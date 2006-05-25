@@ -1,12 +1,18 @@
 package org.omnetpp.experimental.seqchart.editors;
 
 import org.eclipse.jface.dialogs.Dialog;
+import org.eclipse.jface.viewers.ILabelProvider;
+import org.eclipse.jface.viewers.ILabelProviderListener;
+import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.TreeViewer;
+import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Shell;
+import org.omnetpp.experimental.seqchart.moduletree.ModuleTreeItem;
 
 /**
  * Dialog to add items to a given dataset.
@@ -15,14 +21,16 @@ import org.eclipse.swt.widgets.Shell;
  */
 public class ModuleTreeDialog extends Dialog {
 
-	TreeViewer moduleTree;
+	private TreeViewer treeViewer;
+	private ModuleTreeItem moduleTree;
 	
 	/**
 	 * This method initializes the dialog
 	 */
-	public ModuleTreeDialog(Shell parentShell) {
+	public ModuleTreeDialog(Shell parentShell, ModuleTreeItem moduleTree) {
 		super(parentShell);
 		setShellStyle(getShellStyle()|SWT.RESIZE);
+		this.moduleTree = moduleTree;
 	}
 
 	public void dispose() {
@@ -41,8 +49,53 @@ public class ModuleTreeDialog extends Dialog {
         Composite composite = (Composite) super.createDialogArea(parent);
         //((GridLayout)composite.getLayout()).numColumns = 2;
 
-        moduleTree = new TreeViewer(composite, SWT.CHECK);
-        moduleTree.getTree().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+        treeViewer = new TreeViewer(composite, SWT.CHECK | SWT.BORDER);
+        GridData gridData = new GridData(SWT.FILL, SWT.FILL, true, true);
+        gridData.widthHint = 300;
+        gridData.heightHint = 300;
+        treeViewer.getTree().setLayoutData(gridData);
+
+        treeViewer.setContentProvider(new ITreeContentProvider() {
+			public void dispose() { }
+			public void inputChanged(Viewer viewer, Object oldInput, Object newInput) { }
+			public Object[] getChildren(Object parentElement) {
+				return ((ModuleTreeItem)parentElement).getSubmodules(); //XXX sort by name
+			}
+			public Object getParent(Object element) {
+				return ((ModuleTreeItem)element).getParentModule();
+			}
+			public boolean hasChildren(Object element) {
+				return ((ModuleTreeItem)element).getSubmodules().length>0;
+			}
+			public Object[] getElements(Object inputElement) {
+				return getChildren(inputElement);
+			}
+        });
+        
+        treeViewer.setLabelProvider(new ILabelProvider() {
+			public void addListener(ILabelProviderListener listener) { }
+			public void removeListener(ILabelProviderListener listener) { }
+			public void dispose() { }
+			public boolean isLabelProperty(Object element, String property) {
+				return false;
+			}
+			public Image getImage(Object element) {
+				return null;
+			}
+			public String getText(Object element) {
+				ModuleTreeItem mod = (ModuleTreeItem)element;
+				String text = mod.getModuleName();
+				if (mod.getModuleClassName()!=null)
+					text = "("+mod.getModuleClassName()+") "+text;
+				if (mod.getModuleId()!=-1)
+					text += "  (id="+mod.getModuleId()+")";
+				return text;
+			}
+        	
+        });
+
+        treeViewer.setInput(moduleTree);
+        treeViewer.expandToLevel(2);
         
         return composite;
     }

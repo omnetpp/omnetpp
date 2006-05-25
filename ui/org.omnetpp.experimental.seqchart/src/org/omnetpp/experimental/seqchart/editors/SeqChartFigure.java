@@ -32,6 +32,9 @@ import org.omnetpp.scave.engine.MessageEntry;
 //TODO limit pixelsPersec to a range that makes sense (for the current eventLog)
 //TODO draw arrowheads
 //TODO merge/hide axes
+//XXX Performanece note: perf hog is line drawing. Coordicate calculations etc
+//    take much less time (to verify, comment out body of drawMessageArrow()).
+//    Solution: draw into an off-screen image, and use that during repaints!
 //FIXME scrollbar breaks badly when char size exceeds ~4,000,000 pixels (this means only ~0.1s resolution ticks on an 1000s trace!!! not enough!)
 //FIXME msg arrows that intersect the chart area but don't start or end there are not displayed (BUG!)
 //FIXME redraw chart with antialias while user is idle? hints: new SafeRunnable(); or:
@@ -324,11 +327,12 @@ public class SeqChartFigure extends Figure {
 				graphics.drawArc(Rectangle.SINGLETON, 0, 180);
 			}
 		} else {
-			graphics.clipRect(Rectangle.SINGLETON);
-			if (Rectangle.SINGLETON.y > y1 && Rectangle.SINGLETON.y > y2)
-				return;
-			if (Rectangle.SINGLETON.bottom() < y1 && Rectangle.SINGLETON.bottom() < y2)
-				return;
+			//XXX some attempt do do manual clipping...
+			//graphics.clipRect(Rectangle.SINGLETON);
+			//if (Rectangle.SINGLETON.y > y1 && Rectangle.SINGLETON.y > y2)
+			//	return;
+			//if (Rectangle.SINGLETON.bottom() < y1 && Rectangle.SINGLETON.bottom() < y2)
+			//	return;
 			graphics.drawLine(x1, y1, x2, y2);
 		}
 	}

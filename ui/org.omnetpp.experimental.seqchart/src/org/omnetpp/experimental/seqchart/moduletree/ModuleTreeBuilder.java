@@ -8,7 +8,7 @@ import java.util.StringTokenizer;
  * @author andras
  */
 public class ModuleTreeBuilder {
-	private ModuleTreeItem tree = null;
+	private ModuleTreeItem tree = new ModuleTreeItem();
 	
 	/**
 	 * Adds a module to the current tree, by creating intervening levels if they
@@ -19,14 +19,10 @@ public class ModuleTreeBuilder {
 	 */
 	public ModuleTreeItem addModule(String fullPath) {
 		StringTokenizer st = new StringTokenizer(fullPath, ".");
-		ModuleTreeItem currentParent = null;
+		ModuleTreeItem currentParent = tree;
 		while (st.hasMoreTokens()) {
 			String submodName = st.nextToken();
-			if (currentParent==null) {
-				// add root
-				tree = currentParent = new ModuleTreeItem(submodName, null);
-			}
-			else if (currentParent.getSubmodule(submodName)!=null) {
+			if (currentParent.getSubmodule(submodName)!=null) {
 				// find existing
 				currentParent = currentParent.getSubmodule(submodName);
 			}

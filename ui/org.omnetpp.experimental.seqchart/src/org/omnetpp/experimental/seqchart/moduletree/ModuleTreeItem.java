@@ -14,6 +14,10 @@ public class ModuleTreeItem {
 	private ModuleTreeItem parentModule;
 	private ModuleTreeItem[] submodules = new ModuleTreeItem[0];
 
+	public ModuleTreeItem() {
+		moduleName = "<root>";
+	}
+
 	/**
 	 * Create an item with the given name and (optionally) parent.
 	 *  

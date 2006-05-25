@@ -31,10 +31,13 @@ import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.part.EditorPart;
+import org.omnetpp.experimental.seqchart.moduletree.ModuleTreeBuilder;
+import org.omnetpp.experimental.seqchart.moduletree.ModuleTreeItem;
 import org.omnetpp.scave.engine.EventEntry;
 import org.omnetpp.scave.engine.EventLog;
 import org.omnetpp.scave.engine.JavaFriendlyEventLogFacade;
 import org.omnetpp.scave.engine.MessageEntry;
+import org.omnetpp.scave.engine.ModuleEntry;
 
 /**
  * Sequence chart display tool. (It is not actually an editor; it is only named so
@@ -140,7 +143,7 @@ public class SequenceChartToolEditor extends EditorPart {
 
 	private Composite createControlStrip(Composite upper) {
 		Composite controlStrip = new Composite(upper, SWT.NONE);
-		controlStrip.setLayout(new GridLayout(3, false));
+		controlStrip.setLayout(new GridLayout(4, false));
 		eventcombo = new Combo(controlStrip, SWT.NONE);
 		eventcombo.setLayoutData(new GridData(SWT.FILL,SWT.FILL,true,false));
 		eventcombo.setVisibleItemCount(20);
@@ -148,6 +151,8 @@ public class SequenceChartToolEditor extends EditorPart {
 		zoomIn.setText("Zoom in");
 		Button zoomOut = new Button(controlStrip, SWT.NONE);
 		zoomOut.setText("Zoom out");
+		Button selectModules = new Button(controlStrip, SWT.NONE);
+		selectModules.setText("Modules...");
 
 		// add event handlers
 		eventcombo.addSelectionListener(new SelectionListener() {
@@ -179,6 +184,7 @@ public class SequenceChartToolEditor extends EditorPart {
 			public void widgetSelected(SelectionEvent e) {
 				seqChartFigure.zoomIn();
 			}});
+		
 		zoomOut.addSelectionListener(new SelectionListener() {
 			public void widgetDefaultSelected(SelectionEvent e) {
 				seqChartFigure.zoomOut();
@@ -186,7 +192,29 @@ public class SequenceChartToolEditor extends EditorPart {
 			public void widgetSelected(SelectionEvent e) {
 				seqChartFigure.zoomOut();
 			}});
+
+		selectModules.addSelectionListener(new SelectionListener() {
+			public void widgetDefaultSelected(SelectionEvent e) {
+				displayModuleTreeDialog();
+			}
+			public void widgetSelected(SelectionEvent e) {
+				displayModuleTreeDialog();
+			}});
+
 		return controlStrip;
+	}
+
+	protected void displayModuleTreeDialog() {
+		ModuleTreeBuilder treeBuilder = new ModuleTreeBuilder();
+		for (int i=0; i<eventLog.getNumModules(); i++) {
+			ModuleEntry mod = eventLog.getModule(i);
+			treeBuilder.addModule(mod.getModuleFullPath(), mod.getModuleClassName(), mod.getModuleId());
+		}
+
+		ModuleTreeItem moduleTree = treeBuilder.getModuleTree();
+
+		ModuleTreeDialog dialog = new ModuleTreeDialog(getSite().getShell(), moduleTree);
+		dialog.open();
 	}
 
 	private void fillEventCombo() {
