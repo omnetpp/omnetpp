@@ -7,7 +7,7 @@ import java.util.List;
  * 
  * @author andras
  */
-public class ModuleTreeItem {
+public class ModuleTreeItem implements Comparable<ModuleTreeItem> {
 	private int moduleId = -1;
 	private String moduleName;
 	private String moduleFullPath; //XXX maybe this could be cached as well?
@@ -44,7 +44,6 @@ public class ModuleTreeItem {
 
 	/**
 	 * Returns the ModuleTreeItems from the tree root down to this element.
-	 * Useful for creating TreePath object for use with ITreeSelection for TreeViewer.
 	 */
 	public ModuleTreeItem[] getPath() {
 	    int count = 0;
@@ -61,7 +60,7 @@ public class ModuleTreeItem {
 	 */
 	public String getFullPathName() {
 	    String path = getModuleName();
-	    for (ModuleTreeItem current=this; current!=null; current=current.getParentModule())
+	    for (ModuleTreeItem current=getParentModule(); current!=null && current.getParentModule()!=null /*omit <root>*/; current=current.getParentModule())
 	    	path = current.getModuleName()+"."+path;
 	    return path;
 	}
@@ -105,5 +104,9 @@ public class ModuleTreeItem {
 			if (submodule.moduleName.equals(submoduleName))
 				return submodule;
 		return null;
+	}
+
+	public int compareTo(ModuleTreeItem item) {
+		return moduleName.compareTo(item.getModuleName());
 	}
 }

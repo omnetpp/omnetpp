@@ -205,20 +205,6 @@ public class SequenceChartToolEditor extends EditorPart {
 		return controlStrip;
 	}
 
-	protected void displayModuleTreeDialog() {
-		ModuleTreeBuilder treeBuilder = new ModuleTreeBuilder();
-		for (int i=0; i<eventLog.getNumModules(); i++) {
-			ModuleEntry mod = eventLog.getModule(i);
-			treeBuilder.addModule(mod.getModuleFullPath(), mod.getModuleClassName(), mod.getModuleId());
-		}
-
-		ModuleTreeItem moduleTree = treeBuilder.getModuleTree();  //XXX turn this into a class member? and store selection...?
-
-		ModuleTreeDialog dialog = new ModuleTreeDialog(getSite().getShell(), moduleTree, null);
-		dialog.open();
-		Collection<ModuleTreeItem> selection = dialog.getSelection(); //XXX process selection...
-	}
-
 	private void fillEventCombo() {
 		eventcombo.removeAll();
     	eventcombo.add("All events");
@@ -332,6 +318,24 @@ public class SequenceChartToolEditor extends EditorPart {
 
 		rootFigure.add(label);
 		rootLayout.setConstraint(label, new Rectangle(x,y,-1,-1));
+	}
+
+	protected void displayModuleTreeDialog() {
+		ModuleTreeBuilder treeBuilder = new ModuleTreeBuilder();
+		for (int i=0; i<eventLog.getNumModules(); i++) {
+			ModuleEntry mod = eventLog.getModule(i);
+			treeBuilder.addModule(mod.getModuleFullPath(), mod.getModuleClassName(), mod.getModuleId());
+		}
+	
+		ModuleTreeItem moduleTree = treeBuilder.getModuleTree();  //XXX turn this into a class member? and store selection...?
+	
+		ModuleTreeDialog dialog = new ModuleTreeDialog(getSite().getShell(), moduleTree, null);
+		dialog.open();
+		Object[] selection = dialog.getResult(); //XXX process selection...
+		System.out.println("Selected:");
+		for (Object sel : selection) {
+			System.out.println(" "+((ModuleTreeItem)sel).getFullPathName());
+		}
 	}
 
 	public void dispose() {

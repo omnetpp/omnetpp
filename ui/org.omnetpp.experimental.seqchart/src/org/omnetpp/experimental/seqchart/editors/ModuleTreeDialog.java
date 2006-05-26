@@ -1,15 +1,12 @@
 package org.omnetpp.experimental.seqchart.editors;
 
-import java.util.ArrayList;
-import java.util.Collection;
+import java.util.Arrays;
+import java.util.List;
 
-import org.eclipse.jface.dialogs.Dialog;
+import org.eclipse.jface.viewers.CheckboxTreeViewer;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.jface.viewers.ITreeContentProvider;
-import org.eclipse.jface.viewers.TreePath;
-import org.eclipse.jface.viewers.TreeSelection;
-import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
@@ -18,6 +15,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.ui.dialogs.SelectionDialog;
 import org.omnetpp.experimental.seqchart.moduletree.ModuleTreeItem;
 
 /**
@@ -25,30 +23,26 @@ import org.omnetpp.experimental.seqchart.moduletree.ModuleTreeItem;
  * 
  * @author andras
  */
-public class ModuleTreeDialog extends Dialog {
+public class ModuleTreeDialog extends SelectionDialog {
 
-	private TreeViewer treeViewer;
-	private ModuleTreeItem moduleTree;
-	private Collection<ModuleTreeItem> selection;
+	private CheckboxTreeViewer treeViewer;
+	private Object input;
 	
 	/**
 	 * This method initializes the dialog
 	 */
-	public ModuleTreeDialog(Shell parentShell, ModuleTreeItem moduleTree, Collection<ModuleTreeItem> selection) {
+	public ModuleTreeDialog(Shell parentShell, ModuleTreeItem moduleItemTree, List<ModuleTreeItem> checkedModuleItems) {
 		super(parentShell);
 		setShellStyle(getShellStyle()|SWT.RESIZE);
-		this.moduleTree = moduleTree;
-		this.selection = selection;
-	}
-
-	public void dispose() {
-		//XXX
+        setTitle("Choose Modules");
+        setMessage("Hello message");
+        input = moduleItemTree;
+        setInitialElementSelections(checkedModuleItems);
 	}
 
     @Override
     protected void configureShell(Shell newShell) {
         super.configureShell(newShell);
-        newShell.setText("Choose Modules");
         //PlatformUI.getWorkbench().getHelpSystem().setHelp(newShell, IReadmeConstants.SECTIONS_DIALOG_CONTEXT);
     }
 
@@ -60,7 +54,7 @@ public class ModuleTreeDialog extends Dialog {
         label.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
         label.setText("Choose modules for chart axes:");
 
-        treeViewer = new TreeViewer(composite, SWT.CHECK | SWT.BORDER);
+        treeViewer = new CheckboxTreeViewer(composite, SWT.CHECK | SWT.BORDER | SWT.MULTI);
         GridData gridData = new GridData(SWT.FILL, SWT.FILL, true, true);
         gridData.widthHint = 300;
         gridData.heightHint = 300;
@@ -70,7 +64,9 @@ public class ModuleTreeDialog extends Dialog {
 			public void dispose() { }
 			public void inputChanged(Viewer viewer, Object oldInput, Object newInput) { }
 			public Object[] getChildren(Object parentElement) {
-				return ((ModuleTreeItem)parentElement).getSubmodules(); //XXX sort by name
+				ModuleTreeItem[] submods = ((ModuleTreeItem)parentElement).getSubmodules(); 
+				Arrays.sort(submods, 0, submods.length);
+				return submods;
 			}
 			public Object getParent(Object element) {
 				return ((ModuleTreeItem)element).getParentModule();
@@ -97,44 +93,28 @@ public class ModuleTreeDialog extends Dialog {
 				ModuleTreeItem mod = (ModuleTreeItem)element;
 				String text = mod.getModuleName();
 				if (mod.getModuleClassName()!=null)
-					text = "("+mod.getModuleClassName()+") "+text;
+					text += " ("+mod.getModuleClassName()+")";
 				if (mod.getModuleId()!=-1)
-					text += "  (id="+mod.getModuleId()+")";
+					text += " (id="+mod.getModuleId()+")";
 				return text;
 			}
         	
         });
 
-        treeViewer.setInput(moduleTree);
+        //XXX configure dialog behaviour according to the following rules:
+        // - if a compound module is checked, its submodules get unchecked and grayed
+        treeViewer.setInput(input);
         
         // set initial selection
-        if (selection!=null) {
-        	ArrayList<TreePath> paths = new ArrayList<TreePath>();
-        	for (ModuleTreeItem sel : selection)
-        		paths.add(new TreePath(sel.getPath()));
-        	treeViewer.setSelection(new TreeSelection(paths.toArray(new TreePath[0])), true);
-        }
+        if (getInitialElementSelections()!=null) 
+        	treeViewer.setCheckedElements(getInitialElementSelections().toArray());
         return composite;
 
     }
-
-    public Collection<ModuleTreeItem> getSelection() {
-    	return null;  //FIXME todo...
-    }
     
-    @Override
-	protected void createButtonsForButtonBar(Composite parent) {
-		createButton(parent, 1, "OK", true);
-		createButton(parent, 2, "Cancel", false);
-	}
-
-    @Override
-	protected void buttonPressed(int buttonId) {
-		if (buttonId==1) {
-			close(); //XXX and...?
-		} else if (buttonId==2) {
-			close(); //XXX and...?
-		}
-	}
-
+    protected void okPressed() {
+		Object[] checkedItems = treeViewer.getCheckedElements();
+		setSelectionResult(checkedItems);
+        super.okPressed();
+    }
 }
