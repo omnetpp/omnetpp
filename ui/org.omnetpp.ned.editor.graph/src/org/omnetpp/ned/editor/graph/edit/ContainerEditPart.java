@@ -1,8 +1,6 @@
 package org.omnetpp.ned.editor.graph.edit;
 
-import org.eclipse.gef.EditPolicy;
 import org.eclipse.gef.editparts.AbstractGraphicalEditPart;
-import org.omnetpp.ned.editor.graph.edit.policies.NedContainerEditPolicy;
 import org.omnetpp.ned2.model.IDisplayStringChangeListener;
 import org.omnetpp.ned2.model.IDisplayStringProvider;
 import org.omnetpp.ned2.model.INEDChangeListener;
@@ -45,8 +43,6 @@ abstract public class ContainerEditPart
      */
     @Override
     protected void createEditPolicies() {
-    	// XXX check wheter this policy is ok on Submodule too?
-        installEditPolicy(EditPolicy.CONTAINER_ROLE, new NedContainerEditPolicy());
     }
 
     /**

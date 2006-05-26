@@ -3,7 +3,6 @@ package org.omnetpp.ned.editor.graph.edit.outline;
 import org.eclipse.gef.EditPolicy;
 import org.eclipse.gef.RootEditPart;
 import org.eclipse.gef.editpolicies.RootComponentEditPolicy;
-import org.omnetpp.ned.editor.graph.edit.policies.NedContainerEditPolicy;
 import org.omnetpp.ned.editor.graph.edit.policies.NedTreeContainerEditPolicy;
 
 /**
@@ -24,7 +23,6 @@ public class NedFileTreeEditPart extends NedTreeEditPart {
     @Override
     protected void createEditPolicies() {
         super.createEditPolicies();
-        installEditPolicy(EditPolicy.CONTAINER_ROLE, new NedContainerEditPolicy());
         installEditPolicy(EditPolicy.TREE_CONTAINER_ROLE, new NedTreeContainerEditPolicy());
         // If this editpart is the contents of the viewer, then it is not
         // deletable!

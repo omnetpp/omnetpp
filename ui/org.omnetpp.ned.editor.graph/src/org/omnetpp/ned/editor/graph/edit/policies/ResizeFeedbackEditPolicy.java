@@ -12,9 +12,10 @@ import org.eclipse.gef.editpolicies.ResizableEditPolicy;
 import org.omnetpp.common.color.ColorFactory;
 
 /**
+ * Handles feedback figures during move and resize.
  * 
  */
-public class NedResizableEditPolicy extends ResizableEditPolicy {
+public class ResizeFeedbackEditPolicy extends ResizableEditPolicy {
 
     /**
      * Creates the figure used for feedback.
@@ -58,10 +59,8 @@ public class NedResizableEditPolicy extends ResizableEditPolicy {
         IFigure figure;
 
         figure = new RectangleFigure();
-        ((RectangleFigure) figure).setXOR(true);
-        ((RectangleFigure) figure).setFill(true);
-        figure.setBackgroundColor(ColorFactory.ghostFillColor);
-        figure.setForegroundColor(ColorConstants.white);
+        ((RectangleFigure) figure).setFill(false);
+        figure.setForegroundColor(ColorFactory.highlight);
 
         return figure;
     }

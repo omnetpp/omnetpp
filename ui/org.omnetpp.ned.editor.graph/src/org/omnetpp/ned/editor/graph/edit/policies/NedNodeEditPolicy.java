@@ -13,10 +13,6 @@ import org.omnetpp.ned.editor.graph.figures.ModuleFigure;
 import org.omnetpp.ned.editor.graph.model.commands.ConnectionCommand;
 import org.omnetpp.ned2.model.ConnectionNodeEx;
 import org.omnetpp.ned2.model.INamedGraphNode;
-import org.omnetpp.ned2.model.NEDElementFactoryEx;
-import org.omnetpp.ned2.model.NedElementExUtil;
-import org.omnetpp.ned2.model.pojo.NEDElementFactory;
-import org.omnetpp.ned2.model.pojo.NEDElementTags;
 
 public class NedNodeEditPolicy extends GraphicalNodeEditPolicy {
 
@@ -33,7 +29,6 @@ public class NedNodeEditPolicy extends GraphicalNodeEditPolicy {
     @Override
     protected Command getConnectionCreateCommand(CreateConnectionRequest request) {
         ConnectionNodeEx conn = (ConnectionNodeEx)request.getNewObject();
-//        conn.setArrowDirection(ConnectionNodeEx.NED_ARROWDIR_L2R);
         ConnectionCommand command = new ConnectionCommand(conn);
         command.setSrcModule(getNedNodeModel());
         ConnectionAnchor ctor = getNedNodeEditPart().getSourceConnectionAnchor(request);
@@ -49,10 +44,6 @@ public class NedNodeEditPolicy extends GraphicalNodeEditPolicy {
      */
     @Override
     protected IFigure getFeedbackLayer() {
-        /*
-         * Fix for Bug# 66590 Feedback needs to be added to the scaled feedback
-         * layer
-         */
         return getLayer(LayerConstants.SCALED_FEEDBACK_LAYER);
     }
 
