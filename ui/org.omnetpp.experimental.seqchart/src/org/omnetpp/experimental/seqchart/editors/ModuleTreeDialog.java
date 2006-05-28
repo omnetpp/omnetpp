@@ -3,7 +3,9 @@ package org.omnetpp.experimental.seqchart.editors;
 import java.util.Arrays;
 import java.util.List;
 
+import org.eclipse.jface.viewers.CheckStateChangedEvent;
 import org.eclipse.jface.viewers.CheckboxTreeViewer;
+import org.eclipse.jface.viewers.ICheckStateListener;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.jface.viewers.ITreeContentProvider;
@@ -54,7 +56,7 @@ public class ModuleTreeDialog extends SelectionDialog {
         label.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
         label.setText("Choose modules for chart axes:");
 
-        treeViewer = new CheckboxTreeViewer(composite, SWT.CHECK | SWT.BORDER | SWT.MULTI);
+        treeViewer = new CheckboxTreeViewer(composite, SWT.CHECK | SWT.BORDER);
         GridData gridData = new GridData(SWT.FILL, SWT.FILL, true, true);
         gridData.widthHint = 300;
         gridData.heightHint = 300;
@@ -101,10 +103,32 @@ public class ModuleTreeDialog extends SelectionDialog {
         	
         });
 
-        //XXX configure dialog behaviour according to the following rules:
-        // - if a compound module is checked, its submodules get unchecked and grayed
-        treeViewer.setInput(input);
+        // configure dialog behaviour according to the following rules:
+        // - if a compound module is checked, its submodules and parents get unchecked 
+        treeViewer.addCheckStateListener(new ICheckStateListener() {
+			public void checkStateChanged(CheckStateChangedEvent event) {
+				if (event.getChecked()) {
+					ModuleTreeItem e = (ModuleTreeItem)event.getElement();
+					treeViewer.setSubtreeChecked(e, false);
+					treeViewer.setChecked(e, true);
+					// all parents should be unchecked
+				    for (ModuleTreeItem current=e.getParentModule(); current!=null; current=current.getParentModule())
+				    	treeViewer.setChecked(current, false);
+				}
+				else {
+					// when unchecked, expand and check all submodules
+					ModuleTreeItem e = (ModuleTreeItem)event.getElement();
+					treeViewer.setSubtreeChecked(e, false);
+					treeViewer.setExpandedState(e, true);
+					for (ModuleTreeItem i : e.getSubmodules())
+						treeViewer.setChecked(i, true);
+				}
+			}
+        });
         
+        treeViewer.setInput(input);
+        treeViewer.expandAll();
+
         // set initial selection
         if (getInitialElementSelections()!=null) 
         	treeViewer.setCheckedElements(getInitialElementSelections().toArray());
