@@ -19,6 +19,7 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.ToolTip;
+import org.omnetpp.experimental.seqchart.moduletree.ModuleTreeItem;
 import org.omnetpp.scave.engine.EventEntry;
 import org.omnetpp.scave.engine.EventLog;
 import org.omnetpp.scave.engine.JavaFriendlyEventLogFacade;
@@ -67,6 +68,8 @@ public class SeqChartFigure extends Figure {
 	private ToolTip swtTooltip; // the current tooltip
 	
 	private int dragStartX, dragStartY; // temporary variables for drag handling
+	private ModuleTreeItem moduleTree;  // items in axisModules point into this tree
+	private ArrayList<ModuleTreeItem> axisModules; // the modules which should have an axis
 
 	/**
      * Constructor.
@@ -149,8 +152,9 @@ public class SeqChartFigure extends Figure {
 	/**
 	 * Set the event log to be displayed in the chart
 	 */
-	public void setEventLog(EventLog eventLog) {
+	public void setEventLog(EventLog eventLog, ModuleTreeItem moduleTree) {
 		this.eventLog = eventLog;
+		this.moduleTree = moduleTree;
 
 		// adapt our zoom level to the current eventLog
 		setPixelsPerSec(suggestPixelsPerSec());
@@ -158,6 +162,18 @@ public class SeqChartFigure extends Figure {
 		// refresh chart. We may end up doing this twice, since it's also called from 
 		// setPixelsPerSec(), but it does no harm
 		recalculatePreferredSize(); 
+		repaint();
+	}
+
+	/**
+	 * Sets which modules should have axes. Items in axisModules
+	 * should point to elements in the moduleTree. 
+	 */
+	public void setAxisModules(ArrayList<ModuleTreeItem> axisModules) {
+		this.axisModules = axisModules;
+
+		// refresh chart
+		recalculatePreferredSize(); // y size probably changed 
 		repaint();
 	}
 
@@ -633,5 +649,4 @@ public class SeqChartFigure extends Figure {
 		// the result is always true.
 		return result <= tolerance * tolerance;
 	}
-
 }

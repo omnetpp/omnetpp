@@ -45,7 +45,7 @@ public class ModuleTreeItem implements Comparable<ModuleTreeItem> {
 	/**
 	 * Returns the ModuleTreeItems from the tree root down to this element.
 	 */
-	public ModuleTreeItem[] getPath() {
+	public ModuleTreeItem[] getTreePath() {
 	    int count = 0;
 	    for (ModuleTreeItem current=this; current!=null; current=current.getParentModule())
 	    	count++;
@@ -58,7 +58,7 @@ public class ModuleTreeItem implements Comparable<ModuleTreeItem> {
 	/**
 	 * Return the path as a dot-separared string.
 	 */
-	public String getFullPathName() {
+	public String getModuleFullPath() {
 	    String path = getModuleName();
 	    for (ModuleTreeItem current=getParentModule(); current!=null && current.getParentModule()!=null /*omit <root>*/; current=current.getParentModule())
 	    	path = current.getModuleName()+"."+path;

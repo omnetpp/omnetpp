@@ -37,7 +37,7 @@ public class ModuleTreeDialog extends SelectionDialog {
 		super(parentShell);
 		setShellStyle(getShellStyle()|SWT.RESIZE);
         setTitle("Choose Modules");
-        setMessage("Hello message");
+        setMessage("Choose Modules For Axes"); // XXX this does not appear anywhere on the GUI 
         input = moduleItemTree;
         setInitialElementSelections(checkedModuleItems);
 	}
@@ -58,8 +58,8 @@ public class ModuleTreeDialog extends SelectionDialog {
 
         treeViewer = new CheckboxTreeViewer(composite, SWT.CHECK | SWT.BORDER);
         GridData gridData = new GridData(SWT.FILL, SWT.FILL, true, true);
-        gridData.widthHint = 300;
-        gridData.heightHint = 300;
+        gridData.widthHint = 500;
+        gridData.heightHint = 400;
         treeViewer.getTree().setLayoutData(gridData);
 
         treeViewer.setContentProvider(new ITreeContentProvider() {
@@ -94,8 +94,10 @@ public class ModuleTreeDialog extends SelectionDialog {
 			public String getText(Object element) {
 				ModuleTreeItem mod = (ModuleTreeItem)element;
 				String text = mod.getModuleName();
+				text += " -";
 				if (mod.getModuleClassName()!=null)
 					text += " ("+mod.getModuleClassName()+")";
+				text += " "+mod.getModuleFullPath();
 				if (mod.getModuleId()!=-1)
 					text += " (id="+mod.getModuleId()+")";
 				return text;
@@ -103,11 +105,11 @@ public class ModuleTreeDialog extends SelectionDialog {
         	
         });
 
-        // configure dialog behaviour according to the following rules:
-        // - if a compound module is checked, its submodules and parents get unchecked 
+        // configure checkbox behaviour
         treeViewer.addCheckStateListener(new ICheckStateListener() {
 			public void checkStateChanged(CheckStateChangedEvent event) {
 				if (event.getChecked()) {
+			        // when a compound module is checked, uncheck its subtree and all parents up to the root  
 					ModuleTreeItem e = (ModuleTreeItem)event.getElement();
 					treeViewer.setSubtreeChecked(e, false);
 					treeViewer.setChecked(e, true);
@@ -128,6 +130,8 @@ public class ModuleTreeDialog extends SelectionDialog {
         
         treeViewer.setInput(input);
         treeViewer.expandAll();
+        if (((ModuleTreeItem)input).getSubmodules().length>0)
+        	treeViewer.reveal(((ModuleTreeItem)input).getSubmodules()[0]); // scroll to top
 
         // set initial selection
         if (getInitialElementSelections()!=null) 

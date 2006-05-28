@@ -58,6 +58,8 @@ public class SequenceChartToolEditor extends EditorPart {
 	private EventLogTable eventLogTable;
 	
 	private EventLog eventLog;  // the log file loaded
+	private ModuleTreeItem moduleTree; // modules in eventLog
+	private ArrayList<ModuleTreeItem> axisModules; // which modules should have an axis
 	private int currentEventNumber = -1;
 	private EventLog filteredEventLog; // eventLog filtered for currentEventNumber
 
@@ -78,6 +80,19 @@ public class SequenceChartToolEditor extends EditorPart {
 
 		eventLog = new EventLog(fileName);
 		System.out.println("read "+eventLog.getNumEvents()+" events in "+eventLog.getNumModules()+" modules from "+fileName);
+		
+		extractModuleTree();
+	}
+
+	private void extractModuleTree() {
+		ArrayList<ModuleTreeItem> modules = new ArrayList<ModuleTreeItem>();
+		ModuleTreeBuilder treeBuilder = new ModuleTreeBuilder();
+		for (int i=0; i<eventLog.getNumModules(); i++) {
+			ModuleEntry mod = eventLog.getModule(i);
+			modules.add(treeBuilder.addModule(mod.getModuleFullPath(), mod.getModuleClassName(), mod.getModuleId()));
+		}
+		moduleTree = treeBuilder.getModuleTree();
+		axisModules = modules;
 	}
 	
 	@Override
@@ -300,7 +315,7 @@ public class SequenceChartToolEditor extends EditorPart {
 	}
 
 	private void filteredEventLogChanged() {
-		seqChartFigure.setEventLog(filteredEventLog);
+		seqChartFigure.setEventLog(filteredEventLog, moduleTree);
 		eventLogTable.setInput(filteredEventLog);
 	}
 
@@ -321,20 +336,20 @@ public class SequenceChartToolEditor extends EditorPart {
 	}
 
 	protected void displayModuleTreeDialog() {
-		ModuleTreeBuilder treeBuilder = new ModuleTreeBuilder();
-		for (int i=0; i<eventLog.getNumModules(); i++) {
-			ModuleEntry mod = eventLog.getModule(i);
-			treeBuilder.addModule(mod.getModuleFullPath(), mod.getModuleClassName(), mod.getModuleId());
-		}
-	
-		ModuleTreeItem moduleTree = treeBuilder.getModuleTree();  //XXX turn this into a class member? and store selection...?
-	
-		ModuleTreeDialog dialog = new ModuleTreeDialog(getSite().getShell(), moduleTree, null);
+		ModuleTreeDialog dialog = new ModuleTreeDialog(getSite().getShell(), moduleTree, axisModules);
 		dialog.open();
-		Object[] selection = dialog.getResult(); //XXX process selection...
-		System.out.println("Selected:");
-		for (Object sel : selection) {
-			System.out.println(" "+((ModuleTreeItem)sel).getFullPathName());
+		Object[] selection = dialog.getResult(); 
+		if (selection != null) { // not cancelled
+			axisModules = new ArrayList<ModuleTreeItem>();
+			for (Object sel : selection)
+				axisModules.add((ModuleTreeItem)sel);
+
+			System.out.println("Selected:");
+			for (ModuleTreeItem sel : axisModules)
+				System.out.println(" "+sel.getModuleFullPath());
+
+			// update chart
+			seqChartFigure.setAxisModules(axisModules); 
 		}
 	}
 
