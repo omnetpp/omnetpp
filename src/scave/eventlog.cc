@@ -21,7 +21,7 @@
 ModuleEntry::ModuleEntry()
 {
     moduleId = -1;
-    moduleClassName = NULL;
+    moduleClassName = ""; // must not be NULL because SWIG-generated code will crash!
 }
 
 ModuleEntry::~ModuleEntry()
@@ -52,8 +52,9 @@ MessageEntry::MessageEntry()
 {
     isDelivery = false;
     lineNumber = -1;
-    messageClassName = NULL;
-    messageName = NULL;
+    messageClassName = "";  // must not be NULL because SWIG-generated code will crash!
+    messageName = ""; // must not be NULL because SWIG-generated code will crash!
+    source = target = NULL;
 }
 
 MessageEntry::~MessageEntry()
@@ -79,7 +80,7 @@ StringPool::~StringPool()
 const char *StringPool::get(const char *s)
 {
     if (s==NULL)
-        return NULL;
+        return ""; // must not be NULL because SWIG-generated code will crash!
     StringSet::iterator it = pool.find(const_cast<char *>(s));
     if (it!=pool.end())
         return *it;

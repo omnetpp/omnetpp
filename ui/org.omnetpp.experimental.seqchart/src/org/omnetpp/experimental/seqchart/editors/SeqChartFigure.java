@@ -47,8 +47,8 @@ public class SeqChartFigure extends Figure {
 
 	private final Color EVENT_FG_COLOR = new Color(null,255,0,0);
 	private final Color EVENT_BG_COLOR = new Color(null,255,0,0);
-	private final Color MSG_COLOR = new Color(null,0,255,0);
-	private final Color DELIVERY_MSG_COLOR = new Color(null,0,0,255);
+	private final Color MSG_COLOR = new Color(null,0,0,255);
+	private final Color DELIVERY_MSG_COLOR = new Color(null,0,255,0);
 	private final Cursor DRAGCURSOR = new Cursor(null, SWT.CURSOR_SIZEALL);
 	private static final int XMAX = 10000;
 	private static final int ANTIALIAS_TURN_ON_AT_MSEC = 100;

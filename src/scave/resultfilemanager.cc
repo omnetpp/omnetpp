@@ -557,6 +557,7 @@ void ResultFileManager::processLine(char **vec, int numtokens, Run *&runRef, Fil
 
 File *ResultFileManager::loadScalarFile(const char *filename)
 {
+//XXX __asm int 3;
     // check
     if (isFileLoaded(filename))
         return getFile(filename);
@@ -577,6 +578,7 @@ File *ResultFileManager::loadScalarFile(const char *filename)
     FileTokenizer ftok(filename);
     while (ftok.readLine())
     {
+//XXX int li = ftok.lineNum(); printf("DBG line %d\n", li); fflush(stdout);
         int numtokens = ftok.numTokens();
         char **vec = ftok.tokens();
         processLine(vec, numtokens, runRef, fileRef, ftok.lineNum());
