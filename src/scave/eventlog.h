@@ -19,6 +19,7 @@
 #include <list>
 #include <vector>
 #include <map>
+#include <set>
 #include "filetokenizer.h"
 
 /**
@@ -52,8 +53,8 @@ class MessageEntry
         const char *messageClassName; // stringpooled
         const char *messageName;  // stringpooled
 
-         /** These log messages actually belong to the target event, but this way we can preserve ordering of message entries within the event */
-         std::vector<const char *> logMessages; // stringpooled
+        /** These log messages actually belong to the target event, but this way we can preserve ordering of message entries within the event */
+        std::vector<const char *> logMessages; // stringpooled
 
         EventEntry *source;
         EventEntry *target;
@@ -78,6 +79,9 @@ class EventEntry
         MessageEntryList causes;  // also includes "cause"
         MessageEntryList consequences;
         int numLogMessages; // total number of log messages for this event
+
+        // temporary state for tracing events, coloring (graph)
+        bool isInCollectedEvents;
 
         // the following fields are for the convenience of the GUI
         int cachedX; // position on canvas

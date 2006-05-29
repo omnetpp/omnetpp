@@ -23,7 +23,6 @@ int main(int argc, char **argv)
     }
 
     EventLog eventLog(argv[1]);
-    eventLog.writeTrace(stdout);
 
     long eventNumber = atol(argv[2]);
     EventEntry *event = eventLog.getEventByNumber(eventNumber);
@@ -33,7 +32,7 @@ int main(int argc, char **argv)
         exit(1);
     }
 
-    EventLog *traceLog = eventLog.traceEvent(event, true, false);
+    EventLog *traceLog = eventLog.traceEvent(event, true, true);
     traceLog->writeTrace(stdout);
     delete traceLog;
     return 0;

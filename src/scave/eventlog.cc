@@ -21,6 +21,7 @@
 ModuleEntry::ModuleEntry()
 {
     moduleId = -1;
+    moduleClassName = NULL;
 }
 
 ModuleEntry::~ModuleEntry()
@@ -33,6 +34,7 @@ EventEntry::EventEntry()
     eventNumber = -1;
     simulationTime = -1;
     module = NULL;
+    cause = NULL;
     numLogMessages = 0;
 
     cachedX = cachedY = 0;
@@ -50,6 +52,8 @@ MessageEntry::MessageEntry()
 {
     isDelivery = false;
     lineNumber = -1;
+    messageClassName = NULL;
+    messageName = NULL;
 }
 
 MessageEntry::~MessageEntry()
@@ -120,6 +124,7 @@ void EventLog::parseLogFile()
 {
     long lineNumber = 0;
     MessageEntry *messageEntry = NULL;
+    EventEntry *eventEntry = NULL;
     FileTokenizer ftok(logFileName.c_str());
 
     // read messages and events
@@ -150,7 +155,7 @@ void EventLog::parseLogFile()
 
                     if (isDelivery)
                     {
-                        EventEntry *eventEntry = new EventEntry();
+                        eventEntry = new EventEntry();
                         eventEntry->eventNumber = eventNumber;
                         eventEntry->simulationTime = atof(vec[3]);
                         // skip (id=
@@ -173,7 +178,10 @@ void EventLog::parseLogFile()
             }
             else
             {
-                if (messageEntry != NULL)
+                // skip [ character
+                long eventNumber = atol(vec[0] + 1);
+
+                if (messageEntry != NULL && messageEntry->target->eventNumber == eventNumber)
                 {
                     char *str = tokensToStr(numTokens - 1, vec + 1);
                     messageEntry->logMessages.push_back(stringPool.get(str));
@@ -396,8 +404,8 @@ inline bool equal_EventEntryByEventNumber(EventEntry *e1, EventEntry *e2) {
 inline bool less_ModuleById(ModuleEntry *m1, ModuleEntry *m2) {
     return m1->moduleId < m2->moduleId;
 }
-inline bool less_MessageEntryBySourceEventNumber(MessageEntry *m1, MessageEntry *m2) {
-    return m1->source->eventNumber < m2->source->eventNumber;
+inline bool less_MessageEntryByLineNumber(MessageEntry *m1, MessageEntry *m2) {
+    return m1->lineNumber < m2->lineNumber;
 }
 
 
@@ -410,14 +418,21 @@ EventLog *EventLog::traceEvent(EventEntry *tracedEvent, bool wantCauses, bool wa
 
     if (wantCauses)
     {
+        for (EventEntryList::iterator it = eventList.begin(); it!=eventList.end(); ++it)
+        {
+            (*it)->isInCollectedEvents = false;
+        }
+
         std::set<EventEntry*> openEvents;
         openEvents.insert(tracedEvent);
+        tracedEvent->isInCollectedEvents = true;
         while (openEvents.size() > 0)
         {
             // remove one from openEvents, and add it into collectedEvents
             EventEntry *event = *openEvents.begin();
             openEvents.erase(openEvents.begin());
             collectedEvents.push_back(event);
+            event->isInCollectedEvents = true;
 
             // then add all causes to openEvents
             for (MessageEntryList::iterator it = event->causes.begin(); it!=event->causes.end(); ++it)
@@ -426,7 +441,7 @@ EventLog *EventLog::traceEvent(EventEntry *tracedEvent, bool wantCauses, bool wa
                 if (msg->source != NULL)
                 {
                     collectedMessages.push_back(msg);
-                    if (msg->source != event)
+                    if (msg->source != event && !msg->source->isInCollectedEvents)
                         openEvents.insert(msg->source);
                 }
             }
@@ -435,14 +450,21 @@ EventLog *EventLog::traceEvent(EventEntry *tracedEvent, bool wantCauses, bool wa
 
     if (wantConsequences)
     {
+        for (EventEntryList::iterator it = eventList.begin(); it!=eventList.end(); ++it)
+        {
+            (*it)->isInCollectedEvents = false;
+        }
+
         std::set<EventEntry*> openEvents;
         openEvents.insert(tracedEvent);
+        tracedEvent->isInCollectedEvents = true;
         while (openEvents.size() > 0)
         {
             // remove one from openEvents, and add it into collectedEvents
             EventEntry *event = *openEvents.begin();
             openEvents.erase(openEvents.begin());
             collectedEvents.push_back(event);
+            event->isInCollectedEvents = true;
 
             // then add all consequences to openEvents
             for (MessageEntryList::iterator it = event->consequences.begin(); it!=event->consequences.end(); ++it)
@@ -451,18 +473,15 @@ EventLog *EventLog::traceEvent(EventEntry *tracedEvent, bool wantCauses, bool wa
                 if (msg->target != NULL)
                 {
                     collectedMessages.push_back(msg);
-                    if (msg->target != event)
+                    if (msg->target != event && !msg->target->isInCollectedEvents)
                         openEvents.insert(msg->target);
                 }
             }
         }
     }
 
-    // sort events by event number, and filter out duplicates (if an event is reached
-    // via several different branches, it'll be a duplicate)
+    // sort events by event number (there cannot be duplicates here)
     sort(collectedEvents.begin(), collectedEvents.end(), less_EventEntryByEventNumber);
-    EventEntryList::iterator newEnd = unique(collectedEvents.begin(), collectedEvents.end(), equal_EventEntryByEventNumber);
-    collectedEvents.resize(newEnd - collectedEvents.begin());
 
     // collect list of modules that occur in the filtered event list
     std::set<ModuleEntry*> moduleSet;
@@ -473,14 +492,13 @@ EventLog *EventLog::traceEvent(EventEntry *tracedEvent, bool wantCauses, bool wa
     sort(traceResult->moduleList.begin(), traceResult->moduleList.end(), less_ModuleById);
 
     // sort messages by "source" event number (there cannot be duplicates here)
-    sort(collectedMessages.begin(), collectedMessages.end(), less_MessageEntryBySourceEventNumber);
+    sort(collectedMessages.begin(), collectedMessages.end(), less_MessageEntryByLineNumber);
 
     return traceResult;
 }
 
 void EventLog::writeTrace(FILE *fout)
 {
-    //FIXME this won't work with filtered eventlogs, where messageList is empty
     for (MessageEntryList::iterator it = messageList.begin(); it != messageList.end(); it++)
     {
         MessageEntry *messageEntry = *it;
@@ -508,7 +526,7 @@ void EventLog::writeTrace(FILE *fout)
                 eventEntry->module->moduleFullPath.c_str(),
                 eventEntry->module->moduleId,
                 messageEntry->messageClassName,
-                messageEntry->messageName);
+                (messageEntry->messageName != NULL) ? messageEntry->messageName : "");
 
         for (std::vector<const char *>::iterator at = messageEntry->logMessages.begin(); at != messageEntry->logMessages.end(); at++)
             fprintf(fout, "  [%ld] %s\n", eventEntry->eventNumber, *at);
