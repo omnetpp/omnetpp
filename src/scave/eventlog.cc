@@ -33,7 +33,6 @@ EventEntry::EventEntry()
 {
     eventNumber = -1;
     simulationTime = -1;
-    module = NULL;
     cause = NULL;
     numLogMessages = 0;
 
@@ -55,6 +54,7 @@ MessageEntry::MessageEntry()
     messageClassName = "";  // must not be NULL because SWIG-generated code will crash!
     messageName = ""; // must not be NULL because SWIG-generated code will crash!
     source = target = NULL;
+    module = NULL;
 }
 
 MessageEntry::~MessageEntry()
@@ -131,6 +131,7 @@ void EventLog::parseLogFile()
     // read messages and events
     while (ftok.readLine())
     {
+        bool invalidFormat = false;
         int numTokens = ftok.numTokens();
         char **vec = ftok.tokens();
         lineNumber++;
@@ -140,9 +141,7 @@ void EventLog::parseLogFile()
             if (!strcmp(vec[0], "*") || !strcmp(vec[0], "+"))
             {
                 if (numTokens < 8)
-                {
-                    fprintf(stderr, "Invalid format at line %ld: %s\n", lineNumber, tokensToStr(numTokens, vec)); //XXX
-                }
+                    invalidFormat = true;
                 else
                 {
                     bool isDelivery = !strcmp(vec[0], "*");   //FIXME stricter format check overall
@@ -159,12 +158,12 @@ void EventLog::parseLogFile()
                         eventEntry = new EventEntry();
                         eventEntry->eventNumber = eventNumber;
                         eventEntry->simulationTime = atof(vec[3]);
-                        // skip (id=
-                        eventEntry->module = getOrAddModule(atoi(vec[6] + 4), vec[4], vec[5]);
                         eventEntry->cause = messageEntry;
                         eventList.push_back(eventEntry);
                     }
 
+                    // skip (id=
+                    messageEntry->module = getOrAddModule(atoi(vec[6] + 4), vec[4], vec[5]);
                     messageEntry->source = getEventByNumber(causalEventNumber);
                     messageEntry->target = getEventByNumber(eventNumber);
                     // skip () characters
@@ -180,15 +179,37 @@ void EventLog::parseLogFile()
             else
             {
                 // skip [ character
-                long eventNumber = atol(vec[0] + 1);
+                char *endPtr;
+                char *eventNumberPtr = vec[0] + 1;
+                long eventNumber = strtol(eventNumberPtr, &endPtr, 10);
+                char *str = tokensToStr(numTokens - 1, vec + 1);
 
-                if (messageEntry != NULL && messageEntry->target->eventNumber == eventNumber)
+                if (endPtr != eventNumberPtr)
                 {
-                    char *str = tokensToStr(numTokens - 1, vec + 1);
-                    messageEntry->logMessages.push_back(stringPool.get(str));
-                    delete [] str;
+                    if (messageEntry != NULL && messageEntry->target->eventNumber == eventNumber)
+                        messageEntry->logMessages.push_back(stringPool.get(str));
                 }
+                else if (!strncmp("build", eventNumberPtr, 5))
+                    buildLogMessages.push_back(stringPool.get(str));
+                else if (!strncmp("initialize", eventNumberPtr, 10))
+                    initializeLogMessages.push_back(stringPool.get(str));
+                else if (!strncmp("finish", eventNumberPtr, 6))
+                    finishLogMessages.push_back(stringPool.get(str));
+                else
+                    invalidFormat = true;
+
+                delete [] str;
             }
+        }
+        else
+            invalidFormat = true;
+
+        if (invalidFormat)
+        {
+            // TODO: use returned line of readLine
+            char *line = tokensToStr(numTokens, vec);
+            fprintf(stderr, "Invalid format at line %ld: %s\n", lineNumber, line);
+            delete [] line;
         }
     }
 
@@ -250,18 +271,37 @@ MessageEntry *EventLog::getMessage(int pos)
 
 ModuleEntry *EventLog::getOrAddModule(int moduleId, char *moduleClassName, char *moduleFullPath)
 {
+    // skip () characters
+    if (!strncmp(moduleClassName, "(", 1))
+    {
+        *(moduleClassName + strlen(moduleClassName) - 1) = '\0';
+        moduleClassName++;
+    }
+
     // if module with such ID already exists, return it
     //FIXME warn if className or fullPath doesn't match!
     for (ModuleEntryList::iterator it = moduleList.begin(); it != moduleList.end(); it++)
-        if ((*it)->moduleId == moduleId)
-            return *it;
+    {
+        ModuleEntry *moduleEntry = *it;
+
+        if (moduleEntry->moduleId == moduleId)
+        {
+            if (!strcmp(moduleEntry->moduleClassName, moduleClassName) &&
+                !strcmp(moduleEntry->moduleFullPath.c_str(), moduleFullPath))
+            {
+                return *it;
+            }
+            else
+            {
+                printf("Different module data for the same module id, returning new module\n");
+            }
+        }
+    }
 
     // not yet in there -- store it
     ModuleEntry *moduleEntry = new ModuleEntry();
     moduleEntry->moduleId = moduleId;
-    // skip () characters
-    *(moduleClassName + strlen(moduleClassName) - 1) = '\0';
-    moduleEntry->moduleClassName = stringPool.get(moduleClassName + 1);
+    moduleEntry->moduleClassName = stringPool.get(moduleClassName);
     moduleEntry->moduleFullPath = moduleFullPath;
     moduleList.push_back(moduleEntry);
 
@@ -379,7 +419,7 @@ char *EventLog::tokensToStr(int numTokens, char **vec)
     for (int i = 0; i < numTokens; i++)
         length += strlen(vec[i]);
 
-    char *str = new char[length];
+    char *str = new char[length + 1];
     length = 0;
 
     for (int i = 0; i < numTokens; i++)
@@ -487,7 +527,7 @@ EventLog *EventLog::traceEvent(EventEntry *tracedEvent, bool wantCauses, bool wa
     // collect list of modules that occur in the filtered event list
     std::set<ModuleEntry*> moduleSet;
     for (int i=0; i<collectedEvents.size(); i++)
-        moduleSet.insert(collectedEvents[i]->module);
+        moduleSet.insert(collectedEvents[i]->cause->module);
     for (std::set<ModuleEntry*>::iterator it = moduleSet.begin(); it!=moduleSet.end(); ++it)
         traceResult->moduleList.push_back(*it);
     sort(traceResult->moduleList.begin(), traceResult->moduleList.end(), less_ModuleById);
@@ -500,6 +540,12 @@ EventLog *EventLog::traceEvent(EventEntry *tracedEvent, bool wantCauses, bool wa
 
 void EventLog::writeTrace(FILE *fout)
 {
+    for (std::vector<const char *>::iterator it = buildLogMessages.begin(); it != buildLogMessages.end(); it++)
+        fprintf(fout, "  [build] %s\n", *it);
+
+    for (std::vector<const char *>::iterator it = initializeLogMessages.begin(); it != initializeLogMessages.end(); it++)
+        fprintf(fout, "  [initialize] %s\n", *it);
+
     for (MessageEntryList::iterator it = messageList.begin(); it != messageList.end(); it++)
     {
         MessageEntry *messageEntry = *it;
@@ -523,13 +569,16 @@ void EventLog::writeTrace(FILE *fout)
                 messageEntry->source->eventNumber,
                 12,
                 eventEntry->simulationTime,
-                eventEntry->module->moduleClassName,
-                eventEntry->module->moduleFullPath.c_str(),
-                eventEntry->module->moduleId,
+                messageEntry->module->moduleClassName,
+                messageEntry->module->moduleFullPath.c_str(),
+                messageEntry->module->moduleId,
                 messageEntry->messageClassName,
                 (messageEntry->messageName != NULL) ? messageEntry->messageName : "");
 
         for (std::vector<const char *>::iterator at = messageEntry->logMessages.begin(); at != messageEntry->logMessages.end(); at++)
             fprintf(fout, "  [%ld] %s\n", eventEntry->eventNumber, *at);
     }
+
+    for (std::vector<const char *>::iterator it = finishLogMessages.begin(); it != finishLogMessages.end(); it++)
+        fprintf(fout, "  [finish] %s\n", *it);
 }
