@@ -1,9 +1,15 @@
 package org.omnetpp.scave2.editors;
 
 import java.util.ArrayList;
+import java.util.List;
 
+import org.eclipse.emf.common.notify.AdapterFactory;
 import org.eclipse.emf.ecore.xmi.XMIResource;
+import org.eclipse.emf.edit.provider.ComposedAdapterFactory;
+import org.eclipse.emf.edit.provider.ReflectiveItemProviderAdapterFactory;
+import org.eclipse.emf.edit.provider.resource.ResourceItemProviderAdapterFactory;
 import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
@@ -11,7 +17,9 @@ import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.omnetpp.scave.model.Analysis;
+import org.omnetpp.scave.model.Dataset;
 import org.omnetpp.scave.model.ScaveModelFactory;
+import org.omnetpp.scave.model.provider.ScaveModelItemProviderAdapterFactory;
 
 public class ScaveEditor extends AbstractEMFModelEditor {
 
@@ -37,8 +45,8 @@ public class ScaveEditor extends AbstractEMFModelEditor {
         configureTreeViewer(overviewPage.getInputFilesTreeViewer());
         configureTreeViewer(overviewPage.getDatasetsTreeViewer());
         configureTreeViewer(overviewPage.getChartSheetsTreeViewer());
-        overviewPage.getPhysicalDataTreeViewer().setContentProvider(new InputPhysicalViewContentProvider());
-        overviewPage.getPhysicalDataTreeViewer().setLabelProvider(new InputPhysicalViewLabelProvider());
+        configureTreeViewer(overviewPage.getPhysicalDataTreeViewer(), new InputsPhysicalView(this));
+        configureTreeViewer(overviewPage.getLogicalDataTreeViewer(), new InputsLogicalView(this));
         
         Analysis analysis = getAnalysisModelObject();
         // create mandatory objects if not exist; XXX must also prevent them from being deleted
@@ -53,6 +61,8 @@ public class ScaveEditor extends AbstractEMFModelEditor {
         overviewPage.getDatasetsTreeViewer().setInput(analysis.getDatasets());
         overviewPage.getChartSheetsTreeViewer().setInput(analysis.getChartSheets()); //XXX for now...
         overviewPage.getPhysicalDataTreeViewer().setInput(analysis.getInputs());
+        overviewPage.getLogicalDataTreeViewer().setInput(analysis.getInputs());
+        
         //createDatasetPage("queue lengths");
         //createDatasetPage("average EED");
         //createDatasetPage("frame counts");
@@ -69,6 +79,10 @@ public class ScaveEditor extends AbstractEMFModelEditor {
     	Analysis analysis = (Analysis)resource.getContents().get(0);
     	return analysis;
     }
+	
+	public void openDataset(Dataset dataset) {
+		createDatasetPage(dataset.getName());
+	}
 	
 	protected void initializeContentOutlineViewer(Viewer contentOutlineViewer) {
 		contentOutlineViewer.setInput(getAnalysisModelObject());
@@ -125,6 +139,11 @@ public class ScaveEditor extends AbstractEMFModelEditor {
 		setViewerSelectionNoNotify(overviewPage.getInputFilesTreeViewer(), selection);
 		setViewerSelectionNoNotify(overviewPage.getDatasetsTreeViewer(), selection);
 		setViewerSelectionNoNotify(overviewPage.getChartSheetsTreeViewer(), selection);
+	}
+	
+	public void configureTreeViewer(TreeViewer viewer, InputsView view) {
+		viewer.setContentProvider(view.getContentProvider());
+		viewer.setLabelProvider(view.getLabelProvider());
 	}
 }
 
