@@ -308,33 +308,51 @@ ModuleEntry *EventLog::getOrAddModule(int moduleId, char *moduleClassName, char 
     return moduleEntry;
 }
 
-inline bool less_EventEntry_long(EventEntry *e, long eventNumber) {return e->eventNumber < eventNumber;}
+inline bool less_EventEntry_EventNumber(EventEntry *e, long eventNumber) {return e->eventNumber < eventNumber;}
+
+inline bool less_EventEntry_SimulationTime(EventEntry *e, double t) {return e->simulationTime < t;}
+
+inline bool less_EventEntry_TimelineCoordinate(EventEntry *e, double t) {return e->simulationTime < t;}
 
 int EventLog::findEvent(EventEntry *event)
 {
-    EventEntryList::iterator it = std::lower_bound(eventList.begin(), eventList.end(), event->eventNumber, less_EventEntry_long);
+    EventEntryList::iterator it = std::lower_bound(eventList.begin(), eventList.end(), event->eventNumber, less_EventEntry_EventNumber);
     return (it!=eventList.end() && *it==event) ? it-eventList.begin() : -1;
 }
 
 EventEntry *EventLog::getEventByNumber(long eventNumber)
 {
-    EventEntryList::iterator it = std::lower_bound(eventList.begin(), eventList.end(), eventNumber, less_EventEntry_long);
+    EventEntryList::iterator it = std::lower_bound(eventList.begin(), eventList.end(), eventNumber, less_EventEntry_EventNumber);
     return it==eventList.end() ? NULL : *it;
 }
 
-inline bool less_EventEntry_double(EventEntry *e, double t) {return e->simulationTime < t;}
-
 EventEntry *EventLog::getFirstEventAfter(double t)
 {
-    EventEntryList::iterator it = std::lower_bound(eventList.begin(), eventList.end(), t, less_EventEntry_double);
-    return it==eventList.end() ? NULL : *it;
+    EventEntryList::iterator it = std::lower_bound(eventList.begin(), eventList.end(), t, less_EventEntry_SimulationTime);
+    EventEntry *eventEntry = *it;
+    return (eventEntry->simulationTime!=t && it==eventList.end()) ? NULL : eventEntry;
 }
 
 EventEntry *EventLog::getLastEventBefore(double t)
 {
     // do getFirstEventAfter, then return the event before that
-    EventEntryList::iterator it = std::lower_bound(eventList.begin(), eventList.end(), t, less_EventEntry_double);
-    return it==eventList.begin() ? NULL : it==eventList.end() ? eventList.back() : *(it-1);
+    EventEntryList::iterator it = std::lower_bound(eventList.begin(), eventList.end(), t, less_EventEntry_SimulationTime);
+    EventEntry *eventEntry = *it;
+    if (eventEntry->simulationTime==t)
+        return eventEntry;
+    else
+        return it==eventList.begin() ? NULL : it==eventList.end() ? eventList.back() : *(it-1);
+}
+
+EventEntry *EventLog::getLastEventBeforeByTimelineCoordinate(double t)
+{
+    // do getFirstEventAfter, then return the event before that
+    EventEntryList::iterator it = std::lower_bound(eventList.begin(), eventList.end(), t, less_EventEntry_TimelineCoordinate);
+    EventEntry *eventEntry = *it;
+    if (eventEntry->simulationTime==t)
+        return eventEntry;
+    else
+        return it==eventList.begin() ? NULL : it==eventList.end() ? eventList.back() : *(it-1);
 }
 
 inline bool less_EventEntry_tableRowIndex(int index, EventEntry *e) {return index < e->tableRowIndex;}

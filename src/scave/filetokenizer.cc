@@ -74,8 +74,10 @@ size_t FileTokenizer::readMore()
 
     // read enough bytes to fill the buffer
     int bytesread = fread(dataend, 1, bufferend-dataend, f);
-    if (feof(f))
+    if (feof(f)) {
         eofreached = true;
+        fclose(f);
+    }
     if (ferror(f))
         errcode = CANNOTREAD;
     dataend += bytesread;

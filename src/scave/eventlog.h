@@ -92,6 +92,7 @@ class EventEntry
         bool isSelected;
         bool isExpandedInTree;
         int tableRowIndex;
+        double timelineCoordinate;
 
     public:
         EventEntry();
@@ -165,6 +166,7 @@ class EventLog
         EventEntry *getEventByNumber(long eventNumber);
         EventEntry *getFirstEventAfter(double t);
         EventEntry *getLastEventBefore(double t);
+        EventEntry *getLastEventBeforeByTimelineCoordinate(double t);
         EventEntry *getEventByTableRowIndex(int tableRowIndex);
 
         int getNumMessages();
@@ -226,10 +228,12 @@ class JavaFriendlyEventLogFacade
         bool getEvent_i_isSelected(int pos)  {return getEvent(pos)->isSelected;}
         bool getEvent_i_isExpandedInTree(int pos)  {return getEvent(pos)->isExpandedInTree;}
         int getEvent_i_tableRowIndex(int pos)  {return getEvent(pos)->tableRowIndex;}
+        double getEvent_i_timelineCoordinate(int pos)  {return getEvent(pos)->timelineCoordinate;}
         void setEvent_cachedX(int pos, int x)  {getEvent(pos)->cachedX = x;}
         void setEvent_cachedY(int pos, int y)  {getEvent(pos)->cachedY = y;}
         void setEvent_i_isSelected(int pos, bool sel)  {getEvent(pos)->isSelected = sel;}
         void setEvent_i_isExpandedInTree(int pos, bool exp)  {getEvent(pos)->isExpandedInTree = exp;} //XXX modify tableRowIndex!!!
+        void setEvent_i_timelineCoordinate(int pos, double x)  {getEvent(pos)->timelineCoordinate = x;}
 
         const char *getEvent_i_module_moduleClassName(int pos) {return getEvent_cause_module(pos)->moduleClassName;}
         const char *getEvent_i_module_moduleFullPath(int pos)  {return getEvent_cause_module(pos)->moduleFullPath.c_str();}
@@ -261,6 +265,7 @@ class JavaFriendlyEventLogFacade
         bool getEvent_i_causes_k_source_isInFilteredSubset(int pos, int k, EventLog *filteredSubset)  {return filteredSubset->containsEvent(getEvent_causes(pos,k)->source);}
         long getEvent_i_causes_k_source_eventNumber(int pos, int k)  {return getEvent_causes(pos,k)->source->eventNumber;}
         double getEvent_i_causes_k_source_simulationTime(int pos, int k)  {return getEvent_causes(pos,k)->source->simulationTime;}
+        double getEvent_i_causes_k_source_timelineCoordinate(int pos, int k)  {return getEvent_causes(pos,k)->source->timelineCoordinate;}
         int getEvent_i_causes_k_source_cause_module_moduleId(int pos, int k)  {return getEvent_causes(pos,k)->source->cause->module->moduleId;}
         int getEvent_i_causes_k_source_cachedX(int pos, int k)  {return getEvent_causes(pos,k)->source->cachedX;}
         int getEvent_i_causes_k_source_cachedY(int pos, int k)  {return getEvent_causes(pos,k)->source->cachedY;}
@@ -277,6 +282,7 @@ class JavaFriendlyEventLogFacade
         bool getEvent_i_consequences_k_target_isInFilteredSubset(int pos, int k, EventLog *filteredSubset)  {return filteredSubset->containsEvent(getEvent_consequences(pos,k)->target);}
         long getEvent_i_consequences_k_target_eventNumber(int pos, int k)  {return getEvent_consequences(pos,k)->target->eventNumber;}
         double getEvent_i_consequences_k_target_simulationTime(int pos, int k)  {return getEvent_consequences(pos,k)->target->simulationTime;}
+        double getEvent_i_consequences_k_target_timelineCoordinatea(int pos, int k)  {return getEvent_consequences(pos,k)->target->timelineCoordinate;}
         int getEvent_i_consequences_k_target_cause_module_moduleId(int pos, int k)  {return getEvent_consequences(pos,k)->target->cause->module->moduleId;}
         int getEvent_i_consequences_k_target_cachedX(int pos, int k)  {return getEvent_consequences(pos,k)->target->cachedX;}
         int getEvent_i_consequences_k_target_cachedY(int pos, int k)  {return getEvent_consequences(pos,k)->target->cachedY;}
