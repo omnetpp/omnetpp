@@ -37,7 +37,6 @@ EventEntry::EventEntry()
     numLogMessages = 0;
 
     cachedX = cachedY = 0;
-    isSelected = false;
     isExpandedInTree = false;
     tableRowIndex = 0;
 }
@@ -236,7 +235,7 @@ int EventLog::getNumEvents()
 EventEntry *EventLog::getEvent(int pos)
 {
     if (pos<0 || pos>=eventList.size() || !eventList[pos])
-        return NULL;
+        throw new Exception("event index %d out of bounds", pos);
     return eventList[pos];
 }
 
@@ -253,7 +252,7 @@ int EventLog::getNumModules()
 ModuleEntry *EventLog::getModule(int pos)
 {
     if (pos<0 || pos>=moduleList.size() || !moduleList[pos])
-        return NULL;
+        throw new Exception("module index %d out of bounds", pos);
     return moduleList[pos];
 }
 
@@ -265,7 +264,7 @@ int EventLog::getNumMessages()
 MessageEntry *EventLog::getMessage(int pos)
 {
     if (pos<0 || pos>=messageList.size() || !messageList[pos])
-        return NULL;
+        throw new Exception("message index %d out of bounds", pos);
     return messageList[pos];
 }
 
@@ -369,13 +368,6 @@ EventEntry *EventLog::getEventByTableRowIndex(int tableRowIndex)
         if (eventList[i]->tableRowIndex > tableRowIndex)
             return i==0 ? NULL : eventList[i-1];
     return eventList.back();
-}
-
-void EventLog::deselectAllEvents()
-{
-    int n = eventList.size();
-    for (int i=0; i<n; i++)
-         eventList[i]->isSelected = false;
 }
 
 void EventLog::expandAllEvents()

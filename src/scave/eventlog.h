@@ -21,6 +21,7 @@
 #include <map>
 #include <set>
 #include "filetokenizer.h"
+#include "exception.h"
 
 /**
  * A compound or simple module extracted from the log file
@@ -31,9 +32,6 @@ class ModuleEntry
         const char *moduleClassName; // stringpooled
         std::string moduleFullPath;
         int moduleId;
-
-        // the following fields are for the convenience of the GUI
-        bool selected;
 
     public:
         ModuleEntry();
@@ -89,7 +87,6 @@ class EventEntry
         // the following fields are for the convenience of the GUI
         int cachedX; // position on canvas
         int cachedY;
-        bool isSelected;
         bool isExpandedInTree;
         int tableRowIndex;
         double timelineCoordinate;
@@ -176,7 +173,6 @@ class EventLog
         ModuleEntry *getModule(int pos);
 
         // manipulating GUI vars stored in EventEntry
-        void deselectAllEvents();
         void expandAllEvents();
         void collapseAllEvents();
         void expandEvent(int pos);
@@ -212,8 +208,18 @@ class JavaFriendlyEventLogFacade
         EventEntry *getEvent(int pos) {return log->getEvent(pos);}
         ModuleEntry *getEvent_cause_module(int pos) {return log->getEvent(pos)->cause->module;}
         MessageEntry *getEvent_cause(int pos) {return log->getEvent(pos)->cause;}
-        MessageEntry *getEvent_causes(int pos, int k) {return log->getEvent(pos)->causes[k];}
-        MessageEntry *getEvent_consequences(int pos, int k) {return log->getEvent(pos)->consequences[k];}
+        MessageEntry *getEvent_causes(int pos, int k) {
+            EventEntry *e = log->getEvent(pos);
+            if (k<0 || k>=e->causes.size())
+                throw new Exception("causes[] index %d of event #%ld out of bounds", pos, e->eventNumber);
+            return e->causes[k];
+        }
+        MessageEntry *getEvent_consequences(int pos, int k) {
+            EventEntry *e = log->getEvent(pos);
+            if (k<0 || k>=e->consequences.size())
+                throw new Exception("getEvent_consequences[] index %d of event #%ld out of bounds", pos, e->eventNumber);
+            return e->consequences[k];
+        }
         MessageEntry *getMessage(int pos) {return log->getMessage(pos);}
 
     public:
@@ -225,13 +231,11 @@ class JavaFriendlyEventLogFacade
         double getEvent_i_simulationTime(int pos) {return getEvent(pos)->simulationTime;}
         int getEvent_i_cachedX(int pos)  {return getEvent(pos)->cachedX;}
         int getEvent_i_cachedY(int pos)  {return getEvent(pos)->cachedY;}
-        bool getEvent_i_isSelected(int pos)  {return getEvent(pos)->isSelected;}
         bool getEvent_i_isExpandedInTree(int pos)  {return getEvent(pos)->isExpandedInTree;}
         int getEvent_i_tableRowIndex(int pos)  {return getEvent(pos)->tableRowIndex;}
         double getEvent_i_timelineCoordinate(int pos)  {return getEvent(pos)->timelineCoordinate;}
         void setEvent_cachedX(int pos, int x)  {getEvent(pos)->cachedX = x;}
         void setEvent_cachedY(int pos, int y)  {getEvent(pos)->cachedY = y;}
-        void setEvent_i_isSelected(int pos, bool sel)  {getEvent(pos)->isSelected = sel;}
         void setEvent_i_isExpandedInTree(int pos, bool exp)  {getEvent(pos)->isExpandedInTree = exp;} //XXX modify tableRowIndex!!!
         void setEvent_i_timelineCoordinate(int pos, double x)  {getEvent(pos)->timelineCoordinate = x;}
 
