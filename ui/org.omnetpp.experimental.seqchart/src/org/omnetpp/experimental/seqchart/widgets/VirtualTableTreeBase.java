@@ -1,6 +1,7 @@
-package org.omnetpp.experimental.seqchart.editors;
+package org.omnetpp.experimental.seqchart.widgets;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
@@ -54,7 +55,7 @@ public abstract class VirtualTableTreeBase extends Composite {
 	 */
 	protected abstract void configureTableItem(TableItem item, int lineNumber);
 	
-	public Table getTable() {
+	protected Table getTable() {
 		return table;
 	}
 
@@ -116,7 +117,7 @@ public abstract class VirtualTableTreeBase extends Composite {
 		return minusImage;
 	}
 
-	public void setBackground (Color color) {
+	public void setBackground(Color color) {
 		super.setBackground(color);
 		table.setBackground(color);
 		if (sizeImage != null) {
@@ -126,6 +127,14 @@ public abstract class VirtualTableTreeBase extends Composite {
 			gc.fillRectangle(size);
 			gc.dispose();
 		}
+	}
+
+	public void addSelectionListener(SelectionListener listener) {
+		table.addSelectionListener(listener);
+	}
+
+	public void removeSelectionListener(SelectionListener listener) {
+		table.removeSelectionListener(listener);
 	}
 
 }

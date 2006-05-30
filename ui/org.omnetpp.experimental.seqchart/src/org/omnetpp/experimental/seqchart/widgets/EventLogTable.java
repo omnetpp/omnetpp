@@ -1,8 +1,14 @@
-package org.omnetpp.experimental.seqchart.editors;
+package org.omnetpp.experimental.seqchart.widgets;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 import org.eclipse.draw2d.ColorConstants;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.widgets.Composite;
@@ -19,9 +25,7 @@ import org.omnetpp.scave.engine.PStringVector;
  * 
  * @author andras
  */
-//FIXME this should actually be turned into a View!
 //FIXME actually implement expand/collapse! [+] and [-] images to be displayed are there in VirtualTableTreeBase; see also eventLog.collapseEvent/expandEvent 
-//FIXME also: remove getTable and provide better encapsulation instead
 public class EventLogTable extends VirtualTableTreeBase {
 	
 	private EventLog eventLog;
@@ -42,6 +46,18 @@ public class EventLogTable extends VirtualTableTreeBase {
 		TableColumn tableColumn4 = new TableColumn(table, SWT.NONE);
 		tableColumn4.setWidth(800);
 		tableColumn4.setText("Details / log message");
+		
+		table.addSelectionListener(new SelectionListener() {
+			public void widgetDefaultSelected(SelectionEvent e) { }
+			public void widgetSelected(SelectionEvent e) {
+				Collection<EventEntry> events = getSelectionEvents();
+				// mark EventEntries as selected in the model as well 
+				eventLog.deselectAllEvents();
+				for (EventEntry event : events)
+					event.setIsSelected(true);
+			}
+		});
+		
 	}
 
 	public void setInput(EventLog eventLog) {
@@ -49,7 +65,7 @@ public class EventLogTable extends VirtualTableTreeBase {
 
 		EventEntry oldSelectionEvent = null;
 		if (eventLog!=null)
-			oldSelectionEvent = eventForTableIndex(table.getSelectionIndex());
+			oldSelectionEvent = getSelectionEvent();
 		
 		// make log messages visible
 		eventLog.expandAllEvents();
@@ -81,7 +97,7 @@ public class EventLogTable extends VirtualTableTreeBase {
 			if (!eventLog.containsEvent(event))
 				event = eventLog.getLastEventBefore(event.getSimulationTime());
 			if (event!=null) {
-				int index = tableIndexForEvent(event);
+				int index = event.getTableRowIndex();
 				table.setSelection(index);
 				table.setTopIndex(index);
 			}
@@ -133,12 +149,19 @@ public class EventLogTable extends VirtualTableTreeBase {
 		}
 		return null; // bad luck
 	}
-	
-	public EventEntry eventForTableIndex(int index) {
-		return eventLog.getEventByTableRowIndex(index);
+
+	public EventEntry getSelectionEvent() {
+		int sel = getTable().getSelectionIndex();
+		return eventLog.getEventByTableRowIndex(sel);
 	}
 
-	public int tableIndexForEvent(EventEntry event) {
-		return event.getTableRowIndex();
+	public List<EventEntry> getSelectionEvents() {
+		int[] sels = getTable().getSelectionIndices();
+		ArrayList<EventEntry> list = new ArrayList<EventEntry>();
+		for (int sel : sels) {
+			EventEntry event = eventLog.getEventByTableRowIndex(sel);
+			list.add(event);
+		}
+		return list;
 	}
 }

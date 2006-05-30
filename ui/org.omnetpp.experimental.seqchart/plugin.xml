@@ -14,4 +14,30 @@
       </editor>
    </extension>
 
+   <extension
+         point="org.eclipse.ui.views">
+      <category
+            name="OMNeT++/OMNEST"
+            id="org.omnetpp">
+      </category> <!-- FIXME does not show up for some reason -->
+      <view
+            name="Simulation Event Log"
+            icon="icons/sample.gif"
+            category="viewtest"
+            class="org.omnetpp.experimental.seqchart.editors.EventLogView"
+            id="org.omnetpp.experimental.seqchart.editors.EventLogView">
+      </view>
+   </extension>
+   
+   <extension
+         point="org.eclipse.ui.perspectiveExtensions">
+      <perspectiveExtension
+            targetID="org.eclipse.ui.resourcePerspective">
+         <view
+               relationship="bottom"
+               id="org.omnetpp.experimental.seqchart.editors.EventLogView">
+         </view>
+      </perspectiveExtension>
+   </extension>
+
 </plugin>

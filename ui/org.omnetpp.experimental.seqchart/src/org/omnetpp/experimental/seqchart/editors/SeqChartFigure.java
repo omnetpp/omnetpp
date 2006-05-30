@@ -4,7 +4,9 @@ package org.omnetpp.experimental.seqchart.editors;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 
 import org.eclipse.draw2d.Figure;
 import org.eclipse.draw2d.Graphics;
@@ -12,12 +14,14 @@ import org.eclipse.draw2d.MouseEvent;
 import org.eclipse.draw2d.MouseListener;
 import org.eclipse.draw2d.MouseMotionListener;
 import org.eclipse.draw2d.ScrollPane;
-import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.widgets.Canvas;
+import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.ToolTip;
 import org.omnetpp.experimental.seqchart.moduletree.ModuleTreeItem;
 import org.omnetpp.scave.engine.EventEntry;
@@ -32,10 +36,10 @@ import org.omnetpp.scave.engine.MessageEntry;
  */
 //TODO limit pixelsPerTimelineCoordinate to a range that makes sense (for the current eventLog)
 //TODO draw arrowheads
-//TODO merge/hide axes
 //XXX Performanece note: perf log is line drawing. Coordicate calculations etc
 //    take much less time (to verify, comment out body of drawMessageArrow()).
 //    Solution: draw into an off-screen image, and use that during repaints!
+//TODO non-delivery events should be drawn in dotted line, and maybe lower ellipse than others? 
 //FIXME scrollbar breaks badly when char size exceeds ~4,000,000 pixels (this means only ~0.1s resolution ticks on an 1000s trace!!! not enough!)
 //FIXME msg arrows that intersect the chart area but don't start or end there are not displayed (BUG!)
 //FIXME redraw chart with antialias while user is idle? hints: new SafeRunnable(); or:
@@ -73,8 +77,10 @@ public class SeqChartFigure extends Figure {
 	private ToolTip swtTooltip; // the current tooltip
 	
 	private int dragStartX, dragStartY; // temporary variables for drag handling
-	private ModuleTreeItem moduleTree; // the modules in axisModules point into this tree
-	private ArrayList<ModuleTreeItem> axisModules; // the modules which should have an axis
+	private List<ModuleTreeItem> axisModules; // the modules which should have an axis (they must be part of a module tree!)
+
+	private List<EventEntry> selectionEvents = new ArrayList<EventEntry>(); // the selection
+	private ArrayList<SelectionListener> selectionListenerList = new ArrayList<SelectionListener>();
 
 	public enum TimelineMode {
 		LINEAR,
@@ -177,9 +183,8 @@ public class SeqChartFigure extends Figure {
 	/**
 	 * Set the event log to be displayed in the chart
 	 */
-	public void setEventLog(EventLog eventLog, ModuleTreeItem moduleTree) {
+	public void setEventLog(EventLog eventLog) {
 		this.eventLog = eventLog;
-		this.moduleTree = moduleTree;
 		this.logFacade = new JavaFriendlyEventLogFacade(eventLog); 
 
 		// transform simulation times to timeline coordinate system
@@ -204,6 +209,51 @@ public class SeqChartFigure extends Figure {
 		// refresh chart
 		recalculatePreferredSize(); // y size probably changed 
 		repaint();
+	}
+	
+	/**
+	 * Sets the currently "selected" events. These events must be
+	 * part of the current eventLog, and will be displayed as red
+	 * circles in the graph.
+	 */
+	public void setSelectionEvents(List<EventEntry> events) {
+		selectionEvents = events;
+		repaint();
+	}
+
+	/**
+	 * Returns the currently "selected" events (marked as red circles in the chart).
+	 */
+	public List<EventEntry> getSelectionEvents() {
+		return selectionEvents;
+	}
+	
+	/**
+	 * Adds a selection listener. The selection is IStructuredSelection
+	 * which contains EventEntry items.
+	 */
+	public void addSelectionListener (SelectionListener listener) {
+		selectionListenerList.add(listener);
+	}
+
+	/**
+	 * Removes the given selection listener.
+	 */
+	public void removeSelectionListener (SelectionListener listener) {
+		selectionListenerList.remove(listener);
+	}
+
+	protected void fireSelectionChanged(boolean defaultSelection) {
+		Event event = new Event();
+		event.display = canvas.getDisplay();
+		event.widget = canvas;
+		SelectionEvent se = new SelectionEvent(event);
+		for (SelectionListener listener : selectionListenerList) {
+			if (defaultSelection)
+				listener.widgetDefaultSelected(se);
+			else
+				listener.widgetSelected(se);
+		}
 	}
 	
 	/**
@@ -362,13 +412,18 @@ public class SeqChartFigure extends Figure {
 	   				int x = logFacade.getEvent_i_cachedX(i);
 	   				int y = logFacade.getEvent_i_cachedY(i);
 	            	graphics.fillOval(x-2, y-3, 5, 7);
-	            	
-	            	if (logFacade.getEvent_i_isSelected(i)) {
-	                	graphics.drawOval(x-10, y-10, 21, 21);
-	            	}
             	}
             }           	
 
+            // paint event selection marks
+            if (selectionEvents != null) {
+            	for (EventEntry sel : selectionEvents) {
+            		int x = sel.getCachedX();
+            		int y = sel.getCachedY();
+            		graphics.drawOval(x-10, y-10, 21, 21);
+            	}
+            }
+            
             // turn on/off anti-alias 
             long repaintMillis = System.currentTimeMillis()-startMillis;
             System.out.println("repaint(): "+repaintMillis+"ms");
@@ -559,9 +614,10 @@ public class SeqChartFigure extends Figure {
 	}
 	
 	/**
-	 * Sets up dragging and tooltip.
+	 * Sets up default mouse handling.
 	 */
 	private void setUpMouseHandling() {
+		// dragging ("hand" cursor) and tooltip
 		addMouseListener(new MouseListener() {
 			public void mouseDoubleClicked(MouseEvent me) {}
 			public void mousePressed(MouseEvent me) {
@@ -592,9 +648,31 @@ public class SeqChartFigure extends Figure {
 			}
 			public void mouseMoved(MouseEvent me) {
 				removeTooltip();
-				setCursor(null); // restore cursor at end of drag (must do it here too, because we don't get the "released" event if user releases mouse outside the canvas)
+				setCursor(null); // restore cursor at end of drag (must do it here too, because we 
+								 // don't get the "released" event if user releases mouse outside the canvas)
 			}
 		});
+		
+		// selection handling
+		addMouseListener(new MouseListener() {
+			public void mouseDoubleClicked(MouseEvent me) {
+				selectionEvents.clear();
+				collectStuffUnderMouse(me.x, me.y, selectionEvents, null);
+				fireSelectionChanged(true);
+				repaint();
+			}
+			public void mousePressed(MouseEvent me) {
+				if (me.button==1) {
+					if ((me.getState() & SWT.CTRL)==0) // CTRL key extends selection
+						selectionEvents.clear();
+					collectStuffUnderMouse(me.x, me.y, selectionEvents, null);
+					fireSelectionChanged(false);
+					repaint();
+				}
+			}
+			public void mouseReleased(MouseEvent me) {}
+		});
+		
 	}
 
 	protected void displayTooltip(int x, int y) {
@@ -657,12 +735,15 @@ public class SeqChartFigure extends Figure {
 
 	/**
 	 * Determines if there are any events (EventEntry) or messages (MessageEntry)
-	 * at the given mouse coordinates, and returns them in the ArrayLists passed. 
+	 * at the given mouse coordinates, and returns them in the Lists passed. 
 	 * Coordinates are canvas coordinates (more precisely, viewport coordinates).
 	 * You can call this method from mouse click, double-click or hover event 
-	 * handlers.
+	 * handlers. 
+	 * 
+	 * If you're interested only in messages or only in events, pass null in the
+	 * events or msgs argument. This method does NOT clear the lists before filling them.
 	 */
-	public void collectStuffUnderMouse(int mouseX, int mouseY, ArrayList<EventEntry> events, ArrayList<MessageEntry> msgs) {
+	public void collectStuffUnderMouse(int mouseX, int mouseY, List<EventEntry> events, List<MessageEntry> msgs) {
 		if (eventLog!=null) {
 			long startMillis = System.currentTimeMillis();
 		
@@ -680,48 +761,52 @@ public class SeqChartFigure extends Figure {
 			int startEventNumber = (startEvent!=null) ? startEvent.getEventNumber() : 0;
             
             // check events
-            for (int i=startEventIndex; i<endEventIndex; i++)
+            if (events != null) {
+            	for (int i=startEventIndex; i<endEventIndex; i++)
    				if (eventSymbolContainsPoint(mouseX, mouseY, logFacade.getEvent_i_cachedX(i), logFacade.getEvent_i_cachedY(i), MOUSE_TOLERANCE))
    					events.add(eventLog.getEvent(i));
+            }
 
             // check message arrows
-            for (int i=startEventIndex; i<endEventIndex; i++) {
-   				int eventX = logFacade.getEvent_i_cachedX(i);
-   				int eventY = logFacade.getEvent_i_cachedY(i);
+            if (msgs != null) {
+            	for (int i=startEventIndex; i<endEventIndex; i++) {
+            		int eventX = logFacade.getEvent_i_cachedX(i);
+            		int eventY = logFacade.getEvent_i_cachedY(i);
 
-   				// check forward arrows for this event
-            	int numConsequences = logFacade.getEvent_i_numConsequences(i);
-            	for (int k=0; k<numConsequences; k++) {
-            		if (logFacade.getEvent_i_consequences_k_hasTarget(i, k) &&
-            			logFacade.getEvent_i_consequences_k_target_isInFilteredSubset(i, k, eventLog)) {
-            			if (messageArrowContainsPoint(
-            					eventX,
-            					eventY,
-            					logFacade.getEvent_i_consequences_k_target_cachedX(i, k),
-            					logFacade.getEvent_i_consequences_k_target_cachedY(i, k),
-            					mouseX, 
-            					mouseY,
-            					MOUSE_TOLERANCE))
-            				msgs.add(eventLog.getEvent(i).getConsequences().get(k));
+            		// check forward arrows for this event
+            		int numConsequences = logFacade.getEvent_i_numConsequences(i);
+            		for (int k=0; k<numConsequences; k++) {
+            			if (logFacade.getEvent_i_consequences_k_hasTarget(i, k) &&
+            					logFacade.getEvent_i_consequences_k_target_isInFilteredSubset(i, k, eventLog)) {
+            				if (messageArrowContainsPoint(
+            						eventX,
+            						eventY,
+            						logFacade.getEvent_i_consequences_k_target_cachedX(i, k),
+            						logFacade.getEvent_i_consequences_k_target_cachedY(i, k),
+            						mouseX, 
+            						mouseY,
+            						MOUSE_TOLERANCE))
+            					msgs.add(eventLog.getEvent(i).getConsequences().get(k));
+            			}
             		}
-            	}
 
-            	// check backward arrows that we didn't check as forward arrows
-            	int numCauses = logFacade.getEvent_i_numCauses(i);
-            	for (int k=0; k<numCauses; k++) {
-            		if (logFacade.getEvent_i_causes_k_source_eventNumber(i, k) < startEventNumber) {
-                		if (logFacade.getEvent_i_causes_k_hasSource(i, k) &&
-                    		logFacade.getEvent_i_causes_k_source_isInFilteredSubset(i, k, eventLog)) {
-                			if (messageArrowContainsPoint(
-                					logFacade.getEvent_i_causes_k_source_cachedX(i, k),
-                					logFacade.getEvent_i_causes_k_source_cachedY(i, k),
-                					eventX,
-                					eventY,
-                					mouseX, 
-                					mouseY,
-                					MOUSE_TOLERANCE))
-                				msgs.add(eventLog.getEvent(i).getConsequences().get(k));
-                		}
+            		// check backward arrows that we didn't check as forward arrows
+            		int numCauses = logFacade.getEvent_i_numCauses(i);
+            		for (int k=0; k<numCauses; k++) {
+            			if (logFacade.getEvent_i_causes_k_source_eventNumber(i, k) < startEventNumber) {
+            				if (logFacade.getEvent_i_causes_k_hasSource(i, k) &&
+            						logFacade.getEvent_i_causes_k_source_isInFilteredSubset(i, k, eventLog)) {
+            					if (messageArrowContainsPoint(
+            							logFacade.getEvent_i_causes_k_source_cachedX(i, k),
+            							logFacade.getEvent_i_causes_k_source_cachedY(i, k),
+            							eventX,
+            							eventY,
+            							mouseX, 
+            							mouseY,
+            							MOUSE_TOLERANCE))
+            						msgs.add(eventLog.getEvent(i).getConsequences().get(k));
+            				}
+            			}
             		}
             	}
             }

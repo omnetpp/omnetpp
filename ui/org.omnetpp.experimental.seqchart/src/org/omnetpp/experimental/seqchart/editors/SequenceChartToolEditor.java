@@ -1,7 +1,7 @@
 package org.omnetpp.experimental.seqchart.editors;
 
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.List;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.draw2d.ColorConstants;
@@ -17,7 +17,6 @@ import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -25,7 +24,6 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
@@ -34,6 +32,7 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.part.EditorPart;
 import org.omnetpp.experimental.seqchart.moduletree.ModuleTreeBuilder;
 import org.omnetpp.experimental.seqchart.moduletree.ModuleTreeItem;
+import org.omnetpp.experimental.seqchart.widgets.EventLogTable;
 import org.omnetpp.scave.engine.EventEntry;
 import org.omnetpp.scave.engine.EventLog;
 import org.omnetpp.scave.engine.JavaFriendlyEventLogFacade;
@@ -46,6 +45,7 @@ import org.omnetpp.scave.engine.ModuleEntry;
  * 
  * @author andras
  */
+//FIXME EventLog must be wrapped into a "model" class with proper notifications for selection, etc! then the editor and the view should update themselves upon these notifications
 public class SequenceChartToolEditor extends EditorPart {
 
 	private SashForm sashForm;
@@ -118,24 +118,17 @@ public class SequenceChartToolEditor extends EditorPart {
 		lower.setLayout(new FillLayout());
 
 		eventLogTable = new EventLogTable(lower, SWT.MULTI);
-		eventLogTable.getTable().addSelectionListener(new SelectionListener() {
+		eventLogTable.addSelectionListener(new SelectionListener() {
 			public void widgetDefaultSelected(SelectionEvent e) {
 				// double-click or enter: filter for the current event
-				int sel = eventLogTable.getTable().getSelectionIndex();
-				EventEntry event = eventLogTable.eventForTableIndex(sel);
+				EventEntry event = eventLogTable.getSelectionEvent();
 				showSequenceChartForEvent(event.getEventNumber());
 			}
 			public void widgetSelected(SelectionEvent e) {
-				// mark selected events in the chart as well
-				int[] sel = eventLogTable.getTable().getSelectionIndices();
-				filteredEventLog.deselectAllEvents();
-				for (int i=0; i<sel.length; i++) {
-					EventEntry event = eventLogTable.eventForTableIndex(sel[i]);
-					event.setIsSelected(true);
-				}
+				// update selection
+				seqChartFigure.setSelectionEvents(eventLogTable.getSelectionEvents());
 				// show (scroll to) currently selected event
-				int cur = eventLogTable.getTable().getSelectionIndex();
-				EventEntry curEvent = eventLogTable.eventForTableIndex(cur);
+				EventEntry curEvent = eventLogTable.getSelectionEvent();
 				seqChartFigure.gotoTime(curEvent.getSimulationTime()); 
 				seqChartFigure.repaint(); //XXX or just invalidate?
 			}
@@ -293,12 +286,10 @@ public class SequenceChartToolEditor extends EditorPart {
 		rootLayout.setConstraint(seqChartFigure, new Rectangle(0,0,-1,-1));
 		
 		// set up canvas mouse operations: click, double-click
-		seqChartFigure.addMouseListener(new MouseListener() {
-			public void mouseDoubleClicked(MouseEvent me) {
-				// filter for double-clicked event
-				ArrayList<EventEntry> events = new ArrayList<EventEntry>();
-				ArrayList<MessageEntry> msgs = new ArrayList<MessageEntry>();
-				seqChartFigure.collectStuffUnderMouse(me.x, me.y, events, msgs);
+		seqChartFigure.addSelectionListener(new SelectionListener() {
+			public void widgetDefaultSelected(SelectionEvent e) {
+				// on double-click, filter the event log
+				List<EventEntry> events = seqChartFigure.getSelectionEvents();
 				if (events.size()>1) { 
 					//XXX pop up selection dialog instead?
 					messageBox(SWT.ICON_INFORMATION, "Information", "Ambiguous double-click: there are "+events.size()+" events under the mouse! Zooming may help.");
@@ -306,20 +297,12 @@ public class SequenceChartToolEditor extends EditorPart {
 					showSequenceChartForEvent(events.get(0).getEventNumber());
 				}
 			}
-			public void mousePressed(MouseEvent me) {
-				// goto that event in the log 
-				ArrayList<EventEntry> events = new ArrayList<EventEntry>();
-				ArrayList<MessageEntry> msgs = new ArrayList<MessageEntry>();
-				seqChartFigure.collectStuffUnderMouse(me.x, me.y, events, msgs);
-				filteredEventLog.deselectAllEvents(); //we may handle ctrl-click to extend selection as well
-				if (events.size()>=1) { 
-					EventEntry event = events.get(0);
-					event.setIsSelected(true);
-					eventLogTable.gotoEvent(event);
-				}
-				seqChartFigure.repaint(); // as selection has changed
+			public void widgetSelected(SelectionEvent e) {
+				// on click, go to selected event in the table
+				List<EventEntry> events = seqChartFigure.getSelectionEvents();
+				if (!events.isEmpty())
+					eventLogTable.gotoEvent(events.get(0));
 			}
-			public void mouseReleased(MouseEvent me) {}
 		});
 	}
 
@@ -350,7 +333,7 @@ public class SequenceChartToolEditor extends EditorPart {
 	}
 
 	private void filteredEventLogChanged() {
-		seqChartFigure.setEventLog(filteredEventLog, moduleTree);
+		seqChartFigure.setEventLog(filteredEventLog);
 		eventLogTable.setInput(filteredEventLog);
 	}
 
@@ -361,6 +344,13 @@ public class SequenceChartToolEditor extends EditorPart {
 		return m.open();
 	}
 	
+	/**
+	 * Return the current filtered event log.
+	 */
+	public EventLog getFilteredEventLog() {
+		return filteredEventLog;
+	}
+
 	private void addLabelFigure(int x, int y, String text) {
 /*
 		Font someFont = new Font(null, "Arial", 12, SWT.BOLD); //XXX cache fonts!
