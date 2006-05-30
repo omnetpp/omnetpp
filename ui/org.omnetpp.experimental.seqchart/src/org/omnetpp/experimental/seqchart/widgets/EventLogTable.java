@@ -1,7 +1,6 @@
 package org.omnetpp.experimental.seqchart.widgets;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 import org.eclipse.draw2d.ColorConstants;
@@ -50,11 +49,7 @@ public class EventLogTable extends VirtualTableTreeBase {
 		table.addSelectionListener(new SelectionListener() {
 			public void widgetDefaultSelected(SelectionEvent e) { }
 			public void widgetSelected(SelectionEvent e) {
-				Collection<EventEntry> events = getSelectionEvents();
-				// mark EventEntries as selected in the model as well 
-				eventLog.deselectAllEvents();
-				for (EventEntry event : events)
-					event.setIsSelected(true);
+				List<EventEntry> events = getSelectionEvents();
 			}
 		});
 		
