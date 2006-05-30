@@ -1,5 +1,6 @@
 package org.omnetpp.experimental.seqchart.moduletree;
 
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -15,6 +16,11 @@ public class ModuleTreeItem implements Comparable<ModuleTreeItem> {
 	private ModuleTreeItem parentModule;
 	private ModuleTreeItem[] submodules = new ModuleTreeItem[0];
 
+	public interface IModuleTreeItemVisitor
+	{
+		public void visit(ModuleTreeItem treeItem);
+	}
+	
 	/**
 	 * Create a blank node. Can be used to create a tree root. 
 	 */
@@ -40,6 +46,20 @@ public class ModuleTreeItem implements Comparable<ModuleTreeItem> {
 		System.arraycopy(submodules, 0, newSubmodules, 0, submodules.length);
 		newSubmodules[submodules.length] = item;
 		submodules = newSubmodules;
+	}
+
+	public void visitLeaves(IModuleTreeItemVisitor visitor)
+	{
+		visitLeaves(visitor, this);
+	}
+	
+	private void visitLeaves(IModuleTreeItemVisitor visitor, ModuleTreeItem treeItem)
+	{
+		if (treeItem.getSubmodules().length == 0)
+			visitor.visit(treeItem);
+		else
+			for (ModuleTreeItem childTreeItem : treeItem.getSubmodules())
+				visitLeaves(visitor, childTreeItem);
 	}
 
 	/**

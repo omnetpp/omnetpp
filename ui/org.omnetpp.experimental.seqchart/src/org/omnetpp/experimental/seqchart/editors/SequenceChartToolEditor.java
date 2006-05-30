@@ -6,7 +6,6 @@ import java.util.Collection;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.draw2d.ColorConstants;
 import org.eclipse.draw2d.Figure;
-import org.eclipse.draw2d.Label;
 import org.eclipse.draw2d.LightweightSystem;
 import org.eclipse.draw2d.MouseEvent;
 import org.eclipse.draw2d.MouseListener;
@@ -26,6 +25,7 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
@@ -144,6 +144,8 @@ public class SequenceChartToolEditor extends EditorPart {
 		// give eventLog to the chart for display
 		showFullSequenceChart();
 		
+		seqChartFigure.setAxisModules(axisModules);
+		
 		//XXX this is an attempt at improving drag in the chart, but it apparently doesn't do the job
 		//canvas.addMouseListener(new MouseListener() {
 		//	public void mouseDoubleClick(MouseEvent e) {}
@@ -159,10 +161,12 @@ public class SequenceChartToolEditor extends EditorPart {
 
 	private Composite createControlStrip(Composite upper) {
 		Composite controlStrip = new Composite(upper, SWT.NONE);
-		controlStrip.setLayout(new GridLayout(4, false));
+		controlStrip.setLayout(new GridLayout(5, false));
 		eventcombo = new Combo(controlStrip, SWT.NONE);
 		eventcombo.setLayoutData(new GridData(SWT.FILL,SWT.FILL,true,false));
 		eventcombo.setVisibleItemCount(20);
+		Button showNonDeliveryMessages = new Button(controlStrip, SWT.CHECK);
+		showNonDeliveryMessages.setText("Blue");
 		Button zoomIn = new Button(controlStrip, SWT.NONE);
 		zoomIn.setText("Zoom in");
 		Button zoomOut = new Button(controlStrip, SWT.NONE);
@@ -217,6 +221,15 @@ public class SequenceChartToolEditor extends EditorPart {
 				displayModuleTreeDialog();
 			}});
 
+		showNonDeliveryMessages.addSelectionListener(new SelectionListener () {
+			public void widgetDefaultSelected(SelectionEvent e) {
+				seqChartFigure.setShowNonDeliveryMessages(((Button)e.getSource()).getSelection());
+			}
+			public void widgetSelected(SelectionEvent e) {
+				seqChartFigure.setShowNonDeliveryMessages(((Button)e.getSource()).getSelection());
+			}
+		});
+		
 		return controlStrip;
 	}
 
@@ -327,13 +340,14 @@ public class SequenceChartToolEditor extends EditorPart {
 	}
 	
 	private void addLabelFigure(int x, int y, String text) {
+/*
 		Font someFont = new Font(null, "Arial", 12, SWT.BOLD); //XXX cache fonts!
 		Label label = new Label(text, null);
 		label.setFont(someFont);
 
 		rootFigure.add(label);
 		rootLayout.setConstraint(label, new Rectangle(x,y,-1,-1));
-	}
+*/	}
 
 	protected void displayModuleTreeDialog() {
 		ModuleTreeDialog dialog = new ModuleTreeDialog(getSite().getShell(), moduleTree, axisModules);

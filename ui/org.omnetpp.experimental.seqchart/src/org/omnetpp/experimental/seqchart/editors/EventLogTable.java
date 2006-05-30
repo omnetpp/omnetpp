@@ -56,8 +56,14 @@ public class EventLogTable extends VirtualTableTreeBase {
 		
 		// calculate number of rows and set table row count
 		EventEntry lastEvent = eventLog.getLastEvent();
-		int lastEventRows = 1 + (lastEvent.getIsExpandedInTree() ? lastEvent.getNumLogMessages() : 0);
-		table.setItemCount(lastEvent==null ? 0 : lastEvent.getTableRowIndex()+lastEventRows);
+		
+		if (lastEvent != null)
+		{
+			int lastEventRows = 1 + (lastEvent.getIsExpandedInTree() ? lastEvent.getNumLogMessages() : 0);
+			table.setItemCount(lastEvent==null ? 0 : lastEvent.getTableRowIndex()+lastEventRows);
+		}
+		else
+			table.setItemCount(0);			
 
 		if (oldSelectionEvent!=null)
 			gotoEvent(oldSelectionEvent);
@@ -95,8 +101,8 @@ public class EventLogTable extends VirtualTableTreeBase {
 			//item.setImage(0, ImageFactory.getImage(ImageFactory.TOOLBAR_IMAGE_SIMPLE)); // plus/minus sign
 			item.setText(0, "#"+event.getEventNumber());
 			item.setText(1, ""+event.getSimulationTime()+"s");
-			item.setText(2, "module ("+event.getModule().getModuleClassName()
-							+") "+event.getModule().getModuleFullPath()
+			item.setText(2, "module ("+event.getCause().getModule().getModuleClassName()
+							+") "+event.getCause().getModule().getModuleFullPath()
 							+", on arrival of message ("+event.getCause().getMessageClassName()
 							+") "+event.getCause().getMessageName());
 		}
