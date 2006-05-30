@@ -80,6 +80,8 @@ public class SequenceChartToolEditor extends EditorPart {
 
 		eventLog = new EventLog(fileName);
 		System.out.println("read "+eventLog.getNumEvents()+" events in "+eventLog.getNumModules()+" modules from "+fileName);
+
+		setPartName(input.getName());
 		
 		extractModuleTree();
 	}
@@ -161,16 +163,27 @@ public class SequenceChartToolEditor extends EditorPart {
 
 	private Composite createControlStrip(Composite upper) {
 		Composite controlStrip = new Composite(upper, SWT.NONE);
-		controlStrip.setLayout(new GridLayout(5, false));
+		controlStrip.setLayout(new GridLayout(6, false));
 		eventcombo = new Combo(controlStrip, SWT.NONE);
 		eventcombo.setLayoutData(new GridData(SWT.FILL,SWT.FILL,true,false));
 		eventcombo.setVisibleItemCount(20);
+
+		Combo timelineMode = new Combo(controlStrip, SWT.NONE);
+		for (SeqChartFigure.TimelineMode t : SeqChartFigure.TimelineMode.values())
+			timelineMode.add(t.name());
+		timelineMode.setLayoutData(new GridData(SWT.FILL,SWT.FILL,false,false));
+		timelineMode.select(0);
+		timelineMode.setVisibleItemCount(3);
+		
 		Button showNonDeliveryMessages = new Button(controlStrip, SWT.CHECK);
 		showNonDeliveryMessages.setText("Blue");
+		
 		Button zoomIn = new Button(controlStrip, SWT.NONE);
 		zoomIn.setText("Zoom in");
+		
 		Button zoomOut = new Button(controlStrip, SWT.NONE);
 		zoomOut.setText("Zoom out");
+		
 		Button selectModules = new Button(controlStrip, SWT.NONE);
 		selectModules.setText("Modules...");
 
@@ -227,6 +240,15 @@ public class SequenceChartToolEditor extends EditorPart {
 			}
 			public void widgetSelected(SelectionEvent e) {
 				seqChartFigure.setShowNonDeliveryMessages(((Button)e.getSource()).getSelection());
+			}
+		});
+		
+		timelineMode.addSelectionListener(new SelectionListener () {
+			public void widgetDefaultSelected(SelectionEvent e) {
+				seqChartFigure.setTimelineMode(SeqChartFigure.TimelineMode.values()[((Combo)e.getSource()).getSelectionIndex()]);
+			}
+			public void widgetSelected(SelectionEvent e) {
+				seqChartFigure.setTimelineMode(SeqChartFigure.TimelineMode.values()[((Combo)e.getSource()).getSelectionIndex()]);
 			}
 		});
 		

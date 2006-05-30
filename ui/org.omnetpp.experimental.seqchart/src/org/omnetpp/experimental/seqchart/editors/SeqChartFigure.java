@@ -30,10 +30,10 @@ import org.omnetpp.scave.engine.MessageEntry;
  *
  * @author andras
  */
-//TODO limit pixelsPersec to a range that makes sense (for the current eventLog)
+//TODO limit pixelsPerTimelineCoordinate to a range that makes sense (for the current eventLog)
 //TODO draw arrowheads
 //TODO merge/hide axes
-//XXX Performanece note: perf hog is line drawing. Coordicate calculations etc
+//XXX Performanece note: perf log is line drawing. Coordicate calculations etc
 //    take much less time (to verify, comment out body of drawMessageArrow()).
 //    Solution: draw into an off-screen image, and use that during repaints!
 //FIXME scrollbar breaks badly when char size exceeds ~4,000,000 pixels (this means only ~0.1s resolution ticks on an 1000s trace!!! not enough!)
@@ -56,23 +56,32 @@ public class SeqChartFigure extends Figure {
 	private static final int MOUSE_TOLERANCE = 1;
 
 	protected EventLog eventLog; // contains the data to be displayed
+	protected JavaFriendlyEventLogFacade logFacade; // helpful facade on eventlog
 	
-	protected double pixelsPerSec = 2;
+	protected double pixelsPerTimelineCoordinate = 2;
 	protected int tickScale = 2; // -1 means step=0.1
 	private boolean antiAlias = true;  // antialiasing -- this gets turned on/off automatically
 	private int axisOffset = 30;  // y coord of first axis
 	private int axisSpacing = 50; // y distance between two axes
 
-	private boolean showNonDeliveryMessages;
+	private boolean showNonDeliveryMessages; // show or hide non delivery message arrows
+	private TimelineMode timelineMode = TimelineMode.LINEAR; // specifies timeline x coordinate transformation, see enum
+	private double nonLinearFocus = 0.1; // parameter for non linear timeline transformation
 	
 	private Canvas canvas;  // our host widget (reference needed for tooltip creation)
 	private ScrollPane scrollPane; // parent scrollPane
 	private ToolTip swtTooltip; // the current tooltip
 	
 	private int dragStartX, dragStartY; // temporary variables for drag handling
-	private ModuleTreeItem moduleTree;  // items in axisModules point into this tree
+	private ModuleTreeItem moduleTree; // the modules in axisModules point into this tree
 	private ArrayList<ModuleTreeItem> axisModules; // the modules which should have an axis
 
+	public enum TimelineMode {
+		LINEAR,
+		STEP_BY_STEP,
+		NON_LINEAR
+	}
+	
 	/**
      * Constructor.
 	 * We need to know the surrounding scroll pane to be able to scroll here and there.
@@ -88,16 +97,16 @@ public class SeqChartFigure extends Figure {
 	/**
 	 * Returns chart scale (number of pixels a 1-second interval maps to).
 	 */
-	public double getPixelsPerSec() {
-		return pixelsPerSec;	
+	public double getPixelsPerTimelineCoordinate() {
+		return pixelsPerTimelineCoordinate;	
 	}
 	
 	/**
 	 * Set chart scale (number of pixels a 1-second interval maps to), 
 	 * and adjusts the density of ticks.
 	 */
-	public void setPixelsPerSec(double pps) {
-		if (pixelsPerSec == pps)
+	public void setPixelsPerTimelineCoordinate(double pp) {
+		if (pixelsPerTimelineCoordinate == pp)
 			 return; // nothing to do
 		
 		// we want to center around the time currently displayed
@@ -105,13 +114,13 @@ public class SeqChartFigure extends Figure {
 		double currentTime = pixelToTime(middleX);
 		
 		// set pixels per sec, and recalculate tick spacing
-		if (pps<=0)
-			pps = 1e-12;
-		pixelsPerSec = pps;
+		if (pp <= 0)
+			pp = 1e-12;
+		pixelsPerTimelineCoordinate = pp;
 		int labelWidthNeeded = 50; // pixels
-		tickScale = (int)Math.ceil(Math.log10(labelWidthNeeded/pps));
+		tickScale = (int)Math.ceil(Math.log10(labelWidthNeeded / pp));
 
-		System.out.println("pixels per sec: "+pixelsPerSec);
+		System.out.println("pixels per timeline coordinate: "+pixelsPerTimelineCoordinate);
         
 		// we are of different size now
 		recalculatePreferredSize();
@@ -128,11 +137,17 @@ public class SeqChartFigure extends Figure {
 		repaint();
 	}
 	
+	public void setTimelineMode(TimelineMode timelineMode) {
+		this.timelineMode = timelineMode;
+		simulationTimesToTimelineCoordinates();
+		repaint();
+	}
+	
 	/**
 	 * Scroll the canvas so as to make currentTime visible 
 	 */
 	public void gotoTime(double time) {
-		double xDouble = time * pixelsPerSec;
+		double xDouble = simulationTimeToTimelineCoordinate(time) * pixelsPerTimelineCoordinate;
 		int x = xDouble < 0 ? 0 : xDouble>Integer.MAX_VALUE ? Integer.MAX_VALUE : (int)xDouble;
 		scrollPane.scrollHorizontalTo(x - scrollPane.getViewport().getBounds().width/2);
 		repaint();
@@ -142,14 +157,14 @@ public class SeqChartFigure extends Figure {
 	 * Increases pixels per second. 
 	 */
 	public void zoomIn() {
-		setPixelsPerSec(getPixelsPerSec() * 1.5);
+		setPixelsPerTimelineCoordinate(getPixelsPerTimelineCoordinate() * 1.5);
 	}
 
 	/**
 	 * Decreases pixels per second. 
 	 */
 	public void zoomOut() {
-		setPixelsPerSec(getPixelsPerSec() / 1.5);	
+		setPixelsPerTimelineCoordinate(getPixelsPerTimelineCoordinate() / 1.5);	
 	}
 	
 	/**
@@ -165,13 +180,17 @@ public class SeqChartFigure extends Figure {
 	public void setEventLog(EventLog eventLog, ModuleTreeItem moduleTree) {
 		this.eventLog = eventLog;
 		this.moduleTree = moduleTree;
+		this.logFacade = new JavaFriendlyEventLogFacade(eventLog); 
+
+		// transform simulation times to timeline coordinate system
+		simulationTimesToTimelineCoordinates();
 
 		// adapt our zoom level to the current eventLog
-		setPixelsPerSec(suggestPixelsPerSec());
+		setPixelsPerTimelineCoordinate(suggestPixelsPerTimelineCoordinate());
 
 		// refresh chart. We may end up doing this twice, since it's also called from 
-		// setPixelsPerSec(), but it does no harm
-		recalculatePreferredSize(); 
+		// setPixelsPerTimelineCoordinate(), but it does no harm
+		recalculatePreferredSize();
 		repaint();
 	}
 
@@ -186,37 +205,37 @@ public class SeqChartFigure extends Figure {
 		recalculatePreferredSize(); // y size probably changed 
 		repaint();
 	}
-
+	
 	/**
 	 * If the current pixels/sec setting doesn't look useful for the current event log,
 	 * suggest a better one. Otherwise just returns the old value. The current settings
 	 * are not changed.
 	 */
-	public double suggestPixelsPerSec() {
-		// adjust pixelsPerSec if it's way out of the range that makes sense
+	public double suggestPixelsPerTimelineCoordinate() {
+		// adjust pixelsPerTimelineCoordinate if it's way out of the range that makes sense
 		int numEvents = eventLog.getNumEvents();
 		if (numEvents>=2) {
-			double tStart = eventLog.getEvent(0).getSimulationTime();
-			double tEnd = eventLog.getEvent(numEvents-1).getSimulationTime();
+			double tStart = eventLog.getEvent(0).getTimelineCoordinate();
+			double tEnd = eventLog.getEvent(numEvents-1).getTimelineCoordinate();
 			double eventPerSec = numEvents / (tEnd - tStart);
 
 			int chartWidthPixels = scrollPane.getViewport().getBounds().width;
 			if (chartWidthPixels<=0) chartWidthPixels = 800;  // may be 0 on startup
 
-			double minPixelsPerSec = eventPerSec * 10;  // we want at least 10 pixel/event
-			double maxPixelsPerSec = eventPerSec * (chartWidthPixels/10);  // we want at least 10 events on the chart
+			double minPixelsPerTimelineCoordinate = eventPerSec * 10;  // we want at least 10 pixel/event
+			double maxPixelsPerTimelineCoordinate = eventPerSec * (chartWidthPixels/10);  // we want at least 10 events on the chart
 
-			if (pixelsPerSec < minPixelsPerSec)
-				return minPixelsPerSec;
-			else if (pixelsPerSec > maxPixelsPerSec)
-				return maxPixelsPerSec;
+			if (pixelsPerTimelineCoordinate < minPixelsPerTimelineCoordinate)
+				return minPixelsPerTimelineCoordinate;
+			else if (pixelsPerTimelineCoordinate > maxPixelsPerTimelineCoordinate)
+				return maxPixelsPerTimelineCoordinate;
 		}
-		return pixelsPerSec; // the current setting is fine
+		return pixelsPerTimelineCoordinate; // the current setting is fine
 	}
 
 	private void recalculatePreferredSize() {
 		EventEntry lastEvent = eventLog.getEvent(eventLog.getNumEvents()-1);
-		int width = lastEvent==null ? 0 : (int)(lastEvent.getSimulationTime()*getPixelsPerSec());
+		int width = lastEvent==null ? 0 : (int)(lastEvent.getTimelineCoordinate() * getPixelsPerTimelineCoordinate());
 		width = Math.max(width, 600); // at least half a screen
 		int height = eventLog.getNumModules()*axisSpacing;
 		setPreferredSize(width, height);
@@ -231,7 +250,6 @@ public class SeqChartFigure extends Figure {
 			long startMillis = System.currentTimeMillis();
 			
 			// paint axes
-			JavaFriendlyEventLogFacade logFacade = new JavaFriendlyEventLogFacade(eventLog); 
 			final HashMap<Integer,Integer> moduleIdToAxisYMap = new HashMap<Integer, Integer>();
 
 			// different y for each selected module
@@ -265,7 +283,7 @@ public class SeqChartFigure extends Figure {
             // calculate event coordinates (we'll paint them after the arrows)
             for (int i=startEventIndex; i<endEventIndex; i++) {
             	if (moduleIdToAxisYMap.containsKey(logFacade.getEvent_i_module_moduleId(i))) {
-	   				int x = timeToPixel(logFacade.getEvent_i_simulationTime(i));
+	   				int x = timelineCoordinateToPixel(logFacade.getEvent_i_timelineCoordinate(i));
 	   				int y = moduleIdToAxisYMap.get(logFacade.getEvent_i_module_moduleId(i));
 	   				logFacade.setEvent_cachedX(i, x);
 	   				logFacade.setEvent_cachedY(i, y);
@@ -299,8 +317,7 @@ public class SeqChartFigure extends Figure {
 	                		}
 	                		else {
 	                			// target is outside the repaint region (on the far right)
-	               				double targetTime = logFacade.getEvent_i_consequences_k_target_simulationTime(i, k);
-	               				double targetXDouble = timeToPixelDouble(targetTime);
+	               				double targetXDouble = timelineCoordinateToPixelDouble(logFacade.getEvent_i_consequences_k_target_timelineCoordinatea(i, k));
 	               				int targetX = targetXDouble > XMAX ? XMAX : (int)targetXDouble;
 	               				int targetY = moduleIdToAxisYMap.get(logFacade.getEvent_i_consequences_k_target_cause_module_moduleId(i, k));
 	               				logFacade.setEvent_i_consequences_k_target_cachedX(i, k, targetX);
@@ -322,7 +339,7 @@ public class SeqChartFigure extends Figure {
 	                			moduleIdToAxisYMap.containsKey(logFacade.getEvent_i_causes_k_source_cause_module_moduleId(i, k)) &&
 	                    		logFacade.getEvent_i_causes_k_source_isInFilteredSubset(i, k, eventLog))
 	                		{
-	               				double srcXDouble = timeToPixelDouble(logFacade.getEvent_i_causes_k_source_simulationTime(i, k));
+	               				double srcXDouble = timelineCoordinateToPixelDouble(logFacade.getEvent_i_causes_k_source_timelineCoordinate(i, k));
 	               				int srcY = moduleIdToAxisYMap.get(logFacade.getEvent_i_causes_k_source_cause_module_moduleId(i, k));
 	               				int srcX = srcXDouble < -XMAX ? -XMAX : (int)srcXDouble;
 	               				logFacade.setEvent_i_causes_k_source_cachedX(i, k, srcX);
@@ -387,7 +404,7 @@ public class SeqChartFigure extends Figure {
 	}
 
 	/**
-	 * Draws the axis, according to the current pixelsPerSec and tickInterval
+	 * Draws the axis, according to the current pixelsPerTimelineCoordinate and tickInterval
 	 * settings.
 	 */
 	private void drawLinearAxis(Graphics graphics, int y, String label) {
@@ -415,29 +432,130 @@ public class SeqChartFigure extends Figure {
 		for (BigDecimal t=tickStart; t.compareTo(tickEnd)<0; t = t.add(tickIntvl)) {
 			int x = timeToPixel(t.doubleValue());
 			graphics.drawLine(x, y-2, x, y+2);
-			graphics.drawText(t.toPlainString()+"s", x, y+3);
+			String l = (timelineMode == TimelineMode.STEP_BY_STEP) ? "#" + t.toPlainString() : t.toPlainString() + "s";
+			graphics.drawText(l, x, y+3);
 		}
 	}
 
 	/**
-	 * Translates from pixel x coordinate to seconds, using on pixelsPerSec.
+	 * Transforms simulation times of events into timeline coordinates. It might be
+	 * a non linear transformation.
+	 *
+	 */
+	private void simulationTimesToTimelineCoordinates()
+	{
+		double previousSimulationTime = 0;
+		double previousTimelineCoordinate = 0;
+		int size = logFacade.getNumEvents();
+
+		for (int i=0; i<size; i++) {
+        	double simulationTime = logFacade.getEvent_i_simulationTime(i);
+
+        	switch (timelineMode)
+        	{
+	        	case LINEAR:
+	        		logFacade.setEvent_i_timelineCoordinate(i, simulationTime);
+	        		break;
+	        	case STEP_BY_STEP:
+	        		logFacade.setEvent_i_timelineCoordinate(i, i);
+	        		break;
+	        	case NON_LINEAR:
+	        		double timelineCoordinate = previousTimelineCoordinate + Math.atan((simulationTime - previousSimulationTime) / nonLinearFocus);
+	        		logFacade.setEvent_i_timelineCoordinate(i, timelineCoordinate);
+	        		previousTimelineCoordinate = timelineCoordinate;
+	        		break;
+        	}
+        	
+        	previousSimulationTime = simulationTime;
+        }
+	}
+
+	/**
+	 * Translates from simulation time to timeline coordinate.
+	 */
+	private double simulationTimeToTimelineCoordinate(double simulationTime)
+	{		
+    	switch (timelineMode)
+    	{
+        	case LINEAR:
+        		return simulationTime;
+        	case STEP_BY_STEP:
+        	case NON_LINEAR:
+        		EventEntry event = eventLog.getLastEventBefore(simulationTime);
+        		
+        		if (event == null)
+        			// FIXME:
+        			return 0;
+
+        		double simulationTimeDelta = logFacade.getEvent_i_simulationTime(event.getEventNumber() + 1) - event.getSimulationTime();
+
+    			// linear approximation between two enclosing events
+        		if (timelineMode == TimelineMode.STEP_BY_STEP)
+        			return event.getTimelineCoordinate() + (simulationTime - event.getSimulationTime()) / simulationTimeDelta;
+        		else
+        		{
+	        		double timelineCoordinateDelta = logFacade.getEvent_i_timelineCoordinate(event.getEventNumber() + 1) - event.getTimelineCoordinate();
+	        		return event.getTimelineCoordinate() + timelineCoordinateDelta * (simulationTime - event.getSimulationTime()) / simulationTimeDelta;
+        		}
+        	default:
+        		throw new RuntimeException("Unknown timeline mode");
+    	}
+	}
+	
+	/**
+	 * Translates from timeline coordinate to simulation time.
+	 */
+	private double timelineCoordinateToSimulationTime(double timelineCoordinate)
+	{
+    	switch (timelineMode)
+    	{
+        	case LINEAR:
+        		return timelineCoordinate;
+        	case STEP_BY_STEP:
+        		int eventNumber = (int)Math.floor(timelineCoordinate);
+        		return logFacade.getEvent_i_eventNumber(eventNumber) + timelineCoordinate - eventNumber;
+        	case NON_LINEAR:
+    			// linear approximation between two enclosing events
+        		EventEntry event = eventLog.getLastEventBeforeByTimelineCoordinate(timelineCoordinate);
+        		
+        		if (event == null)
+        			// FIXME:
+        			return 0;
+
+        		double timelineCoordinateDelta = logFacade.getEvent_i_timelineCoordinate(event.getEventNumber() + 1) - timelineCoordinate;
+        		double simulationTimeDelta = logFacade.getEvent_i_simulationTime(event.getEventNumber() + 1) - event.getSimulationTime();
+        		return event.getSimulationTime() + simulationTimeDelta * (timelineCoordinate - event.getTimelineCoordinate()) / timelineCoordinateDelta;
+        	default:
+        		throw new RuntimeException("Unknown timeline mode");
+    	}
+	}
+	
+	/**
+	 * Translates from pixel x coordinate to seconds, using on pixelsPerTimelineCoordinate.
 	 */
 	private double pixelToTime(int x) {
-		return (x-getBounds().x) / pixelsPerSec;
+		return timelineCoordinateToSimulationTime((x-getBounds().x) / pixelsPerTimelineCoordinate);
 	}
-
+	
 	/**
-	 * Translates from seconds to pixel x coordinate, using on pixelsPerSec.
+	 * Translates from seconds to pixel x coordinate, using on pixelsPerTimelineCoordinate.
 	 */
 	private int timeToPixel(double t) {
-		return (int)Math.round(t * pixelsPerSec) + getBounds().x;
+		return (int)Math.round(simulationTimeToTimelineCoordinate(t) * pixelsPerTimelineCoordinate) + getBounds().x;
 	}
 
 	/**
-	 * Same as timeToPixel(), but doesn't convert to int; to be used where "int" may overflow
+	 * Translates timeline coordinate to pixel x coordinate, using on pixelsPerTimelineCoordinate.
 	 */
-	private double timeToPixelDouble(double t) {
-		return t * pixelsPerSec + getBounds().x;
+	private int timelineCoordinateToPixel(double t) {
+		return (int)Math.round(t * pixelsPerTimelineCoordinate) + getBounds().x;
+	}
+
+	/**
+	 * Same as timelineCoordinateToPixel(), but doesn't convert to int; to be used where "int" may overflow
+	 */
+	private double timelineCoordinateToPixelDouble(double t) {
+		return t * pixelsPerTimelineCoordinate + getBounds().x;
 	}
 	
 	/**
