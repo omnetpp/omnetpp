@@ -156,7 +156,7 @@ public class SequenceChartToolEditor extends EditorPart {
 
 	private Composite createControlStrip(Composite upper) {
 		Composite controlStrip = new Composite(upper, SWT.NONE);
-		controlStrip.setLayout(new GridLayout(6, false));
+		controlStrip.setLayout(new GridLayout(7, false));
 		eventcombo = new Combo(controlStrip, SWT.NONE);
 		eventcombo.setLayoutData(new GridData(SWT.FILL,SWT.FILL,true,false));
 		eventcombo.setVisibleItemCount(20);
@@ -170,6 +170,9 @@ public class SequenceChartToolEditor extends EditorPart {
 		
 		Button showNonDeliveryMessages = new Button(controlStrip, SWT.CHECK);
 		showNonDeliveryMessages.setText("Blue");
+		
+		Button showEventNumbers = new Button(controlStrip, SWT.CHECK);
+		showEventNumbers.setText("Event");
 		
 		Button zoomIn = new Button(controlStrip, SWT.NONE);
 		zoomIn.setText("Zoom in");
@@ -233,6 +236,15 @@ public class SequenceChartToolEditor extends EditorPart {
 			}
 			public void widgetSelected(SelectionEvent e) {
 				seqChartFigure.setShowNonDeliveryMessages(((Button)e.getSource()).getSelection());
+			}
+		});
+		
+		showEventNumbers.addSelectionListener(new SelectionListener () {
+			public void widgetDefaultSelected(SelectionEvent e) {
+				seqChartFigure.setShowEventNumbers(((Button)e.getSource()).getSelection());
+			}
+			public void widgetSelected(SelectionEvent e) {
+				seqChartFigure.setShowEventNumbers(((Button)e.getSource()).getSelection());
 			}
 		});
 		
