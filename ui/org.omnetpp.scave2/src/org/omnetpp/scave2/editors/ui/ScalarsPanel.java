@@ -1,5 +1,6 @@
-package org.omnetpp.scave2.editors;
+package org.omnetpp.scave2.editors.ui;
 
+import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.layout.GridData;
@@ -10,23 +11,29 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 
+public class ScalarsPanel extends FilterPanel {
 
-public class VectorsPanel extends FilterPanel {
-
+	public static final int COL_DIRECTORY = 0;
+	public static final int COL_FILENAME = 1;
+	public static final int COL_RUN = 2;
+	public static final int COL_MODULE = 3;
+	public static final int COL_NAME = 4;
+	public static final int COL_VALUE = 5;
+	
 	private Label runNameLabel = null;
 	private Label moduleNameLabel = null;
-	private Label vectorNameLabel = null;
+	private Label scalarNameLabel = null;
 
 	public CCombo runNameCombo = null;
 	public CCombo moduleNameCombo = null;
-	public CCombo vectorNameCombo = null;
+	public CCombo scalarNameCombo = null;
 
 	private Label dummy = null;
-	public Button filterButton = null;
+	private Button filterButton = null;
 
-	public Table table = null;
-
-	public VectorsPanel(Composite parent, int style) {
+	private TableViewer tableViewer = null;
+	
+	public ScalarsPanel(Composite parent, int style) {
 		super(parent, style);
 		initialize();
 	}
@@ -44,11 +51,11 @@ public class VectorsPanel extends FilterPanel {
 	}
 
 	public CCombo getNameCombo() {
-		return vectorNameCombo;
+		return scalarNameCombo;
 	}
 
-	public Table getTable() {
-		return table;
+	public TableViewer getTableViewer() {
+		return tableViewer;
 	}
 
 	private void initialize() {
@@ -70,8 +77,8 @@ public class VectorsPanel extends FilterPanel {
 		runNameLabel.setLayoutData(gridData);
 		moduleNameLabel = new Label(this, SWT.NONE);
 		moduleNameLabel.setText("Module name:");
-		vectorNameLabel = new Label(this, SWT.NONE);
-		vectorNameLabel.setText("Vector name:");
+		scalarNameLabel = new Label(this, SWT.NONE);
+		scalarNameLabel.setText("Scalar name:");
 		dummy = new Label(this, SWT.NONE);
 		runNameCombo = new CCombo(this, SWT.BORDER);
 		runNameCombo.setVisibleItemCount(10);
@@ -81,10 +88,10 @@ public class VectorsPanel extends FilterPanel {
 		moduleNameCombo.setVisibleItemCount(10);
 		moduleNameCombo.setToolTipText("Filter displayed items by module name. Wildcards *,? are OK.");
 		moduleNameCombo.setLayoutData(gridData2);
-		vectorNameCombo = new CCombo(this, SWT.BORDER);
-		vectorNameCombo.setVisibleItemCount(10);
-		vectorNameCombo.setToolTipText("Filter displayed items by the output vector's name. Wildcards *,? are OK.");
-		vectorNameCombo.setLayoutData(gridData3);
+		scalarNameCombo = new CCombo(this, SWT.BORDER);
+		scalarNameCombo.setVisibleItemCount(10);
+		scalarNameCombo.setToolTipText("Filter lines shown by the scalar's name. Wildcards *,? are OK.");
+		scalarNameCombo.setLayoutData(gridData3);
 		filterButton = new Button(this, SWT.NONE);
 		filterButton.setText("Filter");
 		createTable();
@@ -102,7 +109,8 @@ public class VectorsPanel extends FilterPanel {
 		gridData4.verticalAlignment = org.eclipse.swt.layout.GridData.FILL;
 		gridData4.horizontalSpan = 4;
 		gridData4.heightHint = 200;
-		table = new Table(this, SWT.FULL_SELECTION | SWT.MULTI | SWT.VIRTUAL);
+		tableViewer = new TableViewer(this, SWT.MULTI | SWT.FULL_SELECTION | SWT.VIRTUAL);
+		Table table = tableViewer.getTable();
 		table.setHeaderVisible(true);
 		table.setLayoutData(gridData4);
 		table.setLinesVisible(true);
@@ -112,6 +120,9 @@ public class VectorsPanel extends FilterPanel {
 		TableColumn tableColumn1 = new TableColumn(table, SWT.NONE);
 		tableColumn1.setWidth(80);
 		tableColumn1.setText("File");
+		TableColumn tableColumn2 = new TableColumn(table, SWT.NONE);
+		tableColumn2.setWidth(80);
+		tableColumn2.setText("Run#");
 		TableColumn tableColumn3 = new TableColumn(table, SWT.NONE);
 		tableColumn3.setWidth(160);
 		tableColumn3.setText("Module");
@@ -119,13 +130,7 @@ public class VectorsPanel extends FilterPanel {
 		tableColumn4.setWidth(100);
 		tableColumn4.setText("Name");
 		TableColumn tableColumn5 = new TableColumn(table, SWT.NONE);
-		tableColumn5.setWidth(50);
-		tableColumn5.setText("Count");
-		TableColumn tableColumn6 = new TableColumn(table, SWT.NONE);
-		tableColumn6.setWidth(60);
-		tableColumn6.setText("Mean");
-		TableColumn tableColumn7 = new TableColumn(table, SWT.NONE);
-		tableColumn7.setWidth(60);
-		tableColumn7.setText("StdDev");
+		tableColumn5.setWidth(80);
+		tableColumn5.setText("Value");
 	}
 }  //  @jve:decl-index=0:visual-constraint="15,14"

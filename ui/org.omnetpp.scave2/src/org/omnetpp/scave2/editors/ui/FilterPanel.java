@@ -1,9 +1,9 @@
-package org.omnetpp.scave2.editors;
+package org.omnetpp.scave2.editors.ui;
 
+import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Table;
 
 /**
  * ScalarPanelComposite and VectorPanelComposite inherit from this class;
@@ -23,6 +23,6 @@ public abstract class FilterPanel extends Composite {
 
 	public abstract CCombo getNameCombo();
 
-	public abstract Table getTable();
+	public abstract TableViewer getTableViewer();
 
 }

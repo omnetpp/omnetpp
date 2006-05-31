@@ -1,4 +1,4 @@
-package org.omnetpp.scave2.editors;
+package org.omnetpp.scave2.editors.ui;
 
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;

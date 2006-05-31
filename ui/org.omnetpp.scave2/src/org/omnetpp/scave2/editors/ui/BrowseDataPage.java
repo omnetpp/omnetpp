@@ -1,5 +1,6 @@
-package org.omnetpp.scave2.editors;
+package org.omnetpp.scave2.editors.ui;
 
+import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
@@ -23,9 +24,20 @@ public class BrowseDataPage extends ScrolledForm {
 	Button createChartButton;
 	Button copyToClipboardButton;
 	
+	VectorsPanel vectorsPanel;
+	ScalarsPanel scalarsPanel;
+	
 	public BrowseDataPage(Composite parent, int style) {
 		super(parent, style | SWT.V_SCROLL);
 		initialize();
+	}
+	
+	public TableViewer getScalarsTableViewer() {
+		return scalarsPanel.getTableViewer();
+	}
+	
+	public TableViewer getVectorsTableViewer() {
+		return vectorsPanel.getTableViewer();
 	}
 	
 	private void initialize() {
@@ -58,11 +70,13 @@ public class BrowseDataPage extends ScrolledForm {
 	}
 	
 	private void createVectorsPage() {
-		addItem("Vectors", new VectorsPanel(ctabfolder, SWT.NONE));
+		vectorsPanel = new VectorsPanel(ctabfolder, SWT.NONE);
+		addItem("Vectors", vectorsPanel);
 	}
 	
 	private void createScalarsPage() {
-		addItem("Scalars", new ScalarsPanel(ctabfolder, SWT.NONE));
+		scalarsPanel = new ScalarsPanel(ctabfolder, SWT.NONE);
+		addItem("Scalars", scalarsPanel);
 	}
 	
 	private void createHistogramsPage() {

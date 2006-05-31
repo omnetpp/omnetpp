@@ -1,4 +1,4 @@
-package org.omnetpp.scave2.editors;
+package org.omnetpp.scave2.editors.ui;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Button;
