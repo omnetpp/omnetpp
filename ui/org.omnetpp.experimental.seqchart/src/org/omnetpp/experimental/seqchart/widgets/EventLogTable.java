@@ -3,8 +3,14 @@ package org.omnetpp.experimental.seqchart.widgets;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.core.runtime.ListenerList;
 import org.eclipse.draw2d.ColorConstants;
 import org.eclipse.jface.resource.JFaceResources;
+import org.eclipse.jface.util.SafeRunnable;
+import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
+import org.eclipse.jface.viewers.ISelectionProvider;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
@@ -13,6 +19,8 @@ import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
+import org.omnetpp.experimental.seqchart.editors.EventLogSelection;
+import org.omnetpp.experimental.seqchart.editors.IEventLogSelection;
 import org.omnetpp.scave.engine.EventEntry;
 import org.omnetpp.scave.engine.EventLog;
 import org.omnetpp.scave.engine.MessageEntries;
@@ -24,13 +32,20 @@ import org.omnetpp.scave.engine.PStringVector;
  * 
  * @author andras
  */
-//FIXME actually implement expand/collapse! [+] and [-] images to be displayed are there in VirtualTableTreeBase; see also eventLog.collapseEvent/expandEvent 
-public class EventLogTable extends VirtualTableTreeBase {
-	
-	private EventLog eventLog;
-	private Font boldFont = JFaceResources.getFontRegistry().getBold(JFaceResources.DEFAULT_FONT);
-	private Color blueColor = ColorConstants.blue;
+//TODO actually implement expand/collapse! [+] and [-] images to be displayed are there in VirtualTableTreeBase; see also eventLog.collapseEvent/expandEvent
+//FIXME on setInput() make sure tableRowIndex is initialized properly
+//FIXME cannot scroll down!! it gets stuck on first logmessage line
+//FIXME reduce circular notifications
+public class EventLogTable extends VirtualTableTreeBase implements ISelectionProvider {
 
+	private static final Color blueColor = ColorConstants.blue;
+
+	private EventLog eventLog;
+
+	private ListenerList selectionChangedListeners = new ListenerList(); // list of selection change listeners (type ISelectionChangedListener).
+
+	private boolean followSelection = true;
+	
 	public EventLogTable(Composite parent, int style) {
 		super(parent, style);
 		
@@ -46,38 +61,40 @@ public class EventLogTable extends VirtualTableTreeBase {
 		tableColumn4.setWidth(800);
 		tableColumn4.setText("Details / log message");
 		
-		table.addSelectionListener(new SelectionListener() {
-			public void widgetDefaultSelected(SelectionEvent e) { }
+		addSelectionListener(new SelectionListener() {
+			public void widgetDefaultSelected(SelectionEvent e) {
+				fireSelectionChanged();
+			}
 			public void widgetSelected(SelectionEvent e) {
-				List<EventEntry> events = getSelectionEvents();
+				fireSelectionChanged();
 			}
 		});
-		
 	}
 
 	public void setInput(EventLog eventLog) {
 		this.eventLog = eventLog;
+		table.setItemCount(0);
 
-		EventEntry oldSelectionEvent = null;
-		if (eventLog!=null)
-			oldSelectionEvent = getSelectionEvent();
-		
-		// make log messages visible
-		eventLog.expandAllEvents();
-		
-		// calculate number of rows and set table row count
-		EventEntry lastEvent = eventLog.getLastEvent();
-		
-		if (lastEvent != null)
-		{
-			int lastEventRows = 1 + (lastEvent.getIsExpandedInTree() ? lastEvent.getNumLogMessages() : 0);
-			table.setItemCount(lastEvent==null ? 0 : lastEvent.getTableRowIndex()+lastEventRows);
+		if (eventLog!=null) {
+			// remember old selected element
+			EventEntry oldSelectionEvent = null;
+			if (eventLog!=null)
+				oldSelectionEvent = getSelectionEvent();
+
+			// make log messages visible
+			eventLog.expandAllEvents();
+
+			// calculate number of rows and set table row count
+			EventEntry lastEvent = eventLog.getLastEvent();
+			if (lastEvent != null) {
+				int lastEventRows = 1 + (lastEvent.getIsExpandedInTree() ? lastEvent.getNumLogMessages() : 0);
+				table.setItemCount(lastEvent==null ? 0 : lastEvent.getTableRowIndex()+lastEventRows);
+			}
+
+			// restore old event number; XXX needed???
+			if (oldSelectionEvent!=null)
+				gotoEvent(oldSelectionEvent);
 		}
-		else
-			table.setItemCount(0);			
-
-		if (oldSelectionEvent!=null)
-			gotoEvent(oldSelectionEvent);
 		
 		// refresh
 		table.clearAll();
@@ -85,7 +102,7 @@ public class EventLogTable extends VirtualTableTreeBase {
 
 	/**
 	 * Position the table selection to the given event, or if it's not in the current 
-	 * filtered event log, to an event near it.
+	 * filtered event log, to an event near that simulation time.
 	 */
 	public void gotoEvent(EventEntry event) {
 		if (event!=null) {
@@ -94,11 +111,14 @@ public class EventLogTable extends VirtualTableTreeBase {
 			if (event!=null) {
 				int index = event.getTableRowIndex();
 				table.setSelection(index);
-				table.setTopIndex(index);
 			}
 		}
 	}
 
+	/**
+	 * Called back whenever a new table row gets exposed. 
+	 */
+	@Override
 	protected void configureTableItem(TableItem item, int lineNumber) {
 		EventEntry event = eventLog.getEventByTableRowIndex(lineNumber);
 		if (event==null) {
@@ -145,11 +165,17 @@ public class EventLogTable extends VirtualTableTreeBase {
 		return null; // bad luck
 	}
 
+	/**
+	 * Returns the current selection.
+	 */
 	public EventEntry getSelectionEvent() {
 		int sel = getTable().getSelectionIndex();
 		return eventLog.getEventByTableRowIndex(sel);
 	}
 
+	/**
+	 * Returns the current selection.
+	 */
 	public List<EventEntry> getSelectionEvents() {
 		int[] sels = getTable().getSelectionIndices();
 		ArrayList<EventEntry> list = new ArrayList<EventEntry>();
@@ -158,5 +184,109 @@ public class EventLogTable extends VirtualTableTreeBase {
 			list.add(event);
 		}
 		return list;
+	}
+
+	/**
+	 * Selects the given events, and goes to the first one.
+	 */
+	public void setSelectionEvents(List<EventEntry> events) {
+		if (events.size()>0)
+			gotoEvent(events.get(0));
+		int[] selIndices = new int[events.size()];
+		for (int i=0; i<events.size(); i++)
+			selIndices[i] = events.get(i).getTableRowIndex();
+		getTable().setSelection(selIndices);
+	}
+	
+	/**
+     * Add a selection change listener.
+     */
+	public void addSelectionChangedListener(ISelectionChangedListener listener) {
+        selectionChangedListeners.add(listener);
+	}
+
+	/**
+     * Remove a selection change listener.
+     */
+	public void removeSelectionChangedListener(ISelectionChangedListener listener) {
+		selectionChangedListeners.remove(listener);
+	}
+	
+	/**
+     * Notifies any selection changed listeners that the viewer's selection has changed.
+     * Only listeners registered at the time this method is called are notified.
+     */
+    protected void fireSelectionChanged() {
+        Object[] listeners = selectionChangedListeners.getListeners();
+        final SelectionChangedEvent event = new SelectionChangedEvent(this, getSelection());        
+        for (int i = 0; i < listeners.length; ++i) {
+            final ISelectionChangedListener l = (ISelectionChangedListener) listeners[i];
+            SafeRunnable.run(new SafeRunnable() {
+                public void run() {
+                    l.selectionChanged(event);
+                }
+            });
+        }
+    }
+
+	/**
+	 * Returns the currently "selected" events as an instance of IEventLogSelection.
+	 */
+	public ISelection getSelection() {
+		return new EventLogSelection(eventLog, getSelectionEvents());
+	}
+
+	/**
+	 * Sets the currently "selected" events. The selection must be an
+	 * instance of IEventLogSelection. See setFollowSelection() too.
+	 */
+	public void setSelection(ISelection newSelection) {
+		System.out.println("EventLogTable got selection: "+newSelection);
+		
+		if (followSelection) {
+			// act as a view: display the event log which comes in the selection, 
+			// or display nothing if the selection is not an event log. 
+			if (!(newSelection instanceof IEventLogSelection)) {
+				setInput(null);
+				return;
+			}
+			IEventLogSelection newEventLogSelection = (IEventLogSelection)newSelection;
+			if (newEventLogSelection.getEventLog() != eventLog)
+				setInput(newEventLogSelection.getEventLog());
+
+			//FIXME only notify if selection actually changed
+			setSelectionEvents(newEventLogSelection.getEvents());
+		}
+		else {
+			// act as an editor: stick to the current event log, and ignore selections 
+			// that are about something else 
+			if (!(newSelection instanceof IEventLogSelection))
+				return; // wrong selection type
+			IEventLogSelection newEventLogSelection = (IEventLogSelection)newSelection;
+			if (newEventLogSelection.getEventLog() != eventLog)
+				return;  // wrong -- refers to another eventLog
+
+			//FIXME only notify if selection actually changed
+			setSelectionEvents(newEventLogSelection.getEvents());
+		}
+	}
+
+	/**
+	 * See setFollowSelection().
+	 */
+	public boolean getFollowSelection() {
+		return followSelection;
+	}
+
+	/**
+	 * Sets whether this widget should always switch to the EventLog which comes in
+	 * the selection (=true), or stick to the EventLog set with setInput() (=false).
+	 * The proper setting typically depends on whether the widget is used in an
+	 * editor (false) or in a view (true).
+	 *
+	 * Default is true.
+	 */
+	public void setFollowSelection(boolean followSelection) {
+		this.followSelection = followSelection;
 	}
 }

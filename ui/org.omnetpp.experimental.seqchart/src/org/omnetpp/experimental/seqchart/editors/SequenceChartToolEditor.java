@@ -1,19 +1,16 @@
 package org.omnetpp.experimental.seqchart.editors;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.draw2d.ColorConstants;
 import org.eclipse.draw2d.Figure;
 import org.eclipse.draw2d.LightweightSystem;
-import org.eclipse.draw2d.MouseEvent;
-import org.eclipse.draw2d.MouseListener;
 import org.eclipse.draw2d.ScrollPane;
 import org.eclipse.draw2d.XYLayout;
 import org.eclipse.draw2d.geometry.Rectangle;
+import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.events.SelectionEvent;
@@ -30,6 +27,9 @@ import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.IFileEditorInput;
+import org.eclipse.ui.ISelectionListener;
+import org.eclipse.ui.IViewPart;
+import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.part.EditorPart;
 import org.omnetpp.experimental.seqchart.moduletree.ModuleTreeBuilder;
@@ -39,7 +39,6 @@ import org.omnetpp.scave.engine.EventEntry;
 import org.omnetpp.scave.engine.EventLog;
 import org.omnetpp.scave.engine.IntSet;
 import org.omnetpp.scave.engine.JavaFriendlyEventLogFacade;
-import org.omnetpp.scave.engine.MessageEntry;
 import org.omnetpp.scave.engine.ModuleEntry;
 
 /**
@@ -51,14 +50,12 @@ import org.omnetpp.scave.engine.ModuleEntry;
 //FIXME EventLog must be wrapped into a "model" class with proper notifications for selection, etc! then the editor and the view should update themselves upon these notifications
 public class SequenceChartToolEditor extends EditorPart {
 
-	private SashForm sashForm;
 	//private Text text;
 	private Canvas canvas;
 	private Figure rootFigure;
 	private XYLayout rootLayout;
 	private SeqChartFigure seqChartFigure;
 	private Combo eventcombo;  //XXX instead of this combo, events should be selectable from the text view at the bottom
-	private EventLogTable eventLogTable;
 	
 	private EventLog eventLog;  // the log file loaded
 	private ModuleTreeItem moduleTree; // modules in eventLog
@@ -76,7 +73,6 @@ public class SequenceChartToolEditor extends EditorPart {
 	public void init(IEditorSite site, IEditorInput input) throws PartInitException {
 		setSite(site);
 		setInput(input);
-		//TODO site.setSelectionProvider(new WhateverSelectionProvider(this));
 		
 		IFileEditorInput fileInput = (IFileEditorInput)input;
 		String fileName = fileInput.getFile().getLocation().toFile().getAbsolutePath();
@@ -102,10 +98,8 @@ public class SequenceChartToolEditor extends EditorPart {
 	
 	@Override
 	public void createPartControl(Composite parent) {
-		sashForm = new SashForm(parent, SWT.VERTICAL | SWT.BORDER | SWT.SMOOTH);
-
-		// add canvas into the upper half
-		Composite upper = new Composite(sashForm, SWT.NONE);
+		// add canvas 
+		Composite upper = new Composite(parent, SWT.NONE);
 		upper.setLayout(new GridLayout());
 
 		Composite controlStrip = createControlStrip(upper);
@@ -116,32 +110,21 @@ public class SequenceChartToolEditor extends EditorPart {
 		canvas.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		setupCanvas(canvas);
 
-		// add event log table into lower half
-		Composite lower = new Composite(sashForm, SWT.NONE);
-		lower.setLayout(new FillLayout());
-
-		eventLogTable = new EventLogTable(lower, SWT.MULTI);
-		eventLogTable.addSelectionListener(new SelectionListener() {
-			public void widgetDefaultSelected(SelectionEvent e) {
-				// double-click or enter: filter for the current event
-				EventEntry event = eventLogTable.getSelectionEvent();
-				showSequenceChartForEvent(event.getEventNumber());
-			}
-			public void widgetSelected(SelectionEvent e) {
-				// update selection
-				seqChartFigure.setSelectionEvents(eventLogTable.getSelectionEvents());
-				// show (scroll to) currently selected event
-				EventEntry curEvent = eventLogTable.getSelectionEvent();
-				seqChartFigure.gotoSimulationTime(curEvent.getSimulationTime()); 
-				seqChartFigure.repaint(); //XXX or just invalidate?
-			}
-		});
-		
 		// fill combo box with events
 		fillEventCombo();
 		// give eventLog to the chart for display
 		showFullSequenceChart();
 		
+		getSite().setSelectionProvider(seqChartFigure);
+		
+		// follow selection
+		getSite().getPage().addSelectionListener(new ISelectionListener() {
+			public void selectionChanged(IWorkbenchPart part, ISelection selection) {
+				if (part!=seqChartFigure)
+					seqChartFigure.setSelection(selection);
+			}
+		});
+
 		//XXX this is an attempt at improving drag in the chart, but it apparently doesn't do the job
 		//canvas.addMouseListener(new MouseListener() {
 		//	public void mouseDoubleClick(MouseEvent e) {}
@@ -302,7 +285,7 @@ public class SequenceChartToolEditor extends EditorPart {
 		seqChartFigure.addSelectionListener(new SelectionListener() {
 			public void widgetDefaultSelected(SelectionEvent e) {
 				// on double-click, filter the event log
-				List<EventEntry> events = seqChartFigure.getSelectionEvents();
+				List<EventEntry> events = ((IEventLogSelection)seqChartFigure.getSelection()).getEvents(); //XXX
 				if (events.size()>1) { 
 					//XXX pop up selection dialog instead?
 					messageBox(SWT.ICON_INFORMATION, "Information", "Ambiguous double-click: there are "+events.size()+" events under the mouse! Zooming may help.");
@@ -311,10 +294,6 @@ public class SequenceChartToolEditor extends EditorPart {
 				}
 			}
 			public void widgetSelected(SelectionEvent e) {
-				// on click, go to selected event in the table
-				List<EventEntry> events = seqChartFigure.getSelectionEvents();
-				if (!events.isEmpty())
-					eventLogTable.gotoEvent(events.get(0));
 			}
 		});
 	}
@@ -368,7 +347,11 @@ public class SequenceChartToolEditor extends EditorPart {
 	private void filteredEventLogChanged() {
 		seqChartFigure.setAxisModules(axisModules); 
 		seqChartFigure.setEventLog(filteredEventLog);
-		eventLogTable.setInput(filteredEventLog);
+//		eventLogTable.setInput(filteredEventLog);
+		
+//		EventLogView view = findEventLogView();
+//		if (view!=null)
+//			view.getEventLogTable().setInput(filteredEventLog);
 	}
 
 	private int messageBox(int style, String title, String message) {

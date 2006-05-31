@@ -6,6 +6,7 @@ import org.omnetpp.scave.engine.ResultFileManager;
 /**
  * Wraps IDList with change notification capability.
  */
+//FIXME move this into the engine plugin, then make SWIG classes unavailable from other packages! --Andras 
 public class IDListModel {
 
 	private IDList idList = new IDList();

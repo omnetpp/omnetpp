@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import org.eclipse.core.runtime.ListenerList;
 import org.eclipse.draw2d.Figure;
 import org.eclipse.draw2d.Graphics;
 import org.eclipse.draw2d.MouseEvent;
@@ -14,6 +15,11 @@ import org.eclipse.draw2d.MouseListener;
 import org.eclipse.draw2d.MouseMotionListener;
 import org.eclipse.draw2d.ScrollPane;
 import org.eclipse.draw2d.geometry.Rectangle;
+import org.eclipse.jface.util.SafeRunnable;
+import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
+import org.eclipse.jface.viewers.ISelectionProvider;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
@@ -35,18 +41,20 @@ import org.omnetpp.scave.engine.MessageEntry;
  */
 //TODO limit pixelsPerTimelineCoordinate to a range that makes sense (for the current eventLog)
 //TODO draw arrowheads
+//TODO instead of (in addition to) gotoSimulationTime(), we need gotoEvent() as well, which would do vertical scrolling too
 //XXX Performanece note: perf log is line drawing. Coordicate calculations etc
 //    take much less time (to verify, comment out body of drawMessageArrow()).
 //    Solution: draw into an off-screen image, and use that during repaints!
-//TODO non-delivery events should be drawn in dotted line, and maybe lower ellipse than others? 
-//FIXME scrollbar breaks badly when char size exceeds ~4,000,000 pixels (this means only ~0.1s resolution ticks on an 1000s trace!!! not enough!)
+//TODO non-delivery events should be drawn in dotted line, and maybe lower ellipse than others?
+//TODO refine tooltips: if there's an event in the hover, don't print msgs in detail, only this "and 5 message arrows"
+//FIXME scrollbar breaks badly when chart size exceeds ~4,000,000 pixels (this means only ~0.1s resolution ticks on an 1000s trace!!! not enough!)
 //FIXME msg arrows that intersect the chart area but don't start or end there are not displayed (BUG!)
 //FIXME redraw chart with antialias while user is idle? hints: new SafeRunnable(); or:
 //		canvas.getDisplay().syncExec(new Runnable() {
 //			public void run() { ... }
 //		};
 
-public class SeqChartFigure extends Figure {
+public class SeqChartFigure extends Figure implements ISelectionProvider {
 
 	private final Color EVENT_FG_COLOR = new Color(null,255,0,0);
 	private final Color EVENT_BG_COLOR = new Color(null,255,255,255);
@@ -79,8 +87,12 @@ public class SeqChartFigure extends Figure {
 	private int dragStartX, dragStartY; // temporary variables for drag handling
 	private List<ModuleTreeItem> axisModules; // the modules which should have an axis (they must be part of a module tree!)
 
+	List<Integer> selectedModuleIds; // a list simple module ids which have timelines assigned (calculated by flattening axisModules)
+
+	private ArrayList<SelectionListener> selectionListenerList = new ArrayList<SelectionListener>(); // SWT selection listeners
+
 	private List<EventEntry> selectionEvents = new ArrayList<EventEntry>(); // the selection
-	private ArrayList<SelectionListener> selectionListenerList = new ArrayList<SelectionListener>();
+    private ListenerList selectionChangedListeners = new ListenerList(); // list of selection change listeners (type ISelectionChangedListener).
 
 	public enum TimelineMode {
 		LINEAR,
@@ -211,6 +223,9 @@ public class SeqChartFigure extends Figure {
 		setPixelsPerTimelineCoordinate(suggestPixelsPerTimelineCoordinate());
 		recalculatePreferredSize();
 		gotoSimulationTime(time);
+		
+		// notify listeners
+		fireSelectionChanged();
 	}
 
 	/**
@@ -222,38 +237,21 @@ public class SeqChartFigure extends Figure {
 	}
 	
 	/**
-	 * Sets the currently "selected" events. These events must be
-	 * part of the current eventLog, and will be displayed as red
-	 * circles in the graph.
-	 */
-	public void setSelectionEvents(List<EventEntry> events) {
-		selectionEvents = events;
-		repaint();
-	}
-
-	/**
-	 * Returns the currently "selected" events (marked as red circles in the chart).
-	 */
-	public List<EventEntry> getSelectionEvents() {
-		return selectionEvents;
-	}
-	
-	/**
-	 * Adds a selection listener. The selection is IStructuredSelection
-	 * which contains EventEntry items.
+	 * Adds an SWT selection listener which gets notified when the widget
+	 * is clicked or double-clicked.
 	 */
 	public void addSelectionListener (SelectionListener listener) {
 		selectionListenerList.add(listener);
 	}
 
 	/**
-	 * Removes the given selection listener.
+	 * Removes the given SWT selection listener.
 	 */
 	public void removeSelectionListener (SelectionListener listener) {
 		selectionListenerList.remove(listener);
 	}
 
-	protected void fireSelectionChanged(boolean defaultSelection) {
+	protected void fireSelection(boolean defaultSelection) {
 		Event event = new Event();
 		event.display = canvas.getDisplay();
 		event.widget = canvas;
@@ -684,18 +682,35 @@ public class SeqChartFigure extends Figure {
 		// selection handling
 		addMouseListener(new MouseListener() {
 			public void mouseDoubleClicked(MouseEvent me) {
-				selectionEvents.clear();
-				collectStuffUnderMouse(me.x, me.y, selectionEvents, null);
-				fireSelectionChanged(true);
-				repaint();
+				ArrayList<EventEntry> tmp = new ArrayList<EventEntry>();
+				collectStuffUnderMouse(me.x, me.y, tmp, null);
+				if (eventListEquals(selectionEvents, tmp)) {
+					fireSelection(true);
+				}
+				else {
+					selectionEvents = tmp;
+					fireSelection(true);
+					fireSelectionChanged();
+					repaint();
+				}
 			}
 			public void mousePressed(MouseEvent me) {
 				if (me.button==1) {
-					if ((me.getState() & SWT.CTRL)==0) // CTRL key extends selection
-						selectionEvents.clear();
-					collectStuffUnderMouse(me.x, me.y, selectionEvents, null);
-					fireSelectionChanged(false);
-					repaint();
+					ArrayList<EventEntry> tmp = new ArrayList<EventEntry>();
+					if ((me.getState() & SWT.CTRL)!=0) // CTRL key extends selection
+						for (EventEntry e : selectionEvents) 
+							tmp.add(e);
+					collectStuffUnderMouse(me.x, me.y, tmp, null);
+					if (eventListEquals(selectionEvents, tmp)) {
+						fireSelection(false);
+					}
+					else {
+						selectionEvents = tmp;
+						fireSelection(false);
+						fireSelectionChanged();
+						repaint();
+					}
+					
 				}
 			}
 			public void mouseReleased(MouseEvent me) {}
@@ -703,6 +718,17 @@ public class SeqChartFigure extends Figure {
 		
 	}
 
+	private static boolean eventListEquals(List<EventEntry> a, List<EventEntry> b) {
+		if (a==null || b==null)
+			return a==b;
+		if (a.size() != b.size())
+			return false;
+		for (int i=0; i<a.size(); i++)
+			if (a.get(i).getEventNumber() != b.get(i).getEventNumber()) // cannot use a.get(i)==b.get(i) because SWIG return new instances every time
+				return false;
+		return true;
+	}
+	
 	protected void displayTooltip(int x, int y) {
 		String tooltipText = getTooltipText(x,y);
 		if (tooltipText!=null) {
@@ -912,5 +938,73 @@ public class SeqChartFigure extends Figure {
 		// if it is the same point, and it passes the bounding box test,
 		// the result is always true.
 		return result <= tolerance * tolerance;
+	}
+
+	/**
+     * Add a selection change listener.
+     */
+	public void addSelectionChangedListener(ISelectionChangedListener listener) {
+        selectionChangedListeners.add(listener);
+	}
+
+	/**
+     * Remove a selection change listener.
+     */
+	public void removeSelectionChangedListener(ISelectionChangedListener listener) {
+		selectionChangedListeners.remove(listener);
+	}
+	
+	/**
+     * Notifies any selection changed listeners that the viewer's selection has changed.
+     * Only listeners registered at the time this method is called are notified.
+     */
+    protected void fireSelectionChanged() {
+        Object[] listeners = selectionChangedListeners.getListeners();
+        final SelectionChangedEvent event = new SelectionChangedEvent(this, getSelection());        
+        for (int i = 0; i < listeners.length; ++i) {
+            final ISelectionChangedListener l = (ISelectionChangedListener) listeners[i];
+            SafeRunnable.run(new SafeRunnable() {
+                public void run() {
+                    l.selectionChanged(event);
+                }
+            });
+        }
+    }
+
+	/**
+	 * Returns the currently "selected" events as an instance of IEventLogSelection.
+	 * Selection is shown as red circles in the chart.
+	 */
+	public ISelection getSelection() {
+		return new EventLogSelection(eventLog, selectionEvents);
+	}
+
+	/**
+	 * Sets the currently "selected" events. The selection must be an
+	 * instance of IEventLogSelection and refer to the current eventLog, 
+	 * otherwise the call will be ignored. Selection is displayed as red
+	 * circles in the graph.
+	 */
+	public void setSelection(ISelection newSelection) {
+		System.out.println("SeqChartFigure got selection: "+newSelection);
+		
+		if (!(newSelection instanceof IEventLogSelection))
+			return; // wrong selection type
+		IEventLogSelection newEventLogSelection = (IEventLogSelection)newSelection;
+		if (newEventLogSelection.getEventLog() != eventLog)
+			return;  // wrong -- refers to another eventLog
+
+		// if new selection differs from existing one, take over its contents
+		if (!eventListEquals(newEventLogSelection.getEvents(), selectionEvents)) {
+			selectionEvents.clear();
+			for (EventEntry e : newEventLogSelection.getEvents()) 
+				selectionEvents.add(e);
+
+			// go to the time of the first event selected
+			if (selectionEvents.size()>0)
+				gotoSimulationTime(selectionEvents.get(0).getSimulationTime());
+
+			repaint();
+		}
 	}
 }

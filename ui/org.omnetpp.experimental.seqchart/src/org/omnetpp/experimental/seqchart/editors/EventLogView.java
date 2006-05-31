@@ -1,23 +1,25 @@
 package org.omnetpp.experimental.seqchart.editors;
 
 
-import org.eclipse.swt.widgets.Composite;
-import org.eclipse.ui.part.*;
-import org.eclipse.jface.viewers.*;
-import org.eclipse.swt.graphics.Image;
-import org.eclipse.jface.action.*;
-import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.ui.*;
-import org.eclipse.swt.widgets.Menu;
+import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.ui.IEditorPart;
+import org.eclipse.ui.ISelectionListener;
+import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.IWorkbenchPart;
+import org.eclipse.ui.part.ViewPart;
 import org.omnetpp.experimental.seqchart.widgets.EventLogTable;
 
 
 /**
  * View for displaying and navigating simulation events and associated log messages.
  */
+//TODO add double-click support (factor out filtering to an Action?)
 //FIXME the <category name="OMNeT++/OMNEST" id="org.omnetpp"> stuff in plugin.xml doesn't seem to take effect
 public class EventLogView extends ViewPart {
+
+	public static final String PART_ID = "org.omnetpp.experimental.seqchart.editors.EventLogView"; 
 
 	private EventLogTable eventLogTable;
 	//private Action doubleClickAction;
@@ -35,23 +37,22 @@ public class EventLogView extends ViewPart {
 	@Override
 	public void createPartControl(Composite parent) {
 		eventLogTable = new EventLogTable(parent, SWT.MULTI);
-		SequenceChartToolEditor editor = getCurrentSequenceChartEditor();
-		if (editor!=null)
-			eventLogTable.setInput(editor.getFilteredEventLog());
-	}
+		
+		// we want to provide selection for the sequence chart tool (an IEditPart)
+		getSite().setSelectionProvider(eventLogTable);
 
-	/**
-	 * Returns the currently active sequence chart editor, or null
-	 * if the active editor is not a sequence chart editor.
-	 */
-	protected SequenceChartToolEditor getCurrentSequenceChartEditor() {
-		IWorkbenchPage page = getSite().getWorkbenchWindow().getActivePage();
-		if (page==null) return null;
-		IEditorPart currentEditor = page.getActiveEditor();
-		return currentEditor instanceof SequenceChartToolEditor ?
-			(SequenceChartToolEditor)currentEditor : null;
-	}
-	
+		// follow selection
+		getSite().getPage().addSelectionListener(new ISelectionListener() {
+			public void selectionChanged(IWorkbenchPart part, ISelection selection) {
+				if (part!=eventLogTable)
+					eventLogTable.setSelection(selection);
+			}
+		});
+		
+		// bootstrap with current selection
+		eventLogTable.setSelection(getSite().getSelectionProvider().getSelection());
+}
+
 	public EventLogTable getEventLogTable() {
 		return eventLogTable;
 	}
@@ -70,12 +71,6 @@ public class EventLogView extends ViewPart {
 //				doubleClickAction.run();
 //			}
 //		});
-//	}
-//	private void showMessage(String message) {
-//		MessageDialog.openInformation(
-//			viewer.getControl().getShell(),
-//			"Sample View",
-//			message);
 //	}
 
 }
