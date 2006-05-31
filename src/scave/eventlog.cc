@@ -510,7 +510,7 @@ inline bool less_MessageEntryByLineNumber(MessageEntry *m1, MessageEntry *m2) {
 }
 
 
-EventLog *EventLog::traceEvent(EventEntry *tracedEvent, bool wantCauses, bool wantConsequences)
+EventLog *EventLog::traceEvent(EventEntry *tracedEvent, std::set<int> *moduleIds, bool wantCauses, bool wantConsequences)
 {
     EventLog *traceResult = new EventLog(this);
 
@@ -532,8 +532,9 @@ EventLog *EventLog::traceEvent(EventEntry *tracedEvent, bool wantCauses, bool wa
             // remove one from openEvents, and add it into collectedEvents
             EventEntry *event = *openEvents.begin();
             openEvents.erase(openEvents.begin());
-            collectedEvents.push_back(event);
             event->isInCollectedEvents = true;
+            if (moduleIds == NULL || moduleIds->find(event->cause->module->moduleId) != moduleIds->end())
+                collectedEvents.push_back(event);
 
             // then add all causes to openEvents
             for (MessageEntryList::iterator it = event->causes.begin(); it!=event->causes.end(); ++it)
@@ -541,7 +542,8 @@ EventLog *EventLog::traceEvent(EventEntry *tracedEvent, bool wantCauses, bool wa
                 MessageEntry *msg = *it;
                 if (msg->source != NULL)
                 {
-                    collectedMessages.push_back(msg);
+                    if (moduleIds == NULL || moduleIds->find(msg->module->moduleId) != moduleIds->end())
+                        collectedMessages.push_back(msg);
                     if (msg->source != event && !msg->source->isInCollectedEvents)
                         openEvents.insert(msg->source);
                 }
@@ -564,8 +566,10 @@ EventLog *EventLog::traceEvent(EventEntry *tracedEvent, bool wantCauses, bool wa
             // remove one from openEvents, and add it into collectedEvents
             EventEntry *event = *openEvents.begin();
             openEvents.erase(openEvents.begin());
-            collectedEvents.push_back(event);
             event->isInCollectedEvents = true;
+            // avoid duplicating tracedEvent already added during adding causes
+            if (event != tracedEvent && (moduleIds == NULL || moduleIds->find(event->cause->module->moduleId) != moduleIds->end()))
+                collectedEvents.push_back(event);
 
             // then add all consequences to openEvents
             for (MessageEntryList::iterator it = event->consequences.begin(); it!=event->consequences.end(); ++it)
@@ -573,7 +577,8 @@ EventLog *EventLog::traceEvent(EventEntry *tracedEvent, bool wantCauses, bool wa
                 MessageEntry *msg = *it;
                 if (msg->target != NULL)
                 {
-                    collectedMessages.push_back(msg);
+                    if (moduleIds == NULL || moduleIds->find(msg->module->moduleId) != moduleIds->end())
+                        collectedMessages.push_back(msg);
                     if (msg->target != event && !msg->target->isInCollectedEvents)
                         openEvents.insert(msg->target);
                 }
