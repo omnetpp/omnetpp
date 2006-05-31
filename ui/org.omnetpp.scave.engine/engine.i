@@ -100,6 +100,9 @@ namespace std {
    specialize_std_vector(const char *);
 
    %template(PStringVector) vector<const char *>;
+
+   %template(IntSet) set<int>;
+
 };
 
 %typemap(javacode) IDList %{
