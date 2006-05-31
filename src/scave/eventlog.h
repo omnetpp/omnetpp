@@ -160,9 +160,18 @@ class EventLog
         EventEntry *getLastEvent(); // convenience method
         int findEvent(EventEntry *event); // returns pos, or -1 if not found
         bool containsEvent(EventEntry *event) {return findEvent(event)!=-1;}
+        inline int getEventPositionByNumber(long eventNumber);
         EventEntry *getEventByNumber(long eventNumber);
+        inline EventEntry *getEventNULLSafe(int pos);
+        inline int getFirstEventPositionAfterByPredicate(double t, bool (*predicate)(EventEntry*,double));
+        inline int getLastEventPositionBeforeByPredicate(double t, bool (*predicate)(EventEntry*,double));
+        int getFirstEventPositionAfter(double t);
+        int getLastEventPositionBefore(double t);
         EventEntry *getFirstEventAfter(double t);
         EventEntry *getLastEventBefore(double t);
+        int getFirstEventPositionAfterByTimelineCoordinate(double t);
+        int getLastEventPositionBeforeByTimelineCoordinate(double t);
+        EventEntry *getFirstEventAfterByTimelineCoordinate(double t);
         EventEntry *getLastEventBeforeByTimelineCoordinate(double t);
         EventEntry *getEventByTableRowIndex(int tableRowIndex);
 

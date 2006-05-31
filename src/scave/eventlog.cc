@@ -309,49 +309,99 @@ ModuleEntry *EventLog::getOrAddModule(int moduleId, char *moduleClassName, char 
 
 inline bool less_EventEntry_EventNumber(EventEntry *e, long eventNumber) {return e->eventNumber < eventNumber;}
 
-inline bool less_EventEntry_SimulationTime(EventEntry *e, double t) {return e->simulationTime < t;}
+inline bool less_EventEntry_SimulationTime(EventEntry *e, double t) {return e->simulationTime <= t;}
 
-inline bool less_EventEntry_TimelineCoordinate(EventEntry *e, double t) {return e->simulationTime < t;}
+inline bool less_EventEntry_TimelineCoordinate(EventEntry *e, double t) {return e->timelineCoordinate <= t;}
+
+inline EventEntry *EventLog::getEventNULLSafe(int pos)
+{
+    if (pos == -1)
+        return NULL;
+    else
+        return getEvent(pos);
+}
+
+inline int EventLog::getEventPositionByNumber(long eventNumber)
+{
+    EventEntryList::iterator it = std::lower_bound(eventList.begin(), eventList.end(), eventNumber, less_EventEntry_EventNumber);
+    return it==eventList.end() ? -1 : it - eventList.begin();
+}
 
 int EventLog::findEvent(EventEntry *event)
 {
-    EventEntryList::iterator it = std::lower_bound(eventList.begin(), eventList.end(), event->eventNumber, less_EventEntry_EventNumber);
-    return (it!=eventList.end() && *it==event) ? it-eventList.begin() : -1;
+    int pos = getEventPositionByNumber(event->eventNumber);
+    EventEntry *e = getEventNULLSafe(pos);
+    return (e==event) ? pos : -1;
 }
 
 EventEntry *EventLog::getEventByNumber(long eventNumber)
 {
-    EventEntryList::iterator it = std::lower_bound(eventList.begin(), eventList.end(), eventNumber, less_EventEntry_EventNumber);
-    return it==eventList.end() ? NULL : *it;
+    return getEventNULLSafe(getEventPositionByNumber(eventNumber));
+}
+
+inline int EventLog::getFirstEventPositionAfterByPredicate(double t, bool (*predicate)(EventEntry*,double))
+{
+    EventEntryList::iterator it = std::lower_bound(eventList.begin(), eventList.end(), t, predicate);
+
+    if (it==eventList.end())
+        return -1;
+    else
+        return it - eventList.begin();
+}
+
+inline int EventLog::getLastEventPositionBeforeByPredicate(double t, bool (*predicate)(EventEntry*,double))
+{
+    // do getFirstEventAfter, then return the event before that
+    EventEntryList::iterator it = std::lower_bound(eventList.begin(), eventList.end(), t, predicate);
+
+    if (it==eventList.end())
+        return eventList.size() - 1;
+    else if (predicate((EventEntry*)*it, t))
+        return it - eventList.begin();
+    else if (it==eventList.begin())
+        return -1;
+    else
+        return (it - eventList.begin()) - 1;
 }
 
 EventEntry *EventLog::getFirstEventAfter(double t)
 {
-    EventEntryList::iterator it = std::lower_bound(eventList.begin(), eventList.end(), t, less_EventEntry_SimulationTime);
-    EventEntry *eventEntry = *it;
-    return (eventEntry->simulationTime!=t && it==eventList.end()) ? NULL : eventEntry;
+    return getEventNULLSafe(getFirstEventPositionAfter(t));
 }
 
 EventEntry *EventLog::getLastEventBefore(double t)
 {
-    // do getFirstEventAfter, then return the event before that
-    EventEntryList::iterator it = std::lower_bound(eventList.begin(), eventList.end(), t, less_EventEntry_SimulationTime);
-    EventEntry *eventEntry = *it;
-    if (eventEntry->simulationTime==t)
-        return eventEntry;
-    else
-        return it==eventList.begin() ? NULL : it==eventList.end() ? eventList.back() : *(it-1);
+    return getEventNULLSafe(getLastEventPositionBefore(t));
+}
+
+int EventLog::getFirstEventPositionAfter(double t)
+{
+    return getFirstEventPositionAfterByPredicate(t, less_EventEntry_SimulationTime);
+}
+
+int EventLog::getLastEventPositionBefore(double t)
+{
+    return getLastEventPositionBeforeByPredicate(t, less_EventEntry_SimulationTime);
+}
+
+EventEntry *EventLog::getFirstEventAfterByTimelineCoordinate(double t)
+{
+    return getEventNULLSafe(getFirstEventPositionAfterByTimelineCoordinate(t));
 }
 
 EventEntry *EventLog::getLastEventBeforeByTimelineCoordinate(double t)
 {
-    // do getFirstEventAfter, then return the event before that
-    EventEntryList::iterator it = std::lower_bound(eventList.begin(), eventList.end(), t, less_EventEntry_TimelineCoordinate);
-    EventEntry *eventEntry = *it;
-    if (eventEntry->simulationTime==t)
-        return eventEntry;
-    else
-        return it==eventList.begin() ? NULL : it==eventList.end() ? eventList.back() : *(it-1);
+    return getEventNULLSafe(getLastEventPositionBeforeByTimelineCoordinate(t));
+}
+
+int EventLog::getFirstEventPositionAfterByTimelineCoordinate(double t)
+{
+    return getFirstEventPositionAfterByPredicate(t, less_EventEntry_TimelineCoordinate);
+}
+
+int EventLog::getLastEventPositionBeforeByTimelineCoordinate(double t)
+{
+    return getLastEventPositionBeforeByPredicate(t, less_EventEntry_TimelineCoordinate);
 }
 
 inline bool less_EventEntry_tableRowIndex(int index, EventEntry *e) {return index < e->tableRowIndex;}
