@@ -1,7 +1,9 @@
 package org.omnetpp.experimental.seqchart.editors;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.draw2d.ColorConstants;
@@ -35,6 +37,7 @@ import org.omnetpp.experimental.seqchart.moduletree.ModuleTreeItem;
 import org.omnetpp.experimental.seqchart.widgets.EventLogTable;
 import org.omnetpp.scave.engine.EventEntry;
 import org.omnetpp.scave.engine.EventLog;
+import org.omnetpp.scave.engine.IntSet;
 import org.omnetpp.scave.engine.JavaFriendlyEventLogFacade;
 import org.omnetpp.scave.engine.MessageEntry;
 import org.omnetpp.scave.engine.ModuleEntry;
@@ -129,7 +132,7 @@ public class SequenceChartToolEditor extends EditorPart {
 				seqChartFigure.setSelectionEvents(eventLogTable.getSelectionEvents());
 				// show (scroll to) currently selected event
 				EventEntry curEvent = eventLogTable.getSelectionEvent();
-				seqChartFigure.gotoTime(curEvent.getSimulationTime()); 
+				seqChartFigure.gotoSimulationTime(curEvent.getSimulationTime()); 
 				seqChartFigure.repaint(); //XXX or just invalidate?
 			}
 		});
@@ -138,8 +141,6 @@ public class SequenceChartToolEditor extends EditorPart {
 		fillEventCombo();
 		// give eventLog to the chart for display
 		showFullSequenceChart();
-		
-		seqChartFigure.setAxisModules(axisModules);
 		
 		//XXX this is an attempt at improving drag in the chart, but it apparently doesn't do the job
 		//canvas.addMouseListener(new MouseListener() {
@@ -330,21 +331,42 @@ public class SequenceChartToolEditor extends EditorPart {
 		currentEventNumber = eventNumber;
 		String eventLabel = getLabelForEvent(new JavaFriendlyEventLogFacade(eventLog), eventLog.findEvent(event));
 		eventcombo.setText(eventLabel);
+		
+		filterEventLog();
+	}
 
-		filteredEventLog = eventLog.traceEvent(event, true, true);
+	private void showFullSequenceChart() {
+		currentEventNumber = -1;
+		filterEventLog();
+	}
+	
+	/**
+	 * Filters event log by the currently selected event number and modules.
+	 */
+	private void filterEventLog() {
+		final IntSet moduleIds = new IntSet();
+
+		for (int i=0; i<axisModules.size(); i++) {
+			ModuleTreeItem treeItem = axisModules.get(i);
+			treeItem.visitLeaves(new ModuleTreeItem.IModuleTreeItemVisitor() {
+				public void visit(ModuleTreeItem treeItem) {
+					moduleIds.insert(treeItem.getModuleId());
+				}
+			});
+		}
+
+		if (currentEventNumber == -1 && moduleIds.empty())
+			filteredEventLog = eventLog;
+		else
+			filteredEventLog = eventLog.traceEvent(eventLog.getEventByNumber(currentEventNumber), moduleIds, true, true);
+
 		System.out.println("filtered log: "+filteredEventLog.getNumEvents()+" events in "+filteredEventLog.getNumModules()+" modules");
 
 		filteredEventLogChanged();
 	}
 
-	private void showFullSequenceChart() {
-		currentEventNumber = -1;
-		filteredEventLog = eventLog;
-
-		filteredEventLogChanged();
-	}
-
 	private void filteredEventLogChanged() {
+		seqChartFigure.setAxisModules(axisModules); 
 		seqChartFigure.setEventLog(filteredEventLog);
 		eventLogTable.setInput(filteredEventLog);
 	}
@@ -387,7 +409,7 @@ public class SequenceChartToolEditor extends EditorPart {
 				System.out.println(" "+sel.getModuleFullPath());
 
 			// update chart
-			seqChartFigure.setAxisModules(axisModules); 
+			filterEventLog();
 		}
 	}
 
