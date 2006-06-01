@@ -35,7 +35,8 @@
 %include "std_string.i"
 %include "std_set.i"     // our custom version
 %include "std_list.i"    // our custom version
-%include "std_vector.i"  // our custom version
+%include "std_vector.i"
+%include "std_map.i"
 
 namespace std {
 
@@ -102,6 +103,10 @@ namespace std {
    %template(PStringVector) vector<const char *>;
 
    %template(IntSet) set<int>;
+
+   specialize_std_map_on_both(int,,,,int,,,);
+
+   %template(IntIntMap) map<int,int>;
 
 };
 
