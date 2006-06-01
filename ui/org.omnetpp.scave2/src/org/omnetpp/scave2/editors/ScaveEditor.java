@@ -55,6 +55,12 @@ import org.omnetpp.scave2.editors.ui.ChartSheetPage;
 import org.omnetpp.scave2.editors.ui.DatasetPage;
 import org.omnetpp.scave2.editors.ui.OverviewPage;
 
+/**
+ * OMNeT++/OMNEST Analysis tool.  
+ * 
+ * @author andras, tomi
+ */
+//FIXME add flag into InputFile: "name" is OS path or workspace-relative path 
 public class ScaveEditor extends AbstractEMFModelEditor implements INotifyChangedListener, IResourceChangeListener {
 
 	private OverviewPage overviewPage;
@@ -303,11 +309,12 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INotifyChange
 	 * it will be added to Inputs unless it's already in there.
 	 */
 	private void setupResultFileDropTarget(Control dropTargetControl) {
-		// set up DropTarget, and add FileTransfer to it
+		// set up DropTarget, and add FileTransfer to it;
+		// issue: the EMF editor already adds a drop target to the TreeViewer
 		DropTarget dropTarget = null;
 		Object o = dropTargetControl.getData("DropTarget");
 		if (o instanceof DropTarget) {
-			dropTarget = (DropTarget) o; // this is a dirty hack, but there's no public API for getting an existing drop target...
+			dropTarget = (DropTarget) o; // this is a dirty hack, but there seems to be no public API for getting an existing drop target
 			// add FileTransfer to the transfer array if not already in there
 			Transfer[] transfer = dropTarget.getTransfer();
 			Transfer[] transfer2 = new Transfer[transfer.length+1];

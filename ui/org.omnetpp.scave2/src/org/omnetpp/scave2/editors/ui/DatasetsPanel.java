@@ -12,8 +12,9 @@ import org.omnetpp.scave2.actions.OpenDatasetActionDelegate;
 public class DatasetsPanel extends TreeWithButtonsPanel {
 	
 	private Button openDatasetButton;
-	private Button newDatasetButton;
-	private Button removeDatasetButton;
+	private Button newNodeButton;
+	private Button editNodeButton;
+	private Button removeNodeButton;
 	
 	public DatasetsPanel(Composite parent, int style) {
 		super(parent, style);
@@ -23,18 +24,16 @@ public class DatasetsPanel extends TreeWithButtonsPanel {
 	private void initialize() {
 		Composite buttonPanel = getButtonPanel();
 		FormToolkit toolkit = getFormToolkit();
-		openDatasetButton = toolkit.createButton(buttonPanel, "Open", SWT.NONE);
+		openDatasetButton = toolkit.createButton(buttonPanel, "Open Dataset", SWT.NONE);
+		newNodeButton = toolkit.createButton(buttonPanel, "New...", SWT.NONE);
+		editNodeButton = toolkit.createButton(buttonPanel, "Edit...", SWT.NONE);
+		removeNodeButton = toolkit.createButton(buttonPanel, "Remove", SWT.NONE);
+
 		openDatasetButton.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
-				new Action() {
-					public void run() {
-						OpenDatasetActionDelegate delegate = new OpenDatasetActionDelegate();
-						delegate.run(this);
-					}
-				}.run();
+				OpenDatasetActionDelegate delegate = new OpenDatasetActionDelegate();
+				delegate.run(null);
 			}
 		});
-		newDatasetButton = toolkit.createButton(buttonPanel, "New...", SWT.NONE);
-		removeDatasetButton = toolkit.createButton(buttonPanel, "Remove", SWT.NONE);
 	}
 }
