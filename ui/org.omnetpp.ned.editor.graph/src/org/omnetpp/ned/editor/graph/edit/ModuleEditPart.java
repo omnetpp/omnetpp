@@ -5,25 +5,15 @@ import java.util.List;
 import org.eclipse.draw2d.ConnectionAnchor;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.geometry.Point;
-import org.eclipse.draw2d.geometry.Rectangle;
+import org.eclipse.gef.ConnectionEditPart;
 import org.eclipse.gef.EditPolicy;
-import org.eclipse.gef.GraphicalEditPart;
+import org.eclipse.gef.NodeEditPart;
 import org.eclipse.gef.Request;
 import org.eclipse.gef.requests.DropRequest;
-import org.eclipse.swt.graphics.Image;
-import org.omnetpp.common.color.ColorFactory;
-import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.ned.editor.graph.edit.policies.NedComponentEditPolicy;
 import org.omnetpp.ned.editor.graph.edit.policies.NedNodeEditPolicy;
 import org.omnetpp.ned.editor.graph.figures.ModuleFigure;
-import org.omnetpp.ned.editor.graph.figures.properties.DisplayCalloutSupport;
-import org.omnetpp.ned.editor.graph.figures.properties.DisplayInfoTextSupport;
-import org.omnetpp.ned.editor.graph.figures.properties.DisplayNameSupport;
-import org.omnetpp.ned.editor.graph.figures.properties.DisplayQueueSupport;
-import org.omnetpp.ned.editor.graph.figures.properties.DisplayRangeSupport;
-import org.omnetpp.ned.editor.graph.figures.properties.DisplayShapeSupport;
-import org.omnetpp.ned.editor.graph.figures.properties.DisplayTooltipSupport;
-import org.omnetpp.ned2.model.DisplayString;
+import org.omnetpp.ned2.model.ConnectionNodeEx;
 import org.omnetpp.ned2.model.INamedGraphNode;
 import org.omnetpp.ned2.model.NEDElement;
 
@@ -31,7 +21,7 @@ import org.omnetpp.ned2.model.NEDElement;
  * Base abstract controller for NedModel and NedFigures. Provides support for 
  * connection handling and common display attributes.
  */
-abstract public class ModuleEditPart extends ContainerEditPart {
+abstract public class ModuleEditPart extends ContainerEditPart implements NodeEditPart {
 
 	/* (non-Javadoc)
 	 * @see org.eclipse.gef.editparts.AbstractGraphicalEditPart#createFigure()
@@ -85,10 +75,10 @@ abstract public class ModuleEditPart extends ContainerEditPart {
      * 
      * @return ConnectionAnchor.
      */
-//    public ConnectionAnchor getSourceConnectionAnchor(ConnectionEditPart connEditPart) {
-//    	ConnectionNodeEx conn = (ConnectionNodeEx) connEditPart.getModel();
-//        return getNedFigure().getConnectionAnchor(conn.getSourceGate());
-//    }
+    public ConnectionAnchor getSourceConnectionAnchor(ConnectionEditPart connEditPart) {
+    	ConnectionNodeEx conn = (ConnectionNodeEx) connEditPart.getModel();
+        return getNedFigure().getConnectionAnchor(conn.getSrcGateWithIndex());
+    }
 
     /**
      * Returns the connection anchor of a srcModule connection which is at the
@@ -106,10 +96,10 @@ abstract public class ModuleEditPart extends ContainerEditPart {
      * 
      * @return ConnectionAnchor.
      */
-//    public ConnectionAnchor getTargetConnectionAnchor(ConnectionEditPart connEditPart) {
-//        ConnectionNodeEx conn = (ConnectionNodeEx) connEditPart.getModel();
-//        return getNedFigure().getConnectionAnchor(conn.getTargetGate());
-//    }
+    public ConnectionAnchor getTargetConnectionAnchor(ConnectionEditPart connEditPart) {
+        ConnectionNodeEx conn = (ConnectionNodeEx) connEditPart.getModel();
+        return getNedFigure().getConnectionAnchor(conn.getDestGateWithIndex());
+    }
 
     /**
      * Returns the connection anchor of a terget connection which is at the

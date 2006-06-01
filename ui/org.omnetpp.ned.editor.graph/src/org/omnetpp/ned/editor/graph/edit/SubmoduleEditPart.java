@@ -21,7 +21,7 @@ import org.omnetpp.ned2.model.SubmoduleDisplayString;
 
 public class SubmoduleEditPart extends ModuleEditPart {
 
-    /**
+    /** 
      * Returns a newly created Figure of this.
      * 
      * @return A new Figure of this.

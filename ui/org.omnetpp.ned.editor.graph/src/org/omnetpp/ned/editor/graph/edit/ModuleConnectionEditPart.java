@@ -29,7 +29,7 @@ import org.omnetpp.ned2.model.DisplayString.Prop;
  * Implements a Connection Editpart to represnt a Wire like connection.
  * 
  */
-public class ConnectionEditPart extends AbstractConnectionEditPart implements INEDChangeListener, IDisplayStringChangeListener {
+public class ModuleConnectionEditPart extends AbstractConnectionEditPart implements INEDChangeListener, IDisplayStringChangeListener {
 
     @Override
     public void activate() {

@@ -3,6 +3,7 @@ package org.omnetpp.ned.editor.graph.model.commands;
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.Rectangle;
+import org.eclipse.gef.commands.Command;
 import org.omnetpp.ned2.model.INamedGraphNode;
 
 /**
@@ -10,7 +11,7 @@ import org.omnetpp.ned2.model.INamedGraphNode;
  * @author rhornig
  *
  */
-public class SetConstraintCommand extends org.eclipse.gef.commands.Command {
+public class SetConstraintCommand extends Command {
 
     private Point newPos;
     private Dimension newSize;

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.gef.EditPolicy;
+import org.eclipse.gef.editparts.AbstractTreeEditPart;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
@@ -15,7 +16,6 @@ import org.omnetpp.ned2.model.ConnectionNodeEx;
 import org.omnetpp.ned2.model.INEDChangeListener;
 import org.omnetpp.ned2.model.NEDElement;
 import org.omnetpp.ned2.model.NEDElementUtil;
-import org.omnetpp.ned2.model.NedElementExUtil;
 import org.omnetpp.ned2.model.SubmoduleNodeEx;
 import org.omnetpp.ned2.model.pojo.ChannelInterfaceNode;
 import org.omnetpp.ned2.model.pojo.ChannelNode;
@@ -42,7 +42,7 @@ import org.omnetpp.ned2.model.pojo.TypesNode;
 /**
  * EditPart for Logic components in the Tree.
  */
-public class NedTreeEditPart extends org.eclipse.gef.editparts.AbstractTreeEditPart implements
+public class NedTreeEditPart extends AbstractTreeEditPart implements
         INEDChangeListener {
 
     /**
@@ -236,8 +236,6 @@ public class NedTreeEditPart extends org.eclipse.gef.editparts.AbstractTreeEditP
     	TreeItem item = (TreeItem)getWidget();
     	if (image != null)
     		image.setBackground(item.getParent().getBackground());
-    	// for debugging display the model id parameter
-    	// label += " ["+model+"]";
     	setWidgetImage(image);
     	setWidgetText(label);
     }
