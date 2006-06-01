@@ -463,7 +463,7 @@ public class SeqChartFigure extends Figure implements ISelectionProvider {
 				graphics.drawLine(x1, y1, x1, y1 - selfArrowHeight);
 
 				if (arrowHeadInClipping)
-					drawArrowHead(graphics, x1, y1, x1 - x2, y1 - y2);
+					drawArrowHead(graphics, x1, y1, 0, 1);
 			}
 			else {
 				// draw half ellipse
@@ -486,9 +486,9 @@ public class SeqChartFigure extends Figure implements ISelectionProvider {
 					
 					// if the solution falls outside of the top right quarter of the ellipse
 					if (x < 0)
-						drawArrowHead(graphics, x2, y2, x2, y2 - 1);
+						drawArrowHead(graphics, x2, y2, 0, 1);
 					else {
-						// shift solution to the canvases coordinate system
+						// shift solution to the coordinate system of the canvas
 						x = (x1 + x2) / 2 + x;
 						y = y1 + y;
 						drawArrowHead(graphics, x2, y2, x2 - x, y2 - y);
