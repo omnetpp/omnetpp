@@ -166,7 +166,7 @@ namespace std {
 %typemap(jstype) (char *array, int n) "byte[]"
 %typemap(javain) (char *array, int n) "$javainput"
 
-// FIXME add %newobject where needed!
+// FIXME add %newobject where needed! (e.g. EventLog::buildMessageCountGraph)
 
 %ignore ResultFileManager::dump;
 
