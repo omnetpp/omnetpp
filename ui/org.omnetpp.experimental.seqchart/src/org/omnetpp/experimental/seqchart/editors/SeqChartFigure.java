@@ -56,6 +56,7 @@ import org.omnetpp.scave.engine.MessageEntry;
 
 public class SeqChartFigure extends Figure implements ISelectionProvider {
 
+	private final Color ARROW_COLOR = new Color(null, 0, 0, 0);
 	private final Color EVENT_FG_COLOR = new Color(null,255,0,0);
 	private final Color EVENT_BG_COLOR = new Color(null,255,255,255);
 	private final Color MSG_COLOR = new Color(null,0,0,255);
@@ -72,8 +73,13 @@ public class SeqChartFigure extends Figure implements ISelectionProvider {
 	protected double pixelsPerTimelineCoordinate = 2;
 	protected int tickScale = 2; // -1 means step=0.1
 	private boolean antiAlias = true;  // antialiasing -- this gets turned on/off automatically
-	private int axisOffset = 30;  // y coord of first axis
-	private int axisSpacing = 50; // y distance between two axes
+	private final int axisOffset = 30;  // y coord of first axis
+	private final int axisSpacing = 50; // y distance between two axes
+	private final int selfArrowHeight = 20; // vertical radius of ellipse for self arrows
+	private final int arrowHeadLength = 10; // length of message arrow head
+	private final int arrowHeadWideness = 7; // wideness of message arrow head
+	private final int labelDistance = 35; // distance of timeline label from timeline
+	private final int eventRadius = 10; // radius of event circle
 
 	private boolean showNonDeliveryMessages; // show or hide non delivery message arrows
 	private boolean showEventNumbers;
@@ -418,7 +424,7 @@ public class SeqChartFigure extends Figure implements ISelectionProvider {
 
    				if (showEventNumbers) {
 	   	            graphics.setBackgroundColor(EVENT_BG_COLOR);
-	   	            graphics.fillText("#"+i, x-10, y-25);
+	   	            graphics.fillText("#"+i, x-10, y - labelDistance);
    				}
             }           	
 
@@ -430,7 +436,7 @@ public class SeqChartFigure extends Figure implements ISelectionProvider {
                 	{
 	            		int x = sel.getCachedX();
 	            		int y = sel.getCachedY();
-	            		graphics.drawOval(x-10, y-10, 21, 21);
+	            		graphics.drawOval(x - eventRadius, y - eventRadius, eventRadius * 2 + 1, eventRadius * 2 + 1);
                 	}
             	}
             }
@@ -447,16 +453,47 @@ public class SeqChartFigure extends Figure implements ISelectionProvider {
 	}
 	
 	private void drawMessageArrow(Graphics graphics, int x1, int y1, int x2, int y2) {
+		Rectangle.SINGLETON.setLocation(x2 - selfArrowHeight, y2 - selfArrowHeight);
+		Rectangle.SINGLETON.setSize(selfArrowHeight * 2, selfArrowHeight * 2);
+		boolean arrowHeadInClipping = !graphics.getClip(Rectangle.SINGLETON).isEmpty();
+		
 		if (y1==y2) {
 			if (x1==x2) {
 				// draw vertical line (as zero-width half ellipse) 
-				graphics.drawLine(x1, y1, x1, y1-10);
+				graphics.drawLine(x1, y1, x1, y1 - selfArrowHeight);
+
+				if (arrowHeadInClipping)
+					drawArrowHead(graphics, x1, y1, x1 - x2, y1 - y2);
 			}
 			else {
 				// draw half ellipse
-				Rectangle.SINGLETON.setLocation(x1, y1-10);
-				Rectangle.SINGLETON.setSize(x2-x1, 20);
+				Rectangle.SINGLETON.setLocation(x1, y1 - selfArrowHeight);
+				Rectangle.SINGLETON.setSize(x2-x1, selfArrowHeight * 2);
 				graphics.drawArc(Rectangle.SINGLETON, 0, 180);
+				
+				if (arrowHeadInClipping) {
+					// intersection of the ellipse and a circle with the arrow length centered at the end point
+					// origin is in the center of the ellipse
+					// mupad: solve([x^2/a^2+(r^2-(x-a)^2)/b^2=1],x,IgnoreSpecialCases)
+					double a = Rectangle.SINGLETON.width / 2;
+					double b = Rectangle.SINGLETON.height / 2;
+					double a2 = a * a;
+					double b2 = b * b;
+					double r = arrowHeadLength;
+					double r2 = r *r;
+					double x = a * (-Math.sqrt(a2 * r2 + b2 * b2 - b2 * r2) + a2) / (a2 - b2);
+					double y = -Math.sqrt(r2 - (x - a) * (x - a));
+					
+					// if the solution falls outside of the top right quarter of the ellipse
+					if (x < 0)
+						drawArrowHead(graphics, x2, y2, x2, y2 - 1);
+					else {
+						// shift solution to the canvases coordinate system
+						x = (x1 + x2) / 2 + x;
+						y = y1 + y;
+						drawArrowHead(graphics, x2, y2, x2 - x, y2 - y);
+					}
+				}
 			}
 		} else {
 			//XXX some attempt do do manual clipping...
@@ -466,7 +503,26 @@ public class SeqChartFigure extends Figure implements ISelectionProvider {
 			//if (Rectangle.SINGLETON.bottom() < y1 && Rectangle.SINGLETON.bottom() < y2)
 			//	return;
 			graphics.drawLine(x1, y1, x2, y2);
+			
+			if (arrowHeadInClipping)
+				drawArrowHead(graphics, x2, y2, x2 - x1, y2 - y1);
 		}
+	}
+	
+	private void drawArrowHead(Graphics graphics, int x, int y, double dx, double dy)
+	{
+		double n = Math.sqrt(dx * dx + dy * dy);
+		double dwx = -dy / n * arrowHeadWideness / 2;
+		double dwy = dx / n * arrowHeadWideness / 2;
+		double xt = x - dx * arrowHeadLength / n;
+		double yt = y - dy * arrowHeadLength / n;
+		int x1 = (int)Math.round(xt - dwx);
+		int y1 = (int)Math.round(yt - dwy);
+		int x2 = (int)Math.round(xt + dwx);
+		int y2 = (int)Math.round(yt + dwy);
+
+		graphics.setBackgroundColor(ARROW_COLOR);
+		graphics.fillPolygon(new int[] {x, y, x1, y1, x2, y2});
 	}
 
 	/**
@@ -480,8 +536,7 @@ public class SeqChartFigure extends Figure implements ISelectionProvider {
 
 		// draw axis label; may it should be "sticky" on the screen?
 		
-		//graphics.drawText(label, bounds.x, y-25); 
-		graphics.drawText(label, scrollPane.getViewport().getBounds().x+5, y-25);
+		graphics.drawText(label, scrollPane.getViewport().getBounds().x+5, y - labelDistance);
 		
 		// draw axis
 		graphics.drawLine(rect.x, y, rect.right(), y);
@@ -525,7 +580,7 @@ public class SeqChartFigure extends Figure implements ISelectionProvider {
 	        		logFacade.setEvent_i_timelineCoordinate(i, i);
 	        		break;
 	        	case NON_LINEAR:
-	        		double timelineCoordinate = previousTimelineCoordinate + Math.atan((simulationTime - previousSimulationTime) / nonLinearFocus);
+	        		double timelineCoordinate = previousTimelineCoordinate + Math.atan((simulationTime - previousSimulationTime) / nonLinearFocus) / Math.PI * 2;
 	        		logFacade.setEvent_i_timelineCoordinate(i, timelineCoordinate);
 	        		previousTimelineCoordinate = timelineCoordinate;
 	        		break;
@@ -533,6 +588,8 @@ public class SeqChartFigure extends Figure implements ISelectionProvider {
         	
         	previousSimulationTime = simulationTime;
     	}
+
+		nonLinearFocus = previousSimulationTime / size;
 	}
 
 	/**
@@ -880,7 +937,7 @@ public class SeqChartFigure extends Figure implements ISelectionProvider {
 
 	private boolean messageArrowContainsPoint(int x1, int y1, int x2, int y2, int px, int py, int tolerance) {
 		if (y1==y2)
-			return halfEllipseContainsPoint(x1, x2, y1, 10, px, py, tolerance); 
+			return halfEllipseContainsPoint(x1, x2, y1, selfArrowHeight, px, py, tolerance); 
 		else
 			return lineContainsPoint(x1, y1, x2, y2, px, py, tolerance); 
 	}
