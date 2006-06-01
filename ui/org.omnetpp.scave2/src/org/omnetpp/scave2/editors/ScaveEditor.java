@@ -206,7 +206,7 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INotifyChange
         browseDataPage.getScalarsTableViewer().setInput(analysis.getInputs());
         browseDataPage.getVectorsTableViewer().setInput(analysis.getInputs());
         
-        //setupResultFileDropTarget(overviewPage.getInputFilesTreeViewer().getControl()); XXX throws error: looks like EMF already sets up a DropTarget on this, and we cannot add another one
+        setupResultFileDropTarget(overviewPage.getInputFilesTreeViewer().getControl()); //XXX throws error: looks like EMF already sets up a DropTarget on this, and we cannot add another one
         setupResultFileDropTarget(overviewPage.getPhysicalDataTreeViewer().getControl());
         setupResultFileDropTarget(overviewPage.getLogicalDataTreeViewer().getControl());
 
@@ -303,8 +303,24 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INotifyChange
 	 * it will be added to Inputs unless it's already in there.
 	 */
 	private void setupResultFileDropTarget(Control dropTargetControl) {
-		DropTarget dropTarget = new DropTarget(dropTargetControl, DND.DROP_DEFAULT | DND.DROP_COPY);
-		dropTarget.setTransfer(new Transfer[] {FileTransfer.getInstance()});
+		// set up DropTarget, and add FileTransfer to it
+		DropTarget dropTarget = null;
+		Object o = dropTargetControl.getData("DropTarget");
+		if (o instanceof DropTarget) {
+			dropTarget = (DropTarget) o; // this is a dirty hack, but there's no public API for getting an existing drop target...
+			// add FileTransfer to the transfer array if not already in there
+			Transfer[] transfer = dropTarget.getTransfer();
+			Transfer[] transfer2 = new Transfer[transfer.length+1];
+			System.arraycopy(transfer, 0, transfer2, 0, transfer.length);
+			transfer2[transfer2.length-1] = FileTransfer.getInstance();
+			dropTarget.setTransfer(transfer2);
+		}
+		else {
+			dropTarget = new DropTarget(dropTargetControl, DND.DROP_DEFAULT | DND.DROP_COPY);
+			dropTarget.setTransfer(new Transfer[] {FileTransfer.getInstance()});
+		}
+
+		// add our listener to handle file transfer to the DropTarget
 		dropTarget.addDropListener(new DropTargetAdapter() {
 			public void dragEnter(DropTargetEvent event) {
 				if (event.detail == DND.DROP_DEFAULT)
