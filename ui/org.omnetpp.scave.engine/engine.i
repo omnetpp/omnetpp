@@ -108,6 +108,8 @@ namespace std {
 
    %template(IntIntMap) map<int,int>;
 
+   %template(IntVector) vector<int>;
+
 };
 
 %typemap(javacode) IDList %{
