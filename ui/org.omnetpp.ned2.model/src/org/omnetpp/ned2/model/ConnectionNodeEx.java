@@ -98,6 +98,28 @@ public class ConnectionNodeEx extends ConnectionNode implements IDisplayStringPr
 		setSrcModuleRef(getSubmoduleByName(val));
 	}
 	
+	/**
+	 * @return Identifier of the source gate instance the connection connected to
+	 */
+	public String getSrcGateWithIndex() {
+		String gate = getSrcGate();
+		if(getSrcGateIndex() != null && !"".equals(getSrcGateIndex()))
+			gate += "["+getSrcGateIndex()+"]";
+		
+		return gate;
+	}
+	
+	/**
+	 * @return Identifier of the destination gate instance the connection connected to
+	 */
+	public String getDestGateWithIndex() {
+		String gate = getDestGate();
+		if(getDestGateIndex() != null && !"".equals(getDestGateIndex()))
+			gate += "["+getDestGateIndex()+"]";
+		
+		return gate;
+	}
+
 	private INamedGraphNode getSubmoduleByName(String moduleName) {
 		CompoundModuleNodeEx compMod = (CompoundModuleNodeEx)getParentWithTag(NED_COMPOUND_MODULE);
 		assert (compMod != null);
