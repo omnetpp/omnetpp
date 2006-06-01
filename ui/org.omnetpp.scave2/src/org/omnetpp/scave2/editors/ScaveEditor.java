@@ -12,7 +12,7 @@ import org.eclipse.core.resources.IResourceDeltaVisitor;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.content.IContentType;
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.ecore.xmi.XMIResource;
@@ -23,14 +23,20 @@ import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.dnd.DND;
+import org.eclipse.swt.dnd.DropTarget;
+import org.eclipse.swt.dnd.DropTargetAdapter;
+import org.eclipse.swt.dnd.DropTargetEvent;
+import org.eclipse.swt.dnd.FileTransfer;
+import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.omnetpp.scave.engine.File;
-import org.omnetpp.scave.engine.FileList;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.model.Analysis;
 import org.omnetpp.scave.model.Dataset;
@@ -191,6 +197,7 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INotifyChange
         	analysis.setChartSheets(ScaveModelFactory.eINSTANCE.createChartSheets());
 
         loadFiles(analysis.getInputs());
+        
         overviewPage.getInputFilesTreeViewer().setInput(analysis.getInputs());
         overviewPage.getDatasetsTreeViewer().setInput(analysis.getDatasets());
         overviewPage.getChartSheetsTreeViewer().setInput(analysis.getChartSheets()); //XXX for now...
@@ -199,6 +206,10 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INotifyChange
         browseDataPage.getScalarsTableViewer().setInput(analysis.getInputs());
         browseDataPage.getVectorsTableViewer().setInput(analysis.getInputs());
         
+        //setupResultFileDropTarget(overviewPage.getInputFilesTreeViewer().getControl()); XXX throws error: looks like EMF already sets up a DropTarget on this, and we cannot add another one
+        setupResultFileDropTarget(overviewPage.getPhysicalDataTreeViewer().getControl());
+        setupResultFileDropTarget(overviewPage.getLogicalDataTreeViewer().getControl());
+
         //createDatasetPage("queue lengths");
         //createDatasetPage("average EED");
         //createDatasetPage("frame counts");
@@ -206,7 +217,7 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INotifyChange
         //createChartPage("delay");
 	}
 
-    /**
+	/**
      * Utility method: Returns the Analysis object from the resource.
      */
     //XXX catch potential nullpointer- and classcast exceptions during resource magic 
@@ -287,7 +298,76 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INotifyChange
 		viewer.setLabelProvider(view.getLabelProvider());
 	}
 	
-	private void  loadFiles(Inputs inputs) {
+	/**
+	 * Sets up the given control so that when a file is drag-dropped into it,
+	 * it will be added to Inputs unless it's already in there.
+	 */
+	private void setupResultFileDropTarget(Control dropTargetControl) {
+		DropTarget dropTarget = new DropTarget(dropTargetControl, DND.DROP_DEFAULT | DND.DROP_COPY);
+		dropTarget.setTransfer(new Transfer[] {FileTransfer.getInstance()});
+		dropTarget.addDropListener(new DropTargetAdapter() {
+			public void dragEnter(DropTargetEvent event) {
+				if (event.detail == DND.DROP_DEFAULT)
+					event.detail = DND.DROP_COPY;
+			}
+			public void dragOperationChanged(DropTargetEvent event) {
+				if (event.detail == DND.DROP_DEFAULT)
+					event.detail = DND.DROP_COPY;
+			}
+			public void drop(DropTargetEvent event) {
+				if (event.data instanceof String[]) {
+					String [] fileNames = (String[])event.data;
+					for (int i=0; i<fileNames.length; i++)
+						fileDropped(fileNames[i]);
+				}
+			}
+		});
+	}
+
+	/**
+	 * Adds the given file (OS-relative) to Inputs unless it's already in there.
+	 */
+	private void fileDropped(String fileName) {
+		// convert OS path to workspace-relative path
+		IFile iFile = findFileInWorkspace(fileName);
+		if (iFile==null) {
+			System.out.println("path not in workspace: "+fileName); //XXX error dialog?
+			return;
+		}
+		String resourcePath = iFile.getFullPath().toPortableString();
+		
+		// add resourcePath to Inputs if not already there
+		Inputs inputs = getAnalysisModelObject().getInputs();
+		boolean found = false;
+		for (Object inputFileObj : inputs.getInputs()) {
+			InputFile inputFile = (InputFile)inputFileObj;
+			if (inputFile.getName().equals(resourcePath))
+				found = true;
+		}
+
+		if (!found) {
+			InputFile inputFile = ScaveModelFactory.eINSTANCE.createInputFile();
+			inputFile.setName(resourcePath);
+			inputs.getInputs().add(inputFile);
+		}
+	}
+
+	/**
+	 * Finds an IFile for an existing file given with OS path. Returns null if the file was not found.
+	 */
+	private IFile findFileInWorkspace(String fileName) {
+		IFile[] iFiles = ResourcesPlugin.getWorkspace().getRoot().findFilesForLocation(new Path(fileName));
+		IFile iFile = null;
+		for (IFile f : iFiles) { 
+			if (f.exists()) {
+				iFile = f;
+				break;
+			}
+		}
+		return iFile;
+	}
+
+	private void loadFiles(Inputs inputs) {
 		// TODO: handle wildcards
 		inputFiles.clear();
 		for (Object inputFileObj : inputs.getInputs()) {
