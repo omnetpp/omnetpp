@@ -19,8 +19,6 @@ import org.eclipse.emf.ecore.xmi.XMIResource;
 import org.eclipse.emf.edit.provider.IChangeNotifier;
 import org.eclipse.emf.edit.provider.INotifyChangedListener;
 import org.eclipse.jface.viewers.ISelection;
-import org.eclipse.jface.viewers.TableViewer;
-import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.dnd.DND;
@@ -185,13 +183,6 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INotifyChange
         createOverviewPage();
         createBrowseDataPage();
 
-        configureTreeViewer(overviewPage.getInputFilesTreeViewer());
-        configureTreeViewer(overviewPage.getDatasetsTreeViewer());
-        configureTreeViewer(overviewPage.getChartSheetsTreeViewer());
-        configureTreeViewer(overviewPage.getPhysicalDataTreeViewer(), new InputsPhysicalViewProvider(this));
-        configureTreeViewer(overviewPage.getLogicalDataTreeViewer(), new InputsLogicalViewProvider(this));
-        configureTableViewer(browseDataPage.getScalarsTableViewer(), new InputsScalarsViewProvider(this));
-        configureTableViewer(browseDataPage.getVectorsTableViewer(), new InputsVectorsViewProvider(this));
 
         Analysis analysis = getAnalysisModelObject();
         // create mandatory objects if not exist; XXX must also prevent them from being deleted
@@ -242,14 +233,27 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INotifyChange
 	}
 
 	private void createOverviewPage() {
+		InputsTreeViewProvider physicalView = new InputsPhysicalViewProvider(this);
+		InputsTreeViewProvider logicalView = new InputsLogicalViewProvider(this);
+		
 		overviewPage = new OverviewPage(getContainer(), SWT.NONE);
+        configureTreeViewer(overviewPage.getInputFilesTreeViewer());
+        configureTreeViewer(overviewPage.getDatasetsTreeViewer());
+        configureTreeViewer(overviewPage.getChartSheetsTreeViewer());
+        physicalView.configureTreeViewer(overviewPage.getPhysicalDataTreeViewer());
+        logicalView.configureTreeViewer(overviewPage.getLogicalDataTreeViewer());
 		setFormTitle(overviewPage, "Overview");
 		int index = addPage(overviewPage);
 		setPageText(index, "Overview");
 	}
 	
 	private void createBrowseDataPage() {
+		InputsTableViewProvider scalarsView = new InputsScalarsViewProvider(this);
+		InputsTableViewProvider vectorsView = new InputsVectorsViewProvider(this);
+
 		browseDataPage = new BrowseDataPage(getContainer(), SWT.NONE);
+		scalarsView.configureFilterPanel(browseDataPage.getScalarsPanel());
+		vectorsView.configureFilterPanel(browseDataPage.getVectorsPanel());
 		setFormTitle(browseDataPage, "Browse data");
 		int index = addPage(browseDataPage);
 		setPageText(index, "Browse data");
@@ -292,16 +296,6 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INotifyChange
 		setViewerSelectionNoNotify(overviewPage.getInputFilesTreeViewer(), selection);
 		setViewerSelectionNoNotify(overviewPage.getDatasetsTreeViewer(), selection);
 		setViewerSelectionNoNotify(overviewPage.getChartSheetsTreeViewer(), selection);
-	}
-	
-	private void configureTreeViewer(TreeViewer viewer, InputsTreeViewProvider view) {
-		viewer.setContentProvider(view.getContentProvider());
-		viewer.setLabelProvider(view.getLabelProvider());
-	}
-	
-	private void configureTableViewer(TableViewer viewer, InputsTableViewProvider view) {
-		viewer.setContentProvider(view.getContentProvider());
-		viewer.setLabelProvider(view.getLabelProvider());
 	}
 	
 	/**

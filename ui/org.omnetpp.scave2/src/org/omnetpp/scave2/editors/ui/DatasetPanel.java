@@ -20,11 +20,8 @@ public class DatasetPanel extends TreeWithButtonsPanel {
 	}
 	
 	private void initialize() {
-		Label label = getLabel();
 		Composite buttonPanel = getButtonPanel(); 
 		FormToolkit toolkit = getFormToolkit();
-		label.setText("Here you can edit the dataset. " +
-				      "The dataset allows you to create a subset of the input data and work with it.");
 		addButton = toolkit.createButton(buttonPanel, "Add...", SWT.NONE);
 		removeButton = toolkit.createButton(buttonPanel, "Remove", SWT.NONE);
 		groupButton = toolkit.createButton(buttonPanel, "Group", SWT.NONE);

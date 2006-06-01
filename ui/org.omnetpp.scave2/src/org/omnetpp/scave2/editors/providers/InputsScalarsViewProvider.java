@@ -34,20 +34,20 @@ public class InputsScalarsViewProvider extends InputsTableViewProvider {
 
 	public ITableLabelProvider getLabelProvider() {
 		return new LabelProvider() {
-				public String getColumnText(Object element, int columnIndex) {
-					long id = (Long)element;
-					ScalarResult scalar = editor.getResultFileManager().getScalar(id);
-					switch (columnIndex)
-					{
-						case COL_DIRECTORY: return scalar.getRun().getFile().getDirectory();
-						case COL_FILENAME: return scalar.getRun().getFile().getFileName();
-						case COL_RUN: return scalar.getRun().getRunName();
-						case COL_MODULE: return scalar.getModuleName();
-						case COL_NAME: return scalar.getName();
-						case COL_VALUE: return String.valueOf(scalar.getValue());
-						default: return "n/a";
-					}
+			public String getColumnText(Object element, int columnIndex) {
+				long id = (Long)element;
+				ScalarResult scalar = editor.getResultFileManager().getScalar(id);
+				switch (columnIndex)
+				{
+					case COL_DIRECTORY: return scalar.getRun().getFile().getDirectory();
+					case COL_FILENAME: return scalar.getRun().getFile().getFileName();
+					case COL_RUN: return scalar.getRun().getRunName();
+					case COL_MODULE: return scalar.getModuleName();
+					case COL_NAME: return scalar.getName();
+					case COL_VALUE: return String.valueOf(scalar.getValue());
+					default: return "n/a";
 				}
-			};
+			}
+		};
 	}
 }

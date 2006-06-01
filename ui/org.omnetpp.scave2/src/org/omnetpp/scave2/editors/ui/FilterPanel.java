@@ -24,5 +24,4 @@ public abstract class FilterPanel extends Composite {
 	public abstract CCombo getNameCombo();
 
 	public abstract TableViewer getTableViewer();
-
 }

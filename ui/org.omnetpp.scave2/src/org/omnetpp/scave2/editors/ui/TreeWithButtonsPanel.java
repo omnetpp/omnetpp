@@ -14,7 +14,6 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 public class TreeWithButtonsPanel extends Composite {
 
 	private FormToolkit formToolkit = null;   //  @jve:decl-index=0:visual-constraint=""
-	private Label label = null;
 	private TreeViewer treeviewer = null;
 	private Composite buttonPanel = null;
 	
@@ -23,10 +22,6 @@ public class TreeWithButtonsPanel extends Composite {
 		initialize();
 	}
 	
-	public Label getLabel() {
-		return label;
-	}
-
 	public Composite getButtonPanel() {
 		return buttonPanel;
 	}
@@ -42,15 +37,9 @@ public class TreeWithButtonsPanel extends Composite {
 		gridData1.verticalAlignment = org.eclipse.swt.layout.GridData.FILL;
 		gridData1.grabExcessVerticalSpace = true;
 		gridData1.horizontalAlignment = org.eclipse.swt.layout.GridData.FILL;
-		GridData gridData = new GridData();
-		gridData.horizontalSpan = 2;
-		gridData.grabExcessHorizontalSpace = true;
 		GridLayout gridLayout = new GridLayout();
 		gridLayout.numColumns = 2;
 		gridLayout.horizontalSpacing = 10;
-		label = getFormToolkit().createLabel(this, "Label", SWT.WRAP);
-		label.setLayoutData(gridData);
-		label.setBackground(this.getBackground());
 		Tree tree = getFormToolkit().createTree(this, SWT.BORDER | SWT.MULTI);
 		tree.setLayoutData(gridData1);
 		treeviewer = new TreeViewer(tree);

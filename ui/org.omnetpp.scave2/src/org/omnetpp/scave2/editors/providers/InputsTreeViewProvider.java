@@ -7,6 +7,7 @@ import org.eclipse.emf.edit.provider.INotifyChangedListener;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.jface.viewers.ITreeContentProvider;
+import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.graphics.Image;
 import org.omnetpp.scave.model.Inputs;
@@ -20,6 +21,11 @@ public abstract class InputsTreeViewProvider {
 	
 	public InputsTreeViewProvider(ScaveEditor editor) {
 		this.editor = editor;
+	}
+	
+	public void configureTreeViewer(TreeViewer viewer) {
+		viewer.setContentProvider(getContentProvider());
+		viewer.setLabelProvider(getLabelProvider());
 	}
 
 	public abstract ITreeContentProvider getContentProvider();

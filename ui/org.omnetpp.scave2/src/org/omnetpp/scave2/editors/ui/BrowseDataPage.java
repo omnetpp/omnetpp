@@ -32,6 +32,14 @@ public class BrowseDataPage extends ScrolledForm {
 		initialize();
 	}
 	
+	public ScalarsPanel getScalarsPanel() {
+		return scalarsPanel;
+	}
+	
+	public VectorsPanel getVectorsPanel() {
+		return vectorsPanel;
+	}
+	
 	public TableViewer getScalarsTableViewer() {
 		return scalarsPanel.getTableViewer();
 	}
