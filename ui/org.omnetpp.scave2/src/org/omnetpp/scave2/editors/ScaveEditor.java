@@ -37,6 +37,7 @@ import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.omnetpp.scave.engine.File;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.model.Analysis;
+import org.omnetpp.scave.model.ChartSheet;
 import org.omnetpp.scave.model.Dataset;
 import org.omnetpp.scave.model.InputFile;
 import org.omnetpp.scave.model.Inputs;
@@ -226,6 +227,10 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INotifyChange
 	
 	public void openDataset(Dataset dataset) {
 		createDatasetPage(dataset.getName());
+	}
+
+	public void openChartSheet(ChartSheet chartSheet) {
+		createChartPage(chartSheet.getName());
 	}
 	
 	protected void initializeContentOutlineViewer(Viewer contentOutlineViewer) {
