@@ -59,7 +59,8 @@ import org.omnetpp.scave2.editors.ui.OverviewPage;
  * 
  * @author andras, tomi
  */
-//FIXME add flag into InputFile: "name" is OS path or workspace-relative path 
+//FIXME add flag into InputFile: "name" is OS path or workspace-relative path
+//FIXME file drag&drop doesn't mark the document as dirty
 public class ScaveEditor extends AbstractEMFModelEditor implements INotifyChangedListener, IResourceChangeListener {
 
 	private OverviewPage overviewPage;
