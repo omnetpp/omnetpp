@@ -28,12 +28,21 @@ public class DatasetsPanel extends TreeWithButtonsPanel {
 		newNodeButton = toolkit.createButton(buttonPanel, "New...", SWT.NONE);
 		editNodeButton = toolkit.createButton(buttonPanel, "Edit...", SWT.NONE);
 		removeNodeButton = toolkit.createButton(buttonPanel, "Remove", SWT.NONE);
+	}
 
-		openDatasetButton.addSelectionListener(new SelectionAdapter() {
-			public void widgetSelected(SelectionEvent e) {
-				OpenDatasetActionDelegate delegate = new OpenDatasetActionDelegate();
-				delegate.run(null);
-			}
-		});
+	public Button getEditNodeButton() {
+		return editNodeButton;
+	}
+
+	public Button getNewNodeButton() {
+		return newNodeButton;
+	}
+
+	public Button getOpenDatasetButton() {
+		return openDatasetButton;
+	}
+
+	public Button getRemoveNodeButton() {
+		return removeNodeButton;
 	}
 }

@@ -32,16 +32,17 @@ public class InputFilesPanel extends TreeWithButtonsPanel {
 		addFileButton = toolkit.createButton(buttonPanel, "Add...", SWT.NONE);
 		addWildcardButton = toolkit.createButton(buttonPanel, "Add wildcard...", SWT.NONE);
 		removeFileButton = toolkit.createButton(buttonPanel, "Remove", SWT.NONE);
-		
-		removeFileButton.addSelectionListener(new SelectionAdapter() {
-			public void widgetSelected(SelectionEvent e) {
-				// use the EMF.Edit Framework's command interface to do the job (undoable)
-//XXX we'll need a reference to scaveEditor for this to work
-//XXX assert that the selection is within Inputs? otherwise it'll be willing to delete datasets, charts etc if they are selected
-//				InputFile inputFile = ScaveModelFactory.eINSTANCE.createInputFile();
-//				Command command = RemoveCommand.create(scaveEditor.getEditingDomain(), scaveEditor.getSelection());
-//				scaveEditor.getEditingDomain().getCommandStack().execute(command);
-			}
-		});
+	}
+
+	public Button getAddFileButton() {
+		return addFileButton;
+	}
+
+	public Button getAddWildcardButton() {
+		return addWildcardButton;
+	}
+
+	public Button getRemoveFileButton() {
+		return removeFileButton;
 	}
 }

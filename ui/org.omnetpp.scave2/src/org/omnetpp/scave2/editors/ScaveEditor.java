@@ -17,11 +17,14 @@ import org.eclipse.core.runtime.content.IContentType;
 import org.eclipse.emf.common.command.Command;
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.ecore.xmi.XMIResource;
-import org.eclipse.emf.edit.command.CommandParameter;
 import org.eclipse.emf.edit.command.CreateChildCommand;
+import org.eclipse.emf.edit.command.RemoveCommand;
 import org.eclipse.emf.edit.provider.IChangeNotifier;
 import org.eclipse.emf.edit.provider.INotifyChangedListener;
 import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
+import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.dnd.DND;
@@ -30,9 +33,12 @@ import org.eclipse.swt.dnd.DropTargetAdapter;
 import org.eclipse.swt.dnd.DropTargetEvent;
 import org.eclipse.swt.dnd.FileTransfer;
 import org.eclipse.swt.dnd.Transfer;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
@@ -63,7 +69,6 @@ import org.omnetpp.scave2.editors.ui.OverviewPage;
  * @author andras, tomi
  */
 //FIXME add flag into InputFile: "name" is OS path or workspace-relative path
-//FIXME file drag&drop doesn't mark the document as dirty
 public class ScaveEditor extends AbstractEMFModelEditor implements INotifyChangedListener, IResourceChangeListener {
 
 	private OverviewPage overviewPage;
@@ -245,7 +250,7 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INotifyChange
 		InputsTreeViewProvider physicalView = new InputsPhysicalViewProvider(this);
 		InputsTreeViewProvider logicalView = new InputsLogicalViewProvider(this);
 		
-		overviewPage = new OverviewPage(getContainer(), SWT.NONE);
+		overviewPage = new OverviewPage(getContainer(), SWT.NONE, this);
         configureTreeViewer(overviewPage.getInputFilesTreeViewer());
         configureTreeViewer(overviewPage.getDatasetsTreeViewer());
         configureTreeViewer(overviewPage.getChartSheetsTreeViewer());
@@ -441,6 +446,34 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INotifyChange
 		//if (resultFile != null)
 		//	manager.unloadFile(resultFile);
 	}
+	
+	/**
+	 * Utility function: Adds dynamic behaviour to a control (typically a Button): 
+	 * it gets disabled whenever the viewer's selection is empty.
+	 */
+	public static void disableButtonWhenSelectionEmpty(final Control button, final Viewer viewer) {
+		viewer.addSelectionChangedListener(new ISelectionChangedListener() {
+			public void selectionChanged(SelectionChangedEvent event) {
+				button.setEnabled(!event.getSelection().isEmpty());
+			}
+		});
+	}
+	
+	/**
+	 * Utility function: configures a Remove button which is associated with a viewer.
+	 */
+	public void configureRemoveButton(final Button removeButton, final Viewer viewer) {
+		ScaveEditor.disableButtonWhenSelectionEmpty(removeButton, viewer);
+		removeButton.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
+				// use EMF.Edit Framework do to the removal (this makes it undoable)
+				IStructuredSelection sel = (IStructuredSelection)viewer.getSelection();
+				Command command = RemoveCommand.create(getEditingDomain(), sel.toList());
+				getEditingDomain().getCommandStack().execute(command);
+			}
+		});
+	}
+	
 }
 
 

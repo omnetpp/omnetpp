@@ -1,16 +1,28 @@
 package org.omnetpp.scave2.editors.ui;
 
+import org.eclipse.emf.common.command.Command;
+import org.eclipse.emf.edit.command.RemoveCommand;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
+import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TreeViewer;
+import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.ui.forms.widgets.FormToolkit;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.ui.forms.widgets.ExpandableComposite;
+import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
-import org.eclipse.ui.forms.widgets.ExpandableComposite;
-import org.eclipse.swt.layout.GridData;
 import org.omnetpp.common.color.ColorFactory;
+import org.omnetpp.scave2.actions.OpenDatasetActionDelegate;
+import org.omnetpp.scave2.editors.ScaveEditor;
 
 public class OverviewPage extends ScrolledForm {
 
@@ -19,9 +31,11 @@ public class OverviewPage extends ScrolledForm {
 	private Section dataSection = null;
 	private Section datasetsSection = null;
 	private Section chartSheetsSection = null;
+	private ScaveEditor scaveEditor = null;  // the containing editor
 
-	public OverviewPage(Composite parent, int style) {
+	public OverviewPage(Composite parent, int style, ScaveEditor scaveEditor) {
 		super(parent, style | SWT.V_SCROLL);
+		this.scaveEditor = scaveEditor;
 		initialize();
 	}
 	
@@ -90,7 +104,19 @@ public class OverviewPage extends ScrolledForm {
 		inputFilesSection.setLayoutData(gridData);
 		inputFilesSection.setText("Input files");
 		inputFilesSection.setDescription("Add or drag&drop output files that should by used in this analysis.");
-		inputFilesSection.setClient(new InputFilesPanel(inputFilesSection, SWT.NONE));
+		InputFilesPanel inputFilesPanel = new InputFilesPanel(inputFilesSection, SWT.NONE);
+		inputFilesSection.setClient(inputFilesPanel);
+
+		// configure Add button
+		//TODO
+
+		// configure Add Wildcard button
+		//TODO
+
+		// configure Remove button
+		final TreeViewer treeViewer = inputFilesPanel.getTreeViewer();
+		final Button removeButton = inputFilesPanel.getRemoveFileButton();
+		scaveEditor.configureRemoveButton(removeButton, treeViewer);
 	}
 
 	/**
@@ -126,12 +152,32 @@ public class OverviewPage extends ScrolledForm {
 		datasetsSection.setLayoutData(gridData2);
 		datasetsSection.setText("Datasets");
 		datasetsSection.setDescription("Here you can browse the datasets you have created from the input.");
-		datasetsSection.setClient(new DatasetsPanel(datasetsSection, SWT.NONE));
+		final DatasetsPanel datasetsPanel = new DatasetsPanel(datasetsSection, SWT.NONE);
+		datasetsSection.setClient(datasetsPanel);
+
+
+		// configure Open dataset button
+		datasetsPanel.getOpenDatasetButton().addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
+				OpenDatasetActionDelegate delegate = new OpenDatasetActionDelegate();
+				delegate.run(null);
+			}
+		});
+		
+		// configure New button
+		//TODO
+		
+		// configure Edit button
+		//TODO
+		
+		// configure Remove button
+		final TreeViewer treeViewer = datasetsPanel.getTreeViewer();
+		final Button removeButton = datasetsPanel.getRemoveNodeButton();
+		scaveEditor.configureRemoveButton(removeButton, treeViewer);
 	}
 
 	/**
 	 * This method initializes chartSheetsSection	
-	 *
 	 */
 	private void createChartSheetsSection() {
 		GridData gridData3 = new GridData();
@@ -144,6 +190,12 @@ public class OverviewPage extends ScrolledForm {
 		chartSheetsSection.setLayoutData(gridData3);
 		chartSheetsSection.setText("Chart sheets and charts");
 		chartSheetsSection.setDescription("Here you can browse the charts you have created for the datasets.");
-		chartSheetsSection.setClient(new ChartSheetsPanel(chartSheetsSection, SWT.NONE));
+		ChartSheetsPanel chartSheetsPanel = new ChartSheetsPanel(chartSheetsSection, SWT.NONE); 
+		chartSheetsSection.setClient(chartSheetsPanel);
+
+		// configure Remove button
+		final TreeViewer treeViewer = chartSheetsPanel.getTreeViewer();
+		final Button removeButton = chartSheetsPanel.getRemoveChartSheetButton();
+		scaveEditor.configureRemoveButton(removeButton, treeViewer);
 	}
 }

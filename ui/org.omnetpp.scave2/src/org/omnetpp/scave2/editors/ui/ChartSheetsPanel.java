@@ -37,4 +37,20 @@ public class ChartSheetsPanel extends TreeWithButtonsPanel {
 		});
 		
 	}
+
+	public Button getEditChartSheetButton() {
+		return editChartSheetButton;
+	}
+
+	public Button getNewChartSheetButton() {
+		return newChartSheetButton;
+	}
+
+	public Button getOpenChartSheetButton() {
+		return openChartSheetButton;
+	}
+
+	public Button getRemoveChartSheetButton() {
+		return removeChartSheetButton;
+	}
 }
