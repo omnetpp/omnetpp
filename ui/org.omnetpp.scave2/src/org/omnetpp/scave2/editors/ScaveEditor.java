@@ -14,8 +14,11 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.content.IContentType;
+import org.eclipse.emf.common.command.Command;
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.ecore.xmi.XMIResource;
+import org.eclipse.emf.edit.command.CommandParameter;
+import org.eclipse.emf.edit.command.CreateChildCommand;
 import org.eclipse.emf.edit.provider.IChangeNotifier;
 import org.eclipse.emf.edit.provider.INotifyChangedListener;
 import org.eclipse.jface.viewers.ISelection;
@@ -369,9 +372,13 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INotifyChange
 		}
 
 		if (!found) {
+			// use the EMF.Edit Framework's command interface to do the job (undoable)
 			InputFile inputFile = ScaveModelFactory.eINSTANCE.createInputFile();
 			inputFile.setName(resourcePath);
-			inputs.getInputs().add(inputFile);
+			ArrayList selection = new ArrayList();
+			selection.add(inputs);
+			Command command = new CreateChildCommand(getEditingDomain(), inputs, ScaveModelFactory.eINSTANCE.getScaveModelPackage().getInputs_Inputs(), inputFile, selection);
+			getEditingDomain().getCommandStack().execute(command);
 		}
 	}
 
