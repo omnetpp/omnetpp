@@ -145,7 +145,7 @@ void EventLog::parseLogFile()
                     bool isDelivery = !strcmp(vec[0], "*");   //FIXME stricter format check overall
                     // skip [ character
                     long eventNumber = atol(vec[1] + 1);
-                    long causalEventNumber = atol(vec[2]);
+                    long causalEventNumber = !strcmp(vec[2], "initialize") ? -1 : atol(vec[2]);
 
                     messageEntry = new MessageEntry();
                     messageEntry->lineNumber = lineNumber;
@@ -162,7 +162,10 @@ void EventLog::parseLogFile()
 
                     // skip (id=
                     messageEntry->module = getOrAddModule(atoi(vec[6] + 4), vec[4], vec[5]);
-                    messageEntry->source = getEventByNumber(causalEventNumber);
+
+                    if (causalEventNumber != -1)
+                        messageEntry->source = getEventByNumber(causalEventNumber);
+
                     messageEntry->target = getEventByNumber(eventNumber);
                     // skip () characters
                     *(vec[7] + strlen(vec[7]) - 1) = '\0';
@@ -215,14 +218,14 @@ void EventLog::parseLogFile()
     for (MessageEntryList::iterator it = messageList.begin(); it != messageList.end(); it++)
     {
         MessageEntry *messageEntry = *it;
-        if (!messageEntry->source || !messageEntry->target)
-        {
-            fprintf(stderr, "Internal error (?): message at line %ld does not have source or target event set\n", lineNumber); //XXX
-            continue;
+
+        if (messageEntry->source != NULL)
+            messageEntry->source->consequences.push_back(messageEntry);
+
+        if (messageEntry->target != NULL) {
+            messageEntry->target->causes.push_back(messageEntry);
+            messageEntry->target->numLogMessages += messageEntry->logMessages.size();
         }
-        messageEntry->source->consequences.push_back(messageEntry);
-        messageEntry->target->causes.push_back(messageEntry);
-        messageEntry->target->numLogMessages += messageEntry->logMessages.size();
     }
 }
 
@@ -323,7 +326,10 @@ inline EventEntry *EventLog::getEventNULLSafe(int pos)
 inline int EventLog::getEventPositionByNumber(long eventNumber)
 {
     EventEntryList::iterator it = std::lower_bound(eventList.begin(), eventList.end(), eventNumber, less_EventEntry_EventNumber);
-    return it==eventList.end() ? -1 : it - eventList.begin();
+    if (it==eventList.end() || ((EventEntry*)*it)->eventNumber != eventNumber)
+        return -1;
+    else
+        return it - eventList.begin();
 }
 
 int EventLog::findEvent(EventEntry *event)
@@ -504,77 +510,88 @@ inline bool less_ModuleById(ModuleEntry *m1, ModuleEntry *m2) {
 inline bool less_MessageEntryByLineNumber(MessageEntry *m1, MessageEntry *m2) {
     return m1->lineNumber < m2->lineNumber;
 }
-EventLog *EventLog::traceEvent(EventEntry *tracedEvent, std::set<int> *moduleIds, bool wantCauses, bool wantConsequences)
+
+EventLog *EventLog::traceEvent(EventEntry *tracedEvent, std::set<int> *moduleIds, bool wantCauses, bool wantConsequences, bool wantNonDeliveryMessages)
 {
     EventLog *traceResult = new EventLog(this);
 
     std::vector<EventEntry*>& collectedEvents = traceResult->eventList;
     std::vector<MessageEntry*>& collectedMessages = traceResult->messageList;
 
-    if (wantCauses)
+    if (tracedEvent == NULL)
     {
         for (EventEntryList::iterator it = eventList.begin(); it!=eventList.end(); ++it)
-        {
-            (*it)->isInCollectedEvents = false;
-        }
+            if (moduleIds == NULL || moduleIds->find((*it)->cause->module->moduleId) != moduleIds->end())
+                collectedEvents.push_back(*it);
 
-        std::set<EventEntry*> openEvents;
-        openEvents.insert(tracedEvent);
-        tracedEvent->isInCollectedEvents = true;
-        while (openEvents.size() > 0)
+        for (MessageEntryList::iterator it = messageList.begin(); it!=messageList.end(); ++it)
+            if ((wantNonDeliveryMessages || (*it)->isDelivery) &&
+                (moduleIds == NULL || moduleIds->find((*it)->module->moduleId) != moduleIds->end()))
+                collectedMessages.push_back(*it);
+    }
+    else
+    {
+        if (wantCauses)
         {
-            // remove one from openEvents, and add it into collectedEvents
-            EventEntry *event = *openEvents.begin();
-            openEvents.erase(openEvents.begin());
-            event->isInCollectedEvents = true;
-            if (moduleIds == NULL || moduleIds->find(event->cause->module->moduleId) != moduleIds->end())
-                collectedEvents.push_back(event);
+            for (EventEntryList::iterator it = eventList.begin(); it!=eventList.end(); ++it)
+                (*it)->isInCollectedEvents = false;
 
-            // then add all causes to openEvents
-            for (MessageEntryList::iterator it = event->causes.begin(); it!=event->causes.end(); ++it)
+            std::set<EventEntry*> openEvents;
+            openEvents.insert(tracedEvent);
+            tracedEvent->isInCollectedEvents = true;
+            while (openEvents.size() > 0)
             {
-                MessageEntry *msg = *it;
-                if (msg->source != NULL)
+                // remove one from openEvents, and add it into collectedEvents
+                EventEntry *event = *openEvents.begin();
+                openEvents.erase(openEvents.begin());
+                event->isInCollectedEvents = true;
+                if (moduleIds == NULL || moduleIds->find(event->cause->module->moduleId) != moduleIds->end())
+                    collectedEvents.push_back(event);
+
+                // then add all causes to openEvents
+                for (MessageEntryList::iterator it = event->causes.begin(); it!=event->causes.end(); ++it)
                 {
-                    if (moduleIds == NULL || moduleIds->find(msg->module->moduleId) != moduleIds->end())
-                        collectedMessages.push_back(msg);
-                    if (msg->source != event && !msg->source->isInCollectedEvents)
-                        openEvents.insert(msg->source);
+                    MessageEntry *msg = *it;
+                    if (wantNonDeliveryMessages || msg->isDelivery)
+                    {
+                        if (moduleIds == NULL || moduleIds->find(msg->module->moduleId) != moduleIds->end())
+                            collectedMessages.push_back(msg);
+                        if (msg->source != NULL && msg->source != event && !msg->source->isInCollectedEvents)
+                            openEvents.insert(msg->source);
+                    }
                 }
             }
         }
-    }
 
-    if (wantConsequences)
-    {
-        for (EventEntryList::iterator it = eventList.begin(); it!=eventList.end(); ++it)
+        if (wantConsequences)
         {
-            (*it)->isInCollectedEvents = false;
-        }
+            for (EventEntryList::iterator it = eventList.begin(); it!=eventList.end(); ++it)
+                (*it)->isInCollectedEvents = false;
 
-        std::set<EventEntry*> openEvents;
-        openEvents.insert(tracedEvent);
-        tracedEvent->isInCollectedEvents = true;
-        while (openEvents.size() > 0)
-        {
-            // remove one from openEvents, and add it into collectedEvents
-            EventEntry *event = *openEvents.begin();
-            openEvents.erase(openEvents.begin());
-            event->isInCollectedEvents = true;
-            // avoid duplicating tracedEvent already added during adding causes
-            if (event != tracedEvent && (moduleIds == NULL || moduleIds->find(event->cause->module->moduleId) != moduleIds->end()))
-                collectedEvents.push_back(event);
-
-            // then add all consequences to openEvents
-            for (MessageEntryList::iterator it = event->consequences.begin(); it!=event->consequences.end(); ++it)
+            std::set<EventEntry*> openEvents;
+            openEvents.insert(tracedEvent);
+            tracedEvent->isInCollectedEvents = true;
+            while (openEvents.size() > 0)
             {
-                MessageEntry *msg = *it;
-                if (msg->target != NULL)
+                // remove one from openEvents, and add it into collectedEvents
+                EventEntry *event = *openEvents.begin();
+                openEvents.erase(openEvents.begin());
+                event->isInCollectedEvents = true;
+                // avoid duplicating tracedEvent already added during adding causes
+                if (event != tracedEvent && (moduleIds == NULL || moduleIds->find(event->cause->module->moduleId) != moduleIds->end()))
+                    collectedEvents.push_back(event);
+
+                // then add all consequences to openEvents
+                for (MessageEntryList::iterator it = event->consequences.begin(); it!=event->consequences.end(); ++it)
                 {
-                    if (moduleIds == NULL || moduleIds->find(msg->module->moduleId) != moduleIds->end())
-                        collectedMessages.push_back(msg);
-                    if (msg->target != event && !msg->target->isInCollectedEvents)
-                        openEvents.insert(msg->target);
+                    MessageEntry *msg = *it;
+                    if (wantNonDeliveryMessages || msg->isDelivery)
+                    {
+                        if (moduleIds == NULL || moduleIds->find(msg->module->moduleId) != moduleIds->end())
+                            collectedMessages.push_back(msg);
+                        if (msg->source != NULL && msg->target != event && !msg->target->isInCollectedEvents)
+                            openEvents.insert(msg->target);
+                    }
                 }
             }
         }
@@ -618,11 +635,14 @@ std::vector<int> *EventLog::buildMessageCountGraph(std::map<int, int> *moduleIdT
         EventEntry *source = messageEntry->source;
         EventEntry *target = messageEntry->target;
 
-        std::map<int, int>::iterator sourceModuleIdIt = moduleIdToNodeIdMap->find(source->cause->module->moduleId);
-        std::map<int, int>::iterator targetModuleIdIt = moduleIdToNodeIdMap->find(target->cause->module->moduleId);
+        if (source != NULL)
+        {
+            std::map<int, int>::iterator sourceModuleIdIt = moduleIdToNodeIdMap->find(source->cause->module->moduleId);
+            std::map<int, int>::iterator targetModuleIdIt = moduleIdToNodeIdMap->find(target->cause->module->moduleId);
 
-        if (sourceModuleIdIt !=  moduleIdToNodeIdMap->end() && targetModuleIdIt !=  moduleIdToNodeIdMap->end()) {
-            result->at(sourceModuleIdIt->second * numberOfNodes + targetModuleIdIt->second)++;
+            if (sourceModuleIdIt !=  moduleIdToNodeIdMap->end() && targetModuleIdIt !=  moduleIdToNodeIdMap->end()) {
+                result->at(sourceModuleIdIt->second * numberOfNodes + targetModuleIdIt->second)++;
+            }
         }
     }
  
@@ -652,12 +672,14 @@ void EventLog::writeTrace(FILE *fout)
         else
             fprintf(fout, "+");
 
-        // TODO: in some rare cases non delivery messages print the wrong module
-        // FIXME: checked by diffing the original and printed log file
+        fprintf(fout, " [%ld]", eventEntry->eventNumber);
 
-        fprintf(fout, " [%ld] %ld %.*g (%s) %s (id=%d) (%s) %s\n",
-                eventEntry->eventNumber,
-                messageEntry->source->eventNumber,
+        if (messageEntry->source != NULL)
+            fprintf(fout, " %ld", messageEntry->source->eventNumber);
+        else
+            fprintf(fout, " initialize");
+
+        fprintf(fout, " %.*g (%s) %s (id=%d) (%s) %s\n",
                 12,
                 eventEntry->simulationTime,
                 messageEntry->module->moduleClassName,

@@ -187,7 +187,7 @@ class EventLog
         void expandEvent(int pos);
         void collapseEvent(int pos);
 
-        EventLog *traceEvent(EventEntry *tracedEvent, std::set<int> *moduleIds, bool wantCauses, bool wantConsequences);
+        EventLog *traceEvent(EventEntry *tracedEvent, std::set<int> *moduleIds, bool wantCauses, bool wantConsequences, bool wantNonDeliveryMessages);
         std::vector<int> *buildMessageCountGraph(std::map<int, int> *moduleIdToNodeIdMap);
         void writeTrace(FILE* fout);
 

@@ -42,7 +42,7 @@ int main(int argc, char **argv)
         moduleIds->insert(id);
     }
 
-    EventLog *traceLog = eventLog.traceEvent(event, moduleIds, true, true);
+    EventLog *traceLog = eventLog.traceEvent(event, moduleIds, true, true, false);
     traceLog->writeTrace(stdout);
     delete traceLog;
     return 0;
