@@ -55,9 +55,9 @@ public class ModuleTreeItem implements Comparable<ModuleTreeItem> {
 	
 	private void visitLeaves(IModuleTreeItemVisitor visitor, ModuleTreeItem treeItem)
 	{
-		if (treeItem.getSubmodules().length == 0)
-			visitor.visit(treeItem);
-		else
+		visitor.visit(treeItem);
+
+		if (treeItem.getSubmodules().length != 0)
 			for (ModuleTreeItem childTreeItem : treeItem.getSubmodules())
 				visitLeaves(visitor, childTreeItem);
 	}

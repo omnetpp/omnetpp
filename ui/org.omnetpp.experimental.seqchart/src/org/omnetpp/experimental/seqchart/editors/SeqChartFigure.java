@@ -4,8 +4,10 @@ package org.omnetpp.experimental.seqchart.editors;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Random;
 
 import org.eclipse.core.runtime.ListenerList;
 import org.eclipse.draw2d.Figure;
@@ -31,6 +33,8 @@ import org.eclipse.swt.widgets.ToolTip;
 import org.omnetpp.experimental.seqchart.moduletree.ModuleTreeItem;
 import org.omnetpp.scave.engine.EventEntry;
 import org.omnetpp.scave.engine.EventLog;
+import org.omnetpp.scave.engine.IntIntMap;
+import org.omnetpp.scave.engine.IntVector;
 import org.omnetpp.scave.engine.JavaFriendlyEventLogFacade;
 import org.omnetpp.scave.engine.MessageEntry;
 
@@ -78,12 +82,13 @@ public class SeqChartFigure extends Figure implements ISelectionProvider {
 	private final int selfArrowHeight = 20; // vertical radius of ellipse for self arrows
 	private final int arrowHeadLength = 10; // length of message arrow head
 	private final int arrowHeadWideness = 7; // wideness of message arrow head
-	private final int labelDistance = 35; // distance of timeline label from timeline
+	private final int labelDistance = 25; // distance of timeline label from timeline
 	private final int eventRadius = 10; // radius of event circle
 
 	private boolean showNonDeliveryMessages; // show or hide non delivery message arrows
 	private boolean showEventNumbers;
 	private TimelineMode timelineMode = TimelineMode.LINEAR; // specifies timeline x coordinate transformation, see enum
+	private TimelineSortMode timelineSortMode = TimelineSortMode.MODULE_ID; // specifies the ordering mode of timelines
 	private double nonLinearFocus = 0.1; // parameter for non linear timeline transformation
 	
 	private Canvas canvas;  // our host widget (reference needed for tooltip creation)
@@ -92,8 +97,7 @@ public class SeqChartFigure extends Figure implements ISelectionProvider {
 	
 	private int dragStartX, dragStartY; // temporary variables for drag handling
 	private List<ModuleTreeItem> axisModules; // the modules which should have an axis (they must be part of a module tree!)
-
-	List<Integer> selectedModuleIds; // a list simple module ids which have timelines assigned (calculated by flattening axisModules)
+	private Integer[] axisModuleYs; // y coordinates assigned to axis modules (in the same order as axisModules)
 
 	private ArrayList<SelectionListener> selectionListenerList = new ArrayList<SelectionListener>(); // SWT selection listeners
 
@@ -104,6 +108,13 @@ public class SeqChartFigure extends Figure implements ISelectionProvider {
 		LINEAR,
 		STEP_BY_STEP,
 		NON_LINEAR
+	}
+
+	public enum TimelineSortMode {
+		MANUAL,
+		MODULE_ID,
+		MODULE_NAME,
+		MINIMIZE_CROSSINGS
 	}
 	
 	/**
@@ -151,11 +162,18 @@ public class SeqChartFigure extends Figure implements ISelectionProvider {
 		repaint();
 	}
 	
+	/**
+	 * Shows/Hides event numbers.
+	 */
 	public void setShowEventNumbers(boolean showEventNumbers) {
 		this.showEventNumbers = showEventNumbers;
 		repaint();
 	}
 	
+	/**
+	 * Changes the timeline mode and updates figure accordingly.
+	 * Tries to show the current simulation time after changing the timeline coordinate system.
+	 */
 	public void setTimelineMode(TimelineMode timelineMode) {
 		double time = currentSimulationTime();
 		this.timelineMode = timelineMode;
@@ -163,6 +181,16 @@ public class SeqChartFigure extends Figure implements ISelectionProvider {
 		setPixelsPerTimelineCoordinate(suggestPixelsPerTimelineCoordinate());
 		recalculatePreferredSize();
 		gotoSimulationTime(time);
+	}
+
+	/**
+	 * Changes the timeline sort mode and updates figure accordingly.
+	 */
+	public void setTimelineSortMode(TimelineSortMode timelineSortMode) {
+		this.timelineSortMode = timelineSortMode;
+		calculateAxisYs();
+		updateFigure();
+		repaint();
 	}
 	
 	/**
@@ -181,6 +209,31 @@ public class SeqChartFigure extends Figure implements ISelectionProvider {
 		int x = xDouble < 0 ? 0 : xDouble>Integer.MAX_VALUE ? Integer.MAX_VALUE : (int)xDouble;
 		scrollPane.scrollHorizontalTo(x - scrollPane.getViewport().getBounds().width/2);
 		repaint();
+	}
+
+	/**
+	 * Updates the figure, recalculates timeline coordinates, canvas size.
+	 */
+	public void updateFigure() {
+		// transform simulation times to timeline coordinate system
+		recalculateTimelineCoordinates();
+		// adapt our zoom level to the current eventLog
+		setPixelsPerTimelineCoordinate(suggestPixelsPerTimelineCoordinate());
+		recalculatePreferredSize();
+		// notify listeners
+		fireSelectionChanged();
+	}
+	
+	/**
+	 * Updates the figure with the given log and axis modules.
+	 * Scrolls canvas to current simulation time after updating.
+	 */
+	public void updateFigure(EventLog eventLog, ArrayList<ModuleTreeItem> axisModules) {
+		double time = currentSimulationTime();
+		setEventLog(eventLog);
+		setAxisModules(axisModules);
+		updateFigure();
+		gotoSimulationTime(time);
 	}
 
 	/**
@@ -219,27 +272,176 @@ public class SeqChartFigure extends Figure implements ISelectionProvider {
 	 */
 	public void setEventLog(EventLog eventLog) {
 		this.eventLog = eventLog;
-		this.logFacade = new JavaFriendlyEventLogFacade(eventLog); 
-		double time = currentSimulationTime();
-		
-		// transform simulation times to timeline coordinate system
-		recalculateTimelineCoordinates();
-
-		// adapt our zoom level to the current eventLog
-		setPixelsPerTimelineCoordinate(suggestPixelsPerTimelineCoordinate());
-		recalculatePreferredSize();
-		gotoSimulationTime(time);
-		
-		// notify listeners
-		fireSelectionChanged();
+		this.logFacade = new JavaFriendlyEventLogFacade(eventLog);
 	}
-
+	
 	/**
 	 * Sets which modules should have axes. Items in axisModules
 	 * should point to elements in the moduleTree. 
 	 */
 	public void setAxisModules(ArrayList<ModuleTreeItem> axisModules) {
 		this.axisModules = axisModules;
+		calculateAxisYs();
+	}
+	
+	/**
+	 * Calculates Y coordinates of axis sorting by module ids.
+	 */
+	private void sortTimelinesByModuleId()
+	{
+		Integer[] axisModulesIndexes = new Integer[axisModules.size()];
+		
+		for (int i = 0; i < axisModulesIndexes.length; i++)
+			axisModulesIndexes[i] = i;
+		
+		java.util.Arrays.sort(axisModulesIndexes, new java.util.Comparator<Integer>() {
+				public int compare(Integer o1, Integer o2) {
+					return ((Integer)axisModules.get(o1).getModuleId()).compareTo(axisModules.get(o2).getModuleId());
+				}
+			});
+		
+		for (int i = 0; i < axisModulesIndexes.length; i++)
+			axisModuleYs[axisModulesIndexes[i]] = axisOffset + i * axisSpacing;
+	}
+	
+	/**
+	 * Calculates Y coordinates of axis sorting by module names.
+	 */
+	private void sortTimelinesByModuleName()
+	{
+		Integer[] axisModulesIndexes = new Integer[axisModules.size()];
+		
+		for (int i = 0; i < axisModulesIndexes.length; i++)
+			axisModulesIndexes[i] = i;
+		
+		java.util.Arrays.sort(axisModulesIndexes, new java.util.Comparator<Integer>() {
+				public int compare(Integer o1, Integer o2) {
+					return axisModules.get(o1).getModuleFullPath().compareTo(axisModules.get(o2).getModuleFullPath());
+				}
+			});
+		
+		for (int i = 0; i < axisModulesIndexes.length; i++)
+			axisModuleYs[axisModulesIndexes[i]] = axisOffset + i * axisSpacing;
+	}
+
+	/**
+	 * Calculates Y coordinates of axis by minimizing crossing message arrows.
+	 * A message arrow costs as much as many axis it crosses.
+	 */
+	private void sortTimelinesByMinimizingCrossings(IntVector axisMatrix)
+	{
+		int cycleCount = 0;
+		int noMoveCount = 0;
+		int noRandomMoveCount = 0;
+		int numberOfAxis = axisModules.size();
+		int[] axisPositions = new int[numberOfAxis];
+		int[] candidateAxisPositions = new int[numberOfAxis];
+		int[] bestAxisPositions = new int[numberOfAxis];
+		Random r = new Random(0);
+		double temperature = 10.0;
+
+		// set initial axis positions 
+		for (int i = 0; i < numberOfAxis; i++)
+			axisPositions[i] = i;
+		
+		while (cycleCount < 1000 && (noMoveCount < numberOfAxis || noRandomMoveCount < numberOfAxis))
+		{
+			cycleCount++;
+			
+			// randomly choose an axis which we move to the best place (there are numberOfAxis possibilities)
+			int selectedAxisIndex = r.nextInt(numberOfAxis);
+			int bestPositionOfSelectedAxis = -1;
+			int costOfBestPositions = Integer.MAX_VALUE;
+
+			// assume moving axis at index to position i while keeping the order of others and calculate cost
+			for (int newPositionOfSelectedAxis = 0; newPositionOfSelectedAxis < numberOfAxis; newPositionOfSelectedAxis++) {
+				int cost = 0;
+
+				// set up candidateAxisPositions so that the order of other axis do not change
+				for (int i = 0; i < numberOfAxis; i++) {
+					int pos = axisPositions[i];
+					if (newPositionOfSelectedAxis <= pos && pos < axisPositions[selectedAxisIndex])
+						pos++;
+					if (axisPositions[selectedAxisIndex] < pos && pos <= newPositionOfSelectedAxis)
+						pos--;
+					candidateAxisPositions[i] = pos;
+				}
+				candidateAxisPositions[selectedAxisIndex] = newPositionOfSelectedAxis;
+
+				// sum up cost of messages to other axis
+				for (int i = 0; i < numberOfAxis; i++)
+					for (int j = 0; j < numberOfAxis; j++)
+						cost += Math.abs(candidateAxisPositions[i] - candidateAxisPositions[j]) *
+								(axisMatrix.get(numberOfAxis * i + j) +
+								 axisMatrix.get(numberOfAxis * j + i));
+				
+				// find minimum cost
+				if (cost < costOfBestPositions) {
+					costOfBestPositions = cost;
+					bestPositionOfSelectedAxis = newPositionOfSelectedAxis;
+					System.arraycopy(candidateAxisPositions, 0, bestAxisPositions, 0, numberOfAxis);
+				}
+			}
+			
+			// move selected axis into best position if applicable
+			if (selectedAxisIndex != bestPositionOfSelectedAxis) {
+				System.arraycopy(bestAxisPositions, 0, axisPositions, 0, numberOfAxis);
+				noMoveCount = 0;
+			}
+			else
+				noMoveCount++;
+
+			// randomly swap axis based on temperature
+			double t = temperature;
+			noRandomMoveCount++;
+			while (r.nextDouble() < t) {
+				int i1 = r.nextInt(numberOfAxis);
+				int i2 = r.nextInt(numberOfAxis);
+				int i = axisPositions[i1];
+				axisPositions[i1] = axisPositions[i2];
+				axisPositions[i2] = i;
+				noRandomMoveCount = 0;
+				t--;
+			}
+			temperature *= 0.9;
+		}
+
+		for (int i = 0; i < numberOfAxis; i++)
+			axisModuleYs[i] = axisOffset + axisPositions[i] * axisSpacing;
+	}
+	
+	/**
+	 * Sorts axis modules minimizing the number of crosses between timelines and messages arrows.
+	 */
+	private void calculateAxisYs()
+	{
+		this.axisModuleYs = new Integer[axisModules.size()];
+
+		switch (timelineSortMode) {
+			case MODULE_ID:
+				sortTimelinesByModuleId();
+				break;
+			case MANUAL:
+				break;
+			case MODULE_NAME:
+				sortTimelinesByModuleName();
+				break;
+			case MINIMIZE_CROSSINGS:
+				// build module id to axis map
+				final IntIntMap moduleIdToAxisIdMap = new IntIntMap();
+				for (int i=0; i<axisModules.size(); i++) {
+					final Integer ii = i;
+					ModuleTreeItem treeItem = axisModules.get(i);
+					treeItem.visitLeaves(new ModuleTreeItem.IModuleTreeItemVisitor() {
+						public void visit(ModuleTreeItem treeItem) {
+							moduleIdToAxisIdMap.set(treeItem.getModuleId(), ii);
+						}
+					});
+				}
+
+				sortTimelinesByMinimizingCrossings(eventLog.buildMessageCountGraph(moduleIdToAxisIdMap));
+				break;
+		}
 	}
 	
 	/**
@@ -313,20 +515,19 @@ public class SeqChartFigure extends Figure implements ISelectionProvider {
 		if (eventLog!=null) {
 			long startMillis = System.currentTimeMillis();
 			
-			// paint axes
-			final HashMap<Integer,Integer> moduleIdToAxisYMap = new HashMap<Integer, Integer>();
+			final HashMap<Integer, Integer> moduleIdToAxisYMap = new HashMap<Integer, Integer>();
 
 			// different y for each selected module
 			for (int i=0; i<axisModules.size(); i++) {
 				ModuleTreeItem treeItem = axisModules.get(i);
-				final int y = getBounds().y + axisOffset + i*axisSpacing;
+				final int y = getBounds().y + axisModuleYs[i];
 				// propagate y to all submodules recursively
 				treeItem.visitLeaves(new ModuleTreeItem.IModuleTreeItemVisitor() {
 					public void visit(ModuleTreeItem treeItem) {
 						moduleIdToAxisYMap.put(treeItem.getModuleId(), y);
 					}
 				});
-				drawLinearAxis(graphics, y, treeItem.getModuleFullPath());
+				drawAxis(graphics, y, treeItem.getModuleFullPath());
 			}
 
 			graphics.setAntialias(antiAlias ? SWT.ON : SWT.OFF);
@@ -529,7 +730,7 @@ public class SeqChartFigure extends Figure implements ISelectionProvider {
 	 * Draws the axis, according to the current pixelsPerTimelineCoordinate and tickInterval
 	 * settings.
 	 */
-	private void drawLinearAxis(Graphics graphics, int y, String label) {
+	private void drawAxis(Graphics graphics, int y, String label) {
 		Rectangle rect = graphics.getClip(new Rectangle());
 		Rectangle bounds = getBounds();
 		rect.intersect(bounds); // although looks like Clip is already set up like this
@@ -881,45 +1082,50 @@ public class SeqChartFigure extends Figure implements ISelectionProvider {
             // check message arrows
             if (msgs != null) {
             	for (int i=startEventIndex; i<endEventIndex; i++) {
-	            		int eventX = logFacade.getEvent_i_cachedX(i);
-	            		int eventY = logFacade.getEvent_i_cachedY(i);
-	
-	            		// check forward arrows for this event
-	            		int numConsequences = logFacade.getEvent_i_numConsequences(i);
-	            		for (int k=0; k<numConsequences; k++) {
-	            			if (logFacade.getEvent_i_consequences_k_hasTarget(i, k) &&
-	            					logFacade.getEvent_i_consequences_k_target_isInFilteredSubset(i, k, eventLog)) {
-	            				if (messageArrowContainsPoint(
-	            						eventX,
-	            						eventY,
-	            						logFacade.getEvent_i_consequences_k_target_cachedX(i, k),
-	            						logFacade.getEvent_i_consequences_k_target_cachedY(i, k),
-	            						mouseX, 
-	            						mouseY,
-	            						MOUSE_TOLERANCE))
-	            					msgs.add(eventLog.getEvent(i).getConsequences().get(k));
-	            			}
-	            		}
-	
-	            		// check backward arrows that we didn't check as forward arrows
-	            		int numCauses = logFacade.getEvent_i_numCauses(i);
-	            		for (int k=0; k<numCauses; k++) {
-	            			if (logFacade.getEvent_i_causes_k_source_eventNumber(i, k) < startEventNumber) {
-	            				if (logFacade.getEvent_i_causes_k_hasSource(i, k) &&
-	            						logFacade.getEvent_i_causes_k_source_isInFilteredSubset(i, k, eventLog)) {
-	            					if (messageArrowContainsPoint(
-	            							logFacade.getEvent_i_causes_k_source_cachedX(i, k),
-	            							logFacade.getEvent_i_causes_k_source_cachedY(i, k),
-	            							eventX,
-	            							eventY,
-	            							mouseX, 
-	            							mouseY,
-	            							MOUSE_TOLERANCE))
-	            						msgs.add(eventLog.getEvent(i).getConsequences().get(k));
-	            				}
-	            			}
-	            		}
-//                	}
+            		int eventX = logFacade.getEvent_i_cachedX(i);
+            		int eventY = logFacade.getEvent_i_cachedY(i);
+
+            		// check forward arrows for this event
+            		int numConsequences = logFacade.getEvent_i_numConsequences(i);
+            		for (int k=0; k<numConsequences; k++) {
+                		boolean isDelivery = logFacade.getEvent_i_consequences_k_isDelivery(i,k);
+                   		if ((isDelivery || showNonDeliveryMessages) &&
+            				logFacade.getEvent_i_consequences_k_hasTarget(i, k) &&
+            				logFacade.getEvent_i_consequences_k_target_isInFilteredSubset(i, k, eventLog))
+                   		{
+            				if (messageArrowContainsPoint(
+            						eventX,
+            						eventY,
+            						logFacade.getEvent_i_consequences_k_target_cachedX(i, k),
+            						logFacade.getEvent_i_consequences_k_target_cachedY(i, k),
+            						mouseX, 
+            						mouseY,
+            						MOUSE_TOLERANCE))
+            					msgs.add(eventLog.getEvent(i).getConsequences().get(k));
+            			}
+            		}
+
+            		// check backward arrows that we didn't check as forward arrows
+            		int numCauses = logFacade.getEvent_i_numCauses(i);
+            		for (int k=0; k<numCauses; k++) {
+                		boolean isDelivery = logFacade.getEvent_i_causes_k_isDelivery(i,k);
+            			if (logFacade.getEvent_i_causes_k_source_eventNumber(i, k) < startEventNumber) {
+                       		if ((isDelivery || showNonDeliveryMessages) &&
+                       			logFacade.getEvent_i_causes_k_hasSource(i, k) &&
+            					logFacade.getEvent_i_causes_k_source_isInFilteredSubset(i, k, eventLog))
+                       		{
+            					if (messageArrowContainsPoint(
+            							logFacade.getEvent_i_causes_k_source_cachedX(i, k),
+            							logFacade.getEvent_i_causes_k_source_cachedY(i, k),
+            							eventX,
+            							eventY,
+            							mouseX, 
+            							mouseY,
+            							MOUSE_TOLERANCE))
+            						msgs.add(eventLog.getEvent(i).getConsequences().get(k));
+            				}
+            			}
+            		}
             	}
             }
 

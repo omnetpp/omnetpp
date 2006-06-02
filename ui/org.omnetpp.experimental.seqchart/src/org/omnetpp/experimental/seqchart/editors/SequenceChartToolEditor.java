@@ -140,17 +140,24 @@ public class SequenceChartToolEditor extends EditorPart {
 
 	private Composite createControlStrip(Composite upper) {
 		Composite controlStrip = new Composite(upper, SWT.NONE);
-		controlStrip.setLayout(new GridLayout(7, false));
+		controlStrip.setLayout(new GridLayout(8, false));
 		eventcombo = new Combo(controlStrip, SWT.NONE);
 		eventcombo.setLayoutData(new GridData(SWT.FILL,SWT.FILL,true,false));
 		eventcombo.setVisibleItemCount(20);
 
+		Combo timelineSortMode = new Combo(controlStrip, SWT.NONE);
+		for (SeqChartFigure.TimelineSortMode t : SeqChartFigure.TimelineSortMode.values())
+			timelineSortMode.add(t.name());
+		timelineSortMode.setLayoutData(new GridData(SWT.FILL,SWT.FILL,false,false));
+		timelineSortMode.select(0);
+		timelineSortMode.setVisibleItemCount(SeqChartFigure.TimelineSortMode.values().length);
+		
 		Combo timelineMode = new Combo(controlStrip, SWT.NONE);
 		for (SeqChartFigure.TimelineMode t : SeqChartFigure.TimelineMode.values())
 			timelineMode.add(t.name());
 		timelineMode.setLayoutData(new GridData(SWT.FILL,SWT.FILL,false,false));
 		timelineMode.select(0);
-		timelineMode.setVisibleItemCount(3);
+		timelineMode.setVisibleItemCount(SeqChartFigure.TimelineMode.values().length);
 		
 		Button showNonDeliveryMessages = new Button(controlStrip, SWT.CHECK);
 		showNonDeliveryMessages.setText("Blue");
@@ -238,6 +245,15 @@ public class SequenceChartToolEditor extends EditorPart {
 			}
 			public void widgetSelected(SelectionEvent e) {
 				seqChartFigure.setTimelineMode(SeqChartFigure.TimelineMode.values()[((Combo)e.getSource()).getSelectionIndex()]);
+			}
+		});
+		
+		timelineSortMode.addSelectionListener(new SelectionListener () {
+			public void widgetDefaultSelected(SelectionEvent e) {
+				seqChartFigure.setTimelineSortMode(SeqChartFigure.TimelineSortMode.values()[((Combo)e.getSource()).getSelectionIndex()]);
+			}
+			public void widgetSelected(SelectionEvent e) {
+				seqChartFigure.setTimelineSortMode(SeqChartFigure.TimelineSortMode.values()[((Combo)e.getSource()).getSelectionIndex()]);
 			}
 		});
 		
@@ -345,8 +361,7 @@ public class SequenceChartToolEditor extends EditorPart {
 	}
 
 	private void filteredEventLogChanged() {
-		seqChartFigure.setAxisModules(axisModules); 
-		seqChartFigure.setEventLog(filteredEventLog);
+		seqChartFigure.updateFigure(filteredEventLog, axisModules);
 //		eventLogTable.setInput(filteredEventLog);
 		
 //		EventLogView view = findEventLogView();
