@@ -14,6 +14,8 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
 import org.omnetpp.common.color.ColorFactory;
+import org.omnetpp.scave.model.ChartSheet;
+import org.omnetpp.scave.model.ScaveModelFactory;
 import org.omnetpp.scave2.actions.OpenDatasetActionDelegate;
 import org.omnetpp.scave2.editors.ScaveEditor;
 
@@ -137,7 +139,6 @@ public class OverviewPage extends ScrolledForm {
 
 	/**
 	 * This method initializes datasetsSection	
-	 *
 	 */
 	private void createDatasetsSection() {
 		GridData gridData2 = new GridData();
@@ -156,6 +157,8 @@ public class OverviewPage extends ScrolledForm {
 		final TreeViewer treeViewer = datasetsPanel.getTreeViewer();
 
 		// configure Open dataset button
+		final Button openButton = datasetsPanel.getOpenDatasetButton();
+		ScaveEditor.disableButtonOnSelectionContent(openButton, treeViewer, ScaveModelFactory.eINSTANCE.createDataset().eClass());
 		datasetsPanel.getOpenDatasetButton().addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				OpenDatasetActionDelegate delegate = new OpenDatasetActionDelegate();
@@ -194,6 +197,10 @@ public class OverviewPage extends ScrolledForm {
 
 		final TreeViewer treeViewer = chartSheetsPanel.getTreeViewer();
 
+		// configure Open button
+		final Button openButton = chartSheetsPanel.getOpenChartSheetButton();
+		ScaveEditor.disableButtonOnSelectionContent(openButton, treeViewer, ScaveModelFactory.eINSTANCE.createChartSheet().eClass());
+		
 		// configure Edit button
 		final Button editButton = chartSheetsPanel.getEditChartSheetButton();
 		scaveEditor.configureEditButton(editButton, treeViewer);

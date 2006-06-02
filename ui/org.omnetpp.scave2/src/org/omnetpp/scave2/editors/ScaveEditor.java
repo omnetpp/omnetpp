@@ -16,6 +16,8 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.content.IContentType;
 import org.eclipse.emf.common.command.Command;
 import org.eclipse.emf.common.notify.Notification;
+import org.eclipse.emf.ecore.EClass;
+import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.xmi.XMIResource;
 import org.eclipse.emf.edit.command.CreateChildCommand;
 import org.eclipse.emf.edit.command.RemoveCommand;
@@ -468,6 +470,27 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INotifyChange
 		viewer.addSelectionChangedListener(new ISelectionChangedListener() {
 			public void selectionChanged(SelectionChangedEvent event) {
 				button.setEnabled(!event.getSelection().isEmpty());
+			}
+		});
+	}
+
+	/**
+	 * Utility function: Adds dynamic behaviour to a control (typically a Button): 
+	 * it gets enabled only whenever the viewer's selection is not empty, and 
+	 * only contains instances of the given EClass (or subclasses).
+	 */
+	public static void disableButtonOnSelectionContent(final Control button, final Viewer viewer, final EClass eClass) {
+		viewer.addSelectionChangedListener(new ISelectionChangedListener() {
+			public void selectionChanged(SelectionChangedEvent event) {
+				IStructuredSelection sel = (IStructuredSelection)event.getSelection();
+				boolean ok = !sel.isEmpty();  // selection is not empty, and only contains instances of eClass
+				for (Object o : sel.toArray()) {
+					if (!(o instanceof EObject) || !((EObject)o).eClass().isSuperTypeOf(eClass)) {
+						ok = false;
+						break;
+					}
+				}
+				button.setEnabled(ok);
 			}
 		});
 	}
