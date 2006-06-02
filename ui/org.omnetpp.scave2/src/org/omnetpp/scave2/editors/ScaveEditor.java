@@ -21,6 +21,7 @@ import org.eclipse.emf.edit.command.CreateChildCommand;
 import org.eclipse.emf.edit.command.RemoveCommand;
 import org.eclipse.emf.edit.provider.IChangeNotifier;
 import org.eclipse.emf.edit.provider.INotifyChangedListener;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -474,6 +475,25 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INotifyChange
 		});
 	}
 	
+	/**
+	 * Utility function: configures an Edit button which is associated with a viewer.
+	 */
+	public void configureEditButton(final Button editButton, final Viewer viewer) {
+		ScaveEditor.disableButtonWhenSelectionEmpty(editButton, viewer);
+		editButton.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
+				IStructuredSelection sel = (IStructuredSelection)viewer.getSelection();
+				openEditSelectedElemementsDialog(sel);
+			}
+		});
+	}
+
+	/**
+	 * Pops up a dialog to edit the element(s) in the selection
+	 */
+	protected void openEditSelectedElemementsDialog(IStructuredSelection sel) {
+		MessageDialog.openInformation(getSite().getShell(), "TODO", "The Edit Dialog doesn't exist yet :("); //TODO
+	}
 }
 
 

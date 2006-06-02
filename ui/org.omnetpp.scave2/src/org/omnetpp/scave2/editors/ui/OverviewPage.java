@@ -1,12 +1,6 @@
 package org.omnetpp.scave2.editors.ui;
 
-import org.eclipse.emf.common.command.Command;
-import org.eclipse.emf.edit.command.RemoveCommand;
-import org.eclipse.jface.viewers.ISelectionChangedListener;
-import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TreeViewer;
-import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -14,7 +8,6 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.forms.widgets.ExpandableComposite;
 import org.eclipse.ui.forms.widgets.FormToolkit;
@@ -107,14 +100,19 @@ public class OverviewPage extends ScrolledForm {
 		InputFilesPanel inputFilesPanel = new InputFilesPanel(inputFilesSection, SWT.NONE);
 		inputFilesSection.setClient(inputFilesPanel);
 
+		final TreeViewer treeViewer = inputFilesPanel.getTreeViewer();
+
 		// configure Add button
 		//TODO
 
 		// configure Add Wildcard button
 		//TODO
 
+		// configure Edit button
+//		final Button editButton = inputFilesPanel.getEditButton();
+//		scaveEditor.configureEditButton(editButton, treeViewer);
+
 		// configure Remove button
-		final TreeViewer treeViewer = inputFilesPanel.getTreeViewer();
 		final Button removeButton = inputFilesPanel.getRemoveFileButton();
 		scaveEditor.configureRemoveButton(removeButton, treeViewer);
 	}
@@ -155,6 +153,7 @@ public class OverviewPage extends ScrolledForm {
 		final DatasetsPanel datasetsPanel = new DatasetsPanel(datasetsSection, SWT.NONE);
 		datasetsSection.setClient(datasetsPanel);
 
+		final TreeViewer treeViewer = datasetsPanel.getTreeViewer();
 
 		// configure Open dataset button
 		datasetsPanel.getOpenDatasetButton().addSelectionListener(new SelectionAdapter() {
@@ -168,10 +167,10 @@ public class OverviewPage extends ScrolledForm {
 		//TODO
 		
 		// configure Edit button
-		//TODO
+		final Button editButton = datasetsPanel.getEditNodeButton();
+		scaveEditor.configureEditButton(editButton, treeViewer);
 		
 		// configure Remove button
-		final TreeViewer treeViewer = datasetsPanel.getTreeViewer();
 		final Button removeButton = datasetsPanel.getRemoveNodeButton();
 		scaveEditor.configureRemoveButton(removeButton, treeViewer);
 	}
@@ -193,8 +192,13 @@ public class OverviewPage extends ScrolledForm {
 		ChartSheetsPanel chartSheetsPanel = new ChartSheetsPanel(chartSheetsSection, SWT.NONE); 
 		chartSheetsSection.setClient(chartSheetsPanel);
 
-		// configure Remove button
 		final TreeViewer treeViewer = chartSheetsPanel.getTreeViewer();
+
+		// configure Edit button
+		final Button editButton = chartSheetsPanel.getEditChartSheetButton();
+		scaveEditor.configureEditButton(editButton, treeViewer);
+
+		// configure Remove button
 		final Button removeButton = chartSheetsPanel.getRemoveChartSheetButton();
 		scaveEditor.configureRemoveButton(removeButton, treeViewer);
 	}
