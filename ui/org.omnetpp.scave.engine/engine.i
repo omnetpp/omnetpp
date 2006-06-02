@@ -38,7 +38,25 @@
 %include "std_vector.i"
 %include "std_map.i"
 
+
 namespace std {
+
+%typemap(javacode) vector<string> %{
+    public String[] toArray() {
+        int sz = (int) size();
+        String[] array = new String[sz];
+        for (int i=0; i<sz; i++)
+            array[i] = get(i);
+        return array;
+    }
+    public static StringVector fromArray(String[] array) {
+        StringVector vector = new StringVector();
+        for (int i=0; i<array.length; i++)
+            vector.add(array[i]);
+        return vector;
+    }
+
+%}
 
    %typemap(javacode) vector<Run*> %{
         public Run[] toArray() {
@@ -79,6 +97,7 @@ namespace std {
            return vec;
        }
    }
+
 
    %template(StringSet) set<string>;
    %template(StringVector) vector<string>;
@@ -127,7 +146,6 @@ namespace std {
         return list;
     }
 %}
-
 
 //
 // The following code is for IDList::getSubsetByIndices():
