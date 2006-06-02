@@ -7,7 +7,7 @@ import org.omnetpp.ned2.model.NedFileNodeEx;
 public class NedTreeEditPartFactory implements EditPartFactory {
 
     public EditPart createEditPart(EditPart context, Object model) {
-        if (model instanceof NedFileNodeEx) return new NedFileTreeEditPart(model);
+//        if (model instanceof NedFileNodeEx) return new NedFileTreeEditPart(model);
         return new NedTreeEditPart(model);
     }
 

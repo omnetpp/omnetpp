@@ -11,7 +11,8 @@ public class NedTreeEditPolicy extends AbstractEditPolicy {
 
     @Override
     public Command getCommand(Request req) {
-        if (REQ_MOVE.equals(req.getType())) return getMoveCommand((ChangeBoundsRequest) req);
+        if (REQ_MOVE.equals(req.getType())) 
+        	return getMoveCommand((ChangeBoundsRequest) req);
         return null;
     }
 

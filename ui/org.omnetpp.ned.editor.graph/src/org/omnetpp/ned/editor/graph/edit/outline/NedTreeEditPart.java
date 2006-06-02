@@ -4,12 +4,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.gef.EditPolicy;
+import org.eclipse.gef.RootEditPart;
 import org.eclipse.gef.editparts.AbstractTreeEditPart;
+import org.eclipse.gef.editpolicies.RootComponentEditPolicy;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
 import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.ned.editor.graph.edit.policies.NedComponentEditPolicy;
+import org.omnetpp.ned.editor.graph.edit.policies.NedTreeContainerEditPolicy;
 import org.omnetpp.ned.editor.graph.edit.policies.NedTreeEditPolicy;
 import org.omnetpp.ned2.model.CompoundModuleNodeEx;
 import org.omnetpp.ned2.model.ConnectionNodeEx;
@@ -66,8 +69,22 @@ public class NedTreeEditPart extends AbstractTreeEditPart implements
      */
     @Override
     protected void createEditPolicies() {
+        // install root policy to disable deleting of the root node
+        if (getParent() instanceof RootEditPart)
+            installEditPolicy(EditPolicy.COMPONENT_ROLE, new RootComponentEditPolicy());
+
+    	installEditPolicy(EditPolicy.PRIMARY_DRAG_ROLE, new NedTreeEditPolicy());
+    	installEditPolicy(EditPolicy.TREE_CONTAINER_ROLE, new NedTreeContainerEditPolicy());
+
+        // we do not allow the reordering of the content (children) of the following node types 
+    	if (getModel() instanceof SubmoduleNodeEx || 
+        	getModel() instanceof CompoundModuleNodeEx ) {
+        	removeEditPolicy(EditPolicy.TREE_CONTAINER_ROLE);
+        }
+    	
+        // delete support
         installEditPolicy(EditPolicy.COMPONENT_ROLE, new NedComponentEditPolicy());
-        installEditPolicy(EditPolicy.PRIMARY_DRAG_ROLE, new NedTreeEditPolicy());
+        // reorder support
     }
 
     @Override
