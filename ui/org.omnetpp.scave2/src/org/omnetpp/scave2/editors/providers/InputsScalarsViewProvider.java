@@ -1,39 +1,47 @@
 package org.omnetpp.scave2.editors.providers;
 
-import static org.omnetpp.scave2.editors.ui.ScalarsPanel.*;
+import static org.omnetpp.scave2.editors.ui.ScalarsPanel.COL_DIRECTORY;
+import static org.omnetpp.scave2.editors.ui.ScalarsPanel.COL_FILENAME;
+import static org.omnetpp.scave2.editors.ui.ScalarsPanel.COL_MODULE;
+import static org.omnetpp.scave2.editors.ui.ScalarsPanel.COL_NAME;
+import static org.omnetpp.scave2.editors.ui.ScalarsPanel.COL_RUN;
+import static org.omnetpp.scave2.editors.ui.ScalarsPanel.COL_VALUE;
 
-import java.util.List;
-
-import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
+import org.omnetpp.common.ui.TableLabelProvider;
 import org.omnetpp.scave.engine.File;
-import org.omnetpp.scave.engine.FileList;
 import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engine.ScalarResult;
 import org.omnetpp.scave2.editors.ScaveEditor;
 
+/**
+ * This class configures the viewer of the scalars table.
+ * 
+ * @author Tomi
+ */
 public class InputsScalarsViewProvider extends InputsTableViewProvider {
 
 	public InputsScalarsViewProvider(ScaveEditor editor) {
 		super(editor);
 	}
 	
-	public IStructuredContentProvider getContentProvider() {
+	public ContentProvider getContentProvider() {
 		return new ContentProvider() {
-			public void buildIDList() {
+			public IDList buildIDList() {
 				ResultFileManager manager = editor.getResultFileManager();
-				idlist = new IDList();
+				IDList idlist = new IDList();
 				for (File file : editor.getInputFiles()) {
 					if (file.getFileType() == File.SCALAR_FILE)
 						idlist.merge(manager.getDataInFile(file));
 				}
+				return idlist;
 			}
 		};
 	}
 
 	public ITableLabelProvider getLabelProvider() {
-		return new LabelProvider() {
+		return new TableLabelProvider() {
 			public String getColumnText(Object element, int columnIndex) {
 				long id = (Long)element;
 				ScalarResult scalar = editor.getResultFileManager().getScalar(id);

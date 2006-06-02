@@ -1,16 +1,20 @@
 package org.omnetpp.scave2.editors.providers;
 
-import java.util.List;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.ITreeContentProvider;
+import org.eclipse.jface.viewers.LabelProvider;
 import org.omnetpp.scave.engine.File;
-import org.omnetpp.scave.engine.FileList;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engine.Run;
 import org.omnetpp.scave.engine.RunList;
 import org.omnetpp.scave.model.Inputs;
 import org.omnetpp.scave2.editors.ScaveEditor;
 
+/**
+ * This class configures the viewer of the logical input tree.
+ *  
+ * @author Tomi
+ */
 public class InputsLogicalViewProvider extends InputsTreeViewProvider {
 	
 	public InputsLogicalViewProvider(ScaveEditor editor) {
@@ -20,10 +24,9 @@ public class InputsLogicalViewProvider extends InputsTreeViewProvider {
 	public ITreeContentProvider getContentProvider() {
 		return new ContentProvider() {
 			// Inputs/Experiment/Measurement/Replication
-			protected void buildTree(Inputs inputs) {
-				ScaveEditor editor = getEditor();
+			protected TreeNode buildTree(Inputs inputs) {
 				ResultFileManager manager = editor.getResultFileManager();
-				root = new TreeNode(null, inputs);
+				TreeNode root = new TreeNode(null, inputs);
 				for (File file : editor.getInputFiles()) {
 					RunList runlist = manager.getRunsInFile(file);
 					for (int j = 0; j < runlist.size(); ++j) {
@@ -33,6 +36,7 @@ public class InputsLogicalViewProvider extends InputsTreeViewProvider {
 						getOrCreateNode(measurementNode, run.getReplicationName());
 					}
 				}
+				return root;
 			}
 		};
 	}

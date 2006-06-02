@@ -5,11 +5,9 @@ import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.edit.provider.IChangeNotifier;
 import org.eclipse.emf.edit.provider.INotifyChangedListener;
 import org.eclipse.jface.viewers.ILabelProvider;
-import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
-import org.eclipse.swt.graphics.Image;
 import org.omnetpp.scave.model.Inputs;
 import org.omnetpp.scave2.editors.ScaveEditor;
 
@@ -17,7 +15,7 @@ public abstract class InputsTreeViewProvider {
 	
 	private static final Object[] EMPTY_ARRAY = new Object[0];
 
-	private ScaveEditor editor;
+	protected ScaveEditor editor;
 	
 	public InputsTreeViewProvider(ScaveEditor editor) {
 		this.editor = editor;
@@ -28,32 +26,30 @@ public abstract class InputsTreeViewProvider {
 		viewer.setLabelProvider(getLabelProvider());
 	}
 
-	public abstract ITreeContentProvider getContentProvider();
-	public abstract ILabelProvider getLabelProvider();
+	/* Methods to be implemented by concrete subclasses. */
+	protected abstract ITreeContentProvider getContentProvider();
+	protected abstract ILabelProvider getLabelProvider();
 	
 
 	protected abstract class ContentProvider implements ITreeContentProvider, INotifyChangedListener {
 		
+		protected Object lastInputElement;
 		protected TreeNode root;
 		protected Viewer viewer;
 		
-		public ScaveEditor getEditor() {
-			return editor;
-		}
-		
-		protected abstract void buildTree(Inputs inputs);
+		protected abstract TreeNode buildTree(Inputs inputs);
 		
 		public Object[] getChildren(Object parentElement) {
 			if (parentElement instanceof TreeNode)
 				return ((TreeNode)parentElement).children;
-			else if (parentElement instanceof Inputs)
-				return root.children; // FIXME: parent of the children is a TreeNode, not the Inputs!
 			return EMPTY_ARRAY;
 		}
 	
 		public Object getParent(Object element) {
-			if (element instanceof TreeNode)
-				return ((TreeNode)element).parent;
+			if (element instanceof TreeNode) {
+				TreeNode node = (TreeNode)element;
+				return node.parent == root ? null : node.parent;
+			}
 			return null;
 		}
 	
@@ -62,18 +58,27 @@ public abstract class InputsTreeViewProvider {
 		}
 	
 		public Object[] getElements(Object inputElement) {
-			return getChildren(inputElement);
+			if (inputElement instanceof Inputs) {
+				if (inputElement != lastInputElement || root == null) {
+					lastInputElement = inputElement;
+					root = buildTree((Inputs)inputElement);
+				}
+				
+				if (root != null)
+					return root.children;
+			}
+			return EMPTY_ARRAY;
 		}
 		
 		public void dispose() {
-			root = null;
+			viewer = null;
 		}
 		
+		/* Notification from the viewer that its input has changed.*/
 		public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
 			this.viewer = viewer;
 			if (oldInput instanceof Inputs)
 				removeListener((Inputs)oldInput);
-			rebuildTree(newInput);
 			if (newInput instanceof Inputs)
 				addListener((Inputs)newInput);
 		}
@@ -81,8 +86,8 @@ public abstract class InputsTreeViewProvider {
 		public void notifyChanged(Notification notification) {
 			if (notification.isTouch())
 				return;
-			rebuildTree(root.payload);
-			if (viewer != null && viewer.getControl() != null && !viewer.getControl().isDisposed())
+			root = null;
+			if (viewer != null)
 				viewer.refresh();
 		}
 		
@@ -102,12 +107,6 @@ public abstract class InputsTreeViewProvider {
 			}
 		}
 		
-		private void rebuildTree(Object input) {
-			root = null;
-			if (input != null && input instanceof Inputs)
-				buildTree((Inputs)input);
-		}
-		
 		protected TreeNode getOrCreateNode(TreeNode parent, String payload) {
 			if (parent.children != null)
 				for (int i = 0; i < parent.children.length; ++i) {
@@ -122,31 +121,6 @@ public abstract class InputsTreeViewProvider {
 			return child;
 		}
 	}
-	
-	protected static class LabelProvider implements ILabelProvider {
-
-		public Image getImage(Object element) {
-			return null;
-		}
-
-		public String getText(Object element) {
-			return null;
-		}
-
-		public void addListener(ILabelProviderListener listener) {
-		}
-
-		public void dispose() {
-		}
-
-		public boolean isLabelProperty(Object element, String property) {
-			return false;
-		}
-
-		public void removeListener(ILabelProviderListener listener) {
-		}
-	}
-	
 	
 	public static boolean equals(Object first, Object second) {
 		return first == null && second == null ||

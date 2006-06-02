@@ -390,7 +390,7 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INotifyChange
 	/**
 	 * Finds an IFile for an existing file given with OS path. Returns null if the file was not found.
 	 */
-	private IFile findFileInWorkspace(String fileName) {
+	public IFile findFileInWorkspace(String fileName) {
 		IFile[] iFiles = ResourcesPlugin.getWorkspace().getRoot().findFilesForLocation(new Path(fileName));
 		IFile iFile = null;
 		for (IFile f : iFiles) { 

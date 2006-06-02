@@ -1,17 +1,21 @@
 package org.omnetpp.scave2.editors.providers;
 
-import java.util.List;
-
+import org.eclipse.core.resources.IFile;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.ITreeContentProvider;
+import org.eclipse.jface.viewers.LabelProvider;
 import org.omnetpp.scave.engine.File;
-import org.omnetpp.scave.engine.FileList;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engine.Run;
 import org.omnetpp.scave.engine.RunList;
 import org.omnetpp.scave.model.Inputs;
 import org.omnetpp.scave2.editors.ScaveEditor;
 
+/**
+ * This class configures the viewer of the physical input tree.
+ *  
+ * @author Tomi
+ */
 public class InputsPhysicalViewProvider extends InputsTreeViewProvider {
 	
 	public InputsPhysicalViewProvider(ScaveEditor editor) {
@@ -21,10 +25,9 @@ public class InputsPhysicalViewProvider extends InputsTreeViewProvider {
 	public ITreeContentProvider getContentProvider() {
 		return new ContentProvider() {
 			// Inputs/File/Run
-			protected void buildTree(Inputs inputs) {
-				ScaveEditor editor = getEditor();
+			protected TreeNode buildTree(Inputs inputs) {
 				ResultFileManager manager = editor.getResultFileManager();
-				root = new TreeNode(null, inputs);
+				TreeNode root = new TreeNode(null, inputs);
 				for (File file : editor.getInputFiles()) {
 					TreeNode fileNode = new TreeNode(root, file);
 					root.addChild(fileNode);
@@ -35,6 +38,7 @@ public class InputsPhysicalViewProvider extends InputsTreeViewProvider {
 						fileNode.addChild(runNode);
 					}
 				}
+				return root;
 			}
 		};
 	}
@@ -49,7 +53,8 @@ public class InputsPhysicalViewProvider extends InputsTreeViewProvider {
 						return "";
 					else if (node.payload instanceof File) {
 						File file = (File)node.payload;
-						return file.getFilePath();
+						IFile ifile = editor.findFileInWorkspace(file.getFilePath());
+						return ifile != null ? ifile.getFullPath().toString() : file.getFilePath();
 					}
 					else if (node.payload instanceof Run) {
 						Run run = (Run)node.payload;
