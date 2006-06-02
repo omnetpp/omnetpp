@@ -13,7 +13,6 @@
 *--------------------------------------------------------------*/
 
 #include <algorithm>
-#include <set>
 #include <assert.h>
 #include "eventlog.h"
 
@@ -499,17 +498,12 @@ char *EventLog::tokensToStr(int numTokens, char **vec)
 inline bool less_EventEntryByEventNumber(EventEntry *e1, EventEntry *e2) {
     return e1->eventNumber < e2->eventNumber;
 }
-inline bool equal_EventEntryByEventNumber(EventEntry *e1, EventEntry *e2) {
-    return e1->eventNumber == e2->eventNumber;
-}
 inline bool less_ModuleById(ModuleEntry *m1, ModuleEntry *m2) {
     return m1->moduleId < m2->moduleId;
 }
 inline bool less_MessageEntryByLineNumber(MessageEntry *m1, MessageEntry *m2) {
     return m1->lineNumber < m2->lineNumber;
 }
-
-
 EventLog *EventLog::traceEvent(EventEntry *tracedEvent, std::set<int> *moduleIds, bool wantCauses, bool wantConsequences)
 {
     EventLog *traceResult = new EventLog(this);
@@ -601,6 +595,38 @@ EventLog *EventLog::traceEvent(EventEntry *tracedEvent, std::set<int> *moduleIds
     sort(collectedMessages.begin(), collectedMessages.end(), less_MessageEntryByLineNumber);
 
     return traceResult;
+}
+
+/**
+ * Returns a graph in a square matrix (number of nodes) counting the number of messages
+ * going from one node to another. Nodes represent a number of modules given in a map.
+ */
+std::vector<int> *EventLog::buildMessageCountGraph(std::map<int, int> *moduleIdToNodeIdMap)
+{
+    std::set<int> nodeIdSet;
+
+    for (std::map<int, int>::iterator it = moduleIdToNodeIdMap->begin(); it != moduleIdToNodeIdMap->end(); it++)
+        nodeIdSet.insert(it->second);
+
+    int numberOfNodes = nodeIdSet.size();
+    std::vector<int> *result = new std::vector<int>();
+    result->resize(numberOfNodes * numberOfNodes);
+ 
+    for (MessageEntryList::iterator it = messageList.begin(); it != messageList.end(); it++)
+    {
+        MessageEntry *messageEntry = *it;
+        EventEntry *source = messageEntry->source;
+        EventEntry *target = messageEntry->target;
+
+        std::map<int, int>::iterator sourceModuleIdIt = moduleIdToNodeIdMap->find(source->cause->module->moduleId);
+        std::map<int, int>::iterator targetModuleIdIt = moduleIdToNodeIdMap->find(target->cause->module->moduleId);
+
+        if (sourceModuleIdIt !=  moduleIdToNodeIdMap->end() && targetModuleIdIt !=  moduleIdToNodeIdMap->end()) {
+            result->at(sourceModuleIdIt->second * numberOfNodes + targetModuleIdIt->second)++;
+        }
+    }
+ 
+    return result;
 }
 
 void EventLog::writeTrace(FILE *fout)
