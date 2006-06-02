@@ -236,7 +236,7 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INotifyChange
     }
 	
 	public void openDataset(Dataset dataset) {
-		createDatasetPage(dataset.getName());
+		createDatasetPage(dataset);
 	}
 
 	public void openChartSheet(ChartSheet chartSheet) {
@@ -274,10 +274,22 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INotifyChange
 		setPageText(index, "Browse data");
 	}
 	
-	private void createDatasetPage(String name) {
+	private void createDatasetPage(Dataset dataset) {
 		DatasetPage page = new DatasetPage(getContainer(), SWT.NONE);
-		setFormTitle(page, "Dataset: " + name);
-		addDatasetPage("Dataset: " + name, page);
+
+		configureTreeViewer(page.getDatasetTreeViewer());
+		if ("scalar".equals(dataset.getType())) {
+			page.addScalarsPanel();
+			InputsTableViewProvider provider = new InputsScalarsViewProvider(this);
+			provider.configureFilterPanel(page.getFilterPanel());
+		} else if ("vector".equals(dataset.getType())) {
+			page.addVectorsPanel();
+			InputsTableViewProvider provider = new InputsVectorsViewProvider(this);
+			provider.configureFilterPanel(page.getFilterPanel());
+		}
+		page.getDatasetTreeViewer().setInput(dataset);
+		setFormTitle(page, "Dataset: " + dataset.getName());
+		addDatasetPage("Dataset: " + dataset.getName(), page);
 	}
 	
 	private void addDatasetPage(String pageText, DatasetPage page) {

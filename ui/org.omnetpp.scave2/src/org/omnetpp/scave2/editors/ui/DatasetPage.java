@@ -30,6 +30,14 @@ public class DatasetPage extends ScrolledForm {
 		return filterPanel;
 	}
 	
+	public void addScalarsPanel() {
+		filterPanel = new ScalarsPanel(sashform, SWT.NONE);
+	}
+	
+	public void addVectorsPanel() {
+		filterPanel = new VectorsPanel(sashform, SWT.NONE);
+	}
+	
 	private void initialize() {
 		setExpandHorizontal(true);
 		setExpandVertical(true);
@@ -43,7 +51,6 @@ public class DatasetPage extends ScrolledForm {
 		label.setLayoutData(new GridData(GridData.GRAB_HORIZONTAL));
 		createSashForm();
 		createDatasetPanel();
-		createFilterPanel();
 		//sashform.setMaximizedControl(datasetPanel);
 	}
 	
@@ -57,9 +64,5 @@ public class DatasetPage extends ScrolledForm {
 	
 	private void createDatasetPanel() {
 		datasetPanel = new DatasetPanel(sashform, SWT.NONE);
-	}
-	
-	private void createFilterPanel() {
-		filterPanel = new ScalarsPanel(sashform, SWT.NONE);
 	}
 }
