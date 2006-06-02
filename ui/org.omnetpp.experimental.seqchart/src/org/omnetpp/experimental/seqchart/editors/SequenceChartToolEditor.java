@@ -28,13 +28,11 @@ import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.ISelectionListener;
-import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.part.EditorPart;
 import org.omnetpp.experimental.seqchart.moduletree.ModuleTreeBuilder;
 import org.omnetpp.experimental.seqchart.moduletree.ModuleTreeItem;
-import org.omnetpp.experimental.seqchart.widgets.EventLogTable;
 import org.omnetpp.scave.engine.EventEntry;
 import org.omnetpp.scave.engine.EventLog;
 import org.omnetpp.scave.engine.IntSet;
@@ -140,7 +138,7 @@ public class SequenceChartToolEditor extends EditorPart {
 
 	private Composite createControlStrip(Composite upper) {
 		Composite controlStrip = new Composite(upper, SWT.NONE);
-		controlStrip.setLayout(new GridLayout(8, false));
+		controlStrip.setLayout(new GridLayout(9, false));
 		eventcombo = new Combo(controlStrip, SWT.NONE);
 		eventcombo.setLayoutData(new GridData(SWT.FILL,SWT.FILL,true,false));
 		eventcombo.setVisibleItemCount(20);
@@ -158,6 +156,9 @@ public class SequenceChartToolEditor extends EditorPart {
 		timelineMode.setLayoutData(new GridData(SWT.FILL,SWT.FILL,false,false));
 		timelineMode.select(0);
 		timelineMode.setVisibleItemCount(SeqChartFigure.TimelineMode.values().length);
+		
+		Button showMessageNames = new Button(controlStrip, SWT.CHECK);
+		showMessageNames.setText("Msg");
 		
 		Button showNonDeliveryMessages = new Button(controlStrip, SWT.CHECK);
 		showNonDeliveryMessages.setText("Blue");
@@ -221,6 +222,15 @@ public class SequenceChartToolEditor extends EditorPart {
 				displayModuleTreeDialog();
 			}});
 
+		showMessageNames.addSelectionListener(new SelectionListener () {
+			public void widgetDefaultSelected(SelectionEvent e) {
+				seqChartFigure.setShowMessageNames(((Button)e.getSource()).getSelection());
+			}
+			public void widgetSelected(SelectionEvent e) {
+				seqChartFigure.setShowMessageNames(((Button)e.getSource()).getSelection());
+			}
+		});
+		
 		showNonDeliveryMessages.addSelectionListener(new SelectionListener () {
 			public void widgetDefaultSelected(SelectionEvent e) {
 				seqChartFigure.setShowNonDeliveryMessages(((Button)e.getSource()).getSelection());
@@ -350,11 +360,7 @@ public class SequenceChartToolEditor extends EditorPart {
 			});
 		}
 
-		if (currentEventNumber == -1 && moduleIds.empty())
-			filteredEventLog = eventLog;
-		else
-			filteredEventLog = eventLog.traceEvent(eventLog.getEventByNumber(currentEventNumber), moduleIds, true, true);
-
+		filteredEventLog = eventLog.traceEvent(eventLog.getEventByNumber(currentEventNumber), moduleIds, true, true, false);
 		System.out.println("filtered log: "+filteredEventLog.getNumEvents()+" events in "+filteredEventLog.getNumModules()+" modules");
 
 		filteredEventLogChanged();

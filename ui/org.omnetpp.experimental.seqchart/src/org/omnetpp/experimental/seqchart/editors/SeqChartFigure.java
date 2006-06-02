@@ -4,7 +4,6 @@ package org.omnetpp.experimental.seqchart.editors;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
@@ -63,8 +62,9 @@ public class SeqChartFigure extends Figure implements ISelectionProvider {
 	private final Color ARROW_COLOR = new Color(null, 0, 0, 0);
 	private final Color EVENT_FG_COLOR = new Color(null,255,0,0);
 	private final Color EVENT_BG_COLOR = new Color(null,255,255,255);
-	private final Color MSG_COLOR = new Color(null,0,0,255);
-	private final Color DELIVERY_MSG_COLOR = new Color(null,0,255,0);
+	private final Color MESSAGE_LABEL_COLOR = new Color(null,0,64,0);
+	private final Color MESSAGE_COLOR = new Color(null,0,0,255);
+	private final Color DELIVERY_MESSAGE_COLOR = new Color(null,0,255,0);
 	private final Cursor DRAGCURSOR = new Cursor(null, SWT.CURSOR_SIZEALL);
 	private static final int XMAX = 10000;
 	private static final int ANTIALIAS_TURN_ON_AT_MSEC = 100;
@@ -74,22 +74,24 @@ public class SeqChartFigure extends Figure implements ISelectionProvider {
 	protected EventLog eventLog; // contains the data to be displayed
 	protected JavaFriendlyEventLogFacade logFacade; // helpful facade on eventlog
 	
-	protected double pixelsPerTimelineCoordinate = 2;
-	protected int tickScale = 2; // -1 means step=0.1
+	protected double pixelsPerTimelineCoordinate = 1;
+	protected int tickScale = 1; // -1 means step=0.1
 	private boolean antiAlias = true;  // antialiasing -- this gets turned on/off automatically
-	private final int axisOffset = 30;  // y coord of first axis
+	private final int axisOffset = 50;  // y coord of first axis
 	private final int axisSpacing = 50; // y distance between two axes
 	private final int selfArrowHeight = 20; // vertical radius of ellipse for self arrows
 	private final int arrowHeadLength = 10; // length of message arrow head
 	private final int arrowHeadWideness = 7; // wideness of message arrow head
 	private final int labelDistance = 25; // distance of timeline label from timeline
 	private final int eventRadius = 10; // radius of event circle
+	private final int tickLabelWidth = 50; // minimum tick label width reserved
 
+	private boolean showMessageNames;
 	private boolean showNonDeliveryMessages; // show or hide non delivery message arrows
 	private boolean showEventNumbers;
 	private TimelineMode timelineMode = TimelineMode.LINEAR; // specifies timeline x coordinate transformation, see enum
 	private TimelineSortMode timelineSortMode = TimelineSortMode.MODULE_ID; // specifies the ordering mode of timelines
-	private double nonLinearFocus = 0.1; // parameter for non linear timeline transformation
+	private double nonLinearFocus = 1; // parameter for non linear timeline transformation
 	
 	private Canvas canvas;  // our host widget (reference needed for tooltip creation)
 	private ScrollPane scrollPane; // parent scrollPane
@@ -97,7 +99,7 @@ public class SeqChartFigure extends Figure implements ISelectionProvider {
 	
 	private int dragStartX, dragStartY; // temporary variables for drag handling
 	private List<ModuleTreeItem> axisModules; // the modules which should have an axis (they must be part of a module tree!)
-	private Integer[] axisModuleYs; // y coordinates assigned to axis modules (in the same order as axisModules)
+	private Integer[] axisModulePositions; // y positions (not coordinates) assigned to axis modules (in the same order as axisModules)
 
 	private ArrayList<SelectionListener> selectionListenerList = new ArrayList<SelectionListener>(); // SWT selection listeners
 
@@ -114,7 +116,8 @@ public class SeqChartFigure extends Figure implements ISelectionProvider {
 		MANUAL,
 		MODULE_ID,
 		MODULE_NAME,
-		MINIMIZE_CROSSINGS
+		MINIMIZE_CROSSINGS,
+		MINIMIZE_CROSSINGS_HIERARCHICALLY
 	}
 	
 	/**
@@ -148,10 +151,14 @@ public class SeqChartFigure extends Figure implements ISelectionProvider {
 		if (pp <= 0)
 			pp = 1e-12;
 		pixelsPerTimelineCoordinate = pp;
-		int labelWidthNeeded = 50; // pixels
-		tickScale = (int)Math.ceil(Math.log10(labelWidthNeeded / pp));
+		tickScale = (int)Math.ceil(Math.log10(tickLabelWidth / pp));
 
 		System.out.println("pixels per timeline coordinate: "+pixelsPerTimelineCoordinate);
+	}
+	
+	public void setShowMessageNames(boolean showMessageNames) {
+		this.showMessageNames = showMessageNames;
+		repaint();
 	}
 
 	/**
@@ -301,7 +308,7 @@ public class SeqChartFigure extends Figure implements ISelectionProvider {
 			});
 		
 		for (int i = 0; i < axisModulesIndexes.length; i++)
-			axisModuleYs[axisModulesIndexes[i]] = axisOffset + i * axisSpacing;
+			axisModulePositions[axisModulesIndexes[i]] = i;
 	}
 	
 	/**
@@ -321,42 +328,82 @@ public class SeqChartFigure extends Figure implements ISelectionProvider {
 			});
 		
 		for (int i = 0; i < axisModulesIndexes.length; i++)
-			axisModuleYs[axisModulesIndexes[i]] = axisOffset + i * axisSpacing;
+			axisModulePositions[axisModulesIndexes[i]] = i;
 	}
 
 	/**
-	 * Calculates Y coordinates of axis by minimizing crossing message arrows.
+	 * Calculates Y coordinates of axis by minimizing message arrows crossing timelines.
 	 * A message arrow costs as much as many axis it crosses.
 	 */
-	private void sortTimelinesByMinimizingCrossings(IntVector axisMatrix)
+	private void sortTimelinesByMinimizingCost(IntVector axisMatrix)
 	{
 		int cycleCount = 0;
 		int noMoveCount = 0;
 		int noRandomMoveCount = 0;
 		int numberOfAxis = axisModules.size();
-		int[] axisPositions = new int[numberOfAxis];
-		int[] candidateAxisPositions = new int[numberOfAxis];
-		int[] bestAxisPositions = new int[numberOfAxis];
+		int[] axisPositions = new int[numberOfAxis]; // actual positions of axis to be returned
+		int[] candidateAxisPositions = new int[numberOfAxis]; // new positions of axis to be set (if better)
+		int[] bestAxisPositions = new int[numberOfAxis]; // best positions choosen from a set of candidates
+		int[] possibleNewPositionsForSelectedAxis = new int[numberOfAxis]; // a list of possible new positions for a selected axis
 		Random r = new Random(0);
-		double temperature = 10.0;
+		double temperature = 5.0;
 
 		// set initial axis positions 
+		sortTimelinesByModuleName();
 		for (int i = 0; i < numberOfAxis; i++)
-			axisPositions[i] = i;
+			axisPositions[i] = axisModulePositions[i];
 		
-		while (cycleCount < 1000 && (noMoveCount < numberOfAxis || noRandomMoveCount < numberOfAxis))
+		while (cycleCount < 100 && (noMoveCount < numberOfAxis || noRandomMoveCount < numberOfAxis))
 		{
 			cycleCount++;
 			
 			// randomly choose an axis which we move to the best place (there are numberOfAxis possibilities)
-			int selectedAxisIndex = r.nextInt(numberOfAxis);
+			//int selectedAxisIndex = r.nextInt(numberOfAxis);
+			int selectedAxisIndex = cycleCount % numberOfAxis;
+			ModuleTreeItem selectedAxisModule = axisModules.get(selectedAxisIndex);
 			int bestPositionOfSelectedAxis = -1;
 			int costOfBestPositions = Integer.MAX_VALUE;
+			
+			// find out possible new positions for selected axis
+			for (int newPositionCandidate = 0; newPositionCandidate < numberOfAxis; newPositionCandidate++) {
+				possibleNewPositionsForSelectedAxis[newPositionCandidate] = newPositionCandidate;
+
+				// do not allow to move axis to a place where none of its neighbour axis have the same
+				// parent module in hierarhical mode
+				if (timelineSortMode == TimelineSortMode.MINIMIZE_CROSSINGS_HIERARCHICALLY)
+				{
+					ModuleTreeItem previousAxisModule = null;
+					ModuleTreeItem nextAxisModule = null;
+					
+					// find axis module that would be right before the selected axis module at new position
+					if (newPositionCandidate > 0)
+						for (int i = 0; i < numberOfAxis; i++)
+							if (axisPositions[i] == newPositionCandidate - 1) {
+								previousAxisModule = axisModules.get(i);
+								break;
+							}
+
+					// find axis module that would be right after the selected axis module at new position
+					if (newPositionCandidate < numberOfAxis - 1)
+						for (int i = 0; i < numberOfAxis; i++)
+							if (axisPositions[i] == newPositionCandidate) {
+								nextAxisModule = axisModules.get(i);
+								break;
+							}
+
+					if ((previousAxisModule == null || previousAxisModule.getParentModule() != selectedAxisModule.getParentModule()) &&
+					    (nextAxisModule == null || nextAxisModule.getParentModule() != selectedAxisModule.getParentModule()))
+						possibleNewPositionsForSelectedAxis[newPositionCandidate] = -1;
+				}
+			}
 
 			// assume moving axis at index to position i while keeping the order of others and calculate cost
-			for (int newPositionOfSelectedAxis = 0; newPositionOfSelectedAxis < numberOfAxis; newPositionOfSelectedAxis++) {
-				int cost = 0;
+			for (int newPositionOfSelectedAxis : possibleNewPositionsForSelectedAxis) {
+				if (newPositionOfSelectedAxis == -1)
+					continue;
 
+				int cost = 0;
+				
 				// set up candidateAxisPositions so that the order of other axis do not change
 				for (int i = 0; i < numberOfAxis; i++) {
 					int pos = axisPositions[i];
@@ -384,7 +431,7 @@ public class SeqChartFigure extends Figure implements ISelectionProvider {
 			}
 			
 			// move selected axis into best position if applicable
-			if (selectedAxisIndex != bestPositionOfSelectedAxis) {
+			if (bestPositionOfSelectedAxis != -1 && selectedAxisIndex != bestPositionOfSelectedAxis) {
 				System.arraycopy(bestAxisPositions, 0, axisPositions, 0, numberOfAxis);
 				noMoveCount = 0;
 			}
@@ -394,7 +441,7 @@ public class SeqChartFigure extends Figure implements ISelectionProvider {
 			// randomly swap axis based on temperature
 			double t = temperature;
 			noRandomMoveCount++;
-			while (r.nextDouble() < t) {
+			while (false && r.nextDouble() < t) {
 				int i1 = r.nextInt(numberOfAxis);
 				int i2 = r.nextInt(numberOfAxis);
 				int i = axisPositions[i1];
@@ -407,7 +454,7 @@ public class SeqChartFigure extends Figure implements ISelectionProvider {
 		}
 
 		for (int i = 0; i < numberOfAxis; i++)
-			axisModuleYs[i] = axisOffset + axisPositions[i] * axisSpacing;
+			axisModulePositions[i] = axisPositions[i];
 	}
 	
 	/**
@@ -415,7 +462,7 @@ public class SeqChartFigure extends Figure implements ISelectionProvider {
 	 */
 	private void calculateAxisYs()
 	{
-		this.axisModuleYs = new Integer[axisModules.size()];
+		this.axisModulePositions = new Integer[axisModules.size()];
 
 		switch (timelineSortMode) {
 			case MODULE_ID:
@@ -427,6 +474,7 @@ public class SeqChartFigure extends Figure implements ISelectionProvider {
 				sortTimelinesByModuleName();
 				break;
 			case MINIMIZE_CROSSINGS:
+			case MINIMIZE_CROSSINGS_HIERARCHICALLY:
 				// build module id to axis map
 				final IntIntMap moduleIdToAxisIdMap = new IntIntMap();
 				for (int i=0; i<axisModules.size(); i++) {
@@ -439,7 +487,7 @@ public class SeqChartFigure extends Figure implements ISelectionProvider {
 					});
 				}
 
-				sortTimelinesByMinimizingCrossings(eventLog.buildMessageCountGraph(moduleIdToAxisIdMap));
+				sortTimelinesByMinimizingCost(eventLog.buildMessageCountGraph(moduleIdToAxisIdMap));
 				break;
 		}
 	}
@@ -503,7 +551,7 @@ public class SeqChartFigure extends Figure implements ISelectionProvider {
 		EventEntry lastEvent = eventLog.getEvent(eventLog.getNumEvents()-1);
 		int width = lastEvent==null ? 0 : (int)(lastEvent.getTimelineCoordinate() * getPixelsPerTimelineCoordinate()) + 3;
 		width = Math.max(width, 600); // at least half a screen
-		int height = eventLog.getNumModules()*axisSpacing;
+		int height = (eventLog.getNumModules() - 1) * axisSpacing + axisOffset * 2;
 		setPreferredSize(width, height);
 	}
 
@@ -520,7 +568,7 @@ public class SeqChartFigure extends Figure implements ISelectionProvider {
 			// different y for each selected module
 			for (int i=0; i<axisModules.size(); i++) {
 				ModuleTreeItem treeItem = axisModules.get(i);
-				final int y = getBounds().y + axisModuleYs[i];
+				final int y = getBounds().y + axisOffset + axisModulePositions[i] * axisSpacing;
 				// propagate y to all submodules recursively
 				treeItem.visitLeaves(new ModuleTreeItem.IModuleTreeItemVisitor() {
 					public void visit(ModuleTreeItem treeItem) {
@@ -567,10 +615,11 @@ public class SeqChartFigure extends Figure implements ISelectionProvider {
             			logFacade.getEvent_i_consequences_k_target_isInFilteredSubset(i, k, eventLog))
             		{
             			// we have to calculate target event's coords if it's beyond endEventNumber
-            			graphics.setForegroundColor(isDelivery ? DELIVERY_MSG_COLOR : MSG_COLOR); 
+            			graphics.setForegroundColor(isDelivery ? DELIVERY_MESSAGE_COLOR : MESSAGE_COLOR); 
                 		if (logFacade.getEvent_i_consequences_k_target_eventNumber(i, k) < endEventNumber) {
                 			// both source and target event in the visible chart area, and already painted
                 			drawMessageArrow(graphics,
+                					logFacade.getEvent_i_consequences_k_messageName(i, k),
                 					eventX,
                 					eventY,
                 					logFacade.getEvent_i_consequences_k_target_cachedX(i, k),
@@ -584,7 +633,9 @@ public class SeqChartFigure extends Figure implements ISelectionProvider {
                				logFacade.setEvent_i_consequences_k_target_cachedX(i, k, targetX);
                				logFacade.setEvent_i_consequences_k_target_cachedY(i, k, targetY);
 
-               				drawMessageArrow(graphics, eventX, eventY, targetX, targetY);
+               				drawMessageArrow(graphics,
+                					logFacade.getEvent_i_consequences_k_messageName(i, k),
+               						eventX, eventY, targetX, targetY);
                 		}
             		}
             	}
@@ -593,20 +644,21 @@ public class SeqChartFigure extends Figure implements ISelectionProvider {
             	int numCauses = logFacade.getEvent_i_numCauses(i);
             	for (int k=0; k<numCauses; k++) {
             		boolean isDelivery = logFacade.getEvent_i_causes_k_isDelivery(i,k);
-            		if (logFacade.getEvent_i_causes_k_source_eventNumber(i, k) < startEventNumber) {
-            			// source event is outside the repaint region (on the far left)
-                		if ((isDelivery || showNonDeliveryMessages) &&
-                			logFacade.getEvent_i_causes_k_hasSource(i, k) &&
-                    		logFacade.getEvent_i_causes_k_source_isInFilteredSubset(i, k, eventLog))
-                		{
-                			double srcXDouble = timelineCoordinateToPixelDouble(logFacade.getEvent_i_causes_k_source_timelineCoordinate(i, k));
-               				int srcY = moduleIdToAxisYMap.get(logFacade.getEvent_i_causes_k_source_cause_module_moduleId(i, k));
-               				int srcX = srcXDouble < -XMAX ? -XMAX : (int)srcXDouble;
-               				logFacade.setEvent_i_causes_k_source_cachedX(i, k, srcX);
-               				logFacade.setEvent_i_causes_k_source_cachedY(i, k, srcY);
-               				graphics.setForegroundColor(isDelivery ? DELIVERY_MSG_COLOR : MSG_COLOR); 
-               				drawMessageArrow(graphics, srcX, srcY, eventX, eventY);
-                		}
+        			// source event is outside the repaint region (on the far left)
+            		if ((isDelivery || showNonDeliveryMessages) &&
+            			logFacade.getEvent_i_causes_k_hasSource(i, k) &&
+            			logFacade.getEvent_i_causes_k_source_eventNumber(i, k) < startEventNumber &&
+                		logFacade.getEvent_i_causes_k_source_isInFilteredSubset(i, k, eventLog))
+            		{
+            			double srcXDouble = timelineCoordinateToPixelDouble(logFacade.getEvent_i_causes_k_source_timelineCoordinate(i, k));
+           				int srcY = moduleIdToAxisYMap.get(logFacade.getEvent_i_causes_k_source_cause_module_moduleId(i, k));
+           				int srcX = srcXDouble < -XMAX ? -XMAX : (int)srcXDouble;
+           				logFacade.setEvent_i_causes_k_source_cachedX(i, k, srcX);
+           				logFacade.setEvent_i_causes_k_source_cachedY(i, k, srcY);
+           				graphics.setForegroundColor(isDelivery ? DELIVERY_MESSAGE_COLOR : MESSAGE_COLOR); 
+           				drawMessageArrow(graphics,
+            					logFacade.getEvent_i_causes_k_messageName(i, k),
+           						srcX, srcY, eventX, eventY);
             		}
             	}
             }
@@ -653,7 +705,7 @@ public class SeqChartFigure extends Figure implements ISelectionProvider {
 		}
 	}
 	
-	private void drawMessageArrow(Graphics graphics, int x1, int y1, int x2, int y2) {
+	private void drawMessageArrow(Graphics graphics, String arrowLabel, int x1, int y1, int x2, int y2) {
 		Rectangle.SINGLETON.setLocation(x2 - selfArrowHeight, y2 - selfArrowHeight);
 		Rectangle.SINGLETON.setSize(selfArrowHeight * 2, selfArrowHeight * 2);
 		boolean arrowHeadInClipping = !graphics.getClip(Rectangle.SINGLETON).isEmpty();
@@ -665,6 +717,9 @@ public class SeqChartFigure extends Figure implements ISelectionProvider {
 
 				if (arrowHeadInClipping)
 					drawArrowHead(graphics, x1, y1, 0, 1);
+
+				if (showMessageNames)
+					drawMessageArrowLabel(graphics, arrowLabel, x1, y1, 2, -15);
 			}
 			else {
 				// draw half ellipse
@@ -695,8 +750,12 @@ public class SeqChartFigure extends Figure implements ISelectionProvider {
 						drawArrowHead(graphics, x2, y2, x2 - x, y2 - y);
 					}
 				}
+
+				if (showMessageNames)
+					drawMessageArrowLabel(graphics, arrowLabel, (x1 + x2) / 2, y1, 0, -selfArrowHeight - 15);
 			}
-		} else {
+		}
+		else {
 			//XXX some attempt do do manual clipping...
 			//graphics.clipRect(Rectangle.SINGLETON);
 			//if (Rectangle.SINGLETON.y > y1 && Rectangle.SINGLETON.y > y2)
@@ -707,7 +766,16 @@ public class SeqChartFigure extends Figure implements ISelectionProvider {
 			
 			if (arrowHeadInClipping)
 				drawArrowHead(graphics, x2, y2, x2 - x1, y2 - y1);
+			
+			if (showMessageNames)
+				drawMessageArrowLabel(graphics, arrowLabel, (x1 + x2) / 2, (y1 + y2) / 2, 2, y1 < y2 ? -15 : 0);
 		}
+	}
+	
+	private void drawMessageArrowLabel(Graphics graphics, String label, int x, int y, int dx, int dy)
+	{
+		graphics.setForegroundColor(MESSAGE_LABEL_COLOR);
+		graphics.drawText(label, x + dx, y + dy);
 	}
 	
 	private void drawArrowHead(Graphics graphics, int x, int y, double dx, double dy)
@@ -735,8 +803,7 @@ public class SeqChartFigure extends Figure implements ISelectionProvider {
 		Rectangle bounds = getBounds();
 		rect.intersect(bounds); // although looks like Clip is already set up like this
 
-		// draw axis label; may it should be "sticky" on the screen?
-		
+		// draw axis label
 		graphics.drawText(label, scrollPane.getViewport().getBounds().x+5, y - labelDistance);
 		
 		// draw axis
@@ -751,10 +818,14 @@ public class SeqChartFigure extends Figure implements ISelectionProvider {
 		BigDecimal tickIntvl = new BigDecimal(1).scaleByPowerOfTen(tickScale);
 		//System.out.println(tickStart+" - "+tickEnd+ " step "+tickIntvl);
 
+		int previousTickLabelX = -tickLabelWidth;
 		for (BigDecimal t=tickStart; t.compareTo(tickEnd)<0; t = t.add(tickIntvl)) {
 			int x = simulationTimeToPixel(t.doubleValue());
-			graphics.drawLine(x, y-2, x, y+2);
-			graphics.drawText(t.toPlainString() + "s", x, y+3);
+			if (x - previousTickLabelX >= tickLabelWidth) {
+				graphics.drawLine(x, y-2, x, y+2);
+				graphics.drawText(t.toPlainString() + "s", x, y+3);
+				previousTickLabelX = x;
+			}
 		}
 	}
 
@@ -790,7 +861,7 @@ public class SeqChartFigure extends Figure implements ISelectionProvider {
         	previousSimulationTime = simulationTime;
     	}
 
-		nonLinearFocus = previousSimulationTime / size;
+		nonLinearFocus = previousSimulationTime / size / 10;
 	}
 
 	/**
@@ -1109,22 +1180,21 @@ public class SeqChartFigure extends Figure implements ISelectionProvider {
             		int numCauses = logFacade.getEvent_i_numCauses(i);
             		for (int k=0; k<numCauses; k++) {
                 		boolean isDelivery = logFacade.getEvent_i_causes_k_isDelivery(i,k);
-            			if (logFacade.getEvent_i_causes_k_source_eventNumber(i, k) < startEventNumber) {
-                       		if ((isDelivery || showNonDeliveryMessages) &&
-                       			logFacade.getEvent_i_causes_k_hasSource(i, k) &&
-            					logFacade.getEvent_i_causes_k_source_isInFilteredSubset(i, k, eventLog))
-                       		{
-            					if (messageArrowContainsPoint(
-            							logFacade.getEvent_i_causes_k_source_cachedX(i, k),
-            							logFacade.getEvent_i_causes_k_source_cachedY(i, k),
-            							eventX,
-            							eventY,
-            							mouseX, 
-            							mouseY,
-            							MOUSE_TOLERANCE))
-            						msgs.add(eventLog.getEvent(i).getConsequences().get(k));
-            				}
-            			}
+                   		if ((isDelivery || showNonDeliveryMessages) &&
+                   			logFacade.getEvent_i_causes_k_hasSource(i, k) &&
+                			logFacade.getEvent_i_causes_k_source_eventNumber(i, k) < startEventNumber &&
+        					logFacade.getEvent_i_causes_k_source_isInFilteredSubset(i, k, eventLog))
+                   		{
+        					if (messageArrowContainsPoint(
+        							logFacade.getEvent_i_causes_k_source_cachedX(i, k),
+        							logFacade.getEvent_i_causes_k_source_cachedY(i, k),
+        							eventX,
+        							eventY,
+        							mouseX, 
+        							mouseY,
+        							MOUSE_TOLERANCE))
+        						msgs.add(eventLog.getEvent(i).getConsequences().get(k));
+        				}
             		}
             	}
             }
