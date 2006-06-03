@@ -1,14 +1,20 @@
 package org.omnetpp.scave2.editors.ui;
 
+import org.eclipse.emf.ecore.EClass;
 import org.eclipse.jface.viewers.TreeViewer;
+import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.omnetpp.common.color.ColorFactory;
+import org.omnetpp.scave.model.ScaveModelFactory;
+import org.omnetpp.scave2.editors.ScaveEditor;
 
 public class DatasetPage extends ScrolledForm {
 
@@ -16,9 +22,11 @@ public class DatasetPage extends ScrolledForm {
 	private SashForm sashform;
 	private DatasetPanel datasetPanel;
 	private FilterPanel filterPanel;
+	private ScaveEditor scaveEditor = null;  // the containing editor
 	
-	public DatasetPage(Composite parent, int style) {
+	public DatasetPage(Composite parent, int style, ScaveEditor scaveEditor) {
 		super(parent, style | SWT.V_SCROLL | SWT.H_SCROLL);
+		this.scaveEditor = scaveEditor;
 		initialize();
 	}
 	
@@ -52,6 +60,30 @@ public class DatasetPage extends ScrolledForm {
 		createSashForm();
 		createDatasetPanel();
 		//sashform.setMaximizedControl(datasetPanel);
+
+		final TreeViewer treeViewer = datasetPanel.getTreeViewer();
+		
+		// configure Add button
+		//TODO
+
+		// configure Remove button
+		final Button removeButton = datasetPanel.getRemoveButton();
+		scaveEditor.configureRemoveButton(removeButton, treeViewer);
+
+		// configure Edit button
+		final Button editButton = datasetPanel.getEditButton();
+		scaveEditor.configureEditButton(editButton, treeViewer);
+
+		// configure Group button
+		//TODO
+
+		// configure Ungroup button
+		final Button ungroupButton = datasetPanel.getUngroupButton();
+		ScaveEditor.disableButtonOnSelectionContent(ungroupButton, treeViewer, ScaveModelFactory.eINSTANCE.createGroup().eClass());
+
+		// configure Create Chart button
+		//TODO
+	
 	}
 	
 	private void createSashForm() {

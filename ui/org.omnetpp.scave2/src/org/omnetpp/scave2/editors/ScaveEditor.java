@@ -72,6 +72,8 @@ import org.omnetpp.scave2.editors.ui.OverviewPage;
  * @author andras, tomi
  */
 //FIXME add flag into InputFile: "name" is OS path or workspace-relative path
+//TODO Outline does'nt use our labelprovider
+//TODO open dataset by double-click 
 public class ScaveEditor extends AbstractEMFModelEditor implements INotifyChangedListener, IResourceChangeListener {
 
 	private OverviewPage overviewPage;
@@ -250,34 +252,37 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INotifyChange
 	}
 
 	private void createOverviewPage() {
-		InputsTreeViewProvider physicalView = new InputsPhysicalViewProvider(this);
-		InputsTreeViewProvider logicalView = new InputsLogicalViewProvider(this);
+		InputsTreeViewProvider physicalViewProvider = new InputsPhysicalViewProvider(this);
+		InputsTreeViewProvider logicalViewProvider = new InputsLogicalViewProvider(this);
 		
 		overviewPage = new OverviewPage(getContainer(), SWT.NONE, this);
         configureTreeViewer(overviewPage.getInputFilesTreeViewer());
         configureTreeViewer(overviewPage.getDatasetsTreeViewer());
         configureTreeViewer(overviewPage.getChartSheetsTreeViewer());
-        physicalView.configureTreeViewer(overviewPage.getPhysicalDataTreeViewer());
-        logicalView.configureTreeViewer(overviewPage.getLogicalDataTreeViewer());
+        physicalViewProvider.configureTreeViewer(overviewPage.getPhysicalDataTreeViewer());
+        logicalViewProvider.configureTreeViewer(overviewPage.getLogicalDataTreeViewer());
+        overviewPage.getPhysicalDataTreeViewer().addSelectionChangedListener(selectionChangedListener);
+        overviewPage.getLogicalDataTreeViewer().addSelectionChangedListener(selectionChangedListener);
+        
 		setFormTitle(overviewPage, "Overview");
 		int index = addPage(overviewPage);
 		setPageText(index, "Overview");
 	}
 	
 	private void createBrowseDataPage() {
-		InputsTableViewProvider scalarsView = new InputsScalarsViewProvider(this);
-		InputsTableViewProvider vectorsView = new InputsVectorsViewProvider(this);
+		InputsTableViewProvider scalarsViewProvider = new InputsScalarsViewProvider(this);
+		InputsTableViewProvider vectorsViewProvider = new InputsVectorsViewProvider(this);
 
 		browseDataPage = new BrowseDataPage(getContainer(), SWT.NONE);
-		scalarsView.configureFilterPanel(browseDataPage.getScalarsPanel());
-		vectorsView.configureFilterPanel(browseDataPage.getVectorsPanel());
+		scalarsViewProvider.configureFilterPanel(browseDataPage.getScalarsPanel());
+		vectorsViewProvider.configureFilterPanel(browseDataPage.getVectorsPanel());
 		setFormTitle(browseDataPage, "Browse data");
 		int index = addPage(browseDataPage);
 		setPageText(index, "Browse data");
 	}
 	
 	private void createDatasetPage(Dataset dataset) {
-		DatasetPage page = new DatasetPage(getContainer(), SWT.NONE);
+		DatasetPage page = new DatasetPage(getContainer(), SWT.NONE, this);
 
 		configureTreeViewer(page.getDatasetTreeViewer());
 		if ("scalar".equals(dataset.getType())) {

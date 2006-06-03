@@ -109,7 +109,7 @@ public class ScalarsPanel extends FilterPanel {
 		gridData4.verticalAlignment = org.eclipse.swt.layout.GridData.FILL;
 		gridData4.horizontalSpan = 4;
 		gridData4.heightHint = 200;
-		tableViewer = new TableViewer(this, SWT.MULTI | SWT.FULL_SELECTION | SWT.VIRTUAL);
+		tableViewer = new TableViewer(this, SWT.MULTI | SWT.FULL_SELECTION | SWT.VIRTUAL | SWT.BORDER);
 		Table table = tableViewer.getTable();
 		table.setHeaderVisible(true);
 		table.setLayoutData(gridData4);

@@ -11,6 +11,7 @@ import org.eclipse.jface.viewers.Viewer;
 import org.omnetpp.scave.model.Inputs;
 import org.omnetpp.scave2.editors.ScaveEditor;
 
+//XXX some docu needed for this class
 public abstract class InputsTreeViewProvider {
 	
 	private static final Object[] EMPTY_ARRAY = new Object[0];
@@ -142,7 +143,7 @@ public abstract class InputsTreeViewProvider {
 		
 		public void addChild(TreeNode child) {
 			TreeNode[] childrenNew = new TreeNode[children.length + 1];
-			System.arraycopy(children, 0, childrenNew, 0, children.length);
+			System.arraycopy(children, 0, childrenNew, 0, children.length);  //XXX potential bottleneck -- use ArrayList? (Andras)
 			children = childrenNew;
 			children[children.length - 1] = child;
 		}

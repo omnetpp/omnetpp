@@ -108,6 +108,7 @@ import org.eclipse.ui.views.properties.PropertySheetPage;
 import org.omnetpp.scave.model.Analysis;
 import org.omnetpp.scave.model.provider.ScaveEditPlugin;
 import org.omnetpp.scave.model.provider.ScaveModelItemProviderAdapterFactory;
+import org.omnetpp.scave2.editors.providers.ScaveModelLabelProvider;
 
 
 /**
@@ -696,9 +697,10 @@ public abstract class AbstractEMFModelEditor
 	 */
 	public void configureTreeViewer(TreeViewer modelViewer) {
 		modelViewer.setContentProvider(new AdapterFactoryContentProvider(adapterFactory));
-		modelViewer.setLabelProvider(new AdapterFactoryLabelProvider(adapterFactory));
+		//modelViewer.setLabelProvider(new AdapterFactoryLabelProvider(adapterFactory));
+		modelViewer.setLabelProvider(new ScaveModelLabelProvider());
 
-		new AdapterFactoryTreeEditor(modelViewer.getTree(), adapterFactory);
+		new AdapterFactoryTreeEditor(modelViewer.getTree(), adapterFactory); //XXX this appears to be something about in-place editing - do we need it?
 
 		// XXX test which one is better here 
 		//modelViewer.addPostSelectionChangedListener(selectionChangedListener);
@@ -1001,7 +1003,7 @@ public abstract class AbstractEMFModelEditor
 				if (collection.size()==0) {
 						statusLineManager.setMessage(getString("_UI_NoObjectSelected"));
 				}
-				else if (collection.size()==1) {
+				else if (collection.size()==1) { //XXX use labelProvider; make sure it works for logical/physical view as well
 						String text = new AdapterFactoryItemDelegator(adapterFactory).getText(collection.iterator().next());
 						statusLineManager.setMessage(getString("_UI_SingleObjectSelected", text));
 				}

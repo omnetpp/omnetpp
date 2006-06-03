@@ -2,8 +2,6 @@ package org.omnetpp.scave2.editors.ui;
 
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.CTabFolder;
-import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -11,13 +9,21 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.TabFolder;
+import org.eclipse.swt.widgets.TabItem;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.omnetpp.common.color.ColorFactory;
 
+/**
+ * This is the "Browse data" page of Scave Editor
+ */
+//XXX tables and filter should include the experiment, measurement, replication fields as well
+//XXX filter should include expressions ("where load>10")
+//XXX make filter panel foldable?
 public class BrowseDataPage extends ScrolledForm {
 
 	Label label;
-	CTabFolder ctabfolder;
+	TabFolder tabfolder;
 	Composite buttonPanel;
 	Button createDatasetButton;
 	Button addToDatasetButton;
@@ -62,13 +68,13 @@ public class BrowseDataPage extends ScrolledForm {
 	}
 	
 	private void createTabFolder() {
-		ctabfolder = new CTabFolder(getBody(), SWT.TOP | SWT.FLAT);
-		//ctabfolder.setBackground(this.getBackground());
-		ctabfolder.setLayoutData(new GridData(GridData.GRAB_HORIZONTAL |
+		tabfolder = new TabFolder(getBody(), SWT.TOP);
+		//tabfolder.setBackground(this.getBackground());
+		tabfolder.setLayoutData(new GridData(GridData.GRAB_HORIZONTAL |
 											  GridData.GRAB_VERTICAL |
 											  GridData.FILL_BOTH));
 		createPages();
-		ctabfolder.setSelection(0);
+		tabfolder.setSelection(0);
 	}
 	
 	private void createPages() {
@@ -78,21 +84,21 @@ public class BrowseDataPage extends ScrolledForm {
 	}
 	
 	private void createVectorsPage() {
-		vectorsPanel = new VectorsPanel(ctabfolder, SWT.NONE);
+		vectorsPanel = new VectorsPanel(tabfolder, SWT.NONE);
 		addItem("Vectors", vectorsPanel);
 	}
 	
 	private void createScalarsPage() {
-		scalarsPanel = new ScalarsPanel(ctabfolder, SWT.NONE);
+		scalarsPanel = new ScalarsPanel(tabfolder, SWT.NONE);
 		addItem("Scalars", scalarsPanel);
 	}
 	
 	private void createHistogramsPage() {
-		addItem("Histograms", new ScalarsPanel(ctabfolder, SWT.NONE));
+		addItem("Histograms", new ScalarsPanel(tabfolder, SWT.NONE));
 	}
 	
 	private void addItem(String text, Control control) {
-		CTabItem item = new CTabItem(ctabfolder, SWT.NONE);
+		TabItem item = new TabItem(tabfolder, SWT.NONE);
 		item.setText(text);
 		item.setControl(control);
 	}
