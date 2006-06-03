@@ -270,6 +270,30 @@ MessageEntry *EventLog::getMessage(int pos)
     return messageList[pos];
 }
 
+std::vector<int> *EventLog::getMessagesSpanningOver(double t1, double t2, std::set<int> *moduleIds)
+{
+    std::vector<int> *vp = new std::vector<int>;
+
+    //XXX this is linear search and could be optimized using some clever indexing if needed (but looks like this one is OK up to a few million msgs)
+    int n = messageList.size();
+    for (int i=0; i<n; i++)
+    {
+        MessageEntry *msg = messageList[i];
+        EventEntry *src = msg->source;
+        EventEntry *target = msg->target;
+
+        if (src && target && src->simulationTime<=t1 && target->simulationTime>=t2)
+        {
+            if (moduleIds==NULL || (moduleIds->find(msg->module->moduleId)!=moduleIds->end() &&
+                                    moduleIds->find(src->cause->module->moduleId)!=moduleIds->end()))
+            {
+                vp->push_back(i);
+            }
+        }
+    }
+    return vp;
+}
+
 ModuleEntry *EventLog::getOrAddModule(int moduleId, char *moduleClassName, char *moduleFullPath)
 {
     // skip () characters
@@ -628,7 +652,7 @@ std::vector<int> *EventLog::buildMessageCountGraph(std::map<int, int> *moduleIdT
     int numberOfNodes = nodeIdSet.size();
     std::vector<int> *result = new std::vector<int>();
     result->resize(numberOfNodes * numberOfNodes);
- 
+
     for (MessageEntryList::iterator it = messageList.begin(); it != messageList.end(); it++)
     {
         MessageEntry *messageEntry = *it;
@@ -645,7 +669,7 @@ std::vector<int> *EventLog::buildMessageCountGraph(std::map<int, int> *moduleIdT
             }
         }
     }
- 
+
     return result;
 }
 

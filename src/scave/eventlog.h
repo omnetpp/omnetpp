@@ -30,7 +30,7 @@ class ModuleEntry
 {
     public:
         const char *moduleClassName; // stringpooled
-        std::string moduleFullPath;
+        std::string moduleFullPath;  // unique, no need for stringpool
         int moduleId;
 
     public:
@@ -49,11 +49,11 @@ class MessageEntry
 {
     public:
         /** Tells if this entry represents a message delivery or a message send */
-        bool isDelivery;
-        long lineNumber;
+        bool isDelivery; // if true, this message is the target event's cause (this==source->cause)
+        long lineNumber; // in the event log file
         const char *messageClassName; // stringpooled
         const char *messageName;  // stringpooled
-        ModuleEntry *module;
+        ModuleEntry *module; // this is the target event's module (unless there's Enter_Method() involved)
 
         /** These log messages actually belong to the target event, but this way we can preserve ordering of message entries within the event */
         std::vector<const char *> logMessages; // stringpooled
@@ -76,10 +76,10 @@ class EventEntry
     public:
         long eventNumber;
         double simulationTime;
-        MessageEntry *cause;
+        MessageEntry *cause;  // the message handled in this event (i.e. passed to handleMessage())
         MessageEntryList causes;  // also includes "cause"
         MessageEntryList consequences;
-        int numLogMessages; // total number of log messages for this event
+        int numLogMessages; // total number of log messages for this event (sum of its causes[]' log messages)
 
         // temporary state for tracing events, coloring (graph)
         bool isInCollectedEvents;
@@ -178,6 +178,13 @@ class EventLog
         int getNumMessages();
         MessageEntry *getMessage(int pos);
 
+        /**
+         * Collect messages (ie indices) whose source time<=t1, and target time>=t2, and
+         * both modules are in the given set (if given, as moduleIds may be NULL).
+         * The result vector has to be deallocated by the caller.
+         */
+        std::vector<int> *getMessagesSpanningOver(double t1, double t2, std::set<int> *moduleIds);
+
         int getNumModules();
         ModuleEntry *getModule(int pos);
 
@@ -187,8 +194,22 @@ class EventLog
         void expandEvent(int pos);
         void collapseEvent(int pos);
 
+        /**
+         * Filters an event log to the causes/consequences of one given event;
+         * only events/messages whose module is in the given set are collected.
+         * moduleIds may be NULL.
+         */
         EventLog *traceEvent(EventEntry *tracedEvent, std::set<int> *moduleIds, bool wantCauses, bool wantConsequences, bool wantNonDeliveryMessages);
-        std::vector<int> *buildMessageCountGraph(std::map<int, int> *moduleIdToNodeIdMap);
+
+        /**
+         * Returns an "adjacency matrix" of the nodes, the "edge cost" being the number
+         * of messages from node1 to node2. This is used for ordering axes on the GUI
+         * (node==axis; and there can be several modules on each axis). The returned vector
+         * is of size n*n, n being the number of nodes; it has to be deallocated by the caller.
+         */
+        std::vector<int> *buildMessageCountGraph(std::map<int, int> *moduleIdToNodeIdMap);  //XXX use const std::map&
+
+        /** Records the eventlog to a file */
         void writeTrace(FILE* fout);
 
     protected:
