@@ -16,6 +16,7 @@ import org.omnetpp.experimental.seqchart.widgets.EventLogTable;
  * View for displaying and navigating simulation events and associated log messages.
  */
 //TODO add double-click support (factor out filtering to an Action?)
+//TODO add context menu etc
 //FIXME the <category name="OMNeT++/OMNEST" id="org.omnetpp"> stuff in plugin.xml doesn't seem to take effect
 public class EventLogView extends ViewPart {
 

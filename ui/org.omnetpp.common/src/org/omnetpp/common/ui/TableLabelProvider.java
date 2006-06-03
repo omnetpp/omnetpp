@@ -42,18 +42,16 @@ public class TableLabelProvider extends EventManager implements ITableLabelProvi
      *
      * @see ILabelProviderListener#labelProviderChanged
      */
-    protected void fireLabelProviderChanged(
-            final LabelProviderChangedEvent event) {
-        Object[] listeners = getListeners();
-        for (int i = 0; i < listeners.length; ++i) {
-            final ILabelProviderListener l = (ILabelProviderListener) listeners[i];
-            SafeRunnable.run(new SafeRunnable() {
-                public void run() {
-                    l.labelProviderChanged(event);
-                }
-            });
-
-        }
+    protected void fireLabelProviderChanged(final LabelProviderChangedEvent event) {
+    	Object[] listeners = getListeners();
+    	for (int i = 0; i < listeners.length; ++i) {
+    		final ILabelProviderListener l = (ILabelProviderListener) listeners[i];
+    		SafeRunnable.run(new SafeRunnable() {
+    			public void run() {
+    				l.labelProviderChanged(event);
+    			}
+    		});
+    	}
     }
 
     /**

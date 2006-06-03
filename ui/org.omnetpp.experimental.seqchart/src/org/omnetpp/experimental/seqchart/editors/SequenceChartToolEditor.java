@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.draw2d.ColorConstants;
 import org.eclipse.draw2d.Figure;
 import org.eclipse.draw2d.LightweightSystem;
@@ -12,11 +14,9 @@ import org.eclipse.draw2d.XYLayout;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -31,6 +31,7 @@ import org.eclipse.ui.ISelectionListener;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.part.EditorPart;
+import org.omnetpp.experimental.seqchart.SeqChartPlugin;
 import org.omnetpp.experimental.seqchart.moduletree.ModuleTreeBuilder;
 import org.omnetpp.experimental.seqchart.moduletree.ModuleTreeItem;
 import org.omnetpp.scave.engine.EventEntry;
@@ -45,6 +46,7 @@ import org.omnetpp.scave.engine.ModuleEntry;
  * 
  * @author andras
  */
+//TODO add context menu etc
 //FIXME EventLog must be wrapped into a "model" class with proper notifications for selection, etc! then the editor and the view should update themselves upon these notifications
 public class SequenceChartToolEditor extends EditorPart {
 
@@ -81,6 +83,15 @@ public class SequenceChartToolEditor extends EditorPart {
 		setPartName(input.getName());
 		
 		extractModuleTree();
+
+		// try to open the log view
+		try {
+			// Eclipse feature: during startup, showView() throws "Abnormal Workbench Condition" because perspective is null
+			if (getSite().getPage().getPerspective()!=null)
+				getSite().getPage().showView(EventLogView.PART_ID);
+		} catch (PartInitException e) {
+			SeqChartPlugin.getDefault().logException(e);					
+		}
 	}
 
 	private void extractModuleTree() {
@@ -122,8 +133,8 @@ public class SequenceChartToolEditor extends EditorPart {
 					seqChartFigure.setSelection(selection);
 			}
 		});
-
-		//XXX this is an attempt at improving drag in the chart, but it apparently doesn't do the job
+		
+		//XXX this is an attempt to make it possible to drag outside the chart, but it apparently doesn't do the job
 		//canvas.addMouseListener(new MouseListener() {
 		//	public void mouseDoubleClick(MouseEvent e) {}
 		//	public void mouseDown(MouseEvent e) {

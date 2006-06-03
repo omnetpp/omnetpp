@@ -1,5 +1,7 @@
 package org.omnetpp.experimental.seqchart;
 
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
@@ -7,18 +9,18 @@ import org.osgi.framework.BundleContext;
 /**
  * The activator class controls the plug-in life cycle
  */
-public class Activator extends AbstractUIPlugin {
+public class SeqChartPlugin extends AbstractUIPlugin {
 
 	// The plug-in ID
 	public static final String PLUGIN_ID = "org.omnetpp.experimental.seqchart";
 
 	// The shared instance
-	private static Activator plugin;
+	private static SeqChartPlugin plugin;
 	
 	/**
 	 * The constructor
 	 */
-	public Activator() {
+	public SeqChartPlugin() {
 		plugin = this;
 	}
 
@@ -40,11 +42,17 @@ public class Activator extends AbstractUIPlugin {
 	}
 
 	/**
+	 * Logs an exception into the platform log file.
+	 */
+	public void logException(Throwable ex) {
+		getLog().log(new Status(IStatus.ERROR, PLUGIN_ID, IStatus.OK, "An exception occurred", ex));					
+	}
+	/**
 	 * Returns the shared instance
 	 *
 	 * @return the shared instance
 	 */
-	public static Activator getDefault() {
+	public static SeqChartPlugin getDefault() {
 		return plugin;
 	}
 

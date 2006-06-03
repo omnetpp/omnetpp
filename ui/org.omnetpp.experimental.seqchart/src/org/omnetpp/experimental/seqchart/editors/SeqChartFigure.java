@@ -43,19 +43,21 @@ import org.omnetpp.scave.engine.MessageEntry;
  * @author andras
  */
 //TODO limit pixelsPerTimelineCoordinate to a range that makes sense (for the current eventLog)
-//TODO draw arrowheads
+//TODO optionally display message names on the graph too
 //TODO instead of (in addition to) gotoSimulationTime(), we need gotoEvent() as well, which would do vertical scrolling too
-//XXX Performanece note: perf log is line drawing. Coordicate calculations etc
+//TODO redraw chart with antialias while user is idle? hints: new SafeRunnable(); or:
+//canvas.getDisplay().syncExec(new Runnable() {
+//	public void run() { ... }
+//};
+//XXX Performance note: perf log is line drawing. Coordicate calculations etc
 //    take much less time (to verify, comment out body of drawMessageArrow()).
 //    Solution: draw into an off-screen image, and use that during repaints!
 //TODO non-delivery events should be drawn in dotted line, and maybe lower ellipse than others?
 //TODO refine tooltips: if there's an event in the hover, don't print msgs in detail, only this "and 5 message arrows"
+//TODO factor out common part of paintFigure() and collectStuffUnderMouse(), using "lambda function" 
+//FIXME messages created in initialize() appear to have been created in event #0!!!
 //FIXME scrollbar breaks badly when chart size exceeds ~4,000,000 pixels (this means only ~0.1s resolution ticks on an 1000s trace!!! not enough!)
 //FIXME msg arrows that intersect the chart area but don't start or end there are not displayed (BUG!)
-//FIXME redraw chart with antialias while user is idle? hints: new SafeRunnable(); or:
-//		canvas.getDisplay().syncExec(new Runnable() {
-//			public void run() { ... }
-//		};
 
 public class SeqChartFigure extends Figure implements ISelectionProvider {
 
