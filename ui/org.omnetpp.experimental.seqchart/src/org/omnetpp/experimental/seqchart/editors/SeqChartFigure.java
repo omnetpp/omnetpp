@@ -256,7 +256,7 @@ public class SeqChartFigure extends Figure implements ISelectionProvider {
 	 * Decreases pixels per timeline coordinate. 
 	 */
 	public void zoomOut() {
-		zoomBy(1.1 / 1.5);
+		zoomBy(1.0 / 1.5);
 	}
 
 	/**
@@ -664,6 +664,9 @@ public class SeqChartFigure extends Figure implements ISelectionProvider {
             		}
             	}
             }
+            
+            //XXX use this to paint arrows that start before tleft and end after tright:
+            // IntVector msgs = eventLog.getMessagesSpanningOver(tleft, tright, moduleIds);
 
             System.out.println("draw msgs: "+(System.currentTimeMillis()-startMillis)+"ms");
            
