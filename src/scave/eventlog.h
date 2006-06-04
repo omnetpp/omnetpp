@@ -183,7 +183,13 @@ class EventLog
          * both modules are in the given set (if given, as moduleIds may be NULL).
          * The result vector has to be deallocated by the caller.
          */
-        std::vector<int> *getMessagesSpanningOver(double t1, double t2, std::set<int> *moduleIds);
+        std::vector<int> *getMessagesSpanningOver(double t1, double t2, std::set<int> *moduleIds);  //XXX this may be unused
+        /**
+         * Collect messages (ie indices) whose source time<=start, and target time>=end, and
+         * both modules are in the given set (if given, as moduleIds may be NULL).
+         * The result vector has to be deallocated by the caller.
+         */
+        std::vector<int> *getMessagesIntersecting(long startEventNumber, long endEventNumber, std::set<int> *moduleIds, bool wantNonDeliveryMsgs);
 
         int getNumModules();
         ModuleEntry *getModule(int pos);
@@ -335,7 +341,8 @@ class JavaFriendlyEventLogFacade
         bool getMessage_source_isInFilteredSubset(int pos, EventLog *filteredSubset)  {return filteredSubset->containsEvent(getMessage(pos)->source);}
         long getMessage_source_eventNumber(int pos)  {return getMessage(pos)->source->eventNumber;}
         double getMessage_source_simulationTime(int pos)  {return getMessage(pos)->source->simulationTime;}
-        int getMessage_source_cause_module_moduleId(int pos, int k)  {return getMessage(pos)->source->cause->module->moduleId;}
+        double getMessage_source_timelineCoordinate(int pos)  {return getMessage(pos)->source->timelineCoordinate;}
+        int getMessage_source_cause_module_moduleId(int pos)  {return getMessage(pos)->source->cause->module->moduleId;}
         int getMessage_source_cachedX(int pos)  {return getMessage(pos)->source->cachedX;}
         int getMessage_source_cachedY(int pos)  {return getMessage(pos)->source->cachedY;}
         void setMessage_source_cachedX(int pos, int x)  {getMessage(pos)->source->cachedX = x;}
@@ -345,7 +352,8 @@ class JavaFriendlyEventLogFacade
         bool getMessage_target_isInFilteredSubset(int pos, EventLog *filteredSubset)  {return filteredSubset->containsEvent(getMessage(pos)->target);}
         long getMessage_target_eventNumber(int pos)  {return getMessage(pos)->target->eventNumber;}
         double getMessage_target_simulationTime(int pos)  {return getMessage(pos)->target->simulationTime;}
-        int getMessage_target_cause_module_moduleId(int pos, int k)  {return getMessage(pos)->target->cause->module->moduleId;}
+        double getMessage_target_timelineCoordinate(int pos)  {return getMessage(pos)->target->timelineCoordinate;}
+        int getMessage_target_cause_module_moduleId(int pos)  {return getMessage(pos)->target->cause->module->moduleId;}
         int getMessage_target_cachedX(int pos)  {return getMessage(pos)->target->cachedX;}
         int getMessage_target_cachedY(int pos)  {return getMessage(pos)->target->cachedY;}
         void setMessage_target_cachedX(int pos, int x)  {getMessage(pos)->target->cachedX = x;}

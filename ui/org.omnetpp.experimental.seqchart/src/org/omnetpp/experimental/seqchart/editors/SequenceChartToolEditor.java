@@ -313,7 +313,6 @@ public class SequenceChartToolEditor extends EditorPart {
 		rootFigure.setLayoutManager(rootLayout);
 		lws.setContents(scrollPane);
 
-		//addLabelFigure(10, 10, "Bla");
 		seqChartFigure = new SeqChartFigure(canvas, scrollPane);
 		rootFigure.add(seqChartFigure);
 		rootLayout.setConstraint(seqChartFigure, new Rectangle(0,0,-1,-1));
@@ -371,7 +370,7 @@ public class SequenceChartToolEditor extends EditorPart {
 			});
 		}
 
-		filteredEventLog = eventLog.traceEvent(eventLog.getEventByNumber(currentEventNumber), moduleIds, true, true, false);
+		filteredEventLog = eventLog.traceEvent(eventLog.getEventByNumber(currentEventNumber), moduleIds, true, true, true);
 		System.out.println("filtered log: "+filteredEventLog.getNumEvents()+" events in "+filteredEventLog.getNumModules()+" modules");
 
 		filteredEventLogChanged();
@@ -379,11 +378,6 @@ public class SequenceChartToolEditor extends EditorPart {
 
 	private void filteredEventLogChanged() {
 		seqChartFigure.updateFigure(filteredEventLog, axisModules);
-//		eventLogTable.setInput(filteredEventLog);
-		
-//		EventLogView view = findEventLogView();
-//		if (view!=null)
-//			view.getEventLogTable().setInput(filteredEventLog);
 	}
 
 	private int messageBox(int style, String title, String message) {

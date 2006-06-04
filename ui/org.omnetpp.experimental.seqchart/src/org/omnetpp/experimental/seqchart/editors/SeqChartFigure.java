@@ -33,6 +33,7 @@ import org.omnetpp.experimental.seqchart.moduletree.ModuleTreeItem;
 import org.omnetpp.scave.engine.EventEntry;
 import org.omnetpp.scave.engine.EventLog;
 import org.omnetpp.scave.engine.IntIntMap;
+import org.omnetpp.scave.engine.IntSet;
 import org.omnetpp.scave.engine.IntVector;
 import org.omnetpp.scave.engine.JavaFriendlyEventLogFacade;
 import org.omnetpp.scave.engine.MessageEntry;
@@ -43,7 +44,6 @@ import org.omnetpp.scave.engine.MessageEntry;
  * @author andras
  */
 //TODO limit pixelsPerTimelineCoordinate to a range that makes sense (for the current eventLog)
-//TODO optionally display message names on the graph too
 //TODO instead of (in addition to) gotoSimulationTime(), we need gotoEvent() as well, which would do vertical scrolling too
 //TODO redraw chart with antialias while user is idle? hints: new SafeRunnable(); or:
 //canvas.getDisplay().syncExec(new Runnable() {
@@ -57,7 +57,9 @@ import org.omnetpp.scave.engine.MessageEntry;
 //TODO factor out common part of paintFigure() and collectStuffUnderMouse(), using "lambda function" 
 //FIXME messages created in initialize() appear to have been created in event #0!!!
 //FIXME scrollbar breaks badly when chart size exceeds ~4,000,000 pixels (this means only ~0.1s resolution ticks on an 1000s trace!!! not enough!)
-//FIXME msg arrows that intersect the chart area but don't start or end there are not displayed (BUG!)
+//FIXME BUG: chart y size is wrong sometimes (bottom axes get cut off)
+//FIXME BUG: src event coordinates are not calculated when target is out of screen?? 
+//FIXME BUG: axis tick scale not always right (often there are no ticks visible)
 
 public class SeqChartFigure extends Figure implements ISelectionProvider {
 
@@ -562,11 +564,17 @@ public class SeqChartFigure extends Figure implements ISelectionProvider {
 	 */
 	@Override
 	protected void paintFigure(Graphics graphics) {
+		//TODO paint into off-screen buffers, and reuse them as "tiles" at later repaints
+		doPaintFigure(graphics);
+	}
+
+	protected void doPaintFigure(Graphics graphics) {
 		if (eventLog!=null) {
 			long startMillis = System.currentTimeMillis();
-			
-			final HashMap<Integer, Integer> moduleIdToAxisYMap = new HashMap<Integer, Integer>();
 
+			final HashMap<Integer, Integer> moduleIdToAxisYMap = new HashMap<Integer, Integer>();
+			final IntSet moduleIds = new IntSet();
+	
 			// different y for each selected module
 			for (int i=0; i<axisModules.size(); i++) {
 				ModuleTreeItem treeItem = axisModules.get(i);
@@ -575,11 +583,12 @@ public class SeqChartFigure extends Figure implements ISelectionProvider {
 				treeItem.visitLeaves(new ModuleTreeItem.IModuleTreeItemVisitor() {
 					public void visit(ModuleTreeItem treeItem) {
 						moduleIdToAxisYMap.put(treeItem.getModuleId(), y);
+						moduleIds.insert(treeItem.getModuleId());
 					}
 				});
 				drawAxis(graphics, y, treeItem.getModuleFullPath());
 			}
-
+	
 			graphics.setAntialias(antiAlias ? SWT.ON : SWT.OFF);
 			graphics.setTextAntialias(SWT.ON);
 			
@@ -591,129 +600,259 @@ public class SeqChartFigure extends Figure implements ISelectionProvider {
 			EventEntry endEvent = eventLog.getFirstEventAfter(tright);
 			int startEventIndex = (startEvent!=null) ? eventLog.findEvent(startEvent) : 0;
 			int endEventIndex = (endEvent!=null) ? eventLog.findEvent(endEvent) : eventLog.getNumEvents(); 
-
+	
 			int startEventNumber = (startEvent!=null) ? startEvent.getEventNumber() : 0;
 			int endEventNumber = (endEvent!=null) ? endEvent.getEventNumber() : Integer.MAX_VALUE;
-            
-            // calculate event coordinates (we'll paint them after the arrows)
-            for (int i=startEventIndex; i<endEventIndex; i++) {
-   				int x = timelineCoordinateToPixel(logFacade.getEvent_i_timelineCoordinate(i));
-   				int y = moduleIdToAxisYMap.get(logFacade.getEvent_i_module_moduleId(i));
-   				logFacade.setEvent_cachedX(i, x);
-   				logFacade.setEvent_cachedY(i, y);
-            }
-
-            // paint arrows
-            for (int i=startEventIndex; i<endEventIndex; i++) {
-   				int eventX = logFacade.getEvent_i_cachedX(i);
-   				int eventY = logFacade.getEvent_i_cachedY(i);
-
-   				// paint forward arrows for this event
-            	int numConsequences = logFacade.getEvent_i_numConsequences(i);
-            	for (int k=0; k<numConsequences; k++) {
-            		boolean isDelivery = logFacade.getEvent_i_consequences_k_isDelivery(i,k);
-            		if ((isDelivery || showNonDeliveryMessages) &&
-            			logFacade.getEvent_i_consequences_k_hasTarget(i, k) &&
-            			logFacade.getEvent_i_consequences_k_target_isInFilteredSubset(i, k, eventLog))
-            		{
-            			// we have to calculate target event's coords if it's beyond endEventNumber
-            			graphics.setForegroundColor(isDelivery ? DELIVERY_MESSAGE_COLOR : MESSAGE_COLOR); 
-                		if (logFacade.getEvent_i_consequences_k_target_eventNumber(i, k) < endEventNumber) {
-                			// both source and target event in the visible chart area, and already painted
-                			drawMessageArrow(graphics,
-                					logFacade.getEvent_i_consequences_k_messageName(i, k),
-                					eventX,
-                					eventY,
-                					logFacade.getEvent_i_consequences_k_target_cachedX(i, k),
-                					logFacade.getEvent_i_consequences_k_target_cachedY(i, k));
-                		}
-                		else {
-                			// target is outside the repaint region (on the far right)
-               				double targetXDouble = timelineCoordinateToPixelDouble(logFacade.getEvent_i_consequences_k_target_timelineCoordinatea(i, k));
-               				int targetX = targetXDouble > XMAX ? XMAX : (int)targetXDouble;
-               				int targetY = moduleIdToAxisYMap.get(logFacade.getEvent_i_consequences_k_target_cause_module_moduleId(i, k));
-               				logFacade.setEvent_i_consequences_k_target_cachedX(i, k, targetX);
-               				logFacade.setEvent_i_consequences_k_target_cachedY(i, k, targetY);
-
-               				drawMessageArrow(graphics,
-                					logFacade.getEvent_i_consequences_k_messageName(i, k),
-               						eventX, eventY, targetX, targetY);
-                		}
-            		}
-            	}
-
-            	// paint backward arrows that we didn't paint as forward arrows
-            	int numCauses = logFacade.getEvent_i_numCauses(i);
-            	for (int k=0; k<numCauses; k++) {
-            		boolean isDelivery = logFacade.getEvent_i_causes_k_isDelivery(i,k);
-        			// source event is outside the repaint region (on the far left)
-            		if ((isDelivery || showNonDeliveryMessages) &&
-            			logFacade.getEvent_i_causes_k_hasSource(i, k) &&
-            			logFacade.getEvent_i_causes_k_source_eventNumber(i, k) < startEventNumber &&
-                		logFacade.getEvent_i_causes_k_source_isInFilteredSubset(i, k, eventLog))
-            		{
-            			double srcXDouble = timelineCoordinateToPixelDouble(logFacade.getEvent_i_causes_k_source_timelineCoordinate(i, k));
-           				int srcY = moduleIdToAxisYMap.get(logFacade.getEvent_i_causes_k_source_cause_module_moduleId(i, k));
-           				int srcX = srcXDouble < -XMAX ? -XMAX : (int)srcXDouble;
-           				logFacade.setEvent_i_causes_k_source_cachedX(i, k, srcX);
-           				logFacade.setEvent_i_causes_k_source_cachedY(i, k, srcY);
-           				graphics.setForegroundColor(isDelivery ? DELIVERY_MESSAGE_COLOR : MESSAGE_COLOR); 
-           				drawMessageArrow(graphics,
-            					logFacade.getEvent_i_causes_k_messageName(i, k),
-           						srcX, srcY, eventX, eventY);
-            		}
-            	}
-            }
-            
-            //XXX use this to paint arrows that start before tleft and end after tright:
-            // IntVector msgs = eventLog.getMessagesSpanningOver(tleft, tright, moduleIds);
-
-            System.out.println("draw msgs: "+(System.currentTimeMillis()-startMillis)+"ms");
-           
+	        
+	        // calculate event coordinates (we'll paint them after the arrows)
+	        for (int i=startEventIndex; i<endEventIndex; i++) {
+				int x = timelineCoordinateToPixel(logFacade.getEvent_i_timelineCoordinate(i));
+				int y = moduleIdToAxisYMap.get(logFacade.getEvent_i_module_moduleId(i));
+				logFacade.setEvent_cachedX(i, x);
+				logFacade.setEvent_cachedY(i, y);
+	        }
+	
+	        // paint arrows
+	        IntVector msgsIndices = eventLog.getMessagesIntersecting(startEventNumber, endEventNumber, moduleIds, showNonDeliveryMessages); 
+	        System.out.println(""+msgsIndices.size()+" msgs to draw"+(showNonDeliveryMessages?" SHOWNONDELIVERY" : ""));
+	        for (int i=0; i<msgsIndices.size(); i++) {
+	        	int pos = msgsIndices.get(i);
+	
+	        	// calculate coordinates
+	        	//FIXME source coordinate doesn't get calculated while target is off-screen!!! find out why!
+	        	int srcX, srcY, targetX, targetY;
+	            if (logFacade.getMessage_source_eventNumber(pos) > startEventNumber) {
+	            	srcX = logFacade.getMessage_source_cachedX(pos);
+	            	srcY = logFacade.getMessage_source_cachedY(pos);
+	            }
+	            else {
+	            	// src is outside the repaint region (on the far left)
+	            	double srcXDouble = timelineCoordinateToPixelDouble(logFacade.getMessage_source_timelineCoordinate(pos));
+	            	srcX = srcXDouble < -XMAX ? -XMAX : (int)srcXDouble;
+	            	srcY = moduleIdToAxisYMap.get(logFacade.getMessage_source_cause_module_moduleId(pos));
+	            }
+	            if (logFacade.getMessage_target_eventNumber(pos) < endEventNumber) {
+	            	targetX = logFacade.getMessage_target_cachedX(pos);
+	            	targetY = logFacade.getMessage_target_cachedY(pos);
+	            }
+	            else {
+	            	// target is outside the repaint region (on the far right)
+	            	double targetXDouble = timelineCoordinateToPixelDouble(logFacade.getMessage_target_timelineCoordinate(pos));
+	            	targetX = targetXDouble > XMAX ? XMAX : (int)targetXDouble;
+	            	targetY = moduleIdToAxisYMap.get(logFacade.getMessage_target_cause_module_moduleId(pos));
+	            }
+	
+	            // paint
+	            drawMessageArrow(graphics, pos, srcX, srcY, targetX, targetY);
+	        }
+	        msgsIndices.delete();
+	        
+	        System.out.println("draw msgs: "+(System.currentTimeMillis()-startMillis)+"ms");
+	       
 			// paint events
-            graphics.setForegroundColor(EVENT_FG_COLOR); 
-            graphics.setBackgroundColor(EVENT_BG_COLOR);
-            for (int i=startEventIndex; i<endEventIndex; i++) {
-   				int x = logFacade.getEvent_i_cachedX(i);
-   				int y = logFacade.getEvent_i_cachedY(i);
-
-   	            graphics.setBackgroundColor(EVENT_FG_COLOR);
-   				graphics.fillOval(x-2, y-3, 5, 7);
-
-   				if (showEventNumbers) {
+	        graphics.setForegroundColor(EVENT_FG_COLOR); 
+	        graphics.setBackgroundColor(EVENT_BG_COLOR);
+	        for (int i=startEventIndex; i<endEventIndex; i++) {
+				int x = logFacade.getEvent_i_cachedX(i);
+				int y = logFacade.getEvent_i_cachedY(i);
+	
+	            graphics.setBackgroundColor(EVENT_FG_COLOR);
+				graphics.fillOval(x-2, y-3, 5, 7);
+	
+				if (showEventNumbers) {
 	   	            graphics.setBackgroundColor(EVENT_BG_COLOR);
 	   	            graphics.fillText("#"+i, x-10, y - labelDistance);
-   				}
-            }           	
-
-            // paint event selection marks
-            if (selectionEvents != null) {
-            	for (EventEntry sel : selectionEvents) {
-                	if (startEventNumber<=sel.getEventNumber() &&
-                		sel.getEventNumber()<endEventNumber)
-                	{
+				}
+	        }           	
+	
+	        // paint event selection marks
+	        if (selectionEvents != null) {
+	        	for (EventEntry sel : selectionEvents) {
+	            	if (startEventNumber<=sel.getEventNumber() &&
+	            		sel.getEventNumber()<endEventNumber)
+	            	{
 	            		int x = sel.getCachedX();
 	            		int y = sel.getCachedY();
 	            		graphics.drawOval(x - eventRadius, y - eventRadius, eventRadius * 2 + 1, eventRadius * 2 + 1);
-                	}
-            	}
-            }
-            
-            // turn on/off anti-alias 
-            long repaintMillis = System.currentTimeMillis()-startMillis;
-            System.out.println("repaint(): "+repaintMillis+"ms");
-            if (antiAlias && repaintMillis > ANTIALIAS_TURN_OFF_AT_MSEC)
-            	antiAlias = false;
-            else if (!antiAlias && repaintMillis < ANTIALIAS_TURN_ON_AT_MSEC)
-            	antiAlias = true;
-            //XXX also: turn it off also during painting if it's going to take too long 
+	            	}
+	        	}
+	        }
+	        
+	        // turn on/off anti-alias 
+	        long repaintMillis = System.currentTimeMillis()-startMillis;
+	        System.out.println("repaint(): "+repaintMillis+"ms");
+	        if (antiAlias && repaintMillis > ANTIALIAS_TURN_OFF_AT_MSEC)
+	        	antiAlias = false;
+	        else if (!antiAlias && repaintMillis < ANTIALIAS_TURN_ON_AT_MSEC)
+	        	antiAlias = true;
+	        //XXX also: turn it off also during painting if it's going to take too long 
 		}
 	}
-	
-	private void drawMessageArrow(Graphics graphics, String arrowLabel, int x1, int y1, int x2, int y2) {
+
+//	protected void doPaintFigure_OLD(Graphics graphics) {
+//		if (eventLog!=null) {
+//			long startMillis = System.currentTimeMillis();
+//			
+//			final HashMap<Integer, Integer> moduleIdToAxisYMap = new HashMap<Integer, Integer>();
+//
+//			// different y for each selected module
+//			for (int i=0; i<axisModules.size(); i++) {
+//				ModuleTreeItem treeItem = axisModules.get(i);
+//				final int y = getBounds().y + axisOffset + axisModulePositions[i] * axisSpacing;
+//				// propagate y to all submodules recursively
+//				treeItem.visitLeaves(new ModuleTreeItem.IModuleTreeItemVisitor() {
+//					public void visit(ModuleTreeItem treeItem) {
+//						moduleIdToAxisYMap.put(treeItem.getModuleId(), y);
+//					}
+//				});
+//				drawAxis(graphics, y, treeItem.getModuleFullPath());
+//			}
+//
+//			graphics.setAntialias(antiAlias ? SWT.ON : SWT.OFF);
+//			graphics.setTextAntialias(SWT.ON);
+//			
+//			// paint events
+//			Rectangle rect = graphics.getClip(new Rectangle());
+//			double tleft = pixelToSimulationTime(rect.x);
+//			double tright = pixelToSimulationTime(rect.right());
+//			EventEntry startEvent = eventLog.getLastEventBefore(tleft);
+//			EventEntry endEvent = eventLog.getFirstEventAfter(tright);
+//			int startEventIndex = (startEvent!=null) ? eventLog.findEvent(startEvent) : 0;
+//			int endEventIndex = (endEvent!=null) ? eventLog.findEvent(endEvent) : eventLog.getNumEvents(); 
+//
+//			int startEventNumber = (startEvent!=null) ? startEvent.getEventNumber() : 0;
+//			int endEventNumber = (endEvent!=null) ? endEvent.getEventNumber() : Integer.MAX_VALUE;
+//            
+//            // calculate event coordinates (we'll paint them after the arrows)
+//            for (int i=startEventIndex; i<endEventIndex; i++) {
+//   				int x = timelineCoordinateToPixel(logFacade.getEvent_i_timelineCoordinate(i));
+//   				int y = moduleIdToAxisYMap.get(logFacade.getEvent_i_module_moduleId(i));
+//   				logFacade.setEvent_cachedX(i, x);
+//   				logFacade.setEvent_cachedY(i, y);
+//            }
+//
+//            // paint arrows
+//            for (int i=startEventIndex; i<endEventIndex; i++) {
+//   				int eventX = logFacade.getEvent_i_cachedX(i);
+//   				int eventY = logFacade.getEvent_i_cachedY(i);
+//
+//   				// paint forward arrows for this event
+//            	int numConsequences = logFacade.getEvent_i_numConsequences(i);
+//            	for (int k=0; k<numConsequences; k++) {
+//            		boolean isDelivery = logFacade.getEvent_i_consequences_k_isDelivery(i,k);
+//            		if ((isDelivery || showNonDeliveryMessages) &&
+//            			logFacade.getEvent_i_consequences_k_hasTarget(i, k) &&
+//            			logFacade.getEvent_i_consequences_k_target_isInFilteredSubset(i, k, eventLog))
+//            		{
+//            			// we have to calculate target event's coords if it's beyond endEventNumber
+//            			graphics.setForegroundColor(isDelivery ? DELIVERY_MESSAGE_COLOR : MESSAGE_COLOR); 
+//                		if (logFacade.getEvent_i_consequences_k_target_eventNumber(i, k) < endEventNumber) {
+//                			// both source and target event in the visible chart area, and already painted
+//                			drawMessageArrow(graphics,
+//                					logFacade.getEvent_i_consequences_k_messageName(i, k),
+//                					eventX,
+//                					eventY,
+//                					logFacade.getEvent_i_consequences_k_target_cachedX(i, k),
+//                					logFacade.getEvent_i_consequences_k_target_cachedY(i, k));
+//                		}
+//                		else {
+//                			// target is outside the repaint region (on the far right)
+//               				double targetXDouble = timelineCoordinateToPixelDouble(logFacade.getEvent_i_consequences_k_target_timelineCoordinatea(i, k));
+//               				int targetX = targetXDouble > XMAX ? XMAX : (int)targetXDouble;
+//               				int targetY = moduleIdToAxisYMap.get(logFacade.getEvent_i_consequences_k_target_cause_module_moduleId(i, k));
+//               				logFacade.setEvent_i_consequences_k_target_cachedX(i, k, targetX);
+//               				logFacade.setEvent_i_consequences_k_target_cachedY(i, k, targetY);
+//
+//               				drawMessageArrow(graphics,
+//                					logFacade.getEvent_i_consequences_k_messageName(i, k),
+//               						eventX, eventY, targetX, targetY);
+//                		}
+//            		}
+//            	}
+//
+//            	// paint backward arrows that we didn't paint as forward arrows
+//            	int numCauses = logFacade.getEvent_i_numCauses(i);
+//            	for (int k=0; k<numCauses; k++) {
+//            		boolean isDelivery = logFacade.getEvent_i_causes_k_isDelivery(i,k);
+//        			// source event is outside the repaint region (on the far left)
+//            		if ((isDelivery || showNonDeliveryMessages) &&
+//            			logFacade.getEvent_i_causes_k_hasSource(i, k) &&
+//            			logFacade.getEvent_i_causes_k_source_eventNumber(i, k) < startEventNumber &&
+//                		logFacade.getEvent_i_causes_k_source_isInFilteredSubset(i, k, eventLog))
+//            		{
+//            			double srcXDouble = timelineCoordinateToPixelDouble(logFacade.getEvent_i_causes_k_source_timelineCoordinate(i, k));
+//           				int srcY = moduleIdToAxisYMap.get(logFacade.getEvent_i_causes_k_source_cause_module_moduleId(i, k));
+//           				int srcX = srcXDouble < -XMAX ? -XMAX : (int)srcXDouble;
+//           				logFacade.setEvent_i_causes_k_source_cachedX(i, k, srcX);
+//           				logFacade.setEvent_i_causes_k_source_cachedY(i, k, srcY);
+//           				graphics.setForegroundColor(isDelivery ? DELIVERY_MESSAGE_COLOR : MESSAGE_COLOR); 
+//           				drawMessageArrow(graphics,
+//            					logFacade.getEvent_i_causes_k_messageName(i, k),
+//           						srcX, srcY, eventX, eventY);
+//            		}
+//            	}
+//            }
+//            
+//            //FIXME use this to paint arrows that start before tleft and end after tright:
+//            // IntVector msgs = eventLog.getMessagesSpanningOver(tleft, tright, moduleIds);
+//
+//            System.out.println("draw msgs: "+(System.currentTimeMillis()-startMillis)+"ms");
+//           
+//			// paint events
+//            graphics.setForegroundColor(EVENT_FG_COLOR); 
+//            graphics.setBackgroundColor(EVENT_BG_COLOR);
+//            for (int i=startEventIndex; i<endEventIndex; i++) {
+//   				int x = logFacade.getEvent_i_cachedX(i);
+//   				int y = logFacade.getEvent_i_cachedY(i);
+//
+//   	            graphics.setBackgroundColor(EVENT_FG_COLOR);
+//   				graphics.fillOval(x-2, y-3, 5, 7);
+//
+//   				if (showEventNumbers) {
+//	   	            graphics.setBackgroundColor(EVENT_BG_COLOR);
+//	   	            graphics.fillText("#"+i, x-10, y - labelDistance);
+//   				}
+//            }           	
+//
+//            // paint event selection marks
+//            if (selectionEvents != null) {
+//            	for (EventEntry sel : selectionEvents) {
+//                	if (startEventNumber<=sel.getEventNumber() &&
+//                		sel.getEventNumber()<endEventNumber)
+//                	{
+//	            		int x = sel.getCachedX();
+//	            		int y = sel.getCachedY();
+//	            		graphics.drawOval(x - eventRadius, y - eventRadius, eventRadius * 2 + 1, eventRadius * 2 + 1);
+//                	}
+//            	}
+//            }
+//            
+//            // turn on/off anti-alias 
+//            long repaintMillis = System.currentTimeMillis()-startMillis;
+//            System.out.println("repaint(): "+repaintMillis+"ms");
+//            if (antiAlias && repaintMillis > ANTIALIAS_TURN_OFF_AT_MSEC)
+//            	antiAlias = false;
+//            else if (!antiAlias && repaintMillis < ANTIALIAS_TURN_ON_AT_MSEC)
+//            	antiAlias = true;
+//            //XXX also: turn it off also during painting if it's going to take too long 
+//		}
+//	}
+
+	private void drawMessageArrow(Graphics graphics, int pos, int x1, int y1, int x2, int y2) {
 		Rectangle.SINGLETON.setLocation(x2 - selfArrowHeight, y2 - selfArrowHeight);
 		Rectangle.SINGLETON.setSize(selfArrowHeight * 2, selfArrowHeight * 2);
 		boolean arrowHeadInClipping = !graphics.getClip(Rectangle.SINGLETON).isEmpty();
+		
+		String arrowLabel = null;
+		if (showMessageNames)
+			arrowLabel = logFacade.getMessage_messageName(pos);
+
+		boolean isDelivery = logFacade.getMessage_isDelivery(pos);
+		graphics.setForegroundColor(isDelivery ? DELIVERY_MESSAGE_COLOR : MESSAGE_COLOR);
+		if (isDelivery)
+			graphics.setLineStyle(SWT.LINE_SOLID);
+		else 
+			graphics.setLineDash(new int[] {1,2}); // SWT.LINE_DOT style is not what we'd like
 		
 		if (y1==y2) {
 			if (x1==x2) {
@@ -1052,6 +1191,9 @@ public class SeqChartFigure extends Figure implements ISelectionProvider {
 		
 	}
 
+	/**
+	 * Utility function, used in selection change handling
+	 */
 	private static boolean eventListEquals(List<EventEntry> a, List<EventEntry> b) {
 		if (a==null || b==null)
 			return a==b;
@@ -1114,8 +1256,8 @@ public class SeqChartFigure extends Figure implements ISelectionProvider {
 		}
 
 		for (MessageEntry msg : msgs) {
-			res += "Message ("+msg.getMessageClassName()+") "
-				+msg.getMessageName()+"\n";
+			res += "Message ("+msg.getMessageClassName()+") "+msg.getMessageName()
+				+"  (#"+msg.getSource().getEventNumber()+" -> #"+msg.getTarget().getEventNumber()+")\n"; 
 		}
 		//XXX truncate to, say, 20 lines (chop off the rest, and add "...")
 		return res;
