@@ -58,6 +58,8 @@ import org.omnetpp.scave.engine.MessageEntry;
 //FIXME scrollbar breaks badly when chart size exceeds ~4,000,000 pixels (this means only ~0.1s resolution ticks on an 1000s trace!!! not enough!)
 //FIXME BUG: chart y size is wrong sometimes (bottom axes get cut off)
 //FIXME BUG: axis tick scale not always right (often there are no ticks visible)
+//TODO nondelivery msg arrows should be only half the height
+//TODO Enter_Method nondelivery arrows! line + half-ellipse
 
 public class SeqChartFigure extends Figure implements ISelectionProvider {
 
@@ -110,6 +112,9 @@ public class SeqChartFigure extends Figure implements ISelectionProvider {
 	private List<EventEntry> selectionEvents = new ArrayList<EventEntry>(); // the selection
     private ListenerList selectionChangedListeners = new ListenerList(); // list of selection change listeners (type ISelectionChangedListener).
 
+	private static Rectangle TEMP_RECT = new Rectangle();  // for tmp var for local calculations 
+    
+    
 	public enum TimelineMode {
 		LINEAR,
 		STEP_BY_STEP,
@@ -614,7 +619,7 @@ public class SeqChartFigure extends Figure implements ISelectionProvider {
 	
 	        // paint arrows
 	        IntVector msgsIndices = eventLog.getMessagesIntersecting(startEventNumber, endEventNumber, moduleIds, showNonDeliveryMessages); 
-	        System.out.println(""+msgsIndices.size()+" msgs to draw"+(showNonDeliveryMessages?" SHOWNONDELIVERY" : ""));
+	        System.out.println(""+msgsIndices.size()+" msgs to draw");
 	        for (int i=0; i<msgsIndices.size(); i++) {
 	        	int pos = msgsIndices.get(i);
 	
@@ -839,14 +844,18 @@ public class SeqChartFigure extends Figure implements ISelectionProvider {
 //	}
 
 	private void drawMessageArrow(Graphics graphics, int pos, int x1, int y1, int x2, int y2) {
-		Rectangle.SINGLETON.setLocation(x2 - selfArrowHeight, y2 - selfArrowHeight);
-		Rectangle.SINGLETON.setSize(selfArrowHeight * 2, selfArrowHeight * 2);
-		boolean arrowHeadInClipping = !graphics.getClip(Rectangle.SINGLETON).isEmpty(); //FIXME this is a misunderstanding: getClip() totally overwrites the rect, ignoring its original contents (and does NOT calculate intersection)
+		// optimization: check if arrowhead is in the clipping rect (don't draw it if not)
+		TEMP_RECT.setLocation(x2,y2);
+		TEMP_RECT.expand(2*arrowHeadLength, 2*arrowHeadLength);
+		graphics.getClip(Rectangle.SINGLETON);
+		boolean arrowHeadInClipping = Rectangle.SINGLETON.intersects(TEMP_RECT);
 		
+		// message name (as label on the arrow)
 		String arrowLabel = null;
 		if (showMessageNames)
 			arrowLabel = logFacade.getMessage_messageName(pos);
 
+		// line color and style depends on message type
 		boolean isDelivery = logFacade.getMessage_isDelivery(pos);
 		graphics.setForegroundColor(isDelivery ? DELIVERY_MESSAGE_COLOR : NONDELIVERY_MESSAGE_COLOR);
 		if (isDelivery)
@@ -854,6 +863,7 @@ public class SeqChartFigure extends Figure implements ISelectionProvider {
 		else 
 			graphics.setLineDash(DOTTED_LINE_PATTERN); // SWT.LINE_DOT style is not what we'd like
 		
+		// test if self-message (y1==y2) or not
 		if (y1==y2) {
 			if (x1==x2) {
 				// draw vertical line (as zero-width half ellipse) 
