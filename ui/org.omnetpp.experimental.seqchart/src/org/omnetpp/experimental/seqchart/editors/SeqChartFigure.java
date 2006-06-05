@@ -43,23 +43,24 @@ import org.omnetpp.scave.engine.MessageEntry;
  *
  * @author andras
  */
-//TODO limit pixelsPerTimelineCoordinate to a range that makes sense (for the current eventLog)
+//TODO limit pixelsPerTimelineUnit to a range that makes sense (for the current eventLog)
 //TODO instead of (in addition to) gotoSimulationTime(), we need gotoEvent() as well, which would do vertical scrolling too
 //TODO redraw chart with antialias while user is idle? hints: new SafeRunnable(); or:
 //canvas.getDisplay().syncExec(new Runnable() {
 //	public void run() { ... }
 //};
-//XXX Performance note: perf log is line drawing. Coordicate calculations etc
+//XXX Performance note: perf log is line drawing. Coordinate calculations etc
 //    take much less time (to verify, comment out body of drawMessageArrow()).
 //    Solution: draw into an off-screen image, and use that during repaints!
 //TODO refine tooltips: if there's an event in the hover, don't print msgs in detail, only this "and 5 message arrows"
 //TODO factor out common part of paintFigure() and collectStuffUnderMouse(), using "lambda function" 
 //FIXME messages created in initialize() appear to have been created in event #0!!!
 //FIXME scrollbar breaks badly when chart size exceeds ~4,000,000 pixels (this means only ~0.1s resolution ticks on an 1000s trace!!! not enough!)
-//FIXME BUG: chart y size is wrong sometimes (bottom axes get cut off)
 //FIXME BUG: axis tick scale not always right (often there are no ticks visible)
 //TODO nondelivery msg arrows should be only half the height
 //TODO Enter_Method nondelivery arrows! line + half-ellipse
+//TODO rename SortMode to OrderingMode?
+//TODO add controls to change axis spacing
 
 public class SeqChartFigure extends Figure implements ISelectionProvider {
 
@@ -80,7 +81,7 @@ public class SeqChartFigure extends Figure implements ISelectionProvider {
 	protected EventLog eventLog; // contains the data to be displayed
 	protected JavaFriendlyEventLogFacade logFacade; // helpful facade on eventlog
 	
-	protected double pixelsPerTimelineCoordinate = 1;
+	protected double pixelsPerTimelineUnit = 1;
 	protected int tickScale = 1; // -1 means step=0.1
 	private boolean antiAlias = true;  // antialiasing -- this gets turned on/off automatically
 	private int axisOffset = 50;  // y coord of first axis
@@ -142,27 +143,31 @@ public class SeqChartFigure extends Figure implements ISelectionProvider {
 	}
 
 	/**
-	 * Returns chart scale (number of pixels a 1-second interval maps to).
+	 * Returns chart scale, that is, the number of pixels a "timeline unit" maps to.
+     *
+	 * The meaning of "timeline unit" depends on the timeline mode (see enum TimelineMode).
+	 * For LINEAR mode it is <i>second</i> (simulation time), for STEP_BY_STEP mode it is <i>event</i>,
+	 * and for NON_LINEAR mode it is calculated as a nonlinear function of simulation time.
 	 */
-	public double getPixelsPerTimelineCoordinate() {
-		return pixelsPerTimelineCoordinate;	
+	public double getPixelsPerTimelineUnit() {
+		return pixelsPerTimelineUnit;	
 	}
 	
 	/**
-	 * Set chart scale (number of pixels a 1-second interval maps to), 
-	 * and adjusts the density of ticks.
+	 * Set chart scale (number of pixels a "timeline unit" maps to), 
+	 * and adjusts the density of ticks. 
 	 */
-	public void setPixelsPerTimelineCoordinate(double pp) {
-		if (pixelsPerTimelineCoordinate == pp)
-			 return; // nothing to do
+	public void setPixelsPerTimelineUnit(double pp) {
+		if (pixelsPerTimelineUnit == pp)
+			 return; // already set, nothing to do
 		
 		// set pixels per sec, and recalculate tick spacing
 		if (pp <= 0)
 			pp = 1e-12;
-		pixelsPerTimelineCoordinate = pp;
+		pixelsPerTimelineUnit = pp;
 		tickScale = (int)Math.ceil(Math.log10(tickLabelWidth / pp));
 
-		System.out.println("pixels per timeline coordinate: "+pixelsPerTimelineCoordinate);
+		System.out.println("pixels per timeline unit: "+pixelsPerTimelineUnit);
 	}
 	
 	public void setShowMessageNames(boolean showMessageNames) {
@@ -194,7 +199,7 @@ public class SeqChartFigure extends Figure implements ISelectionProvider {
 		double time = currentSimulationTime();
 		this.timelineMode = timelineMode;
 		recalculateTimelineCoordinates();
-		setPixelsPerTimelineCoordinate(suggestPixelsPerTimelineCoordinate());
+		setPixelsPerTimelineUnit(suggestPixelsPerTimelineUnit());
 		recalculatePreferredSize();
 		gotoSimulationTime(time);
 	}
@@ -221,7 +226,7 @@ public class SeqChartFigure extends Figure implements ISelectionProvider {
 	 * Scroll the canvas so as to make the simulation time visible 
 	 */
 	public void gotoSimulationTime(double time) {
-		double xDouble = simulationTimeToTimelineCoordinate(time) * pixelsPerTimelineCoordinate;
+		double xDouble = simulationTimeToTimelineCoordinate(time) * pixelsPerTimelineUnit;
 		int x = xDouble < 0 ? 0 : xDouble>Integer.MAX_VALUE ? Integer.MAX_VALUE : (int)xDouble;
 		scrollPane.scrollHorizontalTo(x - scrollPane.getViewport().getBounds().width/2);
 		repaint();
@@ -234,7 +239,7 @@ public class SeqChartFigure extends Figure implements ISelectionProvider {
 		// transform simulation times to timeline coordinate system
 		recalculateTimelineCoordinates();
 		// adapt our zoom level to the current eventLog
-		setPixelsPerTimelineCoordinate(suggestPixelsPerTimelineCoordinate());
+		setPixelsPerTimelineUnit(suggestPixelsPerTimelineUnit());
 		recalculatePreferredSize();
 		// notify listeners
 		fireSelectionChanged();
@@ -271,7 +276,7 @@ public class SeqChartFigure extends Figure implements ISelectionProvider {
 	 */
 	private void zoomBy(double zoomFactor) {
 		double time = currentSimulationTime();
-		setPixelsPerTimelineCoordinate(getPixelsPerTimelineCoordinate() * zoomFactor);	
+		setPixelsPerTimelineUnit(getPixelsPerTimelineUnit() * zoomFactor);	
 		recalculatePreferredSize();
 		gotoSimulationTime(time);
 	}
@@ -534,8 +539,8 @@ public class SeqChartFigure extends Figure implements ISelectionProvider {
 	 * suggest a better one. Otherwise just returns the old value. The current settings
 	 * are not changed.
 	 */
-	public double suggestPixelsPerTimelineCoordinate() {
-		// adjust pixelsPerTimelineCoordinate if it's way out of the range that makes sense
+	public double suggestPixelsPerTimelineUnit() {
+		// adjust pixelsPerTimelineUnit if it's way out of the range that makes sense
 		int numEvents = eventLog.getNumEvents();
 		if (numEvents>=2) {
 			double tStart = eventLog.getEvent(0).getTimelineCoordinate();
@@ -545,22 +550,22 @@ public class SeqChartFigure extends Figure implements ISelectionProvider {
 			int chartWidthPixels = scrollPane.getViewport().getBounds().width;
 			if (chartWidthPixels<=0) chartWidthPixels = 800;  // may be 0 on startup
 
-			double minPixelsPerTimelineCoordinate = eventPerSec * 10;  // we want at least 10 pixel/event
-			double maxPixelsPerTimelineCoordinate = eventPerSec * (chartWidthPixels/10);  // we want at least 10 events on the chart
+			double minPixelsPerTimelineUnit = eventPerSec * 10;  // we want at least 10 pixel/event
+			double maxPixelsPerTimelineUnit = eventPerSec * (chartWidthPixels/10);  // we want at least 10 events on the chart
 
-			if (pixelsPerTimelineCoordinate < minPixelsPerTimelineCoordinate)
-				return minPixelsPerTimelineCoordinate;
-			else if (pixelsPerTimelineCoordinate > maxPixelsPerTimelineCoordinate)
-				return maxPixelsPerTimelineCoordinate;
+			if (pixelsPerTimelineUnit < minPixelsPerTimelineUnit)
+				return minPixelsPerTimelineUnit;
+			else if (pixelsPerTimelineUnit > maxPixelsPerTimelineUnit)
+				return maxPixelsPerTimelineUnit;
 		}
-		return pixelsPerTimelineCoordinate; // the current setting is fine
+		return pixelsPerTimelineUnit; // the current setting is fine
 	}
 
 	private void recalculatePreferredSize() {
 		EventEntry lastEvent = eventLog.getEvent(eventLog.getNumEvents()-1);
-		int width = lastEvent==null ? 0 : (int)(lastEvent.getTimelineCoordinate() * getPixelsPerTimelineCoordinate()) + 3;
+		int width = lastEvent==null ? 0 : (int)(lastEvent.getTimelineCoordinate() * getPixelsPerTimelineUnit()) + 3;
 		width = Math.max(width, 600); // at least half a screen
-		int height = (eventLog.getNumModules() - 1) * axisSpacing + axisOffset * 2;
+		int height = axisModules.size() * axisSpacing + axisOffset * 2;
 		setPreferredSize(width, height);
 	}
 
@@ -949,7 +954,7 @@ public class SeqChartFigure extends Figure implements ISelectionProvider {
 	}
 
 	/**
-	 * Draws the axis, according to the current pixelsPerTimelineCoordinate and tickInterval
+	 * Draws the axis, according to the current pixelsPerTimelineUnit and tickInterval
 	 * settings.
 	 */
 	private void drawAxis(Graphics graphics, int y, String label) {
@@ -1095,31 +1100,31 @@ public class SeqChartFigure extends Figure implements ISelectionProvider {
 	}
 	
 	/**
-	 * Translates from pixel x coordinate to seconds, using on pixelsPerTimelineCoordinate.
+	 * Translates from pixel x coordinate to seconds, using on pixelsPerTimelineUnit.
 	 */
 	private double pixelToSimulationTime(int x) {
-		return timelineCoordinateToSimulationTime((x-getBounds().x) / pixelsPerTimelineCoordinate);
+		return timelineCoordinateToSimulationTime((x-getBounds().x) / pixelsPerTimelineUnit);
 	}
 	
 	/**
-	 * Translates from seconds to pixel x coordinate, using on pixelsPerTimelineCoordinate.
+	 * Translates from seconds to pixel x coordinate, using on pixelsPerTimelineUnit.
 	 */
 	private int simulationTimeToPixel(double t) {
-		return (int)Math.round(simulationTimeToTimelineCoordinate(t) * pixelsPerTimelineCoordinate) + getBounds().x;
+		return (int)Math.round(simulationTimeToTimelineCoordinate(t) * pixelsPerTimelineUnit) + getBounds().x;
 	}
 
 	/**
-	 * Translates timeline coordinate to pixel x coordinate, using on pixelsPerTimelineCoordinate.
+	 * Translates timeline coordinate to pixel x coordinate, using on pixelsPerTimelineUnit.
 	 */
 	private int timelineCoordinateToPixel(double t) {
-		return (int)Math.round(t * pixelsPerTimelineCoordinate) + getBounds().x;
+		return (int)Math.round(t * pixelsPerTimelineUnit) + getBounds().x;
 	}
 
 	/**
 	 * Same as timelineCoordinateToPixel(), but doesn't convert to int; to be used where "int" may overflow
 	 */
 	private double timelineCoordinateToPixelDouble(double t) {
-		return t * pixelsPerTimelineCoordinate + getBounds().x;
+		return t * pixelsPerTimelineUnit + getBounds().x;
 	}
 	
 	/**
