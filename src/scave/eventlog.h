@@ -179,15 +179,10 @@ class EventLog
         MessageEntry *getMessage(int pos);
 
         /**
-         * Collect messages (ie indices) whose source time<=t1, and target time>=t2, and
-         * both modules are in the given set (if given, as moduleIds may be NULL).
-         * The result vector has to be deallocated by the caller.
-         */
-        std::vector<int> *getMessagesSpanningOver(double t1, double t2, std::set<int> *moduleIds);  //XXX this may be unused
-        /**
-         * Collect messages (ie indices) whose source time<=start, and target time>=end, and
-         * both modules are in the given set (if given, as moduleIds may be NULL).
-         * The result vector has to be deallocated by the caller.
+         * Collect messages whose sourceEventNum<end and targetEventNum>=start,
+         * and both modules are in the given set (if given, as moduleIds may be NULL).
+         * Message indices are returned in the result vector, which has to be
+         * deallocated by the caller.
          */
         std::vector<int> *getMessagesIntersecting(long startEventNumber, long endEventNumber, std::set<int> *moduleIds, bool wantNonDeliveryMsgs);
 

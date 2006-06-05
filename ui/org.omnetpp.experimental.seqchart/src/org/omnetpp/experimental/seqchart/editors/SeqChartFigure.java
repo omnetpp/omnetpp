@@ -52,24 +52,24 @@ import org.omnetpp.scave.engine.MessageEntry;
 //XXX Performance note: perf log is line drawing. Coordicate calculations etc
 //    take much less time (to verify, comment out body of drawMessageArrow()).
 //    Solution: draw into an off-screen image, and use that during repaints!
-//TODO non-delivery events should be drawn in dotted line, and maybe lower ellipse than others?
 //TODO refine tooltips: if there's an event in the hover, don't print msgs in detail, only this "and 5 message arrows"
 //TODO factor out common part of paintFigure() and collectStuffUnderMouse(), using "lambda function" 
 //FIXME messages created in initialize() appear to have been created in event #0!!!
 //FIXME scrollbar breaks badly when chart size exceeds ~4,000,000 pixels (this means only ~0.1s resolution ticks on an 1000s trace!!! not enough!)
 //FIXME BUG: chart y size is wrong sometimes (bottom axes get cut off)
-//FIXME BUG: src event coordinates are not calculated when target is out of screen?? 
 //FIXME BUG: axis tick scale not always right (often there are no ticks visible)
 
 public class SeqChartFigure extends Figure implements ISelectionProvider {
 
-	private final Color ARROW_COLOR = new Color(null, 0, 0, 0);
-	private final Color EVENT_FG_COLOR = new Color(null,255,0,0);
-	private final Color EVENT_BG_COLOR = new Color(null,255,255,255);
-	private final Color MESSAGE_LABEL_COLOR = new Color(null,0,64,0);
-	private final Color MESSAGE_COLOR = new Color(null,0,0,255);
-	private final Color DELIVERY_MESSAGE_COLOR = new Color(null,0,255,0);
-	private final Cursor DRAGCURSOR = new Cursor(null, SWT.CURSOR_SIZEALL);
+	private static final Color ARROW_COLOR = new Color(null, 0, 0, 0);
+	private static final Color EVENT_FG_COLOR = new Color(null,255,0,0);
+	private static final Color EVENT_BG_COLOR = new Color(null,255,255,255);
+	private static final Color MESSAGE_LABEL_COLOR = new Color(null,0,64,0);
+	private static final Color NONDELIVERY_MESSAGE_COLOR = new Color(null,0,0,255);
+	private static final Color DELIVERY_MESSAGE_COLOR = new Color(null,0,255,0);
+	private static final Cursor DRAGCURSOR = new Cursor(null, SWT.CURSOR_SIZEALL);
+	private static final int[] DOTTED_LINE_PATTERN = new int[] {1,2}; // 1px black, 2px gap
+	
 	private static final int XMAX = 10000;
 	private static final int ANTIALIAS_TURN_ON_AT_MSEC = 100;
 	private static final int ANTIALIAS_TURN_OFF_AT_MSEC = 300;
@@ -81,14 +81,14 @@ public class SeqChartFigure extends Figure implements ISelectionProvider {
 	protected double pixelsPerTimelineCoordinate = 1;
 	protected int tickScale = 1; // -1 means step=0.1
 	private boolean antiAlias = true;  // antialiasing -- this gets turned on/off automatically
-	private final int axisOffset = 50;  // y coord of first axis
-	private final int axisSpacing = 50; // y distance between two axes
-	private final int selfArrowHeight = 20; // vertical radius of ellipse for self arrows
-	private final int arrowHeadLength = 10; // length of message arrow head
-	private final int arrowHeadWideness = 7; // wideness of message arrow head
-	private final int labelDistance = 25; // distance of timeline label from timeline
-	private final int eventRadius = 10; // radius of event circle
-	private final int tickLabelWidth = 50; // minimum tick label width reserved
+	private int axisOffset = 50;  // y coord of first axis
+	private int axisSpacing = 50; // y distance between two axes
+	private int selfArrowHeight = 20; // vertical radius of ellipse for self arrows
+	private int arrowHeadLength = 10; // length of message arrow head
+	private int arrowHeadWideness = 7; // wideness of message arrow head
+	private int labelDistance = 20; // distance of timeline label above axis
+	private int eventRadius = 10; // radius of event circle
+	private int tickLabelWidth = 50; // minimum tick label width reserved
 
 	private boolean showMessageNames;
 	private boolean showNonDeliveryMessages; // show or hide non delivery message arrows
@@ -841,18 +841,18 @@ public class SeqChartFigure extends Figure implements ISelectionProvider {
 	private void drawMessageArrow(Graphics graphics, int pos, int x1, int y1, int x2, int y2) {
 		Rectangle.SINGLETON.setLocation(x2 - selfArrowHeight, y2 - selfArrowHeight);
 		Rectangle.SINGLETON.setSize(selfArrowHeight * 2, selfArrowHeight * 2);
-		boolean arrowHeadInClipping = !graphics.getClip(Rectangle.SINGLETON).isEmpty();
+		boolean arrowHeadInClipping = !graphics.getClip(Rectangle.SINGLETON).isEmpty(); //FIXME this is a misunderstanding: getClip() totally overwrites the rect, ignoring its original contents (and does NOT calculate intersection)
 		
 		String arrowLabel = null;
 		if (showMessageNames)
 			arrowLabel = logFacade.getMessage_messageName(pos);
 
 		boolean isDelivery = logFacade.getMessage_isDelivery(pos);
-		graphics.setForegroundColor(isDelivery ? DELIVERY_MESSAGE_COLOR : MESSAGE_COLOR);
+		graphics.setForegroundColor(isDelivery ? DELIVERY_MESSAGE_COLOR : NONDELIVERY_MESSAGE_COLOR);
 		if (isDelivery)
 			graphics.setLineStyle(SWT.LINE_SOLID);
 		else 
-			graphics.setLineDash(new int[] {1,2}); // SWT.LINE_DOT style is not what we'd like
+			graphics.setLineDash(DOTTED_LINE_PATTERN); // SWT.LINE_DOT style is not what we'd like
 		
 		if (y1==y2) {
 			if (x1==x2) {
