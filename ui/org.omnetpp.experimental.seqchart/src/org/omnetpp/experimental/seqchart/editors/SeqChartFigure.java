@@ -1301,7 +1301,8 @@ public class SeqChartFigure extends Figure implements ISelectionProvider {
 				}
 				// add message
 				res += "Message ("+msg.getMessageClassName()+") "+msg.getMessageName()
-				+"  (#"+msg.getSource().getEventNumber()+" -> #"+msg.getTarget().getEventNumber()+")\n"; 
+					+"  ("+ (msg.getIsDelivery() ? "sending" : "usage")
+					+", #"+msg.getSource().getEventNumber()+" -> #"+msg.getTarget().getEventNumber()+")\n"; 
 			}
 			return res;
 		}
