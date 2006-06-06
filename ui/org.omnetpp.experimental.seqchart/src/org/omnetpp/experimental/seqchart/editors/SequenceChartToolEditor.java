@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
 import org.eclipse.draw2d.ColorConstants;
 import org.eclipse.draw2d.Figure;
 import org.eclipse.draw2d.LightweightSystem;
@@ -14,11 +12,13 @@ import org.eclipse.draw2d.XYLayout;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Combo;
@@ -149,22 +149,24 @@ public class SequenceChartToolEditor extends EditorPart {
 
 	private Composite createControlStrip(Composite upper) {
 		Composite controlStrip = new Composite(upper, SWT.NONE);
-		controlStrip.setLayout(new GridLayout(9, false));
+		//controlStrip.setLayout(new GridLayout(9, false));
+		RowLayout layout = new RowLayout();
+		controlStrip.setLayout(layout);
 		eventcombo = new Combo(controlStrip, SWT.NONE);
-		eventcombo.setLayoutData(new GridData(SWT.FILL,SWT.FILL,true,false));
+		//eventcombo.setLayoutData(new GridData(SWT.FILL,SWT.FILL,true,false));
 		eventcombo.setVisibleItemCount(20);
 
 		Combo timelineSortMode = new Combo(controlStrip, SWT.NONE);
 		for (SeqChartFigure.TimelineSortMode t : SeqChartFigure.TimelineSortMode.values())
 			timelineSortMode.add(t.name());
-		timelineSortMode.setLayoutData(new GridData(SWT.FILL,SWT.FILL,false,false));
+		//timelineSortMode.setLayoutData(new GridData(SWT.FILL,SWT.FILL,false,false));
 		timelineSortMode.select(0);
 		timelineSortMode.setVisibleItemCount(SeqChartFigure.TimelineSortMode.values().length);
 		
 		Combo timelineMode = new Combo(controlStrip, SWT.NONE);
 		for (SeqChartFigure.TimelineMode t : SeqChartFigure.TimelineMode.values())
 			timelineMode.add(t.name());
-		timelineMode.setLayoutData(new GridData(SWT.FILL,SWT.FILL,false,false));
+		//timelineMode.setLayoutData(new GridData(SWT.FILL,SWT.FILL,false,false));
 		timelineMode.select(0);
 		timelineMode.setVisibleItemCount(SeqChartFigure.TimelineMode.values().length);
 		
@@ -176,15 +178,22 @@ public class SequenceChartToolEditor extends EditorPart {
 		
 		Button showEventNumbers = new Button(controlStrip, SWT.CHECK);
 		showEventNumbers.setText("Event");
+
+		Button selectModules = new Button(controlStrip, SWT.NONE);
+		selectModules.setText("Modules...");
 		
 		Button zoomIn = new Button(controlStrip, SWT.NONE);
 		zoomIn.setText("Zoom in");
 		
 		Button zoomOut = new Button(controlStrip, SWT.NONE);
 		zoomOut.setText("Zoom out");
+
+		Button increaseSpacing = new Button(controlStrip, SWT.NONE);
+		increaseSpacing.setText("Increase spacing");
 		
-		Button selectModules = new Button(controlStrip, SWT.NONE);
-		selectModules.setText("Modules...");
+		Button decreaseSpacing = new Button(controlStrip, SWT.NONE);
+		decreaseSpacing.setText("Decrease spacing");
+		
 
 		// add event handlers
 		eventcombo.addSelectionListener(new SelectionListener() {
@@ -209,70 +218,57 @@ public class SequenceChartToolEditor extends EditorPart {
 				widgetDefaultSelected(e);
 			}});
 
-		zoomIn.addSelectionListener(new SelectionListener() {
-			public void widgetDefaultSelected(SelectionEvent e) {
-				seqChartFigure.zoomIn();
-			}
+		selectModules.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
+				displayModuleTreeDialog();
+			}});
+
+		zoomIn.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				seqChartFigure.zoomIn();
 			}});
 		
-		zoomOut.addSelectionListener(new SelectionListener() {
-			public void widgetDefaultSelected(SelectionEvent e) {
-				seqChartFigure.zoomOut();
-			}
+		zoomOut.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				seqChartFigure.zoomOut();
 			}});
 
-		selectModules.addSelectionListener(new SelectionListener() {
-			public void widgetDefaultSelected(SelectionEvent e) {
-				displayModuleTreeDialog();
-			}
+		increaseSpacing.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
-				displayModuleTreeDialog();
+				seqChartFigure.setAxisSpacing(seqChartFigure.getAxisSpacing()+5);
 			}});
-
-		showMessageNames.addSelectionListener(new SelectionListener () {
-			public void widgetDefaultSelected(SelectionEvent e) {
-				seqChartFigure.setShowMessageNames(((Button)e.getSource()).getSelection());
-			}
+		
+		decreaseSpacing.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
+				if (seqChartFigure.getAxisSpacing()>5)
+				seqChartFigure.setAxisSpacing(seqChartFigure.getAxisSpacing()-5);
+			}});
+		
+		showMessageNames.addSelectionListener(new SelectionAdapter () {
 			public void widgetSelected(SelectionEvent e) {
 				seqChartFigure.setShowMessageNames(((Button)e.getSource()).getSelection());
 			}
 		});
 		
-		showNonDeliveryMessages.addSelectionListener(new SelectionListener () {
-			public void widgetDefaultSelected(SelectionEvent e) {
-				seqChartFigure.setShowNonDeliveryMessages(((Button)e.getSource()).getSelection());
-			}
+		showNonDeliveryMessages.addSelectionListener(new SelectionAdapter () {
 			public void widgetSelected(SelectionEvent e) {
 				seqChartFigure.setShowNonDeliveryMessages(((Button)e.getSource()).getSelection());
 			}
 		});
 		
-		showEventNumbers.addSelectionListener(new SelectionListener () {
-			public void widgetDefaultSelected(SelectionEvent e) {
-				seqChartFigure.setShowEventNumbers(((Button)e.getSource()).getSelection());
-			}
+		showEventNumbers.addSelectionListener(new SelectionAdapter () {
 			public void widgetSelected(SelectionEvent e) {
 				seqChartFigure.setShowEventNumbers(((Button)e.getSource()).getSelection());
 			}
 		});
 		
-		timelineMode.addSelectionListener(new SelectionListener () {
-			public void widgetDefaultSelected(SelectionEvent e) {
-				seqChartFigure.setTimelineMode(SeqChartFigure.TimelineMode.values()[((Combo)e.getSource()).getSelectionIndex()]);
-			}
+		timelineMode.addSelectionListener(new SelectionAdapter () {
 			public void widgetSelected(SelectionEvent e) {
 				seqChartFigure.setTimelineMode(SeqChartFigure.TimelineMode.values()[((Combo)e.getSource()).getSelectionIndex()]);
 			}
 		});
 		
-		timelineSortMode.addSelectionListener(new SelectionListener () {
-			public void widgetDefaultSelected(SelectionEvent e) {
-				seqChartFigure.setTimelineSortMode(SeqChartFigure.TimelineSortMode.values()[((Combo)e.getSource()).getSelectionIndex()]);
-			}
+		timelineSortMode.addSelectionListener(new SelectionAdapter () {
 			public void widgetSelected(SelectionEvent e) {
 				seqChartFigure.setTimelineSortMode(SeqChartFigure.TimelineSortMode.values()[((Combo)e.getSource()).getSelectionIndex()]);
 			}

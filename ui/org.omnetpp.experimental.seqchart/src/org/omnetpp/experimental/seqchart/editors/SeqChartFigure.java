@@ -53,14 +53,15 @@ import org.omnetpp.scave.engine.MessageEntry;
 //    take much less time (to verify, comment out body of drawMessageArrow()).
 //    Solution: draw into an off-screen image, and use that during repaints!
 //TODO refine tooltips: if there's an event in the hover, don't print msgs in detail, only this "and 5 message arrows"
+//TODO tooltip for arrows too
 //TODO factor out common part of paintFigure() and collectStuffUnderMouse(), using "lambda function" 
 //FIXME messages created in initialize() appear to have been created in event #0!!!
 //FIXME scrollbar breaks badly when chart size exceeds ~4,000,000 pixels (this means only ~0.1s resolution ticks on an 1000s trace!!! not enough!)
 //FIXME BUG: axis tick scale not always right (often there are no ticks visible)
-//TODO nondelivery msg arrows should be only half the height
 //TODO Enter_Method nondelivery arrows! line + half-ellipse
 //TODO rename SortMode to OrderingMode?
-//TODO add controls to change axis spacing
+//TODO rewrite collectStuffUnderMouse()
+//TODO cf with ns2 trace file and cEnvir callbacks, and modify file format...
 
 public class SeqChartFigure extends Figure implements ISelectionProvider {
 
@@ -89,7 +90,7 @@ public class SeqChartFigure extends Figure implements ISelectionProvider {
 	private int selfArrowHeight = 20; // vertical radius of ellipse for self arrows
 	private int arrowHeadLength = 10; // length of message arrow head
 	private int arrowHeadWideness = 7; // wideness of message arrow head
-	private int labelDistance = 20; // distance of timeline label above axis
+	private int labelDistance = 15; // distance of timeline label above axis
 	private int eventRadius = 10; // radius of event circle
 	private int tickLabelWidth = 50; // minimum tick label width reserved
 
@@ -170,6 +171,16 @@ public class SeqChartFigure extends Figure implements ISelectionProvider {
 		System.out.println("pixels per timeline unit: "+pixelsPerTimelineUnit);
 	}
 	
+	public int getAxisSpacing() {
+		return axisSpacing;
+	}
+
+	public void setAxisSpacing(int axisSpacing) {
+		this.axisSpacing = axisSpacing>0 ? axisSpacing : 1;
+		recalculatePreferredSize();
+		repaint();
+	}
+
 	public void setShowMessageNames(boolean showMessageNames) {
 		this.showMessageNames = showMessageNames;
 		repaint();
@@ -870,9 +881,12 @@ public class SeqChartFigure extends Figure implements ISelectionProvider {
 		
 		// test if self-message (y1==y2) or not
 		if (y1==y2) {
+
+			int halfEllipseHeight = isDelivery ? selfArrowHeight : selfArrowHeight/2;
+			
 			if (x1==x2) {
 				// draw vertical line (as zero-width half ellipse) 
-				graphics.drawLine(x1, y1, x1, y1 - selfArrowHeight);
+				graphics.drawLine(x1, y1, x1, y1 - halfEllipseHeight);
 
 				if (arrowHeadInClipping)
 					drawArrowHead(graphics, x1, y1, 0, 1);
@@ -882,8 +896,8 @@ public class SeqChartFigure extends Figure implements ISelectionProvider {
 			}
 			else {
 				// draw half ellipse
-				Rectangle.SINGLETON.setLocation(x1, y1 - selfArrowHeight);
-				Rectangle.SINGLETON.setSize(x2-x1, selfArrowHeight * 2);
+				Rectangle.SINGLETON.setLocation(x1, y1 - halfEllipseHeight);
+				Rectangle.SINGLETON.setSize(x2-x1, halfEllipseHeight * 2);
 				graphics.drawArc(Rectangle.SINGLETON, 0, 180);
 				
 				if (arrowHeadInClipping) {
@@ -911,11 +925,11 @@ public class SeqChartFigure extends Figure implements ISelectionProvider {
 				}
 
 				if (showMessageNames)
-					drawMessageArrowLabel(graphics, arrowLabel, (x1 + x2) / 2, y1, 0, -selfArrowHeight - 15);
+					drawMessageArrowLabel(graphics, arrowLabel, (x1 + x2) / 2, y1, 0, -halfEllipseHeight - 15);
 			}
 		}
 		else {
-			//XXX some attempt do do manual clipping...
+			//XXX an attempt for performance improvement (clip by y early)  
 			//graphics.clipRect(Rectangle.SINGLETON);
 			//if (Rectangle.SINGLETON.y > y1 && Rectangle.SINGLETON.y > y2)
 			//	return;
@@ -963,7 +977,8 @@ public class SeqChartFigure extends Figure implements ISelectionProvider {
 		rect.intersect(bounds); // although looks like Clip is already set up like this
 
 		// draw axis label
-		graphics.drawText(label, scrollPane.getViewport().getBounds().x+5, y - labelDistance);
+		if (labelDistance < axisSpacing)
+			graphics.drawText(label, scrollPane.getViewport().getBounds().x+5, y - labelDistance);
 		
 		// draw axis
 		graphics.drawLine(rect.x, y, rect.right(), y);
@@ -982,7 +997,8 @@ public class SeqChartFigure extends Figure implements ISelectionProvider {
 			int x = simulationTimeToPixel(t.doubleValue());
 			if (x - previousTickLabelX >= tickLabelWidth) {
 				graphics.drawLine(x, y-2, x, y+2);
-				graphics.drawText(t.toPlainString() + "s", x, y+3);
+				if (labelDistance < axisSpacing)
+					graphics.drawText(t.toPlainString() + "s", x, y+3);
 				previousTickLabelX = x;
 			}
 		}
