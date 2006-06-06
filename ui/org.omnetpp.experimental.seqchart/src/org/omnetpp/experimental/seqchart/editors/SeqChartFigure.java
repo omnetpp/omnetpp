@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
 
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.ListenerList;
 import org.eclipse.draw2d.Figure;
 import org.eclipse.draw2d.Graphics;
@@ -52,8 +53,6 @@ import org.omnetpp.scave.engine.MessageEntry;
 //XXX Performance note: perf log is line drawing. Coordinate calculations etc
 //    take much less time (to verify, comment out body of drawMessageArrow()).
 //    Solution: draw into an off-screen image, and use that during repaints!
-//TODO refine tooltips: if there's an event in the hover, don't print msgs in detail, only this "and 5 message arrows"
-//TODO tooltip for arrows too
 //TODO factor out common part of paintFigure() and collectStuffUnderMouse(), using "lambda function" 
 //FIXME messages created in initialize() appear to have been created in event #0!!!
 //FIXME scrollbar breaks badly when chart size exceeds ~4,000,000 pixels (this means only ~0.1s resolution ticks on an 1000s trace!!! not enough!)
@@ -107,7 +106,7 @@ public class SeqChartFigure extends Figure implements ISelectionProvider {
 	
 	private int dragStartX, dragStartY; // temporary variables for drag handling
 	private List<ModuleTreeItem> axisModules; // the modules which should have an axis (they must be part of a module tree!)
-	private Integer[] axisModulePositions; // y positions (not coordinates) assigned to axis modules (in the same order as axisModules)
+	private Integer[] axisModulePositions; // y order of the axis modules (in the same order as axisModules); this is a permutation of the 0..axisModule.size()-1 numbers
 
 	private ArrayList<SelectionListener> selectionListenerList = new ArrayList<SelectionListener>(); // SWT selection listeners
 
@@ -321,19 +320,19 @@ public class SeqChartFigure extends Figure implements ISelectionProvider {
 	 */
 	private void sortTimelinesByModuleId()
 	{
-		Integer[] axisModulesIndexes = new Integer[axisModules.size()];
+		Integer[] axisModulesIndices = new Integer[axisModules.size()];
 		
-		for (int i = 0; i < axisModulesIndexes.length; i++)
-			axisModulesIndexes[i] = i;
+		for (int i = 0; i < axisModulesIndices.length; i++)
+			axisModulesIndices[i] = i;
 		
-		java.util.Arrays.sort(axisModulesIndexes, new java.util.Comparator<Integer>() {
+		java.util.Arrays.sort(axisModulesIndices, new java.util.Comparator<Integer>() {
 				public int compare(Integer o1, Integer o2) {
 					return ((Integer)axisModules.get(o1).getModuleId()).compareTo(axisModules.get(o2).getModuleId());
 				}
 			});
 		
-		for (int i = 0; i < axisModulesIndexes.length; i++)
-			axisModulePositions[axisModulesIndexes[i]] = i;
+		for (int i = 0; i < axisModulesIndices.length; i++)
+			axisModulePositions[axisModulesIndices[i]] = i;
 	}
 	
 	/**
@@ -1259,39 +1258,76 @@ public class SeqChartFigure extends Figure implements ISelectionProvider {
 	 * Calls collectStuffUnderMouse(), and assembles a possibly multi-line
 	 * tooltip text from it. Returns null if there's no text to display.
 	 */
+	//FIXME prevent long tooltip lines from wrapping, if possible at all
 	protected String getTooltipText(int x, int y) {
 		ArrayList<EventEntry> events = new ArrayList<EventEntry>();
 		ArrayList<MessageEntry> msgs = new ArrayList<MessageEntry>();
 		collectStuffUnderMouse(x, y, events, msgs);
 
-		if (events.isEmpty() && msgs.isEmpty())
-			return null;
-		String res = "";
-		if (events.size()+msgs.size()>1) {
-			if (events.size()>0 && msgs.size()>0)
-				res = "Multiple hits ("+events.size()+" events, "+msgs.size()+" messages):\n";
-			else if (events.size()>0)
-				res = "Multiple hits ("+events.size()+" events):\n";
-			else
-				res = "Multiple hits ("+msgs.size()+" messages):\n";
+		// 1) if there are events under them mouse, show them in the tooltip
+		if (events.size()>0) {
+			String res = "";
+			if (events.size()>1)
+				res = "** "+events.size()+" events:\n";
+			int count = 0;
+			for (EventEntry event : events) {
+				// truncate to 10 events (~30 lines)
+				if (count++ > 10) {
+					res += "...and "+(events.size()-count)+" more";
+					break;
+				}
+				// note: extra newlines are there because tooltips wrap long lines automatically (Windows)
+				res += "Event #"+event.getEventNumber()+" at t="+event.getSimulationTime()
+		    		+"\n   at ("+event.getCause().getModule().getModuleClassName()+")"
+		    		+event.getCause().getModule().getModuleFullPath()
+		    		+" (id="+event.getCause().getModule().getModuleId()+")"
+		    		+"\n   message ("+event.getCause().getMessageClassName()+")"
+		    		+event.getCause().getMessageName()+"\n";
+			}
+			return res;
 		}
-
-		for (EventEntry event : events) {
-			res += "Event #"+event.getEventNumber()
-	    		+" at t="+event.getSimulationTime()
-	    		+"\n    at module ("+event.getCause().getModule().getModuleClassName()+")"
-	    		+event.getCause().getModule().getModuleFullPath()
-	    		+" (id="+event.getCause().getModule().getModuleId()+")"
-	    		+"\n    message ("+event.getCause().getMessageClassName()+")"
-	    		+event.getCause().getMessageName()+"\n";
-		}
-
-		for (MessageEntry msg : msgs) {
-			res += "Message ("+msg.getMessageClassName()+") "+msg.getMessageName()
+			
+		// 2) no events: show message arrows info
+		if (msgs.size()>1) {
+			String res = "";
+			int count = 0;
+			if (msgs.size()>1)
+				res = "** "+msgs.size()+" message arrows:\n";
+			for (MessageEntry msg : msgs) {
+				// truncate tooltip to 30 lines
+				if (count++ > 10) {
+					res += "...and "+(msgs.size()-count)+" more";
+					break;
+				}
+				// add message
+				res += "Message ("+msg.getMessageClassName()+") "+msg.getMessageName()
 				+"  (#"+msg.getSource().getEventNumber()+" -> #"+msg.getTarget().getEventNumber()+")\n"; 
+			}
+			return res;
 		}
-		//XXX truncate to, say, 20 lines (chop off the rest, and add "...")
-		return res;
+
+		// 3) no events or message arrows: show axis info
+		int nearestAxisPos = (y - getBounds().y - axisOffset + axisSpacing/2) / axisSpacing;
+		int nearestAxisY = getBounds().y + axisOffset + nearestAxisPos * axisSpacing;
+		System.out.println("nearest:"+nearestAxisPos);
+		if (Math.abs(y - nearestAxisY) <= MOUSE_TOLERANCE) {
+			String res = "";
+			int axisModuleIndex = -1;
+			for (int i=0; i<axisModulePositions.length; i++)
+				if (axisModulePositions[i]==nearestAxisPos)
+					axisModuleIndex = i;
+			Assert.isTrue(axisModuleIndex>=0);
+			res += "Axis "+nearestAxisPos+":\n"+axisModules.get(axisModuleIndex).getModuleFullPath()+"\n";
+			double t = pixelToSimulationTime(x);
+			res += String.format("t = %gs", t);
+			EventEntry event = eventLog.getLastEventBefore(t);
+			if (event!=null)
+				res += "\njust after event #"+event.getEventNumber(); 
+			return res;
+		}
+
+		// absolutely nothing to say
+		return null;
 	}
 
 	/**
