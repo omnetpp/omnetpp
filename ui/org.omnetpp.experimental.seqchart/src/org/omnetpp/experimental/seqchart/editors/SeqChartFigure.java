@@ -58,8 +58,9 @@ import org.omnetpp.scave.engine.MessageEntry;
 //FIXME scrollbar breaks badly when chart size exceeds ~4,000,000 pixels (this means only ~0.1s resolution ticks on an 1000s trace!!! not enough!)
 //FIXME BUG: axis tick scale not always right (often there are no ticks visible)
 //TODO Enter_Method nondelivery arrows! line + half-ellipse
-//TODO rename SortMode to OrderingMode?
-//TODO rewrite collectStuffUnderMouse()
+//TODO renaming: DELIVERY->SENDING, NONDELIVERY->USAGE, isDelivery->isSending;
+//               Timeline modes: Linear, Step, Compact (=nonlinear), Compact2 (CompactWithStep);
+//               SortMode to OrderingMode
 //TODO cf with ns2 trace file and cEnvir callbacks, and modify file format...
 
 public class SeqChartFigure extends Figure implements ISelectionProvider {
@@ -132,7 +133,6 @@ public class SeqChartFigure extends Figure implements ISelectionProvider {
 	
 	/**
      * Constructor.
-	 * We need to know the surrounding scroll pane to be able to scroll here and there.
      */
 	public SeqChartFigure(Canvas canvas, ScrollPane scrollPane) {
 		this.canvas = canvas;
@@ -170,23 +170,39 @@ public class SeqChartFigure extends Figure implements ISelectionProvider {
 		System.out.println("pixels per timeline unit: "+pixelsPerTimelineUnit);
 	}
 	
+	/**
+	 * Returns the pixel distance between adjacent axes in the chart.
+	 */
 	public int getAxisSpacing() {
 		return axisSpacing;
 	}
 
+	/**
+	 * Sets the pixel distance between adjacent axes in the chart.
+	 */
 	public void setAxisSpacing(int axisSpacing) {
 		this.axisSpacing = axisSpacing>0 ? axisSpacing : 1;
 		recalculatePreferredSize();
 		repaint();
 	}
 
+	/**
+	 * Hide/show message names on the arrows.
+	 */
 	public void setShowMessageNames(boolean showMessageNames) {
 		this.showMessageNames = showMessageNames;
 		repaint();
 	}
 
 	/**
-	 * Shows/Hides non delivery messages.
+	 * Returns whether message names are displayed on the arrows.
+	 */
+	public boolean getShowMessageNames() {
+		return showMessageNames;
+	}
+
+	/**
+	 * Shows/Hides non-delivery messages.
 	 */
 	public void setShowNonDeliveryMessages(boolean showNonDeliveryMessages) {
 		this.showNonDeliveryMessages = showNonDeliveryMessages;
@@ -194,11 +210,25 @@ public class SeqChartFigure extends Figure implements ISelectionProvider {
 	}
 	
 	/**
+	 * Returns whether non-delivery messages are shown in the chart.
+	 */
+	public boolean getShowNonDeliveryMessages() {
+		return showNonDeliveryMessages;
+	}
+
+	/**
 	 * Shows/Hides event numbers.
 	 */
 	public void setShowEventNumbers(boolean showEventNumbers) {
 		this.showEventNumbers = showEventNumbers;
 		repaint();
+	}
+
+	/**
+	 * Returns whether event numbers are shown in the chart.
+	 */
+	public boolean getShowEventNumbers() {
+		return showEventNumbers;
 	}
 	
 	/**
@@ -215,6 +245,13 @@ public class SeqChartFigure extends Figure implements ISelectionProvider {
 	}
 
 	/**
+	 * Returns the current timeline mode.
+	 */
+	public TimelineMode getTimelineMode() {
+		return timelineMode;
+	}
+	
+	/**
 	 * Changes the timeline sort mode and updates figure accordingly.
 	 */
 	public void setTimelineSortMode(TimelineSortMode timelineSortMode) {
@@ -224,6 +261,13 @@ public class SeqChartFigure extends Figure implements ISelectionProvider {
 		repaint();
 	}
 	
+	/**
+	 * Return the current timeline sort mode.
+	 */
+	public TimelineSortMode getTimelineSortMode() {
+		return timelineSortMode;
+	}
+
 	/**
 	 * Returns the simulation time of the canvas's center.
 	 */
@@ -284,7 +328,7 @@ public class SeqChartFigure extends Figure implements ISelectionProvider {
 	/**
 	 * Changes pixel per timeline coordinate by zoomFactor.
 	 */
-	private void zoomBy(double zoomFactor) {
+	public void zoomBy(double zoomFactor) {
 		double time = currentSimulationTime();
 		setPixelsPerTimelineUnit(getPixelsPerTimelineUnit() * zoomFactor);	
 		recalculatePreferredSize();
@@ -357,7 +401,7 @@ public class SeqChartFigure extends Figure implements ISelectionProvider {
 
 	/**
 	 * Calculates Y coordinates of axis by minimizing message arrows crossing timelines.
-	 * A message arrow costs as much as many axis it crosses.
+	 * A message arrow costs as much as many axis it crosses. Uses simulated annealing.
 	 */
 	private void sortTimelinesByMinimizingCost(IntVector axisMatrix)
 	{
@@ -612,7 +656,7 @@ public class SeqChartFigure extends Figure implements ISelectionProvider {
 			graphics.setAntialias(antiAlias ? SWT.ON : SWT.OFF);
 			graphics.setTextAntialias(SWT.ON);
 			
-			// paint events
+			// determine time and event range we need to paint
 			Rectangle rect = graphics.getClip(new Rectangle());
 			double tleft = pixelToSimulationTime(rect.x);
 			double tright = pixelToSimulationTime(rect.right());
@@ -639,7 +683,6 @@ public class SeqChartFigure extends Figure implements ISelectionProvider {
 	        	int pos = msgsIndices.get(i);
 	
 	        	// calculate coordinates
-	        	//FIXME source coordinate doesn't get calculated while target is off-screen!!! find out why!
 	        	int srcX, srcY, targetX, targetY;
 	            if (logFacade.getMessage_source_eventNumber(pos) > startEventNumber) {
 	            	srcX = logFacade.getMessage_source_cachedX(pos);
@@ -1310,7 +1353,6 @@ public class SeqChartFigure extends Figure implements ISelectionProvider {
 		// 3) no events or message arrows: show axis info
 		int nearestAxisPos = (y - getBounds().y - axisOffset + axisSpacing/2) / axisSpacing;
 		int nearestAxisY = getBounds().y + axisOffset + nearestAxisPos * axisSpacing;
-		System.out.println("nearest:"+nearestAxisPos);
 		if (Math.abs(y - nearestAxisY) <= MOUSE_TOLERANCE) {
 			String res = "";
 			int axisModuleIndex = -1;
@@ -1345,9 +1387,7 @@ public class SeqChartFigure extends Figure implements ISelectionProvider {
 		if (eventLog!=null) {
 			long startMillis = System.currentTimeMillis();
 		
-			JavaFriendlyEventLogFacade logFacade = new JavaFriendlyEventLogFacade(eventLog); 
-
-			// paint events
+			// determine start/end event numbers
 			Rectangle rect = scrollPane.getViewport().getBounds();
 			double tleft = pixelToSimulationTime(rect.x);
 			double tright = pixelToSimulationTime(rect.right());
@@ -1355,8 +1395,9 @@ public class SeqChartFigure extends Figure implements ISelectionProvider {
 			EventEntry endEvent = eventLog.getFirstEventAfter(tright);
 			int startEventIndex = (startEvent!=null) ? eventLog.findEvent(startEvent) : 0;
 			int endEventIndex = (endEvent!=null) ? eventLog.findEvent(endEvent) : eventLog.getNumEvents(); 
-
+	
 			int startEventNumber = (startEvent!=null) ? startEvent.getEventNumber() : 0;
+			int endEventNumber = (endEvent!=null) ? endEvent.getEventNumber() : Integer.MAX_VALUE;
 
 			// check events
             if (events != null) {
@@ -1367,53 +1408,35 @@ public class SeqChartFigure extends Figure implements ISelectionProvider {
 
             // check message arrows
             if (msgs != null) {
-            	for (int i=startEventIndex; i<endEventIndex; i++) {
-            		int eventX = logFacade.getEvent_i_cachedX(i);
-            		int eventY = logFacade.getEvent_i_cachedY(i);
+            	// collect moduleIds (doesn't use x,y so it may be factored out if needed)
+    			final IntSet moduleIds = new IntSet();
+    			for (int i=0; i<axisModules.size(); i++) {
+    				ModuleTreeItem treeItem = axisModules.get(i);
+    				final int y = getBounds().y + axisOffset + axisModulePositions[i] * axisSpacing;
+    				// propagate y to all submodules recursively
+    				treeItem.visitLeaves(new ModuleTreeItem.IModuleTreeItemVisitor() {
+    					public void visit(ModuleTreeItem treeItem) {
+    						moduleIds.insert(treeItem.getModuleId());
+    					}
+    				});
+    			}
 
-            		// check forward arrows for this event
-            		int numConsequences = logFacade.getEvent_i_numConsequences(i);
-            		for (int k=0; k<numConsequences; k++) {
-                		boolean isDelivery = logFacade.getEvent_i_consequences_k_isDelivery(i,k);
-                   		if ((isDelivery || showNonDeliveryMessages) &&
-            				logFacade.getEvent_i_consequences_k_hasTarget(i, k) &&
-            				logFacade.getEvent_i_consequences_k_target_isInFilteredSubset(i, k, eventLog))
-                   		{
-            				if (messageArrowContainsPoint(
-            						eventX,
-            						eventY,
-            						logFacade.getEvent_i_consequences_k_target_cachedX(i, k),
-            						logFacade.getEvent_i_consequences_k_target_cachedY(i, k),
-            						mouseX, 
-            						mouseY,
-            						MOUSE_TOLERANCE))
-            					msgs.add(eventLog.getEvent(i).getConsequences().get(k));
-            			}
-            		}
-
-            		// check backward arrows that we didn't check as forward arrows
-            		int numCauses = logFacade.getEvent_i_numCauses(i);
-            		for (int k=0; k<numCauses; k++) {
-                		boolean isDelivery = logFacade.getEvent_i_causes_k_isDelivery(i,k);
-                   		if ((isDelivery || showNonDeliveryMessages) &&
-                   			logFacade.getEvent_i_causes_k_hasSource(i, k) &&
-                			logFacade.getEvent_i_causes_k_source_eventNumber(i, k) < startEventNumber &&
-        					logFacade.getEvent_i_causes_k_source_isInFilteredSubset(i, k, eventLog))
-                   		{
-        					if (messageArrowContainsPoint(
-        							logFacade.getEvent_i_causes_k_source_cachedX(i, k),
-        							logFacade.getEvent_i_causes_k_source_cachedY(i, k),
-        							eventX,
-        							eventY,
-        							mouseX, 
-        							mouseY,
-        							MOUSE_TOLERANCE))
-        						msgs.add(eventLog.getEvent(i).getConsequences().get(k));
-        				}
-            		}
+    			// collect msgs
+            	IntVector msgsIndices = eventLog.getMessagesIntersecting(startEventNumber, endEventNumber, moduleIds, showNonDeliveryMessages); 
+            	System.out.println(""+msgsIndices.size()+" msgs to draw");
+            	for (int i=0; i<msgsIndices.size(); i++) {
+            		int pos = msgsIndices.get(i);
+            		if (messageArrowContainsPoint(
+        	            	logFacade.getMessage_source_cachedX(pos),
+        	            	logFacade.getMessage_source_cachedY(pos),
+        	            	logFacade.getMessage_target_cachedX(pos),
+        	            	logFacade.getMessage_target_cachedY(pos),
+            				mouseX, 
+            				mouseY,
+            				MOUSE_TOLERANCE))
+            			msgs.add(eventLog.getMessage(pos));
             	}
             }
-
             long millis = System.currentTimeMillis()-startMillis;
             System.out.println("collectStuffUnderMouse(): "+millis+"ms");
 		}

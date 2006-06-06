@@ -274,8 +274,8 @@ std::vector<int> *EventLog::getMessagesIntersecting(long startEventNumber, long 
 {
     std::vector<int> *vp = new std::vector<int>;
 
-    //XXX this is linear search and could be optimized using some clever indexing if needed
-    // (although this one is still OK up to a few million msgs)
+    // Note: this is linear search, and could be optimized using some clever indexing if needed,
+    // although this one is quite fast enough up to a few million messages
     int n = messageList.size();
     for (int i=0; i<n; i++)
     {
