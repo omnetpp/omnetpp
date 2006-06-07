@@ -52,7 +52,7 @@ import org.omnetpp.scave.engine.MessageEntry;
 //TODO limit pixelsPerTimelineUnit to a range that makes sense (for the current eventLog)
 //TODO instead of (in addition to) gotoSimulationTime(), we need gotoEvent() as well, which would do vertical scrolling too
 //TODO redraw chart with antialias while user is idle? hints: new SafeRunnable(); or:
-//canvas.getDisplay().syncExec(new Runnable() {
+//canvas.getDisplay().asyncExec(new Runnable() {
 //	public void run() { ... }
 //};
 //XXX Performance note: perf log is line drawing. Coordinate calculations etc
@@ -88,6 +88,15 @@ public class SeqChartFigure extends Figure implements ISelectionProvider {
 	private static final int ANTIALIAS_TURN_OFF_AT_MSEC = 300;
 	private static final int MOUSE_TOLERANCE = 1;
 
+	private static final int DELIVERY_SELFARROW_HEIGHT = 20; // vertical radius of ellipse for selfmsg arrows
+	private static final int NONDELIVERY_SELFARROW_HEIGHT = 10; // same for non-delivery messages
+	private static final int ARROWHEAD_LENGTH = 10; // length of message arrow head
+	private static final int ARROWHEAD_WIDTH = 7; // width of message arrow head
+	private static final int AXISLABEL_DISTANCE = 15; // distance of timeline label above axis
+	private static final int EVENT_SEL_RADIUS = 10; // radius of event selection mark circle
+	private static final int TICK_LABEL_WIDTH = 50; // minimum tick label width reserved
+	private static final int CLIPRECT_BORDER = 10; // should be greater than an arrowhead or event "ball" radius
+	
 	protected EventLog eventLog; // contains the data to be displayed
 	protected JavaFriendlyEventLogFacade logFacade; // helpful facade on eventlog
 	
@@ -97,19 +106,13 @@ public class SeqChartFigure extends Figure implements ISelectionProvider {
 	private boolean showArrowHeads = true; // whether arrow heads are drawn or not
 	private int axisOffset = 50;  // y coord of first axis
 	private int axisSpacing = 50; // y distance between two axes
-	private int selfArrowHeight = 20; // vertical radius of ellipse for self arrows
-	private int arrowHeadLength = 10; // length of message arrow head
-	private int arrowHeadWidth = 7; // width of message arrow head
-	private int labelDistance = 15; // distance of timeline label above axis
-	private int eventRadius = 10; // radius of event circle
-	private int tickLabelWidth = 50; // minimum tick label width reserved
 
 	private boolean showMessageNames;
-	private boolean showNonDeliveryMessages; // show or hide non delivery message arrows
+	private boolean showNonDeliveryMessages; // show or hide non-delivery message arrows
 	private boolean showEventNumbers;
 	private TimelineMode timelineMode = TimelineMode.LINEAR; // specifies timeline x coordinate transformation, see enum
 	private TimelineSortMode timelineSortMode = TimelineSortMode.MODULE_ID; // specifies the ordering mode of timelines
-	private double nonLinearFocus = 1; // parameter for non linear timeline transformation
+	private double nonLinearFocus = 1; // parameter for non-linear timeline transformation
 	
 	private Canvas canvas;  // our host widget (reference needed for tooltip creation)
 	private ScrollPane scrollPane; // parent scrollPane
@@ -175,7 +178,7 @@ public class SeqChartFigure extends Figure implements ISelectionProvider {
 		if (pp <= 0)
 			pp = 1e-12;
 		pixelsPerTimelineUnit = pp;
-		tickScale = (int)Math.ceil(Math.log10(tickLabelWidth / pp));
+		tickScale = (int)Math.ceil(Math.log10(TICK_LABEL_WIDTH / pp));
 
 		System.out.println("pixels per timeline unit: "+pixelsPerTimelineUnit);
 	}
@@ -682,9 +685,10 @@ public class SeqChartFigure extends Figure implements ISelectionProvider {
 			graphics.setTextAntialias(SWT.ON);
 			
 			// determine time and event range we need to paint
-			Rectangle rect = graphics.getClip(new Rectangle());
-			double tleft = pixelToSimulationTime(rect.x);
-			double tright = pixelToSimulationTime(rect.right());
+			Rectangle clipRect = graphics.getClip(new Rectangle());
+			clipRect.expand(2*CLIPRECT_BORDER, 2*CLIPRECT_BORDER); // so that if an arrowhead or event "ball" extends into the cliprect, it gets redrawn
+			double tleft = pixelToSimulationTime(clipRect.x);
+			double tright = pixelToSimulationTime(clipRect.right());
 			EventEntry startEvent = eventLog.getLastEventBefore(tleft);
 			EventEntry endEvent = eventLog.getFirstEventAfter(tright);
 			int startEventIndex = (startEvent!=null) ? eventLog.findEvent(startEvent) : 0;
@@ -744,7 +748,7 @@ public class SeqChartFigure extends Figure implements ISelectionProvider {
 	
 				if (showEventNumbers) {
 	   	            graphics.setBackgroundColor(EVENT_BG_COLOR);
-	   	            graphics.fillText("#"+logFacade.getEvent_i_eventNumber(i), x-10, y - labelDistance);
+	   	            graphics.fillText("#"+logFacade.getEvent_i_eventNumber(i), x-10, y - AXISLABEL_DISTANCE);
 				}
 	        }           	
 	
@@ -756,7 +760,7 @@ public class SeqChartFigure extends Figure implements ISelectionProvider {
 	            	{
 	            		int x = sel.getCachedX();
 	            		int y = sel.getCachedY();
-	            		graphics.drawOval(x - eventRadius, y - eventRadius, eventRadius * 2 + 1, eventRadius * 2 + 1);
+	            		graphics.drawOval(x - EVENT_SEL_RADIUS, y - EVENT_SEL_RADIUS, EVENT_SEL_RADIUS * 2 + 1, EVENT_SEL_RADIUS * 2 + 1);
 	            	}
 	        	}
 	        }
@@ -930,7 +934,7 @@ public class SeqChartFigure extends Figure implements ISelectionProvider {
 
 		// optimization: check if arrowhead is in the clipping rect (don't draw it if not)
 		TEMP_RECT.setLocation(x2,y2);
-		TEMP_RECT.expand(2*arrowHeadLength, 2*arrowHeadLength);
+		TEMP_RECT.expand(2*ARROWHEAD_LENGTH, 2*ARROWHEAD_LENGTH);
 		graphics.getClip(Rectangle.SINGLETON);
 		boolean arrowHeadInClipping = Rectangle.SINGLETON.intersects(TEMP_RECT);
 		
@@ -950,7 +954,7 @@ public class SeqChartFigure extends Figure implements ISelectionProvider {
 		// test if self-message (y1==y2) or not
 		if (y1==y2) {
 
-			int halfEllipseHeight = isDelivery ? selfArrowHeight : selfArrowHeight/2;
+			int halfEllipseHeight = isDelivery ? DELIVERY_SELFARROW_HEIGHT : NONDELIVERY_SELFARROW_HEIGHT;
 			
 			if (x1==x2) {
 				// draw vertical line (as zero-width half ellipse) 
@@ -976,7 +980,7 @@ public class SeqChartFigure extends Figure implements ISelectionProvider {
 					double b = Rectangle.SINGLETON.height / 2;
 					double a2 = a * a;
 					double b2 = b * b;
-					double r = arrowHeadLength;
+					double r = ARROWHEAD_LENGTH;
 					double r2 = r *r;
 					double x = a * (-Math.sqrt(a2 * r2 + b2 * b2 - b2 * r2) + a2) / (a2 - b2);
 					double y = -Math.sqrt(r2 - (x - a) * (x - a));
@@ -1022,10 +1026,10 @@ public class SeqChartFigure extends Figure implements ISelectionProvider {
 	private void drawArrowHead(Graphics graphics, int x, int y, double dx, double dy)
 	{
 		double n = Math.sqrt(dx * dx + dy * dy);
-		double dwx = -dy / n * arrowHeadWidth / 2;
-		double dwy = dx / n * arrowHeadWidth / 2;
-		double xt = x - dx * arrowHeadLength / n;
-		double yt = y - dy * arrowHeadLength / n;
+		double dwx = -dy / n * ARROWHEAD_WIDTH / 2;
+		double dwy = dx / n * ARROWHEAD_WIDTH / 2;
+		double xt = x - dx * ARROWHEAD_LENGTH / n;
+		double yt = y - dy * ARROWHEAD_LENGTH / n;
 		int x1 = (int)Math.round(xt - dwx);
 		int y1 = (int)Math.round(yt - dwy);
 		int x2 = (int)Math.round(xt + dwx);
@@ -1045,9 +1049,9 @@ public class SeqChartFigure extends Figure implements ISelectionProvider {
 		rect.intersect(bounds); // although looks like Clip is already set up like this
 
 		// draw axis label
-		if (labelDistance < axisSpacing) {
+		if (AXISLABEL_DISTANCE < axisSpacing) {
 			graphics.setForegroundColor(LABEL_COLOR);
-			graphics.drawText(label, scrollPane.getViewport().getBounds().x+5, y - labelDistance);
+			graphics.drawText(label, scrollPane.getViewport().getBounds().x+5, y - AXISLABEL_DISTANCE);
 		}
 		
 		// draw axis
@@ -1063,13 +1067,13 @@ public class SeqChartFigure extends Figure implements ISelectionProvider {
 		BigDecimal tickIntvl = new BigDecimal(1).scaleByPowerOfTen(tickScale);
 		//System.out.println(tickStart+" - "+tickEnd+ " step "+tickIntvl);
 
-		int previousTickLabelX = -tickLabelWidth;
-		int h = labelDistance<axisSpacing ? 2 : 1;
+		int previousTickLabelX = -TICK_LABEL_WIDTH;
+		int h = AXISLABEL_DISTANCE<axisSpacing ? 2 : 1;
 		for (BigDecimal t=tickStart; t.compareTo(tickEnd)<0; t = t.add(tickIntvl)) {
 			int x = simulationTimeToPixel(t.doubleValue());
-			if (x - previousTickLabelX >= tickLabelWidth) {
+			if (x - previousTickLabelX >= TICK_LABEL_WIDTH) {
 				graphics.drawLine(x, y-h, x, y+h);
-				if (labelDistance < axisSpacing)
+				if (AXISLABEL_DISTANCE < axisSpacing)
 					graphics.drawText(t.toPlainString() + "s", x, y+3);
 				previousTickLabelX = x;
 			}
@@ -1077,7 +1081,7 @@ public class SeqChartFigure extends Figure implements ISelectionProvider {
 	}
 
 	/**
-	 * Calculates timeline coordinates for all events. It might be a non linear transformation
+	 * Calculates timeline coordinates for all events. It might be a non-linear transformation
 	 * of simulation time, event number, etc.
 	 *
 	 */
@@ -1485,7 +1489,7 @@ public class SeqChartFigure extends Figure implements ISelectionProvider {
         int y2 = logFacade.getMessage_target_cachedY(pos);
 		//System.out.printf("checking %d %d %d %d\n", x1, x2, y1, y2);
 		if (y1==y2) {
-			int height = logFacade.getMessage_isDelivery(pos) ? selfArrowHeight : selfArrowHeight/2;
+			int height = logFacade.getMessage_isDelivery(pos) ? DELIVERY_SELFARROW_HEIGHT : NONDELIVERY_SELFARROW_HEIGHT;
 			return halfEllipseContainsPoint(x1, x2, y1, height, px, py, tolerance);
 		}
 		else {
