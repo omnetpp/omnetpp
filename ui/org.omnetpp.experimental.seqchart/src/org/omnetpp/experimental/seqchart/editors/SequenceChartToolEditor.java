@@ -290,8 +290,12 @@ public class SequenceChartToolEditor extends EditorPart {
 		eventcombo.removeAll();
     	eventcombo.add("All events");
     	JavaFriendlyEventLogFacade logFacade = new JavaFriendlyEventLogFacade(eventLog);
-	    for (int i=0; i<logFacade.getNumEvents(); i++) 
+    	int n = logFacade.getNumEvents();
+    	if (n>1000) n = 1000;
+	    for (int i=0; i<n; i++) 
 	    	eventcombo.add(getLabelForEvent(logFacade, i));
+    	if (logFacade.getNumEvents()>n)
+    		eventcombo.add("...and "+(logFacade.getNumEvents()-n)+" more");
     	eventcombo.select(0);
 	}
 

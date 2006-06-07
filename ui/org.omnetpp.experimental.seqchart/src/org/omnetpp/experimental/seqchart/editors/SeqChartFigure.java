@@ -146,6 +146,76 @@ public class SeqChartFigure extends Figure implements ISelectionProvider {
 	}
 	
 	/**
+	 * This class is for optimizing the case when the chart is zoomed out and
+	 * there's a large number of connection arrows, on top of each other.
+	 * Most arrows tend to be vertical then, so we only need to bother with
+	 * drawing vertical lines if it sets new pixels over previously drawn ones
+	 * at that x coordinate. We exploit that x coordinates grow monotonously.  
+	 */
+	static class VLineBuffer {
+		int currentX = -1;
+		static class Region {
+			int y1, y2; 
+			Region() {} 
+			Region(int y1, int y2) {this.y1=y1; this.y2=y2;} 
+		}
+		ArrayList<Region> regions = new ArrayList<Region>();
+
+		public boolean vlineContainsNewPixel(int x, int y1, int y2) {
+			if (y1>y2) {
+				int tmp = y1;
+				y1 = y2;
+				y2 = tmp;
+			}
+			if (x!=currentX) {
+				// start new X
+				Region r = regions.isEmpty() ? new Region() : regions.get(0);
+				regions.clear();
+				r.y1 = y1;
+				r.y2 = y2;
+				regions.add(r);
+				currentX = x;
+				return true;
+			}
+
+			// find an overlapping region
+			int i = findOverlappingRegion(y1, y2);
+			if (i==-1) {
+				// no overlapping region, add this one and return
+				regions.add(new Region(y1, y2));
+				return true;
+			}
+
+			// existing region entirely contains this one (most frequent, fast route)
+			Region r = regions.get(i);
+			if (y1>=r.y1 && y2<=r.y2)
+				return false;
+
+			// merge it into other regions
+			mergeRegion(new Region(y1, y2));
+			return true;
+		}
+		private void mergeRegion(Region r) {
+			// merge all regions into r, then add it back
+			int i;
+			while ((i = findOverlappingRegion(r.y1, r.y2)) != -1) {
+				Region r2 = regions.remove(i);
+				if (r.y1>r2.y1) r.y1 = r2.y1; 
+				if (r.y2<r2.y2) r.y2 = r2.y2;
+			}
+			regions.add(r);
+		}
+		private int findOverlappingRegion(int y1, int y2) {
+			for (int i=0; i<regions.size(); i++) {
+				Region r = regions.get(i);
+				if (r.y1 < y2 && r.y2 > y1)
+					return i;
+			}
+			return -1;
+		}
+	}
+	
+	/**
      * Constructor.
      */
 	public SeqChartFigure(Canvas canvas, ScrollPane scrollPane) {
@@ -709,6 +779,7 @@ public class SeqChartFigure extends Figure implements ISelectionProvider {
 	        // paint arrows
 	        IntVector msgsIndices = eventLog.getMessagesIntersecting(startEventNumber, endEventNumber, moduleIds, showNonDeliveryMessages); 
 	        System.out.println(""+msgsIndices.size()+" msgs to draw");
+	        VLineBuffer vlineBuffer = new VLineBuffer();
 	        for (int i=0; i<msgsIndices.size(); i++) {
 	        	int pos = msgsIndices.get(i);
 	
@@ -731,7 +802,7 @@ public class SeqChartFigure extends Figure implements ISelectionProvider {
 	            }
 	
 	            // paint
-	            drawMessageArrow(graphics, pos);
+	            drawMessageArrow(graphics, pos, vlineBuffer);
 	        }
 	        msgsIndices.delete();
 	        
@@ -927,7 +998,7 @@ public class SeqChartFigure extends Figure implements ISelectionProvider {
 //		}
 //	}
 
-	private void drawMessageArrow(Graphics graphics, int pos) {
+	private void drawMessageArrow(Graphics graphics, int pos, VLineBuffer vlineBuffer) {
         int x1 = logFacade.getMessage_source_cachedX(pos);
         int y1 = logFacade.getMessage_source_cachedY(pos);
         int x2 = logFacade.getMessage_target_cachedX(pos);
@@ -935,7 +1006,7 @@ public class SeqChartFigure extends Figure implements ISelectionProvider {
 		//System.out.printf("drawing %d %d %d %d \n", x1, x2, y1, y2);
 
 		// optimization: check if arrowhead is in the clipping rect (don't draw it if not)
-		TEMP_RECT.setLocation(x2,y2);
+		TEMP_RECT.setLocation(x2,y2); // no need if showArrowhead is off
 		TEMP_RECT.expand(2*ARROWHEAD_LENGTH, 2*ARROWHEAD_LENGTH);
 		graphics.getClip(Rectangle.SINGLETON);
 		boolean arrowHeadInClipping = Rectangle.SINGLETON.intersects(TEMP_RECT);
@@ -967,7 +1038,8 @@ public class SeqChartFigure extends Figure implements ISelectionProvider {
 			
 			if (x1==x2) {
 				// draw vertical line (as zero-width half ellipse) 
-				graphics.drawLine(x1, y1, x1, y1 - halfEllipseHeight);
+				if (vlineBuffer.vlineContainsNewPixel(x1, y1-halfEllipseHeight, y1))
+					graphics.drawLine(x1, y1, x1, y1 - halfEllipseHeight);
 
 				if (arrowHeadInClipping && showArrowHeads)
 					drawArrowHead(graphics, x1, y1, 0, 1);
@@ -1010,13 +1082,9 @@ public class SeqChartFigure extends Figure implements ISelectionProvider {
 			}
 		}
 		else {
-			//XXX an attempt for performance improvement (clip by y early)  
-			//graphics.clipRect(Rectangle.SINGLETON);
-			//if (Rectangle.SINGLETON.y > y1 && Rectangle.SINGLETON.y > y2)
-			//	return;
-			//if (Rectangle.SINGLETON.bottom() < y1 && Rectangle.SINGLETON.bottom() < y2)
-			//	return;
-			graphics.drawLine(x1, y1, x2, y2);
+			// draw straight line
+			if (x1!=x2 || vlineBuffer.vlineContainsNewPixel(x1, y1, y2))
+				graphics.drawLine(x1, y1, x2, y2);
 			
 			if (arrowHeadInClipping && showArrowHeads)
 				drawArrowHead(graphics, x2, y2, x2 - x1, y2 - y1);
