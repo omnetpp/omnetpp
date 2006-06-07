@@ -171,7 +171,7 @@ public class SequenceChartToolEditor extends EditorPart {
 		timelineMode.setVisibleItemCount(SeqChartFigure.TimelineMode.values().length);
 		
 		Button showNonDeliveryMessages = new Button(controlStrip, SWT.CHECK);
-		showNonDeliveryMessages.setText("Usage");
+		showNonDeliveryMessages.setText("Usage arrows");
 		
 		Button showEventNumbers = new Button(controlStrip, SWT.CHECK);
 		showEventNumbers.setText("Event#");
@@ -179,6 +179,9 @@ public class SequenceChartToolEditor extends EditorPart {
 		Button showMessageNames = new Button(controlStrip, SWT.CHECK);
 		showMessageNames.setText("Msg name");
 		
+		Button showArrowHeads = new Button(controlStrip, SWT.CHECK);
+		showArrowHeads.setText("Arrowheads");
+
 		Button selectModules = new Button(controlStrip, SWT.NONE);
 		selectModules.setText("Modules...");
 		
@@ -259,6 +262,12 @@ public class SequenceChartToolEditor extends EditorPart {
 		showEventNumbers.addSelectionListener(new SelectionAdapter () {
 			public void widgetSelected(SelectionEvent e) {
 				seqChartFigure.setShowEventNumbers(((Button)e.getSource()).getSelection());
+			}
+		});
+
+		showArrowHeads.addSelectionListener(new SelectionAdapter () {
+			public void widgetSelected(SelectionEvent e) {
+				seqChartFigure.setShowArrowHeads(((Button)e.getSource()).getSelection());
 			}
 		});
 		

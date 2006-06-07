@@ -46,7 +46,6 @@ import org.omnetpp.scave.engine.MessageEntry;
  */
 //TODO Enter_Method nondelivery arrows! line + half-ellipse
 //FIXME BUG: axis tick scale not always right (often there are no ticks visible)
-//FIXME msg tooltips don't work again... 
 
 //TODO limit pixelsPerTimelineUnit to a range that makes sense (for the current eventLog)
 //TODO instead of (in addition to) gotoSimulationTime(), we need gotoEvent() as well, which would do vertical scrolling too
@@ -63,19 +62,24 @@ import org.omnetpp.scave.engine.MessageEntry;
 //               Timeline modes: Linear, Step, Compact (=nonlinear), Compact2 (CompactWithStep);
 //               SortMode to OrderingMode
 //TODO cf with ns2 trace file and cEnvir callbacks, and modify file format...
-
+//TODO perf: draw every kth message arrow when there are too many?
+//TODO double-click on msg arrow: should take to destination event (?)
+//TODO proper "hand" cursor - current one is not very intuitive
+//TODO when switching timeline mode: tweak zoom so that it displays the same interval!!!!
+//FIXME in some rare cases, arrow head is not shown! when ellipse is exactly a half circle? (see nclients.log, nonlinear axis)
+//FIXME fix tooltips to eliminate wrap
 public class SeqChartFigure extends Figure implements ISelectionProvider {
 
 	private static final Color LABEL_COLOR = new Color(null, 0, 0, 0);
 	private static final Color AXIS_COLOR = new Color(null, 120, 120, 120);
-	private static final Color ARROW_COLOR = new Color(null, 0, 0, 0);
+	private static final Color ARROW_COLOR = null; // defaults to line color
 	private static final Color EVENT_FG_COLOR = new Color(null,255,0,0);
 	private static final Color EVENT_BG_COLOR = new Color(null,255,255,255);
 	private static final Color MESSAGE_LABEL_COLOR = new Color(null,0,64,0);
-	private static final Color NONDELIVERY_MESSAGE_COLOR = new Color(null,0,0,255);
-	private static final Color DELIVERY_MESSAGE_COLOR = new Color(null,0,150,0);
+	private static final Color DELIVERY_MESSAGE_COLOR = new Color(null,0,0,255);
+	private static final Color NONDELIVERY_MESSAGE_COLOR = new Color(null,0,150,0);
 	private static final Cursor DRAGCURSOR = new Cursor(null, SWT.CURSOR_SIZEALL);
-	private static final int[] DOTTED_LINE_PATTERN = new int[] {1,2}; // 1px black, 2px gap
+	private static final int[] DOTTED_LINE_PATTERN = new int[] {2,2}; // 2px black, 2px gap
 	
 	private static final int XMAX = 10000;
 	private static final int ANTIALIAS_TURN_ON_AT_MSEC = 100;
@@ -88,11 +92,12 @@ public class SeqChartFigure extends Figure implements ISelectionProvider {
 	protected double pixelsPerTimelineUnit = 1;
 	protected int tickScale = 1; // -1 means step=0.1
 	private boolean antiAlias = true;  // antialiasing -- this gets turned on/off automatically
+	private boolean showArrowHeads = true; // whether arrow heads are drawn or not
 	private int axisOffset = 50;  // y coord of first axis
 	private int axisSpacing = 50; // y distance between two axes
 	private int selfArrowHeight = 20; // vertical radius of ellipse for self arrows
 	private int arrowHeadLength = 10; // length of message arrow head
-	private int arrowHeadWideness = 7; // wideness of message arrow head
+	private int arrowHeadWidth = 7; // width of message arrow head
 	private int labelDistance = 15; // distance of timeline label above axis
 	private int eventRadius = 10; // radius of event circle
 	private int tickLabelWidth = 50; // minimum tick label width reserved
@@ -234,6 +239,21 @@ public class SeqChartFigure extends Figure implements ISelectionProvider {
 		return showEventNumbers;
 	}
 	
+	/**
+	 * Shows/hides arrow heads.
+	 */
+	public boolean getShowArrowHeads() {
+		return showArrowHeads;
+	}
+
+	/**
+	 * Returns whether arrow heads are shown in the chart.
+	 */
+	public void setShowArrowHeads(boolean drawArrowHeads) {
+		this.showArrowHeads = drawArrowHeads;
+		repaint();
+	}
+
 	/**
 	 * Changes the timeline mode and updates figure accordingly.
 	 * Tries to show the current simulation time after changing the timeline coordinate system.
@@ -685,35 +705,30 @@ public class SeqChartFigure extends Figure implements ISelectionProvider {
 	        for (int i=0; i<msgsIndices.size(); i++) {
 	        	int pos = msgsIndices.get(i);
 	
-	        	// calculate coordinates
-	        	int srcX, srcY, targetX, targetY;
-	            if (logFacade.getMessage_source_eventNumber(pos) > startEventNumber) {
-	            	srcX = logFacade.getMessage_source_cachedX(pos);
-	            	srcY = logFacade.getMessage_source_cachedY(pos);
-	            }
-	            else {
+	        	// calculate missing event coordinates
+	            if (logFacade.getMessage_source_eventNumber(pos) <= startEventNumber) {
 	            	// src is outside the repaint region (on the far left)
 	            	double srcXDouble = timelineCoordinateToPixelDouble(logFacade.getMessage_source_timelineCoordinate(pos));
-	            	srcX = srcXDouble < -XMAX ? -XMAX : (int)srcXDouble;
-	            	srcY = moduleIdToAxisYMap.get(logFacade.getMessage_source_cause_module_moduleId(pos));
+	            	int srcX = srcXDouble < -XMAX ? -XMAX : (int)srcXDouble;
+	            	int srcY = moduleIdToAxisYMap.get(logFacade.getMessage_source_cause_module_moduleId(pos));
+					logFacade.setMessage_source_cachedX(pos, srcX);
+					logFacade.setMessage_source_cachedY(pos, srcY);
 	            }
-	            if (logFacade.getMessage_target_eventNumber(pos) < endEventNumber) {
-	            	targetX = logFacade.getMessage_target_cachedX(pos);
-	            	targetY = logFacade.getMessage_target_cachedY(pos);
-	            }
-	            else {
+	            if (logFacade.getMessage_target_eventNumber(pos) >= endEventNumber) {
 	            	// target is outside the repaint region (on the far right)
 	            	double targetXDouble = timelineCoordinateToPixelDouble(logFacade.getMessage_target_timelineCoordinate(pos));
-	            	targetX = targetXDouble > XMAX ? XMAX : (int)targetXDouble;
-	            	targetY = moduleIdToAxisYMap.get(logFacade.getMessage_target_cause_module_moduleId(pos));
+	            	int targetX = targetXDouble > XMAX ? XMAX : (int)targetXDouble;
+	            	int targetY = moduleIdToAxisYMap.get(logFacade.getMessage_target_cause_module_moduleId(pos));
+					logFacade.setMessage_target_cachedX(pos, targetX);
+					logFacade.setMessage_target_cachedY(pos, targetY);
 	            }
 	
 	            // paint
-	            drawMessageArrow(graphics, pos, srcX, srcY, targetX, targetY);
+	            drawMessageArrow(graphics, pos);
 	        }
 	        msgsIndices.delete();
 	        
-	        System.out.println("draw msgs: "+(System.currentTimeMillis()-startMillis)+"ms");
+	        //System.out.println("draw msgs: "+(System.currentTimeMillis()-startMillis)+"ms");
 	       
 			// paint events
 	        graphics.setForegroundColor(EVENT_FG_COLOR); 
@@ -727,7 +742,7 @@ public class SeqChartFigure extends Figure implements ISelectionProvider {
 	
 				if (showEventNumbers) {
 	   	            graphics.setBackgroundColor(EVENT_BG_COLOR);
-	   	            graphics.fillText("#"+i, x-10, y - labelDistance);
+	   	            graphics.fillText("#"+logFacade.getEvent_i_eventNumber(i), x-10, y - labelDistance);
 				}
 	        }           	
 	
@@ -904,7 +919,13 @@ public class SeqChartFigure extends Figure implements ISelectionProvider {
 //		}
 //	}
 
-	private void drawMessageArrow(Graphics graphics, int pos, int x1, int y1, int x2, int y2) {
+	private void drawMessageArrow(Graphics graphics, int pos) {
+        int x1 = logFacade.getMessage_source_cachedX(pos);
+        int y1 = logFacade.getMessage_source_cachedY(pos);
+        int x2 = logFacade.getMessage_target_cachedX(pos);
+        int y2 = logFacade.getMessage_target_cachedY(pos);
+		//System.out.printf("drawing %d %d %d %d \n", x1, x2, y1, y2);
+
 		// optimization: check if arrowhead is in the clipping rect (don't draw it if not)
 		TEMP_RECT.setLocation(x2,y2);
 		TEMP_RECT.expand(2*arrowHeadLength, 2*arrowHeadLength);
@@ -933,7 +954,7 @@ public class SeqChartFigure extends Figure implements ISelectionProvider {
 				// draw vertical line (as zero-width half ellipse) 
 				graphics.drawLine(x1, y1, x1, y1 - halfEllipseHeight);
 
-				if (arrowHeadInClipping)
+				if (arrowHeadInClipping && showArrowHeads)
 					drawArrowHead(graphics, x1, y1, 0, 1);
 
 				if (showMessageNames)
@@ -945,7 +966,7 @@ public class SeqChartFigure extends Figure implements ISelectionProvider {
 				Rectangle.SINGLETON.setSize(x2-x1, halfEllipseHeight * 2);
 				graphics.drawArc(Rectangle.SINGLETON, 0, 180);
 				
-				if (arrowHeadInClipping) {
+				if (arrowHeadInClipping && showArrowHeads) {
 					// intersection of the ellipse and a circle with the arrow length centered at the end point
 					// origin is in the center of the ellipse
 					// mupad: solve([x^2/a^2+(r^2-(x-a)^2)/b^2=1],x,IgnoreSpecialCases)
@@ -982,7 +1003,7 @@ public class SeqChartFigure extends Figure implements ISelectionProvider {
 			//	return;
 			graphics.drawLine(x1, y1, x2, y2);
 			
-			if (arrowHeadInClipping)
+			if (arrowHeadInClipping && showArrowHeads)
 				drawArrowHead(graphics, x2, y2, x2 - x1, y2 - y1);
 			
 			if (showMessageNames)
@@ -999,8 +1020,8 @@ public class SeqChartFigure extends Figure implements ISelectionProvider {
 	private void drawArrowHead(Graphics graphics, int x, int y, double dx, double dy)
 	{
 		double n = Math.sqrt(dx * dx + dy * dy);
-		double dwx = -dy / n * arrowHeadWideness / 2;
-		double dwy = dx / n * arrowHeadWideness / 2;
+		double dwx = -dy / n * arrowHeadWidth / 2;
+		double dwy = dx / n * arrowHeadWidth / 2;
 		double xt = x - dx * arrowHeadLength / n;
 		double yt = y - dy * arrowHeadLength / n;
 		int x1 = (int)Math.round(xt - dwx);
@@ -1008,7 +1029,7 @@ public class SeqChartFigure extends Figure implements ISelectionProvider {
 		int x2 = (int)Math.round(xt + dwx);
 		int y2 = (int)Math.round(yt + dwy);
 
-		graphics.setBackgroundColor(ARROW_COLOR);
+		graphics.setBackgroundColor(ARROW_COLOR!=null ? ARROW_COLOR : graphics.getForegroundColor());
 		graphics.fillPolygon(new int[] {x, y, x1, y1, x2, y2});
 	}
 
@@ -1338,7 +1359,7 @@ public class SeqChartFigure extends Figure implements ISelectionProvider {
 		}
 			
 		// 2) no events: show message arrows info
-		if (msgs.size()>1) {
+		if (msgs.size()>=1) {
 			String res = "";
 			int count = 0;
 			if (msgs.size()>1)
@@ -1351,7 +1372,7 @@ public class SeqChartFigure extends Figure implements ISelectionProvider {
 				}
 				// add message
 				res += "Message ("+msg.getMessageClassName()+") "+msg.getMessageName()
-					+"  ("+ (msg.getIsDelivery() ? "sending" : "usage")
+					+"  ("+ (msg.getIsDelivery() ? "sending" : "usage")  //TODO also: "selfmsg"
 					+", #"+msg.getSource().getEventNumber()+" -> #"+msg.getTarget().getEventNumber()+")\n"; 
 			}
 			return res;
@@ -1441,22 +1462,15 @@ public class SeqChartFigure extends Figure implements ISelectionProvider {
 
     			// collect msgs
             	IntVector msgsIndices = eventLog.getMessagesIntersecting(startEventNumber, endEventNumber, moduleIds, showNonDeliveryMessages); 
-            	System.out.println(""+msgsIndices.size()+" msgs to check");
+        		//System.out.printf("interval: #%d, #%d, %d msgs to check\n",startEventNumber, endEventNumber, msgsIndices.size());
             	for (int i=0; i<msgsIndices.size(); i++) {
             		int pos = msgsIndices.get(i);
-            		if (messageArrowContainsPoint(
-        	            	logFacade.getMessage_source_cachedX(pos),
-        	            	logFacade.getMessage_source_cachedY(pos),
-        	            	logFacade.getMessage_target_cachedX(pos),
-        	            	logFacade.getMessage_target_cachedY(pos),
-            				mouseX, 
-            				mouseY,
-            				MOUSE_TOLERANCE))
+            		if (messageArrowContainsPoint(pos, mouseX, mouseY, MOUSE_TOLERANCE))
             			msgs.add(eventLog.getMessage(pos));
             	}
             }
             long millis = System.currentTimeMillis()-startMillis;
-            System.out.println("collectStuffUnderMouse(): "+millis+"ms");
+            System.out.println("collectStuffUnderMouse(): "+millis+"ms - "+events.size()+" events, "+msgs.size()+" msgs");
 		}
 	}
 
@@ -1467,21 +1481,31 @@ public class SeqChartFigure extends Figure implements ISelectionProvider {
 		return Math.abs(x-px) <= 2+tolerance && Math.abs(y-py) <= 5+tolerance;
 	}
 
-	private boolean messageArrowContainsPoint(int x1, int y1, int x2, int y2, int px, int py, int tolerance) {
-		if (y1==y2)
-			return halfEllipseContainsPoint(x1, x2, y1, selfArrowHeight, px, py, tolerance); 
-		else
-			return lineContainsPoint(x1, y1, x2, y2, px, py, tolerance); 
+	private boolean messageArrowContainsPoint(int pos, int px, int py, int tolerance) {
+        int x1 = logFacade.getMessage_source_cachedX(pos);
+        int y1 = logFacade.getMessage_source_cachedY(pos);
+        int x2 = logFacade.getMessage_target_cachedX(pos);
+        int y2 = logFacade.getMessage_target_cachedY(pos);
+		//System.out.printf("checking %d %d %d %d\n", x1, x2, y1, y2);
+		if (y1==y2) {
+			int height = logFacade.getMessage_isDelivery(pos) ? selfArrowHeight : selfArrowHeight/2;
+			return halfEllipseContainsPoint(x1, x2, y1, height, px, py, tolerance);
+		}
+		else {
+			return lineContainsPoint(x1, y1, x2, y2, px, py, tolerance);
+		}
 	}
 	
 	private boolean halfEllipseContainsPoint(int x1, int x2, int y, int height, int px, int py, int tolerance) {
+		tolerance++;
+
 		Rectangle.SINGLETON.setSize(0, 0);
 		Rectangle.SINGLETON.setLocation(x1, y);
 		Rectangle.SINGLETON.union(x2, y-height);
 		Rectangle.SINGLETON.expand(tolerance, tolerance);
 		if (!Rectangle.SINGLETON.contains(px, py))
 			return false;
-        
+
 		int x = (x1+x2) / 2;
 		int rx = Math.abs(x1-x2) / 2;
 		int ry = height;
