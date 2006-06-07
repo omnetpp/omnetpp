@@ -265,6 +265,7 @@ public class SequenceChartToolEditor extends EditorPart {
 			}
 		});
 
+		showArrowHeads.setSelection(true);
 		showArrowHeads.addSelectionListener(new SelectionAdapter () {
 			public void widgetSelected(SelectionEvent e) {
 				seqChartFigure.setShowArrowHeads(((Button)e.getSource()).getSelection());

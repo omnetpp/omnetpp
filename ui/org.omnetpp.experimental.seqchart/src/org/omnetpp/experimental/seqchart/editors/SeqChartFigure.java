@@ -47,7 +47,8 @@ import org.omnetpp.scave.engine.MessageEntry;
  * @author andras, levy
  */
 //TODO Enter_Method nondelivery arrows! line + half-ellipse
-//FIXME BUG: axis tick scale not always right (often there are no ticks visible)
+//FIXME sometimes there's no tick visible! (axis tick scale calculated wrong?)
+//FIXME scrollbar breaks badly when chart size exceeds ~4,000,000 pixels (this means only ~0.1s resolution ticks on an 1000s trace!!! not enough!)
 
 //TODO limit pixelsPerTimelineUnit to a range that makes sense (for the current eventLog)
 //TODO instead of (in addition to) gotoSimulationTime(), we need gotoEvent() as well, which would do vertical scrolling too
@@ -55,20 +56,18 @@ import org.omnetpp.scave.engine.MessageEntry;
 //canvas.getDisplay().asyncExec(new Runnable() {
 //	public void run() { ... }
 //};
-//XXX Performance note: perf log is line drawing. Coordinate calculations etc
-//    take much less time (to verify, comment out body of drawMessageArrow()).
-//    Solution: draw into an off-screen image, and use that during repaints!
+//TODO Performance opt: draw into off-screen buffer and cache result for later
 //FIXME messages created in initialize() appear to have been created in event #0!!!
-//FIXME scrollbar breaks badly when chart size exceeds ~4,000,000 pixels (this means only ~0.1s resolution ticks on an 1000s trace!!! not enough!)
 //TODO renaming: DELIVERY->SENDING, NONDELIVERY->USAGE, isDelivery->isSending;
 //               Timeline modes: Linear, Step, Compact (=nonlinear), Compact2 (CompactWithStep);
 //               SortMode to OrderingMode
 //TODO cf with ns2 trace file and cEnvir callbacks, and modify file format...
-//TODO perf: draw every kth message arrow when there are too many?
-//TODO double-click on msg arrow: should take to destination event (?)
+//TODO double-click on msg arrow: filter?
 //TODO proper "hand" cursor - current one is not very intuitive
 //TODO when switching timeline mode: tweak zoom so that it displays the same interval!!!!
 //FIXME in some rare cases, arrow head is not shown! when ellipse is exactly a half circle? (see nclients.log, nonlinear axis)
+//TODO max number of event selection marks must be limited (e.g. max 1000)
+//FIXME auto-turn-off message names and arrowheads when there're too many messages?
 public class SeqChartFigure extends Figure implements ISelectionProvider {
 
 	private static final Color LABEL_COLOR = new Color(null, 0, 0, 0);
@@ -777,11 +776,11 @@ public class SeqChartFigure extends Figure implements ISelectionProvider {
 	        }
 	
 	        // paint arrows
-	        IntVector msgsIndices = eventLog.getMessagesIntersecting(startEventNumber, endEventNumber, moduleIds, showNonDeliveryMessages); 
-	        System.out.println(""+msgsIndices.size()+" msgs to draw");
+	        IntVector msgIndices = eventLog.getMessagesIntersecting(startEventNumber, endEventNumber, moduleIds, showNonDeliveryMessages); 
+	        System.out.println(""+msgIndices.size()+" msgs to draw");
 	        VLineBuffer vlineBuffer = new VLineBuffer();
-	        for (int i=0; i<msgsIndices.size(); i++) {
-	        	int pos = msgsIndices.get(i);
+	        for (int i=0; i<msgIndices.size(); i++) {
+	        	int pos = msgIndices.get(i);
 	
 	        	// calculate missing event coordinates
 	            if (logFacade.getMessage_source_eventNumber(pos) <= startEventNumber) {
@@ -804,22 +803,28 @@ public class SeqChartFigure extends Figure implements ISelectionProvider {
 	            // paint
 	            drawMessageArrow(graphics, pos, vlineBuffer);
 	        }
-	        msgsIndices.delete();
+	        msgIndices.delete();
 	        
-	        //System.out.println("draw msgs: "+(System.currentTimeMillis()-startMillis)+"ms");
+	        System.out.println("draw msgs: "+(System.currentTimeMillis()-startMillis)+"ms");
 	       
 			// paint events
-	        graphics.setForegroundColor(EVENT_FG_COLOR); 
+	        graphics.setForegroundColor(EVENT_FG_COLOR);
+	        HashMap<Integer,Integer> axisYtoLastX = new HashMap<Integer, Integer>();
 	        for (int i=startEventIndex; i<endEventIndex; i++) {
 				int x = logFacade.getEvent_i_cachedX(i);
 				int y = logFacade.getEvent_i_cachedY(i);
+
+				// performance optimization: don't paint event if there's one already drawn exactly there
+				if (!Integer.valueOf(x).equals(axisYtoLastX.get(y))) {
+					axisYtoLastX.put(y,x);
+					
+					graphics.setBackgroundColor(EVENT_FG_COLOR);
+					graphics.fillOval(x-2, y-3, 5, 7);
 	
-	            graphics.setBackgroundColor(EVENT_FG_COLOR);
-				graphics.fillOval(x-2, y-3, 5, 7);
-	
-				if (showEventNumbers) {
-	   	            graphics.setBackgroundColor(EVENT_BG_COLOR);
-	   	            graphics.fillText("#"+logFacade.getEvent_i_eventNumber(i), x-10, y - AXISLABEL_DISTANCE);
+					if (showEventNumbers) {
+						graphics.setBackgroundColor(EVENT_BG_COLOR);
+						graphics.fillText("#"+logFacade.getEvent_i_eventNumber(i), x-10, y - AXISLABEL_DISTANCE);
+					}
 				}
 	        }           	
 	
@@ -1005,11 +1010,15 @@ public class SeqChartFigure extends Figure implements ISelectionProvider {
         int y2 = logFacade.getMessage_target_cachedY(pos);
 		//System.out.printf("drawing %d %d %d %d \n", x1, x2, y1, y2);
 
-		// optimization: check if arrowhead is in the clipping rect (don't draw it if not)
-		TEMP_RECT.setLocation(x2,y2); // no need if showArrowhead is off
-		TEMP_RECT.expand(2*ARROWHEAD_LENGTH, 2*ARROWHEAD_LENGTH);
-		graphics.getClip(Rectangle.SINGLETON);
-		boolean arrowHeadInClipping = Rectangle.SINGLETON.intersects(TEMP_RECT);
+        // check whether we'll need to draw an arrowhead
+        boolean needArrowHead = showArrowHeads;
+		if (needArrowHead) {
+			// optimization: check if arrowhead is in the clipping rect (don't draw it if not)
+			TEMP_RECT.setLocation(x2,y2); 
+			TEMP_RECT.expand(2*ARROWHEAD_LENGTH, 2*ARROWHEAD_LENGTH);
+			graphics.getClip(Rectangle.SINGLETON);
+			needArrowHead = Rectangle.SINGLETON.intersects(TEMP_RECT);
+		}
 		
 		// message name (as label on the arrow)
 		String arrowLabel = null;
@@ -1018,11 +1027,14 @@ public class SeqChartFigure extends Figure implements ISelectionProvider {
 
 		// line color and style depends on message type
 		boolean isDelivery = logFacade.getMessage_isDelivery(pos);
-		graphics.setForegroundColor(isDelivery ? DELIVERY_MESSAGE_COLOR : NONDELIVERY_MESSAGE_COLOR);
-		if (isDelivery)
+		if (isDelivery) {
+			graphics.setForegroundColor(DELIVERY_MESSAGE_COLOR);
 			graphics.setLineStyle(SWT.LINE_SOLID);
-		else 
-			graphics.setLineDash(DOTTED_LINE_PATTERN); // SWT.LINE_DOT style is not what we'd like
+		}
+		else { 
+			graphics.setForegroundColor(NONDELIVERY_MESSAGE_COLOR);
+			graphics.setLineDash(DOTTED_LINE_PATTERN); // SWT.LINE_DOT style is not what we want
+		}
 
 		// check if message was sent from a method call (event module != message source module).
 		// XXX This currently only works for non-delivery messages, as we don't have enough info in the log file;
@@ -1041,7 +1053,7 @@ public class SeqChartFigure extends Figure implements ISelectionProvider {
 				if (vlineBuffer.vlineContainsNewPixel(x1, y1-halfEllipseHeight, y1))
 					graphics.drawLine(x1, y1, x1, y1 - halfEllipseHeight);
 
-				if (arrowHeadInClipping && showArrowHeads)
+				if (needArrowHead)
 					drawArrowHead(graphics, x1, y1, 0, 1);
 
 				if (showMessageNames)
@@ -1053,7 +1065,7 @@ public class SeqChartFigure extends Figure implements ISelectionProvider {
 				Rectangle.SINGLETON.setSize(x2-x1, halfEllipseHeight * 2);
 				graphics.drawArc(Rectangle.SINGLETON, 0, 180);
 				
-				if (arrowHeadInClipping && showArrowHeads) {
+				if (needArrowHead) {
 					// intersection of the ellipse and a circle with the arrow length centered at the end point
 					// origin is in the center of the ellipse
 					// mupad: solve([x^2/a^2+(r^2-(x-a)^2)/b^2=1],x,IgnoreSpecialCases)
@@ -1086,7 +1098,7 @@ public class SeqChartFigure extends Figure implements ISelectionProvider {
 			if (x1!=x2 || vlineBuffer.vlineContainsNewPixel(x1, y1, y2))
 				graphics.drawLine(x1, y1, x2, y2);
 			
-			if (arrowHeadInClipping && showArrowHeads)
+			if (needArrowHead)
 				drawArrowHead(graphics, x2, y2, x2 - x1, y2 - y1);
 			
 			if (showMessageNames)
@@ -1122,8 +1134,8 @@ public class SeqChartFigure extends Figure implements ISelectionProvider {
 	 */
 	private void drawAxis(Graphics graphics, int y, String label) {
 		Rectangle rect = graphics.getClip(new Rectangle());
-		Rectangle bounds = getBounds();
-		rect.intersect(bounds); // although looks like Clip is already set up like this
+		//Rectangle bounds = getBounds();
+		//rect.intersect(bounds); // although looks like Clip is already set up like this
 
 		// draw axis label
 		if (AXISLABEL_DISTANCE < axisSpacing) {
