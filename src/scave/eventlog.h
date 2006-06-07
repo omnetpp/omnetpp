@@ -332,6 +332,10 @@ class JavaFriendlyEventLogFacade
         const char *getMessage_messageClassName(int pos) {return getMessage(pos)->messageClassName;}
         const char *getMessage_messageName(int pos) {return getMessage(pos)->messageName;}
 
+        const char *getMessage_module_moduleClassName(int pos) {return getMessage(pos)->module->moduleClassName;}
+        const char *getMessage_module_moduleFullPath(int pos)  {return getMessage(pos)->module->moduleFullPath.c_str();}
+        int getMessage_module_moduleId(int pos) {return getMessage(pos)->module->moduleId;}
+
         bool getMessage_hasSource(int pos)  {return getMessage(pos)->source!=NULL;}
         bool getMessage_source_isInFilteredSubset(int pos, EventLog *filteredSubset)  {return filteredSubset->containsEvent(getMessage(pos)->source);}
         long getMessage_source_eventNumber(int pos)  {return getMessage(pos)->source->eventNumber;}

@@ -76,6 +76,7 @@ public class SeqChartFigure extends Figure implements ISelectionProvider {
 	private static final Color ARROW_COLOR = null; // defaults to line color
 	private static final Color EVENT_FG_COLOR = new Color(null,255,0,0);
 	private static final Color EVENT_BG_COLOR = new Color(null,255,255,255);
+	private static final Color EVENT_SEL_COLOR = new Color(null,255,0,0);
 	private static final Color MESSAGE_LABEL_COLOR = new Color(null,0,64,0);
 	private static final Color DELIVERY_MESSAGE_COLOR = new Color(null,0,0,255);
 	private static final Color NONDELIVERY_MESSAGE_COLOR = new Color(null,0,150,0);
@@ -738,7 +739,6 @@ public class SeqChartFigure extends Figure implements ISelectionProvider {
 	       
 			// paint events
 	        graphics.setForegroundColor(EVENT_FG_COLOR); 
-	        graphics.setBackgroundColor(EVENT_BG_COLOR);
 	        for (int i=startEventIndex; i<endEventIndex; i++) {
 				int x = logFacade.getEvent_i_cachedX(i);
 				int y = logFacade.getEvent_i_cachedY(i);
@@ -754,6 +754,8 @@ public class SeqChartFigure extends Figure implements ISelectionProvider {
 	
 	        // paint event selection marks
 	        if (selectionEvents != null) {
+				graphics.setLineStyle(SWT.LINE_SOLID);
+   	            graphics.setForegroundColor(EVENT_SEL_COLOR);
 	        	for (EventEntry sel : selectionEvents) {
 	            	if (startEventNumber<=sel.getEventNumber() &&
 	            		sel.getEventNumber()<endEventNumber)
@@ -950,6 +952,13 @@ public class SeqChartFigure extends Figure implements ISelectionProvider {
 			graphics.setLineStyle(SWT.LINE_SOLID);
 		else 
 			graphics.setLineDash(DOTTED_LINE_PATTERN); // SWT.LINE_DOT style is not what we'd like
+
+		// check if message was sent from a method call (event module != message source module).
+		// XXX This currently only works for non-delivery messages, as we don't have enough info in the log file;
+		// XXX even with non-delivery messages it acts strange... 
+		//if (!isDelivery && logFacade.getMessage_source_cause_module_moduleId(pos) != logFacade.getMessage_module_moduleId(pos)) {
+		//	graphics.setForegroundColor(EVENT_FG_COLOR); //FIXME temprarily red
+		//}
 		
 		// test if self-message (y1==y2) or not
 		if (y1==y2) {
@@ -1471,7 +1480,7 @@ public class SeqChartFigure extends Figure implements ISelectionProvider {
             	}
             }
             long millis = System.currentTimeMillis()-startMillis;
-            System.out.println("collectStuffUnderMouse(): "+millis+"ms - "+events.size()+" events, "+msgs.size()+" msgs");
+            System.out.println("collectStuffUnderMouse(): "+millis+"ms - "+(events==null ? "n/a" : events.size())+" events, "+(msgs==null ? "n/a" : msgs.size())+" msgs");
 		}
 	}
 
