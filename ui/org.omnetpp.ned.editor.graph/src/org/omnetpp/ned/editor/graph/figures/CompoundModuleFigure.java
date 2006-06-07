@@ -199,7 +199,7 @@ public class CompoundModuleFigure extends ModuleFigure
         prefSize.union(defaultSize);
         return prefSize;
     }
-
+    
     protected void layoutConnectionAnchors() {
         for (int i = 0; i < 4; i++) {
             getOutputConnectionAnchor(i + 4).setPinnedLocationX(0.125 + i / 4.0);

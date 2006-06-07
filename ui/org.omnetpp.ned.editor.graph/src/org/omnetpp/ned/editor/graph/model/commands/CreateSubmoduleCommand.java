@@ -1,13 +1,14 @@
 package org.omnetpp.ned.editor.graph.model.commands;
 
 import org.eclipse.draw2d.geometry.Rectangle;
+import org.omnetpp.ned2.model.CompoundModuleNodeEx;
 import org.omnetpp.ned2.model.ISubmoduleContainer;
 import org.omnetpp.ned2.model.INamedGraphNode;
+import org.omnetpp.ned2.model.SubmoduleNodeEx;
 
 /**
- * Adds a newly created element to the model
  * @author rhornig
- *
+ * Adds a newly created Submodule element to a compound module. 
  */
 public class CreateSubmoduleCommand extends org.eclipse.gef.commands.Command {
 
@@ -24,7 +25,9 @@ public class CreateSubmoduleCommand extends org.eclipse.gef.commands.Command {
     
     @Override
     public boolean canExecute() {
-        return child != null && parent != null;
+        return child != null && parent != null && 
+        		child instanceof SubmoduleNodeEx && 
+        		parent instanceof CompoundModuleNodeEx;
     }
 
     @Override

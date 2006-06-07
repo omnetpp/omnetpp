@@ -21,7 +21,6 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.SafeRunner;
 import org.eclipse.draw2d.DelegatingLayout;
 import org.eclipse.draw2d.FigureCanvas;
-import org.eclipse.draw2d.FreeformLayer;
 import org.eclipse.draw2d.Layer;
 import org.eclipse.draw2d.LayeredPane;
 import org.eclipse.draw2d.LightweightSystem;
@@ -42,6 +41,7 @@ import org.eclipse.gef.RootEditPart;
 import org.eclipse.gef.dnd.TemplateTransferDragSourceListener;
 import org.eclipse.gef.dnd.TemplateTransferDropTargetListener;
 import org.eclipse.gef.editparts.ScalableFreeformRootEditPart;
+import org.eclipse.gef.editparts.ScalableRootEditPart;
 import org.eclipse.gef.editparts.ZoomManager;
 import org.eclipse.gef.palette.PaletteRoot;
 import org.eclipse.gef.ui.actions.ActionRegistry;
@@ -225,7 +225,7 @@ public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette {
             LightweightSystem lws = new LightweightSystem(overview);
             RootEditPart rep = getGraphicalViewer().getRootEditPart();
             if (rep instanceof ScalableFreeformRootEditPart) {
-                ScalableFreeformRootEditPart root = (ScalableFreeformRootEditPart) rep;
+                ScalableRootEditPart root = (ScalableRootEditPart) rep;
                 thumbnail = new ScrollableThumbnail((Viewport) root.getFigure());
                 thumbnail.setBorder(new MarginBorder(3));
                 thumbnail.setSource(root.getLayer(LayerConstants.PRINTABLE_LAYERS));
@@ -414,7 +414,7 @@ public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette {
         super.configureGraphicalViewer();
         ScrollingGraphicalViewer viewer = (ScrollingGraphicalViewer) getGraphicalViewer();
 
-        ScalableFreeformRootEditPart root = new ScalableFreeformRootEditPart();
+        ScalableRootEditPart root = new ScalableRootEditPart();
 
         List zoomLevels = new ArrayList(3);
         zoomLevels.add(ZoomManager.FIT_ALL);
@@ -432,10 +432,10 @@ public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette {
         // create decoration layers and add them before and after the primary layer
         // they are used to hold figure decorations like side texts and range indicators
         LayeredPane printableLayers = (LayeredPane)root.getLayer(LayerConstants.PRINTABLE_LAYERS);
-        Layer backDecorationLayer = new FreeformLayer();
+        Layer backDecorationLayer = new Layer();
         backDecorationLayer.setLayoutManager(new DelegatingLayout());
         printableLayers.addLayerBefore(backDecorationLayer, LayerSupport.LayerID.BackgroundDecoration, LayerConstants.PRIMARY_LAYER);
-        Layer frontDecorationLayer = new FreeformLayer();
+        Layer frontDecorationLayer = new Layer();
         frontDecorationLayer.setLayoutManager(new DelegatingLayout());
         printableLayers.addLayerAfter(frontDecorationLayer, LayerSupport.LayerID.FrontDecoration, LayerConstants.PRIMARY_LAYER);
 

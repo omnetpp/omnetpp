@@ -6,10 +6,10 @@ import java.util.List;
 import org.eclipse.draw2d.Animation;
 import org.eclipse.draw2d.ConnectionLayer;
 import org.eclipse.draw2d.Figure;
-import org.eclipse.draw2d.FreeformLayer;
+import org.eclipse.draw2d.FlowLayout;
 import org.eclipse.draw2d.IFigure;
+import org.eclipse.draw2d.Layer;
 import org.eclipse.draw2d.MarginBorder;
-import org.eclipse.draw2d.XYLayout;
 import org.eclipse.gef.CompoundSnapToHelper;
 import org.eclipse.gef.DragTracker;
 import org.eclipse.gef.EditPolicy;
@@ -25,8 +25,8 @@ import org.eclipse.gef.rulers.RulerProvider;
 import org.eclipse.gef.tools.DeselectAllTracker;
 import org.eclipse.gef.tools.MarqueeDragTracker;
 import org.eclipse.swt.SWT;
-import org.omnetpp.ned.editor.graph.edit.policies.CompoundModuleLayoutEditPolicy;
-import org.omnetpp.ned.editor.graph.misc.FreeformDesktopLayout;
+import org.omnetpp.common.color.ColorFactory;
+import org.omnetpp.ned.editor.graph.edit.policies.NedFileLayoutEditPolicy;
 import org.omnetpp.ned2.model.NedFileNodeEx;
 
 /**
@@ -53,7 +53,8 @@ public class NedFileDiagramEditPart extends ContainerEditPart implements LayerCo
         installEditPolicy(EditPolicy.COMPONENT_ROLE, new RootComponentEditPolicy());
         // install a layout edit policy, this one provides also the creation commands
         // TODO this should be changed to a vertical toolbar layout
-        installEditPolicy(EditPolicy.LAYOUT_ROLE, new CompoundModuleLayoutEditPolicy((XYLayout)getContentPane().getLayoutManager()));
+//        installEditPolicy(EditPolicy.LAYOUT_ROLE, new CompoundModuleLayoutEditPolicy((XYLayout)getContentPane().getLayoutManager()));
+        installEditPolicy(EditPolicy.LAYOUT_ROLE, new NedFileLayoutEditPolicy());
         // have some snap feedback once it enabled
         // installEditPolicy("Snap Feedback", new SnapFeedbackPolicy()); //$NON-NLS-1$
     }
@@ -65,9 +66,10 @@ public class NedFileDiagramEditPart extends ContainerEditPart implements LayerCo
      */
     @Override
     protected IFigure createFigure() {
-        Figure f = new FreeformLayer();
-        f.setLayoutManager(new FreeformDesktopLayout());
+    	Figure f = new Layer();
+    	f.setLayoutManager(new FlowLayout());
         f.setBorder(new MarginBorder(5));
+    	
         return f;
     }
 
