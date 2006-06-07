@@ -42,8 +42,12 @@ import org.omnetpp.scave.engine.MessageEntry;
 /**
  * This is a sequence chart as a single figure.
  *
- * @author andras
+ * @author andras, levy
  */
+//TODO Enter_Method nondelivery arrows! line + half-ellipse
+//FIXME BUG: axis tick scale not always right (often there are no ticks visible)
+//FIXME msg tooltips don't work again... 
+
 //TODO limit pixelsPerTimelineUnit to a range that makes sense (for the current eventLog)
 //TODO instead of (in addition to) gotoSimulationTime(), we need gotoEvent() as well, which would do vertical scrolling too
 //TODO redraw chart with antialias while user is idle? hints: new SafeRunnable(); or:
@@ -53,11 +57,8 @@ import org.omnetpp.scave.engine.MessageEntry;
 //XXX Performance note: perf log is line drawing. Coordinate calculations etc
 //    take much less time (to verify, comment out body of drawMessageArrow()).
 //    Solution: draw into an off-screen image, and use that during repaints!
-//TODO factor out common part of paintFigure() and collectStuffUnderMouse(), using "lambda function" 
 //FIXME messages created in initialize() appear to have been created in event #0!!!
 //FIXME scrollbar breaks badly when chart size exceeds ~4,000,000 pixels (this means only ~0.1s resolution ticks on an 1000s trace!!! not enough!)
-//FIXME BUG: axis tick scale not always right (often there are no ticks visible)
-//TODO Enter_Method nondelivery arrows! line + half-ellipse
 //TODO renaming: DELIVERY->SENDING, NONDELIVERY->USAGE, isDelivery->isSending;
 //               Timeline modes: Linear, Step, Compact (=nonlinear), Compact2 (CompactWithStep);
 //               SortMode to OrderingMode
@@ -65,12 +66,14 @@ import org.omnetpp.scave.engine.MessageEntry;
 
 public class SeqChartFigure extends Figure implements ISelectionProvider {
 
+	private static final Color LABEL_COLOR = new Color(null, 0, 0, 0);
+	private static final Color AXIS_COLOR = new Color(null, 120, 120, 120);
 	private static final Color ARROW_COLOR = new Color(null, 0, 0, 0);
 	private static final Color EVENT_FG_COLOR = new Color(null,255,0,0);
 	private static final Color EVENT_BG_COLOR = new Color(null,255,255,255);
 	private static final Color MESSAGE_LABEL_COLOR = new Color(null,0,64,0);
 	private static final Color NONDELIVERY_MESSAGE_COLOR = new Color(null,0,0,255);
-	private static final Color DELIVERY_MESSAGE_COLOR = new Color(null,0,255,0);
+	private static final Color DELIVERY_MESSAGE_COLOR = new Color(null,0,150,0);
 	private static final Cursor DRAGCURSOR = new Cursor(null, SWT.CURSOR_SIZEALL);
 	private static final int[] DOTTED_LINE_PATTERN = new int[] {1,2}; // 1px black, 2px gap
 	
@@ -114,12 +117,12 @@ public class SeqChartFigure extends Figure implements ISelectionProvider {
 	private List<EventEntry> selectionEvents = new ArrayList<EventEntry>(); // the selection
     private ListenerList selectionChangedListeners = new ListenerList(); // list of selection change listeners (type ISelectionChangedListener).
 
-	private static Rectangle TEMP_RECT = new Rectangle();  // for tmp var for local calculations 
+	private static Rectangle TEMP_RECT = new Rectangle();  // tmp var for local calculations (a second Rectangle.SINGLETON)
     
     
 	public enum TimelineMode {
 		LINEAR,
-		STEP_BY_STEP,
+		STEP,
 		NON_LINEAR
 	}
 
@@ -146,7 +149,7 @@ public class SeqChartFigure extends Figure implements ISelectionProvider {
 	 * Returns chart scale, that is, the number of pixels a "timeline unit" maps to.
      *
 	 * The meaning of "timeline unit" depends on the timeline mode (see enum TimelineMode).
-	 * For LINEAR mode it is <i>second</i> (simulation time), for STEP_BY_STEP mode it is <i>event</i>,
+	 * For LINEAR mode it is <i>second</i> (simulation time), for STEP mode it is <i>event</i>,
 	 * and for NON_LINEAR mode it is calculated as a nonlinear function of simulation time.
 	 */
 	public double getPixelsPerTimelineUnit() {
@@ -1019,10 +1022,13 @@ public class SeqChartFigure extends Figure implements ISelectionProvider {
 		rect.intersect(bounds); // although looks like Clip is already set up like this
 
 		// draw axis label
-		if (labelDistance < axisSpacing)
+		if (labelDistance < axisSpacing) {
+			graphics.setForegroundColor(LABEL_COLOR);
 			graphics.drawText(label, scrollPane.getViewport().getBounds().x+5, y - labelDistance);
+		}
 		
 		// draw axis
+		graphics.setForegroundColor(AXIS_COLOR);
 		graphics.drawLine(rect.x, y, rect.right(), y);
 
 		double tleft = pixelToSimulationTime(rect.x);
@@ -1035,10 +1041,11 @@ public class SeqChartFigure extends Figure implements ISelectionProvider {
 		//System.out.println(tickStart+" - "+tickEnd+ " step "+tickIntvl);
 
 		int previousTickLabelX = -tickLabelWidth;
+		int h = labelDistance<axisSpacing ? 2 : 1;
 		for (BigDecimal t=tickStart; t.compareTo(tickEnd)<0; t = t.add(tickIntvl)) {
 			int x = simulationTimeToPixel(t.doubleValue());
 			if (x - previousTickLabelX >= tickLabelWidth) {
-				graphics.drawLine(x, y-2, x, y+2);
+				graphics.drawLine(x, y-h, x, y+h);
 				if (labelDistance < axisSpacing)
 					graphics.drawText(t.toPlainString() + "s", x, y+3);
 				previousTickLabelX = x;
@@ -1065,7 +1072,7 @@ public class SeqChartFigure extends Figure implements ISelectionProvider {
 	        	case LINEAR:
 	        		logFacade.setEvent_i_timelineCoordinate(i, simulationTime);
 	        		break;
-	        	case STEP_BY_STEP:
+	        	case STEP:
 	        		logFacade.setEvent_i_timelineCoordinate(i, i);
 	        		break;
 	        	case NON_LINEAR:
@@ -1090,7 +1097,7 @@ public class SeqChartFigure extends Figure implements ISelectionProvider {
     	{
         	case LINEAR:
         		return simulationTime;
-        	case STEP_BY_STEP:
+        	case STEP:
         	case NON_LINEAR:
         		int pos = eventLog.getLastEventPositionBefore(simulationTime);
         		double eventSimulationTime;
@@ -1128,7 +1135,7 @@ public class SeqChartFigure extends Figure implements ISelectionProvider {
     	{
         	case LINEAR:
         		return timelineCoordinate;
-        	case STEP_BY_STEP:
+        	case STEP:
         	case NON_LINEAR:
         		int pos = eventLog.getLastEventPositionBeforeByTimelineCoordinate(timelineCoordinate);
         		double eventSimulationTime;
@@ -1351,16 +1358,10 @@ public class SeqChartFigure extends Figure implements ISelectionProvider {
 		}
 
 		// 3) no events or message arrows: show axis info
-		int nearestAxisPos = (y - getBounds().y - axisOffset + axisSpacing/2) / axisSpacing;
-		int nearestAxisY = getBounds().y + axisOffset + nearestAxisPos * axisSpacing;
-		if (Math.abs(y - nearestAxisY) <= MOUSE_TOLERANCE) {
+		ModuleTreeItem axisModule = findAxisAt(y);
+		if (axisModule!=null) {
 			String res = "";
-			int axisModuleIndex = -1;
-			for (int i=0; i<axisModulePositions.length; i++)
-				if (axisModulePositions[i]==nearestAxisPos)
-					axisModuleIndex = i;
-			Assert.isTrue(axisModuleIndex>=0);
-			res += "Axis "+nearestAxisPos+":\n"+axisModules.get(axisModuleIndex).getModuleFullPath()+"\n";
+			res += axisModule.getModuleFullPath()+"\n";
 			double t = pixelToSimulationTime(x);
 			res += String.format("t = %gs", t);
 			EventEntry event = eventLog.getLastEventBefore(t);
@@ -1373,6 +1374,25 @@ public class SeqChartFigure extends Figure implements ISelectionProvider {
 		return null;
 	}
 
+	/**
+	 * Returns the axis at the given Y coordinate (with MOUSE_TOLERANCE), or null. 
+	 */
+	public ModuleTreeItem findAxisAt(int y) {
+		// determine which axis (1st, 2nd, etc) is nearest, and if it's "near enough"
+		int nearestAxisPos = (y - getBounds().y - axisOffset + axisSpacing/2) / axisSpacing;
+		int nearestAxisY = getBounds().y + axisOffset + nearestAxisPos * axisSpacing;
+		if (Math.abs(y - nearestAxisY) > MOUSE_TOLERANCE)
+			return null; // nothing here
+			
+		// find which ModuleTreeItem this axis corresponds to
+		int axisModuleIndex = -1;
+		for (int i=0; i<axisModulePositions.length; i++)
+			if (axisModulePositions[i]==nearestAxisPos)
+				axisModuleIndex = i;
+		Assert.isTrue(axisModuleIndex>=0);
+		return axisModules.get(axisModuleIndex);
+	}
+	
 	/**
 	 * Determines if there are any events (EventEntry) or messages (MessageEntry)
 	 * at the given mouse coordinates, and returns them in the Lists passed. 
@@ -1412,8 +1432,6 @@ public class SeqChartFigure extends Figure implements ISelectionProvider {
     			final IntSet moduleIds = new IntSet();
     			for (int i=0; i<axisModules.size(); i++) {
     				ModuleTreeItem treeItem = axisModules.get(i);
-    				final int y = getBounds().y + axisOffset + axisModulePositions[i] * axisSpacing;
-    				// propagate y to all submodules recursively
     				treeItem.visitLeaves(new ModuleTreeItem.IModuleTreeItemVisitor() {
     					public void visit(ModuleTreeItem treeItem) {
     						moduleIds.insert(treeItem.getModuleId());
@@ -1423,7 +1441,7 @@ public class SeqChartFigure extends Figure implements ISelectionProvider {
 
     			// collect msgs
             	IntVector msgsIndices = eventLog.getMessagesIntersecting(startEventNumber, endEventNumber, moduleIds, showNonDeliveryMessages); 
-            	System.out.println(""+msgsIndices.size()+" msgs to draw");
+            	System.out.println(""+msgsIndices.size()+" msgs to check");
             	for (int i=0; i<msgsIndices.size(); i++) {
             		int pos = msgsIndices.get(i);
             		if (messageArrowContainsPoint(

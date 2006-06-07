@@ -170,15 +170,15 @@ public class SequenceChartToolEditor extends EditorPart {
 		timelineMode.select(0);
 		timelineMode.setVisibleItemCount(SeqChartFigure.TimelineMode.values().length);
 		
-		Button showMessageNames = new Button(controlStrip, SWT.CHECK);
-		showMessageNames.setText("Msg");
-		
 		Button showNonDeliveryMessages = new Button(controlStrip, SWT.CHECK);
-		showNonDeliveryMessages.setText("Blue");
+		showNonDeliveryMessages.setText("Usage");
 		
 		Button showEventNumbers = new Button(controlStrip, SWT.CHECK);
-		showEventNumbers.setText("Event");
+		showEventNumbers.setText("Event#");
 
+		Button showMessageNames = new Button(controlStrip, SWT.CHECK);
+		showMessageNames.setText("Msg name");
+		
 		Button selectModules = new Button(controlStrip, SWT.NONE);
 		selectModules.setText("Modules...");
 		
