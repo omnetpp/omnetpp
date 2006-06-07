@@ -17,6 +17,7 @@ import org.eclipse.draw2d.MouseListener;
 import org.eclipse.draw2d.MouseMotionListener;
 import org.eclipse.draw2d.ScrollPane;
 import org.eclipse.draw2d.geometry.Rectangle;
+import org.eclipse.jface.text.DefaultInformationControl;
 import org.eclipse.jface.util.SafeRunnable;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
@@ -27,6 +28,7 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Cursor;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.ToolTip;
@@ -67,7 +69,6 @@ import org.omnetpp.scave.engine.MessageEntry;
 //TODO proper "hand" cursor - current one is not very intuitive
 //TODO when switching timeline mode: tweak zoom so that it displays the same interval!!!!
 //FIXME in some rare cases, arrow head is not shown! when ellipse is exactly a half circle? (see nclients.log, nonlinear axis)
-//FIXME fix tooltips to eliminate wrap
 public class SeqChartFigure extends Figure implements ISelectionProvider {
 
 	private static final Color LABEL_COLOR = new Color(null, 0, 0, 0);
@@ -82,6 +83,7 @@ public class SeqChartFigure extends Figure implements ISelectionProvider {
 	private static final int[] DOTTED_LINE_PATTERN = new int[] {2,2}; // 2px black, 2px gap
 	
 	private static final int XMAX = 10000;
+	private static final int MAX_TOOLTIP_LINES = 30;
 	private static final int ANTIALIAS_TURN_ON_AT_MSEC = 100;
 	private static final int ANTIALIAS_TURN_OFF_AT_MSEC = 300;
 	private static final int MOUSE_TOLERANCE = 1;
@@ -111,7 +113,7 @@ public class SeqChartFigure extends Figure implements ISelectionProvider {
 	
 	private Canvas canvas;  // our host widget (reference needed for tooltip creation)
 	private ScrollPane scrollPane; // parent scrollPane
-	private ToolTip swtTooltip; // the current tooltip
+	private DefaultInformationControl tooltipWidget; // the current tooltip (Note: SWT's Tooltip cannot be used as it wraps lines)
 	
 	private int dragStartX, dragStartY; // temporary variables for drag handling
 	private List<ModuleTreeItem> axisModules; // the modules which should have an axis (they must be part of a module tree!)
@@ -1309,19 +1311,20 @@ public class SeqChartFigure extends Figure implements ISelectionProvider {
 	protected void displayTooltip(int x, int y) {
 		String tooltipText = getTooltipText(x,y);
 		if (tooltipText!=null) {
-			swtTooltip = new ToolTip(canvas.getShell(), SWT.NONE);
-			swtTooltip.setMessage(tooltipText);
-			swtTooltip.setLocation(canvas.toDisplay(x,y+20));
-			swtTooltip.setVisible(true);
-			swtTooltip.setAutoHide(false);
+			tooltipWidget = new DefaultInformationControl(canvas.getShell());
+			tooltipWidget.setInformation(tooltipText);
+			tooltipWidget.setLocation(canvas.toDisplay(x,y+20));
+			Point size = tooltipWidget.computeSizeHint();
+			tooltipWidget.setSize(size.x, size.y);
+			tooltipWidget.setVisible(true);
 		}
 	}
 
 	protected void removeTooltip() {
-		if (swtTooltip!=null) {
-			swtTooltip.setVisible(false);
-			swtTooltip.dispose();
-			swtTooltip = null;
+		if (tooltipWidget!=null) {
+			tooltipWidget.setVisible(false);
+			tooltipWidget.dispose();
+			tooltipWidget = null;
 		}
 	}
 
@@ -1329,7 +1332,6 @@ public class SeqChartFigure extends Figure implements ISelectionProvider {
 	 * Calls collectStuffUnderMouse(), and assembles a possibly multi-line
 	 * tooltip text from it. Returns null if there's no text to display.
 	 */
-	//FIXME prevent long tooltip lines from wrapping, if possible at all
 	protected String getTooltipText(int x, int y) {
 		ArrayList<EventEntry> events = new ArrayList<EventEntry>();
 		ArrayList<MessageEntry> msgs = new ArrayList<MessageEntry>();
@@ -1338,23 +1340,20 @@ public class SeqChartFigure extends Figure implements ISelectionProvider {
 		// 1) if there are events under them mouse, show them in the tooltip
 		if (events.size()>0) {
 			String res = "";
-			if (events.size()>1)
-				res = "** "+events.size()+" events:\n";
 			int count = 0;
 			for (EventEntry event : events) {
-				// truncate to 10 events (~30 lines)
-				if (count++ > 10) {
+				if (count++ > MAX_TOOLTIP_LINES) {
 					res += "...and "+(events.size()-count)+" more";
 					break;
 				}
-				// note: extra newlines are there because tooltips wrap long lines automatically (Windows)
-				res += "Event #"+event.getEventNumber()+" at t="+event.getSimulationTime()
-		    		+"\n   at ("+event.getCause().getModule().getModuleClassName()+")"
+				res += "event #"+event.getEventNumber()+" at t="+event.getSimulationTime()
+		    		+"  at ("+event.getCause().getModule().getModuleClassName()+")"
 		    		+event.getCause().getModule().getModuleFullPath()
 		    		+" (id="+event.getCause().getModule().getModuleId()+")"
-		    		+"\n   message ("+event.getCause().getMessageClassName()+")"
+		    		+"  message ("+event.getCause().getMessageClassName()+")"
 		    		+event.getCause().getMessageName()+"\n";
 			}
+			res = res.trim();
 			return res;
 		}
 			
@@ -1362,32 +1361,30 @@ public class SeqChartFigure extends Figure implements ISelectionProvider {
 		if (msgs.size()>=1) {
 			String res = "";
 			int count = 0;
-			if (msgs.size()>1)
-				res = "** "+msgs.size()+" message arrows:\n";
 			for (MessageEntry msg : msgs) {
-				// truncate tooltip to 30 lines
-				if (count++ > 10) {
+				// truncate tooltip
+				if (count++ > MAX_TOOLTIP_LINES) {
 					res += "...and "+(msgs.size()-count)+" more";
 					break;
 				}
 				// add message
-				res += "Message ("+msg.getMessageClassName()+") "+msg.getMessageName()
+				res += "message ("+msg.getMessageClassName()+") "+msg.getMessageName()
 					+"  ("+ (msg.getIsDelivery() ? "sending" : "usage")  //TODO also: "selfmsg"
 					+", #"+msg.getSource().getEventNumber()+" -> #"+msg.getTarget().getEventNumber()+")\n"; 
 			}
+			res = res.trim();
 			return res;
 		}
 
 		// 3) no events or message arrows: show axis info
 		ModuleTreeItem axisModule = findAxisAt(y);
 		if (axisModule!=null) {
-			String res = "";
-			res += axisModule.getModuleFullPath()+"\n";
+			String res = "axis "+axisModule.getModuleFullPath()+"\n";
 			double t = pixelToSimulationTime(x);
 			res += String.format("t = %gs", t);
 			EventEntry event = eventLog.getLastEventBefore(t);
 			if (event!=null)
-				res += "\njust after event #"+event.getEventNumber(); 
+				res += ", just after event #"+event.getEventNumber(); 
 			return res;
 		}
 
