@@ -657,7 +657,7 @@ public abstract class NEDElement extends PlatformObject implements Iterable<NEDE
     }
     
     /**
-     * Creates a deep copy of the tree
+     * Creates a deep copy of the tree, optionally providing the new node's parent too
      * @return
      */
     public NEDElement deepDup(NEDElement parent) {

@@ -15,7 +15,7 @@ public class NedEditPartFactory implements EditPartFactory {
         EditPart child = null;
 
         if (model instanceof NedFileNodeEx) 
-        	child = new NedFileDiagramEditPart();
+        	child = new NedFileEditPart();
         else if (model instanceof CompoundModuleNodeEx)
             child = new CompoundModuleEditPart();
         else if (model instanceof SubmoduleNodeEx)

@@ -1,8 +1,7 @@
 package org.omnetpp.ned.editor.graph.edit.policies;
 
-import java.util.Iterator;
+import java.util.List;
 
-import org.eclipse.draw2d.ColorConstants;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.RectangleFigure;
 import org.eclipse.draw2d.XYLayout;
@@ -17,11 +16,9 @@ import org.eclipse.gef.editpolicies.ResizableEditPolicy;
 import org.eclipse.gef.requests.ChangeBoundsRequest;
 import org.eclipse.gef.requests.CreateRequest;
 import org.omnetpp.common.color.ColorFactory;
-import org.omnetpp.ned.editor.graph.figures.CompoundModuleFigure;
 import org.omnetpp.ned.editor.graph.model.commands.CloneSubmoduleCommand;
 import org.omnetpp.ned.editor.graph.model.commands.CreateSubmoduleCommand;
 import org.omnetpp.ned.editor.graph.model.commands.SetConstraintCommand;
-import org.omnetpp.ned2.model.CompoundModuleNodeEx;
 import org.omnetpp.ned2.model.INamedGraphNode;
 import org.omnetpp.ned2.model.ISubmoduleContainer;
 
@@ -33,19 +30,40 @@ public class CompoundModuleLayoutEditPolicy extends DesktopLayoutEditPolicy {
         setXyLayout(layout);
     }
 
-    /*
-     * @see org.eclipse.gef.editpolicies.ConstrainedLayoutEditPolicy#createChangeConstraintCommand(org.eclipse.gef.EditPart,
-     *      java.lang.Object)
+    /**
+     * Override to return the <code>Command</code> to perform an {@link
+     * RequestConstants#REQ_CLONE CLONE}. By default, <code>null</code> is
+     * returned.
+     * 
+     * @param request
+     *            the Clone Request
+     * @return A command to perform the Clone.
      */
-    @Override
-    protected Command createChangeConstraintCommand(EditPart child, Object constraint) {
-        return null;
+    @SuppressWarnings("unchecked")
+	@Override
+    protected Command getCloneCommand(ChangeBoundsRequest request) {
+        CloneSubmoduleCommand cloneCmd = new CloneSubmoduleCommand((ISubmoduleContainer) getHost().getModel());
+
+        for (GraphicalEditPart currPart : (List<GraphicalEditPart>)request.getEditParts()) {
+            cloneCmd.addModule((INamedGraphNode)currPart.getModel(), 
+            					(Rectangle) getConstraintForClone(currPart, request));
+        }
+        return cloneCmd;
     }
 
-    // called when the editpart is moved or resized
     @Override
-    protected Command createChangeConstraintCommand(ChangeBoundsRequest request, EditPart child,
-            Object constraint) {
+    protected Command getCreateCommand(CreateRequest request) {
+        CreateSubmoduleCommand create 
+        		= new CreateSubmoduleCommand((ISubmoduleContainer) getHost().getModel(),
+        									 (INamedGraphNode) request.getNewObject());
+        create.setLocation((Rectangle)getConstraintFor(request));
+        create.setLabel("Add");
+
+        return create;
+    }
+
+    @Override
+    protected Command createChangeConstraintCommand(EditPart child, Object constraint) {
         // HACK for fixing issue when the model returns unspecified size (-1,-1)
         // we have to calculate the center point in that direction manually using the size info
         // from the figure directly (which knows it's size) This is the inverse transformation of
@@ -58,7 +76,7 @@ public class CompoundModuleLayoutEditPolicy extends DesktopLayoutEditPolicy {
         // create the constraint change command 
         INamedGraphNode module = (INamedGraphNode) child.getModel();
         SetConstraintCommand cmd = new SetConstraintCommand(module);
-        cmd.setConstrant(modelConstraint);
+        cmd.setConstraint(modelConstraint);
 
         // if size constrant is not specified, then remove it from the model too
         // TODO is this needed?
@@ -68,6 +86,11 @@ public class CompoundModuleLayoutEditPolicy extends DesktopLayoutEditPolicy {
         return cmd;
     }
 
+    /**
+     * We create a generic resize policy that allows resizing in any direction. 
+     * @see org.eclipse.gef.editpolicies.ConstrainedLayoutEditPolicy#createChildEditPolicy(org.eclipse.gef.EditPart)
+     * 
+     */
     @Override
     protected EditPolicy createChildEditPolicy(EditPart child) {
         ResizableEditPolicy policy = new ResizeFeedbackEditPolicy();
@@ -94,42 +117,7 @@ public class CompoundModuleLayoutEditPolicy extends DesktopLayoutEditPolicy {
     }
 
     /**
-     * Override to return the <code>Command</code> to perform an {@link
-     * RequestConstants#REQ_CLONE CLONE}. By default, <code>null</code> is
-     * returned.
-     * 
-     * @param request
-     *            the Clone Request
-     * @return A command to perform the Clone.
-     */
-    @Override
-    protected Command getCloneCommand(ChangeBoundsRequest request) {
-        CloneSubmoduleCommand clone = new CloneSubmoduleCommand((ISubmoduleContainer) getHost().getModel());
-
-        Iterator i = request.getEditParts().iterator();
-        GraphicalEditPart currPart = null;
-
-        while (i.hasNext()) {
-            currPart = (GraphicalEditPart) i.next();
-            clone.addModule((INamedGraphNode)currPart.getModel(), (Rectangle) getConstraintForClone(currPart,
-                    request));
-        }
-        return clone;
-    }
-
-    @Override
-    protected Command getCreateCommand(CreateRequest request) {
-        CreateSubmoduleCommand create 
-        		= new CreateSubmoduleCommand((ISubmoduleContainer) getHost().getModel(),
-        									 (INamedGraphNode) request.getNewObject());
-        create.setLocation((Rectangle)getConstraintFor(request));
-        create.setLabel("Add");
-
-        return create;
-    }
-
-    /**
-     * Returns the layer used for displaying feedback.
+     * Returns the layer used for displaying feedback. We must return the scaled feedback layer
      * 
      * @return the feedback layer
      */

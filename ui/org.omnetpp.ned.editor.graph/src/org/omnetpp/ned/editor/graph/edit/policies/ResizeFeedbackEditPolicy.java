@@ -2,7 +2,6 @@ package org.omnetpp.ned.editor.graph.edit.policies;
 
 import java.util.Iterator;
 
-import org.eclipse.draw2d.ColorConstants;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.RectangleFigure;
 import org.eclipse.draw2d.geometry.Rectangle;

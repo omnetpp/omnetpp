@@ -7,6 +7,8 @@ import org.eclipse.draw2d.Graphics;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.Layer;
 import org.eclipse.draw2d.LayeredPane;
+import org.eclipse.draw2d.SWTGraphics;
+import org.eclipse.draw2d.ScaledGraphics;
 import org.eclipse.draw2d.ScrollPane;
 import org.eclipse.draw2d.StackLayout;
 import org.eclipse.draw2d.geometry.Dimension;
@@ -56,7 +58,12 @@ public class CompoundModuleFigure extends ModuleFigure
 	        // draw outer non playground area
 	        Pattern nonplayPattern = new Pattern(null, 0,0,5,5, moduleBackgroundColor, moduleBorderColor);
 	        graphics.setBackgroundColor(moduleBackgroundColor);
-	        graphics.setBackgroundPattern(nonplayPattern);
+	        // WARNING only the default SWT graphics implements this method
+	        // if we are using ScaledGrahics we should not use it.
+	        // TODO look for other effect to show nonplay area which is mor scale friendly
+	        if (graphics instanceof SWTGraphics)
+	        	graphics.setBackgroundPattern(nonplayPattern);
+
 	        graphics.fillRectangle(getClientArea());
 
 	        // draw a solid background

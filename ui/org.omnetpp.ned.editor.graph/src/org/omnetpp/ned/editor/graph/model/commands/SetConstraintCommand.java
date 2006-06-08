@@ -48,7 +48,7 @@ public class SetConstraintCommand extends Command {
         module.getDisplayString().setConstraint(oldPos, oldSize);
     }
 
-    public void setConstrant(Rectangle r) {
+    public void setConstraint(Rectangle r) {
         setLocation(r.getLocation());
         setSize(r.getSize());
     }

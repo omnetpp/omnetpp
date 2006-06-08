@@ -35,7 +35,7 @@ import org.omnetpp.ned2.model.NedFileNodeEx;
  * LogicEditorPart, to hold the entire model. It is sort of a blank board where
  * all other EditParts get added.
  */
-public class NedFileDiagramEditPart extends ContainerEditPart implements LayerConstants {
+public class NedFileEditPart extends ContainerEditPart implements LayerConstants {
 
     /**
      * Installs EditPolicies specific to this.
