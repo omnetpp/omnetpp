@@ -5,11 +5,7 @@ import java.util.List;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.draw2d.ColorConstants;
-import org.eclipse.draw2d.Figure;
-import org.eclipse.draw2d.LightweightSystem;
-import org.eclipse.draw2d.ScrollPane;
-import org.eclipse.draw2d.XYLayout;
-import org.eclipse.draw2d.geometry.Rectangle;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -20,7 +16,6 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
-import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.MessageBox;
@@ -34,6 +29,7 @@ import org.eclipse.ui.part.EditorPart;
 import org.omnetpp.experimental.seqchart.SeqChartPlugin;
 import org.omnetpp.experimental.seqchart.moduletree.ModuleTreeBuilder;
 import org.omnetpp.experimental.seqchart.moduletree.ModuleTreeItem;
+import org.omnetpp.experimental.seqchart.widgets.SequenceChart;
 import org.omnetpp.scave.engine.EventEntry;
 import org.omnetpp.scave.engine.EventLog;
 import org.omnetpp.scave.engine.IntSet;
@@ -47,15 +43,10 @@ import org.omnetpp.scave.engine.ModuleEntry;
  * @author andras
  */
 //TODO add context menu etc
-//FIXME EventLog must be wrapped into a "model" class with proper notifications for selection, etc! then the editor and the view should update themselves upon these notifications
 public class SequenceChartToolEditor extends EditorPart {
 
-	//private Text text;
-	private Canvas canvas;
-	private Figure rootFigure;
-	private XYLayout rootLayout;
-	private SeqChartFigure seqChartFigure;
-	private Combo eventcombo;  //XXX instead of this combo, events should be selectable from the text view at the bottom
+	private SequenceChart seqChart;
+	private Combo eventcombo;
 	
 	private EventLog eventLog;  // the log file loaded
 	private ModuleTreeItem moduleTree; // modules in eventLog
@@ -63,7 +54,7 @@ public class SequenceChartToolEditor extends EditorPart {
 	private int currentEventNumber = -1;
 	private EventLog filteredEventLog; // eventLog filtered for currentEventNumber
 
-	private final Color CANVAS_BG_COLOR = ColorConstants.white;
+	private final Color CHART_BACKGROUND_COLOR = ColorConstants.white;
 
 	public SequenceChartToolEditor() {
 		super();
@@ -107,30 +98,44 @@ public class SequenceChartToolEditor extends EditorPart {
 	
 	@Override
 	public void createPartControl(Composite parent) {
-		// add canvas 
+		// add sequence chart 
 		Composite upper = new Composite(parent, SWT.NONE);
 		upper.setLayout(new GridLayout());
 
 		Composite controlStrip = createControlStrip(upper);
 		controlStrip.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
 
-		// create canvas and add chart figure
-		canvas = new Canvas(upper, SWT.DOUBLE_BUFFERED);
-		canvas.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-		setupCanvas(canvas);
+		// create sequence chart widget
+		seqChart = new SequenceChart(upper, SWT.DOUBLE_BUFFERED);
+		seqChart.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+		seqChart.setBackground(CHART_BACKGROUND_COLOR);
+
+		// set up operations: click, double-click
+		seqChart.addSelectionListener(new SelectionAdapter() {
+			public void widgetDefaultSelected(SelectionEvent e) {
+				// on double-click, filter the event log
+				List<EventEntry> events = ((IEventLogSelection)seqChart.getSelection()).getEvents();
+				if (events.size()>1) { 
+					//XXX pop up selection dialog instead?
+					MessageDialog.openInformation(getEditorSite().getShell(), "Information", "Ambiguous double-click: there are "+events.size()+" events under the mouse! Zooming may help.");
+				} else if (events.size()==1) {
+					showSequenceChartForEvent(events.get(0).getEventNumber());
+				}
+			}
+		});
 
 		// fill combo box with events
 		fillEventCombo();
 		// give eventLog to the chart for display
 		showFullSequenceChart();
 		
-		getSite().setSelectionProvider(seqChartFigure);
+		getSite().setSelectionProvider(seqChart);
 		
 		// follow selection
 		getSite().getPage().addSelectionListener(new ISelectionListener() {
 			public void selectionChanged(IWorkbenchPart part, ISelection selection) {
-				if (part!=seqChartFigure)
-					seqChartFigure.setSelection(selection);
+				if (part!=seqChart)
+					seqChart.setSelection(selection);
 			}
 		});
 		
@@ -149,26 +154,22 @@ public class SequenceChartToolEditor extends EditorPart {
 
 	private Composite createControlStrip(Composite upper) {
 		Composite controlStrip = new Composite(upper, SWT.NONE);
-		//controlStrip.setLayout(new GridLayout(9, false));
 		RowLayout layout = new RowLayout();
 		controlStrip.setLayout(layout);
 		eventcombo = new Combo(controlStrip, SWT.NONE);
-		//eventcombo.setLayoutData(new GridData(SWT.FILL,SWT.FILL,true,false));
 		eventcombo.setVisibleItemCount(20);
 
 		Combo timelineSortMode = new Combo(controlStrip, SWT.NONE);
-		for (SeqChartFigure.TimelineSortMode t : SeqChartFigure.TimelineSortMode.values())
+		for (SequenceChart.TimelineSortMode t : SequenceChart.TimelineSortMode.values())
 			timelineSortMode.add(t.name());
-		//timelineSortMode.setLayoutData(new GridData(SWT.FILL,SWT.FILL,false,false));
 		timelineSortMode.select(0);
-		timelineSortMode.setVisibleItemCount(SeqChartFigure.TimelineSortMode.values().length);
+		timelineSortMode.setVisibleItemCount(SequenceChart.TimelineSortMode.values().length);
 		
 		Combo timelineMode = new Combo(controlStrip, SWT.NONE);
-		for (SeqChartFigure.TimelineMode t : SeqChartFigure.TimelineMode.values())
+		for (SequenceChart.TimelineMode t : SequenceChart.TimelineMode.values())
 			timelineMode.add(t.name());
-		//timelineMode.setLayoutData(new GridData(SWT.FILL,SWT.FILL,false,false));
 		timelineMode.select(0);
-		timelineMode.setVisibleItemCount(SeqChartFigure.TimelineMode.values().length);
+		timelineMode.setVisibleItemCount(SequenceChart.TimelineMode.values().length);
 		
 		Button showNonDeliveryMessages = new Button(controlStrip, SWT.CHECK);
 		showNonDeliveryMessages.setText("Usage arrows");
@@ -196,7 +197,6 @@ public class SequenceChartToolEditor extends EditorPart {
 		
 		Button decreaseSpacing = new Button(controlStrip, SWT.NONE);
 		decreaseSpacing.setText("Decrease spacing");
-		
 
 		// add event handlers
 		eventcombo.addSelectionListener(new SelectionListener() {
@@ -211,7 +211,7 @@ public class SequenceChartToolEditor extends EditorPart {
 					int eventNumber = -1;
 					try {eventNumber = Integer.parseInt(sel);} catch (NumberFormatException ex) {}
 					if (eventNumber<0) {
-						messageBox(SWT.ICON_ERROR, "Error", "Please specify event number as \"#nnn\".");
+						MessageDialog.openError(getEditorSite().getShell(), "Error", "Please specify event number as \"#nnn\".");
 						return;
 					}
 					showSequenceChartForEvent(eventNumber);
@@ -228,59 +228,59 @@ public class SequenceChartToolEditor extends EditorPart {
 
 		zoomIn.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
-				seqChartFigure.zoomIn();
+				seqChart.zoomIn();
 			}});
 		
 		zoomOut.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
-				seqChartFigure.zoomOut();
+				seqChart.zoomOut();
 			}});
 
 		increaseSpacing.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
-				seqChartFigure.setAxisSpacing(seqChartFigure.getAxisSpacing()+5);
+				seqChart.setAxisSpacing(seqChart.getAxisSpacing()+5);
 			}});
 		
 		decreaseSpacing.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
-				if (seqChartFigure.getAxisSpacing()>5)
-				seqChartFigure.setAxisSpacing(seqChartFigure.getAxisSpacing()-5);
+				if (seqChart.getAxisSpacing()>5)
+				seqChart.setAxisSpacing(seqChart.getAxisSpacing()-5);
 			}});
 		
 		showMessageNames.addSelectionListener(new SelectionAdapter () {
 			public void widgetSelected(SelectionEvent e) {
-				seqChartFigure.setShowMessageNames(((Button)e.getSource()).getSelection());
+				seqChart.setShowMessageNames(((Button)e.getSource()).getSelection());
 			}
 		});
 		
 		showNonDeliveryMessages.addSelectionListener(new SelectionAdapter () {
 			public void widgetSelected(SelectionEvent e) {
-				seqChartFigure.setShowNonDeliveryMessages(((Button)e.getSource()).getSelection());
+				seqChart.setShowNonDeliveryMessages(((Button)e.getSource()).getSelection());
 			}
 		});
 		
 		showEventNumbers.addSelectionListener(new SelectionAdapter () {
 			public void widgetSelected(SelectionEvent e) {
-				seqChartFigure.setShowEventNumbers(((Button)e.getSource()).getSelection());
+				seqChart.setShowEventNumbers(((Button)e.getSource()).getSelection());
 			}
 		});
 
 		showArrowHeads.setSelection(true);
 		showArrowHeads.addSelectionListener(new SelectionAdapter () {
 			public void widgetSelected(SelectionEvent e) {
-				seqChartFigure.setShowArrowHeads(((Button)e.getSource()).getSelection());
+				seqChart.setShowArrowHeads(((Button)e.getSource()).getSelection());
 			}
 		});
 		
 		timelineMode.addSelectionListener(new SelectionAdapter () {
 			public void widgetSelected(SelectionEvent e) {
-				seqChartFigure.setTimelineMode(SeqChartFigure.TimelineMode.values()[((Combo)e.getSource()).getSelectionIndex()]);
+				seqChart.setTimelineMode(SequenceChart.TimelineMode.values()[((Combo)e.getSource()).getSelectionIndex()]);
 			}
 		});
 		
 		timelineSortMode.addSelectionListener(new SelectionAdapter () {
 			public void widgetSelected(SelectionEvent e) {
-				seqChartFigure.setTimelineSortMode(SeqChartFigure.TimelineSortMode.values()[((Combo)e.getSource()).getSelectionIndex()]);
+				seqChart.setTimelineSortMode(SequenceChart.TimelineSortMode.values()[((Combo)e.getSource()).getSelectionIndex()]);
 			}
 		});
 		
@@ -311,46 +311,13 @@ public class SequenceChartToolEditor extends EditorPart {
 		return label;
 	}
 
-	private void setupCanvas(Canvas canvas) {
-		canvas.setBackground(CANVAS_BG_COLOR);
-		
-		LightweightSystem lws = new LightweightSystem(canvas);
-		ScrollPane scrollPane = new ScrollPane();
-		scrollPane.setScrollBarVisibility(ScrollPane.AUTOMATIC);
-		rootFigure = new Figure();
-		scrollPane.setContents(rootFigure);
-		rootLayout = new XYLayout();
-		rootFigure.setLayoutManager(rootLayout);
-		lws.setContents(scrollPane);
-
-		seqChartFigure = new SeqChartFigure(canvas, scrollPane);
-		rootFigure.add(seqChartFigure);
-		rootLayout.setConstraint(seqChartFigure, new Rectangle(0,0,-1,-1));
-		
-		// set up canvas mouse operations: click, double-click
-		seqChartFigure.addSelectionListener(new SelectionListener() {
-			public void widgetDefaultSelected(SelectionEvent e) {
-				// on double-click, filter the event log
-				List<EventEntry> events = ((IEventLogSelection)seqChartFigure.getSelection()).getEvents(); //XXX
-				if (events.size()>1) { 
-					//XXX pop up selection dialog instead?
-					messageBox(SWT.ICON_INFORMATION, "Information", "Ambiguous double-click: there are "+events.size()+" events under the mouse! Zooming may help.");
-				} else if (events.size()==1) {
-					showSequenceChartForEvent(events.get(0).getEventNumber());
-				}
-			}
-			public void widgetSelected(SelectionEvent e) {
-			}
-		});
-	}
-
 	/**
 	 * Goes to the given event and updates the chart.
 	 */
 	private void showSequenceChartForEvent(int eventNumber) {
 		EventEntry event = eventLog.getEventByNumber(eventNumber);
 		if (event==null) {
-			messageBox(SWT.ICON_ERROR, "Error", "Event #"+eventNumber+" not found.");
+			MessageDialog.openError(getEditorSite().getShell(), "Error", "Event #"+eventNumber+" not found.");
 			return;
 		}
 		currentEventNumber = eventNumber;
@@ -387,32 +354,15 @@ public class SequenceChartToolEditor extends EditorPart {
 	}
 
 	private void filteredEventLogChanged() {
-		seqChartFigure.updateFigure(filteredEventLog, axisModules);
+		seqChart.updateFigure(filteredEventLog, axisModules);
 	}
 
-	private int messageBox(int style, String title, String message) {
-		MessageBox m = new MessageBox(getEditorSite().getShell(), style);
-		m.setText(title);
-		m.setMessage(message);
-		return m.open();
-	}
-	
 	/**
 	 * Return the current filtered event log.
 	 */
 	public EventLog getFilteredEventLog() {
 		return filteredEventLog;
 	}
-
-	private void addLabelFigure(int x, int y, String text) {
-/*
-		Font someFont = new Font(null, "Arial", 12, SWT.BOLD); //XXX cache fonts!
-		Label label = new Label(text, null);
-		label.setFont(someFont);
-
-		rootFigure.add(label);
-		rootLayout.setConstraint(label, new Rectangle(x,y,-1,-1));
-*/	}
 
 	protected void displayModuleTreeDialog() {
 		ModuleTreeDialog dialog = new ModuleTreeDialog(getSite().getShell(), moduleTree, axisModules);

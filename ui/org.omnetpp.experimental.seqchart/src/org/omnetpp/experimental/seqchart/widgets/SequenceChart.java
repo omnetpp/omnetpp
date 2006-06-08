@@ -1,7 +1,6 @@
 package org.omnetpp.experimental.seqchart.widgets;
 
 
-import java.awt.event.MouseMotionListener;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
@@ -24,6 +23,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.events.MouseMoveListener;
+import org.eclipse.swt.events.MouseTrackListener;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Color;
@@ -1325,32 +1325,35 @@ public class SequenceChart extends LargeScrollableCanvas implements ISelectionPr
 				
 			}
     	});
+		addMouseTrackListener(new MouseTrackListener() {
+			public void mouseEnter(MouseEvent e) {}
+			public void mouseExit(MouseEvent e) {}
+			public void mouseHover(MouseEvent e) {
+				displayTooltip(e.x, e.y);
+			}
+		});
 		addMouseMoveListener(new MouseMoveListener() {
 			public void mouseMove(MouseEvent e) {
+				removeTooltip();
+				setCursor(null); // restore cursor at end of drag (must do it here too, because we 
+								 // don't get the "released" event if user releases mouse outside the canvas)
+				if ((e.stateMask & SWT.BUTTON_MASK) != 0)
+					myMouseDragged(e);
 			}
-//			public void mouseDragged(MouseEvent me) {
-//				// display drag cursor if not already displayed
-//				if (getCursor() == null) {
-//					setCursor(DRAGCURSOR);
-//				}
-//				// scroll by the amount moved since last drag call
-//				int dx = me.x - dragStartX;
-//				int dy = me.y - dragStartY;
-//				scrollPane.scrollHorizontalTo(-getBounds().x-dx);
-//				scrollPane.scrollVerticalTo(-getBounds().y-dy);
-//				dragStartX = me.x;
-//				dragStartY = me.y;
-//			}
-//			public void mouseHover(MouseEvent me) {
-//				displayTooltip(me.x, me.y);
-//			}
-//			public void mouseMoved(MouseEvent me) {
-//				removeTooltip();
-//				setCursor(null); // restore cursor at end of drag (must do it here too, because we 
-//								 // don't get the "released" event if user releases mouse outside the canvas)
-//			}
+
+			private void myMouseDragged(MouseEvent e) {
+				// display drag cursor
+				setCursor(DRAGCURSOR);
+				
+				// scroll by the amount moved since last drag call
+				int dx = e.x - dragStartX;
+				int dy = e.y - dragStartY;
+				scrollHorizontalTo(getViewportLeft() - dx);
+				scrollVerticalTo(getViewportTop() - dy);
+				dragStartX = e.x;
+				dragStartY = e.y;
+			}
 		});
-		
 		// selection handling
 		addMouseListener(new MouseListener() {
 			public void mouseDoubleClick(MouseEvent me) {
