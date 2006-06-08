@@ -12,6 +12,18 @@ import org.omnetpp.ned2.model.NEDElement;
 
 public class NedFileLayoutEditPolicy extends FlowLayoutEditPolicy {
 
+	
+	/* (non-Javadoc)
+	 * @see org.eclipse.gef.editpolicies.FlowLayoutEditPolicy#isHorizontal()
+	 * we override this function so it is possible to use the ToolbarLayout
+	 * with the FlowLayoutPolicy, because implementation of FlowLayoutEditPolicy#isHorizonta()
+	 * depends on FlowLayout
+	 */
+	@Override
+	protected boolean isHorizontal() {
+		return false;
+	}
+	
 	// TODO implement generic clone command
 	protected Command getCloneCommand(ChangeBoundsRequest request) {
 //		CloneCommand clone = new CloneCommand();
@@ -66,12 +78,9 @@ public class NedFileLayoutEditPolicy extends FlowLayoutEditPolicy {
 	}
 
 	protected Command getCreateCommand(CreateRequest request) {
-		EditPart insertionPoint = getInsertionReference(request);
-		if (insertionPoint == null)
-			return null;
-
 		NEDElement newElement = (NEDElement)request.getNewObject();
-		NEDElement where = (NEDElement)insertionPoint.getModel();
+		EditPart insertionPoint = getInsertionReference(request);
+		NEDElement where = (insertionPoint != null) ? (NEDElement)insertionPoint.getModel() : null;
 		NEDElement parent = (NEDElement)getHost().getModel();
 		return new CreateToplevelComponentCommand(parent, where, newElement);
 	}

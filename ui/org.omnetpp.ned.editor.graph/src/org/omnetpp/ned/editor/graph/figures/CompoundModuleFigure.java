@@ -28,6 +28,7 @@ public class CompoundModuleFigure extends ModuleFigure
 				LayerSupport, HandleBounds {
 
     private static final int DEFAULT_BORDER_WIDTH = 2;
+    private static Dimension DEFAULT_SIZE = new Dimension(200, 100);
 	private Layer pane;
     private ScrollPane scrollpane;
     private LayeredPane layeredPane;
@@ -194,9 +195,9 @@ public class CompoundModuleFigure extends ModuleFigure
 
     @Override
     public Dimension getPreferredSize(int w, int h) {
-        Dimension prefSize = super.getPreferredSize(w, h);
-        Dimension defaultSize = new Dimension(100, 100);
-        prefSize.union(defaultSize);
+    	// we are not sensitve to the external size hints 
+        Dimension prefSize = super.getPreferredSize(-1, -1);
+        prefSize.union(DEFAULT_SIZE);
         return prefSize;
     }
     
