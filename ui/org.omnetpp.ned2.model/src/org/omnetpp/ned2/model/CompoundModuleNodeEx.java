@@ -21,12 +21,20 @@ public class CompoundModuleNodeEx extends CompoundModuleNode
 	protected CompoundModuleDisplayString displayString = null;
 	
 	public CompoundModuleNodeEx() {
+		init();
 	}
 
 	public CompoundModuleNodeEx(NEDElement parent) {
 		super(parent);
+		init();
 	}
 
+	
+    private void init() {
+        // TODO correctly handle the initial naming for new nodes (name most be unique)
+        setName("unnamed");
+    }
+	
 	public DisplayString getDisplayString() {
 		if (displayString == null)
 			// TODO set the ancestor module correctly
