@@ -719,13 +719,12 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 	}
 
 	@Override
-	protected void paintCachables(GC gc) {
-		Graphics graphics = new SWTGraphics(gc);
+	protected void paintCachables(Graphics graphics) {
 		doPaintFigure(graphics);
 	}
 
 	@Override
-	protected void paintNoncachables(GC gc) {
+	protected void paintNoncachables(Graphics graphics) {
 		//XXX move drawing of selection marks, axis labels etc here
 	}
 	
