@@ -13,17 +13,14 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.ScrollBar;
 
 /**
- * An improved canvas class that supports: (1) displaying part of a very large 
- * client area (h,w>MAXINT) with scrollbar, and (2) caching of (part of) the drawing
- * in off-screen image buffers for performance improvement. Use of both features are
- * optional. 
- * 
- * Other utility functinality: dragging the area with the mouse ("hand cursor");
- * rubberbanding.
+ * An improved canvas class that supports displaying part of a very large 
+ * client area (h,w>MAXINT) with scrollbar.
  * 
  * @author andras
  */
-public class LargeScrollableCanvas extends Canvas {
+//XXX Caching of (part of) the drawing in off-screen image buffers for performance improvement.
+//XXX Other utility functinality: dragging the area with the mouse ("hand cursor"); rubberbanding.
+public abstract class LargeScrollableCanvas extends Canvas {
 	
 	private long virtualWidth, virtualHeight; // 64-bit size of the "virtual canvas"
 	private long viewX, viewY; // 64-bit coordinates of top-left corner of the viewport
@@ -95,6 +92,10 @@ public class LargeScrollableCanvas extends Canvas {
 	 * Sets viewportLeft.
 	 */
 	public void scrollHorizontalTo(long x) {
+		if (x > virtualWidth-getWidth()) 
+			x = virtualWidth-getWidth();  // if negative, we'll fix it below
+		if (x < 0) 
+			x = 0;
 		this.viewX = x;
 		adjustScrollbars();
 		redraw();
@@ -108,6 +109,10 @@ public class LargeScrollableCanvas extends Canvas {
 	 * Sets viewportTop.
 	 */
 	public void scrollVerticalTo(long y) {
+		if (y > virtualHeight-getHeight()) 
+			y = virtualHeight-getHeight();  // if negative, we'll fix it below
+		if (y < 0) 
+			y = 0;
 		this.viewY = y;
 		adjustScrollbars();
 		redraw();
@@ -127,12 +132,12 @@ public class LargeScrollableCanvas extends Canvas {
 		return getSize().y;
 	}
 	
-	protected void horizontalBarChanged() {
+	private void horizontalBarChanged() {
 		viewX = ((long)getHorizontalBar().getSelection()) << hShift;
 		redraw();
 	}
 
-	protected void verticalBarChanged() {
+	private void verticalBarChanged() {
 		viewY = ((long)getVerticalBar().getSelection()) << vShift;
 		redraw();
 	}
@@ -140,9 +145,7 @@ public class LargeScrollableCanvas extends Canvas {
 	/**
 	 * Override this to do your own drawing. 
 	 */
-	protected void paint(GC graphics) {
-		graphics.drawText("x="+viewX+" y="+viewY, 0, 0);
-	}
+	protected abstract void paint(GC graphics);
 
 	private void configureScrollbars() {
 		hShift = configureScrollbar(getHorizontalBar(), virtualWidth, viewX, getSize().x);

@@ -68,16 +68,15 @@ import org.omnetpp.scave.engine.MessageEntry;
 //FIXME in some rare cases, arrow head is not shown! when ellipse is exactly a half circle? (see nclients.log, nonlinear axis)
 //TODO max number of event selection marks must be limited (e.g. max 1000)
 //FIXME auto-turn-off message names and arrowheads when there're too many messages?
-//FIXME sometime throws exception when zooming out? (in step mode, nclients.log)
 public class SequenceChart extends LargeScrollableCanvas implements ISelectionProvider {
 
 	private static final Color LABEL_COLOR = new Color(null, 0, 0, 0);
 	private static final Color AXIS_COLOR = new Color(null, 120, 120, 120);
-	private static final Color ARROW_COLOR = null; // defaults to line color
 	private static final Color EVENT_FG_COLOR = new Color(null,255,0,0);
 	private static final Color EVENT_BG_COLOR = new Color(null,255,255,255);
 	private static final Color EVENT_SEL_COLOR = new Color(null,255,0,0);
-	private static final Color MESSAGE_LABEL_COLOR = new Color(null,0,64,0);
+	private static final Color ARROWHEAD_COLOR = null; // defaults to line color
+	private static final Color MESSAGE_LABEL_COLOR = null; // defaults to line color
 	private static final Color DELIVERY_MESSAGE_COLOR = new Color(null,0,0,255);
 	private static final Color NONDELIVERY_MESSAGE_COLOR = new Color(null,0,150,0);
 	private static final Cursor DRAGCURSOR = new Cursor(null, SWT.CURSOR_SIZEALL);
@@ -1037,7 +1036,7 @@ public class SequenceChart extends LargeScrollableCanvas implements ISelectionPr
 		// XXX This currently only works for non-delivery messages, as we don't have enough info in the log file;
 		// XXX even with non-delivery messages it acts strange... 
 		//if (!isDelivery && logFacade.getMessage_source_cause_module_moduleId(pos) != logFacade.getMessage_module_moduleId(pos)) {
-		//	graphics.setForegroundColor(EVENT_FG_COLOR); //FIXME temprarily red
+		//	graphics.setForegroundColor(EVENT_FG_COLOR); //FIXME temporarily red
 		//}
 		
 		// test if self-message (y1==y2) or not
@@ -1105,7 +1104,8 @@ public class SequenceChart extends LargeScrollableCanvas implements ISelectionPr
 	
 	private void drawMessageArrowLabel(Graphics graphics, String label, int x, int y, int dx, int dy)
 	{
-		graphics.setForegroundColor(MESSAGE_LABEL_COLOR);
+		if (MESSAGE_LABEL_COLOR!=null)
+			graphics.setForegroundColor(MESSAGE_LABEL_COLOR);
 		graphics.drawText(label, x + dx, y + dy);
 	}
 	
@@ -1121,7 +1121,7 @@ public class SequenceChart extends LargeScrollableCanvas implements ISelectionPr
 		int x2 = (int)Math.round(xt + dwx);
 		int y2 = (int)Math.round(yt + dwy);
 
-		graphics.setBackgroundColor(ARROW_COLOR!=null ? ARROW_COLOR : graphics.getForegroundColor());
+		graphics.setBackgroundColor(ARROWHEAD_COLOR!=null ? ARROWHEAD_COLOR : graphics.getForegroundColor());
 		graphics.fillPolygon(new int[] {x, y, x1, y1, x2, y2});
 	}
 
@@ -1144,7 +1144,7 @@ public class SequenceChart extends LargeScrollableCanvas implements ISelectionPr
 
 		double tleft = pixelToSimulationTime(rect.x);
 		double tright = pixelToSimulationTime(rect.right());
-		System.out.println("simtime interval: "+tleft+" - "+tright);
+		//System.out.println("simtime interval: "+tleft+" - "+tright);
 
 		// draw ticks and labels
 		BigDecimal tickStart = new BigDecimal(tleft).setScale(-tickScale, RoundingMode.FLOOR);
@@ -1270,6 +1270,9 @@ public class SequenceChart extends LargeScrollableCanvas implements ISelectionPr
     			// linear approximation between two enclosing events
         		double simulationTimeDelta = logFacade.getEvent_i_simulationTime(pos + 1) - eventSimulationTime;
         		double timelineCoordinateDelta = logFacade.getEvent_i_timelineCoordinate(pos + 1) - eventTimelineCoordinate;
+        		if (timelineCoordinateDelta == 0) //XXX this can happen in STEP mode when pos==-1, and 1st event is at timeline zero. perhaps getLastEventPositionBeforeByTimelineCoordinate() should check "<=" not "<" ?
+        			return eventSimulationTime;
+        		Assert.isTrue(timelineCoordinateDelta > 0);
         		return eventSimulationTime + simulationTimeDelta * (timelineCoordinate - eventTimelineCoordinate) / timelineCoordinateDelta;
         	default:
         		throw new RuntimeException("Unknown timeline mode");
