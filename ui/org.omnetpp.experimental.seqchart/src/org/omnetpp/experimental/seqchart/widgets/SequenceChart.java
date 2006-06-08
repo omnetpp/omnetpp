@@ -68,6 +68,7 @@ import org.omnetpp.scave.engine.MessageEntry;
 //FIXME in some rare cases, arrow head is not shown! when ellipse is exactly a half circle? (see nclients.log, nonlinear axis)
 //TODO max number of event selection marks must be limited (e.g. max 1000)
 //FIXME auto-turn-off message names and arrowheads when there're too many messages?
+//FIXME sometime throws exception when zooming out? (in step mode, nclients.log)
 public class SequenceChart extends LargeScrollableCanvas implements ISelectionProvider {
 
 	private static final Color LABEL_COLOR = new Color(null, 0, 0, 0);
@@ -247,7 +248,7 @@ public class SequenceChart extends LargeScrollableCanvas implements ISelectionPr
 		pixelsPerTimelineUnit = pp;
 		tickScale = (int)Math.ceil(Math.log10(TICK_LABEL_WIDTH / pp));
 
-		System.out.println("pixels per timeline unit: "+pixelsPerTimelineUnit);
+		System.out.println("pixels per timeline unit="+pixelsPerTimelineUnit+"  tickScale="+tickScale);
 	}
 	
 	/**
@@ -1130,8 +1131,6 @@ public class SequenceChart extends LargeScrollableCanvas implements ISelectionPr
 	 */
 	private void drawAxis(Graphics graphics, int y, String label) {
 		Rectangle rect = graphics.getClip(new Rectangle());
-		//Rectangle bounds = getBounds();
-		//rect.intersect(bounds); // although looks like Clip is already set up like this
 
 		// draw axis label
 		if (AXISLABEL_DISTANCE < axisSpacing) {
@@ -1145,6 +1144,7 @@ public class SequenceChart extends LargeScrollableCanvas implements ISelectionPr
 
 		double tleft = pixelToSimulationTime(rect.x);
 		double tright = pixelToSimulationTime(rect.right());
+		System.out.println("simtime interval: "+tleft+" - "+tright);
 
 		// draw ticks and labels
 		BigDecimal tickStart = new BigDecimal(tleft).setScale(-tickScale, RoundingMode.FLOOR);
@@ -1168,6 +1168,7 @@ public class SequenceChart extends LargeScrollableCanvas implements ISelectionPr
 	/**
 	 * Calculates timeline coordinates for all events. It might be a non-linear transformation
 	 * of simulation time, event number, etc.
+	 *
 	 */
 	private void recalculateTimelineCoordinates()
 	{
@@ -1295,7 +1296,7 @@ public class SequenceChart extends LargeScrollableCanvas implements ISelectionPr
 	 */
 	private int timelineCoordinateToPixel(double t) {
 		long x = Math.round(t * pixelsPerTimelineUnit) - getViewportLeft();
-    	return (x < -XMAX) ? -XMAX : (x > -XMAX) ? XMAX : (int)x;
+    	return (x < -XMAX) ? -XMAX : (x > XMAX) ? XMAX : (int)x;
 	}
 
 	/**

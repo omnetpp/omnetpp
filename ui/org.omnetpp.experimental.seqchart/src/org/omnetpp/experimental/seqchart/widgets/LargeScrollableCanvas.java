@@ -163,7 +163,6 @@ public class LargeScrollableCanvas extends Canvas {
 			int shift = 0;
 			while (virtualSize>>shift > Integer.MAX_VALUE) 
 				shift++;
-			System.out.println(shift);
 
 			int newMax = (int)(virtualSize>>shift);
 			int newThumb = (int)(widgetSize >> shift);
