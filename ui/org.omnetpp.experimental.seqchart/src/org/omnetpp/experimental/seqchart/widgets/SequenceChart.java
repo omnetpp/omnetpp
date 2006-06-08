@@ -68,7 +68,7 @@ import org.omnetpp.scave.engine.MessageEntry;
 //FIXME in some rare cases, arrow head is not shown! when ellipse is exactly a half circle? (see nclients.log, nonlinear axis)
 //TODO max number of event selection marks must be limited (e.g. max 1000)
 //FIXME auto-turn-off message names and arrowheads when there're too many messages?
-public class SequenceChart extends LargeScrollableCanvas implements ISelectionProvider {
+public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 
 	private static final Color LABEL_COLOR = new Color(null, 0, 0, 0);
 	private static final Color AXIS_COLOR = new Color(null, 120, 120, 120);
@@ -718,16 +718,17 @@ public class SequenceChart extends LargeScrollableCanvas implements ISelectionPr
 		setVirtualSize(width, height);
 	}
 
-	/**
-	 * Overridden LargeScrollableCanvas method.
-	 */
 	@Override
-	protected void paint(GC gc) {
-		//TODO paint into off-screen buffers, and reuse them as "tiles" at later repaints
+	protected void paintCachables(GC gc) {
 		Graphics graphics = new SWTGraphics(gc);
 		doPaintFigure(graphics);
 	}
 
+	@Override
+	protected void paintNoncachables(GC gc) {
+		//XXX move drawing of selection marks, axis labels etc here
+	}
+	
 	protected void doPaintFigure(Graphics graphics) {
 		if (eventLog!=null) {
 			long startMillis = System.currentTimeMillis();

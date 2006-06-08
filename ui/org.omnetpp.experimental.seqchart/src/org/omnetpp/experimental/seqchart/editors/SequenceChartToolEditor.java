@@ -106,7 +106,7 @@ public class SequenceChartToolEditor extends EditorPart {
 		controlStrip.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
 
 		// create sequence chart widget
-		seqChart = new SequenceChart(upper, SWT.DOUBLE_BUFFERED);
+		seqChart = new SequenceChart(upper, SWT.NONE /*SWT.DOUBLE_BUFFERED*/ );
 		seqChart.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		seqChart.setBackground(CHART_BACKGROUND_COLOR);
 

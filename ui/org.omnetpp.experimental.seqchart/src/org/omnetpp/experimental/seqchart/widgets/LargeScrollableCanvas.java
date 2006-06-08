@@ -56,6 +56,11 @@ public abstract class LargeScrollableCanvas extends Canvas {
 		});
 	}
 
+	/**
+	 * Override this to do your own drawing. 
+	 */
+	protected abstract void paint(GC graphics);
+
 	public void setVirtualSize(long width, long height) {
 		this.virtualWidth = width;
 		this.virtualHeight = height;
@@ -91,11 +96,7 @@ public abstract class LargeScrollableCanvas extends Canvas {
 	 * Sets viewportLeft.
 	 */
 	public void scrollHorizontalTo(long x) {
-		if (x > virtualWidth-getWidth()) 
-			x = virtualWidth-getWidth();  // if negative, we'll fix it below
-		if (x < 0) 
-			x = 0;
-		this.viewX = x;
+		this.viewX = clip(x, virtualWidth-getWidth());
 		adjustScrollbars();
 		redraw();
 	}
@@ -108,13 +109,20 @@ public abstract class LargeScrollableCanvas extends Canvas {
 	 * Sets viewportTop.
 	 */
 	public void scrollVerticalTo(long y) {
-		if (y > virtualHeight-getHeight()) 
-			y = virtualHeight-getHeight();  // if negative, we'll fix it below
-		if (y < 0) 
-			y = 0;
-		this.viewY = y;
+		this.viewY = clip(y, virtualHeight-getHeight());
 		adjustScrollbars();
 		redraw();
+	}
+
+	/**
+	 * Utility function to clip x to (0, upperBound). If upperBound<0, 0 is returned.
+	 */
+	private static long clip(long x, long upperBound) {
+		if (x > upperBound) 
+			x = upperBound;  // if negative, we'll fix it below
+		if (x < 0) 
+			x = 0;
+		return x;
 	}
 
 	/**
@@ -141,11 +149,6 @@ public abstract class LargeScrollableCanvas extends Canvas {
 		redraw();
 	}
 	
-	/**
-	 * Override this to do your own drawing. 
-	 */
-	protected abstract void paint(GC graphics);
-
 	private void configureScrollbars() {
 		hShift = configureScrollbar(getHorizontalBar(), virtualWidth, viewX, getSize().x);
 		vShift = configureScrollbar(getVerticalBar(), virtualHeight, viewY, getSize().y);
