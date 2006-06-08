@@ -13,13 +13,12 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.ScrollBar;
 
 /**
- * An improved canvas class that supports displaying part of a very large 
- * client area (h,w>MAXINT) with scrollbar.
+ * A canvas that supports a scrollable area which can be very large,
+ * as the area's width/height are stored 64-bit numbers. This class
+ * overcomes the scrollbar's 32-bit limit.
  * 
  * @author andras
  */
-//XXX Caching of (part of) the drawing in off-screen image buffers for performance improvement.
-//XXX Other utility functinality: dragging the area with the mouse ("hand cursor"); rubberbanding.
 public abstract class LargeScrollableCanvas extends Canvas {
 	
 	private long virtualWidth, virtualHeight; // 64-bit size of the "virtual canvas"
