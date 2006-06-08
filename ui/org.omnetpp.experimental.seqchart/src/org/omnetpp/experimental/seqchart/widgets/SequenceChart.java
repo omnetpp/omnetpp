@@ -50,10 +50,7 @@ import org.omnetpp.scave.engine.MessageEntry;
  */
 //TODO Enter_Method nondelivery arrows! line + half-ellipse
 //FIXME sometimes there's no tick visible! (axis tick scale calculated wrong?)
-//FIXME scrollbar breaks badly when chart size exceeds ~4,000,000 pixels (this means only ~0.1s resolution ticks on an 1000s trace!!! not enough!)
 //TODO rubberbanding
-
-//TODO limit pixelsPerTimelineUnit to a range that makes sense (for the current eventLog)
 //TODO instead of (in addition to) gotoSimulationTime(), we need gotoEvent() as well, which would do vertical scrolling too
 //TODO redraw chart with antialias while user is idle? hints: new SafeRunnable(); or:
 //getDisplay().asyncExec(new Runnable() {
@@ -241,6 +238,8 @@ public class SequenceChart extends LargeScrollableCanvas implements ISelectionPr
 	public void setPixelsPerTimelineUnit(double pp) {
 		if (pixelsPerTimelineUnit == pp)
 			 return; // already set, nothing to do
+		
+		//XXX limit to a number where 64-bit longs won't overflow 
 		
 		// set pixels per sec, and recalculate tick spacing
 		if (pp <= 0)
@@ -784,16 +783,14 @@ public class SequenceChart extends LargeScrollableCanvas implements ISelectionPr
 	        	// calculate missing event coordinates
 	            if (logFacade.getMessage_source_eventNumber(pos) <= startEventNumber) {
 	            	// src is outside the repaint region (on the far left)
-	            	double srcXDouble = timelineCoordinateToPixelDouble(logFacade.getMessage_source_timelineCoordinate(pos));
-	            	int srcX = srcXDouble < -XMAX ? -XMAX : (int)srcXDouble;
+	            	int srcX = timelineCoordinateToPixel(logFacade.getMessage_source_timelineCoordinate(pos));
 	            	int srcY = moduleIdToAxisYMap.get(logFacade.getMessage_source_cause_module_moduleId(pos));
 					logFacade.setMessage_source_cachedX(pos, srcX);
 					logFacade.setMessage_source_cachedY(pos, srcY);
 	            }
 	            if (logFacade.getMessage_target_eventNumber(pos) >= endEventNumber) {
 	            	// target is outside the repaint region (on the far right)
-	            	double targetXDouble = timelineCoordinateToPixelDouble(logFacade.getMessage_target_timelineCoordinate(pos));
-	            	int targetX = targetXDouble > XMAX ? XMAX : (int)targetXDouble;
+	            	int targetX = timelineCoordinateToPixel(logFacade.getMessage_target_timelineCoordinate(pos));
 	            	int targetY = moduleIdToAxisYMap.get(logFacade.getMessage_target_cause_module_moduleId(pos));
 					logFacade.setMessage_target_cachedX(pos, targetX);
 					logFacade.setMessage_target_cachedY(pos, targetY);
@@ -1171,7 +1168,6 @@ public class SequenceChart extends LargeScrollableCanvas implements ISelectionPr
 	/**
 	 * Calculates timeline coordinates for all events. It might be a non-linear transformation
 	 * of simulation time, event number, etc.
-	 *
 	 */
 	private void recalculateTimelineCoordinates()
 	{
@@ -1295,19 +1291,13 @@ public class SequenceChart extends LargeScrollableCanvas implements ISelectionPr
 
 	/**
 	 * Translates timeline coordinate to pixel x coordinate, using on pixelsPerTimelineUnit.
+	 * Extreme values get clipped to a reasonable interval (-XMAX, XMAX).
 	 */
 	private int timelineCoordinateToPixel(double t) {
-		return (int)((long)Math.round(t * pixelsPerTimelineUnit) - getViewportLeft());
+		long x = Math.round(t * pixelsPerTimelineUnit) - getViewportLeft();
+    	return (x < -XMAX) ? -XMAX : (x > -XMAX) ? XMAX : (int)x;
 	}
 
-	/**
-	 * Same as timelineCoordinateToPixel(), but doesn't convert to int; to be used where "int" may overflow
-	 */
-	//XXX eliminate -- 64bits must be enough
-	private double timelineCoordinateToPixelDouble(double t) {
-		return t * pixelsPerTimelineUnit - getViewportLeft();
-	}
-	
 	/**
 	 * Sets up default mouse handling.
 	 */
