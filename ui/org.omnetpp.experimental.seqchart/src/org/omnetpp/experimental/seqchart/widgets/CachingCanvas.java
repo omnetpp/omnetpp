@@ -1,6 +1,7 @@
 package org.omnetpp.experimental.seqchart.widgets;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.eclipse.draw2d.Graphics;
 import org.eclipse.draw2d.SWTGraphics;
@@ -9,6 +10,7 @@ import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Composite;
+import org.omnetpp.experimental.seqchart.widgets.ITileCache.Tile;
 
 /**
  * A scrollable canvas that supports caching of (part of) the drawing 
@@ -17,21 +19,9 @@ import org.eclipse.swt.widgets.Composite;
 //XXX Other utility functionality: dragging the area with the mouse ("hand cursor"); rubberbanding.
 public abstract class CachingCanvas extends LargeScrollableCanvas {
 
-	private static class CacheItem {
-		public Rectangle rect = null; //XXX Bad, bad, bad!!! store virtual (long) coords!!!
-		public Image image = null;
-		public CacheItem() {}
-		public CacheItem(Rectangle rect, Image image) {
-			this.rect = rect; 
-			this.image = image;
-		}
-	}
-
 	private boolean doCaching = true;
-	private long memoryUsageLimit = 32*1024*1024; // 32Meg by default
-	private long memoryUsage = 0;
-	private ArrayList<CacheItem> cache = new ArrayList<CacheItem>();
-	
+	ITileCache tileCache = new ColumnTileCache(); //XXX make settable
+
 	public CachingCanvas(Composite parent, int style) {
 		super(parent, style | SWT.NO_BACKGROUND);
 	}
@@ -54,33 +44,39 @@ public abstract class CachingCanvas extends LargeScrollableCanvas {
 			graphics.dispose();
 		}
 		else {
-			// perform caching
-			Rectangle r = gc.getClipping();
+			Rectangle clip = gc.getClipping();
+			LargeRect lclip = new LargeRect(clip.x+getViewportLeft(), clip.y+getViewportTop(), clip.width, clip.height);
 			
-			CacheItem cacheItem = findImageFor(r);  //XXX use partial matches as well!!!
-			if (cacheItem==null) {
-			//if (true) {
-				r = new Rectangle(r.x, r.y, r.width, r.height);
-				refinePaintRectangle(r);
-				
-				Image image = new Image(getDisplay(), r);
+			ArrayList<Tile> cachedTiles = new ArrayList<Tile>();
+			ArrayList<LargeRect> missingAreas = new ArrayList<LargeRect>();
+
+			tileCache.getTiles(lclip, getVirtualWidth(), getVirtualHeight(), cachedTiles, missingAreas);
+
+			// display cached tiles
+			for (Tile tile : cachedTiles) {
+				gc.drawImage(tile.image, (int)(tile.rect.x-getViewportLeft()), (int)(tile.rect.y-getViewportTop()));
+			}
+
+			// draw missing tiles
+			for (LargeRect lrect : missingAreas) {
+				Rectangle rect = new Rectangle((int)(lrect.x-getViewportLeft()), (int)(lrect.y-getViewportTop()), (int)lrect.width, (int)lrect.height);
+				Image image = new Image(getDisplay(), rect);
 				GC imgc = new GC(image);
 				Graphics imgraphics = new SWTGraphics(imgc);  // we need to use Graphics because GC doesn't have translate() support
-				imgraphics.translate(-r.x, -r.y);
-				imgraphics.setClip(new org.eclipse.draw2d.geometry.Rectangle(r));
+				imgraphics.translate(-rect.x, -rect.y);
+				imgraphics.setClip(new org.eclipse.draw2d.geometry.Rectangle(rect));
 
 				paintCachables(imgraphics);
 
 				imgraphics.dispose();
 				imgc.dispose();
 				
-				cacheItem = addToCache(r, image);
+				// draw the image on the screen, and also add it to the cache
+				gc.drawImage(image, rect.x, rect.y);
+				tileCache.add(lrect, image);
 			}
 
-			// copy cached image to screen
-			gc.drawImage(cacheItem.image, cacheItem.rect.x, cacheItem.rect.y);
-
-			// paint items that we don't want to appear on the cached image
+			// paint items that we don't want to cache
 			Graphics graphics = new SWTGraphics(gc);
 			paintNoncachables(graphics);
 			graphics.dispose();
@@ -95,32 +91,11 @@ public abstract class CachingCanvas extends LargeScrollableCanvas {
 	 * a possibility to cache a larger area than the clipping if it's going to be 
 	 * drawn anyway.
 	 */
-	protected void refinePaintRectangle(Rectangle paintRect) {
-	}
+	protected void refinePaintRectangle(Rectangle paintRect) { }
 	protected abstract void paintCachables(Graphics graphics);
 	protected abstract void paintNoncachables(Graphics graphics);
 
-	private CacheItem findImageFor(Rectangle r) {
-		for (CacheItem item : cache)
-			if (item.rect.contains(r.x, r.y) && item.rect.contains(r.x+r.width-1, r.y+r.height-1))
-				return item;
-		return null;
-	}
-
-	private CacheItem addToCache(Rectangle r, Image image) {
-		CacheItem cacheItem;
-		cacheItem = new CacheItem(new Rectangle(r.x, r.y, r.width, r.height), image);
-		cache.add(cacheItem);
-		memoryUsage += image.getImageData().data.length;
-		if (memoryUsage > memoryUsageLimit) {
-			//TODO throw out something
-		}
-		System.out.printf("image %d x %d added to cache, memory usage %dk\n", r.width, r.height, memoryUsage/1024);
-		return cacheItem;
-	}
-
-	public void flushCanvasCache() {
-		cache.clear();
-		memoryUsage = 0;
+	public void clearCanvasCache() {
+		tileCache.clear();
 	}
 }
