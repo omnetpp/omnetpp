@@ -31,8 +31,8 @@ public abstract class LargeScrollableCanvas extends Canvas {
 	}
 
 	private void init() {
-		getHorizontalBar().setIncrement(20);
-		getVerticalBar().setIncrement(20);
+		getHorizontalBar().setIncrement(10);
+		getVerticalBar().setIncrement(10);
 		
 		getHorizontalBar().addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {

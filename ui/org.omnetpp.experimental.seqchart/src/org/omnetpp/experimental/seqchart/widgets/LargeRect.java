@@ -44,6 +44,14 @@ public final class LargeRect {
 		this.height = r.height;
 	}
 
+	long right() {
+		return x + width;
+	}
+
+	long bottom() {
+		return y + height;
+	}
+
 	/**
 	 * Destructively replaces the x, y, width and height values
 	 * in the receiver with ones which represent the union of the
@@ -203,5 +211,35 @@ public final class LargeRect {
 		rhs = rect.y + rect.height;
 		long bottom = lhs > rhs ? lhs : rhs;
 		return new LargeRect (left, top, right - left, bottom - top);
+	}
+
+	/**
+	 * Returns a new rectangle which represents the receiver minus the 
+	 * given rectangle. Returns null if the difference is not a rectangular area.
+	 * 
+	 * @author andras
+	 */
+	public LargeRect minus (LargeRect rect) {
+		LargeRect intersection = intersection(rect);
+		if (intersection.height==height && intersection.x==x)
+			return new LargeRect(intersection.right(), y, width-intersection.width, height);
+		if (intersection.height==height && intersection.right()==right())
+			return new LargeRect(x, y, width-intersection.width, height);
+		if (intersection.width==width && intersection.y==y)
+			return new LargeRect(x, intersection.bottom(), width, height-intersection.height);
+		if (intersection.width==width && intersection.right()==right())
+			return new LargeRect(x, y, width, height-intersection.height);
+		return null;
+	}
+
+	/**
+	 * Returns an array of new rectangles which represent the receiver minus the 
+	 * given rectangle. This means at most 4 rectangles in the worst case (when
+	 * rect is completely inside the receiver rect.) 
+	 * 
+	 * @author andras
+	 */
+	public LargeRect[] advancedMinus (LargeRect rect) {
+		throw new RuntimeException("not implemented");
 	}
 }

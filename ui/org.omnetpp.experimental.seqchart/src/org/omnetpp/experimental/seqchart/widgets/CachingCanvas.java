@@ -1,11 +1,11 @@
 package org.omnetpp.experimental.seqchart.widgets;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import org.eclipse.draw2d.Graphics;
 import org.eclipse.draw2d.SWTGraphics;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Rectangle;
@@ -19,11 +19,13 @@ import org.omnetpp.experimental.seqchart.widgets.ITileCache.Tile;
 //XXX Other utility functionality: dragging the area with the mouse ("hand cursor"); rubberbanding.
 public abstract class CachingCanvas extends LargeScrollableCanvas {
 
-	private boolean doCaching = true;
+	private boolean doCaching = false;
 	ITileCache tileCache = new ColumnTileCache(); //XXX make settable
 
 	public CachingCanvas(Composite parent, int style) {
-		super(parent, style | SWT.NO_BACKGROUND);
+		//super(parent, style | SWT.NO_BACKGROUND);
+		//super(parent, style);
+		super(parent, style | SWT.DOUBLE_BUFFERED);
 	}
 
 	public boolean getCaching() {
@@ -55,6 +57,7 @@ public abstract class CachingCanvas extends LargeScrollableCanvas {
 			// display cached tiles
 			for (Tile tile : cachedTiles) {
 				gc.drawImage(tile.image, (int)(tile.rect.x-getViewportLeft()), (int)(tile.rect.y-getViewportTop()));
+				debugDrawTile(gc, tile.rect, new Color(null,0,255,0));
 			}
 
 			// draw missing tiles
@@ -74,6 +77,7 @@ public abstract class CachingCanvas extends LargeScrollableCanvas {
 				// draw the image on the screen, and also add it to the cache
 				gc.drawImage(image, rect.x, rect.y);
 				tileCache.add(lrect, image);
+				debugDrawTile(gc, lrect, new Color(null,255,0,0));
 			}
 
 			// paint items that we don't want to cache
@@ -82,6 +86,13 @@ public abstract class CachingCanvas extends LargeScrollableCanvas {
 			graphics.dispose();
 		}
 		
+	}
+
+	private void debugDrawTile(GC gc, LargeRect rect, Color color) {
+		gc.setForeground(color);
+		gc.drawRoundRectangle(
+				(int)(rect.x-getViewportLeft()), (int)(rect.y-getViewportTop()),
+				(int)rect.width-1, (int)rect.height-1, 8, 8);
 	}
 
 	/**

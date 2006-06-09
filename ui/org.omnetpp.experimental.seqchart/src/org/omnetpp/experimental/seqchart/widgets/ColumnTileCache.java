@@ -61,9 +61,9 @@ public class ColumnTileCache implements ITileCache {
 		cache.clear();
 	}
 
-	public void getTiles(LargeRect rect, long virtualWidth, long virtualHeight, List<Tile> outCachedTiles, List<LargeRect> outMissingAreas) {
-		// dummy impl: if we find an exact match, return it, otherwise return full area as missing
-		//XXX refine
+	public void getTiles_dummyImplementation1(LargeRect rect, long virtualWidth, long virtualHeight, List<Tile> outCachedTiles, List<LargeRect> outMissingAreas) {
+		// if we find an exact match, return it, otherwise return full area as missing
+		// not very efficient
 		for (Tile tile : cache) {
 			if (tile.rect.contains(rect)) {
 				System.out.println("tile cache HIT!");
@@ -74,5 +74,50 @@ public class ColumnTileCache implements ITileCache {
 
 		System.out.println("tile cache MISS!");
 		outMissingAreas.add(rect);
+	}
+	
+	public void getTiles(LargeRect rect, long virtualWidth, long virtualHeight, List<Tile> outCachedTiles, List<LargeRect> outMissingAreas) {
+		// simple algorithm: find best match, and return diff to it as missing
+		Tile bestTile = findBestMatch(rect);
+		if (bestTile==null) {
+			// no overlapping tile, request full rectangle
+			outMissingAreas.add(new LargeRect(rect.x, 0, rect.width, virtualHeight));
+		}
+		else if (bestTile.rect.contains(rect)) {
+			// tile covers it all
+			outCachedTiles.add(bestTile);
+		}
+		else {
+			// calculate diff rect and see
+			LargeRect diff = rect.minus(bestTile.rect);
+			if (diff==null) {
+				// best tile is no use (actually this cannot happen in ColumnTileCache as all tiles are full height) 
+				outMissingAreas.add(new LargeRect(rect.x, 0, rect.width, virtualHeight));
+			}
+			else {
+				outCachedTiles.add(bestTile);
+				outMissingAreas.add(new LargeRect(diff.x-100, 0, diff.width+100, virtualHeight)); //XXX extend only in direction which makes sense!
+			}
+		}
+	}
+
+	/**
+	 * Returns the tile which has the largest overlapping area with rect.
+	 * Returns null if no tiles overlap with it.
+	 */
+	private Tile findBestMatch(LargeRect rect) {
+		Tile bestTile = null;
+		long bestArea = 0;
+		for (Tile tile : cache) {
+			if (tile.rect.intersects(rect)) {
+				LargeRect r = tile.rect.intersection(rect);
+				long area = r.width * r.height;
+				if (area > bestArea) {
+					bestArea = area;
+					bestTile = tile;
+				}
+			}
+		}
+		return bestTile;
 	}
 }
