@@ -227,7 +227,7 @@ public final class LargeRect {
 			return new LargeRect(x, y, width-intersection.width, height);
 		if (intersection.width==width && intersection.y==y)
 			return new LargeRect(x, intersection.bottom(), width, height-intersection.height);
-		if (intersection.width==width && intersection.right()==right())
+		if (intersection.width==width && intersection.bottom()==bottom())
 			return new LargeRect(x, y, width, height-intersection.height);
 		return null;
 	}

@@ -263,7 +263,7 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 	public void setAxisSpacing(int axisSpacing) {
 		this.axisSpacing = axisSpacing>0 ? axisSpacing : 1;
 		recalculateVirtualSize();
-		redraw();
+		clearCanvasCacheAndRedraw();
 	}
 
 	/**
@@ -271,7 +271,7 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 	 */
 	public void setShowMessageNames(boolean showMessageNames) {
 		this.showMessageNames = showMessageNames;
-		redraw();
+		clearCanvasCacheAndRedraw();
 	}
 
 	/**
@@ -286,7 +286,7 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 	 */
 	public void setShowNonDeliveryMessages(boolean showNonDeliveryMessages) {
 		this.showNonDeliveryMessages = showNonDeliveryMessages;
-		redraw();
+		clearCanvasCacheAndRedraw();
 	}
 	
 	/**
@@ -301,7 +301,7 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 	 */
 	public void setShowEventNumbers(boolean showEventNumbers) {
 		this.showEventNumbers = showEventNumbers;
-		redraw();
+		clearCanvasCacheAndRedraw();
 	}
 
 	/**
@@ -323,7 +323,7 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 	 */
 	public void setShowArrowHeads(boolean drawArrowHeads) {
 		this.showArrowHeads = drawArrowHeads;
-		redraw();
+		clearCanvasCacheAndRedraw();
 	}
 
 	/**
@@ -353,7 +353,7 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 		this.timelineSortMode = timelineSortMode;
 		calculateAxisYs();
 		updateFigure();
-		redraw();
+		clearCanvasCacheAndRedraw();
 	}
 	
 	/**
@@ -716,8 +716,14 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 		width = Math.max(width, 600); // at least half a screen
 		long height = axisModules.size() * axisSpacing + axisOffset * 2;
 		setVirtualSize(width, height);
+		clearCanvasCacheAndRedraw();
 	}
 
+	public void clearCanvasCacheAndRedraw() {
+		clearCanvasCache();
+		redraw();
+	}
+	
 	@Override
 	protected void paintCachables(Graphics graphics) {
 		doPaintFigure(graphics);
@@ -775,7 +781,7 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 	
 	        // paint arrows
 	        IntVector msgIndices = eventLog.getMessagesIntersecting(startEventNumber, endEventNumber, moduleIds, showNonDeliveryMessages); 
-	        System.out.println(""+msgIndices.size()+" msgs to draw");
+	        //System.out.println(""+msgIndices.size()+" msgs to draw");
 	        VLineBuffer vlineBuffer = new VLineBuffer();
 	        for (int i=0; i<msgIndices.size(); i++) {
 	        	int pos = msgIndices.get(i);
@@ -801,7 +807,7 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 	        }
 	        msgIndices.delete();
 	        
-	        System.out.println("draw msgs: "+(System.currentTimeMillis()-startMillis)+"ms");
+	        //System.out.println("draw msgs: "+(System.currentTimeMillis()-startMillis)+"ms");
 	       
 			// paint events
 	        graphics.setForegroundColor(EVENT_FG_COLOR);
@@ -1558,7 +1564,7 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
             	}
             }
             long millis = System.currentTimeMillis()-startMillis;
-            System.out.println("collectStuffUnderMouse(): "+millis+"ms - "+(events==null ? "n/a" : events.size())+" events, "+(msgs==null ? "n/a" : msgs.size())+" msgs");
+            //System.out.println("collectStuffUnderMouse(): "+millis+"ms - "+(events==null ? "n/a" : events.size())+" events, "+(msgs==null ? "n/a" : msgs.size())+" msgs");
 		}
 	}
 

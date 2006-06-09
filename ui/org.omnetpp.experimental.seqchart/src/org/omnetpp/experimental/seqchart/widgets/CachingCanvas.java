@@ -16,26 +16,41 @@ import org.omnetpp.experimental.seqchart.widgets.ITileCache.Tile;
  * A scrollable canvas that supports caching of (part of) the drawing 
  * in off-screen image buffers for performance improvement.
  */
-//XXX Other utility functionality: dragging the area with the mouse ("hand cursor"); rubberbanding.
+//XXX something is not right -- mouse hover won't find events!
+//TODO clear region outside the "virtual canvas" area
+//XXX probably we should use getClientArea() instead of getBounds()
 public abstract class CachingCanvas extends LargeScrollableCanvas {
 
-	private boolean doCaching = false;
-	ITileCache tileCache = new ColumnTileCache(); //XXX make settable
+	private boolean doCaching = true;
+	private ITileCache tileCache = new ColumnTileCache(); //XXX make settable
+	private boolean DEBUG = false;
+	
 
+	/**
+	 * Constructor. 
+	 */
 	public CachingCanvas(Composite parent, int style) {
-		//super(parent, style | SWT.NO_BACKGROUND);
-		//super(parent, style);
-		super(parent, style | SWT.DOUBLE_BUFFERED);
+		super(parent, style | SWT.NO_BACKGROUND);
+		//super(parent, style | SWT.DOUBLE_BUFFERED);
 	}
 
+	/**
+	 * Returns whether caching is on or off.
+	 */
 	public boolean getCaching() {
 		return doCaching;
 	}
 
+	/**
+	 * Turns on/off caching.
+	 */
 	public void setCaching(boolean doCaching) {
 		this.doCaching = doCaching;
 	}
 
+	/**
+	 * Paints the canvas, making use of the cache.
+	 */
 	@Override
 	protected void paint(GC gc) {
 		if (!doCaching) {
@@ -53,6 +68,7 @@ public abstract class CachingCanvas extends LargeScrollableCanvas {
 			ArrayList<LargeRect> missingAreas = new ArrayList<LargeRect>();
 
 			tileCache.getTiles(lclip, getVirtualWidth(), getVirtualHeight(), cachedTiles, missingAreas);
+			System.out.println("cache: found "+cachedTiles.size()+" tiles, missing "+missingAreas.size()+" areas");
 
 			// display cached tiles
 			for (Tile tile : cachedTiles) {
@@ -88,25 +104,34 @@ public abstract class CachingCanvas extends LargeScrollableCanvas {
 		
 	}
 
+	/**
+	 * Marks the tiles on the screen by drawing a border for them.
+	 */
 	private void debugDrawTile(GC gc, LargeRect rect, Color color) {
-		gc.setForeground(color);
-		gc.drawRoundRectangle(
-				(int)(rect.x-getViewportLeft()), (int)(rect.y-getViewportTop()),
-				(int)rect.width-1, (int)rect.height-1, 8, 8);
+		if (DEBUG) {
+			gc.setForeground(color);
+			gc.drawRoundRectangle(
+					(int)(rect.x-getViewportLeft()), (int)(rect.y-getViewportTop()),
+					(int)rect.width-1, (int)rect.height-1, 8, 8);
+		}
 	}
 
 	/**
-	 * By redefining this method and modifying the passed paintRect in it, 
-	 * subclasses can specify what rectangle they will actually redraw when 
-	 * they get the given rectangle as clipping. This gives CachingCanvas
-	 * a possibility to cache a larger area than the clipping if it's going to be 
-	 * drawn anyway.
+	 * Paint everything in this method that can be cached.
 	 */
-	protected void refinePaintRectangle(Rectangle paintRect) { }
 	protected abstract void paintCachables(Graphics graphics);
+
+	/**
+	 * Paint in this method anything that you don't want to be cached 
+	 * (selection marks, etc)
+	 */
 	protected abstract void paintNoncachables(Graphics graphics);
 
+	/**
+	 * Clears the tile cache. To be called any time the drawing changes.
+	 */
 	public void clearCanvasCache() {
 		tileCache.clear();
+		System.out.println("Cache cleared!");
 	}
 }

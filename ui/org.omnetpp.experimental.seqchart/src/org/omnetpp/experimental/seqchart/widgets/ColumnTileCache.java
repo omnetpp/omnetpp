@@ -37,18 +37,30 @@ public class ColumnTileCache implements ITileCache {
 		int imageSize = imageSize(image);
 		Assert.isTrue(imageSize < memoryUsageLimit, "memory usage limit set too small");
 		memoryUsage += imageSize;
+		System.out.printf("cache: added image %d x %d, size %dk\n", rect.width, rect.height, imageSize/1024);
 		discardOldTiles();
-		System.out.printf("image %d x %d added to cache, memory usage %dk\n", rect.width, rect.height, memoryUsage/1024);
 		return tile;
 	}
 
+	public void printCache() {
+		System.out.printf("Cache: %d tiles, memory usage %dk, limit %dk\n", cache.size(), memoryUsage/1024, memoryUsageLimit/1024);
+		for (Tile tile : cache) {
+			System.out.printf(" - tile %d x %d, size %dk\n", tile.rect.width, tile.rect.height, imageSize(tile.image)/1024);
+		}
+	}
+
 	private void discardOldTiles() {
+		printCache();
+		int count = 0;
 		while (memoryUsage > memoryUsageLimit) {
 			Assert.isTrue(cache.size()>0);
 			Tile tile = cache.remove(0);
 			memoryUsage -= imageSize(tile.image);
 			tile.image.dispose();
+			count++;
 		}
+		if (count>0)
+			System.out.printf("cache: thrown out %d tiles, currently holding %d\n", count, cache.size());
 	}
 
 	private int imageSize(Image image) {
@@ -59,6 +71,7 @@ public class ColumnTileCache implements ITileCache {
 		for (Tile tile : cache)
 				tile.image.dispose();
 		cache.clear();
+		memoryUsage = 0;
 	}
 
 	public void getTiles_dummyImplementation1(LargeRect rect, long virtualWidth, long virtualHeight, List<Tile> outCachedTiles, List<LargeRect> outMissingAreas) {
@@ -91,12 +104,15 @@ public class ColumnTileCache implements ITileCache {
 			// calculate diff rect and see
 			LargeRect diff = rect.minus(bestTile.rect);
 			if (diff==null) {
-				// best tile is no use (actually this cannot happen in ColumnTileCache as all tiles are full height) 
+				// best tile is no use (actually this cannot happen in ColumnTileCache as all tiles are full height)
+				//XXX look for ones where diff!=null already in findBestMatch()!!
 				outMissingAreas.add(new LargeRect(rect.x, 0, rect.width, virtualHeight));
 			}
 			else {
 				outCachedTiles.add(bestTile);
-				outMissingAreas.add(new LargeRect(diff.x-100, 0, diff.width+100, virtualHeight)); //XXX extend only in direction which makes sense!
+				// instead of adding the diff to missingAreas right away, try to find more tiles by recursion
+				//outMissingAreas.add(new LargeRect(diff.x, 0, diff.width, virtualHeight));
+				getTiles(diff, virtualWidth, virtualHeight, outCachedTiles, outMissingAreas);
 			}
 		}
 	}
