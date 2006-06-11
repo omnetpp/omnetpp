@@ -48,15 +48,9 @@ import org.omnetpp.scave.engine.MessageEntry;
  *
  * @author andras, levy
  */
-//TODO Enter_Method nondelivery arrows! line + half-ellipse
+//FIXME ensure consistency of internal data structure when doing set() operations!!!!
 //FIXME sometimes there's no tick visible! (axis tick scale calculated wrong?)
-//TODO rubberbanding
 //TODO instead of (in addition to) gotoSimulationTime(), we need gotoEvent() as well, which would do vertical scrolling too
-//TODO redraw chart with antialias while user is idle? hints: new SafeRunnable(); or:
-//getDisplay().asyncExec(new Runnable() {
-//	public void run() { ... }
-//};
-//TODO Performance opt: draw into off-screen buffer and cache result for later
 //FIXME messages created in initialize() appear to have been created in event #0!!!
 //TODO renaming: DELIVERY->SENDING, NONDELIVERY->USAGE, isDelivery->isSending;
 //               Timeline modes: Linear, Step, Compact (=nonlinear), Compact2 (CompactWithStep);
@@ -443,6 +437,12 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 	public void setEventLog(EventLog eventLog) {
 		this.eventLog = eventLog;
 		this.logFacade = new JavaFriendlyEventLogFacade(eventLog);
+		
+		//XXX what about resetting dependent state:
+		//clearCanvasCacheAndRedraw();
+		//axisModules = null;
+		//axisModulePositions = null;
+		//selectionEvents = null;
 	}
 	
 	/**
@@ -452,6 +452,7 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 	public void setAxisModules(ArrayList<ModuleTreeItem> axisModules) {
 		this.axisModules = axisModules;
 		calculateAxisYs();
+		//FIXME what about updating the chart?
 	}
 	
 	/**
@@ -711,7 +712,7 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 	}
 
 	private void recalculateVirtualSize() {
-		EventEntry lastEvent = eventLog.getEvent(eventLog.getNumEvents()-1);
+		EventEntry lastEvent = eventLog.getLastEvent();
 		long width = lastEvent==null ? 0 : (long)(lastEvent.getTimelineCoordinate() * getPixelsPerTimelineUnit()) + 3;
 		width = Math.max(width, 600); // at least half a screen
 		long height = axisModules.size() * axisSpacing + axisOffset * 2;

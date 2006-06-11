@@ -354,7 +354,7 @@ public class SequenceChartToolEditor extends EditorPart {
 	}
 
 	private void filteredEventLogChanged() {
-		seqChart.updateFigure(filteredEventLog, axisModules);
+		seqChart.updateFigure(filteredEventLog, axisModules);  //XXX eliminate!!!!
 	}
 
 	/**

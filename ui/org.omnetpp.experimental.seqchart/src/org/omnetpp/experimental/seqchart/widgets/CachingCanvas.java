@@ -19,6 +19,10 @@ import org.omnetpp.experimental.seqchart.widgets.ITileCache.Tile;
 //XXX something is not right -- mouse hover won't find events!
 //TODO clear region outside the "virtual canvas" area
 //XXX probably we should use getClientArea() instead of getBounds()
+//TODO redraw chart with antialias while user is idle? hints: new SafeRunnable(); or:
+//getDisplay().asyncExec(new Runnable() {
+//	public void run() { ... }
+//};
 public abstract class CachingCanvas extends LargeScrollableCanvas {
 
 	private boolean doCaching = true;
