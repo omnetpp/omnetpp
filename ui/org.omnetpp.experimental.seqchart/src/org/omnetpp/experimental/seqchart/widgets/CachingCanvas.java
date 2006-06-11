@@ -63,8 +63,8 @@ public abstract class CachingCanvas extends LargeScrollableCanvas {
 		if (!doCaching) {
 			// paint directly on the GC
 			Graphics graphics = new SWTGraphics(gc);
-			paintCachables(graphics);
-			paintNoncachables(graphics);
+			paintCachableLayer(graphics);
+			paintNoncachableLayer(graphics);
 			graphics.dispose();
 		}
 		else {
@@ -92,7 +92,7 @@ public abstract class CachingCanvas extends LargeScrollableCanvas {
 				imgraphics.translate(-rect.x, -rect.y);
 				imgraphics.setClip(new org.eclipse.draw2d.geometry.Rectangle(rect));
 
-				paintCachables(imgraphics);
+				paintCachableLayer(imgraphics);
 
 				imgraphics.dispose();
 				imgc.dispose();
@@ -106,7 +106,7 @@ public abstract class CachingCanvas extends LargeScrollableCanvas {
 			// paint items that we don't want to cache
 			gc.setClipping(getClientArea());
 			Graphics graphics = new SWTGraphics(gc);
-			paintNoncachables(graphics);
+			paintNoncachableLayer(graphics);
 			graphics.dispose();
 		}
 		
@@ -137,13 +137,13 @@ public abstract class CachingCanvas extends LargeScrollableCanvas {
 	 * Paint everything in this method that can be cached. This may be called several
 	 * times during a repaint, with different clip rectangles.
 	 */
-	protected abstract void paintCachables(Graphics graphics);
+	protected abstract void paintCachableLayer(Graphics graphics);
 
 	/**
 	 * Paint in this method anything that you don't want to be cached 
-	 * (selection marks, etc)
+	 * (selection marks, etc). It will paint over the cachable layer.
 	 */
-	protected abstract void paintNoncachables(Graphics graphics);
+	protected abstract void paintNoncachableLayer(Graphics graphics);
 
 	/**
 	 * Clears the tile cache. To be called any time the drawing changes.

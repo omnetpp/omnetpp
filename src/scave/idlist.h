@@ -18,16 +18,9 @@
 #include <vector>
 #include <exception>
 #include <stdexcept>
+#include "scavedefs.h" // int64
 
 class ResultFileManager;
-
-// define int64, our equivalent of Java's "long" type
-#ifdef _MSC_VER
-typedef __int64 int64;
-#else
-typedef long long int64;
-#endif
-
 
 /**
  * Result ID -- identifies a scalar or a vector in a ResultFileManager

@@ -29,7 +29,15 @@
     }
 }
 
+%include "scavedefs.h"
+
 %typemap(jni) ID "jlong";
+
+%typemap(jni)    int64 "jlong"
+%typemap(jtype)  int64 "long"
+%typemap(jstype) int64 "long"
+%typemap(javain) int64 "$javainput"
+
 
 %include "std_common.i"
 %include "std_string.i"

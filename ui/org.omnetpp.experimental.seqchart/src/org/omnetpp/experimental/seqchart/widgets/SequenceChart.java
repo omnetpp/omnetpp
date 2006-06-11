@@ -730,12 +730,12 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 	}
 	
 	@Override
-	protected void paintCachables(Graphics graphics) {
+	protected void paintCachableLayer(Graphics graphics) {
 		doPaintFigure(graphics);
 	}
 
 	@Override
-	protected void paintNoncachables(Graphics graphics) {
+	protected void paintNoncachableLayer(Graphics graphics) {
 		paintAxisLabels(graphics);
         paintEventSelectionMarks(graphics);
 	}
@@ -819,8 +819,8 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 	        graphics.setForegroundColor(EVENT_FG_COLOR);
 	        HashMap<Integer,Integer> axisYtoLastX = new HashMap<Integer, Integer>();
 	        for (int i=startEventIndex; i<endEventIndex; i++) {
-				int x = logFacade.getEvent_i_cachedX(i);
-				int y = logFacade.getEvent_i_cachedY(i);
+				int x = (int)logFacade.getEvent_i_cachedX(i);
+				int y = (int)logFacade.getEvent_i_cachedY(i);
 
 				// performance optimization: don't paint event if there's one already drawn exactly there
 				if (!Integer.valueOf(x).equals(axisYtoLastX.get(y))) {
@@ -868,8 +868,8 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 			for (EventEntry sel : selectionEvents) {
 		    	if (startEventNumber<=sel.getEventNumber() && sel.getEventNumber()<endEventNumber)
 		    	{
-		    		int x = sel.getCachedX();
-		    		int y = sel.getCachedY();
+		    		int x = (int)sel.getCachedX();
+		    		int y = (int)sel.getCachedY();
 		    		graphics.drawOval(x - EVENT_SEL_RADIUS, y - EVENT_SEL_RADIUS, EVENT_SEL_RADIUS * 2 + 1, EVENT_SEL_RADIUS * 2 + 1);
 		    	}
 			}
@@ -1026,10 +1026,10 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 //	}
 
 	private void drawMessageArrow(Graphics graphics, int pos, VLineBuffer vlineBuffer) {
-        int x1 = logFacade.getMessage_source_cachedX(pos);
-        int y1 = logFacade.getMessage_source_cachedY(pos);
-        int x2 = logFacade.getMessage_target_cachedX(pos);
-        int y2 = logFacade.getMessage_target_cachedY(pos);
+        int x1 = (int)logFacade.getMessage_source_cachedX(pos);
+        int y1 = (int)logFacade.getMessage_source_cachedY(pos);
+        int x2 = (int)logFacade.getMessage_target_cachedX(pos);
+        int y2 = (int)logFacade.getMessage_target_cachedY(pos);
 		//System.out.printf("drawing %d %d %d %d \n", x1, x2, y1, y2);
 
         // check whether we'll need to draw an arrowhead
@@ -1135,6 +1135,10 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 		graphics.drawText(label, x + dx, y + dy);
 	}
 	
+	/**
+	 * Draws an arrowhead.
+	 * XXX what are the parameters? document!!!
+	 */
 	private void drawArrowHead(Graphics graphics, int x, int y, double dx, double dy)
 	{
 		double n = Math.sqrt(dx * dx + dy * dy);
@@ -1153,7 +1157,7 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 
 	/**
 	 * Draws the axis, according to the current pixelsPerTimelineUnit and tickInterval
-	 * settings.
+	 * settings. Does NOT include axis labels which go on the non-cachable layer.
 	 */
 	private void drawAxis(Graphics graphics, int y) {
 		Rectangle rect = graphics.getClip(new Rectangle());
@@ -1185,8 +1189,10 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 		}
 	}
 
-	protected void paintAxisLabels(Graphics graphics) {
-		// draw axis labels
+	/**
+	 * Draws axis labels if there's enough space between axes.
+	 */
+	private void paintAxisLabels(Graphics graphics) {
 		if (AXISLABEL_DISTANCE < axisSpacing) {
 			graphics.setForegroundColor(LABEL_COLOR);
 			for (int i=0; i<axisModules.size(); i++) {
@@ -1198,7 +1204,10 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 		}
 	}
 
-	protected int getAxisY(int i) {
+	/**
+	 * Calculates the Y coordinate for the ith axis.
+	 */
+	private int getAxisY(int i) {
 		int y = axisOffset + axisModulePositions[i] * axisSpacing - (int)getViewportTop();
 		return y;
 	}
@@ -1206,7 +1215,6 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 	/**
 	 * Calculates timeline coordinates for all events. It might be a non-linear transformation
 	 * of simulation time, event number, etc.
-	 *
 	 */
 	private void recalculateTimelineCoordinates()
 	{
@@ -1569,7 +1577,7 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 			// check events
             if (events != null) {
             	for (int i=startEventIndex; i<endEventIndex; i++)
-   				if (eventSymbolContainsPoint(mouseX, mouseY, logFacade.getEvent_i_cachedX(i), logFacade.getEvent_i_cachedY(i), MOUSE_TOLERANCE))
+   				if (eventSymbolContainsPoint(mouseX, mouseY, (int)logFacade.getEvent_i_cachedX(i), (int)logFacade.getEvent_i_cachedY(i), MOUSE_TOLERANCE))
    					events.add(eventLog.getEvent(i));
             }
 
@@ -1608,10 +1616,10 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 	}
 
 	private boolean messageArrowContainsPoint(int pos, int px, int py, int tolerance) {
-        int x1 = logFacade.getMessage_source_cachedX(pos);
-        int y1 = logFacade.getMessage_source_cachedY(pos);
-        int x2 = logFacade.getMessage_target_cachedX(pos);
-        int y2 = logFacade.getMessage_target_cachedY(pos);
+        int x1 = (int)logFacade.getMessage_source_cachedX(pos);
+        int y1 = (int)logFacade.getMessage_source_cachedY(pos);
+        int x2 = (int)logFacade.getMessage_target_cachedX(pos);
+        int y2 = (int)logFacade.getMessage_target_cachedY(pos);
 		//System.out.printf("checking %d %d %d %d\n", x1, x2, y1, y2);
 		if (y1==y2) {
 			int height = logFacade.getMessage_isDelivery(pos) ? DELIVERY_SELFARROW_HEIGHT : NONDELIVERY_SELFARROW_HEIGHT;

@@ -22,6 +22,7 @@
 #include <set>
 #include "filetokenizer.h"
 #include "exception.h"
+#include "scavedefs.h"
 
 /**
  * A compound or simple module extracted from the log file
@@ -85,11 +86,11 @@ class EventEntry
         bool isInCollectedEvents;
 
         // the following fields are for the convenience of the GUI
-        int cachedX; // position on canvas
-        int cachedY;
+        double timelineCoordinate;
+        int64 cachedX;
+        int64 cachedY;
         bool isExpandedInTree;
         int tableRowIndex;
-        double timelineCoordinate;
 
     public:
         EventEntry();
@@ -261,13 +262,13 @@ class JavaFriendlyEventLogFacade
         int getNumEvents() {return log->getNumEvents();}
         long getEvent_i_eventNumber(int pos) {return getEvent(pos)->eventNumber;}
         double getEvent_i_simulationTime(int pos) {return getEvent(pos)->simulationTime;}
-        int getEvent_i_cachedX(int pos)  {return getEvent(pos)->cachedX;}
-        int getEvent_i_cachedY(int pos)  {return getEvent(pos)->cachedY;}
+        int64 getEvent_i_cachedX(int pos)  {return getEvent(pos)->cachedX;}
+        int64 getEvent_i_cachedY(int pos)  {return getEvent(pos)->cachedY;}
         bool getEvent_i_isExpandedInTree(int pos)  {return getEvent(pos)->isExpandedInTree;}
         int getEvent_i_tableRowIndex(int pos)  {return getEvent(pos)->tableRowIndex;}
         double getEvent_i_timelineCoordinate(int pos)  {return getEvent(pos)->timelineCoordinate;}
-        void setEvent_cachedX(int pos, int x)  {getEvent(pos)->cachedX = x;}
-        void setEvent_cachedY(int pos, int y)  {getEvent(pos)->cachedY = y;}
+        void setEvent_cachedX(int pos, int64 x)  {getEvent(pos)->cachedX = x;}
+        void setEvent_cachedY(int pos, int64 y)  {getEvent(pos)->cachedY = y;}
         void setEvent_i_isExpandedInTree(int pos, bool exp)  {getEvent(pos)->isExpandedInTree = exp;} //XXX modify tableRowIndex!!!
         void setEvent_i_timelineCoordinate(int pos, double x)  {getEvent(pos)->timelineCoordinate = x;}
 
@@ -286,10 +287,10 @@ class JavaFriendlyEventLogFacade
         long getEvent_i_cause_source_eventNumber(int pos)  {return getEvent_cause(pos)->source->eventNumber;}
         double getEvent_i_cause_source_simulationTime(int pos)  {return getEvent_cause(pos)->source->simulationTime;}
         int getEvent_i_cause_source_cause_module_moduleId(int pos, int k)  {return getEvent_cause(pos)->source->cause->module->moduleId;}
-        int getEvent_i_cause_source_cachedX(int pos)  {return getEvent_cause(pos)->source->cachedX;}
-        int getEvent_i_cause_source_cachedY(int pos)  {return getEvent_cause(pos)->source->cachedY;}
-        void setEvent_i_cause_source_cachedX(int pos, int x)  {getEvent_cause(pos)->source->cachedX = x;}
-        void setEvent_i_cause_source_cachedY(int pos, int y)  {getEvent_cause(pos)->source->cachedY = y;}
+        int64 getEvent_i_cause_source_cachedX(int pos)  {return getEvent_cause(pos)->source->cachedX;}
+        int64 getEvent_i_cause_source_cachedY(int pos)  {return getEvent_cause(pos)->source->cachedY;}
+        void setEvent_i_cause_source_cachedX(int pos, int64 x)  {getEvent_cause(pos)->source->cachedX = x;}
+        void setEvent_i_cause_source_cachedY(int pos, int64 y)  {getEvent_cause(pos)->source->cachedY = y;}
 
         int getEvent_i_numCauses(int pos)  {return getEvent(pos)->causes.size();}
 
@@ -303,10 +304,10 @@ class JavaFriendlyEventLogFacade
         double getEvent_i_causes_k_source_simulationTime(int pos, int k)  {return getEvent_causes(pos,k)->source->simulationTime;}
         double getEvent_i_causes_k_source_timelineCoordinate(int pos, int k)  {return getEvent_causes(pos,k)->source->timelineCoordinate;}
         int getEvent_i_causes_k_source_cause_module_moduleId(int pos, int k)  {return getEvent_causes(pos,k)->source->cause->module->moduleId;}
-        int getEvent_i_causes_k_source_cachedX(int pos, int k)  {return getEvent_causes(pos,k)->source->cachedX;}
-        int getEvent_i_causes_k_source_cachedY(int pos, int k)  {return getEvent_causes(pos,k)->source->cachedY;}
-        void setEvent_i_causes_k_source_cachedX(int pos, int k, int x)  {getEvent_causes(pos,k)->source->cachedX = x;}
-        void setEvent_i_causes_k_source_cachedY(int pos, int k, int y)  {getEvent_causes(pos,k)->source->cachedY = y;}
+        int64 getEvent_i_causes_k_source_cachedX(int pos, int k)  {return getEvent_causes(pos,k)->source->cachedX;}
+        int64 getEvent_i_causes_k_source_cachedY(int pos, int k)  {return getEvent_causes(pos,k)->source->cachedY;}
+        void setEvent_i_causes_k_source_cachedX(int pos, int k, int64 x)  {getEvent_causes(pos,k)->source->cachedX = x;}
+        void setEvent_i_causes_k_source_cachedY(int pos, int k, int64 y)  {getEvent_causes(pos,k)->source->cachedY = y;}
 
         int getEvent_i_numConsequences(int pos)  {return getEvent(pos)->consequences.size();}
 
@@ -320,10 +321,10 @@ class JavaFriendlyEventLogFacade
         double getEvent_i_consequences_k_target_simulationTime(int pos, int k)  {return getEvent_consequences(pos,k)->target->simulationTime;}
         double getEvent_i_consequences_k_target_timelineCoordinatea(int pos, int k)  {return getEvent_consequences(pos,k)->target->timelineCoordinate;}
         int getEvent_i_consequences_k_target_cause_module_moduleId(int pos, int k)  {return getEvent_consequences(pos,k)->target->cause->module->moduleId;}
-        int getEvent_i_consequences_k_target_cachedX(int pos, int k)  {return getEvent_consequences(pos,k)->target->cachedX;}
-        int getEvent_i_consequences_k_target_cachedY(int pos, int k)  {return getEvent_consequences(pos,k)->target->cachedY;}
-        void setEvent_i_consequences_k_target_cachedX(int pos, int k, int x)  {getEvent_consequences(pos,k)->target->cachedX = x;}
-        void setEvent_i_consequences_k_target_cachedY(int pos, int k, int y)  {getEvent_consequences(pos,k)->target->cachedY = y;}
+        int64 getEvent_i_consequences_k_target_cachedX(int pos, int k)  {return getEvent_consequences(pos,k)->target->cachedX;}
+        int64 getEvent_i_consequences_k_target_cachedY(int pos, int k)  {return getEvent_consequences(pos,k)->target->cachedY;}
+        void setEvent_i_consequences_k_target_cachedX(int pos, int k, int64 x)  {getEvent_consequences(pos,k)->target->cachedX = x;}
+        void setEvent_i_consequences_k_target_cachedY(int pos, int k, int64 y)  {getEvent_consequences(pos,k)->target->cachedY = y;}
 
         int getNumMessages() {return log->getNumMessages();}
 
@@ -342,10 +343,10 @@ class JavaFriendlyEventLogFacade
         double getMessage_source_simulationTime(int pos)  {return getMessage(pos)->source->simulationTime;}
         double getMessage_source_timelineCoordinate(int pos)  {return getMessage(pos)->source->timelineCoordinate;}
         int getMessage_source_cause_module_moduleId(int pos)  {return getMessage(pos)->source->cause->module->moduleId;}
-        int getMessage_source_cachedX(int pos)  {return getMessage(pos)->source->cachedX;}
-        int getMessage_source_cachedY(int pos)  {return getMessage(pos)->source->cachedY;}
-        void setMessage_source_cachedX(int pos, int x)  {getMessage(pos)->source->cachedX = x;}
-        void setMessage_source_cachedY(int pos, int y)  {getMessage(pos)->source->cachedY = y;}
+        int64 getMessage_source_cachedX(int pos)  {return getMessage(pos)->source->cachedX;}
+        int64 getMessage_source_cachedY(int pos)  {return getMessage(pos)->source->cachedY;}
+        void setMessage_source_cachedX(int pos, int64 x)  {getMessage(pos)->source->cachedX = x;}
+        void setMessage_source_cachedY(int pos, int64 y)  {getMessage(pos)->source->cachedY = y;}
 
         bool getMessage_hasTarget(int pos)  {return getMessage(pos)->target!=NULL;}
         bool getMessage_target_isInFilteredSubset(int pos, EventLog *filteredSubset)  {return filteredSubset->containsEvent(getMessage(pos)->target);}
@@ -353,10 +354,10 @@ class JavaFriendlyEventLogFacade
         double getMessage_target_simulationTime(int pos)  {return getMessage(pos)->target->simulationTime;}
         double getMessage_target_timelineCoordinate(int pos)  {return getMessage(pos)->target->timelineCoordinate;}
         int getMessage_target_cause_module_moduleId(int pos)  {return getMessage(pos)->target->cause->module->moduleId;}
-        int getMessage_target_cachedX(int pos)  {return getMessage(pos)->target->cachedX;}
-        int getMessage_target_cachedY(int pos)  {return getMessage(pos)->target->cachedY;}
-        void setMessage_target_cachedX(int pos, int x)  {getMessage(pos)->target->cachedX = x;}
-        void setMessage_target_cachedY(int pos, int y)  {getMessage(pos)->target->cachedY = y;}
+        int64 getMessage_target_cachedX(int pos)  {return getMessage(pos)->target->cachedX;}
+        int64 getMessage_target_cachedY(int pos)  {return getMessage(pos)->target->cachedY;}
+        void setMessage_target_cachedX(int pos, int64 x)  {getMessage(pos)->target->cachedX = x;}
+        void setMessage_target_cachedY(int pos, int64 y)  {getMessage(pos)->target->cachedY = y;}
 };
 
 #endif
