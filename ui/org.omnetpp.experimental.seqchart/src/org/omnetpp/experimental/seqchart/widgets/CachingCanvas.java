@@ -23,15 +23,15 @@ public abstract class CachingCanvas extends LargeScrollableCanvas {
 
 	private boolean doCaching = true;
 	private ITileCache tileCache = new ColumnTileCache(); //XXX make settable
-	private boolean DEBUG = false;
+	private boolean debug = true;
 	
 
 	/**
 	 * Constructor. 
 	 */
 	public CachingCanvas(Composite parent, int style) {
-		super(parent, style | SWT.NO_BACKGROUND);
-		//super(parent, style | SWT.DOUBLE_BUFFERED);
+		//super(parent, style | SWT.NO_BACKGROUND);
+		super(parent, style | SWT.DOUBLE_BUFFERED);
 	}
 
 	/**
@@ -53,6 +53,9 @@ public abstract class CachingCanvas extends LargeScrollableCanvas {
 	 */
 	@Override
 	protected void paint(GC gc) {
+		// call any code subclass wants to run before painting
+		beforePaint();
+		
 		if (!doCaching) {
 			// paint directly on the GC
 			Graphics graphics = new SWTGraphics(gc);
@@ -97,6 +100,7 @@ public abstract class CachingCanvas extends LargeScrollableCanvas {
 			}
 
 			// paint items that we don't want to cache
+			gc.setClipping(getClientArea());
 			Graphics graphics = new SWTGraphics(gc);
 			paintNoncachables(graphics);
 			graphics.dispose();
@@ -104,20 +108,30 @@ public abstract class CachingCanvas extends LargeScrollableCanvas {
 		
 	}
 
+
 	/**
 	 * Marks the tiles on the screen by drawing a border for them.
 	 */
 	private void debugDrawTile(GC gc, LargeRect rect, Color color) {
-		if (DEBUG) {
+		if (debug) {
 			gc.setForeground(color);
+			gc.setLineStyle(SWT.LINE_DOT);
 			gc.drawRoundRectangle(
 					(int)(rect.x-getViewportLeft()), (int)(rect.y-getViewportTop()),
-					(int)rect.width-1, (int)rect.height-1, 8, 8);
+					(int)rect.width-1, (int)rect.height-1, 30, 30);
 		}
 	}
 
 	/**
-	 * Paint everything in this method that can be cached.
+	 * Called in every repaint request, before any call to paintCachables() and
+	 * paintNoncachables(). This is a good place for pre-paint calculations
+	 * whose result is needed by both paintCachables() and paintNoncachables().
+	 */
+	protected abstract void beforePaint();
+
+	/**
+	 * Paint everything in this method that can be cached. This may be called several
+	 * times during a repaint, with different clip rectangles.
 	 */
 	protected abstract void paintCachables(Graphics graphics);
 
