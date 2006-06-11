@@ -723,6 +723,11 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 		clearCanvasCache();
 		redraw();
 	}
+
+	@Override
+	protected void beforePaint() {
+		
+	}
 	
 	@Override
 	protected void paintCachables(Graphics graphics) {
@@ -731,7 +736,26 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 
 	@Override
 	protected void paintNoncachables(Graphics graphics) {
-		//XXX move drawing of selection marks, axis labels etc here
+		paintAxisLabels(graphics);
+        paintEventSelectionMarks(graphics);
+	}
+
+	protected void paintAxisLabels(Graphics graphics) {
+		// draw axis labels
+		if (AXISLABEL_DISTANCE < axisSpacing) {
+			graphics.setForegroundColor(LABEL_COLOR);
+			for (int i=0; i<axisModules.size(); i++) {
+				ModuleTreeItem treeItem = axisModules.get(i);
+				int y = getAxisY(i);
+				String label = treeItem.getModuleFullPath();
+				graphics.drawText(label, 5, y - AXISLABEL_DISTANCE);
+			}
+		}
+	}
+
+	protected int getAxisY(int i) {
+		int y = axisOffset + axisModulePositions[i] * axisSpacing - (int)getViewportTop();
+		return y;
 	}
 	
 	protected void doPaintFigure(Graphics graphics) {
@@ -744,7 +768,7 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 			// different y for each selected module
 			for (int i=0; i<axisModules.size(); i++) {
 				ModuleTreeItem treeItem = axisModules.get(i);
-				final int y = axisOffset + axisModulePositions[i] * axisSpacing - (int)getViewportTop();
+				final int y = getAxisY(i);
 				// propagate y to all submodules recursively
 				treeItem.visitLeaves(new ModuleTreeItem.IModuleTreeItemVisitor() {
 					public void visit(ModuleTreeItem treeItem) {
@@ -752,7 +776,7 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 						moduleIds.insert(treeItem.getModuleId());
 					}
 				});
-				drawAxis(graphics, y, treeItem.getModuleFullPath());
+				drawAxis(graphics, y);
 			}
 	
 			graphics.setAntialias(antiAlias ? SWT.ON : SWT.OFF);
@@ -770,7 +794,7 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 	
 			int startEventNumber = (startEvent!=null) ? startEvent.getEventNumber() : 0;
 			int endEventNumber = (endEvent!=null) ? endEvent.getEventNumber() : Integer.MAX_VALUE;
-	        
+
 	        // calculate event coordinates (we'll paint them after the arrows)
 	        for (int i=startEventIndex; i<endEventIndex; i++) {
 				int x = timelineCoordinateToPixel(logFacade.getEvent_i_timelineCoordinate(i));
@@ -830,21 +854,6 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 				}
 	        }           	
 	
-	        // paint event selection marks
-	        if (selectionEvents != null) {
-				graphics.setLineStyle(SWT.LINE_SOLID);
-   	            graphics.setForegroundColor(EVENT_SEL_COLOR);
-	        	for (EventEntry sel : selectionEvents) {
-	            	if (startEventNumber<=sel.getEventNumber() &&
-	            		sel.getEventNumber()<endEventNumber)
-	            	{
-	            		int x = sel.getCachedX();
-	            		int y = sel.getCachedY();
-	            		graphics.drawOval(x - EVENT_SEL_RADIUS, y - EVENT_SEL_RADIUS, EVENT_SEL_RADIUS * 2 + 1, EVENT_SEL_RADIUS * 2 + 1);
-	            	}
-	        	}
-	        }
-	        
 	        // turn on/off anti-alias 
 	        long repaintMillis = System.currentTimeMillis()-startMillis;
 	        System.out.println("redraw(): "+repaintMillis+"ms");
@@ -853,6 +862,38 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 	        else if (!antiAlias && repaintMillis < ANTIALIAS_TURN_ON_AT_MSEC)
 	        	antiAlias = true;
 	        //XXX also: turn it off also during painting if it's going to take too long 
+		}
+	}
+
+	private void paintEventSelectionMarks(Graphics graphics) {
+		//XXX this code is copy/paste from paintFigure() -- reorganize!!! (see also in collectStuffUnderMouse())
+		// determine time and event range we need to paint
+		Rectangle clipRect = graphics.getClip(new Rectangle());
+		clipRect.expand(2*CLIPRECT_BORDER, 2*CLIPRECT_BORDER); // so that if an arrowhead or event "ball" extends into the cliprect, it gets redrawn
+		double tleft = pixelToSimulationTime(clipRect.x);
+		double tright = pixelToSimulationTime(clipRect.right());
+		EventEntry startEvent = eventLog.getLastEventBefore(tleft);
+		EventEntry endEvent = eventLog.getFirstEventAfter(tright);
+		int startEventIndex = (startEvent!=null) ? eventLog.findEvent(startEvent) : 0;
+		int endEventIndex = (endEvent!=null) ? eventLog.findEvent(endEvent) : eventLog.getNumEvents(); 
+		
+		int startEventNumber = (startEvent!=null) ? startEvent.getEventNumber() : 0;
+		int endEventNumber = (endEvent!=null) ? endEvent.getEventNumber() : Integer.MAX_VALUE;
+		//XXX up to this
+		
+		// paint event selection marks
+		if (selectionEvents != null) {
+			graphics.setLineStyle(SWT.LINE_SOLID);
+		    graphics.setForegroundColor(EVENT_SEL_COLOR);
+			for (EventEntry sel : selectionEvents) {
+		    	if (startEventNumber<=sel.getEventNumber() &&
+		    		sel.getEventNumber()<endEventNumber)
+		    	{
+		    		int x = sel.getCachedX();
+		    		int y = sel.getCachedY();
+		    		graphics.drawOval(x - EVENT_SEL_RADIUS, y - EVENT_SEL_RADIUS, EVENT_SEL_RADIUS * 2 + 1, EVENT_SEL_RADIUS * 2 + 1);
+		    	}
+			}
 		}
 	}
 
@@ -1135,15 +1176,9 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 	 * Draws the axis, according to the current pixelsPerTimelineUnit and tickInterval
 	 * settings.
 	 */
-	private void drawAxis(Graphics graphics, int y, String label) {
+	private void drawAxis(Graphics graphics, int y) {
 		Rectangle rect = graphics.getClip(new Rectangle());
 
-		// draw axis label
-		if (AXISLABEL_DISTANCE < axisSpacing) {
-			graphics.setForegroundColor(LABEL_COLOR);
-			graphics.drawText(label, 5, y - AXISLABEL_DISTANCE);
-		}
-		
 		// draw axis
 		graphics.setForegroundColor(AXIS_COLOR);
 		graphics.drawLine(rect.x, y, rect.right(), y);
@@ -1159,7 +1194,7 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 		//System.out.println(tickStart+" - "+tickEnd+ " step "+tickIntvl);
 
 		int previousTickLabelX = -TICK_LABEL_WIDTH;
-		int h = AXISLABEL_DISTANCE<axisSpacing ? 2 : 1;
+		int h = axisSpacing<AXISLABEL_DISTANCE ? 1 : 2; // make tick lines shorted when axes are dense
 		for (BigDecimal t=tickStart; t.compareTo(tickEnd)<0; t = t.add(tickIntvl)) {
 			int x = simulationTimeToPixel(t.doubleValue());
 			if (x - previousTickLabelX >= TICK_LABEL_WIDTH) {
