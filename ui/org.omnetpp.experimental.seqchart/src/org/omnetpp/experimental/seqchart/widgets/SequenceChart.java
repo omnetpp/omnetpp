@@ -11,7 +11,6 @@ import java.util.Random;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.ListenerList;
 import org.eclipse.draw2d.Graphics;
-import org.eclipse.draw2d.SWTGraphics;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.jface.text.DefaultInformationControl;
 import org.eclipse.jface.util.SafeRunnable;
@@ -28,7 +27,6 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Cursor;
-import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
@@ -48,6 +46,8 @@ import org.omnetpp.scave.engine.MessageEntry;
  *
  * @author andras, levy
  */
+//FIXME expressions like int x = (int)(logFacade.getEvent_i_cachedX(i) - getViewportLeft()) may overflow -- make use of XMAX!
+//TODO improve mouse handling; support wheel too!
 //FIXME ensure consistency of internal data structure when doing set() operations!!!!
 //FIXME sometimes there's no tick visible! (axis tick scale calculated wrong?)
 //TODO instead of (in addition to) gotoSimulationTime(), we need gotoEvent() as well, which would do vertical scrolling too
@@ -113,6 +113,7 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 	private int dragStartX, dragStartY; // temporary variables for drag handling
 	private List<ModuleTreeItem> axisModules; // the modules which should have an axis (they must be part of a module tree!)
 	private Integer[] axisModulePositions; // y order of the axis modules (in the same order as axisModules); this is a permutation of the 0..axisModule.size()-1 numbers
+	private IntSet moduleIds; // calculated from axisModules: module Ids of all modules which are submodule of an axisModule (i.e. whose events appear on the chart)
 
 	private ArrayList<SelectionListener> selectionListenerList = new ArrayList<SelectionListener>(); // SWT selection listeners
 
@@ -442,7 +443,11 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 		//clearCanvasCacheAndRedraw();
 		//axisModules = null;
 		//axisModulePositions = null;
+		//moduleIds = null;
 		//selectionEvents = null;
+
+		//XXX also update eventlog's cached vars:
+		//recalculateTimelineCoordinates(), etc
 	}
 	
 	/**
@@ -451,7 +456,21 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 	 */
 	public void setAxisModules(ArrayList<ModuleTreeItem> axisModules) {
 		this.axisModules = axisModules;
+		
+		// update moduleIds
+		moduleIds = new IntSet();
+		for (int i=0; i<axisModules.size(); i++) {
+			ModuleTreeItem treeItem = axisModules.get(i);
+			// propagate y to all submodules recursively
+			treeItem.visitLeaves(new ModuleTreeItem.IModuleTreeItemVisitor() {
+				public void visit(ModuleTreeItem treeItem) {
+					moduleIds.insert(treeItem.getModuleId());
+				}
+			});
+		}
+		
 		calculateAxisYs();
+
 		//FIXME what about updating the chart?
 	}
 	
@@ -657,6 +676,32 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 	}
 	
 	/**
+	 * Calculates (x,y) coordinates for all events, based on axes settings and timeline coordinates
+	 */
+	private void recalculateEventCoordinates() {
+		// different y for each selected module
+		final HashMap<Integer, Integer> moduleIdToAxisYMap = new HashMap<Integer, Integer>();
+		for (int i=0; i<axisModules.size(); i++) {
+			ModuleTreeItem treeItem = axisModules.get(i);
+			final int y = getAxisY(i);
+			// propagate y to all submodules recursively
+			treeItem.visitLeaves(new ModuleTreeItem.IModuleTreeItemVisitor() {
+				public void visit(ModuleTreeItem treeItem) {
+					moduleIdToAxisYMap.put(treeItem.getModuleId(), y);
+				}
+			});
+		}
+		
+        for (int i=0; i<logFacade.getNumEvents(); i++) {
+			long x = Math.round(logFacade.getEvent_i_timelineCoordinate(i) * pixelsPerTimelineUnit);
+			long y = moduleIdToAxisYMap.get(logFacade.getEvent_i_module_moduleId(i));
+			logFacade.setEvent_cachedX(i, x);
+			logFacade.setEvent_cachedY(i, y);
+        }
+		
+	}
+	
+	/**
 	 * Adds an SWT selection listener which gets notified when the widget
 	 * is clicked or double-clicked.
 	 */
@@ -717,6 +762,7 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 		width = Math.max(width, 600); // at least half a screen
 		long height = axisModules.size() * axisSpacing + axisOffset * 2;
 		setVirtualSize(width, height);
+		recalculateEventCoordinates();  //XXX add this to other places too where something changes
 		clearCanvasCacheAndRedraw();
 	}
 
@@ -740,87 +786,65 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
         paintEventSelectionMarks(graphics);
 	}
 
+	/**
+	 * Utility function to determine event range we need to paint. 
+	 * Returns an array of size 2, or null if the eventLog is empty.
+	 */
+	protected int[] getFirstLastEventIndicesInRange(int x1, int x2) {
+		if (eventLog.getNumEvents()==0)
+			return null;
+		
+		x1 -= CLIPRECT_BORDER;
+		x2 += CLIPRECT_BORDER; // so that if an arrowhead or event "ball" extends into the cliprect, it gets redrawn
+		double tleft = pixelToSimulationTime(x1);
+		double tright = pixelToSimulationTime(x2);
+		EventEntry startEvent = eventLog.getLastEventBefore(tleft);
+		if (startEvent==null)
+			startEvent = eventLog.getEvent(0);
+		EventEntry endEvent = eventLog.getFirstEventAfter(tright);
+		if (endEvent==null)
+			endEvent = eventLog.getLastEvent();
+		int startEventIndex = (startEvent!=null) ? eventLog.findEvent(startEvent) : 0;
+		int endEventIndex = (endEvent!=null) ? eventLog.findEvent(endEvent) : eventLog.getNumEvents(); 
+		return new int[] {startEventIndex, endEventIndex};
+	}	
+
 	protected void doPaintFigure(Graphics graphics) {
-		if (eventLog!=null) {
+		if (eventLog!=null && eventLog.getNumEvents()>0) {
 			long startMillis = System.currentTimeMillis();
 
-			final HashMap<Integer, Integer> moduleIdToAxisYMap = new HashMap<Integer, Integer>();
-			final IntSet moduleIds = new IntSet();
-	
-			// different y for each selected module
-			for (int i=0; i<axisModules.size(); i++) {
-				ModuleTreeItem treeItem = axisModules.get(i);
-				final int y = getAxisY(i);
-				// propagate y to all submodules recursively
-				treeItem.visitLeaves(new ModuleTreeItem.IModuleTreeItemVisitor() {
-					public void visit(ModuleTreeItem treeItem) {
-						moduleIdToAxisYMap.put(treeItem.getModuleId(), y);
-						moduleIds.insert(treeItem.getModuleId());
-					}
-				});
-				drawAxis(graphics, y);
-			}
-	
 			graphics.setAntialias(antiAlias ? SWT.ON : SWT.OFF);
 			graphics.setTextAntialias(SWT.ON);
-			
-			// determine time and event range we need to paint
-			Rectangle clipRect = graphics.getClip(new Rectangle());
-			clipRect.expand(2*CLIPRECT_BORDER, 2*CLIPRECT_BORDER); // so that if an arrowhead or event "ball" extends into the cliprect, it gets redrawn
-			double tleft = pixelToSimulationTime(clipRect.x);
-			double tright = pixelToSimulationTime(clipRect.right());
-			EventEntry startEvent = eventLog.getLastEventBefore(tleft);
-			EventEntry endEvent = eventLog.getFirstEventAfter(tright);
-			int startEventIndex = (startEvent!=null) ? eventLog.findEvent(startEvent) : 0;
-			int endEventIndex = (endEvent!=null) ? eventLog.findEvent(endEvent) : eventLog.getNumEvents(); 
-	
-			int startEventNumber = (startEvent!=null) ? startEvent.getEventNumber() : 0;
-			int endEventNumber = (endEvent!=null) ? endEvent.getEventNumber() : Integer.MAX_VALUE;
 
-	        // calculate event coordinates (we'll paint them after the arrows)
-	        for (int i=startEventIndex; i<endEventIndex; i++) {
-				int x = timelineCoordinateToPixel(logFacade.getEvent_i_timelineCoordinate(i));
-				int y = moduleIdToAxisYMap.get(logFacade.getEvent_i_module_moduleId(i));
-				logFacade.setEvent_cachedX(i, x);
-				logFacade.setEvent_cachedY(i, y);
-	        }
-	
+			for (int i=0; i<axisModules.size(); i++) {
+				int y = (int)(getAxisY(i) - getViewportTop());
+				drawAxis(graphics, y);
+			}
+
+			Rectangle clip = graphics.getClip(new Rectangle());
+			int[] eventIndexRange = getFirstLastEventIndicesInRange(clip.x, clip.right());
+			int startEventIndex = eventIndexRange[0];
+			int endEventIndex = eventIndexRange[1];
+			int startEventNumber = logFacade.getEvent_i_eventNumber(startEventIndex);
+			int endEventNumber = logFacade.getEvent_i_eventNumber(endEventIndex);
+			
 	        // paint arrows
 	        IntVector msgIndices = eventLog.getMessagesIntersecting(startEventNumber, endEventNumber, moduleIds, showNonDeliveryMessages); 
 	        //System.out.println(""+msgIndices.size()+" msgs to draw");
 	        VLineBuffer vlineBuffer = new VLineBuffer();
 	        for (int i=0; i<msgIndices.size(); i++) {
 	        	int pos = msgIndices.get(i);
-	
-	        	// calculate missing event coordinates
-	            if (logFacade.getMessage_source_eventNumber(pos) <= startEventNumber) {
-	            	// src is outside the repaint region (on the far left)
-	            	int srcX = timelineCoordinateToPixel(logFacade.getMessage_source_timelineCoordinate(pos));
-	            	int srcY = moduleIdToAxisYMap.get(logFacade.getMessage_source_cause_module_moduleId(pos));
-					logFacade.setMessage_source_cachedX(pos, srcX);
-					logFacade.setMessage_source_cachedY(pos, srcY);
-	            }
-	            if (logFacade.getMessage_target_eventNumber(pos) >= endEventNumber) {
-	            	// target is outside the repaint region (on the far right)
-	            	int targetX = timelineCoordinateToPixel(logFacade.getMessage_target_timelineCoordinate(pos));
-	            	int targetY = moduleIdToAxisYMap.get(logFacade.getMessage_target_cause_module_moduleId(pos));
-					logFacade.setMessage_target_cachedX(pos, targetX);
-					logFacade.setMessage_target_cachedY(pos, targetY);
-	            }
-	
-	            // paint
 	            drawMessageArrow(graphics, pos, vlineBuffer);
 	        }
 	        msgIndices.delete();
-	        
 	        //System.out.println("draw msgs: "+(System.currentTimeMillis()-startMillis)+"ms");
 	       
 			// paint events
 	        graphics.setForegroundColor(EVENT_FG_COLOR);
 	        HashMap<Integer,Integer> axisYtoLastX = new HashMap<Integer, Integer>();
-	        for (int i=startEventIndex; i<endEventIndex; i++) {
-				int x = (int)logFacade.getEvent_i_cachedX(i);
-				int y = (int)logFacade.getEvent_i_cachedY(i);
+	        for (int i=startEventIndex; i<=endEventIndex; i++) {
+				int x = (int)(logFacade.getEvent_i_cachedX(i) - getViewportLeft());
+				int y = (int)(logFacade.getEvent_i_cachedY(i) - getViewportTop());
 
 				// performance optimization: don't paint event if there's one already drawn exactly there
 				if (!Integer.valueOf(x).equals(axisYtoLastX.get(y))) {
@@ -848,28 +872,21 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 	}
 
 	private void paintEventSelectionMarks(Graphics graphics) {
-		//XXX this code is copy/paste from paintFigure() -- reorganize!!! (see also in collectStuffUnderMouse())
-		// determine time and event range we need to paint
-		Rectangle clipRect = graphics.getClip(new Rectangle());
-		clipRect.expand(2*CLIPRECT_BORDER, 2*CLIPRECT_BORDER); // so that if an arrowhead or event "ball" extends into the cliprect, it gets redrawn
-		double tleft = pixelToSimulationTime(clipRect.x);
-		double tright = pixelToSimulationTime(clipRect.right());
-		EventEntry startEvent = eventLog.getLastEventBefore(tleft);
-		EventEntry endEvent = eventLog.getFirstEventAfter(tright);
-		
-		int startEventNumber = (startEvent!=null) ? startEvent.getEventNumber() : 0;
-		int endEventNumber = (endEvent!=null) ? endEvent.getEventNumber() : Integer.MAX_VALUE;
-		//XXX up to this
+		int[] eventIndexRange = getFirstLastEventIndicesInRange(0, getClientArea().width);
+		int startEventIndex = eventIndexRange[0];
+		int endEventIndex = eventIndexRange[1];
+		int startEventNumber = logFacade.getEvent_i_eventNumber(startEventIndex);
+		int endEventNumber = logFacade.getEvent_i_eventNumber(endEventIndex);
 		
 		// paint event selection marks
 		if (selectionEvents != null) {
 			graphics.setLineStyle(SWT.LINE_SOLID);
 		    graphics.setForegroundColor(EVENT_SEL_COLOR);
 			for (EventEntry sel : selectionEvents) {
-		    	if (startEventNumber<=sel.getEventNumber() && sel.getEventNumber()<endEventNumber)
+		    	if (startEventNumber<=sel.getEventNumber() && sel.getEventNumber()<=endEventNumber)
 		    	{
-		    		int x = (int)sel.getCachedX();
-		    		int y = (int)sel.getCachedY();
+		    		int x = (int)(sel.getCachedX()-getViewportLeft());
+		    		int y = (int)(sel.getCachedY()-getViewportTop());
 		    		graphics.drawOval(x - EVENT_SEL_RADIUS, y - EVENT_SEL_RADIUS, EVENT_SEL_RADIUS * 2 + 1, EVENT_SEL_RADIUS * 2 + 1);
 		    	}
 			}
@@ -1026,10 +1043,10 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 //	}
 
 	private void drawMessageArrow(Graphics graphics, int pos, VLineBuffer vlineBuffer) {
-        int x1 = (int)logFacade.getMessage_source_cachedX(pos);
-        int y1 = (int)logFacade.getMessage_source_cachedY(pos);
-        int x2 = (int)logFacade.getMessage_target_cachedX(pos);
-        int y2 = (int)logFacade.getMessage_target_cachedY(pos);
+        int x1 = (int)(logFacade.getMessage_source_cachedX(pos) - getViewportLeft());
+        int y1 = (int)(logFacade.getMessage_source_cachedY(pos) - getViewportTop());
+        int x2 = (int)(logFacade.getMessage_target_cachedX(pos) - getViewportLeft());
+        int y2 = (int)(logFacade.getMessage_target_cachedY(pos) - getViewportTop());
 		//System.out.printf("drawing %d %d %d %d \n", x1, x2, y1, y2);
 
         // check whether we'll need to draw an arrowhead
@@ -1197,7 +1214,7 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 			graphics.setForegroundColor(LABEL_COLOR);
 			for (int i=0; i<axisModules.size(); i++) {
 				ModuleTreeItem treeItem = axisModules.get(i);
-				int y = getAxisY(i);
+				int y = (int)(getAxisY(i) - getViewportTop());
 				String label = treeItem.getModuleFullPath();
 				graphics.drawText(label, 5, y - AXISLABEL_DISTANCE);
 			}
@@ -1208,8 +1225,7 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 	 * Calculates the Y coordinate for the ith axis.
 	 */
 	private int getAxisY(int i) {
-		int y = axisOffset + axisModulePositions[i] * axisSpacing - (int)getViewportTop();
-		return y;
+		return axisOffset + axisModulePositions[i] * axisSpacing;
 	}
 
 	/**
@@ -1369,7 +1385,8 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 			public void mouseEnter(MouseEvent e) {}
 			public void mouseExit(MouseEvent e) {}
 			public void mouseHover(MouseEvent e) {
-				displayTooltip(e.x, e.y);
+				if ((e.stateMask & SWT.BUTTON_MASK) == 0)
+					displayTooltip(e.x, e.y);
 			}
 		});
 		addMouseMoveListener(new MouseMoveListener() {
@@ -1410,6 +1427,7 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 				}
 			}
 			public void mouseDown(MouseEvent me) {
+				//XXX improve mouse handling: starting dragging should not deselect events!
 				if (me.button==1) {
 					ArrayList<EventEntry> tmp = new ArrayList<EventEntry>();
 					if ((me.stateMask & SWT.CTRL)!=0) // CTRL key extends selection
@@ -1564,36 +1582,21 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 			long startMillis = System.currentTimeMillis();
 		
 			// determine start/end event numbers
-			double tleft = pixelToSimulationTime(0);
-			double tright = pixelToSimulationTime(getWidth());
-			EventEntry startEvent = eventLog.getLastEventBefore(tleft);
-			EventEntry endEvent = eventLog.getFirstEventAfter(tright);
-			int startEventIndex = (startEvent!=null) ? eventLog.findEvent(startEvent) : 0;
-			int endEventIndex = (endEvent!=null) ? eventLog.findEvent(endEvent) : eventLog.getNumEvents(); 
-	
-			int startEventNumber = (startEvent!=null) ? startEvent.getEventNumber() : 0;
-			int endEventNumber = (endEvent!=null) ? endEvent.getEventNumber() : Integer.MAX_VALUE;
+			int[] eventIndexRange = getFirstLastEventIndicesInRange(0, getClientArea().width);
+			int startEventIndex = eventIndexRange[0];
+			int endEventIndex = eventIndexRange[1];
+			int startEventNumber = logFacade.getEvent_i_eventNumber(startEventIndex);
+			int endEventNumber = logFacade.getEvent_i_eventNumber(endEventIndex);
 
 			// check events
             if (events != null) {
-            	for (int i=startEventIndex; i<endEventIndex; i++)
-   				if (eventSymbolContainsPoint(mouseX, mouseY, (int)logFacade.getEvent_i_cachedX(i), (int)logFacade.getEvent_i_cachedY(i), MOUSE_TOLERANCE))
+            	for (int i=startEventIndex; i<=endEventIndex; i++)
+   				if (eventSymbolContainsPoint(mouseX, mouseY, (int)(logFacade.getEvent_i_cachedX(i)-getViewportLeft()), (int)(logFacade.getEvent_i_cachedY(i)-getViewportTop()), MOUSE_TOLERANCE))
    					events.add(eventLog.getEvent(i));
             }
 
             // check message arrows
             if (msgs != null) {
-            	// collect moduleIds (doesn't use x,y so it may be factored out if needed)
-    			final IntSet moduleIds = new IntSet();
-    			for (int i=0; i<axisModules.size(); i++) {
-    				ModuleTreeItem treeItem = axisModules.get(i);
-    				treeItem.visitLeaves(new ModuleTreeItem.IModuleTreeItemVisitor() {
-    					public void visit(ModuleTreeItem treeItem) {
-    						moduleIds.insert(treeItem.getModuleId());
-    					}
-    				});
-    			}
-
     			// collect msgs
             	IntVector msgsIndices = eventLog.getMessagesIntersecting(startEventNumber, endEventNumber, moduleIds, showNonDeliveryMessages); 
         		//System.out.printf("interval: #%d, #%d, %d msgs to check\n",startEventNumber, endEventNumber, msgsIndices.size());
@@ -1616,10 +1619,10 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 	}
 
 	private boolean messageArrowContainsPoint(int pos, int px, int py, int tolerance) {
-        int x1 = (int)logFacade.getMessage_source_cachedX(pos);
-        int y1 = (int)logFacade.getMessage_source_cachedY(pos);
-        int x2 = (int)logFacade.getMessage_target_cachedX(pos);
-        int y2 = (int)logFacade.getMessage_target_cachedY(pos);
+        int x1 = (int)(logFacade.getMessage_source_cachedX(pos) - getViewportLeft());
+        int y1 = (int)(logFacade.getMessage_source_cachedY(pos) - getViewportTop());
+        int x2 = (int)(logFacade.getMessage_target_cachedX(pos) - getViewportLeft());
+        int y2 = (int)(logFacade.getMessage_target_cachedY(pos) - getViewportTop());
 		//System.out.printf("checking %d %d %d %d\n", x1, x2, y1, y2);
 		if (y1==y2) {
 			int height = logFacade.getMessage_isDelivery(pos) ? DELIVERY_SELFARROW_HEIGHT : NONDELIVERY_SELFARROW_HEIGHT;
