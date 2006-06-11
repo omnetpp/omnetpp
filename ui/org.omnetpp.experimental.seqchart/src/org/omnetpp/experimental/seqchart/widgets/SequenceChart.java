@@ -726,7 +726,6 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 
 	@Override
 	protected void beforePaint() {
-		
 	}
 	
 	@Override
