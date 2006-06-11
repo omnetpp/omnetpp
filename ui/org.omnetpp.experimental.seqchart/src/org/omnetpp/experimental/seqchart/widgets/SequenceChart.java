@@ -739,24 +739,6 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
         paintEventSelectionMarks(graphics);
 	}
 
-	protected void paintAxisLabels(Graphics graphics) {
-		// draw axis labels
-		if (AXISLABEL_DISTANCE < axisSpacing) {
-			graphics.setForegroundColor(LABEL_COLOR);
-			for (int i=0; i<axisModules.size(); i++) {
-				ModuleTreeItem treeItem = axisModules.get(i);
-				int y = getAxisY(i);
-				String label = treeItem.getModuleFullPath();
-				graphics.drawText(label, 5, y - AXISLABEL_DISTANCE);
-			}
-		}
-	}
-
-	protected int getAxisY(int i) {
-		int y = axisOffset + axisModulePositions[i] * axisSpacing - (int)getViewportTop();
-		return y;
-	}
-	
 	protected void doPaintFigure(Graphics graphics) {
 		if (eventLog!=null) {
 			long startMillis = System.currentTimeMillis();
@@ -873,8 +855,6 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 		double tright = pixelToSimulationTime(clipRect.right());
 		EventEntry startEvent = eventLog.getLastEventBefore(tleft);
 		EventEntry endEvent = eventLog.getFirstEventAfter(tright);
-		int startEventIndex = (startEvent!=null) ? eventLog.findEvent(startEvent) : 0;
-		int endEventIndex = (endEvent!=null) ? eventLog.findEvent(endEvent) : eventLog.getNumEvents(); 
 		
 		int startEventNumber = (startEvent!=null) ? startEvent.getEventNumber() : 0;
 		int endEventNumber = (endEvent!=null) ? endEvent.getEventNumber() : Integer.MAX_VALUE;
@@ -885,8 +865,7 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 			graphics.setLineStyle(SWT.LINE_SOLID);
 		    graphics.setForegroundColor(EVENT_SEL_COLOR);
 			for (EventEntry sel : selectionEvents) {
-		    	if (startEventNumber<=sel.getEventNumber() &&
-		    		sel.getEventNumber()<endEventNumber)
+		    	if (startEventNumber<=sel.getEventNumber() && sel.getEventNumber()<endEventNumber)
 		    	{
 		    		int x = sel.getCachedX();
 		    		int y = sel.getCachedY();
@@ -1203,6 +1182,24 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 				previousTickLabelX = x;
 			}
 		}
+	}
+
+	protected void paintAxisLabels(Graphics graphics) {
+		// draw axis labels
+		if (AXISLABEL_DISTANCE < axisSpacing) {
+			graphics.setForegroundColor(LABEL_COLOR);
+			for (int i=0; i<axisModules.size(); i++) {
+				ModuleTreeItem treeItem = axisModules.get(i);
+				int y = getAxisY(i);
+				String label = treeItem.getModuleFullPath();
+				graphics.drawText(label, 5, y - AXISLABEL_DISTANCE);
+			}
+		}
+	}
+
+	protected int getAxisY(int i) {
+		int y = axisOffset + axisModulePositions[i] * axisSpacing - (int)getViewportTop();
+		return y;
 	}
 
 	/**
