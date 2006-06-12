@@ -1,5 +1,7 @@
 package org.omnetpp.ned2.model;
 
+import org.eclipse.draw2d.geometry.Point;
+
 public class CompoundModuleDisplayString extends DisplayString {
     // contains the default fallback values for the different tags if a variable is used in that position
     public static final DisplayString VARIABLE_DEFAULTS 
@@ -15,9 +17,10 @@ public class CompoundModuleDisplayString extends DisplayString {
         super(owner, ancestor, value);
         variableDefaults = VARIABLE_DEFAULTS;
         emptyDefaults = EMPTY_DEFAULTS;
-        // use BGP instead of P and use BGB instead of B in compound modules to define the position and size
-        XPosProp = Prop.MODULE_X;
-        YPosProp = Prop.MODULE_Y;
+        // BGB instead of B in compound modules to define the size
+        // we do not need position constraint tough (as we are using a position based toolbar layout)
+        XPosProp = null;
+        YPosProp = null;
         WidthProp = Prop.MODULE_WIDTH;
         HeightProp = Prop.MODULE_HEIGHT;
     }

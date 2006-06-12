@@ -126,7 +126,6 @@ public class CompoundModuleEditPart extends ModuleEditPart {
     protected void refreshVisuals() {
         
         // define the properties that determine the visual appearence
-        
     	INamedGraphNode model = (INamedGraphNode)getNEDModel();
     	
         // parse a dispaly string, so it's easier to get values from it.
@@ -134,12 +133,13 @@ public class CompoundModuleEditPart extends ModuleEditPart {
         
         // setup the figure's properties
         // set the location and size using the models helper methods
-        Point loc = dps.getLocation();
-        // TODO this can be removed once we will have a toolbar layout for the compoundmodules
-        if (loc == null) loc = new Point(0,0);
-        Rectangle constraint = new Rectangle(loc, dps.getSize());
-        ((GraphicalEditPart) getParent()).setLayoutConstraint(this, getFigure(), constraint);
-
+        // if the siez is specified in the displaystring we should set it as preferred size
+        // otherwise getPreferredSize should return the size calculated from the children
+        if (dps.getSize().height > 0 || dps.getSize().width > 0) 
+        	getNedFigure().setPreferredSize(dps.getSize());
+        else 
+        	getNedFigure().setPreferredSize(null);
+        
         // check if the figure supports the name decoration
         if(getNedFigure() instanceof DisplayTitleSupport) {
         	// set the name and type + other inof on compound module

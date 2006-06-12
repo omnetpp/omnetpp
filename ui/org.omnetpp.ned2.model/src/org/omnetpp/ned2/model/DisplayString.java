@@ -527,6 +527,9 @@ public class DisplayString {
      * @return The location property (in pixel)
      */
     public Point getLocation() {
+    	if (XPosProp == null || YPosProp == null)
+    		return null;
+    	
         Float x = getAsFloat(XPosProp);
         Float y = getAsFloat(YPosProp);
         // if it's unspecified in any direction we should return a NULL constraint
@@ -540,6 +543,9 @@ public class DisplayString {
      * @param location Where to place the element (in pixels)
      */
     public void setLocation(Point location) {
+    	if (XPosProp == null || YPosProp == null)
+    		return;
+
     	// disable the notification so we will not send two notify for the two coordinate change
     	boolean tempNotifyState = notifyEnabled;
     	// disable the notification so we will not send two notify for the two coordinate change
@@ -564,7 +570,10 @@ public class DisplayString {
      * @return The size of element (in pixels)
      */
     public Dimension getSize() {
-        int width = unit2pixel(getAsFloatDef(WidthProp, -1.0f));
+    	if (WidthProp == null || HeightProp == null)
+    		return null;
+
+    	int width = unit2pixel(getAsFloatDef(WidthProp, -1.0f));
         width = width > 0 ? width : -1; 
         int height = unit2pixel(getAsFloatDef(HeightProp, -1.0f));
         height = height > 0 ? height : -1; 
@@ -578,6 +587,9 @@ public class DisplayString {
      * @param size
      */
     public void setSize(Dimension size) {
+    	if (WidthProp == null || HeightProp == null)
+    		return;
+
     	// disable the notification so we will not send two notify for the two coordinate change
     	boolean tempNotifyState = notifyEnabled;
     	notifyEnabled = false;
