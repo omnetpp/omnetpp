@@ -16,9 +16,6 @@ import org.omnetpp.experimental.seqchart.widgets.ITileCache.Tile;
  * A scrollable canvas that supports caching of (part of) the drawing 
  * in off-screen image buffers for performance improvement.
  */
-//XXX something is not right -- mouse hover won't find events!
-//TODO clear region outside the "virtual canvas" area
-//XXX probably we should use getClientArea() instead of getBounds()
 //TODO redraw chart with antialias while user is idle? hints: new SafeRunnable(); or:
 //getDisplay().asyncExec(new Runnable() {
 //	public void run() { ... }
@@ -26,7 +23,7 @@ import org.omnetpp.experimental.seqchart.widgets.ITileCache.Tile;
 public abstract class CachingCanvas extends LargeScrollableCanvas {
 
 	private boolean doCaching = true;
-	private ITileCache tileCache = new ColumnTileCache(); //XXX make settable
+	private ITileCache tileCache = new ColumnTileCache();
 	private boolean debug = true;
 	
 
@@ -34,7 +31,6 @@ public abstract class CachingCanvas extends LargeScrollableCanvas {
 	 * Constructor. 
 	 */
 	public CachingCanvas(Composite parent, int style) {
-		//super(parent, style | SWT.NO_BACKGROUND);
 		super(parent, style | SWT.DOUBLE_BUFFERED);
 	}
 
@@ -75,7 +71,7 @@ public abstract class CachingCanvas extends LargeScrollableCanvas {
 			ArrayList<LargeRect> missingAreas = new ArrayList<LargeRect>();
 
 			tileCache.getTiles(lclip, getVirtualWidth(), getVirtualHeight(), cachedTiles, missingAreas);
-			System.out.println("cache: found "+cachedTiles.size()+" tiles, missing "+missingAreas.size()+" areas");
+			//System.out.println("cache: found "+cachedTiles.size()+" tiles, missing "+missingAreas.size()+" areas");
 
 			// display cached tiles
 			for (Tile tile : cachedTiles) {

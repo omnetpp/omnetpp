@@ -10,6 +10,8 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.ScrollBar;
 
 /**
@@ -126,17 +128,17 @@ public abstract class LargeScrollableCanvas extends Canvas {
 	}
 
 	/**
-	 * Returns the widget width.
+	 * Returns the width of the client area (see {@link Canvas#getClientArea()}.
 	 */
 	public int getWidth() {
-		return getSize().x;
+		return getClientArea().width;
 	}
 
 	/**
-	 * Returns the widget height.
+	 * Returns the height of the client area (see {@link Canvas#getClientArea()}.
 	 */
 	public int getHeight() {
-		return getSize().y;
+		return getClientArea().height;
 	}
 	
 	private void horizontalBarChanged() {

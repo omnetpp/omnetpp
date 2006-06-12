@@ -37,7 +37,7 @@ public class ColumnTileCache implements ITileCache {
 		int imageSize = imageSize(image);
 		Assert.isTrue(imageSize < memoryUsageLimit, "memory usage limit set too small");
 		memoryUsage += imageSize;
-		System.out.printf("cache: added image %d x %d, size %dk\n", rect.width, rect.height, imageSize/1024);
+		//System.out.printf("cache: added image %d x %d, size %dk\n", rect.width, rect.height, imageSize/1024);
 		discardOldTiles();
 		return tile;
 	}
@@ -50,7 +50,7 @@ public class ColumnTileCache implements ITileCache {
 	}
 
 	private void discardOldTiles() {
-		printCache();
+		//printCache();
 		int count = 0;
 		while (memoryUsage > memoryUsageLimit) {
 			Assert.isTrue(cache.size()>0);
@@ -74,21 +74,6 @@ public class ColumnTileCache implements ITileCache {
 		memoryUsage = 0;
 	}
 
-	public void getTiles_dummyImplementation1(LargeRect rect, long virtualWidth, long virtualHeight, List<Tile> outCachedTiles, List<LargeRect> outMissingAreas) {
-		// if we find an exact match, return it, otherwise return full area as missing
-		// not very efficient
-		for (Tile tile : cache) {
-			if (tile.rect.contains(rect)) {
-				System.out.println("tile cache HIT!");
-				outCachedTiles.add(tile);
-				return;
-			}
-		}
-
-		System.out.println("tile cache MISS!");
-		outMissingAreas.add(rect);
-	}
-	
 	public void getTiles(LargeRect rect, long virtualWidth, long virtualHeight, List<Tile> outCachedTiles, List<LargeRect> outMissingAreas) {
 		// simple algorithm: find best match, and return diff to it as missing
 		Tile bestTile = findBestMatch(rect);

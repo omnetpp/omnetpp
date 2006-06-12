@@ -751,7 +751,7 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 			double tEnd = eventLog.getEvent(numEvents-1).getTimelineCoordinate();
 			double eventPerSec = numEvents / (tEnd - tStart);
 
-			int chartWidthPixels = getSize().x;
+			int chartWidthPixels = getWidth();
 			if (chartWidthPixels<=0) chartWidthPixels = 800;  // may be 0 on startup
 
 			double minPixelsPerTimelineUnit = eventPerSec * 10;  // we want at least 10 pixel/event
