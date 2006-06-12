@@ -12,6 +12,7 @@ import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.layout.RowLayout;
@@ -29,6 +30,7 @@ import org.eclipse.ui.part.EditorPart;
 import org.omnetpp.experimental.seqchart.SeqChartPlugin;
 import org.omnetpp.experimental.seqchart.moduletree.ModuleTreeBuilder;
 import org.omnetpp.experimental.seqchart.moduletree.ModuleTreeItem;
+import org.omnetpp.experimental.seqchart.widgets.RubberbandSupport;
 import org.omnetpp.experimental.seqchart.widgets.SequenceChart;
 import org.omnetpp.scave.engine.EventEntry;
 import org.omnetpp.scave.engine.EventLog;
@@ -109,6 +111,12 @@ public class SequenceChartToolEditor extends EditorPart {
 		seqChart = new SequenceChart(upper, SWT.NONE /*SWT.DOUBLE_BUFFERED*/ );
 		seqChart.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		seqChart.setBackground(CHART_BACKGROUND_COLOR);
+		new RubberbandSupport(seqChart, SWT.CTRL) {
+			@Override
+			public void rubberBandSelectionMade(Rectangle r) {
+				seqChart.zoomToRectangle(new org.eclipse.draw2d.geometry.Rectangle(r));
+			}
+		};
 
 		// set up operations: click, double-click
 		seqChart.addSelectionListener(new SelectionAdapter() {

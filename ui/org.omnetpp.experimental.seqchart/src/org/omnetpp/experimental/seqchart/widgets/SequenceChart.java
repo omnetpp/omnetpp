@@ -424,6 +424,15 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 		recalculateVirtualSize();
 		gotoSimulationTime(time);
 	}
+
+	/**
+	 * Zoom to the given rectangle, given by pixel coordinates relative to the
+	 * top-left corner of the canvas.
+	 */
+	public void zoomToRectangle(Rectangle r) {
+		System.out.println("Rubberband selection: "+r);
+		//TODO
+	}
 	
 	/**
 	 * The event log (data) to be displayed in the chart
@@ -1399,16 +1408,18 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 			}
 
 			private void myMouseDragged(MouseEvent e) {
-				// display drag cursor
-				setCursor(DRAGCURSOR);
-				
-				// scroll by the amount moved since last drag call
-				int dx = e.x - dragStartX;
-				int dy = e.y - dragStartY;
-				scrollHorizontalTo(getViewportLeft() - dx);
-				scrollVerticalTo(getViewportTop() - dy);
-				dragStartX = e.x;
-				dragStartY = e.y;
+				if ((e.stateMask & SWT.MODIFIER_MASK) == 0) {
+					// display drag cursor
+					setCursor(DRAGCURSOR);
+
+					// scroll by the amount moved since last drag call
+					int dx = e.x - dragStartX;
+					int dy = e.y - dragStartY;
+					scrollHorizontalTo(getViewportLeft() - dx);
+					scrollVerticalTo(getViewportTop() - dy);
+					dragStartX = e.x;
+					dragStartY = e.y;
+				}
 			}
 		});
 		// selection handling

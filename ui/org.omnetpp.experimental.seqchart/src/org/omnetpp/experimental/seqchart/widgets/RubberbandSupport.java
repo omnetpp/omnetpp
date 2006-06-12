@@ -17,11 +17,13 @@ import org.eclipse.swt.widgets.Canvas;
 public abstract class RubberbandSupport {
 
 	private Canvas canvas;
+	private int modifierKeys = 0; // modifier key that needs to be held down for rubber-band (e.g. SWT.CTRL)
 	private Rectangle rubberBand = null;
 	private Rectangle rubberBandBounds = null; // rubberbandable area; null means "whole canvas"
 
-	public RubberbandSupport(Canvas canvas) {
+	public RubberbandSupport(Canvas canvas, int modifierKeys) {
 		this.canvas = canvas;
+		this.modifierKeys = modifierKeys;
 		addListeners();
 	}
 
@@ -42,14 +44,25 @@ public abstract class RubberbandSupport {
 	}
 	
 	/**
+	 * Return the modifier key(s) that need to be held down for rubber-band (e.g. SWT.CTRL).
+	 * Corresponds to SWT Event's stateMask. 
+	 */
+	public int getModifierKeys() {
+		return modifierKeys;
+	}
+
+	/**
+	 * Sets the modifier key(s) that need to be held down for rubber-band (e.g. SWT.CTRL).
+	 * Corresponds to SWT Event's stateMask. Zero means no modifier key is needed.  
+	 */
+	public void setModifierKeys(int modifierKeys) {
+		this.modifierKeys = modifierKeys;
+	}
+
+	/**
 	 * Called back when an area was dragged out in the chart.
 	 */
 	public abstract void rubberBandSelectionMade(Rectangle r);
-
-	/**
-	 * Called back when the user clicked the canvas without dragging out a rubber band.
-	 */
-	public abstract void clicked(int x, int y);
 	
 	/**
 	 * Implements rubber band selection. Successful selections
@@ -57,8 +70,11 @@ public abstract class RubberbandSupport {
 	 */
 	private void addListeners() {
 		canvas.addMouseListener(new MouseListener() {
-	    	public void mouseDown(MouseEvent e) {
-	    		if (rubberBand==null && e.button==1 && (rubberBandBounds==null || rubberBandBounds.contains(e.x, e.y))) {
+			public void mouseDown(MouseEvent e) {
+	    		if (rubberBand==null && e.button==1 && 
+	    			(modifierKeys==0 || (e.stateMask & modifierKeys)!=0) && 
+	    			(rubberBandBounds==null || rubberBandBounds.contains(e.x, e.y))) 
+	    		{
 					// start selection
 					rubberBand = new Rectangle(e.x, e.y, 0, 0);
 					GC gc = new GC(canvas);
@@ -78,9 +94,7 @@ public abstract class RubberbandSupport {
 						// note: firing a SelectionEvent wouldn't work (width,
 						// height won't make it through Listener.handleEvent())
 						fixNegativeSizes(rubberBand);
-						if (rubberBand.width<=2 && rubberBand.height<=2)
-							clicked(e.x, e.y);
-						else
+						if (rubberBand.width>2 || rubberBand.height>2) // not just a click
 							rubberBandSelectionMade(rubberBand);
 					}
 					rubberBand = null;
