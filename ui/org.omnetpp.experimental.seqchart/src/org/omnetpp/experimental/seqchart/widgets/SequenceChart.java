@@ -1114,7 +1114,7 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 					double b2 = b * b;
 					double r = ARROWHEAD_LENGTH;
 					double r2 = r *r;
-					double x = a * (-Math.sqrt(a2 * r2 + b2 * b2 - b2 * r2) + a2) / (a2 - b2);
+					double x = a == b ? (2 * a2 - r2) / 2 / a : a * (-Math.sqrt(a2 * r2 + b2 * b2 - b2 * r2) + a2) / (a2 - b2);
 					double y = -Math.sqrt(r2 - (x - a) * (x - a));
 					
 					// if the solution falls outside of the top right quarter of the ellipse
