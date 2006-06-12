@@ -69,7 +69,7 @@ public class ColumnTileCache implements ITileCache {
 
 	public void clear() {
 		for (Tile tile : cache)
-				tile.image.dispose();
+			tile.image.dispose();
 		cache.clear();
 		memoryUsage = 0;
 	}
@@ -79,7 +79,7 @@ public class ColumnTileCache implements ITileCache {
 		Tile bestTile = findBestMatch(rect);
 		if (bestTile==null) {
 			// no overlapping tile, request full rectangle
-			outMissingAreas.add(new LargeRect(rect.x, 0, rect.width, virtualHeight));
+			outMissingAreas.add(tweakRect(new LargeRect(rect.x, 0, rect.width, virtualHeight)));
 		}
 		else if (bestTile.rect.contains(rect)) {
 			// tile covers it all
@@ -87,30 +87,38 @@ public class ColumnTileCache implements ITileCache {
 		}
 		else {
 			// calculate diff rect and see
-			LargeRect diff = rect.minus(bestTile.rect);
+			LargeRect diff = rect.minus(bestTile.rect); //TODO impl and use advancedMinus
 			if (diff==null) {
 				// best tile is no use (actually this cannot happen in ColumnTileCache as all tiles are full height)
-				//XXX look for ones where diff!=null already in findBestMatch()!!
-				outMissingAreas.add(new LargeRect(rect.x, 0, rect.width, virtualHeight));
+				outMissingAreas.add(tweakRect(new LargeRect(rect.x, 0, rect.width, virtualHeight)));
 			}
 			else {
 				outCachedTiles.add(bestTile);
 				// instead of adding the diff to missingAreas right away, try to find more tiles by recursion
-				//outMissingAreas.add(new LargeRect(diff.x, 0, diff.width, virtualHeight));
+				//outMissingAreas.add(tweakRect(new LargeRect(diff.x, 0, diff.width, virtualHeight)));
 				getTiles(diff, virtualWidth, virtualHeight, outCachedTiles, outMissingAreas);
 			}
 		}
 	}
 
+	private LargeRect tweakRect(LargeRect rect) {
+		// make left & right edge a multiple of 8 pixels
+		long dx = rect.x & 7L;
+		rect.x -= dx;
+		rect.width = (rect.width + dx + 7) & ~7L;
+		return rect;
+	}
+
 	/**
-	 * Returns the tile which has the largest overlapping area with rect.
-	 * Returns null if no tiles overlap with it.
+	 * Returns the tile which has the largest overlapping area with rect,
+	 * and can be substracted from rect (i.e. diff set is rectangular).
+	 * Returns null if there is no such tile.
 	 */
 	private Tile findBestMatch(LargeRect rect) {
 		Tile bestTile = null;
 		long bestArea = 0;
 		for (Tile tile : cache) {
-			if (tile.rect.intersects(rect)) {
+			if (tile.rect.intersects(rect) && rect.minus(tile.rect)!=null) {
 				LargeRect r = tile.rect.intersection(rect);
 				long area = r.width * r.height;
 				if (area > bestArea) {

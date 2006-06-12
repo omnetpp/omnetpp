@@ -31,7 +31,7 @@ public abstract class CachingCanvas extends LargeScrollableCanvas {
 	 * Constructor. 
 	 */
 	public CachingCanvas(Composite parent, int style) {
-		super(parent, style | SWT.DOUBLE_BUFFERED);
+		super(parent, style);
 	}
 
 	/**
@@ -46,6 +46,7 @@ public abstract class CachingCanvas extends LargeScrollableCanvas {
 	 */
 	public void setCaching(boolean doCaching) {
 		this.doCaching = doCaching;
+		clearCanvasCache();
 	}
 
 	/**
@@ -65,7 +66,9 @@ public abstract class CachingCanvas extends LargeScrollableCanvas {
 		}
 		else {
 			Rectangle clip = gc.getClipping();
-			LargeRect lclip = new LargeRect(clip.x+getViewportLeft(), clip.y+getViewportTop(), clip.width, clip.height);
+			LargeRect lclip = new LargeRect(clip.x+getViewportLeft(), clip.y+getViewportTop(), 
+											Math.min(clip.width, getVirtualWidth()), 
+											Math.min(clip.height, getVirtualHeight()));
 			
 			ArrayList<Tile> cachedTiles = new ArrayList<Tile>();
 			ArrayList<LargeRect> missingAreas = new ArrayList<LargeRect>();

@@ -701,12 +701,14 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 			});
 		}
 		
+        long startMillis = System.currentTimeMillis();
         for (int i=0; i<logFacade.getNumEvents(); i++) {
 			long x = Math.round(logFacade.getEvent_i_timelineCoordinate(i) * pixelsPerTimelineUnit);
 			long y = moduleIdToAxisYMap.get(logFacade.getEvent_i_module_moduleId(i));
 			logFacade.setEvent_cachedX(i, x);
 			logFacade.setEvent_cachedY(i, y);
         }
+        System.out.println("recalculateEventCoordinates: "+(System.currentTimeMillis()-startMillis)+"ms");
 		
 	}
 	
@@ -822,7 +824,8 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 		if (eventLog!=null && eventLog.getNumEvents()>0) {
 			long startMillis = System.currentTimeMillis();
 
-			graphics.setAntialias(antiAlias ? SWT.ON : SWT.OFF);
+			//graphics.setAntialias(antiAlias ? SWT.ON : SWT.OFF);
+			graphics.setAntialias(SWT.OFF);
 			graphics.setTextAntialias(SWT.ON);
 
 			for (int i=0; i<axisModules.size(); i++) {
@@ -869,14 +872,14 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 				}
 	        }           	
 	
-	        // turn on/off anti-alias 
 	        long repaintMillis = System.currentTimeMillis()-startMillis;
 	        System.out.println("redraw(): "+repaintMillis+"ms");
+
+	        // turn on/off anti-alias 
 	        if (antiAlias && repaintMillis > ANTIALIAS_TURN_OFF_AT_MSEC)
 	        	antiAlias = false;
 	        else if (!antiAlias && repaintMillis < ANTIALIAS_TURN_ON_AT_MSEC)
 	        	antiAlias = true;
-	        //XXX also: turn it off also during painting if it's going to take too long 
 		}
 	}
 
@@ -1618,7 +1621,7 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
             	}
             }
             long millis = System.currentTimeMillis()-startMillis;
-            //System.out.println("collectStuffUnderMouse(): "+millis+"ms - "+(events==null ? "n/a" : events.size())+" events, "+(msgs==null ? "n/a" : msgs.size())+" msgs");
+            System.out.println("collectStuffUnderMouse(): "+millis+"ms - "+(events==null ? "n/a" : events.size())+" events, "+(msgs==null ? "n/a" : msgs.size())+" msgs");
 		}
 	}
 

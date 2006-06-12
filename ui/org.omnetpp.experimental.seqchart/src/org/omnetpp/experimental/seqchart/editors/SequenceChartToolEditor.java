@@ -104,11 +104,8 @@ public class SequenceChartToolEditor extends EditorPart {
 		Composite upper = new Composite(parent, SWT.NONE);
 		upper.setLayout(new GridLayout());
 
-		Composite controlStrip = createControlStrip(upper);
-		controlStrip.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
-
 		// create sequence chart widget
-		seqChart = new SequenceChart(upper, SWT.NONE /*SWT.DOUBLE_BUFFERED*/ );
+		seqChart = new SequenceChart(upper, SWT.DOUBLE_BUFFERED);
 		seqChart.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		seqChart.setBackground(CHART_BACKGROUND_COLOR);
 		new RubberbandSupport(seqChart, SWT.CTRL) {
@@ -117,6 +114,11 @@ public class SequenceChartToolEditor extends EditorPart {
 				seqChart.zoomToRectangle(new org.eclipse.draw2d.geometry.Rectangle(r));
 			}
 		};
+
+		// create control strip (this needs the seqChart pointer)
+		Composite controlStrip = createControlStrip(upper);
+		controlStrip.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
+		controlStrip.moveAbove(seqChart);
 
 		// set up operations: click, double-click
 		seqChart.addSelectionListener(new SelectionAdapter() {
@@ -191,6 +193,9 @@ public class SequenceChartToolEditor extends EditorPart {
 		Button showArrowHeads = new Button(controlStrip, SWT.CHECK);
 		showArrowHeads.setText("Arrowheads");
 
+		Button canvasCaching = new Button(controlStrip, SWT.CHECK);
+		canvasCaching.setText("Caching");
+		
 		Button selectModules = new Button(controlStrip, SWT.NONE);
 		selectModules.setText("Modules...");
 		
@@ -252,34 +257,45 @@ public class SequenceChartToolEditor extends EditorPart {
 		decreaseSpacing.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				if (seqChart.getAxisSpacing()>5)
-				seqChart.setAxisSpacing(seqChart.getAxisSpacing()-5);
+					seqChart.setAxisSpacing(seqChart.getAxisSpacing()-5);
 			}});
 		
+		showMessageNames.setSelection(seqChart.getShowMessageNames());
 		showMessageNames.addSelectionListener(new SelectionAdapter () {
 			public void widgetSelected(SelectionEvent e) {
 				seqChart.setShowMessageNames(((Button)e.getSource()).getSelection());
 			}
 		});
 		
+		showNonDeliveryMessages.setSelection(seqChart.getShowNonDeliveryMessages());
 		showNonDeliveryMessages.addSelectionListener(new SelectionAdapter () {
 			public void widgetSelected(SelectionEvent e) {
 				seqChart.setShowNonDeliveryMessages(((Button)e.getSource()).getSelection());
 			}
 		});
 		
+		showEventNumbers.setSelection(seqChart.getShowEventNumbers());
 		showEventNumbers.addSelectionListener(new SelectionAdapter () {
 			public void widgetSelected(SelectionEvent e) {
 				seqChart.setShowEventNumbers(((Button)e.getSource()).getSelection());
 			}
 		});
 
-		showArrowHeads.setSelection(true);
+		showArrowHeads.setSelection(seqChart.getShowArrowHeads());
 		showArrowHeads.addSelectionListener(new SelectionAdapter () {
 			public void widgetSelected(SelectionEvent e) {
 				seqChart.setShowArrowHeads(((Button)e.getSource()).getSelection());
 			}
 		});
 		
+		showArrowHeads.setSelection(seqChart.getCaching());
+		canvasCaching.addSelectionListener(new SelectionAdapter () {
+			public void widgetSelected(SelectionEvent e) {
+				seqChart.setCaching(((Button)e.getSource()).getSelection());
+				seqChart.redraw();
+			}
+		});
+
 		timelineMode.addSelectionListener(new SelectionAdapter () {
 			public void widgetSelected(SelectionEvent e) {
 				seqChart.setTimelineMode(SequenceChart.TimelineMode.values()[((Combo)e.getSource()).getSelectionIndex()]);
