@@ -158,6 +158,7 @@ class EventLog
          */
         int getNumEvents();
         EventEntry *getEvent(int pos);
+        EventEntry *getFirstEvent(); // convenience method
         EventEntry *getLastEvent(); // convenience method
         int findEvent(EventEntry *event); // returns pos, or -1 if not found
         bool containsEvent(EventEntry *event) {return findEvent(event)!=-1;}

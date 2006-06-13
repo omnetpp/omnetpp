@@ -241,6 +241,11 @@ EventEntry *EventLog::getEvent(int pos)
     return eventList[pos];
 }
 
+EventEntry *EventLog::getFirstEvent()
+{
+    return eventList.empty() ? NULL : eventList.front();
+}
+
 EventEntry *EventLog::getLastEvent()
 {
     return eventList.empty() ? NULL : eventList.back();
@@ -339,9 +344,9 @@ ModuleEntry *EventLog::getOrAddModule(int moduleId, char *moduleClassName, char 
 
 inline bool less_EventEntry_EventNumber(EventEntry *e, long eventNumber) {return e->eventNumber < eventNumber;}
 
-inline bool less_EventEntry_SimulationTime(EventEntry *e, double t) {return e->simulationTime <= t;}
+inline bool less_EventEntry_SimulationTime(EventEntry *e, double t) {return e->simulationTime < t;}
 
-inline bool less_EventEntry_TimelineCoordinate(EventEntry *e, double t) {return e->timelineCoordinate <= t;}
+inline bool less_EventEntry_TimelineCoordinate(EventEntry *e, double t) {return e->timelineCoordinate < t;}
 
 inline EventEntry *EventLog::getEventNULLSafe(int pos)
 {
