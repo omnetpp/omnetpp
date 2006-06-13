@@ -60,7 +60,7 @@ public class CompoundModuleFigure extends ModuleFigure
 	        graphics.setBackgroundColor(moduleBackgroundColor);
 	        // WARNING only the default SWT graphics implements this method
 	        // if we are using ScaledGrahics we should not use it.
-	        // TODO look for other effect to show nonplay area which is mor scale friendly
+	        // TODO look for other effect to show nonplay area which is more scale friendly
 	        if (graphics instanceof SWTGraphics)
 	        	graphics.setBackgroundPattern(nonplayPattern);
 
@@ -160,21 +160,22 @@ public class CompoundModuleFigure extends ModuleFigure
     }
 
     protected void createConnectionAnchors() {
-        PinnableNoncentralChopboxAnchor in, out;
+        GateAnchor in, out;
         for (int i = 0; i < 8; i++) {
-            in = new PinnableNoncentralChopboxAnchor(this);
-            out = new PinnableNoncentralChopboxAnchor(this);
-            in.setPinnedDown(true);
-            out.setPinnedDown(true);
-            if (i > 3) {
-                in.setPinnedLocationY(1.0);
-                out.setPinnedLocationY(0.0);
-            } else {
-                in.setPinnedLocationY(0.0);
-                out.setPinnedLocationY(1.0);
-            }
-            addSourceConnectionAnchor(out, "OUT"+i);
-            addTargetConnectionAnchor(out, "IN"+i);
+            in = new GateAnchor(this,"IN"+i);
+            out = new GateAnchor(this,"OUT"+i);
+//            in.setPinnedDown(true);
+//            out.setPinnedDown(true);
+//            if (i > 3) {
+//                in.setPinnedLocationY(1.0);
+//                out.setPinnedLocationY(0.0);
+//            } else {
+//                in.setPinnedLocationY(0.0);
+//                out.setPinnedLocationY(1.0);
+//            }
+
+//            addSourceConnectionAnchor(out);
+//            addTargetConnectionAnchor(in);
 
         }
     }
@@ -192,13 +193,22 @@ public class CompoundModuleFigure extends ModuleFigure
         		((CompoundModuleBorder)getBorder()).getOuterBorder().getInsets(this));
     }
 
-    protected PinnableNoncentralChopboxAnchor getInputConnectionAnchor(int i) {
-        return (PinnableNoncentralChopboxAnchor) getConnectionAnchor("IN"+i);
-    }
+//    protected PinnableNoncentralChopboxAnchor getInputConnectionAnchor(int i) {
+//        return (PinnableNoncentralChopboxAnchor) getConnectionAnchor("IN"+i);
+//    }
+//
+//    protected PinnableNoncentralChopboxAnchor getOutputConnectionAnchor(int i) {
+//        return (PinnableNoncentralChopboxAnchor) getConnectionAnchor("OUT"+i);
+//    }
 
-    protected PinnableNoncentralChopboxAnchor getOutputConnectionAnchor(int i) {
-        return (PinnableNoncentralChopboxAnchor) getConnectionAnchor("OUT"+i);
-    }
+//  protected void layoutConnectionAnchors() {
+//  for (int i = 0; i < 4; i++) {
+//      getOutputConnectionAnchor(i + 4).setPinnedLocationX(0.125 + i / 4.0);
+//      getInputConnectionAnchor(i).setPinnedLocationX(0.125 + i / 4.0);
+//      getOutputConnectionAnchor(i).setPinnedLocationX(0.125 + i / 4.0);
+//      getInputConnectionAnchor(i + 4).setPinnedLocationX(0.125 + i / 4.0);
+//  }
+//}
 
     @Override
     public Dimension getPreferredSize(int w, int h) {
@@ -208,21 +218,12 @@ public class CompoundModuleFigure extends ModuleFigure
         return prefSize;
     }
     
-    protected void layoutConnectionAnchors() {
-        for (int i = 0; i < 4; i++) {
-            getOutputConnectionAnchor(i + 4).setPinnedLocationX(0.125 + i / 4.0);
-            getInputConnectionAnchor(i).setPinnedLocationX(0.125 + i / 4.0);
-            getOutputConnectionAnchor(i).setPinnedLocationX(0.125 + i / 4.0);
-            getInputConnectionAnchor(i + 4).setPinnedLocationX(0.125 + i / 4.0);
-        }
-    }
-
-    @Override
-    public void validate() {
-        if (isValid()) return;
-        layoutConnectionAnchors();
-        super.validate();
-    }
+//    @Override
+//    public void validate() {
+//        if (isValid()) return;
+//        layoutConnectionAnchors();
+//        super.validate();
+//    }
 
     /**
      * Helper function to return the current border 

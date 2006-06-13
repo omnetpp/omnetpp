@@ -53,17 +53,10 @@ public class SubmoduleFigure extends ModuleFigure implements HandleBounds,
 
     public SubmoduleFigure() {
         // anchors TEMPORARY
-        PinnableNoncentralChopboxAnchor outputConnectionAnchor = new PinnableNoncentralChopboxAnchor(this);
-        outputConnectionAnchor.setRelRefPoint(0.5, 0.8);
-        addSourceConnectionAnchor(outputConnectionAnchor, "OUT");
-
-        PinnableNoncentralChopboxAnchor inputConnectionAnchorA, inputConnectionAnchorB;
-        inputConnectionAnchorA = new PinnableNoncentralChopboxAnchor(this, 0.2, 0.0);
-        inputConnectionAnchorA.setPinnedDown(false);
-        addTargetConnectionAnchor(inputConnectionAnchorA, "IN1");
-        inputConnectionAnchorB = new PinnableNoncentralChopboxAnchor(this, 0.8, 0.0);
-        inputConnectionAnchorB.setPinnedDown(false);
-        addTargetConnectionAnchor(inputConnectionAnchorB, "IN2");
+        
+//        addSourceConnectionAnchor(new GateAnchor(this, "OUT"));
+//        addTargetConnectionAnchor(new GateAnchor(this, "IN1"));
+//        addTargetConnectionAnchor(new GateAnchor(this, "IN2"));
   
         setLayoutManager(new StackLayout());
 
@@ -74,16 +67,6 @@ public class SubmoduleFigure extends ModuleFigure implements HandleBounds,
         polygonShapeFigure.setVisible(false);
         rangeFigure.setOpaque(false);
         
-        // XX just debugging
-//        LineBorder lb = new LineBorder();
-//        lb.setColor(ColorConstants.green);
-//        setBorder(lb);
-//        lb = new LineBorder();
-//        lb.setColor(ColorConstants.blue);
-//        imageFigure.setBorder(lb);
-//        lb = new LineBorder();
-//        lb.setColor(ColorConstants.red);
-//        rectShapeFigure.setBorder(lb);
     }
 
     @Override

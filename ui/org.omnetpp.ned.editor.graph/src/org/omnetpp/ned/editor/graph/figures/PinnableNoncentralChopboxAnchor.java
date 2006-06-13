@@ -4,6 +4,11 @@ import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.Rectangle;
 
+/**
+ * @author rhornig
+ * Anchor where the reference point can be anything inside the figure and the ancor is placed
+ * on the bounding box, or it can be pinned down to any inside point.
+ */
 public class PinnableNoncentralChopboxAnchor extends NoncentralChopboxAnchor {
     // fixed location if the anchor is pinned (relative in owner area ie 0.0 - 1.0)
     private double pinnedLocationX = 0.5f;

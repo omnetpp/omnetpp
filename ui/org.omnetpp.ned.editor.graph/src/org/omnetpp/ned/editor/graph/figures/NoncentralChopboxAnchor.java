@@ -1,10 +1,16 @@
 package org.omnetpp.ned.editor.graph.figures;
 
-import org.eclipse.draw2d.*;
+import org.eclipse.draw2d.IFigure;
+import org.eclipse.draw2d.Label;
+import org.eclipse.draw2d.ScalableFigure;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.Rectangle;
 
-public class NoncentralChopboxAnchor extends ChopboxAnchor {
+/**
+ * @author rhornig
+ * Creates a special chopbox anchor, where the reference point is not the owner figure's center 
+ */
+public class NoncentralChopboxAnchor extends GateAnchor {
 
     // centrum point (relative in owner area ie 0.0 - 1.0)
     private double relRefPointX = 0.5f;

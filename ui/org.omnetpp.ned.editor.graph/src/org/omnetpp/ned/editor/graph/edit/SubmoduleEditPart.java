@@ -121,4 +121,17 @@ public class SubmoduleEditPart extends ModuleEditPart {
 
         } 
     }
+    
+	@Override
+	String[] getInputGateNames() {
+		String gates[] = {"IN1", "IN2", "IN3", "IN4"}; 
+		return gates; 
+	}
+
+	@Override
+	String[] getOutputGateNames() {
+		String gates[] = {"OUT1", "OUT2", "OUT3", "OUT4"}; 
+		return gates; 
+	}
+    
 }
