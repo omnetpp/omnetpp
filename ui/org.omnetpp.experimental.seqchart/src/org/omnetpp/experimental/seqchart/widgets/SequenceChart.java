@@ -451,6 +451,15 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 		recalculateVirtualSize();
 		gotoSimulationTime(time);
 	}
+
+	/**
+	 * Zoom to the given rectangle, given by pixel coordinates relative to the
+	 * top-left corner of the canvas.
+	 */
+	public void zoomToRectangle(Rectangle r) {
+		System.out.println("Rubberband selection: "+r);
+		//TODO
+	}
 	
 	/**
 	 * The event log (data) to be displayed in the chart
@@ -719,12 +728,14 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 			});
 		}
 		
+        long startMillis = System.currentTimeMillis();
         for (int i=0; i<logFacade.getNumEvents(); i++) {
 			long x = Math.round(logFacade.getEvent_i_timelineCoordinate(i) * pixelsPerTimelineUnit);
 			long y = moduleIdToAxisYMap.get(logFacade.getEvent_i_module_moduleId(i));
 			logFacade.setEvent_cachedX(i, x);
 			logFacade.setEvent_cachedY(i, y);
         }
+        System.out.println("recalculateEventCoordinates: "+(System.currentTimeMillis()-startMillis)+"ms");
 		
 	}
 	
@@ -891,14 +902,14 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 				}
 	        }           	
 	
-	        // turn on/off anti-alias 
 	        long repaintMillis = System.currentTimeMillis()-startMillis;
 	        System.out.println("redraw(): "+repaintMillis+"ms");
+
+	        // turn on/off anti-alias 
 	        if (antiAlias && repaintMillis > ANTIALIAS_TURN_OFF_AT_MSEC)
 	        	antiAlias = false;
 	        else if (!antiAlias && repaintMillis < ANTIALIAS_TURN_ON_AT_MSEC)
 	        	antiAlias = true;
-	        //XXX also: turn it off also during painting if it's going to take too long 
 		}
 	}
 
@@ -1314,6 +1325,7 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 		addMouseListener(new MouseListener() {
 			public void mouseDoubleClick(MouseEvent e) {}
 			public void mouseDown(MouseEvent e) {
+				setCursor(DRAGCURSOR);
 				dragStartX = e.x;
 				dragStartY = e.y;
 				removeTooltip();
@@ -1334,23 +1346,23 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 		addMouseMoveListener(new MouseMoveListener() {
 			public void mouseMove(MouseEvent e) {
 				removeTooltip();
-				setCursor(null); // restore cursor at end of drag (must do it here too, because we 
-								 // don't get the "released" event if user releases mouse outside the canvas)
 				if ((e.stateMask & SWT.BUTTON_MASK) != 0)
 					myMouseDragged(e);
+				else
+					setCursor(null); // restore cursor at end of drag (must do it here too, because we 
+									 // don't get the "released" event if user releases mouse outside the canvas)
 			}
 
 			private void myMouseDragged(MouseEvent e) {
-				// display drag cursor
-				setCursor(DRAGCURSOR);
-				
-				// scroll by the amount moved since last drag call
-				int dx = e.x - dragStartX;
-				int dy = e.y - dragStartY;
-				scrollHorizontalTo(getViewportLeft() - dx);
-				scrollVerticalTo(getViewportTop() - dy);
-				dragStartX = e.x;
-				dragStartY = e.y;
+				if ((e.stateMask & SWT.MODIFIER_MASK) == 0) {
+					// scroll by the amount moved since last drag call
+					int dx = e.x - dragStartX;
+					int dy = e.y - dragStartY;
+					scrollHorizontalTo(getViewportLeft() - dx);
+					scrollVerticalTo(getViewportTop() - dy);
+					dragStartX = e.x;
+					dragStartY = e.y;
+				}
 			}
 		});
 		// selection handling
