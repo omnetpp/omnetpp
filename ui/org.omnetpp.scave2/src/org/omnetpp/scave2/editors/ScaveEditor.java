@@ -30,6 +30,8 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.CTabFolder;
+import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.DropTarget;
 import org.eclipse.swt.dnd.DropTargetAdapter;
@@ -44,7 +46,9 @@ import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.ui.IEditorInput;
+import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IEditorSite;
+import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.omnetpp.scave.engine.File;
 import org.omnetpp.scave.engine.ResultFileManager;
@@ -55,7 +59,6 @@ import org.omnetpp.scave.model.InputFile;
 import org.omnetpp.scave.model.Inputs;
 import org.omnetpp.scave.model.ScaveModelFactory;
 import org.omnetpp.scave2.ContentTypes;
-import org.omnetpp.scave2.editors.providers.DatasetScalarsViewProvider;
 import org.omnetpp.scave2.editors.providers.InputsLogicalViewProvider;
 import org.omnetpp.scave2.editors.providers.InputsPhysicalViewProvider;
 import org.omnetpp.scave2.editors.providers.InputsScalarsViewProvider;
@@ -109,8 +112,6 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INotifyChange
 		return inputFiles;
 	}
 	
-	
-	
 	@Override
 	public void init(IEditorSite site, IEditorInput editorInput) {
 		super.init(site, editorInput);
@@ -119,6 +120,50 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INotifyChange
 			notifier.addListener(this);
 		}
 		ResourcesPlugin.getWorkspace().addResourceChangeListener(this);
+	}
+
+	/**
+	 * Variant of addPage(int index, Control control): adds a page with a 
+	 * large [X] on the tab. 
+	 */
+	public void addClosablePage(int index, Control control) {
+		// add it in the normal way, then replace CTabItem with one with SWT.CLOSE set
+		super.addPage(index, control);
+		CTabFolder ctabFolder = (CTabFolder) control.getParent();
+		ctabFolder.getItem(index).dispose();
+		CTabItem item = new CTabItem(ctabFolder, SWT.CLOSE, index);
+		item.setControl(control);
+	}
+
+	/**
+	 * Adds a closable page on the last position 
+	 */
+	public int addClosablePage(Control control) {
+		int index = getPageCount();
+		addClosablePage(index, control);
+		return index;
+	}
+
+	/**
+	 * Closes the page of the multi-page editor page which holds
+	 * the given control. The request is ignored if the control is
+	 * not found among the pages.
+	 */
+	public void removePage(Control control) {
+		int index = findPage(control);
+		if (index!=-1)
+			removePage(index);
+	}
+	
+	/**
+	 * Returns the index of the multi-page editor page which holds
+	 * the given control (typeically some Composite). Returns -1 if not found.
+	 */
+	public int findPage(Control control) {
+		for (int i=0; i<getPageCount(); i++)
+			if (getControl(i)==control)
+				return i;
+		return -1;
 	}
 
 	@Override
@@ -241,13 +286,11 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INotifyChange
     }
 	
 	public void openDataset(Dataset dataset) {
-		int pageIndex = createDatasetPage(dataset);
-		setActivePage(pageIndex);
+		createDatasetPage(dataset);
 	}
 
 	public void openChartSheet(ChartSheet chartSheet) {
-		int pageIndex = createChartPage(chartSheet.getName());
-		setActivePage(pageIndex);
+		createChartPage(chartSheet.getName());
 	}
 	
 	protected void initializeContentOutlineViewer(Viewer contentOutlineViewer) {
@@ -284,14 +327,13 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INotifyChange
 		setPageText(index, "Browse data");
 	}
 	
-	private int createDatasetPage(Dataset dataset) {
+	private void createDatasetPage(Dataset dataset) {
 		DatasetPage page = new DatasetPage(getContainer(), SWT.NONE, this);
 
 		configureTreeViewer(page.getDatasetTreeViewer());
 		if ("scalar".equals(dataset.getType())) {
 			page.addScalarsPanel();
-			//InputsTableViewProvider provider = new InputsScalarsViewProvider(this);
-			DatasetScalarsViewProvider provider = new DatasetScalarsViewProvider(this);
+			InputsTableViewProvider provider = new InputsScalarsViewProvider(this);
 			provider.configureFilterPanel(page.getFilterPanel());
 		} else if ("vector".equals(dataset.getType())) {
 			page.addVectorsPanel();
@@ -299,31 +341,26 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INotifyChange
 			provider.configureFilterPanel(page.getFilterPanel());
 		}
 		page.getDatasetTreeViewer().setInput(dataset);
-		page.getDatasetTableViewer().setInput(dataset);
 		setFormTitle(page, "Dataset: " + dataset.getName());
-		int index = addDatasetPage("Dataset: " + dataset.getName(), page);
-		return index;
+		addDatasetPage("Dataset: " + dataset.getName(), page);
 	}
 	
-	private int addDatasetPage(String pageText, DatasetPage page) {
+	private void addDatasetPage(String pageText, DatasetPage page) {
 		datasetPages.add(page);
-		int index = addPage(page);
+		int index = addClosablePage(page);
 		setPageText(index, pageText);
-		return index;
 	}
 	
-	private int createChartPage(String name) {
+	private void createChartPage(String name) {
 		ChartSheetPage page = new ChartSheetPage(getContainer(), SWT.NONE);
 		setFormTitle(page, "Charts: " + name);
-		int index = addChartSheetPage("Charts: " + name, page);
-		return index;
+		addChartSheetPage("Charts: " + name, page);
 	}
 	
-	private int addChartSheetPage(String pageText, ChartSheetPage page) {
+	private void addChartSheetPage(String pageText, ChartSheetPage page) {
 		chartSheetPages.add(page);
 		int index = addPage(page);
 		setPageText(index, pageText);
-		return index;
 	}
 	
 	private void setFormTitle(ScrolledForm form, String title) {

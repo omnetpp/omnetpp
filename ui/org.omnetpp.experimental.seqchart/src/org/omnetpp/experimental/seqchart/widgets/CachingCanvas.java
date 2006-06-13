@@ -24,7 +24,7 @@ public abstract class CachingCanvas extends LargeScrollableCanvas {
 
 	private boolean doCaching = true;
 	private ITileCache tileCache = new ColumnTileCache();
-	private boolean debug = true;
+	private boolean debug = false;
 	
 
 	/**
