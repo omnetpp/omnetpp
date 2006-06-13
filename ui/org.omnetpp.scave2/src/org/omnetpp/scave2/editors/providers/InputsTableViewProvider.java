@@ -2,6 +2,7 @@ package org.omnetpp.scave2.editors.providers;
 
 import org.eclipse.core.runtime.ListenerList;
 import org.eclipse.emf.common.notify.Notification;
+import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.edit.provider.IChangeNotifier;
 import org.eclipse.emf.edit.provider.INotifyChangedListener;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
@@ -14,7 +15,6 @@ import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.engine.ResultFileManager;
-import org.omnetpp.scave.model.Inputs;
 import org.omnetpp.scave2.editors.ScaveEditor;
 import org.omnetpp.scave2.editors.ui.FilterPanel;
 
@@ -81,11 +81,11 @@ public abstract class InputsTableViewProvider {
 		private ListenerList listeners = new ListenerList();
 		
 		public Object[] getElements(Object inputElement) {
-			if (inputElement instanceof Inputs) {
+			if (inputElement instanceof EObject) {
 
 				if (inputElement != lastInputElement || idlistCached == null) {
 					lastInputElement = inputElement;
-					idlistCached = buildIDList();
+					idlistCached = buildIDList(inputElement);
 					fireContentChange();
 				}
 
@@ -107,7 +107,7 @@ public abstract class InputsTableViewProvider {
 			return EMPTY_ARRAY;
 		}
 		
-		protected abstract IDList buildIDList();
+		protected abstract IDList buildIDList(Object inputElement);
 
 		public void dispose() {
 			viewer = null;
@@ -116,12 +116,12 @@ public abstract class InputsTableViewProvider {
 		/* Notification from the viewer that its input has changed. */
 		public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
 			this.viewer = viewer;
-			if (oldInput instanceof Inputs &&
+			if (oldInput instanceof EObject &&
 				editor.getAdapterFactory() instanceof IChangeNotifier) {
 				IChangeNotifier notifier = (IChangeNotifier)editor.getAdapterFactory();
 				notifier.removeListener(this);
 			}
-			if (newInput instanceof Inputs &&
+			if (newInput instanceof EObject &&
 				editor.getAdapterFactory() instanceof IChangeNotifier) {
 				IChangeNotifier notifier = (IChangeNotifier)editor.getAdapterFactory();
 				notifier.addListener(this);

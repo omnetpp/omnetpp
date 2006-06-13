@@ -1,15 +1,13 @@
 package org.omnetpp.scave2.editors.ui;
 
-import org.eclipse.emf.ecore.EClass;
+import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TreeViewer;
-import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.omnetpp.common.color.ColorFactory;
@@ -32,6 +30,10 @@ public class DatasetPage extends ScrolledForm {
 	
 	public TreeViewer getDatasetTreeViewer() {
 		return datasetPanel.getTreeViewer();
+	}
+	
+	public TableViewer getDatasetTableViewer() {
+		return filterPanel != null ? filterPanel.getTableViewer() : null;
 	}
 	
 	public FilterPanel getFilterPanel() {

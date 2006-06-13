@@ -55,6 +55,7 @@ import org.omnetpp.scave.model.InputFile;
 import org.omnetpp.scave.model.Inputs;
 import org.omnetpp.scave.model.ScaveModelFactory;
 import org.omnetpp.scave2.ContentTypes;
+import org.omnetpp.scave2.editors.providers.DatasetScalarsViewProvider;
 import org.omnetpp.scave2.editors.providers.InputsLogicalViewProvider;
 import org.omnetpp.scave2.editors.providers.InputsPhysicalViewProvider;
 import org.omnetpp.scave2.editors.providers.InputsScalarsViewProvider;
@@ -240,11 +241,13 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INotifyChange
     }
 	
 	public void openDataset(Dataset dataset) {
-		createDatasetPage(dataset);
+		int pageIndex = createDatasetPage(dataset);
+		setActivePage(pageIndex);
 	}
 
 	public void openChartSheet(ChartSheet chartSheet) {
-		createChartPage(chartSheet.getName());
+		int pageIndex = createChartPage(chartSheet.getName());
+		setActivePage(pageIndex);
 	}
 	
 	protected void initializeContentOutlineViewer(Viewer contentOutlineViewer) {
@@ -281,13 +284,14 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INotifyChange
 		setPageText(index, "Browse data");
 	}
 	
-	private void createDatasetPage(Dataset dataset) {
+	private int createDatasetPage(Dataset dataset) {
 		DatasetPage page = new DatasetPage(getContainer(), SWT.NONE, this);
 
 		configureTreeViewer(page.getDatasetTreeViewer());
 		if ("scalar".equals(dataset.getType())) {
 			page.addScalarsPanel();
-			InputsTableViewProvider provider = new InputsScalarsViewProvider(this);
+			//InputsTableViewProvider provider = new InputsScalarsViewProvider(this);
+			DatasetScalarsViewProvider provider = new DatasetScalarsViewProvider(this);
 			provider.configureFilterPanel(page.getFilterPanel());
 		} else if ("vector".equals(dataset.getType())) {
 			page.addVectorsPanel();
@@ -295,26 +299,31 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INotifyChange
 			provider.configureFilterPanel(page.getFilterPanel());
 		}
 		page.getDatasetTreeViewer().setInput(dataset);
+		page.getDatasetTableViewer().setInput(dataset);
 		setFormTitle(page, "Dataset: " + dataset.getName());
-		addDatasetPage("Dataset: " + dataset.getName(), page);
+		int index = addDatasetPage("Dataset: " + dataset.getName(), page);
+		return index;
 	}
 	
-	private void addDatasetPage(String pageText, DatasetPage page) {
+	private int addDatasetPage(String pageText, DatasetPage page) {
 		datasetPages.add(page);
 		int index = addPage(page);
 		setPageText(index, pageText);
+		return index;
 	}
 	
-	private void createChartPage(String name) {
+	private int createChartPage(String name) {
 		ChartSheetPage page = new ChartSheetPage(getContainer(), SWT.NONE);
 		setFormTitle(page, "Charts: " + name);
-		addChartSheetPage("Charts: " + name, page);
+		int index = addChartSheetPage("Charts: " + name, page);
+		return index;
 	}
 	
-	private void addChartSheetPage(String pageText, ChartSheetPage page) {
+	private int addChartSheetPage(String pageText, ChartSheetPage page) {
 		chartSheetPages.add(page);
 		int index = addPage(page);
 		setPageText(index, pageText);
+		return index;
 	}
 	
 	private void setFormTitle(ScrolledForm form, String title) {

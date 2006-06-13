@@ -28,7 +28,7 @@ public class InputsScalarsViewProvider extends InputsTableViewProvider {
 	
 	public ContentProvider getContentProvider() {
 		return new ContentProvider() {
-			public IDList buildIDList() {
+			public IDList buildIDList(Object inputElement) {
 				ResultFileManager manager = editor.getResultFileManager();
 				IDList idlist = new IDList();
 				for (File file : editor.getInputFiles()) {
