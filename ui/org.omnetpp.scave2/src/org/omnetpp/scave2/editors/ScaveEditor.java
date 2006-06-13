@@ -93,8 +93,6 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INotifyChange
 
 	private OverviewPage overviewPage;
 	private BrowseDataPage browseDataPage;
-	private ArrayList<DatasetPage> datasetPages = new ArrayList<DatasetPage>(3);
-	private ArrayList<ChartSheetPage> chartSheetPages = new ArrayList<ChartSheetPage>(3);
 	
 	/**
 	 *  ResultFileManager containing all files of the analysis. 
@@ -374,7 +372,6 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INotifyChange
 	}
 	
 	private int addDatasetPage(String pageText, DatasetPage page) {
-		datasetPages.add(page);
 		int index = addClosablePage(page);
 		setPageText(index, pageText);
 		return index;
@@ -389,7 +386,6 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INotifyChange
 	}
 	
 	private int addChartSheetPage(String pageText, ChartSheetPage page) {
-		chartSheetPages.add(page);
 		int index = addClosablePage(page);
 		setPageText(index, pageText);
 		return index;
