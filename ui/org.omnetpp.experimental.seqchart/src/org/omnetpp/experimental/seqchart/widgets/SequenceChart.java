@@ -30,6 +30,7 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.omnetpp.experimental.seqchart.editors.EventLogSelection;
 import org.omnetpp.experimental.seqchart.editors.IEventLogSelection;
@@ -67,6 +68,10 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 
 	private static final Color LABEL_COLOR = new Color(null, 0, 0, 0);
 	private static final Color AXIS_COLOR = new Color(null, 120, 120, 120);
+	private static final Color TICKS_LINE_COLOR = new Color(null, 160, 160, 160);
+	private static final Color TICKS_LABEL_COLOR = new Color(null, 0, 0, 0);
+	private static final Color GUTTER_BACKGROUND_COLOR = new Color(null, 255, 255, 160);
+	private static final Color GUTTER_BORDER_COLOR = new Color(null, 0, 0, 0);
 	private static final Color EVENT_FG_COLOR = new Color(null,255,0,0);
 	private static final Color EVENT_BG_COLOR = new Color(null,255,255,255);
 	private static final Color EVENT_SEL_COLOR = new Color(null,255,0,0);
@@ -74,7 +79,6 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 	private static final Color MESSAGE_LABEL_COLOR = null; // defaults to line color
 	private static final Color DELIVERY_MESSAGE_COLOR = new Color(null,0,0,255);
 	private static final Color NONDELIVERY_MESSAGE_COLOR = new Color(null,0,150,0);
-	private static final Color TICKS_LINE_COLOR = new Color(null, 240, 240, 240);
 	private static final Cursor DRAGCURSOR = new Cursor(null, SWT.CURSOR_SIZEALL);
 	private static final int[] DOTTED_LINE_PATTERN = new int[] {2,2}; // 2px black, 2px gap
 	
@@ -90,14 +94,14 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 	private static final int ARROWHEAD_WIDTH = 7; // width of message arrow head
 	private static final int AXISLABEL_DISTANCE = 15; // distance of timeline label above axis
 	private static final int EVENT_SEL_RADIUS = 10; // radius of event selection mark circle
-	private static final int TICK_LABEL_WIDTH = 50; // minimum tick label width reserved
+	private static final int TICK_SPACING = 100; // space between ticks in pixels
 	private static final int CLIPRECT_BORDER = 10; // should be greater than an arrowhead or event "ball" radius
+	private static final int GUTTER_HEIGHT = 18; // height of top and bottom gutter
 	
 	protected EventLog eventLog; // contains the data to be displayed
 	protected JavaFriendlyEventLogFacade logFacade; // helpful facade on eventlog
 	
 	protected double pixelsPerTimelineUnit = 1;
-	protected int tickScale = 1; // -1 means step=0.1, in power of timeline units
 	private boolean antiAlias = true;  // antialiasing -- this gets turned on/off automatically
 	private boolean showArrowHeads = true; // whether arrow heads are drawn or not
 	private int axisOffset = 50;  // y coord of first axis
@@ -109,6 +113,9 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 	private TimelineMode timelineMode = TimelineMode.LINEAR; // specifies timeline x coordinate transformation, see enum
 	private TimelineSortMode timelineSortMode = TimelineSortMode.MODULE_ID; // specifies the ordering mode of timelines
 	private double nonLinearFocus = 1; // parameter for non-linear timeline transformation
+	
+	double viewportLeftSimulationTime; // used to restore the visible range of simulation time
+	double viewportRightSimulationTime;
 	
 	private DefaultInformationControl tooltipWidget; // the current tooltip (Note: SWT's Tooltip cannot be used as it wraps lines)
 	
@@ -244,9 +251,8 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 		if (pp <= 0)
 			pp = 1e-12;
 		pixelsPerTimelineUnit = pp;
-		tickScale = (int)Math.ceil(Math.log10(TICK_LABEL_WIDTH / pp));
 
-		System.out.println("pixels per timeline unit="+pixelsPerTimelineUnit+"  tickScale="+tickScale);
+		System.out.println("pixels per timeline unit="+pixelsPerTimelineUnit);
 	}
 	
 	/**
@@ -361,12 +367,8 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 		return timelineSortMode;
 	}
 	
-	// TODO:
-	double viewportLeftSimulationTime;
-	double viewportRightSimulationTime;
-	
 	/**
-	 * TODO:
+	 * Saves the currently visible range of simulation time.
 	 */
 	public void saveViewportSimulationTimeRange()
 	{
@@ -375,11 +377,11 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 	}
 	
 	/**
-	 * TODO:
+	 * Restores last saved range of visible simulation time.
 	 */
 	public void restoreViewportSimulationTimeRange()
 	{
-		double timelineUnitDelta = (simulationTimeToTimelineCoordinate(viewportRightSimulationTime)) - (simulationTimeToTimelineCoordinate(viewportLeftSimulationTime));
+		double timelineUnitDelta = simulationTimeToTimelineCoordinate(viewportRightSimulationTime) - simulationTimeToTimelineCoordinate(viewportLeftSimulationTime);
 		setPixelsPerTimelineUnit(getWidth() / timelineUnitDelta);
 		scrollHorizontalTo(getViewportLeft() + simulationTimeToPixel(viewportLeftSimulationTime));
 		recalculateVirtualSize();
@@ -457,8 +459,11 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 	 * top-left corner of the canvas.
 	 */
 	public void zoomToRectangle(Rectangle r) {
-		System.out.println("Rubberband selection: "+r);
-		//TODO
+		double timelineCoordinate = pixelToTimelineCoordinate(r.x);
+		double timelineUnitDelta = pixelToTimelineCoordinate(r.right()) - timelineCoordinate;
+		setPixelsPerTimelineUnit(getWidth() / timelineUnitDelta);
+		recalculateVirtualSize();
+		scrollHorizontalTo(timelineCoordinateToVirtualPixel(timelineCoordinate));
 	}
 	
 	/**
@@ -811,6 +816,7 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 
 	@Override
 	protected void beforePaint() {
+		calculateTicks();
 	}
 	
 	@Override
@@ -821,8 +827,9 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 	@Override
 	protected void paintNoncachableLayer(Graphics graphics) {
 		paintAxisLabels(graphics);
+        paintGutters(graphics);
+        paintMouseTick(graphics);
         paintEventSelectionMarks(graphics);
-        paintTicks(graphics);
 	}
 
 	/**
@@ -855,8 +862,6 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 			graphics.setAntialias(antiAlias ? SWT.ON : SWT.OFF);
 			graphics.setTextAntialias(SWT.ON);
 
-			calculateTicks(graphics);
-			
 			for (int i=0; i<axisModules.size(); i++) {
 				int y = (int)(getAxisY(i) - getViewportTop());
 				drawAxis(graphics, y);
@@ -897,7 +902,7 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 	
 					if (showEventNumbers) {
 						graphics.setBackgroundColor(EVENT_BG_COLOR);
-						graphics.fillText("#"+logFacade.getEvent_i_eventNumber(i), x-10, y - AXISLABEL_DISTANCE);
+						graphics.fillText("#"+logFacade.getEvent_i_eventNumber(i), x + 3, y + 3);
 					}
 				}
 	        }           	
@@ -912,16 +917,38 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 	        	antiAlias = true;
 		}
 	}
+	
+	private void paintGutters(Graphics graphics) {
+		graphics.setBackgroundColor(GUTTER_BACKGROUND_COLOR);
+		graphics.fillRectangle(0, 0, getWidth(), GUTTER_HEIGHT);
+		graphics.fillRectangle(0, getHeight() - GUTTER_HEIGHT - 1, getWidth(), GUTTER_HEIGHT);
+		paintTicks(graphics);
+		graphics.setBackgroundColor(GUTTER_BORDER_COLOR);
+		graphics.setLineStyle(SWT.LINE_SOLID);
+		graphics.drawRectangle(0, 0, getWidth(), GUTTER_HEIGHT);
+		graphics.drawRectangle(0, getHeight() - GUTTER_HEIGHT - 1, getWidth(), GUTTER_HEIGHT);
+	}
 
 	private void paintTicks(Graphics graphics) {
 		for (BigDecimal tick : ticks)
-		{
-			int x = simulationTimeToPixel(tick.doubleValue());
-			graphics.setForegroundColor(TICKS_LINE_COLOR);
-			graphics.drawLine(x, 0, x, getHeight());
-			graphics.drawText(tick.toPlainString() + "s", x, 3);
-			graphics.drawText(tick.toPlainString() + "s", x, getHeight() - 33);
-		}
+			paintTick(graphics, tick);
+	}
+	
+	private void paintMouseTick(Graphics graphics) {
+		BigDecimal t = new BigDecimal(pixelToSimulationTime(toControl(Display.getDefault().getCursorLocation()).x));
+		paintTick(graphics, calculateTick(t, 1));
+	}
+	
+	private void paintTick(Graphics graphics, BigDecimal simulationTime) {
+		int x = simulationTimeToPixel(simulationTime.doubleValue());
+		graphics.setLineStyle(SWT.LINE_DOT);
+		graphics.setForegroundColor(TICKS_LINE_COLOR);
+		graphics.drawLine(x, 0, x, getHeight());
+		graphics.setForegroundColor(TICKS_LABEL_COLOR);
+		String str = simulationTime.toPlainString() + "s";
+		graphics.setBackgroundColor(GUTTER_BACKGROUND_COLOR);
+		graphics.fillText(str, x + 3, 3);
+		graphics.fillText(str, x + 3, getHeight() - 15);
 	}
 	
 	private void paintEventSelectionMarks(Graphics graphics) {
@@ -1084,67 +1111,111 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 		Rectangle rect = graphics.getClip(Rectangle.SINGLETON);
 
 		// draw axis
+		graphics.setLineStyle(SWT.LINE_SOLID);
 		graphics.setForegroundColor(AXIS_COLOR);
 		graphics.drawLine(rect.x, y, rect.right(), y);
 
+		/*
 		int h = axisSpacing<AXISLABEL_DISTANCE ? 1 : 2; // make tick lines shorted when axes are dense
 		for (BigDecimal tick : ticks)
 		{
 			int x = simulationTimeToPixel(tick.doubleValue());
+			graphics.setForegroundColor(TICKS_LINE_COLOR);
 			graphics.drawLine(x, y-h, x, y+h);
-			graphics.drawText(tick.toPlainString() + "s", x, y+3);
+			graphics.setForegroundColor(TICKS_LABEL_COLOR);
+			graphics.drawText(tick.toPlainString() + "s", x + 3, y + 3);
 		}
+		*/
 	}
 
 	/**
-	 * Calculates and stores ticks as simulation times based on tickScale. Tries to round tick values
-	 * to have as short numbers as possible within within a range.
+	 * Calculates and stores ticks as simulation times based on tick spacing. Tries to round tick values
+	 * to have as short numbers as possible within a range.
 	 */
-	private void calculateTicks(Graphics graphics) {
+	private void calculateTicks() {
 		ticks.clear();
-		Rectangle rect = graphics.getClip(Rectangle.SINGLETON);
-
-		double tleft = pixelToSimulationTime(rect.x);
-		double tright = pixelToSimulationTime(rect.right());
-		//System.out.println("simtime interval: "+tleft+" - "+tright);
-
-		// calculate ticks and labels
-		BigDecimal tickStart = new BigDecimal(tleft).setScale(-tickScale, RoundingMode.FLOOR);
-		BigDecimal tickEnd = new BigDecimal(tright).setScale(-tickScale, RoundingMode.CEILING);
-		BigDecimal tickIntvl = new BigDecimal(1).scaleByPowerOfTen(tickScale);
-		//System.out.println(tickStart+" - "+tickEnd+ " step "+tickIntvl);
-
-		int halfTickRange = (int)Math.round(tickIntvl.doubleValue() * pixelsPerTimelineUnit / 2);
-		for (BigDecimal t = tickStart; t.compareTo(tickEnd) < 0;) {
-			int x = simulationTimeToPixel(t.doubleValue());
-			BigDecimal tMin = new BigDecimal(pixelToSimulationTime(x - halfTickRange));
-			BigDecimal tMax = new BigDecimal(pixelToSimulationTime(x + halfTickRange));
-			int tMinPrecision = tMin.stripTrailingZeros().precision();
-			int tMaxPrecision = tMax.stripTrailingZeros().precision();
-			int tDeltaPrecision = tMax.subtract(tMin).stripTrailingZeros().precision();
-			MathContext mc = new MathContext(1 + Math.max(tMinPrecision - tDeltaPrecision, tMaxPrecision - tDeltaPrecision));
-			BigDecimal tRounded = t;
-			BigDecimal tBestRounded = tRounded;
-
-			do
-			{
-				tRounded = t.round(mc);
-
-				if (tRounded.compareTo(tMin) > 0 && tRounded.compareTo(tMax) < 0)
-					tBestRounded = tRounded;
-				else
-					break;
-				
+		org.eclipse.swt.graphics.Rectangle rect = getClientArea();
 		
-				if (mc.getPrecision() > 0)
-					mc = new MathContext(mc.getPrecision() - 1);
-				
-			}
-			while (mc.getPrecision() > 0);
+		if (timelineMode == TimelineMode.LINEAR) {
+			// puts ticks to constant distance from each other measured in timeline units
+			double tleft = pixelToSimulationTime(rect.x);
+			double tright = pixelToSimulationTime(rect.x + rect.width);
+			int tickScale = (int)Math.ceil(Math.log10(TICK_SPACING / pixelsPerTimelineUnit));
+			BigDecimal tickStart = new BigDecimal(tleft).setScale(-tickScale, RoundingMode.FLOOR);
+			BigDecimal tickEnd = new BigDecimal(tright).setScale(-tickScale, RoundingMode.CEILING);
+			BigDecimal tickIntvl = new BigDecimal(1).scaleByPowerOfTen(tickScale);
 
-			ticks.add(tBestRounded);
-			t = new BigDecimal(timelineCoordinateToSimulationTime(simulationTimeToTimelineCoordinate(t.doubleValue()) + tickIntvl.doubleValue()));
+			for (BigDecimal t=tickStart; t.compareTo(tickEnd)<0; t = t.add(tickIntvl))
+				ticks.add(t);
 		}
+		else {
+			// tries to put ticks constant distance from each other measured in virtual pixels
+			long tleft = getViewportLeft();
+			long tright = tleft + rect.width;
+			int tickScale = (int)Math.ceil(Math.log10(TICK_SPACING));
+			BigDecimal tickStart = new BigDecimal(tleft).setScale(-tickScale, RoundingMode.FLOOR);
+			BigDecimal tickEnd = new BigDecimal(tright).setScale(-tickScale, RoundingMode.CEILING);
+			BigDecimal tickIntvl = new BigDecimal(1).scaleByPowerOfTen(tickScale);
+	
+			for (long t = tickStart.longValue(); t < tickEnd.longValue();) {
+				double simulationTime = timelineCoordinateToSimulationTime(virtualPixelToTimelineCoordinate(t));
+				BigDecimal tick = calculateTick(new BigDecimal(simulationTime), TICK_SPACING / 4);
+				ticks.add(tick);
+				t = t + tickIntvl.longValue();
+			}
+		}
+	}
+	
+	/**
+	 * Calculates a single tick around simulation time. The range is defined in terms of pixels.
+	 * Minimizes the number of characters to have a short tick label.
+	 */
+	private BigDecimal calculateTick(BigDecimal simulationTime, int halfTickRange)
+	{
+		int x = simulationTimeToPixel(simulationTime.doubleValue());
+		// defines the range of valid simulation times for the tick
+		BigDecimal tMin = new BigDecimal(pixelToSimulationTime(x - halfTickRange));
+		BigDecimal tMax = new BigDecimal(pixelToSimulationTime(x + halfTickRange));
+		// number of digits
+		int tMinPrecision = tMin.stripTrailingZeros().precision();
+		int tMaxPrecision = tMax.stripTrailingZeros().precision();
+		int tDeltaPrecision = tMax.subtract(tMin).stripTrailingZeros().precision();
+		int precision = Math.max(0, 1 + Math.max(tMinPrecision - tDeltaPrecision, tMaxPrecision - tDeltaPrecision));
+		// estabilish initial rounding contextes
+		MathContext mcMin = new MathContext(precision, RoundingMode.FLOOR);
+		MathContext mcMax = new MathContext(precision, RoundingMode.CEILING);
+		BigDecimal tRoundedMin = simulationTime;
+		BigDecimal tRoundedMax = simulationTime;
+		BigDecimal tBestRoundedMin = simulationTime;
+		BigDecimal tBestRoundedMax = simulationTime;
+
+		do
+		{
+			if (mcMin.getPrecision() > 0) {
+				tRoundedMin = simulationTime.round(mcMin);
+	
+				if (tRoundedMin.compareTo(tMin) > 0)
+					tBestRoundedMin = tRoundedMin;
+
+				mcMin = new MathContext(mcMin.getPrecision() - 1, RoundingMode.FLOOR);
+			}
+
+			if (mcMax.getPrecision() > 0) {
+				tRoundedMax = simulationTime.round(mcMax);
+	
+				if (tRoundedMax.compareTo(tMax) < 0)
+					tBestRoundedMin = tRoundedMax;
+
+				mcMax = new MathContext(mcMax.getPrecision() - 1, RoundingMode.CEILING);
+			}
+		}
+		while (mcMin.getPrecision() > 0 || mcMax.getPrecision() > 0);
+
+		// TODO: potentionally we could try the same numbers with different endings: e.g. 5, or even numbers instead of 1,3,7,9
+		if (tBestRoundedMin.toPlainString().length() < tBestRoundedMax.toPlainString().length())
+			return tBestRoundedMin;
+		else
+			return tBestRoundedMax;
 	}
 
 	/**
@@ -1278,9 +1349,11 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
     			// linear approximation between two enclosing events
         		double simulationTimeDelta = logFacade.getEvent_i_simulationTime(pos + 1) - eventSimulationTime;
         		double timelineCoordinateDelta = logFacade.getEvent_i_timelineCoordinate(pos + 1) - eventTimelineCoordinate;
+
         		if (timelineCoordinateDelta == 0) //XXX this can happen in STEP mode when pos==-1, and 1st event is at timeline zero. perhaps getLastEventPositionBeforeByTimelineCoordinate() should check "<=" not "<" ?
         			return eventSimulationTime;
         		Assert.isTrue(timelineCoordinateDelta > 0);
+        		
         		return eventSimulationTime + simulationTimeDelta * (timelineCoordinate - eventTimelineCoordinate) / timelineCoordinateDelta;
         	default:
         		throw new RuntimeException("Unknown timeline mode");
@@ -1305,7 +1378,7 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 	 * Translates from pixel x coordinate to timeline coordinate, using on pixelsPerTimelineUnit.
 	 */
 	private double pixelToTimelineCoordinate(int x) {
-		return (x+getViewportLeft()) / pixelsPerTimelineUnit;
+		return (x + getViewportLeft()) / pixelsPerTimelineUnit;
 	}
 
 	/**
@@ -1315,6 +1388,20 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 	private int timelineCoordinateToPixel(double t) {
 		long x = Math.round(t * pixelsPerTimelineUnit) - getViewportLeft();
     	return (x < -XMAX) ? -XMAX : (x > XMAX) ? XMAX : (int)x;
+	}
+
+	/**
+	 * Translates from virtual pixel x coordinate to timeline coordinate, using on pixelsPerTimelineUnit.
+	 */
+	private double virtualPixelToTimelineCoordinate(long x) {
+		return x / pixelsPerTimelineUnit;
+	}
+
+	/**
+	 * Translates timeline coordinate to pixel x coordinate, using on pixelsPerTimelineUnit.
+	 */
+	private long timelineCoordinateToVirtualPixel(double t) {
+		return Math.round(t * pixelsPerTimelineUnit);
 	}
 
 	/**
@@ -1332,7 +1419,6 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 			}
 			public void mouseUp(MouseEvent e) {
 				setCursor(null); // restore cursor at end of drag
-				
 			}
     	});
 		addMouseTrackListener(new MouseTrackListener() {
@@ -1348,9 +1434,11 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 				removeTooltip();
 				if ((e.stateMask & SWT.BUTTON_MASK) != 0)
 					myMouseDragged(e);
-				else
+				else {
 					setCursor(null); // restore cursor at end of drag (must do it here too, because we 
 									 // don't get the "released" event if user releases mouse outside the canvas)
+					redraw();
+				}
 			}
 
 			private void myMouseDragged(MouseEvent e) {
