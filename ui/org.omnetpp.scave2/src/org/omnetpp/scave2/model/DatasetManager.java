@@ -9,6 +9,7 @@ import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.model.Add;
 import org.omnetpp.scave.model.Apply;
 import org.omnetpp.scave.model.Dataset;
+import org.omnetpp.scave.model.DatasetItem;
 import org.omnetpp.scave.model.Deselect;
 import org.omnetpp.scave.model.Discard;
 import org.omnetpp.scave.model.Group;
@@ -24,6 +25,7 @@ public class DatasetManager {
 		public FileList files;
 		public IDList idlist;
 		public DataflowManager dataflowManager;
+		public boolean finished;
 		
 		public DatasetContent() {
 			files = new FileList();
@@ -31,7 +33,7 @@ public class DatasetManager {
 		}
 	}
 	
-	public static IDList getIDListFromDataset(ResultFileManager manager, Dataset dataset) {
+	public static IDList getIDListFromDataset(ResultFileManager manager, Dataset dataset, DatasetItem lastProcessedItem) {
 		DatasetContent content = (DatasetContent)new ProcessDatasetSwitch(manager).doSwitch(dataset);
 		return content != null ? content.idlist : new IDList();
 	}
@@ -53,6 +55,9 @@ public class DatasetManager {
 			} else if ("vector".equals(dataset.getType())) {
 				content.isScalar = false;
 			}
+			
+			if (dataset.getBasedOn() != null)
+				content.idlist = getIDListFromDataset(manager, (Dataset)dataset.getBasedOn(), null);
 			
 			for (Object item : dataset.getItems())
 				doSwitch((EObject)item);

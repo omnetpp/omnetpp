@@ -40,6 +40,35 @@ public class DatasetPage extends ScrolledForm {
 		return filterPanel;
 	}
 	
+	public Button getAddButton() {
+		return datasetPanel.getAddButton();
+	}
+
+	public Button getRemoveButton() {
+		return datasetPanel.getRemoveButton();
+	}
+
+	public Button getEditButton() {
+		return datasetPanel.getEditButton();
+	}
+
+	public Button getCreateChartButton() {
+		return datasetPanel.getCreateChartButton();
+	}
+	
+	public Button getOpenChartButton() {
+		return datasetPanel.getOpenChartButton();
+	}
+
+	public Button getGroupButton() {
+		return datasetPanel.getGroupButton();
+	}
+
+	public Button getUngroupButton() {
+		return datasetPanel.getUngroupButton();
+	}
+	
+	
 	public void addScalarsPanel() {
 		filterPanel = new ScalarsPanel(sashform, SWT.NONE);
 	}

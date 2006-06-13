@@ -19,3 +19,5 @@ Require-Bundle: org.eclipse.ui,
  org.omnetpp.scave.model
 Eclipse-LazyStart: true
 Bundle-Vendor: OpenSim Ltd.
+Bundle-ClassPath: lib/jcommon-1.0.0.jar,
+ lib/jfreechart-1.0.1.jar

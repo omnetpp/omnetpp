@@ -19,7 +19,7 @@ public class DatasetVectorsViewProvider extends InputsVectorsViewProvider {
 				if (inputElement instanceof Dataset) {
 					ResultFileManager manager = editor.getResultFileManager();
 					Dataset dataset = (Dataset)inputElement;
-					IDList idlist = DatasetManager.getIDListFromDataset(manager, dataset);
+					IDList idlist = DatasetManager.getIDListFromDataset(manager, dataset, null);
 					return idlist;
 				}
 				return new IDList();

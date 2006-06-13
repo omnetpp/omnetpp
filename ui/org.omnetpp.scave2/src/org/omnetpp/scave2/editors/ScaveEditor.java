@@ -1,6 +1,7 @@
 package org.omnetpp.scave2.editors;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import org.eclipse.core.resources.IFile;
@@ -40,10 +41,12 @@ import org.eclipse.swt.dnd.FileTransfer;
 import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
@@ -51,14 +54,20 @@ import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.omnetpp.scave.engine.File;
+import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.model.Analysis;
+import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.ChartSheet;
 import org.omnetpp.scave.model.Dataset;
+import org.omnetpp.scave.model.Datasets;
+import org.omnetpp.scave.model.Group;
 import org.omnetpp.scave.model.InputFile;
 import org.omnetpp.scave.model.Inputs;
 import org.omnetpp.scave.model.ScaveModelFactory;
 import org.omnetpp.scave2.ContentTypes;
+import org.omnetpp.scave2.charting.ChartManager;
+import org.omnetpp.scave2.editors.providers.DatasetScalarsViewProvider;
 import org.omnetpp.scave2.editors.providers.InputsLogicalViewProvider;
 import org.omnetpp.scave2.editors.providers.InputsPhysicalViewProvider;
 import org.omnetpp.scave2.editors.providers.InputsScalarsViewProvider;
@@ -66,9 +75,11 @@ import org.omnetpp.scave2.editors.providers.InputsTableViewProvider;
 import org.omnetpp.scave2.editors.providers.InputsTreeViewProvider;
 import org.omnetpp.scave2.editors.providers.InputsVectorsViewProvider;
 import org.omnetpp.scave2.editors.ui.BrowseDataPage;
+import org.omnetpp.scave2.editors.ui.ChartPage;
 import org.omnetpp.scave2.editors.ui.ChartSheetPage;
 import org.omnetpp.scave2.editors.ui.DatasetPage;
 import org.omnetpp.scave2.editors.ui.OverviewPage;
+import org.omnetpp.scave2.model.DatasetManager;
 
 /**
  * OMNeT++/OMNEST Analysis tool.  
@@ -290,7 +301,13 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INotifyChange
 	}
 
 	public void openChartSheet(ChartSheet chartSheet) {
-		createChartPage(chartSheet.getName());
+		int pageIndex = createChartSheetPage(chartSheet);
+		setActivePage(pageIndex);
+	}
+	
+	public void openChart(Chart chart) {
+		int pageIndex = createChartPage(chart);
+		setActivePage(pageIndex);
 	}
 	
 	protected void initializeContentOutlineViewer(Viewer contentOutlineViewer) {
@@ -341,6 +358,16 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INotifyChange
 			provider.configureFilterPanel(page.getFilterPanel());
 		}
 		page.getDatasetTreeViewer().setInput(dataset);
+		page.getOpenChartButton().addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
+				if (getSelection() instanceof IStructuredSelection) {
+					IStructuredSelection selection = (IStructuredSelection)getSelection();
+					Object selected = selection.getFirstElement();
+					if (selected != null && selected instanceof Chart)
+						openChart((Chart)selected);
+				}
+			}
+		});
 		setFormTitle(page, "Dataset: " + dataset.getName());
 		addDatasetPage("Dataset: " + dataset.getName(), page);
 	}
@@ -351,22 +378,98 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INotifyChange
 		setPageText(index, pageText);
 	}
 	
-	private void createChartPage(String name) {
+	private int createChartSheetPage(ChartSheet chartsheet) {
 		ChartSheetPage page = new ChartSheetPage(getContainer(), SWT.NONE);
-		setFormTitle(page, "Charts: " + name);
-		addChartSheetPage("Charts: " + name, page);
+		configureChartSheetPage(page, chartsheet);
+		setFormTitle(page, "Charts: " + chartsheet.getName());
+		int index = addChartSheetPage("Charts: " + chartsheet.getName(), page);
+		return index;
 	}
 	
-	private void addChartSheetPage(String pageText, ChartSheetPage page) {
+	private int addChartSheetPage(String pageText, ChartSheetPage page) {
 		chartSheetPages.add(page);
 		int index = addPage(page);
 		setPageText(index, pageText);
+		return index;
+	}
+	
+	private int createChartPage(Chart chart) {
+		ChartPage page = new ChartPage(getContainer(), SWT.NONE);
+		configureChartPage(page, chart);
+		setFormTitle(page, "Chart: " + chart.getName());
+		int index = addPage(page);
+		setPageText(index, "Chart: " + chart.getName());
+		return index;
 	}
 	
 	private void setFormTitle(ScrolledForm form, String title) {
 		form.setFont(new Font(null, "Arial", 12, SWT.BOLD));
 		form.setForeground(new Color(null, 0, 128, 255));
 		form.setText(title);
+	}
+	
+	private void configureChartSheetPage(ChartSheetPage page, ChartSheet chartsheet) {
+		Collection<Chart> charts = findCharts(chartsheet);
+		Composite parent = page.getChartSheetComposite();
+		
+		for (Chart chart : charts) {
+			Dataset dataset = findChartDataset(chart);
+			IDList idlist = DatasetManager.getIDListFromDataset(manager, dataset, chart);
+			if ("scalar".equals(dataset.getType())) {
+				page.addChart(ChartManager.createScalarChart(parent, idlist, manager));
+			}
+			else if ("vector".equals(dataset.getType()))
+				page.addChart(ChartManager.createVectorChart(parent, idlist, manager));
+		}
+	}
+	
+	private void configureChartPage(ChartPage page, Chart chart) {
+		Composite parent = page.getChartComposite();
+		Dataset dataset = findChartDataset(chart);
+		IDList idlist = DatasetManager.getIDListFromDataset(manager, dataset, chart);
+		if ("scalar".equals(dataset.getType())) {
+			page.setChart(ChartManager.createScalarChart(parent, idlist, manager));
+		}
+		else if ("vector".equals(dataset.getType()))
+			page.setChart(ChartManager.createVectorChart(parent, idlist, manager));
+		
+	}
+	
+	private Collection<Chart> findCharts(ChartSheet chartsheet) {
+		List<Chart> charts = new ArrayList<Chart>();
+		Datasets datasets = getAnalysisModelObject().getDatasets();
+		findCharts(chartsheet, datasets, charts);
+		return charts;
+	}
+	
+	private void findCharts(ChartSheet chartsheet, Object container, List<Chart> result) {
+		if (container instanceof Datasets) {
+			for (Object dataset : ((Datasets)container).getDatasets())
+				findCharts(chartsheet, dataset, result);
+		}
+		else if (container instanceof Dataset) {
+			for (Object item : ((Dataset)container).getItems()) {
+				findCharts(chartsheet, item, result);
+			}
+		}
+		else if (container instanceof Group) {
+			for (Object item : ((Group)container).getItems())
+				findCharts(chartsheet, item, result);
+		}
+		else if (container instanceof Chart) {
+			Chart chart = (Chart)container;
+			if (chart.getContainingSheet() == null ||
+				chart.getContainingSheet().equals(chartsheet)) {
+				result.add(chart);
+			}
+		}
+	}
+	
+	private Dataset findChartDataset(Chart chart) {
+		EObject parent = chart.eContainer();
+		while (parent != null && !(parent instanceof Dataset))
+			parent = parent.eContainer();
+		return (Dataset)parent;
 	}
 
 	@Override
