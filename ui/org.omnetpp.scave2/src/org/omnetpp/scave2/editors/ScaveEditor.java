@@ -297,7 +297,8 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INotifyChange
     }
 	
 	public void openDataset(Dataset dataset) {
-		createDatasetPage(dataset);
+		int pageIndex = createDatasetPage(dataset);
+		setActivePage(pageIndex);
 	}
 
 	public void openChartSheet(ChartSheet chartSheet) {
@@ -344,7 +345,7 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INotifyChange
 		setPageText(index, "Browse data");
 	}
 	
-	private void createDatasetPage(Dataset dataset) {
+	private int createDatasetPage(Dataset dataset) {
 		DatasetPage page = new DatasetPage(getContainer(), SWT.NONE, this);
 
 		configureTreeViewer(page.getDatasetTreeViewer());
@@ -369,13 +370,14 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INotifyChange
 			}
 		});
 		setFormTitle(page, "Dataset: " + dataset.getName());
-		addDatasetPage("Dataset: " + dataset.getName(), page);
+		return addDatasetPage("Dataset: " + dataset.getName(), page);
 	}
 	
-	private void addDatasetPage(String pageText, DatasetPage page) {
+	private int addDatasetPage(String pageText, DatasetPage page) {
 		datasetPages.add(page);
 		int index = addClosablePage(page);
 		setPageText(index, pageText);
+		return index;
 	}
 	
 	private int createChartSheetPage(ChartSheet chartsheet) {
@@ -388,7 +390,7 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INotifyChange
 	
 	private int addChartSheetPage(String pageText, ChartSheetPage page) {
 		chartSheetPages.add(page);
-		int index = addPage(page);
+		int index = addClosablePage(page);
 		setPageText(index, pageText);
 		return index;
 	}
@@ -397,7 +399,7 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INotifyChange
 		ChartPage page = new ChartPage(getContainer(), SWT.NONE);
 		configureChartPage(page, chart);
 		setFormTitle(page, "Chart: " + chart.getName());
-		int index = addPage(page);
+		int index = addClosablePage(page);
 		setPageText(index, "Chart: " + chart.getName());
 		return index;
 	}
@@ -413,7 +415,7 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INotifyChange
 		Composite parent = page.getChartSheetComposite();
 		
 		for (Chart chart : charts) {
-			Dataset dataset = findChartDataset(chart);
+			Dataset dataset = findEnclosingDataset(chart);
 			IDList idlist = DatasetManager.getIDListFromDataset(manager, dataset, chart);
 			if ("scalar".equals(dataset.getType())) {
 				page.addChart(ChartManager.createScalarChart(parent, idlist, manager));
@@ -425,7 +427,7 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INotifyChange
 	
 	private void configureChartPage(ChartPage page, Chart chart) {
 		Composite parent = page.getChartComposite();
-		Dataset dataset = findChartDataset(chart);
+		Dataset dataset = findEnclosingDataset(chart);
 		IDList idlist = DatasetManager.getIDListFromDataset(manager, dataset, chart);
 		if ("scalar".equals(dataset.getType())) {
 			page.setChart(ChartManager.createScalarChart(parent, idlist, manager));
@@ -465,7 +467,7 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INotifyChange
 		}
 	}
 	
-	private Dataset findChartDataset(Chart chart) {
+	private Dataset findEnclosingDataset(Chart chart) {
 		EObject parent = chart.eContainer();
 		while (parent != null && !(parent instanceof Dataset))
 			parent = parent.eContainer();

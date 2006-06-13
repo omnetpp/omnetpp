@@ -24,6 +24,7 @@ public class ChartPage extends ScrolledForm {
 	
 	private void initialize() {
 		setExpandHorizontal(true);
+		setExpandVertical(true);
 		setBackground(ColorFactory.asColor("white"));
 		FillLayout layout = new FillLayout();
 		getBody().setLayout(layout);

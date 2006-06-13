@@ -289,6 +289,7 @@ public class ChartSWTWrapper extends Canvas {
 	public static Image createChartImage(Control parent, JFreeChart chart,
 			int width, int height, ChartRenderingInfo renderingInfo)
 	{
+		System.out.println("Requested size: "+"w="+width+",h="+height);
 		// Color adjustment
 		Color swtBackground = parent.getBackground();
 		java.awt.Color awtBackground = new java.awt.Color(swtBackground.getRed(),
@@ -299,8 +300,8 @@ public class ChartSWTWrapper extends Canvas {
 		// Draw the chart in an AWT buffered image
 		long time = System.currentTimeMillis();
 		BufferedImage bufferedImage = chart.createBufferedImage(width, height, renderingInfo);
+		System.out.println("Image size: "+"w="+bufferedImage.getWidth()+",h="+bufferedImage.getHeight());
 		System.out.println("Chart rendering took " + (System.currentTimeMillis() - time) + " ms.");
-		
 		// Get the data buffer of the image
 		DataBuffer buffer = bufferedImage.getRaster().getDataBuffer();
 		DataBufferInt intBuffer = (DataBufferInt) buffer;
@@ -316,14 +317,12 @@ public class ChartSWTWrapper extends Canvas {
 		// Create an SWT image
 		return new Image(parent.getDisplay(), imageData);
 	}
-	
-	public Point computeSize (int wHint, int hHint, boolean changed) {
-		if (image != null) {
-			Rectangle rect = image.getBounds();
-			return new Point(rect.width, rect.height);
-		}
-		else
-			return super.computeSize(wHint, hHint, changed);
+
+	@Override
+	public void setBounds(int x, int y, int w, int h) {
+		System.out.println("Bounds: "+"x="+x+",y="+y+",w="+w+",h="+h);
+		super.setBounds(x, y, w, h);
 	}
+	
 	
 }
