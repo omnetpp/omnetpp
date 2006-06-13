@@ -115,16 +115,18 @@ public class LiveTable extends Composite {
 		}
 	}
 
-	public void moveChild(Control item, Control before) {
+	public void moveChild(Control item, Control beforeItem) {
 		Assert.isTrue(item.getParent().getParent()==this);
-		Assert.isTrue(before.getParent().getParent()==this);
+		Assert.isTrue(beforeItem.getParent().getParent()==this);
+		if (item==beforeItem)
+			return;
 
 		Control[] frames = getChildren();
 		ArrayList<Control> children = new ArrayList<Control>();;
 		for (int i=0; i<frames.length; i++)
 			children.add(((Canvas)frames[i]).getChildren()[0]);
 		children.remove(item);
-		int index = children.indexOf(before);
+		int index = children.indexOf(beforeItem);
 		children.add(index, item);
 
 		for (int i=0; i<frames.length; i++)
