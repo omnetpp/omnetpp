@@ -17,6 +17,12 @@ import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 
+/**
+ * Holds a grid of equal-sized controls that can be selected and 
+ * reordered with the mouse.
+ * 
+ * @author andras
+ */
 public class LiveTable extends Composite {
 
 	private int itemWidth = 200;
@@ -74,7 +80,7 @@ public class LiveTable extends Composite {
 		control.addMouseListener(new MouseListener() {
 			public void mouseDoubleClick(MouseEvent e) {}
 			public void mouseDown(MouseEvent e) {
-				select((Control)e.widget);
+				setSelection((Control)e.widget);
 			}
 			public void mouseUp(MouseEvent e) {
 				if ((e.stateMask & SWT.BUTTON_MASK) != 0) {
@@ -83,7 +89,7 @@ public class LiveTable extends Composite {
 					if (target!=null) {
 						moveChild(sender, target);
 						setInsertMark(null);
-						select(target);
+						setSelection(target);
 					}
 				}
 			}
@@ -100,7 +106,7 @@ public class LiveTable extends Composite {
 		}
 	}
 	
-	protected void setInsertMark(Control item) {
+	public void setInsertMark(Control item) {
 		redrawSelectionMarks();
 		if (item!=null) {
 			Assert.isTrue(item.getParent().getParent()==this);
@@ -112,16 +118,53 @@ public class LiveTable extends Composite {
 	public void moveChild(Control item, Control before) {
 		Assert.isTrue(item.getParent().getParent()==this);
 		Assert.isTrue(before.getParent().getParent()==this);
-		Control i = item.getParent();
-		Control b = before.getParent();
-		i.moveAbove(b);
+
+		Control[] frames = getChildren();
+		ArrayList<Control> children = new ArrayList<Control>();;
+		for (int i=0; i<frames.length; i++)
+			children.add(((Canvas)frames[i]).getChildren()[0]);
+		children.remove(item);
+		int index = children.indexOf(before);
+		children.add(index, item);
+
+		for (int i=0; i<frames.length; i++)
+			children.get(i).setParent((Canvas)frames[i]);
 	}
 	
-	public void select(Control control) {
+	private void addToSelection(Control control) {
 		Assert.isTrue(control.getParent().getParent()==this);
-		selection.clear();
-		selection.add(control);
+		if (control!=null && !selection.contains(control))
+			selection.add(control);
+	}
+
+	public void select(Control control) {
+		addToSelection(control);
+	}
+
+	public void select(Control[] controls) {
+		for (Control control : controls)
+			addToSelection(control);
 		redrawSelectionMarks();
+	}
+
+	public void setSelection(Control control) {
+		selection.clear();
+		select(control);
+	}
+
+	public void setSelection(Control[] controls) {
+		selection.clear();
+		select(controls);
+	}
+	
+	public void selectAll() {
+		selection.clear();
+		for (Control frame : getChildren())
+			selection.add(((Canvas)frame).getChildren()[0]);
+	}
+
+	public Control[] getSelection() {
+		return selection.toArray(new Control[selection.size()]);
 	}
 	
 	private void redrawSelectionMarks() {
