@@ -2,6 +2,7 @@ package org.omnetpp.experimental.seqchart.widgets;
 
 
 import java.math.BigDecimal;
+import java.math.MathContext;
 import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -73,6 +74,7 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 	private static final Color MESSAGE_LABEL_COLOR = null; // defaults to line color
 	private static final Color DELIVERY_MESSAGE_COLOR = new Color(null,0,0,255);
 	private static final Color NONDELIVERY_MESSAGE_COLOR = new Color(null,0,150,0);
+	private static final Color TICKS_LINE_COLOR = new Color(null, 240, 240, 240);
 	private static final Cursor DRAGCURSOR = new Cursor(null, SWT.CURSOR_SIZEALL);
 	private static final int[] DOTTED_LINE_PATTERN = new int[] {2,2}; // 2px black, 2px gap
 	
@@ -95,7 +97,7 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 	protected JavaFriendlyEventLogFacade logFacade; // helpful facade on eventlog
 	
 	protected double pixelsPerTimelineUnit = 1;
-	protected int tickScale = 1; // -1 means step=0.1
+	protected int tickScale = 1; // -1 means step=0.1, in power of timeline units
 	private boolean antiAlias = true;  // antialiasing -- this gets turned on/off automatically
 	private boolean showArrowHeads = true; // whether arrow heads are drawn or not
 	private int axisOffset = 50;  // y coord of first axis
@@ -115,6 +117,8 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 	private Integer[] axisModulePositions; // y order of the axis modules (in the same order as axisModules); this is a permutation of the 0..axisModule.size()-1 numbers
 	private IntSet moduleIds; // calculated from axisModules: module Ids of all modules which are submodule of an axisModule (i.e. whose events appear on the chart)
 
+	private ArrayList<BigDecimal> ticks = new ArrayList<BigDecimal>(); // a list of tick simulation times to be drawn on axis
+	
 	private ArrayList<SelectionListener> selectionListenerList = new ArrayList<SelectionListener>(); // SWT selection listeners
 
 	private List<EventEntry> selectionEvents = new ArrayList<EventEntry>(); // the selection
@@ -326,12 +330,11 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 	 * Tries to show the current simulation time after changing the timeline coordinate system.
 	 */
 	public void setTimelineMode(TimelineMode timelineMode) {
-		double time = currentSimulationTime();
+		saveViewportSimulationTimeRange();
 		this.timelineMode = timelineMode;
 		recalculateTimelineCoordinates();
-		setPixelsPerTimelineUnit(suggestPixelsPerTimelineUnit());
-		recalculateVirtualSize();
-		gotoSimulationTime(time);
+		//setPixelsPerTimelineUnit(suggestPixelsPerTimelineUnit());
+		restoreViewportSimulationTimeRange();
 	}
 
 	/**
@@ -356,6 +359,30 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 	 */
 	public TimelineSortMode getTimelineSortMode() {
 		return timelineSortMode;
+	}
+	
+	// TODO:
+	double viewportLeftSimulationTime;
+	double viewportRightSimulationTime;
+	
+	/**
+	 * TODO:
+	 */
+	public void saveViewportSimulationTimeRange()
+	{
+		viewportLeftSimulationTime = pixelToSimulationTime(0);
+		viewportRightSimulationTime = pixelToSimulationTime(getWidth());
+	}
+	
+	/**
+	 * TODO:
+	 */
+	public void restoreViewportSimulationTimeRange()
+	{
+		double timelineUnitDelta = (simulationTimeToTimelineCoordinate(viewportRightSimulationTime)) - (simulationTimeToTimelineCoordinate(viewportLeftSimulationTime));
+		setPixelsPerTimelineUnit(getWidth() / timelineUnitDelta);
+		scrollHorizontalTo(getViewportLeft() + simulationTimeToPixel(viewportLeftSimulationTime));
+		recalculateVirtualSize();
 	}
 
 	/**
@@ -423,15 +450,6 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 		setPixelsPerTimelineUnit(getPixelsPerTimelineUnit() * zoomFactor);	
 		recalculateVirtualSize();
 		gotoSimulationTime(time);
-	}
-
-	/**
-	 * Zoom to the given rectangle, given by pixel coordinates relative to the
-	 * top-left corner of the canvas.
-	 */
-	public void zoomToRectangle(Rectangle r) {
-		System.out.println("Rubberband selection: "+r);
-		//TODO
 	}
 	
 	/**
@@ -701,14 +719,12 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 			});
 		}
 		
-        long startMillis = System.currentTimeMillis();
         for (int i=0; i<logFacade.getNumEvents(); i++) {
 			long x = Math.round(logFacade.getEvent_i_timelineCoordinate(i) * pixelsPerTimelineUnit);
 			long y = moduleIdToAxisYMap.get(logFacade.getEvent_i_module_moduleId(i));
 			logFacade.setEvent_cachedX(i, x);
 			logFacade.setEvent_cachedY(i, y);
         }
-        System.out.println("recalculateEventCoordinates: "+(System.currentTimeMillis()-startMillis)+"ms");
 		
 	}
 	
@@ -749,7 +765,7 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 		// adjust pixelsPerTimelineUnit if it's way out of the range that makes sense
 		int numEvents = eventLog.getNumEvents();
 		if (numEvents>=2) {
-			double tStart = eventLog.getEvent(0).getTimelineCoordinate();
+			double tStart = eventLog.getFirstEvent().getTimelineCoordinate();
 			double tEnd = eventLog.getEvent(numEvents-1).getTimelineCoordinate();
 			double eventPerSec = numEvents / (tEnd - tStart);
 
@@ -769,7 +785,7 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 
 	private void recalculateVirtualSize() {
 		EventEntry lastEvent = eventLog.getLastEvent();
-		long width = lastEvent==null ? 0 : (long)(lastEvent.getTimelineCoordinate() * getPixelsPerTimelineUnit()) + 3;
+		long width = lastEvent==null ? 0 : (long)(lastEvent.getTimelineCoordinate() * getPixelsPerTimelineUnit()) + 3; // event mark should fit in
 		width = Math.max(width, 600); // at least half a screen
 		long height = axisModules.size() * axisSpacing + axisOffset * 2;
 		setVirtualSize(width, height);
@@ -788,13 +804,14 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 	
 	@Override
 	protected void paintCachableLayer(Graphics graphics) {
-		doPaintFigure(graphics);
+		paintFigure(graphics);
 	}
 
 	@Override
 	protected void paintNoncachableLayer(Graphics graphics) {
 		paintAxisLabels(graphics);
         paintEventSelectionMarks(graphics);
+        paintTicks(graphics);
 	}
 
 	/**
@@ -807,12 +824,12 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 		
 		x1 -= CLIPRECT_BORDER;
 		x2 += CLIPRECT_BORDER; // so that if an arrowhead or event "ball" extends into the cliprect, it gets redrawn
-		double tleft = pixelToSimulationTime(x1);
-		double tright = pixelToSimulationTime(x2);
-		EventEntry startEvent = eventLog.getLastEventBefore(tleft);
+		double tleft = pixelToTimelineCoordinate(x1);
+		double tright = pixelToTimelineCoordinate(x2);
+		EventEntry startEvent = eventLog.getLastEventBeforeByTimelineCoordinate(tleft);
 		if (startEvent==null)
-			startEvent = eventLog.getEvent(0);
-		EventEntry endEvent = eventLog.getFirstEventAfter(tright);
+			startEvent = eventLog.getFirstEvent();
+		EventEntry endEvent = eventLog.getFirstEventAfterByTimelineCoordinate(tright);
 		if (endEvent==null)
 			endEvent = eventLog.getLastEvent();
 		int startEventIndex = (startEvent!=null) ? eventLog.findEvent(startEvent) : 0;
@@ -820,14 +837,15 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 		return new int[] {startEventIndex, endEventIndex};
 	}	
 
-	protected void doPaintFigure(Graphics graphics) {
+	protected void paintFigure(Graphics graphics) {
 		if (eventLog!=null && eventLog.getNumEvents()>0) {
 			long startMillis = System.currentTimeMillis();
 
-			//graphics.setAntialias(antiAlias ? SWT.ON : SWT.OFF);
-			graphics.setAntialias(SWT.OFF);
+			graphics.setAntialias(antiAlias ? SWT.ON : SWT.OFF);
 			graphics.setTextAntialias(SWT.ON);
 
+			calculateTicks(graphics);
+			
 			for (int i=0; i<axisModules.size(); i++) {
 				int y = (int)(getAxisY(i) - getViewportTop());
 				drawAxis(graphics, y);
@@ -837,6 +855,7 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 			int[] eventIndexRange = getFirstLastEventIndicesInRange(clip.x, clip.right());
 			int startEventIndex = eventIndexRange[0];
 			int endEventIndex = eventIndexRange[1];
+	        System.out.println("redrawing events (index) from: " + startEventIndex + " to: " + endEventIndex);
 			int startEventNumber = logFacade.getEvent_i_eventNumber(startEventIndex);
 			int endEventNumber = logFacade.getEvent_i_eventNumber(endEventIndex);
 			
@@ -872,17 +891,28 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 				}
 	        }           	
 	
+	        // turn on/off anti-alias 
 	        long repaintMillis = System.currentTimeMillis()-startMillis;
 	        System.out.println("redraw(): "+repaintMillis+"ms");
-
-	        // turn on/off anti-alias 
 	        if (antiAlias && repaintMillis > ANTIALIAS_TURN_OFF_AT_MSEC)
 	        	antiAlias = false;
 	        else if (!antiAlias && repaintMillis < ANTIALIAS_TURN_ON_AT_MSEC)
 	        	antiAlias = true;
+	        //XXX also: turn it off also during painting if it's going to take too long 
 		}
 	}
 
+	private void paintTicks(Graphics graphics) {
+		for (BigDecimal tick : ticks)
+		{
+			int x = simulationTimeToPixel(tick.doubleValue());
+			graphics.setForegroundColor(TICKS_LINE_COLOR);
+			graphics.drawLine(x, 0, x, getHeight());
+			graphics.drawText(tick.toPlainString() + "s", x, 3);
+			graphics.drawText(tick.toPlainString() + "s", x, getHeight() - 33);
+		}
+	}
+	
 	private void paintEventSelectionMarks(Graphics graphics) {
 		int[] eventIndexRange = getFirstLastEventIndicesInRange(0, getClientArea().width);
 		int startEventIndex = eventIndexRange[0];
@@ -904,155 +934,6 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 			}
 		}
 	}
-
-//	protected void doPaintFigure_OLD(Graphics graphics) {
-//		if (eventLog!=null) {
-//			long startMillis = System.currentTimeMillis();
-//			
-//			final HashMap<Integer, Integer> moduleIdToAxisYMap = new HashMap<Integer, Integer>();
-//
-//			// different y for each selected module
-//			for (int i=0; i<axisModules.size(); i++) {
-//				ModuleTreeItem treeItem = axisModules.get(i);
-//				final int y = getBounds().y + axisOffset + axisModulePositions[i] * axisSpacing;
-//				// propagate y to all submodules recursively
-//				treeItem.visitLeaves(new ModuleTreeItem.IModuleTreeItemVisitor() {
-//					public void visit(ModuleTreeItem treeItem) {
-//						moduleIdToAxisYMap.put(treeItem.getModuleId(), y);
-//					}
-//				});
-//				drawAxis(graphics, y, treeItem.getModuleFullPath());
-//			}
-//
-//			graphics.setAntialias(antiAlias ? SWT.ON : SWT.OFF);
-//			graphics.setTextAntialias(SWT.ON);
-//			
-//			// paint events
-//			Rectangle rect = graphics.getClip(new Rectangle());
-//			double tleft = pixelToSimulationTime(rect.x);
-//			double tright = pixelToSimulationTime(rect.right());
-//			EventEntry startEvent = eventLog.getLastEventBefore(tleft);
-//			EventEntry endEvent = eventLog.getFirstEventAfter(tright);
-//			int startEventIndex = (startEvent!=null) ? eventLog.findEvent(startEvent) : 0;
-//			int endEventIndex = (endEvent!=null) ? eventLog.findEvent(endEvent) : eventLog.getNumEvents(); 
-//
-//			int startEventNumber = (startEvent!=null) ? startEvent.getEventNumber() : 0;
-//			int endEventNumber = (endEvent!=null) ? endEvent.getEventNumber() : Integer.MAX_VALUE;
-//            
-//            // calculate event coordinates (we'll paint them after the arrows)
-//            for (int i=startEventIndex; i<endEventIndex; i++) {
-//   				int x = timelineCoordinateToPixel(logFacade.getEvent_i_timelineCoordinate(i));
-//   				int y = moduleIdToAxisYMap.get(logFacade.getEvent_i_module_moduleId(i));
-//   				logFacade.setEvent_cachedX(i, x);
-//   				logFacade.setEvent_cachedY(i, y);
-//            }
-//
-//            // paint arrows
-//            for (int i=startEventIndex; i<endEventIndex; i++) {
-//   				int eventX = logFacade.getEvent_i_cachedX(i);
-//   				int eventY = logFacade.getEvent_i_cachedY(i);
-//
-//   				// paint forward arrows for this event
-//            	int numConsequences = logFacade.getEvent_i_numConsequences(i);
-//            	for (int k=0; k<numConsequences; k++) {
-//            		boolean isDelivery = logFacade.getEvent_i_consequences_k_isDelivery(i,k);
-//            		if ((isDelivery || showNonDeliveryMessages) &&
-//            			logFacade.getEvent_i_consequences_k_hasTarget(i, k) &&
-//            			logFacade.getEvent_i_consequences_k_target_isInFilteredSubset(i, k, eventLog))
-//            		{
-//            			// we have to calculate target event's coords if it's beyond endEventNumber
-//            			graphics.setForegroundColor(isDelivery ? DELIVERY_MESSAGE_COLOR : MESSAGE_COLOR); 
-//                		if (logFacade.getEvent_i_consequences_k_target_eventNumber(i, k) < endEventNumber) {
-//                			// both source and target event in the visible chart area, and already painted
-//                			drawMessageArrow(graphics,
-//                					logFacade.getEvent_i_consequences_k_messageName(i, k),
-//                					eventX,
-//                					eventY,
-//                					logFacade.getEvent_i_consequences_k_target_cachedX(i, k),
-//                					logFacade.getEvent_i_consequences_k_target_cachedY(i, k));
-//                		}
-//                		else {
-//                			// target is outside the repaint region (on the far right)
-//               				double targetXDouble = timelineCoordinateToPixelDouble(logFacade.getEvent_i_consequences_k_target_timelineCoordinatea(i, k));
-//               				int targetX = targetXDouble > XMAX ? XMAX : (int)targetXDouble;
-//               				int targetY = moduleIdToAxisYMap.get(logFacade.getEvent_i_consequences_k_target_cause_module_moduleId(i, k));
-//               				logFacade.setEvent_i_consequences_k_target_cachedX(i, k, targetX);
-//               				logFacade.setEvent_i_consequences_k_target_cachedY(i, k, targetY);
-//
-//               				drawMessageArrow(graphics,
-//                					logFacade.getEvent_i_consequences_k_messageName(i, k),
-//               						eventX, eventY, targetX, targetY);
-//                		}
-//            		}
-//            	}
-//
-//            	// paint backward arrows that we didn't paint as forward arrows
-//            	int numCauses = logFacade.getEvent_i_numCauses(i);
-//            	for (int k=0; k<numCauses; k++) {
-//            		boolean isDelivery = logFacade.getEvent_i_causes_k_isDelivery(i,k);
-//        			// source event is outside the repaint region (on the far left)
-//            		if ((isDelivery || showNonDeliveryMessages) &&
-//            			logFacade.getEvent_i_causes_k_hasSource(i, k) &&
-//            			logFacade.getEvent_i_causes_k_source_eventNumber(i, k) < startEventNumber &&
-//                		logFacade.getEvent_i_causes_k_source_isInFilteredSubset(i, k, eventLog))
-//            		{
-//            			double srcXDouble = timelineCoordinateToPixelDouble(logFacade.getEvent_i_causes_k_source_timelineCoordinate(i, k));
-//           				int srcY = moduleIdToAxisYMap.get(logFacade.getEvent_i_causes_k_source_cause_module_moduleId(i, k));
-//           				int srcX = srcXDouble < -XMAX ? -XMAX : (int)srcXDouble;
-//           				logFacade.setEvent_i_causes_k_source_cachedX(i, k, srcX);
-//           				logFacade.setEvent_i_causes_k_source_cachedY(i, k, srcY);
-//           				graphics.setForegroundColor(isDelivery ? DELIVERY_MESSAGE_COLOR : MESSAGE_COLOR); 
-//           				drawMessageArrow(graphics,
-//            					logFacade.getEvent_i_causes_k_messageName(i, k),
-//           						srcX, srcY, eventX, eventY);
-//            		}
-//            	}
-//            }
-//            
-//            //FIXME use this to paint arrows that start before tleft and end after tright:
-//            // IntVector msgs = eventLog.getMessagesSpanningOver(tleft, tright, moduleIds);
-//
-//            System.out.println("draw msgs: "+(System.currentTimeMillis()-startMillis)+"ms");
-//           
-//			// paint events
-//            graphics.setForegroundColor(EVENT_FG_COLOR); 
-//            graphics.setBackgroundColor(EVENT_BG_COLOR);
-//            for (int i=startEventIndex; i<endEventIndex; i++) {
-//   				int x = logFacade.getEvent_i_cachedX(i);
-//   				int y = logFacade.getEvent_i_cachedY(i);
-//
-//   	            graphics.setBackgroundColor(EVENT_FG_COLOR);
-//   				graphics.fillOval(x-2, y-3, 5, 7);
-//
-//   				if (showEventNumbers) {
-//	   	            graphics.setBackgroundColor(EVENT_BG_COLOR);
-//	   	            graphics.fillText("#"+i, x-10, y - labelDistance);
-//   				}
-//            }           	
-//
-//            // paint event selection marks
-//            if (selectionEvents != null) {
-//            	for (EventEntry sel : selectionEvents) {
-//                	if (startEventNumber<=sel.getEventNumber() &&
-//                		sel.getEventNumber()<endEventNumber)
-//                	{
-//	            		int x = sel.getCachedX();
-//	            		int y = sel.getCachedY();
-//	            		graphics.drawOval(x - eventRadius, y - eventRadius, eventRadius * 2 + 1, eventRadius * 2 + 1);
-//                	}
-//            	}
-//            }
-//            
-//            // turn on/off anti-alias 
-//            long repaintMillis = System.currentTimeMillis()-startMillis;
-//            System.out.println("redraw(): "+repaintMillis+"ms");
-//            if (antiAlias && repaintMillis > ANTIALIAS_TURN_OFF_AT_MSEC)
-//            	antiAlias = false;
-//            else if (!antiAlias && repaintMillis < ANTIALIAS_TURN_ON_AT_MSEC)
-//            	antiAlias = true;
-//            //XXX also: turn it off also during painting if it's going to take too long 
-//		}
-//	}
 
 	private void drawMessageArrow(Graphics graphics, int pos, VLineBuffer vlineBuffer) {
         int x1 = (int)(logFacade.getMessage_source_cachedX(pos) - getViewportLeft());
@@ -1189,32 +1070,69 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 	 * settings. Does NOT include axis labels which go on the non-cachable layer.
 	 */
 	private void drawAxis(Graphics graphics, int y) {
-		Rectangle rect = graphics.getClip(new Rectangle());
+		Rectangle rect = graphics.getClip(Rectangle.SINGLETON);
 
 		// draw axis
 		graphics.setForegroundColor(AXIS_COLOR);
 		graphics.drawLine(rect.x, y, rect.right(), y);
 
+		int h = axisSpacing<AXISLABEL_DISTANCE ? 1 : 2; // make tick lines shorted when axes are dense
+		for (BigDecimal tick : ticks)
+		{
+			int x = simulationTimeToPixel(tick.doubleValue());
+			graphics.drawLine(x, y-h, x, y+h);
+			graphics.drawText(tick.toPlainString() + "s", x, y+3);
+		}
+	}
+
+	/**
+	 * Calculates and stores ticks as simulation times based on tickScale. Tries to round tick values
+	 * to have as short numbers as possible within within a range.
+	 */
+	private void calculateTicks(Graphics graphics) {
+		ticks.clear();
+		Rectangle rect = graphics.getClip(Rectangle.SINGLETON);
+
 		double tleft = pixelToSimulationTime(rect.x);
 		double tright = pixelToSimulationTime(rect.right());
 		//System.out.println("simtime interval: "+tleft+" - "+tright);
 
-		// draw ticks and labels
+		// calculate ticks and labels
 		BigDecimal tickStart = new BigDecimal(tleft).setScale(-tickScale, RoundingMode.FLOOR);
 		BigDecimal tickEnd = new BigDecimal(tright).setScale(-tickScale, RoundingMode.CEILING);
 		BigDecimal tickIntvl = new BigDecimal(1).scaleByPowerOfTen(tickScale);
 		//System.out.println(tickStart+" - "+tickEnd+ " step "+tickIntvl);
 
-		int previousTickLabelX = -TICK_LABEL_WIDTH;
-		int h = axisSpacing<AXISLABEL_DISTANCE ? 1 : 2; // make tick lines shorted when axes are dense
-		for (BigDecimal t=tickStart; t.compareTo(tickEnd)<0; t = t.add(tickIntvl)) {
+		int halfTickRange = (int)Math.round(tickIntvl.doubleValue() * pixelsPerTimelineUnit / 2);
+		for (BigDecimal t = tickStart; t.compareTo(tickEnd) < 0;) {
 			int x = simulationTimeToPixel(t.doubleValue());
-			if (x - previousTickLabelX >= TICK_LABEL_WIDTH) {
-				graphics.drawLine(x, y-h, x, y+h);
-				if (AXISLABEL_DISTANCE < axisSpacing)
-					graphics.drawText(t.toPlainString() + "s", x, y+3);
-				previousTickLabelX = x;
+			BigDecimal tMin = new BigDecimal(pixelToSimulationTime(x - halfTickRange));
+			BigDecimal tMax = new BigDecimal(pixelToSimulationTime(x + halfTickRange));
+			int tMinPrecision = tMin.stripTrailingZeros().precision();
+			int tMaxPrecision = tMax.stripTrailingZeros().precision();
+			int tDeltaPrecision = tMax.subtract(tMin).stripTrailingZeros().precision();
+			MathContext mc = new MathContext(1 + Math.max(tMinPrecision - tDeltaPrecision, tMaxPrecision - tDeltaPrecision));
+			BigDecimal tRounded = t;
+			BigDecimal tBestRounded = tRounded;
+
+			do
+			{
+				tRounded = t.round(mc);
+
+				if (tRounded.compareTo(tMin) > 0 && tRounded.compareTo(tMax) < 0)
+					tBestRounded = tRounded;
+				else
+					break;
+				
+		
+				if (mc.getPrecision() > 0)
+					mc = new MathContext(mc.getPrecision() - 1);
+				
 			}
+			while (mc.getPrecision() > 0);
+
+			ticks.add(tBestRounded);
+			t = new BigDecimal(timelineCoordinateToSimulationTime(simulationTimeToTimelineCoordinate(t.doubleValue()) + tickIntvl.doubleValue()));
 		}
 	}
 
@@ -1306,6 +1224,11 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
     			// linear approximation between two enclosing events
         		double simulationTimeDelta = logFacade.getEvent_i_simulationTime(pos + 1) - eventSimulationTime;
         		double timelineCoordinateDelta = logFacade.getEvent_i_timelineCoordinate(pos + 1) - eventTimelineCoordinate;
+           		
+        		if (simulationTimeDelta == 0) //XXX this can happen in STEP mode when pos==-1, and 1st event is at timeline zero. perhaps getLastEventPositionBeforeByTimelineCoordinate() should check "<=" not "<" ?
+        			return eventTimelineCoordinate;
+        		Assert.isTrue(simulationTimeDelta > 0);
+
         		return eventTimelineCoordinate + timelineCoordinateDelta * (simulationTime - eventSimulationTime) / simulationTimeDelta;
         	default:
         		throw new RuntimeException("Unknown timeline mode");
@@ -1354,17 +1277,24 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 	}
 	
 	/**
-	 * Translates from pixel x coordinate to seconds, using on pixelsPerTimelineUnit.
+	 * Translates from pixel x coordinate to seconds.
 	 */
 	private double pixelToSimulationTime(int x) {
-		return timelineCoordinateToSimulationTime((x+getViewportLeft()) / pixelsPerTimelineUnit);
+		return timelineCoordinateToSimulationTime(pixelToTimelineCoordinate(x));
 	}
 	
 	/**
-	 * Translates from seconds to pixel x coordinate, using on pixelsPerTimelineUnit.
+	 * Translates from seconds to pixel x coordinate.
 	 */
 	private int simulationTimeToPixel(double t) {
 		return (int)((long)Math.round(simulationTimeToTimelineCoordinate(t) * pixelsPerTimelineUnit) - getViewportLeft());
+	}
+	
+	/**
+	 * Translates from pixel x coordinate to timeline coordinate, using on pixelsPerTimelineUnit.
+	 */
+	private double pixelToTimelineCoordinate(int x) {
+		return (x+getViewportLeft()) / pixelsPerTimelineUnit;
 	}
 
 	/**
@@ -1411,18 +1341,16 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 			}
 
 			private void myMouseDragged(MouseEvent e) {
-				if ((e.stateMask & SWT.MODIFIER_MASK) == 0) {
-					// display drag cursor
-					setCursor(DRAGCURSOR);
-
-					// scroll by the amount moved since last drag call
-					int dx = e.x - dragStartX;
-					int dy = e.y - dragStartY;
-					scrollHorizontalTo(getViewportLeft() - dx);
-					scrollVerticalTo(getViewportTop() - dy);
-					dragStartX = e.x;
-					dragStartY = e.y;
-				}
+				// display drag cursor
+				setCursor(DRAGCURSOR);
+				
+				// scroll by the amount moved since last drag call
+				int dx = e.x - dragStartX;
+				int dy = e.y - dragStartY;
+				scrollHorizontalTo(getViewportLeft() - dx);
+				scrollVerticalTo(getViewportTop() - dy);
+				dragStartX = e.x;
+				dragStartY = e.y;
 			}
 		});
 		// selection handling
@@ -1621,7 +1549,7 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
             	}
             }
             long millis = System.currentTimeMillis()-startMillis;
-            System.out.println("collectStuffUnderMouse(): "+millis+"ms - "+(events==null ? "n/a" : events.size())+" events, "+(msgs==null ? "n/a" : msgs.size())+" msgs");
+            //System.out.println("collectStuffUnderMouse(): "+millis+"ms - "+(events==null ? "n/a" : events.size())+" events, "+(msgs==null ? "n/a" : msgs.size())+" msgs");
 		}
 	}
 
