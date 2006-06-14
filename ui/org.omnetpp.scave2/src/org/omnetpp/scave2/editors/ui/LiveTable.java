@@ -1,21 +1,25 @@
 package org.omnetpp.scave2.editors.ui;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.events.MouseMoveListener;
+import org.eclipse.swt.events.PaintEvent;
+import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
-import org.eclipse.swt.layout.FillLayout;
-import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+
+import sun.security.krb5.internal.crypto.t;
 
 /**
  * Holds a grid of equal-sized controls that can be selected and 
@@ -24,22 +28,26 @@ import org.eclipse.swt.widgets.Control;
  * @author andras
  */
 public class LiveTable extends Composite {
-
-	private int itemWidth = 200;
-	private int itemHeight = 150;
-	private Color BORDER_COLOR = new Color(null,255,255,255);
-	private Color SELECTBORDER_COLOR = new Color(null,255,0,0);
-	private Color INSERTMARK_COLOR = new Color(null,0,0,0);
-	
+	private static final Color SELECTBORDER_COLOR = new Color(null,255,0,0);
+	private static final Color INSERTMARK_COLOR = new Color(null,0,0,0);
+ 	
+	private ArrayList<Control> orderedChildren = new ArrayList<Control>();
 	private ArrayList<Control> selection = new ArrayList<Control>();
+	private Control insertMark = null;
 	
 	public LiveTable(Composite parent, int style) {
 		super(parent, style);
 
 		GridLayout gridLayout = new GridLayout(4, true);
-		gridLayout.horizontalSpacing = 1;
-		gridLayout.verticalSpacing = 1;
+		gridLayout.horizontalSpacing = 5;
+		gridLayout.verticalSpacing = 5;
 		setLayout(gridLayout);
+		
+		addPaintListener(new PaintListener() {
+			public void paintControl(PaintEvent e) {
+				redrawCanvas(e.gc);
+			}
+		});
 	}
 	
 	public void setNumColumns(int numColums) {
@@ -52,24 +60,30 @@ public class LiveTable extends Composite {
 		GridLayout layout = (GridLayout) getLayout();
 		return layout.numColumns;
 	}
+
+	/**
+	 * Overridden so that we can reorder the children. 
+	 */
+	@Override
+	public Control[] getChildren() {
+		// synchronize orderedChildren to actual children; remove disposed ones, add new ones
+		Control[] children = super.getChildren();
+		for (Control child : orderedChildren)
+			if (child.isDisposed())
+				orderedChildren.remove(child);
+		for (Control child : children)
+			if (!orderedChildren.contains(child))
+				orderedChildren.add(child);
+		return orderedChildren.toArray(new Control[orderedChildren.size()]);
+	}
 	
 	/**
-	 * Adds a control to the table. The control can be created with any parent,
-	 * because this method will explicitly overwrite it using setParent().
+	 * Adds the necessary mouse listeners for dragging a child.
 	 */
-	public void addChild(Control control) {
-		Canvas frame = new Canvas(this, SWT.NONE);
-		frame.setBackground(BORDER_COLOR);
-		frame.setLayoutData(new GridData(itemWidth,itemHeight));
-		FillLayout fillLayout = new FillLayout();
-		fillLayout.marginHeight = 3;
-		fillLayout.marginWidth = 3;
-		frame.setLayout(fillLayout);
-		control.setParent(frame);
-		
+	public void configureChild(Control control) {
 		control.addMouseMoveListener(new MouseMoveListener() {
 			public void mouseMove(MouseEvent e) {
-				if ((e.stateMask & SWT.BUTTON_MASK) != 0) {
+				if ((e.stateMask & SWT.BUTTON_MASK) != 0) { // dragging
 					Control sender = (Control)e.widget;
 					Control c = findControlUnder(sender.toDisplay(e.x,e.y));
 					if (c!=null)
@@ -80,73 +94,107 @@ public class LiveTable extends Composite {
 		control.addMouseListener(new MouseListener() {
 			public void mouseDoubleClick(MouseEvent e) {}
 			public void mouseDown(MouseEvent e) {
-				setSelection((Control)e.widget);
+				if (selection.size()<=1 && (e.stateMask & SWT.CTRL)==0)
+					setSelection((Control)e.widget);
 			}
 			public void mouseUp(MouseEvent e) {
-				if ((e.stateMask & SWT.BUTTON_MASK) != 0) {
-					Control sender = (Control)e.widget;
-					Control target = findControlUnder(sender.toDisplay(e.x,e.y));
-					if (target!=null) {
+				Control sender = (Control)e.widget;
+				Control target = findControlUnder(sender.toDisplay(e.x,e.y));
+				if (sender!=target && target!=null) {
+					// this is a move
+					if (selection.isEmpty())
 						moveChild(sender, target);
-						setInsertMark(null);
-						setSelection(target);
+					else
+						moveSelectionTo(target);
+				}
+				if (sender==target) {
+					// this is a selection
+					if ((e.stateMask & SWT.CTRL)!=0) {
+						if (!selection.contains(e.widget))
+							select((Control)e.widget);
+						else
+							deselect((Control)e.widget);
+					}
+					else {
+						setSelection((Control)e.widget);
 					}
 				}
+				setInsertMark(null);
 			}
 		});
 	}
 
-	public void removeChild(Control control) {
-		for (Control f : getChildren()) {
-			Canvas frame = (Canvas)f;
-			if (frame.getChildren()[0]==control) {
-				frame.dispose();
-				break;
-			}
-		}
-	}
-	
 	public void setInsertMark(Control item) {
-		redrawSelectionMarks();
-		if (item!=null) {
-			Assert.isTrue(item.getParent().getParent()==this);
-			Canvas frame = (Canvas) item.getParent();
-			frame.setBackground(INSERTMARK_COLOR);
+		insertMark = item;
+		redraw();
+	}
+
+	private void redrawCanvas(GC gc) {
+		for (Control child : selection) {
+			Rectangle bounds = child.getBounds();
+			bounds.x -= 2;
+			bounds.y -= 2;
+			bounds.width += 3;
+			bounds.height += 3;
+			gc.setForeground(SELECTBORDER_COLOR);
+			gc.drawRectangle(bounds);
+		}
+		if (insertMark!=null) {
+			Rectangle bounds = insertMark.getBounds();
+			bounds.x -= 2;
+			bounds.y -= 2;
+			bounds.width += 3;
+			bounds.height += 3;
+			gc.setForeground(INSERTMARK_COLOR);
+			gc.drawRectangle(bounds);
 		}
 	}
 
-	public void moveChild(Control item, Control beforeItem) {
-		Assert.isTrue(item.getParent().getParent()==this);
-		Assert.isTrue(beforeItem.getParent().getParent()==this);
-		if (item==beforeItem)
+	
+	public void moveChild(Control item, Control atItem) {
+		Assert.isTrue(item.getParent()==this);
+		Assert.isTrue(atItem.getParent()==this);
+		if (item==atItem)
 			return;
 
-		Control[] frames = getChildren();
-		ArrayList<Control> children = new ArrayList<Control>();;
-		for (int i=0; i<frames.length; i++)
-			children.add(((Canvas)frames[i]).getChildren()[0]);
-		children.remove(item);
-		int index = children.indexOf(beforeItem);
-		children.add(index, item);
+		int index = orderedChildren.indexOf(atItem);
+		orderedChildren.remove(item);
+		orderedChildren.add(index, item);
+		layout();
+	}
 
-		for (int i=0; i<frames.length; i++)
-			children.get(i).setParent((Canvas)frames[i]);
+	protected void moveSelectionTo(Control target) {
+		int index = orderedChildren.indexOf(target);
+		for (Control sel : selection)
+			orderedChildren.remove(sel);
+		if (index>orderedChildren.size())
+			index = orderedChildren.size();
+		for (Control sel : selection)
+			orderedChildren.add(index++, sel);
+		layout();
 	}
 	
 	private void addToSelection(Control control) {
-		Assert.isTrue(control.getParent().getParent()==this);
+		Assert.isTrue(control.getParent()==this);
 		if (control!=null && !selection.contains(control))
 			selection.add(control);
 	}
 
 	public void select(Control control) {
 		addToSelection(control);
+		redraw();
 	}
 
+	public void deselect(Control control) {
+		if (selection.contains(control))
+			selection.remove(control);
+		redraw();
+	}
+	
 	public void select(Control[] controls) {
 		for (Control control : controls)
 			addToSelection(control);
-		redrawSelectionMarks();
+		redraw();
 	}
 
 	public void setSelection(Control control) {
@@ -161,24 +209,14 @@ public class LiveTable extends Composite {
 	
 	public void selectAll() {
 		selection.clear();
-		for (Control frame : getChildren())
-			selection.add(((Canvas)frame).getChildren()[0]);
+		for (Control child: getChildren())
+			selection.add(child);
 	}
 
 	public Control[] getSelection() {
 		return selection.toArray(new Control[selection.size()]);
 	}
 	
-	private void redrawSelectionMarks() {
-		for (Control frame : getChildren()) {
-			frame.setBackground(BORDER_COLOR);
-		}
-		for (Control control : selection) {
-			Canvas frame = (Canvas) control.getParent();
-			frame.setBackground(SELECTBORDER_COLOR);
-		}
-	}
-
 	private Control findControlUnder(Point p) {
 		for (Control child : getChildren()) {
 			Point topLeft = child.toDisplay(0,0);
@@ -186,8 +224,7 @@ public class LiveTable extends Composite {
 			bounds.x = topLeft.x;
 			bounds.y = topLeft.y;
 			if (bounds.contains(p)) {
-				Canvas frame = (Canvas)child;
-				return frame.getChildren()[0];
+				return child;
 			}
 		}
 		return null;
