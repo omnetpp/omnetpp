@@ -1,7 +1,6 @@
 package org.omnetpp.scave2.editors.ui;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.swt.SWT;
@@ -14,12 +13,8 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
-import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-
-import sun.security.krb5.internal.crypto.t;
 
 /**
  * Holds a several controls that can be selected and 
@@ -42,6 +37,9 @@ public class LiveTable extends Composite {
 	private ArrayList<Control> selection = new ArrayList<Control>();
 	private Control insertMark = null;
 	
+	/**
+	 * Constructor.
+	 */
 	public LiveTable(Composite parent, int style) {
 		super(parent, style);
 
@@ -69,7 +67,7 @@ public class LiveTable extends Composite {
 	}
 	
 	/**
-	 * Adds the necessary mouse listeners for dragging a child.
+	 * Adds the necessary mouse listeners for dragging and selecting children.
 	 */
 	public void configureChild(Control control) {
 		control.addMouseMoveListener(new MouseMoveListener() {
@@ -115,11 +113,36 @@ public class LiveTable extends Composite {
 		});
 	}
 
+	/**
+	 * Returns the child control under the given mouse position, or null.
+	 * Expects screen coordinates. 
+	 */
+	private Control findControlUnder(Point p) {
+		for (Control child : getChildren()) {
+			Point topLeft = child.toDisplay(0,0);
+			Rectangle bounds = child.getBounds();
+			bounds.x = topLeft.x;
+			bounds.y = topLeft.y;
+			if (bounds.contains(p)) {
+				return child;
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * Displays the insert mark around the given item.
+	 * A null value means no insert mark.
+	 */
 	public void setInsertMark(Control item) {
+		Assert.isTrue(item.getParent()==this);
 		insertMark = item;
 		redraw();
 	}
 
+	/**
+	 * Redraws the canvas, with selection marks and insert mark.
+	 */
 	private void redrawCanvas(GC gc) {
 		for (Control child : selection) {
 			Rectangle bounds = child.getBounds();
@@ -141,7 +164,10 @@ public class LiveTable extends Composite {
 		}
 	}
 
-	
+	/**
+	 * Changes the order of children so that "item" is moved to 
+	 * where the "target" child currently is.
+	 */
 	public void moveChild(Control item, Control atItem) {
 		Assert.isTrue(item.getParent()==this);
 		Assert.isTrue(atItem.getParent()==this);
@@ -154,7 +180,12 @@ public class LiveTable extends Composite {
 		layout();
 	}
 
+	/**
+	 * Changes the order of children so that the selected items
+	 * are moved to where the "target" child currently is.
+	 */
 	protected void moveSelectionTo(Control target) {
+		Assert.isTrue(target.getParent()==this);
 		int index = orderedChildren.indexOf(target);
 		for (Control sel : selection)
 			orderedChildren.remove(sel);
@@ -171,53 +202,61 @@ public class LiveTable extends Composite {
 			selection.add(control);
 	}
 
+	/**
+	 * Extends the selection with the given control.
+	 */
 	public void select(Control control) {
 		addToSelection(control);
 		redraw();
 	}
 
+	/**
+	 * Removes the given control from the selection.
+	 */
 	public void deselect(Control control) {
 		if (selection.contains(control))
 			selection.remove(control);
 		redraw();
 	}
 	
+	/**
+	 * Extends the selection with the given controls.
+	 */
 	public void select(Control[] controls) {
 		for (Control control : controls)
 			addToSelection(control);
 		redraw();
 	}
 
+	/**
+	 * Sets the selection to the given control.
+	 */
 	public void setSelection(Control control) {
 		selection.clear();
 		select(control);
 	}
 
+	/**
+	 * Sets the selection to the given controls.
+	 */
 	public void setSelection(Control[] controls) {
 		selection.clear();
 		select(controls);
 	}
 	
+	/**
+	 * Selects all controls.
+	 */
 	public void selectAll() {
 		selection.clear();
 		for (Control child: getChildren())
 			selection.add(child);
 	}
 
+	/**
+	 * Returns the selection.
+	 */
 	public Control[] getSelection() {
 		return selection.toArray(new Control[selection.size()]);
-	}
-	
-	private Control findControlUnder(Point p) {
-		for (Control child : getChildren()) {
-			Point topLeft = child.toDisplay(0,0);
-			Rectangle bounds = child.getBounds();
-			bounds.x = topLeft.x;
-			bounds.y = topLeft.y;
-			if (bounds.contains(p)) {
-				return child;
-			}
-		}
-		return null;
 	}
 }
