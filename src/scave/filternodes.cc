@@ -582,3 +582,50 @@ Node *MeanNodeType::create(DataflowManager *mgr, StringMap& attrs) const
     return node;
 }
 
+//-----
+
+bool RemoveRepeatsNode::isReady() const
+{
+    return in()->length()>0;
+}
+
+void RemoveRepeatsNode::process()
+{
+    int n = in()->length();
+    for (int i=0; i<n; i++)
+    {
+        Datum d;
+        in()->read(&d,1);
+
+        if (first || prevy != d.y) {
+            first = false;
+            prevy = d.y;
+            out()->write(&d,1);
+        }
+    }
+}
+
+//--
+
+const char *RemoveRepeatsNodeType::description() const
+{
+    return "Removes repeated y values";
+}
+
+void RemoveRepeatsNodeType::getAttributes(StringMap& attrs) const
+{
+}
+
+void RemoveRepeatsNodeType::getAttrDefaults(StringMap& attrs) const
+{
+}
+
+Node *RemoveRepeatsNodeType::create(DataflowManager *mgr, StringMap& attrs) const
+{
+    checkAttrNames(attrs);
+
+    Node *node = new RemoveRepeatsNode();
+    node->setNodeType(this);
+    mgr->addNode(node);
+    return node;
+}

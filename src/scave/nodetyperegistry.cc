@@ -76,6 +76,7 @@ NodeTypeRegistry::NodeTypeRegistry()
     add(new LinearTrendNodeType());
     add(new CropNodeType());
     add(new MeanNodeType());
+    add(new RemoveRepeatsNodeType());
 }
 
 NodeTypeRegistry::~NodeTypeRegistry()

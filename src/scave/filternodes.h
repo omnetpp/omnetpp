@@ -326,3 +326,30 @@ class MeanNodeType : public FilterNodeType
 #endif
 
 
+//----
+
+/**
+ * Processing node which removes repeated y values.
+ */
+class RemoveRepeatsNode : public FilterNode
+{
+    protected:
+        bool first;
+        double prevy;
+    public:
+        RemoveRepeatsNode()  {first = true;}
+        virtual ~RemoveRepeatsNode() {}
+        virtual bool isReady() const;
+        virtual void process();
+};
+
+class RemoveRepeatsNodeType : public FilterNodeType
+{
+    public:
+        virtual const char *name() const {return "removerepeats";}
+        virtual const char *description() const;
+        virtual void getAttributes(StringMap& attrs) const;
+        virtual void getAttrDefaults(StringMap& attrs) const;
+        virtual Node *create(DataflowManager *mgr, StringMap& attrs) const;
+};
+
