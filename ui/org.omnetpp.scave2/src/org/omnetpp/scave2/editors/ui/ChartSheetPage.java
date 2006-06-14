@@ -12,17 +12,21 @@ import org.omnetpp.common.color.ColorFactory;
 
 public class ChartSheetPage extends ScrolledForm {
 
+	private LiveTable chartsArea;
+	
 	public ChartSheetPage(Composite parent, int style) {
 		super(parent, style | SWT.V_SCROLL | SWT.H_SCROLL);
 		initialize();
 	}
 	
 	public Composite getChartSheetComposite() {
-		return getBody();
+		//return getBody();
+		return chartsArea;
 	}
 	
 	public void addChart(Control chart) {
-		// set layout data
+		chart.setLayoutData(new GridData(320,200));
+		chartsArea.configureChild(chart);
 	}
 	
 	private void initialize() {
@@ -32,15 +36,21 @@ public class ChartSheetPage extends ScrolledForm {
 		GridLayout layout = new GridLayout();
 		getBody().setLayout(layout);
 		
-		LiveTable chartsArea = new LiveTable(getBody(), SWT.NONE);
+		chartsArea = new LiveTable(getBody(), SWT.NONE);
 		chartsArea.setLayoutData(new GridData(SWT.FILL,SWT.FILL, true, true));
 		chartsArea.setBackground(ColorFactory.asColor("white"));
 
+		GridLayout gridLayout = new GridLayout(2, true); //2 columns
+		gridLayout.horizontalSpacing = 7;
+		gridLayout.verticalSpacing = 7;
+		chartsArea.setLayout(gridLayout);
+
 		//XXX some testing code
-		for (int i=0; i<14; i++) {
-			Canvas canvas = new Canvas(this, SWT.NONE);
-			canvas.setBackground(new Color(null, 0, 255-i*10, 0));
-			chartsArea.addChild(canvas);
+		for (int i=0; i<5; i++) {
+			Canvas canvas = new Canvas(chartsArea, SWT.NONE);
+			canvas.setBackground(new Color(null, 0, 255-i*20, 0));
+			canvas.setLayoutData(new GridData(320,200));
+			chartsArea.configureChild(canvas);
 		}
 		
 	}

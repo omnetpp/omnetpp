@@ -22,8 +22,15 @@ import org.eclipse.swt.widgets.Control;
 import sun.security.krb5.internal.crypto.t;
 
 /**
- * Holds a grid of equal-sized controls that can be selected and 
- * reordered with the mouse.
+ * Holds a several controls that can be selected and 
+ * reordered with the mouse. Typically the user wants to
+ * set a GridLayout on the control, but this is not mandatory.
+ *
+ * <pre>
+ * GridLayout gridLayout = new GridLayout(4, true);
+ * gridLayout.horizontalSpacing = gridLayout.verticalSpacing = 5;
+ * liveTable.setLayout(gridLayout);
+ * </pre>
  * 
  * @author andras
  */
@@ -38,11 +45,6 @@ public class LiveTable extends Composite {
 	public LiveTable(Composite parent, int style) {
 		super(parent, style);
 
-		GridLayout gridLayout = new GridLayout(4, true);
-		gridLayout.horizontalSpacing = 5;
-		gridLayout.verticalSpacing = 5;
-		setLayout(gridLayout);
-		
 		addPaintListener(new PaintListener() {
 			public void paintControl(PaintEvent e) {
 				redrawCanvas(e.gc);
@@ -50,17 +52,6 @@ public class LiveTable extends Composite {
 		});
 	}
 	
-	public void setNumColumns(int numColums) {
-		GridLayout layout = (GridLayout) getLayout();
-		layout.numColumns = numColums;
-		redraw();
-	}
-
-	public int getNumColumns() {
-		GridLayout layout = (GridLayout) getLayout();
-		return layout.numColumns;
-	}
-
 	/**
 	 * Overridden so that we can reorder the children. 
 	 */
