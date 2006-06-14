@@ -64,31 +64,31 @@ public class SubmoduleEditPart extends ModuleEditPart {
         Rectangle constraint = new Rectangle(loc, dps.getSize());
         ((GraphicalEditPart) getParent()).setLayoutConstraint(this, getFigure(), constraint);
         // check if the figure supports the name decoration
-        if(getNedFigure() instanceof DisplayNameSupport)
-            ((DisplayNameSupport)getNedFigure()).setName(model.getName());
+        if(getModuleFigure() instanceof DisplayNameSupport)
+            ((DisplayNameSupport)getModuleFigure()).setName(model.getName());
         // range support
-        if(getNedFigure() instanceof DisplayRangeSupport)
-            ((DisplayRangeSupport)getNedFigure()).setRange(
+        if(getModuleFigure() instanceof DisplayRangeSupport)
+            ((DisplayRangeSupport)getModuleFigure()).setRange(
                     dps.getRange(),
                     ColorFactory.asColor(dps.getAsStringDef(DisplayString.Prop.RANGEFILLCOL)),
                     ColorFactory.asColor(dps.getAsStringDef(DisplayString.Prop.RANGEBORDERCOL)),
                     dps.getAsIntDef(DisplayString.Prop.RANGEBORDERWIDTH, -1));
         // tooltip support
-        if(getNedFigure() instanceof DisplayTooltipSupport)
-            ((DisplayTooltipSupport)getNedFigure()).setTooltipText(
+        if(getModuleFigure() instanceof DisplayTooltipSupport)
+            ((DisplayTooltipSupport)getModuleFigure()).setTooltipText(
                     dps.getAsStringDef(DisplayString.Prop.TOOLTIP));
         // queue length support
-        if(getNedFigure() instanceof DisplayQueueSupport)
-            ((DisplayQueueSupport)getNedFigure()).setQueueText(
+        if(getModuleFigure() instanceof DisplayQueueSupport)
+            ((DisplayQueueSupport)getModuleFigure()).setQueueText(
                     dps.getAsStringDef(DisplayString.Prop.QUEUE));
         // additional text support
-        if(getNedFigure() instanceof DisplayInfoTextSupport)
-            ((DisplayInfoTextSupport)getNedFigure()).setInfoText(
+        if(getModuleFigure() instanceof DisplayInfoTextSupport)
+            ((DisplayInfoTextSupport)getModuleFigure()).setInfoText(
                     dps.getAsStringDef(DisplayString.Prop.TEXT), 
                     dps.getAsStringDef(DisplayString.Prop.TEXTPOS),
                     ColorFactory.asColor(dps.getAsStringDef(DisplayString.Prop.TEXTCOLOR)));
         // shape support
-        if(getNedFigure() instanceof DisplayShapeSupport) {
+        if(getModuleFigure() instanceof DisplayShapeSupport) {
             String imgSize = dps.getAsStringDef(DisplayString.Prop.IMAGESIZE);
             Image img = ImageFactory.getImage(
                     dps.getAsStringDef(DisplayString.Prop.IMAGE), 
@@ -97,7 +97,7 @@ public class SubmoduleEditPart extends ModuleEditPart {
                     dps.getAsIntDef(DisplayString.Prop.IMAGECOLORPCT,0));
             
             // set the figure properties
-            ((DisplayShapeSupport)getNedFigure()).setShape(img, 
+            ((DisplayShapeSupport)getModuleFigure()).setShape(img, 
                     dps.getAsStringDef(DisplayString.Prop.SHAPE), 
                     constraint.width, 
                     constraint.height,
@@ -105,7 +105,7 @@ public class SubmoduleEditPart extends ModuleEditPart {
                     ColorFactory.asColor(dps.getAsStringDef(DisplayString.Prop.BORDERCOL)),
                     dps.getAsIntDef(DisplayString.Prop.BORDERWIDTH, -1));
             // set the decoration image properties
-            ((DisplayShapeSupport)getNedFigure()).setImageDecoration(
+            ((DisplayShapeSupport)getModuleFigure()).setImageDecoration(
                     ImageFactory.getImage(
                             dps.getAsStringDef(DisplayString.Prop.OVIMAGE),
                             null,
@@ -115,21 +115,21 @@ public class SubmoduleEditPart extends ModuleEditPart {
         }
         
         // XXX callout bubble. just for testing
-        if(getNedFigure() instanceof DisplayCalloutSupport) {
-                if (dps.getLocation()!=null && dps.getLocation().x >70) ((DisplayCalloutSupport)getNedFigure()).clearCallout();
-                	else ((DisplayCalloutSupport)getNedFigure()).addCallout("Yes Sir, my position is: "+dps.getLocation() );
+        if(getModuleFigure() instanceof DisplayCalloutSupport) {
+                if (dps.getLocation()!=null && dps.getLocation().x >70) ((DisplayCalloutSupport)getModuleFigure()).clearCallout();
+                	else ((DisplayCalloutSupport)getModuleFigure()).addCallout("Yes Sir, my position is: "+dps.getLocation() );
 
         } 
     }
     
 	@Override
-	String[] getInputGateNames() {
+	public String[] getInputGateNames() {
 		String gates[] = {"IN1", "IN2", "IN3", "IN4"}; 
 		return gates; 
 	}
 
 	@Override
-	String[] getOutputGateNames() {
+	public String[] getOutputGateNames() {
 		String gates[] = {"OUT1", "OUT2", "OUT3", "OUT4"}; 
 		return gates; 
 	}

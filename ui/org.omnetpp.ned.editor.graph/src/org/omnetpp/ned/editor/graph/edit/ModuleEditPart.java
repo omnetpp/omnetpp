@@ -54,21 +54,21 @@ abstract public class ModuleEditPart extends ContainerEditPart implements NodeEd
 	/**
 	 * Returns the Figure of this, as a NedFigure.
 	 * 
-	 * @return Figure as a NedFigure.
+	 * @return Figure as a ModuleFigure.
 	 */
-	protected ModuleFigure getNedFigure() {
+	protected ModuleFigure getModuleFigure() {
 		return (ModuleFigure) getFigure();
 	}
 	
 	/**
 	 * @return The names of the input gates
 	 */
-	abstract String[] getInputGateNames();
+	public abstract String[] getInputGateNames();
 	
 	/**
 	 * @return The names of the output gates
 	 */
-	abstract String[] getOutputGateNames();
+	public abstract String[] getOutputGateNames();
 
 
 	/**
@@ -101,22 +101,9 @@ abstract public class ModuleEditPart extends ContainerEditPart implements NodeEd
 	 * @return
 	 */
 	public GateAnchor getConnectionAnchor(String gate) {
-//		if (gate == null)
-//			return null;
-//
-//		GateAnchor ga = targetConnectionAnchors.get(gate);
-//		if (ga != null)	return ga;
-//
-//		ga = sourceConnectionAnchors.get(gate);
-//		return ga;
 		return new GateAnchor(getFigure(), gate);
 	}
 
-	/**
-	 * Returns the connection anchor for the given ConnectionEditPart's srcModule.
-	 * 
-	 * @return ConnectionAnchor.
-	 */
 	public ConnectionAnchor getSourceConnectionAnchor(ConnectionEditPart connEditPart) {
 		ConnectionNodeEx conn = (ConnectionNodeEx) connEditPart.getModel();
 		return getConnectionAnchor(conn.getSrcGateWithIndex());

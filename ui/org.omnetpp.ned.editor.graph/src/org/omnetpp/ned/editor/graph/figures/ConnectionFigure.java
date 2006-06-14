@@ -56,5 +56,10 @@ public class ConnectionFigure extends PolylineConnection {
 			arrow.setScale(5+lineWidth, 2+lineWidth);
     }
 
+    @Override
+    public void paint(Graphics graphics) {
+        graphics.setAntialias(SWT.ON);
+        super.paint(graphics);
+    }
 
 }

@@ -2,6 +2,7 @@ package org.omnetpp.ned.editor.graph.figures;
 
 
 import org.eclipse.draw2d.Ellipse;
+import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.ImageFigure;
 import org.eclipse.draw2d.Label;
 import org.eclipse.draw2d.Layer;
@@ -52,12 +53,6 @@ public class SubmoduleFigure extends ModuleFigure implements HandleBounds,
     protected CalloutFigure calloutFigure = new CalloutFigure();
 
     public SubmoduleFigure() {
-        // anchors TEMPORARY
-        
-//        addSourceConnectionAnchor(new GateAnchor(this, "OUT"));
-//        addTargetConnectionAnchor(new GateAnchor(this, "IN1"));
-//        addTargetConnectionAnchor(new GateAnchor(this, "IN2"));
-  
         setLayoutManager(new StackLayout());
 
         rectShapeFigure.setVisible(false);
@@ -69,6 +64,22 @@ public class SubmoduleFigure extends ModuleFigure implements HandleBounds,
         
     }
 
+    /**
+     * Returns a layer from any ancestor that supports multiple layers for decorations
+     * @param id Layer id
+     * @return The layer with teh given id from any ancestor that inpmelements tha LayerSupport IF
+     */
+    // TODO implement in a way, that if a layer is not found, it should search furter in the ancestor list
+    // and return null only if eached the root figure
+    protected Layer getAncestorLayer(Object id) {
+    	IFigure figureIter = getParent();
+    	// look for a parent who is an instance of LayerSupport and get the layer from it
+    	while (!(figureIter == null || (figureIter instanceof LayerSupport)))
+    		figureIter = figureIter.getParent();
+    	if(figureIter instanceof LayerSupport) return ((LayerSupport)figureIter).getLayer(id); 
+    	return null;
+    }
+    
     @Override
     public void addNotify() {
         // functions here need to access the parent or ancestor figures, so these setup

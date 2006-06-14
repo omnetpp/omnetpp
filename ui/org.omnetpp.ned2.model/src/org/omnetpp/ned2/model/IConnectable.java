@@ -2,6 +2,10 @@ package org.omnetpp.ned2.model;
 
 import java.util.List;
 
+/**
+ * @author rhornig
+ * Generic interface implemented by all nodes that can be connected via gates (Compound and submodule)
+ */
 public interface IConnectable {
 
 	public final String ATT_DEST_CONNECTION = "destConnection";

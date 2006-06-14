@@ -136,21 +136,21 @@ public class CompoundModuleEditPart extends ModuleEditPart {
         // if the siez is specified in the displaystring we should set it as preferred size
         // otherwise getPreferredSize should return the size calculated from the children
         if (dps.getSize().height > 0 || dps.getSize().width > 0) 
-        	getNedFigure().setPreferredSize(dps.getSize());
+        	getModuleFigure().setPreferredSize(dps.getSize());
         else 
-        	getNedFigure().setPreferredSize(null);
+        	getModuleFigure().setPreferredSize(null);
         
         // check if the figure supports the name decoration
-        if(getNedFigure() instanceof DisplayTitleSupport) {
+        if(getModuleFigure() instanceof DisplayTitleSupport) {
         	// set the name and type + other inof on compound module
-            ((DisplayTitleSupport)getNedFigure()).setName(model.getName());
+            ((DisplayTitleSupport)getModuleFigure()).setName(model.getName());
             // set the icon showing the default representation in the titlebar
             Image img = ImageFactory.getImage(
                     dps.getAsStringDef(DisplayString.Prop.IMAGE), 
                     dps.getAsStringDef(DisplayString.Prop.IMAGESIZE),
                     ColorFactory.asRGB(dps.getAsStringDef(DisplayString.Prop.IMAGECOLOR)),
                     dps.getAsIntDef(DisplayString.Prop.IMAGECOLORPCT,0));
-            ((DisplayTitleSupport)getNedFigure()).setDefaultShape(img, 
+            ((DisplayTitleSupport)getModuleFigure()).setDefaultShape(img, 
                     dps.getAsStringDef(DisplayString.Prop.SHAPE), 
                     dps.getAsIntDef(DisplayString.Prop.WIDTH, -1), 
                     dps.getAsIntDef(DisplayString.Prop.HEIGHT, -1),
@@ -160,12 +160,12 @@ public class CompoundModuleEditPart extends ModuleEditPart {
         }
         
         // tooltip support
-        if(getNedFigure() instanceof DisplayTooltipSupport)
-            ((DisplayTooltipSupport)getNedFigure()).setTooltipText(
+        if(getModuleFigure() instanceof DisplayTooltipSupport)
+            ((DisplayTooltipSupport)getModuleFigure()).setTooltipText(
                     dps.getAsStringDef(DisplayString.Prop.TOOLTIP));
         
         // background color / image
-        if(getNedFigure() instanceof DisplayBackgroundSupport) {
+        if(getModuleFigure() instanceof DisplayBackgroundSupport) {
             Image img = ImageFactory.getImage(
                     dps.getAsStringDef(DisplayString.Prop.MODULE_IMAGE),
                     null, null, 0);
@@ -174,7 +174,7 @@ public class CompoundModuleEditPart extends ModuleEditPart {
             String imageArrangementStr = dps.getAsStringDef(DisplayString.Prop.MODULE_IMAGEARRANGEMENT);
             
             // set the background
-            ((DisplayBackgroundSupport)getNedFigure()).setBackgorund(
+            ((DisplayBackgroundSupport)getModuleFigure()).setBackgorund(
             		img, 
             		imageArrangementStr, 
             		ColorFactory.asColor(dps.getAsStringDef(DisplayString.Prop.MODULE_FILLCOL)), 
@@ -182,19 +182,19 @@ public class CompoundModuleEditPart extends ModuleEditPart {
             		dps.getAsIntDef(DisplayString.Prop.MODULE_BORDERWIDTH, -1));
             
             // grid support
-            ((DisplayBackgroundSupport)getNedFigure()).setGrid(
+            ((DisplayBackgroundSupport)getModuleFigure()).setGrid(
             		dps.getGridTickDistance(), 
             		dps.getAsIntDef(DisplayString.Prop.MODULE_TICKNUMBER, -1), 
             		ColorFactory.asColor(dps.getAsStringDef(DisplayString.Prop.MODULE_GRIDCOL)));
             
             // scaling support
-            ((DisplayBackgroundSupport)getNedFigure()).setScale(
+            ((DisplayBackgroundSupport)getModuleFigure()).setScale(
             		dps.getAsFloatDef(DisplayString.Prop.MODULE_SCALE, 1),
             		dps.getAsStringDef(DisplayString.Prop.MODULE_UNIT));
         }
         
         // default icon / shape support
-        if(getNedFigure() instanceof DisplayShapeSupport) {
+        if(getModuleFigure() instanceof DisplayShapeSupport) {
             Image img = ImageFactory.getImage(
                     dps.getAsStringDef(DisplayString.Prop.IMAGE), 
                     dps.getAsStringDef(DisplayString.Prop.IMAGESIZE),
@@ -202,7 +202,7 @@ public class CompoundModuleEditPart extends ModuleEditPart {
                     dps.getAsIntDef(DisplayString.Prop.IMAGECOLORPCT,0));
                         
             // set the figure properties
-            ((DisplayShapeSupport)getNedFigure()).setShape(img, 
+            ((DisplayShapeSupport)getModuleFigure()).setShape(img, 
                     dps.getAsStringDef(DisplayString.Prop.SHAPE), 
                     dps.getAsIntDef(DisplayString.Prop.WIDTH, -1), 
                     dps.getAsIntDef(DisplayString.Prop.HEIGHT, -1),
@@ -215,13 +215,13 @@ public class CompoundModuleEditPart extends ModuleEditPart {
     }
 
 	@Override
-	String[] getInputGateNames() {
+	public String[] getInputGateNames() {
 		String gates[] = {"IN1", "IN2", "IN3", "IN4"}; 
 		return gates; 
 	}
 
 	@Override
-	String[] getOutputGateNames() {
+	public String[] getOutputGateNames() {
 		String gates[] = {"OUT1", "OUT2", "OUT3", "OUT4"}; 
 		return gates; 
 	}

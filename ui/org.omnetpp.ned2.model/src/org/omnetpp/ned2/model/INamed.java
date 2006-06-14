@@ -5,11 +5,11 @@ public interface INamed {
 	/**
 	 * Returns name attribute 
 	 */
-	String getName();
+	public String getName();
 
 	/**
 	 * Sets name attribute 
 	 */
-	void setName(String name);
+	public void setName(String name);
 
 }

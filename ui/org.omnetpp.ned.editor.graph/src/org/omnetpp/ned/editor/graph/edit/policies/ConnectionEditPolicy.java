@@ -10,8 +10,8 @@ public class ConnectionEditPolicy extends org.eclipse.gef.editpolicies.Connectio
     @Override
     protected Command getDeleteCommand(GroupRequest request) {
         ConnectionCommand c = new ConnectionCommand((ConnectionNodeEx) getHost().getModel());
-        // the new source and destination module is not set (ie NULL) this effectively removes 
-        // the connection from the modell
+        // do not set any src/destModule / Gate for the connection command. This command
+        // will delete the whole connection
         return c;
     }
 
