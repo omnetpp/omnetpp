@@ -19,10 +19,12 @@ import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.IFileEditorInput;
+import org.eclipse.ui.IMemento;
+import org.eclipse.ui.INavigationLocation;
+import org.eclipse.ui.INavigationLocationProvider;
 import org.eclipse.ui.ISelectionListener;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.PartInitException;
@@ -32,11 +34,21 @@ import org.omnetpp.experimental.seqchart.moduletree.ModuleTreeBuilder;
 import org.omnetpp.experimental.seqchart.moduletree.ModuleTreeItem;
 import org.omnetpp.experimental.seqchart.widgets.RubberbandSupport;
 import org.omnetpp.experimental.seqchart.widgets.SequenceChart;
+import org.omnetpp.scave.engine.DataflowManager;
 import org.omnetpp.scave.engine.EventEntry;
 import org.omnetpp.scave.engine.EventLog;
+import org.omnetpp.scave.engine.File;
+import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.engine.IntSet;
 import org.omnetpp.scave.engine.JavaFriendlyEventLogFacade;
 import org.omnetpp.scave.engine.ModuleEntry;
+import org.omnetpp.scave.engine.Node;
+import org.omnetpp.scave.engine.NodeType;
+import org.omnetpp.scave.engine.NodeTypeRegistry;
+import org.omnetpp.scave.engine.ResultFileManager;
+import org.omnetpp.scave.engine.StringMap;
+import org.omnetpp.scave.engine.VectorResult;
+import org.omnetpp.scave.engine.XYArray;
 
 /**
  * Sequence chart display tool. (It is not actually an editor; it is only named so
@@ -45,7 +57,7 @@ import org.omnetpp.scave.engine.ModuleEntry;
  * @author andras
  */
 //TODO add context menu etc
-public class SequenceChartToolEditor extends EditorPart {
+public class SequenceChartToolEditor extends EditorPart implements INavigationLocationProvider {
 
 	private SequenceChart seqChart;
 	private Combo eventcombo;
@@ -55,6 +67,9 @@ public class SequenceChartToolEditor extends EditorPart {
 	private ArrayList<ModuleTreeItem> axisModules; // which modules should have an axis
 	private int currentEventNumber = -1;
 	private EventLog filteredEventLog; // eventLog filtered for currentEventNumber
+	private ResultFileManager resultFileManager; 
+	private IDList idlist; // idlist of the loaded vector file
+	private XYArray[] stateVectors; // vector file loaded for the log file
 
 	private final Color CHART_BACKGROUND_COLOR = ColorConstants.white;
 
@@ -68,11 +83,17 @@ public class SequenceChartToolEditor extends EditorPart {
 		setInput(input);
 		
 		IFileEditorInput fileInput = (IFileEditorInput)input;
-		String fileName = fileInput.getFile().getLocation().toFile().getAbsolutePath();
+		String logFileName = fileInput.getFile().getLocation().toFile().getAbsolutePath();
 
-		eventLog = new EventLog(fileName);
-		System.out.println("read "+eventLog.getNumEvents()+" events in "+eventLog.getNumModules()+" modules from "+fileName);
+		eventLog = new EventLog(logFileName);
+		System.out.println("read "+eventLog.getNumEvents()+" events in "+eventLog.getNumModules()+" modules from "+logFileName);
 
+		String vectorFileName = logFileName.replace(".log", ".vec");
+		if (new java.io.File(vectorFileName).exists()) {
+			stateVectors = readVectorFile(vectorFileName);
+			System.out.println("read "+stateVectors.length+" vectors from "+vectorFileName);
+		}
+		
 		setPartName(input.getName());
 		
 		extractModuleTree();
@@ -86,7 +107,53 @@ public class SequenceChartToolEditor extends EditorPart {
 			SeqChartPlugin.getDefault().logException(e);					
 		}
 	}
+	
+	private XYArray[] readVectorFile(String fileName)
+	{
+		resultFileManager = new ResultFileManager();
+		File file = resultFileManager.loadVectorFile(fileName);
+		idlist = resultFileManager.getDataInFile(file);
+		idlist = resultFileManager.getFilteredList(idlist, "*", "*", "State");
+		DataflowManager net = new DataflowManager();
+		NodeTypeRegistry factory = NodeTypeRegistry.instance();
 
+		// create VectorFileReader nodes
+		NodeType vectorFileReaderType = factory.getNodeType("vectorfilereader");
+		StringMap args = new StringMap();
+		args.set("filename", file.getFilePath());
+		Node fileReaderNode = vectorFileReaderType.create(net, args);
+
+		// create network
+		NodeType removeRepeatsType = factory.getNodeType("removerepeats");
+		NodeType arrayBuilderType = factory.getNodeType("arraybuilder");
+		Node [] arrayBuilderNodes = new Node[(int)idlist.size()];
+		for (int i = 0; i < (int)idlist.size(); i++) {
+			VectorResult vec = resultFileManager.getVector(idlist.get(i));
+			// no filter: connect directly to an ArrayBuilder
+			args = new StringMap();
+			Node removeRepeatsNode = removeRepeatsType.create(net, args);
+			Node arrayBuilderNode = arrayBuilderType.create(net, args);
+			arrayBuilderNodes[i] = arrayBuilderNode;
+			net.connect(vectorFileReaderType.getPort(fileReaderNode, "" + vec.getVectorId()),
+						removeRepeatsType.getPort(removeRepeatsNode, "in"));
+			net.connect(removeRepeatsType.getPort(removeRepeatsNode, "out"),
+						arrayBuilderType.getPort(arrayBuilderNode, "in"));
+		}
+
+		// run the netwrork
+		net.dump();
+		net.execute();
+
+		// extract results
+		XYArray[] xyArray = new XYArray[arrayBuilderNodes.length];
+		for (int i = 0; i < arrayBuilderNodes.length; i++)
+			xyArray[i] = arrayBuilderNodes[i].getArray();
+		
+		return xyArray;
+	}
+	
+	
+	
 	private void extractModuleTree() {
 		ArrayList<ModuleTreeItem> modules = new ArrayList<ModuleTreeItem>();
 		ModuleTreeBuilder treeBuilder = new ModuleTreeBuilder();
@@ -112,6 +179,7 @@ public class SequenceChartToolEditor extends EditorPart {
 			@Override
 			public void rubberBandSelectionMade(Rectangle r) {
 				seqChart.zoomToRectangle(new org.eclipse.draw2d.geometry.Rectangle(r));
+				markLocation();
 			}
 		};
 
@@ -144,8 +212,10 @@ public class SequenceChartToolEditor extends EditorPart {
 		// follow selection
 		getSite().getPage().addSelectionListener(new ISelectionListener() {
 			public void selectionChanged(IWorkbenchPart part, ISelection selection) {
-				if (part!=seqChart)
+				if (part!=seqChart) {
 					seqChart.setSelection(selection);
+					markLocation();
+				}
 			}
 		});
 		
@@ -242,11 +312,13 @@ public class SequenceChartToolEditor extends EditorPart {
 		zoomIn.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				seqChart.zoomIn();
+				markLocation();
 			}});
 		
 		zoomOut.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				seqChart.zoomOut();
+				markLocation();
 			}});
 
 		increaseSpacing.addSelectionListener(new SelectionAdapter() {
@@ -374,11 +446,19 @@ public class SequenceChartToolEditor extends EditorPart {
 		filteredEventLog = eventLog.traceEvent(eventLog.getEventByNumber(currentEventNumber), moduleIds, true, true, true);
 		System.out.println("filtered log: "+filteredEventLog.getNumEvents()+" events in "+filteredEventLog.getNumModules()+" modules");
 
-		filteredEventLogChanged();
-	}
+		ArrayList<XYArray> axisVectors = new ArrayList<XYArray>();
+		for (ModuleTreeItem treeItem : axisModules) {
+			axisVectors.add(null);
 
-	private void filteredEventLogChanged() {
-		seqChart.updateFigure(filteredEventLog, axisModules);  //XXX eliminate!!!!
+			if (idlist != null) 
+				for (int i = 0; i < idlist.size(); i++)
+					if (resultFileManager.getItem(idlist.get(i)).getModuleName().equals(treeItem.getModuleFullPath())) {
+						axisVectors.set(axisVectors.size() - 1, stateVectors[i]);
+						break;
+					}
+		}
+		
+		seqChart.updateFigure(filteredEventLog, axisModules, axisVectors);
 	}
 
 	/**
@@ -430,5 +510,67 @@ public class SequenceChartToolEditor extends EditorPart {
 	@Override
 	public boolean isSaveAsAllowed() {
 		return false;
+	}
+	
+	public void markLocation() {
+		getSite().getPage().getNavigationHistory().markLocation(SequenceChartToolEditor.this);
+	}
+	
+	public class SequenceChartLocation implements INavigationLocation {
+		private double startSimulationTime;
+		private double endSimulationTime;
+		
+		public SequenceChartLocation(double startSimulationTime, double endSimulationTime) {
+			this.startSimulationTime = startSimulationTime;
+			this.endSimulationTime = endSimulationTime;
+		}
+
+		public void dispose() {
+			// void
+		}
+
+		public Object getInput() {
+			return SequenceChartToolEditor.this.getEditorInput();
+		}
+
+		public String getText() {
+			return "SimulationTime: " + startSimulationTime + "s - " + endSimulationTime + "s";
+		}
+
+		public boolean mergeInto(INavigationLocation currentLocation) {
+			return false;
+		}
+
+		public void releaseState() {
+			// void
+		}
+
+		public void restoreLocation() {
+			seqChart.gotoSimulationTimeRange(startSimulationTime, endSimulationTime);
+		}
+
+		public void restoreState(IMemento memento) {
+			// TODO: implement
+		}
+
+		public void saveState(IMemento memento) {
+			// TODO: implement
+		}
+
+		public void setInput(Object input) {
+			SequenceChartToolEditor.this.setInput((IFileEditorInput)input);
+		}
+
+		public void update() {
+			// void
+		}
+	}
+
+	public INavigationLocation createEmptyNavigationLocation() {
+		return new SequenceChartLocation(0, Double.NaN);
+	}
+
+	public INavigationLocation createNavigationLocation() {
+		return new SequenceChartLocation(seqChart.getViewportLeftSimulationTime(), seqChart.getViewportRightSimulationTime());
 	}
 }

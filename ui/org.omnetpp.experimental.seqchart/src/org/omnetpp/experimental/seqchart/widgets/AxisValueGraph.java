@@ -22,6 +22,8 @@ public class AxisValueGraph extends AxisGraph {
 	private static final Color VALUE_NAME_COLOR = ColorFactory.asColor("black");
 	private static final Color NO_VALUE_COLOR = ColorFactory.asColor("white");
 	private static final Color TOO_MANY_VALUES_COLOR = ColorFactory.asColor("black");
+
+	// TODO: add more colors
 	private static final Color[] colors = {
 			ColorFactory.asColor("green"),
 			ColorFactory.asColor("red"),
@@ -33,8 +35,9 @@ public class AxisValueGraph extends AxisGraph {
 			ColorFactory.asColor("gray"),
 	};
 
-	private static XYArray[] xyArray;
+	private XYArray data;
 
+	// TODO: extract meta data
 	private String[] names = new String[] {
 			"IDLE",
 	        "DEFER",
@@ -45,61 +48,18 @@ public class AxisValueGraph extends AxisGraph {
 	        "WAITSIFS"
 	};
 	
-	// TODO: remove this hack
-	static 
-	{
-		ResultFileManager resultFileManager = new ResultFileManager();
-		File file = resultFileManager.loadVectorFile("C:\\Workspace\\Repository\\INET\\Examples\\Wireless\\80211Lan\\omnetpp.vec");
-		IDList idlist = resultFileManager.getDataInFile(file);
-		idlist = resultFileManager.getFilteredList(idlist, "*", "*", "State");
-		DataflowManager net = new DataflowManager();
-		NodeTypeRegistry factory = NodeTypeRegistry.instance();
-
-		// create VectorFileReader nodes
-		NodeType vectorFileReaderType = factory.getNodeType("vectorfilereader");
-		StringMap args = new StringMap();
-		args.set("filename", file.getFilePath());
-		Node fileReaderNode = vectorFileReaderType.create(net, args);
-
-		// create network
-		NodeType removeRepeatsType = factory.getNodeType("removerepeats");
-		NodeType arrayBuilderType = factory.getNodeType("arraybuilder");
-		Node [] arrayBuilderNodes = new Node[(int)idlist.size()];
-		for (int i = 0; i < (int)idlist.size(); i++) {
-			VectorResult vec = resultFileManager.getVector(idlist.get(i));
-			// no filter: connect directly to an ArrayBuilder
-			args = new StringMap();
-			Node removeRepeatsNode = removeRepeatsType.create(net, args);
-			Node arrayBuilderNode = arrayBuilderType.create(net, args);
-			arrayBuilderNodes[i] = arrayBuilderNode;
-			net.connect(vectorFileReaderType.getPort(fileReaderNode, "" + vec.getVectorId()),
-						removeRepeatsType.getPort(removeRepeatsNode, "in"));
-			net.connect(removeRepeatsType.getPort(removeRepeatsNode, "out"),
-						arrayBuilderType.getPort(arrayBuilderNode, "in"));
-		}
-
-		// run the netwrork
-		net.dump();
-		net.execute();
-
-		// extract results
-		xyArray = new XYArray[arrayBuilderNodes.length];
-		for (int i = 0; i < arrayBuilderNodes.length; i++)
-			xyArray[i] = arrayBuilderNodes[i].getArray();
-	}
-
-	// TODO: remove this hack and load data based on user choice
-	private int dataIndex;
-	
-	public AxisValueGraph(SequenceChart sequenceChart, int dataIndex) {
+	public AxisValueGraph(SequenceChart sequenceChart, XYArray data) {
 		super(sequenceChart);
-		this.dataIndex = dataIndex;
+		this.data = data;
 	}
 
 	public int getHeight() {
 		return 13;
 	}
 	
+	/**
+	 * Paints a colored tick line based on the values in the data vector in the given range. 
+	 */
 	public void paintAxis(Graphics graphics, double startSimulationTime, double endSimulationTime)
 	{
 		Rectangle rect = graphics.getClip(Rectangle.SINGLETON);
@@ -161,6 +121,10 @@ public class AxisValueGraph extends AxisGraph {
 		graphics.drawLine(rect.x, getHeight(), rect.right(), getHeight());
 	}
 	
+	/**
+	 * Returns the index having the same simulation time in the data array.
+	 * If there's no such element, then return the one before or after depending on the flag.
+	 */
 	private int getIndex(double simulationTime, boolean before)
 	{
 		int index;
@@ -197,17 +161,17 @@ public class AxisValueGraph extends AxisGraph {
 	
 	private int getDataLength()
 	{
-		return xyArray[dataIndex].length();
+		return data.length();
 	}
 	
 	private double getSimulationTime(int index)
 	{
-		return xyArray[dataIndex].getX(index);
+		return data.getX(index);
 	}
 	
 	private double getValue(int index)
 	{
-		return xyArray[dataIndex].getY(index);
+		return data.getY(index);
 	}
 
 	private int getValueIndex(int index)

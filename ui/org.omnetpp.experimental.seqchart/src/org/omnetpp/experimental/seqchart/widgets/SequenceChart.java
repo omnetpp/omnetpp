@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
 
+import org.eclipse.core.internal.resources.SaveContext;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.ListenerList;
 import org.eclipse.draw2d.Graphics;
@@ -42,6 +43,7 @@ import org.omnetpp.scave.engine.IntSet;
 import org.omnetpp.scave.engine.IntVector;
 import org.omnetpp.scave.engine.JavaFriendlyEventLogFacade;
 import org.omnetpp.scave.engine.MessageEntry;
+import org.omnetpp.scave.engine.XYArray;
 
 /**
  * This is a sequence chart as a single figure.
@@ -375,8 +377,8 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 	 */
 	public void saveViewportSimulationTimeRange()
 	{
-		viewportLeftSimulationTime = pixelToSimulationTime(0);
-		viewportRightSimulationTime = pixelToSimulationTime(getWidth());
+		viewportLeftSimulationTime = getViewportLeftSimulationTime();
+		viewportRightSimulationTime = getViewportRightSimulationTime();
 	}
 	
 	/**
@@ -384,24 +386,49 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 	 */
 	public void restoreViewportSimulationTimeRange()
 	{
-		double timelineUnitDelta = simulationTimeToTimelineCoordinate(viewportRightSimulationTime) - simulationTimeToTimelineCoordinate(viewportLeftSimulationTime);
-		setPixelsPerTimelineUnit(getWidth() / timelineUnitDelta);
-		scrollHorizontalTo(getViewportLeft() + simulationTimeToPixel(viewportLeftSimulationTime));
-		recalculateVirtualSize();
+		gotoSimulationTimeRange(viewportLeftSimulationTime, viewportRightSimulationTime);
 	}
 
 	/**
 	 * Returns the simulation time of the canvas's center.
 	 */
-	public double currentSimulationTime() {
-		int middleX = getWidth()/2;
+	public double getViewportCenterSimulationTime() {
+		int middleX = getWidth() / 2;
 		return pixelToSimulationTime(middleX);
 	}
 	
 	/**
-	 * Scroll the canvas so as to make the simulation time visible 
+	 * Returns the simulation time of the canvas's left.
 	 */
-	public void gotoSimulationTime(double time) {
+	public double getViewportLeftSimulationTime() {
+		return pixelToSimulationTime(0);
+	}
+	
+	/**
+	 * Returns the simulation time of the canvas's right.
+	 */
+	public double getViewportRightSimulationTime() {
+		return pixelToSimulationTime(getWidth());
+	}
+	
+	/**
+	 * Scroll the canvas so to make start and end simulation times visible.
+	 */
+	public void gotoSimulationTimeRange(double startSimulationTime, double endSimulationTime)
+	{
+		if (!Double.isNaN(endSimulationTime) && startSimulationTime != endSimulationTime) {
+			double timelineUnitDelta = simulationTimeToTimelineCoordinate(endSimulationTime) - simulationTimeToTimelineCoordinate(startSimulationTime);
+			setPixelsPerTimelineUnit(getWidth() / timelineUnitDelta);
+		}
+
+		scrollHorizontalTo(getViewportLeft() + simulationTimeToPixel(startSimulationTime));
+		recalculateVirtualSize();
+	}
+	
+	/**
+	 * Scroll the canvas so as to make the simulation time visible.
+	 */
+	public void gotoSimulationTimeWithCenter(double time) {
 		double xDouble = simulationTimeToTimelineCoordinate(time) * pixelsPerTimelineUnit;
 		long x = xDouble < 0 ? 0 : xDouble>Long.MAX_VALUE ? Long.MAX_VALUE : (long)xDouble;
 		scrollHorizontalTo(x - getWidth()/2);
@@ -425,12 +452,13 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 	 * Updates the figure with the given log and axis modules.
 	 * Scrolls canvas to current simulation time after updating.
 	 */
-	public void updateFigure(EventLog eventLog, ArrayList<ModuleTreeItem> axisModules) {
-		double time = currentSimulationTime();
+	public void updateFigure(EventLog eventLog, ArrayList<ModuleTreeItem> axisModules, ArrayList<XYArray> axisVectors) {
+		saveViewportSimulationTimeRange();
 		setEventLog(eventLog);
+		setAxisVectors(axisVectors);
 		setAxisModules(axisModules);
 		updateFigure();
-		gotoSimulationTime(time);
+		restoreViewportSimulationTimeRange();
 	}
 
 	/**
@@ -451,10 +479,10 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 	 * Changes pixel per timeline coordinate by zoomFactor.
 	 */
 	public void zoomBy(double zoomFactor) {
-		double time = currentSimulationTime();
+		double time = getViewportCenterSimulationTime();
 		setPixelsPerTimelineUnit(getPixelsPerTimelineUnit() * zoomFactor);	
 		recalculateVirtualSize();
-		gotoSimulationTime(time);
+		gotoSimulationTimeWithCenter(time);
 	}
 
 	/**
@@ -500,7 +528,6 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 	 */
 	public void setAxisModules(ArrayList<ModuleTreeItem> axisModules) {
 		this.axisModules = axisModules;
-		this.axisGraphs = new ArrayList<AxisGraph>();
 		
 		// update moduleIds
 		moduleIds = new IntSet();
@@ -512,26 +539,23 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 					moduleIds.insert(treeItem.getModuleId());
 				}
 			});
-
-			// TODO: remove this hack and load data based on user choice
-			if (treeItem.getModuleFullPath().contains(".mac")) {
-				int dataIndex = treeItem.getModuleFullPath().indexOf("host[");
-				
-				if (dataIndex != -1)
-					dataIndex = Integer.parseInt(treeItem.getModuleFullPath().substring(dataIndex + 5, dataIndex + 6));
-				else
-					dataIndex = 2;
-				
-				axisGraphs.add(new AxisValueGraph(this, dataIndex));
-			}
-			else
-				axisGraphs.add(new AxisGraph(this));
 		}
 		
 		calculateAxisPositions();
 		calculateAxisYs();
 
 		//FIXME what about updating the chart?
+	}
+	
+	private void setAxisVectors(ArrayList<XYArray> axisVectors) {
+		this.axisGraphs = new ArrayList<AxisGraph>();
+
+		for (XYArray axisVector : axisVectors)
+			if (axisVector != null) {
+				axisGraphs.add(new AxisValueGraph(this, axisVector));
+			}
+			else
+				axisGraphs.add(new AxisGraph(this));
 	}
 	
 	/**
@@ -1816,7 +1840,7 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 
 			// go to the time of the first event selected
 			if (selectionEvents.size()>0)
-				gotoSimulationTime(selectionEvents.get(0).getSimulationTime());
+				gotoSimulationTimeWithCenter(selectionEvents.get(0).getSimulationTime());
 
 			redraw();
 		}
