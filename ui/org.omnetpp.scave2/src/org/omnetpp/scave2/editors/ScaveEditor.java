@@ -66,7 +66,7 @@ import org.omnetpp.scave.model.InputFile;
 import org.omnetpp.scave.model.Inputs;
 import org.omnetpp.scave.model.ScaveModelFactory;
 import org.omnetpp.scave2.ContentTypes;
-import org.omnetpp.scave2.charting.ChartManager;
+import org.omnetpp.scave2.charting.ChartFactory;
 import org.omnetpp.scave2.editors.providers.DatasetScalarsViewProvider;
 import org.omnetpp.scave2.editors.providers.InputsLogicalViewProvider;
 import org.omnetpp.scave2.editors.providers.InputsPhysicalViewProvider;
@@ -414,10 +414,10 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INotifyChange
 			Dataset dataset = findEnclosingDataset(chart);
 			IDList idlist = DatasetManager.getIDListFromDataset(manager, dataset, chart);
 			if ("scalar".equals(dataset.getType())) {
-				page.addChart(ChartManager.createScalarChart(parent, idlist, manager));
+				page.addChart(ChartFactory.createScalarChart(parent, idlist, manager));
 			}
 			else if ("vector".equals(dataset.getType()))
-				page.addChart(ChartManager.createVectorChart(parent, idlist, manager));
+				page.addChart(ChartFactory.createVectorChart(parent, idlist, manager));
 		}
 	}
 	
@@ -426,10 +426,10 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INotifyChange
 		Dataset dataset = findEnclosingDataset(chart);
 		IDList idlist = DatasetManager.getIDListFromDataset(manager, dataset, chart);
 		if ("scalar".equals(dataset.getType())) {
-			page.setChart(ChartManager.createScalarChart(parent, idlist, manager));
+			page.setChart(ChartFactory.createScalarChart(parent, idlist, manager));
 		}
 		else if ("vector".equals(dataset.getType()))
-			page.setChart(ChartManager.createVectorChart(parent, idlist, manager));
+			page.setChart(ChartFactory.createVectorChart(parent, idlist, manager));
 		
 	}
 	

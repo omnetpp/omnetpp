@@ -4,24 +4,29 @@ import java.awt.Color;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
-import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.NumberAxis;
+import org.jfree.chart.block.BlockBorder;
 import org.jfree.chart.plot.CategoryPlot;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.category.BarRenderer;
 import org.jfree.chart.renderer.category.CategoryItemRenderer;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
+import org.jfree.chart.title.LegendTitle;
 import org.jfree.data.category.CategoryDataset;
 import org.jfree.data.category.DefaultCategoryDataset;
 import org.jfree.data.xy.XYDataset;
 import org.jfree.data.xy.XYSeriesCollection;
+import org.jfree.ui.RectangleEdge;
 import org.jfree.ui.RectangleInsets;
 import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.engine.ResultFileManager;
 
-public class ChartManager {
+/**
+ * Factory for scalar and vector charts. 
+ */
+public class ChartFactory {
 
 	public static InteractiveChart createScalarChart(Composite parent, IDList idlist, ResultFileManager manager) {
 		InteractiveChart chart = new InteractiveChart(parent, SWT.NONE);
@@ -29,6 +34,8 @@ public class ChartManager {
 		CategoryDataset dataset = ChartHelper.createChartWithRunsOnXAxis(idlist, manager);
 		chart.setChart(jfreechart);
 		jfreechart.getCategoryPlot().setDataset(dataset);
+		if (dataset.getRowCount() <= 5)
+			addLegend(jfreechart);
 		return chart;
 	}
 	
@@ -38,15 +45,17 @@ public class ChartManager {
 		XYDataset dataset = ChartHelper.createXYDataSet(idlist, manager);
 		chart.setChart(jfreechart);
 		jfreechart.getXYPlot().setDataset(dataset);
+		if (dataset.getSeriesCount() <= 5)
+			addLegend(jfreechart);
 		return chart;
 	}
 	
 	private static JFreeChart createEmptyScalarJFreeChart() {
 		DefaultCategoryDataset categorydataset = new DefaultCategoryDataset();
-		JFreeChart jfreechart = ChartFactory.createBarChart3D(
+		JFreeChart jfreechart = org.jfree.chart.ChartFactory.createBarChart3D(
 				"Title", "Category", "Value",
 				categorydataset, PlotOrientation.VERTICAL,
-				true, true, false);
+				false, false, false);
 		CategoryPlot categoryplot = jfreechart.getCategoryPlot();
 		CategoryItemRenderer categoryitemrenderer = categoryplot.getRenderer();
 		categoryitemrenderer.setItemLabelsVisible(true);
@@ -57,14 +66,11 @@ public class ChartManager {
 	}
 	
 	private static JFreeChart createEmptyVectorJFreeChart() {
-		// create dataset
 		XYSeriesCollection xyseriescollection = new XYSeriesCollection();
-
-		// create chart
-		JFreeChart jfreechart = ChartFactory.createXYLineChart(
+		JFreeChart jfreechart = org.jfree.chart.ChartFactory.createXYLineChart(
 				"Line Chart", "X", "Y",
 				xyseriescollection, PlotOrientation.VERTICAL,
-				true, true, false);
+				false, false, false);
 		jfreechart.setAntiAlias(false);
 		jfreechart.setBackgroundPaint(Color.white);
 		XYPlot xyplot = (XYPlot)jfreechart.getPlot();
@@ -78,5 +84,14 @@ public class ChartManager {
 		NumberAxis numberaxis = (NumberAxis)xyplot.getRangeAxis();
 		numberaxis.setStandardTickUnits(NumberAxis.createIntegerTickUnits());
 		return jfreechart;
+	}
+	
+	private static void addLegend(JFreeChart jfreechart) {
+        LegendTitle legend = new LegendTitle(jfreechart.getPlot());
+        legend.setMargin(new RectangleInsets(1.0, 1.0, 1.0, 1.0));
+        legend.setBorder(new BlockBorder());
+        legend.setBackgroundPaint(Color.white);
+        legend.setPosition(RectangleEdge.BOTTOM);
+        jfreechart.addSubtitle(legend);
 	}
 }
