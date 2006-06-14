@@ -67,7 +67,6 @@ import org.omnetpp.scave.engine.MessageEntry;
 public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 
 	private static final Color LABEL_COLOR = new Color(null, 0, 0, 0);
-	private static final Color AXIS_COLOR = new Color(null, 120, 120, 120);
 	private static final Color TICKS_LINE_COLOR = new Color(null, 160, 160, 160);
 	private static final Color TICKS_LABEL_COLOR = new Color(null, 0, 0, 0);
 	private static final Color GUTTER_BACKGROUND_COLOR = new Color(null, 255, 255, 160);
@@ -96,7 +95,7 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 	private static final int EVENT_SEL_RADIUS = 10; // radius of event selection mark circle
 	private static final int TICK_SPACING = 100; // space between ticks in pixels
 	private static final int CLIPRECT_BORDER = 10; // should be greater than an arrowhead or event "ball" radius
-	private static final int GUTTER_HEIGHT = 18; // height of top and bottom gutter
+	private static final int GUTTER_HEIGHT = 17; // height of top and bottom gutter
 	
 	protected EventLog eventLog; // contains the data to be displayed
 	protected JavaFriendlyEventLogFacade logFacade; // helpful facade on eventlog
@@ -121,10 +120,12 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 	
 	private int dragStartX, dragStartY; // temporary variables for drag handling
 	private List<ModuleTreeItem> axisModules; // the modules which should have an axis (they must be part of a module tree!)
+	private List<AxisGraph> axisGraphs; // used to paint the axis
 	private Integer[] axisModulePositions; // y order of the axis modules (in the same order as axisModules); this is a permutation of the 0..axisModule.size()-1 numbers
+	private Integer[] axisModuleYs; // top y coordinates of axis bounding boxes
 	private IntSet moduleIds; // calculated from axisModules: module Ids of all modules which are submodule of an axisModule (i.e. whose events appear on the chart)
 
-	private ArrayList<BigDecimal> ticks = new ArrayList<BigDecimal>(); // a list of tick simulation times to be drawn on axis
+	private ArrayList<BigDecimal> ticks = new ArrayList<BigDecimal>(); // a list of simulation times painted on the axis as tick marks
 	
 	private ArrayList<SelectionListener> selectionListenerList = new ArrayList<SelectionListener>(); // SWT selection listeners
 
@@ -267,6 +268,7 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 	 */
 	public void setAxisSpacing(int axisSpacing) {
 		this.axisSpacing = axisSpacing>0 ? axisSpacing : 1;
+		calculateAxisYs();
 		recalculateVirtualSize();
 		clearCanvasCacheAndRedraw();
 	}
@@ -355,6 +357,7 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 	 */
 	public void setTimelineSortMode(TimelineSortMode timelineSortMode) {
 		this.timelineSortMode = timelineSortMode;
+		calculateAxisPositions();
 		calculateAxisYs();
 		updateFigure();
 		clearCanvasCacheAndRedraw();
@@ -497,6 +500,7 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 	 */
 	public void setAxisModules(ArrayList<ModuleTreeItem> axisModules) {
 		this.axisModules = axisModules;
+		this.axisGraphs = new ArrayList<AxisGraph>();
 		
 		// update moduleIds
 		moduleIds = new IntSet();
@@ -508,8 +512,23 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 					moduleIds.insert(treeItem.getModuleId());
 				}
 			});
+
+			// TODO: remove this hack and load data based on user choice
+			if (treeItem.getModuleFullPath().contains(".mac")) {
+				int dataIndex = treeItem.getModuleFullPath().indexOf("host[");
+				
+				if (dataIndex != -1)
+					dataIndex = Integer.parseInt(treeItem.getModuleFullPath().substring(dataIndex + 5, dataIndex + 6));
+				else
+					dataIndex = 2;
+				
+				axisGraphs.add(new AxisValueGraph(this, dataIndex));
+			}
+			else
+				axisGraphs.add(new AxisGraph(this));
 		}
 		
+		calculateAxisPositions();
 		calculateAxisYs();
 
 		//FIXME what about updating the chart?
@@ -556,7 +575,7 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 	}
 
 	/**
-	 * Calculates Y coordinates of axis by minimizing message arrows crossing timelines.
+	 * Sorts axis by minimizing message arrows crossing timelines.
 	 * A message arrow costs as much as many axis it crosses. Uses simulated annealing.
 	 */
 	private void sortTimelinesByMinimizingCost(IntVector axisMatrix)
@@ -682,11 +701,12 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 	}
 	
 	/**
-	 * Sorts axis modules minimizing the number of crosses between timelines and messages arrows.
+	 * Sorts axis modules depending on timelineSortMode.
 	 */
-	private void calculateAxisYs()
+	private void calculateAxisPositions()
 	{
 		this.axisModulePositions = new Integer[axisModules.size()];
+		this.axisModuleYs = new Integer[axisModules.size()];
 
 		switch (timelineSortMode) {
 			case MODULE_ID:
@@ -715,6 +735,23 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 				break;
 		}
 	}
+
+	/**
+	 * Calculates top y coordinates of axis bounding boxes based on height returned
+	 * by each axis.
+	 */
+	private void calculateAxisYs()
+	{
+		for (int i = 0; i < axisModuleYs.length; i++) {
+			int y = 0;
+
+			for (int j = 0; j < axisModuleYs.length; j++)
+				if (axisModulePositions[j] < axisModulePositions[i])
+					y += axisSpacing + axisGraphs.get(j).getHeight();
+
+			axisModuleYs[i] = axisOffset + y;
+		}
+	}
 	
 	/**
 	 * Calculates (x,y) coordinates for all events, based on axes settings and timeline coordinates
@@ -724,7 +761,7 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 		final HashMap<Integer, Integer> moduleIdToAxisYMap = new HashMap<Integer, Integer>();
 		for (int i=0; i<axisModules.size(); i++) {
 			ModuleTreeItem treeItem = axisModules.get(i);
-			final int y = getAxisY(i);
+			final int y = getAxisY(i) + axisGraphs.get(i).getHeight() / 2;
 			// propagate y to all submodules recursively
 			treeItem.visitLeaves(new ModuleTreeItem.IModuleTreeItemVisitor() {
 				public void visit(ModuleTreeItem treeItem) {
@@ -803,7 +840,9 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 		EventEntry lastEvent = eventLog.getLastEvent();
 		long width = lastEvent==null ? 0 : (long)(lastEvent.getTimelineCoordinate() * getPixelsPerTimelineUnit()) + 3; // event mark should fit in
 		width = Math.max(width, 600); // at least half a screen
-		long height = axisModules.size() * axisSpacing + axisOffset * 2;
+		long height = (axisModules.size() - 1) * axisSpacing + axisOffset * 2;
+		for (int i = 0; i < axisGraphs.size(); i++)
+			height += axisGraphs.get(i).getHeight();
 		setVirtualSize(width, height);
 		recalculateEventCoordinates();  //XXX add this to other places too where something changes
 		clearCanvasCacheAndRedraw();
@@ -859,15 +898,23 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 		if (eventLog!=null && eventLog.getNumEvents()>0) {
 			long startMillis = System.currentTimeMillis();
 
+			Rectangle clip = graphics.getClip(new Rectangle());
+
 			graphics.setAntialias(antiAlias ? SWT.ON : SWT.OFF);
 			graphics.setTextAntialias(SWT.ON);
 
+			double startSimulationTime = pixelToSimulationTime(clip.x);
+			double endSimulationTime = pixelToSimulationTime(clip.right());
+			
 			for (int i=0; i<axisModules.size(); i++) {
 				int y = (int)(getAxisY(i) - getViewportTop());
-				drawAxis(graphics, y);
+				AxisGraph axisGraph = axisGraphs.get(i);
+				int dy = y;
+				graphics.translate(0, dy);
+				axisGraph.paintAxis(graphics, startSimulationTime, endSimulationTime);
+				graphics.translate(0, -dy);
 			}
 
-			Rectangle clip = graphics.getClip(new Rectangle());
 			int[] eventIndexRange = getFirstLastEventIndicesInRange(clip.x, clip.right());
 			int startEventIndex = eventIndexRange[0];
 			int endEventIndex = eventIndexRange[1];
@@ -947,8 +994,8 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 		graphics.setForegroundColor(TICKS_LABEL_COLOR);
 		String str = simulationTime.toPlainString() + "s";
 		graphics.setBackgroundColor(GUTTER_BACKGROUND_COLOR);
-		graphics.fillText(str, x + 3, 3);
-		graphics.fillText(str, x + 3, getHeight() - 15);
+		graphics.fillText(str, x + 3, 2);
+		graphics.fillText(str, x + 3, getHeight() - 16);
 	}
 	
 	private void paintEventSelectionMarks(Graphics graphics) {
@@ -1104,31 +1151,6 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 	}
 
 	/**
-	 * Draws the axis, according to the current pixelsPerTimelineUnit and tickInterval
-	 * settings. Does NOT include axis labels which go on the non-cachable layer.
-	 */
-	private void drawAxis(Graphics graphics, int y) {
-		Rectangle rect = graphics.getClip(Rectangle.SINGLETON);
-
-		// draw axis
-		graphics.setLineStyle(SWT.LINE_SOLID);
-		graphics.setForegroundColor(AXIS_COLOR);
-		graphics.drawLine(rect.x, y, rect.right(), y);
-
-		/*
-		int h = axisSpacing<AXISLABEL_DISTANCE ? 1 : 2; // make tick lines shorted when axes are dense
-		for (BigDecimal tick : ticks)
-		{
-			int x = simulationTimeToPixel(tick.doubleValue());
-			graphics.setForegroundColor(TICKS_LINE_COLOR);
-			graphics.drawLine(x, y-h, x, y+h);
-			graphics.setForegroundColor(TICKS_LABEL_COLOR);
-			graphics.drawText(tick.toPlainString() + "s", x + 3, y + 3);
-		}
-		*/
-	}
-
-	/**
 	 * Calculates and stores ticks as simulation times based on tick spacing. Tries to round tick values
 	 * to have as short numbers as possible within a range.
 	 */
@@ -1237,7 +1259,7 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 	 * Calculates the Y coordinate for the ith axis.
 	 */
 	private int getAxisY(int i) {
-		return axisOffset + axisModulePositions[i] * axisSpacing;
+		return axisModuleYs[i];
 	}
 
 	/**
@@ -1277,7 +1299,7 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 	/**
 	 * Translates from simulation time to timeline coordinate.
 	 */
-	private double simulationTimeToTimelineCoordinate(double simulationTime)
+	protected double simulationTimeToTimelineCoordinate(double simulationTime)
 	{		
     	switch (timelineMode)
     	{
@@ -1320,7 +1342,7 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 	/**
 	 * Translates from timeline coordinate to simulation time.
 	 */
-	private double timelineCoordinateToSimulationTime(double timelineCoordinate)
+	protected double timelineCoordinateToSimulationTime(double timelineCoordinate)
 	{
     	switch (timelineMode)
     	{
@@ -1363,21 +1385,21 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 	/**
 	 * Translates from pixel x coordinate to seconds.
 	 */
-	private double pixelToSimulationTime(int x) {
+	protected double pixelToSimulationTime(int x) {
 		return timelineCoordinateToSimulationTime(pixelToTimelineCoordinate(x));
 	}
 	
 	/**
 	 * Translates from seconds to pixel x coordinate.
 	 */
-	private int simulationTimeToPixel(double t) {
+	protected int simulationTimeToPixel(double t) {
 		return (int)((long)Math.round(simulationTimeToTimelineCoordinate(t) * pixelsPerTimelineUnit) - getViewportLeft());
 	}
 	
 	/**
 	 * Translates from pixel x coordinate to timeline coordinate, using on pixelsPerTimelineUnit.
 	 */
-	private double pixelToTimelineCoordinate(int x) {
+	protected double pixelToTimelineCoordinate(int x) {
 		return (x + getViewportLeft()) / pixelsPerTimelineUnit;
 	}
 
@@ -1385,7 +1407,7 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 	 * Translates timeline coordinate to pixel x coordinate, using on pixelsPerTimelineUnit.
 	 * Extreme values get clipped to a reasonable interval (-XMAX, XMAX).
 	 */
-	private int timelineCoordinateToPixel(double t) {
+	protected int timelineCoordinateToPixel(double t) {
 		long x = Math.round(t * pixelsPerTimelineUnit) - getViewportLeft();
     	return (x < -XMAX) ? -XMAX : (x > XMAX) ? XMAX : (int)x;
 	}
@@ -1393,14 +1415,14 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 	/**
 	 * Translates from virtual pixel x coordinate to timeline coordinate, using on pixelsPerTimelineUnit.
 	 */
-	private double virtualPixelToTimelineCoordinate(long x) {
+	protected double virtualPixelToTimelineCoordinate(long x) {
 		return x / pixelsPerTimelineUnit;
 	}
 
 	/**
 	 * Translates timeline coordinate to pixel x coordinate, using on pixelsPerTimelineUnit.
 	 */
-	private long timelineCoordinateToVirtualPixel(double t) {
+	protected long timelineCoordinateToVirtualPixel(double t) {
 		return Math.round(t * pixelsPerTimelineUnit);
 	}
 
