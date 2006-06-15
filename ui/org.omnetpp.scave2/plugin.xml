@@ -13,6 +13,7 @@
             id="org.omnetpp.scave2.editors.ScaveEditor">
       </editor>
    </extension>
+   
    <extension
          id="org.omnetpp.scave.content-types"
          name="Scave content types"
@@ -28,5 +29,22 @@
             name="Vector result file"
             priority="normal"/>
    </extension>
+
+  <extension
+    point = "org.eclipse.ui.newWizards">
+    <category
+      id = "org.omnetpp.Wizard.category.ID"
+      name="OMNEST/OMNeT++ Wizards">
+    </category>
+    <wizard
+      id = "org.omnetpp.scave2.wizard.ScaveModelModelWizardID"
+      name = "Analysis"
+      class = "org.omnetpp.scave2.wizard.ScaveModelWizard"
+      category = "org.omnetpp.Wizard.category.ID"
+      icon = "icons/full/obj16/ScaveModelModelFile.gif">
+      <description>Create a new Analysis</description>
+      <selection class = "org.eclipse.core.resources.IResource" />
+    </wizard>
+  </extension>
 
 </plugin>

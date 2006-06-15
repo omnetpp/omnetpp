@@ -51,24 +51,6 @@
        genModel = "model/scave.genmodel" /> 
   </extension>
 
-
-  <extension
-    point = "org.eclipse.ui.newWizards">
-    <category
-      id = "org.eclipse.emf.ecore.Wizard.category.ID"
-      name="%_UI_Wizard_category">
-    </category>
-    <wizard
-      id = "org.omnetpp.scave.model.presentation.ScaveModelModelWizardID"
-      name = "%_UI_ScaveModelModelWizard_label"
-      class = "org.omnetpp.scave.model.presentation.ScaveModelModelWizard"
-      category = "org.eclipse.emf.ecore.Wizard.category.ID"
-      icon = "icons/full/obj16/ScaveModelModelFile.gif">
-      <description>%_UI_ScaveModelModelWizard_description</description>
-      <selection class = "org.eclipse.core.resources.IResource" />
-    </wizard>
-  </extension>
-
   <extension point = "org.eclipse.ui.editors">
     <editor
         id = "org.omnetpp.scave.model.presentation.ScaveModelEditorID"

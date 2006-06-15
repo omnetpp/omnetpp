@@ -44,14 +44,5 @@ public class ChartSheetPage extends ScrolledForm {
 		gridLayout.horizontalSpacing = 7;
 		gridLayout.verticalSpacing = 7;
 		chartsArea.setLayout(gridLayout);
-
-		//XXX some testing code
-		for (int i=0; i<5; i++) {
-			Canvas canvas = new Canvas(chartsArea, SWT.NONE);
-			canvas.setBackground(new Color(null, 0, 255-i*20, 0));
-			canvas.setLayoutData(new GridData(320,200));
-			chartsArea.configureChild(canvas);
-		}
-		
 	}
 }
