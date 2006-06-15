@@ -17,10 +17,15 @@ import org.omnetpp.scave2.model.FilterParams;
  * The user is asked to select the target dataset.
  */
 public class AddToDatasetAction extends AbstractScaveAction {
+	public AddToDatasetAction() {
+		setText("Add to dataset...");
+		setToolTipText("Add to dataset");
+	}
 
 	@Override
 	protected void doRun(ScaveEditor editor, IStructuredSelection selection) {
 		FilterPanel activePanel = editor.getBrowseDataPage().getActivePanel();
+		//FIXME tomi: mi van ha activePanel==null???
 		ListDialog dialog = new ListDialog(editor.getSite().getShell());
 		dialog.setInput(editor.getAnalysisModelObject().getDatasets());
 		dialog.setContentProvider(new AdapterFactoryContentProvider(editor.getAdapterFactory()));

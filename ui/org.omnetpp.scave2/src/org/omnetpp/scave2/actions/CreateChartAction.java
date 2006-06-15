@@ -15,6 +15,10 @@ import org.omnetpp.scave2.model.FilterParams;
  * creates a chart displaying the dataset. 
  */
 public class CreateChartAction extends AbstractScaveAction {
+	public CreateChartAction() {
+		setText("Create chart...");
+		setToolTipText("Create chart from current data");
+	}
 
 	@Override
 	protected void doRun(ScaveEditor editor, IStructuredSelection selection) {

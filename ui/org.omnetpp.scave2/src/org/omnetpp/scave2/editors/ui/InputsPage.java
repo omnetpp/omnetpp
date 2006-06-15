@@ -1,10 +1,10 @@
 package org.omnetpp.scave2.editors.ui;
 
+import org.eclipse.jface.action.ActionContributionItem;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.forms.widgets.ExpandableComposite;
@@ -12,7 +12,11 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
 import org.omnetpp.common.color.ColorFactory;
+import org.omnetpp.scave2.actions.AddResultFileAction;
+import org.omnetpp.scave2.actions.AddWildcardResultFileAction;
+import org.omnetpp.scave2.actions.RemoveAction;
 import org.omnetpp.scave2.editors.ScaveEditor;
+import org.omnetpp.scave2.editors.ScaveEditorContributor;
 
 public class InputsPage extends ScrolledForm {
 
@@ -65,7 +69,6 @@ public class InputsPage extends ScrolledForm {
 
 	/**
 	 * This method initializes inputFilesSection	
-	 *
 	 */
 	private void createInputFilesSection() {
 		GridData gridData = new GridData();
@@ -84,8 +87,22 @@ public class InputsPage extends ScrolledForm {
 		InputFilesPanel inputFilesPanel = new InputFilesPanel(inputFilesSection, SWT.NONE);
 		inputFilesSection.setClient(inputFilesPanel);
 
-		final TreeViewer treeViewer = inputFilesPanel.getTreeViewer();
-		//TODO buttons
+		// buttons
+		//new ActionContributionItem(ScaveEditorContributor.getDefault().addResultFileAction).fill(inputFilesPanel.getButtonPanel());
+		//new ActionContributionItem(ScaveEditorContributor.getDefault().addWildcardResultFileAction).fill(inputFilesPanel.getButtonPanel());
+		//new ActionContributionItem(ScaveEditorContributor.getDefault().removeAction).fill(inputFilesPanel.getButtonPanel());
+		scaveEditor.configureViewerButton(
+				inputFilesPanel.getAddFileButton(), 
+				inputFilesPanel.getTreeViewer(),
+				new AddResultFileAction());
+		scaveEditor.configureViewerButton(
+				inputFilesPanel.getAddWildcardButton(), 
+				inputFilesPanel.getTreeViewer(),
+				new AddWildcardResultFileAction());
+		scaveEditor.configureViewerButton(
+				inputFilesPanel.getRemoveFileButton(), 
+				inputFilesPanel.getTreeViewer(),
+				new RemoveAction());
 	}
 
 	/**

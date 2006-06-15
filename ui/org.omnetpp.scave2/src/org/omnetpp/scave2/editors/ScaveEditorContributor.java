@@ -4,11 +4,16 @@ import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.IStatusLineManager;
 import org.eclipse.jface.action.IToolBarManager;
+import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ui.IActionBars;
+import org.eclipse.ui.ISelectionListener;
 import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.IWorkbenchPart;
 import org.omnetpp.scave.model.presentation.ScaveModelActionBarContributor;
 import org.omnetpp.scave2.actions.AbstractScaveAction;
+import org.omnetpp.scave2.actions.AddResultFileAction;
 import org.omnetpp.scave2.actions.AddToDatasetAction;
+import org.omnetpp.scave2.actions.AddWildcardResultFileAction;
 import org.omnetpp.scave2.actions.CreateChartAction;
 import org.omnetpp.scave2.actions.CreateDatasetAction;
 import org.omnetpp.scave2.actions.EditAction;
@@ -25,6 +30,8 @@ import org.omnetpp.scave2.actions.RemoveAction;
 public class ScaveEditorContributor extends ScaveModelActionBarContributor {
 	private static ScaveEditorContributor instance;
 	
+	public IAction addResultFileAction;
+	public IAction addWildcardResultFileAction;
 	public IAction openAction;
 	public IAction editAction;
 	public IAction removeAction;
@@ -44,33 +51,22 @@ public class ScaveEditorContributor extends ScaveModelActionBarContributor {
 	public void init(IActionBars bars, IWorkbenchPage page) {
         super.init(bars, page);
 
+        addResultFileAction = registerAction(page, new AddResultFileAction());
+        addWildcardResultFileAction = registerAction(page, new AddWildcardResultFileAction());
         openAction = registerAction(page, new OpenAction());
-		openAction.setText("Open");
-		openAction.setToolTipText("Open item in a separate page");
-
         editAction = registerAction(page, new EditAction());
-        editAction.setText("Edit...");
-        editAction.setToolTipText("Edit selectyed item");
-	
 		removeAction = registerAction(page, new RemoveAction());
-		removeAction.setText("Remove");
-		removeAction.setToolTipText("Remove selected items");
-
 		addToDatasetAction = registerAction(page, new AddToDatasetAction());
-		addToDatasetAction.setText("Add to dataset...");
-		addToDatasetAction.setToolTipText("Add to dataset");
-
 		createDatasetAction = registerAction(page, new CreateDatasetAction());
-		createDatasetAction.setText("Create dataset...");
-		createDatasetAction.setToolTipText("Create dataset from current data");
-
 		createChartAction = registerAction(page, new CreateChartAction());
-		createChartAction.setText("Create chart...");
-		createChartAction.setToolTipText("Create chart from current data");
 	}
 
-	private IAction registerAction(IWorkbenchPage page, AbstractScaveAction action) {
-		page.getWorkbenchWindow().getSelectionService().addSelectionListener(action);
+	private IAction registerAction(IWorkbenchPage page, final AbstractScaveAction action) {
+		page.getWorkbenchWindow().getSelectionService().addSelectionListener(new ISelectionListener() {
+			public void selectionChanged(IWorkbenchPart part, ISelection selection) {
+				action.selectionChanged(selection);
+			}
+		});
 		return action;
 	}
 

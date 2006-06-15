@@ -9,6 +9,11 @@ import org.omnetpp.scave2.editors.ScaveEditor;
  * Removes selected elements.
  */
 public class RemoveAction extends AbstractScaveAction {
+	public RemoveAction() {
+		setText("Remove");
+		setToolTipText("Remove selected items");
+	}
+
 	@Override
 	protected void doRun(ScaveEditor scaveEditor, IStructuredSelection structuredSelection) {
 		// use EMF.Edit Framework do to the removal (this makes it undoable)

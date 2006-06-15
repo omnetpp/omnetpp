@@ -17,7 +17,7 @@ import org.omnetpp.scave2.editors.ScaveEditor;
  * Base class to factor out common code in Action classes. 
  * @author andras
  */
-public abstract class AbstractScaveAction extends Action implements ISelectionListener {
+public abstract class AbstractScaveAction extends Action implements IScaveAction {
 
 	/**
 	 * Delegate work to doRun() if the editor is ScaveEditor and selection is
@@ -43,11 +43,14 @@ public abstract class AbstractScaveAction extends Action implements ISelectionLi
 	protected abstract void doRun(ScaveEditor scaveEditor, IStructuredSelection selection);
 
 	/**
-	 * Disable the action if the editor is not a ScaveEditor or selection is 
-	 * not an IStructuredSelection. Redefine isApplicable() to refine this condition.  
+	 * To be called from a JFace {@link ISelectionChangedListener} or the selection service's
+	 * {@link ISelectionListener} to enable/disable the action. To get enabled, the editor 
+	 * must be a ScaveEditor, selection an IStructuredSelection, and <code>isApplicable()</code> 
+	 * should return true. Override <code>isApplicable()</code> accordingly.  
 	 */
-	public void selectionChanged(IWorkbenchPart part, ISelection selection) {
+	public void selectionChanged(ISelection selection) {
 		IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
+		if (page==null) return;
 		IEditorPart editor = page.getActiveEditor();
 		boolean isApplicable = editor instanceof ScaveEditor && selection instanceof IStructuredSelection && isApplicable((ScaveEditor)editor, (IStructuredSelection)selection);
 		if (isEnabled()!=isApplicable)
@@ -62,12 +65,12 @@ public abstract class AbstractScaveAction extends Action implements ISelectionLi
 	/**
 	 * Utility function for use in isApplicable()
 	 */
-	public static boolean containsEObjectsOnly(IStructuredSelection selection) {
+	protected static boolean containsEObjectsOnly(IStructuredSelection selection) {
 		if (selection.isEmpty())
 			return true;
 		for (Object o : selection.toArray())
 			if (!(o instanceof EObject))
 				return false;
-		return false;
+		return true;
 	}
 }

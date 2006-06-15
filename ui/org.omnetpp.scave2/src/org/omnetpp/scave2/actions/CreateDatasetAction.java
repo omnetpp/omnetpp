@@ -10,6 +10,10 @@ import org.omnetpp.scave2.editors.ui.FilterPanel;
 import org.omnetpp.scave2.model.FilterParams;
 
 public class CreateDatasetAction extends AbstractScaveAction {
+	public CreateDatasetAction() {
+		setText("Create dataset...");
+		setToolTipText("Create dataset from current data");
+	}
 
 	@Override
 	protected void doRun(ScaveEditor editor, IStructuredSelection selection) {

@@ -26,7 +26,11 @@ import org.eclipse.emf.edit.command.CreateChildCommand;
 import org.eclipse.emf.edit.provider.IChangeNotifier;
 import org.eclipse.emf.edit.provider.INotifyChangedListener;
 import org.eclipse.jface.action.IAction;
+import org.eclipse.jface.util.IPropertyChangeListener;
+import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
@@ -37,13 +41,20 @@ import org.eclipse.swt.dnd.DropTargetAdapter;
 import org.eclipse.swt.dnd.DropTargetEvent;
 import org.eclipse.swt.dnd.FileTransfer;
 import org.eclipse.swt.dnd.Transfer;
+import org.eclipse.swt.events.DisposeEvent;
+import org.eclipse.swt.events.DisposeListener;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
+import org.eclipse.ui.ISelectionListener;
+import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.omnetpp.scave.engine.File;
 import org.omnetpp.scave.engine.IDList;
@@ -59,6 +70,7 @@ import org.omnetpp.scave.model.InputFile;
 import org.omnetpp.scave.model.Inputs;
 import org.omnetpp.scave.model.ScaveModelFactory;
 import org.omnetpp.scave2.ContentTypes;
+import org.omnetpp.scave2.actions.IScaveAction;
 import org.omnetpp.scave2.charting.ChartFactory;
 import org.omnetpp.scave2.editors.providers.InputsLogicalViewProvider;
 import org.omnetpp.scave2.editors.providers.InputsPhysicalViewProvider;
@@ -123,8 +135,6 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INotifyChange
 	@Override
 	public void init(IEditorSite site, IEditorInput editorInput) {
 		super.init(site, editorInput);
-		IAction action = this.getActionBarContributor().getActionBars().getGlobalActionHandler("org.omnetpp.scave2.OpenDataset");
-		System.out.println("Action: "+action);
 		
 		if (adapterFactory instanceof IChangeNotifier) {
 			IChangeNotifier notifier = (IChangeNotifier)adapterFactory;
@@ -677,7 +687,7 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INotifyChange
 //			}
 //		});
 //	}
-//	
+//
 //	/**
 //	 * Connects the button with an action, so that
 //	 * the action is executed, when the button is pressed and
@@ -691,7 +701,7 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INotifyChange
 //			}
 //		};
 //		delegate.setActiveEditor(action, this);
-//		getSite().getSelectionProvider().addSelectionChangedListener(new ISelectionChangedListener() {
+//		getSite().getSelectionProvider().addSelectionChangedListener(new ISelectionChangedListener() {  <<<<<<<<< this wasn't good
 //			public void selectionChanged(SelectionChangedEvent event) {
 //				delegate.selectionChanged(action, event.getSelection());
 //			}
@@ -716,14 +726,75 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INotifyChange
 //			}
 //		});
 //	}
-//
-//	/**
-//	 * Pops up a dialog to edit the element(s) in the selection
-//	 */
-//	protected void openEditSelectedElemementsDialog(IStructuredSelection sel) {
-//		MessageDialog.openInformation(getSite().getShell(), "TODO", "The Edit Dialog doesn't exist yet :("); //TODO
-//	}
 	
+	/**
+	 * Connects the button with an action, so that the action is executed 
+	 * when the button is pressed, and the button is enabled/disabled when 
+	 * the action becomes enabled/disabled.
+	 * 
+	 * Note: ActionContributionItem is not good here because:
+	 *  (1) it wants to create the button itself, and thus not compatible with FormToolkit
+	 *  (2) the button it creates has wrong background color, and there's no way to access the button to fix it
+	 *  (3) it will make the button listen to global selection changes, and cannot be tied to a viewer 
+	 */
+	private void doConfigureButton(final Button button, final IScaveAction action) {
+		button.setText(action.getText());
+		button.setToolTipText(action.getToolTipText());
+		//XXX button.setImage(action.getImageDescriptor());
+		button.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
+				action.run();
+			}
+		});
+		final IPropertyChangeListener propertyChangeListener = new IPropertyChangeListener() {
+			public void propertyChange(PropertyChangeEvent event) {
+				if (event.getProperty().equals(IAction.ENABLED)) {
+					if (!button.isDisposed())
+						button.setEnabled(action.isEnabled());
+				}
+			}
+		};
+		action.addPropertyChangeListener(propertyChangeListener);
+		button.addDisposeListener(new DisposeListener() {
+			public void widgetDisposed(DisposeEvent e) {
+				action.removePropertyChangeListener(propertyChangeListener);
+			}
+		});
+	}
+
+	/* 
+	 * Connects the button with an action, so that the action is executed 
+	 * when the button is pressed, and the button is enabled/disabled when 
+	 * the action becomes enabled/disabled. 
+	 * 
+	 * The action will be enabled/disabled based on the selection service's
+	 * selection.
+	 */
+	public void configureGlobalButton(final Button button, final IScaveAction action) {
+		doConfigureButton(button, action);
+		getSite().getWorkbenchWindow().getSelectionService().addSelectionListener(new ISelectionListener() {
+			public void selectionChanged(IWorkbenchPart part, ISelection selection) {
+				action.selectionChanged(selection);
+			}
+		});
+	}
+	
+	/* 
+	 * Connects the button with an action, so that the action is executed 
+	 * when the button is pressed, and the button is enabled/disabled when 
+	 * the action becomes enabled/disabled. 
+	 * 
+	 * The action will be enabled/disabled based on a viewer's selection.
+	 */
+	public void configureViewerButton(final Button button, final Viewer viewer, final IScaveAction action) {
+		doConfigureButton(button, action);
+		viewer.addSelectionChangedListener(new ISelectionChangedListener() {
+			public void selectionChanged(SelectionChangedEvent event) {
+				action.selectionChanged(event.getSelection());
+			}
+		});
+	}
+
 	public void reportError(String message) {
 		// TODO
 	}

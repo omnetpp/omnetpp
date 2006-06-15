@@ -32,60 +32,6 @@
       </perspective>
    </extension>
    <extension
-         point="org.eclipse.ui.views">
-      <view
-            name="Message"
-            allowMultiple="true"
-            icon="icons/sample2.gif"
-            class="org.omnetpp.ide.misc.View"
-            id="org.omnetpp.ide.view">
-      </view>
-      <view
-            name="Mailboxes"
-            allowMultiple="true"
-            icon="icons/sample3.gif"
-            class="org.omnetpp.ide.misc.NavigationView"
-            id="org.omnetpp.ide.navigationView">
-      </view>
-   </extension>
-   <extension
-         point="org.eclipse.ui.commands">
-      <category
-            name="Mail"
-            id="org.omnetpp.ide.category">
-      </category>
-      <command
-            name="Open Mailbox"
-            description="Opens a mailbox"
-            categoryId="org.omnetpp.ide.category"
-            id="org.omnetpp.ide.open">
-      </command>
-      <command
-            name="Open Message Dialog"
-            description="Open a message dialog"
-            categoryId="org.omnetpp.ide.category"
-            id="org.omnetpp.ide.openMessage">
-      </command>
-   </extension>
-   <extension
-         point="org.eclipse.ui.bindings">
-      <key
-            commandId="org.omnetpp.ide.open"
-            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
-            sequence="CTRL+2">
-      </key>
-      <key
-            commandId="org.omnetpp.ide.openMessage"
-            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
-            sequence="CTRL+3">
-      </key>
-      <key
-            commandId="org.eclipse.ui.file.exit"
-            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
-            sequence="CTRL+X">
-      </key>
-   </extension>
-   <extension
          id="omnetppide"
          point="org.eclipse.core.runtime.products">
       <product
