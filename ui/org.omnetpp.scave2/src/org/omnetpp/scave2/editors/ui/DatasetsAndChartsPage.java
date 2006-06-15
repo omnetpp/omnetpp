@@ -2,6 +2,8 @@ package org.omnetpp.scave2.editors.ui;
 
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -93,7 +95,7 @@ public class DatasetsAndChartsPage extends ScrolledForm {
 				datasetsPanel.getRemoveNodeButton(), 
 				datasetsPanel.getTreeViewer(),
 				new RemoveAction());
-		scaveEditor.configureViewerButton(
+		scaveEditor.configureViewerDefaultButton(
 				datasetsPanel.getOpenDatasetButton(), 
 				datasetsPanel.getTreeViewer(),
 				new OpenAction());
@@ -130,9 +132,10 @@ public class DatasetsAndChartsPage extends ScrolledForm {
 				chartSheetsPanel.getRemoveChartSheetButton(), 
 				chartSheetsPanel.getTreeViewer(),
 				new RemoveAction());
-		scaveEditor.configureViewerButton(
+		scaveEditor.configureViewerDefaultButton(
 				chartSheetsPanel.getOpenChartSheetButton(), 
 				chartSheetsPanel.getTreeViewer(),
 				new OpenAction());
+		
 	}
 }

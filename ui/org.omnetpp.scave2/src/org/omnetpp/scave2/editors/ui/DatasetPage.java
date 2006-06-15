@@ -117,7 +117,7 @@ public class DatasetPage extends ScrolledForm {
 				datasetPanel.getUngroupButton(),
 				datasetPanel.getTreeViewer(), 
 				new UngroupAction());
-		scaveEditor.configureViewerButton(
+		scaveEditor.configureViewerDefaultButton(
 				datasetPanel.getOpenChartButton(),
 				datasetPanel.getTreeViewer(), 
 				new OpenAction());

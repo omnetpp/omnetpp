@@ -31,6 +31,7 @@ import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
+import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
@@ -802,6 +803,18 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INotifyChange
 		});
 	}
 
+	/**
+	 * Like <code>configureViewerButton</code>, but action will also run
+	 * on double-clicking in the viewer.
+	 */
+	public void configureViewerDefaultButton(final Button button, final TreeViewer viewer, final IScaveAction action) {
+		viewer.getTree().addSelectionListener(new SelectionAdapter() {
+			public void widgetDefaultSelected(SelectionEvent e) {
+				action.run();
+			}
+		});
+	}
+	
 	public void reportError(String message) {
 		// TODO
 	}
@@ -811,8 +824,7 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INotifyChange
 	 */
 	public void executeCommand(Command command) {
 		getEditingDomain().getCommandStack().execute(command);
-	}
-	
+	}	
 }
 
 
