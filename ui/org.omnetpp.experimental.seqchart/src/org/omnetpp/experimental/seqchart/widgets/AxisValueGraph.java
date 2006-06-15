@@ -6,15 +6,6 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.omnetpp.common.color.ColorFactory;
-import org.omnetpp.scave.engine.DataflowManager;
-import org.omnetpp.scave.engine.File;
-import org.omnetpp.scave.engine.IDList;
-import org.omnetpp.scave.engine.Node;
-import org.omnetpp.scave.engine.NodeType;
-import org.omnetpp.scave.engine.NodeTypeRegistry;
-import org.omnetpp.scave.engine.ResultFileManager;
-import org.omnetpp.scave.engine.StringMap;
-import org.omnetpp.scave.engine.VectorResult;
 import org.omnetpp.scave.engine.XYArray;
 
 public class AxisValueGraph extends AxisGraph {
@@ -98,8 +89,7 @@ public class AxisValueGraph extends AxisGraph {
 					graphics.drawLine(x1, 0, x1, getHeight());
 				}
 	
-				// draw labels starting at each value change
-				// TODO: measure name and compare length to that
+				// draw labels starting at each value change and repeat labels based on canvas width
 				if (phase == 1) {
 					String name = getValueName(i);
 					int labelWidth = graphics.getFontMetrics().getAverageCharWidth() * name.length();
@@ -122,41 +112,54 @@ public class AxisValueGraph extends AxisGraph {
 	}
 	
 	/**
-	 * Returns the index having the same simulation time in the data array.
-	 * If there's no such element, then return the one before or after depending on the flag.
+	 * Returns the index having less or greater simulation time in the data array depending on the given flag.
 	 */
 	private int getIndex(double simulationTime, boolean before)
 	{
-		int index;
+		int index = -1;
 		int left = 0;
 		int right = getDataLength();
 
 		while (left <= right) {
 	        int mid = (int)Math.floor((right-left)/2) + left;
 
-	        if (getSimulationTime(mid) == simulationTime)
-	            return mid;
+	        if (getSimulationTime(mid) == simulationTime) {
+	        	do {
+	        		if (before)
+	        			mid--;
+	        		else
+	        			mid++;
+	        	}
+	        	while (mid >= 0 && mid < getDataLength() && getSimulationTime(mid) == simulationTime);
+
+	        	index = mid;
+	        	break;
+	        }
             else if (simulationTime < getSimulationTime(mid))
 	            right = mid - 1;
 	        else
 	            left = mid + 1;
 		}
 
-		if (before)
-			if (simulationTime < getSimulationTime(left))
-				index = left - 1;
+		if (left > right)
+			if (before)
+				if (simulationTime < getSimulationTime(left))
+					index = left - 1;
+				else
+					index = left;
 			else
-				index = left;
-		else
-			if (simulationTime > getSimulationTime(right))
-				index = right + 1;
-			else
-				index = right;
+				if (simulationTime > getSimulationTime(right))
+					index = right + 1;
+				else
+					index = right;
 
 		if (index < 0 || index >= getDataLength())
 			return -1;
-		else
+		else {
+			assert((before && getSimulationTime(index) < simulationTime) ||
+				   (!before && getSimulationTime(index) > simulationTime));
 			return index;
+		}
 	}
 	
 	private int getDataLength()

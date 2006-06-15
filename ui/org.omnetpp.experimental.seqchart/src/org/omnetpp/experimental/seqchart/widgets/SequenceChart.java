@@ -9,7 +9,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
 
-import org.eclipse.core.internal.resources.SaveContext;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.ListenerList;
 import org.eclipse.draw2d.Graphics;
@@ -418,7 +417,9 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 	{
 		if (!Double.isNaN(endSimulationTime) && startSimulationTime != endSimulationTime) {
 			double timelineUnitDelta = simulationTimeToTimelineCoordinate(endSimulationTime) - simulationTimeToTimelineCoordinate(startSimulationTime);
-			setPixelsPerTimelineUnit(getWidth() / timelineUnitDelta);
+			
+			if (timelineUnitDelta > 0)
+				setPixelsPerTimelineUnit(getWidth() / timelineUnitDelta);
 		}
 
 		scrollHorizontalTo(getViewportLeft() + simulationTimeToPixel(startSimulationTime));
@@ -433,6 +434,14 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 		long x = xDouble < 0 ? 0 : xDouble>Long.MAX_VALUE ? Long.MAX_VALUE : (long)xDouble;
 		scrollHorizontalTo(x - getWidth()/2);
 		redraw();
+	}
+	
+	/**
+	 * Scroll the canvas to make the event visible.
+	 */
+	public void gotoEvent(EventEntry e) {
+		gotoSimulationTimeWithCenter(e.getSimulationTime());
+		scrollVerticalTo(e.getCachedY() - getClientArea().height / 2);
 	}
 
 	/**
@@ -785,7 +794,7 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 		final HashMap<Integer, Integer> moduleIdToAxisYMap = new HashMap<Integer, Integer>();
 		for (int i=0; i<axisModules.size(); i++) {
 			ModuleTreeItem treeItem = axisModules.get(i);
-			final int y = getAxisY(i) + axisGraphs.get(i).getHeight() / 2;
+			final int y = axisModuleYs[i] + axisGraphs.get(i).getHeight() / 2;
 			// propagate y to all submodules recursively
 			treeItem.visitLeaves(new ModuleTreeItem.IModuleTreeItemVisitor() {
 				public void visit(ModuleTreeItem treeItem) {
@@ -931,7 +940,7 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 			double endSimulationTime = pixelToSimulationTime(clip.right());
 			
 			for (int i=0; i<axisModules.size(); i++) {
-				int y = (int)(getAxisY(i) - getViewportTop());
+				int y = (int)(axisModuleYs[i] - getViewportTop());
 				AxisGraph axisGraph = axisGraphs.get(i);
 				int dy = y;
 				graphics.translate(0, dy);
@@ -1272,18 +1281,11 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 			graphics.setForegroundColor(LABEL_COLOR);
 			for (int i=0; i<axisModules.size(); i++) {
 				ModuleTreeItem treeItem = axisModules.get(i);
-				int y = (int)(getAxisY(i) - getViewportTop());
+				int y = (int)(axisModuleYs[i] - getViewportTop());
 				String label = treeItem.getModuleFullPath();
 				graphics.drawText(label, 5, y - AXISLABEL_DISTANCE);
 			}
 		}
-	}
-
-	/**
-	 * Calculates the Y coordinate for the ith axis.
-	 */
-	private int getAxisY(int i) {
-		return axisModuleYs[i];
 	}
 
 	/**
@@ -1621,7 +1623,7 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 		}
 
 		// 3) no events or message arrows: show axis info
-		ModuleTreeItem axisModule = findAxisAt(y);
+		ModuleTreeItem axisModule = findAxisAt(y + getViewportTop());
 		if (axisModule!=null) {
 			String res = "axis "+axisModule.getModuleFullPath()+"\n";
 			double t = pixelToSimulationTime(x);
@@ -1639,20 +1641,14 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 	/**
 	 * Returns the axis at the given Y coordinate (with MOUSE_TOLERANCE), or null. 
 	 */
-	public ModuleTreeItem findAxisAt(int y) {
-		// determine which axis (1st, 2nd, etc) is nearest, and if it's "near enough"
-		long nearestAxisPos = (y + getViewportTop() - axisOffset + axisSpacing/2) / axisSpacing;
-		long nearestAxisY = axisOffset + nearestAxisPos * axisSpacing - getViewportTop();
-		if (Math.abs(y - nearestAxisY) > MOUSE_TOLERANCE)
-			return null; // nothing here
-			
-		// find which ModuleTreeItem this axis corresponds to
-		int axisModuleIndex = -1;
-		for (int i=0; i<axisModulePositions.length; i++)
-			if (axisModulePositions[i]==nearestAxisPos)
-				axisModuleIndex = i;
-		Assert.isTrue(axisModuleIndex>=0);
-		return axisModules.get(axisModuleIndex);
+	public ModuleTreeItem findAxisAt(long y) {
+		for (int i=0; i<axisModuleYs.length; i++) {
+			int height = axisGraphs.get(i).getHeight();
+			if (axisModuleYs[i] - MOUSE_TOLERANCE <= y && y <= axisModuleYs[i] + height + MOUSE_TOLERANCE)
+				return axisModules.get(i);
+		}
+		
+		return null;
 	}
 	
 	/**
@@ -1839,8 +1835,9 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 				selectionEvents.add(e);
 
 			// go to the time of the first event selected
-			if (selectionEvents.size()>0)
-				gotoSimulationTimeWithCenter(selectionEvents.get(0).getSimulationTime());
+			if (selectionEvents.size()>0) {
+				gotoEvent(selectionEvents.get(0));
+			}
 
 			redraw();
 		}
