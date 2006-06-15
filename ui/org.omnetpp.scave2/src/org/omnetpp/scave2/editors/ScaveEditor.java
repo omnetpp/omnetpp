@@ -20,16 +20,26 @@ import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.xmi.XMIResource;
+import org.eclipse.emf.edit.command.AddCommand;
 import org.eclipse.emf.edit.command.CreateChildCommand;
 import org.eclipse.emf.edit.command.RemoveCommand;
 import org.eclipse.emf.edit.provider.IChangeNotifier;
 import org.eclipse.emf.edit.provider.INotifyChangedListener;
+import org.eclipse.emf.edit.ui.provider.AdapterFactoryContentProvider;
+import org.eclipse.emf.edit.ui.provider.AdapterFactoryLabelProvider;
+import org.eclipse.jface.action.Action;
+import org.eclipse.jface.action.IAction;
+import org.eclipse.jface.action.StatusLineManager;
+import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.util.IPropertyChangeListener;
+import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.Viewer;
+import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
@@ -39,6 +49,8 @@ import org.eclipse.swt.dnd.DropTargetAdapter;
 import org.eclipse.swt.dnd.DropTargetEvent;
 import org.eclipse.swt.dnd.FileTransfer;
 import org.eclipse.swt.dnd.Transfer;
+import org.eclipse.swt.events.DisposeEvent;
+import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
@@ -48,14 +60,20 @@ import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.ui.IActionDelegate;
+import org.eclipse.ui.IEditorActionDelegate;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.PartInitException;
+import org.eclipse.ui.dialogs.ListDialog;
+import org.eclipse.ui.dialogs.ListSelectionDialog;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
+import org.eclipse.ui.internal.WorkbenchWindow;
 import org.omnetpp.scave.engine.File;
 import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.engine.ResultFileManager;
+import org.omnetpp.scave.model.Add;
 import org.omnetpp.scave.model.Analysis;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.ChartSheet;
@@ -66,6 +84,9 @@ import org.omnetpp.scave.model.InputFile;
 import org.omnetpp.scave.model.Inputs;
 import org.omnetpp.scave.model.ScaveModelFactory;
 import org.omnetpp.scave2.ContentTypes;
+import org.omnetpp.scave2.actions.AddToDatasetActionDelegate;
+import org.omnetpp.scave2.actions.CreateChartActionDelegate;
+import org.omnetpp.scave2.actions.CreateDatasetActionDelegate;
 import org.omnetpp.scave2.charting.ChartFactory;
 import org.omnetpp.scave2.editors.providers.DatasetScalarsViewProvider;
 import org.omnetpp.scave2.editors.providers.InputsLogicalViewProvider;
@@ -78,8 +99,10 @@ import org.omnetpp.scave2.editors.ui.BrowseDataPage;
 import org.omnetpp.scave2.editors.ui.ChartPage;
 import org.omnetpp.scave2.editors.ui.ChartSheetPage;
 import org.omnetpp.scave2.editors.ui.DatasetPage;
+import org.omnetpp.scave2.editors.ui.FilterPanel;
 import org.omnetpp.scave2.editors.ui.OverviewPage;
 import org.omnetpp.scave2.model.DatasetManager;
+import org.omnetpp.scave2.model.FilterParams;
 
 /**
  * OMNeT++/OMNEST Analysis tool.  
@@ -119,6 +142,10 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INotifyChange
 	
 	public List<File> getInputFiles() {
 		return inputFiles;
+	}
+	
+	public BrowseDataPage getBrowseDataPage() {
+		return browseDataPage;
 	}
 	
 	@Override
@@ -338,10 +365,31 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INotifyChange
 		browseDataPage = new BrowseDataPage(getContainer(), SWT.NONE);
 		scalarsViewProvider.configureFilterPanel(browseDataPage.getScalarsPanel());
 		vectorsViewProvider.configureFilterPanel(browseDataPage.getVectorsPanel());
+		configureButton(browseDataPage.getCreateDatasetButton(), new CreateDatasetActionDelegate());
+		configureButton(browseDataPage.getAddToDatasetButton(), new AddToDatasetActionDelegate());
+		configureButton(browseDataPage.getCreateChartButton(), new CreateChartActionDelegate());
 		setFormTitle(browseDataPage, "Browse data");
 		int index = addPage(browseDataPage);
 		setPageText(index, "Browse data");
 	}
+	
+	public void addNewDataset(String name, String type, FilterParams params) {
+		Dataset dataset = ScaveModelFactory.eINSTANCE.createDataset();
+		dataset.setName(name);
+		dataset.setType(type);
+		dataset.getItems().add(createAdd(params));
+		executeCommand(new AddCommand(this.getEditingDomain(),
+			getAnalysisModelObject().getDatasets().getDatasets(), dataset));
+	}
+	
+	public Add createAdd(FilterParams params) {
+		Add add = ScaveModelFactory.eINSTANCE.createAdd();
+		add.setFilenamePattern(params.getRunNamePattern());
+		add.setModuleNamePattern(params.getModuleNamePattern());
+		add.setNamePattern(params.getDataNamePattern());
+		return add;
+	}
+	
 	
 	private int createDatasetPage(Dataset dataset) {
 		DatasetPage page = new DatasetPage(getContainer(), SWT.NONE, this);
@@ -553,6 +601,10 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INotifyChange
 			getEditingDomain().getCommandStack().execute(command);
 		}
 	}
+	
+	private void executeCommand(Command command) {
+		getEditingDomain().getCommandStack().execute(command);
+	}
 
 	/**
 	 * Finds an IFile for an existing file given with OS path. Returns null if the file was not found.
@@ -674,12 +726,55 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INotifyChange
 			}
 		});
 	}
+	
+	/**
+	 * Connects the button with an action, so that
+	 * the action is executed, when the button is pressed and
+	 * the button is enabled/disabled when the action becomes enabled/disabled.
+	 */
+	public void configureButton(final Button button, final IEditorActionDelegate delegate) {
+		final Action action = new Action() {
+			public void run() {
+				delegate.setActiveEditor(this, ScaveEditor.this);
+				delegate.run(this);
+			}
+		};
+		delegate.setActiveEditor(action, this);
+		getSite().getSelectionProvider().addSelectionChangedListener(new ISelectionChangedListener() {
+			public void selectionChanged(SelectionChangedEvent event) {
+				delegate.selectionChanged(action, event.getSelection());
+			}
+		});
+		button.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
+				action.run();
+			}
+		});
+		final IPropertyChangeListener propertyChangeListener = new IPropertyChangeListener() {
+			public void propertyChange(PropertyChangeEvent event) {
+				if (event.getProperty().equals(IAction.ENABLED)) {
+					if (!button.isDisposed())
+						button.setEnabled(action.isEnabled());
+				}
+			}
+		};
+		action.addPropertyChangeListener(propertyChangeListener);
+		button.addDisposeListener(new DisposeListener() {
+			public void widgetDisposed(DisposeEvent e) {
+				action.removePropertyChangeListener(propertyChangeListener);
+			}
+		});
+	}
 
 	/**
 	 * Pops up a dialog to edit the element(s) in the selection
 	 */
 	protected void openEditSelectedElemementsDialog(IStructuredSelection sel) {
 		MessageDialog.openInformation(getSite().getShell(), "TODO", "The Edit Dialog doesn't exist yet :("); //TODO
+	}
+	
+	public void reportError(String message) {
+		// TODO
 	}
 }
 

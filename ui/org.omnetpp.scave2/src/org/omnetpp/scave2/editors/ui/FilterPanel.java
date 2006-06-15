@@ -4,6 +4,7 @@ import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.omnetpp.scave2.model.FilterParams;
 
 /**
  * ScalarPanelComposite and VectorPanelComposite inherit from this class;
@@ -24,4 +25,11 @@ public abstract class FilterPanel extends Composite {
 	public abstract CCombo getNameCombo();
 
 	public abstract TableViewer getTableViewer();
+	
+	public FilterParams getFilterParams() {
+		return new FilterParams(
+				getRunNameCombo().getText(),
+				getModuleNameCombo().getText(),
+				getNameCombo().getText());
+	}
 }

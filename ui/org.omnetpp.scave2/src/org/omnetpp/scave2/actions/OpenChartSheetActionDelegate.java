@@ -2,7 +2,6 @@ package org.omnetpp.scave2.actions;
 
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.omnetpp.scave.model.ChartSheet;
-import org.omnetpp.scave.model.Dataset;
 import org.omnetpp.scave2.editors.ScaveEditor;
 
 /**
@@ -11,11 +10,16 @@ import org.omnetpp.scave2.editors.ScaveEditor;
 public class OpenChartSheetActionDelegate extends AbstractScaveActionDelegate {
 	@Override
 	protected void doRun(ScaveEditor scaveEditor, IStructuredSelection structuredSelection) {
-		for (Object element : structuredSelection.toArray()) {
-			if (element instanceof ChartSheet) {
-				ChartSheet dataset = (ChartSheet)element;
-				scaveEditor.openChartSheet(dataset);
-			}
+		if (isEnabled(scaveEditor, structuredSelection)) {
+			ChartSheet chartsheet = (ChartSheet)structuredSelection.getFirstElement();
+			scaveEditor.openChartSheet(chartsheet);
 		}
+	}
+	
+	@Override
+	protected boolean isEnabled(ScaveEditor editor, IStructuredSelection selection) {
+		return selection != null &&
+				selection.size() == 1 &&
+				selection.getFirstElement() instanceof ChartSheet;
 	}
 }

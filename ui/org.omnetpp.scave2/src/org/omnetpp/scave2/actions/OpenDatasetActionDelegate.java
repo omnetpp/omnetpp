@@ -8,13 +8,17 @@ import org.omnetpp.scave2.editors.ScaveEditor;
  * Opens the selected datasets in the editor.
  */
 public class OpenDatasetActionDelegate extends AbstractScaveActionDelegate {
+	
 	@Override
-	protected void doRun(ScaveEditor scaveEditor, IStructuredSelection structuredSelection) {
-		for (Object element : structuredSelection.toArray()) {
-			if (element instanceof Dataset) {
-				Dataset dataset = (Dataset)element;
-				scaveEditor.openDataset(dataset);
-			}
+	public void doRun(ScaveEditor editor, IStructuredSelection selection) {
+		if (isEnabled(editor, selection)) {
+			editor.openDataset((Dataset)selection.getFirstElement());
 		}
+	}
+	
+	@Override
+	public boolean isEnabled(ScaveEditor editor, IStructuredSelection selection) {
+		return selection != null && selection.size() == 1 && 
+				selection.getFirstElement() instanceof Dataset;
 	}
 }

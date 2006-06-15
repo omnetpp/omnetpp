@@ -46,6 +46,30 @@ public class BrowseDataPage extends ScrolledForm {
 		return vectorsPanel;
 	}
 	
+	public FilterPanel getActivePanel() {
+		int index = tabfolder.getSelectionIndex();
+		if (index >= 0)
+			return (FilterPanel)tabfolder.getItem(index).getControl();
+		else
+			return null;
+	}
+	
+	public Button getCreateDatasetButton() {
+		return createDatasetButton;
+	}
+	
+	public Button getAddToDatasetButton() {
+		return addToDatasetButton;
+	}
+	
+	public Button getCreateChartButton() {
+		return createChartButton;
+	}
+	
+	public Button getCopyToClipboardButton() {
+		return copyToClipboardButton;
+	}
+	
 	public TableViewer getScalarsTableViewer() {
 		return scalarsPanel.getTableViewer();
 	}
