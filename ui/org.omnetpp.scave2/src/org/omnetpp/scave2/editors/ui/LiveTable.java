@@ -135,7 +135,7 @@ public class LiveTable extends Composite {
 	 * A null value means no insert mark.
 	 */
 	public void setInsertMark(Control item) {
-		Assert.isTrue(item.getParent()==this);
+		Assert.isTrue(item==null || item.getParent()==this);
 		insertMark = item;
 		redraw();
 	}

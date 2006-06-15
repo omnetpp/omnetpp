@@ -2,7 +2,6 @@ package org.omnetpp.scave2.editors.ui;
 
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -13,7 +12,11 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
-import org.omnetpp.common.color.ColorFactory;
+import org.omnetpp.scave2.actions.AddToDatasetAction;
+import org.omnetpp.scave2.actions.CopyToClipboardAction;
+import org.omnetpp.scave2.actions.CreateChartAction;
+import org.omnetpp.scave2.actions.CreateDatasetAction;
+import org.omnetpp.scave2.editors.ScaveEditor;
 
 /**
  * This is the "Browse data" page of Scave Editor
@@ -23,19 +26,21 @@ import org.omnetpp.common.color.ColorFactory;
 //XXX make filter panel foldable?
 public class BrowseDataPage extends ScrolledForm {
 
-	Label label;
-	TabFolder tabfolder;
-	Composite buttonPanel;
-	Button createDatasetButton;
-	Button addToDatasetButton;
-	Button createChartButton;
-	Button copyToClipboardButton;
+	private ScaveEditor scaveEditor;
+	private Label label;
+	private TabFolder tabfolder;
+	private Composite buttonPanel;
+	private Button createDatasetButton;
+	private Button addToDatasetButton;
+	private Button createChartButton;
+	private Button copyToClipboardButton;
 	
 	VectorsPanel vectorsPanel;
 	ScalarsPanel scalarsPanel;
 	
-	public BrowseDataPage(Composite parent, int style) {
+	public BrowseDataPage(Composite parent, int style, ScaveEditor editor) {
 		super(parent, style | SWT.V_SCROLL);
+		scaveEditor = editor;
 		initialize();
 	}
 	
@@ -86,12 +91,16 @@ public class BrowseDataPage extends ScrolledForm {
 		GridLayout layout = new GridLayout();
 		getBody().setLayout(layout);
 		label = new Label(getBody(), SWT.WRAP);
-		label.setText("Here you can see all data that come from the input files specified in the Inputs page.");
+		label.setText("Here you can see all data that come from the files specified in the Inputs page.");
 		label.setBackground(this.getBackground());
 		createTabFolder();
 		createButtonsPanel();
 		
 		// add actions
+		scaveEditor.configureGlobalButton(createDatasetButton, new CreateDatasetAction());
+		scaveEditor.configureGlobalButton(addToDatasetButton, new AddToDatasetAction());
+		scaveEditor.configureGlobalButton(createChartButton, new CreateChartAction());
+		scaveEditor.configureGlobalButton(copyToClipboardButton, new CopyToClipboardAction());
 	}
 	
 	private void createTabFolder() {

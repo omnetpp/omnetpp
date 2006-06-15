@@ -36,7 +36,7 @@ public class ChartSheetPage extends ScrolledForm {
 		GridLayout layout = new GridLayout();
 		getBody().setLayout(layout);
 		
-		chartsArea = new LiveTable(getBody(), SWT.NONE);
+		chartsArea = new LiveTable(getBody(), SWT.DOUBLE_BUFFERED);
 		chartsArea.setLayoutData(new GridData(SWT.FILL,SWT.FILL, true, true));
 		chartsArea.setBackground(ColorFactory.asColor("white"));
 

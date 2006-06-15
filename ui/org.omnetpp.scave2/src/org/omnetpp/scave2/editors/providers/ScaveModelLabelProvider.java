@@ -82,11 +82,11 @@ public class ScaveModelLabelProvider extends LabelProvider {
 				res = "???";
 
 			// "end-to-end delay"
-			if (o.getNamePattern()!=null)
+			if (!isEmpty(o.getNamePattern()))
 				res += " \""+o.getNamePattern()+"\"";
 			else 
 				res += " <nothing>";
-			if (o.getModuleNamePattern()!=null)
+			if (!isEmpty(o.getModuleNamePattern()))
 				res += " of module(s) \""+o.getModuleNamePattern()+"\"";
 			if (o.getSourceDataset()!=null)
 				res += " from dataset "+fallback(o.getSourceDataset().getName(),"<unnamed>");
@@ -122,7 +122,10 @@ public class ScaveModelLabelProvider extends LabelProvider {
 		}
 		else if (element instanceof Chart) {
 			Chart o = (Chart) element;
-			return "chart "+fallback(o.getName(),"<unnamed>");
+			String res = "chart "+fallback(o.getName(),"<unnamed>");
+			if (o.getContainingSheet()!=null)
+				res += " on sheet "+fallback(o.getContainingSheet().getName(),"<unnamed>");
+			return res;
 		}
 		else if (element instanceof Param) {
 			Param o = (Param) element;

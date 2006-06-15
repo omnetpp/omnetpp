@@ -1,6 +1,5 @@
 package org.omnetpp.scave2.editors.ui;
 
-import org.eclipse.jface.action.ActionContributionItem;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
@@ -16,7 +15,6 @@ import org.omnetpp.scave2.actions.AddResultFileAction;
 import org.omnetpp.scave2.actions.AddWildcardResultFileAction;
 import org.omnetpp.scave2.actions.RemoveAction;
 import org.omnetpp.scave2.editors.ScaveEditor;
-import org.omnetpp.scave2.editors.ScaveEditorContributor;
 
 public class InputsPage extends ScrolledForm {
 
@@ -83,7 +81,7 @@ public class InputsPage extends ScrolledForm {
 		inputFilesSection.setExpanded(true);
 		inputFilesSection.setLayoutData(gridData);
 		inputFilesSection.setText("Input files");
-		inputFilesSection.setDescription("Add or drag&drop output files that should by used in this analysis.");
+		inputFilesSection.setDescription("Add or drag&drop result files (*.sca or *.vec) that should by used in this analysis.");
 		InputFilesPanel inputFilesPanel = new InputFilesPanel(inputFilesSection, SWT.NONE);
 		inputFilesSection.setClient(inputFilesPanel);
 

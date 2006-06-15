@@ -345,7 +345,7 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INotifyChange
 	
 	private void createBrowseDataPage() {
 		//XXX move stuff into page's constructor
-		browseDataPage = new BrowseDataPage(getContainer(), SWT.NONE);
+		browseDataPage = new BrowseDataPage(getContainer(), SWT.NONE, this);
 		setFormTitle(browseDataPage, "Browse data");
 
 		InputsTableViewProvider scalarsViewProvider = new InputsScalarsViewProvider(this);
@@ -381,6 +381,8 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INotifyChange
 			page.addVectorsPanel();
 			InputsTableViewProvider provider = new InputsVectorsViewProvider(this);
 			provider.configureFilterPanel(page.getFilterPanel());
+		} else {
+			throw new RuntimeException("invalid or unset dataset 'type' attribute: "+dataset.getType()); //XXX proper error handling
 		}
 		page.getDatasetTreeViewer().setInput(dataset);
 		int index = addClosablePage("Dataset: " + dataset.getName(), page);
@@ -613,9 +615,11 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INotifyChange
 					inputFiles.add(manager.loadScalarFile(path));
 				else if (ContentTypes.VECTOR.equals(contentType.getId()))
 					inputFiles.add(manager.loadVectorFile(path));
+				else 
+					throw new RuntimeException("wrong file type:"+file.getFullPath()); //XXX proper error handling (e.g. remove file from Inputs?)
 			}
 		} catch (CoreException e) {
-			System.err.println("Cannot open resource: " + file.getFullPath());
+			System.err.println("Cannot open resource: " + file.getFullPath()); //XXX proper error message
 		}
 	}
 	

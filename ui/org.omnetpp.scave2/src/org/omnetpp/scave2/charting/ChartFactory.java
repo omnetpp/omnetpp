@@ -36,7 +36,9 @@ public class ChartFactory {
 			return createVectorChart(parent, idlist, manager);
 		else if (HISTOGRAM.equals(type))
 			return createHistogramChart(parent, idlist, manager);
-		return null;
+		else
+			//XXX tomi! ha if-letra van, mindig legyen "else" ag a vegen!!!!! (Andras)
+			throw new RuntimeException("invalid or unset dataset 'type' attribute: "+type); //XXX proper error handling
 	}
 
 	public static InteractiveChart createScalarChart(Composite parent, IDList idlist, ResultFileManager manager) {
