@@ -22,11 +22,22 @@ import org.jfree.ui.RectangleEdge;
 import org.jfree.ui.RectangleInsets;
 import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.engine.ResultFileManager;
+import static org.omnetpp.scave2.model.DatasetType.*;
 
 /**
  * Factory for scalar and vector charts. 
  */
 public class ChartFactory {
+	
+	public static InteractiveChart createChart(Composite parent, String type, IDList idlist, ResultFileManager manager) {
+		if (SCALAR.equals(type))
+			return createScalarChart(parent, idlist, manager);
+		else if (VECTOR.equals(type))
+			return createVectorChart(parent, idlist, manager);
+		else if (HISTOGRAM.equals(type))
+			return createHistogramChart(parent, idlist, manager);
+		return null;
+	}
 
 	public static InteractiveChart createScalarChart(Composite parent, IDList idlist, ResultFileManager manager) {
 		InteractiveChart chart = new InteractiveChart(parent, SWT.NONE);
@@ -48,6 +59,11 @@ public class ChartFactory {
 		if (dataset.getSeriesCount() <= 5)
 			addLegend(jfreechart);
 		return chart;
+	}
+	
+	public static InteractiveChart createHistogramChart(Composite parent, IDList idlist, ResultFileManager manager) {
+		// TODO
+		return null;
 	}
 	
 	private static JFreeChart createEmptyScalarJFreeChart() {

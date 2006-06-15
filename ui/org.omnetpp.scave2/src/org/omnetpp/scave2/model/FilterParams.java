@@ -18,11 +18,23 @@ public class FilterParams {
 		return runName != null ? runName : "";
 	}
 	
+	public void setRunNamePattern(String runName) {
+		this.runName = runName;
+	}
+
 	public String getModuleNamePattern() {
 		return moduleName != null ? moduleName : "";
 	}
 	
+	public void setModuleNamePattern(String moduleName) {
+		this.moduleName = moduleName;
+	}
+
 	public String getDataNamePattern() {
 		return dataName != null ? dataName : "";
+	}
+
+	public void setDataNamePattern(String dataName) {
+		this.dataName = dataName;
 	}
 }

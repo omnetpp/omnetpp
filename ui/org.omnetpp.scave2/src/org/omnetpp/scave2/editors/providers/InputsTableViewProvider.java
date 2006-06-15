@@ -5,6 +5,7 @@ import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.edit.provider.IChangeNotifier;
 import org.eclipse.emf.edit.provider.INotifyChangedListener;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
@@ -13,10 +14,12 @@ import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave2.editors.ScaveEditor;
 import org.omnetpp.scave2.editors.ui.FilterPanel;
+import org.omnetpp.scave2.model.FilterParams;
 
 /**
  * This class parametrizes the table views of the input data.
@@ -56,15 +59,28 @@ public abstract class InputsTableViewProvider {
 			}
 		});
 		
-		// when the filter button pressed, update the filter of the tableviewer
-		filterPanel.getFilterButton().addSelectionListener(new SelectionAdapter() {
+		SelectionListener selectionListener = new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
+				updateTable();
+			}
+
+			public void widgetDefaultSelected(SelectionEvent e) {
+				updateTable();
+			}
+			
+			private void updateTable() {
 				filter.setFileAndRunFilter(filterPanel.getRunNameCombo().getText());
 				filter.setModuleFilter(filterPanel.getModuleNameCombo().getText());
 				filter.setNameFilter(filterPanel.getNameCombo().getText());
 				filterPanel.getTableViewer().refresh();
 			}
-		});
+		};
+			
+		// when the filter button pressed, update the filter of the tableviewer
+		filterPanel.getFilterButton().addSelectionListener(selectionListener);
+		filterPanel.getRunNameCombo().addSelectionListener(selectionListener);
+		filterPanel.getModuleNameCombo().addSelectionListener(selectionListener);
+		filterPanel.getNameCombo().addSelectionListener(selectionListener);
 	}
 	
 	private static final Long[] EMPTY_ARRAY = new Long[0];
@@ -165,23 +181,21 @@ public abstract class InputsTableViewProvider {
 	 * Filter of the scalars/vectors table. 
 	 */
 	public class Filter extends ViewerFilter {
-		private String fileAndRunFilter = "";
-		private String moduleFilter = "";
-		private String nameFilter = "";
+		FilterParams params = new FilterParams("", "", "");
 		
 		public Filter() {
 		}
 
 		public void setFileAndRunFilter(String fileAndRunFilter) {
-			this.fileAndRunFilter = fileAndRunFilter == null ? "" : fileAndRunFilter;
+			params.setRunNamePattern(fileAndRunFilter);
 		}
 
 		public void setModuleFilter(String moduleFilter) {
-			this.moduleFilter = moduleFilter == null ? "" : moduleFilter;
+			params.setModuleNamePattern(moduleFilter);
 		}
 
 		public void setNameFilter(String nameFilter) {
-			this.nameFilter = nameFilter == null ? "" : nameFilter;
+			params.setDataNamePattern(nameFilter);
 		}
 
 		@Override
@@ -192,7 +206,9 @@ public abstract class InputsTableViewProvider {
 					idlist.add((Long)element);
 			
 			ResultFileManager manager = editor.getResultFileManager();
-			idlist = manager.getFilteredList(idlist, fileAndRunFilter, moduleFilter, nameFilter);
+			idlist = manager.getFilteredList(idlist,
+					params.getRunNamePattern(), params.getModuleNamePattern(),
+					params.getDataNamePattern());
 			return idlist.toArray();
 		}
 

@@ -19,7 +19,7 @@ import org.omnetpp.scave.model.SetOperation;
 import org.omnetpp.scave.model.util.ScaveModelSwitch;
 
 public class DatasetManager {
-
+	
 	static class DatasetContent {
 		public boolean isScalar;
 		public FileList files;
@@ -37,6 +37,7 @@ public class DatasetManager {
 		DatasetContent content = (DatasetContent)new ProcessDatasetSwitch(manager).doSwitch(dataset);
 		return content != null ? content.idlist : new IDList();
 	}
+	
 	
 	static class ProcessDatasetSwitch extends ScaveModelSwitch {
 		
