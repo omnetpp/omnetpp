@@ -11,7 +11,12 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.omnetpp.common.color.ColorFactory;
-import org.omnetpp.scave.model.ScaveModelFactory;
+import org.omnetpp.scave2.actions.EditAction;
+import org.omnetpp.scave2.actions.GroupAction;
+import org.omnetpp.scave2.actions.NewAction;
+import org.omnetpp.scave2.actions.OpenAction;
+import org.omnetpp.scave2.actions.RemoveAction;
+import org.omnetpp.scave2.actions.UngroupAction;
 import org.omnetpp.scave2.editors.ScaveEditor;
 
 public class DatasetPage extends ScrolledForm {
@@ -40,34 +45,34 @@ public class DatasetPage extends ScrolledForm {
 		return filterPanel;
 	}
 	
-	public Button getAddButton() {
-		return datasetPanel.getAddButton();
-	}
-
-	public Button getRemoveButton() {
-		return datasetPanel.getRemoveButton();
-	}
-
-	public Button getEditButton() {
-		return datasetPanel.getEditButton();
-	}
-
-	public Button getCreateChartButton() {
-		return datasetPanel.getCreateChartButton();
-	}
-	
-	public Button getOpenChartButton() {
-		return datasetPanel.getOpenChartButton();
-	}
-
-	public Button getGroupButton() {
-		return datasetPanel.getGroupButton();
-	}
-
-	public Button getUngroupButton() {
-		return datasetPanel.getUngroupButton();
-	}
-	
+//	public Button getAddButton() {
+//		return datasetPanel.getAddButton();
+//	}
+//
+//	public Button getRemoveButton() {
+//		return datasetPanel.getRemoveButton();
+//	}
+//
+//	public Button getEditButton() {
+//		return datasetPanel.getEditButton();
+//	}
+//
+//	public Button getCreateChartButton() {
+//		return datasetPanel.getCreateChartButton();
+//	}
+//	
+//	public Button getOpenChartButton() {
+//		return datasetPanel.getOpenChartButton();
+//	}
+//
+//	public Button getGroupButton() {
+//		return datasetPanel.getGroupButton();
+//	}
+//
+//	public Button getUngroupButton() {
+//		return datasetPanel.getUngroupButton();
+//	}
+//	
 	
 	public void addScalarsPanel() {
 		filterPanel = new ScalarsPanel(sashform, SWT.NONE);
@@ -92,8 +97,30 @@ public class DatasetPage extends ScrolledForm {
 		createDatasetPanel();
 		//sashform.setMaximizedControl(datasetPanel);
 
-		final TreeViewer treeViewer = datasetPanel.getTreeViewer();
-		//TODO buttons
+		scaveEditor.configureViewerButton(
+				datasetPanel.getAddButton(),
+				datasetPanel.getTreeViewer(),
+				new NewAction()); //XXX "Add new item"?
+		scaveEditor.configureViewerButton(
+				datasetPanel.getRemoveButton(), 
+				datasetPanel.getTreeViewer(),
+				new RemoveAction());
+		scaveEditor.configureViewerButton(
+				datasetPanel.getEditButton(),
+				datasetPanel.getTreeViewer(), 
+				new EditAction());
+		scaveEditor.configureViewerButton(
+				datasetPanel.getGroupButton(),
+				datasetPanel.getTreeViewer(), 
+				new GroupAction());
+		scaveEditor.configureViewerButton(
+				datasetPanel.getUngroupButton(),
+				datasetPanel.getTreeViewer(), 
+				new UngroupAction());
+		scaveEditor.configureViewerButton(
+				datasetPanel.getOpenChartButton(),
+				datasetPanel.getTreeViewer(), 
+				new OpenAction());
 	}
 	
 	private void createSashForm() {

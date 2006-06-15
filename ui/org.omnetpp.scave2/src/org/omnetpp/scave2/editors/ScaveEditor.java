@@ -98,8 +98,8 @@ import org.omnetpp.scave2.model.FilterParams;
 public class ScaveEditor extends AbstractEMFModelEditor implements INotifyChangedListener, IResourceChangeListener {
 
 	private InputsPage inputsPage;
-	private DatasetsAndChartsPage datasetsPage;
 	private BrowseDataPage browseDataPage;
+	private DatasetsAndChartsPage datasetsPage;
 	
 	/**
 	 *  ResultFileManager containing all files of the analysis. 
@@ -738,9 +738,11 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INotifyChange
 	 *  (3) it will make the button listen to global selection changes, and cannot be tied to a viewer 
 	 */
 	private void doConfigureButton(final Button button, final IScaveAction action) {
-		button.setText(action.getText());
+		//button.setText(action.getText());
+		button.setText(action.getText()+" / "+button.getText());
 		button.setToolTipText(action.getToolTipText());
 		//XXX button.setImage(action.getImageDescriptor());
+		
 		button.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				action.run();

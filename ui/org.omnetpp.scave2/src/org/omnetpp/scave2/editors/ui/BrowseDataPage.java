@@ -55,21 +55,21 @@ public class BrowseDataPage extends ScrolledForm {
 			return null;
 	}
 	
-	public Button getCreateDatasetButton() {
-		return createDatasetButton;
-	}
-	
-	public Button getAddToDatasetButton() {
-		return addToDatasetButton;
-	}
-	
-	public Button getCreateChartButton() {
-		return createChartButton;
-	}
-	
-	public Button getCopyToClipboardButton() {
-		return copyToClipboardButton;
-	}
+//	public Button getCreateDatasetButton() {
+//		return createDatasetButton;
+//	}
+//	
+//	public Button getAddToDatasetButton() {
+//		return addToDatasetButton;
+//	}
+//	
+//	public Button getCreateChartButton() {
+//		return createChartButton;
+//	}
+//	
+//	public Button getCopyToClipboardButton() {
+//		return copyToClipboardButton;
+//	}
 	
 	public TableViewer getScalarsTableViewer() {
 		return scalarsPanel.getTableViewer();
@@ -90,6 +90,8 @@ public class BrowseDataPage extends ScrolledForm {
 		label.setBackground(this.getBackground());
 		createTabFolder();
 		createButtonsPanel();
+		
+		// add actions
 	}
 	
 	private void createTabFolder() {

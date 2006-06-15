@@ -11,6 +11,10 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
 import org.omnetpp.common.color.ColorFactory;
+import org.omnetpp.scave2.actions.EditAction;
+import org.omnetpp.scave2.actions.NewAction;
+import org.omnetpp.scave2.actions.OpenAction;
+import org.omnetpp.scave2.actions.RemoveAction;
 import org.omnetpp.scave2.editors.ScaveEditor;
 
 public class DatasetsAndChartsPage extends ScrolledForm {
@@ -77,8 +81,22 @@ public class DatasetsAndChartsPage extends ScrolledForm {
 		final DatasetsPanel datasetsPanel = new DatasetsPanel(datasetsSection, SWT.NONE);
 		datasetsSection.setClient(datasetsPanel);
 
-		final TreeViewer treeViewer = datasetsPanel.getTreeViewer();
-		//TODO buttons
+		scaveEditor.configureViewerButton(
+				datasetsPanel.getEditNodeButton(), 
+				datasetsPanel.getTreeViewer(), 
+				new EditAction());
+		scaveEditor.configureViewerButton(
+				datasetsPanel.getNewNodeButton(),
+				datasetsPanel.getTreeViewer(),
+				new NewAction());
+		scaveEditor.configureViewerButton(
+				datasetsPanel.getRemoveNodeButton(), 
+				datasetsPanel.getTreeViewer(),
+				new RemoveAction());
+		scaveEditor.configureViewerButton(
+				datasetsPanel.getOpenDatasetButton(), 
+				datasetsPanel.getTreeViewer(),
+				new OpenAction());
 	}
 
 	/**
@@ -100,7 +118,21 @@ public class DatasetsAndChartsPage extends ScrolledForm {
 		ChartSheetsPanel chartSheetsPanel = new ChartSheetsPanel(chartSheetsSection, SWT.NONE); 
 		chartSheetsSection.setClient(chartSheetsPanel);
 
-		final TreeViewer treeViewer = chartSheetsPanel.getTreeViewer();
-		//TODO buttons
+		scaveEditor.configureViewerButton(
+				chartSheetsPanel.getEditChartSheetButton(),
+				chartSheetsPanel.getTreeViewer(), 
+				new EditAction());
+		scaveEditor.configureViewerButton(
+				chartSheetsPanel.getNewChartSheetButton(),
+				chartSheetsPanel.getTreeViewer(),
+				new NewAction()); //XXX "New chart sheet"?
+		scaveEditor.configureViewerButton(
+				chartSheetsPanel.getRemoveChartSheetButton(), 
+				chartSheetsPanel.getTreeViewer(),
+				new RemoveAction());
+		scaveEditor.configureViewerButton(
+				chartSheetsPanel.getOpenChartSheetButton(), 
+				chartSheetsPanel.getTreeViewer(),
+				new OpenAction());
 	}
 }

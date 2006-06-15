@@ -29,17 +29,6 @@ public class ChartSheetsPanel extends TreeWithButtonsPanel {
 		newChartSheetButton = toolkit.createButton(buttonPanel, "New...", SWT.NONE);
 		editChartSheetButton = toolkit.createButton(buttonPanel, "Edit...", SWT.NONE);
 		removeChartSheetButton = toolkit.createButton(buttonPanel, "Remove", SWT.NONE);
-		
-		openChartSheetButton.addSelectionListener(new SelectionAdapter() {
-			public void widgetSelected(SelectionEvent e) {
-				OpenAction delegate = new OpenAction();
-				//delegate.run(null); //XXX
-			}
-		});
-		
-		new ActionContributionItem(ScaveEditorContributor.getDefault().openAction).fill(buttonPanel);
-		
-		
 	}
 
 	public Button getEditChartSheetButton() {
