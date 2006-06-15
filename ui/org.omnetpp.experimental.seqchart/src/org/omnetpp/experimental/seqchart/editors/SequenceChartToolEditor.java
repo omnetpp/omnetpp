@@ -534,7 +534,7 @@ public class SequenceChartToolEditor extends EditorPart implements INavigationLo
 		}
 
 		public String getText() {
-			return "SimulationTime: " + startSimulationTime + "s - " + endSimulationTime + "s";
+			return SequenceChartToolEditor.this.getPartName() + ": " + startSimulationTime + "s - " + endSimulationTime + "s";
 		}
 
 		public boolean mergeInto(INavigationLocation currentLocation) {
