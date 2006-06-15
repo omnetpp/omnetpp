@@ -2,8 +2,6 @@ package org.omnetpp.scave2.editors.ui;
 
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -14,40 +12,22 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
 import org.omnetpp.common.color.ColorFactory;
-import org.omnetpp.scave.model.ChartSheet;
 import org.omnetpp.scave.model.ScaveModelFactory;
 import org.omnetpp.scave2.actions.OpenChartSheetActionDelegate;
 import org.omnetpp.scave2.actions.OpenDatasetActionDelegate;
 import org.omnetpp.scave2.editors.ScaveEditor;
 
-public class OverviewPage extends ScrolledForm {
+public class DatasetsAndChartsPage extends ScrolledForm {
 
 	private FormToolkit formToolkit = null;   //  @jve:decl-index=0:visual-constraint=""
-	private Section inputFilesSection = null;
-	private Section dataSection = null;
 	private Section datasetsSection = null;
 	private Section chartSheetsSection = null;
 	private ScaveEditor scaveEditor = null;  // the containing editor
 
-	public OverviewPage(Composite parent, int style, ScaveEditor scaveEditor) {
+	public DatasetsAndChartsPage(Composite parent, int style, ScaveEditor scaveEditor) {
 		super(parent, style | SWT.V_SCROLL);
 		this.scaveEditor = scaveEditor;
 		initialize();
-	}
-	
-	public TreeViewer getInputFilesTreeViewer() {
-		InputFilesPanel panel = (InputFilesPanel)inputFilesSection.getClient();
-		return panel.getTreeViewer();
-	}
-	
-	public TreeViewer getPhysicalDataTreeViewer() {
-		DataPanel panel = (DataPanel)dataSection.getClient();
-		return panel.getPhysicalTreeViewer();
-	}
-	
-	public TreeViewer getLogicalDataTreeViewer() {
-		DataPanel panel = (DataPanel)dataSection.getClient();
-		return panel.getLogicalTreeViewer();
 	}
 	
 	public TreeViewer getDatasetsTreeViewer() {
@@ -59,15 +39,12 @@ public class OverviewPage extends ScrolledForm {
 		ChartSheetsPanel panel = (ChartSheetsPanel)chartSheetsSection.getClient();
 		return panel.getTreeViewer();
 	}
-	
-	
 
 	private void initialize() {
 		setExpandHorizontal(true);
+		setExpandVertical(true);
 		setBackground(ColorFactory.asColor("white"));
 		getBody().setLayout(new GridLayout());
-		createInputFilesSection();
-		createDataSection();
 		createDatasetsSection();
 		createChartSheetsSection();
 	}
@@ -85,68 +62,17 @@ public class OverviewPage extends ScrolledForm {
 	}
 
 	/**
-	 * This method initializes inputFilesSection	
-	 *
-	 */
-	private void createInputFilesSection() {
-		GridData gridData = new GridData();
-		gridData.grabExcessHorizontalSpace = true;
-		gridData.horizontalAlignment = org.eclipse.swt.layout.GridData.FILL;
-		inputFilesSection = getFormToolkit().createSection(
-				getBody(),
-				ExpandableComposite.TWISTIE | Section.DESCRIPTION
-						| ExpandableComposite.TITLE_BAR);
-		inputFilesSection.setExpanded(true);
-		inputFilesSection.setLayoutData(gridData);
-		inputFilesSection.setText("Input files");
-		inputFilesSection.setDescription("Add or drag&drop output files that should by used in this analysis.");
-		InputFilesPanel inputFilesPanel = new InputFilesPanel(inputFilesSection, SWT.NONE);
-		inputFilesSection.setClient(inputFilesPanel);
-
-		final TreeViewer treeViewer = inputFilesPanel.getTreeViewer();
-
-		// configure Add button
-		//TODO
-
-		// configure Add Wildcard button
-		//TODO
-
-		// configure Edit button
-//		final Button editButton = inputFilesPanel.getEditButton();
-//		scaveEditor.configureEditButton(editButton, treeViewer);
-
-		// configure Remove button
-		final Button removeButton = inputFilesPanel.getRemoveFileButton();
-		scaveEditor.configureRemoveButton(removeButton, treeViewer);
-	}
-
-	/**
-	 * This method initializes dataSection	
-	 *
-	 */
-	private void createDataSection() {
-		GridData gridData1 = new GridData();
-		gridData1.horizontalAlignment = org.eclipse.swt.layout.GridData.FILL;
-		dataSection = getFormToolkit().createSection(
-				getBody(),
-				ExpandableComposite.TWISTIE | Section.DESCRIPTION
-						| ExpandableComposite.TITLE_BAR);
-		dataSection.setExpanded(true);
-		dataSection.setLayoutData(gridData1);
-		dataSection.setText("Data");
-		dataSection.setDescription("Here you can browse all data (vectors, scalars and histograms) that come from the input files.");
-		dataSection.setClient(new DataPanel(dataSection, SWT.NONE));
-	}
-
-	/**
 	 * This method initializes datasetsSection	
 	 */
 	private void createDatasetsSection() {
 		GridData gridData2 = new GridData();
-		gridData2.horizontalAlignment = org.eclipse.swt.layout.GridData.FILL;
+		gridData2.horizontalAlignment = GridData.FILL;
+		gridData2.verticalAlignment = GridData.FILL;
+		gridData2.grabExcessHorizontalSpace = true;
+		gridData2.grabExcessVerticalSpace = true;
 		datasetsSection = getFormToolkit().createSection(
 				getBody(),
-				ExpandableComposite.TWISTIE | Section.DESCRIPTION
+				Section.DESCRIPTION
 						| ExpandableComposite.TITLE_BAR);
 		datasetsSection.setExpanded(true);
 		datasetsSection.setLayoutData(gridData2);
@@ -178,7 +104,9 @@ public class OverviewPage extends ScrolledForm {
 	 */
 	private void createChartSheetsSection() {
 		GridData gridData3 = new GridData();
-		gridData3.horizontalAlignment = org.eclipse.swt.layout.GridData.FILL;
+		gridData3.horizontalAlignment = GridData.FILL;
+		gridData3.verticalAlignment = GridData.FILL;
+		gridData3.grabExcessHorizontalSpace = true;
 		chartSheetsSection = getFormToolkit().createSection(
 				getBody(),
 				ExpandableComposite.TWISTIE | Section.DESCRIPTION

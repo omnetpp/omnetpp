@@ -85,7 +85,7 @@ public class BrowseDataPage extends ScrolledForm {
 		GridLayout layout = new GridLayout();
 		getBody().setLayout(layout);
 		label = new Label(getBody(), SWT.WRAP);
-		label.setText("Here you can see all data that come from the input files specified in the overview page.");
+		label.setText("Here you can see all data that come from the input files specified in the Inputs page.");
 		label.setBackground(this.getBackground());
 		createTabFolder();
 		createButtonsPanel();

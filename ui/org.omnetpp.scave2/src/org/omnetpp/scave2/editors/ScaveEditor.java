@@ -25,12 +25,8 @@ import org.eclipse.emf.edit.command.CreateChildCommand;
 import org.eclipse.emf.edit.command.RemoveCommand;
 import org.eclipse.emf.edit.provider.IChangeNotifier;
 import org.eclipse.emf.edit.provider.INotifyChangedListener;
-import org.eclipse.emf.edit.ui.provider.AdapterFactoryContentProvider;
-import org.eclipse.emf.edit.ui.provider.AdapterFactoryLabelProvider;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IAction;
-import org.eclipse.jface.action.StatusLineManager;
-import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
@@ -39,7 +35,6 @@ import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.Viewer;
-import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
@@ -53,23 +48,16 @@ import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.ui.IActionDelegate;
 import org.eclipse.ui.IEditorActionDelegate;
 import org.eclipse.ui.IEditorInput;
-import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IEditorSite;
-import org.eclipse.ui.PartInitException;
-import org.eclipse.ui.dialogs.ListDialog;
-import org.eclipse.ui.dialogs.ListSelectionDialog;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
-import org.eclipse.ui.internal.WorkbenchWindow;
 import org.omnetpp.scave.engine.File;
 import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.engine.ResultFileManager;
@@ -88,7 +76,6 @@ import org.omnetpp.scave2.actions.AddToDatasetActionDelegate;
 import org.omnetpp.scave2.actions.CreateChartActionDelegate;
 import org.omnetpp.scave2.actions.CreateDatasetActionDelegate;
 import org.omnetpp.scave2.charting.ChartFactory;
-import org.omnetpp.scave2.editors.providers.DatasetScalarsViewProvider;
 import org.omnetpp.scave2.editors.providers.InputsLogicalViewProvider;
 import org.omnetpp.scave2.editors.providers.InputsPhysicalViewProvider;
 import org.omnetpp.scave2.editors.providers.InputsScalarsViewProvider;
@@ -99,8 +86,8 @@ import org.omnetpp.scave2.editors.ui.BrowseDataPage;
 import org.omnetpp.scave2.editors.ui.ChartPage;
 import org.omnetpp.scave2.editors.ui.ChartSheetPage;
 import org.omnetpp.scave2.editors.ui.DatasetPage;
-import org.omnetpp.scave2.editors.ui.FilterPanel;
-import org.omnetpp.scave2.editors.ui.OverviewPage;
+import org.omnetpp.scave2.editors.ui.DatasetsAndChartsPage;
+import org.omnetpp.scave2.editors.ui.InputsPage;
 import org.omnetpp.scave2.model.DatasetManager;
 import org.omnetpp.scave2.model.FilterParams;
 
@@ -114,7 +101,8 @@ import org.omnetpp.scave2.model.FilterParams;
 //TODO open dataset by double-click 
 public class ScaveEditor extends AbstractEMFModelEditor implements INotifyChangedListener, IResourceChangeListener {
 
-	private OverviewPage overviewPage;
+	private InputsPage inputsPage;
+	private DatasetsAndChartsPage datasetsPage;
 	private BrowseDataPage browseDataPage;
 	
 	/**
@@ -277,8 +265,9 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INotifyChange
 		FillLayout layout = new FillLayout();
         getContainer().setLayout(layout);
 
-        createOverviewPage();
+        createInputsPage();
         createBrowseDataPage();
+        createDatasetsPage();
 
 
         Analysis analysis = getAnalysisModelObject();
@@ -292,23 +281,17 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INotifyChange
 
         loadFiles(analysis.getInputs());
         
-        overviewPage.getInputFilesTreeViewer().setInput(analysis.getInputs());
-        overviewPage.getDatasetsTreeViewer().setInput(analysis.getDatasets());
-        overviewPage.getChartSheetsTreeViewer().setInput(analysis.getChartSheets()); //XXX for now...
-        overviewPage.getPhysicalDataTreeViewer().setInput(analysis.getInputs());
-        overviewPage.getLogicalDataTreeViewer().setInput(analysis.getInputs());
+        inputsPage.getInputFilesTreeViewer().setInput(analysis.getInputs());
+        inputsPage.getPhysicalDataTreeViewer().setInput(analysis.getInputs());
+        inputsPage.getLogicalDataTreeViewer().setInput(analysis.getInputs());
         browseDataPage.getScalarsTableViewer().setInput(analysis.getInputs());
         browseDataPage.getVectorsTableViewer().setInput(analysis.getInputs());
+        datasetsPage.getDatasetsTreeViewer().setInput(analysis.getDatasets());
+        datasetsPage.getChartSheetsTreeViewer().setInput(analysis.getChartSheets()); //XXX for now...
         
-        setupResultFileDropTarget(overviewPage.getInputFilesTreeViewer().getControl()); //XXX throws error: looks like EMF already sets up a DropTarget on this, and we cannot add another one
-        setupResultFileDropTarget(overviewPage.getPhysicalDataTreeViewer().getControl());
-        setupResultFileDropTarget(overviewPage.getLogicalDataTreeViewer().getControl());
-
-        //createDatasetPage("queue lengths");
-        //createDatasetPage("average EED");
-        //createDatasetPage("frame counts");
-        //createChartPage("packet loss");
-        //createChartPage("delay");
+        setupResultFileDropTarget(inputsPage.getInputFilesTreeViewer().getControl()); //XXX throws error: looks like EMF already sets up a DropTarget on this, and we cannot add another one
+        setupResultFileDropTarget(inputsPage.getPhysicalDataTreeViewer().getControl());
+        setupResultFileDropTarget(inputsPage.getLogicalDataTreeViewer().getControl());
 	}
 
 	/**
@@ -340,22 +323,20 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INotifyChange
 		contentOutlineViewer.setInput(getAnalysisModelObject());
 	}
 
-	private void createOverviewPage() {
+	private void createInputsPage() {
 		InputsTreeViewProvider physicalViewProvider = new InputsPhysicalViewProvider(this);
 		InputsTreeViewProvider logicalViewProvider = new InputsLogicalViewProvider(this);
 		
-		overviewPage = new OverviewPage(getContainer(), SWT.NONE, this);
-        configureTreeViewer(overviewPage.getInputFilesTreeViewer());
-        configureTreeViewer(overviewPage.getDatasetsTreeViewer());
-        configureTreeViewer(overviewPage.getChartSheetsTreeViewer());
-        physicalViewProvider.configureTreeViewer(overviewPage.getPhysicalDataTreeViewer());
-        logicalViewProvider.configureTreeViewer(overviewPage.getLogicalDataTreeViewer());
-        overviewPage.getPhysicalDataTreeViewer().addSelectionChangedListener(selectionChangedListener);
-        overviewPage.getLogicalDataTreeViewer().addSelectionChangedListener(selectionChangedListener);
+		inputsPage = new InputsPage(getContainer(), SWT.NONE, this);
+        configureTreeViewer(inputsPage.getInputFilesTreeViewer());
+        physicalViewProvider.configureTreeViewer(inputsPage.getPhysicalDataTreeViewer());
+        logicalViewProvider.configureTreeViewer(inputsPage.getLogicalDataTreeViewer());
+        inputsPage.getPhysicalDataTreeViewer().addSelectionChangedListener(selectionChangedListener);
+        inputsPage.getLogicalDataTreeViewer().addSelectionChangedListener(selectionChangedListener);
         
-		setFormTitle(overviewPage, "Overview");
-		int index = addPage(overviewPage);
-		setPageText(index, "Overview");
+		setFormTitle(inputsPage, "Inputs");
+		int index = addPage(inputsPage);
+		setPageText(index, "Inputs");
 	}
 	
 	private void createBrowseDataPage() {
@@ -371,6 +352,15 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INotifyChange
 		setFormTitle(browseDataPage, "Browse data");
 		int index = addPage(browseDataPage);
 		setPageText(index, "Browse data");
+	}
+	
+	private void createDatasetsPage() {
+		datasetsPage = new DatasetsAndChartsPage(getContainer(), SWT.NONE, this);
+        configureTreeViewer(datasetsPage.getDatasetsTreeViewer());
+        configureTreeViewer(datasetsPage.getChartSheetsTreeViewer());
+		setFormTitle(datasetsPage, "Datasets and Charts");
+		int index = addPage(datasetsPage);
+		setPageText(index, "Datasets");
 	}
 	
 	public void addNewDataset(String name, String type, FilterParams params) {
@@ -522,9 +512,9 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INotifyChange
 	public void handleSelectionChange(ISelection selection) {
 		super.handleSelectionChange(selection);
 
-		setViewerSelectionNoNotify(overviewPage.getInputFilesTreeViewer(), selection);
-		setViewerSelectionNoNotify(overviewPage.getDatasetsTreeViewer(), selection);
-		setViewerSelectionNoNotify(overviewPage.getChartSheetsTreeViewer(), selection);
+		setViewerSelectionNoNotify(inputsPage.getInputFilesTreeViewer(), selection);
+		setViewerSelectionNoNotify(datasetsPage.getDatasetsTreeViewer(), selection);
+		setViewerSelectionNoNotify(datasetsPage.getChartSheetsTreeViewer(), selection);
 	}
 	
 	/**
