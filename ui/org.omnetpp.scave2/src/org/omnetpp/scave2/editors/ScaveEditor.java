@@ -93,7 +93,8 @@ import org.omnetpp.scave2.model.FilterParams;
  * @author andras, tomi
  */
 //FIXME add flag into InputFile: "name" is OS path or workspace-relative path
-//TODO Outline does'nt use our labelprovider
+//TODO Outline view doesn't use our labelprovider
+//FIXME setting ContainingSheet for a chart doesn't update the label in the table!!!
 //TODO open dataset by double-click 
 public class ScaveEditor extends AbstractEMFModelEditor implements INotifyChangedListener, IResourceChangeListener {
 
