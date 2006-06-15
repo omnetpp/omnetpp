@@ -8,7 +8,7 @@
             name="OMNeT++ Analysis"
             extensions="scave"
             icon="icons/sample.gif"
-            contributorClass="org.omnetpp.scave.model.presentation.ScaveModelActionBarContributor"
+            contributorClass="org.omnetpp.scave2.editors.ScaveEditorContributor"
             class="org.omnetpp.scave2.editors.ScaveEditor"
             id="org.omnetpp.scave2.editors.ScaveEditor">
       </editor>
@@ -31,20 +31,21 @@
    </extension>
 
   <extension
-    point = "org.eclipse.ui.newWizards">
-    <category
-      id = "org.omnetpp.Wizard.category.ID"
-      name="OMNEST/OMNeT++ Wizards">
-    </category>
-    <wizard
-      id = "org.omnetpp.scave2.wizard.ScaveModelModelWizardID"
-      name = "Analysis"
-      class = "org.omnetpp.scave2.wizard.ScaveModelWizard"
-      category = "org.omnetpp.Wizard.category.ID"
-      icon = "icons/full/obj16/ScaveModelModelFile.gif">
-      <description>Create a new Analysis</description>
-      <selection class = "org.eclipse.core.resources.IResource" />
-    </wizard>
+        point="org.eclipse.ui.newWizards">
+     <category
+           id="org.omnetpp.Wizard.category.ID"
+           name="OMNEST/OMNeT++ Wizards"/>
+     <wizard
+           category="org.omnetpp.Wizard.category.ID"
+           class="org.omnetpp.scave2.wizard.ScaveModelWizard"
+           icon="icons/full/obj16/ScaveModelModelFile.gif"
+           id="org.omnetpp.scave2.wizard.ScaveModelModelWizardID"
+           name="Analysis">
+        <description>
+           Create a new Analysis
+        </description>
+        <selection class="org.eclipse.core.resources.IResource"/>
+     </wizard>
   </extension>
 
 </plugin>

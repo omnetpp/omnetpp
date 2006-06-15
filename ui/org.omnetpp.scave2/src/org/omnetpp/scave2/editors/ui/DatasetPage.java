@@ -93,28 +93,7 @@ public class DatasetPage extends ScrolledForm {
 		//sashform.setMaximizedControl(datasetPanel);
 
 		final TreeViewer treeViewer = datasetPanel.getTreeViewer();
-		
-		// configure Add button
-		//TODO
-
-		// configure Remove button
-		final Button removeButton = datasetPanel.getRemoveButton();
-		scaveEditor.configureRemoveButton(removeButton, treeViewer);
-
-		// configure Edit button
-		final Button editButton = datasetPanel.getEditButton();
-		scaveEditor.configureEditButton(editButton, treeViewer);
-
-		// configure Group button
-		//TODO
-
-		// configure Ungroup button
-		final Button ungroupButton = datasetPanel.getUngroupButton();
-		ScaveEditor.disableButtonOnSelectionContent(ungroupButton, treeViewer, ScaveModelFactory.eINSTANCE.createGroup().eClass());
-
-		// configure Create Chart button
-		//TODO
-	
+		//TODO buttons
 	}
 	
 	private void createSashForm() {

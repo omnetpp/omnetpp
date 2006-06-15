@@ -20,22 +20,13 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.content.IContentType;
 import org.eclipse.emf.common.command.Command;
 import org.eclipse.emf.common.notify.Notification;
-import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.xmi.XMIResource;
 import org.eclipse.emf.edit.command.CreateChildCommand;
-import org.eclipse.emf.edit.command.RemoveCommand;
 import org.eclipse.emf.edit.provider.IChangeNotifier;
 import org.eclipse.emf.edit.provider.INotifyChangedListener;
-import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IAction;
-import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.jface.util.IPropertyChangeListener;
-import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.jface.viewers.ISelection;
-import org.eclipse.jface.viewers.ISelectionChangedListener;
-import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
@@ -46,17 +37,11 @@ import org.eclipse.swt.dnd.DropTargetAdapter;
 import org.eclipse.swt.dnd.DropTargetEvent;
 import org.eclipse.swt.dnd.FileTransfer;
 import org.eclipse.swt.dnd.Transfer;
-import org.eclipse.swt.events.DisposeEvent;
-import org.eclipse.swt.events.DisposeListener;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.layout.FillLayout;
-import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.ui.IEditorActionDelegate;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
@@ -74,10 +59,6 @@ import org.omnetpp.scave.model.InputFile;
 import org.omnetpp.scave.model.Inputs;
 import org.omnetpp.scave.model.ScaveModelFactory;
 import org.omnetpp.scave2.ContentTypes;
-import org.omnetpp.scave2.actions.AddToDatasetActionDelegate;
-import org.omnetpp.scave2.actions.CreateChartActionDelegate;
-import org.omnetpp.scave2.actions.CreateDatasetActionDelegate;
-import org.omnetpp.scave2.actions.OpenChartActionDelegate;
 import org.omnetpp.scave2.charting.ChartFactory;
 import org.omnetpp.scave2.editors.providers.InputsLogicalViewProvider;
 import org.omnetpp.scave2.editors.providers.InputsPhysicalViewProvider;
@@ -337,6 +318,7 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INotifyChange
 	}
 
 	private void createInputsPage() {
+		//XXX move stuff into page's constructor
 		inputsPage = new InputsPage(getContainer(), SWT.NONE, this);
 		setFormTitle(inputsPage, "Inputs");
 
@@ -352,6 +334,7 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INotifyChange
 	}
 	
 	private void createBrowseDataPage() {
+		//XXX move stuff into page's constructor
 		browseDataPage = new BrowseDataPage(getContainer(), SWT.NONE);
 		setFormTitle(browseDataPage, "Browse data");
 
@@ -359,14 +342,12 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INotifyChange
 		InputsTableViewProvider vectorsViewProvider = new InputsVectorsViewProvider(this);
 		scalarsViewProvider.configureFilterPanel(browseDataPage.getScalarsPanel());
 		vectorsViewProvider.configureFilterPanel(browseDataPage.getVectorsPanel());
-		configureButton(browseDataPage.getCreateDatasetButton(), new CreateDatasetActionDelegate());
-		configureButton(browseDataPage.getAddToDatasetButton(), new AddToDatasetActionDelegate());
-		configureButton(browseDataPage.getCreateChartButton(), new CreateChartActionDelegate());
 
 		addPage("Browse data", browseDataPage);
 	}
 	
 	private void createDatasetsPage() {
+		//XXX move stuff into page's constructor
 		datasetsPage = new DatasetsAndChartsPage(getContainer(), SWT.NONE, this);
 		setFormTitle(datasetsPage, "Datasets and Charts");
 
@@ -377,6 +358,7 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INotifyChange
 	}
 	
 	private int createDatasetPage(Dataset dataset) {
+		//XXX move stuff into page's constructor
 		DatasetPage page = new DatasetPage(getContainer(), SWT.NONE, this);
 		setFormTitle(page, "Dataset: " + dataset.getName());
 
@@ -391,12 +373,12 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INotifyChange
 			provider.configureFilterPanel(page.getFilterPanel());
 		}
 		page.getDatasetTreeViewer().setInput(dataset);
-		configureButton(page.getOpenChartButton(), new OpenChartActionDelegate());
 		int index = addClosablePage("Dataset: " + dataset.getName(), page);
 		return index;
 	}
 	
 	private int createChartSheetPage(ChartSheet chartsheet) {
+		//XXX move stuff into page's constructor
 		ChartSheetPage page = new ChartSheetPage(getContainer(), SWT.NONE);
 		setFormTitle(page, "Charts: " + chartsheet.getName());
 
@@ -414,6 +396,7 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INotifyChange
 	}
 	
 	private int createChartPage(Chart chart) {
+		//XXX move stuff into page's constructor
 		ChartPage page = new ChartPage(getContainer(), SWT.NONE);
 		Composite parent = page.getChartComposite();
 		Dataset dataset = findEnclosingDataset(chart);
@@ -570,14 +553,10 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INotifyChange
 			ArrayList selection = new ArrayList();
 			selection.add(inputs);
 			Command command = new CreateChildCommand(getEditingDomain(), inputs, ScaveModelFactory.eINSTANCE.getScaveModelPackage().getInputs_Inputs(), inputFile, selection);
-			getEditingDomain().getCommandStack().execute(command);
+			executeCommand(command);
 		}
 	}
 	
-	private void executeCommand(Command command) {
-		getEditingDomain().getCommandStack().execute(command);
-	}
-
 	/**
 	 * Finds an IFile for an existing file given with OS path. Returns null if the file was not found.
 	 */
@@ -638,116 +617,124 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INotifyChange
 		//	manager.unloadFile(resultFile);
 	}
 	
-	/**
-	 * Utility function: Adds dynamic behaviour to a control (typically a Button): 
-	 * it gets disabled whenever the viewer's selection is empty.
-	 */
-	public static void disableButtonWhenSelectionEmpty(final Control button, final Viewer viewer) {
-		viewer.addSelectionChangedListener(new ISelectionChangedListener() {
-			public void selectionChanged(SelectionChangedEvent event) {
-				button.setEnabled(!event.getSelection().isEmpty());
-			}
-		});
-	}
-
-	/**
-	 * Utility function: Adds dynamic behaviour to a control (typically a Button): 
-	 * it gets enabled only whenever the viewer's selection is not empty, and 
-	 * only contains instances of the given EClass (or subclasses).
-	 */
-	public static void disableButtonOnSelectionContent(final Control button, final Viewer viewer, final EClass eClass) {
-		viewer.addSelectionChangedListener(new ISelectionChangedListener() {
-			public void selectionChanged(SelectionChangedEvent event) {
-				IStructuredSelection sel = (IStructuredSelection)event.getSelection();
-				boolean ok = !sel.isEmpty();  // selection is not empty, and only contains instances of eClass
-				for (Object o : sel.toArray()) {
-					if (!(o instanceof EObject) || !((EObject)o).eClass().isSuperTypeOf(eClass)) {
-						ok = false;
-						break;
-					}
-				}
-				button.setEnabled(ok);
-			}
-		});
-	}
-	
-	/**
-	 * Utility function: configures a Remove button which is associated with a viewer.
-	 */
-	public void configureRemoveButton(final Button removeButton, final Viewer viewer) {
-		ScaveEditor.disableButtonWhenSelectionEmpty(removeButton, viewer);
-		removeButton.addSelectionListener(new SelectionAdapter() {
-			public void widgetSelected(SelectionEvent e) {
-				// use EMF.Edit Framework do to the removal (this makes it undoable)
-				IStructuredSelection sel = (IStructuredSelection)viewer.getSelection();
-				Command command = RemoveCommand.create(getEditingDomain(), sel.toList());
-				getEditingDomain().getCommandStack().execute(command);
-			}
-		});
-	}
-	
-	/**
-	 * Utility function: configures an Edit button which is associated with a viewer.
-	 */
-	public void configureEditButton(final Button editButton, final Viewer viewer) {
-		ScaveEditor.disableButtonWhenSelectionEmpty(editButton, viewer);
-		editButton.addSelectionListener(new SelectionAdapter() {
-			public void widgetSelected(SelectionEvent e) {
-				IStructuredSelection sel = (IStructuredSelection)viewer.getSelection();
-				openEditSelectedElemementsDialog(sel);
-			}
-		});
-	}
-	
-	/**
-	 * Connects the button with an action, so that
-	 * the action is executed, when the button is pressed and
-	 * the button is enabled/disabled when the action becomes enabled/disabled.
-	 */
-	public void configureButton(final Button button, final IEditorActionDelegate delegate) {
-		final Action action = new Action() {
-			public void run() {
-				delegate.setActiveEditor(this, ScaveEditor.this);
-				delegate.run(this);
-			}
-		};
-		delegate.setActiveEditor(action, this);
-		getSite().getSelectionProvider().addSelectionChangedListener(new ISelectionChangedListener() {
-			public void selectionChanged(SelectionChangedEvent event) {
-				delegate.selectionChanged(action, event.getSelection());
-			}
-		});
-		button.addSelectionListener(new SelectionAdapter() {
-			public void widgetSelected(SelectionEvent e) {
-				action.run();
-			}
-		});
-		final IPropertyChangeListener propertyChangeListener = new IPropertyChangeListener() {
-			public void propertyChange(PropertyChangeEvent event) {
-				if (event.getProperty().equals(IAction.ENABLED)) {
-					if (!button.isDisposed())
-						button.setEnabled(action.isEnabled());
-				}
-			}
-		};
-		action.addPropertyChangeListener(propertyChangeListener);
-		button.addDisposeListener(new DisposeListener() {
-			public void widgetDisposed(DisposeEvent e) {
-				action.removePropertyChangeListener(propertyChangeListener);
-			}
-		});
-	}
-
-	/**
-	 * Pops up a dialog to edit the element(s) in the selection
-	 */
-	protected void openEditSelectedElemementsDialog(IStructuredSelection sel) {
-		MessageDialog.openInformation(getSite().getShell(), "TODO", "The Edit Dialog doesn't exist yet :("); //TODO
-	}
+//	/**
+//	 * Utility function: Adds dynamic behaviour to a control (typically a Button): 
+//	 * it gets disabled whenever the viewer's selection is empty.
+//	 */
+//	public static void disableButtonWhenSelectionEmpty(final Control button, final Viewer viewer) {
+//		viewer.addSelectionChangedListener(new ISelectionChangedListener() {
+//			public void selectionChanged(SelectionChangedEvent event) {
+//				button.setEnabled(!event.getSelection().isEmpty());
+//			}
+//		});
+//	}
+//
+//	/**
+//	 * Utility function: Adds dynamic behaviour to a control (typically a Button): 
+//	 * it gets enabled only whenever the viewer's selection is not empty, and 
+//	 * only contains instances of the given EClass (or subclasses).
+//	 */
+//	public static void disableButtonOnSelectionContent(final Control button, final Viewer viewer, final EClass eClass) {
+//		viewer.addSelectionChangedListener(new ISelectionChangedListener() {
+//			public void selectionChanged(SelectionChangedEvent event) {
+//				IStructuredSelection sel = (IStructuredSelection)event.getSelection();
+//				boolean ok = !sel.isEmpty();  // selection is not empty, and only contains instances of eClass
+//				for (Object o : sel.toArray()) {
+//					if (!(o instanceof EObject) || !((EObject)o).eClass().isSuperTypeOf(eClass)) {
+//						ok = false;
+//						break;
+//					}
+//				}
+//				button.setEnabled(ok);
+//			}
+//		});
+//	}
+//	
+//	/**
+//	 * Utility function: configures a Remove button which is associated with a viewer.
+//	 */
+//	public void configureRemoveButton(final Button removeButton, final Viewer viewer) {
+//		ScaveEditor.disableButtonWhenSelectionEmpty(removeButton, viewer);
+//		removeButton.addSelectionListener(new SelectionAdapter() {
+//			public void widgetSelected(SelectionEvent e) {
+//				// use EMF.Edit Framework do to the removal (this makes it undoable)
+//				IStructuredSelection sel = (IStructuredSelection)viewer.getSelection();
+//				Command command = RemoveCommand.create(getEditingDomain(), sel.toList());
+//				getEditingDomain().getCommandStack().execute(command);
+//			}
+//		});
+//	}
+//	
+//	/**
+//	 * Utility function: configures an Edit button which is associated with a viewer.
+//	 */
+//	public void configureEditButton(final Button editButton, final Viewer viewer) {
+//		ScaveEditor.disableButtonWhenSelectionEmpty(editButton, viewer);
+//		editButton.addSelectionListener(new SelectionAdapter() {
+//			public void widgetSelected(SelectionEvent e) {
+//				IStructuredSelection sel = (IStructuredSelection)viewer.getSelection();
+//				openEditSelectedElemementsDialog(sel);
+//			}
+//		});
+//	}
+//	
+//	/**
+//	 * Connects the button with an action, so that
+//	 * the action is executed, when the button is pressed and
+//	 * the button is enabled/disabled when the action becomes enabled/disabled.
+//	 */
+//	public void configureButton(final Button button, final IEditorActionDelegate delegate) {
+//		final Action action = new Action() {
+//			public void run() {
+//				delegate.setActiveEditor(this, ScaveEditor.this);
+//				delegate.run(this);
+//			}
+//		};
+//		delegate.setActiveEditor(action, this);
+//		getSite().getSelectionProvider().addSelectionChangedListener(new ISelectionChangedListener() {
+//			public void selectionChanged(SelectionChangedEvent event) {
+//				delegate.selectionChanged(action, event.getSelection());
+//			}
+//		});
+//		button.addSelectionListener(new SelectionAdapter() {
+//			public void widgetSelected(SelectionEvent e) {
+//				action.run();
+//			}
+//		});
+//		final IPropertyChangeListener propertyChangeListener = new IPropertyChangeListener() {
+//			public void propertyChange(PropertyChangeEvent event) {
+//				if (event.getProperty().equals(IAction.ENABLED)) {
+//					if (!button.isDisposed())
+//						button.setEnabled(action.isEnabled());
+//				}
+//			}
+//		};
+//		action.addPropertyChangeListener(propertyChangeListener);
+//		button.addDisposeListener(new DisposeListener() {
+//			public void widgetDisposed(DisposeEvent e) {
+//				action.removePropertyChangeListener(propertyChangeListener);
+//			}
+//		});
+//	}
+//
+//	/**
+//	 * Pops up a dialog to edit the element(s) in the selection
+//	 */
+//	protected void openEditSelectedElemementsDialog(IStructuredSelection sel) {
+//		MessageDialog.openInformation(getSite().getShell(), "TODO", "The Edit Dialog doesn't exist yet :("); //TODO
+//	}
 	
 	public void reportError(String message) {
 		// TODO
 	}
+	
+	/**
+	 * Utility method. 
+	 */
+	public void executeCommand(Command command) {
+		getEditingDomain().getCommandStack().execute(command);
+	}
+	
 }
 
 

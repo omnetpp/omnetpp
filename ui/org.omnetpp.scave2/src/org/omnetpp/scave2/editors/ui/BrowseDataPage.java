@@ -2,6 +2,7 @@ package org.omnetpp.scave2.editors.ui;
 
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -79,7 +80,7 @@ public class BrowseDataPage extends ScrolledForm {
 	}
 	
 	private void initialize() {
-		setBackground(ColorFactory.asColor("white"));
+		//setBackground(ColorFactory.asColor("white"));
 		setExpandHorizontal(true);
 		setExpandVertical(true);
 		GridLayout layout = new GridLayout();
@@ -93,7 +94,7 @@ public class BrowseDataPage extends ScrolledForm {
 	
 	private void createTabFolder() {
 		tabfolder = new TabFolder(getBody(), SWT.TOP);
-		//tabfolder.setBackground(this.getBackground());
+		//tabfolder.setBackground(new Color(null,255,255,255));
 		tabfolder.setLayoutData(new GridData(GridData.GRAB_HORIZONTAL |
 											  GridData.GRAB_VERTICAL |
 											  GridData.FILL_BOTH));

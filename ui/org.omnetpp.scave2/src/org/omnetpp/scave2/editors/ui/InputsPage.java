@@ -85,20 +85,7 @@ public class InputsPage extends ScrolledForm {
 		inputFilesSection.setClient(inputFilesPanel);
 
 		final TreeViewer treeViewer = inputFilesPanel.getTreeViewer();
-
-		// configure Add button
-		//TODO
-
-		// configure Add Wildcard button
-		//TODO
-
-		// configure Edit button
-//		final Button editButton = inputFilesPanel.getEditButton();
-//		scaveEditor.configureEditButton(editButton, treeViewer);
-
-		// configure Remove button
-		final Button removeButton = inputFilesPanel.getRemoveFileButton();
-		scaveEditor.configureRemoveButton(removeButton, treeViewer);
+		//TODO buttons
 	}
 
 	/**

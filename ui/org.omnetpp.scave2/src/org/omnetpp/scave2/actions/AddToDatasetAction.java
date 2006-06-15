@@ -16,7 +16,7 @@ import org.omnetpp.scave2.model.FilterParams;
  * Adds items selected on the BrowseDataPage to a dataset.
  * The user is asked to select the target dataset.
  */
-public class AddToDatasetActionDelegate extends AbstractScaveActionDelegate {
+public class AddToDatasetAction extends AbstractScaveAction {
 
 	@Override
 	protected void doRun(ScaveEditor editor, IStructuredSelection selection) {
@@ -34,14 +34,13 @@ public class AddToDatasetActionDelegate extends AbstractScaveActionDelegate {
 				Dataset dataset = (Dataset)result[0];
 				FilterParams params = activePanel.getFilterParams();
 				Add add = editor.createAdd(params);
-				executeCommand(new AddCommand(editor.getEditingDomain(), dataset.getItems(), add));
+				editor.executeCommand(new AddCommand(editor.getEditingDomain(), dataset.getItems(), add));
 			}
 		}
 	}
 
 	@Override
-	protected boolean isEnabled(ScaveEditor editor, IStructuredSelection selection) {
+	protected boolean isApplicable(ScaveEditor editor, IStructuredSelection selection) {
 		return editor.getBrowseDataPage().getActivePanel() != null;
 	}
-
 }

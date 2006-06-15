@@ -4,7 +4,6 @@ import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.forms.widgets.ExpandableComposite;
@@ -12,9 +11,6 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
 import org.omnetpp.common.color.ColorFactory;
-import org.omnetpp.scave.model.ScaveModelFactory;
-import org.omnetpp.scave2.actions.OpenChartSheetActionDelegate;
-import org.omnetpp.scave2.actions.OpenDatasetActionDelegate;
 import org.omnetpp.scave2.editors.ScaveEditor;
 
 public class DatasetsAndChartsPage extends ScrolledForm {
@@ -82,21 +78,7 @@ public class DatasetsAndChartsPage extends ScrolledForm {
 		datasetsSection.setClient(datasetsPanel);
 
 		final TreeViewer treeViewer = datasetsPanel.getTreeViewer();
-
-		// configure Open dataset button
-		Button openButton = datasetsPanel.getOpenDatasetButton();
-		scaveEditor.configureButton(openButton, new OpenDatasetActionDelegate());
-		
-		// configure New button
-		//TODO
-		
-		// configure Edit button
-		final Button editButton = datasetsPanel.getEditNodeButton();
-		scaveEditor.configureEditButton(editButton, treeViewer);
-		
-		// configure Remove button
-		final Button removeButton = datasetsPanel.getRemoveNodeButton();
-		scaveEditor.configureRemoveButton(removeButton, treeViewer);
+		//TODO buttons
 	}
 
 	/**
@@ -119,17 +101,6 @@ public class DatasetsAndChartsPage extends ScrolledForm {
 		chartSheetsSection.setClient(chartSheetsPanel);
 
 		final TreeViewer treeViewer = chartSheetsPanel.getTreeViewer();
-
-		// configure Open button
-		final Button openButton = chartSheetsPanel.getOpenChartSheetButton();
-		ScaveEditor.disableButtonOnSelectionContent(openButton, treeViewer, ScaveModelFactory.eINSTANCE.createChartSheet().eClass());
-		scaveEditor.configureButton(openButton, new OpenChartSheetActionDelegate());
-		// configure Edit button
-		final Button editButton = chartSheetsPanel.getEditChartSheetButton();
-		scaveEditor.configureEditButton(editButton, treeViewer);
-
-		// configure Remove button
-		final Button removeButton = chartSheetsPanel.getRemoveChartSheetButton();
-		scaveEditor.configureRemoveButton(removeButton, treeViewer);
+		//TODO buttons
 	}
 }
