@@ -2,6 +2,7 @@ package org.omnetpp.scave2.editors.ui;
 
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -22,6 +23,7 @@ public class InputsPage extends ScrolledForm {
 	private Section inputFilesSection = null;
 	private Section dataSection = null;
 	private ScaveEditor scaveEditor = null;  // the containing editor
+	private SashForm sashform = null;
 
 	public InputsPage(Composite parent, int style, ScaveEditor scaveEditor) {
 		super(parent, style | SWT.V_SCROLL);
@@ -49,6 +51,7 @@ public class InputsPage extends ScrolledForm {
 		setExpandVertical(true);
 		setBackground(ColorFactory.asColor("white"));
 		getBody().setLayout(new GridLayout());
+		createSashForm();
 		createInputFilesSection();
 		createDataSection();
 	}
@@ -65,6 +68,14 @@ public class InputsPage extends ScrolledForm {
 		return formToolkit;
 	}
 
+	private void createSashForm() {
+		sashform = new SashForm(getBody(), SWT.VERTICAL | SWT.SMOOTH);
+		sashform.setBackground(this.getBackground());
+		sashform.setLayoutData(new GridData(GridData.GRAB_HORIZONTAL |
+											GridData.GRAB_VERTICAL |
+											GridData.FILL_BOTH));
+	}
+	
 	/**
 	 * This method initializes inputFilesSection	
 	 */
@@ -74,21 +85,16 @@ public class InputsPage extends ScrolledForm {
 		gridData.grabExcessVerticalSpace = true;
 		gridData.horizontalAlignment = GridData.FILL;
 		gridData.verticalAlignment = GridData.FILL;
-		inputFilesSection = getFormToolkit().createSection(
-				getBody(),
-				Section.DESCRIPTION
-						| ExpandableComposite.TITLE_BAR);
+		inputFilesSection = getFormToolkit().createSection(sashform,
+				Section.DESCRIPTION | ExpandableComposite.TITLE_BAR);
 		inputFilesSection.setExpanded(true);
 		inputFilesSection.setLayoutData(gridData);
 		inputFilesSection.setText("Input files");
-		inputFilesSection.setDescription("Add or drag&drop result files (*.sca or *.vec) that should by used in this analysis.");
+		inputFilesSection.setDescription("Add or drag & drop result files (*.sca or *.vec) that should be used in this analysis.");
 		InputFilesPanel inputFilesPanel = new InputFilesPanel(inputFilesSection, SWT.NONE);
 		inputFilesSection.setClient(inputFilesPanel);
 
 		// buttons
-		//new ActionContributionItem(ScaveEditorContributor.getDefault().addResultFileAction).fill(inputFilesPanel.getButtonPanel());
-		//new ActionContributionItem(ScaveEditorContributor.getDefault().addWildcardResultFileAction).fill(inputFilesPanel.getButtonPanel());
-		//new ActionContributionItem(ScaveEditorContributor.getDefault().removeAction).fill(inputFilesPanel.getButtonPanel());
 		scaveEditor.configureViewerButton(
 				inputFilesPanel.getAddFileButton(), 
 				inputFilesPanel.getTreeViewer(),
@@ -110,16 +116,15 @@ public class InputsPage extends ScrolledForm {
 	private void createDataSection() {
 		GridData gridData1 = new GridData();
 		gridData1.grabExcessHorizontalSpace = true;
+		gridData1.grabExcessVerticalSpace = true;
 		gridData1.horizontalAlignment = GridData.FILL;
 		gridData1.verticalAlignment = GridData.FILL;
-		dataSection = getFormToolkit().createSection(
-				getBody(),
-				ExpandableComposite.TWISTIE | Section.DESCRIPTION
-						| ExpandableComposite.TITLE_BAR);
+		dataSection = getFormToolkit().createSection(sashform, 
+				Section.DESCRIPTION | ExpandableComposite.TITLE_BAR);
 		dataSection.setExpanded(true);
 		dataSection.setLayoutData(gridData1);
 		dataSection.setText("Data");
-		dataSection.setDescription("Here you can browse all data (vectors, scalars and histograms) that come from the input files.");
+		dataSection.setDescription("Here you can browse all data (vectors, scalars and histograms) that come from the result files.");
 		dataSection.setClient(new DataPanel(dataSection, SWT.NONE));
 	}
 }

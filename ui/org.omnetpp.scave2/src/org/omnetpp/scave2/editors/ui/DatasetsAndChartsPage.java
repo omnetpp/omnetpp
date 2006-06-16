@@ -2,6 +2,7 @@ package org.omnetpp.scave2.editors.ui;
 
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
@@ -25,6 +26,7 @@ public class DatasetsAndChartsPage extends ScrolledForm {
 	private Section datasetsSection = null;
 	private Section chartSheetsSection = null;
 	private ScaveEditor scaveEditor = null;  // the containing editor
+	private SashForm sashform = null;
 
 	public DatasetsAndChartsPage(Composite parent, int style, ScaveEditor scaveEditor) {
 		super(parent, style | SWT.V_SCROLL);
@@ -47,6 +49,7 @@ public class DatasetsAndChartsPage extends ScrolledForm {
 		setExpandVertical(true);
 		setBackground(ColorFactory.asColor("white"));
 		getBody().setLayout(new GridLayout());
+		createSashForm();
 		createDatasetsSection();
 		createChartSheetsSection();
 	}
@@ -63,6 +66,14 @@ public class DatasetsAndChartsPage extends ScrolledForm {
 		return formToolkit;
 	}
 
+	private void createSashForm() {
+		sashform = new SashForm(getBody(), SWT.VERTICAL | SWT.SMOOTH);
+		sashform.setBackground(this.getBackground());
+		sashform.setLayoutData(new GridData(GridData.GRAB_HORIZONTAL |
+											GridData.GRAB_VERTICAL |
+											GridData.FILL_BOTH));
+	}
+	
 	/**
 	 * This method initializes datasetsSection	
 	 */
@@ -72,10 +83,8 @@ public class DatasetsAndChartsPage extends ScrolledForm {
 		gridData2.verticalAlignment = GridData.FILL;
 		gridData2.grabExcessHorizontalSpace = true;
 		gridData2.grabExcessVerticalSpace = true;
-		datasetsSection = getFormToolkit().createSection(
-				getBody(),
-				Section.DESCRIPTION
-						| ExpandableComposite.TITLE_BAR);
+		datasetsSection = getFormToolkit().createSection(sashform,
+				Section.DESCRIPTION | ExpandableComposite.TITLE_BAR);
 		datasetsSection.setExpanded(true);
 		datasetsSection.setLayoutData(gridData2);
 		datasetsSection.setText("Datasets");
@@ -109,10 +118,8 @@ public class DatasetsAndChartsPage extends ScrolledForm {
 		gridData3.horizontalAlignment = GridData.FILL;
 		gridData3.verticalAlignment = GridData.FILL;
 		gridData3.grabExcessHorizontalSpace = true;
-		chartSheetsSection = getFormToolkit().createSection(
-				getBody(),
-				ExpandableComposite.TWISTIE | Section.DESCRIPTION
-						| ExpandableComposite.TITLE_BAR);
+		chartSheetsSection = getFormToolkit().createSection(sashform,
+				Section.DESCRIPTION | ExpandableComposite.TITLE_BAR);
 		chartSheetsSection.setExpanded(true);
 		chartSheetsSection.setLayoutData(gridData3);
 		chartSheetsSection.setText("Chart sheets and charts");

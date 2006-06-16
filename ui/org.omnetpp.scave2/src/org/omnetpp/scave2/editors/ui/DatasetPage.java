@@ -91,7 +91,7 @@ public class DatasetPage extends ScrolledForm {
 	}
 	
 	private void createSashForm() {
-		sashform = new SashForm(getBody(), SWT.VERTICAL | SWT.BORDER | SWT.SMOOTH);
+		sashform = new SashForm(getBody(), SWT.VERTICAL | SWT.SMOOTH);
 		sashform.setBackground(this.getBackground());
 		sashform.setLayoutData(new GridData(GridData.GRAB_HORIZONTAL |
 											GridData.GRAB_VERTICAL |

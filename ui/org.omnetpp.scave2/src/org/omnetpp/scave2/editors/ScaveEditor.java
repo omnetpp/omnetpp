@@ -66,9 +66,6 @@ import org.omnetpp.scave.model.Analysis;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.ChartSheet;
 import org.omnetpp.scave.model.Dataset;
-import org.omnetpp.scave.model.DatasetItem;
-import org.omnetpp.scave.model.Datasets;
-import org.omnetpp.scave.model.Group;
 import org.omnetpp.scave.model.InputFile;
 import org.omnetpp.scave.model.Inputs;
 import org.omnetpp.scave.model.ScaveModelFactory;
@@ -100,8 +97,6 @@ import org.omnetpp.scave2.model.FilterParams;
  */
 //FIXME add flag into InputFile: "name" is OS path or workspace-relative path
 //TODO Outline view doesn't use our labelprovider
-//FIXME setting ContainingSheet for a chart doesn't update the label in the table!!!
-//TODO open dataset by double-click 
 public class ScaveEditor extends AbstractEMFModelEditor implements INotifyChangedListener, IResourceChangeListener {
 
 	private InputsPage inputsPage;
