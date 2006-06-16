@@ -15,7 +15,6 @@
         eType="#//SelectDeselectOp" containment="true"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="properties" upperBound="-1"
         eType="#//Property" containment="true"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="containingSheet" eType="#//ChartSheet"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="Add" eSuperTypes="#//AddDiscardOp">
     <eStructuralFeatures xsi:type="ecore:EReference" name="excepts" upperBound="-1"
@@ -63,6 +62,8 @@
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="ChartSheet">
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="charts" upperBound="-1"
+        eType="#//Chart"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="Analysis">
     <eStructuralFeatures xsi:type="ecore:EReference" name="inputs" eType="#//Inputs"

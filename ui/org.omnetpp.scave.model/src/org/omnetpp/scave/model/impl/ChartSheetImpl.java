@@ -6,13 +6,20 @@
  */
 package org.omnetpp.scave.model.impl;
 
+import java.util.Collection;
+
 import org.eclipse.emf.common.notify.Notification;
+
+import org.eclipse.emf.common.util.EList;
 
 import org.eclipse.emf.ecore.EClass;
 
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
 import org.eclipse.emf.ecore.impl.EObjectImpl;
 
+import org.eclipse.emf.ecore.util.EObjectResolvingEList;
+
+import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.ChartSheet;
 import org.omnetpp.scave.model.ScaveModelPackage;
 
@@ -24,6 +31,7 @@ import org.omnetpp.scave.model.ScaveModelPackage;
  * The following features are implemented:
  * <ul>
  *   <li>{@link org.omnetpp.scave.model.impl.ChartSheetImpl#getName <em>Name</em>}</li>
+ *   <li>{@link org.omnetpp.scave.model.impl.ChartSheetImpl#getCharts <em>Charts</em>}</li>
  * </ul>
  * </p>
  *
@@ -49,6 +57,16 @@ public class ChartSheetImpl extends EObjectImpl implements ChartSheet {
 	 * @ordered
 	 */
 	protected String name = NAME_EDEFAULT;
+
+	/**
+	 * The cached value of the '{@link #getCharts() <em>Charts</em>}' reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #getCharts()
+	 * @generated
+	 * @ordered
+	 */
+	protected EList charts = null;
 
 	/**
 	 * <!-- begin-user-doc -->
@@ -94,10 +112,24 @@ public class ChartSheetImpl extends EObjectImpl implements ChartSheet {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	public EList getCharts() {
+		if (charts == null) {
+			charts = new EObjectResolvingEList(Chart.class, this, ScaveModelPackage.CHART_SHEET__CHARTS);
+		}
+		return charts;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
 	public Object eGet(int featureID, boolean resolve, boolean coreType) {
 		switch (featureID) {
 			case ScaveModelPackage.CHART_SHEET__NAME:
 				return getName();
+			case ScaveModelPackage.CHART_SHEET__CHARTS:
+				return getCharts();
 		}
 		return super.eGet(featureID, resolve, coreType);
 	}
@@ -111,6 +143,10 @@ public class ChartSheetImpl extends EObjectImpl implements ChartSheet {
 		switch (featureID) {
 			case ScaveModelPackage.CHART_SHEET__NAME:
 				setName((String)newValue);
+				return;
+			case ScaveModelPackage.CHART_SHEET__CHARTS:
+				getCharts().clear();
+				getCharts().addAll((Collection)newValue);
 				return;
 		}
 		super.eSet(featureID, newValue);
@@ -126,6 +162,9 @@ public class ChartSheetImpl extends EObjectImpl implements ChartSheet {
 			case ScaveModelPackage.CHART_SHEET__NAME:
 				setName(NAME_EDEFAULT);
 				return;
+			case ScaveModelPackage.CHART_SHEET__CHARTS:
+				getCharts().clear();
+				return;
 		}
 		super.eUnset(featureID);
 	}
@@ -139,6 +178,8 @@ public class ChartSheetImpl extends EObjectImpl implements ChartSheet {
 		switch (featureID) {
 			case ScaveModelPackage.CHART_SHEET__NAME:
 				return NAME_EDEFAULT == null ? name != null : !NAME_EDEFAULT.equals(name);
+			case ScaveModelPackage.CHART_SHEET__CHARTS:
+				return charts != null && !charts.isEmpty();
 		}
 		return super.eIsSet(featureID);
 	}

@@ -88,8 +88,8 @@ public class SequenceChartToolEditor extends EditorPart implements INavigationLo
 		eventLog = new EventLog(logFileName);
 		System.out.println("read "+eventLog.getNumEvents()+" events in "+eventLog.getNumModules()+" modules from "+logFileName);
 
-		String vectorFileName = logFileName.replace(".log", ".vec");
-		if (new java.io.File(vectorFileName).exists()) {
+		String vectorFileName = logFileName.replaceFirst("\\.log$", ".vec");
+		if (!vectorFileName.equals(logFileName) && new java.io.File(vectorFileName).exists()) {
 			stateVectors = readVectorFile(vectorFileName);
 			System.out.println("read "+stateVectors.length+" vectors from "+vectorFileName);
 		}
@@ -218,18 +218,6 @@ public class SequenceChartToolEditor extends EditorPart implements INavigationLo
 				}
 			}
 		});
-		
-		//XXX this is an attempt to make it possible to drag outside the chart, but it apparently doesn't do the job
-		//canvas.addMouseListener(new MouseListener() {
-		//	public void mouseDoubleClick(MouseEvent e) {}
-		//	public void mouseDown(MouseEvent e) {
-		//		System.out.println("CANVAS CAPTURED");
-		//		canvas.setCapture(true);
-		//	}
-		//	public void mouseUp(MouseEvent e) {
-		//		canvas.setCapture(false);
-		//		System.out.println("CANVAS RELEASED");
-		//	}});
 	}
 
 	private Composite createControlStrip(Composite upper) {

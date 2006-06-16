@@ -6,6 +6,8 @@
  */
 package org.omnetpp.scave.model;
 
+import org.eclipse.emf.common.util.EList;
+
 import org.eclipse.emf.ecore.EObject;
 
 /**
@@ -17,6 +19,7 @@ import org.eclipse.emf.ecore.EObject;
  * The following features are supported:
  * <ul>
  *   <li>{@link org.omnetpp.scave.model.ChartSheet#getName <em>Name</em>}</li>
+ *   <li>{@link org.omnetpp.scave.model.ChartSheet#getCharts <em>Charts</em>}</li>
  * </ul>
  * </p>
  *
@@ -50,5 +53,21 @@ public interface ChartSheet extends EObject {
 	 * @generated
 	 */
 	void setName(String value);
+
+	/**
+	 * Returns the value of the '<em><b>Charts</b></em>' reference list.
+	 * The list contents are of type {@link org.omnetpp.scave.model.Chart}.
+	 * <!-- begin-user-doc -->
+	 * <p>
+	 * If the meaning of the '<em>Charts</em>' reference list isn't clear,
+	 * there really should be more of a description here...
+	 * </p>
+	 * <!-- end-user-doc -->
+	 * @return the value of the '<em>Charts</em>' reference list.
+	 * @see org.omnetpp.scave.model.ScaveModelPackage#getChartSheet_Charts()
+	 * @model type="org.omnetpp.scave.model.Chart"
+	 * @generated
+	 */
+	EList getCharts();
 
 } // ChartSheet

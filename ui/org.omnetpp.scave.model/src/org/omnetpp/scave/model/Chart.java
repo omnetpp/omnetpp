@@ -19,7 +19,6 @@ import org.eclipse.emf.common.util.EList;
  *   <li>{@link org.omnetpp.scave.model.Chart#getName <em>Name</em>}</li>
  *   <li>{@link org.omnetpp.scave.model.Chart#getFilters <em>Filters</em>}</li>
  *   <li>{@link org.omnetpp.scave.model.Chart#getProperties <em>Properties</em>}</li>
- *   <li>{@link org.omnetpp.scave.model.Chart#getContainingSheet <em>Containing Sheet</em>}</li>
  * </ul>
  * </p>
  *
@@ -85,31 +84,5 @@ public interface Chart extends DatasetItem {
 	 * @generated
 	 */
 	EList getProperties();
-
-	/**
-	 * Returns the value of the '<em><b>Containing Sheet</b></em>' reference.
-	 * <!-- begin-user-doc -->
-	 * <p>
-	 * If the meaning of the '<em>Containing Sheet</em>' reference isn't clear,
-	 * there really should be more of a description here...
-	 * </p>
-	 * <!-- end-user-doc -->
-	 * @return the value of the '<em>Containing Sheet</em>' reference.
-	 * @see #setContainingSheet(ChartSheet)
-	 * @see org.omnetpp.scave.model.ScaveModelPackage#getChart_ContainingSheet()
-	 * @model
-	 * @generated
-	 */
-	ChartSheet getContainingSheet();
-
-	/**
-	 * Sets the value of the '{@link org.omnetpp.scave.model.Chart#getContainingSheet <em>Containing Sheet</em>}' reference.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @param value the new value of the '<em>Containing Sheet</em>' reference.
-	 * @see #getContainingSheet()
-	 * @generated
-	 */
-	void setContainingSheet(ChartSheet value);
 
 } // Chart

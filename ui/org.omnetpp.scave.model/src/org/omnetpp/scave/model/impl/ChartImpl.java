@@ -19,6 +19,7 @@ import org.eclipse.emf.ecore.InternalEObject;
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
 
 import org.eclipse.emf.ecore.util.EObjectContainmentEList;
+import org.eclipse.emf.ecore.util.EObjectResolvingEList;
 import org.eclipse.emf.ecore.util.InternalEList;
 
 import org.omnetpp.scave.model.Chart;
@@ -37,7 +38,6 @@ import org.omnetpp.scave.model.SelectDeselectOp;
  *   <li>{@link org.omnetpp.scave.model.impl.ChartImpl#getName <em>Name</em>}</li>
  *   <li>{@link org.omnetpp.scave.model.impl.ChartImpl#getFilters <em>Filters</em>}</li>
  *   <li>{@link org.omnetpp.scave.model.impl.ChartImpl#getProperties <em>Properties</em>}</li>
- *   <li>{@link org.omnetpp.scave.model.impl.ChartImpl#getContainingSheet <em>Containing Sheet</em>}</li>
  * </ul>
  * </p>
  *
@@ -83,16 +83,6 @@ public class ChartImpl extends DatasetItemImpl implements Chart {
 	 * @ordered
 	 */
 	protected EList properties = null;
-
-	/**
-	 * The cached value of the '{@link #getContainingSheet() <em>Containing Sheet</em>}' reference.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @see #getContainingSheet()
-	 * @generated
-	 * @ordered
-	 */
-	protected ChartSheet containingSheet = null;
 
 	/**
 	 * <!-- begin-user-doc -->
@@ -162,44 +152,6 @@ public class ChartImpl extends DatasetItemImpl implements Chart {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public ChartSheet getContainingSheet() {
-		if (containingSheet != null && containingSheet.eIsProxy()) {
-			InternalEObject oldContainingSheet = (InternalEObject)containingSheet;
-			containingSheet = (ChartSheet)eResolveProxy(oldContainingSheet);
-			if (containingSheet != oldContainingSheet) {
-				if (eNotificationRequired())
-					eNotify(new ENotificationImpl(this, Notification.RESOLVE, ScaveModelPackage.CHART__CONTAINING_SHEET, oldContainingSheet, containingSheet));
-			}
-		}
-		return containingSheet;
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	public ChartSheet basicGetContainingSheet() {
-		return containingSheet;
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	public void setContainingSheet(ChartSheet newContainingSheet) {
-		ChartSheet oldContainingSheet = containingSheet;
-		containingSheet = newContainingSheet;
-		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, ScaveModelPackage.CHART__CONTAINING_SHEET, oldContainingSheet, containingSheet));
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
 	public NotificationChain eInverseRemove(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
 		switch (featureID) {
 			case ScaveModelPackage.CHART__FILTERS:
@@ -223,9 +175,6 @@ public class ChartImpl extends DatasetItemImpl implements Chart {
 				return getFilters();
 			case ScaveModelPackage.CHART__PROPERTIES:
 				return getProperties();
-			case ScaveModelPackage.CHART__CONTAINING_SHEET:
-				if (resolve) return getContainingSheet();
-				return basicGetContainingSheet();
 		}
 		return super.eGet(featureID, resolve, coreType);
 	}
@@ -248,9 +197,6 @@ public class ChartImpl extends DatasetItemImpl implements Chart {
 				getProperties().clear();
 				getProperties().addAll((Collection)newValue);
 				return;
-			case ScaveModelPackage.CHART__CONTAINING_SHEET:
-				setContainingSheet((ChartSheet)newValue);
-				return;
 		}
 		super.eSet(featureID, newValue);
 	}
@@ -271,9 +217,6 @@ public class ChartImpl extends DatasetItemImpl implements Chart {
 			case ScaveModelPackage.CHART__PROPERTIES:
 				getProperties().clear();
 				return;
-			case ScaveModelPackage.CHART__CONTAINING_SHEET:
-				setContainingSheet((ChartSheet)null);
-				return;
 		}
 		super.eUnset(featureID);
 	}
@@ -291,8 +234,6 @@ public class ChartImpl extends DatasetItemImpl implements Chart {
 				return filters != null && !filters.isEmpty();
 			case ScaveModelPackage.CHART__PROPERTIES:
 				return properties != null && !properties.isEmpty();
-			case ScaveModelPackage.CHART__CONTAINING_SHEET:
-				return containingSheet != null;
 		}
 		return super.eIsSet(featureID);
 	}

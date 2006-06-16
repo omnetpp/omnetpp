@@ -63,6 +63,7 @@ public class ChartSheetItemProvider
 			super.getPropertyDescriptors(object);
 
 			addNamePropertyDescriptor(object);
+			addChartsPropertyDescriptor(object);
 		}
 		return itemPropertyDescriptors;
 	}
@@ -83,6 +84,26 @@ public class ChartSheetItemProvider
 				 ScaveModelPackage.Literals.CHART_SHEET__NAME,
 				 true,
 				 ItemPropertyDescriptor.GENERIC_VALUE_IMAGE,
+				 null,
+				 null));
+	}
+
+	/**
+	 * This adds a property descriptor for the Charts feature.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	protected void addChartsPropertyDescriptor(Object object) {
+		itemPropertyDescriptors.add
+			(createItemPropertyDescriptor
+				(((ComposeableAdapterFactory)adapterFactory).getRootAdapterFactory(),
+				 getResourceLocator(),
+				 getString("_UI_ChartSheet_charts_feature"),
+				 getString("_UI_PropertyDescriptor_description", "_UI_ChartSheet_charts_feature", "_UI_ChartSheet_type"),
+				 ScaveModelPackage.Literals.CHART_SHEET__CHARTS,
+				 true,
+				 null,
 				 null,
 				 null));
 	}

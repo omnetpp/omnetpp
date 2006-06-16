@@ -171,22 +171,13 @@ public interface ScaveModelPackage extends EPackage {
 	int CHART__PROPERTIES = DATASET_ITEM_FEATURE_COUNT + 2;
 
 	/**
-	 * The feature id for the '<em><b>Containing Sheet</b></em>' reference.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int CHART__CONTAINING_SHEET = DATASET_ITEM_FEATURE_COUNT + 3;
-
-	/**
 	 * The number of structural features of the '<em>Chart</em>' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int CHART_FEATURE_COUNT = DATASET_ITEM_FEATURE_COUNT + 4;
+	int CHART_FEATURE_COUNT = DATASET_ITEM_FEATURE_COUNT + 3;
 
 	/**
 	 * The meta object id for the '{@link org.omnetpp.scave.model.impl.SetOperationImpl <em>Set Operation</em>}' class.
@@ -883,13 +874,22 @@ public interface ScaveModelPackage extends EPackage {
 	int CHART_SHEET__NAME = 0;
 
 	/**
+	 * The feature id for the '<em><b>Charts</b></em>' reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int CHART_SHEET__CHARTS = 1;
+
+	/**
 	 * The number of structural features of the '<em>Chart Sheet</em>' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int CHART_SHEET_FEATURE_COUNT = 1;
+	int CHART_SHEET_FEATURE_COUNT = 2;
 
 	/**
 	 * The meta object id for the '{@link org.omnetpp.scave.model.impl.AnalysisImpl <em>Analysis</em>}' class.
@@ -1466,17 +1466,6 @@ public interface ScaveModelPackage extends EPackage {
 	EReference getChart_Properties();
 
 	/**
-	 * Returns the meta object for the reference '{@link org.omnetpp.scave.model.Chart#getContainingSheet <em>Containing Sheet</em>}'.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @return the meta object for the reference '<em>Containing Sheet</em>'.
-	 * @see org.omnetpp.scave.model.Chart#getContainingSheet()
-	 * @see #getChart()
-	 * @generated
-	 */
-	EReference getChart_ContainingSheet();
-
-	/**
 	 * Returns the meta object for class '{@link org.omnetpp.scave.model.Add <em>Add</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -1808,6 +1797,17 @@ public interface ScaveModelPackage extends EPackage {
 	EAttribute getChartSheet_Name();
 
 	/**
+	 * Returns the meta object for the reference list '{@link org.omnetpp.scave.model.ChartSheet#getCharts <em>Charts</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the reference list '<em>Charts</em>'.
+	 * @see org.omnetpp.scave.model.ChartSheet#getCharts()
+	 * @see #getChartSheet()
+	 * @generated
+	 */
+	EReference getChartSheet_Charts();
+
+	/**
 	 * Returns the meta object for class '{@link org.omnetpp.scave.model.Analysis <em>Analysis</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -2095,14 +2095,6 @@ public interface ScaveModelPackage extends EPackage {
 		EReference CHART__PROPERTIES = eINSTANCE.getChart_Properties();
 
 		/**
-		 * The meta object literal for the '<em><b>Containing Sheet</b></em>' reference feature.
-		 * <!-- begin-user-doc -->
-		 * <!-- end-user-doc -->
-		 * @generated
-		 */
-		EReference CHART__CONTAINING_SHEET = eINSTANCE.getChart_ContainingSheet();
-
-		/**
 		 * The meta object literal for the '{@link org.omnetpp.scave.model.impl.AddImpl <em>Add</em>}' class.
 		 * <!-- begin-user-doc -->
 		 * <!-- end-user-doc -->
@@ -2369,6 +2361,14 @@ public interface ScaveModelPackage extends EPackage {
 		 * @generated
 		 */
 		EAttribute CHART_SHEET__NAME = eINSTANCE.getChartSheet_Name();
+
+		/**
+		 * The meta object literal for the '<em><b>Charts</b></em>' reference list feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference CHART_SHEET__CHARTS = eINSTANCE.getChartSheet_Charts();
 
 		/**
 		 * The meta object literal for the '{@link org.omnetpp.scave.model.impl.AnalysisImpl <em>Analysis</em>}' class.

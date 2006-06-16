@@ -754,14 +754,6 @@
     <sourceAnchor xmi:type="notation:IdentityAnchor" xmi:id="_4wxfJeTFEdqldJgFfGVykA" id="(0.52459013,0.023255814)"/>
     <targetAnchor xmi:type="notation:IdentityAnchor" xmi:id="_4wxfJuTFEdqldJgFfGVykA" id="(0.24590164,0.43023255)"/>
   </edges>
-  <edges xmi:type="notation:Edge" xmi:id="_EXum8OZBEdqeaYd94rfFJQ" type="3002" source="_OMd4IOBGEdqGIqWRmKIpGw" target="_jnQWkOWoEdqxxfwp0D2XBA">
-    <children xmi:type="notation:Node" xmi:id="_EX0tkOZBEdqeaYd94rfFJQ" type="4015">
-      <layoutConstraint xmi:type="notation:Location" xmi:id="_EX0tkeZBEdqeaYd94rfFJQ"/>
-    </children>
-    <styles xmi:type="notation:ConnectorStyle" xmi:id="_EXum8eZBEdqeaYd94rfFJQ"/>
-    <element xmi:type="ecore:EReference" href="scave.ecore#//Chart/containingSheet"/>
-    <bendpoints xmi:type="notation:RelativeBendpoints" xmi:id="_EXum8uZBEdqeaYd94rfFJQ" points="[0, 0, 0, 0]$[0, 0, 0, 0]"/>
-  </edges>
   <edges xmi:type="notation:Edge" xmi:id="_cQGfYOZDEdqeaYd94rfFJQ" type="3003" source="_FPLCkOEuEdqgzvtsA5GI_w" target="_eGg5UOZBEdqeaYd94rfFJQ">
     <children xmi:type="notation:Node" xmi:id="_cQGfY-ZDEdqeaYd94rfFJQ" type="4016">
       <layoutConstraint xmi:type="notation:Location" xmi:id="_cQGfZOZDEdqeaYd94rfFJQ"/>
@@ -816,5 +808,15 @@
     <bendpoints xmi:type="notation:RelativeBendpoints" xmi:id="_rx1H4uZDEdqeaYd94rfFJQ" points="[-11, -4, 127, 51]$[-131, -66, 7, -11]"/>
     <sourceAnchor xmi:type="notation:IdentityAnchor" xmi:id="_rx1H5eZDEdqeaYd94rfFJQ" id="(0.16666667,0.3283582)"/>
     <targetAnchor xmi:type="notation:IdentityAnchor" xmi:id="_rx1H5uZDEdqeaYd94rfFJQ" id="(0.8032787,0.12790698)"/>
+  </edges>
+  <edges xmi:type="notation:Edge" xmi:id="_cbNTkP02EdqWJPxT24Gx1A" type="3002" source="_jnQWkOWoEdqxxfwp0D2XBA" target="_OMd4IOBGEdqGIqWRmKIpGw">
+    <children xmi:type="notation:Node" xmi:id="_cbNTk_02EdqWJPxT24Gx1A" type="4015">
+      <layoutConstraint xmi:type="notation:Location" xmi:id="_cbNTlP02EdqWJPxT24Gx1A"/>
+    </children>
+    <styles xmi:type="notation:ConnectorStyle" xmi:id="_cbNTkf02EdqWJPxT24Gx1A"/>
+    <element xmi:type="ecore:EReference" href="scave.ecore#//ChartSheet/charts"/>
+    <bendpoints xmi:type="notation:RelativeBendpoints" xmi:id="_cbNTkv02EdqWJPxT24Gx1A" points="[4, 11, -110, -291]$[114, 287, 0, -15]"/>
+    <sourceAnchor xmi:type="notation:IdentityAnchor" xmi:id="_cbTaMP02EdqWJPxT24Gx1A" id="(0.5185185,0.8472222)"/>
+    <targetAnchor xmi:type="notation:IdentityAnchor" xmi:id="_cbTaMf02EdqWJPxT24Gx1A" id="(0.5,0.20833333)"/>
   </edges>
 </notation:Diagram>

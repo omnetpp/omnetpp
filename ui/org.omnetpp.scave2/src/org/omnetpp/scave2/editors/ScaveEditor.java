@@ -396,7 +396,7 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INotifyChange
 		ChartSheetPage page = new ChartSheetPage(getContainer(), SWT.NONE);
 		setFormTitle(page, "Charts: " + chartsheet.getName());
 
-		Collection<Chart> charts = findCharts(chartsheet);
+		Collection<Chart> charts = chartsheet.getCharts();
 		Composite parent = page.getChartSheetComposite();
 		for (Chart chart : charts) {
 			Dataset dataset = findEnclosingDataset(chart);
@@ -448,36 +448,6 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INotifyChange
 		add.setModuleNamePattern(params.getModuleNamePattern());
 		add.setNamePattern(params.getDataNamePattern());
 		return add;
-	}
-	
-	private Collection<Chart> findCharts(ChartSheet chartsheet) {
-		List<Chart> charts = new ArrayList<Chart>();
-		Datasets datasets = getAnalysisModelObject().getDatasets();
-		findCharts(chartsheet, datasets, charts);
-		return charts;
-	}
-	
-	private void findCharts(ChartSheet chartsheet, Object container, List<Chart> result) {
-		if (container instanceof Datasets) {
-			for (Object dataset : ((Datasets)container).getDatasets())
-				findCharts(chartsheet, dataset, result);
-		}
-		else if (container instanceof Dataset) {
-			for (Object item : ((Dataset)container).getItems()) {
-				findCharts(chartsheet, item, result);
-			}
-		}
-		else if (container instanceof Group) {
-			for (Object item : ((Group)container).getItems())
-				findCharts(chartsheet, item, result);
-		}
-		else if (container instanceof Chart) {
-			Chart chart = (Chart)container;
-			if (chart.getContainingSheet() == null ||
-				chart.getContainingSheet().equals(chartsheet)) {
-				result.add(chart);
-			}
-		}
 	}
 	
 	private Dataset findEnclosingDataset(Chart chart) {

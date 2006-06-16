@@ -49,7 +49,7 @@ public class ScaveModelLabelProvider extends LabelProvider {
 		} 
 		else if (element instanceof ChartSheet) {
 			ChartSheet o = (ChartSheet) element;
-			return "chart sheet "+fallback(o.getName(),"<unnamed>");
+			return "chart sheet "+fallback(o.getName(),"<unnamed>")+" ("+o.getCharts().size()+" charts)";
 		} 
 		else if (element instanceof Datasets) {
 			return "Datasets";
@@ -122,10 +122,7 @@ public class ScaveModelLabelProvider extends LabelProvider {
 		}
 		else if (element instanceof Chart) {
 			Chart o = (Chart) element;
-			String res = "chart "+fallback(o.getName(),"<unnamed>");
-			if (o.getContainingSheet()!=null)
-				res += " on sheet "+fallback(o.getContainingSheet().getName(),"<unnamed>");
-			return res;
+			return "chart "+fallback(o.getName(),"<unnamed>");
 		}
 		else if (element instanceof Param) {
 			Param o = (Param) element;
