@@ -8,10 +8,13 @@ import org.eclipse.draw2d.ColorConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.MouseAdapter;
+import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -19,6 +22,8 @@ import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.IFileEditorInput;
@@ -41,6 +46,7 @@ import org.omnetpp.scave.engine.File;
 import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.engine.IntSet;
 import org.omnetpp.scave.engine.JavaFriendlyEventLogFacade;
+import org.omnetpp.scave.engine.MessageEntry;
 import org.omnetpp.scave.engine.ModuleEntry;
 import org.omnetpp.scave.engine.Node;
 import org.omnetpp.scave.engine.NodeType;
@@ -201,6 +207,13 @@ public class SequenceChartToolEditor extends EditorPart implements INavigationLo
 				}
 			}
 		});
+		
+		seqChart.addMouseListener(new MouseAdapter() {
+			public void mouseDown(MouseEvent e) {
+				if (e.button == 3)
+					displayPopupMenu(e);
+			}
+		});
 
 		// fill combo box with events
 		fillEventCombo();
@@ -230,13 +243,13 @@ public class SequenceChartToolEditor extends EditorPart implements INavigationLo
 		Combo timelineSortMode = new Combo(controlStrip, SWT.NONE);
 		for (SequenceChart.TimelineSortMode t : SequenceChart.TimelineSortMode.values())
 			timelineSortMode.add(t.name());
-		timelineSortMode.select(0);
+		timelineSortMode.select(seqChart.getTimelineSortMode().ordinal());
 		timelineSortMode.setVisibleItemCount(SequenceChart.TimelineSortMode.values().length);
 		
 		Combo timelineMode = new Combo(controlStrip, SWT.NONE);
 		for (SequenceChart.TimelineMode t : SequenceChart.TimelineMode.values())
 			timelineMode.add(t.name());
-		timelineMode.select(0);
+		timelineMode.select(seqChart.getTimelineMode().ordinal());
 		timelineMode.setVisibleItemCount(SequenceChart.TimelineMode.values().length);
 		
 		Button showNonDeliveryMessages = new Button(controlStrip, SWT.CHECK);
@@ -446,7 +459,7 @@ public class SequenceChartToolEditor extends EditorPart implements INavigationLo
 					}
 		}
 		
-		seqChart.updateFigure(filteredEventLog, axisModules, axisVectors);
+		seqChart.setParameters(filteredEventLog, axisModules, axisVectors);
 	}
 
 	/**
@@ -469,9 +482,143 @@ public class SequenceChartToolEditor extends EditorPart implements INavigationLo
 			for (ModuleTreeItem sel : axisModules)
 				System.out.println(" "+sel.getModuleFullPath());
 
-			// update chart
 			filterEventLog();
 		}
+	}
+	
+	private void displayPopupMenu(MouseEvent e) {
+		final int x = e.x;
+		Menu popupMenu = new Menu(seqChart);
+		ArrayList<EventEntry> events = new ArrayList<EventEntry>();
+		ArrayList<MessageEntry> msgs = new ArrayList<MessageEntry>();
+		Point p = seqChart.toControl(seqChart.getDisplay().getCursorLocation());
+		seqChart.collectStuffUnderMouse(p.x, p.y, events, msgs);
+
+		// center menu item
+		MenuItem subMenuItem = new MenuItem(popupMenu, SWT.PUSH);
+		subMenuItem.setText("Center");
+		subMenuItem.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
+				seqChart.gotoSimulationTimeWithCenter(seqChart.pixelToSimulationTime(x));
+			}
+		});
+
+		// axis submenu
+		MenuItem cascadeItem = new MenuItem(popupMenu, SWT.CASCADE);
+		cascadeItem.setText("Axis");
+		Menu subMenu = new Menu(popupMenu);
+		cascadeItem.setMenu(subMenu);
+
+		subMenuItem = new MenuItem(subMenu, SWT.PUSH);
+		subMenuItem.setText("Dense");
+		subMenuItem.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
+				seqChart.setAxisSpacing(20);
+			}
+		});
+		
+		subMenuItem = new MenuItem(subMenu, SWT.PUSH);
+		subMenuItem.setText("Evenly");
+		subMenuItem.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
+				seqChart.setAxisSpacing(-1);
+			}
+		});
+		
+		new MenuItem(popupMenu, SWT.SEPARATOR);
+		
+		// events submenu
+		for (final EventEntry event : events) {
+			cascadeItem = new MenuItem(popupMenu, SWT.CASCADE);
+			cascadeItem.setText(seqChart.getEventText(event));
+			subMenu = new Menu(popupMenu);
+			cascadeItem.setMenu(subMenu);
+
+			subMenuItem = new MenuItem(subMenu, SWT.PUSH);
+			subMenuItem.setText("Center");
+			subMenuItem.addSelectionListener(new SelectionAdapter() {
+				public void widgetSelected(SelectionEvent e) {
+					seqChart.gotoEvent(event);
+				}
+			});
+
+			subMenuItem = new MenuItem(subMenu, SWT.PUSH);
+			subMenuItem.setText("Select");
+			subMenuItem.addSelectionListener(new SelectionAdapter() {
+				public void widgetSelected(SelectionEvent e) {
+					// TODO:
+				}
+			});
+
+			subMenuItem = new MenuItem(subMenu, SWT.PUSH);
+			subMenuItem.setText("Filter to");
+			subMenuItem.addSelectionListener(new SelectionAdapter() {
+				public void widgetSelected(SelectionEvent e) {
+					showSequenceChartForEvent(event.getEventNumber());
+				}
+			});
+		}
+		
+		new MenuItem(popupMenu, SWT.SEPARATOR);
+
+		// messages submenu
+		for (final MessageEntry msg : msgs) {
+			cascadeItem = new MenuItem(popupMenu, SWT.CASCADE);
+			cascadeItem.setText(seqChart.getMessageText(msg));
+			subMenu = new Menu(popupMenu);
+			cascadeItem.setMenu(subMenu);
+
+			subMenuItem = new MenuItem(subMenu, SWT.PUSH);
+			subMenuItem.setText("Zoom to message");
+			subMenuItem.addSelectionListener(new SelectionAdapter() {
+				public void widgetSelected(SelectionEvent e) {
+					seqChart.gotoSimulationTimeRange(msg.getSource().getSimulationTime(), msg.getTarget().getSimulationTime(), (int)(seqChart.getWidth() * 0.1));
+				}
+			});
+
+			subMenuItem = new MenuItem(subMenu, SWT.PUSH);
+			subMenuItem.setText("Go to source event");
+			subMenuItem.addSelectionListener(new SelectionAdapter() {
+				public void widgetSelected(SelectionEvent e) {
+					seqChart.gotoEvent(msg.getSource());
+				}
+			});
+
+			subMenuItem = new MenuItem(subMenu, SWT.PUSH);
+			subMenuItem.setText("Go to target event");
+			subMenuItem.addSelectionListener(new SelectionAdapter() {
+				public void widgetSelected(SelectionEvent e) {
+					seqChart.gotoEvent(msg.getTarget());
+				}
+			});
+		}
+		
+		// axis submenu
+		final ModuleTreeItem axisModule = seqChart.findAxisAt(p.y);
+		if (axisModule != null) {
+			cascadeItem = new MenuItem(popupMenu, SWT.CASCADE);
+			cascadeItem.setText(seqChart.getAxisText(axisModule));
+			subMenu = new Menu(popupMenu);
+			cascadeItem.setMenu(subMenu);
+
+			subMenuItem = new MenuItem(subMenu, SWT.PUSH);
+			subMenuItem.setText("Center");
+			subMenuItem.addSelectionListener(new SelectionAdapter() {
+				public void widgetSelected(SelectionEvent e) {
+					seqChart.gotoAxisModule(axisModule);
+				}
+			});
+
+			subMenuItem = new MenuItem(subMenu, SWT.PUSH);
+			subMenuItem.setText("Zoom to value");
+			subMenuItem.addSelectionListener(new SelectionAdapter() {
+				public void widgetSelected(SelectionEvent e) {
+					seqChart.gotoAxisValue(axisModule, seqChart.pixelToSimulationTime(x));
+				}
+			});			
+		}
+		
+		seqChart.setMenu(popupMenu);
 	}
 
 	public void dispose() {
@@ -480,6 +627,7 @@ public class SequenceChartToolEditor extends EditorPart implements INavigationLo
 
 	@Override
 	public void setFocus() {
+		seqChart.setFocus();
 	}
 
 	@Override
