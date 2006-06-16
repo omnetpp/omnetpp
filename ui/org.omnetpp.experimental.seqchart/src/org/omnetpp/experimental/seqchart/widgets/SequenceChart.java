@@ -287,6 +287,7 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 		this.timelineSortMode = timelineSortMode;
 		axisModulePositions = null;
 		axisModuleYs = null;
+		invalidEventCoordinates = true;
 		clearCanvasCacheAndRedraw();
 	}
 	
@@ -522,6 +523,8 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 		
 		axisModulePositions = null;
 		axisModuleYs = null;
+		invalidVirtualSize = true;
+		invalidEventCoordinates = true;
 		clearCanvasCacheAndRedraw();
 	}
 	
@@ -537,6 +540,11 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 			}
 			else
 				axisGraphs.add(new AxisGraph(this));
+
+		axisModuleYs = null;
+		invalidVirtualSize = true;
+		invalidEventCoordinates = true;
+		clearCanvasCacheAndRedraw();
 	}
 	
 	/**
