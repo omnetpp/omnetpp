@@ -1,12 +1,14 @@
 package org.omnetpp.scave2.editors.ui;
 
+import static org.omnetpp.scave2.model.DatasetType.SCALAR;
+import static org.omnetpp.scave2.model.DatasetType.VECTOR;
+
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
@@ -26,10 +28,12 @@ public class DatasetPage extends ScrolledForm {
 	private DatasetPanel datasetPanel;
 	private FilterPanel filterPanel;
 	private ScaveEditor scaveEditor = null;  // the containing editor
+	private String type; // "vector","scalar" or "histogram"
 	
-	public DatasetPage(Composite parent, int style, ScaveEditor scaveEditor) {
+	public DatasetPage(Composite parent, int style, ScaveEditor scaveEditor, String type) {
 		super(parent, style | SWT.V_SCROLL | SWT.H_SCROLL);
 		this.scaveEditor = scaveEditor;
+		this.type = type;
 		initialize();
 	}
 	
@@ -45,43 +49,6 @@ public class DatasetPage extends ScrolledForm {
 		return filterPanel;
 	}
 	
-//	public Button getAddButton() {
-//		return datasetPanel.getAddButton();
-//	}
-//
-//	public Button getRemoveButton() {
-//		return datasetPanel.getRemoveButton();
-//	}
-//
-//	public Button getEditButton() {
-//		return datasetPanel.getEditButton();
-//	}
-//
-//	public Button getCreateChartButton() {
-//		return datasetPanel.getCreateChartButton();
-//	}
-//	
-//	public Button getOpenChartButton() {
-//		return datasetPanel.getOpenChartButton();
-//	}
-//
-//	public Button getGroupButton() {
-//		return datasetPanel.getGroupButton();
-//	}
-//
-//	public Button getUngroupButton() {
-//		return datasetPanel.getUngroupButton();
-//	}
-//	
-	
-	public void addScalarsPanel() {
-		filterPanel = new ScalarsPanel(sashform, SWT.NONE);
-	}
-	
-	public void addVectorsPanel() {
-		filterPanel = new VectorsPanel(sashform, SWT.NONE);
-	}
-	
 	private void initialize() {
 		setExpandHorizontal(true);
 		setExpandVertical(true);
@@ -95,7 +62,7 @@ public class DatasetPage extends ScrolledForm {
 		label.setLayoutData(new GridData(GridData.GRAB_HORIZONTAL));
 		createSashForm();
 		createDatasetPanel();
-		//sashform.setMaximizedControl(datasetPanel);
+		createFilterPanel();
 
 		scaveEditor.configureViewerButton(
 				datasetPanel.getAddButton(),
@@ -133,5 +100,14 @@ public class DatasetPage extends ScrolledForm {
 	
 	private void createDatasetPanel() {
 		datasetPanel = new DatasetPanel(sashform, SWT.NONE);
+	}
+	
+	private void createFilterPanel() {
+		if (SCALAR.equals(type))
+			filterPanel = new ScalarsPanel(sashform, SWT.NONE);
+		else if (VECTOR.equals(type))
+			filterPanel = new VectorsPanel(sashform, SWT.NONE);
+		else
+			filterPanel = new ScalarsPanel(sashform, SWT.NONE);
 	}
 }

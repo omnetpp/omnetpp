@@ -10,14 +10,15 @@ import org.omnetpp.scave.model.Add;
 import org.omnetpp.scave.model.Apply;
 import org.omnetpp.scave.model.Dataset;
 import org.omnetpp.scave.model.DatasetItem;
-import org.omnetpp.scave.model.Deselect;
 import org.omnetpp.scave.model.Discard;
 import org.omnetpp.scave.model.Group;
-import org.omnetpp.scave.model.Select;
-import org.omnetpp.scave.model.SelectDeselectOp;
 import org.omnetpp.scave.model.SetOperation;
 import org.omnetpp.scave.model.util.ScaveModelSwitch;
 
+/**
+ * This class calculates the content of a dataset
+ * applying the operations described by the dataset. 
+ */
 public class DatasetManager {
 	
 	static class DatasetContent {
@@ -25,7 +26,6 @@ public class DatasetManager {
 		public FileList files;
 		public IDList idlist;
 		public DataflowManager dataflowManager;
-		public boolean finished;
 		
 		public DatasetContent() {
 			files = new FileList();
@@ -34,7 +34,8 @@ public class DatasetManager {
 	}
 	
 	public static IDList getIDListFromDataset(ResultFileManager manager, Dataset dataset, DatasetItem lastProcessedItem) {
-		DatasetContent content = (DatasetContent)new ProcessDatasetSwitch(manager).doSwitch(dataset);
+		ProcessDatasetSwitch processor = new ProcessDatasetSwitch(manager, lastProcessedItem);
+		DatasetContent content = (DatasetContent)processor.doSwitch(dataset);
 		return content != null ? content.idlist : new IDList();
 	}
 	
@@ -43,14 +44,21 @@ public class DatasetManager {
 		
 		ResultFileManager manager;
 		DatasetContent content;
+		EObject stopAfter;
+		boolean stopped;
 		
-		public ProcessDatasetSwitch(ResultFileManager manager) {
+		public ProcessDatasetSwitch(ResultFileManager manager, EObject stopAfter) {
 			this.manager = manager;
 			this.content = new DatasetContent();
+			this.stopAfter = stopAfter;
+			this.stopped = false;
 		}
 
 		@Override
 		public Object caseDataset(Dataset dataset) {
+			if (stopped)
+				return content;
+			
 			if ("scalar".equals(dataset.getType())) {
 				content.isScalar = true;
 			} else if ("vector".equals(dataset.getType())) {
@@ -62,30 +70,57 @@ public class DatasetManager {
 			
 			for (Object item : dataset.getItems())
 				doSwitch((EObject)item);
+			
+			if (dataset == stopAfter)
+				stopped = true;
 			return content;
 		}
 
 		@Override
 		public Object caseAdd(Add add) {
+			if (stopped)
+				return content;
+
 			add(content.idlist, add, content.isScalar);
+
+			if (add == stopAfter)
+				stopped = true;
+
 			return content;
 		}
 		
 		@Override
 		public Object caseDiscard(Discard discard) {
+			if (stopped)
+				return content;
+
 			remove(content.idlist, discard);
+			
+			if (discard == stopAfter)
+				stopped = true;
+
 			return content;
 		}
 
 		@Override
 		public Object caseGroup(Group group) {
+			if (stopped)
+				return content;
+
 			for (Object item : group.getItems())
 				doSwitch((EObject)item);
+			
+			if (group == stopAfter)
+				stopped = true;
+			
 			return content;
 		}
 
 		@Override
 		public Object caseApply(Apply apply) {
+			if (stopped)
+				return content;
+
 			/*
 			String operation = apply.getOperation();
 			EList params = apply.getParams();
@@ -104,6 +139,10 @@ public class DatasetManager {
 			// execute operation with input/params
 			content.idlist = executeFilter(idlist, operation, params);
 			*/
+			
+			if (apply == stopAfter)
+				stopped = true;
+			
 			return content;
 		}
 

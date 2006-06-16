@@ -31,6 +31,7 @@ import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
+import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
@@ -65,6 +66,7 @@ import org.omnetpp.scave.model.Analysis;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.ChartSheet;
 import org.omnetpp.scave.model.Dataset;
+import org.omnetpp.scave.model.DatasetItem;
 import org.omnetpp.scave.model.Datasets;
 import org.omnetpp.scave.model.Group;
 import org.omnetpp.scave.model.InputFile;
@@ -73,6 +75,8 @@ import org.omnetpp.scave.model.ScaveModelFactory;
 import org.omnetpp.scave2.ContentTypes;
 import org.omnetpp.scave2.actions.IScaveAction;
 import org.omnetpp.scave2.charting.ChartFactory;
+import org.omnetpp.scave2.editors.providers.DatasetScalarsViewProvider;
+import org.omnetpp.scave2.editors.providers.DatasetVectorsViewProvider;
 import org.omnetpp.scave2.editors.providers.InputsLogicalViewProvider;
 import org.omnetpp.scave2.editors.providers.InputsPhysicalViewProvider;
 import org.omnetpp.scave2.editors.providers.InputsScalarsViewProvider;
@@ -84,6 +88,7 @@ import org.omnetpp.scave2.editors.ui.ChartPage;
 import org.omnetpp.scave2.editors.ui.ChartSheetPage;
 import org.omnetpp.scave2.editors.ui.DatasetPage;
 import org.omnetpp.scave2.editors.ui.DatasetsAndChartsPage;
+import org.omnetpp.scave2.editors.ui.FilterPanel;
 import org.omnetpp.scave2.editors.ui.InputsPage;
 import org.omnetpp.scave2.model.DatasetManager;
 import org.omnetpp.scave2.model.FilterParams;
@@ -371,22 +376,23 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INotifyChange
 	
 	private int createDatasetPage(Dataset dataset) {
 		//XXX move stuff into page's constructor
-		DatasetPage page = new DatasetPage(getContainer(), SWT.NONE, this);
+		DatasetPage page = new DatasetPage(getContainer(), SWT.NONE, this, dataset.getType());
 		setFormTitle(page, "Dataset: " + dataset.getName());
-
-		configureTreeViewer(page.getDatasetTreeViewer());
-		if (SCALAR.equals(dataset.getType())) {
-			page.addScalarsPanel();
-			InputsTableViewProvider provider = new InputsScalarsViewProvider(this);
-			provider.configureFilterPanel(page.getFilterPanel());
-		} else if (VECTOR.equals(dataset.getType())) {
-			page.addVectorsPanel();
-			InputsTableViewProvider provider = new InputsVectorsViewProvider(this);
-			provider.configureFilterPanel(page.getFilterPanel());
-		} else {
+		
+		InputsTableViewProvider provider;
+		if (SCALAR.equals(dataset.getType()))
+			provider = new DatasetScalarsViewProvider(this);
+		else if (VECTOR.equals(dataset.getType()))
+			provider = new DatasetVectorsViewProvider(this);
+		else
 			throw new RuntimeException("invalid or unset dataset 'type' attribute: "+dataset.getType()); //XXX proper error handling
-		}
-		page.getDatasetTreeViewer().setInput(dataset);
+		TreeViewer treeViewer = page.getDatasetTreeViewer();
+		FilterPanel filterPanel = page.getFilterPanel();
+		TableViewer tableViewer = page.getDatasetTableViewer();
+		configureTreeViewer(treeViewer);
+		provider.configureFilterPanel(filterPanel, treeViewer);
+		treeViewer.setInput(dataset);
+		tableViewer.setInput(dataset);
 		int index = addClosablePage("Dataset: " + dataset.getName(), page);
 		return index;
 	}
@@ -399,7 +405,7 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INotifyChange
 		Collection<Chart> charts = chartsheet.getCharts();
 		Composite parent = page.getChartSheetComposite();
 		for (Chart chart : charts) {
-			Dataset dataset = findEnclosingDataset(chart);
+			Dataset dataset = findEnclosingObject(chart, Dataset.class);
 			IDList idlist = DatasetManager.getIDListFromDataset(manager, dataset, chart);
 			String type = dataset.getType();
 			page.addChart(ChartFactory.createChart(parent, type, idlist, manager));
@@ -413,7 +419,7 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INotifyChange
 		//XXX move stuff into page's constructor
 		ChartPage page = new ChartPage(getContainer(), SWT.NONE);
 		Composite parent = page.getChartComposite();
-		Dataset dataset = findEnclosingDataset(chart);
+		Dataset dataset = findEnclosingObject(chart, Dataset.class);
 		IDList idlist = DatasetManager.getIDListFromDataset(manager, dataset, chart);
 		String type = dataset.getType();
 		page.setChart(ChartFactory.createChart(parent, type, idlist, manager));
@@ -450,12 +456,19 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INotifyChange
 		return add;
 	}
 	
-	private Dataset findEnclosingDataset(Chart chart) {
+	public Dataset findEnclosingDataset(Chart chart) {
 		EObject parent = chart.eContainer();
 		while (parent != null && !(parent instanceof Dataset))
 			parent = parent.eContainer();
 		return (Dataset)parent;
 	}
+	
+	public <T extends EObject> T findEnclosingObject(EObject object, Class<T> type) {
+		while (object != null && !(type.isAssignableFrom(object.getClass())))
+			object = object.eContainer();
+		return (T)object;
+	}
+	
 
 	@Override
 	public void handleSelectionChange(ISelection selection) {
@@ -714,10 +727,10 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INotifyChange
 	 *  (3) it will make the button listen to global selection changes, and cannot be tied to a viewer 
 	 */
 	private void doConfigureButton(final Button button, final IScaveAction action) {
-		//button.setText(action.getText());
-		button.setText(action.getText()+" / "+button.getText());
+		button.setText(action.getText());
 		button.setToolTipText(action.getToolTipText());
-		//XXX button.setImage(action.getImageDescriptor());
+		if (action.getImageDescriptor() != null)
+			button.setImage(action.getImageDescriptor().createImage());
 		
 		button.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
@@ -766,18 +779,20 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INotifyChange
 	 */
 	public void configureViewerButton(final Button button, final Viewer viewer, final IScaveAction action) {
 		doConfigureButton(button, action);
+		action.setViewer(viewer);
 		viewer.addSelectionChangedListener(new ISelectionChangedListener() {
 			public void selectionChanged(SelectionChangedEvent event) {
 				action.selectionChanged(event.getSelection());
 			}
 		});
 	}
-
+	
 	/**
 	 * Like <code>configureViewerButton</code>, but action will also run
 	 * on double-clicking in the viewer.
 	 */
 	public void configureViewerDefaultButton(final Button button, final TreeViewer viewer, final IScaveAction action) {
+		configureViewerButton(button, viewer, action);
 		viewer.getTree().addSelectionListener(new SelectionAdapter() {
 			public void widgetDefaultSelected(SelectionEvent e) {
 				action.run();

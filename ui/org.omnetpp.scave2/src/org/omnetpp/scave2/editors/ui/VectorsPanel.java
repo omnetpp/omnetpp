@@ -110,7 +110,6 @@ public class VectorsPanel extends FilterPanel {
 		gridData4.horizontalAlignment = org.eclipse.swt.layout.GridData.FILL;
 		gridData4.verticalAlignment = org.eclipse.swt.layout.GridData.FILL;
 		gridData4.horizontalSpan = 4;
-		gridData4.heightHint = 200;
 		tableViewer = new TableViewer(this, SWT.FULL_SELECTION | SWT.MULTI | SWT.VIRTUAL | SWT.BORDER);
 		Table table = tableViewer.getTable();
 		table.setHeaderVisible(true);

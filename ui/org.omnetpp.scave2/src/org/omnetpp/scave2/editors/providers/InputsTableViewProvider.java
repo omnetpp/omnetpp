@@ -5,10 +5,14 @@ import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.edit.provider.IChangeNotifier;
 import org.eclipse.emf.edit.provider.INotifyChangedListener;
+import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
+import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITableLabelProvider;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TableViewer;
+import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.swt.SWT;
@@ -41,7 +45,7 @@ public abstract class InputsTableViewProvider {
 	protected abstract ContentProvider getContentProvider();
 	protected abstract ITableLabelProvider getLabelProvider();
 	
-	public void configureFilterPanel(final FilterPanel filterPanel) {
+	public void configureFilterPanel(final FilterPanel filterPanel, TreeViewer treeViewer) {
 		final Filter filter = new Filter();
 		final ContentProvider contentProvider = getContentProvider();
 		
@@ -58,6 +62,17 @@ public abstract class InputsTableViewProvider {
 				filterPanel.getNameCombo().setItems(manager.getNameFilterHints(idlist).toArray());
 			}
 		});
+		
+		if (treeViewer != null)
+			treeViewer.addSelectionChangedListener(new ISelectionChangedListener() {
+				public void selectionChanged(SelectionChangedEvent event) {
+					ISelection selection = event.getSelection();
+					if (selection instanceof IStructuredSelection) {
+						Object selected = ((IStructuredSelection)selection).getFirstElement();
+						filterPanel.getTableViewer().setInput(selected);
+					}
+				}
+			});
 		
 		SelectionListener selectionListener = new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
@@ -81,6 +96,10 @@ public abstract class InputsTableViewProvider {
 		filterPanel.getRunNameCombo().addSelectionListener(selectionListener);
 		filterPanel.getModuleNameCombo().addSelectionListener(selectionListener);
 		filterPanel.getNameCombo().addSelectionListener(selectionListener);
+	}
+	
+	public void configureFilterPanel(FilterPanel filterPanel) {
+		configureFilterPanel(filterPanel, null);
 	}
 	
 	private static final Long[] EMPTY_ARRAY = new Long[0];

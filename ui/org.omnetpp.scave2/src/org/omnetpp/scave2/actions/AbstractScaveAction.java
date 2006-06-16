@@ -6,6 +6,7 @@ import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
+import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.ISelectionListener;
 import org.eclipse.ui.IWorkbenchPage;
@@ -20,6 +21,16 @@ import org.omnetpp.scave2.editors.ScaveEditor;
 public abstract class AbstractScaveAction extends Action implements IScaveAction {
 
 	/**
+	 * If set, then the target of the action is the selection of the viewer.
+	 */
+	protected Viewer viewer;
+	
+	
+	public void setViewer(Viewer viewer) {
+		this.viewer = viewer;
+	}
+	
+	/**
 	 * Delegate work to doRun() if the editor is ScaveEditor and selection is
 	 * an IStructuredSelection; otherwise ignore the request.
 	 * Redefine isApplicable() to refine the above condition. 
@@ -28,7 +39,7 @@ public abstract class AbstractScaveAction extends Action implements IScaveAction
 	public void run() {
 		IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
 		IEditorPart editor = page.getActiveEditor();
-		ISelection selection = page.getSelection();
+		ISelection selection = viewer != null ? viewer.getSelection() : page.getSelection();
 		if (editor instanceof ScaveEditor && selection instanceof IStructuredSelection && isApplicable((ScaveEditor)editor, (IStructuredSelection)selection)) {
 			ScaveEditor scaveEditor = (ScaveEditor)editor;
 			IStructuredSelection structuredSelection = (IStructuredSelection)selection;
