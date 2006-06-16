@@ -15,7 +15,8 @@ import org.eclipse.ui.PlatformUI;
 import org.omnetpp.scave2.editors.ScaveEditor;
 
 /**
- * Base class to factor out common code in Action classes. 
+ * Base class to factor out common code in Action classes. Subclasses
+ * need to implement <code>doRun</code> and <code>isApplicable</code>
  * @author andras
  */
 public abstract class AbstractScaveAction extends Action implements IScaveAction {
@@ -26,6 +27,9 @@ public abstract class AbstractScaveAction extends Action implements IScaveAction
 	protected Viewer viewer;
 	
 	
+	/**
+	 * Implements {@link IScaveAction#setViewer(Viewer)}.
+	 */
 	public void setViewer(Viewer viewer) {
 		this.viewer = viewer;
 	}
