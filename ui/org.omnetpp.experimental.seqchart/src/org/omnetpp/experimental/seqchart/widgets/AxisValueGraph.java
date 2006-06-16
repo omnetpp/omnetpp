@@ -114,7 +114,7 @@ public class AxisValueGraph extends AxisGraph {
 	/**
 	 * Returns the index having less or greater simulation time in the data array depending on the given flag.
 	 */
-	private int getIndex(double simulationTime, boolean before)
+	public int getIndex(double simulationTime, boolean before)
 	{
 		int index = -1;
 		int left = 0;
@@ -162,17 +162,17 @@ public class AxisValueGraph extends AxisGraph {
 		}
 	}
 	
-	private int getDataLength()
+	public int getDataLength()
 	{
 		return data.length();
 	}
 	
-	private double getSimulationTime(int index)
+	public double getSimulationTime(int index)
 	{
 		return data.getX(index);
 	}
 	
-	private double getValue(int index)
+	public double getValue(int index)
 	{
 		return data.getY(index);
 	}
