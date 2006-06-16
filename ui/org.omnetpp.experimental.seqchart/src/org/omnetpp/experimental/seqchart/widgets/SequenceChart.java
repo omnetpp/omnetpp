@@ -59,6 +59,7 @@ import org.omnetpp.scave.engine.XYArray;
 //TODO cf with ns2 trace file and cEnvir callbacks, and modify file format...
 //TODO proper "hand" cursor - current one is not very intuitive
 //TODO max number of event selection marks must be limited (e.g. max 1000)
+//TODO hierarchic sort is not yet implemented
 public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 
 	private static final Color LABEL_COLOR = new Color(null, 0, 0, 0);
@@ -548,7 +549,7 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 	}
 	
 	/**
-	 * Calculates Y coordinates of axis sorting by module ids.
+	 * Calculates axis positions sorting by module ids.
 	 */
 	private void sortTimelinesByModuleId() {
 		Integer[] axisModulesIndices = new Integer[axisModules.size()];
@@ -567,7 +568,7 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 	}
 	
 	/**
-	 * Calculates Y coordinates of axis sorting by module names.
+	 * Calculates axis positions sorting by module names.
 	 */
 	private void sortTimelinesByModuleName() {
 		Integer[] axisModulesIndexes = new Integer[axisModules.size()];
@@ -597,7 +598,6 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 		int[] axisPositions = new int[numberOfAxis]; // actual positions of axis to be returned
 		int[] candidateAxisPositions = new int[numberOfAxis]; // new positions of axis to be set (if better)
 		int[] bestAxisPositions = new int[numberOfAxis]; // best positions choosen from a set of candidates
-		int[] possibleNewPositionsForSelectedAxis = new int[numberOfAxis]; // a list of possible new positions for a selected axis
 		Random r = new Random(0);
 		double temperature = 5.0;
 
@@ -610,48 +610,13 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 		{
 			cycleCount++;
 			
-			// randomly choose an axis which we move to the best place (there are numberOfAxis possibilities)
-			//int selectedAxisIndex = r.nextInt(numberOfAxis);
+			// choose an axis which we move to the best place (there are numberOfAxis possibilities)
 			int selectedAxisIndex = cycleCount % numberOfAxis;
-			ModuleTreeItem selectedAxisModule = axisModules.get(selectedAxisIndex);
 			int bestPositionOfSelectedAxis = -1;
 			int costOfBestPositions = Integer.MAX_VALUE;
-			
-			// find out possible new positions for selected axis
-			for (int newPositionCandidate = 0; newPositionCandidate < numberOfAxis; newPositionCandidate++) {
-				possibleNewPositionsForSelectedAxis[newPositionCandidate] = newPositionCandidate;
-
-				// do not allow to move axis to a place where none of its neighbour axis have the same
-				// parent module in hierarhical mode
-				if (timelineSortMode == TimelineSortMode.MINIMIZE_CROSSINGS_HIERARCHICALLY)
-				{
-					ModuleTreeItem previousAxisModule = null;
-					ModuleTreeItem nextAxisModule = null;
-					
-					// find axis module that would be right before the selected axis module at new position
-					if (newPositionCandidate > 0)
-						for (int i = 0; i < numberOfAxis; i++)
-							if (axisPositions[i] == newPositionCandidate - 1) {
-								previousAxisModule = axisModules.get(i);
-								break;
-							}
-
-					// find axis module that would be right after the selected axis module at new position
-					if (newPositionCandidate < numberOfAxis - 1)
-						for (int i = 0; i < numberOfAxis; i++)
-							if (axisPositions[i] == newPositionCandidate) {
-								nextAxisModule = axisModules.get(i);
-								break;
-							}
-
-					if ((previousAxisModule == null || previousAxisModule.getParentModule() != selectedAxisModule.getParentModule()) &&
-					    (nextAxisModule == null || nextAxisModule.getParentModule() != selectedAxisModule.getParentModule()))
-						possibleNewPositionsForSelectedAxis[newPositionCandidate] = -1;
-				}
-			}
 
 			// assume moving axis at index to position i while keeping the order of others and calculate cost
-			for (int newPositionOfSelectedAxis : possibleNewPositionsForSelectedAxis) {
+			for (int newPositionOfSelectedAxis = 0; newPositionOfSelectedAxis < numberOfAxis; newPositionOfSelectedAxis++) {
 				if (newPositionOfSelectedAxis == -1)
 					continue;
 
@@ -684,7 +649,7 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 			}
 			
 			// move selected axis into best position if applicable
-			if (bestPositionOfSelectedAxis != -1 && selectedAxisIndex != bestPositionOfSelectedAxis) {
+			if (bestPositionOfSelectedAxis != -1) {
 				System.arraycopy(bestAxisPositions, 0, axisPositions, 0, numberOfAxis);
 				noMoveCount = 0;
 			}

@@ -98,7 +98,7 @@ public abstract class LargeScrollableCanvas extends Canvas {
 	 * Sets viewportLeft.
 	 */
 	public void scrollHorizontalTo(long x) {
-		this.viewX = clip(x, virtualWidth-getWidth());
+		this.viewX = clipX(x);
 		adjustScrollbars();
 		redraw();
 	}
@@ -111,9 +111,17 @@ public abstract class LargeScrollableCanvas extends Canvas {
 	 * Sets viewportTop.
 	 */
 	public void scrollVerticalTo(long y) {
-		this.viewY = clip(y, virtualHeight-getHeight());
+		this.viewY = clipY(y);
 		adjustScrollbars();
 		redraw();
+	}
+	
+	private long clipX(long x) {
+		return clip(x, virtualWidth-getWidth());
+	}
+	
+	private long clipY(long y) {
+		return clip(y, virtualHeight-getHeight());
 	}
 
 	/**
@@ -142,16 +150,18 @@ public abstract class LargeScrollableCanvas extends Canvas {
 	}
 	
 	private void horizontalBarChanged() {
-		viewX = ((long)getHorizontalBar().getSelection()) << hShift;
+		viewX = clipX(((long)getHorizontalBar().getSelection()) << hShift);
 		redraw();
 	}
 
 	private void verticalBarChanged() {
-		viewY = ((long)getVerticalBar().getSelection()) << vShift;
+		viewY = clipY(((long)getVerticalBar().getSelection()) << vShift);
 		redraw();
 	}
 	
 	private void configureScrollbars() {
+		viewX = clipX(viewX);
+		viewY = clipY(viewY);
 		hShift = configureScrollbar(getHorizontalBar(), virtualWidth, viewX, getSize().x);
 		vShift = configureScrollbar(getVerticalBar(), virtualHeight, viewY, getSize().y);
 	}
