@@ -95,8 +95,16 @@ import org.omnetpp.scave2.model.FilterParams;
  * 
  * @author andras, tomi
  */
-//FIXME add flag into InputFile: "name" is OS path or workspace-relative path
+//TODO add flag into InputFile: "name" is OS path or workspace-relative path
 //TODO Outline view doesn't use our labelprovider
+//TODO copy/paste doesn't work on the model
+//TODO Browse page, Create Dataset button: assemble default name from filter params
+//TODO Browse page, Add To Dataset button: offer tree to select insertion point
+//TODO Browse page: add a "Preview selected items on a chart" button
+//TODO Chart sheet: should modify order of charts in the ChartSheet#getCharts collection
+//TODO chart page: "view numbers" feature
+//TODO "view numbers in a vector" feature (ie is this the same feature as "view numbers in chart"?)
+//TODO label provider: print attributes in "quotes"
 public class ScaveEditor extends AbstractEMFModelEditor implements INotifyChangedListener, IResourceChangeListener {
 
 	private InputsPage inputsPage;
