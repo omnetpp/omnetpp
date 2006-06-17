@@ -137,6 +137,19 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INotifyChange
 		ResourcesPlugin.getWorkspace().addResourceChangeListener(this);
 	}
 
+	@Override
+	public void dispose() {
+		ResourcesPlugin.getWorkspace().removeResourceChangeListener(this);
+		if (adapterFactory instanceof IChangeNotifier) {
+			IChangeNotifier notifier = (IChangeNotifier)adapterFactory;
+			notifier.removeListener(this);
+		}
+		if (manager != null) {
+			manager.delete();
+			manager = null;
+		}
+		super.dispose();
+	}
 	
 	@Override
 	public void createModel() {
@@ -164,7 +177,12 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INotifyChange
 
 		// we can load the result files now
         loadFiles(getAnalysis().getInputs());
-}
+	}
+
+	@Override
+	protected void initializeContentOutlineViewer(Viewer contentOutlineViewer) {
+		contentOutlineViewer.setInput(getAnalysis());
+	}
 
 	/**
 	 * Adds a fixed (non-closable) editor page at the last position 
@@ -185,7 +203,6 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INotifyChange
 		return index;
 	}
 	
-
 	/**
 	 * Adds a closable page to the multi-page editor. This is a variant of 
 	 * addPage(int index, Control control).
@@ -219,20 +236,6 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INotifyChange
 			if (getControl(i)==control)
 				return i;
 		return -1;
-	}
-
-	@Override
-	public void dispose() {
-		ResourcesPlugin.getWorkspace().removeResourceChangeListener(this);
-		if (adapterFactory instanceof IChangeNotifier) {
-			IChangeNotifier notifier = (IChangeNotifier)adapterFactory;
-			notifier.removeListener(this);
-		}
-		if (manager != null) {
-			manager.delete();
-			manager = null;
-		}
-		super.dispose();
 	}
 
 	/**
@@ -310,25 +313,30 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INotifyChange
     	return analysis;
     }
 	
+	/**
+	 * Opens the given dataset on a new editor page, and switches to it. 
+	 */
 	public void openDataset(Dataset dataset) {
 		int pageIndex = createDatasetPage(dataset);
 		setActivePage(pageIndex);
 	}
 
+	/**
+	 * Opens the given chart sheet on a new editor page, and switches to it. 
+	 */
 	public void openChartSheet(ChartSheet chartSheet) {
 		int pageIndex = createChartSheetPage(chartSheet);
 		setActivePage(pageIndex);
 	}
 	
+	/**
+	 * Opens the given chart on a new editor page, and switches to it. 
+	 */
 	public void openChart(Chart chart) {
 		int pageIndex = createChartPage(chart);
 		setActivePage(pageIndex);
 	}
 	
-	protected void initializeContentOutlineViewer(Viewer contentOutlineViewer) {
-		contentOutlineViewer.setInput(getAnalysis());
-	}
-
 	private void createInputsPage() {
 		inputsPage = new InputsPage(getContainer(), this);
 		addScaveEditorPage(inputsPage);
