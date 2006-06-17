@@ -1,4 +1,4 @@
-package org.omnetpp.scave2.model;
+package org.omnetpp.scave2.editors;
 
 import java.util.ArrayList;
 import java.util.List;

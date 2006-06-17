@@ -36,7 +36,6 @@ import org.omnetpp.scave2.editors.ui.DatasetPage;
 import org.omnetpp.scave2.editors.ui.DatasetsAndChartsPage;
 import org.omnetpp.scave2.editors.ui.InputsPage;
 import org.omnetpp.scave2.editors.ui.ScaveEditorPage;
-import org.omnetpp.scave2.model.ResultFilesTracker;
 
 /**
  * OMNeT++/OMNEST Analysis tool.  
