@@ -7,6 +7,7 @@ import org.omnetpp.scave.model.Dataset;
 import org.omnetpp.scave.model.DatasetItem;
 import org.omnetpp.scave2.editors.ScaveEditor;
 import org.omnetpp.scave2.model.DatasetManager;
+import org.omnetpp.scave2.model.ScaveModelUtil;
 
 public class DatasetScalarsViewProvider extends InputsScalarsViewProvider {
 	
@@ -18,8 +19,8 @@ public class DatasetScalarsViewProvider extends InputsScalarsViewProvider {
 		return new ContentProvider() {
 			public IDList buildIDList(Object inputElement) {
 				if (inputElement instanceof EObject) {
-					Dataset dataset = editor.findEnclosingObject((EObject)inputElement, Dataset.class);
-					DatasetItem item = editor.findEnclosingObject((EObject)inputElement, DatasetItem.class);
+					Dataset dataset = ScaveModelUtil.findEnclosingObject((EObject)inputElement, Dataset.class);
+					DatasetItem item = ScaveModelUtil.findEnclosingObject((EObject)inputElement, DatasetItem.class);
 					if (dataset != null) {
 						ResultFileManager manager = editor.getResultFileManager();
 						IDList idlist = DatasetManager.getIDListFromDataset(manager, dataset, item);

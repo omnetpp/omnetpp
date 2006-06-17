@@ -11,6 +11,7 @@ import org.omnetpp.scave.model.Dataset;
 import org.omnetpp.scave2.editors.ScaveEditor;
 import org.omnetpp.scave2.editors.ui.FilterPanel;
 import org.omnetpp.scave2.model.FilterParams;
+import org.omnetpp.scave2.model.ScaveModelUtil;
 
 /**
  * Adds items selected on the BrowseDataPage to a dataset.
@@ -38,7 +39,7 @@ public class AddToDatasetAction extends AbstractScaveAction {
 			if (result != null && result.length == 1) {
 				Dataset dataset = (Dataset)result[0];
 				FilterParams params = activePanel.getFilterParams();
-				Add add = editor.createAdd(params);
+				Add add = ScaveModelUtil.createAdd(params);
 				editor.executeCommand(new AddCommand(editor.getEditingDomain(), dataset.getItems(), add));
 			}
 		}

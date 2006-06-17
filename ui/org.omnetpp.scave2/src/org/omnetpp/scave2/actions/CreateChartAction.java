@@ -9,6 +9,7 @@ import org.omnetpp.scave.model.Dataset;
 import org.omnetpp.scave2.editors.ScaveEditor;
 import org.omnetpp.scave2.editors.ui.FilterPanel;
 import org.omnetpp.scave2.model.FilterParams;
+import org.omnetpp.scave2.model.ScaveModelUtil;
 
 /**
  * Creates a dataset from the filter setting on the BrowseDataPage and 
@@ -31,8 +32,8 @@ public class CreateChartAction extends AbstractScaveAction {
 			String type = activePanel == editor.getBrowseDataPage().getScalarsPanel() ?
 					"scalar" : "vector";
 			FilterParams params = activePanel.getFilterParams();
-			Dataset dataset = editor.createDataset(name, type, params);
-			Chart chart = editor.createChart("Chart of " + name);
+			Dataset dataset = ScaveModelUtil.createDataset(name, type, params);
+			Chart chart = ScaveModelUtil.createChart("Chart of " + name);
 			dataset.getItems().add(chart);
 			editor.executeCommand(new AddCommand(
 					editor.getEditingDomain(),

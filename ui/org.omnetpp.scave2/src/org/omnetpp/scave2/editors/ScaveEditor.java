@@ -254,7 +254,7 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INotifyChange
 		case Notification.MOVE:
 		case Notification.SET:
 		case Notification.UNSET:
-			loadFiles(analysis.getInputs());
+			loadFiles(analysis.getInputs()); //XXX looks like we always reload everything, whatever mode element changes? --Andras
 		}
 	}
 	
@@ -362,42 +362,6 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INotifyChange
 		return index;
 	}
 	
-	public Dataset createDataset(String name, String type, FilterParams params) {
-		Dataset dataset = ScaveModelFactory.eINSTANCE.createDataset();
-		dataset.setName(name);
-		dataset.setType(type);
-		dataset.getItems().add(createAdd(params));
-		return dataset;
-	}
-	
-	public Chart createChart(String name) {
-		Chart chart = ScaveModelFactory.eINSTANCE.createChart();
-		chart.setName(name);
-		return chart;
-	}
-	
-	public Add createAdd(FilterParams params) {
-		Add add = ScaveModelFactory.eINSTANCE.createAdd();
-		add.setFilenamePattern(params.getRunNamePattern());
-		add.setModuleNamePattern(params.getModuleNamePattern());
-		add.setNamePattern(params.getDataNamePattern());
-		return add;
-	}
-	
-	public Dataset findEnclosingDataset(Chart chart) {
-		EObject parent = chart.eContainer();
-		while (parent != null && !(parent instanceof Dataset))
-			parent = parent.eContainer();
-		return (Dataset)parent;
-	}
-	
-	public <T extends EObject> T findEnclosingObject(EObject object, Class<T> type) {
-		while (object != null && !(type.isAssignableFrom(object.getClass())))
-			object = object.eContainer();
-		return (T)object;
-	}
-	
-
 	@Override
 	public void handleSelectionChange(ISelection selection) {
 		super.handleSelectionChange(selection);

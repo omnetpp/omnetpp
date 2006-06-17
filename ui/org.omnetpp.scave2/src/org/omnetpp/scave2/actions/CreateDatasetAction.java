@@ -8,6 +8,7 @@ import org.omnetpp.scave.model.Dataset;
 import org.omnetpp.scave2.editors.ScaveEditor;
 import org.omnetpp.scave2.editors.ui.FilterPanel;
 import org.omnetpp.scave2.model.FilterParams;
+import org.omnetpp.scave2.model.ScaveModelUtil;
 
 public class CreateDatasetAction extends AbstractScaveAction {
 	public CreateDatasetAction() {
@@ -27,7 +28,7 @@ public class CreateDatasetAction extends AbstractScaveAction {
 			String type = activePanel == editor.getBrowseDataPage().getScalarsPanel() ?
 					"scalar" : "vector";
 			FilterParams params = activePanel.getFilterParams();
-			Dataset dataset = editor.createDataset(name, type, params);
+			Dataset dataset = ScaveModelUtil.createDataset(name, type, params);
 			editor.executeCommand(new AddCommand(
 					editor.getEditingDomain(),
 					editor.getAnalysis().getDatasets().getDatasets(),

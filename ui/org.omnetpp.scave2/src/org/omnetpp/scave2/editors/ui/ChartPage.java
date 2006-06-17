@@ -11,6 +11,7 @@ import org.omnetpp.scave.model.Dataset;
 import org.omnetpp.scave2.charting.ChartFactory;
 import org.omnetpp.scave2.editors.ScaveEditor;
 import org.omnetpp.scave2.model.DatasetManager;
+import org.omnetpp.scave2.model.ScaveModelUtil;
 
 public class ChartPage extends ScaveEditorPage {
 
@@ -41,7 +42,7 @@ public class ChartPage extends ScaveEditorPage {
 		
 		// set up contents
 		Composite parent = getChartComposite();
-		Dataset dataset = scaveEditor.findEnclosingObject(chart, Dataset.class);
+		Dataset dataset = ScaveModelUtil.findEnclosingObject(chart, Dataset.class);
 		IDList idlist = DatasetManager.getIDListFromDataset(scaveEditor.getResultFileManager(), dataset, chart);
 		String type = dataset.getType();
 		setChart(ChartFactory.createChart(parent, type, idlist, scaveEditor.getResultFileManager()));
