@@ -62,7 +62,7 @@ import org.omnetpp.scave.engine.XYArray;
  * 
  * @author andras
  */
-//TODO add context menu etc
+//FIXME unhook from listeners (there are "widget is disposed" errors in the log after the editor is closed)  
 public class SequenceChartToolEditor extends EditorPart implements INavigationLocationProvider {
 
 	private SequenceChart seqChart;
