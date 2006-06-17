@@ -30,7 +30,7 @@ public class CreateDatasetAction extends AbstractScaveAction {
 			Dataset dataset = editor.createDataset(name, type, params);
 			editor.executeCommand(new AddCommand(
 					editor.getEditingDomain(),
-					editor.getAnalysisModelObject().getDatasets().getDatasets(),
+					editor.getAnalysis().getDatasets().getDatasets(),
 					dataset));
 			editor.openDataset(dataset);
 		}

@@ -11,7 +11,8 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
-import org.eclipse.ui.forms.widgets.ScrolledForm;
+import org.eclipse.ui.IWorkbenchWindow;
+import org.omnetpp.scave.model.Analysis;
 import org.omnetpp.scave2.actions.AddToDatasetAction;
 import org.omnetpp.scave2.actions.CopyToClipboardAction;
 import org.omnetpp.scave2.actions.CreateChartAction;
@@ -89,10 +90,17 @@ public class BrowseDataPage extends ScaveEditorPage {
 		vectorsViewProvider.configureFilterPanel(getVectorsPanel());
 		
 		// add actions
-		scaveEditor.configureGlobalButton(createDatasetButton, new CreateDatasetAction());
-		scaveEditor.configureGlobalButton(addToDatasetButton, new AddToDatasetAction());
-		scaveEditor.configureGlobalButton(createChartButton, new CreateChartAction());
-		scaveEditor.configureGlobalButton(copyToClipboardButton, new CopyToClipboardAction());
+		IWorkbenchWindow workbenchWindow = scaveEditor.getSite().getWorkbenchWindow();
+		configureGlobalButton(workbenchWindow, createDatasetButton, new CreateDatasetAction());
+		configureGlobalButton(workbenchWindow, addToDatasetButton, new AddToDatasetAction());
+		configureGlobalButton(workbenchWindow, createChartButton, new CreateChartAction());
+		configureGlobalButton(workbenchWindow, copyToClipboardButton, new CopyToClipboardAction());
+		
+		// set up contents
+		Analysis analysis = scaveEditor.getAnalysis();
+        getScalarsTableViewer().setInput(analysis.getInputs());
+        getVectorsTableViewer().setInput(analysis.getInputs());
+		
 	}
 	
 	private void createTabFolder() {

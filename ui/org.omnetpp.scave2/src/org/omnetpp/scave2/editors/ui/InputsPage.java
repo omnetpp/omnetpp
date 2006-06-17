@@ -12,6 +12,7 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
 import org.omnetpp.common.color.ColorFactory;
+import org.omnetpp.scave.model.Analysis;
 import org.omnetpp.scave2.actions.AddResultFileAction;
 import org.omnetpp.scave2.actions.AddWildcardResultFileAction;
 import org.omnetpp.scave2.actions.RemoveAction;
@@ -58,7 +59,7 @@ public class InputsPage extends ScaveEditorPage {
 		createSashForm();
 		createInputFilesSection();
 		createDataSection();
-		
+
 		// configure viewers
 		InputsTreeViewProvider physicalViewProvider = new InputsPhysicalViewProvider(scaveEditor);
 		InputsTreeViewProvider logicalViewProvider = new InputsLogicalViewProvider(scaveEditor);
@@ -67,6 +68,17 @@ public class InputsPage extends ScaveEditorPage {
         logicalViewProvider.configureTreeViewer(getLogicalDataTreeViewer());
         getPhysicalDataTreeViewer().addSelectionChangedListener(scaveEditor.getSelectionChangedListener());
         getLogicalDataTreeViewer().addSelectionChangedListener(scaveEditor.getSelectionChangedListener());
+        
+        // set up drag & drop of .sca and .vec files into the viewers
+        setupResultFileDropTarget(getInputFilesTreeViewer().getControl());
+        setupResultFileDropTarget(getPhysicalDataTreeViewer().getControl());
+        setupResultFileDropTarget(getLogicalDataTreeViewer().getControl());
+
+        // set contents
+		Analysis analysis = scaveEditor.getAnalysis();
+        getInputFilesTreeViewer().setInput(analysis.getInputs());
+        getPhysicalDataTreeViewer().setInput(analysis.getInputs());
+        getLogicalDataTreeViewer().setInput(analysis.getInputs());
 	}
 
 	/**
@@ -108,15 +120,15 @@ public class InputsPage extends ScaveEditorPage {
 		inputFilesSection.setClient(inputFilesPanel);
 
 		// buttons
-		scaveEditor.configureViewerButton(
+		configureViewerButton(
 				inputFilesPanel.getAddFileButton(), 
 				inputFilesPanel.getTreeViewer(),
 				new AddResultFileAction());
-		scaveEditor.configureViewerButton(
+		configureViewerButton(
 				inputFilesPanel.getAddWildcardButton(), 
 				inputFilesPanel.getTreeViewer(),
 				new AddWildcardResultFileAction());
-		scaveEditor.configureViewerButton(
+		configureViewerButton(
 				inputFilesPanel.getRemoveFileButton(), 
 				inputFilesPanel.getTreeViewer(),
 				new RemoveAction());

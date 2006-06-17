@@ -27,7 +27,7 @@ public class AddToDatasetAction extends AbstractScaveAction {
 		FilterPanel activePanel = editor.getBrowseDataPage().getActivePanel();
 		//FIXME tomi: mi van ha activePanel==null???
 		ListDialog dialog = new ListDialog(editor.getSite().getShell());
-		dialog.setInput(editor.getAnalysisModelObject().getDatasets());
+		dialog.setInput(editor.getAnalysis().getDatasets());
 		dialog.setContentProvider(new AdapterFactoryContentProvider(editor.getAdapterFactory()));
 		dialog.setLabelProvider(new AdapterFactoryLabelProvider(editor.getAdapterFactory()));
 		dialog.setMessage("Select dataset:");

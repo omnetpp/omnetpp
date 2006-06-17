@@ -86,27 +86,27 @@ public class DatasetPage extends ScaveEditorPage {
 		tableViewer.setInput(dataset);
 
 		// set up actions
-		scaveEditor.configureViewerButton(
+		configureViewerButton(
 				datasetPanel.getAddButton(),
 				datasetPanel.getTreeViewer(),
 				new NewAction()); //XXX "Add new item"?
-		scaveEditor.configureViewerButton(
+		configureViewerButton(
 				datasetPanel.getRemoveButton(), 
 				datasetPanel.getTreeViewer(),
 				new RemoveAction());
-		scaveEditor.configureViewerButton(
+		configureViewerButton(
 				datasetPanel.getEditButton(),
 				datasetPanel.getTreeViewer(), 
 				new EditAction());
-		scaveEditor.configureViewerButton(
+		configureViewerButton(
 				datasetPanel.getGroupButton(),
 				datasetPanel.getTreeViewer(), 
 				new GroupAction());
-		scaveEditor.configureViewerButton(
+		configureViewerButton(
 				datasetPanel.getUngroupButton(),
 				datasetPanel.getTreeViewer(), 
 				new UngroupAction());
-		scaveEditor.configureViewerDefaultButton(
+		configureViewerDefaultButton(
 				datasetPanel.getOpenChartButton(),
 				datasetPanel.getTreeViewer(), 
 				new OpenAction());

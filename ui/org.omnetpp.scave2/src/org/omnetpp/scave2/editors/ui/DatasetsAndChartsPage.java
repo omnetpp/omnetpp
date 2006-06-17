@@ -14,6 +14,7 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
 import org.omnetpp.common.color.ColorFactory;
+import org.omnetpp.scave.model.Analysis;
 import org.omnetpp.scave2.actions.EditAction;
 import org.omnetpp.scave2.actions.NewAction;
 import org.omnetpp.scave2.actions.OpenAction;
@@ -57,6 +58,11 @@ public class DatasetsAndChartsPage extends ScaveEditorPage {
 		// configure viewers
 		scaveEditor.configureTreeViewer(getDatasetsTreeViewer());
         scaveEditor.configureTreeViewer(getChartSheetsTreeViewer());
+        
+		// set contents
+		Analysis analysis = scaveEditor.getAnalysis();
+		getDatasetsTreeViewer().setInput(analysis.getDatasets());
+        getChartSheetsTreeViewer().setInput(analysis.getChartSheets());
 	}
 
 	/**
@@ -97,19 +103,19 @@ public class DatasetsAndChartsPage extends ScaveEditorPage {
 		final DatasetsPanel datasetsPanel = new DatasetsPanel(datasetsSection, SWT.NONE);
 		datasetsSection.setClient(datasetsPanel);
 
-		scaveEditor.configureViewerButton(
+		configureViewerButton(
 				datasetsPanel.getEditNodeButton(), 
 				datasetsPanel.getTreeViewer(), 
 				new EditAction());
-		scaveEditor.configureViewerButton(
+		configureViewerButton(
 				datasetsPanel.getNewNodeButton(),
 				datasetsPanel.getTreeViewer(),
 				new NewAction());
-		scaveEditor.configureViewerButton(
+		configureViewerButton(
 				datasetsPanel.getRemoveNodeButton(), 
 				datasetsPanel.getTreeViewer(),
 				new RemoveAction());
-		scaveEditor.configureViewerDefaultButton(
+		configureViewerDefaultButton(
 				datasetsPanel.getOpenDatasetButton(), 
 				datasetsPanel.getTreeViewer(),
 				new OpenAction());
@@ -119,6 +125,7 @@ public class DatasetsAndChartsPage extends ScaveEditorPage {
 	 * This method initializes chartSheetsSection	
 	 */
 	private void createChartSheetsSection() {
+		// set up UI
 		GridData gridData3 = new GridData();
 		gridData3.horizontalAlignment = GridData.FILL;
 		gridData3.verticalAlignment = GridData.FILL;
@@ -132,22 +139,22 @@ public class DatasetsAndChartsPage extends ScaveEditorPage {
 		ChartSheetsPanel chartSheetsPanel = new ChartSheetsPanel(chartSheetsSection, SWT.NONE); 
 		chartSheetsSection.setClient(chartSheetsPanel);
 
-		scaveEditor.configureViewerButton(
+		// configure actions
+		configureViewerButton(
 				chartSheetsPanel.getEditChartSheetButton(),
 				chartSheetsPanel.getTreeViewer(), 
 				new EditAction());
-		scaveEditor.configureViewerButton(
+		configureViewerButton(
 				chartSheetsPanel.getNewChartSheetButton(),
 				chartSheetsPanel.getTreeViewer(),
 				new NewAction()); //XXX "New chart sheet"?
-		scaveEditor.configureViewerButton(
+		configureViewerButton(
 				chartSheetsPanel.getRemoveChartSheetButton(), 
 				chartSheetsPanel.getTreeViewer(),
 				new RemoveAction());
-		scaveEditor.configureViewerDefaultButton(
+		configureViewerDefaultButton(
 				chartSheetsPanel.getOpenChartSheetButton(), 
 				chartSheetsPanel.getTreeViewer(),
 				new OpenAction());
-		
 	}
 }

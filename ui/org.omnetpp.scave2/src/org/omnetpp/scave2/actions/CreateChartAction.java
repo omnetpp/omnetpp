@@ -36,7 +36,7 @@ public class CreateChartAction extends AbstractScaveAction {
 			dataset.getItems().add(chart);
 			editor.executeCommand(new AddCommand(
 					editor.getEditingDomain(),
-					editor.getAnalysisModelObject().getDatasets().getDatasets(),
+					editor.getAnalysis().getDatasets().getDatasets(),
 					dataset));
 			editor.openChart(chart);
 		}
