@@ -16,42 +16,22 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.content.IContentType;
 import org.eclipse.emf.common.command.Command;
 import org.eclipse.emf.common.notify.Notification;
-import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.xmi.XMIResource;
 import org.eclipse.emf.edit.command.CreateChildCommand;
 import org.eclipse.emf.edit.provider.IChangeNotifier;
 import org.eclipse.emf.edit.provider.INotifyChangedListener;
-import org.eclipse.jface.action.IAction;
-import org.eclipse.jface.util.IPropertyChangeListener;
-import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
-import org.eclipse.jface.viewers.SelectionChangedEvent;
-import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
-import org.eclipse.swt.dnd.DND;
-import org.eclipse.swt.dnd.DropTarget;
-import org.eclipse.swt.dnd.DropTargetAdapter;
-import org.eclipse.swt.dnd.DropTargetEvent;
-import org.eclipse.swt.dnd.FileTransfer;
-import org.eclipse.swt.dnd.Transfer;
-import org.eclipse.swt.events.DisposeEvent;
-import org.eclipse.swt.events.DisposeListener;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.FillLayout;
-import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
-import org.eclipse.ui.ISelectionListener;
-import org.eclipse.ui.IWorkbenchPart;
 import org.omnetpp.scave.engine.File;
 import org.omnetpp.scave.engine.ResultFileManager;
-import org.omnetpp.scave.model.Add;
 import org.omnetpp.scave.model.Analysis;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.ChartSheet;
@@ -60,7 +40,6 @@ import org.omnetpp.scave.model.InputFile;
 import org.omnetpp.scave.model.Inputs;
 import org.omnetpp.scave.model.ScaveModelFactory;
 import org.omnetpp.scave2.ContentTypes;
-import org.omnetpp.scave2.actions.IScaveAction;
 import org.omnetpp.scave2.editors.ui.BrowseDataPage;
 import org.omnetpp.scave2.editors.ui.ChartPage;
 import org.omnetpp.scave2.editors.ui.ChartSheetPage;
@@ -68,7 +47,6 @@ import org.omnetpp.scave2.editors.ui.DatasetPage;
 import org.omnetpp.scave2.editors.ui.DatasetsAndChartsPage;
 import org.omnetpp.scave2.editors.ui.InputsPage;
 import org.omnetpp.scave2.editors.ui.ScaveEditorPage;
-import org.omnetpp.scave2.model.FilterParams;
 
 /**
  * OMNeT++/OMNEST Analysis tool.  
@@ -171,12 +149,14 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INotifyChange
 		FillLayout layout = new FillLayout();
         getContainer().setLayout(layout);
 
+		// we can load the result files now
+        //XXX we should probably move this after creating the pages, but then we'll need a browseDataPage.refresh() too!  
+        loadFiles(getAnalysis().getInputs());
+
         createInputsPage();
         createBrowseDataPage();
         createDatasetsPage();
 
-		// we can load the result files now
-        loadFiles(getAnalysis().getInputs());
 	}
 
 	@Override
