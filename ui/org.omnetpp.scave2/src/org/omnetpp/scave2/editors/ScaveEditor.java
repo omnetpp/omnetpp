@@ -4,22 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IResource;
-import org.eclipse.core.resources.IResourceChangeEvent;
-import org.eclipse.core.resources.IResourceChangeListener;
-import org.eclipse.core.resources.IResourceDelta;
-import org.eclipse.core.resources.IResourceDeltaVisitor;
-import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.Path;
-import org.eclipse.core.runtime.content.IContentType;
 import org.eclipse.emf.common.command.Command;
-import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.ecore.xmi.XMIResource;
 import org.eclipse.emf.edit.command.CreateChildCommand;
 import org.eclipse.emf.edit.provider.IChangeNotifier;
-import org.eclipse.emf.edit.provider.INotifyChangedListener;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.Viewer;
@@ -39,7 +29,6 @@ import org.omnetpp.scave.model.Dataset;
 import org.omnetpp.scave.model.InputFile;
 import org.omnetpp.scave.model.Inputs;
 import org.omnetpp.scave.model.ScaveModelFactory;
-import org.omnetpp.scave2.ContentTypes;
 import org.omnetpp.scave2.editors.ui.BrowseDataPage;
 import org.omnetpp.scave2.editors.ui.ChartPage;
 import org.omnetpp.scave2.editors.ui.ChartSheetPage;
@@ -47,6 +36,7 @@ import org.omnetpp.scave2.editors.ui.DatasetPage;
 import org.omnetpp.scave2.editors.ui.DatasetsAndChartsPage;
 import org.omnetpp.scave2.editors.ui.InputsPage;
 import org.omnetpp.scave2.editors.ui.ScaveEditorPage;
+import org.omnetpp.scave2.model.ResultFilesTracker;
 
 /**
  * OMNeT++/OMNEST Analysis tool.  
@@ -63,7 +53,7 @@ import org.omnetpp.scave2.editors.ui.ScaveEditorPage;
 //TODO chart page: "view numbers" feature
 //TODO "view numbers in a vector" feature (ie is this the same feature as "view numbers in chart"?)
 //TODO label provider: print attributes in "quotes"
-public class ScaveEditor extends AbstractEMFModelEditor implements INotifyChangedListener, IResourceChangeListener {
+public class ScaveEditor extends AbstractEMFModelEditor {
 
 	private InputsPage inputsPage;
 	private BrowseDataPage browseDataPage;
@@ -73,14 +63,11 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INotifyChange
 	 *  ResultFileManager containing all files of the analysis. 
 	 */
 	private ResultFileManager manager = new ResultFileManager();
-	
+
 	/**
-	 * List of input files.
-	 * It is synchronized with the files specified by the Inputs node.
-	 * When ResultFileManager.unloadFile() is implemented, then this
-	 * field will be replaced by ResultFileManager.getFiles().
+	 * Loads/unloads result files in manager, according to changes in the model and in the workspace.
 	 */
-	private List<File> inputFiles = new ArrayList<File>();
+	private ResultFilesTracker tracker;
 	
 	/**
 	 * The constructor.
@@ -93,7 +80,7 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INotifyChange
 	}
 	
 	public List<File> getInputFiles() {
-		return inputFiles;
+		return tracker.getInputFiles();
 	}
 	
 	public BrowseDataPage getBrowseDataPage() {
@@ -104,26 +91,19 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INotifyChange
 	public void init(IEditorSite site, IEditorInput editorInput) {
 		// init super. Note that this does not load the model yet -- it's done in createModel() called from createPages().
 		super.init(site, editorInput);
-		
-		// listen to model changes
-		if (adapterFactory instanceof IChangeNotifier) {
-			IChangeNotifier notifier = (IChangeNotifier)adapterFactory;
-			notifier.addListener(this);
-		}
-		
-		// listen to resource changes: create, delete, modify
-		ResourcesPlugin.getWorkspace().addResourceChangeListener(this);
 	}
 
 	@Override
 	public void dispose() {
-		ResourcesPlugin.getWorkspace().removeResourceChangeListener(this);
-		if (adapterFactory instanceof IChangeNotifier) {
-			IChangeNotifier notifier = (IChangeNotifier)adapterFactory;
-			notifier.removeListener(this);
+		if (tracker!=null) {
+			ResourcesPlugin.getWorkspace().removeResourceChangeListener(tracker);
+			if (adapterFactory instanceof IChangeNotifier) {
+				IChangeNotifier notifier = (IChangeNotifier)adapterFactory;
+				notifier.removeListener(tracker);
+			}
 		}
 		if (manager != null) {
-			manager.delete();
+			manager.delete(); // it would get garbage-collected anyway, but the sooner the better because it may have allocated large amounts of data
 			manager = null;
 		}
 		super.dispose();
@@ -141,6 +121,17 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INotifyChange
 			analysis.setDatasets(ScaveModelFactory.eINSTANCE.createDatasets());
 		if (analysis.getChartSheets()==null)
 			analysis.setChartSheets(ScaveModelFactory.eINSTANCE.createChartSheets());
+
+		tracker = new ResultFilesTracker(manager, analysis.getInputs()); //XXX must ensure that Inputs never gets deleted or replaced!!! 
+		
+		// listen to model changes
+		if (adapterFactory instanceof IChangeNotifier) {
+			IChangeNotifier notifier = (IChangeNotifier)adapterFactory;
+			notifier.addListener(tracker);
+		}
+		
+		// listen to resource changes: create, delete, modify
+		ResourcesPlugin.getWorkspace().addResourceChangeListener(tracker);
 	}
 
 	@Override
@@ -150,8 +141,8 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INotifyChange
         getContainer().setLayout(layout);
 
 		// we can load the result files now
-        //XXX we should probably move this after creating the pages, but then we'll need a browseDataPage.refresh() too!  
-        loadFiles(getAnalysis().getInputs());
+        //XXX we should probably move this after creating the pages, but then we'll need something like browseDataPage.refresh()  
+        tracker.synchronize();
 
         createInputsPage();
         createBrowseDataPage();
@@ -319,123 +310,6 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INotifyChange
 			Command command = new CreateChildCommand(getEditingDomain(), inputs, ScaveModelFactory.eINSTANCE.getScaveModelPackage().getInputs_Inputs(), inputFile, selection);
 			executeCommand(command);
 		}
-	}
-	
-	/**
-	 * Listen to EMF model changes.
-	 */
-	public void notifyChanged(Notification notification) {
-		if (notification.isTouch())
-			return;
-		
-		Analysis analysis = getAnalysis();
-		if (analysis == null || analysis.getInputs() == null)
-			return;
-
-		switch (notification.getEventType()) {
-		case Notification.ADD:
-		case Notification.ADD_MANY:
-		case Notification.REMOVE:
-		case Notification.REMOVE_MANY:
-		case Notification.MOVE:
-		case Notification.SET:
-		case Notification.UNSET:
-			loadFiles(analysis.getInputs()); //XXX add condition: only reload if something inside Inputs changes! --Andras
-		}
-	}
-	
-	/**
-	 * Listen to workspace changes. We want to keep our result files in
-	 * sync with the workspace. In addition to changes in file contents,
-	 * Inputs can have wildcard filters which may match different files
-	 * as files get created/deleted in the workspace.
-	 */
-	public void resourceChanged(IResourceChangeEvent event) {
-		Analysis analysis = getAnalysis();
-		if (analysis == null || analysis.getInputs() == null) // cannot normally happen
-			return;
-		
-		try {
-			IResourceDelta delta = event.getDelta();
-			delta.accept(new ResourceDeltaVisitor());
-		} catch (CoreException e) {
-			e.printStackTrace();
-		}
-	}
-	
-	class ResourceDeltaVisitor implements IResourceDeltaVisitor {
-		public boolean visit(IResourceDelta delta) throws CoreException {
-			IResource resource = delta.getResource();
-			if (!(resource instanceof IFile))
-				return true;
-
-			//FIXME FIXME FIXME every file gets loaded, regardless Inputs!!! must check if it matches anything in Inputs
-			IFile file = (IFile)resource;
-			switch (delta.getKind()) {
-			case IResourceDelta.ADDED:
-					loadFile(file);
-					break;
-			case IResourceDelta.REMOVED:
-					unloadFile(file);
-					break;
-			case IResourceDelta.CHANGED:
-					unloadFile(file);
-					loadFile(file);
-					break;
-			}
-			return false;
-		}
-	}
-
-	private void loadFiles(Inputs inputs) {
-		System.out.println("loadFiles()");
-		// TODO: handle wildcards
-		//XXX also: must unload files which have been removed from Inputs. --Andras
-		inputFiles.clear();
-		for (Object inputFileObj : inputs.getInputs()) {
-			String resourcePath = ((InputFile)inputFileObj).getName();
-			loadFile(resourcePath);
-		}
-	}
-	
-	private void loadFile(String resourcePath) {
-		if (resourcePath != null) {
-			IWorkspaceRoot workspaceRoot = ResourcesPlugin.getWorkspace().getRoot();
-			IResource resource = workspaceRoot.findMember(resourcePath);
-			if (resource instanceof IFile) {
-				IFile file = (IFile)resource;
-				loadFile(file);
-			}
-		}
-	}
-	
-	private void loadFile(IFile file) {
-		System.out.println("loadFile: "+file);
-		try {
-			if (file.getContentDescription() != null &&
-					file.getContentDescription().getContentType() != null) {
-
-				IContentType contentType = file.getContentDescription().getContentType();
-				String path = file.getLocation().toOSString();
-				if (ContentTypes.SCALAR.equals(contentType.getId()))
-					inputFiles.add(manager.loadScalarFile(path));
-				else if (ContentTypes.VECTOR.equals(contentType.getId()))
-					inputFiles.add(manager.loadVectorFile(path));
-				else 
-					throw new RuntimeException("wrong file type:"+file.getFullPath()); //XXX proper error handling (e.g. remove file from Inputs?)
-			}
-		} catch (CoreException e) {
-			System.err.println("Cannot open resource: " + file.getFullPath()); //XXX proper error message
-		}
-	}
-	
-	private void unloadFile(IFile file) {
-		System.out.println("unloadFile: "+file);
-		File resultFile = manager.getFile(file.getLocation().toOSString());
-		inputFiles.remove(resultFile);
-		// TODO: ResultFileManager.unloadFile() not yet implemented
-		//if (resultFile != null)
-		//	manager.unloadFile(resultFile);
 	}
 	
 	/**
