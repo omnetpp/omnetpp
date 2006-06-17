@@ -1,21 +1,30 @@
 package org.omnetpp.scave2.editors.ui;
 
+import java.util.Collection;
+
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.omnetpp.common.color.ColorFactory;
+import org.omnetpp.scave.engine.IDList;
+import org.omnetpp.scave.model.Chart;
+import org.omnetpp.scave.model.ChartSheet;
+import org.omnetpp.scave.model.Dataset;
+import org.omnetpp.scave2.charting.ChartFactory;
+import org.omnetpp.scave2.editors.ScaveEditor;
+import org.omnetpp.scave2.model.DatasetManager;
 
-public class ChartSheetPage extends ScrolledForm {
+public class ChartSheetPage extends ScaveEditorPage {
+
+	private ChartSheet chartsheet; // the underlying model
 
 	private LiveTable chartsArea;
 	
-	public ChartSheetPage(Composite parent, int style) {
-		super(parent, style | SWT.V_SCROLL | SWT.H_SCROLL);
+	public ChartSheetPage(Composite parent, ScaveEditor editor, ChartSheet chartsheet) {
+		super(parent, SWT.V_SCROLL | SWT.H_SCROLL, editor);
+		this.chartsheet = chartsheet;
 		initialize();
 	}
 	
@@ -30,6 +39,9 @@ public class ChartSheetPage extends ScrolledForm {
 	}
 	
 	private void initialize() {
+		// set up UI
+		setPageTitle("Charts: " + chartsheet.getName());
+		setFormTitle("Charts: " + chartsheet.getName());
 		setBackground(ColorFactory.asColor("white"));
 		setExpandHorizontal(true);
 		setExpandVertical(true);
@@ -44,5 +56,15 @@ public class ChartSheetPage extends ScrolledForm {
 		gridLayout.horizontalSpacing = 7;
 		gridLayout.verticalSpacing = 7;
 		chartsArea.setLayout(gridLayout);
+		
+		// set up contents
+		Collection<Chart> charts = chartsheet.getCharts();
+		Composite parent = getChartSheetComposite();
+		for (Chart chart : charts) {
+			Dataset dataset = scaveEditor.findEnclosingObject(chart, Dataset.class);
+			IDList idlist = DatasetManager.getIDListFromDataset(scaveEditor.getResultFileManager(), dataset, chart);
+			String type = dataset.getType();
+			addChart(ChartFactory.createChart(parent, type, idlist, scaveEditor.getResultFileManager()));
+		}
 	}
 }

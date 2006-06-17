@@ -16,18 +16,19 @@ import org.omnetpp.scave2.actions.AddResultFileAction;
 import org.omnetpp.scave2.actions.AddWildcardResultFileAction;
 import org.omnetpp.scave2.actions.RemoveAction;
 import org.omnetpp.scave2.editors.ScaveEditor;
+import org.omnetpp.scave2.editors.providers.InputsLogicalViewProvider;
+import org.omnetpp.scave2.editors.providers.InputsPhysicalViewProvider;
+import org.omnetpp.scave2.editors.providers.InputsTreeViewProvider;
 
-public class InputsPage extends ScrolledForm {
+public class InputsPage extends ScaveEditorPage {
 
 	private FormToolkit formToolkit = null;   //  @jve:decl-index=0:visual-constraint=""
 	private Section inputFilesSection = null;
 	private Section dataSection = null;
-	private ScaveEditor scaveEditor = null;  // the containing editor
 	private SashForm sashform = null;
 
-	public InputsPage(Composite parent, int style, ScaveEditor scaveEditor) {
-		super(parent, style | SWT.V_SCROLL);
-		this.scaveEditor = scaveEditor;
+	public InputsPage(Composite parent, ScaveEditor scaveEditor) {
+		super(parent, SWT.V_SCROLL, scaveEditor);
 		initialize();
 	}
 	
@@ -47,6 +48,9 @@ public class InputsPage extends ScrolledForm {
 	}
 	
 	private void initialize() {
+		// set up UI
+		setPageTitle("Inputs"); 
+		setFormTitle("Inputs");
 		setExpandHorizontal(true);
 		setExpandVertical(true);
 		setBackground(ColorFactory.asColor("white"));
@@ -54,6 +58,15 @@ public class InputsPage extends ScrolledForm {
 		createSashForm();
 		createInputFilesSection();
 		createDataSection();
+		
+		// configure viewers
+		InputsTreeViewProvider physicalViewProvider = new InputsPhysicalViewProvider(scaveEditor);
+		InputsTreeViewProvider logicalViewProvider = new InputsLogicalViewProvider(scaveEditor);
+        scaveEditor.configureTreeViewer(getInputFilesTreeViewer());
+        physicalViewProvider.configureTreeViewer(getPhysicalDataTreeViewer());
+        logicalViewProvider.configureTreeViewer(getLogicalDataTreeViewer());
+        getPhysicalDataTreeViewer().addSelectionChangedListener(scaveEditor.getSelectionChangedListener());
+        getLogicalDataTreeViewer().addSelectionChangedListener(scaveEditor.getSelectionChangedListener());
 	}
 
 	/**

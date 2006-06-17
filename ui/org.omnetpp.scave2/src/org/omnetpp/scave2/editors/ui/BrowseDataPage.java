@@ -17,6 +17,9 @@ import org.omnetpp.scave2.actions.CopyToClipboardAction;
 import org.omnetpp.scave2.actions.CreateChartAction;
 import org.omnetpp.scave2.actions.CreateDatasetAction;
 import org.omnetpp.scave2.editors.ScaveEditor;
+import org.omnetpp.scave2.editors.providers.InputsScalarsViewProvider;
+import org.omnetpp.scave2.editors.providers.InputsTableViewProvider;
+import org.omnetpp.scave2.editors.providers.InputsVectorsViewProvider;
 
 /**
  * This is the "Browse data" page of Scave Editor
@@ -24,9 +27,8 @@ import org.omnetpp.scave2.editors.ScaveEditor;
 //XXX tables and filter should include the experiment, measurement, replication fields as well
 //XXX filter should include expressions ("where load>10")
 //XXX make filter panel foldable?
-public class BrowseDataPage extends ScrolledForm {
+public class BrowseDataPage extends ScaveEditorPage {
 
-	private ScaveEditor scaveEditor;
 	private Label label;
 	private TabFolder tabfolder;
 	private Composite buttonPanel;
@@ -35,12 +37,11 @@ public class BrowseDataPage extends ScrolledForm {
 	private Button createChartButton;
 	private Button copyToClipboardButton;
 	
-	VectorsPanel vectorsPanel;
-	ScalarsPanel scalarsPanel;
+	private VectorsPanel vectorsPanel;
+	private ScalarsPanel scalarsPanel;
 	
-	public BrowseDataPage(Composite parent, int style, ScaveEditor editor) {
-		super(parent, style | SWT.V_SCROLL);
-		scaveEditor = editor;
+	public BrowseDataPage(Composite parent, ScaveEditor editor) {
+		super(parent, SWT.V_SCROLL, editor);
 		initialize();
 	}
 	
@@ -69,16 +70,23 @@ public class BrowseDataPage extends ScrolledForm {
 	}
 	
 	private void initialize() {
+		setPageTitle("Browse data");
+		setFormTitle("Browse data");
 		//setBackground(ColorFactory.asColor("white"));
 		setExpandHorizontal(true);
 		setExpandVertical(true);
-		GridLayout layout = new GridLayout();
-		getBody().setLayout(layout);
+		getBody().setLayout(new GridLayout());
 		label = new Label(getBody(), SWT.WRAP);
 		label.setText("Here you can see all data that come from the files specified in the Inputs page.");
 		label.setBackground(this.getBackground());
 		createTabFolder();
 		createButtonsPanel();
+		
+		// configure viewers
+		InputsTableViewProvider scalarsViewProvider = new InputsScalarsViewProvider(scaveEditor);
+		InputsTableViewProvider vectorsViewProvider = new InputsVectorsViewProvider(scaveEditor);
+		scalarsViewProvider.configureFilterPanel(getScalarsPanel());
+		vectorsViewProvider.configureFilterPanel(getVectorsPanel());
 		
 		// add actions
 		scaveEditor.configureGlobalButton(createDatasetButton, new CreateDatasetAction());

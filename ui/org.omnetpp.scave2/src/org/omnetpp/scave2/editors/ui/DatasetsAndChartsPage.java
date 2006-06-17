@@ -20,17 +20,15 @@ import org.omnetpp.scave2.actions.OpenAction;
 import org.omnetpp.scave2.actions.RemoveAction;
 import org.omnetpp.scave2.editors.ScaveEditor;
 
-public class DatasetsAndChartsPage extends ScrolledForm {
+public class DatasetsAndChartsPage extends ScaveEditorPage {
 
 	private FormToolkit formToolkit = null;   //  @jve:decl-index=0:visual-constraint=""
 	private Section datasetsSection = null;
 	private Section chartSheetsSection = null;
-	private ScaveEditor scaveEditor = null;  // the containing editor
 	private SashForm sashform = null;
 
-	public DatasetsAndChartsPage(Composite parent, int style, ScaveEditor scaveEditor) {
-		super(parent, style | SWT.V_SCROLL);
-		this.scaveEditor = scaveEditor;
+	public DatasetsAndChartsPage(Composite parent, ScaveEditor scaveEditor) {
+		super(parent, SWT.V_SCROLL, scaveEditor);
 		initialize();
 	}
 	
@@ -45,6 +43,9 @@ public class DatasetsAndChartsPage extends ScrolledForm {
 	}
 
 	private void initialize() {
+		// set up UI
+		setPageTitle("Datasets");
+		setFormTitle("Datasets and Charts");
 		setExpandHorizontal(true);
 		setExpandVertical(true);
 		setBackground(ColorFactory.asColor("white"));
@@ -52,6 +53,10 @@ public class DatasetsAndChartsPage extends ScrolledForm {
 		createSashForm();
 		createDatasetsSection();
 		createChartSheetsSection();
+		
+		// configure viewers
+		scaveEditor.configureTreeViewer(getDatasetsTreeViewer());
+        scaveEditor.configureTreeViewer(getChartSheetsTreeViewer());
 	}
 
 	/**

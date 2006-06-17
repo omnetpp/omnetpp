@@ -4,13 +4,21 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.omnetpp.common.color.ColorFactory;
+import org.omnetpp.scave.engine.IDList;
+import org.omnetpp.scave.model.Chart;
+import org.omnetpp.scave.model.Dataset;
+import org.omnetpp.scave2.charting.ChartFactory;
+import org.omnetpp.scave2.editors.ScaveEditor;
+import org.omnetpp.scave2.model.DatasetManager;
 
-public class ChartPage extends ScrolledForm {
+public class ChartPage extends ScaveEditorPage {
 
-	public ChartPage(Composite parent, int style) {
-		super(parent, style | SWT.V_SCROLL);
+	private Chart chart; // the underlying model
+
+	public ChartPage(Composite parent, ScaveEditor editor, Chart chart) {
+		super(parent, SWT.V_SCROLL, editor);
+		this.chart = chart;
 		initialize();
 	}
 	
@@ -23,10 +31,19 @@ public class ChartPage extends ScrolledForm {
 	}
 	
 	private void initialize() {
+		// set up UI
+		setPageTitle("Chart: " + chart.getName());
+		setFormTitle("Chart: " + chart.getName());
 		setExpandHorizontal(true);
 		setExpandVertical(true);
 		setBackground(ColorFactory.asColor("white"));
-		FillLayout layout = new FillLayout();
-		getBody().setLayout(layout);
+		getBody().setLayout(new FillLayout());
+		
+		// set up contents
+		Composite parent = getChartComposite();
+		Dataset dataset = scaveEditor.findEnclosingObject(chart, Dataset.class);
+		IDList idlist = DatasetManager.getIDListFromDataset(scaveEditor.getResultFileManager(), dataset, chart);
+		String type = dataset.getType();
+		setChart(ChartFactory.createChart(parent, type, idlist, scaveEditor.getResultFileManager()));
 	}
 }

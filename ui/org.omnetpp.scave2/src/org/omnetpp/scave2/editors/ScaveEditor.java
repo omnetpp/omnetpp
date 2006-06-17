@@ -1,10 +1,6 @@
 package org.omnetpp.scave2.editors;
 
-import static org.omnetpp.scave2.model.DatasetType.SCALAR;
-import static org.omnetpp.scave2.model.DatasetType.VECTOR;
-
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 import org.eclipse.core.resources.IFile;
@@ -31,7 +27,6 @@ import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
-import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
@@ -47,19 +42,14 @@ import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Button;
-import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.ISelectionListener;
 import org.eclipse.ui.IWorkbenchPart;
-import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.omnetpp.scave.engine.File;
-import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.model.Add;
 import org.omnetpp.scave.model.Analysis;
@@ -71,23 +61,13 @@ import org.omnetpp.scave.model.Inputs;
 import org.omnetpp.scave.model.ScaveModelFactory;
 import org.omnetpp.scave2.ContentTypes;
 import org.omnetpp.scave2.actions.IScaveAction;
-import org.omnetpp.scave2.charting.ChartFactory;
-import org.omnetpp.scave2.editors.providers.DatasetScalarsViewProvider;
-import org.omnetpp.scave2.editors.providers.DatasetVectorsViewProvider;
-import org.omnetpp.scave2.editors.providers.InputsLogicalViewProvider;
-import org.omnetpp.scave2.editors.providers.InputsPhysicalViewProvider;
-import org.omnetpp.scave2.editors.providers.InputsScalarsViewProvider;
-import org.omnetpp.scave2.editors.providers.InputsTableViewProvider;
-import org.omnetpp.scave2.editors.providers.InputsTreeViewProvider;
-import org.omnetpp.scave2.editors.providers.InputsVectorsViewProvider;
 import org.omnetpp.scave2.editors.ui.BrowseDataPage;
 import org.omnetpp.scave2.editors.ui.ChartPage;
 import org.omnetpp.scave2.editors.ui.ChartSheetPage;
 import org.omnetpp.scave2.editors.ui.DatasetPage;
 import org.omnetpp.scave2.editors.ui.DatasetsAndChartsPage;
-import org.omnetpp.scave2.editors.ui.FilterPanel;
 import org.omnetpp.scave2.editors.ui.InputsPage;
-import org.omnetpp.scave2.model.DatasetManager;
+import org.omnetpp.scave2.editors.ui.ScaveEditorPage;
 import org.omnetpp.scave2.model.FilterParams;
 
 /**
@@ -157,28 +137,28 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INotifyChange
 	 * Variant of addPage(int index, Control control): adds a page with a 
 	 * large [X] on the tab. 
 	 */
-	public void addClosablePage(int index, String text, Control control) {
+	public void addClosablePage(int index, Control control) {
 		// add it in the normal way, then replace CTabItem with one with SWT.CLOSE set
 		super.addPage(index, control);
 		CTabFolder ctabFolder = (CTabFolder) control.getParent();
 		ctabFolder.getItem(index).dispose();
 		CTabItem item = new CTabItem(ctabFolder, SWT.CLOSE, index);
 		item.setControl(control);
-		setPageText(index, text);
 	}
 
 	/**
 	 * Adds a closable page on the last position 
 	 */
-	public int addClosablePage(String text, Control control) {
+	public int addClosableScaveEditorPage(ScaveEditorPage page) {
 		int index = getPageCount();
-		addClosablePage(index, text, control);
+		addClosablePage(index, page);
+		setPageText(index, page.getPageTitle());
 		return index;
 	}
 	
-	public int addPage(String text, Control control) {
-		int index = addPage(control);
-		setPageText(index, text);
+	public int addScaveEditorPage(ScaveEditorPage page) {
+		int index = addPage(page);
+		setPageText(index, page.getPageTitle());
 		return index;
 	}
 
@@ -276,24 +256,24 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INotifyChange
 
 	@Override
 	protected void doCreatePages() {
+		//XXX this should go into init()?
+		Analysis analysis = getAnalysisModelObject();
+		// create mandatory objects if not exist; XXX must also prevent them from being deleted
+		if (analysis.getInputs()==null)
+			analysis.setInputs(ScaveModelFactory.eINSTANCE.createInputs());
+		if (analysis.getDatasets()==null)
+			analysis.setDatasets(ScaveModelFactory.eINSTANCE.createDatasets());
+		if (analysis.getChartSheets()==null)
+			analysis.setChartSheets(ScaveModelFactory.eINSTANCE.createChartSheets());
+
+		loadFiles(analysis.getInputs());
+
 		FillLayout layout = new FillLayout();
         getContainer().setLayout(layout);
 
         createInputsPage();
         createBrowseDataPage();
         createDatasetsPage();
-
-
-        Analysis analysis = getAnalysisModelObject();
-        // create mandatory objects if not exist; XXX must also prevent them from being deleted
-        if (analysis.getInputs()==null)
-        	analysis.setInputs(ScaveModelFactory.eINSTANCE.createInputs());
-        if (analysis.getDatasets()==null)
-        	analysis.setDatasets(ScaveModelFactory.eINSTANCE.createDatasets());
-        if (analysis.getChartSheets()==null)
-        	analysis.setChartSheets(ScaveModelFactory.eINSTANCE.createChartSheets());
-
-        loadFiles(analysis.getInputs());
         
         inputsPage.getInputFilesTreeViewer().setInput(analysis.getInputs());
         inputsPage.getPhysicalDataTreeViewer().setInput(analysis.getInputs());
@@ -338,103 +318,36 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INotifyChange
 	}
 
 	private void createInputsPage() {
-		//XXX move stuff into page's constructor
-		inputsPage = new InputsPage(getContainer(), SWT.NONE, this);
-		setFormTitle(inputsPage, "Inputs");
-
-		InputsTreeViewProvider physicalViewProvider = new InputsPhysicalViewProvider(this);
-		InputsTreeViewProvider logicalViewProvider = new InputsLogicalViewProvider(this);
-        configureTreeViewer(inputsPage.getInputFilesTreeViewer());
-        physicalViewProvider.configureTreeViewer(inputsPage.getPhysicalDataTreeViewer());
-        logicalViewProvider.configureTreeViewer(inputsPage.getLogicalDataTreeViewer());
-        inputsPage.getPhysicalDataTreeViewer().addSelectionChangedListener(selectionChangedListener);
-        inputsPage.getLogicalDataTreeViewer().addSelectionChangedListener(selectionChangedListener);
-        
-		addPage("Inputs", inputsPage);
+		inputsPage = new InputsPage(getContainer(), this);
+		addScaveEditorPage(inputsPage);
 	}
 	
 	private void createBrowseDataPage() {
-		//XXX move stuff into page's constructor
-		browseDataPage = new BrowseDataPage(getContainer(), SWT.NONE, this);
-		setFormTitle(browseDataPage, "Browse data");
-
-		InputsTableViewProvider scalarsViewProvider = new InputsScalarsViewProvider(this);
-		InputsTableViewProvider vectorsViewProvider = new InputsVectorsViewProvider(this);
-		scalarsViewProvider.configureFilterPanel(browseDataPage.getScalarsPanel());
-		vectorsViewProvider.configureFilterPanel(browseDataPage.getVectorsPanel());
-
-		addPage("Browse data", browseDataPage);
+		browseDataPage = new BrowseDataPage(getContainer(), this);
+		addScaveEditorPage(browseDataPage);
 	}
 	
 	private void createDatasetsPage() {
-		//XXX move stuff into page's constructor
-		datasetsPage = new DatasetsAndChartsPage(getContainer(), SWT.NONE, this);
-		setFormTitle(datasetsPage, "Datasets and Charts");
-
-		configureTreeViewer(datasetsPage.getDatasetsTreeViewer());
-        configureTreeViewer(datasetsPage.getChartSheetsTreeViewer());
-
-        addPage("Datasets", datasetsPage);
+		datasetsPage = new DatasetsAndChartsPage(getContainer(), this);
+        addScaveEditorPage(datasetsPage);
 	}
 	
 	private int createDatasetPage(Dataset dataset) {
-		//XXX move stuff into page's constructor
-		DatasetPage page = new DatasetPage(getContainer(), SWT.NONE, this, dataset.getType());
-		setFormTitle(page, "Dataset: " + dataset.getName());
-		
-		InputsTableViewProvider provider;
-		if (SCALAR.equals(dataset.getType()))
-			provider = new DatasetScalarsViewProvider(this);
-		else if (VECTOR.equals(dataset.getType()))
-			provider = new DatasetVectorsViewProvider(this);
-		else
-			throw new RuntimeException("invalid or unset dataset 'type' attribute: "+dataset.getType()); //XXX proper error handling
-		TreeViewer treeViewer = page.getDatasetTreeViewer();
-		FilterPanel filterPanel = page.getFilterPanel();
-		TableViewer tableViewer = page.getDatasetTableViewer();
-		configureTreeViewer(treeViewer);
-		provider.configureFilterPanel(filterPanel, treeViewer);
-		treeViewer.setInput(dataset);
-		tableViewer.setInput(dataset);
-		int index = addClosablePage("Dataset: " + dataset.getName(), page);
+		DatasetPage page = new DatasetPage(getContainer(), this, dataset);
+		int index = addClosableScaveEditorPage(page);
 		return index;
 	}
 	
 	private int createChartSheetPage(ChartSheet chartsheet) {
-		//XXX move stuff into page's constructor
-		ChartSheetPage page = new ChartSheetPage(getContainer(), SWT.NONE);
-		setFormTitle(page, "Charts: " + chartsheet.getName());
-
-		Collection<Chart> charts = chartsheet.getCharts();
-		Composite parent = page.getChartSheetComposite();
-		for (Chart chart : charts) {
-			Dataset dataset = findEnclosingObject(chart, Dataset.class);
-			IDList idlist = DatasetManager.getIDListFromDataset(manager, dataset, chart);
-			String type = dataset.getType();
-			page.addChart(ChartFactory.createChart(parent, type, idlist, manager));
-		}
-		
-		int index = addClosablePage("Charts: " + chartsheet.getName(), page);
+		ChartSheetPage page = new ChartSheetPage(getContainer(), this, chartsheet);
+		int index = addClosableScaveEditorPage(page);
 		return index;
 	}
 	
 	private int createChartPage(Chart chart) {
-		//XXX move stuff into page's constructor
-		ChartPage page = new ChartPage(getContainer(), SWT.NONE);
-		Composite parent = page.getChartComposite();
-		Dataset dataset = findEnclosingObject(chart, Dataset.class);
-		IDList idlist = DatasetManager.getIDListFromDataset(manager, dataset, chart);
-		String type = dataset.getType();
-		page.setChart(ChartFactory.createChart(parent, type, idlist, manager));
-		setFormTitle(page, "Chart: " + chart.getName());
-		int index = addClosablePage("Chart: " + chart.getName(), page);
+		ChartPage page = new ChartPage(getContainer(), this, chart);
+		int index = addClosableScaveEditorPage(page);
 		return index;
-	}
-	
-	private void setFormTitle(ScrolledForm form, String title) {
-		form.setFont(new Font(null, "Arial", 12, SWT.BOLD));
-		form.setForeground(new Color(null, 0, 128, 255));
-		form.setText(title);
 	}
 	
 	public Dataset createDataset(String name, String type, FilterParams params) {
@@ -812,7 +725,12 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INotifyChange
 	 */
 	public void executeCommand(Command command) {
 		getEditingDomain().getCommandStack().execute(command);
-	}	
+	}
+
+	public ISelectionChangedListener getSelectionChangedListener() {
+		return selectionChangedListener;
+	}
+
 }
 
 

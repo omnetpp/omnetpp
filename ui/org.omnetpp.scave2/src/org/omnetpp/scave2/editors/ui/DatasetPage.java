@@ -11,8 +11,8 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.omnetpp.common.color.ColorFactory;
+import org.omnetpp.scave.model.Dataset;
 import org.omnetpp.scave2.actions.EditAction;
 import org.omnetpp.scave2.actions.GroupAction;
 import org.omnetpp.scave2.actions.NewAction;
@@ -20,20 +20,24 @@ import org.omnetpp.scave2.actions.OpenAction;
 import org.omnetpp.scave2.actions.RemoveAction;
 import org.omnetpp.scave2.actions.UngroupAction;
 import org.omnetpp.scave2.editors.ScaveEditor;
+import org.omnetpp.scave2.editors.providers.DatasetScalarsViewProvider;
+import org.omnetpp.scave2.editors.providers.DatasetVectorsViewProvider;
+import org.omnetpp.scave2.editors.providers.InputsTableViewProvider;
 
-public class DatasetPage extends ScrolledForm {
+public class DatasetPage extends ScaveEditorPage {
+
+	private Dataset dataset;
+	private String type; //XXX out! "vector","scalar" or "histogram"
 
 	private Label label;
 	private SashForm sashform;
 	private DatasetPanel datasetPanel;
 	private FilterPanel filterPanel;
-	private ScaveEditor scaveEditor = null;  // the containing editor
-	private String type; // "vector","scalar" or "histogram"
 	
-	public DatasetPage(Composite parent, int style, ScaveEditor scaveEditor, String type) {
-		super(parent, style | SWT.V_SCROLL | SWT.H_SCROLL);
-		this.scaveEditor = scaveEditor;
-		this.type = type;
+	public DatasetPage(Composite parent, ScaveEditor scaveEditor, Dataset dataset) {
+		super(parent, SWT.V_SCROLL | SWT.H_SCROLL, scaveEditor);
+		this.dataset = dataset;
+		this.type = dataset.getType(); //XXX out!
 		initialize();
 	}
 	
@@ -50,6 +54,8 @@ public class DatasetPage extends ScrolledForm {
 	}
 	
 	private void initialize() {
+		setPageTitle("Dataset: " + dataset.getName());
+		setFormTitle("Dataset: " + dataset.getName());
 		setExpandHorizontal(true);
 		setExpandVertical(true);
 		//setDelayedReflow(false);
@@ -63,7 +69,23 @@ public class DatasetPage extends ScrolledForm {
 		createSashForm();
 		createDatasetPanel();
 		createFilterPanel();
+		
+		InputsTableViewProvider provider;
+		if (SCALAR.equals(dataset.getType()))
+			provider = new DatasetScalarsViewProvider(scaveEditor);
+		else if (VECTOR.equals(dataset.getType()))
+			provider = new DatasetVectorsViewProvider(scaveEditor);
+		else
+			throw new RuntimeException("invalid or unset dataset 'type' attribute: "+dataset.getType()); //XXX proper error handling
+		TreeViewer treeViewer = getDatasetTreeViewer();
+		FilterPanel filterPanel = getFilterPanel();
+		TableViewer tableViewer = getDatasetTableViewer();
+		scaveEditor.configureTreeViewer(treeViewer);
+		provider.configureFilterPanel(filterPanel, treeViewer);
+		treeViewer.setInput(dataset);
+		tableViewer.setInput(dataset);
 
+		// set up actions
 		scaveEditor.configureViewerButton(
 				datasetPanel.getAddButton(),
 				datasetPanel.getTreeViewer(),
