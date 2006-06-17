@@ -1,5 +1,8 @@
 package org.omnetpp.scave2.editors.ui;
 
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
@@ -69,7 +72,7 @@ public class ScaveEditorPage extends ScrolledForm {
 	 * Sets up the given control so that when a file is drag-dropped into it,
 	 * it will be added to Inputs unless it's already in there.
 	 */
-	protected void setupResultFileDropTarget(Control dropTargetControl) {
+	public void setupResultFileDropTarget(Control dropTargetControl) {
 		// set up DropTarget, and add FileTransfer to it;
 		// issue: the EMF editor already adds a drop target to the TreeViewer
 		DropTarget dropTarget = null;
@@ -102,10 +105,28 @@ public class ScaveEditorPage extends ScrolledForm {
 				if (event.data instanceof String[]) {
 					String [] fileNames = (String[])event.data;
 					for (int i=0; i<fileNames.length; i++)
-						scaveEditor.addFileToInputs(fileNames[i]);
+						addDroppedFileToInputs(fileNames[i]);
 				}
 			}
 		});
+	}
+
+	/**
+	 * Adds the given file to Inputs unless it's already in there.
+	 * The file name should be an OS path (D:\... or /home/you/...),
+	 * not a workspace path! 
+	 * 
+	 * XXX Limitation: currently the file must be available via the 
+	 * workspace as well. This may get improved in the future. 
+	 */
+	private void addDroppedFileToInputs(String fileName) {
+		// convert OS path to workspace path
+		IFile iFile = ScaveEditor.findFileInWorkspace(fileName);
+		if (iFile==null) {
+			System.out.println("path not in workspace: "+fileName); //XXX error dialog?
+			return;
+		}
+		scaveEditor.addWorkspaceFileToInputs(iFile);
 	}
 
 	/**

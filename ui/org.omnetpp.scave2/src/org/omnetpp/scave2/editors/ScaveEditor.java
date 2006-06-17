@@ -239,71 +239,6 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INotifyChange
 	}
 
 	/**
-	 * Listen to EMF model changes.
-	 */
-	public void notifyChanged(Notification notification) {
-		if (notification.isTouch())
-			return;
-		
-		Analysis analysis = getAnalysis();
-		if (analysis == null || analysis.getInputs() == null)
-			return;
-
-		switch (notification.getEventType()) {
-		case Notification.ADD:
-		case Notification.ADD_MANY:
-		case Notification.REMOVE:
-		case Notification.REMOVE_MANY:
-		case Notification.MOVE:
-		case Notification.SET:
-		case Notification.UNSET:
-			loadFiles(analysis.getInputs()); //XXX looks like we always reload everything, whatever mode element changes? --Andras
-		}
-	}
-	
-	/**
-	 * Listen to workspace changes. We want to keep our result files in
-	 * sync with the workspace. In addition to changes in file contents,
-	 * Inputs can have wildcard filters which may match different files
-	 * as files get created/deleted in the workspace.
-	 */
-	public void resourceChanged(IResourceChangeEvent event) {
-		Analysis analysis = getAnalysis();
-		if (analysis == null || analysis.getInputs() == null) // cannot normally happen
-			return;
-		
-		try {
-			IResourceDelta delta = event.getDelta();
-			delta.accept(new ResourceDeltaVisitor());
-		} catch (CoreException e) {
-			e.printStackTrace();
-		}
-	}
-	
-	class ResourceDeltaVisitor implements IResourceDeltaVisitor {
-		public boolean visit(IResourceDelta delta) throws CoreException {
-			IResource resource = delta.getResource();
-			if (!(resource instanceof IFile))
-				return true;
-			
-			IFile file = (IFile)resource;
-			switch (delta.getKind()) {
-			case IResourceDelta.ADDED:
-					loadFile(file);
-					break;
-			case IResourceDelta.REMOVED:
-					unloadFile(file);
-					break;
-			case IResourceDelta.CHANGED:
-					unloadFile(file);
-					loadFile(file);
-					break;
-			}
-			return false;
-		}
-	}
-
-	/**
      * Utility method: Returns the Analysis object from the resource.
      */
     //XXX catch potential nullpointer- and classcast exceptions during resource magic 
@@ -374,24 +309,18 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INotifyChange
 	public void handleSelectionChange(ISelection selection) {
 		super.handleSelectionChange(selection);
 
+		// propagate selection to the following viewers
 		setViewerSelectionNoNotify(inputsPage.getInputFilesTreeViewer(), selection);
 		setViewerSelectionNoNotify(datasetsPage.getDatasetsTreeViewer(), selection);
 		setViewerSelectionNoNotify(datasetsPage.getChartSheetsTreeViewer(), selection);
 	}
 	
-
 	/**
-	 * Adds the given file (OS-relative) to Inputs unless it's already in there.
+	 * Adds the given workspace file to Inputs.
 	 */
-	public void addFileToInputs(String fileName) {
-		// convert OS path to workspace-relative path
-		IFile iFile = findFileInWorkspace(fileName);
-		if (iFile==null) {
-			System.out.println("path not in workspace: "+fileName); //XXX error dialog?
-			return;
-		}
-		String resourcePath = iFile.getFullPath().toPortableString();
-		
+	public void addWorkspaceFileToInputs(IFile resource) {
+		String resourcePath = resource.getFullPath().toPortableString();
+
 		// add resourcePath to Inputs if not already there
 		Inputs inputs = getAnalysis().getInputs();
 		boolean found = false;
@@ -413,22 +342,75 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INotifyChange
 	}
 	
 	/**
-	 * Utility function: finds an IFile for an existing file given with OS path. Returns null if the file was not found.
+	 * Listen to EMF model changes.
 	 */
-	public static IFile findFileInWorkspace(String fileName) {
-		IFile[] iFiles = ResourcesPlugin.getWorkspace().getRoot().findFilesForLocation(new Path(fileName));
-		IFile iFile = null;
-		for (IFile f : iFiles) { 
-			if (f.exists()) {
-				iFile = f;
-				break;
-			}
+	public void notifyChanged(Notification notification) {
+		if (notification.isTouch())
+			return;
+		
+		Analysis analysis = getAnalysis();
+		if (analysis == null || analysis.getInputs() == null)
+			return;
+
+		switch (notification.getEventType()) {
+		case Notification.ADD:
+		case Notification.ADD_MANY:
+		case Notification.REMOVE:
+		case Notification.REMOVE_MANY:
+		case Notification.MOVE:
+		case Notification.SET:
+		case Notification.UNSET:
+			loadFiles(analysis.getInputs()); //XXX add condition: only reload if something inside Inputs changes! --Andras
 		}
-		return iFile;
+	}
+	
+	/**
+	 * Listen to workspace changes. We want to keep our result files in
+	 * sync with the workspace. In addition to changes in file contents,
+	 * Inputs can have wildcard filters which may match different files
+	 * as files get created/deleted in the workspace.
+	 */
+	public void resourceChanged(IResourceChangeEvent event) {
+		Analysis analysis = getAnalysis();
+		if (analysis == null || analysis.getInputs() == null) // cannot normally happen
+			return;
+		
+		try {
+			IResourceDelta delta = event.getDelta();
+			delta.accept(new ResourceDeltaVisitor());
+		} catch (CoreException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	class ResourceDeltaVisitor implements IResourceDeltaVisitor {
+		public boolean visit(IResourceDelta delta) throws CoreException {
+			IResource resource = delta.getResource();
+			if (!(resource instanceof IFile))
+				return true;
+
+			//FIXME FIXME FIXME every file gets loaded, regardless Inputs!!! must check if it matches anything in Inputs
+			IFile file = (IFile)resource;
+			switch (delta.getKind()) {
+			case IResourceDelta.ADDED:
+					loadFile(file);
+					break;
+			case IResourceDelta.REMOVED:
+					unloadFile(file);
+					break;
+			case IResourceDelta.CHANGED:
+					unloadFile(file);
+					loadFile(file);
+					break;
+			}
+			return false;
+		}
 	}
 
 	private void loadFiles(Inputs inputs) {
+		System.out.println("loadFiles()");
 		// TODO: handle wildcards
+		//XXX also: must unload files which have been removed from Inputs. --Andras
 		inputFiles.clear();
 		for (Object inputFileObj : inputs.getInputs()) {
 			String resourcePath = ((InputFile)inputFileObj).getName();
@@ -448,6 +430,7 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INotifyChange
 	}
 	
 	private void loadFile(IFile file) {
+		System.out.println("loadFile: "+file);
 		try {
 			if (file.getContentDescription() != null &&
 					file.getContentDescription().getContentType() != null) {
@@ -467,6 +450,7 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INotifyChange
 	}
 	
 	private void unloadFile(IFile file) {
+		System.out.println("unloadFile: "+file);
 		File resultFile = manager.getFile(file.getLocation().toOSString());
 		inputFiles.remove(resultFile);
 		// TODO: ResultFileManager.unloadFile() not yet implemented
@@ -474,6 +458,21 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INotifyChange
 		//	manager.unloadFile(resultFile);
 	}
 	
+	/**
+	 * Utility function: finds an IFile for an existing file given with OS path. Returns null if the file was not found.
+	 */
+	public static IFile findFileInWorkspace(String fileName) {
+		IFile[] iFiles = ResourcesPlugin.getWorkspace().getRoot().findFilesForLocation(new Path(fileName));
+		IFile iFile = null;
+		for (IFile f : iFiles) { 
+			if (f.exists()) {
+				iFile = f;
+				break;
+			}
+		}
+		return iFile;
+	}
+
 	public void reportError(String message) {
 		// TODO
 	}
