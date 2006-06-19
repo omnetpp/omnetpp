@@ -1,4 +1,4 @@
-package org.omnetpp.scave2.editors.providers;
+package org.omnetpp.scave2.editors.tableproviders;
 
 import static org.omnetpp.scave2.editors.ui.ScalarsPanel.COL_DIRECTORY;
 import static org.omnetpp.scave2.editors.ui.ScalarsPanel.COL_FILENAME;

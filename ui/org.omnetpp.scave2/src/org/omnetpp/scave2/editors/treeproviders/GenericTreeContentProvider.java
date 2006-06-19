@@ -1,4 +1,4 @@
-package org.omnetpp.scave2.editors.providers;
+package org.omnetpp.scave2.editors.treeproviders;
 
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.jface.viewers.ITreeContentProvider;

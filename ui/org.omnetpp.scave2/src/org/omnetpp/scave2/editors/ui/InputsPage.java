@@ -16,10 +16,10 @@ import org.omnetpp.scave2.actions.AddResultFileAction;
 import org.omnetpp.scave2.actions.AddWildcardResultFileAction;
 import org.omnetpp.scave2.actions.RemoveAction;
 import org.omnetpp.scave2.editors.ScaveEditor;
-import org.omnetpp.scave2.editors.providers.InputsLogicalViewContentProvider;
-import org.omnetpp.scave2.editors.providers.InputsLogicalViewLabelProvider;
-import org.omnetpp.scave2.editors.providers.InputsPhysicalViewContentProvider;
-import org.omnetpp.scave2.editors.providers.InputsPhysicalViewLabelProvider;
+import org.omnetpp.scave2.editors.treeproviders.InputsLogicalViewContentProvider;
+import org.omnetpp.scave2.editors.treeproviders.InputsLogicalViewLabelProvider;
+import org.omnetpp.scave2.editors.treeproviders.InputsPhysicalViewContentProvider;
+import org.omnetpp.scave2.editors.treeproviders.InputsPhysicalViewLabelProvider;
 
 public class InputsPage extends ScaveEditorPage {
 

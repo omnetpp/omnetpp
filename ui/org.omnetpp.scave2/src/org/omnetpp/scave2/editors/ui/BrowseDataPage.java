@@ -18,9 +18,9 @@ import org.omnetpp.scave2.actions.CopyToClipboardAction;
 import org.omnetpp.scave2.actions.CreateChartAction;
 import org.omnetpp.scave2.actions.CreateDatasetAction;
 import org.omnetpp.scave2.editors.ScaveEditor;
-import org.omnetpp.scave2.editors.providers.InputsScalarsViewProvider;
-import org.omnetpp.scave2.editors.providers.InputsTableViewProvider;
-import org.omnetpp.scave2.editors.providers.InputsVectorsViewProvider;
+import org.omnetpp.scave2.editors.tableproviders.InputsScalarsViewProvider;
+import org.omnetpp.scave2.editors.tableproviders.InputsTableViewProvider;
+import org.omnetpp.scave2.editors.tableproviders.InputsVectorsViewProvider;
 
 /**
  * This is the "Browse data" page of Scave Editor

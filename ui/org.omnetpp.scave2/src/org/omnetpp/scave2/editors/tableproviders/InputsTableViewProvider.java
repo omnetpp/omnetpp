@@ -1,4 +1,4 @@
-package org.omnetpp.scave2.editors.providers;
+package org.omnetpp.scave2.editors.tableproviders;
 
 import org.eclipse.core.runtime.ListenerList;
 import org.eclipse.emf.common.notify.Notification;

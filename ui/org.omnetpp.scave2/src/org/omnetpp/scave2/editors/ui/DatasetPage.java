@@ -20,9 +20,9 @@ import org.omnetpp.scave2.actions.OpenAction;
 import org.omnetpp.scave2.actions.RemoveAction;
 import org.omnetpp.scave2.actions.UngroupAction;
 import org.omnetpp.scave2.editors.ScaveEditor;
-import org.omnetpp.scave2.editors.providers.DatasetScalarsViewProvider;
-import org.omnetpp.scave2.editors.providers.DatasetVectorsViewProvider;
-import org.omnetpp.scave2.editors.providers.InputsTableViewProvider;
+import org.omnetpp.scave2.editors.tableproviders.DatasetScalarsViewProvider;
+import org.omnetpp.scave2.editors.tableproviders.DatasetVectorsViewProvider;
+import org.omnetpp.scave2.editors.tableproviders.InputsTableViewProvider;
 
 public class DatasetPage extends ScaveEditorPage {
 

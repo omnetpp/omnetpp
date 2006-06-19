@@ -1,4 +1,4 @@
-package org.omnetpp.scave2.editors.providers;
+package org.omnetpp.scave2.editors.tableproviders;
 
 import org.eclipse.emf.ecore.EObject;
 import org.omnetpp.scave.engine.IDList;
