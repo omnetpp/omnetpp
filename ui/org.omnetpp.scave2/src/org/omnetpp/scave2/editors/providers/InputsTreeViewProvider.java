@@ -14,8 +14,6 @@ import org.omnetpp.scave2.editors.ScaveEditor;
 //XXX some docu needed for this class
 public abstract class InputsTreeViewProvider {
 	
-	private static final Object[] EMPTY_ARRAY = new Object[0];
-
 	protected ScaveEditor editor;
 	
 	public InputsTreeViewProvider(ScaveEditor editor) {
@@ -31,45 +29,12 @@ public abstract class InputsTreeViewProvider {
 	protected abstract ITreeContentProvider getContentProvider();
 	protected abstract ILabelProvider getLabelProvider();
 	
-
-	protected abstract class ContentProvider implements ITreeContentProvider, INotifyChangedListener {
+	protected abstract class ContentProvider extends GenericTreeContentProvider implements INotifyChangedListener {
 		
-		protected Object lastInputElement;
-		protected TreeNode root;
+		protected GenericTreeNode root;
 		protected Viewer viewer;
 		
-		protected abstract TreeNode buildTree(Inputs inputs);
-		
-		public Object[] getChildren(Object parentElement) {
-			if (parentElement instanceof TreeNode)
-				return ((TreeNode)parentElement).children;
-			return EMPTY_ARRAY;
-		}
-	
-		public Object getParent(Object element) {
-			if (element instanceof TreeNode) {
-				TreeNode node = (TreeNode)element;
-				return node.parent == root ? null : node.parent;
-			}
-			return null;
-		}
-	
-		public boolean hasChildren(Object element) {
-			return getChildren(element).length > 0;
-		}
-	
-		public Object[] getElements(Object inputElement) {
-			if (inputElement instanceof Inputs) {
-				if (inputElement != lastInputElement || root == null) {
-					lastInputElement = inputElement;
-					root = buildTree((Inputs)inputElement);
-				}
-				
-				if (root != null)
-					return root.children;
-			}
-			return EMPTY_ARRAY;
-		}
+		protected abstract GenericTreeNode buildTree(Inputs inputs);
 		
 		public void dispose() {
 			viewer = null;
@@ -107,19 +72,15 @@ public abstract class InputsTreeViewProvider {
 				notifier.removeListener(this);
 			}
 		}
-		
-		protected TreeNode getOrCreateNode(TreeNode parent, String payload) {
-			if (parent.children != null)
-				for (int i = 0; i < parent.children.length; ++i) {
-					TreeNode child = parent.children[i];
-					if (InputsTreeViewProvider.equals(payload, child.payload))
-						return child;
-				}
-			
-			TreeNode child = new TreeNode(parent, payload);
-			parent.addChild(child);
-			
-			return child;
+
+		@Override
+		public Object[] getElements(Object inputElement) {
+			if (inputElement instanceof Inputs) {
+				if (root==null)
+					root = buildTree((Inputs)inputElement);
+				return root.getChildren();
+			}
+			return super.getElements(inputElement);
 		}
 	}
 	
@@ -128,34 +89,4 @@ public abstract class InputsTreeViewProvider {
 				first != null && first.equals(second);
 	}
 
-	protected static class TreeNode {
-		private static final TreeNode[] EMPTY_ARRAY = new TreeNode[0];
-		
-		public TreeNode parent;
-		public TreeNode[] children;
-		public Object payload;
-		
-		public TreeNode(TreeNode parent, Object payload) {
-			this.parent = parent;
-			this.payload = payload;
-			this.children = EMPTY_ARRAY;
-		}
-		
-		public void addChild(TreeNode child) {
-			TreeNode[] childrenNew = new TreeNode[children.length + 1];
-			System.arraycopy(children, 0, childrenNew, 0, children.length);  //XXX potential bottleneck -- use ArrayList? (Andras)
-			children = childrenNew;
-			children[children.length - 1] = child;
-		}
-		
-		public int index() {
-			if (parent == null)
-				return -1;
-			TreeNode[] siblings = parent.children;
-			for (int i = 0; i < siblings.length; ++i)
-				if (siblings[i] == this)
-					return i;
-			return -1;
-		}
-	}
 }

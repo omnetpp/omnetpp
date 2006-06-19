@@ -24,16 +24,16 @@ public class InputsLogicalViewProvider extends InputsTreeViewProvider {
 	public ITreeContentProvider getContentProvider() {
 		return new ContentProvider() {
 			// Inputs/Experiment/Measurement/Replication
-			protected TreeNode buildTree(Inputs inputs) {
+			protected GenericTreeNode buildTree(Inputs inputs) {
 				ResultFileManager manager = editor.getResultFileManager();
-				TreeNode root = new TreeNode(null, inputs);
+				GenericTreeNode root = new GenericTreeNode(null, inputs);
 				for (File file : editor.getInputFiles()) {
 					RunList runlist = manager.getRunsInFile(file);
 					for (int j = 0; j < runlist.size(); ++j) {
 						Run run = runlist.get(j);
-						TreeNode experimentNode = getOrCreateNode(root, run.getExperimentName());
-						TreeNode measurementNode = getOrCreateNode(experimentNode, run.getMeasurementName());
-						getOrCreateNode(measurementNode, run.getReplicationName());
+						GenericTreeNode experimentNode = root.getOrCreateChild(run.getExperimentName());
+						GenericTreeNode measurementNode = experimentNode.getOrCreateChild(run.getMeasurementName());
+						measurementNode.getOrCreateChild(run.getReplicationName());
 					}
 				}
 				return root;
@@ -45,19 +45,19 @@ public class InputsLogicalViewProvider extends InputsTreeViewProvider {
 		return new LabelProvider() {
 			
 			public String getText(Object element) {
-				if (element instanceof TreeNode) {
-					TreeNode node = (TreeNode)element;
-					if (node.payload != null && !node.payload.equals(""))
-						return node.payload.toString();
+				if (element instanceof GenericTreeNode) {
+					GenericTreeNode node = (GenericTreeNode)element;
+					if (node.getPayload() != null && !node.getPayload().equals(""))
+						return node.getPayload().toString();
 					// test code
-					if (node.parent == null)
+					if (node.getParent() == null)
 						return null;
-					else if (node.parent.parent == null)
-						return "experiment-" + node.index();
-					else if (node.parent.parent.parent == null)
-						return "measurement-" + node.index();
-					else if (node.parent.parent.parent.parent == null)
-						return "replication-" + node.index();
+					else if (node.getParent().getParent() == null)
+						return "experiment-" + node.indexInParent();
+					else if (node.getParent().getParent().getParent() == null)
+						return "measurement-" + node.indexInParent();
+					else if (node.getParent().getParent().getParent().getParent() == null)
+						return "replication-" + node.indexInParent();
 				}
 				return null;
 			}

@@ -25,16 +25,16 @@ public class InputsPhysicalViewProvider extends InputsTreeViewProvider {
 	public ITreeContentProvider getContentProvider() {
 		return new ContentProvider() {
 			// Inputs/File/Run
-			protected TreeNode buildTree(Inputs inputs) {
+			protected GenericTreeNode buildTree(Inputs inputs) {
 				ResultFileManager manager = editor.getResultFileManager();
-				TreeNode root = new TreeNode(null, inputs);
+				GenericTreeNode root = new GenericTreeNode(null, inputs);
 				for (File file : editor.getInputFiles()) {
-					TreeNode fileNode = new TreeNode(root, file);
+					GenericTreeNode fileNode = new GenericTreeNode(root, file);
 					root.addChild(fileNode);
 					RunList runlist = manager.getRunsInFile(file);
 					for (int i = 0; i < runlist.size(); ++i) {
 						Run run = runlist.get(i);
-						TreeNode runNode = new TreeNode(fileNode, run);
+						GenericTreeNode runNode = new GenericTreeNode(fileNode, run);
 						fileNode.addChild(runNode);
 					}
 				}
@@ -47,17 +47,17 @@ public class InputsPhysicalViewProvider extends InputsTreeViewProvider {
 		return new LabelProvider() {
 
 			public String getText(Object element) {
-				if (element instanceof TreeNode) {
-					TreeNode node = (TreeNode)element;
-					if (node.payload instanceof Inputs)
+				if (element instanceof GenericTreeNode) {
+					GenericTreeNode node = (GenericTreeNode)element;
+					if (node.getPayload() instanceof Inputs)
 						return "";
-					else if (node.payload instanceof File) {
-						File file = (File)node.payload;
-						IFile ifile = editor.findFileInWorkspace(file.getFilePath());
+					else if (node.getPayload() instanceof File) {
+						File file = (File)node.getPayload();
+						IFile ifile = ScaveEditor.findFileInWorkspace(file.getFilePath());
 						return ifile != null ? ifile.getFullPath().toString() : file.getFilePath();
 					}
-					else if (node.payload instanceof Run) {
-						Run run = (Run)node.payload;
+					else if (node.getPayload() instanceof Run) {
+						Run run = (Run)node.getPayload();
 						return run.getRunName() + ", " + run.getDate();
 					}
 				}
