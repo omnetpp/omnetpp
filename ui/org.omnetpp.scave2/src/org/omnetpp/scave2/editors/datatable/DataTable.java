@@ -1,0 +1,138 @@
+package org.omnetpp.scave2.editors.datatable;
+
+import org.eclipse.core.runtime.Assert;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.Table;
+import org.eclipse.swt.widgets.TableColumn;
+import org.eclipse.swt.widgets.TableItem;
+import org.omnetpp.scave.engine.IDList;
+import org.omnetpp.scave.engine.ResultFileManager;
+import org.omnetpp.scave.engine.ScalarResult;
+import org.omnetpp.scave.engine.VectorResult;
+
+/**
+ * This is a preconfigured VIRTUAL table, which displays a list of
+ * output vectors, output scalars or histograms, given an IDList and
+ * the corresponding ResultFileManager as input. It is optimized
+ * for very large amounts of data. (Display time is constant,
+ * so it can be used with even millions of table lines without
+ * performance degradation).
+ * 
+ * When the IDList changes, the table needs to be refreshed either
+ * by a call to setIDList(), or by clearAll().
+ *  
+ * @author andras
+ */
+public class DataTable extends Table {
+	public static final int TYPE_SCALAR = 0;
+	public static final int TYPE_VECTOR = 1;
+	public static final int TYPE_HISTOGRAM = 2;
+
+	private int type;
+	private ResultFileManager manager;
+	private IDList idlist;
+	
+	public DataTable(Composite parent, int style, int type) {
+		super(parent, style | SWT.VIRTUAL | SWT.FULL_SELECTION);
+		Assert.isTrue(type==TYPE_SCALAR || type==TYPE_VECTOR || type==TYPE_HISTOGRAM);
+		this.type = type;
+		setHeaderVisible(true);
+		setLinesVisible(true);
+		addColumns();
+
+		addListener(SWT.SetData, new Listener() {
+			public void handleEvent(Event e) {
+				TableItem item = (TableItem)e.item;
+				int lineNumber = indexOf(item);
+				fillTableLine(item, lineNumber);
+			}
+		});
+	}
+
+	public int getType() {
+		return type;
+	}
+
+	public void setResultFileManager(ResultFileManager manager) {
+		this.manager = manager;
+	}
+	
+	public ResultFileManager getResultFileManager() {
+		return manager;
+	}
+
+	public void setIDList(IDList idlist) {
+		this.idlist = idlist;
+		clearAll(); // refresh
+	}
+
+	public IDList getIDList() {
+		return idlist;
+	}
+
+	protected void addColumns() {
+		if (type==TYPE_SCALAR) {
+			addColumn("Directory", 60);
+			addColumn("File", 80);
+			addColumn("Run#", 80);
+			addColumn("Module", 160);
+			addColumn("Name", 100);
+			addColumn("Value", 80);
+		}
+		else if (type==TYPE_VECTOR) {
+			addColumn("Directory", 60);
+			addColumn("File", 80);
+			addColumn("Run#", 60);
+			addColumn("Module", 160);
+			addColumn("Name", 100);
+			addColumn("Count", 50);
+			addColumn("Mean", 60);
+			addColumn("Stddev", 60);
+		}
+		else if (type==TYPE_HISTOGRAM) {
+			addColumn("Directory", 60);
+			addColumn("File", 80);
+			addColumn("Run#", 80);
+			addColumn("Module", 160);
+			addColumn("Name", 100);
+			addColumn("Mean", 60);
+			addColumn("Stddev", 60);
+		}		
+	}
+
+	protected TableColumn addColumn(String text, int width) {
+		TableColumn tableColumn = new TableColumn(this, SWT.NONE);
+		tableColumn.setWidth(width);
+		tableColumn.setText(text);
+		return tableColumn;
+	}
+
+	protected void fillTableLine(TableItem item, int lineNumber) {
+		if (type==TYPE_SCALAR) {
+			ScalarResult d = manager.getScalar(idlist.get(lineNumber));
+			item.setText(0, d.getRun().getFile().getDirectory());
+			item.setText(1, d.getRun().getFile().getFileName());
+			item.setText(2, d.getRun().getRunName());
+			item.setText(3, d.getModuleName());
+			item.setText(4, d.getName());
+			item.setText(5, ""+d.getValue());
+		}
+		else if (type==TYPE_VECTOR) {
+			VectorResult d = manager.getVector(idlist.get(lineNumber));
+			item.setText(0, d.getRun().getFile().getDirectory());
+			item.setText(1, d.getRun().getFile().getFileName());
+			item.setText(2, "n/a");
+			item.setText(3, d.getModuleName());
+			item.setText(4, d.getName());
+			item.setText(5, "not counted");
+			item.setText(6, "not yet");
+			item.setText(7, "not yet");
+		}
+		else if (type==TYPE_HISTOGRAM) {
+			//TODO
+		}		
+	}
+}
