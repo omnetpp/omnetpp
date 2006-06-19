@@ -9,6 +9,7 @@ import org.eclipse.core.runtime.Assert;
  * 
  * @author andras
  */
+//XXX move to "common" plug-in?
 public class GenericTreeNode {
 
 	private static final GenericTreeNode[] EMPTY_ARRAY = new GenericTreeNode[0];

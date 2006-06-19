@@ -608,7 +608,12 @@ public abstract class AbstractEMFModelEditor
 		Menu menu= contextMenu.createContextMenu(viewer.getControl());
 		viewer.getControl().setMenu(menu);
 		getSite().registerContextMenu(contextMenu, viewer);
+	}
 
+	/**
+	 * Sets up the viewer so that it functions as drag source and drop target for model elements
+	 */
+	protected void setupDragAndDropSupportFor(StructuredViewer viewer) {
 		int dndOperations = DND.DROP_COPY | DND.DROP_MOVE | DND.DROP_LINK;
 		Transfer[] transfers = new Transfer[] { LocalTransfer.getInstance() };
 		viewer.addDragSupport(dndOperations, transfers, new ViewerDragAdapter(viewer));
@@ -707,6 +712,7 @@ public abstract class AbstractEMFModelEditor
 		modelViewer.addSelectionChangedListener(selectionChangedListener);
 
 		createContextMenuFor(modelViewer);
+		setupDragAndDropSupportFor(modelViewer);
 	}	
 
 	/**

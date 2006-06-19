@@ -8,6 +8,7 @@ import org.eclipse.jface.viewers.Viewer;
  * Content provider for a tree built of {@link GenericTreeNode}s.
  * @author andras
  */
+//XXX move to "common" plug-in?
 public class GenericTreeContentProvider implements ITreeContentProvider {
 	
 	public Object[] getChildren(Object parentElement) {

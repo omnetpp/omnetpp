@@ -9,7 +9,6 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.forms.widgets.ExpandableComposite;
 import org.eclipse.ui.forms.widgets.FormToolkit;
-import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.scave.model.Analysis;
@@ -17,9 +16,10 @@ import org.omnetpp.scave2.actions.AddResultFileAction;
 import org.omnetpp.scave2.actions.AddWildcardResultFileAction;
 import org.omnetpp.scave2.actions.RemoveAction;
 import org.omnetpp.scave2.editors.ScaveEditor;
-import org.omnetpp.scave2.editors.providers.InputsLogicalViewProvider;
-import org.omnetpp.scave2.editors.providers.InputsPhysicalViewProvider;
-import org.omnetpp.scave2.editors.providers.InputsTreeViewProvider;
+import org.omnetpp.scave2.editors.providers.InputsLogicalViewContentProvider;
+import org.omnetpp.scave2.editors.providers.InputsLogicalViewLabelProvider;
+import org.omnetpp.scave2.editors.providers.InputsPhysicalViewContentProvider;
+import org.omnetpp.scave2.editors.providers.InputsPhysicalViewLabelProvider;
 
 public class InputsPage extends ScaveEditorPage {
 
@@ -61,11 +61,14 @@ public class InputsPage extends ScaveEditorPage {
 		createDataSection();
 
 		// configure viewers
-		InputsTreeViewProvider physicalViewProvider = new InputsPhysicalViewProvider(scaveEditor);
-		InputsTreeViewProvider logicalViewProvider = new InputsLogicalViewProvider(scaveEditor);
         scaveEditor.configureTreeViewer(getInputFilesTreeViewer());
-        physicalViewProvider.configureTreeViewer(getPhysicalDataTreeViewer());
-        logicalViewProvider.configureTreeViewer(getLogicalDataTreeViewer());
+        
+        getPhysicalDataTreeViewer().setContentProvider(new InputsPhysicalViewContentProvider(scaveEditor));
+        getPhysicalDataTreeViewer().setLabelProvider(new InputsPhysicalViewLabelProvider());
+
+        getLogicalDataTreeViewer().setContentProvider(new InputsLogicalViewContentProvider(scaveEditor));
+        getLogicalDataTreeViewer().setLabelProvider(new InputsLogicalViewLabelProvider());
+
         getPhysicalDataTreeViewer().addSelectionChangedListener(scaveEditor.getSelectionChangedListener());
         getLogicalDataTreeViewer().addSelectionChangedListener(scaveEditor.getSelectionChangedListener());
         
