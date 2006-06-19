@@ -13,6 +13,8 @@ public class NEDElementFactoryEx extends NEDElementFactory {
             return new SubmoduleNodeEx(parent);
         if (tagname.equals("connection"))
             return new ConnectionNodeEx(parent);
+        if (tagname.equals("gate"))
+            return new GateNodeEx(parent);
 
         return super.createNodeWithTag(tagname, parent);
 	}
@@ -26,6 +28,9 @@ public class NEDElementFactoryEx extends NEDElementFactory {
             return new SubmoduleNodeEx(parent);
         if (tagcode==NED_CONNECTION)
             return new ConnectionNodeEx(parent);
+        if (tagcode==NED_GATE)
+            return new GateNodeEx(parent);
+        
 		return super.createNodeWithTag(tagcode, parent);
 	}
 }

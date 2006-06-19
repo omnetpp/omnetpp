@@ -6,6 +6,7 @@ import java.util.List;
 import org.omnetpp.ned2.model.DisplayString.Prop;
 import org.omnetpp.ned2.model.pojo.CompoundModuleNode;
 import org.omnetpp.ned2.model.pojo.ConnectionsNode;
+import org.omnetpp.ned2.model.pojo.GatesNode;
 import org.omnetpp.ned2.model.pojo.SubmoduleNode;
 import org.omnetpp.ned2.model.pojo.SubmodulesNode;
 
@@ -177,4 +178,5 @@ public class CompoundModuleNodeEx extends CompoundModuleNode
 				
 		return result;
 	}
+
 }

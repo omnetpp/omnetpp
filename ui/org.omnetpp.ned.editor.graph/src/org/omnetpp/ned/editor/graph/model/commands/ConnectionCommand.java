@@ -1,16 +1,25 @@
 package org.omnetpp.ned.editor.graph.model.commands;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.eclipse.gef.commands.Command;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.PopupList;
-import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.MenuItem;
 import org.omnetpp.ned2.model.CompoundModuleNodeEx;
 import org.omnetpp.ned2.model.ConnectionNodeEx;
 import org.omnetpp.ned2.model.IConnectable;
 import org.omnetpp.ned2.model.IConnectionContainer;
 import org.omnetpp.ned2.model.IElement;
 import org.omnetpp.ned2.model.SubmoduleNodeEx;
+import org.omnetpp.ned2.model.pojo.GateNode;
+import org.omnetpp.resources.INEDComponent;
+import org.omnetpp.resources.NEDResourcesPlugin;
 
 /**
  * (Re)assigns a Connection to srcModule/destModule sub/compound module gates and also adds it to the
@@ -181,18 +190,107 @@ public class ConnectionCommand extends Command {
 			return;
 		
 		PopupList pl = new PopupList(Display.getCurrent().getActiveShell());
-		String proba[] = new String[] {"INPUTPORT11","IN2","OUT1","OUT2"};
-		// TODO get the needed in/out connections from the model directly
-		// if both of them are requred create pairs
-		// return only free gates
-		pl.setItems(proba);
-		pl.setMinimumWidth(50);
-		Point pt = Display.getCurrent().getCursorLocation();
-		String result = pl.open(new Rectangle(pt.x, pt.y, 50, 50));
+		List<String> srcOutModuleGateNames = getModuleGateNames(srcModule, GateNode.NED_GATETYPE_OUTPUT);
+		List<String> srcInOutModuleGateNames = getModuleGateNames(srcModule, GateNode.NED_GATETYPE_INOUT);
+		List<String> destInModuleGateNames = getModuleGateNames(destModule, GateNode.NED_GATETYPE_INPUT);
+		List<String> destInOutModuleGateNames = getModuleGateNames(srcModule, GateNode.NED_GATETYPE_INOUT);
+
+		
+		
+		Menu menu = new Menu(Display.getCurrent().getActiveShell(), SWT.NONE);
+		for (String srcOut : srcOutModuleGateNames)
+			for(String destIn : destInModuleGateNames) {
+				MenuItem mi = new MenuItem(menu, SWT.PUSH);
+				mi.setText(srcOut+" --> "+destIn);
+				mi.addSelectionListener(new SelectionAdapter() {
+					public void widgetSelected(SelectionEvent e) {
+					}
+
+				});
+			}
+				
+		for (String srcInOut : srcInOutModuleGateNames)
+			for(String destInOut : destInOutModuleGateNames) {
+				MenuItem mi = new MenuItem(menu, SWT.PUSH);
+				mi.setText(srcInOut+" <--> "+destInOut);
+				mi.addSelectionListener(new SelectionAdapter() {
+					public void widgetSelected(SelectionEvent e) {
+					}
+
+				});
+			}
 
 		// get the src and dest gatemenes from the selection
 		// just temportary testing
-		destGate = result;
-		srcGate = result;
+		menu.setVisible(true);
+//		destGate = result;
+//		srcGate = result;
+	}
+
+	protected static List<String> getModuleGateNames(IConnectable module, int gateType) {
+		List<String> result = new ArrayList<String>();
+		
+		// the type is the compound module's name
+		// the gate type depends 
+		String moduleType = "";
+		if (module instanceof CompoundModuleNodeEx) {
+			moduleType = ((CompoundModuleNodeEx)module).getName();
+			// if we connect a compound module swap the gate type (in<>out) submodule.out -> out
+			gateType = (gateType == GateNode.NED_GATETYPE_INPUT) ? GateNode.NED_GATETYPE_OUTPUT : 
+				(gateType == GateNode.NED_GATETYPE_OUTPUT ? GateNode.NED_GATETYPE_INPUT : GateNode.NED_GATETYPE_INOUT);
+		}
+		if (module instanceof SubmoduleNodeEx) {
+			moduleType = ((SubmoduleNodeEx)module).getType();
+		}
+		
+		INEDComponent comp = NEDResourcesPlugin.getNEDResources().getComponent(moduleType);
+		if (comp == null)
+			return result;
+		
+		for(String s : comp.getGateNames()) {
+			GateNode currGate = (GateNode)comp.getMember(s);
+			if (currGate.getType() == gateType)
+				result.add(s);
+		}
+
+		return result;
 	}
 }
+
+//protected void askForGates(boolean askForSrcGate, boolean askForDestGate) {
+//	// do not ask anything 
+//	if (!askForSrcGate && !askForDestGate)
+//		return;
+//	
+//	PopupList pl = new PopupList(Display.getCurrent().getActiveShell());
+//	List<String> srcOutModuleGateNames = getModuleGateNames(srcModule, GateNode.NED_GATETYPE_OUTPUT);
+//	List<String> srcInOutModuleGateNames = getModuleGateNames(srcModule, GateNode.NED_GATETYPE_INOUT);
+//	List<String> destInModuleGateNames = getModuleGateNames(destModule, GateNode.NED_GATETYPE_INPUT);
+//	List<String> destInOutModuleGateNames = getModuleGateNames(srcModule, GateNode.NED_GATETYPE_INOUT);
+//
+//	
+//	
+//	List<String> proposals = new ArrayList<String>();
+//	Menu menu = new Menu(Display.getCurrent().getActiveShell(), SWT.NONE);
+//	for (String srcOut : srcOutModuleGateNames)
+//		for(String destIn : destInModuleGateNames)
+//			proposals.add(srcOut+" --> "+destIn);
+//	
+//	for (String srcInOut : srcInOutModuleGateNames)
+//		for(String destInOut : destInOutModuleGateNames)
+//			proposals.add(srcInOut+" <--> "+destInOut);
+//		
+//	String gateNames[] = (String[]) proposals.toArray(new String[proposals.size()]);
+//	// TODO get the needed in/out connections from the resource parser
+//	// if both of them are requred create pairs
+//	// return only free gates
+//	pl.setItems(gateNames);
+//	pl.setMinimumWidth(200);
+//	Point pt = Display.getCurrent().getCursorLocation();
+//	String result = pl.open(new Rectangle(pt.x, pt.y, -1, -1));
+//
+//	// get the src and dest gatemenes from the selection
+//	// just temportary testing
+//	destGate = result;
+//	srcGate = result;
+//}
