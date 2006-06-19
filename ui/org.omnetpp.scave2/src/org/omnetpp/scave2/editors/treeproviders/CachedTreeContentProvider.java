@@ -11,6 +11,7 @@ import org.eclipse.jface.viewers.Viewer;
  * change notifications. EMF's IChangeNotifier interface is implemented 
  * for this purpose. 
  */
+//XXX move to common plug-in
 //FIXME tree has to be rebuilt upon resource changes as well! ResultFileTracker should fire some notification
 public abstract class CachedTreeContentProvider extends GenericTreeContentProvider implements INotifyChangedListener {
 

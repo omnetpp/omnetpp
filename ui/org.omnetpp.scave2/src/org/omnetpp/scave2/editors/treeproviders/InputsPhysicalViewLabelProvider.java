@@ -7,6 +7,9 @@ import org.omnetpp.scave.engine.Run;
 import org.omnetpp.scave.model.Inputs;
 import org.omnetpp.scave2.editors.ScaveEditor;
 
+/**
+ * Label provider for the "Physical view" tree of the Inputs page.
+ */
 public class InputsPhysicalViewLabelProvider extends LabelProvider {
 
 	public String getText(Object element) {

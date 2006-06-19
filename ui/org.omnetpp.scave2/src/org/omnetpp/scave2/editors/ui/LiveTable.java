@@ -29,6 +29,7 @@ import org.eclipse.swt.widgets.Control;
  * 
  * @author andras
  */
+//XXX move to common plug-in
 public class LiveTable extends Composite {
 	private static final Color SELECTBORDER_COLOR = new Color(null,255,0,0);
 	private static final Color INSERTMARK_COLOR = new Color(null,0,0,0);

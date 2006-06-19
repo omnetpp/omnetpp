@@ -48,7 +48,6 @@ import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.util.EContentAdapter;
 import org.eclipse.emf.ecore.util.EcoreUtil;
-import org.eclipse.emf.ecore.xmi.XMIResource;
 import org.eclipse.emf.edit.domain.AdapterFactoryEditingDomain;
 import org.eclipse.emf.edit.domain.EditingDomain;
 import org.eclipse.emf.edit.domain.IEditingDomainProvider;
@@ -105,10 +104,9 @@ import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
 import org.eclipse.ui.views.properties.IPropertySheetPage;
 import org.eclipse.ui.views.properties.PropertySheet;
 import org.eclipse.ui.views.properties.PropertySheetPage;
-import org.omnetpp.scave.model.Analysis;
 import org.omnetpp.scave.model.provider.ScaveEditPlugin;
 import org.omnetpp.scave.model.provider.ScaveModelItemProviderAdapterFactory;
-import org.omnetpp.scave2.editors.providers.ScaveModelLabelProvider;
+import org.omnetpp.scave2.editors.treeproviders.ScaveModelLabelProvider;
 
 
 /**
@@ -117,7 +115,6 @@ import org.omnetpp.scave2.editors.providers.ScaveModelLabelProvider;
  */
 //FIXME "New Children" etc context menu is only available after clicking in the outline page at least once
 //FIXME if Datasets is empty, context menu offers "New Input File" if Inputs is selected in the content outline
-//TODO create a good wizard as well
 //TODO review and customize context menu (e.g. do we need "Validate" or "Load resource"?) 
 public abstract class AbstractEMFModelEditor
 	extends MultiPageEditorPart
