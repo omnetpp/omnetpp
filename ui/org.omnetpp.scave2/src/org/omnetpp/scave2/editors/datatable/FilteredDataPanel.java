@@ -37,8 +37,10 @@ public class FilteredDataPanel extends Composite {
 
 	public void setIDList(IDList idlist) {
 		this.idlist = idlist;
+		updateFilterCombos();
 		runFilter();
 	}
+
 
 	public IDList getIDList() {
 		return idlist;
@@ -76,6 +78,13 @@ public class FilteredDataPanel extends Composite {
 		filterPanel.getRunNameCombo().addSelectionListener(selectionListener);
 		filterPanel.getModuleNameCombo().addSelectionListener(selectionListener);
 		filterPanel.getNameCombo().addSelectionListener(selectionListener);
+	}
+
+	protected void updateFilterCombos() {
+		ResultFileManager manager = table.getResultFileManager();
+		filterPanel.getModuleNameCombo().setItems(manager.getModuleFilterHints(idlist).toArray());
+		filterPanel.getRunNameCombo().setItems(manager.getRunNameFilterHints(idlist).toArray());
+		filterPanel.getNameCombo().setItems(manager.getNameFilterHints(idlist).toArray());
 	}
 
 	protected void runFilter() {
