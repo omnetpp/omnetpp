@@ -5,18 +5,21 @@ import java.util.List;
 
 import org.eclipse.gef.commands.Command;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.PopupList;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
+import org.omnetpp.ned.editor.graph.misc.BlockingMenu;
 import org.omnetpp.ned2.model.CompoundModuleNodeEx;
 import org.omnetpp.ned2.model.ConnectionNodeEx;
 import org.omnetpp.ned2.model.IConnectable;
 import org.omnetpp.ned2.model.IConnectionContainer;
 import org.omnetpp.ned2.model.IElement;
+import org.omnetpp.ned2.model.INamedGraphNode;
+import org.omnetpp.ned2.model.ModelUtil;
 import org.omnetpp.ned2.model.SubmoduleNodeEx;
+import org.omnetpp.ned2.model.pojo.ConnectionNode;
 import org.omnetpp.ned2.model.pojo.GateNode;
 import org.omnetpp.resources.INEDComponent;
 import org.omnetpp.resources.NEDResourcesPlugin;
@@ -36,6 +39,8 @@ public class ConnectionCommand extends Command {
     protected String srcGate;
     protected IConnectable destModule;
     protected String destGate;
+    protected int oldDirection;
+    protected int direction = ConnectionNode.NED_ARROWDIR_L2R;
     protected ConnectionNodeEx connNode;
     protected ConnectionNodeEx connNodeNextSibling = null;
     protected IConnectionContainer parent = null;
@@ -57,6 +62,7 @@ public class ConnectionCommand extends Command {
         oldDestModule = connNode.getDestModuleRef();
         oldSrcGate = connNode.getSrcGate();
         oldDestGate = connNode.getDestGate();
+        oldDirection = connNode.getArrowDirection();
     }
     /**
      * Handles which module can be connected to which
@@ -95,12 +101,15 @@ public class ConnectionCommand extends Command {
     	// after we connected the modules, let's ask the user which gates should be connected
     	if(srcModule != null || destModule != null) {
     		// ask the user for ser and dest gate names
-    		askForGates(srcModule != null, destModule != null);
-
+    		ConnectionNodeEx tempConn = askForTemplateConnection(srcModule, destModule);
     		// if both gates are specified by the user do the model change
-    		if (srcGate != null && destGate != null) 
-    			redo();
-    		else //otherwise revert the connection change (user cancel) 
+    		if (tempConn != null) {
+        		srcGate = tempConn.getSrcGate();
+        		destGate = tempConn.getDestGate();
+        		direction = tempConn.getArrowDirection();
+        		redo();
+    		}
+    		else //otherwise revert the connection change (user cancel)
     			undo();
     	}
     }
@@ -118,6 +127,8 @@ public class ConnectionCommand extends Command {
         
         if (destGate != null && oldDestGate != destGate)
             connNode.setDestGate(destGate);
+        
+        connNode.setArrowDirection(direction);
         
         // if both src and dest module should be detached then remove it 
         // from the model totally (ie delete it)
@@ -145,6 +156,7 @@ public class ConnectionCommand extends Command {
         connNode.setSrcGate(oldSrcGate);
         connNode.setDestModuleRef(oldDestModule);
         connNode.setDestGate(oldDestGate);
+        connNode.setArrowDirection(oldDirection);
     }
 
     public void setSrcModule(IConnectable newSrcModule) {
@@ -184,51 +196,63 @@ public class ConnectionCommand extends Command {
 	 * @param askForSrcGate
 	 * @param askForDestGate
 	 */
-	protected void askForGates(boolean askForSrcGate, boolean askForDestGate) {
+	protected ConnectionNodeEx askForTemplateConnection(IConnectable srcModule, IConnectable destModule) {
 		// do not ask anything 
-		if (!askForSrcGate && !askForDestGate)
-			return;
+		if (srcModule == null && destModule == null)
+			return null;
 		
-		PopupList pl = new PopupList(Display.getCurrent().getActiveShell());
-		List<String> srcOutModuleGateNames = getModuleGateNames(srcModule, GateNode.NED_GATETYPE_OUTPUT);
-		List<String> srcInOutModuleGateNames = getModuleGateNames(srcModule, GateNode.NED_GATETYPE_INOUT);
-		List<String> destInModuleGateNames = getModuleGateNames(destModule, GateNode.NED_GATETYPE_INPUT);
-		List<String> destInOutModuleGateNames = getModuleGateNames(srcModule, GateNode.NED_GATETYPE_INOUT);
+		List<GateNode> srcOutModuleGates = getModuleGates(srcModule, GateNode.NED_GATETYPE_OUTPUT);
+		List<GateNode> srcInOutModuleGates = getModuleGates(srcModule, GateNode.NED_GATETYPE_INOUT);
+		List<GateNode> destInModuleGates = getModuleGates(destModule, GateNode.NED_GATETYPE_INPUT);
+		List<GateNode> destInOutModuleGates = getModuleGates(srcModule, GateNode.NED_GATETYPE_INOUT);
 
+		BlockingMenu menu = new BlockingMenu(Display.getCurrent().getActiveShell(), SWT.NONE);
 		
-		
-		Menu menu = new Menu(Display.getCurrent().getActiveShell(), SWT.NONE);
-		for (String srcOut : srcOutModuleGateNames)
-			for(String destIn : destInModuleGateNames) {
-				MenuItem mi = new MenuItem(menu, SWT.PUSH);
-				mi.setText(srcOut+" --> "+destIn);
-				mi.addSelectionListener(new SelectionAdapter() {
-					public void widgetSelected(SelectionEvent e) {
-					}
-
-				});
+		for (GateNode srcOut : srcOutModuleGates)
+			for(GateNode destIn : destInModuleGates) {
+				MenuItem mi = menu.addMenuItem(SWT.PUSH);
+				// add the gate names to the menu item as additional widget data
+				ConnectionNodeEx conn = new ConnectionNodeEx();
+				// attach it to the src and dest modules
+				conn.setSrcModuleRef(srcModule);
+				conn.setDestModuleRef(destModule);
+				// set the possible gates
+				conn.setSrcGate(srcOut.getName());
+				conn.setDestGate(destIn.getName());
+				conn.setArrowDirection(ConnectionNode.NED_ARROWDIR_L2R);
+				// but remove from the model
+				conn.removeFromParent();
+				mi.setData(conn);
+				mi.setText(ModelUtil.generateNedSource(conn, false).trim());
 			}
 				
-		for (String srcInOut : srcInOutModuleGateNames)
-			for(String destInOut : destInOutModuleGateNames) {
-				MenuItem mi = new MenuItem(menu, SWT.PUSH);
-				mi.setText(srcInOut+" <--> "+destInOut);
-				mi.addSelectionListener(new SelectionAdapter() {
-					public void widgetSelected(SelectionEvent e) {
-					}
-
-				});
+		for (GateNode srcInOut : srcInOutModuleGates)
+			for(GateNode destInOut : destInOutModuleGates) {
+				MenuItem mi = menu.addMenuItem(SWT.PUSH);
+				// add the gate names to the menu item as additional widget data
+				ConnectionNodeEx conn = new ConnectionNodeEx();
+				// attach it to the src and dest modules
+				conn.setSrcModuleRef(srcModule);
+				conn.setDestModuleRef(destModule);
+				// set the possible gates
+				conn.setSrcGate(srcInOut.getName());
+				conn.setDestGate(destInOut.getName());
+				conn.setArrowDirection(ConnectionNode.NED_ARROWDIR_BIDIR);
+				// but remove from the model
+				conn.removeFromParent();
+				mi.setData(conn);
+				mi.setText(ModelUtil.generateNedSource(conn, false).trim());
 			}
 
-		// get the src and dest gatemenes from the selection
-		// just temportary testing
-		menu.setVisible(true);
-//		destGate = result;
-//		srcGate = result;
+		MenuItem selection = menu.open();
+		if (selection == null)
+			return null;
+
+		return (ConnectionNodeEx)selection.getData();
 	}
 
-	protected static List<String> getModuleGateNames(IConnectable module, int gateType) {
-		List<String> result = new ArrayList<String>();
+	protected static List<GateNode> getModuleGates(IConnectable module, int gateType) {
+		List<GateNode> result = new ArrayList<GateNode>();
 		
 		// the type is the compound module's name
 		// the gate type depends 
@@ -250,47 +274,9 @@ public class ConnectionCommand extends Command {
 		for(String s : comp.getGateNames()) {
 			GateNode currGate = (GateNode)comp.getMember(s);
 			if (currGate.getType() == gateType)
-				result.add(s);
+				result.add(currGate);
 		}
 
 		return result;
 	}
 }
-
-//protected void askForGates(boolean askForSrcGate, boolean askForDestGate) {
-//	// do not ask anything 
-//	if (!askForSrcGate && !askForDestGate)
-//		return;
-//	
-//	PopupList pl = new PopupList(Display.getCurrent().getActiveShell());
-//	List<String> srcOutModuleGateNames = getModuleGateNames(srcModule, GateNode.NED_GATETYPE_OUTPUT);
-//	List<String> srcInOutModuleGateNames = getModuleGateNames(srcModule, GateNode.NED_GATETYPE_INOUT);
-//	List<String> destInModuleGateNames = getModuleGateNames(destModule, GateNode.NED_GATETYPE_INPUT);
-//	List<String> destInOutModuleGateNames = getModuleGateNames(srcModule, GateNode.NED_GATETYPE_INOUT);
-//
-//	
-//	
-//	List<String> proposals = new ArrayList<String>();
-//	Menu menu = new Menu(Display.getCurrent().getActiveShell(), SWT.NONE);
-//	for (String srcOut : srcOutModuleGateNames)
-//		for(String destIn : destInModuleGateNames)
-//			proposals.add(srcOut+" --> "+destIn);
-//	
-//	for (String srcInOut : srcInOutModuleGateNames)
-//		for(String destInOut : destInOutModuleGateNames)
-//			proposals.add(srcInOut+" <--> "+destInOut);
-//		
-//	String gateNames[] = (String[]) proposals.toArray(new String[proposals.size()]);
-//	// TODO get the needed in/out connections from the resource parser
-//	// if both of them are requred create pairs
-//	// return only free gates
-//	pl.setItems(gateNames);
-//	pl.setMinimumWidth(200);
-//	Point pt = Display.getCurrent().getCursorLocation();
-//	String result = pl.open(new Rectangle(pt.x, pt.y, -1, -1));
-//
-//	// get the src and dest gatemenes from the selection
-//	// just temportary testing
-//	destGate = result;
-//	srcGate = result;
-//}
