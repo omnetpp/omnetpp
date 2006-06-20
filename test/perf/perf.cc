@@ -72,7 +72,6 @@ Define_Module(SelectNextModule_1);
 
 void SelectNextModule_1::activity()
 {
-    cQueue q;
     repCount = par("repCount");
 
     scheduleAt(0.0, new cMessage());
@@ -165,5 +164,42 @@ void Send_1::finish()
 {
     tmr.stop();
     ev << "T=" << 1000000*tmr.get()/repCount << " us per cycle\n";
+}
+
+//---------------
+
+class ScheduledEvents_1 : public cSimpleModule
+{
+  protected:
+    cPar *iaTime;
+    Timer tmr;
+  public:
+    virtual void initialize();
+    virtual void handleMessage(cMessage *msg);
+    virtual void finish();
+};
+
+Define_Module(ScheduledEvents_1);
+
+void ScheduledEvents_1::initialize()
+{
+    iaTime = &par("iaTime");
+    int n = par("numScheduledMsgs");
+    for (int i=0; i<n; i++)
+    	scheduleAt(iaTime->doubleValue(), new cMessage());
+
+    tmr.start();
+}
+
+void ScheduledEvents_1::handleMessage(cMessage *msg)
+{
+  	scheduleAt(simTime()+iaTime->doubleValue(), msg);
+}
+
+void ScheduledEvents_1::finish()
+{
+    tmr.stop();
+    double evPerSec = simulation.eventNumber() / tmr.get();
+    ev << evPerSec << " event/sec\n";
 }
 
