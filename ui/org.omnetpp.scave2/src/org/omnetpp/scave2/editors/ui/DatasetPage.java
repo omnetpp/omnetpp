@@ -1,10 +1,16 @@
 package org.omnetpp.scave2.editors.ui;
 
+import static org.omnetpp.scave2.model.DatasetType.HISTOGRAM;
 import static org.omnetpp.scave2.model.DatasetType.SCALAR;
 import static org.omnetpp.scave2.model.DatasetType.VECTOR;
-import static org.omnetpp.scave2.model.DatasetType.HISTOGRAM;
 
-import org.eclipse.jface.viewers.TableViewer;
+import org.eclipse.emf.common.notify.Notification;
+import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.edit.provider.IChangeNotifier;
+import org.eclipse.emf.edit.provider.INotifyChangedListener;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
+import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
@@ -13,7 +19,12 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.omnetpp.common.color.ColorFactory;
+import org.omnetpp.scave.engine.IDList;
+import org.omnetpp.scave.engine.ResultFileManager;
+import org.omnetpp.scave.engineext.IResultFilesChangeListener;
+import org.omnetpp.scave.engineext.ResultFileManagerEx;
 import org.omnetpp.scave.model.Dataset;
+import org.omnetpp.scave.model.DatasetItem;
 import org.omnetpp.scave2.actions.EditAction;
 import org.omnetpp.scave2.actions.GroupAction;
 import org.omnetpp.scave2.actions.NewAction;
@@ -21,18 +32,20 @@ import org.omnetpp.scave2.actions.OpenAction;
 import org.omnetpp.scave2.actions.RemoveAction;
 import org.omnetpp.scave2.actions.UngroupAction;
 import org.omnetpp.scave2.editors.ScaveEditor;
-import org.omnetpp.scave2.editors.tableproviders.DatasetScalarsViewProvider;
-import org.omnetpp.scave2.editors.tableproviders.DatasetVectorsViewProvider;
-import org.omnetpp.scave2.editors.tableproviders.InputsTableViewProvider;
+import org.omnetpp.scave2.editors.datatable.DataTable;
+import org.omnetpp.scave2.editors.datatable.FilteredDataPanel;
+import org.omnetpp.scave2.model.DatasetManager;
+import org.omnetpp.scave2.model.ScaveModelUtil;
 
+//FIXME close this page when dataset gets deleted
 public class DatasetPage extends ScaveEditorPage {
 
-	private Dataset dataset;
-
-	private Label label;
-	private SashForm sashform;
+	private Dataset dataset; //backref to the model object we operate on
 	private DatasetPanel datasetPanel;
-	private FilterPanel filterPanel;
+	private FilteredDataPanel filterPanel;
+	
+	private IResultFilesChangeListener resultFilesChangeListener;
+	private INotifyChangedListener modelChangeListener;
 	
 	public DatasetPage(Composite parent, ScaveEditor scaveEditor, Dataset dataset) {
 		super(parent, SWT.V_SCROLL | SWT.H_SCROLL, scaveEditor);
@@ -44,15 +57,12 @@ public class DatasetPage extends ScaveEditorPage {
 		return datasetPanel.getTreeViewer();
 	}
 	
-	public TableViewer getDatasetTableViewer() {
-		return filterPanel != null ? filterPanel.getTableViewer() : null;
-	}
-	
-	public FilterPanel getFilterPanel() {
+	public FilteredDataPanel getFilterPanel() {
 		return filterPanel;
 	}
 	
 	private void initialize() {
+		// set up UI
 		setPageTitle("Dataset: " + dataset.getName());
 		setFormTitle("Dataset: " + dataset.getName());
 		setExpandHorizontal(true);
@@ -60,30 +70,45 @@ public class DatasetPage extends ScaveEditorPage {
 		//setDelayedReflow(false);
 		setBackground(ColorFactory.asColor("white"));
 		getBody().setLayout(new GridLayout());
-		label = new Label(getBody(), SWT.NONE);
+		Label label = new Label(getBody(), SWT.NONE);
 		label.setBackground(getBackground());
 		label.setText("Here you can edit the dataset. " +
 	      "The dataset allows you to create a subset of the input data and work with it.");
 		label.setLayoutData(new GridData(GridData.GRAB_HORIZONTAL));
-		createSashForm();
-		createDatasetPanel();
-		createFilterPanel();
+		createFormContents();
 		
-		InputsTableViewProvider provider;
-		if (SCALAR.equals(dataset.getType()))
-			provider = new DatasetScalarsViewProvider(scaveEditor);
-		else if (VECTOR.equals(dataset.getType()))
-			provider = new DatasetVectorsViewProvider(scaveEditor);
-		else
-			throw new RuntimeException("invalid or unset dataset 'type' attribute: "+dataset.getType()); //XXX proper error handling
+		// configure dataset treeviewer
 		TreeViewer treeViewer = getDatasetTreeViewer();
-		FilterPanel filterPanel = getFilterPanel();
-		TableViewer tableViewer = getDatasetTableViewer();
 		scaveEditor.configureTreeViewer(treeViewer);
-		provider.configureFilterPanel(filterPanel, treeViewer);
 		treeViewer.setInput(dataset);
-		tableViewer.setInput(dataset);
 
+		// set up filtered data panel
+		filterPanel.setResultFileManager(scaveEditor.getResultFileManager());
+		updateDataTable();
+
+		// make the data table follow the treeviewer's selection
+		treeViewer.addPostSelectionChangedListener(new ISelectionChangedListener() {
+			public void selectionChanged(SelectionChangedEvent event) {
+				updateDataTable();
+			}
+		});
+		// update whenever files get loaded/unloaded
+		//XXX unregister listener when we get disposed
+		scaveEditor.getResultFileManager().addListener(resultFilesChangeListener = 
+			new IResultFilesChangeListener() {
+			public void resultFileManagerChanged(ResultFileManager manager) {
+				updateDataTable();
+			}
+		});
+		// update on model changes
+		//TODO try to limit notifications to relevant ones
+		IChangeNotifier notifier = (IChangeNotifier)scaveEditor.getAdapterFactory();
+		notifier.addListener(modelChangeListener = new INotifyChangedListener() {
+			public void notifyChanged(Notification notification) {
+				updateDataTable();
+			}
+		});
+		
 		// set up actions
 		configureViewerButton(
 				datasetPanel.getAddButton(),
@@ -109,26 +134,50 @@ public class DatasetPage extends ScaveEditorPage {
 				datasetPanel.getOpenChartButton(),
 				datasetPanel.getTreeViewer(), 
 				new OpenAction());
+		
+		
 	}
-	
-	private void createSashForm() {
-		sashform = new SashForm(getBody(), SWT.VERTICAL | SWT.SMOOTH);
+
+	@Override
+	public void dispose() {
+		// deregister listeners we hooked on external objects
+		scaveEditor.getResultFileManager().removeListener(resultFilesChangeListener);
+		IChangeNotifier notifier = (IChangeNotifier)scaveEditor.getAdapterFactory();
+		notifier.removeListener(modelChangeListener);
+
+		super.dispose();
+	}
+
+	protected void updateDataTable() {
+		TreeViewer treeViewer = getDatasetTreeViewer();
+		IStructuredSelection selection = (IStructuredSelection)treeViewer.getSelection(); // tree selection is always IStructuredSelection
+		Object selected = selection.getFirstElement();
+		if (selected instanceof EObject) {
+			Dataset dataset = ScaveModelUtil.findEnclosingObject((EObject)selected, Dataset.class);
+			DatasetItem item = ScaveModelUtil.findEnclosingObject((EObject)selected, DatasetItem.class);
+			if (dataset != null) {
+				ResultFileManagerEx manager = scaveEditor.getResultFileManager();
+				IDList idlist = DatasetManager.getIDListFromDataset(manager, dataset, item);
+				filterPanel.setIDList(idlist);
+			}
+		}
+	}
+
+	private void createFormContents() {
+		SashForm sashform = new SashForm(getBody(), SWT.VERTICAL | SWT.SMOOTH);
 		sashform.setBackground(this.getBackground());
 		sashform.setLayoutData(new GridData(GridData.GRAB_HORIZONTAL |
 											GridData.GRAB_VERTICAL |
 											GridData.FILL_BOTH));
-	}
-	
-	private void createDatasetPanel() {
+
+		// create dataset treeviewer with buttons
 		datasetPanel = new DatasetPanel(sashform, SWT.NONE);
-	}
-	
-	private void createFilterPanel() {
-		if (SCALAR.equals(dataset.getType()))
-			filterPanel = new ScalarsPanel(sashform, SWT.NONE);
-		else if (VECTOR.equals(dataset.getType()))
-			filterPanel = new VectorsPanel(sashform, SWT.NONE);
-		else if (HISTOGRAM.equals(dataset.getType()))
-			filterPanel = new ScalarsPanel(sashform, SWT.NONE);
+
+		// create data panel
+		int type = SCALAR.equals(dataset.getType()) ? DataTable.TYPE_SCALAR
+				 : VECTOR.equals(dataset.getType()) ? DataTable.TYPE_VECTOR
+				 : HISTOGRAM.equals(dataset.getType()) ? DataTable.TYPE_HISTOGRAM 
+				 : -1;
+		filterPanel = new FilteredDataPanel(sashform, SWT.NONE, type);
 	}
 }
