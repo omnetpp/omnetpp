@@ -44,8 +44,8 @@ public class DatasetPage extends ScaveEditorPage {
 	private DatasetPanel datasetPanel;
 	private FilteredDataPanel filterPanel;
 	
-	private IResultFilesChangeListener resultFilesChangeListener;
-	private INotifyChangedListener modelChangeListener;
+	private IResultFilesChangeListener resultFilesChangeListener; // we'll need to unhook on dispose()
+	private INotifyChangedListener modelChangeListener; // we'll need to unhook on dispose()
 	
 	public DatasetPage(Composite parent, ScaveEditor scaveEditor, Dataset dataset) {
 		super(parent, SWT.V_SCROLL | SWT.H_SCROLL, scaveEditor);
