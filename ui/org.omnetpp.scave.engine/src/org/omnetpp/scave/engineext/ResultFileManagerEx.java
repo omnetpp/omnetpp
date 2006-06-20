@@ -80,27 +80,27 @@ public class ResultFileManagerEx extends ResultFileManager {
 	}
 	
 	@Override
-	public IDList getAllScalars() {
+	public IDListEx getAllScalars() {
 		return wrap(super.getAllScalars());
 	}
 
 	@Override
-	public IDList getAllVectors() {
+	public IDListEx getAllVectors() {
 		return wrap(super.getAllVectors());
 	}
 
 	@Override
-	public IDList getDataInFile(File file) {
+	public IDListEx getDataInFile(File file) {
 		return wrap(super.getDataInFile(file));
 	}
 
 	@Override
-	public IDList getDataInRun(Run run) {
+	public IDListEx getDataInRun(Run run) {
 		return wrap(super.getDataInRun(run));
 	}
 
 	@Override
-	public IDList getFilteredList(IDList idlist, String fileAndRunFilter, String moduleFilter, String nameFilter) {
+	public IDListEx getFilteredList(IDList idlist, String fileAndRunFilter, String moduleFilter, String nameFilter) {
 		return wrap(super.getFilteredList(idlist, fileAndRunFilter, moduleFilter, nameFilter));
 	}
 }

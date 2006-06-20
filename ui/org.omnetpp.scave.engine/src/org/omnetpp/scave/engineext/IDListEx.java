@@ -145,7 +145,7 @@ public class IDListEx extends IDList {
 	}
 
 	@Override
-	public IDList dup() {
+	public IDListEx dup() {
 		return new IDListEx(super.dup()); // re-wrap into "Ex" class
 	}
 
