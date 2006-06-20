@@ -6,5 +6,6 @@ Bundle-Version: 4.0.0
 Bundle-Localization: plugin
 Bundle-Vendor: OpenSim Ltd.
 Bundle-ClassPath: .
-Export-Package: org.omnetpp.scave.engine
+Export-Package: org.omnetpp.scave.engine,
+ org.omnetpp.scave.engineext
 Eclipse-LazyStart: true

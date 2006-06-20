@@ -140,6 +140,9 @@ namespace std {
 };
 
 %typemap(javacode) IDList %{
+    public void swigDisown() {
+        swigCMemOwn = false;
+    }
     public Long[] toArray() {
         int sz = (int) size();
         Long[] array = new Long[sz];
