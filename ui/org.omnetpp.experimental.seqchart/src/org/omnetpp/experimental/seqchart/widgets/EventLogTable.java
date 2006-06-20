@@ -119,7 +119,7 @@ public class EventLogTable extends VirtualTableTreeBase implements ISelectionPro
 	 * Called back whenever a new table row gets exposed. 
 	 */
 	@Override
-	protected void configureTableItem(TableItem item, int lineNumber) {
+	protected void fillTableLine(TableItem item, int lineNumber) {
 		EventEntry event = eventLog.getEventByTableRowIndex(lineNumber);
 		if (event==null) {
 			item.setText(0, "null");

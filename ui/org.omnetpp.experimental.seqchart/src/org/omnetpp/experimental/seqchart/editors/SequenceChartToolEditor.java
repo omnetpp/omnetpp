@@ -51,10 +51,10 @@ import org.omnetpp.scave.engine.ModuleEntry;
 import org.omnetpp.scave.engine.Node;
 import org.omnetpp.scave.engine.NodeType;
 import org.omnetpp.scave.engine.NodeTypeRegistry;
-import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engine.StringMap;
 import org.omnetpp.scave.engine.VectorResult;
 import org.omnetpp.scave.engine.XYArray;
+import org.omnetpp.scave.engineext.ResultFileManagerEx;
 
 /**
  * Sequence chart display tool. (It is not actually an editor; it is only named so
@@ -73,7 +73,7 @@ public class SequenceChartToolEditor extends EditorPart implements INavigationLo
 	private ArrayList<ModuleTreeItem> axisModules; // which modules should have an axis
 	private int currentEventNumber = -1;
 	private EventLog filteredEventLog; // eventLog filtered for currentEventNumber
-	private ResultFileManager resultFileManager; 
+	private ResultFileManagerEx resultFileManager; 
 	private IDList idlist; // idlist of the loaded vector file
 	private XYArray[] stateVectors; // vector file loaded for the log file
 
@@ -116,7 +116,7 @@ public class SequenceChartToolEditor extends EditorPart implements INavigationLo
 	
 	private XYArray[] readVectorFile(String fileName)
 	{
-		resultFileManager = new ResultFileManager();
+		resultFileManager = new ResultFileManagerEx();
 		File file = resultFileManager.loadVectorFile(fileName);
 		idlist = resultFileManager.getDataInFile(file);
 		idlist = resultFileManager.getFilteredList(idlist, "*", "*", "State");

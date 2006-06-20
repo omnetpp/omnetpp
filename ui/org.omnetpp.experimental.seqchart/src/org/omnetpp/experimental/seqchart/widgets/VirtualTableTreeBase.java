@@ -44,7 +44,7 @@ public abstract class VirtualTableTreeBase extends Composite {
 			public void handleEvent(Event e) {
 				TableItem item = (TableItem)e.item;
 				int lineNumber = table.indexOf(item);
-				configureTableItem(item, lineNumber);
+				fillTableLine(item, lineNumber);
 			}
 		});
 	}
@@ -53,7 +53,7 @@ public abstract class VirtualTableTreeBase extends Composite {
 	 * Subclasses should define this to put table column data into item,
 	 * by calling item.setText(int column, String text), etc.
 	 */
-	protected abstract void configureTableItem(TableItem item, int lineNumber);
+	protected abstract void fillTableLine(TableItem item, int lineNumber);
 	
 	protected Table getTable() {
 		return table;
