@@ -15,6 +15,11 @@ import org.omnetpp.scave2.model.FilterParams;
  * Displays a data table of vectors/scalars/histograms with filter
  * comboboxes.
  * 
+ * This class is reusable, which means it only knows that it has to 
+ * display an IDList belonging to a particular ResultFileManager,
+ * and has absolutely no reference to the editor, or EMF model objects,
+ * or any widgets outside -- nothing.
+ * 
  * @author andras
  */
 public class FilteredDataPanel extends Composite {
