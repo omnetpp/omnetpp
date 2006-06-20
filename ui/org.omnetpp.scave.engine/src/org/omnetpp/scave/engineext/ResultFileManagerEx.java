@@ -31,7 +31,7 @@ public class ResultFileManagerEx extends ResultFileManager {
 	
 	protected void notifyListeners() {
 		for (IResultFilesChangeListener listener : listeners.toArray(new IResultFilesChangeListener[listeners.size()]))
-			listener.changed(this);
+			listener.resultFileManagerChanged(this);
 	}
 
 	@Override

@@ -10,24 +10,24 @@ import org.omnetpp.scave.engine.ResultFileManager;
  * @author andras
  */
 public class IDListEx extends IDList {
-	private ArrayList<IResultFilesChangeListener> listeners = new ArrayList<IResultFilesChangeListener>();
+	private ArrayList<IIDListChangeListener> listeners = new ArrayList<IIDListChangeListener>();
 
 	public IDListEx(IDList obj) {
 		super(IDList.getCPtr(obj), true);
 		obj.swigDisown();
 	}
 	
-	public void addListener(IResultFilesChangeListener listener) {
+	public void addListener(IIDListChangeListener listener) {
 		listeners.add(listener);
 	}
 
-	public void removeListener(IResultFilesChangeListener listener) {
+	public void removeListener(IIDListChangeListener listener) {
 		listeners.remove(listener);
 	}
 	
 	protected void notifyListeners() {
-		for (IResultFilesChangeListener listener : listeners.toArray(new IResultFilesChangeListener[listeners.size()]))
-			listener.changed(this);
+		for (IIDListChangeListener listener : listeners.toArray(new IIDListChangeListener[listeners.size()]))
+			listener.idlistChanged(this);
 	}
 
 	@Override
