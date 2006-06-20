@@ -9,7 +9,7 @@ import org.eclipse.ui.dialogs.ListDialog;
 import org.omnetpp.scave.model.Add;
 import org.omnetpp.scave.model.Dataset;
 import org.omnetpp.scave2.editors.ScaveEditor;
-import org.omnetpp.scave2.editors.ui.FilterPanel;
+import org.omnetpp.scave2.editors.datatable.FilteredDataPanel;
 import org.omnetpp.scave2.model.FilterParams;
 import org.omnetpp.scave2.model.ScaveModelUtil;
 
@@ -25,7 +25,7 @@ public class AddToDatasetAction extends AbstractScaveAction {
 
 	@Override
 	protected void doRun(ScaveEditor editor, IStructuredSelection selection) {
-		FilterPanel activePanel = editor.getBrowseDataPage().getActivePanel();
+		FilteredDataPanel activePanel = editor.getBrowseDataPage().getActivePanel();
 		//FIXME tomi: mi van ha activePanel==null???
 		ListDialog dialog = new ListDialog(editor.getSite().getShell());
 		dialog.setInput(editor.getAnalysis().getDatasets());

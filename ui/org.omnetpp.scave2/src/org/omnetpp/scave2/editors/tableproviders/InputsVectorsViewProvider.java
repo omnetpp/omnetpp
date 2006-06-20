@@ -12,8 +12,8 @@ import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.omnetpp.common.ui.TableLabelProvider;
 import org.omnetpp.scave.engine.File;
 import org.omnetpp.scave.engine.IDList;
-import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engine.VectorResult;
+import org.omnetpp.scave.engineext.ResultFileManagerEx;
 import org.omnetpp.scave2.editors.ScaveEditor;
 
 /**
@@ -30,7 +30,7 @@ public class InputsVectorsViewProvider extends InputsTableViewProvider {
 	public ContentProvider getContentProvider() {
 		return new ContentProvider() {
 			public IDList buildIDList(Object inputElement) {
-				ResultFileManager manager = editor.getResultFileManager();
+				ResultFileManagerEx manager = editor.getResultFileManager();
 				IDList idlist = new IDList();
 				for (File file : editor.getInputFiles()) {
 					if (file.getFileType() == File.VECTOR_FILE)

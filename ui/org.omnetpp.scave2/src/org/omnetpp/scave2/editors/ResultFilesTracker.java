@@ -16,7 +16,7 @@ import org.eclipse.core.runtime.content.IContentType;
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.edit.provider.INotifyChangedListener;
 import org.omnetpp.scave.engine.File;
-import org.omnetpp.scave.engine.ResultFileManager;
+import org.omnetpp.scave.engineext.ResultFileManagerEx;
 import org.omnetpp.scave.model.InputFile;
 import org.omnetpp.scave.model.Inputs;
 import org.omnetpp.scave2.ContentTypes;
@@ -31,7 +31,7 @@ import org.omnetpp.scave2.ContentTypes;
  */
 public class ResultFilesTracker implements INotifyChangedListener, IResourceChangeListener {
 
-	private ResultFileManager manager; //backreference to the manager it operates on
+	private ResultFileManagerEx manager; //backreference to the manager it operates on
 	private Inputs inputs; // backreference to the Inputs element we watch
 
 	/**
@@ -41,7 +41,7 @@ public class ResultFilesTracker implements INotifyChangedListener, IResourceChan
 	 */
 	private List<File> inputFiles = new ArrayList<File>();
 	
-	public ResultFilesTracker(ResultFileManager manager, Inputs inputs) {
+	public ResultFilesTracker(ResultFileManagerEx manager, Inputs inputs) {
 		this.manager = manager;
 		this.inputs = inputs;
 	}

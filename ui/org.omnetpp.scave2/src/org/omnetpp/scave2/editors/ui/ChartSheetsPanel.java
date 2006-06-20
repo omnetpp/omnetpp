@@ -1,14 +1,9 @@
 package org.omnetpp.scave2.editors.ui;
 
-import org.eclipse.jface.action.ActionContributionItem;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.widgets.FormToolkit;
-import org.omnetpp.scave2.actions.OpenAction;
-import org.omnetpp.scave2.editors.ScaveEditorContributor;
 
 public class ChartSheetsPanel extends TreeWithButtonsPanel {
 	

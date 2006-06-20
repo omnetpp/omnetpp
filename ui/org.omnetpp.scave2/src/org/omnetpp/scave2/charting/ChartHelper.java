@@ -5,24 +5,23 @@ import java.util.HashMap;
 import org.jfree.data.category.CategoryDataset;
 import org.jfree.data.category.DefaultCategoryDataset;
 import org.jfree.data.xy.XYDataset;
-
 import org.omnetpp.scave.engine.DataflowManager;
 import org.omnetpp.scave.engine.FileList;
 import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.engine.Node;
 import org.omnetpp.scave.engine.NodeType;
 import org.omnetpp.scave.engine.NodeTypeRegistry;
-import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engine.ScalarResult;
 import org.omnetpp.scave.engine.StringMap;
 import org.omnetpp.scave.engine.VectorResult;
 import org.omnetpp.scave.engine.XYArray;
+import org.omnetpp.scave.engineext.ResultFileManagerEx;
 
 public class ChartHelper {
 	/**
 	 * Convert an IDList to a JFreeChart CategoryDataset.
 	 */
-	public static CategoryDataset createChartWithRunsOnXAxis(IDList idlist, ResultFileManager manager) {
+	public static CategoryDataset createChartWithRunsOnXAxis(IDList idlist, ResultFileManagerEx manager) {
 		DefaultCategoryDataset ds = new DefaultCategoryDataset();
 
 		int sz = (int)idlist.size();
@@ -39,7 +38,7 @@ public class ChartHelper {
 	 * Produces JFreeChart dataset for a line chart from a series of
 	 * output vectors, by running the data-flow engine.
 	 */
-	private static XYArray[] executeDataflowNetwork(IDList vecs, ResultFileManager manager) {
+	private static XYArray[] executeDataflowNetwork(IDList vecs, ResultFileManagerEx manager) {
         // prepare
 		DataflowManager net = new DataflowManager();
 		NodeTypeRegistry factory = NodeTypeRegistry.instance();
@@ -100,7 +99,7 @@ public class ChartHelper {
 		return array;
 	}
 
-	public static XYDataset createXYDataSet(IDList vecs, ResultFileManager manager) {
+	public static XYDataset createXYDataSet(IDList vecs, ResultFileManagerEx manager) {
 		XYArray[] array = executeDataflowNetwork(vecs, manager);
 		return new OutputVectorDataset(array);
 	}

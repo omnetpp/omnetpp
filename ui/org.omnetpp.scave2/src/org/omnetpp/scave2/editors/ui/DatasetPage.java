@@ -2,6 +2,7 @@ package org.omnetpp.scave2.editors.ui;
 
 import static org.omnetpp.scave2.model.DatasetType.SCALAR;
 import static org.omnetpp.scave2.model.DatasetType.VECTOR;
+import static org.omnetpp.scave2.model.DatasetType.HISTOGRAM;
 
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TreeViewer;
@@ -27,7 +28,6 @@ import org.omnetpp.scave2.editors.tableproviders.InputsTableViewProvider;
 public class DatasetPage extends ScaveEditorPage {
 
 	private Dataset dataset;
-	private String type; //XXX out! "vector","scalar" or "histogram"
 
 	private Label label;
 	private SashForm sashform;
@@ -37,7 +37,6 @@ public class DatasetPage extends ScaveEditorPage {
 	public DatasetPage(Composite parent, ScaveEditor scaveEditor, Dataset dataset) {
 		super(parent, SWT.V_SCROLL | SWT.H_SCROLL, scaveEditor);
 		this.dataset = dataset;
-		this.type = dataset.getType(); //XXX out!
 		initialize();
 	}
 	
@@ -125,11 +124,11 @@ public class DatasetPage extends ScaveEditorPage {
 	}
 	
 	private void createFilterPanel() {
-		if (SCALAR.equals(type))
+		if (SCALAR.equals(dataset.getType()))
 			filterPanel = new ScalarsPanel(sashform, SWT.NONE);
-		else if (VECTOR.equals(type))
+		else if (VECTOR.equals(dataset.getType()))
 			filterPanel = new VectorsPanel(sashform, SWT.NONE);
-		else
+		else if (HISTOGRAM.equals(dataset.getType()))
 			filterPanel = new ScalarsPanel(sashform, SWT.NONE);
 	}
 }

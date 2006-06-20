@@ -1,5 +1,9 @@
 package org.omnetpp.scave2.charting;
 
+import static org.omnetpp.scave2.model.DatasetType.HISTOGRAM;
+import static org.omnetpp.scave2.model.DatasetType.SCALAR;
+import static org.omnetpp.scave2.model.DatasetType.VECTOR;
+
 import java.awt.Color;
 
 import org.eclipse.swt.SWT;
@@ -21,15 +25,14 @@ import org.jfree.data.xy.XYSeriesCollection;
 import org.jfree.ui.RectangleEdge;
 import org.jfree.ui.RectangleInsets;
 import org.omnetpp.scave.engine.IDList;
-import org.omnetpp.scave.engine.ResultFileManager;
-import static org.omnetpp.scave2.model.DatasetType.*;
+import org.omnetpp.scave.engineext.ResultFileManagerEx;
 
 /**
  * Factory for scalar and vector charts. 
  */
 public class ChartFactory {
 	
-	public static InteractiveChart createChart(Composite parent, String type, IDList idlist, ResultFileManager manager) {
+	public static InteractiveChart createChart(Composite parent, String type, IDList idlist, ResultFileManagerEx manager) {
 		if (SCALAR.equals(type))
 			return createScalarChart(parent, idlist, manager);
 		else if (VECTOR.equals(type))
@@ -41,7 +44,7 @@ public class ChartFactory {
 			throw new RuntimeException("invalid or unset dataset 'type' attribute: "+type); //XXX proper error handling
 	}
 
-	public static InteractiveChart createScalarChart(Composite parent, IDList idlist, ResultFileManager manager) {
+	public static InteractiveChart createScalarChart(Composite parent, IDList idlist, ResultFileManagerEx manager) {
 		InteractiveChart chart = new InteractiveChart(parent, SWT.NONE);
 		JFreeChart jfreechart = createEmptyScalarJFreeChart();
 		CategoryDataset dataset = ChartHelper.createChartWithRunsOnXAxis(idlist, manager);
@@ -52,7 +55,7 @@ public class ChartFactory {
 		return chart;
 	}
 	
-	public static InteractiveChart createVectorChart(Composite parent, IDList idlist, ResultFileManager manager) {
+	public static InteractiveChart createVectorChart(Composite parent, IDList idlist, ResultFileManagerEx manager) {
 		InteractiveChart chart = new InteractiveChart(parent, SWT.NONE);
 		JFreeChart jfreechart = createEmptyVectorJFreeChart();
 		XYDataset dataset = ChartHelper.createXYDataSet(idlist, manager);
@@ -63,7 +66,7 @@ public class ChartFactory {
 		return chart;
 	}
 	
-	public static InteractiveChart createHistogramChart(Composite parent, IDList idlist, ResultFileManager manager) {
+	public static InteractiveChart createHistogramChart(Composite parent, IDList idlist, ResultFileManagerEx manager) {
 		// TODO
 		return null;
 	}

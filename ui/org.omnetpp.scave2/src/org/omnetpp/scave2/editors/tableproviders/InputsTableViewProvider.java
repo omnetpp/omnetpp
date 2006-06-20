@@ -20,7 +20,7 @@ import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.omnetpp.scave.engine.IDList;
-import org.omnetpp.scave.engine.ResultFileManager;
+import org.omnetpp.scave.engineext.ResultFileManagerEx;
 import org.omnetpp.scave2.editors.ScaveEditor;
 import org.omnetpp.scave2.editors.ui.FilterPanel;
 import org.omnetpp.scave2.model.FilterParams;
@@ -56,7 +56,7 @@ public abstract class InputsTableViewProvider {
 		// when the table content changes, update the filter hints in combos
 		contentProvider.addContentChangeListener(new IContentChangeListener() {
 			public void contentChanged(IDList idlist) {
-				ResultFileManager manager = editor.getResultFileManager();
+				ResultFileManagerEx manager = editor.getResultFileManager();
 				filterPanel.getModuleNameCombo().setItems(manager.getModuleFilterHints(idlist).toArray());
 				filterPanel.getRunNameCombo().setItems(manager.getRunNameFilterHints(idlist).toArray());
 				filterPanel.getNameCombo().setItems(manager.getNameFilterHints(idlist).toArray());
@@ -224,7 +224,7 @@ public abstract class InputsTableViewProvider {
 				if (element instanceof Long)
 					idlist.add((Long)element);
 			
-			ResultFileManager manager = editor.getResultFileManager();
+			ResultFileManagerEx manager = editor.getResultFileManager();
 			idlist = manager.getFilteredList(idlist,
 					params.getRunNamePattern(), params.getModuleNamePattern(),
 					params.getDataNamePattern());

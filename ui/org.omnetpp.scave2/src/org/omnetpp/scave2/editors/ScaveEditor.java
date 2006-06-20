@@ -21,7 +21,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.omnetpp.scave.engine.File;
-import org.omnetpp.scave.engine.ResultFileManager;
+import org.omnetpp.scave.engineext.ResultFileManagerEx;
 import org.omnetpp.scave.model.Analysis;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.ChartSheet;
@@ -61,7 +61,7 @@ public class ScaveEditor extends AbstractEMFModelEditor {
 	/**
 	 *  ResultFileManager containing all files of the analysis. 
 	 */
-	private ResultFileManager manager = new ResultFileManager();
+	private ResultFileManagerEx manager = new ResultFileManagerEx();
 
 	/**
 	 * Loads/unloads result files in manager, according to changes in the model and in the workspace.
@@ -74,7 +74,7 @@ public class ScaveEditor extends AbstractEMFModelEditor {
 	public ScaveEditor() {
 	}
 	
-	public ResultFileManager getResultFileManager() {
+	public ResultFileManagerEx getResultFileManager() {
 		return manager;
 	}
 	

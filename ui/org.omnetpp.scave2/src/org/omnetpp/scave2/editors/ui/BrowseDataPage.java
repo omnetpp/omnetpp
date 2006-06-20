@@ -1,6 +1,5 @@
 package org.omnetpp.scave2.editors.ui;
 
-import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
@@ -12,15 +11,17 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
 import org.eclipse.ui.IWorkbenchWindow;
-import org.omnetpp.scave.model.Analysis;
+import org.omnetpp.scave.engine.IDList;
+import org.omnetpp.scave.engine.ResultFileManager;
+import org.omnetpp.scave.engineext.IResultFilesChangeListener;
+import org.omnetpp.scave.engineext.ResultFileManagerEx;
 import org.omnetpp.scave2.actions.AddToDatasetAction;
 import org.omnetpp.scave2.actions.CopyToClipboardAction;
 import org.omnetpp.scave2.actions.CreateChartAction;
 import org.omnetpp.scave2.actions.CreateDatasetAction;
 import org.omnetpp.scave2.editors.ScaveEditor;
-import org.omnetpp.scave2.editors.tableproviders.InputsScalarsViewProvider;
-import org.omnetpp.scave2.editors.tableproviders.InputsTableViewProvider;
-import org.omnetpp.scave2.editors.tableproviders.InputsVectorsViewProvider;
+import org.omnetpp.scave2.editors.datatable.DataTable;
+import org.omnetpp.scave2.editors.datatable.FilteredDataPanel;
 
 /**
  * This is the "Browse data" page of Scave Editor
@@ -38,39 +39,37 @@ public class BrowseDataPage extends ScaveEditorPage {
 	private Button createChartButton;
 	private Button copyToClipboardButton;
 	
-	private VectorsPanel vectorsPanel;
-	private ScalarsPanel scalarsPanel;
+	private FilteredDataPanel vectorsPanel;
+	private FilteredDataPanel scalarsPanel;
+	private FilteredDataPanel histogramsPanel;
 	
 	public BrowseDataPage(Composite parent, ScaveEditor editor) {
 		super(parent, SWT.V_SCROLL, editor);
 		initialize();
 	}
 	
-	public ScalarsPanel getScalarsPanel() {
+	public FilteredDataPanel getScalarsPanel() {
 		return scalarsPanel;
 	}
 	
-	public VectorsPanel getVectorsPanel() {
+	public FilteredDataPanel getVectorsPanel() {
 		return vectorsPanel;
 	}
 	
-	public FilterPanel getActivePanel() {
+	public FilteredDataPanel getHistogramsPanel() {
+		return histogramsPanel;
+	}
+	
+	public FilteredDataPanel getActivePanel() {
 		int index = tabfolder.getSelectionIndex();
 		if (index >= 0)
-			return (FilterPanel)tabfolder.getItem(index).getControl();
+			return (FilteredDataPanel)tabfolder.getItem(index).getControl();
 		else
 			return null;
 	}
 	
-	public TableViewer getScalarsTableViewer() {
-		return scalarsPanel.getTableViewer();
-	}
-	
-	public TableViewer getVectorsTableViewer() {
-		return vectorsPanel.getTableViewer();
-	}
-	
 	private void initialize() {
+		// set up UI
 		setPageTitle("Browse data");
 		setFormTitle("Browse data");
 		//setBackground(ColorFactory.asColor("white"));
@@ -83,12 +82,6 @@ public class BrowseDataPage extends ScaveEditorPage {
 		createTabFolder();
 		createButtonsPanel();
 		
-		// configure viewers
-		InputsTableViewProvider scalarsViewProvider = new InputsScalarsViewProvider(scaveEditor);
-		InputsTableViewProvider vectorsViewProvider = new InputsVectorsViewProvider(scaveEditor);
-		scalarsViewProvider.configureFilterPanel(getScalarsPanel());
-		vectorsViewProvider.configureFilterPanel(getVectorsPanel());
-		
 		// add actions
 		IWorkbenchWindow workbenchWindow = scaveEditor.getSite().getWorkbenchWindow();
 		configureGlobalButton(workbenchWindow, createDatasetButton, new CreateDatasetAction());
@@ -97,10 +90,21 @@ public class BrowseDataPage extends ScaveEditorPage {
 		configureGlobalButton(workbenchWindow, copyToClipboardButton, new CopyToClipboardAction());
 		
 		// set up contents
-		Analysis analysis = scaveEditor.getAnalysis();
-        getScalarsTableViewer().setInput(analysis.getInputs());
-        getVectorsTableViewer().setInput(analysis.getInputs());
+		ResultFileManagerEx manager = scaveEditor.getResultFileManager();
+		scalarsPanel.setResultFileManager(manager);
+		vectorsPanel.setResultFileManager(manager);
+		scalarsPanel.setIDList(manager.getAllScalars());
+		vectorsPanel.setIDList(manager.getAllVectors());
 		
+		// stay up to date
+		manager.addListener(new IResultFilesChangeListener() {
+			public void idlistChanged(IDList idlist) {
+			}
+			public void resultFileManagerChanged(ResultFileManager manager) {
+				scalarsPanel.setIDList(manager.getAllScalars());
+				vectorsPanel.setIDList(manager.getAllVectors());
+			}
+		});
 	}
 	
 	private void createTabFolder() {
@@ -109,28 +113,16 @@ public class BrowseDataPage extends ScaveEditorPage {
 		tabfolder.setLayoutData(new GridData(GridData.GRAB_HORIZONTAL |
 											  GridData.GRAB_VERTICAL |
 											  GridData.FILL_BOTH));
-		createPages();
-		tabfolder.setSelection(0);
-	}
-	
-	private void createPages() {
-		createVectorsPage();
-		createScalarsPage();
-		createHistogramsPage();
-	}
-	
-	private void createVectorsPage() {
-		vectorsPanel = new VectorsPanel(tabfolder, SWT.NONE);
+
+		// create pages
+		vectorsPanel = new FilteredDataPanel(tabfolder, SWT.NONE, DataTable.TYPE_VECTOR);
+		scalarsPanel = new FilteredDataPanel(tabfolder, SWT.NONE, DataTable.TYPE_SCALAR);
+		histogramsPanel = new FilteredDataPanel(tabfolder, SWT.NONE, DataTable.TYPE_HISTOGRAM);
 		addItem("Vectors", vectorsPanel);
-	}
-	
-	private void createScalarsPage() {
-		scalarsPanel = new ScalarsPanel(tabfolder, SWT.NONE);
 		addItem("Scalars", scalarsPanel);
-	}
-	
-	private void createHistogramsPage() {
-		addItem("Histograms", new ScalarsPanel(tabfolder, SWT.NONE));
+		addItem("Histograms", histogramsPanel);
+		
+		tabfolder.setSelection(0);
 	}
 	
 	private void addItem(String text, Control control) {

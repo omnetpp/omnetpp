@@ -5,7 +5,7 @@ import org.eclipse.emf.ecore.EObject;
 import org.omnetpp.scave.engine.DataflowManager;
 import org.omnetpp.scave.engine.FileList;
 import org.omnetpp.scave.engine.IDList;
-import org.omnetpp.scave.engine.ResultFileManager;
+import org.omnetpp.scave.engineext.ResultFileManagerEx;
 import org.omnetpp.scave.model.Add;
 import org.omnetpp.scave.model.Apply;
 import org.omnetpp.scave.model.Dataset;
@@ -33,7 +33,7 @@ public class DatasetManager {
 		}
 	}
 	
-	public static IDList getIDListFromDataset(ResultFileManager manager, Dataset dataset, DatasetItem lastProcessedItem) {
+	public static IDList getIDListFromDataset(ResultFileManagerEx manager, Dataset dataset, DatasetItem lastProcessedItem) {
 		ProcessDatasetSwitch processor = new ProcessDatasetSwitch(manager, lastProcessedItem);
 		DatasetContent content = (DatasetContent)processor.doSwitch(dataset);
 		return content != null ? content.idlist : new IDList();
@@ -42,12 +42,12 @@ public class DatasetManager {
 	
 	static class ProcessDatasetSwitch extends ScaveModelSwitch {
 		
-		ResultFileManager manager;
+		ResultFileManagerEx manager;
 		DatasetContent content;
 		EObject stopAfter;
 		boolean stopped;
 		
-		public ProcessDatasetSwitch(ResultFileManager manager, EObject stopAfter) {
+		public ProcessDatasetSwitch(ResultFileManagerEx manager, EObject stopAfter) {
 			this.manager = manager;
 			this.content = new DatasetContent();
 			this.stopAfter = stopAfter;

@@ -9,9 +9,9 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 import org.omnetpp.scave.engine.IDList;
-import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engine.ScalarResult;
 import org.omnetpp.scave.engine.VectorResult;
+import org.omnetpp.scave.engineext.ResultFileManagerEx;
 
 /**
  * This is a preconfigured VIRTUAL table, which displays a list of
@@ -22,7 +22,7 @@ import org.omnetpp.scave.engine.VectorResult;
  * performance degradation).
  * 
  * When the IDList changes, the table needs to be refreshed either
- * by a call to setIDList(), or by clearAll().
+ * by a call to setIDList(), or by refresh().
  *  
  * @author andras
  */
@@ -32,7 +32,7 @@ public class DataTable extends Table {
 	public static final int TYPE_HISTOGRAM = 2;
 
 	private int type;
-	private ResultFileManager manager;
+	private ResultFileManagerEx manager;
 	private IDList idlist;
 	
 	public DataTable(Composite parent, int style, int type) {
@@ -52,25 +52,40 @@ public class DataTable extends Table {
 		});
 	}
 
+	/**
+	 * Override the ban on subclassing of Table, after having read the doc of 
+	 * checkSubclass(). In this class we only build upon the public interface
+	 * of Table, so there can be no unwanted side effects. We prefer subclassing
+	 * to delegating all 1,000,000 Table methods to an internal Table instance.    
+	 */
+	@Override
+	protected void checkSubclass() {
+	}
+	
 	public int getType() {
 		return type;
 	}
 
-	public void setResultFileManager(ResultFileManager manager) {
+	public void setResultFileManager(ResultFileManagerEx manager) {
 		this.manager = manager;
 	}
 	
-	public ResultFileManager getResultFileManager() {
+	public ResultFileManagerEx getResultFileManager() {
 		return manager;
 	}
 
 	public void setIDList(IDList idlist) {
 		this.idlist = idlist;
-		clearAll(); // refresh
+		refresh();
 	}
 
 	public IDList getIDList() {
 		return idlist;
+	}
+
+	public void refresh() {
+		setItemCount((int)idlist.size());
+		clearAll();
 	}
 
 	protected void addColumns() {

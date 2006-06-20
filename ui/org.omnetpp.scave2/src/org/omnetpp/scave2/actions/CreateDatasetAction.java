@@ -6,7 +6,7 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.window.Window;
 import org.omnetpp.scave.model.Dataset;
 import org.omnetpp.scave2.editors.ScaveEditor;
-import org.omnetpp.scave2.editors.ui.FilterPanel;
+import org.omnetpp.scave2.editors.datatable.FilteredDataPanel;
 import org.omnetpp.scave2.model.FilterParams;
 import org.omnetpp.scave2.model.ScaveModelUtil;
 
@@ -18,7 +18,7 @@ public class CreateDatasetAction extends AbstractScaveAction {
 
 	@Override
 	protected void doRun(ScaveEditor editor, IStructuredSelection selection) {
-		FilterPanel activePanel = editor.getBrowseDataPage().getActivePanel();
+		FilteredDataPanel activePanel = editor.getBrowseDataPage().getActivePanel();
 
 		InputDialog dialog = new InputDialog(editor.getSite().getShell(),
 				"Create dataset", "Dataset name:", "", null);

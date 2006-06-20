@@ -8,7 +8,8 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.omnetpp.scave.engine.IDList;
-import org.omnetpp.scave.engine.ResultFileManager;
+import org.omnetpp.scave.engineext.ResultFileManagerEx;
+import org.omnetpp.scave2.model.FilterParams;
 
 /**
  * Displays a data table of vectors/scalars/histograms with filter
@@ -41,16 +42,15 @@ public class FilteredDataPanel extends Composite {
 		runFilter();
 	}
 
-
 	public IDList getIDList() {
 		return idlist;
 	}
 
-	public void setResultFileManager(ResultFileManager manager) {
+	public void setResultFileManager(ResultFileManagerEx manager) {
 		table.setResultFileManager(manager);
 	}
 
-	public ResultFileManager getResultFileManager() {
+	public ResultFileManagerEx getResultFileManager() {
 		return table.getResultFileManager();
 	}
 
@@ -67,7 +67,6 @@ public class FilteredDataPanel extends Composite {
 			public void widgetSelected(SelectionEvent e) {
 				runFilter();
 			}
-
 			public void widgetDefaultSelected(SelectionEvent e) {
 				runFilter();
 			}
@@ -81,7 +80,7 @@ public class FilteredDataPanel extends Composite {
 	}
 
 	protected void updateFilterCombos() {
-		ResultFileManager manager = table.getResultFileManager();
+		ResultFileManagerEx manager = table.getResultFileManager();
 		filterPanel.getModuleNameCombo().setItems(manager.getModuleFilterHints(idlist).toArray());
 		filterPanel.getRunNameCombo().setItems(manager.getRunNameFilterHints(idlist).toArray());
 		filterPanel.getNameCombo().setItems(manager.getNameFilterHints(idlist).toArray());
@@ -89,7 +88,7 @@ public class FilteredDataPanel extends Composite {
 
 	protected void runFilter() {
 		// run the filter on the unfiltered IDList, and set the result to the table
-		ResultFileManager manager = table.getResultFileManager();
+		ResultFileManagerEx manager = table.getResultFileManager();
 		String fileAndRunFilter = filterPanel.getRunNameCombo().getText();
 		String moduleFilter = filterPanel.getModuleNameCombo().getText();
 		String nameFilter = filterPanel.getNameCombo().getText();
@@ -98,5 +97,12 @@ public class FilteredDataPanel extends Composite {
 				fileAndRunFilter, moduleFilter, nameFilter);
 		
 		table.setIDList(filteredIDList);
+	}
+
+	public FilterParams getFilterParams() {
+		return new FilterParams(
+				filterPanel.getRunNameCombo().getText(),
+				filterPanel.getModuleNameCombo().getText(),
+				filterPanel.getNameCombo().getText());
 	}
 }

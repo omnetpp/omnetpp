@@ -24,7 +24,7 @@ public class GenericTreeNode {
 	 * @param payload may NOT be null
 	 */
 	public GenericTreeNode(GenericTreeNode parent, Object payload) {
-		//XXX this is shit!!!! does not add this node into parent's child list -- possible inconsistency!
+		//XXX not good: does not add this node into parent's child list -- possible inconsistency!
 		Assert.isTrue(payload!=null);
 		this.parent = parent;
 		this.payload = payload;
@@ -36,7 +36,7 @@ public class GenericTreeNode {
 	 * @param child may NOT be null
 	 */
 	public void addChild(GenericTreeNode child) {
-		//XXX shit shit shit!!! goes set child's parent field -- possible inconsistency!
+		//XXX doesn't set child's parent field -- possible inconsistency!
 		GenericTreeNode[] childrenNew = new GenericTreeNode[children.length + 1];
 		System.arraycopy(children, 0, childrenNew, 0, children.length);  //XXX potential bottleneck -- use ArrayList? (Andras)
 		children = childrenNew;
