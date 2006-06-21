@@ -203,3 +203,46 @@ void ScheduledEvents_1::finish()
     ev << evPerSec << " event/sec\n";
 }
 
+//---------------
+
+class ScheduleAndCancel_1 : public cSimpleModule
+{
+  protected:
+    cPar *iaTime;
+    Timer tmr;
+    int cancelsPerEvent;
+  public:
+    virtual void initialize();
+    virtual void handleMessage(cMessage *msg);
+    virtual void finish();
+};
+
+Define_Module(ScheduleAndCancel_1);
+
+void ScheduleAndCancel_1::initialize()
+{
+    iaTime = &par("iaTime");
+    cancelsPerEvent = par("cancelsPerEvent");
+    int n = par("numScheduledMsgs");
+    for (int i=0; i<n; i++)
+    	scheduleAt(iaTime->doubleValue(), new cMessage());
+
+    tmr.start();
+}
+
+void ScheduleAndCancel_1::handleMessage(cMessage *msg)
+{
+  	for (int i=0; i<cancelsPerEvent; i++) 
+	{
+             scheduleAt(simTime()+iaTime->doubleValue(), msg);
+	     cancelEvent(msg);
+        }
+  	scheduleAt(simTime()+iaTime->doubleValue(), msg);
+}
+
+void ScheduleAndCancel_1::finish()
+{
+    tmr.stop();
+    double evPerSec = simulation.eventNumber() / tmr.get();
+    ev << evPerSec << " event/sec\n";
+}
