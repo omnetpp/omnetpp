@@ -1,4 +1,4 @@
-package org.omnetpp.experimental.seqchart.widgets;
+package org.omnetpp.common.canvas;
 
 import java.util.ArrayList;
 
@@ -10,7 +10,7 @@ import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Composite;
-import org.omnetpp.experimental.seqchart.widgets.ITileCache.Tile;
+import org.omnetpp.common.canvas.ITileCache.Tile;
 
 /**
  * A scrollable canvas that supports caching of (part of) the drawing 

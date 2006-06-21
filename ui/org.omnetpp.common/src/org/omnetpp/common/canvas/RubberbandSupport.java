@@ -1,4 +1,4 @@
-package org.omnetpp.experimental.seqchart.widgets;
+package org.omnetpp.common.canvas;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseEvent;

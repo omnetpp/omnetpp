@@ -33,6 +33,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
+import org.omnetpp.common.canvas.CachingCanvas;
 import org.omnetpp.experimental.seqchart.editors.EventLogSelection;
 import org.omnetpp.experimental.seqchart.editors.IEventLogSelection;
 import org.omnetpp.experimental.seqchart.moduletree.ModuleTreeItem;

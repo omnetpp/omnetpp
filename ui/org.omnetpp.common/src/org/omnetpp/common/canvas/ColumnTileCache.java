@@ -1,4 +1,4 @@
-package org.omnetpp.experimental.seqchart.widgets;
+package org.omnetpp.common.canvas;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -4,6 +4,7 @@ import static org.omnetpp.scave2.model.DatasetType.HISTOGRAM;
 import static org.omnetpp.scave2.model.DatasetType.SCALAR;
 import static org.omnetpp.scave2.model.DatasetType.VECTOR;
 
+import org.eclipse.emf.common.notify.AdapterFactory;
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.edit.provider.IChangeNotifier;
@@ -25,6 +26,8 @@ import org.omnetpp.scave.engineext.IResultFilesChangeListener;
 import org.omnetpp.scave.engineext.ResultFileManagerEx;
 import org.omnetpp.scave.model.Dataset;
 import org.omnetpp.scave.model.DatasetItem;
+import org.omnetpp.scave.model.ScaveModelFactory;
+import org.omnetpp.scave.model.ScaveModelPackage;
 import org.omnetpp.scave2.actions.EditAction;
 import org.omnetpp.scave2.actions.GroupAction;
 import org.omnetpp.scave2.actions.NewAction;
@@ -108,6 +111,14 @@ public class DatasetPage extends ScaveEditorPage {
 				updateDataTable();
 			}
 		});
+
+		System.out.println("size: "+dataset.eAdapters().size());
+		dataset.eAdapters().add(0,new INotifyChangedListener() {
+			public void notifyChanged(Notification notification) {
+				System.out.println("PUTTY!");
+			}
+		});
+		
 		
 		// set up actions
 		configureViewerButton(
