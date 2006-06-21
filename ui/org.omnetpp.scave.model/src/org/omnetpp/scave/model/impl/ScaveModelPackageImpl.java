@@ -8,6 +8,7 @@ package org.omnetpp.scave.model.impl;
 
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EClass;
+import org.eclipse.emf.ecore.EEnum;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EReference;
 
@@ -22,6 +23,7 @@ import org.omnetpp.scave.model.ChartSheet;
 import org.omnetpp.scave.model.ChartSheets;
 import org.omnetpp.scave.model.Dataset;
 import org.omnetpp.scave.model.DatasetItem;
+import org.omnetpp.scave.model.DatasetType;
 import org.omnetpp.scave.model.Datasets;
 import org.omnetpp.scave.model.Deselect;
 import org.omnetpp.scave.model.Discard;
@@ -190,6 +192,13 @@ public class ScaveModelPackageImpl extends EPackageImpl implements ScaveModelPac
 	 * @generated
 	 */
 	private EClass inputFileEClass = null;
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	private EEnum datasetTypeEEnum = null;
 
 	/**
 	 * Creates an instance of the model <b>Package</b>, registered with
@@ -795,6 +804,15 @@ public class ScaveModelPackageImpl extends EPackageImpl implements ScaveModelPac
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	public EEnum getDatasetType() {
+		return datasetTypeEEnum;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
 	public ScaveModelFactory getScaveModelFactory() {
 		return (ScaveModelFactory)getEFactoryInstance();
 	}
@@ -897,6 +915,9 @@ public class ScaveModelPackageImpl extends EPackageImpl implements ScaveModelPac
 
 		inputFileEClass = createEClass(INPUT_FILE);
 		createEAttribute(inputFileEClass, INPUT_FILE__NAME);
+
+		// Create enums
+		datasetTypeEEnum = createEEnum(DATASET_TYPE);
 	}
 
 	/**
@@ -939,7 +960,7 @@ public class ScaveModelPackageImpl extends EPackageImpl implements ScaveModelPac
 		initEClass(datasetEClass, Dataset.class, "Dataset", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 		initEAttribute(getDataset_Name(), ecorePackage.getEString(), "name", null, 0, 1, Dataset.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEReference(getDataset_Items(), this.getDatasetItem(), null, "items", null, 0, -1, Dataset.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-		initEAttribute(getDataset_Type(), ecorePackage.getEString(), "type", null, 0, 1, Dataset.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEAttribute(getDataset_Type(), this.getDatasetType(), "type", null, 0, 1, Dataset.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEReference(getDataset_BasedOn(), this.getDataset(), null, "basedOn", null, 0, 1, Dataset.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		initEClass(chartEClass, Chart.class, "Chart", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
@@ -1015,6 +1036,12 @@ public class ScaveModelPackageImpl extends EPackageImpl implements ScaveModelPac
 
 		initEClass(inputFileEClass, InputFile.class, "InputFile", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 		initEAttribute(getInputFile_Name(), ecorePackage.getEString(), "name", null, 0, 1, InputFile.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+
+		// Initialize enums and add enum literals
+		initEEnum(datasetTypeEEnum, DatasetType.class, "DatasetType");
+		addEEnumLiteral(datasetTypeEEnum, DatasetType.SCALAR_LITERAL);
+		addEEnumLiteral(datasetTypeEEnum, DatasetType.VECTOR_LITERAL);
+		addEEnumLiteral(datasetTypeEEnum, DatasetType.HISTOGRAM_LITERAL);
 
 		// Create resource
 		createResource(eNS_URI);

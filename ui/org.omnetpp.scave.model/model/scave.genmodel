@@ -4,12 +4,17 @@
     xmlns:genmodel="http://www.eclipse.org/emf/2002/GenModel" modelDirectory="/org.omnetpp.scave.model/src"
     editDirectory="/org.omnetpp.scave.model/src" editorDirectory="/org.omnetpp.scave.model/src"
     modelPluginID="org.omnetpp.scave.model" modelName="Scave" editPluginClass="org.omnetpp.scave.model.provider.ScaveEditPlugin"
-    editorPluginClass="org.omnetpp.scave.model.presentation.ScaveEditorPlugin" testsDirectory="/org.omnetpp.scave.model/src"
-    testSuiteClass="org.omnetpp.scave.model.tests.ScaveAllTests" importerID="org.eclipse.emf.importer.ecore"
-    bundleManifest="false">
+    editorPluginClass="org.omnetpp.scave.model.presentation.ScaveEditorPlugin" rootImplementsInterface=""
+    testsDirectory="/org.omnetpp.scave.model/src" testSuiteClass="org.omnetpp.scave.model.tests.ScaveAllTests"
+    importerID="org.eclipse.emf.importer.ecore" bundleManifest="false">
   <foreignModel>scave.ecore</foreignModel>
   <genPackages prefix="ScaveModel" basePackage="org.omnetpp.scave" disposableProviderFactory="true"
       ecorePackage="scave.ecore#/">
+    <genEnums ecoreEnum="scave.ecore#//DatasetType">
+      <genEnumLiterals ecoreEnumLiteral="scave.ecore#//DatasetType/scalar"/>
+      <genEnumLiterals ecoreEnumLiteral="scave.ecore#//DatasetType/vector"/>
+      <genEnumLiterals ecoreEnumLiteral="scave.ecore#//DatasetType/histogram"/>
+    </genEnums>
     <genClasses ecoreClass="scave.ecore#//Dataset">
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute scave.ecore#//Dataset/name"/>
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference scave.ecore#//Dataset/items"/>
@@ -20,7 +25,6 @@
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute scave.ecore#//Chart/name"/>
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference scave.ecore#//Chart/filters"/>
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference scave.ecore#//Chart/properties"/>
-      <genFeatures notify="false" createChild="false" ecoreFeature="ecore:EReference scave.ecore#//Chart/containingSheet"/>
     </genClasses>
     <genClasses ecoreClass="scave.ecore#//Add">
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference scave.ecore#//Add/excepts"/>
@@ -60,6 +64,7 @@
     </genClasses>
     <genClasses ecoreClass="scave.ecore#//ChartSheet">
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute scave.ecore#//ChartSheet/name"/>
+      <genFeatures notify="false" createChild="false" ecoreFeature="ecore:EReference scave.ecore#//ChartSheet/charts"/>
     </genClasses>
     <genClasses ecoreClass="scave.ecore#//Analysis">
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference scave.ecore#//Analysis/inputs"/>
@@ -77,14 +82,14 @@
     <genClasses ecoreClass="scave.ecore#//Inputs">
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference scave.ecore#//Inputs/inputs"/>
     </genClasses>
-    <genClasses ecoreClass="scave.ecore#//Input">
-      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute scave.ecore#//Input/name"/>
-    </genClasses>
     <genClasses ecoreClass="scave.ecore#//ChartSheets">
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference scave.ecore#//ChartSheets/chartSheets"/>
     </genClasses>
     <genClasses ecoreClass="scave.ecore#//Datasets">
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference scave.ecore#//Datasets/datasets"/>
+    </genClasses>
+    <genClasses ecoreClass="scave.ecore#//InputFile">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute scave.ecore#//InputFile/name"/>
     </genClasses>
   </genPackages>
 </genmodel:GenModel>

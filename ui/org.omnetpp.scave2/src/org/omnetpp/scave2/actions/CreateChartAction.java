@@ -6,6 +6,7 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.window.Window;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.Dataset;
+import org.omnetpp.scave.model.DatasetType;
 import org.omnetpp.scave2.editors.ScaveEditor;
 import org.omnetpp.scave2.editors.datatable.FilteredDataPanel;
 import org.omnetpp.scave2.model.FilterParams;
@@ -29,8 +30,8 @@ public class CreateChartAction extends AbstractScaveAction {
 		int result = dialog.open();
 		if (result == Window.OK) {
 			String name = dialog.getValue();
-			String type = activePanel == editor.getBrowseDataPage().getScalarsPanel() ?
-					"scalar" : "vector";
+			DatasetType type = activePanel == editor.getBrowseDataPage().getScalarsPanel() ?
+					DatasetType.SCALAR_LITERAL : DatasetType.VECTOR_LITERAL; //XXX histogram
 			FilterParams params = activePanel.getFilterParams();
 			Dataset dataset = ScaveModelUtil.createDataset(name, type, params);
 			Chart chart = ScaveModelUtil.createChart("Chart of " + name);

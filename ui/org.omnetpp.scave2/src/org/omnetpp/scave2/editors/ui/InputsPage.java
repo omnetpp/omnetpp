@@ -118,7 +118,7 @@ public class InputsPage extends ScaveEditorPage {
 		inputFilesSection.setExpanded(true);
 		inputFilesSection.setLayoutData(gridData);
 		inputFilesSection.setText("Input files");
-		inputFilesSection.setDescription("Add or drag & drop result files (*.sca or *.vec) that should be used in this analysis.");
+		inputFilesSection.setDescription("Add or drag & drop result files (*.sca or *.vec) that should be used in this analysis. Wildcards (*,?) can also be used to specify multiple files.");
 		InputFilesPanel inputFilesPanel = new InputFilesPanel(inputFilesSection, SWT.NONE);
 		inputFilesSection.setClient(inputFilesPanel);
 

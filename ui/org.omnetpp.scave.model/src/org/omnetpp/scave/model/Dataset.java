@@ -74,6 +74,7 @@ public interface Dataset extends EObject {
 
 	/**
 	 * Returns the value of the '<em><b>Type</b></em>' attribute.
+	 * The literals are from the enumeration {@link org.omnetpp.scave.model.DatasetType}.
 	 * <!-- begin-user-doc -->
 	 * <p>
 	 * If the meaning of the '<em>Type</em>' attribute isn't clear,
@@ -81,22 +82,24 @@ public interface Dataset extends EObject {
 	 * </p>
 	 * <!-- end-user-doc -->
 	 * @return the value of the '<em>Type</em>' attribute.
-	 * @see #setType(String)
+	 * @see org.omnetpp.scave.model.DatasetType
+	 * @see #setType(DatasetType)
 	 * @see org.omnetpp.scave.model.ScaveModelPackage#getDataset_Type()
 	 * @model
 	 * @generated
 	 */
-	String getType();
+	DatasetType getType();
 
 	/**
 	 * Sets the value of the '{@link org.omnetpp.scave.model.Dataset#getType <em>Type</em>}' attribute.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @param value the new value of the '<em>Type</em>' attribute.
+	 * @see org.omnetpp.scave.model.DatasetType
 	 * @see #getType()
 	 * @generated
 	 */
-	void setType(String value);
+	void setType(DatasetType value);
 
 	/**
 	 * Returns the value of the '<em><b>Based On</b></em>' reference.

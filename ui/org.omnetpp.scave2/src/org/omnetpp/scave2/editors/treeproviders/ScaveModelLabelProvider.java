@@ -56,7 +56,7 @@ public class ScaveModelLabelProvider extends LabelProvider {
 		} 
 		else if (element instanceof Dataset) {
 			Dataset o = (Dataset) element;
-			String res = fallback(o.getType(),"")+" dataset "+fallback(o.getName(),"<unnamed>");
+			String res = (o.getType()==null ? "" : o.getType().getName())+" dataset "+fallback(o.getName(),"<unnamed>");
 			if (o.getBasedOn()!=null)
 				res += " based on dataset "+fallback(o.getBasedOn().getName(),"<unnamed>");
 			return res;

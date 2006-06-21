@@ -4,6 +4,7 @@ import org.eclipse.emf.ecore.EObject;
 import org.omnetpp.scave.model.Add;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.Dataset;
+import org.omnetpp.scave.model.DatasetType;
 import org.omnetpp.scave.model.ScaveModelFactory;
 
 /**
@@ -12,7 +13,7 @@ import org.omnetpp.scave.model.ScaveModelFactory;
  */
 public class ScaveModelUtil {
 	
-	public static Dataset createDataset(String name, String type, FilterParams params) {
+	public static Dataset createDataset(String name, DatasetType type, FilterParams params) {
 		Dataset dataset = ScaveModelFactory.eINSTANCE.createDataset();
 		dataset.setName(name);
 		dataset.setType(type);

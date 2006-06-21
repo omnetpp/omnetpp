@@ -24,6 +24,7 @@ import org.eclipse.emf.ecore.util.InternalEList;
 
 import org.omnetpp.scave.model.Dataset;
 import org.omnetpp.scave.model.DatasetItem;
+import org.omnetpp.scave.model.DatasetType;
 import org.omnetpp.scave.model.ScaveModelPackage;
 
 /**
@@ -81,7 +82,7 @@ public class DatasetImpl extends EObjectImpl implements Dataset {
 	 * @generated
 	 * @ordered
 	 */
-	protected static final String TYPE_EDEFAULT = null;
+	protected static final DatasetType TYPE_EDEFAULT = DatasetType.SCALAR_LITERAL;
 
 	/**
 	 * The cached value of the '{@link #getType() <em>Type</em>}' attribute.
@@ -91,7 +92,7 @@ public class DatasetImpl extends EObjectImpl implements Dataset {
 	 * @generated
 	 * @ordered
 	 */
-	protected String type = TYPE_EDEFAULT;
+	protected DatasetType type = TYPE_EDEFAULT;
 
 	/**
 	 * The cached value of the '{@link #getBasedOn() <em>Based On</em>}' reference.
@@ -159,7 +160,7 @@ public class DatasetImpl extends EObjectImpl implements Dataset {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public String getType() {
+	public DatasetType getType() {
 		return type;
 	}
 
@@ -168,9 +169,9 @@ public class DatasetImpl extends EObjectImpl implements Dataset {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public void setType(String newType) {
-		String oldType = type;
-		type = newType;
+	public void setType(DatasetType newType) {
+		DatasetType oldType = type;
+		type = newType == null ? TYPE_EDEFAULT : newType;
 		if (eNotificationRequired())
 			eNotify(new ENotificationImpl(this, Notification.SET, ScaveModelPackage.DATASET__TYPE, oldType, type));
 	}
@@ -261,7 +262,7 @@ public class DatasetImpl extends EObjectImpl implements Dataset {
 				getItems().addAll((Collection)newValue);
 				return;
 			case ScaveModelPackage.DATASET__TYPE:
-				setType((String)newValue);
+				setType((DatasetType)newValue);
 				return;
 			case ScaveModelPackage.DATASET__BASED_ON:
 				setBasedOn((Dataset)newValue);
@@ -305,7 +306,7 @@ public class DatasetImpl extends EObjectImpl implements Dataset {
 			case ScaveModelPackage.DATASET__ITEMS:
 				return items != null && !items.isEmpty();
 			case ScaveModelPackage.DATASET__TYPE:
-				return TYPE_EDEFAULT == null ? type != null : !TYPE_EDEFAULT.equals(type);
+				return type != TYPE_EDEFAULT;
 			case ScaveModelPackage.DATASET__BASED_ON:
 				return basedOn != null;
 		}

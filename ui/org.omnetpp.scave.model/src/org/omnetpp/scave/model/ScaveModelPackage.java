@@ -8,6 +8,7 @@ package org.omnetpp.scave.model;
 
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EClass;
+import org.eclipse.emf.ecore.EEnum;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EReference;
 
@@ -41,7 +42,7 @@ public interface ScaveModelPackage extends EPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	String eNS_URI = "null";
+	String eNS_URI = "http://www.omnetpp.org/omnetpp/scave";
 
 	/**
 	 * The package namespace name.
@@ -49,7 +50,7 @@ public interface ScaveModelPackage extends EPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	String eNS_PREFIX = "null";
+	String eNS_PREFIX = "scave";
 
 	/**
 	 * The singleton instance of the package.
@@ -1369,6 +1370,17 @@ public interface ScaveModelPackage extends EPackage {
 
 
 	/**
+	 * The meta object id for the '{@link org.omnetpp.scave.model.DatasetType <em>Dataset Type</em>}' enum.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see org.omnetpp.scave.model.DatasetType
+	 * @see org.omnetpp.scave.model.impl.ScaveModelPackageImpl#getDatasetType()
+	 * @generated
+	 */
+	int DATASET_TYPE = 21;
+
+
+	/**
 	 * Returns the meta object for class '{@link org.omnetpp.scave.model.Dataset <em>Dataset</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -1997,6 +2009,16 @@ public interface ScaveModelPackage extends EPackage {
 	EAttribute getInputFile_Name();
 
 	/**
+	 * Returns the meta object for enum '{@link org.omnetpp.scave.model.DatasetType <em>Dataset Type</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for enum '<em>Dataset Type</em>'.
+	 * @see org.omnetpp.scave.model.DatasetType
+	 * @generated
+	 */
+	EEnum getDatasetType();
+
+	/**
 	 * Returns the factory that creates the instances of the model.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -2531,6 +2553,16 @@ public interface ScaveModelPackage extends EPackage {
 		 * @generated
 		 */
 		EAttribute INPUT_FILE__NAME = eINSTANCE.getInputFile_Name();
+
+		/**
+		 * The meta object literal for the '{@link org.omnetpp.scave.model.DatasetType <em>Dataset Type</em>}' enum.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @see org.omnetpp.scave.model.DatasetType
+		 * @see org.omnetpp.scave.model.impl.ScaveModelPackageImpl#getDatasetType()
+		 * @generated
+		 */
+		EEnum DATASET_TYPE = eINSTANCE.getDatasetType();
 
 	}
 

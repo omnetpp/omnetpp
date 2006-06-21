@@ -8,6 +8,7 @@ import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.Dataset;
+import org.omnetpp.scave.model.DatasetType;
 import org.omnetpp.scave2.charting.ChartFactory;
 import org.omnetpp.scave2.editors.ScaveEditor;
 import org.omnetpp.scave2.model.DatasetManager;
@@ -44,7 +45,7 @@ public class ChartPage extends ScaveEditorPage {
 		Composite parent = getChartComposite();
 		Dataset dataset = ScaveModelUtil.findEnclosingObject(chart, Dataset.class);
 		IDList idlist = DatasetManager.getIDListFromDataset(scaveEditor.getResultFileManager(), dataset, chart);
-		String type = dataset.getType();
+		DatasetType type = dataset.getType();
 		setChart(ChartFactory.createChart(parent, type, idlist, scaveEditor.getResultFileManager()));
 	}
 }

@@ -74,9 +74,10 @@ public class DatasetPage extends ScaveEditorPage {
 		setBackground(ColorFactory.asColor("white"));
 		getBody().setLayout(new GridLayout());
 		Label label = new Label(getBody(), SWT.NONE);
-		label.setBackground(getBackground());
+		label.setBackground(getBackground()); //XXX make it wrap
 		label.setText("Here you can edit the dataset. " +
-	      "The dataset allows you to create a subset of the input data and work with it.");
+	      "The dataset allows you to create a subset of the input data and work with it. "+
+	      "Datasets may include processing steps, and one dataset can serve as input for another.");
 		label.setLayoutData(new GridData(GridData.GRAB_HORIZONTAL));
 		createFormContents();
 		

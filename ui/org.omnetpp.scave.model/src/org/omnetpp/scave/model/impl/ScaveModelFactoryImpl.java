@@ -7,6 +7,7 @@
 package org.omnetpp.scave.model.impl;
 
 import org.eclipse.emf.ecore.EClass;
+import org.eclipse.emf.ecore.EDataType;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EPackage;
 
@@ -31,7 +32,7 @@ public class ScaveModelFactoryImpl extends EFactoryImpl implements ScaveModelFac
 	 */
 	public static ScaveModelFactory init() {
 		try {
-			ScaveModelFactory theScaveModelFactory = (ScaveModelFactory)EPackage.Registry.INSTANCE.getEFactory("null"); 
+			ScaveModelFactory theScaveModelFactory = (ScaveModelFactory)EPackage.Registry.INSTANCE.getEFactory("http://www.omnetpp.org/omnetpp/scave"); 
 			if (theScaveModelFactory != null) {
 				return theScaveModelFactory;
 			}
@@ -78,6 +79,34 @@ public class ScaveModelFactoryImpl extends EFactoryImpl implements ScaveModelFac
 			case ScaveModelPackage.INPUT_FILE: return createInputFile();
 			default:
 				throw new IllegalArgumentException("The class '" + eClass.getName() + "' is not a valid classifier");
+		}
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public Object createFromString(EDataType eDataType, String initialValue) {
+		switch (eDataType.getClassifierID()) {
+			case ScaveModelPackage.DATASET_TYPE:
+				return createDatasetTypeFromString(eDataType, initialValue);
+			default:
+				throw new IllegalArgumentException("The datatype '" + eDataType.getName() + "' is not a valid classifier");
+		}
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public String convertToString(EDataType eDataType, Object instanceValue) {
+		switch (eDataType.getClassifierID()) {
+			case ScaveModelPackage.DATASET_TYPE:
+				return convertDatasetTypeToString(eDataType, instanceValue);
+			default:
+				throw new IllegalArgumentException("The datatype '" + eDataType.getName() + "' is not a valid classifier");
 		}
 	}
 
@@ -249,6 +278,26 @@ public class ScaveModelFactoryImpl extends EFactoryImpl implements ScaveModelFac
 	public InputFile createInputFile() {
 		InputFileImpl inputFile = new InputFileImpl();
 		return inputFile;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public DatasetType createDatasetTypeFromString(EDataType eDataType, String initialValue) {
+		DatasetType result = DatasetType.get(initialValue);
+		if (result == null) throw new IllegalArgumentException("The value '" + initialValue + "' is not a valid enumerator of '" + eDataType.getName() + "'");
+		return result;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public String convertDatasetTypeToString(EDataType eDataType, Object instanceValue) {
+		return instanceValue == null ? null : instanceValue.toString();
 	}
 
 	/**

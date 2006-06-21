@@ -580,6 +580,35 @@
     <element xmi:type="ecore:EClass" href="scave.ecore#//Datasets"/>
     <layoutConstraint xmi:type="notation:Bounds" xmi:id="_iWbkcuZDEdqeaYd94rfFJQ" x="384" y="60"/>
   </children>
+  <children xmi:type="notation:Node" xmi:id="_zACqIAFiEduQ59r7ilSaTA" type="1005">
+    <children xmi:type="notation:Node" xmi:id="_zACqIwFiEduQ59r7ilSaTA" type="4014"/>
+    <children xmi:type="notation:Node" xmi:id="_zAIwwAFiEduQ59r7ilSaTA" type="5011">
+      <styles xmi:type="notation:DrawerStyle" xmi:id="_zAIwwQFiEduQ59r7ilSaTA"/>
+      <styles xmi:type="notation:TitleStyle" xmi:id="_zAIwwgFiEduQ59r7ilSaTA"/>
+      <styles xmi:type="notation:SortingStyle" xmi:id="_zAIwwwFiEduQ59r7ilSaTA"/>
+      <styles xmi:type="notation:FilteringStyle" xmi:id="_zAIwxAFiEduQ59r7ilSaTA"/>
+    </children>
+    <children xmi:type="notation:Node" xmi:id="_zAIwxQFiEduQ59r7ilSaTA" type="5012">
+      <styles xmi:type="notation:DrawerStyle" xmi:id="_zAIwxgFiEduQ59r7ilSaTA"/>
+      <styles xmi:type="notation:TitleStyle" xmi:id="_zAIwxwFiEduQ59r7ilSaTA"/>
+      <styles xmi:type="notation:SortingStyle" xmi:id="_zAIwyAFiEduQ59r7ilSaTA"/>
+      <styles xmi:type="notation:FilteringStyle" xmi:id="_zAIwyQFiEduQ59r7ilSaTA"/>
+    </children>
+    <styles xmi:type="notation:ShapeStyle" xmi:id="_zACqIQFiEduQ59r7ilSaTA"/>
+    <element xmi:type="ecore:EEnum" href="scave.ecore#//DatasetType"/>
+    <layoutConstraint xmi:type="notation:Bounds" xmi:id="_zACqIgFiEduQ59r7ilSaTA"/>
+  </children>
+  <children xmi:type="notation:Node" xmi:id="_5hBD0AFiEduQ59r7ilSaTA" type="Note">
+    <children xmi:type="notation:Node" xmi:id="_5hHKcAFiEduQ59r7ilSaTA" type="DiagramName">
+      <element xsi:nil="true"/>
+    </children>
+    <children xmi:type="notation:Node" xmi:id="_5hHKcQFiEduQ59r7ilSaTA" type="Description">
+      <element xsi:nil="true"/>
+    </children>
+    <styles xmi:type="notation:ShapeStyle" xmi:id="_5hBD0QFiEduQ59r7ilSaTA" description="add &quot;Compute&quot; element too" fillColor="13369343" lineColor="6737151"/>
+    <element xsi:nil="true"/>
+    <layoutConstraint xmi:type="notation:Bounds" xmi:id="_5hBD0gFiEduQ59r7ilSaTA" x="432" y="600" width="97"/>
+  </children>
   <styles xmi:type="notation:DiagramStyle" xmi:id="_OLg14eBGEdqGIqWRmKIpGw"/>
   <element xmi:type="ecore:EPackage" href="scave.ecore#/"/>
   <edges xmi:type="notation:Edge" xmi:id="_ivUc0OElEdqDCuPsfR1pRA" type="3004" source="_OMd4IOBGEdqGIqWRmKIpGw" target="_MCNywOElEdqDCuPsfR1pRA">

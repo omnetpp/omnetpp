@@ -1,9 +1,5 @@
 package org.omnetpp.scave2.charting;
 
-import static org.omnetpp.scave2.model.DatasetType.HISTOGRAM;
-import static org.omnetpp.scave2.model.DatasetType.SCALAR;
-import static org.omnetpp.scave2.model.DatasetType.VECTOR;
-
 import java.awt.Color;
 
 import org.eclipse.swt.SWT;
@@ -26,18 +22,19 @@ import org.jfree.ui.RectangleEdge;
 import org.jfree.ui.RectangleInsets;
 import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.engineext.ResultFileManagerEx;
+import org.omnetpp.scave.model.DatasetType;
 
 /**
  * Factory for scalar and vector charts. 
  */
 public class ChartFactory {
 	
-	public static InteractiveChart createChart(Composite parent, String type, IDList idlist, ResultFileManagerEx manager) {
-		if (SCALAR.equals(type))
+	public static InteractiveChart createChart(Composite parent, DatasetType type, IDList idlist, ResultFileManagerEx manager) {
+		if (type == DatasetType.SCALAR_LITERAL)
 			return createScalarChart(parent, idlist, manager);
-		else if (VECTOR.equals(type))
+		else if (type == DatasetType.VECTOR_LITERAL)
 			return createVectorChart(parent, idlist, manager);
-		else if (HISTOGRAM.equals(type))
+		else if (type == DatasetType.HISTOGRAM_LITERAL)
 			return createHistogramChart(parent, idlist, manager);
 		else
 			//XXX tomi! ha if-letra van, mindig legyen "else" ag a vegen!!!!! (Andras)
