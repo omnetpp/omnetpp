@@ -111,14 +111,6 @@ public class DatasetPage extends ScaveEditorPage {
 				updateDataTable();
 			}
 		});
-
-		System.out.println("size: "+dataset.eAdapters().size());
-		dataset.eAdapters().add(0,new INotifyChangedListener() {
-			public void notifyChanged(Notification notification) {
-				System.out.println("PUTTY!");
-			}
-		});
-		
 		
 		// set up actions
 		configureViewerButton(
