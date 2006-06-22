@@ -21,6 +21,8 @@ import org.eclipse.gef.tools.MarqueeSelectionTool;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.omnetpp.common.image.ImageFactory;
+import org.omnetpp.ned.editor.graph.misc.NedConnectionCreationTool;
+import org.omnetpp.ned.editor.graph.misc.NedSelectionTool;
 import org.omnetpp.ned.editor.graph.properties.NedPropertySourceAdapterFactory;
 import org.omnetpp.ned2.model.CompoundModuleNodeEx;
 import org.omnetpp.ned2.model.ConnectionNodeEx;
@@ -76,6 +78,7 @@ public class GraphicalNedEditorPlugin extends AbstractUIPlugin {
         List<PaletteEntry> entries = new ArrayList<PaletteEntry>();
 
         ToolEntry tool = new PanningSelectionToolEntry();
+        tool.setToolClass(NedSelectionTool.class);
         entries.add(tool);
         root.setDefaultEntry(tool);
 
@@ -100,7 +103,10 @@ public class GraphicalNedEditorPlugin extends AbstractUIPlugin {
                 ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_CONNECTION),
                 ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_CONNECTION,"l", null, 24)//$NON-NLS-1$
         );
+        // sets the required connection tool
+        tool.setToolClass(NedConnectionCreationTool.class);
         entries.add(tool);
+        
         controlGroup.addAll(entries);
         return controlGroup;
     }

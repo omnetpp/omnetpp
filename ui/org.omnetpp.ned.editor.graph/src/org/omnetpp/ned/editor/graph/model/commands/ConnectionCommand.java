@@ -33,15 +33,13 @@ import org.omnetpp.resources.NEDResourcesPlugin;
 public class ConnectionCommand extends Command {
 
 	protected IConnectable oldSrcModule;
-    protected String oldSrcGate;
-    protected IConnectable oldDestModule;
-    protected String oldDestGate;
+	protected IConnectable oldDestModule;
+	protected ConnectionNode oldConn = new ConnectionNode();
+    
     protected IConnectable srcModule;
-    protected String srcGate;
     protected IConnectable destModule;
-    protected String destGate;
-    protected int oldDirection;
-    protected int direction = ConnectionNode.NED_ARROWDIR_L2R;
+	protected ConnectionNode newConn = new ConnectionNode();
+	// connection model to be changed
     protected ConnectionNodeEx connNode;
     protected ConnectionNodeEx connNodeNextSibling = null;
     protected IConnectionContainer parent = null;
@@ -61,9 +59,9 @@ public class ConnectionCommand extends Command {
         connNode = conn;
         oldSrcModule = connNode.getSrcModuleRef();
         oldDestModule = connNode.getDestModuleRef();
-        oldSrcGate = connNode.getSrcGate();
-        oldDestGate = connNode.getDestGate();
-        oldDirection = connNode.getArrowDirection();
+        oldConn = (ConnectionNode)connNode.dup(null);
+        newConn = (ConnectionNode)connNode.dup(null);
+
     }
     /**
      * Handles which module can be connected to which
@@ -102,12 +100,10 @@ public class ConnectionCommand extends Command {
     	// after we connected the modules, let's ask the user which gates should be connected
     	if(srcModule != null || destModule != null) {
     		// ask the user for ser and dest gate names
-    		ConnectionNode tempConn = ConnectionChooser.askForTemplateConnection(srcModule, destModule);
+    		ConnectionNode tempConn = ConnectionChooser.open(srcModule, destModule);
     		// if both gates are specified by the user do the model change
     		if (tempConn != null) {
-        		srcGate = tempConn.getSrcGate();
-        		destGate = tempConn.getDestGate();
-        		direction = tempConn.getArrowDirection();
+    			copyConn(tempConn, newConn);
         		redo();
     		}
     		else //otherwise revert the connection change (user cancel)
@@ -120,16 +116,16 @@ public class ConnectionCommand extends Command {
         if (srcModule != null && oldSrcModule != srcModule) 
             connNode.setSrcModuleRef(srcModule);
         
-        if (srcGate != null && oldSrcGate != srcGate)
-            connNode.setSrcGate(srcGate);
+        if (newConn.getSrcGate() != null && !newConn.getSrcGate().equals(oldConn.getSrcGate()))
+            connNode.setSrcGate(newConn.getSrcGate());
         
         if (destModule != null && oldDestModule != destModule) 
             connNode.setDestModuleRef(destModule);
         
-        if (destGate != null && oldDestGate != destGate)
-            connNode.setDestGate(destGate);
+        if (newConn.getDestGate() != null &&  !newConn.getDestGate().equals(oldConn.getDestGate()))
+            connNode.setDestGate(newConn.getDestGate());
         
-        connNode.setArrowDirection(direction);
+        copyConn(newConn, connNode);
         
         // if both src and dest module should be detached then remove it 
         // from the model totally (ie delete it)
@@ -154,18 +150,31 @@ public class ConnectionCommand extends Command {
         
         // attach to the original modules and gates
         connNode.setSrcModuleRef(oldSrcModule);
-        connNode.setSrcGate(oldSrcGate);
         connNode.setDestModuleRef(oldDestModule);
-        connNode.setDestGate(oldDestGate);
-        connNode.setArrowDirection(oldDirection);
+
+        copyConn(oldConn, connNode);
     }
+
+	private void copyConn(ConnectionNode from, ConnectionNode to) {
+		to.setSrcModuleIndex(from.getSrcModuleIndex());
+        to.setSrcGate(from.getSrcGate());
+        to.setSrcGateIndex(from.getSrcGateIndex());
+        to.setSrcGatePlusplus(from.getSrcGatePlusplus());
+        
+        to.setDestModuleIndex(from.getDestModuleIndex());
+        to.setDestGate(from.getDestGate());
+        to.setDestGateIndex(from.getDestGateIndex());
+        to.setDestGatePlusplus(from.getDestGatePlusplus());
+        
+        to.setArrowDirection(from.getArrowDirection());
+	}
 
     public void setSrcModule(IConnectable newSrcModule) {
         srcModule = newSrcModule;
     }
 
     public void setSrcGate(String newSrcGate) {
-        srcGate = newSrcGate;
+        newConn.setSrcGate(newSrcGate);
     }
 
     public void setDestModule(IConnectable newDestModule) {
@@ -173,23 +182,10 @@ public class ConnectionCommand extends Command {
     }
 
     public void setDestGate(String newDestGate) {
-        destGate = newDestGate;
+        newConn.setDestGate(newDestGate);
     }
+    
+    
 
-	public String getDestGate() {
-		return destGate;
-	}
-
-	public IConnectable getDestModule() {
-		return destModule;
-	}
-
-	public String getSrcGate() {
-		return srcGate;
-	}
-
-	public IConnectable getSrcModule() {
-		return srcModule;
-	}
 	
 }

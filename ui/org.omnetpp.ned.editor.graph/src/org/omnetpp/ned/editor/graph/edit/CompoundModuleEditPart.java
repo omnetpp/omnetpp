@@ -225,4 +225,15 @@ public class CompoundModuleEditPart extends ModuleEditPart {
 		String gates[] = {"OUT1", "OUT2", "OUT3", "OUT4"}; 
 		return gates; 
 	}
+	
+	/**
+	 * Returns whether the compound module is selectable for the slection tool based on the
+	 * current mouse target coordinates.
+	 * @param x
+	 * @param y
+	 * @return
+	 */
+	public boolean isSelectable(int x, int y) {
+		return getCompoundModuleFigure().isOnBorder(x, y);
+	}
 }

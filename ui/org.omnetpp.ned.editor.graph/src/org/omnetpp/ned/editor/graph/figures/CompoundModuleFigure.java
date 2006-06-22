@@ -8,7 +8,6 @@ import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.Layer;
 import org.eclipse.draw2d.LayeredPane;
 import org.eclipse.draw2d.SWTGraphics;
-import org.eclipse.draw2d.ScaledGraphics;
 import org.eclipse.draw2d.ScrollPane;
 import org.eclipse.draw2d.StackLayout;
 import org.eclipse.draw2d.geometry.Dimension;
@@ -30,6 +29,7 @@ public class CompoundModuleFigure extends ModuleFigure
 				LayerSupport, HandleBounds {
 
     private static final int DEFAULT_BORDER_WIDTH = 2;
+    private static final int DEFAULT_BORDER_SNAP_WIDTH = 5;
     private static Dimension DEFAULT_SIZE = new Dimension(200, 100);
 	private Layer pane;
     private ScrollPane scrollpane;
@@ -275,4 +275,16 @@ public class CompoundModuleFigure extends ModuleFigure
 		this.unit = unit;
 		invalidate();
 	}
+	
+	/**
+	 * Returns whether the point is on the border area, where dragging and selection and connection start/end is possible 
+	 * @param x
+	 * @param y
+	 * @return
+	 */
+	public boolean isOnBorder(int x, int y) {
+		return getBounds().contains(x,y) && 
+			!getClientArea().shrink(2*DEFAULT_BORDER_SNAP_WIDTH, 2*DEFAULT_BORDER_SNAP_WIDTH).contains(x, y);
+	}
+	
 }

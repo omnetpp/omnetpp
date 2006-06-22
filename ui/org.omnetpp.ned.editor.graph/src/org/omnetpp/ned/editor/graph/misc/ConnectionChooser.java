@@ -52,21 +52,26 @@ public class ConnectionChooser {
 	}
 
     /**
-	 * Creates a connection object from the provided gates
+	 * Creates a template connection object from the provided gates and modules. 
+	 * If the module is a vector, it uses module[0] syntax
+	 * If the gate is a vector uses either gate[0] or gate++ syntax depending on the srcGatePP, destGatePP parameters.
+	 * If the gatePP is set to <code>true</code> but none of the gates are vector, it returns <code>null</code>     
 	 * 
-	 * @param srcMod		Source module
-	 * @param srcModPP	Index IF the srcMdule is vector (typically '0' or   
+	 * @param srcMod
 	 * @param srcGate
-	 * @param srcGatePP
 	 * @param destMod
-	 * @param destModPP
 	 * @param destGate
-	 * @param destGatePP
-	 * @return
+	 * @param gatePP 	if set to <code>true</code> creates gatename++ (only for vectore gates)
+	 * @return The template connection or <code>null</code> if connection cannot be created
 	 */
 	protected static ConnectionNode createTemplateConnection(
-						IConnectable srcMod, boolean srcModPP, GateNode srcGate, boolean srcGatePP,
-						IConnectable destMod, boolean destModPP, GateNode destGate, boolean destGatePP) {
+						IConnectable srcMod, GateNode srcGate,
+						IConnectable destMod, GateNode destGate, boolean gatePP) {
+
+		// check if at least one of the gates are vector if gatePP (gate++) syntax requested
+		if (gatePP && !srcGate.getIsVector() && !destGate.getIsVector())
+			return null;
+		
 		ConnectionNode conn = new ConnectionNode();
 		// set the source and dest module names.
 		// if compound module, name must be empty
@@ -92,19 +97,17 @@ public class ConnectionChooser {
 		
 		// check if we have a module vector and add an index to it.
 		if(srcGate.getIsVector())
-			if(srcGatePP)
+			if(gatePP)
 				conn.setSrcGatePlusplus(true);
 			else
 				conn.setSrcGateIndex(DEFAULT_INDEX);
 		
 		if(destGate.getIsVector())
-			if(destGatePP)
+			if(gatePP)
 				conn.setDestGatePlusplus(true);
 			else
 				conn.setDestGateIndex(DEFAULT_INDEX);
 		
-		// but remove from the model
-//		conn.removeFromParent();
 		return conn;
 	}
 	
@@ -125,7 +128,7 @@ public class ConnectionChooser {
 	 * @param askForSrcGate
 	 * @param askForDestGate
 	 */
-	public static ConnectionNode askForTemplateConnection(IConnectable srcModule, IConnectable destModule) {
+	public static ConnectionNode open(IConnectable srcModule, IConnectable destModule) {
 		// do not ask anything 
 		if (srcModule == null && destModule == null)
 			return null;
@@ -140,16 +143,24 @@ public class ConnectionChooser {
 		for (GateNode srcOut : srcOutModuleGates)
 			for(GateNode destIn : destInModuleGates) {
 				// add the gate names to the menu item as additional widget data
-				ConnectionNode conn = createTemplateConnection(
-											srcModule, false, srcOut, false, destModule, false, destIn, false);
-				addToMenu(menu, conn);
+				ConnectionNode conn = 
+						createTemplateConnection(srcModule, srcOut, destModule, destIn, false);
+				if (conn != null) addToMenu(menu, conn);
+
+				// try to add a connection with gate++ syntax too
+				conn = createTemplateConnection(srcModule, srcOut, destModule, destIn, true);
+				if (conn != null) addToMenu(menu, conn);
 			}
 				
 		for (GateNode srcInOut : srcInOutModuleGates)
 			for(GateNode destInOut : destInOutModuleGates) {
-				ConnectionNode conn = createTemplateConnection(
-						srcModule, false, srcInOut, false, destModule, false, destInOut, false);
-				addToMenu(menu, conn);
+				ConnectionNode conn = 
+						createTemplateConnection(srcModule, srcInOut, destModule, destInOut, false);
+				if (conn != null) addToMenu(menu, conn);
+
+				// try to add a connection with gate++ syntax too
+				conn = createTemplateConnection(srcModule, srcInOut, destModule, destInOut, true);
+				if (conn != null) addToMenu(menu, conn);
 			}
 
 		MenuItem selection = menu.open();
