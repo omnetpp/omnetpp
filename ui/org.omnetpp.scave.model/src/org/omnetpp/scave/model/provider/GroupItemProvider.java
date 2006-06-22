@@ -181,6 +181,11 @@ public class GroupItemProvider
 			(createChildParameter
 				(ScaveModelPackage.Literals.GROUP__ITEMS,
 				 ScaveModelFactory.eINSTANCE.createDiscard()));
+
+		newChildDescriptors.add
+			(createChildParameter
+				(ScaveModelPackage.Literals.GROUP__ITEMS,
+				 ScaveModelFactory.eINSTANCE.createCompute()));
 	}
 
 	/**

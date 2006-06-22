@@ -225,6 +225,11 @@ public class DatasetItemProvider
 			(createChildParameter
 				(ScaveModelPackage.Literals.DATASET__ITEMS,
 				 ScaveModelFactory.eINSTANCE.createDiscard()));
+
+		newChildDescriptors.add
+			(createChildParameter
+				(ScaveModelPackage.Literals.DATASET__ITEMS,
+				 ScaveModelFactory.eINSTANCE.createCompute()));
 	}
 
 	/**

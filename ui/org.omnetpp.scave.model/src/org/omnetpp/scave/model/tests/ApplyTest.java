@@ -17,7 +17,7 @@ import org.omnetpp.scave.model.ScaveModelFactory;
  * <!-- end-user-doc -->
  * @generated
  */
-public class ApplyTest extends DatasetItemTest {
+public class ApplyTest extends ProcessingOpTest {
 	/**
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->

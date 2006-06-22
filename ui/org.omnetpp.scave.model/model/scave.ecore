@@ -25,7 +25,7 @@
     <eStructuralFeatures xsi:type="ecore:EReference" name="excepts" upperBound="-1"
         eType="#//Except" containment="true"/>
   </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="Apply" eSuperTypes="#//DatasetItem">
+  <eClassifiers xsi:type="ecore:EClass" name="ProcessingOp" abstract="true" eSuperTypes="#//DatasetItem">
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="operation" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="filters" upperBound="-1"
         eType="#//SelectDeselectOp" containment="true"/>
@@ -104,4 +104,6 @@
     <eLiterals name="vector" value="2" literal="VECTOR"/>
     <eLiterals name="histogram" value="3" literal="HISTOGRAM"/>
   </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="Apply" eSuperTypes="#//ProcessingOp"/>
+  <eClassifiers xsi:type="ecore:EClass" name="Compute" eSuperTypes="#//ProcessingOp"/>
 </ecore:EPackage>

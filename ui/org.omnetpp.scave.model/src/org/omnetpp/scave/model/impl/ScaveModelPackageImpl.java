@@ -21,6 +21,7 @@ import org.omnetpp.scave.model.Apply;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.ChartSheet;
 import org.omnetpp.scave.model.ChartSheets;
+import org.omnetpp.scave.model.Compute;
 import org.omnetpp.scave.model.Dataset;
 import org.omnetpp.scave.model.DatasetItem;
 import org.omnetpp.scave.model.DatasetType;
@@ -32,6 +33,7 @@ import org.omnetpp.scave.model.Group;
 import org.omnetpp.scave.model.InputFile;
 import org.omnetpp.scave.model.Inputs;
 import org.omnetpp.scave.model.Param;
+import org.omnetpp.scave.model.ProcessingOp;
 import org.omnetpp.scave.model.Property;
 import org.omnetpp.scave.model.ScaveModelFactory;
 import org.omnetpp.scave.model.ScaveModelPackage;
@@ -192,6 +194,20 @@ public class ScaveModelPackageImpl extends EPackageImpl implements ScaveModelPac
 	 * @generated
 	 */
 	private EClass inputFileEClass = null;
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	private EClass processingOpEClass = null;
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	private EClass computeEClass = null;
 
 	/**
 	 * <!-- begin-user-doc -->
@@ -374,33 +390,6 @@ public class ScaveModelPackageImpl extends EPackageImpl implements ScaveModelPac
 	 */
 	public EClass getApply() {
 		return applyEClass;
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	public EAttribute getApply_Operation() {
-		return (EAttribute)applyEClass.getEStructuralFeatures().get(0);
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	public EReference getApply_Filters() {
-		return (EReference)applyEClass.getEStructuralFeatures().get(1);
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	public EReference getApply_Params() {
-		return (EReference)applyEClass.getEStructuralFeatures().get(2);
 	}
 
 	/**
@@ -804,6 +793,51 @@ public class ScaveModelPackageImpl extends EPackageImpl implements ScaveModelPac
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	public EClass getProcessingOp() {
+		return processingOpEClass;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EAttribute getProcessingOp_Operation() {
+		return (EAttribute)processingOpEClass.getEStructuralFeatures().get(0);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EReference getProcessingOp_Filters() {
+		return (EReference)processingOpEClass.getEStructuralFeatures().get(1);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EReference getProcessingOp_Params() {
+		return (EReference)processingOpEClass.getEStructuralFeatures().get(2);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EClass getCompute() {
+		return computeEClass;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
 	public EEnum getDatasetType() {
 		return datasetTypeEEnum;
 	}
@@ -851,9 +885,6 @@ public class ScaveModelPackageImpl extends EPackageImpl implements ScaveModelPac
 		createEReference(addEClass, ADD__EXCEPTS);
 
 		applyEClass = createEClass(APPLY);
-		createEAttribute(applyEClass, APPLY__OPERATION);
-		createEReference(applyEClass, APPLY__FILTERS);
-		createEReference(applyEClass, APPLY__PARAMS);
 
 		exceptEClass = createEClass(EXCEPT);
 
@@ -916,6 +947,13 @@ public class ScaveModelPackageImpl extends EPackageImpl implements ScaveModelPac
 		inputFileEClass = createEClass(INPUT_FILE);
 		createEAttribute(inputFileEClass, INPUT_FILE__NAME);
 
+		processingOpEClass = createEClass(PROCESSING_OP);
+		createEAttribute(processingOpEClass, PROCESSING_OP__OPERATION);
+		createEReference(processingOpEClass, PROCESSING_OP__FILTERS);
+		createEReference(processingOpEClass, PROCESSING_OP__PARAMS);
+
+		computeEClass = createEClass(COMPUTE);
+
 		// Create enums
 		datasetTypeEEnum = createEEnum(DATASET_TYPE);
 	}
@@ -946,7 +984,7 @@ public class ScaveModelPackageImpl extends EPackageImpl implements ScaveModelPac
 		// Add supertypes to classes
 		chartEClass.getESuperTypes().add(this.getDatasetItem());
 		addEClass.getESuperTypes().add(this.getAddDiscardOp());
-		applyEClass.getESuperTypes().add(this.getDatasetItem());
+		applyEClass.getESuperTypes().add(this.getProcessingOp());
 		exceptEClass.getESuperTypes().add(this.getSetOperation());
 		groupEClass.getESuperTypes().add(this.getDatasetItem());
 		discardEClass.getESuperTypes().add(this.getAddDiscardOp());
@@ -955,6 +993,8 @@ public class ScaveModelPackageImpl extends EPackageImpl implements ScaveModelPac
 		addDiscardOpEClass.getESuperTypes().add(this.getSetOperation());
 		addDiscardOpEClass.getESuperTypes().add(this.getDatasetItem());
 		selectDeselectOpEClass.getESuperTypes().add(this.getSetOperation());
+		processingOpEClass.getESuperTypes().add(this.getDatasetItem());
+		computeEClass.getESuperTypes().add(this.getProcessingOp());
 
 		// Initialize classes and features; add operations and parameters
 		initEClass(datasetEClass, Dataset.class, "Dataset", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
@@ -972,9 +1012,6 @@ public class ScaveModelPackageImpl extends EPackageImpl implements ScaveModelPac
 		initEReference(getAdd_Excepts(), this.getExcept(), null, "excepts", null, 0, -1, Add.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		initEClass(applyEClass, Apply.class, "Apply", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
-		initEAttribute(getApply_Operation(), ecorePackage.getEString(), "operation", null, 0, 1, Apply.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-		initEReference(getApply_Filters(), this.getSelectDeselectOp(), null, "filters", null, 0, -1, Apply.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-		initEReference(getApply_Params(), this.getParam(), null, "params", null, 0, -1, Apply.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		initEClass(exceptEClass, Except.class, "Except", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 
@@ -1036,6 +1073,13 @@ public class ScaveModelPackageImpl extends EPackageImpl implements ScaveModelPac
 
 		initEClass(inputFileEClass, InputFile.class, "InputFile", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 		initEAttribute(getInputFile_Name(), ecorePackage.getEString(), "name", null, 0, 1, InputFile.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+
+		initEClass(processingOpEClass, ProcessingOp.class, "ProcessingOp", IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+		initEAttribute(getProcessingOp_Operation(), ecorePackage.getEString(), "operation", null, 0, 1, ProcessingOp.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getProcessingOp_Filters(), this.getSelectDeselectOp(), null, "filters", null, 0, -1, ProcessingOp.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getProcessingOp_Params(), this.getParam(), null, "params", null, 0, -1, ProcessingOp.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+
+		initEClass(computeEClass, Compute.class, "Compute", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 
 		// Initialize enums and add enum literals
 		initEEnum(datasetTypeEEnum, DatasetType.class, "DatasetType");

@@ -133,6 +133,12 @@ public class ScaveModelAdapterFactory extends AdapterFactoryImpl {
 			public Object caseInputFile(InputFile object) {
 				return createInputFileAdapter();
 			}
+			public Object caseProcessingOp(ProcessingOp object) {
+				return createProcessingOpAdapter();
+			}
+			public Object caseCompute(Compute object) {
+				return createComputeAdapter();
+			}
 			public Object defaultCase(EObject object) {
 				return createEObjectAdapter();
 			}
@@ -442,6 +448,34 @@ public class ScaveModelAdapterFactory extends AdapterFactoryImpl {
 	 * @generated
 	 */
 	public Adapter createInputFileAdapter() {
+		return null;
+	}
+
+	/**
+	 * Creates a new adapter for an object of class '{@link org.omnetpp.scave.model.ProcessingOp <em>Processing Op</em>}'.
+	 * <!-- begin-user-doc -->
+	 * This default implementation returns null so that we can easily ignore cases;
+	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
+	 * <!-- end-user-doc -->
+	 * @return the new adapter.
+	 * @see org.omnetpp.scave.model.ProcessingOp
+	 * @generated
+	 */
+	public Adapter createProcessingOpAdapter() {
+		return null;
+	}
+
+	/**
+	 * Creates a new adapter for an object of class '{@link org.omnetpp.scave.model.Compute <em>Compute</em>}'.
+	 * <!-- begin-user-doc -->
+	 * This default implementation returns null so that we can easily ignore cases;
+	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
+	 * <!-- end-user-doc -->
+	 * @return the new adapter.
+	 * @see org.omnetpp.scave.model.Compute
+	 * @generated
+	 */
+	public Adapter createComputeAdapter() {
 		return null;
 	}
 

@@ -77,6 +77,7 @@ public class ScaveModelFactoryImpl extends EFactoryImpl implements ScaveModelFac
 			case ScaveModelPackage.CHART_SHEETS: return createChartSheets();
 			case ScaveModelPackage.DATASETS: return createDatasets();
 			case ScaveModelPackage.INPUT_FILE: return createInputFile();
+			case ScaveModelPackage.COMPUTE: return createCompute();
 			default:
 				throw new IllegalArgumentException("The class '" + eClass.getName() + "' is not a valid classifier");
 		}
@@ -278,6 +279,16 @@ public class ScaveModelFactoryImpl extends EFactoryImpl implements ScaveModelFac
 	public InputFile createInputFile() {
 		InputFileImpl inputFile = new InputFileImpl();
 		return inputFile;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public Compute createCompute() {
+		ComputeImpl compute = new ComputeImpl();
+		return compute;
 	}
 
 	/**

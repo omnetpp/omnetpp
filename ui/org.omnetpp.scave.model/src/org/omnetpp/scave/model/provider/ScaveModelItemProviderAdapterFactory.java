@@ -450,6 +450,28 @@ public class ScaveModelItemProviderAdapterFactory extends ScaveModelAdapterFacto
 	}
 
 	/**
+	 * This keeps track of the one adapter used for all {@link org.omnetpp.scave.model.Compute} instances.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	protected ComputeItemProvider computeItemProvider;
+
+	/**
+	 * This creates an adapter for a {@link org.omnetpp.scave.model.Compute}.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public Adapter createComputeAdapter() {
+		if (computeItemProvider == null) {
+			computeItemProvider = new ComputeItemProvider(this);
+		}
+
+		return computeItemProvider;
+	}
+
+	/**
 	 * This returns the root adapter factory that contains this factory.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -562,6 +584,7 @@ public class ScaveModelItemProviderAdapterFactory extends ScaveModelAdapterFacto
 		if (chartSheetsItemProvider != null) chartSheetsItemProvider.dispose();
 		if (datasetsItemProvider != null) datasetsItemProvider.dispose();
 		if (inputFileItemProvider != null) inputFileItemProvider.dispose();
+		if (computeItemProvider != null) computeItemProvider.dispose();
 	}
 
 }

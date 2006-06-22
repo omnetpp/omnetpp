@@ -112,6 +112,7 @@ public class ScaveModelSwitch {
 			case ScaveModelPackage.APPLY: {
 				Apply apply = (Apply)theEObject;
 				Object result = caseApply(apply);
+				if (result == null) result = caseProcessingOp(apply);
 				if (result == null) result = caseDatasetItem(apply);
 				if (result == null) result = defaultCase(theEObject);
 				return result;
@@ -227,6 +228,21 @@ public class ScaveModelSwitch {
 			case ScaveModelPackage.INPUT_FILE: {
 				InputFile inputFile = (InputFile)theEObject;
 				Object result = caseInputFile(inputFile);
+				if (result == null) result = defaultCase(theEObject);
+				return result;
+			}
+			case ScaveModelPackage.PROCESSING_OP: {
+				ProcessingOp processingOp = (ProcessingOp)theEObject;
+				Object result = caseProcessingOp(processingOp);
+				if (result == null) result = caseDatasetItem(processingOp);
+				if (result == null) result = defaultCase(theEObject);
+				return result;
+			}
+			case ScaveModelPackage.COMPUTE: {
+				Compute compute = (Compute)theEObject;
+				Object result = caseCompute(compute);
+				if (result == null) result = caseProcessingOp(compute);
+				if (result == null) result = caseDatasetItem(compute);
 				if (result == null) result = defaultCase(theEObject);
 				return result;
 			}
@@ -546,6 +562,36 @@ public class ScaveModelSwitch {
 	 * @generated
 	 */
 	public Object caseInputFile(InputFile object) {
+		return null;
+	}
+
+	/**
+	 * Returns the result of interpretting the object as an instance of '<em>Processing Op</em>'.
+	 * <!-- begin-user-doc -->
+	 * This implementation returns null;
+	 * returning a non-null result will terminate the switch.
+	 * <!-- end-user-doc -->
+	 * @param object the target of the switch.
+	 * @return the result of interpretting the object as an instance of '<em>Processing Op</em>'.
+	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+	 * @generated
+	 */
+	public Object caseProcessingOp(ProcessingOp object) {
+		return null;
+	}
+
+	/**
+	 * Returns the result of interpretting the object as an instance of '<em>Compute</em>'.
+	 * <!-- begin-user-doc -->
+	 * This implementation returns null;
+	 * returning a non-null result will terminate the switch.
+	 * <!-- end-user-doc -->
+	 * @param object the target of the switch.
+	 * @return the result of interpretting the object as an instance of '<em>Compute</em>'.
+	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+	 * @generated
+	 */
+	public Object caseCompute(Compute object) {
 		return null;
 	}
 

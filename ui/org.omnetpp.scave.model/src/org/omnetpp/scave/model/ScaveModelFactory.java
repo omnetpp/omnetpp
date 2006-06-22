@@ -179,6 +179,15 @@ public interface ScaveModelFactory extends EFactory {
 	InputFile createInputFile();
 
 	/**
+	 * Returns a new object of class '<em>Compute</em>'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return a new object of class '<em>Compute</em>'.
+	 * @generated
+	 */
+	Compute createCompute();
+
+	/**
 	 * Returns the package supported by this factory.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->

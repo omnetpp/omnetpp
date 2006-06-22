@@ -490,6 +490,52 @@ public interface ScaveModelPackage extends EPackage {
 	int ADD_FEATURE_COUNT = ADD_DISCARD_OP_FEATURE_COUNT + 1;
 
 	/**
+	 * The meta object id for the '{@link org.omnetpp.scave.model.impl.ProcessingOpImpl <em>Processing Op</em>}' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see org.omnetpp.scave.model.impl.ProcessingOpImpl
+	 * @see org.omnetpp.scave.model.impl.ScaveModelPackageImpl#getProcessingOp()
+	 * @generated
+	 */
+	int PROCESSING_OP = 21;
+
+	/**
+	 * The feature id for the '<em><b>Operation</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int PROCESSING_OP__OPERATION = DATASET_ITEM_FEATURE_COUNT + 0;
+
+	/**
+	 * The feature id for the '<em><b>Filters</b></em>' containment reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int PROCESSING_OP__FILTERS = DATASET_ITEM_FEATURE_COUNT + 1;
+
+	/**
+	 * The feature id for the '<em><b>Params</b></em>' containment reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int PROCESSING_OP__PARAMS = DATASET_ITEM_FEATURE_COUNT + 2;
+
+	/**
+	 * The number of structural features of the '<em>Processing Op</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int PROCESSING_OP_FEATURE_COUNT = DATASET_ITEM_FEATURE_COUNT + 3;
+
+	/**
 	 * The meta object id for the '{@link org.omnetpp.scave.model.impl.ApplyImpl <em>Apply</em>}' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -506,7 +552,7 @@ public interface ScaveModelPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int APPLY__OPERATION = DATASET_ITEM_FEATURE_COUNT + 0;
+	int APPLY__OPERATION = PROCESSING_OP__OPERATION;
 
 	/**
 	 * The feature id for the '<em><b>Filters</b></em>' containment reference list.
@@ -515,7 +561,7 @@ public interface ScaveModelPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int APPLY__FILTERS = DATASET_ITEM_FEATURE_COUNT + 1;
+	int APPLY__FILTERS = PROCESSING_OP__FILTERS;
 
 	/**
 	 * The feature id for the '<em><b>Params</b></em>' containment reference list.
@@ -524,7 +570,7 @@ public interface ScaveModelPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int APPLY__PARAMS = DATASET_ITEM_FEATURE_COUNT + 2;
+	int APPLY__PARAMS = PROCESSING_OP__PARAMS;
 
 	/**
 	 * The number of structural features of the '<em>Apply</em>' class.
@@ -533,7 +579,7 @@ public interface ScaveModelPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int APPLY_FEATURE_COUNT = DATASET_ITEM_FEATURE_COUNT + 3;
+	int APPLY_FEATURE_COUNT = PROCESSING_OP_FEATURE_COUNT + 0;
 
 	/**
 	 * The meta object id for the '{@link org.omnetpp.scave.model.impl.ExceptImpl <em>Except</em>}' class.
@@ -1370,6 +1416,52 @@ public interface ScaveModelPackage extends EPackage {
 
 
 	/**
+	 * The meta object id for the '{@link org.omnetpp.scave.model.impl.ComputeImpl <em>Compute</em>}' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see org.omnetpp.scave.model.impl.ComputeImpl
+	 * @see org.omnetpp.scave.model.impl.ScaveModelPackageImpl#getCompute()
+	 * @generated
+	 */
+	int COMPUTE = 22;
+
+	/**
+	 * The feature id for the '<em><b>Operation</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int COMPUTE__OPERATION = PROCESSING_OP__OPERATION;
+
+	/**
+	 * The feature id for the '<em><b>Filters</b></em>' containment reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int COMPUTE__FILTERS = PROCESSING_OP__FILTERS;
+
+	/**
+	 * The feature id for the '<em><b>Params</b></em>' containment reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int COMPUTE__PARAMS = PROCESSING_OP__PARAMS;
+
+	/**
+	 * The number of structural features of the '<em>Compute</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int COMPUTE_FEATURE_COUNT = PROCESSING_OP_FEATURE_COUNT + 0;
+
+	/**
 	 * The meta object id for the '{@link org.omnetpp.scave.model.DatasetType <em>Dataset Type</em>}' enum.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -1377,7 +1469,7 @@ public interface ScaveModelPackage extends EPackage {
 	 * @see org.omnetpp.scave.model.impl.ScaveModelPackageImpl#getDatasetType()
 	 * @generated
 	 */
-	int DATASET_TYPE = 21;
+	int DATASET_TYPE = 23;
 
 
 	/**
@@ -1507,39 +1599,6 @@ public interface ScaveModelPackage extends EPackage {
 	 * @generated
 	 */
 	EClass getApply();
-
-	/**
-	 * Returns the meta object for the attribute '{@link org.omnetpp.scave.model.Apply#getOperation <em>Operation</em>}'.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @return the meta object for the attribute '<em>Operation</em>'.
-	 * @see org.omnetpp.scave.model.Apply#getOperation()
-	 * @see #getApply()
-	 * @generated
-	 */
-	EAttribute getApply_Operation();
-
-	/**
-	 * Returns the meta object for the containment reference list '{@link org.omnetpp.scave.model.Apply#getFilters <em>Filters</em>}'.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @return the meta object for the containment reference list '<em>Filters</em>'.
-	 * @see org.omnetpp.scave.model.Apply#getFilters()
-	 * @see #getApply()
-	 * @generated
-	 */
-	EReference getApply_Filters();
-
-	/**
-	 * Returns the meta object for the containment reference list '{@link org.omnetpp.scave.model.Apply#getParams <em>Params</em>}'.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @return the meta object for the containment reference list '<em>Params</em>'.
-	 * @see org.omnetpp.scave.model.Apply#getParams()
-	 * @see #getApply()
-	 * @generated
-	 */
-	EReference getApply_Params();
 
 	/**
 	 * Returns the meta object for class '{@link org.omnetpp.scave.model.Except <em>Except</em>}'.
@@ -2009,6 +2068,59 @@ public interface ScaveModelPackage extends EPackage {
 	EAttribute getInputFile_Name();
 
 	/**
+	 * Returns the meta object for class '{@link org.omnetpp.scave.model.ProcessingOp <em>Processing Op</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for class '<em>Processing Op</em>'.
+	 * @see org.omnetpp.scave.model.ProcessingOp
+	 * @generated
+	 */
+	EClass getProcessingOp();
+
+	/**
+	 * Returns the meta object for the attribute '{@link org.omnetpp.scave.model.ProcessingOp#getOperation <em>Operation</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the attribute '<em>Operation</em>'.
+	 * @see org.omnetpp.scave.model.ProcessingOp#getOperation()
+	 * @see #getProcessingOp()
+	 * @generated
+	 */
+	EAttribute getProcessingOp_Operation();
+
+	/**
+	 * Returns the meta object for the containment reference list '{@link org.omnetpp.scave.model.ProcessingOp#getFilters <em>Filters</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the containment reference list '<em>Filters</em>'.
+	 * @see org.omnetpp.scave.model.ProcessingOp#getFilters()
+	 * @see #getProcessingOp()
+	 * @generated
+	 */
+	EReference getProcessingOp_Filters();
+
+	/**
+	 * Returns the meta object for the containment reference list '{@link org.omnetpp.scave.model.ProcessingOp#getParams <em>Params</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the containment reference list '<em>Params</em>'.
+	 * @see org.omnetpp.scave.model.ProcessingOp#getParams()
+	 * @see #getProcessingOp()
+	 * @generated
+	 */
+	EReference getProcessingOp_Params();
+
+	/**
+	 * Returns the meta object for class '{@link org.omnetpp.scave.model.Compute <em>Compute</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for class '<em>Compute</em>'.
+	 * @see org.omnetpp.scave.model.Compute
+	 * @generated
+	 */
+	EClass getCompute();
+
+	/**
 	 * Returns the meta object for enum '{@link org.omnetpp.scave.model.DatasetType <em>Dataset Type</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -2143,30 +2255,6 @@ public interface ScaveModelPackage extends EPackage {
 		 * @generated
 		 */
 		EClass APPLY = eINSTANCE.getApply();
-
-		/**
-		 * The meta object literal for the '<em><b>Operation</b></em>' attribute feature.
-		 * <!-- begin-user-doc -->
-		 * <!-- end-user-doc -->
-		 * @generated
-		 */
-		EAttribute APPLY__OPERATION = eINSTANCE.getApply_Operation();
-
-		/**
-		 * The meta object literal for the '<em><b>Filters</b></em>' containment reference list feature.
-		 * <!-- begin-user-doc -->
-		 * <!-- end-user-doc -->
-		 * @generated
-		 */
-		EReference APPLY__FILTERS = eINSTANCE.getApply_Filters();
-
-		/**
-		 * The meta object literal for the '<em><b>Params</b></em>' containment reference list feature.
-		 * <!-- begin-user-doc -->
-		 * <!-- end-user-doc -->
-		 * @generated
-		 */
-		EReference APPLY__PARAMS = eINSTANCE.getApply_Params();
 
 		/**
 		 * The meta object literal for the '{@link org.omnetpp.scave.model.impl.ExceptImpl <em>Except</em>}' class.
@@ -2553,6 +2641,50 @@ public interface ScaveModelPackage extends EPackage {
 		 * @generated
 		 */
 		EAttribute INPUT_FILE__NAME = eINSTANCE.getInputFile_Name();
+
+		/**
+		 * The meta object literal for the '{@link org.omnetpp.scave.model.impl.ProcessingOpImpl <em>Processing Op</em>}' class.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @see org.omnetpp.scave.model.impl.ProcessingOpImpl
+		 * @see org.omnetpp.scave.model.impl.ScaveModelPackageImpl#getProcessingOp()
+		 * @generated
+		 */
+		EClass PROCESSING_OP = eINSTANCE.getProcessingOp();
+
+		/**
+		 * The meta object literal for the '<em><b>Operation</b></em>' attribute feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute PROCESSING_OP__OPERATION = eINSTANCE.getProcessingOp_Operation();
+
+		/**
+		 * The meta object literal for the '<em><b>Filters</b></em>' containment reference list feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference PROCESSING_OP__FILTERS = eINSTANCE.getProcessingOp_Filters();
+
+		/**
+		 * The meta object literal for the '<em><b>Params</b></em>' containment reference list feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference PROCESSING_OP__PARAMS = eINSTANCE.getProcessingOp_Params();
+
+		/**
+		 * The meta object literal for the '{@link org.omnetpp.scave.model.impl.ComputeImpl <em>Compute</em>}' class.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @see org.omnetpp.scave.model.impl.ComputeImpl
+		 * @see org.omnetpp.scave.model.impl.ScaveModelPackageImpl#getCompute()
+		 * @generated
+		 */
+		EClass COMPUTE = eINSTANCE.getCompute();
 
 		/**
 		 * The meta object literal for the '{@link org.omnetpp.scave.model.DatasetType <em>Dataset Type</em>}' enum.

@@ -8,6 +8,7 @@ import org.omnetpp.scave.model.Apply;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.ChartSheet;
 import org.omnetpp.scave.model.ChartSheets;
+import org.omnetpp.scave.model.Compute;
 import org.omnetpp.scave.model.Dataset;
 import org.omnetpp.scave.model.Datasets;
 import org.omnetpp.scave.model.Deselect;
@@ -116,6 +117,10 @@ public class ScaveModelLabelProvider extends LabelProvider {
 		else if (element instanceof Apply) {
 			Apply o = (Apply) element;
 			return "apply "+fallback(o.getOperation(),"<undefined>");
+		}
+		else if (element instanceof Compute) {
+			Compute o = (Compute) element;
+			return "compute "+fallback(o.getOperation(),"<undefined>");
 		}
 		else if (element instanceof Group) {
 			return "group";
