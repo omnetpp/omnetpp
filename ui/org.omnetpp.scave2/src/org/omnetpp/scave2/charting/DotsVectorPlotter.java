@@ -8,6 +8,7 @@ public class DotsVectorPlotter implements IVectorPlotter {
 
 	public void plot(XYDataset dataset, int series, Graphics graphics, VectorChart chart) {
 		int n = dataset.getItemCount(series);
+		//XXX paint cliprect only
 		for (int i=0; i<n; i++) {
 			int x = chart.toCanvasX(dataset.getXValue(series, i));
 			int y = chart.toCanvasY(dataset.getYValue(series, i));

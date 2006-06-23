@@ -19,6 +19,7 @@ public class LinesVectorPlotter implements IVectorPlotter {
 		}
 
 		// n>1
+		//XXX paint cliprect only
 		for (int i=1; i<n; i++) {
 			int currentX = chart.toCanvasX(dataset.getXValue(series, i));
 			int currentY = chart.toCanvasY(dataset.getYValue(series, i));

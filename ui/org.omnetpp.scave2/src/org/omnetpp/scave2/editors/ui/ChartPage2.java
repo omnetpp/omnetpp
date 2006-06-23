@@ -62,12 +62,6 @@ public class ChartPage2 extends ScaveEditorPage {
 		chart.setDataset(xydataset);
 		chart.setCaching(false);
 		//chart.setDefaultPlotter(new DotsVectorPlotter());
-		Display.getCurrent().asyncExec(new Runnable() {
-			public void run() {
-				chart.zoomToFitX();
-				chart.zoomToFitY();
-			}
-		});
 
 		chart.setBackground(ColorConstants.white);
 		new RubberbandSupport(chart, SWT.CTRL) {

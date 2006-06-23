@@ -14,7 +14,7 @@ public class ColorFactory {
 
     private static ColorRegistry str2rgbRegistry = new ColorRegistry();
     private static HashMap<RGB, String> rgb2strMap = new HashMap<RGB, String>();
-    
+
     static {
         addMapping("antiqueWhite",new RGB(250,235,215));
         addMapping("antiqueWhite1",new RGB(255,239,219));

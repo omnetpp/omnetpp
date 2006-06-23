@@ -153,12 +153,12 @@ public abstract class ZoomableCachingCanvas extends CachingCanvas {
 	}
 	
 	public void zoomToFitX() {
-		int width = getWidth()==0 ? 300 : getWidth(); // zero before canvas gets layouted
+		int width = getWidth()==0 ? 300 : getWidth(); // getWidth() is zero before canvas gets layouted
 		setZoomX((width - insets.getWidth()) / (maxX - minX));
 	}
 
 	public void zoomToFitY() {
-		int height = getHeight()==0 ? 200 : getHeight(); // zero before canvas gets layouted
+		int height = getHeight()==0 ? 200 : getHeight(); // getWidth() is zero before canvas gets layouted
 		setZoomY((height - insets.getHeight()) / (maxY - minY));
 	}
 	

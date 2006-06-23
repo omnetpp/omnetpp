@@ -8,6 +8,7 @@ public class PointsVectorPlotter implements IVectorPlotter {
 
 	public void plot(XYDataset dataset, int series, Graphics graphics, VectorChart chart) {
 		int n = dataset.getItemCount(series);
+		//XXX paint cliprect only
 		for (int i=0; i<n; i++) {
 			graphics.drawPoint(
 					chart.toCanvasX(dataset.getXValue(series, i)),
