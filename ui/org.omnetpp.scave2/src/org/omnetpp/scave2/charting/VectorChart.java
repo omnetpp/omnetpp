@@ -160,6 +160,7 @@ public class VectorChart extends ZoomableCachingCanvas {
 		}
 
 		//draw Y ticks
+		//XXX factor out common code with X axis ticks
 		double startY = fromCanvasY(rect.y);
 		double endY = fromCanvasY(rect.y + rect.width);
 		int tickScaleY = (int)Math.ceil(Math.log10(TICK_SPACING / getZoomY()));

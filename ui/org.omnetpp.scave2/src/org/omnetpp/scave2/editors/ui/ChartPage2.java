@@ -11,7 +11,6 @@ import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Display;
 import org.jfree.data.xy.XYDataset;
 import org.omnetpp.common.canvas.RubberbandSupport;
 import org.omnetpp.common.color.ColorFactory;
@@ -20,7 +19,7 @@ import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.Dataset;
 import org.omnetpp.scave.model.DatasetType;
 import org.omnetpp.scave2.charting.ChartHelper;
-import org.omnetpp.scave2.charting.DotsVectorPlotter;
+import org.omnetpp.scave2.charting.SampleHoldVectorPlotter;
 import org.omnetpp.scave2.charting.VectorChart;
 import org.omnetpp.scave2.editors.ScaveEditor;
 import org.omnetpp.scave2.model.DatasetManager;
@@ -62,6 +61,8 @@ public class ChartPage2 extends ScaveEditorPage {
 		chart.setDataset(xydataset);
 		chart.setCaching(false);
 		//chart.setDefaultPlotter(new DotsVectorPlotter());
+		//chart.setDefaultPlotter(new PinsVectorPlotter());
+		chart.setDefaultPlotter(new SampleHoldVectorPlotter());
 
 		chart.setBackground(ColorConstants.white);
 		new RubberbandSupport(chart, SWT.CTRL) {

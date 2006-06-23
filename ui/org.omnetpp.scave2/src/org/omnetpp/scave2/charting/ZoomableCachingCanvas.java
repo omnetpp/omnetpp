@@ -94,7 +94,7 @@ public abstract class ZoomableCachingCanvas extends CachingCanvas {
 	}
 
 	public double fromVirtualY(long y) {
-		return (y - insets.top) / zoomY + minY;
+		return maxY - (y - insets.top) / zoomY;
 	}
 	
 	public double getViewportCenterCoordX() {
@@ -108,11 +108,11 @@ public abstract class ZoomableCachingCanvas extends CachingCanvas {
 	}
 	
 	public void centerXOn(double xCoord) {
-		scrollHorizontalTo((long)((xCoord - minX)*zoomX) - getViewportLeft());
+		scrollHorizontalTo(toVirtualX(xCoord) - getWidth()/2);
 	}
 
 	public void centerYOn(double yCoord) {
-		scrollVerticalTo((long)((yCoord - minY)*zoomY) - getViewportTop());
+		scrollVerticalTo(toVirtualY(yCoord) - getHeight()/2);
 	}
 	
 	public void setZoomX(double zoom) {
@@ -193,6 +193,9 @@ public abstract class ZoomableCachingCanvas extends CachingCanvas {
 		double w = (maxX - minX)*zoomX;
 		double h = (maxY - minY)*zoomY;
 		setVirtualSize((long)w + insets.getWidth(), (long)h + insets.getHeight());
+		
+		//if (getVirtualHeight() < getHeight()) setVirtualHeight(getHeight()); //XXX experimental
+		//if (getVirtualWidth() < getWidth()) setVirtualWidth(getWidth()); //XXX experimental
 	}
 
 	public Insets getInsets() {
