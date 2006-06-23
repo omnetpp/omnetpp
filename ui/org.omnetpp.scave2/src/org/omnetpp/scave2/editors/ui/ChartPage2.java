@@ -20,6 +20,7 @@ import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.Dataset;
 import org.omnetpp.scave.model.DatasetType;
 import org.omnetpp.scave2.charting.ChartHelper;
+import org.omnetpp.scave2.charting.DotsVectorPlotter;
 import org.omnetpp.scave2.charting.VectorChart;
 import org.omnetpp.scave2.editors.ScaveEditor;
 import org.omnetpp.scave2.model.DatasetManager;
@@ -60,6 +61,7 @@ public class ChartPage2 extends ScaveEditorPage {
 		chart.setLayoutData(new GridData(SWT.FILL,SWT.FILL,true,true));
 		chart.setDataset(xydataset);
 		chart.setCaching(false);
+		//chart.setDefaultPlotter(new DotsVectorPlotter());
 		Display.getCurrent().asyncExec(new Runnable() {
 			public void run() {
 				chart.zoomToFitX();
@@ -90,21 +92,36 @@ public class ChartPage2 extends ScaveEditorPage {
 		Button canvasCaching = new Button(controlStrip, SWT.CHECK);
 		canvasCaching.setText("Caching");
 		
-		Button zoomIn = new Button(controlStrip, SWT.NONE);
-		zoomIn.setText("Zoom in");
+		Button zoomInX = new Button(controlStrip, SWT.NONE);
+		zoomInX.setText("X+");
 		
-		Button zoomOut = new Button(controlStrip, SWT.NONE);
-		zoomOut.setText("Zoom out");
+		Button zoomInY = new Button(controlStrip, SWT.NONE);
+		zoomInY.setText("Y+");
+		
+		Button zoomOutX = new Button(controlStrip, SWT.NONE);
+		zoomOutX.setText("X-");
 
+		Button zoomOutY = new Button(controlStrip, SWT.NONE);
+		zoomOutY.setText("Y-");
+		
 		// add event handlers
-		zoomIn.addSelectionListener(new SelectionAdapter() {
+		zoomInX.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
-				chart.zoomBy(1.5);
+				chart.zoomXBy(1.5);
 			}});
 		
-		zoomOut.addSelectionListener(new SelectionAdapter() {
+		zoomOutX.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
-				chart.zoomBy(1/1.5);
+				chart.zoomXBy(1/1.5);
+			}});
+		zoomInY.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
+				chart.zoomYBy(1.5);
+			}});
+		
+		zoomOutY.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
+				chart.zoomYBy(1/1.5);
 			}});
 
 		canvasCaching.setSelection(chart.getCaching());

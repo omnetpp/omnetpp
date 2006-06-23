@@ -6,15 +6,39 @@ import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Composite;
 import org.jfree.data.xy.XYDataset;
+import org.omnetpp.common.color.ColorFactory;
 
 import sun.java2d.loops.DrawRect;
 
 public class VectorChart extends ZoomableCachingCanvas {
 	private static final Color INSETS_BACKGROUND_COLOR = new Color(null, 255, 255, 128);
 	private static final Color INSETS_LINE_COLOR = new Color(null, 0,0,0);
-	
+
 	private XYDataset dataset;
 	private IVectorPlotter defaultPlotter = new LinesVectorPlotter();
+
+	private static Color[] goodChartColors = new Color[] { //XXX to ColorFactory?
+		ColorFactory.asColor("blue"),
+		ColorFactory.asColor("red2"),
+		ColorFactory.asColor("green"),
+		ColorFactory.asColor("orange"),
+		ColorFactory.asColor("#008000"),
+		ColorFactory.asColor("darkgray"), 
+		ColorFactory.asColor("#a00000"), 
+		ColorFactory.asColor("#008080"), 
+		ColorFactory.asColor("cyan"), 
+		ColorFactory.asColor("#808000"),
+		ColorFactory.asColor("#8080ff"), 
+		ColorFactory.asColor("yellow"), 
+		ColorFactory.asColor("black"), 
+		ColorFactory.asColor("purple"), 
+		ColorFactory.asColor("gray")
+		//XXX add more
+	};
+
+	public Color getChartColor(int i) {
+		return goodChartColors[i % goodChartColors.length];
+	}
 	
 	public VectorChart(Composite parent, int style) {
 		super(parent, style);
@@ -39,7 +63,7 @@ public class VectorChart extends ZoomableCachingCanvas {
 		this.defaultPlotter = defaultPlotter;
 		clearCanvasCacheAndRedraw();
 	}
-	
+
 	private void calculateArea() {
 		if (dataset==null || dataset.getSeriesCount()==0) {
 			setArea(0,0,0,0);
@@ -72,10 +96,11 @@ public class VectorChart extends ZoomableCachingCanvas {
 	@Override
 	protected void paintCachableLayer(Graphics graphics) {
 		graphics.setForegroundColor(new Color(null,0,0,0));
-		graphics.drawRectangle(toCanvasX(minX), toCanvasY(minY), 10, 10);
-		graphics.drawRectangle(toCanvasX(maxX), toCanvasY(maxY), 10, 10);
-		
+		graphics.drawOval(toCanvasX(minX)-5, toCanvasY(minY)-5, 11, 11);
+		graphics.drawOval(toCanvasX(maxX)-5, toCanvasY(maxY)-5, 11, 11);
+
 		for (int series=0; series<dataset.getSeriesCount(); series++) {
+			graphics.setForegroundColor(getChartColor(series));
 			defaultPlotter.plot(dataset, series, graphics, this);
 		}
 	}
@@ -95,7 +120,7 @@ public class VectorChart extends ZoomableCachingCanvas {
 
 		graphics.setForegroundColor(INSETS_LINE_COLOR);
 		graphics.drawRectangle(insets.left-1, insets.top-1, getWidth()-insets.getWidth()+1, getHeight()-insets.getHeight()+1);
-		
+
 		//TODO draw ticks an tick labels
 	}
 
