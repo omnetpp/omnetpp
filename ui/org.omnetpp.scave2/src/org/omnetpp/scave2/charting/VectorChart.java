@@ -14,7 +14,8 @@ public class VectorChart extends ZoomableCachingCanvas {
 	private static final Color INSETS_LINE_COLOR = new Color(null, 0,0,0);
 	
 	private XYDataset dataset;
-
+	private IVectorPlotter defaultPlotter = new LinesVectorPlotter();
+	
 	public VectorChart(Composite parent, int style) {
 		super(parent, style);
 		super.setInsets(new Insets(10,30,10,10));
@@ -30,6 +31,15 @@ public class VectorChart extends ZoomableCachingCanvas {
 		clearCanvasCacheAndRedraw();
 	}
 
+	public IVectorPlotter getDefaultPlotter() {
+		return defaultPlotter;
+	}
+
+	public void setDefaultPlotter(IVectorPlotter defaultPlotter) {
+		this.defaultPlotter = defaultPlotter;
+		clearCanvasCacheAndRedraw();
+	}
+	
 	private void calculateArea() {
 		if (dataset==null || dataset.getSeriesCount()==0) {
 			setArea(0,0,0,0);
@@ -62,21 +72,11 @@ public class VectorChart extends ZoomableCachingCanvas {
 	@Override
 	protected void paintCachableLayer(Graphics graphics) {
 		graphics.setForegroundColor(new Color(null,0,0,0));
-		graphics.drawRectangle(
-				toCanvasX(minX),
-				toCanvasY(minY),
-				10,10);
-		graphics.drawRectangle(
-				toCanvasX(maxX),
-				toCanvasY(maxY),
-				10,10);
+		graphics.drawRectangle(toCanvasX(minX), toCanvasY(minY), 10, 10);
+		graphics.drawRectangle(toCanvasX(maxX), toCanvasY(maxY), 10, 10);
+		
 		for (int series=0; series<dataset.getSeriesCount(); series++) {
-			int n = dataset.getItemCount(series);
-			for (int i=0; i<n; i++) {
-				graphics.drawPoint(
-						toCanvasX(dataset.getXValue(series, i)),
-						toCanvasY(dataset.getYValue(series, i)));
-			}
+			defaultPlotter.plot(dataset, series, graphics, this);
 		}
 	}
 
@@ -96,5 +96,7 @@ public class VectorChart extends ZoomableCachingCanvas {
 		graphics.setForegroundColor(INSETS_LINE_COLOR);
 		graphics.drawRectangle(insets.left-1, insets.top-1, getWidth()-insets.getWidth()+1, getHeight()-insets.getHeight()+1);
 		
+		//TODO draw ticks an tick labels
 	}
+
 }

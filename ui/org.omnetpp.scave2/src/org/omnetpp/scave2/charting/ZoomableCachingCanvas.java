@@ -43,38 +43,38 @@ public abstract class ZoomableCachingCanvas extends CachingCanvas {
     	setUpMouseHandling();
 	}
 
-	protected double fromCanvasX(int x) {
+	public double fromCanvasX(int x) {
 		return (x + getViewportLeft()) / zoomX + minX;
 	}
 
-	protected double fromCanvasY(int y) {
+	public double fromCanvasY(int y) {
 		return (y + getViewportTop()) / zoomY + minY;
 	}
 
-	protected double fromCanvasDistX(int x) {
+	public double fromCanvasDistX(int x) {
 		return x / zoomX + minX;
 	}
 
-	protected double fromCanvasDistY(int y) {
+	public double fromCanvasDistY(int y) {
 		return y / zoomY + minY;
 	}
 	
-	protected int toCanvasX(double xCoord) {
+	public int toCanvasX(double xCoord) {
 		long x = (long)((xCoord - minX)*zoomX) - getViewportLeft();
 		return x<-MAXPIX ? -MAXPIX : x>MAXPIX ? MAXPIX : (int)x;
 	}
 
-	protected int toCanvasY(double yCoord) {
+	public int toCanvasY(double yCoord) {
 		long y = (long)((yCoord - minY)*zoomY) - getViewportTop();
 		return y<-MAXPIX ? -MAXPIX : y>MAXPIX ? MAXPIX : (int)y;
 	}
 
-	protected int toCanvasDistX(double xCoord) {
+	public int toCanvasDistX(double xCoord) {
 		long x = (long)((xCoord - minX)*zoomX);
 		return x<-MAXPIX ? -MAXPIX : x>MAXPIX ? MAXPIX : (int)x;
 	}
 
-	protected int toCanvasDistY(double yCoord) {
+	public int toCanvasDistY(double yCoord) {
 		long y = (long)((yCoord - minY)*zoomY) - getViewportTop();
 		return y<-MAXPIX ? -MAXPIX : y>MAXPIX ? MAXPIX : (int)y;
 	}
