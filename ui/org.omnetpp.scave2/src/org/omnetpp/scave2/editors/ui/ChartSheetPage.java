@@ -14,6 +14,7 @@ import org.omnetpp.scave.model.ChartSheet;
 import org.omnetpp.scave.model.Dataset;
 import org.omnetpp.scave.model.DatasetType;
 import org.omnetpp.scave2.charting.ChartFactory;
+import org.omnetpp.scave2.charting.VectorChart;
 import org.omnetpp.scave2.editors.ScaveEditor;
 import org.omnetpp.scave2.model.DatasetManager;
 import org.omnetpp.scave2.model.ScaveModelUtil;
@@ -68,5 +69,6 @@ public class ChartSheetPage extends ScaveEditorPage {
 			DatasetType type = dataset.getType();
 			addChart(ChartFactory.createChart(parent, type, idlist, scaveEditor.getResultFileManager()));
 		}
+		
 	}
 }

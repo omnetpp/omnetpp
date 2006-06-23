@@ -1,5 +1,7 @@
 package org.omnetpp.scave2.charting;
 
+import org.eclipse.draw2d.geometry.Insets;
+import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseListener;
@@ -11,10 +13,12 @@ import org.eclipse.swt.widgets.Listener;
 import org.omnetpp.common.canvas.CachingCanvas;
 
 /**
- * This is a zoomable scrollable canvas, with optional caching.
+ * Extends CachingCanvas with zoom handling capabilities. Dragging and
+ * mouse wheel zooming behaviours also added.
  *
  * @author andras
  */
+//FIXME insets should be taken into account by coord calculation functions and zooming functions
 public abstract class ZoomableCachingCanvas extends CachingCanvas {
 
 	private static final Cursor DRAG_CURSOR = new Cursor(null, SWT.CURSOR_SIZEALL);
@@ -26,10 +30,10 @@ public abstract class ZoomableCachingCanvas extends CachingCanvas {
 	private int dragStartX;
 	private int dragStartY;
 
-	public static class Bounds {
-		public double minX, maxX;
-		public double minY, maxY;
-	}
+	protected double minX, maxX;  //XXX make private
+	protected double minY, maxY;  //XXX make private
+
+	private Insets insets;  // size of margins used for axis drawing
 	
 	/**
      * Constructor.
@@ -39,42 +43,58 @@ public abstract class ZoomableCachingCanvas extends CachingCanvas {
     	setUpMouseHandling();
 	}
 
-	public abstract Bounds getArea();
+	protected double fromCanvasX(int x) {
+		return (x + getViewportLeft()) / zoomX + minX;
+	}
+
+	protected double fromCanvasY(int y) {
+		return (y + getViewportTop()) / zoomY + minY;
+	}
+
+	protected double fromCanvasDistX(int x) {
+		return x / zoomX + minX;
+	}
+
+	protected double fromCanvasDistY(int y) {
+		return y / zoomY + minY;
+	}
+	
+	protected int toCanvasX(double xCoord) {
+		long x = (long)((xCoord - minX)*zoomX) - getViewportLeft();
+		return x<-MAXPIX ? -MAXPIX : x>MAXPIX ? MAXPIX : (int)x;
+	}
+
+	protected int toCanvasY(double yCoord) {
+		long y = (long)((yCoord - minY)*zoomY) - getViewportTop();
+		return y<-MAXPIX ? -MAXPIX : y>MAXPIX ? MAXPIX : (int)y;
+	}
+
+	protected int toCanvasDistX(double xCoord) {
+		long x = (long)((xCoord - minX)*zoomX);
+		return x<-MAXPIX ? -MAXPIX : x>MAXPIX ? MAXPIX : (int)x;
+	}
+
+	protected int toCanvasDistY(double yCoord) {
+		long y = (long)((yCoord - minY)*zoomY) - getViewportTop();
+		return y<-MAXPIX ? -MAXPIX : y>MAXPIX ? MAXPIX : (int)y;
+	}
 	
 	public double getViewportCenterCoordX() {
 		int middleX = getWidth() / 2;
-		return pixelToCoordX(middleX);
+		return fromCanvasX(middleX);
 	}
 
 	public double getViewportCenterCoordY() {
 		int middleY = getHeight() / 2;
-		return pixelToCoordY(middleY);
-	}
-	
-	protected double pixelToCoordX(int x) {
-		return (x + getViewportLeft()) / zoomX + getArea().minX;
-	}
-
-	protected double pixelToCoordY(int y) {
-		return (y + getViewportTop()) / zoomY + getArea().minY;
-	}
-
-	protected int coordToPixelX(double xCoord) {
-		long x = (long)((xCoord - getArea().minX)*zoomX);
-		return x<-MAXPIX ? -MAXPIX : x>MAXPIX ? MAXPIX : (int)x;
-	}
-
-	protected int coordToPixelY(double yCoord) {
-		long y = (long)((yCoord - getArea().minY)*zoomY);
-		return y<-MAXPIX ? -MAXPIX : y>MAXPIX ? MAXPIX : (int)y;
+		return fromCanvasY(middleY);
 	}
 	
 	public void centerXOn(double xCoord) {
-		scrollHorizontalTo((long)((xCoord - getArea().minX)*zoomX) - getViewportLeft());
+		scrollHorizontalTo((long)((xCoord - minX)*zoomX) - getViewportLeft());
 	}
 
 	public void centerYOn(double yCoord) {
-		scrollVerticalTo((long)((yCoord - getArea().minY)*zoomY) - getViewportTop());
+		scrollVerticalTo((long)((yCoord - minY)*zoomY) - getViewportTop());
 	}
 	
 	public void setZoomX(double zoom) {
@@ -108,17 +128,51 @@ public abstract class ZoomableCachingCanvas extends CachingCanvas {
 	public void zoomYBy(double zoomFactor) {
 		setZoomY(zoomY * zoomFactor);	
 	}
-	
+
 	public void zoomBy(double zoomFactor) {
 		zoomXBy(zoomFactor);
 		zoomYBy(zoomFactor);
 	}
 	
+	public void zoomToFitX() {
+		int width = getWidth()==0 ? 300 : getWidth(); // zero before canvas gets layouted
+		setZoomX(width / (maxX - minX));
+	}
+
+	public void zoomToFitY() {
+		int height = getHeight()==0 ? 200 : getHeight(); // zero before canvas gets layouted
+		setZoomY(height / (maxY - minY));
+	}
+	
+	public void zoomToFit() {
+		zoomToFitX();
+		zoomToFitY();
+	}
+
+	public void zoomToRectangle(Rectangle rectangle) {
+		// TODO
+	}
+	
+	public void setArea(double minX, double minY, double maxX, double maxY) {
+		this.minX = minX;
+		this.minY = minY;
+		this.maxX = Math.max(minX, maxX);
+		this.maxY = Math.max(minY, maxY);
+		calculateVirtualSize();
+	}
+
 	protected void calculateVirtualSize() {
-		Bounds b = getArea();
-		double w = (b.maxX - b.minX)*zoomX;
-		double h = (b.maxY - b.minY)*zoomY;
+		double w = (maxX - minX)*zoomX;
+		double h = (maxY - minY)*zoomY;
 		setVirtualSize((long)w, (long)h);
+	}
+
+	public Insets getInsets() {
+		return insets;
+	}
+
+	public void setInsets(Insets insets) {
+		this.insets = insets;
 	}
 
 	public void clearCanvasCacheAndRedraw() {

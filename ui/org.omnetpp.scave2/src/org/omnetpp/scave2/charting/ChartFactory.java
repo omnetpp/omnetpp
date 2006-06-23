@@ -37,7 +37,6 @@ public class ChartFactory {
 		else if (type == DatasetType.HISTOGRAM_LITERAL)
 			return createHistogramChart(parent, idlist, manager);
 		else
-			//XXX tomi! ha if-letra van, mindig legyen "else" ag a vegen!!!!! (Andras)
 			throw new RuntimeException("invalid or unset dataset 'type' attribute: "+type); //XXX proper error handling
 	}
 

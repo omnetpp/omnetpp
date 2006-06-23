@@ -31,6 +31,7 @@ import org.omnetpp.scave.model.Inputs;
 import org.omnetpp.scave.model.ScaveModelFactory;
 import org.omnetpp.scave2.editors.ui.BrowseDataPage;
 import org.omnetpp.scave2.editors.ui.ChartPage;
+import org.omnetpp.scave2.editors.ui.ChartPage2;
 import org.omnetpp.scave2.editors.ui.ChartSheetPage;
 import org.omnetpp.scave2.editors.ui.DatasetPage;
 import org.omnetpp.scave2.editors.ui.DatasetsAndChartsPage;
@@ -272,6 +273,10 @@ public class ScaveEditor extends AbstractEMFModelEditor {
 	private int createChartPage(Chart chart) {
 		ChartPage page = new ChartPage(getContainer(), this, chart);
 		int index = addClosableScaveEditorPage(page);
+
+		ChartPage2 page2 = new ChartPage2(getContainer(), this, chart);  //XXX experimental
+		addClosableScaveEditorPage(page2); //XXX experimental
+
 		return index;
 	}
 	

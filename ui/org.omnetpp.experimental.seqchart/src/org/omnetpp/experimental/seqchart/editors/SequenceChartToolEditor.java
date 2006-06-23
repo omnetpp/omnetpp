@@ -361,7 +361,7 @@ public class SequenceChartToolEditor extends EditorPart implements INavigationLo
 			}
 		});
 		
-		showArrowHeads.setSelection(seqChart.getCaching());
+		canvasCaching.setSelection(seqChart.getCaching());
 		canvasCaching.addSelectionListener(new SelectionAdapter () {
 			public void widgetSelected(SelectionEvent e) {
 				seqChart.setCaching(((Button)e.getSource()).getSelection());
