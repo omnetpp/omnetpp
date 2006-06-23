@@ -4,7 +4,7 @@ import org.eclipse.draw2d.Graphics;
 import org.eclipse.swt.SWT;
 import org.jfree.data.xy.XYDataset;
 
-public class SampleHoldVectorPlotter implements IVectorPlotter {
+public class SampleHoldVectorPlotter extends VectorPlotter {
 
 	public void plot(XYDataset dataset, int series, Graphics graphics, VectorChart chart) {
 		int n = dataset.getItemCount(series);

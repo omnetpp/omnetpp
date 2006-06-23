@@ -4,7 +4,7 @@ import org.eclipse.draw2d.Graphics;
 import org.eclipse.swt.graphics.Color;
 import org.jfree.data.xy.XYDataset;
 
-public class PointsVectorPlotter implements IVectorPlotter {
+public class PointsVectorPlotter extends VectorPlotter {
 
 	public void plot(XYDataset dataset, int series, Graphics graphics, VectorChart chart) {
 		int n = dataset.getItemCount(series);

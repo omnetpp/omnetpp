@@ -77,6 +77,8 @@ public class VectorChart extends ZoomableCachingCanvas {
 			setArea(0,0,0,0);
 			return;
 		}
+		
+		// calculate bounding box
 		double minX = Double.MAX_VALUE;
 		double minY = Double.MAX_VALUE;
 		double maxX = Double.MIN_VALUE;
@@ -94,7 +96,18 @@ public class VectorChart extends ZoomableCachingCanvas {
 				}
 			}
 		}
-		setArea(minX, minY, maxX, maxY);
+        double width = maxX - minX;
+        double height = maxY - minY;
+        
+        int w = getWidth() - getInsets().getWidth();
+        int h = getHeight() - getInsets().getHeight();
+        if (w <= 0) w=800;
+        if (h <= 0) h=600;
+        setZoomX(w / (maxX - minX));
+		setZoomY(h / (maxY - minY) / 2);
+		setArea(minX-width, minY-height, maxX+width, maxY+height); // leave extra space around
+		scrollHorizontalTo(toVirtualX(0));
+		scrollVerticalTo(toVirtualY(0)-h);
 	}
 
 	@Override
@@ -159,6 +172,12 @@ public class VectorChart extends ZoomableCachingCanvas {
 			graphics.fillText(str, x + 3, getHeight() - 16);
 		}
 
+		// Y axis
+		if (startX<=0 && endX>=0) {
+			graphics.setLineStyle(SWT.LINE_SOLID);
+			graphics.drawLine(toCanvasX(0), 0, toCanvasX(0), getHeight());
+		}
+		
 		//draw Y ticks
 		//XXX factor out common code with X axis ticks
 		double startY = fromCanvasY(rect.y);
@@ -187,6 +206,12 @@ public class VectorChart extends ZoomableCachingCanvas {
 			graphics.fillText(str, 2, y+3);
 			graphics.fillText(str, getWidth() - 16, y+3);
 		}
+
+		// X axis
+		//if (startY<=0 && endY>=0) { //XXX
+			graphics.setLineStyle(SWT.LINE_SOLID);
+			graphics.drawLine(0, toCanvasY(0), getWidth(), toCanvasY(0));
+		//}
 	}
 
 }

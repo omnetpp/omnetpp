@@ -19,7 +19,7 @@ import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.Dataset;
 import org.omnetpp.scave.model.DatasetType;
 import org.omnetpp.scave2.charting.ChartHelper;
-import org.omnetpp.scave2.charting.SampleHoldVectorPlotter;
+import org.omnetpp.scave2.charting.DotsVectorPlotter;
 import org.omnetpp.scave2.charting.VectorChart;
 import org.omnetpp.scave2.editors.ScaveEditor;
 import org.omnetpp.scave2.model.DatasetManager;
@@ -58,11 +58,12 @@ public class ChartPage2 extends ScaveEditorPage {
 		XYDataset xydataset = ChartHelper.createXYDataSet(idlist, scaveEditor.getResultFileManager());
 		final VectorChart chart = new VectorChart(parent, SWT.DOUBLE_BUFFERED);
 		chart.setLayoutData(new GridData(SWT.FILL,SWT.FILL,true,true));
+		chart.setSize(getParent().getBounds().width, getParent().getBounds().height); // provide width/height hint until layouting runs
 		chart.setDataset(xydataset);
 		chart.setCaching(false);
-		//chart.setDefaultPlotter(new DotsVectorPlotter());
+		chart.setDefaultPlotter(new DotsVectorPlotter());
 		//chart.setDefaultPlotter(new PinsVectorPlotter());
-		chart.setDefaultPlotter(new SampleHoldVectorPlotter());
+		//chart.setDefaultPlotter(new SampleHoldVectorPlotter());
 
 		chart.setBackground(ColorConstants.white);
 		new RubberbandSupport(chart, SWT.CTRL) {

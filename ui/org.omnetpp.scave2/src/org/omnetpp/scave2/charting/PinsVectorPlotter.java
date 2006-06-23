@@ -4,7 +4,7 @@ import org.eclipse.draw2d.Graphics;
 import org.eclipse.swt.graphics.Color;
 import org.jfree.data.xy.XYDataset;
 
-public class PinsVectorPlotter implements IVectorPlotter {
+public class PinsVectorPlotter extends VectorPlotter {
 
 	public double referenceLevel = 0;  // baseline for the pins
 	
