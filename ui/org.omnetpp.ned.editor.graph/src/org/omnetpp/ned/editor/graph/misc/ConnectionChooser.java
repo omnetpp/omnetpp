@@ -76,14 +76,20 @@ public class ConnectionChooser {
 		// set the source and dest module names.
 		// if compound module, name must be empty
 		// for Submodules name must be the submodulename
-		if(srcMod instanceof SubmoduleNodeEx)
-			conn.setSrcModule(((SubmoduleNodeEx)srcMod).getName());
-		else
+		if(srcMod instanceof SubmoduleNodeEx) {
+			SubmoduleNodeEx smodNode = (SubmoduleNodeEx)srcMod;
+			conn.setSrcModule(smodNode.getName());
+			if (smodNode.getVectorSize()!= null && !"".equals(smodNode.getVectorSize()))
+					conn.setSrcModuleIndex(DEFAULT_INDEX);
+		} else
 			conn.setSrcModule(null);
 
-		if(destMod instanceof SubmoduleNodeEx)
-			conn.setDestModule(((SubmoduleNodeEx)destMod).getName());
-		else
+		if(destMod instanceof SubmoduleNodeEx) {
+			SubmoduleNodeEx dmodNode = (SubmoduleNodeEx)destMod;
+			conn.setDestModule(dmodNode.getName());
+			if (dmodNode.getVectorSize()!= null && !"".equals(dmodNode.getVectorSize()))
+					conn.setDestModuleIndex(DEFAULT_INDEX);
+		} else
 			conn.setDestModule(null);
 		
 		// set the possible gates

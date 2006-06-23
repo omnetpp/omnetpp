@@ -1,29 +1,14 @@
 package org.omnetpp.ned.editor.graph.model.commands;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.eclipse.gef.commands.Command;
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Menu;
-import org.eclipse.swt.widgets.MenuItem;
-import org.omnetpp.ned.editor.graph.misc.BlockingMenu;
 import org.omnetpp.ned.editor.graph.misc.ConnectionChooser;
 import org.omnetpp.ned2.model.CompoundModuleNodeEx;
 import org.omnetpp.ned2.model.ConnectionNodeEx;
 import org.omnetpp.ned2.model.IConnectable;
 import org.omnetpp.ned2.model.IConnectionContainer;
 import org.omnetpp.ned2.model.IElement;
-import org.omnetpp.ned2.model.INamedGraphNode;
-import org.omnetpp.ned2.model.ModelUtil;
 import org.omnetpp.ned2.model.SubmoduleNodeEx;
 import org.omnetpp.ned2.model.pojo.ConnectionNode;
-import org.omnetpp.ned2.model.pojo.GateNode;
-import org.omnetpp.resources.INEDComponent;
-import org.omnetpp.resources.NEDResourcesPlugin;
 
 /**
  * (Re)assigns a Connection to srcModule/destModule sub/compound module gates and also adds it to the
@@ -63,6 +48,8 @@ public class ConnectionCommand extends Command {
         newConn = (ConnectionNode)connNode.dup(null);
 
     }
+    
+    
     /**
      * Handles which module can be connected to which
      */
@@ -98,17 +85,17 @@ public class ConnectionCommand extends Command {
     	redo();
 
     	// after we connected the modules, let's ask the user which gates should be connected
-    	if(srcModule != null || destModule != null) {
-    		// ask the user for ser and dest gate names
-    		ConnectionNode tempConn = ConnectionChooser.open(srcModule, destModule);
-    		// if both gates are specified by the user do the model change
-    		if (tempConn != null) {
-    			copyConn(tempConn, newConn);
-        		redo();
-    		}
-    		else //otherwise revert the connection change (user cancel)
-    			undo();
-    	}
+//    	if(srcModule != null || destModule != null) {
+//    		// ask the user for ser and dest gate names
+//    		ConnectionNode tempConn = ConnectionChooser.open(srcModule, destModule);
+//    		// if both gates are specified by the user do the model change
+//    		if (tempConn != null) {
+//    			copyConn(tempConn, newConn);
+//        		redo();
+//    		}
+//    		else //otherwise revert the connection change (user cancel)
+//    			undo();
+//    	}
     }
 
     @Override
@@ -133,6 +120,7 @@ public class ConnectionCommand extends Command {
             // just store the NEXT sibling so we can put it back during undo to the right place
             connNodeNextSibling = (ConnectionNodeEx)connNode.getNextConnectionNodeSibling();
             // store the parent too so we now where to put it back during undo
+            // FIXME this does not work if connections are placed in connection groups
             parent = (IConnectionContainer)connNode.getParent().getParent();
             // now detach from both src and dest modules
             connNode.setSrcModuleRef(null);
@@ -155,7 +143,13 @@ public class ConnectionCommand extends Command {
         copyConn(oldConn, connNode);
     }
 
-	private void copyConn(ConnectionNode from, ConnectionNode to) {
+	/**
+	 * Utility method to copy base connection properties (except module names) from one 
+	 * connectionNode to the other
+	 * @param from
+	 * @param to
+	 */
+	public static void copyConn(ConnectionNode from, ConnectionNode to) {
 		to.setSrcModuleIndex(from.getSrcModuleIndex());
         to.setSrcGate(from.getSrcGate());
         to.setSrcGateIndex(from.getSrcGateIndex());
@@ -173,19 +167,42 @@ public class ConnectionCommand extends Command {
         srcModule = newSrcModule;
     }
 
-    public void setSrcGate(String newSrcGate) {
-        newConn.setSrcGate(newSrcGate);
-    }
 
     public void setDestModule(IConnectable newDestModule) {
         destModule = newDestModule;
     }
 
+    public String getSrcGate() {
+    	return newConn.getSrcGate();
+    }
+    
+    public void setSrcGate(String newSrcGate) {
+        newConn.setSrcGate(newSrcGate);
+    }
+
+    public String getDestGate() {
+    	return newConn.getDestGate();
+    }
+
     public void setDestGate(String newDestGate) {
         newConn.setDestGate(newDestGate);
     }
-    
-    
 
+	public IConnectable getDestModule() {
+		return destModule;
+	}
+
+	public IConnectable getSrcModule() {
+		return srcModule;
+	}
+    
+    /**
+     * @return The connection node used as a template, for the command. If the command is executed
+     * the model will have the same content as the temaplate connection.
+     */
+    public ConnectionNode getConnectionTemplate() {
+    	return newConn;
+    }
+ 
 	
 }

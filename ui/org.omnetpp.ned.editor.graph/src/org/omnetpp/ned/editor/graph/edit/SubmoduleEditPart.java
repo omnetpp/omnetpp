@@ -116,7 +116,7 @@ public class SubmoduleEditPart extends ModuleEditPart {
         
         // XXX callout bubble. just for testing
         if(getModuleFigure() instanceof DisplayCalloutSupport) {
-                if (dps.getLocation()!=null && dps.getLocation().x >70) ((DisplayCalloutSupport)getModuleFigure()).clearCallout();
+                if (dps.getLocation()!=null && dps.getLocation().x >-1) ((DisplayCalloutSupport)getModuleFigure()).clearCallout();
                 	else ((DisplayCalloutSupport)getModuleFigure()).addCallout("Yes Sir, my position is: "+dps.getLocation() );
 
         } 
