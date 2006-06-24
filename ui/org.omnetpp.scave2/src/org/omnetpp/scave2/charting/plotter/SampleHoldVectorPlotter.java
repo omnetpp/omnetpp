@@ -26,9 +26,9 @@ public class SampleHoldVectorPlotter extends VectorPlotter {
 			graphics.setLineStyle(SWT.LINE_SOLID);
 			symbol.drawSymbol(graphics, currentX, currentY);
 			graphics.drawLine(prevX, prevY, currentX, prevY);
-			graphics.setLineStyle(SWT.LINE_DOT);
+			//graphics.setLineStyle(SWT.LINE_DOT);
 			//graphics.setLineStyle(SWT.LINE_DASHDOTDOT);
-			//graphics.setLineDash(dots); // looks better, but much slower
+			graphics.setLineDash(dots); // looks better, but much slower
 			graphics.drawLine(currentX, prevY, currentX, currentY);
 			
 			prevX = currentX;

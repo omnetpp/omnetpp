@@ -25,8 +25,10 @@ public class DiamondSymbol extends ChartSymbol {
 		super.setSizeHint(sizeHint);
 		size = (sizeHint*141+50)/100;  // make same area as square; 1.41=sqrt(2)
 		size |= 1; // make it an odd number
-		int d = size/2;
-		poly = new int[] {-d+1,0,0,-d,d,0,0,d}; // +1: magic to make it look symmetric
+		int d = (sizeHint*71+50)/100;
+		poly = new int[] {-d+1,0,0,-d,d,0,0,d}; // with anti-alias OFF, +1 magic is needed to make it look symmetric
+		 										//FIXME with ON, it looks asymmetric... HELP!!!
+		//poly = new int[] {-d,0,0,-d,d,0,0,d}; XXX this will be asymmetric too, but WHY? 
 	}
 	
 	public void drawSymbol(Graphics graphics, int x, int y) {

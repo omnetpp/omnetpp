@@ -64,9 +64,6 @@ public class ChartPage2 extends ScaveEditorPage {
 		chart.setSize(getParent().getBounds().width, getParent().getBounds().height); // provide width/height hint until layouting runs
 		chart.setDataset(xydataset);
 		chart.setCaching(false);
-		chart.setDefaultLineType(new DotsVectorPlotter());
-		//chart.setDefaultPlotter(new PinsVectorPlotter());
-		//chart.setDefaultPlotter(new SampleHoldVectorPlotter());
 
 		chart.setBackground(ColorConstants.white);
 		new RubberbandSupport(chart, SWT.CTRL) {
@@ -91,43 +88,49 @@ public class ChartPage2 extends ScaveEditorPage {
 		Button canvasCaching = new Button(controlStrip, SWT.CHECK);
 		canvasCaching.setText("Caching");
 
-		Button zoomInX = new Button(controlStrip, SWT.NONE);
-		zoomInX.setText("X+");
+		Button antialias = new Button(controlStrip, SWT.CHECK);
+		antialias.setText("Antialias");
 
-		Button zoomInY = new Button(controlStrip, SWT.NONE);
-		zoomInY.setText("Y+");
+		Button zoomInX = new Button(controlStrip, SWT.NONE);
+		zoomInX.setText("Zoom <->");
 
 		Button zoomOutX = new Button(controlStrip, SWT.NONE);
-		zoomOutX.setText("X-");
+		zoomOutX.setText("Zoom -><-");
+
+		Button zoomInY = new Button(controlStrip, SWT.NONE);
+		zoomInY.setText("Zoom ^");
 
 		Button zoomOutY = new Button(controlStrip, SWT.NONE);
-		zoomOutY.setText("Y-");
+		zoomOutY.setText("Zoom v");
 
 		Combo lineType = new Combo(controlStrip, SWT.NONE);
 		lineType.setItems(new String[] {
-				"DotsVectorPlotter",
 				"LinesVectorPlotter",
-				"PinsVectorPlotter",
 				"PointsVectorPlotter",
-				"SampleHoldVectorPlotter"
+				"DotsVectorPlotter",
+				"PinsVectorPlotter",
+				"SampleHoldVectorPlotter",
 		});
 		lineType.setVisibleItemCount(lineType.getItemCount());
+		lineType.select(0); //XXX
 
 		Combo symbolType = new Combo(controlStrip, SWT.NONE);
 		symbolType.setItems(new String[] {
+				"SquareSymbol",
+				"DiamondSymbol",
+				"TriangleSymbol",
 				"OvalSymbol",
 				"CrossSymbol",
-				"DiamondSymbol",
 				"PlusSymbol",
-				"SquareSymbol",
-				"TriangleSymbol"
 		});
 		symbolType.setVisibleItemCount(symbolType.getItemCount());
+		symbolType.select(0); //XXX
 
 		Combo symbolSize = new Combo(controlStrip, SWT.NONE);
 		for (int i=0; i<=20; i++)
 			symbolSize.add(""+i);
 		symbolSize.setVisibleItemCount(symbolSize.getItemCount());
+		symbolSize.select(4); //XXX
 
 		// add event handlers
 		zoomInX.addSelectionListener(new SelectionAdapter() {
@@ -157,6 +160,13 @@ public class ChartPage2 extends ScaveEditorPage {
 			}
 		});
 
+		antialias.setSelection(chart.getAntialias()==SWT.ON);
+		antialias.addSelectionListener(new SelectionAdapter () {
+			public void widgetSelected(SelectionEvent e) {
+				chart.setAntialias(((Button)e.getSource()).getSelection() ? SWT.ON : SWT.OFF);
+			}
+		});
+		
 		lineType.addSelectionListener(new SelectionAdapter () {
 			public void widgetSelected(SelectionEvent e) {
 				Combo combo = ((Combo)e.getSource());
@@ -173,10 +183,10 @@ public class ChartPage2 extends ScaveEditorPage {
 			public void widgetSelected(SelectionEvent e) {
 				Combo combo = ((Combo)e.getSource());
 				String sel = combo.getItem(combo.getSelectionIndex());
-				int oldSize = chart.getDefaultSymbol().getSizeHint();
+				int oldSizeHint = chart.getDefaultSymbol().getSizeHint();
 				try {
 					chart.setDefaultSymbol((IChartSymbol)(Class.forName("org.omnetpp.scave2.charting.plotter."+sel).newInstance()));
-					chart.getDefaultSymbol().setSizeHint(oldSize);
+					chart.getDefaultSymbol().setSizeHint(oldSizeHint);
 				} catch (Exception e1) {
 					e1.printStackTrace();
 				}
@@ -188,6 +198,7 @@ public class ChartPage2 extends ScaveEditorPage {
 				Combo combo = ((Combo)e.getSource());
 				String sel = combo.getItem(combo.getSelectionIndex());
 				chart.getDefaultSymbol().setSizeHint(Integer.parseInt(sel));
+				chart.clearCanvasCacheAndRedraw();
 			}
 		});
 		return controlStrip;

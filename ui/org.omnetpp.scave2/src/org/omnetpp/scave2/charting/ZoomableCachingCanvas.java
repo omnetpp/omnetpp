@@ -18,20 +18,20 @@ import org.omnetpp.common.canvas.CachingCanvas;
  *
  * @author andras
  */
-//FIXME insets should be taken into account by coord calculation functions and zooming functions
+//FIXME while zooming with Ctrl+wheel too fast, one can get "event loop exception: SWTError: No more handles" 
 public abstract class ZoomableCachingCanvas extends CachingCanvas {
 
 	private static final Cursor DRAG_CURSOR = new Cursor(null, SWT.CURSOR_SIZEALL);
 	private static final int MAXPIX = Integer.MAX_VALUE / 2;
 	
-	private double zoomX = 100; // pixels per coordinate unit
-	private double zoomY = 100; // pixels per coordinate unit
+	private double zoomX = 0; // pixels per coordinate unit
+	private double zoomY = 0; // pixels per coordinate unit
 	
 	private int dragStartX;
 	private int dragStartY;
 
-	protected double minX, maxX;  //XXX make private
-	protected double minY, maxY;  //XXX make private
+	protected double minX, maxX;  //XXX make private and add getArea()
+	protected double minY, maxY;  //XXX make private and add getArea()
 
 	private Insets insets;  // size of margins used for axis drawing
 	
@@ -117,7 +117,7 @@ public abstract class ZoomableCachingCanvas extends CachingCanvas {
 	
 	public void setZoomX(double zoom) {
 		double x = getViewportCenterCoordX();
-		zoomX  = zoom;
+		zoomX = zoom;
 		calculateVirtualSize();
 		centerXOn(x);
 		clearCanvasCacheAndRedraw();
@@ -153,13 +153,11 @@ public abstract class ZoomableCachingCanvas extends CachingCanvas {
 	}
 	
 	public void zoomToFitX() {
-		int width = getWidth()==0 ? 300 : getWidth(); // getWidth() is zero before canvas gets layouted
-		setZoomX((width - insets.getWidth()) / (maxX - minX));
+		zoomX = 0;  // means "zoom out completely"; will be done by zoom validation in beforePaint()
 	}
 
 	public void zoomToFitY() {
-		int height = getHeight()==0 ? 200 : getHeight(); // getWidth() is zero before canvas gets layouted
-		setZoomY((height - insets.getHeight()) / (maxY - minY));
+		zoomY = 0;  // means "zoom out completely"; will be done by zoom validation in beforePaint()
 	}
 	
 	public void zoomToFit() {
@@ -193,9 +191,6 @@ public abstract class ZoomableCachingCanvas extends CachingCanvas {
 		double w = (maxX - minX)*zoomX;
 		double h = (maxY - minY)*zoomY;
 		setVirtualSize((long)w + insets.getWidth(), (long)h + insets.getHeight());
-		
-		//if (getVirtualHeight() < getHeight()) setVirtualHeight(getHeight()); //XXX experimental
-		//if (getVirtualWidth() < getWidth()) setVirtualWidth(getWidth()); //XXX experimental
 	}
 
 	public Insets getInsets() {
@@ -209,6 +204,22 @@ public abstract class ZoomableCachingCanvas extends CachingCanvas {
 	public void clearCanvasCacheAndRedraw() {
 		clearCanvasCache();
 		redraw();
+	}
+
+	@Override
+	protected void beforePaint() {
+		// validate zoom, so that one cannot zoom out too much (the content (getArea()) must cover full canvas)
+		double minZoomX = (getWidth()-getInsets().getWidth()) / (maxX - minX); 
+		if (zoomX < minZoomX) {
+			zoomX = minZoomX;
+			calculateVirtualSize();
+		}
+
+		double minZoomY = (getHeight()-getInsets().getHeight()) / (maxY - minY); 
+		if (zoomY < minZoomY){
+			zoomY = minZoomY;
+			calculateVirtualSize();
+		}
 	}
 
 	/**

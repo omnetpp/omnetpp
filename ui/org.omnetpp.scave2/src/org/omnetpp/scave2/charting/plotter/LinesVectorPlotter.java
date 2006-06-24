@@ -14,10 +14,7 @@ public class LinesVectorPlotter extends VectorPlotter {
 		
 		int prevX = chart.toCanvasX(dataset.getXValue(series, 0));
 		int prevY = chart.toCanvasY(dataset.getYValue(series, 0));
-		if (n==1) {
-			symbol.drawSymbol(graphics, prevX, prevY);
-			return;
-		}
+		symbol.drawSymbol(graphics, prevX, prevY);
 
 		// n>1
 		//XXX paint cliprect only

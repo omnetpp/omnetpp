@@ -11,12 +11,10 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Composite;
 import org.jfree.data.xy.XYDataset;
 import org.omnetpp.common.color.ColorFactory;
-import org.omnetpp.scave2.charting.plotter.OvalSymbol;
 import org.omnetpp.scave2.charting.plotter.IChartSymbol;
 import org.omnetpp.scave2.charting.plotter.IVectorPlotter;
 import org.omnetpp.scave2.charting.plotter.LinesVectorPlotter;
-
-import sun.java2d.loops.DrawRect;
+import org.omnetpp.scave2.charting.plotter.SquareSymbol;
 
 public class VectorChart extends ZoomableCachingCanvas {
 	private static final Color TICK_LINE_COLOR = new Color(null, 160, 160, 160);
@@ -28,8 +26,9 @@ public class VectorChart extends ZoomableCachingCanvas {
 
 	private XYDataset dataset;
 	private IVectorPlotter defaultPlotter = new LinesVectorPlotter();
-	private IChartSymbol defaultSymbol = new OvalSymbol(5);
-
+	private IChartSymbol defaultSymbol = new SquareSymbol(3);
+	private int antialias = SWT.ON; // SWT.ON, SWT.OFF, SWT.DEFAULT
+	
 	private static Color[] goodChartColors = new Color[] { //XXX to ColorFactory?
 		ColorFactory.asColor("blue"),
 		ColorFactory.asColor("red2"),
@@ -83,8 +82,18 @@ public class VectorChart extends ZoomableCachingCanvas {
 
 	public void setDefaultSymbol(IChartSymbol defaultSymbol) {
 		this.defaultSymbol = defaultSymbol;
+		clearCanvasCacheAndRedraw();
 	}
 	
+	public int getAntialias() {
+		return antialias;
+	}
+
+	public void setAntialias(int antialias) {
+		this.antialias = antialias;
+		clearCanvasCacheAndRedraw();
+	}
+
 	private void calculateArea() {
 		if (dataset==null || dataset.getSeriesCount()==0) {
 			setArea(0,0,0,0);
@@ -111,28 +120,19 @@ public class VectorChart extends ZoomableCachingCanvas {
 		}
         double width = maxX - minX;
         double height = maxY - minY;
-        
-        int w = getWidth() - getInsets().getWidth();
-        int h = getHeight() - getInsets().getHeight();
-        if (w <= 0) w=800;
-        if (h <= 0) h=600;
-        setZoomX(w / (maxX - minX));
-		setZoomY(h / (maxY - minY) / 2);
-		setArea(minX-width, minY-height, maxX+width, maxY+height); // leave extra space around
-		scrollHorizontalTo(toVirtualX(0));
-		scrollVerticalTo(toVirtualY(0)-h);
+
+        setArea(minX-width/80, minY-height/5, maxX+width/80, maxY+height/3); // leave some extra space
+        zoomToFit(); // zoom out completely
 	}
 
 	@Override
 	protected void beforePaint() {
+		super.beforePaint();
 	}
 
 	@Override
 	protected void paintCachableLayer(Graphics graphics) {
-		graphics.setForegroundColor(new Color(null,0,0,0));
-		graphics.drawOval(toCanvasX(minX)-5, toCanvasY(minY)-5, 11, 11);
-		graphics.drawOval(toCanvasX(maxX)-5, toCanvasY(maxY)-5, 11, 11);
-
+		graphics.setAntialias(antialias);
 		for (int series=0; series<dataset.getSeriesCount(); series++) {
 			graphics.setForegroundColor(getChartColor(series));
 			defaultPlotter.plot(dataset, series, graphics, this, defaultSymbol);
@@ -142,7 +142,7 @@ public class VectorChart extends ZoomableCachingCanvas {
 	@Override
 	protected void paintNoncachableLayer(Graphics graphics) {
 		Insets insets = getInsets();
-		graphics.drawText("X range: "+minX+".."+maxX+"   Y range: "+minY+".."+maxY, insets.left, insets.top);
+		graphics.setAntialias(antialias);
 
 		// draw insets border
 		graphics.setForegroundColor(INSETS_BACKGROUND_COLOR);
@@ -221,7 +221,7 @@ public class VectorChart extends ZoomableCachingCanvas {
 		}
 
 		// X axis
-		//if (startY<=0 && endY>=0) { //XXX
+		//if (startY<=0 && endY>=0) { //XXX with this "if" sometimes it doesn't draw
 			graphics.setLineStyle(SWT.LINE_SOLID);
 			graphics.drawLine(0, toCanvasY(0), getWidth(), toCanvasY(0));
 		//}

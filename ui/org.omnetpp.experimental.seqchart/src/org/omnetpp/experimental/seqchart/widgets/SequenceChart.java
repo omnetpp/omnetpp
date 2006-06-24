@@ -52,7 +52,6 @@ import org.omnetpp.scave.engine.XYArray;
  * @author andras, levy
  */
 //FIXME expressions like int x = (int)(logFacade.getEvent_i_cachedX(i) - getViewportLeft()) may overflow -- make use of XMAX!
-//TODO improve mouse handling; support wheel too!
 //FIXME ensure consistency of internal data structure when doing set() operations!!!!
 //TODO renaming: DELIVERY->SENDING, NONDELIVERY->USAGE, isDelivery->isSending;
 //               Timeline modes: Linear, Step, Compact (=nonlinear), Compact2 (CompactWithStep);
@@ -61,6 +60,7 @@ import org.omnetpp.scave.engine.XYArray;
 //TODO proper "hand" cursor - current one is not very intuitive
 //TODO max number of event selection marks must be limited (e.g. max 1000)
 //TODO hierarchic sort is not yet implemented
+//FIXME while zooming with Ctrl+wheel too fast, one can get "event loop exception: SWTError: No more handles" 
 public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 
 	private static final Color LABEL_COLOR = new Color(null, 0, 0, 0);
