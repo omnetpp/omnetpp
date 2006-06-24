@@ -4,16 +4,25 @@ import org.eclipse.draw2d.Graphics;
 import org.eclipse.swt.SWT;
 
 /**
- * Declares utility functions for subclasses
+ * Draws a "cross" symbol.
  * 
  * @author andras
  */
 public class CrossSymbol extends ChartSymbol {
+	private int size;
+	
 	public CrossSymbol() {
 	}
 
 	public CrossSymbol(int size) {
 		super(size);
+	}
+
+	@Override
+	public void setSizeHint(int sizeHint) {
+		super.setSizeHint(sizeHint);
+		size = 3*sizeHint/2;
+		size |= 1; // make it an odd number
 	}
 
 	public void drawSymbol(Graphics graphics, int x, int y) {

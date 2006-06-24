@@ -5,9 +5,14 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 
 /**
+ * Draws a diamond symbol.
+ * 
  * @author andras
  */
 public class DiamondSymbol extends ChartSymbol {
+	private int size;
+	private int[] poly;
+	
 	public DiamondSymbol() {
 	}
 
@@ -15,6 +20,15 @@ public class DiamondSymbol extends ChartSymbol {
 		super(size);
 	}
 
+	@Override
+	public void setSizeHint(int sizeHint) {
+		super.setSizeHint(sizeHint);
+		size = (sizeHint*141+50)/100;  // make same area as square; 1.41=sqrt(2)
+		size |= 1; // make it an odd number
+		int d = size/2;
+		poly = new int[] {-d+1,0,0,-d,d,0,0,d}; // +1: magic to make it look symmetric
+	}
+	
 	public void drawSymbol(Graphics graphics, int x, int y) {
 		if (size<=0) {
 			// nothing
@@ -30,11 +44,9 @@ public class DiamondSymbol extends ChartSymbol {
 			graphics.drawPoint(x, y+1);
 		}
 		else {
-			int d = size/2;
-			int[] poly = new int[] {-d,0,0,-d,d,0,0,d}; //XXX cache it
 			graphics.translate(x, y);
 			graphics.setBackgroundColor(graphics.getForegroundColor());
-			graphics.fillPolygon(poly); //XXX make filled/unfilled version
+			graphics.fillPolygon(poly);
 			graphics.translate(-x, -y);
 		}
 	}

@@ -115,7 +115,7 @@ public class ChartPage2 extends ScaveEditorPage {
 
 		Combo symbolType = new Combo(controlStrip, SWT.NONE);
 		symbolType.setItems(new String[] {
-				"CircleSymbol",
+				"OvalSymbol",
 				"CrossSymbol",
 				"DiamondSymbol",
 				"PlusSymbol",
@@ -173,10 +173,10 @@ public class ChartPage2 extends ScaveEditorPage {
 			public void widgetSelected(SelectionEvent e) {
 				Combo combo = ((Combo)e.getSource());
 				String sel = combo.getItem(combo.getSelectionIndex());
-				int oldSize = chart.getDefaultSymbol().getSize();
+				int oldSize = chart.getDefaultSymbol().getSizeHint();
 				try {
 					chart.setDefaultSymbol((IChartSymbol)(Class.forName("org.omnetpp.scave2.charting.plotter."+sel).newInstance()));
-					chart.getDefaultSymbol().setSize(oldSize);
+					chart.getDefaultSymbol().setSizeHint(oldSize);
 				} catch (Exception e1) {
 					e1.printStackTrace();
 				}
@@ -187,7 +187,7 @@ public class ChartPage2 extends ScaveEditorPage {
 			public void widgetSelected(SelectionEvent e) {
 				Combo combo = ((Combo)e.getSource());
 				String sel = combo.getItem(combo.getSelectionIndex());
-				chart.getDefaultSymbol().setSize(Integer.parseInt(sel));
+				chart.getDefaultSymbol().setSizeHint(Integer.parseInt(sel));
 			}
 		});
 		return controlStrip;

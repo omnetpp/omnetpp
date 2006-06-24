@@ -4,11 +4,13 @@ import org.eclipse.draw2d.Graphics;
 import org.eclipse.swt.SWT;
 
 /**
- * Declares utility functions for subclasses
+ * Draws a "plus" symbol.
  * 
  * @author andras
  */
 public class PlusSymbol extends ChartSymbol {
+	private int size;
+	
 	public PlusSymbol() {
 	}
 
@@ -16,6 +18,13 @@ public class PlusSymbol extends ChartSymbol {
 		super(size);
 	}
 	
+	@Override
+	public void setSizeHint(int sizeHint) {
+		super.setSizeHint(sizeHint);
+		size = 3*sizeHint/2;
+		size |= 1; // make it an odd number
+	}
+
 	public void drawSymbol(Graphics graphics, int x, int y) {
 		if (size<=0) {
 			// nothing

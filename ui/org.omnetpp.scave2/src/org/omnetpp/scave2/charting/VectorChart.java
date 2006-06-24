@@ -11,7 +11,7 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Composite;
 import org.jfree.data.xy.XYDataset;
 import org.omnetpp.common.color.ColorFactory;
-import org.omnetpp.scave2.charting.plotter.CircleSymbol;
+import org.omnetpp.scave2.charting.plotter.OvalSymbol;
 import org.omnetpp.scave2.charting.plotter.IChartSymbol;
 import org.omnetpp.scave2.charting.plotter.IVectorPlotter;
 import org.omnetpp.scave2.charting.plotter.LinesVectorPlotter;
@@ -28,7 +28,7 @@ public class VectorChart extends ZoomableCachingCanvas {
 
 	private XYDataset dataset;
 	private IVectorPlotter defaultPlotter = new LinesVectorPlotter();
-	private IChartSymbol defaultSymbol = new CircleSymbol(5);
+	private IChartSymbol defaultSymbol = new OvalSymbol(5);
 
 	private static Color[] goodChartColors = new Color[] { //XXX to ColorFactory?
 		ColorFactory.asColor("blue"),

@@ -27,7 +27,7 @@ public interface IChartSymbol {
 //		graphics.fillPolygon(ii);
 //	System.out.println("oval: "+(System.currentTimeMillis()-start));
 
-	public int getSize();
-	public void setSize(int size);
+	public int getSizeHint();
+	public void setSizeHint(int size);
 	public void drawSymbol(Graphics graphics, int x, int y);
 }

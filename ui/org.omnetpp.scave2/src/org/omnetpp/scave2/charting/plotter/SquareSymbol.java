@@ -5,11 +5,13 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 
 /**
- * Declares utility functions for subclasses
+ * Draws a square symbol.
  * 
  * @author andras
  */
 public class SquareSymbol extends ChartSymbol {
+	private int size;
+	
 	public SquareSymbol() {
 	}
 
@@ -17,18 +19,19 @@ public class SquareSymbol extends ChartSymbol {
 		super(size);
 	}
 
+	@Override
+	public void setSizeHint(int sizeHint) {
+		super.setSizeHint(sizeHint);
+		size = sizeHint|1; // make odd number
+	}
+	
+	
 	public void drawSymbol(Graphics graphics, int x, int y) {
 		if (size<=0) {
 			// nothing
 		}
 		else if (size==1) {
 			graphics.drawPoint(x, y);
-		}
-		else if (size==2) {
-			graphics.drawPoint(x, y);
-			graphics.drawPoint(x-1, y); // note -1 not +1 to be consistent with size/2 for larger sizes
-			graphics.drawPoint(x, y-1);
-			graphics.drawPoint(x-1, y-1);
 		}
 		else {
 			graphics.setBackgroundColor(graphics.getForegroundColor());

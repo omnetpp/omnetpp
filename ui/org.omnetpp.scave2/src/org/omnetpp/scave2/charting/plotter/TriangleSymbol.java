@@ -4,11 +4,14 @@ import org.eclipse.draw2d.Graphics;
 import org.eclipse.swt.graphics.Color;
 
 /**
- * Declares utility functions for subclasses
+ * Draws a triangle symbol.
  * 
  * @author andras
  */
 public class TriangleSymbol extends ChartSymbol {
+	private int height;
+	private int[] poly;
+	
 	public TriangleSymbol() {
 	}
 
@@ -16,26 +19,33 @@ public class TriangleSymbol extends ChartSymbol {
 		super(size);
 	}
 
+	@Override
+	public void setSizeHint(int sizeHint) {
+		super.setSizeHint(sizeHint);
+		// equal-sized triangle whose area is sizeHint^2
+		height = (132*sizeHint+50)/100; // 1.32 = sqrt4(3)
+		int halfside = (76*sizeHint+50)/100; // 0.76 = 1 / sqrt4(3)
+		int off = (58*sizeHint+50)/100; // .58 = 1/sqrt(3)
+		poly = new int[] {-halfside, (height-off), 0, -off, halfside, (height-off)};
+	}
+	
 	public void drawSymbol(Graphics graphics, int x, int y) {
-		if (size<=0) {
+		if (sizeHint<=0) {
 			// nothing
 		}
-		else if (size==1) {
+		else if (sizeHint==1) {
 			graphics.drawPoint(x, y);
 		}
-		else if (size==2 || size==3) {
+		else if (sizeHint==2 || sizeHint==3) {
 			graphics.drawPoint(x, y);
 			graphics.drawPoint(x-1, y);
 			graphics.drawPoint(x+1, y);
 			graphics.drawPoint(x, y-1);
 		}
 		else {
-			int d = size/2;
-			int dd = (size*433+500)/1000;  // 0.433 = cos(30)/2
-			int[] poly = new int[] {0,-d, -dd, d/2, dd, d/2};
 			graphics.translate(x, y);
 			graphics.setBackgroundColor(graphics.getForegroundColor());
-			graphics.fillPolygon(poly); //XXX make filled/unfilled version
+			graphics.fillPolygon(poly);
 			graphics.translate(-x, -y);
 		}
 	}

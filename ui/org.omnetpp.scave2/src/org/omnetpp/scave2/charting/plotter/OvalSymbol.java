@@ -3,18 +3,28 @@ package org.omnetpp.scave2.charting.plotter;
 import org.eclipse.draw2d.Graphics;
 
 /**
- * Declares utility functions for subclasses
- * 
+ * Draws a "oval" symbol.
+ *
  * @author andras
  */
-public class CircleSymbol extends ChartSymbol {
-	public CircleSymbol() {
+public class OvalSymbol extends ChartSymbol {
+	private int size;
+	
+	public OvalSymbol() {
 	}
 
-	public CircleSymbol(int size) {
+	public OvalSymbol(int size) {
 		super(size);
 	}
 
+	@Override
+	public void setSizeHint(int sizeHint) {
+		super.setSizeHint(sizeHint);
+		size = (sizeHint*113+50)/100;  // make same area as square; 1.13=2/sqrt(pi)
+		size |= 1;  // make an odd number
+	}
+	
+	
 	public void drawSymbol(Graphics graphics, int x, int y) {
 		if (size<=0) {
 			// nothing
@@ -28,14 +38,9 @@ public class CircleSymbol extends ChartSymbol {
 			graphics.drawPoint(x, y-1);
 			graphics.drawPoint(x, y+1);
 		}
-		else if (size<8) {
-			graphics.drawOval(x-size/2, y-size/2, size, size);
-		}
 		else {
-			int saved = graphics.getLineWidth();
-			graphics.setLineWidth(size/4);
-			graphics.drawOval(x-size/2, y-size/2, size, size); //XXX make filled/unfilled version
-			graphics.setLineWidth(saved);
+			graphics.setBackgroundColor(graphics.getForegroundColor());
+			graphics.fillOval(x-size/2, y-size/2, size, size);
 		}
 	}
 }
