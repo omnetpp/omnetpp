@@ -20,8 +20,15 @@ import org.omnetpp.scave2.model.FilterParams;
  * and has absolutely no reference to the editor, or EMF model objects,
  * or any widgets outside -- nothing.
  * 
+ * The user is responsible to keep contents up-to-date in case
+ * ResultFileManager or IDList contents change. Refreshing can be
+ * done by calling setIDList(). 
+ *  
  * @author andras
  */
+//XXX tables and filter should include the experiment, measurement, replication fields as well
+//XXX filter should include expressions ("where load>10")
+//XXX make filter panel foldable?
 public class FilteredDataPanel extends Composite {
 	private FilteringPanel filterPanel;
 	private DataTable table;

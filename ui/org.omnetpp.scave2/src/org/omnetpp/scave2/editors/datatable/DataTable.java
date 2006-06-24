@@ -21,8 +21,9 @@ import org.omnetpp.scave.engineext.ResultFileManagerEx;
  * so it can be used with even millions of table lines without
  * performance degradation).
  * 
- * When the IDList changes, the table needs to be refreshed either
- * by a call to setIDList(), or by refresh().
+ * The user is responsible to keep contents up-to-date in case
+ * ResultFileManager or IDList contents change. Refreshing can be
+ * done either by a call to setIDList(), or by refresh().
  *  
  * @author andras
  */

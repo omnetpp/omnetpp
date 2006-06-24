@@ -26,9 +26,6 @@ import org.omnetpp.scave2.editors.datatable.FilteredDataPanel;
 /**
  * This is the "Browse data" page of Scave Editor
  */
-//XXX tables and filter should include the experiment, measurement, replication fields as well
-//XXX filter should include expressions ("where load>10")
-//XXX make filter panel foldable?
 public class BrowseDataPage extends ScaveEditorPage {
 
 	private Label label;

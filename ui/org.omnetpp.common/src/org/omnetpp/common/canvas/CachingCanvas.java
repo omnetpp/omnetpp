@@ -149,6 +149,5 @@ public abstract class CachingCanvas extends LargeScrollableCanvas {
 	 */
 	public void clearCanvasCache() {
 		tileCache.clear();
-		System.out.println("Cache cleared!");
 	}
 }
