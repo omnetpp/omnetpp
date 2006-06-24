@@ -1,0 +1,49 @@
+package org.omnetpp.scave2.charting.plotter;
+
+import org.eclipse.draw2d.Graphics;
+import org.eclipse.swt.SWT;
+
+/**
+ * Declares utility functions for subclasses
+ * 
+ * @author andras
+ */
+public class CrossSymbol extends ChartSymbol {
+	public CrossSymbol() {
+	}
+
+	public CrossSymbol(int size) {
+		super(size);
+	}
+
+	public void drawSymbol(Graphics graphics, int x, int y) {
+		if (size<=0) {
+			// nothing
+		}
+		else if (size==1) {
+			graphics.drawPoint(x, y);
+		}
+		else if (size==2 || size==3) {
+			graphics.drawPoint(x, y);
+			graphics.drawPoint(x-1, y-1);
+			graphics.drawPoint(x-1, y+1);
+			graphics.drawPoint(x+1, y-1);
+			graphics.drawPoint(x+1, y+1);
+		}
+		else if (size<8) {
+			int d = size/2;
+			graphics.drawLine(x-d, y-d, x+d, y+d);
+			graphics.drawLine(x-d, y+d, x+d, y-d);
+		}
+		else {
+			int saved = graphics.getLineWidth();
+			graphics.setLineWidth(size/4);
+			//graphics.setLineCap(SWT.FLAT);
+			int d = size/2;
+			graphics.drawLine(x-d, y-d, x+d, y+d);
+			graphics.drawLine(x-d, y+d, x+d, y-d);
+			graphics.setLineWidth(saved);
+		}
+	}
+}
+

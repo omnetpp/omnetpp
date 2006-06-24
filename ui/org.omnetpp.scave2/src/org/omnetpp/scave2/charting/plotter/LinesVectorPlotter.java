@@ -1,12 +1,13 @@
-package org.omnetpp.scave2.charting;
+package org.omnetpp.scave2.charting.plotter;
 
 import org.eclipse.draw2d.Graphics;
 import org.eclipse.swt.graphics.Color;
 import org.jfree.data.xy.XYDataset;
+import org.omnetpp.scave2.charting.VectorChart;
 
 public class LinesVectorPlotter extends VectorPlotter {
 
-	public void plot(XYDataset dataset, int series, Graphics graphics, VectorChart chart) {
+	public void plot(XYDataset dataset, int series, Graphics graphics, VectorChart chart, IChartSymbol symbol) {
 		int n = dataset.getItemCount(series);
 		if (n==0)
 			return;
@@ -14,7 +15,7 @@ public class LinesVectorPlotter extends VectorPlotter {
 		int prevX = chart.toCanvasX(dataset.getXValue(series, 0));
 		int prevY = chart.toCanvasY(dataset.getYValue(series, 0));
 		if (n==1) {
-			graphics.drawPoint(prevX, prevY);
+			symbol.drawSymbol(graphics, prevX, prevY);
 			return;
 		}
 
@@ -24,6 +25,7 @@ public class LinesVectorPlotter extends VectorPlotter {
 			int currentX = chart.toCanvasX(dataset.getXValue(series, i));
 			int currentY = chart.toCanvasY(dataset.getYValue(series, i));
 			graphics.drawLine(prevX, prevY, currentX, currentY);
+			symbol.drawSymbol(graphics, currentX, currentY);
 			prevX = currentX;
 			prevY = currentY;
 		}

@@ -1,22 +1,20 @@
-package org.omnetpp.scave2.charting;
+package org.omnetpp.scave2.charting.plotter;
 
 import org.eclipse.draw2d.Graphics;
 import org.eclipse.swt.SWT;
 import org.jfree.data.xy.XYDataset;
+import org.omnetpp.scave2.charting.VectorChart;
 
 public class SampleHoldVectorPlotter extends VectorPlotter {
 
-	public void plot(XYDataset dataset, int series, Graphics graphics, VectorChart chart) {
+	public void plot(XYDataset dataset, int series, Graphics graphics, VectorChart chart, IChartSymbol symbol) {
 		int n = dataset.getItemCount(series);
 		if (n==0)
 			return;
 		
 		int prevX = chart.toCanvasX(dataset.getXValue(series, 0));
 		int prevY = chart.toCanvasY(dataset.getYValue(series, 0));
-		if (n==1) {
-			graphics.drawPoint(prevX, prevY);
-			return;
-		}
+		symbol.drawSymbol(graphics, prevX, prevY);
 
 		// n>1
 		//XXX paint cliprect only
@@ -26,6 +24,7 @@ public class SampleHoldVectorPlotter extends VectorPlotter {
 			int currentY = chart.toCanvasY(dataset.getYValue(series, i));
 			
 			graphics.setLineStyle(SWT.LINE_SOLID);
+			symbol.drawSymbol(graphics, currentX, currentY);
 			graphics.drawLine(prevX, prevY, currentX, prevY);
 			graphics.setLineStyle(SWT.LINE_DOT);
 			//graphics.setLineStyle(SWT.LINE_DASHDOTDOT);
@@ -35,6 +34,6 @@ public class SampleHoldVectorPlotter extends VectorPlotter {
 			prevX = currentX;
 			prevY = currentY;
 		}
-		graphics.drawPoint(prevX, prevY);
+		//graphics.drawPoint(prevX, prevY); XXX needed?
 	}
 }

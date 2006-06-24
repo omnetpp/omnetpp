@@ -1,4 +1,4 @@
-package org.omnetpp.scave2.charting;
+package org.omnetpp.scave2.charting.plotter;
 
 import org.jfree.data.DomainOrder;
 import org.jfree.data.general.AbstractSeriesDataset;

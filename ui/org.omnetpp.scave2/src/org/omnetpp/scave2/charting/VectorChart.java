@@ -11,6 +11,10 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Composite;
 import org.jfree.data.xy.XYDataset;
 import org.omnetpp.common.color.ColorFactory;
+import org.omnetpp.scave2.charting.plotter.CircleSymbol;
+import org.omnetpp.scave2.charting.plotter.IChartSymbol;
+import org.omnetpp.scave2.charting.plotter.IVectorPlotter;
+import org.omnetpp.scave2.charting.plotter.LinesVectorPlotter;
 
 import sun.java2d.loops.DrawRect;
 
@@ -24,6 +28,7 @@ public class VectorChart extends ZoomableCachingCanvas {
 
 	private XYDataset dataset;
 	private IVectorPlotter defaultPlotter = new LinesVectorPlotter();
+	private IChartSymbol defaultSymbol = new CircleSymbol(5);
 
 	private static Color[] goodChartColors = new Color[] { //XXX to ColorFactory?
 		ColorFactory.asColor("blue"),
@@ -63,15 +68,23 @@ public class VectorChart extends ZoomableCachingCanvas {
 		clearCanvasCacheAndRedraw();
 	}
 
-	public IVectorPlotter getDefaultPlotter() {
+	public IVectorPlotter getDefaultLineType() {
 		return defaultPlotter;
 	}
 
-	public void setDefaultPlotter(IVectorPlotter defaultPlotter) {
+	public void setDefaultLineType(IVectorPlotter defaultPlotter) {
 		this.defaultPlotter = defaultPlotter;
 		clearCanvasCacheAndRedraw();
 	}
 
+	public IChartSymbol getDefaultSymbol() {
+		return defaultSymbol;
+	}
+
+	public void setDefaultSymbol(IChartSymbol defaultSymbol) {
+		this.defaultSymbol = defaultSymbol;
+	}
+	
 	private void calculateArea() {
 		if (dataset==null || dataset.getSeriesCount()==0) {
 			setArea(0,0,0,0);
@@ -122,7 +135,7 @@ public class VectorChart extends ZoomableCachingCanvas {
 
 		for (int series=0; series<dataset.getSeriesCount(); series++) {
 			graphics.setForegroundColor(getChartColor(series));
-			defaultPlotter.plot(dataset, series, graphics, this);
+			defaultPlotter.plot(dataset, series, graphics, this, defaultSymbol);
 		}
 	}
 

@@ -16,6 +16,7 @@ import org.omnetpp.scave.engine.StringMap;
 import org.omnetpp.scave.engine.VectorResult;
 import org.omnetpp.scave.engine.XYArray;
 import org.omnetpp.scave.engineext.ResultFileManagerEx;
+import org.omnetpp.scave2.charting.plotter.OutputVectorDataset;
 
 public class ChartHelper {
 	/**
