@@ -18,7 +18,8 @@ import org.omnetpp.common.canvas.CachingCanvas;
  *
  * @author andras
  */
-//FIXME while zooming with Ctrl+wheel too fast, one can get "event loop exception: SWTError: No more handles" 
+//FIXME while zooming with Ctrl+wheel too fast, one can get "event loop exception: SWTError: No more handles"
+//FIXME add tooltip support
 public abstract class ZoomableCachingCanvas extends CachingCanvas {
 
 	private static final Cursor DRAG_CURSOR = new Cursor(null, SWT.CURSOR_SIZEALL);
@@ -48,7 +49,7 @@ public abstract class ZoomableCachingCanvas extends CachingCanvas {
 	}
 
 	public double fromCanvasY(int y) {
-		return (y + getViewportTop() - insets.top) / zoomY + minY;
+		return maxY - (y + getViewportTop() - insets.top) / zoomY;
 	}
 
 	public double fromCanvasDistX(int x) {
@@ -240,7 +241,7 @@ public abstract class ZoomableCachingCanvas extends CachingCanvas {
 				}
 			}
 		});
-		// dragging ("hand" cursor) and tooltip
+		// dragging ("hand" cursor)
 		addMouseListener(new MouseListener() {
 			public void mouseDoubleClick(MouseEvent e) {}
 			public void mouseDown(MouseEvent e) {
@@ -259,23 +260,26 @@ public abstract class ZoomableCachingCanvas extends CachingCanvas {
     	});
 		addMouseMoveListener(new MouseMoveListener() {
 			public void mouseMove(MouseEvent e) {
-				if (dragStartX != -1 && dragStartY != -1 && (e.stateMask & SWT.BUTTON_MASK) != 0 && (e.stateMask & SWT.MODIFIER_MASK) == 0)
+				if ((e.stateMask & SWT.BUTTON_MASK)!=0) { // drag with any mouse button being held down
 					mouseDragged(e);
-				else {
+				} 
+				else { // plain move
 					setCursor(null); // restore cursor at end of drag (must do it here too, because we 
 									 // don't get the "released" event if user releases mouse outside the canvas)
-					redraw();
 				}
 			}
 
 			private void mouseDragged(MouseEvent e) {
-				// scroll by the amount moved since last drag call
-				int dx = e.x - dragStartX;
-				int dy = e.y - dragStartY;
-				scrollHorizontalTo(getViewportLeft() - dx);
-				scrollVerticalTo(getViewportTop() - dy);
-				dragStartX = e.x;
-				dragStartY = e.y;
+				// if mouse button is pressed with no modifier key: drag the chart
+				if ((e.stateMask & SWT.MODIFIER_MASK)==0 && dragStartX!=-1 && dragStartY!=-1) {
+					// scroll by the amount moved since last drag call
+					int dx = e.x - dragStartX;
+					int dy = e.y - dragStartY;
+					scrollHorizontalTo(getViewportLeft() - dx);
+					scrollVerticalTo(getViewportTop() - dy);
+					dragStartX = e.x;
+					dragStartY = e.y;
+				}
 			}
 		});
 	}

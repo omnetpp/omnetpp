@@ -380,7 +380,6 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 		double xDouble = simulationTimeToTimelineCoordinate(time) * pixelsPerTimelineUnit;
 		long x = xDouble < 0 ? 0 : xDouble>Long.MAX_VALUE ? Long.MAX_VALUE : (long)xDouble;
 		scrollHorizontalTo(x - getWidth()/2);
-		redraw();
 	}
 	
 	/**
@@ -1541,23 +1540,27 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 		addMouseMoveListener(new MouseMoveListener() {
 			public void mouseMove(MouseEvent e) {
 				removeTooltip();
-				if (dragStartX != -1 && dragStartY != -1 && (e.stateMask & SWT.BUTTON_MASK) != 0 && (e.stateMask & SWT.MODIFIER_MASK) == 0)
+				if ((e.stateMask & SWT.BUTTON_MASK)!=0) { // drag with any mouse button being held down
 					mouseDragged(e);
-				else {
+				} 
+				else { // plain move
 					setCursor(null); // restore cursor at end of drag (must do it here too, because we 
 									 // don't get the "released" event if user releases mouse outside the canvas)
-					redraw();
+                    redraw(); // move crosshair --FIXME make more efficient, i.e. refresh only affected area!!!
 				}
 			}
 
 			private void mouseDragged(MouseEvent e) {
-				// scroll by the amount moved since last drag call
-				int dx = e.x - dragStartX;
-				int dy = e.y - dragStartY;
-				scrollHorizontalTo(getViewportLeft() - dx);
-				scrollVerticalTo(getViewportTop() - dy);
-				dragStartX = e.x;
-				dragStartY = e.y;
+				// if mouse button is pressed with no modifier key: drag the chart
+				if ((e.stateMask & SWT.MODIFIER_MASK)==0 && dragStartX!=-1 && dragStartY!=-1) {
+					// scroll by the amount moved since last drag call
+					int dx = e.x - dragStartX;
+					int dy = e.y - dragStartY;
+					scrollHorizontalTo(getViewportLeft() - dx);
+					scrollVerticalTo(getViewportTop() - dy);
+					dragStartX = e.x;
+					dragStartY = e.y;
+				}
 			}
 		});
 		// selection handling
