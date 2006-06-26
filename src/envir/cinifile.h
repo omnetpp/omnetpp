@@ -66,7 +66,6 @@ class ENVIR_API cIniFile : public cConfiguration
     sEntry *_findEntry(const char *section, const char *key);
     const char *_getValue(const char *section, const char *key, bool raw);
     void _readFile(const char *fname, int section_id);
-    void clearContents();
 
     bool warnings;
     bool notfound;
@@ -84,6 +83,7 @@ class ENVIR_API cIniFile : public cConfiguration
     //@{
     void readFile(const char *fname);
     void setWarnings(bool warn) {warnings = warn;}
+    void clearContents();
     //@}
 
     /** @name Redefined section query methods from cConfiguration */

@@ -259,6 +259,10 @@ void cIniFile::clearContents()
        delete [] files[i].directory;
     }
 
+	sections.clear();
+	entries.clear();
+	files.clear();
+
     delete [] fname;
     fname = NULL;
 }

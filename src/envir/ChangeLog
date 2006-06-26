@@ -1,3 +1,7 @@
+2006-06-26  Andras Varga
+
+	* cinifile.cc: clearContents() made public.
+
 2006-03-19  Andras Varga
 
 	* omnetapp.cc: optimized checkTimeLimits() to call gettimeofday() less
