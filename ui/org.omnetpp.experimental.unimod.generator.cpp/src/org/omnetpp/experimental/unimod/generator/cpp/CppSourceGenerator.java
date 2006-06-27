@@ -27,7 +27,7 @@ import com.evelopers.unimod.transform.source.ModelToSource;
 
 public class CppSourceGenerator implements IGenerator {
 	
-	public static final String PLUGIN_ID = "com.evelopers.unimod.generator.symbian";
+	public static final String PLUGIN_ID = "org.omnetpp.experimental.unimod.generator.cpp";
 
 	public IFile[] generate(IFile f, GModel m, StateMachine root,
 			IPath outputFolder, Map parameters, IProgressMonitor monitor)
@@ -54,7 +54,7 @@ public class CppSourceGenerator implements IGenerator {
 				implementationFile = ((IFolder)f.getParent()).getFile(modelTool.getFileName()+".cpp"); 
 			} else if (f.getParent() instanceof IProject) {
 				headerFile = ((IProject)f.getParent()).getFile(modelTool.getFileName()+".h"); 
-				implementationFile = ((IFolder)f.getParent()).getFile(modelTool.getFileName()+".cpp"); 
+				implementationFile = ((IProject)f.getParent()).getFile(modelTool.getFileName()+".cpp"); 
 			} else {
 				return null;
 			}
@@ -85,7 +85,7 @@ public class CppSourceGenerator implements IGenerator {
 		params.put("renderHeader", renderHeader);
 		params.put("contextClass", "TStateMachineContext");
 		params.put("contextHeader", "StateMachineContext.h");
-		ms.generate("com/evelopers/unimod/generator/symbian/templates/model.vm", modelTool.getModel(), osw, params, getClass().getClassLoader());
+		ms.generate("org/omnetpp/experimental/unimod/generator/cpp/templates/model.vm", modelTool.getModel(), osw, params, getClass().getClassLoader());
 
 		file.create(new ByteArrayInputStream(baos.toByteArray()), true, monitor);
 	}

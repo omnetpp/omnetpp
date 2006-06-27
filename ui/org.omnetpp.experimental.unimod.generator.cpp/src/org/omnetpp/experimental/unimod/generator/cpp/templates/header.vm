@@ -10,29 +10,29 @@
 \#include <f32file.h>
 \#include <s32file.h>
 
-/* Forward declaration of model engine class */	
+/* Forward declaration of model engine class */
 class ${modelTool.ClassName};
-/* Forward declaration of base state machine class */	
+/* Forward declaration of base state machine class */
 class ${modelTool.BaseMachineClassName};
-/* Forward declaration of state machines from the model */	
+/* Forward declaration of state machines from the model */
 #foreach ($sm in $modelTool.StateMachines)
 class ${modelTool.getSMTool($sm).ClassName};
 #end
 
-/* Include state machine context class header */	
+/* Include state machine context class header */
 \#include "$contextHeader"
 
-/* Include used controlled objects classes headers */	
+/* Include used controlled objects classes headers */
 #foreach ($coHandler in $modelTool.COHandlers)
 \#include "${modelTool.getCOHeaderFileName($coHandler)}"
 #end
 
-#parse("com/evelopers/unimod/generator/symbian/templates/engine-header.vm")
+#parse("org/omnetpp/experimental/unimod/generator/cpp/templates/engine-header.vm")
 
-#parse("com/evelopers/unimod/generator/symbian/templates/base-machine-header.vm")
+#parse("org/omnetpp/experimental/unimod/generator/cpp/templates/base-machine-header.vm")
 
 #foreach ($sm in $modelTool.StateMachines)
-#parse("com/evelopers/unimod/generator/symbian/templates/smheader.vm")
+#parse("org/omnetpp/experimental/unimod/generator/cpp/templates/smheader.vm")
 #end
 
 #endif // __${modelTool.FileName}_H__

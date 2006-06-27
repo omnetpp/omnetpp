@@ -7,23 +7,19 @@
    provider-name="OpenSim Ltd">
 
    <runtime>
-      <library name="unimod-generator-symbian.jar">
+      <library name="unimod-generator-omnetpp.jar">
          <export name="*"/>
       </library>
    </runtime>
    <requires>
       <import plugin="com.evelopers.unimod"/>
       <import plugin="org.eclipse.jdt.core"/>
-      <import plugin="com.evelopers.unimod.adapter.standalone"/>
-      <import plugin="com.evelopers.unimod.generator.java"/>
-      <import plugin="com.evelopers.unimod.generator.xml"/>
-      <import plugin="com.evelopers.unimod.glayout"/>
    </requires>
    <extension
          point="com.evelopers.unimod.generator">
       <generator
             class="org.omnetpp.experimental.unimod.generator.cpp.CppSourceGenerator"
-            name="Symbian C++ Source"/>
+            name="OMNeT++/OMNEST C++ Source Generator"/>
    </extension>
 
 </plugin>
