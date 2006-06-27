@@ -1,0 +1,4 @@
+void ${modelTool.ClassName}::HandleL(${modelTool.ClassName}::EEvent aEvent)
+	{
+	${modelTool.getInstanceName($model.RootStateMachine)}->HandleL(aEvent, iContext);
+	}
