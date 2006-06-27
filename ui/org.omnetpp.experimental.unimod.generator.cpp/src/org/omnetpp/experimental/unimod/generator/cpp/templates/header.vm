@@ -6,6 +6,8 @@
 #ifndef __${modelTool.FileName}_H__
 #define __${modelTool.FileName}_H__
 
+/* HI THERE!!! --Andras */
+
 \#include <e32def.h>
 \#include <f32file.h>
 \#include <s32file.h>
