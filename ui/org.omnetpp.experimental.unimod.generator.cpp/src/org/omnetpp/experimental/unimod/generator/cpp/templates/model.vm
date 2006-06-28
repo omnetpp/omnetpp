@@ -1,17 +1,17 @@
-#macro(listHeader $list $header $offset)
+#macro(listHeader $list $header $indent)
 #if ($list.size() > 0)
-$modelTool.offset($offset)/* $header */
+$modelTool.offset($indent)/* $header */
 #end
 #end
 ##
-#macro(modelEngineConstructorParameters $offset $closingParenthesis)
+#macro(modelEngineConstructorParameters $indent $closingParenthesis)
 #foreach($coHandler in $modelTool.COHandlers)
 #if($velocityCount < $modelTool.COHandlers.size())
 #set($sep = ",")
 #else
 #set($sep = $closingParenthesis)
 #end
-$modelTool.offset($offset)$coHandler.ImplName* ${modelTool.getParamName($coHandler)}$sep
+$modelTool.offset($indent)$coHandler.ImplName* ${modelTool.getParamName($coHandler)}$sep
 #end
 #end
 ##

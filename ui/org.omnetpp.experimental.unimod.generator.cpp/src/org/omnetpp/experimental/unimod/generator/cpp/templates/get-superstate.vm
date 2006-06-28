@@ -4,12 +4,9 @@ $smTool.ClassName::EState $smTool.ClassName::getSuperstate($smTool.ClassName::ES
     {
 #foreach($state in $smTool.States)
 #if(! $state.Top)
-        case $smTool.getStateTool($state).Const:
-            return $smTool.getStateTool($state.Superstate).Const;
+        case $smTool.getStateTool($state).Const: return $smTool.getStateTool($state.Superstate).Const;
 #end
 #end
-        default:
-            // For top and nonexisting states
-            return UNKNOWN_STATE;
+        default: return UNKNOWN_STATE; // for top and nonexisting states
     }
 }

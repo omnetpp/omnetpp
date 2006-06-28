@@ -3,16 +3,16 @@
 ///////////////////////////////////////////////////////////////////////////
 // Automaton $sm.Name section
 ///////////////////////////////////////////////////////////////////////////
-#macro(executeActions $actions $offset)
+#macro(executeActions $actions $indent)
 #foreach($action in $actions)
-${modelTool.offset($offset)}$modelTool.getAction($action);
+${modelTool.offset($indent)}$modelTool.getAction($action);
 #end
 #end
-#macro(transit $transition $targetVar $offset)
-#executeActions($transition.OutputActions $offset)
-${modelTool.offset($offset)}$targetVar = $smTool.getStateTool($transition.TargetState).Const;
-${modelTool.offset($offset)}LogTransiteL(stateName($sourceVar), stateName($targetVar));
-${modelTool.offset($offset)}enterState($targetVar, aContext);
+#macro(transit $transition $targetVar $indent)
+#executeActions($transition.OutputActions $indent)
+${modelTool.offset($indent)}$targetVar = $smTool.getStateTool($transition.TargetState).Const;
+${modelTool.offset($indent)}logTransition(stateName($sourceVar), stateName($targetVar));
+${modelTool.offset($indent)}enterState($targetVar, aContext);
 #end
 
 #parse("org/omnetpp/experimental/unimod/generator/cpp/templates/enter-state.vm")
@@ -31,18 +31,18 @@ ${modelTool.offset($offset)}enterState($targetVar, aContext);
 
 #parse("org/omnetpp/experimental/unimod/generator/cpp/templates/invoke-submachines.vm")
 
-void $smTool.ClassName::HandleL($modelTool.ClassName::EEvent aEvent, $contextClass& aContext)
+void $smTool.ClassName::handle($modelTool.ClassName::EEvent aEvent, $contextClass& aContext)
 {
-	// Init state machine $sm.Name if it is in its top state
-	if (iState == EState::$smTool.getStateTool($sm.Top).Const)
-{
-		iState = TransiteToStableL(EState::${smTool.getStateTool($sm.Top).Const}, aContext);
-}
+    // Init state machine $sm.Name if it is in its top state
+    if (iState == EState::$smTool.getStateTool($sm.Top).Const)
+    {
+        iState = transitToStable(EState::${smTool.getStateTool($sm.Top).Const}, aContext);
+    }
 
-	LogBeginL(stateName(iState), aEvent);
-	EState newState = TransiteOnEventL(aEvent, aContext);
-	iState = TransiteToStableL(newState, aContext);
-	InvokeSubmachinesL(aEvent, aContext);
-	LogEndL(stateName(iState), aEvent);
+    //LogBeginL(stateName(iState), aEvent);
+    EState newState = transitOnEvent(aEvent, aContext);
+    iState = transitToStable(newState, aContext);
+    invokeSubmachines(aEvent, aContext);
+    //LogEndL(stateName(iState), aEvent);
 }
 

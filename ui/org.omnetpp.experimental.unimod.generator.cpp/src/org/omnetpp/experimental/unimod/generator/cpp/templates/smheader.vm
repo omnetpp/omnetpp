@@ -3,12 +3,12 @@
  * State machine $sm.Name
  */
 class ${smTool.ClassName}: ${modelTool.BaseMachineClassName}
-    {
+{
     public:
         /* Constructor of state machine $sm.Name */
         ${smTool.ClassName}($modelTool.ClassName& aModel): ${modelTool.BaseMachineClassName}(aModel), iState($smTool.getStateTool($sm.Top).Const) {}
 
-        void HandleL($modelTool.ClassName::EEvent aEvent, $contextClass& aContext);
+        void handle($modelTool.ClassName::EEvent aEvent, $contextClass& aContext);
 
 #listHeader($smTool.COAssocs "Controlled objects setters" 8)
 #foreach($assoc in $smTool.COAssocs)
@@ -22,12 +22,12 @@ class ${smTool.ClassName}: ${modelTool.BaseMachineClassName}
 
     private:
         enum EState
-            {
+        {
 #foreach ($state in $smTool.States)
             $smTool.getStateTool($state).Const,
 #end
             UNKNOWN_STATE
-            };
+        };
 
         EState iState;
 
@@ -61,13 +61,13 @@ class ${smTool.ClassName}: ${modelTool.BaseMachineClassName}
          */
         const char *machineName() const;
 
-        EState TransiteOnEventL($modelTool.ClassName::EEvent aEvent, $contextClass& aContext);
-        EState TransiteToStableL(EState aState, $contextClass& aContext);
+        EState transitOnEvent($modelTool.ClassName::EEvent aEvent, $contextClass& aContext);
+        EState transitToStable(EState aState, $contextClass& aContext);
 
         /**
          * Executes on enter actions of the given state of automaton ${sm.Name}
          */
         void enterState(EState aState, $contextClass& aContext);
 
-        void InvokeSubmachinesL($modelTool.ClassName::EEvent aEvent, $contextClass& aContext);
-    };
+        void invokeSubmachines($modelTool.ClassName::EEvent aEvent, $contextClass& aContext);
+};

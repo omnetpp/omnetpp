@@ -3,11 +3,9 @@ const char *$smTool.ClassName::stateName($smTool.ClassName::EState aState) const
     switch (aState)
     {
 #foreach($state in $smTool.States)
-        case $smTool.getStateTool($state).Const:
-            return "${state.Name}";
+        case $smTool.getStateTool($state).Const: return "${state.Name}";
 #end
-        default:
-            return "<<Unknown>>";
+        default: return "<<Unknown>>";
     }
 }
 

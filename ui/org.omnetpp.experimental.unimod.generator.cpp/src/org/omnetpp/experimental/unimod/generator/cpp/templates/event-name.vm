@@ -3,10 +3,8 @@ const char *${modelTool.ClassName}::eventName(${modelTool.ClassName}::EEvent anE
     switch (anEvent)
     {
 #foreach ($event in $modelTool.Events)
-        case ${modelTool.getEventConst($event)}:
-            return "${event.Name}";
+        case ${modelTool.getEventConst($event)}: return "${event.Name}";
 #end
-        default:
-            return "*";
+        default: return "*";
     }
 }

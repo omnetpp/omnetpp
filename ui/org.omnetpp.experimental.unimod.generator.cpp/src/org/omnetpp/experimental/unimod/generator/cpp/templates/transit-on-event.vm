@@ -20,17 +20,17 @@ $modelTool.offset($baseOffset)// Warning: Inconsitence: skipping conditional tra
 #if($velocityCount > 1)
                         else
 #end
-	                    if ($modelTool.getGuard($t.Guard))
-						    {
+                        if ($modelTool.getGuard($t.Guard))
+                        {
 #transit($t "targetState" $extOffset)
-						    }
+                        }
 #end
 #foreach($t in $elseTransitions)
 #if($velocityCount == 1)
                         else
-						    {
+                        {
 #transit($t "targetState" $extOffset)
-						}
+                        }
 #else
 $modelTool.offset($baseOffset)// Warning: Inconsitence: skipping else transition $t
 #end
@@ -49,47 +49,46 @@ $modelTool.offset($baseOffset)// Warning: Inconsitence: skipping else transition
 /*
  * Selects transition and transits.
  */
-$smTool.ClassName::EState $smTool.ClassName::TransiteOnEventL($modelTool.ClassName::EEvent aEvent, $contextClass& aContext)
+$smTool.ClassName::EState $smTool.ClassName::transitOnEvent($modelTool.ClassName::EEvent aEvent, $contextClass& aContext)
 {
-	$smTool.ClassName::EState targetState = UNKNOWN_STATE;
+    $smTool.ClassName::EState targetState = UNKNOWN_STATE;
 #set ($top = $smTool.getStateTool($sm.Top).Const)
-	for ($smTool.ClassName::EState sourceState = iState; targetState == UNKNOWN_STATE && sourceState != $top; sourceState = getSuperstate(sourceState))
-	{
+    for ($smTool.ClassName::EState sourceState = iState; targetState == UNKNOWN_STATE && sourceState != $top; sourceState = getSuperstate(sourceState))
+    {
         switch (sourceState)
-    	    {
+        {
 #foreach ($state in $smTool.States)
-            /* State: $state.Name */
 #set($sTool = $smTool.getStateTool($state))
             case $sTool.Const:
                 switch (aEvent)
-    			    {
+                {
 #foreach ($event in $sTool.Events)
-					case $modelTool.ClassName::EEvent::$modelTool.getEventConst($event):
+                    case $modelTool.ClassName::EEvent::$modelTool.getEventConst($event):
 #listTransitions($event 24)
-	                    break;
+                        break;
 #end
                     default: ;// Do nothing if no event was triggered
-				}
-			    break;
+                }
+                break;
 #end
-		}
-	}
+        }
+    }
 
-	// Look for default transition
-	for ($smTool.ClassName::EState sourceState = iState; targetState == UNKNOWN_STATE && sourceState != $top; sourceState = getSuperstate(sourceState))
-	{
+    // Look for default transition
+    for ($smTool.ClassName::EState sourceState = iState; targetState == UNKNOWN_STATE && sourceState != $top; sourceState = getSuperstate(sourceState))
+    {
         switch (sourceState)
-    	    {
+        {
 #foreach ($state in $smTool.States)
-            /* State: $state.Name */
 #set($sTool = $smTool.getStateTool($state))
             case $sTool.Const:
 #listTransitions($sTool.AnyEvent 16)
-			    break;
-#end
-		}
-	}
+                break;
 
-	// If no transition was found stay in current state
-	return targetState != UNKNOWN_STATE ? targetState : iState;
+#end
+        }
+    }
+
+    // If no transition was found, stay in current state
+    return targetState != UNKNOWN_STATE ? targetState : iState;
 }
