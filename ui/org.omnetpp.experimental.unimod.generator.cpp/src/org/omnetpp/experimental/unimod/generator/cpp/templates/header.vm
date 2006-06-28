@@ -12,4 +12,6 @@
 #parse("org/omnetpp/experimental/unimod/generator/cpp/templates/smheader.vm")
 #end
 
-#endif // __${modelTool.FileName}_H__
+#endif
+
+

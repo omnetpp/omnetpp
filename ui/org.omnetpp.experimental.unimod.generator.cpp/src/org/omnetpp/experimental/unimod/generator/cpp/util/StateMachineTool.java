@@ -33,7 +33,7 @@ public class StateMachineTool extends BaseTool {
 
 	public String getClassName() {
 		if (className == null) {
-			className = getClassName("T", stateMachine.getName(), ""); 
+			className = getClassName("", stateMachine.getName(), ""); 
 		}
 		return className; 
 	}

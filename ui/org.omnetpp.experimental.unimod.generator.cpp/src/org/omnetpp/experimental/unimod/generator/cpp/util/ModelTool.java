@@ -47,21 +47,21 @@ public class ModelTool extends BaseTool {
 	
 	public String getClassName() {
 		if (className == null) {
-			className = getClassName("C", model.getName(), "ModelEngine");
+			className = getClassName("", model.getName(), "_Engine");
 		}
 		return className;
 	}
 	
 	public String getFileName() {
 		if (fileName == null) {
-			fileName = getClassName("", model.getName(), "ModelEngine");
+			fileName = getClassName("", model.getName(), "_Engine");
 		}
 		return fileName;
 	}
 	
 	public String getBaseMachineClassName() {
 		if (baseMachineClassName == null) {
-			baseMachineClassName = getClassName("C", model.getName(), "BaseMachine");
+			baseMachineClassName = getClassName("", model.getName(), "BaseMachine");
 		}
 		return baseMachineClassName;
 	}
@@ -173,7 +173,6 @@ public class ModelTool extends BaseTool {
 	}
 
 	public String getGuard(Guard guard) throws RecognitionException {
-//		return CppFormulaGenerator.generate(guard.getAST(), this);
-		return "Hello";
+		return CppFormulaGenerator.generate(guard.getAST());
 	}
 }
