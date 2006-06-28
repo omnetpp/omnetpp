@@ -1,22 +1,12 @@
-/*
- * Returns name of the given event
- */
-const TDesC& ${modelTool.ClassName}::EventName(${modelTool.ClassName}::EEvent anEvent) const
-	{
-	switch (anEvent)
-	    {
+const char *${modelTool.ClassName}::eventName(${modelTool.ClassName}::EEvent anEvent) const
+{
+    switch (anEvent)
+    {
 #foreach ($event in $modelTool.Events)
-	    case ${modelTool.getEventConst($event)}:
-			{
-			_LIT(KEventName, "${event.Name}");
-		    return KEventName;
-			}
+        case ${modelTool.getEventConst($event)}:
+            return "${event.Name}";
 #end
-
         default:
-			{
-			_LIT(KEventName, "*");
-			return KEventName;
-			}
-		}
-	}
+            return "*";
+    }
+}

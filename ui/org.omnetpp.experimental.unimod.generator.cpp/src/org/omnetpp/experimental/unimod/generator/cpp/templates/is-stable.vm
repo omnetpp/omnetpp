@@ -1,11 +1,8 @@
-/*
- * Checks whether given state of automaton ${sm.Name} is stable.
- */
-TBool $smTool.ClassName::IsStable($smTool.ClassName::EState aState) const
-	{
-	return 
+bool $smTool.ClassName::isStable($smTool.ClassName::EState aState) const
+{
+    return
 #foreach($state in $smTool.StableStates)
         aState == $smTool.ClassName::EState::$smTool.getStateTool($state).Const ||
 #end
-        FALSE;
-	}
+        false;
+}

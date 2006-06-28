@@ -1,21 +1,21 @@
 /*
- * For stable state immediately returns itself. For unstable state transites
+ * For stable state immediately returns itself. For unstable state transits
  * to corresponding stable invoking all actions on transitions.
  */
 $smTool.ClassName::EState $smTool.ClassName::TransiteToStableL($smTool.ClassName::EState aState, $contextClass& aContext)
-    {	
+    {
 	EState newState = aState;
-	while (!IsStable(newState)) 
+	while (!isStable(newState))
         {
 		switch (newState)
 		    {
 #foreach($state in $smTool.CompositeStates)
-            case ${smTool.getStateTool($state).Const}:				
-#transite($state.InitialSubstate.OutgoingTransitions.get(0) "newState" 16)
+            case ${smTool.getStateTool($state).Const}:
+#transit($state.InitialSubstate.OutgoingTransitions.get(0) "newState" 16)
 			    break;
 #end
 			default: ;// Impossible case
-			}
+		}
         }
 	return newState;
-	}
+}

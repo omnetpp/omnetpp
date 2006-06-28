@@ -8,11 +8,11 @@
 ${modelTool.offset($offset)}$modelTool.getAction($action);
 #end
 #end
-#macro(transite $transition $targetVar $offset)
+#macro(transit $transition $targetVar $offset)
 #executeActions($transition.OutputActions $offset)
 ${modelTool.offset($offset)}$targetVar = $smTool.getStateTool($transition.TargetState).Const;
-${modelTool.offset($offset)}LogTransiteL(StateName($sourceVar), StateName($targetVar));
-${modelTool.offset($offset)}EnterStateL($targetVar, aContext);
+${modelTool.offset($offset)}LogTransiteL(stateName($sourceVar), stateName($targetVar));
+${modelTool.offset($offset)}enterState($targetVar, aContext);
 #end
 
 #parse("org/omnetpp/experimental/unimod/generator/cpp/templates/enter-state.vm")
@@ -25,24 +25,24 @@ ${modelTool.offset($offset)}EnterStateL($targetVar, aContext);
 
 #parse("org/omnetpp/experimental/unimod/generator/cpp/templates/get-superstate.vm")
 
-#parse("org/omnetpp/experimental/unimod/generator/cpp/templates/transite-to-stable.vm")
+#parse("org/omnetpp/experimental/unimod/generator/cpp/templates/transit-to-stable.vm")
 
-#parse("org/omnetpp/experimental/unimod/generator/cpp/templates/transite-on-event.vm")
+#parse("org/omnetpp/experimental/unimod/generator/cpp/templates/transit-on-event.vm")
 
 #parse("org/omnetpp/experimental/unimod/generator/cpp/templates/invoke-submachines.vm")
 
 void $smTool.ClassName::HandleL($modelTool.ClassName::EEvent aEvent, $contextClass& aContext)
-	{
+{
 	// Init state machine $sm.Name if it is in its top state
 	if (iState == EState::$smTool.getStateTool($sm.Top).Const)
-		{
+{
 		iState = TransiteToStableL(EState::${smTool.getStateTool($sm.Top).Const}, aContext);
-		}
+}
 
-	LogBeginL(StateName(iState), aEvent);
+	LogBeginL(stateName(iState), aEvent);
 	EState newState = TransiteOnEventL(aEvent, aContext);
 	iState = TransiteToStableL(newState, aContext);
 	InvokeSubmachinesL(aEvent, aContext);
-	LogEndL(StateName(iState), aEvent);
-	}
+	LogEndL(stateName(iState), aEvent);
+}
 

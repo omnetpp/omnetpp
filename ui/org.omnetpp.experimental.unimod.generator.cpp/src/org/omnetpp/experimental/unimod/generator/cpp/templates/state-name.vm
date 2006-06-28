@@ -1,21 +1,13 @@
-/*
- * Returns superstate of the given state of automaton ${sm.Name}
- */
-const TDesC& $smTool.ClassName::StateName($smTool.ClassName::EState aState) const
-	{
-	switch (aState)
-	    {
+const char *$smTool.ClassName::stateName($smTool.ClassName::EState aState) const
+{
+    switch (aState)
+    {
 #foreach($state in $smTool.States)
-	    case $smTool.getStateTool($state).Const:
-			{
-			_LIT(KStateName, "${state.Name}");
-		    return KStateName;
-			}
+        case $smTool.getStateTool($state).Const:
+            return "${state.Name}";
 #end
         default:
-			{
-			_LIT(KStateName, "<<Unknown>>");
-			return KStateName;
-			}
-		}
-	}
+            return "<<Unknown>>";
+    }
+}
+

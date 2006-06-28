@@ -1,8 +1,8 @@
 void $smTool.ClassName::InvokeSubmachinesL($modelTool.ClassName::EEvent aEvent, $contextClass& aContext)
-	{
+{
 #set ($top = $smTool.getStateTool($sm.Top).Const)
-	for (EState curState = iState; curState != $top; curState = GetSuperstate(curState))
-		{
+	for (EState curState = iState; curState != $top; curState = getSuperstate(curState))
+	{
         switch (curState)
     	    {
 #foreach ($state in $smTool.States)
@@ -13,6 +13,6 @@ void $smTool.ClassName::InvokeSubmachinesL($modelTool.ClassName::EEvent aEvent, 
 #end
 			    break;
 #end
-			}
 		}
 	}
+}
