@@ -21,7 +21,7 @@ public class PlusSymbol extends ChartSymbol {
 	@Override
 	public void setSizeHint(int sizeHint) {
 		super.setSizeHint(sizeHint);
-		size = 3*sizeHint/2;
+		size = 2*sizeHint;
 		size |= 1; // make it an odd number
 	}
 
