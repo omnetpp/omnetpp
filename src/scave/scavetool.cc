@@ -27,11 +27,13 @@ int main(int argc, char **argv)
     ResultFileManager resultFileManager;
     for (int i=1; i<argc; i++)
     {
-        fprintf(stdout, "Loading result file %s...\n", argv[i]);
+        printf("Loading result file %s...\n", argv[i]);
         try {
             ResultFile *f = resultFileManager.loadFile(argv[i]);
             if (!f)
                 fprintf(stdout, "Error: load() returned null\n");
+            else
+                printf("Done - %d unrecognized lines out of %d\n", f->numUnrecognizedLines, f->numLines);
         } catch (Exception *e) {
             fprintf(stdout, "Exception: %s\n", e->message());
             delete e;

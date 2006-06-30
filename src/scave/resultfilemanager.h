@@ -28,7 +28,7 @@
 
 
 class Run;
-class ResultFile;  //XXX rename to: ResultFile
+class ResultFile;
 class FileRun;
 class ResultFileManager;
 
@@ -44,7 +44,7 @@ struct ResultItem
 };
 
 /**
- * An output scalar
+ * Represents an output scalar
  */
 struct ScalarResult : public ResultItem
 {
@@ -52,7 +52,8 @@ struct ScalarResult : public ResultItem
 };
 
 /**
- * An output vector
+ * Represents an output vector. This is only the declaration,
+ * actual vector data are not kept in memory.
  */
 struct VectorResult : public ResultItem
 {
@@ -72,48 +73,46 @@ typedef std::vector<FileRun *> FileRunList;
 struct ResultFile
 {
     int id;  // position in fileList
-    enum {VECTOR_FILE, SCALAR_FILE} fileType;
-    ResultFileManager *resultFileManager;
+    ResultFileManager *resultFileManager; // backref to containing ResultFileManager
     std::string filePath; // directory + fileName
     std::string directory;
     std::string fileName;
-    //XXX RunList runs;
     ScalarResults *scalarResults;
     VectorResults *vectorResults;
+    int numLines;
+    int numUnrecognizedLines;
 };
 
+typedef std::map<std::string, std::string> StringMap;
 
 /**
- * Represents a run in a scalar or vector file.
- * (Presently, vector files may contain only one run.)
+ * Represents a run. If several scalar or vector files contain
+ * the same run (i.e. runName is the same), they will share
+ * the same Run object.
  */
 struct Run
 {
-    ResultFileManager *resultFileManager;
-    //XXX ResultFile *fileRef;
-    int runNumber;
-    std::string networkName;
-    std::string date;
-    int lineNum;
+    std::string runName; // unique identifier for the run, "runId"
+    ResultFileManager *resultFileManager; // backref to containing ResultFileManager
 
-    std::string runName; //XXX unique identifier for the run
-    std::string fileAndRunName;
+    // various attributes of the run are stored in a string map.
+    // keys include: runNumber, networkName, datetime, experiment, measurement, replication
+    StringMap attributes;
+    int runNumber; // this is stored separately as well, for convenience
 
-    //XXX replace them with string HashMap
-    // run attributes
-    std::string experimentName;
-    std::string measurementName;
-    std::string replicationName;
-    // plus we need custom labels
+    // module parameters: maps wildcard pattern to value
+    StringMap moduleParams;
 };
+
 
 /**
  * Represents a run in a result file. Such item is needed because
  * result files and runs are in many-to-many relationship: a result file
  * may contain more than one runs (.sca file), and during a simulation run
  * (represented by struct Run) more than one result files are written into
- * (namely, a .vec and a .sca file). And ResultItems refer to a FileRun
- * instead of a ResultFile and a Run, to conserve memory.
+ * (namely, a .vec and a .sca file, or sometimes many of them).
+ * And ResultItems refer to a FileRun instead of a ResultFile and a Run,
+ * to conserve memory.
  */
 struct FileRun
 {
@@ -122,7 +121,6 @@ struct FileRun
 };
 
 typedef std::set<std::string> StringSet;
-
 typedef std::vector<std::string> StringVector;
 
 
@@ -151,9 +149,6 @@ class ResultFileManager
     enum {SCALAR=1, VECTOR=2}; // must be 1,2,4,8 etc, because of IDList::itemTypes() XXX add histogram
 
   private:
-    // utility, called during processing one line
-    void processLine(char **vec, int numtokens, FileRun *&fileRunRef, ResultFile *fileRef, int lineNum);
-
     static std::string *stringSetFindOrInsert(StringSet& set, const std::string& str);
 
     // ID: 8 bit type, 24 bit fileid, 32 bit pos
@@ -165,12 +160,13 @@ class ResultFileManager
         return ((ID)type << 56) | ((ID)fileid << 32) | (ID)pos;
     }
 
-    void addScalar(FileRun *fileRunRef, const char *moduleName, const char *scalarName, double value);
-    //void addVector(FileRun *fileRunRef, const char *moduleName, const char *vectorName, int vectorId);
-
+    // utility functions called while loading a result file
     ResultFile *addFile();
     Run *addRun();
-    FileRun *addFileRun(ResultFile *file, Run *run);  // associate a ResultFile with a Run
+    FileRun *addFileRun(ResultFile *file, Run *run);  // associates a ResultFile with a Run
+
+    void processLine(char **vec, int numTokens, FileRun *&fileRunRef, ResultFile *fileRef, int lineNum);
+    void addScalar(FileRun *fileRunRef, const char *moduleName, const char *scalarName, double value);
 
   public:
     ResultFileManager();
@@ -220,13 +216,18 @@ class ResultFileManager
 
     // loading files
     ResultFile *loadFile(const char *filename);
-    //File *loadVectorFile(const char *filename);
     void unloadFile(ResultFile *file);
 
     bool isFileLoaded(const char *filename) const;
     ResultFile *getFile(const char *filename) const;
     Run *getRunByName(const char *runName) const;
+    FileRun *getFileRun(ResultFile *file, Run *run) const;
     //ID getItemByName(Run *run, const char *module, const char *name) const;
+
+    //XXX needed:
+    // - select Runs and FileRuns by various criteria (attribute value, etc);
+    // - get unique values of an attribute ("experiment",etc) in a set of Runs;
+    // - expand RunList to FileRunList
 
     // utility
     //void dump(ResultFile *fileRef, std::ostream& out) const;

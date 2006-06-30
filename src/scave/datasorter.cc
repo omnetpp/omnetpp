@@ -68,7 +68,13 @@ bool ScalarDataSorter::lessByFileAndRun(ID id1, ID id2)
     if (id1==-1 || id2==-1) return id2!=-1; // -1 is the smallest
     const ScalarResult& d1 = tmpScalarMgr->getScalar(id1);
     const ScalarResult& d2 = tmpScalarMgr->getScalar(id2);
-    return strdictcmp(d1.fileRunRef->runRef->fileAndRunName.c_str(), d2.fileRunRef->runRef->fileAndRunName.c_str()) < 0;
+
+    // compare first by file, then by run
+    int cmpFile = strdictcmp(d1.fileRunRef->fileRef->filePath.c_str(), d2.fileRunRef->fileRef->filePath.c_str());
+    if (cmpFile!=0)
+        return cmpFile < 0;
+    int cmpRun = strdictcmp(d1.fileRunRef->runRef->runName.c_str(), d2.fileRunRef->runRef->runName.c_str());
+    return cmpRun < 0;
 }
 
 bool ScalarDataSorter::equalByFileAndRun(ID id1, ID id2)

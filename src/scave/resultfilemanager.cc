@@ -241,6 +241,14 @@ Run *ResultFileManager::getRunByName(const char *runName) const
     return NULL;
 }
 
+FileRun *ResultFileManager::getFileRun(ResultFile *file, Run *run) const
+{
+    for (int i=0; i<fileRunList.size(); i++)
+        if (fileRunList[i]->fileRef==file && fileRunList[i]->runRef==run)
+            return fileRunList[i];
+    return NULL;
+}
+
 /*
 ID ResultFileManager::getItemByName(Run *run, const char *module, const char *name) const
 {
@@ -359,15 +367,17 @@ ResultFile *ResultFileManager::addFile()
     file->id = fileList.size();
     fileList.push_back(file);
     file->resultFileManager = this;
-    //XXX file->fileType = ResultFile::SCALAR_FILE; or ResultFile::VECTOR_FILE
     file->scalarResults = new ScalarResults();
     file->vectorResults = new VectorResults();
+    file->numLines = 0;
+    file->numUnrecognizedLines = 0;
     return file;
 }
 
 Run *ResultFileManager::addRun()
 {
     Run *run = new Run();
+    run->resultFileManager = this;
     runList.push_back(run);
     return run;
 }
@@ -513,53 +523,95 @@ static std::string filenameToSlash(const char *filename)
     return res;
 }
 
-void ResultFileManager::processLine(char **vec, int numtokens, FileRun *&fileRunRef, ResultFile *fileRef, int lineNum)
+void ResultFileManager::processLine(char **vec, int numTokens, FileRun *&fileRunRef, ResultFile *fileRef, int lineNum)
 {
     // ignore empty lines
-    if (numtokens==0 || vec[0][0]=='#')
+    if (numTokens==0 || vec[0][0]=='#')
         return;
 
     // process "run" lines
     if (vec[0][0]=='r' && !strcmp(vec[0],"run"))
     {
-        if (numtokens<2)
-            throw new Exception("invalid scalar file: no run number on `run' line, line %d", lineNum);
+        if (numTokens<2)
+            throw new Exception("invalid result file: run Id missing from `run' line, line %d", lineNum);
 
-        // add a new Run, and fill in its members
-        Run *runRef = addRun();
-        fileRunRef = addFileRun(fileRef, runRef);
-        runRef->runNumber = atoi(vec[1]);
-        runRef->networkName = numtokens<3 ? "" : vec[2];
-        runRef->date = numtokens<4 ? "" : vec[3];
-        runRef->lineNum = lineNum;
+        if (atoi(vec[1])>0 && strlen(vec[1])<=10)
+        {
+            // old-style "run" line, format: run <runNumber> [<networkName>] [<dateTime>]
+            // and runs in different files cannot be related, so we must create a new Run entry.
+            Run *runRef = addRun();
+            fileRunRef = addFileRun(fileRef, runRef);
 
-        std::stringstream os;
-        os << runRef->runNumber << " (at line " << lineNum << ")";
-        runRef->runName = os.str();
-        //if (!date.empty())
-        //    runRef->runName += " (" + date + ")";
-        runRef->fileAndRunName = fileRef->filePath + "#" + runRef->runName;
+            runRef->runNumber = atoi(vec[1]);
+            runRef->attributes["runNumber"] = vec[1];
+            if (numTokens>=3)
+                runRef->attributes["networkName"] = vec[2];
+            if (numTokens>=4)
+                runRef->attributes["dateTime"] = vec[3];
+
+            // assemble a probably-unique runName
+            std::stringstream os;
+            os << fileRef->fileName << ":" << lineNum << "-#" << vec[1];
+            if (numTokens>=3)
+                os << "-" << vec[2];
+            if (numTokens>=4)
+                os << "-" << vec[3];
+            runRef->runName = os.str();
+        }
+        else
+        {
+            // new-style "run" line, format: run <runName>
+            // find out of we have that run already
+            Run *runRef = getRunByName(vec[1]);
+            if (!runRef)
+            {
+                // not yet: add it
+                runRef = addRun();
+                runRef->runName = vec[1];
+            }
+            // associate Run with this file
+            if (getFileRun(fileRef, runRef)!=NULL)
+                throw new Exception("invalid result file: run Id repeats in the file, line %d", lineNum);
+            fileRunRef = addFileRun(fileRef, runRef);
+        }
         return;
     }
 
     // if we haven't seen a "run" line yet (as with old vector files), add a default run
     if (fileRunRef==NULL)
     {
-        // add a new Run, and fill in its members
+        // fake a new Run
         Run *runRef = addRun();
         fileRunRef = addFileRun(fileRef, runRef);
         runRef->runNumber = 0;
-        runRef->networkName = "n/a";  // FIXME TBD refine vector file format
-        runRef->date = "n/a";
-        runRef->lineNum = 0;
-        runRef->runName = "default"; //XXX
-        runRef->fileAndRunName = fileRef->filePath; // + "#" + runRef->runName;
+
+        // make up a unique runName
+        std::stringstream os;
+        static int counter=1000;
+        os << fileRef->fileName << ":" << lineNum << "-#n/a-" <<++counter;
+        runRef->runName = os.str();
     }
 
-    if (vec[0][0]=='s' && !strcmp(vec[0],"scalar"))
+    if (vec[0][0]=='a' && !strcmp(vec[0],"attr"))
+    {
+        if (numTokens<3)
+            throw new Exception("invalid result file: 'attr <name> <value>' expected, line %d", lineNum);
+
+        // store attribute
+        fileRunRef->runRef->attributes[vec[1]] = vec[2];
+    }
+    else if (vec[0][0]=='p' && !strcmp(vec[0],"param"))
+    {
+        if (numTokens<3)
+            throw new Exception("invalid result file: 'param <namePattern> <value>' expected, line %d", lineNum);
+
+        // store attribute
+        fileRunRef->runRef->moduleParams[vec[1]] = vec[2];
+    }
+    else if (vec[0][0]=='s' && !strcmp(vec[0],"scalar"))
     {
         // syntax: "scalar <module> <scalarname> <value>"
-        if (numtokens<4)
+        if (numTokens<4)
             throw new Exception("invalid scalar file: too few items on `scalar' line, line %d", lineNum);
 
         double value;
@@ -572,7 +624,7 @@ void ResultFileManager::processLine(char **vec, int numtokens, FileRun *&fileRun
     else if (vec[0][0]=='v' && !strcmp(vec[0],"vector"))
     {
         // vector line
-        if (numtokens<4)
+        if (numTokens<4)
             throw new Exception("invalid vector file syntax: too few items on 'vector' line, line %d", lineNum);
 
         VectorResult vecdata;
@@ -592,17 +644,14 @@ void ResultFileManager::processLine(char **vec, int numtokens, FileRun *&fileRun
 
         fileRef->vectorResults->push_back(vecdata);
     }
-    else if (vec[0][0]=='a' && !strcmp(vec[0],"attr"))
+    else if (isdigit(vec[0][0]) && numTokens==3)
     {
-        //XXX TODO
-    }
-    else if (vec[0][0]=='p' && !strcmp(vec[0],"param"))
-    {
-        //XXX TODO
+        // this looks like a vector data line, skip it this time
     }
     else
     {
         // ignore unknown lines and vector data lines
+        fileRef->numUnrecognizedLines++;
     }
 }
 
@@ -629,15 +678,17 @@ ResultFile *ResultFileManager::loadFile(const char *filename)
     FileTokenizer ftok(filename);
     while (ftok.readLine())
     {
-        int numtokens = ftok.numTokens();
+        int numTokens = ftok.numTokens();
         char **vec = ftok.tokens();
-        processLine(vec, numtokens, fileRunRef, fileRef, ftok.lineNum());
+        processLine(vec, numTokens, fileRunRef, fileRef, ftok.lineNum());
     }
 
     // ignore "incomplete last line" error, because we might be reading
     // from a vec file currently being written by a simulation
     if (!ftok.eof() && ftok.errorCode()!=FileTokenizer::INCOMPLETELINE)
         throw new Exception(ftok.errorMsg().c_str());
+
+    fileRef->numLines = ftok.lineNum();
 
     return fileRef;
 }
@@ -678,10 +729,10 @@ StringVector ResultFileManager::getRunNameFilterHints(const IDList& idlist)
 
     for (int i=0; i<runs.size(); i++)
     {
-        std::string a = runs[i]->fileAndRunName;
+        std::string a = runs[i]->runName;
         vec.push_back(a);
 
-        int k = a.find('#');
+        int k = a.find('#');  //XXX this code is out of date now...
         if (k!=a.npos)
         {
             a.replace(k, a.length()-k, "#*");
