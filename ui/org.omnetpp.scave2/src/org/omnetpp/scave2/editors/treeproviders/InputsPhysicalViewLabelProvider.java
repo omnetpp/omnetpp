@@ -24,7 +24,7 @@ public class InputsPhysicalViewLabelProvider extends LabelProvider {
 			}
 			else if (node.getPayload() instanceof Run) {
 				Run run = (Run)node.getPayload();
-				return run.getRunName() + ", " + run.getDate();
+				return run.getRunName();
 			}
 		}
 		return null;

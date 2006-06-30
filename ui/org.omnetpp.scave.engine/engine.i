@@ -116,9 +116,12 @@ namespace std {
        }
    }
 
-
    %template(StringSet) set<string>;
    %template(StringVector) vector<string>;
+
+   //specialize_std_map_on_both(string,,,,string,,,);
+
+   //%template(StringMap) map<string,string>;
 
    specialize_std_vector(ID);
 
@@ -235,13 +238,13 @@ FIX_STRING_MEMBER(ResultFile, filePath, FilePath);
 FIX_STRING_MEMBER(ResultFile, directory, Directory);
 FIX_STRING_MEMBER(ResultFile, fileName, FileName);
 
-FIX_STRING_MEMBER(Run, networkName, NetworkName);
-FIX_STRING_MEMBER(Run, date, Date);
+//FIX_STRING_MEMBER(Run, networkName, NetworkName);
+//FIX_STRING_MEMBER(Run, date, Date);
 FIX_STRING_MEMBER(Run, runName, RunName);
-FIX_STRING_MEMBER(Run, fileAndRunName, FileAndRunName);
-FIX_STRING_MEMBER(Run, experimentName, ExperimentName);
-FIX_STRING_MEMBER(Run, measurementName, MeasurementName);
-FIX_STRING_MEMBER(Run, replicationName, ReplicationName);
+//FIX_STRING_MEMBER(Run, fileAndRunName, FileAndRunName);
+//FIX_STRING_MEMBER(Run, experimentName, ExperimentName);
+//FIX_STRING_MEMBER(Run, measurementName, MeasurementName);
+//FIX_STRING_MEMBER(Run, replicationName, ReplicationName);
 
 %rename FileRun::fileRef file;
 %rename FileRun::runRef run;
