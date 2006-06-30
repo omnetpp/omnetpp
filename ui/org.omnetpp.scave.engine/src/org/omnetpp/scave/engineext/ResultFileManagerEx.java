@@ -90,16 +90,6 @@ public class ResultFileManagerEx extends ResultFileManager {
 	}
 
 	@Override
-	public IDListEx getDataInFile(File file) {
-		return wrap(super.getDataInFile(file));
-	}
-
-	@Override
-	public IDListEx getDataInRun(Run run) {
-		return wrap(super.getDataInRun(run));
-	}
-
-	@Override
 	public IDListEx getFilteredList(IDList idlist, String fileAndRunFilter, String moduleFilter, String nameFilter) {
 		return wrap(super.getFilteredList(idlist, fileAndRunFilter, moduleFilter, nameFilter));
 	}

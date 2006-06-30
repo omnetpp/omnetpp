@@ -86,6 +86,16 @@ namespace std {
         }
    %}
 
+   %typemap(javacode) vector<FileRun*> %{
+        public FileRun[] toArray() {
+            int sz = (int)size();
+            FileRun[] array = new FileRun[sz];
+            for (int i=0; i<sz; i++)
+                array[i] = get(i);
+            return array;
+        }
+   %}
+
    %typemap(javacode) vector<ID> %{
         public Long[] toArray() {
             int sz = (int)size();
@@ -117,9 +127,11 @@ namespace std {
 
    specialize_std_vector(Run*);
    specialize_std_vector(File*);
+   specialize_std_vector(FileRun*);
 
    %template(RunList) vector<Run*>;
    %template(FileList) vector<File*>;
+   %template(FileRunList) vector<FileRun*>;
 
    specialize_std_vector(MessageEntry*);
 
@@ -231,7 +243,8 @@ FIX_STRING_MEMBER(Run, experimentName, ExperimentName);
 FIX_STRING_MEMBER(Run, measurementName, MeasurementName);
 FIX_STRING_MEMBER(Run, replicationName, ReplicationName);
 
-%rename Run::fileRef file;
+%rename FileRun::fileRef file;
+%rename FileRun::runRef run;
 %rename ResultItem::runRef run;
 
 %ignore ResultItem::moduleNameRef;
@@ -242,7 +255,6 @@ FIX_STRING_MEMBER(Run, replicationName, ReplicationName);
 }
 
 %ignore File::id;
-%ignore File::runs;
 %ignore File::scalarResults;
 %ignore File::vectorResults;
 
@@ -258,6 +270,15 @@ FIX_STRING_MEMBER(Run, replicationName, ReplicationName);
 %typemap(javacode) Run %{
     public boolean equals(Object obj) {
         return (obj instanceof Run) && getCPtr(this)==getCPtr((Run)obj);
+    }
+    public int hashCode() {
+        return (int)getCPtr(this);
+    }
+%}
+
+%typemap(javacode) FileRun %{
+    public boolean equals(Object obj) {
+        return (obj instanceof FileRun) && getCPtr(this)==getCPtr((FileRun)obj);
     }
     public int hashCode() {
         return (int)getCPtr(this);
