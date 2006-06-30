@@ -32,16 +32,20 @@ OBJS= arraybuilder.obj channel.obj commonnodes.obj compoundfilter.obj \
 #
 # Targets (TBD: build dll)
 #
-all : scave.lib tracetool.exe
+all : scave.lib tracetool.exe scavetool.exe
 
 scave.lib : $(OBJS)
 	$(AR) /out:scave.lib $(OBJS)
 	copy scave.lib $(OMNETPP_LIB_DIR:/=\)
 	- copy /b scave.pdb $(OMNETPP_LIB_DIR:/=\) 2>nul
 
-tracetool.exe : tracetool.obj eventlog.obj
-	$(LINK) $(LDFLAGS) /nologo /out:tracetool.exe tracetool.obj $(LIBS) ../scave/scave.lib $(XML_LIBS)
+tracetool.exe : tracetool.obj scave.lib
+	$(LINK) $(LDFLAGS) /nologo /out:tracetool.exe tracetool.obj $(LIBS) scave.lib $(XML_LIBS)
 	copy tracetool.exe $(OMNETPP_BIN_DIR:/=\)
+
+scavetool.exe : scavetool.obj scave.lib
+	$(LINK) $(LDFLAGS) /nologo /out:scavetool.exe scavetool.obj $(LIBS) scave.lib $(XML_LIBS)
+	copy scavetool.exe $(OMNETPP_BIN_DIR:/=\)
 
 doc:
 	$(DOXYGEN:/=\) doxy.cfg
@@ -55,4 +59,202 @@ clean:
 
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
-
+arraybuilder.obj: arraybuilder.cc \
+  channel.h \
+  arraybuilder.h \
+  util.h \
+  node.h \
+  exception.h \
+  commonnodes.h \
+  xyarray.h \
+  nodetype.h \
+  dataflowmanager.h
+channel.obj: channel.cc \
+  channel.h \
+  util.h \
+  node.h \
+  exception.h
+commonnodes.obj: commonnodes.cc \
+  commonnodes.h \
+  channel.h \
+  node.h \
+  nodetype.h \
+  util.h \
+  exception.h \
+  dataflowmanager.h
+compoundfilter.obj: compoundfilter.cc \
+  util.h \
+  compoundfilter.h \
+  filternodes.h \
+  nodetyperegistry.h \
+  exception.h \
+  nodetype.h \
+  commonnodes.h \
+  dataflowmanager.h \
+  node.h \
+  channel.h
+cstrtokenizer.obj: cstrtokenizer.cc \
+  cstrtokenizer.h
+dataflowmanager.obj: dataflowmanager.cc \
+  channel.h \
+  nodetype.h \
+  dataflowmanager.h \
+  util.h \
+  node.h \
+  exception.h
+datasorter.obj: datasorter.cc \
+  resultfilemanager.h \
+  util.h \
+  datasorter.h \
+  idlist.h \
+  exception.h \
+  scavedefs.h \
+  patmatch.h
+diffquot.obj: diffquot.cc \
+  channel.h \
+  diffquot.h \
+  util.h \
+  node.h \
+  exception.h \
+  commonnodes.h \
+  nodetype.h \
+  dataflowmanager.h
+eventlog.obj: eventlog.cc \
+  eventlog.h \
+  filetokenizer.h \
+  exception.h \
+  scavedefs.h
+exception.obj: exception.cc \
+  exception.h
+filetokenizer.obj: filetokenizer.cc \
+  filetokenizer.h
+filewriter.obj: filewriter.cc \
+  channel.h \
+  filewriter.h \
+  util.h \
+  node.h \
+  exception.h \
+  commonnodes.h \
+  nodetype.h \
+  dataflowmanager.h
+filternodes.obj: filternodes.cc \
+  channel.h \
+  filternodes.h \
+  util.h \
+  node.h \
+  exception.h \
+  commonnodes.h \
+  nodetype.h \
+  dataflowmanager.h
+idlist.obj: idlist.cc \
+  idlist.h \
+  resultfilemanager.h \
+  scavedefs.h \
+  exception.h \
+  util.h
+mergernodes.obj: mergernodes.cc \
+  channel.h \
+  mergernodes.h \
+  util.h \
+  node.h \
+  exception.h \
+  commonnodes.h \
+  nodetype.h \
+  dataflowmanager.h
+nodetype.obj: nodetype.cc \
+  util.h \
+  nodetype.h \
+  exception.h \
+  dataflowmanager.h \
+  node.h \
+  channel.h
+nodetyperegistry.obj: nodetyperegistry.cc \
+  util.h \
+  nodetyperegistry.h \
+  arraybuilder.h \
+  vectorfilereader.h \
+  vectorfilewriter.h \
+  filewriter.h \
+  windowavg.h \
+  slidingwinavg.h \
+  filternodes.h \
+  mergernodes.h \
+  xyplotnode.h \
+  diffquot.h \
+  exception.h \
+  commonnodes.h \
+  xyarray.h \
+  node.h \
+  nodetype.h \
+  dataflowmanager.h \
+  channel.h \
+  filetokenizer.h
+patmatch.obj: patmatch.cc \
+  patmatch.h
+resultfilemanager.obj: resultfilemanager.cc \
+  patmatch.h \
+  resultfilemanager.h \
+  filetokenizer.h \
+  cstrtokenizer.h \
+  idlist.h \
+  exception.h \
+  util.h \
+  scavedefs.h
+scavetool.obj: scavetool.cc \
+  resultfilemanager.h \
+  idlist.h \
+  exception.h \
+  util.h \
+  scavedefs.h
+slidingwinavg.obj: slidingwinavg.cc \
+  channel.h \
+  slidingwinavg.h \
+  util.h \
+  node.h \
+  exception.h \
+  commonnodes.h \
+  nodetype.h \
+  dataflowmanager.h
+tracetool.obj: tracetool.cc \
+  eventlog.h \
+  filetokenizer.h \
+  exception.h \
+  scavedefs.h
+util.obj: util.cc \
+  util.h \
+  exception.h
+vectorfilereader.obj: vectorfilereader.cc \
+  channel.h \
+  vectorfilereader.h \
+  util.h \
+  node.h \
+  exception.h \
+  nodetype.h \
+  filetokenizer.h \
+  dataflowmanager.h
+vectorfilewriter.obj: vectorfilewriter.cc \
+  channel.h \
+  vectorfilewriter.h \
+  util.h \
+  node.h \
+  exception.h \
+  nodetype.h \
+  dataflowmanager.h
+windowavg.obj: windowavg.cc \
+  channel.h \
+  windowavg.h \
+  util.h \
+  node.h \
+  exception.h \
+  commonnodes.h \
+  nodetype.h \
+  dataflowmanager.h
+xyplotnode.obj: xyplotnode.cc \
+  channel.h \
+  xyplotnode.h \
+  util.h \
+  node.h \
+  exception.h \
+  commonnodes.h \
+  nodetype.h \
+  dataflowmanager.h

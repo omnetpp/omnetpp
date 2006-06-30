@@ -361,7 +361,7 @@ File *ResultFileManager::addFile()
     file->resultFileManager = this;
     //XXX file->fileType = File::SCALAR_FILE; or File::VECTOR_FILE
     file->scalarResults = new ScalarResults();
-    file->vectorResults = NULL;
+    file->vectorResults = new VectorResults();
     return file;
 }
 

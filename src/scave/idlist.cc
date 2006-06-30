@@ -180,12 +180,12 @@ class CmpFileAndRunRef : public CmpBase {
         bool operator()(ID a, ID b) { // implements operator<
             const ResultItem& da = mgr->getItem(a);
             const ResultItem& db = mgr->getItem(b);
-            if (da.runRef==db.runRef)
+            if (da.fileRunRef==db.fileRunRef)
                 return false;
-            else if (da.runRef->fileRef==db.runRef->fileRef)
-                return da.runRef < db.runRef;
+            else if (da.fileRunRef->fileRef==db.fileRunRef->fileRef)
+                return da.fileRunRef < db.fileRunRef;
             else
-                return da.runRef->fileRef < db.runRef->fileRef;
+                return da.fileRunRef->fileRef < db.fileRunRef->fileRef;
         }
 };
 
@@ -201,12 +201,12 @@ void IDList::sortByFileAndRunRef(ResultFileManager *mgr)
         bool operator()(ID a, ID b) {return method;} \
     };
 
-CMP(DirectoryLess, less(mgr->uncheckedGetItem(a).runRef->fileRef->directory, mgr->uncheckedGetItem(b).runRef->fileRef->directory))
-CMP(DirectoryMore, less(mgr->uncheckedGetItem(b).runRef->fileRef->directory, mgr->uncheckedGetItem(a).runRef->fileRef->directory))
-CMP(FileNameLess, less(mgr->uncheckedGetItem(a).runRef->fileRef->fileName, mgr->uncheckedGetItem(b).runRef->fileRef->fileName))
-CMP(FileNameMore, less(mgr->uncheckedGetItem(b).runRef->fileRef->fileName, mgr->uncheckedGetItem(a).runRef->fileRef->fileName))
-CMP(RunLess, less(mgr->uncheckedGetItem(a).runRef->runName, mgr->uncheckedGetItem(b).runRef->runName))
-CMP(RunMore, less(mgr->uncheckedGetItem(b).runRef->runName, mgr->uncheckedGetItem(a).runRef->runName))
+CMP(DirectoryLess, less(mgr->uncheckedGetItem(a).fileRunRef->fileRef->directory, mgr->uncheckedGetItem(b).fileRunRef->fileRef->directory))
+CMP(DirectoryMore, less(mgr->uncheckedGetItem(b).fileRunRef->fileRef->directory, mgr->uncheckedGetItem(a).fileRunRef->fileRef->directory))
+CMP(FileNameLess, less(mgr->uncheckedGetItem(a).fileRunRef->fileRef->fileName, mgr->uncheckedGetItem(b).fileRunRef->fileRef->fileName))
+CMP(FileNameMore, less(mgr->uncheckedGetItem(b).fileRunRef->fileRef->fileName, mgr->uncheckedGetItem(a).fileRunRef->fileRef->fileName))
+CMP(RunLess, less(mgr->uncheckedGetItem(a).fileRunRef->runRef->runName, mgr->uncheckedGetItem(b).fileRunRef->runRef->runName))
+CMP(RunMore, less(mgr->uncheckedGetItem(b).fileRunRef->runRef->runName, mgr->uncheckedGetItem(a).fileRunRef->runRef->runName))
 CMP(ModuleLess, less(*(mgr->uncheckedGetItem(a).moduleNameRef), *(mgr->uncheckedGetItem(b).moduleNameRef)))
 CMP(ModuleMore, less(*(mgr->uncheckedGetItem(b).moduleNameRef), *(mgr->uncheckedGetItem(a).moduleNameRef)))
 CMP(NameLess, less(*(mgr->uncheckedGetItem(a).nameRef), *(mgr->uncheckedGetItem(b).nameRef)))

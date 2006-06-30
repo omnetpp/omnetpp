@@ -34,7 +34,7 @@ ResultFileManager *ScalarDataSorter::tmpScalarMgr;
 
 bool ScalarDataSorter::sameGroupFileRunScalar(const ScalarResult& d1, const ScalarResult& d2)
 {
-    return d1.runRef==d2.runRef && d1.nameRef==d2.nameRef;
+    return d1.fileRunRef==d2.fileRunRef && d1.nameRef==d2.nameRef;
 }
 
 bool ScalarDataSorter::sameGroupModuleScalar(const ScalarResult& d1, const ScalarResult& d2)
@@ -44,7 +44,7 @@ bool ScalarDataSorter::sameGroupModuleScalar(const ScalarResult& d1, const Scala
 
 bool ScalarDataSorter::sameGroupFileRunModule(const ScalarResult& d1, const ScalarResult& d2)
 {
-    return d1.runRef==d2.runRef && d1.moduleNameRef==d2.moduleNameRef;
+    return d1.fileRunRef==d2.fileRunRef && d1.moduleNameRef==d2.moduleNameRef;
 }
 
 bool ScalarDataSorter::lessByModuleRef(ID id1, ID id2)
@@ -68,7 +68,7 @@ bool ScalarDataSorter::lessByFileAndRun(ID id1, ID id2)
     if (id1==-1 || id2==-1) return id2!=-1; // -1 is the smallest
     const ScalarResult& d1 = tmpScalarMgr->getScalar(id1);
     const ScalarResult& d2 = tmpScalarMgr->getScalar(id2);
-    return strdictcmp(d1.runRef->fileAndRunName.c_str(), d2.runRef->fileAndRunName.c_str()) < 0;
+    return strdictcmp(d1.fileRunRef->runRef->fileAndRunName.c_str(), d2.fileRunRef->runRef->fileAndRunName.c_str()) < 0;
 }
 
 bool ScalarDataSorter::equalByFileAndRun(ID id1, ID id2)
@@ -76,7 +76,7 @@ bool ScalarDataSorter::equalByFileAndRun(ID id1, ID id2)
     if (id1==-1 || id2==-1) return id1==id2;
     const ScalarResult& d1 = tmpScalarMgr->getScalar(id1);
     const ScalarResult& d2 = tmpScalarMgr->getScalar(id2);
-    return d1.runRef == d2.runRef;
+    return d1.fileRunRef == d2.fileRunRef;
 }
 
 bool ScalarDataSorter::lessByScalarNameRef(ID id1, ID id2)
