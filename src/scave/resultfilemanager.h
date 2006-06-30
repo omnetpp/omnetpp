@@ -102,6 +102,17 @@ struct Run
 
     // module parameters: maps wildcard pattern to value
     StringMap moduleParams;
+
+    // utility methods to non-disruptive access to the maps (note that evaluating
+    // attributes["nonexisting-key"] would create a blank entry with that key!)
+    const char *getAttribute(const char *attrName) const {
+        StringMap::const_iterator it = attributes.find(attrName);
+        return it==attributes.end() ? NULL : it->second.c_str();
+    }
+    const char *getModuleParam(const char *namePattern) const {
+        StringMap::const_iterator it = moduleParams.find(namePattern);
+        return it==attributes.end() ? NULL : it->second.c_str();
+    }
 };
 
 
