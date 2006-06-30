@@ -48,7 +48,7 @@ std::string *ResultFileManager::stringSetFindOrInsert(StringSet& set, const std:
     return &const_cast<std::string&>(*m);
 }
 
-RunList ResultFileManager::getRunsInFile(File *file) const
+RunList ResultFileManager::getRunsInFile(ResultFile *file) const
 {
     RunList out;
     for (int i=0; i<fileRunList.size(); i++)
@@ -57,9 +57,9 @@ RunList ResultFileManager::getRunsInFile(File *file) const
     return out;
 }
 
-FileList ResultFileManager::getFilesForRun(Run *run) const
+ResultFileList ResultFileManager::getFilesForRun(Run *run) const
 {
-    FileList out;
+    ResultFileList out;
     for (int i=0; i<fileRunList.size(); i++)
         if (fileRunList[i]->runRef == run)
             out.push_back(fileRunList[i]->fileRef);
@@ -67,7 +67,7 @@ FileList ResultFileManager::getFilesForRun(Run *run) const
 }
 
 /*
-IDList ResultFileManager::getDataInFile(File *fileRef) const
+IDList ResultFileManager::getDataInFile(ResultFile *fileRef) const
 {
     IDList out;
     int fileId = fileRef->id;
@@ -91,7 +91,7 @@ IDList ResultFileManager::getDataInFile(File *fileRef) const
 IDList ResultFileManager::getDataInRun(Run *runRef) const
 {
     IDList out;
-    File *file = runRef->fileRef;
+    ResultFile *file = runRef->fileRef;
     int fileId = file->id;
     if (file->scalarResults)
     {
@@ -128,16 +128,16 @@ const ResultItem& ResultFileManager::getItem(ID id) const
     }
 }
 
-FileList *ResultFileManager::getUniqueFiles(const IDList& ids) const
+ResultFileList *ResultFileManager::getUniqueFiles(const IDList& ids) const
 {
     // collect unique runs in this dataset
-    std::set<File*> set;
+    std::set<ResultFile*> set;
     for (int i=0; i<ids.size(); i++)
         set.insert(getItem(ids.get(i)).fileRunRef->fileRef);
 
     // convert to list for easier handling at recipient
-    FileList *list = new FileList();
-    for (std::set<File*>::iterator i = set.begin(); i!=set.end(); i++)
+    ResultFileList *list = new ResultFileList();
+    for (std::set<ResultFile*>::iterator i = set.begin(); i!=set.end(); i++)
         list->push_back(*i);
     return list;
 }
@@ -221,7 +221,7 @@ bool ResultFileManager::isFileLoaded(const char *filename) const
     return getFile(filename)!=NULL;
 }
 
-File *ResultFileManager::getFile(const char *filename) const
+ResultFile *ResultFileManager::getFile(const char *filename) const
 {
     if (!filename)
         return NULL;
@@ -353,13 +353,13 @@ IDList ResultFileManager::getFilteredList(const IDList& idlist,
     return out;
 }
 
-File *ResultFileManager::addFile()
+ResultFile *ResultFileManager::addFile()
 {
-    File *file = new File();
+    ResultFile *file = new ResultFile();
     file->id = fileList.size();
     fileList.push_back(file);
     file->resultFileManager = this;
-    //XXX file->fileType = File::SCALAR_FILE; or File::VECTOR_FILE
+    //XXX file->fileType = ResultFile::SCALAR_FILE; or ResultFile::VECTOR_FILE
     file->scalarResults = new ScalarResults();
     file->vectorResults = new VectorResults();
     return file;
@@ -372,7 +372,7 @@ Run *ResultFileManager::addRun()
     return run;
 }
 
-FileRun *ResultFileManager::addFileRun(File *file, Run *run)
+FileRun *ResultFileManager::addFileRun(ResultFile *file, Run *run)
 {
     FileRun *fileRun = new FileRun();
     fileRunList.push_back(fileRun);
@@ -409,7 +409,7 @@ void ResultFileManager::addScalar(FileRun *fileRunRef, const char *moduleName,
 
 
 /*
-void ResultFileManager::dump(File *fileRef, std::ostream& out) const
+void ResultFileManager::dump(ResultFile *fileRef, std::ostream& out) const
 {
     Run *prevRunRef = NULL;
     for (ScalarResults::const_iterator i = scalars.begin(); i!=scalars.end(); i++)
@@ -513,7 +513,7 @@ static std::string filenameToSlash(const char *filename)
     return res;
 }
 
-void ResultFileManager::processLine(char **vec, int numtokens, FileRun *&fileRunRef, File *fileRef, int lineNum)
+void ResultFileManager::processLine(char **vec, int numtokens, FileRun *&fileRunRef, ResultFile *fileRef, int lineNum)
 {
     // ignore empty lines
     if (numtokens==0 || vec[0][0]=='#')
@@ -607,7 +607,7 @@ void ResultFileManager::processLine(char **vec, int numtokens, FileRun *&fileRun
 }
 
 
-File *ResultFileManager::loadFile(const char *filename)
+ResultFile *ResultFileManager::loadFile(const char *filename)
 {
     // check
     if (isFileLoaded(filename))
@@ -620,7 +620,7 @@ File *ResultFileManager::loadFile(const char *filename)
     fclose(f);
 
     // add to fileList
-    File *fileRef = addFile();
+    ResultFile *fileRef = addFile();
     fileRef->filePath = filenameToSlash(filename);
     splitFileName(fileRef->filePath.c_str(), fileRef->directory, fileRef->fileName);
 
@@ -642,7 +642,7 @@ File *ResultFileManager::loadFile(const char *filename)
     return fileRef;
 }
 
-void ResultFileManager::unloadFile(File *)
+void ResultFileManager::unloadFile(ResultFile *)
 {
     throw new Exception("not implemented yet"); //FIXME
 }

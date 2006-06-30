@@ -29,7 +29,7 @@ int main(int argc, char **argv)
     {
         fprintf(stdout, "Loading result file %s...\n", argv[i]);
         try {
-            File *f = resultFileManager.loadFile(argv[i]);
+            ResultFile *f = resultFileManager.loadFile(argv[i]);
             if (!f)
                 fprintf(stdout, "Error: load() returned null\n");
         } catch (Exception *e) {

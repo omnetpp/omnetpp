@@ -28,7 +28,7 @@
 
 
 class Run;
-class File;  //XXX rename to: ResultFile
+class ResultFile;  //XXX rename to: ResultFile
 class FileRun;
 class ResultFileManager;
 
@@ -63,13 +63,13 @@ typedef std::vector<ScalarResult> ScalarResults;
 typedef std::vector<VectorResult> VectorResults;
 
 typedef std::vector<Run*> RunList;
-typedef std::vector<File*> FileList;
+typedef std::vector<ResultFile*> ResultFileList;
 typedef std::vector<FileRun *> FileRunList;
 
 /**
  * Represents a loaded scalar or vector file.
  */
-struct File
+struct ResultFile
 {
     int id;  // position in fileList
     enum {VECTOR_FILE, SCALAR_FILE} fileType;
@@ -90,7 +90,7 @@ struct File
 struct Run
 {
     ResultFileManager *resultFileManager;
-    //XXX File *fileRef;
+    //XXX ResultFile *fileRef;
     int runNumber;
     std::string networkName;
     std::string date;
@@ -113,11 +113,11 @@ struct Run
  * may contain more than one runs (.sca file), and during a simulation run
  * (represented by struct Run) more than one result files are written into
  * (namely, a .vec and a .sca file). And ResultItems refer to a FileRun
- * instead of a File and a Run, to conserve memory.
+ * instead of a ResultFile and a Run, to conserve memory.
  */
 struct FileRun
 {
-    File *fileRef;
+    ResultFile *fileRef;
     Run *runRef;
 };
 
@@ -140,7 +140,7 @@ class ResultFileManager
 {
     friend class IDList;  // _type()
   private:
-    FileList fileList;
+    ResultFileList fileList;
     RunList runList;
     FileRunList fileRunList; // stores the connection between files and runs (many-to-many relationship)
 
@@ -152,7 +152,7 @@ class ResultFileManager
 
   private:
     // utility, called during processing one line
-    void processLine(char **vec, int numtokens, FileRun *&fileRunRef, File *fileRef, int lineNum);
+    void processLine(char **vec, int numtokens, FileRun *&fileRunRef, ResultFile *fileRef, int lineNum);
 
     static std::string *stringSetFindOrInsert(StringSet& set, const std::string& str);
 
@@ -168,28 +168,28 @@ class ResultFileManager
     void addScalar(FileRun *fileRunRef, const char *moduleName, const char *scalarName, double value);
     //void addVector(FileRun *fileRunRef, const char *moduleName, const char *vectorName, int vectorId);
 
-    File *addFile();
+    ResultFile *addFile();
     Run *addRun();
-    FileRun *addFileRun(File *file, Run *run);  // associate a File with a Run
+    FileRun *addFileRun(ResultFile *file, Run *run);  // associate a ResultFile with a Run
 
   public:
     ResultFileManager();
     ~ResultFileManager();
 
     // navigation
-    const FileList& getFiles() const  {return fileList;}
+    const ResultFileList& getFiles() const  {return fileList;}
     const RunList& getRuns() const {return runList;}
-    RunList getRunsInFile(File *file) const;
-    FileList getFilesForRun(Run *run) const;
+    RunList getRunsInFile(ResultFile *file) const;
+    ResultFileList getFilesForRun(Run *run) const;
 
-    //IDList getDataInFile(File *file) const;
+    //IDList getDataInFile(ResultFile *file) const;
     //IDList getDataInRun(Run *run) const;
     const ResultItem& getItem(ID id) const;
     bool isVector(ID id) const {return _type(id)==VECTOR;}
     bool isScalar(ID id) const {return _type(id)==SCALAR;}
 
     // the following are needed for filter combos
-    FileList *getUniqueFiles(const IDList& ids) const; //XXX why returns pointer?
+    ResultFileList *getUniqueFiles(const IDList& ids) const; //XXX why returns pointer?
     RunList *getUniqueRuns(const IDList& ids) const;
     StringSet *getUniqueModuleNames(const IDList& ids) const;
     StringSet *getUniqueNames(const IDList& ids) const;
@@ -219,17 +219,17 @@ class ResultFileManager
                            const char *nameFilter);
 
     // loading files
-    File *loadFile(const char *filename);
+    ResultFile *loadFile(const char *filename);
     //File *loadVectorFile(const char *filename);
-    void unloadFile(File *file);
+    void unloadFile(ResultFile *file);
 
     bool isFileLoaded(const char *filename) const;
-    File *getFile(const char *filename) const;
+    ResultFile *getFile(const char *filename) const;
     Run *getRunByName(const char *runName) const;
     //ID getItemByName(Run *run, const char *module, const char *name) const;
 
     // utility
-    //void dump(File *fileRef, std::ostream& out) const;
+    //void dump(ResultFile *fileRef, std::ostream& out) const;
 
     StringVector getRunNameFilterHints(const IDList& idlist);
     StringVector getModuleFilterHints(const IDList& idlist);
