@@ -174,25 +174,46 @@ class CmpBase {
         CmpBase(ResultFileManager *m) {mgr = m;}
 };
 
-class CmpFileAndRunRef : public CmpBase {
+class CmpFileAndRun : public CmpBase {
     public:
-        CmpFileAndRunRef(ResultFileManager *m) : CmpBase(m) {}
+        CmpFileAndRun(ResultFileManager *m) : CmpBase(m) {}
         bool operator()(ID a, ID b) { // implements operator<
-            const ResultItem& da = mgr->getItem(a);
-            const ResultItem& db = mgr->getItem(b);
-            if (da.fileRunRef==db.fileRunRef)
+            const FileRun *da = mgr->getItem(a).fileRunRef;
+            const FileRun *db = mgr->getItem(b).fileRunRef;
+            if (da==db)
                 return false;
-            else if (da.fileRunRef->fileRef==db.fileRunRef->fileRef)
-                return da.fileRunRef < db.fileRunRef;
+            else if (da->fileRef==db->fileRef)
+                return da->runRef->runName < db->runRef->runName;
             else
-                return da.fileRunRef->fileRef < db.fileRunRef->fileRef;
+                return da->fileRef->filePath < db->fileRef->filePath;
         }
 };
 
-void IDList::sortByFileAndRunRef(ResultFileManager *mgr)
+class CmpRunAndFile : public CmpBase {
+    public:
+        CmpRunAndFile(ResultFileManager *m) : CmpBase(m) {}
+        bool operator()(ID a, ID b) { // implements operator<
+            const FileRun *da = mgr->getItem(a).fileRunRef;
+            const FileRun *db = mgr->getItem(b).fileRunRef;
+            if (da==db)
+                return false;
+            else if (da->runRef==db->runRef)
+                return da->fileRef->filePath < db->fileRef->filePath;
+            else
+                return da->runRef->runName < db->runRef->runName;
+        }
+};
+
+void IDList::sortByFileAndRun(ResultFileManager *mgr)
 {
     checkV();
-    std::sort(v->begin(), v->end(), CmpFileAndRunRef(mgr));
+    std::sort(v->begin(), v->end(), CmpFileAndRun(mgr));
+}
+
+void IDList::sortByRunAndFile(ResultFileManager *mgr)
+{
+    checkV();
+    std::sort(v->begin(), v->end(), CmpRunAndFile(mgr));
 }
 
 #define CMP(clazz,method) class clazz : public CmpBase { \
