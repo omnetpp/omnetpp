@@ -177,6 +177,7 @@ cxmldoccache.obj: cxmldoccache.cc \
 filemgrs.obj: filemgrs.cc \
   ../../include/defs.h \
   ../../include/platdep/time.h \
+  ../../include/platdep/misc.h \
   ../../include/cenvir.h \
   omnetapp.h \
   ../../include/csimul.h \
@@ -217,6 +218,7 @@ fsutils.obj: fsutils.cc \
 main.obj: main.cc \
   ../../include/cobject.h \
   ../../include/cenvir.h \
+  ../utils/ver.h \
   ../../include/defs.h \
   ../../include/util.h \
   ../../include/cpolymorphic.h \

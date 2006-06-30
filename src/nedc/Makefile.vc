@@ -40,4 +40,5 @@ clean:
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 nedtool.obj: nedtool.cc \
   ../../include/platdep/misc.h \
-  ../../include/platdep/fileutil.h
+  ../../include/platdep/fileutil.h \
+  ../utils/ver.h
