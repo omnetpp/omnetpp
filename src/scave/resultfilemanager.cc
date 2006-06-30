@@ -48,6 +48,25 @@ std::string *ResultFileManager::stringSetFindOrInsert(StringSet& set, const std:
     return &const_cast<std::string&>(*m);
 }
 
+RunList ResultFileManager::getRunsInFile(File *file) const
+{
+    RunList out;
+    for (int i=0; i<fileRunList.size(); i++)
+        if (fileRunList[i]->fileRef == file)
+            out.push_back(fileRunList[i]->runRef);
+    return out;
+}
+
+FileList ResultFileManager::getFilesForRun(Run *run) const
+{
+    FileList out;
+    for (int i=0; i<fileRunList.size(); i++)
+        if (fileRunList[i]->runRef == run)
+            out.push_back(fileRunList[i]->fileRef);
+    return out;
+}
+
+/*
 IDList ResultFileManager::getDataInFile(File *fileRef) const
 {
     IDList out;
@@ -66,8 +85,9 @@ IDList ResultFileManager::getDataInFile(File *fileRef) const
     }
     return out;
 }
+*/
 
-
+/*
 IDList ResultFileManager::getDataInRun(Run *runRef) const
 {
     IDList out;
@@ -89,6 +109,7 @@ IDList ResultFileManager::getDataInRun(Run *runRef) const
     }
     return out;
 }
+*/
 
 const ResultItem& ResultFileManager::getItem(ID id) const
 {
@@ -112,7 +133,7 @@ FileList *ResultFileManager::getUniqueFiles(const IDList& ids) const
     // collect unique runs in this dataset
     std::set<File*> set;
     for (int i=0; i<ids.size(); i++)
-        set.insert(getItem(ids.get(i)).runRef->fileRef);
+        set.insert(getItem(ids.get(i)).fileRunRef->fileRef);
 
     // convert to list for easier handling at recipient
     FileList *list = new FileList();
@@ -126,7 +147,7 @@ RunList *ResultFileManager::getUniqueRuns(const IDList& ids) const
     // collect unique runs in this dataset
     std::set<Run*> set;
     for (int i=0; i<ids.size(); i++)
-        set.insert(getItem(ids.get(i)).runRef);
+        set.insert(getItem(ids.get(i)).fileRunRef->runRef);
 
     // convert to list for easier handling at recipient
     RunList *list = new RunList();
@@ -210,17 +231,17 @@ File *ResultFileManager::getFile(const char *filename) const
     return NULL;
 }
 
-Run *ResultFileManager::getRunByName(File *file, const char *runName) const
+Run *ResultFileManager::getRunByName(const char *runName) const
 {
-    if (!file|| !runName)
+    if (!runName)
         return NULL;
-    RunList& runs = file->runs;
-    for (int i=0; i<runs.size(); i++)
-        if (runs[i]->runName==runName)
-            return runs[i];
+    for (int i=0; i<runList.size(); i++)
+        if (runList[i]->runName==runName)
+            return runList[i];
     return NULL;
 }
 
+/*
 ID ResultFileManager::getItemByName(Run *run, const char *module, const char *name) const
 {
     if (!run || !module || !name)
@@ -258,28 +279,20 @@ ID ResultFileManager::getItemByName(Run *run, const char *module, const char *na
     }
     return 0;
 }
+*/
 
 IDList ResultFileManager::getFilteredList(const IDList& idlist,
-                                         const char *fileAndRunFilter,
-                                         const char *moduleFilter,
-                                         const char *nameFilter)
+                                          const FileRunList *fileRunFilter,
+                                          const char *moduleFilter,
+                                          const char *nameFilter)
 {
     // "*" means no filtering, so ignore it
-    if (!strcmp(fileAndRunFilter,"*")) fileAndRunFilter = "";
     if (!strcmp(moduleFilter,"*")) moduleFilter = "";
     if (!strcmp(nameFilter,"*")) nameFilter = "";
 
     // prepare for wildcard matches
-    bool patMatchFile = contains_wildcards(fileAndRunFilter);
     bool patMatchModule = contains_wildcards(moduleFilter);
     bool patMatchName = contains_wildcards(nameFilter);
-
-    short *filePattern = NULL;
-    if (patMatchFile)
-    {
-        filePattern = new short[512]; // FIXME!
-        transform_pattern(fileAndRunFilter, filePattern);
-    }
 
     short *modulePattern = NULL;
     if (patMatchModule)
@@ -297,28 +310,26 @@ IDList ResultFileManager::getFilteredList(const IDList& idlist,
     // FIXME TODO: if there's no wildcard, find string pointers in the stringsets
     // in advance, then we don't have to do strcmp().
 
-    // iterate over all values and add matching ones to out.
+    // iterate over all values and add matching ones to "out".
     // we can exploit the fact that ResultFileManager contains the data in the order
-    // they were read from file, i.e. grouped by file and run number
+    // they were read from file, i.e. grouped by runs
     IDList out;
-    Run *lastRunRef = NULL;
-    bool lastRunMatched = false;
+    FileRun *lastFileRunRef = NULL;
+    bool lastFileRunMatched = false;
     int sz = idlist.size();
     for (int i=0; i<sz; i++)
     {
         ID id = idlist.get(i);
         const ResultItem& d = getItem(id);
 
-        if (fileAndRunFilter && fileAndRunFilter[0])
+        if (fileRunFilter)
         {
-            if (lastRunRef!=d.runRef)
+            if (lastFileRunRef!=d.fileRunRef)
             {
-                lastRunRef = d.runRef;
-                lastRunMatched = (patMatchFile
-                    ? stringmatch(filePattern, lastRunRef->fileAndRunName.c_str())
-                    : !strcmp(lastRunRef->fileAndRunName.c_str(), fileAndRunFilter));
+                lastFileRunRef = d.fileRunRef;
+                lastFileRunMatched = std::find(fileRunFilter->begin(), fileRunFilter->end(), d.fileRunRef) != fileRunFilter->end();
             }
-            if (!lastRunMatched)
+            if (!lastFileRunMatched)
                 continue;
         }
 
@@ -342,45 +353,41 @@ IDList ResultFileManager::getFilteredList(const IDList& idlist,
     return out;
 }
 
-File *ResultFileManager::addScalarFile()
+File *ResultFileManager::addFile()
 {
     File *file = new File();
     file->id = fileList.size();
     fileList.push_back(file);
     file->resultFileManager = this;
-    file->fileType = File::SCALAR_FILE;
+    //XXX file->fileType = File::SCALAR_FILE; or File::VECTOR_FILE
     file->scalarResults = new ScalarResults();
     file->vectorResults = NULL;
     return file;
 }
 
-File *ResultFileManager::addVectorFile()
-{
-    File *file = new File();
-    file->id = fileList.size();
-    fileList.push_back(file);
-    file->resultFileManager = this;
-    file->fileType = File::VECTOR_FILE;
-    file->scalarResults = NULL;
-    file->vectorResults = new VectorResults();
-    return file;
-}
-
-Run *ResultFileManager::addRun(File *file)
+Run *ResultFileManager::addRun()
 {
     Run *run = new Run();
-    file->runs.push_back(run);
-    run->fileRef = file;
+    runList.push_back(run);
     return run;
 }
 
-void ResultFileManager::addScalar(Run *runRef, const char *moduleName,
+FileRun *ResultFileManager::addFileRun(File *file, Run *run)
+{
+    FileRun *fileRun = new FileRun();
+    fileRunList.push_back(fileRun);
+    fileRun->fileRef = file;
+    fileRun->runRef = run;
+    return fileRun;
+}
+
+void ResultFileManager::addScalar(FileRun *fileRunRef, const char *moduleName,
                                   const char *scalarName, double value)
 {
     static std::string *lastInsertedModuleRef = NULL;
 
     ScalarResult d;
-    d.runRef = runRef;
+    d.fileRunRef = fileRunRef;
 
     // lines in omnetpp.sca are usually grouped by module, we can exploit this for efficiency
     if (lastInsertedModuleRef && *lastInsertedModuleRef==moduleName)
@@ -397,14 +404,13 @@ void ResultFileManager::addScalar(Run *runRef, const char *moduleName,
 
     d.value = value;
 
-    //scalars.push_back(d);
-    runRef->fileRef->scalarResults->push_back(d);
+    fileRunRef->fileRef->scalarResults->push_back(d);
 }
 
 
+/*
 void ResultFileManager::dump(File *fileRef, std::ostream& out) const
 {
-/*
     Run *prevRunRef = NULL;
     for (ScalarResults::const_iterator i = scalars.begin(); i!=scalars.end(); i++)
     {
@@ -421,8 +427,8 @@ void ResultFileManager::dump(File *fileRef, std::ostream& out) const
                 << *d.nameRef << "\"\t" << d.value << "\n";
         }
     }
-*/
 }
+*/
 
 //===================================================================
 
@@ -507,15 +513,21 @@ static std::string filenameToSlash(const char *filename)
     return res;
 }
 
-void ResultFileManager::processLine(char **vec, int numtokens, Run *&runRef, File *fileRef, int lineNum)
+void ResultFileManager::processLine(char **vec, int numtokens, FileRun *&fileRunRef, File *fileRef, int lineNum)
 {
-    if (numtokens>=1 && !strcmp(vec[0],"run"))
+    // ignore empty lines
+    if (numtokens==0 || vec[0][0]=='#')
+        return;
+
+    // process "run" lines
+    if (vec[0][0]=='r' && !strcmp(vec[0],"run"))
     {
         if (numtokens<2)
             throw new Exception("invalid scalar file: no run number on `run' line, line %d", lineNum);
 
         // add a new Run, and fill in its members
-        runRef = addRun(fileRef);
+        Run *runRef = addRun();
+        fileRunRef = addFileRun(fileRef, runRef);
         runRef->runNumber = atoi(vec[1]);
         runRef->networkName = numtokens<3 ? "" : vec[2];
         runRef->date = numtokens<4 ? "" : vec[3];
@@ -527,12 +539,25 @@ void ResultFileManager::processLine(char **vec, int numtokens, Run *&runRef, Fil
         //if (!date.empty())
         //    runRef->runName += " (" + date + ")";
         runRef->fileAndRunName = fileRef->filePath + "#" + runRef->runName;
+        return;
     }
-    else if (numtokens>0 && !strcmp(vec[0],"scalar"))
-    {
-        if (runRef==NULL)
-            throw new Exception("invalid scalar file: no `run' line before first `scalar' line, line %d", lineNum);
 
+    // if we haven't seen a "run" line yet (as with old vector files), add a default run
+    if (fileRunRef==NULL)
+    {
+        // add a new Run, and fill in its members
+        Run *runRef = addRun();
+        fileRunRef = addFileRun(fileRef, runRef);
+        runRef->runNumber = 0;
+        runRef->networkName = "n/a";  // FIXME TBD refine vector file format
+        runRef->date = "n/a";
+        runRef->lineNum = 0;
+        runRef->runName = "default"; //XXX
+        runRef->fileAndRunName = fileRef->filePath; // + "#" + runRef->runName;
+    }
+
+    if (vec[0][0]=='s' && !strcmp(vec[0],"scalar"))
+    {
         // syntax: "scalar <module> <scalarname> <value>"
         if (numtokens<4)
             throw new Exception("invalid scalar file: too few items on `scalar' line, line %d", lineNum);
@@ -541,55 +566,48 @@ void ResultFileManager::processLine(char **vec, int numtokens, Run *&runRef, Fil
         if (!parseDouble(vec[3],value))
             throw new Exception("invalid scalar file syntax: invalid value column, line %d", lineNum);
 
-        addScalar(runRef, vec[1], vec[2], value);
+        addScalar(fileRunRef, vec[1], vec[2], value);
+        return;
     }
-    else if (numtokens>0 && !strcmp(vec[0],"vector"))
+    else if (vec[0][0]=='v' && !strcmp(vec[0],"vector"))
     {
-        // FIXME unload file on all exceptions!
-        throw new Exception("error parsing output scalar file: it rather appears to be a vector file");
+        // vector line
+        if (numtokens<4)
+            throw new Exception("invalid vector file syntax: too few items on 'vector' line, line %d", lineNum);
+
+        VectorResult vecdata;
+        vecdata.fileRunRef = fileRunRef;
+
+        // vectorId
+        char *e;
+        vecdata.vectorId = (int) strtol(vec[1],&e,10);
+        if (*e)
+            throw new Exception("invalid vector file syntax: invalid vector id in vector definition, line %d", lineNum);
+
+        // module name, vector name
+        const char *moduleName = vec[2];
+        const char *vectorName = vec[3];
+        vecdata.moduleNameRef = stringSetFindOrInsert(moduleNames, std::string(moduleName));
+        vecdata.nameRef = stringSetFindOrInsert(names, std::string(vectorName));
+
+        fileRef->vectorResults->push_back(vecdata);
+    }
+    else if (vec[0][0]=='a' && !strcmp(vec[0],"attr"))
+    {
+        //XXX TODO
+    }
+    else if (vec[0][0]=='p' && !strcmp(vec[0],"param"))
+    {
+        //XXX TODO
     }
     else
     {
-        // some other line, ignore
+        // ignore unknown lines and vector data lines
     }
 }
 
 
-File *ResultFileManager::loadScalarFile(const char *filename)
-{
-//XXX __asm int 3;
-    // check
-    if (isFileLoaded(filename))
-        return getFile(filename);
-
-    // try if file can be opened, before we add it to our database
-    FILE *f = fopen(filename, "r");
-    if (!f)
-        throw new Exception("cannot open `%s' for read", filename);
-    fclose(f);
-
-    // add to fileList
-    File *fileRef = addScalarFile();
-    fileRef->filePath = filenameToSlash(filename);
-    splitFileName(fileRef->filePath.c_str(), fileRef->directory, fileRef->fileName);
-
-    Run *runRef = NULL;
-
-    FileTokenizer ftok(filename);
-    while (ftok.readLine())
-    {
-//XXX int li = ftok.lineNum(); printf("DBG line %d\n", li); fflush(stdout);
-        int numtokens = ftok.numTokens();
-        char **vec = ftok.tokens();
-        processLine(vec, numtokens, runRef, fileRef, ftok.lineNum());
-    }
-    if (!ftok.eof())
-        throw new Exception(ftok.errorMsg().c_str());
-
-    return fileRef;
-}
-
-File *ResultFileManager::loadVectorFile(const char *filename)
+File *ResultFileManager::loadFile(const char *filename)
 {
     // check
     if (isFileLoaded(filename))
@@ -602,63 +620,27 @@ File *ResultFileManager::loadVectorFile(const char *filename)
     fclose(f);
 
     // add to fileList
-    File *fileRef = addVectorFile();
+    File *fileRef = addFile();
     fileRef->filePath = filenameToSlash(filename);
     splitFileName(fileRef->filePath.c_str(), fileRef->directory, fileRef->fileName);
 
-    // add a new Run, and fill in its members
-    Run *runRef = addRun(fileRef);
-    runRef->runNumber = 0;
-    runRef->networkName = "n/a";  // FIXME TBD refine vector file format
-    runRef->date = "n/a";
-    runRef->lineNum = 0;
-    runRef->runName = "default";
-    runRef->fileAndRunName = fileRef->filePath; // + "#" + runRef->runName;
+    FileRun *fileRunRef = NULL;
 
     FileTokenizer ftok(filename);
     while (ftok.readLine())
     {
         int numtokens = ftok.numTokens();
         char **vec = ftok.tokens();
-
-        if (numtokens>0 && vec[0][0]=='v' && !strcmp(vec[0],"vector"))
-        {
-            // vector line
-            if (numtokens<4)
-                throw new Exception("invalid vector file syntax: too few items on 'vector' line, line %d", ftok.lineNum());
-
-            VectorResult vecdata;
-            vecdata.runRef = runRef;
-
-            // vectorId
-            char *e;
-            vecdata.vectorId = (int) strtol(vec[1],&e,10);
-            if (*e)
-                throw new Exception("invalid vector file syntax: invalid vector id in vector definition, line %d", ftok.lineNum());
-
-            // module name, vector name
-            const char *moduleName = vec[2];
-            const char *vectorName = vec[3];
-            vecdata.moduleNameRef = stringSetFindOrInsert(moduleNames, std::string(moduleName));
-            vecdata.nameRef = stringSetFindOrInsert(names, std::string(vectorName));
-
-            runRef->fileRef->vectorResults->push_back(vecdata);
-        }
-        else if (numtokens>0 && vec[0][0]=='s' && !strcmp(vec[0],"scalar"))
-        {
-            // FIXME unload file on all exceptions!
-            throw new Exception("error parsing output vector file: it rather appears to be a scalar file");
-        }
+        processLine(vec, numtokens, fileRunRef, fileRef, ftok.lineNum());
     }
 
     // ignore "incomplete last line" error, because we might be reading
-    // a vec file currently being written by a simulation
+    // from a vec file currently being written by a simulation
     if (!ftok.eof() && ftok.errorCode()!=FileTokenizer::INCOMPLETELINE)
         throw new Exception(ftok.errorMsg().c_str());
 
     return fileRef;
 }
-
 
 void ResultFileManager::unloadFile(File *)
 {
