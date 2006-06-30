@@ -6,7 +6,7 @@ import org.jfree.data.category.CategoryDataset;
 import org.jfree.data.category.DefaultCategoryDataset;
 import org.jfree.data.xy.XYDataset;
 import org.omnetpp.scave.engine.DataflowManager;
-import org.omnetpp.scave.engine.FileList;
+import org.omnetpp.scave.engine.ResultFileList;
 import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.engine.Node;
 import org.omnetpp.scave.engine.NodeType;
@@ -46,7 +46,7 @@ public class ChartHelper {
 		// create VectorFileReader nodes
 		HashMap fileNameToNode = new HashMap();
 		NodeType vectorFileReaderType = factory.getNodeType("vectorfilereader");
-		FileList files = manager.getFiles();
+		ResultFileList files = manager.getFiles();
 		int sz = (int)files.size();
 		for (int i=0; i<sz; i++) { // FIXME we should only create reader for files that occur in vecs[]
 			StringMap args = new StringMap();

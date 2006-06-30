@@ -76,10 +76,10 @@ namespace std {
         }
    %}
 
-   %typemap(javacode) vector<File*> %{
-        public File[] toArray() {
+   %typemap(javacode) vector<ResultFile*> %{
+        public ResultFile[] toArray() {
             int sz = (int)size();
-            File[] array = new File[sz];
+            ResultFile[] array = new ResultFile[sz];
             for (int i=0; i<sz; i++)
                 array[i] = get(i);
             return array;
@@ -126,11 +126,11 @@ namespace std {
    %template(IDVectorVector) vector<vector<ID> >;
 
    specialize_std_vector(Run*);
-   specialize_std_vector(File*);
+   specialize_std_vector(ResultFile*);
    specialize_std_vector(FileRun*);
 
    %template(RunList) vector<Run*>;
-   %template(FileList) vector<File*>;
+   %template(ResultFileList) vector<ResultFile*>;
    %template(FileRunList) vector<FileRun*>;
 
    specialize_std_vector(MessageEntry*);
@@ -231,9 +231,9 @@ namespace std {
 }
 %enddef
 
-FIX_STRING_MEMBER(File, filePath, FilePath);
-FIX_STRING_MEMBER(File, directory, Directory);
-FIX_STRING_MEMBER(File, fileName, FileName);
+FIX_STRING_MEMBER(ResultFile, filePath, FilePath);
+FIX_STRING_MEMBER(ResultFile, directory, Directory);
+FIX_STRING_MEMBER(ResultFile, fileName, FileName);
 
 FIX_STRING_MEMBER(Run, networkName, NetworkName);
 FIX_STRING_MEMBER(Run, date, Date);
@@ -254,13 +254,13 @@ FIX_STRING_MEMBER(Run, replicationName, ReplicationName);
    std::string getName() {return *self->nameRef;}
 }
 
-%ignore File::id;
-%ignore File::scalarResults;
-%ignore File::vectorResults;
+%ignore ResultFile::id;
+%ignore ResultFile::scalarResults;
+%ignore ResultFile::vectorResults;
 
-%typemap(javacode) File %{
+%typemap(javacode) ResultFile %{
     public boolean equals(Object obj) {
-        return (obj instanceof File) && getCPtr(this)==getCPtr((File)obj);
+        return (obj instanceof ResultFile) && getCPtr(this)==getCPtr((ResultFile)obj);
     }
     public int hashCode() {
         return (int)getCPtr(this);

@@ -20,7 +20,7 @@ import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
-import org.omnetpp.scave.engine.File;
+import org.omnetpp.scave.engine.ResultFile;
 import org.omnetpp.scave.engineext.ResultFileManagerEx;
 import org.omnetpp.scave.model.Analysis;
 import org.omnetpp.scave.model.Chart;
@@ -79,7 +79,7 @@ public class ScaveEditor extends AbstractEMFModelEditor {
 		return manager;
 	}
 	
-	public List<File> getInputFiles() {
+	public List<ResultFile> getInputFiles() {
 		return tracker.getInputFiles();
 	}
 	

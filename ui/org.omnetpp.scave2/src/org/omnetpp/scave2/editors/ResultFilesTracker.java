@@ -15,7 +15,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.content.IContentType;
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.edit.provider.INotifyChangedListener;
-import org.omnetpp.scave.engine.File;
+import org.omnetpp.scave.engine.ResultFile;
 import org.omnetpp.scave.engineext.ResultFileManagerEx;
 import org.omnetpp.scave.model.InputFile;
 import org.omnetpp.scave.model.Inputs;
@@ -39,7 +39,7 @@ public class ResultFilesTracker implements INotifyChangedListener, IResourceChan
 	 * XXX When ResultFileManager.unloadFile() is implemented, then this field
 	 * will be replaced by ResultFileManager.getFiles().
 	 */
-	private List<File> inputFiles = new ArrayList<File>();
+	private List<ResultFile> inputFiles = new ArrayList<ResultFile>();
 	
 	public ResultFilesTracker(ResultFileManagerEx manager, Inputs inputs) {
 		this.manager = manager;
@@ -50,7 +50,7 @@ public class ResultFilesTracker implements INotifyChangedListener, IResourceChan
 	 * List of result files loaded. This gets synchronized with the Inputs model
 	 * element and with the workspace.
 	 */ 
-	public List<File> getInputFiles() {
+	public List<ResultFile> getInputFiles() {
 		return inputFiles;
 	}
 
@@ -159,7 +159,7 @@ public class ResultFilesTracker implements INotifyChangedListener, IResourceChan
 	
 	private void unloadFile(IFile file) {
 		System.out.println("unloadFile: "+file);
-		File resultFile = manager.getFile(file.getLocation().toOSString());
+		ResultFile resultFile = manager.getFile(file.getLocation().toOSString());
 		inputFiles.remove(resultFile);
 		// TODO: ResultFileManager.unloadFile() not yet implemented
 		//if (resultFile != null)

@@ -3,7 +3,7 @@ package org.omnetpp.scave2.model;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EObject;
 import org.omnetpp.scave.engine.DataflowManager;
-import org.omnetpp.scave.engine.FileList;
+import org.omnetpp.scave.engine.ResultFileList;
 import org.omnetpp.scave.engine.FileRunList;
 import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.engineext.ResultFileManagerEx;
@@ -24,12 +24,12 @@ public class DatasetManager {
 	
 	static class DatasetContent {
 		public boolean isScalar;
-		public FileList files;
+		public ResultFileList files;
 		public IDList idlist;
 		public DataflowManager dataflowManager;
 		
 		public DatasetContent() {
-			files = new FileList();
+			files = new ResultFileList();
 			idlist = new IDList();
 		}
 	}

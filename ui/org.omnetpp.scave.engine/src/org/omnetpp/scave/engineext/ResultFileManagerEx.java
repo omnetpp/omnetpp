@@ -2,7 +2,7 @@ package org.omnetpp.scave.engineext;
 
 import java.util.ArrayList;
 
-import org.omnetpp.scave.engine.File;
+import org.omnetpp.scave.engine.ResultFile;
 import org.omnetpp.scave.engine.FileRunList;
 import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.engine.ResultFileManager;
@@ -32,14 +32,14 @@ public class ResultFileManagerEx extends ResultFileManager {
 	}
 
 	@Override
-	public File loadFile(String filename) {
-		File file = super.loadFile(filename);
+	public ResultFile loadFile(String filename) {
+		ResultFile file = super.loadFile(filename);
 		notifyListeners();
 		return file;
 	}
 
 	@Override
-	public void unloadFile(File file) {
+	public void unloadFile(ResultFile file) {
 		super.unloadFile(file);
 		notifyListeners();
 	}

@@ -16,6 +16,7 @@ import org.omnetpp.scave2.charting.plotter.IVectorPlotter;
 import org.omnetpp.scave2.charting.plotter.LinesVectorPlotter;
 import org.omnetpp.scave2.charting.plotter.SquareSymbol;
 
+//XXX strange effects when resized and vertical scrollbar pulled...
 public class VectorChart extends ZoomableCachingCanvas {
 	private static final Color TICK_LINE_COLOR = new Color(null, 160, 160, 160);
 	private static final Color TICK_LABEL_COLOR = new Color(null, 0, 0, 0);
@@ -186,6 +187,7 @@ public class VectorChart extends ZoomableCachingCanvas {
 		}
 
 		// Y axis
+		// XXX don't draw if falls into gutter area
 		if (startX<=0 && endX>=0) {
 			graphics.setLineStyle(SWT.LINE_SOLID);
 			graphics.drawLine(toCanvasX(0), 0, toCanvasX(0), getHeight());
@@ -221,6 +223,7 @@ public class VectorChart extends ZoomableCachingCanvas {
 		}
 
 		// X axis
+		// XXX don't draw if falls into gutter area
 		//if (startY<=0 && endY>=0) { //XXX with this "if" sometimes it doesn't draw
 			graphics.setLineStyle(SWT.LINE_SOLID);
 			graphics.drawLine(0, toCanvasY(0), getWidth(), toCanvasY(0));
