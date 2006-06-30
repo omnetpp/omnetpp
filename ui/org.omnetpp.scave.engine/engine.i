@@ -245,7 +245,7 @@ FIX_STRING_MEMBER(Run, replicationName, ReplicationName);
 
 %rename FileRun::fileRef file;
 %rename FileRun::runRef run;
-%rename ResultItem::runRef run;
+%rename ResultItem::fileRunRef fileRun;
 
 %ignore ResultItem::moduleNameRef;
 %ignore ResultItem::nameRef;

@@ -28,7 +28,7 @@ public class ChartHelper {
 		for (int i=0; i<sz; i++) {
 			ScalarResult d = manager.getScalar(idlist.get(i));
 			ds.addValue(d.getValue(),
-					d.getRun().getFileAndRunName(),
+					d.getFileRun().getRun().getRunName(),
 					d.getModuleName()+"\n"+d.getName());
 		}
 		return ds;
@@ -66,7 +66,7 @@ public class ChartHelper {
 				StringMap args = new StringMap();
 				Node arrayNode = arrayBuilderType.create(net, args);
 				arrayBuilderNodes[i] = arrayNode;
-				String fileName = vec.getRun().getFile().getFilePath();
+				String fileName = vec.getFileRun().getFile().getFilePath();
 				Node readerNode = (Node)fileNameToNode.get(fileName);
 				net.connect(
 						vectorFileReaderType.getPort(readerNode, ""+vec.getVectorId()),

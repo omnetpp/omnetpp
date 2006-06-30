@@ -7,6 +7,7 @@ import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.omnetpp.scave.engine.FileRunList;
 import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.engineext.ResultFileManagerEx;
 import org.omnetpp.scave2.model.FilterParams;
@@ -105,8 +106,9 @@ public class FilteredDataPanel extends Composite {
 		String moduleFilter = filterPanel.getModuleNameCombo().getText();
 		String nameFilter = filterPanel.getNameCombo().getText();
 
+		FileRunList fileRunFilter = null; //FIXME
 		IDList filteredIDList = manager.getFilteredList(idlist,
-				fileAndRunFilter, moduleFilter, nameFilter);
+				fileRunFilter, moduleFilter, nameFilter);
 		
 		table.setIDList(filteredIDList);
 	}

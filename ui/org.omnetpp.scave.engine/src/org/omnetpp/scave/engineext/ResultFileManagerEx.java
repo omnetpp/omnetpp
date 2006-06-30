@@ -3,12 +3,9 @@ package org.omnetpp.scave.engineext;
 import java.util.ArrayList;
 
 import org.omnetpp.scave.engine.File;
-import org.omnetpp.scave.engine.FileList;
+import org.omnetpp.scave.engine.FileRunList;
 import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.engine.ResultFileManager;
-import org.omnetpp.scave.engine.Run;
-import org.omnetpp.scave.engine.RunList;
-import org.omnetpp.scave.engine.StringSet;
 
 /**
  * ResultFileManager with notification capability. Also re-wraps
@@ -35,36 +32,8 @@ public class ResultFileManagerEx extends ResultFileManager {
 	}
 
 	@Override
-	public Run addRun(File file) {
-		Run run = super.addRun(file);
-		notifyListeners();
-		return run;
-	}
-
-	@Override
-	public File addScalarFile() {
-		File file = super.addScalarFile();
-		notifyListeners();
-		return file;
-	}
-
-	@Override
-	public File addVectorFile() {
-		File file = super.addVectorFile();
-		notifyListeners();
-		return file;
-	}
-
-	@Override
-	public File loadScalarFile(String filename) {
-		File file = super.loadScalarFile(filename);
-		notifyListeners();
-		return file;
-	}
-
-	@Override
-	public File loadVectorFile(String filename) {
-		File file = super.loadVectorFile(filename);
+	public File loadFile(String filename) {
+		File file = super.loadFile(filename);
 		notifyListeners();
 		return file;
 	}
@@ -90,7 +59,7 @@ public class ResultFileManagerEx extends ResultFileManager {
 	}
 
 	@Override
-	public IDListEx getFilteredList(IDList idlist, String fileAndRunFilter, String moduleFilter, String nameFilter) {
+	public IDListEx getFilteredList(IDList idlist, FileRunList fileAndRunFilter, String moduleFilter, String nameFilter) {
 		return wrap(super.getFilteredList(idlist, fileAndRunFilter, moduleFilter, nameFilter));
 	}
 }

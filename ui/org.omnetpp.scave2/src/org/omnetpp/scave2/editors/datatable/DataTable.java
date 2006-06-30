@@ -129,17 +129,17 @@ public class DataTable extends Table {
 	protected void fillTableLine(TableItem item, int lineNumber) {
 		if (type==TYPE_SCALAR) {
 			ScalarResult d = manager.getScalar(idlist.get(lineNumber));
-			item.setText(0, d.getRun().getFile().getDirectory());
-			item.setText(1, d.getRun().getFile().getFileName());
-			item.setText(2, d.getRun().getRunName());
+			item.setText(0, d.getFileRun().getFile().getDirectory());
+			item.setText(1, d.getFileRun().getFile().getFileName());
+			item.setText(2, d.getFileRun().getRun().getRunName());
 			item.setText(3, d.getModuleName());
 			item.setText(4, d.getName());
 			item.setText(5, ""+d.getValue());
 		}
 		else if (type==TYPE_VECTOR) {
 			VectorResult d = manager.getVector(idlist.get(lineNumber));
-			item.setText(0, d.getRun().getFile().getDirectory());
-			item.setText(1, d.getRun().getFile().getFileName());
+			item.setText(0, d.getFileRun().getFile().getDirectory());
+			item.setText(1, d.getFileRun().getFile().getFileName());
 			item.setText(2, "n/a");
 			item.setText(3, d.getModuleName());
 			item.setText(4, d.getName());

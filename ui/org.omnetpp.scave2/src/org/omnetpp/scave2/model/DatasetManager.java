@@ -4,6 +4,7 @@ import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EObject;
 import org.omnetpp.scave.engine.DataflowManager;
 import org.omnetpp.scave.engine.FileList;
+import org.omnetpp.scave.engine.FileRunList;
 import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.engineext.ResultFileManagerEx;
 import org.omnetpp.scave.model.Add;
@@ -150,8 +151,10 @@ public class DatasetManager {
 			String fileAndRunFilter = add.getFilenamePattern() != null ? add.getFilenamePattern() : "";
 			String moduleFilter = add.getModuleNamePattern() != null ? add.getModuleNamePattern() : "";
 			String nameFilter = add.getNamePattern() != null ? add.getNamePattern() : "";
+
+			FileRunList fileRunFilter = null; //FIXME
 			idlist.merge(manager.getFilteredList(scalar ? manager.getAllScalars() : manager.getAllVectors(),
-					fileAndRunFilter, moduleFilter, nameFilter));
+					fileRunFilter, moduleFilter, nameFilter));
 
 			// TODO: excepts, experiments, ...
 		}
@@ -161,8 +164,9 @@ public class DatasetManager {
 			String moduleFilter = remove.getModuleNamePattern() != null ? remove.getModuleNamePattern() : "";
 			String nameFilter = remove.getNamePattern() != null ? remove.getNamePattern() : "";
 			
+			FileRunList fileRunFilter = null; //FIXME
 			idlist.substract(manager.getFilteredList(idlist,
-					fileAndRunFilter, moduleFilter, nameFilter));
+					fileRunFilter, moduleFilter, nameFilter));
 
 			// TODO: excepts, experiments, ...
 		}
