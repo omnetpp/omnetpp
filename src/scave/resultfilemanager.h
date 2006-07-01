@@ -197,7 +197,7 @@ class ResultFileManager
     ~ResultFileManager();
 
     // navigation
-    const ResultFileList& getFiles() const  {return fileList;} //XXX filter out NULLs
+    ResultFileList getFiles() const; // filters out NULLs
     const RunList& getRuns() const {return runList;}
     RunList getRunsInFile(ResultFile *file) const;
     ResultFileList getFilesForRun(Run *run) const;

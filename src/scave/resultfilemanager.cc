@@ -63,6 +63,15 @@ std::string *ResultFileManager::stringSetFindOrInsert(StringSet& set, const std:
     return &const_cast<std::string&>(*m);
 }
 
+ResultFileList ResultFileManager::getFiles() const
+{
+    ResultFileList out;
+    for (int i=0; i<fileList.size(); i++)
+        if (fileList[i])
+            out.push_back(fileList[i]);
+    return out;
+}
+
 RunList ResultFileManager::getRunsInFile(ResultFile *file) const
 {
     RunList out;
