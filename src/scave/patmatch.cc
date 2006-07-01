@@ -138,3 +138,54 @@ bool stringmatch(const short *pat, const char *line)
     return 1;
 }
 
+//--------------------
+
+PatternMatcher::PatternMatcher()
+{
+    pattern = NULL;
+}
+
+PatternMatcher::PatternMatcher(const char *s)
+{
+    pattern = NULL;
+    setPattern(s);
+}
+
+PatternMatcher::PatternMatcher(const PatternMatcher& other)
+{
+    pattern = NULL;
+    setPattern(other.str.c_str());
+}
+
+PatternMatcher::~PatternMatcher()
+{
+    delete[] pattern;
+}
+
+void PatternMatcher::operator=(const PatternMatcher& other)
+{
+    setPattern(other.str.c_str());
+}
+
+void PatternMatcher::setPattern(const char *s)
+{
+    // clean up existing contents
+    str = "";
+    delete[] pattern;
+    pattern = NULL;
+
+    // set new contents
+    str = s; // needed for copy ctor too!
+    if (contains_wildcards(s))
+    {
+        pattern = new short[512]; // FIXME potential overrun
+        transform_pattern(s, pattern);
+    }
+}
+
+bool PatternMatcher::matches(const char *line) const
+{
+    return line==NULL ? false : pattern==NULL ? strcmp(line, str.c_str())==0 : stringmatch(pattern, line);
+}
+
+

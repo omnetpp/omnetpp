@@ -246,9 +246,15 @@ class ResultFileManager
     FileRun *getFileRun(ResultFile *file, Run *run) const;
     ID getItemByName(ResultFile *file, const char *module, const char *name) const;
 
+    // get unique values of an attribute ("experiment",etc) in a set of Runs
+    StringVector getUniqueAttributeValues(const RunList& runList, const char *attrName) const;
+
+    // select Runs and FileRuns by various criteria (attribute value, etc)
+    RunList getFilteredRunList(const RunList& runList,
+                               const char *runNameFilter,
+                               const StringMap attrFilter) const;
+
     //XXX needed:
-    // - select Runs and FileRuns by various criteria (attribute value, etc);
-    // - get unique values of an attribute ("experiment",etc) in a set of Runs;
     // - expand RunList to FileRunList
 
     // utility

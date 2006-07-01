@@ -286,6 +286,59 @@ ID ResultFileManager::getItemByName(ResultFile *fileRef, const char *module, con
     return 0;
 }
 
+StringVector ResultFileManager::getUniqueAttributeValues(const RunList& runList, const char *attrName) const
+{
+    StringSet values;
+    for (int i=0; i<runList.size(); i++)
+    {
+        const char *value = runList[i]->getAttribute(attrName);
+        if (value!=NULL)
+            values.insert(value);
+    }
+
+    // copy into a vector
+    StringVector vec;
+    for (StringSet::iterator it=values.begin(); it!=values.end(); it++)
+        vec.push_back(*it);
+
+    // sort it and return the result
+    std::sort(vec.begin(), vec.end());
+    return vec;
+}
+
+RunList ResultFileManager::getFilteredRunList(const RunList& runList,
+                           const char *runNameFilter,
+                           const StringMap attrFilter) const
+{
+    RunList out;
+
+    // runName matcher
+    PatternMatcher runNamePattern(runNameFilter);
+
+    // copy attributes to vectors for performance (std::map iterator is
+    // infamously slow, and we need PatternMatchers as well)
+    StringVector attrNames;
+    std::vector<PatternMatcher> attrValues;
+    for (StringMap::const_iterator it = attrFilter.begin(); it!=attrFilter.end(); ++it)
+    {
+        attrNames.push_back(it->first);
+        attrValues.push_back(PatternMatcher(it->second.c_str()));
+    }
+
+    // do it
+    for (int i=0; i<runList.size(); i++)
+    {
+        Run *run = runList[i];
+        if (!runNamePattern.matches(run->runName.c_str()))
+            continue;
+        for (int j=0; j<attrNames.size(); j++)
+            if (!attrValues[j].matches(run->getAttribute(attrNames[i].c_str())))
+                continue;
+        out.push_back(run);
+    }
+    return out;
+}
+
 IDList ResultFileManager::getFilteredList(const IDList& idlist,
                                           const FileRunList *fileRunFilter,
                                           const char *moduleFilter,
