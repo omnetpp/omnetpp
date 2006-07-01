@@ -79,10 +79,6 @@ public class ScaveEditor extends AbstractEMFModelEditor {
 		return manager;
 	}
 	
-	public List<ResultFile> getInputFiles() {
-		return tracker.getInputFiles();
-	}
-	
 	public BrowseDataPage getBrowseDataPage() {
 		return browseDataPage;
 	}

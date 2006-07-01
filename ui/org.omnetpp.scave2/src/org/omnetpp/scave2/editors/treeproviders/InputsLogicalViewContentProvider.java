@@ -25,7 +25,7 @@ public class InputsLogicalViewContentProvider extends CachedTreeContentProvider 
 		Inputs inputs = (Inputs)element;
 		ResultFileManagerEx manager = editor.getResultFileManager();
 		GenericTreeNode root = new GenericTreeNode(null, inputs);
-		for (ResultFile file : editor.getInputFiles()) {
+		for (ResultFile file : manager.getFiles().toArray()) {
 			RunList runlist = manager.getRunsInFile(file);
 			for (int j = 0; j < runlist.size(); ++j) {
 				Run run = runlist.get(j);

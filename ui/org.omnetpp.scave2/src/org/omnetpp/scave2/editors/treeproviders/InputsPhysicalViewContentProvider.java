@@ -25,7 +25,7 @@ public class InputsPhysicalViewContentProvider extends CachedTreeContentProvider
 		Inputs inputs = (Inputs)element;
 		ResultFileManagerEx manager = editor.getResultFileManager();
 		GenericTreeNode root = new GenericTreeNode(null, inputs);
-		for (ResultFile file : editor.getInputFiles()) {
+		for (ResultFile file : manager.getFiles().toArray()) {
 			GenericTreeNode fileNode = new GenericTreeNode(root, file);
 			root.addChild(fileNode);
 			RunList runlist = manager.getRunsInFile(file);

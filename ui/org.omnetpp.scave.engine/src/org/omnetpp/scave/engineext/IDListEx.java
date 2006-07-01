@@ -79,11 +79,17 @@ public class IDListEx extends IDList {
 	}
 
 	@Override
-	public void sortByFileAndRunRef(ResultFileManager mgr) {
-		super.sortByFileAndRunRef(mgr);
+	public void sortByFileAndRun(ResultFileManager mgr) {
+		super.sortByFileAndRun(mgr);
 		notifyListeners();
 	}
 
+	@Override
+	public void sortByRunAndFile(ResultFileManager mgr) {
+		super.sortByRunAndFile(mgr);
+		notifyListeners();
+	}
+	
 	@Override
 	public void sortByFileName(ResultFileManager mgr, boolean ascending) {
 		super.sortByFileName(mgr, ascending);

@@ -1,8 +1,5 @@
 package org.omnetpp.scave2.editors;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceChangeEvent;
@@ -34,24 +31,9 @@ public class ResultFilesTracker implements INotifyChangedListener, IResourceChan
 	private ResultFileManagerEx manager; //backreference to the manager it operates on
 	private Inputs inputs; // backreference to the Inputs element we watch
 
-	/**
-	 * List of input files.
-	 * XXX When ResultFileManager.unloadFile() is implemented, then this field
-	 * will be replaced by ResultFileManager.getFiles().
-	 */
-	private List<ResultFile> inputFiles = new ArrayList<ResultFile>();
-	
 	public ResultFilesTracker(ResultFileManagerEx manager, Inputs inputs) {
 		this.manager = manager;
 		this.inputs = inputs;
-	}
-
-	/**
-	 * List of result files loaded. This gets synchronized with the Inputs model
-	 * element and with the workspace.
-	 */ 
-	public List<ResultFile> getInputFiles() {
-		return inputFiles;
 	}
 
 	/**
@@ -121,7 +103,9 @@ public class ResultFilesTracker implements INotifyChangedListener, IResourceChan
 		System.out.println("ResultFileTracker.synchronize()");
 		// TODO: handle wildcards
 		//XXX also: must unload files which have been removed from Inputs
-		inputFiles.clear();
+		//FIXME for now, a primitive solution, TO BE REPLACED: unload everything
+		for (ResultFile file : manager.getFiles().toArray())
+			manager.unloadFile(file);
 		for (Object inputFileObj : inputs.getInputs()) {
 			String resourcePath = ((InputFile)inputFileObj).getName();
 			loadFile(resourcePath);
@@ -148,7 +132,7 @@ public class ResultFilesTracker implements INotifyChangedListener, IResourceChan
 				IContentType contentType = file.getContentDescription().getContentType();
 				String path = file.getLocation().toOSString();
 				if (ContentTypes.SCALAR.equals(contentType.getId()) || ContentTypes.VECTOR.equals(contentType.getId()))
-					inputFiles.add(manager.loadFile(path));
+					manager.loadFile(path);
 				else 
 					throw new RuntimeException("wrong file type:"+file.getFullPath()); //XXX proper error handling (e.g. remove file from Inputs?)
 			}
@@ -160,10 +144,8 @@ public class ResultFilesTracker implements INotifyChangedListener, IResourceChan
 	private void unloadFile(IFile file) {
 		System.out.println("unloadFile: "+file);
 		ResultFile resultFile = manager.getFile(file.getLocation().toOSString());
-		inputFiles.remove(resultFile);
-		// TODO: ResultFileManager.unloadFile() not yet implemented
-		//if (resultFile != null)
-		//	manager.unloadFile(resultFile);
+		if (resultFile != null)
+			manager.unloadFile(resultFile);
 	}
 	
 }
