@@ -38,9 +38,9 @@ class ResultFileManager;
  */
 struct ResultItem
 {
-    FileRun *fileRunRef;
-    std::string *moduleNameRef;
-    std::string *nameRef; // scalarname or vectorname
+    FileRun *fileRunRef; // backref to containing FileRun
+    std::string *moduleNameRef; // points into ResultFileManager's StringSet
+    std::string *nameRef; // scalarname or vectorname; points into ResultFileManager's StringSet
 };
 
 /**
@@ -77,8 +77,8 @@ struct ResultFile
     std::string filePath; // directory + fileName
     std::string directory;
     std::string fileName;
-    ScalarResults *scalarResults;
-    VectorResults *vectorResults;
+    ScalarResults scalarResults;
+    VectorResults vectorResults;
     int numLines;
     int numUnrecognizedLines;
 };
@@ -189,9 +189,9 @@ class ResultFileManager
     RunList getRunsInFile(ResultFile *file) const;
     ResultFileList getFilesForRun(Run *run) const;
 
-    //IDList getDataInFile(ResultFile *file) const;
-    //IDList getDataInRun(Run *run) const;
     const ResultItem& getItem(ID id) const;
+    const ScalarResult& getScalar(ID id) const;
+    const VectorResult& getVector(ID id) const;
     bool isVector(ID id) const {return _type(id)==VECTOR;}
     bool isScalar(ID id) const {return _type(id)==SCALAR;}
 
@@ -201,13 +201,11 @@ class ResultFileManager
     StringSet *getUniqueModuleNames(const IDList& ids) const;
     StringSet *getUniqueNames(const IDList& ids) const;
 
-    // scalars access
+    // getting lists of data items
     IDList getAllScalars() const;
-    const ScalarResult& getScalar(ID id) const;
-
-    // vectors access
     IDList getAllVectors() const;
-    const VectorResult& getVector(ID id) const;
+    IDList getScalarsInFileRun(FileRun *fileRun) const;
+    IDList getVectorsInFileRun(FileRun *fileRun) const;
 
     // unchecked getters are only for internal use by IDList
     const ResultItem& uncheckedGetItem(ID id) const;
@@ -233,7 +231,7 @@ class ResultFileManager
     ResultFile *getFile(const char *filename) const;
     Run *getRunByName(const char *runName) const;
     FileRun *getFileRun(ResultFile *file, Run *run) const;
-    //ID getItemByName(Run *run, const char *module, const char *name) const;
+    ID getItemByName(ResultFile *file, const char *module, const char *name) const;
 
     //XXX needed:
     // - select Runs and FileRuns by various criteria (attribute value, etc);
@@ -252,20 +250,20 @@ inline const ResultItem& ResultFileManager::uncheckedGetItem(ID id) const
 {
     switch (_type(id))
     {
-        case SCALAR: return (*fileList[_fileid(id)]->scalarResults)[_pos(id)];
-        case VECTOR: return (*fileList[_fileid(id)]->vectorResults)[_pos(id)];
+        case SCALAR: return fileList[_fileid(id)]->scalarResults[_pos(id)];
+        case VECTOR: return fileList[_fileid(id)]->vectorResults[_pos(id)];
         default: throw new Exception("");
     }
 }
 
 inline const ScalarResult& ResultFileManager::uncheckedGetScalar(ID id) const
 {
-    return (*fileList[_fileid(id)]->scalarResults)[_pos(id)];
+    return fileList[_fileid(id)]->scalarResults[_pos(id)];
 }
 
 inline const VectorResult& ResultFileManager::uncheckedGetVector(ID id) const
 {
-    return (*fileList[_fileid(id)]->vectorResults)[_pos(id)];
+    return fileList[_fileid(id)]->vectorResults[_pos(id)];
 }
 
 #endif

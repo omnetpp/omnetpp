@@ -34,7 +34,22 @@ ResultFileManager::ResultFileManager()
 
 ResultFileManager::~ResultFileManager()
 {
-    // FIXME todo dealloc per-file data
+    for (int i=0; i<fileRunList.size(); i++)
+        delete fileRunList[i];
+
+    for (int i=0; i<runList.size(); i++)
+        delete runList[i];
+
+    for (int i=0; i<fileList.size(); i++)
+        delete fileList[i];
+
+    fileRunList.clear();
+    runList.clear();
+    fileList.clear();
+
+    moduleNames.clear();
+    names.clear();
+    classNames.clear();
 }
 
 std::string *ResultFileManager::stringSetFindOrInsert(StringSet& set, const std::string& str)
@@ -66,59 +81,14 @@ ResultFileList ResultFileManager::getFilesForRun(Run *run) const
     return out;
 }
 
-/*
-IDList ResultFileManager::getDataInFile(ResultFile *fileRef) const
-{
-    IDList out;
-    int fileId = fileRef->id;
-    if (fileRef->scalarResults)
-    {
-        ScalarResults& v = *(fileRef->scalarResults);
-        for (int i=0; i<v.size(); i++)
-            out.uncheckedAdd(_mkID(SCALAR,fileId,i));
-    }
-    if (fileRef->vectorResults)
-    {
-        VectorResults& v = *(fileRef->vectorResults);
-        for (int i=0; i<v.size(); i++)
-            out.uncheckedAdd(_mkID(VECTOR,fileId,i));
-    }
-    return out;
-}
-*/
-
-/*
-IDList ResultFileManager::getDataInRun(Run *runRef) const
-{
-    IDList out;
-    ResultFile *file = runRef->fileRef;
-    int fileId = file->id;
-    if (file->scalarResults)
-    {
-        ScalarResults& v = *(file->scalarResults);
-        for (int i=0; i<v.size(); i++)
-            if (v[i].runRef==runRef)
-                out.uncheckedAdd(_mkID(SCALAR,fileId,i));
-    }
-    if (file->vectorResults)
-    {
-        VectorResults& v = *(file->vectorResults);
-        for (int i=0; i<v.size(); i++)
-            if (v[i].runRef==runRef)
-                out.uncheckedAdd(_mkID(VECTOR,fileId,i));
-    }
-    return out;
-}
-*/
-
 const ResultItem& ResultFileManager::getItem(ID id) const
 {
     try
     {
         switch (_type(id))
         {
-            case SCALAR: return fileList.at(_fileid(id))->scalarResults->at(_pos(id));
-            case VECTOR: return fileList.at(_fileid(id))->vectorResults->at(_pos(id));
+            case SCALAR: return fileList.at(_fileid(id))->scalarResults.at(_pos(id));
+            case VECTOR: return fileList.at(_fileid(id))->vectorResults.at(_pos(id));
             default: throw new Exception("ResultFileManager::getItem(id): invalid ID");
         }
     }
@@ -174,25 +144,30 @@ StringSet *ResultFileManager::getUniqueNames(const IDList& ids) const
     return set;
 }
 
+const ScalarResult& ResultFileManager::getScalar(ID id) const
+{
+    if (_type(id)!=SCALAR)
+        throw new Exception("ResultFileManager::getScalar(id): this item is not a scalar");
+    return fileList.at(_fileid(id))->scalarResults.at(_pos(id));
+}
+
+const VectorResult& ResultFileManager::getVector(ID id) const
+{
+    if (_type(id)!=VECTOR)
+        throw new Exception("ResultFileManager::getVector(id): this item is not a vector");
+    return fileList.at(_fileid(id))->vectorResults.at(_pos(id));
+}
+
 IDList ResultFileManager::getAllScalars() const
 {
     IDList out;
     for (int k=0; k<fileList.size(); k++)
     {
-        ScalarResults *v = fileList[k]->scalarResults;
-        if (v)
-            for (int i=0; i<v->size(); i++)
-                out.uncheckedAdd(_mkID(SCALAR,k,i));
+        ScalarResults& v = fileList[k]->scalarResults;
+        for (int i=0; i<v.size(); i++)
+            out.uncheckedAdd(_mkID(SCALAR,k,i));
     }
     return out;
-}
-
-const ScalarResult& ResultFileManager::getScalar(ID id) const
-{
-    if (_type(id)==SCALAR)
-        return fileList.at(_fileid(id))->scalarResults->at(_pos(id));
-    else
-        throw new Exception("ResultFileManager::getScalar(id): this item is not a scalar");
 }
 
 IDList ResultFileManager::getAllVectors() const
@@ -200,20 +175,33 @@ IDList ResultFileManager::getAllVectors() const
     IDList out;
     for (int k=0; k<fileList.size(); k++)
     {
-        VectorResults *v = fileList[k]->vectorResults;
-        if (v)
-            for (int i=0; i<v->size(); i++)
-                out.uncheckedAdd(_mkID(VECTOR,k,i));
+        VectorResults& v = fileList[k]->vectorResults;
+        for (int i=0; i<v.size(); i++)
+            out.uncheckedAdd(_mkID(VECTOR,k,i));
     }
     return out;
 }
 
-const VectorResult& ResultFileManager::getVector(ID id) const
+IDList ResultFileManager::getScalarsInFileRun(FileRun *fileRun) const
 {
-    if (_type(id)==VECTOR)
-        return fileList.at(_fileid(id))->vectorResults->at(_pos(id));
-    else
-        throw new Exception("ResultFileManager::getScalar(id): this item is not a vector");
+    IDList out;
+    int fileId = fileRun->fileRef->id;
+    ScalarResults& v = fileRun->fileRef->scalarResults;
+    for (int i=0; i<v.size(); i++)
+        if (v[i].fileRunRef==fileRun)
+            out.uncheckedAdd(_mkID(SCALAR,fileId,i));
+    return out;
+}
+
+IDList ResultFileManager::getVectorsInFileRun(FileRun *fileRun) const
+{
+    IDList out;
+    int fileId = fileRun->fileRef->id;
+    VectorResults& v = fileRun->fileRef->vectorResults;
+    for (int i=0; i<v.size(); i++)
+        if (v[i].fileRunRef==fileRun)
+            out.uncheckedAdd(_mkID(VECTOR,fileId,i));
+    return out;
 }
 
 bool ResultFileManager::isFileLoaded(const char *filename) const
@@ -249,10 +237,10 @@ FileRun *ResultFileManager::getFileRun(ResultFile *file, Run *run) const
     return NULL;
 }
 
-/*
-ID ResultFileManager::getItemByName(Run *run, const char *module, const char *name) const
+// currently unused
+ID ResultFileManager::getItemByName(ResultFile *fileRef, const char *module, const char *name) const
 {
-    if (!run || !module || !name)
+    if (!fileRef || !module || !name)
         return 0;
 
     StringSet::const_iterator m = moduleNames.find(module);
@@ -265,29 +253,23 @@ ID ResultFileManager::getItemByName(Run *run, const char *module, const char *na
         return 0;
     const std::string *nameRef = &(*n);
 
-    if (run->fileRef->scalarResults)
+    ScalarResults& scalarResults = fileRef->scalarResults;
+    for (int i=0; i<scalarResults.size(); i++)
     {
-        ScalarResults& scalarResults = *(run->fileRef->scalarResults);
-        for (int i=0; i<scalarResults.size(); i++)
-        {
-            const ResultItem& d = scalarResults[i];
-            if (d.moduleNameRef==moduleNameRef && d.nameRef==nameRef && d.runRef==run)
-                return _mkID(SCALAR, run->fileRef->id, i);
-        }
+        const ResultItem& d = scalarResults[i];
+        if (d.moduleNameRef==moduleNameRef && d.nameRef==nameRef)
+            return _mkID(SCALAR, fileRef->id, i);
     }
-    if (run->fileRef->vectorResults)
+
+    VectorResults& vectorResults = fileRef->vectorResults;
+    for (int i=0; i<vectorResults.size(); i++)
     {
-        VectorResults& vectorResults = *(run->fileRef->vectorResults);
-        for (int i=0; i<vectorResults.size(); i++)
-        {
-            const ResultItem& d = vectorResults[i];
-            if (d.moduleNameRef==moduleNameRef && d.nameRef==nameRef && d.runRef==run)
-                return _mkID(VECTOR, run->fileRef->id, i);
-        }
+        const ResultItem& d = vectorResults[i];
+        if (d.moduleNameRef==moduleNameRef && d.nameRef==nameRef)
+            return _mkID(VECTOR, fileRef->id, i);
     }
     return 0;
 }
-*/
 
 IDList ResultFileManager::getFilteredList(const IDList& idlist,
                                           const FileRunList *fileRunFilter,
@@ -367,8 +349,6 @@ ResultFile *ResultFileManager::addFile()
     file->id = fileList.size();
     fileList.push_back(file);
     file->resultFileManager = this;
-    file->scalarResults = new ScalarResults();
-    file->vectorResults = new VectorResults();
     file->numLines = 0;
     file->numUnrecognizedLines = 0;
     return file;
@@ -414,7 +394,7 @@ void ResultFileManager::addScalar(FileRun *fileRunRef, const char *moduleName,
 
     d.value = value;
 
-    fileRunRef->fileRef->scalarResults->push_back(d);
+    fileRunRef->fileRef->scalarResults.push_back(d);
 }
 
 
@@ -439,8 +419,6 @@ void ResultFileManager::dump(ResultFile *fileRef, std::ostream& out) const
     }
 }
 */
-
-//===================================================================
 
 // FIXME unused function
 static void parseString(char *&s, std::string& dest, int lineNum)
@@ -642,7 +620,7 @@ void ResultFileManager::processLine(char **vec, int numTokens, FileRun *&fileRun
         vecdata.moduleNameRef = stringSetFindOrInsert(moduleNames, std::string(moduleName));
         vecdata.nameRef = stringSetFindOrInsert(names, std::string(vectorName));
 
-        fileRef->vectorResults->push_back(vecdata);
+        fileRef->vectorResults.push_back(vecdata);
     }
     else if (isdigit(vec[0][0]) && numTokens==3)
     {
