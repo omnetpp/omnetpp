@@ -149,10 +149,21 @@ class ResultFileManager
 {
     friend class IDList;  // _type()
   private:
+    // List of files loaded. This vector can have holes (NULLs) in it due to
+    // unloaded files. The "id" field of ResultFile is the index into this vector.
+    // It is not allowed to move elements, because IDs contain the file's index in them.
     ResultFileList fileList;
-    RunList runList;
-    FileRunList fileRunList; // stores the connection between files and runs (many-to-many relationship)
 
+    // List of unique runs in the files. If several files contain the same runName,
+    // it will generate only one Run entry here.
+    RunList runList;
+
+    // ResultFiles and Runs have many-to-many relationship. This is where we store
+    // their relations (instead of having a collection in both). ResultItems also
+    // contain a FileRun pointer instead of separate ResultFile and Run pointers.
+    FileRunList fileRunList;
+
+    // module names and variable names are stringpooled to conserve space
     StringSet moduleNames;
     StringSet names;
     StringSet classNames; // currently not used
@@ -179,12 +190,14 @@ class ResultFileManager
     void processLine(char **vec, int numTokens, FileRun *&fileRunRef, ResultFile *fileRef, int lineNum);
     void addScalar(FileRun *fileRunRef, const char *moduleName, const char *scalarName, double value);
 
+    ResultFile *getFileForID(ID id) const; // checks for NULL
+
   public:
     ResultFileManager();
     ~ResultFileManager();
 
     // navigation
-    const ResultFileList& getFiles() const  {return fileList;}
+    const ResultFileList& getFiles() const  {return fileList;} //XXX filter out NULLs
     const RunList& getRuns() const {return runList;}
     RunList getRunsInFile(ResultFile *file) const;
     ResultFileList getFilesForRun(Run *run) const;
@@ -265,6 +278,15 @@ inline const VectorResult& ResultFileManager::uncheckedGetVector(ID id) const
 {
     return fileList[_fileid(id)]->vectorResults[_pos(id)];
 }
+
+inline ResultFile *ResultFileManager::getFileForID(ID id) const
+{
+    ResultFile *fileRef = fileList.at(_fileid(id));
+    if (fileRef==NULL)
+        throw new Exception("ResultFileManager: stale ID: its file has already been unloaded");
+    return fileRef;
+}
+
 
 #endif
 

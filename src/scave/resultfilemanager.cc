@@ -87,9 +87,9 @@ const ResultItem& ResultFileManager::getItem(ID id) const
     {
         switch (_type(id))
         {
-            case SCALAR: return fileList.at(_fileid(id))->scalarResults.at(_pos(id));
-            case VECTOR: return fileList.at(_fileid(id))->vectorResults.at(_pos(id));
-            default: throw new Exception("ResultFileManager::getItem(id): invalid ID");
+            case SCALAR: return getFileForID(id)->scalarResults.at(_pos(id));
+            case VECTOR: return getFileForID(id)->vectorResults.at(_pos(id));
+            default: throw new Exception("ResultFileManager: invalid ID: bad type");
         }
     }
     catch (std::out_of_range e)
@@ -148,14 +148,14 @@ const ScalarResult& ResultFileManager::getScalar(ID id) const
 {
     if (_type(id)!=SCALAR)
         throw new Exception("ResultFileManager::getScalar(id): this item is not a scalar");
-    return fileList.at(_fileid(id))->scalarResults.at(_pos(id));
+    return getFileForID(id)->scalarResults.at(_pos(id));
 }
 
 const VectorResult& ResultFileManager::getVector(ID id) const
 {
     if (_type(id)!=VECTOR)
         throw new Exception("ResultFileManager::getVector(id): this item is not a vector");
-    return fileList.at(_fileid(id))->vectorResults.at(_pos(id));
+    return getFileForID(id)->vectorResults.at(_pos(id));
 }
 
 IDList ResultFileManager::getAllScalars() const
@@ -163,9 +163,12 @@ IDList ResultFileManager::getAllScalars() const
     IDList out;
     for (int k=0; k<fileList.size(); k++)
     {
-        ScalarResults& v = fileList[k]->scalarResults;
-        for (int i=0; i<v.size(); i++)
-            out.uncheckedAdd(_mkID(SCALAR,k,i));
+        if (fileList[k]!=NULL)
+        {
+            ScalarResults& v = fileList[k]->scalarResults;
+            for (int i=0; i<v.size(); i++)
+                out.uncheckedAdd(_mkID(SCALAR,k,i));
+        }
     }
     return out;
 }
@@ -175,9 +178,12 @@ IDList ResultFileManager::getAllVectors() const
     IDList out;
     for (int k=0; k<fileList.size(); k++)
     {
-        VectorResults& v = fileList[k]->vectorResults;
-        for (int i=0; i<v.size(); i++)
-            out.uncheckedAdd(_mkID(VECTOR,k,i));
+        if (fileList[k]!=NULL)
+        {
+            VectorResults& v = fileList[k]->vectorResults;
+            for (int i=0; i<v.size(); i++)
+                out.uncheckedAdd(_mkID(VECTOR,k,i));
+        }
     }
     return out;
 }
@@ -214,7 +220,7 @@ ResultFile *ResultFileManager::getFile(const char *filename) const
     if (!filename)
         return NULL;
     for (int i=0; i<fileList.size(); i++)
-        if (fileList[i]->filePath==filename)
+        if (fileList[i]!=NULL && fileList[i]->filePath==filename)
             return fileList[i];
     return NULL;
 }
@@ -420,7 +426,7 @@ void ResultFileManager::dump(ResultFile *fileRef, std::ostream& out) const
 }
 */
 
-// FIXME unused function
+// XXX unused function
 static void parseString(char *&s, std::string& dest, int lineNum)
 {
     while (*s==' ' || *s=='\t') s++;
@@ -671,9 +677,43 @@ ResultFile *ResultFileManager::loadFile(const char *filename)
     return fileRef;
 }
 
-void ResultFileManager::unloadFile(ResultFile *)
+void ResultFileManager::unloadFile(ResultFile *file)
 {
-    throw new Exception("not implemented yet"); //FIXME
+    // remove FileRun entries
+    RunList runsPotentiallyToBeDeleted;
+    for (int i=0; i<fileRunList.size(); i++)
+    {
+        if (fileRunList[i]->fileRef==file)
+        {
+            // remember Run; if this was the last reference, we need to delete it
+            runsPotentiallyToBeDeleted.push_back(fileRunList[i]->runRef);
+
+            // delete fileRun
+            delete fileRunList[i];
+            fileRunList.erase(fileRunList.begin()+i);
+            i--;
+        }
+    }
+
+    // delete ResultFile entry. Note that the fileList array will have a hole.
+    // It is not allowed to move another ResultFile into the hole, because
+    // that would change its "id", and invalidate existing IDs (IDLists)
+    // that use that file.
+    fileList[file->id] = NULL;
+    delete file;
+
+    // remove Runs that don't appear in other loaded files
+    for (int i=0; i<runsPotentiallyToBeDeleted.size(); i++)
+    {
+        Run *runRef = runsPotentiallyToBeDeleted[i];
+        if (getFilesForRun(runRef).empty())
+        {
+            // delete it.
+            RunList::iterator it = std::find(runList.begin(), runList.end(), runRef);
+            assert(it != runList.end());  // runs may occur only once in runsPotentiallyToBeDeleted, because runNames are not allowed to repeat in files
+            runList.erase(it);
+        }
+    }
 }
 
 /**
