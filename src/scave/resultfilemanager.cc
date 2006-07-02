@@ -135,6 +135,20 @@ RunList *ResultFileManager::getUniqueRuns(const IDList& ids) const
     return list;
 }
 
+FileRunList *ResultFileManager::getUniqueFileRuns(const IDList& ids) const
+{
+    // collect unique FileRuns in this dataset
+    std::set<FileRun*> set;
+    for (int i=0; i<ids.size(); i++)
+        set.insert(getItem(ids.get(i)).fileRunRef);
+
+    // convert to list for easier handling at recipient
+    FileRunList *list = new FileRunList();
+    for (std::set<FileRun*>::iterator i = set.begin(); i!=set.end(); i++)
+        list->push_back(*i);
+    return list;
+}
+
 StringSet *ResultFileManager::getUniqueModuleNames(const IDList& ids) const
 {
     // collect unique module names in this dataset
@@ -459,6 +473,7 @@ Run *ResultFileManager::addRun()
 {
     Run *run = new Run();
     run->resultFileManager = this;
+    run->runNumber = 0;
     runList.push_back(run);
     return run;
 }
@@ -628,6 +643,7 @@ void ResultFileManager::processLine(char **vec, int numTokens, FileRun *&fileRun
             if (numTokens>=4)
                 runRef->attributes["dateTime"] = vec[3];
 
+            /*
             // assemble a probably-unique runName
             std::stringstream os;
             os << fileRef->fileName << ":" << lineNum << "-#" << vec[1];
@@ -636,6 +652,7 @@ void ResultFileManager::processLine(char **vec, int numTokens, FileRun *&fileRun
             if (numTokens>=4)
                 os << "-" << vec[3];
             runRef->runName = os.str();
+            */
         }
         else
         {
@@ -664,11 +681,13 @@ void ResultFileManager::processLine(char **vec, int numTokens, FileRun *&fileRun
         fileRunRef = addFileRun(fileRef, runRef);
         runRef->runNumber = 0;
 
+        /*
         // make up a unique runName
         std::stringstream os;
         static int counter=1000;
         os << fileRef->fileName << ":" << lineNum << "-#n/a-" <<++counter;
         runRef->runName = os.str();
+        */
     }
 
     if (vec[0][0]=='a' && !strcmp(vec[0],"attr"))
@@ -678,6 +697,10 @@ void ResultFileManager::processLine(char **vec, int numTokens, FileRun *&fileRun
 
         // store attribute
         fileRunRef->runRef->attributes[vec[1]] = vec[2];
+
+        // the "runNumber" attribute is also stored separately
+        if (!strcmp(vec[1], "runNumber"))
+            fileRunRef->runRef->runNumber = atoi(vec[2]);
     }
     else if (vec[0][0]=='p' && !strcmp(vec[0],"param"))
     {
@@ -833,26 +856,29 @@ class DuplicateStringCollector
     }
 };
 
-StringVector ResultFileManager::getRunNameFilterHints(const IDList& idlist)
+StringVector ResultFileManager::getFileAndRunNumberFilterHints(const IDList& idlist)
 {
-    RunList& runs = *getUniqueRuns(idlist);
+    FileRunList *fileRuns = getUniqueFileRuns(idlist);
 
     StringVector vec;
     DuplicateStringCollector coll;
 
-    for (int i=0; i<runs.size(); i++)
+    for (int i=0; i<fileRuns->size(); i++)
     {
-        std::string a = runs[i]->runName;
-        vec.push_back(a);
-
-        int k = a.find('#');  //XXX this code is out of date now...
-        if (k!=a.npos)
+        FileRun *fileRun = (*fileRuns)[i];
+        if (fileRun->runRef->runNumber==0)
         {
-            a.replace(k, a.length()-k, "#*");
-            coll.add(a);
+            vec.push_back(fileRun->fileRef->filePath);
+        }
+        else
+        {
+            char runNumberStr[32];
+            sprintf(runNumberStr, "%d", fileRun->runRef->runNumber);
+            vec.push_back(fileRun->fileRef->filePath+"#"+runNumberStr);
+            coll.add(fileRun->fileRef->filePath+"#*");
         }
     }
-    delete &runs;
+    delete fileRuns;
 
     // sort and concatenate them, and return the result
     StringVector wildvec = coll.get();

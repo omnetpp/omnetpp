@@ -92,16 +92,16 @@ public class DataTable extends Table {
 	protected void addColumns() {
 		if (type==TYPE_SCALAR) {
 			addColumn("Directory", 60);
-			addColumn("File", 80);
-			addColumn("Run#", 80);
+			addColumn("File, Run#", 100);
+			addColumn("RunName", 100);
 			addColumn("Module", 160);
 			addColumn("Name", 100);
 			addColumn("Value", 80);
 		}
 		else if (type==TYPE_VECTOR) {
 			addColumn("Directory", 60);
-			addColumn("File", 80);
-			addColumn("Run#", 60);
+			addColumn("File, Run#", 100);
+			addColumn("RunName", 100);
 			addColumn("Module", 160);
 			addColumn("Name", 100);
 			addColumn("Count", 50);
@@ -110,8 +110,8 @@ public class DataTable extends Table {
 		}
 		else if (type==TYPE_HISTOGRAM) {
 			addColumn("Directory", 60);
-			addColumn("File", 80);
-			addColumn("Run#", 80);
+			addColumn("File, Run#", 100);
+			addColumn("RunName", 100);
 			addColumn("Module", 160);
 			addColumn("Name", 100);
 			addColumn("Mean", 60);
@@ -130,7 +130,11 @@ public class DataTable extends Table {
 		if (type==TYPE_SCALAR) {
 			ScalarResult d = manager.getScalar(idlist.get(lineNumber));
 			item.setText(0, d.getFileRun().getFile().getDirectory());
-			item.setText(1, d.getFileRun().getFile().getFileName());
+			int runNumber = d.getFileRun().getRun().getRunNumber();
+			if (runNumber==0)
+				item.setText(1, d.getFileRun().getFile().getFileName());
+			else
+				item.setText(1, d.getFileRun().getFile().getFileName()+"#"+runNumber);
 			item.setText(2, d.getFileRun().getRun().getRunName());
 			item.setText(3, d.getModuleName());
 			item.setText(4, d.getName());
@@ -139,8 +143,12 @@ public class DataTable extends Table {
 		else if (type==TYPE_VECTOR) {
 			VectorResult d = manager.getVector(idlist.get(lineNumber));
 			item.setText(0, d.getFileRun().getFile().getDirectory());
-			item.setText(1, d.getFileRun().getFile().getFileName());
-			item.setText(2, "n/a");
+			int runNumber = d.getFileRun().getRun().getRunNumber();
+			if (runNumber==0)
+				item.setText(1, d.getFileRun().getFile().getFileName());
+			else
+				item.setText(1, d.getFileRun().getFile().getFileName()+"#"+runNumber);
+			item.setText(2, d.getFileRun().getRun().getRunName());
 			item.setText(3, d.getModuleName());
 			item.setText(4, d.getName());
 			item.setText(5, "not counted");

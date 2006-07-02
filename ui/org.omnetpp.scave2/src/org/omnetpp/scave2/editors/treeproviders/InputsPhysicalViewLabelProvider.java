@@ -24,7 +24,14 @@ public class InputsPhysicalViewLabelProvider extends LabelProvider {
 			}
 			else if (node.getPayload() instanceof Run) {
 				Run run = (Run)node.getPayload();
-				return run.getRunName();
+				if (run.getRunNumber()==0 && run.getRunName().equals("")) 
+					return "(unnamed run)"; // old vector files
+				else if (run.getRunNumber()!=0 && run.getRunName().equals("")) 
+					return "run "+run.getRunNumber()+" - unnamed"; // old scalar files
+				else if (run.getRunNumber()==0) 
+					return "run \""+run.getRunName()+"\"";  // cannot normally happen
+				else 
+					return "run "+run.getRunNumber()+" - \""+run.getRunName()+"\"";
 			}
 		}
 		return null;

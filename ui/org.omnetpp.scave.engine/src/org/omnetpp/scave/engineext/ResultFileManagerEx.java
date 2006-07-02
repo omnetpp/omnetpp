@@ -59,7 +59,7 @@ public class ResultFileManagerEx extends ResultFileManager {
 	}
 
 	@Override
-	public IDListEx getFilteredList(IDList idlist, FileRunList fileAndRunFilter, String moduleFilter, String nameFilter) {
-		return wrap(super.getFilteredList(idlist, fileAndRunFilter, moduleFilter, nameFilter));
+	public IDListEx filterIDList(IDList idlist, FileRunList fileAndRunFilter, String moduleFilter, String nameFilter) {
+		return wrap(super.filterIDList(idlist, fileAndRunFilter, moduleFilter, nameFilter));
 	}
 }

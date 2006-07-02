@@ -153,7 +153,7 @@ public class DatasetManager {
 			String nameFilter = add.getNamePattern() != null ? add.getNamePattern() : "";
 
 			FileRunList fileRunFilter = null; //FIXME
-			idlist.merge(manager.getFilteredList(scalar ? manager.getAllScalars() : manager.getAllVectors(),
+			idlist.merge(manager.filterIDList(scalar ? manager.getAllScalars() : manager.getAllVectors(),
 					fileRunFilter, moduleFilter, nameFilter));
 
 			// TODO: excepts, experiments, ...
@@ -165,7 +165,7 @@ public class DatasetManager {
 			String nameFilter = remove.getNamePattern() != null ? remove.getNamePattern() : "";
 			
 			FileRunList fileRunFilter = null; //FIXME
-			idlist.substract(manager.getFilteredList(idlist,
+			idlist.substract(manager.filterIDList(idlist,
 					fileRunFilter, moduleFilter, nameFilter));
 
 			// TODO: excepts, experiments, ...

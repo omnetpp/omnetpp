@@ -29,9 +29,9 @@ public class InputsLogicalViewContentProvider extends CachedTreeContentProvider 
 			RunList runlist = manager.getRunsInFile(file);
 			for (int j = 0; j < runlist.size(); ++j) {
 				Run run = runlist.get(j);
-				GenericTreeNode experimentNode = root.getOrCreateChild(fallback(run.getAttribute("experiment"), "n/a")); //XXX make constant
-				GenericTreeNode measurementNode = experimentNode.getOrCreateChild(fallback(run.getAttribute("measurement"), "n/a")); //XXX make constant
-				measurementNode.getOrCreateChild(fallback(run.getAttribute("replication"), "n/a")); //XXX make constant
+				GenericTreeNode experimentNode = root.getOrCreateChild("experiment \""+fallback(run.getAttribute("experiment"), "n/a")+"\""); //XXX make constant
+				GenericTreeNode measurementNode = experimentNode.getOrCreateChild("measurement \""+fallback(run.getAttribute("measurement"), "n/a")+"\""); //XXX make constant
+				measurementNode.getOrCreateChild("replication \""+fallback(run.getAttribute("replication"), "n/a")+"\""); //XXX make constant
 			}
 		}
 		return root;

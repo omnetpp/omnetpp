@@ -211,6 +211,7 @@ class ResultFileManager
     // the following are needed for filter combos
     ResultFileList *getUniqueFiles(const IDList& ids) const; //XXX why returns pointer?
     RunList *getUniqueRuns(const IDList& ids) const;
+    FileRunList *getUniqueFileRuns(const IDList& ids) const;
     StringSet *getUniqueModuleNames(const IDList& ids) const;
     StringSet *getUniqueNames(const IDList& ids) const;
 
@@ -260,7 +261,7 @@ class ResultFileManager
     // utility
     //void dump(ResultFile *fileRef, std::ostream& out) const;
 
-    StringVector getRunNameFilterHints(const IDList& idlist);
+    StringVector getFileAndRunNumberFilterHints(const IDList& idlist);
     StringVector getModuleFilterHints(const IDList& idlist);
     StringVector getNameFilterHints(const IDList& idlist);
 };

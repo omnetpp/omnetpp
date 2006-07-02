@@ -95,7 +95,7 @@ public class FilteredDataPanel extends Composite {
 	protected void updateFilterCombos() {
 		ResultFileManagerEx manager = table.getResultFileManager();
 		filterPanel.getModuleNameCombo().setItems(manager.getModuleFilterHints(idlist).toArray());
-		filterPanel.getRunNameCombo().setItems(manager.getRunNameFilterHints(idlist).toArray());
+		filterPanel.getRunNameCombo().setItems(manager.getFileAndRunNumberFilterHints(idlist).toArray());
 		filterPanel.getNameCombo().setItems(manager.getNameFilterHints(idlist).toArray());
 	}
 
@@ -107,7 +107,7 @@ public class FilteredDataPanel extends Composite {
 		String nameFilter = filterPanel.getNameCombo().getText();
 
 		FileRunList fileRunFilter = null; //FIXME
-		IDList filteredIDList = manager.getFilteredList(idlist,
+		IDList filteredIDList = manager.filterIDList(idlist,
 				fileRunFilter, moduleFilter, nameFilter);
 		
 		table.setIDList(filteredIDList);
