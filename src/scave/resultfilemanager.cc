@@ -306,9 +306,9 @@ StringVector ResultFileManager::getUniqueAttributeValues(const RunList& runList,
     return vec;
 }
 
-RunList ResultFileManager::getFilteredRunList(const RunList& runList,
-                           const char *runNameFilter,
-                           const StringMap attrFilter) const
+RunList ResultFileManager::filterRunList(const RunList& runList,
+                                         const char *runNameFilter,
+                                         const StringMap& attrFilter) const
 {
     RunList out;
 
@@ -339,10 +339,43 @@ RunList ResultFileManager::getFilteredRunList(const RunList& runList,
     return out;
 }
 
-IDList ResultFileManager::getFilteredList(const IDList& idlist,
-                                          const FileRunList *fileRunFilter,
-                                          const char *moduleFilter,
-                                          const char *nameFilter)
+ResultFileList ResultFileManager::filterFileList(const ResultFileList& fileList,
+                                                 const char *filePathFilter) const
+{
+    ResultFileList out;
+
+    // filePath matcher
+    PatternMatcher filePathPattern(filePathFilter);
+
+    for (int i=0; i<fileList.size(); i++)
+    {
+        ResultFile *file = fileList[i];
+        if (!filePathPattern.matches(file->filePath.c_str()))
+            continue;
+        out.push_back(file);
+    }
+    return out;
+}
+
+FileRunList ResultFileManager::getFileRuns(const ResultFileList *fileList, const RunList *runList) const
+{
+    FileRunList out;
+    for (int i=0; i<fileRunList.size(); i++)
+    {
+        FileRun *fileRun = fileRunList[i];
+        if (fileList && std::find(fileList->begin(), fileList->end(), fileRun->fileRef)==fileList->end())
+            continue;
+        if (runList && std::find(runList->begin(), runList->end(), fileRun->runRef)==runList->end())
+            continue;
+        out.push_back(fileRun);
+    }
+    return out;
+}
+
+IDList ResultFileManager::filterIDList(const IDList& idlist,
+                                       const FileRunList *fileRunFilter,
+                                       const char *moduleFilter,
+                                       const char *nameFilter)
 {
     // "*" means no filtering, so ignore it
     if (!strcmp(moduleFilter,"*")) moduleFilter = "";

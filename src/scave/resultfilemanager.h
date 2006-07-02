@@ -231,10 +231,10 @@ class ResultFileManager
      * may contain wildcards (*,?).
      * Uses full string match (substrings need asterisks (*) both ends).
      */
-    IDList getFilteredList(const IDList& idlist,
-                           const FileRunList *fileRunFilter,
-                           const char *moduleFilter,
-                           const char *nameFilter);
+    IDList filterIDList(const IDList& idlist,
+                        const FileRunList *fileRunFilter,
+                        const char *moduleFilter,
+                        const char *nameFilter);
 
     // loading files
     ResultFile *loadFile(const char *filename);
@@ -249,13 +249,13 @@ class ResultFileManager
     // get unique values of an attribute ("experiment",etc) in a set of Runs
     StringVector getUniqueAttributeValues(const RunList& runList, const char *attrName) const;
 
-    // select Runs and FileRuns by various criteria (attribute value, etc)
-    RunList getFilteredRunList(const RunList& runList,
-                               const char *runNameFilter,
-                               const StringMap attrFilter) const;
+    // filtering files and runs
+    RunList filterRunList(const RunList& runList, const char *runNameFilter,
+                                                  const StringMap& attrFilter) const;
+    ResultFileList filterFileList(const ResultFileList& fileList, const char *filePathPattern) const;
 
-    //XXX needed:
-    // - expand RunList to FileRunList
+    // select FileRuns which are both in file list and run list (both can be NULL, meaning '*')
+    FileRunList getFileRuns(const ResultFileList *fileList, const RunList *runList) const;
 
     // utility
     //void dump(ResultFile *fileRef, std::ostream& out) const;
