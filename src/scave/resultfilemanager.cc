@@ -758,7 +758,7 @@ void ResultFileManager::processLine(char **vec, int numTokens, FileRun *&fileRun
 }
 
 
-ResultFile *ResultFileManager::loadFile(const char *filename)
+ResultFile *ResultFileManager::loadFile(const char *filename, const char *workspaceFilename)
 {
     // check
     if (isFileLoaded(filename))
@@ -774,6 +774,11 @@ ResultFile *ResultFileManager::loadFile(const char *filename)
     ResultFile *fileRef = addFile();
     fileRef->filePath = filenameToSlash(filename);
     splitFileName(fileRef->filePath.c_str(), fileRef->directory, fileRef->fileName);
+    if (workspaceFilename!=NULL)
+    {
+        fileRef->workspaceFilePath = workspaceFilename;
+        splitFileName(workspaceFilename, fileRef->workspaceDirectory, fileRef->fileName);
+    }
 
     FileRun *fileRunRef = NULL;
 

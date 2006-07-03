@@ -74,8 +74,10 @@ struct ResultFile
 {
     int id;  // position in fileList
     ResultFileManager *resultFileManager; // backref to containing ResultFileManager
-    std::string filePath; // directory + fileName
-    std::string directory;
+    std::string filePath; // filesystem directory + fileName
+    std::string directory; // filesystem directory
+    std::string workspaceFilePath; // workspace directory + fileName
+    std::string workspaceDirectory; // directory's location in the Eclipse workspace
     std::string fileName;
     ScalarResults scalarResults;
     VectorResults vectorResults;
@@ -237,8 +239,8 @@ class ResultFileManager
                         const char *moduleFilter,
                         const char *nameFilter);
 
-    // loading files
-    ResultFile *loadFile(const char *filename);
+    // loading files. The file path in the Eclipse workspace can optionally be also stored (it's not used for anything)
+    ResultFile *loadFile(const char *filename, const char *workspaceFilename=NULL);
     void unloadFile(ResultFile *file);
 
     bool isFileLoaded(const char *filename) const;
