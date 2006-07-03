@@ -11,7 +11,6 @@ import org.omnetpp.scave2.editors.ScaveEditor;
 /**
  * Content provider for the "Logical view" tree of the Inputs page.
  */
-//FIXME tree has to be rebuilt upon resource changes as well! ResultFileTracker should fire some notification
 public class InputsLogicalViewContentProvider extends CachedTreeContentProvider {
 	private ScaveEditor editor;
 	

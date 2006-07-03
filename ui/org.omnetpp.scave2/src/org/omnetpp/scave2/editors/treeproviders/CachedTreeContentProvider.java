@@ -12,7 +12,7 @@ import org.eclipse.jface.viewers.Viewer;
  * for this purpose. 
  */
 //XXX move to common plug-in
-//FIXME tree has to be rebuilt upon resource changes as well! ResultFileTracker should fire some notification
+//FIXME should be hooked on ResultFileManager notifications, not on EMF ones!!!
 public abstract class CachedTreeContentProvider extends GenericTreeContentProvider implements INotifyChangedListener {
 
 	private IChangeNotifier notifier;
