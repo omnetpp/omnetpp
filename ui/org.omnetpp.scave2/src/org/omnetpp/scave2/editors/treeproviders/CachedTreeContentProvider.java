@@ -3,11 +3,13 @@ package org.omnetpp.scave2.editors.treeproviders;
 import org.eclipse.jface.viewers.Viewer;
 
 /**
- * A specific tree content provider: displays a tree generated from 
- * an input element. The tree is cached, and gets re-generated on 
- * change notifications. EMF's IChangeNotifier interface is implemented 
- * for this purpose. 
+ * A specific tree content provider: displays a GenericTreeNode tree 
+ * generated from an input element by the buildTree() method which
+ * has to be provided by the user. The resulting tree is cached, so
+ * buildTree() is only called once. Refresh (discarding and rebuilding
+ * the tree) can be triggered by calling setInput() on the viewer.
  */
+//XXX this is reusable and does not reference any Scave stuff -- move to the common plug-in!
 public abstract class CachedTreeContentProvider extends GenericTreeContentProvider {
 	private GenericTreeNode root;
 
