@@ -50,7 +50,7 @@ public class ChartHelper {
 		int sz = (int)files.size();
 		for (int i=0; i<sz; i++) { // FIXME we should only create reader for files that occur in vecs[]
 			StringMap args = new StringMap();
-			String fileName = files.get(i).getFilePath();
+			String fileName = files.get(i).getFileSystemFilePath();
 			args.set("filename", fileName);
 			Node readerNode = vectorFileReaderType.create(net, args);
 			fileNameToNode.put(fileName, readerNode);
@@ -66,7 +66,7 @@ public class ChartHelper {
 				StringMap args = new StringMap();
 				Node arrayNode = arrayBuilderType.create(net, args);
 				arrayBuilderNodes[i] = arrayNode;
-				String fileName = vec.getFileRun().getFile().getFilePath();
+				String fileName = vec.getFileRun().getFile().getFileSystemFilePath();
 				Node readerNode = (Node)fileNameToNode.get(fileName);
 				net.connect(
 						vectorFileReaderType.getPort(readerNode, ""+vec.getVectorId()),

@@ -1,10 +1,5 @@
 package org.omnetpp.scave2.editors.ui;
 
-import static org.omnetpp.scave2.model.DatasetType.HISTOGRAM;
-import static org.omnetpp.scave2.model.DatasetType.SCALAR;
-import static org.omnetpp.scave2.model.DatasetType.VECTOR;
-
-import org.eclipse.emf.common.notify.AdapterFactory;
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.edit.provider.IChangeNotifier;
@@ -26,8 +21,7 @@ import org.omnetpp.scave.engineext.IResultFilesChangeListener;
 import org.omnetpp.scave.engineext.ResultFileManagerEx;
 import org.omnetpp.scave.model.Dataset;
 import org.omnetpp.scave.model.DatasetItem;
-import org.omnetpp.scave.model.ScaveModelFactory;
-import org.omnetpp.scave.model.ScaveModelPackage;
+import org.omnetpp.scave.model.DatasetType;
 import org.omnetpp.scave2.actions.EditAction;
 import org.omnetpp.scave2.actions.GroupAction;
 import org.omnetpp.scave2.actions.NewAction;
@@ -178,9 +172,10 @@ public class DatasetPage extends ScaveEditorPage {
 		datasetPanel = new DatasetPanel(sashform, SWT.NONE);
 
 		// create data panel
-		int type = SCALAR.equals(dataset.getType()) ? DataTable.TYPE_SCALAR
-				 : VECTOR.equals(dataset.getType()) ? DataTable.TYPE_VECTOR
-				 : HISTOGRAM.equals(dataset.getType()) ? DataTable.TYPE_HISTOGRAM 
+		int datasetType = dataset.getType().getValue();
+		int type = datasetType==DatasetType.SCALAR ? DataTable.TYPE_SCALAR
+				 : datasetType==DatasetType.VECTOR ? DataTable.TYPE_VECTOR
+				 : datasetType==DatasetType.HISTOGRAM ? DataTable.TYPE_HISTOGRAM 
 				 : -1;
 		filterPanel = new FilteredDataPanel(sashform, SWT.NONE, type);
 	}
