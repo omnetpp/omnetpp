@@ -237,6 +237,7 @@ namespace std {
 FIX_STRING_MEMBER(ResultFile, filePath, FilePath);
 FIX_STRING_MEMBER(ResultFile, directory, Directory);
 FIX_STRING_MEMBER(ResultFile, fileName, FileName);
+FIX_STRING_MEMBER(ResultFile, fileSystemFilePath, FileSystemFilePath);
 
 //FIX_STRING_MEMBER(Run, networkName, NetworkName);
 //FIX_STRING_MEMBER(Run, date, Date);
