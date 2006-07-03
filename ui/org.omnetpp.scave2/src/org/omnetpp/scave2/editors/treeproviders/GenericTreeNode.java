@@ -19,8 +19,7 @@ public class GenericTreeNode {
 	private Object payload;
 
 	/**
-	 * Constructs a new tree node with the given parent and payload.
-	 * @param parent may be null if this is the root
+	 * Constructs a new tree node with the given payload.
 	 * @param payload may NOT be null
 	 */
 	public GenericTreeNode(Object payload) {

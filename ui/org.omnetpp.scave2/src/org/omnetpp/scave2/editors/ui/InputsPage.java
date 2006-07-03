@@ -11,11 +11,15 @@ import org.eclipse.ui.forms.widgets.ExpandableComposite;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
 import org.omnetpp.common.color.ColorFactory;
+import org.omnetpp.scave.engine.ResultFileManager;
+import org.omnetpp.scave.engineext.IResultFilesChangeListener;
+import org.omnetpp.scave.engineext.ResultFileManagerEx;
 import org.omnetpp.scave.model.Analysis;
 import org.omnetpp.scave2.actions.AddResultFileAction;
 import org.omnetpp.scave2.actions.AddWildcardResultFileAction;
 import org.omnetpp.scave2.actions.RemoveAction;
 import org.omnetpp.scave2.editors.ScaveEditor;
+import org.omnetpp.scave2.editors.treeproviders.CachedTreeContentProvider;
 import org.omnetpp.scave2.editors.treeproviders.InputsLogicalViewContentProvider;
 import org.omnetpp.scave2.editors.treeproviders.InputsLogicalViewLabelProvider;
 import org.omnetpp.scave2.editors.treeproviders.InputsPhysicalViewContentProvider;
@@ -63,12 +67,19 @@ public class InputsPage extends ScaveEditorPage {
 		// configure viewers
         scaveEditor.configureTreeViewer(getInputFilesTreeViewer());
         
-        getPhysicalDataTreeViewer().setContentProvider(new InputsPhysicalViewContentProvider(scaveEditor));
+        getPhysicalDataTreeViewer().setContentProvider(new InputsPhysicalViewContentProvider());
         getPhysicalDataTreeViewer().setLabelProvider(new InputsPhysicalViewLabelProvider());
 
-        getLogicalDataTreeViewer().setContentProvider(new InputsLogicalViewContentProvider(scaveEditor));
+        getLogicalDataTreeViewer().setContentProvider(new InputsLogicalViewContentProvider());
         getLogicalDataTreeViewer().setLabelProvider(new InputsLogicalViewLabelProvider());
 
+        scaveEditor.getResultFileManager().addListener(new IResultFilesChangeListener() {
+			public void resultFileManagerChanged(ResultFileManager manager) {
+				getPhysicalDataTreeViewer().setInput(manager); // force refresh
+				getLogicalDataTreeViewer().setInput(manager);
+			}
+        });
+        
         getPhysicalDataTreeViewer().addSelectionChangedListener(scaveEditor.getSelectionChangedListener());
         getLogicalDataTreeViewer().addSelectionChangedListener(scaveEditor.getSelectionChangedListener());
         
@@ -80,8 +91,10 @@ public class InputsPage extends ScaveEditorPage {
         // set contents
 		Analysis analysis = scaveEditor.getAnalysis();
         getInputFilesTreeViewer().setInput(analysis.getInputs());
-        getPhysicalDataTreeViewer().setInput(analysis.getInputs());
-        getLogicalDataTreeViewer().setInput(analysis.getInputs());
+
+        ResultFileManagerEx manager = scaveEditor.getResultFileManager();
+        getPhysicalDataTreeViewer().setInput(manager);
+        getLogicalDataTreeViewer().setInput(manager);
 	}
 
 	/**
