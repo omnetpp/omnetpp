@@ -42,7 +42,6 @@ import org.omnetpp.experimental.seqchart.widgets.SequenceChart;
 import org.omnetpp.scave.engine.DataflowManager;
 import org.omnetpp.scave.engine.EventEntry;
 import org.omnetpp.scave.engine.EventLog;
-import org.omnetpp.scave.engine.File;
 import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.engine.IntSet;
 import org.omnetpp.scave.engine.JavaFriendlyEventLogFacade;
@@ -51,6 +50,7 @@ import org.omnetpp.scave.engine.ModuleEntry;
 import org.omnetpp.scave.engine.Node;
 import org.omnetpp.scave.engine.NodeType;
 import org.omnetpp.scave.engine.NodeTypeRegistry;
+import org.omnetpp.scave.engine.ResultFile;
 import org.omnetpp.scave.engine.StringMap;
 import org.omnetpp.scave.engine.VectorResult;
 import org.omnetpp.scave.engine.XYArray;
@@ -117,9 +117,9 @@ public class SequenceChartToolEditor extends EditorPart implements INavigationLo
 	private XYArray[] readVectorFile(String fileName)
 	{
 		resultFileManager = new ResultFileManagerEx();
-		File file = resultFileManager.loadVectorFile(fileName);
-		idlist = resultFileManager.getDataInFile(file);
-		idlist = resultFileManager.getFilteredList(idlist, "*", "*", "State");
+		ResultFile file = resultFileManager.loadFile(fileName);
+		idlist = resultFileManager.getAllVectors();
+		idlist = resultFileManager.filterIDList(idlist, null, "*", "State");
 		DataflowManager net = new DataflowManager();
 		NodeTypeRegistry factory = NodeTypeRegistry.instance();
 
