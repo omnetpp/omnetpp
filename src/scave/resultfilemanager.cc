@@ -233,17 +233,17 @@ IDList ResultFileManager::getVectorsInFileRun(FileRun *fileRun) const
     return out;
 }
 
-bool ResultFileManager::isFileLoaded(const char *filename) const
+bool ResultFileManager::isFileLoaded(const char *fileName) const
 {
-    return getFile(filename)!=NULL;
+    return getFile(fileName)!=NULL;
 }
 
-ResultFile *ResultFileManager::getFile(const char *filename) const
+ResultFile *ResultFileManager::getFile(const char *fileName) const
 {
-    if (!filename)
+    if (!fileName)
         return NULL;
     for (int i=0; i<fileList.size(); i++)
-        if (fileList[i]!=NULL && fileList[i]->filePath==filename)
+        if (fileList[i]!=NULL && fileList[i]->filePath==fileName)
             return fileList[i];
     return NULL;
 }
@@ -267,9 +267,9 @@ FileRun *ResultFileManager::getFileRun(ResultFile *file, Run *run) const
 }
 
 // currently unused
-ID ResultFileManager::getItemByName(ResultFile *fileRef, const char *module, const char *name) const
+ID ResultFileManager::getItemByName(FileRun *fileRunRef, const char *module, const char *name) const
 {
-    if (!fileRef || !module || !name)
+    if (!fileRunRef || !module || !name)
         return 0;
 
     StringSet::const_iterator m = moduleNames.find(module);
@@ -282,20 +282,20 @@ ID ResultFileManager::getItemByName(ResultFile *fileRef, const char *module, con
         return 0;
     const std::string *nameRef = &(*n);
 
-    ScalarResults& scalarResults = fileRef->scalarResults;
+    ScalarResults& scalarResults = fileRunRef->fileRef->scalarResults;
     for (int i=0; i<scalarResults.size(); i++)
     {
         const ResultItem& d = scalarResults[i];
-        if (d.moduleNameRef==moduleNameRef && d.nameRef==nameRef)
-            return _mkID(SCALAR, fileRef->id, i);
+        if (d.moduleNameRef==moduleNameRef && d.nameRef==nameRef && d.fileRunRef==fileRunRef)
+            return _mkID(SCALAR, fileRunRef->fileRef->id, i);
     }
 
-    VectorResults& vectorResults = fileRef->vectorResults;
+    VectorResults& vectorResults = fileRunRef->fileRef->vectorResults;
     for (int i=0; i<vectorResults.size(); i++)
     {
         const ResultItem& d = vectorResults[i];
-        if (d.moduleNameRef==moduleNameRef && d.nameRef==nameRef)
-            return _mkID(VECTOR, fileRef->id, i);
+        if (d.moduleNameRef==moduleNameRef && d.nameRef==nameRef && d.fileRunRef==fileRunRef)
+            return _mkID(VECTOR, fileRunRef->fileRef->id, i);
     }
     return 0;
 }
@@ -608,12 +608,12 @@ static void splitFileName(const char *pathname, std::string& dir, std::string& f
     }
 }
 
-static std::string filenameToSlash(const char *filename)
+static std::string fileNameToSlash(const char *fileName)
 {
     std::string res;
-    res.reserve(strlen(filename));
-    for (; *filename; filename++)
-        res.append(1, *filename=='\\' ? '/' : *filename);
+    res.reserve(strlen(fileName));
+    for (; *fileName; fileName++)
+        res.append(1, *fileName=='\\' ? '/' : *fileName);
     return res;
 }
 
@@ -758,31 +758,33 @@ void ResultFileManager::processLine(char **vec, int numTokens, FileRun *&fileRun
 }
 
 
-ResultFile *ResultFileManager::loadFile(const char *filename, const char *workspaceFilename)
+ResultFile *ResultFileManager::loadFile(const char *fileName, const char *fileSystemFileName)
 {
+    // tricky part: we store "fileName" which is the Eclipse pathname of the file
+    // (or some other "display name" of the file), but we actually load from
+    // fileSystemFileName which is the fileName suitable for fopen()
+
     // check
-    if (isFileLoaded(filename))
-        return getFile(filename);
+    if (isFileLoaded(fileName))
+        return getFile(fileName);
 
     // try if file can be opened, before we add it to our database
-    FILE *f = fopen(filename, "r");
+    if (fileSystemFileName==NULL)
+        fileSystemFileName = fileName;
+    FILE *f = fopen(fileSystemFileName, "r");
     if (!f)
-        throw new Exception("cannot open `%s' for read", filename);
+        throw new Exception("cannot open `%s' for read", fileSystemFileName);
     fclose(f);
 
     // add to fileList
     ResultFile *fileRef = addFile();
-    fileRef->filePath = filenameToSlash(filename);
+    fileRef->filePath = fileNameToSlash(fileName);
     splitFileName(fileRef->filePath.c_str(), fileRef->directory, fileRef->fileName);
-    if (workspaceFilename!=NULL)
-    {
-        fileRef->workspaceFilePath = workspaceFilename;
-        splitFileName(workspaceFilename, fileRef->workspaceDirectory, fileRef->fileName);
-    }
+    fileRef->fileSystemFilePath = fileSystemFileName;
 
     FileRun *fileRunRef = NULL;
 
-    FileTokenizer ftok(filename);
+    FileTokenizer ftok(fileSystemFileName);
     while (ftok.readLine())
     {
         int numTokens = ftok.numTokens();

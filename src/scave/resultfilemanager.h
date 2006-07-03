@@ -74,11 +74,10 @@ struct ResultFile
 {
     int id;  // position in fileList
     ResultFileManager *resultFileManager; // backref to containing ResultFileManager
-    std::string filePath; // filesystem directory + fileName
-    std::string directory; // filesystem directory
-    std::string workspaceFilePath; // workspace directory + fileName
-    std::string workspaceDirectory; // directory's location in the Eclipse workspace
-    std::string fileName;
+    std::string fileSystemFilePath; // directory+fileName of underlying file (for fopen())
+    std::string directory; // directory's location in the Eclipse workspace
+    std::string fileName; // file name
+    std::string filePath; // workspace directory + fileName
     ScalarResults scalarResults;
     VectorResults vectorResults;
     int numLines;
@@ -239,15 +238,15 @@ class ResultFileManager
                         const char *moduleFilter,
                         const char *nameFilter);
 
-    // loading files. The file path in the Eclipse workspace can optionally be also stored (it's not used for anything)
-    ResultFile *loadFile(const char *filename, const char *workspaceFilename=NULL);
+    // loading files. fileName is the file path in the Eclipse workspace; the file is actually read from fileSystemFileName
+    ResultFile *loadFile(const char *fileName, const char *fileSystemFileName=NULL);
     void unloadFile(ResultFile *file);
 
-    bool isFileLoaded(const char *filename) const;
-    ResultFile *getFile(const char *filename) const;
+    bool isFileLoaded(const char *fileName) const;
+    ResultFile *getFile(const char *fileName) const;
     Run *getRunByName(const char *runName) const;
     FileRun *getFileRun(ResultFile *file, Run *run) const;
-    ID getItemByName(ResultFile *file, const char *module, const char *name) const;
+    ID getItemByName(FileRun *fileRun, const char *module, const char *name) const;
 
     // get unique values of an attribute ("experiment",etc) in a set of Runs
     StringVector getUniqueAttributeValues(const RunList& runList, const char *attrName) const;
