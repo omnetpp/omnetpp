@@ -24,14 +24,14 @@ public class InputsPhysicalViewContentProvider extends CachedTreeContentProvider
 		// Inputs/File/Run
 		Inputs inputs = (Inputs)element;
 		ResultFileManagerEx manager = editor.getResultFileManager();
-		GenericTreeNode root = new GenericTreeNode(null, inputs);
+		GenericTreeNode root = new GenericTreeNode(inputs);
 		for (ResultFile file : manager.getFiles().toArray()) {
-			GenericTreeNode fileNode = new GenericTreeNode(root, file);
+			GenericTreeNode fileNode = new GenericTreeNode(file);
 			root.addChild(fileNode);
 			RunList runlist = manager.getRunsInFile(file);
 			for (int i = 0; i < runlist.size(); ++i) {
 				Run run = runlist.get(i);
-				GenericTreeNode runNode = new GenericTreeNode(fileNode, run);
+				GenericTreeNode runNode = new GenericTreeNode(run);
 				fileNode.addChild(runNode);
 			}
 		}

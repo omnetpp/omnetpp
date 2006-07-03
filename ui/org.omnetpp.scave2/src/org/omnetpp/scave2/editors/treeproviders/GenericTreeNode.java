@@ -23,10 +23,8 @@ public class GenericTreeNode {
 	 * @param parent may be null if this is the root
 	 * @param payload may NOT be null
 	 */
-	public GenericTreeNode(GenericTreeNode parent, Object payload) {
-		//XXX not good: does not add this node into parent's child list -- possible inconsistency!
+	public GenericTreeNode(Object payload) {
 		Assert.isTrue(payload!=null);
-		this.parent = parent;
 		this.payload = payload;
 		this.children = EMPTY_ARRAY;
 	}
@@ -36,7 +34,9 @@ public class GenericTreeNode {
 	 * @param child may NOT be null
 	 */
 	public void addChild(GenericTreeNode child) {
-		//XXX doesn't set child's parent field -- possible inconsistency!
+		if (child.parent!=null)
+			throw new RuntimeException("child node already has a parent");
+		child.parent = this;
 		GenericTreeNode[] childrenNew = new GenericTreeNode[children.length + 1];
 		System.arraycopy(children, 0, childrenNew, 0, children.length);  //XXX potential bottleneck -- use ArrayList? (Andras)
 		children = childrenNew;
@@ -98,7 +98,7 @@ public class GenericTreeNode {
 			}
 		}
 		
-		GenericTreeNode child = new GenericTreeNode(this, payload);
+		GenericTreeNode child = new GenericTreeNode(payload);
 		addChild(child);
 		
 		return child;
