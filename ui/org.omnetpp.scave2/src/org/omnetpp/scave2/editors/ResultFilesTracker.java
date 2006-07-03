@@ -130,9 +130,9 @@ public class ResultFilesTracker implements INotifyChangedListener, IResourceChan
 					file.getContentDescription().getContentType() != null) {
 
 				IContentType contentType = file.getContentDescription().getContentType();
-				String path = file.getLocation().toOSString();
+				String osPath = file.getLocation().toOSString();
 				if (ContentTypes.SCALAR.equals(contentType.getId()) || ContentTypes.VECTOR.equals(contentType.getId()))
-					manager.loadFile(path);
+					manager.loadFile(file.getFullPath().toString(), osPath);
 				else 
 					throw new RuntimeException("wrong file type:"+file.getFullPath()); //XXX proper error handling (e.g. remove file from Inputs?)
 			}

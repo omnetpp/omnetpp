@@ -21,7 +21,7 @@ public class CrossSymbol extends ChartSymbol {
 	@Override
 	public void setSizeHint(int sizeHint) {
 		super.setSizeHint(sizeHint);
-		size = 3*sizeHint/2;
+		size = (120*sizeHint+50)/100;
 		size |= 1; // make it an odd number
 	}
 

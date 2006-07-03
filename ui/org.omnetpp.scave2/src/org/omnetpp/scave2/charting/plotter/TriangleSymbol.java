@@ -25,7 +25,7 @@ public class TriangleSymbol extends ChartSymbol {
 		// equal-sized triangle whose area is sizeHint^2
 		height = (132*sizeHint+50)/100; // 1.32 = sqrt4(3)
 		int halfside = (76*sizeHint+50)/100; // 0.76 = 1 / sqrt4(3)
-		int off = (58*sizeHint+50)/100; // .58 = 1/sqrt(3)
+		int off = (84*sizeHint+50)/100;
 		poly = new int[] {-halfside, (height-off), 0, -off, halfside, (height-off)};
 	}
 	
