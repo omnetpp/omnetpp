@@ -2,9 +2,10 @@ package org.omnetpp.scave.engineext;
 
 import java.util.ArrayList;
 
-import org.omnetpp.scave.engine.ResultFile;
+import org.omnetpp.scave.engine.FileRun;
 import org.omnetpp.scave.engine.FileRunList;
 import org.omnetpp.scave.engine.IDList;
+import org.omnetpp.scave.engine.ResultFile;
 import org.omnetpp.scave.engine.ResultFileManager;
 
 /**
@@ -39,6 +40,13 @@ public class ResultFileManagerEx extends ResultFileManager {
 	}
 
 	@Override
+	public ResultFile loadFile(String filename, String osFileName) {
+		ResultFile file = super.loadFile(filename, osFileName);
+		notifyListeners();
+		return file;
+	}
+	
+	@Override
 	public void unloadFile(ResultFile file) {
 		super.unloadFile(file);
 		notifyListeners();
@@ -56,6 +64,16 @@ public class ResultFileManagerEx extends ResultFileManager {
 	@Override
 	public IDListEx getAllVectors() {
 		return wrap(super.getAllVectors());
+	}
+
+	@Override
+	public IDList getScalarsInFileRun(FileRun fileRun) {
+		return wrap(super.getScalarsInFileRun(fileRun));
+	}
+
+	@Override
+	public IDList getVectorsInFileRun(FileRun fileRun) {
+		return wrap(super.getVectorsInFileRun(fileRun));
 	}
 
 	@Override
