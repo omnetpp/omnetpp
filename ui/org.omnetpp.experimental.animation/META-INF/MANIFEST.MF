@@ -7,7 +7,7 @@ Bundle-Activator: org.omnetpp.experimental.animation.Activator
 Bundle-Localization: plugin
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
- org.eclipse.jface.text,
  org.eclipse.ui.editors,
- org.eclipse.ui.workbench.texteditor
+ org.omnetpp.common,
+ org.eclipse.draw2d
 Eclipse-LazyStart: true
