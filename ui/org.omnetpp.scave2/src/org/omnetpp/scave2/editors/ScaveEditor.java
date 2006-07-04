@@ -231,6 +231,12 @@ public class ScaveEditor extends AbstractEMFModelEditor {
 		setActivePage(pageIndex);
 	}
 	
+	public void showPage(ScaveEditorPage page) {
+		int pageIndex = findPage(page);
+		if (pageIndex >= 0)
+			setActivePage(pageIndex);
+	}
+	
 	/**
 	 * Opens the given chart on a new editor page, and switches to it. 
 	 */

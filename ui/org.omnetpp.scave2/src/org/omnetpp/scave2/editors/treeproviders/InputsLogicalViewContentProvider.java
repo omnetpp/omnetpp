@@ -1,5 +1,9 @@
 package org.omnetpp.scave2.editors.treeproviders;
 
+import static org.omnetpp.scave2.model.RunAttribute.EXPERIMENT;
+import static org.omnetpp.scave2.model.RunAttribute.MEASUREMENT;
+import static org.omnetpp.scave2.model.RunAttribute.REPLICATION;
+import static org.omnetpp.scave2.model.RunAttribute.getRunAttribute;
 import org.omnetpp.scave.engine.ResultFile;
 import org.omnetpp.scave.engine.Run;
 import org.omnetpp.scave.engine.RunList;
@@ -18,15 +22,11 @@ public class InputsLogicalViewContentProvider extends CachedTreeContentProvider 
 			RunList runlist = manager.getRunsInFile(file);
 			for (int j = 0; j < runlist.size(); ++j) {
 				Run run = runlist.get(j);
-				GenericTreeNode experimentNode = root.getOrCreateChild("experiment \""+fallback(run.getAttribute("experiment"), "n/a")+"\""); //XXX make constant
-				GenericTreeNode measurementNode = experimentNode.getOrCreateChild("measurement \""+fallback(run.getAttribute("measurement"), "n/a")+"\""); //XXX make constant
-				measurementNode.getOrCreateChild("replication \""+fallback(run.getAttribute("replication"), "n/a")+"\""); //XXX make constant
+				GenericTreeNode experimentNode = root.getOrCreateChild(getRunAttribute(run, EXPERIMENT));
+				GenericTreeNode measurementNode = experimentNode.getOrCreateChild(getRunAttribute(run, MEASUREMENT));
+				measurementNode.getOrCreateChild(getRunAttribute(run, REPLICATION));
 			}
 		}
 		return root;
-	}
-	
-	static private String fallback(String string, String fallbackValue) {
-		return string!=null ? string : fallbackValue;
 	}
 }

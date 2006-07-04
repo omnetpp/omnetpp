@@ -206,11 +206,18 @@ public class ScaveEditorPage extends ScrolledForm {
 	 */
 	public static void configureViewerDefaultButton(final Button button, final TreeViewer viewer, final IScaveAction action) {
 		configureViewerButton(button, viewer, action);
+		configureViewerDefaultAction(viewer, action);
+	}
+	
+	/**
+	 * Connects the double-click in the viewer with the action.
+	 */
+	public static void configureViewerDefaultAction(final TreeViewer viewer, final IScaveAction action) {
+		action.setViewer(viewer);
 		viewer.getTree().addSelectionListener(new SelectionAdapter() {
 			public void widgetDefaultSelected(SelectionEvent e) {
 				action.run();
 			}
 		});
 	}
-	
 }

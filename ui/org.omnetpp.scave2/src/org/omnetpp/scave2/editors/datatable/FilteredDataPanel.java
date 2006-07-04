@@ -1,19 +1,18 @@
 package org.omnetpp.scave2.editors.datatable;
 
+import static org.omnetpp.scave2.model.RunAttribute.EXPERIMENT;
+import static org.omnetpp.scave2.model.RunAttribute.MEASUREMENT;
+import static org.omnetpp.scave2.model.RunAttribute.REPLICATION;
+
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.ExpandEvent;
-import org.eclipse.swt.events.ExpandListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
-import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.ExpandBar;
-import org.eclipse.swt.widgets.ExpandItem;
-import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.omnetpp.scave.engine.FileRunList;
 import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.engine.ResultFileList;
@@ -22,11 +21,6 @@ import org.omnetpp.scave.engine.StringMap;
 import org.omnetpp.scave.engine.StringVector;
 import org.omnetpp.scave.engineext.ResultFileManagerEx;
 import org.omnetpp.scave2.model.FilterParams;
-import org.eclipse.ui.forms.widgets.FormToolkit;
-import org.eclipse.swt.widgets.Display;
-import org.eclipse.ui.forms.widgets.ExpandableComposite;
-import org.eclipse.swt.widgets.Text;
-import org.eclipse.swt.graphics.Rectangle;
 
 /**
  * Displays a data table of vectors/scalars/histograms with filter
@@ -103,7 +97,6 @@ public class FilteredDataPanel extends Composite {
 		};
 			
 		// when the filter button gets pressed, update the table
-		
 		filterPanel.getFilterButton().addSelectionListener(selectionListener);
 		filterPanel.getFileNameCombo().addSelectionListener(selectionListener);
 		filterPanel.getRunNameCombo().addSelectionListener(selectionListener);
@@ -131,9 +124,9 @@ public class FilteredDataPanel extends Composite {
 		filterPanel.getRunNameCombo().setItems(runNames);
 		filterPanel.getModuleNameCombo().setItems(manager.getModuleFilterHints(idlist).toArray());
 		filterPanel.getNameCombo().setItems(manager.getNameFilterHints(idlist).toArray());
-		filterPanel.getExperimentNameCombo().setItems(getFilterHintsForRunAttribute(runList, "experiment"));
-		filterPanel.getMeasurementNameCombo().setItems(getFilterHintsForRunAttribute(runList, "measurement"));
-		filterPanel.getReplicationNameCombo().setItems(getFilterHintsForRunAttribute(runList, "replication"));
+		filterPanel.getExperimentNameCombo().setItems(getFilterHintsForRunAttribute(runList, EXPERIMENT));
+		filterPanel.getMeasurementNameCombo().setItems(getFilterHintsForRunAttribute(runList, MEASUREMENT));
+		filterPanel.getReplicationNameCombo().setItems(getFilterHintsForRunAttribute(runList, REPLICATION));
 	}
 	
 	private String[] getFilterHintsForRunAttribute(RunList runList, String attrName) {
@@ -153,12 +146,9 @@ public class FilteredDataPanel extends Composite {
 		ResultFileList fileList = params.getFileNamePattern().length() > 0 ?
 				manager.filterFileList(manager.getFiles(), params.getFileNamePattern()) : null;
 		StringMap attrs = new StringMap();
-		if (params.getExperimentNamePattern().length() > 0)
-			attrs.set("experiment", params.getExperimentNamePattern());
-		if (params.getMeasurementNamePattern().length() > 0)
-			attrs.set("measurement", params.getMeasurementNamePattern());
-		if (params.getReplicationNamePattern().length() > 0)
-			attrs.set("replication", params.getReplicationNamePattern());
+		addAttribute(attrs, EXPERIMENT, params.getExperimentNamePattern());
+		addAttribute(attrs, MEASUREMENT, params.getMeasurementNamePattern());
+		addAttribute(attrs, REPLICATION, params.getReplicationNamePattern());
 		String runNamePattern = params.getRunNamePattern().length() > 0 ? params.getRunNamePattern() : "*";
 		RunList runList = params.getRunNamePattern().length() > 0 || attrs.size() > 0 ?
 				manager.filterRunList(manager.getRuns(), runNamePattern, attrs) : null;
@@ -170,6 +160,11 @@ public class FilteredDataPanel extends Composite {
 
 		filterPanel.setFilterText(getFilterParams().toString());
 	}
+	
+	private static void addAttribute(StringMap attrs, String name, String value) {
+		if (value != null && value.length() > 0)
+			attrs.set(name, value);
+	}
 
 	public FilterParams getFilterParams() {
 		return new FilterParams(
@@ -180,6 +175,17 @@ public class FilteredDataPanel extends Composite {
 				filterPanel.getReplicationNameCombo().getText(),
 				filterPanel.getModuleNameCombo().getText(),
 				filterPanel.getNameCombo().getText());
+	}
+	
+	public void setFilterParams(FilterParams params) {
+		filterPanel.getFileNameCombo().setText(params.getFileNamePattern());
+		filterPanel.getRunNameCombo().setText(params.getRunNamePattern());
+		filterPanel.getExperimentNameCombo().setText(params.getExperimentNamePattern());
+		filterPanel.getMeasurementNameCombo().setText(params.getMeasurementNamePattern());
+		filterPanel.getReplicationNameCombo().setText(params.getReplicationNamePattern());
+		filterPanel.getModuleNameCombo().setText(params.getModuleNamePattern());
+		filterPanel.getNameCombo().setText(params.getDataNamePattern());
+		runFilter();
 	}
 
 	/**

@@ -3,6 +3,7 @@ package org.omnetpp.scave2.editors.ui;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
+import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -18,6 +19,7 @@ import org.omnetpp.scave.model.Analysis;
 import org.omnetpp.scave2.actions.AddResultFileAction;
 import org.omnetpp.scave2.actions.AddWildcardResultFileAction;
 import org.omnetpp.scave2.actions.RemoveAction;
+import org.omnetpp.scave2.actions.SetFilterAction;
 import org.omnetpp.scave2.editors.ScaveEditor;
 import org.omnetpp.scave2.editors.treeproviders.CachedTreeContentProvider;
 import org.omnetpp.scave2.editors.treeproviders.InputsLogicalViewContentProvider;
@@ -148,6 +150,11 @@ public class InputsPage extends ScaveEditorPage {
 				inputFilesPanel.getRemoveFileButton(), 
 				inputFilesPanel.getTreeViewer(),
 				new RemoveAction());
+		
+		// double-clicks
+		configureViewerDefaultAction(
+				inputFilesPanel.getTreeViewer(),
+				new SetFilterAction());
 	}
 
 	/**
@@ -166,6 +173,15 @@ public class InputsPage extends ScaveEditorPage {
 		dataSection.setLayoutData(gridData1);
 		dataSection.setText("Data");
 		dataSection.setDescription("Here you can browse all data (vectors, scalars and histograms) that come from the result files.");
-		dataSection.setClient(new DataPanel(dataSection, SWT.NONE));
+		DataPanel dataPanel = new DataPanel(dataSection, SWT.NONE);
+		dataSection.setClient(dataPanel);
+		
+		// double-clicks
+		configureViewerDefaultAction(
+				dataPanel.getPhysicalTreeViewer(),
+				new SetFilterAction());
+		configureViewerDefaultAction(
+				dataPanel.getLogicalTreeViewer(),
+				new SetFilterAction());
 	}
 }

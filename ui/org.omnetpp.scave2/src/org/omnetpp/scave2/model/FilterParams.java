@@ -12,6 +12,9 @@ public class FilterParams {
 	private String moduleName;
 	private String dataName;
 	
+	public FilterParams() {
+	}
+	
 	public FilterParams(String fileName, String runName,
 			String experimentName, String measurementName, String replicationName,
 			String moduleName, String dataName) {
