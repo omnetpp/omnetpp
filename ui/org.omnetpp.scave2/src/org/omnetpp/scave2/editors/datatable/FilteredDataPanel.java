@@ -16,6 +16,10 @@ import org.eclipse.swt.widgets.ExpandItem;
 import org.eclipse.swt.widgets.Label;
 import org.omnetpp.scave.engine.FileRunList;
 import org.omnetpp.scave.engine.IDList;
+import org.omnetpp.scave.engine.ResultFileList;
+import org.omnetpp.scave.engine.RunList;
+import org.omnetpp.scave.engine.StringMap;
+import org.omnetpp.scave.engine.StringVector;
 import org.omnetpp.scave.engineext.ResultFileManagerEx;
 import org.omnetpp.scave2.model.FilterParams;
 import org.eclipse.ui.forms.widgets.FormToolkit;
@@ -99,6 +103,7 @@ public class FilteredDataPanel extends Composite {
 		};
 			
 		// when the filter button gets pressed, update the table
+		
 		filterPanel.getFilterButton().addSelectionListener(selectionListener);
 		filterPanel.getFileNameCombo().addSelectionListener(selectionListener);
 		filterPanel.getRunNameCombo().addSelectionListener(selectionListener);
@@ -111,21 +116,55 @@ public class FilteredDataPanel extends Composite {
 
 	protected void updateFilterCombos() {
 		ResultFileManagerEx manager = table.getResultFileManager();
+		ResultFileList fileList = manager.getUniqueFiles(idlist);
+		String[] fileNames = new String[(int)fileList.size() + 1];
+		fileNames[0] = "*";
+		for (int i = 0; i < fileList.size(); ++i)
+			fileNames[i+1] = fileList.get(i).getFilePath();
+		RunList runList = manager.getUniqueRuns(idlist);
+		String[] runNames = new String[(int)runList.size() + 1];
+		runNames[0] = "*";
+		for (int i = 0; i < runList.size(); ++i)
+			runNames[i+1] = runList.get(i).getRunName();
+		
+		filterPanel.getFileNameCombo().setItems(fileNames);
+		filterPanel.getRunNameCombo().setItems(runNames);
 		filterPanel.getModuleNameCombo().setItems(manager.getModuleFilterHints(idlist).toArray());
-		filterPanel.getRunNameCombo().setItems(manager.getFileAndRunNumberFilterHints(idlist).toArray());
 		filterPanel.getNameCombo().setItems(manager.getNameFilterHints(idlist).toArray());
+		filterPanel.getExperimentNameCombo().setItems(getFilterHintsForRunAttribute(runList, "experiment"));
+		filterPanel.getMeasurementNameCombo().setItems(getFilterHintsForRunAttribute(runList, "measurement"));
+		filterPanel.getReplicationNameCombo().setItems(getFilterHintsForRunAttribute(runList, "replication"));
 	}
-
+	
+	private String[] getFilterHintsForRunAttribute(RunList runList, String attrName) {
+		ResultFileManagerEx manager = table.getResultFileManager();
+		StringVector values = manager.getUniqueAttributeValues(runList, attrName);
+		String[] filterHints = new String[(int)values.size() + 1];
+		filterHints[0] = "*";
+		for (int i = 0; i < values.size(); ++i)
+			filterHints[i+1] = values.get(i);
+		return filterHints;
+	}
+	
 	protected void runFilter() {
 		// run the filter on the unfiltered IDList, and set the result to the table
 		ResultFileManagerEx manager = table.getResultFileManager();
-		String fileAndRunFilter = filterPanel.getRunNameCombo().getText();
-		String moduleFilter = filterPanel.getModuleNameCombo().getText();
-		String nameFilter = filterPanel.getNameCombo().getText();
-		
-		FileRunList fileRunFilter = null; //FIXME
+		FilterParams params = getFilterParams();
+		ResultFileList fileList = params.getFileNamePattern().length() > 0 ?
+				manager.filterFileList(manager.getFiles(), params.getFileNamePattern()) : null;
+		StringMap attrs = new StringMap();
+		if (params.getExperimentNamePattern().length() > 0)
+			attrs.set("experiment", params.getExperimentNamePattern());
+		if (params.getMeasurementNamePattern().length() > 0)
+			attrs.set("measurement", params.getMeasurementNamePattern());
+		if (params.getReplicationNamePattern().length() > 0)
+			attrs.set("replication", params.getReplicationNamePattern());
+		String runNamePattern = params.getRunNamePattern().length() > 0 ? params.getRunNamePattern() : "*";
+		RunList runList = params.getRunNamePattern().length() > 0 || attrs.size() > 0 ?
+				manager.filterRunList(manager.getRuns(), runNamePattern, attrs) : null;
+		FileRunList fileRunFilter = manager.getFileRuns(fileList, runList);
 		IDList filteredIDList = manager.filterIDList(idlist,
-				fileRunFilter, moduleFilter, nameFilter);
+				fileRunFilter, params.getModuleNamePattern(), params.getDataNamePattern());
 		
 		table.setIDList(filteredIDList);
 
