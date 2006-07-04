@@ -110,9 +110,27 @@ public class ModuleTreeItem implements Comparable<ModuleTreeItem> {
 	public void setModuleClassName(String moduleClassName) {
 		this.moduleClassName = moduleClassName;
 	}
-
+	
 	public ModuleTreeItem getParentModule() {
 		return parentModule;
+	}
+
+	public ModuleTreeItem getRootModule() {
+		ModuleTreeItem ancestorModule = parentModule;
+		
+		while (ancestorModule.parentModule != null)
+			ancestorModule = ancestorModule.parentModule;
+		
+		return ancestorModule;
+	}
+	
+	public ModuleTreeItem getAncestorModuleUnder(ModuleTreeItem ancestorParentModule) {
+		if (parentModule == ancestorParentModule)
+			return this;
+		else if (parentModule != null)
+			return parentModule.getAncestorModuleUnder(ancestorParentModule);
+		else
+			return null;
 	}
 
 	public ModuleTreeItem[] getSubmodules() {

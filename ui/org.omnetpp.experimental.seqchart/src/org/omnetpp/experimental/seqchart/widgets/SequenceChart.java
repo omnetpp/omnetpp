@@ -5,10 +5,14 @@ import java.math.BigInteger;
 import java.math.MathContext;
 import java.math.RoundingMode;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
 
+import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.collections.ListUtils;
+import org.apache.commons.collections.map.MultiValueMap;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.ListenerList;
 import org.eclipse.draw2d.Graphics;
@@ -33,7 +37,6 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
-import org.omnetpp.common.canvas.CachingCanvas;
 import org.omnetpp.experimental.seqchart.editors.EventLogSelection;
 import org.omnetpp.experimental.seqchart.editors.IEventLogSelection;
 import org.omnetpp.experimental.seqchart.moduletree.ModuleTreeItem;
@@ -52,15 +55,14 @@ import org.omnetpp.scave.engine.XYArray;
  * @author andras, levy
  */
 //FIXME expressions like int x = (int)(logFacade.getEvent_i_cachedX(i) - getViewportLeft()) may overflow -- make use of XMAX!
-//FIXME ensure consistency of internal data structure when doing set() operations!!!!
 //TODO renaming: DELIVERY->SENDING, NONDELIVERY->USAGE, isDelivery->isSending;
 //               Timeline modes: Linear, Step, Compact (=nonlinear), Compact2 (CompactWithStep);
 //               SortMode to OrderingMode
 //TODO cf with ns2 trace file and cEnvir callbacks, and modify file format...
 //TODO proper "hand" cursor - current one is not very intuitive
 //TODO max number of event selection marks must be limited (e.g. max 1000)
-//TODO hierarchic sort is not yet implemented
-//FIXME while zooming with Ctrl+wheel too fast, one can get "event loop exception: SWTError: No more handles" 
+//TODO hierarchic sort should be able to reverse order of sorted axes of its submodules
+//TODO rubberband vs. haircross, show them at once
 public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 
 	private static final Color LABEL_COLOR = new Color(null, 0, 0, 0);
@@ -117,8 +119,8 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 	private int dragStartX = -1, dragStartY = -1; // temporary variables for drag handling
 	private List<ModuleTreeItem> axisModules; // the modules which should have an axis (they must be part of a module tree!)
 	private List<AxisGraph> axisGraphs; // used to paint the axis
-	private Integer[] axisModulePositions; // y order of the axis modules (in the same order as axisModules); this is a permutation of the 0..axisModule.size()-1 numbers
-	private Integer[] axisModuleYs; // top y coordinates of axis bounding boxes
+	private int[] axisModulePositions; // y order of the axis modules (in the same order as axisModules); this is a permutation of the 0..axisModule.size()-1 numbers
+	private int[] axisModuleYs; // top y coordinates of axis bounding boxes
 	private IntSet moduleIds; // calculated from axisModules: module Ids of all modules which are submodule of an axisModule (i.e. whose events appear on the chart)
 	private ArrayList<BigDecimal> ticks; // a list of simulation times painted on the axis as tick marks
 	private boolean invalidVirtualSize = true;
@@ -197,7 +199,7 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 	 * Sets the pixel distance between adjacent axes in the chart.
 	 */
 	public void setAxisSpacing(int axisSpacing) {
-		this.axisSpacing = axisSpacing > 20 ? axisSpacing : axisSpacing == -1 ? -1 : 20;
+		this.axisSpacing = axisSpacing > 1 ? axisSpacing : axisSpacing == -1 ? -1 : 1;
 		axisModuleYs = null;
 		invalidVirtualSize = true;
 		invalidEventCoordinates = true;
@@ -380,6 +382,7 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 		double xDouble = simulationTimeToTimelineCoordinate(time) * pixelsPerTimelineUnit;
 		long x = xDouble < 0 ? 0 : xDouble>Long.MAX_VALUE ? Long.MAX_VALUE : (long)xDouble;
 		scrollHorizontalTo(x - getWidth()/2);
+		redraw();
 	}
 	
 	/**
@@ -571,45 +574,211 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 	 * Calculates axis positions sorting by module names.
 	 */
 	private void sortTimelinesByModuleName() {
-		Integer[] axisModulesIndexes = new Integer[axisModules.size()];
+		int[] axisPositions = sortTimelinesByModuleName(axisModules.toArray(new ModuleTreeItem[0]));
+		System.arraycopy(axisPositions, 0, axisModulePositions, 0, axisModulePositions.length);
+	}
+
+	/**
+	 * Same as above but works on a subset of modules.
+	 */
+	private int[] sortTimelinesByModuleName(final ModuleTreeItem[] modules) {
+		int[] axisPositions = new int[modules.length];
+		Integer[] axisModulesIndexes = new Integer[modules.length];
 		
 		for (int i = 0; i < axisModulesIndexes.length; i++)
 			axisModulesIndexes[i] = i;
 		
 		java.util.Arrays.sort(axisModulesIndexes, new java.util.Comparator<Integer>() {
 				public int compare(Integer o1, Integer o2) {
-					return axisModules.get(o1).getModuleFullPath().compareTo(axisModules.get(o2).getModuleFullPath());
+					return modules[o1].getModuleFullPath().compareTo(modules[o2].getModuleFullPath());
 				}
 			});
 		
 		for (int i = 0; i < axisModulesIndexes.length; i++)
-			axisModulePositions[axisModulesIndexes[i]] = i;
+			axisPositions[axisModulesIndexes[i]] = i;
+		
+		return axisPositions;
+	}
+	
+	/**
+	 * Sorts axes by minimizing message arrows crossing timelines.
+	 * Axes are sorted in a hierarchic way based on the module hierarchy.
+	 */
+	private void sortTimelinesHierarchicallyByMinimizingCost(IntVector axisMatrix) {
+		sortTimelinesHierarchicallyByMinimizingCostRecursive(axisModules.get(0).getRootModule(), axisMatrix);
 	}
 
 	/**
-	 * Sorts axis by minimizing message arrows crossing timelines.
-	 * A message arrow costs as much as many axis it crosses. Uses simulated annealing.
+	 * Recursive version for the hierarchic sort of axis timelines.
 	 */
-	private void sortTimelinesByMinimizingCost(IntVector axisMatrix) {
+	private void sortTimelinesHierarchicallyByMinimizingCostRecursive(final ModuleTreeItem module, final IntVector axisMatrix) {
+		if (!axisModules.contains(module)) {
+			final int numberOfAxis = axisModules.size();
+			final ModuleTreeItem[] submodules = module.getSubmodules();
+			final int[] submoduleIndicesToNumberOfAxis = new int[submodules.length];
+			final MultiValueMap submoduleToAxisIndexes = new MultiValueMap();
+			final int[] axisPositions = new int[numberOfAxis];
+
+			if (submodules.length == 0)
+				return;
+
+			// calculate the number of axes and the axis module indexes that a submodule represents
+			for (int i = 0; i < numberOfAxis; i++) {
+				ModuleTreeItem submodule = axisModules.get(i).getAncestorModuleUnder(module);
+			
+				if (submodule != null) {
+					submoduleIndicesToNumberOfAxis[ArrayUtils.indexOf(submodules, submodule)]++;
+					submoduleToAxisIndexes.put(submodule, i);
+				}
+			}
+			
+			// first sort descendants recursively
+			for (ModuleTreeItem submodule : submodules)
+				sortTimelinesHierarchicallyByMinimizingCostRecursive(submodule, axisMatrix);
+
+			// sort the direct submodules of this module
+			int[] submoduleIndicesToSubmodulePositions = sortTimelinesByMinimizingCost(submodules, new ICostCalculator() {
+				public int calculateCost(int[] submoduleIndicesToSubmodulePositions) {
+					int cost = 0;
+					
+					for (int i = 0; i < numberOfAxis; i++)
+						axisPositions[i] = axisModulePositions[i];
+
+					calculateAxisPositions(axisPositions, submodules, submoduleIndicesToSubmodulePositions, submoduleIndicesToNumberOfAxis, submoduleToAxisIndexes);
+
+					// sum up cost of messages to other axis
+					for (ModuleTreeItem iSubmodule : submodules)
+						for (ModuleTreeItem jSubmodule : submodules)
+							if (iSubmodule != jSubmodule)
+								for (Object iObject : getAxisModuleIndicesForSubmodule(submoduleToAxisIndexes, iSubmodule))
+									for (Object jObject : getAxisModuleIndicesForSubmodule(submoduleToAxisIndexes, jSubmodule))
+										cost += SequenceChart.this.calculateCost(axisPositions, (Integer)iObject, (Integer)jObject, axisMatrix);
+
+					return cost;
+				}
+			});
+
+			// calculate axis offsets and positions for submodules
+			calculateAxisPositions(axisModulePositions, submodules, submoduleIndicesToSubmodulePositions, submoduleIndicesToNumberOfAxis, submoduleToAxisIndexes);
+		}
+		else
+			// the positions will be updated each time when returning from this recursive function
+			axisModulePositions[axisModules.indexOf(module)] = 0;
+	}
+	
+	/**
+	 * Calculates axis positions by shifting axes according to the module positions and count of axes per module.
+	 */
+	private void calculateAxisPositions(int[] axisPositions, ModuleTreeItem[] submodules, int[] submoduleIndicesToSubmodulePositions, int[] submoduleIndicesToNumberOfAxis, MultiValueMap submoduleToAxisIndexes) {
+		int[] submodulePositionsToSubmoduleIndices = new int[submodules.length];
+		for (int i = 0; i < submodules.length; i++)
+			submodulePositionsToSubmoduleIndices[submoduleIndicesToSubmodulePositions[i]] = i;
+
+		int count = 0;
+		int[] submoduleIndicesToSubmoduleAxisOffsets = new int[submodules.length];
+		for (int submodulePosition = 0; submodulePosition < submodules.length; submodulePosition++) {
+			int c = submoduleIndicesToNumberOfAxis[submodulePositionsToSubmoduleIndices[submodulePosition]];
+			submoduleIndicesToSubmoduleAxisOffsets[submodulePositionsToSubmoduleIndices[submodulePosition]] = count;
+			count += c;
+		}
+
+		// recalculate positions
+		for (int submoduleIndex = 0; submoduleIndex < submodules.length; submoduleIndex++) {
+			ModuleTreeItem submodule = submodules[submoduleIndex];
+
+			// move axes to the offset of their module
+			for (Object i : getAxisModuleIndicesForSubmodule(submoduleToAxisIndexes, submodule))
+				axisPositions[(Integer)i] += submoduleIndicesToSubmoduleAxisOffsets[submoduleIndex];
+		}
+	}
+
+	/**
+	 * Just a convenient helper function to return an empty collection if there's no value for the given key.
+	 */
+	private Collection getAxisModuleIndicesForSubmodule(MultiValueMap submoduleToAxisIndexes, ModuleTreeItem submodule) {
+		Collection collection = submoduleToAxisIndexes.getCollection(submodule);
+		
+		if (collection != null)
+			return collection;
+		else
+			return ListUtils.EMPTY_LIST;
+	}
+
+	/**
+	 * Sorts axes by minimizing message arrows crossing physical timelines.
+	 * Axes are sorted in a flat way without looking at module hierarchy.
+	 */
+	private void sortTimelinesFlatByMinimizingCost(final IntVector axisMatrix) {
+		final ModuleTreeItem[] modules = axisModules.toArray(new ModuleTreeItem[axisModules.size()]);
+		final int numberOfAxis = modules.length;
+		int[] axisPositions = sortTimelinesByMinimizingCost(modules,
+			new ICostCalculator() {
+				public int calculateCost(int[] axisPositions) {
+					int cost = 0;
+
+					// sum up cost of messages to other axis
+					for (int i = 0; i < numberOfAxis; i++)
+						for (int j = 0; j < numberOfAxis; j++)
+							if (i != j)
+								cost += SequenceChart.this.calculateCost(axisPositions, i, j, axisMatrix);
+					
+					return cost;
+				}
+			});
+		System.arraycopy(axisPositions, 0, axisModulePositions, 0, axisModulePositions.length);
+	}
+	
+	/**
+	 * Cost is based on the number of crossed axis according to the positions.
+	 */
+	private int calculateCost(int[] axisPositions, int i, int j, IntVector axisMatrix) {
+		return Math.abs(axisPositions[i] - axisPositions[j]) *
+			            (axisMatrix.get(axisPositions.length * i + j) +
+                         axisMatrix.get(axisPositions.length * j + i));
+	}
+	
+	/**
+	 * Helper interface to calculate the cost of a candidate ordering for the axis being ordered.
+	 */
+	private interface ICostCalculator {
+		public int calculateCost(int[] axisPositions);
+	}
+
+	/**
+	 * Sorts axes by minimizing message arrows crossing physical timelines.
+	 * A message arrow costs as much as many axes it crosses. Uses simulated annealing.
+	 */
+	private int[] sortTimelinesByMinimizingCost(ModuleTreeItem[] modules, ICostCalculator costCalculator) {
 		int cycleCount = 0;
 		int noMoveCount = 0;
 		int noRandomMoveCount = 0;
-		int numberOfAxis = axisModules.size();
+		int numberOfAxis = modules.length;
 		int[] axisPositions = new int[numberOfAxis]; // actual positions of axis to be returned
 		int[] candidateAxisPositions = new int[numberOfAxis]; // new positions of axis to be set (if better)
 		int[] bestAxisPositions = new int[numberOfAxis]; // best positions choosen from a set of candidates
 		Random r = new Random(0);
-		double temperature = 5.0;
+		double temperature = 1.0;		
 
 		// set initial axis positions 
-		sortTimelinesByModuleName();
-		for (int i = 0; i < numberOfAxis; i++)
-			axisPositions[i] = axisModulePositions[i];
+		System.arraycopy(sortTimelinesByModuleName(modules), 0, axisPositions, 0, numberOfAxis);
 		
 		while (cycleCount < 100 && (noMoveCount < numberOfAxis || noRandomMoveCount < numberOfAxis))
 		{
 			cycleCount++;
 			
+			// randomly swap axis based on temperature
+			double t = temperature;
+			noRandomMoveCount++;
+			while (false && r.nextDouble() < t) {
+				int i1 = r.nextInt(numberOfAxis);
+				int i2 = r.nextInt(numberOfAxis);
+				int i = axisPositions[i1];
+				axisPositions[i1] = axisPositions[i2];
+				axisPositions[i2] = i;
+				noRandomMoveCount = 0;
+				t--;
+			}
+
 			// choose an axis which we move to the best place (there are numberOfAxis possibilities)
 			int selectedAxisIndex = cycleCount % numberOfAxis;
 			int bestPositionOfSelectedAxis = -1;
@@ -620,8 +789,6 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 				if (newPositionOfSelectedAxis == -1)
 					continue;
 
-				int cost = 0;
-				
 				// set up candidateAxisPositions so that the order of other axis do not change
 				for (int i = 0; i < numberOfAxis; i++) {
 					int pos = axisPositions[i];
@@ -633,12 +800,7 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 				}
 				candidateAxisPositions[selectedAxisIndex] = newPositionOfSelectedAxis;
 
-				// sum up cost of messages to other axis
-				for (int i = 0; i < numberOfAxis; i++)
-					for (int j = 0; j < numberOfAxis; j++)
-						cost += Math.abs(candidateAxisPositions[i] - candidateAxisPositions[j]) *
-								(axisMatrix.get(numberOfAxis * i + j) +
-								 axisMatrix.get(numberOfAxis * j + i));
+				int cost = costCalculator.calculateCost(candidateAxisPositions);
 				
 				// find minimum cost
 				if (cost < costOfBestPositions) {
@@ -656,30 +818,18 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 			else
 				noMoveCount++;
 
-			// randomly swap axis based on temperature
-			double t = temperature;
-			noRandomMoveCount++;
-			while (false && r.nextDouble() < t) {
-				int i1 = r.nextInt(numberOfAxis);
-				int i2 = r.nextInt(numberOfAxis);
-				int i = axisPositions[i1];
-				axisPositions[i1] = axisPositions[i2];
-				axisPositions[i2] = i;
-				noRandomMoveCount = 0;
-				t--;
-			}
+			// decrease temperature
 			temperature *= 0.9;
 		}
 
-		for (int i = 0; i < numberOfAxis; i++)
-			axisModulePositions[i] = axisPositions[i];
+		return axisPositions;
 	}
 	
 	/**
 	 * Sorts axis modules depending on timelineSortMode.
 	 */
 	private void calculateAxisPositions() {
-		axisModulePositions = new Integer[axisModules.size()];
+		axisModulePositions = new int[axisModules.size()];
 
 		switch (timelineSortMode) {
 			case MODULE_ID:
@@ -704,7 +854,11 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 					});
 				}
 
-				sortTimelinesByMinimizingCost(eventLog.buildMessageCountGraph(moduleIdToAxisIdMap));
+				if (timelineSortMode == TimelineSortMode.MINIMIZE_CROSSINGS)
+					sortTimelinesFlatByMinimizingCost(eventLog.buildMessageCountGraph(moduleIdToAxisIdMap));
+				else
+					sortTimelinesHierarchicallyByMinimizingCost(eventLog.buildMessageCountGraph(moduleIdToAxisIdMap));
+					
 				break;
 		}
 	}
@@ -714,7 +868,7 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 	 * by each axis.
 	 */
 	private void calculateAxisYs() {
-		axisModuleYs = new Integer[axisModules.size()];
+		axisModuleYs = new int[axisModules.size()];
 		
 		for (int i = 0; i < axisModuleYs.length; i++) {
 			int y = 0;
@@ -736,7 +890,7 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 		for (AxisGraph axisGraph : axisGraphs)
 			dy += axisGraph.getHeight();
 
-		setAxisSpacing((getHeight() - axisOffset * 2 - dy) / (axisModules.size() - 1));
+		setAxisSpacing(Math.max(AXISLABEL_DISTANCE + 1, (getHeight() - axisOffset * 2 - dy) / (axisModules.size() - 1)));
 	}
 	
 	/**
@@ -1540,27 +1694,23 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 		addMouseMoveListener(new MouseMoveListener() {
 			public void mouseMove(MouseEvent e) {
 				removeTooltip();
-				if ((e.stateMask & SWT.BUTTON_MASK)!=0) { // drag with any mouse button being held down
+				if (dragStartX != -1 && dragStartY != -1 && (e.stateMask & SWT.BUTTON_MASK) != 0 && (e.stateMask & SWT.MODIFIER_MASK) == 0)
 					mouseDragged(e);
-				} 
-				else { // plain move
+				else {
 					setCursor(null); // restore cursor at end of drag (must do it here too, because we 
 									 // don't get the "released" event if user releases mouse outside the canvas)
-                    redraw(); // move crosshair --FIXME make more efficient, i.e. refresh only affected area!!!
+					redraw();
 				}
 			}
 
 			private void mouseDragged(MouseEvent e) {
-				// if mouse button is pressed with no modifier key: drag the chart
-				if ((e.stateMask & SWT.MODIFIER_MASK)==0 && dragStartX!=-1 && dragStartY!=-1) {
-					// scroll by the amount moved since last drag call
-					int dx = e.x - dragStartX;
-					int dy = e.y - dragStartY;
-					scrollHorizontalTo(getViewportLeft() - dx);
-					scrollVerticalTo(getViewportTop() - dy);
-					dragStartX = e.x;
-					dragStartY = e.y;
-				}
+				// scroll by the amount moved since last drag call
+				int dx = e.x - dragStartX;
+				int dy = e.y - dragStartY;
+				scrollHorizontalTo(getViewportLeft() - dx);
+				scrollVerticalTo(getViewportTop() - dy);
+				dragStartX = e.x;
+				dragStartY = e.y;
 			}
 		});
 		// selection handling
