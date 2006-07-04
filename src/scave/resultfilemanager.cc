@@ -345,10 +345,12 @@ RunList ResultFileManager::filterRunList(const RunList& runList,
         Run *run = runList[i];
         if (!runNamePattern.matches(run->runName.c_str()))
             continue;
-        for (int j=0; j<attrNames.size(); j++)
-            if (!attrValues[j].matches(run->getAttribute(attrNames[i].c_str())))
-                continue;
-        out.push_back(run);
+		bool matches = true;
+        for (int j=0; j<attrNames.size() && matches; j++)
+			if (!attrValues[j].matches(run->getAttribute(attrNames[j].c_str())))
+                matches = false;
+		if (matches)
+			out.push_back(run);
     }
     return out;
 }
