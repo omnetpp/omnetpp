@@ -4,9 +4,9 @@ import org.eclipse.gef.EditPart;
 import org.eclipse.gef.EditPartViewer;
 import org.eclipse.gef.requests.CreateConnectionRequest;
 import org.eclipse.gef.tools.ConnectionCreationTool;
+import org.omnetpp.ned.editor.graph.commands.ConnectionCommand;
 import org.omnetpp.ned.editor.graph.edit.CompoundModuleEditPart;
 import org.omnetpp.ned.editor.graph.edit.SubmoduleEditPart;
-import org.omnetpp.ned.editor.graph.model.commands.ConnectionCommand;
 import org.omnetpp.ned2.model.pojo.ConnectionNode;
 
 /**
@@ -14,9 +14,10 @@ import org.omnetpp.ned2.model.pojo.ConnectionNode;
  * Special connection tool that requests additional information regarding gate association at the 
  * end of connection creation. It pops up a menu with all gate pairs for selection.
  */
+// CHECKME we can use COnnectionDragCreationTool for a dran'n drop type behvior
 public class NedConnectionCreationTool extends ConnectionCreationTool {
 
-	// override the method to fix a GEF BUG 
+	// override the method to fix a GEF BUGFIX 
 	@Override
 	protected boolean handleButtonDown(int button) {
 		// BUGFIX START
@@ -103,7 +104,7 @@ public class NedConnectionCreationTool extends ConnectionCreationTool {
 				// if the selection target is a CompoundModule, allow selection ONLY using it's borders
 				if (editpart instanceof CompoundModuleEditPart) {
 					CompoundModuleEditPart cmep = (CompoundModuleEditPart)editpart;
-					return cmep.isSelectable(getLocation().x, getLocation().y);
+					return cmep.isOnBorder(getLocation().x, getLocation().y);
 				}
 				
 				return editpart.isSelectable();

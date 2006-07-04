@@ -9,7 +9,7 @@ import org.eclipse.gef.commands.UnexecutableCommand;
 import org.eclipse.gef.editpolicies.TreeContainerEditPolicy;
 import org.eclipse.gef.requests.ChangeBoundsRequest;
 import org.eclipse.gef.requests.CreateRequest;
-import org.omnetpp.ned.editor.graph.model.commands.ReorderPartCommand;
+import org.omnetpp.ned.editor.graph.commands.ReorderPartCommand;
 import org.omnetpp.ned2.model.NEDElement;
 
 public class NedTreeContainerEditPolicy extends TreeContainerEditPolicy {

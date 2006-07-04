@@ -1,4 +1,4 @@
-package org.omnetpp.ned.editor.graph.model.commands;
+package org.omnetpp.ned.editor.graph.commands;
 
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Point;

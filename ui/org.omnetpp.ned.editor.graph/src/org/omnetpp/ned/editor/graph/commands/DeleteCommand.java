@@ -1,4 +1,4 @@
-package org.omnetpp.ned.editor.graph.model.commands;
+package org.omnetpp.ned.editor.graph.commands;
 
 import java.util.ArrayList;
 import java.util.List;

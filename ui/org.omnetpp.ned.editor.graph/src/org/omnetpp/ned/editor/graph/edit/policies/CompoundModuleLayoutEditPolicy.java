@@ -16,9 +16,9 @@ import org.eclipse.gef.editpolicies.ResizableEditPolicy;
 import org.eclipse.gef.requests.ChangeBoundsRequest;
 import org.eclipse.gef.requests.CreateRequest;
 import org.omnetpp.common.color.ColorFactory;
-import org.omnetpp.ned.editor.graph.model.commands.CloneSubmoduleCommand;
-import org.omnetpp.ned.editor.graph.model.commands.CreateSubmoduleCommand;
-import org.omnetpp.ned.editor.graph.model.commands.SetConstraintCommand;
+import org.omnetpp.ned.editor.graph.commands.CloneSubmoduleCommand;
+import org.omnetpp.ned.editor.graph.commands.CreateSubmoduleCommand;
+import org.omnetpp.ned.editor.graph.commands.SetConstraintCommand;
 import org.omnetpp.ned2.model.INamedGraphNode;
 import org.omnetpp.ned2.model.ISubmoduleContainer;
 

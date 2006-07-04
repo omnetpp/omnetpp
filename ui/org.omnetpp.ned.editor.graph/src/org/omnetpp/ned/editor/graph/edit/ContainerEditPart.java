@@ -65,7 +65,7 @@ abstract public class ContainerEditPart
     public void propertyChanged(Prop changedProp) {
 		// by default refresh all visuals if the display string has changed
         refreshVisuals();
-    	System.out.println("Container notification: "+changedProp);
+//    	System.out.println("Container notification: "+changedProp);
 	}
 
 	public void attributeChanged(NEDElement node, String attr) {
@@ -77,13 +77,13 @@ abstract public class ContainerEditPart
     
 	public void childInserted(NEDElement node, NEDElement where, NEDElement child) {
 		// TODO maybe addChild would be a better idea (faster)
-		System.out.println("childInserted on "+this+": (node="+node+", where="+where+", child="+child+")");
+//		System.out.println("childInserted on "+this+": (node="+node+", where="+where+", child="+child+")");
 		refreshChildren();
 	}
 
 	public void childRemoved(NEDElement node, NEDElement child) {
 		// TODO maybe removeChild would be a better idea (faster)
-		System.out.println("childRemoved on "+this+": (node="+node+", child="+child+")");
+//		System.out.println("childRemoved on "+this+": (node="+node+", child="+child+")");
 		refreshChildren();
 	}
 }

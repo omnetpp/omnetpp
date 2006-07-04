@@ -5,23 +5,17 @@ import java.util.List;
 
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.XYLayout;
-import org.eclipse.draw2d.geometry.Point;
-import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.gef.AutoexposeHelper;
 import org.eclipse.gef.CompoundSnapToHelper;
 import org.eclipse.gef.EditPolicy;
 import org.eclipse.gef.ExposeHelper;
-import org.eclipse.gef.GraphicalEditPart;
 import org.eclipse.gef.MouseWheelHelper;
 import org.eclipse.gef.SnapToGeometry;
-import org.eclipse.gef.SnapToGrid;
-import org.eclipse.gef.SnapToGuides;
 import org.eclipse.gef.SnapToHelper;
 import org.eclipse.gef.editparts.ViewportAutoexposeHelper;
 import org.eclipse.gef.editparts.ViewportExposeHelper;
 import org.eclipse.gef.editparts.ViewportMouseWheelHelper;
 import org.eclipse.gef.editpolicies.SnapFeedbackPolicy;
-import org.eclipse.gef.rulers.RulerProvider;
 import org.eclipse.swt.graphics.Image;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.image.ImageFactory;
@@ -84,12 +78,8 @@ public class CompoundModuleEditPart extends ModuleEditPart {
         // snap to grig/guide adaptor
         if (key == SnapToHelper.class) {
             List snapStrategies = new ArrayList();
-            Boolean val = (Boolean) getViewer().getProperty(RulerProvider.PROPERTY_RULER_VISIBILITY);
-            if (val != null && val.booleanValue()) snapStrategies.add(new SnapToGuides(this));
-            val = (Boolean) getViewer().getProperty(SnapToGeometry.PROPERTY_SNAP_ENABLED);
+            Boolean val = (Boolean) getViewer().getProperty(SnapToGeometry.PROPERTY_SNAP_ENABLED);
             if (val != null && val.booleanValue()) snapStrategies.add(new SnapToGeometry(this));
-            val = (Boolean) getViewer().getProperty(SnapToGrid.PROPERTY_GRID_ENABLED);
-            if (val != null && val.booleanValue()) snapStrategies.add(new SnapToGrid(this));
 
             if (snapStrategies.size() == 0) return null;
             if (snapStrategies.size() == 1) return snapStrategies.get(0);
@@ -116,7 +106,7 @@ public class CompoundModuleEditPart extends ModuleEditPart {
     	}
     	// refresh only ourselves
     	refreshVisuals();
-    	System.out.println("Compound module notification: "+changedProp);
+//    	System.out.println("Compound module notification: "+changedProp);
 	}
 
 	/**
@@ -227,13 +217,13 @@ public class CompoundModuleEditPart extends ModuleEditPart {
 	}
 	
 	/**
-	 * Returns whether the compound module is selectable for the slection tool based on the
-	 * current mouse target coordinates.
+	 * Returns whether the compound module is selectable (mouse is over the borering area)
+	 * for the slection tool based on the current mouse target coordinates.
 	 * @param x
 	 * @param y
 	 * @return
 	 */
-	public boolean isSelectable(int x, int y) {
+	public boolean isOnBorder(int x, int y) {
 		return getCompoundModuleFigure().isOnBorder(x, y);
 	}
 }

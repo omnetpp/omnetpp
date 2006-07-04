@@ -20,12 +20,12 @@ Require-Bundle: org.eclipse.core.runtime,
 Eclipse-LazyStart: true
 Export-Package: org.omnetpp.ned.editor.graph,
  org.omnetpp.ned.editor.graph.actions,
+ org.omnetpp.ned.editor.graph.commands,
  org.omnetpp.ned.editor.graph.dnd,
  org.omnetpp.ned.editor.graph.edit,
  org.omnetpp.ned.editor.graph.edit.policies,
  org.omnetpp.ned.editor.graph.figures,
  org.omnetpp.ned.editor.graph.figures.properties,
  org.omnetpp.ned.editor.graph.misc,
- org.omnetpp.ned.editor.graph.model.commands,
  org.omnetpp.ned.editor.graph.properties,
  org.omnetpp.ned.editor.graph.wizards

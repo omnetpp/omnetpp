@@ -19,7 +19,7 @@ public class NedSelectionTool extends PanningSelectionTool {
 				// if the selection target is a CompoundModule, allow selection ONLY using it's borders
 				if (editpart instanceof CompoundModuleEditPart) {
 					CompoundModuleEditPart cmep = (CompoundModuleEditPart)editpart;
-					return cmep.isSelectable(getLocation().x, getLocation().y);
+					return cmep.isOnBorder(getLocation().x, getLocation().y);
 				}
 				
 				return editpart.isSelectable();

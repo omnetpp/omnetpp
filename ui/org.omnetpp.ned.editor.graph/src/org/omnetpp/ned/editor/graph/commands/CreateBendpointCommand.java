@@ -1,4 +1,4 @@
-package org.omnetpp.ned.editor.graph.model.commands;
+package org.omnetpp.ned.editor.graph.commands;
 
 import org.omnetpp.ned2.model.WireBendpointModel;
 

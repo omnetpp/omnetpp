@@ -15,10 +15,10 @@ import org.eclipse.gef.editpolicies.FlowLayoutEditPolicy;
 import org.eclipse.gef.editpolicies.ResizableEditPolicy;
 import org.eclipse.gef.requests.ChangeBoundsRequest;
 import org.eclipse.gef.requests.CreateRequest;
-import org.omnetpp.ned.editor.graph.model.commands.ClonePartsCommand;
-import org.omnetpp.ned.editor.graph.model.commands.CreateToplevelComponentCommand;
-import org.omnetpp.ned.editor.graph.model.commands.ReorderPartCommand;
-import org.omnetpp.ned.editor.graph.model.commands.SetConstraintCommand;
+import org.omnetpp.ned.editor.graph.commands.ClonePartsCommand;
+import org.omnetpp.ned.editor.graph.commands.CreateToplevelComponentCommand;
+import org.omnetpp.ned.editor.graph.commands.ReorderPartCommand;
+import org.omnetpp.ned.editor.graph.commands.SetConstraintCommand;
 import org.omnetpp.ned2.model.INamedGraphNode;
 import org.omnetpp.ned2.model.NEDElement;
 

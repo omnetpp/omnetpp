@@ -11,8 +11,8 @@ import org.eclipse.gef.EditPolicy;
 import org.eclipse.gef.editparts.AbstractConnectionEditPart;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.ned.editor.graph.edit.policies.ConnectionBendpointEditPolicy;
-import org.omnetpp.ned.editor.graph.edit.policies.ConnectionEditPolicy;
-import org.omnetpp.ned.editor.graph.edit.policies.ConnectionEndpointEditPolicy;
+import org.omnetpp.ned.editor.graph.edit.policies.NedConnectionEditPolicy;
+import org.omnetpp.ned.editor.graph.edit.policies.NedConnectionEndpointEditPolicy;
 import org.omnetpp.ned.editor.graph.figures.ConnectionFigure;
 import org.omnetpp.ned2.model.ConnectionDisplayString;
 import org.omnetpp.ned2.model.ConnectionNodeEx;
@@ -72,11 +72,11 @@ public class ModuleConnectionEditPart extends AbstractConnectionEditPart impleme
      */
     @Override
     protected void createEditPolicies() {
-        installEditPolicy(EditPolicy.CONNECTION_ENDPOINTS_ROLE, new ConnectionEndpointEditPolicy());
+        installEditPolicy(EditPolicy.CONNECTION_ENDPOINTS_ROLE, new NedConnectionEndpointEditPolicy());
         // Note that the Connection is already added to the diagram and knows
         // its Router.
         refreshBendpointEditPolicy();
-        installEditPolicy(EditPolicy.CONNECTION_ROLE, new ConnectionEditPolicy());
+        installEditPolicy(EditPolicy.CONNECTION_ROLE, new NedConnectionEditPolicy());
     }
 
     /**
@@ -120,10 +120,11 @@ public class ModuleConnectionEditPart extends AbstractConnectionEditPart impleme
     }
 
     private void refreshBendpointEditPolicy() {
-        if (getConnectionFigure().getConnectionRouter() instanceof ManhattanConnectionRouter)
-            installEditPolicy(EditPolicy.CONNECTION_BENDPOINTS_ROLE, null);
-        else
-            installEditPolicy(EditPolicy.CONNECTION_BENDPOINTS_ROLE, new ConnectionBendpointEditPolicy());
+// TODO for the moment we do not need bendpoints    	
+//        if (getConnectionFigure().getConnectionRouter() instanceof ManhattanConnectionRouter)
+//            installEditPolicy(EditPolicy.CONNECTION_BENDPOINTS_ROLE, null);
+//        else
+//            installEditPolicy(EditPolicy.CONNECTION_BENDPOINTS_ROLE, new ConnectionBendpointEditPolicy());
     }
 
     /**

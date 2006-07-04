@@ -11,11 +11,11 @@ import org.eclipse.gef.editpolicies.GraphicalNodeEditPolicy;
 import org.eclipse.gef.requests.CreateConnectionRequest;
 import org.eclipse.gef.requests.DropRequest;
 import org.eclipse.gef.requests.ReconnectRequest;
+import org.omnetpp.ned.editor.graph.commands.ConnectionCommand;
 import org.omnetpp.ned.editor.graph.edit.ModuleEditPart;
 import org.omnetpp.ned.editor.graph.figures.ConnectionFigure;
 import org.omnetpp.ned.editor.graph.figures.GateAnchor;
 import org.omnetpp.ned.editor.graph.figures.ModuleFigure;
-import org.omnetpp.ned.editor.graph.model.commands.ConnectionCommand;
 import org.omnetpp.ned2.model.ConnectionNodeEx;
 import org.omnetpp.ned2.model.INamedGraphNode;
 

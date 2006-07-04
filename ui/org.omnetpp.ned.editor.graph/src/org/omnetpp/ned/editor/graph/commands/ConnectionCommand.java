@@ -1,7 +1,6 @@
-package org.omnetpp.ned.editor.graph.model.commands;
+package org.omnetpp.ned.editor.graph.commands;
 
 import org.eclipse.gef.commands.Command;
-import org.omnetpp.ned.editor.graph.misc.ConnectionChooser;
 import org.omnetpp.ned2.model.CompoundModuleNodeEx;
 import org.omnetpp.ned2.model.ConnectionNodeEx;
 import org.omnetpp.ned2.model.IConnectable;
