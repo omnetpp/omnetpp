@@ -9,5 +9,7 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
  org.eclipse.ui.editors,
  org.omnetpp.common,
- org.eclipse.draw2d
+ org.eclipse.draw2d,
+ org.omnetpp.figures,
+ org.eclipse.gef
 Eclipse-LazyStart: true

@@ -2,81 +2,60 @@ package org.omnetpp.experimental.animation.primitives;
 
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.Label;
-import org.eclipse.draw2d.LayoutManager;
-import org.eclipse.draw2d.RectangleFigure;
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.swt.graphics.Color;
 import org.omnetpp.experimental.animation.controller.IAnimationController;
+import org.omnetpp.experimental.animation.editors.Timer;
 
-public class LabelAnimation implements IAnimationPrimitive {
-	private double tStart;
-	private double tEnd;
-	private Point pStart;
-	private Point pEnd;
+public class LabelAnimation extends AbstractAnimationPrimitive {
+	private double startSimulationTime;
+
+	private double endSimulationTime;
+	
+	private Point startPosition;
+	
+	private Point endPosition;
 	
 	private IFigure label;
 	
-	private IAnimationController controller;
+	private Timer changeColorTimer;
 
 	public LabelAnimation(IAnimationController controller, String text, double tStart, double tEnd, Point pStart, Point pEnd) {
-		this.controller = controller;
-		this.tStart = tStart;
-		this.tEnd = tEnd;
-		this.pStart = pStart;
-		this.pEnd = pEnd;
+		super(controller);
+		this.startSimulationTime = tStart;
+		this.endSimulationTime = tEnd;
+		this.startPosition = pStart;
+		this.endPosition = pEnd;
 		this.label = new Label(text);
-		this.label = new RectangleFigure();
-		label.setBackgroundColor(new Color(null, 0, 0, 0));
+		this.changeColorTimer = new Timer(10, true, false) {
+			public void run() {
+				label.setForegroundColor(new Color(null, (int)(changeColorTimer.getNumberOfExecutions() % 255), 0, 0));
+			}
+		};
 	}
 	
-	public void animateSimulationTimeRange(double t0, double t1, double animationTime) {
-	}
-
 	public void gotoSimulationTime(double t) {
-		if (tStart <= t && t <= tEnd) {
-			Point p1 = pStart.getCopy();
-			Point p2 = pEnd.getCopy();
-			double alpha = (t - tStart) / (tEnd - tStart);
-			p1.scale(1 - alpha);
-			p2.scale(alpha);
-			p1.translate(p2);
-
-			setConstraint(label, new Rectangle(p1, new Dimension(50, 20)));
-			ensureFigure(label);
+		if (startSimulationTime <= t && t <= endSimulationTime) {
+			Point p1 = startPosition.getCopy();
+			Point p2 = endPosition.getCopy();
+			double alpha = (t - startSimulationTime) / (endSimulationTime - startSimulationTime);
+			Point p = new Point((1 - alpha) * p1.x + alpha * p2.x, (1 - alpha) * p1.y + alpha * p2.y);
+			setConstraint(label, new Rectangle(p, new Dimension(50, 20)));
+			showFigure(label);
 		}
 		else
-			desureFigure(label);
-	}
-	
-	private IFigure getRootFigure() {
-		return controller.getCanvas().getRootFigure();
+			hideFigure(label);
 	}
 
-	private LayoutManager getLayoutManager() {
-		return getRootFigure().getLayoutManager();
+	protected void addFigure(IFigure figure) {
+		super.addFigure(figure);
+		getTimerQueue().addTimer(changeColorTimer);
 	}
 
-	private void setConstraint(IFigure figure, Rectangle constraint) {
-		getLayoutManager().setConstraint(figure, constraint);
-	}
-
-	private void removeFigure(IFigure figure) {
-		getRootFigure().remove(figure);
-	}
-
-	private void addFigure(IFigure figure) {
-		getRootFigure().add(figure);
-	}
-
-	private void ensureFigure(IFigure figure) {
-		if (figure.getParent() == null)
-			addFigure(figure);
-	}
-
-	private void desureFigure(IFigure figure) {
-		if (figure.getParent() != null)
-			removeFigure(figure);
+	protected void removeFigure(IFigure figure) {
+		super.removeFigure(figure);
+		getTimerQueue().removeTimer(changeColorTimer);
 	}
 }
