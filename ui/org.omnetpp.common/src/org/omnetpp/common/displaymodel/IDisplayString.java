@@ -1,4 +1,4 @@
-package org.omnetpp.ned2.model;
+package org.omnetpp.common.displaymodel;
 
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Point;
@@ -204,4 +204,23 @@ public interface IDisplayString {
 	 */
 	public Dimension getSize();
 
+    /**
+     * Returns the range converted to pixels
+     * @return
+     */
+    public int getRange();
+
+    /**
+	 * Converts the provided value (in pixel) to unit
+	 * @param pixel 
+	 * @return Value in units
+	 */
+	public float pixel2unit(int pixel);
+	
+	/**
+	 * Converts the provided value (in unit) to pixel
+	 * @param unit
+	 * @return
+	 */
+	public int unit2pixel(float unit);
 }

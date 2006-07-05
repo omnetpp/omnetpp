@@ -1,4 +1,4 @@
-package org.omnetpp.figures.properties;
+package org.omnetpp.figures;
 
 import org.eclipse.draw2d.Layer;
 

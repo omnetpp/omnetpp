@@ -19,14 +19,12 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Pattern;
 import org.omnetpp.common.color.ColorFactory;
+import org.omnetpp.common.displaymodel.IDisplayString;
+import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.figures.layout.FreeformDesktopLayout;
-import org.omnetpp.figures.properties.DisplayBackgroundSupport;
-import org.omnetpp.figures.properties.DisplayTitleSupport;
-import org.omnetpp.figures.properties.LayerSupport;
 
 public class CompoundModuleFigure extends ModuleFigure 
-				implements DisplayBackgroundSupport, DisplayTitleSupport,
-				LayerSupport, HandleBounds {
+				implements LayerSupport, HandleBounds {
 
     private static final int DEFAULT_BORDER_WIDTH = 2;
     private static final int DEFAULT_BORDER_SNAP_WIDTH = 5;
@@ -156,28 +154,6 @@ public class CompoundModuleFigure extends ModuleFigure
         // ------ pane
         // ------ foregroundDecorationLayer
         
-    	createConnectionAnchors();
-    }
-
-    protected void createConnectionAnchors() {
-        GateAnchor in, out;
-        for (int i = 0; i < 8; i++) {
-            in = new GateAnchor(this,"IN"+i);
-            out = new GateAnchor(this,"OUT"+i);
-//            in.setPinnedDown(true);
-//            out.setPinnedDown(true);
-//            if (i > 3) {
-//                in.setPinnedLocationY(1.0);
-//                out.setPinnedLocationY(0.0);
-//            } else {
-//                in.setPinnedLocationY(0.0);
-//                out.setPinnedLocationY(1.0);
-//            }
-
-//            addSourceConnectionAnchor(out);
-//            addTargetConnectionAnchor(in);
-
-        }
     }
 
     public IFigure getContentsPane() {
@@ -193,23 +169,6 @@ public class CompoundModuleFigure extends ModuleFigure
         		((CompoundModuleBorder)getBorder()).getOuterBorder().getInsets(this));
     }
 
-//    protected PinnableNoncentralChopboxAnchor getInputConnectionAnchor(int i) {
-//        return (PinnableNoncentralChopboxAnchor) getConnectionAnchor("IN"+i);
-//    }
-//
-//    protected PinnableNoncentralChopboxAnchor getOutputConnectionAnchor(int i) {
-//        return (PinnableNoncentralChopboxAnchor) getConnectionAnchor("OUT"+i);
-//    }
-
-//  protected void layoutConnectionAnchors() {
-//  for (int i = 0; i < 4; i++) {
-//      getOutputConnectionAnchor(i + 4).setPinnedLocationX(0.125 + i / 4.0);
-//      getInputConnectionAnchor(i).setPinnedLocationX(0.125 + i / 4.0);
-//      getOutputConnectionAnchor(i).setPinnedLocationX(0.125 + i / 4.0);
-//      getInputConnectionAnchor(i + 4).setPinnedLocationX(0.125 + i / 4.0);
-//  }
-//}
-
     @Override
     public Dimension getPreferredSize(int w, int h) {
     	// we are not sensitve to the external size hints 
@@ -218,13 +177,6 @@ public class CompoundModuleFigure extends ModuleFigure
         return prefSize;
     }
     
-//    @Override
-//    public void validate() {
-//        if (isValid()) return;
-//        layoutConnectionAnchors();
-//        super.validate();
-//    }
-
     /**
      * Helper function to return the current border 
      * @return
@@ -237,6 +189,14 @@ public class CompoundModuleFigure extends ModuleFigure
         return layeredPane.getLayer(layerId);
     }
 
+	/**
+	 * Adjusts compound module background parameteres
+	 * @param img Background image
+	 * @param arrange 
+	 * @param backgroundColor
+	 * @param borderColor
+	 * @param borderWidth
+	 */
 	public void setBackgorund(Image img, String arrange, Color backgroundColor, Color borderColor, int borderWidth) {
 		moduleBackgroundColor = (backgroundColor==null) ? ColorFactory.defaultBackground : backgroundColor;
 		moduleBorderColor = (borderColor==null) ? ColorFactory.defaultBorder : borderColor;
@@ -252,6 +212,11 @@ public class CompoundModuleFigure extends ModuleFigure
 		invalidate();
 	}
 
+	/**
+	 * @param tickDistance Maximum distance between two ticks measured in pixels
+	 * @param noOfTics Number of minor ticks between two major one
+	 * @param gridColor Grid color
+	 */
 	public void setGrid(int tickDistance, int noOfTics, Color gridColor) {
 		this.gridTickDistance = tickDistance;
 		this.gridNoOfMinorTics = noOfTics;
@@ -270,10 +235,72 @@ public class CompoundModuleFigure extends ModuleFigure
 		invalidate();
 	}
 
+	/**
+	 * Scaling and unit support. 
+	 * @param scale scale value (a value of 18 means: 1 unit = 18 pixels)
+	 * @param unit the unit of the dimension
+	 */
 	public void setScale(float scale, String unit) {
 		this.scale = scale;
 		this.unit = unit;
 		invalidate();
+	}
+	
+	/**
+	 * Adjusts the image properties using a displayString object
+	 * @param dps
+	 */
+	public void setDisplayString(IDisplayString dps) {
+        // setup the figure's properties
+        // set the location and size using the models helper methods
+        // if the siez is specified in the displaystring we should set it as preferred size
+        // otherwise getPreferredSize should return the size calculated from the children
+        if (dps.getSize().height > 0 || dps.getSize().width > 0) 
+        	setPreferredSize(dps.getSize());
+        else 
+        	setPreferredSize(null);
+        
+        // set the icon showing the default representation in the titlebar
+        Image img = ImageFactory.getImage(
+        		dps.getAsStringDef(IDisplayString.Prop.IMAGE), 
+        		dps.getAsStringDef(IDisplayString.Prop.IMAGESIZE),
+        		ColorFactory.asRGB(dps.getAsStringDef(IDisplayString.Prop.IMAGECOLOR)),
+        		dps.getAsIntDef(IDisplayString.Prop.IMAGECOLORPCT,0));
+        setDefaultShape(img, 
+        		dps.getAsStringDef(IDisplayString.Prop.SHAPE), 
+        		dps.getAsIntDef(IDisplayString.Prop.WIDTH, -1), 
+        		dps.getAsIntDef(IDisplayString.Prop.HEIGHT, -1),
+        		ColorFactory.asColor(dps.getAsStringDef(IDisplayString.Prop.FILLCOL)),
+        		ColorFactory.asColor(dps.getAsStringDef(IDisplayString.Prop.BORDERCOL)),
+        		dps.getAsIntDef(IDisplayString.Prop.BORDERWIDTH, -1));
+
+        // background color / image
+        Image imgback = ImageFactory.getImage(
+        		dps.getAsStringDef(IDisplayString.Prop.MODULE_IMAGE), null, null, 0);
+
+        // decode the image arrangement
+        String imageArrangementStr = dps.getAsStringDef(IDisplayString.Prop.MODULE_IMAGEARRANGEMENT);
+
+        // set the background
+        setBackgorund(
+        		imgback, 
+        		imageArrangementStr, 
+        		ColorFactory.asColor(dps.getAsStringDef(IDisplayString.Prop.MODULE_FILLCOL)), 
+        		ColorFactory.asColor(dps.getAsStringDef(IDisplayString.Prop.MODULE_BORDERCOL)), 
+        		dps.getAsIntDef(IDisplayString.Prop.MODULE_BORDERWIDTH, -1));
+
+        // grid support
+        setGrid(
+        		dps.unit2pixel(dps.getAsIntDef(IDisplayString.Prop.MODULE_TICKDISTANCE, -1)), 
+        		dps.getAsIntDef(IDisplayString.Prop.MODULE_TICKNUMBER, -1), 
+        		ColorFactory.asColor(dps.getAsStringDef(IDisplayString.Prop.MODULE_GRIDCOL)));
+
+        // scaling support
+        setScale(
+        		dps.getAsFloatDef(IDisplayString.Prop.MODULE_SCALE, 1),
+        		dps.getAsStringDef(IDisplayString.Prop.MODULE_UNIT));
+        
+        invalidate();
 	}
 	
 	/**

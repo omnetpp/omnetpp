@@ -30,7 +30,6 @@ abstract public class ModuleEditPart extends ContainerEditPart implements NodeEd
 		installEditPolicy(EditPolicy.GRAPHICAL_NODE_ROLE, new NedNodeEditPolicy());
 	}
 
-
 	/**
 	 * Returns a list of connections for which this is the srcModule.
 	 * 
@@ -52,26 +51,6 @@ abstract public class ModuleEditPart extends ContainerEditPart implements NodeEd
 	}
 
 	/**
-	 * Returns the Figure of this, as a NedFigure.
-	 * 
-	 * @return Figure as a ModuleFigure.
-	 */
-	protected ModuleFigure getModuleFigure() {
-		return (ModuleFigure) getFigure();
-	}
-	
-	/**
-	 * @return The names of the input gates
-	 */
-	public abstract String[] getInputGateNames();
-	
-	/**
-	 * @return The names of the output gates
-	 */
-	public abstract String[] getOutputGateNames();
-
-
-	/**
 	 * Compute the source connection anchor to be assigned based on the current mouse 
 	 * location and available gates. 
 	 * @param p current mouse coordinates
@@ -80,7 +59,7 @@ abstract public class ModuleEditPart extends ContainerEditPart implements NodeEd
 	public ConnectionAnchor getSourceConnectionAnchorAt(Point p) {
 		// TODO select the appropriate gate name automatically
 		// or return NULL if no output gate is available
-		return new GateAnchor(getFigure(), getOutputGateNames()[0]);
+		return new GateAnchor(getFigure());
 	}
 
 	/**
@@ -92,7 +71,7 @@ abstract public class ModuleEditPart extends ContainerEditPart implements NodeEd
 	public ConnectionAnchor getTargetConnectionAnchorAt(Point p) {
 		// TODO select the appropriate gate name automatically
 		// or return NULL if no input gate is available
-		return new GateAnchor(getFigure(), getInputGateNames()[0]);
+		return new GateAnchor(getFigure());
 	}
 
 	/**

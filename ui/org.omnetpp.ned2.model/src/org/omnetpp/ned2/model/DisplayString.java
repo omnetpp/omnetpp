@@ -7,6 +7,7 @@ import java.util.Vector;
 
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Point;
+import org.omnetpp.common.displaymodel.IDisplayString;
 
 /**
  * This class is responsible for parsing and creating display strings in the correct format.
@@ -390,6 +391,16 @@ public class DisplayString implements IDisplayString {
 		return (int)(unit * getScale());
 	}
 	
+    /**
+     * Returns the range converted to pixels
+     * @return
+     */
+    public int getRange() {
+    	int range = unit2pixel(getAsFloatDef(DisplayString.Prop.RANGE, -1.0f));
+    	if (range <= 0) range = -1;
+    	return range;
+    }
+
     /* (non-Javadoc)
 	 * @see org.omnetpp.ned2.model.IDisplayString#getLocation()
 	 */

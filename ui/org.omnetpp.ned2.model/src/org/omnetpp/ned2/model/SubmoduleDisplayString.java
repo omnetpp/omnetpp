@@ -18,12 +18,6 @@ public class SubmoduleDisplayString extends DisplayString {
         emptyDefaults = EMPTY_DEFAULTS;
     }
     
-    public int getRange() {
-    	int range = unit2pixel(getAsFloatDef(DisplayString.Prop.RANGE, -1.0f));
-    	if (range <= 0) range = -1;
-    	return range;
-    }
-
 	@Override
 	public float getScale() {
 		float scaleFactor = 1.0f;

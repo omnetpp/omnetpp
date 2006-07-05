@@ -10,7 +10,7 @@ import org.eclipse.draw2d.IFigure;
 public class GateAnchor extends ChopboxAnchor {
 	protected String gateName;
 	
-    protected GateAnchor(IFigure owner) {
+    public GateAnchor(IFigure owner) {
     	super(owner);
     }
     

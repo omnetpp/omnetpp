@@ -12,24 +12,17 @@ import org.eclipse.draw2d.RoundedRectangle;
 import org.eclipse.draw2d.Shape;
 import org.eclipse.draw2d.StackLayout;
 import org.eclipse.draw2d.geometry.Dimension;
+import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.PrecisionPoint;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.gef.handles.HandleBounds;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
+import org.omnetpp.common.color.ColorFactory;
+import org.omnetpp.common.displaymodel.IDisplayString;
 import org.omnetpp.common.image.ImageFactory;
-import org.omnetpp.figures.properties.DisplayCalloutSupport;
-import org.omnetpp.figures.properties.DisplayInfoTextSupport;
-import org.omnetpp.figures.properties.DisplayNameSupport;
-import org.omnetpp.figures.properties.DisplayQueueSupport;
-import org.omnetpp.figures.properties.DisplayRangeSupport;
-import org.omnetpp.figures.properties.DisplayShapeSupport;
-import org.omnetpp.figures.properties.DisplayTooltipSupport;
-import org.omnetpp.figures.properties.LayerSupport;
 
-public class SubmoduleFigure extends ModuleFigure implements HandleBounds, 
-    DisplayRangeSupport, DisplayNameSupport, DisplayTooltipSupport, DisplayQueueSupport, 
-    DisplayInfoTextSupport, DisplayCalloutSupport, DisplayShapeSupport {
+public class SubmoduleFigure extends ModuleFigure implements HandleBounds {
 
     protected Layer foregroundLayer;
     protected Layer backgroundLayer;
@@ -286,4 +279,68 @@ public class SubmoduleFigure extends ModuleFigure implements HandleBounds,
         return getBounds();
     }
 
+	/**
+	 * Adjusts the image properties using a displayString object
+	 * @param dps
+	 */
+	public void setDisplayString(IDisplayString dps) {
+		
+        // set the location and size using the models helper methods
+        Point loc = dps.getLocation();
+        // TODO get the location from the autolayouting engine if exact position is not specified
+        if (loc == null) loc = new Point(0,0);
+        
+        Rectangle constraint = new Rectangle(loc, dps.getSize());
+        getParent().setConstraint(this, constraint);
+        
+        // range support
+        setRange(
+        		dps.getRange(),
+        		ColorFactory.asColor(dps.getAsStringDef(IDisplayString.Prop.RANGEFILLCOL)),
+        		ColorFactory.asColor(dps.getAsStringDef(IDisplayString.Prop.RANGEBORDERCOL)),
+        		dps.getAsIntDef(IDisplayString.Prop.RANGEBORDERWIDTH, -1));
+        // tooltip support
+        setTooltipText(dps.getAsStringDef(IDisplayString.Prop.TOOLTIP));
+        
+        // queue length support
+        setQueueText(dps.getAsStringDef(IDisplayString.Prop.QUEUE));
+
+        // additional text support
+        setInfoText(dps.getAsStringDef(IDisplayString.Prop.TEXT), 
+        		dps.getAsStringDef(IDisplayString.Prop.TEXTPOS),
+        		ColorFactory.asColor(dps.getAsStringDef(IDisplayString.Prop.TEXTCOLOR)));
+
+        // shape support
+        String imgSize = dps.getAsStringDef(IDisplayString.Prop.IMAGESIZE);
+        Image img = ImageFactory.getImage(
+        		dps.getAsStringDef(IDisplayString.Prop.IMAGE), 
+        		imgSize,
+        		ColorFactory.asRGB(dps.getAsStringDef(IDisplayString.Prop.IMAGECOLOR)),
+        		dps.getAsIntDef(IDisplayString.Prop.IMAGECOLORPCT,0));
+
+        // set the figure properties
+        setShape(img, 
+        		dps.getAsStringDef(IDisplayString.Prop.SHAPE), 
+        		constraint.width, 
+        		constraint.height,
+        		ColorFactory.asColor(dps.getAsStringDef(IDisplayString.Prop.FILLCOL)),
+        		ColorFactory.asColor(dps.getAsStringDef(IDisplayString.Prop.BORDERCOL)),
+        		dps.getAsIntDef(IDisplayString.Prop.BORDERWIDTH, -1));
+
+        // set the decoration image properties
+        setImageDecoration(
+        		        ImageFactory.getImage(
+        				dps.getAsStringDef(IDisplayString.Prop.OVIMAGE),
+        				null,
+        				ColorFactory.asRGB(dps.getAsStringDef(IDisplayString.Prop.OVIMAGECOLOR)),
+        				dps.getAsIntDef(IDisplayString.Prop.OVIMAGECOLORPCT,0)));
+
+
+        // XXX callout bubble. just for testing
+
+        if (dps.getLocation()!=null && dps.getLocation().x >-1) clearCallout();
+        	else addCallout("Yes Sir, my position is: "+dps.getLocation() );
+
+        invalidate();
+	}
 }

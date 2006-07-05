@@ -33,12 +33,4 @@ public class CompoundModuleDisplayString extends DisplayString {
 		return getAsFloatDef(Prop.MODULE_SCALE, 1.0f);
 	}
 	
-	
-	/**
-	 * Converts tick distance from unit to pixel
-	 * @return The tick distance between the major gridlines (in pixels)
-	 */
-	public int getGridTickDistance() {
-		return unit2pixel(getAsIntDef(DisplayString.Prop.MODULE_TICKDISTANCE, -1));
-	}
 }
