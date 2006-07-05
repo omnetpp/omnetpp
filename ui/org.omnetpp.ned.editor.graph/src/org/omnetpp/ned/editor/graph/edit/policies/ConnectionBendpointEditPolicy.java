@@ -4,10 +4,10 @@ import org.eclipse.draw2d.Connection;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.gef.commands.Command;
 import org.eclipse.gef.requests.BendpointRequest;
-import org.omnetpp.ned.editor.graph.commands.BendpointCommand;
-import org.omnetpp.ned.editor.graph.commands.CreateBendpointCommand;
-import org.omnetpp.ned.editor.graph.commands.DeleteBendpointCommand;
-import org.omnetpp.ned.editor.graph.commands.MoveBendpointCommand;
+import org.omnetpp.ned.editor.graph.commands.bendpoint.BendpointCommand;
+import org.omnetpp.ned.editor.graph.commands.bendpoint.CreateBendpointCommand;
+import org.omnetpp.ned.editor.graph.commands.bendpoint.DeleteBendpointCommand;
+import org.omnetpp.ned.editor.graph.commands.bendpoint.MoveBendpointCommand;
 import org.omnetpp.ned2.model.ConnectionNodeEx;
 
 public class ConnectionBendpointEditPolicy extends org.eclipse.gef.editpolicies.BendpointEditPolicy {

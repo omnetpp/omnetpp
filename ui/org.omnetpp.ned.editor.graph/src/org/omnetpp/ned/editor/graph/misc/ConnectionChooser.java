@@ -129,6 +129,9 @@ public class ConnectionChooser {
 		mi.setText(label);
 	}
 	
+	
+	// TODO implement popupmenu if only one of the srcModule or destModule is present 
+	// only one side of the connection should be selected
 	/**
 	 * This method ask the user which gates should be connected on the source and destination module
 	 * @param askForSrcGate

@@ -1,10 +1,11 @@
-package org.omnetpp.ned.editor.graph.commands;
+package org.omnetpp.ned.editor.graph.commands.bendpoint;
 
 import org.eclipse.draw2d.Bendpoint;
 
 import org.omnetpp.ned2.model.WireBendpointModel;
 
 /**
+ * Currently UNUSED
  * Moves a bendpoint of a wire to a different location
  * @author rhornig
  *

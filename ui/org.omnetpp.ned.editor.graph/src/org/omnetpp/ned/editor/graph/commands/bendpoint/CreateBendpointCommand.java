@@ -1,8 +1,9 @@
-package org.omnetpp.ned.editor.graph.commands;
+package org.omnetpp.ned.editor.graph.commands.bendpoint;
 
 import org.omnetpp.ned2.model.WireBendpointModel;
 
 /**
+ * Currently UNUSED
  * Creates a new bendpoint on an existing wire
  * @author rhornig
  *

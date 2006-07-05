@@ -1,4 +1,4 @@
-package org.omnetpp.ned.editor.graph.commands;
+package org.omnetpp.ned.editor.graph.commands.bendpoint;
 
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Point;
@@ -6,10 +6,11 @@ import org.eclipse.gef.commands.Command;
 import org.omnetpp.ned2.model.ConnectionNodeEx;
 
 /**
+ * Currently UNUSED
  * Base class for different bend point related commands like
  * CreateBendpointCommand, MoveBendpointCommand, DeleteBendpointCommand
  * @author rhornig
- *
+ * 
  */
 public class BendpointCommand extends Command {
 

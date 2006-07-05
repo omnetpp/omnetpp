@@ -15,6 +15,7 @@ public class CreateSubmoduleCommand extends org.eclipse.gef.commands.Command {
     private INamedGraphNode child;
     private Rectangle rect;
     private ISubmoduleContainer parent;
+    // TODO substitute index based positioning with sibling based one
     private int index = -1;
 
     
@@ -50,9 +51,9 @@ public class CreateSubmoduleCommand extends org.eclipse.gef.commands.Command {
         parent.removeSubmodule(child);
     }
 
-    public void setIndex(int index) {
-        this.index = index;
-    }
+//    public void setIndex(int index) {
+//        this.index = index;
+//    }
 
     public void setLocation(Rectangle r) {
         rect = r;

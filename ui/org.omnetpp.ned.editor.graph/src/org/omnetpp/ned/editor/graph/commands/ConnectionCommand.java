@@ -11,7 +11,7 @@ import org.omnetpp.ned2.model.pojo.ConnectionNode;
 
 /**
  * (Re)assigns a Connection to srcModule/destModule sub/compound module gates and also adds it to the
- * model (to the compound module's connectios section) (or removes it if the new source or destination is NULL)
+ * model (to the compound module's connectios section) (or removes it if both the new source and destination is NULL)
  * @author rhornig
  */
 public class ConnectionCommand extends Command {
@@ -39,13 +39,12 @@ public class ConnectionCommand extends Command {
         return "Move connection";
     }
 
-    public ConnectionCommand (ConnectionNodeEx conn) {
+    public ConnectionCommand(ConnectionNodeEx conn) {
         connNode = conn;
         oldSrcModule = connNode.getSrcModuleRef();
         oldDestModule = connNode.getDestModuleRef();
         oldConn = (ConnectionNode)connNode.dup(null);
         newConn = (ConnectionNode)connNode.dup(null);
-
     }
     
     
@@ -82,19 +81,6 @@ public class ConnectionCommand extends Command {
     public void execute() {
    		// do the changes
     	redo();
-
-    	// after we connected the modules, let's ask the user which gates should be connected
-//    	if(srcModule != null || destModule != null) {
-//    		// ask the user for ser and dest gate names
-//    		ConnectionNode tempConn = ConnectionChooser.open(srcModule, destModule);
-//    		// if both gates are specified by the user do the model change
-//    		if (tempConn != null) {
-//    			copyConn(tempConn, newConn);
-//        		redo();
-//    		}
-//    		else //otherwise revert the connection change (user cancel)
-//    			undo();
-//    	}
     }
 
     @Override
@@ -165,7 +151,6 @@ public class ConnectionCommand extends Command {
     public void setSrcModule(IConnectable newSrcModule) {
         srcModule = newSrcModule;
     }
-
 
     public void setDestModule(IConnectable newDestModule) {
         destModule = newDestModule;

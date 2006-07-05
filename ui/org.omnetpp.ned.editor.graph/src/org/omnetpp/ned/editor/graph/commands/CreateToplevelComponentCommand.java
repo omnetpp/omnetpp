@@ -6,7 +6,6 @@ import org.omnetpp.ned2.model.NEDElement;
 import org.omnetpp.ned2.model.NedFileNodeEx;
 import org.omnetpp.ned2.model.pojo.ChannelInterfaceNode;
 import org.omnetpp.ned2.model.pojo.ChannelNode;
-import org.omnetpp.ned2.model.pojo.InterfaceNameNode;
 import org.omnetpp.ned2.model.pojo.ModuleInterfaceNode;
 import org.omnetpp.ned2.model.pojo.SimpleModuleNode;
 

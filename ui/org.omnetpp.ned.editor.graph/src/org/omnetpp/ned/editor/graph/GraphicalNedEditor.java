@@ -224,7 +224,7 @@ public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette {
         protected void initializeOverview() {
             LightweightSystem lws = new LightweightSystem(overview);
             RootEditPart rep = getGraphicalViewer().getRootEditPart();
-            if (rep instanceof ScalableFreeformRootEditPart) {
+            if (rep instanceof ScalableRootEditPart) {
                 ScalableRootEditPart root = (ScalableRootEditPart) rep;
                 thumbnail = new ScrollableThumbnail((Viewport) root.getFigure());
                 thumbnail.setBorder(new MarginBorder(3));

@@ -7,7 +7,6 @@ import org.omnetpp.ned2.model.NEDElement;
  * Move a child to a different position in the parent's list
  * Used by the tree container policy to drag and drop in the outline tree
  * @author rhornig
- *
  */
 public class ReorderPartCommand extends Command {
 

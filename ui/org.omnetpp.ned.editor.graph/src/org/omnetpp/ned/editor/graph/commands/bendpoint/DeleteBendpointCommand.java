@@ -1,8 +1,9 @@
-package org.omnetpp.ned.editor.graph.commands;
+package org.omnetpp.ned.editor.graph.commands.bendpoint;
 
 import org.eclipse.draw2d.Bendpoint;
 
 /**
+ * Currently UNUSED
  * Removes a bendpoint from a wire
  * @author rhornig
  *
