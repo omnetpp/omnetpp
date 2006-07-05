@@ -283,8 +283,10 @@ public class CompoundModuleFigure extends ModuleFigure
 	 * @return
 	 */
 	public boolean isOnBorder(int x, int y) {
-		return getBounds().contains(x,y) && 
-			!getClientArea().shrink(2*DEFAULT_BORDER_SNAP_WIDTH, 2*DEFAULT_BORDER_SNAP_WIDTH).contains(x, y);
+		Point mouse = new Point(x,y);
+		translateToRelative(mouse);
+		return getBounds().contains(mouse) && 
+			!getClientArea().shrink(2*DEFAULT_BORDER_SNAP_WIDTH, 2*DEFAULT_BORDER_SNAP_WIDTH).contains(mouse);
 	}
 	
 }

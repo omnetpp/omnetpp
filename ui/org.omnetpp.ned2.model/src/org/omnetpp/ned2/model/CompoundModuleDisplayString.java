@@ -1,6 +1,5 @@
 package org.omnetpp.ned2.model;
 
-import org.eclipse.draw2d.geometry.Point;
 
 public class CompoundModuleDisplayString extends DisplayString {
     // contains the default fallback values for the different tags if a variable is used in that position
