@@ -63,6 +63,7 @@ public class NedNodeEditPolicy extends GraphicalNodeEditPolicy {
         	return UnexecutableCommand.INSTANCE;
 
         cmd.setDestModule(getGraphNodeModel());
+        cmd.setSrcModule(conn.getSrcModuleRef());
         return cmd;
     }
 
@@ -76,6 +77,7 @@ public class NedNodeEditPolicy extends GraphicalNodeEditPolicy {
         	return UnexecutableCommand.INSTANCE;
         
         cmd.setSrcModule(getGraphNodeModel());
+        cmd.setDestModule(conn.getDestModuleRef());
         return cmd;
     }
     

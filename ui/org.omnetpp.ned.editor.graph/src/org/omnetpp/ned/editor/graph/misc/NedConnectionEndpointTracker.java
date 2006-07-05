@@ -23,7 +23,6 @@ public class NedConnectionEndpointTracker extends ConnectionEndpointTracker {
 	protected boolean handleButtonUp(int button) {
 		if (stateTransition(STATE_DRAG_IN_PROGRESS, STATE_TERMINAL)) {
 			ConnectionCommand connCommand = (ConnectionCommand)getCommand();
-	    	setCurrentCommand(connCommand);
 	    	
 	    	// ask the user about which gates should be connected
 			ConnectionNode selectedConn 
@@ -43,6 +42,7 @@ public class NedConnectionEndpointTracker extends ConnectionEndpointTracker {
 			ConnectionCommand.copyConn(selectedConn, templateConn);
 
 			// execute the command
+	    	setCurrentCommand(connCommand);
 			executeCurrentCommand();
 		}
 		return true;
