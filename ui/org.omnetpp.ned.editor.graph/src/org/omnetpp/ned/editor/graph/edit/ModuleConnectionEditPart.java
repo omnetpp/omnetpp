@@ -11,7 +11,6 @@ import org.eclipse.gef.EditPolicy;
 import org.eclipse.gef.editparts.AbstractConnectionEditPart;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.figures.ConnectionFigure;
-import org.omnetpp.ned.editor.graph.edit.policies.ConnectionBendpointEditPolicy;
 import org.omnetpp.ned.editor.graph.edit.policies.NedConnectionEditPolicy;
 import org.omnetpp.ned.editor.graph.edit.policies.NedConnectionEndpointEditPolicy;
 import org.omnetpp.ned2.model.ConnectionDisplayString;
@@ -21,9 +20,8 @@ import org.omnetpp.ned2.model.IDisplayStringChangeListener;
 import org.omnetpp.ned2.model.INEDChangeListener;
 import org.omnetpp.ned2.model.NEDElement;
 import org.omnetpp.ned2.model.NEDElementUtil;
-import org.omnetpp.ned2.model.SubmoduleDisplayString;
 import org.omnetpp.ned2.model.WireBendpointModel;
-import org.omnetpp.ned2.model.DisplayString.Prop;
+import org.omnetpp.ned2.model.IDisplayString.Prop;
 
 /**
  * Implements a Connection Editpart to represnt a Wire like connection.

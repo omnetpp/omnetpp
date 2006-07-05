@@ -3,10 +3,9 @@ package org.omnetpp.ned2.model;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.omnetpp.ned2.model.DisplayString.Prop;
+import org.omnetpp.ned2.model.IDisplayString.Prop;
 import org.omnetpp.ned2.model.pojo.CompoundModuleNode;
 import org.omnetpp.ned2.model.pojo.ConnectionsNode;
-import org.omnetpp.ned2.model.pojo.GatesNode;
 import org.omnetpp.ned2.model.pojo.SubmoduleNode;
 import org.omnetpp.ned2.model.pojo.SubmodulesNode;
 

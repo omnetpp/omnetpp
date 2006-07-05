@@ -5,7 +5,7 @@ import org.omnetpp.ned2.model.IDisplayStringChangeListener;
 import org.omnetpp.ned2.model.IDisplayStringProvider;
 import org.omnetpp.ned2.model.INEDChangeListener;
 import org.omnetpp.ned2.model.NEDElement;
-import org.omnetpp.ned2.model.DisplayString.Prop;
+import org.omnetpp.ned2.model.IDisplayString.Prop;
 
 /**
  * Provides support for Container EditParts.
@@ -65,7 +65,6 @@ abstract public class ContainerEditPart
     public void propertyChanged(Prop changedProp) {
 		// by default refresh all visuals if the display string has changed
         refreshVisuals();
-//    	System.out.println("Container notification: "+changedProp);
 	}
 
 	public void attributeChanged(NEDElement node, String attr) {

@@ -29,7 +29,7 @@ import org.omnetpp.ned2.model.CompoundModuleDisplayString;
 import org.omnetpp.ned2.model.CompoundModuleNodeEx;
 import org.omnetpp.ned2.model.DisplayString;
 import org.omnetpp.ned2.model.INamedGraphNode;
-import org.omnetpp.ned2.model.DisplayString.Prop;
+import org.omnetpp.ned2.model.IDisplayString.Prop;
 
 public class CompoundModuleEditPart extends ModuleEditPart {
 
@@ -106,7 +106,6 @@ public class CompoundModuleEditPart extends ModuleEditPart {
     	}
     	// refresh only ourselves
     	refreshVisuals();
-//    	System.out.println("Compound module notification: "+changedProp);
 	}
 
 	/**
