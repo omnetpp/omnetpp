@@ -24,6 +24,25 @@ public class RunAttribute {
 		return value;
 	}
 	
+	public boolean equals(Object other) {
+		if (this == other)
+			return true;
+		if (!(other instanceof RunAttribute))
+			return false;
+		
+		RunAttribute otherAttr = (RunAttribute)other;
+		
+		return this.name.equals(otherAttr.name) &&
+				(this.value == null && otherAttr.value == null ||
+				 this.value != null && this.value.equals(otherAttr.value));
+	}
+	
+	
+	@Override
+	public int hashCode() {
+		return name.hashCode() ^ (value != null ? value.hashCode() : 0);
+	}
+
 	public String toString() {
 		return name +  "\"" + (value != null ? value : "n/a") + "\"";
 	}
