@@ -1,17 +1,16 @@
 package org.omnetpp.scave2.editors.datatable;
 
-import org.eclipse.gef.requests.CreateRequest;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
+import org.omnetpp.scave2.editors.ui.FilterParamsPanel;
+import org.omnetpp.scave2.model.FilterParams;
 
 /**
  * A composite with UI elements to filter a data table.
@@ -23,17 +22,8 @@ public class FilteringPanel extends Composite {
 	
 	private Label filterLabel;
 	private Button showHideButton;
-	
-	private CCombo fileNameCombo;
-	private CCombo runNameCombo;
-	
-	private CCombo moduleNameCombo;
-	private CCombo scalarNameCombo;
-	
-	private CCombo experimentNameCombo;
-	private CCombo measurementNameCombo;
-	private CCombo replicationNameCombo;
-	
+	private FilterParamsPanel leftPanel;
+
 	private Button filterButton;
 
 	public FilteringPanel(Composite parent, int style) {
@@ -42,31 +32,31 @@ public class FilteringPanel extends Composite {
 	}
 	
 	public CCombo getFileNameCombo() {
-		return fileNameCombo;
+		return leftPanel.getFileCombo();
 	}
 	
 	public CCombo getRunNameCombo() {
-		return runNameCombo;
+		return leftPanel.getRunCombo();
 	}
 
 	public CCombo getExperimentNameCombo() {
-		return experimentNameCombo;
+		return leftPanel.getExperimentCombo();
 	}
 	
 	public CCombo getMeasurementNameCombo() {
-		return measurementNameCombo;
+		return leftPanel.getMeasurementCombo();
 	}
 
 	public CCombo getReplicationNameCombo() {
-		return replicationNameCombo;
+		return leftPanel.getReplicationCombo();
 	}
 
 	public CCombo getModuleNameCombo() {
-		return moduleNameCombo;
+		return leftPanel.getModuleCombo();
 	}
 
 	public CCombo getNameCombo() {
-		return scalarNameCombo;
+		return leftPanel.getDataCombo();
 	}
 
 	public Button getFilterButton() {
@@ -75,6 +65,14 @@ public class FilteringPanel extends Composite {
 	
 	public void setFilterText(String text) {
 		filterLabel.setText("Filter: " + text);
+	}
+	
+	public FilterParams getFilterParams() {
+		return leftPanel.getFilterParams();
+	}
+	
+	public void setFilterParams(FilterParams params) {
+		leftPanel.setFilterParams(params);
 	}
 
 	private void initialize() {
@@ -88,28 +86,15 @@ public class FilteringPanel extends Composite {
 		showHideButton.setText("Change");
 		
 		final Composite filterParamsPanel = new Composite(this, SWT.NONE);
+		GridData gridData = new GridData(SWT.FILL, SWT.BEGINNING, true, false);
+		gridData.exclude = true;
 		filterParamsPanel.setVisible(false);
-		filterParamsPanel.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false));
+		filterParamsPanel.setLayoutData(gridData);
 		filterParamsPanel.setLayout(new GridLayout(2, false));
-		((GridData)filterParamsPanel.getLayoutData()).heightHint = 0;
 		
-		
-		Composite leftPanel = new Composite(filterParamsPanel, SWT.NONE);
+		leftPanel = new FilterParamsPanel(filterParamsPanel, SWT.NONE);
 		leftPanel.setLayout(new GridLayout());
 		leftPanel.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false));
-		
-		Composite group = createFilterGroup(leftPanel, 2);
-		fileNameCombo = createLabelAndCombo(group, "File name:", "Filter displayed items by file. Wildcards *,? are OK.");
-		runNameCombo = createLabelAndCombo(group, "Run name:", "Filter displayed items by run name. Wildcards *,? are OK.");
-		
-		group = createFilterGroup(leftPanel, 3);
-		experimentNameCombo = createLabelAndCombo(group, "Experiment name:", "Filter displayed items by experiment name. Wildcards *,? are OK.");
-		measurementNameCombo = createLabelAndCombo(group, "Measurement name:", "Filter displayed items by measurement name. Wildcards *,? are OK.");
-		replicationNameCombo = createLabelAndCombo(group, "Replication name:", "Filter displayed items by replication name. Wildcards *,? are OK.");
-		
-		group = createFilterGroup(leftPanel, 2);
-		moduleNameCombo = createLabelAndCombo(group, "Module name:", "Filter displayed items by module name. Wildcards *,? are OK.");
-		scalarNameCombo = createLabelAndCombo(group, "Scalar name:", "Filter displayed items by scalar name. Wildcards *,? are OK.");
 		
 		filterButton = new Button(filterParamsPanel, SWT.NONE);
 		filterButton.setText("Filter");
@@ -119,35 +104,17 @@ public class FilteringPanel extends Composite {
 			public void widgetSelected(SelectionEvent e) {
 				if (filterParamsPanel.isVisible()) {
 					filterParamsPanel.setVisible(false);
+					((GridData)filterParamsPanel.getLayoutData()).exclude = true;
 					showHideButton.setText("Change");
-					((GridData)filterParamsPanel.getLayoutData()).heightHint = 0;
 				}
 				else {
 					filterParamsPanel.setVisible(true);
+					((GridData)filterParamsPanel.getLayoutData()).exclude = false;
 					showHideButton.setText("Hide");
-					((GridData)filterParamsPanel.getLayoutData()).heightHint = SWT.DEFAULT;
 				}
 				
 				filterParamsPanel.getParent().getParent().layout(true, true);
 			}
 		});
-	}
-	
-	private Composite createFilterGroup(Composite parent, int numOfFilterParams) {
-		Composite group = new Composite(parent, SWT.NONE);
-		group.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false));
-		group.setLayout(new GridLayout(2 * numOfFilterParams, false));
-		return group;
-	}
-	
-	private CCombo createLabelAndCombo(Composite parent, String labelText, String tooltipText) {
-		Label label = new Label(parent, SWT.NONE);
-		label.setText(labelText);
-		label.setLayoutData(new GridData(SWT.BEGINNING, SWT.BEGINNING, false, false));
-		CCombo combo = new CCombo(parent, SWT.BORDER);
-		combo.setVisibleItemCount(10);
-		combo.setToolTipText(tooltipText);
-		combo.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false));
-		return combo;
 	}
 }

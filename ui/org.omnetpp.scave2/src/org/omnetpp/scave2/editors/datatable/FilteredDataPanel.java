@@ -167,24 +167,11 @@ public class FilteredDataPanel extends Composite {
 	}
 
 	public FilterParams getFilterParams() {
-		return new FilterParams(
-				filterPanel.getFileNameCombo().getText(),
-				filterPanel.getRunNameCombo().getText(),
-				filterPanel.getExperimentNameCombo().getText(),
-				filterPanel.getMeasurementNameCombo().getText(),
-				filterPanel.getReplicationNameCombo().getText(),
-				filterPanel.getModuleNameCombo().getText(),
-				filterPanel.getNameCombo().getText());
+		return filterPanel.getFilterParams();
 	}
 	
 	public void setFilterParams(FilterParams params) {
-		filterPanel.getFileNameCombo().setText(params.getFileNamePattern());
-		filterPanel.getRunNameCombo().setText(params.getRunNamePattern());
-		filterPanel.getExperimentNameCombo().setText(params.getExperimentNamePattern());
-		filterPanel.getMeasurementNameCombo().setText(params.getMeasurementNamePattern());
-		filterPanel.getReplicationNameCombo().setText(params.getReplicationNamePattern());
-		filterPanel.getModuleNameCombo().setText(params.getModuleNamePattern());
-		filterPanel.getNameCombo().setText(params.getDataNamePattern());
+		filterPanel.setFilterParams(params);
 		runFilter();
 	}
 

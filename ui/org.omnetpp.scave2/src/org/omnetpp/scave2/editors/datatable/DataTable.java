@@ -9,6 +9,7 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 import org.omnetpp.scave.engine.IDList;
+import org.omnetpp.scave.engine.ResultItem;
 import org.omnetpp.scave.engine.ScalarResult;
 import org.omnetpp.scave.engine.VectorResult;
 import org.omnetpp.scave.engineext.ResultFileManagerEx;
@@ -82,6 +83,17 @@ public class DataTable extends Table {
 
 	public IDList getIDList() {
 		return idlist;
+	}
+	
+	public ResultItem[] getSelectedItems() {
+		int[] selectionIndeces = getSelectionIndices();
+		ResultItem[] items = new ResultItem[selectionIndeces.length];
+		
+		for (int i = 0; i < items.length; ++i) {
+			items[i] = manager.getItem(idlist.get(selectionIndeces[i]));
+		}
+		
+		return items;
 	}
 
 	public void refresh() {
@@ -159,4 +171,6 @@ public class DataTable extends Table {
 			//TODO
 		}		
 	}
+	
+	
 }
