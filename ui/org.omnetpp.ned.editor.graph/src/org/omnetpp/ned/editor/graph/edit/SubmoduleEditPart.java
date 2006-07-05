@@ -14,7 +14,6 @@ public class SubmoduleEditPart extends ModuleEditPart {
      */
     @Override
     protected IFigure createFigure() {
-        
         return new SubmoduleFigure();
     }
 
@@ -34,7 +33,6 @@ public class SubmoduleEditPart extends ModuleEditPart {
     protected void refreshVisuals() {
         
         // define the properties that determine the visual appearence
-        
     	INamedGraphNode model = (INamedGraphNode)getNEDModel();
     	
     	getSubmoduleFigure().setName(model.getName());

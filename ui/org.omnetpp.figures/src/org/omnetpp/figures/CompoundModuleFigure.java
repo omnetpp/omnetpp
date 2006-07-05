@@ -255,8 +255,8 @@ public class CompoundModuleFigure extends ModuleFigure
         // set the location and size using the models helper methods
         // if the siez is specified in the displaystring we should set it as preferred size
         // otherwise getPreferredSize should return the size calculated from the children
-        if (dps.getSize().height > 0 || dps.getSize().width > 0) 
-        	setPreferredSize(dps.getSize());
+        if (dps.getCompoundSize().height > 0 || dps.getCompoundSize().width > 0) 
+        	setPreferredSize(dps.getCompoundSize());
         else 
         	setPreferredSize(null);
         

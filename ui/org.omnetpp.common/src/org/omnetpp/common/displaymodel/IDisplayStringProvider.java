@@ -1,4 +1,5 @@
-package org.omnetpp.ned2.model;
+package org.omnetpp.common.displaymodel;
+
 
 
 

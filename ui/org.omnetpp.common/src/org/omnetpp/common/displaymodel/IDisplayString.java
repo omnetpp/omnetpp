@@ -200,11 +200,16 @@ public interface IDisplayString {
 	public Point getLocation();
 
 	/**
-	 * @return The size of element (in pixels)
+	 * @return The size of submodule (in pixels)
 	 */
 	public Dimension getSize();
 
-    /**
+	/**
+	 * @return The size of compound module (in pixels)
+	 */
+	public Dimension getCompoundSize();
+
+	/**
      * Returns the range converted to pixels
      * @return
      */

@@ -3,6 +3,7 @@ package org.omnetpp.ned2.model;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.omnetpp.common.displaymodel.DisplayString;
 import org.omnetpp.common.displaymodel.IDisplayString.Prop;
 import org.omnetpp.ned2.model.pojo.CompoundModuleNode;
 import org.omnetpp.ned2.model.pojo.ConnectionsNode;
@@ -18,7 +19,7 @@ public class CompoundModuleNodeEx extends CompoundModuleNode
 	// destConns contains all connections where the destmodule is this module
 	protected List<ConnectionNodeEx> destConns = new ArrayList<ConnectionNodeEx>();
 
-	protected CompoundModuleDisplayString displayString = null;
+	protected DisplayString displayString = null;
 	
 	public CompoundModuleNodeEx() {
 		init();
@@ -38,7 +39,7 @@ public class CompoundModuleNodeEx extends CompoundModuleNode
 	public DisplayString getDisplayString() {
 		if (displayString == null)
 			// TODO set the ancestor module correctly
-			displayString = new CompoundModuleDisplayString(this, null,
+			displayString = new DisplayString(this, null,
 									NedElementExUtil.getDisplayString(this));
 		return displayString;
 	}

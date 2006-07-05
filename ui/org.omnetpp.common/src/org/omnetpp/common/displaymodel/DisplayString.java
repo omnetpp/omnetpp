@@ -1,4 +1,4 @@
-package org.omnetpp.ned2.model;
+package org.omnetpp.common.displaymodel;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -7,7 +7,6 @@ import java.util.Vector;
 
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Point;
-import org.omnetpp.common.displaymodel.IDisplayString;
 
 /**
  * This class is responsible for parsing and creating display strings in the correct format.
@@ -19,6 +18,13 @@ import org.omnetpp.common.displaymodel.IDisplayString;
 // FIXME default handling is still not ok. Block size etc is not defaults to -1 if left empty
 public class DisplayString implements IDisplayString {
     
+    // contains the default fallback values for the different tags if a variable is used in that position
+    public static final DisplayString VARIABLE_DEFAULTS 
+        = new DisplayString("i=,,30;i2=,,30;is=40;b=40,40,rect,#8080ff,black,2;t=,t,blue;r=100,,black,1;bgb=-1,-1,grey75,black,2");
+    // contains the default fallback values for the different tags if it is empty
+    public static final DisplayString EMPTY_DEFAULTS 
+        = new DisplayString("i=,,30;i2=,,30;is=40;b=-1,-1,rect,#8080ff,black,2;t=,t,blue;r=,,black,1;bgg=,,,grey;bgb=-1,-1,grey75,black,2");
+
     // hold default values (if specified in derived calsses)
     protected DisplayString variableDefaults = null; 
     protected DisplayString emptyDefaults = null;
@@ -26,10 +32,10 @@ public class DisplayString implements IDisplayString {
     protected boolean notifyEnabled = true;
     // the properties that define the position and width (variables, so we can redefine them in derived
     // classes, and use a different tag (ie. bgp instead of p tag in compound module)
-    protected Prop XPosProp = Prop.X;
-    protected Prop YPosProp = Prop.Y;
-    protected Prop WidthProp = Prop.WIDTH;
-    protected Prop HeightProp = Prop.HEIGHT;
+//    protected Prop XPosProp = Prop.X;
+//    protected Prop YPosProp = Prop.Y;
+//    protected Prop WidthProp = Prop.WIDTH;
+//    protected Prop HeightProp = Prop.HEIGHT;
     
     // the owner of the displaystring
     protected IDisplayStringProvider owner = null;
@@ -151,16 +157,20 @@ public class DisplayString implements IDisplayString {
      * @param container The container's display string used to get scaling value
      * @param value The string to be parsed
      */
-    protected DisplayString(IDisplayStringProvider owner, IDisplayStringProvider ancestor,
+    public DisplayString(IDisplayStringProvider owner, IDisplayStringProvider ancestor,
     		             String value) {
     	this(value);
     	this.owner = owner;
     	this.ancestor = ancestor;
+
     }
 
     protected DisplayString(String value) {
     	if (value != null)
     		set(value);
+
+    	variableDefaults = VARIABLE_DEFAULTS;
+        emptyDefaults = EMPTY_DEFAULTS;
     }
     /**
      * Returns the value of the given tag on the given position
@@ -368,9 +378,11 @@ public class DisplayString implements IDisplayString {
     /* (non-Javadoc)
 	 * @see org.omnetpp.ned2.model.IDisplayString#getScale()
 	 */
-    public float getScale() {
-    	return 1.0f;
-    }
+    // FIXME XXX scaling must be calculated differently for submodule and compound module
+    // submodule's scale should be the same as it's containing compoundmodule scale
+	public float getScale() {
+		return getAsFloatDef(Prop.MODULE_SCALE, 1.0f);
+	}
     
     // helper functions for setting and getting the location and size properties
 	/**
@@ -405,11 +417,8 @@ public class DisplayString implements IDisplayString {
 	 * @see org.omnetpp.ned2.model.IDisplayString#getLocation()
 	 */
     public Point getLocation() {
-    	if (XPosProp == null || YPosProp == null)
-    		return null;
-    	
-        Float x = getAsFloat(XPosProp);
-        Float y = getAsFloat(YPosProp);
+        Float x = getAsFloat(Prop.X);
+        Float y = getAsFloat(Prop.Y);
         // if it's unspecified in any direction we should return a NULL constraint
         if (x == null || y == null)
             return null;
@@ -421,39 +430,33 @@ public class DisplayString implements IDisplayString {
      * @param location Where to place the element (in pixels)
      */
     public void setLocation(Point location) {
-    	if (XPosProp == null || YPosProp == null)
-    		return;
-
     	// disable the notification so we will not send two notify for the two coordinate change
     	boolean tempNotifyState = notifyEnabled;
     	// disable the notification so we will not send two notify for the two coordinate change
     	notifyEnabled = false;
         // if location is not specified, remove the constraint from the display string
         if (location == null) {
-            set(XPosProp, null);
-            set(YPosProp, null);
+            set(Prop.X, null);
+            set(Prop.Y, null);
         } else { 
-            set(XPosProp, String.valueOf(pixel2unit(location.x)));
-            set(YPosProp, String.valueOf(pixel2unit(location.y)));
+            set(Prop.X, String.valueOf(pixel2unit(location.x)));
+            set(Prop.Y, String.valueOf(pixel2unit(location.y)));
         }
         // restore original notify state
     	notifyEnabled = tempNotifyState;
     	// we have explicitly disabled the notification, so we have to send it now manually
     	// be aware that location change always generates an X pos change notification regardless
     	// which coordinate has changed
-    	fireDisplayStringChanged(XPosProp);
+    	fireDisplayStringChanged(Prop.X);
     }
 
     /* (non-Javadoc)
 	 * @see org.omnetpp.ned2.model.IDisplayString#getSize()
 	 */
     public Dimension getSize() {
-    	if (WidthProp == null || HeightProp == null)
-    		return null;
-
-    	int width = unit2pixel(getAsFloatDef(WidthProp, -1.0f));
+    	int width = unit2pixel(getAsFloatDef(Prop.WIDTH, -1.0f));
         width = width > 0 ? width : -1; 
-        int height = unit2pixel(getAsFloatDef(HeightProp, -1.0f));
+        int height = unit2pixel(getAsFloatDef(Prop.HEIGHT, -1.0f));
         height = height > 0 ? height : -1; 
         
         return new Dimension(width, height);
@@ -465,32 +468,70 @@ public class DisplayString implements IDisplayString {
      * @param size
      */
     public void setSize(Dimension size) {
-    	if (WidthProp == null || HeightProp == null)
-    		return;
-
     	// disable the notification so we will not send two notify for the two coordinate change
     	boolean tempNotifyState = notifyEnabled;
     	notifyEnabled = false;
         // if the size is unspecified, remove the size constraint from the model
         if (size == null || size.width < 0 ) 
-            set(WidthProp, null);
+            set(Prop.WIDTH, null);
         else
-            set(WidthProp, String.valueOf(pixel2unit(size.width)));
+            set(Prop.WIDTH, String.valueOf(pixel2unit(size.width)));
 
         // if the size is unspecified, remove the size constraint from the model
         if (size == null || size.height < 0) 
-            set(HeightProp, null);
+            set(Prop.HEIGHT, null);
         else
-            set(HeightProp, String.valueOf(pixel2unit(size.height)));
+            set(Prop.HEIGHT, String.valueOf(pixel2unit(size.height)));
 
         // restore original notify state
     	notifyEnabled = tempNotifyState;
     	// we have explicitly disabled the notification, so we have to send it now manually
     	// be aware that size change always generates an width change notification regardless
     	// which coordinate has changed
-    	fireDisplayStringChanged(WidthProp);
+    	fireDisplayStringChanged(Prop.HEIGHT);
     }
     
+    /**
+     * @return The size of module (pixel) if represented as compound (bgb tag)
+     */
+    public Dimension getCompoundSize() {
+    	int width = unit2pixel(getAsFloatDef(Prop.MODULE_WIDTH, -1.0f));
+        width = width > 0 ? width : -1; 
+        int height = unit2pixel(getAsFloatDef(Prop.MODULE_HEIGHT, -1.0f));
+        height = height > 0 ? height : -1; 
+        
+        return new Dimension(width, height);
+    }
+
+    /**
+     * Converts the size given in pixels to unit based sorage
+     * Sets the size of the element (in pixels)
+     * @param size
+     */
+    public void setCompoundSize(Dimension size) {
+    	// disable the notification so we will not send two notify for the two coordinate change
+    	boolean tempNotifyState = notifyEnabled;
+    	notifyEnabled = false;
+        // if the size is unspecified, remove the size constraint from the model
+        if (size == null || size.width < 0 ) 
+            set(Prop.MODULE_WIDTH, null);
+        else
+            set(Prop.MODULE_WIDTH, String.valueOf(pixel2unit(size.width)));
+
+        // if the size is unspecified, remove the size constraint from the model
+        if (size == null || size.height < 0) 
+            set(Prop.MODULE_HEIGHT, null);
+        else
+            set(Prop.MODULE_HEIGHT, String.valueOf(pixel2unit(size.height)));
+
+        // restore original notify state
+    	notifyEnabled = tempNotifyState;
+    	// we have explicitly disabled the notification, so we have to send it now manually
+    	// be aware that size change always generates an width change notification regardless
+    	// which coordinate has changed
+    	fireDisplayStringChanged(Prop.MODULE_WIDTH);
+    }
+
     /**
      * Sets both the size and the location, but sends out only a SINGLE X position change message.
      * @param loc
@@ -511,7 +552,7 @@ public class DisplayString implements IDisplayString {
     	// which coordinate has changed
     	
     	// if the layout constraint has changed we send out an X coordinate changed event
-    	fireDisplayStringChanged(XPosProp);
+    	fireDisplayStringChanged(Prop.X);
     }
     
     /**

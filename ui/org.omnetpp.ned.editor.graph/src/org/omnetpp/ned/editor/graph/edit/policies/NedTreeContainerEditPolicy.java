@@ -9,7 +9,7 @@ import org.eclipse.gef.commands.UnexecutableCommand;
 import org.eclipse.gef.editpolicies.TreeContainerEditPolicy;
 import org.eclipse.gef.requests.ChangeBoundsRequest;
 import org.eclipse.gef.requests.CreateRequest;
-import org.omnetpp.ned.editor.graph.commands.ReorderPartCommand;
+import org.omnetpp.ned.editor.graph.commands.ReorderCommand;
 import org.omnetpp.ned2.model.NEDElement;
 
 public class NedTreeContainerEditPolicy extends TreeContainerEditPolicy {
@@ -29,7 +29,7 @@ public class NedTreeContainerEditPolicy extends TreeContainerEditPolicy {
               command.add(UnexecutableCommand.INSTANCE);
               return command;
             }
-            command.add(new ReorderPartCommand((NEDElement)insertBeforeEditPart.getModel(), (NEDElement)editPart2move.getModel()));
+            command.add(new ReorderCommand((NEDElement)insertBeforeEditPart.getModel(), (NEDElement)editPart2move.getModel()));
         }
         return command;
     }

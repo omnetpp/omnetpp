@@ -8,14 +8,14 @@ import org.omnetpp.ned2.model.NEDElement;
  * Used by the tree container policy to drag and drop in the outline tree
  * @author rhornig
  */
-public class ReorderPartCommand extends Command {
+public class ReorderCommand extends Command {
 
     private NEDElement node;
     private NEDElement parent;
     private NEDElement oldInsertBeforePos;
     private NEDElement newInsertChildBefore;
 
-    public ReorderPartCommand(NEDElement insertBefore, NEDElement child) {
+    public ReorderCommand(NEDElement insertBefore, NEDElement child) {
         super("Reorder");
         node = child;
         parent = child.getParent();

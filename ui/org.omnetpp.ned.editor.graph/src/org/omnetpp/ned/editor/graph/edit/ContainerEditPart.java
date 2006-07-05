@@ -1,9 +1,9 @@
 package org.omnetpp.ned.editor.graph.edit;
 
 import org.eclipse.gef.editparts.AbstractGraphicalEditPart;
+import org.omnetpp.common.displaymodel.IDisplayStringChangeListener;
+import org.omnetpp.common.displaymodel.IDisplayStringProvider;
 import org.omnetpp.common.displaymodel.IDisplayString.Prop;
-import org.omnetpp.ned2.model.IDisplayStringChangeListener;
-import org.omnetpp.ned2.model.IDisplayStringProvider;
 import org.omnetpp.ned2.model.INEDChangeListener;
 import org.omnetpp.ned2.model.NEDElement;
 

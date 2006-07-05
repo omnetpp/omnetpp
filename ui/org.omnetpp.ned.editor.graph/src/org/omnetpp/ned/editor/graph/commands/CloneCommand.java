@@ -10,7 +10,7 @@ import org.omnetpp.ned2.model.NEDElement;
  * Clones a set of {@link NEDElement} (copy operation)
  * @author rhornig
  */
-public class ClonePartsCommand extends Command {
+public class CloneCommand extends Command {
 
     private List<NEDElement> newNodes;
     // nodes that should be cloned by the command
@@ -27,7 +27,7 @@ public class ClonePartsCommand extends Command {
      * @param insertBefore A sibling in the parent before we should insert the cloned nodes
      *        <code>null</code> should be used to insert at the end of the childlist
      */
-    public ClonePartsCommand(NEDElement parent, NEDElement insertBefore) {
+    public CloneCommand(NEDElement parent, NEDElement insertBefore) {
         super("Clone");
         this.parent = parent;
         this.insertBefore = insertBefore;

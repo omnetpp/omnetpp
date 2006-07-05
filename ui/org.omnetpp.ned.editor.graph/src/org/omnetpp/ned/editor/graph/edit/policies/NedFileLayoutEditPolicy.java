@@ -15,9 +15,10 @@ import org.eclipse.gef.editpolicies.FlowLayoutEditPolicy;
 import org.eclipse.gef.editpolicies.ResizableEditPolicy;
 import org.eclipse.gef.requests.ChangeBoundsRequest;
 import org.eclipse.gef.requests.CreateRequest;
-import org.omnetpp.ned.editor.graph.commands.ClonePartsCommand;
+import org.omnetpp.ned.editor.graph.commands.CloneCommand;
 import org.omnetpp.ned.editor.graph.commands.CreateToplevelComponentCommand;
-import org.omnetpp.ned.editor.graph.commands.ReorderPartCommand;
+import org.omnetpp.ned.editor.graph.commands.ReorderCommand;
+import org.omnetpp.ned.editor.graph.commands.SetCompoundModuleConstraintCommand;
 import org.omnetpp.ned.editor.graph.commands.SetConstraintCommand;
 import org.omnetpp.ned2.model.INamedGraphNode;
 import org.omnetpp.ned2.model.NEDElement;
@@ -55,7 +56,7 @@ public class NedFileLayoutEditPolicy extends FlowLayoutEditPolicy {
 		EditPart iPoint = getInsertionReference(request);
 		NEDElement insertBeforeNode = (iPoint != null) ? (NEDElement)iPoint.getModel() : null;
 		NEDElement parent = (NEDElement)getHost().getModel();
-		ClonePartsCommand cloneCmd = new ClonePartsCommand(parent, insertBeforeNode);
+		CloneCommand cloneCmd = new CloneCommand(parent, insertBeforeNode);
 
 		// iterate through all involved editparts and add their model to the coning list
 		for (GraphicalEditPart currPart : (List<GraphicalEditPart>)request.getEditParts())
@@ -76,7 +77,7 @@ public class NedFileLayoutEditPolicy extends FlowLayoutEditPolicy {
 	protected Command createMoveChildCommand(EditPart movedPart, EditPart wherePart) {
 		NEDElement where = (wherePart != null) ? (NEDElement)wherePart.getModel() : null;
 		NEDElement node = (NEDElement)movedPart.getModel();
-		return new ReorderPartCommand(where, node);
+		return new ReorderCommand(where, node);
 	}
 
 	protected Command getCreateCommand(CreateRequest request) {
@@ -116,12 +117,12 @@ public class NedFileLayoutEditPolicy extends FlowLayoutEditPolicy {
 
         // create the constraint change command 
         INamedGraphNode module = (INamedGraphNode) child.getModel();
-        SetConstraintCommand cmd = new SetConstraintCommand(module);
-        cmd.setConstraint(modelConstraint);
+        SetCompoundModuleConstraintCommand cmd = new SetCompoundModuleConstraintCommand(module);
+        cmd.setSize(modelConstraint.getSize());
 
         // if size constrant is not specified, then remove it from the model too
         // TODO is this needed?
-        if ((modelConstraint.width < 0 || modelConstraint.height < 0) && module.getDisplayString().getSize() == null)
+        if ((modelConstraint.width < 0 || modelConstraint.height < 0) && module.getDisplayString().getCompoundSize() == null)
             cmd.setSize(null);
         
         return cmd;

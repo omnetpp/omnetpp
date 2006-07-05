@@ -1,6 +1,7 @@
-package org.omnetpp.ned2.model;
+package org.omnetpp.common.displaymodel;
 
 import org.omnetpp.common.displaymodel.IDisplayString.Prop;
+
 
 public interface IDisplayStringChangeListener {
 

@@ -3,6 +3,7 @@ package org.omnetpp.ned2.model;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.omnetpp.common.displaymodel.DisplayString;
 import org.omnetpp.common.displaymodel.IDisplayString.Prop;
 import org.omnetpp.ned2.model.pojo.SubmoduleNode;
 
@@ -11,7 +12,7 @@ public class SubmoduleNodeEx extends SubmoduleNode implements INamedGraphNode {
 	protected List<ConnectionNodeEx> srcConns = new ArrayList<ConnectionNodeEx>();
 	// destConns contains all connections where the destmodule is this module
 	protected List<ConnectionNodeEx> destConns = new ArrayList<ConnectionNodeEx>();
-	protected SubmoduleDisplayString displayString = null;
+	protected DisplayString displayString = null;
 	
 	public SubmoduleNodeEx() {
         init();
@@ -31,7 +32,7 @@ public class SubmoduleNodeEx extends SubmoduleNode implements INamedGraphNode {
 	public DisplayString getDisplayString() {
 		// TODO set the ancestor module correctly
 		if (displayString == null)
-			displayString = new SubmoduleDisplayString(this, null, 
+			displayString = new DisplayString(this, null, 
 												NedElementExUtil.getDisplayString(this));
 		return displayString;
 	}

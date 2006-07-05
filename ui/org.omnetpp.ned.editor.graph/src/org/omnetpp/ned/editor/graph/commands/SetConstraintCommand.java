@@ -7,7 +7,7 @@ import org.eclipse.gef.commands.Command;
 import org.omnetpp.ned2.model.INamedGraphNode;
 
 /**
- * Change the size and location of the element
+ * Change the size and location of the submodule
  * @author rhornig
  *
  */

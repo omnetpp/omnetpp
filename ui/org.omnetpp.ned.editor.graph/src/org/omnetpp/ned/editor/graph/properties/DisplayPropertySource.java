@@ -8,7 +8,7 @@ import org.eclipse.ui.views.properties.IPropertyDescriptor;
 import org.eclipse.ui.views.properties.PropertyDescriptor;
 import org.eclipse.ui.views.properties.TextPropertyDescriptor;
 import org.omnetpp.common.color.ColorFactory;
-import org.omnetpp.ned2.model.DisplayString;
+import org.omnetpp.common.displaymodel.DisplayString;
 import org.omnetpp.ned2.model.NEDElement;
 
 //TODO Colors cannot be edited by hand. A derived ColorCellEditor is required
