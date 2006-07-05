@@ -28,7 +28,11 @@ public interface IRuntimeModule {
 	
 	public List<RuntimeModule> getSubmodules();
 	
-    IRuntimeModule getSubmodule(String name);
+    public IRuntimeModule getSubmodule(String name);
 
-    IRuntimeModule getSubmodule(String name, int index);
+    public  IRuntimeModule getSubmodule(String name, int index);
+    
+    public int getNumGates();
+    
+    public IRuntimeGate getGate(int i); 
 }

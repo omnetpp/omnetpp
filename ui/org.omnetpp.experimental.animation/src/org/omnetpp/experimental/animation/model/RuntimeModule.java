@@ -15,6 +15,7 @@ public class RuntimeModule implements IRuntimeModule {
 	private String displayString;
 	private String backgroundDisplayString;
 	private List<RuntimeModule> submodules;
+	private List<RuntimeGate> gates;
 
 	public RuntimeModule() {
 	}
@@ -114,19 +115,32 @@ public class RuntimeModule implements IRuntimeModule {
 		this.id = moduleId;
 	}
 
-	public IRuntimeModule getSubmodule(String name) {
+	public RuntimeModule getSubmodule(String name) {
 		//FIXME use more efficient data structure to avoid linear search! e.g. map of submodule vectors etc
-		for (IRuntimeModule m : submodules)
+		for (RuntimeModule m : submodules)
 			if (name.equals(m.getName()) && m.getSize()<0)
 				return m;
 		return null;
 	}
 
-	public IRuntimeModule getSubmodule(String name, int index) {
+	public RuntimeModule getSubmodule(String name, int index) {
 		//FIXME use more efficient data structure to avoid linear search! e.g. map of submodule vectors etc
-		for (IRuntimeModule m : submodules)
+		for (RuntimeModule m : submodules)
 			if (name.equals(m.getName()) && m.getIndex()==index)
 				return m;
 		return null;
+	}
+
+	//TODO removeGate, more efficient storage, etc
+	public void addGate(RuntimeGate gate) {
+		gates.add(gate);
+	}
+	
+	public RuntimeGate getGate(int i) {
+		return gates.get(index);
+	}
+
+	public int getNumGates() {
+		return gates.size();
 	}
 }
