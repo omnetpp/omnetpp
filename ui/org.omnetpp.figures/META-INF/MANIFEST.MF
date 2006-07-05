@@ -1,0 +1,11 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: OMNeT++ Figures Plug-in
+Bundle-SymbolicName: org.omnetpp.figures
+Bundle-Version: 4.0.0
+Bundle-Localization: plugin
+Require-Bundle: org.eclipse.draw2d,
+ org.eclipse.gef,
+ org.omnetpp.common
+Export-Package: org.omnetpp.figures,
+ org.omnetpp.figures.properties

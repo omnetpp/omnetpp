@@ -7,7 +7,7 @@ import org.eclipse.gef.ConnectionEditPart;
 import org.eclipse.gef.GraphicalEditPart;
 import org.eclipse.gef.editpolicies.ConnectionEndpointEditPolicy;
 import org.omnetpp.common.color.ColorFactory;
-import org.omnetpp.ned.editor.graph.figures.ConnectionFigure;
+import org.omnetpp.figures.ConnectionFigure;
 import org.omnetpp.ned.editor.graph.misc.NedConnectionEndHandle;
 import org.omnetpp.ned.editor.graph.misc.NedConnectionStartHandle;
 

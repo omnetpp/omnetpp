@@ -15,8 +15,9 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.core.resources,
  org.eclipse.gef,
  org.omnetpp.common,
- org.omnetpp.ned2.model,
- org.omnetpp.resources
+ org.omnetpp.resources,
+ org.omnetpp.figures,
+ org.omnetpp.ned2.model
 Eclipse-LazyStart: true
 Export-Package: org.omnetpp.ned.editor.graph,
  org.omnetpp.ned.editor.graph.actions,
@@ -24,8 +25,6 @@ Export-Package: org.omnetpp.ned.editor.graph,
  org.omnetpp.ned.editor.graph.dnd,
  org.omnetpp.ned.editor.graph.edit,
  org.omnetpp.ned.editor.graph.edit.policies,
- org.omnetpp.ned.editor.graph.figures,
- org.omnetpp.ned.editor.graph.figures.properties,
  org.omnetpp.ned.editor.graph.misc,
  org.omnetpp.ned.editor.graph.properties,
  org.omnetpp.ned.editor.graph.wizards
