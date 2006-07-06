@@ -1,16 +1,16 @@
 package org.omnetpp.scave2.actions;
 
+import java.util.List;
+
+import org.eclipse.emf.common.command.Command;
 import org.eclipse.emf.edit.command.AddCommand;
-import org.eclipse.emf.edit.ui.provider.AdapterFactoryContentProvider;
-import org.eclipse.emf.edit.ui.provider.AdapterFactoryLabelProvider;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.window.Window;
-import org.eclipse.ui.dialogs.ListDialog;
-import org.omnetpp.scave.model.Add;
+import org.omnetpp.scave.model.Analysis;
 import org.omnetpp.scave.model.Dataset;
 import org.omnetpp.scave2.editors.ScaveEditor;
 import org.omnetpp.scave2.editors.datatable.FilteredDataPanel;
-import org.omnetpp.scave2.model.FilterParams;
+import org.omnetpp.scave2.editors.ui.AddToDatasetDialog;
 import org.omnetpp.scave2.model.ScaveModelUtil;
 
 /**
@@ -26,27 +26,46 @@ public class AddToDatasetAction extends AbstractScaveAction {
 	@Override
 	protected void doRun(ScaveEditor editor, IStructuredSelection selection) {
 		FilteredDataPanel activePanel = editor.getBrowseDataPage().getActivePanel();
-		//FIXME tomi: mi van ha activePanel==null???
-		ListDialog dialog = new ListDialog(editor.getSite().getShell());
-		dialog.setInput(editor.getAnalysis().getDatasets());
-		dialog.setContentProvider(new AdapterFactoryContentProvider(editor.getAdapterFactory()));
-		dialog.setLabelProvider(new AdapterFactoryLabelProvider(editor.getAdapterFactory()));
-		dialog.setMessage("Select dataset:");
-		dialog.setTitle("Add to dataset");
+		List datasets = getDatasets(editor);
+		if (activePanel == null || datasets == null)
+			return;
+
+		AddToDatasetDialog dialog = new AddToDatasetDialog(editor.getSite().getShell(), (Dataset[])datasets.toArray());
+		dialog.setFilterParams(activePanel.getFilterParams());
+		dialog.setFilterHints(activePanel.getFilterHints());
+		
 		int status = dialog.open();
 		if (status == Window.OK) {
-			Object[] result = dialog.getResult();
-			if (result != null && result.length == 1) {
-				Dataset dataset = (Dataset)result[0];
-				FilterParams params = activePanel.getFilterParams();
-				Add add = ScaveModelUtil.createAdd(params);
-				editor.executeCommand(new AddCommand(editor.getEditingDomain(), dataset.getItems(), add));
+			Dataset dataset = dialog.getSelectedDataset();
+			if (dataset != null) {
+				Command command = dialog.useFilter() ?
+					new AddCommand(
+							editor.getEditingDomain(),
+							dataset.getItems(),
+							ScaveModelUtil.createAdd(dialog.getFilterParams())) :
+					new AddCommand(
+							editor.getEditingDomain(),
+							dataset.getItems(),
+							ScaveModelUtil.createAdds(
+									activePanel.getTable().getSelectedItems(),
+									dialog.getRunIdKind()));
+				editor.executeCommand(command);
 			}
 		}
 	}
 
 	@Override
 	protected boolean isApplicable(ScaveEditor editor, IStructuredSelection selection) {
-		return editor.getBrowseDataPage().getActivePanel() != null;
+		return editor.getBrowseDataPage().getActivePanel() != null && getDatasets(editor) != null;
+	}
+	
+	private List getDatasets(ScaveEditor editor) {
+		Analysis analysis = editor.getAnalysis();
+		if (analysis.getDatasets() != null &&
+			analysis.getDatasets().getDatasets() != null &&
+			analysis.getDatasets().getDatasets().size() > 0)
+			return analysis.getDatasets().getDatasets();
+		else
+			return null;
 	}
 }

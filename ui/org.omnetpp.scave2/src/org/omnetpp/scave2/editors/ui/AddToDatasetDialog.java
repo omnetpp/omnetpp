@@ -3,26 +3,28 @@ package org.omnetpp.scave2.editors.ui;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.swt.widgets.Text;
+import org.omnetpp.scave.model.Dataset;
 
-public class CreateDatasetDialog extends DatasetDialog {
-	
-	private String datasetName;
-	private Text datasetNameText;
+public class AddToDatasetDialog extends DatasetDialog {
 
-	public CreateDatasetDialog(Shell parentShell, String dialogTitle) {
-		super(parentShell, dialogTitle);
+	private Dataset[] datasets;
+	private Dataset selectedDataset;
+	private Combo datasetCombo;
+
+	public AddToDatasetDialog(Shell parentShell, Dataset[] datasets) {
+		super(parentShell, "Add to dataset");
+		this.datasets = datasets;
 	}
 	
-	public String getDatasetName() {
-		return datasetName;
+	public Dataset getSelectedDataset() {
+		return selectedDataset;
 	}
 	
-
 	@Override
 	protected Control createDialogArea(Composite parent) {
 		Composite composite = (Composite)super.createDialogArea(parent);
@@ -34,18 +36,27 @@ public class CreateDatasetDialog extends DatasetDialog {
 		gridData1.horizontalAlignment = org.eclipse.swt.layout.GridData.FILL;
 		gridData1.grabExcessHorizontalSpace = true;
 		Label datasetNameLabel = new Label(composite, SWT.NONE);
-		datasetNameLabel.setText("Name:");
-		datasetNameText = new Text(composite, SWT.BORDER);
-		datasetNameText.setLayoutData(gridData1);
-		if (getFilterParams() != null)
-			datasetNameText.setText(getFilterParams().toString());
+		datasetNameLabel.setText("Dataset:");
+		datasetCombo = new Combo(composite, SWT.DROP_DOWN | SWT.READ_ONLY);
+		datasetCombo.setLayoutData(gridData1);
+		datasetCombo.setItems(getDatasetNames());
+		datasetCombo.select(0);
 		Composite panel = createDataItemsPanel(composite);
 		panel.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 2, 1));
 		return composite;
 	}
+	
+	private String[] getDatasetNames() {
+		String[] names = new String[datasets.length];
+		for (int i = 0; i < names.length; ++i)
+			names[i] = datasets[i].getName();
+		return names;
+	}
 
 	protected void applyChanges() {
 		super.applyChanges();
-		datasetName = datasetNameText.getText();
+		int index = datasetCombo.getSelectionIndex();
+		if (index >= 0)
+			selectedDataset = datasets[index];
 	}
 }

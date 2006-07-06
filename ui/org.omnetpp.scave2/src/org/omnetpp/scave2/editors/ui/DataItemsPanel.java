@@ -8,21 +8,19 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
+import org.omnetpp.scave2.model.FilterHints;
 import org.omnetpp.scave2.model.FilterParams;
 import org.omnetpp.scave2.model.ScaveModelUtil.RunIdKind;
 
 /**
- * This panel displayed in the CreateDatasetDialog.
+ * This panel displayed in the DatasetDialog.
  * 
- * TODO: merge with CreateDatasetDialog
- * TODO: fill combos with filter hints
+ * TODO: merge with DatasetDialog
  *
  * @author tomi
  */
-public class CreateDatasetDialogArea extends Composite {
+public class DataItemsPanel extends Composite {
 
-	private Label datasetNameLabel = null;
-	private Text datasetNameText = null;
 	private Group group = null;
 	private Button useFilterRadio = null;
 	private Button useSelectionRadio = null;
@@ -32,13 +30,9 @@ public class CreateDatasetDialogArea extends Composite {
 	private Button useReplicationRadio = null;
 	private Label label = null;
 	
-	public CreateDatasetDialogArea(Composite parent, int style) {
+	public DataItemsPanel(Composite parent, int style) {
 		super(parent, style);
 		initialize();
-	}
-	
-	public Text getDatasetNameText() {
-		return datasetNameText;
 	}
 	
 	public boolean useFilter() {
@@ -57,18 +51,15 @@ public class CreateDatasetDialogArea extends Composite {
 	public void setFilterParams(FilterParams params) {
 		filterParamsPanel.setFilterParams(params);
 	}
+	
+	public void setFilterHints(FilterHints hints) {
+		filterParamsPanel.setFilterHints(hints);
+	}
 
 	private void initialize() {
-		GridData gridData1 = new GridData();
-		gridData1.horizontalAlignment = org.eclipse.swt.layout.GridData.FILL;
-		gridData1.grabExcessHorizontalSpace = true;
 		GridLayout gridLayout = new GridLayout();
 		gridLayout.numColumns = 2;
 		gridLayout.verticalSpacing = 20;
-		datasetNameLabel = new Label(this, SWT.NONE);
-		datasetNameLabel.setText("Name:");
-		datasetNameText = new Text(this, SWT.BORDER);
-		datasetNameText.setLayoutData(gridData1);
 		this.setLayout(gridLayout);
 		createGroup();
 	}

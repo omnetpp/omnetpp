@@ -1,5 +1,9 @@
 package org.omnetpp.scave2.model;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
 import org.eclipse.emf.ecore.EObject;
 import org.omnetpp.scave.engine.ResultFile;
 import org.omnetpp.scave.engine.ResultItem;
@@ -33,8 +37,7 @@ public class ScaveModelUtil {
 		Dataset dataset = ScaveModelFactory.eINSTANCE.createDataset();
 		dataset.setName(name);
 		dataset.setType(type);
-		for (ResultItem item : items)
-			dataset.getItems().add(createAdd(item, id));
+		dataset.getItems().addAll(createAdds(items, id));
 		return dataset;
 	}
 	
@@ -54,6 +57,13 @@ public class ScaveModelUtil {
 		add.setModuleNamePattern(params.getModuleNamePattern());
 		add.setNamePattern(params.getDataNamePattern());
 		return add;
+	}
+	
+	public static Collection<Add> createAdds(ResultItem[] items, RunIdKind id) {
+		List<Add> adds = new ArrayList<Add>(items.length);
+		for (ResultItem item : items)
+			adds.add(createAdd(item, id));
+		return adds;
 	}
 	
 	public static Add createAdd(ResultItem item, RunIdKind id) {

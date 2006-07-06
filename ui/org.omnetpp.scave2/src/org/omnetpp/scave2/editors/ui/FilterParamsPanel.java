@@ -6,6 +6,7 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
+import org.omnetpp.scave2.model.FilterHints;
 import org.omnetpp.scave2.model.FilterParams;
 
 /**
@@ -90,9 +91,23 @@ public class FilterParamsPanel extends Composite {
 		moduleCombo.setText(params.getModuleNamePattern());
 		dataCombo.setText(params.getDataNamePattern());
 	}
+	
+	public void setFilterHints(FilterHints hints) {
+		fileCombo.setItems(hints.getFileNameHints());
+		runCombo.setItems(hints.getRunNameHints());
+		experimentCombo.setItems(hints.getExperimentNameHints());
+		measurementCombo.setItems(hints.getMeasurementNameHints());
+		replicationCombo.setItems(hints.getReplicationNameHints());
+		moduleCombo.setItems(hints.getModuleNameHints());
+		dataCombo.setItems(hints.getDataNameHints());
+	}
 
 	private void initialize() {
 		GridLayout gridLayout = new GridLayout();
+		gridLayout.verticalSpacing = 5;
+		gridLayout.marginHeight = 5;
+		gridLayout.marginWidth = 5;
+		gridLayout.horizontalSpacing = 0;
 		this.setLayout(gridLayout);
 		createComposite1();
 		createComposite2();
@@ -112,6 +127,8 @@ public class FilterParamsPanel extends Composite {
 		gridData11.horizontalAlignment = org.eclipse.swt.layout.GridData.FILL;
 		GridLayout gridLayout2 = new GridLayout();
 		gridLayout2.numColumns = 4;
+		gridLayout2.marginWidth = 0;
+		gridLayout2.marginHeight = 0;
 		GridData gridData2 = new GridData();
 		gridData2.horizontalAlignment = org.eclipse.swt.layout.GridData.FILL;
 		gridData2.grabExcessHorizontalSpace = true;
@@ -147,6 +164,8 @@ public class FilterParamsPanel extends Composite {
 		gridData6.horizontalAlignment = org.eclipse.swt.layout.GridData.FILL;
 		GridLayout gridLayout3 = new GridLayout();
 		gridLayout3.numColumns = 6;
+		gridLayout3.marginWidth = 0;
+		gridLayout3.marginHeight = 0;
 		composite2 = new Composite(this, SWT.NONE);
 		composite2.setLayout(gridLayout3);
 		composite2.setLayoutData(gridData6);
@@ -180,6 +199,8 @@ public class FilterParamsPanel extends Composite {
 		gridData10.horizontalAlignment = org.eclipse.swt.layout.GridData.FILL;
 		GridLayout gridLayout4 = new GridLayout();
 		gridLayout4.numColumns = 4;
+		gridLayout4.marginWidth = 0;
+		gridLayout4.marginHeight = 0;
 		composite3 = new Composite(this, SWT.NONE);
 		composite3.setLayout(gridLayout4);
 		composite3.setLayoutData(gridData10);

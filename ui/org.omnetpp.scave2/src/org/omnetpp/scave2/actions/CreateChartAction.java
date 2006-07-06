@@ -1,15 +1,13 @@
 package org.omnetpp.scave2.actions;
 
 import org.eclipse.emf.edit.command.AddCommand;
-import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.window.Window;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.Dataset;
-import org.omnetpp.scave.model.DatasetType;
 import org.omnetpp.scave2.editors.ScaveEditor;
 import org.omnetpp.scave2.editors.datatable.FilteredDataPanel;
-import org.omnetpp.scave2.model.FilterParams;
+import org.omnetpp.scave2.editors.ui.CreateDatasetDialog;
 import org.omnetpp.scave2.model.ScaveModelUtil;
 
 /**
@@ -25,17 +23,26 @@ public class CreateChartAction extends AbstractScaveAction {
 	@Override
 	protected void doRun(ScaveEditor editor, IStructuredSelection selection) {
 		FilteredDataPanel activePanel = editor.getBrowseDataPage().getActivePanel();
-		InputDialog dialog = new InputDialog(editor.getSite().getShell(),
-				"Create chart", "Dataset name:", "", null);
+		if (activePanel == null)
+			return;
+		
+		CreateDatasetDialog dialog = new CreateDatasetDialog(editor.getSite().getShell(), "Create chart");
+		
 		int result = dialog.open();
 		if (result == Window.OK) {
-			String name = dialog.getValue();
-			DatasetType type = activePanel == editor.getBrowseDataPage().getScalarsPanel() ?
-					DatasetType.SCALAR_LITERAL : DatasetType.VECTOR_LITERAL; //XXX histogram
-			FilterParams params = activePanel.getFilterParams();
-			Dataset dataset = ScaveModelUtil.createDataset(name, type, params);
-			Chart chart = ScaveModelUtil.createChart("Chart of " + name);
+			Dataset dataset = dialog.useFilter() ?
+				ScaveModelUtil.createDataset(
+						dialog.getDatasetName(),
+						activePanel.getTable().getDataType(),
+						dialog.getFilterParams()) :
+				ScaveModelUtil.createDataset(
+						dialog.getDatasetName(),
+						activePanel.getTable().getDataType(),
+						activePanel.getTable().getSelectedItems(),
+						dialog.getRunIdKind());
+			Chart chart = ScaveModelUtil.createChart("Chart of " + dialog.getDatasetName());
 			dataset.getItems().add(chart);
+			
 			editor.executeCommand(new AddCommand(
 					editor.getEditingDomain(),
 					editor.getAnalysis().getDatasets().getDatasets(),

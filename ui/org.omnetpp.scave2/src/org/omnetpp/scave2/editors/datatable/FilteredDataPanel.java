@@ -20,6 +20,8 @@ import org.omnetpp.scave.engine.RunList;
 import org.omnetpp.scave.engine.StringMap;
 import org.omnetpp.scave.engine.StringVector;
 import org.omnetpp.scave.engineext.ResultFileManagerEx;
+import org.omnetpp.scave.model.DatasetType;
+import org.omnetpp.scave2.model.FilterHints;
 import org.omnetpp.scave2.model.FilterParams;
 
 /**
@@ -59,7 +61,7 @@ public class FilteredDataPanel extends Composite {
 	public DataTable getTable() {
 		return table;
 	}
-
+	
 	public void setIDList(IDList idlist) {
 		this.idlist = idlist;
 		updateFilterCombos();
@@ -108,28 +110,43 @@ public class FilteredDataPanel extends Composite {
 	}
 
 	protected void updateFilterCombos() {
+		filterPanel.setFilterHints(getFilterHints());
+	}
+	
+	public FilterHints getFilterHints() {
+		FilterHints hints = new FilterHints();
 		ResultFileManagerEx manager = table.getResultFileManager();
 		ResultFileList fileList = manager.getUniqueFiles(idlist);
-		String[] fileNames = new String[(int)fileList.size() + 1];
-		fileNames[0] = "*";
-		for (int i = 0; i < fileList.size(); ++i)
-			fileNames[i+1] = fileList.get(i).getFilePath();
 		RunList runList = manager.getUniqueRuns(idlist);
-		StringVector runNames = new StringVector();
-		runNames.add("*");
+		
+		hints.setFileNameHints(getFileNameFilterHints(fileList));
+		hints.setRunNameHints(getRunNameFilterHints(runList));
+		hints.setModuleNameHints(manager.getModuleFilterHints(idlist).toArray());
+		hints.setDataNameHints(manager.getNameFilterHints(idlist).toArray());
+		hints.setExperimentNameHints(getFilterHintsForRunAttribute(runList, EXPERIMENT));
+		hints.setMeasurementNameHints(getFilterHintsForRunAttribute(runList, MEASUREMENT));
+		hints.setReplicationNameHints(getFilterHintsForRunAttribute(runList, REPLICATION));
+		
+		return hints;
+	}
+	
+	private static String[] getFileNameFilterHints(ResultFileList fileList) {
+		String[] hints = new String[(int)fileList.size() + 1];
+		hints[0] = "*";
+		for (int i = 0; i < fileList.size(); ++i)
+			hints[i+1] = fileList.get(i).getFilePath();
+		return hints;
+	}
+	
+	private static String[] getRunNameFilterHints(RunList runList) {
+		StringVector hints = new StringVector();
+		hints.add("*");
 		for (int i = 0; i < runList.size(); ++i) {
 			String runName = runList.get(i).getRunName();
 			if (runName.length() > 0)
-				runNames.add(runName);
+				hints.add(runName);
 		}
-		
-		filterPanel.getFileNameCombo().setItems(fileNames);
-		filterPanel.getRunNameCombo().setItems(runNames.toArray());
-		filterPanel.getModuleNameCombo().setItems(manager.getModuleFilterHints(idlist).toArray());
-		filterPanel.getNameCombo().setItems(manager.getNameFilterHints(idlist).toArray());
-		filterPanel.getExperimentNameCombo().setItems(getFilterHintsForRunAttribute(runList, EXPERIMENT));
-		filterPanel.getMeasurementNameCombo().setItems(getFilterHintsForRunAttribute(runList, MEASUREMENT));
-		filterPanel.getReplicationNameCombo().setItems(getFilterHintsForRunAttribute(runList, REPLICATION));
+		return hints.toArray();
 	}
 	
 	private String[] getFilterHintsForRunAttribute(RunList runList, String attrName) {

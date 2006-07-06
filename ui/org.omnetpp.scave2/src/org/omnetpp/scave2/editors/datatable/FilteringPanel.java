@@ -10,6 +10,7 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.omnetpp.scave2.editors.ui.FilterParamsPanel;
+import org.omnetpp.scave2.model.FilterHints;
 import org.omnetpp.scave2.model.FilterParams;
 
 /**
@@ -73,6 +74,10 @@ public class FilteringPanel extends Composite {
 	
 	public void setFilterParams(FilterParams params) {
 		leftPanel.setFilterParams(params);
+	}
+	
+	public void setFilterHints(FilterHints hints) {
+		leftPanel.setFilterHints(hints);
 	}
 
 	private void initialize() {

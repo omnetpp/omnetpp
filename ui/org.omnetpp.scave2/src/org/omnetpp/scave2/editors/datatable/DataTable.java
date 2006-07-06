@@ -13,6 +13,7 @@ import org.omnetpp.scave.engine.ResultItem;
 import org.omnetpp.scave.engine.ScalarResult;
 import org.omnetpp.scave.engine.VectorResult;
 import org.omnetpp.scave.engineext.ResultFileManagerEx;
+import org.omnetpp.scave.model.DatasetType;
 
 /**
  * This is a preconfigured VIRTUAL table, which displays a list of
@@ -67,6 +68,16 @@ public class DataTable extends Table {
 	public int getType() {
 		return type;
 	}
+	
+	public DatasetType getDataType() {
+		switch (type) {
+		case DataTable.TYPE_SCALAR: return DatasetType.SCALAR_LITERAL;
+		case DataTable.TYPE_VECTOR: return DatasetType.VECTOR_LITERAL;
+		case DataTable.TYPE_HISTOGRAM: return DatasetType.HISTOGRAM_LITERAL;
+		}
+		return null; // XXX
+	}
+	
 
 	public void setResultFileManager(ResultFileManagerEx manager) {
 		this.manager = manager;

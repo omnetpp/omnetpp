@@ -64,7 +64,7 @@ public class BrowseDataPage extends ScaveEditorPage {
 		else
 			return null;
 	}
-	
+
 	private void initialize() {
 		// set up UI
 		setPageTitle("Browse data");
