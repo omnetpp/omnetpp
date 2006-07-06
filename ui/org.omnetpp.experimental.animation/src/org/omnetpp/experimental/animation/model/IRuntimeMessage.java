@@ -1,6 +1,25 @@
 package org.omnetpp.experimental.animation.model;
 
 public interface IRuntimeMessage {
+    /**
+     * Returns message kind.
+     */
+    public int getKind();
+
+    /**
+     * Returns message priority.
+     */
+    public int getPriority();
+
+    /**
+     * Returns message length (bits).
+     */
+    public long getLength();
+
+    /**
+     * Returns true if bit error flag is set, false otherwise.
+     */
+    public boolean hasBitError();
 
 	/**
 	 * Return true if message was posted by scheduleAt().

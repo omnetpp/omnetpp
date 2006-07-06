@@ -5,7 +5,7 @@ import org.omnetpp.experimental.animation.model.IRuntimeMessage;
 public class ReplayMessage implements IRuntimeMessage {
 	private String name;
 
-	private int msgkind;
+	private int kind;
 	private int priority;
 	private long length;
 	private boolean error;
@@ -18,52 +18,95 @@ public class ReplayMessage implements IRuntimeMessage {
 	private int arrivalModuleId, arrivalGateId;
 	private double sendingTime, arrivalTime;
 
-	/* (non-Javadoc)
-	 * @see org.omnetpp.experimental.animation.replay.model.Buu#isSelfMessage()
-	 */
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public boolean hasBitError() {
+		return error;
+	}
+
+	public void setBitError(boolean error) {
+		this.error = error;
+	}
+
+	public long getLength() {
+		return length;
+	}
+
+	public void setLength(long length) {
+		this.length = length;
+	}
+
+	public int getKind() {
+		return kind;
+	}
+
+	public void setMsgkind(int msgkind) {
+		this.kind = msgkind;
+	}
+
+	public int getPriority() {
+		return priority;
+	}
+
+	public void setPriority(int priority) {
+		this.priority = priority;
+	}
+
 	public boolean isSelfMessage() {
 		return arrivalGateId==-1;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.omnetpp.experimental.animation.replay.model.Buu#getSenderModuleId()
-	 */
 	public int getSenderModuleId() {
 		return senderModuleId;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.omnetpp.experimental.animation.replay.model.Buu#getSenderGateId()
-	 */
 	public int getSenderGateId() {
 		return senderGateId;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.omnetpp.experimental.animation.replay.model.Buu#getArrivalModuleId()
-	 */
 	public int getArrivalModuleId() {
 		return arrivalModuleId;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.omnetpp.experimental.animation.replay.model.Buu#getArrivalGateId()
-	 */
 	public int getArrivalGateId() {
 		return arrivalGateId;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.omnetpp.experimental.animation.replay.model.Buu#getSendingTime()
-	 */
 	public double getSendingTime()  {
 		return sendingTime;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.omnetpp.experimental.animation.replay.model.Buu#getArrivalTime()
-	 */
 	public double getArrivalTime() {
 		return arrivalTime;
+	}
+
+	public void setArrivalGateId(int arrivalGateId) {
+		this.arrivalGateId = arrivalGateId;
+	}
+
+	public void setArrivalModuleId(int arrivalModuleId) {
+		this.arrivalModuleId = arrivalModuleId;
+	}
+
+	public void setArrivalTime(double arrivalTime) {
+		this.arrivalTime = arrivalTime;
+	}
+
+	public void setSenderGateId(int senderGateId) {
+		this.senderGateId = senderGateId;
+	}
+
+	public void setSenderModuleId(int senderModuleId) {
+		this.senderModuleId = senderModuleId;
+	}
+
+	public void setSendingTime(double sendingTime) {
+		this.sendingTime = sendingTime;
 	}
 }
