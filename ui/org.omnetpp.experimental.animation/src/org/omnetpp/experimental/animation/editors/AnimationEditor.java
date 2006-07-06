@@ -17,6 +17,7 @@ import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.part.EditorPart;
+import org.omnetpp.experimental.animation.live.LiveAnimationController;
 import org.omnetpp.experimental.animation.replay.ReplayAnimationController;
 import org.omnetpp.experimental.animation.widgets.AnimationCanvas;
 
@@ -154,7 +155,8 @@ public class AnimationEditor extends EditorPart {
 	    AnimationCanvas canvas = new AnimationCanvas(parent, SWT.NONE);
 		canvas.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		
-		animationController = new ReplayAnimationController(canvas);
+//		animationController = new ReplayAnimationController(canvas);
+		animationController = new LiveAnimationController(canvas);
 	}
 
 	@Override

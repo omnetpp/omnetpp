@@ -24,12 +24,12 @@ public class LabelAnimation extends AbstractAnimationPrimitive {
 						  String text,
 						  double beginSimulationTime,
 						  double endSimulationTime,
-						  Point pStart,
-						  Point pEnd) {
+						  Point startPosition,
+						  Point endPosition) {
 		super(controller, beginSimulationTime);
 		this.endSimulationTime = endSimulationTime;
-		this.startPosition = pStart;
-		this.endPosition = pEnd;
+		this.startPosition = startPosition;
+		this.endPosition = endPosition;
 		this.label = new Label(text);
 		this.changeColorTimer = new Timer(10, true, false) {
 			public void run() {

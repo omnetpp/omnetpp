@@ -11,6 +11,8 @@ public abstract class AbstractAnimationPrimitive implements IAnimationPrimitive 
 	
 	protected double beginSimulationTime;
 	
+	protected boolean shown;
+	
 	public AbstractAnimationPrimitive(ReplayAnimationController controller, double beginSimulationTime) {
 		this.animationController = controller;
 		this.beginSimulationTime = beginSimulationTime;
@@ -50,11 +52,15 @@ public abstract class AbstractAnimationPrimitive implements IAnimationPrimitive 
 	protected void showFigure(IFigure figure) {
 		if (figure.getParent() == null)
 			addFigure(figure);
+
+		shown = true;
 	}
 
 	protected void hideFigure(IFigure figure) {
 		if (figure.getParent() != null)
 			removeFigure(figure);
+
+		shown = false;
 	}
 
 	protected void setConstraint(IFigure figure, Rectangle constraint) {

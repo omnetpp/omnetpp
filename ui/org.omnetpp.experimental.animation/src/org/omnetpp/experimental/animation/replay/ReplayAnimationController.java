@@ -80,6 +80,8 @@ public class ReplayAnimationController {
 		this.timerQueue = new TimerQueue();
 		this.simulationTimer = new SimulationTimer();
 		this.stopSimulationTime = -1;
+		this.simulation = createSimulation();
+
 		timerQueue.addTimer(simulationTimer);
 	}
 	
