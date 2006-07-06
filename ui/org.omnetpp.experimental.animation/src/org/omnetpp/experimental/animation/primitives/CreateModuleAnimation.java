@@ -3,6 +3,7 @@ package org.omnetpp.experimental.animation.primitives;
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.Rectangle;
+import org.omnetpp.common.displaymodel.DisplayString;
 import org.omnetpp.experimental.animation.controller.IAnimationController;
 import org.omnetpp.experimental.animation.model.GateId;
 import org.omnetpp.figures.CompoundModuleFigure;
@@ -27,6 +28,7 @@ public class CreateModuleAnimation extends AbstractAnimationPrimitive {
 		this.moduleId = moduleId;
 		this.location = location;
 		this.moduleFigure = new CompoundModuleFigure();
+		((CompoundModuleFigure)moduleFigure).setDisplayString(new DisplayString(null,null,"bgi=background/hungary,stretch"));
 	}
 	
 	public void gotoSimulationTime(double t) {

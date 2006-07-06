@@ -3,6 +3,8 @@ package org.omnetpp.experimental.animation.model;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.omnetpp.common.displaymodel.DisplayString;
+
 
 public class RuntimeModule implements IRuntimeModule {
 	
@@ -12,8 +14,7 @@ public class RuntimeModule implements IRuntimeModule {
 	private int size;
 	private RuntimeModule parent;
 	private String typeName;
-	private String displayString;
-	private String backgroundDisplayString;
+	private DisplayString displayString;
 	private List<RuntimeModule> submodules;
 	private List<RuntimeGate> gates;
 
@@ -92,19 +93,11 @@ public class RuntimeModule implements IRuntimeModule {
 		return submodules;
 	}
 
-	public String getDisplayString() {
+	public DisplayString getDisplayString() {
 		return displayString;
 	}
-	public void setDisplayString(String displayString) {
+	public void setDisplayString(DisplayString displayString) {
 		this.displayString = displayString;
-	}
-
-	public String getBackgroundDisplayString() {
-		return backgroundDisplayString;
-	}
-
-	public void setBackgroundDisplayString(String backgroundDisplayString) {
-		this.backgroundDisplayString = backgroundDisplayString;
 	}
 
 	public int getId() {

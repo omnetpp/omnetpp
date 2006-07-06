@@ -2,6 +2,8 @@ package org.omnetpp.experimental.animation.model;
 
 import java.util.List;
 
+import org.omnetpp.common.displaymodel.DisplayString;
+
 public interface IRuntimeModule {
 	
 	public int getId();
@@ -20,9 +22,7 @@ public interface IRuntimeModule {
 
 	public String getTypeName();
 
-	public String getDisplayString(); //XXX
-
-	public String getBackgroundDisplayString(); //XXX
+	public DisplayString getDisplayString();
 
 	public RuntimeModule getParentModule();
 	
