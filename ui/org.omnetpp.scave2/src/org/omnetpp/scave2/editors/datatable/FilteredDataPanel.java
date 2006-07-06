@@ -115,13 +115,16 @@ public class FilteredDataPanel extends Composite {
 		for (int i = 0; i < fileList.size(); ++i)
 			fileNames[i+1] = fileList.get(i).getFilePath();
 		RunList runList = manager.getUniqueRuns(idlist);
-		String[] runNames = new String[(int)runList.size() + 1];
-		runNames[0] = "*";
-		for (int i = 0; i < runList.size(); ++i)
-			runNames[i+1] = runList.get(i).getRunName();
+		StringVector runNames = new StringVector();
+		runNames.add("*");
+		for (int i = 0; i < runList.size(); ++i) {
+			String runName = runList.get(i).getRunName();
+			if (runName.length() > 0)
+				runNames.add(runName);
+		}
 		
 		filterPanel.getFileNameCombo().setItems(fileNames);
-		filterPanel.getRunNameCombo().setItems(runNames);
+		filterPanel.getRunNameCombo().setItems(runNames.toArray());
 		filterPanel.getModuleNameCombo().setItems(manager.getModuleFilterHints(idlist).toArray());
 		filterPanel.getNameCombo().setItems(manager.getNameFilterHints(idlist).toArray());
 		filterPanel.getExperimentNameCombo().setItems(getFilterHintsForRunAttribute(runList, EXPERIMENT));
