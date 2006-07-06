@@ -1,4 +1,4 @@
-package org.omnetpp.experimental.animation.editors;
+package org.omnetpp.experimental.animation.controller;
 
 import java.util.ArrayList;
 

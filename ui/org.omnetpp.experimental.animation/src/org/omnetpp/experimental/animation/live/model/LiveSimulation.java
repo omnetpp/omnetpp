@@ -1,7 +1,8 @@
-package org.omnetpp.experimental.animation.live;
+package org.omnetpp.experimental.animation.live.model;
 
+import org.omnetpp.experimental.animation.live.IEnvirCallback;
 import org.omnetpp.experimental.animation.model.IRuntimeSimulation;
-import org.omnetpp.experimental.animation.replay.RuntimeModule;
+import org.omnetpp.experimental.animation.replay.model.RuntimeModule;
 
 public class LiveSimulation implements IRuntimeSimulation {
 	private RuntimeModule rootModule;

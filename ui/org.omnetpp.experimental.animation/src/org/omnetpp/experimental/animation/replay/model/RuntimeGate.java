@@ -1,4 +1,4 @@
-package org.omnetpp.experimental.animation.replay;
+package org.omnetpp.experimental.animation.replay.model;
 
 import org.omnetpp.experimental.animation.model.IRuntimeGate;
 

@@ -1,6 +1,6 @@
 package org.omnetpp.experimental.animation.controller;
 
-import org.omnetpp.experimental.animation.editors.TimerQueue;
+import org.omnetpp.experimental.animation.model.IRuntimeSimulation;
 import org.omnetpp.experimental.animation.widgets.AnimationCanvas;
 
 public interface IAnimationController {
@@ -20,10 +20,14 @@ public interface IAnimationController {
 
 	public void gotoEnd();
 	
+	public void gotoSimulationTime(double simulationTime);
+	
+	public void setSpeed(int speed);
+
+	public IRuntimeSimulation getSimulation();
+
 	public AnimationCanvas getCanvas();
 
-	public void gotoSimulationTime(double t);
-	
 	public TimerQueue getTimerQueue();
 
 	public Object getFigure(Object key);

@@ -4,21 +4,27 @@ import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.LayoutManager;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.omnetpp.experimental.animation.controller.IAnimationController;
-import org.omnetpp.experimental.animation.editors.TimerQueue;
+import org.omnetpp.experimental.animation.controller.TimerQueue;
 
 public abstract class AbstractAnimationPrimitive implements IAnimationPrimitive {
 	protected IAnimationController controller;
 	
-	public AbstractAnimationPrimitive(IAnimationController controller) {
+	protected double beginSimulationTime;
+	
+	public AbstractAnimationPrimitive(IAnimationController controller, double beginSimulationTime) {
 		this.controller = controller;
+		this.beginSimulationTime = beginSimulationTime;
+	}
+
+	public double getBeginSimulationTime() {
+		return beginSimulationTime;
+	}
+
+	public double getEndSimulationTime() {
+		return beginSimulationTime;
 	}
 
 	public void gotoSimulationTime(double t) {
-		
-	}
-	
-	public void animateSimulationTimeRange(double t0, double t1, double animationTime) {
-		
 	}
 	
 	protected TimerQueue getTimerQueue() {

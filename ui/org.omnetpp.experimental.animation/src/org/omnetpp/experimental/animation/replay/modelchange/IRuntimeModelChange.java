@@ -1,4 +1,4 @@
-package org.omnetpp.experimental.animation.modelchange;
+package org.omnetpp.experimental.animation.replay.modelchange;
 
 public interface IRuntimeModelChange {
 	public void execute();

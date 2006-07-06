@@ -1,4 +1,4 @@
-package org.omnetpp.experimental.animation.replay;
+package org.omnetpp.experimental.animation.replay.model;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,7 +23,13 @@ public class RuntimeModule implements IRuntimeModule {
 	}
 
 	public RuntimeModule(RuntimeModule parent) {
-		parent.addSubmodule(this);
+		if (parent != null)
+			parent.addSubmodule(this);
+	}
+	
+	public RuntimeModule(RuntimeModule parent, int id) {
+		this(parent);
+		this.id = id;
 	}
 	
 	public void addSubmodule(RuntimeModule module) {

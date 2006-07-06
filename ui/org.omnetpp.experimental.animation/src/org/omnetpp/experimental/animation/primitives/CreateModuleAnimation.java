@@ -1,47 +1,45 @@
 package org.omnetpp.experimental.animation.primitives;
 
-import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.omnetpp.common.displaymodel.DisplayString;
 import org.omnetpp.experimental.animation.controller.IAnimationController;
 import org.omnetpp.experimental.animation.model.GateId;
-import org.omnetpp.figures.CompoundModuleFigure;
+import org.omnetpp.experimental.animation.model.IRuntimeModule;
 import org.omnetpp.figures.GateAnchor;
-import org.omnetpp.figures.ModuleFigure;
+import org.omnetpp.figures.SubmoduleFigure;
 
 public class CreateModuleAnimation extends AbstractAnimationPrimitive {
-	private double creationSimulationTime;
-	
-	private int moduleId;
+	private IRuntimeModule module;
 	
 	private Point location;
 	
-	private ModuleFigure moduleFigure;
+	private SubmoduleFigure moduleFigure;
 
 	public CreateModuleAnimation(IAnimationController controller,
-								 double creationSimulationTime,
-								 int moduleId,
+								 double beginSimulationTime,
+								 IRuntimeModule module,
 								 Point location) {
-		super(controller);
-		this.creationSimulationTime = creationSimulationTime;
-		this.moduleId = moduleId;
+		super(controller, beginSimulationTime);
+		this.module = module;
 		this.location = location;
-		this.moduleFigure = new CompoundModuleFigure();
-		((CompoundModuleFigure)moduleFigure).setDisplayString(new DisplayString(null,null,"bgi=background/hungary,stretch"));
+		this.moduleFigure = new SubmoduleFigure();
 	}
 	
 	public void gotoSimulationTime(double t) {
-		if (t >= creationSimulationTime) {
-			controller.setFigure(new GateId(moduleId, 0), new GateAnchor(moduleFigure, "in"));
-			controller.setFigure(new GateId(moduleId, 1), new GateAnchor(moduleFigure, "out"));
-
-			if (moduleId == 2)
-				setConstraint(moduleFigure, new Rectangle(new Point(location.x + (int)(t * 30), location.y), new Dimension(200, 200)));
-			else
-				setConstraint(moduleFigure, new Rectangle(location, new Dimension(200, 200)));
+		if (t >= beginSimulationTime) {
+			controller.setFigure(new GateId(module.getId(), 0), new GateAnchor(moduleFigure, "in"));
+			controller.setFigure(new GateId(module.getId(), 1), new GateAnchor(moduleFigure, "out"));
 
 			showFigure(moduleFigure);
+
+			// TODO: remove this hackish stuff
+			moduleFigure.setDisplayString(new DisplayString(null, null, "i=block/cogwheel"));
+			if (module.getId() == 2)
+				setConstraint(moduleFigure, new Rectangle(location.x + (int)(t * 30), location.y, -1, -1));
+			else
+				setConstraint(moduleFigure, new Rectangle(location.x, location.y, -1, -1));
+
 		}
 		else {
 			hideFigure(moduleFigure);

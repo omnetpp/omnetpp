@@ -1,4 +1,4 @@
-package org.omnetpp.experimental.animation.editors;
+package org.omnetpp.experimental.animation.controller;
 
 public abstract class Timer implements Comparable<Timer>, Runnable {
 	/**
