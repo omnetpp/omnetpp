@@ -1,9 +1,10 @@
-package org.omnetpp.experimental.animation.model;
+package org.omnetpp.experimental.animation.replay;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import org.omnetpp.common.displaymodel.DisplayString;
+import org.omnetpp.experimental.animation.model.IRuntimeModule;
 
 
 public class RuntimeModule implements IRuntimeModule {

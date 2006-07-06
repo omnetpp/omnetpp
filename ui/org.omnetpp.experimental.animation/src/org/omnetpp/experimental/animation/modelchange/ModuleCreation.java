@@ -1,7 +1,7 @@
 package org.omnetpp.experimental.animation.modelchange;
 
-import org.omnetpp.experimental.animation.model.RuntimeModule;
-import org.omnetpp.experimental.animation.model.RuntimeSimulation;
+import org.omnetpp.experimental.animation.replay.RuntimeModule;
+import org.omnetpp.experimental.animation.replay.RuntimeSimulation;
 
 public class ModuleCreation implements IRuntimeModelChange {
 	private RuntimeSimulation simulation;

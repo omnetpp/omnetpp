@@ -1,4 +1,9 @@
-package org.omnetpp.experimental.animation.model;
+package org.omnetpp.experimental.animation.live;
+
+import org.omnetpp.experimental.animation.model.IObject;
+import org.omnetpp.experimental.animation.model.IRuntimeGate;
+import org.omnetpp.experimental.animation.model.IRuntimeMessage;
+import org.omnetpp.experimental.animation.model.IRuntimeModule;
 
 public interface IEnvirCallback {
     /**

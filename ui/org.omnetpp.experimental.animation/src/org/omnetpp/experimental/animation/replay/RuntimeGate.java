@@ -1,4 +1,6 @@
-package org.omnetpp.experimental.animation.model;
+package org.omnetpp.experimental.animation.replay;
+
+import org.omnetpp.experimental.animation.model.IRuntimeGate;
 
 public class RuntimeGate implements IRuntimeGate {
 	private int id;

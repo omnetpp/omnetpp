@@ -1,4 +1,6 @@
-package org.omnetpp.experimental.animation.model;
+package org.omnetpp.experimental.animation.replay;
+
+import org.omnetpp.experimental.animation.model.IRuntimeSimulation;
 
 public class RuntimeSimulation implements IRuntimeSimulation {
 	private RuntimeModule rootModule;
