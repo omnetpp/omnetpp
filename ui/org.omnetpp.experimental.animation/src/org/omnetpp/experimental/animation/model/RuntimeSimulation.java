@@ -3,15 +3,15 @@ package org.omnetpp.experimental.animation.model;
 public class RuntimeSimulation implements IRuntimeSimulation {
 	private RuntimeModule rootModule;
 	
-	public IRuntimeModule getRootModule() {
+	public RuntimeModule getRootModule() {
 		return rootModule;
 	}
 
-	public IRuntimeModule getModuleByID(String fullPath) {
+	public RuntimeModule getModuleByID(String fullPath) {
 		return null;
 	}
 
-	public IRuntimeModule getModuleByPath(String fullPath) {
+	public RuntimeModule getModuleByPath(String fullPath) {
 		return null;
 	}
 
