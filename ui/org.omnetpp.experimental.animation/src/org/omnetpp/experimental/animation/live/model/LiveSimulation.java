@@ -2,10 +2,11 @@ package org.omnetpp.experimental.animation.live.model;
 
 import org.omnetpp.experimental.animation.live.IEnvirCallback;
 import org.omnetpp.experimental.animation.model.IRuntimeSimulation;
-import org.omnetpp.experimental.animation.replay.model.RuntimeModule;
+import org.omnetpp.experimental.animation.replay.model.ReplayModule;
 
-public class LiveSimulation implements IRuntimeSimulation {
-	private RuntimeModule rootModule;
+//XXX should be Java wrapper around cSimulation
+public class LiveSimulation extends LiveObject implements IRuntimeSimulation {
+	private LiveModule rootModule;
 	private IEnvirCallback ev;
 	private int eventNumber = -1;
 	
@@ -13,15 +14,15 @@ public class LiveSimulation implements IRuntimeSimulation {
 	    this.ev = ev;	
 	}
 	
-	public RuntimeModule getRootModule() {
+	public LiveModule getRootModule() {
 		return rootModule;
 	}
 
-	public RuntimeModule getModuleByID(String fullPath) {
+	public LiveModule getModuleByID(String fullPath) {
 		return null; //TODO
 	}
 
-	public RuntimeModule getModuleByPath(String fullPath) {
+	public LiveModule getModuleByPath(String fullPath) {
 		return null; //TODO
 	}
 

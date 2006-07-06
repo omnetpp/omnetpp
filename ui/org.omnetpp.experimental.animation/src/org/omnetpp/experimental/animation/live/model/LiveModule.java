@@ -1,4 +1,4 @@
-package org.omnetpp.experimental.animation.replay.model;
+package org.omnetpp.experimental.animation.live.model;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -7,41 +7,42 @@ import org.omnetpp.common.displaymodel.DisplayString;
 import org.omnetpp.experimental.animation.model.IRuntimeModule;
 
 
-public class RuntimeModule implements IRuntimeModule {
+//XXX should be Java wrapper around cModule
+public class LiveModule extends LiveObject implements IRuntimeModule {
 	
 	private int id;
 	private String name;
 	private int index;
 	private int size;
-	private RuntimeModule parent;
+	private LiveModule parent;
 	private String typeName;
 	private DisplayString displayString;
-	private List<RuntimeModule> submodules;
-	private List<RuntimeGate> gates;
+	private List<LiveModule> submodules;
+	private List<LiveGate> gates;
 
-	public RuntimeModule() {
+	public LiveModule() {
 	}
 
-	public RuntimeModule(RuntimeModule parent) {
+	public LiveModule(LiveModule parent) {
 		if (parent != null)
 			parent.addSubmodule(this);
 	}
 	
-	public RuntimeModule(RuntimeModule parent, int id) {
+	public LiveModule(LiveModule parent, int id) {
 		this(parent);
 		this.id = id;
 	}
 	
-	public void addSubmodule(RuntimeModule module) {
+	public void addSubmodule(LiveModule module) {
 		if (module.getParentModule()!=null)
 			throw new RuntimeException("submodule already has a parent");
 		if (submodules==null)
-			submodules = new ArrayList<RuntimeModule>(2);
+			submodules = new ArrayList<LiveModule>(2);
 		submodules.add(module);
 		module.parent = this;
 	}
 
-	public void removeSubmodule(RuntimeModule module) {
+	public void removeSubmodule(LiveModule module) {
 		if (module.getParentModule()!=this)
 			throw new RuntimeException("not parent of this submodule");
 		submodules.remove(module);
@@ -92,11 +93,11 @@ public class RuntimeModule implements IRuntimeModule {
 		return parent==null ? getFullName() : parent.getFullPath()+"."+getFullName();
 	}
 
-	public RuntimeModule getParentModule() {
+	public LiveModule getParentModule() {
 		return parent;
 	}
 
-	public List<RuntimeModule> getSubmodules() {
+	public List<LiveModule> getSubmodules() {
 		return submodules;
 	}
 
@@ -115,28 +116,28 @@ public class RuntimeModule implements IRuntimeModule {
 		this.id = moduleId;
 	}
 
-	public RuntimeModule getSubmodule(String name) {
+	public LiveModule getSubmodule(String name) {
 		//FIXME use more efficient data structure to avoid linear search! e.g. map of submodule vectors etc
-		for (RuntimeModule m : submodules)
+		for (LiveModule m : submodules)
 			if (name.equals(m.getName()) && m.getSize()<0)
 				return m;
 		return null;
 	}
 
-	public RuntimeModule getSubmodule(String name, int index) {
+	public LiveModule getSubmodule(String name, int index) {
 		//FIXME use more efficient data structure to avoid linear search! e.g. map of submodule vectors etc
-		for (RuntimeModule m : submodules)
+		for (LiveModule m : submodules)
 			if (name.equals(m.getName()) && m.getIndex()==index)
 				return m;
 		return null;
 	}
 
 	//TODO removeGate, more efficient storage, etc
-	public void addGate(RuntimeGate gate) {
+	public void addGate(LiveGate gate) {
 		gates.add(gate);
 	}
 	
-	public RuntimeGate getGate(int i) {
+	public LiveGate getGate(int i) {
 		return gates.get(index);
 	}
 

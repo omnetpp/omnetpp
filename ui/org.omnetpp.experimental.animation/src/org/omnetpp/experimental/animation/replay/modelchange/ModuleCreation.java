@@ -1,17 +1,17 @@
 package org.omnetpp.experimental.animation.replay.modelchange;
 
-import org.omnetpp.experimental.animation.replay.model.RuntimeSimulation;
-import org.omnetpp.experimental.animation.replay.model.RuntimeModule;
+import org.omnetpp.experimental.animation.replay.model.ReplaySimulation;
+import org.omnetpp.experimental.animation.replay.model.ReplayModule;
 
 public class ModuleCreation implements IRuntimeModelChange {
-	private RuntimeSimulation simulation;
+	private ReplaySimulation simulation;
 	private int id;
 	private String moduleTypeName;
 	private String parentFullPath;
 	private String moduleName;
-	private RuntimeModule module;
+	private ReplayModule module;
 	
-	public ModuleCreation(RuntimeSimulation simulation, 
+	public ModuleCreation(ReplaySimulation simulation, 
 			int id, String moduleTypeName, 
 			String parentFullPath, String moduleName) {
 		this.simulation = simulation;
@@ -22,8 +22,8 @@ public class ModuleCreation implements IRuntimeModelChange {
 	}
 	
 	public void execute() {
-		RuntimeModule parent = simulation.getModuleByPath(parentFullPath);
-		RuntimeModule mod = new RuntimeModule(parent);
+		ReplayModule parent = simulation.getModuleByPath(parentFullPath);
+		ReplayModule mod = new ReplayModule(parent);
 		mod.setName(moduleName);
 		mod.setTypeName(moduleTypeName);
 		mod.setId(id);

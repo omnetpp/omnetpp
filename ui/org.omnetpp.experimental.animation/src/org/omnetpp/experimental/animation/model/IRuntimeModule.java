@@ -3,7 +3,7 @@ package org.omnetpp.experimental.animation.model;
 import java.util.List;
 
 import org.omnetpp.common.displaymodel.DisplayString;
-import org.omnetpp.experimental.animation.replay.model.RuntimeModule;
+import org.omnetpp.experimental.animation.replay.model.ReplayModule;
 
 public interface IRuntimeModule {
 	
@@ -25,9 +25,9 @@ public interface IRuntimeModule {
 
 	public DisplayString getDisplayString();
 
-	public RuntimeModule getParentModule();
+	public IRuntimeModule getParentModule();
 	
-	public List<RuntimeModule> getSubmodules();
+	public List<? extends IRuntimeModule> getSubmodules();
 	
     public IRuntimeModule getSubmodule(String name);
 

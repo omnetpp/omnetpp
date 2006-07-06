@@ -1,13 +1,14 @@
-package org.omnetpp.experimental.animation.replay.model;
+package org.omnetpp.experimental.animation.live.model;
 
 import org.omnetpp.experimental.animation.model.IRuntimeGate;
 
-public class RuntimeGate implements IRuntimeGate {
+//XXX should be Java wrapper around cGate
+public class LiveGate extends LiveObject implements IRuntimeGate {
 	private int id;
 	private String name;
 	private int index;
 	private int size;
-	private RuntimeModule ownerModule;
+	private LiveModule ownerModule;
 
 	public int getId() {
 		return id;
@@ -53,7 +54,7 @@ public class RuntimeGate implements IRuntimeGate {
 		return ownerModule==null ? getFullName() : ownerModule.getFullPath()+"."+getFullName();
 	}
 
-	public RuntimeModule getOwnerModule() {
+	public LiveModule getOwnerModule() {
 		return ownerModule;
 	}
 	

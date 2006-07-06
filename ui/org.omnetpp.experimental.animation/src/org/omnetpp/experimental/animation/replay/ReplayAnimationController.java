@@ -16,8 +16,8 @@ import org.omnetpp.experimental.animation.primitives.CreateConnectionAnimation;
 import org.omnetpp.experimental.animation.primitives.CreateModuleAnimation;
 import org.omnetpp.experimental.animation.primitives.IAnimationPrimitive;
 import org.omnetpp.experimental.animation.primitives.SendMessageAnimation;
-import org.omnetpp.experimental.animation.replay.model.RuntimeModule;
-import org.omnetpp.experimental.animation.replay.model.RuntimeSimulation;
+import org.omnetpp.experimental.animation.replay.model.ReplayModule;
+import org.omnetpp.experimental.animation.replay.model.ReplaySimulation;
 import org.omnetpp.experimental.animation.widgets.AnimationCanvas;
 import org.omnetpp.figures.CompoundModuleFigure;
 import org.omnetpp.figures.GateAnchor;
@@ -262,7 +262,7 @@ public class ReplayAnimationController {
 	}
 	
 	protected IRuntimeSimulation createSimulation() {
-		RuntimeModule rootModule = new RuntimeModule(null, 0);
+		ReplayModule rootModule = new ReplayModule(null, 0);
 
 		CompoundModuleFigure rootModuleFigure = new CompoundModuleFigure();
 		rootModuleFigure.setDisplayString(new DisplayString(null, null, "bgb=400,400;bgi=background/hungary,stretch"));
@@ -271,7 +271,7 @@ public class ReplayAnimationController {
 		canvas.getRootFigure().getLayoutManager().setConstraint(rootModuleFigure, new Rectangle(0, 0, -1, -1));
 		canvas.getRootFigure().add(rootModuleFigure);
 		
-		return new RuntimeSimulation(rootModule);
+		return new ReplaySimulation(rootModule);
 	}
 
 	// TODO: this should read animation primitives from a file
@@ -279,8 +279,8 @@ public class ReplayAnimationController {
 	
 	protected IAnimationPrimitive loadNextAnimationPrimitive() {
 		if (animationPrimitivesToBeRead == null) {
-			RuntimeModule childModule1 = new RuntimeModule((RuntimeModule)simulation.getRootModule(), 1);
-			RuntimeModule childModule2 = new RuntimeModule((RuntimeModule)simulation.getRootModule(), 2);
+			ReplayModule childModule1 = new ReplayModule((ReplayModule)simulation.getRootModule(), 1);
+			ReplayModule childModule2 = new ReplayModule((ReplayModule)simulation.getRootModule(), 2);
 			
 			animationPrimitivesToBeRead = new ArrayList<IAnimationPrimitive>();
 			animationPrimitivesToBeRead.add(new CreateModuleAnimation(this, 0, childModule1, new Point(200, 100)));

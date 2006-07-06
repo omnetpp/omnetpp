@@ -1,7 +1,7 @@
 package org.omnetpp.experimental.animation.live;
 
+import org.omnetpp.experimental.animation.live.model.LiveObject;
 import org.omnetpp.experimental.animation.live.model.LiveSimulation;
-import org.omnetpp.experimental.animation.model.IObject;
 import org.omnetpp.experimental.animation.model.IRuntimeGate;
 import org.omnetpp.experimental.animation.model.IRuntimeMessage;
 import org.omnetpp.experimental.animation.model.IRuntimeModule;
@@ -65,6 +65,6 @@ public class LiveAnimationController extends ReplayAnimationController implement
 	public void moduleReparented(IRuntimeModule module, IRuntimeModule oldparent) {
 	}
 
-	public void objectDeleted(IObject object) {
+	public void objectDeleted(LiveObject object) {
 	}
 }
