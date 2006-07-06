@@ -7,7 +7,6 @@ import java.util.Map;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.omnetpp.common.displaymodel.DisplayString;
-import org.omnetpp.experimental.animation.controller.IAnimationController;
 import org.omnetpp.experimental.animation.controller.Timer;
 import org.omnetpp.experimental.animation.controller.TimerQueue;
 import org.omnetpp.experimental.animation.model.ConnectionId;
@@ -23,35 +22,64 @@ import org.omnetpp.experimental.animation.widgets.AnimationCanvas;
 import org.omnetpp.figures.CompoundModuleFigure;
 import org.omnetpp.figures.GateAnchor;
 
-public class ReplayAnimationController implements IAnimationController {
-	private AnimationCanvas canvas;
+public class ReplayAnimationController {
+	/**
+	 * A list of timers used during animation. There is always at least one timer the simulationTimer.
+	 * Also animation primitives may add there own timers here.
+	 */
+	protected TimerQueue timerQueue;
 	
-	private TimerQueue timerQueue;
+	/**
+	 * The main timer that is responsible for updating the simulation time during animation.
+	 */
+	protected SimulationTimer simulationTimer;
 	
-	private SimulationTimer simulationTimer;
+	/**
+	 * The list of known animation primitives.
+	 */
+	protected ArrayList<IAnimationPrimitive> animationPrimitives = new ArrayList<IAnimationPrimitive>(); // holds all animation primitives since last key frame
 	
-	private ArrayList<IAnimationPrimitive> animationPrimitives = new ArrayList<IAnimationPrimitive>(); // holds all animation primitives since last key frame
+	/**
+	 * The current simulation time. It is updated periodically from a timer callback.
+	 */
+	protected double simulationTime;
 	
-	private Map<Object, Object> figureMap = new HashMap<Object, Object>();
+	/**
+	 * The simulation time when the animation was last started.
+	 */
+	protected double startSimulationTime;
 	
-	private double simulationTime;
+	/**
+	 * The simulation time when the animation should stop.
+	 */
+	protected double stopSimulationTime;
 	
-	private double startSimulationTime;
+	/**
+	 * The simulation time is increased in this amount of steps from the timer.
+	 */
+	protected double simulationTimeStep;
+
+	/**
+	 * The widget used to display the animation figures.
+	 */
+	protected AnimationCanvas canvas;
+
+	protected Map<Object, Object> figureMap;
 	
-	private double stopSimulationTime;
+	protected IRuntimeSimulation simulation;
 	
-	private double simulationTimeStep;
-	
-	private boolean forward;
-	
-	private IRuntimeSimulation simulation;
+	/**
+	 * Direction of the simulation in time.
+	 */
+	protected boolean forward;
 
 	public ReplayAnimationController(AnimationCanvas canvas) {
 		this.canvas = canvas;
+		this.figureMap = new HashMap<Object, Object>(); 
+		this.forward = true;
 		this.timerQueue = new TimerQueue();
 		this.simulationTimer = new SimulationTimer();
 		this.stopSimulationTime = -1;
-		this.forward = true;
 		timerQueue.addTimer(simulationTimer);
 	}
 	
@@ -59,12 +87,29 @@ public class ReplayAnimationController implements IAnimationController {
 		return canvas;
 	}
 	
-	public TimerQueue getTimerQueue() {
-		return timerQueue;
-	}
-	
 	public IRuntimeSimulation getSimulation() {
 		return simulation;
+	}
+
+	/**
+	 * Stores a figure or related object.
+	 */
+	public Object getFigure(Object key) {
+		return figureMap.get(key);
+	}
+
+	/**
+	 * Retrieves a figure or related object.
+	 */
+	public void setFigure(Object key, Object value) {
+		figureMap.put(key, value);
+	}
+
+	/**
+	 * Returns the timer queue that is used to schedule timer events during the animation.
+	 */
+	public TimerQueue getTimerQueue() {
+		return timerQueue;
 	}
 
 	public void animateBack() {
@@ -98,7 +143,7 @@ public class ReplayAnimationController implements IAnimationController {
 		animateStart(true, 0.01, -1);
 	}
 
-	private void animateStart(boolean forward, double simulationTimeStep, double stopSimulationTime) {
+	protected void animateStart(boolean forward, double simulationTimeStep, double stopSimulationTime) {
 		this.forward = forward;
 		this.simulationTimeStep = simulationTimeStep;
 		this.stopSimulationTime = stopSimulationTime;
@@ -168,20 +213,6 @@ public class ReplayAnimationController implements IAnimationController {
 	}
 
 	/**
-	 * Stores a figure or related object.
-	 */
-	public Object getFigure(Object key) {
-		return figureMap.get(key);
-	}
-
-	/**
-	 * Retrieves a figure or related object.
-	 */
-	public void setFigure(Object key, Object value) {
-		figureMap.put(key, value);
-	}
-
-	/**
 	 * The simulation timer is responsible to change simulation time as real time elapses.
 	 */
 	public class SimulationTimer extends Timer {
@@ -200,7 +231,7 @@ public class ReplayAnimationController implements IAnimationController {
 	 * Returns the index of the last animation primitive that has already been reached by the simulation.
 	 * TODO: this is inefficient, should use binary search, because animationPrimitives are in order of begin simulation time
 	 */
-	private int getLastAnimationPrimitiveIndex() {
+	protected int getLastAnimationPrimitiveIndex() {
 		for (int i = 0; i < animationPrimitives.size(); i++)
 			if (animationPrimitives.get(i).getBeginSimulationTime() > simulationTime)
 				return i - 1;
@@ -211,7 +242,7 @@ public class ReplayAnimationController implements IAnimationController {
 	/**
 	 * Returns the last animation primitive which ends before the current simulation time.
 	 */
-	private IAnimationPrimitive getPreviousAnimationPrimitive() {
+	protected IAnimationPrimitive getPreviousAnimationPrimitive() {
 		// TODO: animation primitives are sorted based on their begin simulation times
 		return getAnimationPrimitive(getLastAnimationPrimitiveIndex() - 1);
 	}
@@ -219,34 +250,37 @@ public class ReplayAnimationController implements IAnimationController {
 	/**
 	 * Returns the first animation primitive which begins after the current simulation time.
 	 */
-	private IAnimationPrimitive getNextAnimationPrimitive() {
+	protected IAnimationPrimitive getNextAnimationPrimitive() {
 		return getAnimationPrimitive(getLastAnimationPrimitiveIndex() + 1);
 	}
 	
 	/**
 	 * Returns the nth animation primitive. Returns null if index falls outside of range.
 	 */
-	private IAnimationPrimitive getAnimationPrimitive(int index) {
+	protected IAnimationPrimitive getAnimationPrimitive(int index) {
 		return (0 <= index && index < animationPrimitives.size()) ? animationPrimitives.get(index) : null;
 	}
 	
+	protected IRuntimeSimulation createSimulation() {
+		RuntimeModule rootModule = new RuntimeModule(null, 0);
+
+		CompoundModuleFigure rootModuleFigure = new CompoundModuleFigure();
+		rootModuleFigure.setDisplayString(new DisplayString(null, null, "bgb=400,400;bgi=background/hungary,stretch"));
+		setFigure(new GateId(rootModule.getId(), 0), new GateAnchor(rootModuleFigure, "in"));
+		setFigure(new GateId(rootModule.getId(), 1), new GateAnchor(rootModuleFigure, "out"));
+		canvas.getRootFigure().getLayoutManager().setConstraint(rootModuleFigure, new Rectangle(0, 0, -1, -1));
+		canvas.getRootFigure().add(rootModuleFigure);
+		
+		return new RuntimeSimulation(rootModule);
+	}
+
 	// TODO: this should read animation primitives from a file
-	private ArrayList<IAnimationPrimitive> animationPrimitivesToBeRead;
+	protected ArrayList<IAnimationPrimitive> animationPrimitivesToBeRead;
 	
-	private IAnimationPrimitive loadNextAnimationPrimitive() {
+	protected IAnimationPrimitive loadNextAnimationPrimitive() {
 		if (animationPrimitivesToBeRead == null) {
-			RuntimeModule rootModule = new RuntimeModule(null, 0);
-			RuntimeModule childModule1 = new RuntimeModule(rootModule, 1);
-			RuntimeModule childModule2 = new RuntimeModule(rootModule, 2);
-			
-			simulation = new RuntimeSimulation(rootModule);
-			
-			CompoundModuleFigure rootModuleFigure = new CompoundModuleFigure();
-			rootModuleFigure.setDisplayString(new DisplayString(null, null, "bgb=400,400;bgi=background/hungary,stretch"));
-			setFigure(new GateId(rootModule.getId(), 0), new GateAnchor(rootModuleFigure, "in"));
-			setFigure(new GateId(rootModule.getId(), 1), new GateAnchor(rootModuleFigure, "out"));
-			canvas.getRootFigure().getLayoutManager().setConstraint(rootModuleFigure, new Rectangle(0, 0, -1, -1));
-			canvas.getRootFigure().add(rootModuleFigure);
+			RuntimeModule childModule1 = new RuntimeModule((RuntimeModule)simulation.getRootModule(), 1);
+			RuntimeModule childModule2 = new RuntimeModule((RuntimeModule)simulation.getRootModule(), 2);
 			
 			animationPrimitivesToBeRead = new ArrayList<IAnimationPrimitive>();
 			animationPrimitivesToBeRead.add(new CreateModuleAnimation(this, 0, childModule1, new Point(200, 100)));

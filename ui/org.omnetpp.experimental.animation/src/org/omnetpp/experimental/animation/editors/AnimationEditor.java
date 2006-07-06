@@ -17,12 +17,11 @@ import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.part.EditorPart;
-import org.omnetpp.experimental.animation.controller.IAnimationController;
 import org.omnetpp.experimental.animation.replay.ReplayAnimationController;
 import org.omnetpp.experimental.animation.widgets.AnimationCanvas;
 
 public class AnimationEditor extends EditorPart {
-	private IAnimationController animationController;
+	private ReplayAnimationController animationController;
 	
 	public AnimationEditor() {
 	}

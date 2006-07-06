@@ -6,8 +6,8 @@ import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.swt.graphics.Color;
-import org.omnetpp.experimental.animation.controller.IAnimationController;
 import org.omnetpp.experimental.animation.controller.Timer;
+import org.omnetpp.experimental.animation.replay.ReplayAnimationController;
 
 public class LabelAnimation extends AbstractAnimationPrimitive {
 	private double endSimulationTime;
@@ -20,7 +20,7 @@ public class LabelAnimation extends AbstractAnimationPrimitive {
 	
 	private Timer changeColorTimer;
 
-	public LabelAnimation(IAnimationController controller,
+	public LabelAnimation(ReplayAnimationController controller,
 						  String text,
 						  double beginSimulationTime,
 						  double endSimulationTime,

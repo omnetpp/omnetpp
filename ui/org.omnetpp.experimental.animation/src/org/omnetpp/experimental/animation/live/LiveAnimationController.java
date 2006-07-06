@@ -1,84 +1,70 @@
 package org.omnetpp.experimental.animation.live;
 
-import org.omnetpp.experimental.animation.controller.IAnimationController;
-import org.omnetpp.experimental.animation.controller.TimerQueue;
+import org.omnetpp.experimental.animation.live.model.LiveSimulation;
+import org.omnetpp.experimental.animation.model.IObject;
+import org.omnetpp.experimental.animation.model.IRuntimeGate;
+import org.omnetpp.experimental.animation.model.IRuntimeMessage;
+import org.omnetpp.experimental.animation.model.IRuntimeModule;
 import org.omnetpp.experimental.animation.model.IRuntimeSimulation;
+import org.omnetpp.experimental.animation.primitives.IAnimationPrimitive;
+import org.omnetpp.experimental.animation.replay.ReplayAnimationController;
 import org.omnetpp.experimental.animation.widgets.AnimationCanvas;
 
-public class LiveAnimationController implements IAnimationController {
-
-	public void animateBack() {
-		// TODO Auto-generated method stub
-		
+public class LiveAnimationController extends ReplayAnimationController implements IEnvirCallback {
+	public LiveAnimationController(AnimationCanvas canvas) {
+		super(canvas);
 	}
 
-	public void animateExpress() {
-		// TODO Auto-generated method stub
-		
+	protected IRuntimeSimulation createSimulation() {
+		return new LiveSimulation(this);
 	}
 
-	public void animateFast() {
-		// TODO Auto-generated method stub
-		
+	protected LiveSimulation getLiveSimulation() {
+		return (LiveSimulation)simulation;
 	}
 
-	public void animatePlay() {
-		// TODO Auto-generated method stub
+	protected IAnimationPrimitive loadNextAnimationPrimitive() {
+		getLiveSimulation().doOneEvent();
 		
-	}
-
-	public void animateStep() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	public void animateStop() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	public AnimationCanvas getCanvas() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
-	public Object getFigure(Object key) {
-		// TODO Auto-generated method stub
-		return null;
+	public void breakpointHit(String lbl, IRuntimeModule mod) {
 	}
 
-	public IRuntimeSimulation getSimulation() {
-		// TODO Auto-generated method stub
-		return null;
+	public void bubble(IRuntimeModule mod, String text) {
 	}
 
-	public TimerQueue getTimerQueue() {
-		// TODO Auto-generated method stub
-		return null;
+	public void connectionCreated(IRuntimeGate srcgate) {
 	}
 
-	public void gotoBegin() {
-		// TODO Auto-generated method stub
-		
+	public void connectionRemoved(IRuntimeGate srcgate) {
 	}
 
-	public void gotoEnd() {
-		// TODO Auto-generated method stub
-		
+	public void displayStringChanged(IRuntimeGate gate) {
 	}
 
-	public void gotoSimulationTime(double simulationTime) {
-		// TODO Auto-generated method stub
-		
+	public void displayStringChanged(IRuntimeModule module) {
 	}
 
-	public void setFigure(Object key, Object value) {
-		// TODO Auto-generated method stub
-		
+	public void messageDelivered(IRuntimeMessage msg) {
 	}
 
-	public void setSpeed(int speed) {
-		// TODO Auto-generated method stub
-		
+	public void messageSent(IRuntimeMessage msg, IRuntimeGate directToGate) {
+	}
+
+	public void moduleCreated(IRuntimeModule newmodule) {
+	}
+
+	public void moduleDeleted(IRuntimeModule module) {
+	}
+
+	public void moduleMethodCalled(IRuntimeModule from, IRuntimeModule to, String method) {
+	}
+
+	public void moduleReparented(IRuntimeModule module, IRuntimeModule oldparent) {
+	}
+
+	public void objectDeleted(IObject object) {
 	}
 }

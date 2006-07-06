@@ -4,8 +4,8 @@ import org.eclipse.draw2d.Ellipse;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.swt.graphics.Color;
-import org.omnetpp.experimental.animation.controller.IAnimationController;
 import org.omnetpp.experimental.animation.model.ConnectionId;
+import org.omnetpp.experimental.animation.replay.ReplayAnimationController;
 import org.omnetpp.figures.ConnectionFigure;
 
 public class SendMessageAnimation extends AbstractAnimationPrimitive {
@@ -15,7 +15,7 @@ public class SendMessageAnimation extends AbstractAnimationPrimitive {
 	
 	private Ellipse message;
 	
-	public SendMessageAnimation(IAnimationController controller,
+	public SendMessageAnimation(ReplayAnimationController controller,
 								double beginSimulationTime,
 								double endSimulationTime,
 								ConnectionId connectionId) {
@@ -34,7 +34,7 @@ public class SendMessageAnimation extends AbstractAnimationPrimitive {
 	
 	public void gotoSimulationTime(double t) {
 		if (beginSimulationTime <= t && t <= endSimulationTime) {
-			ConnectionFigure connectionFigure = (ConnectionFigure)controller.getFigure(connectionId);
+			ConnectionFigure connectionFigure = (ConnectionFigure)animationController.getFigure(connectionId);
 
 			Point p1 = connectionFigure.getStart();
 			Point p2 = connectionFigure.getEnd();

@@ -3,9 +3,9 @@ package org.omnetpp.experimental.animation.primitives;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.omnetpp.common.displaymodel.DisplayString;
-import org.omnetpp.experimental.animation.controller.IAnimationController;
 import org.omnetpp.experimental.animation.model.GateId;
 import org.omnetpp.experimental.animation.model.IRuntimeModule;
+import org.omnetpp.experimental.animation.replay.ReplayAnimationController;
 import org.omnetpp.figures.GateAnchor;
 import org.omnetpp.figures.SubmoduleFigure;
 
@@ -16,7 +16,7 @@ public class CreateModuleAnimation extends AbstractAnimationPrimitive {
 	
 	private SubmoduleFigure moduleFigure;
 
-	public CreateModuleAnimation(IAnimationController controller,
+	public CreateModuleAnimation(ReplayAnimationController controller,
 								 double beginSimulationTime,
 								 IRuntimeModule module,
 								 Point location) {
@@ -28,8 +28,8 @@ public class CreateModuleAnimation extends AbstractAnimationPrimitive {
 	
 	public void gotoSimulationTime(double t) {
 		if (t >= beginSimulationTime) {
-			controller.setFigure(new GateId(module.getId(), 0), new GateAnchor(moduleFigure, "in"));
-			controller.setFigure(new GateId(module.getId(), 1), new GateAnchor(moduleFigure, "out"));
+			animationController.setFigure(new GateId(module.getId(), 0), new GateAnchor(moduleFigure, "in"));
+			animationController.setFigure(new GateId(module.getId(), 1), new GateAnchor(moduleFigure, "out"));
 
 			showFigure(moduleFigure);
 

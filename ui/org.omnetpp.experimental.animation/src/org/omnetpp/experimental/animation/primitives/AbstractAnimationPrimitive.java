@@ -3,16 +3,16 @@ package org.omnetpp.experimental.animation.primitives;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.LayoutManager;
 import org.eclipse.draw2d.geometry.Rectangle;
-import org.omnetpp.experimental.animation.controller.IAnimationController;
 import org.omnetpp.experimental.animation.controller.TimerQueue;
+import org.omnetpp.experimental.animation.replay.ReplayAnimationController;
 
 public abstract class AbstractAnimationPrimitive implements IAnimationPrimitive {
-	protected IAnimationController controller;
+	protected ReplayAnimationController animationController;
 	
 	protected double beginSimulationTime;
 	
-	public AbstractAnimationPrimitive(IAnimationController controller, double beginSimulationTime) {
-		this.controller = controller;
+	public AbstractAnimationPrimitive(ReplayAnimationController controller, double beginSimulationTime) {
+		this.animationController = controller;
 		this.beginSimulationTime = beginSimulationTime;
 	}
 
@@ -28,11 +28,11 @@ public abstract class AbstractAnimationPrimitive implements IAnimationPrimitive 
 	}
 	
 	protected TimerQueue getTimerQueue() {
-		return controller.getTimerQueue();
+		return animationController.getTimerQueue();
 	}
 
 	protected IFigure getRootFigure() {
-		return controller.getCanvas().getRootFigure();
+		return animationController.getCanvas().getRootFigure();
 	}
 
 	protected LayoutManager getLayoutManager() {
