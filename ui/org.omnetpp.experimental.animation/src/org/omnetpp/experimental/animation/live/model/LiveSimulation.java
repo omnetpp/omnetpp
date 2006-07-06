@@ -5,7 +5,7 @@ import org.omnetpp.experimental.animation.model.IRuntimeSimulation;
 import org.omnetpp.experimental.animation.replay.model.ReplayModule;
 
 //XXX should be Java wrapper around cSimulation
-public class LiveSimulation extends LiveObject implements IRuntimeSimulation {
+public class LiveSimulation extends LiveMessage implements IRuntimeSimulation {
 	private LiveModule rootModule;
 	private IEnvirCallback ev;
 	private int eventNumber = -1;

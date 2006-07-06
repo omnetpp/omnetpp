@@ -3,7 +3,7 @@ package org.omnetpp.experimental.animation.live.model;
 import org.omnetpp.experimental.animation.model.IRuntimeGate;
 
 //XXX should be Java wrapper around cGate
-public class LiveGate extends LiveObject implements IRuntimeGate {
+public class LiveGate extends LiveMessage implements IRuntimeGate {
 	private int id;
 	private String name;
 	private int index;

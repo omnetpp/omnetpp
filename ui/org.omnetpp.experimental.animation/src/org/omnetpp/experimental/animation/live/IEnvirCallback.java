@@ -1,6 +1,6 @@
 package org.omnetpp.experimental.animation.live;
 
-import org.omnetpp.experimental.animation.live.model.LiveObject;
+import org.omnetpp.experimental.animation.live.model.LiveMessage;
 import org.omnetpp.experimental.animation.model.IRuntimeGate;
 import org.omnetpp.experimental.animation.model.IRuntimeMessage;
 import org.omnetpp.experimental.animation.model.IRuntimeModule;
@@ -12,7 +12,7 @@ public interface IEnvirCallback {
      * and remove it from object lists currently displayed. cObject's
      * destructor automatically calls this function.
      */
-    public void objectDeleted(LiveObject object);
+    public void objectDeleted(LiveMessage object);
 
     /**
      * Notifies the environment that a message was sent. Details can be

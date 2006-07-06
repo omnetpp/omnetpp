@@ -8,7 +8,7 @@ import org.omnetpp.experimental.animation.model.IRuntimeModule;
 
 
 //XXX should be Java wrapper around cModule
-public class LiveModule extends LiveObject implements IRuntimeModule {
+public class LiveModule extends LiveMessage implements IRuntimeModule {
 	
 	private int id;
 	private String name;
