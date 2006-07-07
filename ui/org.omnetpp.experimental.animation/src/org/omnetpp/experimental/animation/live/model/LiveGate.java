@@ -8,7 +8,7 @@ public class LiveGate extends LiveMessage implements IRuntimeGate {
 	private String name;
 	private int index;
 	private int size;
-	private LiveModule ownerModule;
+	LiveModule ownerModule;
 
 	public int getId() {
 		return id;

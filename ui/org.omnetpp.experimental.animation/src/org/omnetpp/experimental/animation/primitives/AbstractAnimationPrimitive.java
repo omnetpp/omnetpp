@@ -13,8 +13,8 @@ public abstract class AbstractAnimationPrimitive implements IAnimationPrimitive 
 	
 	protected boolean shown;
 	
-	public AbstractAnimationPrimitive(ReplayAnimationController controller, double beginSimulationTime) {
-		this.animationController = controller;
+	public AbstractAnimationPrimitive(ReplayAnimationController animationController, double beginSimulationTime) {
+		this.animationController = animationController;
 		this.beginSimulationTime = beginSimulationTime;
 	}
 
@@ -41,25 +41,33 @@ public abstract class AbstractAnimationPrimitive implements IAnimationPrimitive 
 		return getRootFigure().getLayoutManager();
 	}
 
-	protected void removeFigure(IFigure figure) {
-		getRootFigure().remove(figure);
-	}
-
 	protected void addFigure(IFigure figure) {
 		getRootFigure().add(figure);
 	}
 
+	protected void removeFigure(IFigure figure) {
+		getRootFigure().remove(figure);
+	}
+
 	protected void showFigure(IFigure figure) {
+		figure.setVisible(true);
+
 		if (figure.getParent() == null)
 			addFigure(figure);
-
-		shown = true;
 	}
 
 	protected void hideFigure(IFigure figure) {
-		if (figure.getParent() != null)
-			removeFigure(figure);
-
+		//if (figure.getParent() != null)
+		//	removeFigure(figure);
+		
+		figure.setVisible(false);
+	}
+	
+	protected void show() {
+		shown = true;
+	}
+	
+	protected void hide() {
 		shown = false;
 	}
 

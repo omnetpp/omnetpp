@@ -112,10 +112,10 @@ public abstract class Timer implements Comparable<Timer>, Runnable {
     	run();
     	
     	numberOfActualExecutions++;
-    	calculateNextOccurance();
+    	calculateNextExecution();
     }
     
-    public void calculateNextOccurance() {
+    public void calculateNextExecution() {
     	long currentTime = System.currentTimeMillis();
 
     	if (recurring)

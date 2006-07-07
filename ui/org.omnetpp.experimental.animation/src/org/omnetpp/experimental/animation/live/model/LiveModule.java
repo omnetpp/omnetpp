@@ -134,7 +134,11 @@ public class LiveModule extends LiveMessage implements IRuntimeModule {
 
 	//TODO removeGate, more efficient storage, etc
 	public void addGate(LiveGate gate) {
+		if (gates == null)
+			gates = new ArrayList<LiveGate>();
+		
 		gates.add(gate);
+		gate.ownerModule = this;
 	}
 	
 	public LiveGate getGate(int i) {

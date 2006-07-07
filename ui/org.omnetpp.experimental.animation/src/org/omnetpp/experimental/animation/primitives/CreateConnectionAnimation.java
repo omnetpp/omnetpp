@@ -13,18 +13,18 @@ public class CreateConnectionAnimation extends AbstractAnimationPrimitive {
 
 	private GateId targetGateId;
 
-	public CreateConnectionAnimation(ReplayAnimationController controller,
+	public CreateConnectionAnimation(ReplayAnimationController animationController,
 									 double beginSimulationTime,
 									 GateId sourceGateId,
 									 GateId targetGateId) {
-		super(controller, beginSimulationTime);
+		super(animationController, beginSimulationTime);
 		this.sourceGateId = sourceGateId;
 		this.targetGateId = targetGateId;
 		this.connectionFigure = new ConnectionFigure();
 	}
 	
-	public void gotoSimulationTime(double t) {
-		if (t >= beginSimulationTime) {
+	public void gotoSimulationTime(double simulationTime) {
+		if (simulationTime >= beginSimulationTime) {
 			connectionFigure.setSourceAnchor(getGateAnchor(sourceGateId));
 			connectionFigure.setTargetAnchor(getGateAnchor(targetGateId));
 			animationController.setFigure(new ConnectionId(sourceGateId.getModuleId(), sourceGateId.getGateId()), connectionFigure);

@@ -7,6 +7,7 @@ import java.util.Map;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.omnetpp.common.displaymodel.DisplayString;
+import org.omnetpp.experimental.animation.controller.IAnimationListener;
 import org.omnetpp.experimental.animation.controller.Timer;
 import org.omnetpp.experimental.animation.controller.TimerQueue;
 import org.omnetpp.experimental.animation.model.ConnectionId;
@@ -72,6 +73,8 @@ public class ReplayAnimationController {
 	 * Direction of the simulation in time.
 	 */
 	protected boolean forward;
+	
+	protected ArrayList<IAnimationListener> animationListeners = new ArrayList<IAnimationListener>();
 
 	public ReplayAnimationController(AnimationCanvas canvas) {
 		this.canvas = canvas;
@@ -82,13 +85,20 @@ public class ReplayAnimationController {
 		this.stopSimulationTime = -1;
 		this.simulation = createSimulation();
 
-		timerQueue.addTimer(simulationTimer);
+		timerQueue.start();
 	}
 	
+	/**
+	 * Returns the canvas on which the animation figures are drawn.
+	 */
 	public AnimationCanvas getCanvas() {
 		return canvas;
 	}
 	
+	/**
+	 * Returns the simulation attached to this controller.
+	 * It is currently either a LiveSimulation or a ReplaySimulation.
+	 */
 	public IRuntimeSimulation getSimulation() {
 		return simulation;
 	}
@@ -113,7 +123,28 @@ public class ReplayAnimationController {
 	public TimerQueue getTimerQueue() {
 		return timerQueue;
 	}
-
+	
+	/**
+	 * Returns the current simulation time
+	 */
+	public double getSimulationTime() {
+		return startSimulationTime + (forward ? 1 : -1) * simulationTimeStep * simulationTimer.getNumberOfExecutions();
+	}
+	
+	public void setSimulationTime(double simulationTime) {
+		this.simulationTime = simulationTime;
+		simulationTimeChanged();		
+	}
+	
+	public int getEventNumber() {
+		// TODO:
+		return -1;
+	}
+	
+	public void addAnimationListener(IAnimationListener listener) {
+		animationListeners.add(listener);
+	}
+	
 	public void animateBack() {
 		animateStart(false, 0.01, 0);
 	}
@@ -127,38 +158,25 @@ public class ReplayAnimationController {
 	}
 	
 	public void animateStep() {
-		IAnimationPrimitive animationPrimitive = forward ? getNextAnimationPrimitive() : getPreviousAnimationPrimitive();
+		IAnimationPrimitive animationPrimitive = getNextAnimationPrimitive();
 		
-		if (animationPrimitive == null && forward)
-			animationPrimitive = loadNextAnimationPrimitive();
+		if (animationPrimitive == null) {
+			loadNextAnimationPrimitives();
+			animationPrimitive = getNextAnimationPrimitive();
+		}
 
 		if (animationPrimitive != null)
-			animateStart(forward, 0.01, forward ? animationPrimitive.getBeginSimulationTime() : animationPrimitive.getEndSimulationTime());
+			animateStart(true, 0.01, animationPrimitive.getBeginSimulationTime());
 		else if (animationPrimitives.size() != 0)
-			if (forward)
-				animateStart(forward, 0.01, animationPrimitives.get(animationPrimitives.size() - 1).getEndSimulationTime());
-			else
-				animateStart(forward, 0.01, animationPrimitives.get(0).getBeginSimulationTime());				
+			animateStart(true, 0.01, animationPrimitives.get(animationPrimitives.size() - 1).getEndSimulationTime());
 	}
 	
 	public void animatePlay() {
 		animateStart(true, 0.01, -1);
 	}
 
-	protected void animateStart(boolean forward, double simulationTimeStep, double stopSimulationTime) {
-		this.forward = forward;
-		this.simulationTimeStep = simulationTimeStep;
-		this.stopSimulationTime = stopSimulationTime;
-		
-		if (timerQueue.isRunning())
-			startSimulationTime = simulationTime;
-
-		simulationTimer.reset();
-		timerQueue.start();
-	}
-
 	public void animateStop() {
-		timerQueue.stop();
+		timerQueue.removeTimer(simulationTimer);
 		startSimulationTime = simulationTime;
 	}
 
@@ -177,11 +195,12 @@ public class ReplayAnimationController {
 	}
 	
 	public void setSpeed(int speed) {
-		simulationTimeStep = (double)speed / 100.0;
+		// TODO: this is wrong simulationTimeStep = (double)speed / 100.0;
 	}
 
 	public void gotoSimulationTime(double simulationTime) {
-		this.simulationTime = startSimulationTime = simulationTime;
+		setSimulationTime(simulationTime);
+		startSimulationTime = simulationTime;
 		simulationTimer.reset();
 		gotoSimulationTime();
 	}
@@ -191,7 +210,8 @@ public class ReplayAnimationController {
 		
 		if (nextAnimationPrimitive == null || simulationTime > nextAnimationPrimitive.getBeginSimulationTime()) {
 			while (true) {
-				nextAnimationPrimitive = loadNextAnimationPrimitive();
+				loadNextAnimationPrimitives();
+				nextAnimationPrimitive = getNextAnimationPrimitive();
 				
 				if (nextAnimationPrimitive == null) {
 					if (forward && stopSimulationTime == -1)
@@ -203,8 +223,8 @@ public class ReplayAnimationController {
 			}
 		}
 
-		if (stopSimulationTime != -1 && forward ? simulationTime > stopSimulationTime : simulationTime < stopSimulationTime) {
-			simulationTime = stopSimulationTime;
+		if (stopSimulationTime != -1 && forward ? simulationTime >= stopSimulationTime : simulationTime <= stopSimulationTime) {
+			setSimulationTime(stopSimulationTime);
 			animateStop();
 		}
 
@@ -219,15 +239,38 @@ public class ReplayAnimationController {
 	 */
 	public class SimulationTimer extends Timer {
 		public SimulationTimer() {
-			super(10, true, false);
+			super(20, true, false);
 		}
 
 		public void run() {
-			simulationTime = startSimulationTime + (forward ? 1 : -1) * simulationTimeStep * getNumberOfExecutions();
+			setSimulationTime(getSimulationTime());
 			//System.out.println("Setting simulation time at: " + System.currentTimeMillis() + " to: " + simulationTime);
 			gotoSimulationTime();
 		}
 	};
+
+	protected void animateStart(boolean forward, double simulationTimeStep, double stopSimulationTime) {
+		this.forward = forward;
+		this.simulationTimeStep = simulationTimeStep;
+		this.stopSimulationTime = stopSimulationTime;
+		
+		timerQueue.resetTimer(simulationTimer);
+
+		if (timerQueue.hasTimer(simulationTimer))
+			startSimulationTime = simulationTime;
+		else
+			timerQueue.addTimer(simulationTimer);
+	}
+
+	protected void simulationTimeChanged() {
+		for (IAnimationListener listener : animationListeners)
+			listener.simulationTimeChanged(simulationTime);
+	}
+
+	protected void eventNumberChanged() {
+		for (IAnimationListener listener : animationListeners)
+			listener.eventNumberChanged(getEventNumber());
+	}
 
 	/**
 	 * Returns the index of the last animation primitive that has already been reached by the simulation.
@@ -279,7 +322,10 @@ public class ReplayAnimationController {
 	// TODO: this should read animation primitives from a file
 	protected ArrayList<IAnimationPrimitive> animationPrimitivesToBeRead;
 	
-	protected IAnimationPrimitive loadNextAnimationPrimitive() {
+	/**
+	 * Loads at least one animation primitive that begins after the current simulation time.
+	 */
+	protected void loadNextAnimationPrimitives() {
 		if (animationPrimitivesToBeRead == null) {
 			ReplayModule childModule1 = new ReplayModule((ReplayModule)simulation.getRootModule(), 1);
 			ReplayModule childModule2 = new ReplayModule((ReplayModule)simulation.getRootModule(), 2);
@@ -297,12 +343,14 @@ public class ReplayAnimationController {
 		
 		IAnimationPrimitive animationPrimitive = null;
 		
-		if (animationPrimitivesToBeRead.size() != 0)
+		while (animationPrimitivesToBeRead.size() != 0) {
 			animationPrimitive = animationPrimitivesToBeRead.remove(0);
-		
-		if (animationPrimitive != null)
-			animationPrimitives.add(animationPrimitive);
-		
-		return animationPrimitive;
+			
+			if (animationPrimitive != null)
+				animationPrimitives.add(animationPrimitive);
+			
+			if (animationPrimitive.getBeginSimulationTime() > simulationTime)
+				break;
+		}
 	}
 }

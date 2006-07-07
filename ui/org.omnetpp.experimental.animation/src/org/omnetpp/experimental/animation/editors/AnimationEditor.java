@@ -7,9 +7,12 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.layout.RowData;
+import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.CoolBar;
 import org.eclipse.swt.widgets.CoolItem;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Slider;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
@@ -17,26 +20,27 @@ import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.part.EditorPart;
+import org.omnetpp.experimental.animation.controller.IAnimationListener;
 import org.omnetpp.experimental.animation.live.LiveAnimationController;
 import org.omnetpp.experimental.animation.replay.ReplayAnimationController;
 import org.omnetpp.experimental.animation.widgets.AnimationCanvas;
 
-public class AnimationEditor extends EditorPart {
+public class AnimationEditor extends EditorPart implements IAnimationListener {
 	private ReplayAnimationController animationController;
+
+	private Label simulationTimeLabel;
+
+	private Label eventNumberLabel;
 	
 	public AnimationEditor() {
 	}
 
 	@Override
 	public void doSave(IProgressMonitor monitor) {
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
 	public void doSaveAs() {
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
@@ -49,13 +53,11 @@ public class AnimationEditor extends EditorPart {
 
 	@Override
 	public boolean isDirty() {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
 	public boolean isSaveAsAllowed() {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
@@ -63,9 +65,11 @@ public class AnimationEditor extends EditorPart {
 	public void createPartControl(Composite parent) {
 		parent.setLayout(new GridLayout());
 
+		// user interface controls
 		CoolBar coolBar = new CoolBar(parent, SWT.NONE);
 		coolBar.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
 		
+		// navigation tool bar
 		ToolBar toolBar = new ToolBar(coolBar, SWT.NONE);
 
 	    ToolItem toolItem = new ToolItem(toolBar, SWT.PUSH);
@@ -132,12 +136,23 @@ public class AnimationEditor extends EditorPart {
 			}
 	    });
 	    
+	    // navigation buttons
 		CoolItem coolItem = new CoolItem(coolBar, SWT.NONE);
 		coolItem.setControl(toolBar);
-		coolItem.setSize(coolItem.computeSize(toolBar.getSize().x, toolBar.getSize().y));
 		coolItem.setSize(new Point(300, 25));
-		coolItem.setMinimumSize(toolBar.getSize());
 
+		// simulation time label
+		Composite labels = new Composite(coolBar, SWT.NONE);
+		labels.setLayout(new RowLayout(SWT.HORIZONTAL));
+		simulationTimeLabel = new Label(labels, SWT.NONE);
+		simulationTimeLabel.setLayoutData(new RowData(100, 25));
+		eventNumberLabel = new Label(labels, SWT.NONE);
+		eventNumberLabel.setLayoutData(new RowData(100, 25));
+	    coolItem = new CoolItem(coolBar, SWT.NONE);
+	    coolItem.setControl(labels);
+		coolItem.setSize(new Point(230, 25));
+
+		// speed slider
 	    Slider slider = new Slider(coolBar, SWT.HORIZONTAL);
 	    slider.setMinimum(0);
 	    slider.setMaximum(10);
@@ -149,25 +164,30 @@ public class AnimationEditor extends EditorPart {
 	    });
 	    coolItem = new CoolItem(coolBar, SWT.NONE);
 		coolItem.setControl(slider);
-		coolItem.setSize(coolItem.computeSize(slider.getSize().x, slider.getSize().y));
-		coolItem.setMinimumSize(slider.getSize());
 
 	    AnimationCanvas canvas = new AnimationCanvas(parent, SWT.NONE);
 		canvas.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-		
-//		animationController = new ReplayAnimationController(canvas);
-		animationController = new LiveAnimationController(canvas);
+
+		animationController = new ReplayAnimationController(canvas);
+//		animationController = new LiveAnimationController(canvas);
+		animationController.addAnimationListener(this);
 	}
 
 	@Override
 	public void setFocus() {
-		// TODO Auto-generated method stub
-		
 	}
 	
 	@Override
 	public void dispose() {
 		animationController.animateStop();
 		super.dispose();
+	}
+
+	public void eventNumberChanged(int eventNumber) {
+		eventNumberLabel.setText(String.valueOf(eventNumber));
+	}
+
+	public void simulationTimeChanged(double simulationTime) {
+		simulationTimeLabel.setText(String.valueOf(simulationTime));
 	}
 }

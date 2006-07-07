@@ -15,11 +15,11 @@ public class SendMessageAnimation extends AbstractAnimationPrimitive {
 	
 	private Ellipse message;
 	
-	public SendMessageAnimation(ReplayAnimationController controller,
+	public SendMessageAnimation(ReplayAnimationController animationController,
 								double beginSimulationTime,
 								double endSimulationTime,
 								ConnectionId connectionId) {
-		super(controller, beginSimulationTime);
+		super(animationController, beginSimulationTime);
 		this.endSimulationTime = endSimulationTime;
 		this.connectionId = connectionId;
 		this.message = new Ellipse();
@@ -32,13 +32,13 @@ public class SendMessageAnimation extends AbstractAnimationPrimitive {
 		return endSimulationTime;
 	}
 	
-	public void gotoSimulationTime(double t) {
-		if (beginSimulationTime <= t && t <= endSimulationTime) {
+	public void gotoSimulationTime(double simulationTime) {
+		if (beginSimulationTime <= simulationTime && simulationTime <= endSimulationTime) {
 			ConnectionFigure connectionFigure = (ConnectionFigure)animationController.getFigure(connectionId);
 
 			Point p1 = connectionFigure.getStart();
 			Point p2 = connectionFigure.getEnd();
-			double alpha = (t - beginSimulationTime) / (endSimulationTime - beginSimulationTime);
+			double alpha = (simulationTime - beginSimulationTime) / (endSimulationTime - beginSimulationTime);
 			Point p = new Point((1 - alpha) * p1.x + alpha * p2.x, (1 - alpha) * p1.y + alpha * p2.y);
 			setConstraint(message, new Rectangle(p.x - 3, p.y - 3, 7, 7));
 

@@ -20,13 +20,13 @@ public class LabelAnimation extends AbstractAnimationPrimitive {
 	
 	private Timer changeColorTimer;
 
-	public LabelAnimation(ReplayAnimationController controller,
+	public LabelAnimation(ReplayAnimationController animationController,
 						  String text,
 						  double beginSimulationTime,
 						  double endSimulationTime,
 						  Point startPosition,
 						  Point endPosition) {
-		super(controller, beginSimulationTime);
+		super(animationController, beginSimulationTime);
 		this.endSimulationTime = endSimulationTime;
 		this.startPosition = startPosition;
 		this.endPosition = endPosition;
@@ -38,11 +38,11 @@ public class LabelAnimation extends AbstractAnimationPrimitive {
 		};
 	}
 	
-	public void gotoSimulationTime(double t) {
-		if (beginSimulationTime <= t && t <= endSimulationTime) {
+	public void gotoSimulationTime(double simulationTime) {
+		if (beginSimulationTime <= simulationTime && simulationTime <= endSimulationTime) {
 			Point p1 = startPosition.getCopy();
 			Point p2 = endPosition.getCopy();
-			double alpha = (t - beginSimulationTime) / (endSimulationTime - beginSimulationTime);
+			double alpha = (simulationTime - beginSimulationTime) / (endSimulationTime - beginSimulationTime);
 			Point p = new Point((1 - alpha) * p1.x + alpha * p2.x, (1 - alpha) * p1.y + alpha * p2.y);
 			setConstraint(label, new Rectangle(p, new Dimension(50, 20)));
 			showFigure(label);

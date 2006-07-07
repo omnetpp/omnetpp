@@ -17,40 +17,48 @@ public class BubbleAnimation extends AbstractAnimationPrimitive {
 	
 	private Timer bubbleTimer;
 	
-	public BubbleAnimation(ReplayAnimationController controller,
-						  String text,
-						  double beginSimulationTime,
-						  Point location) {
-		super(controller, beginSimulationTime);
+	private boolean expired;
+	
+	public BubbleAnimation(ReplayAnimationController animationController,
+						   String text,
+						   double beginSimulationTime,
+						   Point location) {
+		super(animationController, beginSimulationTime);
 		this.background = new RoundedRectangle();
 		this.label = new Label(text);
 		this.location = location;
 		this.bubbleTimer = new Timer(3000, false, false) {
 			public void run() {
+				expired = true;
 				hide();
-				// to avoid to show it again
-				shown = true;
 			}
 		};
 	}
 	
-	public void gotoSimulationTime(double t) {
-		if ((beginSimulationTime < t && !shown) || beginSimulationTime == t) {
-			Rectangle r = new Rectangle(location, new Dimension(50, 20));
-			setConstraint(background, r);
-			setConstraint(label, r);
-			show();
+	public void gotoSimulationTime(double simulationTime) {
+		if (beginSimulationTime <= simulationTime) {
+			if (!expired) {
+				Rectangle r = new Rectangle(location, new Dimension(50, 20));
+				setConstraint(background, r);
+				setConstraint(label, r);
+				show();
+			}
 		}
-		else
+		else {
+			expired = false;
 			hide();
+		}
 	}
 	
 	protected void show() {
-		if (!shown) {
+		if (!shown && !expired) {
 			showFigure(background);
 			showFigure(label);
+			bubbleTimer.reset();
 			getTimerQueue().addTimer(bubbleTimer);
 		}
+		
+		super.show();
 	}
 	
 	protected void hide() {
@@ -59,5 +67,7 @@ public class BubbleAnimation extends AbstractAnimationPrimitive {
 			hideFigure(label);
 			getTimerQueue().removeTimer(bubbleTimer);
 		}
+		
+		super.hide();
 	}
 }

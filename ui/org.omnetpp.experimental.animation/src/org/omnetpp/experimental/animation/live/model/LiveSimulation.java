@@ -4,10 +4,11 @@ import org.omnetpp.experimental.animation.live.IEnvirCallback;
 import org.omnetpp.experimental.animation.model.IRuntimeSimulation;
 
 //XXX should be Java wrapper around cSimulation
-public class LiveSimulation extends LiveMessage implements IRuntimeSimulation {
+public class LiveSimulation implements IRuntimeSimulation {
 	private LiveModule rootModule;
 	private IEnvirCallback ev;
 	private int eventNumber = -1;
+	private boolean finished;
 	
 	public LiveSimulation(LiveModule rootModule, IEnvirCallback ev) {
 		this.rootModule = rootModule;
@@ -30,15 +31,27 @@ public class LiveSimulation extends LiveMessage implements IRuntimeSimulation {
 		return eventNumber;
 	}
 	
+	public boolean isFinished() {
+		return finished;
+	}
+	
+	// TODO:
+	LiveModule module1 = new LiveModule(rootModule, 1);
+	LiveModule module2 = new LiveModule(rootModule, 2);
+	LiveGate gate1 = new LiveGate();
+	LiveGate gate2 = new LiveGate();
+
 	public void doOneEvent() {
 		switch (eventNumber) {
 		case -1: // initialize
-			ev.moduleCreated(new LiveModule(rootModule, 1));
-			ev.moduleCreated(new LiveModule(rootModule, 2));
+			module1.addGate(gate1);
+			module2.addGate(gate2);
+			ev.moduleCreated(module1);
+			ev.moduleCreated(module2);
+			ev.connectionCreated(gate1);
 			break;
 		case 0:
 //			animationPrimitivesToBeRead.add(new SendMessageAnimation(this, 0, 3, new ConnectionId(0, 0)));
-//			ev.messageSent(null, null);
 			break;
 		case 1:
 			ev.bubble(rootModule, "Hello");
@@ -46,6 +59,10 @@ public class LiveSimulation extends LiveMessage implements IRuntimeSimulation {
 //			ev.messageSent(null, null);
 			break;
 		case 2:
+			LiveMessage msg = new LiveMessage();
+			msg.setSendingTime(getSimulationTime());
+			msg.setArrivalTime(getSimulationTime() * 2);
+			ev.messageSent(msg, gate1);
 //			animationPrimitivesToBeRead.add(new SendMessageAnimation(this, 6, 9, new ConnectionId(2, 1)));
 //			ev.messageSent(null, null);
 			break;
@@ -53,11 +70,16 @@ public class LiveSimulation extends LiveMessage implements IRuntimeSimulation {
 			break;
 		case 4:
 			break;
+		case 1000:
+			finished = true;
+			break;
 		}
-		eventNumber++;
+		
+		if (!finished)
+			eventNumber++;
 	}
 	
 	public double getSimulationTime() {
-		return eventNumber / 100.0;
+		return eventNumber / 10.0;
 	}
 }

@@ -16,18 +16,18 @@ public class CreateModuleAnimation extends AbstractAnimationPrimitive {
 	
 	private SubmoduleFigure moduleFigure;
 
-	public CreateModuleAnimation(ReplayAnimationController controller,
+	public CreateModuleAnimation(ReplayAnimationController animationController,
 								 double beginSimulationTime,
 								 IRuntimeModule module,
 								 Point location) {
-		super(controller, beginSimulationTime);
+		super(animationController, beginSimulationTime);
 		this.module = module;
 		this.location = location;
 		this.moduleFigure = new SubmoduleFigure();
 	}
 	
-	public void gotoSimulationTime(double t) {
-		if (t >= beginSimulationTime) {
+	public void gotoSimulationTime(double simulationTime) {
+		if (simulationTime >= beginSimulationTime) {
 			animationController.setFigure(new GateId(module.getId(), 0), new GateAnchor(moduleFigure, "in"));
 			animationController.setFigure(new GateId(module.getId(), 1), new GateAnchor(moduleFigure, "out"));
 
@@ -36,7 +36,7 @@ public class CreateModuleAnimation extends AbstractAnimationPrimitive {
 			// TODO: remove this hackish stuff
 			moduleFigure.setDisplayString(new DisplayString(null, null, "i=block/cogwheel"));
 			if (module.getId() == 2)
-				setConstraint(moduleFigure, new Rectangle(location.x + (int)(t * 30), location.y, -1, -1));
+				setConstraint(moduleFigure, new Rectangle(location.x + (int)(simulationTime * 30), location.y, -1, -1));
 			else
 				setConstraint(moduleFigure, new Rectangle(location.x, location.y, -1, -1));
 
