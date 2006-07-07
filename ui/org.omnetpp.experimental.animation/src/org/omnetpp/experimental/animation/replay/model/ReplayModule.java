@@ -117,17 +117,30 @@ public class ReplayModule implements IRuntimeModule {
 
 	public ReplayModule getSubmodule(String name) {
 		//FIXME use more efficient data structure to avoid linear search! e.g. map of submodule vectors etc
-		for (ReplayModule m : submodules)
-			if (name.equals(m.getName()) && m.getSize()<0)
-				return m;
+		if (submodules != null)
+			for (ReplayModule m : submodules)
+				if (name.equals(m.getName()) && m.getSize()<0)
+					return m;
+
 		return null;
 	}
 
 	public ReplayModule getSubmodule(String name, int index) {
 		//FIXME use more efficient data structure to avoid linear search! e.g. map of submodule vectors etc
-		for (ReplayModule m : submodules)
-			if (name.equals(m.getName()) && m.getIndex()==index)
-				return m;
+		if (submodules != null)
+			for (ReplayModule m : submodules)
+				if (name.equals(m.getName()) && m.getIndex()==index)
+					return m;
+
+		return null;
+	}
+
+	public ReplayModule getSubmoduleByID(int id) {
+		if (submodules != null)
+			for (ReplayModule submodule : submodules)
+				if (submodule.getId() == id)
+					return submodule;
+		
 		return null;
 	}
 
@@ -142,5 +155,27 @@ public class ReplayModule implements IRuntimeModule {
 
 	public int getNumGates() {
 		return gates.size();
+	}
+
+	@Override
+	public int hashCode() {
+		final int PRIME = 31;
+		int result = 1;
+		result = PRIME * result + id;
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		final ReplayModule other = (ReplayModule) obj;
+		if (id != other.id)
+			return false;
+		return true;
 	}
 }

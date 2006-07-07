@@ -19,7 +19,7 @@ public class LiveSimulation implements IRuntimeSimulation {
 		return rootModule;
 	}
 
-	public LiveModule getModuleByID(String fullPath) {
+	public LiveModule getModuleByID(int id) {
 		return null; //TODO
 	}
 
@@ -61,7 +61,7 @@ public class LiveSimulation implements IRuntimeSimulation {
 		case 2:
 			LiveMessage msg = new LiveMessage();
 			msg.setSendingTime(getSimulationTime());
-			msg.setArrivalTime(getSimulationTime() * 2);
+			msg.setArrivalTime(getSimulationTime() * 10);
 			ev.messageSent(msg, gate1);
 //			animationPrimitivesToBeRead.add(new SendMessageAnimation(this, 6, 9, new ConnectionId(2, 1)));
 //			ev.messageSent(null, null);

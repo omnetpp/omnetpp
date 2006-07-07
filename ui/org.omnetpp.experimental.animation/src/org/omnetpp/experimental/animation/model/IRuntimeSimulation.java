@@ -7,5 +7,5 @@ package org.omnetpp.experimental.animation.model;
 public interface IRuntimeSimulation {
 	public IRuntimeModule getRootModule();
 	public IRuntimeModule getModuleByPath(String fullPath);
-	public IRuntimeModule getModuleByID(String fullPath);
+	public IRuntimeModule getModuleByID(int id);
 }

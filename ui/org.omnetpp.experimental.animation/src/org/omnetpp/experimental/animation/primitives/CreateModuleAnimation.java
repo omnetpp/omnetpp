@@ -2,7 +2,6 @@ package org.omnetpp.experimental.animation.primitives;
 
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.Rectangle;
-import org.omnetpp.common.displaymodel.DisplayString;
 import org.omnetpp.experimental.animation.model.GateId;
 import org.omnetpp.experimental.animation.model.IRuntimeModule;
 import org.omnetpp.experimental.animation.replay.ReplayAnimationController;
@@ -28,18 +27,11 @@ public class CreateModuleAnimation extends AbstractAnimationPrimitive {
 	
 	public void gotoSimulationTime(double simulationTime) {
 		if (simulationTime >= beginSimulationTime) {
+			animationController.setFigure(module, moduleFigure);
 			animationController.setFigure(new GateId(module.getId(), 0), new GateAnchor(moduleFigure, "in"));
 			animationController.setFigure(new GateId(module.getId(), 1), new GateAnchor(moduleFigure, "out"));
-
 			showFigure(moduleFigure);
-
-			// TODO: remove this hackish stuff
-			moduleFigure.setDisplayString(new DisplayString(null, null, "i=block/cogwheel"));
-			if (module.getId() == 2)
-				setConstraint(moduleFigure, new Rectangle(location.x + (int)(simulationTime * 30), location.y, -1, -1));
-			else
-				setConstraint(moduleFigure, new Rectangle(location.x, location.y, -1, -1));
-
+			setConstraint(moduleFigure, new Rectangle(location.x, location.y, -1, -1));
 		}
 		else {
 			hideFigure(moduleFigure);

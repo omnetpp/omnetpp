@@ -13,12 +13,13 @@ public class ReplaySimulation implements IRuntimeSimulation {
 		return rootModule;
 	}
 
-	public ReplayModule getModuleByID(String fullPath) {
-		return null;
+	public ReplayModule getModuleByID(int id) {
+		// TODO: this is inefficient and wrong
+		return rootModule.getSubmoduleByID(id);
 	}
 
 	public ReplayModule getModuleByPath(String fullPath) {
-		return null;
+		// TODO: well this is clearly wrong
+		return rootModule;
 	}
-
 }

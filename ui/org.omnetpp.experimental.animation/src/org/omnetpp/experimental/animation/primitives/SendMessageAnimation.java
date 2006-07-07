@@ -36,13 +36,15 @@ public class SendMessageAnimation extends AbstractAnimationPrimitive {
 		if (beginSimulationTime <= simulationTime && simulationTime <= endSimulationTime) {
 			ConnectionFigure connectionFigure = (ConnectionFigure)animationController.getFigure(connectionId);
 
-			Point p1 = connectionFigure.getStart();
-			Point p2 = connectionFigure.getEnd();
-			double alpha = (simulationTime - beginSimulationTime) / (endSimulationTime - beginSimulationTime);
-			Point p = new Point((1 - alpha) * p1.x + alpha * p2.x, (1 - alpha) * p1.y + alpha * p2.y);
-			setConstraint(message, new Rectangle(p.x - 3, p.y - 3, 7, 7));
+			if (connectionFigure != null) {
+				Point p1 = connectionFigure.getStart();
+				Point p2 = connectionFigure.getEnd();
+				double alpha = (simulationTime - beginSimulationTime) / (endSimulationTime - beginSimulationTime);
+				Point p = new Point((1 - alpha) * p1.x + alpha * p2.x, (1 - alpha) * p1.y + alpha * p2.y);
+				setConstraint(message, new Rectangle(p.x - 3, p.y - 3, 7, 7));
 
-			showFigure(message);
+				showFigure(message);
+			}
 		}
 		else
 			hideFigure(message);

@@ -18,19 +18,19 @@ import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
+import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.part.EditorPart;
 import org.omnetpp.experimental.animation.controller.IAnimationListener;
-import org.omnetpp.experimental.animation.live.LiveAnimationController;
 import org.omnetpp.experimental.animation.replay.ReplayAnimationController;
 import org.omnetpp.experimental.animation.widgets.AnimationCanvas;
 
 public class AnimationEditor extends EditorPart implements IAnimationListener {
 	private ReplayAnimationController animationController;
 
-	private Label simulationTimeLabel;
+	private Label replaySimulationTimeLabel;
 
-	private Label eventNumberLabel;
+	private Label replayEventNumberLabel;
 	
 	public AnimationEditor() {
 	}
@@ -144,10 +144,10 @@ public class AnimationEditor extends EditorPart implements IAnimationListener {
 		// simulation time label
 		Composite labels = new Composite(coolBar, SWT.NONE);
 		labels.setLayout(new RowLayout(SWT.HORIZONTAL));
-		simulationTimeLabel = new Label(labels, SWT.NONE);
-		simulationTimeLabel.setLayoutData(new RowData(100, 25));
-		eventNumberLabel = new Label(labels, SWT.NONE);
-		eventNumberLabel.setLayoutData(new RowData(100, 25));
+		replaySimulationTimeLabel = new Label(labels, SWT.NONE);
+		replaySimulationTimeLabel.setLayoutData(new RowData(100, 25));
+		replayEventNumberLabel = new Label(labels, SWT.NONE);
+		replayEventNumberLabel.setLayoutData(new RowData(100, 25));
 	    coolItem = new CoolItem(coolBar, SWT.NONE);
 	    coolItem.setControl(labels);
 		coolItem.setSize(new Point(230, 25));
@@ -167,8 +167,8 @@ public class AnimationEditor extends EditorPart implements IAnimationListener {
 
 	    AnimationCanvas canvas = new AnimationCanvas(parent, SWT.NONE);
 		canvas.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-
-		animationController = new ReplayAnimationController(canvas);
+		
+		animationController = new ReplayAnimationController(canvas, ((IFileEditorInput)getEditorInput()).getFile());
 //		animationController = new LiveAnimationController(canvas);
 		animationController.addAnimationListener(this);
 	}
@@ -183,11 +183,17 @@ public class AnimationEditor extends EditorPart implements IAnimationListener {
 		super.dispose();
 	}
 
-	public void eventNumberChanged(int eventNumber) {
-		eventNumberLabel.setText(String.valueOf(eventNumber));
+	public void replayEventNumberChanged(int eventNumber) {
+		replayEventNumberLabel.setText(String.valueOf(eventNumber));
 	}
 
-	public void simulationTimeChanged(double simulationTime) {
-		simulationTimeLabel.setText(String.valueOf(simulationTime));
+	public void replaySimulationTimeChanged(double simulationTime) {
+		replaySimulationTimeLabel.setText(String.valueOf(simulationTime));
+	}
+
+	public void liveEventNumberChanged(int eventNumber) {
+	}
+
+	public void liveSimulationTimeChanged(double simulationTime) {
 	}
 }

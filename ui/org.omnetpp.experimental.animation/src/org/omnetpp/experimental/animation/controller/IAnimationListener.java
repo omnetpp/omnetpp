@@ -1,7 +1,11 @@
 package org.omnetpp.experimental.animation.controller;
 
 public interface IAnimationListener {
-	public void simulationTimeChanged(double simulationTime);
+	public void replaySimulationTimeChanged(double simulationTime);
 	
-	public void eventNumberChanged(int eventNumber);
+	public void replayEventNumberChanged(int eventNumber);
+
+	public void liveSimulationTimeChanged(double simulationTime);
+	
+	public void liveEventNumberChanged(int eventNumber);
 }

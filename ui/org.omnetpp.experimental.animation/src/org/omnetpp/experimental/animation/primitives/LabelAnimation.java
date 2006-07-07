@@ -31,7 +31,7 @@ public class LabelAnimation extends AbstractAnimationPrimitive {
 		this.startPosition = startPosition;
 		this.endPosition = endPosition;
 		this.label = new Label(text);
-		this.changeColorTimer = new Timer(10, true, false) {
+		this.changeColorTimer = new Timer(10, true, true) {
 			public void run() {
 				label.setForegroundColor(new Color(null, (int)(changeColorTimer.getNumberOfExecutions() % 255), 0, 0));
 			}

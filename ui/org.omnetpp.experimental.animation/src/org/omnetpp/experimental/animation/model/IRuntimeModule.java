@@ -3,7 +3,6 @@ package org.omnetpp.experimental.animation.model;
 import java.util.List;
 
 import org.omnetpp.common.displaymodel.DisplayString;
-import org.omnetpp.experimental.animation.replay.model.ReplayModule;
 
 public interface IRuntimeModule {
 	

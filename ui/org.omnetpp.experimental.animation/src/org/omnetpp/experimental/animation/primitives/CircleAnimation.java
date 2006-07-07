@@ -24,7 +24,7 @@ public class CircleAnimation extends AbstractAnimationPrimitive {
 		this.location = location;
 		this.endSimulationTime = endSimulationTime;
 		this.circle.setFill(false);
-		this.radiusTimer = new Timer(20, false, false) {
+		this.radiusTimer = new Timer(20, true, true) {
 			public void run() {
 				setRadius(CircleAnimation.this.animationController.getSimulationTime());
 			}
@@ -57,6 +57,8 @@ public class CircleAnimation extends AbstractAnimationPrimitive {
 			radiusTimer.reset();
 			getTimerQueue().addTimer(radiusTimer);
 		}
+		
+		super.show();
 	}
 	
 	protected void hide() {
@@ -64,5 +66,7 @@ public class CircleAnimation extends AbstractAnimationPrimitive {
 			hideFigure(circle);
 			getTimerQueue().removeTimer(radiusTimer);
 		}
+		
+		super.hide();
 	}
 }

@@ -1,8 +1,6 @@
 package org.omnetpp.experimental.animation.live;
 
 import org.eclipse.draw2d.geometry.Point;
-import org.eclipse.draw2d.geometry.Rectangle;
-import org.omnetpp.common.displaymodel.DisplayString;
 import org.omnetpp.experimental.animation.live.model.LiveMessage;
 import org.omnetpp.experimental.animation.live.model.LiveModule;
 import org.omnetpp.experimental.animation.live.model.LiveSimulation;
@@ -19,12 +17,10 @@ import org.omnetpp.experimental.animation.primitives.CreateModuleAnimation;
 import org.omnetpp.experimental.animation.primitives.SendMessageAnimation;
 import org.omnetpp.experimental.animation.replay.ReplayAnimationController;
 import org.omnetpp.experimental.animation.widgets.AnimationCanvas;
-import org.omnetpp.figures.CompoundModuleFigure;
-import org.omnetpp.figures.GateAnchor;
 
 public class LiveAnimationController extends ReplayAnimationController implements IEnvirCallback {
 	public LiveAnimationController(AnimationCanvas canvas) {
-		super(canvas);
+		super(canvas, null);
 	}
 
 	public double getLiveSimulationTime() {
@@ -36,6 +32,7 @@ public class LiveAnimationController extends ReplayAnimationController implement
 	}
 
 	public int getEventNumber() {
+		// TODO: temporarily
 		return getLiveEventNumber();
 	}
 	
@@ -88,19 +85,9 @@ public class LiveAnimationController extends ReplayAnimationController implement
 
 	public void objectDeleted(LiveMessage object) {
 	}
-
-	protected IRuntimeSimulation createSimulation() {
-		// TODO: get as parameter
-		LiveModule rootModule = new LiveModule(null, 0);
-
-		CompoundModuleFigure rootModuleFigure = new CompoundModuleFigure();
-		rootModuleFigure.setDisplayString(new DisplayString(null, null, "bgb=400,400;bgi=background/hungary,stretch"));
-		setFigure(new GateId(rootModule.getId(), 0), new GateAnchor(rootModuleFigure, "in"));
-		setFigure(new GateId(rootModule.getId(), 1), new GateAnchor(rootModuleFigure, "out"));
-		canvas.getRootFigure().getLayoutManager().setConstraint(rootModuleFigure, new Rectangle(0, 0, -1, -1));
-		canvas.getRootFigure().add(rootModuleFigure);
-
-		return new LiveSimulation(rootModule, this);
+	
+	protected IRuntimeSimulation createSimulation(IRuntimeModule rootModule) {
+		return new LiveSimulation((LiveModule)rootModule, this);
 	}
 
 	protected LiveSimulation getLiveSimulation() {
