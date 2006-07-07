@@ -27,6 +27,8 @@ public class CreateChartAction extends AbstractScaveAction {
 			return;
 		
 		CreateDatasetDialog dialog = new CreateDatasetDialog(editor.getSite().getShell(), "Create chart");
+		dialog.setFilterParams(activePanel.getFilterParams());
+		dialog.setFilterHints(activePanel.getFilterHints());
 		
 		int result = dialog.open();
 		if (result == Window.OK) {
