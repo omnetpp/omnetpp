@@ -180,11 +180,6 @@ public class ChartSheetItemProvider
 	 */
 	protected void collectNewChildDescriptors(Collection newChildDescriptors, Object object) {
 		super.collectNewChildDescriptors(newChildDescriptors, object);
-
-		newChildDescriptors.add
-			(createChildParameter
-				(ScaveModelPackage.Literals.CHART_SHEET__CHARTS,
-				 ScaveModelFactory.eINSTANCE.createChart()));
 	}
 
 	/**

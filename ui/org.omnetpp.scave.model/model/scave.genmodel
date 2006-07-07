@@ -60,7 +60,7 @@
     </genClasses>
     <genClasses ecoreClass="scave.ecore#//ChartSheet">
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute scave.ecore#//ChartSheet/name"/>
-      <genFeatures children="true" createChild="true" ecoreFeature="ecore:EReference scave.ecore#//ChartSheet/charts"/>
+      <genFeatures children="true" createChild="false" ecoreFeature="ecore:EReference scave.ecore#//ChartSheet/charts"/>
     </genClasses>
     <genClasses ecoreClass="scave.ecore#//Analysis">
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference scave.ecore#//Analysis/inputs"/>
