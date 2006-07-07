@@ -29,11 +29,7 @@
     <genClasses ecoreClass="scave.ecore#//Add">
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference scave.ecore#//Add/excepts"/>
     </genClasses>
-    <genClasses ecoreClass="scave.ecore#//Apply">
-      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute scave.ecore#//Apply/operation"/>
-      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference scave.ecore#//Apply/filters"/>
-      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference scave.ecore#//Apply/params"/>
-    </genClasses>
+    <genClasses ecoreClass="scave.ecore#//Apply"/>
     <genClasses ecoreClass="scave.ecore#//Except"/>
     <genClasses ecoreClass="scave.ecore#//Property">
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute scave.ecore#//Property/name"/>
@@ -64,7 +60,7 @@
     </genClasses>
     <genClasses ecoreClass="scave.ecore#//ChartSheet">
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute scave.ecore#//ChartSheet/name"/>
-      <genFeatures notify="false" createChild="false" ecoreFeature="ecore:EReference scave.ecore#//ChartSheet/charts"/>
+      <genFeatures children="true" createChild="true" ecoreFeature="ecore:EReference scave.ecore#//ChartSheet/charts"/>
     </genClasses>
     <genClasses ecoreClass="scave.ecore#//Analysis">
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference scave.ecore#//Analysis/inputs"/>
@@ -91,5 +87,11 @@
     <genClasses ecoreClass="scave.ecore#//InputFile">
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute scave.ecore#//InputFile/name"/>
     </genClasses>
+    <genClasses image="false" ecoreClass="scave.ecore#//ProcessingOp">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute scave.ecore#//ProcessingOp/operation"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference scave.ecore#//ProcessingOp/filters"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference scave.ecore#//ProcessingOp/params"/>
+    </genClasses>
+    <genClasses ecoreClass="scave.ecore#//Compute"/>
   </genPackages>
 </genmodel:GenModel>
