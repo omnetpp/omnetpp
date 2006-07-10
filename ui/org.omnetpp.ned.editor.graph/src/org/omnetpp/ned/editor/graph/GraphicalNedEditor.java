@@ -433,10 +433,10 @@ public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette {
         LayeredPane printableLayers = (LayeredPane)root.getLayer(LayerConstants.PRINTABLE_LAYERS);
         Layer backDecorationLayer = new Layer();
         backDecorationLayer.setLayoutManager(new DelegatingLayout());
-        printableLayers.addLayerBefore(backDecorationLayer, LayerSupport.LayerID.BackgroundDecoration, LayerConstants.PRIMARY_LAYER);
+        printableLayers.addLayerBefore(backDecorationLayer, LayerSupport.LayerID.BACKGROUND_DECORATION, LayerConstants.PRIMARY_LAYER);
         Layer frontDecorationLayer = new Layer();
         frontDecorationLayer.setLayoutManager(new DelegatingLayout());
-        printableLayers.addLayerAfter(frontDecorationLayer, LayerSupport.LayerID.FrontDecoration, LayerConstants.PRIMARY_LAYER);
+        printableLayers.addLayerAfter(frontDecorationLayer, LayerSupport.LayerID.FRONT_DECORATION, LayerConstants.PRIMARY_LAYER);
 
         // set the root edit part as the main viewer
         viewer.setRootEditPart(root);

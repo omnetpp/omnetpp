@@ -132,6 +132,8 @@ public class ConnectionChooser {
 	
 	// TODO implement popupmenu if only one of the srcModule or destModule is present 
 	// only one side of the connection should be selected
+	// TODO if on,ly one selection is poccible do not offer a menu, but select that connection immediately
+	// TODO show which gates are already connected (do not offer those gates)
 	/**
 	 * This method ask the user which gates should be connected on the source and destination module
 	 * @param askForSrcGate
