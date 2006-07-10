@@ -140,7 +140,10 @@ public class SubmoduleFigure extends ModuleFigure implements HandleBounds {
         rangeFigure.setOutline(borderColor != null &&  borderWidth > 0);
         rangeFigure.setForegroundColor(borderColor);
         rangeFigure.setLineWidth(borderWidth);
-        rangeAttachLayer.revalidate();
+        
+        // TODO: revision by Rudi (this was null when creating with default constructor and setting display string)
+        if (rangeAttachLayer != null)
+        	rangeAttachLayer.revalidate();
     }
     
     public void setTooltipText(String tttext) {
