@@ -10,7 +10,7 @@ import org.omnetpp.experimental.animation.model.IRuntimeSimulation;
 public class LiveSimulation implements IRuntimeSimulation {
 	private LiveModule rootModule;
 	private IEnvirCallback ev;
-	private int eventNumber = -1;
+	private long eventNumber = -1;
 	private boolean finished;
 	private ArrayList<LiveModule> modules = new ArrayList<LiveModule>();
 	private HashMap<String,LiveModule> pathToModuleMap = new HashMap<String, LiveModule>();
@@ -45,7 +45,7 @@ public class LiveSimulation implements IRuntimeSimulation {
 		return pathToModuleMap.get(fullPath);
 	}
 
-	public int getEventNumber() {
+	public long getEventNumber() {
 		return eventNumber;
 	}
 	
@@ -60,7 +60,7 @@ public class LiveSimulation implements IRuntimeSimulation {
 	LiveGate gate2;
 
 	public void doOneEvent() {
-		switch (eventNumber) {
+		switch ((int)eventNumber) {
 		case -1: // initialize
 			rootModule = new LiveModule();
 			LiveModule module1 = new LiveModule(rootModule);

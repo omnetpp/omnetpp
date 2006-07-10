@@ -11,11 +11,22 @@ public abstract class AbstractAnimationPrimitive implements IAnimationPrimitive 
 	
 	protected double beginSimulationTime;
 	
+	protected long eventNumber;
+	
 	protected boolean shown;
 	
-	public AbstractAnimationPrimitive(ReplayAnimationController animationController, double beginSimulationTime) {
+	public AbstractAnimationPrimitive(ReplayAnimationController animationController, long eventNumber, double beginSimulationTime) {
 		this.animationController = animationController;
 		this.beginSimulationTime = beginSimulationTime;
+		this.eventNumber = eventNumber;
+	}
+	
+	public void setAnimationController(ReplayAnimationController animationController) {
+		this.animationController = animationController;
+	}
+	
+	public long getEventNumber() {
+		return eventNumber;
 	}
 
 	public double getBeginSimulationTime() {
@@ -26,7 +37,7 @@ public abstract class AbstractAnimationPrimitive implements IAnimationPrimitive 
 		return beginSimulationTime;
 	}
 
-	public void gotoSimulationTime(double t) {
+	public void animateAt(long eventNumber, double simulationTime) {
 	}
 	
 	protected TimerQueue getTimerQueue() {

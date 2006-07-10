@@ -16,10 +16,11 @@ public class SendBroadcastAnimation extends AbstractAnimationPrimitive {
 	private Timer radiusTimer;
 	
 	public SendBroadcastAnimation(ReplayAnimationController animationController,
-						   double beginSimulationTime,
-						   double endSimulationTime,
-						   Point location) {
-		super(animationController, beginSimulationTime);
+								  long eventNumber,
+								  double beginSimulationTime,
+								  double endSimulationTime,
+								  Point location) {
+		super(animationController, eventNumber, beginSimulationTime);
 		this.circle = new Ellipse();
 		this.location = location;
 		this.endSimulationTime = endSimulationTime;
@@ -31,7 +32,7 @@ public class SendBroadcastAnimation extends AbstractAnimationPrimitive {
 		};
 	}
 	
-	public void gotoSimulationTime(double simulationTime) {
+	public void animateAt(long eventNumber, double simulationTime) {
 		if (beginSimulationTime <= simulationTime && simulationTime <= endSimulationTime) {
 			setRadius(simulationTime);
 			show();

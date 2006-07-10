@@ -8,22 +8,23 @@ import org.omnetpp.figures.SubmoduleFigure;
 public class SetDisplayStringAnimation extends AbstractAnimationPrimitive {
 	private IRuntimeModule module;
 	
-	private String displayString;
+	private DisplayString displayString;
 	
 	public SetDisplayStringAnimation(ReplayAnimationController animationController,
-								 double beginSimulationTime,
-								 IRuntimeModule module,
-								 String displayString) {
-		super(animationController, beginSimulationTime);
+									 long eventNumber,
+									 double beginSimulationTime,
+									 IRuntimeModule module,
+									 String displayString) {
+		super(animationController, eventNumber, beginSimulationTime);
 		this.module = module;
-		this.displayString = displayString;
+		this.displayString = new DisplayString(null, null, displayString);
+		//System.out.println(displayString);
 	}
 	
-	public void gotoSimulationTime(double simulationTime) {
+	public void animateAt(long eventNumber, double simulationTime) {
 		if (simulationTime >= beginSimulationTime) {
 			SubmoduleFigure moduleFigure = (SubmoduleFigure)animationController.getFigure(module);
-			moduleFigure.setDisplayString(new DisplayString(null, null, displayString));
-			System.out.println(displayString);
+			moduleFigure.setDisplayString(displayString);
 		}
 		else {
 			// TODO: or what to do?

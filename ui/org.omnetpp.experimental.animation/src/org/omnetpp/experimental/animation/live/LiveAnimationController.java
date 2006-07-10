@@ -11,10 +11,11 @@ import org.omnetpp.experimental.animation.model.IRuntimeMessage;
 import org.omnetpp.experimental.animation.model.IRuntimeModule;
 import org.omnetpp.experimental.animation.model.IRuntimeSimulation;
 import org.omnetpp.experimental.animation.primitives.BubbleAnimation;
-import org.omnetpp.experimental.animation.primitives.HandleMessageAnimation;
-import org.omnetpp.experimental.animation.primitives.SendBroadcastAnimation;
 import org.omnetpp.experimental.animation.primitives.CreateConnectionAnimation;
 import org.omnetpp.experimental.animation.primitives.CreateModuleAnimation;
+import org.omnetpp.experimental.animation.primitives.HandleMessageAnimation;
+import org.omnetpp.experimental.animation.primitives.IAnimationPrimitive;
+import org.omnetpp.experimental.animation.primitives.SendBroadcastAnimation;
 import org.omnetpp.experimental.animation.primitives.SendMessageAnimation;
 import org.omnetpp.experimental.animation.primitives.SetDisplayStringAnimation;
 import org.omnetpp.experimental.animation.replay.ReplayAnimationController;
@@ -30,11 +31,11 @@ public class LiveAnimationController extends ReplayAnimationController implement
 		return getLiveSimulation().getSimulationTime();
 	}
 
-	public int getLiveEventNumber() {
+	public long getLiveEventNumber() {
 		return getLiveSimulation().getEventNumber();
 	}
 
-	public int getEventNumber() {
+	public long getEventNumber() {
 		// TODO: temporarily
 		return getLiveEventNumber();
 	}
@@ -43,11 +44,11 @@ public class LiveAnimationController extends ReplayAnimationController implement
 	}
 
 	public void bubble(IRuntimeModule mod, String text) {
-		animationPrimitives.add(new BubbleAnimation(this, text, getLiveSimulationTime(), new Point(0, 0)));
+		animationPrimitives.add(new BubbleAnimation(this, getLiveEventNumber(), getLiveSimulationTime(), text, new Point(0, 0)));
 	}
 
 	public void connectionCreated(IRuntimeGate srcgate) {
-		animationPrimitives.add(new CreateConnectionAnimation(this, getLiveSimulationTime(), new GateId(srcgate.getOwnerModule().getId(), srcgate.getId()), null));
+		animationPrimitives.add(new CreateConnectionAnimation(this, getLiveEventNumber(), getLiveSimulationTime(), new GateId(srcgate.getOwnerModule().getId(), srcgate.getId()), null));
 	}
 
 	public void connectionRemoved(IRuntimeGate srcgate) {
@@ -57,27 +58,29 @@ public class LiveAnimationController extends ReplayAnimationController implement
 	}
 
 	public void displayStringChanged(IRuntimeModule module) {
-		animationPrimitives.add(new SetDisplayStringAnimation(this, getLiveSimulationTime(), module, module.getDisplayString().toString()));
+		animationPrimitives.add(new SetDisplayStringAnimation(this, getLiveEventNumber(), getLiveSimulationTime(), module, module.getDisplayString().toString()));
 	}
 
 	public void messageDelivered(IRuntimeMessage msg) {
-		animationPrimitives.add(new HandleMessageAnimation(this, getLiveSimulationTime(), getLiveEventNumber(), msg));
+		animationPrimitives.add(new HandleMessageAnimation(this, getLiveEventNumber(), getLiveSimulationTime(), simulation.getModuleByID(msg.getArrivalModuleId()), msg));
 	}
 
 	public void messageSent(IRuntimeMessage msg, IRuntimeGate directToGate) {
 		// TODO: remove this test stuff
 		animationPrimitives.add(new SendBroadcastAnimation(this,
+			getLiveEventNumber(),
 			msg.getSendingTime(),
 			msg.getArrivalTime(),
 			new Point(0, 0)));
 		animationPrimitives.add(new SendMessageAnimation(this,
+			getLiveEventNumber(),
 			msg.getSendingTime(),
 			msg.getArrivalTime(),
 			new ConnectionId(directToGate.getOwnerModule().getId(), directToGate.getId())));
 	}
 
 	public void moduleCreated(IRuntimeModule module) {
-		animationPrimitives.add(new CreateModuleAnimation(this, getLiveSimulationTime(), module));
+		animationPrimitives.add(new CreateModuleAnimation(this, getLiveEventNumber(), getLiveSimulationTime(), module));
 	}
 
 	public void moduleDeleted(IRuntimeModule module) {
@@ -100,15 +103,18 @@ public class LiveAnimationController extends ReplayAnimationController implement
 		return (LiveSimulation)simulation;
 	}
 
-	protected void loadNextAnimationPrimitives() {
+	protected void loadAnimationPrimitivesForCurrentPosition() {
 		int count = animationPrimitives.size();
 
 		while (!getLiveSimulation().isFinished()) {
 			getLiveSimulation().doOneEvent();
 			eventNumberChanged();
 			
+			IAnimationPrimitive lastAnimationPrimitive = animationPrimitives.get(animationPrimitives.size() - 1);
+			
 			if (count != animationPrimitives.size() &&
-				animationPrimitives.get(animationPrimitives.size() - 1).getBeginSimulationTime() > simulationTime)
+				lastAnimationPrimitive.getEventNumber() > eventNumber &&
+				lastAnimationPrimitive.getBeginSimulationTime() > simulationTime)
 				break;
 		}
 	}

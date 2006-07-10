@@ -21,12 +21,13 @@ public class LabelAnimation extends AbstractAnimationPrimitive {
 	private Timer changeColorTimer;
 
 	public LabelAnimation(ReplayAnimationController animationController,
-						  String text,
+						  long eventNumber,
 						  double beginSimulationTime,
 						  double endSimulationTime,
+						  String text,
 						  Point startPosition,
 						  Point endPosition) {
-		super(animationController, beginSimulationTime);
+		super(animationController, eventNumber, beginSimulationTime);
 		this.endSimulationTime = endSimulationTime;
 		this.startPosition = startPosition;
 		this.endPosition = endPosition;
@@ -38,7 +39,7 @@ public class LabelAnimation extends AbstractAnimationPrimitive {
 		};
 	}
 	
-	public void gotoSimulationTime(double simulationTime) {
+	public void animateAt(long eventNumber, double simulationTime) {
 		if (beginSimulationTime <= simulationTime && simulationTime <= endSimulationTime) {
 			Point p1 = startPosition.getCopy();
 			Point p2 = endPosition.getCopy();

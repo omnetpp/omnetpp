@@ -159,7 +159,8 @@ public class AnimationEditor extends EditorPart implements IAnimationListener {
 	    slider.setThumb(1);
 	    slider.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
-				animationController.setSpeed(((Slider)e.widget).getSelection());
+				int scale = ((Slider)e.widget).getSelection();
+				animationController.setRealTimeToAnimationTimeScale(Math.pow(0.9, scale));
 			}	    	
 	    });
 	    coolItem = new CoolItem(coolBar, SWT.NONE);
@@ -183,7 +184,7 @@ public class AnimationEditor extends EditorPart implements IAnimationListener {
 		super.dispose();
 	}
 
-	public void replayEventNumberChanged(int eventNumber) {
+	public void replayEventNumberChanged(long eventNumber) {
 		replayEventNumberLabel.setText(String.valueOf(eventNumber));
 	}
 

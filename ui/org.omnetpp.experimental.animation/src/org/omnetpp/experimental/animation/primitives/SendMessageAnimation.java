@@ -16,10 +16,11 @@ public class SendMessageAnimation extends AbstractAnimationPrimitive {
 	private Ellipse message;
 	
 	public SendMessageAnimation(ReplayAnimationController animationController,
+								long eventNumber,
 								double beginSimulationTime,
 								double endSimulationTime,
 								ConnectionId connectionId) {
-		super(animationController, beginSimulationTime);
+		super(animationController, eventNumber, beginSimulationTime);
 		this.endSimulationTime = endSimulationTime;
 		this.connectionId = connectionId;
 		this.message = new Ellipse();
@@ -32,7 +33,7 @@ public class SendMessageAnimation extends AbstractAnimationPrimitive {
 		return endSimulationTime;
 	}
 	
-	public void gotoSimulationTime(double simulationTime) {
+	public void animateAt(long eventNumber, double simulationTime) {
 		if (beginSimulationTime <= simulationTime && simulationTime <= endSimulationTime) {
 			ConnectionFigure connectionFigure = (ConnectionFigure)animationController.getFigure(connectionId);
 
