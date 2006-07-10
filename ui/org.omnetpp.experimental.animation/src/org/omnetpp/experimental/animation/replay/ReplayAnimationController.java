@@ -409,16 +409,17 @@ public class ReplayAnimationController {
 					
 					if (tokens[0].equals("MC")) {
 						String parentModuleName = getToken(tokens, "p");
-						if (!parentModuleName.equals("-"))
-							parentModuleName = parentModuleName.substring(0, parentModuleName.lastIndexOf('.'));
+						//if (!parentModuleName.equals("-"))
+						//	parentModuleName = parentModuleName.substring(0, parentModuleName.lastIndexOf('.'));
 						
 						ReplayModule module = new ReplayModule(
 							simulation != null ? (ReplayModule)simulation.getModuleByPath(parentModuleName) : null,
 							Integer.parseInt(getToken(tokens, "id")));
 						module.setName(getToken(tokens, "n"));
+						((ReplaySimulation)simulation).addModule(module); //XXX simulation must be non-null here already
 					
 						// TODO: we show the first module for now
-						if (simulation == null)
+						if (simulation == null) //FIXME this should not happen -- simulation must be create earlier
 							initializeSimulation(module);
 						else
 							animationPrimitives.add(new CreateModuleAnimation(this, simulationTime, module, new Point(0, 0)));

@@ -135,7 +135,8 @@ public class ReplayModule implements IRuntimeModule {
 		return null;
 	}
 
-	public ReplayModule getSubmoduleByID(int id) {
+	//FIXME this method to be removed -- ID is globally unique so it makes no sense
+	public ReplayModule getSubmoduleByID(int id) {  
 		if (submodules != null)
 			for (ReplayModule submodule : submodules)
 				if (submodule.getId() == id)

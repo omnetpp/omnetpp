@@ -1,5 +1,8 @@
 package org.omnetpp.experimental.animation.live.model;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+
 import org.omnetpp.experimental.animation.live.IEnvirCallback;
 import org.omnetpp.experimental.animation.model.IRuntimeSimulation;
 
@@ -9,22 +12,37 @@ public class LiveSimulation implements IRuntimeSimulation {
 	private IEnvirCallback ev;
 	private int eventNumber = -1;
 	private boolean finished;
+	private ArrayList<LiveModule> modules = new ArrayList<LiveModule>();
+	private HashMap<String,LiveModule> pathToModuleMap = new HashMap<String, LiveModule>();
 	
 	public LiveSimulation(LiveModule rootModule, IEnvirCallback ev) {
 		this.rootModule = rootModule;
 	    this.ev = ev;	
 	}
 	
+	/* to be called after module creation */
+	public void addModule(LiveModule module) {
+		module.setId(modules.size());
+		modules.add(module);
+		pathToModuleMap.put(module.getFullPath(), module);
+	}
+
+	public void removeModule(int id) {
+		LiveModule module = getModuleByID(id);
+		modules.set(id, null); // NOT remove(), because it'd shift elements and thus corrupt id-to-module mapping
+		pathToModuleMap.remove(module.getFullPath());
+	}
+
 	public LiveModule getRootModule() {
 		return rootModule;
 	}
 
 	public LiveModule getModuleByID(int id) {
-		return null; //TODO
+		return modules.get(id);
 	}
 
 	public LiveModule getModuleByPath(String fullPath) {
-		return null; //TODO
+		return pathToModuleMap.get(fullPath);
 	}
 
 	public int getEventNumber() {
@@ -36,18 +54,32 @@ public class LiveSimulation implements IRuntimeSimulation {
 	}
 	
 	// TODO:
-	LiveModule module1 = new LiveModule(rootModule, 1);
-	LiveModule module2 = new LiveModule(rootModule, 2);
-	LiveGate gate1 = new LiveGate();
-	LiveGate gate2 = new LiveGate();
+	LiveModule module1;
+	LiveModule module2;
+	LiveGate gate1;
+	LiveGate gate2;
 
 	public void doOneEvent() {
 		switch (eventNumber) {
 		case -1: // initialize
-			module1.addGate(gate1);
-			module2.addGate(gate2);
+			rootModule = new LiveModule();
+			LiveModule module1 = new LiveModule(rootModule);
+			LiveModule module2 = new LiveModule(rootModule);
+			addModule(rootModule);
+			addModule(module1);
+			addModule(module2);
+			rootModule.setName("net");
+			module1.setName("module1");
+			module2.setName("module2");
+
+			ev.moduleCreated(rootModule);
 			ev.moduleCreated(module1);
 			ev.moduleCreated(module2);
+
+			gate1 = new LiveGate();
+			gate2 = new LiveGate();
+			module1.addGate(gate1);
+			module2.addGate(gate2);
 			ev.connectionCreated(gate1);
 			break;
 		case 0:
