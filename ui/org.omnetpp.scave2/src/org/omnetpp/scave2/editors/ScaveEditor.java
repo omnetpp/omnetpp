@@ -7,9 +7,11 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.emf.common.command.Command;
+import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.ecore.xmi.XMIResource;
 import org.eclipse.emf.edit.command.CreateChildCommand;
 import org.eclipse.emf.edit.provider.IChangeNotifier;
+import org.eclipse.emf.edit.provider.INotifyChangedListener;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.Viewer;
@@ -20,6 +22,7 @@ import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
+import org.eclipse.ui.internal.IChangeListener;
 import org.omnetpp.scave.engine.ResultFile;
 import org.omnetpp.scave.engineext.ResultFileManagerEx;
 import org.omnetpp.scave.model.Analysis;
@@ -70,6 +73,15 @@ public class ScaveEditor extends AbstractEMFModelEditor {
 	private ResultFilesTracker tracker;
 	
 	/**
+	 * Updates pages when the model changed.
+	 */
+	private INotifyChangedListener pageUpdater = new INotifyChangedListener() {
+		public void notifyChanged(Notification notification) {
+			updatePages(notification);
+		}
+	};
+	
+	/**
 	 * The constructor.
 	 */
 	public ScaveEditor() {
@@ -93,10 +105,11 @@ public class ScaveEditor extends AbstractEMFModelEditor {
 	public void dispose() {
 		if (tracker!=null) {
 			ResourcesPlugin.getWorkspace().removeResourceChangeListener(tracker);
-			if (adapterFactory instanceof IChangeNotifier) {
-				IChangeNotifier notifier = (IChangeNotifier)adapterFactory;
-				notifier.removeListener(tracker);
-			}
+		}
+		if (adapterFactory instanceof IChangeNotifier) {
+			IChangeNotifier notifier = (IChangeNotifier)adapterFactory;
+			if (tracker != null) notifier.removeListener(tracker);
+			notifier.removeListener(pageUpdater);
 		}
 		if (manager != null) {
 			manager.delete(); // it would get garbage-collected anyway, but the sooner the better because it may have allocated large amounts of data
@@ -124,6 +137,7 @@ public class ScaveEditor extends AbstractEMFModelEditor {
 		if (adapterFactory instanceof IChangeNotifier) {
 			IChangeNotifier notifier = (IChangeNotifier)adapterFactory;
 			notifier.addListener(tracker);
+			notifier.addListener(pageUpdater);
 		}
 		
 		// listen to resource changes: create, delete, modify
@@ -237,6 +251,12 @@ public class ScaveEditor extends AbstractEMFModelEditor {
 			setActivePage(pageIndex);
 	}
 	
+	public void setPageTitle(ScaveEditorPage page, String title) {
+		int pageIndex = findPage(page);
+		if (pageIndex >= 0)
+			setPageText(pageIndex, title);
+	}
+	
 	/**
 	 * Opens the given chart on a new editor page, and switches to it. 
 	 */
@@ -347,7 +367,24 @@ public class ScaveEditor extends AbstractEMFModelEditor {
 	public ISelectionChangedListener getSelectionChangedListener() {
 		return selectionChangedListener;
 	}
-
+	
+	/**
+	 * Updates the pages.
+	 * Registered as a listener on model changes.
+	 */
+	private void updatePages(Notification notification) {
+		if (notification.isTouch())
+			return;
+		
+		int pageCount = getPageCount();
+		for (int pageIndex = 0; pageIndex < pageCount; ++pageIndex) {
+			Control control = getControl(pageIndex);
+			if (control instanceof ScaveEditorPage) {
+				ScaveEditorPage page = (ScaveEditorPage)control;
+				page.updatePage(notification);
+			}
+		}
+	}
 }
 
 

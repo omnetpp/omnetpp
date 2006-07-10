@@ -3,6 +3,7 @@ package org.omnetpp.scave2.editors.ui;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
@@ -53,19 +54,27 @@ public class ScaveEditorPage extends ScrolledForm {
 		setForeground(new Color(null, 0, 128, 255));
 		setText(title);
 	}
-
+	
 	/**
 	 * Return the text that should appear on the page's tab.
 	 */
 	public String getPageTitle() {
 		return pageTitle;
 	}
-
+	
 	/**
 	 * Sets the text that should appear on the page's tab.
 	 */
-	public void setPageTitle(String pageTitle) {
-		this.pageTitle = pageTitle;
+	public void setPageTitle(String title) {
+		pageTitle = title;
+		scaveEditor.setPageTitle(this, title);
+	}
+	
+	/**
+	 * Updates the page title, etc.
+	 * Called when the model changed.
+	 */
+	public void updatePage(Notification notification) {
 	}
 	
 	/**

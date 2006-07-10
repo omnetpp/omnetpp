@@ -22,6 +22,7 @@ import org.omnetpp.scave.engineext.ResultFileManagerEx;
 import org.omnetpp.scave.model.Dataset;
 import org.omnetpp.scave.model.DatasetItem;
 import org.omnetpp.scave.model.DatasetType;
+import org.omnetpp.scave.model.ScaveModelPackage;
 import org.omnetpp.scave2.actions.EditAction;
 import org.omnetpp.scave2.actions.GroupAction;
 import org.omnetpp.scave2.actions.NewAction;
@@ -48,6 +49,13 @@ public class DatasetPage extends ScaveEditorPage {
 		super(parent, SWT.V_SCROLL | SWT.H_SCROLL, scaveEditor);
 		this.dataset = dataset;
 		initialize();
+	}
+	
+	public void updatePage(Notification notification) {
+		if (ScaveModelPackage.eINSTANCE.getDataset_Name().equals(notification.getFeature())) {
+			setPageTitle("Dataset: " + dataset.getName());
+			setFormTitle("Dataset: " + dataset.getName());
+		}
 	}
 	
 	public TreeViewer getDatasetTreeViewer() {

@@ -1,6 +1,7 @@
 package org.omnetpp.scave2.editors.ui;
 
 import org.eclipse.draw2d.ColorConstants;
+import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -19,6 +20,7 @@ import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.Dataset;
 import org.omnetpp.scave.model.DatasetType;
+import org.omnetpp.scave.model.ScaveModelPackage;
 import org.omnetpp.scave2.charting.ChartHelper;
 import org.omnetpp.scave2.charting.VectorChart;
 import org.omnetpp.scave2.charting.plotter.DotsVectorPlotter;
@@ -36,6 +38,13 @@ public class ChartPage2 extends ScaveEditorPage {
 		super(parent, SWT.V_SCROLL, editor);
 		this.chart = chart;
 		initialize();
+	}
+	
+	public void updatePage(Notification notification) {
+		if (ScaveModelPackage.eINSTANCE.getChart_Name().equals(notification.getFeature())) {
+			setPageTitle("EXPERIMENTAL Chart: " + chart.getName());
+			setFormTitle("Chart: " + chart.getName());
+		}
 	}
 
 	public void setChart(Control chart) {

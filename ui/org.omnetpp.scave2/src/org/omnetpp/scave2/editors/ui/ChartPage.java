@@ -1,5 +1,6 @@
 package org.omnetpp.scave2.editors.ui;
 
+import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -9,6 +10,7 @@ import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.Dataset;
 import org.omnetpp.scave.model.DatasetType;
+import org.omnetpp.scave.model.ScaveModelPackage;
 import org.omnetpp.scave2.charting.ChartFactory;
 import org.omnetpp.scave2.editors.ScaveEditor;
 import org.omnetpp.scave2.model.DatasetManager;
@@ -22,6 +24,13 @@ public class ChartPage extends ScaveEditorPage {
 		super(parent, SWT.V_SCROLL, editor);
 		this.chart = chart;
 		initialize();
+	}
+	
+	public void updatePage(Notification notification) {
+		if (ScaveModelPackage.eINSTANCE.getChart_Name().equals(notification.getFeature())) {
+			setPageTitle("Chart: " + chart.getName());
+			setFormTitle("Chart: " + chart.getName());
+		}
 	}
 	
 	public Composite getChartComposite() {
