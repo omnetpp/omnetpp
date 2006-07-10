@@ -1186,6 +1186,8 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 		int endEventIndex = eventIndexRange[1];
 		int startEventNumber = logFacade.getEvent_i_eventNumber(startEventIndex);
 		int endEventNumber = logFacade.getEvent_i_eventNumber(endEventIndex);
+
+		graphics.setAntialias(SWT.ON); //XXX
 		
 		// paint event selection marks
 		if (selectionEvents != null) {

@@ -136,6 +136,7 @@ public class VectorChart extends ZoomableCachingCanvas {
 		graphics.setAntialias(antialias);
 		for (int series=0; series<dataset.getSeriesCount(); series++) {
 			graphics.setForegroundColor(getChartColor(series));
+			graphics.setBackgroundColor(getChartColor(series));
 			defaultPlotter.plot(dataset, series, graphics, this, defaultSymbol);
 		}
 	}
