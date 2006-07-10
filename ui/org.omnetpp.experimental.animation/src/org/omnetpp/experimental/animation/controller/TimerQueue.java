@@ -4,17 +4,37 @@ import java.util.ArrayList;
 
 import org.eclipse.swt.widgets.Display;
 
+/**
+ * Manages a list of timers and executes them using timerExec.
+ */
 public class TimerQueue implements Runnable {
+	// TODO: use log4j or something similar
+	private static boolean debug = false;
+
+	/**
+	 * Indicates whether this timer queue is active and executing its timers.
+	 */
 	private boolean running;
 	
+	/**
+	 * A list of timers to execute. Timers are ordered based on their next execution time.
+	 */
 	private ArrayList<Timer> timers = new ArrayList<Timer>();
 	
+	/**
+	 * The last timer scheduled to execute.
+	 */
 	private Timer lastScheduledTimer;
 
+	/**
+	 * The execution time when the last scheduled timer will be executed.
+	 */
 	private long lastScheduledNextExecutionTime;
 	
 	public void addTimer(Timer timer) {
-		//System.out.println("Adding timer: " + timer);
+		if (debug)
+			System.out.println("Adding timer: " + timer);
+
 		timers.add(timer);
 		
 		if (running)
@@ -22,7 +42,9 @@ public class TimerQueue implements Runnable {
 	}
 	
 	public void removeTimer(Timer timer) {
-		//System.out.println("Removing timer: " + timer);
+		if (debug)
+			System.out.println("Removing timer: " + timer);
+
 		Timer firstTimer = getFirstTimer();
 		timers.remove(timer);
 
@@ -35,7 +57,9 @@ public class TimerQueue implements Runnable {
 	}
 	
 	public void resetTimer(Timer timer) {
-		//System.out.println("Resetting timer: " + timer);
+		if (debug)
+			System.out.println("Resetting timer: " + timer);
+
 		timer.reset();
 		
 		if (running)
@@ -43,13 +67,17 @@ public class TimerQueue implements Runnable {
 	}
 	
 	public void start() {
-		//System.out.println("Starting timer queue");
+		if (debug)
+			System.out.println("Starting timer queue");
+
 		running = true;
 		scheduleTimer();
 	}
 	
 	public void stop() {
-		//System.out.println("Stopping timer queue");
+		if (debug)
+			System.out.println("Stopping timer queue");
+
 		running = false;
 		Display.getDefault().timerExec(-1, this);
 	}
@@ -60,6 +88,9 @@ public class TimerQueue implements Runnable {
 	
 	public void run() {
 		if (running) {
+			lastScheduledTimer = null;
+			lastScheduledNextExecutionTime = -1;
+
 			runFirstTimer();
 			scheduleTimer();
 		}
@@ -69,7 +100,9 @@ public class TimerQueue implements Runnable {
 		Timer firstTimer = getFirstTimer();
 		
 		if (firstTimer != null) {
-			//System.out.println("Running timer: " + timer);
+			if (debug)
+				System.out.println("Running timer: " + firstTimer);
+
 			firstTimer.execute();
 			
 			if (!firstTimer.isRecurring())
@@ -89,7 +122,8 @@ public class TimerQueue implements Runnable {
 				firstTimer.getNextExecutionTime() != lastScheduledNextExecutionTime ||
 				nextExecutionSleepTime < 0)
 			{
-				//System.out.println("Scheduling timer: " + firstTimer + " at: " + currentTime + " to: " + firstTimer.getNextExecutionTime());
+				if (debug)
+					System.out.println("Scheduling timer: " + firstTimer + " at: " + currentTime + " to: " + firstTimer.getNextExecutionTime());
 				
 				if (nextExecutionSleepTime < 0) {
 					if (firstTimer.isAllowSkipping())
@@ -97,7 +131,6 @@ public class TimerQueue implements Runnable {
 					else
 						runFirstTimer();
 	
-					lastScheduledTimer = null;
 					scheduleTimer();
 				}
 				else {

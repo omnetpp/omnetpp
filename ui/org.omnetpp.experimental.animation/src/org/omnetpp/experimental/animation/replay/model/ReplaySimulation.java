@@ -1,13 +1,12 @@
 package org.omnetpp.experimental.animation.replay.model;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 
 import org.omnetpp.experimental.animation.model.IRuntimeSimulation;
 
 public class ReplaySimulation implements IRuntimeSimulation {
 	private ReplayModule rootModule;
-	private ArrayList<ReplayModule> modules = new ArrayList<ReplayModule>();
+	private HashMap<Integer,ReplayModule> idToModuleMap = new HashMap<Integer, ReplayModule>();
 	private HashMap<String,ReplayModule> pathToModuleMap = new HashMap<String, ReplayModule>();
 	
 	public ReplaySimulation(ReplayModule rootModule) {
@@ -16,14 +15,13 @@ public class ReplaySimulation implements IRuntimeSimulation {
 
 	/* to be called after module creation */
 	public void addModule(ReplayModule module) {
-		module.setId(modules.size());
-		modules.add(module);
+		idToModuleMap.put(module.getId(), module);
 		pathToModuleMap.put(module.getFullPath(), module);
 	}
 
 	public void removeModule(int id) {
 		ReplayModule module = getModuleByID(id);
-		modules.set(id, null); // NOT remove(), because it'd shift elements and thus corrupt id-to-module mapping
+		idToModuleMap.remove(id);
 		pathToModuleMap.remove(module.getFullPath());
 	}
 	
@@ -32,7 +30,7 @@ public class ReplaySimulation implements IRuntimeSimulation {
 	}
 
 	public ReplayModule getModuleByID(int id) {
-		return modules.get(id);
+		return idToModuleMap.get(id);
 	}
 
 	public ReplayModule getModuleByPath(String fullPath) {

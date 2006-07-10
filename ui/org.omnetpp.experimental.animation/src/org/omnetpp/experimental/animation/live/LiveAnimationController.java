@@ -11,16 +11,19 @@ import org.omnetpp.experimental.animation.model.IRuntimeMessage;
 import org.omnetpp.experimental.animation.model.IRuntimeModule;
 import org.omnetpp.experimental.animation.model.IRuntimeSimulation;
 import org.omnetpp.experimental.animation.primitives.BubbleAnimation;
-import org.omnetpp.experimental.animation.primitives.CircleAnimation;
+import org.omnetpp.experimental.animation.primitives.HandleMessageAnimation;
+import org.omnetpp.experimental.animation.primitives.SendBroadcastAnimation;
 import org.omnetpp.experimental.animation.primitives.CreateConnectionAnimation;
 import org.omnetpp.experimental.animation.primitives.CreateModuleAnimation;
 import org.omnetpp.experimental.animation.primitives.SendMessageAnimation;
+import org.omnetpp.experimental.animation.primitives.SetDisplayStringAnimation;
 import org.omnetpp.experimental.animation.replay.ReplayAnimationController;
 import org.omnetpp.experimental.animation.widgets.AnimationCanvas;
 
 public class LiveAnimationController extends ReplayAnimationController implements IEnvirCallback {
 	public LiveAnimationController(AnimationCanvas canvas) {
 		super(canvas, null);
+		initializeSimulation(new LiveModule());
 	}
 
 	public double getLiveSimulationTime() {
@@ -54,13 +57,16 @@ public class LiveAnimationController extends ReplayAnimationController implement
 	}
 
 	public void displayStringChanged(IRuntimeModule module) {
+		animationPrimitives.add(new SetDisplayStringAnimation(this, getLiveSimulationTime(), module, module.getDisplayString().toString()));
 	}
 
 	public void messageDelivered(IRuntimeMessage msg) {
+		animationPrimitives.add(new HandleMessageAnimation(this, getLiveSimulationTime(), getLiveEventNumber(), msg));
 	}
 
 	public void messageSent(IRuntimeMessage msg, IRuntimeGate directToGate) {
-		animationPrimitives.add(new CircleAnimation(this,
+		// TODO: remove this test stuff
+		animationPrimitives.add(new SendBroadcastAnimation(this,
 			msg.getSendingTime(),
 			msg.getArrivalTime(),
 			new Point(0, 0)));
@@ -71,7 +77,7 @@ public class LiveAnimationController extends ReplayAnimationController implement
 	}
 
 	public void moduleCreated(IRuntimeModule module) {
-		animationPrimitives.add(new CreateModuleAnimation(this, getLiveSimulationTime(), module, new Point(0, 0)));
+		animationPrimitives.add(new CreateModuleAnimation(this, getLiveSimulationTime(), module));
 	}
 
 	public void moduleDeleted(IRuntimeModule module) {

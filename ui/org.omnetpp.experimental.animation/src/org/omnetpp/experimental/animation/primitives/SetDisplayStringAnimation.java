@@ -1,6 +1,5 @@
 package org.omnetpp.experimental.animation.primitives;
 
-import org.eclipse.draw2d.geometry.Rectangle;
 import org.omnetpp.common.displaymodel.DisplayString;
 import org.omnetpp.experimental.animation.model.IRuntimeModule;
 import org.omnetpp.experimental.animation.replay.ReplayAnimationController;
@@ -24,7 +23,7 @@ public class SetDisplayStringAnimation extends AbstractAnimationPrimitive {
 		if (simulationTime >= beginSimulationTime) {
 			SubmoduleFigure moduleFigure = (SubmoduleFigure)animationController.getFigure(module);
 			moduleFigure.setDisplayString(new DisplayString(null, null, displayString));
-			setConstraint(moduleFigure, new Rectangle(module.getId() * 200, 0, -1, -1));
+			System.out.println(displayString);
 		}
 		else {
 			// TODO: or what to do?

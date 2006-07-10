@@ -6,7 +6,7 @@ import org.eclipse.draw2d.geometry.Rectangle;
 import org.omnetpp.experimental.animation.controller.Timer;
 import org.omnetpp.experimental.animation.replay.ReplayAnimationController;
 
-public class CircleAnimation extends AbstractAnimationPrimitive {
+public class SendBroadcastAnimation extends AbstractAnimationPrimitive {
 	private double endSimulationTime;
 	
 	private Point location;
@@ -15,7 +15,7 @@ public class CircleAnimation extends AbstractAnimationPrimitive {
 	
 	private Timer radiusTimer;
 	
-	public CircleAnimation(ReplayAnimationController animationController,
+	public SendBroadcastAnimation(ReplayAnimationController animationController,
 						   double beginSimulationTime,
 						   double endSimulationTime,
 						   Point location) {
@@ -26,7 +26,7 @@ public class CircleAnimation extends AbstractAnimationPrimitive {
 		this.circle.setFill(false);
 		this.radiusTimer = new Timer(20, true, true) {
 			public void run() {
-				setRadius(CircleAnimation.this.animationController.getSimulationTime());
+				setRadius(SendBroadcastAnimation.this.animationController.getSimulationTime());
 			}
 		};
 	}

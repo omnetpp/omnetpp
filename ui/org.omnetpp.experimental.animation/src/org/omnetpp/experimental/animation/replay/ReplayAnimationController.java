@@ -7,7 +7,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.core.resources.IFile;
-import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.omnetpp.common.displaymodel.DisplayString;
 import org.omnetpp.experimental.animation.controller.IAnimationListener;
@@ -47,8 +46,13 @@ public class ReplayAnimationController {
 	protected ArrayList<IAnimationPrimitive> animationPrimitives = new ArrayList<IAnimationPrimitive>(); // holds all animation primitives since last key frame
 	
 	/**
+	 * The current event number.
+	 */
+	protected int eventNumber;
+	
+	/**
 	 * The current simulation time. It is updated periodically from a timer callback.
-	 * This simulation time is where the animation is right now which may be different from the live simulation time.
+	 * This is where the animation is right now which may be different from the live simulation time.
 	 */
 	protected double simulationTime;
 	
@@ -87,12 +91,21 @@ public class ReplayAnimationController {
 	 */
 	protected boolean forward;
 	
+	/**
+	 * The log file opened by the editor.
+	 */
 	protected IFile file;
 	
 	/**
 	 * Animation listeners are notified for various events, such as changing the simulation time.
 	 */
 	protected ArrayList<IAnimationListener> animationListeners = new ArrayList<IAnimationListener>();
+
+	/**
+	 * This reader is used to load entries on demand from the simulation log file.
+	 * The reader remans open to be able to load efficiently while animation goes on.
+	 */
+	private BufferedReader logFileReader;
 
 	public ReplayAnimationController(AnimationCanvas canvas, IFile file) {
 		this.canvas = canvas;
@@ -153,14 +166,24 @@ public class ReplayAnimationController {
 	/**
 	 * Changes the replay simulation time and notifies listeners.
 	 */
-	public void setSimulationTime(double simulationTime) {
+	protected void setSimulationTime(double simulationTime) {
 		this.simulationTime = simulationTime;
 		simulationTimeChanged();		
 	}
 	
+	/**
+	 * Returns the current event number.
+	 */
 	public int getEventNumber() {
-		// TODO:
-		return -1;
+		return eventNumber;
+	}
+	
+	/**
+	 * Changes the replay event number and notifies listeners.
+	 */
+	protected void setEventNumber(int eventNumber) {
+		this.eventNumber = eventNumber;
+		eventNumberChanged();
 	}
 	
 	/**
@@ -280,7 +303,7 @@ public class ReplayAnimationController {
 				
 				if (nextAnimationPrimitive == null) {
 					if (forward && nextStopSimulationTime == -1)
-						nextStopSimulationTime = getAnimationPrimitive(animationPrimitives.size() - 1).getEndSimulationTime();
+						nextStopSimulationTime = animationPrimitives.size() != 0 ? getAnimationPrimitive(animationPrimitives.size() - 1).getEndSimulationTime() : 0;
 					break;
 				}
 				if (nextAnimationPrimitive.getBeginSimulationTime() > simulationTime)
@@ -293,8 +316,17 @@ public class ReplayAnimationController {
 			animateStop();
 		}
 
-		for (IAnimationPrimitive animationPrimitive : animationPrimitives)
+		HandleMessageAnimation currenttHandleMessageAnimation = null;
+		
+		for (IAnimationPrimitive animationPrimitive : animationPrimitives) {
+			if (animationPrimitive.getBeginSimulationTime() <= simulationTime && animationPrimitive instanceof HandleMessageAnimation)
+				currenttHandleMessageAnimation = (HandleMessageAnimation)animationPrimitive;
+
 			animationPrimitive.gotoSimulationTime(simulationTime);
+		}
+		
+		if (currenttHandleMessageAnimation != null)
+			setEventNumber(currenttHandleMessageAnimation.getEventNumber());
 
 		canvas.getRootFigure().getLayoutManager().layout(canvas.getRootFigure());
 	}
@@ -334,11 +366,17 @@ public class ReplayAnimationController {
 			timerQueue.addTimer(simulationTimer);
 	}
 
+	/**
+	 * Notifies listeners about the new simulation time.
+	 */
 	protected void simulationTimeChanged() {
 		for (IAnimationListener listener : animationListeners)
 			listener.replaySimulationTimeChanged(simulationTime);
 	}
 
+	/**
+	 * Notifies listeners about the new event number.
+	 */
 	protected void eventNumberChanged() {
 		for (IAnimationListener listener : animationListeners)
 			listener.replayEventNumberChanged(getEventNumber());
@@ -349,6 +387,7 @@ public class ReplayAnimationController {
 	 * TODO: this is inefficient, should use binary search, because animationPrimitives are in order of begin simulation time
 	 */
 	protected int getLastAnimationPrimitiveIndex() {
+		// FIXME: this is inefficient
 		for (int i = 0; i < animationPrimitives.size(); i++)
 			if (animationPrimitives.get(i).getBeginSimulationTime() > simulationTime)
 				return i - 1;
@@ -392,61 +431,71 @@ public class ReplayAnimationController {
 	protected IRuntimeSimulation createSimulation(IRuntimeModule rootModule) {
 		return new ReplaySimulation((ReplayModule)rootModule);
 	}
+	
+	protected ReplaySimulation getReplaySimulation() {
+		return (ReplaySimulation)simulation;
+	}
 
 	/**
 	 * Loads at least one animation primitive that begins after the current simulation time.
 	 */
 	protected void loadNextAnimationPrimitives() {
-		if (simulation == null) {
-			BufferedReader reader;
-			try {
-				String line = null;
-				double simulationTime = 0;
-				reader = new BufferedReader(new InputStreamReader(file.getContents()));
+		try {
+			int lineCount = 0;
+			String line = null;
+			double simulationTime = 0;
+
+			if (logFileReader == null)
+				logFileReader = new BufferedReader(new InputStreamReader(file.getContents()));
+			
+			while ((simulationTime < this.simulationTime || lineCount < 10) &&
+				   (line = logFileReader.readLine()) != null)
+			{
+				lineCount++;
+				String[] tokens = line.split(" ");
 				
-				while ((line = reader.readLine()) != null) {
-					String[] tokens = line.split(" ");
+				if (tokens[0].equals("MC")) {
+					String parentModuleName = getToken(tokens, "p");
+					//if (!parentModuleName.equals("-"))
+					//	parentModuleName = parentModuleName.substring(0, parentModuleName.lastIndexOf('.'));
 					
-					if (tokens[0].equals("MC")) {
-						String parentModuleName = getToken(tokens, "p");
-						//if (!parentModuleName.equals("-"))
-						//	parentModuleName = parentModuleName.substring(0, parentModuleName.lastIndexOf('.'));
-						
-						ReplayModule module = new ReplayModule(
-							simulation != null ? (ReplayModule)simulation.getModuleByPath(parentModuleName) : null,
-							Integer.parseInt(getToken(tokens, "id")));
-						module.setName(getToken(tokens, "n"));
-						((ReplaySimulation)simulation).addModule(module); //XXX simulation must be non-null here already
-					
-						// TODO: we show the first module for now
-						if (simulation == null) //FIXME this should not happen -- simulation must be create earlier
-							initializeSimulation(module);
-						else
-							animationPrimitives.add(new CreateModuleAnimation(this, simulationTime, module, new Point(0, 0)));
-					}
-					else if (tokens[0].equals("MS")) {
-						ReplayModule module = (ReplayModule)simulation.getModuleByID(Integer.parseInt(getToken(tokens, "id")));
-						animationPrimitives.add(new SetDisplayStringAnimation(this, simulationTime, module, getToken(tokens, "d")));
-					}
-					else if (tokens[0].equals("CC")) {
-						GateId sourceGateId = new GateId(Integer.parseInt(getToken(tokens, "sm")), Integer.parseInt(getToken(tokens, "sg")));
-						GateId targetGateId = new GateId(Integer.parseInt(getToken(tokens, "dm")), Integer.parseInt(getToken(tokens, "dg")));
-						animationPrimitives.add(new CreateConnectionAnimation(this, simulationTime, sourceGateId, targetGateId));
-					}
-					else if (tokens[0].equals("E")) {
-						simulationTime = Double.parseDouble(getToken(tokens, "T"));
-						animationPrimitives.add(new HandleMessageAnimation(this, simulationTime, Integer.parseInt(getToken(tokens, "#"))));
-					}
-					else if (tokens[0].equals("ms")) {
-						ConnectionId connectionId = new ConnectionId(Integer.parseInt(getToken(tokens, "sm")), Integer.parseInt(getToken(tokens, "sg")));
-						// TODO: arraivalTime
-						animationPrimitives.add(new SendMessageAnimation(this, simulationTime, simulationTime + 1, connectionId));
-					}
+					ReplayModule module = new ReplayModule(
+						simulation != null ? (ReplayModule)simulation.getModuleByPath(parentModuleName) : null,
+						Integer.parseInt(getToken(tokens, "id")));
+					module.setName(getToken(tokens, "n"));
+				
+					// FIXME: we show the first module for now, should get as parameter?
+					if (simulation == null)
+						initializeSimulation(module);
+
+					getReplaySimulation().addModule(module);
+					animationPrimitives.add(new CreateModuleAnimation(this, simulationTime, module));
+				}
+				else if (tokens[0].equals("MS")) {
+					ReplayModule module = (ReplayModule)simulation.getModuleByID(Integer.parseInt(getToken(tokens, "id")));
+					String displayString = getToken(tokens, "d");
+					animationPrimitives.add(new SetDisplayStringAnimation(this, simulationTime, module, displayString.substring(1, displayString.length() - 1)));
+				}
+				else if (tokens[0].equals("CC")) {
+					GateId sourceGateId = new GateId(Integer.parseInt(getToken(tokens, "sm")), Integer.parseInt(getToken(tokens, "sg")));
+					GateId targetGateId = new GateId(Integer.parseInt(getToken(tokens, "dm")), Integer.parseInt(getToken(tokens, "dg")));
+					animationPrimitives.add(new CreateConnectionAnimation(this, simulationTime, sourceGateId, targetGateId));
+				}
+				else if (tokens[0].equals("E")) {
+					simulationTime = Double.parseDouble(getToken(tokens, "T"));
+					animationPrimitives.add(new HandleMessageAnimation(this, simulationTime, Integer.parseInt(getToken(tokens, "#")), null));
+				}
+				else if (tokens[0].equals("ms")) {
+					ConnectionId connectionId = new ConnectionId(Integer.parseInt(getToken(tokens, "sm")), Integer.parseInt(getToken(tokens, "sg")));
+					// TODO: arraivalTime
+					animationPrimitives.add(new SendMessageAnimation(this, simulationTime, simulationTime + 1, connectionId));
 				}
 			}
-			catch (Throwable e) {
-				e.printStackTrace();
-			}
+		}
+		catch (Throwable e) {
+			e.printStackTrace();
+			
+			throw new RuntimeException(e);
 		}
 	}
 	
