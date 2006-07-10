@@ -21,11 +21,13 @@ import org.eclipse.swt.graphics.Image;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.displaymodel.IDisplayString;
 import org.omnetpp.common.image.ImageFactory;
+import org.omnetpp.figures.LayerSupport.LayerID;
 
 public class SubmoduleFigure extends ModuleFigure implements HandleBounds {
 
     protected Layer foregroundLayer;
     protected Layer backgroundLayer;
+    protected Layer calloutLayer;
     
     protected Shape currShape;
     protected RectangleFigure rectShapeFigure = new RectangleFigure();
@@ -58,13 +60,11 @@ public class SubmoduleFigure extends ModuleFigure implements HandleBounds {
     }
 
     /**
-     * Returns a layer from any ancestor that supports multiple layers for decorations
+     * Returns a layer from the first ancestor that supports multiple layers for decorations
      * @param id Layer id
-     * @return The layer with teh given id from any ancestor that inpmelements tha LayerSupport IF
+     * @return The layer with teh given id from any ancestor that implements the LayerSupport IF
      */
-    // TODO implement in a way, that if a layer is not found, it should search furter in the ancestor list
-    // and return null only if eached the root figure
-    protected Layer getAncestorLayer(Object id) {
+    protected Layer getAncestorLayer(LayerID id) {
     	IFigure figureIter = getParent();
     	// look for a parent who is an instance of LayerSupport and get the layer from it
     	while (!(figureIter == null || (figureIter instanceof LayerSupport)))
@@ -78,11 +78,13 @@ public class SubmoduleFigure extends ModuleFigure implements HandleBounds {
         // functions here need to access the parent or ancestor figures, so these setup
         // procedures cannot be done in the constructor
 
-        // look for decorator layers among the ancestor
-        foregroundLayer = getAncestorLayer(LayerSupport.LayerID.FrontDecoration);
-        backgroundLayer = getAncestorLayer(LayerSupport.LayerID.BackgroundDecoration);
+        // look for decorator layers among the ancestor (compound module figure)
+        foregroundLayer = getAncestorLayer(LayerSupport.LayerID.FRONT_DECORATION);
+        backgroundLayer = getAncestorLayer(LayerSupport.LayerID.BACKGROUND_DECORATION);
+        calloutLayer = getAncestorLayer(LayerSupport.LayerID.CALLOUT);
         
-        // add mainf figures
+        // add main figures
+        // TODO figure should be added only ON DEMAND
         add(rectShapeFigure);
         add(rrectShapeFigure);
         add(ovalShapeFigure);
@@ -109,10 +111,12 @@ public class SubmoduleFigure extends ModuleFigure implements HandleBounds {
             // queue description
             foregroundLayer.add(new AttachedLayer(this, PositionConstants.SOUTH_EAST, 
                     queueFigure, PositionConstants.SOUTH_WEST, 2, 0));
-            // callout (above the text)
-            // TODO should be placed in the TOPMOST layer even above the connections
-            foregroundLayer.add(new AttachedLayer(this, PositionConstants.CENTER, 
-                    calloutFigure, PositionConstants.SOUTH_WEST));
+        }
+        
+        if(calloutLayer != null) {
+        	// callout (above the text)
+        	calloutLayer.add(new AttachedLayer(this, PositionConstants.CENTER, 
+        			calloutFigure, PositionConstants.SOUTH_WEST));
         }
 
         super.addNotify();

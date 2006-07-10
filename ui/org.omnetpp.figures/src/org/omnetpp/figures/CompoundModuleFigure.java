@@ -21,6 +21,7 @@ import org.eclipse.swt.graphics.Pattern;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.displaymodel.IDisplayString;
 import org.omnetpp.common.image.ImageFactory;
+import org.omnetpp.figures.LayerSupport.LayerID;
 import org.omnetpp.figures.layout.FreeformDesktopLayout;
 
 public class CompoundModuleFigure extends ModuleFigure 
@@ -136,10 +137,13 @@ public class CompoundModuleFigure extends ModuleFigure
 
         layeredPane = new FreeformLayeredPane();
         layeredPane.setLayoutManager(new StackLayout());
-        layeredPane.addLayerAfter(pane, LayerSupport.LayerID.Default, null);
-        layeredPane.addLayerBefore(new BackgroundLayer(), LayerID.Background, LayerID.Default);
-        layeredPane.addLayerBefore(new FreeformLayer(), LayerID.BackgroundDecoration, LayerID.Default);
-        layeredPane.addLayerAfter(new FreeformLayer(), LayerID.FrontDecoration, LayerID.Default);
+
+        layeredPane.addLayerAfter(new BackgroundLayer(), LayerID.BACKGROUND, null);
+        layeredPane.addLayerAfter(new FreeformLayer(), LayerID.BACKGROUND_DECORATION, LayerID.BACKGROUND);
+        layeredPane.addLayerAfter(pane, LayerID.DEFAULT, LayerID.BACKGROUND_DECORATION);
+        layeredPane.addLayerAfter(new FreeformLayer(), LayerID.FRONT_DECORATION, LayerID.DEFAULT);
+        layeredPane.addLayerAfter(new FreeformLayer(), LayerID.CONNECTION, LayerID.FRONT_DECORATION);
+        layeredPane.addLayerAfter(new FreeformLayer(), LayerID.CALLOUT, LayerID.CONNECTION);
         
         scrollpane.setViewport(new FreeformViewport());
         scrollpane.setContents(layeredPane);
@@ -153,6 +157,8 @@ public class CompoundModuleFigure extends ModuleFigure
         // ------ backgroundDecorationLayer
         // ------ pane
         // ------ foregroundDecorationLayer
+        // ------ connection
+        // ------ Callout layer
         
     }
 
@@ -185,7 +191,7 @@ public class CompoundModuleFigure extends ModuleFigure
     	return (CompoundModuleBorder)getBorder();
     }
     
-    public Layer getLayer(Object layerId) {
+    public Layer getLayer(LayerID layerId) {
         return layeredPane.getLayer(layerId);
     }
 
@@ -314,6 +320,14 @@ public class CompoundModuleFigure extends ModuleFigure
 		translateToRelative(mouse);
 		return getBounds().contains(mouse) && 
 			!getClientArea().shrink(2*DEFAULT_BORDER_SNAP_WIDTH, 2*DEFAULT_BORDER_SNAP_WIDTH).contains(mouse);
+	}
+	
+	/**
+	 * Utility function to add a submodule child figure to the correct layer
+	 * @param submodule
+	 */
+	public void addSubmodule(SubmoduleFigure submodule) {
+		pane.add(submodule);
 	}
 	
 }
