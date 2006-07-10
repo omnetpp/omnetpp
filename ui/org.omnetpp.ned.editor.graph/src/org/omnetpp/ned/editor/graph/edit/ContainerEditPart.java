@@ -69,7 +69,7 @@ abstract public class ContainerEditPart
 
 	public void attributeChanged(NEDElement node, String attr) {
 		// refresh only if a node attribute changed. Child changes are discarded
-		// FIXME chack wheter this works correctly if we display the vector size too
+		// FIXME check whether this works correctly if we display the vector size too
 		if (node == getModel()) 
 			refreshVisuals();
 	}

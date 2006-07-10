@@ -7,6 +7,7 @@ import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.ManhattanConnectionRouter;
 import org.eclipse.draw2d.RelativeBendpoint;
 import org.eclipse.draw2d.RoutingAnimator;
+import org.eclipse.gef.EditPart;
 import org.eclipse.gef.EditPolicy;
 import org.eclipse.gef.editparts.AbstractConnectionEditPart;
 import org.omnetpp.common.color.ColorFactory;
@@ -15,6 +16,7 @@ import org.omnetpp.common.displaymodel.DisplayString;
 import org.omnetpp.common.displaymodel.IDisplayStringChangeListener;
 import org.omnetpp.common.displaymodel.IDisplayString.Prop;
 import org.omnetpp.figures.ConnectionFigure;
+import org.omnetpp.figures.LayerSupport;
 import org.omnetpp.ned.editor.graph.edit.policies.NedConnectionEditPolicy;
 import org.omnetpp.ned.editor.graph.edit.policies.NedConnectionEndpointEditPolicy;
 import org.omnetpp.ned2.model.ConnectionNodeEx;
@@ -29,7 +31,10 @@ import org.omnetpp.ned2.model.WireBendpointModel;
  */
 public class ModuleConnectionEditPart extends AbstractConnectionEditPart implements INEDChangeListener, IDisplayStringChangeListener {
 
-    @Override
+	private EditPart sourceEditPart; 
+	private EditPart targetEditPart;
+
+	@Override
     public void activate() {
         if (isActive()) return;
         super.activate();
@@ -51,8 +56,10 @@ public class ModuleConnectionEditPart extends AbstractConnectionEditPart impleme
 
     @Override
     public void activateFigure() {
-        super.activateFigure();
-        /*
+    	// add the connection to the compound module's connection layer instead of the global one
+    	((CompoundModuleEditPart)getParent()).getCompoundModuleFigure()
+    			.getLayer(LayerSupport.LayerID.CONNECTION).add(getFigure());
+    	/*
          * Once the figure has been added to the ConnectionLayer, start
          * listening for its router to change.
          */
@@ -62,7 +69,72 @@ public class ModuleConnectionEditPart extends AbstractConnectionEditPart impleme
     @Override
     public void deactivateFigure() {
         // getFigure().removePropertyChangeListener(Connection.PROPERTY_CONNECTION_ROUTER, this);
-        super.deactivateFigure();
+    	// remove the connection figure from the parent
+    	getFigure().getParent().remove(getFigure());
+    	getConnectionFigure().setSourceAnchor(null);
+    	getConnectionFigure().setTargetAnchor(null);
+    }
+
+    /**
+     * @see org.eclipse.gef.ConnectionEditPart#getSource()
+     */
+    @Override
+    public EditPart getSource() {
+    	return sourceEditPart;
+    }
+
+    /**
+     * @see org.eclipse.gef.ConnectionEditPart#getTarget()
+     */
+    @Override
+    public EditPart getTarget() {
+    	return targetEditPart;
+    }
+
+    /**
+     * Sets the source EditPart of this connection. Overrides the original implementation
+     * to add the connection as the child of a compound module
+     *
+     * @param editPart  EditPart which is the source.
+     */
+    @Override
+    public void setSource(EditPart editPart) {
+    	if (sourceEditPart == editPart)
+    		return;
+    	
+    	sourceEditPart = editPart;
+    	if (sourceEditPart != null) {
+    		// attach the connection edit part to the compound module as a parent
+        	if (sourceEditPart instanceof CompoundModuleEditPart)
+        		setParent(sourceEditPart);
+        	else if (sourceEditPart instanceof SubmoduleEditPart)
+        		setParent(sourceEditPart.getParent());
+    	} else if (targetEditPart == null)
+    		setParent(null);
+    	if (sourceEditPart != null && targetEditPart != null)
+    		refresh();
+    }
+
+    /**
+     * Sets the target EditPart of this connection. Overrides the original implementation
+     * to add the connection as the child of a compound module
+     * @param editPart  EditPart which is the target.
+     */
+    @Override
+    public void setTarget(EditPart editPart) {
+    	if (targetEditPart == editPart)
+    		return;
+    	targetEditPart = editPart;
+    	if (targetEditPart != null) {
+    		// attach the connection edit part to the compound module as a parent
+        	if (targetEditPart instanceof CompoundModuleEditPart)
+        		setParent(targetEditPart);
+        	else if (targetEditPart instanceof SubmoduleEditPart)
+        		setParent(targetEditPart.getParent());
+    	} else if (sourceEditPart == null)
+    		setParent(null);
+    	if (sourceEditPart != null && targetEditPart != null)
+    		refresh();
     }
 
     /**

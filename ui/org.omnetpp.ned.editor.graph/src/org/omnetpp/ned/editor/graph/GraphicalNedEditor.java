@@ -430,13 +430,13 @@ public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette {
         
         // create decoration layers and add them before and after the primary layer
         // they are used to hold figure decorations like side texts and range indicators
-        LayeredPane printableLayers = (LayeredPane)root.getLayer(LayerConstants.PRINTABLE_LAYERS);
-        Layer backDecorationLayer = new Layer();
-        backDecorationLayer.setLayoutManager(new DelegatingLayout());
-        printableLayers.addLayerBefore(backDecorationLayer, LayerSupport.LayerID.BACKGROUND_DECORATION, LayerConstants.PRIMARY_LAYER);
-        Layer frontDecorationLayer = new Layer();
-        frontDecorationLayer.setLayoutManager(new DelegatingLayout());
-        printableLayers.addLayerAfter(frontDecorationLayer, LayerSupport.LayerID.FRONT_DECORATION, LayerConstants.PRIMARY_LAYER);
+//        LayeredPane printableLayers = (LayeredPane)root.getLayer(LayerConstants.PRINTABLE_LAYERS);
+//        Layer backDecorationLayer = new Layer();
+//        backDecorationLayer.setLayoutManager(new DelegatingLayout());
+//        printableLayers.addLayerBefore(backDecorationLayer, LayerSupport.LayerID.BACKGROUND_DECORATION, LayerConstants.PRIMARY_LAYER);
+//        Layer frontDecorationLayer = new Layer();
+//        frontDecorationLayer.setLayoutManager(new DelegatingLayout());
+//        printableLayers.addLayerAfter(frontDecorationLayer, LayerSupport.LayerID.FRONT_DECORATION, LayerConstants.PRIMARY_LAYER);
 
         // set the root edit part as the main viewer
         viewer.setRootEditPart(root);

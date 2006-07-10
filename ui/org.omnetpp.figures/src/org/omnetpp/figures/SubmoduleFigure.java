@@ -84,7 +84,7 @@ public class SubmoduleFigure extends ModuleFigure implements HandleBounds {
         calloutLayer = getAncestorLayer(LayerSupport.LayerID.CALLOUT);
         
         // add main figures
-        // TODO figure should be added only ON DEMAND
+        // TODO figures should be added only ON DEMAND
         add(rectShapeFigure);
         add(rrectShapeFigure);
         add(ovalShapeFigure);
@@ -115,7 +115,7 @@ public class SubmoduleFigure extends ModuleFigure implements HandleBounds {
         
         if(calloutLayer != null) {
         	// callout (above the text)
-        	calloutLayer.add(new AttachedLayer(this, PositionConstants.CENTER, 
+        	calloutLayer.add(new AttachedLayer(this, PositionConstants.NORTH, 
         			calloutFigure, PositionConstants.SOUTH_WEST));
         }
 
