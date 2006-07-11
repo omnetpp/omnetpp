@@ -20,7 +20,7 @@
 
 
 %{
-#include "include/omnetpp.h"
+#include "omnetpp.h"
 %}
 
 %include "std_common.i"
@@ -76,56 +76,56 @@
 //%warnfilter(312) cTopology; -- nor this
 
 // now include all header files
-%include "include/defs.h"
-%include "include/cpolymorphic.h"
-%include "include/cobject.h"
-%include "include/cvisitor.h"
-//%include "include/cenvir.h" -- no need to wrap
-//%include "include/util.h" -- no need to wrap
-%include "include/opp_string.h"
-%include "include/random.h"
-%include "include/distrib.h"
-%include "include/cexception.h"
-%include "include/cdefaultlist.h"
-%include "include/csimul.h"
-//%include "include/macros.h" -- no need to wrap
-%include "include/ctypes.h"
-%include "include/carray.h"
-%include "include/cqueue.h"
-%include "include/cllist.h"
-%include "include/globals.h"
-//%include "include/cwatch.h" -- no need to wrap
-//%include "include/cstlwatch.h" -- no need to wrap
-%include "include/cpar.h"
-%include "include/cgate.h"
-%include "include/cmessage.h"
-%include "include/cpacket.h"
-%include "include/cmsgheap.h"
-%include "include/cmodule.h"
-%include "include/csimplemodule.h"
-%include "include/cstat.h"
-%include "include/cdensity.h"
-%include "include/chist.h"
-%include "include/cvarhist.h"
-%include "include/cpsquare.h"
-%include "include/cksplit.h"
-%include "include/coutvect.h"
-%include "include/cdetect.h"
-%include "include/ctopo.h"
-%include "include/cfsm.h"
-%include "include/protocol.h"
-%include "include/cenum.h"
-%include "include/cstruct.h"
-//%include "include/onstartup.h" -- no need to wrap
-%include "include/cchannel.h"
-%include "include/cdispstr.h"
-//%include "include/envirext.h" -- no need to wrap
-//%include "include/cconfig.h" -- no need to wrap
-%include "include/cxmlelement.h"
-//%include "include/cstrtokenizer.h" -- no need to wrap
-//%include "include/cscheduler.h" -- no need to wrap
-//%include "include/compat.h" -- no need to wrap
-//%include "include/cparsimcomm.h" -- no need to wrap
-//%include "include/ccommbuffer.h" -- no need to wrap
-//%include "include/crng.h" -- no need to wrap
+%include "defs.h"
+%include "cpolymorphic.h"
+%include "cobject.h"
+%include "cvisitor.h"
+//%include "cenvir.h" -- no need to wrap
+//%include "util.h" -- no need to wrap
+%include "opp_string.h"
+%include "random.h"
+%include "distrib.h"
+%include "cexception.h"
+%include "cdefaultlist.h"
+%include "csimul.h"
+//%include "macros.h" -- no need to wrap
+%include "ctypes.h"
+%include "carray.h"
+%include "cqueue.h"
+%include "cllist.h"
+%include "globals.h"
+//%include "cwatch.h" -- no need to wrap
+//%include "cstlwatch.h" -- no need to wrap
+%include "cpar.h"
+%include "cgate.h"
+%include "cmessage.h"
+%include "cpacket.h"
+%include "cmsgheap.h"
+%include "cmodule.h"
+%include "csimplemodule.h"
+%include "cstat.h"
+%include "cdensity.h"
+%include "chist.h"
+%include "cvarhist.h"
+%include "cpsquare.h"
+%include "cksplit.h"
+%include "coutvect.h"
+%include "cdetect.h"
+%include "ctopo.h"
+%include "cfsm.h"
+%include "protocol.h"
+%include "cenum.h"
+%include "cstruct.h"
+//%include "onstartup.h" -- no need to wrap
+%include "cchannel.h"
+%include "cdispstr.h"
+//%include "envirext.h" -- no need to wrap
+//%include "cconfig.h" -- no need to wrap
+%include "cxmlelement.h"
+//%include "cstrtokenizer.h" -- no need to wrap
+//%include "cscheduler.h" -- no need to wrap
+//%include "compat.h" -- no need to wrap
+//%include "cparsimcomm.h" -- no need to wrap
+//%include "ccommbuffer.h" -- no need to wrap
+//%include "crng.h" -- no need to wrap
 
