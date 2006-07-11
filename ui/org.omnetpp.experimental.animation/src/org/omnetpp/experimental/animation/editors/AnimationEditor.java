@@ -167,10 +167,12 @@ public class AnimationEditor extends EditorPart implements IAnimationListener {
 	    slider.setMinimum(0);
 	    slider.setMaximum(100);
 	    slider.setThumb(1);
+	    slider.setSelection((slider.getMaximum() - slider.getMinimum()) / 2); 
 	    slider.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
-				int scale = ((Slider)e.widget).getSelection();
-				animationController.setRealTimeToAnimationTimeScale(Math.pow(0.9, scale));
+				Slider slider = (Slider)e.widget;
+				int scale = ((Slider)e.widget).getSelection() - (slider.getMaximum() - slider.getMinimum()) / 2;
+				animationController.setRealTimeToAnimationTimeScale(Math.pow(1.1, scale));
 			}	    	
 	    });
 	    coolItem = new CoolItem(coolBar, SWT.NONE);

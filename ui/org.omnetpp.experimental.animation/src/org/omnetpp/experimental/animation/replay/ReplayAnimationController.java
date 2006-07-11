@@ -101,10 +101,15 @@ public class ReplayAnimationController {
 	protected long nextStopEventNumber;
 	
 	/**
-	 * This is the multiplier to convert real time to animation time.
+	 * This multiplier is applied to the default multiplier. It can be set from the GUI and starts from 1.
 	 */
 	protected double realTimeToAnimationTimeScale;
 
+	/**
+	 * This is the default multiplier to convert real time to animation time.
+	 */
+	protected double defaultRealTimeToAnimationTimeScale;
+	
 	/**
 	 * The widget used to display the animation figures.
 	 */
@@ -162,7 +167,8 @@ public class ReplayAnimationController {
 		this.simulationTimer = new SimulationTimer();
 		this.nextStopSimulationTime = -1;
 		this.nextStopEventNumber = -1;
-		this.realTimeToAnimationTimeScale = NORMAL_REAL_TIME_TO_ANIMATION_TIME_SCALE;
+		this.realTimeToAnimationTimeScale = 1;
+		this.defaultRealTimeToAnimationTimeScale = NORMAL_REAL_TIME_TO_ANIMATION_TIME_SCALE;
 		this.simulationTime = 0;
 		this.animationTime = 0;
 		this.eventNumber = 0;
@@ -284,8 +290,11 @@ public class ReplayAnimationController {
 	/**
 	 * Changes the scaling factor between animation time and real time.
 	 */
-	public void setRealTimeToAnimationTimeScale(double animationTimeScale) {
-		this.realTimeToAnimationTimeScale = animationTimeScale;
+	public void setRealTimeToAnimationTimeScale(double realTimeToAnimationTimeScale) {
+		this.realTimeToAnimationTimeScale = realTimeToAnimationTimeScale;
+		lastStartRealTime = getRealTime();
+		lastStartAnimationTime = getAnimationTime();
+		timerQueue.resetTimer(simulationTimer);
 	}
 
 	/**
@@ -429,7 +438,7 @@ public class ReplayAnimationController {
 		}
 
 		public void run() {
-			setAnimationTime(lastStartAnimationTime + (getRealTime() - lastStartRealTime) * realTimeToAnimationTimeScale);
+			setAnimationTime(lastStartAnimationTime + (getRealTime() - lastStartRealTime) * realTimeToAnimationTimeScale * defaultRealTimeToAnimationTimeScale);
 
 			switch (animationMode)
 			{
@@ -479,9 +488,9 @@ public class ReplayAnimationController {
 	/**
 	 * Asynchronously starts animation in the given direction.
 	 */
-	protected void animateStart(boolean forward, double realTimeToAnimationTimeScale, long nextStopEventNumber, double stopSimulationTime) {
+	protected void animateStart(boolean forward, double defaultRealTimeToAnimationTimeScale, long nextStopEventNumber, double stopSimulationTime) {
 		this.forward = forward;
-		this.realTimeToAnimationTimeScale = realTimeToAnimationTimeScale;
+		this.defaultRealTimeToAnimationTimeScale = defaultRealTimeToAnimationTimeScale;
 		this.nextStopEventNumber = nextStopEventNumber;
 		this.nextStopSimulationTime = stopSimulationTime;
 		
