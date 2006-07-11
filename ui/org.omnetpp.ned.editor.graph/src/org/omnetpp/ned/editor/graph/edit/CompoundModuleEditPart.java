@@ -3,8 +3,10 @@ package org.omnetpp.ned.editor.graph.edit;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.draw2d.ConnectionAnchor;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.XYLayout;
+import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.gef.AutoexposeHelper;
 import org.eclipse.gef.CompoundSnapToHelper;
 import org.eclipse.gef.EditPolicy;
@@ -19,6 +21,8 @@ import org.eclipse.gef.editpolicies.SnapFeedbackPolicy;
 import org.omnetpp.common.displaymodel.IDisplayString;
 import org.omnetpp.common.displaymodel.IDisplayString.Prop;
 import org.omnetpp.figures.CompoundModuleFigure;
+import org.omnetpp.figures.CompoundModuleGateAnchor;
+import org.omnetpp.figures.GateAnchor;
 import org.omnetpp.ned.editor.graph.edit.policies.CompoundModuleLayoutEditPolicy;
 import org.omnetpp.ned2.model.CompoundModuleNodeEx;
 import org.omnetpp.ned2.model.INamedGraphNode;
@@ -126,5 +130,24 @@ public class CompoundModuleEditPart extends ModuleEditPart {
 	 */
 	public boolean isOnBorder(int x, int y) {
 		return getCompoundModuleFigure().isOnBorder(x, y);
+	}
+	
+	/**
+	 * Compute the source connection anchor to be assigned based on the current mouse 
+	 * location and available gates. 
+	 * @param p current mouse coordinates
+	 * @return The selected connection anchor
+	 */
+	public ConnectionAnchor getConnectionAnchorAt(Point p) {
+		return new CompoundModuleGateAnchor(getFigure());
+	}
+
+	/**
+	 * Returns a conn anchor registered for the given gate
+	 * @param gate
+	 * @return
+	 */
+	public GateAnchor getConnectionAnchor(String gate) {
+		return new CompoundModuleGateAnchor(getFigure());
 	}
 }

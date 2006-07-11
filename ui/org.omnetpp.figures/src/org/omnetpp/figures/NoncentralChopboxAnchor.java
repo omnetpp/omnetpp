@@ -5,6 +5,7 @@ import org.eclipse.draw2d.Label;
 import org.eclipse.draw2d.ScalableFigure;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.Rectangle;
+import org.eclipse.gef.handles.HandleBounds;
 
 /**
  * @author rhornig
@@ -48,8 +49,8 @@ public class NoncentralChopboxAnchor extends GateAnchor {
     @Override
     protected Rectangle getBox() {
         // if the owner is a label use only its icon area 
-        if(getOwner() instanceof Label) {
-            Rectangle ib = ((Label)getOwner()).getIconBounds();
+        if(getOwner() instanceof HandleBounds) {
+            Rectangle ib = ((HandleBounds)getOwner()).getHandleBounds();
             return ib;
         }
             

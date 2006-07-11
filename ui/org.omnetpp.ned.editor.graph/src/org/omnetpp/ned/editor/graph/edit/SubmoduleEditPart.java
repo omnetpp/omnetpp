@@ -1,7 +1,10 @@
 package org.omnetpp.ned.editor.graph.edit;
 
+import org.eclipse.draw2d.ConnectionAnchor;
 import org.eclipse.draw2d.IFigure;
+import org.eclipse.draw2d.geometry.Point;
 import org.omnetpp.common.displaymodel.IDisplayString;
+import org.omnetpp.figures.GateAnchor;
 import org.omnetpp.figures.SubmoduleFigure;
 import org.omnetpp.ned2.model.INamedGraphNode;
 
@@ -26,7 +29,28 @@ public class SubmoduleEditPart extends ModuleEditPart {
         return (SubmoduleFigure) getFigure();
     }
 
-    /**
+	/**
+	 * Compute the source connection anchor to be assigned based on the current mouse 
+	 * location and available gates. 
+	 * @param p current mouse coordinates
+	 * @return The selected connection anchor
+	 */
+	public ConnectionAnchor getConnectionAnchorAt(Point p) {
+		// TODO select the appropriate gate name automatically
+		// or return NULL if no output gate is available
+		return new GateAnchor(getFigure());
+	}
+
+	/**
+	 * Returns a conn anchor registered for the given gate
+	 * @param gate
+	 * @return
+	 */
+	public GateAnchor getConnectionAnchor(String gate) {
+		return new GateAnchor(getFigure());
+	}
+
+	/**
      * Updates the visual aspect of this.
      */
     @Override

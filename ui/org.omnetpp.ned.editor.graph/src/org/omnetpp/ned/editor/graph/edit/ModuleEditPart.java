@@ -56,32 +56,14 @@ abstract public class ModuleEditPart extends ContainerEditPart implements NodeEd
 	 * @param p current mouse coordinates
 	 * @return The selected connection anchor
 	 */
-	public ConnectionAnchor getSourceConnectionAnchorAt(Point p) {
-		// TODO select the appropriate gate name automatically
-		// or return NULL if no output gate is available
-		return new GateAnchor(getFigure());
-	}
-
-	/**
-	 * Compute the target connection anchor to be assigned based on the current mouse 
-	 * location and available gates. 
-	 * @param p
-	 * @return
-	 */
-	public ConnectionAnchor getTargetConnectionAnchorAt(Point p) {
-		// TODO select the appropriate gate name automatically
-		// or return NULL if no input gate is available
-		return new GateAnchor(getFigure());
-	}
+	public abstract ConnectionAnchor getConnectionAnchorAt(Point p);
 
 	/**
 	 * Returns a conn anchor registered for the given gate
 	 * @param gate
 	 * @return
 	 */
-	public GateAnchor getConnectionAnchor(String gate) {
-		return new GateAnchor(getFigure(), gate);
-	}
+	public abstract GateAnchor getConnectionAnchor(String gate);
 
 	public ConnectionAnchor getSourceConnectionAnchor(ConnectionEditPart connEditPart) {
 		ConnectionNodeEx conn = (ConnectionNodeEx) connEditPart.getModel();
@@ -90,7 +72,7 @@ abstract public class ModuleEditPart extends ContainerEditPart implements NodeEd
 
 	public ConnectionAnchor getSourceConnectionAnchor(Request request) {
 		Point pt = new Point(((DropRequest) request).getLocation());
-		return getSourceConnectionAnchorAt(pt);
+		return getConnectionAnchorAt(pt);
 	}
 
 	public ConnectionAnchor getTargetConnectionAnchor(ConnectionEditPart connEditPart) {
@@ -100,7 +82,7 @@ abstract public class ModuleEditPart extends ContainerEditPart implements NodeEd
 
 	public ConnectionAnchor getTargetConnectionAnchor(Request request) {
 		Point pt = new Point(((DropRequest) request).getLocation());
-		return getTargetConnectionAnchorAt(pt);
+		return getConnectionAnchorAt(pt);
 	}
 
 	/* (non-Javadoc)

@@ -21,14 +21,13 @@ import org.eclipse.swt.graphics.Pattern;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.displaymodel.IDisplayString;
 import org.omnetpp.common.image.ImageFactory;
-import org.omnetpp.figures.LayerSupport.LayerID;
 import org.omnetpp.figures.layout.FreeformDesktopLayout;
 
 public class CompoundModuleFigure extends ModuleFigure 
 				implements LayerSupport, HandleBounds {
 
     private static final int DEFAULT_BORDER_WIDTH = 2;
-    private static final int DEFAULT_BORDER_SNAP_WIDTH = 5;
+    private static final int DEFAULT_BORDER_SNAP_WIDTH = 3;
     private static Dimension DEFAULT_SIZE = new Dimension(200, 100);
 	private Layer pane;
     private ScrollPane scrollpane;
@@ -173,6 +172,21 @@ public class CompoundModuleFigure extends ModuleFigure
     	// the selection handle should exclude the outer (title) border
         return getBounds().getCropped(
         		((CompoundModuleBorder)getBorder()).getOuterBorder().getInsets(this));
+    }
+    
+    /**
+     * @return the bounds where the anchors should be placed
+     */
+    public Rectangle getAnchorBounds() {
+    	Rectangle box = getClientArea();
+    	box.setLocation(0, 0);
+    	// take into account the compound module scrolling position
+    	layeredPane.translateToAbsolute(box);
+    	// take into account the NedFile figure scrolling position
+    	getParent().translateToRelative(box);
+    	// decrease the size a little to the same as the selection border 
+    	return box.shrink(2*DEFAULT_BORDER_SNAP_WIDTH, 2*DEFAULT_BORDER_SNAP_WIDTH);
+    	
     }
 
     @Override

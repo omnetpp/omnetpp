@@ -14,10 +14,10 @@ public class GateAnchor extends ChopboxAnchor {
     	super(owner);
     }
     
-    public GateAnchor(IFigure owner, String name) {
-    	super(owner);
-    	this.gateName = name;
-    }
+//    public GateAnchor(IFigure owner, String name) {
+//    	super(owner);
+//    	this.gateName = name;
+//    }
 
 	public String getGateName() {
 		return gateName;
