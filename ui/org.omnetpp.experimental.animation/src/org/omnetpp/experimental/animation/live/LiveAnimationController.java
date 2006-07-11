@@ -76,6 +76,7 @@ public class LiveAnimationController extends ReplayAnimationController implement
 			getLiveEventNumber(),
 			msg.getSendingTime(),
 			msg.getArrivalTime(),
+			0,
 			new ConnectionId(directToGate.getOwnerModule().getId(), directToGate.getId())));
 	}
 

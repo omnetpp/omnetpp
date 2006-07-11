@@ -7,5 +7,5 @@ public interface IAnimationListener {
 
 	public void liveSimulationTimeChanged(double simulationTime);
 	
-	public void liveEventNumberChanged(int eventNumber);
+	public void liveEventNumberChanged(long eventNumber);
 }

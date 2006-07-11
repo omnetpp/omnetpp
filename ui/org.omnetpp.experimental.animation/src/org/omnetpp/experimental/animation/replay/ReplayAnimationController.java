@@ -31,7 +31,7 @@ import org.omnetpp.figures.GateAnchor;
 
 public class ReplayAnimationController {
 	private final static double NORMAL_REAL_TIME_TO_ANIMATION_TIME_SCALE = 0.01;
-	private final static double FAST_REAL_TIME_TO_ANIMATION_TIME_SCALE = 10;
+	private final static double FAST_REAL_TIME_TO_ANIMATION_TIME_SCALE = 0.1;
 	private final static double EXPRESS_REAL_TIME_TO_ANIMATION_TIME_SCALE = 100;
 	
 	/**
@@ -131,7 +131,17 @@ public class ReplayAnimationController {
 	 * The reader remans open to be able to load efficiently while animation goes on.
 	 */
 	protected BufferedReader logFileReader;
-	
+
+	/**
+	 * Last event number read from the log file.
+	 */
+	protected long loadEventNumber;
+
+	/**
+	 * Last event's simulation time read from the log file.
+	 */
+	protected double loadSimulationTime;
+
 	/**
 	 * The current animation mode.
 	 */
@@ -174,6 +184,20 @@ public class ReplayAnimationController {
 	 */
 	public IRuntimeSimulation getSimulation() {
 		return simulation;
+	}
+
+	/**
+	 * Returns the current animation mode.
+	 */
+	public AnimationMode getAnimationMode() {
+		return animationMode;
+	}
+
+	/**
+	 * Changes the current animation mode.
+	 */
+	public void setAnimationMode(AnimationMode animationMode) {
+		this.animationMode = animationMode;
 	}
 
 	/**
@@ -296,17 +320,11 @@ public class ReplayAnimationController {
 	}
 	
 	/**
-	 * Starts animation forward from the current simulation time and stops at next animation primitive.
+	 * Starts animation forward from the current event number and stops at the next event number.
 	 * Asynchronous operation.
 	 */
 	public void animateStep() {
-		loadAnimationPrimitivesForPosition(eventNumber + 1, simulationTime);
-
-		IAnimationPrimitive animationPrimitive = getNextAnimationPrimitive();
-		if (animationPrimitive != null)
-			animateStart(true, NORMAL_REAL_TIME_TO_ANIMATION_TIME_SCALE, -1, animationPrimitive.getBeginSimulationTime());
-		else if (animationPrimitives.size() != 0)
-			animateStart(true, NORMAL_REAL_TIME_TO_ANIMATION_TIME_SCALE, -1, animationPrimitives.get(animationPrimitives.size() - 1).getEndSimulationTime());
+		animateStart(true, NORMAL_REAL_TIME_TO_ANIMATION_TIME_SCALE, eventNumber + 1, -1);
 	}
 	
 	/**
@@ -579,13 +597,11 @@ public class ReplayAnimationController {
 		try {
 			int lineCount = 0;
 			String line = null;
-			long eventNumber = 0;
-			double simulationTime = 0;
 
 			if (logFileReader == null)
 				logFileReader = new BufferedReader(new InputStreamReader(file.getContents()));
 			
-			while ((eventNumber <= minimumEventNumber || simulationTime <= minimumEventNumber || lineCount < 10) &&
+			while ((loadEventNumber <= minimumEventNumber || loadSimulationTime <= minimumEventNumber || lineCount < 10) &&
 				   (line = logFileReader.readLine()) != null)
 			{
 				lineCount++;
@@ -602,32 +618,33 @@ public class ReplayAnimationController {
 						initializeSimulation(module);
 
 					getReplaySimulation().addModule(module);
-					animationPrimitives.add(new CreateModuleAnimation(this, eventNumber, simulationTime, module));
+					animationPrimitives.add(new CreateModuleAnimation(this, loadEventNumber, loadSimulationTime, module));
 				}
 				else if (tokens[0].equals("DS")) {
 					ReplayModule module = (ReplayModule)simulation.getModuleByID(getIntegerToken(tokens, "id"));
 					String displayString = getToken(tokens, "d");
-					animationPrimitives.add(new SetDisplayStringAnimation(this, eventNumber, simulationTime, module, displayString.substring(1, displayString.length() - 1)));
+					animationPrimitives.add(new SetDisplayStringAnimation(this, loadEventNumber, loadSimulationTime, module, displayString.substring(1, displayString.length() - 1)));
 				}
 				else if (tokens[0].equals("CC")) {
 					GateId sourceGateId = new GateId(getIntegerToken(tokens, "sm"), getIntegerToken(tokens, "sg"));
 					GateId targetGateId = new GateId(getIntegerToken(tokens, "dm"), getIntegerToken(tokens, "dg"));
-					animationPrimitives.add(new CreateConnectionAnimation(this, eventNumber, simulationTime, sourceGateId, targetGateId));
+					animationPrimitives.add(new CreateConnectionAnimation(this, loadEventNumber, loadSimulationTime, sourceGateId, targetGateId));
 				}
 				else if (tokens[0].equals("E")) {
-					eventNumber = getIntegerToken(tokens, "#");
-					simulationTime = getDoubleToken(tokens, "t");
-					animationPrimitives.add(new HandleMessageAnimation(this, eventNumber, simulationTime, simulation.getModuleByID(getIntegerToken(tokens, "m")), null));
+					loadEventNumber = getIntegerToken(tokens, "#");
+					loadSimulationTime = getDoubleToken(tokens, "t");
+					animationPrimitives.add(new HandleMessageAnimation(this, loadEventNumber, loadSimulationTime, simulation.getModuleByID(getIntegerToken(tokens, "m")), null));
 				}
 				else if (tokens[0].equals("BS")) {
 				}
 				else if (tokens[0].equals("SH")) {
 					ConnectionId connectionId = new ConnectionId(getIntegerToken(tokens, "sm"), getIntegerToken(tokens, "sg"));
-					double delay = getDoubleToken(tokens, "d");
-					animationPrimitives.add(new SendMessageAnimation(this, eventNumber, simulationTime, Double.isNaN(delay) ? simulationTime : simulationTime + delay, connectionId));
+					double propagationTime = getDoubleToken(tokens, "d", 0);
+					double transmissionTime = getDoubleToken(tokens, "td", 0);
+					animationPrimitives.add(new SendMessageAnimation(this, loadEventNumber, loadSimulationTime, propagationTime, transmissionTime, connectionId));
 				}
 				else if (tokens[0].equals("SA")) {
-					animationPrimitives.add(new ScheduleSelfMessageAnimation(this, eventNumber, simulationTime, getDoubleToken(tokens, "t")));
+					animationPrimitives.add(new ScheduleSelfMessageAnimation(this, loadEventNumber, loadSimulationTime, getDoubleToken(tokens, "t")));
 				}
 			}
 		}
@@ -639,9 +656,13 @@ public class ReplayAnimationController {
 	}
 
 	private double getDoubleToken(String[] tokens, String key) {
+		return getDoubleToken(tokens, key, Double.NaN);
+	}
+
+	private double getDoubleToken(String[] tokens, String key, double defaultValue) {
 		String value = getToken(tokens, key);
 
-		return value != null ? Double.parseDouble(value) : Double.NaN;
+		return value != null ? Double.parseDouble(value) : defaultValue;
 	}
 
 	private int getIntegerToken(String[] tokens, String key) {

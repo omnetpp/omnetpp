@@ -9,6 +9,7 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.layout.RowData;
 import org.eclipse.swt.layout.RowLayout;
+import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.CoolBar;
 import org.eclipse.swt.widgets.CoolItem;
@@ -141,6 +142,15 @@ public class AnimationEditor extends EditorPart implements IAnimationListener {
 		coolItem.setControl(toolBar);
 		coolItem.setSize(new Point(300, 25));
 
+		// animation mode selector
+		Combo animationMode = new Combo(coolBar, SWT.NONE);
+		for (ReplayAnimationController.AnimationMode t : ReplayAnimationController.AnimationMode.values())
+			animationMode.add(t.name());
+		animationMode.setVisibleItemCount(ReplayAnimationController.AnimationMode.values().length);
+		coolItem = new CoolItem(coolBar, SWT.NONE);
+		coolItem.setControl(animationMode);
+		coolItem.setSize(new Point(100, 25));
+
 		// simulation time label
 		Composite labels = new Composite(coolBar, SWT.NONE);
 		labels.setLayout(new RowLayout(SWT.HORIZONTAL));
@@ -155,7 +165,7 @@ public class AnimationEditor extends EditorPart implements IAnimationListener {
 		// speed slider
 	    Slider slider = new Slider(coolBar, SWT.HORIZONTAL);
 	    slider.setMinimum(0);
-	    slider.setMaximum(10);
+	    slider.setMaximum(100);
 	    slider.setThumb(1);
 	    slider.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
@@ -172,6 +182,13 @@ public class AnimationEditor extends EditorPart implements IAnimationListener {
 		animationController = new ReplayAnimationController(canvas, ((IFileEditorInput)getEditorInput()).getFile());
 //		animationController = new LiveAnimationController(canvas);
 		animationController.addAnimationListener(this);
+
+		animationMode.select(animationController.getAnimationMode().ordinal());
+		animationMode.addSelectionListener(new SelectionAdapter () {
+			public void widgetSelected(SelectionEvent e) {
+				animationController.setAnimationMode(ReplayAnimationController.AnimationMode.values()[((Combo)e.getSource()).getSelectionIndex()]);
+			}
+		});
 	}
 
 	@Override
@@ -192,7 +209,7 @@ public class AnimationEditor extends EditorPart implements IAnimationListener {
 		replaySimulationTimeLabel.setText(String.valueOf(simulationTime));
 	}
 
-	public void liveEventNumberChanged(int eventNumber) {
+	public void liveEventNumberChanged(long eventNumber) {
 	}
 
 	public void liveSimulationTimeChanged(double simulationTime) {

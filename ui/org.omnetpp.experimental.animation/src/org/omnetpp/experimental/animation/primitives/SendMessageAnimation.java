@@ -1,6 +1,7 @@
 package org.omnetpp.experimental.animation.primitives;
 
 import org.eclipse.draw2d.Ellipse;
+import org.eclipse.draw2d.Polyline;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.swt.graphics.Color;
@@ -9,23 +10,36 @@ import org.omnetpp.experimental.animation.replay.ReplayAnimationController;
 import org.omnetpp.figures.ConnectionFigure;
 
 public class SendMessageAnimation extends AbstractAnimationPrimitive {
-	private ConnectionId connectionId;
+	private static final Color FOREGROUND_COLOR = new Color(null, 128, 0, 0);
 
-	private double endSimulationTime;	
+	private ConnectionId connectionId;
 	
-	private Ellipse message;
+	private double transmissionTime;
 	
+	private double endSimulationTime;
+	
+	private Ellipse messageEllipse;
+	
+	private Polyline messageLine;
+
 	public SendMessageAnimation(ReplayAnimationController animationController,
 								long eventNumber,
 								double beginSimulationTime,
-								double endSimulationTime,
+								double propagationTime,
+								double transmissionTime,
 								ConnectionId connectionId) {
 		super(animationController, eventNumber, beginSimulationTime);
-		this.endSimulationTime = endSimulationTime;
+		this.transmissionTime = transmissionTime;
+		this.endSimulationTime = beginSimulationTime + propagationTime + transmissionTime;
 		this.connectionId = connectionId;
-		this.message = new Ellipse();
-		this.message.setForegroundColor(new Color(null, 128, 0, 0));
-		this.message.setBackgroundColor(message.getForegroundColor());
+		
+		messageEllipse = new Ellipse();
+		messageEllipse.setForegroundColor(FOREGROUND_COLOR);
+		messageEllipse.setBackgroundColor(FOREGROUND_COLOR);
+
+		messageLine = new Polyline();
+		messageLine.setForegroundColor(FOREGROUND_COLOR);
+		messageLine.setLineWidth(5);
 	}
 	
 	@Override
@@ -39,15 +53,47 @@ public class SendMessageAnimation extends AbstractAnimationPrimitive {
 
 			if (connectionFigure != null) {
 				Point p1 = connectionFigure.getStart();
-				Point p2 = connectionFigure.getEnd();
-				double alpha = (simulationTime - beginSimulationTime) / (endSimulationTime - beginSimulationTime);
-				Point p = new Point((1 - alpha) * p1.x + alpha * p2.x, (1 - alpha) * p1.y + alpha * p2.y);
-				setConstraint(message, new Rectangle(p.x - 3, p.y - 3, 7, 7));
+				Point p2 = connectionFigure.getEnd();				
+				double simulationTimeDelta = endSimulationTime - beginSimulationTime - transmissionTime;
 
-				showFigure(message);
+				double alpha;
+				if (simulationTimeDelta != 0) {
+					alpha = (simulationTime - beginSimulationTime) / simulationTimeDelta;
+					alpha = Math.max(0, Math.min(alpha, 1));
+				}
+				else
+					alpha = 0.5;
+				
+				if (transmissionTime == 0) {
+					Point p = getConvexCombination(p1, p2, alpha);
+					setConstraint(messageEllipse, new Rectangle(p.x - 3, p.y - 3, 7, 7));
+					showFigure(messageEllipse);
+				}
+				else {
+					double beta;
+					if (simulationTimeDelta != 0) {
+						beta = (simulationTime - beginSimulationTime - transmissionTime) / simulationTimeDelta;
+						beta = Math.max(0, Math.min(beta, 1));
+					}
+					else {
+						alpha = 0;
+						beta = 1;
+					}
+
+					Point pAlpha = getConvexCombination(p1, p2, alpha);
+					Point pBeta = getConvexCombination(p1, p2, beta);
+					messageLine.setEndpoints(pAlpha, pBeta);
+					showFigure(messageLine);
+				}
 			}
 		}
-		else
-			hideFigure(message);
+		else {
+			hideFigure(messageEllipse);
+			hideFigure(messageLine);
+		}
+	}
+
+	private Point getConvexCombination(Point p1, Point p2, double alpha) {
+		return new Point(Math.round((1 - alpha) * p1.x + alpha * p2.x), Math.round((1 - alpha) * p1.y + alpha * p2.y));
 	}
 }

@@ -17,8 +17,8 @@ public abstract class AbstractAnimationPrimitive implements IAnimationPrimitive 
 	
 	public AbstractAnimationPrimitive(ReplayAnimationController animationController, long eventNumber, double beginSimulationTime) {
 		this.animationController = animationController;
-		this.beginSimulationTime = beginSimulationTime;
 		this.eventNumber = eventNumber;
+		this.beginSimulationTime = beginSimulationTime;
 	}
 	
 	public void setAnimationController(ReplayAnimationController animationController) {
