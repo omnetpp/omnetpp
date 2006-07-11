@@ -80,48 +80,49 @@
 %include "cpolymorphic.h"
 %include "cobject.h"
 %include "cvisitor.h"
-//%include "cenvir.h" -- no need to wrap
-//%include "util.h" -- no need to wrap
-%include "opp_string.h"
-%include "random.h"
-%include "distrib.h"
+//%include "opp_string.h"
+//%include "random.h"
+//%include "distrib.h"
 %include "cexception.h"
 %include "cdefaultlist.h"
 %include "csimul.h"
-//%include "macros.h" -- no need to wrap
-%include "ctypes.h"
-%include "carray.h"
-%include "cqueue.h"
-%include "cllist.h"
+//%include "ctypes.h"
+//%include "carray.h"
+//%include "cqueue.h"
+//%include "cllist.h"
 %include "globals.h"
-//%include "cwatch.h" -- no need to wrap
-//%include "cstlwatch.h" -- no need to wrap
-%include "cpar.h"
+//%include "cpar.h"
 %include "cgate.h"
 %include "cmessage.h"
-%include "cpacket.h"
-%include "cmsgheap.h"
+//%include "cpacket.h"
+//%include "cmsgheap.h"
 %include "cmodule.h"
 %include "csimplemodule.h"
-%include "cstat.h"
-%include "cdensity.h"
-%include "chist.h"
-%include "cvarhist.h"
-%include "cpsquare.h"
-%include "cksplit.h"
-%include "coutvect.h"
-%include "cdetect.h"
-%include "ctopo.h"
-%include "cfsm.h"
-%include "protocol.h"
-%include "cenum.h"
-%include "cstruct.h"
-//%include "onstartup.h" -- no need to wrap
-%include "cchannel.h"
+//%include "cstat.h"
+//%include "cdensity.h"
+//%include "chist.h"
+//%include "cvarhist.h"
+//%include "cpsquare.h"
+//%include "cksplit.h"
+//%include "coutvect.h"
+//%include "cdetect.h"
+//%include "ctopo.h"
+//%include "cfsm.h"
+//%include "protocol.h"
+//%include "cenum.h"
+//%include "cstruct.h"
+//%include "cchannel.h"
 %include "cdispstr.h"
+//%include "cxmlelement.h"
+
+//%include "cenvir.h" -- no need to wrap
+//%include "util.h" -- no need to wrap
+//%include "macros.h" -- no need to wrap
+//%include "cwatch.h" -- no need to wrap
+//%include "cstlwatch.h" -- no need to wrap
+//%include "onstartup.h" -- no need to wrap
 //%include "envirext.h" -- no need to wrap
 //%include "cconfig.h" -- no need to wrap
-%include "cxmlelement.h"
 //%include "cstrtokenizer.h" -- no need to wrap
 //%include "cscheduler.h" -- no need to wrap
 //%include "compat.h" -- no need to wrap

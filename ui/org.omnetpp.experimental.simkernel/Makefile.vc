@@ -20,8 +20,10 @@ JAVAPKG = org.omnetpp.experimental.simkernel
 JAVADIR = src\$(JAVAPKG:.=\)
 
 LIBS = $(OMNETPP_ROOT)/lib/sim_std.lib \
+       $(OMNETPP_ROOT)/lib/nedxml.lib \
        $(OMNETPP_ROOT)/lib/envir.lib \
-       $(OMNETPP_ROOT)/lib/cmdenv.lib
+       $(OMNETPP_ROOT)/lib/cmdenv.lib \
+       $(XML_LIBS) $(SYS_LIBS)
 
 #
 # Automatic rules
