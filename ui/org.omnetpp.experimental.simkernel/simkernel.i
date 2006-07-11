@@ -1,4 +1,4 @@
-%module simkernel
+%module Simkernel
 
 //
 // PROBLEMS:
@@ -17,10 +17,41 @@
 // Solution: use %newobject
 //
 
+%pragma(java) jniclasscode=%{
+  static {
+    try {
+      System.loadLibrary("simkernel");
+    } catch (UnsatisfiedLinkError e) {
+      System.err.println("Native code library failed to load. \n" + e);
+      System.exit(1);
+    }
+  }
+%}
 
 
 %{
 #include "omnetpp.h"
+#include <direct.h>
+
+// accessor for global vars
+inline cSimulation *getSimulation() {return &simulation;}
+inline cEnvir *getEV() {return &ev;}
+
+inline void changeToDir(const char *dir)  //XXX
+{
+    printf("changing to: %s\n", dir);
+    _chdir(dir);
+
+    //char buffer[_MAX_PATH];
+    //if (_getcwd( buffer, _MAX_PATH)==NULL)
+    //   strcpy(buffer,"???");
+    //printf("current working directory: %s\n", buffer);
+}
+
+inline void evSetupDummyCall() { //XXX
+    char *argv[] = {"exe", NULL};
+    ev.setup(1,argv);
+}
 %}
 
 %include "std_common.i"
@@ -50,6 +81,8 @@
 %ignore operator void *;
 %ignore operator cObject *;
 %ignore operator cXMLElement *;
+%ignore cSimulation::operator=;
+%ignore cEnvir::printf;
 
 // ignore methods that are useless from Java
 %ignore writeContents;
@@ -60,7 +93,7 @@
 %ignore cCommBuffer;
 %ignore cContextSwitcher;
 %ignore cContextTypeSwitcher;
-%ignore cEnvir;
+//%ignore cEnvir;
 %ignore cConfiguration;
 %ignore cOutputVectorManager;
 %ignore cOutputScalarManager;
@@ -70,6 +103,9 @@
 %ignore cParsimCommunications;
 %ignore ModNameParamResolver;
 %ignore StringMapParamResolver;
+
+%ignore simulation;
+%ignore ev;
 
 // SWIG doesn't understand nested classes, turn off corresponding warnings
 //%warnfilter(312) cTopology::Node; -- this doesn't seem to work
@@ -114,8 +150,8 @@
 //%include "cchannel.h"
 %include "cdispstr.h"
 //%include "cxmlelement.h"
+%include "cenvir.h"
 
-//%include "cenvir.h" -- no need to wrap
 //%include "util.h" -- no need to wrap
 //%include "macros.h" -- no need to wrap
 //%include "cwatch.h" -- no need to wrap
@@ -129,4 +165,11 @@
 //%include "cparsimcomm.h" -- no need to wrap
 //%include "ccommbuffer.h" -- no need to wrap
 //%include "crng.h" -- no need to wrap
+
+
+// refinements
+cSimulation *getSimulation();
+cEnvir *getEV();
+void evSetupDummyCall(); //XXX
+void changeToDir(const char *dir); //XXX
 

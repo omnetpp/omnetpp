@@ -16,10 +16,11 @@ COPTS=$(CFLAGS) -I$(JDK)\include -I$(JDK)\include\win32 -I$(OMNETPP_ROOT)\includ
 
 OBJS = simkernel_wrap.obj
 HEADERS = $(OMNETPP_ROOT)\include\*.h
-JAVAPKG = org.omnetpp.experimental.simkernel
+JAVAPKG = org.omnetpp.experimental.simkernel.swig
 JAVADIR = src\$(JAVAPKG:.=\)
 
-LIBS = $(OMNETPP_ROOT)/lib/sim_std.lib \
+LIBS = $(OMNETPP_ROOT)/samples/p-to-p/*.obj \
+       $(OMNETPP_ROOT)/lib/sim_std.lib \
        $(OMNETPP_ROOT)/lib/nedxml.lib \
        $(OMNETPP_ROOT)/lib/envir.lib \
        $(OMNETPP_ROOT)/lib/cmdenv.lib \
@@ -42,7 +43,7 @@ LIBS = $(OMNETPP_ROOT)/lib/sim_std.lib \
 #
 default: simkernel.dll
 
-simkernel_wrap.cxx: simkernel.i $(HEADERS)
+simkernel_wrap.cxx: simkernel.i $(HEADERS) Makefile.vc
 	-del $(JAVADIR)\*.java >nul
 	$(SWIG) -c++ -java -package $(JAVAPKG) -I$(OMNETPP_ROOT)\include -outdir $(JAVADIR) simkernel.i
 
