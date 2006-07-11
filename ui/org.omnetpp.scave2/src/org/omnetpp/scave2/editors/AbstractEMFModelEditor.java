@@ -746,7 +746,8 @@ public abstract class AbstractEMFModelEditor
 					// Set up the tree viewer.
 					//
 					contentOutlineViewer.setContentProvider(new AdapterFactoryContentProvider(adapterFactory));
-					contentOutlineViewer.setLabelProvider(new AdapterFactoryLabelProvider(adapterFactory));
+					//contentOutlineViewer.setLabelProvider(new AdapterFactoryLabelProvider(adapterFactory));
+					contentOutlineViewer.setLabelProvider(new ScaveModelLabelProvider());
 					initializeContentOutlineViewer(contentOutlineViewer); // should call setInput()
 
 					// Make sure our popups work.
