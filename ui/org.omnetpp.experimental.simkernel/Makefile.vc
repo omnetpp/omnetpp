@@ -1,0 +1,58 @@
+#
+# Global definitions
+#
+OMNETPP_ROOT=..\..\..\sandbox\omnetpp
+
+!include $(OMNETPP_ROOT)\configuser.vc
+
+JDK="$(TOOLS_DIR)\jdk1.5.0"
+SWIG="$(TOOLS_DIR)\SWIG-1.3.25\swig.exe"
+
+
+#
+# Local definitions
+#
+COPTS=$(CFLAGS) -I$(JDK)\include -I$(JDK)\include\win32 -I$(OMNETPP_ROOT)\include
+
+OBJS = simkernel_wrap.obj
+HEADERS = $(OMNETPP_ROOT)\include\*.h
+JAVAPKG = org.omnetpp.experimental.simkernel
+JAVADIR = src\$(JAVAPKG:.=\)
+
+LIBS = $(OMNETPP_ROOT)/lib/sim_std.lib \
+       $(OMNETPP_ROOT)/lib/envir.lib \
+       $(OMNETPP_ROOT)/lib/cmdenv.lib
+
+#
+# Automatic rules
+#
+.SUFFIXES : .cc
+
+.cc.obj:
+	$(CXX) /Fo"$@" $(COPTS) /c /Tp $<
+
+.cxx.obj:
+	$(CXX) /Fo"$@" $(COPTS) /c /Tp $<
+
+
+#
+# Targets
+#
+default: simkernel.dll
+
+simkernel_wrap.cxx: simkernel.i $(HEADERS)
+	-del $(JAVADIR)\*.java >nul
+	$(SWIG) -c++ -java -package $(JAVAPKG) -I$(OMNETPP_ROOT)\include -outdir $(JAVADIR) simkernel.i
+
+simkernel.dll : $(OBJS)
+	$(LINK) /dll /out:"simkernel.dll" $(OBJS) $(LIBS) $(LDFLAGS)
+
+depend:
+	$(MAKEDEPEND) -I../../include -fMakefile.vc -- *.cc
+
+clean:
+	-del simkernel_wrap.cxx *.obj *.exp *.lib test*.exe simkernel.dll 2> nul
+	-del *.ilk *.idb *.pdb *.pch 2> nul
+
+# DO NOT DELETE THIS LINE -- make depend depends on it.
+
