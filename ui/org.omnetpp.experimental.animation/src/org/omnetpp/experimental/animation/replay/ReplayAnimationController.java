@@ -150,7 +150,7 @@ public class ReplayAnimationController {
 	/**
 	 * The current animation mode.
 	 */
-	protected AnimationMode animationMode = AnimationMode.LINEAR;
+	protected AnimationMode animationMode = AnimationMode.EVENT;
 	
 	public enum AnimationMode {
 		LINEAR,		// simulation time and animation time are proportional
@@ -444,15 +444,14 @@ public class ReplayAnimationController {
 			{
 				case LINEAR:
 					setSimulationTime(animationTime);
-					loadAnimationPrimitivesForSimulationTime(getSimulationTime());
+					loadAnimationPrimitivesForSimulationTime(simulationTime);
 					setEventNumber(getEventNumberForSimulationTime(simulationTime));
 					break;
 				case EVENT:
-					long eventNumberDelta = (long)Math.floor(animationTime);
-					setEventNumber(getEventNumber() + eventNumberDelta);
-					loadAnimationPrimitivesForEventNumber(getEventNumber());
+					setEventNumber((long)Math.floor(animationTime));
+					loadAnimationPrimitivesForEventNumber(eventNumber);
 					double eventSimulationTime = getSimulationTimeForEventNumber(eventNumber);
-					setSimulationTime(eventSimulationTime + (getSimulationTimeForEventNumber(eventNumber + 1) - eventSimulationTime) * (animationTime - eventNumberDelta));
+					setSimulationTime(eventSimulationTime + (getSimulationTimeForEventNumber(eventNumber + 1) - eventSimulationTime) * (animationTime - eventNumber));
 					break;
 				case NON_LINEAR:
 					// TODO:
