@@ -2,6 +2,8 @@ package org.omnetpp.experimental.animation.editors;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Point;
@@ -13,8 +15,8 @@ import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.CoolBar;
 import org.eclipse.swt.widgets.CoolItem;
-import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Slider;
+import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
 import org.eclipse.ui.IEditorInput;
@@ -30,13 +32,13 @@ import org.omnetpp.experimental.animation.widgets.AnimationCanvas;
 public class AnimationEditor extends EditorPart implements IAnimationListener {
 	private IAnimationController animationController;
 
-	private Label replayEventNumberLabel;
+	private Text replayEventNumberWidget;
 
-	private Label replaySimulationTimeLabel;
+	private Text replaySimulationTimeWidget;
 
-	private Label replayAnimationNumberLabel;
+	private Text replayAnimationNumberWidget;
 
-	private Label replayAnimationTimeLabel;
+	private Text replayAnimationTimeWidget;
 	
 	public AnimationEditor() {
 	}
@@ -72,6 +74,7 @@ public class AnimationEditor extends EditorPart implements IAnimationListener {
 		parent.setLayout(new GridLayout());
 
 		// user interface controls
+		int coolBarHeight = 25;
 		CoolBar coolBar = new CoolBar(parent, SWT.NONE);
 		coolBar.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
 		
@@ -145,7 +148,7 @@ public class AnimationEditor extends EditorPart implements IAnimationListener {
 	    // navigation buttons
 		CoolItem coolItem = new CoolItem(coolBar, SWT.NONE);
 		coolItem.setControl(toolBar);
-		coolItem.setSize(new Point(300, 25));
+		coolItem.setSize(new Point(300, coolBarHeight));
 
 		// animation mode selector
 		Combo animationMode = new Combo(coolBar, SWT.NONE);
@@ -154,22 +157,50 @@ public class AnimationEditor extends EditorPart implements IAnimationListener {
 		animationMode.setVisibleItemCount(ReplayAnimationController.AnimationMode.values().length);
 		coolItem = new CoolItem(coolBar, SWT.NONE);
 		coolItem.setControl(animationMode);
-		coolItem.setSize(new Point(100, 25));
+		coolItem.setSize(new Point(100, coolBarHeight));
 
 		// simulation time label
 		Composite labels = new Composite(coolBar, SWT.NONE);
 		labels.setLayout(new RowLayout(SWT.HORIZONTAL));
-		replayEventNumberLabel = new Label(labels, SWT.NONE);
-		replayEventNumberLabel.setLayoutData(new RowData(100, 25));
-		replayAnimationNumberLabel = new Label(labels, SWT.NONE);
-		replayAnimationNumberLabel.setLayoutData(new RowData(100, 25));
-		replaySimulationTimeLabel = new Label(labels, SWT.NONE);
-		replaySimulationTimeLabel.setLayoutData(new RowData(100, 25));
-		replayAnimationTimeLabel = new Label(labels, SWT.NONE);
-		replayAnimationTimeLabel.setLayoutData(new RowData(100, 25));
+		replayEventNumberWidget = new Text(labels, SWT.BORDER);
+		replayEventNumberWidget.setLayoutData(new RowData(100, coolBarHeight - 10));
+		replayEventNumberWidget.addModifyListener(new ModifyListener() {
+			public void modifyText(ModifyEvent e) {
+				long eventNumber = Long.parseLong(((Text)e.widget).getText());
+				if (eventNumber != animationController.getEventNumber())
+					animationController.gotoEventNumber(eventNumber);
+			}
+		});
+		replayAnimationNumberWidget = new Text(labels, SWT.BORDER);
+		replayAnimationNumberWidget.setLayoutData(new RowData(100, coolBarHeight - 10));
+		replayAnimationNumberWidget.addModifyListener(new ModifyListener() {
+			public void modifyText(ModifyEvent e) {
+				long animationNumber = Long.parseLong(((Text)e.widget).getText());
+				if (animationNumber != animationController.getAnimationNumber())
+					animationController.gotoAnimationNumber(animationNumber);
+			}
+		});
+		replaySimulationTimeWidget = new Text(labels, SWT.BORDER);
+		replaySimulationTimeWidget.setLayoutData(new RowData(100, coolBarHeight - 10));
+		replaySimulationTimeWidget.addModifyListener(new ModifyListener() {
+			public void modifyText(ModifyEvent e) {
+				double simulationTime = Double.parseDouble(((Text)e.widget).getText());
+				if (simulationTime != animationController.getSimulationTime())
+					animationController.gotoSimulationTime(simulationTime);
+			}
+		});
+		replayAnimationTimeWidget = new Text(labels, SWT.BORDER);
+		replayAnimationTimeWidget.setLayoutData(new RowData(100, coolBarHeight - 10));
+		replayAnimationTimeWidget.addModifyListener(new ModifyListener() {
+			public void modifyText(ModifyEvent e) {
+				double animationTime = Double.parseDouble(((Text)e.widget).getText());
+				if (animationTime != animationController.getAnimationTime())
+					animationController.gotoAnimationTime(animationTime);
+			}
+		});
 	    coolItem = new CoolItem(coolBar, SWT.NONE);
 	    coolItem.setControl(labels);
-		coolItem.setSize(new Point(430, 25));
+		coolItem.setSize(new Point(480, coolBarHeight));
 
 		// speed slider
 	    Slider slider = new Slider(coolBar, SWT.HORIZONTAL);
@@ -213,19 +244,59 @@ public class AnimationEditor extends EditorPart implements IAnimationListener {
 	}
 
 	public void replayEventNumberChanged(long eventNumber) {
-		replayEventNumberLabel.setText(String.valueOf(eventNumber));
+		long oldEventNumber = -1;
+		
+		try {
+			oldEventNumber = Long.parseLong(replayEventNumberWidget.getText());
+		}
+		catch (NumberFormatException e) {
+			// void
+		}
+		
+		if (oldEventNumber != eventNumber)
+			replayEventNumberWidget.setText(String.valueOf(eventNumber));
 	}
 
 	public void replaySimulationTimeChanged(double simulationTime) {
-		replaySimulationTimeLabel.setText(String.valueOf(simulationTime));
+		double oldSimulationTime = -1;
+		
+		try {
+			oldSimulationTime = Double.parseDouble(replaySimulationTimeWidget.getText());
+		}
+		catch (NumberFormatException e) {
+			// void
+		}
+		
+		if (oldSimulationTime != simulationTime)
+			replaySimulationTimeWidget.setText(String.valueOf(simulationTime));
 	}
 
 	public void replayAnimationNumberChanged(long animationNumber) {
-		replayAnimationNumberLabel.setText(String.valueOf(animationNumber));
+		long oldAnimationNumber = -1; 
+		
+		try {
+			oldAnimationNumber = Long.parseLong(replayAnimationNumberWidget.getText());
+		}
+		catch (NumberFormatException e) {
+			// void
+		}
+		
+		if (oldAnimationNumber != animationNumber)
+			replayAnimationNumberWidget.setText(String.valueOf(animationNumber));
 	}
 
 	public void replayAnimationTimeChanged(double animationTime) {
-		replayAnimationTimeLabel.setText(String.valueOf(animationTime));
+		double oldAnimationTime = -1;
+		
+		try {
+			oldAnimationTime = Double.parseDouble(replayAnimationTimeWidget.getText());
+		}
+		catch (NumberFormatException e) {
+			// void
+		}
+		
+		if (oldAnimationTime != animationTime)
+			replayAnimationTimeWidget.setText(String.valueOf(animationTime));
 	}
 
 	public void liveEventNumberChanged(long eventNumber) {
