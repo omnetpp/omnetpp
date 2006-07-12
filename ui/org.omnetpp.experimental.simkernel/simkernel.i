@@ -108,6 +108,16 @@ inline void evSetupDummyCall() { //XXX
 %ignore simulation;
 %ignore ev;
 
+
+// typemaps to wrap Javaenv::setJCallback(JNIEnv *jenv, jobject jcallbackobj):
+%typemap(in, numinputs=0) JNIEnv *jenv {
+    $1 = jenv;
+}
+%typemap(in) jobject jcallbackobj {
+    $1 = j$1;
+}
+
+
 // SWIG doesn't understand nested classes, turn off corresponding warnings
 //%warnfilter(312) cTopology::Node; -- this doesn't seem to work
 //%warnfilter(312) cTopology; -- nor this
