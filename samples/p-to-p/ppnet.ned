@@ -31,8 +31,8 @@ module PointToPointNet
             display: "p=430,92;i=block/sink";
     connections nocheck:
         burstySrc.out --> ppIF1.in;
-        ppIF1.lineOut --> datarate 1000000 --> ppIF2.lineIn display "o=,3";
-        ppIF1.lineIn <-- datarate 1000000 <-- ppIF2.lineOut display "o=,3";
+        ppIF1.lineOut --> datarate 1000000 delay 0.01 --> ppIF2.lineIn display "o=,3";
+        ppIF1.lineIn <-- datarate 1000000 delay 0.01  <-- ppIF2.lineOut display "o=,3";
         ppIF2.out --> sink.in;
 endmodule
 
