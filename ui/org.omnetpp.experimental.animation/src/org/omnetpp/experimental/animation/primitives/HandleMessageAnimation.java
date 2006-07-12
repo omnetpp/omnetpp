@@ -17,20 +17,20 @@ public class HandleMessageAnimation extends AbstractAnimationPrimitive {
 	
 	public HandleMessageAnimation(ReplayAnimationController animationController,
 								  long eventNumber,
-								  double beginSimulationTime,
+								  double simulationTime,
+								  long animationNumber,
 								  IRuntimeModule module,
 								  IRuntimeMessage message) {
-		super(animationController, eventNumber, beginSimulationTime);
-		this.eventNumber = eventNumber;
+		super(animationController, eventNumber, simulationTime, animationNumber);
 		this.module = module;
 		this.message = message;
 		this.ellipse = new Ellipse();
 		this.ellipse.setBackgroundColor(new Color(null, 0, 128, 0));
 	}
 	
-	public void animateAt(long eventNumber, double simulationTime) {
+	public void animateAt(long eventNumber, double simulationTime, long animationNumber, double animationTime) {
 		if (this.eventNumber == eventNumber) {
-			ModuleFigure moduleFigure = (ModuleFigure)animationController.getFigure(module);
+			ModuleFigure moduleFigure = (ModuleFigure)animationEnvironment.getFigure(module);
 			
 			if (moduleFigure != null) {
 				setConstraint(ellipse, new Rectangle(moduleFigure.getLocation().x + 3, moduleFigure.getLocation().y + 3, 7, 7));

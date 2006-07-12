@@ -8,8 +8,9 @@ public class ScheduleSelfMessageAnimation extends AbstractAnimationPrimitive {
 	public ScheduleSelfMessageAnimation(ReplayAnimationController animationController,
 										long eventNumber,
 										double beginSimulationTime,
+										long animationNumber,
 										double endSimulationTime) {
-		super(animationController, eventNumber, beginSimulationTime);
+		super(animationController, eventNumber, beginSimulationTime, animationNumber);
 		this.endSimulationTime = endSimulationTime;
 	}
 	
@@ -18,6 +19,6 @@ public class ScheduleSelfMessageAnimation extends AbstractAnimationPrimitive {
 		return endSimulationTime;
 	}
 	
-	public void animateAt(long eventNumber, double simulationTime) {
+	public void animateAt(long eventNumber, double simulationTime, long animationNumber, double animationTime) {
 	}
 }

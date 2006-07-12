@@ -16,20 +16,21 @@ public class CreateConnectionAnimation extends AbstractAnimationPrimitive {
 
 	public CreateConnectionAnimation(ReplayAnimationController animationController,
 									 long eventNumber,
-									 double beginSimulationTime,
+									 double simulationTime,
+									 long animationNumber,
 									 GateId sourceGateId,
 									 GateId targetGateId) {
-		super(animationController, eventNumber, beginSimulationTime);
+		super(animationController, eventNumber, simulationTime, animationNumber);
 		this.sourceGateId = sourceGateId;
 		this.targetGateId = targetGateId;
 		this.connectionFigure = new ConnectionFigure();
 	}
 	
-	public void animateAt(long eventNumber, double simulationTime) {
+	public void animateAt(long eventNumber, double simulationTime, long animationNumber, double animationTime) {
 		if (simulationTime >= beginSimulationTime) {
 			connectionFigure.setSourceAnchor(getGateAnchor(sourceGateId));
 			connectionFigure.setTargetAnchor(getGateAnchor(targetGateId));
-			animationController.setFigure(new ConnectionId(sourceGateId.getModuleId(), sourceGateId.getGateId()), connectionFigure);
+			animationEnvironment.setFigure(new ConnectionId(sourceGateId.getModuleId(), sourceGateId.getGateId()), connectionFigure);
 			showFigure(connectionFigure);
 		}
 		else {
@@ -38,13 +39,13 @@ public class CreateConnectionAnimation extends AbstractAnimationPrimitive {
 	}
 	
 	private GateAnchor getGateAnchor(GateId gateId) {
-		GateAnchor gateAnchor = (GateAnchor)animationController.getFigure(gateId);
+		GateAnchor gateAnchor = (GateAnchor)animationEnvironment.getFigure(gateId);
 		
 		if (gateAnchor == null) {
-			ModuleFigure moduleFigure = (ModuleFigure)animationController.getFigure(animationController.getSimulation().getModuleByID(gateId.getModuleId()));
+			ModuleFigure moduleFigure = (ModuleFigure)animationEnvironment.getFigure(animationEnvironment.getModuleByID(gateId.getModuleId()));
 			// TODO: use gate name
 			gateAnchor = new GateAnchor(moduleFigure, String.valueOf(gateId.getGateId()));
-			animationController.setFigure(gateId, gateAnchor);
+			animationEnvironment.setFigure(gateId, gateAnchor);
 		}
 
 		return gateAnchor;

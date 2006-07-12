@@ -4,29 +4,31 @@ import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.LayoutManager;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.omnetpp.experimental.animation.controller.TimerQueue;
-import org.omnetpp.experimental.animation.replay.ReplayAnimationController;
 
 public abstract class AbstractAnimationPrimitive implements IAnimationPrimitive {
-	protected ReplayAnimationController animationController;
-	
-	protected double beginSimulationTime;
+	protected IAnimationEnvironment animationEnvironment;
 	
 	protected long eventNumber;
 	
+	protected double beginSimulationTime;
+
+	protected long animationNumber;
+	
 	protected boolean shown;
 	
-	public AbstractAnimationPrimitive(ReplayAnimationController animationController, long eventNumber, double beginSimulationTime) {
-		this.animationController = animationController;
+	public AbstractAnimationPrimitive(IAnimationEnvironment animationEnvironment, long eventNumber, double beginSimulationTime, long animationNumber) {
+		this.animationEnvironment = animationEnvironment;
 		this.eventNumber = eventNumber;
 		this.beginSimulationTime = beginSimulationTime;
-	}
-	
-	public void setAnimationController(ReplayAnimationController animationController) {
-		this.animationController = animationController;
+		this.animationNumber = animationNumber;
 	}
 	
 	public long getEventNumber() {
 		return eventNumber;
+	}
+	
+	public double getSimulationTime() {
+		return getBeginSimulationTime();
 	}
 
 	public double getBeginSimulationTime() {
@@ -36,16 +38,45 @@ public abstract class AbstractAnimationPrimitive implements IAnimationPrimitive 
 	public double getEndSimulationTime() {
 		return beginSimulationTime;
 	}
-
-	public void animateAt(long eventNumber, double simulationTime) {
+	
+	public long getAnimationNumber() {
+		return animationNumber;
 	}
 	
+	public double getBeginAnimationTime() {
+		switch (animationEnvironment.getAnimationMode()) {
+			case LINEAR:
+				return getBeginSimulationTime();
+			case EVENT:
+				return animationEnvironment.getAnimationTimeForAnimationNumber(animationNumber);
+			case NON_LINEAR:
+				throw new RuntimeException();
+		}
+
+		throw new RuntimeException("Unreachable code reached");
+	}
+
+	public double getEndAnimationTime() {
+		switch (animationEnvironment.getAnimationMode()) {
+			case LINEAR:
+				return getEndSimulationTime();
+			case EVENT:
+				return animationEnvironment.getAnimationTimeForAnimationNumber(animationNumber + 1);
+			case NON_LINEAR:
+				throw new RuntimeException();
+		}
+
+		throw new RuntimeException("Unreachable code reached");
+	}
+
+	public abstract void animateAt(long eventNumber, double simulationTime, long animationNumber, double animationTime);
+	
 	protected TimerQueue getTimerQueue() {
-		return animationController.getTimerQueue();
+		return animationEnvironment.getTimerQueue();
 	}
 
 	protected IFigure getRootFigure() {
-		return animationController.getCanvas().getRootFigure();
+		return animationEnvironment.getRootFigure();
 	}
 
 	protected LayoutManager getLayoutManager() {

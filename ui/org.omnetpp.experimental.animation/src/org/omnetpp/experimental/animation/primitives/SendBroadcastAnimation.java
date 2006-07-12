@@ -18,21 +18,22 @@ public class SendBroadcastAnimation extends AbstractAnimationPrimitive {
 	public SendBroadcastAnimation(ReplayAnimationController animationController,
 								  long eventNumber,
 								  double beginSimulationTime,
+								  long animationNumber,
 								  double endSimulationTime,
 								  Point location) {
-		super(animationController, eventNumber, beginSimulationTime);
+		super(animationController, eventNumber, beginSimulationTime, animationNumber);
 		this.circle = new Ellipse();
 		this.location = location;
 		this.endSimulationTime = endSimulationTime;
 		this.circle.setFill(false);
 		this.radiusTimer = new Timer(20, true, true) {
 			public void run() {
-				setRadius(SendBroadcastAnimation.this.animationController.getSimulationTime());
+				setRadius(SendBroadcastAnimation.this.animationEnvironment.getSimulationTime());
 			}
 		};
 	}
 	
-	public void animateAt(long eventNumber, double simulationTime) {
+	public void animateAt(long eventNumber, double simulationTime, long animationNumber, double animationTime) {
 		if (beginSimulationTime <= simulationTime && simulationTime <= endSimulationTime) {
 			setRadius(simulationTime);
 			show();

@@ -10,7 +10,7 @@ import org.omnetpp.experimental.animation.replay.ReplayAnimationController;
 import org.omnetpp.figures.ConnectionFigure;
 
 public class SendMessageAnimation extends AbstractAnimationPrimitive {
-	private static final Color FOREGROUND_COLOR = new Color(null, 128, 0, 0);
+	private static final Color COLOR = new Color(null, 128, 0, 0);
 
 	private ConnectionId connectionId;
 	
@@ -24,21 +24,22 @@ public class SendMessageAnimation extends AbstractAnimationPrimitive {
 
 	public SendMessageAnimation(ReplayAnimationController animationController,
 								long eventNumber,
-								double beginSimulationTime,
+								double simulationTime,
+								long animationNumber,
 								double propagationTime,
 								double transmissionTime,
 								ConnectionId connectionId) {
-		super(animationController, eventNumber, beginSimulationTime);
+		super(animationController, eventNumber, simulationTime, animationNumber);
 		this.transmissionTime = transmissionTime;
-		this.endSimulationTime = beginSimulationTime + propagationTime + transmissionTime;
+		this.endSimulationTime = simulationTime + propagationTime + transmissionTime;
 		this.connectionId = connectionId;
 		
 		messageEllipse = new Ellipse();
-		messageEllipse.setForegroundColor(FOREGROUND_COLOR);
-		messageEllipse.setBackgroundColor(FOREGROUND_COLOR);
+		messageEllipse.setForegroundColor(COLOR);
+		messageEllipse.setBackgroundColor(COLOR);
 
 		messageLine = new Polyline();
-		messageLine.setForegroundColor(FOREGROUND_COLOR);
+		messageLine.setForegroundColor(COLOR);
 		messageLine.setLineWidth(5);
 	}
 	
@@ -47,9 +48,9 @@ public class SendMessageAnimation extends AbstractAnimationPrimitive {
 		return endSimulationTime;
 	}
 	
-	public void animateAt(long eventNumber, double simulationTime) {
+	public void animateAt(long eventNumber, double simulationTime, long animationNumber, double animationTime) {
 		if (beginSimulationTime <= simulationTime && simulationTime <= endSimulationTime) {
-			ConnectionFigure connectionFigure = (ConnectionFigure)animationController.getFigure(connectionId);
+			ConnectionFigure connectionFigure = (ConnectionFigure)animationEnvironment.getFigure(connectionId);
 
 			if (connectionFigure != null) {
 				Point p1 = connectionFigure.getStart();
@@ -57,12 +58,11 @@ public class SendMessageAnimation extends AbstractAnimationPrimitive {
 				double simulationTimeDelta = endSimulationTime - beginSimulationTime - transmissionTime;
 
 				double alpha;
-				if (simulationTimeDelta != 0) {
+				if (simulationTimeDelta != 0)
 					alpha = (simulationTime - beginSimulationTime) / simulationTimeDelta;
-					alpha = Math.max(0, Math.min(alpha, 1));
-				}
 				else
-					alpha = 0.5;
+					alpha = (animationTime - getBeginAnimationTime()) / (getEndAnimationTime() - getBeginAnimationTime());
+				alpha = Math.max(0, Math.min(alpha, 1));
 				
 				if (transmissionTime == 0) {
 					Point p = getConvexCombination(p1, p2, alpha);
@@ -83,7 +83,9 @@ public class SendMessageAnimation extends AbstractAnimationPrimitive {
 					Point pAlpha = getConvexCombination(p1, p2, alpha);
 					Point pBeta = getConvexCombination(p1, p2, beta);
 					messageLine.setEndpoints(pAlpha, pBeta);
+					setConstraint(messageEllipse, new Rectangle(pAlpha.x - 3, pAlpha.y - 3, 7, 7));
 					showFigure(messageLine);
+					showFigure(messageEllipse);
 				}
 			}
 		}

@@ -44,11 +44,11 @@ public class LiveAnimationController extends ReplayAnimationController implement
 	}
 
 	public void bubble(IRuntimeModule mod, String text) {
-		animationPrimitives.add(new BubbleAnimation(this, getLiveEventNumber(), getLiveSimulationTime(), text, new Point(0, 0)));
+		animationPrimitives.add(new BubbleAnimation(this, getLiveEventNumber(), getLiveSimulationTime(), 0, text, new Point(0, 0)));
 	}
 
 	public void connectionCreated(IRuntimeGate srcgate) {
-		animationPrimitives.add(new CreateConnectionAnimation(this, getLiveEventNumber(), getLiveSimulationTime(), new GateId(srcgate.getOwnerModule().getId(), srcgate.getId()), null));
+		animationPrimitives.add(new CreateConnectionAnimation(this, getLiveEventNumber(), getLiveSimulationTime(), 0, new GateId(srcgate.getOwnerModule().getId(), srcgate.getId()), null));
 	}
 
 	public void connectionRemoved(IRuntimeGate srcgate) {
@@ -58,11 +58,11 @@ public class LiveAnimationController extends ReplayAnimationController implement
 	}
 
 	public void displayStringChanged(IRuntimeModule module) {
-		animationPrimitives.add(new SetDisplayStringAnimation(this, getLiveEventNumber(), getLiveSimulationTime(), module, module.getDisplayString().toString()));
+		animationPrimitives.add(new SetDisplayStringAnimation(this, getLiveEventNumber(), getLiveSimulationTime(), 0, module, module.getDisplayString().toString()));
 	}
 
 	public void messageDelivered(IRuntimeMessage msg) {
-		animationPrimitives.add(new HandleMessageAnimation(this, getLiveEventNumber(), getLiveSimulationTime(), simulation.getModuleByID(msg.getArrivalModuleId()), msg));
+		animationPrimitives.add(new HandleMessageAnimation(this, getLiveEventNumber(), getLiveSimulationTime(), 0, simulation.getModuleByID(msg.getArrivalModuleId()), msg));
 	}
 
 	public void messageSent(IRuntimeMessage msg, IRuntimeGate directToGate) {
@@ -70,18 +70,20 @@ public class LiveAnimationController extends ReplayAnimationController implement
 		animationPrimitives.add(new SendBroadcastAnimation(this,
 			getLiveEventNumber(),
 			msg.getSendingTime(),
+			0,
 			msg.getArrivalTime(),
 			new Point(0, 0)));
 		animationPrimitives.add(new SendMessageAnimation(this,
 			getLiveEventNumber(),
 			msg.getSendingTime(),
+			0,
 			msg.getArrivalTime(),
 			0,
 			new ConnectionId(directToGate.getOwnerModule().getId(), directToGate.getId())));
 	}
 
 	public void moduleCreated(IRuntimeModule module) {
-		animationPrimitives.add(new CreateModuleAnimation(this, getLiveEventNumber(), getLiveSimulationTime(), module));
+		animationPrimitives.add(new CreateModuleAnimation(this, getLiveEventNumber(), getLiveSimulationTime(), 0, module));
 	}
 
 	public void moduleDeleted(IRuntimeModule module) {

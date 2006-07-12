@@ -11,16 +11,17 @@ public class CreateModuleAnimation extends AbstractAnimationPrimitive {
 
 	public CreateModuleAnimation(ReplayAnimationController animationController,
 								 long eventNumber,
-								 double beginSimulationTime,
+								 double simulationTime,
+								 long animationNumber,
 								 IRuntimeModule module) {
-		super(animationController, eventNumber, beginSimulationTime);
+		super(animationController, eventNumber, simulationTime, animationNumber);
 		this.module = module;
 		this.moduleFigure = new SubmoduleFigure();
 	}
 	
-	public void animateAt(long eventNumber, double simulationTime) {
+	public void animateAt(long eventNumber, double simulationTime, long animationNumber, double animationTime) {
 		if (simulationTime >= beginSimulationTime) {
-			animationController.setFigure(module, moduleFigure);
+			animationEnvironment.setFigure(module, moduleFigure);
 			showFigure(moduleFigure);
 		}
 		else {

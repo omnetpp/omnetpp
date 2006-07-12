@@ -7,8 +7,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.core.resources.IFile;
+import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.omnetpp.common.displaymodel.DisplayString;
+import org.omnetpp.experimental.animation.controller.IAnimationController;
 import org.omnetpp.experimental.animation.controller.IAnimationListener;
 import org.omnetpp.experimental.animation.controller.Timer;
 import org.omnetpp.experimental.animation.controller.TimerQueue;
@@ -19,6 +21,7 @@ import org.omnetpp.experimental.animation.model.IRuntimeSimulation;
 import org.omnetpp.experimental.animation.primitives.CreateConnectionAnimation;
 import org.omnetpp.experimental.animation.primitives.CreateModuleAnimation;
 import org.omnetpp.experimental.animation.primitives.HandleMessageAnimation;
+import org.omnetpp.experimental.animation.primitives.IAnimationEnvironment;
 import org.omnetpp.experimental.animation.primitives.IAnimationPrimitive;
 import org.omnetpp.experimental.animation.primitives.ScheduleSelfMessageAnimation;
 import org.omnetpp.experimental.animation.primitives.SendMessageAnimation;
@@ -29,10 +32,10 @@ import org.omnetpp.experimental.animation.widgets.AnimationCanvas;
 import org.omnetpp.figures.CompoundModuleFigure;
 import org.omnetpp.figures.GateAnchor;
 
-public class ReplayAnimationController {
+public class ReplayAnimationController implements IAnimationController, IAnimationEnvironment {
 	private final static double NORMAL_REAL_TIME_TO_ANIMATION_TIME_SCALE = 0.01;
 	private final static double FAST_REAL_TIME_TO_ANIMATION_TIME_SCALE = 0.1;
-	private final static double EXPRESS_REAL_TIME_TO_ANIMATION_TIME_SCALE = 100;
+	private final static double EXPRESS_REAL_TIME_TO_ANIMATION_TIME_SCALE = 1;
 	
 	/**
 	 * A list of timers used during the animation. The queue contains the simulationTimer and
@@ -44,7 +47,7 @@ public class ReplayAnimationController {
 	/**
 	 * The main timer that is responsible for updating the event number and simulation time during animation.
 	 */
-	protected SimulationTimer simulationTimer;
+	protected AnimationTimer animationTimer;
 	
 	/**
 	 * The list of loaded animation primitives. This may contain more animation primitives than
@@ -78,6 +81,11 @@ public class ReplayAnimationController {
 	 * The animation time when the animation was last started or continued.
 	 */
 	protected double lastStartAnimationTime;
+
+	/**
+	 * The current animation number.
+	 */
+	protected long animationNumber;
 	
 	/**
 	 * The current animation time. Animation time is always proportional to real time but may be
@@ -91,17 +99,22 @@ public class ReplayAnimationController {
 	protected double lastStartRealTime;
 	
 	/**
-	 * The simulation time when the animation will be next stopped or -1 if there's no such limit.
-	 */
-	protected double nextStopSimulationTime;
-	
-	/**
 	 * The event number when the animation will be next stopped or -1 if there's no such limit.
 	 */
 	protected long nextStopEventNumber;
 	
 	/**
-	 * This multiplier is applied to the default multiplier. It can be set from the GUI and starts from 1.
+	 * The simulation time when the animation will be next stopped or -1 if there's no such limit.
+	 */
+	protected double nextStopSimulationTime;
+	
+	/**
+	 * The animation number when the animation will be next stopped or -1 if there's no such limit.
+	 */
+	protected long nextStopAnimationNumber;
+	
+	/**
+	 * This multiplier is applied to the default multiplier. It can be set from the GUI and defaults to 1.
 	 */
 	protected double realTimeToAnimationTimeScale;
 
@@ -146,6 +159,11 @@ public class ReplayAnimationController {
 	 * Last event's simulation time read from the log file.
 	 */
 	protected double loadSimulationTime;
+	
+	/**
+	 * Last animation number used during reading from the log file.
+	 */
+	protected long loadAnimationNumber;
 
 	/**
 	 * The current animation mode.
@@ -164,9 +182,10 @@ public class ReplayAnimationController {
 		this.figureMap = new HashMap<Object, Object>(); 
 		this.forward = true;
 		this.timerQueue = new TimerQueue();
-		this.simulationTimer = new SimulationTimer();
+		this.animationTimer = new AnimationTimer();
 		this.nextStopSimulationTime = -1;
 		this.nextStopEventNumber = -1;
+		this.nextStopAnimationNumber = -1;
 		this.realTimeToAnimationTimeScale = 1;
 		this.defaultRealTimeToAnimationTimeScale = NORMAL_REAL_TIME_TO_ANIMATION_TIME_SCALE;
 		this.simulationTime = 0;
@@ -184,12 +203,33 @@ public class ReplayAnimationController {
 	}
 	
 	/**
+	 * Returns the canvas'es root figure.
+	 */
+	public IFigure getRootFigure() {
+		return canvas.getRootFigure();
+	}
+	
+	/**
 	 * Returns the simulation attached to this controller.
 	 * If an underlying simulation kernel is running then it is a LiveSimulation.
 	 * Otherwise it is a ReplaySimulation working on a log file.
 	 */
 	public IRuntimeSimulation getSimulation() {
 		return simulation;
+	}
+
+	/**
+	 * Delegates to simulation.
+	 */
+	public IRuntimeModule getModuleByID(int id) {
+		return simulation.getModuleByID(id);
+	}
+
+	/**
+	 * Returns the timer queue that is used to schedule timer events during the animation.
+	 */
+	public TimerQueue getTimerQueue() {
+		return timerQueue;
 	}
 
 	/**
@@ -219,12 +259,31 @@ public class ReplayAnimationController {
 	public void setFigure(Object key, Object value) {
 		figureMap.put(key, value);
 	}
-
+	
 	/**
-	 * Returns the timer queue that is used to schedule timer events during the animation.
+	 * Returns the current event number.
 	 */
-	public TimerQueue getTimerQueue() {
-		return timerQueue;
+	public long getEventNumber() {
+		return eventNumber;
+	}
+	
+	/**
+	 * Changes the replay event number and notifies listeners.
+	 */
+	protected void setEventNumber(long eventNumber) {
+		this.eventNumber = eventNumber;
+		loadAnimationPrimitivesForPosition(eventNumber, 0);
+		eventNumberChanged();
+	}
+	
+	/**
+	 * Changes the replay event number and updates other position state accordingly.
+	 */
+	protected void setEventNumberAndUpdatePosition(long eventNumber) {
+		setEventNumber(eventNumber);
+		setSimulationTime(getSimulationTimeForEventNumber(eventNumber));
+		setAnimationTime(getAnimationTimeForEventNumber(eventNumber));
+		setAnimationNumber(getAnimationNumberForAnimationTime(animationTime));
 	}
 	
 	/**
@@ -239,24 +298,40 @@ public class ReplayAnimationController {
 	 */
 	protected void setSimulationTime(double simulationTime) {
 		this.simulationTime = simulationTime;
-		loadAnimationPrimitivesForSimulationTime(simulationTime);
+		loadAnimationPrimitivesForPosition(0, simulationTime);
 		simulationTimeChanged();
 	}
 	
 	/**
-	 * Returns the current event number.
+	 * Changes the replay simulation time and updates other position state accordingly.
 	 */
-	public long getEventNumber() {
-		return eventNumber;
+	protected void setSimulationTimeAndUpdatePosition(double simulationTime) {
+		setSimulationTime(simulationTime);
+		setEventNumber(getLastEventNumberForSimulationTime(simulationTime));
+		setAnimationTime(getAnimationTimeForSimulationTime(simulationTime));
+		setAnimationNumber(getAnimationNumberForAnimationTime(animationTime));
+	}
+
+	/**
+	 * Returns the current animation number.
+	 */
+	public long getAnimationNumber() {
+		return animationNumber;
 	}
 	
 	/**
-	 * Changes the replay event number and notifies listeners.
+	 * Changes the replay animation number.
 	 */
-	protected void setEventNumber(long eventNumber) {
-		this.eventNumber = eventNumber;
-		loadAnimationPrimitivesForEventNumber(eventNumber);
-		eventNumberChanged();
+	protected void setAnimationNumber(long animationNumber) {
+		this.animationNumber = animationNumber;
+		animationNumberChanged();
+	}
+	
+	protected void setAnimationNumberAndUpdatePosition(long animationNumber) {
+		setAnimationNumber(animationNumber);
+		setAnimationTime(getAnimationTimeForAnimationNumber(animationNumber));
+		setSimulationTime(getSimulationTimeForAnimationTime(animationTime));
+		setEventNumber(getLastEventNumberForSimulationTime(simulationTime));
 	}
 	
 	/**
@@ -271,12 +346,23 @@ public class ReplayAnimationController {
 	 */
 	protected void setAnimationTime(double animationTime) {
 		this.animationTime = animationTime;
+		animationTimeChanged();
 	}
 	
 	/**
-	 * Returns the current real time.
+	 * Changes the replay animation time and updates other position state accordingly.
 	 */
-	protected double getRealTime() {
+	protected void setAnimationTimeAndUpdatePosition(double animationTime) {
+		setAnimationTime(animationTime);
+		setSimulationTime(getSimulationTimeForAnimationTime(animationTime));
+		setEventNumber(getLastEventNumberForSimulationTime(simulationTime));
+		setAnimationNumber(getAnimationNumberForAnimationTime(animationTime));
+	}
+
+	/**
+	 * Returns the current real time in seconds.
+	 */
+	public double getRealTime() {
 		return System.currentTimeMillis() / 1000.0;
 	}
 	
@@ -294,7 +380,150 @@ public class ReplayAnimationController {
 		this.realTimeToAnimationTimeScale = realTimeToAnimationTimeScale;
 		lastStartRealTime = getRealTime();
 		lastStartAnimationTime = getAnimationTime();
-		timerQueue.resetTimer(simulationTimer);
+		timerQueue.resetTimer(animationTimer);
+	}
+	
+	/**
+	 * Returns the event number of the last event that occured before the given simulation time.
+	 * If there are more than one event having the same simulation time then the first of them is returned.
+	 */
+	public long getFirstEventNumberForSimulationTime(double simulationTime) {
+		throw new RuntimeException();
+	}
+
+	/**
+	 * Returns the event number of the last event that occured before the given simulation time.
+	 * If there are more than one event having the same simulation time then the last of them is returned.
+	 */
+	public long getLastEventNumberForSimulationTime(double simulationTime) {
+		HandleMessageAnimation lastHandleMessageAnimation = null;
+		
+		for (IAnimationPrimitive animationPrimitive : animationPrimitives) {
+			if (animationPrimitive.getBeginSimulationTime() <= simulationTime && animationPrimitive instanceof HandleMessageAnimation)
+				lastHandleMessageAnimation = (HandleMessageAnimation)animationPrimitive;
+		}
+		
+		if (lastHandleMessageAnimation != null)
+			return lastHandleMessageAnimation.getEventNumber();
+		else
+			return -1;
+	}
+	
+	/**
+	 * Returns the event number of the last event that occured before the given animation time.
+	 * If there are more than one event having the same animation time then the last of them is returned.
+	 */
+	public long getLastEventNumberForAnimationTime(double animationTime) {
+		switch (animationMode ){
+			case LINEAR:
+				return getLastEventNumberForSimulationTime(animationTime);
+			case EVENT:
+				return (long)Math.floor(animationTime);
+			case NON_LINEAR:
+				throw new RuntimeException();
+		}
+		
+		throw new RuntimeException("Unreacheable code reached");
+	}
+
+	/**
+	 * Returns the simulation time when the given event occured.
+	 */
+	public double getSimulationTimeForEventNumber(long eventNumber) {
+		for (IAnimationPrimitive animationPrimitive : animationPrimitives) {
+			if (animationPrimitive.getEventNumber() == eventNumber && animationPrimitive instanceof HandleMessageAnimation)
+				return animationPrimitive.getBeginSimulationTime();
+		}
+		
+		return -1;
+	}
+
+	/**
+	 * 
+	 */
+	public double getSimulationTimeForAnimationNumber(long animationNumber) {
+		for (IAnimationPrimitive animationPrimitive : animationPrimitives) {
+			if (animationPrimitive.getAnimationNumber() == animationNumber)
+				return animationPrimitive.getBeginSimulationTime();
+		}
+		
+		return -1;
+	}
+	
+	/**
+	 * Returns the simulation time for the given animation time.
+	 */
+	public double getSimulationTimeForAnimationTime(double animationTime) {
+		switch (animationMode) {
+			case LINEAR:
+				return animationTime;
+			case EVENT:
+				long animationNumber = getAnimationNumberForAnimationTime(animationTime);
+				double eventSimulationTime = getSimulationTimeForAnimationNumber(animationNumber);
+				double nextEventSimulationTime = getSimulationTimeForAnimationNumber(animationNumber + 1);
+
+				return eventSimulationTime + (nextEventSimulationTime - eventSimulationTime) * (animationTime - animationNumber);
+			case NON_LINEAR:
+				throw new RuntimeException();
+		}
+	
+		throw new RuntimeException("Unreacheable code reached");
+	}
+
+	/**
+	 * Returns the event number of the last event that occured before the given animation time.
+	 * If there are more than one event having the same animation time then the last of them is returned.
+	 */
+	public long getAnimationNumberForAnimationTime(double animationTime) {
+		switch (animationMode) {
+			case LINEAR:
+				// FIXME: this is wrong
+				return getLastEventNumberForSimulationTime(animationTime);
+			case EVENT:
+				return (long)Math.floor(animationTime);
+			case NON_LINEAR:
+				throw new RuntimeException();
+		}
+		
+		throw new RuntimeException("Unreacheable code reached");
+	}
+
+	/**
+	 * Returns the animation time for the given real time.
+	 */
+	public double getAnimationTimeForRealTime(double realTime) {
+		return lastStartAnimationTime + (realTime - lastStartRealTime) * realTimeToAnimationTimeScale * defaultRealTimeToAnimationTimeScale;
+	}
+
+	/**
+	 * Returns the animation time for the given simulation time.
+	 */
+	private double getAnimationTimeForSimulationTime(double simulationTime) {
+		switch (animationMode) {
+			case LINEAR:
+				return simulationTime;
+			case EVENT:
+				return getLastEventNumberForSimulationTime(simulationTime);
+			case NON_LINEAR:
+				// TODO:
+				throw new RuntimeException();
+		}
+		
+		throw new RuntimeException("Unreacheable code reached");
+	}
+
+	/**
+	 * Returns the animation time for the given event number.
+	 */
+	private double getAnimationTimeForEventNumber(long eventNumber) {
+		return getAnimationTimeForSimulationTime(getSimulationTimeForEventNumber(eventNumber));
+	}
+
+	/**
+	 * Returns the animation time when the given animation starts.
+	 */
+	public double getAnimationTimeForAnimationNumber(long animationNumber) {
+		return animationNumber;
 	}
 
 	/**
@@ -303,13 +532,13 @@ public class ReplayAnimationController {
 	public void addAnimationListener(IAnimationListener listener) {
 		animationListeners.add(listener);
 	}
-	
+
 	/**
 	 * Starts animation backward from the current simulation time with normal speed.
 	 * Asynchronous operation.
 	 */
 	public void animateBack() {
-		animateStart(false, NORMAL_REAL_TIME_TO_ANIMATION_TIME_SCALE, 0, 0);
+		animateStart(false, NORMAL_REAL_TIME_TO_ANIMATION_TIME_SCALE, 0, 0, 0);
 	}
 
 	/**
@@ -317,7 +546,7 @@ public class ReplayAnimationController {
 	 * Asynchronous operation.
 	 */
 	public void animateExpress() {
-		animateStart(true, EXPRESS_REAL_TIME_TO_ANIMATION_TIME_SCALE, -1, -1);
+		animateStart(true, EXPRESS_REAL_TIME_TO_ANIMATION_TIME_SCALE, -1, -1, -1);
 	}
 
 	/**
@@ -325,7 +554,7 @@ public class ReplayAnimationController {
 	 * Asynchronous operation.
 	 */
 	public void animateFast() {
-		animateStart(true, FAST_REAL_TIME_TO_ANIMATION_TIME_SCALE, -1, -1);
+		animateStart(true, FAST_REAL_TIME_TO_ANIMATION_TIME_SCALE, -1, -1, -1);
 	}
 	
 	/**
@@ -333,7 +562,7 @@ public class ReplayAnimationController {
 	 * Asynchronous operation.
 	 */
 	public void animateStep() {
-		animateStart(true, NORMAL_REAL_TIME_TO_ANIMATION_TIME_SCALE, eventNumber + 1, -1);
+		animateStart(true, NORMAL_REAL_TIME_TO_ANIMATION_TIME_SCALE, -1, -1, animationNumber + 1);
 	}
 	
 	/**
@@ -341,7 +570,7 @@ public class ReplayAnimationController {
 	 * Asynchronous operation.
 	 */
 	public void animatePlay() {
-		animateStart(true, NORMAL_REAL_TIME_TO_ANIMATION_TIME_SCALE, -1, -1);
+		animateStart(true, NORMAL_REAL_TIME_TO_ANIMATION_TIME_SCALE, -1, -1, -1);
 	}
 	
 	/**
@@ -349,24 +578,25 @@ public class ReplayAnimationController {
 	 * Animation stops when the given simulation time is reached.
 	 * Asynchronous operation.
 	 */
-	public void animationToSimulationTime(double simulationTime) {
-		animateStart(true, NORMAL_REAL_TIME_TO_ANIMATION_TIME_SCALE, -1, simulationTime);
+	public void animateToSimulationTime(double simulationTime) {
+		animateStart(true, NORMAL_REAL_TIME_TO_ANIMATION_TIME_SCALE, -1, simulationTime, -1);
 	}
 
 	/**
 	 * Temporarily stops animation.
 	 */
 	public void animateStop() {
-		timerQueue.removeTimer(simulationTimer);
+		forward = true;
+		nextStopEventNumber = -1;
+		nextStopSimulationTime = -1;
+		nextStopAnimationNumber = -1;
+		timerQueue.removeTimer(animationTimer);
 	}
 
 	/**
 	 * Stops animation and sets the current simulation time to 0.
 	 */
 	public void gotoBegin() {
-		forward = true;
-		nextStopSimulationTime = -1;
-		nextStopEventNumber = -1;
 		animateStop();
 		gotoSimulationTime(0);
 	}
@@ -375,9 +605,6 @@ public class ReplayAnimationController {
 	 * Stops animation and sets the current simulation time to the end of the animation.
 	 */
 	public void gotoEnd() {
-		forward = true;
-		nextStopSimulationTime = -1;
-		nextStopEventNumber = -1;
 		animateStop();
 		gotoSimulationTime(Double.MAX_VALUE);
 	}
@@ -386,117 +613,100 @@ public class ReplayAnimationController {
 	 * Goes to the given simulation time without animating.
 	 */
 	public void gotoSimulationTime(double simulationTime) {
-		setSimulationTime(simulationTime);
-		setEventNumber(getEventNumberForSimulationTime(simulationTime));
+		timerQueue.resetTimer(animationTimer);
+		setSimulationTimeAndUpdatePosition(simulationTime);
+		animateAtCurrentPosition();
+	}
+	
+	/**
+	 * Goes to the given event number without animating.
+	 */
+	public void gotoEventNumber(long eventNumber) {
+		timerQueue.resetTimer(animationTimer);
+		setEventNumberAndUpdatePosition(eventNumber);
+		animateAtCurrentPosition();
+	}
 
-		switch (animationMode) {
-			case LINEAR:
-				setAnimationTime(simulationTime);
-				break;
-			case EVENT:
-				setAnimationTime(getEventNumber());
-				break;
-			case NON_LINEAR:
-				// TODO:
-				throw new RuntimeException();
-		}
+	/**
+	 * Goes to the given animation time without animating.
+	 */
+	public void gotoAnimationNumber(long animationNumber) {
+		timerQueue.resetTimer(animationTimer);
+		setAnimationNumberAndUpdatePosition(animationNumber);
+		animateAtCurrentPosition();
+	}
 
-		timerQueue.resetTimer(simulationTimer);
-		animateAtCurrentEventNumberAndSimulationTime();
+	/**
+	 * Goes to the given animation time without animating.
+	 */
+	public void gotoAnimationTime(double animationTime) {
+		timerQueue.resetTimer(animationTimer);
+		setAnimationTimeAndUpdatePosition(animationTime);
+		animateAtCurrentPosition();
 	}
 
 	/**
 	 * Shows to the current event number and simulation time.
 	 */
-	public void animateAtCurrentEventNumberAndSimulationTime() {
+	public void animateAtCurrentPosition() {
 		// stop at event number
 		if (nextStopEventNumber != -1 && forward ? eventNumber >= nextStopEventNumber : eventNumber < nextStopEventNumber) {
-			setEventNumber(nextStopEventNumber);
-			setSimulationTime(getSimulationTimeForEventNumber(eventNumber));
+			setEventNumberAndUpdatePosition(nextStopEventNumber);
 			animateStop();
 		}
 
 		// stop at simulation time
 		if (nextStopSimulationTime != -1 && forward ? simulationTime >= nextStopSimulationTime : simulationTime < nextStopSimulationTime) {
-			setSimulationTime(nextStopSimulationTime);
-			setEventNumber(getEventNumberForSimulationTime(simulationTime));
+			setSimulationTimeAndUpdatePosition(nextStopSimulationTime);
 			animateStop();
 		}
 		
+		// stop at event number
+		if (nextStopAnimationNumber != -1 && forward ? animationNumber >= nextStopAnimationNumber : animationNumber < nextStopAnimationNumber) {
+			setAnimationNumberAndUpdatePosition(nextStopAnimationNumber);
+			animateStop();
+		}
+
 		for (IAnimationPrimitive animationPrimitive : animationPrimitives)
-			animationPrimitive.animateAt(eventNumber, simulationTime);
+			animationPrimitive.animateAt(eventNumber, simulationTime, animationNumber, animationTime);
 
 		canvas.getRootFigure().getLayoutManager().layout(canvas.getRootFigure());
+
+		System.out.println("Event number: " + eventNumber + " Simulation Time: " + simulationTime);
 	}
 	
 	/**
 	 * The simulation timer is responsible to change simulation time as real time elapses.
 	 */
-	public class SimulationTimer extends Timer {
-		public SimulationTimer() {
+	public class AnimationTimer extends Timer {
+		public AnimationTimer() {
 			super(20, true, true);
 		}
 
+		/**
+		 * This method is called every 20 milliseconds when animation runs.
+		 * It updates animation state.
+		 */
 		public void run() {
-			setAnimationTime(lastStartAnimationTime + (getRealTime() - lastStartRealTime) * realTimeToAnimationTimeScale * defaultRealTimeToAnimationTimeScale);
-
-			switch (animationMode)
-			{
-				case LINEAR:
-					setSimulationTime(animationTime);
-					loadAnimationPrimitivesForSimulationTime(simulationTime);
-					setEventNumber(getEventNumberForSimulationTime(simulationTime));
-					break;
-				case EVENT:
-					setEventNumber((long)Math.floor(animationTime));
-					loadAnimationPrimitivesForEventNumber(eventNumber);
-					double eventSimulationTime = getSimulationTimeForEventNumber(eventNumber);
-					setSimulationTime(eventSimulationTime + (getSimulationTimeForEventNumber(eventNumber + 1) - eventSimulationTime) * (animationTime - eventNumber));
-					break;
-				case NON_LINEAR:
-					// TODO:
-					throw new RuntimeException();
-			}
-			
-			System.out.println("Event number: " + eventNumber + " Simulation Time: " + simulationTime);
-			animateAtCurrentEventNumberAndSimulationTime();
+			setAnimationTimeAndUpdatePosition(getAnimationTimeForRealTime(getRealTime()));
+			animateAtCurrentPosition();
 		}
 	};
-	
-	protected void ensureNextStopSimulationTime() {
-		if (nextStopSimulationTime == -1 && forward && getNextAnimationPrimitive() == null)
-			nextStopSimulationTime = animationPrimitives.size() != 0 ? getAnimationPrimitive(animationPrimitives.size() - 1).getEndSimulationTime() : 0;
-	}
-	
-	/**
-	 * Loads all animation primitives to be able to correctly display animation at the given event number.
-	 */
-	protected void loadAnimationPrimitivesForEventNumber(long eventNumber) {
-		loadAnimationPrimitivesForPosition(eventNumber, 0);
-		ensureNextStopSimulationTime();
-	}
-
-	/**
-	 * Loads all animation primitives to be able to correctly display animation at the given simulation time.
-	 */
-	protected void loadAnimationPrimitivesForSimulationTime(double simulationTime) {
-		loadAnimationPrimitivesForPosition(0, simulationTime);
-		ensureNextStopSimulationTime();
-	}
 
 	/**
 	 * Asynchronously starts animation in the given direction.
 	 */
-	protected void animateStart(boolean forward, double defaultRealTimeToAnimationTimeScale, long nextStopEventNumber, double stopSimulationTime) {
+	protected void animateStart(boolean forward, double defaultRealTimeToAnimationTimeScale, long nextStopEventNumber, double stopSimulationTime, long nextStopAnimationNumber) {
 		this.forward = forward;
 		this.defaultRealTimeToAnimationTimeScale = defaultRealTimeToAnimationTimeScale;
 		this.nextStopEventNumber = nextStopEventNumber;
 		this.nextStopSimulationTime = stopSimulationTime;
+		this.nextStopAnimationNumber = nextStopAnimationNumber;
 		
-		timerQueue.resetTimer(simulationTimer);
+		timerQueue.resetTimer(animationTimer);
 		lastStartRealTime = getRealTime();
 		lastStartAnimationTime = animationTime;
-		timerQueue.addTimer(simulationTimer);
+		timerQueue.addTimer(animationTimer);
 	}
 
 	/**
@@ -512,64 +722,23 @@ public class ReplayAnimationController {
 	 */
 	protected void eventNumberChanged() {
 		for (IAnimationListener listener : animationListeners)
-			listener.replayEventNumberChanged(getEventNumber());
-	}
-
-	/**
-	 * Returns the event number of the last HandleMessageAnimation that is before the given simulation time. 
-	 */
-	protected long getEventNumberForSimulationTime(double simulationTime) {
-		HandleMessageAnimation lastHandleMessageAnimation = null;
-		
-		for (IAnimationPrimitive animationPrimitive : animationPrimitives) {
-			if (animationPrimitive.getBeginSimulationTime() <= simulationTime && animationPrimitive instanceof HandleMessageAnimation)
-				lastHandleMessageAnimation = (HandleMessageAnimation)animationPrimitive;
-		}
-		
-		if (lastHandleMessageAnimation != null)
-			return lastHandleMessageAnimation.getEventNumber();
-		else
-			return -1;
+			listener.replayEventNumberChanged(eventNumber);
 	}
 	
 	/**
-	 * Returns the simulation time for the given event number.
+	 * Notifies listeners about the new animation number.
 	 */
-	protected double getSimulationTimeForEventNumber(long eventNumber) {
-		for (IAnimationPrimitive animationPrimitive : animationPrimitives) {
-			if (animationPrimitive.getEventNumber() == eventNumber && animationPrimitive instanceof HandleMessageAnimation)
-				return ((HandleMessageAnimation)animationPrimitive).getBeginSimulationTime();
-		}
-		
-		return -1;
-	}
-
-	/**
-	 * Returns the index of the last animation primitive that has already been reached by the simulation.
-	 * TODO: this is inefficient, should use binary search, because animationPrimitives are in order of begin simulation time
-	 */
-	protected int getLastAnimationPrimitiveIndex() {
-		// FIXME: this is inefficient
-		for (int i = 0; i < animationPrimitives.size(); i++)
-			if (animationPrimitives.get(i).getBeginSimulationTime() > simulationTime)
-				return i - 1;
-		
-		return animationPrimitives.size();
+	protected void animationNumberChanged() {
+		for (IAnimationListener listener : animationListeners)
+			listener.replayAnimationNumberChanged(animationNumber);
 	}
 	
 	/**
-	 * Returns the last animation primitive which ends before the current simulation time.
+	 * Notifies listeners about the new animation time.
 	 */
-	protected IAnimationPrimitive getPreviousAnimationPrimitive() {
-		// FIXME: animation primitives are sorted based on their begin simulation times
-		return getAnimationPrimitive(getLastAnimationPrimitiveIndex() - 1);
-	}
-
-	/**
-	 * Returns the first animation primitive which begins after the current simulation time.
-	 */
-	protected IAnimationPrimitive getNextAnimationPrimitive() {
-		return getAnimationPrimitive(getLastAnimationPrimitiveIndex() + 1);
+	protected void animationTimeChanged() {
+		for (IAnimationListener listener : animationListeners)
+			listener.replayAnimationTimeChanged(animationTime);
 	}
 	
 	/**
@@ -579,6 +748,9 @@ public class ReplayAnimationController {
 		return (0 <= index && index < animationPrimitives.size()) ? animationPrimitives.get(index) : null;
 	}
 
+	/**
+	 * Initalizes the simulation and adds the root compound module figure to the canvas.
+	 */
 	protected void initializeSimulation(IRuntimeModule rootModule) {
 		CompoundModuleFigure rootModuleFigure = new CompoundModuleFigure();
 		rootModuleFigure.setDisplayString(new DisplayString(null, null, "bgb=600,600;bgi=background/hungary,stretch"));
@@ -590,10 +762,16 @@ public class ReplayAnimationController {
 		simulation = createSimulation(rootModule);
 	}
 	
+	/**
+	 * Factory method to create the simulation object.
+	 */
 	protected IRuntimeSimulation createSimulation(IRuntimeModule rootModule) {
 		return new ReplaySimulation((ReplayModule)rootModule);
 	}
-	
+
+	/**
+	 * Convenient method to get a type safe replay simulation if applicable.
+	 */
 	protected ReplaySimulation getReplaySimulation() {
 		return (ReplaySimulation)simulation;
 	}
@@ -601,8 +779,9 @@ public class ReplayAnimationController {
 	/**
 	 * Loads all animation primitives that begins before or at the given event number and simulation time.
 	 */
-	protected void loadAnimationPrimitivesForPosition(long minimumEventNumber, double minimumSimulationTime) {
+	protected long loadAnimationPrimitivesForPosition(long minimumEventNumber, double minimumSimulationTime) {
 		try {
+			long animationPrimitivesCount = animationPrimitives.size();
 			int lineCount = 0;
 			String line = null;
 
@@ -626,22 +805,23 @@ public class ReplayAnimationController {
 						initializeSimulation(module);
 
 					getReplaySimulation().addModule(module);
-					animationPrimitives.add(new CreateModuleAnimation(this, loadEventNumber, loadSimulationTime, module));
+					animationPrimitives.add(new CreateModuleAnimation(this, loadEventNumber, loadSimulationTime, loadAnimationNumber, module));
 				}
 				else if (tokens[0].equals("DS")) {
 					ReplayModule module = (ReplayModule)simulation.getModuleByID(getIntegerToken(tokens, "id"));
 					String displayString = getToken(tokens, "d");
-					animationPrimitives.add(new SetDisplayStringAnimation(this, loadEventNumber, loadSimulationTime, module, displayString.substring(1, displayString.length() - 1)));
+					animationPrimitives.add(new SetDisplayStringAnimation(this, loadEventNumber, loadSimulationTime, loadAnimationNumber, module, displayString.substring(1, displayString.length() - 1)));
 				}
 				else if (tokens[0].equals("CC")) {
 					GateId sourceGateId = new GateId(getIntegerToken(tokens, "sm"), getIntegerToken(tokens, "sg"));
 					GateId targetGateId = new GateId(getIntegerToken(tokens, "dm"), getIntegerToken(tokens, "dg"));
-					animationPrimitives.add(new CreateConnectionAnimation(this, loadEventNumber, loadSimulationTime, sourceGateId, targetGateId));
+					animationPrimitives.add(new CreateConnectionAnimation(this, loadEventNumber, loadSimulationTime, loadAnimationNumber, sourceGateId, targetGateId));
 				}
 				else if (tokens[0].equals("E")) {
 					loadEventNumber = getIntegerToken(tokens, "#");
 					loadSimulationTime = getDoubleToken(tokens, "t");
-					animationPrimitives.add(new HandleMessageAnimation(this, loadEventNumber, loadSimulationTime, simulation.getModuleByID(getIntegerToken(tokens, "m")), null));
+					loadAnimationNumber++;
+					animationPrimitives.add(new HandleMessageAnimation(this, loadEventNumber, loadSimulationTime, loadAnimationNumber, simulation.getModuleByID(getIntegerToken(tokens, "m")), null));
 				}
 				else if (tokens[0].equals("BS")) {
 				}
@@ -649,12 +829,18 @@ public class ReplayAnimationController {
 					ConnectionId connectionId = new ConnectionId(getIntegerToken(tokens, "sm"), getIntegerToken(tokens, "sg"));
 					double propagationTime = getDoubleToken(tokens, "d", 0);
 					double transmissionTime = getDoubleToken(tokens, "td", 0);
-					animationPrimitives.add(new SendMessageAnimation(this, loadEventNumber, loadSimulationTime, propagationTime, transmissionTime, connectionId));
+					animationPrimitives.add(new SendMessageAnimation(this, loadEventNumber, loadSimulationTime, loadAnimationNumber, propagationTime, transmissionTime, connectionId));
 				}
 				else if (tokens[0].equals("SA")) {
-					animationPrimitives.add(new ScheduleSelfMessageAnimation(this, loadEventNumber, loadSimulationTime, getDoubleToken(tokens, "t")));
+					animationPrimitives.add(new ScheduleSelfMessageAnimation(this, loadEventNumber, loadSimulationTime, loadAnimationNumber, getDoubleToken(tokens, "t")));
 				}
 			}
+			
+			if (animationPrimitivesCount == 0)
+				if (nextStopSimulationTime == -1 && forward && line == null)
+					nextStopSimulationTime = animationPrimitives.size() != 0 ? getAnimationPrimitive(animationPrimitives.size() - 1).getEndSimulationTime() : 0;
+
+			return animationPrimitives.size() - animationPrimitivesCount;
 		}
 		catch (Throwable e) {
 			e.printStackTrace();

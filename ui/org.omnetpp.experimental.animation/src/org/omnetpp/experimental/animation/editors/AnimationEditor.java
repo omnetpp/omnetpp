@@ -22,16 +22,21 @@ import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.part.EditorPart;
+import org.omnetpp.experimental.animation.controller.IAnimationController;
 import org.omnetpp.experimental.animation.controller.IAnimationListener;
 import org.omnetpp.experimental.animation.replay.ReplayAnimationController;
 import org.omnetpp.experimental.animation.widgets.AnimationCanvas;
 
 public class AnimationEditor extends EditorPart implements IAnimationListener {
-	private ReplayAnimationController animationController;
+	private IAnimationController animationController;
+
+	private Label replayEventNumberLabel;
 
 	private Label replaySimulationTimeLabel;
 
-	private Label replayEventNumberLabel;
+	private Label replayAnimationNumberLabel;
+
+	private Label replayAnimationTimeLabel;
 	
 	public AnimationEditor() {
 	}
@@ -154,13 +159,17 @@ public class AnimationEditor extends EditorPart implements IAnimationListener {
 		// simulation time label
 		Composite labels = new Composite(coolBar, SWT.NONE);
 		labels.setLayout(new RowLayout(SWT.HORIZONTAL));
-		replaySimulationTimeLabel = new Label(labels, SWT.NONE);
-		replaySimulationTimeLabel.setLayoutData(new RowData(100, 25));
 		replayEventNumberLabel = new Label(labels, SWT.NONE);
 		replayEventNumberLabel.setLayoutData(new RowData(100, 25));
+		replayAnimationNumberLabel = new Label(labels, SWT.NONE);
+		replayAnimationNumberLabel.setLayoutData(new RowData(100, 25));
+		replaySimulationTimeLabel = new Label(labels, SWT.NONE);
+		replaySimulationTimeLabel.setLayoutData(new RowData(100, 25));
+		replayAnimationTimeLabel = new Label(labels, SWT.NONE);
+		replayAnimationTimeLabel.setLayoutData(new RowData(100, 25));
 	    coolItem = new CoolItem(coolBar, SWT.NONE);
 	    coolItem.setControl(labels);
-		coolItem.setSize(new Point(230, 25));
+		coolItem.setSize(new Point(430, 25));
 
 		// speed slider
 	    Slider slider = new Slider(coolBar, SWT.HORIZONTAL);
@@ -211,9 +220,23 @@ public class AnimationEditor extends EditorPart implements IAnimationListener {
 		replaySimulationTimeLabel.setText(String.valueOf(simulationTime));
 	}
 
+	public void replayAnimationNumberChanged(long animationNumber) {
+		replayAnimationNumberLabel.setText(String.valueOf(animationNumber));
+	}
+
+	public void replayAnimationTimeChanged(double animationTime) {
+		replayAnimationTimeLabel.setText(String.valueOf(animationTime));
+	}
+
 	public void liveEventNumberChanged(long eventNumber) {
 	}
 
 	public void liveSimulationTimeChanged(double simulationTime) {
+	}
+
+	public void liveAnimationNumberChanged(long animationNumber) {
+	}
+
+	public void liveAnimationTimeChanged(double animationTime) {
 	}
 }

@@ -12,18 +12,19 @@ public class SetDisplayStringAnimation extends AbstractAnimationPrimitive {
 	
 	public SetDisplayStringAnimation(ReplayAnimationController animationController,
 									 long eventNumber,
-									 double beginSimulationTime,
+									 double simulationTime,
+									 long animationNumber,
 									 IRuntimeModule module,
 									 String displayString) {
-		super(animationController, eventNumber, beginSimulationTime);
+		super(animationController, eventNumber, simulationTime, animationNumber);
 		this.module = module;
 		this.displayString = new DisplayString(null, null, displayString);
 		//System.out.println(displayString);
 	}
 	
-	public void animateAt(long eventNumber, double simulationTime) {
+	public void animateAt(long eventNumber, double simulationTime, long animationNumber, double animationTime) {
 		if (simulationTime >= beginSimulationTime) {
-			SubmoduleFigure moduleFigure = (SubmoduleFigure)animationController.getFigure(module);
+			SubmoduleFigure moduleFigure = (SubmoduleFigure)animationEnvironment.getFigure(module);
 			moduleFigure.setDisplayString(displayString);
 		}
 		else {

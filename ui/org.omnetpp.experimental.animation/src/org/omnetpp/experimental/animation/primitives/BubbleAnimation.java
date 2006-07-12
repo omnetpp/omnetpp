@@ -21,10 +21,11 @@ public class BubbleAnimation extends AbstractAnimationPrimitive {
 	
 	public BubbleAnimation(ReplayAnimationController animationController,
 						   long eventNumber,
-						   double beginSimulationTime,
+						   double simulationTime,
+						   long animationNumber,
 						   String text,
 						   Point location) {
-		super(animationController, eventNumber, beginSimulationTime);
+		super(animationController, eventNumber, simulationTime, animationNumber);
 		this.background = new RoundedRectangle();
 		this.label = new Label(text);
 		this.location = location;
@@ -36,7 +37,7 @@ public class BubbleAnimation extends AbstractAnimationPrimitive {
 		};
 	}
 	
-	public void animateAt(long eventNumber, double simulationTime) {
+	public void animateAt(long eventNumber, double simulationTime, long animationNumber, double animationTime) {
 		if (beginSimulationTime <= simulationTime) {
 			if (!expired) {
 				Rectangle r = new Rectangle(location, new Dimension(50, 20));

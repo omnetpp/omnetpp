@@ -6,6 +6,7 @@ import org.eclipse.swt.widgets.Display;
 
 /**
  * Manages a list of timers and executes them using timerExec.
+ * This class is not thread safe and meant to be called from the GUI thread only.
  */
 public class TimerQueue implements Runnable {
 	// TODO: use log4j or something similar
