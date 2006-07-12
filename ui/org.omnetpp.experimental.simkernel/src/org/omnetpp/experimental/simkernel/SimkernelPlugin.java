@@ -3,6 +3,7 @@ package org.omnetpp.experimental.simkernel;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
+import org.omnetpp.experimental.simkernel.swig.EnvirCallbackProxy;
 import org.omnetpp.experimental.simkernel.swig.Javaenv;
 import org.omnetpp.experimental.simkernel.swig.Simkernel;
 import org.omnetpp.experimental.simkernel.swig.cEnvir;
@@ -41,6 +42,7 @@ public class SimkernelPlugin extends AbstractUIPlugin {
 		//cSimulation simulation = Simkernel.getSimulation();
 		Simkernel.evSetupDummyCall(); //XXX ev.setup(argc, argv);
 		Javaenv jenv = Simkernel.getJavaenv();
+		jenv.setJCallback(null, new EnvirCallbackProxy(new DummyEnvirCallback()));
 
 		jenv.newRun(1);
 		for (int i=0; i<10; i++)

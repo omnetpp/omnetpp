@@ -110,7 +110,8 @@ inline void evSetupDummyCall() { //XXX
 
 
 // typemaps to wrap Javaenv::setJCallback(JNIEnv *jenv, jobject jcallbackobj):
-%typemap(in, numinputs=0) JNIEnv *jenv {
+// %typemap(in, numinputs=0): unfortunately, generated java code doesn't compile
+%typemap(in) JNIEnv *jenv {
     $1 = jenv;
 }
 %typemap(in) jobject jcallbackobj {
