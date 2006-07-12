@@ -31,12 +31,13 @@
 
 %{
 #include "omnetpp.h"
-#include <direct.h>
+#include "src/javaenv/javaenv.h"
 
 // accessor for global vars
 inline cSimulation *getSimulation() {return &simulation;}
 inline cEnvir *getEV() {return &ev;}
 
+#include <direct.h>
 inline void changeToDir(const char *dir)  //XXX
 {
     printf("changing to: %s\n", dir);
@@ -151,6 +152,8 @@ inline void evSetupDummyCall() { //XXX
 %include "cdispstr.h"
 //%include "cxmlelement.h"
 %include "cenvir.h"
+
+%include "src/javaenv/javaenv.h"
 
 //%include "util.h" -- no need to wrap
 //%include "macros.h" -- no need to wrap

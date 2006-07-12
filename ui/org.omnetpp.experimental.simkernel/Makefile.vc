@@ -12,10 +12,9 @@ SWIG="$(TOOLS_DIR)\SWIG-1.3.25\swig.exe"
 #
 # Local definitions
 #
-COPTS=$(CFLAGS) -I$(JDK)\include -I$(JDK)\include\win32 -I$(OMNETPP_ROOT)\include
+COPTS=$(CFLAGS) -I$(JDK)\include -I$(JDK)\include\win32 -I$(OMNETPP_ROOT) -I$(OMNETPP_ROOT)/include -I$(OMNETPP_ROOT)/src/envir
 
 OBJS = simkernel_wrap.obj
-HEADERS = $(OMNETPP_ROOT)\include\*.h
 JAVAPKG = org.omnetpp.experimental.simkernel.swig
 JAVADIR = src\$(JAVAPKG:.=\)
 
@@ -23,7 +22,8 @@ LIBS = $(OMNETPP_ROOT)/samples/p-to-p/*.obj \
        $(OMNETPP_ROOT)/lib/sim_std.lib \
        $(OMNETPP_ROOT)/lib/nedxml.lib \
        $(OMNETPP_ROOT)/lib/envir.lib \
-       $(OMNETPP_ROOT)/lib/cmdenv.lib \
+#       $(OMNETPP_ROOT)/lib/cmdenv.lib \
+       $(OMNETPP_ROOT)/lib/javaenv.lib \
        $(XML_LIBS) $(SYS_LIBS)
 
 #
@@ -43,9 +43,9 @@ LIBS = $(OMNETPP_ROOT)/samples/p-to-p/*.obj \
 #
 default: simkernel.dll
 
-simkernel_wrap.cxx: simkernel.i $(HEADERS) Makefile.vc
+simkernel_wrap.cxx: simkernel.i Makefile.vc $(OMNETPP_ROOT)/include/*.h  # and many oher things
 	-del $(JAVADIR)\*.java >nul
-	$(SWIG) -c++ -java -package $(JAVAPKG) -I$(OMNETPP_ROOT)\include -outdir $(JAVADIR) simkernel.i
+	$(SWIG) -c++ -java -package $(JAVAPKG) -I$(OMNETPP_ROOT)/include -I$(OMNETPP_ROOT)/src/envir -I$(OMNETPP_ROOT) -outdir $(JAVADIR) simkernel.i
 
 simkernel.dll : $(OBJS)
 	$(LINK) /dll /out:"simkernel.dll" $(OBJS) $(LIBS) $(LDFLAGS)
