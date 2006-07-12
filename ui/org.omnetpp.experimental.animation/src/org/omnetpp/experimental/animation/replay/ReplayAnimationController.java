@@ -78,6 +78,11 @@ public class ReplayAnimationController implements IAnimationController, IAnimati
 	protected double simulationTime;
 	
 	/**
+	 * The end of the whole simulation if known, otherwise -1.
+	 */
+	protected double endSimulationTime;
+	
+	/**
 	 * The animation time when the animation was last started or continued.
 	 */
 	protected double lastStartAnimationTime;
@@ -183,6 +188,7 @@ public class ReplayAnimationController implements IAnimationController, IAnimati
 		this.forward = true;
 		this.timerQueue = new TimerQueue();
 		this.animationTimer = new AnimationTimer();
+		this.endSimulationTime = -1;
 		this.nextStopSimulationTime = -1;
 		this.nextStopEventNumber = -1;
 		this.nextStopAnimationNumber = -1;
@@ -492,7 +498,8 @@ public class ReplayAnimationController implements IAnimationController, IAnimati
 	 * Returns the animation time for the given real time.
 	 */
 	public double getAnimationTimeForRealTime(double realTime) {
-		return lastStartAnimationTime + (realTime - lastStartRealTime) * realTimeToAnimationTimeScale * defaultRealTimeToAnimationTimeScale;
+		return lastStartAnimationTime +
+			(forward ? 1 : -1) * (realTime - lastStartRealTime) * realTimeToAnimationTimeScale * defaultRealTimeToAnimationTimeScale;
 	}
 
 	/**
@@ -649,6 +656,18 @@ public class ReplayAnimationController implements IAnimationController, IAnimati
 	 * Shows to the current event number and simulation time.
 	 */
 	public void animateAtCurrentPosition() {
+		// stop at begin
+		if (nextStopSimulationTime != -1 && !forward && simulationTime < 0) {
+			setSimulationTimeAndUpdatePosition(0);
+			animateStop();
+		}
+
+		// stop at end
+		if (nextStopSimulationTime != -1 && forward && endSimulationTime != -1 && (simulationTime > endSimulationTime || simulationTime == -1)) {
+			setSimulationTimeAndUpdatePosition(endSimulationTime);
+			animateStop();
+		}
+
 		// stop at event number
 		if (nextStopEventNumber != -1 && forward ? eventNumber >= nextStopEventNumber : eventNumber < nextStopEventNumber) {
 			setEventNumberAndUpdatePosition(nextStopEventNumber);
@@ -661,7 +680,7 @@ public class ReplayAnimationController implements IAnimationController, IAnimati
 			animateStop();
 		}
 		
-		// stop at event number
+		// stop at animation number
 		if (nextStopAnimationNumber != -1 && forward ? animationNumber >= nextStopAnimationNumber : animationNumber < nextStopAnimationNumber) {
 			setAnimationNumberAndUpdatePosition(nextStopAnimationNumber);
 			animateStop();
@@ -670,7 +689,7 @@ public class ReplayAnimationController implements IAnimationController, IAnimati
 		for (IAnimationPrimitive animationPrimitive : animationPrimitives)
 			animationPrimitive.animateAt(eventNumber, simulationTime, animationNumber, animationTime);
 
-		canvas.getRootFigure().getLayoutManager().layout(canvas.getRootFigure());
+		getRootFigure().getLayoutManager().layout(getRootFigure());
 
 		System.out.println("Event number: " + eventNumber + " Simulation Time: " + simulationTime);
 	}
@@ -706,7 +725,9 @@ public class ReplayAnimationController implements IAnimationController, IAnimati
 		timerQueue.resetTimer(animationTimer);
 		lastStartRealTime = getRealTime();
 		lastStartAnimationTime = animationTime;
-		timerQueue.addTimer(animationTimer);
+		
+		if (!timerQueue.hasTimer(animationTimer))
+			timerQueue.addTimer(animationTimer);
 	}
 
 	/**
@@ -792,7 +813,7 @@ public class ReplayAnimationController implements IAnimationController, IAnimati
 				   (line = logFileReader.readLine()) != null)
 			{
 				lineCount++;
-				String[] tokens = line.split(" ");
+				String[] tokens = splitLine(line);
 				
 				if (tokens[0].equals("MC")) {
 					ReplayModule module = new ReplayModule(
@@ -810,7 +831,7 @@ public class ReplayAnimationController implements IAnimationController, IAnimati
 				else if (tokens[0].equals("DS")) {
 					ReplayModule module = (ReplayModule)simulation.getModuleByID(getIntegerToken(tokens, "id"));
 					String displayString = getToken(tokens, "d");
-					animationPrimitives.add(new SetDisplayStringAnimation(this, loadEventNumber, loadSimulationTime, loadAnimationNumber, module, displayString.substring(1, displayString.length() - 1)));
+					animationPrimitives.add(new SetDisplayStringAnimation(this, loadEventNumber, loadSimulationTime, loadAnimationNumber, module, displayString));
 				}
 				else if (tokens[0].equals("CC")) {
 					GateId sourceGateId = new GateId(getIntegerToken(tokens, "sm"), getIntegerToken(tokens, "sg"));
@@ -827,7 +848,8 @@ public class ReplayAnimationController implements IAnimationController, IAnimati
 				}
 				else if (tokens[0].equals("SH")) {
 					ConnectionId connectionId = new ConnectionId(getIntegerToken(tokens, "sm"), getIntegerToken(tokens, "sg"));
-					double propagationTime = getDoubleToken(tokens, "d", 0);
+					// TODO: handle ts different then E's t
+					double propagationTime = getDoubleToken(tokens, "pd", 0);
 					double transmissionTime = getDoubleToken(tokens, "td", 0);
 					animationPrimitives.add(new SendMessageAnimation(this, loadEventNumber, loadSimulationTime, loadAnimationNumber, propagationTime, transmissionTime, connectionId));
 				}
@@ -836,10 +858,9 @@ public class ReplayAnimationController implements IAnimationController, IAnimati
 				}
 			}
 			
-			if (animationPrimitivesCount == 0)
-				if (nextStopSimulationTime == -1 && forward && line == null)
-					nextStopSimulationTime = animationPrimitives.size() != 0 ? getAnimationPrimitive(animationPrimitives.size() - 1).getEndSimulationTime() : 0;
-
+			if (line == null)
+				endSimulationTime = loadSimulationTime;
+			
 			return animationPrimitives.size() - animationPrimitivesCount;
 		}
 		catch (Throwable e) {
@@ -848,18 +869,53 @@ public class ReplayAnimationController implements IAnimationController, IAnimati
 			throw new RuntimeException(e);
 		}
 	}
+	
+	protected String[] splitLine(String line) {
+		int lastSpaceIndex = -1;
+		int lastQuoteIndex = -1;
+		ArrayList<String> tokens = new ArrayList<String>(20);
+		
+		for (int i = 0; i < line.length(); i++) {
+			char ch = line.charAt(i);
+			
+			if (ch == ' ') {
+				if (lastQuoteIndex == -1)
+					tokens.add(line.substring(lastSpaceIndex + 1, i));
+				
+				lastSpaceIndex = i;
+			}
+			else if (ch == '"') {
+				if (lastQuoteIndex == -1) {
+					lastSpaceIndex = -1;
+					lastQuoteIndex = i;
+				}
+				else {
+					tokens.add(line.substring(lastQuoteIndex + 1, i));
+					lastQuoteIndex = -1;
+				}
+			}
+		}
 
-	private double getDoubleToken(String[] tokens, String key) {
+		if (lastSpaceIndex != -1)
+			tokens.add(line.substring(lastSpaceIndex + 1, line.length()));
+		
+		for (String s : tokens)
+			System.out.println(s);
+		
+		return (String[])tokens.toArray(new String[0]);
+	}
+
+	protected double getDoubleToken(String[] tokens, String key) {
 		return getDoubleToken(tokens, key, Double.NaN);
 	}
 
-	private double getDoubleToken(String[] tokens, String key, double defaultValue) {
+	protected double getDoubleToken(String[] tokens, String key, double defaultValue) {
 		String value = getToken(tokens, key);
 
 		return value != null ? Double.parseDouble(value) : defaultValue;
 	}
 
-	private int getIntegerToken(String[] tokens, String key) {
+	protected int getIntegerToken(String[] tokens, String key) {
 		return Integer.parseInt(getToken(tokens, key));
 	}
 	
