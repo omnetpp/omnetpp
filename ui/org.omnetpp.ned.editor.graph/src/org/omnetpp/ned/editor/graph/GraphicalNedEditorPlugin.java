@@ -77,25 +77,31 @@ public class GraphicalNedEditorPlugin extends AbstractUIPlugin {
 
         List<PaletteEntry> entries = new ArrayList<PaletteEntry>();
 
-        ToolEntry tool = new PanningSelectionToolEntry();
+        ToolEntry tool = new PanningSelectionToolEntry("Selector","Select module(s) and connections");
         tool.setToolClass(NedSelectionTool.class);
         entries.add(tool);
         root.setDefaultEntry(tool);
 
-    	PaletteStack marqueeStack = new PaletteStack("Marq", "", null); //$NON-NLS-1$
-    	marqueeStack.add(new MarqueeToolEntry());
-    	MarqueeToolEntry marquee = new MarqueeToolEntry();
+//    	PaletteStack marqueeStack = new PaletteStack("Marq", "", null); //$NON-NLS-1$
+//    	marqueeStack.add(new MarqueeToolEntry());
+//    	MarqueeToolEntry marquee = new MarqueeToolEntry();
+//    	marquee.setToolProperty(MarqueeSelectionTool.PROPERTY_MARQUEE_BEHAVIOR, 
+//    			new Integer(MarqueeSelectionTool.BEHAVIOR_CONNECTIONS_TOUCHED));
+//    	marqueeStack.add(marquee);
+//    	marquee = new MarqueeToolEntry();
+//    	marquee.setToolProperty(MarqueeSelectionTool.PROPERTY_MARQUEE_BEHAVIOR, 
+//    			new Integer(MarqueeSelectionTool.BEHAVIOR_CONNECTIONS_TOUCHED 
+//    			| MarqueeSelectionTool.BEHAVIOR_NODES_CONTAINED));
+//    	marqueeStack.add(marquee);
+//    	marqueeStack.setUserModificationPermission(PaletteEntry.PERMISSION_NO_MODIFICATION);
+//    	entries.add(marqueeStack);
+
+    	MarqueeToolEntry marquee = new MarqueeToolEntry("Connection selector","Select all connections touching the marked area");
     	marquee.setToolProperty(MarqueeSelectionTool.PROPERTY_MARQUEE_BEHAVIOR, 
     			new Integer(MarqueeSelectionTool.BEHAVIOR_CONNECTIONS_TOUCHED));
-    	marqueeStack.add(marquee);
-    	marquee = new MarqueeToolEntry();
-    	marquee.setToolProperty(MarqueeSelectionTool.PROPERTY_MARQUEE_BEHAVIOR, 
-    			new Integer(MarqueeSelectionTool.BEHAVIOR_CONNECTIONS_TOUCHED 
-    			| MarqueeSelectionTool.BEHAVIOR_NODES_CONTAINED));
-    	marqueeStack.add(marquee);
-    	marqueeStack.setUserModificationPermission(PaletteEntry.PERMISSION_NO_MODIFICATION);
-    	entries.add(marqueeStack);
-
+    	entries.add(marquee);
+    	
+    	
         tool = new ConnectionCreationToolEntry(
                 "Connection",
                 "The connection tool can be used to connect various modules and submodules",

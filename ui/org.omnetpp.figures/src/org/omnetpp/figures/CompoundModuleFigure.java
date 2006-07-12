@@ -1,5 +1,8 @@
 package org.omnetpp.figures;
 
+import org.eclipse.draw2d.ConnectionLayer;
+import org.eclipse.draw2d.ConnectionRouter;
+import org.eclipse.draw2d.FanRouter;
 import org.eclipse.draw2d.FreeformLayer;
 import org.eclipse.draw2d.FreeformLayeredPane;
 import org.eclipse.draw2d.FreeformViewport;
@@ -7,8 +10,10 @@ import org.eclipse.draw2d.Graphics;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.Layer;
 import org.eclipse.draw2d.LayeredPane;
+import org.eclipse.draw2d.ManhattanConnectionRouter;
 import org.eclipse.draw2d.SWTGraphics;
 import org.eclipse.draw2d.ScrollPane;
+import org.eclipse.draw2d.ShortestPathConnectionRouter;
 import org.eclipse.draw2d.StackLayout;
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Point;
@@ -22,6 +27,8 @@ import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.displaymodel.IDisplayString;
 import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.figures.layout.FreeformDesktopLayout;
+import org.omnetpp.figures.routers.CompoundModuleConnectionRouter;
+import org.omnetpp.figures.routers.CompoundModuleShortestPathConnectionRouter;
 
 public class CompoundModuleFigure extends ModuleFigure 
 				implements LayerSupport, HandleBounds {
@@ -39,6 +46,7 @@ public class CompoundModuleFigure extends ModuleFigure
     private Color gridColor;
     private Color moduleBackgroundColor = ColorFactory.defaultBackground;
     private Color moduleBorderColor = ColorFactory.defaultBorder;
+    private ConnectionLayer connectionLayer;
     private float scale = 1.0f;
     private String unit = "px";
 
@@ -133,6 +141,7 @@ public class CompoundModuleFigure extends ModuleFigure
         // create the main and the decoration layers that will be added into the viewportPane
         pane = new FreeformLayer();
         pane.setLayoutManager(new FreeformDesktopLayout());
+        connectionLayer = new ConnectionLayer();
 
         layeredPane = new FreeformLayeredPane();
         layeredPane.setLayoutManager(new StackLayout());
@@ -141,7 +150,7 @@ public class CompoundModuleFigure extends ModuleFigure
         layeredPane.addLayerAfter(new FreeformLayer(), LayerID.BACKGROUND_DECORATION, LayerID.BACKGROUND);
         layeredPane.addLayerAfter(pane, LayerID.DEFAULT, LayerID.BACKGROUND_DECORATION);
         layeredPane.addLayerAfter(new FreeformLayer(), LayerID.FRONT_DECORATION, LayerID.DEFAULT);
-        layeredPane.addLayerAfter(new FreeformLayer(), LayerID.CONNECTION, LayerID.FRONT_DECORATION);
+        layeredPane.addLayerAfter(connectionLayer, LayerID.CONNECTION, LayerID.FRONT_DECORATION);
         layeredPane.addLayerAfter(new FreeformLayer(), LayerID.CALLOUT, LayerID.CONNECTION);
         
         scrollpane.setViewport(new FreeformViewport());
@@ -158,9 +167,23 @@ public class CompoundModuleFigure extends ModuleFigure
         // ------ foregroundDecorationLayer
         // ------ connection
         // ------ Callout layer
-        
+
+        // set the connection routing
+        FanRouter fr = new FanRouter();
+        fr.setSeparation(10);
+        CompoundModuleShortestPathConnectionRouter spcr = 
+        	new CompoundModuleShortestPathConnectionRouter(pane);
+        spcr.setSpacing(10);
+        fr.setNextRouter(spcr);
+        setConnectionRouter(fr);
+        // simple straight connectin router         
+//        setConnectionRouter(new CompoundModuleConnectionRouter());
     }
 
+    public void setConnectionRouter(ConnectionRouter router) {
+		connectionLayer.setConnectionRouter(router);
+	}
+    
     public IFigure getContentsPane() {
         return pane;
     }
