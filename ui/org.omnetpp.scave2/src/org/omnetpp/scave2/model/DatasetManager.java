@@ -1,5 +1,6 @@
 package org.omnetpp.scave2.model;
 
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EObject;
 import org.omnetpp.scave.engine.DataflowManager;
@@ -11,6 +12,7 @@ import org.omnetpp.scave.model.Add;
 import org.omnetpp.scave.model.Apply;
 import org.omnetpp.scave.model.Dataset;
 import org.omnetpp.scave.model.DatasetItem;
+import org.omnetpp.scave.model.DatasetType;
 import org.omnetpp.scave.model.Discard;
 import org.omnetpp.scave.model.Group;
 import org.omnetpp.scave.model.SetOperation;
@@ -23,7 +25,7 @@ import org.omnetpp.scave.model.util.ScaveModelSwitch;
 public class DatasetManager {
 	
 	static class DatasetContent {
-		public boolean isScalar;
+		public DatasetType type;
 		public ResultFileList files;
 		public IDList idlist;
 		public DataflowManager dataflowManager;
@@ -60,12 +62,7 @@ public class DatasetManager {
 			if (stopped)
 				return content;
 			
-			if ("scalar".equals(dataset.getType())) {
-				content.isScalar = true;
-			} else if ("vector".equals(dataset.getType())) {
-				content.isScalar = false;
-			}
-			
+			content.type = dataset.getType();
 			if (dataset.getBasedOn() != null)
 				content.idlist = getIDListFromDataset(manager, (Dataset)dataset.getBasedOn(), null);
 			
@@ -82,7 +79,7 @@ public class DatasetManager {
 			if (stopped)
 				return content;
 
-			add(content.idlist, add, content.isScalar);
+			add(content.idlist, add, content.type);
 
 			if (add == stopAfter)
 				stopped = true;
@@ -147,13 +144,13 @@ public class DatasetManager {
 			return content;
 		}
 
-		private void add(IDList idlist, SetOperation add, boolean scalar) {
+		private void add(IDList idlist, SetOperation add, DatasetType type) {
 			String fileAndRunFilter = add.getFilenamePattern() != null ? add.getFilenamePattern() : "";
 			String moduleFilter = add.getModuleNamePattern() != null ? add.getModuleNamePattern() : "";
 			String nameFilter = add.getNamePattern() != null ? add.getNamePattern() : "";
 
 			FileRunList fileRunFilter = null; //FIXME
-			idlist.merge(manager.filterIDList(scalar ? manager.getAllScalars() : manager.getAllVectors(),
+			idlist.merge(manager.filterIDList(getAllIDs(type),
 					fileRunFilter, moduleFilter, nameFilter));
 
 			// TODO: excepts, experiments, ...
@@ -174,6 +171,16 @@ public class DatasetManager {
 		private IDList executeFilter(IDList idlist, String operation, EList params) {
 			// TODO
 			return idlist;
+		}
+		
+		private IDList getAllIDs(DatasetType type) {
+			switch (type.getValue()) {
+			case DatasetType.SCALAR: return manager.getAllScalars();
+			case DatasetType.VECTOR: return manager.getAllVectors();
+			case DatasetType.HISTOGRAM: return new IDList(); // TODO
+			}
+			Assert.isTrue(false, "Unexpected dataset type: " + type);
+			return null;
 		}
 	}
 }
