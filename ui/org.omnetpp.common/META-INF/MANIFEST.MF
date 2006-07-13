@@ -16,6 +16,7 @@ Export-Package: org.apache.commons.collections,
  org.omnetpp.common.displaymodel,
  org.omnetpp.common.image,
  org.omnetpp.common.properties,
+ org.omnetpp.common.simulation.model,
  org.omnetpp.common.ui,
  org.omnetpp.common.util,
  org.omnetpp.common.xml
