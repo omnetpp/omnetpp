@@ -4,8 +4,13 @@ import org.omnetpp.experimental.simkernel.swig.*;
 
 public interface IEnvirCallback {
     void objectDeleted(cObject object);
-    void messageSent(cMessage msg, cGate directToGate);
     void messageDelivered(cMessage msg);
+    void messageScheduled(cMessage msg);
+    void messageCancelled(cMessage msg);
+    void beginSend(cMessage msg);
+    void messageSendDirect(cMessage msg, cGate toGate, double propagationDelay);
+    void messageSendHop(cMessage msg, cGate srcGate, double propagationDelay);
+    void messageSendHop(cMessage msg, cGate srcGate, double propagationDelay, double transmissionDelay, double transmissionStartTime);
     void breakpointHit(String label, cModule mod);
     void moduleMethodCalled(cModule from, cModule to, String method);
     void moduleCreated(cModule newmodule);

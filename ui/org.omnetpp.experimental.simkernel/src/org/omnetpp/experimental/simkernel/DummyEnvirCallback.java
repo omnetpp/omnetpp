@@ -36,10 +36,6 @@ public class DummyEnvirCallback implements IEnvirCallback {
 		System.out.println("messageDelivered()");
 	}
 
-	public void messageSent(cMessage msg, cGate directToGate) {
-		System.out.println("messageSent()");
-	}
-
 	public void moduleCreated(cModule newmodule) {
 		System.out.println("moduleCreated()");
 	}
@@ -49,15 +45,39 @@ public class DummyEnvirCallback implements IEnvirCallback {
 	}
 
 	public void moduleMethodCalled(cModule from, cModule to, String method) {
-		System.out.println("moduleDeleted()");
+		System.out.println("moduleMethodCalled()");
 	}
 
 	public void moduleReparented(cModule module, cModule oldparent) {
-		System.out.println("moduleDeleted()");
+		System.out.println("moduleReparented()");
 	}
 
 	public void objectDeleted(cObject object) {
-		System.out.println("moduleDeleted()");
+		System.out.println("objectDeleted()");
+	}
+
+	public void beginSend(cMessage msg) {
+		System.out.println("beginSend()");
+	}
+
+	public void messageCancelled(cMessage msg) {
+		System.out.println("messageCancelled()");
+	}
+
+	public void messageScheduled(cMessage msg) {
+		System.out.println("messageScheduled()");
+	}
+
+	public void messageSendDirect(cMessage msg, cGate toGate, double propagationDelay) {
+		System.out.println("messageSendDirect()");
+	}
+
+	public void messageSendHop(cMessage msg, cGate srcGate, double propagationDelay) {
+		System.out.println("messageSendHop1()");
+	}
+
+	public void messageSendHop(cMessage msg, cGate srcGate, double propagationDelay, double transmissionDelay, double transmissionStartTime) {
+		System.out.println("messageSendHop3()");
 	}
 
 }
