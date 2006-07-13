@@ -6,7 +6,7 @@ public interface IEnvirCallback {
     void objectDeleted(cObject object);
     void messageSent(cMessage msg, cGate directToGate);
     void messageDelivered(cMessage msg);
-    void breakpointHit(String label, cSimpleModule mod);
+    void breakpointHit(String label, cModule mod);
     void moduleMethodCalled(cModule from, cModule to, String method);
     void moduleCreated(cModule newmodule);
     void moduleDeleted(cModule module);

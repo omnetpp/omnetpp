@@ -12,7 +12,7 @@ public class DummyEnvirCallback implements IEnvirCallback {
 		System.out.println("backgroundDisplayStringChanged()");
 	}
 
-	public void breakpointHit(String label, cSimpleModule mod) {
+	public void breakpointHit(String label, cModule mod) {
 		System.out.println("breakpointHit()");
 	}
 
