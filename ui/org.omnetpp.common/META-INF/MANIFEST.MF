@@ -17,6 +17,7 @@ Export-Package: org.apache.commons.collections,
  org.omnetpp.common.image,
  org.omnetpp.common.properties,
  org.omnetpp.common.ui,
+ org.omnetpp.common.util,
  org.omnetpp.common.xml
 Bundle-ClassPath: lib/commons-collections-3.2.jar,
  lib/commons-lang-2.1.jar,
