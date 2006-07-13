@@ -9,11 +9,21 @@ import org.eclipse.swt.SWT;
  * @author rhornig
  */
 public class ModuleFigure extends Figure {
-    
+	protected int antialias = SWT.ON;
+	
+	/**
+	 * Sets the module antialaiasing. can be SWT.DEFAULT, SWT.ON, SWT.OFF
+	 * @param antialias
+	 */
+	public void setAntialias(int antialias) {
+		this.antialias = antialias;
+	}
+	
     @Override
     public void paint(Graphics graphics) {
-    	// Enable antialiasing on derived figures
-        graphics.setAntialias(SWT.ON);
+    	// set antialiasing on derived figures
+        if(antialias != SWT.DEFAULT)
+        	graphics.setAntialias(antialias);
         super.paint(graphics);
     }
 
@@ -28,4 +38,5 @@ public class ModuleFigure extends Figure {
     		debugPrintFigureHierarchy((Figure)child, indent+"    ");
     	}
     }
+
 }

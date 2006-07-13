@@ -78,16 +78,13 @@ public class NedFileEditPart extends ContainerEditPart implements LayerConstants
     /**
      * @see org.eclipse.core.runtime.IAdaptable#getAdapter(java.lang.Class)
      */
-    @Override
+    @SuppressWarnings("unchecked")
+	@Override
     public Object getAdapter(Class adapter) {
         if (adapter == SnapToHelper.class) {
             List snapStrategies = new ArrayList();
-            Boolean val = (Boolean) getViewer().getProperty(RulerProvider.PROPERTY_RULER_VISIBILITY);
-            if (val != null && val.booleanValue()) snapStrategies.add(new SnapToGuides(this));
-            val = (Boolean) getViewer().getProperty(SnapToGeometry.PROPERTY_SNAP_ENABLED);
+            Boolean val = (Boolean) getViewer().getProperty(SnapToGeometry.PROPERTY_SNAP_ENABLED);
             if (val != null && val.booleanValue()) snapStrategies.add(new SnapToGeometry(this));
-            val = (Boolean) getViewer().getProperty(SnapToGrid.PROPERTY_GRID_ENABLED);
-            if (val != null && val.booleanValue()) snapStrategies.add(new SnapToGrid(this));
 
             if (snapStrategies.size() == 0) return null;
             if (snapStrategies.size() == 1) return snapStrategies.get(0);
@@ -98,33 +95,6 @@ public class NedFileEditPart extends ContainerEditPart implements LayerConstants
             return new CompoundSnapToHelper(ss);
         }
         return super.getAdapter(adapter);
-    }
-
-    @Override
-    public DragTracker getDragTracker(Request req) {
-        if (req instanceof SelectionRequest && ((SelectionRequest) req).getLastButtonPressed() == 3)
-            return new DeselectAllTracker(this);
-        return new MarqueeDragTracker();
-    }
-
-
-    // FIXME 
-    @Override
-    protected void refreshVisuals() {
-    	Animation.markBegin();
-    	ConnectionLayer cLayer = (ConnectionLayer) getLayer(CONNECTION_LAYER);
-    	cLayer.setAntialias(SWT.ON);
-
-// FIXME setting connection routers    	
-//    	if (((NedFileModel)getModel()).getConnectionRouter().equals(NedFileModel.ROUTER_MANUAL)) {
-//    		AutomaticRouter router = new FanRouter();
-//    		router.setNextRouter(new BendpointConnectionRouter());
-//    		cLayer.setConnectionRouter(router);
-//    	} else if (((NedFileModel)getModel()).getConnectionRouter().equals(NedFileModel.ROUTER_MANHATTAN))
-//    		cLayer.setConnectionRouter(new ManhattanConnectionRouter());
-//    	else
-//    		cLayer.setConnectionRouter(new ShortestPathConnectionRouter(getFigure()));
-    	Animation.run(400);
     }
 
     @Override

@@ -19,10 +19,7 @@ import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.SafeRunner;
-import org.eclipse.draw2d.DelegatingLayout;
 import org.eclipse.draw2d.FigureCanvas;
-import org.eclipse.draw2d.Layer;
-import org.eclipse.draw2d.LayeredPane;
 import org.eclipse.draw2d.LightweightSystem;
 import org.eclipse.draw2d.MarginBorder;
 import org.eclipse.draw2d.PositionConstants;
@@ -50,8 +47,6 @@ import org.eclipse.gef.ui.actions.DirectEditAction;
 import org.eclipse.gef.ui.actions.GEFActionConstants;
 import org.eclipse.gef.ui.actions.MatchHeightAction;
 import org.eclipse.gef.ui.actions.MatchWidthAction;
-import org.eclipse.gef.ui.actions.ToggleGridAction;
-import org.eclipse.gef.ui.actions.ToggleRulerVisibilityAction;
 import org.eclipse.gef.ui.actions.ToggleSnapToGeometryAction;
 import org.eclipse.gef.ui.actions.ZoomInAction;
 import org.eclipse.gef.ui.actions.ZoomOutAction;
@@ -62,7 +57,6 @@ import org.eclipse.gef.ui.parts.GraphicalEditorWithFlyoutPalette;
 import org.eclipse.gef.ui.parts.GraphicalViewerKeyHandler;
 import org.eclipse.gef.ui.parts.ScrollingGraphicalViewer;
 import org.eclipse.gef.ui.parts.TreeViewer;
-import org.eclipse.gef.ui.rulers.RulerComposite;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IMenuListener;
@@ -100,7 +94,6 @@ import org.eclipse.ui.part.MultiPageEditorPart;
 import org.eclipse.ui.part.PageBook;
 import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
 import org.omnetpp.common.image.ImageFactory;
-import org.omnetpp.figures.LayerSupport;
 import org.omnetpp.ned.editor.graph.actions.ModulePasteTemplateAction;
 import org.omnetpp.ned.editor.graph.dnd.TextTransferDropTargetListener;
 import org.omnetpp.ned.editor.graph.edit.NedEditPartFactory;
@@ -377,8 +370,6 @@ public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette {
 
     private ResourceTracker resourceListener = new ResourceTracker();
 
-    private RulerComposite rulerComp;
-
     private MultiPageEditorPart embeddingEditor;
 
     protected static final String PALETTE_DOCK_LOCATION = "Dock location"; //$NON-NLS-1$
@@ -408,7 +399,8 @@ public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette {
     	super.commandStackChanged(event);
     }
 
-    @Override
+    @SuppressWarnings("unchecked")
+	@Override
     protected void configureGraphicalViewer() {
         super.configureGraphicalViewer();
         ScrollingGraphicalViewer viewer = (ScrollingGraphicalViewer) getGraphicalViewer();
@@ -451,14 +443,9 @@ public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette {
         loadProperties();
 
         // Actions
-        IAction showRulers = new ToggleRulerVisibilityAction(getGraphicalViewer());
-        getActionRegistry().registerAction(showRulers);
 
         IAction snapAction = new ToggleSnapToGeometryAction(getGraphicalViewer());
         getActionRegistry().registerAction(snapAction);
-
-        IAction showGrid = new ToggleGridAction(getGraphicalViewer());
-        getActionRegistry().registerAction(showGrid);
 
         Listener listener = new Listener() {
             public void handleEvent(Event event) {
@@ -552,11 +539,6 @@ public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette {
         return super.getAdapter(type);
     }
 
-    @Override
-    protected Control getGraphicalControl() {
-        return rulerComp;
-    }
-
     /**
      * Returns the KeyHandler with common bindings for both the Outline and
      * Graphical Views. For example, delete is a common action.
@@ -602,7 +584,8 @@ public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette {
         		new TextTransferDropTargetListener(getGraphicalViewer(), TextTransfer.getInstance()));
     }
 
-    @Override
+    @SuppressWarnings("unchecked")
+	@Override
     protected void createActions() {
         super.createActions();
         ActionRegistry registry = getActionRegistry();
@@ -652,18 +635,6 @@ public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette {
         getSelectionActions().add(action.getId());
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.eclipse.gef.ui.parts.GraphicalEditor#createGraphicalViewer(org.eclipse.swt.widgets.Composite)
-     */
-    @Override
-    protected void createGraphicalViewer(Composite parent) {
-        rulerComp = new RulerComposite(parent, SWT.NONE);
-        super.createGraphicalViewer(rulerComp);
-        rulerComp.setGraphicalViewer((ScrollingGraphicalViewer) getGraphicalViewer());
-    }
-
     protected FigureCanvas getEditor() {
         return (FigureCanvas) getGraphicalViewer().getControl();
     }
@@ -678,17 +649,11 @@ public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette {
 //        getGraphicalViewer().setProperty(SnapToGeometry.PROPERTY_SNAP_ENABLED,
 //                new Boolean(getModel().isSnapToGeometryEnabled()));
 //
-//        // Grid properties
-//        getGraphicalViewer().setProperty(SnapToGrid.PROPERTY_GRID_ENABLED,
-//                new Boolean(getModel().isGridEnabled()));
-//        // We keep grid visibility and enablement in sync
-//        getGraphicalViewer().setProperty(SnapToGrid.PROPERTY_GRID_VISIBLE,
-//                new Boolean(getModel().isGridEnabled()));
-
         // Zoom
         ZoomManager manager = (ZoomManager) getGraphicalViewer().getProperty(ZoomManager.class.toString());
 //        if (manager != null) manager.setZoom(getModel().getZoom());
-        // Scroll-wheel Zoom
+
+        // Scroll-wheel Zoom support
         getGraphicalViewer().setProperty(MouseWheelHandler.KeyGenerator.getKey(SWT.MOD1),
                 MouseWheelZoomHandler.SINGLETON);
 

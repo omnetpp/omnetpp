@@ -145,7 +145,7 @@ public class ModuleConnectionEditPart extends AbstractConnectionEditPart impleme
         installEditPolicy(EditPolicy.CONNECTION_ENDPOINTS_ROLE, new NedConnectionEndpointEditPolicy());
         // Note that the Connection is already added to the diagram and knows
         // its Router.
-        refreshBendpointEditPolicy();
+//        refreshBendpointEditPolicy();
         installEditPolicy(EditPolicy.CONNECTION_ROLE, new NedConnectionEditPolicy());
     }
 
@@ -175,27 +175,27 @@ public class ModuleConnectionEditPart extends AbstractConnectionEditPart impleme
     /**
      * Updates the bendpoints, based on the model.
      */
-    protected void refreshBendpoints() {
-        if (getConnectionFigure().getConnectionRouter() instanceof ManhattanConnectionRouter) return;
-        List modelConstraint = getConnectionModel().getBendpoints();
-        List figureConstraint = new ArrayList();
-        for (int i = 0; i < modelConstraint.size(); i++) {
-            WireBendpointModel wbp = (WireBendpointModel) modelConstraint.get(i);
-            RelativeBendpoint rbp = new RelativeBendpoint(getConnectionFigure());
-            rbp.setRelativeDimensions(wbp.getFirstRelativeDimension(), wbp.getSecondRelativeDimension());
-            rbp.setWeight((i + 1) / ((float) modelConstraint.size() + 1));
-            figureConstraint.add(rbp);
-        }
-        getConnectionFigure().setRoutingConstraint(figureConstraint);
-    }
+//    protected void refreshBendpoints() {
+//        if (getConnectionFigure().getConnectionRouter() instanceof ManhattanConnectionRouter) return;
+//        List modelConstraint = getConnectionModel().getBendpoints();
+//        List figureConstraint = new ArrayList();
+//        for (int i = 0; i < modelConstraint.size(); i++) {
+//            WireBendpointModel wbp = (WireBendpointModel) modelConstraint.get(i);
+//            RelativeBendpoint rbp = new RelativeBendpoint(getConnectionFigure());
+//            rbp.setRelativeDimensions(wbp.getFirstRelativeDimension(), wbp.getSecondRelativeDimension());
+//            rbp.setWeight((i + 1) / ((float) modelConstraint.size() + 1));
+//            figureConstraint.add(rbp);
+//        }
+//        getConnectionFigure().setRoutingConstraint(figureConstraint);
+//    }
 
-    private void refreshBendpointEditPolicy() {
-// TODO for the moment we do not need bendpoints    	
+//  TODO for the moment we do not need bendpoints    	
+//    private void refreshBendpointEditPolicy() {
 //        if (getConnectionFigure().getConnectionRouter() instanceof ManhattanConnectionRouter)
 //            installEditPolicy(EditPolicy.CONNECTION_BENDPOINTS_ROLE, null);
 //        else
 //            installEditPolicy(EditPolicy.CONNECTION_BENDPOINTS_ROLE, new ConnectionBendpointEditPolicy());
-    }
+//    }
 
     /**
      * Refreshes the visual aspects of this, based upon the model (Wire). It
@@ -204,18 +204,11 @@ public class ModuleConnectionEditPart extends AbstractConnectionEditPart impleme
      */
     @Override
     protected void refreshVisuals() {
-        ConnectionDisplayString dps = (ConnectionDisplayString)getConnectionModel().getDisplayString();
-
-    	refreshBendpoints();
         // XXX do we need this here?
+    	// refreshBendpoints();
         // refreshBendpointEditPolicy();
-        ConnectionFigure cfig = (ConnectionFigure)getFigure();  
-        
-        cfig.setStyle(ColorFactory.asColor(dps.getAsStringDef(DisplayString.Prop.CONNECTION_COL)), 
-        				dps.getAsIntDef(DisplayString.Prop.CONNECTION_WIDTH, 1), 
-        				dps.getAsStringDef(DisplayString.Prop.CONNECTION_STYLE), 
-        				dps.getAsStringDef(DisplayString.Prop.CONNECTION_SEGMENTS));
-        
+        ConnectionFigure cfig = (ConnectionFigure)getConnectionFigure();  
+        cfig.setDisplayString(getConnectionModel().getDisplayString());
         cfig.setArrowEnabled(getConnectionModel().getArrowDirection() != NEDElementUtil.NED_ARROWDIR_BIDIR);
     }
 
@@ -235,7 +228,7 @@ public class ModuleConnectionEditPart extends AbstractConnectionEditPart impleme
 	public void propertyChanged(Prop changedProp) {
 		// connection router changed
 		refreshVisuals();
-        refreshBendpoints();
-        refreshBendpointEditPolicy();
+//        refreshBendpoints();
+//        refreshBendpointEditPolicy();
 	}
 }

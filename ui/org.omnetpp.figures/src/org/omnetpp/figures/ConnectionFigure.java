@@ -3,8 +3,10 @@ package org.omnetpp.figures;
 import org.eclipse.draw2d.Graphics;
 import org.eclipse.draw2d.PolygonDecoration;
 import org.eclipse.draw2d.PolylineConnection;
-import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
+import org.omnetpp.common.color.ColorFactory;
+import org.omnetpp.common.displaymodel.DisplayString;
+import org.omnetpp.common.displaymodel.IDisplayString;
 
 public class ConnectionFigure extends PolylineConnection {
 	protected int localLineStyle = Graphics.LINE_SOLID;
@@ -56,10 +58,14 @@ public class ConnectionFigure extends PolylineConnection {
 			arrow.setScale(5+lineWidth, 2+lineWidth);
     }
 
-    @Override
-    public void paint(Graphics graphics) {
-        graphics.setAntialias(SWT.ON);
-        super.paint(graphics);
-    }
-
+	/**
+	 * Adjusts the figure properties using a displayString object
+	 * @param dps The display string object containing the properties
+	 */
+	public void setDisplayString(IDisplayString dps) {
+        setStyle(ColorFactory.asColor(dps.getAsStringDef(DisplayString.Prop.CONNECTION_COL)), 
+				dps.getAsIntDef(DisplayString.Prop.CONNECTION_WIDTH, 1), 
+				dps.getAsStringDef(DisplayString.Prop.CONNECTION_STYLE), 
+				dps.getAsStringDef(DisplayString.Prop.CONNECTION_SEGMENTS));
+	}
 }

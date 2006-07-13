@@ -151,7 +151,7 @@ public class CompoundModuleFigure extends ModuleFigure
         layeredPane.addLayerAfter(pane, LayerID.DEFAULT, LayerID.BACKGROUND_DECORATION);
         layeredPane.addLayerAfter(new FreeformLayer(), LayerID.FRONT_DECORATION, LayerID.DEFAULT);
         layeredPane.addLayerAfter(connectionLayer, LayerID.CONNECTION, LayerID.FRONT_DECORATION);
-        layeredPane.addLayerAfter(new FreeformLayer(), LayerID.CALLOUT, LayerID.CONNECTION);
+        layeredPane.addLayerAfter(new Layer(), LayerID.CALLOUT, LayerID.CONNECTION);
         
         scrollpane.setViewport(new FreeformViewport());
         scrollpane.setContents(layeredPane);
@@ -290,8 +290,8 @@ public class CompoundModuleFigure extends ModuleFigure
 	}
 	
 	/**
-	 * Adjusts the image properties using a displayString object
-	 * @param dps
+	 * Adjusts the figure properties using a displayString object
+	 * @param dps The display string object containing the properties
 	 */
 	public void setDisplayString(IDisplayString dps) {
         // setup the figure's properties
