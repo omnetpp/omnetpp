@@ -14,5 +14,6 @@ Require-Bundle: org.eclipse.ui,
  org.omnetpp.figures,
  org.eclipse.gef,
  org.eclipse.ui.views,
- org.eclipse.ui.ide
+ org.eclipse.ui.ide,
+ org.omnetpp.experimental.simkernel
 Eclipse-LazyStart: true
