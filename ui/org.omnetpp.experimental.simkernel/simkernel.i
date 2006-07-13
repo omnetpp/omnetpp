@@ -118,9 +118,53 @@ inline void evSetupDummyCall() { //XXX
     $1 = j$1;
 }
 
+%rename cObject::name getName;
+%rename cObject::fullName getFullName;
+%rename cObject::fullPath getFullPath;
 
-%typemap(javainterfaces) cModule "org.omnetpp.experimental.animation.model.IRuntimeModule";
+%typemap(javainterfaces) cSimulation "org.omnetpp.common.simulation.model.IRuntimeSimulation";
+%rename cSimulation::systemModule getRootModule;
+%rename cSimulation::moduleByPath getModuleByPath;
+%rename cSimulation::module getModuleByID;
 
+%typemap(javainterfaces) cModule "org.omnetpp.common.simulation.model.IRuntimeModule";
+%rename cModule::id getId;
+%rename cModule::index getIndex;
+%rename cModule::size getSize;
+%rename cModule::parentModule getParentModule;
+%rename cModule::submodule getSubmodule;
+%rename cModule::gates getNumGates;
+%rename cModule::gate getGate;
+%typemap(javaimports) cModule
+  "import org.omnetpp.common.displaymodel.DisplayString;\n"
+  "import org.omnetpp.common.displaymodel.IDisplayString;";
+%extend cModule {
+  const char *getTypeName() {
+    return self->moduleType()->name();
+  }
+}
+%typemap(javacode) cModule %{
+  public IDisplayString getDisplayString() {
+    return new DisplayString(null, null, displayString().getString());
+  }
+%};
+
+%typemap(javainterfaces) cGate "org.omnetpp.common.simulation.model.IRuntimeGate";
+%rename cGate::id getId;
+%rename cGate::index getIndex;
+%rename cGate::size getSize;
+%rename cGate::ownerModule getOwnerModule;
+
+%typemap(javainterfaces) cMessage "org.omnetpp.common.simulation.model.IRuntimeMessage";
+%rename cMessage::kind getKind;
+%rename cMessage::priority getPriority;
+%rename cMessage::length getLength;
+%rename cMessage::senderModuleId getSenderModuleId;
+%rename cMessage::senderGateId getSenderGateId;
+%rename cMessage::arrivalModuleId getArrivalModuleId;
+%rename cMessage::arrivalGateId getArrivalGateId;
+%rename cMessage::sendingTime getSendingTime;
+%rename cMessage::arrivalTime getArrivalTime;
 
 // SWIG doesn't understand nested classes, turn off corresponding warnings
 //%warnfilter(312) cTopology::Node; -- this doesn't seem to work
