@@ -1,5 +1,8 @@
 package org.omnetpp.experimental.animation.editors;
 
+import java.text.NumberFormat;
+import java.text.ParseException;
+
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
@@ -40,6 +43,8 @@ public class AnimationEditor extends EditorPart implements IAnimationListener {
 
 	private Text replayAnimationTimeWidget;
 	
+	private NumberFormat numberFormat;
+	
 	public AnimationEditor() {
 	}
 
@@ -57,6 +62,8 @@ public class AnimationEditor extends EditorPart implements IAnimationListener {
 		setInput(input);
 		
 		setPartName(input.getName());
+		numberFormat = NumberFormat.getNumberInstance();
+		numberFormat.setMaximumFractionDigits(Integer.MAX_VALUE);
 	}
 
 	@Override
@@ -166,8 +173,14 @@ public class AnimationEditor extends EditorPart implements IAnimationListener {
 		replayEventNumberWidget.setLayoutData(new RowData(100, coolBarHeight - 10));
 		replayEventNumberWidget.addModifyListener(new ModifyListener() {
 			public void modifyText(ModifyEvent e) {
-				long eventNumber = Long.parseLong(((Text)e.widget).getText());
-				if (eventNumber != animationController.getEventNumber())
+				long eventNumber = -1;
+				try {
+					eventNumber = numberFormat.parse(((Text)e.widget).getText()).longValue();
+				}
+				catch (ParseException e1) {
+					// void
+				}
+				if (eventNumber != -1 && eventNumber != animationController.getEventNumber())
 					animationController.gotoEventNumber(eventNumber);
 			}
 		});
@@ -175,8 +188,15 @@ public class AnimationEditor extends EditorPart implements IAnimationListener {
 		replayAnimationNumberWidget.setLayoutData(new RowData(100, coolBarHeight - 10));
 		replayAnimationNumberWidget.addModifyListener(new ModifyListener() {
 			public void modifyText(ModifyEvent e) {
-				long animationNumber = Long.parseLong(((Text)e.widget).getText());
-				if (animationNumber != animationController.getAnimationNumber())
+				long animationNumber = -1;
+				try {
+					animationNumber = numberFormat.parse(((Text)e.widget).getText()).longValue();
+				}
+				catch (ParseException e1) {
+					// void
+				}
+
+				if (animationNumber != -1 && animationNumber != animationController.getAnimationNumber())
 					animationController.gotoAnimationNumber(animationNumber);
 			}
 		});
@@ -184,8 +204,15 @@ public class AnimationEditor extends EditorPart implements IAnimationListener {
 		replaySimulationTimeWidget.setLayoutData(new RowData(100, coolBarHeight - 10));
 		replaySimulationTimeWidget.addModifyListener(new ModifyListener() {
 			public void modifyText(ModifyEvent e) {
-				double simulationTime = Double.parseDouble(((Text)e.widget).getText());
-				if (simulationTime != animationController.getSimulationTime())
+				double simulationTime = -1;
+				try {
+					simulationTime = numberFormat.parse(((Text)e.widget).getText()).doubleValue();
+				}
+				catch (ParseException e1) {
+					// void
+				}
+
+				if (simulationTime != -1 && simulationTime != animationController.getSimulationTime())
 					animationController.gotoSimulationTime(simulationTime);
 			}
 		});
@@ -193,8 +220,15 @@ public class AnimationEditor extends EditorPart implements IAnimationListener {
 		replayAnimationTimeWidget.setLayoutData(new RowData(100, coolBarHeight - 10));
 		replayAnimationTimeWidget.addModifyListener(new ModifyListener() {
 			public void modifyText(ModifyEvent e) {
-				double animationTime = Double.parseDouble(((Text)e.widget).getText());
-				if (animationTime != animationController.getAnimationTime())
+				double animationTime = -1;
+				try {
+					animationTime = numberFormat.parse(((Text)e.widget).getText()).doubleValue();
+				}
+				catch (ParseException e1) {
+					// void
+				}
+
+				if (animationTime != -1 && animationTime != animationController.getAnimationTime())
 					animationController.gotoAnimationTime(animationTime);
 			}
 		});
@@ -247,56 +281,56 @@ public class AnimationEditor extends EditorPart implements IAnimationListener {
 		long oldEventNumber = -1;
 		
 		try {
-			oldEventNumber = Long.parseLong(replayEventNumberWidget.getText());
+			oldEventNumber = numberFormat.parse(replayEventNumberWidget.getText()).longValue();
 		}
-		catch (NumberFormatException e) {
+		catch (ParseException e) {
 			// void
 		}
 		
 		if (oldEventNumber != eventNumber)
-			replayEventNumberWidget.setText(String.valueOf(eventNumber));
+			replayEventNumberWidget.setText(numberFormat.format(eventNumber));
 	}
 
 	public void replaySimulationTimeChanged(double simulationTime) {
 		double oldSimulationTime = -1;
 		
 		try {
-			oldSimulationTime = Double.parseDouble(replaySimulationTimeWidget.getText());
+			oldSimulationTime = numberFormat.parse(replaySimulationTimeWidget.getText()).doubleValue();
 		}
-		catch (NumberFormatException e) {
+		catch (ParseException e) {
 			// void
 		}
 		
 		if (oldSimulationTime != simulationTime)
-			replaySimulationTimeWidget.setText(String.valueOf(simulationTime));
+			replaySimulationTimeWidget.setText(numberFormat.format(simulationTime));
 	}
 
 	public void replayAnimationNumberChanged(long animationNumber) {
 		long oldAnimationNumber = -1; 
 		
 		try {
-			oldAnimationNumber = Long.parseLong(replayAnimationNumberWidget.getText());
+			oldAnimationNumber = numberFormat.parse(replayAnimationNumberWidget.getText()).longValue();
 		}
-		catch (NumberFormatException e) {
+		catch (ParseException e) {
 			// void
 		}
 		
 		if (oldAnimationNumber != animationNumber)
-			replayAnimationNumberWidget.setText(String.valueOf(animationNumber));
+			replayAnimationNumberWidget.setText(numberFormat.format(animationNumber));
 	}
 
 	public void replayAnimationTimeChanged(double animationTime) {
 		double oldAnimationTime = -1;
 		
 		try {
-			oldAnimationTime = Double.parseDouble(replayAnimationTimeWidget.getText());
+			oldAnimationTime = numberFormat.parse(replayAnimationTimeWidget.getText()).doubleValue();
 		}
-		catch (NumberFormatException e) {
+		catch (ParseException e) {
 			// void
 		}
 		
 		if (oldAnimationTime != animationTime)
-			replayAnimationTimeWidget.setText(String.valueOf(animationTime));
+			replayAnimationTimeWidget.setText(numberFormat.format(animationTime));
 	}
 
 	public void liveEventNumberChanged(long eventNumber) {

@@ -5,12 +5,12 @@ import org.omnetpp.experimental.animation.model.IRuntimeModule;
 import org.omnetpp.experimental.animation.replay.ReplayAnimationController;
 import org.omnetpp.figures.SubmoduleFigure;
 
-public class SetDisplayStringAnimation extends AbstractAnimationPrimitive {
+public class SetModuleDisplayStringAnimation extends AbstractAnimationPrimitive {
 	private IRuntimeModule module;
 	
 	private DisplayString displayString;
 	
-	public SetDisplayStringAnimation(ReplayAnimationController animationController,
+	public SetModuleDisplayStringAnimation(ReplayAnimationController animationController,
 									 long eventNumber,
 									 double simulationTime,
 									 long animationNumber,

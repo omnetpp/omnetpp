@@ -20,12 +20,14 @@ import org.omnetpp.experimental.animation.model.IRuntimeModule;
 import org.omnetpp.experimental.animation.model.IRuntimeSimulation;
 import org.omnetpp.experimental.animation.primitives.CreateConnectionAnimation;
 import org.omnetpp.experimental.animation.primitives.CreateModuleAnimation;
+import org.omnetpp.experimental.animation.primitives.DeleteModuleAnimation;
 import org.omnetpp.experimental.animation.primitives.HandleMessageAnimation;
 import org.omnetpp.experimental.animation.primitives.IAnimationEnvironment;
 import org.omnetpp.experimental.animation.primitives.IAnimationPrimitive;
 import org.omnetpp.experimental.animation.primitives.ScheduleSelfMessageAnimation;
 import org.omnetpp.experimental.animation.primitives.SendMessageAnimation;
-import org.omnetpp.experimental.animation.primitives.SetDisplayStringAnimation;
+import org.omnetpp.experimental.animation.primitives.SetConnectionDisplayStringAnimation;
+import org.omnetpp.experimental.animation.primitives.SetModuleDisplayStringAnimation;
 import org.omnetpp.experimental.animation.replay.model.ReplayModule;
 import org.omnetpp.experimental.animation.replay.model.ReplaySimulation;
 import org.omnetpp.experimental.animation.widgets.AnimationCanvas;
@@ -54,6 +56,11 @@ public class ReplayAnimationController implements IAnimationController, IAnimati
 	 * that is rendered to the canvas.
 	 */
 	protected ArrayList<IAnimationPrimitive> animationPrimitives = new ArrayList<IAnimationPrimitive>(); // holds all animation primitives since last key frame
+	
+	/**
+	 * The list of HandleMessageAnimations in the order of event numbers.
+	 */
+	protected ArrayList<HandleMessageAnimation> handleMessageAnimationPrimitives = new ArrayList<HandleMessageAnimation>();
 	
 	/**
 	 * The simulation is either a LiveSimulation or a ReplaySimulation.
@@ -278,7 +285,7 @@ public class ReplayAnimationController implements IAnimationController, IAnimati
 	 */
 	protected void setEventNumber(long eventNumber) {
 		this.eventNumber = eventNumber;
-		loadAnimationPrimitivesForPosition(eventNumber, 0);
+		loadAnimationPrimitivesForPosition(eventNumber, 0, 0, 0);
 		eventNumberChanged();
 	}
 	
@@ -304,7 +311,7 @@ public class ReplayAnimationController implements IAnimationController, IAnimati
 	 */
 	protected void setSimulationTime(double simulationTime) {
 		this.simulationTime = simulationTime;
-		loadAnimationPrimitivesForPosition(0, simulationTime);
+		loadAnimationPrimitivesForPosition(0, simulationTime, 0, 0);
 		simulationTimeChanged();
 	}
 	
@@ -330,6 +337,7 @@ public class ReplayAnimationController implements IAnimationController, IAnimati
 	 */
 	protected void setAnimationNumber(long animationNumber) {
 		this.animationNumber = animationNumber;
+		loadAnimationPrimitivesForPosition(0, 0, animationNumber, 0);
 		animationNumberChanged();
 	}
 	
@@ -352,6 +360,7 @@ public class ReplayAnimationController implements IAnimationController, IAnimati
 	 */
 	protected void setAnimationTime(double animationTime) {
 		this.animationTime = animationTime;
+		loadAnimationPrimitivesForPosition(0, 0, 0, animationTime);
 		animationTimeChanged();
 	}
 	
@@ -402,15 +411,14 @@ public class ReplayAnimationController implements IAnimationController, IAnimati
 	 * If there are more than one event having the same simulation time then the last of them is returned.
 	 */
 	public long getLastEventNumberForSimulationTime(double simulationTime) {
-		HandleMessageAnimation lastHandleMessageAnimation = null;
+		int index = getAnimationPrimitiveIndexForValue(new IValueProvider() {
+			public double getValue(int index) {
+				return animationPrimitives.get(index).getBeginSimulationTime();
+			}
+		}, simulationTime, false);
 		
-		for (IAnimationPrimitive animationPrimitive : animationPrimitives) {
-			if (animationPrimitive.getBeginSimulationTime() <= simulationTime && animationPrimitive instanceof HandleMessageAnimation)
-				lastHandleMessageAnimation = (HandleMessageAnimation)animationPrimitive;
-		}
-		
-		if (lastHandleMessageAnimation != null)
-			return lastHandleMessageAnimation.getEventNumber();
+		if (index != -1)
+			return animationPrimitives.get(index).getEventNumber();
 		else
 			return -1;
 	}
@@ -436,24 +444,26 @@ public class ReplayAnimationController implements IAnimationController, IAnimati
 	 * Returns the simulation time when the given event occured.
 	 */
 	public double getSimulationTimeForEventNumber(long eventNumber) {
-		for (IAnimationPrimitive animationPrimitive : animationPrimitives) {
-			if (animationPrimitive.getEventNumber() == eventNumber && animationPrimitive instanceof HandleMessageAnimation)
-				return animationPrimitive.getBeginSimulationTime();
-		}
-		
-		return -1;
+		if (0 <= eventNumber && eventNumber < handleMessageAnimationPrimitives.size())
+			return handleMessageAnimationPrimitives.get((int)eventNumber).getBeginSimulationTime();
+		else
+			return -1;
 	}
 
 	/**
-	 * 
+	 * Returns the simulation time for the given animation number.
 	 */
 	public double getSimulationTimeForAnimationNumber(long animationNumber) {
-		for (IAnimationPrimitive animationPrimitive : animationPrimitives) {
-			if (animationPrimitive.getAnimationNumber() == animationNumber)
-				return animationPrimitive.getBeginSimulationTime();
-		}
+		int index = getAnimationPrimitiveIndexForValue(new IValueProvider() {
+			public double getValue(int index) {
+				return animationPrimitives.get(index).getAnimationNumber();
+			}
+		}, animationNumber, false);
 		
-		return -1;
+		if (index != -1)
+			return animationPrimitives.get(index).getBeginSimulationTime();
+		else
+			return -1;
 	}
 	
 	/**
@@ -597,7 +607,9 @@ public class ReplayAnimationController implements IAnimationController, IAnimati
 		nextStopEventNumber = -1;
 		nextStopSimulationTime = -1;
 		nextStopAnimationNumber = -1;
-		timerQueue.removeTimer(animationTimer);
+		
+		if (timerQueue.hasTimer(animationTimer))
+			timerQueue.removeTimer(animationTimer);
 	}
 
 	/**
@@ -605,7 +617,7 @@ public class ReplayAnimationController implements IAnimationController, IAnimati
 	 */
 	public void gotoBegin() {
 		animateStop();
-		gotoSimulationTime(0);
+		gotoAnimationTime(0);
 	}
 
 	/**
@@ -613,7 +625,7 @@ public class ReplayAnimationController implements IAnimationController, IAnimati
 	 */
 	public void gotoEnd() {
 		animateStop();
-		gotoSimulationTime(Double.MAX_VALUE);
+		gotoAnimationTime(Double.MAX_VALUE);
 	}
 	
 	/**
@@ -657,13 +669,13 @@ public class ReplayAnimationController implements IAnimationController, IAnimati
 	 */
 	public void animateAtCurrentPosition() {
 		// stop at begin
-		if (nextStopSimulationTime != -1 && !forward && simulationTime < 0) {
+		if (!forward && simulationTime < 0) {
 			setSimulationTimeAndUpdatePosition(0);
 			animateStop();
 		}
 
 		// stop at end
-		if (nextStopSimulationTime != -1 && forward && endSimulationTime != -1 && (simulationTime > endSimulationTime || simulationTime == -1)) {
+		if (forward && endSimulationTime != -1 && (simulationTime > endSimulationTime || simulationTime == -1)) {
 			setSimulationTimeAndUpdatePosition(endSimulationTime);
 			animateStop();
 		}
@@ -686,12 +698,12 @@ public class ReplayAnimationController implements IAnimationController, IAnimati
 			animateStop();
 		}
 
+		System.out.println("Displaying at - Event number: " + eventNumber + " Simulation time: " + simulationTime + " Animation number: " + animationNumber + " AnimationTime: " + animationTime);
+
 		for (IAnimationPrimitive animationPrimitive : animationPrimitives)
 			animationPrimitive.animateAt(eventNumber, simulationTime, animationNumber, animationTime);
 
 		getRootFigure().getLayoutManager().layout(getRootFigure());
-
-		System.out.println("Event number: " + eventNumber + " Simulation Time: " + simulationTime);
 	}
 	
 	/**
@@ -722,12 +734,16 @@ public class ReplayAnimationController implements IAnimationController, IAnimati
 		this.nextStopSimulationTime = stopSimulationTime;
 		this.nextStopAnimationNumber = nextStopAnimationNumber;
 		
-		timerQueue.resetTimer(animationTimer);
-		lastStartRealTime = getRealTime();
-		lastStartAnimationTime = animationTime;
-		
-		if (!timerQueue.hasTimer(animationTimer))
-			timerQueue.addTimer(animationTimer);
+		if ((forward && (endSimulationTime == -1 || simulationTime < endSimulationTime)) ||
+			(!forward && simulationTime > 0))
+		{
+			timerQueue.resetTimer(animationTimer);
+			lastStartRealTime = getRealTime();
+			lastStartAnimationTime = animationTime;
+			
+			if (!timerQueue.hasTimer(animationTimer))
+				timerQueue.addTimer(animationTimer);
+		}
 	}
 
 	/**
@@ -760,6 +776,65 @@ public class ReplayAnimationController implements IAnimationController, IAnimati
 	protected void animationTimeChanged() {
 		for (IAnimationListener listener : animationListeners)
 			listener.replayAnimationTimeChanged(animationTime);
+	}
+
+	/**
+	 * Helper to provide the value for an index on which the binary search is working.
+	 */
+	protected interface IValueProvider {
+		public double getValue(int index);
+	}
+
+	/**
+	 * Binary search among animation primitives.
+	 */
+	protected int getAnimationPrimitiveIndexForValue(IValueProvider valueProvider, double value, boolean first) {
+		int index = -1;
+		int left = 0;
+		int size = animationPrimitives.size();
+		int right = size - 1;
+
+		while (left <= right) {
+	        int mid = (int)Math.floor((right + left) / 2);
+	        double midValue = valueProvider.getValue(mid);
+
+	        if (midValue == value) {
+	        	do {
+	        		index = mid;
+
+	        		if (first)
+	        			mid--;
+	        		else
+	        			mid++;
+	        	}
+	        	while (mid >= 0 && mid < size && valueProvider.getValue(mid) == value);
+	        	break;
+	        }
+            else if (value < midValue)
+	            right = mid - 1;
+	        else
+	            left = mid + 1;
+		}
+
+		if (left > right)
+			if (first && left < size)
+				if (value < valueProvider.getValue(left))
+					index = left - 1;
+				else
+					index = left;
+			else if (!first && right >= 0)
+				if (value > valueProvider.getValue(right))
+					index = right + 1;
+				else
+					index = right;
+
+		if (index < 0 || index >= size)
+			return -1;
+		else {
+			assert((first && valueProvider.getValue(index) < value) ||
+				   (!first && valueProvider.getValue(index) > value));
+			return index;
+		}
 	}
 	
 	/**
@@ -800,7 +875,7 @@ public class ReplayAnimationController implements IAnimationController, IAnimati
 	/**
 	 * Loads all animation primitives that begins before or at the given event number and simulation time.
 	 */
-	protected long loadAnimationPrimitivesForPosition(long minimumEventNumber, double minimumSimulationTime) {
+	protected long loadAnimationPrimitivesForPosition(long minimumEventNumber, double minimumSimulationTime, long minimumAnimationNumber, double minimumAnimationTime) {
 		try {
 			long animationPrimitivesCount = animationPrimitives.size();
 			int lineCount = 0;
@@ -809,7 +884,10 @@ public class ReplayAnimationController implements IAnimationController, IAnimati
 			if (logFileReader == null)
 				logFileReader = new BufferedReader(new InputStreamReader(file.getContents()));
 			
-			while ((loadEventNumber <= minimumEventNumber || loadSimulationTime <= minimumEventNumber || lineCount < 10) &&
+			while ((loadEventNumber <= minimumEventNumber ||
+					loadSimulationTime <= minimumEventNumber ||
+					loadAnimationNumber <= minimumAnimationNumber ||
+					lineCount < 10) &&
 				   (line = logFileReader.readLine()) != null)
 			{
 				lineCount++;
@@ -821,17 +899,16 @@ public class ReplayAnimationController implements IAnimationController, IAnimati
 						getIntegerToken(tokens, "id"));
 					module.setName(getToken(tokens, "n"));
 				
-					// FIXME: we show the first module for now, should get as parameter?
+					// FIXME: we show the first module for now, should we get it as parameter?
 					if (simulation == null)
 						initializeSimulation(module);
 
 					getReplaySimulation().addModule(module);
 					animationPrimitives.add(new CreateModuleAnimation(this, loadEventNumber, loadSimulationTime, loadAnimationNumber, module));
 				}
-				else if (tokens[0].equals("DS")) {
+				else if (tokens[0].equals("MD")) {
 					ReplayModule module = (ReplayModule)simulation.getModuleByID(getIntegerToken(tokens, "id"));
-					String displayString = getToken(tokens, "d");
-					animationPrimitives.add(new SetDisplayStringAnimation(this, loadEventNumber, loadSimulationTime, loadAnimationNumber, module, displayString));
+					animationPrimitives.add(new DeleteModuleAnimation(this, loadEventNumber, loadSimulationTime, loadAnimationNumber, module));
 				}
 				else if (tokens[0].equals("CC")) {
 					GateId sourceGateId = new GateId(getIntegerToken(tokens, "sm"), getIntegerToken(tokens, "sg"));
@@ -842,13 +919,17 @@ public class ReplayAnimationController implements IAnimationController, IAnimati
 					loadEventNumber = getIntegerToken(tokens, "#");
 					loadSimulationTime = getDoubleToken(tokens, "t");
 					loadAnimationNumber++;
-					animationPrimitives.add(new HandleMessageAnimation(this, loadEventNumber, loadSimulationTime, loadAnimationNumber, simulation.getModuleByID(getIntegerToken(tokens, "m")), null));
+					HandleMessageAnimation handleMessageAnimation = new HandleMessageAnimation(this, loadEventNumber, loadSimulationTime, loadAnimationNumber, simulation.getModuleByID(getIntegerToken(tokens, "m")), null);
+					animationPrimitives.add(handleMessageAnimation);
+					handleMessageAnimationPrimitives.add(handleMessageAnimation);
 				}
 				else if (tokens[0].equals("BS")) {
 				}
 				else if (tokens[0].equals("SH")) {
 					ConnectionId connectionId = new ConnectionId(getIntegerToken(tokens, "sm"), getIntegerToken(tokens, "sg"));
 					// TODO: handle ts different then E's t
+					// FIXME: animationPrimitives are sorted by eventNumber, beginSimulationTime and animationNumber
+					// and the binary search relies upon this
 					double propagationTime = getDoubleToken(tokens, "pd", 0);
 					double transmissionTime = getDoubleToken(tokens, "td", 0);
 					animationPrimitives.add(new SendMessageAnimation(this, loadEventNumber, loadSimulationTime, loadAnimationNumber, propagationTime, transmissionTime, connectionId));
@@ -856,6 +937,17 @@ public class ReplayAnimationController implements IAnimationController, IAnimati
 				else if (tokens[0].equals("SA")) {
 					animationPrimitives.add(new ScheduleSelfMessageAnimation(this, loadEventNumber, loadSimulationTime, loadAnimationNumber, getDoubleToken(tokens, "t")));
 				}
+				else if (tokens[0].equals("DS")) {
+					ReplayModule module = (ReplayModule)simulation.getModuleByID(getIntegerToken(tokens, "id"));
+					String displayString = getToken(tokens, "d");
+					animationPrimitives.add(new SetModuleDisplayStringAnimation(this, loadEventNumber, loadSimulationTime, loadAnimationNumber, module, displayString));
+				}
+				else if (tokens[0].equals("CS")) {
+					String displayString = getToken(tokens, "d");
+					animationPrimitives.add(new SetConnectionDisplayStringAnimation(this, loadEventNumber, loadSimulationTime, loadAnimationNumber, displayString));
+				}
+				else
+					throw new RuntimeException("Unknown log entry");
 			}
 			
 			if (line == null)
@@ -898,9 +990,6 @@ public class ReplayAnimationController implements IAnimationController, IAnimati
 
 		if (lastSpaceIndex != -1)
 			tokens.add(line.substring(lastSpaceIndex + 1, line.length()));
-		
-		for (String s : tokens)
-			System.out.println(s);
 		
 		return (String[])tokens.toArray(new String[0]);
 	}

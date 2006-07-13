@@ -17,7 +17,7 @@ import org.omnetpp.experimental.animation.primitives.HandleMessageAnimation;
 import org.omnetpp.experimental.animation.primitives.IAnimationPrimitive;
 import org.omnetpp.experimental.animation.primitives.SendBroadcastAnimation;
 import org.omnetpp.experimental.animation.primitives.SendMessageAnimation;
-import org.omnetpp.experimental.animation.primitives.SetDisplayStringAnimation;
+import org.omnetpp.experimental.animation.primitives.SetModuleDisplayStringAnimation;
 import org.omnetpp.experimental.animation.replay.ReplayAnimationController;
 import org.omnetpp.experimental.animation.widgets.AnimationCanvas;
 
@@ -58,7 +58,7 @@ public class LiveAnimationController extends ReplayAnimationController implement
 	}
 
 	public void displayStringChanged(IRuntimeModule module) {
-		animationPrimitives.add(new SetDisplayStringAnimation(this, getLiveEventNumber(), getLiveSimulationTime(), 0, module, module.getDisplayString().toString()));
+		animationPrimitives.add(new SetModuleDisplayStringAnimation(this, getLiveEventNumber(), getLiveSimulationTime(), 0, module, module.getDisplayString().toString()));
 	}
 
 	public void messageDelivered(IRuntimeMessage msg) {
