@@ -3,7 +3,6 @@ package org.omnetpp.experimental.simkernel;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
-import org.omnetpp.experimental.simkernel.swig.Javaenv;
 import org.omnetpp.experimental.simkernel.swig.Simkernel;
 import org.omnetpp.experimental.simkernel.swig.cEnvir;
 import org.omnetpp.experimental.simkernel.swig.cStaticFlag;
@@ -16,6 +15,8 @@ public class SimkernelPlugin extends AbstractUIPlugin {
 
 	// The shared instance.
 	private static SimkernelPlugin plugin;
+	
+	cStaticFlag staticFlag; 
 
 	/**
 	 * The constructor.
@@ -30,26 +31,23 @@ public class SimkernelPlugin extends AbstractUIPlugin {
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
 		
-		cEnvir ev = Simkernel.getEV();
-		cStaticFlag a = new cStaticFlag(); // needed by simkernel!!!
+		staticFlag = new cStaticFlag(); // needed by sim kernel
 		
 		System.out.println("STARTING SIMULATION");
-		//Simkernel.changeToDir("D:\\home\\omnetpp40\\sandbox\\omnetpp\\samples\\p-to-p");
 		IResource workspaceRoot = ResourcesPlugin.getWorkspace().getRoot();
 		Simkernel.changeToDir(workspaceRoot.getLocation().toOSString()+"\\rxtx");
 
+		Simkernel.evSetupDummyCall(); // ev.setup(argc, argv);
+
+		//Javaenv jenv = Simkernel.getJavaenv();
+		//jenv.setJCallback(null, new DummyEnvirCallback());
+
+		//cEnvir ev = Simkernel.getEV();
 		//cSimulation simulation = Simkernel.getSimulation();
-		Simkernel.evSetupDummyCall(); //XXX ev.setup(argc, argv);
-		Javaenv jenv = Simkernel.getJavaenv();
-		//jenv.setJCallback(null, new EnvirCallbackProxy(new DummyEnvirCallback()));
-		jenv.setJCallback(null, new DummyEnvirCallback());
 
-		jenv.newRun(1);
-		for (int i=0; i<10; i++)
-			jenv.doOneStep();
-
-		ev.shutdown();
-		
+		//jenv.newRun(1);
+		//for (int i=0; i<10; i++)
+		//	jenv.doOneStep();
 	}
 
 	/**
@@ -57,6 +55,10 @@ public class SimkernelPlugin extends AbstractUIPlugin {
 	 */
 	public void stop(BundleContext context) throws Exception {
 		super.stop(context);
+
+		cEnvir ev = Simkernel.getEV();
+		ev.shutdown();
+		staticFlag = null;
 		plugin = null;
 	}
 
