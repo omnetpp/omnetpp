@@ -24,11 +24,11 @@ import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
-import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.part.EditorPart;
 import org.omnetpp.experimental.animation.controller.IAnimationController;
 import org.omnetpp.experimental.animation.controller.IAnimationListener;
+import org.omnetpp.experimental.animation.live.LiveAnimationController;
 import org.omnetpp.experimental.animation.replay.ReplayAnimationController;
 import org.omnetpp.experimental.animation.widgets.AnimationCanvas;
 
@@ -255,8 +255,8 @@ public class AnimationEditor extends EditorPart implements IAnimationListener {
 	    AnimationCanvas canvas = new AnimationCanvas(parent, SWT.NONE);
 		canvas.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		
-		animationController = new ReplayAnimationController(canvas, ((IFileEditorInput)getEditorInput()).getFile());
-//		animationController = new LiveAnimationController(canvas);
+//		animationController = new ReplayAnimationController(canvas, ((IFileEditorInput)getEditorInput()).getFile());
+		animationController = new LiveAnimationController(canvas);
 		animationController.addAnimationListener(this);
 
 		animationMode.select(animationController.getAnimationMode().ordinal());

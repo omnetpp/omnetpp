@@ -3,6 +3,8 @@ package org.omnetpp.experimental.animation.live;
 import org.eclipse.draw2d.geometry.Point;
 import org.omnetpp.common.simulation.model.ConnectionId;
 import org.omnetpp.common.simulation.model.GateId;
+import org.omnetpp.common.simulation.model.IRuntimeModule;
+import org.omnetpp.common.simulation.model.IRuntimeSimulation;
 import org.omnetpp.experimental.animation.primitives.BubbleAnimation;
 import org.omnetpp.experimental.animation.primitives.CreateConnectionAnimation;
 import org.omnetpp.experimental.animation.primitives.CreateModuleAnimation;
@@ -25,12 +27,10 @@ import org.omnetpp.experimental.simkernel.swig.cSimulation;
 public class LiveAnimationController extends ReplayAnimationController implements IEnvirCallback {
 	public LiveAnimationController(AnimationCanvas canvas) {
 		super(canvas, null);
-		// TODO: get root module
-		initializeSimulation(Simkernel.getSimulation().getRootModule());
-
 		Javaenv jenv = Simkernel.getJavaenv();
 		jenv.setJCallback(null, this);
-		jenv.newRun(1);
+		Simkernel.getJavaenv().doOneStep();
+		initializeSimulation(Simkernel.getSimulation().getRootModule());
 	}
 
 	public double getLiveSimulationTime() {
@@ -127,21 +127,30 @@ public class LiveAnimationController extends ReplayAnimationController implement
 	public void objectDeleted(cObject object) {
 	}
 
-	protected cSimulation createSimulation(cModule rootModule) {
+	@Override
+	protected IRuntimeSimulation createSimulation(IRuntimeModule rootModule) {
 		return Simkernel.getSimulation();
+	}
+
+	@Override
+	protected void initializeSimulation(IRuntimeModule rootModule) {
+		// TODO: rootModule and callback interface
+		super.initializeSimulation(rootModule);
+		Javaenv jenv = Simkernel.getJavaenv();
+		jenv.newRun(1);
 	}
 
 	protected cSimulation getLiveSimulation() {
 		return (cSimulation)simulation;
 	}
 
-	protected void loadAnimationPrimitivesForCurrentPosition() {
+	@Override
+	protected long loadAnimationPrimitivesForPosition() {
 		int count = animationPrimitives.size();
 
 		// TODO: why Simkernel
 		while (Simkernel.getJavaenv().getSimulationState() != Javaenv.eState.SIM_TERMINATED.swigValue()) {
 			Simkernel.getJavaenv().doOneStep();
-			getLiveSimulation().doOneEvent(getLiveSimulation().selectNextModule());
 			positionChanged();
 			
 			IAnimationPrimitive lastAnimationPrimitive = animationPrimitives.get(animationPrimitives.size() - 1);
@@ -151,5 +160,8 @@ public class LiveAnimationController extends ReplayAnimationController implement
 				lastAnimationPrimitive.getBeginSimulationTime() > simulationTime)
 				break;
 		}
+		
+		// TODO:
+		return -1;
 	}
 }
