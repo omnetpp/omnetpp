@@ -121,7 +121,7 @@ public class AxisValueGraph extends AxisGraph {
 		int right = getDataLength();
 
 		while (left <= right) {
-	        int mid = (int)Math.floor((right-left)/2) + left;
+	        int mid = (int)Math.floor((right + left) / 2);
 
 	        if (getSimulationTime(mid) == simulationTime) {
 	        	do {
