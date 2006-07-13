@@ -119,6 +119,9 @@ inline void evSetupDummyCall() { //XXX
 }
 
 
+%typemap(javainterfaces) cModule "org.omnetpp.experimental.animation.model.IRuntimeModule";
+
+
 // SWIG doesn't understand nested classes, turn off corresponding warnings
 //%warnfilter(312) cTopology::Node; -- this doesn't seem to work
 //%warnfilter(312) cTopology; -- nor this
