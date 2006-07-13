@@ -820,8 +820,8 @@ public class ReplayAnimationController implements IAnimationController, IAnimati
 	protected void initializeSimulation(IRuntimeModule rootModule) {
 		CompoundModuleFigure rootModuleFigure = new CompoundModuleFigure();
 		rootModuleFigure.setDisplayString(new DisplayString(null, null, "bgb=600,600;bgi=background/hungary,stretch"));
-		setFigure(new GateId(rootModule.getId(), 0), new GateAnchor(rootModuleFigure, "in"));
-		setFigure(new GateId(rootModule.getId(), 1), new GateAnchor(rootModuleFigure, "out"));
+		setFigure(new GateId(rootModule.getId(), 0), new GateAnchor(rootModuleFigure));
+		setFigure(new GateId(rootModule.getId(), 1), new GateAnchor(rootModuleFigure));
 		canvas.getRootFigure().getLayoutManager().setConstraint(rootModuleFigure, new Rectangle(0, 0, -1, -1));
 		canvas.getRootFigure().add(rootModuleFigure);
 		
@@ -922,7 +922,8 @@ public class ReplayAnimationController implements IAnimationController, IAnimati
 				}
 				else if (tokens[0].equals("CS")) {
 					String displayString = getToken(tokens, "d");
-					animationPrimitives.add(new SetConnectionDisplayStringAnimation(this, loadEventNumber, loadSimulationTime, loadAnimationNumber, displayString));
+					ConnectionId connectionId = new ConnectionId(getIntegerToken(tokens, "sm"), getIntegerToken(tokens, "sg"));
+					animationPrimitives.add(new SetConnectionDisplayStringAnimation(this, loadEventNumber, loadSimulationTime, loadAnimationNumber, connectionId, displayString));
 				}
 				else
 					throw new RuntimeException("Unknown log entry");
