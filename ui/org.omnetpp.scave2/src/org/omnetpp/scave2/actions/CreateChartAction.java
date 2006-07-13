@@ -5,6 +5,7 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.window.Window;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.Dataset;
+import org.omnetpp.scave.model.ScaveModelPackage;
 import org.omnetpp.scave2.editors.ScaveEditor;
 import org.omnetpp.scave2.editors.datatable.FilteredDataPanel;
 import org.omnetpp.scave2.editors.ui.CreateDatasetDialog;
@@ -45,9 +46,10 @@ public class CreateChartAction extends AbstractScaveAction {
 			Chart chart = ScaveModelUtil.createChart("Chart of " + dialog.getDatasetName());
 			dataset.getItems().add(chart);
 			
-			editor.executeCommand(new AddCommand(
+			editor.executeCommand(AddCommand.create(
 					editor.getEditingDomain(),
-					editor.getAnalysis().getDatasets().getDatasets(),
+					editor.getAnalysis().getDatasets(),
+					ScaveModelPackage.eINSTANCE.getDatasets_Datasets(),
 					dataset));
 			editor.openChart(chart);
 		}

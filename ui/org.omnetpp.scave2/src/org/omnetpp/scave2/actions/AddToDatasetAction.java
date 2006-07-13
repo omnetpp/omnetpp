@@ -8,6 +8,7 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.window.Window;
 import org.omnetpp.scave.model.Analysis;
 import org.omnetpp.scave.model.Dataset;
+import org.omnetpp.scave.model.ScaveModelPackage;
 import org.omnetpp.scave2.editors.ScaveEditor;
 import org.omnetpp.scave2.editors.datatable.FilteredDataPanel;
 import org.omnetpp.scave2.editors.ui.AddToDatasetDialog;
@@ -39,13 +40,15 @@ public class AddToDatasetAction extends AbstractScaveAction {
 			Dataset dataset = dialog.getSelectedDataset();
 			if (dataset != null) {
 				Command command = dialog.useFilter() ?
-					new AddCommand(
+					AddCommand.create(
 							editor.getEditingDomain(),
-							dataset.getItems(),
+							dataset,
+							ScaveModelPackage.eINSTANCE.getDataset_Items(),
 							ScaveModelUtil.createAdd(dialog.getFilterParams())) :
-					new AddCommand(
+					AddCommand.create(
 							editor.getEditingDomain(),
-							dataset.getItems(),
+							dataset,
+							ScaveModelPackage.eINSTANCE.getDataset_Items(),
 							ScaveModelUtil.createAdds(
 									activePanel.getTable().getSelectedItems(),
 									dialog.getRunIdKind()));

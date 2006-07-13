@@ -6,11 +6,13 @@ import java.util.Iterator;
 import org.eclipse.emf.common.command.CompoundCommand;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.edit.command.AddCommand;
 import org.eclipse.emf.edit.command.RemoveCommand;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.omnetpp.scave.model.Group;
 import org.omnetpp.scave.model.ScaveModelFactory;
+import org.omnetpp.scave.model.ScaveModelPackage;
 import org.omnetpp.scave2.editors.ScaveEditor;
 
 /**
@@ -30,9 +32,20 @@ public class GroupAction extends AbstractScaveAction {
 			Collection elements = selection.toList();
 			Group group = ScaveModelFactory.eINSTANCE.createGroup();
 			CompoundCommand command = new CompoundCommand("Group");
-			command.append(new RemoveCommand(editor.getEditingDomain(), range.elist, elements));
-			command.append(new AddCommand(editor.getEditingDomain(), range.elist, group, range.fromIndex));
-			command.append(new AddCommand(editor.getEditingDomain(), group.getItems(), elements));
+			command.append(RemoveCommand.create(
+							editor.getEditingDomain(),
+							elements));
+			command.append(AddCommand.create(
+							editor.getEditingDomain(),
+							range.owner,
+							range.feature,
+							group,
+							range.fromIndex));
+			command.append(AddCommand.create(
+							editor.getEditingDomain(),
+							group,
+							ScaveModelPackage.eINSTANCE.getGroup_Items(),
+							elements));
 			editor.executeCommand(command);
 		}
 	}
@@ -43,7 +56,8 @@ public class GroupAction extends AbstractScaveAction {
 	}
 	
 	static class RangeSelection {
-		public EList elist;
+		public EObject owner;
+		public EStructuralFeature feature;
 		public int fromIndex;
 		public int toIndex;
 	}
@@ -56,16 +70,18 @@ public class GroupAction extends AbstractScaveAction {
 		Iterator elements = selection.iterator();
 		while (elements.hasNext()) {
 			EObject element = (EObject)elements.next();
-			Object elist = element.eContainer() != null ? element.eContainer().eGet(element.eContainingFeature()) : null;
-			if (!(elist instanceof EList))
+			EObject owner = element.eContainer();
+			EStructuralFeature feature = element.eContainingFeature();
+			if (feature == null || !feature.isMany())
 				return null;
+			int index = ((EList)owner.eGet(feature)).indexOf(element);
 			
-			if (range.elist == null) { // first iteration
-				range.elist = (EList)elist;
-				range.fromIndex = range.toIndex = range.elist.indexOf(element);
+			if (range.owner == null) { // first iteration
+				range.owner = owner;
+				range.feature = feature;
+				range.fromIndex = range.toIndex = index;
 			}
-			else if (range.elist == elist) { // sibling
-				int index = range.elist.indexOf(element);
+			else if (range.owner == owner && range.feature == feature) { // sibling
 				range.fromIndex = Math.min(range.fromIndex, index);
 				range.toIndex = Math.max(range.toIndex, index);
 			}

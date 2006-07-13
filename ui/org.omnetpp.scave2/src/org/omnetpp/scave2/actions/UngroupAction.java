@@ -10,6 +10,7 @@ import org.eclipse.emf.edit.command.RemoveCommand;
 import org.eclipse.emf.edit.command.ReplaceCommand;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.omnetpp.scave.model.Group;
+import org.omnetpp.scave.model.ScaveModelPackage;
 import org.omnetpp.scave2.editors.ScaveEditor;
 
 /**
@@ -30,8 +31,15 @@ public class UngroupAction extends AbstractScaveAction {
 			Object elist = parent.eGet(group.eContainingFeature());
 			if (elist instanceof EList) {
 				CompoundCommand command = new CompoundCommand("Ungroup");
-				command.append(new RemoveCommand(editor.getEditingDomain(), group.getItems(), items));
-				command.append(new ReplaceCommand(editor.getEditingDomain(), (EList)elist, group, items));
+				command.append(RemoveCommand.create(
+								editor.getEditingDomain(),
+								items));
+				command.append(ReplaceCommand.create(
+								editor.getEditingDomain(),
+								group.eContainer(),
+								group.eContainingFeature(),
+								group,
+								items));
 				editor.executeCommand(command);
 			}
 		}

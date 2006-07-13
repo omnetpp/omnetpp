@@ -4,6 +4,7 @@ import org.eclipse.emf.edit.command.AddCommand;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.window.Window;
 import org.omnetpp.scave.model.Dataset;
+import org.omnetpp.scave.model.ScaveModelPackage;
 import org.omnetpp.scave2.editors.ScaveEditor;
 import org.omnetpp.scave2.editors.datatable.FilteredDataPanel;
 import org.omnetpp.scave2.editors.ui.CreateDatasetDialog;
@@ -36,9 +37,10 @@ public class CreateDatasetAction extends AbstractScaveAction {
 						activePanel.getTable().getSelectedItems(),
 						dialog.getRunIdKind());
 			
-			editor.executeCommand(new AddCommand(
+			editor.executeCommand(AddCommand.create(
 					editor.getEditingDomain(),
-					editor.getAnalysis().getDatasets().getDatasets(),
+					editor.getAnalysis().getDatasets(),
+					ScaveModelPackage.eINSTANCE.getDatasets_Datasets(),
 					dataset));
 			editor.openDataset(dataset);
 		}
