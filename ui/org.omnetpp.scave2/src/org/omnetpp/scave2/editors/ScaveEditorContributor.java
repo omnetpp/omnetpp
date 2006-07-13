@@ -11,6 +11,7 @@ import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchPart;
 import org.omnetpp.scave.model.presentation.ScaveModelActionBarContributor;
 import org.omnetpp.scave2.actions.AbstractScaveAction;
+import org.omnetpp.scave2.actions.EditAction;
 
 /**
  * Manages the installation/deinstallation of global actions for multi-page editors.
@@ -28,6 +29,8 @@ public class ScaveEditorContributor extends ScaveModelActionBarContributor {
 //	public IAction addToDatasetAction;
 //	public IAction createDatasetAction;
 //	public IAction createChartAction;
+	
+	private IAction editAction = new EditAction();
 
 
 	/**
@@ -78,4 +81,12 @@ public class ScaveEditorContributor extends ScaveModelActionBarContributor {
 	public void contributeToStatusLine(IStatusLineManager statusLineManager) {
 		super.contributeToStatusLine(statusLineManager);
 	}
+
+	@Override
+	public void menuAboutToShow(IMenuManager menuManager) {
+		super.menuAboutToShow(menuManager);
+		menuManager.insertBefore("additions", editAction);
+	}
+	
+	
 }

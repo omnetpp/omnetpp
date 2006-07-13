@@ -1,10 +1,16 @@
 package org.omnetpp.scave2.actions;
 
+import org.eclipse.emf.common.command.CompoundCommand;
+import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.EStructuralFeature;
+import org.eclipse.emf.edit.command.SetCommand;
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.window.Window;
 import org.omnetpp.scave2.editors.ScaveEditor;
+import org.omnetpp.scave2.editors.ui.EditDialog;
 
 /**
- * Opens the selected datasets/charts/chart sheets in the editor.
+ * Opens an edit dialog for the selected dataset, chart, chart sheet, etc.
  */
 public class EditAction extends AbstractScaveAction {
 	public EditAction() {
@@ -14,11 +20,30 @@ public class EditAction extends AbstractScaveAction {
 
 	@Override
 	protected void doRun(ScaveEditor scaveEditor, IStructuredSelection selection) {
-		//TODO open edit dialog
+		if (isApplicable(scaveEditor, selection)) {
+		
+			EObject object = (EObject)selection.getFirstElement();
+
+			EditDialog dialog = new EditDialog(scaveEditor.getSite().getShell(), object);
+			if (dialog.open() == Window.OK) {
+				CompoundCommand command = new CompoundCommand("Edit");
+				EStructuralFeature[] features = dialog.getFeatures();
+				for (int i = 0; i < features.length; ++i) {
+					if (dialog.isDirty(i)) {
+						command.append(SetCommand.create(
+							scaveEditor.getEditingDomain(),
+							object,
+							features[i],
+							dialog.getValue(i)));
+					}
+				}
+				scaveEditor.executeCommand(command);
+			}
+		}
 	}
 
 	@Override
 	public boolean isApplicable(ScaveEditor editor, IStructuredSelection selection) {
-		return !selection.isEmpty() && containsEObjectsOnly(selection);
+		return selection.size() == 1 && selection.getFirstElement() instanceof EObject;
 	}
 }
