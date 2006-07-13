@@ -277,71 +277,27 @@ public class AnimationEditor extends EditorPart implements IAnimationListener {
 		super.dispose();
 	}
 
-	public void replayEventNumberChanged(long eventNumber) {
-		long oldEventNumber = -1;
+	public void replayPositionChanged(long eventNumber, double simulationTime, long animationNumber, double animationTime) {
+		valueChanged(replayEventNumberWidget, eventNumber);
+		valueChanged(replaySimulationTimeWidget, simulationTime);
+		valueChanged(replayAnimationNumberWidget, animationNumber);
+		valueChanged(replayAnimationTimeWidget, animationTime);
+	}
+
+	public void livePositionChanged(long eventNumber, double simulationTime, long animationNumber, double animationTime) {
+	}
+
+	public void valueChanged(Text widget, Object newValue) {
+		Object oldValue = null;
 		
 		try {
-			oldEventNumber = numberFormat.parse(replayEventNumberWidget.getText()).longValue();
+			oldValue = numberFormat.parse(widget.getText());
 		}
 		catch (ParseException e) {
 			// void
 		}
 		
-		if (oldEventNumber != eventNumber)
-			replayEventNumberWidget.setText(numberFormat.format(eventNumber));
-	}
-
-	public void replaySimulationTimeChanged(double simulationTime) {
-		double oldSimulationTime = -1;
-		
-		try {
-			oldSimulationTime = numberFormat.parse(replaySimulationTimeWidget.getText()).doubleValue();
-		}
-		catch (ParseException e) {
-			// void
-		}
-		
-		if (oldSimulationTime != simulationTime)
-			replaySimulationTimeWidget.setText(numberFormat.format(simulationTime));
-	}
-
-	public void replayAnimationNumberChanged(long animationNumber) {
-		long oldAnimationNumber = -1; 
-		
-		try {
-			oldAnimationNumber = numberFormat.parse(replayAnimationNumberWidget.getText()).longValue();
-		}
-		catch (ParseException e) {
-			// void
-		}
-		
-		if (oldAnimationNumber != animationNumber)
-			replayAnimationNumberWidget.setText(numberFormat.format(animationNumber));
-	}
-
-	public void replayAnimationTimeChanged(double animationTime) {
-		double oldAnimationTime = -1;
-		
-		try {
-			oldAnimationTime = numberFormat.parse(replayAnimationTimeWidget.getText()).doubleValue();
-		}
-		catch (ParseException e) {
-			// void
-		}
-		
-		if (oldAnimationTime != animationTime)
-			replayAnimationTimeWidget.setText(numberFormat.format(animationTime));
-	}
-
-	public void liveEventNumberChanged(long eventNumber) {
-	}
-
-	public void liveSimulationTimeChanged(double simulationTime) {
-	}
-
-	public void liveAnimationNumberChanged(long animationNumber) {
-	}
-
-	public void liveAnimationTimeChanged(double animationTime) {
+		if (!newValue.equals(oldValue))
+			widget.setText(numberFormat.format(newValue));
 	}
 }

@@ -111,7 +111,7 @@ public class LiveAnimationController extends ReplayAnimationController implement
 
 		while (!getLiveSimulation().isFinished()) {
 			getLiveSimulation().doOneEvent();
-			eventNumberChanged();
+			positionChanged();
 			
 			IAnimationPrimitive lastAnimationPrimitive = animationPrimitives.get(animationPrimitives.size() - 1);
 			

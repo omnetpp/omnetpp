@@ -285,18 +285,13 @@ public class ReplayAnimationController implements IAnimationController, IAnimati
 	 */
 	protected void setEventNumber(long eventNumber) {
 		this.eventNumber = eventNumber;
-		loadAnimationPrimitivesForPosition(eventNumber, 0, 0, 0);
-		eventNumberChanged();
-	}
-	
-	/**
-	 * Changes the replay event number and updates other position state accordingly.
-	 */
-	protected void setEventNumberAndUpdatePosition(long eventNumber) {
-		setEventNumber(eventNumber);
-		setSimulationTime(getSimulationTimeForEventNumber(eventNumber));
-		setAnimationTime(getAnimationTimeForEventNumber(eventNumber));
-		setAnimationNumber(getAnimationNumberForAnimationTime(animationTime));
+		loadAnimationPrimitivesForPosition();
+
+		// calculate dependent state
+		simulationTime = getSimulationTimeForEventNumber(eventNumber);
+		animationTime = getAnimationTimeForEventNumber(eventNumber);
+		animationNumber =getAnimationNumberForAnimationTime(animationTime);
+		positionChanged();
 	}
 	
 	/**
@@ -311,20 +306,15 @@ public class ReplayAnimationController implements IAnimationController, IAnimati
 	 */
 	protected void setSimulationTime(double simulationTime) {
 		this.simulationTime = simulationTime;
-		loadAnimationPrimitivesForPosition(0, simulationTime, 0, 0);
-		simulationTimeChanged();
+		loadAnimationPrimitivesForPosition();
+		
+		// calculate dependent state
+		eventNumber = getLastEventNumberForSimulationTime(simulationTime);
+		animationTime = getAnimationTimeForSimulationTime(simulationTime);
+		animationNumber = getAnimationNumberForAnimationTime(animationTime);
+		positionChanged();
 	}
 	
-	/**
-	 * Changes the replay simulation time and updates other position state accordingly.
-	 */
-	protected void setSimulationTimeAndUpdatePosition(double simulationTime) {
-		setSimulationTime(simulationTime);
-		setEventNumber(getLastEventNumberForSimulationTime(simulationTime));
-		setAnimationTime(getAnimationTimeForSimulationTime(simulationTime));
-		setAnimationNumber(getAnimationNumberForAnimationTime(animationTime));
-	}
-
 	/**
 	 * Returns the current animation number.
 	 */
@@ -337,15 +327,13 @@ public class ReplayAnimationController implements IAnimationController, IAnimati
 	 */
 	protected void setAnimationNumber(long animationNumber) {
 		this.animationNumber = animationNumber;
-		loadAnimationPrimitivesForPosition(0, 0, animationNumber, 0);
-		animationNumberChanged();
-	}
-	
-	protected void setAnimationNumberAndUpdatePosition(long animationNumber) {
-		setAnimationNumber(animationNumber);
-		setAnimationTime(getAnimationTimeForAnimationNumber(animationNumber));
-		setSimulationTime(getSimulationTimeForAnimationTime(animationTime));
-		setEventNumber(getLastEventNumberForSimulationTime(simulationTime));
+		loadAnimationPrimitivesForPosition();
+		
+		// calculate dependent state
+		animationTime = getAnimationTimeForAnimationNumber(animationNumber);
+		simulationTime = getSimulationTimeForAnimationTime(animationTime);
+		eventNumber = getLastEventNumberForSimulationTime(simulationTime);
+		positionChanged();
 	}
 	
 	/**
@@ -360,20 +348,15 @@ public class ReplayAnimationController implements IAnimationController, IAnimati
 	 */
 	protected void setAnimationTime(double animationTime) {
 		this.animationTime = animationTime;
-		loadAnimationPrimitivesForPosition(0, 0, 0, animationTime);
-		animationTimeChanged();
+		loadAnimationPrimitivesForPosition();
+
+		// calculate dependent state
+		simulationTime = getSimulationTimeForAnimationTime(animationTime);
+		eventNumber = getLastEventNumberForSimulationTime(simulationTime);
+		animationNumber = getAnimationNumberForAnimationTime(animationTime);
+		positionChanged();
 	}
 	
-	/**
-	 * Changes the replay animation time and updates other position state accordingly.
-	 */
-	protected void setAnimationTimeAndUpdatePosition(double animationTime) {
-		setAnimationTime(animationTime);
-		setSimulationTime(getSimulationTimeForAnimationTime(animationTime));
-		setEventNumber(getLastEventNumberForSimulationTime(simulationTime));
-		setAnimationNumber(getAnimationNumberForAnimationTime(animationTime));
-	}
-
 	/**
 	 * Returns the current real time in seconds.
 	 */
@@ -540,7 +523,18 @@ public class ReplayAnimationController implements IAnimationController, IAnimati
 	 * Returns the animation time when the given animation starts.
 	 */
 	public double getAnimationTimeForAnimationNumber(long animationNumber) {
-		return animationNumber;
+		switch (animationMode) {
+			case LINEAR:
+				// TODO:
+				throw new RuntimeException();
+			case EVENT:
+				return animationNumber;
+			case NON_LINEAR:
+				// TODO:
+				throw new RuntimeException();
+		}
+	
+		throw new RuntimeException("Unreacheable code reached");
 	}
 
 	/**
@@ -633,7 +627,7 @@ public class ReplayAnimationController implements IAnimationController, IAnimati
 	 */
 	public void gotoSimulationTime(double simulationTime) {
 		timerQueue.resetTimer(animationTimer);
-		setSimulationTimeAndUpdatePosition(simulationTime);
+		setSimulationTime(simulationTime);
 		animateAtCurrentPosition();
 	}
 	
@@ -642,7 +636,7 @@ public class ReplayAnimationController implements IAnimationController, IAnimati
 	 */
 	public void gotoEventNumber(long eventNumber) {
 		timerQueue.resetTimer(animationTimer);
-		setEventNumberAndUpdatePosition(eventNumber);
+		setEventNumber(eventNumber);
 		animateAtCurrentPosition();
 	}
 
@@ -651,7 +645,7 @@ public class ReplayAnimationController implements IAnimationController, IAnimati
 	 */
 	public void gotoAnimationNumber(long animationNumber) {
 		timerQueue.resetTimer(animationTimer);
-		setAnimationNumberAndUpdatePosition(animationNumber);
+		setAnimationNumber(animationNumber);
 		animateAtCurrentPosition();
 	}
 
@@ -660,7 +654,7 @@ public class ReplayAnimationController implements IAnimationController, IAnimati
 	 */
 	public void gotoAnimationTime(double animationTime) {
 		timerQueue.resetTimer(animationTimer);
-		setAnimationTimeAndUpdatePosition(animationTime);
+		setAnimationTime(animationTime);
 		animateAtCurrentPosition();
 	}
 
@@ -670,35 +664,35 @@ public class ReplayAnimationController implements IAnimationController, IAnimati
 	public void animateAtCurrentPosition() {
 		// stop at begin
 		if (!forward && simulationTime < 0) {
-			setSimulationTimeAndUpdatePosition(0);
+			setSimulationTime(0);
 			animateStop();
 		}
 
 		// stop at end
 		if (forward && endSimulationTime != -1 && (simulationTime > endSimulationTime || simulationTime == -1)) {
-			setSimulationTimeAndUpdatePosition(endSimulationTime);
+			setSimulationTime(endSimulationTime);
 			animateStop();
 		}
 
 		// stop at event number
 		if (nextStopEventNumber != -1 && forward ? eventNumber >= nextStopEventNumber : eventNumber < nextStopEventNumber) {
-			setEventNumberAndUpdatePosition(nextStopEventNumber);
+			setEventNumber(nextStopEventNumber);
 			animateStop();
 		}
 
 		// stop at simulation time
 		if (nextStopSimulationTime != -1 && forward ? simulationTime >= nextStopSimulationTime : simulationTime < nextStopSimulationTime) {
-			setSimulationTimeAndUpdatePosition(nextStopSimulationTime);
+			setSimulationTime(nextStopSimulationTime);
 			animateStop();
 		}
 		
 		// stop at animation number
 		if (nextStopAnimationNumber != -1 && forward ? animationNumber >= nextStopAnimationNumber : animationNumber < nextStopAnimationNumber) {
-			setAnimationNumberAndUpdatePosition(nextStopAnimationNumber);
+			setAnimationNumber(nextStopAnimationNumber);
 			animateStop();
 		}
 
-		System.out.println("Displaying at - Event number: " + eventNumber + " Simulation time: " + simulationTime + " Animation number: " + animationNumber + " AnimationTime: " + animationTime);
+		System.out.println("Displaying -> Event number: " + eventNumber + " Simulation time: " + simulationTime + " Animation number: " + animationNumber + " AnimationTime: " + animationTime);
 
 		for (IAnimationPrimitive animationPrimitive : animationPrimitives)
 			animationPrimitive.animateAt(eventNumber, simulationTime, animationNumber, animationTime);
@@ -719,7 +713,7 @@ public class ReplayAnimationController implements IAnimationController, IAnimati
 		 * It updates animation state.
 		 */
 		public void run() {
-			setAnimationTimeAndUpdatePosition(getAnimationTimeForRealTime(getRealTime()));
+			setAnimationTime(getAnimationTimeForRealTime(getRealTime()));
 			animateAtCurrentPosition();
 		}
 	};
@@ -749,33 +743,9 @@ public class ReplayAnimationController implements IAnimationController, IAnimati
 	/**
 	 * Notifies listeners about the new simulation time.
 	 */
-	protected void simulationTimeChanged() {
+	protected void positionChanged() {
 		for (IAnimationListener listener : animationListeners)
-			listener.replaySimulationTimeChanged(simulationTime);
-	}
-
-	/**
-	 * Notifies listeners about the new event number.
-	 */
-	protected void eventNumberChanged() {
-		for (IAnimationListener listener : animationListeners)
-			listener.replayEventNumberChanged(eventNumber);
-	}
-	
-	/**
-	 * Notifies listeners about the new animation number.
-	 */
-	protected void animationNumberChanged() {
-		for (IAnimationListener listener : animationListeners)
-			listener.replayAnimationNumberChanged(animationNumber);
-	}
-	
-	/**
-	 * Notifies listeners about the new animation time.
-	 */
-	protected void animationTimeChanged() {
-		for (IAnimationListener listener : animationListeners)
-			listener.replayAnimationTimeChanged(animationTime);
+			listener.replayPositionChanged(eventNumber, simulationTime, animationNumber, animationTime);
 	}
 
 	/**
@@ -873,7 +843,14 @@ public class ReplayAnimationController implements IAnimationController, IAnimati
 	}
 
 	/**
-	 * Loads all animation primitives that begins before or at the given event number and simulation time.
+	 * Loads all animation primitives that begins before or at the current replay position.
+	 */
+	protected long loadAnimationPrimitivesForPosition() {
+		return loadAnimationPrimitivesForPosition(eventNumber, simulationTime, animationNumber, animationTime);
+	}
+
+	/**
+	 * Loads all animation primitives that begins before or at the given position.
 	 */
 	protected long loadAnimationPrimitivesForPosition(long minimumEventNumber, double minimumSimulationTime, long minimumAnimationNumber, double minimumAnimationTime) {
 		try {
@@ -887,6 +864,7 @@ public class ReplayAnimationController implements IAnimationController, IAnimati
 			while ((loadEventNumber <= minimumEventNumber ||
 					loadSimulationTime <= minimumEventNumber ||
 					loadAnimationNumber <= minimumAnimationNumber ||
+					getAnimationTimeForSimulationTime(loadSimulationTime) <= minimumAnimationTime ||
 					lineCount < 10) &&
 				   (line = logFileReader.readLine()) != null)
 			{
