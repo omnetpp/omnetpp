@@ -1,13 +1,13 @@
 package org.omnetpp.experimental.animation.replay.model;
 
-import org.omnetpp.experimental.animation.model.IRuntimeMessage;
+import org.omnetpp.common.simulation.model.IRuntimeMessage;
 
 public class ReplayMessage implements IRuntimeMessage {
 	private String name;
 
 	private int kind;
 	private int priority;
-	private long length;
+	private int length;
 	private boolean error;
 
 //	cMessage *encapmsg;
@@ -34,11 +34,11 @@ public class ReplayMessage implements IRuntimeMessage {
 		this.error = error;
 	}
 
-	public long getLength() {
+	public int getLength() {
 		return length;
 	}
 
-	public void setLength(long length) {
+	public void setLength(int length) {
 		this.length = length;
 	}
 

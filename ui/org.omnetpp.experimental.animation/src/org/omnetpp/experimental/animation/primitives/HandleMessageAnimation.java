@@ -3,8 +3,8 @@ package org.omnetpp.experimental.animation.primitives;
 import org.eclipse.draw2d.Ellipse;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.swt.graphics.Color;
-import org.omnetpp.experimental.animation.model.IRuntimeMessage;
-import org.omnetpp.experimental.animation.model.IRuntimeModule;
+import org.omnetpp.common.simulation.model.IRuntimeMessage;
+import org.omnetpp.common.simulation.model.IRuntimeModule;
 import org.omnetpp.experimental.animation.replay.ReplayAnimationController;
 import org.omnetpp.figures.ModuleFigure;
 

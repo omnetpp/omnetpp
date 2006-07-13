@@ -2,7 +2,7 @@ package org.omnetpp.experimental.animation.replay.model;
 
 import java.util.HashMap;
 
-import org.omnetpp.experimental.animation.model.IRuntimeSimulation;
+import org.omnetpp.common.simulation.model.IRuntimeSimulation;
 
 public class ReplaySimulation implements IRuntimeSimulation {
 	private ReplayModule rootModule;

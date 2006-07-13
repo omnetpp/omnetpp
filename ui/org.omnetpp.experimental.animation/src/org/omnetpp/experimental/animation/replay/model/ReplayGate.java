@@ -1,6 +1,6 @@
 package org.omnetpp.experimental.animation.replay.model;
 
-import org.omnetpp.experimental.animation.model.IRuntimeGate;
+import org.omnetpp.common.simulation.model.IRuntimeGate;
 
 public class ReplayGate implements IRuntimeGate {
 	private int id;

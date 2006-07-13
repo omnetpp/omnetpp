@@ -26,6 +26,10 @@ public interface IAnimationPrimitive {
 	 */
 	public long getAnimationNumber();
 
+// TODO: public void redo();
+	
+// TODO: public void undo();
+	
 	/**
 	 * Updates figures according to the given animation state.
 	 */

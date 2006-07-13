@@ -1,7 +1,7 @@
 package org.omnetpp.experimental.animation.primitives;
 
 import org.omnetpp.common.displaymodel.DisplayString;
-import org.omnetpp.experimental.animation.model.ConnectionId;
+import org.omnetpp.common.simulation.model.ConnectionId;
 import org.omnetpp.experimental.animation.replay.ReplayAnimationController;
 import org.omnetpp.figures.ConnectionFigure;
 

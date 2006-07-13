@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.omnetpp.common.displaymodel.DisplayString;
-import org.omnetpp.experimental.animation.model.IRuntimeModule;
+import org.omnetpp.common.simulation.model.IRuntimeModule;
 
 
 public class ReplayModule implements IRuntimeModule {
