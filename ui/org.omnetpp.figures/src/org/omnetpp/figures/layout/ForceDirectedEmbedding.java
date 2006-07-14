@@ -1,5 +1,6 @@
 package org.omnetpp.figures.layout;
 
+import java.awt.Canvas;
 import java.awt.Color;
 import java.awt.Frame;
 import java.awt.Graphics;
@@ -30,7 +31,7 @@ public class ForceDirectedEmbedding
 	public double timeStep = 0.01;
 
 	// Maximum simulation time step allowed.
-	public double minTimeStep = 0.0001;
+	public double minTimeStep = 0.001;
 
 	// Maximum simulation time step allowed.
 	public double maxTimeStep = 10;
@@ -38,7 +39,7 @@ public class ForceDirectedEmbedding
 	// Limit of acceleration difference (between bs in RK-4).
 	// Error has to be between Min and Max
 	public double accelerationMinErrorLimit = 1;
-	public double accelerationMaxErrorLimit = 5;
+	public double accelerationMaxErrorLimit = 10;
 
 	// Acceleration limit during relaxing.
 	public double accelerationRelaxLimit = 1;
@@ -62,7 +63,7 @@ public class ForceDirectedEmbedding
 	public int minCycle = 0;
 
 	// Maximum number of cycles of relaxing.
-	public int maxCycle = 1000;
+	public int maxCycle = 10000;
 	
 	// Implementation fields
 	private Random random;
@@ -137,8 +138,8 @@ public class ForceDirectedEmbedding
 			}
 
 			for (Vertex vertex : graphComponent.getVertices()) {
-				vertex.pt.x = random.nextDouble() * width;
-				vertex.pt.y = random.nextDouble() * height;
+				vertex.pt.x = width - random.nextDouble() * width * 2;
+				vertex.pt.y = height - random.nextDouble() * height * 2;
 			}
 		}
 
@@ -173,11 +174,11 @@ public class ForceDirectedEmbedding
 				b(b4, tps, tvs);
 
 				// Adjust time step (h)
-				double diff = diff(b1, b2, b3, b4);
+				double accelerationError = diff(b1, b2, b3, b4);
 
-				// Console.WriteLine("**** " + diff + " ***** " + h);
+				System.out.println("**** " + accelerationError + " ***** " + h);
 
-				if (diff < accelerationMinErrorLimit) {
+				if (accelerationError < accelerationMinErrorLimit) {
 					hLow = h;
 
 					if (hHigh != 0)
@@ -185,7 +186,7 @@ public class ForceDirectedEmbedding
 					else
 						h *= 2;
 				}
-				else if (diff > accelerationMaxErrorLimit) {
+				else if (accelerationError > accelerationMaxErrorLimit) {
 					hHigh = h;
 
 					if (hLow != 0)
@@ -196,9 +197,12 @@ public class ForceDirectedEmbedding
 				else
 					hFound = true;
 
-				if (h > maxTimeStep || h < minTimeStep || h == hHigh || h == hLow) {
+				if (h > maxTimeStep || h < minTimeStep || h == hHigh || h == hLow)
 					hFound = true;
-				}
+				
+				// FIXME: remove this, adaptive h setting seems not to work
+				//h = minTimeStep * 100;
+				//hFound = true;
 			}
 
 			// yn+1 = yn + h * yn' + h * h / 6 * [b1 + b2 + b3]
@@ -245,8 +249,7 @@ public class ForceDirectedEmbedding
 				listener.positionsChanged();
 		}
 
-		// Console.WriteLine("Runge-Kutta-4 number of cycles to relax: " + cycle + "
-		// Prob cycle: " + probCycle);
+		System.out.println("Runge-Kutta-4 number of cycles to relax: " + cycle + " Prob cycle: " + probCycle);
 	}
 
 	private Pt[] createPtArray() {
@@ -510,26 +513,46 @@ public class ForceDirectedEmbedding
 	 * Test.
 	 */
 	public static void main(String[] args) {
+		double mass = 10;
+		double charge = 0.1;
 		GraphComponent graphComponent = new GraphComponent();
-		Vertex vertex1 = new Vertex(new Pt(0, 0), new Rc(10, 10), false, false, 1, 1);
-		Vertex vertex2 = new Vertex(new Pt(10, 0), new Rc(10, 10), false, false, 1, 1);
-		Vertex vertex3 = new Vertex(new Pt(0, 10), new Rc(10, 10), false, false, 1, 1);
-		Vertex vertex4 = new Vertex(new Pt(10, 10), new Rc(10, 10), false, false, 1, 1);
+		Vertex vertex1 = new Vertex(new Pt(0, 0), new Rc(50, 80), false, false, mass, charge);
+		Vertex vertex2 = new Vertex(new Pt(0, 0), new Rc(10, 10), false, false, mass, charge);
+		Vertex vertex3 = new Vertex(new Pt(0, 0), new Rc(30, 30), false, false, mass, charge);
+		Vertex vertex4 = new Vertex(new Pt(0, 0), new Rc(30, 20), false, false, mass, charge);
+		Vertex vertex5 = new Vertex(new Pt(0, 0), new Rc(20, 20), false, false, mass, charge);
+		Vertex vertex6 = new Vertex(new Pt(0, 0), new Rc(40, 50), false, false, mass, charge);
+		Vertex vertex7 = new Vertex(new Pt(0, 0), new Rc(30, 20), false, false, mass, charge);
+		Vertex vertex8 = new Vertex(new Pt(0, 0), new Rc(20, 30), false, false, mass, charge);
+		Vertex vertex9 = new Vertex(new Pt(0, 0), new Rc(20, 40), false, false, mass, charge);
+		Vertex vertex10 = new Vertex(new Pt(0, 0), new Rc(10, 10), false, false, mass, charge);
 		graphComponent.addVertex(vertex1);
 		graphComponent.addVertex(vertex2);
 		graphComponent.addVertex(vertex3);
 		graphComponent.addVertex(vertex4);
+		graphComponent.addVertex(vertex5);
+		graphComponent.addVertex(vertex6);
+		graphComponent.addVertex(vertex7);
+		graphComponent.addVertex(vertex8);
+		graphComponent.addVertex(vertex9);
+		graphComponent.addVertex(vertex10);
 		graphComponent.addEdge(new Edge(vertex1, vertex2));
 		graphComponent.addEdge(new Edge(vertex1, vertex3));
 		graphComponent.addEdge(new Edge(vertex1, vertex4));
-		graphComponent.addEdge(new Edge(vertex2, vertex3));
-		graphComponent.addEdge(new Edge(vertex2, vertex4));
-		graphComponent.addEdge(new Edge(vertex3, vertex4));
+		graphComponent.addEdge(new Edge(vertex2, vertex5));
+		graphComponent.addEdge(new Edge(vertex2, vertex6));
+		graphComponent.addEdge(new Edge(vertex3, vertex7));
+		graphComponent.addEdge(new Edge(vertex3, vertex8));
+		graphComponent.addEdge(new Edge(vertex4, vertex9));
+		graphComponent.addEdge(new Edge(vertex4, vertex10));
 
-		TestFrame testFrame = new TestFrame(graphComponent);
-		testFrame.setSize(500, 500);
-		testFrame.show();
-		ForceDirectedEmbedding embedding = new ForceDirectedEmbedding(graphComponent, testFrame);
+		TestCanvas testCanvas = new TestCanvas(graphComponent);
+		testCanvas.setSize(500, 500);
+		Frame frame = new Frame();
+		frame.setSize(500, 500);
+		frame.add(testCanvas);
+		frame.show();
+		ForceDirectedEmbedding embedding = new ForceDirectedEmbedding(graphComponent, testCanvas);
 		embedding.embed();
 		
 		for (Vertex vertex : graphComponent.getVertices())
@@ -537,27 +560,42 @@ public class ForceDirectedEmbedding
 	}
 }
 
-class TestFrame extends Frame implements ForceDirectedEmbedding.IForceDirectedEmbeddingListener {
+class TestCanvas extends Canvas implements ForceDirectedEmbedding.IForceDirectedEmbeddingListener {
 	private GraphComponent graphComponent;
 
-	public TestFrame(GraphComponent graphComponent) {
+	public TestCanvas(GraphComponent graphComponent) {
 		this.graphComponent = graphComponent;
 	}
 	
 	public void positionsChanged() {
 		repaint();
+		try {
+			Thread.sleep(10);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
+	@Override
 	public void paint(Graphics g)
 	{
 		g.setColor(new Color(0, 0, 0));
 
 		for (Vertex vertex : graphComponent.getVertices()) {
-			int x = (int)vertex.pt.x;
-			int y = (int)vertex.pt.y;
+			int x = (int)vertex.pt.x + getWidth() / 2;
+			int y = (int)vertex.pt.y + getHeight() / 2;
 			int width = (int)vertex.rc.width;
 			int height = (int)vertex.rc.height;
 			g.fillRect(x, y, width, height);
+		}
+		
+		for (Edge edge : graphComponent.getEdges()) {
+			int x1 = (int)edge.source.pt.x + ((int)edge.source.rc.width + getWidth()) / 2;
+			int y1 = (int)edge.source.pt.y + ((int)edge.source.rc.height + getHeight()) / 2;
+			int x2 = (int)edge.target.pt.x + ((int)edge.target.rc.width + getWidth()) / 2;
+			int y2 = (int)edge.target.pt.y + ((int)edge.target.rc.height + getHeight()) / 2;
+			g.drawLine(x1, y1, x2, y2);
 		}
 	}
 }
@@ -600,6 +638,7 @@ class Pt {
 	public double getDistance(Pt other) {
 		double dx = x - other.x;
 		double dy = y - other.y;
+
 		return Math.sqrt(dx * dx + dy * dy);
 	}
 	
