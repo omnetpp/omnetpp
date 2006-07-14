@@ -4,9 +4,11 @@ import org.omnetpp.experimental.simkernel.swig.cGate;
 import org.omnetpp.experimental.simkernel.swig.cMessage;
 import org.omnetpp.experimental.simkernel.swig.cModule;
 import org.omnetpp.experimental.simkernel.swig.cObject;
-import org.omnetpp.experimental.simkernel.swig.cSimpleModule;
 
 public class DummyEnvirCallback implements IEnvirCallback {
+	public void bubble(cModule mod, String text) {
+		System.out.println("bubble()");
+	}
 
 	public void backgroundDisplayStringChanged(cModule parentmodule) {
 		System.out.println("backgroundDisplayStringChanged()");
@@ -79,5 +81,4 @@ public class DummyEnvirCallback implements IEnvirCallback {
 	public void messageSendHop(cMessage msg, cGate srcGate, double propagationDelay, double transmissionDelay, double transmissionStartTime) {
 		System.out.println("messageSendHop3()");
 	}
-
 }

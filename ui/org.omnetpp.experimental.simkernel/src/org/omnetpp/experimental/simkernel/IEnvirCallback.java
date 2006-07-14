@@ -3,6 +3,8 @@ package org.omnetpp.experimental.simkernel;
 import org.omnetpp.experimental.simkernel.swig.*;
 
 public interface IEnvirCallback {
+	// TODO: call bubble from Javaenv
+	void bubble(cModule mod, String text);
     void objectDeleted(cObject object);
     void messageDelivered(cMessage msg);
     void messageScheduled(cMessage msg);
