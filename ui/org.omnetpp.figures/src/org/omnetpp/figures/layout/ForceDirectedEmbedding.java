@@ -1,5 +1,8 @@
 package org.omnetpp.figures.layout;
 
+import java.awt.Color;
+import java.awt.Frame;
+import java.awt.Graphics;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -64,11 +67,14 @@ public class ForceDirectedEmbedding
 	// Implementation fields
 	private Random random;
 
-	private Component component;
+	private GraphComponent graphComponent;
+	
+	IForceDirectedEmbeddingListener listener;
 
 	// Constructors
-	public ForceDirectedEmbedding(Component component) {
-		this.component = component;
+	public ForceDirectedEmbedding(GraphComponent graphComponent, IForceDirectedEmbeddingListener listener) {
+		this.graphComponent = graphComponent;
+		this.listener = listener;
 	}
 
 	// Find the solution for the differential equation using the
@@ -82,10 +88,37 @@ public class ForceDirectedEmbedding
 	// yn+1 = yn + h * yn' + h * h / 6 * [b1 + b2 + b3]
 	// yn+1' = yn' + h / 6 * (b1 + 2 * b2 + 2 * b3 + b4)
 	public void embed() {
-		/* TODO: this was used to set initial positions
+		int cycle = 0;
+		int probCycle = 0;
+		boolean relaxed = false;
+		// h (Low and High for log h search)
+		double h = timeStep;
+		double hLow;
+		double hHigh;
+		// yn : positions
+		Pt[] ps = createPtArray();
+		getCenters(ps);
+		// accelerations
+		Pt[] acs = createPtArray();
+		// yn' : velocities
+		Pt[] vs = createPtArray();
+		// bs
+		Pt[] b1 = createPtArray();
+		Pt[] b2 = createPtArray();
+		Pt[] b3 = createPtArray();
+		Pt[] b4 = createPtArray();
+		// velocity deltas
+		Pt[] dvs = createPtArray();
+		Pt[] tvs = createPtArray();
+		// position deltas
+		Pt[] dps = createPtArray();
+		Pt[] tps = createPtArray();
+		// initialize random for no distance repealing
+		// make it stable and always use the same seed
+		random = new Random(0);
 		boolean fFirstRun = true;
 
-		for (Vertex vertex : component.getVertices()) {
+		for (Vertex vertex : graphComponent.getVertices()) {
 			if ((!vertex.hasFixedXPosition && vertex.pt.x != 0) ||
 				(!vertex.hasFixedYPosition && vertex.pt.y != 0))
 			{
@@ -95,46 +128,19 @@ public class ForceDirectedEmbedding
 		}
 
 		if (fFirstRun) {
-			double spacing = 0;
-
-			for (Vertex vertex : component.getVertices()) {
-				spacing = Math.max(spacing, vertex.rc.width);
-				spacing = Math.max(spacing, vertex.rc.height);
+			double width = 0;
+			double height = 0;
+			
+			for (Vertex vertex : graphComponent.getVertices()) {
+				width += vertex.rc.width;
+				height += vertex.rc.height;
 			}
 
-			VertexEmbedding ve = new HeapEmbedding(component, 2 * spacing, true, true);
-			ve.Embed();
+			for (Vertex vertex : graphComponent.getVertices()) {
+				vertex.pt.x = random.nextDouble() * width;
+				vertex.pt.y = random.nextDouble() * height;
+			}
 		}
-		*/
-
-		int cycle = 0;
-		int probCycle = 0;
-		boolean relaxed = false;
-		// h (Low and High for log h search)
-		double h = timeStep;
-		double hLow;
-		double hHigh;
-		// yn : positions
-		Pt[] ps = new Pt[component.getVertexCount()];
-		getCenters(ps);
-		// accelerations
-		Pt[] acs = new Pt[component.getVertexCount()];
-		// yn' : velocities
-		Pt[] vs = new Pt[component.getVertexCount()];
-		// bs
-		Pt[] b1 = new Pt[component.getVertexCount()];
-		Pt[] b2 = new Pt[component.getVertexCount()];
-		Pt[] b3 = new Pt[component.getVertexCount()];
-		Pt[] b4 = new Pt[component.getVertexCount()];
-		// velocity deltas
-		Pt[] dvs = new Pt[component.getVertexCount()];
-		Pt[] tvs = new Pt[component.getVertexCount()];
-		// position deltas
-		Pt[] dps = new Pt[component.getVertexCount()];
-		Pt[] tps = new Pt[component.getVertexCount()];
-		// initialize random for no distance repealing
-		// make it stable and always use the same seed
-		random = new Random(0);
 
 		while (!relaxed) {
 			// Runge Kutta 4th order
@@ -232,13 +238,24 @@ public class ForceDirectedEmbedding
 						break;
 					}
 				}
-				
 
 			addToVertexPositions(dps);
+			
+			if (listener != null)
+				listener.positionsChanged();
 		}
 
 		// Console.WriteLine("Runge-Kutta-4 number of cycles to relax: " + cycle + "
 		// Prob cycle: " + probCycle);
+	}
+
+	private Pt[] createPtArray() {
+		Pt[] result = new Pt[graphComponent.getVertexCount()];
+		
+		for (int i = 0; i < result.length; i++)
+			result[i] = new Pt(0, 0);
+		
+		return result;
 	}
 
 	// Calculation
@@ -261,15 +278,15 @@ public class ForceDirectedEmbedding
 	private void getCenters(Pt[] ps)
 	{
 		for (int i = 0; i < ps.length; i++)
-			ps[i] = component.getVertex(i).getCenter();
+			ps[i] = graphComponent.getVertex(i).getCenter();
 	}
 
 	private void addToVertexPositions(Pt[] dps)
 	{
-		assert (dps.length == component.getVertexCount());
+		assert (dps.length == graphComponent.getVertexCount());
 
 		for (int i = 0; i < dps.length; i++) {
-			Vertex vertex = component.getVertex(i);
+			Vertex vertex = graphComponent.getVertex(i);
 			vertex.pt.x += dps[i].x;
 			vertex.pt.y += dps[i].y;
 		}
@@ -309,14 +326,14 @@ public class ForceDirectedEmbedding
 		
 		// Apply connection spring force
 		if (connectionSpringCoefficient != 0) {
-			for (int i = 0; i < component.getEdgeCount(); i++) {
-				Edge edge = component.getEdge(i);
+			for (int i = 0; i < graphComponent.getEdgeCount(); i++) {
+				Edge edge = graphComponent.getEdge(i);
 				Vertex vertex1 = edge.source;
 				Vertex vertex2 = edge.target;
 
 				if (vertex1 != null && vertex2 != null && vertex1 != vertex2) {
-					int i1 = component.IndexOfVertex(edge.source);
-					int i2 = component.IndexOfVertex(edge.target);
+					int i1 = graphComponent.IndexOfVertex(edge.source);
+					int i2 = graphComponent.IndexOfVertex(edge.target);
 
 					Pt d = new Pt(ps[i2]).subtract(ps[i1]);
 					double distance = d.getLength();
@@ -335,10 +352,10 @@ public class ForceDirectedEmbedding
 
 		// Apply magnetic force
 		if (connectionMagneticFieldCoefficient != 0) {
-			for (int i = 0; i < component.getEdgeCount(); i++) {
-				Edge edge1 = component.getEdge(i);
-				int iSource = component.IndexOfVertex(edge1.source);
-				int iTarget = component.IndexOfVertex(edge1.target);
+			for (int i = 0; i < graphComponent.getEdgeCount(); i++) {
+				Edge edge1 = graphComponent.getEdge(i);
+				int iSource = graphComponent.IndexOfVertex(edge1.source);
+				int iTarget = graphComponent.IndexOfVertex(edge1.target);
 				Pt pSource1 = ps[iSource];
 				Pt pTarget1 = ps[iTarget];
 				Vertex sourceVertex1 = edge1.source;
@@ -352,10 +369,10 @@ public class ForceDirectedEmbedding
 					m1.Normalize();
 					m1.multiply(connectionMagneticDipolPower);
 
-					for (int j = i + 1; j < component.getEdgeCount(); j++) {
-						Edge edge2 = component.getEdge(j);
-						Pt pSource2 = ps[component.IndexOfVertex(edge2.source)];
-						Pt pTarget2 = ps[component.IndexOfVertex(edge2.target)];
+					for (int j = i + 1; j < graphComponent.getEdgeCount(); j++) {
+						Edge edge2 = graphComponent.getEdge(j);
+						Pt pSource2 = ps[graphComponent.IndexOfVertex(edge2.source)];
+						Pt pTarget2 = ps[graphComponent.IndexOfVertex(edge2.target)];
 						Pt connectionCenter2 = new Pt(pSource2).add(pTarget2).divide(2);
 						Pt m2 = new Pt(pTarget2).subtract(pSource2);
 						m2.Normalize();
@@ -395,11 +412,11 @@ public class ForceDirectedEmbedding
 
 		// Apply electric force
 		if (vertexElectricRepealCoefficient != 0) {
-			for (int i = 0; i < component.getVertexCount(); i++) {
-				Vertex vertex1 = component.getVertex(i);
+			for (int i = 0; i < graphComponent.getVertexCount(); i++) {
+				Vertex vertex1 = graphComponent.getVertex(i);
 
-				for (int j = i + 1; j < component.getVertexCount(); j++) {
-					Vertex vertex2 = component.getVertex(j);
+				for (int j = i + 1; j < graphComponent.getVertexCount(); j++) {
+					Vertex vertex2 = graphComponent.getVertex(j);
 
 					Pt d = new Pt(ps[i]).subtract(ps[j]);
 					double distance = d.getLength();
@@ -416,11 +433,11 @@ public class ForceDirectedEmbedding
 
 		// Apply vertex spring force
 		if (vertexSpringCoefficient != 0) {
-			for (int i = 0; i < component.getVertexCount(); i++) {
-				Vertex vertex1 = component.getVertex(i);
+			for (int i = 0; i < graphComponent.getVertexCount(); i++) {
+				Vertex vertex1 = graphComponent.getVertex(i);
 
-				for (int j = i + 1; j < component.getVertexCount(); j++) {
-					Vertex vertex2 = component.getVertex(j);
+				for (int j = i + 1; j < graphComponent.getVertexCount(); j++) {
+					Vertex vertex2 = graphComponent.getVertex(j);
 					Pt d = new Pt(ps[j]).subtract(ps[i]);
 					double distance = d.getLength();
 
@@ -440,7 +457,7 @@ public class ForceDirectedEmbedding
 		if (frictionCoefficient != 0) {
 			for (int i = 0; i < vs.length; i++) {
 				double vlen = vs[i].getLength();
-				Vertex vertex = component.getVertex(i);
+				Vertex vertex = graphComponent.getVertex(i);
 
 				if (!vertex.hasFixedXPosition)
 					fs[i].x -= frictionCoefficient * vlen * vs[i].x;
@@ -451,8 +468,8 @@ public class ForceDirectedEmbedding
 		}
 		
 		// Convert forces to acceleration
-		for (int i = 0; i < component.getVertexCount(); i++)
-			fs[i].divide(component.getVertex(i).mass);		
+		for (int i = 0; i < graphComponent.getVertexCount(); i++)
+			fs[i].divide(graphComponent.getVertex(i).mass);		
 	}
 
 	private void addForcePair(Vertex vertex1, Vertex vertex2, Pt f1, Pt f2, double force, Pt d, double distance)
@@ -483,7 +500,66 @@ public class ForceDirectedEmbedding
 
 		if (!vertex2.hasFixedYPosition)
 			f2.y -= forceY;
-	}	
+	}
+
+	public interface IForceDirectedEmbeddingListener {
+		public void positionsChanged();
+	}
+
+	/**
+	 * Test.
+	 */
+	public static void main(String[] args) {
+		GraphComponent graphComponent = new GraphComponent();
+		Vertex vertex1 = new Vertex(new Pt(0, 0), new Rc(10, 10), false, false, 1, 1);
+		Vertex vertex2 = new Vertex(new Pt(10, 0), new Rc(10, 10), false, false, 1, 1);
+		Vertex vertex3 = new Vertex(new Pt(0, 10), new Rc(10, 10), false, false, 1, 1);
+		Vertex vertex4 = new Vertex(new Pt(10, 10), new Rc(10, 10), false, false, 1, 1);
+		graphComponent.addVertex(vertex1);
+		graphComponent.addVertex(vertex2);
+		graphComponent.addVertex(vertex3);
+		graphComponent.addVertex(vertex4);
+		graphComponent.addEdge(new Edge(vertex1, vertex2));
+		graphComponent.addEdge(new Edge(vertex1, vertex3));
+		graphComponent.addEdge(new Edge(vertex1, vertex4));
+		graphComponent.addEdge(new Edge(vertex2, vertex3));
+		graphComponent.addEdge(new Edge(vertex2, vertex4));
+		graphComponent.addEdge(new Edge(vertex3, vertex4));
+
+		TestFrame testFrame = new TestFrame(graphComponent);
+		testFrame.setSize(500, 500);
+		testFrame.show();
+		ForceDirectedEmbedding embedding = new ForceDirectedEmbedding(graphComponent, testFrame);
+		embedding.embed();
+		
+		for (Vertex vertex : graphComponent.getVertices())
+			System.out.println(vertex.pt);
+	}
+}
+
+class TestFrame extends Frame implements ForceDirectedEmbedding.IForceDirectedEmbeddingListener {
+	private GraphComponent graphComponent;
+
+	public TestFrame(GraphComponent graphComponent) {
+		this.graphComponent = graphComponent;
+	}
+	
+	public void positionsChanged() {
+		repaint();
+	}
+	
+	public void paint(Graphics g)
+	{
+		g.setColor(new Color(0, 0, 0));
+
+		for (Vertex vertex : graphComponent.getVertices()) {
+			int x = (int)vertex.pt.x;
+			int y = (int)vertex.pt.y;
+			int width = (int)vertex.rc.width;
+			int height = (int)vertex.rc.height;
+			g.fillRect(x, y, width, height);
+		}
+	}
 }
 
 class Pt {
@@ -566,6 +642,11 @@ class Pt {
 	public double crossProduct(Pt pt) {
 		return x * pt.y - y * pt.x;
 	}
+	
+	@Override
+	public String toString() {
+		return "x: " + x + " y: " + y;
+	}
 }
 
 class Rc {
@@ -577,8 +658,14 @@ class Rc {
 		this.width = width;
 		this.height = height;
 	}
+
+	@Override
+	public String toString() {
+		return "width: " + width + " height: " + height;
+	}
 }
-class Component {
+
+class GraphComponent {
 	private ArrayList<Vertex> vertices = new ArrayList<Vertex>();
 	
 	private ArrayList<Edge> edges = new ArrayList<Edge>();
