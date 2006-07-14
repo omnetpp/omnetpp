@@ -35,6 +35,14 @@ import org.omnetpp.experimental.animation.widgets.AnimationCanvas;
 import org.omnetpp.figures.CompoundModuleFigure;
 import org.omnetpp.figures.GateAnchor;
 
+/**
+ * The animation position is identified by the following:
+ *  - real time
+ *  - animation time
+ *  - animation number
+ *  - simulation time
+ *  - event number
+ */
 public class ReplayAnimationController implements IAnimationController, IAnimationEnvironment {
 	protected final static double NORMAL_REAL_TIME_TO_ANIMATION_TIME_SCALE = 0.01;
 	protected final static double FAST_REAL_TIME_TO_ANIMATION_TIME_SCALE = 0.1;
@@ -291,7 +299,7 @@ public class ReplayAnimationController implements IAnimationController, IAnimati
 		// calculate dependent state
 		simulationTime = getSimulationTimeForEventNumber(eventNumber);
 		animationTime = getAnimationTimeForEventNumber(eventNumber);
-		animationNumber =getAnimationNumberForAnimationTime(animationTime);
+		animationNumber = getAnimationNumberForAnimationTime(animationTime);
 		positionChanged();
 	}
 	
@@ -834,6 +842,16 @@ public class ReplayAnimationController implements IAnimationController, IAnimati
 	protected ReplaySimulation getReplaySimulation() {
 		return (ReplaySimulation)simulation;
 	}
+	
+	/**
+	 * Stores a loaded animation primitive.
+	 */
+	protected void addAnimationPrimitive(IAnimationPrimitive animationPrimitive) {
+		animationPrimitives.add(animationPrimitive);
+		
+		if (animationPrimitive instanceof HandleMessageAnimation)
+			handleMessageAnimationPrimitives.add((HandleMessageAnimation)animationPrimitive);
+	}
 
 	/**
 	 * Loads all animation primitives that begins before or at the current replay position.
@@ -870,24 +888,23 @@ public class ReplayAnimationController implements IAnimationController, IAnimati
 					}
 
 					getReplaySimulation().addModule(module);
-					animationPrimitives.add(new CreateModuleAnimation(this, loadEventNumber, loadSimulationTime, loadAnimationNumber, module));
+					addAnimationPrimitive(new CreateModuleAnimation(this, loadEventNumber, loadSimulationTime, loadAnimationNumber, module));
 				}
 				else if (tokens[0].equals("MD")) {
 					ReplayModule module = (ReplayModule)simulation.getModuleByID(getIntegerToken(tokens, "id"));
-					animationPrimitives.add(new DeleteModuleAnimation(this, loadEventNumber, loadSimulationTime, loadAnimationNumber, module));
+					addAnimationPrimitive(new DeleteModuleAnimation(this, loadEventNumber, loadSimulationTime, loadAnimationNumber, module));
 				}
 				else if (tokens[0].equals("CC")) {
 					GateId sourceGateId = new GateId(getIntegerToken(tokens, "sm"), getIntegerToken(tokens, "sg"));
 					GateId targetGateId = new GateId(getIntegerToken(tokens, "dm"), getIntegerToken(tokens, "dg"));
-					animationPrimitives.add(new CreateConnectionAnimation(this, loadEventNumber, loadSimulationTime, loadAnimationNumber, sourceGateId, targetGateId));
+					addAnimationPrimitive(new CreateConnectionAnimation(this, loadEventNumber, loadSimulationTime, loadAnimationNumber, sourceGateId, targetGateId));
 				}
 				else if (tokens[0].equals("E")) {
 					loadEventNumber = getIntegerToken(tokens, "#");
 					loadSimulationTime = getDoubleToken(tokens, "t");
 					loadAnimationNumber++;
-					HandleMessageAnimation handleMessageAnimation = new HandleMessageAnimation(this, loadEventNumber, loadSimulationTime, loadAnimationNumber, simulation.getModuleByID(getIntegerToken(tokens, "m")), null);
-					animationPrimitives.add(handleMessageAnimation);
-					handleMessageAnimationPrimitives.add(handleMessageAnimation);
+					IRuntimeModule module = simulation.getModuleByID(getIntegerToken(tokens, "m"));
+					addAnimationPrimitive(new HandleMessageAnimation(this, loadEventNumber, loadSimulationTime, loadAnimationNumber, module, null));
 				}
 				else if (tokens[0].equals("BS")) {
 				}
@@ -898,20 +915,20 @@ public class ReplayAnimationController implements IAnimationController, IAnimati
 					// and the binary search relies upon this
 					double propagationTime = getDoubleToken(tokens, "pd", 0);
 					double transmissionTime = getDoubleToken(tokens, "td", 0);
-					animationPrimitives.add(new SendMessageAnimation(this, loadEventNumber, loadSimulationTime, loadAnimationNumber, propagationTime, transmissionTime, connectionId));
+					addAnimationPrimitive(new SendMessageAnimation(this, loadEventNumber, loadSimulationTime, loadAnimationNumber, propagationTime, transmissionTime, connectionId));
 				}
 				else if (tokens[0].equals("SA")) {
-					animationPrimitives.add(new ScheduleSelfMessageAnimation(this, loadEventNumber, loadSimulationTime, loadAnimationNumber, getDoubleToken(tokens, "t")));
+					addAnimationPrimitive(new ScheduleSelfMessageAnimation(this, loadEventNumber, loadSimulationTime, loadAnimationNumber, getDoubleToken(tokens, "t")));
 				}
 				else if (tokens[0].equals("DS")) {
 					ReplayModule module = (ReplayModule)simulation.getModuleByID(getIntegerToken(tokens, "id"));
 					IDisplayString displayString = new DisplayString(null, null, getToken(tokens, "d"));
-					animationPrimitives.add(new SetModuleDisplayStringAnimation(this, loadEventNumber, loadSimulationTime, loadAnimationNumber, module, displayString));
+					addAnimationPrimitive(new SetModuleDisplayStringAnimation(this, loadEventNumber, loadSimulationTime, loadAnimationNumber, module, displayString));
 				}
 				else if (tokens[0].equals("CS")) {
 					IDisplayString displayString = new DisplayString(null, null, getToken(tokens, "d"));
 					ConnectionId connectionId = new ConnectionId(getIntegerToken(tokens, "sm"), getIntegerToken(tokens, "sg"));
-					animationPrimitives.add(new SetConnectionDisplayStringAnimation(this, loadEventNumber, loadSimulationTime, loadAnimationNumber, connectionId, displayString));
+					addAnimationPrimitive(new SetConnectionDisplayStringAnimation(this, loadEventNumber, loadSimulationTime, loadAnimationNumber, connectionId, displayString));
 				}
 				else
 					throw new RuntimeException("Unknown log entry");

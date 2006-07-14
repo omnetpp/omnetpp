@@ -57,36 +57,36 @@ public class LiveAnimationController extends ReplayAnimationController implement
 	}
 
 	public void bubble(cModule mod, String text) {
-		animationPrimitives.add(new BubbleAnimation(this, getLiveEventNumber(), getLiveSimulationTime(), getLiveAnimationNumber(), text, new Point(0, 0)));
+		addAnimationPrimitive(new BubbleAnimation(this, getLiveEventNumber(), getLiveSimulationTime(), getLiveAnimationNumber(), text, new Point(0, 0)));
 	}
 
 	public void connectionCreated(cGate gate) {
 		cGate targetGate = gate.destinationGate();
-		animationPrimitives.add(new CreateConnectionAnimation(this, getLiveEventNumber(), getLiveSimulationTime(), getLiveAnimationNumber(), new GateId(gate.getOwnerModule().getId(), gate.getId()), new GateId(targetGate.getOwnerModule().getId(), targetGate.getId())));
+		addAnimationPrimitive(new CreateConnectionAnimation(this, getLiveEventNumber(), getLiveSimulationTime(), getLiveAnimationNumber(), new GateId(gate.getOwnerModule().getId(), gate.getId()), new GateId(targetGate.getOwnerModule().getId(), targetGate.getId())));
 	}
 
 	public void connectionRemoved(cGate gate) {
 	}
 
 	public void displayStringChanged(cGate gate) {
-		animationPrimitives.add(new SetConnectionDisplayStringAnimation(this, getLiveEventNumber(), getLiveSimulationTime(), getLiveAnimationNumber(), new ConnectionId(gate.getOwnerModule().getId(), gate.getId()), gate.getDisplayString()));
+		addAnimationPrimitive(new SetConnectionDisplayStringAnimation(this, getLiveEventNumber(), getLiveSimulationTime(), getLiveAnimationNumber(), new ConnectionId(gate.getOwnerModule().getId(), gate.getId()), gate.getDisplayString()));
 	}
 
 	public void displayStringChanged(cModule module) {
-		animationPrimitives.add(new SetModuleDisplayStringAnimation(this, getLiveEventNumber(), getLiveSimulationTime(), getLiveAnimationNumber(), module, module.getDisplayString()));
+		addAnimationPrimitive(new SetModuleDisplayStringAnimation(this, getLiveEventNumber(), getLiveSimulationTime(), getLiveAnimationNumber(), module, module.getDisplayString()));
 	}
 
 	public void messageDelivered(cMessage msg) {
 		liveAnimationNumber++;
-		animationPrimitives.add(new HandleMessageAnimation(this, getLiveEventNumber(), getLiveSimulationTime(), getLiveAnimationNumber(), simulation.getModuleByID(msg.getArrivalModuleId()), msg));
+		addAnimationPrimitive(new HandleMessageAnimation(this, getLiveEventNumber(), getLiveSimulationTime(), getLiveAnimationNumber(), simulation.getModuleByID(msg.getArrivalModuleId()), msg));
 	}
 
 	public void moduleCreated(cModule module) {
-		animationPrimitives.add(new CreateModuleAnimation(this, getLiveEventNumber(), getLiveSimulationTime(), getLiveAnimationNumber(), module));
+		addAnimationPrimitive(new CreateModuleAnimation(this, getLiveEventNumber(), getLiveSimulationTime(), getLiveAnimationNumber(), module));
 	}
 
 	public void moduleDeleted(cModule module) {
-		animationPrimitives.add(new DeleteModuleAnimation(this, getLiveEventNumber(), getLiveSimulationTime(), getLiveAnimationNumber(), module));
+		addAnimationPrimitive(new DeleteModuleAnimation(this, getLiveEventNumber(), getLiveSimulationTime(), getLiveAnimationNumber(), module));
 	}
 
 	public void moduleMethodCalled(cModule from, cModule to, String method) {
@@ -111,7 +111,7 @@ public class LiveAnimationController extends ReplayAnimationController implement
 	}
 
 	public void messageSendHop(cMessage msg, cGate gate, double propagationTime) {
-		animationPrimitives.add(new SendMessageAnimation(this,
+		addAnimationPrimitive(new SendMessageAnimation(this,
 				getLiveEventNumber(),
 				msg.getSendingTime(),
 				getLiveAnimationNumber(),
@@ -121,9 +121,9 @@ public class LiveAnimationController extends ReplayAnimationController implement
 	}
 
 	public void messageSendHop(cMessage msg, cGate gate, double propagationTime, double transmissionTime, double transmissionStartTime) {
-		animationPrimitives.add(new SendMessageAnimation(this,
+		addAnimationPrimitive(new SendMessageAnimation(this,
 				getLiveEventNumber(),
-				transmissionStartTime,
+				msg.getSendingTime(), //transmissionStartTime,
 				getLiveAnimationNumber(),
 				propagationTime,
 				transmissionTime,

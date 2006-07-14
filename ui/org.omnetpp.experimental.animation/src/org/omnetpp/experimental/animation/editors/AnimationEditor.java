@@ -287,8 +287,8 @@ public class AnimationEditor extends EditorPart implements IAnimationListener {
 	public void livePositionChanged(long eventNumber, double simulationTime, long animationNumber, double animationTime) {
 	}
 
-	public void valueChanged(Text widget, Object newValue) {
-		Object oldValue = null;
+	public void valueChanged(Text widget, Number newValue) {
+		Number oldValue = null;
 		
 		try {
 			oldValue = numberFormat.parse(widget.getText());
@@ -297,7 +297,7 @@ public class AnimationEditor extends EditorPart implements IAnimationListener {
 			// void
 		}
 		
-		if (!newValue.equals(oldValue))
+		if (oldValue == null || newValue.doubleValue() != oldValue.doubleValue())
 			widget.setText(numberFormat.format(newValue));
 	}
 }
