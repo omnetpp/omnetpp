@@ -147,6 +147,28 @@ inline void evSetupDummyCall() { //XXX
   public IDisplayString getDisplayString() {
     return new DisplayString(null, null, displayString().getString());
   }
+
+  @Override
+  public int hashCode() {
+    final int PRIME = 31;
+    int result = 1;
+    result = PRIME * result + getId();
+    return result;
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj)
+      return true;
+    if (obj == null)
+      return false;
+    if (getClass() != obj.getClass())
+      return false;
+    final cModule other = (cModule) obj;
+    if (getId() != other.getId())
+      return false;
+    return true;
+  }
 %};
 
 %typemap(javainterfaces) cGate "org.omnetpp.common.simulation.model.IRuntimeGate";
@@ -154,6 +176,14 @@ inline void evSetupDummyCall() { //XXX
 %rename cGate::index getIndex;
 %rename cGate::size getSize;
 %rename cGate::ownerModule getOwnerModule;
+%typemap(javaimports) cGate
+  "import org.omnetpp.common.displaymodel.DisplayString;\n"
+  "import org.omnetpp.common.displaymodel.IDisplayString;";
+%typemap(javacode) cGate %{
+  public IDisplayString getDisplayString() {
+    return new DisplayString(null, null, displayString().getString());
+  }
+%};
 
 %typemap(javainterfaces) cMessage "org.omnetpp.common.simulation.model.IRuntimeMessage";
 %rename cMessage::kind getKind;
