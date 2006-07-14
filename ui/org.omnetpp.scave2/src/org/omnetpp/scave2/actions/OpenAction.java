@@ -1,5 +1,7 @@
 package org.omnetpp.scave2.actions;
 
+import org.eclipse.emf.edit.domain.AdapterFactoryEditingDomain;
+import org.eclipse.emf.edit.provider.IWrapperItemProvider;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.ChartSheet;
@@ -18,16 +20,17 @@ public class OpenAction extends AbstractScaveAction {
 	@Override
 	protected void doRun(ScaveEditor scaveEditor, IStructuredSelection selection) {
 		for (Object element : selection.toArray()) {
-			if (element instanceof Dataset) {
-				Dataset dataset = (Dataset)element;
+			Object object = AdapterFactoryEditingDomain.unwrap(element);
+			if (object instanceof Dataset) {
+				Dataset dataset = (Dataset)object;
 				scaveEditor.openDataset(dataset);
 			}
-			else if (element instanceof ChartSheet) {
-				ChartSheet chartsheet = (ChartSheet)element;
+			else if (object instanceof ChartSheet) {
+				ChartSheet chartsheet = (ChartSheet)object;
 				scaveEditor.openChartSheet(chartsheet);
 			}
-			else if (element instanceof Chart) {
-				Chart chart = (Chart)element;
+			else if (object instanceof Chart) {
+				Chart chart = (Chart)object;
 				scaveEditor.openChart(chart);
 			}
 		}
@@ -36,7 +39,8 @@ public class OpenAction extends AbstractScaveAction {
 	@Override
 	public boolean isApplicable(ScaveEditor editor, IStructuredSelection selection) {
 		for (Object element : selection.toArray())
-			if (element instanceof Dataset || element instanceof ChartSheet || element instanceof Chart)
+			if (element instanceof Dataset || element instanceof ChartSheet ||
+				element instanceof Chart || element instanceof IWrapperItemProvider)
 				return true;
 		return false;
 	}
