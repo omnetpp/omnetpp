@@ -1,5 +1,6 @@
 package org.omnetpp.scave2.editors.treeproviders;
 
+import org.eclipse.emf.edit.provider.IWrapperItemProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.graphics.Image;
 import org.omnetpp.scave.model.Add;
@@ -136,6 +137,9 @@ public class ScaveModelLabelProvider extends LabelProvider {
 		else if (element instanceof Property) {
 			Property o = (Property) element;
 			return fallback(o.getName(),"<undefined>")+" = "+fallback(o.getValue(),"");
+		}
+		else if (element instanceof IWrapperItemProvider) {
+			return getText(((IWrapperItemProvider)element).getValue());
 		}
 		return element.toString(); // fallback
 	}

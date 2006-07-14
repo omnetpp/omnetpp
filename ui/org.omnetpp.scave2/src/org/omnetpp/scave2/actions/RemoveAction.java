@@ -1,8 +1,15 @@
 package org.omnetpp.scave2.actions;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+
 import org.eclipse.emf.common.command.Command;
+import org.eclipse.emf.common.command.CompoundCommand;
 import org.eclipse.emf.edit.command.DeleteCommand;
 import org.eclipse.emf.edit.command.RemoveCommand;
+import org.eclipse.emf.edit.domain.EditingDomain;
+import org.eclipse.emf.edit.provider.IWrapperItemProvider;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.omnetpp.scave2.editors.ScaveEditor;
 
@@ -17,17 +24,45 @@ public class RemoveAction extends AbstractScaveAction {
 
 	@Override
 	protected void doRun(ScaveEditor scaveEditor, IStructuredSelection structuredSelection) {
-		// use EMF.Edit Framework do to the removal (this makes it undoable)
-		// the DeleteCommand removes the references to the deleted items too
-		// XXX: if the selection done through a reference delete the reference only (now the referenced object is deleted)
-		Command command = DeleteCommand.create(
+		Command command = createCommand(
 							scaveEditor.getEditingDomain(),
-							structuredSelection.toList());
+							structuredSelection);
 		scaveEditor.getEditingDomain().getCommandStack().execute(command);
 	}
 
 	@Override
 	public boolean isApplicable(ScaveEditor editor, IStructuredSelection selection) {
-		return !selection.isEmpty() && containsEObjectsOnly(selection);
+		return !selection.isEmpty();
+	}
+
+	/**
+	 * Creates a command that removes the selected objects.
+	 * 
+	 * Simple DeleteCommand.create(ed, selection.toList()) does not work,
+	 * because it would delete the referenced node when the references are
+	 * displayed under their parent (Edit.Children=true).
+	 * 
+	 * The solution is to wrap the reference values
+	 * (overriding isWrappingNeeded() in the ItemProvider) and execute
+	 * RemoveCommand on them (instead of DeleteCommand).
+	 * 
+	 * TODO: fix EditingDomainActionBarContributor.deleteAction too.
+	 */
+	private Command createCommand(EditingDomain ed, IStructuredSelection selection) {
+		CompoundCommand command = new CompoundCommand("Remove");
+		Collection<Object> references = new ArrayList<Object>();
+		Collection<Object> containments = new ArrayList<Object>();
+		for (Iterator i = selection.iterator(); i.hasNext();) {
+			Object object = i.next();
+			if (object instanceof IWrapperItemProvider)
+				references.add(object);
+			else
+				containments.add(object);
+		}
+		if (references.size() > 0)
+			command.append(RemoveCommand.create(ed, references));
+		if (containments.size() > 0)
+			command.append(DeleteCommand.create(ed, containments));
+		return command.unwrap();
 	}
 }

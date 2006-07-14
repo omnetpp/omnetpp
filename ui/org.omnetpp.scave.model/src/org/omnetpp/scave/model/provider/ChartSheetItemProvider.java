@@ -56,6 +56,16 @@ public class ChartSheetItemProvider
 	}
 
 	/**
+	 * Override default implementation to wrap the values of the 
+	 * 'charts' reference.
+	 */
+	protected boolean isWrappingNeeded(Object object) {
+		return true;
+	}
+
+
+
+	/**
 	 * This returns the property descriptors for the adapted class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
