@@ -10,6 +10,7 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.omnetpp.common.displaymodel.DisplayString;
+import org.omnetpp.common.displaymodel.IDisplayString;
 import org.omnetpp.common.simulation.model.ConnectionId;
 import org.omnetpp.common.simulation.model.GateId;
 import org.omnetpp.common.simulation.model.IRuntimeModule;
@@ -35,9 +36,9 @@ import org.omnetpp.figures.CompoundModuleFigure;
 import org.omnetpp.figures.GateAnchor;
 
 public class ReplayAnimationController implements IAnimationController, IAnimationEnvironment {
-	private final static double NORMAL_REAL_TIME_TO_ANIMATION_TIME_SCALE = 0.01;
-	private final static double FAST_REAL_TIME_TO_ANIMATION_TIME_SCALE = 0.1;
-	private final static double EXPRESS_REAL_TIME_TO_ANIMATION_TIME_SCALE = 1;
+	protected final static double NORMAL_REAL_TIME_TO_ANIMATION_TIME_SCALE = 0.01;
+	protected final static double FAST_REAL_TIME_TO_ANIMATION_TIME_SCALE = 0.1;
+	protected final static double EXPRESS_REAL_TIME_TO_ANIMATION_TIME_SCALE = 1;
 	
 	/**
 	 * A list of timers used during the animation. The queue contains the simulationTimer and
@@ -498,7 +499,7 @@ public class ReplayAnimationController implements IAnimationController, IAnimati
 	/**
 	 * Returns the animation time for the given simulation time.
 	 */
-	private double getAnimationTimeForSimulationTime(double simulationTime) {
+	protected double getAnimationTimeForSimulationTime(double simulationTime) {
 		switch (animationMode) {
 			case LINEAR:
 				return simulationTime;
@@ -515,7 +516,7 @@ public class ReplayAnimationController implements IAnimationController, IAnimati
 	/**
 	 * Returns the animation time for the given event number.
 	 */
-	private double getAnimationTimeForEventNumber(long eventNumber) {
+	protected double getAnimationTimeForEventNumber(long eventNumber) {
 		return getAnimationTimeForSimulationTime(getSimulationTimeForEventNumber(eventNumber));
 	}
 
@@ -817,22 +818,14 @@ public class ReplayAnimationController implements IAnimationController, IAnimati
 	/**
 	 * Initalizes the simulation and adds the root compound module figure to the canvas.
 	 */
-	protected void initializeSimulation(IRuntimeModule rootModule) {
+	protected void initializeSimulation() {
+		IRuntimeModule rootModule = simulation.getRootModule();
 		CompoundModuleFigure rootModuleFigure = new CompoundModuleFigure();
 		rootModuleFigure.setDisplayString(new DisplayString(null, null, "bgb=600,600;bgi=background/hungary,stretch"));
 		setFigure(new GateId(rootModule.getId(), 0), new GateAnchor(rootModuleFigure));
 		setFigure(new GateId(rootModule.getId(), 1), new GateAnchor(rootModuleFigure));
 		canvas.getRootFigure().getLayoutManager().setConstraint(rootModuleFigure, new Rectangle(0, 0, -1, -1));
 		canvas.getRootFigure().add(rootModuleFigure);
-		
-		simulation = createSimulation(rootModule);
-	}
-	
-	/**
-	 * Factory method to create the simulation object.
-	 */
-	protected IRuntimeSimulation createSimulation(IRuntimeModule rootModule) {
-		return new ReplaySimulation((ReplayModule)rootModule);
 	}
 
 	/**
@@ -846,13 +839,6 @@ public class ReplayAnimationController implements IAnimationController, IAnimati
 	 * Loads all animation primitives that begins before or at the current replay position.
 	 */
 	protected long loadAnimationPrimitivesForPosition() {
-		return loadAnimationPrimitivesForPosition(eventNumber, simulationTime, animationNumber, animationTime);
-	}
-
-	/**
-	 * Loads all animation primitives that begins before or at the given position.
-	 */
-	protected long loadAnimationPrimitivesForPosition(long minimumEventNumber, double minimumSimulationTime, long minimumAnimationNumber, double minimumAnimationTime) {
 		try {
 			long animationPrimitivesCount = animationPrimitives.size();
 			int lineCount = 0;
@@ -861,10 +847,10 @@ public class ReplayAnimationController implements IAnimationController, IAnimati
 			if (logFileReader == null)
 				logFileReader = new BufferedReader(new InputStreamReader(file.getContents()));
 			
-			while ((loadEventNumber <= minimumEventNumber ||
-					loadSimulationTime <= minimumEventNumber ||
-					loadAnimationNumber <= minimumAnimationNumber ||
-					getAnimationTimeForSimulationTime(loadSimulationTime) <= minimumAnimationTime ||
+			while ((loadEventNumber <= eventNumber ||
+					loadSimulationTime <= simulationTime ||
+					loadAnimationNumber <= animationNumber ||
+					getAnimationTimeForSimulationTime(loadSimulationTime) <= animationTime ||
 					lineCount < 10) &&
 				   (line = logFileReader.readLine()) != null)
 			{
@@ -878,8 +864,10 @@ public class ReplayAnimationController implements IAnimationController, IAnimati
 					module.setName(getToken(tokens, "n"));
 				
 					// FIXME: we show the first module for now, should we get it as parameter?
-					if (simulation == null)
-						initializeSimulation(module);
+					if (simulation == null) {
+						simulation = new ReplaySimulation(module);
+						initializeSimulation();
+					}
 
 					getReplaySimulation().addModule(module);
 					animationPrimitives.add(new CreateModuleAnimation(this, loadEventNumber, loadSimulationTime, loadAnimationNumber, module));
@@ -917,11 +905,11 @@ public class ReplayAnimationController implements IAnimationController, IAnimati
 				}
 				else if (tokens[0].equals("DS")) {
 					ReplayModule module = (ReplayModule)simulation.getModuleByID(getIntegerToken(tokens, "id"));
-					String displayString = getToken(tokens, "d");
+					IDisplayString displayString = new DisplayString(null, null, getToken(tokens, "d"));
 					animationPrimitives.add(new SetModuleDisplayStringAnimation(this, loadEventNumber, loadSimulationTime, loadAnimationNumber, module, displayString));
 				}
 				else if (tokens[0].equals("CS")) {
-					String displayString = getToken(tokens, "d");
+					IDisplayString displayString = new DisplayString(null, null, getToken(tokens, "d"));
 					ConnectionId connectionId = new ConnectionId(getIntegerToken(tokens, "sm"), getIntegerToken(tokens, "sg"));
 					animationPrimitives.add(new SetConnectionDisplayStringAnimation(this, loadEventNumber, loadSimulationTime, loadAnimationNumber, connectionId, displayString));
 				}

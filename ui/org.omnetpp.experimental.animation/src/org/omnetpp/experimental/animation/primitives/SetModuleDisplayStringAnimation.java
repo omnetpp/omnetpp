@@ -1,6 +1,6 @@
 package org.omnetpp.experimental.animation.primitives;
 
-import org.omnetpp.common.displaymodel.DisplayString;
+import org.omnetpp.common.displaymodel.IDisplayString;
 import org.omnetpp.common.simulation.model.IRuntimeModule;
 import org.omnetpp.experimental.animation.replay.ReplayAnimationController;
 import org.omnetpp.figures.SubmoduleFigure;
@@ -8,17 +8,17 @@ import org.omnetpp.figures.SubmoduleFigure;
 public class SetModuleDisplayStringAnimation extends AbstractAnimationPrimitive {
 	private IRuntimeModule module;
 	
-	private DisplayString displayString;
+	private IDisplayString displayString;
 	
 	public SetModuleDisplayStringAnimation(ReplayAnimationController animationController,
 									 long eventNumber,
 									 double simulationTime,
 									 long animationNumber,
 									 IRuntimeModule module,
-									 String displayString) {
+									 IDisplayString displayString) {
 		super(animationController, eventNumber, simulationTime, animationNumber);
 		this.module = module;
-		this.displayString = new DisplayString(null, null, displayString);
+		this.displayString = displayString;
 		//System.out.println(displayString);
 	}
 	

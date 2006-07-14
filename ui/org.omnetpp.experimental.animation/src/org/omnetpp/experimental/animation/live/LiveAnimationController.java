@@ -3,15 +3,14 @@ package org.omnetpp.experimental.animation.live;
 import org.eclipse.draw2d.geometry.Point;
 import org.omnetpp.common.simulation.model.ConnectionId;
 import org.omnetpp.common.simulation.model.GateId;
-import org.omnetpp.common.simulation.model.IRuntimeModule;
-import org.omnetpp.common.simulation.model.IRuntimeSimulation;
 import org.omnetpp.experimental.animation.primitives.BubbleAnimation;
 import org.omnetpp.experimental.animation.primitives.CreateConnectionAnimation;
 import org.omnetpp.experimental.animation.primitives.CreateModuleAnimation;
+import org.omnetpp.experimental.animation.primitives.DeleteModuleAnimation;
 import org.omnetpp.experimental.animation.primitives.HandleMessageAnimation;
 import org.omnetpp.experimental.animation.primitives.IAnimationPrimitive;
-import org.omnetpp.experimental.animation.primitives.SendBroadcastAnimation;
 import org.omnetpp.experimental.animation.primitives.SendMessageAnimation;
+import org.omnetpp.experimental.animation.primitives.SetConnectionDisplayStringAnimation;
 import org.omnetpp.experimental.animation.primitives.SetModuleDisplayStringAnimation;
 import org.omnetpp.experimental.animation.replay.ReplayAnimationController;
 import org.omnetpp.experimental.animation.widgets.AnimationCanvas;
@@ -25,76 +24,69 @@ import org.omnetpp.experimental.simkernel.swig.cObject;
 import org.omnetpp.experimental.simkernel.swig.cSimulation;
 
 public class LiveAnimationController extends ReplayAnimationController implements IEnvirCallback {
+	protected Javaenv jenv;
+
+	protected long liveAnimationNumber;
+
 	public LiveAnimationController(AnimationCanvas canvas) {
 		super(canvas, null);
-		Javaenv jenv = Simkernel.getJavaenv();
+		simulation = Simkernel.getSimulation();
+		jenv = Simkernel.getJavaenv();
 		jenv.setJCallback(null, this);
-		Simkernel.getJavaenv().doOneStep();
-		initializeSimulation(Simkernel.getSimulation().getRootModule());
-	}
-
-	public double getLiveSimulationTime() {
-		return getLiveSimulation().simTime();
+		jenv.newRun(1);
+		initializeSimulation();
 	}
 
 	public long getLiveEventNumber() {
 		return getLiveSimulation().eventNumber();
 	}
 
-	public long getEventNumber() {
-		// TODO: temporarily
-		return getLiveEventNumber();
+	public double getLiveSimulationTime() {
+		return getLiveSimulation().simTime();
 	}
 	
+	public long getLiveAnimationNumber() {
+		return liveAnimationNumber;
+	}
+	
+	public long getLiveAnimationTime() {
+		throw new RuntimeException();
+	}
+
 	public void breakpointHit(String lbl, cModule mod) {
 	}
 
-	// TODO: add to interface
 	public void bubble(cModule mod, String text) {
-		animationPrimitives.add(new BubbleAnimation(this, getLiveEventNumber(), getLiveSimulationTime(), 0, text, new Point(0, 0)));
+		animationPrimitives.add(new BubbleAnimation(this, getLiveEventNumber(), getLiveSimulationTime(), getLiveAnimationNumber(), text, new Point(0, 0)));
 	}
 
-	public void connectionCreated(cGate srcgate) {
-		animationPrimitives.add(new CreateConnectionAnimation(this, getLiveEventNumber(), getLiveSimulationTime(), 0, new GateId(srcgate.getOwnerModule().getId(), srcgate.getId()), null));
+	public void connectionCreated(cGate gate) {
+		cGate targetGate = gate.destinationGate();
+		animationPrimitives.add(new CreateConnectionAnimation(this, getLiveEventNumber(), getLiveSimulationTime(), getLiveAnimationNumber(), new GateId(gate.getOwnerModule().getId(), gate.getId()), new GateId(targetGate.getOwnerModule().getId(), targetGate.getId())));
 	}
 
-	public void connectionRemoved(cGate srcgate) {
+	public void connectionRemoved(cGate gate) {
 	}
 
 	public void displayStringChanged(cGate gate) {
+		animationPrimitives.add(new SetConnectionDisplayStringAnimation(this, getLiveEventNumber(), getLiveSimulationTime(), getLiveAnimationNumber(), new ConnectionId(gate.getOwnerModule().getId(), gate.getId()), gate.getDisplayString()));
 	}
 
 	public void displayStringChanged(cModule module) {
-		animationPrimitives.add(new SetModuleDisplayStringAnimation(this, getLiveEventNumber(), getLiveSimulationTime(), 0, module, module.getDisplayString().toString()));
+		animationPrimitives.add(new SetModuleDisplayStringAnimation(this, getLiveEventNumber(), getLiveSimulationTime(), getLiveAnimationNumber(), module, module.getDisplayString()));
 	}
 
 	public void messageDelivered(cMessage msg) {
-		animationPrimitives.add(new HandleMessageAnimation(this, getLiveEventNumber(), getLiveSimulationTime(), 0, simulation.getModuleByID(msg.getArrivalModuleId()), msg));
-	}
-
-	// TODO: this callback was split (remove it)
-	public void messageSent(cMessage msg, cGate directToGate) {
-		// TODO: remove this test stuff
-		animationPrimitives.add(new SendBroadcastAnimation(this,
-			getLiveEventNumber(),
-			msg.getSendingTime(),
-			0,
-			msg.getArrivalTime(),
-			new Point(0, 0)));
-		animationPrimitives.add(new SendMessageAnimation(this,
-			getLiveEventNumber(),
-			msg.getSendingTime(),
-			0,
-			msg.getArrivalTime(),
-			0,
-			new ConnectionId(directToGate.getOwnerModule().getId(), directToGate.getId())));
+		liveAnimationNumber++;
+		animationPrimitives.add(new HandleMessageAnimation(this, getLiveEventNumber(), getLiveSimulationTime(), getLiveAnimationNumber(), simulation.getModuleByID(msg.getArrivalModuleId()), msg));
 	}
 
 	public void moduleCreated(cModule module) {
-		animationPrimitives.add(new CreateModuleAnimation(this, getLiveEventNumber(), getLiveSimulationTime(), 0, module));
+		animationPrimitives.add(new CreateModuleAnimation(this, getLiveEventNumber(), getLiveSimulationTime(), getLiveAnimationNumber(), module));
 	}
 
 	public void moduleDeleted(cModule module) {
+		animationPrimitives.add(new DeleteModuleAnimation(this, getLiveEventNumber(), getLiveSimulationTime(), getLiveAnimationNumber(), module));
 	}
 
 	public void moduleMethodCalled(cModule from, cModule to, String method) {
@@ -115,53 +107,52 @@ public class LiveAnimationController extends ReplayAnimationController implement
 	public void messageScheduled(cMessage msg) {
 	}
 
-	public void messageSendDirect(cMessage msg, cGate toGate, double propagationDelay) {
+	public void messageSendDirect(cMessage msg, cGate toGate, double propagationTime) {
 	}
 
-	public void messageSendHop(cMessage msg, cGate srcGate, double propagationDelay) {
+	public void messageSendHop(cMessage msg, cGate gate, double propagationTime) {
+		animationPrimitives.add(new SendMessageAnimation(this,
+				getLiveEventNumber(),
+				msg.getSendingTime(),
+				getLiveAnimationNumber(),
+				propagationTime,
+				0,
+				new ConnectionId(gate.getOwnerModule().getId(), gate.getId())));
 	}
 
-	public void messageSendHop(cMessage msg, cGate srcGate, double propagationDelay, double transmissionDelay, double transmissionStartTime) {
+	public void messageSendHop(cMessage msg, cGate gate, double propagationTime, double transmissionTime, double transmissionStartTime) {
+		animationPrimitives.add(new SendMessageAnimation(this,
+				getLiveEventNumber(),
+				transmissionStartTime,
+				getLiveAnimationNumber(),
+				propagationTime,
+				transmissionTime,
+				new ConnectionId(gate.getOwnerModule().getId(), gate.getId())));
 	}
 
 	public void objectDeleted(cObject object) {
 	}
 
 	@Override
-	protected IRuntimeSimulation createSimulation(IRuntimeModule rootModule) {
-		return Simkernel.getSimulation();
-	}
+	protected long loadAnimationPrimitivesForPosition() {
+		int count = animationPrimitives.size();
 
-	@Override
-	protected void initializeSimulation(IRuntimeModule rootModule) {
-		// TODO: rootModule and callback interface
-		super.initializeSimulation(rootModule);
-		Javaenv jenv = Simkernel.getJavaenv();
-		jenv.newRun(1);
+		while (jenv.getSimulationState() != Javaenv.eState.SIM_TERMINATED.swigValue()) {
+			IAnimationPrimitive lastAnimationPrimitive = animationPrimitives.get(animationPrimitives.size() - 1);
+
+			if (lastAnimationPrimitive.getEventNumber() > eventNumber &&
+				lastAnimationPrimitive.getBeginSimulationTime() > simulationTime &&
+				lastAnimationPrimitive.getAnimationNumber() > animationNumber &&
+				getAnimationTimeForSimulationTime(lastAnimationPrimitive.getBeginSimulationTime()) > animationTime)
+					break;
+
+			jenv.doOneStep();
+		}
+		
+		return animationPrimitives.size() - count;
 	}
 
 	protected cSimulation getLiveSimulation() {
 		return (cSimulation)simulation;
-	}
-
-	@Override
-	protected long loadAnimationPrimitivesForPosition() {
-		int count = animationPrimitives.size();
-
-		// TODO: why Simkernel
-		while (Simkernel.getJavaenv().getSimulationState() != Javaenv.eState.SIM_TERMINATED.swigValue()) {
-			Simkernel.getJavaenv().doOneStep();
-			positionChanged();
-			
-			IAnimationPrimitive lastAnimationPrimitive = animationPrimitives.get(animationPrimitives.size() - 1);
-			
-			if (count != animationPrimitives.size() &&
-				lastAnimationPrimitive.getEventNumber() > eventNumber &&
-				lastAnimationPrimitive.getBeginSimulationTime() > simulationTime)
-				break;
-		}
-		
-		// TODO:
-		return -1;
 	}
 }
