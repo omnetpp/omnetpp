@@ -1,11 +1,11 @@
-package org.omnetpp.ned.editor.graph.layouter;
+package org.omnetpp.figures.layout;
 
 import org.eclipse.draw2d.geometry.Point;
 
 /**
  * Abstract base class for graph layouting algorithms.
  */
-public abstract class AbstractGraphLayouter
+public abstract class AbstractGraphLayoutAlgorithm
 {
     protected int defaultEdgeLen;
 
@@ -34,7 +34,7 @@ public abstract class AbstractGraphLayouter
     /**
      * Constructor
      */
-    public AbstractGraphLayouter() {
+    public AbstractGraphLayoutAlgorithm() {
         rndseed = 1;
         defaultEdgeLen = 40;
         width = height = border = 0;

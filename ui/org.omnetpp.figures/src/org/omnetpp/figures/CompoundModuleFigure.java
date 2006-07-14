@@ -1,5 +1,6 @@
 package org.omnetpp.figures;
 
+import org.eclipse.draw2d.Connection;
 import org.eclipse.draw2d.ConnectionLayer;
 import org.eclipse.draw2d.ConnectionRouter;
 import org.eclipse.draw2d.FanRouter;
@@ -10,10 +11,8 @@ import org.eclipse.draw2d.Graphics;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.Layer;
 import org.eclipse.draw2d.LayeredPane;
-import org.eclipse.draw2d.ManhattanConnectionRouter;
 import org.eclipse.draw2d.SWTGraphics;
 import org.eclipse.draw2d.ScrollPane;
-import org.eclipse.draw2d.ShortestPathConnectionRouter;
 import org.eclipse.draw2d.StackLayout;
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Point;
@@ -26,8 +25,7 @@ import org.eclipse.swt.graphics.Pattern;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.displaymodel.IDisplayString;
 import org.omnetpp.common.image.ImageFactory;
-import org.omnetpp.figures.layout.FreeformDesktopLayout;
-import org.omnetpp.figures.routers.CompoundModuleConnectionRouter;
+import org.omnetpp.figures.layout.SpringEmbedderLayout;
 import org.omnetpp.figures.routers.CompoundModuleShortestPathConnectionRouter;
 
 public class CompoundModuleFigure extends ModuleFigure 
@@ -140,7 +138,6 @@ public class CompoundModuleFigure extends ModuleFigure
         // add the maint layer to the scroller pane
         // create the main and the decoration layers that will be added into the viewportPane
         pane = new FreeformLayer();
-        pane.setLayoutManager(new FreeformDesktopLayout());
         connectionLayer = new ConnectionLayer();
 
         layeredPane = new FreeformLayeredPane();
@@ -151,11 +148,13 @@ public class CompoundModuleFigure extends ModuleFigure
         layeredPane.addLayerAfter(pane, LayerID.DEFAULT, LayerID.BACKGROUND_DECORATION);
         layeredPane.addLayerAfter(new FreeformLayer(), LayerID.FRONT_DECORATION, LayerID.DEFAULT);
         layeredPane.addLayerAfter(connectionLayer, LayerID.CONNECTION, LayerID.FRONT_DECORATION);
-        layeredPane.addLayerAfter(new Layer(), LayerID.CALLOUT, LayerID.CONNECTION);
+        layeredPane.addLayerAfter(new FreeformLayer(), LayerID.CALLOUT, LayerID.CONNECTION);
         
         scrollpane.setViewport(new FreeformViewport());
         scrollpane.setContents(layeredPane);
         add(scrollpane);
+        
+        pane.setLayoutManager(new SpringEmbedderLayout(pane, connectionLayer));
 
         // this effectively creates the following hierechy:
         // -- ScrollPane (+FreeformViewport)
@@ -365,6 +364,14 @@ public class CompoundModuleFigure extends ModuleFigure
 	 */
 	public void addSubmodule(SubmoduleFigure submodule) {
 		pane.add(submodule);
+	}
+	
+	/**
+	 * Adds a connection figure to the connection layer of the compound module
+	 * @param conn
+	 */
+	public void addConnection(Connection conn) {
+		connectionLayer.add(conn);
 	}
 	
 }

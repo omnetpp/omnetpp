@@ -14,7 +14,8 @@ public class DesktopLayout extends XYLayout {
     /**
      * Implements the algorithm to layout the components of the given container figure.
      * Each component is laid out using its own layout constraint specifying its size
-     * and position.
+     * and position. Copied from XYLayout BUT places the middlepoint if the children to the
+     * specified constraint location.
      * 
      * @see LayoutManager#layout(IFigure)
      */

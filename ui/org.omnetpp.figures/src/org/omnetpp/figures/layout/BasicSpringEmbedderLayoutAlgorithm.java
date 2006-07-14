@@ -1,5 +1,6 @@
-package org.omnetpp.ned.editor.graph.layouter;
+package org.omnetpp.figures.layout;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
 
@@ -14,7 +15,7 @@ import org.eclipse.draw2d.geometry.Point;
  *  - ignores connections to the parent module (nodes which are connected
  *    to the parent may end up in the middle of the layout)
  */
-public class BasicSpringEmbedderLayouter extends AbstractGraphLayouter
+public class BasicSpringEmbedderLayoutAlgorithm extends AbstractGraphLayoutAlgorithm
 {
     static class Anchor
     {
@@ -44,9 +45,9 @@ public class BasicSpringEmbedderLayouter extends AbstractGraphLayouter
         int len;
     };
 
-    List<Anchor> anchors;
-    List<Node> nodes;
-    List<Edge> edges;
+    List<Anchor> anchors = new ArrayList<Anchor>();
+    List<Node> nodes = new ArrayList<Node>();;
+    List<Edge> edges = new ArrayList<Edge>();;
 
 	//#ifdef USE_CONTRACTING_BOX
 	//    static class Box
@@ -83,7 +84,7 @@ public class BasicSpringEmbedderLayouter extends AbstractGraphLayouter
     /**
      * Constructor
      */
-    BasicSpringEmbedderLayouter() {
+    BasicSpringEmbedderLayoutAlgorithm() {
         haveFixedNode = false;
         haveAnchoredNode = false;
         allNodesAreFixed = true; // unless later it proves otherwise
