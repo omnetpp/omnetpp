@@ -1,14 +1,24 @@
 package org.omnetpp.scave2.editors.ui;
 
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 import org.eclipse.core.runtime.Assert;
+import org.eclipse.core.runtime.ListenerList;
+import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
+import org.eclipse.jface.viewers.ISelectionProvider;
+import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
+import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.events.MouseMoveListener;
 import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.events.PaintListener;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Point;
@@ -30,12 +40,13 @@ import org.eclipse.swt.widgets.Control;
  * @author andras
  */
 //XXX move to common plug-in
-public class LiveTable extends Composite {
+public class LiveTable extends Composite  implements ISelectionProvider {
 	private static final Color SELECTBORDER_COLOR = new Color(null,255,0,0);
 	private static final Color INSERTMARK_COLOR = new Color(null,0,0,0);
  	
 	private ArrayList<Control> orderedChildren = new ArrayList<Control>();
 	private ArrayList<Control> selection = new ArrayList<Control>();
+	private ListenerList listeners = new ListenerList();
 	private Control insertMark = null;
 	
 	/**
@@ -209,6 +220,7 @@ public class LiveTable extends Composite {
 	public void select(Control control) {
 		addToSelection(control);
 		redraw();
+		fireSelectionChanged();
 	}
 
 	/**
@@ -218,6 +230,7 @@ public class LiveTable extends Composite {
 		if (selection.contains(control))
 			selection.remove(control);
 		redraw();
+		fireSelectionChanged();
 	}
 	
 	/**
@@ -227,6 +240,7 @@ public class LiveTable extends Composite {
 		for (Control control : controls)
 			addToSelection(control);
 		redraw();
+		fireSelectionChanged();
 	}
 
 	/**
@@ -257,7 +271,45 @@ public class LiveTable extends Composite {
 	/**
 	 * Returns the selection.
 	 */
-	public Control[] getSelection() {
-		return selection.toArray(new Control[selection.size()]);
+	public ISelection getSelection() {
+		return new StructuredSelection(selection);
+	}
+
+    /**
+     * Sets the current selection for this selection provider.
+     */
+	public void setSelection(ISelection selection) {
+		List<Control> controls = new ArrayList<Control>();
+		if (selection instanceof IStructuredSelection) {
+			for (Iterator iterator = ((IStructuredSelection)selection).iterator(); iterator.hasNext();) {
+				Object element = iterator.next();
+				if (element instanceof Control)
+					controls.add((Control)element);
+			}
+		}
+		setSelection(controls.toArray(new Control[controls.size()]));
+	}
+
+	/**
+     * Adds a listener for selection changes in this selection provider.
+	 */
+	public void addSelectionChangedListener(ISelectionChangedListener listener) {
+		listeners.add(listener);
+	}
+
+	/**
+     * Removes the given selection change listener from this selection provider.
+	 */
+	public void removeSelectionChangedListener(ISelectionChangedListener listener) {
+		listeners.remove(listener);
+	}
+	
+	/**
+	 * Notifies the selection change listeners about a selection change event.
+	 */
+	protected void fireSelectionChanged() {
+		SelectionChangedEvent event = new SelectionChangedEvent(this, getSelection());
+		for (Object listener : listeners.getListeners())
+			((ISelectionChangedListener)listener).selectionChanged(event);
 	}
 }

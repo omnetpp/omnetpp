@@ -3,7 +3,12 @@ package org.omnetpp.scave2.editors.ui;
 import java.util.Collection;
 
 import org.eclipse.emf.common.notify.Notification;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
+import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -69,6 +74,12 @@ public class ChartSheetPage extends ScaveEditorPage {
 		gridLayout.verticalSpacing = 7;
 		chartsArea.setLayout(gridLayout);
 		
+		chartsArea.addSelectionChangedListener(new ISelectionChangedListener() {
+			public void selectionChanged(SelectionChangedEvent event) {
+				scaveEditor.setSelection(event.getSelection());
+			}
+		});
+		
 		// set up contents
 		Collection<Chart> charts = chartsheet.getCharts();
 		Composite parent = getChartSheetComposite();
@@ -78,6 +89,5 @@ public class ChartSheetPage extends ScaveEditorPage {
 			DatasetType type = dataset.getType();
 			addChart(ChartFactory.createChart(parent, type, idlist, scaveEditor.getResultFileManager()));
 		}
-		
 	}
 }

@@ -810,7 +810,9 @@ public abstract class AbstractEMFModelEditor
 						getActionBarContributor().shareGlobalActions(this, actionBars);
 					}
 				};
-			propertySheetPage.setPropertySourceProvider(new AdapterFactoryContentProvider(adapterFactory));
+			propertySheetPage.setPropertySourceProvider(
+					new PropertySourceProvider(
+							new AdapterFactoryContentProvider(adapterFactory)));
 		}
 
 		return propertySheetPage;
