@@ -11,6 +11,7 @@ import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.graphics.Rectangle;
+import org.omnetpp.common.ui.CustomSashForm;
 
 
 public class DataPanel extends Composite {
@@ -66,7 +67,7 @@ public class DataPanel extends Composite {
 		gridData3.grabExcessVerticalSpace = true;
 		gridData3.verticalAlignment = GridData.FILL;
 		gridData3.horizontalAlignment = GridData.FILL;
-		SashForm sashForm = new SashForm(this, SWT.HORIZONTAL);
+		SashForm sashForm = new CustomSashForm(this, SWT.HORIZONTAL | SWT.SMOOTH);
 		sashForm.setLayoutData(gridData3);
 		
 		Tree fileRunTree = getFormToolkit().createTree(sashForm, SWT.BORDER);
@@ -74,8 +75,7 @@ public class DataPanel extends Composite {
 		Tree runFileTree = getFormToolkit().createTree(sashForm, SWT.BORDER);
 		runFileView = new TreeViewer(runFileTree);
 		
-		//sashForm.setMaximizedControl(fileRunTree);
-		sashForm.setWeights(new int[] {100, 0});
+		//sashForm.setWeights(new int[] {100, 0});
 	}
 	
 	private void createLogicalView() {

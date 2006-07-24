@@ -11,6 +11,7 @@ import org.eclipse.ui.forms.widgets.ExpandableComposite;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
 import org.omnetpp.common.color.ColorFactory;
+import org.omnetpp.common.ui.CustomSashForm;
 import org.omnetpp.scave.model.Analysis;
 import org.omnetpp.scave2.actions.EditAction;
 import org.omnetpp.scave2.actions.NewAction;
@@ -75,7 +76,7 @@ public class DatasetsAndChartsPage extends ScaveEditorPage {
 	}
 
 	private void createSashForm() {
-		sashform = new SashForm(getBody(), SWT.VERTICAL | SWT.SMOOTH);
+		sashform = new CustomSashForm(getBody(), SWT.VERTICAL | SWT.SMOOTH);
 		sashform.setBackground(this.getBackground());
 		sashform.setLayoutData(new GridData(GridData.GRAB_HORIZONTAL |
 											GridData.GRAB_VERTICAL |
