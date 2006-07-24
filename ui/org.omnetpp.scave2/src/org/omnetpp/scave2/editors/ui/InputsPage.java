@@ -24,8 +24,9 @@ import org.omnetpp.scave2.editors.ScaveEditor;
 import org.omnetpp.scave2.editors.treeproviders.CachedTreeContentProvider;
 import org.omnetpp.scave2.editors.treeproviders.InputsLogicalViewContentProvider;
 import org.omnetpp.scave2.editors.treeproviders.InputsLogicalViewLabelProvider;
-import org.omnetpp.scave2.editors.treeproviders.InputsPhysicalViewContentProvider;
+import org.omnetpp.scave2.editors.treeproviders.InputsFileRunViewContentProvider;
 import org.omnetpp.scave2.editors.treeproviders.InputsPhysicalViewLabelProvider;
+import org.omnetpp.scave2.editors.treeproviders.InputsRunFileViewContentProvider;
 
 public class InputsPage extends ScaveEditorPage {
 
@@ -44,9 +45,14 @@ public class InputsPage extends ScaveEditorPage {
 		return panel.getTreeViewer();
 	}
 	
-	public TreeViewer getPhysicalDataTreeViewer() {
+	public TreeViewer getFileRunTreeViewer() {
 		DataPanel panel = (DataPanel)dataSection.getClient();
-		return panel.getPhysicalTreeViewer();
+		return panel.getFileRunTreeViewer();
+	}
+	
+	public TreeViewer getRunFileTreeViewer() {
+		DataPanel panel = (DataPanel)dataSection.getClient();
+		return panel.getRunFileTreeViewer();
 	}
 	
 	public TreeViewer getLogicalDataTreeViewer() {
@@ -69,25 +75,31 @@ public class InputsPage extends ScaveEditorPage {
 		// configure viewers
         scaveEditor.configureTreeViewer(getInputFilesTreeViewer());
         
-        getPhysicalDataTreeViewer().setContentProvider(new InputsPhysicalViewContentProvider());
-        getPhysicalDataTreeViewer().setLabelProvider(new InputsPhysicalViewLabelProvider());
+        getFileRunTreeViewer().setContentProvider(new InputsFileRunViewContentProvider());
+        getFileRunTreeViewer().setLabelProvider(new InputsPhysicalViewLabelProvider());
 
+        getRunFileTreeViewer().setContentProvider(new InputsRunFileViewContentProvider());
+        getRunFileTreeViewer().setLabelProvider(new InputsPhysicalViewLabelProvider());
+        
         getLogicalDataTreeViewer().setContentProvider(new InputsLogicalViewContentProvider());
         getLogicalDataTreeViewer().setLabelProvider(new InputsLogicalViewLabelProvider());
 
         scaveEditor.getResultFileManager().addListener(new IResultFilesChangeListener() {
 			public void resultFileManagerChanged(ResultFileManager manager) {
-				getPhysicalDataTreeViewer().setInput(manager); // force refresh
+				getFileRunTreeViewer().setInput(manager); // force refresh
+				getRunFileTreeViewer().setInput(manager);
 				getLogicalDataTreeViewer().setInput(manager);
 			}
         });
         
-        getPhysicalDataTreeViewer().addSelectionChangedListener(scaveEditor.getSelectionChangedListener());
+        getFileRunTreeViewer().addSelectionChangedListener(scaveEditor.getSelectionChangedListener());
+        getRunFileTreeViewer().addSelectionChangedListener(scaveEditor.getSelectionChangedListener());
         getLogicalDataTreeViewer().addSelectionChangedListener(scaveEditor.getSelectionChangedListener());
         
         // set up drag & drop of .sca and .vec files into the viewers
         setupResultFileDropTarget(getInputFilesTreeViewer().getControl());
-        setupResultFileDropTarget(getPhysicalDataTreeViewer().getControl());
+        setupResultFileDropTarget(getFileRunTreeViewer().getControl());
+        setupResultFileDropTarget(getRunFileTreeViewer().getControl());
         setupResultFileDropTarget(getLogicalDataTreeViewer().getControl());
 
         // set contents
@@ -95,7 +107,8 @@ public class InputsPage extends ScaveEditorPage {
         getInputFilesTreeViewer().setInput(analysis.getInputs());
 
         ResultFileManagerEx manager = scaveEditor.getResultFileManager();
-        getPhysicalDataTreeViewer().setInput(manager);
+        getFileRunTreeViewer().setInput(manager);
+        getRunFileTreeViewer().setInput(manager);
         getLogicalDataTreeViewer().setInput(manager);
 	}
 
@@ -178,7 +191,10 @@ public class InputsPage extends ScaveEditorPage {
 		
 		// double-clicks
 		configureViewerDefaultAction(
-				dataPanel.getPhysicalTreeViewer(),
+				dataPanel.getFileRunTreeViewer(),
+				new SetFilterAction());
+		configureViewerDefaultAction(
+				dataPanel.getRunFileTreeViewer(),
 				new SetFilterAction());
 		configureViewerDefaultAction(
 				dataPanel.getLogicalTreeViewer(),

@@ -6,9 +6,9 @@ import org.omnetpp.scave.engine.RunList;
 import org.omnetpp.scave.engineext.ResultFileManagerEx;
 
 /**
- * Content provider for the "Physical view" tree of the Inputs page.
+ * Content provider for the "File/Run" tree of the Inputs page.
  */
-public class InputsPhysicalViewContentProvider extends CachedTreeContentProvider  {
+public class InputsFileRunViewContentProvider extends CachedTreeContentProvider  {
 
 	public GenericTreeNode buildTree(Object element) {
 		// Manager/ResultFile/Run

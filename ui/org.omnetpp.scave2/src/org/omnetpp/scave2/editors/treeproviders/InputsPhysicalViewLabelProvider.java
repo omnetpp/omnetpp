@@ -15,15 +15,16 @@ public class InputsPhysicalViewLabelProvider extends LabelProvider {
 	public String getText(Object element) {
 		if (element instanceof GenericTreeNode) {
 			GenericTreeNode node = (GenericTreeNode)element;
-			if (node.getPayload() instanceof Inputs)
+			Object payload = node.getPayload();
+			if (payload instanceof Inputs)
 				return "";
-			else if (node.getPayload() instanceof ResultFile) {
-				ResultFile file = (ResultFile)node.getPayload();
+			else if (payload instanceof ResultFile) {
+				ResultFile file = (ResultFile)payload;
 				IFile ifile = ScaveEditor.findFileInWorkspace(file.getFilePath());
 				return ifile != null ? ifile.getFullPath().toString() : file.getFilePath();
 			}
-			else if (node.getPayload() instanceof Run) {
-				Run run = (Run)node.getPayload();
+			else if (payload instanceof Run) {
+				Run run = (Run)payload;
 				if (run.getRunNumber()==0 && run.getRunName().equals("")) 
 					return "(unnamed run)"; // old vector files
 				else if (run.getRunNumber()!=0 && run.getRunName().equals("")) 
