@@ -14,17 +14,16 @@ import org.eclipse.swt.graphics.Rectangle;
 import org.omnetpp.common.ui.CustomSashForm;
 
 
-public class DataPanel extends Composite {
+public class DataPanel extends SashForm {
 
 	private FormToolkit formToolkit = null;   //  @jve:decl-index=0:visual-constraint=""
-	private Label heading1 = null;
-	private Label heading2 = null;
 	private TreeViewer fileRunView;
 	private TreeViewer runFileView;
 	private TreeViewer logicalView;
 
 	public DataPanel(Composite parent, int style) {
-		super(parent, style);
+		super(parent, style | SWT.SMOOTH);
+		getFormToolkit().adapt(this);
 		initialize();
 	}
 	
@@ -48,47 +47,22 @@ public class DataPanel extends Composite {
 		gridLayout.horizontalSpacing = 10;
 		this.setLayout(gridLayout);
 
-		GridData gridData1 = new GridData();
-		gridData1.grabExcessHorizontalSpace = false;
-		heading1 = getFormToolkit().createLabel(this, "Physical: by file and run");
-		heading1.setLayoutData(gridData1);
-		GridData gridData2 = new GridData();
-		gridData2.grabExcessHorizontalSpace = false;
-		gridData2.horizontalAlignment = GridData.BEGINNING;
-		heading2 = getFormToolkit().createLabel(this, "Logical: by experiment, measurement, replication");
-		heading2.setLayoutData(gridData2);
-		createPhysicalViews();
-		createLogicalView();
-	}
-	
-	private void createPhysicalViews() {
-		GridData gridData3 = new GridData();
-		gridData3.grabExcessHorizontalSpace = true;
-		gridData3.grabExcessVerticalSpace = true;
-		gridData3.verticalAlignment = GridData.FILL;
-		gridData3.horizontalAlignment = GridData.FILL;
-		SashForm sashForm = new CustomSashForm(this, SWT.HORIZONTAL | SWT.SMOOTH);
-		sashForm.setLayoutData(gridData3);
-		
-		Tree fileRunTree = getFormToolkit().createTree(sashForm, SWT.BORDER);
-		fileRunView = new TreeViewer(fileRunTree);
-		Tree runFileTree = getFormToolkit().createTree(sashForm, SWT.BORDER);
-		runFileView = new TreeViewer(runFileTree);
-		
-		//sashForm.setWeights(new int[] {100, 0});
-	}
-	
-	private void createLogicalView() {
-		GridData gridData = new GridData();
-		gridData.grabExcessHorizontalSpace = true;
-		gridData.grabExcessVerticalSpace = true;
-		gridData.verticalAlignment = GridData.FILL;
-		gridData.horizontalAlignment = GridData.FILL;
-		Tree logicalViewTree = getFormToolkit().createTree(this, SWT.BORDER);
-		logicalViewTree.setLayoutData(gridData);
-		logicalView = new TreeViewer(logicalViewTree);
+		fileRunView = createLabelAndTree(this, "Physical: by file and run");
+		runFileView = createLabelAndTree(this, "Physical: by run and file");
+		logicalView = createLabelAndTree(this, "Logical: by experiment, measurement, replication");
 	}
 
+	private TreeViewer createLabelAndTree(Composite parent, String text) {
+		Composite composite = new Composite(parent, SWT.BACKGROUND);
+		composite.setLayout(new GridLayout(1, false));
+
+		Label label = getFormToolkit().createLabel(composite, text);
+		label.setLayoutData(new GridData(GridData.BEGINNING, GridData.BEGINNING, false, false));
+		Tree tree = getFormToolkit().createTree(composite, SWT.BORDER);
+		tree.setLayoutData(new GridData(GridData.FILL, GridData.FILL, true, true));
+		return new TreeViewer(tree);
+	}
+	
 	/**
 	 * This method initializes formToolkit	
 	 * 	

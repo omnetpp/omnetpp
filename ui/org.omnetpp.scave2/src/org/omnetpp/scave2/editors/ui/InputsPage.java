@@ -11,6 +11,7 @@ import org.eclipse.ui.forms.widgets.ExpandableComposite;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
 import org.omnetpp.common.color.ColorFactory;
+import org.omnetpp.common.ui.CustomSashForm;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engineext.IResultFilesChangeListener;
 import org.omnetpp.scave.engineext.ResultFileManagerEx;
@@ -124,7 +125,7 @@ public class InputsPage extends ScaveEditorPage {
 	}
 
 	private void createSashForm() {
-		sashform = new SashForm(getBody(), SWT.VERTICAL | SWT.SMOOTH);
+		sashform = new CustomSashForm(getBody(), SWT.VERTICAL | SWT.SMOOTH);
 		sashform.setBackground(this.getBackground());
 		sashform.setLayoutData(new GridData(GridData.GRAB_HORIZONTAL |
 											GridData.GRAB_VERTICAL |
@@ -178,15 +179,10 @@ public class InputsPage extends ScaveEditorPage {
 	 *
 	 */
 	private void createDataSection() {
-		GridData gridData1 = new GridData();
-		gridData1.grabExcessHorizontalSpace = true;
-		gridData1.grabExcessVerticalSpace = true;
-		gridData1.horizontalAlignment = GridData.FILL;
-		gridData1.verticalAlignment = GridData.FILL;
 		dataSection = getFormToolkit().createSection(sashform, 
 				Section.DESCRIPTION | ExpandableComposite.TITLE_BAR);
 		dataSection.setExpanded(true);
-		dataSection.setLayoutData(gridData1);
+		dataSection.setLayoutData(new GridData(GridData.FILL, GridData.FILL, true, true));
 		dataSection.setText("Data");
 		dataSection.setDescription("Here you can browse all data (vectors, scalars and histograms) that come from the result files.");
 		DataPanel dataPanel = new DataPanel(dataSection, SWT.NONE);
