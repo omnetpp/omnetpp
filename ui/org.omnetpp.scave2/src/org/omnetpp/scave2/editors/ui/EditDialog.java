@@ -20,11 +20,11 @@ import org.eclipse.swt.widgets.Shell;
  */
 public class EditDialog extends Dialog {
 
-	EObject object;
-	EStructuralFeature[] features;
-	ScaveObjectEditForm form;
-	Object[] values;
-	boolean[] isDirty;
+	private EObject object;
+	private EStructuralFeature[] features;
+	private IScaveObjectEditForm form;
+	private Object[] values;
+	private boolean[] isDirty;
 	
 	public EditDialog(
 			Shell parentShell,
@@ -46,11 +46,11 @@ public class EditDialog extends Dialog {
 	}
 	
 	public boolean isDirty(int index) {
-		return form.isDirty(index);
+		return isDirty[index];
 	}
 	
 	public Object getValue(int index) {
-		return form.getValue(index);
+		return values[index];
 	}
 	
 	@Override

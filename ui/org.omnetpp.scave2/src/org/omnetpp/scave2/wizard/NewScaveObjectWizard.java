@@ -17,7 +17,7 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.omnetpp.scave.model.ScaveModelFactory;
-import org.omnetpp.scave2.editors.ui.ScaveObjectEditForm;
+import org.omnetpp.scave2.editors.ui.IScaveObjectEditForm;
 import org.omnetpp.scave2.editors.ui.ScaveObjectEditFormFactory;
 
 /**
@@ -147,7 +147,7 @@ public class NewScaveObjectWizard extends Wizard {
 	
 	class EditFieldsWizardPage extends WizardPage {
 		
-		ScaveObjectEditForm form;
+		IScaveObjectEditForm form;
 		
 		protected EditFieldsWizardPage(String pageName) {
 			super(pageName);

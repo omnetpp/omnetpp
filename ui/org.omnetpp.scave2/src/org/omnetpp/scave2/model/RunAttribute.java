@@ -43,8 +43,9 @@ public class RunAttribute {
 		return name.hashCode() ^ (value != null ? value.hashCode() : 0);
 	}
 
+	@Override
 	public String toString() {
-		return name +  "\"" + (value != null ? value : "n/a") + "\"";
+		return name +  " \"" + (value != null ? value : "n/a") + "\"";
 	}
 	
 	public static RunAttribute getRunAttribute(Run run, String attrName) {

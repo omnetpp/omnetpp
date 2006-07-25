@@ -7,9 +7,10 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 
 public class InputFilesPanel extends TreeWithButtonsPanel {
 	
-	Button addFileButton;
-	Button addWildcardButton;
-	Button removeFileButton;
+	private Button addFileButton;
+	private Button addWildcardButton;
+	private Button removeFileButton;
+	private Button editButton;
 	
 	public InputFilesPanel(Composite parent, int style) {
 		super(parent, style);
@@ -21,6 +22,7 @@ public class InputFilesPanel extends TreeWithButtonsPanel {
 		FormToolkit toolkit = getFormToolkit();
 		addFileButton = toolkit.createButton(buttonPanel, "Add...", SWT.NONE);
 		addWildcardButton = toolkit.createButton(buttonPanel, "Add wildcard...", SWT.NONE);
+		editButton = toolkit.createButton(buttonPanel, "Edit", SWT.NONE);
 		removeFileButton = toolkit.createButton(buttonPanel, "Remove", SWT.NONE);
 	}
 
@@ -30,6 +32,10 @@ public class InputFilesPanel extends TreeWithButtonsPanel {
 
 	public Button getAddWildcardButton() {
 		return addWildcardButton;
+	}
+
+	public Button getEditButton() {
+		return editButton;
 	}
 
 	public Button getRemoveFileButton() {

@@ -12,7 +12,7 @@ import org.eclipse.swt.widgets.Composite;
  *
  * @author tomi
  */
-public interface ScaveObjectEditForm {
+public interface IScaveObjectEditForm {
 	
 	/**
 	 * Adds the controls of the form to the panel.

@@ -3,7 +3,6 @@ package org.omnetpp.scave2.editors.ui;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
-import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -18,13 +17,13 @@ import org.omnetpp.scave.engineext.ResultFileManagerEx;
 import org.omnetpp.scave.model.Analysis;
 import org.omnetpp.scave2.actions.AddResultFileAction;
 import org.omnetpp.scave2.actions.AddWildcardResultFileAction;
+import org.omnetpp.scave2.actions.EditAction;
 import org.omnetpp.scave2.actions.RemoveAction;
 import org.omnetpp.scave2.actions.SetFilterAction;
 import org.omnetpp.scave2.editors.ScaveEditor;
-import org.omnetpp.scave2.editors.treeproviders.CachedTreeContentProvider;
+import org.omnetpp.scave2.editors.treeproviders.InputsFileRunViewContentProvider;
 import org.omnetpp.scave2.editors.treeproviders.InputsLogicalViewContentProvider;
 import org.omnetpp.scave2.editors.treeproviders.InputsLogicalViewLabelProvider;
-import org.omnetpp.scave2.editors.treeproviders.InputsFileRunViewContentProvider;
 import org.omnetpp.scave2.editors.treeproviders.InputsPhysicalViewLabelProvider;
 import org.omnetpp.scave2.editors.treeproviders.InputsRunFileViewContentProvider;
 
@@ -159,6 +158,10 @@ public class InputsPage extends ScaveEditorPage {
 				inputFilesPanel.getAddWildcardButton(), 
 				inputFilesPanel.getTreeViewer(),
 				new AddWildcardResultFileAction());
+		configureViewerButton(
+				inputFilesPanel.getEditButton(),
+				inputFilesPanel.getTreeViewer(),
+				new EditAction());
 		configureViewerButton(
 				inputFilesPanel.getRemoveFileButton(), 
 				inputFilesPanel.getTreeViewer(),

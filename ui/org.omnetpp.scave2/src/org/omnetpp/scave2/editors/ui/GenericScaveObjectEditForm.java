@@ -27,7 +27,7 @@ import org.omnetpp.scave.model.provider.ScaveModelItemProviderAdapterFactory;
  *
  * @author tomi
  */
-public class GenericScaveObjectEditForm implements ScaveObjectEditForm {
+public class GenericScaveObjectEditForm implements IScaveObjectEditForm {
 
 	private EObject object;
 	private AdapterFactory adapterFactory;

@@ -22,7 +22,7 @@ public class EditAction extends AbstractScaveAction {
 	protected void doRun(ScaveEditor scaveEditor, IStructuredSelection selection) {
 		if (isApplicable(scaveEditor, selection)) {
 		
-			EObject object = (EObject)selection.getFirstElement();
+			EObject object = (EObject)selection.getFirstElement(); //TODO edit several objects together?
 
 			EditDialog dialog = new EditDialog(scaveEditor.getSite().getShell(), object);
 			if (dialog.open() == Window.OK) {

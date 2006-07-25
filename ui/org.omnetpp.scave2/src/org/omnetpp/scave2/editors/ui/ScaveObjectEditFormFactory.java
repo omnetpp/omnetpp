@@ -24,14 +24,14 @@ public class ScaveObjectEditFormFactory {
 	/**
 	 * Creates a form containing all editable features of the object.
 	 */
-	public ScaveObjectEditForm createForm(EObject object) {
+	public IScaveObjectEditForm createForm(EObject object) {
 		return new GenericScaveObjectEditForm(object);
 	}
 	
 	/**
 	 * Creates a form containing the specified features of the object.
 	 */
-	public ScaveObjectEditForm createForm(EObject object, EStructuralFeature[] features) {
+	public IScaveObjectEditForm createForm(EObject object, EStructuralFeature[] features) {
 		return new GenericScaveObjectEditForm(object, features);
 	}
 }
