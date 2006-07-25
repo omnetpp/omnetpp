@@ -51,7 +51,9 @@ public class ResultFilesTracker implements INotifyChangedListener, IResourceChan
 		case Notification.MOVE:
 		case Notification.SET:
 		case Notification.UNSET:
-			synchronize(); //XXX add condition: only reload if something inside Inputs changes! --Andras
+			Object notifier = notification.getNotifier();
+			if (notifier instanceof Inputs || notifier instanceof InputFile)
+				synchronize();
 		}
 	}
 	
