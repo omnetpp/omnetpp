@@ -126,7 +126,8 @@ public class InputsPage extends ScaveEditorPage {
 
 	private void createSashForm() {
 		sashform = new CustomSashForm(getBody(), SWT.VERTICAL | SWT.SMOOTH);
-		sashform.setBackground(this.getBackground());
+		getFormToolkit().adapt(sashform);
+		//sashform.setBackground(this.getBackground());
 		sashform.setLayoutData(new GridData(GridData.GRAB_HORIZONTAL |
 											GridData.GRAB_VERTICAL |
 											GridData.FILL_BOTH));
@@ -136,15 +137,10 @@ public class InputsPage extends ScaveEditorPage {
 	 * This method initializes inputFilesSection	
 	 */
 	private void createInputFilesSection() {
-		GridData gridData = new GridData();
-		gridData.grabExcessHorizontalSpace = true;
-		gridData.grabExcessVerticalSpace = true;
-		gridData.horizontalAlignment = GridData.FILL;
-		gridData.verticalAlignment = GridData.FILL;
 		inputFilesSection = getFormToolkit().createSection(sashform,
 				Section.DESCRIPTION | ExpandableComposite.TITLE_BAR);
 		inputFilesSection.setExpanded(true);
-		inputFilesSection.setLayoutData(gridData);
+		inputFilesSection.setLayoutData(new GridData(GridData.FILL, GridData.FILL, true, true));
 		inputFilesSection.setText("Input files");
 		inputFilesSection.setDescription("Add or drag & drop result files (*.sca or *.vec) that should be used in this analysis. Wildcards (*,?) can also be used to specify multiple files.");
 		InputFilesPanel inputFilesPanel = new InputFilesPanel(inputFilesSection, SWT.NONE);
@@ -181,13 +177,13 @@ public class InputsPage extends ScaveEditorPage {
 	private void createDataSection() {
 		dataSection = getFormToolkit().createSection(sashform, 
 				Section.DESCRIPTION | ExpandableComposite.TITLE_BAR);
-		dataSection.setExpanded(true);
 		dataSection.setLayoutData(new GridData(GridData.FILL, GridData.FILL, true, true));
 		dataSection.setText("Data");
 		dataSection.setDescription("Here you can browse all data (vectors, scalars and histograms) that come from the result files.");
+		//dataSection.setExpanded(true); XXX SWT bug: must be after setText() if present, otherwise text won't appear!
 		DataPanel dataPanel = new DataPanel(dataSection, SWT.NONE);
 		dataSection.setClient(dataPanel);
-		
+
 		// double-clicks
 		configureViewerDefaultAction(
 				dataPanel.getFileRunTreeViewer(),

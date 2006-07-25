@@ -87,17 +87,12 @@ public class DatasetsAndChartsPage extends ScaveEditorPage {
 	 * This method initializes datasetsSection	
 	 */
 	private void createDatasetsSection() {
-		GridData gridData2 = new GridData();
-		gridData2.horizontalAlignment = GridData.FILL;
-		gridData2.verticalAlignment = GridData.FILL;
-		gridData2.grabExcessHorizontalSpace = true;
-		gridData2.grabExcessVerticalSpace = true;
 		datasetsSection = getFormToolkit().createSection(sashform,
 				Section.DESCRIPTION | ExpandableComposite.TITLE_BAR);
-		datasetsSection.setExpanded(true);
-		datasetsSection.setLayoutData(gridData2);
+		datasetsSection.setLayoutData(new GridData(GridData.FILL, GridData.FILL, true, true));
 		datasetsSection.setText("Datasets");
 		datasetsSection.setDescription("Here you can browse the datasets you have created from the input.");
+		//datasetsSection.setExpanded(true); XXX SWT bug: must be after setText() if present, otherwise text won't appear!
 		final DatasetsPanel datasetsPanel = new DatasetsPanel(datasetsSection, SWT.NONE);
 		datasetsSection.setClient(datasetsPanel);
 
@@ -124,16 +119,12 @@ public class DatasetsAndChartsPage extends ScaveEditorPage {
 	 */
 	private void createChartSheetsSection() {
 		// set up UI
-		GridData gridData3 = new GridData();
-		gridData3.horizontalAlignment = GridData.FILL;
-		gridData3.verticalAlignment = GridData.FILL;
-		gridData3.grabExcessHorizontalSpace = true;
 		chartSheetsSection = getFormToolkit().createSection(sashform,
 				Section.DESCRIPTION | ExpandableComposite.TITLE_BAR);
-		chartSheetsSection.setExpanded(true);
-		chartSheetsSection.setLayoutData(gridData3);
+		chartSheetsSection.setLayoutData(new GridData(GridData.FILL, GridData.FILL, true, false));
 		chartSheetsSection.setText("Chart sheets and charts");
 		chartSheetsSection.setDescription("Here you can browse the charts you have created for the datasets.");
+		//chartSheetsSection.setExpanded(true); XXX SWT bug: must be after setText() if present, otherwise text won't appear!
 		ChartSheetsPanel chartSheetsPanel = new ChartSheetsPanel(chartSheetsSection, SWT.NONE); 
 		chartSheetsSection.setClient(chartSheetsPanel);
 
