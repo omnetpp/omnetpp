@@ -44,8 +44,7 @@ public class PropertySourceIO {
 		writer.writeEndElement(id);
 	}
 	
-	public static String toString(Object value, IPropertyDescriptor descriptor)
-		throws IOException {
+	public static String toString(Object value, IPropertyDescriptor descriptor) {
 		String str = null;
 		
 		if (descriptor instanceof CheckboxPropertyDescriptor ||
@@ -60,13 +59,12 @@ public class PropertySourceIO {
 		else if (descriptor instanceof EnumPropertyDescriptor)
 			str = (((EnumPropertyDescriptor)descriptor).getName(value));
 		else
-			throw new IOException("Unsupported property descriptor: " + descriptor.getClass().getName());
+			throw new RuntimeException("Unsupported property descriptor: " + descriptor.getClass().getName());
 		
 		return str;
 	}
 	
-	public static Object fromString(String str, IPropertyDescriptor descriptor)
-		throws SAXException {
+	public static Object fromString(String str, IPropertyDescriptor descriptor) {
 		Object value = null;
 		
 		if (descriptor instanceof CheckboxPropertyDescriptor)
@@ -82,7 +80,7 @@ public class PropertySourceIO {
 		else if (descriptor instanceof EnumPropertyDescriptor)
 			value = ((EnumPropertyDescriptor)descriptor).getValue(str);
 		else
-			throw new SAXException("Unsupperted property descriptor: " + descriptor.getClass().getName());
+			throw new RuntimeException("Unsupported property descriptor: " + descriptor.getClass().getName());
 		
 		return value;
 	}

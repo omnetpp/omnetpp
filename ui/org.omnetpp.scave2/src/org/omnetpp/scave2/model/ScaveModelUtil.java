@@ -4,7 +4,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import org.eclipse.emf.common.command.Command;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.edit.command.AddCommand;
+import org.eclipse.emf.edit.command.SetCommand;
+import org.eclipse.emf.edit.domain.EditingDomain;
 import org.omnetpp.scave.engine.ResultFile;
 import org.omnetpp.scave.engine.ResultItem;
 import org.omnetpp.scave.engine.Run;
@@ -12,7 +16,9 @@ import org.omnetpp.scave.model.Add;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.Dataset;
 import org.omnetpp.scave.model.DatasetType;
+import org.omnetpp.scave.model.Property;
 import org.omnetpp.scave.model.ScaveModelFactory;
+import org.omnetpp.scave.model.ScaveModelPackage;
 
 /**
  * A collection of static methods to manipulate model objects
@@ -95,5 +101,37 @@ public class ScaveModelUtil {
 		while (object != null && !(type.isAssignableFrom(object.getClass())))
 			object = object.eContainer();
 		return (T)object;
+	}
+	
+	public static Property getChartProperty(Chart chart, String propertyName) {
+		for (Object object : chart.getProperties()) {
+			Property property = (Property)object;
+			if (property.getName().equals(propertyName))
+				return property;
+		}
+		return null;
+	}
+	
+	public static void setChartProperty(EditingDomain ed, Chart chart, String propertyName, String propertyValue) {
+		Property property = getChartProperty(chart, propertyName);
+		Command command;
+		if (property == null) {
+			property = ScaveModelFactory.eINSTANCE.createProperty();
+			property.setName(propertyName);
+			property.setValue(propertyValue);
+			command = AddCommand.create(
+						ed,
+						chart,
+						ScaveModelPackage.eINSTANCE.getChart_Properties(),
+						property);
+		}
+		else {
+			command = SetCommand.create(
+						ed,
+						property,
+						ScaveModelPackage.eINSTANCE.getProperty_Value(),
+						propertyValue);
+		}
+		ed.getCommandStack().execute(command);
 	}
 }

@@ -811,8 +811,7 @@ public abstract class AbstractEMFModelEditor
 					}
 				};
 			propertySheetPage.setPropertySourceProvider(
-					new PropertySourceProvider(
-							new AdapterFactoryContentProvider(adapterFactory)));
+					new ScavePropertySourceProvider(adapterFactory));
 		}
 
 		return propertySheetPage;

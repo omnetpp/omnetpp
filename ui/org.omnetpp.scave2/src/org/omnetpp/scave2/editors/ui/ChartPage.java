@@ -1,7 +1,11 @@
 package org.omnetpp.scave2.editors.ui;
 
 import org.eclipse.emf.common.notify.Notification;
+import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.MouseAdapter;
+import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -12,6 +16,7 @@ import org.omnetpp.scave.model.Dataset;
 import org.omnetpp.scave.model.DatasetType;
 import org.omnetpp.scave.model.ScaveModelPackage;
 import org.omnetpp.scave2.charting.ChartFactory;
+import org.omnetpp.scave2.charting.InteractiveChart;
 import org.omnetpp.scave2.editors.ScaveEditor;
 import org.omnetpp.scave2.model.DatasetManager;
 import org.omnetpp.scave2.model.ScaveModelUtil;
@@ -55,6 +60,12 @@ public class ChartPage extends ScaveEditorPage {
 		Dataset dataset = ScaveModelUtil.findEnclosingObject(chart, Dataset.class);
 		IDList idlist = DatasetManager.getIDListFromDataset(scaveEditor.getResultFileManager(), dataset, chart);
 		DatasetType type = dataset.getType();
-		setChart(ChartFactory.createChart(parent, type, idlist, scaveEditor.getResultFileManager()));
+		final InteractiveChart chart = ChartFactory.createChart(parent, type, idlist, scaveEditor.getResultFileManager()); 
+		setChart(chart);
+		chart.addMouseListener(new MouseAdapter() {
+			public void mouseUp(MouseEvent e) {
+				scaveEditor.setSelection(new StructuredSelection(chart));
+			}
+		});
 	}
 }
