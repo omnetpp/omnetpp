@@ -15,11 +15,18 @@ import org.omnetpp.scave2.wizard.NewScaveObjectWizard;
  * attributes can be entered.
  */
 public class NewAction extends AbstractScaveAction {
+	private EObject defaultParent;
+	
 	public NewAction() {
+		this(null);
+	}
+
+	public NewAction(EObject defaultParent) {
+		this.defaultParent = defaultParent;
 		setText("New...");
 		setToolTipText("Create new item");
 	}
-
+	
 	@Override
 	protected void doRun(ScaveEditor editor, IStructuredSelection selection) {
 		EObject parent = getParent(selection);
@@ -39,7 +46,9 @@ public class NewAction extends AbstractScaveAction {
 	}
 	
 	private EObject getParent(IStructuredSelection selection) {
-		return selection != null && selection.size() == 1 && selection.getFirstElement() instanceof EObject ?
-			(EObject)selection.getFirstElement() : null;
+		if (selection!=null && selection.size()==1 && selection.getFirstElement() instanceof EObject)
+			return (EObject)selection.getFirstElement();
+		else
+			return defaultParent;
 	}
 }

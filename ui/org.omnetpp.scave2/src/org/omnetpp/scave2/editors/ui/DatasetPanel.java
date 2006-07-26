@@ -12,7 +12,7 @@ public class DatasetPanel extends TreeWithButtonsPanel {
 	private Button editButton;
 	private Button groupButton;
 	private Button ungroupButton;
-	private Button createChartButton;
+	//private Button createChartButton;
 	private Button openChartButton;
 	
 	public DatasetPanel(Composite parent, int style) {
@@ -28,7 +28,7 @@ public class DatasetPanel extends TreeWithButtonsPanel {
 		editButton = toolkit.createButton(buttonPanel, "Edit...", SWT.NONE);
 		groupButton = toolkit.createButton(buttonPanel, "Group", SWT.NONE);
 		ungroupButton = toolkit.createButton(buttonPanel, "Ungroup", SWT.NONE);
-		createChartButton = toolkit.createButton(buttonPanel, "Create chart...", SWT.NONE);
+		//createChartButton = toolkit.createButton(buttonPanel, "Create chart...", SWT.NONE);
 		openChartButton = toolkit.createButton(buttonPanel, "Open chart", SWT.NONE);
 	}
 
@@ -44,9 +44,9 @@ public class DatasetPanel extends TreeWithButtonsPanel {
 		return editButton;
 	}
 
-	public Button getCreateChartButton() {
-		return createChartButton;
-	}
+//	public Button getCreateChartButton() {
+//		return createChartButton;
+//	}
 	
 	public Button getOpenChartButton() {
 		return openChartButton;
