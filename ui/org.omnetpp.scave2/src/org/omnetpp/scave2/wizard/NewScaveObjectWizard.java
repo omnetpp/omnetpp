@@ -97,7 +97,7 @@ public class NewScaveObjectWizard extends Wizard {
 		if (newScaveObject != null) {
 			EStructuralFeature[] features = editFieldsPage.getFeatures();
 			for (int i = 0; i < features.length; ++i) {
-				newScaveObject.eSet(features[i], editFieldsPage.getValue(i));
+				newScaveObject.eSet(features[i], editFieldsPage.getValue(features[i]));
 			}
 		}
 		return newScaveObject != null;
@@ -167,8 +167,8 @@ public class NewScaveObjectWizard extends Wizard {
 			return form.getFeatures();
 		}
 		
-		public Object getValue(int index) {
-			return form.getValue(index);
+		public Object getValue(EStructuralFeature feature) {
+			return form.getValue(feature);
 		}
 		
 		public void clearControl() {

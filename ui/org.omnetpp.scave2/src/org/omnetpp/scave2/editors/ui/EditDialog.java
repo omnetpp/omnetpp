@@ -2,7 +2,7 @@ package org.omnetpp.scave2.editors.ui;
 
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
-import org.eclipse.jface.dialogs.Dialog;
+import org.eclipse.jface.dialogs.TitleAreaDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
@@ -18,18 +18,18 @@ import org.eclipse.swt.widgets.Shell;
  * 
  * @author tomi
  */
-public class EditDialog extends Dialog {
+public class EditDialog extends TitleAreaDialog {
 
 	private EObject object;
 	private EStructuralFeature[] features;
 	private IScaveObjectEditForm form;
 	private Object[] values;
-	private boolean[] isDirty;
 	
 	public EditDialog(
 			Shell parentShell,
 			EObject object) {
 		this(parentShell, object, null);
+		setShellStyle(getShellStyle() | SWT.RESIZE);
 	}
 	
 	public EditDialog(
@@ -41,12 +41,10 @@ public class EditDialog extends Dialog {
 		this.features = features;
 	}
 	
+	
+	
 	public EStructuralFeature[] getFeatures() {
 		return form.getFeatures();
-	}
-	
-	public boolean isDirty(int index) {
-		return isDirty[index];
 	}
 	
 	public Object getValue(int index) {
@@ -62,15 +60,19 @@ public class EditDialog extends Dialog {
 	@Override
 	protected Control createDialogArea(Composite parent) {
 		Composite composite = (Composite)super.createDialogArea(parent);
+		
 		Composite panel = new Composite(composite, SWT.NONE);
 		panel.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+		
 		form = features == null ?
 				ScaveObjectEditFormFactory.instance().createForm(object) :
 				ScaveObjectEditFormFactory.instance().createForm(object, features);
+		setTitle(form.getTitle());
+		setMessage(form.getDescription());
 		form.populatePanel(panel);
 		features = form.getFeatures();
 		for (int i = 0; i < features.length; ++i)
-			form.setValue(i, object.eGet(features[i]));
+			form.setValue(features[i], object.eGet(features[i]));
 		return composite;
 	}
 	
@@ -82,11 +84,9 @@ public class EditDialog extends Dialog {
 	
 	private void applyChanges() {
 		if (features != null) {
-			isDirty = new boolean[features.length];
 			values = new Object[features.length];
 			for (int i = 0; i < values.length; ++i) {
-				isDirty[i] = form.isDirty(i);
-				values[i] = form.getValue(i);
+				values[i] = form.getValue(features[i]);
 			}
 		}
 	}

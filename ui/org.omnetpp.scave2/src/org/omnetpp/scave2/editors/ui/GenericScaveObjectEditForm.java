@@ -23,7 +23,7 @@ import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.scave.model.provider.ScaveModelItemProviderAdapterFactory;
 
 /**
- * 
+ *
  *
  * @author tomi
  */
@@ -44,6 +44,13 @@ public class GenericScaveObjectEditForm implements IScaveObjectEditForm {
 		this.adapterFactory = new ScaveModelItemProviderAdapterFactory();
 	}
 	
+	public String getTitle() {
+		return object.eClass().getName();
+	}
+	
+	public String getDescription() {
+		return "";
+	}
 	
 	public void populatePanel(Composite panel) {
 		panel.setLayout(new GridLayout(2, false));
@@ -99,16 +106,21 @@ public class GenericScaveObjectEditForm implements IScaveObjectEditForm {
 		return features.length;
 	}
 	
-	public boolean isDirty(int index) {
-		return index >= 0 && index < editors.length ? editors[index].isDirty() : false;
-	}
-	
-	public Object getValue(int index) {
-		return index >= 0 && index <= editors.length ? editors[index].getValue() : null;
+	public Object getValue(EStructuralFeature feature) {
+		int index = getIndex(feature);
+		return index >= 0 ? editors[index].getValue() : null;
 	}
 
-	public void setValue(int index, Object value) {
-		if (index >= 0 && index < editors.length)
+	public void setValue(EStructuralFeature feature, Object value) {
+		int index = getIndex(feature);
+		if (index >= 0)
 			editors[index].setValue(value);
+	}
+	
+	private int getIndex(EStructuralFeature feature) {
+		for (int i = 0; i < features.length; ++i)
+			if (features[i].equals(feature))
+				return i;
+		return -1;
 	}
 }

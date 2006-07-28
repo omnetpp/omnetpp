@@ -15,6 +15,16 @@ import org.eclipse.swt.widgets.Composite;
 public interface IScaveObjectEditForm {
 	
 	/**
+	 * Returns the string displayed in the title are of the dialog.
+	 */
+	String getTitle();
+	
+	/**
+	 * Returns the string displayed below the title.
+	 */
+	String getDescription();
+	
+	/**
 	 * Adds the controls of the form to the panel.
 	 */
 	void populatePanel(Composite panel);
@@ -32,16 +42,10 @@ public interface IScaveObjectEditForm {
 	/**
 	 * Returns the value of the control associated with the specified feature. 
 	 */
-	Object getValue(int featureIndex);
+	Object getValue(EStructuralFeature feature);
 	
 	/**
 	 * Sets the value of the control associated with the specified feature. 
 	 */
-	void setValue(int featureIndex, Object value);
-
-	/**
-	 * Returns true if the value of the control changed since the last
-	 * <code>setValue()</code> call.
-	 */
-	boolean isDirty(int featureIndex);
+	void setValue(EStructuralFeature feature, Object value);
 }

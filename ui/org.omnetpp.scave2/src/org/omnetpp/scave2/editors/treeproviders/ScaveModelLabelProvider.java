@@ -30,6 +30,9 @@ import org.omnetpp.scave.model.SetOperation;
  * @author andras
  */
 //XXX changing the "based on" property of "Dataset" in the properties view somehow doesn't refresh the label in the editor's tree
+//    reason:  the generated item providers create viewer notifications from emf notifications in the notifyChanged() method
+//             the viewer notification contains the flag that labels need to be updated
+//             the generated notifyChanged() method works only with the generated label provider
 public class ScaveModelLabelProvider extends LabelProvider {
 	public Image getImage(Object element) {
 		return null;  //XXX fall back to EMF-generated code?

@@ -4,8 +4,12 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.emf.common.command.Command;
+import org.eclipse.emf.common.util.EList;
+import org.eclipse.emf.common.util.TreeIterator;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.edit.command.AddCommand;
 import org.eclipse.emf.edit.command.SetCommand;
 import org.eclipse.emf.edit.domain.EditingDomain;
@@ -13,6 +17,7 @@ import org.omnetpp.scave.engine.ResultFile;
 import org.omnetpp.scave.engine.ResultItem;
 import org.omnetpp.scave.engine.Run;
 import org.omnetpp.scave.model.Add;
+import org.omnetpp.scave.model.Analysis;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.Dataset;
 import org.omnetpp.scave.model.DatasetType;
@@ -90,17 +95,71 @@ public class ScaveModelUtil {
 		return add;
 	}
 	
+	
 	public static Dataset findEnclosingDataset(Chart chart) {
 		EObject parent = chart.eContainer();
 		while (parent != null && !(parent instanceof Dataset))
 			parent = parent.eContainer();
 		return (Dataset)parent;
 	}
+
+	/**
+	 * Returns the analysis node of the specified resource.
+	 * It is assumed that the resource contains exactly one analysis node as 
+	 * content.
+	 */
+	public static Analysis findAnalysis(Resource resource) {
+		EList contents = resource.getContents();
+		Assert.isTrue(contents.size() == 1 && contents.get(0) instanceof Analysis, "Analysis object expected");
+		return (Analysis)contents.get(0);
+	}
+	
+	/**
+	 * Returns the datasets in the resource having the specified type.
+	 */
+	public static List<Dataset> findDatasets(Resource resource, DatasetType type) {
+		List<Dataset> result = new ArrayList<Dataset>();
+		Analysis analysis = findAnalysis(resource);
+		if (analysis.getDatasets() != null) {
+			for (Object object : analysis.getDatasets().getDatasets()) {
+				Dataset dataset = (Dataset)object;
+				if (dataset.getType().equals(type))
+					result.add((Dataset)dataset);
+			}
+		}
+		return result;
+	}
 	
 	public static <T extends EObject> T findEnclosingObject(EObject object, Class<T> type) {
-		while (object != null && !(type.isAssignableFrom(object.getClass())))
+		while (object != null && !type.isInstance(object))
 			object = object.eContainer();
 		return (T)object;
+	}
+	
+	/**
+	 * Returns all object in the container having the specified type. 
+	 */
+	public static <T extends EObject> List<T> findObjects(EObject container, Class<T> type) {
+		ArrayList<T> objects = new ArrayList<T>();
+		for (TreeIterator iterator = container.eAllContents(); iterator.hasNext(); ) {
+			Object object = iterator.next();
+			if (type.isInstance(object))
+				objects.add((T)object);
+		}
+		return objects;
+ 	}
+	
+	/**
+	 * Returns all objects in the resource having the specified type.
+	 */
+	public static <T extends EObject> List<T> findObjects(Resource resource, Class<T> type) {
+		ArrayList<T> objects = new ArrayList<T>();
+		for (TreeIterator iterator = resource.getAllContents(); iterator.hasNext(); ) {
+			Object object = iterator.next();
+			if (type.isInstance(object))
+				objects.add((T)object);
+		}
+		return objects;
 	}
 	
 	public static Property getChartProperty(Chart chart, String propertyName) {

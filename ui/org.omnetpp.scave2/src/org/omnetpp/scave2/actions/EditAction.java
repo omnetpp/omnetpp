@@ -29,12 +29,16 @@ public class EditAction extends AbstractScaveAction {
 				CompoundCommand command = new CompoundCommand("Edit");
 				EStructuralFeature[] features = dialog.getFeatures();
 				for (int i = 0; i < features.length; ++i) {
-					if (dialog.isDirty(i)) {
+					Object oldValue = object.eGet(features[i]);
+					Object newValue = dialog.getValue(i);
+					boolean isDirty = oldValue == null && newValue != null ||
+									  oldValue != null && !oldValue.equals(newValue);
+					if (isDirty) {
 						command.append(SetCommand.create(
 							scaveEditor.getEditingDomain(),
 							object,
 							features[i],
-							dialog.getValue(i)));
+							newValue));
 					}
 				}
 				scaveEditor.executeCommand(command);
