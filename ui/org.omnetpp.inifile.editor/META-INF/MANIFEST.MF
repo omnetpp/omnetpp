@@ -1,0 +1,16 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Ini-file Editor Plug-in
+Bundle-SymbolicName: org.omnetpp.inifile.editor; singleton:=true
+Bundle-Version: 4.0.0
+Bundle-Activator: org.omnetpp.inifile.editor.InifileEditorPlugin
+Bundle-Localization: plugin
+Require-Bundle: org.eclipse.ui,
+ org.eclipse.core.runtime,
+ org.eclipse.jface.text,
+ org.eclipse.core.resources,
+ org.eclipse.ui.editors,
+ org.eclipse.ui.ide,
+ org.eclipse.ui.workbench.texteditor,
+ org.omnetpp.common
+Eclipse-LazyStart: true

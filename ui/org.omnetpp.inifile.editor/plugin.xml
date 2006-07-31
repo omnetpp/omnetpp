@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.2"?>
+<plugin>
+
+   <extension
+         point="org.eclipse.ui.editors">
+      <editor
+            name="OMNeT++ Inifile Editor"
+            extensions="ini"
+            icon="icons/sample.gif"
+            contributorClass="org.omnetpp.inifile.editor.editors.InifileEditorContributor"
+            class="org.omnetpp.inifile.editor.editors.InifileEditor"
+            id="org.omnetpp.inifile.editor.editors.InifileEditor">
+      </editor>
+   </extension>
+   <extension
+         point="org.eclipse.ui.newWizards">
+      <wizard
+            name="Ini file"
+            icon="icons/sample.gif"
+            category="org.omnetpp.wizards"
+            class="org.omnetpp.inifile.editor.wizards.NewInifileWizard"
+            id="org.omnetpp.inifile.editor.wizards.NewInifileWizard">
+      </wizard>
+   </extension>
+
+</plugin>
