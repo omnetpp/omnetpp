@@ -1,17 +1,20 @@
 package org.omnetpp.inifile.editor.editors;
 
-import org.eclipse.jface.action.*;
-import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.action.Action;
+import org.eclipse.jface.action.IAction;
+import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.action.IToolBarManager;
+import org.eclipse.jface.action.MenuManager;
+import org.eclipse.jface.action.Separator;
 import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IWorkbenchActionConstants;
-import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.actions.ActionFactory;
-import org.eclipse.ui.ide.IDE;
 import org.eclipse.ui.ide.IDEActionFactory;
 import org.eclipse.ui.part.MultiPageEditorActionBarContributor;
 import org.eclipse.ui.texteditor.ITextEditor;
 import org.eclipse.ui.texteditor.ITextEditorActionConstants;
+import org.omnetpp.inifile.editor.actions.LaunchSimulatonAction;
 
 /**
  * Manages the installation/deinstallation of global actions for multi-page editors.
@@ -20,7 +23,8 @@ import org.eclipse.ui.texteditor.ITextEditorActionConstants;
  */
 public class InifileEditorContributor extends MultiPageEditorActionBarContributor {
 	private IEditorPart activeEditorPart;
-	private Action sampleAction;
+	private Action launchSimulationAction;
+	
 	/**
 	 * Creates a multi-page contributor.
 	 */
@@ -28,6 +32,7 @@ public class InifileEditorContributor extends MultiPageEditorActionBarContributo
 		super();
 		createActions();
 	}
+	
 	/**
 	 * Returns the action registed with the given text editor.
 	 * @return IAction or null if editor is null.
@@ -35,10 +40,10 @@ public class InifileEditorContributor extends MultiPageEditorActionBarContributo
 	protected IAction getAction(ITextEditor editor, String actionID) {
 		return (editor == null ? null : editor.getAction(actionID));
 	}
+	
 	/* (non-JavaDoc)
 	 * Method declared in AbstractMultiPageEditorActionBarContributor.
 	 */
-
 	public void setActivePage(IEditorPart part) {
 		if (activeEditorPart == part)
 			return;
@@ -80,24 +85,19 @@ public class InifileEditorContributor extends MultiPageEditorActionBarContributo
 			actionBars.updateActionBars();
 		}
 	}
+
 	private void createActions() {
-		sampleAction = new Action() {
-			public void run() {
-				MessageDialog.openInformation(null, "Ini-file Editor Plug-in", "Sample Action Executed");
-			}
-		};
-		sampleAction.setText("Sample Action");
-		sampleAction.setToolTipText("Sample Action tool tip");
-		sampleAction.setImageDescriptor(PlatformUI.getWorkbench().getSharedImages().
-				getImageDescriptor(IDE.SharedImages.IMG_OBJS_TASK_TSK));
+		launchSimulationAction = new LaunchSimulatonAction();
 	}
-	public void contributeToMenu(IMenuManager manager) {
+
+	public void contributeToMenu(IMenuManager manager) { //XXX refine...
 		IMenuManager menu = new MenuManager("Editor &Menu");
 		manager.prependToGroup(IWorkbenchActionConstants.MB_ADDITIONS, menu);
-		menu.add(sampleAction);
+		menu.add(launchSimulationAction);
 	}
+
 	public void contributeToToolBar(IToolBarManager manager) {
 		manager.add(new Separator());
-		manager.add(sampleAction);
+		manager.add(launchSimulationAction);
 	}
 }
