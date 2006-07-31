@@ -1,5 +1,15 @@
 package org.omnetpp.scave2.model;
 
+import static org.omnetpp.scave2.model.RunAttribute.EXPERIMENT;
+import static org.omnetpp.scave2.model.RunAttribute.MEASUREMENT;
+import static org.omnetpp.scave2.model.RunAttribute.REPLICATION;
+
+import org.omnetpp.scave.engine.IDList;
+import org.omnetpp.scave.engine.ResultFileList;
+import org.omnetpp.scave.engine.RunList;
+import org.omnetpp.scave.engine.StringVector;
+import org.omnetpp.scave.engineext.ResultFileManagerEx;
+
 public class FilterHints {
 	private static final String[] EMPTY = new String[0];
 	
@@ -10,6 +20,51 @@ public class FilterHints {
 	private String[] replicationNameHints;
 	private String[] moduleNameHints;
 	private String[] dataNameHints;
+	
+	public FilterHints() {
+	}
+	
+	public FilterHints(ResultFileManagerEx manager, IDList idlist) {
+		ResultFileList fileList = manager.getUniqueFiles(idlist);
+		RunList runList = manager.getUniqueRuns(idlist);
+		
+		setFileNameHints(getFileNameFilterHints(fileList));
+		setRunNameHints(getRunNameFilterHints(runList));
+		setModuleNameHints(manager.getModuleFilterHints(idlist).toArray());
+		setDataNameHints(manager.getNameFilterHints(idlist).toArray());
+		setExperimentNameHints(getFilterHintsForRunAttribute(manager, runList, EXPERIMENT));
+		setMeasurementNameHints(getFilterHintsForRunAttribute(manager, runList, MEASUREMENT));
+		setReplicationNameHints(getFilterHintsForRunAttribute(manager, runList, REPLICATION));
+	}
+	
+	private static String[] getFileNameFilterHints(ResultFileList fileList) {
+		String[] hints = new String[(int)fileList.size() + 1];
+		hints[0] = "*";
+		for (int i = 0; i < fileList.size(); ++i)
+			hints[i+1] = fileList.get(i).getFilePath();
+		return hints;
+	}
+	
+	private static String[] getRunNameFilterHints(RunList runList) {
+		StringVector hints = new StringVector();
+		hints.add("*");
+		for (int i = 0; i < runList.size(); ++i) {
+			String runName = runList.get(i).getRunName();
+			if (runName.length() > 0)
+				hints.add(runName);
+		}
+		return hints.toArray();
+	}
+	
+	private static String[] getFilterHintsForRunAttribute(ResultFileManagerEx manager, RunList runList, String attrName) {
+		StringVector values = manager.getUniqueAttributeValues(runList, attrName);
+		String[] filterHints = new String[(int)values.size() + 1];
+		filterHints[0] = "*";
+		for (int i = 0; i < values.size(); ++i)
+			filterHints[i+1] = values.get(i);
+		return filterHints;
+	}
+	
 
 	public String[] getFileNameHints() {
 		return fileNameHints != null ? fileNameHints : EMPTY;

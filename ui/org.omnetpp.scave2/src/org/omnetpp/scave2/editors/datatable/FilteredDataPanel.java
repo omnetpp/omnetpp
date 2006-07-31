@@ -18,9 +18,7 @@ import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.engine.ResultFileList;
 import org.omnetpp.scave.engine.RunList;
 import org.omnetpp.scave.engine.StringMap;
-import org.omnetpp.scave.engine.StringVector;
 import org.omnetpp.scave.engineext.ResultFileManagerEx;
-import org.omnetpp.scave.model.DatasetType;
 import org.omnetpp.scave2.model.FilterHints;
 import org.omnetpp.scave2.model.FilterParams;
 
@@ -114,49 +112,7 @@ public class FilteredDataPanel extends Composite {
 	}
 	
 	public FilterHints getFilterHints() {
-		FilterHints hints = new FilterHints();
-		ResultFileManagerEx manager = table.getResultFileManager();
-		ResultFileList fileList = manager.getUniqueFiles(idlist);
-		RunList runList = manager.getUniqueRuns(idlist);
-		
-		hints.setFileNameHints(getFileNameFilterHints(fileList));
-		hints.setRunNameHints(getRunNameFilterHints(runList));
-		hints.setModuleNameHints(manager.getModuleFilterHints(idlist).toArray());
-		hints.setDataNameHints(manager.getNameFilterHints(idlist).toArray());
-		hints.setExperimentNameHints(getFilterHintsForRunAttribute(runList, EXPERIMENT));
-		hints.setMeasurementNameHints(getFilterHintsForRunAttribute(runList, MEASUREMENT));
-		hints.setReplicationNameHints(getFilterHintsForRunAttribute(runList, REPLICATION));
-		
-		return hints;
-	}
-	
-	private static String[] getFileNameFilterHints(ResultFileList fileList) {
-		String[] hints = new String[(int)fileList.size() + 1];
-		hints[0] = "*";
-		for (int i = 0; i < fileList.size(); ++i)
-			hints[i+1] = fileList.get(i).getFilePath();
-		return hints;
-	}
-	
-	private static String[] getRunNameFilterHints(RunList runList) {
-		StringVector hints = new StringVector();
-		hints.add("*");
-		for (int i = 0; i < runList.size(); ++i) {
-			String runName = runList.get(i).getRunName();
-			if (runName.length() > 0)
-				hints.add(runName);
-		}
-		return hints.toArray();
-	}
-	
-	private String[] getFilterHintsForRunAttribute(RunList runList, String attrName) {
-		ResultFileManagerEx manager = table.getResultFileManager();
-		StringVector values = manager.getUniqueAttributeValues(runList, attrName);
-		String[] filterHints = new String[(int)values.size() + 1];
-		filterHints[0] = "*";
-		for (int i = 0; i < values.size(); ++i)
-			filterHints[i+1] = values.get(i);
-		return filterHints;
+		return new FilterHints(table.getResultFileManager(), idlist);
 	}
 	
 	protected void runFilter() {

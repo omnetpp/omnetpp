@@ -148,6 +148,8 @@ abstract class SetOperationEditForm implements IScaveObjectEditForm {
 		replicationNameCombo = new CCombo(group, SWT.BORDER);
 		replicationNameCombo.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 	}
+	
+	
 
 	public Object getValue(EStructuralFeature feature) {
 		switch (feature.getFeatureID()) {

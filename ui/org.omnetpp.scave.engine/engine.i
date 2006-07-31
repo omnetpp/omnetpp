@@ -116,6 +116,16 @@ namespace std {
        }
    }
 
+   %extend map<string,string> {
+       std::vector<std::string> keys() {
+           std::vector<std::string> vec;
+           vec.reserve(self->size());
+           for (std::map<std::string,std::string>::iterator it = self->begin(); it!=self->end(); it++)
+               vec.push_back(it->first);
+           return vec;
+       }
+   }
+
    %template(StringSet) set<string>;
    %template(StringVector) vector<string>;
 
