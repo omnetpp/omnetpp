@@ -24,28 +24,28 @@ import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
+import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.part.EditorPart;
 import org.omnetpp.experimental.animation.controller.IAnimationController;
 import org.omnetpp.experimental.animation.controller.IAnimationListener;
-import org.omnetpp.experimental.animation.live.LiveAnimationController;
 import org.omnetpp.experimental.animation.replay.ReplayAnimationController;
 import org.omnetpp.experimental.animation.widgets.AnimationCanvas;
 
-public class AnimationEditor extends EditorPart implements IAnimationListener {
-	private IAnimationController animationController;
+public class ReplayAnimationEditor extends EditorPart implements IAnimationListener {
+	protected IAnimationController animationController;
 
-	private Text replayEventNumberWidget;
+	protected Text replayEventNumberWidget;
 
-	private Text replaySimulationTimeWidget;
+	protected Text replaySimulationTimeWidget;
 
-	private Text replayAnimationNumberWidget;
+	protected Text replayAnimationNumberWidget;
 
-	private Text replayAnimationTimeWidget;
+	protected Text replayAnimationTimeWidget;
 	
-	private NumberFormat numberFormat;
+	protected NumberFormat numberFormat;
 	
-	public AnimationEditor() {
+	public ReplayAnimationEditor() {
 	}
 
 	@Override
@@ -129,6 +129,14 @@ public class AnimationEditor extends EditorPart implements IAnimationListener {
 	    });
 
 	    toolItem = new ToolItem(toolBar, SWT.PUSH);
+	    toolItem.setText("Live");
+	    toolItem.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
+				animationController.gotoLivePosition();
+			}
+	    });
+
+	    toolItem = new ToolItem(toolBar, SWT.PUSH);
 	    toolItem.setText("Fast");
 	    toolItem.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
@@ -155,7 +163,7 @@ public class AnimationEditor extends EditorPart implements IAnimationListener {
 	    // navigation buttons
 		CoolItem coolItem = new CoolItem(coolBar, SWT.NONE);
 		coolItem.setControl(toolBar);
-		coolItem.setSize(new Point(300, coolBarHeight));
+		coolItem.setSize(new Point(330, coolBarHeight));
 
 		// animation mode selector
 		Combo animationMode = new Combo(coolBar, SWT.NONE);
@@ -252,12 +260,7 @@ public class AnimationEditor extends EditorPart implements IAnimationListener {
 	    coolItem = new CoolItem(coolBar, SWT.NONE);
 		coolItem.setControl(slider);
 
-	    AnimationCanvas canvas = new AnimationCanvas(parent, SWT.NONE);
-		canvas.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-		
-//		animationController = new ReplayAnimationController(canvas, ((IFileEditorInput)getEditorInput()).getFile());
-		animationController = new LiveAnimationController(canvas);
-		animationController.addAnimationListener(this);
+	    createAnimationController(parent);
 
 		animationMode.select(animationController.getAnimationMode().ordinal());
 		animationMode.addSelectionListener(new SelectionAdapter () {
@@ -267,6 +270,15 @@ public class AnimationEditor extends EditorPart implements IAnimationListener {
 		});
 	}
 
+	protected void createAnimationController(Composite parent) {
+		AnimationCanvas canvas = new AnimationCanvas(parent, SWT.NONE);
+		canvas.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+		
+		animationController = new ReplayAnimationController(canvas, ((IFileEditorInput)getEditorInput()).getFile());
+		animationController.addAnimationListener(this);
+		animationController.init();
+	}
+
 	@Override
 	public void setFocus() {
 	}
@@ -274,6 +286,7 @@ public class AnimationEditor extends EditorPart implements IAnimationListener {
 	@Override
 	public void dispose() {
 		animationController.animateStop();
+		animationController.shutdown();
 		super.dispose();
 	}
 

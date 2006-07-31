@@ -61,6 +61,7 @@ public abstract class AbstractAnimationPrimitive implements IAnimationPrimitive 
 			case LINEAR:
 				return getEndSimulationTime();
 			case EVENT:
+				// TODO: is it really +1? or is it just a default?
 				return animationEnvironment.getAnimationTimeForAnimationNumber(animationNumber + 1);
 			case NON_LINEAR:
 				throw new RuntimeException();
@@ -83,34 +84,16 @@ public abstract class AbstractAnimationPrimitive implements IAnimationPrimitive 
 		return getRootFigure().getLayoutManager();
 	}
 
-	protected void addFigure(IFigure figure) {
+	protected IFigure addFigure(IFigure figure) {
 		getRootFigure().add(figure);
-	}
-
-	protected void removeFigure(IFigure figure) {
-		getRootFigure().remove(figure);
-	}
-
-	protected void showFigure(IFigure figure) {
-		figure.setVisible(true);
-
-		if (figure.getParent() == null)
-			addFigure(figure);
-	}
-
-	protected void hideFigure(IFigure figure) {
-		//if (figure.getParent() != null)
-		//	removeFigure(figure);
 		
-		figure.setVisible(false);
+		return figure;
 	}
-	
-	protected void show() {
-		shown = true;
-	}
-	
-	protected void hide() {
-		shown = false;
+
+	protected IFigure removeFigure(IFigure figure) {
+		getRootFigure().remove(figure);
+		
+		return figure;
 	}
 
 	protected void setConstraint(IFigure figure, Rectangle constraint) {

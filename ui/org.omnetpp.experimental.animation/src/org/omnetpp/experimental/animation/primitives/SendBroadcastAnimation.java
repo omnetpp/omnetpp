@@ -3,7 +3,6 @@ package org.omnetpp.experimental.animation.primitives;
 import org.eclipse.draw2d.Ellipse;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.Rectangle;
-import org.omnetpp.experimental.animation.controller.Timer;
 import org.omnetpp.experimental.animation.replay.ReplayAnimationController;
 
 public class SendBroadcastAnimation extends AbstractAnimationPrimitive {
@@ -12,8 +11,6 @@ public class SendBroadcastAnimation extends AbstractAnimationPrimitive {
 	private Point location;
 
 	private Ellipse circle;
-	
-	private Timer radiusTimer;
 	
 	public SendBroadcastAnimation(ReplayAnimationController animationController,
 								  long eventNumber,
@@ -26,49 +23,24 @@ public class SendBroadcastAnimation extends AbstractAnimationPrimitive {
 		this.location = location;
 		this.endSimulationTime = endSimulationTime;
 		this.circle.setFill(false);
-		this.radiusTimer = new Timer(20, true, true) {
-			public void run() {
-				setRadius(SendBroadcastAnimation.this.animationEnvironment.getSimulationTime());
-			}
-		};
 	}
 	
+	public void redo() {
+		addFigure(circle);
+	}
+
+	public void undo() {
+		removeFigure(circle);
+	}
+
 	public void animateAt(long eventNumber, double simulationTime, long animationNumber, double animationTime) {
-		if (beginSimulationTime <= simulationTime && simulationTime <= endSimulationTime) {
-			setRadius(simulationTime);
-			show();
-		}
-		else
-			hide();
-	}
-	
-	@Override
-	public double getEndSimulationTime() {
-		return endSimulationTime;
-	}
-	
-	protected void setRadius(double simulationTime) {
 		int radius = (int)Math.floor(100 * (simulationTime - beginSimulationTime) / (endSimulationTime - beginSimulationTime));
 		Rectangle r = new Rectangle(location.x - radius, location.y - radius, radius * 2, radius * 2);
 		setConstraint(circle, r);
 	}
 	
-	protected void show() {
-		if (!shown) {
-			showFigure(circle);
-			radiusTimer.reset();
-			getTimerQueue().addTimer(radiusTimer);
-		}
-		
-		super.show();
-	}
-	
-	protected void hide() {
-		if (shown) {
-			hideFigure(circle);
-			getTimerQueue().removeTimer(radiusTimer);
-		}
-		
-		super.hide();
+	@Override
+	public double getEndSimulationTime() {
+		return endSimulationTime;
 	}
 }

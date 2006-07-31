@@ -51,12 +51,22 @@ public interface IAnimationEnvironment {
 	 * Returns the simulation time when the given event occured.
 	 */
 	public double getSimulationTimeForEventNumber(long eventNumber);
+
+	/**
+	 * Returns the animation time for the given event number.
+	 */
+	public double getAnimationTimeForEventNumber(long eventNumber);
 	
 	/**
 	 * Returns the animation time when the given animation starts.
 	 */
 	public double getAnimationTimeForAnimationNumber(long animationNumber);
 	
+	/**
+	 * Returns the animation time when the given animation starts.
+	 */
+	public double getAnimationTimeForSimulationTime(double simulationTime);
+
 	/**
 	 * Returns a timer queue which can be used by animation primitives to display animated figures.
 	 */

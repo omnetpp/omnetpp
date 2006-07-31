@@ -19,6 +19,12 @@ public class ScheduleSelfMessageAnimation extends AbstractAnimationPrimitive {
 		return endSimulationTime;
 	}
 	
+	public void redo() {
+	}
+
+	public void undo() {
+	}
+
 	public void animateAt(long eventNumber, double simulationTime, long animationNumber, double animationTime) {
 	}
 }

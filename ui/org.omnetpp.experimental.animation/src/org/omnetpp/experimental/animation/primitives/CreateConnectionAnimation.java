@@ -8,11 +8,11 @@ import org.omnetpp.figures.GateAnchor;
 import org.omnetpp.figures.ModuleFigure;
 
 public class CreateConnectionAnimation extends AbstractAnimationPrimitive {
-	private ConnectionFigure connectionFigure;
-
 	private GateId sourceGateId;
 
 	private GateId targetGateId;
+
+	private ConnectionId connectionId;
 
 	public CreateConnectionAnimation(ReplayAnimationController animationController,
 									 long eventNumber,
@@ -23,19 +23,34 @@ public class CreateConnectionAnimation extends AbstractAnimationPrimitive {
 		super(animationController, eventNumber, simulationTime, animationNumber);
 		this.sourceGateId = sourceGateId;
 		this.targetGateId = targetGateId;
-		this.connectionFigure = new ConnectionFigure();
+		this.connectionId = new ConnectionId(sourceGateId.getModuleId(), sourceGateId.getGateId());
+	}
+	
+	@Override
+	public double getEndSimulationTime() {
+		return Double.MAX_VALUE;
+	}
+	
+	@Override
+	public double getEndAnimationTime() {
+		return Double.MAX_VALUE;
+	}
+	
+	public void redo() {
+		ConnectionFigure connectionFigure = new ConnectionFigure();
+		connectionFigure.setSourceAnchor(getGateAnchor(sourceGateId));
+		connectionFigure.setTargetAnchor(getGateAnchor(targetGateId));
+		animationEnvironment.setFigure(connectionId, connectionFigure);
+		addFigure(connectionFigure);
+	}
+
+	public void undo() {
+		removeFigure((ConnectionFigure)animationEnvironment.getFigure(connectionId));
+		animationEnvironment.setFigure(connectionId, null);
 	}
 	
 	public void animateAt(long eventNumber, double simulationTime, long animationNumber, double animationTime) {
-		if (simulationTime >= beginSimulationTime) {
-			connectionFigure.setSourceAnchor(getGateAnchor(sourceGateId));
-			connectionFigure.setTargetAnchor(getGateAnchor(targetGateId));
-			animationEnvironment.setFigure(new ConnectionId(sourceGateId.getModuleId(), sourceGateId.getGateId()), connectionFigure);
-			showFigure(connectionFigure);
-		}
-		else {
-			hideFigure(connectionFigure);
-		}
+		// void
 	}
 	
 	private GateAnchor getGateAnchor(GateId gateId) {

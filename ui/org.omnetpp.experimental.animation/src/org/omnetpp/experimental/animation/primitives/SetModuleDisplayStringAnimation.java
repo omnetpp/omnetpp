@@ -22,13 +22,26 @@ public class SetModuleDisplayStringAnimation extends AbstractAnimationPrimitive 
 		//System.out.println(displayString);
 	}
 	
+	@Override
+	public double getEndSimulationTime() {
+		return Double.MAX_VALUE;
+	}
+	
+	@Override
+	public double getEndAnimationTime() {
+		return Double.MAX_VALUE;
+	}
+	
+	public void redo() {
+		SubmoduleFigure moduleFigure = (SubmoduleFigure)animationEnvironment.getFigure(module);
+		moduleFigure.setDisplayString(displayString);
+	}
+
+	public void undo() {
+		// TODO: not enough info
+	}
+
 	public void animateAt(long eventNumber, double simulationTime, long animationNumber, double animationTime) {
-		if (simulationTime >= beginSimulationTime) {
-			SubmoduleFigure moduleFigure = (SubmoduleFigure)animationEnvironment.getFigure(module);
-			moduleFigure.setDisplayString(displayString);
-		}
-		else {
-			// TODO: or what to do?
-		}
+		// void
 	}
 }

@@ -22,13 +22,26 @@ public class SetConnectionDisplayStringAnimation extends AbstractAnimationPrimit
 		//System.out.println(displayString);
 	}
 	
+	@Override
+	public double getEndSimulationTime() {
+		return Double.MAX_VALUE;
+	}
+	
+	@Override
+	public double getEndAnimationTime() {
+		return Double.MAX_VALUE;
+	}
+	
+	public void redo() {
+		ConnectionFigure connectionFigure = (ConnectionFigure)animationEnvironment.getFigure(connectionId);
+		connectionFigure.setDisplayString(displayString);
+	}
+
+	public void undo() {
+		// TODO: not enough info
+	}
+
 	public void animateAt(long eventNumber, double simulationTime, long animationNumber, double animationTime) {
-		if (simulationTime >= beginSimulationTime) {
-			ConnectionFigure connectionFigure = (ConnectionFigure)animationEnvironment.getFigure(connectionId);
-			connectionFigure.setDisplayString(displayString);
-		}
-		else {
-			// TODO: or what to do?
-		}
+		// void
 	}
 }

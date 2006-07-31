@@ -6,6 +6,10 @@ import org.omnetpp.experimental.animation.replay.ReplayAnimationController.Anima
  * IAnimationController is the public interface of the animation controllers.
  */
 public interface IAnimationController {
+	public void init();
+	
+	public void shutdown();
+	
 	public void animateBack();
 	
 	public void animateStep();
@@ -29,8 +33,14 @@ public interface IAnimationController {
 	public void gotoAnimationNumber(long animationNumber);
 
 	public void gotoAnimationTime(double animationTime);
+	
+	public void gotoLivePosition();
+	
+	public boolean isAtLivePosition();
 
 	public AnimationMode getAnimationMode();
+	
+	public void setAnimationMode(AnimationMode mode);
 
 	public long getEventNumber();
 
@@ -39,8 +49,6 @@ public interface IAnimationController {
 	public long getAnimationNumber();
 
 	public double getAnimationTime();
-
-	public void setAnimationMode(AnimationMode mode);
 
 	public void addAnimationListener(IAnimationListener editor);
 

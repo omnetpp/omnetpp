@@ -1,6 +1,5 @@
 package org.omnetpp.experimental.animation.live;
 
-import org.eclipse.draw2d.geometry.Point;
 import org.omnetpp.common.simulation.model.ConnectionId;
 import org.omnetpp.common.simulation.model.GateId;
 import org.omnetpp.experimental.animation.primitives.BubbleAnimation;
@@ -36,6 +35,11 @@ public class LiveAnimationController extends ReplayAnimationController implement
 		jenv.newRun(1);
 		initializeSimulation();
 	}
+	
+	public void shutdown() {
+		super.shutdown();
+		jenv.setJCallback(null, null);
+	}
 
 	public long getLiveEventNumber() {
 		return getLiveSimulation().eventNumber();
@@ -43,7 +47,7 @@ public class LiveAnimationController extends ReplayAnimationController implement
 
 	public double getLiveSimulationTime() {
 		return getLiveSimulation().simTime();
-	}
+   }
 	
 	public long getLiveAnimationNumber() {
 		return liveAnimationNumber;
@@ -53,11 +57,19 @@ public class LiveAnimationController extends ReplayAnimationController implement
 		throw new RuntimeException();
 	}
 
+	public void gotoLivePosition() {
+		gotoSimulationTime(getLiveSimulationTime());
+	}
+
+	public boolean isAtLivePosition() {
+		return simulationTime == getLiveSimulationTime();
+	}
+
 	public void breakpointHit(String lbl, cModule mod) {
 	}
 
-	public void bubble(cModule mod, String text) {
-		addAnimationPrimitive(new BubbleAnimation(this, getLiveEventNumber(), getLiveSimulationTime(), getLiveAnimationNumber(), text, new Point(0, 0)));
+	public void bubble(cModule module, String text) {
+		addAnimationPrimitive(new BubbleAnimation(this, getLiveEventNumber(), getLiveSimulationTime(), getLiveAnimationNumber(), text, module));
 	}
 
 	public void connectionCreated(cGate gate) {
@@ -143,7 +155,7 @@ public class LiveAnimationController extends ReplayAnimationController implement
 			if (lastAnimationPrimitive.getEventNumber() > eventNumber &&
 				lastAnimationPrimitive.getBeginSimulationTime() > simulationTime &&
 				lastAnimationPrimitive.getAnimationNumber() > animationNumber &&
-				getAnimationTimeForSimulationTime(lastAnimationPrimitive.getBeginSimulationTime()) > animationTime)
+				lastAnimationPrimitive.getBeginAnimationTime() > animationTime + 10)
 					break;
 
 			jenv.doOneStep();
