@@ -4,15 +4,11 @@
 
    <extension
          point="org.eclipse.ui.newWizards">
-      <category
-            name="NED Wizards"
-            id="org.omnetpp.ned">
-      </category>
       <wizard
-            name="New NED Module Wizard"
-            icon="/images/_internal/gned.gif"
-            category="org.omnetpp.ned"
-            class="org.omnetpp.ned.editor.graph.wizards.ModuleCreationWizard"
+            name="NED file"
+            icon="icons/sample.gif"
+            category="org.omnetpp.wizards"
+            class="org.omnetpp.ned.editor.graph.wizards.NewNEDFileWizard"
             id="org.omnetpp.ned.editor.graph.wizard.new.file">
          <description>
             Create a new module in the NED file

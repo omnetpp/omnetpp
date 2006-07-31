@@ -5,8 +5,8 @@ import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.ui.INewWizard;
 import org.eclipse.ui.IWorkbench;
 
-public class ModuleCreationWizard extends Wizard implements INewWizard {
-    private ModuleCreationWizardPage1 logicPage = null;
+public class NewNEDFileWizard extends Wizard implements INewWizard {
+    private NewNEDFileWizardPage1 page1 = null;
 
     private IStructuredSelection selection;
 
@@ -14,8 +14,8 @@ public class ModuleCreationWizard extends Wizard implements INewWizard {
 
     @Override
     public void addPages() {
-        logicPage = new ModuleCreationWizardPage1(workbench, selection);
-        addPage(logicPage);
+        page1 = new NewNEDFileWizardPage1(workbench, selection);
+        addPage(page1);
     }
 
     public void init(IWorkbench aWorkbench, IStructuredSelection currentSelection) {
@@ -25,7 +25,7 @@ public class ModuleCreationWizard extends Wizard implements INewWizard {
 
     @Override
     public boolean performFinish() {
-        return logicPage.finish();
+        return page1.finish();
     }
 
 }

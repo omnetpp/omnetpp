@@ -43,7 +43,8 @@ public class CreateChartAction extends AbstractScaveAction {
 						activePanel.getTable().getDataType(),
 						activePanel.getTable().getSelectedItems(),
 						dialog.getRunIdKind());
-			Chart chart = ScaveModelUtil.createChart("Chart of " + dialog.getDatasetName());
+			String chartName = dialog.getDatasetName()=="" ? "chart" : dialog.getDatasetName()+"-chart"; //FIXME generate proper name
+			Chart chart = ScaveModelUtil.createChart(chartName);
 			dataset.getItems().add(chart);
 			
 			editor.executeCommand(AddCommand.create(

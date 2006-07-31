@@ -1,14 +1,13 @@
 package org.omnetpp.ned.editor.graph.wizards;
 
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
-import java.io.ObjectOutputStream;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
@@ -22,29 +21,23 @@ import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.dialogs.WizardNewFileCreationPage;
 import org.eclipse.ui.ide.IDE;
-import org.omnetpp.ned2.model.NEDElementFactoryEx;
-import org.omnetpp.ned2.model.NedFileNodeEx;
-import org.omnetpp.ned2.model.pojo.NEDElementFactory;
-import org.omnetpp.ned2.model.pojo.NEDElementTags;
 
-public class ModuleCreationWizardPage1 extends WizardNewFileCreationPage
-		implements SelectionListener {
+public class NewNEDFileWizardPage1 extends WizardNewFileCreationPage {
 
 	private IWorkbench workbench;
 
 	private static int exampleCount = 1;
 
+	//FIXME FIXME FIXME factor out UI controls to another page!!!!! --Andras
 	private Button model1 = null;
-
 	private Button model2 = null;
-
 	private int modelSelected = 1;
 
-	public ModuleCreationWizardPage1(IWorkbench aWorkbench,
+	public NewNEDFileWizardPage1(IWorkbench aWorkbench,
 			IStructuredSelection selection) {
-		super("sampleLogicPage1", selection); //$NON-NLS-1$
+		super("page1", selection); //$NON-NLS-1$
 		this.setTitle("Create a NED file");
-		this.setDescription("This wizard allows you to create a new netwrok topology file");
+		this.setDescription("This wizard allows you to create a new network description");
 		this.setImageDescriptor(ImageDescriptor.createFromFile(getClass(),
 				"icons/logicbanner.gif")); //$NON-NLS-1$
 		this.workbench = aWorkbench;
@@ -53,26 +46,38 @@ public class ModuleCreationWizardPage1 extends WizardNewFileCreationPage
 	@Override
     public void createControl(Composite parent) {
 		super.createControl(parent);
-		this.setFileName("emptyModel" + exampleCount + ".logic"); //$NON-NLS-2$//$NON-NLS-1$
+		this.setFileName("new" + exampleCount + ".ned"); //$NON-NLS-2$//$NON-NLS-1$
 
 		Composite composite = (Composite) getControl();
 
 		// sample section generation group
 		Group group = new Group(composite, SWT.NONE);
 		group.setLayout(new GridLayout());
-		group.setText("Group 1");
+		group.setText("Content");
 		group.setLayoutData(new GridData(GridData.GRAB_HORIZONTAL
 				| GridData.HORIZONTAL_ALIGN_FILL));
 
+		SelectionListener listener = new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
+				if (e.getSource() == model1) {
+					modelSelected = 1;
+					setFileName("untitled" + exampleCount + ".ned"); //$NON-NLS-2$//$NON-NLS-1$
+				} else {
+					modelSelected = 2;
+					setFileName("new" + exampleCount + ".ned"); //$NON-NLS-2$//$NON-NLS-1$
+				}
+			}
+		};
+
 		// sample section generation checkboxes
 		model1 = new Button(group, SWT.RADIO);
-		model1.setText("Empty model");
-		model1.addSelectionListener(this);
+		model1.setText("Empty file");
+		model1.addSelectionListener(listener);
 		model1.setSelection(true);
 
 		model2 = new Button(group, SWT.RADIO);
-		model2.setText("Example model");
-		model2.addSelectionListener(this);
+		model2.setText("Example");
+		model2.addSelectionListener(listener);
 
 		new Label(composite, SWT.NONE);
 
@@ -81,21 +86,8 @@ public class ModuleCreationWizardPage1 extends WizardNewFileCreationPage
 
 	@Override
     protected InputStream getInitialContents() {
-		NedFileNodeEx ld = (NedFileNodeEx)NEDElementFactory.getInstance().createNodeWithTag(NEDElementTags.NED_NED_FILE);
-		ByteArrayInputStream bais = null;
-		try {
-			ByteArrayOutputStream baos = new ByteArrayOutputStream();
-			ObjectOutputStream oos = new ObjectOutputStream(baos);
-			oos.writeObject(ld);
-			oos.flush();
-			oos.close();
-			baos.close();
-			bais = new ByteArrayInputStream(baos.toByteArray());
-			bais.close();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return bais;
+		String contents = "//\n// NED file\n//\n\n"; //FIXME
+		return new ByteArrayInputStream(contents.getBytes());
 	}
 
 	public boolean finish() {
@@ -119,22 +111,8 @@ public class ModuleCreationWizardPage1 extends WizardNewFileCreationPage
 	}
 
 	/**
-	 * @see org.eclipse.swt.events.SelectionListener#widgetSelected(SelectionEvent)
-	 */
-	public void widgetSelected(SelectionEvent e) {
-		if (e.getSource() == model1) {
-			modelSelected = 1;
-			setFileName("untitled" + exampleCount + ".gned"); //$NON-NLS-2$//$NON-NLS-1$
-		} else {
-			modelSelected = 2;
-			setFileName("complex" + exampleCount + ".gned"); //$NON-NLS-2$//$NON-NLS-1$
-		}
-	}
-
-	/**
 	 * Empty method
 	 */
 	public void widgetDefaultSelected(SelectionEvent e) {
 	}
-
 }

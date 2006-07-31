@@ -83,7 +83,7 @@ public class FilteringPanel extends Composite {
 
 	private void initialize() {
 		this.setLayout(new GridLayout(2, false));
-//XXX new TEST(this, SWT.NONE).setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false, 2, 1));
+//new TEST(this, SWT.NONE).setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false, 2, 1));
 
 		filterLabel = new Label(this, SWT.WRAP);
 		filterLabel.setText("Filter: ");

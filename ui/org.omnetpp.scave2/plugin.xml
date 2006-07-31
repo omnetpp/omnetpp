@@ -32,13 +32,10 @@
 
   <extension
         point="org.eclipse.ui.newWizards">
-     <category
-           id="org.omnetpp.Wizard.category.ID"
-           name="OMNEST/OMNeT++ Wizards"/>
      <wizard
-           category="org.omnetpp.Wizard.category.ID"
+           category="org.omnetpp.wizards"
            class="org.omnetpp.scave2.wizard.ScaveModelWizard"
-           icon="icons/full/obj16/ScaveModelModelFile.gif"
+           icon="icons/sample.gif"
            id="org.omnetpp.scave2.wizard.ScaveModelModelWizardID"
            name="Analysis">
         <description>
