@@ -16,7 +16,8 @@ import org.omnetpp.figures.CompoundModuleFigure;
 public class SpringEmbedderLayout extends XYLayout {
 
 	protected IFigure edgeParent;
-
+	protected IFigure nodeParent;
+	protected AbstractGraphLayoutAlgorithm alg;
 	/**
 	 * 
 	 * @param nodeParent The parent figure of the nodes
@@ -24,6 +25,7 @@ public class SpringEmbedderLayout extends XYLayout {
 	 */
 	public SpringEmbedderLayout(IFigure nodeParent, IFigure edgeParent) {
 		super();
+		this.nodeParent = nodeParent;
 		this.edgeParent = edgeParent;
  	}
 	
@@ -34,18 +36,28 @@ public class SpringEmbedderLayout extends XYLayout {
 	 */
 	@SuppressWarnings("unchecked")
 	protected AbstractGraphLayoutAlgorithm createAutoLayouter(IFigure nodeParent, IFigure edgeParent) {
-		AbstractGraphLayoutAlgorithm autoLayouter = new BasicSpringEmbedderLayoutAlgorithm();
-		autoLayouter.setDefaultEdgeLength(40);
-		autoLayouter.setScaleToArea(400, 400, 50);
+		BasicSpringEmbedderLayoutAlgorithm autoLayouter = new BasicSpringEmbedderLayoutAlgorithm();
+		autoLayouter.setDefaultEdgeLength(100);
+		autoLayouter.setRepulsiveForce(300.0);
+		autoLayouter.setMaxIterations(500);
+		autoLayouter.setSeed(12345);
+		// FIXME set the correct area size
+		autoLayouter.setConfineToArea(400,200, 50);
+//		autoLayouter.setConfineToArea(nodeParent.getSize().width, 
+//				                      nodeParent.getSize().height, 50);
 		
 		// iterate over the nodes and add them to the algorithm 
 		// all child figures on this layer are considered as node
 		for(IFigure node : (List<IFigure>)nodeParent.getChildren()) {
 			// get the associated constraint (coordinates) if any
             Rectangle constr = (Rectangle)getConstraint(node);
-            // if not found add it as freely movable node
-            // FIXME onpinned nodes still have a constrains (should be removed in the controller)
-            if (constr == null || constr.x == 0) 
+            // skip the node if it dos not have a constraint
+//            if(constr == null) {
+//            	System.out.println(node);
+//            	continue;
+//            }
+            
+            if (constr.x == Integer.MIN_VALUE && constr.y == Integer.MIN_VALUE) 
             	autoLayouter.addMovableNode(node, node.getPreferredSize().width, node.getPreferredSize().height);
             else
             	// add as foxed node
@@ -63,12 +75,12 @@ public class SpringEmbedderLayout extends XYLayout {
 				IFigure targetFig = conn.getTargetAnchor().getOwner();
 				// if this is an edge coming from outside to a submodule
 				if (srcFig instanceof CompoundModuleFigure) {
-					autoLayouter.addEdgeToBorder(targetFig, 20);
+					autoLayouter.addEdgeToBorder(targetFig, 0);
 				} // else if this is an edge goung out from a submodule
 				else if (targetFig instanceof CompoundModuleFigure) {
-					autoLayouter.addEdgeToBorder(srcFig, 20);
+					autoLayouter.addEdgeToBorder(srcFig, 0);
 				} else {  // both are submodules
-					autoLayouter.addEdge(srcFig, targetFig, 20);
+					autoLayouter.addEdge(srcFig, targetFig, 0);
 				}
 				
 			}
@@ -76,7 +88,21 @@ public class SpringEmbedderLayout extends XYLayout {
 		
 		return autoLayouter;
 	}
-    /**
+
+	@Override
+	public void invalidate() {
+		super.invalidate();
+		alg = null;
+	}
+	
+	public void initLayout() {
+    	alg = createAutoLayouter(nodeParent, edgeParent);
+    	// execute the algorithm 
+    	alg.execute();
+    	System.out.println("Layouting figure :"+nodeParent);
+	}
+	
+	/**
      * Implements the algorithm to layout the components of the given container figure.
      * Each component is laid out using its own layout constraint specifying its size
      * and position. Copied from XYLayout BUT places the middlepoint if the children to the
@@ -86,10 +112,9 @@ public class SpringEmbedderLayout extends XYLayout {
      */
     @Override
     public void layout(IFigure parent) {
-    	AbstractGraphLayoutAlgorithm alg = createAutoLayouter(parent, edgeParent);
-    	alg.setDefaultEdgeLength(20);
-    	// execute the algorithm 
-    	alg.execute();
+    	
+    	if (alg == null)
+    		initLayout();
     	
     	// lay out the children according to the autolayouter
         Iterator children = parent.getChildren().iterator();

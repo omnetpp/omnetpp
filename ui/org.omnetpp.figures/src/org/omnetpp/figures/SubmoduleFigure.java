@@ -118,6 +118,7 @@ public class SubmoduleFigure extends ModuleFigure implements HandleBounds {
         	calloutLayer.add(new AttachedLayer(this, PositionConstants.NORTH, 
         			calloutFigure, PositionConstants.SOUTH_WEST));
         }
+        calloutFigure.clearCallout();
 
         super.addNotify();
     }
@@ -294,8 +295,9 @@ public class SubmoduleFigure extends ModuleFigure implements HandleBounds {
 		
         // set the location and size using the models helper methods
         Point loc = dps.getLocation();
-        // TODO get the location from the autolayouting engine if exact position is not specified
-        if (loc == null) loc = new Point(0,0);
+        // Integer.MIN_VALUE signals that the coordinate is unpinned and the
+        // layouter can move it freely (if no location is specified in the displaystring)
+        if (loc == null) loc = new Point(Integer.MIN_VALUE, Integer.MIN_VALUE);
         
         Rectangle constraint = new Rectangle(loc, dps.getSize());
         getParent().setConstraint(this, constraint);
@@ -345,8 +347,8 @@ public class SubmoduleFigure extends ModuleFigure implements HandleBounds {
 
         // XXX callout bubble. just for testing
 
-        if (dps.getLocation()!=null && dps.getLocation().x >-1) clearCallout();
-        	else addCallout("Yes Sir, my position is: "+dps.getLocation() );
+//        if (dps.getLocation() != null && dps.getLocation().x >-1) clearCallout();
+//        	else addCallout("Yes Sir, my position is: "+dps.getLocation() );
 
         invalidate();
 	}
