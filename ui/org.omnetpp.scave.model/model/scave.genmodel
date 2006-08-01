@@ -19,7 +19,7 @@
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute scave.ecore#//Dataset/name"/>
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference scave.ecore#//Dataset/items"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute scave.ecore#//Dataset/type"/>
-      <genFeatures notify="false" createChild="false" ecoreFeature="ecore:EReference scave.ecore#//Dataset/basedOn"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EReference scave.ecore#//Dataset/basedOn"/>
     </genClasses>
     <genClasses ecoreClass="scave.ecore#//Chart">
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute scave.ecore#//Chart/name"/>

@@ -177,18 +177,4 @@ public class AnalysisItemProvider
 		return ScaveEditPlugin.INSTANCE;
 	}
 
-	/**
-	 * Disable the deletion of Inputs/Datasets/Chartsheets node from the Analysis.
-	 */
-	@Override
-	protected Command createSetCommand(EditingDomain domain, EObject owner, EStructuralFeature feature, Object value) {
-		ScaveModelPackage scavePackage = ScaveModelPackage.eINSTANCE;
-		if (value == null &&
-				(feature == scavePackage.getAnalysis_Inputs() ||
-						feature == scavePackage.getAnalysis_Datasets() ||
-						feature == scavePackage.getAnalysis_ChartSheets()))
-			return UnexecutableCommand.INSTANCE;
-		else
-			return super.createSetCommand(domain, owner, feature, value);
-	}
 }

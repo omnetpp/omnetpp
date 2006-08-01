@@ -20,7 +20,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.util.StringUtils;
-import org.omnetpp.scave.model.provider.ScaveModelItemProviderAdapterFactory;
+import org.omnetpp.scave2.model.provider.ScaveModelItemProviderAdapterFactory;
 
 /**
  *

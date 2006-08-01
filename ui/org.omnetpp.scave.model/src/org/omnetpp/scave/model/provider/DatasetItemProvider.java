@@ -182,6 +182,7 @@ public class DatasetItemProvider
 		switch (notification.getFeatureID(Dataset.class)) {
 			case ScaveModelPackage.DATASET__NAME:
 			case ScaveModelPackage.DATASET__TYPE:
+			case ScaveModelPackage.DATASET__BASED_ON:
 				fireNotifyChanged(new ViewerNotification(notification, notification.getNotifier(), false, true));
 				return;
 			case ScaveModelPackage.DATASET__ITEMS:
