@@ -749,11 +749,11 @@ public class ReplayAnimationController implements IAnimationEnvironment {
 	/**
 	 * Asynchronously starts animation in the given direction.
 	 */
-	protected void animateStart(boolean forward, double defaultRealTimeToAnimationTimeScale, long nextStopEventNumber, double stopSimulationTime, long nextStopAnimationNumber) {
+	protected void animateStart(boolean forward, double defaultRealTimeToAnimationTimeScale, long nextStopEventNumber, double nextStopSimulationTime, long nextStopAnimationNumber) {
 		this.forward = forward;
 		this.defaultRealTimeToAnimationTimeScale = defaultRealTimeToAnimationTimeScale;
 		this.nextStopEventNumber = nextStopEventNumber;
-		this.nextStopSimulationTime = stopSimulationTime;
+		this.nextStopSimulationTime = nextStopSimulationTime;
 		this.nextStopAnimationNumber = nextStopAnimationNumber;
 		
 		if ((forward && (endSimulationTime == -1 || simulationTime < endSimulationTime)) ||
@@ -774,6 +774,7 @@ public class ReplayAnimationController implements IAnimationEnvironment {
 	 * in natural order.
 	 */
 	protected void updateAnimationModel(double oldAnimationTime, double newAnimationTime) {
+		// TODO: maintain active animation primitives, call undo/redo incrementally by searching ordered animation primitives
 		ArrayList<IAnimationPrimitive> currentAnimationPrimitives = getAnimationPrimitivesForAnimationTime(oldAnimationTime);
 		java.util.Collections.reverse(currentAnimationPrimitives);
 		
@@ -824,7 +825,16 @@ public class ReplayAnimationController implements IAnimationEnvironment {
 	}
 
 	/**
-	 * Binary search among animation primitives.
+	 * Binary search among animation primitives. Search key is provided
+	 * by valueProvider. If exactly one is found,
+	 * returns that one. If more than one equal values are found, returns
+	 * the first one (if first==true) or the last one (if first==false) of them.
+	 * If none are found, returns the previous (if first==true) or the 
+	 * following (if first==false) entry.
+	 *  
+	 * @param valueProvider  provides search key
+	 * @param value  search for this value
+	 * @param first  return first or last among equal values
 	 */
 	protected int getAnimationPrimitiveIndexForValue(IValueProvider valueProvider, double value, boolean first) {
 		int index = -1;

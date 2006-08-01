@@ -2,6 +2,7 @@ package org.omnetpp.experimental.animation;
 
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
+import org.omnetpp.experimental.animation.editors.LiveAnimationEditor;
 import org.omnetpp.experimental.simkernel.SimkernelPlugin;
 import org.osgi.framework.BundleContext;
 
@@ -15,6 +16,10 @@ public class AnimationPlugin extends AbstractUIPlugin {
 
 	// The shared instance
 	private static AnimationPlugin plugin;
+	
+	// There can be only one "live" simulation executing -- this 
+	// points to the instance (or null)
+	private LiveAnimationEditor currentLiveAnimation;
 	
 	/**
 	 * The constructor

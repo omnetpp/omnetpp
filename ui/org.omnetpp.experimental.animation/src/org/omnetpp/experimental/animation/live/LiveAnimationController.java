@@ -65,10 +65,12 @@ public class LiveAnimationController extends ReplayAnimationController implement
 	}
 
 	public void gotoLivePosition() {
+		// TODO: not precise
 		gotoSimulationTime(getLiveSimulationTime());
 	}
 
 	public boolean isAtLivePosition() {
+		// TODO: not precise
 		return simulationTime == getLiveSimulationTime();
 	}
 
@@ -114,10 +116,11 @@ public class LiveAnimationController extends ReplayAnimationController implement
 			if (lastAnimationPrimitive.getEventNumber() > eventNumber &&
 				lastAnimationPrimitive.getBeginSimulationTime() > simulationTime &&
 				lastAnimationPrimitive.getAnimationNumber() > animationNumber &&
-				lastAnimationPrimitive.getBeginAnimationTime() > animationTime + 10)
+				lastAnimationPrimitive.getBeginAnimationTime() > animationTime + 10) // FIXME: WTF?
 					break;
 
 			jenv.doOneStep();
+			//jenv.runSimulation(mode, until_time, until_event);
 		}
 		
 		return animationPrimitives.size() - count;
