@@ -15,9 +15,12 @@ import org.omnetpp.figures.CompoundModuleFigure;
 
 public class SpringEmbedderLayout extends XYLayout {
 
+	private static final int DEFAULT_WIDTH = 500;
+	private static final int DEFAULT_HEIGHT = 300;
 	protected IFigure edgeParent;
 	protected IFigure nodeParent;
 	protected AbstractGraphLayoutAlgorithm alg;
+	protected long algSeed = 1971;
 	/**
 	 * 
 	 * @param nodeParent The parent figure of the nodes
@@ -38,26 +41,23 @@ public class SpringEmbedderLayout extends XYLayout {
 	protected AbstractGraphLayoutAlgorithm createAutoLayouter(IFigure nodeParent, IFigure edgeParent) {
 		BasicSpringEmbedderLayoutAlgorithm autoLayouter = new BasicSpringEmbedderLayoutAlgorithm();
 		autoLayouter.setDefaultEdgeLength(100);
-		autoLayouter.setRepulsiveForce(300.0);
+		autoLayouter.setRepulsiveForce(500.0);
 		autoLayouter.setMaxIterations(500);
-		autoLayouter.setSeed(12345);
-		// FIXME set the correct area size
-		autoLayouter.setConfineToArea(400,200, 50);
-//		autoLayouter.setConfineToArea(nodeParent.getSize().width, 
-//				                      nodeParent.getSize().height, 50);
+		// set the layouting area
+		int width = nodeParent.getPreferredSize().width;
+		int height = nodeParent.getPreferredSize().height;
+		// if the size is not present, use a default size;
+		if (width <= 0) width = DEFAULT_WIDTH;
+		if (height <= 0) height = DEFAULT_HEIGHT;
+		autoLayouter.setConfineToArea(width, height, 80);
 		
 		// iterate over the nodes and add them to the algorithm 
 		// all child figures on this layer are considered as node
 		for(IFigure node : (List<IFigure>)nodeParent.getChildren()) {
 			// get the associated constraint (coordinates) if any
             Rectangle constr = (Rectangle)getConstraint(node);
-            // skip the node if it dos not have a constraint
-//            if(constr == null) {
-//            	System.out.println(node);
-//            	continue;
-//            }
             
-            if (constr.x == Integer.MIN_VALUE && constr.y == Integer.MIN_VALUE) 
+            if (constr.x == Integer.MIN_VALUE && constr.y == Integer.MIN_VALUE || constr == null) 
             	autoLayouter.addMovableNode(node, node.getPreferredSize().width, node.getPreferredSize().height);
             else
             	// add as foxed node
@@ -97,9 +97,10 @@ public class SpringEmbedderLayout extends XYLayout {
 	
 	public void initLayout() {
     	alg = createAutoLayouter(nodeParent, edgeParent);
+		alg.setSeed(algSeed);
     	// execute the algorithm 
     	alg.execute();
-    	System.out.println("Layouting figure :"+nodeParent);
+    	System.out.println("Layouting figure :"+nodeParent+" seed: "+algSeed);
 	}
 	
 	/**
@@ -160,5 +161,20 @@ public class SpringEmbedderLayout extends XYLayout {
     public Point getOrigin(IFigure figure) {
         return new Point();
     }
+
+	/**
+	 * Set a new seed for the layouting algorithm. The nex layout will use thid seed
+	 * @param algSeed
+	 */
+	public void setSeed(long algSeed) {
+		this.algSeed = algSeed;
+	}
+
+	/**
+	 * @return The current seed value
+	 */
+	public long getSeed() {
+		return algSeed;
+	}
 
 }

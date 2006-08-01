@@ -26,6 +26,7 @@ import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.displaymodel.IDisplayString;
 import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.figures.layout.SpringEmbedderLayout;
+import org.omnetpp.figures.routers.CompoundModuleConnectionRouter;
 import org.omnetpp.figures.routers.CompoundModuleShortestPathConnectionRouter;
 
 public class CompoundModuleFigure extends ModuleFigure 
@@ -45,6 +46,7 @@ public class CompoundModuleFigure extends ModuleFigure
     private Color moduleBackgroundColor = ColorFactory.defaultBackground;
     private Color moduleBorderColor = ColorFactory.defaultBorder;
     private ConnectionLayer connectionLayer;
+    private SpringEmbedderLayout layouter;
     private float scale = 1.0f;
     private String unit = "px";
 
@@ -154,7 +156,7 @@ public class CompoundModuleFigure extends ModuleFigure
         scrollpane.setContents(layeredPane);
         add(scrollpane);
         
-        pane.setLayoutManager(new SpringEmbedderLayout(pane, connectionLayer));
+        pane.setLayoutManager(layouter = new SpringEmbedderLayout(pane, connectionLayer));
 
         // this effectively creates the following hierechy:
         // -- ScrollPane (+FreeformViewport)
@@ -174,9 +176,12 @@ public class CompoundModuleFigure extends ModuleFigure
         	new CompoundModuleShortestPathConnectionRouter(pane);
         spcr.setSpacing(10);
         fr.setNextRouter(spcr);
-        setConnectionRouter(fr);
-        // simple straight connectin router         
-//        setConnectionRouter(new CompoundModuleConnectionRouter());
+// use this for fan router
+//        setConnectionRouter(fr);
+// use this for shortest path ruter        
+//        setConnectionRouter(spcr);
+// simple straight connectin router         
+        setConnectionRouter(new CompoundModuleConnectionRouter());
     }
 
     public void setConnectionRouter(ConnectionRouter router) {
@@ -295,13 +300,31 @@ public class CompoundModuleFigure extends ModuleFigure
 	public void setDisplayString(IDisplayString dps) {
         // setup the figure's properties
         // set the location and size using the models helper methods
-        // if the siez is specified in the displaystring we should set it as preferred size
+        // if the size is specified in the displaystring we should set it as preferred size
         // otherwise getPreferredSize should return the size calculated from the children
-        if (dps.getCompoundSize().height > 0 || dps.getCompoundSize().width > 0) 
-        	setPreferredSize(dps.getCompoundSize());
-        else 
+    	Dimension newSize = dps.getCompoundSize();
+    	Dimension oldSize = getSize();
+    	
+    	// TODO get the seed from the display string
+    	long seed = 1971;
+    	if (seed != layouter.getSeed()) {
+    		layouter.setSeed(seed);
+    		layouter.initLayout();
+    	}
+    	
+        if (newSize.height > 0 || newSize.width > 0) {
+        	setPreferredSize(newSize);
+        	pane.setPreferredSize(newSize.getCopy());
+        	// invalidate the layout if the size of the module has changed
+        	if (!newSize.equals(oldSize)) {
+        		// TODO get the seed from the display string
+        		layouter.setSeed(1971);
+        		layouter.initLayout();
+        	}
+        } else {
         	setPreferredSize(null);
-        
+        	pane.setPreferredSize(null);
+        }
         // set the icon showing the default representation in the titlebar
         Image img = ImageFactory.getImage(
         		dps.getAsStringDef(IDisplayString.Prop.IMAGE), 

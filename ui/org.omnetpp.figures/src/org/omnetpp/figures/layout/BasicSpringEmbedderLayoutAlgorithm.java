@@ -255,8 +255,8 @@ public class BasicSpringEmbedderLayoutAlgorithm extends AbstractGraphLayoutAlgor
 	    {
 	        minx = border;
 	        miny = border;
-	        maxx = 2*minx + width;
-	        maxy = 2*miny + height;
+	        maxx = width - border;
+	        maxy = height - border;
 	    }
 	    else
 	    {
