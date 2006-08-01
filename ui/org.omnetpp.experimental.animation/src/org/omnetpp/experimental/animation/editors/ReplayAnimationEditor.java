@@ -38,16 +38,20 @@ import org.omnetpp.experimental.animation.widgets.AnimationCanvas;
 
 
 public class ReplayAnimationEditor extends EditorPart implements IAnimationListener {
-	protected CoolBar coolBar;
+	private static final String ICONS_REWIND_GIF = "icons/rewind.gif";
+	private static final String ICONS_GOTOEND_GIF = "icons/gotoend.gif";
+	private static final String ICONS_PLAY_GIF = "icons/play.gif";
+	private static final String ICONS_BACKPLAY_GIF = "icons/backplay.gif";
+	private static final String ICONS_STEP_GIF = "icons/step.gif";
+	private static final String ICONS_BACKSTEP_GIF = "icons/backstep.gif";
+	private static final String ICONS_STOP_GIF = "icons/stop.gif";
 	
 	protected IAnimationController animationController;
 
+	protected CoolBar coolBar;
 	protected Text replayEventNumberWidget;
-
 	protected Text replaySimulationTimeWidget;
-
 	protected Text replayAnimationNumberWidget;
-
 	protected Text replayAnimationTimeWidget;
 	
 	protected NumberFormat numberFormat;
@@ -97,7 +101,7 @@ public class ReplayAnimationEditor extends EditorPart implements IAnimationListe
 
 	    ToolItem toolItem = new ToolItem(toolBar, SWT.PUSH);
 	    //toolItem.setText("Begin");
-	    toolItem.setImage(AnimationPlugin.getImageDescriptor("icons/rewind.gif").createImage());
+	    toolItem.setImage(AnimationPlugin.getImageDescriptor(ICONS_REWIND_GIF).createImage());
 	    toolItem.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				animationController.gotoBegin();
@@ -106,7 +110,7 @@ public class ReplayAnimationEditor extends EditorPart implements IAnimationListe
 
 	    toolItem = new ToolItem(toolBar, SWT.PUSH);
 	    //toolItem.setText("Back");
-	    toolItem.setImage(AnimationPlugin.getImageDescriptor("icons/backplay.gif").createImage());
+	    toolItem.setImage(AnimationPlugin.getImageDescriptor(ICONS_BACKPLAY_GIF).createImage());
 	    toolItem.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				animationController.animateBack();
@@ -115,7 +119,7 @@ public class ReplayAnimationEditor extends EditorPart implements IAnimationListe
 
 	    toolItem = new ToolItem(toolBar, SWT.PUSH);
 	    //toolItem.setText("Backstep");
-	    toolItem.setImage(AnimationPlugin.getImageDescriptor("icons/backstep.gif").createImage());
+	    toolItem.setImage(AnimationPlugin.getImageDescriptor(ICONS_BACKSTEP_GIF).createImage());
 	    toolItem.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				//animationController.animateBackStep(); //XXX needed
@@ -124,7 +128,7 @@ public class ReplayAnimationEditor extends EditorPart implements IAnimationListe
 	    
 	    toolItem = new ToolItem(toolBar, SWT.PUSH);
 	    //toolItem.setText("Stop");
-	    toolItem.setImage(AnimationPlugin.getImageDescriptor("icons/stop.gif").createImage());
+	    toolItem.setImage(AnimationPlugin.getImageDescriptor(ICONS_STOP_GIF).createImage());
 	    toolItem.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				animationController.animateStop();
@@ -133,7 +137,7 @@ public class ReplayAnimationEditor extends EditorPart implements IAnimationListe
 
 	    toolItem = new ToolItem(toolBar, SWT.PUSH);
 	    //toolItem.setText("Step");
-	    toolItem.setImage(AnimationPlugin.getImageDescriptor("icons/step.gif").createImage());
+	    toolItem.setImage(AnimationPlugin.getImageDescriptor(ICONS_STEP_GIF).createImage());
 	    toolItem.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				animationController.animateStep();
@@ -142,7 +146,7 @@ public class ReplayAnimationEditor extends EditorPart implements IAnimationListe
 
 	    toolItem = new ToolItem(toolBar, SWT.PUSH);
 	    //toolItem.setText("Play");
-	    toolItem.setImage(AnimationPlugin.getImageDescriptor("icons/play.gif").createImage());
+	    toolItem.setImage(AnimationPlugin.getImageDescriptor(ICONS_PLAY_GIF).createImage());
 	    toolItem.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				animationController.animatePlay();
@@ -151,7 +155,7 @@ public class ReplayAnimationEditor extends EditorPart implements IAnimationListe
 
 	    toolItem = new ToolItem(toolBar, SWT.PUSH);
 	    //toolItem.setText("End");
-	    toolItem.setImage(AnimationPlugin.getImageDescriptor("icons/gotoend.gif").createImage());
+	    toolItem.setImage(AnimationPlugin.getImageDescriptor(ICONS_GOTOEND_GIF).createImage());
 	    toolItem.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				animationController.gotoEnd();

@@ -8,6 +8,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.CoolItem;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
+import org.omnetpp.experimental.animation.AnimationPlugin;
 import org.omnetpp.experimental.animation.live.LiveAnimationController;
 import org.omnetpp.experimental.animation.widgets.AnimationCanvas;
 
@@ -22,16 +23,36 @@ public class LiveAnimationEditor extends ReplayAnimationEditor {
 		ToolBar toolBar = new ToolBar(coolBar, SWT.NONE);
 
 		ToolItem toolItem;
-		toolItem = new ToolItem(toolBar, SWT.PUSH);
-		toolItem.setText("Live");
-		toolItem.addSelectionListener(new SelectionAdapter() {
-			public void widgetSelected(SelectionEvent e) {
-				animationController.gotoLivePosition();
-			}
-		});
+
+//		toolItem = new ToolItem(toolBar, SWT.PUSH);
+//		toolItem.setText("Live");
+//		toolItem.addSelectionListener(new SelectionAdapter() {
+//			public void widgetSelected(SelectionEvent e) {
+//				animationController.gotoLivePosition();  //XXX remove?
+//			}
+//		});
 
 		toolItem = new ToolItem(toolBar, SWT.PUSH);
-		toolItem.setText("Fast");
+		//toolItem.setText("Step");
+	    toolItem.setImage(AnimationPlugin.getImageDescriptor("icons/dooneevent.gif").createImage());
+		toolItem.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
+				animationController.animateFast(); //XXX step()!!!
+			}
+		});
+		
+		toolItem = new ToolItem(toolBar, SWT.PUSH);
+		//toolItem.setText("Run");
+	    toolItem.setImage(AnimationPlugin.getImageDescriptor("icons/run.gif").createImage());
+		toolItem.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
+				animationController.animateFast(); //XXX run()!!!
+			}
+		});
+		
+		toolItem = new ToolItem(toolBar, SWT.PUSH);
+		//toolItem.setText("Fast");
+	    toolItem.setImage(AnimationPlugin.getImageDescriptor("icons/fast.gif").createImage());
 		toolItem.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				animationController.animateFast();
@@ -39,13 +60,32 @@ public class LiveAnimationEditor extends ReplayAnimationEditor {
 		});
 
 		toolItem = new ToolItem(toolBar, SWT.PUSH);
-		toolItem.setText("Express");
+		//toolItem.setText("Express");
+	    toolItem.setImage(AnimationPlugin.getImageDescriptor("icons/express.gif").createImage());
 		toolItem.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				animationController.animateExpress();
 			}
 		});
 
+		toolItem = new ToolItem(toolBar, SWT.PUSH);
+		//toolItem.setText("Stop");
+	    toolItem.setImage(AnimationPlugin.getImageDescriptor("icons/stopsim.gif").createImage());
+		toolItem.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
+				animationController.animateExpress(); //FIXME stop()!!!
+			}
+		});
+
+		toolItem = new ToolItem(toolBar, SWT.PUSH);
+		//toolItem.setText("Restart");
+	    toolItem.setImage(AnimationPlugin.getImageDescriptor("icons/restart.gif").createImage());
+		toolItem.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
+				animationController.animateExpress(); //FIXME restart()!!!
+			}
+		});
+		
 		toolBar.setSize(toolBar.computeSize(SWT.DEFAULT, SWT.DEFAULT));
 
 		CoolItem coolItem = new CoolItem(coolBar, SWT.NONE);
