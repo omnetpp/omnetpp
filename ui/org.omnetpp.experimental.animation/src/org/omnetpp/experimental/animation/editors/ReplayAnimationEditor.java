@@ -4,15 +4,12 @@ import java.text.NumberFormat;
 import java.text.ParseException;
 
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.jface.action.ActionContributionItem;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.layout.RowData;
@@ -31,13 +28,11 @@ import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.part.EditorPart;
 import org.omnetpp.experimental.animation.AnimationPlugin;
-import org.omnetpp.experimental.animation.controller.IAnimationController;
-import org.omnetpp.experimental.animation.controller.IAnimationListener;
+import org.omnetpp.experimental.animation.controller.IReplayAnimationListener;
 import org.omnetpp.experimental.animation.replay.ReplayAnimationController;
 import org.omnetpp.experimental.animation.widgets.AnimationCanvas;
 
-
-public class ReplayAnimationEditor extends EditorPart implements IAnimationListener {
+public class ReplayAnimationEditor extends EditorPart implements IReplayAnimationListener {
 	private static final String ICONS_REWIND_GIF = "icons/rewind.gif";
 	private static final String ICONS_GOTOEND_GIF = "icons/gotoend.gif";
 	private static final String ICONS_PLAY_GIF = "icons/play.gif";
@@ -46,7 +41,7 @@ public class ReplayAnimationEditor extends EditorPart implements IAnimationListe
 	private static final String ICONS_BACKSTEP_GIF = "icons/backstep.gif";
 	private static final String ICONS_STOP_GIF = "icons/stop.gif";
 	
-	protected IAnimationController animationController;
+	protected ReplayAnimationController animationController;
 
 	protected CoolBar coolBar;
 	protected Text replayEventNumberWidget;
@@ -100,7 +95,7 @@ public class ReplayAnimationEditor extends EditorPart implements IAnimationListe
 		ToolBar toolBar = new ToolBar(coolBar, SWT.NONE);
 
 	    ToolItem toolItem = new ToolItem(toolBar, SWT.PUSH);
-	    //toolItem.setText("Begin");
+	    toolItem.setToolTipText("Begin");
 	    toolItem.setImage(AnimationPlugin.getImageDescriptor(ICONS_REWIND_GIF).createImage());
 	    toolItem.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
@@ -109,7 +104,7 @@ public class ReplayAnimationEditor extends EditorPart implements IAnimationListe
 	    });
 
 	    toolItem = new ToolItem(toolBar, SWT.PUSH);
-	    //toolItem.setText("Back");
+	    toolItem.setToolTipText("Back");
 	    toolItem.setImage(AnimationPlugin.getImageDescriptor(ICONS_BACKPLAY_GIF).createImage());
 	    toolItem.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
@@ -118,16 +113,16 @@ public class ReplayAnimationEditor extends EditorPart implements IAnimationListe
 	    });
 
 	    toolItem = new ToolItem(toolBar, SWT.PUSH);
-	    //toolItem.setText("Backstep");
+	    toolItem.setToolTipText("Backstep");
 	    toolItem.setImage(AnimationPlugin.getImageDescriptor(ICONS_BACKSTEP_GIF).createImage());
 	    toolItem.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
-				//animationController.animateBackStep(); //XXX needed
+				animationController.animateBackStep();
 			}
 	    });
 	    
 	    toolItem = new ToolItem(toolBar, SWT.PUSH);
-	    //toolItem.setText("Stop");
+	    toolItem.setToolTipText("Stop");
 	    toolItem.setImage(AnimationPlugin.getImageDescriptor(ICONS_STOP_GIF).createImage());
 	    toolItem.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
@@ -136,7 +131,7 @@ public class ReplayAnimationEditor extends EditorPart implements IAnimationListe
 	    });
 
 	    toolItem = new ToolItem(toolBar, SWT.PUSH);
-	    //toolItem.setText("Step");
+	    toolItem.setToolTipText("Step");
 	    toolItem.setImage(AnimationPlugin.getImageDescriptor(ICONS_STEP_GIF).createImage());
 	    toolItem.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
@@ -145,7 +140,7 @@ public class ReplayAnimationEditor extends EditorPart implements IAnimationListe
 	    });
 
 	    toolItem = new ToolItem(toolBar, SWT.PUSH);
-	    //toolItem.setText("Play");
+	    toolItem.setToolTipText("Play");
 	    toolItem.setImage(AnimationPlugin.getImageDescriptor(ICONS_PLAY_GIF).createImage());
 	    toolItem.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
@@ -154,7 +149,7 @@ public class ReplayAnimationEditor extends EditorPart implements IAnimationListe
 	    });
 
 	    toolItem = new ToolItem(toolBar, SWT.PUSH);
-	    //toolItem.setText("End");
+	    toolItem.setToolTipText("End");
 	    toolItem.setImage(AnimationPlugin.getImageDescriptor(ICONS_GOTOEND_GIF).createImage());
 	    toolItem.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
@@ -165,9 +160,11 @@ public class ReplayAnimationEditor extends EditorPart implements IAnimationListe
 	    // navigation buttons
 		CoolItem coolItem = new CoolItem(coolBar, SWT.NONE);
 		coolItem.setControl(toolBar);
-		coolItem.setSize(new Point(330, coolBarHeight));
+		//toolBar.setSize(toolBar.computeSize(SWT.DEFAULT, SWT.DEFAULT));
+		coolItem.setSize(new Point(180, coolBarHeight));
 
 		// animation mode selector
+/*
 		Combo animationMode = new Combo(coolBar, SWT.NONE);
 		for (ReplayAnimationController.AnimationMode t : ReplayAnimationController.AnimationMode.values())
 			animationMode.add(t.name());
@@ -175,7 +172,7 @@ public class ReplayAnimationEditor extends EditorPart implements IAnimationListe
 		coolItem = new CoolItem(coolBar, SWT.NONE);
 		coolItem.setControl(animationMode);
 		coolItem.setSize(new Point(100, coolBarHeight));
-
+*/
 		// simulation time label
 		Composite labels = new Composite(coolBar, SWT.NONE);
 		labels.setLayout(new RowLayout(SWT.HORIZONTAL));
@@ -263,14 +260,14 @@ public class ReplayAnimationEditor extends EditorPart implements IAnimationListe
 		coolItem.setSize(new Point(200, coolBarHeight)); //XXX height has no effect
 
 	    createAnimationController(parent);
-
+/*
 		animationMode.select(animationController.getAnimationMode().ordinal());
 		animationMode.addSelectionListener(new SelectionAdapter () {
 			public void widgetSelected(SelectionEvent e) {
 				animationController.setAnimationMode(ReplayAnimationController.AnimationMode.values()[((Combo)e.getSource()).getSelectionIndex()]);
 			}
 		});
-	}
+*/	}
 
 	protected void createAnimationController(Composite parent) {
 		AnimationCanvas canvas = new AnimationCanvas(parent, SWT.NONE);
@@ -297,9 +294,6 @@ public class ReplayAnimationEditor extends EditorPart implements IAnimationListe
 		valueChanged(replaySimulationTimeWidget, simulationTime);
 		valueChanged(replayAnimationNumberWidget, animationNumber);
 		valueChanged(replayAnimationTimeWidget, animationTime);
-	}
-
-	public void livePositionChanged(long eventNumber, double simulationTime, long animationNumber, double animationTime) {
 	}
 
 	public void valueChanged(Text widget, Number newValue) {

@@ -1,7 +1,7 @@
 package org.omnetpp.experimental.animation.primitives;
 
 import org.eclipse.draw2d.IFigure;
-import org.omnetpp.common.simulation.model.IRuntimeModule;
+import org.omnetpp.common.simulation.model.IRuntimeSimulation;
 import org.omnetpp.experimental.animation.controller.TimerQueue;
 import org.omnetpp.experimental.animation.replay.ReplayAnimationController.AnimationMode;
 
@@ -81,5 +81,5 @@ public interface IAnimationEnvironment {
 
 	public void setFigure(Object key, Object value);
 	
-	public IRuntimeModule getModuleByID(int id);
+	public IRuntimeSimulation getSimulation();
 }

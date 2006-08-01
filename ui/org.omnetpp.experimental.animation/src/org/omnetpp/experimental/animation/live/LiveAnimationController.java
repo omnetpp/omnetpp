@@ -12,6 +12,7 @@ import org.omnetpp.experimental.animation.primitives.SendMessageAnimation;
 import org.omnetpp.experimental.animation.primitives.SetConnectionDisplayStringAnimation;
 import org.omnetpp.experimental.animation.primitives.SetModuleDisplayStringAnimation;
 import org.omnetpp.experimental.animation.replay.ReplayAnimationController;
+import org.omnetpp.experimental.animation.replay.model.ReplayModule;
 import org.omnetpp.experimental.animation.widgets.AnimationCanvas;
 import org.omnetpp.experimental.simkernel.IEnvirCallback;
 import org.omnetpp.experimental.simkernel.swig.Javaenv;
@@ -26,14 +27,16 @@ public class LiveAnimationController extends ReplayAnimationController implement
 	protected Javaenv jenv;
 
 	protected long liveAnimationNumber;
+	
+	protected cSimulation liveSimulation;
 
 	public LiveAnimationController(AnimationCanvas canvas) {
 		super(canvas, null);
-		simulation = Simkernel.getSimulation();
+		liveSimulation = Simkernel.getSimulation();
 		jenv = Simkernel.getJavaenv();
 		jenv.setJCallback(null, this);
 		jenv.newRun(1);
-		initializeSimulation();
+		initializeSimulation(toReplayModule(liveSimulation.getRootModule()));
 	}
 	
 	public void shutdown() {
@@ -41,12 +44,16 @@ public class LiveAnimationController extends ReplayAnimationController implement
 		jenv.setJCallback(null, null);
 	}
 
+	public cSimulation getLiveSimulation() {
+		return liveSimulation;
+	}
+
 	public long getLiveEventNumber() {
-		return getLiveSimulation().eventNumber();
+		return liveSimulation.eventNumber();
 	}
 
 	public double getLiveSimulationTime() {
-		return getLiveSimulation().simTime();
+		return liveSimulation.simTime();
    }
 	
 	public long getLiveAnimationNumber() {
@@ -65,6 +72,67 @@ public class LiveAnimationController extends ReplayAnimationController implement
 		return simulationTime == getLiveSimulationTime();
 	}
 
+	public void restartSimulation() {
+		jenv.newRun(1);
+	}
+
+	public void simulateStep() {
+		gotoSimulationTime(getLiveSimulationTime());
+		animateStep();
+	}
+
+	public void simulateRun() {
+		gotoSimulationTime(getLiveSimulationTime());
+		animatePlay();
+	}
+
+	public void simulateFast() {	
+		animateStart(true, FAST_REAL_TIME_TO_ANIMATION_TIME_SCALE, -1, -1, -1);
+	}
+
+	public void simulateExpress() {
+		// TODO: show a modal dialog with a big stop button		
+	}
+
+	public void simulateStop() {
+		gotoSimulationTime(getLiveSimulationTime());
+		animateStop();
+	}
+
+	public void finishSimulation() {
+		gotoSimulationTime(getLiveSimulationTime());
+		jenv.finishSimulation();
+	}
+
+	@Override
+	protected long loadAnimationPrimitivesForPosition() {
+		int count = animationPrimitives.size();
+
+		while (jenv.getSimulationState() != Javaenv.eState.SIM_TERMINATED.swigValue()) {
+			IAnimationPrimitive lastAnimationPrimitive = animationPrimitives.get(animationPrimitives.size() - 1);
+
+			if (lastAnimationPrimitive.getEventNumber() > eventNumber &&
+				lastAnimationPrimitive.getBeginSimulationTime() > simulationTime &&
+				lastAnimationPrimitive.getAnimationNumber() > animationNumber &&
+				lastAnimationPrimitive.getBeginAnimationTime() > animationTime + 10)
+					break;
+
+			jenv.doOneStep();
+		}
+		
+		return animationPrimitives.size() - count;
+	}
+	
+	protected ReplayModule toReplayModule(cModule module) {
+		ReplayModule replayModule = new ReplayModule();
+		replayModule.setId(module.getId());
+		replayModule.setName(module.getName());
+		
+		return replayModule;
+	}
+	
+	// Simulation callbacks
+	
 	public void breakpointHit(String lbl, cModule mod) {
 	}
 
@@ -85,20 +153,21 @@ public class LiveAnimationController extends ReplayAnimationController implement
 	}
 
 	public void displayStringChanged(cModule module) {
-		addAnimationPrimitive(new SetModuleDisplayStringAnimation(this, getLiveEventNumber(), getLiveSimulationTime(), getLiveAnimationNumber(), module, module.getDisplayString()));
+		addAnimationPrimitive(new SetModuleDisplayStringAnimation(this, getLiveEventNumber(), getLiveSimulationTime(), getLiveAnimationNumber(), module.getId(), module.getDisplayString()));
 	}
 
 	public void messageDelivered(cMessage msg) {
 		liveAnimationNumber++;
-		addAnimationPrimitive(new HandleMessageAnimation(this, getLiveEventNumber(), getLiveSimulationTime(), getLiveAnimationNumber(), simulation.getModuleByID(msg.getArrivalModuleId()), msg));
+		addAnimationPrimitive(new HandleMessageAnimation(this, getLiveEventNumber(), getLiveSimulationTime(), getLiveAnimationNumber(), msg.getArrivalModuleId(), msg));
 	}
 
 	public void moduleCreated(cModule module) {
-		addAnimationPrimitive(new CreateModuleAnimation(this, getLiveEventNumber(), getLiveSimulationTime(), getLiveAnimationNumber(), module));
+		String parentModulePath = module.getParentModule() != null ? module.getParentModule().getFullPath() : null;
+		addAnimationPrimitive(new CreateModuleAnimation(this, getLiveEventNumber(), getLiveSimulationTime(), getLiveAnimationNumber(), toReplayModule(module), parentModulePath));
 	}
 
 	public void moduleDeleted(cModule module) {
-		addAnimationPrimitive(new DeleteModuleAnimation(this, getLiveEventNumber(), getLiveSimulationTime(), getLiveAnimationNumber(), module));
+		addAnimationPrimitive(new DeleteModuleAnimation(this, getLiveEventNumber(), getLiveSimulationTime(), getLiveAnimationNumber(), module.getId()));
 	}
 
 	public void moduleMethodCalled(cModule from, cModule to, String method) {
@@ -143,28 +212,5 @@ public class LiveAnimationController extends ReplayAnimationController implement
 	}
 
 	public void objectDeleted(cObject object) {
-	}
-
-	@Override
-	protected long loadAnimationPrimitivesForPosition() {
-		int count = animationPrimitives.size();
-
-		while (jenv.getSimulationState() != Javaenv.eState.SIM_TERMINATED.swigValue()) {
-			IAnimationPrimitive lastAnimationPrimitive = animationPrimitives.get(animationPrimitives.size() - 1);
-
-			if (lastAnimationPrimitive.getEventNumber() > eventNumber &&
-				lastAnimationPrimitive.getBeginSimulationTime() > simulationTime &&
-				lastAnimationPrimitive.getAnimationNumber() > animationNumber &&
-				lastAnimationPrimitive.getBeginAnimationTime() > animationTime + 10)
-					break;
-
-			jenv.doOneStep();
-		}
-		
-		return animationPrimitives.size() - count;
-	}
-
-	protected cSimulation getLiveSimulation() {
-		return (cSimulation)simulation;
 	}
 }

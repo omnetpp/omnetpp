@@ -13,13 +13,10 @@ import org.omnetpp.common.displaymodel.DisplayString;
 import org.omnetpp.common.displaymodel.IDisplayString;
 import org.omnetpp.common.simulation.model.ConnectionId;
 import org.omnetpp.common.simulation.model.GateId;
-import org.omnetpp.common.simulation.model.IRuntimeModule;
 import org.omnetpp.common.simulation.model.IRuntimeSimulation;
-import org.omnetpp.experimental.animation.controller.IAnimationController;
-import org.omnetpp.experimental.animation.controller.IAnimationListener;
+import org.omnetpp.experimental.animation.controller.IReplayAnimationListener;
 import org.omnetpp.experimental.animation.controller.Timer;
 import org.omnetpp.experimental.animation.controller.TimerQueue;
-import org.omnetpp.experimental.animation.primitives.BubbleAnimation;
 import org.omnetpp.experimental.animation.primitives.CreateConnectionAnimation;
 import org.omnetpp.experimental.animation.primitives.CreateModuleAnimation;
 import org.omnetpp.experimental.animation.primitives.DeleteModuleAnimation;
@@ -34,7 +31,6 @@ import org.omnetpp.experimental.animation.replay.model.ReplayModule;
 import org.omnetpp.experimental.animation.replay.model.ReplaySimulation;
 import org.omnetpp.experimental.animation.widgets.AnimationCanvas;
 import org.omnetpp.figures.CompoundModuleFigure;
-import org.omnetpp.figures.GateAnchor;
 
 /**
  * The animation position is identified by the following tuple:
@@ -44,7 +40,7 @@ import org.omnetpp.figures.GateAnchor;
  *  - simulation time
  *  - event number
  */
-public class ReplayAnimationController implements IAnimationController, IAnimationEnvironment {
+public class ReplayAnimationController implements IAnimationEnvironment {
 	protected final static double NORMAL_REAL_TIME_TO_ANIMATION_TIME_SCALE = 0.01;
 	protected final static double FAST_REAL_TIME_TO_ANIMATION_TIME_SCALE = 0.1;
 	protected final static double EXPRESS_REAL_TIME_TO_ANIMATION_TIME_SCALE = 1;
@@ -164,7 +160,7 @@ public class ReplayAnimationController implements IAnimationController, IAnimati
 	/**
 	 * Animation listeners are notified for various events, such as changing the event number or the simulation time.
 	 */
-	protected ArrayList<IAnimationListener> animationListeners = new ArrayList<IAnimationListener>();
+	protected ArrayList<IReplayAnimationListener> animationListeners = new ArrayList<IReplayAnimationListener>();
 
 	/**
 	 * This reader is used to load entries on demand from the simulation log file.
@@ -252,13 +248,6 @@ public class ReplayAnimationController implements IAnimationController, IAnimati
 	 */
 	public IRuntimeSimulation getSimulation() {
 		return simulation;
-	}
-
-	/**
-	 * Delegates to simulation.
-	 */
-	public IRuntimeModule getModuleByID(int id) {
-		return simulation.getModuleByID(id);
 	}
 
 	/**
@@ -571,7 +560,7 @@ public class ReplayAnimationController implements IAnimationController, IAnimati
 	/**
 	 * Adds a new animation listener to the list of listeners.
 	 */
-	public void addAnimationListener(IAnimationListener listener) {
+	public void addAnimationListener(IReplayAnimationListener listener) {
 		animationListeners.add(listener);
 	}
 
@@ -584,19 +573,12 @@ public class ReplayAnimationController implements IAnimationController, IAnimati
 	}
 
 	/**
-	 * Starts animation forward from the current simulation time with express speed.
+	 * Starts animation backward from the current simulation time with normal speed.
 	 * Asynchronous operation.
 	 */
-	public void animateExpress() {
-		animateStart(true, EXPRESS_REAL_TIME_TO_ANIMATION_TIME_SCALE, -1, -1, -1);
-	}
-
-	/**
-	 * Starts animation forward from the current simulation time with fast speed.
-	 * Asynchronous operation.
-	 */
-	public void animateFast() {
-		animateStart(true, FAST_REAL_TIME_TO_ANIMATION_TIME_SCALE, -1, -1, -1);
+	public void animateBackStep() {
+		// TODO:
+		animateStart(false, NORMAL_REAL_TIME_TO_ANIMATION_TIME_SCALE, 0, 0, animationNumber - 1);
 	}
 	
 	/**
@@ -830,7 +812,7 @@ public class ReplayAnimationController implements IAnimationController, IAnimati
 	 * Notifies listeners about the new simulation time.
 	 */
 	protected void positionChanged() {
-		for (IAnimationListener listener : animationListeners)
+		for (IReplayAnimationListener listener : animationListeners)
 			listener.replayPositionChanged(eventNumber, simulationTime, animationNumber, animationTime);
 	}
 
@@ -903,12 +885,12 @@ public class ReplayAnimationController implements IAnimationController, IAnimati
 	/**
 	 * Initalizes the simulation and adds the root compound module figure to the canvas.
 	 */
-	protected void initializeSimulation() {
-		IRuntimeModule rootModule = simulation.getRootModule();
+	protected void initializeSimulation(ReplayModule rootModule) {
+		simulation = new ReplaySimulation(rootModule);
+
 		CompoundModuleFigure rootModuleFigure = new CompoundModuleFigure();
 		rootModuleFigure.setDisplayString(new DisplayString(null, null, "bgb=600,600;bgi=background/hungary,stretch"));
-		setFigure(new GateId(rootModule.getId(), 0), new GateAnchor(rootModuleFigure));
-		setFigure(new GateId(rootModule.getId(), 1), new GateAnchor(rootModuleFigure));
+
 		canvas.getRootFigure().getLayoutManager().setConstraint(rootModuleFigure, new Rectangle(0, 0, -1, -1));
 		canvas.getRootFigure().add(rootModuleFigure);
 	}
@@ -953,24 +935,19 @@ public class ReplayAnimationController implements IAnimationController, IAnimati
 				String[] tokens = splitLine(line);
 				
 				if (tokens[0].equals("MC")) {
-					ReplayModule module = new ReplayModule(
-						simulation != null ? (ReplayModule)simulation.getModuleByPath(getToken(tokens, "p")) : null,
-						getIntegerToken(tokens, "id"));
+					ReplayModule module = new ReplayModule();
+					module.setId(getIntegerToken(tokens, "id"));
 					module.setName(getToken(tokens, "n"));
 				
-					// FIXME: we show the first module for now, should we get it as parameter?
+					// FIXME: we show the first (root) module for now, should we get it as parameter?
 					if (simulation == null) {
-						simulation = new ReplaySimulation(module);
-						initializeSimulation();
+						initializeSimulation(module);
 					}
 
-					getReplaySimulation().addModule(module);
-					addAnimationPrimitive(new CreateModuleAnimation(this, loadEventNumber, loadSimulationTime, loadAnimationNumber, module));
-					addAnimationPrimitive(new BubbleAnimation(this, loadEventNumber, loadSimulationTime, loadAnimationNumber, "I have been created", module));
+					addAnimationPrimitive(new CreateModuleAnimation(this, loadEventNumber, loadSimulationTime, loadAnimationNumber, module, getToken(tokens, "p")));
 				}
 				else if (tokens[0].equals("MD")) {
-					ReplayModule module = (ReplayModule)simulation.getModuleByID(getIntegerToken(tokens, "id"));
-					addAnimationPrimitive(new DeleteModuleAnimation(this, loadEventNumber, loadSimulationTime, loadAnimationNumber, module));
+					addAnimationPrimitive(new DeleteModuleAnimation(this, loadEventNumber, loadSimulationTime, loadAnimationNumber, getIntegerToken(tokens, "id")));
 				}
 				else if (tokens[0].equals("CC")) {
 					GateId sourceGateId = new GateId(getIntegerToken(tokens, "sm"), getIntegerToken(tokens, "sg"));
@@ -981,10 +958,10 @@ public class ReplayAnimationController implements IAnimationController, IAnimati
 					loadEventNumber = getIntegerToken(tokens, "#");
 					loadSimulationTime = getDoubleToken(tokens, "t");
 					loadAnimationNumber++;
-					IRuntimeModule module = simulation.getModuleByID(getIntegerToken(tokens, "m"));
-					addAnimationPrimitive(new HandleMessageAnimation(this, loadEventNumber, loadSimulationTime, loadAnimationNumber, module, null));
+					addAnimationPrimitive(new HandleMessageAnimation(this, loadEventNumber, loadSimulationTime, loadAnimationNumber, getIntegerToken(tokens, "m"), null));
 				}
 				else if (tokens[0].equals("BS")) {
+					// TODO:
 				}
 				else if (tokens[0].equals("SH")) {
 					ConnectionId connectionId = new ConnectionId(getIntegerToken(tokens, "sm"), getIntegerToken(tokens, "sg"));
@@ -999,9 +976,8 @@ public class ReplayAnimationController implements IAnimationController, IAnimati
 					addAnimationPrimitive(new ScheduleSelfMessageAnimation(this, loadEventNumber, loadSimulationTime, loadAnimationNumber, getDoubleToken(tokens, "t")));
 				}
 				else if (tokens[0].equals("DS")) {
-					ReplayModule module = (ReplayModule)simulation.getModuleByID(getIntegerToken(tokens, "id"));
 					IDisplayString displayString = new DisplayString(null, null, getToken(tokens, "d"));
-					addAnimationPrimitive(new SetModuleDisplayStringAnimation(this, loadEventNumber, loadSimulationTime, loadAnimationNumber, module, displayString));
+					addAnimationPrimitive(new SetModuleDisplayStringAnimation(this, loadEventNumber, loadSimulationTime, loadAnimationNumber, getIntegerToken(tokens, "id"), displayString));
 				}
 				else if (tokens[0].equals("CS")) {
 					IDisplayString displayString = new DisplayString(null, null, getToken(tokens, "d"));

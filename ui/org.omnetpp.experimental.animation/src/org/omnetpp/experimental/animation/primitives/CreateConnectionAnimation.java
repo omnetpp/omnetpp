@@ -57,7 +57,7 @@ public class CreateConnectionAnimation extends AbstractAnimationPrimitive {
 		GateAnchor gateAnchor = (GateAnchor)animationEnvironment.getFigure(gateId);
 		
 		if (gateAnchor == null) {
-			ModuleFigure moduleFigure = (ModuleFigure)animationEnvironment.getFigure(animationEnvironment.getModuleByID(gateId.getModuleId()));
+			ModuleFigure moduleFigure = (ModuleFigure)animationEnvironment.getFigure(animationEnvironment.getSimulation().getModuleByID(gateId.getModuleId()));
 			// TODO: use gate name
 			gateAnchor = new GateAnchor(moduleFigure);
 			animationEnvironment.setFigure(gateId, gateAnchor);

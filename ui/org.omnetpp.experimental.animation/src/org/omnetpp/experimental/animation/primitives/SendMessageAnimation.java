@@ -1,6 +1,7 @@
 package org.omnetpp.experimental.animation.primitives;
 
 import org.eclipse.draw2d.Ellipse;
+import org.eclipse.draw2d.Label;
 import org.eclipse.draw2d.Polyline;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.Rectangle;
@@ -19,12 +20,16 @@ public class SendMessageAnimation extends AbstractAnimationPrimitive {
 	private ConnectionId connectionId;
 	
 	private double transmissionTime;
+
+	private double propagationTime;
 	
 	private double endSimulationTime;
 	
 	private Ellipse messageEllipse;
 	
 	private Polyline messageLine;
+	
+	private Label toolTip;
 
 	public SendMessageAnimation(ReplayAnimationController animationController,
 								long eventNumber,
@@ -35,16 +40,23 @@ public class SendMessageAnimation extends AbstractAnimationPrimitive {
 								ConnectionId connectionId) {
 		super(animationController, eventNumber, simulationTime, animationNumber);
 		this.transmissionTime = transmissionTime;
+		this.propagationTime = propagationTime;
 		this.endSimulationTime = simulationTime + propagationTime + transmissionTime;
 		this.connectionId = connectionId;
 		
+		toolTip = new Label();
+		toolTip.setText("Propagation time: " + SendMessageAnimation.this.propagationTime +
+						" transmission time: " + SendMessageAnimation.this.transmissionTime);
+
 		messageEllipse = new Ellipse();
 		messageEllipse.setForegroundColor(COLOR);
 		messageEllipse.setBackgroundColor(COLOR);
+		messageEllipse.setToolTip(toolTip);
 
 		messageLine = new Polyline();
 		messageLine.setForegroundColor(COLOR);
 		messageLine.setLineWidth(5);
+		messageLine.setToolTip(toolTip);
 	}
 	
 	@Override
@@ -61,17 +73,17 @@ public class SendMessageAnimation extends AbstractAnimationPrimitive {
 	}
 	
 	public void redo() {
-		addFigure(messageEllipse);
-
 		if (transmissionTime != 0)
 			addFigure(messageLine);
+
+		addFigure(messageEllipse);
 	}
 
 	public void undo() {
-		removeFigure(messageEllipse);
-		
 		if (transmissionTime != 0)
 			removeFigure(messageLine);
+
+		removeFigure(messageEllipse);
 	}
 
 	public void animateAt(long eventNumber, double simulationTime, long animationNumber, double animationTime) {

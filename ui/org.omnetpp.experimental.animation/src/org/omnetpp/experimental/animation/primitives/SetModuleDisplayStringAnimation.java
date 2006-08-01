@@ -6,7 +6,7 @@ import org.omnetpp.experimental.animation.replay.ReplayAnimationController;
 import org.omnetpp.figures.SubmoduleFigure;
 
 public class SetModuleDisplayStringAnimation extends AbstractAnimationPrimitive {
-	private IRuntimeModule module;
+	private int moduleId;
 	
 	private IDisplayString displayString;
 	
@@ -14,10 +14,10 @@ public class SetModuleDisplayStringAnimation extends AbstractAnimationPrimitive 
 									 long eventNumber,
 									 double simulationTime,
 									 long animationNumber,
-									 IRuntimeModule module,
+									 int moduleId,
 									 IDisplayString displayString) {
 		super(animationController, eventNumber, simulationTime, animationNumber);
-		this.module = module;
+		this.moduleId = moduleId;
 		this.displayString = displayString;
 		//System.out.println(displayString);
 	}
@@ -33,6 +33,7 @@ public class SetModuleDisplayStringAnimation extends AbstractAnimationPrimitive 
 	}
 	
 	public void redo() {
+		IRuntimeModule module = animationEnvironment.getSimulation().getModuleByID(moduleId);
 		SubmoduleFigure moduleFigure = (SubmoduleFigure)animationEnvironment.getFigure(module);
 		moduleFigure.setDisplayString(displayString);
 	}

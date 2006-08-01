@@ -57,11 +57,6 @@ public interface IAnimationPrimitive {
 	 */
 	public void undo();
 	
-	// The animation time after this primitive's animateAt should not be called any more even though the
-	// animation primitive may still be active
-	// This is different from the begin and end animation times.
-	// public double getXXXAnimationTime()
-	
 	/**
 	 * Updates figures according to the given animation position. This method will be called only
 	 * when the animation primitive is active.

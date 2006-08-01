@@ -13,16 +13,16 @@ public class HandleMessageAnimation extends AbstractAnimationPrimitive {
 	
 	private Ellipse ellipse;
 
-	private IRuntimeModule module;
+	private int moduleId;
 	
 	public HandleMessageAnimation(ReplayAnimationController animationController,
 								  long eventNumber,
 								  double simulationTime,
 								  long animationNumber,
-								  IRuntimeModule module,
+								  int moduleId,
 								  IRuntimeMessage message) {
 		super(animationController, eventNumber, simulationTime, animationNumber);
-		this.module = module;
+		this.moduleId = moduleId;
 		this.message = message;
 		this.ellipse = new Ellipse();
 		this.ellipse.setBackgroundColor(new Color(null, 0, 128, 0));
@@ -47,6 +47,7 @@ public class HandleMessageAnimation extends AbstractAnimationPrimitive {
 	}
 
 	public void animateAt(long eventNumber, double simulationTime, long animationNumber, double animationTime) {
+		IRuntimeModule module = animationEnvironment.getSimulation().getModuleByID(moduleId);
 		ModuleFigure moduleFigure = (ModuleFigure)animationEnvironment.getFigure(module);
 		setConstraint(ellipse, new Rectangle(moduleFigure.getLocation().x + 3, moduleFigure.getLocation().y + 3, 7, 7));
 	}
