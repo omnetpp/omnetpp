@@ -58,6 +58,7 @@ public class SimkernelPlugin extends AbstractUIPlugin {
 
 		cEnvir ev = Simkernel.getEV();
 		ev.shutdown();
+		staticFlag.delete();
 		staticFlag = null;
 		plugin = null;
 	}
