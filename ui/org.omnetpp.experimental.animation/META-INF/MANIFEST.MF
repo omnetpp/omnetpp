@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: Animation Plug-in
 Bundle-SymbolicName: org.omnetpp.experimental.animation; singleton:=true
 Bundle-Version: 1.0.0
-Bundle-Activator: org.omnetpp.experimental.animation.Activator
+Bundle-Activator: org.omnetpp.experimental.animation.AnimationPlugin
 Bundle-Localization: plugin
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,

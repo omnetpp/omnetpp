@@ -4,12 +4,15 @@ import java.text.NumberFormat;
 import java.text.ParseException;
 
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.jface.action.ActionContributionItem;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.layout.RowData;
@@ -18,7 +21,7 @@ import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.CoolBar;
 import org.eclipse.swt.widgets.CoolItem;
-import org.eclipse.swt.widgets.Slider;
+import org.eclipse.swt.widgets.Scale;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
@@ -27,12 +30,16 @@ import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.part.EditorPart;
+import org.omnetpp.experimental.animation.AnimationPlugin;
 import org.omnetpp.experimental.animation.controller.IAnimationController;
 import org.omnetpp.experimental.animation.controller.IAnimationListener;
 import org.omnetpp.experimental.animation.replay.ReplayAnimationController;
 import org.omnetpp.experimental.animation.widgets.AnimationCanvas;
 
+
 public class ReplayAnimationEditor extends EditorPart implements IAnimationListener {
+	protected CoolBar coolBar;
+	
 	protected IAnimationController animationController;
 
 	protected Text replayEventNumberWidget;
@@ -79,17 +86,18 @@ public class ReplayAnimationEditor extends EditorPart implements IAnimationListe
 	@Override
 	public void createPartControl(Composite parent) {
 		parent.setLayout(new GridLayout());
-
+		
 		// user interface controls
 		int coolBarHeight = 25;
-		CoolBar coolBar = new CoolBar(parent, SWT.NONE);
+		coolBar = new CoolBar(parent, SWT.NONE);
 		coolBar.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
 		
 		// navigation tool bar
 		ToolBar toolBar = new ToolBar(coolBar, SWT.NONE);
 
 	    ToolItem toolItem = new ToolItem(toolBar, SWT.PUSH);
-	    toolItem.setText("Begin");
+	    //toolItem.setText("Begin");
+	    toolItem.setImage(AnimationPlugin.getImageDescriptor("icons/rewind.gif").createImage());
 	    toolItem.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				animationController.gotoBegin();
@@ -97,7 +105,8 @@ public class ReplayAnimationEditor extends EditorPart implements IAnimationListe
 	    });
 
 	    toolItem = new ToolItem(toolBar, SWT.PUSH);
-	    toolItem.setText("Back");
+	    //toolItem.setText("Back");
+	    toolItem.setImage(AnimationPlugin.getImageDescriptor("icons/backplay.gif").createImage());
 	    toolItem.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				animationController.animateBack();
@@ -105,7 +114,17 @@ public class ReplayAnimationEditor extends EditorPart implements IAnimationListe
 	    });
 
 	    toolItem = new ToolItem(toolBar, SWT.PUSH);
-	    toolItem.setText("Stop");
+	    //toolItem.setText("Backstep");
+	    toolItem.setImage(AnimationPlugin.getImageDescriptor("icons/backstep.gif").createImage());
+	    toolItem.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
+				//animationController.animateBackStep(); //XXX needed
+			}
+	    });
+	    
+	    toolItem = new ToolItem(toolBar, SWT.PUSH);
+	    //toolItem.setText("Stop");
+	    toolItem.setImage(AnimationPlugin.getImageDescriptor("icons/stop.gif").createImage());
 	    toolItem.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				animationController.animateStop();
@@ -113,7 +132,8 @@ public class ReplayAnimationEditor extends EditorPart implements IAnimationListe
 	    });
 
 	    toolItem = new ToolItem(toolBar, SWT.PUSH);
-	    toolItem.setText("Step");
+	    //toolItem.setText("Step");
+	    toolItem.setImage(AnimationPlugin.getImageDescriptor("icons/step.gif").createImage());
 	    toolItem.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				animationController.animateStep();
@@ -121,7 +141,8 @@ public class ReplayAnimationEditor extends EditorPart implements IAnimationListe
 	    });
 
 	    toolItem = new ToolItem(toolBar, SWT.PUSH);
-	    toolItem.setText("Play");
+	    //toolItem.setText("Play");
+	    toolItem.setImage(AnimationPlugin.getImageDescriptor("icons/play.gif").createImage());
 	    toolItem.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				animationController.animatePlay();
@@ -129,31 +150,8 @@ public class ReplayAnimationEditor extends EditorPart implements IAnimationListe
 	    });
 
 	    toolItem = new ToolItem(toolBar, SWT.PUSH);
-	    toolItem.setText("Live");
-	    toolItem.addSelectionListener(new SelectionAdapter() {
-			public void widgetSelected(SelectionEvent e) {
-				animationController.gotoLivePosition();
-			}
-	    });
-
-	    toolItem = new ToolItem(toolBar, SWT.PUSH);
-	    toolItem.setText("Fast");
-	    toolItem.addSelectionListener(new SelectionAdapter() {
-			public void widgetSelected(SelectionEvent e) {
-				animationController.animateFast();
-			}
-	    });
-
-	    toolItem = new ToolItem(toolBar, SWT.PUSH);
-	    toolItem.setText("Express");
-	    toolItem.addSelectionListener(new SelectionAdapter() {
-			public void widgetSelected(SelectionEvent e) {
-				animationController.animateExpress();
-			}
-	    });
-
-	    toolItem = new ToolItem(toolBar, SWT.PUSH);
-	    toolItem.setText("End");
+	    //toolItem.setText("End");
+	    toolItem.setImage(AnimationPlugin.getImageDescriptor("icons/gotoend.gif").createImage());
 	    toolItem.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				animationController.gotoEnd();
@@ -245,20 +243,20 @@ public class ReplayAnimationEditor extends EditorPart implements IAnimationListe
 		coolItem.setSize(new Point(480, coolBarHeight));
 
 		// speed slider
-	    Slider slider = new Slider(coolBar, SWT.HORIZONTAL);
-	    slider.setMinimum(0);
-	    slider.setMaximum(100);
-	    slider.setThumb(1);
-	    slider.setSelection((slider.getMaximum() - slider.getMinimum()) / 2); 
-	    slider.addSelectionListener(new SelectionAdapter() {
+	    Scale scale = new Scale(coolBar, SWT.HORIZONTAL);
+	    scale.setMinimum(0);
+	    scale.setMaximum(100);
+	    scale.setSelection((scale.getMaximum() - scale.getMinimum()) / 2); 
+	    scale.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
-				Slider slider = (Slider)e.widget;
-				int scale = ((Slider)e.widget).getSelection() - (slider.getMaximum() - slider.getMinimum()) / 2;
-				animationController.setRealTimeToAnimationTimeScale(Math.pow(1.1, scale));
+				Scale scale = (Scale)e.widget;
+				int value = scale.getSelection() - (scale.getMaximum() - scale.getMinimum()) / 2;
+				animationController.setRealTimeToAnimationTimeScale(Math.pow(1.1, value));
 			}	    	
 	    });
 	    coolItem = new CoolItem(coolBar, SWT.NONE);
-		coolItem.setControl(slider);
+		coolItem.setControl(scale);
+		coolItem.setSize(new Point(200, coolBarHeight)); //XXX height has no effect
 
 	    createAnimationController(parent);
 

@@ -19,7 +19,7 @@ import org.eclipse.ui.part.FileEditorInput;
 import org.omnetpp.inifile.editor.InifileEditorPlugin;
 
 public class LaunchSimulatonAction extends Action {
-	private static final String LAUNCH_EDITOR_ID = "org.omnetpp.experimental.animation.editors.AnimationEditor";
+	private static final String LAUNCH_EDITOR_ID = "org.omnetpp.experimental.animation.editors.LiveAnimationEditor";
 
 	public LaunchSimulatonAction() {
 		setText("Launch simulation");
