@@ -28,8 +28,10 @@ public class ScaveObjectEditFormFactory {
 	
 	/**
 	 * Creates a form containing all editable features of the object.
+	 * @param object  the edited object
 	 */
 	public IScaveObjectEditForm createForm(EObject object) {
+		
 		if (object instanceof AddDiscardOp)
 			return new AddDiscardEditForm((AddDiscardOp)object);
 		if (object instanceof Chart)

@@ -1,12 +1,9 @@
 package org.omnetpp.common.util;
 
-import static org.apache.commons.lang.StringUtils.capitalize;
-import static org.apache.commons.lang.StringUtils.join;
-
 import java.util.ArrayList;
 import java.util.List;
 
-public class StringUtils {
+public class StringUtils extends org.apache.commons.lang.StringUtils {
 	
 	/**
 	 * Converts a java id string (camel case and '_' used as word separators)

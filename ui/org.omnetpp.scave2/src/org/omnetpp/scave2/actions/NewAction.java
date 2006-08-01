@@ -3,6 +3,7 @@ package org.omnetpp.scave2.actions;
 import org.eclipse.emf.common.command.Command;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.edit.command.AddCommand;
+import org.eclipse.emf.edit.command.CreateChildCommand;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.window.Window;
 import org.eclipse.jface.wizard.WizardDialog;
@@ -34,7 +35,11 @@ public class NewAction extends AbstractScaveAction {
 			NewScaveObjectWizard wizard = new NewScaveObjectWizard(editor.getEditingDomain(), parent);
 			WizardDialog dialog = new WizardDialog(editor.getSite().getShell(), wizard);
 			if (dialog.open() == Window.OK) {
-				Command command = AddCommand.create(editor.getEditingDomain(), parent, null, wizard.getNewScaveObject());
+				Command command = CreateChildCommand.create(
+									editor.getEditingDomain(),
+									parent,
+									wizard.getNewChildDescriptor(),
+									selection.toList());  
 				editor.executeCommand(command);
 			}
 		}
