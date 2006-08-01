@@ -7,6 +7,7 @@ import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.ChartSheet;
 import org.omnetpp.scave.model.Dataset;
 import org.omnetpp.scave.model.ProcessingOp;
+import org.omnetpp.scave.model.SetOperation;
 
 /**
  * Factory for <code>ScaveObjectEditForm</code>s.
