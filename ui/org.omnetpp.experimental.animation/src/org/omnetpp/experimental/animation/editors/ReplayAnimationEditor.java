@@ -63,6 +63,8 @@ public class ReplayAnimationEditor extends EditorPart implements IReplayAnimatio
 
 	@Override
 	public void init(IEditorSite site, IEditorInput input) throws PartInitException {
+	    if (!(input instanceof IFileEditorInput))
+	    	throw new PartInitException("Invalid input: this editor only works with workspace files");
 		setSite(site);
 		setInput(input);
 		
@@ -90,9 +92,17 @@ public class ReplayAnimationEditor extends EditorPart implements IReplayAnimatio
 		coolBar = new CoolBar(parent, SWT.NONE);
 		coolBar.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
 		
+		createNavigationToolbar(coolBarHeight);
+		createTimeGauges(coolBarHeight);
+		createSpeedSlider(coolBarHeight);
+
+		createAnimationController(parent);
+	}
+
+	private void createNavigationToolbar(int coolBarHeight) {
 		// navigation tool bar
 		ToolBar toolBar = new ToolBar(coolBar, SWT.NONE);
-
+	
 	    ToolItem toolItem = new ToolItem(toolBar, SWT.PUSH);
 	    toolItem.setToolTipText("Begin");
 	    toolItem.setImage(AnimationPlugin.getImageDescriptor(ICONS_REWIND_GIF).createImage());
@@ -101,7 +111,7 @@ public class ReplayAnimationEditor extends EditorPart implements IReplayAnimatio
 				animationController.gotoBegin();
 			}
 	    });
-
+	
 	    toolItem = new ToolItem(toolBar, SWT.PUSH);
 	    toolItem.setToolTipText("Back");
 	    toolItem.setImage(AnimationPlugin.getImageDescriptor(ICONS_BACKPLAY_GIF).createImage());
@@ -110,7 +120,7 @@ public class ReplayAnimationEditor extends EditorPart implements IReplayAnimatio
 				animationController.animateBack();
 			}
 	    });
-
+	
 	    toolItem = new ToolItem(toolBar, SWT.PUSH);
 	    toolItem.setToolTipText("Backstep");
 	    toolItem.setImage(AnimationPlugin.getImageDescriptor(ICONS_BACKSTEP_GIF).createImage());
@@ -128,7 +138,7 @@ public class ReplayAnimationEditor extends EditorPart implements IReplayAnimatio
 				animationController.animateStop();
 			}
 	    });
-
+	
 	    toolItem = new ToolItem(toolBar, SWT.PUSH);
 	    toolItem.setToolTipText("Step");
 	    toolItem.setImage(AnimationPlugin.getImageDescriptor(ICONS_STEP_GIF).createImage());
@@ -137,7 +147,7 @@ public class ReplayAnimationEditor extends EditorPart implements IReplayAnimatio
 				animationController.animateStep();
 			}
 	    });
-
+	
 	    toolItem = new ToolItem(toolBar, SWT.PUSH);
 	    toolItem.setToolTipText("Play");
 	    toolItem.setImage(AnimationPlugin.getImageDescriptor(ICONS_PLAY_GIF).createImage());
@@ -146,7 +156,7 @@ public class ReplayAnimationEditor extends EditorPart implements IReplayAnimatio
 				animationController.animatePlay();
 			}
 	    });
-
+	
 	    toolItem = new ToolItem(toolBar, SWT.PUSH);
 	    toolItem.setToolTipText("End");
 	    toolItem.setImage(AnimationPlugin.getImageDescriptor(ICONS_GOTOEND_GIF).createImage());
@@ -161,7 +171,10 @@ public class ReplayAnimationEditor extends EditorPart implements IReplayAnimatio
 		coolItem.setControl(toolBar);
 		//toolBar.setSize(toolBar.computeSize(SWT.DEFAULT, SWT.DEFAULT));
 		coolItem.setSize(new Point(180, coolBarHeight));
+	}
 
+	private void createTimeGauges(int coolBarHeight) {
+		CoolItem coolItem;
 		// animation mode selector
 /*
 		Combo animationMode = new Combo(coolBar, SWT.NONE);
@@ -242,6 +255,18 @@ public class ReplayAnimationEditor extends EditorPart implements IReplayAnimatio
 	    coolItem.setControl(labels);
 		coolItem.setSize(new Point(480, coolBarHeight));
 
+/*
+   		animationMode.select(animationController.getAnimationMode().ordinal());
+   		animationMode.addSelectionListener(new SelectionAdapter () {
+   			public void widgetSelected(SelectionEvent e) {
+   				animationController.setAnimationMode(ReplayAnimationController.AnimationMode.values()[((Combo)e.getSource()).getSelectionIndex()]);
+   			}
+   		});
+*/
+	}
+
+	private void createSpeedSlider(int coolBarHeight) {
+		CoolItem coolItem;
 		// speed slider
 	    Scale scale = new Scale(coolBar, SWT.HORIZONTAL);
 	    scale.setMinimum(0);
@@ -257,17 +282,8 @@ public class ReplayAnimationEditor extends EditorPart implements IReplayAnimatio
 	    coolItem = new CoolItem(coolBar, SWT.NONE);
 		coolItem.setControl(scale);
 		coolItem.setSize(new Point(200, coolBarHeight)); //XXX height has no effect
-
-	    createAnimationController(parent);
-/*
-		animationMode.select(animationController.getAnimationMode().ordinal());
-		animationMode.addSelectionListener(new SelectionAdapter () {
-			public void widgetSelected(SelectionEvent e) {
-				animationController.setAnimationMode(ReplayAnimationController.AnimationMode.values()[((Combo)e.getSource()).getSelectionIndex()]);
-			}
-		});
-*/	}
-
+	}
+	
 	protected void createAnimationController(Composite parent) {
 		AnimationCanvas canvas = new AnimationCanvas(parent, SWT.NONE);
 		canvas.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));

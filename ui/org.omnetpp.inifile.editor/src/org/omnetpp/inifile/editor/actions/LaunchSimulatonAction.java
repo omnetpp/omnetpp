@@ -39,6 +39,7 @@ public class LaunchSimulatonAction extends Action {
 
 		try {
 			if (!launchFile.exists()) {
+				// record only the file name without directory -- it will be understood as relative to the .launch file
 				String contents = "inifile "+iniFile.getName()+"\n";
 				InputStream bis = new ByteArrayInputStream(contents.getBytes());
 				launchFile.create(bis, false, null);
