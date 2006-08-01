@@ -10,13 +10,17 @@ package org.omnetpp.scave.model.provider;
 import java.util.Collection;
 import java.util.List;
 
+import org.eclipse.emf.common.command.Command;
+import org.eclipse.emf.common.command.UnexecutableCommand;
 import org.eclipse.emf.common.notify.AdapterFactory;
 import org.eclipse.emf.common.notify.Notification;
 
 import org.eclipse.emf.common.util.ResourceLocator;
 
+import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
 
+import org.eclipse.emf.edit.domain.EditingDomain;
 import org.eclipse.emf.edit.provider.IEditingDomainItemProvider;
 import org.eclipse.emf.edit.provider.IItemLabelProvider;
 import org.eclipse.emf.edit.provider.IItemPropertySource;
@@ -173,4 +177,18 @@ public class AnalysisItemProvider
 		return ScaveEditPlugin.INSTANCE;
 	}
 
+	/**
+	 * Disable the deletion of Inputs/Datasets/Chartsheets node from the Analysis.
+	 */
+	@Override
+	protected Command createSetCommand(EditingDomain domain, EObject owner, EStructuralFeature feature, Object value) {
+		ScaveModelPackage scavePackage = ScaveModelPackage.eINSTANCE;
+		if (value == null &&
+				(feature == scavePackage.getAnalysis_Inputs() ||
+						feature == scavePackage.getAnalysis_Datasets() ||
+						feature == scavePackage.getAnalysis_ChartSheets()))
+			return UnexecutableCommand.INSTANCE;
+		else
+			return super.createSetCommand(domain, owner, feature, value);
+	}
 }
