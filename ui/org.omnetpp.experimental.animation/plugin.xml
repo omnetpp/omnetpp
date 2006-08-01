@@ -5,12 +5,20 @@
    <extension
          point="org.eclipse.ui.editors">
       <editor
-            name="Animation Editor"
+            name="Replay Animation Editor"
             extensions="anim"
             icon="icons/sample.gif"
             contributorClass="org.eclipse.ui.texteditor.BasicTextEditorActionContributor"
-            class="org.omnetpp.experimental.animation.editors.AnimationEditor"
-            id="org.omnetpp.experimental.animation.editors.AnimationEditor">
+            class="org.omnetpp.experimental.animation.editors.ReplayAnimationEditor"
+            id="org.omnetpp.experimental.animation.editors.ReplayAnimationEditor">
+      </editor>
+      <editor
+            name="Live Animation Editor"
+            extensions="launch"
+            icon="icons/sample.gif"
+            contributorClass="org.eclipse.ui.texteditor.BasicTextEditorActionContributor"
+            class="org.omnetpp.experimental.animation.editors.LiveAnimationEditor"
+            id="org.omnetpp.experimental.animation.editors.LiveAnimationEditor">
       </editor>
    </extension>
 
