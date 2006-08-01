@@ -33,6 +33,15 @@ public class LiveAnimationEditor extends ReplayAnimationEditor {
 //		});
 
 		toolItem = new ToolItem(toolBar, SWT.PUSH);
+		//toolItem.setText("Restart");
+	    toolItem.setImage(AnimationPlugin.getImageDescriptor("icons/restart.gif").createImage());
+		toolItem.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
+				animationController.animateExpress(); //FIXME restart()!!!
+			}
+		});
+
+		toolItem = new ToolItem(toolBar, SWT.PUSH);
 		//toolItem.setText("Step");
 	    toolItem.setImage(AnimationPlugin.getImageDescriptor("icons/dooneevent.gif").createImage());
 		toolItem.addSelectionListener(new SelectionAdapter() {
@@ -79,10 +88,10 @@ public class LiveAnimationEditor extends ReplayAnimationEditor {
 
 		toolItem = new ToolItem(toolBar, SWT.PUSH);
 		//toolItem.setText("Restart");
-	    toolItem.setImage(AnimationPlugin.getImageDescriptor("icons/restart.gif").createImage());
+	    toolItem.setImage(AnimationPlugin.getImageDescriptor("icons/finish.gif").createImage());
 		toolItem.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
-				animationController.animateExpress(); //FIXME restart()!!!
+				animationController.animateExpress(); //FIXME callFinish()!!!
 			}
 		});
 		
