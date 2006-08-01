@@ -18,7 +18,22 @@ OBJS = simkernel_wrap.obj
 JAVAPKG = org.omnetpp.experimental.simkernel.swig
 JAVADIR = src\$(JAVAPKG:.=\)
 
-LIBS = $(OMNETPP_ROOT)/samples/p-to-p/*.obj \
+MODEL_OBJS = $(OMNETPP_ROOT)/samples/aloha/*.obj \
+             $(OMNETPP_ROOT)/samples/cqn/*.obj \
+             $(OMNETPP_ROOT)/samples/dyna/*.obj \
+             $(OMNETPP_ROOT)/samples/fddi/*.obj \
+             $(OMNETPP_ROOT)/samples/fifo/*.obj \
+             $(OMNETPP_ROOT)/samples/hcube/*.obj \
+             $(OMNETPP_ROOT)/samples/hist/*.obj \
+             $(OMNETPP_ROOT)/samples/neddemo/*.obj \
+             $(OMNETPP_ROOT)/samples/p-to-p/*.obj \
+             $(OMNETPP_ROOT)/samples/queueing/*.obj \
+             $(OMNETPP_ROOT)/samples/routing/*.obj \
+             $(OMNETPP_ROOT)/samples/tictoc/*.obj \
+             $(OMNETPP_ROOT)/samples/tokenring/*.obj \
+             $(OMNETPP_ROOT)/samples/sockets/*.obj
+       
+LIBS = $(MODEL_OBJS) \
        $(OMNETPP_ROOT)/lib/sim_std.lib \
        $(OMNETPP_ROOT)/lib/nedxml.lib \
        $(OMNETPP_ROOT)/lib/envir.lib \
