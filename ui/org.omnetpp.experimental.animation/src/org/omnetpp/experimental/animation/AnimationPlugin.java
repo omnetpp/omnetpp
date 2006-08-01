@@ -1,5 +1,6 @@
 package org.omnetpp.experimental.animation;
 
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.omnetpp.experimental.animation.editors.LiveAnimationEditor;
@@ -64,5 +65,13 @@ public class AnimationPlugin extends AbstractUIPlugin {
 	 */
 	public static ImageDescriptor getImageDescriptor(String path) {
 		return imageDescriptorFromPlugin(PLUGIN_ID, path);
+	}
+
+	public LiveAnimationEditor getCurrentLiveAnimation() {
+		return currentLiveAnimation;
+	}
+
+	public void setCurrentLiveAnimation(LiveAnimationEditor currentLiveAnimation) {
+		this.currentLiveAnimation = currentLiveAnimation;
 	}
 }

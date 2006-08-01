@@ -1,5 +1,6 @@
 package org.omnetpp.experimental.animation.editors;
 
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -8,6 +9,9 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.CoolItem;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
+import org.eclipse.ui.IEditorInput;
+import org.eclipse.ui.IEditorSite;
+import org.eclipse.ui.PartInitException;
 import org.omnetpp.experimental.animation.AnimationPlugin;
 import org.omnetpp.experimental.animation.controller.ILiveAnimationListener;
 import org.omnetpp.experimental.animation.live.LiveAnimationController;
@@ -16,7 +20,27 @@ import org.omnetpp.experimental.animation.widgets.AnimationCanvas;
 public class LiveAnimationEditor extends ReplayAnimationEditor implements ILiveAnimationListener {
 	
 	@Override
+	public void init(IEditorSite site, IEditorInput input) throws PartInitException {
+		super.init(site, input);
+	}
+	
+	@Override
+	public void dispose() {
+		super.dispose();
+		AnimationPlugin.getDefault().setCurrentLiveAnimation(null); // see matching code in createPartControl()
+	}
+
+	@Override
 	public void createPartControl(Composite parent) {
+		// make sure there's only one simulation running at a time
+		if (AnimationPlugin.getDefault().getCurrentLiveAnimation()!=null) {
+			MessageDialog.openError(null, "Error", "There can only be one simulation running at a time.");
+		    getSite().getPage().closeEditor(this, false);
+		    return;
+		}
+		AnimationPlugin.getDefault().setCurrentLiveAnimation(this);
+
+		// now create controls
 		super.createPartControl(parent);
 		
 		ToolBar toolBar = new ToolBar(coolBar, SWT.NONE);
