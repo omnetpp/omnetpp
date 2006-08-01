@@ -35,7 +35,7 @@ public class AnimationPlugin extends AbstractUIPlugin {
 	 */
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
-		SimkernelPlugin.getDefault(); //XXX test
+		//SimkernelPlugin.getDefault(); //XXX test
 	}
 
 	/*
