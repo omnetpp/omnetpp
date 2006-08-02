@@ -49,16 +49,9 @@ public class ReplayAnimationEditor extends EditorPart implements IReplayAnimatio
 	protected Text replayAnimationTimeWidget;
 	
 	protected NumberFormat numberFormat;
+	protected static final int COOLBAR_HEIGHT = 25;
 	
 	public ReplayAnimationEditor() {
-	}
-
-	@Override
-	public void doSave(IProgressMonitor monitor) {
-	}
-
-	@Override
-	public void doSaveAs() {
 	}
 
 	@Override
@@ -74,32 +67,24 @@ public class ReplayAnimationEditor extends EditorPart implements IReplayAnimatio
 	}
 
 	@Override
-	public boolean isDirty() {
-		return false;
-	}
-
-	@Override
-	public boolean isSaveAsAllowed() {
-		return false;
-	}
-
-	@Override
 	public void createPartControl(Composite parent) {
-		parent.setLayout(new GridLayout());
+		parent.setLayout(new GridLayout(1, false));
 		
-		// user interface controls
-		int coolBarHeight = 25;
-		coolBar = new CoolBar(parent, SWT.NONE);
-		coolBar.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
+		createCoolbar(parent);
 		
-		createNavigationToolbar(coolBarHeight);
-		createTimeGauges(coolBarHeight);
-		createSpeedSlider(coolBarHeight);
+		createNavigationToolbar();
+		createTimeGauges();
+		createSpeedSlider();
 
 		createAnimationController(parent);
 	}
 
-	private void createNavigationToolbar(int coolBarHeight) {
+	protected void createCoolbar(Composite parent) {
+		coolBar = new CoolBar(parent, SWT.NONE);
+		coolBar.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
+	}
+
+	protected void createNavigationToolbar() {
 		// navigation tool bar
 		ToolBar toolBar = new ToolBar(coolBar, SWT.NONE);
 	
@@ -170,10 +155,10 @@ public class ReplayAnimationEditor extends EditorPart implements IReplayAnimatio
 		CoolItem coolItem = new CoolItem(coolBar, SWT.NONE);
 		coolItem.setControl(toolBar);
 		//toolBar.setSize(toolBar.computeSize(SWT.DEFAULT, SWT.DEFAULT));
-		coolItem.setSize(new Point(180, coolBarHeight));
+		coolItem.setSize(new Point(180, COOLBAR_HEIGHT));
 	}
 
-	private void createTimeGauges(int coolBarHeight) {
+	protected void createTimeGauges() {
 		CoolItem coolItem;
 		// animation mode selector
 /*
@@ -189,7 +174,7 @@ public class ReplayAnimationEditor extends EditorPart implements IReplayAnimatio
 		Composite labels = new Composite(coolBar, SWT.NONE);
 		labels.setLayout(new RowLayout(SWT.HORIZONTAL));
 		replayEventNumberWidget = new Text(labels, SWT.BORDER);
-		replayEventNumberWidget.setLayoutData(new RowData(100, coolBarHeight - 10));
+		replayEventNumberWidget.setLayoutData(new RowData(100, COOLBAR_HEIGHT - 10));
 		replayEventNumberWidget.addModifyListener(new ModifyListener() {
 			public void modifyText(ModifyEvent e) {
 				long eventNumber = -1;
@@ -204,7 +189,7 @@ public class ReplayAnimationEditor extends EditorPart implements IReplayAnimatio
 			}
 		});
 		replayAnimationNumberWidget = new Text(labels, SWT.BORDER);
-		replayAnimationNumberWidget.setLayoutData(new RowData(100, coolBarHeight - 10));
+		replayAnimationNumberWidget.setLayoutData(new RowData(100, COOLBAR_HEIGHT - 10));
 		replayAnimationNumberWidget.addModifyListener(new ModifyListener() {
 			public void modifyText(ModifyEvent e) {
 				long animationNumber = -1;
@@ -220,7 +205,7 @@ public class ReplayAnimationEditor extends EditorPart implements IReplayAnimatio
 			}
 		});
 		replaySimulationTimeWidget = new Text(labels, SWT.BORDER);
-		replaySimulationTimeWidget.setLayoutData(new RowData(100, coolBarHeight - 10));
+		replaySimulationTimeWidget.setLayoutData(new RowData(100, COOLBAR_HEIGHT - 10));
 		replaySimulationTimeWidget.addModifyListener(new ModifyListener() {
 			public void modifyText(ModifyEvent e) {
 				double simulationTime = -1;
@@ -236,7 +221,7 @@ public class ReplayAnimationEditor extends EditorPart implements IReplayAnimatio
 			}
 		});
 		replayAnimationTimeWidget = new Text(labels, SWT.BORDER);
-		replayAnimationTimeWidget.setLayoutData(new RowData(100, coolBarHeight - 10));
+		replayAnimationTimeWidget.setLayoutData(new RowData(100, COOLBAR_HEIGHT - 10));
 		replayAnimationTimeWidget.addModifyListener(new ModifyListener() {
 			public void modifyText(ModifyEvent e) {
 				double animationTime = -1;
@@ -253,7 +238,7 @@ public class ReplayAnimationEditor extends EditorPart implements IReplayAnimatio
 		});
 	    coolItem = new CoolItem(coolBar, SWT.NONE);
 	    coolItem.setControl(labels);
-		coolItem.setSize(new Point(480, coolBarHeight));
+		coolItem.setSize(new Point(480, COOLBAR_HEIGHT));
 
 /*
    		animationMode.select(animationController.getAnimationMode().ordinal());
@@ -265,7 +250,7 @@ public class ReplayAnimationEditor extends EditorPart implements IReplayAnimatio
 */
 	}
 
-	private void createSpeedSlider(int coolBarHeight) {
+	protected void createSpeedSlider() {
 		CoolItem coolItem;
 		// speed slider
 	    Scale scale = new Scale(coolBar, SWT.HORIZONTAL);
@@ -281,7 +266,7 @@ public class ReplayAnimationEditor extends EditorPart implements IReplayAnimatio
 	    });
 	    coolItem = new CoolItem(coolBar, SWT.NONE);
 		coolItem.setControl(scale);
-		coolItem.setSize(new Point(200, coolBarHeight)); //XXX height has no effect
+		coolItem.setSize(new Point(200, COOLBAR_HEIGHT)); //XXX height has no effect
 	}
 	
 	protected void createAnimationController(Composite parent) {
@@ -302,6 +287,24 @@ public class ReplayAnimationEditor extends EditorPart implements IReplayAnimatio
 		animationController.animateStop();
 		animationController.shutdown();
 		super.dispose();
+	}
+
+	@Override
+	public boolean isDirty() {
+		return false;
+	}
+
+	@Override
+	public boolean isSaveAsAllowed() {
+		return false;
+	}
+
+	@Override
+	public void doSave(IProgressMonitor monitor) {
+	}
+
+	@Override
+	public void doSaveAs() {
 	}
 
 	public void replayPositionChanged(long eventNumber, double simulationTime, long animationNumber, double animationTime) {

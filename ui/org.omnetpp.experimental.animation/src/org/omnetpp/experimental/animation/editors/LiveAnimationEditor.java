@@ -15,7 +15,9 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.CoolItem;
 import org.eclipse.swt.widgets.ToolBar;
@@ -48,12 +50,8 @@ public class LiveAnimationEditor extends ReplayAnimationEditor implements ILiveA
 		// see matching code in createPartControl()
 		AnimationPlugin.getDefault().setCurrentLiveAnimation(null);
 		
-		// shutdown simulation
-		cEnvir ev = Simkernel.getEV();
-		ev.shutdown();
-		staticFlag.delete();
-		staticFlag = null;
-		
+		// release simkernel
+		shutdownSimulation();
 	}
 
 	@Override
@@ -69,23 +67,33 @@ public class LiveAnimationEditor extends ReplayAnimationEditor implements ILiveA
 		// initialize simulation
 		initSimulation();
 
-		// now create controls
-		super.createPartControl(parent);
-		createToolbar();
+		// now create controls.
+		// note: cannot simply call super.createPartControl(parent) because
+		// we want toolbars in different order (could use coolBar.setItemLayout() though)
+		parent.setLayout(new GridLayout());
+		
+		createCoolbar(parent);
+		createSimulationToolbar();
+		createNavigationToolbar();
+		createTimeGauges();
+		createSpeedSlider();
+
+		createAnimationController(parent);
+		
+		coolBar.setWrapIndices(new int[] {2,3});
+
 	}
 
 	private void initSimulation() {
-		staticFlag = new cStaticFlag(); // needed by sim kernel
-		
 		// read the ".launch" file and extract inifile name from it
 	    IFile launchFile = ((IFileEditorInput)getEditorInput()).getFile();
-		String inifileName = null;
+		String inifilePathName = null;
 		try {
 			BufferedReader reader = new BufferedReader(new InputStreamReader(launchFile.getContents()));
 			String line = reader.readLine();
 			String[] tokens = line.split(" ");
 			if (tokens.length>=2 && tokens[0].equals("inifile"))
-				inifileName = tokens[1];
+				inifilePathName = tokens[1];
 			else
 				throw new RuntimeException(launchFile+": invalid syntax"); //XXX better error handling
 		} catch (CoreException e) {
@@ -98,18 +106,20 @@ public class LiveAnimationEditor extends ReplayAnimationEditor implements ILiveA
 
 		// change into the ini file's directory
 		IWorkspaceRoot workspaceRoot = ResourcesPlugin.getWorkspace().getRoot();
-		IPath path = new Path(inifileName);
-		if (!path.isAbsolute())
-			path = launchFile.getParent().getFullPath().append(path);
-		IResource inifile = workspaceRoot.findMember(path);
+		IPath inifilePath = new Path(inifilePathName);
+		if (!inifilePath.isAbsolute())
+			inifilePath = launchFile.getParent().getFullPath().append(inifilePath);
+		IResource inifile = workspaceRoot.findMember(inifilePath);
 		if (!(inifile instanceof IFile))
-			throw new RuntimeException("File "+path+" does not exist"); //XXX better error handling
-		String dir = inifile.getRawLocation().removeLastSegments(1).toOSString();
-		Simkernel.changeToDir(dir);
+			throw new RuntimeException("File "+inifilePath+" does not exist"); //XXX better error handling
+		String inifileDir = inifile.getRawLocation().removeLastSegments(1).toOSString();
 
-		System.out.println("STARTING SIMULATION");
-		Simkernel.evSetupDummyCall(); // ev.setup(argc, argv);
+		Simkernel.changeToDir(inifileDir);
 
+		staticFlag = new cStaticFlag(); // needed by sim kernel
+		Simkernel.evSetup(inifile.getName()); // ev.setup(argc, argv);
+
+		//TEST CODE:
 		//Javaenv jenv = Simkernel.getJavaenv();
 		//jenv.setJCallback(null, new DummyEnvirCallback());
 
@@ -121,7 +131,14 @@ public class LiveAnimationEditor extends ReplayAnimationEditor implements ILiveA
 		//	jenv.doOneStep();
 	}
 
-	private void createToolbar() {
+	private void shutdownSimulation() {
+		cEnvir ev = Simkernel.getEV();
+		ev.shutdown();
+		staticFlag.delete();
+		staticFlag = null;
+	}
+
+	private void createSimulationToolbar() {
 		ToolBar toolBar = new ToolBar(coolBar, SWT.NONE);
 
 		ToolItem toolItem;
@@ -189,10 +206,12 @@ public class LiveAnimationEditor extends ReplayAnimationEditor implements ILiveA
 			}
 		});
 		
-		toolBar.setSize(toolBar.computeSize(SWT.DEFAULT, SWT.DEFAULT));
+		//toolBar.setSize(toolBar.computeSize(SWT.DEFAULT, SWT.DEFAULT)); XXX does not work
 
 		CoolItem coolItem = new CoolItem(coolBar, SWT.NONE);
 		coolItem.setControl(toolBar);
+
+		coolItem.setSize(new Point(250, COOLBAR_HEIGHT));
 	}
 	
 	@Override
