@@ -170,10 +170,11 @@ public class ReplayAnimationEditor extends EditorPart implements IReplayAnimatio
 		coolItem.setControl(animationMode);
 		coolItem.setSize(new Point(100, coolBarHeight));
 */
-		// simulation time label
+		// event number
 		Composite labels = new Composite(coolBar, SWT.NONE);
 		labels.setLayout(new RowLayout(SWT.HORIZONTAL));
 		replayEventNumberWidget = new Text(labels, SWT.BORDER);
+		replayEventNumberWidget.setToolTipText("event number");
 		replayEventNumberWidget.setLayoutData(new RowData(100, COOLBAR_HEIGHT - 10));
 		replayEventNumberWidget.addModifyListener(new ModifyListener() {
 			public void modifyText(ModifyEvent e) {
@@ -189,6 +190,7 @@ public class ReplayAnimationEditor extends EditorPart implements IReplayAnimatio
 			}
 		});
 		replayAnimationNumberWidget = new Text(labels, SWT.BORDER);
+		replayAnimationNumberWidget.setToolTipText("\"animation number\"");
 		replayAnimationNumberWidget.setLayoutData(new RowData(100, COOLBAR_HEIGHT - 10));
 		replayAnimationNumberWidget.addModifyListener(new ModifyListener() {
 			public void modifyText(ModifyEvent e) {
@@ -205,6 +207,7 @@ public class ReplayAnimationEditor extends EditorPart implements IReplayAnimatio
 			}
 		});
 		replaySimulationTimeWidget = new Text(labels, SWT.BORDER);
+		replaySimulationTimeWidget.setToolTipText("simulation time");
 		replaySimulationTimeWidget.setLayoutData(new RowData(100, COOLBAR_HEIGHT - 10));
 		replaySimulationTimeWidget.addModifyListener(new ModifyListener() {
 			public void modifyText(ModifyEvent e) {
@@ -221,6 +224,7 @@ public class ReplayAnimationEditor extends EditorPart implements IReplayAnimatio
 			}
 		});
 		replayAnimationTimeWidget = new Text(labels, SWT.BORDER);
+		replayAnimationTimeWidget.setToolTipText("\"animation time\"");
 		replayAnimationTimeWidget.setLayoutData(new RowData(100, COOLBAR_HEIGHT - 10));
 		replayAnimationTimeWidget.addModifyListener(new ModifyListener() {
 			public void modifyText(ModifyEvent e) {

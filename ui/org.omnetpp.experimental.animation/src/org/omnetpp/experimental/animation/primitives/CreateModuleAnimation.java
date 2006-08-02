@@ -33,7 +33,10 @@ public class CreateModuleAnimation extends AbstractAnimationPrimitive {
 	}
 	
 	public void redo() {
-		animationEnvironment.setFigure(module, addFigure(new SubmoduleFigure()));
+		SubmoduleFigure figure = new SubmoduleFigure();
+		getCompoundModuleFigure().addSubmodule(figure);
+		animationEnvironment.setFigure(module, figure);
+		figure.setName(getReplayModule().getFullName());
 		
 		if (getParentModule() != null)
 			getParentModule().addSubmodule(getReplayModule());
