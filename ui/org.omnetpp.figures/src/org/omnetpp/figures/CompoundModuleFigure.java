@@ -46,6 +46,7 @@ public class CompoundModuleFigure extends ModuleFigure
     private Color moduleBackgroundColor = ColorFactory.defaultBackground;
     private Color moduleBorderColor = ColorFactory.defaultBorder;
     private ConnectionLayer connectionLayer;
+    private FreeformLayer messageLayer;
     private SpringEmbedderLayout layouter;
     private float scale = 1.0f;
     private String unit = "px";
@@ -140,7 +141,9 @@ public class CompoundModuleFigure extends ModuleFigure
         // add the maint layer to the scroller pane
         // create the main and the decoration layers that will be added into the viewportPane
         pane = new FreeformLayer();
+        messageLayer = new FreeformLayer();
         connectionLayer = new ConnectionLayer();
+        
 
         layeredPane = new FreeformLayeredPane();
         layeredPane.setLayoutManager(new StackLayout());
@@ -150,7 +153,8 @@ public class CompoundModuleFigure extends ModuleFigure
         layeredPane.addLayerAfter(pane, LayerID.DEFAULT, LayerID.BACKGROUND_DECORATION);
         layeredPane.addLayerAfter(new FreeformLayer(), LayerID.FRONT_DECORATION, LayerID.DEFAULT);
         layeredPane.addLayerAfter(connectionLayer, LayerID.CONNECTION, LayerID.FRONT_DECORATION);
-        layeredPane.addLayerAfter(new FreeformLayer(), LayerID.CALLOUT, LayerID.CONNECTION);
+        layeredPane.addLayerAfter(messageLayer, LayerID.MESSAGE, LayerID.CONNECTION);
+        layeredPane.addLayerAfter(new FreeformLayer(), LayerID.CALLOUT, LayerID.MESSAGE);
         
         scrollpane.setViewport(new FreeformViewport());
         scrollpane.setContents(layeredPane);
@@ -396,5 +400,12 @@ public class CompoundModuleFigure extends ModuleFigure
 	public void addConnection(Connection conn) {
 		connectionLayer.add(conn);
 	}
-	
+
+	/**
+	 * Adds a message decoration figure above connection layer of the compound module
+	 * @param conn
+	 */
+	public void addMessage(IFigure messageFigure) {
+		messageLayer.add(messageFigure);
+	}
 }
