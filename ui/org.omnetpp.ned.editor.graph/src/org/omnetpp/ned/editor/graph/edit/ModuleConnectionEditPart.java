@@ -58,7 +58,7 @@ public class ModuleConnectionEditPart extends AbstractConnectionEditPart impleme
     public void activateFigure() {
     	// add the connection to the compound module's connection layer instead of the global one
     	((CompoundModuleEditPart)getParent()).getCompoundModuleFigure()
-    			.addConnection(getConnectionFigure());
+    			.addConnectionFigure(getConnectionFigure());
     	/*
          * Once the figure has been added to the ConnectionLayer, start
          * listening for its router to change.
