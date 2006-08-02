@@ -36,7 +36,8 @@ public class ImageFactory {
     public final static String MODEL_IMAGE_SIMPLEMODULE = MODEL_IMAGE_DIR + "SimpleModule";
     public final static String MODEL_IMAGE_SUBMODULE = MODEL_IMAGE_DIR + "Submodule";
 
-    private final static String DEFAULT_NAME = IMAGE_DIR + INTERNAL_DIR + "default.png";  
+    public final static String DEFAULT_NAME = IMAGE_DIR + INTERNAL_DIR + "default.png";  
+    public final static String PIN_NAME = INTERNAL_DIR + "pin";  
     public final static String DEFAULT_KEY = "__default__";  
 
     private static ImageRegistry imageRegistry = new ImageRegistry();
