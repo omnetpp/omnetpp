@@ -49,10 +49,12 @@ inline void changeToDir(const char *dir)  //XXX
     //printf("current working directory: %s\n", buffer);
 }
 
-inline void evSetupDummyCall() { //XXX
-    char *argv[] = {"exe", NULL};
-    ev.setup(1,argv);
+inline void evSetup(const char *inifile) { //XXX
+    char *argv[] = {"exe", "-f", (char *)inifile, NULL};
+    int argc = 3;
+    ev.setup(argc, argv);
 }
+
 %}
 
 %include "std_common.i"
@@ -261,6 +263,6 @@ inline void evSetupDummyCall() { //XXX
 // refinements
 cSimulation *getSimulation();
 cEnvir *getEV();
-void evSetupDummyCall(); //XXX
+void evSetup(const char *inifile); //XXX
 void changeToDir(const char *dir); //XXX
 
