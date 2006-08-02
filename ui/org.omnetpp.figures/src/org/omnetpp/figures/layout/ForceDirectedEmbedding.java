@@ -527,6 +527,34 @@ public class ForceDirectedEmbedding
 		Vertex vertex6 = new Vertex(new Pt(0, 0), new Rc(10, 10), false, false, mass, charge);
 		Vertex vertex7 = new Vertex(new Pt(0, 0), new Rc(10, 10), false, false, mass, charge);
 		Vertex vertex8 = new Vertex(new Pt(0, 0), new Rc(10, 10), false, false, mass, charge);
+		graphComponent.addVertex(vertex1);
+		graphComponent.addVertex(vertex2);
+		graphComponent.addVertex(vertex3);
+		graphComponent.addVertex(vertex4);
+		graphComponent.addVertex(vertex5);
+		graphComponent.addVertex(vertex6);
+		graphComponent.addVertex(vertex7);
+		graphComponent.addVertex(vertex8);
+		graphComponent.addEdge(new Edge(vertex1, vertex2));
+		graphComponent.addEdge(new Edge(vertex1, vertex3));
+		graphComponent.addEdge(new Edge(vertex1, vertex5));
+		graphComponent.addEdge(new Edge(vertex2, vertex4));
+		graphComponent.addEdge(new Edge(vertex2, vertex6));
+		graphComponent.addEdge(new Edge(vertex3, vertex4));
+		graphComponent.addEdge(new Edge(vertex3, vertex7));
+		graphComponent.addEdge(new Edge(vertex4, vertex8));
+		graphComponent.addEdge(new Edge(vertex5, vertex6));
+		graphComponent.addEdge(new Edge(vertex5, vertex7));
+		graphComponent.addEdge(new Edge(vertex6, vertex8));
+		graphComponent.addEdge(new Edge(vertex7, vertex8));
+/*		Vertex vertex1 = new Vertex(new Pt(0, 0), new Rc(10, 10), false, false, mass, charge);
+		Vertex vertex2 = new Vertex(new Pt(0, 0), new Rc(10, 10), false, false, mass, charge);
+		Vertex vertex3 = new Vertex(new Pt(0, 0), new Rc(10, 10), false, false, mass, charge);
+		Vertex vertex4 = new Vertex(new Pt(0, 0), new Rc(10, 10), false, false, mass, charge);
+		Vertex vertex5 = new Vertex(new Pt(0, 0), new Rc(10, 10), false, false, mass, charge);
+		Vertex vertex6 = new Vertex(new Pt(0, 0), new Rc(10, 10), false, false, mass, charge);
+		Vertex vertex7 = new Vertex(new Pt(0, 0), new Rc(10, 10), false, false, mass, charge);
+		Vertex vertex8 = new Vertex(new Pt(0, 0), new Rc(10, 10), false, false, mass, charge);
 		Vertex vertex9 = new Vertex(new Pt(0, 0), new Rc(10, 10), false, false, mass, charge);
 		Vertex vertex10 = new Vertex(new Pt(0, 0), new Rc(10, 10), false, false, mass, charge);
 		Vertex vertex11 = new Vertex(new Pt(0, 0), new Rc(10, 10), false, false, mass, charge);
@@ -557,8 +585,9 @@ public class ForceDirectedEmbedding
 		graphComponent.addEdge(new Edge(vertex4, vertex11));
 		graphComponent.addEdge(new Edge(vertex4, vertex12));
 		graphComponent.addEdge(new Edge(vertex4, vertex13));
+*/
 
-		graphComponent.addEdge(new Edge(vertex1, vertex13));
+		//graphComponent.addEdge(new Edge(vertex1, vertex13));
 		
 		TestCanvas testCanvas = new TestCanvas(graphComponent);
 		testCanvas.setSize(500, 500);
