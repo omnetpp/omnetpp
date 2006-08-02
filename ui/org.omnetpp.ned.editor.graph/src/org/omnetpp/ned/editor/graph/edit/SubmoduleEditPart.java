@@ -4,10 +4,13 @@ import org.eclipse.draw2d.ConnectionAnchor;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.geometry.Point;
 import org.omnetpp.common.displaymodel.IDisplayString;
+import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.figures.GateAnchor;
 import org.omnetpp.figures.SubmoduleFigure;
 import org.omnetpp.ned2.model.INamedGraphNode;
 
+
+// TODO implement UnpinRequest 
 public class SubmoduleEditPart extends ModuleEditPart {
 
     /** 
@@ -63,7 +66,11 @@ public class SubmoduleEditPart extends ModuleEditPart {
         // parse a dispaly string, so it's easier to get values from it.
         IDisplayString dps = model.getDisplayString();
         getSubmoduleFigure().setDisplayString(dps);
+        // TODO implement a separate PIN decoration decorator figure in submodule figure
+        if (dps.getLocation() != null)
+        	getSubmoduleFigure().setImageDecoration(ImageFactory.getImage(ImageFactory.DEFAULT_PIN));
         
     }
+    
     
 }

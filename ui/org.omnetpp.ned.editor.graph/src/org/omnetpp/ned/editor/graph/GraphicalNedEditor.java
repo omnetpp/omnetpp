@@ -95,6 +95,7 @@ import org.eclipse.ui.part.PageBook;
 import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
 import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.ned.editor.graph.actions.ModulePasteTemplateAction;
+import org.omnetpp.ned.editor.graph.actions.UnpinAction;
 import org.omnetpp.ned.editor.graph.dnd.TextTransferDropTargetListener;
 import org.omnetpp.ned.editor.graph.edit.NedEditPartFactory;
 import org.omnetpp.ned.editor.graph.edit.outline.NedTreeEditPartFactory;
@@ -420,23 +421,13 @@ public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette {
         getSite().getKeyBindingService().registerAction(zoomIn);
         getSite().getKeyBindingService().registerAction(zoomOut);
         
-        // create decoration layers and add them before and after the primary layer
-        // they are used to hold figure decorations like side texts and range indicators
-//        LayeredPane printableLayers = (LayeredPane)root.getLayer(LayerConstants.PRINTABLE_LAYERS);
-//        Layer backDecorationLayer = new Layer();
-//        backDecorationLayer.setLayoutManager(new DelegatingLayout());
-//        printableLayers.addLayerBefore(backDecorationLayer, LayerSupport.LayerID.BACKGROUND_DECORATION, LayerConstants.PRIMARY_LAYER);
-//        Layer frontDecorationLayer = new Layer();
-//        frontDecorationLayer.setLayoutManager(new DelegatingLayout());
-//        printableLayers.addLayerAfter(frontDecorationLayer, LayerSupport.LayerID.FRONT_DECORATION, LayerConstants.PRIMARY_LAYER);
-
         // set the root edit part as the main viewer
         viewer.setRootEditPart(root);
 
         viewer.setEditPartFactory(new NedEditPartFactory());
         ContextMenuProvider provider = new GraphicalNedEditorContextMenuProvider(viewer, getActionRegistry());
         viewer.setContextMenu(provider);
-        getSite().registerContextMenu("org.omnetpp.ned.editor.graph.contextmenu", //$NON-NLS-1$
+        getSite().registerContextMenu("org.omnetpp.ned.editor.graph.contextmenu",
                 provider, viewer);
         viewer.setKeyHandler(new GraphicalViewerKeyHandler(viewer).setParent(getCommonKeyHandler()));
 
@@ -446,7 +437,7 @@ public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette {
 
         IAction snapAction = new ToggleSnapToGeometryAction(getGraphicalViewer());
         getActionRegistry().registerAction(snapAction);
-
+        
         Listener listener = new Listener() {
             public void handleEvent(Event event) {
                 handleActivationChanged(event);
@@ -633,6 +624,11 @@ public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette {
         action = new AlignmentAction((IWorkbenchPart) this, PositionConstants.MIDDLE);
         registry.registerAction(action);
         getSelectionActions().add(action.getId());
+        
+        action = new UnpinAction((IWorkbenchPart)this);
+        registry.registerAction(action);
+        getSelectionActions().add(action.getId());
+
     }
 
     protected FigureCanvas getEditor() {

@@ -31,6 +31,8 @@ public class GraphicalNedEditorActionContributor extends org.eclipse.gef.ui.acti
         addRetargetAction(new UndoRetargetAction());
         addRetargetAction(new RedoRetargetAction());
 
+        addRetargetAction(new UnpinRetargetAction());
+
         addRetargetAction(new AlignmentRetargetAction(PositionConstants.LEFT));
         addRetargetAction(new AlignmentRetargetAction(PositionConstants.CENTER));
         addRetargetAction(new AlignmentRetargetAction(PositionConstants.RIGHT));
@@ -47,8 +49,6 @@ public class GraphicalNedEditorActionContributor extends org.eclipse.gef.ui.acti
         addRetargetAction(new RetargetAction(GEFActionConstants.TOGGLE_SNAP_TO_GEOMETRY,
                 GEFMessages.ToggleSnapToGeometry_Label, IAction.AS_CHECK_BOX));
 
-        addRetargetAction(new RetargetAction(GEFActionConstants.TOGGLE_GRID_VISIBILITY,
-                GEFMessages.ToggleGrid_Label, IAction.AS_CHECK_BOX));
     }
 
     /**
@@ -70,9 +70,7 @@ public class GraphicalNedEditorActionContributor extends org.eclipse.gef.ui.acti
         tbm.add(getAction(ActionFactory.UNDO.getId()));
         tbm.add(getAction(ActionFactory.REDO.getId()));
 
-        tbm.add(new Separator());
-
-        tbm.add(new Separator());
+    	tbm.add(new Separator());
         tbm.add(getAction(GEFActionConstants.ALIGN_LEFT));
         tbm.add(getAction(GEFActionConstants.ALIGN_CENTER));
         tbm.add(getAction(GEFActionConstants.ALIGN_RIGHT));
@@ -86,6 +84,9 @@ public class GraphicalNedEditorActionContributor extends org.eclipse.gef.ui.acti
         tbm.add(getAction(GEFActionConstants.MATCH_HEIGHT));
 
         tbm.add(new Separator());
+    	tbm.add(getAction(UnpinAction.ID));
+
+    	tbm.add(new Separator());
         String[] zoomStrings = new String[] { ZoomManager.FIT_ALL, ZoomManager.FIT_HEIGHT,
                 ZoomManager.FIT_WIDTH };
         tbm.add(new ZoomComboContributionItem(getPage(), zoomStrings));
@@ -101,11 +102,20 @@ public class GraphicalNedEditorActionContributor extends org.eclipse.gef.ui.acti
         viewMenu.add(getAction(GEFActionConstants.ZOOM_IN));
         viewMenu.add(getAction(GEFActionConstants.ZOOM_OUT));
         viewMenu.add(new Separator());
-        viewMenu.add(getAction(GEFActionConstants.TOGGLE_GRID_VISIBILITY));
         viewMenu.add(getAction(GEFActionConstants.TOGGLE_SNAP_TO_GEOMETRY));
+        viewMenu.add(new Separator());
+        viewMenu.add(getAction(GEFActionConstants.ALIGN_LEFT));
+        viewMenu.add(getAction(GEFActionConstants.ALIGN_CENTER));
+        viewMenu.add(getAction(GEFActionConstants.ALIGN_RIGHT));
+        viewMenu.add(new Separator());
+        viewMenu.add(getAction(GEFActionConstants.ALIGN_TOP));
+        viewMenu.add(getAction(GEFActionConstants.ALIGN_MIDDLE));
+        viewMenu.add(getAction(GEFActionConstants.ALIGN_BOTTOM));
         viewMenu.add(new Separator());
         viewMenu.add(getAction(GEFActionConstants.MATCH_WIDTH));
         viewMenu.add(getAction(GEFActionConstants.MATCH_HEIGHT));
+
+        // adds a VIEW menu to the main toolbar
         menubar.insertAfter(IWorkbenchActionConstants.M_EDIT, viewMenu);
     }
 

@@ -9,6 +9,7 @@ import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.ui.actions.ActionFactory;
+import org.omnetpp.ned.editor.graph.actions.UnpinAction;
 
 public class GraphicalNedEditorContextMenuProvider extends ContextMenuProvider {
 
@@ -36,14 +37,19 @@ public class GraphicalNedEditorContextMenuProvider extends ContextMenuProvider {
         action = getActionRegistry().getAction(ActionFactory.REDO.getId());
         manager.appendToGroup(GEFActionConstants.GROUP_UNDO, action);
 
-        action = getActionRegistry().getAction(ActionFactory.PASTE.getId());
-        if (action.isEnabled()) manager.appendToGroup(GEFActionConstants.GROUP_EDIT, action);
+        action = getActionRegistry().getAction(UnpinAction.ID);
+        if (action.isEnabled()) manager.appendToGroup(GEFActionConstants.GROUP_REST, action);
+
+// COPY,CUT,PASTE is not currently 
+//        action = getActionRegistry().getAction(ActionFactory.PASTE.getId());
+//        if (action.isEnabled()) manager.appendToGroup(GEFActionConstants.GROUP_EDIT, action);
 
         action = getActionRegistry().getAction(ActionFactory.DELETE.getId());
         if (action.isEnabled()) manager.appendToGroup(GEFActionConstants.GROUP_EDIT, action);
 
-        action = getActionRegistry().getAction(GEFActionConstants.DIRECT_EDIT);
-        if (action.isEnabled()) manager.appendToGroup(GEFActionConstants.GROUP_EDIT, action);
+// NO DIRECT EDIT support        
+//        action = getActionRegistry().getAction(GEFActionConstants.DIRECT_EDIT);
+//        if (action.isEnabled()) manager.appendToGroup(GEFActionConstants.GROUP_EDIT, action);
 
 
         // Alignment Actions
@@ -71,8 +77,8 @@ public class GraphicalNedEditorContextMenuProvider extends ContextMenuProvider {
 
         if (!submenu.isEmpty()) manager.appendToGroup(GEFActionConstants.GROUP_REST, submenu);
 
-        action = getActionRegistry().getAction(ActionFactory.SAVE.getId());
-        manager.appendToGroup(GEFActionConstants.GROUP_SAVE, action);
+//        action = getActionRegistry().getAction(ActionFactory.SAVE.getId());
+//        manager.appendToGroup(GEFActionConstants.GROUP_SAVE, action);
 
     }
 
