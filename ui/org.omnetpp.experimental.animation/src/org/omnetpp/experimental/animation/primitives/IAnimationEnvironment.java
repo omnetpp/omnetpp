@@ -4,6 +4,7 @@ import org.eclipse.draw2d.IFigure;
 import org.omnetpp.common.simulation.model.IRuntimeSimulation;
 import org.omnetpp.experimental.animation.controller.TimerQueue;
 import org.omnetpp.experimental.animation.replay.ReplayAnimationController.AnimationMode;
+import org.omnetpp.experimental.animation.widgets.AnimationCanvas;
 
 /**
  * IAnimationPrimitives use the IAnimationEnvironment class to query about the
@@ -82,4 +83,6 @@ public interface IAnimationEnvironment {
 	public void setFigure(Object key, Object value);
 	
 	public IRuntimeSimulation getSimulation();
+
+	public AnimationCanvas getCanvas();
 }

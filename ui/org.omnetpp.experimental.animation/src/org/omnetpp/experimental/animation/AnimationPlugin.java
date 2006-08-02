@@ -1,10 +1,8 @@
 package org.omnetpp.experimental.animation;
 
-import org.eclipse.core.runtime.Assert;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.omnetpp.experimental.animation.editors.LiveAnimationEditor;
-import org.omnetpp.experimental.simkernel.SimkernelPlugin;
 import org.osgi.framework.BundleContext;
 
 /**

@@ -3,6 +3,7 @@ package org.omnetpp.experimental.animation.primitives;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.LayoutManager;
 import org.eclipse.draw2d.geometry.Rectangle;
+import org.omnetpp.common.simulation.model.IRuntimeModule;
 import org.omnetpp.experimental.animation.controller.TimerQueue;
 import org.omnetpp.figures.CompoundModuleFigure;
 
@@ -81,8 +82,8 @@ public abstract class AbstractAnimationPrimitive implements IAnimationPrimitive 
 		return animationEnvironment.getRootFigure();
 	}
 
-	protected CompoundModuleFigure getCompoundModuleFigure() { //FIXME must accept IModule whose figure to return
-		return (CompoundModuleFigure)animationEnvironment.getRootFigure();  //FIXME
+	protected CompoundModuleFigure getCompoundModuleFigure(IRuntimeModule module) {
+		return (CompoundModuleFigure)animationEnvironment.getFigure(module);
 	}
 	
 	protected LayoutManager getLayoutManager() {

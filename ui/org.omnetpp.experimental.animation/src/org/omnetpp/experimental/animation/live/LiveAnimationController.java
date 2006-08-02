@@ -130,6 +130,8 @@ public class LiveAnimationController extends ReplayAnimationController implement
 		ReplayModule replayModule = new ReplayModule();
 		replayModule.setId(module.getId());
 		replayModule.setName(module.getName());
+		replayModule.setIndex(module.getIndex());
+		replayModule.setSize(module.isVector() ? -1 : module.getSize());
 		
 		return replayModule;
 	}

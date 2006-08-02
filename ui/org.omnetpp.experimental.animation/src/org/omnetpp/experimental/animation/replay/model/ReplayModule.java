@@ -12,7 +12,7 @@ public class ReplayModule implements IRuntimeModule {
 	private int id;
 	private String name;
 	private int index;
-	private int size;
+	private int size = -1;
 	private ReplayModule parent;
 	private String typeName;
 	private DisplayString displayString;
@@ -73,7 +73,7 @@ public class ReplayModule implements IRuntimeModule {
 	}
 
 	public boolean isVector() {
-		return index!=-1;
+		return size!=-1;
 	}
 	
 	public int getSize() {
@@ -85,7 +85,7 @@ public class ReplayModule implements IRuntimeModule {
 	}
 
 	public String getFullName() {
-		return size<0 ? name : name+"["+index+"]";
+		return isVector() ? name : name+"["+index+"]";
 	}
 
 	public String getFullPath() {

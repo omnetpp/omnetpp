@@ -8,8 +8,8 @@ import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
 
 public class AnimationCanvas extends Canvas {
-	private IFigure contents;
-	private LightweightSystem lws;
+	protected IFigure contents;
+	protected LightweightSystem lws;
 
 	public AnimationCanvas(Composite parent, int style) {
 		super(parent, style);
@@ -17,7 +17,7 @@ public class AnimationCanvas extends Canvas {
 		init();
 	}
 
-	private void init() {
+	protected void init() {
 		XYLayout contentsLayout = new XYLayout();
 
 		contents = new Figure();

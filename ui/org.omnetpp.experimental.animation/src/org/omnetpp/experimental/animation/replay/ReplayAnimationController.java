@@ -899,9 +899,7 @@ public class ReplayAnimationController implements IAnimationEnvironment {
 		simulation = new ReplaySimulation(rootModule);
 
 		CompoundModuleFigure rootModuleFigure = new CompoundModuleFigure();
-		//XXX
-		rootModuleFigure.setDisplayString(new DisplayString(null, null, "bgb=600,600;bgi=background/hungary,stretch"));
-
+		setFigure(rootModule, rootModuleFigure);
 		canvas.getRootFigure().getLayoutManager().setConstraint(rootModuleFigure, new Rectangle(0, 0, -1, -1));
 		canvas.getRootFigure().add(rootModuleFigure);
 	}

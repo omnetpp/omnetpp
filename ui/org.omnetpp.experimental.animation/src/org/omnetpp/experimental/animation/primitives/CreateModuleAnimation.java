@@ -1,9 +1,9 @@
 package org.omnetpp.experimental.animation.primitives;
 
+import org.omnetpp.common.displaymodel.DisplayString;
 import org.omnetpp.experimental.animation.replay.ReplayAnimationController;
 import org.omnetpp.experimental.animation.replay.model.ReplayModule;
 import org.omnetpp.experimental.animation.replay.model.ReplaySimulation;
-import org.omnetpp.figures.ModuleFigure;
 import org.omnetpp.figures.SubmoduleFigure;
 
 public class CreateModuleAnimation extends AbstractAnimationPrimitive {
@@ -33,24 +33,29 @@ public class CreateModuleAnimation extends AbstractAnimationPrimitive {
 	}
 	
 	public void redo() {
-		SubmoduleFigure figure = new SubmoduleFigure();
-		getCompoundModuleFigure().addSubmodule(figure);
-		animationEnvironment.setFigure(module, figure);
-		figure.setName(getReplayModule().getFullName());
-		
-		if (getParentModule() != null)
-			getParentModule().addSubmodule(getReplayModule());
+		ReplayModule parentModule = getParentModule();
+		if (parentModule != null) {
+			SubmoduleFigure figure = new SubmoduleFigure();
+			animationEnvironment.setFigure(module, figure);
+			getCompoundModuleFigure(parentModule).addSubmoduleFigure(figure);
+			figure.setDisplayString(new DisplayString(null, null, ""));
+			figure.setName(getReplayModule().getFullName());
+
+			parentModule.addSubmodule(getReplayModule());
+		}
 
 		getReplaySimulation().addModule(getReplayModule());
 	}
 
 	public void undo() {
-		removeFigure((ModuleFigure)animationEnvironment.getFigure(module));
+		ReplayModule parentModule = getParentModule();
+		if (parentModule != null) {
+			SubmoduleFigure moduleFigure = (SubmoduleFigure)animationEnvironment.getFigure(module);
+			getCompoundModuleFigure(parentModule).removeSubmoduleFigure(moduleFigure);
+			parentModule.removeSubmodule(getReplayModule());
+		}
+
 		animationEnvironment.setFigure(module, null);
-
-		if (getParentModule() != null)
-			getParentModule().removeSubmodule(getReplayModule());
-
 		getReplaySimulation().removeModule(module.getId());
 	}
 
