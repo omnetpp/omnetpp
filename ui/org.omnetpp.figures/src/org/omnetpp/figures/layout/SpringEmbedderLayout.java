@@ -57,7 +57,7 @@ public class SpringEmbedderLayout extends XYLayout {
 			// get the associated constraint (coordinates) if any
             Rectangle constr = (Rectangle)getConstraint(node);
             
-            if (constr.x == Integer.MIN_VALUE && constr.y == Integer.MIN_VALUE || constr == null) 
+            if (constr == null || (constr.x == Integer.MIN_VALUE && constr.y == Integer.MIN_VALUE)) 
             	autoLayouter.addMovableNode(node, node.getPreferredSize().width, node.getPreferredSize().height);
             else
             	// add as foxed node
