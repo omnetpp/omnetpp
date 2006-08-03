@@ -22,13 +22,17 @@ public class SetConstraintCommand extends Command {
     public SetConstraintCommand(INamedGraphNode newModule) {
     	super();
         module = newModule;
+        newPos = module.getDisplayString().getLocation();
+        newSize = module.getDisplayString().getSize();
     }
 
     @Override
     public String getLabel() {
-        if (oldSize.equals(newSize)) 
-            return "Move " + module.getName();
-        return "Resize " + module.getName();
+    	if (newPos == null )
+    		return "Unpin " + module.getName();
+        if (newSize != null && !newSize.equals(oldSize)) 
+            return "Resize " + module.getName();
+        return "Move " + module.getName();
     }
 
     @Override

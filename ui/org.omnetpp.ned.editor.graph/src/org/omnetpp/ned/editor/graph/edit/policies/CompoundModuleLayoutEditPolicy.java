@@ -10,12 +10,16 @@ import org.eclipse.gef.EditPart;
 import org.eclipse.gef.EditPolicy;
 import org.eclipse.gef.GraphicalEditPart;
 import org.eclipse.gef.LayerConstants;
+import org.eclipse.gef.Request;
 import org.eclipse.gef.RequestConstants;
 import org.eclipse.gef.commands.Command;
+import org.eclipse.gef.commands.CompoundCommand;
 import org.eclipse.gef.editpolicies.ResizableEditPolicy;
 import org.eclipse.gef.requests.ChangeBoundsRequest;
 import org.eclipse.gef.requests.CreateRequest;
+import org.eclipse.gef.requests.GroupRequest;
 import org.omnetpp.common.color.ColorFactory;
+import org.omnetpp.ned.editor.graph.actions.UnpinAction;
 import org.omnetpp.ned.editor.graph.commands.CloneSubmoduleCommand;
 import org.omnetpp.ned.editor.graph.commands.CreateSubmoduleCommand;
 import org.omnetpp.ned.editor.graph.commands.SetConstraintCommand;
@@ -23,6 +27,10 @@ import org.omnetpp.ned2.model.INamedGraphNode;
 import org.omnetpp.ned2.model.ISubmoduleContainer;
 
 
+/**
+ * Layout policy used in compound modules. Handles cloning, creation, resizing of submodules
+ * @author rhornig
+ */
 public class CompoundModuleLayoutEditPolicy extends DesktopLayoutEditPolicy {
 
     public CompoundModuleLayoutEditPolicy(XYLayout layout) {
@@ -30,6 +38,17 @@ public class CompoundModuleLayoutEditPolicy extends DesktopLayoutEditPolicy {
         setXyLayout(layout);
     }
 
+    /* (non-Javadoc)
+     * @see org.eclipse.gef.editpolicies.ConstrainedLayoutEditPolicy#getCommand(org.eclipse.gef.Request)
+     * Factors out the Unpin request
+     */
+    @Override
+    public Command getCommand(Request request) {
+    	if (UnpinAction.REQ_UNPIN.equals(request.getType()))
+    		return getUnpinChildrenCommand((GroupRequest)request);
+    	return super.getCommand(request);
+    }
+    
     /**
      * Override to return the <code>Command</code> to perform an {@link
      * RequestConstants#REQ_CLONE CLONE}. By default, <code>null</code> is
@@ -62,7 +81,7 @@ public class CompoundModuleLayoutEditPolicy extends DesktopLayoutEditPolicy {
         return create;
     }
 
-    @Override
+    
     protected Command createChangeConstraintCommand(EditPart child, Object constraint) {
         // HACK for fixing issue when the model returns unspecified size (-1,-1)
         // we have to calculate the center point in that direction manually using the size info
@@ -83,6 +102,48 @@ public class CompoundModuleLayoutEditPolicy extends DesktopLayoutEditPolicy {
         if ((modelConstraint.width < 0 || modelConstraint.height < 0) && module.getDisplayString().getSize() == null)
             cmd.setSize(null);
         
+        return cmd;
+    }
+    
+    /**
+     * Returns the <code>Command</code> to unpin a group of children.
+     * @param request the ChangeBoundsRequest
+     * @return the Command
+     */
+    protected Command getUnpinChildrenCommand(GroupRequest request) {
+    	CompoundCommand resize = new CompoundCommand();
+    	Command c;
+    	GraphicalEditPart child;
+    	List children = request.getEditParts();
+
+    	for (int i = 0; i < children.size(); i++) {
+    		child = (GraphicalEditPart)children.get(i);
+    		c = createUnpinCommand(request, child);
+    		if (c != null) 
+    			resize.add(c);
+    	}
+    	// do not provide a command if there were no submodules with location info (ie. all was unpinned)
+    	if (resize.size() < 1) return null;
+    	
+    	return resize.unwrap();
+    }
+    /**
+     * Generate a constraint change command in response to an unpin request
+     * @param child
+     * @return
+     */
+    protected Command createUnpinCommand(Request request, EditPart child) {
+        // create the constraint change command 
+        INamedGraphNode module = (INamedGraphNode) child.getModel();
+        // do not create a command for submodules that do not have a location
+        if (module.getDisplayString().getLocation() == null)
+        	return null;
+        // otherwise create a command that deletes the location from the displayestring
+        SetConstraintCommand cmd = new SetConstraintCommand(module);
+        // delete the location info, so the node can be moved freely by the layouting algorythm
+        // we leave the size unchanged
+        cmd.setLocation(null);
+
         return cmd;
     }
 

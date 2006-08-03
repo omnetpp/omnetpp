@@ -3,28 +3,29 @@ package org.omnetpp.ned.editor.graph.actions;
 import java.util.List;
 
 import org.eclipse.gef.EditPart;
-import org.eclipse.gef.Request;
 import org.eclipse.gef.commands.Command;
 import org.eclipse.gef.commands.CompoundCommand;
+import org.eclipse.gef.requests.GroupRequest;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.IWorkbenchPart;
 import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.ned.editor.graph.edit.SubmoduleEditPart;
+import org.omnetpp.ned2.model.SubmoduleNodeEx;
 
 public class UnpinAction extends org.eclipse.gef.ui.actions.SelectionAction {
 
-	private static final String UNPIN_REQUEST = "UnpinRequest"; 
+	public static final String REQ_UNPIN = "unpin"; 
 
 	public static final String ID = "Unpin";
 	public static final String MENUNAME = "Unpin";
 	public static final String TOOLTIP = "Allow the module to move freely";
 	public static final ImageDescriptor IMAGE = ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_UNPIN);
 
-	Request request;
+	GroupRequest request;
 
 	public UnpinAction(IWorkbenchPart part) {
 		super(part);
-		request = new Request(UNPIN_REQUEST);
+		request = new GroupRequest(REQ_UNPIN);
 		setText(MENUNAME);
 		setId(ID);
 		setToolTipText(TOOLTIP);
@@ -32,31 +33,45 @@ public class UnpinAction extends org.eclipse.gef.ui.actions.SelectionAction {
 		setHoverImageDescriptor(IMAGE);
 	}
 
+	/**
+	 * This command can be executed ONLY on submodules who has fixed location
+	 * @return
+	 */
 	protected boolean calculateEnabled() {
-		return canPerformAction();
-	}
-
-	private boolean canPerformAction() {
+		boolean endresult = false;
 		if (getSelectedObjects().isEmpty())
 			return false;
 		List parts = getSelectedObjects();
 		for (int i = 0; i < parts.size(); i++) {
 			Object o = parts.get(i);
+			// if one of the selected editparts is not submodule, the action is not allowed 
 			if (!(o instanceof SubmoduleEditPart))
 				return false;
+			// at least one submodule must have a location
+			SubmoduleNodeEx smod = (SubmoduleNodeEx)((SubmoduleEditPart)o).getModel(); 
+			if (smod.getDisplayString().getLocation() != null) 
+				endresult = true;
 		}
-		return true;
+		return endresult;
 	}
 
+	/**
+	 * get a command for the request from the containing compound module
+	 * @return
+	 */
 	private Command getCommand() {
-		List editparts = getSelectedObjects();
-		CompoundCommand cc = new CompoundCommand();
-		cc.setDebugLabel("Unpin submodule");//$NON-NLS-1$
-		for (int i = 0; i < editparts.size(); i++) {
-			EditPart part = (EditPart) editparts.get(i);
-			cc.add(part.getCommand(request));
-		}
-		return cc;
+		List selEditParts = getSelectedObjects();
+		// include the selected editparts, 
+		// TODO maybe we should throw away the submodule parts that do not have a location parts
+		request.setEditParts(selEditParts);
+		
+		if (selEditParts.size() < 1 || !(selEditParts.get(0) instanceof SubmoduleEditPart))
+			return null;
+		
+		// get the parent of the currently selected 
+		EditPart compoundModuleEditPart = ((EditPart)selEditParts.get(0)).getParent();
+		// get the command from the containing compound module edit part
+		return compoundModuleEditPart.getCommand(request);
 	}
 
 	public void run() {

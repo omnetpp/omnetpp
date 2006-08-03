@@ -17,6 +17,11 @@ import org.omnetpp.ned.editor.graph.edit.ModuleEditPart;
 import org.omnetpp.ned2.model.ConnectionNodeEx;
 import org.omnetpp.ned2.model.INamedGraphNode;
 
+/**
+ * Handle all connection related requests for graphically represented nodes (compound and submodules) 
+ * @author rhornig
+ *
+ */
 public class NedNodeEditPolicy extends GraphicalNodeEditPolicy {
 	
 	// Used to give feedback during dragging
@@ -80,51 +85,6 @@ public class NedNodeEditPolicy extends GraphicalNodeEditPolicy {
         cmd.setDestModule(conn.getDestModuleRef());
         return cmd;
     }
-    
-    /* (non-Javadoc)
-     * @see org.eclipse.gef.editpolicies.GraphicalNodeEditPolicy#getTargetEditPart(org.eclipse.gef.Request)
-     * Filter the possible targets for the connection creation/reconnect requests so that only
-     * submodules in the same parent can be connectected and the compound module should be targeted ONLY
-     * if the mouse is over the border of the compound module. 
-     */
-//    @Override
-//    public EditPart getTargetEditPart(Request request) {
-//    	
-//    	if (ep != null && REQ_RECONNECT_SOURCE.equals(request.getType()))
-//    		return null;
-//
-//    	EditPart destEditPart = super.getTargetEditPart(request);
-//		EditPart srcEditPart = ((CreateConnectionRequest)request).getSourceEditPart();
-//
-//		// if both editpart is Submodule, they must share the same parent (ie. compound module)
-//		if (srcEditPart instanceof SubmoduleEditPart 
-//				&& destEditPart instanceof SubmoduleEditPart
-//				&& srcEditPart.getParent() != destEditPart.getParent()) 
-//			return false;
-//		// if one of them is Submodule and the other is compound module then the
-//		// submodule's parent must be the compound module (ie. submodule can be connected ony to it's parent)
-//		if (srcEditPart instanceof SubmoduleEditPart 
-//				&& destEditPart instanceof CompoundModuleEditPart
-//				&& srcEditPart.getParent() != destEditPart) 
-//			return false;
-//		if (srcEditPart instanceof CompoundModuleEditPart 
-//				&& destEditPart instanceof SubmoduleEditPart
-//				&& srcEditPart != destEditPart.getParent()) 
-//			return false;
-//		// do not allow connetction between compound modules at all
-//		if (srcEditPart instanceof CompoundModuleEditPart 
-//				&& destEditPart instanceof CompoundModuleEditPart) {
-//			return false;
-//		}
-//	}
-//	// if the selection target is a CompoundModule, allow selection ONLY using it's borders
-//	if (editpart instanceof CompoundModuleEditPart) {
-//		CompoundModuleEditPart cmep = (CompoundModuleEditPart)editpart;
-//		return cmep.isOnBorder(getLocation().x, getLocation().y);
-//	}
-//    	
-//    	return ep;
-//    }
     
     /**
      * Feedback should be added to the scaled feedback layer.

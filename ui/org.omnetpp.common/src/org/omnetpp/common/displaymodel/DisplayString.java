@@ -299,7 +299,7 @@ public class DisplayString implements IDisplayString {
     public Integer getAsInteger(Prop property) {
         String strVal = getAsString(property);
         // if tag not present at all
-        if(strVal == null) return null;
+        if(strVal == null || TagInstance.EMPTY_VALUE.equals(strVal)) return null;
         try {
             return Integer.valueOf(strVal);
         } catch (NumberFormatException e) { }
@@ -309,7 +309,7 @@ public class DisplayString implements IDisplayString {
     public Float getAsFloat(Prop property) {
         String strVal = getAsString(property);
         // if tag not present at all
-        if(strVal == null) return null;
+        if(strVal == null || TagInstance.EMPTY_VALUE.equals(strVal)) return null;
         try {
             return Float.valueOf(strVal);
         } catch (NumberFormatException e) { }
@@ -329,7 +329,9 @@ public class DisplayString implements IDisplayString {
     public Integer getAsIntegerDef(Prop property) {
         String strVal = getAsStringDef(property);
         // if tag not present at all
-        if(strVal == null) return null;
+        if(strVal == null || TagInstance.EMPTY_VALUE.equals(strVal)) 
+        	return null;
+        
         try {
             return Integer.valueOf(strVal);
         } catch (NumberFormatException e) { }
