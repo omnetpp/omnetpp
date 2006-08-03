@@ -16,14 +16,12 @@ import org.eclipse.swt.widgets.Control;
 import org.jfree.data.xy.XYDataset;
 import org.omnetpp.common.canvas.RubberbandSupport;
 import org.omnetpp.common.color.ColorFactory;
-import org.omnetpp.scave.engine.IDList;
+import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.Dataset;
-import org.omnetpp.scave.model.DatasetType;
 import org.omnetpp.scave.model.ScaveModelPackage;
-import org.omnetpp.scave2.charting.ChartHelper;
+import org.omnetpp.scave2.charting.OutputVectorDataset;
 import org.omnetpp.scave2.charting.VectorChart;
-import org.omnetpp.scave2.charting.plotter.DotsVectorPlotter;
 import org.omnetpp.scave2.charting.plotter.IChartSymbol;
 import org.omnetpp.scave2.charting.plotter.IVectorPlotter;
 import org.omnetpp.scave2.editors.ScaveEditor;
@@ -63,11 +61,9 @@ public class ChartPage2 extends ScaveEditorPage {
 		// set up contents
 		Composite parent = getBody();
 		Dataset dataset = ScaveModelUtil.findEnclosingObject(chart, Dataset.class);
-		IDList idlist = DatasetManager.getIDListFromDataset(scaveEditor.getResultFileManager(), dataset, chart);
-		DatasetType type = dataset.getType();
-
+		ResultFileManager manager = scaveEditor.getResultFileManager();
 		//XXX just testing
-		XYDataset xydataset = ChartHelper.createXYDataSet(idlist, scaveEditor.getResultFileManager());
+		XYDataset xydataset = new OutputVectorDataset(DatasetManager.getDataFromDataset(manager, dataset, chart));
 		final VectorChart chart = new VectorChart(parent, SWT.DOUBLE_BUFFERED);
 		chart.setLayoutData(new GridData(SWT.FILL,SWT.FILL,true,true));
 		chart.setSize(getParent().getBounds().width, getParent().getBounds().height); // provide width/height hint until layouting runs

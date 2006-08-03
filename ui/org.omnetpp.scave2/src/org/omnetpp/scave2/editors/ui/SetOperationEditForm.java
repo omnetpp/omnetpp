@@ -12,14 +12,16 @@ import org.eclipse.swt.widgets.Text;
 import org.omnetpp.scave.model.Dataset;
 import org.omnetpp.scave.model.ScaveModelPackage;
 import org.omnetpp.scave.model.SetOperation;
+import org.omnetpp.scave2.editors.ScaveEditor;
+import org.omnetpp.scave2.model.FilterHints;
 import org.omnetpp.scave2.model.ScaveModelUtil;
 
 /**
- * Abstract base class for edit forms of set operations.
+ * Base class for edit forms of set operations.
  *
  * @author tomi
  */
-abstract class SetOperationEditForm implements IScaveObjectEditForm {
+public class SetOperationEditForm implements IScaveObjectEditForm {
 
 	protected static final EStructuralFeature[] features = new EStructuralFeature[] {
 		ScaveModelPackage.eINSTANCE.getSetOperation_ModuleNamePattern(),
@@ -65,6 +67,14 @@ abstract class SetOperationEditForm implements IScaveObjectEditForm {
 		for (Dataset ds : datasets)
 			if (!ds.equals(dataset))
 				sourceDatasets.add(ds);
+	}
+	
+	public String getTitle() {
+		return String.format("%s operation", setOperation.eClass().getName());
+	}
+
+	public String getDescription() {
+		return "Modify the properties of the operation.";
 	}
 
 	public int getFeatureCount() {
@@ -149,7 +159,15 @@ abstract class SetOperationEditForm implements IScaveObjectEditForm {
 		replicationNameCombo.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 	}
 	
-	
+	protected void setFilterHints(FilterHints hints) {
+		nameCombo.setItems(hints.getDataNameHints());
+		moduleNameCombo.setItems(hints.getModuleNameHints());
+		fileNameCombo.setItems(hints.getFileNameHints());
+		runNameCombo.setItems(hints.getRunNameHints());
+		experimentNameCombo.setItems(hints.getExperimentNameHints());
+		measurementNameCombo.setItems(hints.getExperimentNameHints());
+		replicationNameCombo.setItems(hints.getReplicationNameHints());
+	}
 
 	public Object getValue(EStructuralFeature feature) {
 		switch (feature.getFeatureID()) {

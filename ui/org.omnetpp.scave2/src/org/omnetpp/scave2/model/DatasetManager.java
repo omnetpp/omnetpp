@@ -1,20 +1,28 @@
 package org.omnetpp.scave2.model;
 
+import java.util.List;
+
 import org.eclipse.core.runtime.Assert;
-import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EObject;
-import org.omnetpp.scave.engine.DataflowManager;
-import org.omnetpp.scave.engine.ResultFileList;
-import org.omnetpp.scave.engine.FileRunList;
+import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.omnetpp.scave.engine.IDList;
-import org.omnetpp.scave.engineext.ResultFileManagerEx;
+import org.omnetpp.scave.engine.Node;
+import org.omnetpp.scave.engine.ResultFileManager;
+import org.omnetpp.scave.engine.XYArray;
 import org.omnetpp.scave.model.Add;
+import org.omnetpp.scave.model.AddDiscardOp;
 import org.omnetpp.scave.model.Apply;
+import org.omnetpp.scave.model.Chart;
+import org.omnetpp.scave.model.Compute;
 import org.omnetpp.scave.model.Dataset;
 import org.omnetpp.scave.model.DatasetItem;
 import org.omnetpp.scave.model.DatasetType;
+import org.omnetpp.scave.model.Deselect;
 import org.omnetpp.scave.model.Discard;
+import org.omnetpp.scave.model.Except;
 import org.omnetpp.scave.model.Group;
+import org.omnetpp.scave.model.Select;
+import org.omnetpp.scave.model.SelectDeselectOp;
 import org.omnetpp.scave.model.SetOperation;
 import org.omnetpp.scave.model.util.ScaveModelSwitch;
 
@@ -24,163 +32,152 @@ import org.omnetpp.scave.model.util.ScaveModelSwitch;
  */
 public class DatasetManager {
 	
-	static class DatasetContent {
-		public DatasetType type;
-		public ResultFileList files;
-		public IDList idlist;
-		public DataflowManager dataflowManager;
-		
-		public DatasetContent() {
-			files = new ResultFileList();
-			idlist = new IDList();
-		}
-	}
-	
-	public static IDList getIDListFromDataset(ResultFileManagerEx manager, Dataset dataset, DatasetItem lastProcessedItem) {
+	public static IDList getIDListFromDataset(ResultFileManager manager, Dataset dataset, DatasetItem lastProcessedItem) {
 		ProcessDatasetSwitch processor = new ProcessDatasetSwitch(manager, lastProcessedItem);
-		DatasetContent content = (DatasetContent)processor.doSwitch(dataset);
-		return content != null ? content.idlist : new IDList();
+		processor.doSwitch(dataset);
+		return processor.getIDList();
 	}
-	
 	
 	static class ProcessDatasetSwitch extends ScaveModelSwitch {
 		
-		ResultFileManagerEx manager;
-		DatasetContent content;
-		EObject stopAfter;
-		boolean stopped;
+		private ResultFileManager manager;
+		private DatasetType type;
+		private IDList idlist;
+		private EObject target;
+		private boolean finished;
 		
-		public ProcessDatasetSwitch(ResultFileManagerEx manager, EObject stopAfter) {
+		public ProcessDatasetSwitch(ResultFileManager manager, EObject target) {
 			this.manager = manager;
-			this.content = new DatasetContent();
-			this.stopAfter = stopAfter;
-			this.stopped = false;
+			this.target = target;
+			this.idlist = new IDList();
+		}
+		
+		public IDList getIDList() {
+			return idlist;
 		}
 
 		@Override
+		protected Object doSwitch(int classifierID, EObject object) {
+			Object result = this;
+			if (!finished) {
+				result = super.doSwitch(classifierID, object);
+				if (object == target)
+					finished = true;
+			}
+			return result;
+		}
+
 		public Object caseDataset(Dataset dataset) {
-			if (stopped)
-				return content;
-			
-			content.type = dataset.getType();
+			type = dataset.getType();
 			if (dataset.getBasedOn() != null)
-				content.idlist = getIDListFromDataset(manager, (Dataset)dataset.getBasedOn(), null);
+				idlist = getIDListFromDataset(manager, dataset.getBasedOn(), null);
 			
 			for (Object item : dataset.getItems())
 				doSwitch((EObject)item);
 			
-			if (dataset == stopAfter)
-				stopped = true;
-			return content;
+			return this;
 		}
 
-		@Override
 		public Object caseAdd(Add add) {
-			if (stopped)
-				return content;
-
-			add(content.idlist, add, content.type);
-
-			if (add == stopAfter)
-				stopped = true;
-
-			return content;
+			idlist.merge(select(null, add));
+			return this;
 		}
 		
-		@Override
 		public Object caseDiscard(Discard discard) {
-			if (stopped)
-				return content;
-
-			remove(content.idlist, discard);
-			
-			if (discard == stopAfter)
-				stopped = true;
-
-			return content;
+			idlist.substract(select(idlist, discard));
+			return this;
 		}
 
-		@Override
 		public Object caseGroup(Group group) {
-			if (stopped)
-				return content;
-
-			for (Object item : group.getItems())
-				doSwitch((EObject)item);
-			
-			if (group == stopAfter)
-				stopped = true;
-			
-			return content;
+			if (EcoreUtil.isAncestor(group, target))
+				for (Object item : group.getItems())
+					doSwitch((EObject)item);
+			return this;
 		}
 
-		@Override
 		public Object caseApply(Apply apply) {
-			if (stopped)
-				return content;
-
-			/*
-			String operation = apply.getOperation();
-			EList params = apply.getParams();
-			
-			// build input idlist
-			IDList idlist = content.idlist.dup();
-			for (Object filter : apply.getFilters()) {
-				SelectDeselectOp filterOp = (SelectDeselectOp)filter;
-				if (filterOp instanceof Select) {
-					add(idlist, filterOp);
-				} else if (filterOp instanceof Deselect) {
-					remove(idlist, filterOp);
-				}
-			}
-			
-			// execute operation with input/params
-			content.idlist = executeFilter(idlist, operation, params);
-			*/
-			
-			if (apply == stopAfter)
-				stopped = true;
-			
-			return content;
-		}
-
-		private void add(IDList idlist, SetOperation add, DatasetType type) {
-			String fileAndRunFilter = add.getFilenamePattern() != null ? add.getFilenamePattern() : "";
-			String moduleFilter = add.getModuleNamePattern() != null ? add.getModuleNamePattern() : "";
-			String nameFilter = add.getNamePattern() != null ? add.getNamePattern() : "";
-
-			FileRunList fileRunFilter = null; //FIXME
-			idlist.merge(manager.filterIDList(getAllIDs(type),
-					fileRunFilter, moduleFilter, nameFilter));
-
-			// TODO: excepts, experiments, ...
-		}
-		
-		private void remove(IDList idlist, SetOperation remove) {
-			String fileAndRunFilter = remove.getFilenamePattern() != null ? remove.getFilenamePattern() : "";
-			String moduleFilter = remove.getModuleNamePattern() != null ? remove.getModuleNamePattern() : "";
-			String nameFilter = remove.getNamePattern() != null ? remove.getNamePattern() : "";
-			
-			FileRunList fileRunFilter = null; //FIXME
-			idlist.substract(manager.filterIDList(idlist,
-					fileRunFilter, moduleFilter, nameFilter));
-
-			// TODO: excepts, experiments, ...
-		}
-		
-		private IDList executeFilter(IDList idlist, String operation, EList params) {
 			// TODO
-			return idlist;
+			return this;
 		}
 		
-		private IDList getAllIDs(DatasetType type) {
-			switch (type.getValue()) {
-			case DatasetType.SCALAR: return manager.getAllScalars();
-			case DatasetType.VECTOR: return manager.getAllVectors();
-			case DatasetType.HISTOGRAM: return new IDList(); // TODO
-			}
-			Assert.isTrue(false, "Unexpected dataset type: " + type);
-			return null;
+		public Object caseCompute(Compute compute) {
+			// TODO
+			return this;
 		}
+		
+		public Object caseChart(Chart chart) {
+			if (chart == target) {
+				idlist = select(idlist, chart.getFilters());
+			}
+			return this;
+		}
+		
+		private IDList select(IDList source, List<SelectDeselectOp> filters) {
+			return DatasetManager.select(source, filters, manager, type);
+		}
+		
+		private IDList select(IDList source, AddDiscardOp op) {
+			return DatasetManager.select(source, op, manager, type);
+		}
+	}
+	
+	public static XYArray[] getDataFromDataset(ResultFileManager manager, Dataset dataset, DatasetItem lastProcessedItem) {
+		Assert.isLegal(dataset.getType() == DatasetType.VECTOR_LITERAL, "Vector dataset expected.");
+		
+		DataflowNetworkBuilder builder = new DataflowNetworkBuilder(manager);
+		builder.build(dataset, lastProcessedItem);
+		builder.close();
+
+		List<Node> outputs = builder.getOutputs();
+
+		if (outputs.size() > 0) // XXX DataflowManager craches when there are no sinks
+			builder.getDataflowManager().execute();
+
+		XYArray[] result = new XYArray[outputs.size()]; 
+		for (int i = 0; i < result.length; ++i)
+			result[i] = outputs.get(i).getArray();
+		return result;
+	}
+	
+	public static IDList select(IDList source, List<SelectDeselectOp> filters, ResultFileManager manager, DatasetType type) {
+		IDList result = new IDList();
+		for (SelectDeselectOp filter : filters) {
+			if (filter instanceof Select) {
+				result.merge(select(source, (Select)filter, manager, type));
+			}
+			else if (filter instanceof Deselect) {
+				result.substract(select(source, (Deselect)filter, manager, type));
+			}
+		}
+		return result;
+	}
+	
+	public static IDList select(IDList source, SetOperation op, ResultFileManager manager, DatasetType type) {
+		IDList idlist = selectInternal(source, (SetOperation)op, manager, type);
+		
+		List<Except> excepts = null;
+		if (op instanceof Select)
+			excepts = ((Select)op).getExcepts();
+		else if (op instanceof Deselect)
+			excepts = ((Deselect)op).getExcepts();
+		else if (op instanceof Add)
+			excepts = ((Add)op).getExcepts();
+		else if (op instanceof Discard)
+			excepts = ((Discard)op).getExcepts();
+		
+		if (excepts != null)
+			for (Except except : excepts)
+				idlist.substract(selectInternal(idlist, except, manager, type));
+		
+		return idlist;
+	}
+
+	private static IDList selectInternal(IDList source, SetOperation op, ResultFileManager manager, DatasetType type) {
+		Dataset sourceDataset = op.getSourceDataset();
+		IDList sourceIDList = source != null ? source :
+							  sourceDataset == null ? ScaveModelUtil.getAllIDs(manager, type) :
+							  DatasetManager.getIDListFromDataset(manager, sourceDataset, null);
+								
+		return ScaveModelUtil.filterIDList(sourceIDList, new FilterParams(op), manager);
 	}
 }

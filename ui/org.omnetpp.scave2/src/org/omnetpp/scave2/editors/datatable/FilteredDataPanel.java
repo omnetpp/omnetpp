@@ -21,6 +21,7 @@ import org.omnetpp.scave.engine.StringMap;
 import org.omnetpp.scave.engineext.ResultFileManagerEx;
 import org.omnetpp.scave2.model.FilterHints;
 import org.omnetpp.scave2.model.FilterParams;
+import org.omnetpp.scave2.model.ScaveModelUtil;
 
 /**
  * Displays a data table of vectors/scalars/histograms with filter
@@ -117,31 +118,12 @@ public class FilteredDataPanel extends Composite {
 	
 	protected void runFilter() {
 		// run the filter on the unfiltered IDList, and set the result to the table
-		ResultFileManagerEx manager = table.getResultFileManager();
 		FilterParams params = getFilterParams();
-		ResultFileList fileList = params.getFileNamePattern().length() > 0 ?
-				manager.filterFileList(manager.getFiles(), params.getFileNamePattern()) : null;
-		StringMap attrs = new StringMap();
-		addAttribute(attrs, EXPERIMENT, params.getExperimentNamePattern());
-		addAttribute(attrs, MEASUREMENT, params.getMeasurementNamePattern());
-		addAttribute(attrs, REPLICATION, params.getReplicationNamePattern());
-		String runNamePattern = params.getRunNamePattern().length() > 0 ? params.getRunNamePattern() : "*";
-		RunList runList = params.getRunNamePattern().length() > 0 || attrs.size() > 0 ?
-				manager.filterRunList(manager.getRuns(), runNamePattern, attrs) : null;
-		FileRunList fileRunFilter = manager.getFileRuns(fileList, runList);
-		IDList filteredIDList = manager.filterIDList(idlist,
-				fileRunFilter, params.getModuleNamePattern(), params.getDataNamePattern());
-		
+		IDList filteredIDList = ScaveModelUtil.filterIDList(idlist, params, table.getResultFileManager());
 		table.setIDList(filteredIDList);
-
-		filterPanel.setFilterText(getFilterParams().toString());
+		filterPanel.setFilterText(params.toString());
 	}
 	
-	private static void addAttribute(StringMap attrs, String name, String value) {
-		if (value != null && value.length() > 0)
-			attrs.set(name, value);
-	}
-
 	public FilterParams getFilterParams() {
 		return filterPanel.getFilterParams();
 	}

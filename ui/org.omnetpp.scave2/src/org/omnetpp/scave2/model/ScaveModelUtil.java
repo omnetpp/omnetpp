@@ -1,5 +1,9 @@
 package org.omnetpp.scave2.model;
 
+import static org.omnetpp.scave2.model.RunAttribute.EXPERIMENT;
+import static org.omnetpp.scave2.model.RunAttribute.MEASUREMENT;
+import static org.omnetpp.scave2.model.RunAttribute.REPLICATION;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -13,9 +17,15 @@ import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.edit.command.AddCommand;
 import org.eclipse.emf.edit.command.SetCommand;
 import org.eclipse.emf.edit.domain.EditingDomain;
+import org.omnetpp.scave.engine.FileRunList;
+import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.engine.ResultFile;
+import org.omnetpp.scave.engine.ResultFileList;
 import org.omnetpp.scave.engine.ResultItem;
 import org.omnetpp.scave.engine.Run;
+import org.omnetpp.scave.engine.RunList;
+import org.omnetpp.scave.engine.StringMap;
+import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.model.Add;
 import org.omnetpp.scave.model.Analysis;
 import org.omnetpp.scave.model.Chart;
@@ -94,7 +104,6 @@ public class ScaveModelUtil {
 		add.setNamePattern(item.getName());
 		return add;
 	}
-	
 	
 	public static Dataset findEnclosingDataset(Chart chart) {
 		EObject parent = chart.eContainer();
@@ -192,5 +201,36 @@ public class ScaveModelUtil {
 						propertyValue);
 		}
 		ed.getCommandStack().execute(command);
+	}
+	
+	public static IDList getAllIDs(ResultFileManager manager, DatasetType type) {
+		IDList idlist = null;
+		switch (type.getValue()) {
+		case DatasetType.SCALAR: 	idlist = manager.getAllScalars();
+		case DatasetType.VECTOR:	idlist = manager.getAllVectors();
+		case DatasetType.HISTOGRAM:	idlist = null; // TODO
+		}
+		return idlist;
+	}
+	
+	public static IDList filterIDList(IDList idlist, FilterParams params, ResultFileManager manager) {
+		ResultFileList fileList = params.getFileNamePattern().length() > 0 ?
+				manager.filterFileList(manager.getFiles(), params.getFileNamePattern()) : null;
+		StringMap attrs = new StringMap();
+		addAttribute(attrs, EXPERIMENT, params.getExperimentNamePattern());
+		addAttribute(attrs, MEASUREMENT, params.getMeasurementNamePattern());
+		addAttribute(attrs, REPLICATION, params.getReplicationNamePattern());
+		String runNamePattern = params.getRunNamePattern().length() > 0 ? params.getRunNamePattern() : "*";
+		RunList runList = params.getRunNamePattern().length() > 0 || attrs.size() > 0 ?
+				manager.filterRunList(manager.getRuns(), runNamePattern, attrs) : null;
+		FileRunList fileRunFilter = manager.getFileRuns(fileList, runList);
+		IDList filteredIDList = manager.filterIDList(idlist,
+				fileRunFilter, params.getModuleNamePattern(), params.getDataNamePattern());
+		return filteredIDList;
+	}
+	
+	private static void addAttribute(StringMap attrs, String name, String value) {
+		if (value != null && value.length() > 0)
+			attrs.set(name, value);
 	}
 }

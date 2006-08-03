@@ -84,10 +84,7 @@ public class ChartSheetPage extends ScaveEditorPage {
 		Collection<Chart> charts = chartsheet.getCharts();
 		Composite parent = getChartSheetComposite();
 		for (Chart chart : charts) {
-			Dataset dataset = ScaveModelUtil.findEnclosingObject(chart, Dataset.class);
-			IDList idlist = DatasetManager.getIDListFromDataset(scaveEditor.getResultFileManager(), dataset, chart);
-			DatasetType type = dataset.getType();
-			addChart(ChartFactory.createChart(parent, type, idlist, scaveEditor.getResultFileManager()));
+			addChart(ChartFactory.createChart(parent, chart, scaveEditor.getResultFileManager()));
 		}
 	}
 }

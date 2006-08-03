@@ -57,10 +57,11 @@ public class ChartPage extends ScaveEditorPage {
 		
 		// set up contents
 		Composite parent = getChartComposite();
-		Dataset dataset = ScaveModelUtil.findEnclosingObject(chart, Dataset.class);
-		IDList idlist = DatasetManager.getIDListFromDataset(scaveEditor.getResultFileManager(), dataset, chart);
-		DatasetType type = dataset.getType();
-		final InteractiveChart chart = ChartFactory.createChart(parent, type, idlist, scaveEditor.getResultFileManager()); 
+//		Dataset dataset = ScaveModelUtil.findEnclosingObject(chart, Dataset.class);
+//		IDList idlist = DatasetManager.getIDListFromDataset(scaveEditor.getResultFileManager(), dataset, chart);
+//		DatasetType type = dataset.getType();
+//		final InteractiveChart chart = ChartFactory.createChart(parent, type, idlist, scaveEditor.getResultFileManager()); 
+		final InteractiveChart chart = ChartFactory.createChart(parent, this.chart, scaveEditor.getResultFileManager());
 		setChart(chart);
 		chart.addMouseListener(new MouseAdapter() {
 			public void mouseUp(MouseEvent e) {

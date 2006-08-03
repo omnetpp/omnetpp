@@ -1,5 +1,7 @@
 package org.omnetpp.scave2.model;
 
+import org.omnetpp.scave.model.SetOperation;
+
 /**
  * Filter parameters for datasets. 
  */
@@ -25,6 +27,16 @@ public class FilterParams {
 		this.replicationName = replicationName;
 		this.moduleName = moduleName;
 		this.dataName = dataName;
+	}
+	
+	public FilterParams(SetOperation op) {
+		this.fileName = op.getFilenamePattern();
+		this.runName = op.getRunNamePattern();
+		this.experimentName = op.getExperimentNamePattern();
+		this.measurementName = op.getMeasurementNamePattern();
+		this.replicationName = op.getReplicationNamePattern();
+		this.moduleName = op.getModuleNamePattern();
+		this.dataName = op.getNamePattern();
 	}
 	
 	public String getFileNamePattern() {

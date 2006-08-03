@@ -9,6 +9,7 @@ import org.omnetpp.scave.engine.ResultFileList;
 import org.omnetpp.scave.engine.RunList;
 import org.omnetpp.scave.engine.StringVector;
 import org.omnetpp.scave.engineext.ResultFileManagerEx;
+import org.omnetpp.scave.model.DatasetType;
 
 public class FilterHints {
 	private static final String[] EMPTY = new String[0];
@@ -22,6 +23,10 @@ public class FilterHints {
 	private String[] dataNameHints;
 	
 	public FilterHints() {
+	}
+	
+	public FilterHints(ResultFileManagerEx manager, DatasetType type) {
+		this(manager, ScaveModelUtil.getAllIDs(manager, type));
 	}
 	
 	public FilterHints(ResultFileManagerEx manager, IDList idlist) {

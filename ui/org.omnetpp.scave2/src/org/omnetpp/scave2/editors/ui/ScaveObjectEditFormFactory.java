@@ -33,8 +33,6 @@ public class ScaveObjectEditFormFactory {
 	 */
 	public IScaveObjectEditForm createForm(EObject object) {
 		
-		if (object instanceof AddDiscardOp)
-			return new AddDiscardEditForm((AddDiscardOp)object);
 		if (object instanceof Chart)
 			return new ChartEditForm((Chart)object);
 		else if (object instanceof ChartSheet)
@@ -43,6 +41,8 @@ public class ScaveObjectEditFormFactory {
 			return new DatasetEditForm((Dataset)object);
 		else if (object instanceof ProcessingOp)
 			return new ProcessingOperationEditForm((ProcessingOp)object);
+		else if (object instanceof SetOperation)
+			return new SetOperationEditForm((SetOperation)object);
 		else
 			return new GenericScaveObjectEditForm(object);
 	}
