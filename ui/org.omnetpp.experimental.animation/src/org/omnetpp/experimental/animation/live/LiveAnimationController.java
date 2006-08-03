@@ -290,7 +290,7 @@ public class LiveAnimationController extends ReplayAnimationController implement
 	}
 
 	public void bubble(cModule module, String text) {
-		addAnimationPrimitive(new BubbleAnimation(this, getLiveEventNumber(), getLiveSimulationTime(), getLiveAnimationNumber(), text, module));
+		addAnimationPrimitive(new BubbleAnimation(this, getLiveEventNumber(), getLiveSimulationTime(), getLiveAnimationNumber(), text, module.getId()));
 	}
 
 	public void connectionCreated(cGate gate) {

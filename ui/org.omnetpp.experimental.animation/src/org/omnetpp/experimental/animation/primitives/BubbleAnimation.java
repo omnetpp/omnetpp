@@ -11,7 +11,7 @@ import org.omnetpp.figures.ModuleFigure;
 
 public class BubbleAnimation extends AbstractAnimationPrimitive {
 
-	private IRuntimeModule module;
+	private int moduleId;
 	
 	private RoundedRectangle background;
 
@@ -26,12 +26,12 @@ public class BubbleAnimation extends AbstractAnimationPrimitive {
 						   double simulationTime,
 						   long animationNumber,
 						   String text,
-						   IRuntimeModule module) {
+						   int moduleId) {
 		super(animationController, eventNumber, simulationTime, animationNumber);
 		this.background = new RoundedRectangle();
 		this.text = text;
 		this.label = new Label(text);
-		this.module = module;
+		this.moduleId = moduleId;
 		this.bubbleTimer = new Timer(3000, false, false) {
 			public void run() {
 				removeFigure(background);
@@ -47,19 +47,33 @@ public class BubbleAnimation extends AbstractAnimationPrimitive {
 	}
 	
 	public void redo() {
-		addFigure(background);
-		addFigure(label);
+		IRuntimeModule module = getModule();
+		IRuntimeModule parentModule = module.getParentModule();
+		
+		if (parentModule == animationEnvironment.getSimulation().getRootModule()) {
+			addFigure(background);
+			addFigure(label);
+		}
 	}
 
 	public void undo() {
-		bubbleTimer.reset();
-		getTimerQueue().addTimer(bubbleTimer);
+		IRuntimeModule module = getModule();
+		IRuntimeModule parentModule = module.getParentModule();
+		
+		if (parentModule == animationEnvironment.getSimulation().getRootModule()) {
+			bubbleTimer.reset();
+			getTimerQueue().addTimer(bubbleTimer);
+		}
 	}
 	
 	public void animateAt(long eventNumber, double simulationTime, long animationNumber, double animationTime) {
-		ModuleFigure moduleFigure = (ModuleFigure)animationEnvironment.getFigure(module);
+		ModuleFigure moduleFigure = (ModuleFigure)animationEnvironment.getFigure(getModule());
 		Rectangle r = new Rectangle(moduleFigure.getLocation(), new Dimension(10 * text.length(), 20));
 		setConstraint(background, r);
 		setConstraint(label, r);
+	}
+
+	protected IRuntimeModule getModule() {
+		return animationEnvironment.getSimulation().getModuleByID(moduleId);
 	}
 }

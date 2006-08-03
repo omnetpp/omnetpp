@@ -17,6 +17,7 @@ import org.omnetpp.common.simulation.model.IRuntimeSimulation;
 import org.omnetpp.experimental.animation.controller.IReplayAnimationListener;
 import org.omnetpp.experimental.animation.controller.Timer;
 import org.omnetpp.experimental.animation.controller.TimerQueue;
+import org.omnetpp.experimental.animation.primitives.BubbleAnimation;
 import org.omnetpp.experimental.animation.primitives.CreateConnectionAnimation;
 import org.omnetpp.experimental.animation.primitives.CreateModuleAnimation;
 import org.omnetpp.experimental.animation.primitives.DeleteModuleAnimation;
@@ -1091,6 +1092,7 @@ public class ReplayAnimationController implements IAnimationEnvironment {
 					loadSimulationTime = getDoubleToken(tokens, "t");
 					loadAnimationNumber++;
 					
+					// TODO: what if event numbers are not started from 0 or not continous?
 					IAnimationPrimitive handleMessageAnimationPrimitive = new HandleMessageAnimation(this, loadEventNumber, loadSimulationTime, loadAnimationNumber, getIntegerToken(tokens, "m"), null);
 
 					// store the beginning of the simulation
@@ -1127,6 +1129,10 @@ public class ReplayAnimationController implements IAnimationEnvironment {
 					IDisplayString displayString = new DisplayString(null, null, getToken(tokens, "d"));
 					ConnectionId connectionId = new ConnectionId(getIntegerToken(tokens, "sm"), getIntegerToken(tokens, "sg"));
 					addAnimationPrimitive(new SetConnectionDisplayStringAnimation(this, loadEventNumber, loadSimulationTime, loadAnimationNumber, connectionId, displayString));
+				}
+				else if (tokens[0].equals("BU")) {
+					String text = getToken(tokens, "txt");
+					addAnimationPrimitive(new BubbleAnimation(this, loadEventNumber, loadSimulationTime, loadAnimationNumber, text, getIntegerToken(tokens, "id")));
 				}
 				else
 					throw new RuntimeException("Unknown log entry");
