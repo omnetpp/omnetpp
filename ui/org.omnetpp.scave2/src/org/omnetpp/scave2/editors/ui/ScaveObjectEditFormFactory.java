@@ -2,6 +2,7 @@ package org.omnetpp.scave2.editors.ui;
 
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
+import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.model.AddDiscardOp;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.ChartSheet;
@@ -31,7 +32,7 @@ public class ScaveObjectEditFormFactory {
 	 * Creates a form containing all editable features of the object.
 	 * @param object  the edited object
 	 */
-	public IScaveObjectEditForm createForm(EObject object) {
+	public IScaveObjectEditForm createForm(EObject object, ResultFileManager manager) {
 		
 		if (object instanceof Chart)
 			return new ChartEditForm((Chart)object);
@@ -42,7 +43,7 @@ public class ScaveObjectEditFormFactory {
 		else if (object instanceof ProcessingOp)
 			return new ProcessingOperationEditForm((ProcessingOp)object);
 		else if (object instanceof SetOperation)
-			return new SetOperationEditForm((SetOperation)object);
+			return new SetOperationEditForm((SetOperation)object, manager);
 		else
 			return new GenericScaveObjectEditForm(object);
 	}

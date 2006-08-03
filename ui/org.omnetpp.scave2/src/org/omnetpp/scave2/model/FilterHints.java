@@ -6,9 +6,9 @@ import static org.omnetpp.scave2.model.RunAttribute.REPLICATION;
 
 import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.engine.ResultFileList;
+import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engine.RunList;
 import org.omnetpp.scave.engine.StringVector;
-import org.omnetpp.scave.engineext.ResultFileManagerEx;
 import org.omnetpp.scave.model.DatasetType;
 
 public class FilterHints {
@@ -25,11 +25,11 @@ public class FilterHints {
 	public FilterHints() {
 	}
 	
-	public FilterHints(ResultFileManagerEx manager, DatasetType type) {
+	public FilterHints(ResultFileManager manager, DatasetType type) {
 		this(manager, ScaveModelUtil.getAllIDs(manager, type));
 	}
 	
-	public FilterHints(ResultFileManagerEx manager, IDList idlist) {
+	public FilterHints(ResultFileManager manager, IDList idlist) {
 		ResultFileList fileList = manager.getUniqueFiles(idlist);
 		RunList runList = manager.getUniqueRuns(idlist);
 		
@@ -61,7 +61,7 @@ public class FilterHints {
 		return hints.toArray();
 	}
 	
-	private static String[] getFilterHintsForRunAttribute(ResultFileManagerEx manager, RunList runList, String attrName) {
+	private static String[] getFilterHintsForRunAttribute(ResultFileManager manager, RunList runList, String attrName) {
 		StringVector values = manager.getUniqueAttributeValues(runList, attrName);
 		String[] filterHints = new String[(int)values.size() + 1];
 		filterHints[0] = "*";

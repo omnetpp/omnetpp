@@ -20,6 +20,7 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Group;
+import org.omnetpp.scave2.editors.ScaveEditor;
 import org.omnetpp.scave2.editors.ui.IScaveObjectEditForm;
 import org.omnetpp.scave2.editors.ui.ScaveObjectEditFormFactory;
 
@@ -38,6 +39,7 @@ import org.omnetpp.scave2.editors.ui.ScaveObjectEditFormFactory;
 //      The new node is removed when the dialog is closed.
 public class NewScaveObjectWizard extends Wizard {
 	
+	private ScaveEditor editor;
 	private EditingDomain domain;
 	private EObject parent;
 	private CommandParameter newChildDescriptor;
@@ -48,8 +50,9 @@ public class NewScaveObjectWizard extends Wizard {
 	private TypeSelectionWizardPage typeSelectionPage;
 	private EditFieldsWizardPage editFieldsPage;
 	
-	public NewScaveObjectWizard(EditingDomain domain, EObject parent) {
-		this.domain = domain;
+	public NewScaveObjectWizard(ScaveEditor editor, EObject parent) {
+		this.editor = editor;
+		this.domain = editor.getEditingDomain();
 		this.parent = parent;
 		setWindowTitle("Create new item");
 		setHelpAvailable(false);
@@ -193,7 +196,8 @@ public class NewScaveObjectWizard extends Wizard {
 		public void createControl(Composite parentComposite) {
 			Composite panel = new Composite(parentComposite, SWT.NONE);
 			panel.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-			form = ScaveObjectEditFormFactory.instance().createForm((EObject)newChildDescriptor.value);
+			ScaveObjectEditFormFactory factory = ScaveObjectEditFormFactory.instance();
+			form = factory.createForm((EObject)newChildDescriptor.value, editor.getResultFileManager());
 			form.populatePanel(panel);
 			setControl(panel);
 		}

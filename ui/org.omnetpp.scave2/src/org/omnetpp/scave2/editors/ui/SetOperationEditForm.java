@@ -9,6 +9,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
+import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.model.Dataset;
 import org.omnetpp.scave.model.ScaveModelPackage;
 import org.omnetpp.scave.model.SetOperation;
@@ -45,6 +46,8 @@ public class SetOperationEditForm implements IScaveObjectEditForm {
 	 * First elements is <code>null</code> corresponding to "All".
 	 */
 	protected java.util.List<Dataset> sourceDatasets;
+
+	protected FilterHints filterHints; 
 	
 	// controls
 	private CCombo sourceDatasetCombo;
@@ -57,7 +60,7 @@ public class SetOperationEditForm implements IScaveObjectEditForm {
 	private CCombo runNameCombo;
 	private Text fromRunsWhereText;
 	
-	public SetOperationEditForm(SetOperation setOperation) {
+	public SetOperationEditForm(SetOperation setOperation, ResultFileManager manager) {
 		this.setOperation = setOperation;
 		
 		sourceDatasets = new java.util.ArrayList<Dataset>();
@@ -67,6 +70,8 @@ public class SetOperationEditForm implements IScaveObjectEditForm {
 		for (Dataset ds : datasets)
 			if (!ds.equals(dataset))
 				sourceDatasets.add(ds);
+		
+		filterHints = new FilterHints(manager, dataset.getType());
 	}
 	
 	public String getTitle() {
@@ -157,18 +162,17 @@ public class SetOperationEditForm implements IScaveObjectEditForm {
 		label.setLayoutData(new GridData());
 		replicationNameCombo = new CCombo(group, SWT.BORDER);
 		replicationNameCombo.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+	
+		// set filter hints
+		nameCombo.setItems(filterHints.getDataNameHints());
+		moduleNameCombo.setItems(filterHints.getModuleNameHints());
+		fileNameCombo.setItems(filterHints.getFileNameHints());
+		runNameCombo.setItems(filterHints.getRunNameHints());
+		experimentNameCombo.setItems(filterHints.getExperimentNameHints());
+		measurementNameCombo.setItems(filterHints.getExperimentNameHints());
+		replicationNameCombo.setItems(filterHints.getReplicationNameHints());
 	}
 	
-	protected void setFilterHints(FilterHints hints) {
-		nameCombo.setItems(hints.getDataNameHints());
-		moduleNameCombo.setItems(hints.getModuleNameHints());
-		fileNameCombo.setItems(hints.getFileNameHints());
-		runNameCombo.setItems(hints.getRunNameHints());
-		experimentNameCombo.setItems(hints.getExperimentNameHints());
-		measurementNameCombo.setItems(hints.getExperimentNameHints());
-		replicationNameCombo.setItems(hints.getReplicationNameHints());
-	}
-
 	public Object getValue(EStructuralFeature feature) {
 		switch (feature.getFeatureID()) {
 		case ScaveModelPackage.SET_OPERATION__MODULE_NAME_PATTERN:

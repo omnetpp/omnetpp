@@ -132,7 +132,7 @@ public class DatasetEditForm implements IScaveObjectEditForm {
 	public void setValue(EStructuralFeature feature, Object value) {
 		switch (feature.getFeatureID()) {
 		case ScaveModelPackage.DATASET__NAME:
-			nameText.setText((String)value);
+			nameText.setText(value != null ? (String)value : "");
 			break;
 		case ScaveModelPackage.DATASET__BASED_ON:
 			Dataset dataset = (Dataset)value;

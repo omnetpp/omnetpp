@@ -23,7 +23,7 @@ public class EditAction extends AbstractScaveAction {
 		if (isApplicable(scaveEditor, selection)) {
 		
 			EObject object = (EObject)selection.getFirstElement(); //TODO edit several objects together?
-			EditDialog dialog = new EditDialog(scaveEditor.getSite().getShell(), object);
+			EditDialog dialog = new EditDialog(scaveEditor.getSite().getShell(), object, scaveEditor);
 			
 			if (dialog.open() == Window.OK) {
 				EStructuralFeature[] features = dialog.getFeatures();

@@ -62,8 +62,8 @@ public class ChartPage2 extends ScaveEditorPage {
 		Composite parent = getBody();
 		Dataset dataset = ScaveModelUtil.findEnclosingObject(chart, Dataset.class);
 		ResultFileManager manager = scaveEditor.getResultFileManager();
-		//XXX just testing
 		XYDataset xydataset = new OutputVectorDataset(DatasetManager.getDataFromDataset(manager, dataset, chart));
+		//XXX just testing
 		final VectorChart chart = new VectorChart(parent, SWT.DOUBLE_BUFFERED);
 		chart.setLayoutData(new GridData(SWT.FILL,SWT.FILL,true,true));
 		chart.setSize(getParent().getBounds().width, getParent().getBounds().height); // provide width/height hint until layouting runs

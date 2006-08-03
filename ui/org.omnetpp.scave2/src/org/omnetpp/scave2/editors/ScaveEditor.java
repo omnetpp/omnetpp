@@ -29,6 +29,7 @@ import org.omnetpp.scave.model.Analysis;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.ChartSheet;
 import org.omnetpp.scave.model.Dataset;
+import org.omnetpp.scave.model.DatasetType;
 import org.omnetpp.scave.model.InputFile;
 import org.omnetpp.scave.model.Inputs;
 import org.omnetpp.scave.model.ScaveModelFactory;
@@ -40,6 +41,7 @@ import org.omnetpp.scave2.editors.ui.DatasetPage;
 import org.omnetpp.scave2.editors.ui.DatasetsAndChartsPage;
 import org.omnetpp.scave2.editors.ui.InputsPage;
 import org.omnetpp.scave2.editors.ui.ScaveEditorPage;
+import org.omnetpp.scave2.model.ScaveModelUtil;
 
 /**
  * OMNeT++/OMNEST Analysis tool.  
@@ -296,8 +298,11 @@ public class ScaveEditor extends AbstractEMFModelEditor {
 		ChartPage page = new ChartPage(getContainer(), this, chart);
 		int index = addClosableScaveEditorPage(page);
 
-		ChartPage2 page2 = new ChartPage2(getContainer(), this, chart);  //XXX experimental
-		addClosableScaveEditorPage(page2); //XXX experimental
+		Dataset dataset = ScaveModelUtil.findEnclosingDataset(chart);
+		if (dataset.getType() == DatasetType.VECTOR_LITERAL) {
+			ChartPage2 page2 = new ChartPage2(getContainer(), this, chart);  //XXX experimental
+			addClosableScaveEditorPage(page2); //XXX experimental
+		}
 
 		return index;
 	}

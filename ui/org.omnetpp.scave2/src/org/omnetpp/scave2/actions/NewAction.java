@@ -32,7 +32,7 @@ public class NewAction extends AbstractScaveAction {
 	protected void doRun(ScaveEditor editor, IStructuredSelection selection) {
 		EObject parent = getParent(selection);
 		if (parent != null) {
-			NewScaveObjectWizard wizard = new NewScaveObjectWizard(editor.getEditingDomain(), parent);
+			NewScaveObjectWizard wizard = new NewScaveObjectWizard(editor, parent);
 			WizardDialog dialog = new WizardDialog(editor.getSite().getShell(), wizard);
 			if (dialog.open() == Window.OK) {
 				Command command = CreateChildCommand.create(

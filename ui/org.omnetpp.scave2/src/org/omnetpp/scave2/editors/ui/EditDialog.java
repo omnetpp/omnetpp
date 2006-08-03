@@ -8,6 +8,7 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Shell;
+import org.omnetpp.scave2.editors.ScaveEditor;
 
 /**
  * This is the edit dialog for scave model objects.
@@ -20,23 +21,28 @@ import org.eclipse.swt.widgets.Shell;
  */
 public class EditDialog extends TitleAreaDialog {
 
+	private ScaveEditor editor;
 	private EObject object;
 	private EStructuralFeature[] features;
 	private IScaveObjectEditForm form;
 	private Object[] values;
 	
+	
 	public EditDialog(
 			Shell parentShell,
-			EObject object) {
-		this(parentShell, object, null);
+			EObject object,
+			ScaveEditor editor) {
+		this(parentShell, object, null, editor);
 		setShellStyle(getShellStyle() | SWT.RESIZE);
 	}
 	
 	public EditDialog(
 			Shell parentShell,
 			EObject object,
-			EStructuralFeature[] features) {
+			EStructuralFeature[] features,
+			ScaveEditor editor) {
 		super(parentShell);
+		this.editor = editor;
 		this.object = object;
 		this.features = features;
 	}
@@ -65,7 +71,7 @@ public class EditDialog extends TitleAreaDialog {
 		panel.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		
 		form = features == null ?
-				ScaveObjectEditFormFactory.instance().createForm(object) :
+				ScaveObjectEditFormFactory.instance().createForm(object, editor.getResultFileManager()) :
 				ScaveObjectEditFormFactory.instance().createForm(object, features);
 		setTitle(form.getTitle());
 		setMessage(form.getDescription());
