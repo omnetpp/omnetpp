@@ -53,7 +53,7 @@ public class DatasetManager {
 		}
 		
 		public IDList getIDList() {
-			return idlist;
+			return idlist != null ? idlist : new IDList();
 		}
 
 		@Override

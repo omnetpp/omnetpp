@@ -204,13 +204,14 @@ public class ScaveModelUtil {
 	}
 	
 	public static IDList getAllIDs(ResultFileManager manager, DatasetType type) {
-		IDList idlist = null;
 		switch (type.getValue()) {
-		case DatasetType.SCALAR: 	idlist = manager.getAllScalars();
-		case DatasetType.VECTOR:	idlist = manager.getAllVectors();
-		case DatasetType.HISTOGRAM:	idlist = null; // TODO
+		case DatasetType.SCALAR: 	return manager.getAllScalars();
+		case DatasetType.VECTOR:	return manager.getAllVectors();
+		case DatasetType.HISTOGRAM:	return new IDList(); // TODO
 		}
-		return idlist;
+		
+		Assert.isTrue(false, "Unknown dataset type: " + type);
+		return null;
 	}
 	
 	public static IDList filterIDList(IDList idlist, FilterParams params, ResultFileManager manager) {
