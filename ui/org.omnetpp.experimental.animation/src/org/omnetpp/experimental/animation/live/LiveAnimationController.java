@@ -25,24 +25,49 @@ import org.omnetpp.experimental.simkernel.swig.cSimulation;
 
 public class LiveAnimationController extends ReplayAnimationController implements IEnvirCallback {
 	protected Javaenv jenv;
-
-	protected long liveAnimationNumber;
 	
 	protected cSimulation liveSimulation;
+
+	protected long lastStopLiveEventNumber;
+	
+	protected double lastStopLiveSimulationTime;
+	
+	protected long lastStopLiveAnimationNumber;
+	
+	protected double lastStopLiveAnimationTime;
+	
+	protected long liveAnimationNumber;
+
+	private boolean isRunningLive;
 
 	public LiveAnimationController(AnimationCanvas canvas) {
 		super(canvas, null);
 		liveSimulation = Simkernel.getSimulation();
 		jenv = Simkernel.getJavaenv();
 		jenv.setJCallback(null, this);
+	}
+	
+	@Override
+	public void restart() {
+		super.restart();
+		lastStopLiveEventNumber = -1;
+		lastStopLiveSimulationTime = -1;
+		lastStopLiveAnimationNumber = -1;
+		lastStopLiveAnimationTime = -1;
+		liveAnimationNumber = 0;
+		isRunningLive = false;
+
 		jenv.newRun(1);
 		initializeSimulation(toReplayModule(liveSimulation.getRootModule()));
 	}
-	
+
+	@Override
 	public void shutdown() {
 		super.shutdown();
 		jenv.setJCallback(null, null);
 	}
+	
+	// simulate state
 
 	public cSimulation getLiveSimulation() {
 		return liveSimulation;
@@ -65,67 +90,190 @@ public class LiveAnimationController extends ReplayAnimationController implement
 	}
 
 	public void gotoLivePosition() {
-		// TODO: not precise
-		gotoSimulationTime(getLiveSimulationTime());
+		if (!isRunningLive) {
+			eventNumber = lastStopLiveEventNumber;
+			simulationTime = lastStopLiveSimulationTime;
+			animationNumber = lastStopLiveAnimationNumber;
+			animationTime = lastStopLiveAnimationTime;
+		}
 	}
 
-	public boolean isAtLivePosition() {
-		// TODO: not precise
-		return simulationTime == getLiveSimulationTime();
+	public boolean isAtLivePosition() {		
+		return eventNumber == lastStopLiveEventNumber &&
+			simulationTime == lastStopLiveSimulationTime &&
+			animationNumber == lastStopLiveAnimationNumber &&
+			animationTime == lastStopLiveAnimationTime;
+	}
+	
+	// public animation API
+
+	@Override
+	public void gotoAnimationBegin() {
+		setRunningLive(false);
+		super.gotoAnimationBegin();
+	}
+	
+	@Override
+	public void runAnimationBack() {
+		setRunningLive(false);
+		super.runAnimationBack();
+	}
+	
+	@Override
+	public void stepAnimationBack() {
+		setRunningLive(false);
+		super.stepAnimationBack();
+	}
+	
+	@Override
+	public void stopAnimation() {
+		setRunningLive(false);
+		super.stopAnimation();
+	}
+	
+	@Override
+	public void runAnimation() {
+		setRunningLive(false);
+		super.runAnimation();
+	}
+	
+	@Override
+	public void stepAnimation() {
+		setRunningLive(false);
+		super.stepAnimation();
 	}
 
+	@Override
+	public void gotoAnimationEnd() {
+		setRunningLive(false);
+		super.gotoAnimationEnd();
+	}
+	
+	// public simulation API
+	
 	public void restartSimulation() {
-		jenv.newRun(1);
+		restart();
+		animateAtCurrentPosition();
 	}
 
-	public void simulateStep() {
-		gotoSimulationTime(getLiveSimulationTime());
-		animateStep();
+	public void stepSimulation() {
+		gotoLivePosition();
+		setRunningLive(true);
+		resetEndPosition();
+		super.stepAnimation();
 	}
 
-	public void simulateRun() {
-		gotoSimulationTime(getLiveSimulationTime());
-		animatePlay();
+	public void runSimulation() {
+		gotoLivePosition();
+		setRunningLive(true);
+		resetEndPosition();
+		super.runAnimation();
 	}
 
-	public void simulateFast() {	
-		animateStart(true, FAST_REAL_TIME_TO_ANIMATION_TIME_SCALE, -1, -1, -1);
+	public void runSimulationFast() {
+		gotoLivePosition();
+		setRunningLive(true);
+		resetEndPosition();
+		super.animateStart(true, FAST_REAL_TIME_TO_ANIMATION_TIME_SCALE, -1, -1, -1);
 	}
 
-	public void simulateExpress() {
+	public void runSimulationExpress() {
+		setRunningLive(true);
 		// TODO: show a modal dialog with a big stop button		
 	}
 
-	public void simulateStop() {
-		gotoSimulationTime(getLiveSimulationTime());
-		animateStop();
+	public void stopSimulation() {
+		super.stopAnimation();
 	}
 
 	public void finishSimulation() {
-		gotoSimulationTime(getLiveSimulationTime());
-		jenv.finishSimulation();
+		setRunningLive(false);
+
+		if (!isSimulationFinished()) {
+			gotoLivePosition();
+			setLastStopLivePositionAtCurrentPosition();
+			setEndPositionAtLastStopLivePosition();
+			jenv.finishSimulation();
+			
+			controllerStateChanged();
+		}
+	}
+
+	public boolean isSimulationFinished() {
+		return jenv.getSimulationState() == Javaenv.eState.SIM_TERMINATED.swigValue() ||
+			jenv.getSimulationState() == Javaenv.eState.SIM_FINISHCALLED.swigValue();
+	}
+	
+	public boolean isRunningLive() {
+		return isRunningLive;
+	}
+	
+	public void setRunningLive(boolean isRunningLive) {
+		this.isRunningLive = isRunningLive;
+		
+		controllerStateChanged();
+	}
+	
+	@Override
+	protected void animateStop() {
+		if (isRunningLive) {
+			setRunningLive(false);
+			setLastStopLivePositionAtCurrentPosition();
+			setEndPositionAtLastStopLivePosition();			
+		}
+
+		super.animateStop();
 	}
 
 	@Override
 	protected long loadAnimationPrimitivesForPosition() {
 		int count = animationPrimitives.size();
 
-		while (jenv.getSimulationState() != Javaenv.eState.SIM_TERMINATED.swigValue()) {
-			IAnimationPrimitive lastAnimationPrimitive = animationPrimitives.get(animationPrimitives.size() - 1);
-
-			if (lastAnimationPrimitive.getEventNumber() > eventNumber &&
-				lastAnimationPrimitive.getBeginSimulationTime() > simulationTime &&
-				lastAnimationPrimitive.getAnimationNumber() > animationNumber &&
-				lastAnimationPrimitive.getBeginAnimationTime() > animationTime + 10) // FIXME: WTF?
-					break;
-
-			jenv.doOneStep();
-			//jenv.runSimulation(mode, until_time, until_event);
-		}
+		if (isRunningLive)
+			while (!isSimulationFinished()) {
+				IAnimationPrimitive lastAnimationPrimitive = animationPrimitives.get(animationPrimitives.size() - 1);
+	
+				if (lastAnimationPrimitive.getEventNumber() > eventNumber &&
+					lastAnimationPrimitive.getBeginSimulationTime() > simulationTime &&
+					lastAnimationPrimitive.getAnimationNumber() > animationNumber &&
+					lastAnimationPrimitive.getBeginAnimationTime() > animationTime)
+						break;
+	
+				jenv.doOneStep();
+				//jenv.runSimulation(mode, until_time, until_event);
+			}
 		
 		return animationPrimitives.size() - count;
 	}
+
+	protected void setEndPositionAtLastStopLivePosition() {
+		endEventNumber = lastStopLiveEventNumber;
+		endSimulationTime = lastStopLiveSimulationTime;
+		endAnimationNumber = lastStopLiveAnimationNumber;
+		endAnimationTime = lastStopLiveAnimationTime;
+	}
 	
+/*	protected void setLivePositionAtCurrentPosition() {
+		lastStopLiveEventNumber = getLiveEventNumber() - 1;
+		lastStopLiveSimulationTime = getSimulationTimeForEventNumber(endEventNumber);
+		lastStopLiveAnimationNumber = getAnimationNumberForEventNumber(endEventNumber);
+		lastStopLiveAnimationTime = getAnimationTimeForAnimationNumber(endAnimationNumber);		
+	}
+*/	
+	protected void setLastStopLivePositionAtCurrentPosition() {
+		lastStopLiveEventNumber = eventNumber;
+		lastStopLiveSimulationTime = simulationTime;
+		lastStopLiveAnimationNumber = animationNumber;
+		lastStopLiveAnimationTime = animationTime;		
+	}
+
+	protected void resetEndPosition() {
+		endEventNumber = -1;
+		endSimulationTime = -1;
+		endAnimationNumber = -1;
+		endAnimationTime = -1;
+	}
+
 	protected ReplayModule toReplayModule(cModule module) {
 		ReplayModule replayModule = new ReplayModule();
 		replayModule.setId(module.getId());
@@ -136,7 +284,7 @@ public class LiveAnimationController extends ReplayAnimationController implement
 		return replayModule;
 	}
 	
-	// Simulation callbacks
+	// simulation callbacks
 	
 	public void breakpointHit(String lbl, cModule mod) {
 	}

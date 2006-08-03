@@ -22,10 +22,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.CoolItem;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
-import org.eclipse.ui.IEditorInput;
-import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.IFileEditorInput;
-import org.eclipse.ui.PartInitException;
 import org.omnetpp.experimental.animation.AnimationPlugin;
 import org.omnetpp.experimental.animation.controller.ILiveAnimationListener;
 import org.omnetpp.experimental.animation.live.LiveAnimationController;
@@ -35,13 +32,23 @@ import org.omnetpp.experimental.simkernel.swig.cEnvir;
 import org.omnetpp.experimental.simkernel.swig.cStaticFlag;
 
 public class LiveAnimationEditor extends ReplayAnimationEditor implements ILiveAnimationListener {
+	private static final String ICONS_FINISH_GIF = "icons/finish.gif";
+	private static final String ICONS_STOPSIM_GIF = "icons/stopsim.gif";
+	private static final String ICONS_EXPRESS_GIF = "icons/express.gif";
+	private static final String ICONS_FAST_GIF = "icons/fast.gif";
+	private static final String ICONS_RUN_GIF = "icons/run.gif";
+	private static final String ICONS_DOONEEVENT_GIF = "icons/dooneevent.gif";
+	private static final String ICONS_RESTART_GIF = "icons/restart.gif";
 
-	cStaticFlag staticFlag; 
-	
-	@Override
-	public void init(IEditorSite site, IEditorInput input) throws PartInitException {
-		super.init(site, input);
-	}
+	protected cStaticFlag staticFlag;
+	protected ToolBar liveToolBar;
+	protected ToolItem liveStopToolItem; 
+	protected ToolItem liveRestartToolItem;
+	protected ToolItem liveStepToolItem;
+	protected ToolItem liveRunToolItem;
+	protected ToolItem liveFastToolItem;
+	protected ToolItem liveExpressToolItem;
+	protected ToolItem liveFinishToolItem; 
 	
 	@Override
 	public void dispose() {
@@ -81,7 +88,6 @@ public class LiveAnimationEditor extends ReplayAnimationEditor implements ILiveA
 		createAnimationController(parent);
 		
 		coolBar.setWrapIndices(new int[] {2,3});
-
 	}
 
 	private void initSimulation() {
@@ -139,68 +145,76 @@ public class LiveAnimationEditor extends ReplayAnimationEditor implements ILiveA
 	}
 
 	private void createSimulationToolbar() {
-		ToolBar toolBar = new ToolBar(coolBar, SWT.NONE);
+		liveToolBar = new ToolBar(coolBar, SWT.NONE);
 
-		ToolItem toolItem;
-
-		toolItem = new ToolItem(toolBar, SWT.PUSH);
-		toolItem.setToolTipText("Restart");
-	    toolItem.setImage(AnimationPlugin.getImageDescriptor("icons/restart.gif").createImage());
-		toolItem.addSelectionListener(new SelectionAdapter() {
+		liveRestartToolItem = new ToolItem(liveToolBar, SWT.PUSH);
+		liveRestartToolItem.setToolTipText("Restart");
+		liveRestartToolItem.setImage(AnimationPlugin.getImageDescriptor(ICONS_RESTART_GIF).createImage());
+		liveRestartToolItem.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				getLiveAnimationController().restartSimulation();
+				
+				liveStopToolItem.setEnabled(false);
+
+				liveRestartToolItem.setEnabled(true);
+				liveStepToolItem.setEnabled(true);
+				liveRunToolItem.setEnabled(true);
+				liveFastToolItem.setEnabled(true);
+				liveExpressToolItem.setEnabled(true);
+				liveFinishToolItem.setEnabled(true); 
 			}
 		});
 
-		toolItem = new ToolItem(toolBar, SWT.PUSH);
-		toolItem.setToolTipText("Step");
-	    toolItem.setImage(AnimationPlugin.getImageDescriptor("icons/dooneevent.gif").createImage());
-		toolItem.addSelectionListener(new SelectionAdapter() {
+		liveStepToolItem = new ToolItem(liveToolBar, SWT.PUSH);
+		liveStepToolItem.setToolTipText("Step");
+	    liveStepToolItem.setImage(AnimationPlugin.getImageDescriptor(ICONS_DOONEEVENT_GIF).createImage());
+		liveStepToolItem.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
-				getLiveAnimationController().simulateStep();
+				getLiveAnimationController().stepSimulation();
 			}
 		});
 		
-		toolItem = new ToolItem(toolBar, SWT.PUSH);
-		toolItem.setToolTipText("Run");
-	    toolItem.setImage(AnimationPlugin.getImageDescriptor("icons/run.gif").createImage());
-		toolItem.addSelectionListener(new SelectionAdapter() {
+		liveRunToolItem = new ToolItem(liveToolBar, SWT.PUSH);
+		liveRunToolItem.setToolTipText("Run");
+	    liveRunToolItem.setImage(AnimationPlugin.getImageDescriptor(ICONS_RUN_GIF).createImage());
+		liveRunToolItem.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
-				getLiveAnimationController().simulateRun();
+				getLiveAnimationController().runSimulation();
 			}
 		});
 		
-		toolItem = new ToolItem(toolBar, SWT.PUSH);
-		toolItem.setToolTipText("Fast");
-	    toolItem.setImage(AnimationPlugin.getImageDescriptor("icons/fast.gif").createImage());
-		toolItem.addSelectionListener(new SelectionAdapter() {
+		liveFastToolItem = new ToolItem(liveToolBar, SWT.PUSH);
+		liveFastToolItem.setToolTipText("Fast");
+	    liveFastToolItem.setImage(AnimationPlugin.getImageDescriptor(ICONS_FAST_GIF).createImage());
+		liveFastToolItem.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
-				getLiveAnimationController().simulateFast();
+				getLiveAnimationController().runSimulationFast();
 			}
 		});
 
-		toolItem = new ToolItem(toolBar, SWT.PUSH);
-		toolItem.setToolTipText("Express");
-	    toolItem.setImage(AnimationPlugin.getImageDescriptor("icons/express.gif").createImage());
-		toolItem.addSelectionListener(new SelectionAdapter() {
+		liveExpressToolItem = new ToolItem(liveToolBar, SWT.PUSH);
+		liveExpressToolItem.setToolTipText("Express");
+	    liveExpressToolItem.setImage(AnimationPlugin.getImageDescriptor(ICONS_EXPRESS_GIF).createImage());
+		liveExpressToolItem.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
-				getLiveAnimationController().simulateExpress();
+				getLiveAnimationController().runSimulationExpress();
 			}
 		});
 
-		toolItem = new ToolItem(toolBar, SWT.PUSH);
-		toolItem.setToolTipText("Stop");
-	    toolItem.setImage(AnimationPlugin.getImageDescriptor("icons/stopsim.gif").createImage());
-		toolItem.addSelectionListener(new SelectionAdapter() {
+		liveStopToolItem = new ToolItem(liveToolBar, SWT.PUSH);
+		liveStopToolItem.setEnabled(false);
+		liveStopToolItem.setToolTipText("Stop");
+		liveStopToolItem.setImage(AnimationPlugin.getImageDescriptor(ICONS_STOPSIM_GIF).createImage());
+		liveStopToolItem.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
-				getLiveAnimationController().simulateStop();
+				getLiveAnimationController().stopSimulation();
 			}
 		});
 
-		toolItem = new ToolItem(toolBar, SWT.PUSH);
-		toolItem.setToolTipText("Finish");
-	    toolItem.setImage(AnimationPlugin.getImageDescriptor("icons/finish.gif").createImage());
-		toolItem.addSelectionListener(new SelectionAdapter() {
+		liveFinishToolItem = new ToolItem(liveToolBar, SWT.PUSH);
+		liveFinishToolItem.setToolTipText("Finish");
+	    liveFinishToolItem.setImage(AnimationPlugin.getImageDescriptor(ICONS_FINISH_GIF).createImage());
+		liveFinishToolItem.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				getLiveAnimationController().finishSimulation();
 			}
@@ -209,7 +223,7 @@ public class LiveAnimationEditor extends ReplayAnimationEditor implements ILiveA
 		//toolBar.setSize(toolBar.computeSize(SWT.DEFAULT, SWT.DEFAULT)); XXX does not work
 
 		CoolItem coolItem = new CoolItem(coolBar, SWT.NONE);
-		coolItem.setControl(toolBar);
+		coolItem.setControl(liveToolBar);
 
 		coolItem.setSize(new Point(270, COOLBAR_HEIGHT));
 	}
@@ -222,11 +236,32 @@ public class LiveAnimationEditor extends ReplayAnimationEditor implements ILiveA
 		
 		animationController = new LiveAnimationController(canvas);
 		animationController.addAnimationListener(this);
-		animationController.init();
+		animationController.restart();
 	}
 
 	protected LiveAnimationController getLiveAnimationController() {
 		return ((LiveAnimationController)animationController);
+	}
+
+	@Override
+	public void controllerStateChanged() {		
+		super.controllerStateChanged();
+
+		if (getLiveAnimationController().isRunning() && getLiveAnimationController().isRunningLive())
+			liveStopToolItem.setEnabled(true);
+		else
+			liveStopToolItem.setEnabled(false);
+		
+		if (getLiveAnimationController().isSimulationFinished()) {
+			liveRestartToolItem.setEnabled(true);
+
+			liveStopToolItem.setEnabled(false);
+			liveStepToolItem.setEnabled(false);
+			liveRunToolItem.setEnabled(false);
+			liveFastToolItem.setEnabled(false);
+			liveExpressToolItem.setEnabled(false);
+			liveFinishToolItem.setEnabled(false); 
+		}
 	}
 
 	public void livePositionChanged(long eventNumber, double simulationTime, long animationNumber, double animationTime) {

@@ -43,6 +43,8 @@ public class ReplayAnimationEditor extends EditorPart implements IReplayAnimatio
 	protected ReplayAnimationController animationController;
 
 	protected CoolBar coolBar;
+	protected ToolBar replayToolBar;
+	protected ToolItem replayStopToolItem;
 	protected Text replayEventNumberWidget;
 	protected Text replaySimulationTimeWidget;
 	protected Text replayAnimationNumberWidget;
@@ -86,74 +88,75 @@ public class ReplayAnimationEditor extends EditorPart implements IReplayAnimatio
 
 	protected void createNavigationToolbar() {
 		// navigation tool bar
-		ToolBar toolBar = new ToolBar(coolBar, SWT.NONE);
+		replayToolBar = new ToolBar(coolBar, SWT.NONE);
 	
-	    ToolItem toolItem = new ToolItem(toolBar, SWT.PUSH);
+	    ToolItem toolItem = new ToolItem(replayToolBar, SWT.PUSH);
 	    toolItem.setToolTipText("Begin");
 	    toolItem.setImage(AnimationPlugin.getImageDescriptor(ICONS_REWIND_GIF).createImage());
 	    toolItem.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
-				animationController.gotoBegin();
+				animationController.gotoAnimationBegin();
 			}
 	    });
 	
-	    toolItem = new ToolItem(toolBar, SWT.PUSH);
+	    toolItem = new ToolItem(replayToolBar, SWT.PUSH);
 	    toolItem.setToolTipText("Back");
 	    toolItem.setImage(AnimationPlugin.getImageDescriptor(ICONS_BACKPLAY_GIF).createImage());
 	    toolItem.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
-				animationController.animateBack();
+				animationController.runAnimationBack();
 			}
 	    });
 	
-	    toolItem = new ToolItem(toolBar, SWT.PUSH);
+	    toolItem = new ToolItem(replayToolBar, SWT.PUSH);
 	    toolItem.setToolTipText("Backstep");
 	    toolItem.setImage(AnimationPlugin.getImageDescriptor(ICONS_BACKSTEP_GIF).createImage());
 	    toolItem.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
-				animationController.animateBackStep();
+				animationController.stepAnimationBack();
 			}
 	    });
 	    
-	    toolItem = new ToolItem(toolBar, SWT.PUSH);
-	    toolItem.setToolTipText("Stop");
-	    toolItem.setImage(AnimationPlugin.getImageDescriptor(ICONS_STOP_GIF).createImage());
-	    toolItem.addSelectionListener(new SelectionAdapter() {
+	    replayStopToolItem = new ToolItem(replayToolBar, SWT.PUSH);
+	    replayStopToolItem.setEnabled(false);
+	    replayStopToolItem.setToolTipText("Stop");
+	    replayStopToolItem.setImage(AnimationPlugin.getImageDescriptor(ICONS_STOP_GIF).createImage());
+	    replayStopToolItem.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
-				animationController.animateStop();
+				animationController.stopAnimation();
 			}
 	    });
 	
-	    toolItem = new ToolItem(toolBar, SWT.PUSH);
+	    toolItem = new ToolItem(replayToolBar, SWT.PUSH);
 	    toolItem.setToolTipText("Step");
 	    toolItem.setImage(AnimationPlugin.getImageDescriptor(ICONS_STEP_GIF).createImage());
 	    toolItem.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
-				animationController.animateStep();
+				animationController.stepAnimation();
 			}
 	    });
 	
-	    toolItem = new ToolItem(toolBar, SWT.PUSH);
+	    toolItem = new ToolItem(replayToolBar, SWT.PUSH);
 	    toolItem.setToolTipText("Play");
 	    toolItem.setImage(AnimationPlugin.getImageDescriptor(ICONS_PLAY_GIF).createImage());
 	    toolItem.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
-				animationController.animatePlay();
+				animationController.runAnimation();
 			}
 	    });
 	
-	    toolItem = new ToolItem(toolBar, SWT.PUSH);
+	    toolItem = new ToolItem(replayToolBar, SWT.PUSH);
 	    toolItem.setToolTipText("End");
 	    toolItem.setImage(AnimationPlugin.getImageDescriptor(ICONS_GOTOEND_GIF).createImage());
 	    toolItem.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
-				animationController.gotoEnd();
+				animationController.gotoAnimationEnd();
 			}
 	    });
 	    
 	    // navigation buttons
 		CoolItem coolItem = new CoolItem(coolBar, SWT.NONE);
-		coolItem.setControl(toolBar);
+		coolItem.setControl(replayToolBar);
 		//toolBar.setSize(toolBar.computeSize(SWT.DEFAULT, SWT.DEFAULT));
 		coolItem.setSize(new Point(180, COOLBAR_HEIGHT));
 	}
@@ -279,7 +282,11 @@ public class ReplayAnimationEditor extends EditorPart implements IReplayAnimatio
 		
 		animationController = new ReplayAnimationController(canvas, ((IFileEditorInput)getEditorInput()).getFile());
 		animationController.addAnimationListener(this);
-		animationController.init();
+		animationController.restart();
+	}
+
+	protected void setReplayToolbarEnabled(boolean enable) {
+		replayToolBar.setEnabled(enable);		
 	}
 
 	@Override
@@ -288,7 +295,7 @@ public class ReplayAnimationEditor extends EditorPart implements IReplayAnimatio
 	
 	@Override
 	public void dispose() {
-		animationController.animateStop();
+		animationController.stopAnimation();
 		animationController.shutdown();
 		super.dispose();
 	}
@@ -311,6 +318,13 @@ public class ReplayAnimationEditor extends EditorPart implements IReplayAnimatio
 	public void doSaveAs() {
 	}
 
+	public void controllerStateChanged() {		
+		if (animationController.isRunning())
+			replayStopToolItem.setEnabled(true);
+		else
+			replayStopToolItem.setEnabled(false);
+	}
+
 	public void replayPositionChanged(long eventNumber, double simulationTime, long animationNumber, double animationTime) {
 		valueChanged(replayEventNumberWidget, eventNumber);
 		valueChanged(replaySimulationTimeWidget, simulationTime);
@@ -318,7 +332,7 @@ public class ReplayAnimationEditor extends EditorPart implements IReplayAnimatio
 		valueChanged(replayAnimationTimeWidget, animationTime);
 	}
 
-	public void valueChanged(Text widget, Number newValue) {
+	protected void valueChanged(Text widget, Number newValue) {
 		Number oldValue = null;
 		
 		try {

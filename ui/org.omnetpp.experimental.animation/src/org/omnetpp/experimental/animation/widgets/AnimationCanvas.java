@@ -30,4 +30,8 @@ public class AnimationCanvas extends Canvas {
 	public IFigure getRootFigure() {
 		return contents;
 	}
+
+	public void reset() {
+		contents.erase();
+	}
 }

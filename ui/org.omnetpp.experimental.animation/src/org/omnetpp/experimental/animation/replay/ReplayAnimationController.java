@@ -78,6 +78,11 @@ public class ReplayAnimationController implements IAnimationEnvironment {
 	protected boolean forward;
 	
 	/**
+	 * Specifies whether the animation is currently running or not.
+	 */
+	protected boolean isRunning;
+	
+	/**
 	 * The current event number. It is updated periodically from a timer callback during animation.
 	 * This is where the animation is right now which may be different from the live event number.
 	 */
@@ -236,35 +241,37 @@ public class ReplayAnimationController implements IAnimationEnvironment {
 	public ReplayAnimationController(AnimationCanvas canvas, IFile file) {
 		this.canvas = canvas;
 		this.file = file;
-		this.figureMap = new HashMap<Object, Object>(); 
-		this.forward = true;
-		this.timerQueue = new TimerQueue();
-		this.animationTimer = new AnimationTimer();
-		this.nextStopSimulationTime = -1;
-		this.nextStopEventNumber = -1;
-		this.nextStopAnimationNumber = -1;
-		this.realTimeToAnimationTimeScale = 1;
-		this.defaultRealTimeToAnimationTimeScale = NORMAL_REAL_TIME_TO_ANIMATION_TIME_SCALE;
-		this.eventNumber = -1;
-		this.simulationTime = -1;
-		this.animationNumber = -1;
-		this.animationTime = -1;
-		this.modelAnimationTime = -1;
-		this.beginEventNumber = 0;
-		this.beginSimulationTime = -1;
-		this.beginAnimationNumber = 0;
-		this.beginAnimationTime = -1;
-		this.endEventNumber = -1;
-		this.endSimulationTime = -1;
-		this.endAnimationNumber = -1;
-		this.endAnimationTime = -1;
 	}
 
 	/**
 	 * Initialize the controller.
 	 */
-	public void init() {
+	public void restart() {
+		figureMap = new HashMap<Object, Object>(); 
+		forward = true;
+		isRunning = false;
+		timerQueue = new TimerQueue();
+		animationTimer = new AnimationTimer();
+		nextStopSimulationTime = -1;
+		nextStopEventNumber = -1;
+		nextStopAnimationNumber = -1;
+		realTimeToAnimationTimeScale = 1;
+		defaultRealTimeToAnimationTimeScale = NORMAL_REAL_TIME_TO_ANIMATION_TIME_SCALE;
+		eventNumber = -1;
+		simulationTime = -1;
+		animationNumber = -1;
+		animationTime = -1;
+		modelAnimationTime = -1;
+		beginEventNumber = 0;
+		beginSimulationTime = -1;
+		beginAnimationNumber = 0;
+		beginAnimationTime = -1;
+		endEventNumber = -1;
+		endSimulationTime = -1;
+		endAnimationNumber = -1;
+		endAnimationTime = -1;
 		timerQueue.start();
+		canvas.reset();
 	}
 
 	/**
@@ -316,6 +323,29 @@ public class ReplayAnimationController implements IAnimationEnvironment {
 	 */
 	public void setAnimationMode(AnimationMode animationMode) {
 		this.animationMode = animationMode;
+	}
+
+	/**
+	 * Specifies the direction of the animation.
+	 */
+	public boolean isForward() {
+		return forward;
+	}
+	
+	/**
+	 * Specifies whether tha animation is currently running.
+	 */
+	public boolean isRunning() {
+		return isRunning;
+	}
+
+	/**
+	 * Changes the state of the animation.
+	 */
+	public void setRunning(boolean isRunning) {
+		this.isRunning = isRunning;
+		
+		controllerStateChanged();
 	}
 
 	/**
@@ -632,63 +662,58 @@ public class ReplayAnimationController implements IAnimationEnvironment {
 	}
 
 	/**
-	 * Starts animation backward from the current simulation time with normal speed.
+	 * Starts animation backward from the current position with normal speed.
 	 * Asynchronous operation.
 	 */
-	public void animateBack() {
+	public void runAnimationBack() {
 		animateStart(false, NORMAL_REAL_TIME_TO_ANIMATION_TIME_SCALE, 0, 0, 0);
 	}
 
 	/**
-	 * Starts animation backward from the current simulation time with normal speed.
+	 * Starts animation backward from the current position with normal speed and stops at the next event number.
 	 * Asynchronous operation.
 	 */
-	public void animateBackStep() {
+	public void stepAnimationBack() {
 		animateStart(false, NORMAL_REAL_TIME_TO_ANIMATION_TIME_SCALE, eventNumber - 1, 0, 0);
 	}
 	
 	/**
-	 * Starts animation forward from the current event number and stops at the next event number.
+	 * Starts animation forward from the current position with normal speed.
 	 * Asynchronous operation.
 	 */
-	public void animateStep() {
-		animateStart(true, NORMAL_REAL_TIME_TO_ANIMATION_TIME_SCALE, eventNumber + 1, -1, -1);
-	}
-	
-	/**
-	 * Starts animation forward from the current simulation time with normal speed.
-	 * Asynchronous operation.
-	 */
-	public void animatePlay() {
+	public void runAnimation() {
 		animateStart(true, NORMAL_REAL_TIME_TO_ANIMATION_TIME_SCALE, -1, -1, -1);
 	}
 	
 	/**
-	 * Starts animation forward from the current simulation time with normal speed.
+	 * Starts animation forward from the current position and stops at the next event number.
+	 * Asynchronous operation.
+	 */
+	public void stepAnimation() {
+		animateStart(true, NORMAL_REAL_TIME_TO_ANIMATION_TIME_SCALE, eventNumber + 1, -1, -1);
+	}
+	
+	/**
+	 * Starts animation forward from the current position with normal speed.
 	 * Animation stops when the given simulation time is reached.
 	 * Asynchronous operation.
 	 */
-	public void animateToSimulationTime(double simulationTime) {
+	public void runAnimationToSimulationTime(double simulationTime) {
 		animateStart(true, NORMAL_REAL_TIME_TO_ANIMATION_TIME_SCALE, -1, simulationTime, -1);
 	}
 
 	/**
 	 * Temporarily stops animation.
 	 */
-	public void animateStop() {
-		forward = true;
-		nextStopEventNumber = -1;
-		nextStopSimulationTime = -1;
-		nextStopAnimationNumber = -1;
-		
-		if (timerQueue.hasTimer(animationTimer))
-			timerQueue.removeTimer(animationTimer);
+	public void stopAnimation() {
+		animateStop();
+		animateAtCurrentPosition();
 	}
 
 	/**
 	 * Stops animation and sets the current event number to 0.
 	 */
-	public void gotoBegin() {
+	public void gotoAnimationBegin() {
 		animateStop();
 		gotoEventNumber(beginEventNumber);
 	}
@@ -696,7 +721,7 @@ public class ReplayAnimationController implements IAnimationEnvironment {
 	/**
 	 * Stops animation and sets the current simulation time to the end of the animation.
 	 */
-	public void gotoEnd() {
+	public void gotoAnimationEnd() {
 		animateStop();
 		gotoSimulationTime(Double.MAX_VALUE);
 	}
@@ -735,20 +760,6 @@ public class ReplayAnimationController implements IAnimationEnvironment {
 		timerQueue.resetTimer(animationTimer);
 		setAnimationTime(animationTime);
 		animateAtCurrentPosition();
-	}
-
-	/**
-	 * Goes to the live position if applicable.
-	 */
-	public void gotoLivePosition() {
-		throw new RuntimeException("Not a live animation");
-	}
-
-	/**
-	 * Tells if the current position is the live position or not.
-	 */
-	public boolean isAtLivePosition() {
-		return false;
 	}
 
 	/**
@@ -845,6 +856,7 @@ public class ReplayAnimationController implements IAnimationEnvironment {
 		this.nextStopEventNumber = nextStopEventNumber;
 		this.nextStopSimulationTime = nextStopSimulationTime;
 		this.nextStopAnimationNumber = nextStopAnimationNumber;
+		setRunning(true);
 		
 		if ((forward && (endSimulationTime == -1 || simulationTime < endSimulationTime)) ||
 			(!forward && simulationTime > 0))
@@ -858,6 +870,17 @@ public class ReplayAnimationController implements IAnimationEnvironment {
 		}
 	}
 	
+	protected void animateStop() {
+		setRunning(false);
+		forward = true;
+		nextStopEventNumber = -1;
+		nextStopSimulationTime = -1;
+		nextStopAnimationNumber = -1;
+		
+		if (timerQueue.hasTimer(animationTimer))
+			timerQueue.removeTimer(animationTimer);
+	}
+
 	/**
 	 * Updates the animation model according to the new animation time. This will result in a bunch of undo/redo
 	 * calls on the appropriate animation primitives. First the undo calls in reverse order and then the redo calls
@@ -905,6 +928,14 @@ public class ReplayAnimationController implements IAnimationEnvironment {
 	protected void positionChanged() {
 		for (IReplayAnimationListener listener : animationListeners)
 			listener.replayPositionChanged(eventNumber, simulationTime, animationNumber, animationTime);
+	}
+
+	/**
+	 * Notifies listeners about controller state change.
+	 */
+	protected void controllerStateChanged() {
+		for (IReplayAnimationListener listener : animationListeners)
+			listener.controllerStateChanged();
 	}
 
 	/**
