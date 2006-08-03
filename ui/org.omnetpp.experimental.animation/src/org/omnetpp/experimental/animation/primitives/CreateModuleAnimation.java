@@ -34,7 +34,7 @@ public class CreateModuleAnimation extends AbstractAnimationPrimitive {
 	
 	public void redo() {
 		ReplayModule parentModule = getParentModule();
-		if (parentModule != null) {
+		if (parentModule == animationEnvironment.getSimulation().getRootModule()) { //FIXME
 			SubmoduleFigure figure = new SubmoduleFigure();
 			animationEnvironment.setFigure(module, figure);
 			getCompoundModuleFigure(parentModule).addSubmoduleFigure(figure);
@@ -55,7 +55,7 @@ public class CreateModuleAnimation extends AbstractAnimationPrimitive {
 			parentModule.removeSubmodule(getReplayModule());
 		}
 
-		animationEnvironment.setFigure(module, null);
+		animationEnvironment.setFigure(module, null); //XXX move inside if???
 		getReplaySimulation().removeModule(module.getId());
 	}
 

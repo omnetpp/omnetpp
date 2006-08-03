@@ -33,8 +33,11 @@ public class SetConnectionDisplayStringAnimation extends AbstractAnimationPrimit
 	}
 	
 	public void redo() {
-		ConnectionFigure connectionFigure = (ConnectionFigure)animationEnvironment.getFigure(connectionId);
-		connectionFigure.setDisplayString(displayString);
+//XXX		
+//		if (animationEnvironment.getSimulation().getModuleByID(connectionId.getModuleId()).getParentModule()==animationEnvironment.getSimulation().getRootModule()) { //FIXME
+//			ConnectionFigure connectionFigure = (ConnectionFigure)animationEnvironment.getFigure(connectionId);
+//			connectionFigure.setDisplayString(displayString);
+//		}
 	}
 
 	public void undo() {

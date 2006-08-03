@@ -39,16 +39,20 @@ public class HandleMessageAnimation extends AbstractAnimationPrimitive {
 	}
 	
 	public void redo() {
-		addFigure(ellipse);
+		if (ellipse.getParent()!=getRootFigure())  //FIXME 
+			addFigure(ellipse);
 	}
 
 	public void undo() {
-		removeFigure(ellipse);
+		if (ellipse.getParent()==getRootFigure())  //FIXME 
+			removeFigure(ellipse);
 	}
 
 	public void animateAt(long eventNumber, double simulationTime, long animationNumber, double animationTime) {
 		IRuntimeModule module = animationEnvironment.getSimulation().getModuleByID(moduleId);
-		ModuleFigure moduleFigure = (ModuleFigure)animationEnvironment.getFigure(module);
-		setConstraint(ellipse, new Rectangle(moduleFigure.getLocation().x + 3, moduleFigure.getLocation().y + 3, 7, 7));
+		if (module.getParentModule()==animationEnvironment.getSimulation().getRootModule()) { //FIXME
+			ModuleFigure moduleFigure = (ModuleFigure)animationEnvironment.getFigure(module);
+			setConstraint(ellipse, new Rectangle(moduleFigure.getLocation().x + 3, moduleFigure.getLocation().y + 3, 7, 7));
+		}
 	}
 }

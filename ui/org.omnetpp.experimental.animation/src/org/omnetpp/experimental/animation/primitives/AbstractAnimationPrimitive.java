@@ -107,4 +107,10 @@ public abstract class AbstractAnimationPrimitive implements IAnimationPrimitive 
 	protected void setConstraint(IFigure figure, Rectangle constraint) {
 		getLayoutManager().setConstraint(figure, constraint);
 	}
+
+	protected CompoundModuleFigure getEnclosingModuleFigure() {
+		IRuntimeModule enclosingModule = animationEnvironment.getSimulation().getRootModule(); //FIXME
+		CompoundModuleFigure enclosingModuleFigure = getCompoundModuleFigure(enclosingModule);
+		return enclosingModuleFigure;
+	}
 }

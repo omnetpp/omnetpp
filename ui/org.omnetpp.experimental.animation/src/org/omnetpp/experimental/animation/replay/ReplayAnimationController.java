@@ -44,51 +44,51 @@ import org.omnetpp.figures.CompoundModuleFigure;
 public class ReplayAnimationController implements IAnimationEnvironment {
 	protected final static double NORMAL_REAL_TIME_TO_ANIMATION_TIME_SCALE = 0.1;
 	protected final static double FAST_REAL_TIME_TO_ANIMATION_TIME_SCALE = 1;
-	
+
 	/**
 	 * A list of timers used during the animation. The queue contains the simulationTimer and
 	 * animation primitives may add their own timers here. As real time goes by the timer queue
 	 * will call its timers based on their settings, so that they can update their figures.
 	 */
 	protected TimerQueue timerQueue;
-	
+
 	/**
 	 * The main timer that is responsible for updating the event number and simulation time during animation.
 	 */
 	protected AnimationTimer animationTimer;
-	
+
 	/**
 	 * The list of loaded animation primitives. This may contain more animation primitives than
 	 * that is rendered to the canvas.
 	 */
 	protected ArrayList<IAnimationPrimitive> animationPrimitives = new ArrayList<IAnimationPrimitive>(); // holds all animation primitives since last key frame
-	
+
 	/**
 	 * The list of HandleMessageAnimations in the order of event numbers.
 	 */
 	protected ArrayList<HandleMessageAnimation> handleMessageAnimationPrimitives = new ArrayList<HandleMessageAnimation>();
-	
+
 	/**
 	 * The simulation is either a LiveSimulation or a ReplaySimulation.
 	 */
 	protected IRuntimeSimulation simulation;
-	
+
 	/**
 	 * Direction of the simulation in time.
 	 */
 	protected boolean forward;
-	
+
 	/**
 	 * Specifies whether the animation is currently running or not.
 	 */
 	protected boolean isRunning;
-	
+
 	/**
 	 * The current event number. It is updated periodically from a timer callback during animation.
 	 * This is where the animation is right now which may be different from the live event number.
 	 */
 	protected long eventNumber;
-	
+
 	/**
 	 * The current simulation time. It is updated periodically from a timer callback during animation.
 	 * This is where the animation is right now which may be different from the live simulation time.
@@ -99,28 +99,28 @@ public class ReplayAnimationController implements IAnimationEnvironment {
 	 * The current animation number.
 	 */
 	protected long animationNumber;
-	
+
 	/**
 	 * The current animation time. Animation time is always proportional to real time but may be
 	 * non linear to simulation time.
 	 */
 	protected double animationTime;
-	
+
 	/**
 	 * The animation time when the animation was last started or continued.
 	 */
 	protected double lastStartAnimationTime;
-	
+
 	/**
 	 * The animation time which is reflected in the model state.
 	 */
 	protected double modelAnimationTime;
-	
+
 	/**
 	 * The begin of the whole simulation if known, otherwise -1.
 	 */
 	protected double beginSimulationTime;
-	
+
 	/**
 	 * The begin of the whole simulation if known, otherwise -1.
 	 */
@@ -135,12 +135,12 @@ public class ReplayAnimationController implements IAnimationEnvironment {
 	 * The begin of the whole simulation if known, otherwise -1.
 	 */
 	protected double beginAnimationTime;
-	
+
 	/**
 	 * The end of the whole simulation if known, otherwise -1.
 	 */
 	protected double endSimulationTime;
-	
+
 	/**
 	 * The end of the whole simulation if known, otherwise -1.
 	 */
@@ -155,27 +155,27 @@ public class ReplayAnimationController implements IAnimationEnvironment {
 	 * The end of the whole simulation if known, otherwise -1.
 	 */
 	protected double endAnimationTime;
-	
+
 	/**
 	 * The real time when the animation was last started or continued.
 	 */
 	protected double lastStartRealTime;
-	
+
 	/**
 	 * The event number when the animation will be next stopped or -1 if there's no such limit.
 	 */
 	protected long nextStopEventNumber;
-	
+
 	/**
 	 * The simulation time when the animation will be next stopped or -1 if there's no such limit.
 	 */
 	protected double nextStopSimulationTime;
-	
+
 	/**
 	 * The animation number when the animation will be next stopped or -1 if there's no such limit.
 	 */
 	protected long nextStopAnimationNumber;
-	
+
 	/**
 	 * This multiplier is applied to the default multiplier. It can be set from the GUI and defaults to 1.
 	 */
@@ -185,7 +185,7 @@ public class ReplayAnimationController implements IAnimationEnvironment {
 	 * This is the default multiplier to convert real time to animation time.
 	 */
 	protected double defaultRealTimeToAnimationTimeScale;
-	
+
 	/**
 	 * The widget used to display the animation figures.
 	 */
@@ -196,12 +196,12 @@ public class ReplayAnimationController implements IAnimationEnvironment {
 	 * may communicate with each other.
 	 */
 	protected Map<Object, Object> figureMap;
-	
+
 	/**
 	 * The log file opened in the editor.
 	 */
 	protected IFile file;
-	
+
 	/**
 	 * Animation listeners are notified for various events, such as changing the event number or the simulation time.
 	 */
@@ -222,7 +222,7 @@ public class ReplayAnimationController implements IAnimationEnvironment {
 	 * Last event's simulation time read from the log file.
 	 */
 	protected double loadSimulationTime;
-	
+
 	/**
 	 * Last animation number used during reading from the log file.
 	 */
@@ -232,7 +232,7 @@ public class ReplayAnimationController implements IAnimationEnvironment {
 	 * The current animation mode.
 	 */
 	protected AnimationMode animationMode = AnimationMode.EVENT;
-	
+
 	public enum AnimationMode {
 		LINEAR,		// simulation time and animation time are proportional
 		EVENT,		// one event is mapped to one animation time unit
@@ -248,7 +248,7 @@ public class ReplayAnimationController implements IAnimationEnvironment {
 	 * Initialize the controller.
 	 */
 	public void restart() {
-		figureMap = new HashMap<Object, Object>(); 
+		figureMap = new HashMap<Object, Object>();
 		forward = true;
 		isRunning = false;
 		timerQueue = new TimerQueue();
@@ -281,21 +281,21 @@ public class ReplayAnimationController implements IAnimationEnvironment {
 	public void shutdown() {
 		timerQueue.stop();
 	}
-	
+
 	/**
 	 * Returns the canvas on which the animation figures will be drawn.
 	 */
 	public AnimationCanvas getCanvas() {
 		return canvas;
 	}
-	
+
 	/**
 	 * Returns the canvas'es root figure.
 	 */
 	public IFigure getRootFigure() {
 		return canvas.getRootFigure();
 	}
-	
+
 	/**
 	 * Returns the simulation attached to this controller.
 	 * If an underlying simulation kernel is running then it is a LiveSimulation.
@@ -332,7 +332,7 @@ public class ReplayAnimationController implements IAnimationEnvironment {
 	public boolean isForward() {
 		return forward;
 	}
-	
+
 	/**
 	 * Specifies whether tha animation is currently running.
 	 */
@@ -345,7 +345,7 @@ public class ReplayAnimationController implements IAnimationEnvironment {
 	 */
 	public void setRunning(boolean isRunning) {
 		this.isRunning = isRunning;
-		
+
 		controllerStateChanged();
 	}
 
@@ -362,14 +362,14 @@ public class ReplayAnimationController implements IAnimationEnvironment {
 	public void setFigure(Object key, Object value) {
 		figureMap.put(key, value);
 	}
-	
+
 	/**
 	 * Returns the current event number.
 	 */
 	public long getEventNumber() {
 		return eventNumber;
 	}
-	
+
 	/**
 	 * Changes the replay event number and notifies listeners.
 	 */
@@ -382,54 +382,54 @@ public class ReplayAnimationController implements IAnimationEnvironment {
 		animationTime = getAnimationTimeForEventNumber(eventNumber);
 		animationNumber = getAnimationNumberForEventNumber(eventNumber);
 	}
-	
+
 	/**
 	 * Returns the current simulation time.
 	 */
 	public double getSimulationTime() {
 		return simulationTime;
 	}
-	
+
 	/**
 	 * Changes the replay simulation time and notifies listeners.
 	 */
 	protected void setSimulationTime(double simulationTime) {
 		this.simulationTime = simulationTime;
 		loadAnimationPrimitivesForPosition();
-		
+
 		// calculate dependent state
 		eventNumber = getLastEventNumberForSimulationTime(simulationTime);
 		animationTime = getAnimationTimeForSimulationTime(simulationTime);
 		animationNumber = getAnimationNumberForAnimationTime(animationTime);
 	}
-	
+
 	/**
 	 * Returns the current animation number.
 	 */
 	public long getAnimationNumber() {
 		return animationNumber;
 	}
-	
+
 	/**
 	 * Changes the replay animation number.
 	 */
 	protected void setAnimationNumber(long animationNumber) {
 		this.animationNumber = animationNumber;
 		loadAnimationPrimitivesForPosition();
-		
+
 		// calculate dependent state
 		animationTime = getAnimationTimeForAnimationNumber(animationNumber);
 		simulationTime = getSimulationTimeForAnimationTime(animationTime);
 		eventNumber = getLastEventNumberForSimulationTime(simulationTime);
 	}
-	
+
 	/**
 	 * Returns the current animation time.
 	 */
 	public double getAnimationTime() {
 		return animationTime;
 	}
-	
+
 	/**
 	 * Changes the replay animation time.
 	 */
@@ -441,7 +441,7 @@ public class ReplayAnimationController implements IAnimationEnvironment {
 		simulationTime = getSimulationTimeForAnimationTime(animationTime);
 		animationNumber = getAnimationNumberForAnimationTime(animationTime);
 		eventNumber = getEventNumberForAnimationNumber(animationNumber);
-	}	
+	}
 
 	/**
 	 * Returns the current real time in seconds.
@@ -449,14 +449,14 @@ public class ReplayAnimationController implements IAnimationEnvironment {
 	public double getRealTime() {
 		return System.currentTimeMillis() / 1000.0;
 	}
-	
+
 	/**
 	 * Returns the scaling factor between animation time and real time.
 	 */
 	public double getRealTimeToAnimationTimeScale() {
 		return realTimeToAnimationTimeScale;
 	}
-	
+
 	/**
 	 * Changes the scaling factor between animation time and real time.
 	 */
@@ -466,7 +466,7 @@ public class ReplayAnimationController implements IAnimationEnvironment {
 		lastStartAnimationTime = getAnimationTime();
 		timerQueue.resetTimer(animationTimer);
 	}
-	
+
 	/**
 	 * Returns the event number of the last event that occured before the given simulation time.
 	 * If there are more than one event having the same simulation time then the first of them is returned.
@@ -485,13 +485,13 @@ public class ReplayAnimationController implements IAnimationEnvironment {
 				return animationPrimitives.get(index).getBeginSimulationTime();
 			}
 		}, simulationTime, false);
-		
+
 		if (index != -1)
 			return animationPrimitives.get(index).getEventNumber();
 		else
 			return -1;
 	}
-	
+
 	/**
 	 * Returns the event number of the last event that occured before the given animation time.
 	 * If there are more than one event having the same animation time then the last of them is returned.
@@ -505,7 +505,7 @@ public class ReplayAnimationController implements IAnimationEnvironment {
 			case NON_LINEAR:
 				throw new RuntimeException();
 		}
-		
+
 		throw new RuntimeException("Unreacheable code reached");
 	}
 
@@ -540,13 +540,13 @@ public class ReplayAnimationController implements IAnimationEnvironment {
 				return animationPrimitives.get(index).getAnimationNumber();
 			}
 		}, animationNumber, false);
-		
+
 		if (index != -1)
 			return animationPrimitives.get(index).getBeginSimulationTime();
 		else
 			return -1;
 	}
-	
+
 	/**
 	 * Returns the simulation time for the given animation time.
 	 */
@@ -563,7 +563,7 @@ public class ReplayAnimationController implements IAnimationEnvironment {
 			case NON_LINEAR:
 				throw new RuntimeException();
 		}
-	
+
 		throw new RuntimeException("Unreacheable code reached");
 	}
 
@@ -580,7 +580,7 @@ public class ReplayAnimationController implements IAnimationEnvironment {
 			case NON_LINEAR:
 				throw new RuntimeException();
 		}
-		
+
 		throw new RuntimeException("Unreacheable code reached");
 	}
 
@@ -616,7 +616,7 @@ public class ReplayAnimationController implements IAnimationEnvironment {
 				// TODO:
 				throw new RuntimeException();
 		}
-		
+
 		throw new RuntimeException("Unreacheable code reached");
 	}
 
@@ -633,7 +633,7 @@ public class ReplayAnimationController implements IAnimationEnvironment {
 				// TODO:
 				throw new RuntimeException();
 		}
-	
+
 		throw new RuntimeException("Unreacheable code reached");
 	}
 
@@ -651,7 +651,7 @@ public class ReplayAnimationController implements IAnimationEnvironment {
 				// TODO:
 				throw new RuntimeException();
 		}
-	
+
 		throw new RuntimeException("Unreacheable code reached");
 	}
 
@@ -677,7 +677,7 @@ public class ReplayAnimationController implements IAnimationEnvironment {
 	public void stepAnimationBack() {
 		animateStart(false, NORMAL_REAL_TIME_TO_ANIMATION_TIME_SCALE, eventNumber - 1, 0, 0);
 	}
-	
+
 	/**
 	 * Starts animation forward from the current position with normal speed.
 	 * Asynchronous operation.
@@ -685,7 +685,7 @@ public class ReplayAnimationController implements IAnimationEnvironment {
 	public void runAnimation() {
 		animateStart(true, NORMAL_REAL_TIME_TO_ANIMATION_TIME_SCALE, -1, -1, -1);
 	}
-	
+
 	/**
 	 * Starts animation forward from the current position and stops at the next event number.
 	 * Asynchronous operation.
@@ -693,7 +693,7 @@ public class ReplayAnimationController implements IAnimationEnvironment {
 	public void stepAnimation() {
 		animateStart(true, NORMAL_REAL_TIME_TO_ANIMATION_TIME_SCALE, eventNumber + 1, -1, -1);
 	}
-	
+
 	/**
 	 * Starts animation forward from the current position with normal speed.
 	 * Animation stops when the given simulation time is reached.
@@ -726,7 +726,7 @@ public class ReplayAnimationController implements IAnimationEnvironment {
 		animateStop();
 		gotoSimulationTime(Double.MAX_VALUE);
 	}
-	
+
 	/**
 	 * Goes to the given simulation time without animating.
 	 */
@@ -735,7 +735,7 @@ public class ReplayAnimationController implements IAnimationEnvironment {
 		setSimulationTime(simulationTime);
 		animateAtCurrentPosition();
 	}
-	
+
 	/**
 	 * Goes to the given event number without animating.
 	 */
@@ -822,14 +822,14 @@ public class ReplayAnimationController implements IAnimationEnvironment {
 			setSimulationTime(nextStopSimulationTime);
 			animateStop();
 		}
-		
+
 		// stop at animation number
 		if (nextStopAnimationNumber != -1 && forward ? animationNumber >= nextStopAnimationNumber : animationNumber < nextStopAnimationNumber) {
 			setAnimationNumber(nextStopAnimationNumber);
 			animateStop();
 		}
 	}
-	
+
 	/**
 	 * The simulation timer is responsible to change simulation time as real time elapses.
 	 */
@@ -858,26 +858,26 @@ public class ReplayAnimationController implements IAnimationEnvironment {
 		this.nextStopSimulationTime = nextStopSimulationTime;
 		this.nextStopAnimationNumber = nextStopAnimationNumber;
 		setRunning(true);
-		
+
 		if ((forward && (endSimulationTime == -1 || simulationTime < endSimulationTime)) ||
 			(!forward && simulationTime > 0))
 		{
 			timerQueue.resetTimer(animationTimer);
 			lastStartRealTime = getRealTime();
 			lastStartAnimationTime = animationTime;
-			
+
 			if (!timerQueue.hasTimer(animationTimer))
 				timerQueue.addTimer(animationTimer);
 		}
 	}
-	
+
 	protected void animateStop() {
 		setRunning(false);
 		forward = true;
 		nextStopEventNumber = -1;
 		nextStopSimulationTime = -1;
 		nextStopAnimationNumber = -1;
-		
+
 		if (timerQueue.hasTimer(animationTimer))
 			timerQueue.removeTimer(animationTimer);
 	}
@@ -891,7 +891,7 @@ public class ReplayAnimationController implements IAnimationEnvironment {
 		// TODO: maintain active animation primitives, call undo/redo incrementally by searching ordered animation primitives
 		ArrayList<IAnimationPrimitive> currentAnimationPrimitives = getAnimationPrimitivesForAnimationTime(oldAnimationTime);
 		java.util.Collections.reverse(currentAnimationPrimitives);
-		
+
 		for (IAnimationPrimitive animationPrimitive : currentAnimationPrimitives) {
 			double beginAnimationTime = animationPrimitive.getBeginAnimationTime();
 			double endAnimationTime = animationPrimitive.getEndAnimationTime();
@@ -903,23 +903,23 @@ public class ReplayAnimationController implements IAnimationEnvironment {
 		for (IAnimationPrimitive animationPrimitive : getAnimationPrimitivesForAnimationTime(newAnimationTime)) {
 			double beginAnimationTime = animationPrimitive.getBeginAnimationTime();
 			double endAnimationTime = animationPrimitive.getEndAnimationTime();
-			
+
 			if (oldAnimationTime < beginAnimationTime || endAnimationTime < oldAnimationTime)
 				animationPrimitive.redo();
 		}
 	}
-	
+
 	/**
 	 * Returns the list of animation primitives which are active at the given animation time.
 	 */
 	protected ArrayList<IAnimationPrimitive> getAnimationPrimitivesForAnimationTime(double animationTime) {
 		ArrayList<IAnimationPrimitive> collectedPrimitives = new ArrayList<IAnimationPrimitive>();
-		
+
 		// TODO: make this efficient
 		for (IAnimationPrimitive animationPrimitive : animationPrimitives)
 			if (animationPrimitive.getBeginAnimationTime() <= animationTime && animationTime <= animationPrimitive.getEndAnimationTime())
 				collectedPrimitives.add(animationPrimitive);
-		
+
 		return collectedPrimitives;
 	}
 
@@ -951,9 +951,9 @@ public class ReplayAnimationController implements IAnimationEnvironment {
 	 * by valueProvider. If exactly one is found,
 	 * returns that one. If more than one equal values are found, returns
 	 * the first one (if first==true) or the last one (if first==false) of them.
-	 * If none are found, returns the previous (if first==true) or the 
+	 * If none are found, returns the previous (if first==true) or the
 	 * following (if first==false) entry.
-	 *  
+	 *
 	 * @param valueProvider  provides search key
 	 * @param value  search for this value
 	 * @param first  return first or last among equal values
@@ -1006,7 +1006,7 @@ public class ReplayAnimationController implements IAnimationEnvironment {
 			return index;
 		}
 	}
-	
+
 	/**
 	 * Returns the nth animation primitive. Returns null if index falls outside of range.
 	 */
@@ -1032,13 +1032,13 @@ public class ReplayAnimationController implements IAnimationEnvironment {
 	protected ReplaySimulation getReplaySimulation() {
 		return (ReplaySimulation)simulation;
 	}
-	
+
 	/**
 	 * Stores a loaded animation primitive.
 	 */
 	protected void addAnimationPrimitive(IAnimationPrimitive animationPrimitive) {
 		animationPrimitives.add(animationPrimitive);
-		
+
 		if (animationPrimitive instanceof HandleMessageAnimation)
 			handleMessageAnimationPrimitives.add((HandleMessageAnimation)animationPrimitive);
 	}
@@ -1054,7 +1054,7 @@ public class ReplayAnimationController implements IAnimationEnvironment {
 
 			if (logFileReader == null)
 				logFileReader = new BufferedReader(new InputStreamReader(file.getContents()));
-			
+
 			while ((loadEventNumber <= eventNumber ||
 					loadSimulationTime <= simulationTime ||
 					loadAnimationNumber <= animationNumber ||
@@ -1064,14 +1064,14 @@ public class ReplayAnimationController implements IAnimationEnvironment {
 			{
 				lineCount++;
 				String[] tokens = splitLine(line);
-				
+
 				if (tokens.length == 0)
 					continue;
 				else if (tokens[0].equals("MC")) {
 					ReplayModule module = new ReplayModule();
 					module.setId(getIntegerToken(tokens, "id"));
 					module.setName(getToken(tokens, "n"));
-				
+
 					// FIXME: we show the first (root) module for now, should we get it as parameter?
 					if (simulation == null) {
 						initializeSimulation(module);
@@ -1091,7 +1091,7 @@ public class ReplayAnimationController implements IAnimationEnvironment {
 					loadEventNumber = getIntegerToken(tokens, "#");
 					loadSimulationTime = getDoubleToken(tokens, "t");
 					loadAnimationNumber++;
-					
+
 					// TODO: what if event numbers are not started from 0 or not continous?
 					IAnimationPrimitive handleMessageAnimationPrimitive = new HandleMessageAnimation(this, loadEventNumber, loadSimulationTime, loadAnimationNumber, getIntegerToken(tokens, "m"), null);
 
@@ -1130,14 +1130,17 @@ public class ReplayAnimationController implements IAnimationEnvironment {
 					ConnectionId connectionId = new ConnectionId(getIntegerToken(tokens, "sm"), getIntegerToken(tokens, "sg"));
 					addAnimationPrimitive(new SetConnectionDisplayStringAnimation(this, loadEventNumber, loadSimulationTime, loadAnimationNumber, connectionId, displayString));
 				}
+				else if (tokens[0].equals("MM")) {
+					//TODO: create a MethodCallAnimation primitive
+				}
 				else if (tokens[0].equals("BU")) {
 					String text = getToken(tokens, "txt");
 					addAnimationPrimitive(new BubbleAnimation(this, loadEventNumber, loadSimulationTime, loadAnimationNumber, text, getIntegerToken(tokens, "id")));
 				}
 				else
-					throw new RuntimeException("Unknown log entry");
+					throw new RuntimeException("Unknown log entry: "+tokens[0]);
 			}
-			
+
 			// store the end of the simulation
 			if (line == null) {
 				endEventNumber = loadEventNumber;
@@ -1145,28 +1148,28 @@ public class ReplayAnimationController implements IAnimationEnvironment {
 				endAnimationNumber = loadAnimationNumber;
 				endAnimationTime = getAnimationTimeForAnimationNumber(endAnimationNumber);
 			}
-			
+
 			return animationPrimitives.size() - animationPrimitivesCount;
 		}
 		catch (Throwable e) {
 			e.printStackTrace();
-			
+
 			throw new RuntimeException(e);
 		}
 	}
-	
+
 	protected String[] splitLine(String line) {
 		int lastSpaceIndex = -1;
 		int lastQuoteIndex = -1;
 		ArrayList<String> tokens = new ArrayList<String>(20);
-		
+
 		for (int i = 0; i < line.length(); i++) {
 			char ch = line.charAt(i);
-			
+
 			if (ch == ' ') {
 				if (lastQuoteIndex == -1)
 					tokens.add(line.substring(lastSpaceIndex + 1, i));
-				
+
 				lastSpaceIndex = i;
 			}
 			else if (ch == '"') {
@@ -1183,7 +1186,7 @@ public class ReplayAnimationController implements IAnimationEnvironment {
 
 		if (lastSpaceIndex != -1)
 			tokens.add(line.substring(lastSpaceIndex + 1, line.length()));
-		
+
 		return (String[])tokens.toArray(new String[0]);
 	}
 
@@ -1206,7 +1209,7 @@ public class ReplayAnimationController implements IAnimationEnvironment {
 
 		return value != null || defaultValue == null ? Integer.parseInt(value) : defaultValue;
 	}
-	
+
 	protected String getToken(String[] tokens, String key) {
 		for (int i = 0; i < tokens.length; i++)
 			if (tokens[i].equals(key))

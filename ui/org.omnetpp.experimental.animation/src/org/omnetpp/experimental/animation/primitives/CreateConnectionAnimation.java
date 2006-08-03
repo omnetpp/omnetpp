@@ -38,18 +38,23 @@ public class CreateConnectionAnimation extends AbstractAnimationPrimitive {
 	}
 	
 	public void redo() {
-		ConnectionFigure connectionFigure = new ConnectionFigure();
-		connectionFigure.setSourceAnchor(getGateAnchor(sourceGateId));
-		connectionFigure.setTargetAnchor(getGateAnchor(targetGateId));
-		animationEnvironment.setFigure(connectionId, connectionFigure);
-		//addFigure(connectionFigure);
-		IRuntimeModule enclosingModule = animationEnvironment.getSimulation().getRootModule(); //FIXME
-		getCompoundModuleFigure(enclosingModule).addConnectionFigure(connectionFigure);
+		if (animationEnvironment.getSimulation().getModuleByID(sourceGateId.getModuleId()).getParentModule()==animationEnvironment.getSimulation().getRootModule() &&
+			animationEnvironment.getSimulation().getModuleByID(targetGateId.getModuleId()).getParentModule()==animationEnvironment.getSimulation().getRootModule()) //FIXME 
+		{
+			ConnectionFigure connectionFigure = new ConnectionFigure();
+			connectionFigure.setSourceAnchor(getGateAnchor(sourceGateId));
+			connectionFigure.setTargetAnchor(getGateAnchor(targetGateId));
+			animationEnvironment.setFigure(connectionId, connectionFigure);
+			getEnclosingModuleFigure().addConnectionFigure(connectionFigure);
+		}
 	}
 
 	public void undo() {
-		removeFigure((ConnectionFigure)animationEnvironment.getFigure(connectionId));
-		animationEnvironment.setFigure(connectionId, null);
+		ConnectionFigure connectionFigure = (ConnectionFigure)animationEnvironment.getFigure(connectionId);
+		if (connectionFigure==null) {
+			removeFigure(connectionFigure);
+			animationEnvironment.setFigure(connectionId, null);
+		}
 	}
 	
 	public void animateAt(long eventNumber, double simulationTime, long animationNumber, double animationTime) {

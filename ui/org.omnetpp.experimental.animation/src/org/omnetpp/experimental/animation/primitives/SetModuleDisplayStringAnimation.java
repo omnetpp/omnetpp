@@ -34,8 +34,10 @@ public class SetModuleDisplayStringAnimation extends AbstractAnimationPrimitive 
 	
 	public void redo() {
 		IRuntimeModule module = animationEnvironment.getSimulation().getModuleByID(moduleId);
-		SubmoduleFigure moduleFigure = (SubmoduleFigure)animationEnvironment.getFigure(module);
-		moduleFigure.setDisplayString(displayString);
+		if (module.getParentModule() == animationEnvironment.getSimulation().getRootModule()) { //FIXME
+			SubmoduleFigure moduleFigure = (SubmoduleFigure)animationEnvironment.getFigure(module);
+			moduleFigure.setDisplayString(displayString);
+		}
 	}
 
 	public void undo() {

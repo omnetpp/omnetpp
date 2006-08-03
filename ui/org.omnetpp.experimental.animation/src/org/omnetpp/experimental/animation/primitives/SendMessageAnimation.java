@@ -8,6 +8,7 @@ import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.swt.graphics.Color;
 import org.omnetpp.common.simulation.model.ConnectionId;
 import org.omnetpp.experimental.animation.replay.ReplayAnimationController;
+import org.omnetpp.figures.CompoundModuleFigure;
 import org.omnetpp.figures.ConnectionFigure;
 
 /**
@@ -73,16 +74,16 @@ public class SendMessageAnimation extends AbstractAnimationPrimitive {
 	
 	public void redo() {
 		if (transmissionTime != 0)
-			addFigure(messageLine);
+			getEnclosingModuleFigure().addMessageFigure(messageLine);
 
-		addFigure(messageEllipse);
+		getEnclosingModuleFigure().addMessageFigure(messageEllipse);
 	}
 
 	public void undo() {
 		if (transmissionTime != 0)
-			removeFigure(messageLine);
+			getEnclosingModuleFigure().removeMessageFigure(messageLine);
 
-		removeFigure(messageEllipse);
+		getEnclosingModuleFigure().removeMessageFigure(messageEllipse);
 	}
 
 	public void animateAt(long eventNumber, double simulationTime, long animationNumber, double animationTime) {
