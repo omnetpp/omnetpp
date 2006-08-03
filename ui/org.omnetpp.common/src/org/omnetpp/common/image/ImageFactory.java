@@ -14,7 +14,7 @@ public class ImageFactory {
     
     public final static String TOOLBAR_IMAGE_WIZARDBANNER = TOOL_IMAGE_DIR + "module";
     public final static String TOOLBAR_IMAGE_UNPIN = TOOL_IMAGE_DIR + "unpin";
-    public final static String TOOLBAR_IMAGE_SHRINK = TOOL_IMAGE_DIR + "shrink";
+    public final static String TOOLBAR_IMAGE_LAYOUT = TOOL_IMAGE_DIR + "layout";
     public final static String TOOLBAR_IMAGE_OVERVIEW = TOOL_IMAGE_DIR + "overview";
     public final static String TOOLBAR_IMAGE_OUTLINE = TOOL_IMAGE_DIR + "outline";
     public final static String TOOLBAR_IMAGE_ZOOMMINUS = TOOL_IMAGE_DIR + "zoomminus";

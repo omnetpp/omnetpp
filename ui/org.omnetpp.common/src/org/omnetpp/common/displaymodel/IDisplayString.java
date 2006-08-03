@@ -14,7 +14,7 @@ public interface IDisplayString {
      * Tag names used in the display string
      */
     public enum Tag { p, b, i, is, i2, r, q, t, tt,  // submodule tags 
-                      bgp, bgb, bgi, bgtt, bgg, bgs, // compound module background tags
+                      bgp, bgb, bgi, bgtt, bgg, bgl, bgs, // compound module background tags
                       m, a, ls, bp }                 // connection tags
     
     /**
@@ -92,6 +92,9 @@ public interface IDisplayString {
         MODULE_TICKDISTANCE(Tag.bgg, 0, PropType.UNIT, PropGroup.Misc, "background grid tick distance", "Distance between two major ticks measured in units"),
         MODULE_TICKNUMBER(Tag.bgg, 1, PropType.INTEGER, PropGroup.Misc, "background grid tick number", "Number of minor ticks between two major one"),
         MODULE_GRIDCOL(Tag.bgg, 3, PropType.COLOR, PropGroup.Style, "background grid color", "Color of grid"),
+        // module layouting (how to layout the freemoving submodules)
+        MODULE_LAYOUT_SEED(Tag.bgl, 0, PropType.INTEGER, PropGroup.Misc, "layout seed","Seed value for layout algorithm"),
+        MODULE_LAYOUT_ALGORITHM(Tag.bgl, 1, PropType.STRING, PropGroup.Misc, "layout algorithm","Algorithm for child layouting. Default: spring"),
         // module scaling mixel per unit
         MODULE_SCALE(Tag.bgs, 0, PropType.UNIT, PropGroup.Misc, "background scaling", "Number of pixels per unit"),
         MODULE_UNIT(Tag.bgs, 1, PropType.STRING, PropGroup.Text, "background unit", "Name of measurement unit"),

@@ -9,7 +9,9 @@ import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.ui.actions.ActionFactory;
+import org.omnetpp.ned.editor.graph.actions.ReLayoutAction;
 import org.omnetpp.ned.editor.graph.actions.UnpinAction;
+import org.omnetpp.ned.editor.graph.commands.ChangeLayoutSeedCommand;
 
 public class GraphicalNedEditorContextMenuProvider extends ContextMenuProvider {
 
@@ -38,6 +40,9 @@ public class GraphicalNedEditorContextMenuProvider extends ContextMenuProvider {
         manager.appendToGroup(GEFActionConstants.GROUP_UNDO, action);
 
         action = getActionRegistry().getAction(UnpinAction.ID);
+        if (action.isEnabled()) manager.appendToGroup(GEFActionConstants.GROUP_REST, action);
+
+        action = getActionRegistry().getAction(ReLayoutAction.ID);
         if (action.isEnabled()) manager.appendToGroup(GEFActionConstants.GROUP_REST, action);
 
 // COPY,CUT,PASTE is not currently 

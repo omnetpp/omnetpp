@@ -309,11 +309,12 @@ public class CompoundModuleFigure extends ModuleFigure
     	Dimension newSize = dps.getCompoundSize();
     	Dimension oldSize = getSize();
     	
-    	// TODO get the seed from the display string
-    	long seed = 1971;
+    	long seed = dps.getAsIntDef(IDisplayString.Prop.MODULE_LAYOUT_SEED, 1);
+    	// if the seed changed we explicitly have to force a relayout
     	if (seed != layouter.getSeed()) {
     		layouter.setSeed(seed);
     		layouter.initLayout();
+    		layouter.layout(pane);
     	}
     	
         if (newSize.height > 0 || newSize.width > 0) {
@@ -321,8 +322,6 @@ public class CompoundModuleFigure extends ModuleFigure
         	pane.setPreferredSize(newSize.getCopy());
         	// invalidate the layout if the size of the module has changed
         	if (!newSize.equals(oldSize)) {
-        		// TODO get the seed from the display string
-        		layouter.setSeed(1971);
         		layouter.initLayout();
         	}
         } else {

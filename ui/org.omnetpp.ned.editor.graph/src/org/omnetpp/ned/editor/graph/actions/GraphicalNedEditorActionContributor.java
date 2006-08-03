@@ -32,6 +32,7 @@ public class GraphicalNedEditorActionContributor extends org.eclipse.gef.ui.acti
         addRetargetAction(new RedoRetargetAction());
 
         addRetargetAction(new UnpinRetargetAction());
+        addRetargetAction(new ReLayoutRetargetAction());
 
         addRetargetAction(new AlignmentRetargetAction(PositionConstants.LEFT));
         addRetargetAction(new AlignmentRetargetAction(PositionConstants.CENTER));
@@ -85,6 +86,7 @@ public class GraphicalNedEditorActionContributor extends org.eclipse.gef.ui.acti
 
         tbm.add(new Separator());
     	tbm.add(getAction(UnpinAction.ID));
+    	tbm.add(getAction(ReLayoutAction.ID));
 
     	tbm.add(new Separator());
         String[] zoomStrings = new String[] { ZoomManager.FIT_ALL, ZoomManager.FIT_HEIGHT,

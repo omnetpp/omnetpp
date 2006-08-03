@@ -95,6 +95,7 @@ import org.eclipse.ui.part.PageBook;
 import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
 import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.ned.editor.graph.actions.ModulePasteTemplateAction;
+import org.omnetpp.ned.editor.graph.actions.ReLayoutAction;
 import org.omnetpp.ned.editor.graph.actions.UnpinAction;
 import org.omnetpp.ned.editor.graph.dnd.TextTransferDropTargetListener;
 import org.omnetpp.ned.editor.graph.edit.NedEditPartFactory;
@@ -629,6 +630,9 @@ public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette {
         registry.registerAction(action);
         getSelectionActions().add(action.getId());
 
+        action = new ReLayoutAction((IWorkbenchPart)this);
+        registry.registerAction(action);
+        getSelectionActions().add(action.getId());
     }
 
     protected FigureCanvas getEditor() {

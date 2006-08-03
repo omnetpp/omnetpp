@@ -62,7 +62,6 @@ public class UnpinAction extends org.eclipse.gef.ui.actions.SelectionAction {
 	private Command getCommand() {
 		List selEditParts = getSelectedObjects();
 		// include the selected editparts, 
-		// TODO maybe we should throw away the submodule parts that do not have a location parts
 		request.setEditParts(selEditParts);
 		
 		if (selEditParts.size() < 1 || !(selEditParts.get(0) instanceof SubmoduleEditPart))
