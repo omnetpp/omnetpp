@@ -211,7 +211,7 @@ public class LiveAnimationEditor extends ReplayAnimationEditor implements ILiveA
 		CoolItem coolItem = new CoolItem(coolBar, SWT.NONE);
 		coolItem.setControl(toolBar);
 
-		coolItem.setSize(new Point(250, COOLBAR_HEIGHT));
+		coolItem.setSize(new Point(270, COOLBAR_HEIGHT));
 	}
 	
 	@Override

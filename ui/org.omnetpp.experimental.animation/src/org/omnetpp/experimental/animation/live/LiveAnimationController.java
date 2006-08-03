@@ -131,7 +131,7 @@ public class LiveAnimationController extends ReplayAnimationController implement
 		replayModule.setId(module.getId());
 		replayModule.setName(module.getName());
 		replayModule.setIndex(module.getIndex());
-		replayModule.setSize(module.isVector() ? -1 : module.getSize());
+		replayModule.setSize(!module.isVector() ? -1 : module.getSize());
 		
 		return replayModule;
 	}
@@ -167,8 +167,8 @@ public class LiveAnimationController extends ReplayAnimationController implement
 	}
 
 	public void moduleCreated(cModule module) {
-		String parentModulePath = module.getParentModule() != null ? module.getParentModule().getFullPath() : null;
-		addAnimationPrimitive(new CreateModuleAnimation(this, getLiveEventNumber(), getLiveSimulationTime(), getLiveAnimationNumber(), toReplayModule(module), parentModulePath));
+		int parentModuleId = module.getParentModule() != null ? module.getParentModule().getId() : -1;
+		addAnimationPrimitive(new CreateModuleAnimation(this, getLiveEventNumber(), getLiveSimulationTime(), getLiveAnimationNumber(), toReplayModule(module), parentModuleId));
 	}
 
 	public void moduleDeleted(cModule module) {

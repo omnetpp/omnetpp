@@ -9,17 +9,17 @@ import org.omnetpp.figures.SubmoduleFigure;
 public class CreateModuleAnimation extends AbstractAnimationPrimitive {
 	protected ReplayModule module;
 	
-	protected String parentModulePath;
+	protected int parentModuleId;
 
 	public CreateModuleAnimation(ReplayAnimationController animationController,
 								 long eventNumber,
 								 double simulationTime,
 								 long animationNumber,
 								 ReplayModule module,
-								 String parentModulePath) {
+								 int parentModuleId) {
 		super(animationController, eventNumber, simulationTime, animationNumber);
 		this.module = module;
-		this.parentModulePath = parentModulePath;
+		this.parentModuleId = parentModuleId;
 	}
 	
 	@Override
@@ -72,6 +72,6 @@ public class CreateModuleAnimation extends AbstractAnimationPrimitive {
 	}
 
 	protected ReplayModule getParentModule() {
-		return getReplaySimulation().getModuleByPath(parentModulePath);
+		return getReplaySimulation().getModuleByID(parentModuleId);
 	}
 }

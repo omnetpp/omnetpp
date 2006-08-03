@@ -21,8 +21,6 @@ public class SendMessageAnimation extends AbstractAnimationPrimitive {
 	
 	private double transmissionTime;
 
-	private double propagationTime;
-	
 	private double endSimulationTime;
 	
 	private Ellipse messageEllipse;
@@ -40,13 +38,14 @@ public class SendMessageAnimation extends AbstractAnimationPrimitive {
 								ConnectionId connectionId) {
 		super(animationController, eventNumber, simulationTime, animationNumber);
 		this.transmissionTime = transmissionTime;
-		this.propagationTime = propagationTime;
 		this.endSimulationTime = simulationTime + propagationTime + transmissionTime;
 		this.connectionId = connectionId;
 		
 		toolTip = new Label();
-		toolTip.setText("Propagation time: " + SendMessageAnimation.this.propagationTime +
-						" transmission time: " + SendMessageAnimation.this.transmissionTime);
+		toolTip.setText("Sending time: " + simulationTime +
+						" arrival time: " + endSimulationTime +
+						" propagation time: " + propagationTime +
+						" transmission time: " + transmissionTime);
 
 		messageEllipse = new Ellipse();
 		messageEllipse.setForegroundColor(COLOR);

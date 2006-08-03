@@ -85,7 +85,7 @@ public class ReplayModule implements IRuntimeModule {
 	}
 
 	public String getFullName() {
-		return isVector() ? name : name+"["+index+"]";
+		return !isVector() ? name : name+"["+index+"]";
 	}
 
 	public String getFullPath() {
