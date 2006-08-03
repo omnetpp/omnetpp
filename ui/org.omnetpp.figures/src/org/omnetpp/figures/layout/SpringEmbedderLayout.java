@@ -15,8 +15,8 @@ import org.omnetpp.figures.CompoundModuleFigure;
 
 public class SpringEmbedderLayout extends XYLayout {
 
-	private static final int DEFAULT_WIDTH = 500;
-	private static final int DEFAULT_HEIGHT = 300;
+	private static final int DEFAULT_MAX_WIDTH = 680;
+	private static final int DEFAULT_MAX_HEIGHT = 450;
 	protected IFigure edgeParent;
 	protected IFigure nodeParent;
 	protected AbstractGraphLayoutAlgorithm alg;
@@ -47,9 +47,10 @@ public class SpringEmbedderLayout extends XYLayout {
 		int width = nodeParent.getPreferredSize().width;
 		int height = nodeParent.getPreferredSize().height;
 		// if the size is not present, use a default size;
-		if (width <= 0) width = DEFAULT_WIDTH;
-		if (height <= 0) height = DEFAULT_HEIGHT;
-		autoLayouter.setConfineToArea(width, height, 80);
+		if (width <= 0) width = DEFAULT_MAX_WIDTH;
+		if (height <= 0) height = DEFAULT_MAX_HEIGHT;
+		//autoLayouter.setConfineToArea(width, height, 50);
+		autoLayouter.setScaleToArea(width, height, 50);
 		
 		// iterate over the nodes and add them to the algorithm 
 		// all child figures on this layer are considered as node
@@ -60,7 +61,7 @@ public class SpringEmbedderLayout extends XYLayout {
             if (constr == null || (constr.x == Integer.MIN_VALUE && constr.y == Integer.MIN_VALUE)) 
             	autoLayouter.addMovableNode(node, node.getPreferredSize().width, node.getPreferredSize().height);
             else
-            	// add as foxed node
+            	// add as fixed node
             	autoLayouter.addFixedNode(node, 
             			constr.x, constr.y,
             			constr.width, constr.height);
@@ -76,7 +77,7 @@ public class SpringEmbedderLayout extends XYLayout {
 				// if this is an edge coming from outside to a submodule
 				if (srcFig instanceof CompoundModuleFigure) {
 					autoLayouter.addEdgeToBorder(targetFig, 0);
-				} // else if this is an edge goung out from a submodule
+				} // else if this is an edge going out from a submodule
 				else if (targetFig instanceof CompoundModuleFigure) {
 					autoLayouter.addEdgeToBorder(srcFig, 0);
 				} else {  // both are submodules

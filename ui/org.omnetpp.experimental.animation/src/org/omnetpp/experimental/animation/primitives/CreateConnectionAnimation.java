@@ -2,6 +2,7 @@ package org.omnetpp.experimental.animation.primitives;
 
 import org.omnetpp.common.simulation.model.ConnectionId;
 import org.omnetpp.common.simulation.model.GateId;
+import org.omnetpp.common.simulation.model.IRuntimeModule;
 import org.omnetpp.experimental.animation.replay.ReplayAnimationController;
 import org.omnetpp.figures.ConnectionFigure;
 import org.omnetpp.figures.GateAnchor;
@@ -41,7 +42,9 @@ public class CreateConnectionAnimation extends AbstractAnimationPrimitive {
 		connectionFigure.setSourceAnchor(getGateAnchor(sourceGateId));
 		connectionFigure.setTargetAnchor(getGateAnchor(targetGateId));
 		animationEnvironment.setFigure(connectionId, connectionFigure);
-		addFigure(connectionFigure);
+		//addFigure(connectionFigure);
+		IRuntimeModule enclosingModule = animationEnvironment.getSimulation().getRootModule(); //FIXME
+		getCompoundModuleFigure(enclosingModule).addConnectionFigure(connectionFigure);
 	}
 
 	public void undo() {

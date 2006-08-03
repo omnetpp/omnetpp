@@ -19,7 +19,7 @@ public class SetModuleDisplayStringAnimation extends AbstractAnimationPrimitive 
 		super(animationController, eventNumber, simulationTime, animationNumber);
 		this.moduleId = moduleId;
 		this.displayString = displayString;
-		//System.out.println(displayString);
+		//System.out.println("SetModuleDisplayStringAnimation: "+displayString);
 	}
 	
 	@Override
