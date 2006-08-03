@@ -218,4 +218,8 @@ public class LiveAnimationController extends ReplayAnimationController implement
 
 	public void objectDeleted(cObject object) {
 	}
+
+	public boolean idle() {
+		return false;
+	}
 }

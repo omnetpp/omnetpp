@@ -6,6 +6,11 @@ import org.omnetpp.experimental.simkernel.swig.cModule;
 import org.omnetpp.experimental.simkernel.swig.cObject;
 
 public class DummyEnvirCallback implements IEnvirCallback {
+	public boolean idle() {
+		System.out.println("idle()");
+		return false;
+	}
+
 	public void bubble(cModule mod, String text) {
 		System.out.println("bubble()");
 	}
