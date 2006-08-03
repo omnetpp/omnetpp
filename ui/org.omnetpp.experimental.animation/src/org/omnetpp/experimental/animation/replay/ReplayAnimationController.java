@@ -1113,10 +1113,11 @@ public class ReplayAnimationController implements IAnimationEnvironment {
 					// TODO: handle ts different then E's t
 					// FIXME: animationPrimitives are sorted by eventNumber, beginSimulationTime and animationNumber
 					// and the binary search relies upon this
+					long messageId = getIntegerToken(tokens, "id", -1); //XXX use getLong; should really use treeId, but it's not available here
 					double propagationTime = getDoubleToken(tokens, "pd", 0);
 					double transmissionTime = getDoubleToken(tokens, "td", 0);
 					double simulationTime = getDoubleToken(tokens, "ts", loadSimulationTime);
-					addAnimationPrimitive(new SendMessageAnimation(this, loadEventNumber, simulationTime, loadAnimationNumber, propagationTime, transmissionTime, connectionId));
+					addAnimationPrimitive(new SendMessageAnimation(this, loadEventNumber, simulationTime, loadAnimationNumber, propagationTime, transmissionTime, connectionId, messageId));
 				}
 				else if (tokens[0].equals("SA")) {
 					addAnimationPrimitive(new ScheduleSelfMessageAnimation(this, loadEventNumber, loadSimulationTime, loadAnimationNumber, getDoubleToken(tokens, "t")));

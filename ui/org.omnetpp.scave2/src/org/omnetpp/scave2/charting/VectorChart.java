@@ -30,29 +30,6 @@ public class VectorChart extends ZoomableCachingCanvas {
 	private IChartSymbol defaultSymbol = new SquareSymbol(3);
 	private int antialias = SWT.ON; // SWT.ON, SWT.OFF, SWT.DEFAULT
 	
-	private static Color[] goodChartColors = new Color[] { //XXX to ColorFactory?
-		ColorFactory.asColor("blue"),
-		ColorFactory.asColor("red2"),
-		ColorFactory.asColor("green"),
-		ColorFactory.asColor("orange"),
-		ColorFactory.asColor("#008000"),
-		ColorFactory.asColor("darkgray"), 
-		ColorFactory.asColor("#a00000"), 
-		ColorFactory.asColor("#008080"), 
-		ColorFactory.asColor("cyan"), 
-		ColorFactory.asColor("#808000"),
-		ColorFactory.asColor("#8080ff"), 
-		ColorFactory.asColor("yellow"), 
-		ColorFactory.asColor("black"), 
-		ColorFactory.asColor("purple"), 
-		ColorFactory.asColor("gray")
-		//XXX add more
-	};
-
-	public Color getChartColor(int i) {
-		return goodChartColors[i % goodChartColors.length];
-	}
-	
 	public VectorChart(Composite parent, int style) {
 		super(parent, style);
 		super.setInsets(new Insets(18,40,18,40));
@@ -135,8 +112,8 @@ public class VectorChart extends ZoomableCachingCanvas {
 	protected void paintCachableLayer(Graphics graphics) {
 		graphics.setAntialias(antialias);
 		for (int series=0; series<dataset.getSeriesCount(); series++) {
-			graphics.setForegroundColor(getChartColor(series));
-			graphics.setBackgroundColor(getChartColor(series));
+			graphics.setForegroundColor(ColorFactory.getGoodColor(series));
+			graphics.setBackgroundColor(ColorFactory.getGoodColor(series));
 			defaultPlotter.plot(dataset, series, graphics, this, defaultSymbol);
 		}
 	}

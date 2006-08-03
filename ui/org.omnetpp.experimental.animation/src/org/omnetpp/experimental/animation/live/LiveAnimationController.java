@@ -351,7 +351,8 @@ public class LiveAnimationController extends ReplayAnimationController implement
 				getLiveAnimationNumber(),
 				propagationTime,
 				0,
-				new ConnectionId(gate.getOwnerModule().getId(), gate.getId())));
+				new ConnectionId(gate.getOwnerModule().getId(), gate.getId()),
+				msg.msgSeqId()));
 	}
 
 	public void messageSendHop(cMessage msg, cGate gate, double propagationTime, double transmissionTime, double transmissionStartTime) {
@@ -361,7 +362,8 @@ public class LiveAnimationController extends ReplayAnimationController implement
 				getLiveAnimationNumber(),
 				propagationTime,
 				transmissionTime,
-				new ConnectionId(gate.getOwnerModule().getId(), gate.getId())));
+				new ConnectionId(gate.getOwnerModule().getId(), gate.getId()),
+				msg.msgSeqId()));
 	}
 
 	public void objectDeleted(cObject object) {

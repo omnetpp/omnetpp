@@ -14,7 +14,8 @@ public class ColorFactory {
 
     private static ColorRegistry str2rgbRegistry = new ColorRegistry();
     private static HashMap<RGB, String> rgb2strMap = new HashMap<RGB, String>();
-
+    private static Color[] goodChartColors; 
+    
     static {
         addMapping("antiqueWhite",new RGB(250,235,215));
         addMapping("antiqueWhite1",new RGB(255,239,219));
@@ -556,9 +557,28 @@ public class ColorFactory {
         addMapping("yellow2",new RGB(238,238,0));
         addMapping("yellow3",new RGB(205,205,0));
         addMapping("yellow4",new RGB(139,139,0));
-    }
 
-    // helpre function to fill the color table
+        goodChartColors = new Color[] {
+        		ColorFactory.asColor("blue"),
+        		ColorFactory.asColor("red2"),
+        		ColorFactory.asColor("green"),
+        		ColorFactory.asColor("orange"),
+        		ColorFactory.asColor("#008000"),
+        		ColorFactory.asColor("darkgray"), 
+        		ColorFactory.asColor("#a00000"), 
+        		ColorFactory.asColor("#008080"), 
+        		ColorFactory.asColor("cyan"), 
+        		ColorFactory.asColor("#808000"),
+        		ColorFactory.asColor("#8080ff"), 
+        		ColorFactory.asColor("yellow"), 
+        		ColorFactory.asColor("black"), 
+        		ColorFactory.asColor("purple"), 
+        		ColorFactory.asColor("gray")
+        		//XXX add more
+        };
+	};
+
+    // helper function to fill the color table
     private static void addMapping(String name, RGB rgb) {
         str2rgbRegistry.put(name.toLowerCase(), rgb);
         // check if the given RGB is already in the map
@@ -569,6 +589,7 @@ public class ColorFactory {
             rgb2strMap.put(rgb, name);
         }
     }
+    
     /**
      * Returns the color name, or #RRGGBB if no constant found for the color. Throws
      * <code>NullPointerException</code> if the parametr is <code>null</code> 
@@ -631,5 +652,12 @@ public class ColorFactory {
         // return it as a Color object
         return str2rgbRegistry.get(value.toLowerCase());
     }
+
+	/**
+	 * Returns a "good" color.
+	 */
+    public static Color getGoodColor(int i) {
+		return goodChartColors[i % goodChartColors.length];
+	}
     
 }

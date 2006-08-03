@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
 
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.draw2d.geometry.Point;
 
 /**
@@ -193,6 +194,7 @@ public class BasicSpringEmbedderLayoutAlgorithm extends AbstractGraphLayoutAlgor
 	    e.from = findNode(from);
 	    e.to = findNode(to);
 	    e.len = len>0 ? len : defaultEdgeLen;
+	    assert(e.to!=null && e.from!=null);
 
 	    // heuristics to take submodule size into account
 	    e.len += 2*(Math.min(e.from.sx,e.from.sy)+Math.min(e.to.sx,e.to.sy));

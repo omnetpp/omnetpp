@@ -6,9 +6,9 @@ import org.eclipse.draw2d.Polyline;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.swt.graphics.Color;
+import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.simulation.model.ConnectionId;
 import org.omnetpp.experimental.animation.replay.ReplayAnimationController;
-import org.omnetpp.figures.CompoundModuleFigure;
 import org.omnetpp.figures.ConnectionFigure;
 
 /**
@@ -16,9 +16,11 @@ import org.omnetpp.figures.ConnectionFigure;
  * growing line following the connection as time goes on.
  */
 public class SendMessageAnimation extends AbstractAnimationPrimitive {
-	private static final Color COLOR = new Color(null, 128, 0, 0);
+	//private static final Color COLOR = new Color(null, 128, 0, 0);
 
 	private ConnectionId connectionId;
+
+	private long messageId;
 	
 	private double transmissionTime;
 
@@ -36,11 +38,13 @@ public class SendMessageAnimation extends AbstractAnimationPrimitive {
 								long animationNumber,
 								double propagationTime,
 								double transmissionTime,
-								ConnectionId connectionId) {
+								ConnectionId connectionId,
+								long messageId) {
 		super(animationController, eventNumber, simulationTime, animationNumber);
 		this.transmissionTime = transmissionTime;
 		this.endSimulationTime = simulationTime + propagationTime + transmissionTime;
 		this.connectionId = connectionId;
+		this.messageId = messageId;
 		
 		toolTip = new Label();
 		toolTip.setText("Sending time: " + simulationTime +
@@ -49,12 +53,13 @@ public class SendMessageAnimation extends AbstractAnimationPrimitive {
 						" transmission time: " + transmissionTime);
 
 		messageEllipse = new Ellipse();
-		messageEllipse.setForegroundColor(COLOR);
-		messageEllipse.setBackgroundColor(COLOR);
+		Color color = ColorFactory.getGoodColor((int)messageId); //FIXME should rather use treeId instead of messageId, but it's not easily gettable from trace 
+		messageEllipse.setForegroundColor(color);
+		messageEllipse.setBackgroundColor(color);
 		messageEllipse.setToolTip(toolTip);
 
 		messageLine = new Polyline();
-		messageLine.setForegroundColor(COLOR);
+		messageLine.setForegroundColor(color);
 		messageLine.setLineWidth(5);
 		messageLine.setToolTip(toolTip);
 	}

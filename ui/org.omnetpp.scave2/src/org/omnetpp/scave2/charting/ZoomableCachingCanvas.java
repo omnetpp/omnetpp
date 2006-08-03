@@ -210,13 +210,15 @@ public abstract class ZoomableCachingCanvas extends CachingCanvas {
 	@Override
 	protected void beforePaint() {
 		// validate zoom, so that one cannot zoom out too much (the content (getArea()) must cover full canvas)
-		double minZoomX = (getWidth()-getInsets().getWidth()) / (maxX - minX); 
+		double w = maxX - minX;
+		double minZoomX = (getWidth()-getInsets().getWidth()) / (w==0 ? 1.0 : w); 
 		if (zoomX < minZoomX) {
 			zoomX = minZoomX;
 			calculateVirtualSize();
 		}
 
-		double minZoomY = (getHeight()-getInsets().getHeight()) / (maxY - minY); 
+		double h = maxY - minY;
+		double minZoomY = (getHeight()-getInsets().getHeight()) / (h==0 ? 1.0 : h); 
 		if (zoomY < minZoomY){
 			zoomY = minZoomY;
 			calculateVirtualSize();
