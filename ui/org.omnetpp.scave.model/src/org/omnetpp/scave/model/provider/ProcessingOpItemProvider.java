@@ -136,7 +136,7 @@ public class ProcessingOpItemProvider
 	 * children and by creating a viewer notification, which it passes to {@link #fireNotifyChanged}.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @generated
+	 * @generatedNOT
 	 */
 	public void notifyChanged(Notification notification) {
 		updateChildren(notification);
@@ -147,7 +147,12 @@ public class ProcessingOpItemProvider
 				return;
 			case ScaveModelPackage.PROCESSING_OP__FILTERS:
 			case ScaveModelPackage.PROCESSING_OP__PARAMS:
-				fireNotifyChanged(new ViewerNotification(notification, notification.getNotifier(), true, false));
+				// XXX AdapterFactoryContentProvider.ViewerRefresh.merge() has a bug, which
+				//     causes that if both Operation and Params are changed within one refresh
+				//     then the label is not updated. As a kludge we set the LabelUpdate flag
+				//     in case of Params change.
+				//fireNotifyChanged(new ViewerNotification(notification, notification.getNotifier(), true, false));
+				fireNotifyChanged(new ViewerNotification(notification, notification.getNotifier(), true, true));
 				return;
 		}
 		super.notifyChanged(notification);
