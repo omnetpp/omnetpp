@@ -47,7 +47,7 @@ public class SendDirectAnimation extends SendMessageAnimation {
 		SubmoduleFigure senderModuleFigure = getSubmoduleFigure(senderModuleId);
 		SubmoduleFigure destModuleFigure = getSubmoduleFigure(destModuleId);
 
-	//	if (senderModuleFigure!=null && destModuleFigure!=null)
-		//	animateSendMessageAt(simulationTime, animationTime, getSubmoduleFigureCenter(senderModuleId), getSubmoduleFigureCenter(destModuleId));
+		if (senderModuleFigure!=null && destModuleFigure!=null)
+			animateSendMessageAt(simulationTime, animationTime, getSubmoduleFigureCenter(senderModuleId), getSubmoduleFigureCenter(destModuleId));
 	}
 }
