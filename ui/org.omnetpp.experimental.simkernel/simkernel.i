@@ -197,6 +197,10 @@ inline void evSetup(const char *inifile) { //XXX
 %rename cMessage::arrivalGateId getArrivalGateId;
 %rename cMessage::sendingTime getSendingTime;
 %rename cMessage::arrivalTime getArrivalTime;
+%rename cMessage::id getId;
+%rename cMessage::treeId getTreeId;
+%rename cMessage::encapsulationId getEncapsulationId;
+%rename cMessage::encapsulationTreeId getEncapsulationTreeId;
 
 // SWIG doesn't understand nested classes, turn off corresponding warnings
 //%warnfilter(312) cTopology::Node; -- this doesn't seem to work
