@@ -97,13 +97,13 @@ public class FilterParams {
 	
 	public String toString() {
 		StringBuffer sb = new StringBuffer();
+		if (getModuleNamePattern().length() > 0) sb.append("module=").append(getModuleNamePattern()).append(" ");
+		if (getDataNamePattern().length() > 0) sb.append("name=").append(getDataNamePattern()).append(" ");
 		if (getFileNamePattern().length() > 0) sb.append("file=").append(getFileNamePattern()).append(" ");
 		if (getRunNamePattern().length() > 0) sb.append("run=").append(getRunNamePattern()).append(" ");
 		if (getExperimentNamePattern().length() > 0) sb.append("experiment=").append(getExperimentNamePattern()).append(" ");
 		if (getMeasurementNamePattern().length() > 0) sb.append("measurement=").append(getMeasurementNamePattern()).append(" ");
 		if (getReplicationNamePattern().length() > 0) sb.append("replication=").append(getReplicationNamePattern()).append(" ");
-		if (getModuleNamePattern().length() > 0) sb.append("module=").append(getModuleNamePattern()).append(" ");
-		if (getDataNamePattern().length() > 0) sb.append("name=").append(getDataNamePattern()).append(" ");
 		if (sb.length() > 0) sb.deleteCharAt(sb.length() - 1);
 		return sb.toString();
 	}

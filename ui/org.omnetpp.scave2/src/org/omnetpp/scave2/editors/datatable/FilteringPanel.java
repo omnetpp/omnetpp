@@ -20,11 +20,13 @@ import org.omnetpp.scave2.model.FilterParams;
  * to do anything useful.
  * @author andras
  */
+// XXX layout of "Filter" label
 public class FilteringPanel extends Composite {
 	
 	private Label filterLabel;
 	private Button showHideButton;
-	private FilterParamsPanel leftPanel;
+	private FilterParamsPanel upperPanel;
+	private FilterParamsPanel lowerPanel;
 
 	private Button filterButton;
 
@@ -33,32 +35,32 @@ public class FilteringPanel extends Composite {
 		initialize();
 	}
 	
-	public CCombo getFileNameCombo() {
-		return leftPanel.getFileCombo();
-	}
-	
-	public CCombo getRunNameCombo() {
-		return leftPanel.getRunCombo();
-	}
-
-	public CCombo getExperimentNameCombo() {
-		return leftPanel.getExperimentCombo();
-	}
-	
-	public CCombo getMeasurementNameCombo() {
-		return leftPanel.getMeasurementCombo();
-	}
-
-	public CCombo getReplicationNameCombo() {
-		return leftPanel.getReplicationCombo();
-	}
-
 	public CCombo getModuleNameCombo() {
-		return leftPanel.getModuleCombo();
+		return upperPanel.getModuleCombo();
 	}
 
 	public CCombo getNameCombo() {
-		return leftPanel.getDataCombo();
+		return upperPanel.getDataCombo();
+	}
+
+	public CCombo getFileNameCombo() {
+		return lowerPanel.getFileCombo();
+	}
+	
+	public CCombo getRunNameCombo() {
+		return lowerPanel.getRunCombo();
+	}
+
+	public CCombo getExperimentNameCombo() {
+		return lowerPanel.getExperimentCombo();
+	}
+	
+	public CCombo getMeasurementNameCombo() {
+		return lowerPanel.getMeasurementCombo();
+	}
+
+	public CCombo getReplicationNameCombo() {
+		return lowerPanel.getReplicationCombo();
 	}
 
 	public Button getFilterButton() {
@@ -70,57 +72,76 @@ public class FilteringPanel extends Composite {
 	}
 	
 	public FilterParams getFilterParams() {
-		return leftPanel.getFilterParams();
+		FilterParams upperParams = upperPanel.getFilterParams();
+		FilterParams lowerParams = lowerPanel.getFilterParams();
+		return new FilterParams(
+			lowerParams.getFileNamePattern(),
+			lowerParams.getRunNamePattern(),
+			lowerParams.getExperimentNamePattern(),
+			lowerParams.getMeasurementNamePattern(),
+			lowerParams.getReplicationNamePattern(),
+			upperParams.getModuleNamePattern(),
+			upperParams.getDataNamePattern());
 	}
 	
 	public void setFilterParams(FilterParams params) {
-		leftPanel.setFilterParams(params);
+		upperPanel.setFilterParams(params);
+		lowerPanel.setFilterParams(params);
 	}
 	
 	public void setFilterHints(FilterHints hints) {
-		leftPanel.setFilterHints(hints);
+		upperPanel.setFilterHints(hints);
+		lowerPanel.setFilterHints(hints);
 	}
 
 	private void initialize() {
-		this.setLayout(new GridLayout(2, false));
+		this.setLayout(new GridLayout());
 //new TEST(this, SWT.NONE).setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false, 2, 1));
 
-		filterLabel = new Label(this, SWT.WRAP);
+		Composite firstRow = new Composite(this, SWT.NONE);
+		firstRow.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+		firstRow.setLayout(new GridLayout(4, false));
+		
+		filterLabel = new Label(firstRow, SWT.WRAP);
 		filterLabel.setText("Filter: ");
-		filterLabel.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false));
+		filterLabel.setLayoutData(new GridData(200, SWT.DEFAULT));
 		
-		showHideButton = new Button(this, SWT.PUSH);
-		showHideButton.setText("Change");
+		upperPanel = new FilterParamsPanel(firstRow, SWT.NONE, FilterParamsPanel.MODULE_NAME_ROW);
+		upperPanel.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 		
-		final Composite filterParamsPanel = new Composite(this, SWT.NONE);
+		filterButton = new Button(firstRow, SWT.NONE);
+		filterButton.setText("Filter");
+		filterButton.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false, false));
+	
+		showHideButton = new Button(firstRow, SWT.PUSH);
+		showHideButton.setText("More");
+		showHideButton.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false, false));
+		
+		final Composite showHidePanel = new Composite(this, SWT.NONE);
 		GridData gridData = new GridData(SWT.FILL, SWT.BEGINNING, true, false);
 		gridData.exclude = true;
-		filterParamsPanel.setVisible(false);
-		filterParamsPanel.setLayoutData(gridData);
-		filterParamsPanel.setLayout(new GridLayout(2, false));
+		showHidePanel.setVisible(false);
+		showHidePanel.setLayoutData(gridData);
+		showHidePanel.setLayout(new GridLayout(2, false));
 		
-		leftPanel = new FilterParamsPanel(filterParamsPanel, SWT.NONE);
-		leftPanel.setLayout(new GridLayout());
-		leftPanel.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false));
+		lowerPanel = new FilterParamsPanel(showHidePanel, SWT.NONE,
+				FilterParamsPanel.FILE_RUN_ROW | FilterParamsPanel.EXPERIMENT_MEASUREMENT_REPLICATION_ROW);
+		lowerPanel.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false));
 		
-		filterButton = new Button(filterParamsPanel, SWT.NONE);
-		filterButton.setText("Filter");
-		filterButton.setLayoutData(new GridData(SWT.BEGINNING, SWT.BEGINNING, false, false));
-	
 		showHideButton.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
-				if (filterParamsPanel.isVisible()) {
-					filterParamsPanel.setVisible(false);
-					((GridData)filterParamsPanel.getLayoutData()).exclude = true;
-					showHideButton.setText("Change");
+				if (showHidePanel.isVisible()) {
+					showHidePanel.setVisible(false);
+					((GridData)showHidePanel.getLayoutData()).exclude = true;
+					showHideButton.setText("More");
 				}
 				else {
-					filterParamsPanel.setVisible(true);
-					((GridData)filterParamsPanel.getLayoutData()).exclude = false;
+					showHidePanel.setVisible(true);
+					((GridData)showHidePanel.getLayoutData()).exclude = false;
 					showHideButton.setText("Hide");
 				}
 				
-				filterParamsPanel.getParent().getParent().layout(true, true);
+				showHidePanel.getParent().getParent().layout(true, true);
 			}
 		});
 	}

@@ -19,7 +19,15 @@ import org.omnetpp.scave2.model.FilterParams;
  * @author tomi
  */
 public class FilterParamsPanel extends Composite {
-
+	
+	public static final int
+		MODULE_NAME_ROW = 1,
+		FILE_RUN_ROW = 2,
+		EXPERIMENT_MEASUREMENT_REPLICATION_ROW = 4;
+	public static final int
+		ALL_ROWS = MODULE_NAME_ROW | FILE_RUN_ROW | EXPERIMENT_MEASUREMENT_REPLICATION_ROW;
+	
+	private int rows;
 	private Composite composite1 = null;
 	private Label fileLabel = null;
 	private Label runLabel = null;
@@ -39,7 +47,12 @@ public class FilterParamsPanel extends Composite {
 	private CCombo dataCombo = null;
 	
 	public FilterParamsPanel(Composite parent, int style) {
+		this(parent, style, ALL_ROWS);
+	}
+	
+	public FilterParamsPanel(Composite parent, int style, int rows) {
 		super(parent, style);
+		this.rows = rows;
 		initialize();
 	}
 	
@@ -73,33 +86,33 @@ public class FilterParamsPanel extends Composite {
 
 	public FilterParams getFilterParams() {
 		return new FilterParams(
-				fileCombo.getText(),
-				runCombo.getText(),
-				experimentCombo.getText(),
-				measurementCombo.getText(),
-				replicationCombo.getText(),
-				moduleCombo.getText(),
-				dataCombo.getText());
+				fileCombo != null ? fileCombo.getText() : null,
+				runCombo != null ? runCombo.getText() : null,
+				experimentCombo != null ? experimentCombo.getText() : null,
+				measurementCombo != null ? measurementCombo.getText() : null,
+				replicationCombo != null ? replicationCombo.getText() : null,
+				moduleCombo != null ? moduleCombo.getText() : null,
+				dataCombo != null ? dataCombo.getText() : null);
 	}
 	
 	public void setFilterParams(FilterParams params) {
-		fileCombo.setText(params.getFileNamePattern());
-		runCombo.setText(params.getRunNamePattern());
-		experimentCombo.setText(params.getExperimentNamePattern());
-		measurementCombo.setText(params.getMeasurementNamePattern());
-		replicationCombo.setText(params.getReplicationNamePattern());
-		moduleCombo.setText(params.getModuleNamePattern());
-		dataCombo.setText(params.getDataNamePattern());
+		if (fileCombo != null) fileCombo.setText(params.getFileNamePattern());
+		if (runCombo != null) runCombo.setText(params.getRunNamePattern());
+		if (experimentCombo != null) experimentCombo.setText(params.getExperimentNamePattern());
+		if (measurementCombo != null) measurementCombo.setText(params.getMeasurementNamePattern());
+		if (replicationCombo != null) replicationCombo.setText(params.getReplicationNamePattern());
+		if (moduleCombo != null) moduleCombo.setText(params.getModuleNamePattern());
+		if (dataCombo != null) dataCombo.setText(params.getDataNamePattern());
 	}
 	
 	public void setFilterHints(FilterHints hints) {
-		fileCombo.setItems(hints.getFileNameHints());
-		runCombo.setItems(hints.getRunNameHints());
-		experimentCombo.setItems(hints.getExperimentNameHints());
-		measurementCombo.setItems(hints.getMeasurementNameHints());
-		replicationCombo.setItems(hints.getReplicationNameHints());
-		moduleCombo.setItems(hints.getModuleNameHints());
-		dataCombo.setItems(hints.getDataNameHints());
+		if (fileCombo != null) fileCombo.setItems(hints.getFileNameHints());
+		if (runCombo != null) runCombo.setItems(hints.getRunNameHints());
+		if (experimentCombo != null) experimentCombo.setItems(hints.getExperimentNameHints());
+		if (measurementCombo != null) measurementCombo.setItems(hints.getMeasurementNameHints());
+		if (replicationCombo != null) replicationCombo.setItems(hints.getReplicationNameHints());
+		if (moduleCombo != null) moduleCombo.setItems(hints.getModuleNameHints());
+		if (dataCombo != null) dataCombo.setItems(hints.getDataNameHints());
 	}
 
 	private void initialize() {
@@ -109,16 +122,50 @@ public class FilterParamsPanel extends Composite {
 		gridLayout.marginWidth = 5;
 		gridLayout.horizontalSpacing = 0;
 		this.setLayout(gridLayout);
-		createComposite1();
-		createComposite2();
-		createComposite3();
+		if ((rows & MODULE_NAME_ROW) != 0)
+			createComposite1();
+		if ((rows & FILE_RUN_ROW) != 0)
+			createComposite2();
+		if ((rows & EXPERIMENT_MEASUREMENT_REPLICATION_ROW) != 0)
+			createComposite3();
+	}
+	
+	/**
+	 * This method initializes composite3	
+	 *
+	 */
+	private void createComposite1() {
+		GridData gridData8 = new GridData();
+		gridData8.grabExcessHorizontalSpace = true;
+		gridData8.horizontalAlignment = org.eclipse.swt.layout.GridData.FILL;
+		GridData gridData7 = new GridData();
+		gridData7.grabExcessHorizontalSpace = true;
+		gridData7.horizontalAlignment = org.eclipse.swt.layout.GridData.FILL;
+		GridData gridData10 = new GridData();
+		gridData10.grabExcessHorizontalSpace = true;
+		gridData10.horizontalAlignment = org.eclipse.swt.layout.GridData.FILL;
+		GridLayout gridLayout4 = new GridLayout();
+		gridLayout4.numColumns = 4;
+		gridLayout4.marginWidth = 0;
+		gridLayout4.marginHeight = 0;
+		composite3 = new Composite(this, SWT.NONE);
+		composite3.setLayout(gridLayout4);
+		composite3.setLayoutData(gridData10);
+		moduleLabel = new Label(composite3, SWT.NONE);
+		moduleLabel.setText("Module name:");
+		moduleCombo = new CCombo(composite3, SWT.BORDER);
+		moduleCombo.setLayoutData(gridData7);
+		dataLabel = new Label(composite3, SWT.NONE);
+		dataLabel.setText("Data name:");
+		dataCombo = new CCombo(composite3, SWT.BORDER);
+		dataCombo.setLayoutData(gridData8);
 	}
 
 	/**
 	 * This method initializes composite1	
 	 *
 	 */
-	private void createComposite1() {
+	private void createComposite2() {
 		GridData gridData21 = new GridData();
 		gridData21.grabExcessHorizontalSpace = true;
 		gridData21.horizontalAlignment = org.eclipse.swt.layout.GridData.FILL;
@@ -145,12 +192,11 @@ public class FilterParamsPanel extends Composite {
 		runCombo.setLayoutData(gridData21);
 	}
 
-
 	/**
 	 * This method initializes composite	
 	 *
 	 */
-	private void createComposite2() {
+	private void createComposite3() {
 		GridData gridData31 = new GridData();
 		gridData31.grabExcessHorizontalSpace = true;
 		gridData31.horizontalAlignment = org.eclipse.swt.layout.GridData.FILL;
@@ -181,36 +227,5 @@ public class FilterParamsPanel extends Composite {
 		replicationLabel.setText("Replication:");
 		replicationCombo = new CCombo(composite2, SWT.BORDER);
 		replicationCombo.setLayoutData(gridData31);
-	}
-
-	/**
-	 * This method initializes composite3	
-	 *
-	 */
-	private void createComposite3() {
-		GridData gridData8 = new GridData();
-		gridData8.grabExcessHorizontalSpace = true;
-		gridData8.horizontalAlignment = org.eclipse.swt.layout.GridData.FILL;
-		GridData gridData7 = new GridData();
-		gridData7.grabExcessHorizontalSpace = true;
-		gridData7.horizontalAlignment = org.eclipse.swt.layout.GridData.FILL;
-		GridData gridData10 = new GridData();
-		gridData10.grabExcessHorizontalSpace = true;
-		gridData10.horizontalAlignment = org.eclipse.swt.layout.GridData.FILL;
-		GridLayout gridLayout4 = new GridLayout();
-		gridLayout4.numColumns = 4;
-		gridLayout4.marginWidth = 0;
-		gridLayout4.marginHeight = 0;
-		composite3 = new Composite(this, SWT.NONE);
-		composite3.setLayout(gridLayout4);
-		composite3.setLayoutData(gridData10);
-		moduleLabel = new Label(composite3, SWT.NONE);
-		moduleLabel.setText("Module name:");
-		moduleCombo = new CCombo(composite3, SWT.BORDER);
-		moduleCombo.setLayoutData(gridData7);
-		dataLabel = new Label(composite3, SWT.NONE);
-		dataLabel.setText("Data name:");
-		dataCombo = new CCombo(composite3, SWT.BORDER);
-		dataCombo.setLayoutData(gridData8);
 	}
 }
