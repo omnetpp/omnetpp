@@ -1260,8 +1260,9 @@ public class ReplayAnimationController implements IAnimationEnvironment {
 					int senderModuleId = getIntegerToken(tokens, "sm");
 					int destModuleId = getIntegerToken(tokens, "dm");
 					int destGateId = getIntegerToken(tokens, "dg");
+					double transmissionTime = 0.0; //XXX for now (cSimpleModule::sendDirect() is missing this parameter)
 					double propagationTime = getDoubleToken(tokens, "pd", 0);
-					//XXX store all
+					//addAnimationPrimitive(new SendDirectAnimation(this, loadEventNumber, simulationTime, loadAnimationNumber, transmissionTime, propagationTime, senderModuleId, destModuleId, lastMsg));
 					addAnimationPrimitive(new SendBroadcastAnimation(this, loadEventNumber, loadSimulationTime, loadAnimationNumber, propagationTime, senderModuleId, destModuleId));
 				}
 				else if (tokens[0].equals("SA")) {

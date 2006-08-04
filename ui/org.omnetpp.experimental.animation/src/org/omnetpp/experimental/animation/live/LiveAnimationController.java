@@ -8,6 +8,7 @@ import org.omnetpp.experimental.animation.primitives.CreateModuleAnimation;
 import org.omnetpp.experimental.animation.primitives.DeleteModuleAnimation;
 import org.omnetpp.experimental.animation.primitives.HandleMessageAnimation;
 import org.omnetpp.experimental.animation.primitives.IAnimationPrimitive;
+import org.omnetpp.experimental.animation.primitives.SendDirectAnimation;
 import org.omnetpp.experimental.animation.primitives.SendMessageAnimation;
 import org.omnetpp.experimental.animation.primitives.SetConnectionDisplayStringAnimation;
 import org.omnetpp.experimental.animation.primitives.SetModuleDisplayStringAnimation;
@@ -343,6 +344,25 @@ public class LiveAnimationController extends ReplayAnimationController implement
 	}
 
 	public void messageSendDirect(cMessage msg, cGate toGate, double propagationTime) {
+		ReplayMessage rmsg = new ReplayMessage();
+		rmsg.setName(msg.getName());
+		rmsg.setClassName(msg.getClassName());
+		rmsg.setKind(msg.getKind());
+		rmsg.setLength(msg.getLength());
+		rmsg.setId(msg.getId());
+		rmsg.setTreeId(msg.getTreeId());
+		rmsg.setEncapsulationId(msg.getEncapsulationId());
+		rmsg.setEncapsulationTreeId(msg.getEncapsulationTreeId());
+
+		addAnimationPrimitive(new SendDirectAnimation(this, 
+				getLiveEventNumber(),
+				msg.getSendingTime(),
+				getLiveAnimationNumber(),
+				0, //XXX transmTime
+				propagationTime,
+				msg.getSenderModuleId(), 
+				toGate.getOwnerModule().getId(),
+				rmsg));
 	}
 
 	public void messageSendHop(cMessage msg, cGate gate, double propagationTime) {
