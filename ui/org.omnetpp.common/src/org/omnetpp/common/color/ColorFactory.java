@@ -564,7 +564,7 @@ public class ColorFactory {
         		ColorFactory.asColor("green"),
         		ColorFactory.asColor("orange"),
         		ColorFactory.asColor("#008000"),
-        		ColorFactory.asColor("darkgray"), 
+        		ColorFactory.asColor("darkGrey"), 
         		ColorFactory.asColor("#a00000"), 
         		ColorFactory.asColor("#008080"), 
         		ColorFactory.asColor("cyan"), 
@@ -573,7 +573,7 @@ public class ColorFactory {
         		ColorFactory.asColor("yellow"), 
         		ColorFactory.asColor("black"), 
         		ColorFactory.asColor("purple"), 
-        		ColorFactory.asColor("gray")
+        		ColorFactory.asColor("grey")
         		//XXX add more
         };
 	};
