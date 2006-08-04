@@ -7,7 +7,7 @@ import org.omnetpp.common.displaymodel.IDisplayString;
 import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.figures.GateAnchor;
 import org.omnetpp.figures.SubmoduleFigure;
-import org.omnetpp.ned2.model.INamedGraphNode;
+import org.omnetpp.ned2.model.SubmoduleNodeEx;
 
 
 // TODO implement UnpinRequest 
@@ -60,9 +60,13 @@ public class SubmoduleEditPart extends ModuleEditPart {
     protected void refreshVisuals() {
         
         // define the properties that determine the visual appearence
-    	INamedGraphNode model = (INamedGraphNode)getNEDModel();
+    	SubmoduleNodeEx model = (SubmoduleNodeEx)getModel();
     	
-    	getSubmoduleFigure().setName(model.getName());
+    	String nameToDisplay = model.getName();
+    	// add [size] if it's a module vector
+    	if (model.getVectorSize() != null && !"".equals(model.getVectorSize()))
+    		nameToDisplay += "["+model.getVectorSize()+"]";
+    	getSubmoduleFigure().setName(nameToDisplay);
         // parse a dispaly string, so it's easier to get values from it.
         IDisplayString dps = model.getDisplayString();
         getSubmoduleFigure().setDisplayString(dps);
