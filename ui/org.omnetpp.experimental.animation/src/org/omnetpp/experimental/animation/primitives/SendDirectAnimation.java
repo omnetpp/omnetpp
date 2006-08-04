@@ -17,12 +17,12 @@ public class SendDirectAnimation extends SendMessageAnimation {
 							   long eventNumber, 
 							   double simulationTime,
 							   long animationNumber, 
-							   double transmissionTime, 
 							   double propagationTime, 
+							   double transmissionTime, 
 							   int senderModuleId, 
 							   int destModuleId,
 							   IRuntimeMessage msg) {
-		super(animationController, eventNumber, simulationTime, animationNumber, transmissionTime, propagationTime, null, msg);
+		super(animationController, eventNumber, simulationTime, animationNumber, propagationTime, transmissionTime, null, msg);
 		this.senderModuleId = senderModuleId;
 		this.destModuleId = destModuleId;
 	}

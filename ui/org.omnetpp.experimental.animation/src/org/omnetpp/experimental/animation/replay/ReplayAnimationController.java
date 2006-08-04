@@ -1252,7 +1252,7 @@ public class ReplayAnimationController implements IAnimationEnvironment {
 					int destGateId = getIntegerToken(tokens, "dg");
 					double transmissionDelay = getDoubleToken(tokens, "td", 0);
 					double propagationDelay = getDoubleToken(tokens, "pd", 0);
-					//addAnimationPrimitive(new SendDirectAnimation(this, loadEventNumber, simulationTime, loadAnimationNumber, transmissionDelay, propagationDelay, senderModuleId, destModuleId, lastMsg));
+					//addAnimationPrimitive(new SendDirectAnimation(this, loadEventNumber, loadSimulationTime, loadAnimationNumber, propagationDelay, transmissionDelay, senderModuleId, destModuleId, lastLoadedMessage));
 					addAnimationPrimitive(new SendBroadcastAnimation(this, loadEventNumber, loadSimulationTime, loadAnimationNumber, propagationDelay, transmissionDelay, senderModuleId, destModuleId));
 				}
 				else if (tokens[0].equals("SA")) {
