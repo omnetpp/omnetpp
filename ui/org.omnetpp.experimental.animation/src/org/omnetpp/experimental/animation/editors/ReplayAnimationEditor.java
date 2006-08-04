@@ -51,6 +51,12 @@ public class ReplayAnimationEditor extends EditorPart implements IReplayAnimatio
 	protected Text replayAnimationTimeWidget;
 	
 	protected NumberFormat numberFormat;
+	private ToolItem replayBeginToolItem;
+	private ToolItem replayBackToolItem;
+	private ToolItem replayBackstepToolItem;
+	private ToolItem replayStepToolItem;
+	private ToolItem replayPlayToolItem;
+	private ToolItem replayEndToolItem;
 	protected static final int COOLBAR_HEIGHT = 25;
 	
 	public ReplayAnimationEditor() {
@@ -90,28 +96,28 @@ public class ReplayAnimationEditor extends EditorPart implements IReplayAnimatio
 		// navigation tool bar
 		replayToolBar = new ToolBar(coolBar, SWT.NONE);
 	
-	    ToolItem toolItem = new ToolItem(replayToolBar, SWT.PUSH);
-	    toolItem.setToolTipText("Begin");
-	    toolItem.setImage(AnimationPlugin.getImageDescriptor(ICONS_REWIND_GIF).createImage());
-	    toolItem.addSelectionListener(new SelectionAdapter() {
+	    replayBeginToolItem = new ToolItem(replayToolBar, SWT.PUSH);
+	    replayBeginToolItem.setToolTipText("Begin");
+	    replayBeginToolItem.setImage(AnimationPlugin.getImageDescriptor(ICONS_REWIND_GIF).createImage());
+	    replayBeginToolItem.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				animationController.gotoAnimationBegin();
 			}
 	    });
 	
-	    toolItem = new ToolItem(replayToolBar, SWT.PUSH);
-	    toolItem.setToolTipText("Back");
-	    toolItem.setImage(AnimationPlugin.getImageDescriptor(ICONS_BACKPLAY_GIF).createImage());
-	    toolItem.addSelectionListener(new SelectionAdapter() {
+	    replayBackToolItem = new ToolItem(replayToolBar, SWT.PUSH);
+	    replayBackToolItem.setToolTipText("Back");
+	    replayBackToolItem.setImage(AnimationPlugin.getImageDescriptor(ICONS_BACKPLAY_GIF).createImage());
+	    replayBackToolItem.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				animationController.runAnimationBack();
 			}
 	    });
 	
-	    toolItem = new ToolItem(replayToolBar, SWT.PUSH);
-	    toolItem.setToolTipText("Backstep");
-	    toolItem.setImage(AnimationPlugin.getImageDescriptor(ICONS_BACKSTEP_GIF).createImage());
-	    toolItem.addSelectionListener(new SelectionAdapter() {
+	    replayBackstepToolItem = new ToolItem(replayToolBar, SWT.PUSH);
+	    replayBackstepToolItem.setToolTipText("Backstep");
+	    replayBackstepToolItem.setImage(AnimationPlugin.getImageDescriptor(ICONS_BACKSTEP_GIF).createImage());
+	    replayBackstepToolItem.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				animationController.stepAnimationBack();
 			}
@@ -127,33 +133,32 @@ public class ReplayAnimationEditor extends EditorPart implements IReplayAnimatio
 			}
 	    });
 	
-	    toolItem = new ToolItem(replayToolBar, SWT.PUSH);
-	    toolItem.setToolTipText("Step");
-	    toolItem.setImage(AnimationPlugin.getImageDescriptor(ICONS_STEP_GIF).createImage());
-	    toolItem.addSelectionListener(new SelectionAdapter() {
+	    replayStepToolItem = new ToolItem(replayToolBar, SWT.PUSH);
+	    replayStepToolItem.setToolTipText("Step");
+	    replayStepToolItem.setImage(AnimationPlugin.getImageDescriptor(ICONS_STEP_GIF).createImage());
+	    replayStepToolItem.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				animationController.stepAnimation();
 			}
 	    });
 	
-	    toolItem = new ToolItem(replayToolBar, SWT.PUSH);
-	    toolItem.setToolTipText("Play");
-	    toolItem.setImage(AnimationPlugin.getImageDescriptor(ICONS_PLAY_GIF).createImage());
-	    toolItem.addSelectionListener(new SelectionAdapter() {
+	    replayPlayToolItem = new ToolItem(replayToolBar, SWT.PUSH);
+	    replayPlayToolItem.setToolTipText("Play");
+	    replayPlayToolItem.setImage(AnimationPlugin.getImageDescriptor(ICONS_PLAY_GIF).createImage());
+	    replayPlayToolItem.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				animationController.runAnimation();
 			}
 	    });
 	
-	    toolItem = new ToolItem(replayToolBar, SWT.PUSH);
-	    toolItem.setToolTipText("End");
-	    toolItem.setImage(AnimationPlugin.getImageDescriptor(ICONS_GOTOEND_GIF).createImage());
-	    toolItem.addSelectionListener(new SelectionAdapter() {
+	    replayEndToolItem = new ToolItem(replayToolBar, SWT.PUSH);
+	    replayEndToolItem.setToolTipText("End");
+	    replayEndToolItem.setImage(AnimationPlugin.getImageDescriptor(ICONS_GOTOEND_GIF).createImage());
+	    replayEndToolItem.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				animationController.gotoAnimationEnd();
 			}
 	    });
-	    
 	    // navigation buttons
 		CoolItem coolItem = new CoolItem(coolBar, SWT.NONE);
 		coolItem.setControl(replayToolBar);
@@ -318,14 +323,40 @@ public class ReplayAnimationEditor extends EditorPart implements IReplayAnimatio
 	public void doSaveAs() {
 	}
 
-	public void controllerStateChanged() {		
-		if (animationController.isRunning())
-			replayStopToolItem.setEnabled(true);
-		else
-			replayStopToolItem.setEnabled(false);
+	public void controllerStateChanged() {
+		if (!replayToolBar.isDisposed()) {
+			if (animationController.isRunning())
+				replayStopToolItem.setEnabled(true);
+			else
+				replayStopToolItem.setEnabled(false);
+			}
 	}
 
 	public void replayPositionChanged(long eventNumber, double simulationTime, long animationNumber, double animationTime) {
+		if (!replayToolBar.isDisposed()) {
+			if (animationController.isAnimationPositionValid() && animationController.isAtAnimationBegin()) {
+				replayBeginToolItem.setEnabled(false);
+				replayBackToolItem.setEnabled(false);
+				replayBackstepToolItem.setEnabled(false);
+			}
+			else {
+				replayBeginToolItem.setEnabled(true);
+				replayBackToolItem.setEnabled(true);
+				replayBackstepToolItem.setEnabled(true);
+			}
+	
+			if (animationController.isAnimationPositionValid() && animationController.isAtAnimationEnd()) {
+				replayStepToolItem.setEnabled(false);
+				replayPlayToolItem.setEnabled(false);
+				replayEndToolItem.setEnabled(false);
+			}
+			else {
+				replayStepToolItem.setEnabled(true);
+				replayPlayToolItem.setEnabled(true);
+				replayEndToolItem.setEnabled(true);
+			}
+		}
+
 		valueChanged(replayEventNumberWidget, eventNumber);
 		valueChanged(replaySimulationTimeWidget, simulationTime);
 		valueChanged(replayAnimationNumberWidget, animationNumber);
@@ -333,16 +364,18 @@ public class ReplayAnimationEditor extends EditorPart implements IReplayAnimatio
 	}
 
 	protected void valueChanged(Text widget, Number newValue) {
-		Number oldValue = null;
-		
-		try {
-			oldValue = numberFormat.parse(widget.getText());
+		if (!widget.isDisposed()) {
+			Number oldValue = null;
+			
+			try {
+				oldValue = numberFormat.parse(widget.getText());
+			}
+			catch (ParseException e) {
+				// void
+			}
+			
+			if (oldValue == null || newValue.doubleValue() != oldValue.doubleValue())
+				widget.setText(numberFormat.format(newValue));
 		}
-		catch (ParseException e) {
-			// void
-		}
-		
-		if (oldValue == null || newValue.doubleValue() != oldValue.doubleValue())
-			widget.setText(numberFormat.format(newValue));
 	}
 }

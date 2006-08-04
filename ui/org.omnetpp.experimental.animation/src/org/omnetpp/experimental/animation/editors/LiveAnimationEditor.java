@@ -247,20 +247,22 @@ public class LiveAnimationEditor extends ReplayAnimationEditor implements ILiveA
 	public void controllerStateChanged() {		
 		super.controllerStateChanged();
 
-		if (getLiveAnimationController().isRunning() && getLiveAnimationController().isRunningLive())
-			liveStopToolItem.setEnabled(true);
-		else
-			liveStopToolItem.setEnabled(false);
-		
-		if (getLiveAnimationController().isSimulationFinished()) {
-			liveRestartToolItem.setEnabled(true);
-
-			liveStopToolItem.setEnabled(false);
-			liveStepToolItem.setEnabled(false);
-			liveRunToolItem.setEnabled(false);
-			liveFastToolItem.setEnabled(false);
-			liveExpressToolItem.setEnabled(false);
-			liveFinishToolItem.setEnabled(false); 
+		if (!replayToolBar.isDisposed()) {
+			if (getLiveAnimationController().isRunning() && getLiveAnimationController().isRunningLive())
+				liveStopToolItem.setEnabled(true);
+			else
+				liveStopToolItem.setEnabled(false);
+			
+			if (getLiveAnimationController().isSimulationFinished()) {
+				liveRestartToolItem.setEnabled(true);
+	
+				liveStopToolItem.setEnabled(false);
+				liveStepToolItem.setEnabled(false);
+				liveRunToolItem.setEnabled(false);
+				liveFastToolItem.setEnabled(false);
+				liveExpressToolItem.setEnabled(false);
+				liveFinishToolItem.setEnabled(false); 
+			}
 		}
 	}
 

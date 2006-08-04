@@ -30,29 +30,35 @@ public class HandleMessageAnimation extends AbstractAnimationPrimitive {
 	
 	@Override
 	public double getEndSimulationTime() {
-		return animationEnvironment.getSimulationTimeForEventNumber(eventNumber + 1);
+		return super.getEndSimulationTime();
+// FIXME: uncomment with end animation time		return animationEnvironment.getSimulationTimeForEventNumber(eventNumber + 1);
 	}
 	
 	@Override
 	public double getEndAnimationTime() {
-		return animationEnvironment.getAnimationTimeForEventNumber(eventNumber + 1);
+		return getBeginAnimationTime();
+// FIXME: this does not return the correct value during loading		return animationEnvironment.getAnimationTimeForEventNumber(eventNumber + 1);
 	}
 	
 	public void redo() {
-		if (ellipse.getParent()!=getRootFigure())  //FIXME 
-			addFigure(ellipse);
+//		if (getModule().getParentModule() == animationEnvironment.getSimulation().getRootModule())  //FIXME 
+//			addFigure(ellipse);
 	}
 
 	public void undo() {
-		if (ellipse.getParent()==getRootFigure())  //FIXME 
-			removeFigure(ellipse);
+//		if (getModule().getParentModule() == animationEnvironment.getSimulation().getRootModule())  //FIXME 
+//			removeFigure(ellipse);
 	}
 
 	public void animateAt(long eventNumber, double simulationTime, long animationNumber, double animationTime) {
-		IRuntimeModule module = animationEnvironment.getSimulation().getModuleByID(moduleId);
+		IRuntimeModule module = getModule();
 		if (module.getParentModule()==animationEnvironment.getSimulation().getRootModule()) { //FIXME
 			ModuleFigure moduleFigure = (ModuleFigure)animationEnvironment.getFigure(module);
 			setConstraint(ellipse, new Rectangle(moduleFigure.getLocation().x + 3, moduleFigure.getLocation().y + 3, 7, 7));
 		}
+	}
+
+	private IRuntimeModule getModule() {
+		return animationEnvironment.getSimulation().getModuleByID(moduleId);
 	}
 }

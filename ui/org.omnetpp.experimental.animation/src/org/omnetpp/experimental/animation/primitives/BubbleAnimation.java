@@ -54,6 +54,11 @@ public class BubbleAnimation extends AbstractAnimationPrimitive {
 			addFigure(background);
 			addFigure(label);
 		}
+
+		ModuleFigure moduleFigure = (ModuleFigure)animationEnvironment.getFigure(module);
+		Rectangle r = new Rectangle(moduleFigure.getLocation(), new Dimension(10 * text.length(), 20));
+		setConstraint(background, r);
+		setConstraint(label, r);
 	}
 
 	public void undo() {
@@ -67,10 +72,6 @@ public class BubbleAnimation extends AbstractAnimationPrimitive {
 	}
 	
 	public void animateAt(long eventNumber, double simulationTime, long animationNumber, double animationTime) {
-		ModuleFigure moduleFigure = (ModuleFigure)animationEnvironment.getFigure(getModule());
-		Rectangle r = new Rectangle(moduleFigure.getLocation(), new Dimension(10 * text.length(), 20));
-		setConstraint(background, r);
-		setConstraint(label, r);
 	}
 
 	protected IRuntimeModule getModule() {

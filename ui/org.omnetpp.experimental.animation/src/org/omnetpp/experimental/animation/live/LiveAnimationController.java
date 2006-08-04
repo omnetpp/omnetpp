@@ -228,11 +228,11 @@ public class LiveAnimationController extends ReplayAnimationController implement
 
 	@Override
 	protected long loadAnimationPrimitivesForPosition() {
-		int count = animationPrimitives.size();
+		int count = beginOrderedAnimationPrimitives.size();
 
 		if (isRunningLive)
 			while (!isSimulationFinished()) {
-				IAnimationPrimitive lastAnimationPrimitive = animationPrimitives.get(animationPrimitives.size() - 1);
+				IAnimationPrimitive lastAnimationPrimitive = beginOrderedAnimationPrimitives.get(beginOrderedAnimationPrimitives.size() - 1);
 	
 				if (lastAnimationPrimitive.getEventNumber() > eventNumber &&
 					lastAnimationPrimitive.getBeginSimulationTime() > simulationTime &&
@@ -244,7 +244,7 @@ public class LiveAnimationController extends ReplayAnimationController implement
 				//jenv.runSimulation(mode, until_time, until_event);
 			}
 		
-		return animationPrimitives.size() - count;
+		return beginOrderedAnimationPrimitives.size() - count;
 	}
 
 	protected void setEndPositionAtLastStopLivePosition() {
@@ -369,7 +369,7 @@ public class LiveAnimationController extends ReplayAnimationController implement
 	public void messageSendHop(cMessage msg, cGate gate, double propagationTime, double transmissionTime, double transmissionStartTime) {
 		ReplayMessage rmsg = new ReplayMessage();
 		rmsg.setName(msg.getName());
-		rmsg.setClassName(msg.className());
+		rmsg.setClassName(msg.getClassName());
 		rmsg.setKind(msg.getKind());
 		rmsg.setLength(msg.getLength());
 		rmsg.setId(msg.getId());

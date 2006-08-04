@@ -4,6 +4,7 @@ import org.omnetpp.common.displaymodel.IDisplayString;
 import org.omnetpp.common.simulation.model.IRuntimeModule;
 import org.omnetpp.experimental.animation.replay.ReplayAnimationController;
 import org.omnetpp.figures.SubmoduleFigure;
+import org.omnetpp.figures.layout.SubmoduleConstraint;
 
 public class SetModuleDisplayStringAnimation extends AbstractAnimationPrimitive {
 	private int moduleId;
@@ -36,6 +37,11 @@ public class SetModuleDisplayStringAnimation extends AbstractAnimationPrimitive 
 		IRuntimeModule module = animationEnvironment.getSimulation().getModuleByID(moduleId);
 		if (module.getParentModule() == animationEnvironment.getSimulation().getRootModule()) { //FIXME
 			SubmoduleFigure moduleFigure = (SubmoduleFigure)animationEnvironment.getFigure(module);
+			SubmoduleConstraint submoduleConstraint = new SubmoduleConstraint(displayString);
+			submoduleConstraint.setVectorName(module.getFullPath());
+			submoduleConstraint.setVectorSize(module.getSize());
+			submoduleConstraint.setVectorIndex(module.getIndex());
+			moduleFigure.setConstraint(submoduleConstraint);
 			moduleFigure.setDisplayString(displayString);
 		}
 	}

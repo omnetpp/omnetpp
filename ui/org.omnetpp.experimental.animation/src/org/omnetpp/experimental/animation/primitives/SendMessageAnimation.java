@@ -11,6 +11,7 @@ import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.simulation.model.ConnectionId;
 import org.omnetpp.common.simulation.model.IRuntimeMessage;
 import org.omnetpp.experimental.animation.replay.ReplayAnimationController;
+import org.omnetpp.figures.CompoundModuleFigure;
 import org.omnetpp.figures.ConnectionFigure;
 
 /**
@@ -33,6 +34,8 @@ public class SendMessageAnimation extends AbstractAnimationPrimitive {
 	private Polyline messageLine;
 	
 	private Label toolTip;
+	
+	private Label messageLabel;
 
 	public SendMessageAnimation(ReplayAnimationController animationController,
 								long eventNumber,
@@ -65,6 +68,8 @@ public class SendMessageAnimation extends AbstractAnimationPrimitive {
 		messageLine.setForegroundColor(color);
 		messageLine.setLineWidth(5);
 		messageLine.setToolTip(toolTip);
+		
+		messageLabel = new Label();
 	}
 	
 	@Override
@@ -83,18 +88,28 @@ public class SendMessageAnimation extends AbstractAnimationPrimitive {
 	public void redo() {
 		ConnectionFigure connectionFigure = (ConnectionFigure)animationEnvironment.getFigure(connectionId);
 		if (connectionFigure != null) {
+			CompoundModuleFigure enclosingModuleFigure = getEnclosingModuleFigure();
+			
 			if (transmissionTime != 0)
-				getEnclosingModuleFigure().addMessageFigure(messageLine);
-			getEnclosingModuleFigure().addMessageFigure(messageEllipse);
+				enclosingModuleFigure.addMessageFigure(messageLine);
+			enclosingModuleFigure.addMessageFigure(messageEllipse);
+
+			if (msg != null)
+				messageLabel.setText((msg.getName() != null ? msg.getName() : "") + "(" + msg.getClassName() + ")");
+			enclosingModuleFigure.addMessageFigure(messageLabel);
 		}
 	}
 
 	public void undo() {
 		ConnectionFigure connectionFigure = (ConnectionFigure)animationEnvironment.getFigure(connectionId);
 		if (connectionFigure != null) {
+			CompoundModuleFigure enclosingModuleFigure = getEnclosingModuleFigure();
+		
 			if (transmissionTime != 0)
-				getEnclosingModuleFigure().removeMessageFigure(messageLine);
-			getEnclosingModuleFigure().removeMessageFigure(messageEllipse);
+				enclosingModuleFigure.removeMessageFigure(messageLine);
+			enclosingModuleFigure.removeMessageFigure(messageEllipse);
+			
+			enclosingModuleFigure.removeMessageFigure(messageLabel);
 		}
 	}
 
@@ -123,6 +138,7 @@ public class SendMessageAnimation extends AbstractAnimationPrimitive {
 				Point p = getConvexCombination(p1, p2, alpha);
 				//setConstraint(messageEllipse, new Rectangle(p.x - 3, p.y - 3, 7, 7));
 				messageEllipse.setBounds(new Rectangle(p.x - 3, p.y - 3, 7, 7));//XXX clarify constraint vs setbounds
+				messageLabel.setBounds(new Rectangle(p.x, p.y, 200, 20)); // FIXME: should set location instead but does not show up
 			}
 			else {
 				double beta;
@@ -140,6 +156,7 @@ public class SendMessageAnimation extends AbstractAnimationPrimitive {
 				messageLine.setEndpoints(pAlpha, pBeta); //XXX clarify constraint vs setEndsPoints
 				//setConstraint(messageEllipse, new Rectangle(pAlpha.x - 3, pAlpha.y - 3, 7, 7));
 				messageEllipse.setBounds(new Rectangle(pAlpha.x - 3, pAlpha.y - 3, 7, 7));  //XXX clarify constraint vs setbounds
+				messageLabel.setBounds(new Rectangle(pAlpha.x, pAlpha.y, 200, 20)); // FIXME: should set location instead but does not show up
 			}
 			System.out.println("bounds:"+messageEllipse.getBounds() + " constraint:"+getLayoutManager().getConstraint(messageEllipse));
 		}

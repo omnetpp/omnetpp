@@ -9,11 +9,22 @@ public class AnimationPosition {
 	
 	protected double animationTime;
 
+	public AnimationPosition() {
+		this(-1, -1, -1, -1);
+	}
+	
 	public AnimationPosition(long eventNumber, double simulationTime, long animationNumber, double animationTime) {
 		this.eventNumber = eventNumber;
 		this.simulationTime = simulationTime;
 		this.animationNumber = animationNumber;
 		this.animationTime = animationTime;
+	}
+
+	public AnimationPosition(AnimationPosition animationPosition) {
+		this.eventNumber = animationPosition.eventNumber;
+		this.simulationTime = animationPosition.simulationTime;
+		this.animationNumber = animationPosition.animationNumber;
+		this.animationTime = animationPosition.animationTime;
 	}
 
 	public long getAnimationNumber() {
@@ -80,5 +91,12 @@ public class AnimationPosition {
 		if (Double.doubleToLongBits(simulationTime) != Double.doubleToLongBits(other.simulationTime))
 			return false;
 		return true;
+	}
+	
+	public boolean isValid() {
+		return eventNumber >= 0 &&
+			simulationTime >= 0 &&
+			animationNumber >= 0 &&
+			animationTime >= 0;
 	}
 }
