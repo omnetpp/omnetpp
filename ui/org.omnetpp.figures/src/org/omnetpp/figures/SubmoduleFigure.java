@@ -130,7 +130,7 @@ public class SubmoduleFigure extends ModuleFigure implements HandleBounds {
         nameFigure.setText(name);
     }
     
-    public void setRange(int radius, Color fillColor, Color borderColor, int borderWidth) {
+    protected void setRange(int radius, Color fillColor, Color borderColor, int borderWidth) {
         if (rangeFigure == null) return;
         if(radius > 0) {
             int rad = radius;
@@ -152,7 +152,7 @@ public class SubmoduleFigure extends ModuleFigure implements HandleBounds {
         	rangeAttachLayer.revalidate();
     }
     
-    public void setTooltipText(String tttext) {
+    protected void setTooltipText(String tttext) {
         if(tttext == null || "".equals(tttext)) {
             setToolTip(null);
         } else {
@@ -161,13 +161,13 @@ public class SubmoduleFigure extends ModuleFigure implements HandleBounds {
         }
     }
     
-    public void setQueueText(String qtext) {
+    protected void setQueueText(String qtext) {
         if (queueFigure == null) return;
         queueFigure.setVisible(qtext != null && !"".equals(qtext));
         queueFigure.setText(qtext);
     }
     
-    public void setInfoText(String text, String alignment, Color color) {
+    protected void setInfoText(String text, String alignment, Color color) {
         if (textFigure == null || textAttachLayer == null) return;
         textFigure.setVisible(text != null && !"".equals(text));
         textFigure.setText(text);
@@ -198,7 +198,7 @@ public class SubmoduleFigure extends ModuleFigure implements HandleBounds {
         calloutFigure.clearCallout();
     }
     
-    public void setShape(Image img, 
+    protected void setShape(Image img, 
             String shape, int shapeWidth, int shapeHeight, 
             Color shapeFillColor, Color shapeBorderColor, int shapeBorderWidth) {
         // handle defaults. if no size is given and no icon is present use a default icon
@@ -277,6 +277,10 @@ public class SubmoduleFigure extends ModuleFigure implements HandleBounds {
         setPreferredSize(actualSize);
     }
     
+    /**
+     * Sets the external image decoration (for pins)
+     * @param img
+     */
     public void setImageDecoration(Image img) {
         if(img != decoratorImageFigure.getImage())
             decoratorImageFigure.setImage(img);
@@ -297,18 +301,11 @@ public class SubmoduleFigure extends ModuleFigure implements HandleBounds {
     }
     
 	/**
-	 * Adjusts the image properties using a displayString object
+	 * Adjusts the image properties using a displayString object (except the location and size)
 	 * @param dps
 	 */
 	public void setDisplayString(IDisplayString dps) {
-		
-		// fallback for setting the constraint (if it's not yet set)
-//		Object currentConstr = getParent().getLayoutManager().getConstraint(this); 
-//		if ( currentConstr == null) {
-//	        SubmoduleConstraint constr = new SubmoduleConstraint(dps);
-//	        setConstraint(constr);
-//		}
-		
+		lastDisplayString = dps;
         // range support
         setRange(
         		dps.getRange(),

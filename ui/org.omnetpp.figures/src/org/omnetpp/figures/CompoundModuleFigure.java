@@ -248,7 +248,7 @@ public class CompoundModuleFigure extends ModuleFigure
 	 * @param borderColor
 	 * @param borderWidth
 	 */
-	public void setBackgorund(Image img, String arrange, Color backgroundColor, Color borderColor, int borderWidth) {
+	protected void setBackgorund(Image img, String arrange, Color backgroundColor, Color borderColor, int borderWidth) {
 		moduleBackgroundColor = (backgroundColor==null) ? ColorFactory.defaultBackground : backgroundColor;
 		moduleBorderColor = (borderColor==null) ? ColorFactory.defaultBorder : borderColor;
 		
@@ -268,14 +268,14 @@ public class CompoundModuleFigure extends ModuleFigure
 	 * @param noOfTics Number of minor ticks between two major one
 	 * @param gridColor Grid color
 	 */
-	public void setGrid(int tickDistance, int noOfTics, Color gridColor) {
+	protected void setGrid(int tickDistance, int noOfTics, Color gridColor) {
 		this.gridTickDistance = tickDistance;
 		this.gridNoOfMinorTics = noOfTics;
 		this.gridColor = gridColor;
 		invalidate();
 	}
 
-	public void setDefaultShape(Image img, String shape, int shapeWidth, int shapeHeight, Color shapeFillColor, Color shapeBorderColor, int shapeBorderWidth) {
+	protected void setDefaultShape(Image img, String shape, int shapeWidth, int shapeHeight, Color shapeFillColor, Color shapeBorderColor, int shapeBorderWidth) {
 		getCompoundModuleBorder().setImage(img);
 		// TODO support shapes too
 		invalidate();
@@ -291,7 +291,7 @@ public class CompoundModuleFigure extends ModuleFigure
 	 * @param scale scale value (a value of 18 means: 1 unit = 18 pixels)
 	 * @param unit the unit of the dimension
 	 */
-	public void setScale(float scale, String unit) {
+	protected void setScale(float scale, String unit) {
 		this.scale = scale;
 		this.unit = unit;
 		invalidate();
@@ -302,7 +302,9 @@ public class CompoundModuleFigure extends ModuleFigure
 	 * @param dps The display string object containing the properties
 	 */
 	public void setDisplayString(IDisplayString dps) {
-        // setup the figure's properties
+		lastDisplayString = dps;
+
+		// setup the figure's properties
         // set the location and size using the models helper methods
         // if the size is specified in the displaystring we should set it as preferred size
         // otherwise getPreferredSize should return the size calculated from the children

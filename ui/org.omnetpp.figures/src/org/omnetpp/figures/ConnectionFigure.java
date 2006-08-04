@@ -13,6 +13,7 @@ public class ConnectionFigure extends PolylineConnection {
 	protected int localLineWidth = 1;
 	protected Color localLineColor = null;
     protected PolygonDecoration arrow = null;
+	private IDisplayString lastDisplayString;
     
     public Color getLocalLineColor() {
 		return localLineColor;
@@ -40,7 +41,7 @@ public class ConnectionFigure extends PolylineConnection {
 
     }
     
-    public void setStyle(Color color, int width, String style, String segments) {
+    protected void setStyle(Color color, int width, String style, String segments) {
     	style = (style == null) ? "" : style;
     	if (style.toLowerCase().startsWith("da"))
     		setLineStyle(localLineStyle = Graphics.LINE_DASH);
@@ -63,9 +64,18 @@ public class ConnectionFigure extends PolylineConnection {
 	 * @param dps The display string object containing the properties
 	 */
 	public void setDisplayString(IDisplayString dps) {
+		lastDisplayString = dps;
+		
         setStyle(ColorFactory.asColor(dps.getAsStringDef(DisplayString.Prop.CONNECTION_COL)), 
 				dps.getAsIntDef(DisplayString.Prop.CONNECTION_WIDTH, 1), 
 				dps.getAsStringDef(DisplayString.Prop.CONNECTION_STYLE), 
 				dps.getAsStringDef(DisplayString.Prop.CONNECTION_SEGMENTS));
 	}
+    /**
+     * Returns the lastly set displaysting
+     * @return
+     */
+	public IDisplayString getLastDisplayString() {
+    	return lastDisplayString;
+    }
 }

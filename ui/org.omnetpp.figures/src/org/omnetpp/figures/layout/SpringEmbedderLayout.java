@@ -101,7 +101,7 @@ public class SpringEmbedderLayout extends XYLayout {
 		alg.setSeed(algSeed);
     	// execute the algorithm 
     	alg.execute();
-    	System.out.println("Layouting figure :"+nodeParent+" seed: "+algSeed);
+//    	System.out.println("Layouting figure :"+nodeParent+" seed: "+algSeed);
 	}
 	
 	/**
