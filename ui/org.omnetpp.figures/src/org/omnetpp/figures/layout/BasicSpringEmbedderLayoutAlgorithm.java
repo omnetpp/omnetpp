@@ -289,10 +289,9 @@ public class BasicSpringEmbedderLayoutAlgorithm extends AbstractGraphLayoutAlgor
 	    //printf("DBG: layout done in %g secs, %d iterations (%g sec/iter)\n",
 	    //       (end-beg)/(double)CLOCKS_PER_SEC, i, (end-beg)/(double)CLOCKS_PER_SEC/i);
 
-	    // scale back if too big -- BUT only if we don't have any fixed (or anchored) nodes,
-	    // because we don't want to change explicitly given coordinates (or distances
-	    // between anchored nodes)
-	    if (sizingMode==SIZINGMODE_SCALE && !haveFixedNode)
+	    // scale back if too big -- BUT scale back only non fixed nodes.
+	    // fixed nodes do not change position
+	    if (sizingMode==SIZINGMODE_SCALE)
 	    {
 	        // calculate bounding box
 	        double x1, y1, x2, y2;
@@ -301,6 +300,8 @@ public class BasicSpringEmbedderLayoutAlgorithm extends AbstractGraphLayoutAlgor
 	        y1 = y2 = n0.y;
 	        for (Node n : nodes)
 	        {
+	        	// skip the fixed nodes
+	        	if (n.fixed) continue;
 	            if (n.x-n.sx < x1) x1 = n.x-n.sx;
 	            if (n.y-n.sy < y1) y1 = n.y-n.sy;
 	            if (n.x+n.sx > x2) x2 = n.x+n.sx;
@@ -317,6 +318,8 @@ public class BasicSpringEmbedderLayoutAlgorithm extends AbstractGraphLayoutAlgor
 	            if (yfact>1) {yfact=1;}
 	            for (Node n : nodes)
 	            {
+		        	// skip the fixed nodes
+		        	if (n.fixed) continue;
 	                n.x = bx + (n.x-x1)*xfact;
 	                n.y = by + (n.y-y1)*yfact;
 	            }
@@ -326,6 +329,8 @@ public class BasicSpringEmbedderLayoutAlgorithm extends AbstractGraphLayoutAlgor
 	            // don't want to rescale with anchored nodes, just shift bounding box to (bx,by)
 	            for (Node n : nodes)
 	            {
+		        	// skip the fixed nodes
+		        	if (n.fixed) continue;
 	                n.x = bx + n.x - x1;
 	                n.y = by + n.y - y1;
 	            }
