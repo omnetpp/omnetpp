@@ -61,7 +61,7 @@ public class ChartPage extends ScaveEditorPage {
 //		IDList idlist = DatasetManager.getIDListFromDataset(scaveEditor.getResultFileManager(), dataset, chart);
 //		DatasetType type = dataset.getType();
 //		final InteractiveChart chart = ChartFactory.createChart(parent, type, idlist, scaveEditor.getResultFileManager()); 
-		final InteractiveChart chart = ChartFactory.createChart(parent, this.chart, scaveEditor.getResultFileManager());
+		final InteractiveChart chart = ChartFactory.createChart(parent, this.chart, scaveEditor.getResultFileManager(), -1, -1);
 		setChart(chart);
 		chart.addMouseListener(new MouseAdapter() {
 			public void mouseUp(MouseEvent e) {

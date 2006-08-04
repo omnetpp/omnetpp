@@ -70,6 +70,13 @@ public class ChartSWTWrapper extends Canvas {
 			   }
 			});
 	}
+	
+	public void setSize(int width, int height) {
+		if (width != SWT.DEFAULT || height != SWT.DEFAULT) {
+			Point size = getSize();
+			super.setSize(width != SWT.DEFAULT ? width : size.x, height != SWT.DEFAULT ? height : size.y);
+		}
+	}
 
 	/**
 	 * Called when an area was dragged out in the chart.

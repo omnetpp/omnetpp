@@ -21,6 +21,8 @@ import org.omnetpp.scave.model.Dataset;
 import org.omnetpp.scave.model.DatasetType;
 import org.omnetpp.scave.model.ScaveModelPackage;
 import org.omnetpp.scave2.charting.ChartFactory;
+import org.omnetpp.scave2.charting.ChartSWTWrapper;
+import org.omnetpp.scave2.charting.InteractiveChart;
 import org.omnetpp.scave2.charting.VectorChart;
 import org.omnetpp.scave2.editors.ScaveEditor;
 import org.omnetpp.scave2.model.DatasetManager;
@@ -84,7 +86,8 @@ public class ChartSheetPage extends ScaveEditorPage {
 		Collection<Chart> charts = chartsheet.getCharts();
 		Composite parent = getChartSheetComposite();
 		for (Chart chart : charts) {
-			addChart(ChartFactory.createChart(parent, chart, scaveEditor.getResultFileManager()));
+			InteractiveChart swtChart = ChartFactory.createChart(parent, chart, scaveEditor.getResultFileManager(), 320, 200);
+			addChart(swtChart);
 		}
 	}
 }

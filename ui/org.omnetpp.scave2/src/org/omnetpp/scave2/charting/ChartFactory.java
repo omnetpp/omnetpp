@@ -21,8 +21,8 @@ import org.jfree.data.xy.XYSeriesCollection;
 import org.jfree.ui.RectangleEdge;
 import org.jfree.ui.RectangleInsets;
 import org.omnetpp.scave.engine.IDList;
+import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engine.ScalarResult;
-import org.omnetpp.scave.engineext.ResultFileManagerEx;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.Dataset;
 import org.omnetpp.scave.model.DatasetType;
@@ -34,36 +34,38 @@ import org.omnetpp.scave2.model.ScaveModelUtil;
  */
 public class ChartFactory {
 	
-	public static InteractiveChart createChart(Composite parent, Chart chart, ResultFileManagerEx manager) {
+	public static InteractiveChart createChart(Composite parent, Chart chart, ResultFileManager manager) {
+		return createChart(parent, chart, manager, SWT.DEFAULT, SWT.DEFAULT);
+	}
+
+	public static InteractiveChart createChart(Composite parent, Chart chart, ResultFileManager manager, int width, int height) {
 		Dataset dataset = ScaveModelUtil.findEnclosingDataset(chart);
 		switch (dataset.getType().getValue()) {
-		case DatasetType.SCALAR: return createScalarChart(parent, chart, dataset, manager);
-		case DatasetType.VECTOR: return createVectorChart(parent, chart, dataset, manager);
-		case DatasetType.HISTOGRAM: return createHistogramChart(parent, chart, dataset, manager);
+		case DatasetType.SCALAR: return createScalarChart(parent, chart, dataset, manager, width, height);
+		case DatasetType.VECTOR: return createVectorChart(parent, chart, dataset, manager, width, height);
+		case DatasetType.HISTOGRAM: return createHistogramChart(parent, chart, dataset, manager, width, height);
 		}
 		throw new RuntimeException("invalid or unset dataset 'type' attribute: "+dataset.getType()); //XXX proper error handling
 	}
 	
-	public static InteractiveChart createScalarChart(Composite parent, Chart chart, Dataset dataset, ResultFileManagerEx manager) {
+	private static InteractiveChart createScalarChart(Composite parent, Chart chart, Dataset dataset, ResultFileManager manager, int width, int height) {
 		IDList idlist = DatasetManager.getIDListFromDataset(manager, dataset, chart);
-		return createScalarChart(parent, idlist, manager);
-	}
-	
-	public static InteractiveChart createScalarChart(Composite parent, IDList idlist, ResultFileManagerEx manager) {
-		InteractiveChart chart = new InteractiveChart(parent, SWT.NONE);
-		JFreeChart jfreechart = createEmptyScalarJFreeChart();
-		CategoryDataset dataset = createChartWithRunsOnXAxis(idlist, manager);
-		chart.setChart(jfreechart);
-		jfreechart.getCategoryPlot().setDataset(dataset);
-		if (dataset.getRowCount() <= 5)
+		InteractiveChart interactiveChart = new InteractiveChart(parent, SWT.NONE);
+		JFreeChart jfreechart = createEmptyScalarJFreeChart(chart.getName(), "Category", "Value");
+		CategoryDataset categoryDataset = createChartWithRunsOnXAxis(idlist, manager);
+		interactiveChart.setSize(width, height);
+		interactiveChart.setChart(jfreechart);
+		jfreechart.getCategoryPlot().setDataset(categoryDataset);
+		if (categoryDataset.getRowCount() <= 5)
 			addLegend(jfreechart);
-		return chart;
+		return interactiveChart;
 	}
-	
-	public static InteractiveChart createVectorChart(Composite parent, Chart chart, Dataset dataset, ResultFileManagerEx manager) {
+
+	private static InteractiveChart createVectorChart(Composite parent, Chart chart, Dataset dataset, ResultFileManager manager, int width, int height) {
 		XYDataset data = new OutputVectorDataset(DatasetManager.getDataFromDataset(manager, dataset, chart));
 		InteractiveChart interactiveChart = new InteractiveChart(parent, SWT.NONE);
-		JFreeChart jfreechart = createEmptyVectorJFreeChart();
+		JFreeChart jfreechart = createEmptyVectorJFreeChart(chart.getName(), "X", "Y");
+		interactiveChart.setSize(width, height);
 		interactiveChart.setChart(jfreechart);
 		jfreechart.getXYPlot().setDataset(data);
 		if (data.getSeriesCount() <= 5)
@@ -72,14 +74,17 @@ public class ChartFactory {
 		return interactiveChart;
 	}
 	
-	public static InteractiveChart createHistogramChart(Composite parent, Chart chart, Dataset dataset, ResultFileManagerEx manager) {
-		return null; // TODO
+	private static InteractiveChart createHistogramChart(Composite parent, Chart chart, Dataset dataset, ResultFileManager manager, int width, int height) {
+		InteractiveChart interactiveChart = new InteractiveChart(parent, SWT.NONE);
+		interactiveChart.setSize(width, height);
+		// TODO: create JFreeChart
+		return interactiveChart;
 	}
 	
-	private static JFreeChart createEmptyScalarJFreeChart() {
+	private static JFreeChart createEmptyScalarJFreeChart(String title, String categoryAxisLabel, String valueAxisLabel) {
 		DefaultCategoryDataset categorydataset = new DefaultCategoryDataset();
 		JFreeChart jfreechart = org.jfree.chart.ChartFactory.createBarChart3D(
-				"Title", "Category", "Value",
+				title, categoryAxisLabel, valueAxisLabel,
 				categorydataset, PlotOrientation.VERTICAL,
 				false, false, false);
 		CategoryPlot categoryplot = jfreechart.getCategoryPlot();
@@ -91,10 +96,10 @@ public class ChartFactory {
 		return jfreechart;
 	}
 	
-	private static JFreeChart createEmptyVectorJFreeChart() {
+	private static JFreeChart createEmptyVectorJFreeChart(String title, String xAxisLabel, String yAxisLabel) {
 		XYSeriesCollection xyseriescollection = new XYSeriesCollection();
 		JFreeChart jfreechart = org.jfree.chart.ChartFactory.createXYLineChart(
-				"Line Chart", "X", "Y",
+				title, xAxisLabel, yAxisLabel,
 				xyseriescollection, PlotOrientation.VERTICAL,
 				false, false, false);
 		jfreechart.setAntiAlias(false);
@@ -121,7 +126,7 @@ public class ChartFactory {
         jfreechart.addSubtitle(legend);
 	}
 	
-	private static CategoryDataset createChartWithRunsOnXAxis(IDList idlist, ResultFileManagerEx manager) {
+	private static CategoryDataset createChartWithRunsOnXAxis(IDList idlist, ResultFileManager manager) {
 		DefaultCategoryDataset ds = new DefaultCategoryDataset();
 
 		int sz = (int)idlist.size();
