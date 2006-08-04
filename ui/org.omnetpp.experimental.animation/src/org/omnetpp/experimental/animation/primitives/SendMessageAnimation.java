@@ -48,11 +48,12 @@ public class SendMessageAnimation extends AbstractAnimationPrimitive {
 		
 		toolTip = new Label();
 		toolTip.setText("Sending time: " + simulationTime +
-						" arrival time: " + endSimulationTime +
-						" propagation time: " + propagationTime +
-						" transmission time: " + transmissionTime);
+				" arrival time: " + endSimulationTime +
+				" propagation time: " + propagationTime +
+				" transmission time: " + transmissionTime);
 
 		messageEllipse = new Ellipse();
+		messageEllipse.setSize(20, 20);
 		Color color = ColorFactory.getGoodColor((int)messageId); //FIXME should rather use treeId instead of messageId, but it's not easily gettable from trace 
 		messageEllipse.setForegroundColor(color);
 		messageEllipse.setBackgroundColor(color);
@@ -78,17 +79,21 @@ public class SendMessageAnimation extends AbstractAnimationPrimitive {
 	}
 	
 	public void redo() {
-		if (transmissionTime != 0)
-			getEnclosingModuleFigure().addMessageFigure(messageLine);
-
-		getEnclosingModuleFigure().addMessageFigure(messageEllipse);
+		ConnectionFigure connectionFigure = (ConnectionFigure)animationEnvironment.getFigure(connectionId);
+		if (connectionFigure != null) {
+			if (transmissionTime != 0)
+				getEnclosingModuleFigure().addMessageFigure(messageLine);
+			getEnclosingModuleFigure().addMessageFigure(messageEllipse);
+		}
 	}
 
 	public void undo() {
-		if (transmissionTime != 0)
-			getEnclosingModuleFigure().removeMessageFigure(messageLine);
-
-		getEnclosingModuleFigure().removeMessageFigure(messageEllipse);
+		ConnectionFigure connectionFigure = (ConnectionFigure)animationEnvironment.getFigure(connectionId);
+		if (connectionFigure != null) {
+			if (transmissionTime != 0)
+				getEnclosingModuleFigure().removeMessageFigure(messageLine);
+			getEnclosingModuleFigure().removeMessageFigure(messageEllipse);
+		}
 	}
 
 	public void animateAt(long eventNumber, double simulationTime, long animationNumber, double animationTime) {
@@ -108,7 +113,8 @@ public class SendMessageAnimation extends AbstractAnimationPrimitive {
 			
 			if (transmissionTime == 0) {
 				Point p = getConvexCombination(p1, p2, alpha);
-				setConstraint(messageEllipse, new Rectangle(p.x - 3, p.y - 3, 7, 7));
+				//setConstraint(messageEllipse, new Rectangle(p.x - 3, p.y - 3, 7, 7));
+				messageEllipse.setBounds(new Rectangle(p.x - 3, p.y - 3, 7, 7));//XXX clarify constraint vs setbounds
 			}
 			else {
 				double beta;
@@ -123,9 +129,11 @@ public class SendMessageAnimation extends AbstractAnimationPrimitive {
 
 				Point pAlpha = getConvexCombination(p1, p2, alpha);
 				Point pBeta = getConvexCombination(p1, p2, beta);
-				messageLine.setEndpoints(pAlpha, pBeta);
-				setConstraint(messageEllipse, new Rectangle(pAlpha.x - 3, pAlpha.y - 3, 7, 7));
+				messageLine.setEndpoints(pAlpha, pBeta); //XXX clarify constraint vs setEndsPoints
+				//setConstraint(messageEllipse, new Rectangle(pAlpha.x - 3, pAlpha.y - 3, 7, 7));
+				messageEllipse.setBounds(new Rectangle(pAlpha.x - 3, pAlpha.y - 3, 7, 7));  //XXX clarify constraint vs setbounds
 			}
+			System.out.println("bounds:"+messageEllipse.getBounds() + " constraint:"+getLayoutManager().getConstraint(messageEllipse));
 		}
 	}
 

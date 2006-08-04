@@ -773,7 +773,7 @@ public class ReplayAnimationController implements IAnimationEnvironment {
 		modelAnimationTime = animationTime;
 
 		ArrayList<IAnimationPrimitive> currentAnimationPrimitives = getAnimationPrimitivesForAnimationTime(animationTime);
-		System.out.println("Displaying " + currentAnimationPrimitives.size() + " primitives at -> Event number: " + eventNumber + " Simulation time: " + simulationTime + " Animation number: " + animationNumber + " AnimationTime: " + animationTime);
+		//System.out.println("Displaying " + currentAnimationPrimitives.size() + " primitives at -> Event number: " + eventNumber + " Simulation time: " + simulationTime + " Animation number: " + animationNumber + " AnimationTime: " + animationTime);
 
 		for (IAnimationPrimitive animationPrimitive : currentAnimationPrimitives)
 			animationPrimitive.animateAt(eventNumber, simulationTime, animationNumber, animationTime);
