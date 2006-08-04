@@ -26,6 +26,7 @@ import org.omnetpp.experimental.animation.primitives.HandleMessageAnimation;
 import org.omnetpp.experimental.animation.primitives.IAnimationEnvironment;
 import org.omnetpp.experimental.animation.primitives.IAnimationPrimitive;
 import org.omnetpp.experimental.animation.primitives.ScheduleSelfMessageAnimation;
+import org.omnetpp.experimental.animation.primitives.SendBroadcastAnimation;
 import org.omnetpp.experimental.animation.primitives.SendMessageAnimation;
 import org.omnetpp.experimental.animation.primitives.SetConnectionDisplayStringAnimation;
 import org.omnetpp.experimental.animation.primitives.SetModuleDisplayStringAnimation;
@@ -1168,9 +1169,12 @@ public class ReplayAnimationController implements IAnimationEnvironment {
 				lineCount++;
 				String[] tokens = splitLine(line);
 
-				if (tokens.length == 0)
+				if (tokens.length == 0) {
+					// blank line
 					continue;
+				}
 				else if (tokens[0].equals("MC")) {
+					// "ModuleCreation" line
 					ReplayModule module = new ReplayModule();
 					module.setId(getIntegerToken(tokens, "id"));
 					module.setName(getToken(tokens, "n"));
@@ -1183,14 +1187,17 @@ public class ReplayAnimationController implements IAnimationEnvironment {
 					addAnimationPrimitive(new CreateModuleAnimation(this, loadEventNumber, loadSimulationTime, loadAnimationNumber, module, getIntegerToken(tokens, "pid", -1)));
 				}
 				else if (tokens[0].equals("MD")) {
+					// "ModuleDeletion" line
 					addAnimationPrimitive(new DeleteModuleAnimation(this, loadEventNumber, loadSimulationTime, loadAnimationNumber, getIntegerToken(tokens, "id")));
 				}
 				else if (tokens[0].equals("CC")) {
+					// "ConnectionCreation" line
 					GateId sourceGateId = new GateId(getIntegerToken(tokens, "sm"), getIntegerToken(tokens, "sg"));
 					GateId targetGateId = new GateId(getIntegerToken(tokens, "dm"), getIntegerToken(tokens, "dg"));
 					addAnimationPrimitive(new CreateConnectionAnimation(this, loadEventNumber, loadSimulationTime, loadAnimationNumber, sourceGateId, targetGateId));
 				}
 				else if (tokens[0].equals("E")) {
+					// "Event" line
 					loadEventNumber = getIntegerToken(tokens, "#");
 					loadSimulationTime = getDoubleToken(tokens, "t");
 					loadAnimationNumber++;
@@ -1209,7 +1216,7 @@ public class ReplayAnimationController implements IAnimationEnvironment {
 					addAnimationPrimitive(handleMessageAnimationPrimitive );
 				}
 				else if (tokens[0].equals("BS")) {
-					//XXX 
+					// "BeginSend" line
 					lastMsg = new ReplayMessage();
 					lastMsg.setName(getToken(tokens, "n"));
 					lastMsg.setClassName(getToken(tokens, "c"));
@@ -1222,32 +1229,62 @@ public class ReplayAnimationController implements IAnimationEnvironment {
 					lastMsg.setEncapsulationTreeId(getIntegerToken(tokens, "etid", id));
 				}
 				else if (tokens[0].equals("SH")) {
-					ConnectionId connectionId = new ConnectionId(getIntegerToken(tokens, "sm"), getIntegerToken(tokens, "sg"));
+					// "SendHop" line
+					int messageId = getIntegerToken(tokens, "id", -1);
+					if (lastMsg.getId()!=messageId) {
+						System.out.println("wrong trace: SH line without BS"); //XXX proper error handling
+						lastMsg = null;
+					}
+						
 					// TODO: handle ts different then E's t
 					// FIXME: animationPrimitives are sorted by eventNumber, beginSimulationTime and animationNumber
 					// and the binary search relies upon this
-					long messageId = getIntegerToken(tokens, "id", -1); //XXX use getLong; should really use treeId, but it's not available here
+					ConnectionId connectionId = new ConnectionId(getIntegerToken(tokens, "sm"), getIntegerToken(tokens, "sg"));
 					double propagationTime = getDoubleToken(tokens, "pd", 0);
 					double transmissionTime = getDoubleToken(tokens, "td", 0);
 					double simulationTime = getDoubleToken(tokens, "ts", loadSimulationTime);
 					addAnimationPrimitive(new SendMessageAnimation(this, loadEventNumber, simulationTime, loadAnimationNumber, propagationTime, transmissionTime, connectionId, lastMsg));
 				}
+				else if (tokens[0].equals("SD")) {
+					// "SendDirect" line
+					int messageId = getIntegerToken(tokens, "id", -1);
+					if (lastMsg.getId()!=messageId) {
+						System.out.println("wrong trace: SD line without BS"); //XXX proper error handling
+						lastMsg = null;
+					}
+						
+					long senderModuleId = getIntegerToken(tokens, "sm");
+					long destModuleId = getIntegerToken(tokens, "dm");
+					long destGateId = getIntegerToken(tokens, "dg");
+					double propagationTime = getDoubleToken(tokens, "pd", 0);
+					//XXX store all
+					addAnimationPrimitive(new SendBroadcastAnimation(this, loadEventNumber, simulationTime, loadAnimationNumber, propagationTime, null));
+				}
 				else if (tokens[0].equals("SA")) {
+					// "ScheduleAt" line
 					addAnimationPrimitive(new ScheduleSelfMessageAnimation(this, loadEventNumber, loadSimulationTime, loadAnimationNumber, getDoubleToken(tokens, "t")));
 				}
 				else if (tokens[0].equals("DS")) {
+					// "DisplayString" line
 					IDisplayString displayString = new DisplayString(null, null, getToken(tokens, "d"));
 					addAnimationPrimitive(new SetModuleDisplayStringAnimation(this, loadEventNumber, loadSimulationTime, loadAnimationNumber, getIntegerToken(tokens, "id"), displayString));
 				}
 				else if (tokens[0].equals("CS")) {
+					// "ConnectionDisplayString" line
 					IDisplayString displayString = new DisplayString(null, null, getToken(tokens, "d"));
 					ConnectionId connectionId = new ConnectionId(getIntegerToken(tokens, "sm"), getIntegerToken(tokens, "sg"));
 					addAnimationPrimitive(new SetConnectionDisplayStringAnimation(this, loadEventNumber, loadSimulationTime, loadAnimationNumber, connectionId, displayString));
 				}
+				else if (tokens[0].equals("CE")) {
+					// "CancelEvent" line
+					//TODO handle
+				}
 				else if (tokens[0].equals("MM")) {
-					//TODO: create a MethodCallAnimation primitive
+					// "ModuleMethodCalled" line
+					//TODO create a MethodCallAnimation primitive
 				}
 				else if (tokens[0].equals("BU")) {
+					// "Bubble" line
 					String text = getToken(tokens, "txt");
 					addAnimationPrimitive(new BubbleAnimation(this, loadEventNumber, loadSimulationTime, loadAnimationNumber, text, getIntegerToken(tokens, "id")));
 				}
