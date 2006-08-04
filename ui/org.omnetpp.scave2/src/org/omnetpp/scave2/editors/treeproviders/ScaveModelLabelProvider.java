@@ -90,7 +90,7 @@ public class ScaveModelLabelProvider extends LabelProvider {
 			if (!isEmpty(o.getNamePattern()))
 				res += " \""+o.getNamePattern()+"\"";
 			else 
-				res += " <nothing>";
+				res += " <all>";
 			if (!isEmpty(o.getModuleNamePattern()))
 				res += " of module(s) \""+o.getModuleNamePattern()+"\"";
 			if (o.getSourceDataset()!=null)

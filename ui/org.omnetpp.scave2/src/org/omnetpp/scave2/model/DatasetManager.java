@@ -138,6 +138,8 @@ public class DatasetManager {
 
 		List<Node> outputs = builder.getOutputs();
 
+		builder.getDataflowManager().dump();
+		
 		if (outputs.size() > 0) // XXX DataflowManager craches when there are no sinks
 			builder.getDataflowManager().execute();
 
