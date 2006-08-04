@@ -125,7 +125,7 @@ public class VectorChart extends ZoomableCachingCanvas {
 
 		// draw insets border
 		graphics.setForegroundColor(INSETS_BACKGROUND_COLOR);
-		graphics.setBackgroundColor(new Color(null, 255, 255, 180));
+		graphics.setBackgroundColor(new Color(null, 236, 233, 216));
 		graphics.fillRectangle(0, 0, getWidth(), insets.top); // top
 		graphics.fillRectangle(0, getHeight()-insets.bottom, getWidth(), insets.bottom); // bottom
 		graphics.fillRectangle(0, 0, insets.left, getHeight()); // left

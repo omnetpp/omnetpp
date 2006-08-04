@@ -40,7 +40,7 @@ public class ChartPage2 extends ScaveEditorPage {
 	
 	public void updatePage(Notification notification) {
 		if (ScaveModelPackage.eINSTANCE.getChart_Name().equals(notification.getFeature())) {
-			setPageTitle("EXPERIMENTAL Chart: " + chart.getName());
+			setPageTitle("Chart: " + chart.getName());
 			setFormTitle("Chart: " + chart.getName());
 		}
 	}
@@ -51,7 +51,7 @@ public class ChartPage2 extends ScaveEditorPage {
 
 	private void initialize() {
 		// set up UI
-		setPageTitle("EXPERIMENTAL Chart: " + chart.getName());
+		setPageTitle("Chart: " + chart.getName());
 		setFormTitle("Chart: " + chart.getName());
 		setExpandHorizontal(true);
 		setExpandVertical(true);

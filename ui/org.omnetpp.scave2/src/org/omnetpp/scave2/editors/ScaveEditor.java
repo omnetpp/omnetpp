@@ -295,13 +295,16 @@ public class ScaveEditor extends AbstractEMFModelEditor {
 	}
 	
 	private int createChartPage(Chart chart) {
-		ChartPage page = new ChartPage(getContainer(), this, chart);
-		int index = addClosableScaveEditorPage(page);
+		int index;
 
 		Dataset dataset = ScaveModelUtil.findEnclosingDataset(chart);
 		if (dataset.getType() == DatasetType.VECTOR_LITERAL) {
-			ChartPage2 page2 = new ChartPage2(getContainer(), this, chart);  //XXX experimental
-			addClosableScaveEditorPage(page2); //XXX experimental
+			ChartPage2 page = new ChartPage2(getContainer(), this, chart);  //XXX experimental
+			index = addClosableScaveEditorPage(page); //XXX experimental
+		} 
+		else {
+			ChartPage page = new ChartPage(getContainer(), this, chart);
+			index = addClosableScaveEditorPage(page);
 		}
 
 		return index;
