@@ -9,6 +9,7 @@ import org.eclipse.swt.graphics.RGB;
 public class ImageFactory {
     private final static String IMAGE_DIR = "/images/"; 
     private final static String INTERNAL_DIR = "_internal/"; 
+    private final static String LEGACY_DIR = "old/"; 
     private final static String TOOL_IMAGE_DIR = INTERNAL_DIR + "toolbar/";
     private final static String MODEL_IMAGE_DIR = INTERNAL_DIR + "model/";
     
@@ -72,6 +73,10 @@ public class ImageFactory {
         String key = getKeyFor(imageId, imageSize, shade, weight);
         // if image was found, get it from the registry
         if (key != null) return imageRegistry.get(key);
+        // if image was not found, look it up among the legacy icons
+        key = getKeyFor(LEGACY_DIR+imageId, imageSize, shade, weight);
+        // if image was found, get it from the registry
+        if (key != null) return imageRegistry.get(key);
         // if key was null (ie not found) return the default image
         return imageRegistry.get(DEFAULT_KEY);
     }
@@ -80,6 +85,10 @@ public class ImageFactory {
         if (imageId == null) return null;
         // look for the image on filesystem/jar and return the full key to retrieve
         String key = getKeyFor(imageId, imageSize, shade, weight);
+        // if image was found, get it from the registry
+        if (key != null) return imageRegistry.getDescriptor(key);
+        // if image was not found, look it up among the legacy icons
+        key = getKeyFor(LEGACY_DIR+imageId, imageSize, shade, weight);
         // if image was found, get it from the registry
         if (key != null) return imageRegistry.getDescriptor(key);
         // if key was null (ie not found) return the default image descriptor
@@ -167,34 +176,6 @@ public class ImageFactory {
         return decoratedImageId;
     }
     
-        /**
-     * Returns an image with a given id, with preferred size. The method also 
-     * caches the image for future reuse
-     * @param baseId The requested image name
-     * @param size the requested horizontal size
-     * @return the requested image or <code>null</code> if imageId was also <code>null</code>
-     */
-//    public static ImageDescriptor getDescriptor(String baseId) {
-//        // if baseId is null (ie. no image) then we should return null
-//        // as a descriptor
-//        if (baseId == null) return null;
-//
-//        // try to get it from the registry (in case we've already created it)
-//        ImageDescriptor result = imageRegistry.getDescriptor(baseId);
-//        if (result != null) 
-//            return result;
-//    
-//        // if the image descriptor is not in the registry look for it in the filesystem or JAR file
-//        result = createDescriptor(baseId);
-//        // if file was not found return the default not found icon
-//        if (result == null)
-//            return imageRegistry.getDescriptor(DEFAULT_KEY);
-//
-//        // add it to the image registry, so later we can reuse it. The key provides the
-//        // name, horizontal size, and colorization data too
-//        imageRegistry.put(baseId, result);
-//        return result;
-//    }
 
     /**
      * Looks for image files with the given name in the image search path. First looks for 
@@ -223,7 +204,7 @@ public class ImageFactory {
     
     /**
      * @param refClass Reference class, if <code>null</code> file is loaded from the filesystem
-     *                 otehrwise from the same resource where the this class is found 
+     *                 otehrwise from the same resource where this class is located 
      * @param dir Base path for file
      * @param fileName The name of the file
      * @param ext extension to be used
