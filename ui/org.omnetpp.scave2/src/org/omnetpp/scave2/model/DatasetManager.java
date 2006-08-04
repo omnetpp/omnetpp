@@ -1,5 +1,6 @@
 package org.omnetpp.scave2.model;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.core.runtime.Assert;
@@ -21,6 +22,7 @@ import org.omnetpp.scave.model.Deselect;
 import org.omnetpp.scave.model.Discard;
 import org.omnetpp.scave.model.Except;
 import org.omnetpp.scave.model.Group;
+import org.omnetpp.scave.model.ScaveModelFactory;
 import org.omnetpp.scave.model.Select;
 import org.omnetpp.scave.model.SelectDeselectOp;
 import org.omnetpp.scave.model.SetOperation;
@@ -106,13 +108,19 @@ public class DatasetManager {
 		}
 		
 		public Object caseChart(Chart chart) {
-			if (chart == target) {
+			if (chart == target)
 				idlist = select(idlist, chart.getFilters());
-			}
 			return this;
 		}
 		
 		private IDList select(IDList source, List<SelectDeselectOp> filters) {
+			// if no select, then interpret it as "select all"
+			if (filters.size() == 0 || filters.get(0) instanceof Deselect) {
+				Select selectAll = ScaveModelFactory.eINSTANCE.createSelect(); 
+				filters = new ArrayList<SelectDeselectOp>(filters);
+				filters.add(0, selectAll);
+			}
+			
 			return DatasetManager.select(source, filters, manager, type);
 		}
 		
