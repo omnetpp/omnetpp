@@ -46,7 +46,7 @@ public class DataflowNetworkBuilder {
 	private ResultFileManager resultfileManager;
 	private NodeTypeRegistry factory;
 	
-	private Map<ResultFile,Node> fileToNodeMap = new HashMap<ResultFile,Node>();
+	private Map<ResultFile,Node> fileToSourceNodeMap = new HashMap<ResultFile,Node>();
 	private Map<Long,Port> idToPortMap = new HashMap<Long,Port>();
 	private List<Node> outputNodes = new ArrayList<Node>();
 	
@@ -75,7 +75,7 @@ public class DataflowNetworkBuilder {
 				Dataset baseDataset = dataset.getBasedOn();
 				if (baseDataset != null) {
 					IDList idlist = DatasetManager.getIDListFromDataset(resultfileManager, baseDataset, null);
-					addSources(idlist);
+					addSourceNodes(idlist);
 				}
 				// process items
 				for (Object item : dataset.getItems())
@@ -87,7 +87,7 @@ public class DataflowNetworkBuilder {
 			 * Adds "vectorfilereader" nodes for ids selected by the add operation.
 			 */
 			public Object caseAdd(Add add) {
-				addSources(select(null, add));
+				addSourceNodes(select(null, add));
 				return this;
 			}
 			
@@ -107,8 +107,7 @@ public class DataflowNetworkBuilder {
 				IDList idlist = select(getIDs(), apply.getFilters());
 				for (int i = 0; i < idlist.size(); ++i) {
 					long id = idlist.get(i);
-					Node filterNode = createFilterNode(apply.getOperation(), apply.getParams());
-					addFilterNode(id, filterNode);
+					addFilterNode(id, apply.getOperation(), apply.getParams());
 				}
 				return this;
 			}
@@ -172,8 +171,7 @@ public class DataflowNetworkBuilder {
 		IDList idlist = getIDs();
 		for (int i = 0; i < idlist.size(); ++i) {
 			long id = idlist.get(i);
-			Node arraybuilderNode = createNode("arraybuilder", attrs);
-			addSinkNode(id, arraybuilderNode);
+			addSinkNode(id);
 		}
 	}
 	
@@ -187,6 +185,8 @@ public class DataflowNetworkBuilder {
 	/*=========================
 	 *          Helpers
 	 *=========================*/
+	private static final StringMap EMPTY_ATTRS = new StringMap();
+	
 	private Node createNode(String typeName, StringMap attrs) {
 		Node node = null;
 		if (factory.exists(typeName)) {
@@ -196,11 +196,27 @@ public class DataflowNetworkBuilder {
 		return node;
 	}
 	
+	private Node getOrCreateSourceNode(long id) {
+		ResultFile file = resultfileManager.getVector(id).getFileRun().getFile();
+		Node sourceNode = fileToSourceNodeMap.get(file);
+		if (sourceNode == null) {
+			StringMap attrs = new StringMap();
+			attrs.set("filename", file.getFileSystemFilePath());
+			sourceNode = createNode("vectorfilereader", attrs);
+			fileToSourceNodeMap.put(file, sourceNode);
+		}
+		return sourceNode;
+	}
+	
 	private Node createFilterNode(String operation, List<Param> params) {
 		StringMap attrs = new StringMap();
 		for (Param param : params)
 			attrs.set(param.getName(), param.getValue());
 		return createNode(operation, attrs);
+	}
+
+	private Node createSinkNode() {
+		return createNode("arraybuilder", EMPTY_ATTRS);
 	}
 	
 	private void connect(Port outputPort, Node node, String inputPortName) {
@@ -220,18 +236,34 @@ public class DataflowNetworkBuilder {
 		return IDList.fromArray(keys.toArray(new Long[keys.size()]));
 	}
 	
-	private void addSourceNode(long id, Node node) {
+	private void addSourceNodes(IDList idlist) {
+		for (int i = 0; i < idlist.size(); ++i) {
+			long id = idlist.get(i);
+			addSourceNode(id);
+		}
+	}
+	
+	private void addSourceNode(long id) {
+		// close the port
+		if (getPort(id) != null)
+			addSinkNode(id);
+		// create new port
+		Node node = getOrCreateSourceNode(id);
 		String portName = Integer.toString(resultfileManager.getVector(id).getVectorId());
 		idToPortMap.put(id, getPort(node, portName));
 	}
 	
-	private void addFilterNode(long id, Node filterNode) {
+	private void addFilterNode(long id, String operation, List<Param> params) {
 		Port port = getPort(id);
-		connect(port, filterNode, "in");
-		idToPortMap.put(id, getPort(filterNode, "out"));
+		Node filterNode = createFilterNode(operation, params);
+		if (filterNode != null) {
+			connect(port, filterNode, "in");
+			idToPortMap.put(id, getPort(filterNode, "out"));
+		}
 	}
 	
-	private void addSinkNode(long id, Node sinkNode) {
+	private void addSinkNode(long id) {
+		Node sinkNode = createSinkNode();
 		Port port = getPort(id);
 		connect(port, sinkNode, "in");
 		idToPortMap.remove(id);
@@ -248,28 +280,8 @@ public class DataflowNetworkBuilder {
 	}
 	
 	
-	private void addSources(IDList idlist) {
-		for (int i = 0; i < idlist.size(); ++i) {
-			long id = idlist.get(i);
-			Node node = ensureFileReaderNode(id);
-			addSourceNode(id, node);
-		}
-	}
-	
 	private void removeSources(IDList ids) {
 		// TODO: not supported yet
-	}
-
-	private Node ensureFileReaderNode(long id) {
-		ResultFile file = resultfileManager.getVector(id).getFileRun().getFile();
-		Node readerNode = fileToNodeMap.get(file);
-		if (readerNode == null) {
-			StringMap attrs = new StringMap();
-			attrs.set("filename", file.getFileSystemFilePath());
-			readerNode = createNode("vectorfilereader", attrs);
-			fileToNodeMap.put(file, readerNode);
-		}
-		return readerNode;
 	}
 
 	private IDList select(IDList source, List<SelectDeselectOp> filters) {
