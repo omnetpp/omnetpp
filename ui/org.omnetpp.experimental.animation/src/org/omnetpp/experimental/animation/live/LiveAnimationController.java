@@ -343,7 +343,7 @@ public class LiveAnimationController extends ReplayAnimationController implement
 	public void messageScheduled(cMessage msg) {
 	}
 
-	public void messageSendDirect(cMessage msg, cGate toGate, double propagationTime) {
+	public void messageSendDirect(cMessage msg, cGate toGate, double propagationDelay, double transmissionDelay) {
 		ReplayMessage rmsg = new ReplayMessage();
 		rmsg.setName(msg.getName());
 		rmsg.setClassName(msg.getClassName());
@@ -358,8 +358,8 @@ public class LiveAnimationController extends ReplayAnimationController implement
 				getLiveEventNumber(),
 				msg.getSendingTime(),
 				getLiveAnimationNumber(),
-				0, //XXX transmTime
-				propagationTime,
+				propagationDelay,
+				transmissionDelay,
 				msg.getSenderModuleId(), 
 				toGate.getOwnerModule().getId(),
 				rmsg));
