@@ -29,12 +29,6 @@ public class HandleMessageAnimation extends AbstractAnimationPrimitive {
 	}
 	
 	@Override
-	public double getEndSimulationTime() {
-		return super.getEndSimulationTime();
-// FIXME: uncomment with end animation time		return animationEnvironment.getSimulationTimeForEventNumber(eventNumber + 1);
-	}
-	
-	@Override
 	public double getEndAnimationTime() {
 		return getBeginAnimationTime();
 // FIXME: this does not return the correct value during loading		return animationEnvironment.getAnimationTimeForEventNumber(eventNumber + 1);

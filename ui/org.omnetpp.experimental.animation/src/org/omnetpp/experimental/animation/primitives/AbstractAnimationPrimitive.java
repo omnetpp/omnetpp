@@ -28,16 +28,8 @@ public abstract class AbstractAnimationPrimitive implements IAnimationPrimitive 
 	public long getEventNumber() {
 		return eventNumber;
 	}
-	
+
 	public double getSimulationTime() {
-		return getBeginSimulationTime();
-	}
-
-	public double getBeginSimulationTime() {
-		return beginSimulationTime;
-	}
-
-	public double getEndSimulationTime() {
 		return beginSimulationTime;
 	}
 	
@@ -46,30 +38,11 @@ public abstract class AbstractAnimationPrimitive implements IAnimationPrimitive 
 	}
 	
 	public double getBeginAnimationTime() {
-		switch (animationEnvironment.getAnimationMode()) {
-			case LINEAR:
-				return getBeginSimulationTime();
-			case EVENT:
-				return animationEnvironment.getAnimationTimeForAnimationNumber(animationNumber);
-			case NON_LINEAR:
-				throw new RuntimeException();
-		}
-
-		throw new RuntimeException("Unreachable code reached");
+		return animationEnvironment.getAnimationTimeForAnimationNumber(animationNumber);
 	}
 
 	public double getEndAnimationTime() {
-		switch (animationEnvironment.getAnimationMode()) {
-			case LINEAR:
-				return getEndSimulationTime();
-			case EVENT:
-				// TODO: is it really +1? or is it just a default?
-				return animationEnvironment.getAnimationTimeForAnimationNumber(animationNumber + 1);
-			case NON_LINEAR:
-				throw new RuntimeException();
-		}
-
-		throw new RuntimeException("Unreachable code reached");
+		return animationEnvironment.getAnimationTimeForAnimationNumber(animationNumber + 1);
 	}
 
 	public abstract void animateAt(long eventNumber, double simulationTime, long animationNumber, double animationTime);
@@ -88,20 +61,6 @@ public abstract class AbstractAnimationPrimitive implements IAnimationPrimitive 
 	
 	protected LayoutManager getLayoutManager() {
 		return getRootFigure().getLayoutManager();
-	}
-
-	//FIXME to be replaced by specific calls
-	protected IFigure addFigure(IFigure figure) {
-		getRootFigure().add(figure);
-		
-		return figure;
-	}
-
-	//FIXME to be replaced by specific calls
-	protected IFigure removeFigure(IFigure figure) {
-		getRootFigure().remove(figure);
-		
-		return figure;
 	}
 
 	protected void setConstraint(IFigure figure, Rectangle constraint) {

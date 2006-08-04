@@ -234,6 +234,11 @@ public class ReplayAnimationController implements IAnimationEnvironment {
 	protected long loadAnimationNumber;
 
 	/**
+	 * Last message loaded. FIXME: this should be removed
+	 */
+	protected ReplayMessage lastLoadedMessage;
+
+	/**
 	 * The current animation mode.
 	 */
 	protected AnimationMode animationMode = AnimationMode.EVENT;
@@ -508,7 +513,7 @@ public class ReplayAnimationController implements IAnimationEnvironment {
 	public long getLastEventNumberForSimulationTime(double simulationTime) {
 		int index = getAnimationPrimitiveIndexForValue(new IValueProvider() {
 			public double getValue(int index) {
-				return handleMessageAnimationPrimitives.get(index).getBeginSimulationTime();
+				return handleMessageAnimationPrimitives.get(index).getSimulationTime();
 			}
 		}, handleMessageAnimationPrimitives.size(), simulationTime, false);
 		
@@ -554,7 +559,7 @@ public class ReplayAnimationController implements IAnimationEnvironment {
 	 */
 	public double getSimulationTimeForEventNumber(long eventNumber) {
 		if (0 <= eventNumber && eventNumber < handleMessageAnimationPrimitives.size())
-			return handleMessageAnimationPrimitives.get((int)eventNumber).getBeginSimulationTime();
+			return handleMessageAnimationPrimitives.get((int)eventNumber).getSimulationTime();
 		else
 			return -1;
 	}
@@ -570,7 +575,7 @@ public class ReplayAnimationController implements IAnimationEnvironment {
 		}, beginOrderedAnimationPrimitives.size(), animationNumber, true);
 
 		if (index >= 0 && index < beginOrderedAnimationPrimitives.size())
-			return beginOrderedAnimationPrimitives.get(index).getBeginSimulationTime();
+			return beginOrderedAnimationPrimitives.get(index).getSimulationTime();
 		else
 			return -1;
 	}
@@ -1154,7 +1159,6 @@ public class ReplayAnimationController implements IAnimationEnvironment {
 			long animationPrimitivesCount = beginOrderedAnimationPrimitives.size();
 			int lineCount = 0;
 			String line = null;
-			ReplayMessage lastMsg = null; //XXX
 
 			if (logFileReader == null)
 				logFileReader = new BufferedReader(new InputStreamReader(file.getContents()));
@@ -1217,23 +1221,23 @@ public class ReplayAnimationController implements IAnimationEnvironment {
 				}
 				else if (tokens[0].equals("BS")) {
 					// "BeginSend" line
-					lastMsg = new ReplayMessage();
-					lastMsg.setName(getToken(tokens, "n"));
-					lastMsg.setClassName(getToken(tokens, "c"));
-					lastMsg.setKind(getIntegerToken(tokens, "k"));
-					lastMsg.setLength(getIntegerToken(tokens, "l"));
+					lastLoadedMessage = new ReplayMessage();
+					lastLoadedMessage.setName(getToken(tokens, "n"));
+					lastLoadedMessage.setClassName(getToken(tokens, "c"));
+					lastLoadedMessage.setKind(getIntegerToken(tokens, "k"));
+					lastLoadedMessage.setLength(getIntegerToken(tokens, "l"));
 					int id = getIntegerToken(tokens, "id", -1);
-					lastMsg.setId(id);
-					lastMsg.setTreeId(getIntegerToken(tokens, "tid", id));
-					lastMsg.setEncapsulationId(getIntegerToken(tokens, "eid", id));
-					lastMsg.setEncapsulationTreeId(getIntegerToken(tokens, "etid", id));
+					lastLoadedMessage.setId(id);
+					lastLoadedMessage.setTreeId(getIntegerToken(tokens, "tid", id));
+					lastLoadedMessage.setEncapsulationId(getIntegerToken(tokens, "eid", id));
+					lastLoadedMessage.setEncapsulationTreeId(getIntegerToken(tokens, "etid", id));
 				}
 				else if (tokens[0].equals("SH")) {
 					// "SendHop" line
 					int messageId = getIntegerToken(tokens, "id", -1);
-					if (lastMsg.getId()!=messageId) {
+					if (lastLoadedMessage.getId()!=messageId) {
 						System.out.println("wrong trace: SH line without BS"); //XXX proper error handling
-						lastMsg = null;
+						lastLoadedMessage = null;
 					}
 						
 					// TODO: handle ts different then E's t
@@ -1242,23 +1246,23 @@ public class ReplayAnimationController implements IAnimationEnvironment {
 					ConnectionId connectionId = new ConnectionId(getIntegerToken(tokens, "sm"), getIntegerToken(tokens, "sg"));
 					double propagationTime = getDoubleToken(tokens, "pd", 0);
 					double transmissionTime = getDoubleToken(tokens, "td", 0);
-					double simulationTime = getDoubleToken(tokens, "ts", loadSimulationTime);
-					addAnimationPrimitive(new SendMessageAnimation(this, loadEventNumber, simulationTime, loadAnimationNumber, propagationTime, transmissionTime, connectionId, lastMsg));
+					double loadSimulationTime = getDoubleToken(tokens, "ts", this.loadSimulationTime);
+					addAnimationPrimitive(new SendMessageAnimation(this, loadEventNumber, loadSimulationTime, loadAnimationNumber, propagationTime, transmissionTime, connectionId, lastLoadedMessage));
 				}
 				else if (tokens[0].equals("SD")) {
 					// "SendDirect" line
 					int messageId = getIntegerToken(tokens, "id", -1);
-					if (lastMsg.getId()!=messageId) {
+					if (lastLoadedMessage.getId()!=messageId) {
 						System.out.println("wrong trace: SD line without BS"); //XXX proper error handling
-						lastMsg = null;
+						lastLoadedMessage = null;
 					}
 						
-					long senderModuleId = getIntegerToken(tokens, "sm");
-					long destModuleId = getIntegerToken(tokens, "dm");
-					long destGateId = getIntegerToken(tokens, "dg");
+					int senderModuleId = getIntegerToken(tokens, "sm");
+					int destModuleId = getIntegerToken(tokens, "dm");
+					int destGateId = getIntegerToken(tokens, "dg");
 					double propagationTime = getDoubleToken(tokens, "pd", 0);
 					//XXX store all
-					addAnimationPrimitive(new SendBroadcastAnimation(this, loadEventNumber, simulationTime, loadAnimationNumber, propagationTime, null));
+					addAnimationPrimitive(new SendBroadcastAnimation(this, loadEventNumber, loadSimulationTime, loadAnimationNumber, propagationTime, senderModuleId, destModuleId));
 				}
 				else if (tokens[0].equals("SA")) {
 					// "ScheduleAt" line

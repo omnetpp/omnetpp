@@ -73,11 +73,6 @@ public class SendMessageAnimation extends AbstractAnimationPrimitive {
 	}
 	
 	@Override
-	public double getEndSimulationTime() {
-		return endSimulationTime;
-	}
-	
-	@Override
 	public double getEndAnimationTime() {
 		if (transmissionTime == 0)
 			return super.getEndAnimationTime();

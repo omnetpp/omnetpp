@@ -2,7 +2,7 @@ package org.omnetpp.experimental.animation.primitives;
 
 import org.omnetpp.common.simulation.model.IRuntimeModule;
 import org.omnetpp.experimental.animation.replay.ReplayAnimationController;
-import org.omnetpp.figures.ModuleFigure;
+import org.omnetpp.figures.SubmoduleFigure;
 
 public class DeleteModuleAnimation extends AbstractAnimationPrimitive {
 	private int moduleId;
@@ -17,18 +17,13 @@ public class DeleteModuleAnimation extends AbstractAnimationPrimitive {
 	}
 	
 	@Override
-	public double getEndSimulationTime() {
-		return Double.MAX_VALUE;
-	}
-	
-	@Override
 	public double getEndAnimationTime() {
 		return Double.MAX_VALUE;
 	}
 	
 	public void redo() {
 		IRuntimeModule module = animationEnvironment.getSimulation().getModuleByID(moduleId);
-		removeFigure((ModuleFigure)animationEnvironment.getFigure(module));
+		getEnclosingModuleFigure().removeSubmoduleFigure((SubmoduleFigure)animationEnvironment.getFigure(module));
 		animationEnvironment.setFigure(module, null);
 	}
 

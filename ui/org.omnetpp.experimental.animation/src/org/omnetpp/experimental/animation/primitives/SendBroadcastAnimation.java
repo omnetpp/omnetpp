@@ -1,14 +1,19 @@
 package org.omnetpp.experimental.animation.primitives;
 
 import org.eclipse.draw2d.Ellipse;
+import org.eclipse.draw2d.Graphics;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.Rectangle;
+import org.omnetpp.common.simulation.model.IRuntimeModule;
 import org.omnetpp.experimental.animation.replay.ReplayAnimationController;
+import org.omnetpp.figures.ModuleFigure;
 
 public class SendBroadcastAnimation extends AbstractAnimationPrimitive {
-	private double endSimulationTime;
+	private double propagationTime;
 	
-	private Point location;
+	private int sourceModuleId;
+
+	private int destinationModuleId;
 
 	private Ellipse circle;
 	
@@ -16,31 +21,45 @@ public class SendBroadcastAnimation extends AbstractAnimationPrimitive {
 								  long eventNumber,
 								  double beginSimulationTime,
 								  long animationNumber,
-								  double endSimulationTime,
-								  Point location) {
+								  double propagationTime,
+								  int sourceModuleId,
+								  int destinationModuleId) {
 		super(animationController, eventNumber, beginSimulationTime, animationNumber);
-		this.circle = new Ellipse();
-		this.location = location;
-		this.endSimulationTime = endSimulationTime;
-		this.circle.setFill(false);
+		this.propagationTime = propagationTime;
+		this.sourceModuleId = sourceModuleId;
+		this.destinationModuleId = destinationModuleId;
+
+		circle = new Ellipse() {
+			@Override
+			public void paint(Graphics graphics) {
+				graphics.pushState();
+				graphics.setAlpha(128);
+				super.paint(graphics);
+				graphics.popState();
+			}
+		};
+		circle.setFill(true);
 	}
 	
 	public void redo() {
-		addFigure(circle);
+		getEnclosingModuleFigure().addMessageFigure(circle);
 	}
 
 	public void undo() {
-		removeFigure(circle);
+		getEnclosingModuleFigure().removeMessageFigure(circle);
 	}
 
 	public void animateAt(long eventNumber, double simulationTime, long animationNumber, double animationTime) {
-		int radius = (int)Math.floor(100 * (simulationTime - beginSimulationTime) / (endSimulationTime - beginSimulationTime));
-		Rectangle r = new Rectangle(location.x - radius, location.y - radius, radius * 2, radius * 2);
-		setConstraint(circle, r);
+		Point sourceLocation = getModuleLocation(sourceModuleId);
+		Point destinationLocation = getModuleLocation(destinationModuleId);
+		int radius = (int)Math.floor(sourceLocation.getDistance(destinationLocation) * (simulationTime - beginSimulationTime) / propagationTime);
+		Rectangle r = new Rectangle(sourceLocation.x - radius, sourceLocation.y - radius, radius * 2, radius * 2);
+		circle.setBounds(r);
 	}
-	
-	@Override
-	public double getEndSimulationTime() {
-		return endSimulationTime;
+
+	private Point getModuleLocation(int moduleId) {
+		IRuntimeModule sourceModule = animationEnvironment.getSimulation().getModuleByID(moduleId);
+		ModuleFigure sourceModuleFigure = (ModuleFigure)animationEnvironment.getFigure(sourceModule);
+		return sourceModuleFigure.getBounds().getCenter();
 	}
 }

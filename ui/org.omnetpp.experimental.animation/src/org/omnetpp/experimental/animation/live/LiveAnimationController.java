@@ -235,7 +235,7 @@ public class LiveAnimationController extends ReplayAnimationController implement
 				IAnimationPrimitive lastAnimationPrimitive = beginOrderedAnimationPrimitives.get(beginOrderedAnimationPrimitives.size() - 1);
 	
 				if (lastAnimationPrimitive.getEventNumber() > eventNumber &&
-					lastAnimationPrimitive.getBeginSimulationTime() > simulationTime &&
+					lastAnimationPrimitive.getSimulationTime() > simulationTime &&
 					lastAnimationPrimitive.getAnimationNumber() > animationNumber &&
 					lastAnimationPrimitive.getBeginAnimationTime() > animationTime)
 						break;

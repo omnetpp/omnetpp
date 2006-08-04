@@ -1,5 +1,6 @@
 package org.omnetpp.experimental.animation.primitives;
 
+import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.Label;
 import org.eclipse.draw2d.RoundedRectangle;
 import org.eclipse.draw2d.geometry.Dimension;
@@ -76,5 +77,19 @@ public class BubbleAnimation extends AbstractAnimationPrimitive {
 
 	protected IRuntimeModule getModule() {
 		return animationEnvironment.getSimulation().getModuleByID(moduleId);
+	}
+	
+	//FIXME to be replaced by specific calls
+	protected IFigure addFigure(IFigure figure) {
+		getRootFigure().add(figure);
+		
+		return figure;
+	}
+
+	//FIXME to be replaced by specific calls
+	protected IFigure removeFigure(IFigure figure) {
+		getRootFigure().remove(figure);
+		
+		return figure;
 	}
 }

@@ -14,11 +14,6 @@ public class ScheduleSelfMessageAnimation extends AbstractAnimationPrimitive {
 		this.endSimulationTime = endSimulationTime;
 	}
 	
-	@Override
-	public double getEndSimulationTime() {
-		return endSimulationTime;
-	}
-	
 	public void redo() {
 	}
 

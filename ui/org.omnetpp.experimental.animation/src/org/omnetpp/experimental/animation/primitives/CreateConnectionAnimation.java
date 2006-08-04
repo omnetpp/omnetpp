@@ -28,11 +28,6 @@ public class CreateConnectionAnimation extends AbstractAnimationPrimitive {
 	}
 	
 	@Override
-	public double getEndSimulationTime() {
-		return Double.MAX_VALUE;
-	}
-	
-	@Override
 	public double getEndAnimationTime() {
 		return Double.MAX_VALUE;
 	}
@@ -52,7 +47,7 @@ public class CreateConnectionAnimation extends AbstractAnimationPrimitive {
 	public void undo() {
 		ConnectionFigure connectionFigure = (ConnectionFigure)animationEnvironment.getFigure(connectionId);
 		if (connectionFigure==null) {
-			removeFigure(connectionFigure);
+			getEnclosingModuleFigure().removeConnectionFigure(connectionFigure);
 			animationEnvironment.setFigure(connectionId, null);
 		}
 	}
