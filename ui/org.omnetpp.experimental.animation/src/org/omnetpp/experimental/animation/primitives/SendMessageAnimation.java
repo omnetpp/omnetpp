@@ -4,6 +4,7 @@ import org.eclipse.draw2d.Ellipse;
 import org.eclipse.draw2d.Label;
 import org.eclipse.draw2d.Polyline;
 import org.eclipse.draw2d.geometry.Point;
+import org.eclipse.draw2d.geometry.PrecisionPoint;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.swt.graphics.Color;
 import org.omnetpp.common.color.ColorFactory;
@@ -101,8 +102,14 @@ public class SendMessageAnimation extends AbstractAnimationPrimitive {
 
 		if (connectionFigure != null) {
 			Point p1 = connectionFigure.getStart();
-			Point p2 = connectionFigure.getEnd();				
+			Point p2 = connectionFigure.getEnd();
 			double simulationTimeDelta = endSimulationTime - beginSimulationTime - transmissionTime;
+
+			// translate connection line coordinates orthogonal to the line
+			PrecisionPoint n = new PrecisionPoint(p1.y - p2.y, p2.x - p1.x);
+			n.performScale(4 / Math.sqrt(n.x * n.x + n.y * n.y));
+			p1.translate(n);
+			p2.translate(n);
 
 			double alpha;
 			if (simulationTimeDelta != 0)
