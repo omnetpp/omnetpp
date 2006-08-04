@@ -11,6 +11,8 @@ public class SetModuleDisplayStringAnimation extends AbstractAnimationPrimitive 
 	
 	private IDisplayString displayString;
 	
+	private IDisplayString oldDisplayString; // FIXME: this is a temproray hack to be able to undo changes
+	
 	public SetModuleDisplayStringAnimation(ReplayAnimationController animationController,
 									 long eventNumber,
 									 double simulationTime,
@@ -36,13 +38,20 @@ public class SetModuleDisplayStringAnimation extends AbstractAnimationPrimitive 
 			submoduleConstraint.setVectorName(module.getFullPath());
 			submoduleConstraint.setVectorSize(module.getSize());
 			submoduleConstraint.setVectorIndex(module.getIndex());
+			
+			oldDisplayString = moduleFigure.getLastDisplayString();
+
 			moduleFigure.setConstraint(submoduleConstraint);
 			moduleFigure.setDisplayString(displayString);
 		}
 	}
 
 	public void undo() {
-		// TODO: not enough info
+		IRuntimeModule module = animationEnvironment.getSimulation().getModuleByID(moduleId);
+		if (module.getParentModule() == animationEnvironment.getSimulation().getRootModule()) { //FIXME
+			SubmoduleFigure moduleFigure = (SubmoduleFigure)animationEnvironment.getFigure(module);
+			moduleFigure.setDisplayString(oldDisplayString); // FIXME: this is a temproray hack to be able to undo changes
+		}
 	}
 
 	public void animateAt(long eventNumber, double simulationTime, long animationNumber, double animationTime) {

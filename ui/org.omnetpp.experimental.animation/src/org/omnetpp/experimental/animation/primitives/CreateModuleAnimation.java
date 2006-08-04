@@ -29,7 +29,7 @@ public class CreateModuleAnimation extends AbstractAnimationPrimitive {
 	
 	public void redo() {
 		ReplayModule parentModule = getParentModule();
-		if (parentModule == animationEnvironment.getSimulation().getRootModule()) { //FIXME
+		if (parentModule == getSimulation().getRootModule()) { //FIXME
 			SubmoduleFigure figure = new SubmoduleFigure();
 			animationEnvironment.setFigure(module, figure);
 			getCompoundModuleFigure(parentModule).addSubmoduleFigure(figure);

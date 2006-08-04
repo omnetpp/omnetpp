@@ -2,6 +2,7 @@ package org.omnetpp.experimental.animation.primitives;
 
 import org.omnetpp.common.displaymodel.IDisplayString;
 import org.omnetpp.common.simulation.model.ConnectionId;
+import org.omnetpp.common.simulation.model.IRuntimeModule;
 import org.omnetpp.experimental.animation.replay.ReplayAnimationController;
 import org.omnetpp.figures.ConnectionFigure;
 
@@ -10,6 +11,8 @@ public class SetConnectionDisplayStringAnimation extends AbstractAnimationPrimit
 
 	private IDisplayString displayString;
 	
+	private IDisplayString oldDisplayString; // FIXME: this is a temproray hack to be able to undo changes
+
 	public SetConnectionDisplayStringAnimation(ReplayAnimationController animationController,
 									 long eventNumber,
 									 double simulationTime,
@@ -28,18 +31,27 @@ public class SetConnectionDisplayStringAnimation extends AbstractAnimationPrimit
 	}
 	
 	public void redo() {
-//XXX		
-//		if (animationEnvironment.getSimulation().getModuleByID(connectionId.getModuleId()).getParentModule()==animationEnvironment.getSimulation().getRootModule()) { //FIXME
-//			ConnectionFigure connectionFigure = (ConnectionFigure)animationEnvironment.getFigure(connectionId);
-//			connectionFigure.setDisplayString(displayString);
-//		}
+		IRuntimeModule module = getSourceModule();
+		if (module != null && module.getParentModule() == animationEnvironment.getSimulation().getRootModule()) { //FIXME
+			ConnectionFigure connectionFigure = (ConnectionFigure)animationEnvironment.getFigure(connectionId);
+			oldDisplayString = connectionFigure.getLastDisplayString();
+			connectionFigure.setDisplayString(displayString);
+		}
 	}
 
 	public void undo() {
-		// TODO: not enough info
+		IRuntimeModule module = getSourceModule();
+		if (module != null && module.getParentModule() == animationEnvironment.getSimulation().getRootModule()) { //FIXME
+			ConnectionFigure connectionFigure = (ConnectionFigure)animationEnvironment.getFigure(connectionId);
+			connectionFigure.setDisplayString(oldDisplayString);// FIXME: this is a temproray hack to be able to undo changes
+		}
 	}
 
 	public void animateAt(long eventNumber, double simulationTime, long animationNumber, double animationTime) {
 		// void
+	}
+
+	private IRuntimeModule getSourceModule() {
+		return animationEnvironment.getSimulation().getModuleByID(connectionId.getModuleId());
 	}
 }

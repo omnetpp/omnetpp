@@ -4,12 +4,12 @@ import org.eclipse.draw2d.Ellipse;
 import org.eclipse.draw2d.Graphics;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.Rectangle;
-import org.omnetpp.common.simulation.model.IRuntimeModule;
 import org.omnetpp.experimental.animation.replay.ReplayAnimationController;
-import org.omnetpp.figures.ModuleFigure;
 
 public class SendBroadcastAnimation extends AbstractAnimationPrimitive {
 	private double propagationTime;
+	
+	private double transmissionTime;
 	
 	private int sourceModuleId;
 
@@ -22,10 +22,12 @@ public class SendBroadcastAnimation extends AbstractAnimationPrimitive {
 								  double beginSimulationTime,
 								  long animationNumber,
 								  double propagationTime,
+								  double transmissionTime,
 								  int sourceModuleId,
 								  int destinationModuleId) {
 		super(animationController, eventNumber, beginSimulationTime, animationNumber);
 		this.propagationTime = propagationTime;
+		this.transmissionTime = transmissionTime;
 		this.sourceModuleId = sourceModuleId;
 		this.destinationModuleId = destinationModuleId;
 
@@ -50,16 +52,14 @@ public class SendBroadcastAnimation extends AbstractAnimationPrimitive {
 	}
 
 	public void animateAt(long eventNumber, double simulationTime, long animationNumber, double animationTime) {
-		Point sourceLocation = getModuleLocation(sourceModuleId);
-		Point destinationLocation = getModuleLocation(destinationModuleId);
+		Point sourceLocation = getSubmoduleFigureCenter(sourceModuleId);
+		Point destinationLocation = getSubmoduleFigureCenter(destinationModuleId);
 		int radius = (int)Math.floor(sourceLocation.getDistance(destinationLocation) * (simulationTime - beginSimulationTime) / propagationTime);
+		int width = (int)(radius * Math.min(1, transmissionTime / propagationTime));
+		radius = Math.max(0, radius - width / 2);
+		width /= 2;
 		Rectangle r = new Rectangle(sourceLocation.x - radius, sourceLocation.y - radius, radius * 2, radius * 2);
+		circle.setLineWidth(width);
 		circle.setBounds(r);
-	}
-
-	private Point getModuleLocation(int moduleId) {
-		IRuntimeModule sourceModule = animationEnvironment.getSimulation().getModuleByID(moduleId);
-		ModuleFigure sourceModuleFigure = (ModuleFigure)animationEnvironment.getFigure(sourceModule);
-		return sourceModuleFigure.getBounds().getCenter();
 	}
 }

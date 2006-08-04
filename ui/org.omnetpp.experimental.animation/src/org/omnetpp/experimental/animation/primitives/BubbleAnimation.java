@@ -35,8 +35,11 @@ public class BubbleAnimation extends AbstractAnimationPrimitive {
 		this.moduleId = moduleId;
 		this.bubbleTimer = new Timer(3000, false, false) {
 			public void run() {
-				removeFigure(background);
-				removeFigure(label);
+				if (background.getParent() != null) {
+					removeFigure(background);
+					removeFigure(label);
+				}
+
 				getTimerQueue().removeTimer(bubbleTimer);
 			}
 		};
@@ -54,12 +57,12 @@ public class BubbleAnimation extends AbstractAnimationPrimitive {
 		if (parentModule == animationEnvironment.getSimulation().getRootModule()) {
 			addFigure(background);
 			addFigure(label);
-		}
 
-		ModuleFigure moduleFigure = (ModuleFigure)animationEnvironment.getFigure(module);
-		Rectangle r = new Rectangle(moduleFigure.getLocation(), new Dimension(10 * text.length(), 20));
-		setConstraint(background, r);
-		setConstraint(label, r);
+			ModuleFigure moduleFigure = (ModuleFigure)animationEnvironment.getFigure(module);
+			Rectangle r = new Rectangle(moduleFigure.getLocation(), new Dimension(10 * text.length(), 20));
+			setConstraint(background, r);
+			setConstraint(label, r);
+		}
 	}
 
 	public void undo() {

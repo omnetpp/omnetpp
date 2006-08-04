@@ -2,7 +2,6 @@ package org.omnetpp.experimental.animation.primitives;
 
 import org.omnetpp.common.simulation.model.ConnectionId;
 import org.omnetpp.common.simulation.model.GateId;
-import org.omnetpp.common.simulation.model.IRuntimeModule;
 import org.omnetpp.experimental.animation.replay.ReplayAnimationController;
 import org.omnetpp.figures.ConnectionFigure;
 import org.omnetpp.figures.GateAnchor;

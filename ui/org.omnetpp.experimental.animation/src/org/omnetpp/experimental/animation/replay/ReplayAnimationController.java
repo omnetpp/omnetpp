@@ -1090,17 +1090,7 @@ public class ReplayAnimationController implements IAnimationEnvironment {
 
 		if (left > right)
 			index = left;
-/*			if (first && left < size)
-				if (value < valueProvider.getValue(left))
-					index = left - 1;
-				else
-					index = left;
-			else if (!first && right >= 0)
-				if (value > valueProvider.getValue(right))
-					index = right + 1;
-				else
-					index = right;
-*/
+
 		if (index < 0 || index > size)
 			return -1;
 		else {
@@ -1262,8 +1252,8 @@ public class ReplayAnimationController implements IAnimationEnvironment {
 					int destGateId = getIntegerToken(tokens, "dg");
 					double transmissionTime = 0.0; //XXX for now (cSimpleModule::sendDirect() is missing this parameter)
 					double propagationTime = getDoubleToken(tokens, "pd", 0);
-					//addAnimationPrimitive(new SendDirectAnimation(this, loadEventNumber, simulationTime, loadAnimationNumber, transmissionTime, propagationTime, senderModuleId, destModuleId, lastMsg));
-					addAnimationPrimitive(new SendBroadcastAnimation(this, loadEventNumber, loadSimulationTime, loadAnimationNumber, propagationTime, senderModuleId, destModuleId));
+					//addAnimationPrimitive(new SendDirectAnimation(this, loadEventNumber, loadSimulationTime, loadAnimationNumber, transmissionTime, propagationTime, senderModuleId, destModuleId, lastLoadedMessage));
+					addAnimationPrimitive(new SendBroadcastAnimation(this, loadEventNumber, loadSimulationTime, loadAnimationNumber, propagationTime, 0, senderModuleId, destModuleId));
 				}
 				else if (tokens[0].equals("SA")) {
 					// "ScheduleAt" line
