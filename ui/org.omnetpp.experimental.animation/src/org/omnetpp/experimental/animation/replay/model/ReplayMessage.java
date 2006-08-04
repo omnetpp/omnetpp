@@ -4,16 +4,18 @@ import org.omnetpp.common.simulation.model.IRuntimeMessage;
 
 public class ReplayMessage implements IRuntimeMessage {
 	private String name;
+	private String className;
 
 	private int kind;
 	private int priority;
 	private int length;
 	private boolean error;
 
-//	cMessage *encapmsg;
-//	cPolymorphic *ctrlp;
-//	void *contextptr;  
-
+	private int id;
+	private int treeId;
+	private int encapsulationId;
+	private int encapsulationTreeId;
+	
 	private int senderModuleId, senderGateId;
 	private int arrivalModuleId, arrivalGateId;
 	private double sendingTime, arrivalTime;
@@ -46,8 +48,8 @@ public class ReplayMessage implements IRuntimeMessage {
 		return kind;
 	}
 
-	public void setMsgkind(int msgkind) {
-		this.kind = msgkind;
+	public void setKind(int kind) {
+		this.kind = kind;
 	}
 
 	public int getPriority() {
@@ -109,4 +111,45 @@ public class ReplayMessage implements IRuntimeMessage {
 	public void setSendingTime(double sendingTime) {
 		this.sendingTime = sendingTime;
 	}
+
+	public int getEncapsulationId() {
+		return encapsulationId;
+	}
+
+	public void setEncapsulationId(int encapsulationId) {
+		this.encapsulationId = encapsulationId;
+	}
+
+	public int getEncapsulationTreeId() {
+		return encapsulationTreeId;
+	}
+
+	public void setEncapsulationTreeId(int encapsulationTreeId) {
+		this.encapsulationTreeId = encapsulationTreeId;
+	}
+
+	public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
+	}
+
+	public int getTreeId() {
+		return treeId;
+	}
+
+	public void setTreeId(int treeId) {
+		this.treeId = treeId;
+	}
+
+	public String getClassName() {
+		return className;
+	}
+
+	public void setClassName(String className) {
+		this.className = className;
+	}
+
 }

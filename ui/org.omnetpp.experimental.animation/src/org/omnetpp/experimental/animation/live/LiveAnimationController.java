@@ -12,6 +12,7 @@ import org.omnetpp.experimental.animation.primitives.SendMessageAnimation;
 import org.omnetpp.experimental.animation.primitives.SetConnectionDisplayStringAnimation;
 import org.omnetpp.experimental.animation.primitives.SetModuleDisplayStringAnimation;
 import org.omnetpp.experimental.animation.replay.ReplayAnimationController;
+import org.omnetpp.experimental.animation.replay.model.ReplayMessage;
 import org.omnetpp.experimental.animation.replay.model.ReplayModule;
 import org.omnetpp.experimental.animation.widgets.AnimationCanvas;
 import org.omnetpp.experimental.simkernel.IEnvirCallback;
@@ -345,6 +346,16 @@ public class LiveAnimationController extends ReplayAnimationController implement
 	}
 
 	public void messageSendHop(cMessage msg, cGate gate, double propagationTime) {
+		ReplayMessage rmsg = new ReplayMessage();
+		rmsg.setName(msg.getName());
+		//rmsg.setClassName(msg.getClassName());XXX
+		rmsg.setKind(msg.getKind());
+		rmsg.setLength(msg.getLength());
+		rmsg.setId(msg.getId());
+		rmsg.setTreeId(msg.getTreeId());
+		rmsg.setEncapsulationId(msg.getEncapsulationId());
+		rmsg.setEncapsulationTreeId(msg.getEncapsulationTreeId());
+
 		addAnimationPrimitive(new SendMessageAnimation(this,
 				getLiveEventNumber(),
 				msg.getSendingTime(),
@@ -352,10 +363,20 @@ public class LiveAnimationController extends ReplayAnimationController implement
 				propagationTime,
 				0,
 				new ConnectionId(gate.getOwnerModule().getId(), gate.getId()),
-				msg.getId()));
+				rmsg));
 	}
 
 	public void messageSendHop(cMessage msg, cGate gate, double propagationTime, double transmissionTime, double transmissionStartTime) {
+		ReplayMessage rmsg = new ReplayMessage();
+		rmsg.setName(msg.getName());
+		rmsg.setClassName(msg.className());
+		rmsg.setKind(msg.getKind());
+		rmsg.setLength(msg.getLength());
+		rmsg.setId(msg.getId());
+		rmsg.setTreeId(msg.getTreeId());
+		rmsg.setEncapsulationId(msg.getEncapsulationId());
+		rmsg.setEncapsulationTreeId(msg.getEncapsulationTreeId());
+
 		addAnimationPrimitive(new SendMessageAnimation(this,
 				getLiveEventNumber(),
 				msg.getSendingTime(), //transmissionStartTime,
@@ -363,7 +384,7 @@ public class LiveAnimationController extends ReplayAnimationController implement
 				propagationTime,
 				transmissionTime,
 				new ConnectionId(gate.getOwnerModule().getId(), gate.getId()),
-				msg.getId()));
+				rmsg));
 	}
 
 	public void objectDeleted(cObject object) {

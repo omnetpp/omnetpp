@@ -28,6 +28,7 @@ import org.omnetpp.experimental.animation.primitives.ScheduleSelfMessageAnimatio
 import org.omnetpp.experimental.animation.primitives.SendMessageAnimation;
 import org.omnetpp.experimental.animation.primitives.SetConnectionDisplayStringAnimation;
 import org.omnetpp.experimental.animation.primitives.SetModuleDisplayStringAnimation;
+import org.omnetpp.experimental.animation.replay.model.ReplayMessage;
 import org.omnetpp.experimental.animation.replay.model.ReplayModule;
 import org.omnetpp.experimental.animation.replay.model.ReplaySimulation;
 import org.omnetpp.experimental.animation.widgets.AnimationCanvas;
@@ -1051,6 +1052,7 @@ public class ReplayAnimationController implements IAnimationEnvironment {
 			long animationPrimitivesCount = animationPrimitives.size();
 			int lineCount = 0;
 			String line = null;
+			ReplayMessage lastMsg = null; //XXX
 
 			if (logFileReader == null)
 				logFileReader = new BufferedReader(new InputStreamReader(file.getContents()));
@@ -1106,7 +1108,17 @@ public class ReplayAnimationController implements IAnimationEnvironment {
 					addAnimationPrimitive(handleMessageAnimationPrimitive );
 				}
 				else if (tokens[0].equals("BS")) {
-					// TODO:
+					//XXX 
+					lastMsg = new ReplayMessage();
+					lastMsg.setName(getToken(tokens, "n"));
+					lastMsg.setClassName(getToken(tokens, "c"));
+					lastMsg.setKind(getIntegerToken(tokens, "k"));
+					lastMsg.setLength(getIntegerToken(tokens, "l"));
+					int id = getIntegerToken(tokens, "id", -1);
+					lastMsg.setId(id);
+					lastMsg.setTreeId(getIntegerToken(tokens, "tid", id));
+					lastMsg.setEncapsulationId(getIntegerToken(tokens, "eid", id));
+					lastMsg.setEncapsulationTreeId(getIntegerToken(tokens, "etid", id));
 				}
 				else if (tokens[0].equals("SH")) {
 					ConnectionId connectionId = new ConnectionId(getIntegerToken(tokens, "sm"), getIntegerToken(tokens, "sg"));
@@ -1117,7 +1129,7 @@ public class ReplayAnimationController implements IAnimationEnvironment {
 					double propagationTime = getDoubleToken(tokens, "pd", 0);
 					double transmissionTime = getDoubleToken(tokens, "td", 0);
 					double simulationTime = getDoubleToken(tokens, "ts", loadSimulationTime);
-					addAnimationPrimitive(new SendMessageAnimation(this, loadEventNumber, simulationTime, loadAnimationNumber, propagationTime, transmissionTime, connectionId, messageId));
+					addAnimationPrimitive(new SendMessageAnimation(this, loadEventNumber, simulationTime, loadAnimationNumber, propagationTime, transmissionTime, connectionId, lastMsg));
 				}
 				else if (tokens[0].equals("SA")) {
 					addAnimationPrimitive(new ScheduleSelfMessageAnimation(this, loadEventNumber, loadSimulationTime, loadAnimationNumber, getDoubleToken(tokens, "t")));

@@ -9,6 +9,7 @@ import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.swt.graphics.Color;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.simulation.model.ConnectionId;
+import org.omnetpp.common.simulation.model.IRuntimeMessage;
 import org.omnetpp.experimental.animation.replay.ReplayAnimationController;
 import org.omnetpp.figures.ConnectionFigure;
 
@@ -21,7 +22,7 @@ public class SendMessageAnimation extends AbstractAnimationPrimitive {
 
 	private ConnectionId connectionId;
 
-	private long messageId;
+	private IRuntimeMessage msg; //FIXME should not be here...
 	
 	private double transmissionTime;
 
@@ -40,12 +41,12 @@ public class SendMessageAnimation extends AbstractAnimationPrimitive {
 								double propagationTime,
 								double transmissionTime,
 								ConnectionId connectionId,
-								long messageId) {
+								IRuntimeMessage msg) {
 		super(animationController, eventNumber, simulationTime, animationNumber);
 		this.transmissionTime = transmissionTime;
 		this.endSimulationTime = simulationTime + propagationTime + transmissionTime;
 		this.connectionId = connectionId;
-		this.messageId = messageId;
+		this.msg = msg;
 		
 		toolTip = new Label();
 		toolTip.setText("Sending time: " + simulationTime +
@@ -55,7 +56,7 @@ public class SendMessageAnimation extends AbstractAnimationPrimitive {
 
 		messageEllipse = new Ellipse();
 		messageEllipse.setSize(20, 20);
-		Color color = ColorFactory.getGoodColor((int)messageId); //FIXME should rather use treeId instead of messageId, but it's not easily gettable from trace 
+		Color color = ColorFactory.getGoodColor(msg==null ? 0 : msg.getEncapsulationId()); 
 		messageEllipse.setForegroundColor(color);
 		messageEllipse.setBackgroundColor(color);
 		messageEllipse.setToolTip(toolTip);
