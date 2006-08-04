@@ -10,7 +10,7 @@ public interface IEnvirCallback {
     void messageScheduled(cMessage msg);
     void messageCancelled(cMessage msg);
     void beginSend(cMessage msg);
-    void messageSendDirect(cMessage msg, cGate toGate, double propagationDelay);
+    void messageSendDirect(cMessage msg, cGate toGate, double propagationDelay, double transmissionDelay);
     void messageSendHop(cMessage msg, cGate srcGate, double propagationDelay);
     void messageSendHop(cMessage msg, cGate srcGate, double propagationDelay, double transmissionDelay, double transmissionStartTime);
     void breakpointHit(String label, cModule mod);

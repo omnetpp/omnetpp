@@ -75,7 +75,7 @@ public class DummyEnvirCallback implements IEnvirCallback {
 		System.out.println("messageScheduled()");
 	}
 
-	public void messageSendDirect(cMessage msg, cGate toGate, double propagationDelay) {
+	public void messageSendDirect(cMessage msg, cGate toGate, double propagationDelay, double transmissionDelay) {
 		System.out.println("messageSendDirect()");
 	}
 
