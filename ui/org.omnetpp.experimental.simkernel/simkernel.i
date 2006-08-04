@@ -120,6 +120,8 @@ inline void evSetup(const char *inifile) { //XXX
     $1 = j$1;
 }
 
+%rename cPolymorphic::className getClassName;
+
 %rename cObject::name getName;
 %rename cObject::fullName getFullName;
 %rename cObject::fullPath getFullPath;
