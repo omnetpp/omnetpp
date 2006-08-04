@@ -83,4 +83,10 @@ public interface IRuntimeMessage {
      * Returns the treeId() of the innermost encapsulated message.
      */
 	public int getEncapsulationTreeId();
+
+	// FIXME: IObject?
+	public String getName();
+
+	// FIXME: IObject?
+	public String getClassName();
 }
