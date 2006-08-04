@@ -22,6 +22,7 @@ import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.displaymodel.IDisplayString;
 import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.figures.LayerSupport.LayerID;
+import org.omnetpp.figures.layout.SubmoduleConstraint;
 
 public class SubmoduleFigure extends ModuleFigure implements HandleBounds {
 
@@ -287,21 +288,27 @@ public class SubmoduleFigure extends ModuleFigure implements HandleBounds {
         return getBounds();
     }
 
+    /**
+     * Sets the layout constraint for this submodule figure 
+     * @param constr
+     */
+    public void setConstraint(SubmoduleConstraint constr) {
+        getParent().setConstraint(this, constr);
+    }
+    
 	/**
 	 * Adjusts the image properties using a displayString object
 	 * @param dps
 	 */
 	public void setDisplayString(IDisplayString dps) {
 		
-        // set the location and size using the models helper methods
-        Point loc = dps.getLocation();
-        // Integer.MIN_VALUE signals that the coordinate is unpinned and the
-        // layouter can move it freely (if no location is specified in the displaystring)
-        if (loc == null) loc = new Point(Integer.MIN_VALUE, Integer.MIN_VALUE);
-        
-        Rectangle constraint = new Rectangle(loc, dps.getSize());
-        getParent().setConstraint(this, constraint);
-        
+		// fallback for setting the constraint (if it's not yet set)
+//		Object currentConstr = getParent().getLayoutManager().getConstraint(this); 
+//		if ( currentConstr == null) {
+//	        SubmoduleConstraint constr = new SubmoduleConstraint(dps);
+//	        setConstraint(constr);
+//		}
+		
         // range support
         setRange(
         		dps.getRange(),
@@ -330,8 +337,8 @@ public class SubmoduleFigure extends ModuleFigure implements HandleBounds {
         // set the figure properties
         setShape(img, 
         		dps.getAsStringDef(IDisplayString.Prop.SHAPE), 
-        		constraint.width, 
-        		constraint.height,
+        		dps.getSize().width, 
+        		dps.getSize().height,
         		ColorFactory.asColor(dps.getAsStringDef(IDisplayString.Prop.FILLCOL)),
         		ColorFactory.asColor(dps.getAsStringDef(IDisplayString.Prop.BORDERCOL)),
         		dps.getAsIntDef(IDisplayString.Prop.BORDERWIDTH, -1));

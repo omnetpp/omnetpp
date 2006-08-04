@@ -7,6 +7,7 @@ import org.omnetpp.common.displaymodel.IDisplayString;
 import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.figures.GateAnchor;
 import org.omnetpp.figures.SubmoduleFigure;
+import org.omnetpp.figures.layout.SubmoduleConstraint;
 import org.omnetpp.ned2.model.SubmoduleNodeEx;
 
 
@@ -60,15 +61,24 @@ public class SubmoduleEditPart extends ModuleEditPart {
     protected void refreshVisuals() {
         
         // define the properties that determine the visual appearence
-    	SubmoduleNodeEx model = (SubmoduleNodeEx)getModel();
+    	SubmoduleNodeEx submNode = (SubmoduleNodeEx)getModel();
     	
-    	String nameToDisplay = model.getName();
+    	String nameToDisplay = submNode.getName();
     	// add [size] if it's a module vector
-    	if (model.getVectorSize() != null && !"".equals(model.getVectorSize()))
-    		nameToDisplay += "["+model.getVectorSize()+"]";
+    	if (submNode.getVectorSize() != null && !"".equals(submNode.getVectorSize()))
+    		nameToDisplay += "["+submNode.getVectorSize()+"]";
     	getSubmoduleFigure().setName(nameToDisplay);
         // parse a dispaly string, so it's easier to get values from it.
-        IDisplayString dps = model.getDisplayString();
+        IDisplayString dps = submNode.getDisplayString();
+        
+        // set the layout constraint for the figure
+        SubmoduleConstraint constr = new SubmoduleConstraint(dps);
+        constr.setVectorName(nameToDisplay);
+        // TODO put the correct values here from the model
+        constr.setVectorSize(5);
+        constr.setVectorIndex(3);
+        getSubmoduleFigure().setConstraint(constr);
+        // set the rest of the dispay properties
         getSubmoduleFigure().setDisplayString(dps);
         // TODO implement a separate PIN decoration decorator figure in submodule figure
         if (dps.getLocation() != null)

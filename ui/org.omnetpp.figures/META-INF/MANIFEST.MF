@@ -8,4 +8,6 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.draw2d,
  org.eclipse.gef,
  org.omnetpp.common
-Export-Package: org.omnetpp.figures
+Export-Package: org.omnetpp.figures,
+ org.omnetpp.figures.layout
+Bundle-Vendor: OpenSim Ltd.
