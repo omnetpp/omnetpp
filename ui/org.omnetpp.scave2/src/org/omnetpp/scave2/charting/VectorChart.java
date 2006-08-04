@@ -20,7 +20,7 @@ import org.omnetpp.scave2.charting.plotter.SquareSymbol;
 public class VectorChart extends ZoomableCachingCanvas {
 	private static final Color TICK_LINE_COLOR = new Color(null, 160, 160, 160);
 	private static final Color TICK_LABEL_COLOR = new Color(null, 0, 0, 0);
-	private static final Color INSETS_BACKGROUND_COLOR = new Color(null, 255, 255, 160);
+	private static final Color INSETS_BACKGROUND_COLOR = new Color(null, 236, 233, 216);
 	private static final Color INSETS_LINE_COLOR = new Color(null, 0, 0, 0);
 	
 	private static final int TICK_SPACING = 100; // space between ticks in pixels
@@ -125,7 +125,7 @@ public class VectorChart extends ZoomableCachingCanvas {
 
 		// draw insets border
 		graphics.setForegroundColor(INSETS_BACKGROUND_COLOR);
-		graphics.setBackgroundColor(new Color(null, 236, 233, 216));
+		graphics.setBackgroundColor(INSETS_BACKGROUND_COLOR);
 		graphics.fillRectangle(0, 0, getWidth(), insets.top); // top
 		graphics.fillRectangle(0, getHeight()-insets.bottom, getWidth(), insets.bottom); // bottom
 		graphics.fillRectangle(0, 0, insets.left, getHeight()); // left

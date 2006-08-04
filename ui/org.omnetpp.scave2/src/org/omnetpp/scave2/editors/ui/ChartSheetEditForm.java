@@ -50,7 +50,9 @@ public class ChartSheetEditForm implements IScaveObjectEditForm {
 	private List<Chart> allCharts;
 	private Comparator<Chart> comparator = new Comparator<Chart>() {
 		public int compare(Chart o1, Chart o2) {
-			return o1.getName().compareTo(o2.getName());
+			String name1 = o1.getName() != null ? o1.getName() : "";
+			String name2 = o2.getName() != null ? o2.getName() : "";
+			return name1.compareTo(name2);
 		}
 	};
 	
@@ -118,8 +120,10 @@ public class ChartSheetEditForm implements IScaveObjectEditForm {
 	
 	private List<String> getChartNames(List<Chart> charts) {
 		ArrayList<String> names = new ArrayList<String>();
-		for (Chart chart : charts)
-			names.add(chart.getName());
+		for (Chart chart : charts) {
+			String chartName = chart.getName() != null ? chart.getName() : "<unnamed>";
+			names.add(chartName);
+		}
 		return names;
 	}
 	

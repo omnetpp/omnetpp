@@ -68,7 +68,7 @@ public class ChartPage2 extends ScaveEditorPage {
 		chart.setLayoutData(new GridData(SWT.FILL,SWT.FILL,true,true));
 		chart.setSize(getParent().getBounds().width, getParent().getBounds().height); // provide width/height hint until layouting runs
 		chart.setDataset(xydataset);
-		chart.setCaching(false);
+		chart.setCaching(true);
 
 		chart.setBackground(ColorConstants.white);
 		new RubberbandSupport(chart, SWT.CTRL) {

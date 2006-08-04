@@ -72,8 +72,7 @@ public class NewScaveObjectWizard extends Wizard {
 			editFieldsPage.clearControl();
 			
 			// remove previous child, add new child
-			if (addNewChildCommand != null)
-				addNewChildCommand.undo();
+			removeNewChild();
 			addNewChildCommand = CreateChildCommand.create(domain, parent, newChildDescriptor, Arrays.asList(parent));
 			if (addNewChildCommand.canExecute())
 				addNewChildCommand.execute();
@@ -99,8 +98,7 @@ public class NewScaveObjectWizard extends Wizard {
 	
 	@Override
 	public boolean performCancel() {
-		if (addNewChildCommand != null && addNewChildCommand.canUndo())
-			addNewChildCommand.undo();
+		removeNewChild();
 		if (newChildDescriptor != null) {
 			newChildDescriptor = null;
 		}
@@ -109,13 +107,21 @@ public class NewScaveObjectWizard extends Wizard {
 
 	@Override
 	public boolean performFinish() {
-		if (addNewChildCommand != null && addNewChildCommand.canUndo())
-			addNewChildCommand.undo();
+		removeNewChild();
 		if (newChildDescriptor != null) {
 			editFieldsPage.setNewChildFeatures();
 			return true;
 		}
 		return false;
+	}
+	
+	private void removeNewChild() {
+		try {
+			if (addNewChildCommand != null && addNewChildCommand.canUndo())
+				addNewChildCommand.undo();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 	
 	/**
