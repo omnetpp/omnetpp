@@ -243,32 +243,37 @@ public class DataflowNetworkBuilder {
 		}
 	}
 	
-	private void addSourceNode(long id) {
+	private Node addSourceNode(long id) {
 		// close the port
-		if (getPort(id) != null)
-			addSinkNode(id);
+		if (getPort(id) != null) {
+			Node node = addSinkNode(id);
+			outputNodes.remove(node);
+		}
 		// create new port
 		Node node = getOrCreateSourceNode(id);
 		String portName = Integer.toString(resultfileManager.getVector(id).getVectorId());
 		idToPortMap.put(id, getPort(node, portName));
+		return node;
 	}
 	
-	private void addFilterNode(long id, String operation, List<Param> params) {
+	private Node addFilterNode(long id, String operation, List<Param> params) {
 		Port port = getPort(id);
 		Node filterNode = createFilterNode(operation, params);
 		if (filterNode != null) {
 			connect(port, filterNode, "in");
 			idToPortMap.put(id, getPort(filterNode, "out"));
 		}
+		return filterNode;
 	}
 	
-	private void addSinkNode(long id) {
+	private Node addSinkNode(long id) {
 		Node sinkNode = createSinkNode();
 		Port port = getPort(id);
 		connect(port, sinkNode, "in");
 		idToPortMap.remove(id);
 		if (chartDisplayedIds == null || contains(chartDisplayedIds, id))
 			outputNodes.add(sinkNode);
+		return sinkNode;
 	}
 	
 	// XXX add this to IDList

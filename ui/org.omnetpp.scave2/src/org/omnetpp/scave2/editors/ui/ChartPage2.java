@@ -40,9 +40,13 @@ public class ChartPage2 extends ScaveEditorPage {
 	
 	public void updatePage(Notification notification) {
 		if (ScaveModelPackage.eINSTANCE.getChart_Name().equals(notification.getFeature())) {
-			setPageTitle("Chart: " + chart.getName());
-			setFormTitle("Chart: " + chart.getName());
+			setPageTitle("Chart: " + getChartName(chart));
+			setFormTitle("Chart: " + getChartName(chart));
 		}
+	}
+
+	private String getChartName(Chart chart) {
+		return chart.getName() != null ? chart.getName() : "<unnamed>";
 	}
 
 	public void setChart(Control chart) {
@@ -51,8 +55,8 @@ public class ChartPage2 extends ScaveEditorPage {
 
 	private void initialize() {
 		// set up UI
-		setPageTitle("Chart: " + chart.getName());
-		setFormTitle("Chart: " + chart.getName());
+		setPageTitle("Chart: " + getChartName(chart));
+		setFormTitle("Chart: " + getChartName(chart));
 		setExpandHorizontal(true);
 		setExpandVertical(true);
 		setBackground(ColorFactory.asColor("white"));
