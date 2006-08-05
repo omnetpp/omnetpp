@@ -60,7 +60,6 @@ public class LiveAnimationController extends ReplayAnimationController implement
 		isRunningLive = false;
 
 		jenv.newRun(1);
-		initializeSimulation(toReplayModule(liveSimulation.getRootModule()));
 	}
 
 	@Override
@@ -286,6 +285,19 @@ public class LiveAnimationController extends ReplayAnimationController implement
 		return replayModule;
 	}
 	
+	protected ReplayMessage toReplayMessage(cMessage msg) {
+		ReplayMessage replayMessage = new ReplayMessage();
+		replayMessage.setName(msg.getName());
+		replayMessage.setClassName(msg.getClassName());
+		replayMessage.setKind(msg.getKind());
+		replayMessage.setLength(msg.getLength());
+		replayMessage.setId(msg.getId());
+		replayMessage.setTreeId(msg.getTreeId());
+		replayMessage.setEncapsulationId(msg.getEncapsulationId());
+		replayMessage.setEncapsulationTreeId(msg.getEncapsulationTreeId());
+		return replayMessage;
+	}
+
 	// simulation callbacks
 	
 	public void breakpointHit(String lbl, cModule mod) {
@@ -317,8 +329,13 @@ public class LiveAnimationController extends ReplayAnimationController implement
 	}
 
 	public void moduleCreated(cModule module) {
+		ReplayModule replayModule = toReplayModule(module);
+
+		if (simulation == null)
+			initializeSimulation(replayModule);
+
 		int parentModuleId = module.getParentModule() != null ? module.getParentModule().getId() : -1;
-		addAnimationPrimitive(new CreateModuleAnimation(this, getLiveEventNumber(), getLiveSimulationTime(), getLiveAnimationNumber(), toReplayModule(module), parentModuleId));
+		addAnimationPrimitive(new CreateModuleAnimation(this, getLiveEventNumber(), getLiveSimulationTime(), getLiveAnimationNumber(), replayModule, parentModuleId));
 	}
 
 	public void moduleDeleted(cModule module) {
@@ -344,16 +361,6 @@ public class LiveAnimationController extends ReplayAnimationController implement
 	}
 
 	public void messageSendDirect(cMessage msg, cGate toGate, double propagationDelay, double transmissionDelay) {
-		ReplayMessage rmsg = new ReplayMessage();
-		rmsg.setName(msg.getName());
-		rmsg.setClassName(msg.getClassName());
-		rmsg.setKind(msg.getKind());
-		rmsg.setLength(msg.getLength());
-		rmsg.setId(msg.getId());
-		rmsg.setTreeId(msg.getTreeId());
-		rmsg.setEncapsulationId(msg.getEncapsulationId());
-		rmsg.setEncapsulationTreeId(msg.getEncapsulationTreeId());
-
 		addAnimationPrimitive(new SendDirectAnimation(this, 
 				getLiveEventNumber(),
 				msg.getSendingTime(),
@@ -362,20 +369,10 @@ public class LiveAnimationController extends ReplayAnimationController implement
 				transmissionDelay,
 				msg.getSenderModuleId(), 
 				toGate.getOwnerModule().getId(),
-				rmsg));
+				toReplayMessage(msg)));
 	}
 
 	public void messageSendHop(cMessage msg, cGate gate, double propagationTime) {
-		ReplayMessage rmsg = new ReplayMessage();
-		rmsg.setName(msg.getName());
-		//rmsg.setClassName(msg.getClassName());XXX
-		rmsg.setKind(msg.getKind());
-		rmsg.setLength(msg.getLength());
-		rmsg.setId(msg.getId());
-		rmsg.setTreeId(msg.getTreeId());
-		rmsg.setEncapsulationId(msg.getEncapsulationId());
-		rmsg.setEncapsulationTreeId(msg.getEncapsulationTreeId());
-
 		addAnimationPrimitive(new SendMessageAnimation(this,
 				getLiveEventNumber(),
 				msg.getSendingTime(),
@@ -383,20 +380,10 @@ public class LiveAnimationController extends ReplayAnimationController implement
 				propagationTime,
 				0,
 				new ConnectionId(gate.getOwnerModule().getId(), gate.getId()),
-				rmsg));
+				toReplayMessage(msg)));
 	}
 
 	public void messageSendHop(cMessage msg, cGate gate, double propagationTime, double transmissionTime, double transmissionStartTime) {
-		ReplayMessage rmsg = new ReplayMessage();
-		rmsg.setName(msg.getName());
-		rmsg.setClassName(msg.getClassName());
-		rmsg.setKind(msg.getKind());
-		rmsg.setLength(msg.getLength());
-		rmsg.setId(msg.getId());
-		rmsg.setTreeId(msg.getTreeId());
-		rmsg.setEncapsulationId(msg.getEncapsulationId());
-		rmsg.setEncapsulationTreeId(msg.getEncapsulationTreeId());
-
 		addAnimationPrimitive(new SendMessageAnimation(this,
 				getLiveEventNumber(),
 				msg.getSendingTime(), //transmissionStartTime,
@@ -404,7 +391,7 @@ public class LiveAnimationController extends ReplayAnimationController implement
 				propagationTime,
 				transmissionTime,
 				new ConnectionId(gate.getOwnerModule().getId(), gate.getId()),
-				rmsg));
+				toReplayMessage(msg)));
 	}
 
 	public void objectDeleted(cObject object) {

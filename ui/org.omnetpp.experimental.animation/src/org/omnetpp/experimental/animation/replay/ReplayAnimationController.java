@@ -1174,9 +1174,8 @@ public class ReplayAnimationController implements IAnimationEnvironment {
 					module.setName(getToken(tokens, "n"));
 
 					// FIXME: we show the first (root) module for now, should we get it as parameter?
-					if (simulation == null) {
+					if (simulation == null)
 						initializeSimulation(module);
-					}
 
 					addAnimationPrimitive(new CreateModuleAnimation(this, loadEventNumber, loadSimulationTime, loadAnimationNumber, module, getIntegerToken(tokens, "pid", -1)));
 				}
@@ -1249,8 +1248,8 @@ public class ReplayAnimationController implements IAnimationEnvironment {
 						
 					int senderModuleId = getIntegerToken(tokens, "sm");
 					int destModuleId = getIntegerToken(tokens, "dm");
-					int destGateId = getIntegerToken(tokens, "dg");
-					double transmissionDelay = 0;//getDoubleToken(tokens, "td", 0);
+					//int destGateId = getIntegerToken(tokens, "dg");
+					double transmissionDelay = getDoubleToken(tokens, "td", 0);
 					double propagationDelay = getDoubleToken(tokens, "pd", 0);
 					//addAnimationPrimitive(new SendDirectAnimation(this, loadEventNumber, loadSimulationTime, loadAnimationNumber, propagationDelay, transmissionDelay, senderModuleId, destModuleId, lastLoadedMessage));
 					addAnimationPrimitive(new SendBroadcastAnimation(this, loadEventNumber, loadSimulationTime, loadAnimationNumber, propagationDelay, transmissionDelay, senderModuleId, destModuleId, lastLoadedMessage));
