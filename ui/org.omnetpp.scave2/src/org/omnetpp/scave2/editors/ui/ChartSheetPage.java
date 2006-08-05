@@ -86,7 +86,7 @@ public class ChartSheetPage extends ScaveEditorPage {
 		Collection<Chart> charts = chartsheet.getCharts();
 		Composite parent = getChartSheetComposite();
 		for (Chart chart : charts) {
-			InteractiveChart swtChart = ChartFactory.createChart(parent, chart, scaveEditor.getResultFileManager(), 320, 200);
+			Control swtChart = ChartFactory.createChart(parent, chart, scaveEditor.getResultFileManager(), 320, 200);
 			addChart(swtChart);
 		}
 	}

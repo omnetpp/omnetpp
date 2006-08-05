@@ -2,8 +2,12 @@ package org.omnetpp.scave2.charting;
 
 import java.awt.Color;
 
+import org.eclipse.draw2d.ColorConstants;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.block.BlockBorder;
@@ -20,6 +24,7 @@ import org.jfree.data.xy.XYDataset;
 import org.jfree.data.xy.XYSeriesCollection;
 import org.jfree.ui.RectangleEdge;
 import org.jfree.ui.RectangleInsets;
+import org.omnetpp.common.canvas.RubberbandSupport;
 import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engine.ScalarResult;
@@ -34,15 +39,16 @@ import org.omnetpp.scave2.model.ScaveModelUtil;
  */
 public class ChartFactory {
 	
-	public static InteractiveChart createChart(Composite parent, Chart chart, ResultFileManager manager) {
+	public static Control createChart(Composite parent, Chart chart, ResultFileManager manager) {
 		return createChart(parent, chart, manager, SWT.DEFAULT, SWT.DEFAULT);
 	}
 
-	public static InteractiveChart createChart(Composite parent, Chart chart, ResultFileManager manager, int width, int height) {
+	public static Control createChart(Composite parent, Chart chart, ResultFileManager manager, int width, int height) {
 		Dataset dataset = ScaveModelUtil.findEnclosingDataset(chart);
 		switch (dataset.getType().getValue()) {
 		case DatasetType.SCALAR: return createScalarChart(parent, chart, dataset, manager, width, height);
-		case DatasetType.VECTOR: return createVectorChart(parent, chart, dataset, manager, width, height);
+		//case DatasetType.VECTOR: return createVectorChart(parent, chart, dataset, manager, width, height);
+		case DatasetType.VECTOR: return createVectorChart2(parent, chart, dataset, manager, width, height);
 		case DatasetType.HISTOGRAM: return createHistogramChart(parent, chart, dataset, manager, width, height);
 		}
 		throw new RuntimeException("invalid or unset dataset 'type' attribute: "+dataset.getType()); //XXX proper error handling
@@ -73,7 +79,26 @@ public class ChartFactory {
 		
 		return interactiveChart;
 	}
-	
+
+	private static VectorChart createVectorChart2(Composite parent, Chart chart, Dataset dataset, ResultFileManager manager, int width, int height) {
+		XYDataset data = new OutputVectorDataset(DatasetManager.getDataFromDataset(manager, dataset, chart));
+
+		final VectorChart vectorChart = new VectorChart(parent, SWT.DOUBLE_BUFFERED);
+		vectorChart.setLayoutData(new GridData(SWT.FILL,SWT.FILL,true,true));
+		vectorChart.setSize(width, height);
+		vectorChart.setDataset(data);
+		vectorChart.setCaching(true);
+
+		vectorChart.setBackground(ColorConstants.white);
+		new RubberbandSupport(vectorChart, SWT.CTRL) {
+			@Override
+			public void rubberBandSelectionMade(Rectangle r) {
+				vectorChart.zoomToRectangle(new org.eclipse.draw2d.geometry.Rectangle(r));
+			}
+		};
+		return vectorChart;
+	}
+
 	private static InteractiveChart createHistogramChart(Composite parent, Chart chart, Dataset dataset, ResultFileManager manager, int width, int height) {
 		InteractiveChart interactiveChart = new InteractiveChart(parent, SWT.NONE);
 		interactiveChart.setSize(width, height);

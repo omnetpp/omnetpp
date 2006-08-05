@@ -20,6 +20,7 @@ import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.Dataset;
 import org.omnetpp.scave.model.ScaveModelPackage;
+import org.omnetpp.scave2.charting.ChartFactory;
 import org.omnetpp.scave2.charting.OutputVectorDataset;
 import org.omnetpp.scave2.charting.VectorChart;
 import org.omnetpp.scave2.charting.plotter.IChartSymbol;
@@ -64,23 +65,25 @@ public class ChartPage2 extends ScaveEditorPage {
 
 		// set up contents
 		Composite parent = getBody();
-		Dataset dataset = ScaveModelUtil.findEnclosingObject(chart, Dataset.class);
-		ResultFileManager manager = scaveEditor.getResultFileManager();
-		XYDataset xydataset = new OutputVectorDataset(DatasetManager.getDataFromDataset(manager, dataset, chart));
-		//XXX just testing
-		final VectorChart chart = new VectorChart(parent, SWT.DOUBLE_BUFFERED);
-		chart.setLayoutData(new GridData(SWT.FILL,SWT.FILL,true,true));
-		chart.setSize(getParent().getBounds().width, getParent().getBounds().height); // provide width/height hint until layouting runs
-		chart.setDataset(xydataset);
-		chart.setCaching(true);
-
-		chart.setBackground(ColorConstants.white);
-		new RubberbandSupport(chart, SWT.CTRL) {
-			@Override
-			public void rubberBandSelectionMade(Rectangle r) {
-				chart.zoomToRectangle(new org.eclipse.draw2d.geometry.Rectangle(r));
-			}
-		};
+		final VectorChart chart = (VectorChart) ChartFactory.createChart(parent, this.chart, scaveEditor.getResultFileManager(), -1, -1);
+		
+//		Dataset dataset = ScaveModelUtil.findEnclosingObject(chart, Dataset.class);
+//		ResultFileManager manager = scaveEditor.getResultFileManager();
+//		XYDataset xydataset = new OutputVectorDataset(DatasetManager.getDataFromDataset(manager, dataset, chart));
+//		//XXX just testing
+//		final VectorChart chart = new VectorChart(parent, SWT.DOUBLE_BUFFERED);
+//		chart.setLayoutData(new GridData(SWT.FILL,SWT.FILL,true,true));
+//		chart.setSize(getParent().getBounds().width, getParent().getBounds().height); // provide width/height hint until layouting runs
+//		chart.setDataset(xydataset);
+//		chart.setCaching(true);
+//
+//		chart.setBackground(ColorConstants.white);
+//		new RubberbandSupport(chart, SWT.CTRL) {
+//			@Override
+//			public void rubberBandSelectionMade(Rectangle r) {
+//				chart.zoomToRectangle(new org.eclipse.draw2d.geometry.Rectangle(r));
+//			}
+//		};
 
 		// create control strip (XXX temp code)
 		Composite controlStrip = createControlStrip(parent, chart);
