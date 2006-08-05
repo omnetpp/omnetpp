@@ -15,6 +15,8 @@ public class SendBroadcastAnimation extends AbstractSendMessageAnimation {
 
 	private Ellipse circle;
 	
+	private double hidePropagationTime;
+	
 	public SendBroadcastAnimation(ReplayAnimationController animationController,
 								  long eventNumber,
 								  double beginSimulationTime,
@@ -27,12 +29,15 @@ public class SendBroadcastAnimation extends AbstractSendMessageAnimation {
 		super(animationController, eventNumber, beginSimulationTime, animationNumber, propagationTime, transmissionTime, msg);
 		this.sourceModuleId = sourceModuleId;
 		this.destinationModuleId = destinationModuleId;
+		this.hidePropagationTime = propagationTime * 0.2;
 
 		circle = new Ellipse() {
 			@Override
 			public void paint(Graphics graphics) {
 				graphics.pushState();
-				graphics.setAlpha(64);
+				double alpha = 64 * (animationEnvironment.getSimulationTime() < endSimulationTime - hidePropagationTime ?
+						1 : (1 - (animationEnvironment.getSimulationTime() - endSimulationTime + hidePropagationTime) / hidePropagationTime));
+				graphics.setAlpha((int)alpha);
 				super.paint(graphics);
 				graphics.popState();
 			}
