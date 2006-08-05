@@ -5,28 +5,19 @@ import java.util.Collection;
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
-import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.MouseAdapter;
+import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.omnetpp.common.color.ColorFactory;
-import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.ChartSheet;
-import org.omnetpp.scave.model.Dataset;
-import org.omnetpp.scave.model.DatasetType;
 import org.omnetpp.scave.model.ScaveModelPackage;
 import org.omnetpp.scave2.charting.ChartFactory;
-import org.omnetpp.scave2.charting.ChartSWTWrapper;
-import org.omnetpp.scave2.charting.InteractiveChart;
-import org.omnetpp.scave2.charting.VectorChart;
 import org.omnetpp.scave2.editors.ScaveEditor;
-import org.omnetpp.scave2.model.DatasetManager;
-import org.omnetpp.scave2.model.ScaveModelUtil;
 
 public class ChartSheetPage extends ScaveEditorPage {
 
@@ -85,9 +76,15 @@ public class ChartSheetPage extends ScaveEditorPage {
 		// set up contents
 		Collection<Chart> charts = chartsheet.getCharts();
 		Composite parent = getChartSheetComposite();
-		for (Chart chart : charts) {
+		for (final Chart chart : charts) {
 			Control swtChart = ChartFactory.createChart(parent, chart, scaveEditor.getResultFileManager(), 320, 200);
 			addChart(swtChart);
+
+			swtChart.addMouseListener(new MouseAdapter() { //FIXME this is a hack to get chart opened by double-click; to be done properly (SelectionListener, ask chart from widget)
+				public void mouseDoubleClick(MouseEvent e) {
+					scaveEditor.openChart(chart);
+				}
+			});
 		}
 	}
 }

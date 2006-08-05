@@ -48,10 +48,10 @@ import org.omnetpp.scave2.model.ScaveModelUtil;
  * 
  * @author andras, tomi
  */
+//FIXME merge ChartPage and ChartPage2 
+
 //TODO add flag into InputFile: "name" is OS path or workspace-relative path
-//TODO Outline view doesn't use our labelprovider
 //TODO copy/paste doesn't work on the model
-//TODO Browse page, Create Dataset button: assemble default name from filter params
 //TODO Browse page, Add To Dataset button: offer tree to select insertion point
 //TODO Browse page: add a "Preview selected items on a chart" button
 //TODO Chart sheet: should modify order of charts in the ChartSheet#getCharts collection
