@@ -39,8 +39,11 @@ public class SetConnectionDisplayStringAnimation extends AbstractAnimationPrimit
 		IRuntimeModule module = getSourceModule();
 		if (module != null && module.getParentModule() == animationEnvironment.getSimulation().getRootModule()) { //FIXME
 			ConnectionFigure connectionFigure = (ConnectionFigure)animationEnvironment.getFigure(connectionId);
-			oldDisplayString = connectionFigure.getLastDisplayString();
-			connectionFigure.setDisplayString(displayString);
+			
+			if (connectionFigure != null) {
+				oldDisplayString = connectionFigure.getLastDisplayString();
+				connectionFigure.setDisplayString(displayString);
+			}
 		}
 	}
 
@@ -48,7 +51,9 @@ public class SetConnectionDisplayStringAnimation extends AbstractAnimationPrimit
 		IRuntimeModule module = getSourceModule();
 		if (module != null && module.getParentModule() == animationEnvironment.getSimulation().getRootModule()) { //FIXME
 			ConnectionFigure connectionFigure = (ConnectionFigure)animationEnvironment.getFigure(connectionId);
-			connectionFigure.setDisplayString(oldDisplayString);// FIXME: this is a temproray hack to be able to undo changes
+
+			if (connectionFigure != null)
+				connectionFigure.setDisplayString(oldDisplayString);// FIXME: this is a temproray hack to be able to undo changes
 		}
 	}
 
