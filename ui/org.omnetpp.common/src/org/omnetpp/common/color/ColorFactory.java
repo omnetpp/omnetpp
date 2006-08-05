@@ -573,7 +573,6 @@ public class ColorFactory {
         		ColorFactory.asColor("yellow"), 
         		ColorFactory.asColor("black"), 
         		ColorFactory.asColor("purple"), 
-        		ColorFactory.asColor("grey")
         		//XXX add more
         };
 	};
