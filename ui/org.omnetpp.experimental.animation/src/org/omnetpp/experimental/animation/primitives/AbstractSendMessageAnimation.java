@@ -30,7 +30,7 @@ public abstract class AbstractSendMessageAnimation extends AbstractAnimationPrim
 	
 	@Override
 	public double getEndAnimationTime() {
-		if (transmissionTime == 0)
+		if (endSimulationTime == beginSimulationTime)
 			return super.getEndAnimationTime();
 		else
 			return animationEnvironment.getAnimationTimeForSimulationTime(endSimulationTime);
@@ -40,16 +40,18 @@ public abstract class AbstractSendMessageAnimation extends AbstractAnimationPrim
 	
 	protected abstract Point getEndPoint();
 
-	protected Point[] getMessageSendPoints(double simulationTime, double animationTime) {
+	protected Point[] getMessageSendPoints(double simulationTime, double animationTime, int orthogonalTranslation) {
 		Point p1 = getBeginPoint();
 		Point p2 = getEndPoint();
 		double simulationTimeDelta = endSimulationTime - beginSimulationTime - transmissionTime;
 
 		// translate connection line coordinates orthogonal to the line
-		PrecisionPoint n = new PrecisionPoint(p1.y - p2.y, p2.x - p1.x);
-		n.performScale(4 / Math.sqrt(n.x * n.x + n.y * n.y));
-		p1.translate(n);
-		p2.translate(n);
+		if (orthogonalTranslation != 0) {
+			PrecisionPoint n = new PrecisionPoint(p1.y - p2.y, p2.x - p1.x);
+			n.performScale(orthogonalTranslation / Math.sqrt(n.x * n.x + n.y * n.y));
+			p1.translate(n);
+			p2.translate(n);
+		}
 
 		double alpha;
 		if (simulationTimeDelta != 0)

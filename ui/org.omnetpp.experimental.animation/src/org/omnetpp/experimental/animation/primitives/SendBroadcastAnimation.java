@@ -4,6 +4,7 @@ import org.eclipse.draw2d.Ellipse;
 import org.eclipse.draw2d.Graphics;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.Rectangle;
+import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.simulation.model.IRuntimeMessage;
 import org.omnetpp.experimental.animation.replay.ReplayAnimationController;
 
@@ -31,12 +32,13 @@ public class SendBroadcastAnimation extends AbstractSendMessageAnimation {
 			@Override
 			public void paint(Graphics graphics) {
 				graphics.pushState();
-				graphics.setAlpha(128);
+				graphics.setAlpha(64);
 				super.paint(graphics);
 				graphics.popState();
 			}
 		};
-		circle.setFill(true);
+		circle.setFill(false);
+		circle.setForegroundColor(ColorFactory.getGoodColor(msg == null ? 0 : msg.getEncapsulationId()));
 	}
 	
 	public void redo() {
@@ -52,12 +54,14 @@ public class SendBroadcastAnimation extends AbstractSendMessageAnimation {
 	public void animateAt(long eventNumber, double simulationTime, long animationNumber, double animationTime) {
 		if (isDisplayed()) { 
 			Point p = getBeginPoint();
-			Point[] ps = getMessageSendPoints(simulationTime, animationTime);
+			Point[] ps = getMessageSendPoints(simulationTime, animationTime, 0);
+			//System.out.println("Source: " + p + " message:" + ps[0] + ":" + ps[1]);
 			double r = ps[0].getDistance(p);
-			double width = r - (int)ps[1].getDistance(p);
+			double width = r - ps[1].getDistance(p);
+			//System.out.println("Radius: " + r + " width:" + width);
 			int radius = (int)r;
 			circle.setLineWidth((int)width);
-			circle.setBounds(new Rectangle(p.x - radius, p.y - radius, radius * 2, radius * 2));
+			circle.setBounds(new Rectangle(p.x - radius, p.y - radius, radius * 2 - 1, radius * 2 - 1));
 		}
 	}
 

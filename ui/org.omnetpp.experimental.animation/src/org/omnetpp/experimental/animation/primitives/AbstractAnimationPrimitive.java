@@ -20,12 +20,15 @@ public abstract class AbstractAnimationPrimitive implements IAnimationPrimitive 
 	protected long animationNumber;
 	
 	protected boolean shown;
+
+	protected boolean isActive;
 	
 	public AbstractAnimationPrimitive(IAnimationEnvironment animationEnvironment, long eventNumber, double beginSimulationTime, long animationNumber) {
 		this.animationEnvironment = animationEnvironment;
 		this.eventNumber = eventNumber;
 		this.beginSimulationTime = beginSimulationTime;
 		this.animationNumber = animationNumber;
+		this.isActive = false;
 	}
 	
 	public long getEventNumber() {
@@ -44,9 +47,38 @@ public abstract class AbstractAnimationPrimitive implements IAnimationPrimitive 
 		return animationEnvironment.getAnimationTimeForAnimationNumber(animationNumber);
 	}
 
+	/**
+	 * The default animation time duration is one animation unit.
+	 */
 	public double getEndAnimationTime() {
 		return animationEnvironment.getAnimationTimeForAnimationNumber(animationNumber + 1);
 	}
+ 
+	public boolean isActive() {
+		return isActive;
+	}
+	
+	public void activate() {
+		if (!isActive) {
+			redo();
+			isActive = true;
+		}
+		else
+			throw new RuntimeException();
+	}
+
+	public void deactivate() {
+		if (isActive) {
+			undo();
+			isActive = false;
+		}
+		else
+			throw new RuntimeException();
+	}
+	
+	public abstract void redo();
+
+	public abstract void undo();
 
 	public abstract void animateAt(long eventNumber, double simulationTime, long animationNumber, double animationTime);
 	

@@ -247,7 +247,7 @@ public class LiveAnimationEditor extends ReplayAnimationEditor implements ILiveA
 	public void controllerStateChanged() {		
 		super.controllerStateChanged();
 
-		if (!replayToolBar.isDisposed()) {
+		if (!liveToolBar.isDisposed()) {
 			if (getLiveAnimationController().isRunning() && getLiveAnimationController().isRunningLive())
 				liveStopToolItem.setEnabled(true);
 			else

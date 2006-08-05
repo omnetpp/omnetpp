@@ -1,5 +1,6 @@
 package org.omnetpp.experimental.animation.live;
 
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.omnetpp.common.simulation.model.ConnectionId;
 import org.omnetpp.common.simulation.model.GateId;
 import org.omnetpp.experimental.animation.primitives.BubbleAnimation;
@@ -8,7 +9,7 @@ import org.omnetpp.experimental.animation.primitives.CreateModuleAnimation;
 import org.omnetpp.experimental.animation.primitives.DeleteModuleAnimation;
 import org.omnetpp.experimental.animation.primitives.HandleMessageAnimation;
 import org.omnetpp.experimental.animation.primitives.IAnimationPrimitive;
-import org.omnetpp.experimental.animation.primitives.SendDirectAnimation;
+import org.omnetpp.experimental.animation.primitives.SendBroadcastAnimation;
 import org.omnetpp.experimental.animation.primitives.SendMessageAnimation;
 import org.omnetpp.experimental.animation.primitives.SetConnectionDisplayStringAnimation;
 import org.omnetpp.experimental.animation.primitives.SetModuleDisplayStringAnimation;
@@ -60,6 +61,11 @@ public class LiveAnimationController extends ReplayAnimationController implement
 		isRunningLive = false;
 
 		jenv.newRun(1);
+		addNextHandleMessageAnimation();
+		gotoAnimationBegin();
+		setLastStopLivePositionAtCurrentPosition();
+		setEndPositionAtLastStopLivePosition();
+		positionChanged();
 	}
 
 	@Override
@@ -81,6 +87,10 @@ public class LiveAnimationController extends ReplayAnimationController implement
 	public double getLiveSimulationTime() {
 		return liveSimulation.simTime();
    }
+	
+	public double guessNextEventLiveSimulationTime() {
+		return liveSimulation.guessNextSimtime();
+	}
 	
 	public long getLiveAnimationNumber() {
 		return liveAnimationNumber;
@@ -241,10 +251,28 @@ public class LiveAnimationController extends ReplayAnimationController implement
 						break;
 	
 				jenv.doOneStep();
+				addNextHandleMessageAnimation();
 				//jenv.runSimulation(mode, until_time, until_event);
 			}
 		
 		return beginOrderedAnimationPrimitives.size() - count;
+	}
+
+	protected void addNextHandleMessageAnimation() {
+		liveAnimationNumber++;
+		cMessage message = liveSimulation.guessNextEvent();
+		cModule module = liveSimulation.guessNextModule();
+		// FIXME: liveEventNumber is set to -1 before first doOneEvent, this is not consistent when later it is set to the next event number
+		long liveEventNumber = getLiveEventNumber() == -1 ? 0 : getLiveEventNumber();
+		HandleMessageAnimation handleMessageAnimation = new HandleMessageAnimation(this, liveEventNumber, guessNextEventLiveSimulationTime(), getLiveAnimationNumber(), module.getId(), message);
+		addAnimationPrimitive(handleMessageAnimation);
+
+		if (liveEventNumber == 0) {
+			beginEventNumber = liveEventNumber;
+			beginSimulationTime = guessNextEventLiveSimulationTime();
+			beginAnimationNumber = liveAnimationNumber;
+			beginAnimationTime = handleMessageAnimation.getBeginAnimationTime();
+		}
 	}
 
 	protected void setEndPositionAtLastStopLivePosition() {
@@ -324,8 +352,14 @@ public class LiveAnimationController extends ReplayAnimationController implement
 	}
 
 	public void messageDelivered(cMessage msg) {
-		liveAnimationNumber++;
-		addAnimationPrimitive(new HandleMessageAnimation(this, getLiveEventNumber(), getLiveSimulationTime(), getLiveAnimationNumber(), msg.getArrivalModuleId(), msg));
+		HandleMessageAnimation handleMessageAnimation = handleMessageAnimationPrimitives.get(handleMessageAnimationPrimitives.size() - 1);
+		
+		if (handleMessageAnimation.getEventNumber() != getLiveEventNumber() ||
+			handleMessageAnimation.getSimulationTime() != getLiveSimulationTime() ||
+			handleMessageAnimation.getAnimationNumber() != getLiveAnimationNumber())
+		{
+			MessageDialog.openError(null, "Error", "Handle message animation differs!");
+		}
 	}
 
 	public void moduleCreated(cModule module) {
@@ -361,7 +395,7 @@ public class LiveAnimationController extends ReplayAnimationController implement
 	}
 
 	public void messageSendDirect(cMessage msg, cGate toGate, double propagationDelay, double transmissionDelay) {
-		addAnimationPrimitive(new SendDirectAnimation(this, 
+		addAnimationPrimitive(new SendBroadcastAnimation(this, 
 				getLiveEventNumber(),
 				msg.getSendingTime(),
 				getLiveAnimationNumber(),

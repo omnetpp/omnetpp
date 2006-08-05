@@ -6,7 +6,7 @@ package org.omnetpp.experimental.animation.primitives;
  * having effect on the state of the model or the animation.
  * 
  * The controller is responsible for notifying the animation primitives when they become active or inactive based
- * on the animation position. The animation primitive life cycle is the following: (redo, animateAt*, undo)*
+ * on the animation position. The animation primitive life cycle is the following: (activate, animateAt*, deactivate)*
  */
 public interface IAnimationPrimitive {
 	/**
@@ -19,6 +19,11 @@ public interface IAnimationPrimitive {
 	 * BeginSimulationTime and EndSimulationTime may be equal.
 	 */
 	public double getSimulationTime();
+
+	/**
+	 * Returns the animation number when this animation primitive begins.
+	 */
+	public long getAnimationNumber();
 	
 	/**
 	 * Returns the animation time when this animation primitive begins and shall become active.
@@ -33,23 +38,23 @@ public interface IAnimationPrimitive {
 	public double getEndAnimationTime();
 
 	/**
-	 * Returns the animation number when this animation primitive begins.
-	 */
-	public long getAnimationNumber();
-
-	/**
 	 * Applies changes to the model. This method is called when the model is to be
 	 * updated to an animation time where this animation primitve is not active while
 	 * it was active at the current animation time.
 	 */
-	public void redo();
+	public void activate();
 
 	/**
 	 * Undos changes to the model. This method is called when the model is to be
 	 * updated to an animation time where this animation primitve is active while
 	 * it was not active at the current animation time.
 	 */
-	public void undo();
+	public void deactivate();
+
+	/**
+	 * True if the animation primitive is active.
+	 */
+	public boolean isActive();
 	
 	/**
 	 * Updates figures according to the given animation position. This method will be called only

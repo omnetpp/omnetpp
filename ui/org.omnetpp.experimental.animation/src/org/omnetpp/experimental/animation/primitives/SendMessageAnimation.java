@@ -89,7 +89,7 @@ public class SendMessageAnimation extends AbstractSendMessageAnimation {
 
 	public void animateAt(long eventNumber, double simulationTime, long animationNumber, double animationTime) {
 		if (isDisplayed()) {
-			Point[] ps = getMessageSendPoints(simulationTime, animationTime);
+			Point[] ps = getMessageSendPoints(simulationTime, animationTime, 4);
 			messageEllipse.setBounds(new Rectangle(ps[0].x - 3, ps[0].y - 3, 7, 7));
 			messageLabel.setBounds(new Rectangle(new Point(ps[0].x, ps[0].y), messageLabel.getPreferredSize().getCopy().expand(10, 0)));
 			

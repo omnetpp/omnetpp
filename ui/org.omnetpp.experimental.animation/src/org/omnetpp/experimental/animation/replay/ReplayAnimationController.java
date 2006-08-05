@@ -62,10 +62,22 @@ public class ReplayAnimationController implements IAnimationEnvironment {
 
 	/**
 	 * The list of loaded animation primitives. This may contain more animation primitives than
-	 * that is rendered to the canvas.
+	 * that is rendered to the canvas. This list is ordered by begin animation time.
 	 */
 	protected ArrayList<IAnimationPrimitive> beginOrderedAnimationPrimitives = new ArrayList<IAnimationPrimitive>();
+
+	/**
+	 * The list of loaded animation primitives. This may contain more animation primitives than
+	 * that is rendered to the canvas. This list is ordered by end animation time.
+	 * 
+	 * In fact the list is ordered by end simulation time and as soon as any item is required at a given simulation time,
+	 * then all the primitives at the very same end simulation time are ordered in place by their end animation time.
+	 */
 	protected ArrayList<IAnimationPrimitive> endOrderedAnimationPrimitives = new ArrayList<IAnimationPrimitive>();
+	
+	/**
+	 * The list of currently active animation primitives. These will be called to animate at the current position.
+	 */
 	protected ArrayList<IAnimationPrimitive> activeAnimationPrimitives = new ArrayList<IAnimationPrimitive>();
 
 	/**
@@ -811,11 +823,11 @@ public class ReplayAnimationController implements IAnimationEnvironment {
 			modelAnimationTime = animationTime;
 	
 			System.out.println("Displaying " + activeAnimationPrimitives.size() + " primitives at -> Event number: " + eventNumber + " Simulation time: " + simulationTime + " Animation number: " + animationNumber + " AnimationTime: " + animationTime);
+			
+			getRootFigure().getLayoutManager().layout(getRootFigure());
 	
 			for (IAnimationPrimitive animationPrimitive : activeAnimationPrimitives)
 				animationPrimitive.animateAt(eventNumber, simulationTime, animationNumber, animationTime);
-	
-			getRootFigure().getLayoutManager().layout(getRootFigure());
 		}
 	}
 
@@ -831,7 +843,10 @@ public class ReplayAnimationController implements IAnimationEnvironment {
 			 (endAnimationNumber != -1 && animationNumber > endAnimationNumber) ||
 			 (endAnimationTime != -1 && animationTime > endAnimationTime)))
 		{
-			setEventNumber(endEventNumber);
+			eventNumber = endEventNumber;
+			simulationTime = endSimulationTime;
+			animationNumber = endAnimationNumber;
+			animationTime = endAnimationTime;
 			animateStop();
 		}
 
@@ -935,13 +950,13 @@ public class ReplayAnimationController implements IAnimationEnvironment {
 			public double getValue(int index) {
 				return beginOrderedAnimationPrimitives.get(index).getBeginAnimationTime();
 			}
-		}, beginOrderedAnimationPrimitives.size(), oldAnimationTime, false);
+		}, beginOrderedAnimationPrimitives.size(), oldAnimationTime, forward ? true : false);
 
 		int endOrderedIndex = getAnimationPrimitiveIndexForValue(new IValueProvider() {
 			public double getValue(int index) {
 				return endOrderedAnimationPrimitives.get(index).getEndAnimationTime();
 			}
-		}, endOrderedAnimationPrimitives.size(), oldAnimationTime, false);
+		}, endOrderedAnimationPrimitives.size(), oldAnimationTime, forward ? true : false);
 		
 		if (!forward) {
 			beginOrderedIndex--;
@@ -966,7 +981,7 @@ public class ReplayAnimationController implements IAnimationEnvironment {
 				beginOrderedAnimationPrimitive = null;
 			}
 			
-			if (forward ? endAnimationTime > newAnimationTime : endAnimationTime <= newAnimationTime) {
+			if (forward ? endAnimationTime >= newAnimationTime : endAnimationTime < newAnimationTime) {
 				endOrderedIndex = -1;
 				endOrderedIndexValid = false;
 				endOrderedAnimationPrimitive = null;
@@ -974,48 +989,60 @@ public class ReplayAnimationController implements IAnimationEnvironment {
 
 			if (forward) {	
 				if (beginOrderedIndexValid && (!endOrderedIndexValid || beginAnimationTime <= endAnimationTime)) {
-					System.out.println("Forward animation redo: " +
-						beginOrderedAnimationPrimitive.getClass().getSimpleName() +
-						"(" + beginOrderedAnimationPrimitive.getBeginAnimationTime() + "-" + beginOrderedAnimationPrimitive.getEndAnimationTime() + ")" +
-						":" + beginOrderedIndex);
+					if (!beginOrderedAnimationPrimitive.isActive()) {
+						System.out.println("Forward animation redo: " +
+							beginOrderedAnimationPrimitive.getClass().getSimpleName() +
+							"(" + beginOrderedAnimationPrimitive.getBeginAnimationTime() + "-" + beginOrderedAnimationPrimitive.getEndAnimationTime() + ")" +
+							":" + beginOrderedIndex);
+	
+						beginOrderedAnimationPrimitive.activate();
+						activeAnimationPrimitives.add(beginOrderedAnimationPrimitive);
+					}
 
-					beginOrderedAnimationPrimitive.redo();
 					beginOrderedIndex++;
-					activeAnimationPrimitives.add(beginOrderedAnimationPrimitive);
 				}
 	
-				if (endOrderedIndexValid && (!beginOrderedIndexValid || endAnimationTime <= beginAnimationTime)) {
-					System.out.println("Forward animation undo: " +
-						endOrderedAnimationPrimitive.getClass().getSimpleName() + 
-						"(" + endOrderedAnimationPrimitive.getBeginAnimationTime() + "-" + endOrderedAnimationPrimitive.getEndAnimationTime() + ")" +
-						":" + endOrderedIndex);
-
-					endOrderedAnimationPrimitive.undo();
+				if (endOrderedIndexValid  && (!beginOrderedIndexValid || endAnimationTime <= beginAnimationTime)) {
+					if (endOrderedAnimationPrimitive.isActive()) {
+						System.out.println("Forward animation undo: " +
+							endOrderedAnimationPrimitive.getClass().getSimpleName() + 
+							"(" + endOrderedAnimationPrimitive.getBeginAnimationTime() + "-" + endOrderedAnimationPrimitive.getEndAnimationTime() + ")" +
+							":" + endOrderedIndex);
+	
+						endOrderedAnimationPrimitive.deactivate();
+						activeAnimationPrimitives.remove(endOrderedAnimationPrimitive);
+					}
+					
 					endOrderedIndex++;
-					activeAnimationPrimitives.remove(endOrderedAnimationPrimitive);
 				}
 			}
 			else {
 				if (endOrderedIndexValid && (!beginOrderedIndexValid || endAnimationTime >= beginAnimationTime)) {
-					System.out.println("Backward animation redo: " +
-						endOrderedAnimationPrimitive.getClass().getSimpleName() +
-						"(" + endOrderedAnimationPrimitive.getBeginAnimationTime() + "-" + endOrderedAnimationPrimitive.getEndAnimationTime() + ")" +
-						":" + endOrderedIndex);
+					if (!endOrderedAnimationPrimitive.isActive()) {
+						System.out.println("Backward animation redo: " +
+							endOrderedAnimationPrimitive.getClass().getSimpleName() +
+							"(" + endOrderedAnimationPrimitive.getBeginAnimationTime() + "-" + endOrderedAnimationPrimitive.getEndAnimationTime() + ")" +
+							":" + endOrderedIndex);
+	
+						endOrderedAnimationPrimitive.activate();
+						activeAnimationPrimitives.add(endOrderedAnimationPrimitive);
+					}
 
-					endOrderedAnimationPrimitive.redo();
 					endOrderedIndex--;
-					activeAnimationPrimitives.add(endOrderedAnimationPrimitive);
 				}
 
 				if (beginOrderedIndexValid && (!endOrderedIndexValid || beginAnimationTime >= endAnimationTime)) {
-					System.out.println("Backward animation undo: " +
-						beginOrderedAnimationPrimitive.getClass().getSimpleName() +
-						"(" + beginOrderedAnimationPrimitive.getBeginAnimationTime() + "-" + beginOrderedAnimationPrimitive.getEndAnimationTime() + ")" +
-						":" + beginOrderedIndex);
+					if (beginOrderedAnimationPrimitive.isActive()) {
+						System.out.println("Backward animation undo: " +
+							beginOrderedAnimationPrimitive.getClass().getSimpleName() +
+							"(" + beginOrderedAnimationPrimitive.getBeginAnimationTime() + "-" + beginOrderedAnimationPrimitive.getEndAnimationTime() + ")" +
+							":" + beginOrderedIndex);
+	
+						beginOrderedAnimationPrimitive.deactivate();
+						activeAnimationPrimitives.remove(beginOrderedAnimationPrimitive);
+					}
 
-					beginOrderedAnimationPrimitive.undo();
 					beginOrderedIndex--;
-					activeAnimationPrimitives.remove(beginOrderedAnimationPrimitive);
 				}
 			}
 		}
@@ -1197,17 +1224,17 @@ public class ReplayAnimationController implements IAnimationEnvironment {
 					loadAnimationNumber++;
 
 					// TODO: what if event numbers are not started from 0 or not continous?
-					IAnimationPrimitive handleMessageAnimationPrimitive = new HandleMessageAnimation(this, loadEventNumber, loadSimulationTime, loadAnimationNumber, getIntegerToken(tokens, "m"), null);
+					IAnimationPrimitive handleMessageAnimation = new HandleMessageAnimation(this, loadEventNumber, loadSimulationTime, loadAnimationNumber, getIntegerToken(tokens, "m"), null);
 
 					// store the beginning of the simulation
 					if (loadEventNumber == 0) {
 						beginEventNumber = loadEventNumber;
 						beginSimulationTime = loadSimulationTime;
 						beginAnimationNumber = loadAnimationNumber;
-						beginAnimationTime = handleMessageAnimationPrimitive.getBeginAnimationTime();
+						beginAnimationTime = handleMessageAnimation.getBeginAnimationTime();
 					}
 
-					addAnimationPrimitive(handleMessageAnimationPrimitive );
+					addAnimationPrimitive(handleMessageAnimation );
 				}
 				else if (tokens[0].equals("BS")) {
 					// "BeginSend" line
