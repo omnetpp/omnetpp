@@ -51,6 +51,10 @@ public class HandleMessageAnimation extends AbstractAnimationPrimitive {
 			setConstraint(ellipse, new Rectangle(moduleFigure.getLocation().x + 3, moduleFigure.getLocation().y + 3, 7, 7));
 		}
 	}
+	
+	public IRuntimeMessage getMessage() {
+		return message;
+	}
 
 	private IRuntimeModule getModule() {
 		return animationEnvironment.getSimulation().getModuleByID(moduleId);

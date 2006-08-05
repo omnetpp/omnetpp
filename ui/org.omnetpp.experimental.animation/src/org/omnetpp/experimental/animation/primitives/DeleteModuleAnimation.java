@@ -17,6 +17,11 @@ public class DeleteModuleAnimation extends AbstractAnimationPrimitive {
 	}
 	
 	@Override
+	public double getEndSimulationTime() {
+		return Double.MAX_VALUE;
+	}
+	
+	@Override
 	public double getEndAnimationTime() {
 		return Double.MAX_VALUE;
 	}

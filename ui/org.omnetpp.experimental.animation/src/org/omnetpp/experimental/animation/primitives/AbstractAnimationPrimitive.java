@@ -35,7 +35,11 @@ public abstract class AbstractAnimationPrimitive implements IAnimationPrimitive 
 		return eventNumber;
 	}
 
-	public double getSimulationTime() {
+	public double getBeginSimulationTime() {
+		return beginSimulationTime;
+	}
+	
+	public double getEndSimulationTime() {
 		return beginSimulationTime;
 	}
 	
@@ -47,11 +51,8 @@ public abstract class AbstractAnimationPrimitive implements IAnimationPrimitive 
 		return animationEnvironment.getAnimationTimeForAnimationNumber(animationNumber);
 	}
 
-	/**
-	 * The default animation time duration is one animation unit.
-	 */
 	public double getEndAnimationTime() {
-		return animationEnvironment.getAnimationTimeForAnimationNumber(animationNumber + 1);
+		return getBeginAnimationTime();
 	}
  
 	public boolean isActive() {

@@ -27,13 +27,19 @@ public abstract class AbstractSendMessageAnimation extends AbstractAnimationPrim
 		this.endSimulationTime = simulationTime + propagationTime + transmissionTime;
 		this.msg = msg;
 	}
+
+	@Override
+	public double getEndSimulationTime() {
+		return endSimulationTime;
+	}
 	
 	@Override
 	public double getEndAnimationTime() {
 		if (endSimulationTime == beginSimulationTime)
-			return super.getEndAnimationTime();
-		else
+			return animationEnvironment.getAnimationTimeForAnimationNumber(animationNumber + 1);
+		else {
 			return animationEnvironment.getAnimationTimeForSimulationTime(endSimulationTime);
+		}
 	}
 	
 	protected abstract Point getBeginPoint();

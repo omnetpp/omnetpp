@@ -18,7 +18,13 @@ public interface IAnimationPrimitive {
 	 * Returns the simulation time when this animation primitive begins and shall become active.
 	 * BeginSimulationTime and EndSimulationTime may be equal.
 	 */
-	public double getSimulationTime();
+	public double getBeginSimulationTime();
+
+	/**
+	 * Returns the simulation time when this animation primitive ends and shall become inactive.
+	 * BeginSimulationTime and EndSimulationTime may be equal.
+	 */
+	public double getEndSimulationTime();
 
 	/**
 	 * Returns the animation number when this animation primitive begins.

@@ -245,7 +245,7 @@ public class LiveAnimationController extends ReplayAnimationController implement
 				IAnimationPrimitive lastAnimationPrimitive = beginOrderedAnimationPrimitives.get(beginOrderedAnimationPrimitives.size() - 1);
 	
 				if (lastAnimationPrimitive.getEventNumber() > eventNumber &&
-					lastAnimationPrimitive.getSimulationTime() > simulationTime &&
+					lastAnimationPrimitive.getBeginSimulationTime() > simulationTime &&
 					lastAnimationPrimitive.getAnimationNumber() > animationNumber &&
 					lastAnimationPrimitive.getBeginAnimationTime() > animationTime)
 						break;
@@ -355,7 +355,7 @@ public class LiveAnimationController extends ReplayAnimationController implement
 		HandleMessageAnimation handleMessageAnimation = handleMessageAnimationPrimitives.get(handleMessageAnimationPrimitives.size() - 1);
 		
 		if (handleMessageAnimation.getEventNumber() != getLiveEventNumber() ||
-			handleMessageAnimation.getSimulationTime() != getLiveSimulationTime() ||
+			handleMessageAnimation.getBeginSimulationTime() != getLiveSimulationTime() ||
 			handleMessageAnimation.getAnimationNumber() != getLiveAnimationNumber())
 		{
 			MessageDialog.openError(null, "Error", "Handle message animation differs!");

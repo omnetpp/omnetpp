@@ -44,11 +44,6 @@ public class BubbleAnimation extends AbstractAnimationPrimitive {
 			}
 		};
 	}
-
-	@Override
-	public double getEndAnimationTime() {
-		return super.getBeginAnimationTime();
-	}
 	
 	public void redo() {
 		IRuntimeModule module = getModule();
