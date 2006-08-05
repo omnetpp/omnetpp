@@ -4,13 +4,10 @@ import org.eclipse.draw2d.Ellipse;
 import org.eclipse.draw2d.Graphics;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.Rectangle;
+import org.omnetpp.common.simulation.model.IRuntimeMessage;
 import org.omnetpp.experimental.animation.replay.ReplayAnimationController;
 
-public class SendBroadcastAnimation extends AbstractAnimationPrimitive {
-	private double propagationTime;
-	
-	private double transmissionTime;
-	
+public class SendBroadcastAnimation extends AbstractSendMessageAnimation {
 	private int sourceModuleId;
 
 	private int destinationModuleId;
@@ -24,10 +21,9 @@ public class SendBroadcastAnimation extends AbstractAnimationPrimitive {
 								  double propagationTime,
 								  double transmissionTime,
 								  int sourceModuleId,
-								  int destinationModuleId) {
-		super(animationController, eventNumber, beginSimulationTime, animationNumber);
-		this.propagationTime = propagationTime;
-		this.transmissionTime = transmissionTime;
+								  int destinationModuleId,
+								  IRuntimeMessage msg) {
+		super(animationController, eventNumber, beginSimulationTime, animationNumber, propagationTime, transmissionTime, msg);
 		this.sourceModuleId = sourceModuleId;
 		this.destinationModuleId = destinationModuleId;
 
@@ -44,22 +40,37 @@ public class SendBroadcastAnimation extends AbstractAnimationPrimitive {
 	}
 	
 	public void redo() {
-		getEnclosingModuleFigure().addMessageFigure(circle);
+		if (isDisplayed())
+			getEnclosingModuleFigure().addMessageFigure(circle);
 	}
 
 	public void undo() {
-		getEnclosingModuleFigure().removeMessageFigure(circle);
+		if (isDisplayed())
+			getEnclosingModuleFigure().removeMessageFigure(circle);
 	}
 
 	public void animateAt(long eventNumber, double simulationTime, long animationNumber, double animationTime) {
-		Point sourceLocation = getSubmoduleFigureCenter(sourceModuleId);
-		Point destinationLocation = getSubmoduleFigureCenter(destinationModuleId);
-		int radius = (int)Math.floor(sourceLocation.getDistance(destinationLocation) * (simulationTime - beginSimulationTime) / propagationTime);
-		int width = (int)(radius * Math.min(1, transmissionTime / propagationTime));
-		radius = Math.max(0, radius - width / 2);
-		width /= 2;
-		Rectangle r = new Rectangle(sourceLocation.x - radius, sourceLocation.y - radius, radius * 2, radius * 2);
-		circle.setLineWidth(width);
-		circle.setBounds(r);
+		if (isDisplayed()) { 
+			Point p = getBeginPoint();
+			Point[] ps = getMessageSendPoints(simulationTime, animationTime);
+			double r = ps[0].getDistance(p);
+			double width = r - (int)ps[1].getDistance(p);
+			int radius = (int)r;
+			circle.setLineWidth((int)width);
+			circle.setBounds(new Rectangle(p.x - radius, p.y - radius, radius * 2, radius * 2));
+		}
+	}
+
+	protected Point getBeginPoint() {
+		return getSubmoduleFigureCenter(sourceModuleId);
+	}
+	
+	protected Point getEndPoint() {
+		return getSubmoduleFigureCenter(destinationModuleId);
+	}
+
+	protected boolean isDisplayed() {
+		// FIXME:
+		return true;
 	}
 }

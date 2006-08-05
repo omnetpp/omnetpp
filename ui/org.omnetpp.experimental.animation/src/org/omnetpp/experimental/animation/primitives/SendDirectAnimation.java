@@ -1,17 +1,17 @@
 package org.omnetpp.experimental.animation.primitives;
 
+import org.eclipse.draw2d.geometry.Point;
 import org.omnetpp.common.simulation.model.IRuntimeMessage;
 import org.omnetpp.experimental.animation.replay.ReplayAnimationController;
-import org.omnetpp.figures.SubmoduleFigure;
 
 /**
  * Draws an ellipse if the message transmission time is 0. Otherwise it draws a
  * growing line following the connection as time goes on.
  */
 public class SendDirectAnimation extends SendMessageAnimation {
-	private int senderModuleId;
+	protected int sourceModuleId;
 
-	private int destModuleId;
+	protected int destinationModuleId;
 
 	public SendDirectAnimation(ReplayAnimationController animationController, 
 							   long eventNumber, 
@@ -19,35 +19,23 @@ public class SendDirectAnimation extends SendMessageAnimation {
 							   long animationNumber, 
 							   double propagationTime, 
 							   double transmissionTime, 
-							   int senderModuleId, 
-							   int destModuleId,
+							   int sourceModuleId, 
+							   int destinationModuleId,
 							   IRuntimeMessage msg) {
 		super(animationController, eventNumber, simulationTime, animationNumber, propagationTime, transmissionTime, null, msg);
-		this.senderModuleId = senderModuleId;
-		this.destModuleId = destModuleId;
+		this.sourceModuleId = sourceModuleId;
+		this.destinationModuleId = destinationModuleId;
 	}
 
-	public void redo() {
-		SubmoduleFigure senderModuleFigure = getSubmoduleFigure(senderModuleId);
-		SubmoduleFigure destModuleFigure = getSubmoduleFigure(destModuleId);
-
-		if (senderModuleFigure!=null && destModuleFigure!=null)
-			redoInternal();
+	protected Point getBeginPoint() {
+		return getSubmoduleFigureCenter(sourceModuleId);
+	}
+	
+	protected Point getEndPoint() {
+		return getSubmoduleFigureCenter(destinationModuleId);
 	}
 
-	public void undo() {
-		SubmoduleFigure senderModuleFigure = getSubmoduleFigure(senderModuleId);
-		SubmoduleFigure destModuleFigure = getSubmoduleFigure(destModuleId);
-
-		if (senderModuleFigure!=null && destModuleFigure!=null)
-			undoInternal();
-	}
-
-	public void animateAt(long eventNumber, double simulationTime, long animationNumber, double animationTime) {
-		SubmoduleFigure senderModuleFigure = getSubmoduleFigure(senderModuleId);
-		SubmoduleFigure destModuleFigure = getSubmoduleFigure(destModuleId);
-
-		if (senderModuleFigure!=null && destModuleFigure!=null)
-			animateSendMessageAt(simulationTime, animationTime, getSubmoduleFigureCenter(senderModuleId), getSubmoduleFigureCenter(destModuleId));
+	protected boolean isDisplayed() {
+		return getSubmoduleFigure(sourceModuleId) != null && getSubmoduleFigure(destinationModuleId) != null;
 	}
 }
