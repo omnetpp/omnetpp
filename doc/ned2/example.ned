@@ -91,6 +91,9 @@
 //     o for submodules: NO
 //     o for connections: YES
 //
+// - XXX is it possible to set a parameter to its default value? e.g. queueCapacity = default;
+//
+//
 // STATIC ANALYSIS IS NO GOOD WITH CONDITIONALS:
 // as param values, gate size, param/gate/module/submodule properties may
 // involve conditionals, they are UNDETERMINABLE with static analysis.
