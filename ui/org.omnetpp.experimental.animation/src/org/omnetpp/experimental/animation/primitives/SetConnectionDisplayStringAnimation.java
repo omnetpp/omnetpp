@@ -40,6 +40,7 @@ public class SetConnectionDisplayStringAnimation extends AbstractAnimationPrimit
 		if (module != null && module.getParentModule() == animationEnvironment.getSimulation().getRootModule()) { //FIXME
 			ConnectionFigure connectionFigure = (ConnectionFigure)animationEnvironment.getFigure(connectionId);
 			
+			// FIXME:
 			if (connectionFigure != null) {
 				oldDisplayString = connectionFigure.getLastDisplayString();
 				connectionFigure.setDisplayString(displayString);
@@ -52,6 +53,7 @@ public class SetConnectionDisplayStringAnimation extends AbstractAnimationPrimit
 		if (module != null && module.getParentModule() == animationEnvironment.getSimulation().getRootModule()) { //FIXME
 			ConnectionFigure connectionFigure = (ConnectionFigure)animationEnvironment.getFigure(connectionId);
 
+			// FIXME:
 			if (connectionFigure != null)
 				connectionFigure.setDisplayString(oldDisplayString);// FIXME: this is a temproray hack to be able to undo changes
 		}

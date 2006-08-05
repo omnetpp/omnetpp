@@ -29,6 +29,7 @@ import org.omnetpp.experimental.animation.primitives.IAnimationEnvironment;
 import org.omnetpp.experimental.animation.primitives.IAnimationPrimitive;
 import org.omnetpp.experimental.animation.primitives.ScheduleSelfMessageAnimation;
 import org.omnetpp.experimental.animation.primitives.SendBroadcastAnimation;
+import org.omnetpp.experimental.animation.primitives.SendDirectAnimation;
 import org.omnetpp.experimental.animation.primitives.SendMessageAnimation;
 import org.omnetpp.experimental.animation.primitives.SetConnectionDisplayStringAnimation;
 import org.omnetpp.experimental.animation.primitives.SetModuleDisplayStringAnimation;
@@ -683,7 +684,39 @@ public class ReplayAnimationController implements IAnimationEnvironment {
 				return simulationTime;
 			case EVENT:
 				// FIXME: maybe this is wrong?
-				return getLastAnimationNumberForSimulationTime(simulationTime);
+				int index = getAnimationPrimitiveIndexForValue(new IValueProvider() {
+					public double getValue(int index) {
+						return beginOrderedAnimationPrimitives .get(index).getBeginSimulationTime();
+					}
+				}, beginOrderedAnimationPrimitives.size(), simulationTime, false);
+				
+				index--;
+				
+				// FIXME: check if -1 really means interpolation before the firtst event
+				IAnimationPrimitive previousAnimationPrimitive;
+				long animationNumber; 
+				double previousSimulationTime;
+ 
+				if (index == -1) {
+					previousAnimationPrimitive = null;
+					animationNumber = 0;
+					previousSimulationTime = 0;
+				}
+				else {
+					previousAnimationPrimitive = beginOrderedAnimationPrimitives.get(index);
+					animationNumber = previousAnimationPrimitive.getAnimationNumber();
+					previousSimulationTime = previousAnimationPrimitive.getBeginSimulationTime();
+				}
+				
+				double nextSimulationTime = getSimulationTimeForAnimationNumber(animationNumber + 1);
+				double animationTimeDelta = (simulationTime - previousSimulationTime) / (nextSimulationTime - previousSimulationTime);
+				
+				if (animationTimeDelta < 0)
+					return animationNumber;
+				else
+					return animationNumber + animationTimeDelta;
+				// FIXME: maybe this is wrong?
+				//return getLastAnimationNumberForSimulationTime(simulationTime);
 			case NON_LINEAR:
 				// TODO:
 				throw new RuntimeException();
@@ -850,7 +883,7 @@ public class ReplayAnimationController implements IAnimationEnvironment {
 			modelSimulationTime = simulationTime;
 			modelAnimationTime = animationTime;
 	
-			//System.out.println("Displaying " + activeAnimationPrimitives.size() + " primitives at -> Event number: " + eventNumber + " Simulation time: " + simulationTime + " Animation number: " + animationNumber + " AnimationTime: " + animationTime);
+			System.out.println("Displaying " + activeAnimationPrimitives.size() + " primitives at -> Event number: " + eventNumber + " Simulation time: " + simulationTime + " Animation number: " + animationNumber + " AnimationTime: " + animationTime);
 			
 			getRootFigure().getLayoutManager().layout(getRootFigure());
 	
@@ -1027,7 +1060,7 @@ public class ReplayAnimationController implements IAnimationEnvironment {
 			if (forward) {	
 				if (beginOrderedIndexValid && (!endOrderedIndexValid || beginAnimationTime <= endAnimationTime)) {
 					if (!beginOrderedAnimationPrimitive.isActive()) {
-						System.out.println("Forward animation redo: " +
+						System.out.println("Forward animation activate: " +
 							beginOrderedAnimationPrimitive.getClass().getSimpleName() +
 							"(" + beginOrderedAnimationPrimitive.getBeginAnimationTime() + "-" + beginOrderedAnimationPrimitive.getEndAnimationTime() + ")" +
 							":" + beginOrderedIndex);
@@ -1039,9 +1072,10 @@ public class ReplayAnimationController implements IAnimationEnvironment {
 					beginOrderedIndex++;
 				}
 	
-				if (endOrderedIndexValid  && (!beginOrderedIndexValid || endAnimationTime <= beginAnimationTime)) {
+				// compare using > to allow activations to happen before deactivations having the same time
+				if (endOrderedIndexValid  && (!beginOrderedIndexValid || endAnimationTime < beginAnimationTime)) {
 					if (endOrderedAnimationPrimitive.isActive()) {
-						System.out.println("Forward animation undo: " +
+						System.out.println("Forward animation deactivate: " +
 							endOrderedAnimationPrimitive.getClass().getSimpleName() + 
 							"(" + endOrderedAnimationPrimitive.getBeginAnimationTime() + "-" + endOrderedAnimationPrimitive.getEndAnimationTime() + ")" +
 							":" + endOrderedIndex);
@@ -1056,7 +1090,7 @@ public class ReplayAnimationController implements IAnimationEnvironment {
 			else {
 				if (endOrderedIndexValid && (!beginOrderedIndexValid || endAnimationTime >= beginAnimationTime)) {
 					if (!endOrderedAnimationPrimitive.isActive()) {
-						System.out.println("Backward animation redo: " +
+						System.out.println("Backward animation activate: " +
 							endOrderedAnimationPrimitive.getClass().getSimpleName() +
 							"(" + endOrderedAnimationPrimitive.getBeginAnimationTime() + "-" + endOrderedAnimationPrimitive.getEndAnimationTime() + ")" +
 							":" + endOrderedIndex);
@@ -1068,9 +1102,10 @@ public class ReplayAnimationController implements IAnimationEnvironment {
 					endOrderedIndex--;
 				}
 
-				if (beginOrderedIndexValid && (!endOrderedIndexValid || beginAnimationTime >= endAnimationTime)) {
+				// compare using > to allow activations to happen before deactivations having the same time
+				if (beginOrderedIndexValid && (!endOrderedIndexValid || beginAnimationTime > endAnimationTime)) {
 					if (beginOrderedAnimationPrimitive.isActive()) {
-						System.out.println("Backward animation undo: " +
+						System.out.println("Backward animation deactivate: " +
 							beginOrderedAnimationPrimitive.getClass().getSimpleName() +
 							"(" + beginOrderedAnimationPrimitive.getBeginAnimationTime() + "-" + beginOrderedAnimationPrimitive.getEndAnimationTime() + ")" +
 							":" + beginOrderedIndex);
@@ -1385,7 +1420,7 @@ public class ReplayAnimationController implements IAnimationEnvironment {
 					//int destGateId = getIntegerToken(tokens, "dg");
 					double transmissionDelay = getDoubleToken(tokens, "td", 0);
 					double propagationDelay = getDoubleToken(tokens, "pd", 0);
-					//addAnimationPrimitive(new SendDirectAnimation(this, loadEventNumber, loadSimulationTime, loadAnimationNumber, propagationDelay, transmissionDelay, senderModuleId, destModuleId, lastLoadedMessage));
+					addAnimationPrimitive(new SendDirectAnimation(this, loadEventNumber, loadSimulationTime, loadAnimationNumber, propagationDelay, transmissionDelay, senderModuleId, destModuleId, lastLoadedMessage));
 					addAnimationPrimitive(new SendBroadcastAnimation(this, loadEventNumber, loadSimulationTime, loadAnimationNumber, propagationDelay, transmissionDelay, senderModuleId, destModuleId, lastLoadedMessage));
 				}
 				else if (tokens[0].equals("SA")) {

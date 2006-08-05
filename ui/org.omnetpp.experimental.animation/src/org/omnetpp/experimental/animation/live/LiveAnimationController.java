@@ -10,6 +10,7 @@ import org.omnetpp.experimental.animation.primitives.DeleteModuleAnimation;
 import org.omnetpp.experimental.animation.primitives.HandleMessageAnimation;
 import org.omnetpp.experimental.animation.primitives.IAnimationPrimitive;
 import org.omnetpp.experimental.animation.primitives.SendBroadcastAnimation;
+import org.omnetpp.experimental.animation.primitives.SendDirectAnimation;
 import org.omnetpp.experimental.animation.primitives.SendMessageAnimation;
 import org.omnetpp.experimental.animation.primitives.SetConnectionDisplayStringAnimation;
 import org.omnetpp.experimental.animation.primitives.SetModuleDisplayStringAnimation;
@@ -259,6 +260,7 @@ public class LiveAnimationController extends ReplayAnimationController implement
 	}
 
 	protected void addNextHandleMessageAnimation() {
+		// FIXME: maybe we should be able to go to the very beginning of the simulation without this workaround
 		liveAnimationNumber++;
 		cMessage message = liveSimulation.guessNextEvent();
 		cModule module = liveSimulation.guessNextModule();
@@ -396,6 +398,15 @@ public class LiveAnimationController extends ReplayAnimationController implement
 
 	public void messageSendDirect(cMessage msg, cGate toGate, double propagationDelay, double transmissionDelay) {
 		addAnimationPrimitive(new SendBroadcastAnimation(this, 
+				getLiveEventNumber(),
+				msg.getSendingTime(),
+				getLiveAnimationNumber(),
+				propagationDelay,
+				transmissionDelay,
+				msg.getSenderModuleId(), 
+				toGate.getOwnerModule().getId(),
+				toReplayMessage(msg)));
+		addAnimationPrimitive(new SendDirectAnimation(this, 
 				getLiveEventNumber(),
 				msg.getSendingTime(),
 				getLiveAnimationNumber(),
