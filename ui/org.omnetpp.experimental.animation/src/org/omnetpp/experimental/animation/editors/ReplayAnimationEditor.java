@@ -85,6 +85,8 @@ public class ReplayAnimationEditor extends EditorPart implements IReplayAnimatio
 		createSpeedSlider();
 
 		createAnimationController(parent);
+		
+		coolBar.setWrapIndices(new int[] {2});
 	}
 
 	protected void createCoolbar(Composite parent) {
