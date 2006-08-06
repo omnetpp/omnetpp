@@ -93,8 +93,8 @@ INET_OBJS = \
 	$(INET)/NetworkInterfaces/Ieee80211/Mgmt/*.obj
              
 LIBS = \
-#       $(SAMPLES_OBJS) \
-       $(INET_OBJS) \
+       $(SAMPLES_OBJS) \
+#       $(INET_OBJS) \
        $(OMNETPP_ROOT)/lib/sim_std.lib \
        $(OMNETPP_ROOT)/lib/nedxml.lib \
        $(OMNETPP_ROOT)/lib/envir.lib \

@@ -44,10 +44,10 @@ public class NedTextHover implements ITextHover {
 			return ModelUtil.generateNedSource(component.getNEDElement(), true);
 
 		//XXX just for debugging
-		return getNEDElementsUnderCursor(textViewer, hoverRegion);
+		//return getNEDElementsUnderCursor(textViewer, hoverRegion);
 		
 		// otherwise, give up (TODO we might try harder though, ie using context info)
-		//return "";
+		return "";
 		//return word;
 		
 //XXX

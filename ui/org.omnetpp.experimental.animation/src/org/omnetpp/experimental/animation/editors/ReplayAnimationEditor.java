@@ -282,7 +282,7 @@ public class ReplayAnimationEditor extends EditorPart implements IReplayAnimatio
 	}
 	
 	protected void createAnimationController(Composite parent) {
-		AnimationCanvas canvas = new AnimationCanvas(parent, SWT.NONE);
+		AnimationCanvas canvas = new AnimationCanvas(parent, SWT.DOUBLE_BUFFERED);
 		canvas.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		
 		animationController = new ReplayAnimationController(canvas, ((IFileEditorInput)getEditorInput()).getFile());
