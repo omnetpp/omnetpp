@@ -94,6 +94,7 @@ import org.eclipse.ui.part.MultiPageEditorPart;
 import org.eclipse.ui.part.PageBook;
 import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
 import org.omnetpp.common.image.ImageFactory;
+import org.omnetpp.ned.editor.graph.actions.GNEDContextMenuProvider;
 import org.omnetpp.ned.editor.graph.actions.ModulePasteTemplateAction;
 import org.omnetpp.ned.editor.graph.actions.ReLayoutAction;
 import org.omnetpp.ned.editor.graph.actions.UnpinAction;
@@ -145,7 +146,7 @@ public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette {
         protected void configureOutlineViewer() {
             getViewer().setEditDomain(getEditDomain());
             getViewer().setEditPartFactory(new NedTreeEditPartFactory());
-            ContextMenuProvider provider = new GraphicalNedEditorContextMenuProvider(getViewer(), getActionRegistry());
+            ContextMenuProvider provider = new GNEDContextMenuProvider(getViewer(), getActionRegistry());
             getViewer().setContextMenu(provider);
             getSite().registerContextMenu("org.eclipse.gef.examples.logic.outline.contextmenu", //$NON-NLS-1$
                     provider, getSite().getSelectionProvider());
@@ -426,7 +427,7 @@ public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette {
         viewer.setRootEditPart(root);
 
         viewer.setEditPartFactory(new NedEditPartFactory());
-        ContextMenuProvider provider = new GraphicalNedEditorContextMenuProvider(viewer, getActionRegistry());
+        ContextMenuProvider provider = new GNEDContextMenuProvider(viewer, getActionRegistry());
         viewer.setContextMenu(provider);
         getSite().registerContextMenu("org.omnetpp.ned.editor.graph.contextmenu",
                 provider, viewer);
@@ -553,9 +554,6 @@ public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette {
         return root;
     }
 
-    public void gotoMarker(IMarker marker) {
-    }
-
     protected void handleActivationChanged(Event event) {
         IAction copy = null;
         if (event.type == SWT.Deactivate) copy = getActionRegistry().getAction(ActionFactory.COPY.getId());
@@ -576,6 +574,10 @@ public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette {
         		new TextTransferDropTargetListener(getGraphicalViewer(), TextTransfer.getInstance()));
     }
 
+    /* (non-Javadoc)
+     * @see org.eclipse.gef.ui.parts.GraphicalEditor#createActions()
+     * Register the used acions 
+     */
     @SuppressWarnings("unchecked")
 	@Override
     protected void createActions() {

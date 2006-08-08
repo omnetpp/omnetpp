@@ -4,7 +4,7 @@ import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.part.MultiPageEditorActionBarContributor;
 import org.omnetpp.ned.editor.graph.GraphicalNedEditor;
-import org.omnetpp.ned.editor.graph.actions.GraphicalNedEditorActionContributor;
+import org.omnetpp.ned.editor.graph.actions.GNEDActionBarContributor;
 import org.omnetpp.ned.editor.text.TextualNedEditor;
 import org.omnetpp.ned.editor.text.actions.TextualNedEditorActionContributor;
 
@@ -14,7 +14,7 @@ import org.omnetpp.ned.editor.text.actions.TextualNedEditorActionContributor;
  * Multi-page contributor replaces the contributors for the individual editors in the multi-page editor.
  */
 public class MultiPageNedEditorActionContributor extends MultiPageEditorActionBarContributor {
-    private GraphicalNedEditorActionContributor graphContrib;
+    private GNEDActionBarContributor graphContrib;
     private TextualNedEditorActionContributor textContrib;
     private IEditorPart activeEditorPart;
     /**
@@ -23,7 +23,7 @@ public class MultiPageNedEditorActionContributor extends MultiPageEditorActionBa
     public MultiPageNedEditorActionContributor() {
         super();
         // create the multi page editor's own acions (if any)
-        graphContrib = new GraphicalNedEditorActionContributor();
+        graphContrib = new GNEDActionBarContributor();
         textContrib = new TextualNedEditorActionContributor();
     }
 
@@ -47,7 +47,7 @@ public class MultiPageNedEditorActionContributor extends MultiPageEditorActionBa
         activeEditorPart = part;
         
         if(part instanceof GraphicalNedEditor) {
-            textContrib.setActiveEditor(null);
+            textContrib.setActiveEditor(activeEditorPart);
             graphContrib.setActiveEditor(activeEditorPart);
         } else if (part instanceof TextualNedEditor) {
             // FIXME disable graphical editor actions

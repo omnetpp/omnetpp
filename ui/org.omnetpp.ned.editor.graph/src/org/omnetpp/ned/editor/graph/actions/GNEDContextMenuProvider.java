@@ -1,4 +1,4 @@
-package org.omnetpp.ned.editor.graph;
+package org.omnetpp.ned.editor.graph.actions;
 
 import org.eclipse.gef.ContextMenuProvider;
 import org.eclipse.gef.EditPartViewer;
@@ -9,15 +9,17 @@ import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.ui.actions.ActionFactory;
-import org.omnetpp.ned.editor.graph.actions.ReLayoutAction;
-import org.omnetpp.ned.editor.graph.actions.UnpinAction;
-import org.omnetpp.ned.editor.graph.commands.ChangeLayoutSeedCommand;
 
-public class GraphicalNedEditorContextMenuProvider extends ContextMenuProvider {
+/**
+ * Adds actions to the context menus in the editor area
+ * @author rhornig
+ *
+ */
+public class GNEDContextMenuProvider extends ContextMenuProvider {
 
     private ActionRegistry actionRegistry;
 
-    public GraphicalNedEditorContextMenuProvider(EditPartViewer viewer, ActionRegistry registry) {
+    public GNEDContextMenuProvider(EditPartViewer viewer, ActionRegistry registry) {
         super(viewer);
         setActionRegistry(registry);
     }
@@ -81,9 +83,6 @@ public class GraphicalNedEditorContextMenuProvider extends ContextMenuProvider {
         if (action.isEnabled()) submenu.add(action);
 
         if (!submenu.isEmpty()) manager.appendToGroup(GEFActionConstants.GROUP_REST, submenu);
-
-//        action = getActionRegistry().getAction(ActionFactory.SAVE.getId());
-//        manager.appendToGroup(GEFActionConstants.GROUP_SAVE, action);
 
     }
 

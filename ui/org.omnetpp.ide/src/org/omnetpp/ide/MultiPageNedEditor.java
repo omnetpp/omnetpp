@@ -158,15 +158,13 @@ public class MultiPageNedEditor extends MultiPageEditorPart implements
 
 	@Override
 	public void doSave(IProgressMonitor monitor) {
-		graphEditor.doSave(monitor);
-		nedEditor.doSave(monitor);
+		getActiveEditor().doSave(monitor);
 	}
 
 	@Override
 	public void doSaveAs() {
 		// TODO open SaveAs dialog
-		graphEditor.doSaveAs();
-		nedEditor.doSaveAs();
+		getActiveEditor().doSaveAs();
 	}
 
 	@Override

@@ -2,7 +2,7 @@ package org.omnetpp.ned.editor.graph.actions;
 
 import org.eclipse.draw2d.PositionConstants;
 import org.eclipse.gef.editparts.ZoomManager;
-import org.eclipse.gef.internal.GEFMessages;
+import org.eclipse.gef.ui.actions.ActionBarContributor;
 import org.eclipse.gef.ui.actions.AlignmentRetargetAction;
 import org.eclipse.gef.ui.actions.GEFActionConstants;
 import org.eclipse.gef.ui.actions.MatchHeightRetargetAction;
@@ -21,12 +21,16 @@ import org.eclipse.ui.IWorkbenchActionConstants;
 import org.eclipse.ui.actions.ActionFactory;
 import org.eclipse.ui.actions.RetargetAction;
 
-public class GraphicalNedEditorActionContributor extends org.eclipse.gef.ui.actions.ActionBarContributor {
+/**
+ * Adds Graphical ned editor actions to the acion bar. 
+ * @author rhornig
+ */
+public class GNEDActionBarContributor extends ActionBarContributor {
 
     /**
      * @see org.eclipse.gef.ui.actions.ActionBarContributor#buildActions()
      */
-    @Override
+	@Override
     protected void buildActions() {
         addRetargetAction(new UndoRetargetAction());
         addRetargetAction(new RedoRetargetAction());
@@ -48,7 +52,7 @@ public class GraphicalNedEditorActionContributor extends org.eclipse.gef.ui.acti
         addRetargetAction(new MatchHeightRetargetAction());
 
         addRetargetAction(new RetargetAction(GEFActionConstants.TOGGLE_SNAP_TO_GEOMETRY,
-                GEFMessages.ToggleSnapToGeometry_Label, IAction.AS_CHECK_BOX));
+                "Snap to geometry", IAction.AS_CHECK_BOX));
 
     }
 

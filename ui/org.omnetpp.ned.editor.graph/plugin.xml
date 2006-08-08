@@ -22,7 +22,7 @@
          point="org.eclipse.ui.popupMenus">
       <objectContribution
             objectClass="org.eclipse.core.resources.IFile"
-            nameFilter="*.gned"
+            nameFilter="*.ned"
             id="org.omnetpp.ned.editor.graph">
          <action
                label="Print"
