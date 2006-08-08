@@ -149,6 +149,21 @@ namespace std {
 
 %ignore EventLog::writeTrace;
 
+%define FIX_STRING_MEMBER(STRUCT,MEMBER,CAPITALIZEDMEMBER)
+%ignore STRUCT::MEMBER;
+%extend STRUCT {
+   std::string get ## CAPITALIZEDMEMBER() {return self->MEMBER;}
+   void set ## CAPITALIZEDMEMBER(std::string __a) {self->MEMBER = __a;}
+}
+%enddef
+
+%define FIX_CHARPTR_MEMBER(STRUCT,MEMBER,CAPITALIZEDMEMBER)
+%ignore STRUCT::MEMBER;
+%extend STRUCT {
+   const char * get ## CAPITALIZEDMEMBER() {return self->MEMBER;}
+}
+%enddef
+
 FIX_CHARPTR_MEMBER(MessageEntry, messageName, MessageName);
 FIX_CHARPTR_MEMBER(MessageEntry, messageClassName, MessageClassName);
 FIX_CHARPTR_MEMBER(ModuleEntry, moduleClassName, ModuleClassName);
