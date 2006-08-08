@@ -16,7 +16,6 @@
 #include "resultfilemanager.h"
 #include "datasorter.h"
 #include "util.h"   // strdictcmp
-#include "eventlog.h"
 %}
 
 %exception {
@@ -146,13 +145,7 @@ namespace std {
    %template(ResultFileList) vector<ResultFile*>;
    %template(FileRunList) vector<FileRun*>;
 
-   specialize_std_vector(MessageEntry*);
-
-   %template(MessageEntries) vector<MessageEntry*>;
-
    specialize_std_vector(const char *);
-
-   %template(PStringVector) vector<const char *>;
 
    %template(IntSet) set<int>;
 
@@ -220,7 +213,7 @@ namespace std {
 %typemap(jstype) (char *array, int n) "byte[]"
 %typemap(javain) (char *array, int n) "$javainput"
 
-// FIXME add %newobject where needed! (e.g. EventLog::buildMessageCountGraph)
+// FIXME add %newobject where needed!
 
 %ignore ResultFileManager::dump;
 
@@ -309,15 +302,5 @@ int strdictcmp(const char *s1, const char *s2);
 
 // wrap the data-flow engine as well
 %include plove.i
-
-// wrap eventlog.h
-%ignore EventLog::writeTrace;
-
-FIX_CHARPTR_MEMBER(MessageEntry, messageName, MessageName);
-FIX_CHARPTR_MEMBER(MessageEntry, messageClassName, MessageClassName);
-FIX_CHARPTR_MEMBER(ModuleEntry, moduleClassName, ModuleClassName);
-FIX_STRING_MEMBER(ModuleEntry, moduleFullPath, ModuleFullPath);
-
-%include "eventlog.h"
 
 

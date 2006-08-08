@@ -5,7 +5,6 @@ import java.util.List;
 
 import org.eclipse.core.runtime.ListenerList;
 import org.eclipse.draw2d.ColorConstants;
-import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.util.SafeRunnable;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
@@ -15,16 +14,15 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
+import org.omnetpp.eventlog.engine.EventEntry;
+import org.omnetpp.eventlog.engine.EventLog;
+import org.omnetpp.eventlog.engine.MessageEntries;
+import org.omnetpp.eventlog.engine.PStringVector;
 import org.omnetpp.experimental.seqchart.editors.EventLogSelection;
 import org.omnetpp.experimental.seqchart.editors.IEventLogSelection;
-import org.omnetpp.scave.engine.EventEntry;
-import org.omnetpp.scave.engine.EventLog;
-import org.omnetpp.scave.engine.MessageEntries;
-import org.omnetpp.scave.engine.PStringVector;
 
 /**
  * Table to hold the event log. Has to be prepared for very large amounts of 

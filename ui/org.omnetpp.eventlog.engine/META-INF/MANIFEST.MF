@@ -7,3 +7,4 @@ Bundle-Vendor: OpenSim Ltd.
 Bundle-Localization: plugin
 Require-Bundle: org.eclipse.core.runtime
 Eclipse-LazyStart: true
+Export-Package: org.omnetpp.eventlog.engine

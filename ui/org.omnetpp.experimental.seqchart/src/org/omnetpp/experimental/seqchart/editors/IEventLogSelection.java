@@ -3,8 +3,8 @@ package org.omnetpp.experimental.seqchart.editors;
 import java.util.List;
 
 import org.eclipse.jface.viewers.ISelection;
-import org.omnetpp.scave.engine.EventEntry;
-import org.omnetpp.scave.engine.EventLog;
+import org.omnetpp.eventlog.engine.EventEntry;
+import org.omnetpp.eventlog.engine.EventLog;
 
 /**
  * Selection that is published by the sequence chart tool

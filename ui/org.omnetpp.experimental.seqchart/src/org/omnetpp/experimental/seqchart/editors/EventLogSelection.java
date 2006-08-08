@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.core.runtime.Assert;
-import org.omnetpp.scave.engine.EventEntry;
-import org.omnetpp.scave.engine.EventLog;
+import org.omnetpp.eventlog.engine.EventEntry;
+import org.omnetpp.eventlog.engine.EventLog;
 
 /**
  * Selection that is published by the sequence chart tool

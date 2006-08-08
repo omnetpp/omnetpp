@@ -1,5 +1,6 @@
 package org.omnetpp.experimental.animation.primitives;
 
+import org.omnetpp.common.displaymodel.DisplayString;
 import org.omnetpp.common.displaymodel.IDisplayString;
 import org.omnetpp.common.simulation.model.ConnectionId;
 import org.omnetpp.common.simulation.model.IRuntimeModule;
@@ -43,6 +44,7 @@ public class SetConnectionDisplayStringAnimation extends AbstractAnimationPrimit
 			// FIXME:
 			if (connectionFigure != null) {
 				oldDisplayString = connectionFigure.getLastDisplayString();
+				if (oldDisplayString==null) oldDisplayString = new DisplayString(null, null, "");
 				connectionFigure.setDisplayString(displayString);
 			}
 		}

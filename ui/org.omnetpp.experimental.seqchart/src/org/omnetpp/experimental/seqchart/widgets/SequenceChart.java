@@ -10,9 +10,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
 
-import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.collections.ListUtils;
 import org.apache.commons.collections.map.MultiValueMap;
+import org.apache.commons.lang.ArrayUtils;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.ListenerList;
 import org.eclipse.draw2d.Graphics;
@@ -38,16 +38,16 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.omnetpp.common.canvas.CachingCanvas;
+import org.omnetpp.eventlog.engine.EventEntry;
+import org.omnetpp.eventlog.engine.EventLog;
+import org.omnetpp.eventlog.engine.JavaFriendlyEventLogFacade;
+import org.omnetpp.eventlog.engine.MessageEntry;
 import org.omnetpp.experimental.seqchart.editors.EventLogSelection;
 import org.omnetpp.experimental.seqchart.editors.IEventLogSelection;
 import org.omnetpp.experimental.seqchart.moduletree.ModuleTreeItem;
-import org.omnetpp.scave.engine.EventEntry;
-import org.omnetpp.scave.engine.EventLog;
-import org.omnetpp.scave.engine.IntIntMap;
-import org.omnetpp.scave.engine.IntSet;
-import org.omnetpp.scave.engine.IntVector;
-import org.omnetpp.scave.engine.JavaFriendlyEventLogFacade;
-import org.omnetpp.scave.engine.MessageEntry;
+import org.omnetpp.eventlog.engine.IntIntMap;
+import org.omnetpp.eventlog.engine.IntSet;
+import org.omnetpp.eventlog.engine.IntVector;
 import org.omnetpp.scave.engine.XYArray;
 
 /**
