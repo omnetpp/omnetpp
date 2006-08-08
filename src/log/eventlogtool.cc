@@ -1,5 +1,5 @@
 //=========================================================================
-//  TRACETOOL.CC - part of
+//  EVENTLOGTOOL.CC - part of
 //                  OMNeT++/OMNEST
 //           Discrete System Simulation in C++
 //
@@ -18,11 +18,11 @@ int main(int argc, char **argv)
 {
     if (argc<3)
     {
-        fprintf(stderr, "%s: Usage: tracetool <logfile> <eventnumber> [<moduleid>*]\n", argv[0]);
+        fprintf(stderr, "%s: Usage: eventlogtool <logfile> <eventnumber> [<moduleid>*]\n", argv[0]);
         exit(0);
     }
 
-    fprintf(stderr, "Loading log file %s\n", argv[1]);
+    fprintf(stderr, "Loading event log file %s\n", argv[1]);
     EventLog eventLog(argv[1]);
 
     long eventNumber = atol(argv[2]);
@@ -30,7 +30,7 @@ int main(int argc, char **argv)
     EventEntry *event = eventLog.getEventByNumber(eventNumber);
     if (event==NULL)
     {
-        fprintf(stderr, "%s: Event #%ld not in the given trace file\n", argv[0], eventNumber);
+        fprintf(stderr, "%s: Event #%ld not in the given event log file\n", argv[0], eventNumber);
         exit(1);
     }
 
