@@ -88,6 +88,7 @@ $(PROGS):
 #
 $(JNILIBS):
 	@echo ===== Compiling $@ ====
+	cd /d $(OMNETPP_UI_DIR:/=\)\$@ && $(MAKE) $(MOPTS) $(MAKEFILE) clean
 	cd /d $(OMNETPP_UI_DIR:/=\)\$@ && $(MAKE) $(MOPTS) $(MAKEFILE)
 
 #
