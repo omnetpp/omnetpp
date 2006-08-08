@@ -371,11 +371,6 @@ public class NEDResources implements INEDComponentResolver {
 			storeNEDFileContents(file, tree);
 	}
 
-	public boolean writeNEDFile(IFile file) {
-		
-		return true;
-	}
-	
 	private void convertErrorsToMarkers(IFile file, NEDErrorStore errors) {
 		try {
 			file.deleteMarkers(NEDPROBLEM_MARKERID, true, IResource.DEPTH_ZERO);

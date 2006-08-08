@@ -158,7 +158,22 @@ public class MultiPageNedEditor extends MultiPageEditorPart implements
 
 	@Override
 	public void doSave(IProgressMonitor monitor) {
-		getActiveEditor().doSave(monitor);
+		if (getActivePage() == graphPageIndex) { 
+			// switch from graphics to text:
+			// generate text representation from the model
+			NedFileNodeEx modelRoot = graphEditor.getModel();
+            IFile ifile = ((FileEditorInput)getEditorInput()).getFile();
+            
+            // put the actual model state back to the incremental builder
+    		NEDResourcesPlugin.getNEDResources().setNEDFileContents(ifile, modelRoot);
+            
+            // generate the text representation
+            String textEditorContent = ModelUtil.generateNedSource(modelRoot, false);
+            // put it into the text editor
+            nedEditor.setText(textEditorContent);
+		}
+		// delegate the save task to the TextEditor's save method
+		nedEditor.doSave(monitor);
 	}
 
 	@Override
