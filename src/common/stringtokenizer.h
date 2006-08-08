@@ -1,11 +1,11 @@
 //==========================================================================
-//  CSTRTOKENIZER.H - part of
+//  STRINGTOKENIZER.H - part of
 //                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
 //
 //
 //  Declaration of the following classes:
-//    cStringTokenizer  : string tokenizer utility class
+//    StringTokenizer  : string tokenizer utility class
 //
 //==========================================================================
 
@@ -31,7 +31,7 @@
  * const char *str = "34 42 13 46 72 41"; // input
  * std::vector<int> numbers;  // array to hold result
  *
- * cStringTokenizer tokenizer(str);
+ * StringTokenizer tokenizer(str);
  * const char *token;
  * while ((token = tokenizer.nextToken())!=NULL)
  *     numbers.push_back(atoi(token));
@@ -39,7 +39,7 @@
  *
  * @ingroup SimSupport
  */
-class cStringTokenizer
+class StringTokenizer
 {
   private:
     char *str; // copy of full string
@@ -52,12 +52,12 @@ class cStringTokenizer
      * Constructor. The class will make its own copy of the input string
      * and of the delimiters string.
      */
-    cStringTokenizer(const char *str, const char *delimiters=" ");
+    StringTokenizer(const char *str, const char *delimiters=" ");
 
     /**
      * Destructor.
      */
-    ~cStringTokenizer();
+    ~StringTokenizer();
 
     /**
      * Change delimiters. This allows for switching delimiters during

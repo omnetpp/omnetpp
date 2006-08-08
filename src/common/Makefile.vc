@@ -1,0 +1,48 @@
+#
+# Global definitions
+#
+!include ..\..\configuser.vc
+
+!if "$(LIB_SUFFIX)"==".dll"
+CFLAGS=$(CFLAGS) /DWIN32_DLL
+!endif
+
+#
+# Local definitions
+#
+COPTS=$(CFLAGS) $(XML_CFLAGS) /I. /Fd"common.pdb"
+
+OBJS= filetokenizer.obj stringtokenizer.obj util.obj
+
+
+#
+# Automatic rules
+#
+.SUFFIXES : .cc
+
+.cc.obj:
+	$(CXX) /Fo"$@" $(COPTS) /c /Tp $<
+
+
+#
+# Targets (TBD: build dll)
+#
+all : common.lib
+
+common.lib : $(OBJS)
+	$(AR) /out:common.lib $(OBJS)
+	copy common.lib $(OMNETPP_LIB_DIR:/=\)
+	- copy /b common.pdb $(OMNETPP_LIB_DIR:/=\) 2>nul
+
+doc:
+	$(DOXYGEN:/=\) doxy.cfg
+
+depend:
+	$(MAKEDEPEND) -I. -fMakefile.vc -- *.cc
+
+clean:
+	- del *.obj 2> nul
+	- del *.ilk *.idb *.pdb 2> nul
+
+
+# DO NOT DELETE THIS LINE -- make depend depends on it.

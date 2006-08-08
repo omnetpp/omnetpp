@@ -1,11 +1,11 @@
 //==========================================================================
-//  CSTRTOKENIZER.CC - part of
+//  STRINGTOKENIZER.CC - part of
 //                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
 //
 //
 //  Declaration of the following classes:
-//    cStringTokenizer  : string tokenizer utility class
+//    StringTokenizer  : string tokenizer utility class
 //
 //==========================================================================
 
@@ -22,10 +22,10 @@
 
 #include <assert.h>
 #include <stdlib.h>
-#include "cstrtokenizer.h"
+#include "stringtokenizer.h"
 
 
-cStringTokenizer::cStringTokenizer(const char *s, const char *delim)
+StringTokenizer::StringTokenizer(const char *s, const char *delim)
 {
     if (!s)
         s = "";
@@ -38,19 +38,19 @@ cStringTokenizer::cStringTokenizer(const char *s, const char *delim)
     rest = str;
 }
 
-cStringTokenizer::~cStringTokenizer()
+StringTokenizer::~StringTokenizer()
 {
     delete [] str;
 }
 
-void cStringTokenizer::setDelimiter(const char *delim)
+void StringTokenizer::setDelimiter(const char *delim)
 {
     if (!delim || !*delim)
         delim = " ";
     delimiter = delim;
 }
 
-const char *cStringTokenizer::nextToken()
+const char *StringTokenizer::nextToken()
 {
     if (!rest)
         return NULL;
@@ -61,7 +61,7 @@ const char *cStringTokenizer::nextToken()
     return token;
 }
 
-std::vector<std::string> cStringTokenizer::asVector()
+std::vector<std::string> StringTokenizer::asVector()
 {
     const char *s;
     std::vector<std::string> v;
