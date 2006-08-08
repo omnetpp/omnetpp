@@ -33,6 +33,7 @@ public class ForceDirectedEmbedding
 	// Friction reduces energy.
 	public double frictionCoefficient = 0.1;
 	
+	// change time step to have acceleration error in range
 	public boolean adaptive = true;
 
 	// Simulation time step.
@@ -79,6 +80,7 @@ public class ForceDirectedEmbedding
 	// Implementation fields
 	private Random random;
 
+	// the component to layout
 	private GraphComponent graphComponent;
 	
 	IForceDirectedEmbeddingListener listener;
@@ -100,6 +102,7 @@ public class ForceDirectedEmbedding
 	// yn+1 = yn + h * yn' + h * h / 6 * [b1 + b2 + b3]
 	// yn+1' = yn' + h / 6 * (b1 + 2 * b2 + 2 * b3 + b4)
 	public void embed() {
+		long begin = System.currentTimeMillis();
 		int cycle = 0;
 		int probCycle = 0;
 		boolean relaxed = false;
@@ -168,7 +171,7 @@ public class ForceDirectedEmbedding
 				// Adjust time step (h)
 				double accelerationError = diff(b1, b2, b3, b4);
 
-				System.out.println("**** " + accelerationError + " ***** " + h);
+				//System.out.println("**** " + accelerationError + " ***** " + h);
 
 				if (!adaptive)
 					break;
@@ -185,7 +188,7 @@ public class ForceDirectedEmbedding
 					hFound = true;
 			}
 
-			System.out.println("Found h: " + h);
+			//System.out.println("Found h: " + h);
 
 			// yn+1 = yn + h * yn' + h * h / 6 * [b1 + b2 + b3]
 			add(dps, b1, b2);
@@ -235,7 +238,8 @@ public class ForceDirectedEmbedding
 			if (vertex.positionConstraint != null)
 				vertex.pt = vertex.positionConstraint.getFinalPosition(vertex.pt);
 
-		System.out.println("Runge-Kutta-4 number of cycles to relax: " + cycle + " Prob cycle: " + probCycle);
+		long end = System.currentTimeMillis();
+		System.out.println("Runge-Kutta-4 number of cycles to relax: " + cycle + " Prob cycle: " + probCycle + " in " + (end - begin) + " ms");
 	}
 
 	private void setInitialPositions(Pt[] ps) {
@@ -577,44 +581,45 @@ public class ForceDirectedEmbedding
 			graphComponent.addEdge(new Edge(vertex7, vertex8));
 		}
 		else {
-			Vertex vertex1 = new Vertex(Pt.getNil(), new Rs(10, 10), mass, charge);
-			 Vertex vertex2 = new Vertex(Pt.getNil(), new Rs(10, 10), mass, charge);
-			 Vertex vertex3 = new Vertex(Pt.getNil(), new Rs(10, 10), mass, charge);
-			 Vertex vertex4 = new Vertex(Pt.getNil(), new Rs(10, 10), mass, charge);
-			 Vertex vertex5 = new Vertex(Pt.getNil(), new Rs(10, 10), mass, charge);
-			 Vertex vertex6 = new Vertex(Pt.getNil(), new Rs(10, 10), mass, charge);
-			 Vertex vertex7 = new Vertex(Pt.getNil(), new Rs(10, 10), mass, charge);
-			 Vertex vertex8 = new Vertex(Pt.getNil(), new Rs(10, 10), mass, charge);
-			 Vertex vertex9 = new Vertex(Pt.getNil(), new Rs(10, 10), mass, charge);
-			 Vertex vertex10 = new Vertex(Pt.getNil(), new Rs(10, 10), mass, charge);
-			 Vertex vertex11 = new Vertex(Pt.getNil(), new Rs(10, 10), mass, charge);
-			 Vertex vertex12 = new Vertex(Pt.getNil(), new Rs(10, 10), mass, charge);
-			 Vertex vertex13 = new Vertex(Pt.getNil(), new Rs(10, 10), mass, charge);
-			 graphComponent.addVertex(vertex1);
-			 graphComponent.addVertex(vertex2);
-			 graphComponent.addVertex(vertex3);
-			 graphComponent.addVertex(vertex4);
-			 graphComponent.addVertex(vertex5);
-			 graphComponent.addVertex(vertex6);
-			 graphComponent.addVertex(vertex7);
-			 graphComponent.addVertex(vertex8);
-			 graphComponent.addVertex(vertex9);
-			 graphComponent.addVertex(vertex10);
-			 graphComponent.addVertex(vertex11);
-			 graphComponent.addVertex(vertex12);
-			 graphComponent.addVertex(vertex13);
-			 graphComponent.addEdge(new Edge(vertex1, vertex2));
-			 graphComponent.addEdge(new Edge(vertex1, vertex3));
-			 graphComponent.addEdge(new Edge(vertex1, vertex4));
-			 graphComponent.addEdge(new Edge(vertex2, vertex5));
-			 graphComponent.addEdge(new Edge(vertex2, vertex6));
-			 graphComponent.addEdge(new Edge(vertex3, vertex7));
-			 graphComponent.addEdge(new Edge(vertex3, vertex8));
-			 graphComponent.addEdge(new Edge(vertex4, vertex9));
-			 graphComponent.addEdge(new Edge(vertex4, vertex10));
-			 graphComponent.addEdge(new Edge(vertex4, vertex11));
-			 graphComponent.addEdge(new Edge(vertex4, vertex12));
-			 graphComponent.addEdge(new Edge(vertex4, vertex13));
+		 	Vertex vertex1 = new Vertex(Pt.getNil(), new Rs(10, 10), mass, charge);
+			Vertex vertex2 = new Vertex(Pt.getNil(), new Rs(10, 10), mass, charge);
+			Vertex vertex3 = new Vertex(Pt.getNil(), new Rs(10, 10), mass, charge);
+			Vertex vertex4 = new Vertex(Pt.getNil(), new Rs(10, 10), mass, charge);
+			Vertex vertex5 = new Vertex(Pt.getNil(), new Rs(10, 10), mass, charge);
+			Vertex vertex6 = new Vertex(Pt.getNil(), new Rs(10, 10), mass, charge);
+			Vertex vertex7 = new Vertex(Pt.getNil(), new Rs(10, 10), mass, charge);
+			Vertex vertex8 = new Vertex(Pt.getNil(), new Rs(10, 10), mass, charge);
+			Vertex vertex9 = new Vertex(Pt.getNil(), new Rs(10, 10), mass, charge);
+			Vertex vertex10 = new Vertex(Pt.getNil(), new Rs(10, 10), mass, charge);
+			Vertex vertex11 = new Vertex(Pt.getNil(), new Rs(10, 10), mass, charge);
+			Vertex vertex12 = new Vertex(Pt.getNil(), new Rs(10, 10), mass, charge);
+			Vertex vertex13 = new Vertex(Pt.getNil(), new Rs(10, 10), mass, charge);
+			vertex1.positionConstraint = new LinePositionConstraint(new Ln(new Pt(0, 0), new Pt(1, 1)));
+			graphComponent.addVertex(vertex1);
+			graphComponent.addVertex(vertex2);
+			graphComponent.addVertex(vertex3);
+			graphComponent.addVertex(vertex4);
+			graphComponent.addVertex(vertex5);
+			graphComponent.addVertex(vertex6);
+			graphComponent.addVertex(vertex7);
+			graphComponent.addVertex(vertex8);
+			graphComponent.addVertex(vertex9);
+			graphComponent.addVertex(vertex10);
+			graphComponent.addVertex(vertex11);
+			graphComponent.addVertex(vertex12);
+			graphComponent.addVertex(vertex13);
+			graphComponent.addEdge(new Edge(vertex1, vertex2));
+			graphComponent.addEdge(new Edge(vertex1, vertex3));
+			graphComponent.addEdge(new Edge(vertex1, vertex4));
+			graphComponent.addEdge(new Edge(vertex2, vertex5));
+			graphComponent.addEdge(new Edge(vertex2, vertex6));
+			graphComponent.addEdge(new Edge(vertex3, vertex7));
+			graphComponent.addEdge(new Edge(vertex3, vertex8));
+			graphComponent.addEdge(new Edge(vertex4, vertex9));
+			graphComponent.addEdge(new Edge(vertex4, vertex10));
+			graphComponent.addEdge(new Edge(vertex4, vertex11));
+			graphComponent.addEdge(new Edge(vertex4, vertex12));
+			graphComponent.addEdge(new Edge(vertex4, vertex13));
 		}		
 
 		TestCanvas testCanvas = new TestCanvas(graphComponent);
@@ -625,8 +630,8 @@ public class ForceDirectedEmbedding
 		frame.show();
 		testCanvas.embed();
 		
-		for (Vertex vertex : graphComponent.getVertices())
-			System.out.println(vertex.pt);
+		//for (Vertex vertex : graphComponent.getVertices())
+		//	System.out.println(vertex.pt);
 	}
 }
 
@@ -710,9 +715,16 @@ class TestCanvas extends Canvas implements ForceDirectedEmbedding.IForceDirected
 		this.addMouseMotionListener(new MouseMotionListener() {
 			public void mouseDragged(MouseEvent e) {
 				Pt fixPt = new Pt(dragPt.x + e.getX() - dragPoint.getX(), dragPt.y + e.getY() - dragPoint.getY());
-				dragVertex.positionConstraint = new FixPositionConstraint(fixPt);
 				
-				embed();
+				IVertexPositionConstraint positionConstraint = dragVertex.positionConstraint;
+				
+				if (positionConstraint == null ||
+					!(positionConstraint instanceof FixPositionConstraint) ||
+					!((FixPositionConstraint)positionConstraint).pt.equals(fixPt))
+				{
+					dragVertex.positionConstraint = new FixPositionConstraint(fixPt);			
+					embed();	
+				}
 			}
 
 			public void mouseMoved(MouseEvent e) {
@@ -869,6 +881,10 @@ class Pt {
 	public double crossProduct(Pt pt) {
 		return x * pt.y - y * pt.x;
 	}
+
+	public Pt transpse() {
+		return new Pt(y, -x);
+	}
 	
 	public static Pt getNil() {
 		return new Pt(Double.NaN, Double.NaN);
@@ -879,8 +895,114 @@ class Pt {
 	}
 
 	@Override
+	public int hashCode() {
+		final int PRIME = 31;
+		int result = 1;
+		long temp;
+		temp = Double.doubleToLongBits(x);
+		result = PRIME * result + (int) (temp ^ (temp >>> 32));
+		temp = Double.doubleToLongBits(y);
+		result = PRIME * result + (int) (temp ^ (temp >>> 32));
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		final Pt other = (Pt) obj;
+		if (Double.doubleToLongBits(x) != Double.doubleToLongBits(other.x))
+			return false;
+		if (Double.doubleToLongBits(y) != Double.doubleToLongBits(other.y))
+			return false;
+		return true;
+	}
+
+	@Override
 	public String toString() {
 		return "x: " + x + " y: " + y;
+	}
+}
+
+class Ln {
+	public Pt begin;
+	
+	public Pt end;
+
+	public Ln(Pt begin, Pt end) {
+		super();
+		this.begin = begin;
+		this.end = end;
+	}
+
+	public Pt getClosestPoint(Pt pt) {
+		Pt n = getDirectionVector().transpse();
+		
+		return intersect(new Ln(pt, n.add(pt)));
+	}
+
+	public Pt getDirectionVector() {
+		Pt v = end.copy().subtract(begin);
+		v.Normalize();
+		
+		return v;
+	}
+
+	public Pt intersect(Ln ln) {
+		double x1 = begin.x;
+		double y1 = begin.y;
+		double x2 = end.x;
+		double y2 = end.y;
+		double x3 = ln.begin.x;
+		double y3 = ln.begin.y;
+		double x4 = ln.end.x;
+		double y4 = ln.end.y;
+		double a = determinant(x1, y1, x2, y2);
+		double b = determinant(x3, y3, x4, y4);
+		double c = determinant(x1 - x2, y1 - y2, x3 - x4, y3 - y4);
+		double x = determinant(a, x1 - x2, b, x3 - x4) / c;
+		double y = determinant(a, y1 - y2, b, y3 - y4) / c;
+		
+		return new Pt(x, y);
+	}
+
+	private double determinant(double a, double b, double c, double d) {
+		return a * d - b * c;
+	}
+
+	@Override
+	public int hashCode() {
+		final int PRIME = 31;
+		int result = 1;
+		result = PRIME * result + ((begin == null) ? 0 : begin.hashCode());
+		result = PRIME * result + ((end == null) ? 0 : end.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		final Ln other = (Ln) obj;
+		if (begin == null) {
+			if (other.begin != null)
+				return false;
+		} else if (!begin.equals(other.begin))
+			return false;
+		if (end == null) {
+			if (other.end != null)
+				return false;
+		} else if (!end.equals(other.end))
+			return false;
+		return true;
 	}
 }
 
@@ -900,6 +1022,34 @@ class Rs {
 
 	public boolean isNil() {
 		return Double.isNaN(width) && Double.isNaN(height);
+	}
+
+	@Override
+	public int hashCode() {
+		final int PRIME = 31;
+		int result = 1;
+		long temp;
+		temp = Double.doubleToLongBits(height);
+		result = PRIME * result + (int) (temp ^ (temp >>> 32));
+		temp = Double.doubleToLongBits(width);
+		result = PRIME * result + (int) (temp ^ (temp >>> 32));
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		final Rs other = (Rs) obj;
+		if (Double.doubleToLongBits(height) != Double.doubleToLongBits(other.height))
+			return false;
+		if (Double.doubleToLongBits(width) != Double.doubleToLongBits(other.width))
+			return false;
+		return true;
 	}
 
 	@Override
@@ -953,6 +1103,37 @@ class Rc {
 
 	public boolean isNil() {
 		return pt.isNil() && rs.isNil();
+	}
+
+	@Override
+	public int hashCode() {
+		final int PRIME = 31;
+		int result = 1;
+		result = PRIME * result + ((pt == null) ? 0 : pt.hashCode());
+		result = PRIME * result + ((rs == null) ? 0 : rs.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		final Rc other = (Rc) obj;
+		if (pt == null) {
+			if (other.pt != null)
+				return false;
+		} else if (!pt.equals(other.pt))
+			return false;
+		if (rs == null) {
+			if (other.rs != null)
+				return false;
+		} else if (!rs.equals(other.rs))
+			return false;
+		return true;
 	}
 }
 
@@ -1024,7 +1205,25 @@ class FixPositionConstraint implements IVertexPositionConstraint {
 	}
 
 	public Pt getFinalPosition(Pt pt) {
-		return this.pt;
+		return this.pt.copy();
+	}
+}
+
+class LinePositionConstraint implements IVertexPositionConstraint {
+	public Ln ln;
+
+	public LinePositionConstraint(Ln ln) {
+		this.ln = ln;
+	}
+
+	public Pt getForce(Pt pt) {
+		Pt d = ln.getClosestPoint(pt).copy().subtract(pt);
+		
+		return d;
+	}
+
+	public Pt getFinalPosition(Pt pt) {
+		return ln.getClosestPoint(pt);
 	}
 }
 
