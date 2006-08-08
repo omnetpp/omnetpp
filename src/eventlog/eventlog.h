@@ -22,7 +22,7 @@
 #include <set>
 #include "filetokenizer.h"
 #include "exception.h"
-#include "scavedefs.h"
+#include "eventlogdefs.h"
 
 /**
  * A compound or simple module extracted from the log file

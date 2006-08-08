@@ -10,9 +10,9 @@ CFLAGS=$(CFLAGS) /DWIN32_DLL
 #
 # Local definitions
 #
-COPTS=$(CFLAGS) $(XML_CFLAGS) /I. /Fd"eventlog.pdb"
+COPTS=$(CFLAGS) $(XML_CFLAGS) -I. -I../common /Fd"eventlog.pdb"
 
-OBJS= eventlog.obj exception.obj
+OBJS= eventlog.obj
 
 #
 # Automatic rules
@@ -33,8 +33,8 @@ eventlog.lib : $(OBJS)
 	copy eventlog.lib $(OMNETPP_LIB_DIR:/=\)
 	- copy /b eventlog.pdb $(OMNETPP_LIB_DIR:/=\) 2>nul
 
-eventlogtool.exe : eventlogtool.obj eventlog.lib
-	$(LINK) $(LDFLAGS) /nologo /out:eventlogtool.exe eventlogtool.obj $(LIBS) eventlog.lib $(XML_LIBS)
+eventlogtool.exe : eventlogtool.obj eventlog.lib ../common/common.lib
+	$(LINK) $(LDFLAGS) /nologo /out:eventlogtool.exe eventlogtool.obj $(LIBS) eventlog.lib ../common/common.lib $(XML_LIBS)
 	copy eventlogtool.exe $(OMNETPP_BIN_DIR:/=\)
 
 doc:

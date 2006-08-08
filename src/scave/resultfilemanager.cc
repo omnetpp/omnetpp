@@ -25,7 +25,7 @@
 #include "patmatch.h"
 #include "resultfilemanager.h"
 #include "filetokenizer.h"
-#include "cstrtokenizer.h"
+#include "stringtokenizer.h"
 
 
 ResultFileManager::ResultFileManager()
@@ -914,7 +914,7 @@ StringVector ResultFileManager::getModuleFilterHints(const IDList& idlist)
         //FIXME TODO!!!!!!!!!!!!!!
 
         // break it up along dots, and...
-        cStringTokenizer tokenizer(a.c_str(), ".");
+        StringTokenizer tokenizer(a.c_str(), ".");
         const char *prefix = "";
         const char *suffix = ".*";
         while (tokenizer.hasMoreTokens()) {
@@ -948,7 +948,7 @@ StringVector ResultFileManager::getNameFilterHints(const IDList& idlist)
         vec.push_back(a);
 
         // break it up along spaces, and...
-        cStringTokenizer tokenizer(a.c_str());
+        StringTokenizer tokenizer(a.c_str());
         const char *prefix = "";
         const char *suffix = " *";
         while (tokenizer.hasMoreTokens()) {
