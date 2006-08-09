@@ -65,7 +65,7 @@ public class SendBroadcastAnimation extends AbstractSendMessageAnimation {
 			//System.out.println("Source: " + p + " message:" + ps[0] + ":" + ps[1]);
 			double r = ps[0].getDistance(p);
 			double width = r - ps[1].getDistance(p);
-			System.out.println("Radius: " + r + " width:" + width);
+			//System.out.println("Radius: " + r + " width:" + width);
 			int radius = (int)r;
 			circle.setLineWidth((int)width);
 			circle.setBounds(new Rectangle(p.x - radius, p.y - radius, radius * 2 - 1, radius * 2 - 1));
