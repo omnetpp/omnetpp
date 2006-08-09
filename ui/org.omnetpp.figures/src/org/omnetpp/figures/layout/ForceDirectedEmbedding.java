@@ -713,18 +713,25 @@ class TestCanvas extends Canvas implements ForceDirectedEmbedding.IForceDirected
 			}
 		});
 		this.addMouseMotionListener(new MouseMotionListener() {
+			private long last;
+
 			public void mouseDragged(MouseEvent e) {
+				long begin = System.currentTimeMillis();
 				Pt fixPt = new Pt(dragPt.x + e.getX() - dragPoint.getX(), dragPt.y + e.getY() - dragPoint.getY());
 				
 				IVertexPositionConstraint positionConstraint = dragVertex.positionConstraint;
 				
-				if (positionConstraint == null ||
+				if (begin - last > 100 && 
+					(positionConstraint == null ||
 					!(positionConstraint instanceof FixPositionConstraint) ||
-					!((FixPositionConstraint)positionConstraint).pt.equals(fixPt))
+					!((FixPositionConstraint)positionConstraint).pt.equals(fixPt)))
 				{
-					dragVertex.positionConstraint = new FixPositionConstraint(fixPt);			
-					embed();	
+					dragVertex.positionConstraint = new FixPositionConstraint(fixPt);
+					embed();
+					last = begin;
 				}
+				long end = System.currentTimeMillis();
+				System.out.println("Drag after " + (begin - last) + " in " + (end - begin) + " ms");
 			}
 
 			public void mouseMoved(MouseEvent e) {
@@ -737,6 +744,7 @@ class TestCanvas extends Canvas implements ForceDirectedEmbedding.IForceDirected
 	public void embed() {
 		embedding.embed();
 		repaint();
+		System.gc();
 	}
 
 	public void positionsChanged() {
