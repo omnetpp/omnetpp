@@ -12,7 +12,7 @@ CFLAGS=$(CFLAGS) /DWIN32_DLL
 #
 COPTS=$(CFLAGS) $(XML_CFLAGS) -I. -I../common /Fd"eventlog.pdb"
 
-OBJS= eventlog.obj
+OBJS= eventlog.obj stringpool.obj
 
 #
 # Automatic rules

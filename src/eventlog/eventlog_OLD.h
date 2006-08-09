@@ -6,7 +6,7 @@
 //=========================================================================
 
 /*--------------------------------------------------------------*
-  Copyright (C) 1992-2006 Andras Varga
+  Copyright (C) 1992-2005 Andras Varga
 
   This file is distributed WITHOUT ANY WARRANTY. See the file
   `license' for details on this and other legal matters.
@@ -19,7 +19,7 @@
 #include <list>
 #include <vector>
 #include <map>
-#include "stringpool.h"
+#include <set>
 #include "filetokenizer.h"
 #include "exception.h"
 #include "eventlogdefs.h"
@@ -95,6 +95,29 @@ class EventEntry
     public:
         EventEntry();
         ~EventEntry();
+};
+
+/**
+ * For saving memory on the storage of (largely) constant strings that occur in
+ * many instances. (See Flyweight GoF pattern.)
+ */
+class StringPool
+{
+  protected:
+    struct strless {
+        bool operator()(const char *s1, const char *s2) const {
+            int d0 = *s1 - *s2;
+            if (d0<0) return true; else if (d0>0) return false;
+            return strcmp(s1+1,s2+1)<0;
+        }
+    };
+    typedef std::set<char *,strless> StringSet;
+    StringSet pool;
+
+  public:
+    StringPool();
+    ~StringPool();
+    const char *get(const char *s);
 };
 
 /**
