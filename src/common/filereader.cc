@@ -33,7 +33,8 @@ FileReader::FileReader(const char *fileName, size_t bufferSize)
 
     linenum = 0;
 
-    wholeline = wholelineend = NULL;
+    wholeline = NULL;
+    lineoffset = 0;
 
     errcode = OK;
 }
@@ -96,9 +97,10 @@ char *FileReader::readLine()
     // check sentry
     assert(*dataend==0);
 
-    linenum++;
+    if (linenum!=-1)  // after seek() we don't maintain it (stays -1)
+        linenum++;
     char *s = wholeline = databeg;
-    wholelineend = NULL;
+    lineoffset = ftell(f);
 
     // find end of line
     while (*s && *s!='\r' && *s!='\n') s++;
@@ -110,14 +112,14 @@ char *FileReader::readLine()
         if (errcode==EOFREACHED)
            errcode = INCOMPLETELINE;
         if (errcode!=OK)
-            return zapline();
+            return NULL;
 
         // find end of line (provided we're not yet there)
         while (*s && *s!='\r' && *s!='\n') s++;
         if (s==dataend)
         {
             errcode = LINETOOLONG;
-            return zapline();
+            return NULL;
         }
     }
 
@@ -125,14 +127,13 @@ char *FileReader::readLine()
     if (*s=='\r')
     {
         *s = '\0';
-        wholelineend = s;
 
         s++;
         if (s==dataend)
         {
             s -= readMore();
             if (errcode!=OK)
-                return errcode==EOFREACHED ? wholeline : zapline();
+                return errcode==EOFREACHED ? wholeline : NULL;
         }
     }
     if (*s=='\n')
@@ -143,7 +144,7 @@ char *FileReader::readLine()
         {
             s -= readMore();
             if (errcode!=OK)
-                return errcode==EOFREACHED ? wholeline : zapline();
+                return errcode==EOFREACHED ? wholeline : NULL;
         }
     }
 
@@ -152,10 +153,38 @@ char *FileReader::readLine()
     return wholeline;
 }
 
-char *FileReader::zapline()
+long FileReader::fileSize()
 {
-    return wholeline = wholelineend = NULL;
+    long tmp = ftell(f);
+    fseek(f, 0, SEEK_END);
+    long size = ftell(f);
+    fseek(f, tmp, SEEK_SET);
+    return size;
 }
+
+void FileReader::seekTo(long offset)
+{
+    // flush buffer
+    databeg = dataend = buffer;
+    *dataend = 0; // sentry
+
+    linenum = -1; // after seekTo() we lose line number info
+
+    // position there
+    fseek(f, offset, SEEK_SET);
+
+    // find beginning of first whole line
+    if (offset==0)
+        return;
+    int c = ' ';
+    while (c!=EOF && c!='\r' && c!='\n')
+        c = fgetc(f);
+    while (c=='\r' || c=='\n')
+        c = fgetc(f);
+    if (c!=EOF)
+        ungetc(c,f);
+}
+
 
 std::string FileReader::errorMsg() const
 {
@@ -170,7 +199,7 @@ std::string FileReader::errorMsg() const
         case LINETOOLONG:    out << "line too long"; break;
         default:             out << "???";
     }
-    if (errcode!=CANNOTOPEN)
+    if (errcode!=CANNOTOPEN && linenum!=-1)
         out << ", line " << linenum;
     return out.str();
 }

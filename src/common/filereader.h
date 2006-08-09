@@ -46,7 +46,7 @@ class FileReader
 
     // the pointer returned by readLine()
     char *wholeline;
-    char *wholelineend;
+    long lineoffset;
 
     // num of line last returned
     int linenum;
@@ -59,9 +59,6 @@ class FileReader
     // reads new bytes to the buffer, and returns offset by which
     // existing data were moved.
     size_t readMore();
-
-    // nulls out wholeline/wholelineend, and returns null
-    char *zapline();
 
   public:
     /**
@@ -97,6 +94,21 @@ class FileReader
      * Number of last line parsed by readAndTokenizeLine().
      */
     int lineNum() const {return linenum;}
+
+    /**
+     * Returns the offset of the line last parsed with readLine()
+     */
+    long lineStartOffset() {return lineoffset;}
+
+    /**
+     * Returns the size of the file
+     */
+    long fileSize();
+
+    /**
+     * Positions to the beginning of the first full line following the given offset.
+     */
+    void seekTo(long offset);
 
     /**
      * Detailed error code; this completes ok() and eof().
