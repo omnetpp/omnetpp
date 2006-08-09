@@ -23,6 +23,7 @@
  * it'll be used on several hundred-megabyte files: the code avoids 
  * string copies, avoids scanning the string more than once, etc.
  */
+//FIXME this class is obsolete -- replace with FileReader + LineTokenizer
 class FileTokenizer
 {
   public:

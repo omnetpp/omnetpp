@@ -12,7 +12,7 @@ CFLAGS=$(CFLAGS) /DWIN32_DLL
 #
 COPTS=$(CFLAGS) $(XML_CFLAGS) -I. /Fd"common.pdb"
 
-OBJS= filetokenizer.obj stringtokenizer.obj util.obj exception.obj
+OBJS= filetokenizer.obj filereader.obj linetokenizer.obj stringtokenizer.obj util.obj exception.obj
 
 
 #
