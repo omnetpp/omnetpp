@@ -2,6 +2,7 @@ package org.omnetpp.experimental.animation.primitives;
 
 import org.eclipse.draw2d.geometry.Point;
 import org.omnetpp.common.simulation.model.IRuntimeMessage;
+import org.omnetpp.experimental.animation.controller.AnimationPosition;
 import org.omnetpp.experimental.animation.replay.ReplayAnimationController;
 
 /**
@@ -14,27 +15,28 @@ public class SendDirectAnimation extends SendMessageAnimation {
 	protected int destinationModuleId;
 
 	public SendDirectAnimation(ReplayAnimationController animationController, 
-							   long eventNumber, 
-							   double simulationTime,
-							   long animationNumber, 
+							   AnimationPosition animationPosition,
 							   double propagationTime, 
 							   double transmissionTime, 
 							   int sourceModuleId, 
 							   int destinationModuleId,
 							   IRuntimeMessage msg) {
-		super(animationController, eventNumber, simulationTime, animationNumber, propagationTime, transmissionTime, null, msg);
+		super(animationController, animationPosition, propagationTime, transmissionTime, null, msg);
 		this.sourceModuleId = sourceModuleId;
 		this.destinationModuleId = destinationModuleId;
 	}
 
+	@Override
 	protected Point getBeginPoint() {
 		return getSubmoduleFigureCenter(sourceModuleId);
 	}
 	
+	@Override
 	protected Point getEndPoint() {
 		return getSubmoduleFigureCenter(destinationModuleId);
 	}
 
+	@Override
 	protected boolean isDisplayed() {
 		return getSubmoduleFigure(sourceModuleId) != null && getSubmoduleFigure(destinationModuleId) != null;
 	}

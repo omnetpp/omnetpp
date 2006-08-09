@@ -1,16 +1,15 @@
 package org.omnetpp.experimental.animation.primitives;
 
+import org.omnetpp.experimental.animation.controller.AnimationPosition;
 import org.omnetpp.experimental.animation.replay.ReplayAnimationController;
 
 public class ScheduleSelfMessageAnimation extends AbstractAnimationPrimitive {
-	private double endSimulationTime;	
+	protected double endSimulationTime;	
 	
 	public ScheduleSelfMessageAnimation(ReplayAnimationController animationController,
-										long eventNumber,
-										double beginSimulationTime,
-										long animationNumber,
+										AnimationPosition animationPosition,
 										double endSimulationTime) {
-		super(animationController, eventNumber, beginSimulationTime, animationNumber);
+		super(animationController, animationPosition);
 		this.endSimulationTime = endSimulationTime;
 	}
 	
@@ -24,12 +23,18 @@ public class ScheduleSelfMessageAnimation extends AbstractAnimationPrimitive {
 		return animationEnvironment.getAnimationTimeForSimulationTime(endSimulationTime);
 	}
 	
+	@Override
 	public void redo() {
+		// TODO:
 	}
 
+	@Override
 	public void undo() {
+		// TODO:
 	}
 
-	public void animateAt(long eventNumber, double simulationTime, long animationNumber, double animationTime) {
+	@Override
+	public void animateAt(AnimationPosition animtionPosition) {
+		// TODO:
 	}
 }

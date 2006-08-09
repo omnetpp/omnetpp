@@ -3,6 +3,7 @@ package org.omnetpp.experimental.animation.primitives;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.PrecisionPoint;
 import org.omnetpp.common.simulation.model.IRuntimeMessage;
+import org.omnetpp.experimental.animation.controller.AnimationPosition;
 import org.omnetpp.experimental.animation.replay.ReplayAnimationController;
 
 public abstract class AbstractSendMessageAnimation extends AbstractAnimationPrimitive {
@@ -15,16 +16,14 @@ public abstract class AbstractSendMessageAnimation extends AbstractAnimationPrim
 	protected double endSimulationTime;
 
 	public AbstractSendMessageAnimation(ReplayAnimationController animationController,
-								long eventNumber,
-								double simulationTime,
-								long animationNumber,
+								AnimationPosition animationPosition,
 								double propagationTime,
 								double transmissionTime,
 								IRuntimeMessage msg) {
-		super(animationController, eventNumber, simulationTime, animationNumber);
+		super(animationController, animationPosition);
 		this.propagationTime = propagationTime;
 		this.transmissionTime = transmissionTime;
-		this.endSimulationTime = simulationTime + propagationTime + transmissionTime;
+		this.endSimulationTime = getBeginSimulationTime() + propagationTime + transmissionTime;
 		this.msg = msg;
 	}
 
@@ -35,8 +34,8 @@ public abstract class AbstractSendMessageAnimation extends AbstractAnimationPrim
 	
 	@Override
 	public double getEndAnimationTime() {
-		if (endSimulationTime == beginSimulationTime)
-			return animationEnvironment.getAnimationTimeForAnimationNumber(animationNumber + 1);
+		if (endSimulationTime == getBeginSimulationTime())
+			return animationEnvironment.getAnimationTimeForAnimationNumber(getAnimationNumber() + 1);
 		else {
 			return animationEnvironment.getAnimationTimeForSimulationTime(endSimulationTime);
 		}
@@ -46,10 +45,10 @@ public abstract class AbstractSendMessageAnimation extends AbstractAnimationPrim
 	
 	protected abstract Point getEndPoint();
 
-	protected Point[] getMessageSendPoints(double simulationTime, double animationTime, int orthogonalTranslation) {
+	protected Point[] getMessageSendPoints(AnimationPosition animationPosition, int orthogonalTranslation) {
 		Point p1 = getBeginPoint();
 		Point p2 = getEndPoint();
-		double simulationTimeDelta = endSimulationTime - beginSimulationTime - transmissionTime;
+		double simulationTimeDelta = endSimulationTime - getBeginSimulationTime() - transmissionTime;
 
 		// translate connection line coordinates orthogonal to the line
 		if (orthogonalTranslation != 0) {
@@ -61,9 +60,9 @@ public abstract class AbstractSendMessageAnimation extends AbstractAnimationPrim
 
 		double alpha;
 		if (simulationTimeDelta != 0)
-			alpha = (simulationTime - beginSimulationTime) / simulationTimeDelta;
+			alpha = (animationPosition.getSimulationTime() - getBeginSimulationTime()) / simulationTimeDelta;
 		else
-			alpha = (animationTime - getBeginAnimationTime()) / (getEndAnimationTime() - getBeginAnimationTime());
+			alpha = (animationPosition.getAnimationTime() - getBeginAnimationTime()) / (getEndAnimationTime() - getBeginAnimationTime());
 		alpha = Math.max(0, Math.min(alpha, 1));
 		
 		Point pAlpha; 
@@ -74,7 +73,7 @@ public abstract class AbstractSendMessageAnimation extends AbstractAnimationPrim
 		else {
 			double beta;
 			if (simulationTimeDelta != 0) {
-				beta = (simulationTime - beginSimulationTime - transmissionTime) / simulationTimeDelta;
+				beta = (animationPosition.getSimulationTime() - getBeginSimulationTime() - transmissionTime) / simulationTimeDelta;
 				beta = Math.max(0, Math.min(beta, 1));
 			}
 			else {

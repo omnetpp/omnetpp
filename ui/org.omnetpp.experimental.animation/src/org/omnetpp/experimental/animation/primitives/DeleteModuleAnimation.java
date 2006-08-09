@@ -1,18 +1,15 @@
 package org.omnetpp.experimental.animation.primitives;
 
-import org.omnetpp.common.simulation.model.IRuntimeModule;
+import org.omnetpp.experimental.animation.controller.AnimationPosition;
 import org.omnetpp.experimental.animation.replay.ReplayAnimationController;
-import org.omnetpp.figures.SubmoduleFigure;
 
 public class DeleteModuleAnimation extends AbstractAnimationPrimitive {
-	private int moduleId;
+	protected int moduleId;
 	
 	public DeleteModuleAnimation(ReplayAnimationController animationController,
-								 long eventNumber,
-								 double simulationTime,
-								 long animationNumber,
+								 AnimationPosition animationPosition,
 								 int moduleId) {
-		super(animationController, eventNumber, simulationTime, animationNumber);
+		super(animationController, animationPosition);
 		this.moduleId = moduleId;
 	}
 	
@@ -26,17 +23,17 @@ public class DeleteModuleAnimation extends AbstractAnimationPrimitive {
 		return Double.MAX_VALUE;
 	}
 	
+	@Override
 	public void redo() {
-		IRuntimeModule module = animationEnvironment.getSimulation().getModuleByID(moduleId);
-		getEnclosingModuleFigure().removeSubmoduleFigure((SubmoduleFigure)animationEnvironment.getFigure(module));
-		animationEnvironment.setFigure(module, null);
-	}
+/*		IRuntimeModule module = animationEnvironment.getSimulation().getModuleByID(moduleId);
+		if (module.getParentModule() == getSimulation().getRootModule()) { //FIXME
+			getEnclosingModuleFigure().removeSubmoduleFigure((SubmoduleFigure)animationEnvironment.getFigure(module));
+			animationEnvironment.setFigure(module, null);
+		}
+*/	}
 
+	@Override
 	public void undo() {
 		// TODO: animationEnvironment.setFigure(module, addFigure(new SubmoduleFigure()));
-	}
-
-	public void animateAt(long eventNumber, double simulationTime, long animationNumber, double animationTime) {
-		// void
 	}
 }

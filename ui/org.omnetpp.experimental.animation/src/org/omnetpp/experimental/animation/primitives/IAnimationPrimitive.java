@@ -1,9 +1,11 @@
 package org.omnetpp.experimental.animation.primitives;
 
+import org.omnetpp.experimental.animation.controller.AnimationPosition;
+
 /**
  * IAnimationPrimitive is an atomic animation element managed by the IAnimationController. An animation primitive
- * may or may not be active depending on the animation position managed by its controller. Being active means
- * having effect on the state of the model or the animation.
+ * may or may not be active depending on the current animation position managed by its controller. Being active means
+ * having effect on the state of the model or the state of the animation.
  * 
  * The controller is responsible for notifying the animation primitives when they become active or inactive based
  * on the animation position. The animation primitive life cycle is the following: (activate, animateAt*, deactivate)*
@@ -58,7 +60,7 @@ public interface IAnimationPrimitive {
 	public void deactivate();
 
 	/**
-	 * True if the animation primitive is active.
+	 * True if the animation primitive is active. This should be remembered by the activate and deactivate calls.
 	 */
 	public boolean isActive();
 	
@@ -66,5 +68,5 @@ public interface IAnimationPrimitive {
 	 * Updates figures according to the given animation position. This method will be called only
 	 * when the animation primitive is active.
 	 */
-	public void animateAt(long eventNumber, double simulationTime, long animationNumber, double animationTime);
+	public void animateAt(AnimationPosition animationPosition);
 }

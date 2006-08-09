@@ -9,6 +9,7 @@ import org.eclipse.swt.graphics.Color;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.simulation.model.ConnectionId;
 import org.omnetpp.common.simulation.model.IRuntimeMessage;
+import org.omnetpp.experimental.animation.controller.AnimationPosition;
 import org.omnetpp.experimental.animation.replay.ReplayAnimationController;
 import org.omnetpp.figures.CompoundModuleFigure;
 import org.omnetpp.figures.ConnectionFigure;
@@ -29,18 +30,16 @@ public class SendMessageAnimation extends AbstractSendMessageAnimation {
 	private Label messageLabel;
 
 	public SendMessageAnimation(ReplayAnimationController animationController,
-								long eventNumber,
-								double simulationTime,
-								long animationNumber,
+								AnimationPosition animationPosition,
 								double propagationTime,
 								double transmissionTime,
 								ConnectionId connectionId,
 								IRuntimeMessage msg) {
-		super(animationController, eventNumber, simulationTime, animationNumber, propagationTime, transmissionTime, msg);
+		super(animationController, animationPosition, propagationTime, transmissionTime, msg);
 		this.connectionId = connectionId;
 		
 		toolTip = new Label();
-		toolTip.setText("Sending time: " + simulationTime +
+		toolTip.setText("Sending time: " + getBeginSimulationTime() +
 				" arrival time: " + endSimulationTime +
 				" propagation time: " + propagationTime +
 				" transmission time: " + transmissionTime);
@@ -60,6 +59,7 @@ public class SendMessageAnimation extends AbstractSendMessageAnimation {
 		messageLabel = new Label();
 	}
 	
+	@Override
 	public void redo() {
 		if (isDisplayed()) {
 			CompoundModuleFigure enclosingModuleFigure = getEnclosingModuleFigure();
@@ -75,6 +75,7 @@ public class SendMessageAnimation extends AbstractSendMessageAnimation {
 		}
 	}
 
+	@Override
 	public void undo() {
 		if (isDisplayed()) {
 			CompoundModuleFigure enclosingModuleFigure = getEnclosingModuleFigure();
@@ -87,9 +88,10 @@ public class SendMessageAnimation extends AbstractSendMessageAnimation {
 		}
 	}
 
-	public void animateAt(long eventNumber, double simulationTime, long animationNumber, double animationTime) {
+	@Override
+	public void animateAt(AnimationPosition animationPosition) {
 		if (isDisplayed()) {
-			Point[] ps = getMessageSendPoints(simulationTime, animationTime, 4);
+			Point[] ps = getMessageSendPoints(animationPosition, 4);
 			messageEllipse.setBounds(new Rectangle(ps[0].x - 3, ps[0].y - 3, 7, 7));
 			messageLabel.setBounds(new Rectangle(new Point(ps[0].x, ps[0].y), messageLabel.getPreferredSize().getCopy().expand(10, 0)));
 			
@@ -98,19 +100,22 @@ public class SendMessageAnimation extends AbstractSendMessageAnimation {
 		}
 	}
 
-	private ConnectionFigure getConnectionFigure() {
-		return (ConnectionFigure)animationEnvironment.getFigure(connectionId);
-	}
-
+	@Override
 	protected Point getBeginPoint() {
 		return getConnectionFigure().getStart();
 	}
 	
+	@Override
 	protected Point getEndPoint() {
 		return getConnectionFigure().getEnd();
 	}
 
 	protected boolean isDisplayed() {
+		// FIXME: this should check the source and destination modules instead
 		return getConnectionFigure() != null;
+	}
+
+	protected ConnectionFigure getConnectionFigure() {
+		return (ConnectionFigure)animationEnvironment.getFigure(connectionId);
 	}
 }

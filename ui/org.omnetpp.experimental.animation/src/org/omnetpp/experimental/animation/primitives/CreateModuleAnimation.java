@@ -1,37 +1,27 @@
 package org.omnetpp.experimental.animation.primitives;
 
 import org.omnetpp.common.displaymodel.DisplayString;
+import org.omnetpp.experimental.animation.controller.AnimationPosition;
 import org.omnetpp.experimental.animation.replay.ReplayAnimationController;
 import org.omnetpp.experimental.animation.replay.model.ReplayModule;
 import org.omnetpp.experimental.animation.replay.model.ReplaySimulation;
 import org.omnetpp.figures.SubmoduleFigure;
 
-public class CreateModuleAnimation extends AbstractAnimationPrimitive {
+public class CreateModuleAnimation extends AbstractInfiniteAnimation {
 	protected ReplayModule module;
 	
 	protected int parentModuleId;
 
 	public CreateModuleAnimation(ReplayAnimationController animationController,
-								 long eventNumber,
-								 double simulationTime,
-								 long animationNumber,
+								 AnimationPosition animationPosition,
 								 ReplayModule module,
 								 int parentModuleId) {
-		super(animationController, eventNumber, simulationTime, animationNumber);
+		super(animationController, animationPosition);
 		this.module = module;
 		this.parentModuleId = parentModuleId;
 	}
 	
 	@Override
-	public double getEndSimulationTime() {
-		return Double.MAX_VALUE;
-	}
-	
-	@Override
-	public double getEndAnimationTime() {
-		return Double.MAX_VALUE;
-	}
-	
 	public void redo() {
 		ReplayModule parentModule = getParentModule();
 		if (parentModule == getSimulation().getRootModule()) { //FIXME
@@ -47,6 +37,7 @@ public class CreateModuleAnimation extends AbstractAnimationPrimitive {
 		getReplaySimulation().addModule(getReplayModule());
 	}
 
+	@Override
 	public void undo() {
 		ReplayModule parentModule = getParentModule();
 		if (parentModule != null) {
@@ -57,10 +48,6 @@ public class CreateModuleAnimation extends AbstractAnimationPrimitive {
 
 		animationEnvironment.setFigure(module, null); //XXX move inside if???
 		getReplaySimulation().removeModule(module.getId());
-	}
-
-	public void animateAt(long eventNumber, double simulationTime, long animationNumber, double animationTime) {
-		// void
 	}
 
 	protected ReplaySimulation getReplaySimulation() {

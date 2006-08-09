@@ -27,6 +27,7 @@ import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.part.EditorPart;
 import org.omnetpp.experimental.animation.AnimationPlugin;
+import org.omnetpp.experimental.animation.controller.AnimationPosition;
 import org.omnetpp.experimental.animation.controller.IReplayAnimationListener;
 import org.omnetpp.experimental.animation.replay.ReplayAnimationController;
 import org.omnetpp.experimental.animation.widgets.AnimationCanvas;
@@ -334,9 +335,9 @@ public class ReplayAnimationEditor extends EditorPart implements IReplayAnimatio
 			}
 	}
 
-	public void replayPositionChanged(long eventNumber, double simulationTime, long animationNumber, double animationTime) {
+	public void replayPositionChanged(AnimationPosition animationPosition) {
 		if (!replayToolBar.isDisposed()) {
-			if (animationController.isAnimationPositionValid() && animationController.isAtAnimationBegin()) {
+			if (animationController.isCurrentAnimationPositionValid() && animationController.isAtAnimationBegin()) {
 				replayBeginToolItem.setEnabled(false);
 				replayBackToolItem.setEnabled(false);
 				replayBackstepToolItem.setEnabled(false);
@@ -347,7 +348,7 @@ public class ReplayAnimationEditor extends EditorPart implements IReplayAnimatio
 				replayBackstepToolItem.setEnabled(true);
 			}
 	
-			if (animationController.isAnimationPositionValid() && animationController.isAtAnimationEnd()) {
+			if (animationController.isCurrentAnimationPositionValid() && animationController.isAtAnimationEnd()) {
 				replayStepToolItem.setEnabled(false);
 				replayPlayToolItem.setEnabled(false);
 				replayEndToolItem.setEnabled(false);
@@ -359,10 +360,10 @@ public class ReplayAnimationEditor extends EditorPart implements IReplayAnimatio
 			}
 		}
 
-		valueChanged(replayEventNumberWidget, eventNumber);
-		valueChanged(replaySimulationTimeWidget, simulationTime);
-		valueChanged(replayAnimationNumberWidget, animationNumber);
-		valueChanged(replayAnimationTimeWidget, animationTime);
+		valueChanged(replayEventNumberWidget, animationPosition.getEventNumber());
+		valueChanged(replaySimulationTimeWidget, animationPosition.getSimulationTime());
+		valueChanged(replayAnimationNumberWidget, animationPosition.getAnimationNumber());
+		valueChanged(replayAnimationTimeWidget, animationPosition.getAnimationTime());
 	}
 
 	protected void valueChanged(Text widget, Number newValue) {

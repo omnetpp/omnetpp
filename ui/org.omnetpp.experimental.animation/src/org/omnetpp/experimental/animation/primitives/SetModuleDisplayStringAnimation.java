@@ -2,39 +2,29 @@ package org.omnetpp.experimental.animation.primitives;
 
 import org.omnetpp.common.displaymodel.IDisplayString;
 import org.omnetpp.common.simulation.model.IRuntimeModule;
+import org.omnetpp.experimental.animation.controller.AnimationPosition;
 import org.omnetpp.experimental.animation.replay.ReplayAnimationController;
 import org.omnetpp.figures.SubmoduleFigure;
 import org.omnetpp.figures.layout.SubmoduleConstraint;
 
-public class SetModuleDisplayStringAnimation extends AbstractAnimationPrimitive {
-	private int moduleId;
+public class SetModuleDisplayStringAnimation extends AbstractInfiniteAnimation {
+	protected int moduleId;
 	
-	private IDisplayString displayString;
+	protected IDisplayString displayString;
 	
-	private IDisplayString oldDisplayString; // FIXME: this is a temproray hack to be able to undo changes
+	protected IDisplayString oldDisplayString; // FIXME: this is a temproray hack to be able to undo changes
 	
 	public SetModuleDisplayStringAnimation(ReplayAnimationController animationController,
-									 long eventNumber,
-									 double simulationTime,
-									 long animationNumber,
-									 int moduleId,
-									 IDisplayString displayString) {
-		super(animationController, eventNumber, simulationTime, animationNumber);
+										   AnimationPosition animationPosition,
+										   int moduleId,
+										   IDisplayString displayString) {
+		super(animationController, animationPosition);
 		this.moduleId = moduleId;
 		this.displayString = displayString;
 		//System.out.println("SetModuleDisplayStringAnimation: "+displayString);
 	}
 	
 	@Override
-	public double getEndSimulationTime() {
-		return Double.MAX_VALUE;
-	}
-	
-	@Override
-	public double getEndAnimationTime() {
-		return Double.MAX_VALUE;
-	}
-	
 	public void redo() {
 		IRuntimeModule module = animationEnvironment.getSimulation().getModuleByID(moduleId);
 		if (module.getParentModule() == animationEnvironment.getSimulation().getRootModule()) { //FIXME
@@ -51,15 +41,12 @@ public class SetModuleDisplayStringAnimation extends AbstractAnimationPrimitive 
 		}
 	}
 
+	@Override
 	public void undo() {
 		IRuntimeModule module = animationEnvironment.getSimulation().getModuleByID(moduleId);
 		if (module.getParentModule() == animationEnvironment.getSimulation().getRootModule()) { //FIXME
 			SubmoduleFigure moduleFigure = (SubmoduleFigure)animationEnvironment.getFigure(module);
 			moduleFigure.setDisplayString(oldDisplayString); // FIXME: this is a temproray hack to be able to undo changes
 		}
-	}
-
-	public void animateAt(long eventNumber, double simulationTime, long animationNumber, double animationTime) {
-		// void
 	}
 }

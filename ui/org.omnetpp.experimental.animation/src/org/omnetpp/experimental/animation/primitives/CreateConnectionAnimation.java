@@ -2,40 +2,30 @@ package org.omnetpp.experimental.animation.primitives;
 
 import org.omnetpp.common.simulation.model.ConnectionId;
 import org.omnetpp.common.simulation.model.GateId;
+import org.omnetpp.experimental.animation.controller.AnimationPosition;
 import org.omnetpp.experimental.animation.replay.ReplayAnimationController;
 import org.omnetpp.figures.ConnectionFigure;
 import org.omnetpp.figures.GateAnchor;
 import org.omnetpp.figures.ModuleFigure;
 
-public class CreateConnectionAnimation extends AbstractAnimationPrimitive {
-	private GateId sourceGateId;
+public class CreateConnectionAnimation extends AbstractInfiniteAnimation {
+	protected GateId sourceGateId;
 
-	private GateId targetGateId;
+	protected GateId targetGateId;
 
-	private ConnectionId connectionId;
+	protected ConnectionId connectionId;
 
 	public CreateConnectionAnimation(ReplayAnimationController animationController,
-									 long eventNumber,
-									 double simulationTime,
-									 long animationNumber,
+									 AnimationPosition animationPosition,
 									 GateId sourceGateId,
 									 GateId targetGateId) {
-		super(animationController, eventNumber, simulationTime, animationNumber);
+		super(animationController, animationPosition);
 		this.sourceGateId = sourceGateId;
 		this.targetGateId = targetGateId;
 		this.connectionId = new ConnectionId(sourceGateId.getModuleId(), sourceGateId.getGateId());
 	}
-	
-	@Override
-	public double getEndSimulationTime() {
-		return Double.MAX_VALUE;
-	}
 
 	@Override
-	public double getEndAnimationTime() {
-		return Double.MAX_VALUE;
-	}
-	
 	public void redo() {
 		if (animationEnvironment.getSimulation().getModuleByID(sourceGateId.getModuleId()).getParentModule()==animationEnvironment.getSimulation().getRootModule() &&
 			animationEnvironment.getSimulation().getModuleByID(targetGateId.getModuleId()).getParentModule()==animationEnvironment.getSimulation().getRootModule()) //FIXME 
@@ -48,6 +38,7 @@ public class CreateConnectionAnimation extends AbstractAnimationPrimitive {
 		}
 	}
 
+	@Override
 	public void undo() {
 		ConnectionFigure connectionFigure = (ConnectionFigure)animationEnvironment.getFigure(connectionId);
 		if (connectionFigure==null) {
@@ -56,11 +47,7 @@ public class CreateConnectionAnimation extends AbstractAnimationPrimitive {
 		}
 	}
 	
-	public void animateAt(long eventNumber, double simulationTime, long animationNumber, double animationTime) {
-		// void
-	}
-	
-	private GateAnchor getGateAnchor(GateId gateId) {
+	protected GateAnchor getGateAnchor(GateId gateId) {
 		GateAnchor gateAnchor = (GateAnchor)animationEnvironment.getFigure(gateId);
 		
 		if (gateAnchor == null) {

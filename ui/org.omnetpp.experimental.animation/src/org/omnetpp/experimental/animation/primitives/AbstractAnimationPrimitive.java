@@ -6,49 +6,46 @@ import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.omnetpp.common.simulation.model.IRuntimeModule;
 import org.omnetpp.common.simulation.model.IRuntimeSimulation;
+import org.omnetpp.experimental.animation.controller.AnimationPosition;
 import org.omnetpp.experimental.animation.controller.TimerQueue;
 import org.omnetpp.figures.CompoundModuleFigure;
 import org.omnetpp.figures.SubmoduleFigure;
 
+/**
+ * Base class for animation primitives. The default behaviour is that the animation primitive does not animate and its
+ * begin and end animation times are equal.
+ */
 public abstract class AbstractAnimationPrimitive implements IAnimationPrimitive {
 	protected IAnimationEnvironment animationEnvironment;
 	
-	protected long eventNumber;
-	
-	protected double beginSimulationTime;
-
-	protected long animationNumber;
-	
-	protected boolean shown;
+	protected AnimationPosition animationPosition;
 
 	protected boolean isActive;
 	
-	public AbstractAnimationPrimitive(IAnimationEnvironment animationEnvironment, long eventNumber, double beginSimulationTime, long animationNumber) {
+	public AbstractAnimationPrimitive(IAnimationEnvironment animationEnvironment, AnimationPosition animationPosition) {
 		this.animationEnvironment = animationEnvironment;
-		this.eventNumber = eventNumber;
-		this.beginSimulationTime = beginSimulationTime;
-		this.animationNumber = animationNumber;
+		this.animationPosition = animationPosition;
 		this.isActive = false;
 	}
 	
 	public long getEventNumber() {
-		return eventNumber;
+		return animationPosition.getEventNumber();
 	}
 
 	public double getBeginSimulationTime() {
-		return beginSimulationTime;
+		return animationPosition.getSimulationTime();
 	}
 	
 	public double getEndSimulationTime() {
-		return beginSimulationTime;
+		return animationPosition.getSimulationTime();
 	}
 	
 	public long getAnimationNumber() {
-		return animationNumber;
+		return animationPosition.getAnimationNumber();
 	}
 	
 	public double getBeginAnimationTime() {
-		return animationEnvironment.getAnimationTimeForAnimationNumber(animationNumber);
+		return animationEnvironment.getAnimationTimeForAnimationNumber(animationPosition.getAnimationNumber());
 	}
 
 	public double getEndAnimationTime() {
@@ -77,11 +74,18 @@ public abstract class AbstractAnimationPrimitive implements IAnimationPrimitive 
 			throw new RuntimeException();
 	}
 	
-	public abstract void redo();
+	public void redo() {
+	}
 
-	public abstract void undo();
+	public void undo() {
+	}
 
-	public abstract void animateAt(long eventNumber, double simulationTime, long animationNumber, double animationTime);
+	public void animateAt(AnimationPosition animationPosition) {
+	}
+
+	protected IRuntimeSimulation getSimulation() {
+		return animationEnvironment.getSimulation();
+	}
 	
 	protected TimerQueue getTimerQueue() {
 		return animationEnvironment.getTimerQueue();
@@ -90,13 +94,13 @@ public abstract class AbstractAnimationPrimitive implements IAnimationPrimitive 
 	protected IFigure getRootFigure() {
 		return animationEnvironment.getRootFigure();
 	}
-
-	protected CompoundModuleFigure getCompoundModuleFigure(IRuntimeModule module) {
-		return (CompoundModuleFigure)animationEnvironment.getFigure(module);
-	}
 	
 	protected LayoutManager getLayoutManager() {
 		return getRootFigure().getLayoutManager();
+	}
+
+	protected CompoundModuleFigure getCompoundModuleFigure(IRuntimeModule module) {
+		return (CompoundModuleFigure)animationEnvironment.getFigure(module);
 	}
 
 	protected void setConstraint(IFigure figure, Rectangle constraint) {
@@ -125,9 +129,5 @@ public abstract class AbstractAnimationPrimitive implements IAnimationPrimitive 
 
 	protected Point getConvexCombination(Point p1, Point p2, double alpha) {
 		return new Point(Math.round((1 - alpha) * p1.x + alpha * p2.x), Math.round((1 - alpha) * p1.y + alpha * p2.y));
-	}
-
-	protected IRuntimeSimulation getSimulation() {
-		return animationEnvironment.getSimulation();
 	}
 }

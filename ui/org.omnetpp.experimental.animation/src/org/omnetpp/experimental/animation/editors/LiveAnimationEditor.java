@@ -24,6 +24,7 @@ import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
 import org.eclipse.ui.IFileEditorInput;
 import org.omnetpp.experimental.animation.AnimationPlugin;
+import org.omnetpp.experimental.animation.controller.AnimationPosition;
 import org.omnetpp.experimental.animation.controller.ILiveAnimationListener;
 import org.omnetpp.experimental.animation.live.LiveAnimationController;
 import org.omnetpp.experimental.animation.widgets.AnimationCanvas;
@@ -267,7 +268,7 @@ public class LiveAnimationEditor extends ReplayAnimationEditor implements ILiveA
 		}
 	}
 
-	public void livePositionChanged(long eventNumber, double simulationTime, long animationNumber, double animationTime) {
+	public void livePositionChanged(AnimationPosition animationPosition) {
 		// TODO:
 	}
 }

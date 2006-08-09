@@ -5,23 +5,22 @@ import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.swt.graphics.Color;
 import org.omnetpp.common.simulation.model.IRuntimeMessage;
 import org.omnetpp.common.simulation.model.IRuntimeModule;
+import org.omnetpp.experimental.animation.controller.AnimationPosition;
 import org.omnetpp.experimental.animation.replay.ReplayAnimationController;
 import org.omnetpp.figures.ModuleFigure;
 
 public class HandleMessageAnimation extends AbstractAnimationPrimitive {
-	private IRuntimeMessage message;
+	protected IRuntimeMessage message;
 	
-	private Ellipse ellipse;
+	protected Ellipse ellipse;
 
-	private int moduleId;
+	protected int moduleId;
 	
 	public HandleMessageAnimation(ReplayAnimationController animationController,
-								  long eventNumber,
-								  double simulationTime,
-								  long animationNumber,
+								  AnimationPosition animationPosition,
 								  int moduleId,
 								  IRuntimeMessage message) {
-		super(animationController, eventNumber, simulationTime, animationNumber);
+		super(animationController, animationPosition);
 		this.moduleId = moduleId;
 		this.message = message;
 		this.ellipse = new Ellipse();
@@ -34,17 +33,20 @@ public class HandleMessageAnimation extends AbstractAnimationPrimitive {
 // FIXME: this does not return the correct value during loading		return animationEnvironment.getAnimationTimeForEventNumber(eventNumber + 1);
 	}
 	
+	@Override
 	public void redo() {
 //		if (getModule().getParentModule() == animationEnvironment.getSimulation().getRootModule())  //FIXME 
 //			addFigure(ellipse);
 	}
 
+	@Override
 	public void undo() {
 //		if (getModule().getParentModule() == animationEnvironment.getSimulation().getRootModule())  //FIXME 
 //			removeFigure(ellipse);
 	}
 
-	public void animateAt(long eventNumber, double simulationTime, long animationNumber, double animationTime) {
+	@Override
+	public void animateAt(AnimationPosition animtionPosition) {
 		IRuntimeModule module = getModule();
 		if (module.getParentModule()==animationEnvironment.getSimulation().getRootModule()) { //FIXME
 			ModuleFigure moduleFigure = (ModuleFigure)animationEnvironment.getFigure(module);
@@ -56,7 +58,7 @@ public class HandleMessageAnimation extends AbstractAnimationPrimitive {
 		return message;
 	}
 
-	private IRuntimeModule getModule() {
+	protected IRuntimeModule getModule() {
 		return animationEnvironment.getSimulation().getModuleByID(moduleId);
 	}
 }

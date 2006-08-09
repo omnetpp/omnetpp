@@ -6,29 +6,27 @@ import org.eclipse.draw2d.RoundedRectangle;
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.omnetpp.common.simulation.model.IRuntimeModule;
+import org.omnetpp.experimental.animation.controller.AnimationPosition;
 import org.omnetpp.experimental.animation.controller.Timer;
 import org.omnetpp.experimental.animation.replay.ReplayAnimationController;
 import org.omnetpp.figures.ModuleFigure;
 
 public class BubbleAnimation extends AbstractAnimationPrimitive {
-
-	private int moduleId;
+	protected int moduleId;
 	
-	private RoundedRectangle background;
+	protected RoundedRectangle background;
 
-	private Label label;
+	protected Label label;
 	
-	private Timer bubbleTimer;
+	protected Timer bubbleTimer;
 
-	private String text;
+	protected String text;
 	
 	public BubbleAnimation(ReplayAnimationController animationController,
-						   long eventNumber,
-						   double simulationTime,
-						   long animationNumber,
+						   AnimationPosition animationPosition,
 						   String text,
 						   int moduleId) {
-		super(animationController, eventNumber, simulationTime, animationNumber);
+		super(animationController, animationPosition);
 		this.background = new RoundedRectangle();
 		this.text = text;
 		this.label = new Label(text);
@@ -45,6 +43,7 @@ public class BubbleAnimation extends AbstractAnimationPrimitive {
 		};
 	}
 	
+	@Override
 	public void redo() {
 		IRuntimeModule module = getModule();
 		IRuntimeModule parentModule = module.getParentModule();
@@ -60,6 +59,7 @@ public class BubbleAnimation extends AbstractAnimationPrimitive {
 		}
 	}
 
+	@Override
 	public void undo() {
 		IRuntimeModule module = getModule();
 		IRuntimeModule parentModule = module.getParentModule();
@@ -68,9 +68,6 @@ public class BubbleAnimation extends AbstractAnimationPrimitive {
 			bubbleTimer.reset();
 			getTimerQueue().addTimer(bubbleTimer);
 		}
-	}
-	
-	public void animateAt(long eventNumber, double simulationTime, long animationNumber, double animationTime) {
 	}
 
 	protected IRuntimeModule getModule() {

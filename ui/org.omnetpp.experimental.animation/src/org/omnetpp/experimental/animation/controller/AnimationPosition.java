@@ -1,6 +1,16 @@
 package org.omnetpp.experimental.animation.controller;
 
-public class AnimationPosition {
+/**
+ * An animation position consist of the following tuple:
+ *  - event number
+ *  - simulation time
+ *  - animation number
+ *  - animation time
+ *  
+ * The position may be partially filled when some of its elements are -1. Elements which have values must be consistent.
+ * If none of the elements are set, then the position is said to be invalid.
+ */
+public class AnimationPosition implements Comparable {
 	protected long eventNumber;
 	
 	protected double simulationTime;
@@ -14,17 +24,30 @@ public class AnimationPosition {
 	}
 	
 	public AnimationPosition(long eventNumber, double simulationTime, long animationNumber, double animationTime) {
+		setAnimationPosition(eventNumber, simulationTime, animationNumber, animationTime);
+	}
+
+	public AnimationPosition(AnimationPosition animationPosition) {
+		assign(animationPosition);
+	}
+
+	public void assign(AnimationPosition animationPosition) {
+		setAnimationPosition(animationPosition.eventNumber, animationPosition.simulationTime, animationPosition.animationNumber, animationPosition.animationTime);
+	}
+
+	public void setAnimationPosition(long eventNumber, double simulationTime, long animationNumber, double animationTime) {
 		this.eventNumber = eventNumber;
 		this.simulationTime = simulationTime;
 		this.animationNumber = animationNumber;
 		this.animationTime = animationTime;
 	}
 
-	public AnimationPosition(AnimationPosition animationPosition) {
-		this.eventNumber = animationPosition.eventNumber;
-		this.simulationTime = animationPosition.simulationTime;
-		this.animationNumber = animationPosition.animationNumber;
-		this.animationTime = animationPosition.animationTime;
+	public void invalidate() {
+		setAnimationPosition(-1, -1, -1, -1);
+	}
+
+	public AnimationPosition copy() {
+		return new AnimationPosition(this);
 	}
 
 	public long getAnimationNumber() {
@@ -57,6 +80,48 @@ public class AnimationPosition {
 
 	public void setAnimationTime(double animationTime) {
 		this.animationTime = animationTime;
+	}
+	
+	public boolean isValid() {
+		return eventNumber != -1 &&
+			simulationTime != -1 &&
+			animationNumber != -1 &&
+			animationTime != -1;
+	}
+	
+	public boolean isPartiallyValid() {
+		return eventNumber != -1 ||
+			simulationTime != -1 ||
+			animationNumber != -1 ||
+			animationTime != -1;
+	}
+
+	/**
+	 * Unspecified values are treated as being equal.
+	 */
+	public int compareTo(Object o) {
+		if (this == o)
+			return 0;
+		final AnimationPosition other = (AnimationPosition) o;
+		return
+			compareTo(eventNumber, other.eventNumber) + 
+			compareTo(simulationTime, other.simulationTime) +
+			compareTo(animationNumber, other.animationNumber) + 
+			compareTo(animationTime, other.animationTime);
+	}
+
+	protected int compareTo(long l1, long l2) {
+		if (l1 == -1 || l2 == -1)
+			return 0;
+		else
+			return (int)Math.signum(l1 - l2);
+	}
+
+	protected int compareTo(double d1, double d2) {
+		if (d1 == -1 || d2 == -1)
+			return 0;
+		else
+			return (int)Math.signum(d1 - d2);
 	}
 
 	@Override
@@ -93,10 +158,8 @@ public class AnimationPosition {
 		return true;
 	}
 	
-	public boolean isValid() {
-		return eventNumber >= 0 &&
-			simulationTime >= 0 &&
-			animationNumber >= 0 &&
-			animationTime >= 0;
+	@Override
+	public String toString() {
+		return "event number: " + eventNumber + ", simulation time: " + simulationTime + ", animation number: " + animationNumber + ", animationTime: " + animationTime;
 	}
 }
