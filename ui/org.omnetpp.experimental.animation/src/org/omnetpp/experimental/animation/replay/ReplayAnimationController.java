@@ -1122,8 +1122,8 @@ public class ReplayAnimationController implements IAnimationEnvironment {
 		}, endOrderedAnimationPrimitives.size(), endSimulationTime, false);
 
 		// FIXME: hack to sort the whole bloody shit for now
-		beginSortIndex = 0;
-		endSortIndex = endOrderedAnimationPrimitives.size();
+		//beginSortIndex = 0;
+		//endSortIndex = endOrderedAnimationPrimitives.size();
 		
 		if (endSortIndex - beginSortIndex > 1) {
 			// copy to temporary array
