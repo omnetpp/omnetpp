@@ -43,6 +43,9 @@ public class AnimationPosition implements Comparable {
 	}
 
 	protected void setEventNumber(long eventNumber) {
+		if (eventNumber != -1 && eventNumber < 0)
+			throw new RuntimeException("Invalid event number");
+		
 		this.eventNumber = eventNumber;
 	}
 
@@ -51,6 +54,9 @@ public class AnimationPosition implements Comparable {
 	}
 
 	protected void setSimulationTime(double simulationTime) {
+		if (simulationTime != -1 && simulationTime < 0)
+			throw new RuntimeException("Invalid event number");
+		
 		this.simulationTime = simulationTime;
 	}
 
@@ -59,6 +65,9 @@ public class AnimationPosition implements Comparable {
 	}
 
 	protected void setAnimationNumber(long animationNumber) {
+		if (animationNumber != -1 && animationNumber < 0)
+			throw new RuntimeException("Invalid event number");
+		
 		this.animationNumber = animationNumber;
 	}
 
@@ -67,6 +76,9 @@ public class AnimationPosition implements Comparable {
 	}
 
 	protected void setAnimationTime(double animationTime) {
+		if (animationTime != -1 && animationTime < 0)
+			throw new RuntimeException("Invalid event number");
+		
 		this.animationTime = animationTime;
 	}
 	

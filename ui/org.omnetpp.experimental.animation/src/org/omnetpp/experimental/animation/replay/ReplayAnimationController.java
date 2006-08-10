@@ -912,8 +912,15 @@ public class ReplayAnimationController implements IAnimationEnvironment {
 		 * It updates animation state.
 		 */
 		public void run() {
-			setAnimationTime(getAnimationTimeForRealTime(getRealTime()));
-			animateAtCurrentPosition();
+			try {
+				setAnimationTime(getAnimationTimeForRealTime(getRealTime()));
+				animateAtCurrentPosition();
+			}
+			catch (RuntimeException e) {
+				MessageDialog.openError(null, "Exception raised", e.toString());
+
+				throw e;
+			}
 		}
 	};
 
@@ -1004,10 +1011,10 @@ public class ReplayAnimationController implements IAnimationEnvironment {
 			// check correct ordering
 			if (debug) {
 				if (beginOrderedIndexValid && (forward ? beginAnimationTime < previousBeginAnimationTime : beginAnimationTime > previousBeginAnimationTime))
-					MessageDialog.openError(null, "Error", "Begin ordered animation primitives are not correctly ordered");
+					throw new RuntimeException("Begin ordered animation primitives are not correctly ordered");
 				
 				if (endOrderedIndexValid && (forward ? endAnimationTime < previousEndAnimationTime : endAnimationTime > previousEndAnimationTime))
-					MessageDialog.openError(null, "Error", "End ordered animation primitives are not correctly ordered");
+					throw new RuntimeException("End ordered animation primitives are not correctly ordered");
 			}
 			
 			if (forward ? beginAnimationTime > newAnimationTime : beginAnimationTime <= newAnimationTime) {
@@ -1093,7 +1100,7 @@ public class ReplayAnimationController implements IAnimationEnvironment {
 				if ((animationPrimitive.getBeginAnimationTime() <= getAnimationTime() &&
 					 getAnimationTime() <= animationPrimitive.getEndAnimationTime()) !=
 					 activeAnimationPrimitives.contains(animationPrimitive))
-						MessageDialog.openError(null, "Error", "Animation primitive should be active iff its animation time range includes the current animation position");
+						throw new RuntimeException("Animation primitive should be active iff its animation time range includes the current animation position");
 
 		modelAnimationPosition = currentAnimationPosition;
 	}
