@@ -15,7 +15,12 @@
 #ifndef _EVENTLOGDEFS_H_
 #define _EVENTLOGDEFS_H_
 
-//...
+// define int64, our equivalent of Java's "long" type
+#ifdef _MSC_VER
+typedef __int64 int64;
+#else
+typedef long long int64;
+#endif
 
 #endif
 
