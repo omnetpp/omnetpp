@@ -1,14 +1,14 @@
 package org.omnetpp.experimental.animation.controller;
 
 /**
- * An animation position consist of the following tuple:
+ * This is an immutable class. An animation position consist of the following tuple:
  *  - event number
  *  - simulation time
  *  - animation number
  *  - animation time
  *  
- * The position may be partially filled when some of its elements are -1. Elements which have values must be consistent.
- * If none of the elements are set, then the position is said to be invalid.
+ * The position may be partially filled when some of its elements are -1. Elements which have values must be greater or equal to 0
+ * and be consistent. If none of the elements are set, then the position is said to be invalid.
  */
 public class AnimationPosition implements Comparable {
 	protected long eventNumber;
@@ -28,37 +28,21 @@ public class AnimationPosition implements Comparable {
 	}
 
 	public AnimationPosition(AnimationPosition animationPosition) {
-		assign(animationPosition);
-	}
-
-	public void assign(AnimationPosition animationPosition) {
 		setAnimationPosition(animationPosition.eventNumber, animationPosition.simulationTime, animationPosition.animationNumber, animationPosition.animationTime);
 	}
 
-	public void setAnimationPosition(long eventNumber, double simulationTime, long animationNumber, double animationTime) {
-		this.eventNumber = eventNumber;
-		this.simulationTime = simulationTime;
-		this.animationNumber = animationNumber;
-		this.animationTime = animationTime;
-	}
-
-	public void invalidate() {
-		setAnimationPosition(-1, -1, -1, -1);
-	}
-
-	public AnimationPosition copy() {
-		return new AnimationPosition(this);
-	}
-
-	public long getAnimationNumber() {
-		return animationNumber;
+	protected void setAnimationPosition(long eventNumber, double simulationTime, long animationNumber, double animationTime) {
+		setEventNumber(eventNumber);
+		setSimulationTime(simulationTime);
+		setAnimationNumber(animationNumber);
+		setAnimationTime(animationTime);
 	}
 
 	public long getEventNumber() {
 		return eventNumber;
 	}
 
-	public void setEventNumber(long eventNumber) {
+	protected void setEventNumber(long eventNumber) {
 		this.eventNumber = eventNumber;
 	}
 
@@ -66,11 +50,15 @@ public class AnimationPosition implements Comparable {
 		return simulationTime;
 	}
 
-	public void setSimulationTime(double simulationTime) {
+	protected void setSimulationTime(double simulationTime) {
 		this.simulationTime = simulationTime;
 	}
 
-	public void setAnimationNumber(long animationNumber) {
+	public long getAnimationNumber() {
+		return animationNumber;
+	}
+
+	protected void setAnimationNumber(long animationNumber) {
 		this.animationNumber = animationNumber;
 	}
 
@@ -78,7 +66,7 @@ public class AnimationPosition implements Comparable {
 		return animationTime;
 	}
 
-	public void setAnimationTime(double animationTime) {
+	protected void setAnimationTime(double animationTime) {
 		this.animationTime = animationTime;
 	}
 	

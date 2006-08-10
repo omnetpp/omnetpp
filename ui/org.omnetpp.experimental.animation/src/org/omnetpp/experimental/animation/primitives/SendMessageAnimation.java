@@ -94,9 +94,7 @@ public class SendMessageAnimation extends AbstractSendMessageAnimation {
 			Point[] ps = getMessageSendPoints(animationPosition, 4);
 			messageEllipse.setBounds(new Rectangle(ps[0].x - 3, ps[0].y - 3, 7, 7));
 			messageLabel.setBounds(new Rectangle(new Point(ps[0].x, ps[0].y), messageLabel.getPreferredSize().getCopy().expand(10, 0)));
-			
-			if (!ps[0].equals(ps[1]))
-				messageLine.setEndpoints(ps[0], ps[1]);
+			messageLine.setEndpoints(ps[0], ps[1]);
 		}
 	}
 

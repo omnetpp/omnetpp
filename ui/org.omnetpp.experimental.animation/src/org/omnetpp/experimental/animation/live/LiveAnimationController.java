@@ -155,21 +155,21 @@ public class LiveAnimationController extends ReplayAnimationController implement
 	public void stepSimulation() {
 		gotoLivePosition();
 		setRunningLive(true);
-		endAnimationPosition.invalidate();
+		endAnimationPosition = new AnimationPosition();
 		super.stepAnimation();
 	}
 
 	public void runSimulation() {
 		gotoLivePosition();
 		setRunningLive(true);
-		endAnimationPosition.invalidate();
+		endAnimationPosition = new AnimationPosition();
 		super.runAnimation();
 	}
 
 	public void runSimulationFast() {
 		gotoLivePosition();
 		setRunningLive(true);
-		endAnimationPosition.invalidate();
+		endAnimationPosition = new AnimationPosition();
 		super.animateStart(true, FAST_REAL_TIME_TO_ANIMATION_TIME_SCALE, new AnimationPosition());
 	}
 
@@ -250,15 +250,15 @@ public class LiveAnimationController extends ReplayAnimationController implement
 		addAnimationPrimitive(handleMessageAnimation);
 
 		if (liveEventNumber == 0)
-			beginAnimationPosition.assign(animationPosition);
+			beginAnimationPosition = animationPosition;
 	}
 
 	protected void setEndPositionAtLastStopLivePosition() {
-		endAnimationPosition.assign(lastStopLiveAnimationPosition);
+		endAnimationPosition = lastStopLiveAnimationPosition;
 	}
 
 	protected void setLastStopLivePositionAtCurrentPosition() {
-		lastStopLiveAnimationPosition.assign(currentAnimationPosition);
+		lastStopLiveAnimationPosition = currentAnimationPosition;
 	}
 
 	private AnimationPosition getLiveSimulationPosition() {
