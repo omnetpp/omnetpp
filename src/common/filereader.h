@@ -60,6 +60,9 @@ class FileReader
     // existing data were moved.
     size_t readMore();
 
+    // opens the given file
+    void openFile();
+
   public:
     /**
      * Creates a tokenizer object for the given file, with the given
@@ -107,8 +110,9 @@ class FileReader
 
     /**
      * Positions to the beginning of the first full line following the given offset.
+     * Returns false on error.
      */
-    void seekTo(long offset);
+    bool seekTo(long offset);
 
     /**
      * Detailed error code; this completes ok() and eof().

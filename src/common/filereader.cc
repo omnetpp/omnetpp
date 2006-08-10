@@ -44,17 +44,21 @@ FileReader::~FileReader()
     delete [] buffer;
 }
 
+void FileReader::openFile()
+{
+    f = fopen(fname.c_str(), "rb");  // 'b' turns off CR/LF translation and might be faster
+    if (!f)
+        errcode = CANNOTOPEN;
+}
+
 size_t FileReader::readMore()
 {
     // open file if needed
     if (!f)
     {
-        f = fopen(fname.c_str(), "rb");  // 'b' turns off CR/LF translation and might be faster
+        openFile();
         if (!f)
-        {
-            errcode = CANNOTOPEN;
             return 0;
-        }
     }
 
     // if eof was reached already in the file, set status
@@ -162,20 +166,35 @@ long FileReader::fileSize()
     return size;
 }
 
-void FileReader::seekTo(long offset)
+bool FileReader::seekTo(long offset)
 {
+    // open file if needed
+    if (!f)
+    {
+        openFile();
+        if (!f)
+            return 0;
+    }
+
+    // seek to given offset
+    int err = fseek(f, offset, SEEK_SET);
+    if (err!=0)
+    {
+        errcode = CANNOTREAD;
+        return false;
+    }
+
     // flush buffer
     databeg = dataend = buffer;
     *dataend = 0; // sentry
 
     linenum = -1; // after seekTo() we lose line number info
 
-    // position there
-    fseek(f, offset, SEEK_SET);
-
-    // find beginning of first whole line
+    // if we're at the very beginning, return
     if (offset==0)
-        return;
+        return true;
+
+    // find beginning of first whole line by reading up to an end-of-line
     int c = ' ';
     while (c!=EOF && c!='\r' && c!='\n')
         c = fgetc(f);
@@ -183,6 +202,12 @@ void FileReader::seekTo(long offset)
         c = fgetc(f);
     if (c!=EOF)
         ungetc(c,f);
+    if (ferror(f))
+    {
+        errcode = CANNOTREAD;
+        return false;
+    }
+    return true;
 }
 
 
