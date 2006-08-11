@@ -126,7 +126,6 @@ public abstract class AbstractAnimationPrimitive implements IAnimationPrimitive 
 		return getSubmoduleFigure(moduleId).getBounds().getCenter();
 	}
 
-
 	protected Point getConvexCombination(Point p1, Point p2, double alpha) {
 		return new Point(Math.round((1 - alpha) * p1.x + alpha * p2.x), Math.round((1 - alpha) * p1.y + alpha * p2.y));
 	}

@@ -222,7 +222,6 @@ public class ReplayAnimationController implements IAnimationEnvironment {
 		stopAnimationPosition = new AnimationPosition();
 		lastStartAnimationPosition = new AnimationPosition();
 		timerQueue.start();
-		canvas.reset();
 	}
 
 	/**

@@ -4,8 +4,11 @@ import org.eclipse.draw2d.Figure;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.LightweightSystem;
 import org.eclipse.draw2d.XYLayout;
+import org.eclipse.draw2d.geometry.Dimension;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
+import org.omnetpp.figures.CompoundModuleFigure;
 
 public class AnimationCanvas extends Canvas {
 	protected IFigure contents;
@@ -31,7 +34,8 @@ public class AnimationCanvas extends Canvas {
 		return contents;
 	}
 
-	public void reset() {
-		contents.erase();
+	public Point getPreferredSize() {
+		Dimension dimension = ((CompoundModuleFigure)contents.getChildren().get(0)).getPreferredSize();
+		return new Point(dimension.width, dimension.height);
 	}
 }

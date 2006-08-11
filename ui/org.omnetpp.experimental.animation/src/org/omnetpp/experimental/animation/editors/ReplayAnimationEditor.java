@@ -7,14 +7,22 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.events.MouseListener;
+import org.eclipse.swt.events.MouseMoveListener;
+import org.eclipse.swt.events.MouseTrackListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.layout.FormAttachment;
+import org.eclipse.swt.layout.FormData;
+import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.layout.RowData;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.CoolBar;
 import org.eclipse.swt.widgets.CoolItem;
 import org.eclipse.swt.widgets.Scale;
@@ -26,6 +34,7 @@ import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.part.EditorPart;
+import org.omnetpp.common.canvas.BorderedComposite;
 import org.omnetpp.experimental.animation.AnimationPlugin;
 import org.omnetpp.experimental.animation.controller.AnimationPosition;
 import org.omnetpp.experimental.animation.controller.IReplayAnimationListener;
@@ -77,8 +86,8 @@ public class ReplayAnimationEditor extends EditorPart implements IReplayAnimatio
 
 	@Override
 	public void createPartControl(Composite parent) {
-		parent.setLayout(new GridLayout(1, false));
-		
+		parent.setLayout(new FormLayout());
+		parent.setBackground(new Color(null, 228, 228, 228));
 		createCoolbar(parent);
 		
 		createNavigationToolbar();
@@ -91,8 +100,17 @@ public class ReplayAnimationEditor extends EditorPart implements IReplayAnimatio
 	}
 
 	protected void createCoolbar(Composite parent) {
-		coolBar = new CoolBar(parent, SWT.NONE);
-		coolBar.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
+		BorderedComposite borderedComposite = new BorderedComposite(parent, SWT.NONE);
+		FormData formData = new FormData();
+		formData.left = new FormAttachment(0, 0);
+		formData.top = new FormAttachment(0, 0);
+		formData.right = new FormAttachment(100, 0);
+		borderedComposite.setLayoutData(formData);
+		FormLayoutMouseListener listener = new FormLayoutMouseListener(parent, false);
+		borderedComposite.addMouseListener(listener);
+		borderedComposite.addMouseMoveListener(listener);
+		borderedComposite.addMouseTrackListener(listener);
+		coolBar = new CoolBar(borderedComposite, SWT.NONE);
 	}
 
 	protected void createNavigationToolbar() {
@@ -285,12 +303,327 @@ public class ReplayAnimationEditor extends EditorPart implements IReplayAnimatio
 	}
 	
 	protected void createAnimationController(Composite parent) {
-		AnimationCanvas canvas = new AnimationCanvas(parent, SWT.DOUBLE_BUFFERED);
-		canvas.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+		BorderedComposite borderedComposite = new BorderedComposite(parent, SWT.NONE);
+		FormData formData = new FormData();
+		formData.left = new FormAttachment(0, 0);
+		formData.top = new FormAttachment(coolBar.getParent(), 0);
+		formData.right = new FormAttachment(100, 0);
+		formData.bottom = new FormAttachment(100, 0);
+		borderedComposite.setLayoutData(formData);
+		FormLayoutMouseListener listener = new FormLayoutMouseListener(parent, true);
+		borderedComposite.addMouseListener(listener);
+		borderedComposite.addMouseMoveListener(listener);
+		borderedComposite.addMouseTrackListener(listener);
+
+		AnimationCanvas canvas = new AnimationCanvas(borderedComposite, SWT.DOUBLE_BUFFERED);
 		
 		animationController = new ReplayAnimationController(canvas, ((IFileEditorInput)getEditorInput()).getFile());
 		animationController.addAnimationListener(this);
 		animationController.restart();
+	}
+	
+	public class FormLayoutMouseListener implements MouseListener, MouseMoveListener, MouseTrackListener {
+		private Composite parent;
+
+		private boolean allowHorizontalResize;
+
+		private boolean allowVerticalResize;
+
+		private BorderedComposite dragControl;
+		
+		private Point dragStart;
+		
+		private Point dragStartControlSize;
+		
+		private Point dragStartControlLocation;
+		
+		private boolean dragLeft;
+
+		private boolean dragRight;
+
+		private boolean dragTop;
+
+		private boolean dragBottom;
+		
+		private boolean dragMove;
+
+		public FormLayoutMouseListener(Composite parent, boolean allowResize) {
+			this(parent, allowResize, allowResize);
+		}
+		
+		public FormLayoutMouseListener(Composite parent, boolean allowHorizontalResize, boolean allowVerticalResize) {
+			this.parent = parent;
+			this.allowHorizontalResize = allowHorizontalResize;
+			this.allowVerticalResize = allowVerticalResize;
+		}
+		
+		public void mouseDoubleClick(MouseEvent e) {
+			extractDragControlInformation(e);
+			
+			if ((e.stateMask & SWT.CONTROL) != 0) {
+				if (dragControl.getChildren()[0] instanceof AnimationCanvas) {
+					AnimationCanvas animationCanvas = (AnimationCanvas)dragControl.getChildren()[0];
+					Point size = animationCanvas.getPreferredSize();
+					FormData formData = (FormData)dragControl.getLayoutData();
+					formData.right = new FormAttachment(0, dragControl.getLocation().x + size.x + dragControl.getBorderSize() * 2);
+					formData.bottom = new FormAttachment(0, dragControl.getLocation().y + size.y + dragControl.getBorderSize() * 2);
+					parent.layout();
+				}
+			}
+			else {
+				Point delta = new Point(0, 0);
+				DockingLimits dockingLimits = new DockingLimits(10000, 0, 0, 10000);
+				calculateDragMode(e);
+				boolean oldDragLeft = dragLeft;
+				boolean oldDragRight = dragRight;
+				boolean oldDragTop = dragTop;
+				boolean oldDragBottom = dragBottom;
+	
+				dragRight = dragTop = dragBottom = false;
+				dragLeft = oldDragLeft & allowHorizontalResize;
+				moveOrResizeDraggedControl(delta, dockingLimits);
+				parent.layout();
+				
+				calculateDragMode(e);
+				dragLeft = dragTop = dragBottom = false;
+				dragRight = oldDragRight & allowHorizontalResize;
+				moveOrResizeDraggedControl(delta, dockingLimits);
+				parent.layout();
+				
+				calculateDragMode(e);
+				dragLeft = dragRight = dragBottom = false;
+				dragTop = oldDragTop & allowVerticalResize;
+				moveOrResizeDraggedControl(delta, dockingLimits);
+				parent.layout();
+				
+				calculateDragMode(e);
+				dragLeft = dragRight = dragTop = false;
+				dragBottom = oldDragBottom & allowVerticalResize;
+				moveOrResizeDraggedControl(delta, dockingLimits);
+				parent.layout();
+			}
+	
+			dragControl = null;
+		}
+
+		public void mouseDown(MouseEvent e) {
+			extractDragControlInformation(e);
+			dragControl.moveAbove(null);
+			dragStart = dragControl.toDisplay(e.x, e.y);
+			
+			calculateDragMode(e);
+		}
+
+		public void mouseUp(MouseEvent e) {
+			dragControl = null;
+		}
+
+		public void mouseMove(MouseEvent e) {
+			if (dragControl != null) {
+				Control control = (Control)e.widget;
+				Point p = control.toDisplay(e.x, e.y);
+				Point delta = new Point(p.x - dragStart.x, p.y - dragStart.y);
+
+				moveOrResizeDraggedControl(delta, new DockingLimits((e.stateMask & SWT.CONTROL) == 0 ? 10 : 0));
+
+				parent.layout();
+			}
+			else
+				updateCursor(e);
+		}
+
+		public void mouseEnter(MouseEvent e) {
+			updateCursor(e);
+		}
+
+		public void mouseExit(MouseEvent e) {
+			Control control = (Control)e.widget;
+			control.setCursor(null);
+		}
+
+		public void mouseHover(MouseEvent e) {
+		}
+		
+		private class DockingLimits {
+			public int maximumSmallerValueDecrease;
+			
+			public int maximumSmallerValueIncrease;
+			
+			public int maximumBiggerValueDecrease;
+
+			public int maximumBiggerValueIncrease;
+
+			public DockingLimits(int maximumValueChange) {
+				this(maximumValueChange, maximumValueChange, maximumValueChange, maximumValueChange);
+			}
+
+			public DockingLimits(int maximumSmallerValueDecrease, int maximumSmallerValueIncrease, int maximumBiggerValueDecrease, int maximumBiggerValueIncrease) {
+				this.maximumSmallerValueDecrease = maximumSmallerValueDecrease;
+				this.maximumSmallerValueIncrease = maximumSmallerValueIncrease;
+				this.maximumBiggerValueDecrease = maximumBiggerValueDecrease;
+				this.maximumBiggerValueIncrease = maximumBiggerValueIncrease;
+			}
+		}
+
+		private void extractDragControlInformation(MouseEvent e) {
+			dragControl = (BorderedComposite)e.widget;
+			dragStartControlSize = dragControl.getSize();
+			dragStartControlLocation = dragControl.getLocation();
+		}
+		
+		private void moveOrResizeDraggedControl(Point delta, DockingLimits dockingLimits)
+		{
+			int left = dragStartControlLocation.x + delta.x;
+			int right = dragStartControlLocation.x + dragStartControlSize.x + delta.x;
+			int top = dragStartControlLocation.y + delta.y;
+			int bottom = dragStartControlLocation.y + dragStartControlSize.y + delta.y;
+			FormAttachment[] horizontalFormAttachments = getDockingAttachments(true, left, right, dockingLimits);
+			FormAttachment[] verticalFormAttachments = getDockingAttachments(false, top, bottom, dockingLimits);
+			FormData formData = (FormData)dragControl.getLayoutData();
+			if (dragLeft)
+				formData.left = horizontalFormAttachments != null ? horizontalFormAttachments[0] : new FormAttachment(0, left);
+			if (dragRight)
+				formData.right = horizontalFormAttachments != null ? horizontalFormAttachments[1] : new FormAttachment(0, right);
+			if (dragTop)
+				formData.top = verticalFormAttachments != null ? verticalFormAttachments[0] : new FormAttachment(0, top);
+			if (dragBottom)
+				formData.bottom = verticalFormAttachments != null ? verticalFormAttachments[1] : new FormAttachment(0, bottom);
+		}
+
+		private void updateCursor(MouseEvent e) {
+			Control control = (Control)e.widget;
+
+			calculateDragMode(e);
+			
+			int cursorType;
+			if (dragMove)
+				cursorType = SWT.CURSOR_SIZEALL;
+			else if (dragLeft && !dragRight && !dragTop && !dragBottom)
+				cursorType = SWT.CURSOR_SIZEW;
+			else if (!dragLeft && dragRight && !dragTop && !dragBottom)
+				cursorType = SWT.CURSOR_SIZEE;
+			else if (!dragLeft && !dragRight && dragTop && !dragBottom)
+				cursorType = SWT.CURSOR_SIZEN;
+			else if (!dragLeft && !dragRight && !dragTop && dragBottom)
+				cursorType = SWT.CURSOR_SIZES;
+			else if (dragLeft && !dragRight && dragTop && !dragBottom)
+				cursorType = SWT.CURSOR_SIZENW;
+			else if (!dragLeft && dragRight && dragTop && !dragBottom)
+				cursorType = SWT.CURSOR_SIZENE;
+			else if (!dragLeft && dragRight && !dragTop && dragBottom)
+				cursorType = SWT.CURSOR_SIZESE;
+			else if (dragLeft && !dragRight && !dragTop && dragBottom)
+				cursorType = SWT.CURSOR_SIZESW;
+			else
+				cursorType = SWT.CURSOR_ARROW;
+
+			control.setCursor(new Cursor(null, cursorType));
+		}
+
+		private void calculateDragMode(MouseEvent e) {
+			Control control = ((Control)e.widget);
+			Point size = control.getSize();
+			int dragMinHandleSize = 20;
+			int dragHandleWidth = Math.min(dragMinHandleSize, size.x / 6);
+			int dragHandleHeight = Math.min(dragMinHandleSize, size.y / 6);
+			int dragX = getDragValue(e.x, size.x, dragHandleWidth);
+			int dragY = getDragValue(e.y, size.y, dragHandleHeight);
+
+			dragLeft = dragX == 0 || dragX == 3 || dragY == 3;
+			dragRight = dragX == 2 || dragX == 3 || dragY == 3;
+
+			if (!allowHorizontalResize)
+				dragLeft = dragRight = dragLeft || dragRight;
+
+			dragTop = dragY == 0 || dragY == 3 || dragX == 3;
+			dragBottom = dragY == 2 || dragY == 3 || dragX == 3;
+
+			if (!allowVerticalResize)
+				dragTop = dragBottom = dragTop || dragBottom;
+
+			dragMove = dragLeft && dragRight && dragTop & dragBottom;
+		}
+
+		private int getDragValue(int p, int controlSize, int dragHandleSize) {
+			if (0 <= p && p <= dragHandleSize)
+				return 0;
+			else if (controlSize / 2 - dragHandleSize <= p && p <= controlSize / 2 + dragHandleSize)
+				return 1;
+			else if (controlSize - dragHandleSize <= p && p <= controlSize)
+				return 2;
+			else
+				return 3;
+		}
+		
+		private FormAttachment[] getDockingAttachments(boolean horizontal, int smallerValue, int biggerValue, DockingLimits dockingLimits) {
+			FormAttachment[] formAttachments = new FormAttachment[] {null, null};
+			Point parentSize = parent.getSize();
+			int minValue = 0;
+			int maxValue = horizontal ? parentSize.x : parentSize.y;
+			int bestDockingDistance = Integer.MAX_VALUE;
+			int size = biggerValue - smallerValue;
+			boolean dragSmaller = horizontal ? dragLeft : dragTop;
+			boolean dragBigger = horizontal ? dragRight : dragBottom;
+
+			// docking to parent
+			bestDockingDistance = setDockingFormAttachments(formAttachments, bestDockingDistance, dockingLimits, null, dragSmaller, smallerValue, minValue, true, 0, size);
+			bestDockingDistance = setDockingFormAttachments(formAttachments, bestDockingDistance, dockingLimits, null, dragBigger, biggerValue, maxValue, false, 100, size);
+
+			// docking to siblings
+			for (Control childControl : parent.getChildren()) {
+				if (childControl == dragControl)
+					continue;
+
+				Point childLocation = childControl.getLocation();
+				Point childSize = childControl.getSize();
+				int childSmallerValue = horizontal ? childLocation.x : childLocation.y;
+				int childBiggerValue = horizontal ? childLocation.x + childSize.x : childLocation.y + childSize.y;
+
+				bestDockingDistance = setDockingFormAttachments(formAttachments, bestDockingDistance, dockingLimits, childControl, dragSmaller, smallerValue, childSmallerValue, true, 0, size);
+				bestDockingDistance = setDockingFormAttachments(formAttachments, bestDockingDistance, dockingLimits, childControl, dragSmaller, smallerValue, childBiggerValue, true, 0, size);
+				bestDockingDistance = setDockingFormAttachments(formAttachments, bestDockingDistance, dockingLimits, childControl, dragBigger, biggerValue, childSmallerValue, false, 0, size);
+				bestDockingDistance = setDockingFormAttachments(formAttachments, bestDockingDistance, dockingLimits, childControl, dragBigger, biggerValue, childBiggerValue, false, 0, size);
+			}
+			
+			if (bestDockingDistance != Integer.MAX_VALUE)
+				return formAttachments;
+			else
+				return null;
+		}
+		
+		private int setDockingFormAttachments(FormAttachment[] formAttachments,
+											  int bestDistance,
+											  DockingLimits dockingLimits,
+											  Control dockingControl,
+											  boolean dragFlag,
+											  int currentValue,
+											  int dockingValue,
+											  boolean smallerValue,
+											  int parentPercent,
+											  int size) {
+			int currentDockingDistance = Math.abs(currentValue - dockingValue);
+			int maximumValueIncrease = smallerValue ? dockingLimits.maximumSmallerValueIncrease : dockingLimits.maximumBiggerValueIncrease;
+			int maximumValueDecrease = smallerValue ? dockingLimits.maximumSmallerValueDecrease : dockingLimits.maximumBiggerValueDecrease;
+
+			if (dragFlag &&
+				currentDockingDistance < bestDistance &&
+				dockingValue - maximumValueIncrease <= currentValue &&
+				currentValue <= dockingValue + maximumValueDecrease)
+			{
+/* TODO: if you ever want to attach to siblings then use this and break dependeny cycles
+				if (dockingControl != null) {
+					formAttachments[0] = new FormAttachment(dockingControl, smallerValue ? 0 : -size);
+					formAttachments[1] = new FormAttachment(dockingControl, smallerValue ? size : 0);
+				}
+*/
+				formAttachments[0] = new FormAttachment(parentPercent, (parentPercent == 0 ? dockingValue : 0) + (smallerValue ? 0 : -size));
+				formAttachments[1] = new FormAttachment(parentPercent, (parentPercent == 0 ? dockingValue : 0) + (smallerValue ? size : 0));
+						
+				return currentDockingDistance;
+			}
+			else
+				return bestDistance;
+		}
 	}
 
 	protected void setReplayToolbarEnabled(boolean enable) {
