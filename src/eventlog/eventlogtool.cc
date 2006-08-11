@@ -18,29 +18,34 @@
 
 void filter(int argc, char **argv)
 {
-    fprintf(stderr, "Loading event log file %s\n", argv[2]);
-    EventLog eventLog(argv[2]);
-
-    long eventNumber = atol(argv[3]);
-    fprintf(stderr, "Filtering for event number %ld\n", eventNumber);
-    EventEntry *event = eventLog.getEventByNumber(eventNumber);
-    if (event==NULL)
-    {
-        fprintf(stderr, "%s: Event #%ld not in the given event log file\n", argv[0], eventNumber);
-        exit(1);
+    try {
+        fprintf(stderr, "Loading event log file %s\n", argv[2]);
+        EventLog eventLog(argv[2]);
+    
+        long eventNumber = atol(argv[3]);
+        fprintf(stderr, "Filtering for event number %ld\n", eventNumber);
+        EventEntry *event = eventLog.getEventByNumber(eventNumber);
+        if (event==NULL)
+        {
+            fprintf(stderr, "%s: Event #%ld not in the given event log file\n", argv[0], eventNumber);
+            exit(1);
+        }
+    
+        std::set<int> *moduleIds = argc < 5 ? NULL : new std::set<int>;
+    
+        for (int i = 0; i < argc - 4; i++) {
+            int id = atoi(argv[4 + i]);
+            fprintf(stderr, "Filtering for module id %d\n", id);
+            moduleIds->insert(id);
+        }
+    
+        EventLog *traceLog = eventLog.traceEvent(event, moduleIds, true, true, false);
+        traceLog->writeTrace(stdout);
+        delete traceLog;
+        
+    } catch (Exception *e) {
+        fprintf(stderr, "Error: %s\n", e->message());
     }
-
-    std::set<int> *moduleIds = argc < 5 ? NULL : new std::set<int>;
-
-    for (int i = 0; i < argc - 4; i++) {
-        int id = atoi(argv[4 + i]);
-        fprintf(stderr, "Filtering for module id %d\n", id);
-        moduleIds->insert(id);
-    }
-
-    EventLog *traceLog = eventLog.traceEvent(event, moduleIds, true, true, false);
-    traceLog->writeTrace(stdout);
-    delete traceLog;
 }
 
 void printOffsets(int argc, char **argv)
@@ -55,12 +60,14 @@ void printOffsets(int argc, char **argv)
             long eventNumber = atol(argv[i]);
             long offset = index.getOffsetFor(eventNumber);
             printf("Event #%ld --> file offset %ld (0x%lx)\n", eventNumber, offset, offset);
-reader.seekTo(offset-1); //XXX
-printf("   line there: %s\n", reader.readLine());
+            if (offset!=-1) {
+                reader.seekTo(offset);
+                printf("  - line at that offset: %s\n", reader.readLine());
+            }
             index.dumpTable();
         }
     } catch (Exception *e) {
-        fprintf(stderr, e->message());
+        fprintf(stderr, "Error: %s\n", e->message());
     }
 }
 
