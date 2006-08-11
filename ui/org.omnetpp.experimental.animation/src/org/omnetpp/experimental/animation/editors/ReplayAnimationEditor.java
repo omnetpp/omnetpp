@@ -16,6 +16,8 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
@@ -87,9 +89,10 @@ public class ReplayAnimationEditor extends EditorPart implements IReplayAnimatio
 
 	@Override
 	public void createPartControl(Composite parent) {
-		this.parent = parent;
-		parent.setLayout(new FormLayout());
-		parent.setBackground(new Color(null, 228, 228, 228));
+		parent.setLayout(new FillLayout());
+		this.parent = new Composite(parent, SWT.V_SCROLL | SWT.H_SCROLL);
+		this.parent.setLayout(new FormLayout());
+		this.parent.setBackground(new Color(null, 228, 228, 228));
 		createCoolbar();
 		
 		createNavigationToolbar();
@@ -560,9 +563,9 @@ public class ReplayAnimationEditor extends EditorPart implements IReplayAnimatio
 		
 		protected FormAttachment[] getDockingAttachments(boolean horizontal, int smallerValue, int biggerValue, DockingLimits dockingLimits) {
 			FormAttachment[] formAttachments = new FormAttachment[] {null, null};
-			Point parentSize = parent.getSize();
+			Rectangle parentRectangle = parent.getClientArea();
 			int minValue = 0;
-			int maxValue = horizontal ? parentSize.x : parentSize.y;
+			int maxValue = horizontal ? parentRectangle.width : parentRectangle.height;
 			int bestDockingDistance = Integer.MAX_VALUE;
 			int size = biggerValue - smallerValue;
 			boolean dragSmaller = horizontal ? dragLeft : dragTop;
