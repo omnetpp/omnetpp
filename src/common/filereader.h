@@ -57,6 +57,9 @@ class FileReader
     // opens the given file
     void openFile();
 
+    // assert data structure consistence
+    void checkConsistence();
+
   public:
     /**
      * Creates a tokenizer object for the given file, with the given

@@ -18,6 +18,7 @@
 #include "filereader.h"
 #include "exception.h"
 
+
 FileReader::FileReader(const char *fileName, size_t bufferSize)
 {
     fname = fileName;
@@ -47,6 +48,15 @@ void FileReader::openFile()
     f = fopen(fname.c_str(), "rb");
     if (!f)
         throw new Exception("Cannot open file `%s'", fname.c_str());
+}
+
+void FileReader::checkConsistence()
+{
+    bool ok = bufferend-buffer==buffersize &&
+              databeg<=dataend && databeg>=buffer && dataend<=bufferend &&
+              strlen(databeg)==dataend-databeg;
+    if (!ok)
+        __asm int 3;
 }
 
 size_t FileReader::readMore()
@@ -98,12 +108,17 @@ char *FileReader::readLine()
     if (s==dataend)
     {
         // if we reached end of buffer meanwhile, read more data
+checkConsistence();
         s -= readMore();
+checkConsistence();
 
         // if we couldn't get any more, then this is the last line and missing CR/LF.
         // ignore this incomplete last line, as the file might be currently being written
         if (s==dataend)
+        {
+            databeg = s;
             return NULL;
+        }
 
         // find end of line (provided we're not yet there)
         while (*s && *s!='\r' && *s!='\n')
@@ -120,7 +135,10 @@ char *FileReader::readLine()
         {
             s -= readMore();
             if (s==dataend)
+            {
+                databeg = s;
                 return wholeline;
+            }
         }
     }
     if (*s=='\n')
@@ -130,7 +148,10 @@ char *FileReader::readLine()
         {
             s -= readMore();
             if (s==dataend)
+            {
+                databeg = s;
                 return wholeline;
+            }
         }
     }
 
