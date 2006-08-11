@@ -15,6 +15,7 @@
 
 #include <assert.h>
 #include <sstream>
+#include "exception.h"
 #include "linetokenizer.h"
 
 
@@ -22,8 +23,6 @@ LineTokenizer::LineTokenizer()
 {
     vecsize = 16000;  // max 16,000 tokens per line (still vec<64K)
     vec = new char *[vecsize];
-
-    errcode = OK;
 }
 
 LineTokenizer::~LineTokenizer()
@@ -31,7 +30,7 @@ LineTokenizer::~LineTokenizer()
     delete [] vec;
 }
 
-bool LineTokenizer::tokenize(char *line)
+int LineTokenizer::tokenize(char *line)
 {
     numtokens = 0;
     char *s = line;
@@ -57,10 +56,7 @@ bool LineTokenizer::tokenize(char *line)
             while (*s && (*s!='"' || *(s-1)=='\\')) s++;
             // check we found the close quote
             if (*s!='"')
-            {
-                errcode = UNMATCHEDQUOTE;
-                return false;
-            }
+                throw new Exception("Unmatched quote in file");
             // terminate quoted string with zero, overwriting close quote
             *s++ = 0;
         }
@@ -76,27 +72,10 @@ bool LineTokenizer::tokenize(char *line)
 
         // add token to the array (if there's room); s points to the rest of the string
         if (numtokens==vecsize)
-        {
-            errcode = TOOMANYTOKENS;
-            return false;
-        }
+            throw new Exception("Too many tokens on a line, max %d allowed", vecsize-1);
         vec[numtokens++] = token;
     }
-    return true;
-}
-
-std::string LineTokenizer::errorMsg(int linenum) const
-{
-    std::stringstream out;
-    switch (errcode)
-    {
-        case OK:             out << "OK"; break;
-        case UNMATCHEDQUOTE: out << "unmatched quote"; break;
-        case TOOMANYTOKENS:  out << "too many tokens per line"; break;
-        default:             out << "???";
-    }
-    out << ", line " << linenum;
-    return out.str();
+    return numtokens;
 }
 
 /*
