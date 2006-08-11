@@ -1,5 +1,7 @@
 package org.omnetpp.experimental.animation.primitives;
 
+import org.eclipse.draw2d.MouseEvent;
+import org.eclipse.draw2d.MouseListener;
 import org.omnetpp.common.displaymodel.DisplayString;
 import org.omnetpp.experimental.animation.controller.AnimationPosition;
 import org.omnetpp.experimental.animation.replay.ReplayAnimationController;
@@ -25,11 +27,22 @@ public class CreateModuleAnimation extends AbstractInfiniteAnimation {
 	public void redo() {
 		ReplayModule parentModule = getParentModule();
 		if (parentModule == getSimulation().getRootModule()) { //FIXME
-			SubmoduleFigure figure = new SubmoduleFigure();
-			animationEnvironment.setFigure(module, figure);
-			getCompoundModuleFigure(parentModule).addSubmoduleFigure(figure);
-			figure.setDisplayString(new DisplayString(null, null, ""));
-			figure.setName(getReplayModule().getFullName());
+			SubmoduleFigure submoduleFigure = new SubmoduleFigure();
+			submoduleFigure.addMouseListener(new MouseListener() {
+				public void mouseDoubleClicked(MouseEvent me) {
+					// TODO: open new canvas here
+				}
+
+				public void mousePressed(MouseEvent me) {
+				}
+
+				public void mouseReleased(MouseEvent me) {
+				}
+			});
+			animationEnvironment.setFigure(module, submoduleFigure);
+			getCompoundModuleFigure(parentModule).addSubmoduleFigure(submoduleFigure);
+			submoduleFigure.setDisplayString(new DisplayString(null, null, ""));
+			submoduleFigure.setName(getReplayModule().getFullName());
 
 			parentModule.addSubmodule(getReplayModule());
 		}
@@ -41,8 +54,8 @@ public class CreateModuleAnimation extends AbstractInfiniteAnimation {
 	public void undo() {
 		ReplayModule parentModule = getParentModule();
 		if (parentModule != null) {
-			SubmoduleFigure moduleFigure = (SubmoduleFigure)animationEnvironment.getFigure(module);
-			getCompoundModuleFigure(parentModule).removeSubmoduleFigure(moduleFigure);
+			SubmoduleFigure submoduleFigure = (SubmoduleFigure)animationEnvironment.getFigure(module);
+			getCompoundModuleFigure(parentModule).removeSubmoduleFigure(submoduleFigure);
 			parentModule.removeSubmodule(getReplayModule());
 		}
 

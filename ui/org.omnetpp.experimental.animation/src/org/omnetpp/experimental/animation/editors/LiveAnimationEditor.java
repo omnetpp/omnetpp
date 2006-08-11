@@ -15,9 +15,9 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.CoolItem;
 import org.eclipse.swt.widgets.ToolBar;
@@ -64,6 +64,8 @@ public class LiveAnimationEditor extends ReplayAnimationEditor implements ILiveA
 
 	@Override
 	public void createPartControl(Composite parent) {
+		this.parent = parent;
+
 		// make sure there's only one simulation running at a time
 		if (AnimationPlugin.getDefault().getCurrentLiveAnimation()!=null) {
 			MessageDialog.openError(null, "Error", "There can only be one simulation running at a time.");
@@ -78,15 +80,17 @@ public class LiveAnimationEditor extends ReplayAnimationEditor implements ILiveA
 		// now create controls.
 		// note: cannot simply call super.createPartControl(parent) because
 		// we want toolbars in different order (could use coolBar.setItemLayout() though)
-		parent.setLayout(new GridLayout());
+		this.parent = parent;
+		parent.setLayout(new FormLayout());
+		parent.setBackground(new Color(null, 228, 228, 228));
 		
-		createCoolbar(parent);
+		createCoolbar();
 		createSimulationToolbar();
 		createNavigationToolbar();
 		createTimeGauges();
 		createSpeedSlider();
 
-		createAnimationController(parent);
+		createAnimationController();
 		
 		coolBar.setWrapIndices(new int[] {2,3});
 	}
@@ -230,11 +234,8 @@ public class LiveAnimationEditor extends ReplayAnimationEditor implements ILiveA
 	}
 	
 	@Override
-	protected void createAnimationController(Composite parent) {
-		//AnimationCanvas canvas = new AnimationCanvas(parent, SWT.H_SCROLL | SWT.V_SCROLL); //FIXME scrolling does not work
-		//AnimationCanvas canvas = new AnimationCanvas(parent, SWT.NONE);
-		AnimationCanvas canvas = new AnimationCanvas(parent, SWT.DOUBLE_BUFFERED);
-		canvas.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+	protected void createAnimationController() {
+		AnimationCanvas canvas = createAnimationCanvas();
 		
 		animationController = new LiveAnimationController(canvas);
 		animationController.addAnimationListener(this);

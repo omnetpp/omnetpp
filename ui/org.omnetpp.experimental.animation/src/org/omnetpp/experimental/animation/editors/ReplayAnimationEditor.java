@@ -42,16 +42,17 @@ import org.omnetpp.experimental.animation.replay.ReplayAnimationController;
 import org.omnetpp.experimental.animation.widgets.AnimationCanvas;
 
 public class ReplayAnimationEditor extends EditorPart implements IReplayAnimationListener {
-	private static final String ICONS_REWIND_GIF = "icons/rewind.gif";
-	private static final String ICONS_GOTOEND_GIF = "icons/gotoend.gif";
-	private static final String ICONS_PLAY_GIF = "icons/play.gif";
-	private static final String ICONS_BACKPLAY_GIF = "icons/backplay.gif";
-	private static final String ICONS_STEP_GIF = "icons/step.gif";
-	private static final String ICONS_BACKSTEP_GIF = "icons/backstep.gif";
-	private static final String ICONS_STOP_GIF = "icons/stop.gif";
+	protected static final String ICONS_REWIND_GIF = "icons/rewind.gif";
+	protected static final String ICONS_GOTOEND_GIF = "icons/gotoend.gif";
+	protected static final String ICONS_PLAY_GIF = "icons/play.gif";
+	protected static final String ICONS_BACKPLAY_GIF = "icons/backplay.gif";
+	protected static final String ICONS_STEP_GIF = "icons/step.gif";
+	protected static final String ICONS_BACKSTEP_GIF = "icons/backstep.gif";
+	protected static final String ICONS_STOP_GIF = "icons/stop.gif";
 	
 	protected ReplayAnimationController animationController;
 
+	protected Composite parent;
 	protected CoolBar coolBar;
 	protected ToolBar replayToolBar;
 	protected ToolItem replayStopToolItem;
@@ -61,12 +62,12 @@ public class ReplayAnimationEditor extends EditorPart implements IReplayAnimatio
 	protected Text replayAnimationTimeWidget;
 	
 	protected NumberFormat numberFormat;
-	private ToolItem replayBeginToolItem;
-	private ToolItem replayBackToolItem;
-	private ToolItem replayBackstepToolItem;
-	private ToolItem replayStepToolItem;
-	private ToolItem replayPlayToolItem;
-	private ToolItem replayEndToolItem;
+	protected ToolItem replayBeginToolItem;
+	protected ToolItem replayBackToolItem;
+	protected ToolItem replayBackstepToolItem;
+	protected ToolItem replayStepToolItem;
+	protected ToolItem replayPlayToolItem;
+	protected ToolItem replayEndToolItem;
 	protected static final int COOLBAR_HEIGHT = 25;
 	
 	public ReplayAnimationEditor() {
@@ -86,27 +87,28 @@ public class ReplayAnimationEditor extends EditorPart implements IReplayAnimatio
 
 	@Override
 	public void createPartControl(Composite parent) {
+		this.parent = parent;
 		parent.setLayout(new FormLayout());
 		parent.setBackground(new Color(null, 228, 228, 228));
-		createCoolbar(parent);
+		createCoolbar();
 		
 		createNavigationToolbar();
 		createTimeGauges();
 		createSpeedSlider();
 
-		createAnimationController(parent);
+		createAnimationController();
 		
 		coolBar.setWrapIndices(new int[] {2});
 	}
 
-	protected void createCoolbar(Composite parent) {
+	protected void createCoolbar() {
 		BorderedComposite borderedComposite = new BorderedComposite(parent, SWT.NONE);
 		FormData formData = new FormData();
 		formData.left = new FormAttachment(0, 0);
 		formData.top = new FormAttachment(0, 0);
 		formData.right = new FormAttachment(100, 0);
 		borderedComposite.setLayoutData(formData);
-		FormLayoutMouseListener listener = new FormLayoutMouseListener(parent, false);
+		FormLayoutMouseListener listener = new FormLayoutMouseListener(false);
 		borderedComposite.addMouseListener(listener);
 		borderedComposite.addMouseMoveListener(listener);
 		borderedComposite.addMouseTrackListener(listener);
@@ -302,7 +304,15 @@ public class ReplayAnimationEditor extends EditorPart implements IReplayAnimatio
 		coolItem.setSize(new Point(200, COOLBAR_HEIGHT)); //XXX height has no effect
 	}
 	
-	protected void createAnimationController(Composite parent) {
+	protected void createAnimationController() {
+		AnimationCanvas canvas = createAnimationCanvas();
+		
+		animationController = new ReplayAnimationController(canvas, ((IFileEditorInput)getEditorInput()).getFile());
+		animationController.addAnimationListener(this);
+		animationController.restart();
+	}
+
+	public AnimationCanvas createAnimationCanvas() {
 		BorderedComposite borderedComposite = new BorderedComposite(parent, SWT.NONE);
 		FormData formData = new FormData();
 		formData.left = new FormAttachment(0, 0);
@@ -310,49 +320,42 @@ public class ReplayAnimationEditor extends EditorPart implements IReplayAnimatio
 		formData.right = new FormAttachment(100, 0);
 		formData.bottom = new FormAttachment(100, 0);
 		borderedComposite.setLayoutData(formData);
-		FormLayoutMouseListener listener = new FormLayoutMouseListener(parent, true);
+		FormLayoutMouseListener listener = new FormLayoutMouseListener(true);
 		borderedComposite.addMouseListener(listener);
 		borderedComposite.addMouseMoveListener(listener);
 		borderedComposite.addMouseTrackListener(listener);
 
-		AnimationCanvas canvas = new AnimationCanvas(borderedComposite, SWT.DOUBLE_BUFFERED);
-		
-		animationController = new ReplayAnimationController(canvas, ((IFileEditorInput)getEditorInput()).getFile());
-		animationController.addAnimationListener(this);
-		animationController.restart();
+		return new AnimationCanvas(borderedComposite, SWT.DOUBLE_BUFFERED);
 	}
 	
 	public class FormLayoutMouseListener implements MouseListener, MouseMoveListener, MouseTrackListener {
-		private Composite parent;
+		protected boolean allowHorizontalResize;
 
-		private boolean allowHorizontalResize;
+		protected boolean allowVerticalResize;
 
-		private boolean allowVerticalResize;
-
-		private BorderedComposite dragControl;
+		protected BorderedComposite dragControl;
 		
-		private Point dragStart;
+		protected Point dragStart;
 		
-		private Point dragStartControlSize;
+		protected Point dragStartControlSize;
 		
-		private Point dragStartControlLocation;
+		protected Point dragStartControlLocation;
 		
-		private boolean dragLeft;
+		protected boolean dragLeft;
 
-		private boolean dragRight;
+		protected boolean dragRight;
 
-		private boolean dragTop;
+		protected boolean dragTop;
 
-		private boolean dragBottom;
+		protected boolean dragBottom;
 		
-		private boolean dragMove;
+		protected boolean dragMove;
 
-		public FormLayoutMouseListener(Composite parent, boolean allowResize) {
-			this(parent, allowResize, allowResize);
+		public FormLayoutMouseListener(boolean allowResize) {
+			this(allowResize, allowResize);
 		}
 		
-		public FormLayoutMouseListener(Composite parent, boolean allowHorizontalResize, boolean allowVerticalResize) {
-			this.parent = parent;
+		public FormLayoutMouseListener(boolean allowHorizontalResize, boolean allowVerticalResize) {
 			this.allowHorizontalResize = allowHorizontalResize;
 			this.allowVerticalResize = allowVerticalResize;
 		}
@@ -444,7 +447,7 @@ public class ReplayAnimationEditor extends EditorPart implements IReplayAnimatio
 		public void mouseHover(MouseEvent e) {
 		}
 		
-		private class DockingLimits {
+		protected class DockingLimits {
 			public int maximumSmallerValueDecrease;
 			
 			public int maximumSmallerValueIncrease;
@@ -465,13 +468,13 @@ public class ReplayAnimationEditor extends EditorPart implements IReplayAnimatio
 			}
 		}
 
-		private void extractDragControlInformation(MouseEvent e) {
+		protected void extractDragControlInformation(MouseEvent e) {
 			dragControl = (BorderedComposite)e.widget;
 			dragStartControlSize = dragControl.getSize();
 			dragStartControlLocation = dragControl.getLocation();
 		}
 		
-		private void moveOrResizeDraggedControl(Point delta, DockingLimits dockingLimits)
+		protected void moveOrResizeDraggedControl(Point delta, DockingLimits dockingLimits)
 		{
 			int left = dragStartControlLocation.x + delta.x;
 			int right = dragStartControlLocation.x + dragStartControlSize.x + delta.x;
@@ -490,7 +493,7 @@ public class ReplayAnimationEditor extends EditorPart implements IReplayAnimatio
 				formData.bottom = verticalFormAttachments != null ? verticalFormAttachments[1] : new FormAttachment(0, bottom);
 		}
 
-		private void updateCursor(MouseEvent e) {
+		protected void updateCursor(MouseEvent e) {
 			Control control = (Control)e.widget;
 
 			calculateDragMode(e);
@@ -520,7 +523,7 @@ public class ReplayAnimationEditor extends EditorPart implements IReplayAnimatio
 			control.setCursor(new Cursor(null, cursorType));
 		}
 
-		private void calculateDragMode(MouseEvent e) {
+		protected void calculateDragMode(MouseEvent e) {
 			Control control = ((Control)e.widget);
 			Point size = control.getSize();
 			int dragMinHandleSize = 20;
@@ -544,7 +547,7 @@ public class ReplayAnimationEditor extends EditorPart implements IReplayAnimatio
 			dragMove = dragLeft && dragRight && dragTop & dragBottom;
 		}
 
-		private int getDragValue(int p, int controlSize, int dragHandleSize) {
+		protected int getDragValue(int p, int controlSize, int dragHandleSize) {
 			if (0 <= p && p <= dragHandleSize)
 				return 0;
 			else if (controlSize / 2 - dragHandleSize <= p && p <= controlSize / 2 + dragHandleSize)
@@ -555,7 +558,7 @@ public class ReplayAnimationEditor extends EditorPart implements IReplayAnimatio
 				return 3;
 		}
 		
-		private FormAttachment[] getDockingAttachments(boolean horizontal, int smallerValue, int biggerValue, DockingLimits dockingLimits) {
+		protected FormAttachment[] getDockingAttachments(boolean horizontal, int smallerValue, int biggerValue, DockingLimits dockingLimits) {
 			FormAttachment[] formAttachments = new FormAttachment[] {null, null};
 			Point parentSize = parent.getSize();
 			int minValue = 0;
@@ -591,7 +594,7 @@ public class ReplayAnimationEditor extends EditorPart implements IReplayAnimatio
 				return null;
 		}
 		
-		private int setDockingFormAttachments(FormAttachment[] formAttachments,
+		protected int setDockingFormAttachments(FormAttachment[] formAttachments,
 											  int bestDistance,
 											  DockingLimits dockingLimits,
 											  Control dockingControl,
