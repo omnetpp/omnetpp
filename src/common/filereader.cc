@@ -108,9 +108,7 @@ char *FileReader::readLine()
     if (s==dataend)
     {
         // if we reached end of buffer meanwhile, read more data
-checkConsistence();
         s -= readMore();
-checkConsistence();
 
         // if we couldn't get any more, then this is the last line and missing CR/LF.
         // ignore this incomplete last line, as the file might be currently being written
