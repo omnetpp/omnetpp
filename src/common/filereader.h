@@ -23,17 +23,14 @@
  * it may be used up to gigabyte-sized files (output vector files
  * and event logs). File reading is done in large chunks, and
  * the code avoids string copying and duplicating.
+ * All functions throw class Exception on error.
  */
 class FileReader
 {
-  public:
-    enum StatusCode {OK, EOFREACHED, CANNOTOPEN, CANNOTREAD, INCOMPLETELINE, LINETOOLONG};
-
   private:
     // the file
     std::string fname;
     FILE *f;
-    bool eofreached;
 
     // the buffer
     size_t buffersize;
@@ -50,9 +47,6 @@ class FileReader
 
     // num of line last returned
     int linenum;
-
-    // status
-    StatusCode errcode;
 
   private:
     // moves remaining data (databeg,dataend) to beginning of buffer,
@@ -77,21 +71,10 @@ class FileReader
 
     /**
      * Reads a line from the file, and returns a pointer to its first character.
-     * It returns NULL after EOF and on error (file could not be opened/read,
-     * last line was incomplete (missing CRLF), line was too long
-     * (>bufferSize)); see StatusCode values.
+     * It returns NULL after EOF. Incomplete last line gets ignored (returns NULL)
+     * as it is possible that the file is currently being written into.
      */
     char *readLine();
-
-    /**
-     * True if more readAndTokenizeLine() calls are permitted.
-     */
-    bool ok() const {return errcode==OK;}
-
-    /**
-     * True if end of input file was reached without any error.
-     */
-    bool eof() const {return errcode==EOFREACHED;}
 
     /**
      * Number of last line parsed by readAndTokenizeLine().
@@ -110,20 +93,8 @@ class FileReader
 
     /**
      * Positions to the beginning of the first full line following the given offset.
-     * Returns false on error.
      */
-    bool seekTo(long offset);
-
-    /**
-     * Detailed error code; this completes ok() and eof().
-     */
-    StatusCode errorCode() const {return errcode;}
-
-    /**
-     * Produces a textual error message, based on the error code
-     * and the line number.
-     */
-    std::string errorMsg() const;
+    void seekTo(long offset);
 };
 
 #endif

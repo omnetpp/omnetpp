@@ -16,13 +16,12 @@
 #include <assert.h>
 #include <sstream>
 #include "filereader.h"
+#include "exception.h"
 
-//FIXME throw Exception on read errors!!!
 FileReader::FileReader(const char *fileName, size_t bufferSize)
 {
     fname = fileName;
     f = NULL;
-    eofreached = false;
 
     buffersize = bufferSize;
     buffer = new char[buffersize+1]; // +1 for EOS
@@ -35,8 +34,6 @@ FileReader::FileReader(const char *fileName, size_t bufferSize)
     linenum = 0;
 
     wholeline = NULL;
-
-    errcode = OK;
 }
 
 FileReader::~FileReader()
@@ -46,27 +43,21 @@ FileReader::~FileReader()
 
 void FileReader::openFile()
 {
-    f = fopen(fname.c_str(), "rb");  // 'b' turns off CR/LF translation and might be faster
+    // open file. Note: 'b' mode turns off CR/LF translation and might be faster
+    f = fopen(fname.c_str(), "rb");
     if (!f)
-        errcode = CANNOTOPEN;
+        throw new Exception("Cannot open file `%s'", fname.c_str());
 }
 
 size_t FileReader::readMore()
 {
     // open file if needed
     if (!f)
-    {
         openFile();
-        if (!f)
-            return 0;
-    }
 
-    // if eof was reached already in the file, set status
-    if (eofreached)
-    {
-        errcode = EOFREACHED;
+    // if we are at EOF, nothing to do
+    if (feof(f))
         return 0;
-    }
 
     // move remaining data to beginning of buffer
     if (databeg!=dataend)
@@ -77,12 +68,9 @@ size_t FileReader::readMore()
 
     // read enough bytes to fill the buffer
     bufferfileoffset = ftell(f) - (dataend-buffer);
-//XXX printf("   dataend-buffer=%ld, bufferfileoffset=0x%lx\n", dataend-buffer, bufferfileoffset);
     int bytesread = fread(dataend, 1, bufferend-dataend, f);
-    if (feof(f))
-        eofreached = true;
     if (ferror(f))
-        errcode = CANNOTREAD;
+        throw new Exception("Read error in file `%s'", fname.c_str());
     dataend += bytesread;
     *dataend = 0;  // sentry
 
@@ -94,12 +82,8 @@ size_t FileReader::readMore()
     return offset;
 }
 
-
 char *FileReader::readLine()
 {
-    if (errcode!=OK)
-        return NULL;
-
     // check sentry
     assert(*dataend==0);
 
@@ -108,48 +92,45 @@ char *FileReader::readLine()
     char *s = wholeline = databeg;
 
     // find end of line
-    while (*s && *s!='\r' && *s!='\n') s++;
+    while (*s && *s!='\r' && *s!='\n')
+        s++;
 
     if (s==dataend)
     {
         // if we reached end of buffer meanwhile, read more data
         s -= readMore();
-        if (errcode==EOFREACHED)
-           errcode = INCOMPLETELINE;
-        if (errcode!=OK)
+
+        // if we couldn't get any more, then this is the last line and missing CR/LF.
+        // ignore this incomplete last line, as the file might be currently being written
+        if (s==dataend)
             return NULL;
 
         // find end of line (provided we're not yet there)
-        while (*s && *s!='\r' && *s!='\n') s++;
+        while (*s && *s!='\r' && *s!='\n')
+            s++;
         if (s==dataend)
-        {
-            errcode = LINETOOLONG;  //FIXME why does it come here after seek???????????????
-            return NULL;
-        }
+            throw new Exception("Line too long, should be below %d in file `%s'", buffersize, fname.c_str());
     }
 
-    // skip cr/lf. Note: last line should NOT YET report eof!
+    // skip CR/LF. Note: last line should not yet report EOF.
     if (*s=='\r')
     {
-        *s = '\0';
-
-        s++;
+        *s++ = '\0';
         if (s==dataend)
         {
             s -= readMore();
-            if (errcode!=OK)
-                return errcode==EOFREACHED ? wholeline : NULL;
+            if (s==dataend)
+                return wholeline;
         }
     }
     if (*s=='\n')
     {
-        *s = '\0';
-        s++;
+        *s++ = '\0';
         if (s==dataend)
         {
             s -= readMore();
-            if (errcode!=OK)
-                return errcode==EOFREACHED ? wholeline : NULL;
+            if (s==dataend)
+                return wholeline;
         }
     }
 
@@ -162,48 +143,42 @@ long FileReader::fileSize()
 {
     // open file if needed
     if (!f)
-    {
         openFile();
-        if (!f)
-            return 0;
-    }
 
     long tmp = ftell(f);
     fseek(f, 0, SEEK_END);
     long size = ftell(f);
     fseek(f, tmp, SEEK_SET);
+    if (ferror(f))
+        throw new Exception("Cannot seek in file `%s'", fname.c_str());
     return size;
 }
 
-bool FileReader::seekTo(long offset)
+void FileReader::seekTo(long offset)
 {
     // open file if needed
     if (!f)
-    {
         openFile();
-        if (!f)
-            return 0;
-    }
+
+    // seek to one smaller value, in order to not skip the line which
+    // starts exactly on the given offset
+    if (offset!=0)
+        offset--;
 
     // seek to given offset
     int err = fseek(f, offset, SEEK_SET);
     if (err!=0)
-    {
-        errcode = CANNOTREAD;
-        return false;
-    }
+        throw new Exception("Cannot seek in file `%s'", fname.c_str());
 
     // flush buffer
     databeg = dataend = bufferend;
     *dataend = 0; // sentry
-    eofreached = false;
-    errcode = OK; //FIXME this should not be here, but EOFREACHED should be cleared
 
     linenum = -1; // after seekTo() we lose line number info
 
     // if we're at the very beginning, return
     if (offset==0)
-        return true;
+        return;
 
     // find beginning of first whole line by reading up to an end-of-line
     int c = ' ';
@@ -214,30 +189,7 @@ bool FileReader::seekTo(long offset)
     if (c!=EOF)
         ungetc(c,f);
     if (ferror(f))
-    {
-        errcode = CANNOTREAD;
-        return false;
-    }
-    return true;
-}
-
-
-std::string FileReader::errorMsg() const
-{
-    std::stringstream out;
-    switch (errcode)
-    {
-        case OK:             out << "OK"; break;
-        case EOFREACHED:     out << "end of file"; break;
-        case CANNOTOPEN:     out << "cannot open file"; break;
-        case CANNOTREAD:     out << "error reading from file"; break;
-        case INCOMPLETELINE: out << "incomplete last line"; break;
-        case LINETOOLONG:    out << "line too long"; break;
-        default:             out << "???";
-    }
-    if (errcode!=CANNOTOPEN && linenum!=-1)
-        out << ", line " << linenum;
-    return out.str();
+        throw new Exception("Read error in file `%s'", fname.c_str());
 }
 
 /*
@@ -251,13 +203,14 @@ int main(int argc, char **argv)
     if (argc<2)
         return 1;
 
-    FileReader freader(argv[1],200);
-    char *line;
-    while ((line = freader.readLine())!=NULL)
-    {
-        cout << line << "\n";
+    try {
+        FileReader freader(argv[1],200);
+        char *line;
+        while ((line = freader.readLine())!=NULL)
+            cout << line << "\n";
+    } catch (Exception *e) {
+        cout << "Error: " << e->message() << endl;
     }
-    cout << freader.errorMsg();
     return 0;
 }
 */
