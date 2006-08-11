@@ -39,6 +39,7 @@ class FileReader
     size_t buffersize;
     char *buffer;
     char *bufferend;  // =buffer+buffersize
+    long bufferfileoffset;
 
     // the currently used region in buffer
     char *databeg;
@@ -46,7 +47,6 @@ class FileReader
 
     // the pointer returned by readLine()
     char *wholeline;
-    long lineoffset;
 
     // num of line last returned
     int linenum;
@@ -101,7 +101,7 @@ class FileReader
     /**
      * Returns the offset of the line last parsed with readLine()
      */
-    long lineStartOffset() {return lineoffset;}
+    long lineStartOffset() {return (wholeline-buffer) + bufferfileoffset;}
 
     /**
      * Returns the size of the file

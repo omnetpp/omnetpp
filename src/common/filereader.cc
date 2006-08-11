@@ -15,9 +15,9 @@
 
 #include <assert.h>
 #include <sstream>
-#include "FileReader.h"
+#include "filereader.h"
 
-
+//FIXME throw Exception on read errors!!!
 FileReader::FileReader(const char *fileName, size_t bufferSize)
 {
     fname = fileName;
@@ -27,14 +27,14 @@ FileReader::FileReader(const char *fileName, size_t bufferSize)
     buffersize = bufferSize;
     buffer = new char[buffersize+1]; // +1 for EOS
     bufferend = buffer+buffersize;
+    bufferfileoffset = 0;
 
-    databeg = dataend = buffer;
+    databeg = dataend = bufferend;
     *dataend = 0; // sentry
 
     linenum = 0;
 
     wholeline = NULL;
-    lineoffset = 0;
 
     errcode = OK;
 }
@@ -76,6 +76,8 @@ size_t FileReader::readMore()
     dataend -= offset;
 
     // read enough bytes to fill the buffer
+    bufferfileoffset = ftell(f) - (dataend-buffer);
+//XXX printf("   dataend-buffer=%ld, bufferfileoffset=0x%lx\n", dataend-buffer, bufferfileoffset);
     int bytesread = fread(dataend, 1, bufferend-dataend, f);
     if (feof(f))
         eofreached = true;
@@ -104,7 +106,6 @@ char *FileReader::readLine()
     if (linenum!=-1)  // after seek() we don't maintain it (stays -1)
         linenum++;
     char *s = wholeline = databeg;
-    lineoffset = ftell(f);
 
     // find end of line
     while (*s && *s!='\r' && *s!='\n') s++;
@@ -122,7 +123,7 @@ char *FileReader::readLine()
         while (*s && *s!='\r' && *s!='\n') s++;
         if (s==dataend)
         {
-            errcode = LINETOOLONG;
+            errcode = LINETOOLONG;  //FIXME why does it come here after seek???????????????
             return NULL;
         }
     }
@@ -159,6 +160,14 @@ char *FileReader::readLine()
 
 long FileReader::fileSize()
 {
+    // open file if needed
+    if (!f)
+    {
+        openFile();
+        if (!f)
+            return 0;
+    }
+
     long tmp = ftell(f);
     fseek(f, 0, SEEK_END);
     long size = ftell(f);
@@ -185,8 +194,10 @@ bool FileReader::seekTo(long offset)
     }
 
     // flush buffer
-    databeg = dataend = buffer;
+    databeg = dataend = bufferend;
     *dataend = 0; // sentry
+    eofreached = false;
+    errcode = OK; //FIXME this should not be here, but EOFREACHED should be cleared
 
     linenum = -1; // after seekTo() we lose line number info
 

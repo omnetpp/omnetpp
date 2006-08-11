@@ -54,7 +54,10 @@ void printOffsets(int argc, char **argv)
         for (int i = 3; i < argc; i++) {
             long eventNumber = atol(argv[i]);
             long offset = index.getOffsetFor(eventNumber);
-            printf("Event #%ld --> file offset %ld\n", eventNumber, offset);
+            printf("Event #%ld --> file offset %ld (0x%lx)\n", eventNumber, offset, offset);
+reader.seekTo(offset-1); //XXX
+printf("   line there: %s\n", reader.readLine());
+            index.dumpTable();
         }
     } catch (Exception *e) {
         fprintf(stderr, e->message());
