@@ -19,86 +19,14 @@
 #include <list>
 #include <vector>
 #include <map>
-#include "stringpool.h"
-#include "filetokenizer.h"
-#include "exception.h"
 #include "eventlogdefs.h"
+#include "stringpool.h"
+#include "evententry.h"
+#include "exception.h"
+#include "filetokenizer.h"
 
 /**
- * A compound or simple module extracted from the log file
- */
-class ModuleEntry
-{
-    public:
-        const char *moduleClassName; // stringpooled
-        std::string moduleFullPath;  // unique, no need for stringpool
-        int moduleId;
-
-    public:
-        ModuleEntry();
-        ~ModuleEntry();
-};
-
-typedef std::vector<ModuleEntry*> ModuleEntryList;
-
-class EventEntry;
-
-/**
- * A message sent from one module to another.
- */
-class MessageEntry
-{
-    public:
-        /** Tells if this entry represents a message delivery or a message send */
-        bool isDelivery; // if true, this message is the target event's cause (this==source->cause)
-        long lineNumber; // in the event log file
-        const char *messageClassName; // stringpooled
-        const char *messageName;  // stringpooled
-        ModuleEntry *module; // this is the target event's module (unless there's Enter_Method() involved)
-
-        /** These log messages actually belong to the target event, but this way we can preserve ordering of message entries within the event */
-        std::vector<const char *> logMessages; // stringpooled
-
-        EventEntry *source;
-        EventEntry *target;
-
-    public:
-        MessageEntry();
-        ~MessageEntry();
-};
-
-typedef std::vector<MessageEntry*> MessageEntryList;
-
-/**
- * An event log entry as seen in the log file corresponding to a handleMessage call.
- */
-class EventEntry
-{
-    public:
-        long eventNumber;
-        double simulationTime;
-        MessageEntry *cause;  // the message handled in this event (i.e. passed to handleMessage())
-        MessageEntryList causes;  // also includes "cause"
-        MessageEntryList consequences;
-        int numLogMessages; // total number of log messages for this event (sum of its causes[]' log messages)
-
-        // temporary state for tracing events, coloring (graph)
-        bool isInCollectedEvents;
-
-        // the following fields are for the convenience of the GUI
-        double timelineCoordinate;
-        int64 cachedX;
-        int64 cachedY;
-        bool isExpandedInTree;
-        int tableRowIndex;
-
-    public:
-        EventEntry();
-        ~EventEntry();
-};
-
-/**
- * A trace utility to trace the causes and consequences of a particular event back and forth in time.
+ * ...
  */
 class EventLog
 {
@@ -198,6 +126,7 @@ class EventLog
         ModuleEntry *getOrAddModule(int moduleId, char *moduleClassName, char *moduleFullPath);
         char *tokensToStr(int numTokens, char **vec);
 };
+
 
 /**
  * A class that makes it possible to extract info about events, without
