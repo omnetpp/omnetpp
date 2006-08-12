@@ -1,5 +1,5 @@
 //=========================================================================
-//  EVENTENTRY.H - part of
+//  EVENTLOGENTRIES.H - part of
 //                  OMNeT++/OMNEST
 //           Discrete System Simulation in C++
 //
@@ -17,6 +17,13 @@
 
 #include "eventlogdefs.h"
 #include "exception.h"
+
+// FIXME these should probably be generated
+
+// FIXME re-cast BeginSendEntry as something like "MessageDescription"?
+//       with its task being to describe the contents of a message identified by an ID?
+//       it could occur just before any line where a message is involved.
+// FIXME Then MessageScheduledEntry could also be split into two!
 
 
 //BU
@@ -41,20 +48,20 @@ class ModuleCreatedEntry
     const char *moduleClassName;  // "c"
     int parentModuleId;           // "pid" (-1 if none)
     const char *fullName;         // "n"
-}
+};
 
 //MD
 class ModuleDeletedEntry
 {
     int moduleId;  // "id"
-}
+};
 
 //MR
 class ModuleReparentedEntry
 {
     int moduleId;           // "id"
     int newParentModuleId;  // "p"
-}
+};
 
 //CC
 class ConnectionCreatedEntry
@@ -66,14 +73,14 @@ class ConnectionCreatedEntry
     int destGateId;         // "dg"
     int destGateFullName;   // "dn"
     //XXX channel, channel attributes, etc
-}
+};
 
 //CD
 class ConnectionRemovedEntry
 {
     int sourceModuleId;     // "sm"
     int sourceGateId;       // "sg"
-}
+};
 
 //CS
 class ConnectionDisplayStringChangedEntry
@@ -81,21 +88,21 @@ class ConnectionDisplayStringChangedEntry
     int sourceModuleId;        // "sm"
     int sourceGateId;          // "sg"
     const char *displayString; // "d"
-}
+};
 
 //DS
 class ModuleDisplayStringChangedEntry
 {
     int moduleId;              // "id"
     const char *displayString; // "d"
-}
+};
 
 //DG
 class BackgroundDisplayStringChangedEntry //(cModule *parentmodule)
 {
     int moduleId;              // "id"
     const char *displayString; // "d"
-}
+};
 
 //E
 class MessageDeliveredEntry
@@ -104,105 +111,63 @@ class MessageDeliveredEntry
     simtime_t simulationTime;  // "t"
     int moduleId;              // "m"
     long messageId;            // "msg"
-}
+};
 
 //SA
 class MessageScheduledEntry
 {
-    long messageId;
-    long messageTreeId;
+    long messageId;       // "id"
+    long messageTreeId;   // "tid"
     //long messageEncapsulationId;     FIXME these two are not currently recorded
     //long messageEncapsulationTreeId;
+    const char *messageClassName;  // "c"
+    const char *messageFullName;   // "n"
+    int senderModuleId;            // "sm"
+    simtime_t arrivalTime;         // "t"
+};
 
-    long messageId;
-        ::fprintf(fmsglog, "SA id %ld tid %ld c %s n %s sm %ld t %.*g\n",
-                           msg->id(),
-                           msg->treeId(),
-                           msg->className(),
-                           msg->fullName(),
-                           msg->senderModuleId(),
-                           12, msg->arrivalTime());
-    }
-}
-
-class MessageCancelledEntry //(cMessage *msg)
+//CE
+class MessageCancelledEntry
 {
-    if (fmsglog)
-    {
-        ::fprintf(fmsglog, "CE id %ld\n",
-                           msg->id());
-    }
-}
+    long messageId; // "id"
+};
 
-class BeginSendEntry //(cMessage *msg)
+//BS
+class BeginSendEntry
 {
-    if (fmsglog)
-    {
-        ::fprintf(fmsglog, "BS id %ld tid %ld eid %ld etid %ld c %s n \"%s\" k %d l %ld\n",
-                           msg->id(),
-                           msg->treeId(), //XXX only if differs from id()
-                           msg->encapsulationId(), //XXX only if differs from id()
-                           msg->encapsulationTreeId(), //XXX only if differs from id()
-                           msg->className(),
-                           msg->fullName(),
-                           msg->kind(),
-                           msg->length());  //XXX plus many other fields...
-    }
-}
+    long messageId;                  // "id"
+    long messageTreeId;              // "tid"
+    long messageEncapsulationId;     // "eid"
+    long messageEncapsulationTreeId; // "etid"
+    const char *messageClassName;    // "c"
+    const char *messageFullName;     // "n"
+    int messageKind;                 // "k"
+    long messageLength;              // "l"
+    // and many other fields...
+};
 
-class MessageSendDirectEntry //(cMessage *msg, cGate *toGate, simtime_t propagationDelay, simtime_t transmissionDelay)
+//SD
+class MessageSendDirectEntry
 {
-    if (fmsglog)
-    {
-        ::fprintf(fmsglog, "SD id %ld sm %ld dm %ld dg %d pd %.*g td %.*g\n",
-                           msg->id(),
-                           msg->senderModuleId(),
-                           toGate->ownerModule()->id(),
-                           toGate->id(),
-                           12, propagationDelay, //XXX if nonzero
-                           12, transmissionDelay);  //XXX if nonzero
-    }
-}
+    long messageId;                  // "id"
+    int senderModuleId;              // "sm"
+    int destModuleId;                // "dm"
+    int destGateId;                  // "dg"
+    simtime_t propagationDelay;      // "pd"
+    simtime_t transmissionDelay;     // "td"
+};
 
-class MessageSendHopEntry //(cMessage *msg, cGate *srcGate, simtime_t propagationDelay)
+//SH
+//FIXME split into two? it's typical that there's no delay
+class MessageSendHopEntry
 {
-    if (fmsglog)
-    {
-        if (propagationDelay==0)
-            ::fprintf(fmsglog, "SH id %ld sm %ld sg %d\n",
-                               msg->id(),
-                               srcGate->ownerModule()->id(),
-                               srcGate->id());
-        else
-            ::fprintf(fmsglog, "SH id %ld sm %ld sg %d pd %.*g\n",
-                               msg->id(),
-                               srcGate->ownerModule()->id(),
-                               srcGate->id(),
-                               12, propagationDelay);
-    }
-}
-
-class MessageSendHopEntry //(cMessage *msg, cGate *srcGate, simtime_t propagationDelay, simtime_t transmissionDelay, simtime_t transmissionStartTime)
-{
-    if (fmsglog)
-    {
-        if (transmissionStartTime<0)
-          ::fprintf(fmsglog, "SH id %ld sm %ld sg %d td %.*g pd %.*g\n",
-                             msg->id(),
-                             srcGate->ownerModule()->id(),
-                             srcGate->id(),
-                             12, transmissionDelay,  //XXX only if nonzero
-                             12, propagationDelay);  //XXX only if nonzero
-        else
-          ::fprintf(fmsglog, "SH id %ld sm %ld sg %d ts %.*g td %.*g pd %.*g\n",
-                             msg->id(),
-                             srcGate->ownerModule()->id(),
-                             srcGate->id(),
-                             12, transmissionStartTime,
-                             12, transmissionDelay,  //XXX only if nonzero
-                             12, propagationDelay);  //XXX only if nonzero
-    }
-}
+    long messageId;                  // "id"
+    int senderModuleId;              // "sm"
+    int senderGateId;                // "sg"
+    simtime_t transmissionStartId;   // "ts"  --FIXME this should be eliminated from simkernel
+    simtime_t propagationDelay;      // "pd"
+    simtime_t transmissionDelay;     // "td"
+};
 
 #endif
 
