@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.collections.ListUtils;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.omnetpp.scave.engine.DataflowManager;
@@ -71,11 +70,10 @@ public class DataflowNetworkBuilder {
 			 * Adds "vectorfilereader" nodes for ids in the base dataset.
 			 */
 			public Object caseDataset(Dataset dataset) {
-				// add sources for each id in the base dataset
+				// build network for the base dataset first
 				Dataset baseDataset = dataset.getBasedOn();
 				if (baseDataset != null) {
-					IDList idlist = DatasetManager.getIDListFromDataset(resultfileManager, baseDataset, null);
-					addSourceNodes(idlist);
+					build(baseDataset, null);
 				}
 				// process items
 				for (Object item : dataset.getItems())
