@@ -39,6 +39,9 @@ import org.omnetpp.scave.model.util.ScaveModelSwitch;
  *
  * @author tomi
  */
+// TODO: add tee node to the C code
+// TODO: implement DataflowManager.remove(Node node) (removes node and connected nodes recursively)
+// TODO: find identifier for a computed result (computed flag in id?)
 public class DataflowNetworkBuilder {
 	
 	private DataflowManager dataflowManager;
@@ -284,7 +287,12 @@ public class DataflowNetworkBuilder {
 	
 	
 	private void removeSources(IDList ids) {
-		// TODO: not supported yet
+		for (int i = 0; i < ids.size(); ++i)
+			removeNodes(ids.get(i));
+	}
+	
+	private void removeNodes(long id) {
+		
 	}
 
 	private IDList select(IDList source, List<SelectDeselectOp> filters) {

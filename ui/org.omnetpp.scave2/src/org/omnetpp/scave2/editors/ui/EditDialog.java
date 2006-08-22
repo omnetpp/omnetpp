@@ -33,7 +33,6 @@ public class EditDialog extends TitleAreaDialog {
 			EObject object,
 			ScaveEditor editor) {
 		this(parentShell, object, null, editor);
-		setShellStyle(getShellStyle() | SWT.RESIZE);
 	}
 	
 	public EditDialog(
@@ -42,6 +41,7 @@ public class EditDialog extends TitleAreaDialog {
 			EStructuralFeature[] features,
 			ScaveEditor editor) {
 		super(parentShell);
+		setShellStyle(getShellStyle() | SWT.RESIZE);
 		this.editor = editor;
 		this.object = object;
 		this.features = features;
