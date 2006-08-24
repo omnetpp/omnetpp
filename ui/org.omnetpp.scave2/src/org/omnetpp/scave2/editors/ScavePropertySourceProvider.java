@@ -5,8 +5,8 @@ import org.eclipse.emf.edit.ui.provider.AdapterFactoryContentProvider;
 import org.eclipse.ui.views.properties.IPropertySource;
 import org.eclipse.ui.views.properties.IPropertySourceProvider;
 import org.omnetpp.common.properties.PropertySource;
-import org.omnetpp.scave2.charting.ChartProperties;
-import org.omnetpp.scave2.charting.ChartSWTWrapper;
+import org.omnetpp.scave.model.Chart;
+import org.omnetpp.scave2.model.ChartProperties;
 
 /**
  * Provides properties of scave model objects and charts.
@@ -23,8 +23,10 @@ public class ScavePropertySourceProvider implements IPropertySourceProvider {
 
 	public IPropertySource getPropertySource(Object object) {
 		IPropertySource propertySource;
-		if (object instanceof ChartSWTWrapper)
+		/*if (object instanceof ChartSWTWrapper)
 			propertySource = new ChartProperties((ChartSWTWrapper)object);
+		else*/ if (object instanceof Chart)
+			propertySource = ChartProperties.createPropertySource((Chart)object);
 		else if (object instanceof PropertySource)
 			propertySource = (PropertySource)object;
 		else

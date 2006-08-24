@@ -1,20 +1,21 @@
 package org.omnetpp.scave2.editors.ui;
 
-import static org.omnetpp.scave2.model.VectorChartProperties.PROP_AXIS_TITLE_FONT;
-import static org.omnetpp.scave2.model.VectorChartProperties.PROP_GRAPH_TITLE;
-import static org.omnetpp.scave2.model.VectorChartProperties.PROP_GRAPH_TITLE_FONT;
-import static org.omnetpp.scave2.model.VectorChartProperties.PROP_LABEL_FONT;
-import static org.omnetpp.scave2.model.VectorChartProperties.PROP_XY_GRID;
-import static org.omnetpp.scave2.model.VectorChartProperties.PROP_XY_INVERT;
-import static org.omnetpp.scave2.model.VectorChartProperties.PROP_X_AXIS_LOGARITHMIC;
-import static org.omnetpp.scave2.model.VectorChartProperties.PROP_X_AXIS_MAX;
-import static org.omnetpp.scave2.model.VectorChartProperties.PROP_X_AXIS_MIN;
-import static org.omnetpp.scave2.model.VectorChartProperties.PROP_X_AXIS_TITLE;
-import static org.omnetpp.scave2.model.VectorChartProperties.PROP_X_LABELS_ROTATE_BY;
-import static org.omnetpp.scave2.model.VectorChartProperties.PROP_Y_AXIS_LOGARITHMIC;
-import static org.omnetpp.scave2.model.VectorChartProperties.PROP_Y_AXIS_MAX;
-import static org.omnetpp.scave2.model.VectorChartProperties.PROP_Y_AXIS_MIN;
-import static org.omnetpp.scave2.model.VectorChartProperties.PROP_Y_AXIS_TITLE;
+import static org.omnetpp.scave2.model.ChartProperties.PROP_AXIS_TITLE_FONT;
+import static org.omnetpp.scave2.model.ChartProperties.PROP_GRAPH_TITLE;
+import static org.omnetpp.scave2.model.ChartProperties.PROP_GRAPH_TITLE_FONT;
+import static org.omnetpp.scave2.model.ChartProperties.PROP_LABEL_FONT;
+import static org.omnetpp.scave2.model.ChartProperties.PROP_XY_GRID;
+import static org.omnetpp.scave2.model.ChartProperties.PROP_XY_INVERT;
+import static org.omnetpp.scave2.model.ChartProperties.PROP_X_AXIS_LOGARITHMIC;
+import static org.omnetpp.scave2.model.ChartProperties.PROP_X_AXIS_MAX;
+import static org.omnetpp.scave2.model.ChartProperties.PROP_X_AXIS_MIN;
+import static org.omnetpp.scave2.model.ChartProperties.PROP_X_AXIS_TITLE;
+import static org.omnetpp.scave2.model.ChartProperties.PROP_X_LABELS_ROTATE_BY;
+import static org.omnetpp.scave2.model.ChartProperties.PROP_Y_AXIS_LOGARITHMIC;
+import static org.omnetpp.scave2.model.ChartProperties.PROP_Y_AXIS_MAX;
+import static org.omnetpp.scave2.model.ChartProperties.PROP_Y_AXIS_MIN;
+import static org.omnetpp.scave2.model.ChartProperties.PROP_Y_AXIS_TITLE;
+import static org.omnetpp.scave2.model.ChartProperties.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,11 +37,20 @@ import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.Property;
 import org.omnetpp.scave.model.ScaveModelFactory;
 import org.omnetpp.scave.model.ScaveModelPackage;
-import org.omnetpp.scave2.model.VectorChartProperties.LegendAnchor;
-import org.omnetpp.scave2.model.VectorChartProperties.LegendPosition;
-import org.omnetpp.scave2.model.VectorChartProperties.LineStyle;
-import org.omnetpp.scave2.model.VectorChartProperties.ShowGrid;
+import org.omnetpp.scave2.model.ChartProperties;
+import org.omnetpp.scave2.model.ChartProperties.LegendAnchor;
+import org.omnetpp.scave2.model.ChartProperties.LegendPosition;
+import org.omnetpp.scave2.model.ChartProperties.LineStyle;
+import org.omnetpp.scave2.model.ChartProperties.ShowGrid;
 
+/**
+ * Edit form of charts.
+ * 
+ * It contains the graphical properties of the chart (as in plove/scalars).
+ *
+ * @author tomi
+ */
+// TODO: scalar chart properties
 public class ChartEditForm implements IScaveObjectEditForm {
 	
 	/**
@@ -55,7 +65,6 @@ public class ChartEditForm implements IScaveObjectEditForm {
 	 * The edited chart.
 	 */
 	private Chart chart;
-	private List<Property> properties;
 	
 	// controls
 	private Text nameText;
@@ -142,6 +151,8 @@ public class ChartEditForm implements IScaveObjectEditForm {
 		axisTitleFontText = createTextField("Axis title font", group);
 		labelFontText = createTextField("Label font", group);
 		xLabelsRotateByCombo = createComboField("Rotate X labels by", group);
+		xLabelsRotateByCombo.setItems(new String[] {"0", "30", "45", "60", "90"});
+		
 		// Axes
 		panel = createTab("Axes", tabfolder, 2);
 		group = createGroup("Axis bounds", panel, 3);
@@ -282,52 +293,44 @@ public class ChartEditForm implements IScaveObjectEditForm {
 	}
 	
 	private List<Property> getProperties() {
-		properties = new ArrayList<Property>();
+		ChartProperties props = new ChartProperties(new ArrayList<Property>());
 		// Titles
-		addProperty(PROP_GRAPH_TITLE, graphTitleText.getText());
-		addProperty(PROP_GRAPH_TITLE_FONT, graphTitleFontText.getText());
-		addProperty(PROP_X_AXIS_TITLE, xAxisTitleText.getText());
-		addProperty(PROP_Y_AXIS_TITLE, yAxisTitleText.getText());
-		addProperty(PROP_AXIS_TITLE_FONT, axisTitleFontText.getText());
-		addProperty(PROP_LABEL_FONT, labelFontText.getText());
-		addProperty(PROP_X_LABELS_ROTATE_BY, xLabelsRotateByCombo.getText());
+		props.setProperty(PROP_GRAPH_TITLE, graphTitleText.getText());
+		props.setProperty(PROP_GRAPH_TITLE_FONT, graphTitleFontText.getText());
+		props.setProperty(PROP_X_AXIS_TITLE, xAxisTitleText.getText());
+		props.setProperty(PROP_Y_AXIS_TITLE, yAxisTitleText.getText());
+		props.setProperty(PROP_AXIS_TITLE_FONT, axisTitleFontText.getText());
+		props.setProperty(PROP_LABEL_FONT, labelFontText.getText());
+		props.setProperty(PROP_X_LABELS_ROTATE_BY, xLabelsRotateByCombo.getText());
 		// Axes
-		addProperty(PROP_X_AXIS_MIN, xAxisMinText.getText());
-		addProperty(PROP_X_AXIS_MAX, xAxisMaxText.getText());
-		addProperty(PROP_Y_AXIS_MIN, yAxisMinText.getText());
-		addProperty(PROP_Y_AXIS_MAX, yAxisMaxText.getText());
-		addProperty(PROP_X_AXIS_LOGARITHMIC, xAxisLogCheckbox.getSelection());
-		addProperty(PROP_Y_AXIS_LOGARITHMIC, yAxisLogCheckbox.getSelection());
-		addProperty(PROP_XY_INVERT, invertAxesCheckbox.getSelection());
-		addProperty(PROP_XY_GRID, getEnumValue(ShowGrid.class, showGridRadios));
+		props.setProperty(PROP_X_AXIS_MIN, xAxisMinText.getText());
+		props.setProperty(PROP_X_AXIS_MAX, xAxisMaxText.getText());
+		props.setProperty(PROP_Y_AXIS_MIN, yAxisMinText.getText());
+		props.setProperty(PROP_Y_AXIS_MAX, yAxisMaxText.getText());
+		props.setProperty(PROP_X_AXIS_LOGARITHMIC, xAxisLogCheckbox.getSelection());
+		props.setProperty(PROP_Y_AXIS_LOGARITHMIC, yAxisLogCheckbox.getSelection());
+		props.setProperty(PROP_XY_INVERT, invertAxesCheckbox.getSelection());
+		props.setProperty(PROP_XY_GRID, getSelection(showGridRadios, ShowGrid.class));
 		// Lines
-		// TODO
+		props.setProperty(PROP_DISPLAY_SYMBOLS, displaySymbolsCheckbox.getSelection());
+		props.setProperty(PROP_SYMBOL_TYPE, symbolTypeCombo.getText()); // XXX
+		props.setProperty(PROP_SYMBOL_SIZE, symbolSizeCombo.getText());
+		props.setProperty(PROP_LINE_TYPE, getSelection(lineStyleRadios, LineStyle.class));
+		props.setProperty(PROP_HIDE_LINE, hideLinesCheckbox.getSelection());
 		// Legend
-		// TODO
+		props.setProperty(PROP_DISPLAY_LEGEND, displayLegendCheckbox.getSelection());
+		props.setProperty(PROP_LEGEND_BORDER, displayBorderCheckbox.getSelection());
+		props.setProperty(PROP_LEGEND_FONT, legendFontText.getText());
+		props.setProperty(PROP_LEGEND_POSITION, getSelection(legendPositionRadios, LegendPosition.class));
+		props.setProperty(PROP_LEGEND_ANCHORING, getSelection(legendAnchorRadios, LegendAnchor.class));
 		
-		return properties;
+		return props.getProperties();
 	}
 	
-	private void addProperty(String propertyName, String propertyValue) {
-		if (propertyValue != null) {
-			Property property = ScaveModelFactory.eINSTANCE.createProperty(); 
-			properties.add(property);
-			property.setName(propertyName);
-			property.setValue(propertyValue);
-		}
-	}
-	
-	private void addProperty(String propertyName, Boolean propertyValue) {
-		if (propertyValue != null)
-			addProperty(propertyName, String.valueOf(propertyValue));
-	}
-	
-	private void addProperty(String propertyName, Enum<?> propertyValue) {
-		if (propertyValue != null)
-			addProperty(propertyName, String.valueOf(propertyValue));
-	}
-	
-	private <T extends Enum<T>> T getEnumValue(Class<T> type, Button[] radios) {
+	/**
+	 * Returns the selected radio button as the enum value it represents. 
+	 */
+	private <T extends Enum<T>> T getSelection(Button[] radios, Class<T> type) {
 		T[] values = type.getEnumConstants();
 		for (int i = 0; i < radios.length; ++i)
 			if (radios[i].getSelection())
@@ -336,59 +339,43 @@ public class ChartEditForm implements IScaveObjectEditForm {
 	}
 	
 	private void setProperties(List<Property> properties) {
-		this.properties = properties;
+		ChartProperties props = new ChartProperties((List<Property>)chart.getProperties());
 		// Titles
-		graphTitleText.setText(getStringProperty(PROP_GRAPH_TITLE));
-		graphTitleFontText.setText(getStringProperty(PROP_GRAPH_TITLE_FONT));
-		xAxisTitleText.setText(getStringProperty(PROP_X_AXIS_TITLE));
-		yAxisTitleText.setText(getStringProperty(PROP_Y_AXIS_TITLE));
-		axisTitleFontText.setText(getStringProperty(PROP_AXIS_TITLE_FONT));
-		labelFontText.setText(getStringProperty(PROP_LABEL_FONT));
-		xLabelsRotateByCombo.setItems(new String[] {"0", "30", "45", "60", "90"});
-		xLabelsRotateByCombo.setText(getStringProperty(PROP_X_LABELS_ROTATE_BY));
+		graphTitleText.setText(props.getStringProperty(PROP_GRAPH_TITLE));
+		graphTitleFontText.setText(props.getStringProperty(PROP_GRAPH_TITLE_FONT));
+		xAxisTitleText.setText(props.getStringProperty(PROP_X_AXIS_TITLE));
+		yAxisTitleText.setText(props.getStringProperty(PROP_Y_AXIS_TITLE));
+		axisTitleFontText.setText(props.getStringProperty(PROP_AXIS_TITLE_FONT));
+		labelFontText.setText(props.getStringProperty(PROP_LABEL_FONT));
+		xLabelsRotateByCombo.setText(props.getStringProperty(PROP_X_LABELS_ROTATE_BY));
 		// Axes
-		xAxisMinText.setText(getStringProperty(PROP_X_AXIS_MIN));
-		xAxisMaxText.setText(getStringProperty(PROP_X_AXIS_MAX));
-		yAxisMinText.setText(getStringProperty(PROP_Y_AXIS_MIN));
-		yAxisMaxText.setText(getStringProperty(PROP_Y_AXIS_MAX));
-		xAxisLogCheckbox.setSelection(getBooleanProperty(PROP_X_AXIS_LOGARITHMIC));
-		yAxisLogCheckbox.setSelection(getBooleanProperty(PROP_Y_AXIS_LOGARITHMIC));
-		invertAxesCheckbox.setSelection(getBooleanProperty(PROP_XY_INVERT));
-		setValue(showGridRadios, getEnumProperty(PROP_XY_GRID, ShowGrid.class));
+		xAxisMinText.setText(props.getStringProperty(PROP_X_AXIS_MIN));
+		xAxisMaxText.setText(props.getStringProperty(PROP_X_AXIS_MAX));
+		yAxisMinText.setText(props.getStringProperty(PROP_Y_AXIS_MIN));
+		yAxisMaxText.setText(props.getStringProperty(PROP_Y_AXIS_MAX));
+		xAxisLogCheckbox.setSelection(props.getBooleanProperty(PROP_X_AXIS_LOGARITHMIC));
+		yAxisLogCheckbox.setSelection(props.getBooleanProperty(PROP_Y_AXIS_LOGARITHMIC));
+		invertAxesCheckbox.setSelection(props.getBooleanProperty(PROP_XY_INVERT));
+		setSelection(showGridRadios, props.getEnumProperty(PROP_XY_GRID, ShowGrid.class));
 		// Lines
-		// TODO
+		displaySymbolsCheckbox.setSelection(props.getBooleanProperty(PROP_DISPLAY_SYMBOLS));
+		symbolTypeCombo.setText(props.getStringProperty(PROP_SYMBOL_TYPE));
+		symbolSizeCombo.setText(props.getStringProperty(PROP_SYMBOL_SIZE));
+		setSelection(lineStyleRadios, props.getEnumProperty(PROP_LINE_TYPE, LineStyle.class));
+		hideLinesCheckbox.setSelection(props.getBooleanProperty(PROP_HIDE_LINE));
 		// Legend
-		// TODO
+		displayLegendCheckbox.setSelection(props.getBooleanProperty(PROP_DISPLAY_LEGEND));
+		displayBorderCheckbox.setSelection(props.getBooleanProperty(PROP_LEGEND_BORDER));
+		legendFontText.setText(props.getStringProperty(PROP_LEGEND_FONT));
+		setSelection(legendPositionRadios, props.getEnumProperty(PROP_LEGEND_POSITION, LegendPosition.class));
+		setSelection(legendAnchorRadios, props.getEnumProperty(PROP_LEGEND_ANCHORING, LegendAnchor.class));
 	}
 	
-	private String getStringProperty(String propertyName) {
-		for (Property property : properties) {
-			if (propertyName.equals(property.getName()))
-				return StringUtils.defaultString(property.getValue());
-		}
-		return StringUtils.EMPTY;
-	}
-	
-	private Boolean getBooleanProperty(String propertyName) {
-		for (Property property : properties) {
-			if (propertyName.equals(property.getName()))
-				return Boolean.valueOf(property.getValue());
-		}
-		return Boolean.FALSE;
-	}
-	
-	private <T extends Enum<T>> T getEnumProperty(String propertyName, Class<T> type) {
-		for (Property property : properties) {
-			if (propertyName.equals(property.getName()))
-				return property.getValue() != null ? Enum.valueOf(type, property.getValue()) : null;
-		}
-		return null;
-	}
-	
-	private void setValue(Button[] radios, Enum<?> value) {
+	/**
+	 * Select the radio button representing the enum value. 
+	 */
+	private void setSelection(Button[] radios, Enum<?> value) {
 		for (int i = 0; i < radios.length; ++i)
 			radios[i].setSelection(value != null && value.ordinal() == i);
 	}
-	
-	
 }

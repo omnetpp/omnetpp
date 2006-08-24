@@ -111,6 +111,11 @@ public class ScaveModelUtil {
 			parent = parent.eContainer();
 		return (Dataset)parent;
 	}
+	
+	public static DatasetType getDatasetType(Chart chart) {
+		Dataset dataset = findEnclosingDataset(chart);
+		return dataset != null ? dataset.getType() : null;
+	}
 
 	/**
 	 * Returns the analysis node of the specified resource.
