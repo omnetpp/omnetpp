@@ -213,6 +213,8 @@ public abstract class PropertySource implements IPropertySource2 {
 				return ColorPropertyDescriptor.class;
 			else if (propType == FontData.class)
 				return FontPropertyDescriptor.class;
+			else if (propType.isEnum())
+				return EnumPropertyDescriptor.class;
 		}
 		return declaredDescriptorClass;
 	}
@@ -264,7 +266,9 @@ public abstract class PropertySource implements IPropertySource2 {
 			try {
 				Object defaultValue = info.defaultGetter.invoke(this);
 				info.setter.invoke(this, defaultValue);
-			} catch (Exception e) {}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 		}
 	}
 
@@ -273,7 +277,9 @@ public abstract class PropertySource implements IPropertySource2 {
 		Object value = null;
 		try {
 			value = info.getter.invoke(this);
-		} catch (Exception e) { }
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 		return value;
 	}
 
@@ -282,7 +288,9 @@ public abstract class PropertySource implements IPropertySource2 {
 		if (info != null && info.setter != null)
 			try {
 				info.setter.invoke(this, new Object[] {value});
-			} catch (Exception e) { }
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 	}
 }	
 

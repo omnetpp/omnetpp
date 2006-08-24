@@ -34,26 +34,34 @@ public class EnumPropertyDescriptor extends PropertyDescriptor {
 	
 	public void setEnumType(Class enumType)
 	{
-		Field[] fields = enumType.getDeclaredFields();
-		ArrayList<Object> values = new ArrayList<Object>();
-		ArrayList<String> names = new ArrayList<String>();
-		
-		for (Field field : fields)
-		{
-			int modifiers = field.getModifiers();
-			if (Modifier.isFinal(modifiers) && Modifier.isStatic(modifiers) &&
-				Modifier.isPublic(modifiers))
-			{
-				try {
-					values.add(field.get(null));
-					names.add(field.getName());
-				} catch (IllegalArgumentException e) {
-				} catch (IllegalAccessException e) {}
-			}
+		if (enumType.isEnum()) { // Java 1.5 enum class
+			this.values = enumType.getEnumConstants();
+			this.names = new String[this.values.length];
+			for (int i = 0; i < this.names.length; ++i)
+				this.names[i] = ((Enum<?>)this.values[i]).name();
 		}
+		else { // typesafe enum pattern class
+			Field[] fields = enumType.getDeclaredFields();
+			ArrayList<Object> values = new ArrayList<Object>();
+			ArrayList<String> names = new ArrayList<String>();
 		
-		this.values = values.toArray();
-		this.names = names.toArray(new String[names.size()]);
+			for (Field field : fields)
+			{
+				int modifiers = field.getModifiers();
+				if (Modifier.isFinal(modifiers) && Modifier.isStatic(modifiers) &&
+					Modifier.isPublic(modifiers))
+				{
+					try {
+						values.add(field.get(null));
+						names.add(field.getName());
+					} catch (IllegalArgumentException e) {
+					} catch (IllegalAccessException e) {}
+				}
+			}
+			
+			this.values = values.toArray();
+			this.names = names.toArray(new String[names.size()]);
+		}
 	}
 	
 	public String getName(Object value) {
@@ -73,33 +81,10 @@ public class EnumPropertyDescriptor extends PropertyDescriptor {
 	}
 	
 	public CellEditor createPropertyEditor(Composite parent) {
-        CellEditor editor = new EnumCellEditor(parent);
+        CellEditor editor = new EnumCellEditor(parent, names, values);
         if (getValidator() != null)
             editor.setValidator(getValidator());
         return editor;
     }
-	
-	class EnumCellEditor extends ComboBoxCellEditor {
-		
-		public EnumCellEditor(Composite parent) {
-			super(parent, names, SWT.READ_ONLY);
-		}
-
-		@Override
-		protected Object doGetValue() {
-			int index = (Integer)super.doGetValue();
-			return 0 <= index && index < values.length ? values[index] : null;
-		}
-
-		@Override
-		protected void doSetValue(Object value) {
-			if (value != null)
-				for(int i = 0; i < values.length; ++i)
-					if (value.equals(values[i])) {
-						super.doSetValue(i);
-						return;
-					}
-		}
-	}
 }
 
