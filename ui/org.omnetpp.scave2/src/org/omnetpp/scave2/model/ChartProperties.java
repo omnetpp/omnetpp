@@ -2,6 +2,11 @@ package org.omnetpp.scave2.model;
 
 import java.util.List;
 
+import org.eclipse.emf.edit.command.AddCommand;
+import org.eclipse.emf.edit.command.RemoveCommand;
+import org.eclipse.emf.edit.command.SetCommand;
+import org.eclipse.emf.edit.domain.AdapterFactoryEditingDomain;
+import org.eclipse.emf.edit.domain.EditingDomain;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.CheckboxCellEditor;
 import org.eclipse.jface.viewers.ComboBoxCellEditor;
@@ -21,6 +26,7 @@ import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.DatasetType;
 import org.omnetpp.scave.model.Property;
 import org.omnetpp.scave.model.ScaveModelFactory;
+import org.omnetpp.scave.model.ScaveModelPackage;
 
 public class ChartProperties extends PropertySource {
 	
@@ -103,18 +109,24 @@ public class ChartProperties extends PropertySource {
 	public static ChartProperties createPropertySource(Chart chart) {
 		DatasetType type = ScaveModelUtil.getDatasetType(chart);
 		switch (type.getValue()) {
-		case DatasetType.SCALAR: return new ScalarChartProperties(chart.getProperties());
-		case DatasetType.VECTOR: return new VectorChartProperties(chart.getProperties());
-		case DatasetType.HISTOGRAM: return new HistogramChartProperties(chart.getProperties());
-		default: return new ChartProperties(chart.getProperties());
+		case DatasetType.SCALAR: return new ScalarChartProperties(chart);
+		case DatasetType.VECTOR: return new VectorChartProperties(chart);
+		case DatasetType.HISTOGRAM: return new HistogramChartProperties(chart);
+		default: return new ChartProperties(chart);
 		}
 	}
-
 	
 	private List<Property> properties;
+	private Chart owner;
 	
 	public ChartProperties(List<Property> properties) {
 		this.properties = properties;
+		this.owner = null;
+	}
+	
+	public ChartProperties(Chart chart) {
+		this.properties = chart.getProperties();
+		this.owner = chart;
 	}
 	
 	public List<Property> getProperties() {
@@ -124,7 +136,6 @@ public class ChartProperties extends PropertySource {
 	/*======================================================================
 	 *                             Titles
 	 *======================================================================*/
-	
 	@org.omnetpp.common.properties.Property(category="Titles")
 	public String getGraphTitle() { return getStringProperty(PROP_GRAPH_TITLE); }
 	public void setGraphTitle(String title) { setProperty(PROP_GRAPH_TITLE, title); }
@@ -132,7 +143,7 @@ public class ChartProperties extends PropertySource {
 	@org.omnetpp.common.properties.Property(category="Titles")
 	public String getGraphTitleFont() { return getStringProperty(PROP_GRAPH_TITLE_FONT); }
 	public void setGraphTitleFont(String font) { setProperty(PROP_GRAPH_TITLE_FONT, font); }
-
+	
 	@org.omnetpp.common.properties.Property(category="Titles")
 	public String getXAxisTitle() { return getStringProperty(PROP_X_AXIS_TITLE); }
 	public void setXAxisTitle(String title) { setProperty(PROP_X_AXIS_TITLE, title); }
@@ -152,7 +163,6 @@ public class ChartProperties extends PropertySource {
 	@org.omnetpp.common.properties.Property(category="Titles", displayName="x labels rotated by")
 	public String getXLabelsRotate() { return getStringProperty(PROP_X_LABELS_ROTATE_BY); }
 	public void setXLabelsRotate(String title) { setProperty(PROP_X_LABELS_ROTATE_BY, title); }
-	
 	/*======================================================================
 	 *                             Axes
 	 *======================================================================*/
@@ -218,6 +228,10 @@ public class ChartProperties extends PropertySource {
 			super(properties);
 		}
 		
+		public VectorChartProperties(Chart chart) {
+			super(chart);
+		}
+		
 		/*======================================================================
 		 *                             Lines
 		 *======================================================================*/
@@ -248,6 +262,10 @@ public class ChartProperties extends PropertySource {
 			super(properties);
 		}
 		
+		public ScalarChartProperties(Chart chart) {
+			super(chart);
+		}
+		
 		/*======================================================================
 		 *                             Bars
 		 *======================================================================*/
@@ -266,6 +284,10 @@ public class ChartProperties extends PropertySource {
 			super(properties);
 		}
 		
+		public HistogramChartProperties(Chart chart) {
+			super(chart);
+		}
+		
 		// TODO
 	}
 	
@@ -278,16 +300,6 @@ public class ChartProperties extends PropertySource {
 			if (property.getName().equals(propertyName))
 				return property;
 		return null;
-	}
-	
-	public Property getOrCreateProperty(String propertyName) {
-		Property property = getProperty(propertyName);
-		if (property == null) {
-			property = ScaveModelFactory.eINSTANCE.createProperty();
-			property.setName(propertyName);
-			properties.add(property);
-		}
-		return property;
 	}
 	
 	public String getStringProperty(String propertyName) {
@@ -305,47 +317,50 @@ public class ChartProperties extends PropertySource {
 		return property != null && property.getValue() != null ? Enum.valueOf(type, property.getValue()) : null;
 	}
 	
-	public Enum<?> getEnumProperty2(String propertyName, Class<?> type) {
-		Property property = getProperty(propertyName);
-		if (property != null && property.getValue() != null) {
-			Enum<?>[] values = (Enum<?>[])type.getEnumConstants();
-			for (Enum<?> value : values)
-				if (value.name().equals(property.getValue()))
-					return value;
-		}
-		return null;
-	}
-	
 	public void setProperty(String propertyName, String propertyValue) {
-		if (propertyValue != null) {
-			Property property = getOrCreateProperty(propertyName);
+		EditingDomain domain = getEditingDomain();
+		ScaveModelPackage model = ScaveModelPackage.eINSTANCE;
+		ScaveModelFactory factory = ScaveModelFactory.eINSTANCE;
+		Property property = getProperty(propertyName);
+		
+		if ("".equals(propertyValue))
+			propertyValue = null;
+
+		if (property == null && propertyValue != null ) {
+			property = factory.createProperty();
+			property.setName(propertyName);
 			property.setValue(propertyValue);
-		} else {
-			removeProperty(propertyName);
+			if (domain == null)
+				properties.add(property);
+			else
+				domain.getCommandStack().execute(
+					AddCommand.create(domain, owner, model.getChart_Properties(), property));
+		}
+		else if (property != null && propertyValue != null) {
+			if (domain == null)
+				property.setValue(propertyValue);
+			else
+				domain.getCommandStack().execute(
+					SetCommand.create(domain, property,	model.getProperty_Value(), propertyValue));
+		}
+		else if (property != null && propertyValue == null){
+			if (domain == null)
+				properties.remove(property);
+			else
+				domain.getCommandStack().execute(
+					RemoveCommand.create(domain, property)); 
 		}
 	}
 	
 	public void setProperty(String propertyName, Boolean propertyValue) {
-		if (propertyValue != null)
-			setProperty(propertyName, String.valueOf(propertyValue));
-		else
-			removeProperty(propertyName);
+		setProperty(propertyName, propertyValue == null || propertyValue == Boolean.FALSE ?  null : String.valueOf(propertyValue));
 	}
 	
 	public void setProperty(String propertyName, Enum<?> propertyValue) {
-		if (propertyValue != null)
-			setProperty(propertyName, String.valueOf(propertyValue));
-		else
-			removeProperty(propertyName);
+		setProperty(propertyName, propertyValue == null ? null : String.valueOf(propertyValue));
 	}
 	
-	public void removeProperty(String propertyName) {
-		for (int i = 0; i < properties.size(); ++i) {
-			Property property = properties.get(i);
-			if (property.getName().equals(propertyName)) {
-				properties.remove(i);
-				break;
-			}
-		}
+	private EditingDomain getEditingDomain() {
+		return owner != null ? AdapterFactoryEditingDomain.getEditingDomainFor(owner) : null;
 	}
 }
