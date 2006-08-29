@@ -26,21 +26,15 @@ public class DisplayString implements IDisplayString {
         = new DisplayString("i=,,30;i2=,,30;is=40;b=-1,-1,rect,#8080ff,black,2;t=,t,blue;r=,,black,1;bgg=,,,grey;bgb=-1,-1,grey75,black,2");
 
     // hold default values (if specified in derived calsses)
+    // first look in 'this' then in 'defaults' then in 'variableDefaults' or 'emptyDefaults' 
     protected DisplayString variableDefaults = null; 
     protected DisplayString emptyDefaults = null;
+    protected DisplayString defaults = null;
     // whether notification is enabled or not
     protected boolean notifyEnabled = true;
-    // the properties that define the position and width (variables, so we can redefine them in derived
-    // classes, and use a different tag (ie. bgp instead of p tag in compound module)
-//    protected Prop XPosProp = Prop.X;
-//    protected Prop YPosProp = Prop.Y;
-//    protected Prop WidthProp = Prop.WIDTH;
-//    protected Prop HeightProp = Prop.HEIGHT;
     
     // the owner of the displaystring
     protected IDisplayStringProvider owner = null;
-    // the direct ancestor's displaystring
-    protected IDisplayStringProvider ancestor = null;
     // listener for the display string changes (usually the controller)
     protected IDisplayStringChangeListener changeListener = null;
     
@@ -153,16 +147,11 @@ public class DisplayString implements IDisplayString {
      * Create a display string tokenizer class only derived classes alowed to be created
      * @param owner owner of the displaystring object (who has this displaystring) owner 
      * 		  will be notified about changes 
-     * @param ancestor The direct ancestor of this module in the type hierarchy (used for display string fallback)
-     * @param container The container's display string used to get scaling value
      * @param value The string to be parsed
      */
-    public DisplayString(IDisplayStringProvider owner, IDisplayStringProvider ancestor,
-    		             String value) {
+    public DisplayString(IDisplayStringProvider owner, String value) {
     	this(value);
     	this.owner = owner;
-    	this.ancestor = ancestor;
-
     }
 
     protected DisplayString(String value) {
@@ -172,7 +161,24 @@ public class DisplayString implements IDisplayString {
     	variableDefaults = VARIABLE_DEFAULTS;
         emptyDefaults = EMPTY_DEFAULTS;
     }
+
     /**
+     * @return The currently set default display string
+     */
+    public DisplayString getDefaults() {
+		return defaults;
+	}
+
+	/**
+	 * Sets the default display string used if the current object has empty or null value for a
+	 * requested property
+	 * @param defaults
+	 */
+	public void setDefaults(DisplayString defaults) {
+		this.defaults = defaults;
+	}
+
+	/**
      * Returns the value of the given tag on the given position
      * @param tag TagInstance to be checked
      * @param pos Position (0 based)

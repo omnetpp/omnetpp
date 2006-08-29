@@ -10,6 +10,8 @@ import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
+import org.omnetpp.common.displaymodel.DisplayString;
+import org.omnetpp.common.displaymodel.IDisplayStringProvider;
 import org.omnetpp.ned2.model.ModelUtil;
 import org.omnetpp.ned2.model.NEDElement;
 import org.omnetpp.ned2.model.NEDElementUtil;
@@ -280,6 +282,13 @@ public class NEDResources implements INEDComponentResolver {
 		return components.get(name);
 	}
 
+	public DisplayString getEffectiveDisplayString(IDisplayStringProvider node) {
+		// TODO look for fallback only if the displaystring is empty
+		// should be changed to correctly handle the fallback on a per property/attribute base
+		DisplayString resDisp = node.getDisplayString();
+		return resDisp;
+	}
+	
 	/* (non-Javadoc)
 	 * @see org.omnetpp.resources.INEDComponentResolver#wrapNEDElement(org.omnetpp.ned2.model.NEDElement)
 	 */

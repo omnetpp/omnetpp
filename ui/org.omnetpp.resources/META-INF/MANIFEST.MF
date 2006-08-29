@@ -8,6 +8,7 @@ Bundle-Localization: plugin
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
  org.eclipse.core.resources,
- org.omnetpp.ned2.model
+ org.omnetpp.ned2.model,
+ org.omnetpp.common
 Eclipse-LazyStart: true
 Export-Package: org.omnetpp.resources

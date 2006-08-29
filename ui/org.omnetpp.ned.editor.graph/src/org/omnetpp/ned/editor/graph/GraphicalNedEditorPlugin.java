@@ -1,7 +1,10 @@
 package org.omnetpp.ned.editor.graph;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Set;
+import java.util.SortedSet;
 
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.gef.palette.CombinedTemplateCreationEntry;
@@ -18,15 +21,19 @@ import org.eclipse.gef.palette.ToolEntry;
 import org.eclipse.gef.requests.SimpleFactory;
 import org.eclipse.gef.tools.MarqueeSelectionTool;
 import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.ui.actions.QuickStartAction;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.ned.editor.graph.misc.NedConnectionCreationTool;
 import org.omnetpp.ned.editor.graph.misc.NedSelectionTool;
+import org.omnetpp.ned.editor.graph.misc.SubmoduleFactory;
 import org.omnetpp.ned.editor.graph.properties.NedPropertySourceAdapterFactory;
 import org.omnetpp.ned2.model.CompoundModuleNodeEx;
 import org.omnetpp.ned2.model.ConnectionNodeEx;
 import org.omnetpp.ned2.model.NEDElement;
 import org.omnetpp.ned2.model.SubmoduleNodeEx;
+import org.omnetpp.resources.NEDResources;
+import org.omnetpp.resources.NEDResourcesPlugin;
 
 public class GraphicalNedEditorPlugin extends AbstractUIPlugin {
 
@@ -55,9 +62,9 @@ public class GraphicalNedEditorPlugin extends AbstractUIPlugin {
     }
 
     static PaletteRoot createPalette() {
-        PaletteRoot logicPalette = new PaletteRoot();
-        logicPalette.addAll(createCategories(logicPalette));
-        return logicPalette;
+        PaletteRoot nedPalette = new PaletteRoot();
+        nedPalette.addAll(createCategories(nedPalette));
+        return nedPalette;
     }
 
     static private List<PaletteContainer> createCategories(PaletteRoot root) {
@@ -65,8 +72,8 @@ public class GraphicalNedEditorPlugin extends AbstractUIPlugin {
 
         categories.add(createControlGroup(root));
         categories.add(createComponentsDrawer());
-        categories.add(createTemplatesDrawer());
         categories.add(createImportsDrawer());
+        categories.add(createTemplatesDrawer());
 
         return categories;
     }
@@ -80,20 +87,6 @@ public class GraphicalNedEditorPlugin extends AbstractUIPlugin {
         tool.setToolClass(NedSelectionTool.class);
         entries.add(tool);
         root.setDefaultEntry(tool);
-
-//    	PaletteStack marqueeStack = new PaletteStack("Marq", "", null); //$NON-NLS-1$
-//    	marqueeStack.add(new MarqueeToolEntry());
-//    	MarqueeToolEntry marquee = new MarqueeToolEntry();
-//    	marquee.setToolProperty(MarqueeSelectionTool.PROPERTY_MARQUEE_BEHAVIOR, 
-//    			new Integer(MarqueeSelectionTool.BEHAVIOR_CONNECTIONS_TOUCHED));
-//    	marqueeStack.add(marquee);
-//    	marquee = new MarqueeToolEntry();
-//    	marquee.setToolProperty(MarqueeSelectionTool.PROPERTY_MARQUEE_BEHAVIOR, 
-//    			new Integer(MarqueeSelectionTool.BEHAVIOR_CONNECTIONS_TOUCHED 
-//    			| MarqueeSelectionTool.BEHAVIOR_NODES_CONTAINED));
-//    	marqueeStack.add(marquee);
-//    	marqueeStack.setUserModificationPermission(PaletteEntry.PERMISSION_NO_MODIFICATION);
-//    	entries.add(marqueeStack);
 
     	MarqueeToolEntry marquee = new MarqueeToolEntry("Connection selector","Select all connections touching the marked area");
     	marquee.setToolProperty(MarqueeSelectionTool.PROPERTY_MARQUEE_BEHAVIOR, 
@@ -179,31 +172,33 @@ public class GraphicalNedEditorPlugin extends AbstractUIPlugin {
         return drawer;
     }
 
+    /**
+     * fills the import draver with currently parsed types
+     * @return
+     */
     static private PaletteContainer createImportsDrawer() {
         PaletteDrawer drawer = new PaletteDrawer(
                 "Imports",
                 ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_TEMPLATE)); 
 
         List entries = new ArrayList();
-
-//        CombinedTemplateCreationEntry combined = new CombinedTemplateCreationEntry(
-//                "EthMAC",
-//                "Ethernet MAC protocol module",
-//                NedModelFactory.getHalfAdderFactory(),
-//                ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_MODULE),
-//                ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_MODULE,"l",null,24)
-//        );
-//        entries.add(combined);
-//
-//        combined = new CombinedTemplateCreationEntry(
-//                "IPv4",
-//                "Internet protocol v4 module",
-//                NedModelFactory.getFullAdderFactory(),
-//                ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_MODULE),
-//                ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_MODULE,"l",null,24)
-//        );
-//        entries.add(combined);
-
+        
+        List<String> typeNames 
+        		= new ArrayList<String>(NEDResourcesPlugin.getNEDResources().getModuleNames());
+        Collections.sort(typeNames);
+        
+        for(String name : typeNames) {
+        	// TODO display correct icons, based on the type's default display string
+        	CombinedTemplateCreationEntry combined = new CombinedTemplateCreationEntry(
+                    name,
+                    "A submodule with type "+name,
+                    new SubmoduleFactory(name), 
+                    ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_SIMPLE),
+                    ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_SIMPLE,"l",null,24)
+            );
+            entries.add(combined);
+        }
+        
         drawer.addAll(entries);
         return drawer;
     }

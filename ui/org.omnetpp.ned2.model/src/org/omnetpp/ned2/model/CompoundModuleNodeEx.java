@@ -32,15 +32,13 @@ public class CompoundModuleNodeEx extends CompoundModuleNode
 
 	
     private void init() {
-        // TODO correctly handle the initial naming for new nodes (name most be unique)
+        // TODO correctly handle the initial naming for new nodes (name mUst be unique)
         setName("unnamed");
     }
 	
 	public DisplayString getDisplayString() {
 		if (displayString == null)
-			// TODO set the ancestor module correctly
-			displayString = new DisplayString(this, null,
-									NedElementExUtil.getDisplayString(this));
+			displayString = new DisplayString(this, NedElementExUtil.getDisplayString(this));
 		return displayString;
 	}
 	

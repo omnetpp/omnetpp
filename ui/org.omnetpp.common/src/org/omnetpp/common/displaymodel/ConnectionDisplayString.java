@@ -11,9 +11,8 @@ public class ConnectionDisplayString extends DisplayString {
         = new DisplayString("ls=black,1,s,l");
 
     
-    public ConnectionDisplayString(IDisplayStringProvider owner, IDisplayStringProvider ancestor,
-    								String value) {
-        super(owner, ancestor, value);
+    public ConnectionDisplayString(IDisplayStringProvider owner, String value) {
+        super(owner, value);
         variableDefaults = VARIABLE_DEFAULTS;
         emptyDefaults = EMPTY_DEFAULTS;
     }

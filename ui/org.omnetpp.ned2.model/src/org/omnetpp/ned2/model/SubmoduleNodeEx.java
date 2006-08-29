@@ -24,16 +24,15 @@ public class SubmoduleNodeEx extends SubmoduleNode implements INamedGraphNode {
 	}
 
     private void init() {
-        // TODO correctly handle the initial naming for new nodes (name most be unique)
+        // TODO correctly handle the initial naming for new nodes (name must be unique)
         setName("unnamed");
         setType("node");
     }
     
 	public DisplayString getDisplayString() {
-		// TODO set the ancestor module correctly
-		if (displayString == null)
-			displayString = new DisplayString(this, null, 
-												NedElementExUtil.getDisplayString(this));
+		if (displayString == null) {
+			displayString = new DisplayString(this, NedElementExUtil.getDisplayString(this));
+		}
 		return displayString;
 	}
 	

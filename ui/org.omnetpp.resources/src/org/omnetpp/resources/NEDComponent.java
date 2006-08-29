@@ -113,9 +113,10 @@ public class NEDComponent implements INEDComponent, NEDElementTags {
 	}
 
 	/**
-	 * Follow inheritance chain, and return the list of super classes
+	 * Follow inheritance chain, and return the list of super classes 
+	 * starting from the base class and ending with the current class
 	 */
-	protected List<INEDComponent> resolveExtendsChain() {
+	public List<INEDComponent> resolveExtendsChain() {
 	    ArrayList<INEDComponent> tmp = new ArrayList<INEDComponent>();
     	tmp.add(this);
 	    INEDComponent currentComponent = this;
@@ -130,8 +131,9 @@ public class NEDComponent implements INEDComponent, NEDElementTags {
 	    	currentComponent = resolver.getComponent(extendsName);
 	    	if (currentComponent==null)
 	    		break;
-	    	tmp.add(currentComponent);
+	    	tmp.add(0,currentComponent);
 	    }
+	    
 	    return tmp;
 	}
 
