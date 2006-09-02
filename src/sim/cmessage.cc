@@ -406,7 +406,7 @@ cMessage *cMessage::encapsulatedMsg() const
     // so that other messages are not affected in case the user modifies
     // the encapsulated message via the returned pointer.
     // Trick: this is a const method, so we can only do changes via a
-    // non-const copy if the 'this' pointer.
+    // non-const copy of the 'this' pointer.
     if (encapmsg)
         const_cast<cMessage *>(this)->_detachEncapMsg();
 #endif
