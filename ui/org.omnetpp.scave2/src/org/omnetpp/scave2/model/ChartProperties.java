@@ -14,6 +14,7 @@ import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TextCellEditor;
+import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
@@ -21,6 +22,7 @@ import org.eclipse.ui.views.properties.IPropertySource2;
 import org.eclipse.ui.views.properties.PropertyDescriptor;
 import org.omnetpp.common.properties.EnumCellEditor;
 import org.omnetpp.common.properties.PropertySource;
+import org.omnetpp.common.util.Converter;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.DatasetType;
@@ -71,6 +73,15 @@ public class ChartProperties extends PropertySource {
 		None,
 		AtMajorTicks,
 		AtAllTicks,
+	}
+	
+	public enum SymbolType {
+		Cross,
+		Diamond,
+		Oval,
+		Plus,
+		Square,
+		Triangle,
 	}
 	
 	public enum LineStyle {
@@ -136,31 +147,31 @@ public class ChartProperties extends PropertySource {
 	/*======================================================================
 	 *                             Titles
 	 *======================================================================*/
-	@org.omnetpp.common.properties.Property(category="Titles")
+	@org.omnetpp.common.properties.Property(category="Titles",id=PROP_GRAPH_TITLE)
 	public String getGraphTitle() { return getStringProperty(PROP_GRAPH_TITLE); }
 	public void setGraphTitle(String title) { setProperty(PROP_GRAPH_TITLE, title); }
 	
-	@org.omnetpp.common.properties.Property(category="Titles")
-	public String getGraphTitleFont() { return getStringProperty(PROP_GRAPH_TITLE_FONT); }
-	public void setGraphTitleFont(String font) { setProperty(PROP_GRAPH_TITLE_FONT, font); }
+	@org.omnetpp.common.properties.Property(category="Titles",id=PROP_GRAPH_TITLE_FONT)
+	public FontData getGraphTitleFont() { return getFontProperty(PROP_GRAPH_TITLE_FONT); }
+	public void setGraphTitleFont(FontData font) { setProperty(PROP_GRAPH_TITLE_FONT, font); }
 	
-	@org.omnetpp.common.properties.Property(category="Titles")
+	@org.omnetpp.common.properties.Property(category="Titles",id=PROP_X_AXIS_TITLE)
 	public String getXAxisTitle() { return getStringProperty(PROP_X_AXIS_TITLE); }
 	public void setXAxisTitle(String title) { setProperty(PROP_X_AXIS_TITLE, title); }
 	
-	@org.omnetpp.common.properties.Property(category="Titles")
+	@org.omnetpp.common.properties.Property(category="Titles",id=PROP_Y_AXIS_TITLE)
 	public String getYAxisTitle() { return getStringProperty(PROP_Y_AXIS_TITLE); }
 	public void setYAxisTitle(String title) { setProperty(PROP_Y_AXIS_TITLE, title); }
 	
-	@org.omnetpp.common.properties.Property(category="Titles")
+	@org.omnetpp.common.properties.Property(category="Titles",id=PROP_AXIS_TITLE_FONT)
 	public String getAxisTitleFont() { return getStringProperty(PROP_AXIS_TITLE_FONT); }
 	public void setAxisTitleFont(String title) { setProperty(PROP_AXIS_TITLE_FONT, title); }
 	
-	@org.omnetpp.common.properties.Property(category="Titles")
+	@org.omnetpp.common.properties.Property(category="Titles",id=PROP_LABEL_FONT)
 	public String getLabelsFont() { return getStringProperty(PROP_LABEL_FONT); }
 	public void setLabelsFont(String title) { setProperty(PROP_LABEL_FONT, title); }
 	
-	@org.omnetpp.common.properties.Property(category="Titles", displayName="x labels rotated by")
+	@org.omnetpp.common.properties.Property(category="Titles",id=PROP_X_LABELS_ROTATE_BY,displayName="x labels rotated by")
 	public String getXLabelsRotate() { return getStringProperty(PROP_X_LABELS_ROTATE_BY); }
 	public void setXLabelsRotate(String title) { setProperty(PROP_X_LABELS_ROTATE_BY, title); }
 	/*======================================================================
@@ -240,8 +251,8 @@ public class ChartProperties extends PropertySource {
 		public void setDisplaySymbols(boolean flag) { setProperty(PROP_DISPLAY_SYMBOLS, flag); }
 
 		@org.omnetpp.common.properties.Property(category="Lines")
-		public String getSymbolType() { return getStringProperty(PROP_SYMBOL_TYPE); }
-		public void setSymbolType(String type) { setProperty(PROP_SYMBOL_TYPE, type); }
+		public SymbolType getSymbolType() { return getEnumProperty(PROP_SYMBOL_TYPE, SymbolType.class); }
+		public void setSymbolType(SymbolType type) { setProperty(PROP_SYMBOL_TYPE, type); }
 		
 		@org.omnetpp.common.properties.Property(category="Lines")
 		public String getSymbolSize() { return getStringProperty(PROP_SYMBOL_SIZE); }
@@ -317,6 +328,11 @@ public class ChartProperties extends PropertySource {
 		return property != null && property.getValue() != null ? Enum.valueOf(type, property.getValue()) : null;
 	}
 	
+	public FontData getFontProperty(String propertyName) {
+		Property property = getProperty(propertyName);
+		return property != null ? Converter.stringToFontdata(property.getValue()) : null;
+	}
+	
 	public void setProperty(String propertyName, String propertyValue) {
 		EditingDomain domain = getEditingDomain();
 		ScaveModelPackage model = ScaveModelPackage.eINSTANCE;
@@ -358,6 +374,10 @@ public class ChartProperties extends PropertySource {
 	
 	public void setProperty(String propertyName, Enum<?> propertyValue) {
 		setProperty(propertyName, propertyValue == null ? null : String.valueOf(propertyValue));
+	}
+	
+	public void setProperty(String propertyName, FontData propertyValue) {
+		setProperty(propertyName, Converter.fontdataToString(propertyValue));
 	}
 	
 	private EditingDomain getEditingDomain() {

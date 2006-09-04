@@ -1,9 +1,12 @@
 package org.omnetpp.scave2.charting;
 
+import java.awt.Font;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBuffer;
 import java.awt.image.DataBufferInt;
+
+import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.BusyIndicator;
 import org.eclipse.swt.events.MouseEvent;
@@ -18,14 +21,21 @@ import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.graphics.PaletteData;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
-import org.eclipse.swt.internal.win32.OS;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.jfree.chart.ChartRenderingInfo;
 import org.jfree.chart.JFreeChart;
+import org.jfree.chart.axis.Axis;
 import org.jfree.chart.event.ChartChangeEvent;
 import org.jfree.chart.event.ChartChangeListener;
+import org.jfree.chart.plot.CategoryPlot;
+import org.jfree.chart.plot.Plot;
+import org.jfree.chart.plot.XYPlot;
+import org.jfree.chart.title.TextTitle;
+import org.omnetpp.common.util.Converter;
+
+import static org.omnetpp.scave2.model.ChartProperties.*;
 
 /**
  * Allows a JFreeChart chart to be displayed in SWT.
@@ -71,13 +81,119 @@ public class ChartSWTWrapper extends Canvas {
 			});
 	}
 	
+	/*=============================================
+	 *               Properties   
+	 *=============================================*/
+	public void setProperty(String name, String value) {
+		if (chart == null)
+			return;
+		
+		if (PROP_GRAPH_TITLE.equals(name))
+			chart.setTitle(value);
+		else if (PROP_GRAPH_TITLE_FONT.equals(name))
+			setTitleFont(Converter.stringToAwtfont(value));
+		else if (PROP_X_AXIS_TITLE.equals(name))
+			setXAxisTitle(value);
+		else if (PROP_Y_AXIS_TITLE.equals(name))
+			setYAxisTitle(value);
+		else if (PROP_AXIS_TITLE_FONT.equals(name))
+			setAxisTitleFont(Converter.stringToAwtfont(value));
+		else if (PROP_LABEL_FONT.equals(name))
+			setLabelFont(Converter.stringToAwtfont(value));
+		else if (PROP_X_LABELS_ROTATE_BY.equals(name))
+			setXAxisRotatedBy(value);
+	}
+	
+	public void setTitle(String title) {
+		if (chart != null)
+			chart.setTitle(title);
+	}
+	
+	public void setTitleFont(Font font) {
+		if (chart == null || font == null)
+			return;
+		TextTitle mainTitle = chart.getTitle();
+		if (mainTitle != null)
+			mainTitle.setFont(font);
+		else
+			chart.setTitle(new TextTitle("", font));
+	}
+	
+	public void setXAxisTitle(String title) {
+		Axis xAxis = getDomainAxis();
+		if (xAxis != null)
+			xAxis.setLabel(title);
+	}
+	
+	public void setYAxisTitle(String title) {
+		Axis yAxis = getRangeAxis();
+		if (yAxis != null)
+			yAxis.setLabel(title);
+	}
+	
+	public void setAxisTitleFont(Font font) {
+		if (chart == null || font == null)
+			return;
+
+		Axis xAxis = getDomainAxis();
+		Axis yAxis = getRangeAxis();
+		if (xAxis != null)
+			xAxis.setLabelFont(font);
+		if (yAxis != null)
+			yAxis.setLabelFont(font);
+	}
+	
+	public void setLabelFont(Font font) {
+		if (chart == null || font == null)
+			return;
+		
+		Axis xAxis = getDomainAxis();
+		Axis yAxis = getRangeAxis();
+		if (xAxis != null)
+			xAxis.setTickLabelFont(font);
+		if (yAxis != null)
+			yAxis.setTickLabelFont(font);
+	}
+	
+	public void setXAxisRotatedBy(String value) {
+		Double angle = Converter.stringToDouble(value);
+		if (chart == null || angle == null)
+			return;
+		
+		Axis axis = getDomainAxis();
+		if (axis != null)
+			axis.setLabelAngle(Math.toRadians(angle));
+	}
+	
 	public void setSize(int width, int height) {
 		if (width != SWT.DEFAULT || height != SWT.DEFAULT) {
 			Point size = getSize();
 			super.setSize(width != SWT.DEFAULT ? width : size.x, height != SWT.DEFAULT ? height : size.y);
 		}
 	}
+	
+	private Axis getDomainAxis() {
+		if (chart != null) {
+			Plot plot = chart.getPlot();
+			if (plot instanceof CategoryPlot)
+				return ((CategoryPlot)plot).getDomainAxis();
+			else if (plot instanceof XYPlot)
+				return ((XYPlot)plot).getDomainAxis();
+		}
+		return null;
+	}
 
+	private Axis getRangeAxis() {
+		if (chart != null) {
+			Plot plot = chart.getPlot();
+			if (plot instanceof CategoryPlot)
+				return ((CategoryPlot)plot).getRangeAxis();
+			else if (plot instanceof XYPlot)
+				return ((XYPlot)plot).getRangeAxis();
+		}
+		return null;
+	}
+	
 	/**
 	 * Called when an area was dragged out in the chart.
 	 * This default implementation does nothing.

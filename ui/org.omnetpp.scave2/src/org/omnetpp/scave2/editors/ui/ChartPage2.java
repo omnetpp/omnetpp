@@ -13,6 +13,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.scave.model.Chart;
+import org.omnetpp.scave.model.Property;
 import org.omnetpp.scave.model.ScaveModelPackage;
 import org.omnetpp.scave2.charting.ChartFactory;
 import org.omnetpp.scave2.charting.VectorChart;
@@ -23,6 +24,7 @@ import org.omnetpp.scave2.editors.ScaveEditor;
 public class ChartPage2 extends ScaveEditorPage {
 
 	private Chart chart; // the underlying model
+	private VectorChart chartView;
 
 	public ChartPage2(Composite parent, ScaveEditor editor, Chart chart) {
 		super(parent, SWT.V_SCROLL, editor);
@@ -31,9 +33,25 @@ public class ChartPage2 extends ScaveEditorPage {
 	}
 	
 	public void updatePage(Notification notification) {
+		ScaveModelPackage pkg = ScaveModelPackage.eINSTANCE;
 		if (ScaveModelPackage.eINSTANCE.getChart_Name().equals(notification.getFeature())) {
 			setPageTitle("Chart: " + getChartName(chart));
 			setFormTitle("Chart: " + getChartName(chart));
+		}
+		else if (pkg.getChart_Properties().equals(notification.getFeature())) {
+			Property property;
+			switch (notification.getEventType()) {
+			case Notification.ADD:
+				property = (Property)notification.getNewValue();
+				chartView.setProperty(property.getName(), property.getValue());
+			case Notification.REMOVE:
+				property = (Property)notification.getOldValue();
+				chartView.setProperty(property.getName(), null);
+			}
+		}
+		else if (pkg.getProperty_Value().equals(notification.getFeature())) {
+			Property property = (Property)notification.getNotifier();
+			chartView.setProperty(property.getName(), (String)notification.getNewValue());
 		}
 	}
 
@@ -56,12 +74,12 @@ public class ChartPage2 extends ScaveEditorPage {
 
 		// set up contents
 		Composite parent = getBody();
-		final VectorChart chart = (VectorChart) ChartFactory.createChart(parent, this.chart, scaveEditor.getResultFileManager(), -1, -1);
+		chartView = (VectorChart) ChartFactory.createChart(parent, this.chart, scaveEditor.getResultFileManager(), -1, -1);
 		
 		// create control strip (XXX temp code)
-		Composite controlStrip = createControlStrip(parent, chart);
+		Composite controlStrip = createControlStrip(parent, chartView);
 		controlStrip.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
-		controlStrip.moveAbove(chart);
+		controlStrip.moveAbove(chartView);
 	}
 
 	//XXX temporary code

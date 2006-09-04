@@ -14,6 +14,7 @@ import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.Dataset;
 import org.omnetpp.scave.model.DatasetType;
+import org.omnetpp.scave.model.Property;
 import org.omnetpp.scave.model.ScaveModelPackage;
 import org.omnetpp.scave2.charting.ChartFactory;
 import org.omnetpp.scave2.charting.InteractiveChart;
@@ -24,6 +25,7 @@ import org.omnetpp.scave2.model.ScaveModelUtil;
 public class ChartPage extends ScaveEditorPage {
 
 	private Chart chart; // the underlying model
+	private InteractiveChart chartView;
 
 	public ChartPage(Composite parent, ScaveEditor editor, Chart chart) {
 		super(parent, SWT.V_SCROLL, editor);
@@ -32,18 +34,30 @@ public class ChartPage extends ScaveEditorPage {
 	}
 	
 	public void updatePage(Notification notification) {
-		if (ScaveModelPackage.eINSTANCE.getChart_Name().equals(notification.getFeature())) {
+		ScaveModelPackage pkg = ScaveModelPackage.eINSTANCE;
+		if (pkg.getChart_Name().equals(notification.getFeature())) {
 			setPageTitle("Chart: " + chart.getName());
 			setFormTitle("Chart: " + chart.getName());
+		}
+		else if (pkg.getChart_Properties().equals(notification.getFeature())) {
+			Property property;
+			switch (notification.getEventType()) {
+			case Notification.ADD:
+				property = (Property)notification.getNewValue();
+				chartView.setProperty(property.getName(), property.getValue());
+			case Notification.REMOVE:
+				property = (Property)notification.getOldValue();
+				chartView.setProperty(property.getName(), null);
+			}
+		}
+		else if (pkg.getProperty_Value().equals(notification.getFeature())) {
+			Property property = (Property)notification.getNotifier();
+			chartView.setProperty(property.getName(), (String)notification.getNewValue());
 		}
 	}
 	
 	public Composite getChartComposite() {
 		return getBody();
-	}
-	
-	public void setChart(Control chart) {
-		// set layout data
 	}
 	
 	private void initialize() {
@@ -57,13 +71,8 @@ public class ChartPage extends ScaveEditorPage {
 		
 		// set up contents
 		Composite parent = getChartComposite();
-//		Dataset dataset = ScaveModelUtil.findEnclosingObject(chart, Dataset.class);
-//		IDList idlist = DatasetManager.getIDListFromDataset(scaveEditor.getResultFileManager(), dataset, chart);
-//		DatasetType type = dataset.getType();
-//		final InteractiveChart chart = ChartFactory.createChart(parent, type, idlist, scaveEditor.getResultFileManager()); 
-		final Control chart = ChartFactory.createChart(parent, this.chart, scaveEditor.getResultFileManager(), -1, -1);
-		setChart(chart);
-		chart.addMouseListener(new MouseAdapter() {
+		chartView = (InteractiveChart)ChartFactory.createChart(parent, this.chart, scaveEditor.getResultFileManager(), -1, -1);
+		chartView.addMouseListener(new MouseAdapter() {
 			public void mouseUp(MouseEvent e) {
 				scaveEditor.setSelection(new StructuredSelection(chart));
 			}

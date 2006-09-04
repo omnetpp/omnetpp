@@ -1,6 +1,7 @@
 package org.omnetpp.scave2.charting;
 
 import java.awt.Color;
+import java.util.List;
 
 import org.eclipse.draw2d.ColorConstants;
 import org.eclipse.swt.SWT;
@@ -8,6 +9,8 @@ import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.ui.views.properties.IPropertyDescriptor;
+import org.eclipse.ui.views.properties.IPropertySource2;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.block.BlockBorder;
@@ -31,8 +34,10 @@ import org.omnetpp.scave.engine.ScalarResult;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.Dataset;
 import org.omnetpp.scave.model.DatasetType;
+import org.omnetpp.scave.model.Property;
 import org.omnetpp.scave2.model.DatasetManager;
 import org.omnetpp.scave2.model.ScaveModelUtil;
+import org.omnetpp.scave2.model.ChartProperties;
 
 /**
  * Factory for scalar and vector charts. 
@@ -55,25 +60,31 @@ public class ChartFactory {
 	}
 	
 	private static InteractiveChart createScalarChart(Composite parent, Chart chart, Dataset dataset, ResultFileManager manager, int width, int height) {
-		IDList idlist = DatasetManager.getIDListFromDataset(manager, dataset, chart);
 		InteractiveChart interactiveChart = new InteractiveChart(parent, SWT.NONE);
 		JFreeChart jfreechart = createEmptyScalarJFreeChart(chart.getName(), "Category", "Value");
-		CategoryDataset categoryDataset = createChartWithRunsOnXAxis(idlist, manager);
 		interactiveChart.setSize(width, height);
 		interactiveChart.setChart(jfreechart);
+		// set chart data
+		IDList idlist = DatasetManager.getIDListFromDataset(manager, dataset, chart);
+		CategoryDataset categoryDataset = createChartWithRunsOnXAxis(idlist, manager);
 		jfreechart.getCategoryPlot().setDataset(categoryDataset);
+		// set chart properties
+		setChartProperties(chart, interactiveChart);
 		if (categoryDataset.getRowCount() <= 5)
 			addLegend(jfreechart);
 		return interactiveChart;
 	}
 
 	private static InteractiveChart createVectorChart(Composite parent, Chart chart, Dataset dataset, ResultFileManager manager, int width, int height) {
-		XYDataset data = new OutputVectorDataset(DatasetManager.getDataFromDataset(manager, dataset, chart));
 		InteractiveChart interactiveChart = new InteractiveChart(parent, SWT.NONE);
 		JFreeChart jfreechart = createEmptyVectorJFreeChart(chart.getName(), "X", "Y");
 		interactiveChart.setSize(width, height);
 		interactiveChart.setChart(jfreechart);
+		// set chart data
+		XYDataset data = new OutputVectorDataset(DatasetManager.getDataFromDataset(manager, dataset, chart));
 		jfreechart.getXYPlot().setDataset(data);
+		// set chart properties
+		setChartProperties(chart, interactiveChart);
 		if (data.getSeriesCount() <= 5)
 			addLegend(jfreechart);
 		
@@ -88,6 +99,7 @@ public class ChartFactory {
 		vectorChart.setSize(width, height);
 		vectorChart.setDataset(data);
 		vectorChart.setCaching(true);
+		setChartProperties(chart, vectorChart);
 
 		vectorChart.setBackground(ColorConstants.white);
 		new RubberbandSupport(vectorChart, SWT.CTRL) {
@@ -162,5 +174,23 @@ public class ChartFactory {
 					d.getModuleName()+"\n"+d.getName());
 		}
 		return ds;
+	}
+	
+	private static void setChartProperties(Chart chart, InteractiveChart chartView) {
+		ChartProperties chartProperties = ChartProperties.createPropertySource(chart);
+		for (IPropertyDescriptor descriptor : chartProperties.getPropertyDescriptors()) {
+			String id = (String)descriptor.getId();
+			if (chartProperties.isPropertySet(id))
+				chartView.setProperty(id, chartProperties.getStringProperty(id));
+		}
+	}
+	
+	private static void setChartProperties(Chart chart, VectorChart chartView) {
+		ChartProperties chartProperties = ChartProperties.createPropertySource(chart);
+		for (IPropertyDescriptor descriptor : chartProperties.getPropertyDescriptors()) {
+			String id = (String)descriptor.getId();
+			if (chartProperties.isPropertySet(id))
+				chartView.setProperty(id, chartProperties.getStringProperty(id));
+		}
 	}
 }

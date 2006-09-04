@@ -314,7 +314,7 @@ public class ChartEditForm implements IScaveObjectEditForm {
 		// Lines
 		props.setProperty(PROP_DISPLAY_SYMBOLS, displaySymbolsCheckbox.getSelection());
 		props.setProperty(PROP_SYMBOL_TYPE, symbolTypeCombo.getText()); // XXX
-		props.setProperty(PROP_SYMBOL_SIZE, symbolSizeCombo.getText());
+		props.setProperty(PROP_SYMBOL_SIZE, getSelection(symbolSizeCombo, SymbolType.class));
 		props.setProperty(PROP_LINE_TYPE, getSelection(lineStyleRadios, LineStyle.class));
 		props.setProperty(PROP_HIDE_LINE, hideLinesCheckbox.getSelection());
 		// Legend
@@ -338,6 +338,12 @@ public class ChartEditForm implements IScaveObjectEditForm {
 		return null;
 	}
 	
+	private <T extends Enum<T>> T getSelection(CCombo combo, Class<T> type) {
+		T[] values = type.getEnumConstants();
+		int index = combo.getSelectionIndex();
+		return index >= 0 ? values[index] : null;
+	}
+	
 	private void setProperties(List<Property> properties) {
 		ChartProperties props = new ChartProperties((List<Property>)chart.getProperties());
 		// Titles
@@ -359,7 +365,7 @@ public class ChartEditForm implements IScaveObjectEditForm {
 		setSelection(showGridRadios, props.getEnumProperty(PROP_XY_GRID, ShowGrid.class));
 		// Lines
 		displaySymbolsCheckbox.setSelection(props.getBooleanProperty(PROP_DISPLAY_SYMBOLS));
-		symbolTypeCombo.setText(props.getStringProperty(PROP_SYMBOL_TYPE));
+		setSelection(symbolTypeCombo, props.getEnumProperty(PROP_SYMBOL_TYPE, SymbolType.class));
 		symbolSizeCombo.setText(props.getStringProperty(PROP_SYMBOL_SIZE));
 		setSelection(lineStyleRadios, props.getEnumProperty(PROP_LINE_TYPE, LineStyle.class));
 		hideLinesCheckbox.setSelection(props.getBooleanProperty(PROP_HIDE_LINE));
@@ -377,5 +383,9 @@ public class ChartEditForm implements IScaveObjectEditForm {
 	private void setSelection(Button[] radios, Enum<?> value) {
 		for (int i = 0; i < radios.length; ++i)
 			radios[i].setSelection(value != null && value.ordinal() == i);
+	}
+	
+	private void setSelection(CCombo combo, Enum<?> value) {
+		combo.setText(value.toString());
 	}
 }
