@@ -2455,18 +2455,42 @@ opt_fieldvalue
         |
         ;
 
+/*
 fieldvalue
         : STRINGCONSTANT
         | CHARCONSTANT
         | INTCONSTANT
-        | '-' INTCONSTANT
         | REALCONSTANT
-        | '-' REALCONSTANT
         | timeconstant
         | TRUE_
         | FALSE_
         | NAME
         ;
+*/
+
+fieldvalue
+        : fieldvalue_token fieldvalue
+        | fieldvalue_token
+        ;
+
+fieldvalue_token
+        : STRINGCONSTANT
+        | CHARCONSTANT
+        | INTCONSTANT
+        | REALCONSTANT
+        | timeconstant
+        | TRUE_
+        | FALSE_
+        | NAME
+        | '(' | ')' | '.' | ','
+        | '?' | ':'
+        | AND | OR | XOR
+        | EQ | NE | GT | GE | LS | LE
+        | BIN_AND | BIN_OR | BIN_XOR
+        | SHIFT_LEFT | SHIFT_RIGHT
+        | '+' | '-' | '*' | '/' | '%' | '^'
+        ;
+
 
 enumvalue
         : INTCONSTANT
