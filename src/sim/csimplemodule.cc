@@ -505,7 +505,7 @@ int cSimpleModule::scheduleAt(simtime_t t, cMessage *msg)
         if (this!=simulation.contextModule())
             throw new cRuntimeError("scheduleAt() of module (%s)%s called in the context of "
                                     "module (%s)%s: method called from the latter module "
-                                    "lacks Enter_Method() or Enter_Method_Silent()?"
+                                    "lacks Enter_Method() or Enter_Method_Silent()?",
                                     className(), fullPath().c_str(),
                                     simulation.contextModule()->className(),
                                     simulation.contextModule()->fullPath().c_str());

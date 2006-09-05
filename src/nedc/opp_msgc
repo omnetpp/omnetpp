@@ -204,6 +204,14 @@ $classtype{'cPacket'} = 'cobject';
 
 @enums = ();
 
+$reservedwords = 'abstract|allowunconnected|ancestor|anytype|bool|channelinterface|channel|char'
+    . '|class|connections|const|cplusplus|datarate|default|delay|display|double|do|endchannel'
+    . '|endfor|endmodule|endnetwork|endsimple|enum|error|extends|false|fields|for|function'
+    . '|gatesizes|gates|if|import|index|inout|input|interface|int|like|long|message|module'
+    . '|network|nocheck|noncobject|numeric|on|output|package|parameters|properties|property'
+    . '|readonly|ref|short|simple|sizeof|string|struct|submodules|this|to|true|typename|types'
+    . '|unsigned|where|withcppclass|xmldoc|xml';
+
 # parse cppincludes
 while ($msg =~ s/cppinclude\s+(["\<].*?["\>])//s)
 {
@@ -246,6 +254,9 @@ while ($msg =~ s/(struct|cobject|noncobject|class|class\s+noncobject|message)\s+
         die 'invalid type';
     }
 
+    if ($class =~ /^($reservedwords)$/) {
+        print STDERR "*** Error: type name '$class' is a reserved word\n"; $ret=1;
+    }
     if (grep(/^\Q$class\E$/,@classes)) {
         if ($classtype{$class} ne $type) {
             print STDERR "*** Error: different declarations for '$class' are inconsistent\n"; $ret=1;
@@ -260,6 +271,10 @@ while ($msg =~ s/(struct|cobject|noncobject|class|class\s+noncobject|message)\s+
 while ($msg =~ s/enum\s+([A-Za-z_][A-Za-z0-9_]*)\s*;//s)
 {
     $enumname = $1;
+
+    if ($enumname =~ /^($reservedwords)$/) {
+        print STDERR "*** Error: enum name '$enumname' is a reserved word\n"; $ret=1;
+    }
 
     if (grep(/^\Q$enumname\E$/,@classes)) {
         print STDERR "*** Error: inconsistent declarations for '$enum'\n"; $ret=1;
@@ -294,6 +309,10 @@ while ($msg =~ s/enum\s+([A-Za-z0-9_ \t]+?)\s*{(.*?)};?//s)
         $baseenum = '';
     }
 
+    if ($enumname =~ /^($reservedwords)$/) {
+        print STDERR "*** Error: enum name '$enumname' is a reserved word\n"; $ret=1;
+    }
+
     @fieldlist = ();
     undef %fval;
 
@@ -318,6 +337,10 @@ while ($msg =~ s/enum\s+([A-Za-z0-9_ \t]+?)\s*{(.*?)};?//s)
         } else {
             $scrap .= $field;
             print STDERR "*** Error: missing identifier name in enum $enumname\n"; $ret=1;
+        }
+
+        if ($fieldname =~ /^($reservedwords)$/) {
+            print STDERR "*** Error: enum field name '$fieldname' is a reserved word\n"; $ret=1;
         }
 
         # store field
@@ -414,6 +437,10 @@ while ($msg =~ s/(message|class|struct)\s+(.+?)\s*{(.*?)};?//s)
         $msgbase = '';
     }
 
+    if ($msgname =~ /^($reservedwords)$/) {
+        print STDERR "*** Error: type name '$msgname' is a reserved word\n"; $ret=1;
+    }
+
     #
     # check if there's some garbage before "fields:" or "properties:"
     #
@@ -447,6 +474,10 @@ while ($msg =~ s/(message|class|struct)\s+(.+?)\s*{(.*?)};?//s)
                 $propvalue = $2;
                 push(@proplist,$propname);
                 $pval{$propname} = $propvalue;
+
+                if ($propname =~ /^($reservedwords)$/) {
+                    print STDERR "*** Error: property name '$propname' is a reserved word\n"; $ret=1;
+                }
             }
             else {$scrap.=$prop;}
         }
@@ -556,6 +587,10 @@ while ($msg =~ s/(message|class|struct)\s+(.+?)\s*{(.*?)};?//s)
                 }
                 if ($fieldvalue eq '') {
                     print STDERR "*** Error: missing field type in '$msgname'\n"; $ret=1;
+                }
+
+                if ($fieldname =~ /^($reservedwords)$/) {
+                    print STDERR "*** Error: field name '$fieldname' is a reserved word\n"; $ret=1;
                 }
 
                 push(@baseclassfieldlist,$fieldname);
