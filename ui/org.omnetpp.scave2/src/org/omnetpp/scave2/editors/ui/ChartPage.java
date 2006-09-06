@@ -18,6 +18,7 @@ import org.omnetpp.scave.model.Property;
 import org.omnetpp.scave.model.ScaveModelPackage;
 import org.omnetpp.scave2.charting.ChartFactory;
 import org.omnetpp.scave2.charting.InteractiveChart;
+import org.omnetpp.scave2.charting.ScalarChart;
 import org.omnetpp.scave2.editors.ScaveEditor;
 import org.omnetpp.scave2.model.DatasetManager;
 import org.omnetpp.scave2.model.ScaveModelUtil;
@@ -44,15 +45,20 @@ public class ChartPage extends ScaveEditorPage {
 			switch (notification.getEventType()) {
 			case Notification.ADD:
 				property = (Property)notification.getNewValue();
-				chartView.setProperty(property.getName(), property.getValue());
+				if (chartView instanceof ScalarChart)
+					((ScalarChart)chartView).setProperty(property.getName(), property.getValue());
+				break;
 			case Notification.REMOVE:
 				property = (Property)notification.getOldValue();
-				chartView.setProperty(property.getName(), null);
+				if (chartView instanceof ScalarChart)
+					((ScalarChart)chartView).setProperty(property.getName(), null);
+				break;
 			}
 		}
 		else if (pkg.getProperty_Value().equals(notification.getFeature())) {
 			Property property = (Property)notification.getNotifier();
-			chartView.setProperty(property.getName(), (String)notification.getNewValue());
+			if (chartView instanceof ScalarChart)
+				((ScalarChart)chartView).setProperty(property.getName(), (String)notification.getNewValue());
 		}
 	}
 	
@@ -71,7 +77,7 @@ public class ChartPage extends ScaveEditorPage {
 		
 		// set up contents
 		Composite parent = getChartComposite();
-		chartView = (InteractiveChart)ChartFactory.createChart(parent, this.chart, scaveEditor.getResultFileManager(), -1, -1);
+		chartView = (InteractiveChart)ChartFactory.createChart(parent, this.chart, scaveEditor.getResultFileManager());
 		chartView.addMouseListener(new MouseAdapter() {
 			public void mouseUp(MouseEvent e) {
 				scaveEditor.setSelection(new StructuredSelection(chart));

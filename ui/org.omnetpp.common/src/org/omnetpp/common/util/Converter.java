@@ -24,7 +24,7 @@ public class Converter {
 		return new FontData(font.getName(), font.getSize(), font.getStyle());
 	}
 	
-	public static org.eclipse.swt.graphics.Font fontDataToSwtfont(FontData fontdata) {
+	public static org.eclipse.swt.graphics.Font fontdataToSwtfont(FontData fontdata) {
 		if (fontdata == null)
 			return null;
 		return new org.eclipse.swt.graphics.Font(Display.getDefault(), fontdata);
@@ -40,6 +40,20 @@ public class Converter {
 		return fontdataToAwtfont(stringToFontdata(font));
 	}
 	
+	public static org.eclipse.swt.graphics.Font stringToSwtfont(String font) {
+		return fontdataToSwtfont(stringToFontdata(font));
+	}
+	
+	public static <T extends Enum<T>> T stringToEnum(String value, Class<T> enumType) {
+		if (value == null)
+			return null;
+		try {
+			return Enum.valueOf(enumType, value);
+		} catch (IllegalArgumentException e) {
+			return null;
+		}
+	}
+ 	
 	/*
 	 * The rest is from StringConverter.
 	 * This class cannot inherit from StringConverter, because it has

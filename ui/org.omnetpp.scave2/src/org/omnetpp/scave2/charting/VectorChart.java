@@ -10,6 +10,7 @@ import org.eclipse.draw2d.geometry.Insets;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.widgets.Composite;
 import org.jfree.data.xy.XYDataset;
 import org.omnetpp.common.color.ColorFactory;
@@ -59,12 +60,15 @@ public class VectorChart extends ZoomableCachingCanvas {
 	private int tickSpacing = DEFAULT_TICK_SPACING;
 	private boolean displaySymbols = true;
 	private boolean hideLines = false;
+	private Font labelFont;
+	
+	private Runnable scheduledRedraw;
 	
 	public VectorChart(Composite parent, int style) {
 		super(parent, style);
 		super.setInsets(new Insets(18,40,18,40));
 	}
-
+	
 	public XYDataset getDataset() {
 		return dataset;
 	}
@@ -72,7 +76,7 @@ public class VectorChart extends ZoomableCachingCanvas {
 	public void setDataset(XYDataset dataset) {
 		this.dataset = dataset;
 		calculateArea();
-		clearCanvasCacheAndRedraw();
+		scheduleRedraw();
 	}
 	
 	/*==================================
@@ -91,18 +95,18 @@ public class VectorChart extends ZoomableCachingCanvas {
 		else if (PROP_AXIS_TITLE_FONT.equals(name))
 			;
 		else if (PROP_LABEL_FONT.equals(name))
-			;
+			setLabelFont(Converter.stringToSwtfont(value));
 		else if (PROP_X_LABELS_ROTATE_BY.equals(name))
 			;
 		// Axes
 		else if (PROP_X_AXIS_MIN.equals(name))
-			;
+			setXMin(Converter.stringToDouble(value));
 		else if (PROP_X_AXIS_MAX.equals(name))
-			;
+			setXMax(Converter.stringToDouble(value));
 		else if (PROP_Y_AXIS_MIN.equals(name))
-			;
+			setYMin(Converter.stringToDouble(value));
 		else if (PROP_Y_AXIS_MAX.equals(name))
-			;
+			setYMax(Converter.stringToDouble(value));
 		else if (PROP_X_AXIS_LOGARITHMIC.equals(name))
 			;
 		else if (PROP_Y_AXIS_LOGARITHMIC.equals(name))
@@ -115,11 +119,11 @@ public class VectorChart extends ZoomableCachingCanvas {
 		else if (PROP_DISPLAY_SYMBOLS.equals(name))
 			setDisplaySymbols(Converter.stringToBoolean(value));
 		else if (PROP_SYMBOL_TYPE.equals(name))
-			setDefaultSymbol(SymbolType.valueOf(value));
+			setDefaultSymbol(Converter.stringToEnum(value, SymbolType.class));
 		else if (PROP_SYMBOL_SIZE.equals(name))
 			setDefaultSymbolSize(Converter.stringToInteger(value));
 		else if (PROP_LINE_TYPE.equals(name))
-			setDefaultLineType(LineStyle.valueOf(value));
+			setDefaultLineType(Converter.stringToEnum(value, LineStyle.class));
 		else if (PROP_HIDE_LINE.equals(name))
 			setHideLines(Converter.stringToBoolean(value));
 		// Legend
@@ -141,16 +145,20 @@ public class VectorChart extends ZoomableCachingCanvas {
 
 	public void setDefaultLineType(IVectorPlotter defaultPlotter) {
 		this.defaultPlotter = defaultPlotter;
-		clearCanvasCacheAndRedraw();
+		scheduleRedraw();
 	}
 	
 	public void setDefaultLineType(LineStyle type) {
+		if (type == null)
+			return;
+		
 		switch (type) {
 		case None: setDefaultLineType(new DotsVectorPlotter()); break;
 		case Linear: setDefaultLineType(new LinesVectorPlotter()); break;
 		case Step: setDefaultLineType(new SampleHoldVectorPlotter()); break;
 		case Spline: /*TODO*/ break; 
 		}
+		scheduleRedraw();
 	}
 
 	public IChartSymbol getDefaultSymbol() {
@@ -160,10 +168,13 @@ public class VectorChart extends ZoomableCachingCanvas {
 	public void setDefaultSymbol(IChartSymbol defaultSymbol) {
 		Assert.isLegal(defaultSymbol != null);
 		this.defaultSymbol = defaultSymbol;
-		clearCanvasCacheAndRedraw();
+		scheduleRedraw();
 	}
 	
 	public void setDefaultSymbol(SymbolType symbolType) {
+		if (symbolType == null)
+			return;
+		
 		int size = defaultSymbol.getSizeHint();
 		switch (symbolType) {
 		case Cross: setDefaultSymbol(new CrossSymbol(size)); break;
@@ -173,21 +184,54 @@ public class VectorChart extends ZoomableCachingCanvas {
 		case Square: setDefaultSymbol(new SquareSymbol(size)); break;
 		case Triangle: setDefaultSymbol(new TriangleSymbol(size)); break;
 		}
+		scheduleRedraw();
 	}
 	
 	public void setDisplaySymbols(Boolean value) {
 		displaySymbols = value != null ? value : true;
-		clearCanvasCacheAndRedraw();
+		scheduleRedraw();
 	}
 	
-	public void setDefaultSymbolSize(int size) {
+	public void setDefaultSymbolSize(Integer size) {
+		if (size == null)
+			return;
 		defaultSymbol.setSizeHint(size);
-		clearCanvasCacheAndRedraw();
+		scheduleRedraw();
 	}
 	
 	public void setHideLines(Boolean value) {
 		hideLines = value != null ? value : false;
-		clearCanvasCacheAndRedraw();
+		scheduleRedraw();
+	}
+	
+	public void setXMin(Double value) {
+		if (value != null)
+			setArea(value, minY, maxX, maxY);
+		scheduleRedraw();
+	}
+	
+	public void setXMax(Double value) {
+		if (value != null)
+			setArea(minX, minY, value, maxY);
+		scheduleRedraw();
+	}
+	
+	public void setYMin(Double value) {
+		if (value != null)
+			setArea(minX, value, maxX, maxY);
+		scheduleRedraw();
+	}
+	
+	public void setYMax(Double value) {
+		if (value != null)
+			setArea(minX, minY, maxX, value);
+		scheduleRedraw();
+	}
+	
+	public void setLabelFont(Font font) {
+		if (font != null)
+			labelFont = font;
+		scheduleRedraw();
 	}
 	
 	public int getAntialias() {
@@ -196,7 +240,7 @@ public class VectorChart extends ZoomableCachingCanvas {
 
 	public void setAntialias(int antialias) {
 		this.antialias = antialias;
-		clearCanvasCacheAndRedraw();
+		scheduleRedraw();
 	}
 
 	private void calculateArea() {
@@ -281,6 +325,7 @@ public class VectorChart extends ZoomableCachingCanvas {
 		else if (tickIntvlX.divide(BigDecimal.valueOf(2)).compareTo(tickSpacingX) > 0)
 			tickIntvlX = tickIntvlX.divide(BigDecimal.valueOf(2));
 
+		if (labelFont != null) graphics.setFont(labelFont);
 		for (BigDecimal t=tickStartX; t.compareTo(tickEndX)<0; t = t.add(tickIntvlX)) {
 			int x = toCanvasX(t.doubleValue());
 			graphics.setLineStyle(SWT.LINE_DOT);
@@ -317,6 +362,7 @@ public class VectorChart extends ZoomableCachingCanvas {
 		else if (tickIntvlY.divide(BigDecimal.valueOf(2)).compareTo(tickSpacingY) > 0)
 			tickIntvlY = tickIntvlY.divide(BigDecimal.valueOf(2));
 
+		if(labelFont != null) graphics.setFont(labelFont);
 		for (BigDecimal t=tickStartY; t.compareTo(tickEndY)<0; t = t.add(tickIntvlY)) {
 			int y = toCanvasY(t.doubleValue());
 			graphics.setLineStyle(SWT.LINE_DOT);
@@ -335,5 +381,17 @@ public class VectorChart extends ZoomableCachingCanvas {
 			graphics.setLineStyle(SWT.LINE_SOLID);
 			graphics.drawLine(0, toCanvasY(0), getWidth(), toCanvasY(0));
 		//}
+	}
+	
+	private void scheduleRedraw() {
+		if (scheduledRedraw == null) {
+			scheduledRedraw = new Runnable() {
+				public void run() {
+					scheduledRedraw = null;
+					clearCanvasCacheAndRedraw();
+				}
+			};
+			getDisplay().asyncExec(scheduledRedraw);
+		}
 	}
 }

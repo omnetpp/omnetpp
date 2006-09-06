@@ -53,7 +53,13 @@ public class ChartSWTWrapper extends Canvas {
 	protected JFreeChart chart;
 
 	// listener that refreshes the display when the chart changes
-	private ChartChangeListener listener;
+	private ChartChangeListener listener = new ChartChangeListener() {
+		public void chartChanged(ChartChangeEvent arg0) {
+			//refresh();
+	}};
+	
+	private Runnable scheduledRefresh = null;
+
 
 	// geometry info about the chart
 	protected ChartRenderingInfo renderingInfo;
@@ -81,117 +87,12 @@ public class ChartSWTWrapper extends Canvas {
 			});
 	}
 	
-	/*=============================================
-	 *               Properties   
-	 *=============================================*/
-	public void setProperty(String name, String value) {
-		if (chart == null)
-			return;
-		
-		if (PROP_GRAPH_TITLE.equals(name))
-			chart.setTitle(value);
-		else if (PROP_GRAPH_TITLE_FONT.equals(name))
-			setTitleFont(Converter.stringToAwtfont(value));
-		else if (PROP_X_AXIS_TITLE.equals(name))
-			setXAxisTitle(value);
-		else if (PROP_Y_AXIS_TITLE.equals(name))
-			setYAxisTitle(value);
-		else if (PROP_AXIS_TITLE_FONT.equals(name))
-			setAxisTitleFont(Converter.stringToAwtfont(value));
-		else if (PROP_LABEL_FONT.equals(name))
-			setLabelFont(Converter.stringToAwtfont(value));
-		else if (PROP_X_LABELS_ROTATE_BY.equals(name))
-			setXAxisRotatedBy(value);
-	}
-	
-	public void setTitle(String title) {
-		if (chart != null)
-			chart.setTitle(title);
-	}
-	
-	public void setTitleFont(Font font) {
-		if (chart == null || font == null)
-			return;
-		TextTitle mainTitle = chart.getTitle();
-		if (mainTitle != null)
-			mainTitle.setFont(font);
-		else
-			chart.setTitle(new TextTitle("", font));
-	}
-	
-	public void setXAxisTitle(String title) {
-		Axis xAxis = getDomainAxis();
-		if (xAxis != null)
-			xAxis.setLabel(title);
-	}
-	
-	public void setYAxisTitle(String title) {
-		Axis yAxis = getRangeAxis();
-		if (yAxis != null)
-			yAxis.setLabel(title);
-	}
-	
-	public void setAxisTitleFont(Font font) {
-		if (chart == null || font == null)
-			return;
-
-		Axis xAxis = getDomainAxis();
-		Axis yAxis = getRangeAxis();
-		if (xAxis != null)
-			xAxis.setLabelFont(font);
-		if (yAxis != null)
-			yAxis.setLabelFont(font);
-	}
-	
-	public void setLabelFont(Font font) {
-		if (chart == null || font == null)
-			return;
-		
-		Axis xAxis = getDomainAxis();
-		Axis yAxis = getRangeAxis();
-		if (xAxis != null)
-			xAxis.setTickLabelFont(font);
-		if (yAxis != null)
-			yAxis.setTickLabelFont(font);
-	}
-	
-	public void setXAxisRotatedBy(String value) {
-		Double angle = Converter.stringToDouble(value);
-		if (chart == null || angle == null)
-			return;
-		
-		Axis axis = getDomainAxis();
-		if (axis != null)
-			axis.setLabelAngle(Math.toRadians(angle));
-	}
 	
 	public void setSize(int width, int height) {
 		if (width != SWT.DEFAULT || height != SWT.DEFAULT) {
 			Point size = getSize();
 			super.setSize(width != SWT.DEFAULT ? width : size.x, height != SWT.DEFAULT ? height : size.y);
 		}
-	}
-	
-	private Axis getDomainAxis() {
-		if (chart != null) {
-			Plot plot = chart.getPlot();
-			if (plot instanceof CategoryPlot)
-				return ((CategoryPlot)plot).getDomainAxis();
-			else if (plot instanceof XYPlot)
-				return ((XYPlot)plot).getDomainAxis();
-		}
-		return null;
-	}
-
-	private Axis getRangeAxis() {
-		if (chart != null) {
-			Plot plot = chart.getPlot();
-			if (plot instanceof CategoryPlot)
-				return ((CategoryPlot)plot).getRangeAxis();
-			else if (plot instanceof XYPlot)
-				return ((XYPlot)plot).getRangeAxis();
-		}
-		return null;
 	}
 	
 	/**
@@ -307,31 +208,37 @@ public class ChartSWTWrapper extends Canvas {
 
 	public void setChart(JFreeChart newChart) {
 		// deregister from old chart
-		if (listener!=null && chart!=null) {
+		if (chart!=null) {
 			chart.removeChangeListener(listener);
 		}
 
 		// set chart and register ourselves with it.
 		chart = newChart;
-		if (listener==null) {
-			listener = new ChartChangeListener() {
-				public void chartChanged(ChartChangeEvent arg0) {
-					refresh();
-				}};
-		}
 		chart.addChangeListener(listener);
-        refresh();
+        scheduleRefresh();
 	}
 
 	public JFreeChart getChart() {
 		return chart;
 	}
 
+	public void scheduleRefresh() {
+		if (scheduledRefresh == null) {
+			scheduledRefresh = new Runnable() {
+				public void run() {
+					scheduledRefresh = null;
+					refresh();
+				}
+			};
+			getDisplay().asyncExec(scheduledRefresh);
+		}
+	}
+
 	public void refresh() {
 		renderChart();
 		redraw();
 	}
-
+	
 	private void renderChart() {
 		final Rectangle b = getBounds();
 
@@ -357,21 +264,6 @@ public class ChartSWTWrapper extends Canvas {
 
 	}
 
-	private void scheduleChartRendering() {
-        // This code doesn't work perfectly -- there'll bere too many redraws scheduled
-		//		// this is something like Tcl's "after idle".
-		//		if (!renderingScheduled) { // FIXME do we need some locking etc?
-		//			renderingScheduled = true;
-		//			Display.getDefault().asyncExec(new Runnable(){
-		//				public void run() {
-		//					renderChart();
-		//					redraw();
-		//					renderingScheduled = false;
-		//				}
-		//			});
-		//		}
-	}
-
 	private void repaintChart(PaintEvent event) {
 		if (image==null) {
 			 // no chart, just delete the background
@@ -383,8 +275,8 @@ public class ChartSWTWrapper extends Canvas {
 			 // if sizes differ, we should redraw it sometime
 			 Rectangle b = getBounds();
 			 Rectangle ib = image.getBounds();
-			 if (b.height!=0 && b.width!=0 && !b.equals(ib))
-				 scheduleChartRendering();
+			 //if (b.height!=0 && b.width!=0 && !b.equals(ib))
+			 //	 scheduleRefresh();
 
 			 // transfer image to screen
 			 event.gc.drawImage(image,0,0);

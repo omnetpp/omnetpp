@@ -164,12 +164,12 @@ public class ChartProperties extends PropertySource {
 	public void setYAxisTitle(String title) { setProperty(PROP_Y_AXIS_TITLE, title); }
 	
 	@org.omnetpp.common.properties.Property(category="Titles",id=PROP_AXIS_TITLE_FONT)
-	public String getAxisTitleFont() { return getStringProperty(PROP_AXIS_TITLE_FONT); }
-	public void setAxisTitleFont(String title) { setProperty(PROP_AXIS_TITLE_FONT, title); }
+	public FontData getAxisTitleFont() { return getFontProperty(PROP_AXIS_TITLE_FONT); }
+	public void setAxisTitleFont(FontData font) { setProperty(PROP_AXIS_TITLE_FONT, font); }
 	
 	@org.omnetpp.common.properties.Property(category="Titles",id=PROP_LABEL_FONT)
-	public String getLabelsFont() { return getStringProperty(PROP_LABEL_FONT); }
-	public void setLabelsFont(String title) { setProperty(PROP_LABEL_FONT, title); }
+	public FontData getLabelsFont() { return getFontProperty(PROP_LABEL_FONT); }
+	public void setLabelsFont(FontData font) { setProperty(PROP_LABEL_FONT, font); }
 	
 	@org.omnetpp.common.properties.Property(category="Titles",id=PROP_X_LABELS_ROTATE_BY,displayName="x labels rotated by")
 	public String getXLabelsRotate() { return getStringProperty(PROP_X_LABELS_ROTATE_BY); }
@@ -177,58 +177,46 @@ public class ChartProperties extends PropertySource {
 	/*======================================================================
 	 *                             Axes
 	 *======================================================================*/
-	@org.omnetpp.common.properties.Property(category="Axes")
-	public String getXAxisMin() { return getStringProperty(PROP_X_AXIS_MIN); }
-	public void setXAxisMin(String min) { setProperty(PROP_X_AXIS_MIN, min); }
-	
-	@org.omnetpp.common.properties.Property(category="Axes")
-	public String getXAxisMax() { return getStringProperty(PROP_X_AXIS_MAX); }
-	public void setXAxisMax(String max) { setProperty(PROP_X_AXIS_MAX, max); }
-	
-	@org.omnetpp.common.properties.Property(category="Axes")
+	@org.omnetpp.common.properties.Property(category="Axes",id=PROP_Y_AXIS_MIN)
 	public String getYAxisMin() { return getStringProperty(PROP_Y_AXIS_MIN); }
 	public void setYAxisMin(String min) { setProperty(PROP_Y_AXIS_MIN, min); }
 	
-	@org.omnetpp.common.properties.Property(category="Axes")
+	@org.omnetpp.common.properties.Property(category="Axes",id=PROP_Y_AXIS_MAX)
 	public String getYAxisMax() { return getStringProperty(PROP_Y_AXIS_MAX); }
 	public void setYAxisMax(String max) { setProperty(PROP_Y_AXIS_MAX, max); }
 	
-	@org.omnetpp.common.properties.Property(category="Axes")
-	public boolean getXAxisLogarithmic() { return getBooleanProperty(PROP_X_AXIS_LOGARITHMIC); }
-	public void setXAxisLogarithmic(boolean flag) { setProperty(PROP_X_AXIS_LOGARITHMIC, flag); }
-	
-	@org.omnetpp.common.properties.Property(category="Axes")
+	@org.omnetpp.common.properties.Property(category="Axes",id=PROP_Y_AXIS_LOGARITHMIC)
 	public boolean getYAxisLogarithmic() { return getBooleanProperty(PROP_Y_AXIS_LOGARITHMIC); }
 	public void setYAxisLogarithmic(boolean flag) { setProperty(PROP_Y_AXIS_LOGARITHMIC, flag); }
 	
-	@org.omnetpp.common.properties.Property(category="Axes")
+	@org.omnetpp.common.properties.Property(category="Axes",id=PROP_XY_INVERT)
 	public boolean getXYInvert() { return getBooleanProperty(PROP_XY_INVERT); }
 	public void setXYInvert(boolean flag) { setProperty(PROP_XY_INVERT, flag); }
 
-	@org.omnetpp.common.properties.Property(category="Axes")
+	@org.omnetpp.common.properties.Property(category="Axes",id=PROP_XY_GRID)
 	public ShowGrid getXYGrid() { return getEnumProperty(PROP_XY_GRID, ShowGrid.class); }
 	public void setXYGrid(ShowGrid showgrid) { setProperty(PROP_XY_GRID, showgrid); }
 
 	/*======================================================================
 	 *                             Legend
 	 *======================================================================*/
-	@org.omnetpp.common.properties.Property(category="Legend")
+	@org.omnetpp.common.properties.Property(category="Legend",id=PROP_DISPLAY_LEGEND)
 	public boolean getDisplayLegend() { return getBooleanProperty(PROP_DISPLAY_LEGEND); }
 	public void setDisplayLegend(boolean flag) { setProperty(PROP_DISPLAY_LEGEND, flag); }
 	
-	@org.omnetpp.common.properties.Property(category="Legend")
+	@org.omnetpp.common.properties.Property(category="Legend",id=PROP_LEGEND_BORDER)
 	public boolean getLegendBorder() { return getBooleanProperty(PROP_LEGEND_BORDER); }
 	public void setLegendBorder(boolean flag) { setProperty(PROP_LEGEND_BORDER, flag); }
 	
-	@org.omnetpp.common.properties.Property(category="Legend")
-	public String getLegendFont() { return getStringProperty(PROP_LEGEND_FONT); }
-	public void setLegendFont(String font) { setProperty(PROP_LEGEND_FONT, font); }
+	@org.omnetpp.common.properties.Property(category="Legend",id=PROP_LEGEND_FONT)
+	public FontData getLegendFont() { return getFontProperty(PROP_LEGEND_FONT); }
+	public void setLegendFont(FontData font) { setProperty(PROP_LEGEND_FONT, font); }
 	
-	@org.omnetpp.common.properties.Property(category="Legend")
+	@org.omnetpp.common.properties.Property(category="Legend",id=PROP_LEGEND_POSITION)
 	public LegendPosition getLegendPosition() { return getEnumProperty(PROP_LEGEND_POSITION, LegendPosition.class); }
 	public void setLegendPosition(LegendPosition position) { setProperty(PROP_LEGEND_POSITION, position); }
 	
-	@org.omnetpp.common.properties.Property(category="Legend")
+	@org.omnetpp.common.properties.Property(category="Legend",id=PROP_LEGEND_ANCHORING)
 	public LegendAnchor getLegendAnchoring() { return getEnumProperty(PROP_LEGEND_ANCHORING, LegendAnchor.class); }
 	public void setLegendAnchoring(LegendAnchor anchoring) { setProperty(PROP_LEGEND_ANCHORING, anchoring); }
 
@@ -242,27 +230,40 @@ public class ChartProperties extends PropertySource {
 		public VectorChartProperties(Chart chart) {
 			super(chart);
 		}
+		/*======================================================================
+		 *                             Axes
+		 *======================================================================*/
+		@org.omnetpp.common.properties.Property(category="Axes",id=PROP_X_AXIS_MIN)
+		public String getXAxisMin() { return getStringProperty(PROP_X_AXIS_MIN); }
+		public void setXAxisMin(String min) { setProperty(PROP_X_AXIS_MIN, min); }
 		
+		@org.omnetpp.common.properties.Property(category="Axes",id=PROP_X_AXIS_MAX)
+		public String getXAxisMax() { return getStringProperty(PROP_X_AXIS_MAX); }
+		public void setXAxisMax(String max) { setProperty(PROP_X_AXIS_MAX, max); }
+		
+		@org.omnetpp.common.properties.Property(category="Axes",id=PROP_X_AXIS_LOGARITHMIC)
+		public boolean getXAxisLogarithmic() { return getBooleanProperty(PROP_X_AXIS_LOGARITHMIC); }
+		public void setXAxisLogarithmic(boolean flag) { setProperty(PROP_X_AXIS_LOGARITHMIC, flag); }
 		/*======================================================================
 		 *                             Lines
 		 *======================================================================*/
-		@org.omnetpp.common.properties.Property(category="Lines")
+		@org.omnetpp.common.properties.Property(category="Lines",id=PROP_DISPLAY_SYMBOLS)
 		public boolean getDisplaySymbols() { return getBooleanProperty(PROP_DISPLAY_SYMBOLS); }
 		public void setDisplaySymbols(boolean flag) { setProperty(PROP_DISPLAY_SYMBOLS, flag); }
 
-		@org.omnetpp.common.properties.Property(category="Lines")
+		@org.omnetpp.common.properties.Property(category="Lines",id=PROP_SYMBOL_TYPE)
 		public SymbolType getSymbolType() { return getEnumProperty(PROP_SYMBOL_TYPE, SymbolType.class); }
 		public void setSymbolType(SymbolType type) { setProperty(PROP_SYMBOL_TYPE, type); }
 		
-		@org.omnetpp.common.properties.Property(category="Lines")
+		@org.omnetpp.common.properties.Property(category="Lines",id=PROP_SYMBOL_SIZE)
 		public String getSymbolSize() { return getStringProperty(PROP_SYMBOL_SIZE); }
 		public void setSymbolSize(String size) { setProperty(PROP_SYMBOL_SIZE, size); }
 		
-		@org.omnetpp.common.properties.Property(category="Lines")
+		@org.omnetpp.common.properties.Property(category="Lines",id=PROP_LINE_TYPE)
 		public LineStyle getLineType() { return getEnumProperty(PROP_LINE_TYPE, LineStyle.class); }
 		public void setLineType(LineStyle style) { setProperty(PROP_LINE_TYPE, style); }
 		
-		@org.omnetpp.common.properties.Property(category="Lines")
+		@org.omnetpp.common.properties.Property(category="Lines",id=PROP_HIDE_LINE)
 		public boolean getHideLine() { return getBooleanProperty(PROP_HIDE_LINE); }
 		public void setHideLine(boolean flag) { setProperty(PROP_HIDE_LINE, flag); }
 	}
@@ -280,11 +281,11 @@ public class ChartProperties extends PropertySource {
 		/*======================================================================
 		 *                             Bars
 		 *======================================================================*/
-		@org.omnetpp.common.properties.Property(category="Bars")
+		@org.omnetpp.common.properties.Property(category="Bars",id=PROP_BAR_BASELINE)
 		public String getBarBaseline() { return getStringProperty(PROP_BAR_BASELINE); }
 		public void setBarBaseline(String baseline) { setProperty(PROP_BAR_BASELINE, baseline); }
 
-		@org.omnetpp.common.properties.Property(category="Bars")
+		@org.omnetpp.common.properties.Property(category="Bars",id=PROP_BAR_PLACEMENT)
 		public BarPlacement getBarPlacement() { return getEnumProperty(PROP_BAR_PLACEMENT, BarPlacement.class); }
 		public void setBarPlacement(BarPlacement placement) { setProperty(PROP_BAR_PLACEMENT, placement); }
 	}

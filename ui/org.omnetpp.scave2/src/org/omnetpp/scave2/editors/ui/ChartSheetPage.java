@@ -77,7 +77,7 @@ public class ChartSheetPage extends ScaveEditorPage {
 		Collection<Chart> charts = chartsheet.getCharts();
 		Composite parent = getChartSheetComposite();
 		for (final Chart chart : charts) {
-			Control swtChart = ChartFactory.createChart(parent, chart, scaveEditor.getResultFileManager(), 320, 200);
+			Control swtChart = ChartFactory.createChart(parent, chart, scaveEditor.getResultFileManager());
 			addChart(swtChart);
 
 			swtChart.addMouseListener(new MouseAdapter() { //FIXME this is a hack to get chart opened by double-click; to be done properly (SelectionListener, ask chart from widget)

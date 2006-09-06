@@ -74,7 +74,7 @@ public class ChartPage2 extends ScaveEditorPage {
 
 		// set up contents
 		Composite parent = getBody();
-		chartView = (VectorChart) ChartFactory.createChart(parent, this.chart, scaveEditor.getResultFileManager(), -1, -1);
+		chartView = (VectorChart) ChartFactory.createChart(parent, this.chart, scaveEditor.getResultFileManager());
 		
 		// create control strip (XXX temp code)
 		Composite controlStrip = createControlStrip(parent, chartView);

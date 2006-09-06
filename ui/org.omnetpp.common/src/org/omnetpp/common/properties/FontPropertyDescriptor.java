@@ -75,6 +75,12 @@ public class FontPropertyDescriptor extends PropertyDescriptor {
 	    		label.setText(text);
 	    	}
 	    }
+
+		@Override
+		protected void doSetValue(Object value) {
+			super.doSetValue(value);
+			setValueValid(isCorrect(value));
+		}
 	}
 }
 
