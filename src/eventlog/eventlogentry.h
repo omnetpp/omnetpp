@@ -1,5 +1,5 @@
 //=========================================================================
-//  EVENTLOG.H - part of
+//  EVENTLOGENTRY.H - part of
 //                  OMNeT++/OMNEST
 //           Discrete System Simulation in C++
 //
@@ -12,25 +12,24 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __EVENTLOG_H_
-#define __EVENTLOG_H_
+#ifndef __EVENTLOGENTRY_H_
+#define __EVENTLOGENTRY_H_
 
 #include <sstream>
-#include <set>
-#include <map>
-#include "Event.h"
-#include "EventLogFilter.h"
+#include "defs.h"
 
-class EventLog
+class EventLogEntry
 {
    protected:
-      typedef std::map<long, Event> EventNumberToEventMap;
-      EventNumberToEventMap eventNumberToEventMap;
-
-      EventLogFilter *filter(Event *tracedEvent, std::set<int> *moduleIds, bool wantCauses, bool wantConsequences, bool wantNonDeliveryMessages);
+      int getIntToken(const char **tokens, int numTokens, const char *sign);
+      long getLongToken(const char **tokens, int numTokens, const char *sign);
+      simtime_t getSimtimeToken(const char **tokens, int numTokens, const char *sign);
+      const char *getStringToken(const char **tokens, int numTokens, const char *sign);
 
    public:
-      EventLog(const char *fileName);
+      EventLogEntry();
+      virtual void parse(const char **tokens, int numTokens) = 0;
+      virtual void print(FILE *fout) = 0;
 };
 
 #endif

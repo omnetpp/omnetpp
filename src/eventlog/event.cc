@@ -1,5 +1,5 @@
 //=========================================================================
-//  EVENTLOG.H - part of
+//  EVENT.CC - part of
 //                  OMNeT++/OMNEST
 //           Discrete System Simulation in C++
 //
@@ -12,25 +12,9 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __EVENTLOG_H_
-#define __EVENTLOG_H_
+#include <assert.h>
+#include "event.h"
 
-#include <sstream>
-#include <set>
-#include <map>
-#include "Event.h"
-#include "EventLogFilter.h"
-
-class EventLog
+Event::Event()
 {
-   protected:
-      typedef std::map<long, Event> EventNumberToEventMap;
-      EventNumberToEventMap eventNumberToEventMap;
-
-      EventLogFilter *filter(Event *tracedEvent, std::set<int> *moduleIds, bool wantCauses, bool wantConsequences, bool wantNonDeliveryMessages);
-
-   public:
-      EventLog(const char *fileName);
-};
-
-#endif
+}

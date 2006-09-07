@@ -19,6 +19,7 @@
 #include <list>
 #include <vector>
 #include <map>
+#include "defs.h"
 #include "exception.h"
 #include "eventlogdefs.h"
 #include "filereader.h"
@@ -38,7 +39,10 @@ class EventLogIndex
         FileReader *reader;
 
         typedef std::map<long,long> EventNumberToOffsetMap;
-        EventNumberToOffsetMap indices;
+        EventNumberToOffsetMap eventNumberToOffsetMap;
+
+        typedef std::map<simtime_t,long> SimulationTimeToOffsetMap;
+        SimulationTimeToOffsetMap simulationTimeToOffsetMap;
 
     protected:
         // true if OK, false if no "E" line found till end of file
@@ -50,13 +54,14 @@ class EventLogIndex
     public:
         EventLogIndex(FileReader *reader);
         ~EventLogIndex();
-        void addPosition(long eventNumber, long offset);
-        long getOffsetFor(long eventNumber);
-        bool positionTo(long eventNumber);
+        void addPositionForEventNumber(long eventNumber, long offset);
+        void addPositionForSimulationTime(simtime_t simulationTime, bool first, long offset);
+        long getOffsetForEventNumber(long eventNumber);
+        bool positionToEventNumber(long eventNumber);
+        long getOffsetForSimulationTime(simtime_t simulationTime, bool first);
+        bool positionToSimulationTime(simtime_t simulationTime, bool first);
         void dumpTable();
         
 };
 
 #endif
-
-

@@ -1,0 +1,127 @@
+BU BubbleEntry
+{
+   id int moduleId
+   txt string text
+}
+
+MM ModuleMethodCalledEntry
+{
+   sm int fromModuleId
+   tm int toModuleId
+   m string method
+}
+
+MC ModuleCreatedEntry
+{
+   id int moduleId
+   c string moduleClassName
+   pid int parentModuleId
+   n string fullName
+}
+
+MD ModuleDeletedEntry
+{
+   id int moduleId
+}
+
+MR ModuleReparentedEntry
+{
+   id int moduleId
+   p int newParentModuleId
+}
+
+CC ConnectionCreatedEntry
+{
+   sm int sourceModuleId
+   sg int sourceGateId
+   sn int sourceGateFullName
+   dm int destModuleId
+   dg int destGateId
+   dn int destGateFullName
+// channel, channel attributes, etc
+}
+
+CD ConnectionRemovedEntry
+{
+   sm int sourceModuleId
+   sg int sourceGateId
+}
+
+CS ConnectionDisplayStringChangedEntry
+{
+   sm int sourceModuleId
+   sg int sourceGateId
+   d string displayString
+}
+
+DS ModuleDisplayStringChangedEntry
+{
+   id int moduleId
+   d string displayString
+}
+
+DG BackgroundDisplayStringChangedEntry
+{
+   id int moduleId
+   d string displayString
+}
+
+E EventEntry
+{
+   # long eventNumber
+   t simtime_t simulationTime
+   m int moduleId
+   msg long messageId
+}
+
+SA MessageScheduledEntry
+{
+   id long messageId
+   tid long messageTreeId
+// long messageEncapsulationId    FIXME these two are not currently recorded
+// long messageEncapsulationTreeId
+   c string messageClassName
+   n string messageFullName
+   sm int senderModuleId
+   t simtime_t arrivalTime
+}
+
+CE MessageCancelledEntry
+{
+   id long messageId
+}
+
+BS BeginSendEntry
+{
+   id long messageId
+   tid long messageTreeId
+   eid long messageEncapsulationId
+   etid long messageEncapsulationTreeId
+   c string messageClassName
+   n string messageFullName
+   k int messageKind
+   l long messageLength
+// and many other fields...
+}
+
+SD MessageSendDirectEntry
+{
+   id long messageId
+   sm int senderModuleId
+   dm int destModuleId
+   dg int destGateId
+   pd simtime_t propagationDelay
+   td simtime_t transmissionDelay
+}
+
+SH MessageSendHopEntry
+// FIXME split into two? it's typical that there's no delay
+{
+   id long messageId
+   sm int senderModuleId
+   sg int senderGateId
+// FIXME this should be eliminated from simkernel
+   ts simtime_t transmissionStartId 
+   pd simtime_t propagationDelay
+   td simtime_t transmissionDelay
+}

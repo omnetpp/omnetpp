@@ -33,46 +33,46 @@ bool EventLogIndex::needsToBeStored(long eventNumber)
         return true;
 
     // find eventNumber in map (lower_bound() finds equal or first greater key)
-    EventNumberToOffsetMap::iterator it = indices.lower_bound(eventNumber);
-    if (it!=indices.end() && (it->first - eventNumber) < EVENTNUM_INDEX_DENSITY)
+    EventNumberToOffsetMap::iterator it = eventNumberToOffsetMap.lower_bound(eventNumber);
+    if (it!=eventNumberToOffsetMap.end() && (it->first - eventNumber) < EVENTNUM_INDEX_DENSITY)
         return false;  // too close to next stored one
-    if (it!=indices.begin() && (eventNumber - (--it)->first) < EVENTNUM_INDEX_DENSITY)
+    if (it!=eventNumberToOffsetMap.begin() && (eventNumber - (--it)->first) < EVENTNUM_INDEX_DENSITY)
         return false;  // too close to previous stored one
     return true;
 }
 
-void EventLogIndex::addPosition(long eventNumber, long offset)
+void EventLogIndex::addPositionForEventNumber(long eventNumber, long offset)
 {
     if (needsToBeStored(eventNumber))
-        indices[eventNumber] = offset;
+        eventNumberToOffsetMap[eventNumber] = offset;
 }
 
-bool EventLogIndex::positionTo(long eventNumber)
+bool EventLogIndex::positionToEventNumber(long eventNumber)
 {
-    long offset = getOffsetFor(eventNumber);
+    long offset = getOffsetForEventNumber(eventNumber);
     if (offset==-1)
         return false; // eventNumber not found
     reader->seekTo(offset);
     return true;
 }
 
-long EventLogIndex::getOffsetFor(long eventNumber)
+long EventLogIndex::getOffsetForEventNumber(long eventNumber)
 {
     // find eventNumber in map (lower_bound() finds equal or first greater key)
-    EventNumberToOffsetMap::iterator it = indices.lower_bound(eventNumber);
+    EventNumberToOffsetMap::iterator it = eventNumberToOffsetMap.lower_bound(eventNumber);
 
     // exact match?
-    if (it->first==eventNumber)
+    if (it != eventNumberToOffsetMap.end() && it->first==eventNumber)
         return it->second;
 
     // figure out start positions for binary search
     long lowerEventNumber, lowerOffset, upperOffset;
-    if (it==indices.end()) {
+    if (it==eventNumberToOffsetMap.end()) {
         upperOffset = reader->fileSize();
     } else {
         upperOffset = it->second;
     }
-    if (it==indices.begin()) {
+    if (it==eventNumberToOffsetMap.begin()) {
         lowerEventNumber = 0;
         lowerOffset = 0;
     } else {
@@ -108,7 +108,7 @@ long EventLogIndex::getOffsetFor(long eventNumber)
             }
 
             // store the mid position
-            addPosition(midEventNumber, midEventOffset);
+            addPositionForEventNumber(midEventNumber, midEventOffset);
 
             // assign "mid" to "lower" or "upper"
             if (midEventNumber < eventNumber)
@@ -166,8 +166,8 @@ bool EventLogIndex::readToFirstEventLine(long startOffset, long& eventNumber, lo
 
 void EventLogIndex::dumpTable()
 {
-    printf("Stored indices:\n");
-    for (EventNumberToOffsetMap::iterator it = indices.begin(); it!=indices.end(); ++it)
+    printf("Stored eventNumberToOffsetMap:\n");
+    for (EventNumberToOffsetMap::iterator it = eventNumberToOffsetMap.begin(); it!=eventNumberToOffsetMap.end(); ++it)
         printf("  #%ld --> offset %ld (0x%lx)\n", it->first, it->second, it->second);
 }
 
