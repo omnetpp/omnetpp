@@ -1,0 +1,52 @@
+#
+# Global definitions
+#
+!include ..\..\configuser.vc
+
+!if "$(LIB_SUFFIX)"==".dll"
+CFLAGS=$(CFLAGS) /DWIN32_DLL
+!endif
+
+#
+# Local definitions
+#
+COPTS=$(CFLAGS) -I. -I../common /Fd"eventlog.pdb"
+
+OBJS= eventlog.obj eventlogindex.obj evententry.obj stringpool.obj
+LIBS= eventlog.lib ../common/common.lib
+
+#
+# Automatic rules
+#
+.SUFFIXES : .cc
+
+.cc.obj:
+	$(CXX) /Fo"$@" $(COPTS) /c /Tp $<
+
+
+#
+# Targets (TBD: build dll)
+#
+all : eventlog.lib eventlogtool.exe
+
+eventlog.lib : $(OBJS)
+	$(AR) /out:eventlog.lib $(OBJS)
+	copy eventlog.lib $(OMNETPP_LIB_DIR:/=\)
+	- copy /b eventlog.pdb $(OMNETPP_LIB_DIR:/=\) 2>nul
+
+eventlogtool.exe : eventlogtool.obj $(LIBS)
+	$(LINK) $(LDFLAGS) /nologo /out:eventlogtool.exe eventlogtool.obj $(LIBS)
+	copy eventlogtool.exe $(OMNETPP_BIN_DIR:/=\)
+
+doc:
+	$(DOXYGEN:/=\) doxy.cfg
+
+depend:
+	$(MAKEDEPEND) -I. -fMakefile.vc -- *.cc
+
+clean:
+	- del *.obj 2> nul
+	- del *.ilk *.idb *.pdb *.lib *.exe 2> nul
+
+
+# DO NOT DELETE THIS LINE -- make depend depends on it.
