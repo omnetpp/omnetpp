@@ -1,16 +1,44 @@
 package org.omnetpp.scave2.charting;
 
+import static org.omnetpp.scave2.model.ChartProperties.PROP_AXIS_TITLE_FONT;
+import static org.omnetpp.scave2.model.ChartProperties.PROP_DISPLAY_LEGEND;
+import static org.omnetpp.scave2.model.ChartProperties.PROP_DISPLAY_SYMBOLS;
+import static org.omnetpp.scave2.model.ChartProperties.PROP_GRAPH_TITLE;
+import static org.omnetpp.scave2.model.ChartProperties.PROP_GRAPH_TITLE_FONT;
+import static org.omnetpp.scave2.model.ChartProperties.PROP_HIDE_LINE;
+import static org.omnetpp.scave2.model.ChartProperties.PROP_LABEL_FONT;
+import static org.omnetpp.scave2.model.ChartProperties.PROP_LEGEND_ANCHORING;
+import static org.omnetpp.scave2.model.ChartProperties.PROP_LEGEND_BORDER;
+import static org.omnetpp.scave2.model.ChartProperties.PROP_LEGEND_FONT;
+import static org.omnetpp.scave2.model.ChartProperties.PROP_LEGEND_POSITION;
+import static org.omnetpp.scave2.model.ChartProperties.PROP_LINE_TYPE;
+import static org.omnetpp.scave2.model.ChartProperties.PROP_SYMBOL_SIZE;
+import static org.omnetpp.scave2.model.ChartProperties.PROP_SYMBOL_TYPE;
+import static org.omnetpp.scave2.model.ChartProperties.PROP_XY_GRID;
+import static org.omnetpp.scave2.model.ChartProperties.PROP_XY_INVERT;
+import static org.omnetpp.scave2.model.ChartProperties.PROP_X_AXIS_LOGARITHMIC;
+import static org.omnetpp.scave2.model.ChartProperties.PROP_X_AXIS_MAX;
+import static org.omnetpp.scave2.model.ChartProperties.PROP_X_AXIS_MIN;
+import static org.omnetpp.scave2.model.ChartProperties.PROP_X_AXIS_TITLE;
+import static org.omnetpp.scave2.model.ChartProperties.PROP_X_LABELS_ROTATE_BY;
+import static org.omnetpp.scave2.model.ChartProperties.PROP_Y_AXIS_LOGARITHMIC;
+import static org.omnetpp.scave2.model.ChartProperties.PROP_Y_AXIS_MAX;
+import static org.omnetpp.scave2.model.ChartProperties.PROP_Y_AXIS_MIN;
+import static org.omnetpp.scave2.model.ChartProperties.PROP_Y_AXIS_TITLE;
+
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.draw2d.Graphics;
-import org.eclipse.draw2d.Triangle;
+import org.eclipse.draw2d.SWTGraphics;
 import org.eclipse.draw2d.geometry.Insets;
-import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.graphics.GC;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Composite;
 import org.jfree.data.xy.XYDataset;
 import org.omnetpp.common.color.ColorFactory;
@@ -28,8 +56,10 @@ import org.omnetpp.scave2.charting.plotter.SampleHoldVectorPlotter;
 import org.omnetpp.scave2.charting.plotter.SquareSymbol;
 import org.omnetpp.scave2.charting.plotter.TriangleSymbol;
 import org.omnetpp.scave2.charting.plotter.VectorPlotter;
-
-import static org.omnetpp.scave2.model.ChartProperties.*;
+import org.omnetpp.scave2.model.ChartProperties.LegendAnchor;
+import org.omnetpp.scave2.model.ChartProperties.LegendPosition;
+import org.omnetpp.scave2.model.ChartProperties.LineStyle;
+import org.omnetpp.scave2.model.ChartProperties.SymbolType;
 
 //XXX strange effects when resized and vertical scrollbar pulled...
 public class VectorChart extends ZoomableCachingCanvas {
@@ -40,6 +70,12 @@ public class VectorChart extends ZoomableCachingCanvas {
 	private static final int DEFAULT_TICK_SPACING = 100; // space between ticks in pixels
 	private static final IVectorPlotter DEFAULT_DEFAULT_PLOTTER = new LinesVectorPlotter();
 	private static final IChartSymbol DEFAULT_DEFAULT_SYMBOL = new SquareSymbol(3);
+	
+	private static final String DEFAULT_TITLE = "";
+	private static final boolean DEFAULT_DISPLAY_LEGEND = false;
+	private static final boolean DEFAULT_LEGEND_BORDER = false;
+	private static final LegendPosition DEFAULT_LEGEND_POSITION = LegendPosition.Above;
+	private static final LegendAnchor DEFAULT_LEGEND_ANCHOR = LegendAnchor.North;
 	
 	private static final IChartSymbol NULL_SYMBOL = new ChartSymbol() {
 		public void drawSymbol(Graphics graphics, int x, int y) {}
@@ -61,6 +97,15 @@ public class VectorChart extends ZoomableCachingCanvas {
 	private boolean displaySymbols = true;
 	private boolean hideLines = false;
 	private Font labelFont;
+	
+	private String title = DEFAULT_TITLE;
+	private Font titleFont;
+	
+	private boolean displayLegend = DEFAULT_DISPLAY_LEGEND;
+	private boolean legendBorder = DEFAULT_LEGEND_BORDER;
+	private Font legendFont = null;
+	private LegendPosition legendPosition = DEFAULT_LEGEND_POSITION;
+	private LegendAnchor legendAnchor = DEFAULT_LEGEND_ANCHOR;
 	
 	private Runnable scheduledRedraw;
 	
@@ -85,9 +130,9 @@ public class VectorChart extends ZoomableCachingCanvas {
 	public void setProperty(String name, String value) {
 		// Titles
 		if (PROP_GRAPH_TITLE.equals(name))
-			;
+			setTitle(value);
 		else if (PROP_GRAPH_TITLE_FONT.equals(name))
-			;
+			setTitleFont(Converter.stringToSwtfont(value));
 		else if (PROP_X_AXIS_TITLE.equals(name))
 			;
 		else if (PROP_Y_AXIS_TITLE.equals(name))
@@ -128,15 +173,29 @@ public class VectorChart extends ZoomableCachingCanvas {
 			setHideLines(Converter.stringToBoolean(value));
 		// Legend
 		else if (PROP_DISPLAY_LEGEND.equals(name))
-			;
+			setDisplayLegend(Converter.stringToBoolean(value));
 		else if (PROP_LEGEND_BORDER.equals(name))
-			;
+			setLegendBorder(Converter.stringToBoolean(value));
 		else if (PROP_LEGEND_FONT.equals(name))
-			;
+			setLegendFont(Converter.stringToSwtfont(value));
 		else if (PROP_LEGEND_POSITION.equals(name))
-			;
+			setLegendPosition(Converter.stringToEnum(value, LegendPosition.class));
 		else if (PROP_LEGEND_ANCHORING.equals(name))
-			;
+			setLegendAnchor(Converter.stringToEnum(value, LegendAnchor.class));
+	}
+	
+	public void setTitle(String value) {
+		if (value == null)
+			value = DEFAULT_TITLE;
+		this.title = value;
+		scheduleRedraw();
+	}
+	
+	public void setTitleFont(Font value) {
+		if (value == null)
+			return;
+		this.titleFont = value;
+		scheduleRedraw();
 	}
 
 	public IVectorPlotter getDefaultLineType() {
@@ -234,6 +293,41 @@ public class VectorChart extends ZoomableCachingCanvas {
 		scheduleRedraw();
 	}
 	
+	public void setDisplayLegend(Boolean value) {
+		if (value == null)
+			value = DEFAULT_DISPLAY_LEGEND;
+		displayLegend = value;
+		scheduleRedraw();
+	}
+	
+	public void setLegendBorder(Boolean value) {
+		if (value == null)
+			value = DEFAULT_LEGEND_BORDER;
+		legendBorder = value;
+		scheduleRedraw();
+	}
+	
+	public void setLegendFont(Font value) {
+		if (value == null)
+			return;
+		legendFont = value;
+		scheduleRedraw();
+	}
+	
+	public void setLegendPosition(LegendPosition value) {
+		if (value == null)
+			value = DEFAULT_LEGEND_POSITION;
+		legendPosition = value;
+		scheduleRedraw();
+	}
+	
+	public void setLegendAnchor(LegendAnchor value) {
+		if (value == null)
+			value = DEFAULT_LEGEND_ANCHOR;
+		legendAnchor = value;
+		scheduleRedraw();
+	}
+	
 	public int getAntialias() {
 		return antialias;
 	}
@@ -275,8 +369,22 @@ public class VectorChart extends ZoomableCachingCanvas {
 	}
 
 	@Override
-	protected void beforePaint() {
-		super.beforePaint();
+	protected void beforePaint(GC gc) {
+		/* in progress ...
+		
+		// Calculate space occupied by title and legend and set insets accordingly
+		Rectangle rect = gc.getClipping();
+		calculateLegendSize(gc, rect);
+		
+		Rectangle clip = gc.getClipping();
+		Insets insets = new Insets();
+		insets.top = Math.max(rect.y - clip.y, 0) + 18;
+		insets.left = Math.max(rect.x - clip.x, 0) + 40;
+		insets.bottom = Math.max((clip.y + clip.height) - (rect.y + rect.height), 0) + 18;
+		insets.right = Math.max((clip.x + clip.width) - (rect.x + rect.width), 0) + 40;
+		setInsets(insets);
+		*/
+		super.beforePaint(gc);
 	}
 
 	@Override
@@ -285,33 +393,49 @@ public class VectorChart extends ZoomableCachingCanvas {
 		IVectorPlotter plotter = hideLines ? NULL_PLOTTER : defaultPlotter;
 		IChartSymbol symbol = displaySymbols ? defaultSymbol : NULL_SYMBOL;
 		for (int series=0; series<dataset.getSeriesCount(); series++) {
-			graphics.setForegroundColor(ColorFactory.getGoodColor(series));
-			graphics.setBackgroundColor(ColorFactory.getGoodColor(series));
+			Color color = getLineColor(series);
+			graphics.setForegroundColor(color);
+			graphics.setBackgroundColor(color);
 			plotter.plot(dataset, series, graphics, this, symbol);
 		}
 	}
+	
+	private Color getLineColor(int index) {
+		return ColorFactory.getGoodColor(index);
+	}
 
 	@Override
-	protected void paintNoncachableLayer(Graphics graphics) {
+	protected void paintNoncachableLayer(GC gc) {
 		Insets insets = getInsets();
-		graphics.setAntialias(antialias);
+		gc.setAntialias(antialias);
 
 		// draw insets border
-		graphics.setForegroundColor(insetsBackgroundColor);
-		graphics.setBackgroundColor(insetsBackgroundColor);
-		graphics.fillRectangle(0, 0, getWidth(), insets.top); // top
-		graphics.fillRectangle(0, getHeight()-insets.bottom, getWidth(), insets.bottom); // bottom
-		graphics.fillRectangle(0, 0, insets.left, getHeight()); // left
-		graphics.fillRectangle(getWidth()-insets.right, 0, insets.right, getHeight()); // right
+		gc.setForeground(insetsBackgroundColor);
+		gc.setBackground(insetsBackgroundColor);
+		gc.fillRectangle(0, 0, getWidth(), insets.top); // top
+		gc.fillRectangle(0, getHeight()-insets.bottom, getWidth(), insets.bottom); // bottom
+		gc.fillRectangle(0, 0, insets.left, getHeight()); // left
+		gc.fillRectangle(getWidth()-insets.right, 0, insets.right, getHeight()); // right
+		gc.setForeground(insetsLineColor);
+		gc.drawRectangle(insets.left-1, insets.top-1, getWidth()-insets.getWidth()+1, getHeight()-insets.getHeight()+1);
 
-		graphics.setForegroundColor(insetsLineColor);
-		graphics.drawRectangle(insets.left-1, insets.top-1, getWidth()-insets.getWidth()+1, getHeight()-insets.getHeight()+1);
+		Rectangle rect = gc.getClipping();
+		
+		/* work in progress...
+			drawTitle(gc, rect);
+			if (displayLegend) drawLegend(gc, rect);
+		*/
+		drawAxesAndTicks(gc, rect);
+	}
 
-		Rectangle rect = graphics.getClip(new Rectangle());
-
+	/**
+	 * @param graphics
+	 * @param area
+	 */
+	protected void drawAxesAndTicks(GC gc, Rectangle area) {
 		//draw X ticks
-		double startX = fromCanvasX(rect.x);
-		double endX = fromCanvasX(rect.x + rect.width);
+		double startX = fromCanvasX(area.x);
+		double endX = fromCanvasX(area.x + area.width);
 		int tickScale = (int)Math.ceil(Math.log10(tickSpacing / getZoomX()));
 		BigDecimal tickSpacingX = BigDecimal.valueOf(tickSpacing / getZoomX());
 		BigDecimal tickStartX = new BigDecimal(startX).setScale(-tickScale, RoundingMode.FLOOR);
@@ -325,30 +449,30 @@ public class VectorChart extends ZoomableCachingCanvas {
 		else if (tickIntvlX.divide(BigDecimal.valueOf(2)).compareTo(tickSpacingX) > 0)
 			tickIntvlX = tickIntvlX.divide(BigDecimal.valueOf(2));
 
-		if (labelFont != null) graphics.setFont(labelFont);
+		if (labelFont != null) gc.setFont(labelFont);
 		for (BigDecimal t=tickStartX; t.compareTo(tickEndX)<0; t = t.add(tickIntvlX)) {
 			int x = toCanvasX(t.doubleValue());
-			graphics.setLineStyle(SWT.LINE_DOT);
-			graphics.setForegroundColor(tickLineColor);
-			graphics.drawLine(x, 0, x, getHeight());
-			graphics.setForegroundColor(tickLabelColor);
+			gc.setLineStyle(SWT.LINE_DOT);
+			gc.setForeground(tickLineColor);
+			gc.drawLine(x, area.y, x, area.y + area.height);
+			gc.setForeground(tickLabelColor);
 			String str = t.toPlainString() + "s";
-			graphics.setBackgroundColor(insetsBackgroundColor);
-			graphics.fillText(str, x + 3, 2);
-			graphics.fillText(str, x + 3, getHeight() - 16);
+			gc.setBackground(insetsBackgroundColor);
+			gc.drawText(str, x + 3, area.y + 2);
+			gc.drawText(str, x + 3, area.y + area.height - 16);
 		}
 
 		// Y axis
 		// XXX don't draw if falls into gutter area
 		if (startX<=0 && endX>=0) {
-			graphics.setLineStyle(SWT.LINE_SOLID);
-			graphics.drawLine(toCanvasX(0), 0, toCanvasX(0), getHeight());
+			gc.setLineStyle(SWT.LINE_SOLID);
+			gc.drawLine(toCanvasX(0), area.y, toCanvasX(0), area.y + area.height);
 		}
 		
 		//draw Y ticks
 		//XXX factor out common code with X axis ticks
-		double startY = fromCanvasY(rect.y);
-		double endY = fromCanvasY(rect.y + rect.width);
+		double startY = fromCanvasY(area.y);
+		double endY = fromCanvasY(area.y + area.height);
 		int tickScaleY = (int)Math.ceil(Math.log10(tickSpacing / getZoomY()));
 		BigDecimal tickSpacingY = BigDecimal.valueOf(tickSpacing / getZoomY());
 		BigDecimal tickStartY = new BigDecimal(startY).setScale(-tickScaleY, RoundingMode.FLOOR);
@@ -362,25 +486,142 @@ public class VectorChart extends ZoomableCachingCanvas {
 		else if (tickIntvlY.divide(BigDecimal.valueOf(2)).compareTo(tickSpacingY) > 0)
 			tickIntvlY = tickIntvlY.divide(BigDecimal.valueOf(2));
 
-		if(labelFont != null) graphics.setFont(labelFont);
+		if(labelFont != null) gc.setFont(labelFont);
 		for (BigDecimal t=tickStartY; t.compareTo(tickEndY)<0; t = t.add(tickIntvlY)) {
 			int y = toCanvasY(t.doubleValue());
-			graphics.setLineStyle(SWT.LINE_DOT);
-			graphics.setForegroundColor(tickLineColor);
-			graphics.drawLine(0, y, getWidth(), y);
-			graphics.setForegroundColor(tickLabelColor);
+			gc.setLineStyle(SWT.LINE_DOT);
+			gc.setForeground(tickLineColor);
+			gc.drawLine(area.x, y, area.x + area.width, y);
+			gc.setForeground(tickLabelColor);
 			String str = t.toPlainString() + "s";
-			graphics.setBackgroundColor(insetsBackgroundColor);
-			graphics.fillText(str, 2, y+3);
-			graphics.fillText(str, getWidth() - 16, y+3);
+			gc.setBackground(insetsBackgroundColor);
+			gc.drawText(str, area.x + 2, y+3);
+			gc.drawText(str, area.x + area.width - 16, y+3);
 		}
 
 		// X axis
 		// XXX don't draw if falls into gutter area
 		//if (startY<=0 && endY>=0) { //XXX with this "if" sometimes it doesn't draw
-			graphics.setLineStyle(SWT.LINE_SOLID);
-			graphics.drawLine(0, toCanvasY(0), getWidth(), toCanvasY(0));
+			gc.setLineStyle(SWT.LINE_SOLID);
+			gc.drawLine(area.x, toCanvasY(0), area.x + area.width, toCanvasY(0));
 		//}
+	}
+	
+	/**
+	 * Draws the title into the specified area.
+	 * @param graphics TODO
+	 * @param area
+	 */
+	protected void drawTitle(GC gc, Rectangle area) {
+		if (titleFont != null)
+			gc.setFont(titleFont);
+		Point size = gc.stringExtent(title);
+		Point location = new Point(area.x + (area.width - size.x) / 2, 0);
+		gc.drawString(title, location.x, location.y, true);
+		area.y = Math.min(area.y + size.y, area.y + area.height);
+		area.height = Math.max(area.height - size.y, 0);
+	}
+	
+	/**
+	 * Draws a legend into the specified area.
+	 * @param gc
+	 * @param area
+	 */
+	protected void drawLegend(GC gc, Rectangle area) {
+		int top = area.y, left = area.x, bottom = area.y + area.height, right = area.x + area.width;
+
+		if (legendFont != null)
+			gc.setFont(legendFont);
+		
+		// calculate legend size
+		Point size = calculateLegendSize(gc, area);
+		
+		// calculate legend position
+		int dx, dy;
+		switch (legendAnchor) {
+		case North:		dx = 0; dy = -1; break;
+		case NorthEast:	dx = 1; dy = -1; break; 
+		case East:		dx = 1; dy = 0; break;
+		case SouthEast:	dx = 1; dy = 1; break;
+		case South:		dx = 0; dy = 1; break;
+		case SouthWest:	dx = -1; dy = 1; break;
+		case West:		dx = -1; dy = 0; break;
+		case NorthWest:	dx = -1; dy = -1; break;
+		default: throw new IllegalStateException();
+		}
+		
+		int x,y;
+		switch (legendPosition) {
+		case Above:
+			x = left + (area.width - size.x) * (dx + 1) / 2;
+			y = top;
+			top = Math.min(top + size.y, bottom);
+			break;
+		case Below:
+			x = left + (area.width - size.x) * (dx + 1) / 2;
+			y = bottom - size.y;
+			bottom = Math.max(bottom - size.y, top);
+			break;
+		case Left:
+			x = left;
+			y = top + (area.height - size.y) * (dy + 1) / 2;
+			left = Math.min(left + size.x, right);
+			break;
+		case Right:
+			x = right - size.x;
+			y = top + (area.height - size.y) * (dy + 1) / 2;
+			right = Math.max(right - size.x, left);
+			break;
+		case Inside:
+			x = left + (area.width - size.x) * (dx + 1) / 2;
+			y = top + (area.height - size.y) * (dy + 1) / 2;
+			break;
+		default:
+			throw new IllegalStateException();
+		}
+		
+		// update remaining space
+		area.x = left;
+		area.y = top;
+		area.width = right - left;
+		area.height = bottom - top;
+		
+		// draw background and border
+		Rectangle borderRect = new Rectangle(x, y, size.x, size.y);
+		gc.setBackground(ColorFactory.asColor("white"));
+		gc.fillRectangle(new Rectangle(x, y, size.x, size.y));
+		if (legendBorder) {
+			gc.setForeground(ColorFactory.asColor("black"));
+			gc.drawRectangle(borderRect);
+		}
+		
+		// draw legend items
+		for (int series=0; series<dataset.getSeriesCount(); series++) {
+			Color color = getLineColor(series);
+			gc.setForeground(color);
+			gc.setBackground(color);
+			gc.fillOval(x+2 , y + (size.y - 5) / 2, 5, 5);
+			x += 9;
+			
+			String label = dataset.getSeriesKey(series).toString();
+			Point labelSize = gc.stringExtent(label);
+			gc.setForeground(ColorFactory.asColor("black"));
+			gc.drawString(label, x, y + (size.y - labelSize.y) / 2, true);
+			x += labelSize.x + 5;
+		}
+	}
+	
+	private Point calculateLegendSize(GC gc, Rectangle area) {
+		Point size = new Point(0,5);
+		for (int i = 0; i < dataset.getSeriesCount(); ++i) {
+			String label = dataset.getSeriesKey(i).toString();
+			Point labelSize = gc.stringExtent(label);
+
+			if (i > 0) size.x += 5;
+			size.x += 9 + labelSize.x;
+			size.y = Math.max(size.y, labelSize.y);
+		}
+		return size;
 	}
 	
 	private void scheduleRedraw() {

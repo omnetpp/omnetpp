@@ -16,6 +16,7 @@ import org.apache.commons.lang.ArrayUtils;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.ListenerList;
 import org.eclipse.draw2d.Graphics;
+import org.eclipse.draw2d.SWTGraphics;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.jface.text.DefaultInformationControl;
 import org.eclipse.jface.util.SafeRunnable;
@@ -32,6 +33,7 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Cursor;
+import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
@@ -1031,7 +1033,7 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 	}
 	
 	@Override
-	protected void beforePaint() {
+	protected void beforePaint(GC gc) {
 		calculateStuff();
 		calculateTicks();
 	}
@@ -1042,11 +1044,13 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 	}
 
 	@Override
-	protected void paintNoncachableLayer(Graphics graphics) {
+	protected void paintNoncachableLayer(GC gc) {
+		Graphics graphics = new SWTGraphics(gc);
 		paintAxisLabels(graphics);
         paintGutters(graphics);
         paintMouseTick(graphics);
         paintEventSelectionMarks(graphics);
+        graphics.dispose();
 	}
 
 	/**

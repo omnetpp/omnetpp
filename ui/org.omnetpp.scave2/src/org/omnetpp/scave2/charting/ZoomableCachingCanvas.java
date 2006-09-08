@@ -7,6 +7,7 @@ import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.events.MouseMoveListener;
 import org.eclipse.swt.graphics.Cursor;
+import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
@@ -208,7 +209,7 @@ public abstract class ZoomableCachingCanvas extends CachingCanvas {
 	}
 
 	@Override
-	protected void beforePaint() {
+	protected void beforePaint(GC gc) {
 		// validate zoom, so that one cannot zoom out too much (the content (getArea()) must cover full canvas)
 		double w = maxX - minX;
 		double minZoomX = (getWidth()-getInsets().getWidth()) / (w==0 ? 1.0 : w); 

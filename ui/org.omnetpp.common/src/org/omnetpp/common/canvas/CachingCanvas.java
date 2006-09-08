@@ -55,13 +55,13 @@ public abstract class CachingCanvas extends LargeScrollableCanvas {
 	@Override
 	protected void paint(GC gc) {
 		// call any code subclass wants to run before painting
-		beforePaint();
+		beforePaint(gc);
 		
 		if (!doCaching) {
 			// paint directly on the GC
 			Graphics graphics = new SWTGraphics(gc);
 			paintCachableLayer(graphics);
-			paintNoncachableLayer(graphics);
+			paintNoncachableLayer(gc);
 			graphics.dispose();
 		}
 		else {
@@ -105,7 +105,7 @@ public abstract class CachingCanvas extends LargeScrollableCanvas {
 			// paint items that we don't want to cache
 			gc.setClipping(getClientArea());
 			Graphics graphics = new SWTGraphics(gc);
-			paintNoncachableLayer(graphics);
+			paintNoncachableLayer(gc);
 			graphics.dispose();
 		}
 		
@@ -130,7 +130,7 @@ public abstract class CachingCanvas extends LargeScrollableCanvas {
 	 * paintNoncachables(). This is a good place for pre-paint calculations
 	 * whose result is needed by both paintCachables() and paintNoncachables().
 	 */
-	protected abstract void beforePaint();
+	protected abstract void beforePaint(GC gc);
 
 	/**
 	 * Paint everything in this method that can be cached. This may be called several
@@ -142,7 +142,7 @@ public abstract class CachingCanvas extends LargeScrollableCanvas {
 	 * Paint in this method anything that you don't want to be cached 
 	 * (selection marks, etc). It will paint over the cachable layer.
 	 */
-	protected abstract void paintNoncachableLayer(Graphics graphics);
+	protected abstract void paintNoncachableLayer(GC gc);
 
 	/**
 	 * Clears the tile cache. To be called any time the drawing changes.
