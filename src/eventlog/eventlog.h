@@ -22,7 +22,6 @@
 #include "filereader.h"
 #include "event.h"
 #include "eventlogindex.h"
-#include "eventlogfilter.h"
 
 extern StringPool eventLogStringPool;
 
@@ -38,14 +37,17 @@ class EventLog : public EventLogIndex
         typedef std::map<long, Event> EventNumberToEventMap;
         EventNumberToEventMap eventNumberToEventMap;
 
-        EventLogFilter *filter(Event *tracedEvent, std::set<int> *moduleIds, bool wantCauses, bool wantConsequences, bool wantNonDeliveryMessages);
-
     public:
         EventLog(FileReader *index);
+
         void parseInitializationLogEntries();
-        void printInitializationLogEntries(FILE *file);
         void parse(long fromEventNumber, long toEventNumber);
+
+        void printInitializationLogEntries(FILE *file);
+        void printEvents(FILE *file);
         void print(FILE *file);
+
+        Event *getEvent(long eventNumber);
 };
 
 #endif

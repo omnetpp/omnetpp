@@ -51,13 +51,18 @@ void EventLog::parse(long fromEventNumber, long toEventNumber)
     long toOffset = getOffsetForEventNumber(toEventNumber);
     long offset = fromOffset;
 
-    eventNumberToEventMap.clear();
+    if (fromOffset == -1 || toOffset == -1)
+        throw new Exception("Could not find requested events");
 
     while (offset <= toOffset)
     {
         Event *event = new Event();
         offset = event->parse(reader, offset);
-        eventNumberToEventMap[event->eventNumber()] = *event;
+
+        if (eventNumberToEventMap.find(event->eventNumber()) ==  eventNumberToEventMap.end())
+        {
+            eventNumberToEventMap[event->eventNumber()] = *event;
+        }
     }
 }
 
@@ -66,15 +71,43 @@ void EventLog::printInitializationLogEntries(FILE *file)
     for (EventLogEntryList::iterator it = initializationLogEntries.begin(); it != initializationLogEntries.end(); it++)
     {
         (*it)->print(file);
-    }    
+    }
+}
+
+void EventLog::printEvents(FILE *file)
+{
+    for (EventNumberToEventMap::iterator it = eventNumberToEventMap.begin(); it != eventNumberToEventMap.end(); it++)
+    {
+        it->second.print(file);
+    }
 }
 
 void EventLog::print(FILE *file)
 {
     printInitializationLogEntries(file);
+    printEvents(file);
+}
 
-    for (EventNumberToEventMap::iterator it = eventNumberToEventMap.begin(); it != eventNumberToEventMap.end(); it++)
+Event *EventLog::getEvent(long eventNumber)
+{
+    EventNumberToEventMap::iterator it = eventNumberToEventMap.find(eventNumber);
+
+    if (it != eventNumberToEventMap.end())
+        return &it->second;
+    else
     {
-        it->second.print(file);
+        long offset = getOffsetForEventNumber(eventNumber);
+
+        if (offset != -1)
+        {
+            Event *event = new Event();
+            event->parse(reader, offset);
+
+            eventNumberToEventMap[eventNumber] = *event;
+
+            return event;
+        }
+        else
+            return NULL;
     }
 }
