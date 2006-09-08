@@ -18,10 +18,12 @@
 #include <sstream>
 #include <set>
 #include <map>
-#include "Event.h"
-#include "EventLogFilter.h"
+#include "filereader.h"
+#include "event.h"
+#include "eventlogindex.h"
+#include "eventlogfilter.h"
 
-class EventLog
+class EventLog : public EventLogIndex
 {
    protected:
       typedef std::map<long, Event> EventNumberToEventMap;
@@ -30,7 +32,9 @@ class EventLog
       EventLogFilter *filter(Event *tracedEvent, std::set<int> *moduleIds, bool wantCauses, bool wantConsequences, bool wantNonDeliveryMessages);
 
    public:
-      EventLog(const char *fileName);
+      EventLog(FileReader *index);
+      void parse(long fromEventNumber, long toEventNumber);
+      void print(FILE *file);
 };
 
 #endif

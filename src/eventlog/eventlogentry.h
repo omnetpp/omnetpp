@@ -20,16 +20,34 @@
 
 class EventLogEntry
 {
-   protected:
-      int getIntToken(const char **tokens, int numTokens, const char *sign);
-      long getLongToken(const char **tokens, int numTokens, const char *sign);
-      simtime_t getSimtimeToken(const char **tokens, int numTokens, const char *sign);
-      const char *getStringToken(const char **tokens, int numTokens, const char *sign);
+    public:
+        virtual void parse(char *line) = 0;
+        virtual void print(FILE *fout) = 0;
+};
 
-   public:
-      EventLogEntry();
-      virtual void parse(const char **tokens, int numTokens) = 0;
-      virtual void print(FILE *fout) = 0;
+class EventLogTokenBasedEntry : public EventLogEntry
+{
+    protected:
+        char *getToken(char **tokens, int numTokens, const char *sign);
+        int getIntToken(char **tokens, int numTokens, const char *sign);
+        long getLongToken(char **tokens, int numTokens, const char *sign);
+        simtime_t getSimtimeToken(char **tokens, int numTokens, const char *sign);
+        const char *getStringToken(char **tokens, int numTokens, const char *sign);
+
+    public:
+        virtual void parse(char *line);
+        virtual void parse(char **tokens, int numTokens) = 0;
+};
+
+class EventLogMessage : public EventLogEntry
+{
+    public:
+        const char *text;
+
+    public: 
+        EventLogMessage();
+        virtual void parse(char *line);
+        virtual void print(FILE *fout);
 };
 
 #endif

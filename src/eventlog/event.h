@@ -15,13 +15,18 @@
 #ifndef __EVENT_H_
 #define __EVENT_H_
 
+#include <sstream>
 #include <vector>
-#include "EventLogEntry.h"
+#include "filereader.h"
+#include "eventlogentry.h"
+#include "eventlogentries.h"
 
-// event log entries for a single event
+// all the event log entries for a single event
 class Event
 {
     protected:
+       EventEntry *eventEntry;
+
        typedef std::vector<EventLogEntry *> EventLogEntryList;
        EventLogEntryList eventLogEntries;
 
@@ -29,6 +34,9 @@ class Event
 
     public:
        Event();
+       long eventNumber();
+       long parse(FileReader *index, long offset);
+       void print(FILE *file);
 };
 
 #endif

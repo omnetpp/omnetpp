@@ -13,13 +13,30 @@
 *--------------------------------------------------------------*/
 
 #include "filereader.h"
+#include "eventlog.h"
 #include "eventlogindex.h"
 
+void echo(int argc, char **argv)
+{
+    try {
+        long from = atol(argv[3]);
+        long to = atol(argv[4]);
+        fprintf(stderr, "Echoing log file %s from event number %d to %d\n", argv[2], from, to);
+    
+        FileReader reader(argv[2]);
+        EventLog log(&reader);
+        log.parse(from, to);
+        log.print(stdout);
+    } catch (Exception *e) {
+        fprintf(stderr, "Error: %s\n", e->message());
+    }
+}
+        
 void printOffsets(int argc, char **argv)
 {
-    fprintf(stderr, "Printing event offsets from event log file %s\n", argv[2]);
-    
     try {
+        fprintf(stderr, "Printing event offsets from event log file %s\n", argv[2]);
+    
         FileReader reader(argv[2]);
         EventLogIndex index(&reader);
         
@@ -41,6 +58,7 @@ void printOffsets(int argc, char **argv)
 void usage()
 {
     fprintf(stderr, "Usage:\n");
+    fprintf(stderr, " eventlogtool echo <logfile> <starteventnumber> <endeventnumber>\n");
     fprintf(stderr, " eventlogtool offsets <logfile> [<eventnumber>*]\n");
 }
 
@@ -48,6 +66,8 @@ int main(int argc, char **argv)
 {
     if (argc<2)
         usage();
+    else if (!strcmp(argv[1], "echo"))
+        echo(argc, argv);
     else if (!strcmp(argv[1], "offsets"))
         printOffsets(argc, argv);
     else

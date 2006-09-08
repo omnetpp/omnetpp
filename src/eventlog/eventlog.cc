@@ -13,8 +13,34 @@
 *--------------------------------------------------------------*/
 
 #include <assert.h>
+#include "filereader.h"
+#include "event.h"
 #include "eventlog.h"
 
-EventLog::EventLog(const char *logFileName)
+EventLog::EventLog(FileReader *reader) : EventLogIndex(reader)
 {
+}
+
+void EventLog::parse(long fromEventNumber, long toEventNumber)
+{
+    long fromOffset = getOffsetForEventNumber(fromEventNumber);
+    long toOffset = getOffsetForEventNumber(toEventNumber);
+    long offset = fromOffset;
+
+    eventNumberToEventMap.clear();
+
+    while (offset < toOffset)
+    {
+        Event *event = new Event();
+        offset = event->parse(reader, offset);
+        eventNumberToEventMap[event->eventNumber()] = *event;
+    }
+}
+
+void EventLog::print(FILE *file)
+{
+    for (EventNumberToEventMap::iterator it = eventNumberToEventMap.begin(); it != eventNumberToEventMap.end(); it++)
+    {
+        it->second.print(file);
+    }
 }

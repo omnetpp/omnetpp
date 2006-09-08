@@ -1,5 +1,8 @@
 open(FILE, "eventlogentries.txt");
 
+##########################################
+# Read input file
+
 while (<FILE>)
 {
    if ($_ =~ /^ *\/\//)
@@ -36,7 +39,7 @@ while (<FILE>)
       }
       elsif ($fieldType eq "simtime_t")
       {
-         $fieldPrintfType = "%x";
+         $fieldPrintfType = "%.*g";
       }
 
       $fieldCType = $fieldType;
@@ -66,6 +69,9 @@ while (<FILE>)
 
 close(FILE);
 
+##########################################
+# Write eventlogentries header file
+
 open(ENTRIES_H_FILE, ">eventlogentries.h");
 
 print ENTRIES_H_FILE "
@@ -79,12 +85,12 @@ print ENTRIES_H_FILE "
 foreach $class (@classes)
 {
    print ENTRIES_H_FILE "
-class $class->{NAME} : public EventLogEntry
+class $class->{NAME} : public EventLogTokenBasedEntry
 {
    public:
       $class->{NAME}();
 
-   protected:";
+   public:";
    foreach $field (@{ $class->{FIELDS} })
    {
       print ENTRIES_H_FILE "
@@ -93,7 +99,7 @@ class $class->{NAME} : public EventLogEntry
    print ENTRIES_H_FILE "
 
    public:
-      virtual void parse(const char **tokens, int numTokens);
+      virtual void parse(char **tokens, int numTokens);
       virtual void print(FILE *file);
 };
 ";
@@ -104,6 +110,9 @@ print ENTRIES_H_FILE "
 ";
 
 close(ENTRIES_H_FILE);
+
+##########################################
+# Write eventlogentries cc file
 
 open(ENTRIES_CC_FILE, ">eventlogentries.cc");
 
@@ -138,7 +147,7 @@ $className\::$className()
 
    # parse
    print ENTRIES_CC_FILE "
-void $className\::parse(const char **tokens, int numTokens)
+void $className\::parse(char **tokens, int numTokens)
 {";
    foreach $field (@{ $class->{FIELDS} })
    {
@@ -169,19 +178,86 @@ void $className\::parse(const char **tokens, int numTokens)
    print ENTRIES_CC_FILE "
 void $className\::print(FILE *fout)
 {";
-   print ENTRIES_CC_FILE "
-   ::fprintf(fout, \"$class->{SIGN} \");";
-
-   foreach $field (@{ $class->{FIELDS} })
+   if ($class->{NAME} eq "EventEntry")
    {
       print ENTRIES_CC_FILE "
-   ::fprintf(fout, \"$field->{SIGN} $field->{PRINTFTYPE} \", $field->{NAME});
-   ::fflush(fout);"; 
+   ::fprintf(fout, \"\\n\");";
    }
 
    print ENTRIES_CC_FILE "
+   ::fprintf(fout, \"$class->{SIGN}\");";
+
+   foreach $field (@{ $class->{FIELDS} })
+   {
+      if ($field->{TYPE} eq "string")
+      {
+         print ENTRIES_CC_FILE "
+   if ($field->{NAME} != NULL)
+   {
+      ::fprintf(fout, \" $field->{SIGN} \\\"$field->{PRINTFTYPE}\\\"\", $field->{NAME});
+   }";
+      }
+      elsif ($field->{TYPE} eq "simtime_t")
+      {
+         print ENTRIES_CC_FILE "
+   if ($field->{NAME} != -1)
+   {
+      ::fprintf(fout, \" $field->{SIGN} $field->{PRINTFTYPE}\", 12, $field->{NAME});
+   }";
+      }
+      else
+      {
+         print ENTRIES_CC_FILE "
+   if ($field->{NAME} != -1)
+   {
+      ::fprintf(fout, \" $field->{SIGN} $field->{PRINTFTYPE}\", $field->{NAME});
+   }";
+      }
+   }
+
+   print ENTRIES_CC_FILE "
+   ::fprintf(fout, \"\\n\");
+   ::fflush(fout);
 } 
 ";
 }
 
 close(ENTRIES_CC_FILE);
+
+##########################################
+# Write eventlogentryfactory cc file
+
+open(FACTORY_CC_FILE, ">eventlogentryfactory.cc");
+
+print FACTORY_CC_FILE "
+#include \"eventlogentryfactory.h\"
+
+EventLogTokenBasedEntry * EventLogEntryFactory::parseEntry(char **tokens, int numTokens)
+{
+   if (numTokens < 1)
+      return NULL;
+
+   char *sign = tokens[0];
+   EventLogTokenBasedEntry *entry;
+
+   if (false);
+";
+
+foreach $class (@classes)
+{
+   print FACTORY_CC_FILE "
+   else if (!strcmp(sign, \"$class->{SIGN}\"))
+      entry = new $class->{NAME}();
+";
+   }
+
+print FACTORY_CC_FILE "
+   else
+      return NULL;
+
+   entry->parse(tokens, numTokens);
+   return entry;
+}
+";
+
+close(FACTORY_CC_FILE);

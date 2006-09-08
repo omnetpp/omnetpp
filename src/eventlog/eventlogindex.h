@@ -61,7 +61,6 @@ class EventLogIndex
         long getOffsetForSimulationTime(simtime_t simulationTime, bool first);
         bool positionToSimulationTime(simtime_t simulationTime, bool first);
         void dumpTable();
-        
 };
 
 #endif

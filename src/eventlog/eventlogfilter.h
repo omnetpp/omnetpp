@@ -34,6 +34,9 @@ class FilteredEvent
       int64 cachedY;
       bool isExpandedInTree;
       int tableRowIndex;
+
+   public:
+      FilteredEvent();
 };
 
 class EventLogFilter
@@ -44,6 +47,9 @@ class EventLogFilter
 
       long firstEventNumber; // event number of the first considered event
       long lastEventNumber; // event number of the last considered event
+
+   public:
+      EventLogFilter();
 };
 
 #endif
