@@ -48,6 +48,7 @@ class FilteredEvent
         FilteredEvent(EventLogFilter *eventLogFilter, long eventNumber);
 
     public:
+        long getEventNumber() { return eventNumber; };
         Event *getEvent();
 
         // lazily calculatations
@@ -66,10 +67,9 @@ class EventLogFilter
         std::set<int> *includeModuleIds;
         bool includeCauses;
         bool includeConsequences;
-        bool includetNonDeliveryMessages;
 
-        typedef std::deque<FilteredEvent> FilteredEventList;
-        FilteredEventList filteredEventList;
+        typedef std::map<long, FilteredEvent *> FilteredEventList;
+        FilteredEventList eventNumberToFilteredEventMap;
 
         long firstEventNumber; // event number of the first considered event
         long lastEventNumber; // event number of the last considered event
@@ -80,8 +80,8 @@ class EventLogFilter
             long tracedEventNumber,
             std::set<int> *includeModuleIds,
             bool includeCauses,
-            bool includeConsequences,
-            bool includetNonDeliveryMessages);
+            bool includeConsequences);
+        ~EventLogFilter();
 
     public:
         void print(FILE *file);
@@ -92,6 +92,8 @@ class EventLogFilter
         FilteredEvent* getLastFilteredEvent();
         FilteredEvent* getNextFilteredEvent(FilteredEvent *filteredEvent);
         FilteredEvent* getPreviousFilteredEvent(FilteredEvent *filteredEvent);
+
+        FilteredEvent* getFilteredEvent(long eventNumber);
 };
 
 #endif

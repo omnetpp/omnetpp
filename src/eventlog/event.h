@@ -34,7 +34,11 @@ class Event
 
     public:
        Event();
-       long eventNumber();
+       ~Event();
+
+       EventEntry *getEventEntry() { return eventEntry; };
+       long getEventNumber() { return eventEntry->eventNumber; };
+
        long parse(FileReader *index, long offset);
        void print(FILE *file);
 };

@@ -25,6 +25,24 @@ EventLog::EventLog(FileReader *reader) : EventLogIndex(reader)
     parseInitializationLogEntries();
 }
 
+EventLog::~EventLog()
+{
+    for (EventLogEntryList::iterator it = initializationLogEntries.begin(); it != initializationLogEntries.end(); it++)
+    {
+        delete *it;
+    }
+
+    for (EventNumberToEventMap::iterator it = eventNumberToEventMap.begin(); it != eventNumberToEventMap.end(); it++)
+    {
+        delete it->second;
+    }
+
+    for (MessageIdToEventMap::iterator it = messageIdToSenderEventMap.begin(); it != messageIdToSenderEventMap.end(); it++)
+    {
+        delete it->second;
+    }
+}
+
 void EventLog::parseInitializationLogEntries()
 {
     long firstOffset = getOffsetForEventNumber(0);
@@ -59,9 +77,9 @@ void EventLog::parse(long fromEventNumber, long toEventNumber)
         Event *event = new Event();
         offset = event->parse(reader, offset);
 
-        if (eventNumberToEventMap.find(event->eventNumber()) ==  eventNumberToEventMap.end())
+        if (eventNumberToEventMap.find(event->getEventNumber()) ==  eventNumberToEventMap.end())
         {
-            eventNumberToEventMap[event->eventNumber()] = *event;
+            eventNumberToEventMap[event->getEventNumber()] = event;
         }
     }
 }
@@ -78,7 +96,7 @@ void EventLog::printEvents(FILE *file)
 {
     for (EventNumberToEventMap::iterator it = eventNumberToEventMap.begin(); it != eventNumberToEventMap.end(); it++)
     {
-        it->second.print(file);
+        it->second->print(file);
     }
 }
 
@@ -93,7 +111,7 @@ Event *EventLog::getEvent(long eventNumber)
     EventNumberToEventMap::iterator it = eventNumberToEventMap.find(eventNumber);
 
     if (it != eventNumberToEventMap.end())
-        return &it->second;
+        return it->second;
     else
     {
         long offset = getOffsetForEventNumber(eventNumber);
@@ -103,11 +121,22 @@ Event *EventLog::getEvent(long eventNumber)
             Event *event = new Event();
             event->parse(reader, offset);
 
-            eventNumberToEventMap[eventNumber] = *event;
+            eventNumberToEventMap[eventNumber] = event;
 
             return event;
         }
         else
             return NULL;
     }
+}
+
+Event *EventLog::getCause(Event *event)
+{
+    MessageIdToEventMap::iterator it = messageIdToSenderEventMap.find(event->getEventEntry()->messageId);
+
+    if (it != messageIdToSenderEventMap.end())
+        return it->second;
+
+    // TODO: read event based on the message's sending time or store sender event id directly?
+    return NULL;
 }

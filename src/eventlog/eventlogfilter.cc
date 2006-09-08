@@ -28,6 +28,16 @@ Event *FilteredEvent::getEvent()
 
 FilteredEvent *FilteredEvent::getCause()
 {
+    Event *cause = eventLogFilter->eventLog->getCause(getEvent());
+
+    while (cause)
+    {
+        if (eventLogFilter->matchesFilter(cause))
+            return eventLogFilter->getFilteredEvent(cause->getEventNumber());
+
+        cause = eventLogFilter->eventLog->getCause(cause);
+    }
+
     return NULL;
 }
 
@@ -48,32 +58,66 @@ EventLogFilter::EventLogFilter(
     long tracedEventNumber,
     std::set<int> *includeModuleIds,
     bool includeCauses,
-    bool includeConsequences,
-    bool includetNonDeliveryMessages)
+    bool includeConsequences)
 {
     this->eventLog = eventLog;
     this->tracedEventNumber = tracedEventNumber;
     this->includeModuleIds = includeModuleIds;
     this->includeCauses = includeCauses;
     this->includeConsequences = includeConsequences;
-    this->includetNonDeliveryMessages = includetNonDeliveryMessages;
+}
+
+EventLogFilter::~EventLogFilter()
+{
+    for (FilteredEventList::iterator it = eventNumberToFilteredEventMap.begin(); it != eventNumberToFilteredEventMap.end(); it++)
+    {
+        delete it->second;
+    }
+
+    if (includeModuleIds)
+        delete includeModuleIds;
 }
 
 void EventLogFilter::print(FILE *file)
 {
     FilteredEvent *filteredEvent = getFirstFilteredEvent();
 
-    do
+    while (filteredEvent)
     {
-        if (filteredEvent)
-            filteredEvent->getEvent()->print(file);
+        filteredEvent->getEvent()->print(file);
+        filteredEvent = getNextFilteredEvent(filteredEvent);
     }
-    while (filteredEvent = getNextFilteredEvent(filteredEvent));
 }
 
 bool EventLogFilter::matchesFilter(Event *event)
 {
-    return true;
+    if (event->getEventNumber() == tracedEventNumber)
+        return true;
+
+    if (eventNumberToFilteredEventMap.find(event->getEventNumber()) != eventNumberToFilteredEventMap.end())
+        return true;
+
+    if (includeModuleIds != NULL &&
+        includeModuleIds->find(event->getEventEntry()->moduleId) == includeModuleIds->end())
+        return false;
+
+    if (includeCauses)
+    {
+        // TODO:
+    }
+
+    if (includeConsequences)
+    {
+        // TODO:
+    }
+
+    // this is temp
+    Event *cause = eventLog->getCause(event);
+
+    if (cause)
+        return matchesFilter(cause);
+    else
+        return false;
 }
 
 FilteredEvent* EventLogFilter::getFirstFilteredEvent()
@@ -84,7 +128,9 @@ FilteredEvent* EventLogFilter::getFirstFilteredEvent()
     while (event = eventLog->getEvent(eventNumber))
     {
         if (matchesFilter(event))
-            return new FilteredEvent(this, eventNumber);
+            return getFilteredEvent(eventNumber);
+        else
+            eventNumber++;
     }
 
     return NULL;
@@ -92,16 +138,49 @@ FilteredEvent* EventLogFilter::getFirstFilteredEvent()
 
 FilteredEvent* EventLogFilter::getLastFilteredEvent()
 {
-    return NULL;
+    throw new Exception("NYI");
 }
 
 FilteredEvent* EventLogFilter::getNextFilteredEvent(FilteredEvent *filteredEvent)
 {
+    long eventNumber = filteredEvent->getEventNumber() + 1;
+    Event *event;
+
+    while (event = eventLog->getEvent(eventNumber))
+    {
+        if (matchesFilter(event))
+            return getFilteredEvent(eventNumber);
+        else
+            eventNumber++;
+    }
+
     return NULL;
 }
 
 FilteredEvent* EventLogFilter::getPreviousFilteredEvent(FilteredEvent *filteredEvent)
 {
+    long eventNumber = filteredEvent->getEventNumber() - 1;
+    Event *event;
+
+    while (event = eventLog->getEvent(eventNumber))
+    {
+        if (matchesFilter(event))
+            return getFilteredEvent(eventNumber);
+        else
+            eventNumber--;
+    }
+
     return NULL;
 }
 
+FilteredEvent* EventLogFilter::getFilteredEvent(long eventNumber)
+{
+    FilteredEventList::iterator it = eventNumberToFilteredEventMap.find(eventNumber);
+
+    if (it != eventNumberToFilteredEventMap.end())
+        return it->second;
+
+    FilteredEvent *filteredEvent = new FilteredEvent(this, eventNumber);
+    eventNumberToFilteredEventMap[eventNumber] = filteredEvent;
+    return filteredEvent;
+}

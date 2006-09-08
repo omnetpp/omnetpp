@@ -34,11 +34,15 @@ class EventLog : public EventLogIndex
         typedef std::vector<EventLogEntry *> EventLogEntryList;
         EventLogEntryList initializationLogEntries;
 
-        typedef std::map<long, Event> EventNumberToEventMap;
+        typedef std::map<long, Event *> EventNumberToEventMap;
         EventNumberToEventMap eventNumberToEventMap;
+
+        typedef std::map<long, Event *> MessageIdToEventMap;
+        MessageIdToEventMap messageIdToSenderEventMap;
 
     public:
         EventLog(FileReader *index);
+        ~EventLog();
 
         void parseInitializationLogEntries();
         void parse(long fromEventNumber, long toEventNumber);
@@ -48,6 +52,7 @@ class EventLog : public EventLogIndex
         void print(FILE *file);
 
         Event *getEvent(long eventNumber);
+        Event *getCause(Event *event);
 };
 
 #endif

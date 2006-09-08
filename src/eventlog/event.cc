@@ -22,13 +22,12 @@ Event::Event()
     eventEntry = NULL;
 }
 
-void parse()
+Event::~Event()
 {
-}
-
-long Event::eventNumber()
-{
-    return eventEntry->eventNumber;
+    for (EventLogEntryList::iterator it = eventLogEntries.begin(); it != eventLogEntries.end(); it++)
+    {
+        delete *it;
+    }
 }
 
 long Event::parse(FileReader *reader, long offset)
