@@ -25,6 +25,9 @@
 
 extern StringPool eventLogStringPool;
 
+class Event;
+class EventLogEntry;
+
 /**
  * Manages an event log file in memory.
  */
@@ -53,6 +56,8 @@ class EventLog : public EventLogIndex
 
         Event *getEvent(long eventNumber);
         Event *getCause(Event *event);
+        Event::EventList *getCauses(Event *event);
+        Event::EventList *getConsequences(Event *event);
 };
 
 #endif

@@ -15,7 +15,6 @@
 #include <assert.h>
 #include "filereader.h"
 #include "stringpool.h"
-#include "event.h"
 #include "eventlog.h"
 
 StringPool eventLogStringPool;
@@ -33,11 +32,6 @@ EventLog::~EventLog()
     }
 
     for (EventNumberToEventMap::iterator it = eventNumberToEventMap.begin(); it != eventNumberToEventMap.end(); it++)
-    {
-        delete it->second;
-    }
-
-    for (MessageIdToEventMap::iterator it = messageIdToSenderEventMap.begin(); it != messageIdToSenderEventMap.end(); it++)
     {
         delete it->second;
     }
@@ -74,7 +68,7 @@ void EventLog::parse(long fromEventNumber, long toEventNumber)
 
     while (offset <= toOffset)
     {
-        Event *event = new Event();
+        Event *event = new Event(this);
         offset = event->parse(reader, offset);
 
         if (eventNumberToEventMap.find(event->getEventNumber()) ==  eventNumberToEventMap.end())
@@ -118,7 +112,7 @@ Event *EventLog::getEvent(long eventNumber)
 
         if (offset != -1)
         {
-            Event *event = new Event();
+            Event *event = new Event(this);
             event->parse(reader, offset);
 
             eventNumberToEventMap[eventNumber] = event;
@@ -138,5 +132,17 @@ Event *EventLog::getCause(Event *event)
         return it->second;
 
     // TODO: read event based on the message's sending time or store sender event id directly?
+    return NULL;
+}
+
+Event::EventList *EventLog::getCauses(Event *event)
+{
+    // TODO:
+    return NULL;
+}
+
+Event::EventList *EventLog::getConsequences(Event *event)
+{
+    // TODO:
     return NULL;
 }

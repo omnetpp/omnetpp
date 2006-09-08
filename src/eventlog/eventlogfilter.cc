@@ -28,37 +28,26 @@ Event *FilteredEvent::getEvent()
 
 FilteredEvent *FilteredEvent::getCause()
 {
-    Event *cause = eventLogFilter->eventLog->getCause(getEvent());
-
-    while (cause)
-    {
-        if (eventLogFilter->matchesFilter(cause))
-            return eventLogFilter->getFilteredEvent(cause->getEventNumber());
-
-        cause = eventLogFilter->eventLog->getCause(cause);
-    }
-
-    return NULL;
+    return eventLogFilter->getCause(this);
 }
 
-FilteredEventList *FilteredEvent::getCauses()
+FilteredEvent::FilteredEventList *FilteredEvent::getCauses()
 {
-    return NULL;
+    return eventLogFilter->getCauses(this);
 }
 
-FilteredEventList *FilteredEvent::getConsequences()
+FilteredEvent::FilteredEventList *FilteredEvent::getConsequences()
 {
-    return NULL;
+    return eventLogFilter->getConsequences(this);
 }
 
 /**************************************************/
 
-EventLogFilter::EventLogFilter(
-    EventLog *eventLog,
-    long tracedEventNumber,
-    std::set<int> *includeModuleIds,
-    bool includeCauses,
-    bool includeConsequences)
+EventLogFilter::EventLogFilter(EventLog *eventLog,
+                               long tracedEventNumber,
+                               std::set<int> *includeModuleIds,
+                               bool includeCauses,
+                               bool includeConsequences)
 {
     this->eventLog = eventLog;
     this->tracedEventNumber = tracedEventNumber;
@@ -69,7 +58,7 @@ EventLogFilter::EventLogFilter(
 
 EventLogFilter::~EventLogFilter()
 {
-    for (FilteredEventList::iterator it = eventNumberToFilteredEventMap.begin(); it != eventNumberToFilteredEventMap.end(); it++)
+    for (EventNumberToFilteredEventMap::iterator it = eventNumberToFilteredEventMap.begin(); it != eventNumberToFilteredEventMap.end(); it++)
     {
         delete it->second;
     }
@@ -111,7 +100,7 @@ bool EventLogFilter::matchesFilter(Event *event)
         // TODO:
     }
 
-    // this is temp
+    // this is a temporary hack
     Event *cause = eventLog->getCause(event);
 
     if (cause)
@@ -128,7 +117,7 @@ FilteredEvent* EventLogFilter::getFirstFilteredEvent()
     while (event = eventLog->getEvent(eventNumber))
     {
         if (matchesFilter(event))
-            return getFilteredEvent(eventNumber);
+            return cacheFilteredEvent(eventNumber);
         else
             eventNumber++;
     }
@@ -149,7 +138,7 @@ FilteredEvent* EventLogFilter::getNextFilteredEvent(FilteredEvent *filteredEvent
     while (event = eventLog->getEvent(eventNumber))
     {
         if (matchesFilter(event))
-            return getFilteredEvent(eventNumber);
+            return cacheFilteredEvent(eventNumber);
         else
             eventNumber++;
     }
@@ -165,7 +154,7 @@ FilteredEvent* EventLogFilter::getPreviousFilteredEvent(FilteredEvent *filteredE
     while (event = eventLog->getEvent(eventNumber))
     {
         if (matchesFilter(event))
-            return getFilteredEvent(eventNumber);
+            return cacheFilteredEvent(eventNumber);
         else
             eventNumber--;
     }
@@ -173,9 +162,36 @@ FilteredEvent* EventLogFilter::getPreviousFilteredEvent(FilteredEvent *filteredE
     return NULL;
 }
 
-FilteredEvent* EventLogFilter::getFilteredEvent(long eventNumber)
+FilteredEvent *EventLogFilter::getCause(FilteredEvent *filteredEvent)
 {
-    FilteredEventList::iterator it = eventNumberToFilteredEventMap.find(eventNumber);
+    Event *cause = eventLog->getCause(filteredEvent->getEvent());
+
+    while (cause)
+    {
+        if (matchesFilter(cause))
+            return cacheFilteredEvent(cause->getEventNumber());
+
+        cause = cause->getCause();
+    }
+
+    return NULL;
+}
+
+FilteredEvent::FilteredEventList *EventLogFilter::getCauses(FilteredEvent *filteredEvent)
+{
+    // TODO: this should be based on getCauses of our event
+    return NULL;
+}
+
+FilteredEvent::FilteredEventList *EventLogFilter::getConsequences(FilteredEvent *filteredEvent)
+{
+    // TODO: this should be based on getConsequences of our event
+    return NULL;
+}
+
+FilteredEvent* EventLogFilter::cacheFilteredEvent(long eventNumber)
+{
+    EventNumberToFilteredEventMap::iterator it = eventNumberToFilteredEventMap.find(eventNumber);
 
     if (it != eventNumberToFilteredEventMap.end())
         return it->second;

@@ -15,10 +15,12 @@
 #include "linetokenizer.h"
 #include "filereader.h"
 #include "event.h"
+#include "eventlog.h"
 #include "eventlogentry.h"
 
-Event::Event()
+Event::Event(EventLog *eventLog)
 {
+    this->eventLog = eventLog;
     eventEntry = NULL;
 }
 
@@ -28,6 +30,21 @@ Event::~Event()
     {
         delete *it;
     }
+}
+
+Event *Event::getCause()
+{
+    return eventLog->getCause(this);
+}
+
+Event::EventList *Event::getCauses()
+{
+    return eventLog->getCauses(this);
+}
+
+Event::EventList *Event::getConsequences()
+{
+    return eventLog->getConsequences(this);
 }
 
 long Event::parse(FileReader *reader, long offset)

@@ -21,14 +21,16 @@
 #include "eventlogdefs.h"
 #include "eventlog.h"
 
-class FilteredEvent;
 class EventLogFilter;
-
-typedef std::vector<FilteredEvent *> FilteredEventList;
-typedef std::vector<long> EventNumberList;
 
 class FilteredEvent
 {
+    friend EventLogFilter;
+
+    public:
+        typedef std::vector<FilteredEvent *> FilteredEventList;
+        typedef std::vector<long> EventNumberList;
+
     protected:
         EventLogFilter *eventLogFilter;
 
@@ -51,7 +53,6 @@ class FilteredEvent
         long getEventNumber() { return eventNumber; };
         Event *getEvent();
 
-        // lazily calculatations
         FilteredEvent *getCause();
         FilteredEventList *getCauses();
         FilteredEventList *getConsequences();
@@ -68,32 +69,37 @@ class EventLogFilter
         bool includeCauses;
         bool includeConsequences;
 
-        typedef std::map<long, FilteredEvent *> FilteredEventList;
-        FilteredEventList eventNumberToFilteredEventMap;
+        typedef std::map<long, FilteredEvent *> EventNumberToFilteredEventMap;
+        EventNumberToFilteredEventMap eventNumberToFilteredEventMap;
 
         long firstEventNumber; // event number of the first considered event
         long lastEventNumber; // event number of the last considered event
 
     public:
-        EventLogFilter(
-            EventLog *eventLog,
-            long tracedEventNumber,
-            std::set<int> *includeModuleIds,
-            bool includeCauses,
-            bool includeConsequences);
+        EventLogFilter(EventLog *eventLog,
+                       long tracedEventNumber,
+                       std::set<int> *includeModuleIds,
+                       bool includeCauses,
+                       bool includeConsequences);
         ~EventLogFilter();
 
     public:
-        void print(FILE *file);
-
-        bool matchesFilter(Event *event);
-
         FilteredEvent* getFirstFilteredEvent();
         FilteredEvent* getLastFilteredEvent();
         FilteredEvent* getNextFilteredEvent(FilteredEvent *filteredEvent);
         FilteredEvent* getPreviousFilteredEvent(FilteredEvent *filteredEvent);
 
-        FilteredEvent* getFilteredEvent(long eventNumber);
+        // lazy calculatations
+        FilteredEvent *getCause(FilteredEvent *filteredEvent);
+        FilteredEvent::FilteredEventList *getCauses(FilteredEvent *filteredEvent);
+        FilteredEvent::FilteredEventList *getConsequences(FilteredEvent *filteredEvent);
+
+        void print(FILE *file);
+
+    protected:
+        bool matchesFilter(Event *event);
+        FilteredEvent* cacheFilteredEvent(long eventNumber);
+
 };
 
 #endif
