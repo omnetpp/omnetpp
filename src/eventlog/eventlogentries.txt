@@ -34,10 +34,10 @@ CC ConnectionCreatedEntry
 {
    sm int sourceModuleId
    sg int sourceGateId
-   sn int sourceGateFullName
+   sn string sourceGateFullName
    dm int destModuleId
    dg int destGateId
-   dn int destGateFullName
+   dn string destGateFullName
 // channel, channel attributes, etc
 }
 

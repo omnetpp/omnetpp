@@ -18,23 +18,34 @@
 #include <sstream>
 #include <set>
 #include <map>
+#include "stringpool.h"
 #include "filereader.h"
 #include "event.h"
 #include "eventlogindex.h"
 #include "eventlogfilter.h"
 
+extern StringPool eventLogStringPool;
+
+/**
+ * Manages an event log file in memory.
+ */
 class EventLog : public EventLogIndex
 {
-   protected:
-      typedef std::map<long, Event> EventNumberToEventMap;
-      EventNumberToEventMap eventNumberToEventMap;
+    protected:
+        typedef std::vector<EventLogEntry *> EventLogEntryList;
+        EventLogEntryList initializationLogEntries;
 
-      EventLogFilter *filter(Event *tracedEvent, std::set<int> *moduleIds, bool wantCauses, bool wantConsequences, bool wantNonDeliveryMessages);
+        typedef std::map<long, Event> EventNumberToEventMap;
+        EventNumberToEventMap eventNumberToEventMap;
 
-   public:
-      EventLog(FileReader *index);
-      void parse(long fromEventNumber, long toEventNumber);
-      void print(FILE *file);
+        EventLogFilter *filter(Event *tracedEvent, std::set<int> *moduleIds, bool wantCauses, bool wantConsequences, bool wantNonDeliveryMessages);
+
+    public:
+        EventLog(FileReader *index);
+        void parseInitializationLogEntries();
+        void printInitializationLogEntries(FILE *file);
+        void parse(long fromEventNumber, long toEventNumber);
+        void print(FILE *file);
 };
 
 #endif

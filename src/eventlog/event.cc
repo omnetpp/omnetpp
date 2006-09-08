@@ -16,13 +16,10 @@
 #include "filereader.h"
 #include "event.h"
 #include "eventlogentry.h"
-#include "eventlogentries.h"
-#include "eventlogentryfactory.h"
 
 Event::Event()
 {
     eventEntry = NULL;
-    numLogMessages = 0;
 }
 
 void parse()
@@ -36,9 +33,6 @@ long Event::eventNumber()
 
 long Event::parse(FileReader *reader, long offset)
 {
-    EventLogEntryFactory factory;
-    LineTokenizer tokenizer;
-
     eventEntry = NULL;
     eventLogEntries.clear();
     reader->seekTo(offset);
@@ -50,28 +44,18 @@ long Event::parse(FileReader *reader, long offset)
         if (!line)
             return reader->fileSize();
 
-        if (*line == '-')
-        {
-            EventLogMessage *eventLogMessage = new EventLogMessage();
-            eventLogMessage->parse(line);
-            eventLogEntries.push_back(eventLogMessage);
-            continue;
-        }
-
-        tokenizer.tokenize(line);
-
-        EventLogEntry *eventLogEntry = factory.parseEntry(tokenizer.tokens(), tokenizer.numTokens());
+        EventLogEntry *eventLogEntry = EventLogEntry::parseEntry(line);
         EventEntry *eventEntry = dynamic_cast<EventEntry *>(eventLogEntry);
 
         if (eventEntry)
         {
-            if (this->eventEntry == NULL)
-                this->eventEntry = eventEntry;
-            else
+            if (this->eventEntry)
                 break;
+            else
+                this->eventEntry = eventEntry;
         }
 
-        if (eventLogEntry != NULL)
+        if (eventLogEntry)
             eventLogEntries.push_back(eventLogEntry);
     }
 

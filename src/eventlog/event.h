@@ -21,16 +21,16 @@
 #include "eventlogentry.h"
 #include "eventlogentries.h"
 
-// all the event log entries for a single event
+/**
+ * Manages all event log entries for a single event.
+ */
 class Event
 {
     protected:
-       EventEntry *eventEntry;
+       EventEntry *eventEntry; // the event log entry that corresponds to the actual event
 
        typedef std::vector<EventLogEntry *> EventLogEntryList;
        EventLogEntryList eventLogEntries;
-
-       int numLogMessages; // total number of log messages for this event (sum of its causes[]' log messages)
 
     public:
        Event();

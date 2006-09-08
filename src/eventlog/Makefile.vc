@@ -23,13 +23,12 @@ LIBS= eventlog.lib ../common/common.lib
 .cc.obj:
 	$(CXX) /Fo"$@" $(COPTS) /c /Tp $<
 
-
 #
 # Targets (TBD: build dll)
 #
-all : eventlog.lib eventlogtool.exe
+all : eventlogentries.cc eventlog.lib eventlogtool.exe
 
-eventlogentries.cc : eventlogentries.txt eventlogentries.pl
+eventlogentries.cc eventlogentries.h eventlogfactory.cc : eventlogentries.txt eventlogentries.pl
 	perl eventlogentries.pl
 
 eventlog.lib : $(OBJS)
@@ -53,3 +52,32 @@ clean:
 
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
+event.obj: event.cc \
+  event.h \
+  eventlogentry.h \
+  eventlogentryfactory.h
+eventlog.obj: eventlog.cc \
+  event.h \
+  eventlog.h \
+  eventlogentry.h \
+  eventlogindex.h \
+  eventlogfilter.h \
+  eventlogdefs.h
+eventlogentry.obj: eventlogentry.cc \
+  eventlogentry.h
+eventlogfilter.obj: eventlogfilter.cc \
+  eventlogfilter.h \
+  eventlogdefs.h
+eventlogindex.obj: eventlogindex.cc \
+  eventlogindex.h \
+  eventlogdefs.h
+eventlogtool.obj: eventlogtool.cc \
+  eventlog.h \
+  eventlogindex.h \
+  event.h \
+  eventlogfilter.h \
+  eventlogentry.h \
+  eventlogdefs.h
+stringpool.obj: stringpool.cc \
+  stringpool.h \
+  eventlogdefs.h

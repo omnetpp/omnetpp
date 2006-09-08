@@ -18,13 +18,21 @@
 #include <sstream>
 #include "defs.h"
 
+/**
+ * Base class for all kind of event log entries.
+ * An entry is represented by a single line in the log file.
+ */
 class EventLogEntry
 {
     public:
+        static EventLogEntry *parseEntry(char *line);
         virtual void parse(char *line) = 0;
         virtual void print(FILE *fout) = 0;
 };
 
+/**
+ * Base class for entries represented by key value tokens.
+ */
 class EventLogTokenBasedEntry : public EventLogEntry
 {
     protected:
@@ -39,6 +47,9 @@ class EventLogTokenBasedEntry : public EventLogEntry
         virtual void parse(char **tokens, int numTokens) = 0;
 };
 
+/**
+ * One line log message entry.
+ */
 class EventLogMessage : public EventLogEntry
 {
     public:

@@ -13,7 +13,26 @@
 *--------------------------------------------------------------*/
 
 #include "linetokenizer.h"
+#include "eventlog.h"
 #include "eventlogentry.h"
+#include "eventlogentryfactory.h"
+
+EventLogEntry *EventLogEntry::parseEntry(char *line)
+{
+    if (*line == '-')
+    {
+        EventLogMessage *eventLogMessage = new EventLogMessage();
+        eventLogMessage->parse(line);
+        return eventLogMessage;
+    }
+    else
+    {
+        LineTokenizer tokenizer;
+        EventLogEntryFactory factory;
+        tokenizer.tokenize(line);
+        return factory.parseEntry(tokenizer.tokens(), tokenizer.numTokens());
+    }
+}
 
 char *EventLogTokenBasedEntry::getToken(char **tokens, int numTokens, const char *sign)
 {
@@ -44,8 +63,7 @@ simtime_t EventLogTokenBasedEntry::getSimtimeToken(char **tokens, int numTokens,
 
 const char *EventLogTokenBasedEntry::getStringToken(char **tokens, int numTokens, const char *sign)
 {
-    // TODO: use string pool
-    return strdup(getToken(tokens, numTokens, sign));
+    return eventLogStringPool.get(getToken(tokens, numTokens, sign));
 }
 
 void EventLogTokenBasedEntry::parse(char *line)
@@ -64,8 +82,7 @@ EventLogMessage::EventLogMessage()
 
 void EventLogMessage::parse(char *line)
 {
-    // TODO: use string pool
-    text = strdup(line + 2);
+    text = eventLogStringPool.get(line + 2);
 }
 
 void EventLogMessage::print(FILE *fout)
