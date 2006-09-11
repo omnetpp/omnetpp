@@ -1,3 +1,7 @@
+# FIXME Levy pls add comment at top of file: what is this perl script, what does it do?
+# FIXME parsing: choose different strategy, current code cannot detect unrecognized field names in the trace file!
+# FIXME parsing: does it support optional fields in the trace file?
+
 open(FILE, "eventlogentries.txt");
 
 ##########################################
