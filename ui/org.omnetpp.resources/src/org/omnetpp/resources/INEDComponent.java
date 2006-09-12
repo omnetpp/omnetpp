@@ -70,6 +70,7 @@ public interface INEDComponent {
 
 	public Set<String> getPropertyNames();
 	public boolean hasProperty(String name);
+	public NEDElement getProperty(String name);
 	
 	public Set<String> getGateNames();
 	public boolean hasGate(String name);

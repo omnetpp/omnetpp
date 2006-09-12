@@ -2,6 +2,7 @@ package org.omnetpp.resources;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Set;
 import java.util.StringTokenizer;
 
@@ -282,10 +283,31 @@ public class NEDResources implements INEDComponentResolver {
 		return components.get(name);
 	}
 
-	public DisplayString getEffectiveDisplayString(IDisplayStringProvider node) {
-		// TODO look for fallback only if the displaystring is empty
-		// should be changed to correctly handle the fallback on a per property/attribute base
-		DisplayString resDisp = node.getDisplayString();
+	/**
+	 * @param typeName The name of the toplevel component 
+	 * @return The effective display string for the top level ned component
+	 */
+	public DisplayString getEffectiveDisplayString(String typeName) {
+		return getEffectiveDisplayString(getComponent(typeName));
+	}
+	
+	/**
+	 * @param nedcomp The ned component we need the display string for
+	 * @return The effective display string for the top level ned component
+	 */
+	public DisplayString getEffectiveDisplayString(INEDComponent nedcomp) {
+		if (!(nedcomp.getNEDElement() instanceof IDisplayStringProvider))
+			return null;
+		
+		List<INEDComponent> extendsChain = ((NEDComponent)nedcomp).resolveExtendsChain();
+		// start at the current component and ends one before the base component
+		for(int i = extendsChain.size()-1; i>=1; --i) {
+			DisplayString currDisp = ((IDisplayStringProvider)extendsChain.get(i).getNEDElement()).getDisplayString();
+			DisplayString nextDisp = ((IDisplayStringProvider)extendsChain.get(i-1).getNEDElement()).getDisplayString();
+			currDisp.setDefaults(nextDisp);
+		}
+		
+		DisplayString resDisp = ((IDisplayStringProvider)nedcomp.getNEDElement()).getDisplayString();
 		return resDisp;
 	}
 	

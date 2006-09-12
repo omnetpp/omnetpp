@@ -301,6 +301,13 @@ public class NEDComponent implements INEDComponent, NEDElementTags {
 	}
 
 	/* INEDComponent method */
+	public NEDElement getProperty(String name) {
+		if (needsUpdate)
+			refreshInheritedMembers();
+		return allProperties.get(name);
+	}
+	
+	/* INEDComponent method */
 	public Set<String> getGateNames() {
 		if (needsUpdate)
 			refreshInheritedMembers();

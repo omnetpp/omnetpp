@@ -154,7 +154,7 @@ public class DisplayString implements IDisplayString {
     	this.owner = owner;
     }
 
-    protected DisplayString(String value) {
+    public DisplayString(String value) {
     	if (value != null)
     		set(value);
 
@@ -201,22 +201,32 @@ public class DisplayString implements IDisplayString {
      * @param defaultDspStr generic defaults 
      * @param defaultVariableDspStr defaults used if a variable is present at the location
      * @return TagInstance arg's value or <code>EMPTY_VALUE</code> if empty and no default is defined 
-     * or <code>null</code> if tag does not exist at all 
+     * or <code>null</code> if tag does not exist at all. If a default diplay string was
+     * provided with <code>setDefaults</code> it tries to look up the property from there
+     *  
      */
     protected String getTagArgUsingDefs(Tag tagName, int pos) {
         TagInstance tag = getTag(tagName);
         // if the tag does'nt exist do not apply any defaults 
-        if (tag == null) 
+        if (tag == null) {
+        	// if there is a default diplay string delegate the request there
+        	if (defaults != null)
+        		return defaults.getTagArgUsingDefs(tagName, pos);
+        	// no default display string so return NULL to signal that the whole tag is missing
             return null;
+        }
         // get the value
         String value = tag.getArg(pos);
         if (variableDefaults !=null && value.startsWith("$"))
             value = variableDefaults.getTagArg(tagName, pos);
         // if tag was present, but the argument was empty, look for default values
-        if (emptyDefaults!=null && TagInstance.EMPTY_VALUE.equals(value))
+        if (TagInstance.EMPTY_VALUE.equals(value) && defaults != null) 
+        	value = defaults.getTagArgUsingDefs(tagName, pos);
+        // if the value is still empty or null get the local default values  if any
+        if (emptyDefaults!=null && (value == null || TagInstance.EMPTY_VALUE.equals(value)))
             value = emptyDefaults.getTagArg(tagName, pos);
         // if no default was defined for this tag/argument return empty value
-        if (value == null) 
+        if (value == null)
             return TagInstance.EMPTY_VALUE;
         
         return value;

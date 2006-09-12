@@ -20,6 +20,7 @@ public class SubmoduleFactory implements CreationFactory {
 		SubmoduleNodeEx subMod = (SubmoduleNodeEx)NEDElementFactoryEx.getInstance()
 									.createNodeWithTag(NEDElementFactoryEx.NED_SUBMODULE);
 		subMod.setType(submoduleType);
+		subMod.setName(submoduleType.toLowerCase());
 		return subMod;
 	}
 
