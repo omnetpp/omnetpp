@@ -18,6 +18,7 @@ import org.eclipse.gef.editparts.ViewportAutoexposeHelper;
 import org.eclipse.gef.editparts.ViewportExposeHelper;
 import org.eclipse.gef.editparts.ViewportMouseWheelHelper;
 import org.eclipse.gef.editpolicies.SnapFeedbackPolicy;
+import org.omnetpp.common.displaymodel.DisplayString;
 import org.omnetpp.common.displaymodel.IDisplayString;
 import org.omnetpp.common.displaymodel.IDisplayString.Prop;
 import org.omnetpp.figures.CompoundModuleFigure;
@@ -26,6 +27,7 @@ import org.omnetpp.figures.GateAnchor;
 import org.omnetpp.ned.editor.graph.edit.policies.CompoundModuleLayoutEditPolicy;
 import org.omnetpp.ned2.model.CompoundModuleNodeEx;
 import org.omnetpp.ned2.model.INamedGraphNode;
+import org.omnetpp.resources.NEDResourcesPlugin;
 
 public class CompoundModuleEditPart extends ModuleEditPart {
 
@@ -111,12 +113,19 @@ public class CompoundModuleEditPart extends ModuleEditPart {
     protected void refreshVisuals() {
         
         // define the properties that determine the visual appearence
-    	INamedGraphNode model = (INamedGraphNode)getNEDModel();
+    	CompoundModuleNodeEx compModule = (CompoundModuleNodeEx)getNEDModel();
     	
-        getCompoundModuleFigure().setName(model.getName());
+        getCompoundModuleFigure().setName(compModule.getName());
 
         // parse a dispaly string, so it's easier to get values from it.
-    	IDisplayString dps = model.getDisplayString();
+    	DisplayString dps = compModule.getDisplayString();
+        // get a fallback display string for the module type
+    	// the effective display string of its first ancestor (if any)
+    	if (compModule.getFirstExtendsChild() != null) {
+    		DisplayString fallbackDps = NEDResourcesPlugin.getNEDResources()
+        								.getEffectiveDisplayString(compModule.getFirstExtendsChild().getName());
+        	dps.setDefaults(fallbackDps);
+    	}
     	getCompoundModuleFigure().setDisplayString(dps);
         
     }

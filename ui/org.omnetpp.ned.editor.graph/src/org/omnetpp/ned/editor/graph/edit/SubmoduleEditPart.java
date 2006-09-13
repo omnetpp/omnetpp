@@ -3,12 +3,14 @@ package org.omnetpp.ned.editor.graph.edit;
 import org.eclipse.draw2d.ConnectionAnchor;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.geometry.Point;
-import org.omnetpp.common.displaymodel.IDisplayString;
+import org.omnetpp.common.displaymodel.DisplayString;
 import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.figures.GateAnchor;
 import org.omnetpp.figures.SubmoduleFigure;
 import org.omnetpp.figures.layout.SubmoduleConstraint;
 import org.omnetpp.ned2.model.SubmoduleNodeEx;
+import org.omnetpp.resources.NEDResources;
+import org.omnetpp.resources.NEDResourcesPlugin;
 
 
 // TODO implement UnpinRequest 
@@ -63,23 +65,32 @@ public class SubmoduleEditPart extends ModuleEditPart {
         // define the properties that determine the visual appearence
     	SubmoduleNodeEx submNode = (SubmoduleNodeEx)getModel();
     	
+    	// set module name and vector size
     	String nameToDisplay = submNode.getName();
     	// add [size] if it's a module vector
     	if (submNode.getVectorSize() != null && !"".equals(submNode.getVectorSize()))
     		nameToDisplay += "["+submNode.getVectorSize()+"]";
     	getSubmoduleFigure().setName(nameToDisplay);
-        // parse a dispaly string, so it's easier to get values from it.
-        IDisplayString dps = submNode.getDisplayString();
+
+    	// parse a dispaly string, so it's easier to get values from it.
+    	// for other visula properties
+        DisplayString dps = submNode.getDisplayString();
+        // get a fallback display string for the module type
+        DisplayString fallbackDps = NEDResourcesPlugin.getNEDResources()
+        								.getEffectiveDisplayString(submNode.getType());
+        dps.setDefaults(fallbackDps);
         
-        // set the layout constraint for the figure
+        // set the layout constraint for the figure (should be set BEFORE figure.setDisplayString() )
         SubmoduleConstraint constr = new SubmoduleConstraint(dps);
         constr.setVectorName(nameToDisplay);
-        // TODO put the correct values here from the model
+        // FIXME put the correct values here from the model
         constr.setVectorSize(5);
         constr.setVectorIndex(3);
         getSubmoduleFigure().setConstraint(constr);
+
         // set the rest of the dispay properties
         getSubmoduleFigure().setDisplayString(dps);
+
         // TODO implement a separate PIN decoration decorator figure in submodule figure
         if (dps.getLocation() != null)
         	getSubmoduleFigure().setImageDecoration(ImageFactory.getImage(ImageFactory.DEFAULT_PIN));
