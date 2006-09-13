@@ -396,6 +396,7 @@ cmersennetwister.obj: cmersennetwister.cc \
   ../../include/util.h \
   ../../include/cexception.h \
   cmersennetwister.h \
+  ../../include/cparsimcomm.h \
   ../../include/defs.h \
   ../../include/opp_string.h \
   ../../include/macros.h \
@@ -581,6 +582,18 @@ cpar.obj: cpar.cc \
   ../../include/cmsgheap.h \
   ../../include/coutvect.h \
   ../../include/opp_string.h
+cpolymorphic.obj: cpolymorphic.cc \
+  ../../include/cpolymorphic.h \
+  ../../include/cexception.h \
+  ../../include/cstruct.h \
+  ../../include/errmsg.h \
+  ../../include/defs.h \
+  ../../include/util.h \
+  ../../include/opp_string.h \
+  ../../include/cobject.h \
+  ../../include/cenum.h \
+  ../../include/cenvir.h \
+  ../../include/cvisitor.h
 cpsquare.obj: cpsquare.cc \
   ../../include/macros.h \
   ../../include/cpsquare.h \
@@ -743,6 +756,7 @@ cstlwatch.obj: cstlwatch.cc \
   ../../include/cstruct.h \
   ../../include/macros.h \
   ../../include/cobject.h \
+  ../../include/cwatch.h \
   ../../include/cenvir.h \
   ../../include/defs.h \
   ../../include/util.h \
@@ -880,11 +894,27 @@ cwatch.obj: cwatch.cc \
   ../../include/opp_string.h
 cxmlelement.obj: cxmlelement.cc \
   ../../include/cxmlelement.h \
+  minixpath.h \
   ../../include/cexception.h \
   ../../include/cenvir.h \
+  ../../include/cmodule.h \
   ../../include/defs.h \
   ../../include/opp_string.h \
-  ../../include/util.h
+  ../../include/util.h \
+  ../../include/cobject.h \
+  ../../include/ccoroutine.h \
+  ../../include/globals.h \
+  ../../include/carray.h \
+  ../../include/cqueue.h \
+  ../../include/cgate.h \
+  ../../include/csimul.h \
+  ../../include/cdefaultlist.h \
+  ../../include/cpolymorphic.h \
+  ../../include/cvisitor.h \
+  ../../include/onstartup.h \
+  ../../include/errmsg.h \
+  ../../include/cmsgheap.h \
+  ../../include/coutvect.h
 distrib.obj: distrib.cc \
   ../../include/distrib.h \
   ../../include/macros.h \
@@ -926,6 +956,13 @@ globals.obj: globals.cc \
   ../../include/cexception.h \
   ../../include/cvisitor.h \
   ../../include/opp_string.h
+minixpath.obj: minixpath.cc \
+  minixpath.h \
+  ../../include/cexception.h \
+  ../../include/cxmlelement.h \
+  ../../include/defs.h \
+  ../../include/opp_string.h \
+  ../../include/util.h
 onstartup.obj: onstartup.cc \
   ../../include/onstartup.h \
   ../../include/cexception.h \
@@ -1232,6 +1269,7 @@ parsim/cidealsimulationprot.obj: parsim/cidealsimulationprot.cc \
   ../../include/ctypes.h
 parsim/cispeventlogger.obj: parsim/cispeventlogger.cc \
   parsim/cispeventlogger.h \
+  parsim/cidealsimulationprot.h \
   ../../include/cparsimcomm.h \
   parsim/cplaceholdermod.h \
   ../../include/cmodule.h \
@@ -1555,6 +1593,7 @@ parsim/cplaceholdermod.obj: parsim/cplaceholdermod.cc \
   parsim/cnamedpipecomm.h \
   parsim/cnosynchronization.h \
   parsim/cnullmessageprot.h \
+  parsim/cispeventlogger.h \
   parsim/cidealsimulationprot.h \
   parsim/clinkdelaylookahead.h \
   ../../include/cmodule.h \
@@ -1610,6 +1649,43 @@ parsim/cproxygate.obj: parsim/cproxygate.cc \
   ../../include/cmsgheap.h \
   ../../include/coutvect.h \
   ../../include/cpar.h
+parsim/cptrpassingmpicomm.obj: parsim/cptrpassingmpicomm.cc \
+  parsim/cptrpassingmpicomm.h \
+  parsim/cptrpassingmpicommbuffer.h \
+  ../../include/macros.h \
+  ../../include/cparsimcomm.h \
+  ../../include/cpolymorphic.h \
+  ../../include/defs.h \
+  ../../include/util.h \
+  parsim/cmpicommbuffer.h \
+  parsim/ccommbufferbase.h \
+  ../../include/ccommbuffer.h \
+  ../../include/onstartup.h \
+  ../../include/carray.h \
+  ../../include/ctypes.h \
+  ../../include/cobject.h \
+  ../../include/cenvir.h \
+  ../../include/cexception.h \
+  ../../include/cvisitor.h \
+  ../../include/opp_string.h \
+  ../../include/globals.h
+parsim/cptrpassingmpicommbuffer.obj: parsim/cptrpassingmpicommbuffer.cc \
+  parsim/cmpicommbuffer.h \
+  ../../include/macros.h \
+  parsim/ccommbufferbase.h \
+  ../../include/ccommbuffer.h \
+  ../../include/cpolymorphic.h \
+  ../../include/defs.h \
+  ../../include/util.h \
+  ../../include/onstartup.h \
+  ../../include/carray.h \
+  ../../include/ctypes.h \
+  ../../include/cobject.h \
+  ../../include/cenvir.h \
+  ../../include/cexception.h \
+  ../../include/cvisitor.h \
+  ../../include/opp_string.h \
+  ../../include/globals.h
 parsim/creceivedexception.obj: parsim/creceivedexception.cc \
   parsim/creceivedexception.h \
   ../../include/cexception.h \

@@ -80,17 +80,14 @@ clean:
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 scalars.obj: scalars.cc \
-  tklib.h \
-  tclcode.cc
-tclcode.obj: tclcode.cc
+  tklib.h
 tkcmd.obj: tkcmd.cc \
   tklib.h \
   tkutil.h \
   engine/scalarmanager.h \
   engine/util.h \
   engine/datasorter.h \
-  engine/texception.h \
-  engine/patmatch.h
+  engine/texception.h
 tklib.obj: tklib.cc \
   tklib.h \
   tkutil.h
@@ -100,8 +97,8 @@ engine/datasorter.obj: engine/datasorter.cc \
   engine/scalarmanager.h \
   engine/util.h \
   engine/datasorter.h \
-  engine/texception.h \
-  engine/patmatch.h
+  engine/patmatch.h \
+  engine/texception.h
 engine/filetokenizer.obj: engine/filetokenizer.cc \
   engine/filetokenizer.h
 engine/patmatch.obj: engine/patmatch.cc \

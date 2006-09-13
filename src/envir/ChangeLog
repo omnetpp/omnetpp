@@ -6,6 +6,8 @@
 	* cInifile::getAsFilenames() enhancement (as part of the above fix):
 	if directory name contains spaces, quotes are used to escape it.
 
+	* cinifile.cc/h: added getAsFilename()
+
 2006-06-26  Andras Varga
 
 	* cinifile.cc: clearContents() made public.

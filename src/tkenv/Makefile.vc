@@ -200,6 +200,8 @@ inspfactory.obj: inspfactory.cc \
   tkutil.h
 modinsp.obj: modinsp.cc \
   ../../include/csimplemodule.h \
+  ../../include/cchannel.h \
+  ../../include/cgate.h \
   ../../include/cmessage.h \
   ../../include/cpar.h \
   ../../include/carray.h \
@@ -219,7 +221,6 @@ modinsp.obj: modinsp.cc \
   ../../include/ccoroutine.h \
   ../../include/globals.h \
   ../../include/cqueue.h \
-  ../../include/cgate.h \
   ../../include/csimul.h \
   ../../include/cdefaultlist.h \
   ../../include/cenvir.h \
@@ -354,7 +355,6 @@ structinsp.obj: structinsp.cc \
   ../../include/ctypes.h \
   ../../include/globals.h \
   tkutil.h
-tclcode.obj: tclcode.cc
 tkapp.obj: tkapp.cc \
   ../../include/cenvir.h \
   ../../include/csimplemodule.h \
@@ -368,7 +368,6 @@ tkapp.obj: tkapp.cc \
   inspfactory.h \
   modinsp.h \
   ../../include/platdep/time.h \
-  tclcode.cc \
   ../../include/defs.h \
   ../../include/cmodule.h \
   ../../include/cobject.h \

@@ -25,7 +25,7 @@ class cPatternMatcher;
 /**
  * Configuration class which reads data from a MYSQL database. The two
  * configurations, the boot-time omnetpp.ini and the database get merged.
- * Config entries read from the database are appended after the ones 
+ * Config entries read from the database are appended after the ones
  * read from omnetpp.ini, so if there is a collision, omnetpp.ini
  * takes precedence.
  *
@@ -134,6 +134,7 @@ class cMySQLConfiguration : public cConfiguration
     virtual double getAsDouble(const char *section, const char *key, double defaultvalue=0.0);
     virtual double getAsTime(const char *section, const char *key, double defaultvalue=0.0);
     virtual const char *getAsString(const char *section, const char *key, const char *defaultvalue=""); // quotes stripped (if any)
+    virtual std::string getAsFilename(const char *section, const char *key, const char *defaultvalue="");
     virtual std::string getAsFilenames(const char *section, const char *key, const char *defaultvalue="");
     virtual const char *getAsCustom(const char *section, const char *key, const char *defaultvalue=NULL); // with quotes (if any)
     virtual const char *getBaseDirectoryFor(const char *section, const char *key);
@@ -150,6 +151,7 @@ class cMySQLConfiguration : public cConfiguration
     virtual double getAsDouble2(const char *section1, const char *section2, const char *key, double defaultvalue=0.0);
     virtual double getAsTime2(const char *section1, const char *section2, const char *key, double defaultvalue=0.0);
     virtual const char *getAsString2(const char *section1, const char *section2, const char *key, const char *defaultvalue="");
+    virtual std::string getAsFilename2(const char *section1, const char *section2, const char *key, const char *defaultvalue="");
     virtual std::string getAsFilenames2(const char *section1, const char *section2, const char *key, const char *defaultvalue="");
     virtual const char *getAsCustom2(const char *section1, const char *section2, const char *key, const char *defaultvalue="");
     virtual const char *getBaseDirectoryFor(const char *section1, const char *section2, const char *key);

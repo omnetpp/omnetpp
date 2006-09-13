@@ -30,6 +30,7 @@
 #include "appreg.h"
 #include "cmodule.h"
 #include "fsutils.h"
+#include "cstrtokenizer2.h"
 
 #include "speedmtr.h"       // env_dummy_function()
 #include "filemgrs.h"       // env_dummy_function()
@@ -93,21 +94,12 @@ cEnvir::~cEnvir()
 
 static void loadLibs(const char *libs)
 {
-    if (libs && libs[0])
-    {
-        // 'libs' contains several file names separated by whitespaces
-        char *buf = opp_strdup(libs);
-        char *lib, *s = buf;
-        while (isspace(*s)) s++;
-        while (*s)
-        {
-            lib = s;
-            while (*s && !isspace(*s)) s++;
-            if (*s) *s++ = 0;
-            loadExtensionLibrary(lib);
-        }
-        delete buf;
-    }
+    // "libs" may contain quoted filenames, so use cStringTokenizer2 to parse it
+    if (!libs) libs = "";
+    cStringTokenizer2 tokenizer(libs);
+    const char *lib;
+    while ((lib = tokenizer.nextToken())!=NULL)
+        loadExtensionLibrary(lib);
 }
 
 void cEnvir::setup(int argc, char *argv[])
