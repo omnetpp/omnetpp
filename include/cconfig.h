@@ -118,10 +118,11 @@ class ENVIR_API cConfiguration : public cPolymorphic
     /** Returns a config value as string */
     virtual const char *getAsString(const char *section, const char *key, const char *defaultvalue="") = 0; // quotes stripped (if any)
     /**
-     * Assumes the config value is to be understood as a list of paths (file
-     * or directory names, possibly containing wildcards) separated by spaces,
-     * and modifies each of them to be relative to the base directory (see
-     * getBaseDirectoryFor() method) unless they are already absolute.
+     * Interprets the config value as a list of paths (file or directory names, 
+     * possibly containing wildcards) separated by spaces, and modifies each of 
+     * them to be relative to the base directory (see getBaseDirectoryFor() method) 
+     * unless they are already absolute. If the base directory name contains spaces,
+     * the full path will be surrounded with quotes.
      */
     virtual std::string getAsFilenames(const char *section, const char *key, const char *defaultvalue="") = 0;
     /** Returns a config entry's "raw" (unparsed) value */
