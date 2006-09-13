@@ -39,7 +39,7 @@
 #include "cmodule.h"
 #include "cxmlelement.h"
 #include "cxmldoccache.h"
-#include "cstrtokenizer.h"
+#include "cstrtokenizer2.h"
 
 #ifdef WITH_PARSIM
 #include "cparsimcomm.h"
@@ -199,7 +199,7 @@ void TOmnetApp::setup()
              // iterate through file names
              ev.printf("\n");
 
-             cStringTokenizer tokenizer(nedfiles.c_str());
+             cStringTokenizer2 tokenizer(nedfiles.c_str());
              const char *fname;
              while ((fname = tokenizer.nextToken())!=NULL)
              {

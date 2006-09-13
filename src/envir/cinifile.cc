@@ -259,9 +259,9 @@ void cIniFile::clearContents()
        delete [] files[i].directory;
     }
 
-	sections.clear();
-	entries.clear();
-	files.clear();
+    sections.clear();
+    entries.clear();
+    files.clear();
 
     delete [] fname;
     fname = NULL;
@@ -440,22 +440,24 @@ std::string cIniFile::getAsFilenames(const char *sect, const char *key, const ch
 
     // tokenize the string, and prepend each item with baseDir.
     // recognize and treat list files (beginning with '@' or '@@') specially.
+    // if baseDir contains spaces, the filename will be surrounded with quotation marks.
     std::string result;
     cStringTokenizer tokenizer(entry->value);
+    std::string quot = strchr(baseDir, ' ')!=NULL ? "\"" : "";
     const char *token;
     while ((token = tokenizer.nextToken())!=NULL)
     {
         if (token[0]=='@' && token[1]=='@')
         {
-            result += "@@" + tidyFilename(concatDirAndFile(baseDir, token+2).c_str()) + " ";
+            result += quot + "@@" + tidyFilename(concatDirAndFile(baseDir, token+2).c_str()) + quot + " ";
         }
         else if (token[0]=='@')
         {
-            result += "@" + tidyFilename(concatDirAndFile(baseDir, token+1).c_str()) + " ";
+            result += quot + "@" + tidyFilename(concatDirAndFile(baseDir, token+1).c_str()) + quot + " ";
         }
         else
         {
-            result += tidyFilename(concatDirAndFile(baseDir, token).c_str()) + " ";
+            result += quot + tidyFilename(concatDirAndFile(baseDir, token).c_str()) + quot + " ";
         }
     }
     if (result.size()>0)

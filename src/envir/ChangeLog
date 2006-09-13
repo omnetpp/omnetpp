@@ -1,3 +1,11 @@
+2006-09-13  Andras Varga
+
+	* fix: the simulation can now be in a directory whose path name 
+	contains spaces (e.g. "Program Files" or "OMNEST Demo")
+
+	* cInifile::getAsFilenames() enhancement (as part of the above fix):
+	if directory name contains spaces, quotes are used to escape it.
+
 2006-06-26  Andras Varga
 
 	* cinifile.cc: clearContents() made public.
