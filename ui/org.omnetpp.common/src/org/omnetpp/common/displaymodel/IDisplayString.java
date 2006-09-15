@@ -5,6 +5,7 @@ import org.eclipse.draw2d.geometry.Point;
 
 public interface IDisplayString {
 
+	String ATT_DISPLAYSTRING = "DisplayString"; // end of TagArg enum definition
     /**
      *	Property types used in the display string
      */
@@ -160,7 +161,8 @@ public interface IDisplayString {
         public String getVisibleDesc() {
             return visibleDesc;
         }
-    } // end of TagArg enum definition
+    }
+
     
 	/**
 	 * @param property The requested property

@@ -1,9 +1,6 @@
 package org.omnetpp.ned.editor.graph.edit;
 
 import org.eclipse.gef.editparts.AbstractGraphicalEditPart;
-import org.omnetpp.common.displaymodel.IDisplayStringChangeListener;
-import org.omnetpp.common.displaymodel.IDisplayStringProvider;
-import org.omnetpp.common.displaymodel.IDisplayString.Prop;
 import org.omnetpp.ned2.model.INEDChangeListener;
 import org.omnetpp.ned2.model.NEDElement;
 
@@ -11,7 +8,7 @@ import org.omnetpp.ned2.model.NEDElement;
  * Provides support for Container EditParts.
  */
 abstract public class ContainerEditPart 
-   extends AbstractGraphicalEditPart implements INEDChangeListener, IDisplayStringChangeListener  {
+   extends AbstractGraphicalEditPart implements INEDChangeListener {
 
     @Override
     public void activate() {
@@ -19,9 +16,6 @@ abstract public class ContainerEditPart
         super.activate();
         // register as listener of the model object
         getNEDModel().addListener(this);
-        // register to the given node's display string as a listener
-        if (getNEDModel() instanceof IDisplayStringProvider)
-        	((IDisplayStringProvider)getNEDModel()).getDisplayString().setChangeListener(this);
     }
 
     /**
@@ -33,9 +27,6 @@ abstract public class ContainerEditPart
         if (!isActive()) return;
         super.deactivate();
         getNEDModel().removeListener(this);
-        // unregister from the model's display string
-        if (getNEDModel() instanceof IDisplayStringProvider)
-        	((IDisplayStringProvider)getNEDModel()).getDisplayString().setChangeListener(null);
     }
 
     /**
@@ -62,27 +53,24 @@ abstract public class ContainerEditPart
     		((ContainerEditPart)child).refreshVisuals();
     }
 
-    public void propertyChanged(Prop changedProp) {
-		// by default refresh all visuals if the display string has changed
-        refreshVisuals();
-	}
-
 	public void attributeChanged(NEDElement node, String attr) {
 		// refresh only if a node attribute changed. Child changes are discarded
 		// FIXME check whether this works correctly if we display the vector size too
+		
+		System.out.println("attrChange for: "+this+" (node="+node+"attr="+attr+")");
 		if (node == getModel()) 
 			refreshVisuals();
 	}
     
 	public void childInserted(NEDElement node, NEDElement where, NEDElement child) {
 		// TODO maybe addChild would be a better idea (faster)
-//		System.out.println("childInserted on "+this+": (node="+node+", where="+where+", child="+child+")");
+		System.out.println("childInserted for: "+this+": (node="+node+", where="+where+", child="+child+")");
 		refreshChildren();
 	}
 
 	public void childRemoved(NEDElement node, NEDElement child) {
 		// TODO maybe removeChild would be a better idea (faster)
-//		System.out.println("childRemoved on "+this+": (node="+node+", child="+child+")");
+		System.out.println("childRemoved for: "+this+": (node="+node+", child="+child+")");
 		refreshChildren();
 	}
 }

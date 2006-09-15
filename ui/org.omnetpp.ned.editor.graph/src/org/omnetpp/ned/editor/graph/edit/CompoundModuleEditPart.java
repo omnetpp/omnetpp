@@ -27,6 +27,7 @@ import org.omnetpp.figures.GateAnchor;
 import org.omnetpp.ned.editor.graph.edit.policies.CompoundModuleLayoutEditPolicy;
 import org.omnetpp.ned2.model.CompoundModuleNodeEx;
 import org.omnetpp.ned2.model.INamedGraphNode;
+import org.omnetpp.ned2.model.NEDElement;
 import org.omnetpp.resources.NEDResourcesPlugin;
 
 public class CompoundModuleEditPart extends ModuleEditPart {
@@ -97,15 +98,14 @@ public class CompoundModuleEditPart extends ModuleEditPart {
     }
     
     @Override
-	public void propertyChanged(Prop changedProp) {
-    	// if the scaling has changed we must refresh the children too
-    	if (changedProp == Prop.MODULE_SCALE) {
-    		refreshChildrenVisuals();
-    	}
+    public void attributeChanged(NEDElement node, String attr) {
+    	super.attributeChanged(node, attr);
+    	// NEDED only if the scaling property has changed
+   		refreshChildrenVisuals();
     	// refresh only ourselves
     	refreshVisuals();
-	}
-
+    }
+    
 	/**
      * Updates the visual aspect of this.
      */

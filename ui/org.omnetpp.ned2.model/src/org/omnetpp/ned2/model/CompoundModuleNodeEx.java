@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.omnetpp.common.displaymodel.DisplayString;
+import org.omnetpp.common.displaymodel.IDisplayString;
 import org.omnetpp.common.displaymodel.IDisplayString.Prop;
 import org.omnetpp.ned2.model.pojo.CompoundModuleNode;
 import org.omnetpp.ned2.model.pojo.ConnectionsNode;
@@ -45,6 +46,7 @@ public class CompoundModuleNodeEx extends CompoundModuleNode
 	public void propertyChanged(Prop changedProp) {
 		// syncronize it to the underlying model 
 		NedElementExUtil.setDisplayString(this, displayString.toString());
+        fireAttributeChangedToAncestors(IDisplayString.ATT_DISPLAYSTRING+"."+changedProp);
 	}
 
 	public List<SubmoduleNodeEx> getSubmodules() {

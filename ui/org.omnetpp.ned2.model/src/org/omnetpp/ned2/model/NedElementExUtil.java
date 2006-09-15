@@ -61,7 +61,7 @@ public class NedElementExUtil implements NEDElementTags, NEDElementUtil {
 			!(node instanceof ChannelSpecNode))
 				throw new NEDElementException(node, "Node does not support display property");
 		
-        // the connection node is special because the display string is stored inside its 
+		// the connection node is special because the display string is stored inside its 
         // channel spec node, so we must create that too
         if (node instanceof ConnectionNode) {
             NEDElement channelSpecNode = node.getFirstChildWithTag(NED_CHANNEL_SPEC);
@@ -90,7 +90,7 @@ public class NedElementExUtil implements NEDElementTags, NEDElementUtil {
 			paramsNode.appendChild(displayPropertyNode);
 		}
 
-        // if displayString was set to "" (empty) we want to delete the whole diaplay property node
+        // if displayString was set to "" (empty) we want to delete the whole display property node
         if ("".equals(dspString)){
             paramsNode.removeChild(displayPropertyNode);
             return;
@@ -110,12 +110,16 @@ public class NedElementExUtil implements NEDElementTags, NEDElementUtil {
 			propertyKeyNode.appendChild(literalNode);
 		}
 		
+		boolean isNotifyEnabled = literalNode.isNotifyEnabled();
+		literalNode.setNotifyEnabled(false);
 		// finally set the value of display string
 		literalNode.setType(NED_CONST_STRING);
 		literalNode.setValue(dspString);
 		// invalidate the text representation so next time the code will 
 		// be generated from VALUE not from the text attribute
 		literalNode.setText(null);
+		// set notification back to the original state
+		literalNode.setNotifyEnabled(isNotifyEnabled);
 	}
 	
     /**

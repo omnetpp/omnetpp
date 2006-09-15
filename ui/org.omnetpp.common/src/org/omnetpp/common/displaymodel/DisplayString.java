@@ -1,5 +1,6 @@
 package org.omnetpp.common.displaymodel;
 
+import java.lang.ref.WeakReference;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Scanner;
@@ -29,7 +30,9 @@ public class DisplayString implements IDisplayString {
     // first look in 'this' then in 'defaults' then in 'variableDefaults' or 'emptyDefaults' 
     protected DisplayString variableDefaults = null; 
     protected DisplayString emptyDefaults = null;
-    protected DisplayString defaults = null;
+    // use only a week reference so if the referenced fallback displaystring is deleted
+    // along with the containing model element, it will not be held in the memory
+    protected WeakReference<DisplayString> defaults = null;
     // whether notification is enabled or not
     protected boolean notifyEnabled = true;
     
@@ -166,7 +169,9 @@ public class DisplayString implements IDisplayString {
      * @return The currently set default display string
      */
     public DisplayString getDefaults() {
-		return defaults;
+    	if (defaults != null)
+    		return defaults.get();
+    	return null;
 	}
 
 	/**
@@ -175,7 +180,7 @@ public class DisplayString implements IDisplayString {
 	 * @param defaults
 	 */
 	public void setDefaults(DisplayString defaults) {
-		this.defaults = defaults;
+		this.defaults = new WeakReference<DisplayString>(defaults);
 	}
 
 	/**
@@ -210,8 +215,8 @@ public class DisplayString implements IDisplayString {
         // if the tag does'nt exist do not apply any defaults 
         if (tag == null) {
         	// if there is a default diplay string delegate the request there
-        	if (defaults != null)
-        		return defaults.getTagArgUsingDefs(tagName, pos);
+        	if (getDefaults() != null)
+        		return getDefaults().getTagArgUsingDefs(tagName, pos);
         	// no default display string so return NULL to signal that the whole tag is missing
             return null;
         }
@@ -220,8 +225,8 @@ public class DisplayString implements IDisplayString {
         if (variableDefaults !=null && value.startsWith("$"))
             value = variableDefaults.getTagArg(tagName, pos);
         // if tag was present, but the argument was empty, look for default values
-        if (TagInstance.EMPTY_VALUE.equals(value) && defaults != null) 
-        	value = defaults.getTagArgUsingDefs(tagName, pos);
+        if (TagInstance.EMPTY_VALUE.equals(value) && getDefaults() != null) 
+        	value = getDefaults().getTagArgUsingDefs(tagName, pos);
         // if the value is still empty or null get the local default values  if any
         if (emptyDefaults!=null && (value == null || TagInstance.EMPTY_VALUE.equals(value)))
             value = emptyDefaults.getTagArg(tagName, pos);

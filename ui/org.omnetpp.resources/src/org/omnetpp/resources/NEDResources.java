@@ -296,7 +296,7 @@ public class NEDResources implements INEDComponentResolver {
 	 * @return The effective display string for the top level ned component
 	 */
 	public DisplayString getEffectiveDisplayString(INEDComponent nedcomp) {
-		if (!(nedcomp.getNEDElement() instanceof IDisplayStringProvider))
+		if ((nedcomp == null) || !(nedcomp.getNEDElement() instanceof IDisplayStringProvider))
 			return null;
 		
 		List<INEDComponent> extendsChain = ((NEDComponent)nedcomp).resolveExtendsChain();

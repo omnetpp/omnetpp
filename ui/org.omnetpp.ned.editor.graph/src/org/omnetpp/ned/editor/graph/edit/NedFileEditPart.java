@@ -28,6 +28,7 @@ import org.eclipse.gef.tools.DeselectAllTracker;
 import org.eclipse.gef.tools.MarqueeDragTracker;
 import org.eclipse.swt.SWT;
 import org.omnetpp.ned.editor.graph.edit.policies.NedFileLayoutEditPolicy;
+import org.omnetpp.ned2.model.NEDElement;
 import org.omnetpp.ned2.model.NedFileNodeEx;
 
 /**
