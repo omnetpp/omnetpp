@@ -42,8 +42,8 @@
 //   that of the ultimate base class.) Subclass may add new parameters and gates
 //   (if it makes sense...) and set parameters and gate vector sizes.
 //
-// - "module X extends ACompoundModule": subclass may add further submodules and
-//   gates and connections as well!
+// - "module X extends ACompoundModule": subclass may NOT add further submodules,
+//   gates, connections. Parameters can be added or assigned a value.
 //
 //     XXX TODO: revise all "extends" examples below!
 //
