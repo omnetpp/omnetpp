@@ -386,6 +386,7 @@ public class ChartEditForm implements IScaveObjectEditForm {
 	}
 	
 	private void setSelection(CCombo combo, Enum<?> value) {
-		combo.setText(value.toString());
+		if (value != null)
+			combo.setText(value.toString());
 	}
 }
