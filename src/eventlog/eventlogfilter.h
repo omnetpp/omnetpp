@@ -34,10 +34,13 @@ class FilteredEvent
     protected:
         EventLogFilter *eventLogFilter;
 
-        long eventNumber;
+        long eventNumber; // the corresponding event number
         long causeEventNumber; // the event number from which the message was sent that is being processed in this event
         EventNumberList causeEventNumbers; // the arrival event of messages which we send in this event
         EventNumberList consequenceEventNumbers; // a set of events which process messages sent in this event
+
+        long nextFilteredEventNumber; // the event number of the next matching filtered event or -1 if unknown
+        long previousFilteredEventNumber; // the event number of the previous matching filtered event or -1 if unknown
 
         // the following fields are for the convenience of the GUI
         double timelineCoordinate;
@@ -54,8 +57,8 @@ class FilteredEvent
         Event *getEvent();
 
         FilteredEvent *getCause();
-        FilteredEventList *getCauses();
-        FilteredEventList *getConsequences();
+        FilteredEventList *getCauses(); // the returned FilteredEventList must be deleted
+        FilteredEventList *getConsequences(); // the returned FilteredEventList must be deleted
 };
 
 class EventLogFilter
@@ -64,23 +67,30 @@ class EventLogFilter
 
     protected:
         EventLog *eventLog;
-        long tracedEventNumber;
-        std::set<int> *includeModuleIds;
-        bool includeCauses;
-        bool includeConsequences;
+        long tracedEventNumber; // the event number from which causes and consequences are followed or -1
+        long firstEventNumber; // the first event to be considered by the filter or -1
+        long lastEventNumber; // the last event to be considered by the filter or -1
+        std::set<int> *includeModuleIds; // events outside these modules will be filtered out, NULL means include all
+        bool includeCauses; // only when tracedEventNumber is given
+        bool includeConsequences; // only when tracedEventNumber is given
 
         typedef std::map<long, FilteredEvent *> EventNumberToFilteredEventMap;
         EventNumberToFilteredEventMap eventNumberToFilteredEventMap;
 
-        long firstEventNumber; // event number of the first considered event
-        long lastEventNumber; // event number of the last considered event
+        typedef std::map<long, bool> EventNumberToFilterMatchesMap;
+        EventNumberToFilterMatchesMap eventNumberToFilterMatchesMap; // a cache of whether the given event number matches the filter or not
+
+        long firstMatchingEventNumber; // the event number of the first matching event
+        long lastMatchingEventNumber; // the event number of the last matching event
 
     public:
         EventLogFilter(EventLog *eventLog,
-                       long tracedEventNumber,
                        std::set<int> *includeModuleIds,
-                       bool includeCauses,
-                       bool includeConsequences);
+                       long tracedEventNumber = -1,
+                       bool includeCauses = false,
+                       bool includeConsequences = false,
+                       long firstEventNumber = -1,
+                       long lastEventNumber = -1);
         ~EventLogFilter();
 
     public:
@@ -89,17 +99,14 @@ class EventLogFilter
         FilteredEvent* getNextFilteredEvent(FilteredEvent *filteredEvent);
         FilteredEvent* getPreviousFilteredEvent(FilteredEvent *filteredEvent);
 
-        // lazy calculatations
-        FilteredEvent *getCause(FilteredEvent *filteredEvent);
-        FilteredEvent::FilteredEventList *getCauses(FilteredEvent *filteredEvent);
-        FilteredEvent::FilteredEventList *getConsequences(FilteredEvent *filteredEvent);
-
         void print(FILE *file);
 
     protected:
-        bool matchesFilter(Event *event);
         FilteredEvent* cacheFilteredEvent(long eventNumber);
-
+        FilteredEvent* getFilteredEventInDirection(long filteredEventNumber, long eventNumber, bool forward);
+        bool matchesFilter(Event *event);
+        bool matchesFilterNonCached(Event *event);
+        void linkFilteredEvents(FilteredEvent *previousFilteredEvent, FilteredEvent *nextFilteredEvent);
 };
 
 #endif

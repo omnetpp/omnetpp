@@ -64,7 +64,7 @@ void filter(int argc, char **argv)
     
         FileReader fileReader(argv[2]);
         EventLog eventLog(&fileReader);
-        EventLogFilter eventLogFilter(&eventLog, eventNumber, NULL, true, true);
+        EventLogFilter eventLogFilter(&eventLog, NULL, eventNumber, true, true);
         eventLogFilter.print(stdout);
     } catch (Exception *e) {
         fprintf(stderr, "Error: %s\n", e->message());

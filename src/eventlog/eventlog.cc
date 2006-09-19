@@ -102,47 +102,40 @@ void EventLog::print(FILE *file)
 
 Event *EventLog::getEvent(long eventNumber)
 {
+    if (eventNumber < 0)
+        throw new Exception("Event number must be >= 0, %d", eventNumber);
+
     EventNumberToEventMap::iterator it = eventNumberToEventMap.find(eventNumber);
 
     if (it != eventNumberToEventMap.end())
         return it->second;
     else
     {
-        long offset = getOffsetForEventNumber(eventNumber);
+        Event *event = new Event(this);
+        event->parse(reader, getOffsetForEventNumber(eventNumber));
 
-        if (offset != -1)
-        {
-            Event *event = new Event(this);
-            event->parse(reader, offset);
+        eventNumberToEventMap[eventNumber] = event;
 
-            eventNumberToEventMap[eventNumber] = event;
-
-            return event;
-        }
-        else
-            return NULL;
+        return event;
     }
 }
 
-Event *EventLog::getCause(Event *event)
+Event *EventLog::getEventForOffset(long offset)
 {
-    MessageIdToEventMap::iterator it = messageIdToSenderEventMap.find(event->getEventEntry()->messageId);
+    Event *event = new Event(this);
+    event->parse(reader, offset);
 
-    if (it != messageIdToSenderEventMap.end())
+    EventNumberToEventMap::iterator it = eventNumberToEventMap.find(event->getEventNumber());
+
+    if (it != eventNumberToEventMap.end())
+    {
+        delete event;
         return it->second;
+    }
+    else
+    {
+        eventNumberToEventMap[event->getEventNumber()] = event;
 
-    // TODO: read event based on the message's sending time or store sender event id directly?
-    return NULL;
-}
-
-Event::EventList *EventLog::getCauses(Event *event)
-{
-    // TODO:
-    return NULL;
-}
-
-Event::EventList *EventLog::getConsequences(Event *event)
-{
-    // TODO:
-    return NULL;
+        return event;
+    }
 }

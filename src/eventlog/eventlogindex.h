@@ -38,11 +38,14 @@ class EventLogIndex
         LineTokenizer tokenizer;
         FileReader *reader;
 
-        typedef std::map<long,long> EventNumberToOffsetMap;
+        typedef std::map<long, long> EventNumberToOffsetMap;
         EventNumberToOffsetMap eventNumberToOffsetMap;
 
-        typedef std::map<simtime_t,long> SimulationTimeToOffsetMap;
+        typedef std::map<simtime_t, long> SimulationTimeToOffsetMap;
         SimulationTimeToOffsetMap simulationTimeToOffsetMap;
+
+        long firstEventNumber;
+        long lastEventNumber;
 
     protected:
         // true if OK, false if no "E" line found till end of file
@@ -51,11 +54,15 @@ class EventLogIndex
         // return true if the given offset should be stored in the map (not already there, etc)
         bool needsToBeStored(long eventNumber);
 
+        void addPositionForEventNumber(long eventNumber, long offset);
+        void addPositionForSimulationTime(simtime_t simulationTime, bool first, long offset);
+
     public:
         EventLogIndex(FileReader *reader);
         ~EventLogIndex();
-        void addPositionForEventNumber(long eventNumber, long offset);
-        void addPositionForSimulationTime(simtime_t simulationTime, bool first, long offset);
+
+        long getFirstEventNumber();
+        long getLastEventNumber();
         long getOffsetForEventNumber(long eventNumber);
         bool positionToEventNumber(long eventNumber);
         long getOffsetForSimulationTime(simtime_t simulationTime, bool first);

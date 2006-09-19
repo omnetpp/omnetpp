@@ -21,7 +21,38 @@
 #include "eventlogentry.h"
 #include "eventlogentries.h"
 
+class Event;
 class EventLog;
+
+/**
+ * Represents a single message send.
+ */
+class MessageSend
+{
+    protected:
+        EventLog *eventLog;
+        long senderEventNumber;
+        long arrivalEventNumber;
+        int messageSendEntryNumber;
+
+    public:
+        MessageSend(EventLog *eventLog, long senderEventNumber, int messageSendEntryNumber);
+
+        long getSenderEventNumber() { return senderEventNumber; };
+        Event *getSenderEvent();
+
+        long getArrivalEventNumber();
+        Event *getArrivalEvent();
+
+        long getMessageSendEntryNumber() { return messageSendEntryNumber; };
+        EventLogEntry *getMessageSendEntry();
+
+        static bool isMessageSend(EventLogEntry *eventLogEntry);
+        static long getMessageId(EventLogEntry *eventLogEntry);
+
+        long getMessageId();
+        simtime_t getArrivalTime();
+};
 
 /**
  * Manages all event log entries for a single event.
@@ -29,27 +60,45 @@ class EventLog;
 class Event
 {
     public:
+        typedef std::vector<MessageSend *> MessageSendList;
         typedef std::vector<Event *> EventList;
 
     protected:
-        EventLog *eventLog;
+        EventLog *eventLog; // the corresponding event log
+        long beginOffset; // file offset where the event starts
+        long endOffset; // file offset where the event ends
         EventEntry *eventEntry; // the event log entry that corresponds to the actual event
 
         typedef std::vector<EventLogEntry *> EventLogEntryList;
-        EventLogEntryList eventLogEntries;
+        EventLogEntryList eventLogEntries; // all entries parsed from the file
+
+        MessageSend *cause; // the message send which is processed in this event
+        MessageSendList *causes; // the arrival message sends of messages which we send in this event
+        MessageSendList *consequences; // message sends in this event
+
+        static long numParseEvent; // the number of events parsed so far
 
     public:
         Event(EventLog *eventLog);
         ~Event();
 
+        long getBeginOffset() { return beginOffset; };
+        long getEndOffset() { return endOffset; };
+
         EventEntry *getEventEntry() { return eventEntry; };
         long getEventNumber() { return eventEntry->eventNumber; };
+        simtime_t getSimulationTime() { return eventEntry->simulationTime; };
+        long getMessageId() { return eventEntry->messageId; };
+        long getCauseEventNumber() { return eventEntry->causeEventNumber; };
+        EventLogEntry *getEventLogEntry(int index) { return eventLogEntries[index]; };
 
-        Event *getCause();
-        EventList *getCauses();
-        EventList *getConsequences();
+        Event *getCauseEvent();
+        MessageSend *getCause();
+        MessageSendList *getCauses(); // the returned EventList must be deleted
+        MessageSendList *getConsequences(); // the returned EventList must be deleted
 
         long parse(FileReader *index, long offset);
+        long numParsedEvent() { return numParseEvent; };
         void print(FILE *file);
 };
 

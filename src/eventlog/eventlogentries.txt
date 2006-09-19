@@ -71,6 +71,7 @@ E EventEntry
    # long eventNumber
    t simtime_t simulationTime
    m int moduleId
+   ce long causeEventNumber
    msg long messageId
 }
 
@@ -121,7 +122,7 @@ SH MessageSendHopEntry
    sm int senderModuleId
    sg int senderGateId
 // FIXME this should be eliminated from simkernel
-   ts simtime_t transmissionStartId 
+   ts simtime_t transmissionStart
    pd simtime_t propagationDelay
    td simtime_t transmissionDelay
 }

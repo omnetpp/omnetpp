@@ -21,10 +21,46 @@
 EventLogIndex::EventLogIndex(FileReader *reader)
 {
     this->reader = reader;
+    firstEventNumber = -1;
+    lastEventNumber = -1;
 }
 
 EventLogIndex::~EventLogIndex()
 {
+}
+
+long EventLogIndex::getFirstEventNumber()
+{
+    if (firstEventNumber == -1)
+    {
+        long eventOffset;
+        readToFirstEventLine(0, firstEventNumber, eventOffset);
+    }
+
+    return firstEventNumber;
+}
+
+long EventLogIndex::getLastEventNumber()
+{
+    if (lastEventNumber == -1)
+    {
+        long chunkSize = 4000;
+        long chunkOffset = reader->fileSize() - chunkSize;
+
+        while (true)
+        {
+            long eventOffset = chunkOffset;
+    
+            if (readToFirstEventLine(eventOffset, lastEventNumber, eventOffset))
+            {
+                while (readToFirstEventLine(eventOffset, lastEventNumber, eventOffset));
+            }
+
+            chunkOffset -= chunkSize;
+        }
+    }
+
+    return lastEventNumber;
 }
 
 bool EventLogIndex::needsToBeStored(long eventNumber)
@@ -45,6 +81,11 @@ void EventLogIndex::addPositionForEventNumber(long eventNumber, long offset)
 {
     if (needsToBeStored(eventNumber))
         eventNumberToOffsetMap[eventNumber] = offset;
+}
+
+void EventLogIndex::addPositionForSimulationTime(simtime_t simulationTime, bool first, long offset)
+{
+    // TODO:
 }
 
 bool EventLogIndex::positionToEventNumber(long eventNumber)
@@ -132,6 +173,18 @@ long EventLogIndex::getOffsetForEventNumber(long eventNumber)
     }
     //printf("  binary search steps: %d\n", stepCount);
     return foundOffset;
+}
+
+bool EventLogIndex::positionToSimulationTime(simtime_t simulationTime, bool first)
+{
+    reader->seekTo(getOffsetForSimulationTime(simulationTime, first));
+    return true;
+}
+
+long EventLogIndex::getOffsetForSimulationTime(simtime_t simulationTime, bool first)
+{
+    // TODO:
+    return 0;
 }
 
 bool EventLogIndex::readToFirstEventLine(long startOffset, long& eventNumber, long& offset)
