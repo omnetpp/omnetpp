@@ -99,7 +99,7 @@ public class MultiPageNedEditor extends MultiPageEditorPart implements
             res.setNEDFileContents(ifile, modelRoot);
             
             // generate the text representation
-            String textEditorContent = ModelUtil.generateNedSource(modelRoot, false);
+            String textEditorContent = ModelUtil.generateNedSource(modelRoot, true);
             // put it into the text editor
             nedEditor.setText(textEditorContent);
 		} 
@@ -168,7 +168,7 @@ public class MultiPageNedEditor extends MultiPageEditorPart implements
     		NEDResourcesPlugin.getNEDResources().setNEDFileContents(ifile, modelRoot);
             
             // generate the text representation
-            String textEditorContent = ModelUtil.generateNedSource(modelRoot, false);
+            String textEditorContent = ModelUtil.generateNedSource(modelRoot, true);
             // put it into the text editor
             nedEditor.setText(textEditorContent);
 		}
