@@ -48,6 +48,9 @@ class FileReader
     // num of line last returned
     int linenum;
 
+    // number of lines read in so far
+    static long numReadLines;
+
   private:
     // moves remaining data (databeg,dataend) to beginning of buffer,
     // reads new bytes to the buffer, and returns offset by which
@@ -98,6 +101,8 @@ class FileReader
      * Positions to the beginning of the first full line following the given offset.
      */
     void seekTo(long offset);
+
+    static long getNumReadLines() { return numReadLines; };
 };
 
 #endif

@@ -18,6 +18,7 @@
 #include "filereader.h"
 #include "exception.h"
 
+long FileReader::numReadLines = 0;
 
 FileReader::FileReader(const char *fileName, size_t bufferSize)
 {
@@ -94,6 +95,8 @@ size_t FileReader::readMore()
 
 char *FileReader::readLine()
 {
+    numReadLines++;
+
     // check sentry
     assert(*dataend==0);
 
