@@ -138,10 +138,10 @@ public class InputsPage extends ScaveEditorPage {
 	private void createInputFilesSection() {
 		inputFilesSection = getFormToolkit().createSection(sashform,
 				Section.DESCRIPTION | ExpandableComposite.TITLE_BAR);
-		inputFilesSection.setExpanded(true);
 		inputFilesSection.setLayoutData(new GridData(GridData.FILL, GridData.FILL, true, true));
 		inputFilesSection.setText("Input files");
 		inputFilesSection.setDescription("Add or drag & drop result files (*.sca or *.vec) that should be used in this analysis. Wildcards (*,?) can also be used to specify multiple files.");
+		inputFilesSection.setExpanded(true);
 		InputFilesPanel inputFilesPanel = new InputFilesPanel(inputFilesSection, SWT.NONE);
 		inputFilesSection.setClient(inputFilesPanel);
 
