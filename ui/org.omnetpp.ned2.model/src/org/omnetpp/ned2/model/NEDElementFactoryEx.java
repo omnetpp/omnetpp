@@ -1,6 +1,7 @@
 package org.omnetpp.ned2.model;
 
 import org.omnetpp.ned2.model.pojo.NEDElementFactory;
+import org.omnetpp.ned2.model.pojo.SimpleModuleNode;
 
 public class NEDElementFactoryEx extends NEDElementFactory {
 
@@ -11,6 +12,8 @@ public class NEDElementFactoryEx extends NEDElementFactory {
             return new CompoundModuleNodeEx(parent);
         if (tagname.equals("submodule"))
             return new SubmoduleNodeEx(parent);
+        if (tagname.equals("simple-module"))
+            return new SimpleModuleNodeEx(parent);
         if (tagname.equals("connection"))
             return new ConnectionNodeEx(parent);
         //if (tagname.equals("gate"))
@@ -26,6 +29,8 @@ public class NEDElementFactoryEx extends NEDElementFactory {
             return new CompoundModuleNodeEx(parent);
         if (tagcode==NED_SUBMODULE)
             return new SubmoduleNodeEx(parent);
+        if (tagcode==NED_SIMPLE_MODULE)
+            return new SimpleModuleNodeEx(parent);
         if (tagcode==NED_CONNECTION)
             return new ConnectionNodeEx(parent);
         //if (tagcode==NED_GATE)

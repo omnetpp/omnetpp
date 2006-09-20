@@ -44,6 +44,7 @@ public class SubmodulePropertySource extends AbstractNedPropertySource {
     public IPropertyDescriptor[] getPropertyDescriptors() {
         // fill in the type combobox
         Set<String> moduleNames = NEDResourcesPlugin.getNEDResources().getModuleNames();
+        // TODO sort the types alphabetically
         typeProp.setItems(moduleNames);
         
         return descriptors;
