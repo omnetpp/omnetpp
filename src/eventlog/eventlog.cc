@@ -70,11 +70,7 @@ void EventLog::parse(long fromEventNumber, long toEventNumber)
     {
         Event *event = new Event(this);
         offset = event->parse(reader, offset);
-
-        if (eventNumberToEventMap.find(event->getEventNumber()) ==  eventNumberToEventMap.end())
-        {
-            eventNumberToEventMap[event->getEventNumber()] = event;
-        }
+        cacheEvent(event);
     }
 }
 
@@ -103,7 +99,9 @@ void EventLog::print(FILE *file)
 Event *EventLog::getEvent(long eventNumber)
 {
     if (eventNumber < 0)
+    {
         throw new Exception("Event number must be >= 0, %d", eventNumber);
+    }
 
     EventNumberToEventMap::iterator it = eventNumberToEventMap.find(eventNumber);
 
@@ -111,31 +109,35 @@ Event *EventLog::getEvent(long eventNumber)
         return it->second;
     else
     {
-        Event *event = new Event(this);
-        event->parse(reader, getOffsetForEventNumber(eventNumber));
+        long offset = getOffsetForEventNumber(eventNumber);
 
-        eventNumberToEventMap[eventNumber] = event;
-
-        return event;
+        if (offset == -1)
+            return NULL;
+        else
+            return getEventForOffset(offset);
     }
 }
 
 Event *EventLog::getEventForOffset(long offset)
 {
-    Event *event = new Event(this);
-    event->parse(reader, offset);
+    if (offset < 0)
+        throw new Exception("Offset number must be >= 0, %d", offset);
 
-    EventNumberToEventMap::iterator it = eventNumberToEventMap.find(event->getEventNumber());
+    OffsetToEventMap::iterator it = offsetToEventMap.find(offset);
 
-    if (it != eventNumberToEventMap.end())
-    {
-        delete event;
+    if (it != offsetToEventMap.end())
         return it->second;
-    }
     else
     {
-        eventNumberToEventMap[event->getEventNumber()] = event;
-
+        Event *event = new Event(this);
+        event->parse(reader, offset);
+        cacheEvent(event);
         return event;
     }
+}
+
+void EventLog::cacheEvent(Event *event)
+{
+    eventNumberToEventMap[event->getEventNumber()] = event;
+    offsetToEventMap[event->getBeginOffset()] = event;
 }

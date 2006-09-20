@@ -59,13 +59,18 @@ void echo(int argc, char **argv)
 void filter(int argc, char **argv)
 {
     try {
-        long eventNumber = atol(argv[3]);
-        fprintf(stderr, "Filtering log file %s for event number %d\n", argv[2], eventNumber);
+        long traceEventNumber = atol(argv[3]);
+        long fromEventNumber = atol(argv[4]);
+        long toEventNumber = atol(argv[5]);
+        fprintf(stderr, "Filtering log file: %s for event number: %ld from event number: %ld to event number: %ld\n",
+            argv[2], traceEventNumber, fromEventNumber, toEventNumber);
     
         FileReader fileReader(argv[2]);
         EventLog eventLog(&fileReader);
-        EventLogFilter eventLogFilter(&eventLog, NULL, eventNumber, true, true);
+        EventLogFilter eventLogFilter(&eventLog, NULL, traceEventNumber, true, true, fromEventNumber, toEventNumber);
         eventLogFilter.print(stdout);
+
+        fprintf(stderr, "Number of events parsed: %d and number of lines read: %ld\n", Event::getNumParsedEvent(), FileReader::getNumReadLines());
     } catch (Exception *e) {
         fprintf(stderr, "Error: %s\n", e->message());
     }
@@ -76,7 +81,7 @@ void usage()
     fprintf(stderr, "Usage:\n");
     fprintf(stderr, " eventlogtool offsets <logfile> [<eventnumber>*]\n");
     fprintf(stderr, " eventlogtool echo <logfile> <starteventnumber> <endeventnumber>\n");
-    fprintf(stderr, " eventlogtool filter <logfile> <eventnumber>\n");
+    fprintf(stderr, " eventlogtool filter <logfile> <traceeventnumber> <fromeventnumber> <toeventnumber>\n");
 }
 
 int main(int argc, char **argv)

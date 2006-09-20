@@ -34,6 +34,14 @@
  */
 class EventLogIndex
 {
+    public:
+        enum MatchKind
+        {
+            EXACT, // means only one key is allowed to match and returns the offset of that key
+            FIRST, // multiple matches allowed and returns the first one or the previous if there are not matches at all
+            LAST // as FIRST but just the opposite
+        };
+
     protected:
         LineTokenizer tokenizer;
         FileReader *reader;
@@ -46,16 +54,20 @@ class EventLogIndex
 
         long firstEventNumber;
         long lastEventNumber;
+        simtime_t firstSimulationTime;
+        simtime_t lastSimulationTime;
 
     protected:
-        // true if OK, false if no "E" line found till end of file
-        bool readToFirstEventLine(long startOffset, long& eventNumber, long& offset);
-        
         // return true if the given offset should be stored in the map (not already there, etc)
         bool needsToBeStored(long eventNumber);
+        // true if OK, false if no "E" line found till the end of file
+        bool readToFirstEventLine(long readStartOffset, long& eventNumber, simtime_t& simulationTime, long& lineStartOffset, long& lineEndOffset);
+        // reads the first event line in the given direction starting from the given offset
+        bool readToEventLine(bool forward, long readStartOffset, long& eventNumber, simtime_t& simulationTime, long& lineStartOffset, long& lineEndOffset);
 
-        void addPositionForEventNumber(long eventNumber, long offset);
-        void addPositionForSimulationTime(simtime_t simulationTime, bool first, long offset);
+        void addPosition(long eventNumber, simtime_t simulationTime, long offset);
+        template<typename T> long binarySearchForOffset(bool eventNumberBased, std::map<T, long> *keyToOffsetMap, T key, MatchKind matchKind);
+        template <typename T> long linearSearchForOffset(bool eventNumberBased, long offset, T key, MatchKind matchKind, bool exactMatchFound);
 
     public:
         EventLogIndex(FileReader *reader);
@@ -63,10 +75,10 @@ class EventLogIndex
 
         long getFirstEventNumber();
         long getLastEventNumber();
-        long getOffsetForEventNumber(long eventNumber);
-        bool positionToEventNumber(long eventNumber);
-        long getOffsetForSimulationTime(simtime_t simulationTime, bool first);
-        bool positionToSimulationTime(simtime_t simulationTime, bool first);
+        long getOffsetForEventNumber(long eventNumber, MatchKind matchKind = EXACT);
+        bool positionToEventNumber(long eventNumber, MatchKind matchKind = EXACT);
+        long getOffsetForSimulationTime(simtime_t simulationTime, MatchKind matchKind = EXACT);
+        bool positionToSimulationTime(simtime_t simulationTime, MatchKind matchKind = EXACT);
         void dumpTable();
 };
 

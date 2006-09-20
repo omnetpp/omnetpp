@@ -76,7 +76,7 @@ class Event
         MessageSendList *causes; // the arrival message sends of messages which we send in this event
         MessageSendList *consequences; // message sends in this event
 
-        static long numParseEvent; // the number of events parsed so far
+        static long numParsedEvent; // the number of events parsed so far
 
     public:
         Event(EventLog *eventLog);
@@ -91,6 +91,7 @@ class Event
         long getMessageId() { return eventEntry->messageId; };
         long getCauseEventNumber() { return eventEntry->causeEventNumber; };
         EventLogEntry *getEventLogEntry(int index) { return eventLogEntries[index]; };
+        int getNumEventLogEntries() { return eventLogEntries.size(); };
 
         Event *getCauseEvent();
         MessageSend *getCause();
@@ -98,7 +99,7 @@ class Event
         MessageSendList *getConsequences(); // the returned EventList must be deleted
 
         long parse(FileReader *index, long offset);
-        long numParsedEvent() { return numParseEvent; };
+        static long getNumParsedEvent() { return numParsedEvent; };
         void print(FILE *file);
 };
 

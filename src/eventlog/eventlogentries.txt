@@ -85,6 +85,7 @@ SA MessageScheduledEntry
    n string messageFullName
    sm int senderModuleId
    t simtime_t arrivalTime
+   pe long previousEventNumber
 }
 
 CE MessageCancelledEntry
@@ -102,12 +103,17 @@ BS BeginSendEntry
    n string messageFullName
    k int messageKind
    l long messageLength
+   pe long previousEventNumber
 // and many other fields...
+}
+
+ES EndSendEntry
+{
+   t simtime_t arrivalTime
 }
 
 SD MessageSendDirectEntry
 {
-   id long messageId
    sm int senderModuleId
    dm int destModuleId
    dg int destGateId
@@ -118,7 +124,6 @@ SD MessageSendDirectEntry
 SH MessageSendHopEntry
 // FIXME split into two? it's typical that there's no delay
 {
-   id long messageId
    sm int senderModuleId
    sg int senderGateId
 // FIXME this should be eliminated from simkernel

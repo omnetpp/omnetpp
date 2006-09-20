@@ -40,6 +40,9 @@ class EventLog : public EventLogIndex
         typedef std::map<long, Event *> EventNumberToEventMap;
         EventNumberToEventMap eventNumberToEventMap; // all parsed events so far
 
+        typedef std::map<long, Event *> OffsetToEventMap;
+        OffsetToEventMap offsetToEventMap; // all parsed events so far
+
     public:
         EventLog(FileReader *index);
         ~EventLog();
@@ -53,6 +56,9 @@ class EventLog : public EventLogIndex
 
         Event *getEvent(long eventNumber);
         Event *getEventForOffset(long offset);
+
+    protected:
+        void cacheEvent(Event *event);
 };
 
 #endif

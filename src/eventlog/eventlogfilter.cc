@@ -80,21 +80,19 @@ EventLogFilter::EventLogFilter(EventLog *eventLog,
 EventLogFilter::~EventLogFilter()
 {
     for (EventNumberToFilteredEventMap::iterator it = eventNumberToFilteredEventMap.begin(); it != eventNumberToFilteredEventMap.end(); it++)
-    {
         delete it->second;
-    }
 
     if (includeModuleIds)
         delete includeModuleIds;
 }
 
-void EventLogFilter::print(FILE *file)
+void EventLogFilter::print(FILE *file, long fromEventNumber, long toEventNumber)
 {
     eventLog->printInitializationLogEntries(file);
 
-    FilteredEvent *filteredEvent = getFirstFilteredEvent();
+    FilteredEvent *filteredEvent = fromEventNumber == -1 ? getFirstFilteredEvent() : getNextFilteredEvent(fromEventNumber);
 
-    while (filteredEvent)
+    while (filteredEvent != NULL && (toEventNumber == -1 || filteredEvent->getEventNumber() < toEventNumber))
     {
         filteredEvent->getEvent()->print(file);
         filteredEvent = getNextFilteredEvent(filteredEvent);
@@ -115,17 +113,23 @@ bool EventLogFilter::matchesFilter(Event *event)
 
 bool EventLogFilter::matchesFilterNonCached(Event *event)
 {
+    //printf("*** Matching filter to event: %ld\n", event->getEventNumber());
+
+    // the traced event
     if (tracedEventNumber != -1 && event->getEventNumber() == tracedEventNumber)
         return true;
 
+    // event not in considered modules
     if (includeModuleIds != NULL &&
         includeModuleIds->find(event->getEventEntry()->moduleId) == includeModuleIds->end())
         return false;
 
+    // event outside of considered range
     if ((firstEventNumber != -1 && event->getEventNumber() < firstEventNumber) ||
         (lastEventNumber != -1 && event->getEventNumber() > lastEventNumber))
         return false;
     
+    // event causes traced event
     if (tracedEventNumber != -1 && tracedEventNumber > event->getEventNumber() && includeCauses)
     {
         Event::MessageSendList *consequences = event->getConsequences();
@@ -133,12 +137,14 @@ bool EventLogFilter::matchesFilterNonCached(Event *event)
         for (Event::MessageSendList::iterator it = consequences->begin(); it != consequences->end(); it++)
         {
             MessageSend *messageSend = *it;
+            Event *arrivalEvent = messageSend->getArrivalEvent();
 
-            if (matchesFilter(messageSend->getArrivalEvent()))
+            if (arrivalEvent != NULL && tracedEventNumber >= arrivalEvent->getEventNumber() && matchesFilter(arrivalEvent))
                 return true;
         }
     }
 
+    // event is consequence of traced event
     if (tracedEventNumber != -1 && tracedEventNumber < event->getEventNumber() && includeConsequences)
     {
         Event::MessageSendList *causes = event->getCauses();
@@ -146,8 +152,9 @@ bool EventLogFilter::matchesFilterNonCached(Event *event)
         for (Event::MessageSendList::iterator it = causes->begin(); it != causes->end(); it++)
         {
             MessageSend *messageSend = *it;
+            Event *senderEvent = messageSend->getSenderEvent();
 
-            if (matchesFilter(messageSend->getSenderEvent()))
+            if (senderEvent != NULL && tracedEventNumber <= senderEvent->getEventNumber() && matchesFilter(senderEvent))
                 return true;
         }
     }
@@ -168,9 +175,18 @@ FilteredEvent* EventLogFilter::getFilteredEventInDirection(long filteredEventNum
                 return cacheFilteredEvent(eventNumber);
 
             if (forward)
+            {
                 eventNumber++;
-            else
+
+                if (lastEventNumber != -1 && eventNumber > lastEventNumber)
+                    return NULL;
+            }
+            else {
                 eventNumber--;
+
+                if (firstEventNumber != -1 && eventNumber < firstEventNumber)
+                    return NULL;
+            }
         }
 
         return NULL; 
@@ -179,24 +195,23 @@ FilteredEvent* EventLogFilter::getFilteredEventInDirection(long filteredEventNum
 
 FilteredEvent* EventLogFilter::getFirstFilteredEvent()
 {
-    FilteredEvent *firstMatchingFilteredEvent = getFilteredEventInDirection(firstMatchingEventNumber, eventLog->getFirstEventNumber(), true);
+    long startEventNumber = firstEventNumber == -1 ? eventLog->getFirstEventNumber() : std::max(eventLog->getFirstEventNumber(), firstEventNumber);
+    FilteredEvent *firstMatchingFilteredEvent = getFilteredEventInDirection(firstMatchingEventNumber, startEventNumber, true);
 
     if (firstMatchingFilteredEvent != NULL)
-    {
         firstMatchingEventNumber = firstMatchingFilteredEvent->eventNumber;
-    }
+
 
     return firstMatchingFilteredEvent;
 }
 
 FilteredEvent* EventLogFilter::getLastFilteredEvent()
 {
-    FilteredEvent *lastMatchingFilteredEvent = getFilteredEventInDirection(lastMatchingEventNumber, eventLog->getLastEventNumber(), false);
+    long startEventNumber = lastEventNumber == -1 ? eventLog->getLastEventNumber() : std::min(eventLog->getLastEventNumber(), lastEventNumber);
+    FilteredEvent *lastMatchingFilteredEvent = getFilteredEventInDirection(lastMatchingEventNumber, startEventNumber, false);
 
     if (lastMatchingFilteredEvent != NULL)
-    {
         lastMatchingEventNumber = lastMatchingFilteredEvent->eventNumber;
-    }
 
     return lastMatchingFilteredEvent;
 }
@@ -206,9 +221,7 @@ FilteredEvent* EventLogFilter::getNextFilteredEvent(FilteredEvent *filteredEvent
     FilteredEvent *nextFilteredEvent = getFilteredEventInDirection(filteredEvent->nextFilteredEventNumber, filteredEvent->eventNumber + 1, true);
 
     if (nextFilteredEvent != NULL)
-    {
         linkFilteredEvents(filteredEvent, nextFilteredEvent);
-    }
 
     return nextFilteredEvent;
 }
@@ -218,11 +231,19 @@ FilteredEvent* EventLogFilter::getPreviousFilteredEvent(FilteredEvent *filteredE
     FilteredEvent *previousFilteredEvent = getFilteredEventInDirection(filteredEvent->previousFilteredEventNumber, filteredEvent->eventNumber - 1, false);
 
     if (previousFilteredEvent != NULL)
-    {
         linkFilteredEvents(previousFilteredEvent, filteredEvent);
-    }
 
     return previousFilteredEvent;
+}
+
+FilteredEvent* EventLogFilter::getNextFilteredEvent(long eventNumber)
+{
+    return getFilteredEventInDirection(-1, eventNumber, true);
+}
+
+FilteredEvent* EventLogFilter::getPreviousFilteredEvent(long eventNumber)
+{
+    return getFilteredEventInDirection(-1, eventNumber, false);
 }
 
 FilteredEvent* EventLogFilter::cacheFilteredEvent(long eventNumber)

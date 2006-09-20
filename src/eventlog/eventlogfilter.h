@@ -98,8 +98,10 @@ class EventLogFilter
         FilteredEvent* getLastFilteredEvent();
         FilteredEvent* getNextFilteredEvent(FilteredEvent *filteredEvent);
         FilteredEvent* getPreviousFilteredEvent(FilteredEvent *filteredEvent);
+        FilteredEvent* getNextFilteredEvent(long eventNumber);
+        FilteredEvent* getPreviousFilteredEvent(long eventNumber);
 
-        void print(FILE *file);
+        void print(FILE *file, long fromEventNumber = -1, long toEventNumber = -1);
 
     protected:
         FilteredEvent* cacheFilteredEvent(long eventNumber);

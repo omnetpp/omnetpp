@@ -23,7 +23,7 @@ MessageSend::MessageSend(EventLog *eventLog, long senderEventNumber, int message
     this->eventLog = eventLog;
     this->senderEventNumber = senderEventNumber;
     this->messageSendEntryNumber = messageSendEntryNumber;
-    arrivalEventNumber = -1;
+    arrivalEventNumber = -2;
 }
 
 Event *MessageSend::getSenderEvent()
@@ -68,14 +68,18 @@ long MessageSend::getMessageId(EventLogEntry *eventLogEntry)
 
 long MessageSend::getArrivalEventNumber() 
 {
-    if (arrivalEventNumber == -1)
+    if (arrivalEventNumber == -2)
     {
         simtime_t arrivalTime = getArrivalTime();
-        long offset = eventLog->getOffsetForSimulationTime(arrivalTime, true);
+        long offset = eventLog->getOffsetForSimulationTime(arrivalTime, EventLogIndex::MatchKind::FIRST);
 
-        while (true)
+        while (offset != -1)
         {
             Event *event = eventLog->getEventForOffset(offset);
+
+            if (event == NULL)
+                // end of file
+                return -1;
 
             if (event->getMessageId() == getMessageId())
             {
@@ -85,15 +89,21 @@ long MessageSend::getArrivalEventNumber()
 
             if (event->getSimulationTime() > arrivalTime)
             {
-                throw new Exception("Could not find arrival event");
+                // self message has been cancelled
+                arrivalEventNumber = -1;
+                break;
             }
 
             offset = event->getEndOffset();
         }
+
+        if (offset == -1)
+            // end of file
+            return -1;
     }
 
-    if (arrivalEventNumber <= senderEventNumber)
-        throw new Exception("Invalid message send");
+    if (arrivalEventNumber == -2)
+        throw new Exception("alma");
 
     return arrivalEventNumber;
 }
@@ -108,24 +118,21 @@ simtime_t MessageSend::getArrivalTime()
 
     if (beginSendEntry != NULL)
     {
-        int i = messageSendEntryNumber;
-        simtime_t arrivalTime;
+        int i = messageSendEntryNumber + 1;
 
-        while (true)
+        while (i < event->getNumEventLogEntries())
         {
-            eventLogEntry = event->getEventLogEntry(i);
-            MessageSendHopEntry *messageSendHopEntry = dynamic_cast<MessageSendHopEntry *>(eventLogEntry);
+            eventLogEntry = event->getEventLogEntry(i++);
+            EndSendEntry *endSendEntry = dynamic_cast<EndSendEntry *>(eventLogEntry);
 
-            if (messageSendHopEntry != NULL)
-                arrivalTime = event->getSimulationTime() + messageSendHopEntry->propagationDelay;
-            else
-                break;
+            if (endSendEntry != NULL)
+                return endSendEntry->arrivalTime;
         }
 
-        return arrivalTime;
+        throw new Exception("Missing end message send entry");
     }
 
-    // 2. MessageScheduledEntry
+    // 2 . MessageScheduledEntry
     MessageScheduledEntry *messageScheduledEntry = dynamic_cast<MessageScheduledEntry *>(eventLogEntry);
 
     if (messageScheduledEntry != NULL)
@@ -136,12 +143,17 @@ simtime_t MessageSend::getArrivalTime()
 
 Event *MessageSend::getArrivalEvent() 
 {
-    return eventLog->getEvent(getArrivalEventNumber());
+    long arrivalEventNumber = getArrivalEventNumber();
+
+    if (arrivalEventNumber == -1)
+        return NULL;
+    else
+        return eventLog->getEvent(arrivalEventNumber);
 }
 
 /**************************************************/
 
-long Event::numParseEvent = 0;
+long Event::numParsedEvent = 0;
 
 Event::Event(EventLog *eventLog)
 {
@@ -157,9 +169,7 @@ Event::Event(EventLog *eventLog)
 Event::~Event()
 {
     for (EventLogEntryList::iterator it = eventLogEntries.begin(); it != eventLogEntries.end(); it++)
-    {
         delete *it;
-    }
 }
 
 Event *Event::getCauseEvent()
@@ -234,7 +244,7 @@ long Event::parse(FileReader *reader, long offset)
         throw new Exception("Reusing event objects are not supported");
 
     beginOffset = offset;
-    numParseEvent++;
+    numParsedEvent++;
     reader->seekTo(offset);
 
     while (true)
@@ -258,6 +268,8 @@ long Event::parse(FileReader *reader, long offset)
         if (eventLogEntry)
             eventLogEntries.push_back(eventLogEntry);
     }
+
+    printf("*** Parsed event: %ld\n", getEventNumber());
 
     return endOffset = reader->lineStartOffset();
 }
