@@ -136,10 +136,12 @@ bool EventLogFilter::matchesFilterNonCached(Event *event)
 
         for (Event::MessageSendList::iterator it = consequences->begin(); it != consequences->end(); it++)
         {
-            MessageSend *messageSend = *it;
-            Event *arrivalEvent = messageSend->getArrivalEvent();
+            MessageDependency *messageDependency = *it;
+            Event *consequencetEvent = messageDependency->getConsequenceEvent();
 
-            if (arrivalEvent != NULL && tracedEventNumber >= arrivalEvent->getEventNumber() && matchesFilter(arrivalEvent))
+            if (consequencetEvent != NULL &&
+                tracedEventNumber >= consequencetEvent->getEventNumber() &&
+                matchesFilter(consequencetEvent))
                 return true;
         }
     }
@@ -151,10 +153,12 @@ bool EventLogFilter::matchesFilterNonCached(Event *event)
 
         for (Event::MessageSendList::iterator it = causes->begin(); it != causes->end(); it++)
         {
-            MessageSend *messageSend = *it;
-            Event *senderEvent = messageSend->getSenderEvent();
+            MessageDependency *messageDependency = *it;
+            Event *causeEvent = messageDependency->getCauseEvent();
 
-            if (senderEvent != NULL && tracedEventNumber <= senderEvent->getEventNumber() && matchesFilter(senderEvent))
+            if (causeEvent != NULL &&
+                tracedEventNumber <= causeEvent->getEventNumber() &&
+                matchesFilter(causeEvent))
                 return true;
         }
     }

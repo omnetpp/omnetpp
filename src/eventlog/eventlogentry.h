@@ -28,6 +28,10 @@ class EventLogEntry
         static EventLogEntry *parseEntry(char *line);
         virtual void parse(char *line) = 0;
         virtual void print(FILE *fout) = 0;
+
+        bool isMessageSend();
+        long getMessageId();
+        long getPreviousEventNumber();
 };
 
 /**

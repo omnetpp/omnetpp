@@ -18,60 +18,41 @@
 #include "eventlog.h"
 #include "eventlogentry.h"
 
-MessageSend::MessageSend(EventLog *eventLog, long senderEventNumber, int messageSendEntryNumber)
+MessageDependency::MessageDependency(EventLog *eventLog, long causeEventNumber, long consequenceEventNumber, int messageSendEntryNumber)
 {
     this->eventLog = eventLog;
-    this->senderEventNumber = senderEventNumber;
+    this->causeEventNumber = causeEventNumber;
+    this->consequenceEventNumber = consequenceEventNumber;
     this->messageSendEntryNumber = messageSendEntryNumber;
-    arrivalEventNumber = -2;
 }
 
-Event *MessageSend::getSenderEvent()
+long MessageDependency::getCauseEventNumber()
 {
-    return eventLog->getEvent(senderEventNumber);
+    return causeEventNumber;
 }
 
-EventLogEntry *MessageSend::getMessageSendEntry()
+Event *MessageDependency::getCauseEvent()
 {
-    Event *event = getSenderEvent();
+    long causeEventNumber = getCauseEventNumber();
+
+    if (causeEventNumber == -1)
+        return NULL;
+    else
+        return eventLog->getEvent(causeEventNumber);
+}
+
+EventLogEntry *MessageDependency::getMessageSendEntry()
+{
+    Event *event = getCauseEvent();
     return event->getEventLogEntry(messageSendEntryNumber);
 }
 
-bool MessageSend::isMessageSend(EventLogEntry *eventLogEntry)
+long MessageDependency::getConsequenceEventNumber() 
 {
-    return
-        dynamic_cast<BeginSendEntry *>(eventLogEntry) != NULL ||
-        dynamic_cast<MessageScheduledEntry *>(eventLogEntry) != NULL;
-}
-
-long MessageSend::getMessageId()
-{
-    return MessageSend::getMessageId(getMessageSendEntry());
-}
-
-long MessageSend::getMessageId(EventLogEntry *eventLogEntry)
-{
-    // 1. BeginSendEntry
-    BeginSendEntry *beginSendEntry = dynamic_cast<BeginSendEntry *>(eventLogEntry);
-
-    if (beginSendEntry != NULL)
-        return beginSendEntry->messageId;
-
-    // 2. MessageScheduledEntry
-    MessageScheduledEntry *messageScheduledEntry = dynamic_cast<MessageScheduledEntry *>(eventLogEntry);
-
-    if (messageScheduledEntry != NULL)
-        return messageScheduledEntry->messageId;
-
-    throw new Exception("Unknown message entry");
-}
-
-long MessageSend::getArrivalEventNumber() 
-{
-    if (arrivalEventNumber == -2)
+    if (consequenceEventNumber == -2)
     {
-        simtime_t arrivalTime = getArrivalTime();
-        long offset = eventLog->getOffsetForSimulationTime(arrivalTime, EventLogIndex::MatchKind::FIRST);
+        simtime_t consequenceTime = getConsequenceTime();
+        long offset = eventLog->getOffsetForSimulationTime(consequenceTime, EventLogIndex::MatchKind::FIRST);
 
         while (offset != -1)
         {
@@ -83,14 +64,14 @@ long MessageSend::getArrivalEventNumber()
 
             if (event->getMessageId() == getMessageId())
             {
-                arrivalEventNumber = event->getEventNumber();
+                consequenceEventNumber = event->getEventNumber();
                 break;
             }
 
-            if (event->getSimulationTime() > arrivalTime)
+            if (event->getSimulationTime() > consequenceTime)
             {
                 // self message has been cancelled
-                arrivalEventNumber = -1;
+                consequenceEventNumber = -1;
                 break;
             }
 
@@ -102,15 +83,22 @@ long MessageSend::getArrivalEventNumber()
             return -1;
     }
 
-    if (arrivalEventNumber == -2)
-        throw new Exception("alma");
-
-    return arrivalEventNumber;
+    return consequenceEventNumber;
 }
 
-simtime_t MessageSend::getArrivalTime()
+Event *MessageDependency::getConsequenceEvent() 
 {
-    Event *event = getSenderEvent();
+    long consequenceEventNumber = getConsequenceEventNumber();
+
+    if (consequenceEventNumber == -1)
+        return NULL;
+    else
+        return eventLog->getEvent(consequenceEventNumber);
+}
+
+simtime_t MessageDependency::getConsequenceTime()
+{
+    Event *event = getCauseEvent();
     EventLogEntry *eventLogEntry = event->getEventLogEntry(messageSendEntryNumber);
 
     // 1. BeginSendEntry
@@ -141,14 +129,14 @@ simtime_t MessageSend::getArrivalTime()
     throw new Exception("Unknown message entry");
 }
 
-Event *MessageSend::getArrivalEvent() 
+MessageReuse::MessageReuse(EventLog *eventLog, long senderEventNumber, int messageSendEntryNumber)
+    : MessageDependency(eventLog, -2, senderEventNumber, messageSendEntryNumber)
 {
-    long arrivalEventNumber = getArrivalEventNumber();
+}
 
-    if (arrivalEventNumber == -1)
-        return NULL;
-    else
-        return eventLog->getEvent(arrivalEventNumber);
+MessageSend::MessageSend(EventLog *eventLog, long senderEventNumber, int messageSendEntryNumber)
+    : MessageDependency(eventLog, senderEventNumber, -2, messageSendEntryNumber)
+{
 }
 
 /**************************************************/
@@ -192,8 +180,8 @@ MessageSend *Event::getCause()
             {
                 EventLogEntry *eventLogEntry = event->eventLogEntries[messageEntryNumber];
 
-                if (MessageSend::isMessageSend(eventLogEntry) &&
-                    MessageSend::getMessageId(eventLogEntry) == getMessageId())
+                if (eventLogEntry->isMessageSend() &&
+                    eventLogEntry->getMessageId() == getMessageId())
                 {
                     cause = new MessageSend(eventLog, getCauseEventNumber(), messageEntryNumber);
                     break;
@@ -214,7 +202,16 @@ Event::MessageSendList *Event::getCauses()
         if (getCause() != NULL)
             causes->push_back(getCause());
 
-        // TODO: add "reuse" message send causes
+        for (int messageEntryNumber = 0; messageEntryNumber < eventLogEntries.size(); messageEntryNumber++)
+        {
+            EventLogEntry *eventLogEntry = eventLogEntries[messageEntryNumber];
+
+            if (eventLogEntry->isMessageSend() && eventLogEntry->getPreviousEventNumber() != getEventNumber())
+            {
+                //causes->push_back(new MessageReuse(eventLog, getEventNumber(), messageEntryNumber));
+                break;
+            }
+        }
     }
 
     return causes;
@@ -230,7 +227,7 @@ Event::MessageSendList *Event::getConsequences()
         {
             EventLogEntry *eventLogEntry = eventLogEntries[messageEntryNumber];
 
-            if (MessageSend::isMessageSend(eventLogEntry))
+            if (eventLogEntry->isMessageSend())
                 consequences->push_back(new MessageSend(eventLog, getEventNumber(), messageEntryNumber));
         }
     }

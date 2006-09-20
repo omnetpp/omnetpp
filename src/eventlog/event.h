@@ -24,34 +24,54 @@
 class Event;
 class EventLog;
 
-/**
- * Represents a single message send.
- */
-class MessageSend
+class MessageDependency
 {
     protected:
         EventLog *eventLog;
-        long senderEventNumber;
-        long arrivalEventNumber;
+        long causeEventNumber;
+        long consequenceEventNumber;
         int messageSendEntryNumber;
 
     public:
-        MessageSend(EventLog *eventLog, long senderEventNumber, int messageSendEntryNumber);
+        MessageDependency(EventLog *eventLog, long causeEventNumber, long consequenceEventNumber, int messageSendEntryNumber);
 
-        long getSenderEventNumber() { return senderEventNumber; };
-        Event *getSenderEvent();
+        long getCauseEventNumber();
+        Event *getCauseEvent();
 
-        long getArrivalEventNumber();
-        Event *getArrivalEvent();
+        long getConsequenceEventNumber();
+        Event *getConsequenceEvent();
 
         long getMessageSendEntryNumber() { return messageSendEntryNumber; };
         EventLogEntry *getMessageSendEntry();
 
-        static bool isMessageSend(EventLogEntry *eventLogEntry);
-        static long getMessageId(EventLogEntry *eventLogEntry);
+        simtime_t getCauseTime();
+        simtime_t getConsequenceTime();
 
-        long getMessageId();
-        simtime_t getArrivalTime();
+        long getMessageId() { return getMessageSendEntry()->getMessageId(); };
+};
+
+class MessageReuse : public MessageDependency
+{
+    public:
+        MessageReuse(EventLog *eventLog, long senderEventNumber, int messageSendEntryNumber);
+};
+
+/**
+ * Represents a single message send.
+ */
+class MessageSend : public MessageDependency
+{
+    public:
+        MessageSend(EventLog *eventLog, long senderEventNumber, int messageSendEntryNumber);
+
+        long getSenderEventNumber() { return getCauseEventNumber(); };
+        Event *getSenderEvent() { return getCauseEvent(); };
+
+        long getArrivalEventNumber() { return getConsequenceEventNumber(); };
+        Event *getArrivalEvent() { return getConsequenceEvent(); };
+
+        simtime_t getSenderTime() { return getCauseTime(); };
+        simtime_t getArrivalTime() { return getConsequenceTime(); };
 };
 
 /**
@@ -60,7 +80,7 @@ class MessageSend
 class Event
 {
     public:
-        typedef std::vector<MessageSend *> MessageSendList;
+        typedef std::vector<MessageDependency *> MessageSendList;
         typedef std::vector<Event *> EventList;
 
     protected:
