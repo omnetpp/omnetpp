@@ -10,7 +10,7 @@ import org.omnetpp.scave2.editors.ScaveEditor;
 /**
  * Label provider for the "Physical view" tree of the Inputs page.
  */
-public class InputsPhysicalViewLabelProvider extends LabelProvider {
+public class InputsViewLabelProvider extends LabelProvider {
 
 	public String getText(Object element) {
 		if (element instanceof GenericTreeNode) {
@@ -34,7 +34,10 @@ public class InputsPhysicalViewLabelProvider extends LabelProvider {
 				else 
 					return "run "+run.getRunNumber()+" - \""+run.getRunName()+"\"";
 			}
+			else if (payload != null && !payload.equals(""))
+				return payload.toString();
 		}
+		
 		return null;
 	}
 }

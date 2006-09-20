@@ -24,8 +24,7 @@ import org.omnetpp.scave2.actions.SetFilterAction;
 import org.omnetpp.scave2.editors.ScaveEditor;
 import org.omnetpp.scave2.editors.treeproviders.InputsFileRunViewContentProvider;
 import org.omnetpp.scave2.editors.treeproviders.InputsLogicalViewContentProvider;
-import org.omnetpp.scave2.editors.treeproviders.InputsLogicalViewLabelProvider;
-import org.omnetpp.scave2.editors.treeproviders.InputsPhysicalViewLabelProvider;
+import org.omnetpp.scave2.editors.treeproviders.InputsViewLabelProvider;
 import org.omnetpp.scave2.editors.treeproviders.InputsRunFileViewContentProvider;
 
 public class InputsPage extends ScaveEditorPage {
@@ -76,13 +75,13 @@ public class InputsPage extends ScaveEditorPage {
         scaveEditor.configureTreeViewer(getInputFilesTreeViewer());
         
         getFileRunTreeViewer().setContentProvider(new InputsFileRunViewContentProvider());
-        getFileRunTreeViewer().setLabelProvider(new InputsPhysicalViewLabelProvider());
+        getFileRunTreeViewer().setLabelProvider(new InputsViewLabelProvider());
 
         getRunFileTreeViewer().setContentProvider(new InputsRunFileViewContentProvider());
-        getRunFileTreeViewer().setLabelProvider(new InputsPhysicalViewLabelProvider());
+        getRunFileTreeViewer().setLabelProvider(new InputsViewLabelProvider());
         
         getLogicalDataTreeViewer().setContentProvider(new InputsLogicalViewContentProvider());
-        getLogicalDataTreeViewer().setLabelProvider(new InputsLogicalViewLabelProvider());
+        getLogicalDataTreeViewer().setLabelProvider(new InputsViewLabelProvider());
 
         scaveEditor.getResultFileManager().addListener(new IResultFilesChangeListener() {
 			public void resultFileManagerChanged(ResultFileManager manager) {
