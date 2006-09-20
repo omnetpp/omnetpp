@@ -309,4 +309,3 @@ xmlgenerator.obj: xmlgenerator.cc \
   nedelements.h \
   xmlgenerator.h \
   nedelement.h
-xxxxx.obj: xxxxx.cc

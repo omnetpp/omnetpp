@@ -342,44 +342,30 @@ void NED1Generator::doParam(ParamNode *node, const char *indent, bool islast, co
     else
         OUT << " ";  // inline params, used for channel-spec in connections
 
+    OUT << node->getName() << " : ";
+
     switch (node->getType())
     {
-        case NED_PARTYPE_NONE:   break;
-        case NED_PARTYPE_DOUBLE: OUT << "double "; break;
-        case NED_PARTYPE_INT:    OUT << "int "; break;
-        case NED_PARTYPE_STRING: OUT << "string "; break;
-        case NED_PARTYPE_BOOL:   OUT << "bool "; break;
-        case NED_PARTYPE_XML:    OUT << "xml "; break;
+        case NED_PARTYPE_NONE:   OUT << "numeric"; break;
+        case NED_PARTYPE_DOUBLE: // no break: NED-1 uses "numeric" for both "double" and "int"
+        case NED_PARTYPE_INT:    OUT << (node->getIsFunction() ? "numeric" : "numeric const"); break;
+        case NED_PARTYPE_STRING: OUT << "string"; break;
+        case NED_PARTYPE_BOOL:   OUT << "bool"; break;
+        case NED_PARTYPE_XML:    OUT << "xml"; break;
         default: INTERNAL_ERROR0(node, "wrong type");
     }
-    if (node->getIsFunction())
-        OUT << "function ";
-    OUT << node->getName();
     if (hasExpression(node,"value"))
-    {
-        OUT << " = ";
-        bool parsedExpr = !strnotnull(node->getValue());
-        if (parsedExpr && node->getIsDefault())
-        {
-            OUT << "default(";
-            printExpression(node, "value",indent);
-            OUT << ")";
-        }
-        else
-        {
-            // if expressions are unparsed, the stored text already contains "default()"
-            printExpression(node, "value",indent);
-        }
-    }
+        errors->add(node, "assignments in parameter declarations are " A_NED2_FEATURE);
 
     const char *subindent = indent ? increaseIndent(indent) : DEFAULTINDENT;
     generateChildrenWithType(node, NED_PROPERTY, subindent, " ");
-    generateChildrenWithType(node, NED_CONDITION, subindent);
+    if (node->getFirstChildWithTag(NED_CONDITION))
+        errors->add(node, "conditional parameter assignments for NED-1 are not supported");
 
     if (indent)
-        OUT << ";\n";
+        OUT << (islast ? ";\n" : ",\n");
     else
-        OUT << ";";
+        OUT << (islast ? ";" : ",");
 }
 
 void NED1Generator::doPattern(PatternNode *node, const char *indent, bool islast, const char *)
