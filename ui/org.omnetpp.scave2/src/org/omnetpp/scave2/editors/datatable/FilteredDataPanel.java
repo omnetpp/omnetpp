@@ -1,9 +1,5 @@
 package org.omnetpp.scave2.editors.datatable;
 
-import static org.omnetpp.scave2.model.RunAttribute.EXPERIMENT;
-import static org.omnetpp.scave2.model.RunAttribute.MEASUREMENT;
-import static org.omnetpp.scave2.model.RunAttribute.REPLICATION;
-
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -13,11 +9,7 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.forms.widgets.FormToolkit;
-import org.omnetpp.scave.engine.FileRunList;
 import org.omnetpp.scave.engine.IDList;
-import org.omnetpp.scave.engine.ResultFileList;
-import org.omnetpp.scave.engine.RunList;
-import org.omnetpp.scave.engine.StringMap;
 import org.omnetpp.scave.engineext.ResultFileManagerEx;
 import org.omnetpp.scave2.model.FilterHints;
 import org.omnetpp.scave2.model.FilterParams;
@@ -80,7 +72,9 @@ public class FilteredDataPanel extends Composite {
 	}
 
 	protected void initialize(int type) {
-		setLayout(new GridLayout(1, false));
+		GridLayout gridLayout = new GridLayout(1, false);
+		gridLayout.marginHeight = 0;
+		setLayout(gridLayout);
 		filterPanel = new FilteringPanel(this, SWT.NONE);
 		filterPanel.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false));
 		table = new DataTable(this, SWT.MULTI, type);

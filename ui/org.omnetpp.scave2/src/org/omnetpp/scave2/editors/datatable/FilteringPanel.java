@@ -4,13 +4,13 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.omnetpp.scave2.editors.ui.FilterParamsPanel;
-//import org.omnetpp.scave2.editors.ui.TEST;
 import org.omnetpp.scave2.model.FilterHints;
 import org.omnetpp.scave2.model.FilterParams;
 
@@ -95,12 +95,17 @@ public class FilteringPanel extends Composite {
 	}
 
 	private void initialize() {
-		this.setLayout(new GridLayout());
-//new TEST(this, SWT.NONE).setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false, 2, 1));
-
+		GridLayout gridLayout;
+		
+		gridLayout = new GridLayout();
+		gridLayout.marginHeight = 0;
+		this.setLayout(gridLayout);
+		
 		Composite firstRow = new Composite(this, SWT.NONE);
 		firstRow.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
-		firstRow.setLayout(new GridLayout(4, false));
+		gridLayout = new GridLayout(4, false);
+		gridLayout.marginHeight = 0;
+		firstRow.setLayout(gridLayout);
 		
 		filterLabel = new Label(firstRow, SWT.WRAP);
 		filterLabel.setText("Filter: ");
