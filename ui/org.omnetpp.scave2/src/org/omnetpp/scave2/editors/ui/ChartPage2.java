@@ -1,7 +1,11 @@
 package org.omnetpp.scave2.editors.ui;
 
 import org.eclipse.emf.common.notify.Notification;
+import org.eclipse.emf.ecore.EObject;
+import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.MouseAdapter;
+import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
@@ -33,8 +37,13 @@ public class ChartPage2 extends ScaveEditorPage {
 	}
 	
 	public void updatePage(Notification notification) {
+		if (!(notification.getNotifier() instanceof EObject) ||
+			(notification.getNotifier() != chart &&
+					((EObject)notification.getNotifier()).eContainer() != chart))
+			return;
+		
 		ScaveModelPackage pkg = ScaveModelPackage.eINSTANCE;
-		if (ScaveModelPackage.eINSTANCE.getChart_Name().equals(notification.getFeature())) {
+		if (pkg.getChart_Name().equals(notification.getFeature())) {
 			setPageTitle("Chart: " + getChartName(chart));
 			setFormTitle("Chart: " + getChartName(chart));
 		}
@@ -44,9 +53,11 @@ public class ChartPage2 extends ScaveEditorPage {
 			case Notification.ADD:
 				property = (Property)notification.getNewValue();
 				chartView.setProperty(property.getName(), property.getValue());
+				break;
 			case Notification.REMOVE:
 				property = (Property)notification.getOldValue();
 				chartView.setProperty(property.getName(), null);
+				break;
 			}
 		}
 		else if (pkg.getProperty_Value().equals(notification.getFeature())) {
@@ -75,6 +86,11 @@ public class ChartPage2 extends ScaveEditorPage {
 		// set up contents
 		Composite parent = getBody();
 		chartView = (VectorChart) ChartFactory.createChart(parent, this.chart, scaveEditor.getResultFileManager());
+		chartView.addMouseListener(new MouseAdapter() {
+			public void mouseUp(MouseEvent e) {
+				scaveEditor.setSelection(new StructuredSelection(chart));
+			}
+		});
 		
 		// create control strip (XXX temp code)
 		Composite controlStrip = createControlStrip(parent, chartView);
