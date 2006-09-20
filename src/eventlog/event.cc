@@ -28,6 +28,12 @@ MessageDependency::MessageDependency(EventLog *eventLog, long causeEventNumber, 
 
 long MessageDependency::getCauseEventNumber()
 {
+    if (causeEventNumber == -2)
+    {
+        Event *consequenceEvent = getConsequenceEvent();
+        causeEventNumber = consequenceEvent->getEventLogEntry(messageSendEntryNumber)->getPreviousEventNumber();
+    }
+
     return causeEventNumber;
 }
 
@@ -208,7 +214,7 @@ Event::MessageSendList *Event::getCauses()
 
             if (eventLogEntry->isMessageSend() && eventLogEntry->getPreviousEventNumber() != getEventNumber())
             {
-                //causes->push_back(new MessageReuse(eventLog, getEventNumber(), messageEntryNumber));
+                causes->push_back(new MessageReuse(eventLog, getEventNumber(), messageEntryNumber));
                 break;
             }
         }
