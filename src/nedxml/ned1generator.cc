@@ -143,16 +143,16 @@ void NED1Generator::printInheritance(NEDElement *node, const char *indent)
      || (node->getTagCode()==NED_SIMPLE_MODULE && ((SimpleModuleNode *)node)->getIsNetwork()))
     {
         if (node->getNumChildrenWithTag(NED_INTERFACE_NAME)>0)
-            errors->add(node, "inheritance is " A_NED2_FEATURE);
+            errors->add(node, ERRCAT_WARNING, "inheritance is " A_NED2_FEATURE);
         NEDElement *extendsNode = node->getFirstChildWithTag(NED_EXTENDS);
         if (!extendsNode)
-            errors->add(node, "network must extend a module type");
+            errors->add(node, ERRCAT_WARNING, "network must extend a module type");
         else
             OUT << " : " << ((ExtendsNode *)extendsNode)->getName();
     }
     else if (node->getFirstChildWithTag(NED_EXTENDS) || node->getFirstChildWithTag(NED_INTERFACE_NAME))
     {
-        errors->add(node, "inheritance is " A_NED2_FEATURE);
+        errors->add(node, ERRCAT_WARNING, "inheritance is " A_NED2_FEATURE);
     }
 }
 
@@ -257,7 +257,7 @@ void NED1Generator::doImport(ImportNode *node, const char *indent, bool islast, 
 
 void NED1Generator::doPropertyDecl(PropertyDeclNode *node, const char *indent, bool islast, const char *)
 {
-    errors->add(node, "properties are " A_NED2_FEATURE);
+    errors->add(node, ERRCAT_WARNING, "properties are " A_NED2_FEATURE);
 }
 
 void NED1Generator::doExtends(ExtendsNode *node, const char *indent, bool islast, const char *sep)
@@ -284,7 +284,7 @@ void NED1Generator::doSimpleModule(SimpleModuleNode *node, const char *indent, b
 
 void NED1Generator::doModuleInterface(ModuleInterfaceNode *node, const char *indent, bool islast, const char *)
 {
-    errors->add(node, "interfaces are " A_NED2_FEATURE);
+    errors->add(node, ERRCAT_WARNING, "interfaces are " A_NED2_FEATURE);
 }
 
 void NED1Generator::doCompoundModule(CompoundModuleNode *node, const char *indent, bool islast, const char *)
@@ -304,14 +304,14 @@ void NED1Generator::doCompoundModule(CompoundModuleNode *node, const char *inden
 
 void NED1Generator::doChannelInterface(ChannelInterfaceNode *node, const char *indent, bool islast, const char *)
 {
-    errors->add(node, "channel interfaces are " A_NED2_FEATURE);
+    errors->add(node, ERRCAT_WARNING, "channel interfaces are " A_NED2_FEATURE);
 }
 
 void NED1Generator::doChannel(ChannelNode *node, const char *indent, bool islast, const char *)
 {
     OUT << indent << "channel ";
     if (node->getIsWithcppclass())
-        errors->add(node, "channel withcppclass is " A_NED2_FEATURE);
+        errors->add(node, ERRCAT_WARNING, "channel withcppclass is " A_NED2_FEATURE);
     OUT << node->getName();
     printInheritance(node, indent);
     OUT << "\n";
@@ -353,7 +353,7 @@ void NED1Generator::doModuleParameters(ParametersNode *node, const char *indent)
         else if (childTag==NED_PARAM)
             doModuleParam((ParamNode *)child, increaseIndent(indent), child->getNextSiblingWithTag(NED_PARAM)==NULL, NULL);
         else if (childTag==NED_PATTERN || childTag==NED_PARAM_GROUP)
-            errors->add(node, "patterns and parameter groups are " A_NED2_FEATURE);
+            errors->add(node, ERRCAT_WARNING, "patterns and parameter groups are " A_NED2_FEATURE);
         else
             INTERNAL_ERROR0(node,"unexpected element");
     }
@@ -406,7 +406,7 @@ void NED1Generator::doSubstParamGroup(NEDElement *node, const char *indent)
         else if (childTag==NED_PARAM)
             doSubstParam((ParamNode *)child, increaseIndent(indent), !_hasSiblingBefore(child->getNextSibling(), NED_PARAM, NED_PARAM_GROUP), NULL);
         else if (childTag==NED_PATTERN)
-            errors->add(node, "patterns are " A_NED2_FEATURE);
+            errors->add(node, ERRCAT_WARNING, "patterns are " A_NED2_FEATURE);
         else if (childTag==NED_PARAM_GROUP)
         {
             doSubstParamGroup(child, indent);
@@ -434,9 +434,9 @@ void NED1Generator::doChannelParameters(ParametersNode *node, const char *indent
         else if (childTag==NED_PARAM)
             doChannelParam((ParamNode *)child, indent);
         else if (childTag==NED_PATTERN)
-            errors->add(node, "patterns are " A_NED2_FEATURE);
+            errors->add(node, ERRCAT_WARNING, "patterns are " A_NED2_FEATURE);
         else if (childTag==NED_PARAM_GROUP)
-            errors->add(node, "parameter groups in channels are " A_NED2_FEATURE);
+            errors->add(node, ERRCAT_WARNING, "parameter groups in channels are " A_NED2_FEATURE);
         else
             INTERNAL_ERROR0(node,"unexpected element");
     }
@@ -456,9 +456,9 @@ void NED1Generator::doConnectionAttributes(ParametersNode *node, const char *ind
         else if (childTag==NED_PARAM)
             doChannelParam((ParamNode *)child, NULL);
         else if (childTag==NED_PATTERN)
-            errors->add(node, "patterns are " A_NED2_FEATURE);
+            errors->add(node, ERRCAT_WARNING, "patterns are " A_NED2_FEATURE);
         else if (childTag==NED_PARAM_GROUP)
-            errors->add(node, "parameter groups in connections are " A_NED2_FEATURE);
+            errors->add(node, ERRCAT_WARNING, "parameter groups in connections are " A_NED2_FEATURE);
         else
             INTERNAL_ERROR0(node,"unexpected element");
     }
@@ -477,7 +477,7 @@ void NED1Generator::doChannelParam(ParamNode *node, const char *indent)
     }
     else
     {
-        errors->add(node, "channel parameters other than delay, error and datarate are " A_NED2_FEATURE);
+        errors->add(node, ERRCAT_WARNING, "channel parameters other than delay, error and datarate are " A_NED2_FEATURE);
     }
 }
 
@@ -514,12 +514,12 @@ void NED1Generator::doModuleParam(ParamNode *node, const char *indent, bool isla
         OUT << " : " << parType;
 
     if (hasExpression(node,"value"))
-        errors->add(node, "assignments in parameter declarations are " A_NED2_FEATURE);
+        errors->add(node, ERRCAT_WARNING, "assignments in parameter declarations are " A_NED2_FEATURE);
 
     const char *subindent = indent ? increaseIndent(indent) : DEFAULTINDENT;
     generateChildrenWithType(node, NED_PROPERTY, subindent, " ");
     if (node->getFirstChildWithTag(NED_CONDITION))
-        errors->add(node, "conditional parameter assignments for NED-1 are not supported");
+        errors->add(node, ERRCAT_WARNING, "conditional parameter assignments for NED-1 are not supported");
 
     OUT << (islast ? ";\n" : ",\n");
 }
@@ -527,28 +527,28 @@ void NED1Generator::doModuleParam(ParamNode *node, const char *indent, bool isla
 void NED1Generator::doSubstParam(ParamNode *node, const char *indent, bool islast, const char *)
 {
     if (node->getType()!=NED_PARTYPE_NONE)
-        errors->add(node, "defining new parameters for a submodule are " A_NED2_FEATURE);
+        errors->add(node, ERRCAT_WARNING, "defining new parameters for a submodule are " A_NED2_FEATURE);
 
     OUT << indent << node->getName() << " = ";
     printExpression(node, "value", indent);
 
     generateChildrenWithType(node, NED_PROPERTY, increaseIndent(indent), " ");
     if (node->getFirstChildWithTag(NED_CONDITION))
-        errors->add(node, "conditional parameter assignments for NED-1 are not supported");
+        errors->add(node, ERRCAT_WARNING, "conditional parameter assignments for NED-1 are not supported");
 
     OUT << (islast ? ";\n" : ",\n");
 }
 
 void NED1Generator::doPattern(PatternNode *node, const char *indent, bool islast, const char *)
 {
-    errors->add(node, "patterns are " A_NED2_FEATURE);
+    errors->add(node, ERRCAT_WARNING, "patterns are " A_NED2_FEATURE);
 }
 
 void NED1Generator::doProperty(PropertyNode *node, const char *indent, bool islast, const char *sep)
 {
     // only @display is recognized, but it needs to be printed at a different place
     if (strcmp(node->getName(), "display")!=0)
-        errors->add(node, "properties are " A_NED2_FEATURE);
+        errors->add(node, ERRCAT_WARNING, "properties are " A_NED2_FEATURE);
 }
 
 void NED1Generator::doPropertyKey(PropertyKeyNode *node, const char *indent, bool islast, const char *sep)
@@ -583,7 +583,7 @@ void NED1Generator::doGate(GateNode *node, const char *indent, bool islast, cons
         case NED_GATETYPE_NONE:   break;
         case NED_GATETYPE_INPUT:  OUT << "in: "; break;
         case NED_GATETYPE_OUTPUT: OUT << "out: "; break;
-        case NED_GATETYPE_INOUT:  errors->add(node, "inout gates are " A_NED2_FEATURE); break;
+        case NED_GATETYPE_INOUT:  errors->add(node, ERRCAT_WARNING, "inout gates are " A_NED2_FEATURE); break;
         default: INTERNAL_ERROR0(node, "wrong type");
     }
     OUT << node->getName();
@@ -598,7 +598,7 @@ void NED1Generator::doGate(GateNode *node, const char *indent, bool islast, cons
 
 void NED1Generator::doTypes(TypesNode *node, const char *indent, bool islast, const char *)
 {
-    errors->add(node, "inner types are " A_NED2_FEATURE);
+    errors->add(node, ERRCAT_WARNING, "inner types are " A_NED2_FEATURE);
 }
 
 void NED1Generator::doSubmodules(SubmodulesNode *node, const char *indent, bool islast, const char *)
@@ -619,7 +619,7 @@ void NED1Generator::doSubmodule(SubmoduleNode *node, const char *indent, bool is
         if (strnotnull(node->getLikeType()))
             OUT << " like " << node->getLikeType();
         if (node->getLikeAny())
-            errors->add(node, "`like *' is " A_NED2_FEATURE);
+            errors->add(node, ERRCAT_WARNING, "`like *' is " A_NED2_FEATURE);
     }
     else
     {
@@ -652,7 +652,7 @@ void NED1Generator::doConnection(ConnectionNode *node, const char *indent, bool 
     {
         case NED_ARROWDIR_L2R:   arrow = " -->"; srcfirst = true; break;
         case NED_ARROWDIR_R2L:   arrow = " <--"; srcfirst = false; break;
-        case NED_ARROWDIR_BIDIR: errors->add(node, "two-way connections are " A_NED2_FEATURE);
+        case NED_ARROWDIR_BIDIR: errors->add(node, ERRCAT_WARNING, "two-way connections are " A_NED2_FEATURE);
                                  arrow = " <-->"; srcfirst = true; break;
         default: INTERNAL_ERROR0(node, "wrong arrow-dir");
     }
@@ -694,7 +694,7 @@ void NED1Generator::doChannelSpec(ChannelSpecNode *node, const char *indent, boo
 {
     if (node->getLikeAny() || strnotnull(node->getLikeType()))
     {
-        errors->add(node, "channel `like' is " A_NED2_FEATURE);
+        errors->add(node, ERRCAT_WARNING, "channel `like' is " A_NED2_FEATURE);
     }
     else if (strnotnull(node->getType()))
     {
@@ -724,7 +724,7 @@ void NED1Generator::doConnectionGroup(ConnectionGroupNode *node, const char *ind
 void NED1Generator::doWhere(WhereNode *node, const char *indent, bool islast, const char *)
 {
     if (node->getFirstChildWithTag(NED_CONDITION))
-        errors->add(node, "freely mixing loops and conditionals for connections is " A_NED2_FEATURE);
+        errors->add(node, ERRCAT_WARNING, "freely mixing loops and conditionals for connections is " A_NED2_FEATURE);
     generateChildrenWithType(node, NED_LOOP, indent, ", ");
 }
 
@@ -765,7 +765,7 @@ void NED1Generator::printGate(NEDElement *conn, const char *modname, const char 
         printOptVector(conn, gateindexattr,indent);
 
     if (gatesubg!=NED_SUBGATE_NONE)
-        errors->add(conn, "inout gates and their subgates are " A_NED2_FEATURE);
+        errors->add(conn, ERRCAT_WARNING, "inout gates and their subgates are " A_NED2_FEATURE);
 }
 
 void NED1Generator::doExpression(ExpressionNode *node, const char *indent, bool islast, const char *)
