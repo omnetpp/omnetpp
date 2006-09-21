@@ -18,7 +18,7 @@ COPTS=$(CFLAGS) $(XML_CFLAGS) /I. /Fd"nedxml.pdb"
 #      nedfilebuffer.obj nedparser.obj nedyylib.obj \
 #      ned2.tab.obj lex.ned2yy.obj \
 #      msg2.tab.obj lex.msg2yy.obj \
-#      ned1.tab.obj lex.nedyy.obj \
+#      ned1.tab.obj lex.ned1yy.obj \
 #      nedutil.obj nedgenerator.obj xmlgenerator.obj nedtools.obj \
 #      nedxmlparser.obj nedsaxhandler.obj saxparser_$(XMLPARSER).obj \
 #      nedcompiler.obj cppgenerator.obj cppmsggenerator.obj cppexprgenerator.obj
@@ -31,7 +31,7 @@ OBJS= nedelements.obj nedelement.obj nederror.obj \
       ned2.tab.obj lex.ned2yy.obj nedtools.obj \
       nedutil.obj ned2generator.obj ned1generator.obj xmlgenerator.obj \
       nedxmlparser.obj nedsaxhandler.obj saxparser_$(XMLPARSER).obj \
-      ned1.tab.obj lex.nedyy.obj \
+      ned1.tab.obj lex.ned1yy.obj \
       msg2.tab.obj lex.msg2yy.obj
 # FIXME end temporary def
 
@@ -65,14 +65,14 @@ nedelements.cc nedelements.h nedvalidator.cc nedvalidator.h : dtdclassgen.pl ned
 	perl dtdclassgen.pl ned2.dtd
 
 ned1.tab.h ned1.tab.cc : ned1.y
-	$(YACC:/=\) -p nedyy -b ned1 -d ned1.y
+	$(YACC:/=\) -p ned1yy -b ned1 -d ned1.y
 	copy ned1.tab.c ned1.tab.cc
 	del ned1.tab.c
 
-lex.nedyy.cc: ned1.lex
-	$(LEX:/=\) -Pnedyy ned1.lex
-	copy lex.nedyy.c lex.nedyy.cc
-	del lex.nedyy.c
+lex.ned1yy.cc: ned1.lex
+	$(LEX:/=\) -Pned1yy ned1.lex
+	copy lex.ned1yy.c lex.ned1yy.cc
+	del lex.ned1yy.c
 
 ned2.tab.h ned2.tab.cc : ned2.y
 	$(YACC:/=\) --verbose --debug -p ned2yy -b ned2 -d ned2.y
@@ -105,8 +105,9 @@ depend:
 
 clean:
 	- del unistd.h
-	- del *.obj neddata.lib 2> nul
-	- del *.ilk *.idb *.pdb 2> nul
+	- del *.obj *.lib 2> nul
+	- del *.ilk *.idb *.pdb *suo 2> nul
+	- del *.tab.* lex.*yy.*
 
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
@@ -130,35 +131,10 @@ cppmsggenerator.obj: cppmsggenerator.cc \
   nedelement.h \
   cppexprgenerator.h \
   nedcompiler.h
-lex.ned2yy.obj: lex.ned2yy.cc \
-  ./unistd.h \
-  nedyydefs.h \
-  ned2.tab.h
-lex.nedyy.obj: lex.nedyy.cc \
-  ./unistd.h \
-  nedyydefs.h
-ned1.tab.obj: ned1.tab.cc \
-  nedyydefs.h \
-  nederror.h \
-  nedparser.h \
-  nedfilebuffer.h \
-  nedelements.h \
-  nedutil.h \
-  nedyylib.h \
-  nedelement.h
 ned1generator.obj: ned1generator.cc \
   ned1generator.h \
   nederror.h \
   nedelements.h \
-  nedelement.h
-ned2.tab.obj: ned2.tab.cc \
-  nedyydefs.h \
-  nederror.h \
-  nedparser.h \
-  nedfilebuffer.h \
-  nedelements.h \
-  nedutil.h \
-  nedyylib.h \
   nedelement.h
 ned2generator.obj: ned2generator.cc \
   ned2generator.h \

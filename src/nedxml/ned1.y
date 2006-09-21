@@ -1364,7 +1364,7 @@ comma_or_semicolon : ',' | ';' ;
 // general bison/flex stuff:
 //
 
-NEDElement *doParseNED(NEDParser *p, const char *nedtext)
+NEDElement *doParseNED1(NEDParser *p, const char *nedtext)
 {
 #if YYDEBUG != 0      /* #if added --VA */
     yydebug = YYDEBUGGING_ON;
