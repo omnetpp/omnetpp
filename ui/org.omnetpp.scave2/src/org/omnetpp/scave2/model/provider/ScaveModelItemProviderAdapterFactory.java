@@ -1,6 +1,7 @@
 package org.omnetpp.scave2.model.provider;
 
 import org.eclipse.emf.common.notify.Adapter;
+import org.omnetpp.scave2.actions.GroupAction;
 
 /**
  * 
@@ -27,7 +28,21 @@ public class ScaveModelItemProviderAdapterFactory extends
 
 		return chartSheetItemProvider;
 	}
-	
-	
 
+	@Override
+	public Adapter createDatasetAdapter() {
+		if (datasetItemProvider == null) {
+			datasetItemProvider = new DatasetItemProvider(this);
+		}
+
+		return datasetItemProvider;
+	}
+
+	@Override
+	public Adapter createGroupAdapter() {
+		if (groupItemProvider == null) {
+			groupItemProvider = new GroupItemProvider(this);
+		}
+		return groupItemProvider;
+	}
 }
