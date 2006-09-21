@@ -352,37 +352,56 @@ void NED1Generator::doSubstParameters(ParametersNode *node, const char *indent)
     doSubstParamGroup(node, indent);
 }
 
+static bool _hasSiblingBefore(NEDElement *node, int searchTag, int stopTag)
+{
+    // true if: node itself is searchTag, or has searchTag before stopTag
+//    // if start node is already a stopTag, skip it
+//    NEDElement *start = (node && node->getTagCode()==stopTag) ? node->getNextSibling() : node;
+    for (NEDElement *rest=node; rest && rest->getTagCode()!=stopTag; rest=rest->getNextSibling())
+         if (rest->getTagCode()==searchTag)
+             return true;
+    return false;
+}
+
 void NED1Generator::doSubstParamGroup(NEDElement *node, const char *indent)
 {
     // node may be ParametersNode or ParamGroupNode
 
-    //FIXME print condition if exists
-    if (node->getFirstChildWithTag(NED_PARAM))
-        OUT << indent << "parameters:\n";
-
-    //indent = decreaseIndent(indent);
-    //OUT << indent << "parameters ";
-    //generateChildrenWithType(node, NED_CONDITION, increaseIndent(indent));
-    //OUT << ":\n";
+    // print "parameters:" if there's a parameter until the next paramgroup (or at all)
+    if (_hasSiblingBefore(node->getFirstChild(), NED_PARAM, NED_PARAM_GROUP))
+    {
+        // print "parameters" or "parameters if"
+        if (node->getFirstChildWithTag(NED_CONDITION)==NULL)
+        {
+            OUT << indent << "parameters:\n";
+        }
+        else
+        {
+            OUT << indent << "parameters ";
+            generateChildrenWithType(node, NED_CONDITION, increaseIndent(indent));
+            OUT << ":\n";
+        }
+    }
 
     for (NEDElement *child=node->getFirstChild(); child; child=child->getNextSibling())
     {
         int childTag = child->getTagCode();
-        if (childTag==NED_WHITESPACE)
+        if (childTag==NED_WHITESPACE || childTag==NED_CONDITION)
             ; //ignore
         else if (childTag==NED_PROPERTY)
             doProperty((PropertyNode *)child, increaseIndent(indent), false, NULL);
         else if (childTag==NED_PARAM)
-        {
-            bool isLast = child->getNextSiblingWithTag(NED_PARAM)==NULL && child->getNextSiblingWithTag(NED_PARAM_GROUP)==NULL;
-            doSubstParam((ParamNode *)child, increaseIndent(indent), isLast, NULL);
-        }
+            doSubstParam((ParamNode *)child, increaseIndent(indent), !_hasSiblingBefore(child->getNextSibling(), NED_PARAM, NED_PARAM_GROUP), NULL);
         else if (childTag==NED_PATTERN)
             errors->add(node, "patterns are " A_NED2_FEATURE);
         else if (childTag==NED_PARAM_GROUP)
         {
-            //if there is more NED_PARAM until the next NED_PARAM_GROUP or end, print "parameters:"
             doSubstParamGroup(child, indent);
+
+            // if there is more NED_PARAM until the next NED_PARAM_GROUP or end,
+            // print "parameters:" (to return to unconditional scope)
+            if (_hasSiblingBefore(child->getNextSibling(), NED_PARAM, NED_PARAM_GROUP))
+                OUT << indent << "parameters:\n";
         }
         else
             INTERNAL_ERROR0(node,"unexpected element");
