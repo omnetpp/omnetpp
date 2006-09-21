@@ -12,7 +12,7 @@ CFLAGS=$(CFLAGS) /DWIN32_DLL
 #
 COPTS=$(CFLAGS) -I. -I../common -I../../include /Fd"eventlog.pdb"
 
-OBJS= eventlog.obj eventlogindex.obj event.obj eventlogentry.obj eventlogentries.obj eventlogfilter.obj eventlogentryfactory.obj stringpool.obj
+OBJS= eventlog.obj eventlogindex.obj messagedependency.obj event.obj eventlogentry.obj eventlogentries.obj filteredevent.obj filteredeventlog.obj eventlogentryfactory.obj stringpool.obj
 LIBS= eventlog.lib ../common/common.lib
 
 #
@@ -54,29 +54,73 @@ clean:
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 event.obj: event.cc \
   event.h \
-  eventlogentry.h \
-  eventlogentryfactory.h
-eventlog.obj: eventlog.cc \
-  event.h \
   eventlog.h \
   eventlogentry.h \
+  eventlogentries.h \
+  messagedependency.h \
+  stringpool.h \
   eventlogindex.h \
-  eventlogfilter.h \
   eventlogdefs.h
-eventlogentry.obj: eventlogentry.cc \
+eventlog.obj: eventlog.cc \
+  stringpool.h \
+  eventlog.h \
+  eventlogdefs.h \
+  event.h \
+  eventlogindex.h \
+  eventlogentry.h \
+  eventlogentries.h \
+  messagedependency.h
+eventlogentries.obj: eventlogentries.cc \
+  eventlogentries.h \
   eventlogentry.h
-eventlogfilter.obj: eventlogfilter.cc \
-  eventlogfilter.h \
-  eventlogdefs.h
+eventlogentry.obj: eventlogentry.cc \
+  eventlog.h \
+  eventlogentry.h \
+  eventlogentryfactory.h \
+  stringpool.h \
+  event.h \
+  eventlogindex.h \
+  eventlogdefs.h \
+  eventlogentries.h \
+  messagedependency.h
+eventlogentryfactory.obj: eventlogentryfactory.cc \
+  eventlogentryfactory.h \
+  eventlogentries.h \
+  eventlogentry.h
 eventlogindex.obj: eventlogindex.cc \
   eventlogindex.h \
   eventlogdefs.h
 eventlogtool.obj: eventlogtool.cc \
-  eventlog.h \
   eventlogindex.h \
+  eventlog.h \
+  filteredeventlog.h \
+  eventlogdefs.h \
+  stringpool.h \
   event.h \
-  eventlogfilter.h \
   eventlogentry.h \
+  eventlogentries.h \
+  messagedependency.h \
+  filteredevent.h
+filteredevent.obj: filteredevent.cc
+filteredeventlog.obj: filteredeventlog.cc \
+  filteredeventlog.h \
+  eventlogdefs.h \
+  eventlog.h \
+  filteredevent.h \
+  stringpool.h \
+  event.h \
+  eventlogindex.h \
+  eventlogentry.h \
+  eventlogentries.h \
+  messagedependency.h
+messagedependency.obj: messagedependency.cc \
+  event.h \
+  eventlog.h \
+  eventlogentry.h \
+  messagedependency.h \
+  eventlogentries.h \
+  stringpool.h \
+  eventlogindex.h \
   eventlogdefs.h
 stringpool.obj: stringpool.cc \
   stringpool.h \

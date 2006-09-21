@@ -15,7 +15,7 @@
 #include "filereader.h"
 #include "eventlogindex.h"
 #include "eventlog.h"
-#include "eventlogfilter.h"
+#include "filteredeventlog.h"
 
 void printOffsets(int argc, char **argv)
 {
@@ -67,8 +67,8 @@ void filter(int argc, char **argv)
     
         FileReader fileReader(argv[2]);
         EventLog eventLog(&fileReader);
-        EventLogFilter eventLogFilter(&eventLog, NULL, traceEventNumber, true, true, fromEventNumber, toEventNumber);
-        eventLogFilter.print(stdout);
+        FilteredEventLog filteredEventLog(&eventLog, NULL, traceEventNumber, true, true, fromEventNumber, toEventNumber);
+        filteredEventLog.print(stdout);
 
         fprintf(stderr, "Number of events parsed: %d and number of lines read: %ld\n", Event::getNumParsedEvent(), FileReader::getNumReadLines());
     } catch (Exception *e) {

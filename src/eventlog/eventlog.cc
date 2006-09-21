@@ -96,7 +96,7 @@ void EventLog::print(FILE *file)
     printEvents(file);
 }
 
-Event *EventLog::getEvent(long eventNumber)
+Event *EventLog::getEventForEventNumber(long eventNumber)
 {
     if (eventNumber < 0)
     {
@@ -116,6 +116,21 @@ Event *EventLog::getEvent(long eventNumber)
         else
             return getEventForOffset(offset);
     }
+}
+
+Event *EventLog::getEventForSimulationTime(simtime_t simulationTime)
+{
+    if (simulationTime < 0)
+    {
+        throw new Exception("Simulation time must be >= 0, %d", simulationTime);
+    }
+
+    long offset = getOffsetForSimulationTime(simulationTime);
+
+    if (offset == -1)
+        return NULL;
+    else
+        return getEventForOffset(offset);
 }
 
 Event *EventLog::getEventForOffset(long offset)

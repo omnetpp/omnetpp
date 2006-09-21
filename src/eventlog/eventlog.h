@@ -54,7 +54,8 @@ class EventLog : public EventLogIndex
         void printEvents(FILE *file);
         void print(FILE *file);
 
-        Event *getEvent(long eventNumber);
+        Event *getEventForEventNumber(long eventNumber);
+        Event *getEventForSimulationTime(simtime_t simulationTime);
         Event *getEventForOffset(long offset);
 
     protected:
