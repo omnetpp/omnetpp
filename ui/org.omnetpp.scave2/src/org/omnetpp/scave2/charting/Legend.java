@@ -22,11 +22,28 @@ public class Legend {
 	static class Item {
 		String text;
 		Color color;
-		Rectangle rect; // rectangle of the item relative to the legend
+		int x, y;	// location relative to the legend top-left
+		int width, height;
 		
 		public Item(Color color, String text) {
 			this.color = color;
 			this.text = text;
+		}
+		
+		public void calculateSize(GC gc) {
+			Point size = gc.stringExtent(text);
+			width = size.x + 9; // place for mark
+			height = size.y;
+		}
+		
+		public void draw(GC gc, int x, int y) {
+			// draw oval
+			gc.setForeground(color);
+			gc.setBackground(color);
+			gc.fillOval(x + 2 , y + (height - 5) / 2, 5, 5);
+			// draw text
+			gc.setForeground(ColorFactory.asColor("black"));
+			gc.drawString(text, x + 9, y, true);
 		}
 	}
 	
@@ -35,8 +52,10 @@ public class Legend {
 	private Font font;
 	private LegendPosition position;
 	private LegendAnchor anchor;
-	private int hGap = 5;
-	private int vGap = 5;
+	private int horizontalSpacing = 5;
+	private int verticalSpacing = 5;
+	private int horizontalMargin = 5;
+	private int verticalMargin = 5;
 	private List<Item> items = new ArrayList<Item>();
 	private Rectangle bounds; // rectangle of the legend in canvas coordinates
 	
@@ -115,6 +134,10 @@ public class Legend {
 		if (font != null)
 			gc.setFont(font);
 		
+		// measure items
+		for (int i = 0; i < items.size(); ++i)
+			items.get(i).calculateSize(gc);
+		
 		// position items and calculate size
 		bounds = new Rectangle(0, 0, 0, 0);
 		int x = 0;
@@ -122,28 +145,24 @@ public class Legend {
 		boolean vertical = position == LegendPosition.Left || position == LegendPosition.Right;
 		for (int i = 0; i < items.size(); ++i) {
 			Item item = items.get(i);
-			
-			Point size = gc.stringExtent(item.text);
-			size.x += 10; // place for mark
-			
 			if (i > 0) {
 				if (vertical)
-					y += vGap;
+					y += verticalSpacing;
 				else
-					x += hGap;
+					x += horizontalSpacing;
 			}
-			
-			item.rect = new Rectangle(x, y, size.x, size.y);
+			item.x = x;
+			item.y = y;
 			
 			if (vertical) {
-				y += size.y;
-				bounds.width = Math.max(bounds.width, size.x);
+				y += item.height;
+				bounds.width = Math.max(bounds.width, item.width);
 				bounds.height = y;
 			}
 			else {
-				x += size.x;
+				x += item.width;
 				bounds.width  = x;
-				bounds.height = Math.max(bounds.height, size.y);
+				bounds.height = Math.max(bounds.height, item.height);
 			}
 		}
 		
@@ -171,23 +190,23 @@ public class Legend {
 		switch (position) {
 		case Above:
 			bounds.x = left + (parent.width - bounds.width) * (dx + 1) / 2;
-			bounds.y = top;
-			top = Math.min(top + bounds.height, bottom);
+			bounds.y = top + verticalMargin;
+			top = Math.min(top + bounds.height + 2 * verticalMargin, bottom);
 			break;
 		case Below:
 			bounds.x = left + (parent.width - bounds.width) * (dx + 1) / 2;
-			bounds.y = bottom - bounds.height;
-			bottom = Math.max(bottom - bounds.height, top);
+			bounds.y = bottom - verticalMargin - bounds.height;
+			bottom = Math.max(bottom - bounds.height - 2 * verticalMargin, top);
 			break;
 		case Left:
-			bounds.x = left;
+			bounds.x = left + horizontalMargin;
 			bounds.y = top + (parent.height - bounds.y) * (dy + 1) / 2;
-			left = Math.min(left + bounds.width, right);
+			left = Math.min(left + bounds.width + 2 * horizontalMargin, right);
 			break;
 		case Right:
-			bounds.x = right - bounds.width;
+			bounds.x = right - bounds.width - horizontalMargin;
 			bounds.y = top + (parent.height - bounds.height) * (dy + 1) / 2;
-			right = Math.max(right - bounds.width, left);
+			right = Math.max(right - bounds.width - 2 * horizontalMargin, left);
 			break;
 		case Inside:
 			bounds.x = left + (parent.width - bounds.width) * (dx + 1) / 2;
@@ -222,13 +241,7 @@ public class Legend {
 		int top = bounds.y;
 		for (int i = 0; i < items.size(); i++) {
 			Item item = items.get(i);
-			// draw oval
-			gc.setForeground(item.color);
-			gc.setBackground(item.color);
-			gc.fillOval(left+item.rect.x + 2 , top + item.rect.y + (item.rect.height - 5) / 2, 5, 5);
-			// draw text
-			gc.setForeground(ColorFactory.asColor("black"));
-			gc.drawString(item.text, left + 9 + item.rect.x, top + item.rect.y, true);
+			item.draw(gc, left+item.x, top + item.y);
 		}
 		gc.setFont(saveFont);
 	}

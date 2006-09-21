@@ -40,7 +40,6 @@ import org.omnetpp.common.util.Converter;
 import org.omnetpp.scave2.model.ChartProperties.BarPlacement;
 import org.omnetpp.scave2.model.ChartProperties.LegendAnchor;
 import org.omnetpp.scave2.model.ChartProperties.LegendPosition;
-import org.omnetpp.scave2.model.ChartProperties.ShowGrid;
 
 public class ScalarChart extends InteractiveChart {
 	
@@ -57,7 +56,7 @@ public class ScalarChart extends InteractiveChart {
 	private static final LegendAnchor DEFAULT_LEGEND_ANCHOR = LegendAnchor.North;
 	
 	private static final boolean DEFAULT_INVERT_XY = false;
-	private static final ShowGrid DEFAULT_SHOW_GRID = ShowGrid.None;
+	private static final boolean DEFAULT_SHOW_GRID = false;
 	private static final double DEFAULT_X_LABELS_ROTATED_BY = 0.0;
 	private static final boolean DEFAULT_Y_LOGARITHMIC = false;
 	
@@ -81,7 +80,7 @@ public class ScalarChart extends InteractiveChart {
 	private Double yMin;
 	private Double yMax;
 	private Boolean invertXY;
-	private ShowGrid gridVisible;
+	private Boolean gridVisible;
 	
 	public ScalarChart(Composite parent, int style) {
 		super(parent, style);
@@ -132,7 +131,7 @@ public class ScalarChart extends InteractiveChart {
 		else if (PROP_Y_AXIS_MAX.equals(name))
 			setYMax(Converter.stringToDouble(value));
 		else if (PROP_XY_GRID.equals(name))
-			setGridVisible(Converter.stringToEnum(value, ShowGrid.class));
+			setGridVisible(Converter.stringToBoolean(value));
 		else if (PROP_Y_AXIS_LOGARITHMIC.equals(name))
 			setYLogarithmic(Converter.stringToBoolean(value));
 	}
@@ -451,11 +450,11 @@ public class ScalarChart extends InteractiveChart {
 		}
 	}
 	
-	public ShowGrid getGridVisible() {
+	public Boolean getGridVisible() {
 		return gridVisible;
 	}
 	
-	public void setGridVisible(ShowGrid value) {
+	public void setGridVisible(Boolean value) {
 		if (value == null)
 			value = DEFAULT_SHOW_GRID;
 		
@@ -463,16 +462,13 @@ public class ScalarChart extends InteractiveChart {
 
 		if (chart != null) {
 			CategoryPlot plot = getPlot();
-			switch (value) {
-			case None:
-				plot.setDomainGridlinesVisible(false);
-				plot.setRangeGridlinesVisible(false);
-				break;
-			case AtMajorTicks:
-			case AtAllTicks:
+			if (gridVisible) {
 				plot.setDomainGridlinesVisible(true);
 				plot.setRangeGridlinesVisible(true);
-				break;
+			}
+			else {
+				plot.setDomainGridlinesVisible(false);
+				plot.setRangeGridlinesVisible(false);
 			}
 			scheduleRefresh();
 		}

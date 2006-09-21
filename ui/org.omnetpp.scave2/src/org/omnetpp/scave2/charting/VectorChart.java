@@ -31,13 +31,11 @@ import java.math.RoundingMode;
 
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.draw2d.Graphics;
-import org.eclipse.draw2d.SWTGraphics;
 import org.eclipse.draw2d.geometry.Insets;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.GC;
-import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Composite;
 import org.jfree.data.xy.XYDataset;
@@ -73,6 +71,8 @@ public class VectorChart extends ZoomableCachingCanvas {
 	private static final IChartSymbol DEFAULT_DEFAULT_SYMBOL = new SquareSymbol(3);
 	
 	private static final String DEFAULT_TITLE = "";
+	private static final String DEFAULT_X_TITLE = "";
+	private static final String DEFAULT_Y_TITLE = "";
 	private static final boolean DEFAULT_DISPLAY_LEGEND = false;
 	private static final boolean DEFAULT_LEGEND_BORDER = false;
 	private static final LegendPosition DEFAULT_LEGEND_POSITION = LegendPosition.Above;
@@ -86,23 +86,19 @@ public class VectorChart extends ZoomableCachingCanvas {
 		public void plot(XYDataset dataset, int series, Graphics graphics, VectorChart chart, IChartSymbol symbol) {}
 	};
 	
-	private XYDataset dataset;
+	private OutputVectorDataset dataset;
 	private IVectorPlotter defaultPlotter = DEFAULT_DEFAULT_PLOTTER;
 	private IChartSymbol defaultSymbol = DEFAULT_DEFAULT_SYMBOL;
 	private int antialias = SWT.ON; // SWT.ON, SWT.OFF, SWT.DEFAULT
 	private Color insetsBackgroundColor = DEFAULT_INSETS_BACKGROUND_COLOR;
 	private Color insetsLineColor = DEFAULT_INSETS_LINE_COLOR;
-	private Color tickLineColor = DEFAULT_TICK_LINE_COLOR;
-	private Color tickLabelColor = DEFAULT_TICK_LABEL_COLOR;
-	private int tickSpacing = DEFAULT_TICK_SPACING;
 	private boolean displaySymbols = true;
 	private boolean hideLines = false;
-	private Font labelFont;
 	
 	private Title title = new Title(DEFAULT_TITLE, null);
 	private Legend legend = new Legend(DEFAULT_DISPLAY_LEGEND, DEFAULT_LEGEND_BORDER, null, DEFAULT_LEGEND_POSITION, DEFAULT_LEGEND_ANCHOR);
-	
-	private Rectangle plotBounds;
+	private Axes axes = new Axes(DEFAULT_X_TITLE, DEFAULT_Y_TITLE, null);
+	private TickLabels tickLabels = new TickLabels(DEFAULT_TICK_LINE_COLOR, DEFAULT_TICK_LABEL_COLOR, null, DEFAULT_TICK_SPACING);
 	
 	private Runnable scheduledRedraw;
 
@@ -111,18 +107,18 @@ public class VectorChart extends ZoomableCachingCanvas {
 		super.setInsets(new Insets(18,40,18,40));
 	}
 	
-	public XYDataset getDataset() {
+	public OutputVectorDataset getDataset() {
 		return dataset;
 	}
 
-	public void setDataset(XYDataset dataset) {
+	public void setDataset(OutputVectorDataset dataset) {
 		this.dataset = dataset;
-		setLegend(dataset);
+		setLegend();
 		calculateArea();
 		scheduleRedraw();
 	}
 	
-	private void setLegend(XYDataset dataset) {
+	private void setLegend() {
 		legend.clearLegendItems();
 		for (int i = 0; i < dataset.getSeriesCount(); ++i) {
 			legend.addLegendItem(getLineColor(i), dataset.getSeriesKey(i).toString());
@@ -139,13 +135,13 @@ public class VectorChart extends ZoomableCachingCanvas {
 		else if (PROP_GRAPH_TITLE_FONT.equals(name))
 			setTitleFont(Converter.stringToSwtfont(value));
 		else if (PROP_X_AXIS_TITLE.equals(name))
-			;
+			setXAxisTitle(value);
 		else if (PROP_Y_AXIS_TITLE.equals(name))
-			;
+			setYAxisTitle(value);
 		else if (PROP_AXIS_TITLE_FONT.equals(name))
-			;
+			setAxisTitleFont(Converter.stringToSwtfont(value));
 		else if (PROP_LABEL_FONT.equals(name))
-			setLabelFont(Converter.stringToSwtfont(value));
+			setTickLabelFont(Converter.stringToSwtfont(value));
 		else if (PROP_X_LABELS_ROTATE_BY.equals(name))
 			;
 		// Axes
@@ -164,7 +160,7 @@ public class VectorChart extends ZoomableCachingCanvas {
 		else if (PROP_XY_INVERT.equals(name))
 			;
 		else if (PROP_XY_GRID.equals(name))
-			;
+			setGridVisibility(Converter.stringToBoolean(value));
 		// Lines
 		else if (PROP_DISPLAY_SYMBOLS.equals(name))
 			setDisplaySymbols(Converter.stringToBoolean(value));
@@ -201,6 +197,23 @@ public class VectorChart extends ZoomableCachingCanvas {
 			return;
 		title.setFont(value);
 		scheduleRedraw();
+	}
+	
+	public void setXAxisTitle(String value) {
+		axes.setXTitle(value != null ? value : DEFAULT_X_TITLE);
+		scheduleRedraw();
+	}
+	
+	public void setYAxisTitle(String value) {
+		axes.setYTitle(value != null ? value : DEFAULT_Y_TITLE);
+		scheduleRedraw();
+	}
+	
+	public void setAxisTitleFont(Font value) {
+		if (value != null) {
+			axes.setFont(value);
+			scheduleRedraw();
+		}
 	}
 
 	public IVectorPlotter getDefaultLineType() {
@@ -292,9 +305,14 @@ public class VectorChart extends ZoomableCachingCanvas {
 		scheduleRedraw();
 	}
 	
-	public void setLabelFont(Font font) {
+	public void setGridVisibility(Boolean value) {
+		tickLabels.setGridVisible(value != null ? value : false);
+		scheduleRedraw();
+	}
+	
+	public void setTickLabelFont(Font font) {
 		if (font != null)
-			labelFont = font;
+			tickLabels.setFont(font);
 		scheduleRedraw();
 	}
 	
@@ -376,22 +394,16 @@ public class VectorChart extends ZoomableCachingCanvas {
 	@Override
 	protected void beforePaint(GC gc) {
 		// Calculate space occupied by title and legend and set insets accordingly
-		plotBounds = title.layout(gc, gc.getClipping());
-		plotBounds = legend.layout(gc, plotBounds);
+		Rectangle remaining = title.layout(gc, gc.getClipping());
+		remaining = legend.layout(gc, remaining);
+		remaining = tickLabels.layout(gc, remaining);
+		remaining = axes.layout(gc, remaining);
 
-		Insets insets = calculateInsets(gc.getClipping(), plotBounds);
-		insets.add(new Insets(18, 40, 18, 40)); // extra insets for tick labels
+		Insets insets = calculateInsets(gc.getClipping(), remaining);
 		setInsets(insets);
 		super.beforePaint(gc);
 	}
 	
-	private static Insets calculateInsets(Rectangle outer, Rectangle inner) {
-		return new Insets(Math.max(inner.y - outer.y, 0),
-						  Math.max(inner.x - outer.x, 0),
-						  Math.max(outer.y + outer.height - inner.y - inner.height, 0),
-						  Math.max(outer.x + outer.width - inner.x - inner.width, 0));
-	}
-
 	@Override
 	protected void paintCachableLayer(Graphics graphics) {
 		graphics.setAntialias(antialias);
@@ -426,90 +438,10 @@ public class VectorChart extends ZoomableCachingCanvas {
 
 		title.draw(gc);
 		legend.draw(gc);
-		
-		drawAxesAndTicks(gc, plotBounds);
+		tickLabels.draw(gc);
+		axes.draw(gc);
 	}
-	
-	/**
-	 * @param graphics
-	 * @param area
-	 */
-	protected void drawAxesAndTicks(GC gc, Rectangle area) {
-		//draw X ticks
-		double startX = fromCanvasX(area.x + 40);
-		double endX = fromCanvasX(area.x + area.width - 40);
-		int tickScale = (int)Math.ceil(Math.log10(tickSpacing / getZoomX()));
-		BigDecimal tickSpacingX = BigDecimal.valueOf(tickSpacing / getZoomX());
-		BigDecimal tickStartX = new BigDecimal(startX).setScale(-tickScale, RoundingMode.FLOOR);
-		BigDecimal tickEndX = new BigDecimal(endX).setScale(-tickScale, RoundingMode.CEILING);
-		BigDecimal tickIntvlX = new BigDecimal(1).scaleByPowerOfTen(tickScale);
 
-		// use 2, 4, 6, 8, etc. if possible
-		if (tickIntvlX.divide(BigDecimal.valueOf(5)).compareTo(tickSpacingX) > 0)
-			tickIntvlX = tickIntvlX.divide(BigDecimal.valueOf(5));
-		// use 5, 10, 15, 20, etc. if possible
-		else if (tickIntvlX.divide(BigDecimal.valueOf(2)).compareTo(tickSpacingX) > 0)
-			tickIntvlX = tickIntvlX.divide(BigDecimal.valueOf(2));
-
-		if (labelFont != null) gc.setFont(labelFont);
-		for (BigDecimal t=tickStartX; t.compareTo(tickEndX)<0; t = t.add(tickIntvlX)) {
-			int x = toCanvasX(t.doubleValue());
-			gc.setLineStyle(SWT.LINE_DOT);
-			gc.setForeground(tickLineColor);
-			gc.drawLine(x, area.y, x, area.y + area.height);
-			gc.setForeground(tickLabelColor);
-			String str = t.toPlainString() + "s";
-			gc.setBackground(insetsBackgroundColor);
-			
-			gc.drawText(str, x + 3, area.y + 2);
-			gc.drawText(str, x + 3, area.y + area.height - 16);
-		}
-
-		// Y axis
-		// XXX don't draw if falls into gutter area
-		if (startX<=0 && endX>=0) {
-			gc.setLineStyle(SWT.LINE_SOLID);
-			gc.drawLine(toCanvasX(0), area.y, toCanvasX(0), area.y + area.height);
-		}
-		
-		//draw Y ticks
-		//XXX factor out common code with X axis ticks
-		double startY = fromCanvasY(area.y + area.height - 18);
-		double endY = fromCanvasY(area.y + 18);
-		int tickScaleY = (int)Math.ceil(Math.log10(tickSpacing / getZoomY()));
-		BigDecimal tickSpacingY = BigDecimal.valueOf(tickSpacing / getZoomY());
-		BigDecimal tickStartY = new BigDecimal(startY).setScale(-tickScaleY, RoundingMode.FLOOR);
-		BigDecimal tickEndY = new BigDecimal(endY).setScale(-tickScaleY, RoundingMode.CEILING);
-		BigDecimal tickIntvlY = new BigDecimal(1).scaleByPowerOfTen(tickScaleY);
-
-		// use 2, 4, 6, 8, etc. if possible
-		if (tickIntvlY.divide(BigDecimal.valueOf(5)).compareTo(tickSpacingY) > 0)
-			tickIntvlY = tickIntvlY.divide(BigDecimal.valueOf(5));
-		// use 5, 10, 15, 20, etc. if possible
-		else if (tickIntvlY.divide(BigDecimal.valueOf(2)).compareTo(tickSpacingY) > 0)
-			tickIntvlY = tickIntvlY.divide(BigDecimal.valueOf(2));
-
-		if(labelFont != null) gc.setFont(labelFont);
-		for (BigDecimal t=tickStartY; t.compareTo(tickEndY)<0; t = t.add(tickIntvlY)) {
-			int y = toCanvasY(t.doubleValue());
-			gc.setLineStyle(SWT.LINE_DOT);
-			gc.setForeground(tickLineColor);
-			gc.drawLine(area.x, y, area.x + area.width, y);
-			gc.setForeground(tickLabelColor);
-			String str = t.toPlainString() + "s";
-			gc.setBackground(insetsBackgroundColor);
-			gc.drawText(str, area.x + 2, y+3);
-			gc.drawText(str, area.x + area.width - 16, y+3);
-		}
-
-		// X axis
-		// XXX don't draw if falls into gutter area
-		if (startY<=0 && endY>=0) {
-			gc.setLineStyle(SWT.LINE_SOLID);
-			gc.drawLine(area.x, toCanvasY(0), area.x + area.width, toCanvasY(0));
-		}
-	}
-	
 	private void scheduleRedraw() {
 		if (scheduledRedraw == null) {
 			scheduledRedraw = new Runnable() {
@@ -519,6 +451,212 @@ public class VectorChart extends ZoomableCachingCanvas {
 				}
 			};
 			getDisplay().asyncExec(scheduledRedraw);
+		}
+	}
+	
+	private static Insets calculateInsets(Rectangle outer, Rectangle inner) {
+		return new Insets(Math.max(inner.y - outer.y, 0),
+						  Math.max(inner.x - outer.x, 0),
+						  Math.max(outer.y + outer.height - inner.y - inner.height, 0),
+						  Math.max(outer.x + outer.width - inner.x - inner.width, 0));
+	}
+	
+	private static Rectangle extractInsets(Rectangle rect, Insets insets) {
+		return new Rectangle(
+				rect.x + insets.left,
+				rect.y + insets.top,
+				rect.width - insets.getWidth(),
+				rect.height - insets.getHeight());
+	}
+	
+	class TickLabels {
+		private Color lineColor;
+		private Color labelColor;
+		private Font font;
+		private int spacing;
+		private boolean showGrid;
+		
+		private Rectangle bounds; // bounds of the plot (including ticks)
+		private Rectangle plotBounds; // bounds of the plot (without tick area)
+
+		public TickLabels(Color lineColor, Color labelColor, Font font, int spacing) {
+			this.lineColor = lineColor;
+			this.labelColor = labelColor;
+			this.font = font;
+			this.spacing = spacing;
+		}
+		
+		public Font getFont() {
+			return font;
+		}
+		
+		public void setFont(Font font) {
+			this.font = font;
+		}
+		
+		public boolean isGridVisible() {
+			return showGrid;
+		}
+		
+		public void setGridVisible(boolean visible) {
+			showGrid = visible;
+		}
+		
+		public Rectangle layout(GC gc, Rectangle constraint) {
+			Font saveFont = gc.getFont();
+			if (font != null)
+				gc.setFont(font);
+			
+			bounds = constraint;
+			int height = gc.getFontMetrics().getHeight();
+			Insets insets = new Insets(height + 4, 40, height + 4, 40);
+			plotBounds = extractInsets(constraint, insets);
+
+			gc.setFont(saveFont);
+			
+			return plotBounds;
+		}
+		
+		public void draw(GC gc) {
+			Font saveFont = gc.getFont();
+			if (font != null)
+				gc.setFont(font);
+			
+			//draw X ticks
+			BigDecimal tickStartX = getTickStart(fromCanvasX(plotBounds.x), getZoomX());
+			BigDecimal tickEndX = getTickEnd(fromCanvasX(plotBounds.x + plotBounds.width), getZoomX());
+			BigDecimal tickDeltaX = getTickDelta(getZoomX());
+
+			for (BigDecimal t=tickStartX; t.compareTo(tickEndX)<0; t = t.add(tickDeltaX)) {
+				int x = toCanvasX(t.doubleValue());
+				if (x < plotBounds.x || x > plotBounds.x + plotBounds.width)
+					continue;
+				if (showGrid) {
+					gc.setLineStyle(SWT.LINE_DOT);
+					gc.setForeground(lineColor);
+					gc.drawLine(x, plotBounds.y, x, plotBounds.y + plotBounds.height);
+				}
+				gc.setForeground(labelColor);
+				gc.setBackground(insetsBackgroundColor);
+				String str = t.toPlainString() + "s";
+				gc.drawText(str, x + 3, bounds.y + 2);
+				gc.drawText(str, x + 3, bounds.y + bounds.height - 16);
+			}
+
+			//draw Y ticks
+			//XXX factor out common code with X axis ticks
+			BigDecimal tickStartY = getTickStart(fromCanvasY(plotBounds.y + plotBounds.height), getZoomY());
+			BigDecimal tickEndY = getTickEnd(fromCanvasY(plotBounds.y), getZoomY());
+			BigDecimal tickDeltaY = getTickDelta(getZoomY());
+
+			for (BigDecimal t=tickStartY; t.compareTo(tickEndY)<0; t = t.add(tickDeltaY)) {
+				int y = toCanvasY(t.doubleValue());
+				if (y < plotBounds.y || y > plotBounds.y + plotBounds.height)
+					continue;
+				if (showGrid) {
+					gc.setLineStyle(SWT.LINE_DOT);
+					gc.setForeground(lineColor);
+					gc.drawLine(plotBounds.x, y, plotBounds.x + plotBounds.width, y);
+				}
+
+				gc.setForeground(labelColor);
+				gc.setBackground(insetsBackgroundColor);
+				String str = t.toPlainString();
+				gc.drawText(str, bounds.x + 2, y+3);
+				gc.drawText(str, bounds.x + bounds.width - 16, y+3);
+			}
+			
+			gc.setFont(saveFont);
+		}
+		
+		private BigDecimal getTickStart(double start, double zoom) {
+			int tickScale = (int)Math.ceil(Math.log10(spacing / zoom));
+			BigDecimal tickStart = new BigDecimal(start).setScale(-tickScale, RoundingMode.FLOOR);
+			return tickStart;
+		}
+		
+		private BigDecimal getTickEnd(double end, double zoom) {
+			int tickScale = (int)Math.ceil(Math.log10(spacing / zoom));
+			BigDecimal tickEnd = new BigDecimal(end).setScale(-tickScale, RoundingMode.CEILING);
+			return tickEnd;
+		}
+		
+		private BigDecimal getTickDelta(double zoom) {
+			int tickScale = (int)Math.ceil(Math.log10(spacing / zoom));
+			BigDecimal tickSpacing = BigDecimal.valueOf(spacing / zoom);
+			BigDecimal tickIntvl = new BigDecimal(1).scaleByPowerOfTen(tickScale);
+
+			// use 2, 4, 6, 8, etc. if possible
+			if (tickIntvl.divide(BigDecimal.valueOf(5)).compareTo(tickSpacing) > 0)
+				tickIntvl = tickIntvl.divide(BigDecimal.valueOf(5));
+			// use 5, 10, 15, 20, etc. if possible
+			else if (tickIntvl.divide(BigDecimal.valueOf(2)).compareTo(tickSpacing) > 0)
+				tickIntvl = tickIntvl.divide(BigDecimal.valueOf(2));
+			return tickIntvl;
+		}
+	}
+	
+	class Axes {
+		
+		private String xAxisTitle;
+		private String yAxisTitle;
+		private Font axisTitleFont;
+		
+		private Rectangle bounds;
+		
+		public Axes(String xTitle, String yTitle, Font font) {
+			this.xAxisTitle = xTitle;
+			this.yAxisTitle = yTitle;
+			this.axisTitleFont = font;
+		}
+		
+		public String getXTitle() {
+			return xAxisTitle;
+		}
+		
+		public void setXTitle(String title) {
+			xAxisTitle = title;
+		}
+		
+		public String getYTitle() {
+			return yAxisTitle;
+		}
+		
+		public void setYTitle(String title) {
+			yAxisTitle = title;
+		}
+		
+		public Font getFont() {
+			return axisTitleFont;
+		}
+		
+		public void setFont(Font font) {
+			this.axisTitleFont = font;
+		}
+		
+		public Rectangle layout(GC gc, Rectangle area) {
+			bounds = area;
+			return area;
+		}
+		
+		public void draw(GC gc) {
+			int left = bounds.x, top = bounds.y, right = bounds.x + bounds.width, bottom = bounds.y + bounds.height;
+
+			// X axis
+			double startY = fromCanvasY(bottom);
+			double endY = fromCanvasY(top);
+			if (startY<=0 && endY>=0) {
+				gc.setLineStyle(SWT.LINE_SOLID);
+				gc.drawLine(left, toCanvasY(0), right, toCanvasY(0));
+			}
+
+			// Y axis
+			double startX = fromCanvasX(left);
+			double endX = fromCanvasX(right);
+			if (startX<=0 && endX>=0) {
+				gc.setLineStyle(SWT.LINE_SOLID);
+				gc.drawLine(toCanvasX(0), top, toCanvasX(0), bottom);
+			}
 		}
 	}
 }

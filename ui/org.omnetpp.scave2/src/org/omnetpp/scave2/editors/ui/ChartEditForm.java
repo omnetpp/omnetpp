@@ -41,7 +41,6 @@ import org.omnetpp.scave2.model.ChartProperties;
 import org.omnetpp.scave2.model.ChartProperties.LegendAnchor;
 import org.omnetpp.scave2.model.ChartProperties.LegendPosition;
 import org.omnetpp.scave2.model.ChartProperties.LineStyle;
-import org.omnetpp.scave2.model.ChartProperties.ShowGrid;
 
 /**
  * Edit form of charts.
@@ -84,7 +83,7 @@ public class ChartEditForm implements IScaveObjectEditForm {
 	private Button xAxisLogCheckbox;
 	private Button yAxisLogCheckbox;
 	private Button invertAxesCheckbox;
-	private Button[] showGridRadios;
+	private Button showGridCheckbox;
 	
 	private CCombo applyToLinesCombo;
 	private Button displaySymbolsCheckbox;
@@ -168,7 +167,8 @@ public class ChartEditForm implements IScaveObjectEditForm {
 		xAxisLogCheckbox = createCheckboxField("logarithmic X axis", group);
 		yAxisLogCheckbox = createCheckboxField("logarithmic Y axis", group);
 		invertAxesCheckbox = createCheckboxField("invert X,Y", group);
-		showGridRadios = createRadioGroup("Grid", panel, 1, ShowGrid.class);
+		group = createGroup("Grid", panel, 1);
+		showGridCheckbox = createCheckboxField("show grid", group);
 		// Lines
 		panel = createTab("Lines", tabfolder, 1);
 		group = createGroup("Symbols", panel);
@@ -213,7 +213,7 @@ public class ChartEditForm implements IScaveObjectEditForm {
 
 	private Group createGroup(String text, Composite parent, int numOfColumns) {
 		Group group = new Group(parent, SWT.NONE);
-		group.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+		group.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
 		group.setLayout(new GridLayout(numOfColumns, false));
 		group.setText(text);
 		return group;
@@ -310,7 +310,7 @@ public class ChartEditForm implements IScaveObjectEditForm {
 		props.setProperty(PROP_X_AXIS_LOGARITHMIC, xAxisLogCheckbox.getSelection());
 		props.setProperty(PROP_Y_AXIS_LOGARITHMIC, yAxisLogCheckbox.getSelection());
 		props.setProperty(PROP_XY_INVERT, invertAxesCheckbox.getSelection());
-		props.setProperty(PROP_XY_GRID, getSelection(showGridRadios, ShowGrid.class));
+		props.setProperty(PROP_XY_GRID, showGridCheckbox.getSelection());
 		// Lines
 		props.setProperty(PROP_DISPLAY_SYMBOLS, displaySymbolsCheckbox.getSelection());
 		props.setProperty(PROP_SYMBOL_TYPE, symbolTypeCombo.getText()); // XXX
@@ -362,7 +362,7 @@ public class ChartEditForm implements IScaveObjectEditForm {
 		xAxisLogCheckbox.setSelection(props.getBooleanProperty(PROP_X_AXIS_LOGARITHMIC));
 		yAxisLogCheckbox.setSelection(props.getBooleanProperty(PROP_Y_AXIS_LOGARITHMIC));
 		invertAxesCheckbox.setSelection(props.getBooleanProperty(PROP_XY_INVERT));
-		setSelection(showGridRadios, props.getEnumProperty(PROP_XY_GRID, ShowGrid.class));
+		showGridCheckbox.setSelection(props.getBooleanProperty(PROP_XY_GRID));
 		// Lines
 		displaySymbolsCheckbox.setSelection(props.getBooleanProperty(PROP_DISPLAY_SYMBOLS));
 		setSelection(symbolTypeCombo, props.getEnumProperty(PROP_SYMBOL_TYPE, SymbolType.class));

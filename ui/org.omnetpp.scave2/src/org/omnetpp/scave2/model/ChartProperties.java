@@ -69,12 +69,6 @@ public class ChartProperties extends PropertySource {
 		PROP_LEGEND_POSITION	= "Legend.Position",
 		PROP_LEGEND_ANCHORING	= "Legend.Anchoring";
 
-	public enum ShowGrid {
-		None,
-		AtMajorTicks,
-		AtAllTicks,
-	}
-	
 	public enum SymbolType {
 		Cross,
 		Diamond,
@@ -189,34 +183,41 @@ public class ChartProperties extends PropertySource {
 	public boolean getYAxisLogarithmic() { return getBooleanProperty(PROP_Y_AXIS_LOGARITHMIC); }
 	public void setYAxisLogarithmic(boolean flag) { setProperty(PROP_Y_AXIS_LOGARITHMIC, flag); }
 	
-	@org.omnetpp.common.properties.Property(category="Axes",id=PROP_XY_INVERT)
+	@org.omnetpp.common.properties.Property(category="Axes",id=PROP_XY_INVERT,
+			displayName="invert x y")
 	public boolean getXYInvert() { return getBooleanProperty(PROP_XY_INVERT); }
 	public void setXYInvert(boolean flag) { setProperty(PROP_XY_INVERT, flag); }
 
-	@org.omnetpp.common.properties.Property(category="Axes",id=PROP_XY_GRID)
-	public ShowGrid getXYGrid() { return getEnumProperty(PROP_XY_GRID, ShowGrid.class); }
-	public void setXYGrid(ShowGrid showgrid) { setProperty(PROP_XY_GRID, showgrid); }
+	@org.omnetpp.common.properties.Property(category="Axes",id=PROP_XY_GRID,
+			displayName="grid")
+	public boolean getXYGrid() { return getBooleanProperty(PROP_XY_GRID); }
+	public void setXYGrid(boolean showgrid) { setProperty(PROP_XY_GRID, showgrid); }
 
 	/*======================================================================
 	 *                             Legend
 	 *======================================================================*/
-	@org.omnetpp.common.properties.Property(category="Legend",id=PROP_DISPLAY_LEGEND)
+	@org.omnetpp.common.properties.Property(category="Legend", id=PROP_DISPLAY_LEGEND,
+			displayName="display")
 	public boolean getDisplayLegend() { return getBooleanProperty(PROP_DISPLAY_LEGEND); }
 	public void setDisplayLegend(boolean flag) { setProperty(PROP_DISPLAY_LEGEND, flag); }
 	
-	@org.omnetpp.common.properties.Property(category="Legend",id=PROP_LEGEND_BORDER)
+	@org.omnetpp.common.properties.Property(category="Legend", id=PROP_LEGEND_BORDER,
+			displayName="border")
 	public boolean getLegendBorder() { return getBooleanProperty(PROP_LEGEND_BORDER); }
 	public void setLegendBorder(boolean flag) { setProperty(PROP_LEGEND_BORDER, flag); }
 	
-	@org.omnetpp.common.properties.Property(category="Legend",id=PROP_LEGEND_FONT)
+	@org.omnetpp.common.properties.Property(category="Legend", id=PROP_LEGEND_FONT,
+			displayName="font")
 	public FontData getLegendFont() { return getFontProperty(PROP_LEGEND_FONT); }
 	public void setLegendFont(FontData font) { setProperty(PROP_LEGEND_FONT, font); }
 	
-	@org.omnetpp.common.properties.Property(category="Legend",id=PROP_LEGEND_POSITION)
+	@org.omnetpp.common.properties.Property(category="Legend", id=PROP_LEGEND_POSITION,
+			displayName="position")
 	public LegendPosition getLegendPosition() { return getEnumProperty(PROP_LEGEND_POSITION, LegendPosition.class); }
 	public void setLegendPosition(LegendPosition position) { setProperty(PROP_LEGEND_POSITION, position); }
 	
-	@org.omnetpp.common.properties.Property(category="Legend",id=PROP_LEGEND_ANCHORING)
+	@org.omnetpp.common.properties.Property(category="Legend",id=PROP_LEGEND_ANCHORING,
+			displayName="anchor point")
 	public LegendAnchor getLegendAnchoring() { return getEnumProperty(PROP_LEGEND_ANCHORING, LegendAnchor.class); }
 	public void setLegendAnchoring(LegendAnchor anchoring) { setProperty(PROP_LEGEND_ANCHORING, anchoring); }
 

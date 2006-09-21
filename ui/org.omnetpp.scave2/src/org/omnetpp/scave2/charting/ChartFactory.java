@@ -29,6 +29,7 @@ import org.omnetpp.common.canvas.RubberbandSupport;
 import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engine.ScalarResult;
+import org.omnetpp.scave.engine.XYArray;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.Dataset;
 import org.omnetpp.scave.model.DatasetType;
@@ -70,7 +71,7 @@ public class ChartFactory {
 		JFreeChart jfreechart = createEmptyVectorJFreeChart(chart.getName(), "X", "Y");
 		interactiveChart.setChart(jfreechart);
 		// set chart data
-		XYDataset data = new OutputVectorDataset(DatasetManager.getDataFromDataset(manager, dataset, chart));
+		XYDataset data = createOutputVectorDataset(chart, dataset, manager);
 		jfreechart.getXYPlot().setDataset(data);
 		if (data.getSeriesCount() <= 5)
 			addLegend(jfreechart);
@@ -79,7 +80,7 @@ public class ChartFactory {
 	}
 
 	private static VectorChart createVectorChart2(Composite parent, Chart chart, Dataset dataset, ResultFileManager manager) {
-		XYDataset data = new OutputVectorDataset(DatasetManager.getDataFromDataset(manager, dataset, chart));
+		OutputVectorDataset data = createOutputVectorDataset(chart, dataset, manager);
 
 		final VectorChart vectorChart = new VectorChart(parent, SWT.DOUBLE_BUFFERED);
 		vectorChart.setLayoutData(new GridData(SWT.FILL,SWT.FILL,true,true));
@@ -177,5 +178,15 @@ public class ChartFactory {
 			if (chartProperties.isPropertySet(id))
 				chartView.setProperty(id, chartProperties.getStringProperty(id));
 		}
+	}
+	
+	private static OutputVectorDataset createOutputVectorDataset(Chart chart, Dataset dataset, ResultFileManager manager) {
+		XYArray[] dataValues = DatasetManager.getDataFromDataset(manager, dataset, chart);
+		IDList idlist = DatasetManager.getIDListFromDataset(manager, dataset, chart);
+		String[] dataNames = new String[(int)idlist.size()];
+		for (int i = 0; i < idlist.size(); ++i) {
+			dataNames[i] = manager.getItem(idlist.get(i)).getName();
+		}
+		return new OutputVectorDataset(dataNames, dataValues);
 	}
 }

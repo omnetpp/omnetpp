@@ -1,5 +1,6 @@
 package org.omnetpp.scave2.charting;
 
+import org.eclipse.core.runtime.Assert;
 import org.jfree.data.DomainOrder;
 import org.jfree.data.general.AbstractSeriesDataset;
 import org.jfree.data.xy.XYDataset;
@@ -10,42 +11,44 @@ public class OutputVectorDataset extends AbstractSeriesDataset implements XYData
 
 	private static final long serialVersionUID = -3852560945270511274L;
 
-	private XYArray[] array;
+	private String[] seriesKeys;
+	private XYArray[] seriesData;
 
-	public OutputVectorDataset(XYArray[] a) {
-		array = a;
+	public OutputVectorDataset(String[] seriesKeys, XYArray[] seriesData) {
+		Assert.isTrue(seriesKeys.length == seriesData.length);
+		this.seriesKeys = seriesKeys;
+		this.seriesData = seriesData;
 	}
 
 	public DomainOrder getDomainOrder() {
-        return DomainOrder.NONE;
+        return DomainOrder.ASCENDING;
 	}
 
-	public int getItemCount(int arg0) {
-		return array[arg0].length();
+	public int getItemCount(int series) {
+		return seriesData[series].length();
 	}
 
-	public Number getX(int arg0, int arg1) {
-		return new Double(array[arg0].getX(arg1));
+	public Number getX(int series, int item) {
+		return new Double(seriesData[series].getX(item));
 	}
 
-	public double getXValue(int arg0, int arg1) {
-		return array[arg0].getX(arg1);
+	public double getXValue(int series, int item) {
+		return seriesData[series].getX(item);
 	}
 
-	public Number getY(int arg0, int arg1) {
-		return new Double(array[arg0].getY(arg1));
+	public Number getY(int series, int item) {
+		return new Double(seriesData[series].getY(item));
 	}
 
-	public double getYValue(int arg0, int arg1) {
-		return array[arg0].getY(arg1);
+	public double getYValue(int series, int item) {
+		return seriesData[series].getY(item);
 	}
 
 	public int getSeriesCount() {
-		return array.length;
+		return seriesData.length;
 	}
 
-	public Comparable getSeriesKey(int arg0) {
-		return "series-"+arg0;
+	public Comparable getSeriesKey(int series) {
+		return seriesKeys[series];
 	}
-
 }

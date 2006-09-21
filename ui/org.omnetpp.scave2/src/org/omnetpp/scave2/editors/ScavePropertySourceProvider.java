@@ -24,9 +24,7 @@ public class ScavePropertySourceProvider implements IPropertySourceProvider {
 
 	public IPropertySource getPropertySource(Object object) {
 		IPropertySource propertySource;
-		if (object instanceof ChartSWTWrapper)
-			propertySource = new org.omnetpp.scave2.charting.ChartProperties((ChartSWTWrapper)object);
-		else if (object instanceof Chart)
+		if (object instanceof Chart)
 			propertySource = ChartProperties.createPropertySource((Chart)object);
 		else if (object instanceof PropertySource)
 			propertySource = (PropertySource)object;
