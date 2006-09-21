@@ -44,16 +44,70 @@ FilteredEvent *FilteredEvent::getCause()
     return NULL;
 }
 
-FilteredEvent::FilteredEventList *FilteredEvent::getCauses()
+Event::MessageDependencyList *FilteredEvent::getCauses()
 {
-    // TODO: this should be based on getCauses of our event
-    return NULL;
+    if (causes == NULL)
+    {
+        causes = new Event::MessageDependencyList();
+        getCauses(getEvent(), -1, 0);
+    }
+
+    return causes;
 }
 
-FilteredEvent::FilteredEventList *FilteredEvent::getConsequences()
+Event::MessageDependencyList *FilteredEvent::getCauses(Event *event, int consequenceMessageSendEntryNumber, int level)
 {
-    // TODO: this should be based on getConsequences of our event
-    return NULL;
+    Event::MessageDependencyList *eventCauses = event->getCauses();
+
+    for (Event::MessageDependencyList::iterator it = eventCauses->begin(); it != eventCauses->end(); it++)
+    {
+        MessageDependency *messageDependency = *it;
+        Event *causeEvent = messageDependency->getCauseEvent();
+
+        if (filteredEventLog->matchesFilter(causeEvent))
+            causes->push_back(new MessageDependency(filteredEventLog->getEventLog(),
+                causeEvent->getEventNumber(), getEventNumber(),
+                messageDependency->getCauseMessageSendEntryNumber(), consequenceMessageSendEntryNumber));
+        else if (level < filteredEventLog->getMaxCauseDepth())
+            getCauses(causeEvent,
+                consequenceMessageSendEntryNumber == -1 ? messageDependency->getConsequenceMessageSendEntryNumber() : consequenceMessageSendEntryNumber,
+                level + 1);
+    }
+
+    return causes;
+}
+
+Event::MessageDependencyList *FilteredEvent::getConsequences()
+{
+    if (consequences == NULL)
+    {
+        consequences = new Event::MessageDependencyList();
+        getConsequences(getEvent(), -1, 0);
+    }
+
+    return consequences;
+}
+
+Event::MessageDependencyList *FilteredEvent::getConsequences(Event *event, int causeMessageSendEntryNumber, int level)
+{
+    Event::MessageDependencyList *eventConsequences = event->getConsequences();
+
+    for (Event::MessageDependencyList::iterator it = eventConsequences->begin(); it != eventConsequences->end(); it++)
+    {
+        MessageDependency *messageDependency = *it;
+        Event *consequenceEvent = messageDependency->getConsequenceEvent();
+
+        if (filteredEventLog->matchesFilter(consequenceEvent))
+            consequences->push_back(new MessageDependency(filteredEventLog->getEventLog(),
+                getEventNumber(), consequenceEvent->getEventNumber(), 
+                causeMessageSendEntryNumber, messageDependency->getConsequenceMessageSendEntryNumber()));
+        else if (level < filteredEventLog->getMaxConsequenceDepth())
+            getConsequences(consequenceEvent,
+                causeMessageSendEntryNumber == -1 ? messageDependency->getCauseMessageSendEntryNumber() : causeMessageSendEntryNumber,
+                level + 1);
+    }
+
+    return consequences;
 }
 
 void FilteredEvent::linkFilteredEvents(FilteredEvent *previousFilteredEvent, FilteredEvent *nextFilteredEvent)

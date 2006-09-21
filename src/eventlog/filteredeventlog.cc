@@ -31,6 +31,8 @@ FilteredEventLog::FilteredEventLog(EventLog *eventLog,
     this->lastEventNumber = lastEventNumber;
     firstMatchingEventNumber = -1;
     lastMatchingEventNumber = -1;
+    maxCauseDepth = 10;
+    maxConsequenceDepth = 10;
 }
 
 FilteredEventLog::~FilteredEventLog()
@@ -119,9 +121,9 @@ bool FilteredEventLog::matchesDependency(Event *event)
 
 bool FilteredEventLog::consequencesEvent(Event *cause, Event *consequence)
 {
-    Event::MessageSendList *consequences = cause->getConsequences();
+    Event::MessageDependencyList *consequences = cause->getConsequences();
 
-    for (Event::MessageSendList::iterator it = consequences->begin(); it != consequences->end(); it++)
+    for (Event::MessageDependencyList::iterator it = consequences->begin(); it != consequences->end(); it++)
     {
         MessageDependency *messageDependency = *it;
         Event *consequenceEvent = messageDependency->getConsequenceEvent();
@@ -142,9 +144,9 @@ bool FilteredEventLog::consequencesEvent(Event *cause, Event *consequence)
 
 bool FilteredEventLog::causesEvent(Event *cause, Event *consequence)
 {
-    Event::MessageSendList *causes = consequence->getCauses();
+    Event::MessageDependencyList *causes = consequence->getCauses();
 
-    for (Event::MessageSendList::iterator it = causes->begin(); it != causes->end(); it++)
+    for (Event::MessageDependencyList::iterator it = causes->begin(); it != causes->end(); it++)
     {
         MessageDependency *messageDependency = *it;
         Event *causeEvent = messageDependency->getCauseEvent();

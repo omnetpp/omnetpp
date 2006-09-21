@@ -70,11 +70,11 @@ MessageSend *Event::getCause()
     return cause;
 }
 
-Event::MessageSendList *Event::getCauses()
+Event::MessageDependencyList *Event::getCauses()
 {
     if (causes == NULL)
     {
-        causes = new MessageSendList();
+        causes = new MessageDependencyList();
 
         if (getCause() != NULL)
             causes->push_back(getCause());
@@ -94,11 +94,11 @@ Event::MessageSendList *Event::getCauses()
     return causes;
 }
 
-Event::MessageSendList *Event::getConsequences()
+Event::MessageDependencyList *Event::getConsequences()
 {
     if (consequences == NULL)
     {
-        consequences = new MessageSendList();
+        consequences = new MessageDependencyList();
 
         for (int messageEntryNumber = 0; messageEntryNumber < eventLogEntries.size(); messageEntryNumber++)
         {

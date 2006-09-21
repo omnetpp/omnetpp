@@ -32,32 +32,28 @@ class FilteredEvent
 
         long eventNumber; // the corresponding event number
         long causeEventNumber; // the event number from which the message was sent that is being processed in this event
-        EventNumberList causeEventNumbers; // the arrival event of messages which we send in this event
-        EventNumberList consequenceEventNumbers; // a set of events which process messages sent in this event
+        Event::MessageDependencyList *causes;
+        Event::MessageDependencyList *consequences; // the message sends and arrivals from this event to another in the filtered set
 
         long previousFilteredEventNumber; // the event number of the previous matching filtered event or -1 if unknown
         long nextFilteredEventNumber; // the event number of the next matching filtered event or -1 if unknown
-
-        // the following fields are for the convenience of the GUI
-        double timelineCoordinate;
-        int64 cachedX;
-        int64 cachedY;
-        bool isExpandedInTree;
-        int tableRowIndex;
 
     public:
         FilteredEvent(FilteredEventLog *filteredEventLog, long eventNumber);
         static void linkFilteredEvents(FilteredEvent *previousFilteredEvent, FilteredEvent *nextFilteredEvent);
 
-    public:
         Event *getEvent();
         long getEventNumber() { return eventNumber; };
         long getPreviousFilteredEventNumber() { return previousFilteredEventNumber; };
         long getNextFilteredEventNumber() { return nextFilteredEventNumber; };
 
         FilteredEvent *getCause();
-        FilteredEventList *getCauses(); // the returned FilteredEventList must be deleted
-        FilteredEventList *getConsequences(); // the returned FilteredEventList must be deleted
+        Event::MessageDependencyList *getCauses(); // the returned FilteredEventList must be deleted
+        Event::MessageDependencyList *getConsequences(); // the returned FilteredEventList must be deleted
+
+    protected:
+        Event::MessageDependencyList *getCauses(Event *event, int consequenceMessageSendEntryNumber, int level);
+        Event::MessageDependencyList *getConsequences(Event *event, int causeMessageSendEntryNumber, int level);
 };
 
 #endif

@@ -30,6 +30,8 @@ class FilteredEventLog
         std::set<int> *includeModuleIds; // events outside these modules will be filtered out, NULL means include all
         bool includeCauses; // only when tracedEventNumber is given, includes events which cause the traced event even if through a chain of filtered events
         bool includeConsequences; // only when tracedEventNumber is given
+        int maxCauseDepth; // maximum numbef message dependencies considered when collecting causes
+        int maxConsequenceDepth; // maximum numbef message dependencies considered when collecting consequences
 
         typedef std::map<long, FilteredEvent *> EventNumberToFilteredEventMap;
         EventNumberToFilteredEventMap eventNumberToFilteredEventMap;
@@ -53,6 +55,8 @@ class FilteredEventLog
     public:
         EventLog *getEventLog() { return eventLog; };
         FilteredEvent* getFilteredEvent(long eventNumber);
+        int getMaxCauseDepth() { return maxCauseDepth; };
+        int getMaxConsequenceDepth() { return maxConsequenceDepth; };
 
         FilteredEvent* getFirstFilteredEvent();
         FilteredEvent* getLastFilteredEvent();

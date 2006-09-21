@@ -28,7 +28,7 @@
 class Event
 {
     public:
-        typedef std::vector<MessageDependency *> MessageSendList;
+        typedef std::vector<MessageDependency *> MessageDependencyList;
         typedef std::vector<Event *> EventList;
 
     protected:
@@ -41,8 +41,8 @@ class Event
         EventLogEntryList eventLogEntries; // all entries parsed from the file
 
         MessageSend *cause; // the message send which is processed in this event
-        MessageSendList *causes; // the arrival message sends of messages which we send in this event
-        MessageSendList *consequences; // message sends in this event
+        MessageDependencyList *causes; // the arrival message sends of messages which we send in this event
+        MessageDependencyList *consequences; // message sends in this event
 
         static long numParsedEvent; // the number of events parsed so far
 
@@ -63,8 +63,8 @@ class Event
 
         Event *getCauseEvent();
         MessageSend *getCause();
-        MessageSendList *getCauses(); // the returned EventList must be deleted
-        MessageSendList *getConsequences(); // the returned EventList must be deleted
+        MessageDependencyList *getCauses(); // the returned EventList must be deleted
+        MessageDependencyList *getConsequences(); // the returned EventList must be deleted
 
         long parse(FileReader *index, long offset);
         static long getNumParsedEvent() { return numParsedEvent; };
