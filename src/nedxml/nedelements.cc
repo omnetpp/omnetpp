@@ -506,23 +506,26 @@ WhitespaceNode *InterfaceNameNode::getFirstWhitespaceChild() const
 
 SimpleModuleNode::SimpleModuleNode()
 {
+    isNetwork = false;
     applyDefaults();
 }
 
 SimpleModuleNode::SimpleModuleNode(NEDElement *parent) : NEDElement(parent)
 {
+    isNetwork = false;
     applyDefaults();
 }
 
 int SimpleModuleNode::getNumAttributes() const
 {
-    return 1;
+    return 2;
 }
 
 const char *SimpleModuleNode::getAttributeName(int k) const
 {
     switch (k) {
         case 0: return "name";
+        case 1: return "is-network";
         default: return 0;
     }
 }
@@ -531,6 +534,7 @@ const char *SimpleModuleNode::getAttribute(int k) const
 {
     switch (k) {
         case 0: return name.c_str();
+        case 1: return boolToString(isNetwork);
         default: return 0;
     }
 }
@@ -539,6 +543,7 @@ void SimpleModuleNode::setAttribute(int k, const char *val)
 {
     switch (k) {
         case 0: name = val; break;
+        case 1: isNetwork = stringToBool(val); break;
         default: ;
     }
 }
@@ -547,6 +552,7 @@ const char *SimpleModuleNode::getAttributeDefault(int k) const
 {
     switch (k) {
         case 0: return NULL;
+        case 1: return "false";
         default: return 0;
     }
 }

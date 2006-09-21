@@ -41,7 +41,8 @@
 
 <!ELEMENT simple-module (whitespace*, extends?, interface-name*, parameters?, gates?)>
 <!ATTLIST simple-module
-     name               NMTOKEN   #REQUIRED>
+     name               NMTOKEN   #REQUIRED
+     is-network         (true|false) "false">
 
 <!ELEMENT module-interface (whitespace*, extends*, parameters?, gates?)>
 <!ATTLIST module-interface

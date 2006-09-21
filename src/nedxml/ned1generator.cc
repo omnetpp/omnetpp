@@ -138,8 +138,22 @@ void NED1Generator::generateChildrenWithTypes(NEDElement *node, int tagcodes[], 
 
 void NED1Generator::printInheritance(NEDElement *node, const char *indent)
 {
-    if (node->getFirstChildWithTag(NED_EXTENDS) || node->getFirstChildWithTag(NED_INTERFACE_NAME))
+    // for network...endnetwork, print " : type", otherwise warn for any "extends" or "like"
+    if ((node->getTagCode()==NED_COMPOUND_MODULE && ((CompoundModuleNode *)node)->getIsNetwork())
+     || (node->getTagCode()==NED_SIMPLE_MODULE && ((SimpleModuleNode *)node)->getIsNetwork()))
+    {
+        if (node->getNumChildrenWithTag(NED_INTERFACE_NAME)>0)
+            errors->add(node, "inheritance is " A_NED2_FEATURE);
+        NEDElement *extendsNode = node->getFirstChildWithTag(NED_EXTENDS);
+        if (!extendsNode)
+            errors->add(node, "network must extend a module type");
+        else
+            OUT << " : " << ((ExtendsNode *)extendsNode)->getName();
+    }
+    else if (node->getFirstChildWithTag(NED_EXTENDS) || node->getFirstChildWithTag(NED_INTERFACE_NAME))
+    {
         errors->add(node, "inheritance is " A_NED2_FEATURE);
+    }
 }
 
 bool NED1Generator::hasExpression(NEDElement *node, const char *attr)
@@ -285,7 +299,7 @@ void NED1Generator::doCompoundModule(CompoundModuleNode *node, const char *inden
     generateChildrenWithType(node, NED_SUBMODULES, increaseIndent(indent));
     generateChildrenWithType(node, NED_CONNECTIONS, increaseIndent(indent));
 
-    OUT << indent << "endmodule\n\n";
+    OUT << indent << (node->getIsNetwork() ? "endnetwork" : "endmodule") << "\n\n";
 }
 
 void NED1Generator::doChannelInterface(ChannelInterfaceNode *node, const char *indent, bool islast, const char *)

@@ -483,7 +483,8 @@ class InterfaceNameNode : public NEDElement
  * <pre>
  * <!ELEMENT simple-module (whitespace*, extends?, interface-name*, parameters?, gates?)>
  * <!ATTLIST simple-module
- *      name               NMTOKEN   #REQUIRED>
+ *      name               NMTOKEN   #REQUIRED
+ *      is-network         (true|false) "false">
  * </pre>
  * 
  * @ingroup Data
@@ -492,6 +493,7 @@ class SimpleModuleNode : public NEDElement
 {
   private:
     std::string name;
+    bool isNetwork;
   public:
     /** @name Constructors, destructor */
     //@{
@@ -515,6 +517,8 @@ class SimpleModuleNode : public NEDElement
     //@{
     const char * getName() const  {return name.c_str();}
     void setName(const char * val)  {name = val;}
+    bool getIsNetwork() const  {return isNetwork;}
+    void setIsNetwork(bool val)  {isNetwork = val;}
 
     virtual SimpleModuleNode *getNextSimpleModuleNodeSibling() const;
     virtual WhitespaceNode *getFirstWhitespaceChild() const;

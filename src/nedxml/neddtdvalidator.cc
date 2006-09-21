@@ -97,6 +97,8 @@ void NEDDTDValidator::validateElement(SimpleModuleNode *node)
 
     checkRequiredAttribute(node, "name");
     checkNameAttribute(node, "name");
+    const char *vals1[] = {"true","false"};
+    checkEnumeratedAttribute(node, "is-network", vals1, sizeof(vals1)/sizeof(const char *));
 }
 
 void NEDDTDValidator::validateElement(ModuleInterfaceNode *node)
