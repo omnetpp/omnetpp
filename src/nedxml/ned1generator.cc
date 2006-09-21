@@ -329,17 +329,15 @@ void NED1Generator::doModuleParameters(ParametersNode *node, const char *indent)
     if (node->getFirstChildWithTag(NED_PARAM))
         OUT << indent << "parameters:\n";
 
-    NEDElement *lastParamChild = ...;
     for (NEDElement *child=node->getFirstChild(); child; child=child->getNextSibling())
     {
         int childTag = child->getTagCode();
-        bool isLast = child==lastParamChild;
         if (childTag==NED_WHITESPACE)
             ; // ignore whitespace
         else if (childTag==NED_PROPERTY)
             doProperty((PropertyNode *)child, increaseIndent(indent), false, NULL);
         else if (childTag==NED_PARAM)
-            doModuleParam((ParamNode *)child, increaseIndent(indent), isLast, NULL);
+            doModuleParam((ParamNode *)child, increaseIndent(indent), child->getNextSiblingWithTag(NED_PARAM)==NULL, NULL);
         else if (childTag==NED_PATTERN || childTag==NED_PARAM_GROUP)
             errors->add(node, "patterns and parameter groups are " A_NED2_FEATURE);
         else
@@ -370,19 +368,21 @@ void NED1Generator::doSubstParamGroup(NEDElement *node, const char *indent)
     for (NEDElement *child=node->getFirstChild(); child; child=child->getNextSibling())
     {
         int childTag = child->getTagCode();
-        bool isLast = child==node->getLastChild();
         if (childTag==NED_WHITESPACE)
             ; //ignore
         else if (childTag==NED_PROPERTY)
             doProperty((PropertyNode *)child, increaseIndent(indent), false, NULL);
         else if (childTag==NED_PARAM)
+        {
+            bool isLast = child->getNextSiblingWithTag(NED_PARAM)==NULL && child->getNextSiblingWithTag(NED_PARAM_GROUP)==NULL;
             doSubstParam((ParamNode *)child, increaseIndent(indent), isLast, NULL);
+        }
         else if (childTag==NED_PATTERN)
             errors->add(node, "patterns are " A_NED2_FEATURE);
         else if (childTag==NED_PARAM_GROUP)
         {
-            doSubstParamGroup(child, indent);
             //if there is more NED_PARAM until the next NED_PARAM_GROUP or end, print "parameters:"
+            doSubstParamGroup(child, indent);
         }
         else
             INTERNAL_ERROR0(node,"unexpected element");
