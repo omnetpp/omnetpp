@@ -117,7 +117,7 @@ NEDElement *NEDParser::parseNED()
     if (guessIsNEDInNewSyntax(nedsource->getFullText()))
         return ::doParseNED2(this, nedsource->getFullText());
     else
-        return ::doParseNED(this, nedsource->getFullText());
+        return ::doParseNED1(this, nedsource->getFullText());
 }
 
 NEDElement *NEDParser::parseMSG()

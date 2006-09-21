@@ -41,14 +41,14 @@ S  [ \t\v\n\r\f]
 #include "nedyydefs.h"
 #include "ned1.tab.h"
 
-#define yylloc nedyylloc
+#define yylloc ned1yylloc
 extern YYSTYPE yylval;
 extern YYLTYPE yylloc;
 
 // wrap symbols to allow several .lex files coexist
-#define comment     nedcomment
-#define count       nedcount
-#define extendCount nedextendCount
+#define comment     ned1comment
+#define count       ned1count
+#define extendCount ned1extendCount
 
 void comment(void);
 void count(void);

@@ -40,7 +40,7 @@ typedef struct {int li; int co;} LineColumn;
 extern LineColumn pos, prevpos;
 
 NEDElement *doParseNED2(NEDParser *p, const char *nedtext);
-NEDElement *doParseNED(NEDParser *p, const char *nedtext);
+NEDElement *doParseNED1(NEDParser *p, const char *nedtext);
 NEDElement *doParseMSG2(NEDParser *p, const char *nedtext);
 
 

@@ -25,7 +25,6 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-
 %token INCLUDE SIMPLE
 %token CHANNEL /*DELAY ERROR DATARATE are no longer tokens*/
 %token MODULE PARAMETERS GATES GATESIZES SUBMODULES CONNECTIONS DISPLAY
@@ -96,12 +95,12 @@
 #include <string.h>         /* YYVERBOSE needs it */
 #endif
 
-#define yylloc nedyylloc
-#define yyin nedyyin
-#define yyout nedyyout
-#define yyrestart nedyyrestart
-#define yy_scan_string nedyy_scan_string
-#define yy_delete_buffer nedyy_delete_buffer
+#define yylloc ned1yylloc
+#define yyin ned1yyin
+#define yyout ned1yyout
+#define yyrestart ned1yyrestart
+#define yy_scan_string ned1yy_scan_string
+#define yy_delete_buffer ned1yy_delete_buffer
 extern FILE *yyin;
 extern FILE *yyout;
 struct yy_buffer_state;
@@ -117,7 +116,7 @@ void yyerror (const char *s);
 #include "nedutil.h"
 #include "nedyylib.h"
 
-static struct NEDParserState
+static struct NED1ParserState
 {
     bool inLoop;
     bool inNetwork;
@@ -159,7 +158,7 @@ static struct NEDParserState
 
 static void resetParserState()
 {
-    static NEDParserState cleanps;
+    static NED1ParserState cleanps;
     ps = cleanps;
 }
 
