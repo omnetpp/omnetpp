@@ -146,13 +146,13 @@ Event *EventLog::getEventForOffset(long offset)
     {
         Event *event = new Event(this);
         event->parse(reader, offset);
-        cacheEvent(event);
-        return event;
+        return cacheEvent(event);
     }
 }
 
-void EventLog::cacheEvent(Event *event)
+Event *EventLog::cacheEvent(Event *event)
 {
     eventNumberToEventMap[event->getEventNumber()] = event;
     offsetToEventMap[event->getBeginOffset()] = event;
+    return event;
 }

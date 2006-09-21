@@ -15,16 +15,14 @@
 #ifndef __FILTEREDEVENT_H_
 #define __FILTEREDEVENT_H_
 
-#include <deque>
+#include <vector>
 #include "eventlogdefs.h"
-#include "filteredeventlog.h"
+#include "event.h"
 
 class FilteredEventLog;
 
 class FilteredEvent
 {
-    friend FilteredEventLog;
-
     public:
         typedef std::vector<FilteredEvent *> FilteredEventList;
         typedef std::vector<long> EventNumberList;
@@ -37,8 +35,8 @@ class FilteredEvent
         EventNumberList causeEventNumbers; // the arrival event of messages which we send in this event
         EventNumberList consequenceEventNumbers; // a set of events which process messages sent in this event
 
-        long nextFilteredEventNumber; // the event number of the next matching filtered event or -1 if unknown
         long previousFilteredEventNumber; // the event number of the previous matching filtered event or -1 if unknown
+        long nextFilteredEventNumber; // the event number of the next matching filtered event or -1 if unknown
 
         // the following fields are for the convenience of the GUI
         double timelineCoordinate;
@@ -49,10 +47,13 @@ class FilteredEvent
 
     public:
         FilteredEvent(FilteredEventLog *filteredEventLog, long eventNumber);
+        static void linkFilteredEvents(FilteredEvent *previousFilteredEvent, FilteredEvent *nextFilteredEvent);
 
     public:
-        long getEventNumber() { return eventNumber; };
         Event *getEvent();
+        long getEventNumber() { return eventNumber; };
+        long getPreviousFilteredEventNumber() { return previousFilteredEventNumber; };
+        long getNextFilteredEventNumber() { return nextFilteredEventNumber; };
 
         FilteredEvent *getCause();
         FilteredEventList *getCauses(); // the returned FilteredEventList must be deleted

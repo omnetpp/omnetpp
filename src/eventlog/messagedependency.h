@@ -30,10 +30,13 @@ class MessageDependency
         EventLog *eventLog;
         long causeEventNumber;
         long consequenceEventNumber;
-        int messageSendEntryNumber;
+        int causeMessageSendEntryNumber;
+        int consequenceMessageSendEntryNumber;
 
     public:
-        MessageDependency(EventLog *eventLog, long causeEventNumber, long consequenceEventNumber, int messageSendEntryNumber);
+        MessageDependency(EventLog *eventLog,
+            long causeEventNumber, long consequenceEventNumber,
+            int causeMessageSendEntryNumber, int consequenceMessageSendEntryNumber);
 
         long getCauseEventNumber();
         Event *getCauseEvent();
@@ -41,13 +44,17 @@ class MessageDependency
         long getConsequenceEventNumber();
         Event *getConsequenceEvent();
 
-        long getMessageSendEntryNumber() { return messageSendEntryNumber; };
-        EventLogEntry *getMessageSendEntry();
+        long getCauseMessageSendEntryNumber() { return causeMessageSendEntryNumber; };
+        EventLogEntry *getCauseMessageSendEntry();
+
+        long getConsequenceMessageSendEntryNumber() { return consequenceMessageSendEntryNumber; };
+        EventLogEntry *getConsequenceMessageSendEntry();
 
         simtime_t getCauseTime();
         simtime_t getConsequenceTime();
 
-        long getMessageId() { return getMessageSendEntry()->getMessageId(); };
+        long getCauseMessageId() { return getCauseMessageSendEntry()->getMessageId(); };
+        long getConsequenceMessageId() { return getConsequenceMessageSendEntry()->getMessageId(); };
 };
 
 class MessageReuse : public MessageDependency

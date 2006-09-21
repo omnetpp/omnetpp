@@ -59,7 +59,7 @@ class EventLog : public EventLogIndex
         Event *getEventForOffset(long offset);
 
     protected:
-        void cacheEvent(Event *event);
+        Event *cacheEvent(Event *event);
 };
 
 #endif

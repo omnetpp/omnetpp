@@ -22,8 +22,6 @@
 
 class FilteredEventLog
 {
-    friend FilteredEvent;
-
     protected:
         EventLog *eventLog;
         long tracedEventNumber; // the event number from which causes and consequences are followed or -1
@@ -53,6 +51,9 @@ class FilteredEventLog
         ~FilteredEventLog();
 
     public:
+        EventLog *getEventLog() { return eventLog; };
+        FilteredEvent* getFilteredEvent(long eventNumber);
+
         FilteredEvent* getFirstFilteredEvent();
         FilteredEvent* getLastFilteredEvent();
         FilteredEvent* getNextFilteredEvent(FilteredEvent *filteredEvent);
@@ -60,17 +61,17 @@ class FilteredEventLog
         FilteredEvent* getNextFilteredEvent(long eventNumber);
         FilteredEvent* getPreviousFilteredEvent(long eventNumber);
 
+        bool matchesFilter(Event *event);
         void print(FILE *file, long fromEventNumber = -1, long toEventNumber = -1);
 
     protected:
-        FilteredEvent* cacheFilteredEvent(long eventNumber);
+        FilteredEvent *cacheFilteredEvent(long eventNumber);
+        FilteredEvent *cacheFilteredEvent(FilteredEvent *filteredEvent);
         FilteredEvent* getFilteredEventInDirection(long filteredEventNumber, long eventNumber, bool forward);
-        bool matchesFilter(Event *event);
         bool matchesEvent(Event *event);
         bool matchesDependency(Event *event);
         bool consequencesEvent(Event *cause, Event *consequence);
         bool causesEvent(Event *cause, Event *consequence);
-        void linkFilteredEvents(FilteredEvent *previousFilteredEvent, FilteredEvent *nextFilteredEvent);
 };
 
 #endif

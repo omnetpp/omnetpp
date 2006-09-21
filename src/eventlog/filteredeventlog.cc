@@ -1,5 +1,5 @@
 //=========================================================================
-//  EVENTLOGFILTER.CC - part of
+//  FILTEREDEVENTLOG.CC - part of
 //                  OMNeT++/OMNEST
 //           Discrete System Simulation in C++
 //
@@ -13,50 +13,6 @@
 *--------------------------------------------------------------*/
 
 #include "filteredeventlog.h"
-
-FilteredEvent::FilteredEvent(FilteredEventLog *filteredEventLog, long eventNumber)
-{
-    this->eventNumber = eventNumber;
-    this->filteredEventLog = filteredEventLog;
-    causeEventNumber = -1;
-    nextFilteredEventNumber = -1;
-    previousFilteredEventNumber = -1;
-}
-
-Event *FilteredEvent::getEvent()
-{
-    return filteredEventLog->eventLog->getEventForEventNumber(eventNumber);
-}
-
-
-FilteredEvent *FilteredEvent::getCause()
-{
-    Event *cause = getEvent()->getCauseEvent();
-
-    while (cause)
-    {
-        if (filteredEventLog->matchesFilter(cause))
-            return filteredEventLog->cacheFilteredEvent(cause->getEventNumber());
-
-        cause = cause->getCauseEvent();
-    }
-
-    return NULL;
-}
-
-FilteredEvent::FilteredEventList *FilteredEvent::getCauses()
-{
-    // TODO: this should be based on getCauses of our event
-    return NULL;
-}
-
-FilteredEvent::FilteredEventList *FilteredEvent::getConsequences()
-{
-    // TODO: this should be based on getConsequences of our event
-    return NULL;
-}
-
-/**************************************************/
 
 FilteredEventLog::FilteredEventLog(EventLog *eventLog,
                                std::set<int> *includeModuleIds,
@@ -96,6 +52,23 @@ void FilteredEventLog::print(FILE *file, long fromEventNumber, long toEventNumbe
     {
         filteredEvent->getEvent()->print(file);
         filteredEvent = getNextFilteredEvent(filteredEvent);
+    }
+}
+
+FilteredEvent* FilteredEventLog::getFilteredEvent(long eventNumber)
+{
+    EventNumberToFilteredEventMap::iterator it = eventNumberToFilteredEventMap.find(eventNumber);
+
+    if (it != eventNumberToFilteredEventMap.end())
+        return it->second;
+    else
+    {
+        Event *event = eventLog->getEventForEventNumber(eventNumber);
+
+        if (event != NULL && matchesFilter(event))
+            return cacheFilteredEvent(eventNumber);
+        else
+            return NULL;
     }
 }
 
@@ -227,7 +200,7 @@ FilteredEvent* FilteredEventLog::getFirstFilteredEvent()
     FilteredEvent *firstMatchingFilteredEvent = getFilteredEventInDirection(firstMatchingEventNumber, startEventNumber, true);
 
     if (firstMatchingFilteredEvent != NULL)
-        firstMatchingEventNumber = firstMatchingFilteredEvent->eventNumber;
+        firstMatchingEventNumber = firstMatchingFilteredEvent->getEventNumber();
 
 
     return firstMatchingFilteredEvent;
@@ -239,27 +212,27 @@ FilteredEvent* FilteredEventLog::getLastFilteredEvent()
     FilteredEvent *lastMatchingFilteredEvent = getFilteredEventInDirection(lastMatchingEventNumber, startEventNumber, false);
 
     if (lastMatchingFilteredEvent != NULL)
-        lastMatchingEventNumber = lastMatchingFilteredEvent->eventNumber;
+        lastMatchingEventNumber = lastMatchingFilteredEvent->getEventNumber();
 
     return lastMatchingFilteredEvent;
 }
 
 FilteredEvent* FilteredEventLog::getNextFilteredEvent(FilteredEvent *filteredEvent)
 {
-    FilteredEvent *nextFilteredEvent = getFilteredEventInDirection(filteredEvent->nextFilteredEventNumber, filteredEvent->eventNumber + 1, true);
+    FilteredEvent *nextFilteredEvent = getFilteredEventInDirection(filteredEvent->getNextFilteredEventNumber(), filteredEvent->getEventNumber() + 1, true);
 
     if (nextFilteredEvent != NULL)
-        linkFilteredEvents(filteredEvent, nextFilteredEvent);
+        FilteredEvent::linkFilteredEvents(filteredEvent, nextFilteredEvent);
 
     return nextFilteredEvent;
 }
 
 FilteredEvent* FilteredEventLog::getPreviousFilteredEvent(FilteredEvent *filteredEvent)
 {
-    FilteredEvent *previousFilteredEvent = getFilteredEventInDirection(filteredEvent->previousFilteredEventNumber, filteredEvent->eventNumber - 1, false);
+    FilteredEvent *previousFilteredEvent = getFilteredEventInDirection(filteredEvent->getPreviousFilteredEventNumber(), filteredEvent->getEventNumber() - 1, false);
 
     if (previousFilteredEvent != NULL)
-        linkFilteredEvents(previousFilteredEvent, filteredEvent);
+        FilteredEvent::linkFilteredEvents(previousFilteredEvent, filteredEvent);
 
     return previousFilteredEvent;
 }
@@ -276,18 +249,13 @@ FilteredEvent* FilteredEventLog::getPreviousFilteredEvent(long eventNumber)
 
 FilteredEvent* FilteredEventLog::cacheFilteredEvent(long eventNumber)
 {
-    EventNumberToFilteredEventMap::iterator it = eventNumberToFilteredEventMap.find(eventNumber);
-
-    if (it != eventNumberToFilteredEventMap.end())
-        return it->second;
-
     FilteredEvent *filteredEvent = new FilteredEvent(this, eventNumber);
-    eventNumberToFilteredEventMap[eventNumber] = filteredEvent;
+    cacheFilteredEvent(filteredEvent);
     return filteredEvent;
 }
 
-void FilteredEventLog::linkFilteredEvents(FilteredEvent *previousFilteredEvent, FilteredEvent *nextFilteredEvent)
+FilteredEvent* FilteredEventLog::cacheFilteredEvent(FilteredEvent *filteredEvent)
 {
-    previousFilteredEvent->nextFilteredEventNumber = nextFilteredEvent->eventNumber;
-    nextFilteredEvent->previousFilteredEventNumber = previousFilteredEvent->eventNumber;
+    eventNumberToFilteredEventMap[filteredEvent->getEventNumber()] = filteredEvent;
+    return filteredEvent;
 }

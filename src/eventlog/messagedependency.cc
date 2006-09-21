@@ -17,18 +17,20 @@
 #include "eventlogentry.h"
 #include "messagedependency.h"
 
-MessageDependency::MessageDependency(EventLog *eventLog, long causeEventNumber, long consequenceEventNumber, int messageSendEntryNumber)
+MessageDependency::MessageDependency(EventLog *eventLog,
+                                     long causeEventNumber, long consequenceEventNumber,
+                                     int causeMessageSendEntryNumber, int consequenceMessageSendEntryNumber)
 {
     this->eventLog = eventLog;
     this->causeEventNumber = causeEventNumber;
     this->consequenceEventNumber = consequenceEventNumber;
-    this->messageSendEntryNumber = messageSendEntryNumber;
+    this->causeMessageSendEntryNumber = causeMessageSendEntryNumber;
+    this->consequenceMessageSendEntryNumber = consequenceMessageSendEntryNumber;
 }
 
-EventLogEntry *MessageDependency::getMessageSendEntry()
+EventLogEntry *MessageDependency::getCauseMessageSendEntry()
 {
-    Event *event = getCauseEvent();
-    return event->getEventLogEntry(messageSendEntryNumber);
+    return getCauseEvent()->getEventLogEntry(causeMessageSendEntryNumber);
 }
 
 long MessageDependency::getCauseEventNumber()
@@ -36,7 +38,7 @@ long MessageDependency::getCauseEventNumber()
     if (causeEventNumber == -2)
     {
         Event *consequenceEvent = getConsequenceEvent();
-        causeEventNumber = consequenceEvent->getEventLogEntry(messageSendEntryNumber)->getPreviousEventNumber();
+        causeEventNumber = consequenceEvent->getEventLogEntry(consequenceMessageSendEntryNumber)->getPreviousEventNumber();
     }
 
     return causeEventNumber;
@@ -54,7 +56,12 @@ Event *MessageDependency::getCauseEvent()
 
 simtime_t MessageDependency::getCauseTime()
 {
-    throw new Exception("Not yet implemented");
+    return getCauseEvent()->getSimulationTime();
+}
+
+EventLogEntry *MessageDependency::getConsequenceMessageSendEntry()
+{
+    return getConsequenceEvent()->getEventLogEntry(consequenceMessageSendEntryNumber);
 }
 
 long MessageDependency::getConsequenceEventNumber() 
@@ -72,7 +79,7 @@ long MessageDependency::getConsequenceEventNumber()
                 // end of file
                 return -1;
 
-            if (event->getMessageId() == getMessageId())
+            if (event->getMessageId() == getCauseMessageId())
             {
                 consequenceEventNumber = event->getEventNumber();
                 break;
@@ -108,46 +115,51 @@ Event *MessageDependency::getConsequenceEvent()
 
 simtime_t MessageDependency::getConsequenceTime()
 {
-    Event *event = getCauseEvent();
-    EventLogEntry *eventLogEntry = event->getEventLogEntry(messageSendEntryNumber);
-
-    // 1. BeginSendEntry
-    BeginSendEntry *beginSendEntry = dynamic_cast<BeginSendEntry *>(eventLogEntry);
-
-    if (beginSendEntry != NULL)
+    if (consequenceEventNumber >= 0)
+        return getConsequenceEvent()->getSimulationTime();
+    else
     {
-        int i = messageSendEntryNumber + 1;
+        Event *event = getCauseEvent();
+        EventLogEntry *eventLogEntry = event->getEventLogEntry(causeMessageSendEntryNumber);
 
-        while (i < event->getNumEventLogEntries())
+        // 1. BeginSendEntry
+        BeginSendEntry *beginSendEntry = dynamic_cast<BeginSendEntry *>(eventLogEntry);
+
+        if (beginSendEntry != NULL)
         {
-            eventLogEntry = event->getEventLogEntry(i++);
-            EndSendEntry *endSendEntry = dynamic_cast<EndSendEntry *>(eventLogEntry);
+            int i = causeMessageSendEntryNumber + 1;
 
-            if (endSendEntry != NULL)
-                return endSendEntry->arrivalTime;
+            while (i < event->getNumEventLogEntries())
+            {
+                eventLogEntry = event->getEventLogEntry(i++);
+                EndSendEntry *endSendEntry = dynamic_cast<EndSendEntry *>(eventLogEntry);
+
+                if (endSendEntry != NULL)
+                    return endSendEntry->arrivalTime;
+            }
+
+            throw new Exception("Missing end message send entry");
         }
 
-        throw new Exception("Missing end message send entry");
+        // 2 . MessageScheduledEntry
+        MessageScheduledEntry *messageScheduledEntry = dynamic_cast<MessageScheduledEntry *>(eventLogEntry);
+
+        if (messageScheduledEntry != NULL)
+            return messageScheduledEntry->arrivalTime;
+
+        throw new Exception("Unknown message entry");
     }
-
-    // 2 . MessageScheduledEntry
-    MessageScheduledEntry *messageScheduledEntry = dynamic_cast<MessageScheduledEntry *>(eventLogEntry);
-
-    if (messageScheduledEntry != NULL)
-        return messageScheduledEntry->arrivalTime;
-
-    throw new Exception("Unknown message entry");
 }
 
 /**************************************************/
 
 MessageReuse::MessageReuse(EventLog *eventLog, long senderEventNumber, int messageSendEntryNumber)
-    : MessageDependency(eventLog, -2, senderEventNumber, messageSendEntryNumber)
+    : MessageDependency(eventLog, -2, senderEventNumber, -1, messageSendEntryNumber)
 {
 }
 
 MessageSend::MessageSend(EventLog *eventLog, long senderEventNumber, int messageSendEntryNumber)
-    : MessageDependency(eventLog, senderEventNumber, -2, messageSendEntryNumber)
+    : MessageDependency(eventLog, senderEventNumber, -2, messageSendEntryNumber, -1)
 {
 }
 
