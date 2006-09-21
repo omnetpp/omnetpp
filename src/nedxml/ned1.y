@@ -653,7 +653,7 @@ substparamblocks_old
         ;
 
 substparamblock_old
-        : PARAMETERS ':'
+        : PARAMETERS ':' /*FIXME empty "parameters:" in submodule doesn't get accepted! WFT??? */
                 {
                   createSubstparamsNodeIfNotExists();
                   setComments(ps.substparams,@1,@2);

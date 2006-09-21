@@ -118,6 +118,10 @@ class NED1Generator
     void doChannelInterface(ChannelInterfaceNode *node, const char *indent, bool islast, const char *);
     void doChannel(ChannelNode *node, const char *indent, bool islast, const char *);
     void doParameters(ParametersNode *node, const char *indent, bool islast, const char *);
+    void doModuleParameters(ParametersNode *node, const char *indent);
+    void doChannelParameters(ParametersNode *node, const char *indent);
+    void doSubstParameters(ParametersNode *node, const char *indent);
+    void doConnectionAttributes(ParametersNode *node, const char *indent);
     void doParamGroup(ParamGroupNode *node, const char *indent, bool islast, const char *);
     void doParam(ParamNode *node, const char *indent, bool islast, const char *);
     void doPattern(PatternNode *node, const char *indent, bool islast, const char *);

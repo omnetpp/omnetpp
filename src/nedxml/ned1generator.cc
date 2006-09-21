@@ -310,17 +310,47 @@ void NED1Generator::doChannel(ChannelNode *node, const char *indent, bool islast
 
 void NED1Generator::doParameters(ParametersNode *node, const char *indent, bool islast, const char *)
 {
-    // inside channel-spec, everything has to be on one line except it'd be too long
-    // (rule of thumb: if it contains a param group or "parameters:" keyword is explicit)
-    bool inlineParams = node->getParent()->getTagCode()==NED_CHANNEL_SPEC &&
-                        node->getIsImplicit() &&
-                        !node->getFirstChildWithTag(NED_PARAM_GROUP);
-
-    OUT << indent << "parameters:\n";
-
-    generateChildren(node, inlineParams ? NULL : node->getIsImplicit() ? indent : increaseIndent(indent));
+    int parentTag = node->getParent()->getTagCode();
+    if (parentTag==NED_SIMPLE_MODULE || parentTag==NED_COMPOUND_MODULE)
+        doModuleParameters(node, indent);
+    else if (parentTag==NED_SUBMODULE)
+        doSubstParameters(node, indent);
+    else if (parentTag==NED_CHANNEL)
+        doChannelParameters(node, indent);
+    else if (parentTag==NED_CHANNEL_SPEC)
+        doConnectionAttributes(node, indent);
+    else
+        INTERNAL_ERROR0(node,"unexpected parameters section");
 }
 
+void NED1Generator::doModuleParameters(ParametersNode *node, const char *indent)
+{
+    if (node->getFirstChildWithTag(NED_PARAM))
+        OUT << indent << "parameters:\n";
+
+    generateChildren(node, increaseIndent(indent));
+}
+
+void NED1Generator::doSubstParameters(ParametersNode *node, const char *indent)
+{
+    if (node->getFirstChildWithTag(NED_PARAM))
+        OUT << indent << "parameters:\n";
+
+    generateChildren(node, increaseIndent(indent));
+}
+
+void NED1Generator::doChannelParameters(ParametersNode *node, const char *indent)
+{
+    generateChildren(node, increaseIndent(indent));
+}
+
+void NED1Generator::doConnectionAttributes(ParametersNode *node, const char *indent)
+{
+    generateChildren(node, NULL);
+}
+
+
+//XXX revise
 void NED1Generator::doParamGroup(ParamGroupNode *node, const char *indent, bool islast, const char *)
 {
     indent = decreaseIndent(indent);
