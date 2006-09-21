@@ -18,7 +18,7 @@ COPTS=$(CFLAGS) $(XML_CFLAGS) /I. /Fd"nedxml.pdb"
 #      nedfilebuffer.obj nedparser.obj nedyylib.obj \
 #      ned2.tab.obj lex.ned2yy.obj \
 #      msg2.tab.obj lex.msg2yy.obj \
-#      ned.tab.obj lex.nedyy.obj \
+#      ned1.tab.obj lex.nedyy.obj \
 #      nedutil.obj nedgenerator.obj xmlgenerator.obj nedtools.obj \
 #      nedxmlparser.obj nedsaxhandler.obj saxparser_$(XMLPARSER).obj \
 #      nedcompiler.obj cppgenerator.obj cppmsggenerator.obj cppexprgenerator.obj
@@ -31,7 +31,7 @@ OBJS= nedelements.obj nedelement.obj nederror.obj \
       ned2.tab.obj lex.ned2yy.obj nedtools.obj \
       nedutil.obj ned2generator.obj ned1generator.obj xmlgenerator.obj \
       nedxmlparser.obj nedsaxhandler.obj saxparser_$(XMLPARSER).obj \
-      ned.tab.obj lex.nedyy.obj \
+      ned1.tab.obj lex.nedyy.obj \
       msg2.tab.obj lex.msg2yy.obj
 # FIXME end temporary def
 
@@ -64,13 +64,13 @@ nedxml.lib : unistd.h $(OBJS)
 nedelements.cc nedelements.h nedvalidator.cc nedvalidator.h : dtdclassgen.pl ned2.dtd
 	perl dtdclassgen.pl ned2.dtd
 
-ned.tab.h ned.tab.cc : ned.y
-	$(YACC:/=\) -p nedyy -b ned -d ned.y
-	copy ned.tab.c ned.tab.cc
-	del ned.tab.c
+ned1.tab.h ned1.tab.cc : ned1.y
+	$(YACC:/=\) -p nedyy -b ned1 -d ned1.y
+	copy ned1.tab.c ned1.tab.cc
+	del ned1.tab.c
 
-lex.nedyy.cc: ned.lex
-	$(LEX:/=\) -Pnedyy ned.lex
+lex.nedyy.cc: ned1.lex
+	$(LEX:/=\) -Pnedyy ned1.lex
 	copy lex.nedyy.c lex.nedyy.cc
 	del lex.nedyy.c
 
@@ -130,32 +130,14 @@ cppmsggenerator.obj: cppmsggenerator.cc \
   nedelement.h \
   cppexprgenerator.h \
   nedcompiler.h
-lex.msg2yy.obj: lex.msg2yy.cc \
-  ./unistd.h \
-  nedyydefs.h \
-  msg2.tab.h
 lex.ned2yy.obj: lex.ned2yy.cc \
   ./unistd.h \
   nedyydefs.h \
   ned2.tab.h
 lex.nedyy.obj: lex.nedyy.cc \
   ./unistd.h \
-  nedyydefs.h \
-  ned.tab.h
-lex.yy.obj: lex.yy.cc \
-  ./unistd.h \
-  nedyydefs.h \
-  ned.tab.h
-msg2.tab.obj: msg2.tab.cc \
-  nedyydefs.h \
-  nederror.h \
-  nedparser.h \
-  nedfilebuffer.h \
-  nedelements.h \
-  nedutil.h \
-  nedyylib.h \
-  nedelement.h
-ned.tab.obj: ned.tab.cc \
+  nedyydefs.h
+ned1.tab.obj: ned1.tab.cc \
   nedyydefs.h \
   nederror.h \
   nedparser.h \

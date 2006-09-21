@@ -39,7 +39,7 @@ S  [ \t\v\n\r\f]
 #endif
 
 #include "nedyydefs.h"
-#include "ned.tab.h"
+#include "ned1.tab.h"
 
 #define yylloc nedyylloc
 extern YYSTYPE yylval;

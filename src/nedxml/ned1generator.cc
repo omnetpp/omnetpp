@@ -531,9 +531,7 @@ void NED1Generator::doChannelSpec(ChannelSpecNode *node, const char *indent, boo
 
     if (node->getFirstChildWithTag(NED_PARAMETERS))
     {
-        OUT << " { ";
         generateChildrenWithType(node, NED_PARAMETERS, increaseIndent(indent));
-        OUT << " }";
     }
 }
 
