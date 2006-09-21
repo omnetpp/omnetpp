@@ -21,6 +21,11 @@
 
 class FilteredEventLog;
 
+/**
+ * Events stored in the FilteredEventLog.
+ *
+ * Filtered events are in a lazy double-linked list based on event numbers.
+ */
 class FilteredEvent
 {
     public:
@@ -46,7 +51,8 @@ class FilteredEvent
         long getPreviousFilteredEventNumber() { return previousFilteredEventNumber; };
         long getNextFilteredEventNumber() { return nextFilteredEventNumber; };
 
-        FilteredEvent *getCause();
+        FilteredEvent *getCause(); //TODO rename to getCauseFilteredEvent
+        //TODO add getCause() to return FilteredMessageDependency
         FilteredMessageDependencyList *getCauses();
         FilteredMessageDependencyList *getConsequences();
 

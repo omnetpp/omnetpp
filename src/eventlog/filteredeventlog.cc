@@ -76,7 +76,8 @@ FilteredEvent* FilteredEventLog::getFilteredEvent(long eventNumber)
 bool FilteredEventLog::matchesFilter(Event *event)
 {
     EventNumberToFilterMatchesMap::iterator it = eventNumberToFilterMatchesMap.find(event->getEventNumber());
-    
+
+    // if cached, return it
     if (it != eventNumberToFilterMatchesMap.end())
         return it->second;
 
@@ -109,16 +110,20 @@ bool FilteredEventLog::matchesEvent(Event *event)
 
 bool FilteredEventLog::matchesDependency(Event *event)
 {
-    // the traced event
-    if (tracedEventNumber != -1 && event->getEventNumber() == tracedEventNumber)
+    // if there's no traced event
+    if (tracedEventNumber == -1)
+        return true;
+
+    // if this is the traced event
+    if (event->getEventNumber() == tracedEventNumber)
         return true;
 
     // event is cause of traced event
-    if (tracedEventNumber != -1 && tracedEventNumber > event->getEventNumber() && includeCauses)
+    if (tracedEventNumber > event->getEventNumber() && includeCauses)
         return consequencesEvent(event, eventLog->getEventForEventNumber(tracedEventNumber));
 
     // event is consequence of traced event
-    if (tracedEventNumber != -1 && tracedEventNumber < event->getEventNumber() && includeConsequences)
+    if (tracedEventNumber < event->getEventNumber() && includeConsequences)
         return causesEvent(eventLog->getEventForEventNumber(tracedEventNumber), event);
 
     return false;
@@ -126,8 +131,11 @@ bool FilteredEventLog::matchesDependency(Event *event)
 
 bool FilteredEventLog::consequencesEvent(Event *cause, Event *consequence)
 {
+    // returns true if "consequence" can be reached from "cause", using
+    // the consequences chain. We use depth-first search.
     Event::MessageDependencyList *consequences = cause->getConsequences();
 
+    // TODO check filter cache
     for (Event::MessageDependencyList::iterator it = consequences->begin(); it != consequences->end(); it++)
     {
         MessageDependency *messageDependency = *it;
@@ -135,9 +143,11 @@ bool FilteredEventLog::consequencesEvent(Event *cause, Event *consequence)
 
         if (consequenceEvent != NULL)
         {
+            // if we reached the consequence event, we're done
             if (consequence->getEventNumber() == consequenceEvent->getEventNumber())
                 return true;
-            
+
+            // try depth-first search if we haven't passed the consequence event yet
             if (consequence->getEventNumber() > consequenceEvent->getEventNumber() &&
                 consequencesEvent(consequenceEvent, consequence))
                 return true;
@@ -149,6 +159,7 @@ bool FilteredEventLog::consequencesEvent(Event *cause, Event *consequence)
 
 bool FilteredEventLog::causesEvent(Event *cause, Event *consequence)
 {
+    // like consequenceEvent(), but searching from the opposite direction
     Event::MessageDependencyList *causes = consequence->getCauses();
 
     for (Event::MessageDependencyList::iterator it = causes->begin(); it != causes->end(); it++)
@@ -160,7 +171,7 @@ bool FilteredEventLog::causesEvent(Event *cause, Event *consequence)
         {
             if (cause->getEventNumber() == causeEvent->getEventNumber())
                 return true;
-            
+
             if (cause->getEventNumber() < causeEvent->getEventNumber() &&
                 causesEvent(cause, causeEvent))
                 return true;
@@ -174,9 +185,11 @@ FilteredEvent* FilteredEventLog::getFilteredEventInDirection(long filteredEventN
 {
     if (filteredEventNumber != -1)
         return cacheFilteredEvent(filteredEventNumber);
+    else
     {
         Event *event;
 
+        // TODO: linear search
         while (event = eventLog->getEventForEventNumber(eventNumber))
         {
             if (matchesFilter(event))
@@ -197,7 +210,7 @@ FilteredEvent* FilteredEventLog::getFilteredEventInDirection(long filteredEventN
             }
         }
 
-        return NULL; 
+        return NULL;
     }
 }
 

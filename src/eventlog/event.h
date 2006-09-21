@@ -23,7 +23,10 @@
 #include "messagedependency.h"
 
 /**
- * Manages all event log entries for a single event.
+ * Manages all event log entries for a single event. (All lines belonging to an "E" line.)
+ * Returned Event*, MessageSend*, MessageDependencyList* pointers should not be
+ * remembered by callers, because they may get deleted when the event is
+ * thrown out of the eventlog cache.
  */
 class Event
 {
@@ -33,11 +36,11 @@ class Event
     protected:
         EventLog *eventLog; // the corresponding event log
         long beginOffset; // file offset where the event starts
-        long endOffset; // file offset where the event ends
-        EventEntry *eventEntry; // the event log entry that corresponds to the actual event
+        long endOffset; // file offset where the event ends (ie. begin of next event)
+        EventEntry *eventEntry; // the event log entry that corresponds to the actual event ("E" line)
 
         typedef std::vector<EventLogEntry *> EventLogEntryList;
-        EventLogEntryList eventLogEntries; // all entries parsed from the file
+        EventLogEntryList eventLogEntries; // all entries parsed from the file (lines below "E" line)
 
         MessageSend *cause; // the message send which is processed in this event
         MessageDependencyList *causes; // the arrival message sends of messages which we send in this event

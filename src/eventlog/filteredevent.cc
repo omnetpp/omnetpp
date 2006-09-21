@@ -37,6 +37,7 @@ FilteredEvent *FilteredEvent::getCause()
 {
     Event *cause = getEvent()->getCauseEvent();
 
+    // walk backwards on the cause chain until we find an event matched by the filter
     while (cause)
     {
         if (filteredEventLog->matchesFilter(cause))
@@ -61,6 +62,10 @@ FilteredEvent::FilteredMessageDependencyList *FilteredEvent::getCauses()
 
 FilteredEvent::FilteredMessageDependencyList *FilteredEvent::getCauses(Event *event, int consequenceMessageSendEntryNumber, int level)
 {
+    // returns a list of dependencies, where the consequence is this event,
+    // and the other end is no further away than getMaxCauseDepth() and
+    // no events in between match the filter
+
     Event::MessageDependencyList *eventCauses = event->getCauses();
 
     for (Event::MessageDependencyList::iterator it = eventCauses->begin(); it != eventCauses->end(); it++)
@@ -125,6 +130,7 @@ FilteredEvent::FilteredMessageDependencyList *FilteredEvent::getConsequences(Eve
 
 void FilteredEvent::linkFilteredEvents(FilteredEvent *previousFilteredEvent, FilteredEvent *nextFilteredEvent)
 {
+    // used to build the linked list
     previousFilteredEvent->nextFilteredEventNumber = nextFilteredEvent->getEventNumber();
     nextFilteredEvent->previousFilteredEventNumber = previousFilteredEvent->getEventNumber();
 }

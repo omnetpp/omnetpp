@@ -35,6 +35,15 @@ Event::~Event()
 {
     for (EventLogEntryList::iterator it = eventLogEntries.begin(); it != eventLogEntries.end(); it++)
         delete *it;
+    delete cause;
+
+    for (MessageDependencyList::iterator it = causes.begin(); it != causes.end(); it++)
+        delete *it;
+    delete causes;
+
+    for (MessageDependencyList::iterator it = consequences.begin(); it != consequences.end(); it++)
+        delete *it;
+    delete consequences;
 }
 
 Event *Event::getCauseEvent()
@@ -53,6 +62,7 @@ MessageSend *Event::getCause()
 
         if (event != NULL)
         {
+            // find the "BS" or "SA" line in the cause event
             for (int messageEntryNumber = 0; messageEntryNumber < event->eventLogEntries.size(); messageEntryNumber++)
             {
                 EventLogEntry *eventLogEntry = event->eventLogEntries[messageEntryNumber];
@@ -79,12 +89,14 @@ Event::MessageDependencyList *Event::getCauses()
         if (getCause() != NULL)
             causes->push_back(getCause());
 
+        // add message reuses
         for (int messageEntryNumber = 0; messageEntryNumber < eventLogEntries.size(); messageEntryNumber++)
         {
             EventLogEntry *eventLogEntry = eventLogEntries[messageEntryNumber];
 
             if (eventLogEntry->isMessageSend() && eventLogEntry->getPreviousEventNumber() != getEventNumber())
             {
+                // store "pe" key from "BS" or "SA" lines
                 causes->push_back(new MessageReuse(eventLog, getEventNumber(), messageEntryNumber));
                 break;
             }

@@ -29,7 +29,9 @@ class Event;
 class EventLogEntry;
 
 /**
- * Manages an event log file in memory.
+ * Manages an event log file in memory. Caches some events. Clients should not
+ * store pointers to Events or EventLogEntries, because this class may
+ * thow them out of the cache any time.
  */
 class EventLog : public EventLogIndex
 {

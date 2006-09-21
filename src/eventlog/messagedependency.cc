@@ -26,6 +26,8 @@ MessageDependency::MessageDependency(EventLog *eventLog,
     this->consequenceEventNumber = consequenceEventNumber;
     this->causeMessageSendEntryNumber = causeMessageSendEntryNumber;
     this->consequenceMessageSendEntryNumber = consequenceMessageSendEntryNumber;
+
+    //TODO assert: either cause or consequence must be filled out
 }
 
 EventLogEntry *MessageDependency::getMessageSendEntry()
@@ -47,7 +49,9 @@ long MessageDependency::getCauseEventNumber()
 {
     if (causeEventNumber == -2)
     {
+        // only consequence is present, calculate cause from it
         Event *consequenceEvent = getConsequenceEvent();
+        EASSERT(consequenceEvent);
         causeEventNumber = consequenceEvent->getEventLogEntry(consequenceMessageSendEntryNumber)->getPreviousEventNumber();
     }
 
@@ -74,10 +78,16 @@ EventLogEntry *MessageDependency::getConsequenceMessageSendEntry()
     return getConsequenceEvent()->getEventLogEntry(consequenceMessageSendEntryNumber);
 }
 
-long MessageDependency::getConsequenceEventNumber() 
+long MessageDependency::getConsequenceEventNumber()
 {
     if (consequenceEventNumber == -2)
     {
+        // only cause is present, calculate consequence from it.
+        //
+        // when a message is scheduled/sent, we don't know the arrival event number
+        // yet, only the simulation time is recorded in the event log file.
+        // So here we have to look through all events at the arrival time,
+        // and find the one "caused by" our message.
         simtime_t consequenceTime = getConsequenceTime();
         long offset = eventLog->getOffsetForSimulationTime(consequenceTime, EventLogIndex::MatchKind::FIRST);
 
@@ -97,7 +107,9 @@ long MessageDependency::getConsequenceEventNumber()
 
             if (event->getSimulationTime() > consequenceTime)
             {
-                // self message has been cancelled
+                // no more event at that simulation time, and consequence event
+                // still not found. It must have been cancelled (self message),
+                // or it is not in the file (filtered out by the user, etc).
                 consequenceEventNumber = -1;
                 break;
             }
@@ -113,7 +125,7 @@ long MessageDependency::getConsequenceEventNumber()
     return consequenceEventNumber;
 }
 
-Event *MessageDependency::getConsequenceEvent() 
+Event *MessageDependency::getConsequenceEvent()
 {
     long consequenceEventNumber = getConsequenceEventNumber();
 
@@ -129,6 +141,7 @@ simtime_t MessageDependency::getConsequenceTime()
         return getConsequenceEvent()->getSimulationTime();
     else
     {
+        // find the arrival time of the message
         Event *event = getCauseEvent();
         EventLogEntry *eventLogEntry = event->getEventLogEntry(causeMessageSendEntryNumber);
 
@@ -137,6 +150,7 @@ simtime_t MessageDependency::getConsequenceTime()
 
         if (beginSendEntry != NULL)
         {
+            // arrival time is in the EndSendEntry ("ES" line), find it
             int i = causeMessageSendEntryNumber + 1;
 
             while (i < event->getNumEventLogEntries())

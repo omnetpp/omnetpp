@@ -24,15 +24,26 @@
 class Event;
 class EventLog;
 
+/**
+ * Represents two places in the event log file which are associate with the
+ * same message object: (cause event number, cause entry number),
+ * (consequence event number, consequence entry number). This may represent
+ * a message sending (sent at "cause", arrives at "consequence"), a message
+ * scheduling (ditto), or a message reuse (arrived at the module at "cause",
+ * and sent out again at "consequence").
+ *
+ * Entry number is the line number after the "E" line.
+ *
+ */
 class MessageDependency
 {
     protected:
         EventLog *eventLog;
 
-        long causeEventNumber; // -2 means not yet calculated from the consequenceEventNumber, -1 means did not found
+        long causeEventNumber; // -2 means not yet calculated from the consequenceEventNumber, -1 means not found in file
         int causeMessageSendEntryNumber; // optional (-1) and refers to an entry of causeEvent
 
-        long consequenceEventNumber; // -2 means not yet calculated from the causeEventNumber, -1 means did not found
+        long consequenceEventNumber; // -2 means not yet calculated from the causeEventNumber, -1 means not found in file
         int consequenceMessageSendEntryNumber; // optional (-1) and refers to an entry of consequenceEvent
 
     public:
@@ -70,7 +81,7 @@ class MessageReuse : public MessageDependency
 };
 
 /**
- * Represents a single message send.
+ * Represents a single message send (or schedule).
  */
 class MessageSend : public MessageDependency
 {

@@ -20,19 +20,25 @@
 #include "eventlog.h"
 #include "filteredevent.h"
 
+/**
+ * This is a "view" of the EventLog, showing only a subset of events and relationships
+ */
 class FilteredEventLog
 {
     protected:
         EventLog *eventLog;
+
+        // filter parameters
         long tracedEventNumber; // the event number from which causes and consequences are followed or -1
         long firstEventNumber; // the first event to be considered by the filter or -1
         long lastEventNumber; // the last event to be considered by the filter or -1
         std::set<int> *includeModuleIds; // events outside these modules will be filtered out, NULL means include all
         bool includeCauses; // only when tracedEventNumber is given, includes events which cause the traced event even if through a chain of filtered events
         bool includeConsequences; // only when tracedEventNumber is given
-        int maxCauseDepth; // maximum numbef message dependencies considered when collecting causes
-        int maxConsequenceDepth; // maximum numbef message dependencies considered when collecting consequences
+        int maxCauseDepth; // maximum number of message dependencies considered when collecting causes
+        int maxConsequenceDepth; // maximum number of message dependencies considered when collecting consequences
 
+        // state
         typedef std::map<long, FilteredEvent *> EventNumberToFilteredEventMap;
         EventNumberToFilteredEventMap eventNumberToFilteredEventMap;
 
@@ -44,12 +50,12 @@ class FilteredEventLog
 
     public:
         FilteredEventLog(EventLog *eventLog,
-                       std::set<int> *includeModuleIds,
-                       long tracedEventNumber = -1,
-                       bool includeCauses = false,
-                       bool includeConsequences = false,
-                       long firstEventNumber = -1,
-                       long lastEventNumber = -1);
+                         std::set<int> *includeModuleIds,
+                         long tracedEventNumber = -1,
+                         bool includeCauses = false,
+                         bool includeConsequences = false,
+                         long firstEventNumber = -1,
+                         long lastEventNumber = -1);
         ~FilteredEventLog();
 
     public:
