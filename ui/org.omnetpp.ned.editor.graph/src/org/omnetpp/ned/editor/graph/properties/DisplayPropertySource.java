@@ -9,6 +9,7 @@ import org.eclipse.ui.views.properties.PropertyDescriptor;
 import org.eclipse.ui.views.properties.TextPropertyDescriptor;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.displaymodel.DisplayString;
+import org.omnetpp.common.properties.ImagePropertyDescriptor;
 import org.omnetpp.ned2.model.NEDElement;
 
 //TODO Colors cannot be edited by hand. A derived ColorCellEditor is required
@@ -46,7 +47,7 @@ abstract public class DisplayPropertySource extends AbstractNedPropertySource {
         else if(prop.getType() == DisplayString.PropType.INTEGER)
             pdesc = new TextPropertyDescriptor(prop, prop.getVisibleName());
         else if(prop.getType() == DisplayString.PropType.IMAGE)
-            pdesc = new TextPropertyDescriptor(prop, prop.getVisibleName());
+            pdesc = new ImagePropertyDescriptor(prop, prop.getVisibleName());
         else if(prop.getType() == DisplayString.PropType.COLOR)
             pdesc = new ColorPropertyDescriptor(prop, prop.getVisibleName());
         else 

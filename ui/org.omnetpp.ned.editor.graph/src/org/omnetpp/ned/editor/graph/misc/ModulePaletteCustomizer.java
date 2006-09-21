@@ -7,12 +7,7 @@ import org.eclipse.gef.ui.palette.customize.DefaultEntryPage;
 import org.eclipse.gef.ui.palette.customize.DrawerEntryPage;
 import org.eclipse.gef.ui.palette.customize.EntryPage;
 
-
-/**
- * PaletteCustomizer for the logic example.
- * 
- * @author Pratik Shah
- */
+// TODO do we need this?
 public class ModulePaletteCustomizer extends PaletteCustomizer {
 
     protected static final String ERROR_MESSAGE = "Invalid character";

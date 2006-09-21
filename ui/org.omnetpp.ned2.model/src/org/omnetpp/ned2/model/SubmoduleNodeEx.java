@@ -40,7 +40,7 @@ public class SubmoduleNodeEx extends SubmoduleNode implements INamedGraphNode {
 	public void propertyChanged(Prop changedProp) {
 		// syncronize it to the underlying model 
 		NedElementExUtil.setDisplayString(this, displayString.toString());
-//        fireAttributeChangedToAncestors(IDisplayString.ATT_DISPLAYSTRING+"."+changedProp);
+        fireAttributeChangedToAncestors(IDisplayString.ATT_DISPLAYSTRING+"."+changedProp);
 	}
 
 	public CompoundModuleNodeEx getCompoundModule() {
