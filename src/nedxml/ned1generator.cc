@@ -355,8 +355,7 @@ void NED1Generator::doSubstParameters(ParametersNode *node, const char *indent)
 static bool _hasSiblingBefore(NEDElement *node, int searchTag, int stopTag)
 {
     // true if: node itself is searchTag, or has searchTag before stopTag
-//    // if start node is already a stopTag, skip it
-//    NEDElement *start = (node && node->getTagCode()==stopTag) ? node->getNextSibling() : node;
+    // (and false if node is immediately a stopTag)
     for (NEDElement *rest=node; rest && rest->getTagCode()!=stopTag; rest=rest->getNextSibling())
          if (rest->getTagCode()==searchTag)
              return true;
