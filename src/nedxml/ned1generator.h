@@ -124,6 +124,8 @@ class NED1Generator
     void doConnectionAttributes(ParametersNode *node, const char *indent);
     void doParamGroup(ParamGroupNode *node, const char *indent, bool islast, const char *);
     void doParam(ParamNode *node, const char *indent, bool islast, const char *);
+    void doModuleParam(ParamNode *node, const char *indent, bool islast, const char *);
+    void doSubstParam(ParamNode *node, const char *indent, bool islast, const char *);
     void doPattern(PatternNode *node, const char *indent, bool islast, const char *);
     void doProperty(PropertyNode *node, const char *indent, bool islast, const char *);
     void doPropertyKey(PropertyKeyNode *node, const char *indent, bool islast, const char *);

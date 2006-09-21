@@ -310,6 +310,7 @@ void NED1Generator::doChannel(ChannelNode *node, const char *indent, bool islast
 
 void NED1Generator::doParameters(ParametersNode *node, const char *indent, bool islast, const char *)
 {
+    // in NED-1, parameters followed different syntaxes at different places
     int parentTag = node->getParent()->getTagCode();
     if (parentTag==NED_SIMPLE_MODULE || parentTag==NED_COMPOUND_MODULE)
         doModuleParameters(node, indent);
@@ -328,6 +329,22 @@ void NED1Generator::doModuleParameters(ParametersNode *node, const char *indent)
     if (node->getFirstChildWithTag(NED_PARAM))
         OUT << indent << "parameters:\n";
 
+    for (NEDElement *child=node->getFirstChild(); child; child=child->getNextSibling())
+    {
+        int childTag = child->getTagCode();
+        bool isLast = child==node->getLastChild();
+        if (childTag==NED_WHITESPACE)
+            ; // ignore whitespace
+        else if (childTag==NED_PROPERTY)
+            doProperty((PropertyNode *)child, increaseIndent(indent), false, NULL);
+        else if (childTag==NED_PARAM)
+            doModuleParam((ParamNode *)child, increaseIndent(indent), isLast, NULL);
+        else if (childTag==NED_PATTERN || childTag==NED_PARAM_GROUP)
+            errors->add(node, "patterns and parameter groups are " A_NED2_FEATURE);
+        else
+            INTERNAL_ERROR0(node,"unexpected element");
+    }
+
     generateChildren(node, increaseIndent(indent));
 }
 
@@ -336,22 +353,27 @@ void NED1Generator::doSubstParameters(ParametersNode *node, const char *indent)
     if (node->getFirstChildWithTag(NED_PARAM))
         OUT << indent << "parameters:\n";
 
-    generateChildren(node, increaseIndent(indent));
+    for (NEDElement *child=node->getFirstChild(); child; child=child->getNextSibling())
+    {
+        int childTag = child->getTagCode();
+        bool isLast = child==node->getLastChild();
+        if (childTag==NED_WHITESPACE)
+            ; //ignore
+        else if (childTag==NED_PROPERTY)
+            doProperty((PropertyNode *)child, increaseIndent(indent), false, NULL);
+        else if (childTag==NED_PARAM)
+            doSubstParam((ParamNode *)child, increaseIndent(indent), isLast, NULL);
+        else if (childTag==NED_PATTERN)
+            errors->add(node, "patterns are " A_NED2_FEATURE);
+        else if (childTag==NED_PARAM_GROUP)
+            ; //FIXME turn into conditional "parameters"
+        else
+            INTERNAL_ERROR0(node,"unexpected element");
+    }
 }
 
-void NED1Generator::doChannelParameters(ParametersNode *node, const char *indent)
-{
-    generateChildren(node, increaseIndent(indent));
-}
-
-void NED1Generator::doConnectionAttributes(ParametersNode *node, const char *indent)
-{
-    generateChildren(node, NULL);
-}
-
-
-//XXX revise
-void NED1Generator::doParamGroup(ParamGroupNode *node, const char *indent, bool islast, const char *)
+//XXX
+void NED1Generator::doSubstParamGroup(ParamGroupNode *node, const char *indent, bool islast, const char *)
 {
     indent = decreaseIndent(indent);
     OUT << indent << "parameters ";
@@ -365,25 +387,52 @@ void NED1Generator::doParamGroup(ParamGroupNode *node, const char *indent, bool 
         OUT << indent << "parameters:\n"; // restore default scope
 }
 
+void NED1Generator::doChannelParameters(ParametersNode *node, const char *indent)
+{
+    //FIXME todo
+    //only "delay", "error", "datarate" parameters need to be recognized
+}
+
+void NED1Generator::doConnectionAttributes(ParametersNode *node, const char *indent)
+{
+    //FIXME todo
+    //only "delay", "error", "datarate" parameters need to be recognized
+    //"display" property is to be handled elsewhere
+}
+
+
+void NED1Generator::doParamGroup(ParamGroupNode *node, const char *indent, bool islast, const char *)
+{
+    // we use doSubstParamGroup() instead, NED-1 doesn't allow groups elsewhere
+    // doParameters() ensures we never get here
+    INTERNAL_ERROR0(node, "should never get here");
+}
+
 void NED1Generator::doParam(ParamNode *node, const char *indent, bool islast, const char *)
 {
-    if (indent)
-        OUT << indent;
-    else
-        OUT << " ";  // inline params, used for channel-spec in connections
+    // we use doModuleParam() and doSubstParam() instead
+    // doParameters() ensures we never get here
+    INTERNAL_ERROR0(node, "should never get here");
+}
 
-    OUT << node->getName() << " : ";
-
+void NED1Generator::doModuleParam(ParamNode *node, const char *indent, bool islast, const char *)
+{
+    const char *parType = NULL;
     switch (node->getType())
     {
-        case NED_PARTYPE_NONE:   OUT << "numeric"; break;
+        case NED_PARTYPE_NONE:   break;
         case NED_PARTYPE_DOUBLE: // no break: NED-1 uses "numeric" for both "double" and "int"
-        case NED_PARTYPE_INT:    OUT << (node->getIsFunction() ? "numeric" : "numeric const"); break;
-        case NED_PARTYPE_STRING: OUT << "string"; break;
-        case NED_PARTYPE_BOOL:   OUT << "bool"; break;
-        case NED_PARTYPE_XML:    OUT << "xml"; break;
+        case NED_PARTYPE_INT:    parType = node->getIsFunction() ? "numeric" : "numeric const"; break;
+        case NED_PARTYPE_STRING: parType = "string"; break;
+        case NED_PARTYPE_BOOL:   parType = "bool"; break;
+        case NED_PARTYPE_XML:    parType = "xml"; break;
         default: INTERNAL_ERROR0(node, "wrong type");
     }
+
+    OUT << indent << node->getName();
+    if (parType!=NULL)
+        OUT << " : " << parType;
+
     if (hasExpression(node,"value"))
         errors->add(node, "assignments in parameter declarations are " A_NED2_FEATURE);
 
@@ -392,10 +441,22 @@ void NED1Generator::doParam(ParamNode *node, const char *indent, bool islast, co
     if (node->getFirstChildWithTag(NED_CONDITION))
         errors->add(node, "conditional parameter assignments for NED-1 are not supported");
 
-    if (indent)
-        OUT << (islast ? ";\n" : ",\n");
-    else
-        OUT << (islast ? ";" : ",");
+    OUT << (islast ? ";\n" : ",\n");
+}
+
+void NED1Generator::doSubstParam(ParamNode *node, const char *indent, bool islast, const char *)
+{
+    if (node->getType()!=NED_PARTYPE_NONE)
+        errors->add(node, "defining new parameters for a submodule are " A_NED2_FEATURE);
+
+    OUT << indent << node->getName() << " = ";
+    printExpression(node, "value", indent);
+
+    generateChildrenWithType(node, NED_PROPERTY, increaseIndent(indent), " ");
+    if (node->getFirstChildWithTag(NED_CONDITION))
+        errors->add(node, "conditional parameter assignments for NED-1 are not supported");
+
+    OUT << (islast ? ";\n" : ",\n");
 }
 
 void NED1Generator::doPattern(PatternNode *node, const char *indent, bool islast, const char *)
@@ -405,7 +466,9 @@ void NED1Generator::doPattern(PatternNode *node, const char *indent, bool islast
 
 void NED1Generator::doProperty(PropertyNode *node, const char *indent, bool islast, const char *sep)
 {
-    errors->add(node, "properties are " A_NED2_FEATURE);
+    // only @display is recognized, but it needs to be printed at a different place
+    if (strcmp(node->getName(), "display")!=0)
+        errors->add(node, "properties are " A_NED2_FEATURE);
 }
 
 void NED1Generator::doPropertyKey(PropertyKeyNode *node, const char *indent, bool islast, const char *sep)
