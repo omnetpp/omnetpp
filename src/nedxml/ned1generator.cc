@@ -329,10 +329,11 @@ void NED1Generator::doModuleParameters(ParametersNode *node, const char *indent)
     if (node->getFirstChildWithTag(NED_PARAM))
         OUT << indent << "parameters:\n";
 
+    NEDElement *lastParamChild = ...;
     for (NEDElement *child=node->getFirstChild(); child; child=child->getNextSibling())
     {
         int childTag = child->getTagCode();
-        bool isLast = child==node->getLastChild();
+        bool isLast = child==lastParamChild;
         if (childTag==NED_WHITESPACE)
             ; // ignore whitespace
         else if (childTag==NED_PROPERTY)
@@ -350,8 +351,21 @@ void NED1Generator::doModuleParameters(ParametersNode *node, const char *indent)
 
 void NED1Generator::doSubstParameters(ParametersNode *node, const char *indent)
 {
+    doSubstParamGroup(node, indent);
+}
+
+void NED1Generator::doSubstParamGroup(NEDElement *node, const char *indent)
+{
+    // node may be ParametersNode or ParamGroupNode
+
+    //FIXME print condition if exists
     if (node->getFirstChildWithTag(NED_PARAM))
         OUT << indent << "parameters:\n";
+
+    //indent = decreaseIndent(indent);
+    //OUT << indent << "parameters ";
+    //generateChildrenWithType(node, NED_CONDITION, increaseIndent(indent));
+    //OUT << ":\n";
 
     for (NEDElement *child=node->getFirstChild(); child; child=child->getNextSibling())
     {
@@ -366,25 +380,13 @@ void NED1Generator::doSubstParameters(ParametersNode *node, const char *indent)
         else if (childTag==NED_PATTERN)
             errors->add(node, "patterns are " A_NED2_FEATURE);
         else if (childTag==NED_PARAM_GROUP)
-            ; //FIXME turn into conditional "parameters"
+        {
+            doSubstParamGroup(child, indent);
+            //if there is more NED_PARAM until the next NED_PARAM_GROUP or end, print "parameters:"
+        }
         else
             INTERNAL_ERROR0(node,"unexpected element");
     }
-}
-
-//XXX
-void NED1Generator::doSubstParamGroup(ParamGroupNode *node, const char *indent, bool islast, const char *)
-{
-    indent = decreaseIndent(indent);
-    OUT << indent << "parameters ";
-    generateChildrenWithType(node, NED_CONDITION, increaseIndent(indent));
-    OUT << ":\n";
-
-    int tags[] = {NED_PROPERTY, NED_PARAM, NED_PATTERN, NED_NULL};
-    generateChildrenWithTypes(node, tags, increaseIndent(indent));
-
-    if (node->getNextSibling() && node->getNextSibling()->getTagCode()==NED_PARAM)
-        OUT << indent << "parameters:\n"; // restore default scope
 }
 
 void NED1Generator::doChannelParameters(ParametersNode *node, const char *indent)
