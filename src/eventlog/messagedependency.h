@@ -28,15 +28,17 @@ class MessageDependency
 {
     protected:
         EventLog *eventLog;
-        long causeEventNumber;
-        long consequenceEventNumber;
-        int causeMessageSendEntryNumber;
-        int consequenceMessageSendEntryNumber;
+
+        long causeEventNumber; // -2 means not yet calculated from the consequenceEventNumber, -1 means did not found
+        int causeMessageSendEntryNumber; // optional (-1) and refers to an entry of causeEvent
+
+        long consequenceEventNumber; // -2 means not yet calculated from the causeEventNumber, -1 means did not found
+        int consequenceMessageSendEntryNumber; // optional (-1) and refers to an entry of consequenceEvent
 
     public:
         MessageDependency(EventLog *eventLog,
-            long causeEventNumber, long consequenceEventNumber,
-            int causeMessageSendEntryNumber, int consequenceMessageSendEntryNumber);
+            long causeEventNumber, int causeMessageSendEntryNumber,
+            long consequenceEventNumber, int consequenceMessageSendEntryNumber);
 
         long getCauseEventNumber();
         Event *getCauseEvent();
@@ -55,6 +57,10 @@ class MessageDependency
 
         long getCauseMessageId() { return getCauseMessageSendEntry()->getMessageId(); };
         long getConsequenceMessageId() { return getConsequenceMessageSendEntry()->getMessageId(); };
+
+        EventLogEntry *getMessageSendEntry();
+        void printCause(FILE *file);
+        void printConsequence(FILE *file);
 };
 
 class MessageReuse : public MessageDependency
@@ -79,6 +85,28 @@ class MessageSend : public MessageDependency
 
         simtime_t getSenderTime() { return getCauseTime(); };
         simtime_t getArrivalTime() { return getConsequenceTime(); };
+};
+
+class FilteredMessageDependency : public MessageDependency
+{
+    protected:
+        long xxxEventNumber;
+        int xxxMessageSendEntryNumber; // optional and refers to an entry of xxxEvent
+
+    public:
+        FilteredMessageDependency(EventLog *eventLog,
+            long causeEventNumber, int causeMessageSendEntryNumber,
+            long xxxEventNumber, int xxxMessageSendEntryNumber,
+            long consequenceEventNumber, int consequenceMessageSendEntryNumber);
+
+        long getxxxEventNumber() { return xxxEventNumber; };
+        Event *getxxxEvent();
+        simtime_t getxxxTime();
+        int getxxxMessageSendEntryNumber() { return xxxMessageSendEntryNumber; };
+        EventLogEntry *getxxxMessageSendEntry();
+
+        void print(FILE *file);
+        void printxxx(FILE *file);
 };
 
 #endif

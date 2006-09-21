@@ -31,8 +31,7 @@ FilteredEventLog::FilteredEventLog(EventLog *eventLog,
     this->lastEventNumber = lastEventNumber;
     firstMatchingEventNumber = -1;
     lastMatchingEventNumber = -1;
-    maxCauseDepth = 10;
-    maxConsequenceDepth = 10;
+    maxCauseDepth = maxConsequenceDepth = 100;
 }
 
 FilteredEventLog::~FilteredEventLog()
@@ -104,10 +103,16 @@ bool FilteredEventLog::matchesEvent(Event *event)
     if ((firstEventNumber != -1 && event->getEventNumber() < firstEventNumber) ||
         (lastEventNumber != -1 && event->getEventNumber() > lastEventNumber))
         return false;
+
+    return true;
 }
 
 bool FilteredEventLog::matchesDependency(Event *event)
 {
+    // the traced event
+    if (tracedEventNumber != -1 && event->getEventNumber() == tracedEventNumber)
+        return true;
+
     // event is cause of traced event
     if (tracedEventNumber != -1 && tracedEventNumber > event->getEventNumber() && includeCauses)
         return consequencesEvent(event, eventLog->getEventForEventNumber(tracedEventNumber));

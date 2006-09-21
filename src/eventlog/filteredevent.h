@@ -24,16 +24,15 @@ class FilteredEventLog;
 class FilteredEvent
 {
     public:
-        typedef std::vector<FilteredEvent *> FilteredEventList;
-        typedef std::vector<long> EventNumberList;
+        typedef std::vector<FilteredMessageDependency *> FilteredMessageDependencyList;
 
     protected:
         FilteredEventLog *filteredEventLog;
 
         long eventNumber; // the corresponding event number
         long causeEventNumber; // the event number from which the message was sent that is being processed in this event
-        Event::MessageDependencyList *causes;
-        Event::MessageDependencyList *consequences; // the message sends and arrivals from this event to another in the filtered set
+        FilteredMessageDependencyList *causes;
+        FilteredMessageDependencyList *consequences; // the message sends and arrivals from this event to another in the filtered set
 
         long previousFilteredEventNumber; // the event number of the previous matching filtered event or -1 if unknown
         long nextFilteredEventNumber; // the event number of the next matching filtered event or -1 if unknown
@@ -48,12 +47,12 @@ class FilteredEvent
         long getNextFilteredEventNumber() { return nextFilteredEventNumber; };
 
         FilteredEvent *getCause();
-        Event::MessageDependencyList *getCauses(); // the returned FilteredEventList must be deleted
-        Event::MessageDependencyList *getConsequences(); // the returned FilteredEventList must be deleted
+        FilteredMessageDependencyList *getCauses();
+        FilteredMessageDependencyList *getConsequences();
 
     protected:
-        Event::MessageDependencyList *getCauses(Event *event, int consequenceMessageSendEntryNumber, int level);
-        Event::MessageDependencyList *getConsequences(Event *event, int causeMessageSendEntryNumber, int level);
+        FilteredMessageDependencyList *getCauses(Event *event, int consequenceMessageSendEntryNumber, int level);
+        FilteredMessageDependencyList *getConsequences(Event *event, int causeMessageSendEntryNumber, int level);
 };
 
 #endif

@@ -18,14 +18,24 @@
 #include "messagedependency.h"
 
 MessageDependency::MessageDependency(EventLog *eventLog,
-                                     long causeEventNumber, long consequenceEventNumber,
-                                     int causeMessageSendEntryNumber, int consequenceMessageSendEntryNumber)
+    long causeEventNumber, int causeMessageSendEntryNumber,
+    long consequenceEventNumber, int consequenceMessageSendEntryNumber)
 {
     this->eventLog = eventLog;
     this->causeEventNumber = causeEventNumber;
     this->consequenceEventNumber = consequenceEventNumber;
     this->causeMessageSendEntryNumber = causeMessageSendEntryNumber;
     this->consequenceMessageSendEntryNumber = consequenceMessageSendEntryNumber;
+}
+
+EventLogEntry *MessageDependency::getMessageSendEntry()
+{
+    if (causeMessageSendEntryNumber != -1 && consequenceMessageSendEntryNumber != -1)
+        return NULL;
+    else if (causeMessageSendEntryNumber != -1)
+        return getCauseMessageSendEntry();
+    else
+        return getConsequenceMessageSendEntry();
 }
 
 EventLogEntry *MessageDependency::getCauseMessageSendEntry()
@@ -79,7 +89,7 @@ long MessageDependency::getConsequenceEventNumber()
                 // end of file
                 return -1;
 
-            if (event->getMessageId() == getCauseMessageId())
+            if (event->getCauseEventNumber() == getCauseEventNumber())
             {
                 consequenceEventNumber = event->getEventNumber();
                 break;
@@ -151,15 +161,76 @@ simtime_t MessageDependency::getConsequenceTime()
     }
 }
 
+void MessageDependency::printCause(FILE *file)
+{
+    if (getCauseEventNumber() != -1)
+        getCauseEvent()->getEventEntry()->print(file);
+
+    if (getCauseMessageSendEntryNumber() != -1)
+        getCauseMessageSendEntry()->print(file);
+}
+
+void MessageDependency::printConsequence(FILE *file)
+{
+    if (getConsequenceEventNumber() != -1)
+       getConsequenceEvent()->getEventEntry()->print(file);
+
+    if (getConsequenceMessageSendEntryNumber() != -1)
+       getConsequenceMessageSendEntry()->print(file);
+}
+
 /**************************************************/
 
 MessageReuse::MessageReuse(EventLog *eventLog, long senderEventNumber, int messageSendEntryNumber)
-    : MessageDependency(eventLog, -2, senderEventNumber, -1, messageSendEntryNumber)
+    : MessageDependency(eventLog, -2, -1, senderEventNumber, messageSendEntryNumber)
 {
 }
+
+/**************************************************/
 
 MessageSend::MessageSend(EventLog *eventLog, long senderEventNumber, int messageSendEntryNumber)
-    : MessageDependency(eventLog, senderEventNumber, -2, messageSendEntryNumber, -1)
+    : MessageDependency(eventLog, senderEventNumber, messageSendEntryNumber, -2, -1)
 {
 }
 
+/**************************************************/
+FilteredMessageDependency::FilteredMessageDependency(EventLog *eventLog,
+    long causeEventNumber, int causeMessageSendEntryNumber,
+    long xxxEventNumber, int xxxMessageSendEntryNumber,
+    long consequenceEventNumber, int consequenceMessageSendEntryNumber)
+    : MessageDependency(eventLog, causeEventNumber, causeMessageSendEntryNumber, consequenceEventNumber, consequenceMessageSendEntryNumber)
+{
+    this->xxxEventNumber = xxxEventNumber;
+    this->xxxMessageSendEntryNumber = xxxMessageSendEntryNumber;
+}
+
+Event *FilteredMessageDependency::getxxxEvent()
+{
+    return eventLog->getEventForEventNumber(xxxEventNumber);
+}
+
+simtime_t FilteredMessageDependency::getxxxTime()
+{
+    return getxxxEvent()->getSimulationTime();
+}
+
+EventLogEntry *FilteredMessageDependency::getxxxMessageSendEntry()
+{
+    return getxxxEvent()->getEventLogEntry(xxxMessageSendEntryNumber);
+}
+
+void FilteredMessageDependency::printxxx(FILE *file)
+{
+    if (getxxxEventNumber() != -1)
+       getxxxEvent()->getEventEntry()->print(file);
+
+    if (getxxxMessageSendEntryNumber() != -1)
+       getxxxMessageSendEntry()->print(file);
+}
+
+void FilteredMessageDependency::print(FILE *file)
+{
+    printCause(file);
+    printxxx(file);
+    printConsequence(file);
+}

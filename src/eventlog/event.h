@@ -29,7 +29,6 @@ class Event
 {
     public:
         typedef std::vector<MessageDependency *> MessageDependencyList;
-        typedef std::vector<Event *> EventList;
 
     protected:
         EventLog *eventLog; // the corresponding event log
@@ -63,8 +62,8 @@ class Event
 
         Event *getCauseEvent();
         MessageSend *getCause();
-        MessageDependencyList *getCauses(); // the returned EventList must be deleted
-        MessageDependencyList *getConsequences(); // the returned EventList must be deleted
+        MessageDependencyList *getCauses();
+        MessageDependencyList *getConsequences();
 
         long parse(FileReader *index, long offset);
         static long getNumParsedEvent() { return numParsedEvent; };

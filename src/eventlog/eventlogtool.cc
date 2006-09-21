@@ -59,16 +59,42 @@ void echo(int argc, char **argv)
 void filter(int argc, char **argv)
 {
     try {
-        long traceEventNumber = atol(argv[3]);
+        long tracedEventNumber = atol(argv[3]);
         long fromEventNumber = atol(argv[4]);
         long toEventNumber = atol(argv[5]);
         fprintf(stderr, "Filtering log file: %s for event number: %ld from event number: %ld to event number: %ld\n",
-            argv[2], traceEventNumber, fromEventNumber, toEventNumber);
+            argv[2], tracedEventNumber, fromEventNumber, toEventNumber);
     
         FileReader fileReader(argv[2]);
         EventLog eventLog(&fileReader);
-        FilteredEventLog filteredEventLog(&eventLog, NULL, traceEventNumber, true, true, fromEventNumber, toEventNumber);
+        FilteredEventLog filteredEventLog(&eventLog, NULL, tracedEventNumber, true, true, fromEventNumber, toEventNumber);
         filteredEventLog.print(stdout);
+
+        fprintf(stderr, "Number of events parsed: %d and number of lines read: %ld\n", Event::getNumParsedEvent(), FileReader::getNumReadLines());
+    } catch (Exception *e) {
+        fprintf(stderr, "Error: %s\n", e->message());
+    }
+}
+        
+void consequences(int argc, char **argv)
+{
+    try {
+        long tracedEventNumber = atol(argv[3]);
+        std::set<int> *moduleIds = new std::set<int>();
+
+        for (int i = 4; i < argc; i++)
+            moduleIds->insert(atoi(argv[i]));
+
+        fprintf(stderr, "Filtering log file: %s for event number: %ld\n", argv[2], tracedEventNumber);
+    
+        FileReader fileReader(argv[2]);
+        EventLog eventLog(&fileReader);
+        FilteredEventLog filteredEventLog(&eventLog, moduleIds, tracedEventNumber, true, true);
+        FilteredEvent *filteredEvent = filteredEventLog.getFilteredEvent(tracedEventNumber);
+        FilteredEvent::FilteredMessageDependencyList *messageDependencies = filteredEvent->getConsequences();
+
+        for (FilteredEvent::FilteredMessageDependencyList::iterator it = messageDependencies->begin(); it != messageDependencies->end(); it++)
+            (*it)->print(stdout);
 
         fprintf(stderr, "Number of events parsed: %d and number of lines read: %ld\n", Event::getNumParsedEvent(), FileReader::getNumReadLines());
     } catch (Exception *e) {
@@ -81,7 +107,8 @@ void usage()
     fprintf(stderr, "Usage:\n");
     fprintf(stderr, " eventlogtool offsets <logfile> [<eventnumber>*]\n");
     fprintf(stderr, " eventlogtool echo <logfile> <starteventnumber> <endeventnumber>\n");
-    fprintf(stderr, " eventlogtool filter <logfile> <traceeventnumber> <fromeventnumber> <toeventnumber>\n");
+    fprintf(stderr, " eventlogtool filter <logfile> <tracedEventNumber> <fromeventnumber> <toeventnumber>\n");
+    fprintf(stderr, " eventlogtool consequences <logfile> <tracedEventNumber> <moduleid>*\n");
 }
 
 int main(int argc, char **argv)
@@ -94,6 +121,8 @@ int main(int argc, char **argv)
         echo(argc, argv);
     else if (!strcmp(argv[1], "filter"))
         filter(argc, argv);
+    else if (!strcmp(argv[1], "consequences"))
+        consequences(argc, argv);
     else
         usage();
     return 0;

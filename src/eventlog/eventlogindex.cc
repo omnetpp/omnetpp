@@ -284,13 +284,13 @@ template <typename T> long EventLogIndex::linearSearchForOffset(bool eventNumber
             return offset;
         }
 
-        previousOffset = offset;
+        previousOffset = lineStartOffset;
 
         if (matchKind == FIRST)
-            offset = lineEndOffset;
+            offset = lineStartOffset;
 
         if (matchKind == LAST)
-            offset = lineStartOffset;
+            offset = lineEndOffset;
     }
 
     return -1;
