@@ -1,5 +1,5 @@
 //==========================================================================
-//  NEDGENERATOR.CC - part of
+//  NED1GENERATOR.CC - part of
 //
 //                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
@@ -7,7 +7,7 @@
 //==========================================================================
 
 /*--------------------------------------------------------------*
-  Copyright (C) 2002-2005 Andras Varga
+  Copyright (C) 2002-2006 Andras Varga
 
   This file is distributed WITHOUT ANY WARRANTY. See the file
   `license' for details on this and other legal matters.
@@ -197,7 +197,7 @@ void NED1Generator::printOptVector(NEDElement *node, const char *attr, const cha
 
 void NED1Generator::printIfExpression(NEDElement *node, const char *attr, const char *indent)
 {
-    OUT << "ifXXX ";
+    OUT << "ifXXX ";     //FIXME
     printExpression(node,attr,indent);
 }
 
@@ -361,11 +361,6 @@ void NED1Generator::doModuleParameters(ParametersNode *node, const char *indent)
     generateChildren(node, increaseIndent(indent));
 }
 
-void NED1Generator::doSubstParameters(ParametersNode *node, const char *indent)
-{
-    doSubstParamGroup(node, indent);
-}
-
 static bool _hasSiblingBefore(NEDElement *node, int searchTag, int stopTag)
 {
     // true if: node itself is searchTag, or has searchTag before stopTag
@@ -374,6 +369,11 @@ static bool _hasSiblingBefore(NEDElement *node, int searchTag, int stopTag)
          if (rest->getTagCode()==searchTag)
              return true;
     return false;
+}
+
+void NED1Generator::doSubstParameters(ParametersNode *node, const char *indent)
+{
+    doSubstParamGroup(node, indent);
 }
 
 void NED1Generator::doSubstParamGroup(NEDElement *node, const char *indent)
@@ -423,17 +423,63 @@ void NED1Generator::doSubstParamGroup(NEDElement *node, const char *indent)
 
 void NED1Generator::doChannelParameters(ParametersNode *node, const char *indent)
 {
-    //FIXME todo
-    //only "delay", "error", "datarate" parameters need to be recognized
+    // only "delay", "error", "datarate" parameters need to be recognized
+    for (NEDElement *child=node->getFirstChild(); child; child=child->getNextSibling())
+    {
+        int childTag = child->getTagCode();
+        if (childTag==NED_WHITESPACE)
+            ; //ignore
+        else if (childTag==NED_PROPERTY)
+            doProperty((PropertyNode *)child, indent, false, NULL);
+        else if (childTag==NED_PARAM)
+            doChannelParam((ParamNode *)child, indent);
+        else if (childTag==NED_PATTERN)
+            errors->add(node, "patterns are " A_NED2_FEATURE);
+        else if (childTag==NED_PARAM_GROUP)
+            errors->add(node, "parameter groups in channels are " A_NED2_FEATURE);
+        else
+            INTERNAL_ERROR0(node,"unexpected element");
+    }
 }
 
 void NED1Generator::doConnectionAttributes(ParametersNode *node, const char *indent)
 {
-    //FIXME todo
-    //only "delay", "error", "datarate" parameters need to be recognized
-    //"display" property is to be handled elsewhere
+    // only "delay", "error", "datarate" parameters need to be recognized
+    //FIXME "display" property is to be handled elsewhere
+    for (NEDElement *child=node->getFirstChild(); child; child=child->getNextSibling())
+    {
+        int childTag = child->getTagCode();
+        if (childTag==NED_WHITESPACE)
+            ; //ignore
+        else if (childTag==NED_PROPERTY)
+            doProperty((PropertyNode *)child, indent, false, NULL);
+        else if (childTag==NED_PARAM)
+            doChannelParam((ParamNode *)child, NULL);
+        else if (childTag==NED_PATTERN)
+            errors->add(node, "patterns are " A_NED2_FEATURE);
+        else if (childTag==NED_PARAM_GROUP)
+            errors->add(node, "parameter groups in connections are " A_NED2_FEATURE);
+        else
+            INTERNAL_ERROR0(node,"unexpected element");
+    }
 }
 
+void NED1Generator::doChannelParam(ParamNode *node, const char *indent)
+{
+    const char *name = node->getName();
+    if (strcmp(name, "delay")==0 || strcmp(name, "error")==0 || strcmp(name, "datarate")==0)
+    {
+        // indent==NULL means no indent and no new line at end (but a space at front)
+        OUT << (indent ? indent : " ");
+        OUT << node->getName() << " ";
+        printExpression(node, "value", indent);
+        OUT << (indent ? "\n" : "");
+    }
+    else
+    {
+        errors->add(node, "channel parameters other than delay, error and datarate are " A_NED2_FEATURE);
+    }
+}
 
 void NED1Generator::doParamGroup(ParamGroupNode *node, const char *indent, bool islast, const char *)
 {

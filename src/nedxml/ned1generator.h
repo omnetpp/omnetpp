@@ -127,6 +127,7 @@ class NED1Generator
     void doModuleParam(ParamNode *node, const char *indent, bool islast, const char *);
     void doSubstParam(ParamNode *node, const char *indent, bool islast, const char *);
     void doSubstParamGroup(NEDElement *node, const char *indent);
+    void doChannelParam(ParamNode *node, const char *indent);
     void doPattern(PatternNode *node, const char *indent, bool islast, const char *);
     void doProperty(PropertyNode *node, const char *indent, bool islast, const char *);
     void doPropertyKey(PropertyKeyNode *node, const char *indent, bool islast, const char *);
