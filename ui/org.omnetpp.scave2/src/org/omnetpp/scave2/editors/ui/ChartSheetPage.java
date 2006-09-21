@@ -18,6 +18,7 @@ import org.omnetpp.scave.model.ChartSheet;
 import org.omnetpp.scave.model.ScaveModelPackage;
 import org.omnetpp.scave2.charting.ChartFactory;
 import org.omnetpp.scave2.charting.ScalarChart;
+import org.omnetpp.scave2.charting.VectorChart;
 import org.omnetpp.scave2.editors.ScaveEditor;
 
 public class ChartSheetPage extends ScaveEditorPage {
@@ -34,8 +35,8 @@ public class ChartSheetPage extends ScaveEditorPage {
 	
 	public void updatePage(Notification notification) {
 		if (ScaveModelPackage.eINSTANCE.getChartSheet_Name().equals(notification.getFeature())) {
-			setPageTitle("Charts: " + chartsheet.getName());
-			setFormTitle("Charts: " + chartsheet.getName());
+			setPageTitle("Charts: " + getChartSheetName(chartsheet));
+			setFormTitle("Charts: " + getChartSheetName(chartsheet));
 		}
 	}
 	
@@ -51,8 +52,8 @@ public class ChartSheetPage extends ScaveEditorPage {
 	
 	private void initialize() {
 		// set up UI
-		setPageTitle("Charts: " + chartsheet.getName());
-		setFormTitle("Charts: " + chartsheet.getName());
+		setPageTitle("Charts: " + getChartSheetName(chartsheet));
+		setFormTitle("Charts: " + getChartSheetName(chartsheet));
 		setBackground(ColorFactory.asColor("white"));
 		setExpandHorizontal(true);
 		setExpandVertical(true);
@@ -80,6 +81,13 @@ public class ChartSheetPage extends ScaveEditorPage {
 		for (final Chart chart : charts) {
 			Control swtChart = ChartFactory.createChart(parent, chart, scaveEditor.getResultFileManager());
 			addChart(swtChart);
+			
+			if (swtChart instanceof ScalarChart) {
+				((ScalarChart)swtChart).setDisplayLegend(false);
+			}
+			else if (swtChart instanceof VectorChart) {
+				((VectorChart)swtChart).setDisplayLegend(false);
+			}
 
 			swtChart.addMouseListener(new MouseAdapter() { //FIXME this is a hack to get chart opened by double-click; to be done properly (SelectionListener, ask chart from widget)
 				public void mouseDoubleClick(MouseEvent e) {
@@ -87,5 +95,9 @@ public class ChartSheetPage extends ScaveEditorPage {
 				}
 			});
 		}
+	}
+	
+	private static String getChartSheetName(ChartSheet chartSheet) {
+		return chartSheet.getName() != null ? chartSheet.getName() : "<unnamed>";
 	}
 }
