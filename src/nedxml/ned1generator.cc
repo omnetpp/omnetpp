@@ -357,8 +357,6 @@ void NED1Generator::doModuleParameters(ParametersNode *node, const char *indent)
         else
             INTERNAL_ERROR0(node,"unexpected element");
     }
-
-    generateChildren(node, increaseIndent(indent));
 }
 
 static bool _hasSiblingBefore(NEDElement *node, int searchTag, int stopTag)

@@ -54,7 +54,7 @@ bool opt_genned = false;           // -n
 bool opt_genmsg = false;           // -g
 bool opt_validateonly = false;     // -v
 int opt_nextfiletype = UNKNOWN_FILE; // -X
-bool opt_newsyntax = false;        // -N
+bool opt_oldsyntax = false;        // -Q
 const char *opt_suffix = NULL;     // -s
 const char *opt_hdrsuffix = NULL;  // -S
 bool opt_unparsedexpr = false;     // -e
@@ -95,7 +95,7 @@ void printUsage()
        "  -h  place output file into current directory\n"
        "  -I <dir>: add directory to NED include path\n"
        "  -X xml/ned/msg/off: following files are XML, NED or MSG up to '-X off'\n"
-       "  -N: with -n: use new NED syntax (experimental)\n"
+       "  -Z: with -n: use old (3.x) NED syntax\n"
        "  -s <suffix>: suffix for generated files\n"
        "  -S <suffix>: when generating C++, suffix for generated header files\n"
        "  -e: do not parse expressions in NED input; expect unparsed expressions in XML\n"
@@ -110,9 +110,7 @@ void printUsage()
        "  @@listfile: like @listfile, but contents is interpreted as relative to\n"
        "      the current working directory. @@ listfiles can be put anywhere,\n"
        "      including /tmp -- effect only depends on the working directory.\n"
-       "NOTE: C++ code generation from .msg files and the new NED-2 syntax are still\n"
-       "experimental and should not be used in production environment. Message (.msg)\n"
-       "files should be processed with opp_msgc.\n"
+       "Message (.msg) files should be processed with opp_msgc.\n"
     );
 }
 
@@ -136,6 +134,14 @@ void createFileNameWithSuffix(char *outfname, const char *infname, const char *s
     while (s>outfname && *s!='/' && *s!='\\' && *s!='.') s--;
     if (*s!='.') s=outfname+strlen(outfname);
     strcpy(s,suffix);
+}
+
+void generateNED(std::ostream& out, NEDElement *node, NEDErrorStore *e, bool oldsyntax)
+{
+    if (oldsyntax)
+        generateNED1(out, node, e);
+    else
+        generateNED2(out, node, e);
 }
 
 bool processFile(const char *fname, NEDErrorStore *errors)
@@ -272,8 +278,7 @@ try{
         else if (opt_genned || opt_genmsg)
         {
             ofstream out(outfname);
-            generateNED2(out, tree, errors);
-//XXX            generateNED1(out, tree, errors);
+            generateNED(out, tree, errors, opt_oldsyntax);
             out.close();
         }
         else
@@ -443,9 +448,9 @@ int main(int argc, char **argv)
                 return 1;
             }
         }
-        else if (!strcmp(argv[i],"-N"))
+        else if (!strcmp(argv[i],"-Q"))
         {
-            opt_newsyntax = true;
+            opt_oldsyntax = true;
         }
         else if (!strcmp(argv[i],"-s"))
         {
@@ -568,7 +573,7 @@ int main(int argc, char **argv)
         if (opt_genxml)
             generateXML(out, outputtree, opt_srcloc);
         else if (opt_genned)
-;//XXX            generateNED(out, outputtree, opt_newsyntax);
+            generateNED(out, outputtree, errors, opt_oldsyntax);
         else
             return 1; // mergeoutput with C++ output not supported
             // generateCpp(out, cout, outputtree);
