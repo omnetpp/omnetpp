@@ -1,0 +1,25 @@
+2006-09-21
+
+Additions
+
+   + New chart automatically added to a default chart sheet which is created on demand.
+
+   + Vector charts extended with legend and title. Their properties can be set from the
+     Properties view or from the edit dialog.
+
+   + Input files can be added by pressing the "Add files..." button on the Inputs page.
+     "Add with wildcards..." is not yet implemented.
+
+   + Runs are displayed in the logical view under the corresponding replication.
+
+Fixes
+
+   + Filter parameters use less space in the data tables.
+
+   + Title of the "Input files" section is displayed on the Inputs page.
+
+   + When the chart sheet does not have name, "<unnamed>" is displayed in the
+     title of the ChartSheet page.
+
+   + NullReferenceExceptions thrown when opening the edit dialog or updating views of charts.
+
