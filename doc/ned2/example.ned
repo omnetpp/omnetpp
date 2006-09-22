@@ -129,6 +129,16 @@
 // STILL PROBLEM: what to do with conditional properties? like this:
 //   @display(c="green") if index==3;    <=== how to write this?
 //
+// FIXME PROBLEM: NED-I conditional connection inside a "for" cannot be 
+// mapped to NED-2 which is BAD because it is VERY common!!!
+// Must allow 'if' inside connection groups as well!
+//
+// FIXME Additionally: "where" is too unfamiliar for programmers, and syntax
+// for mixing loops with conditionals is CONFUSING!!! 
+// Ditch where, and use "for" + "if" instead?
+//    for i=0..N-1, for j=0..M-1, if i!=j {...} ???
+//
+//
 
 package generic.queueing;  // default package for following components
 
