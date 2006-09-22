@@ -85,8 +85,19 @@ PropertyNode *addComponentProperty(NEDElement *node, const char *name)
 {
     // add propery under the ParametersNode; create that if not yet exists
     NEDElement *params = node->getFirstChildWithTag(NED_PARAMETERS);
-    if (!params)
+    if (!params) {
         params = createNodeWithTag(NED_PARAMETERS, node);
+
+        // move parameters section in front of potential gates, types, etc sections
+        NEDElement *prev;
+        while ((prev=params->getPrevSibling())!=NULL &&
+                 (prev->getTagCode()==NED_GATES || prev->getTagCode()==NED_TYPES ||
+                  prev->getTagCode()==NED_SUBMODULES || prev->getTagCode()==NED_CONNECTIONS))
+        {
+            node->removeChild(params);
+            node->insertChildBefore(prev, params);
+        }
+    }
     PropertyNode *prop = (PropertyNode *)createNodeWithTag(NED_PROPERTY, params);
     prop->setName(name);
     return prop;
@@ -223,8 +234,20 @@ void addLikeParam(NEDElement *elem, const char *attrname, YYLTYPE exprpos, NEDEl
 void addExpression(NEDElement *elem, const char *attrname, YYLTYPE exprpos, NEDElement *expr)
 {
    if (np->getParseExpressionsFlag()) {
-       elem->appendChild(expr);
        ((ExpressionNode *)expr)->setTarget(attrname);
+
+/*XXX probably not needed
+       // in the DTD, whilespaces and expressions are at front, insert there
+       NEDElement *insertPos = elem->getFirstChild();
+       while (insertPos && (insertPos->getTagCode()==NED_WHITESPACE || insertPos->getTagCode()==NED_EXPRESSION))
+           insertPos = insertPos->getNextSibling();
+       if (!insertPos)
+           elem->appendChild(expr);
+       else
+           insertPos->insertChildBefore(insertPos, expr);
+*/
+       elem->appendChild(expr);
+
    } else {
        elem->setAttribute(attrname, toString(exprpos));
    }

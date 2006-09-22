@@ -360,14 +360,6 @@ displayblock_old
                   storePos(ps.propkey, @$);
                   storePos(literal, @3);
                   storePos(ps.property, @$);
-
-                  // move parameters section in front of potential gates section
-                  if (ps.params && ps.module->getFirstChild()!=ps.params)
-                  {
-                      assert(ps.params->getParent()==ps.module);
-                      ps.module->removeChild(ps.params);
-                      ps.module->insertChildBefore(ps.module->getFirstChild(), ps.params);
-                  }
                 }
         ;
 
@@ -782,14 +774,6 @@ opt_submod_displayblock_old
                   storePos(ps.propkey, @$);
                   storePos(literal, @3);
                   storePos(ps.property, @$);
-
-                  // move parameters section in front of potential gatesizes section
-                  if (ps.substparams && ps.submod->getFirstChild()!=ps.substparams)
-                  {
-                      assert(ps.substparams->getParent()==ps.submod);
-                      ps.submod->removeChild(ps.substparams);
-                      ps.submod->insertChildBefore(ps.submod->getFirstChild(), ps.substparams);
-                  }
                 }
         |
         ;
