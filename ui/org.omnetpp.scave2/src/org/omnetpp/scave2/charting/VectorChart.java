@@ -394,12 +394,12 @@ public class VectorChart extends ZoomableCachingCanvas {
 	@Override
 	protected void beforePaint(GC gc) {
 		// Calculate space occupied by title and legend and set insets accordingly
-		Rectangle remaining = title.layout(gc, gc.getClipping());
+		Rectangle remaining = title.layout(gc, getClientArea());
 		remaining = legend.layout(gc, remaining);
 		remaining = tickLabels.layout(gc, remaining);
 		remaining = axes.layout(gc, remaining);
 
-		Insets insets = calculateInsets(gc.getClipping(), remaining);
+		Insets insets = calculateInsets(getClientArea(), remaining);
 		setInsets(insets);
 		super.beforePaint(gc);
 	}
