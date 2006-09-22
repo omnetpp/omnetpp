@@ -244,7 +244,7 @@ void addExpression(NEDElement *elem, const char *attrname, YYLTYPE exprpos, NEDE
        if (!insertPos)
            elem->appendChild(expr);
        else
-           insertPos->insertChildBefore(insertPos, expr);
+           elem->insertChildBefore(insertPos, expr);
 
    } else {
        elem->setAttribute(attrname, toString(exprpos));
