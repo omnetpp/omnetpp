@@ -29,9 +29,6 @@
 //     2. "channel X {...}" means "channel X extends BasicChannel {...}"
 //        XXX wouldn't it be better to force the user spell out "extends BasicChannel"?? one less exception!!!
 //
-// - module inheritance: "module X extends ASimpleModule" is ILLEGAL, as is
-//   "simple X extends ACompoundModule".
-//
 // XXX What about this: "module X extends ASimple" instead of "simple X extends ASimple"??
 //   Otherwise, if base type's implementation gets changed from simple to compound,
 //   all subclasses will have to be changed!!!! It can be still asserted that
@@ -41,6 +38,12 @@
 //   (That is, code CANNOT be modified via "extends" -- it always stays the same,
 //   that of the ultimate base class.) Subclass may add new parameters and gates
 //   (if it makes sense...) and set parameters and gate vector sizes.
+//
+// - WHAT IF: "simple" would mean "underlying C++ class expected", and 
+//   "module" would mean "no underlying C++ class" ? 
+//   That is, both "module X extends ASimpleModule" and "simple X extends ASimpleModule"
+//   would be legal and would mean DIFFERENT things. 
+//   ("simple X extends ACompoundModule" would still be illegal)
 //
 // - "module X extends ACompoundModule": subclass may NOT add further submodules,
 //   gates, connections. Parameters can be added or assigned a value.
