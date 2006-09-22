@@ -85,7 +85,8 @@ PropertyNode *addComponentProperty(NEDElement *node, const char *name)
 {
     // add propery under the ParametersNode; create that if not yet exists
     NEDElement *params = node->getFirstChildWithTag(NED_PARAMETERS);
-    if (!params) {
+    if (!params)
+    {
         params = createNodeWithTag(NED_PARAMETERS, node);
 
         // move parameters section in front of potential gates, types, etc sections
@@ -236,7 +237,6 @@ void addExpression(NEDElement *elem, const char *attrname, YYLTYPE exprpos, NEDE
    if (np->getParseExpressionsFlag()) {
        ((ExpressionNode *)expr)->setTarget(attrname);
 
-/*XXX probably not needed
        // in the DTD, whilespaces and expressions are at front, insert there
        NEDElement *insertPos = elem->getFirstChild();
        while (insertPos && (insertPos->getTagCode()==NED_WHITESPACE || insertPos->getTagCode()==NED_EXPRESSION))
@@ -245,8 +245,6 @@ void addExpression(NEDElement *elem, const char *attrname, YYLTYPE exprpos, NEDE
            elem->appendChild(expr);
        else
            insertPos->insertChildBefore(insertPos, expr);
-*/
-       elem->appendChild(expr);
 
    } else {
        elem->setAttribute(attrname, toString(exprpos));

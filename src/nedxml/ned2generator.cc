@@ -888,7 +888,7 @@ void NED2Generator::doLiteral(LiteralNode *node, const char *indent, bool islast
         OUT << node->getValue();
         if (isstring) OUT << "\"";
     }
-    if (!islast)
+    if (!islast && sep!=NULL)
         OUT << sep;
 }
 
