@@ -97,6 +97,8 @@
 // - XXX is it possible to set a parameter to its default value? e.g. queueCapacity = default;
 //
 //
+// DO WE NEED "like *" ? Not much value in there...
+//
 // STATIC ANALYSIS IS NO GOOD WITH CONDITIONALS:
 // as param values, gate size, param/gate/module/submodule properties may
 // involve conditionals, they are UNDETERMINABLE with static analysis.
