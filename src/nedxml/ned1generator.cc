@@ -85,9 +85,27 @@ const char *NED1Generator::decreaseIndent(const char *indent)
     return indent + indentsize;
 }
 
+//---------------------------------------------------------------------------
+
 inline bool strnotnull(const char *s)
 {
     return s && s[0];
+}
+
+static bool _hasSiblingBefore(NEDElement *node, int searchTag, int stopTag)
+{
+    // true if: node itself is searchTag, or has searchTag before stopTag
+    // (and false if node is immediately a stopTag)
+    for (NEDElement *rest=node; rest && rest->getTagCode()!=stopTag; rest=rest->getNextSibling())
+         if (rest->getTagCode()==searchTag)
+             return true;
+    return false;
+}
+
+static bool _isNetworkNode(NEDElement *node)
+{
+    return (node->getTagCode()==NED_COMPOUND_MODULE && ((CompoundModuleNode *)node)->getIsNetwork())
+        || (node->getTagCode()==NED_SIMPLE_MODULE && ((SimpleModuleNode *)node)->getIsNetwork());
 }
 
 //---------------------------------------------------------------------------
@@ -139,8 +157,7 @@ void NED1Generator::generateChildrenWithTypes(NEDElement *node, int tagcodes[], 
 void NED1Generator::printInheritance(NEDElement *node, const char *indent)
 {
     // for network...endnetwork, print " : type", otherwise warn for any "extends" or "like"
-    if ((node->getTagCode()==NED_COMPOUND_MODULE && ((CompoundModuleNode *)node)->getIsNetwork())
-     || (node->getTagCode()==NED_SIMPLE_MODULE && ((SimpleModuleNode *)node)->getIsNetwork()))
+    if (_isNetworkNode(node))
     {
         if (node->getNumChildrenWithTag(NED_INTERFACE_NAME)>0)
             errors->add(node, ERRCAT_WARNING, "inheritance is " A_NED2_FEATURE);
@@ -326,10 +343,10 @@ void NED1Generator::doParameters(ParametersNode *node, const char *indent, bool 
 {
     // in NED-1, parameters followed different syntaxes at different places
     int parentTag = node->getParent()->getTagCode();
-    if (parentTag==NED_SIMPLE_MODULE || parentTag==NED_COMPOUND_MODULE)
-        doModuleParameters(node, indent);
-    else if (parentTag==NED_SUBMODULE)
+    if (parentTag==NED_SUBMODULE || _isNetworkNode(node->getParent()))
         doSubstParameters(node, indent);
+    else if (parentTag==NED_SIMPLE_MODULE || parentTag==NED_COMPOUND_MODULE)
+        doModuleParameters(node, indent);
     else if (parentTag==NED_CHANNEL)
         doChannelParameters(node, indent);
     else if (parentTag==NED_CHANNEL_SPEC)
@@ -357,16 +374,6 @@ void NED1Generator::doModuleParameters(ParametersNode *node, const char *indent)
         else
             INTERNAL_ERROR0(node,"unexpected element");
     }
-}
-
-static bool _hasSiblingBefore(NEDElement *node, int searchTag, int stopTag)
-{
-    // true if: node itself is searchTag, or has searchTag before stopTag
-    // (and false if node is immediately a stopTag)
-    for (NEDElement *rest=node; rest && rest->getTagCode()!=stopTag; rest=rest->getNextSibling())
-         if (rest->getTagCode()==searchTag)
-             return true;
-    return false;
 }
 
 void NED1Generator::doSubstParameters(ParametersNode *node, const char *indent)
