@@ -165,7 +165,7 @@ void NED1Generator::printInheritance(NEDElement *node, const char *indent)
         if (!extendsNode)
             errors->add(node, ERRCAT_WARNING, "network must extend a module type");
         else
-            OUT << " : " << ((ExtendsNode *)extendsNode)->getName();
+            OUT << ": " << ((ExtendsNode *)extendsNode)->getName();
     }
     else if (node->getFirstChildWithTag(NED_EXTENDS) || node->getFirstChildWithTag(NED_INTERFACE_NAME))
     {
@@ -516,7 +516,7 @@ void NED1Generator::doModuleParam(ParamNode *node, const char *indent, bool isla
 
     OUT << indent << node->getName();
     if (parType!=NULL)
-        OUT << " : " << parType;
+        OUT << ": " << parType;
 
     if (hasExpression(node,"value"))
         errors->add(node, ERRCAT_WARNING, "assignments in parameter declarations are " A_NED2_FEATURE);
@@ -563,25 +563,101 @@ void NED1Generator::doPropertyKey(PropertyKeyNode *node, const char *indent, boo
 
 void NED1Generator::doGates(GatesNode *node, const char *indent, bool islast, const char *)
 {
-    OUT << indent << "gates:\n";
-    generateChildren(node, increaseIndent(indent));
+    // in NED-1, distingish between "gates" and "gatesizes"
+    int parentTag = node->getParent()->getTagCode();
+    if (parentTag==NED_SUBMODULE)
+        doSubmoduleGatesizes(node, indent);
+    else if (parentTag==NED_SIMPLE_MODULE || parentTag==NED_COMPOUND_MODULE)
+        doModuleGates(node, indent);
+    else
+        INTERNAL_ERROR0(node,"unexpected gates section");
+
+    //OUT << indent << "gates:\n";
+    //generateChildren(node, increaseIndent(indent));
+}
+
+void NED1Generator::doModuleGates(GatesNode *node, const char *indent)
+{
+    if (node->getFirstChildWithTag(NED_GATE))
+        OUT << indent << "gates:\n";
+
+    for (NEDElement *child=node->getFirstChild(); child; child=child->getNextSibling())
+    {
+        int childTag = child->getTagCode();
+        if (childTag==NED_WHITESPACE)
+            ; // ignore whitespace
+        else if (childTag==NED_GATE)
+            doModuleGate((GateNode *)child, increaseIndent(indent), child->getNextSiblingWithTag(NED_GATE)==NULL, NULL);
+        else if (childTag==NED_GATE_GROUP)
+            errors->add(node, ERRCAT_WARNING, "gate groups are " A_NED2_FEATURE);
+        else
+            INTERNAL_ERROR0(node,"unexpected element");
+    }
 }
 
 void NED1Generator::doGateGroup(GateGroupNode *node, const char *indent, bool islast, const char *)
 {
-    indent = decreaseIndent(indent);
-    OUT << indent << "gates ";
-    generateChildrenWithType(node, NED_CONDITION, increaseIndent(indent));
-    OUT << ":\n";
+    // we use doSubmoduleGatesizes() instead, NED-1 doesn't allow groups elsewhere
+    // doGates() ensures we never get here
+    INTERNAL_ERROR0(node, "should never get here");
+}
 
-    generateChildrenWithType(node, NED_GATE, increaseIndent(indent));
+void NED1Generator::doSubmoduleGatesizes(GatesNode *node, const char *indent)
+{
+    doGatesizesGroup(node, indent);
+}
 
-    if (node->getNextSibling() && node->getNextSibling()->getTagCode()==NED_GATE)
-        OUT << indent << "gates:\n"; // restore default scope
+void NED1Generator::doGatesizesGroup(NEDElement *node, const char *indent)
+{
+    // node may be GatesNode or GateGroupNode
+
+    // print "gates:" if there's a gate until the next gategroup (or at all)
+    if (_hasSiblingBefore(node->getFirstChild(), NED_GATE, NED_GATE_GROUP))
+    {
+        // print "gates" or "gates if"
+        if (node->getFirstChildWithTag(NED_CONDITION)==NULL)
+        {
+            OUT << indent << "gatesizes:\n";
+        }
+        else
+        {
+            OUT << indent << "gatesizes ";
+            generateChildrenWithType(node, NED_CONDITION, increaseIndent(indent));
+            OUT << ":\n";
+        }
+    }
+
+    for (NEDElement *child=node->getFirstChild(); child; child=child->getNextSibling())
+    {
+        int childTag = child->getTagCode();
+        if (childTag==NED_WHITESPACE || childTag==NED_CONDITION)
+            ; //ignore
+        else if (childTag==NED_GATE)
+            doGatesize((GateNode *)child, increaseIndent(indent), !_hasSiblingBefore(child->getNextSibling(), NED_GATE, NED_GATE_GROUP), NULL);
+        else if (childTag==NED_GATE_GROUP)
+        {
+            doGatesizesGroup(child, indent);
+
+            // if there is more NED_GATE until the next NED_GATE_GROUP or end,
+            // print "gatesizes:" (to return to unconditional scope)
+            if (_hasSiblingBefore(child->getNextSibling(), NED_GATE, NED_GATE_GROUP))
+                OUT << indent << "gatesizes:\n";
+        }
+        else
+            INTERNAL_ERROR0(node,"unexpected element");
+    }
 }
 
 void NED1Generator::doGate(GateNode *node, const char *indent, bool islast, const char *)
 {
+    // we use doModuleGate()/doGatesize() instead
+    // doGates() ensures we never get here
+    INTERNAL_ERROR0(node, "should never get here");
+}
+
+void NED1Generator::doModuleGate(GateNode *node, const char *indent, bool islast, const char *)
+{
+//FIXME reduce to NED-1
     OUT << indent;
     switch (node->getType())
     {
@@ -599,6 +675,29 @@ void NED1Generator::doGate(GateNode *node, const char *indent, bool islast, cons
     generateChildrenWithType(node, NED_PROPERTY, increaseIndent(indent), " ");
     generateChildrenWithType(node, NED_CONDITION, increaseIndent(indent));
     OUT << ";\n";
+}
+
+void NED1Generator::doGatesize(GateNode *node, const char *indent, bool islast, const char *)
+{
+/*
+    OUT << indent;
+    switch (node->getType())
+    {
+        case NED_GATETYPE_NONE:   break;
+        case NED_GATETYPE_INPUT:  OUT << "in: "; break;
+        case NED_GATETYPE_OUTPUT: OUT << "out: "; break;
+        case NED_GATETYPE_INOUT:  errors->add(node, ERRCAT_WARNING, "inout gates are " A_NED2_FEATURE); break;
+        default: INTERNAL_ERROR0(node, "wrong type");
+    }
+    OUT << node->getName();
+    if (node->getIsVector())
+        OUT << "[]";
+    printOptVector(node, "vector-size",indent);
+
+    generateChildrenWithType(node, NED_PROPERTY, increaseIndent(indent), " ");
+    generateChildrenWithType(node, NED_CONDITION, increaseIndent(indent));
+    OUT << ";\n";
+*/
 }
 
 void NED1Generator::doTypes(TypesNode *node, const char *indent, bool islast, const char *)
