@@ -552,6 +552,8 @@ void NED1Generator::doPattern(PatternNode *node, const char *indent, bool islast
 void NED1Generator::doProperty(PropertyNode *node, const char *indent, bool islast, const char *sep)
 {
     // only @display is recognized, but it needs to be printed at a different place
+    //FIXME but gates, parameters etc cannot have @display property!!!
+    //FIXME but parameters can have @prompt etc.
     if (strcmp(node->getName(), "display")!=0)
         errors->add(node, ERRCAT_WARNING, "properties are " A_NED2_FEATURE);
 }
@@ -657,47 +659,39 @@ void NED1Generator::doGate(GateNode *node, const char *indent, bool islast, cons
 
 void NED1Generator::doModuleGate(GateNode *node, const char *indent, bool islast, const char *)
 {
-//FIXME reduce to NED-1
     OUT << indent;
     switch (node->getType())
     {
-        case NED_GATETYPE_NONE:   break;
         case NED_GATETYPE_INPUT:  OUT << "in: "; break;
         case NED_GATETYPE_OUTPUT: OUT << "out: "; break;
         case NED_GATETYPE_INOUT:  errors->add(node, ERRCAT_WARNING, "inout gates are " A_NED2_FEATURE); break;
+        case NED_GATETYPE_NONE:   errors->add(node, ERRCAT_WARNING, "this is " A_NED2_FEATURE); break;
         default: INTERNAL_ERROR0(node, "wrong type");
     }
     OUT << node->getName();
     if (node->getIsVector())
         OUT << "[]";
-    printOptVector(node, "vector-size",indent);
-
+    if (hasExpression(node, "vector-size"))
+        errors->add(node, ERRCAT_WARNING, "specifying gate vector size in gate declaration is " A_NED2_FEATURE);
     generateChildrenWithType(node, NED_PROPERTY, increaseIndent(indent), " ");
-    generateChildrenWithType(node, NED_CONDITION, increaseIndent(indent));
+    if (node->getFirstChildWithTag(NED_CONDITION))
+        errors->add(node, ERRCAT_WARNING, "conditional gate declaration is " A_NED2_FEATURE);
     OUT << ";\n";
 }
 
 void NED1Generator::doGatesize(GateNode *node, const char *indent, bool islast, const char *)
 {
-/*
     OUT << indent;
-    switch (node->getType())
-    {
-        case NED_GATETYPE_NONE:   break;
-        case NED_GATETYPE_INPUT:  OUT << "in: "; break;
-        case NED_GATETYPE_OUTPUT: OUT << "out: "; break;
-        case NED_GATETYPE_INOUT:  errors->add(node, ERRCAT_WARNING, "inout gates are " A_NED2_FEATURE); break;
-        default: INTERNAL_ERROR0(node, "wrong type");
-    }
+    if (node->getType()!=NED_GATETYPE_NONE)
+        errors->add(node, ERRCAT_WARNING, "declaring new gates for submodules is " A_NED2_FEATURE);
     OUT << node->getName();
-    if (node->getIsVector())
-        OUT << "[]";
+    if (!hasExpression(node, "vector-size"))
+        errors->add(node, ERRCAT_WARNING, "missing gate size " A_NED2_FEATURE);
     printOptVector(node, "vector-size",indent);
 
     generateChildrenWithType(node, NED_PROPERTY, increaseIndent(indent), " ");
     generateChildrenWithType(node, NED_CONDITION, increaseIndent(indent));
     OUT << ";\n";
-*/
 }
 
 void NED1Generator::doTypes(TypesNode *node, const char *indent, bool islast, const char *)
