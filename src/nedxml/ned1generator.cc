@@ -165,7 +165,7 @@ void NED1Generator::printInheritance(NEDElement *node, const char *indent)
         if (!extendsNode)
             errors->add(node, ERRCAT_WARNING, "network must extend a module type");
         else
-            OUT << ": " << ((ExtendsNode *)extendsNode)->getName();
+            OUT << " : " << ((ExtendsNode *)extendsNode)->getName();
     }
     else if (node->getFirstChildWithTag(NED_EXTENDS) || node->getFirstChildWithTag(NED_INTERFACE_NAME))
     {
@@ -691,7 +691,7 @@ void NED1Generator::doGatesize(GateNode *node, const char *indent, bool islast, 
 
     generateChildrenWithType(node, NED_PROPERTY, increaseIndent(indent), " ");
     generateChildrenWithType(node, NED_CONDITION, increaseIndent(indent));
-    OUT << ";\n";
+    OUT << (islast ? ";\n" : ",\n");
 }
 
 void NED1Generator::doTypes(TypesNode *node, const char *indent, bool islast, const char *)
