@@ -316,6 +316,10 @@ void NED1Generator::doCompoundModule(CompoundModuleNode *node, const char *inden
     generateChildrenWithType(node, NED_SUBMODULES, increaseIndent(indent));
     generateChildrenWithType(node, NED_CONNECTIONS, increaseIndent(indent));
 
+    const char *dispstr = getDisplayStringOf(node);
+    if (dispstr)
+        OUT << increaseIndent(indent) << "display: " << dispstr << ";\n";
+
     OUT << indent << (node->getIsNetwork() ? "endnetwork" : "endmodule") << "\n\n";
 }
 
@@ -333,7 +337,6 @@ void NED1Generator::doChannel(ChannelNode *node, const char *indent, bool islast
     printInheritance(node, indent);
     OUT << "\n";
 
-    // FIXME restrict param names to delay/error/datarate
     generateChildrenWithType(node, NED_PARAMETERS, increaseIndent(indent));
 
     OUT << indent << "endchannel\n\n";
@@ -715,6 +718,7 @@ void NED1Generator::doSubmodule(SubmoduleNode *node, const char *indent, bool is
     {
         // "like" version
         printExpression(node, "like-param", indent); // this (incidentally) also works if like-param contains a property (ie. starts with "@")
+        printOptVector(node, "vector-size",indent);
 
         if (strnotnull(node->getLikeType()))
             OUT << " like " << node->getLikeType();
@@ -725,12 +729,34 @@ void NED1Generator::doSubmodule(SubmoduleNode *node, const char *indent, bool is
     {
         // "like"-less
         OUT << node->getType();
+        printOptVector(node, "vector-size",indent);
     }
-    printOptVector(node, "vector-size",indent);
-
     OUT << ";\n";
+
     generateChildrenWithType(node, NED_PARAMETERS, increaseIndent(indent));
     generateChildrenWithType(node, NED_GATES, increaseIndent(indent));
+
+    const char *dispstr = getDisplayStringOf(node);
+    if (dispstr)
+        OUT << increaseIndent(indent) << "display: " << dispstr << ";\n";
+}
+
+const char *NED1Generator::getDisplayStringOf(NEDElement *node)
+{
+    // node must be a module, submodule or a connection-spec
+    ParametersNode *parameters = (ParametersNode *)node->getFirstChildWithTag(NED_PARAMETERS);
+    if (!parameters)
+        return NULL;
+    PropertyNode *displayProp = (PropertyNode *)parameters->getFirstChildWithAttribute(NED_PROPERTY, "name", "display");
+    if (!displayProp)
+        return NULL;
+    PropertyKeyNode *propKey = (PropertyKeyNode *)displayProp->getFirstChildWithAttribute(NED_PROPERTY_KEY, "key", "");
+    if (!propKey)
+        return NULL;
+    LiteralNode *literal = (LiteralNode *)propKey->getFirstChildWithTag(NED_LITERAL);
+    if (!literal)
+        return NULL;
+    return literal->getText();
 }
 
 void NED1Generator::doConnections(ConnectionsNode *node, const char *indent, bool islast, const char *)
@@ -783,8 +809,17 @@ void NED1Generator::doConnection(ConnectionNode *node, const char *indent, bool 
 
     if (node->getFirstChildWithTag(NED_WHERE))
     {
-        OUT << " ";
+        OUT << " where "; //FIXME
         generateChildrenWithType(node, NED_WHERE, indent);
+    }
+
+    // display string
+    NEDElement *chanSpecNode = node->getFirstChildWithTag(NED_CHANNEL_SPEC);
+    if (chanSpecNode)
+    {
+        const char *dispstr = getDisplayStringOf(chanSpecNode);
+        if (dispstr)
+            OUT << " display " << dispstr;
     }
 
     OUT << ";\n";
@@ -818,7 +853,7 @@ void NED1Generator::doConnectionGroup(ConnectionGroupNode *node, const char *ind
 
     generateChildrenWithType(node, NED_CONNECTION, increaseIndent(indent));
 
-    OUT << "endfor;\n";
+    OUT << indent << "endfor;\n";
 }
 
 void NED1Generator::doWhere(WhereNode *node, const char *indent, bool islast, const char *)
