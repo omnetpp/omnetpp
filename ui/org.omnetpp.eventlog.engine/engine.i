@@ -1,5 +1,8 @@
 %module ScaveEngine
 
+%include "enumtypeunsafe.swg"
+%javaconst(1);
+
 %pragma(java) jniclasscode=%{
   static {
     try {
@@ -12,7 +15,16 @@
 %}
 
 %{
+#include "event.h"
+#include "filteredevent.h"
+#include "messagedependency.h"
+#include "eventlogentry.h"
+#include "eventlogentries.h"
+#include "eventlogindex.h"
 #include "eventlog.h"
+#include "eventlogfacade.h"
+#include "filteredeventlog.h"
+#include "filereader.h"
 %}
 
 %exception {
@@ -129,9 +141,11 @@ namespace std {
 
    //%template(StringMap) map<string,string>;
 
-   specialize_std_vector(MessageEntry*);
+   specialize_std_vector(MessageDependency*);
+   %template(MessageDependencyList) vector<MessageDependency*>;
 
-   %template(MessageEntries) vector<MessageEntry*>;
+   specialize_std_vector(FilteredMessageDependency*);
+   %template(FilteredMessageDependencyList) vector<FilteredMessageDependency*>;
 
    specialize_std_vector(const char *);
 
@@ -147,6 +161,7 @@ namespace std {
 
 };
 
+/*
 %ignore EventLog::writeTrace;
 
 %define FIX_STRING_MEMBER(STRUCT,MEMBER,CAPITALIZEDMEMBER)
@@ -163,12 +178,29 @@ namespace std {
    const char * get ## CAPITALIZEDMEMBER() {return self->MEMBER;}
 }
 %enddef
+*/
 
-FIX_CHARPTR_MEMBER(MessageEntry, messageName, MessageName);
-FIX_CHARPTR_MEMBER(MessageEntry, messageClassName, MessageClassName);
-FIX_CHARPTR_MEMBER(ModuleEntry, moduleClassName, ModuleClassName);
-FIX_STRING_MEMBER(ModuleEntry, moduleFullPath, ModuleFullPath);
+typedef double simtime_t;
 
+%ignore eventLogStringPool;
+%ignore FILE;
+%ignore *::parse;
+%ignore *::print(FILE *);
+%ignore *::print(FILE *, long, long);
+%ignore *::print(FILE *, long);
+%ignore *::printInitializationLogEntries(FILE *);
+%ignore *::printEvents(FILE *);
+%ignore *::printCause(FILE *);
+%ignore *::printConsequence(FILE *);
+%ignore *::printMiddle(FILE *);
+
+%include "event.h"
+%include "filteredevent.h"
+%include "messagedependency.h"
+%include "eventlogentry.h"
+%include "eventlogentries.h"
+%include "eventlogindex.h"
 %include "eventlog.h"
-
-
+%include "eventlogfacade.h"
+%include "filteredeventlog.h"
+%include "filereader.h"
