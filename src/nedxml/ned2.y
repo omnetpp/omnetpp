@@ -1207,6 +1207,7 @@ connectionsitem
 connectiongroup
         : opt_loops_and_conditions '{'
                 {
+                  //FIXME error if already in group (ps.inGroup)? otherwise we can't restore ps.conngroup....
                   ps.conngroup = (ConnectionGroupNode *)createNodeWithTag(NED_CONNECTION_GROUP, ps.conns);
                   if ($1) {
                       moveChildren($1, ps.conngroup);
