@@ -21,7 +21,7 @@
 %token TYPES PARAMETERS GATES SUBMODULES CONNECTIONS ALLOWUNCONNECTED
 %token DOUBLETYPE INTTYPE STRINGTYPE BOOLTYPE XMLTYPE FUNCTION TYPENAME
 %token INPUT_ OUTPUT_ INOUT_
-%token IF WHERE
+%token IF FOR
 %token RIGHTARROW LEFTARROW DBLARROW TO
 %token TRUE_ FALSE_ THIS_ DEFAULT CONST_ SIZEOF INDEX_ XMLDOC
 
@@ -146,10 +146,10 @@ static struct NED2ParserState
     ConnectionGroupNode *conngroup;
     ConnectionNode *conn;
     ChannelSpecNode *chanspec;
-    WhereNode *where;
     LoopNode *loop;
     ConditionNode *condition;
 } ps;
+
 
 static void resetParserState()
 {
@@ -766,7 +766,7 @@ pattern_elem
         | MODULE | SIMPLE | NETWORK | CHANNEL | INTERFACE | CHANNELINTERFACE
         | EXTENDS | LIKE | WITHCPPCLASS
         | DOUBLETYPE | INTTYPE | STRINGTYPE | BOOLTYPE | XMLTYPE | FUNCTION | TYPENAME
-        | INPUT_ | OUTPUT_ | INOUT_ | IF | WHERE
+        | INPUT_ | OUTPUT_ | INOUT_ | IF | FOR
         | TYPES | PARAMETERS | GATES | SUBMODULES | CONNECTIONS | ALLOWUNCONNECTED
         | TRUE_ | FALSE_ | THIS_ | DEFAULT | CONST_ | SIZEOF | INDEX_ | XMLDOC
         ;
@@ -1191,92 +1191,71 @@ connections
 
 connectionsitem
         : connectiongroup
-        | connection opt_whereclause ';'
+        | connection opt_loops_and_conditions ';'
                 {
                   ps.chanspec = (ChannelSpecNode *)ps.conn->getFirstChildWithTag(NED_CHANNEL_SPEC);
                   if (ps.chanspec)
                       ps.conn->appendChild(ps.conn->removeChild(ps.chanspec)); // move channelspec to conform DTD
-                  if (ps.inGroup && $2)
-                       np->getErrors()->add(ps.conn,"conditional connections inside connection groups are not allowed");
-                  if ($2)
-                      ps.conn->appendChild($2);
+                  if ($2) {
+                      moveChildren($2, ps.conn);
+                      delete $2;
+                  }
                   storePos(ps.conn, @$);
                 }
         ; /* no error recovery rule -- see discussion at top */
 
-connectiongroup  /* note: semicolon at end is mandatory (cannot be opt_semicolon because it'd be ambiguous where "where" clause in "{a-->b;} where i>0 {c-->d;}" belongs) */
-        : whereclause '{'
+connectiongroup
+        : opt_loops_and_conditions '{'
                 {
                   ps.conngroup = (ConnectionGroupNode *)createNodeWithTag(NED_CONNECTION_GROUP, ps.conns);
-                  if (ps.inGroup)
-                     np->getErrors()->add(ps.conngroup,"nested connection groups are not allowed");
+                  if ($1) {
+                      moveChildren($1, ps.conngroup);
+                      delete $1;
+                  }
                   ps.inGroup = true;
                 }
-          connections '}' ';'
+          connections '}' opt_semicolon
                 {
                   ps.inGroup = false;
-                  ps.conngroup->appendChild(ps.where);  // XXX appendChild($1) crashes, $1 being NULL (???)
-                  ps.where->setAtFront(true);
-                  storePos(ps.conngroup, @$);
-                }
-        | '{'
-                {
-                  ps.conngroup = (ConnectionGroupNode *)createNodeWithTag(NED_CONNECTION_GROUP, ps.conns);
-                  if (ps.inGroup)
-                     np->getErrors()->add(ps.conngroup,"nested connection groups are not allowed");
-                  ps.inGroup = true;
-                }
-          connections '}' opt_whereclause ';'
-                {
-                  ps.inGroup = false;
-                  if ($5)
-                      ps.conngroup->appendChild($5);
                   storePos(ps.conngroup, @$);
                 }
         ;
 
-opt_whereclause
-        : whereclause
-            { $$ = ps.where; }
+opt_loops_and_conditions
+        : loops_and_conditions
+                { $$ = $1; }
         |
-            { $$ = NULL; }
+                { $$ = NULL; }
         ;
 
-whereclause
-        : WHERE
+loops_and_conditions
+        : loops_and_conditions ',' loop_or_condition
                 {
-                  ps.where = (WhereNode *)createNodeWithTag(NED_WHERE);
-                  ps.where->setAtFront(false); // by default
+                  $1->appendChild($3);
+                  $$ = $1;
                 }
-          whereitems
+        | loop_or_condition
                 {
-                  storePos(ps.where, @$);
+                  $$ = new UnknownNode();
+                  $$->appendChild($1);
                 }
         ;
 
-whereitems
-        : whereitems ',' whereitem
-        | whereitem
-        ;
-
-whereitem
-        : expression   /* that is, a condition */
-                {
-                  ps.condition = (ConditionNode *)createNodeWithTag(NED_CONDITION, ps.where);
-                  addExpression(ps.condition, "condition",@1,$1);
-                  storePos(ps.condition, @$);
-                }
-        | loop
+loop_or_condition
+        : loop
+        | condition
         ;
 
 loop
-        : NAME '=' expression TO expression
+        : FOR NAME '=' expression TO expression
                 {
-                  ps.loop = addLoop(ps.where, @1);
-                  addExpression(ps.loop, "from-value",@3,$3);
-                  addExpression(ps.loop, "to-value",@5,$5);
-                  //setComments(ps.loop,@1,@5);
+                  ps.loop = (LoopNode *)createNodeWithTag(NED_LOOP);
+                  ps.loop->setParamName( toString(@2) );
+                  addExpression(ps.loop, "from-value",@4,$4);
+                  addExpression(ps.loop, "to-value",@6,$6);
+                  //setComments(ps.loop,@1,@6);
                   storePos(ps.loop, @$);
+                  $$ = ps.loop;
                 }
         ;
 

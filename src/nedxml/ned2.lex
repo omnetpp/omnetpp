@@ -106,11 +106,11 @@ static char textbuf[TEXTBUF_LEN];
 "inout"                  { count(); return INOUT_; }
 
 "if"                     { count(); return IF; }
+"for"                    { count(); return FOR; }
 
 "-->"                    { count(); return RIGHTARROW; }
 "<--"                    { count(); return LEFTARROW; }
 "<-->"                   { count(); return DBLARROW; }
-"where"                  { count(); return WHERE; }
 ".."                     { count(); return TO; }
 
 "true"                   { count(); return TRUE_; }
