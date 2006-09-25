@@ -75,6 +75,8 @@ class EventLogIndex
 
         long getFirstEventNumber();
         long getLastEventNumber();
+        long getBeginOffsetForEndOffset(long endOffset);
+        long getEndOffsetForBeginOffset(long beginOffset);
         long getOffsetForEventNumber(long eventNumber, MatchKind matchKind = EXACT);
         bool positionToEventNumber(long eventNumber, MatchKind matchKind = EXACT);
         long getOffsetForSimulationTime(simtime_t simulationTime, MatchKind matchKind = EXACT);

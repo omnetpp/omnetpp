@@ -35,15 +35,23 @@ Event::~Event()
 {
     for (EventLogEntryList::iterator it = eventLogEntries.begin(); it != eventLogEntries.end(); it++)
         delete *it;
-    delete cause;
 
-    for (MessageDependencyList::iterator it = causes.begin(); it != causes.end(); it++)
-        delete *it;
-    delete causes;
+    if (!causes)
+        delete cause;
 
-    for (MessageDependencyList::iterator it = consequences.begin(); it != consequences.end(); it++)
-        delete *it;
-    delete consequences;
+    if (causes)
+    {
+        for (MessageDependencyList::iterator it = causes->begin(); it != causes->end(); it++)
+            delete *it;
+        delete causes;
+    }
+
+    if (consequences)
+    {
+        for (MessageDependencyList::iterator it = consequences->begin(); it != consequences->end(); it++)
+            delete *it;
+        delete consequences;
+    }
 }
 
 Event *Event::getCauseEvent()

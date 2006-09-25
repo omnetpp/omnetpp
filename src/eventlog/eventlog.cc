@@ -27,14 +27,10 @@ EventLog::EventLog(FileReader *reader) : EventLogIndex(reader)
 EventLog::~EventLog()
 {
     for (EventLogEntryList::iterator it = initializationLogEntries.begin(); it != initializationLogEntries.end(); it++)
-    {
         delete *it;
-    }
 
     for (EventNumberToEventMap::iterator it = eventNumberToEventMap.begin(); it != eventNumberToEventMap.end(); it++)
-    {
         delete it->second;
-    }
 }
 
 void EventLog::parseInitializationLogEntries()
@@ -77,17 +73,13 @@ void EventLog::parse(long fromEventNumber, long toEventNumber)
 void EventLog::printInitializationLogEntries(FILE *file)
 {
     for (EventLogEntryList::iterator it = initializationLogEntries.begin(); it != initializationLogEntries.end(); it++)
-    {
         (*it)->print(file);
-    }
 }
 
 void EventLog::printEvents(FILE *file)
 {
     for (EventNumberToEventMap::iterator it = eventNumberToEventMap.begin(); it != eventNumberToEventMap.end(); it++)
-    {
         it->second->print(file);
-    }
 }
 
 void EventLog::print(FILE *file)
@@ -98,11 +90,7 @@ void EventLog::print(FILE *file)
 
 Event *EventLog::getEventForEventNumber(long eventNumber)
 {
-    if (eventNumber < 0)
-    {
-        throw new Exception("Event number must be >= 0, %d", eventNumber);
-    }
-
+    EASSERT(eventNumber >= 0);
     EventNumberToEventMap::iterator it = eventNumberToEventMap.find(eventNumber);
 
     if (it != eventNumberToEventMap.end())
@@ -114,26 +102,22 @@ Event *EventLog::getEventForEventNumber(long eventNumber)
         if (offset == -1)
             return NULL;
         else
-            return getEventForOffset(offset);
+            return getEventForBeginOffset(offset);
     }
 }
 
-Event *EventLog::getEventForSimulationTime(simtime_t simulationTime)
+Event *EventLog::getEventForSimulationTime(simtime_t simulationTime, MatchKind matchKind)
 {
-    if (simulationTime < 0)
-    {
-        throw new Exception("Simulation time must be >= 0, %d", simulationTime);
-    }
-
-    long offset = getOffsetForSimulationTime(simulationTime);
+    EASSERT(simulationTime >= 0);
+    long offset = getOffsetForSimulationTime(simulationTime, matchKind);
 
     if (offset == -1)
         return NULL;
     else
-        return getEventForOffset(offset);
+        return getEventForBeginOffset(offset);
 }
 
-Event *EventLog::getEventForOffset(long offset)
+Event *EventLog::getEventForBeginOffset(long offset)
 {
     if (offset < 0)
         throw new Exception("Offset number must be >= 0, %d", offset);
@@ -148,6 +132,16 @@ Event *EventLog::getEventForOffset(long offset)
         event->parse(reader, offset);
         return cacheEvent(event);
     }
+}
+
+Event *EventLog::getEventForEndOffset(long endOffset)
+{
+    long beginOffset = getBeginOffsetForEndOffset(endOffset);
+
+    if (beginOffset == -1)
+        return NULL;
+    else
+        return getEventForBeginOffset(beginOffset);
 }
 
 Event *EventLog::cacheEvent(Event *event)

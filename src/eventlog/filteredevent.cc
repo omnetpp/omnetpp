@@ -28,25 +28,73 @@ FilteredEvent::FilteredEvent(FilteredEventLog *filteredEventLog, long eventNumbe
     consequences = NULL;
 }
 
+FilteredEvent::~FilteredEvent()
+{
+    delete cause;
+
+    if (causes)
+    {
+        for (FilteredMessageDependencyList::iterator it = causes->begin(); it != causes->end(); it++)
+            delete *it;
+        delete causes;
+    }
+
+    if (consequences)
+    {
+        for (FilteredMessageDependencyList::iterator it = consequences->begin(); it != consequences->end(); it++)
+            delete *it;
+        delete consequences;
+    }
+}
+
 Event *FilteredEvent::getEvent()
 {
     return filteredEventLog->getEventLog()->getEventForEventNumber(eventNumber);
 }
 
-FilteredEvent *FilteredEvent::getCause()
+FilteredEvent *FilteredEvent::getCauseFilteredEvent()
 {
-    Event *cause = getEvent()->getCauseEvent();
-
-    // walk backwards on the cause chain until we find an event matched by the filter
-    while (cause)
+    if (causeEventNumber == -1)
     {
-        if (filteredEventLog->matchesFilter(cause))
-            return filteredEventLog->getFilteredEvent(cause->getEventNumber());
+        Event *causeEvent = getEvent()->getCauseEvent();
 
-        cause = cause->getCauseEvent();
+        // walk backwards on the cause chain until we find an event matched by the filter
+        while (causeEvent)
+        {
+            if (filteredEventLog->matchesFilter(causeEvent))
+                return filteredEventLog->getFilteredEvent(causeEvent->getEventNumber());
+
+            causeEvent = causeEvent->getCauseEvent();
+        }
     }
 
-    return NULL;
+    return filteredEventLog->getFilteredEvent(causeEventNumber);
+}
+
+FilteredMessageDependency *FilteredEvent::getCause()
+{
+    if (cause == NULL)
+    {
+        Event *causeEvent = getEvent();
+        MessageDependency *causeMessageDependency = causeEvent->getCause();
+
+        while (causeEvent)
+        {
+            MessageDependency *messageDependency = causeEvent->getCause();
+
+            if (filteredEventLog->matchesFilter(messageDependency->getCauseEvent()))
+            {
+                cause = new FilteredMessageDependency(filteredEventLog->getEventLog(),
+                    messageDependency->getCauseEventNumber(), messageDependency->getCauseMessageSendEntryNumber(),
+                    causeMessageDependency->getCauseEventNumber(), causeMessageDependency->getCauseMessageSendEntryNumber(),
+                    getEventNumber(), -1);
+            }
+
+            causeEvent = causeEvent->getCauseEvent();
+        }
+    }
+
+    return cause;
 }
 
 FilteredEvent::FilteredMessageDependencyList *FilteredEvent::getCauses()
@@ -65,7 +113,6 @@ FilteredEvent::FilteredMessageDependencyList *FilteredEvent::getCauses(Event *ev
     // returns a list of dependencies, where the consequence is this event,
     // and the other end is no further away than getMaxCauseDepth() and
     // no events in between match the filter
-
     Event::MessageDependencyList *eventCauses = event->getCauses();
 
     for (Event::MessageDependencyList::iterator it = eventCauses->begin(); it != eventCauses->end(); it++)
@@ -102,6 +149,7 @@ FilteredEvent::FilteredMessageDependencyList *FilteredEvent::getConsequences()
 
 FilteredEvent::FilteredMessageDependencyList *FilteredEvent::getConsequences(Event *event, int causeMessageSendEntryNumber, int level)
 {
+    // similar to getCause
     Event::MessageDependencyList *eventConsequences = event->getConsequences();
 
     for (Event::MessageDependencyList::iterator it = eventConsequences->begin(); it != eventConsequences->end(); it++)

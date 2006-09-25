@@ -39,8 +39,7 @@ FilteredEventLog::~FilteredEventLog()
     for (EventNumberToFilteredEventMap::iterator it = eventNumberToFilteredEventMap.begin(); it != eventNumberToFilteredEventMap.end(); it++)
         delete it->second;
 
-    if (includeModuleIds)
-        delete includeModuleIds;
+    delete includeModuleIds;
 }
 
 void FilteredEventLog::print(FILE *file, long fromEventNumber, long toEventNumber)
@@ -129,13 +128,44 @@ bool FilteredEventLog::matchesDependency(Event *event)
     return false;
 }
 
+bool FilteredEventLog::causesEvent(Event *cause, Event *consequence)
+{
+    // like consequenceEvent(), but searching from the opposite direction
+    Event::MessageDependencyList *causes = consequence->getCauses();
+
+    for (Event::MessageDependencyList::iterator it = causes->begin(); it != causes->end(); it++)
+    {
+        MessageDependency *messageDependency = *it;
+        Event *causeEvent = messageDependency->getCauseEvent();
+
+        if (causeEvent != NULL)
+        {
+            EventNumberToFilterMatchesMap::iterator it = eventNumberToFilterMatchesMap.find(causeEvent->getEventNumber());
+
+            // check cache
+            if (it != eventNumberToFilterMatchesMap.end() && it->second)
+                return true;
+
+            // if we reached the cause event, we're done
+            if (cause->getEventNumber() == causeEvent->getEventNumber())
+                return true;
+
+            // try depth-first search if we haven't passed the cause event yet
+            if (cause->getEventNumber() < causeEvent->getEventNumber() &&
+                causesEvent(cause, causeEvent))
+                return true;
+        }
+    }
+
+    return false;
+}
+
 bool FilteredEventLog::consequencesEvent(Event *cause, Event *consequence)
 {
     // returns true if "consequence" can be reached from "cause", using
     // the consequences chain. We use depth-first search.
     Event::MessageDependencyList *consequences = cause->getConsequences();
 
-    // TODO check filter cache
     for (Event::MessageDependencyList::iterator it = consequences->begin(); it != consequences->end(); it++)
     {
         MessageDependency *messageDependency = *it;
@@ -143,6 +173,12 @@ bool FilteredEventLog::consequencesEvent(Event *cause, Event *consequence)
 
         if (consequenceEvent != NULL)
         {
+            EventNumberToFilterMatchesMap::iterator it = eventNumberToFilterMatchesMap.find(consequenceEvent->getEventNumber());
+
+            // check cache
+            if (it != eventNumberToFilterMatchesMap.end() && it->second)
+                return true;
+
             // if we reached the consequence event, we're done
             if (consequence->getEventNumber() == consequenceEvent->getEventNumber())
                 return true;
@@ -157,40 +193,16 @@ bool FilteredEventLog::consequencesEvent(Event *cause, Event *consequence)
     return false;
 }
 
-bool FilteredEventLog::causesEvent(Event *cause, Event *consequence)
-{
-    // like consequenceEvent(), but searching from the opposite direction
-    Event::MessageDependencyList *causes = consequence->getCauses();
-
-    for (Event::MessageDependencyList::iterator it = causes->begin(); it != causes->end(); it++)
-    {
-        MessageDependency *messageDependency = *it;
-        Event *causeEvent = messageDependency->getCauseEvent();
-
-        if (causeEvent != NULL)
-        {
-            if (cause->getEventNumber() == causeEvent->getEventNumber())
-                return true;
-
-            if (cause->getEventNumber() < causeEvent->getEventNumber() &&
-                causesEvent(cause, causeEvent))
-                return true;
-        }
-    }
-
-    return false;
-}
-
 FilteredEvent* FilteredEventLog::getFilteredEventInDirection(long filteredEventNumber, long eventNumber, bool forward)
 {
     if (filteredEventNumber != -1)
         return cacheFilteredEvent(filteredEventNumber);
     else
     {
-        Event *event;
+        Event *event = eventLog->getEventForEventNumber(eventNumber);
 
-        // TODO: linear search
-        while (event = eventLog->getEventForEventNumber(eventNumber))
+        // TODO: use linear search instead of binary search
+        while (event)
         {
             if (matchesFilter(event))
                 return cacheFilteredEvent(eventNumber);
@@ -198,12 +210,14 @@ FilteredEvent* FilteredEventLog::getFilteredEventInDirection(long filteredEventN
             if (forward)
             {
                 eventNumber++;
+                event = eventLog->getEventForBeginOffset(event->getEndOffset());
 
                 if (lastEventNumber != -1 && eventNumber > lastEventNumber)
                     return NULL;
             }
             else {
                 eventNumber--;
+                event = eventLog->getEventForEndOffset(event->getBeginOffset());
 
                 if (firstEventNumber != -1 && eventNumber < firstEventNumber)
                     return NULL;

@@ -57,8 +57,9 @@ class EventLog : public EventLogIndex
         void print(FILE *file);
 
         Event *getEventForEventNumber(long eventNumber);
-        Event *getEventForSimulationTime(simtime_t simulationTime);
-        Event *getEventForOffset(long offset);
+        Event *getEventForSimulationTime(simtime_t simulationTime, EventLogIndex::MatchKind matchKind = EXACT);
+        Event *getEventForBeginOffset(long offset);
+        Event *getEventForEndOffset(long offset);
 
     protected:
         Event *cacheEvent(Event *event);

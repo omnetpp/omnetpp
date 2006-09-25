@@ -27,7 +27,7 @@ MessageDependency::MessageDependency(EventLog *eventLog,
     this->causeMessageSendEntryNumber = causeMessageSendEntryNumber;
     this->consequenceMessageSendEntryNumber = consequenceMessageSendEntryNumber;
 
-    //TODO assert: either cause or consequence must be filled out
+    EASSERT(causeEventNumber >= 0 || consequenceEventNumber >= 0);
 }
 
 EventLogEntry *MessageDependency::getMessageSendEntry()
@@ -93,7 +93,7 @@ long MessageDependency::getConsequenceEventNumber()
 
         while (offset != -1)
         {
-            Event *event = eventLog->getEventForOffset(offset);
+            Event *event = eventLog->getEventForBeginOffset(offset);
 
             if (event == NULL)
                 // end of file

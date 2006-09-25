@@ -80,8 +80,8 @@ class FilteredEventLog
         FilteredEvent* getFilteredEventInDirection(long filteredEventNumber, long eventNumber, bool forward);
         bool matchesEvent(Event *event);
         bool matchesDependency(Event *event);
-        bool consequencesEvent(Event *cause, Event *consequence);
         bool causesEvent(Event *cause, Event *consequence);
+        bool consequencesEvent(Event *cause, Event *consequence);
 };
 
 #endif

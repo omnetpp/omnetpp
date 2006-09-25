@@ -36,7 +36,8 @@ class FilteredEvent
 
         long eventNumber; // the corresponding event number
         long causeEventNumber; // the event number from which the message was sent that is being processed in this event
-        FilteredMessageDependencyList *causes;
+        FilteredMessageDependency *cause; // the message send which is processed in this event
+        FilteredMessageDependencyList *causes; // the arrival message sends of messages which we send in this even and are in the filtered set
         FilteredMessageDependencyList *consequences; // the message sends and arrivals from this event to another in the filtered set
 
         long previousFilteredEventNumber; // the event number of the previous matching filtered event or -1 if unknown
@@ -44,6 +45,7 @@ class FilteredEvent
 
     public:
         FilteredEvent(FilteredEventLog *filteredEventLog, long eventNumber);
+        ~FilteredEvent();
         static void linkFilteredEvents(FilteredEvent *previousFilteredEvent, FilteredEvent *nextFilteredEvent);
 
         Event *getEvent();
@@ -51,8 +53,8 @@ class FilteredEvent
         long getPreviousFilteredEventNumber() { return previousFilteredEventNumber; };
         long getNextFilteredEventNumber() { return nextFilteredEventNumber; };
 
-        FilteredEvent *getCause(); //TODO rename to getCauseFilteredEvent
-        //TODO add getCause() to return FilteredMessageDependency
+        FilteredEvent *getCauseFilteredEvent();
+        FilteredMessageDependency *getCause();
         FilteredMessageDependencyList *getCauses();
         FilteredMessageDependencyList *getConsequences();
 

@@ -139,12 +139,10 @@ template <typename T> long EventLogIndex::binarySearchForOffset(bool eventNumber
         long lowerKey;
 
         // figure out start positions for binary search
-        if (it == keyToOffsetMap->end()) {
+        if (it == keyToOffsetMap->end())
             upperOffset = reader->fileSize();
-        }
-        else {
+        else
             upperOffset = it->second;
-        }
         
         if (it == keyToOffsetMap->begin()) {
             lowerKey = 0;
@@ -179,13 +177,9 @@ template <typename T> long EventLogIndex::binarySearchForOffset(bool eventNumber
                 T midKey;
 
                 if (eventNumberBased)
-                {
                     midKey = midEventNumber;
-                }
                 else
-                {
                     midKey = midSimulationTime;
-                }
 
                 // stopping condition
                 if (midKey == key || upperOffset-lowerOffset < 10)
@@ -204,9 +198,7 @@ template <typename T> long EventLogIndex::binarySearchForOffset(bool eventNumber
                     lowerOffset = midEventStartOffset;
                 }
                 else
-                {
                     upperOffset = midOffset;
-                }
             }
             else
             {
@@ -222,9 +214,7 @@ template <typename T> long EventLogIndex::binarySearchForOffset(bool eventNumber
     //printf("  binary search steps: %d\n", stepCount);
 
     if (matchKind == EXACT && (foundOffset == -1 || eventNumberBased))
-    {
         return foundOffset;
-    }
     else if (matchKind == EXACT && !eventNumberBased)
     {
         long firstOffset = linearSearchForOffset(eventNumberBased, foundOffset, key, FIRST, true);
@@ -261,28 +251,18 @@ template <typename T> long EventLogIndex::linearSearchForOffset(bool eventNumber
         T readKey;
 
         if (eventNumberBased)
-        {
             readKey = eventNumber;
-        }
         else
-        {
             readKey = simulationTime;
-        }
 
         if (exactMatchFound && readKey != key)
-        {
             return previousOffset;
-        }
         
         if (!exactMatchFound && matchKind == LAST && readKey > key)
-        {
             return offset;
-        }
 
         if (!exactMatchFound && matchKind == FIRST && readKey < key)
-        {
             return offset;
-        }
 
         previousOffset = lineStartOffset;
 
@@ -299,9 +279,7 @@ template <typename T> long EventLogIndex::linearSearchForOffset(bool eventNumber
 bool EventLogIndex::readToEventLine(bool forward, long readStartOffset, long& eventNumber, simtime_t& simulationTime, long& lineStartOffset, long& lineEndOffset)
 {
     if (forward)
-    {
         return readToFirstEventLine(readStartOffset, eventNumber, simulationTime, lineStartOffset, lineEndOffset);
-    }
     else
     {
         bool result;
@@ -343,20 +321,14 @@ bool EventLogIndex::readToFirstEventLine(long readStartOffset, long& eventNumber
     for (int i=1; i<tokenizer.numTokens()-1; i+=2)
     {
         if (!strcmp(tokenizer.tokens()[i], "#"))
-        {
             eventNumber = atol(tokenizer.tokens()[i+1]);
-        }
 
         if (!strcmp(tokenizer.tokens()[i], "t"))
-        {
             simulationTime = atof(tokenizer.tokens()[i+1]);
-        }
     }
 
     if (eventNumber != -1)
-    {
         return true;
-    }
 
     // bad luck
     throw new Exception("Wrong file format: no event number in 'E' line, line %d", reader->lineNum());
@@ -370,3 +342,24 @@ void EventLogIndex::dumpTable()
 }
 
 
+long EventLogIndex::getBeginOffsetForEndOffset(long endOffset)
+{
+    long eventNumber, lineStartOffset, lineEndOffset;
+    simtime_t simulationTime;
+
+    if (readToEventLine(false, endOffset, eventNumber, simulationTime, lineStartOffset, lineEndOffset))
+        return lineStartOffset;
+    else
+        return NULL;
+}
+
+long EventLogIndex::getEndOffsetForBeginOffset(long beginOffset)
+{
+    long eventNumber, lineStartOffset, lineEndOffset;
+    simtime_t simulationTime;
+
+    if (readToEventLine(true, beginOffset + 1, eventNumber, simulationTime, lineStartOffset, lineEndOffset))
+        return lineStartOffset;
+    else
+        return NULL;
+}
