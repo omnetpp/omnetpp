@@ -45,7 +45,6 @@ void NEDDTDValidator::validateElement(CommentNode *node)
 
     checkRequiredAttribute(node, "locid");
     checkNMTokenAttribute(node, "locid");
-    checkRequiredAttribute(node, "content");
 }
 
 void NEDDTDValidator::validateElement(ImportNode *node)

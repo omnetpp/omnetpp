@@ -129,13 +129,14 @@ PropertyNode *storeComponentSourceCode(NEDElement *node, YYLTYPE tokenpos)
 //
 // Comments
 //
-CommentNode *addComment(NEDElement *node, const char *locId, const char *text)
+void addComment(NEDElement *node, const char *locId, const char *text)
 {
+    if (!*text)
+        return;
     CommentNode *comment = (CommentNode *)createNodeWithTag(NED_COMMENT);
     comment->setLocid(locId);
     comment->setContent(text);
     node->insertChildBefore(node->getFirstChild(), comment);
-    return comment;
 }
 
 void storeFileComment(NEDElement *node)

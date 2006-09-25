@@ -250,7 +250,7 @@ const char *CommentNode::getAttributeDefault(int k) const
 {
     switch (k) {
         case 0: return NULL;
-        case 1: return NULL;
+        case 1: return "";
         default: return 0;
     }
 }

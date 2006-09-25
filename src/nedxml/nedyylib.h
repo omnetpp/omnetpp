@@ -33,7 +33,7 @@ PropertyNode *addComponentProperty(NEDElement *node, const char *name); // into 
 PropertyNode *storeSourceCode(NEDElement *node, YYLTYPE tokenpos);  // directly under the node
 PropertyNode *storeComponentSourceCode(NEDElement *node, YYLTYPE tokenpos); // into ParametersNode child
 
-CommentNode *addComment(NEDElement *node, const char *locId, const char *comment);
+void addComment(NEDElement *node, const char *locId, const char *comment);
 void storeFileComment(NEDElement *node);
 void storeBannerComment(NEDElement *node, YYLTYPE tokenpos);
 void storeRightComment(NEDElement *node, YYLTYPE tokenpos);

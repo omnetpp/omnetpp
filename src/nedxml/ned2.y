@@ -247,7 +247,7 @@ import
                   ps.import = (ImportNode *)createNodeWithTag(NED_IMPORT, ps.nedfile);
                   ps.import->setFilename(toString(trimQuotes(@2)));
                   storePos(ps.import,@$);
-                  //setComments(ps.import,@1);
+                  storeComments(ps.import,@$);
                 }
         ; /* no error recovery rule -- see discussion at top */
 
@@ -266,14 +266,14 @@ propertydecl_header
                 {
                   ps.propertydecl = (PropertyDeclNode *)createNodeWithTag(NED_PROPERTY_DECL, ps.nedfile);
                   ps.propertydecl->setName(toString(@3));
-                  //setComments(ps.propertydecl,@1);
+                  storeComments(ps.propertydecl,@$);
                 }
         | PROPERTY '@' NAME '[' ']'
                 {
                   ps.propertydecl = (PropertyDeclNode *)createNodeWithTag(NED_PROPERTY_DECL, ps.nedfile);
                   ps.propertydecl->setName(toString(@3));
                   ps.propertydecl->setIsArray(true);
-                  //setComments(ps.propertydecl,@1);
+                  storeComments(ps.propertydecl,@$);
                 }
         ;
 
@@ -334,7 +334,7 @@ channelheader
                 {
                   ps.component = (ChannelNode *)createNodeWithTag(NED_CHANNEL, ps.inTypes ? (NEDElement *)ps.types : (NEDElement *)ps.nedfile);
                   ((ChannelNode *)ps.component)->setName(toString(@2));
-                  //setComments(ps.component,@1,@2);
+                  storeComments(ps.component,@1,@2);
                 }
            opt_inheritance
         | CHANNEL WITHCPPCLASS NAME
@@ -342,7 +342,7 @@ channelheader
                   ps.component = (ChannelNode *)createNodeWithTag(NED_CHANNEL, ps.inTypes ? (NEDElement *)ps.types : (NEDElement *)ps.nedfile);
                   ((ChannelNode *)ps.component)->setName(toString(@3));
                   ((ChannelNode *)ps.component)->setIsWithcppclass(true);
-                  //setComments(ps.component,@1,@2);
+                  storeComments(ps.component,@1,@3);
                 }
            opt_inheritance
         ;
@@ -407,7 +407,7 @@ channelinterfaceheader
                 {
                   ps.component = (ChannelInterfaceNode *)createNodeWithTag(NED_CHANNEL_INTERFACE, ps.inTypes ? (NEDElement *)ps.types : (NEDElement *)ps.nedfile);
                   ((ChannelInterfaceNode *)ps.component)->setName(toString(@2));
-                  //setComments(ps.component,@1,@2);
+                  storeComments(ps.component,@1,@2);
                 }
            opt_interfaceinheritance
         ;
@@ -453,7 +453,7 @@ simplemoduleheader
                 {
                   ps.component = (SimpleModuleNode *)createNodeWithTag(NED_SIMPLE_MODULE, ps.inTypes ? (NEDElement *)ps.types : (NEDElement *)ps.nedfile );
                   ((SimpleModuleNode *)ps.component)->setName(toString(@2));
-                  //setComments(ps.component,@1,@2);
+                  storeComments(ps.component,@1,@2);
                 }
           opt_inheritance
         ;
@@ -492,7 +492,7 @@ compoundmoduleheader
                 {
                   ps.component = (CompoundModuleNode *)createNodeWithTag(NED_COMPOUND_MODULE, ps.inTypes ? (NEDElement *)ps.types : (NEDElement *)ps.nedfile );
                   ((CompoundModuleNode *)ps.component)->setName(toString(@2));
-                  //setComments(ps.component,@1,@2);
+                  storeComments(ps.component,@1,@2);
                 }
           opt_inheritance
         ;
@@ -532,7 +532,7 @@ networkheader
                   ps.component = (CompoundModuleNode *)createNodeWithTag(NED_COMPOUND_MODULE, ps.inTypes ? (NEDElement *)ps.types : (NEDElement *)ps.nedfile );
                   ((CompoundModuleNode *)ps.component)->setName(toString(@2));
                   ((CompoundModuleNode *)ps.component)->setIsNetwork(true);
-                  //setComments(ps.component,@1,@2);
+                  storeComments(ps.component,@1,@2);
                 }
           opt_inheritance
         ;
@@ -568,7 +568,7 @@ moduleinterfaceheader
                 {
                   ps.component = (ModuleInterfaceNode *)createNodeWithTag(NED_MODULE_INTERFACE, ps.inTypes ? (NEDElement *)ps.types : (NEDElement *)ps.nedfile);
                   ((ModuleInterfaceNode *)ps.component)->setName(toString(@2));
-                  //setComments(ps.component,@1,@2);
+                  storeComments(ps.component,@1,@2);
                 }
            opt_interfaceinheritance
         ;
@@ -600,13 +600,7 @@ opt_params
 
 params
         : params paramsitem
-                {
-                  //setComments(ps.param,@2);
-                }
         | paramsitem
-                {
-                  //setComments(ps.param,@1);
-                }
         ;
 
 paramsitem
@@ -621,6 +615,7 @@ paramgroup
                     ps.paramgroup = (ParamGroupNode *)createNodeWithTag(NED_PARAM_GROUP, ps.parameters);
                     if (ps.inGroup)
                        np->getErrors()->add(ps.paramgroup,"nested parameter groups are not allowed");
+                    storeComments(ps.paramgroup,@1,@2);
                     ps.inGroup = true;
                 }
           params '}'
@@ -647,6 +642,7 @@ param
                   if ($4)
                       ps.param->appendChild($4); // append optional condition
                   storePos(ps.param, @$);
+                  storeComments(ps.param,@$);
                 }
         | pattern_value
                 {
@@ -660,6 +656,7 @@ param
                   if ($4)
                       ps.pattern->appendChild($4); // append optional condition
                   storePos(ps.pattern, @$);
+                  storeComments(ps.param,@$);
                 }
         ; /* no error recovery rule -- see discussion at top */
 
@@ -782,6 +779,7 @@ property
                   if ($2)
                       ps.property->appendChild($2); // append optional condition
                   storePos(ps.property, @$);
+                  storeComments(ps.property,@$);
                 }
         ; /* no error recovery rule -- see discussion at top */
 
@@ -883,7 +881,7 @@ gateblock
                 {
                   assertNonEmpty(ps.blockscope);
                   ps.gates = (GatesNode *)createNodeWithTag(NED_GATES, ps.blockscope.top());
-                  //setComments(ps.gates,@1,@2);
+                  storeComments(ps.gates,@1,@2);
                 }
           opt_gates
                 {
@@ -899,11 +897,11 @@ opt_gates
 gates
         : gates gatesitem
                 {
-                  //setComments(ps.gate,@2);
+                  storeComments(ps.gate,@2);
                 }
         | gatesitem
                 {
-                  //setComments(ps.gate,@1);
+                  storeComments(ps.gate,@1);
                 }
         ;
 
@@ -1008,7 +1006,7 @@ typeblock
                 {
                   assertNonEmpty(ps.blockscope);
                   ps.types = (TypesNode *)createNodeWithTag(NED_TYPES, ps.blockscope.top());
-                  //setComments(ps.types,@1,@2);
+                  storeComments(ps.types,@1,@2);
                   if (ps.inTypes)
                      np->getErrors()->add(ps.paramgroup,"more than one level of type nesting is not allowed");
                   ps.inTypes = true;
@@ -1054,7 +1052,7 @@ submodblock
                 {
                   assertNonEmpty(ps.blockscope);
                   ps.submods = (SubmodulesNode *)createNodeWithTag(NED_SUBMODULES, ps.blockscope.top());
-                  //setComments(ps.submods,@1,@2);
+                  storeComments(ps.submods,@1,@2);
                 }
           opt_submodules
                 {
@@ -1075,7 +1073,7 @@ submodules
 submodule
         : submoduleheader ';'
                 {
-                  //setComments(ps.submod,@1,@2);
+                  storeComments(ps.submod,@1,@2);
                   storePos(ps.submod, @$);
                 }
         | submoduleheader '{'
@@ -1084,7 +1082,7 @@ submodule
                   ps.parameters = (ParametersNode *)createNodeWithTag(NED_PARAMETERS, ps.submod);
                   ps.parameters->setIsImplicit(true);
                   ps.propertyscope.push(ps.parameters);
-                  //setComments(ps.submod,@1,@2);
+                  storeComments(ps.submod,@1,@2);
                 }
           opt_paramblock
           opt_gateblock
@@ -1161,7 +1159,7 @@ connblock
                   assertNonEmpty(ps.blockscope);
                   ps.conns = (ConnectionsNode *)createNodeWithTag(NED_CONNECTIONS, ps.blockscope.top());
                   ps.conns->setAllowUnconnected(true);
-                  //setComments(ps.conns,@1,@3);
+                  storeComments(ps.conns,@1,@3);
                 }
           opt_connections
                 {
@@ -1171,7 +1169,7 @@ connblock
                 {
                   assertNonEmpty(ps.blockscope);
                   ps.conns = (ConnectionsNode *)createNodeWithTag(NED_CONNECTIONS, ps.blockscope.top());
-                  //setComments(ps.conns,@1,@2);
+                  storeComments(ps.conns,@1,@2);
                 }
           opt_connections
                 {
@@ -1254,8 +1252,8 @@ loop
                   ps.loop->setParamName( toString(@2) );
                   addExpression(ps.loop, "from-value",@4,$4);
                   addExpression(ps.loop, "to-value",@6,$6);
-                  //setComments(ps.loop,@1,@6);
                   storePos(ps.loop, @$);
+                  storeComments(ps.loop,@$);
                   $$ = ps.loop;
                 }
         ;
@@ -1267,34 +1265,34 @@ connection
         : leftgatespec RIGHTARROW rightgatespec
                 {
                   ps.conn->setArrowDirection(NED_ARROWDIR_L2R);
-                  //setComments(ps.conn,@1,@3);
+                  storeComments(ps.conn,@$);
                 }
         | leftgatespec RIGHTARROW channelspec RIGHTARROW rightgatespec
                 {
                   ps.conn->setArrowDirection(NED_ARROWDIR_L2R);
-                  //setComments(ps.conn,@1,@5);
+                  storeComments(ps.conn,@$);
                 }
         | leftgatespec LEFTARROW rightgatespec
                 {
                   swapConnection(ps.conn);
                   ps.conn->setArrowDirection(NED_ARROWDIR_R2L);
-                  //setComments(ps.conn,@1,@3);
+                  storeComments(ps.conn,@$);
                 }
         | leftgatespec LEFTARROW channelspec LEFTARROW rightgatespec
                 {
                   swapConnection(ps.conn);
                   ps.conn->setArrowDirection(NED_ARROWDIR_R2L);
-                  //setComments(ps.conn,@1,@5);
+                  storeComments(ps.conn,@$);
                 }
         | leftgatespec DBLARROW rightgatespec
                 {
                   ps.conn->setArrowDirection(NED_ARROWDIR_BIDIR);
-                  //setComments(ps.conn,@1,@3);
+                  storeComments(ps.conn,@$);
                 }
         | leftgatespec DBLARROW channelspec DBLARROW rightgatespec
                 {
                   ps.conn->setArrowDirection(NED_ARROWDIR_BIDIR);
-                  //setComments(ps.conn,@1,@5);
+                  storeComments(ps.conn,@$);
                 }
         ;
 
