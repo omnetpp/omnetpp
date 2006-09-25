@@ -70,6 +70,7 @@ class EventLogIndex
         template <typename T> long linearSearchForOffset(bool eventNumberBased, long offset, T key, MatchKind matchKind, bool exactMatchFound);
 
     public:
+        // reader will be deleted
         EventLogIndex(FileReader *reader);
         ~EventLogIndex();
 

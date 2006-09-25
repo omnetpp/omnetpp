@@ -70,8 +70,8 @@ class MessageDependency
         long getConsequenceMessageId() { return getConsequenceMessageSendEntry()->getMessageId(); };
 
         EventLogEntry *getMessageSendEntry();
-        void printCause(FILE *file);
-        void printConsequence(FILE *file);
+        void printCause(FILE *file = stdout);
+        void printConsequence(FILE *file = stdout);
 };
 
 class MessageReuse : public MessageDependency
@@ -101,23 +101,23 @@ class MessageSend : public MessageDependency
 class FilteredMessageDependency : public MessageDependency
 {
     protected:
-        long xxxEventNumber;
-        int xxxMessageSendEntryNumber; // optional and refers to an entry of xxxEvent
+        long middleEventNumber;
+        int middleMessageSendEntryNumber; // optional and refers to an entry of middleEvent
 
     public:
         FilteredMessageDependency(EventLog *eventLog,
             long causeEventNumber, int causeMessageSendEntryNumber,
-            long xxxEventNumber, int xxxMessageSendEntryNumber,
+            long middleEventNumber, int middleMessageSendEntryNumber,
             long consequenceEventNumber, int consequenceMessageSendEntryNumber);
 
-        long getxxxEventNumber() { return xxxEventNumber; };
-        Event *getxxxEvent();
-        simtime_t getxxxTime();
-        int getxxxMessageSendEntryNumber() { return xxxMessageSendEntryNumber; };
-        EventLogEntry *getxxxMessageSendEntry();
+        long getMiddleEventNumber() { return middleEventNumber; };
+        Event *getMiddleEvent();
+        simtime_t getMiddleTime();
+        int getMiddleMessageSendEntryNumber() { return middleMessageSendEntryNumber; };
+        EventLogEntry *getMiddleMessageSendEntry();
 
         void print(FILE *file);
-        void printxxx(FILE *file);
+        void printMiddle(FILE *file);
 };
 
 #endif

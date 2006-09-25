@@ -24,7 +24,7 @@
 
 /**
  * Manages all event log entries for a single event. (All lines belonging to an "E" line.)
- * Returned Event*, MessageSend*, MessageDependencyList* pointers should not be
+ * Returned Event*, EventLogEntry*, EventEntry*, MessageSend*, MessageDependencyList* pointers should not be
  * remembered by callers, because they may get deleted when the event is
  * thrown out of the eventlog cache.
  */
@@ -70,7 +70,7 @@ class Event
 
         long parse(FileReader *index, long offset);
         static long getNumParsedEvent() { return numParsedEvent; };
-        void print(FILE *file);
+        void print(FILE *file = stdout);
 };
 
 #endif

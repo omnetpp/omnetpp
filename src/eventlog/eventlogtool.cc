@@ -22,16 +22,16 @@ void printOffsets(int argc, char **argv)
     try {
         fprintf(stderr, "Printing event offsets from event log file %s\n", argv[2]);
     
-        FileReader fileReader(argv[2]);
-        EventLogIndex eventLogIndex(&fileReader);
+        FileReader *fileReader = new FileReader(argv[2]);
+        EventLogIndex eventLogIndex(fileReader);
         
         for (int i = 3; i < argc; i++) {
             long eventNumber = atol(argv[i]);
             long offset = eventLogIndex.getOffsetForEventNumber(eventNumber);
             printf("Event #%ld --> file offset %ld (0x%lx)\n", eventNumber, offset, offset);
             if (offset!=-1) { //XXX comment out
-                fileReader.seekTo(offset);
-                printf("  - line at that offset: %s\n", fileReader.readLine());
+                fileReader->seekTo(offset);
+                printf("  - line at that offset: %s\n", fileReader->readLine());
             }
             //eventLogIndex.dumpTable();
         }
@@ -47,8 +47,8 @@ void echo(int argc, char **argv)
         long to = atol(argv[4]);
         fprintf(stderr, "Echoing log file %s from event number %d to %d\n", argv[2], from, to);
     
-        FileReader fileReader(argv[2]);
-        EventLog eventLog(&fileReader);
+        FileReader *fileReader = new FileReader(argv[2]);
+        EventLog eventLog(fileReader);
         eventLog.parse(from, to);
         eventLog.print(stdout);
     } catch (Exception *e) {
@@ -65,9 +65,9 @@ void filter(int argc, char **argv)
         fprintf(stderr, "Filtering log file: %s for event number: %ld from event number: %ld to event number: %ld\n",
             argv[2], tracedEventNumber, fromEventNumber, toEventNumber);
     
-        FileReader fileReader(argv[2]);
-        EventLog eventLog(&fileReader);
-        FilteredEventLog filteredEventLog(&eventLog, NULL, tracedEventNumber, true, true, fromEventNumber, toEventNumber);
+        FileReader *fileReader = new FileReader(argv[2]);
+        EventLog *eventLog = new EventLog(fileReader);
+        FilteredEventLog filteredEventLog(eventLog, NULL, tracedEventNumber, true, true, fromEventNumber, toEventNumber);
         filteredEventLog.print(stdout);
 
         fprintf(stderr, "Number of events parsed: %d and number of lines read: %ld\n", Event::getNumParsedEvent(), FileReader::getNumReadLines());
@@ -87,9 +87,9 @@ void consequences(int argc, char **argv)
 
         fprintf(stderr, "Filtering log file: %s for event number: %ld\n", argv[2], tracedEventNumber);
     
-        FileReader fileReader(argv[2]);
-        EventLog eventLog(&fileReader);
-        FilteredEventLog filteredEventLog(&eventLog, moduleIds, tracedEventNumber, true, true);
+        FileReader *fileReader = new FileReader(argv[2]);
+        EventLog *eventLog = new EventLog(fileReader);
+        FilteredEventLog filteredEventLog(eventLog, moduleIds, tracedEventNumber, true, true);
         FilteredEvent *filteredEvent = filteredEventLog.getFilteredEvent(tracedEventNumber);
         FilteredEvent::FilteredMessageDependencyList *messageDependencies = filteredEvent->getConsequences();
 

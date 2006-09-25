@@ -27,6 +27,7 @@ EventLogIndex::EventLogIndex(FileReader *reader)
 
 EventLogIndex::~EventLogIndex()
 {
+    delete reader;
 }
 
 long EventLogIndex::getFirstEventNumber()
@@ -86,6 +87,28 @@ void EventLogIndex::addPosition(long eventNumber, simtime_t simulationTime, long
         eventNumberToOffsetMap[eventNumber] = offset;
         simulationTimeToOffsetMap[simulationTime] = offset;
     }
+}
+
+long EventLogIndex::getBeginOffsetForEndOffset(long endOffset)
+{
+    long eventNumber, lineStartOffset, lineEndOffset;
+    simtime_t simulationTime;
+
+    if (readToEventLine(false, endOffset, eventNumber, simulationTime, lineStartOffset, lineEndOffset))
+        return lineStartOffset;
+    else
+        return NULL;
+}
+
+long EventLogIndex::getEndOffsetForBeginOffset(long beginOffset)
+{
+    long eventNumber, lineStartOffset, lineEndOffset;
+    simtime_t simulationTime;
+
+    if (readToEventLine(true, beginOffset + 1, eventNumber, simulationTime, lineStartOffset, lineEndOffset))
+        return lineStartOffset;
+    else
+        return NULL;
 }
 
 bool EventLogIndex::positionToEventNumber(long eventNumber, MatchKind matchKind)
@@ -339,27 +362,4 @@ void EventLogIndex::dumpTable()
     printf("Stored eventNumberToOffsetMap:\n");
     for (EventNumberToOffsetMap::iterator it = eventNumberToOffsetMap.begin(); it!=eventNumberToOffsetMap.end(); ++it)
         printf("  #%ld --> offset %ld (0x%lx)\n", it->first, it->second, it->second);
-}
-
-
-long EventLogIndex::getBeginOffsetForEndOffset(long endOffset)
-{
-    long eventNumber, lineStartOffset, lineEndOffset;
-    simtime_t simulationTime;
-
-    if (readToEventLine(false, endOffset, eventNumber, simulationTime, lineStartOffset, lineEndOffset))
-        return lineStartOffset;
-    else
-        return NULL;
-}
-
-long EventLogIndex::getEndOffsetForBeginOffset(long beginOffset)
-{
-    long eventNumber, lineStartOffset, lineEndOffset;
-    simtime_t simulationTime;
-
-    if (readToEventLine(true, beginOffset + 1, eventNumber, simulationTime, lineStartOffset, lineEndOffset))
-        return lineStartOffset;
-    else
-        return NULL;
 }

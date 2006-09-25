@@ -210,41 +210,41 @@ MessageSend::MessageSend(EventLog *eventLog, long senderEventNumber, int message
 /**************************************************/
 FilteredMessageDependency::FilteredMessageDependency(EventLog *eventLog,
     long causeEventNumber, int causeMessageSendEntryNumber,
-    long xxxEventNumber, int xxxMessageSendEntryNumber,
+    long middleEventNumber, int middleMessageSendEntryNumber,
     long consequenceEventNumber, int consequenceMessageSendEntryNumber)
     : MessageDependency(eventLog, causeEventNumber, causeMessageSendEntryNumber, consequenceEventNumber, consequenceMessageSendEntryNumber)
 {
-    this->xxxEventNumber = xxxEventNumber;
-    this->xxxMessageSendEntryNumber = xxxMessageSendEntryNumber;
+    this->middleEventNumber = middleEventNumber;
+    this->middleMessageSendEntryNumber = middleMessageSendEntryNumber;
 }
 
-Event *FilteredMessageDependency::getxxxEvent()
+Event *FilteredMessageDependency::getMiddleEvent()
 {
-    return eventLog->getEventForEventNumber(xxxEventNumber);
+    return eventLog->getEventForEventNumber(middleEventNumber);
 }
 
-simtime_t FilteredMessageDependency::getxxxTime()
+simtime_t FilteredMessageDependency::getMiddleTime()
 {
-    return getxxxEvent()->getSimulationTime();
+    return getMiddleEvent()->getSimulationTime();
 }
 
-EventLogEntry *FilteredMessageDependency::getxxxMessageSendEntry()
+EventLogEntry *FilteredMessageDependency::getMiddleMessageSendEntry()
 {
-    return getxxxEvent()->getEventLogEntry(xxxMessageSendEntryNumber);
+    return getMiddleEvent()->getEventLogEntry(middleMessageSendEntryNumber);
 }
 
-void FilteredMessageDependency::printxxx(FILE *file)
+void FilteredMessageDependency::printMiddle(FILE *file)
 {
-    if (getxxxEventNumber() != -1)
-       getxxxEvent()->getEventEntry()->print(file);
+    if (getMiddleEventNumber() != -1)
+       getMiddleEvent()->getEventEntry()->print(file);
 
-    if (getxxxMessageSendEntryNumber() != -1)
-       getxxxMessageSendEntry()->print(file);
+    if (getMiddleMessageSendEntryNumber() != -1)
+       getMiddleMessageSendEntry()->print(file);
 }
 
 void FilteredMessageDependency::print(FILE *file)
 {
     printCause(file);
-    printxxx(file);
+    printMiddle(file);
     printConsequence(file);
 }

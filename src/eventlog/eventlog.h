@@ -52,9 +52,9 @@ class EventLog : public EventLogIndex
         void parseInitializationLogEntries();
         void parse(long fromEventNumber, long toEventNumber);
 
-        void printInitializationLogEntries(FILE *file);
-        void printEvents(FILE *file);
-        void print(FILE *file);
+        void printInitializationLogEntries(FILE *file = stdout);
+        void printEvents(FILE *file = stdout);
+        void print(FILE *file = stdout);
 
         Event *getEventForEventNumber(long eventNumber);
         Event *getEventForSimulationTime(simtime_t simulationTime, EventLogIndex::MatchKind matchKind = EXACT);

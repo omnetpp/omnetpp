@@ -40,6 +40,8 @@ FilteredEventLog::~FilteredEventLog()
         delete it->second;
 
     delete includeModuleIds;
+
+    delete eventLog;
 }
 
 void FilteredEventLog::print(FILE *file, long fromEventNumber, long toEventNumber)

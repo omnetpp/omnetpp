@@ -72,7 +72,7 @@ class FilteredEventLog
         FilteredEvent* getPreviousFilteredEvent(long eventNumber);
 
         bool matchesFilter(Event *event);
-        void print(FILE *file, long fromEventNumber = -1, long toEventNumber = -1);
+        void print(FILE *file = stdout, long fromEventNumber = -1, long toEventNumber = -1);
 
     protected:
         FilteredEvent *cacheFilteredEvent(long eventNumber);
