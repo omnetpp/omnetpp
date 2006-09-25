@@ -39,10 +39,10 @@
 //   that of the ultimate base class.) Subclass may add new parameters and gates
 //   (if it makes sense...) and set parameters and gate vector sizes.
 //
-// - WHAT IF: "simple" would mean "underlying C++ class expected", and 
-//   "module" would mean "no underlying C++ class" ? 
+// - WHAT IF: "simple" would mean "underlying C++ class expected", and
+//   "module" would mean "no underlying C++ class" ?
 //   That is, both "module X extends ASimpleModule" and "simple X extends ASimpleModule"
-//   would be legal and would mean DIFFERENT things. 
+//   would be legal and would mean DIFFERENT things.
 //   ("simple X extends ACompoundModule" would still be illegal)
 //
 // - "module X extends ACompoundModule": subclass may NOT add further submodules,
@@ -96,6 +96,13 @@
 //
 // - XXX is it possible to set a parameter to its default value? e.g. queueCapacity = default;
 //
+// - submodule array: was
+//         eth: EtherMAC[n];
+//   now:
+//         eth[n]: EtherMAC;
+//   Restore old syntax? But it would mean this too:
+//         eth: <macType>[n] like EtherMAC;
+//
 //
 // DO WE NEED "like *" ? Not much value in there...
 //
@@ -134,15 +141,14 @@
 // STILL PROBLEM: what to do with conditional properties? like this:
 //   @display(c="green") if index==3;    <=== how to write this?
 //
-// FIXME PROBLEM: NED-I conditional connection inside a "for" cannot be 
+// FIXME PROBLEM: NED-I conditional connection inside a "for" cannot be
 // mapped to NED-2 which is BAD because it is VERY common!!!
 // Must allow 'if' inside connection groups as well!
 //
 // FIXME Additionally: "where" is too unfamiliar for programmers, and syntax
-// for mixing loops with conditionals is CONFUSING!!! 
+// for mixing loops with conditionals is CONFUSING!!!
 // Ditch where, and use "for" + "if" instead?
 //    for i=0..N-1, for j=0..M-1, if i!=j {...} ???
-//
 //
 
 package generic.queueing;  // default package for following components
@@ -397,7 +403,7 @@ module Host1
         int mss = 500;
     types:
         simple TCP1X extends TCP1 {
-        	int tmp;
+            int tmp;
         }
     submodules:
         udp: UDP1 {
@@ -457,7 +463,7 @@ network Network1   // "network" is exactly as "module", but: not gates
 
 simple Node
 {
-	gates:
+    gates:
         inout port;
 }
 
@@ -655,17 +661,17 @@ simple Gen1
 // conditional parameters
 network Network6
 {
-	types:
-	    simple Host {
-	    	parameters:
-		    	int parX;
-		    	int parY;
-		    	int parZ;
-	    	gates:
-	    		input port[];
-	    		inout portA[];
-	    		inout portB[];
-	    }
+    types:
+        simple Host {
+            parameters:
+                int parX;
+                int parY;
+                int parZ;
+            gates:
+                input port[];
+                inout portA[];
+                inout portB[];
+        }
     submodules:
         hosts[100]: Host {
             parameters:
