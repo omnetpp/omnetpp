@@ -180,13 +180,6 @@ GateNode *addGate(NEDElement *gates, YYLTYPE namepos)
    return gate;
 }
 
-LoopNode *addLoop(NEDElement *conngroup, YYLTYPE varnamepos)
-{
-   LoopNode *loop = (LoopNode *)createNodeWithTag(NED_LOOP,conngroup);
-   loop->setParamName( toString( varnamepos) );
-   return loop;
-}
-
 YYLTYPE trimBrackets(YYLTYPE vectorpos)
 {
    // should check it's really brackets that get chopped off
@@ -283,6 +276,12 @@ void swapExpressionChildren(NEDElement *node, const char *attr1, const char *att
 
    if (expr1) expr1->setTarget(attr2);
    if (expr2) expr2->setTarget(attr1);
+}
+
+void moveChildren(NEDElement *from, NEDElement *to)
+{
+    while (from->getFirstChild())
+        to->appendChild(from->removeChild(from->getFirstChild()));
 }
 
 OperatorNode *createOperator(const char *op, NEDElement *operand1, NEDElement *operand2, NEDElement *operand3)

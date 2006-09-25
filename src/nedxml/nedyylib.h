@@ -42,7 +42,6 @@ void setComments(NEDElement *node, YYLTYPE firstpos, YYLTYPE lastpos);
 
 ParamNode *addParameter(NEDElement *params, YYLTYPE namepos);
 GateNode *addGate(NEDElement *gates, YYLTYPE namepos);
-LoopNode *addLoop(NEDElement *conngroup, YYLTYPE varnamepos);
 
 YYLTYPE trimBrackets(YYLTYPE vectorpos);
 YYLTYPE trimAngleBrackets(YYLTYPE vectorpos);
@@ -51,6 +50,7 @@ YYLTYPE trimDoubleBraces(YYLTYPE vectorpos);
 void swapAttributes(NEDElement *node, const char *attr1, const char *attr2);
 void swapExpressionChildren(NEDElement *node, const char *attr1, const char *attr2);
 void swapConnection(NEDElement *conn);
+void moveChildren(NEDElement *from, NEDElement *to);
 
 const char *toString(YYLTYPE);
 const char *toString(long);
