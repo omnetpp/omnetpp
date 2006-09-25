@@ -133,7 +133,6 @@ class NED2Generator
     void doConnection(ConnectionNode *node, const char *indent, bool islast, const char *);
     void doChannelSpec(ChannelSpecNode *node, const char *indent, bool islast, const char *);
     void doConnectionGroup(ConnectionGroupNode *node, const char *indent, bool islast, const char *);
-    void doWhere(WhereNode *node, const char *indent, bool islast, const char *);
     void doLoop(LoopNode *node, const char *indent, bool islast, const char *);
     void doCondition(ConditionNode *node, const char *indent, bool islast, const char *);
     void printGate(NEDElement *conn, const char *modname, const char *modindexattr,
