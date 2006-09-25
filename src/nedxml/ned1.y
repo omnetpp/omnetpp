@@ -151,7 +151,6 @@ static struct NED1ParserState
     ConnectionGroupNode *conngroup;
     ConnectionNode *conn;
     ChannelSpecNode *chanspec;
-    WhereNode *where;
     LoopNode *loop;
     ConditionNode *condition;
 } ps;
@@ -828,38 +827,11 @@ loopconnection_old
         : FOR
                 {
                   ps.conngroup = (ConnectionGroupNode *)createNodeWithTag(NED_CONNECTION_GROUP, ps.conns);
-                  ps.where = (WhereNode *)createNodeWithTag(NED_WHERE, ps.conngroup);
                   ps.inLoop=1;
                 }
           loopvarlist_old DO notloopconnections_old ENDFOR opt_semicolon
                 {
                   ps.inLoop=0;
-                  setComments(ps.where,@1,@4);
-                  //setTrailingComment(ps.where,@6);
-                  storePos(ps.where, @3);
-
-                  // optimize: if there's exactly one connection inside the loop, eliminate conngroup
-                  if (ps.conngroup->getNumChildrenWithTag(NED_CONNECTION)==1)
-                  {
-                      ps.conngroup->removeChild(ps.conn);
-                      ps.conns->insertChildBefore(ps.conngroup, ps.conn);
-                      ps.conn->appendChild(ps.conngroup->removeChild(ps.where));
-                      delete ps.conns->removeChild(ps.conngroup);
-                      storePos(ps.conn, @$);
-                  }
-                  else
-                  {
-                      // move ps.where to the end
-                      ps.conngroup->appendChild(ps.conngroup->removeChild(ps.where));
-                      ps.where->setAtFront(true);
-                      storePos(ps.conngroup, @$);
-
-                      // we're only prepared for "for" loops with 1 connection inside
-                      if (ps.where->getNumChildrenWithTag(NED_CONDITION)!=0)
-                          np->getErrors()->add(ps.conngroup, "cannot process NED-I syntax of several "
-                                   "conditional connections within a `for' loop -- "
-                                   "please split it to several `for' loops");
-                  }
                 }
         ;
 
@@ -871,7 +843,8 @@ loopvarlist_old
 loopvar_old
         : NAME '=' expression TO expression
                 {
-                  ps.loop = addLoop(ps.where,@1);
+                  ps.loop = (LoopNode *)createNodeWithTag(NED_LOOP, ps.conngroup);
+                  ps.loop->setParamName( toString(@1) );
                   addExpression(ps.loop, "from-value",@3,$3);
                   addExpression(ps.loop, "to-value",@5,$5);
                   setComments(ps.loop,@1,@5);
@@ -884,19 +857,8 @@ opt_conncondition_old
                 {
                   if (!ps.inLoop)
                   {
-                      // add where+condition to conn
-                      ps.where = (WhereNode *)createNodeWithTag(NED_WHERE, ps.conn);
-                      ps.condition = (ConditionNode *)createNodeWithTag(NED_CONDITION, ps.where);
-                      addExpression(ps.condition, "condition",@2,$2);
-                      storePos(ps.where, @$);
-                      storePos(ps.condition, @$);
-                  }
-                  else
-                  {
-                      // inside a for loop: append condition to its "where".
-                      // at the end we'll need to make sure there's only one connection in the loop!
-                      // (otherwise we'd have to check all conns have exactly the same condition)
-                      ps.condition = (ConditionNode *)createNodeWithTag(NED_CONDITION, ps.where);
+                      // add condition to conn
+                      ps.condition = (ConditionNode *)createNodeWithTag(NED_CONDITION, ps.conn);
                       addExpression(ps.condition, "condition",@2,$2);
                       storePos(ps.condition, @$);
                   }

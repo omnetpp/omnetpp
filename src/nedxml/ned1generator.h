@@ -93,7 +93,6 @@ class NED1Generator
     bool hasExpression(NEDElement *node, const char *attr);
     void printExpression(NEDElement *node, const char *attr, const char *indent);
     void printOptVector(NEDElement *node, const char *attr, const char *indent);
-    void printIfExpression(NEDElement *node, const char *attr, const char *indent);
     const char *getDisplayStringOf(NEDElement *node);
     //@}
 
@@ -147,7 +146,6 @@ class NED1Generator
     void doConnection(ConnectionNode *node, const char *indent, bool islast, const char *);
     void doChannelSpec(ChannelSpecNode *node, const char *indent, bool islast, const char *);
     void doConnectionGroup(ConnectionGroupNode *node, const char *indent, bool islast, const char *);
-    void doWhere(WhereNode *node, const char *indent, bool islast, const char *);
     void doLoop(LoopNode *node, const char *indent, bool islast, const char *);
     void doCondition(ConditionNode *node, const char *indent, bool islast, const char *);
     void printGate(NEDElement *conn, const char *modname, const char *modindexattr,

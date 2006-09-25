@@ -74,7 +74,6 @@ class NEDValidatorBase
     virtual void validateElement(ConnectionNode *node) = 0;
     virtual void validateElement(ChannelSpecNode *node) = 0;
     virtual void validateElement(ConnectionGroupNode *node) = 0;
-    virtual void validateElement(WhereNode *node) = 0;
     virtual void validateElement(LoopNode *node) = 0;
     virtual void validateElement(ConditionNode *node) = 0;
     virtual void validateElement(ExpressionNode *node) = 0;

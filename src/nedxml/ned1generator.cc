@@ -212,13 +212,6 @@ void NED1Generator::printOptVector(NEDElement *node, const char *attr, const cha
     }
 }
 
-void NED1Generator::printIfExpression(NEDElement *node, const char *attr, const char *indent)
-{
-    OUT << "ifXXX ";     //FIXME
-    printExpression(node,attr,indent);
-}
-
-
 //---------------------------------------------------------------------------
 
 void NED1Generator::appendBannerComment(const char *comment, const char *indent)
@@ -807,11 +800,15 @@ void NED1Generator::doConnection(ConnectionNode *node, const char *indent, bool 
     else
         printGate(node, node->getSrcModule(), "src-module-index", node->getSrcGate(), "src-gate-index", node->getSrcGatePlusplus(), node->getSrcGateSubg(), indent);
 
-    if (node->getFirstChildWithTag(NED_WHERE))
-    {
-        OUT << " where "; //FIXME
-        generateChildrenWithType(node, NED_WHERE, indent);
-    }
+    if (node->getFirstChildWithTag(NED_LOOP))
+        errors->add(node, ERRCAT_WARNING, NED2FEATURE "per-connection `for'");
+
+    if (node->getNumChildrenWithTag(NED_CONDITION)>1)
+        errors->add(node, ERRCAT_WARNING, NED2FEATURE "more than one `if' per-connection");
+
+    NEDElement *condition = node->getFirstChildWithTag(NED_CONDITION);
+    if (condition)
+        doCondition((ConditionNode *)condition, indent, false, NULL);
 
     // display string
     NEDElement *chanSpecNode = node->getFirstChildWithTag(NED_CHANNEL_SPEC);
@@ -845,22 +842,13 @@ void NED1Generator::doChannelSpec(ChannelSpecNode *node, const char *indent, boo
 
 void NED1Generator::doConnectionGroup(ConnectionGroupNode *node, const char *indent, bool islast, const char *)
 {
-    WhereNode *where = (WhereNode *)node->getFirstChildWithTag(NED_WHERE);
-
     OUT << indent << "for ";
-    generateChildrenWithType(node, NED_WHERE, increaseIndent(indent));
+    generateChildrenWithType(node, NED_LOOP, increaseIndent(indent), ", ");
     OUT << " do\n";
 
     generateChildrenWithType(node, NED_CONNECTION, increaseIndent(indent));
 
     OUT << indent << "endfor;\n";
-}
-
-void NED1Generator::doWhere(WhereNode *node, const char *indent, bool islast, const char *)
-{
-    if (node->getFirstChildWithTag(NED_CONDITION))
-        errors->add(node, ERRCAT_WARNING, NED2FEATURE "mixing loops and conditionals for connections");
-    generateChildrenWithType(node, NED_LOOP, indent, ", ");
 }
 
 void NED1Generator::doLoop(LoopNode *node, const char *indent, bool islast, const char *sep)
@@ -876,8 +864,7 @@ void NED1Generator::doLoop(LoopNode *node, const char *indent, bool islast, cons
 
 void NED1Generator::doCondition(ConditionNode *node, const char *indent, bool islast, const char *sep)
 {
-    if (node->getParent()->getTagCode()!=NED_WHERE)  //khmm...
-        OUT << "if ";
+    OUT << "if ";
     printExpression(node, "condition",indent);
     if (!islast)
         OUT << sep;
@@ -1148,8 +1135,6 @@ void NED1Generator::generateNedItem(NEDElement *node, const char *indent, bool i
             doChannelSpec((ChannelSpecNode *)node, indent, islast, arg); break;
         case NED_CONNECTION_GROUP:
             doConnectionGroup((ConnectionGroupNode *)node, indent, islast, arg); break;
-        case NED_WHERE:
-            doWhere((WhereNode *)node, indent, islast, arg); break;
         case NED_LOOP:
             doLoop((LoopNode *)node, indent, islast, arg); break;
         case NED_CONDITION:
