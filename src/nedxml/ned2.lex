@@ -129,7 +129,6 @@ static char textbuf[TEXTBUF_LEN];
 {D}*"."{D}+({E})?       { count(); return REALCONSTANT; }
 
 \"[^\"]*\"              { count(); return STRINGCONSTANT; }
-\'[^\']\'               { count(); return CHARCONSTANT; }
 
 "**"                    { count(); return DOUBLEASTERISK; }
 "++"                    { count(); return PLUSPLUS; }
