@@ -234,6 +234,11 @@ void NEDElement::insertChildBefore(NEDElement *where, NEDElement *node)
 {
     if (node->parent)
         node->parent->removeChild(node);
+    if (!where) 
+    {
+        appendChild(node);
+        return;
+    }
     node->parent = this;
     node->prevsibling = where->prevsibling;
     node->nextsibling = where;

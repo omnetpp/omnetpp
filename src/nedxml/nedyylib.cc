@@ -131,46 +131,47 @@ PropertyNode *storeComponentSourceCode(NEDElement *node, YYLTYPE tokenpos)
 //
 CommentNode *addComment(NEDElement *node, const char *locId, const char *text)
 {
-    CommentNode *comment = (CommentNode *)createNodeWithTag(NED_COMMENT, node);
+    CommentNode *comment = (CommentNode *)createNodeWithTag(NED_COMMENT);
     comment->setLocid(locId);
     comment->setContent(text);
+    node->insertChildBefore(node->getFirstChild(), comment);
     return comment;
 }
 
-void setFileComment(NEDElement *node)
+void storeFileComment(NEDElement *node)
 {
     addComment(node, "banner", np->getSource()->getFileComment());
 }
 
-void setBannerComment(NEDElement *node, YYLTYPE tokenpos)
+void storeBannerComment(NEDElement *node, YYLTYPE tokenpos)
 {
     addComment(node, "banner", np->getSource()->getBannerComment(tokenpos));
 }
 
-void setRightComment(NEDElement *node, YYLTYPE tokenpos)
+void storeRightComment(NEDElement *node, YYLTYPE tokenpos)
 {
     addComment(node, "right", np->getSource()->getTrailingComment(tokenpos));
 }
 
-void setTrailingComment(NEDElement *node, YYLTYPE tokenpos)
+void storeTrailingComment(NEDElement *node, YYLTYPE tokenpos)
 {
     addComment(node, "trailing", np->getSource()->getTrailingComment(tokenpos));
 }
 
-void setComments(NEDElement *node, YYLTYPE pos)
+void storeComments(NEDElement *node, YYLTYPE pos)
 {
-    setBannerComment(node, pos);
-    setRightComment(node, pos);
+    storeBannerComment(node, pos);
+    storeRightComment(node, pos);
 }
 
-void setComments(NEDElement *node, YYLTYPE firstpos, YYLTYPE lastpos)
+void storeComments(NEDElement *node, YYLTYPE firstpos, YYLTYPE lastpos)
 {
     YYLTYPE pos = firstpos;
     pos.last_line = lastpos.last_line;
     pos.last_column = lastpos.last_column;
 
-    setBannerComment(node, pos);
-    setRightComment(node, pos);
+    storeBannerComment(node, pos);
+    storeRightComment(node, pos);
 }
 
 ParamNode *addParameter(NEDElement *params, YYLTYPE namepos)

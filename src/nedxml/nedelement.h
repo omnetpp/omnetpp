@@ -299,9 +299,10 @@ class NEDElement
 
     /**
      * Inserts the given element just before the specified child element
-     * in the child element list.
+     * in the child element list, or at the end of the child list if 
+     * NULL is specified as the insert position.
      *
-     * The where element must be a child of this element.
+     * The where element must be a child of this element, or NULL.
      * The node pointer passed should not be NULL.
      */
     virtual void insertChildBefore(NEDElement *where, NEDElement *newnode);

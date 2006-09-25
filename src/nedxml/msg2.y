@@ -150,7 +150,7 @@ cplusplus
                 {
                   ps.cplusplus = (CplusplusNode *)createNodeWithTag(NED_CPLUSPLUS, ps.msgfile );
                   ps.cplusplus->setBody(toString(trimDoubleBraces(@2)));
-                  setComments(ps.cplusplus,@1,@2);
+                  storeComments(ps.cplusplus,@1,@2);
                 }
         ;
 
@@ -159,7 +159,7 @@ struct_decl
                 {
                   ps.structdecl = (StructDeclNode *)createNodeWithTag(NED_STRUCT_DECL, ps.msgfile );
                   ps.structdecl->setName(toString(@2));
-                  setComments(ps.structdecl,@1,@2);
+                  storeComments(ps.structdecl,@1,@2);
                 }
         ;
 
@@ -169,14 +169,14 @@ class_decl
                   ps.classdecl = (ClassDeclNode *)createNodeWithTag(NED_CLASS_DECL, ps.msgfile );
                   ps.classdecl->setName(toString(@2));
                   ps.classdecl->setIsCobject(true);
-                  setComments(ps.classdecl,@1,@2);
+                  storeComments(ps.classdecl,@1,@2);
                 }
         | CLASS NONCOBJECT NAME ';'
                 {
                   ps.classdecl = (ClassDeclNode *)createNodeWithTag(NED_CLASS_DECL, ps.msgfile );
                   ps.classdecl->setIsCobject(false);
                   ps.classdecl->setName(toString(@3));
-                  setComments(ps.classdecl,@1,@2);
+                  storeComments(ps.classdecl,@1,@2);
                 }
         ;
 
@@ -185,7 +185,7 @@ message_decl
                 {
                   ps.messagedecl = (MessageDeclNode *)createNodeWithTag(NED_MESSAGE_DECL, ps.msgfile );
                   ps.messagedecl->setName(toString(@2));
-                  setComments(ps.messagedecl,@1,@2);
+                  storeComments(ps.messagedecl,@1,@2);
                 }
         ;
 
@@ -194,7 +194,7 @@ enum_decl
                 {
                   ps.enumdecl = (EnumDeclNode *)createNodeWithTag(NED_ENUM_DECL, ps.msgfile );
                   ps.enumdecl->setName(toString(@2));
-                  setComments(ps.enumdecl,@1,@2);
+                  storeComments(ps.enumdecl,@1,@2);
                 }
         ;
 
@@ -203,24 +203,24 @@ enum
                 {
                   ps.enump = (EnumNode *)createNodeWithTag(NED_ENUM, ps.msgfile );
                   ps.enump->setName(toString(@2));
-                  setComments(ps.enump,@1,@2);
+                  storeComments(ps.enump,@1,@2);
                   ps.enumfields = (EnumFieldsNode *)createNodeWithTag(NED_ENUM_FIELDS, ps.enump);
                 }
           opt_enumfields '}' opt_semicolon
                 {
-                  setTrailingComment(ps.enump,@6);
+                  storeTrailingComment(ps.enump,@6);
                 }
         | ENUM NAME EXTENDS NAME '{'
                 {
                   ps.enump = (EnumNode *)createNodeWithTag(NED_ENUM, ps.msgfile );
                   ps.enump->setName(toString(@2));
                   ps.enump->setExtendsName(toString(@4));
-                  setComments(ps.enump,@1,@4);
+                  storeComments(ps.enump,@1,@4);
                   ps.enumfields = (EnumFieldsNode *)createNodeWithTag(NED_ENUM_FIELDS, ps.enump);
                 }
           opt_enumfields '}' opt_semicolon
                 {
-                  setTrailingComment(ps.enump,@8);
+                  storeTrailingComment(ps.enump,@8);
                 }
         ;
 
@@ -239,14 +239,14 @@ enumfield
                 {
                   ps.enumfield = (EnumFieldNode *)createNodeWithTag(NED_ENUM_FIELD, ps.enumfields);
                   ps.enumfield->setName(toString(@1));
-                  setComments(ps.enumfield,@1,@1);
+                  storeComments(ps.enumfield,@1,@1);
                 }
         | NAME '=' enumvalue ';'
                 {
                   ps.enumfield = (EnumFieldNode *)createNodeWithTag(NED_ENUM_FIELD, ps.enumfields);
                   ps.enumfield->setName(toString(@1));
                   ps.enumfield->setValue(toString(@3));
-                  setComments(ps.enumfield,@1,@3);
+                  storeComments(ps.enumfield,@1,@3);
                 }
         ;
 
@@ -255,22 +255,22 @@ message
                 {
                   ps.msgclassorstruct = ps.messagep = (MessageNode *)createNodeWithTag(NED_MESSAGE, ps.msgfile );
                   ps.messagep->setName(toString(@2));
-                  setComments(ps.messagep,@1,@2);
+                  storeComments(ps.messagep,@1,@2);
                 }
           opt_propertiesblock opt_fieldsblock '}' opt_semicolon
                 {
-                  setTrailingComment(ps.messagep,@7);
+                  storeTrailingComment(ps.messagep,@7);
                 }
         | MESSAGE NAME EXTENDS NAME '{'
                 {
                   ps.msgclassorstruct = ps.messagep = (MessageNode *)createNodeWithTag(NED_MESSAGE, ps.msgfile );
                   ps.messagep->setName(toString(@2));
                   ps.messagep->setExtendsName(toString(@4));
-                  setComments(ps.messagep,@1,@4);
+                  storeComments(ps.messagep,@1,@4);
                 }
           opt_propertiesblock opt_fieldsblock '}' opt_semicolon
                 {
-                  setTrailingComment(ps.messagep,@9);
+                  storeTrailingComment(ps.messagep,@9);
                 }
         ;
 
@@ -279,22 +279,22 @@ class
                 {
                   ps.msgclassorstruct = ps.classp = (ClassNode *)createNodeWithTag(NED_CLASS, ps.msgfile );
                   ps.classp->setName(toString(@2));
-                  setComments(ps.classp,@1,@2);
+                  storeComments(ps.classp,@1,@2);
                 }
           opt_propertiesblock opt_fieldsblock '}' opt_semicolon
                 {
-                  setTrailingComment(ps.classp,@7);
+                  storeTrailingComment(ps.classp,@7);
                 }
         | CLASS NAME EXTENDS NAME '{'
                 {
                   ps.msgclassorstruct = ps.classp = (ClassNode *)createNodeWithTag(NED_CLASS, ps.msgfile );
                   ps.classp->setName(toString(@2));
                   ps.classp->setExtendsName(toString(@4));
-                  setComments(ps.classp,@1,@4);
+                  storeComments(ps.classp,@1,@4);
                 }
           opt_propertiesblock opt_fieldsblock '}' opt_semicolon
                 {
-                  setTrailingComment(ps.classp,@9);
+                  storeTrailingComment(ps.classp,@9);
                 }
         ;
 
@@ -303,22 +303,22 @@ struct
                 {
                   ps.msgclassorstruct = ps.structp = (StructNode *)createNodeWithTag(NED_STRUCT, ps.msgfile );
                   ps.structp->setName(toString(@2));
-                  setComments(ps.structp,@1,@2);
+                  storeComments(ps.structp,@1,@2);
                 }
           opt_propertiesblock opt_fieldsblock '}' opt_semicolon
                 {
-                  setTrailingComment(ps.structp,@7);
+                  storeTrailingComment(ps.structp,@7);
                 }
         | STRUCT NAME EXTENDS NAME '{'
                 {
                   ps.msgclassorstruct = ps.structp = (StructNode *)createNodeWithTag(NED_STRUCT, ps.msgfile );
                   ps.structp->setName(toString(@2));
                   ps.structp->setExtendsName(toString(@4));
-                  setComments(ps.structp,@1,@4);
+                  storeComments(ps.structp,@1,@4);
                 }
           opt_propertiesblock opt_fieldsblock '}' opt_semicolon
                 {
-                  setTrailingComment(ps.structp,@9);
+                  storeTrailingComment(ps.structp,@9);
                 }
         ;
 
@@ -326,7 +326,7 @@ opt_propertiesblock
         : PROPERTIES ':'
                 {
                   ps.properties = (PropertiesNode *)createNodeWithTag(NED_PROPERTIES, ps.msgclassorstruct);
-                  setComments(ps.properties,@1);
+                  storeComments(ps.properties,@1);
                 }
           opt_properties
         |
@@ -348,7 +348,7 @@ property
                   ps.msgproperty = (MsgpropertyNode *)createNodeWithTag(NED_MSGPROPERTY, ps.properties);
                   ps.msgproperty->setName(toString(@1));
                   ps.msgproperty->setValue(toString(@3));
-                  setComments(ps.msgproperty,@1,@3);
+                  storeComments(ps.msgproperty,@1,@3);
                 }
         ;
 
@@ -365,7 +365,7 @@ opt_fieldsblock
         : FIELDS ':'
                 {
                   ps.fields = (FieldsNode *)createNodeWithTag(NED_FIELDS, ps.msgclassorstruct);
-                  setComments(ps.fields,@1);
+                  storeComments(ps.fields,@1);
                 }
           opt_fields
         |
@@ -392,7 +392,7 @@ field
                 }
            opt_fieldvector opt_fieldenum opt_fieldvalue ';'
                 {
-                  setComments(ps.field,@1,@7);
+                  storeComments(ps.field,@1,@7);
                 }
         | fieldmodifiers NAME
                 {
@@ -403,7 +403,7 @@ field
                 }
            opt_fieldvector opt_fieldenum opt_fieldvalue ';'
                 {
-                  setComments(ps.field,@1,@6);
+                  storeComments(ps.field,@1,@6);
                 }
         ;
 
@@ -536,7 +536,7 @@ NEDElement *doParseMSG2(NEDParser *p, const char *nedtext)
     ps.msgfile->setFilename(slashifyFilename(np->getFileName()).c_str());
 
     // store file comment
-    //FIXME ps.msgfile->setBannerComment(nedsource->getFileComment());
+    storeFileComment(ps.msgfile);
 
     if (np->getStoreSourceFlag())
         storeSourceCode(ps.msgfile, np->getSource()->getFullTextPos());

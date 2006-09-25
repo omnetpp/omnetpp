@@ -34,12 +34,12 @@ PropertyNode *storeSourceCode(NEDElement *node, YYLTYPE tokenpos);  // directly 
 PropertyNode *storeComponentSourceCode(NEDElement *node, YYLTYPE tokenpos); // into ParametersNode child
 
 CommentNode *addComment(NEDElement *node, const char *locId, const char *comment);
-void setFileComment(NEDElement *node);
-void setBannerComment(NEDElement *node, YYLTYPE tokenpos);
-void setRightComment(NEDElement *node, YYLTYPE tokenpos);
-void setTrailingComment(NEDElement *node, YYLTYPE tokenpos);
-void setComments(NEDElement *node, YYLTYPE pos);
-void setComments(NEDElement *node, YYLTYPE firstpos, YYLTYPE lastpos);
+void storeFileComment(NEDElement *node);
+void storeBannerComment(NEDElement *node, YYLTYPE tokenpos);
+void storeRightComment(NEDElement *node, YYLTYPE tokenpos);
+void storeTrailingComment(NEDElement *node, YYLTYPE tokenpos);
+void storeComments(NEDElement *node, YYLTYPE pos);
+void storeComments(NEDElement *node, YYLTYPE firstpos, YYLTYPE lastpos);
 
 ParamNode *addParameter(NEDElement *params, YYLTYPE namepos);
 GateNode *addGate(NEDElement *gates, YYLTYPE namepos);

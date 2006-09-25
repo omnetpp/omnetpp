@@ -124,7 +124,7 @@ static struct NED2ParserState
 
     /* NED-II: modules, channels */
     NedFileNode *nedfile;
-    WhitespaceNode *whitespace;
+    CommentNode *comment;
     ImportNode *import;
     PropertyDeclNode *propertydecl;
     ExtendsNode *extends;
@@ -322,7 +322,7 @@ channeldefinition
                   ps.propertyscope.pop();
                   ps.blockscope.pop();
                   ps.typescope.pop();
-                  setTrailingComment(ps.component,@4);
+                  storeTrailingComment(ps.component,@4);
                   if (np->getStoreSourceFlag())
                       storeComponentSourceCode(ps.component, @$);
                   storePos(ps.component, @$);
@@ -395,7 +395,7 @@ channelinterfacedefinition
                   ps.propertyscope.pop();
                   ps.blockscope.pop();
                   ps.typescope.pop();
-                  setTrailingComment(ps.component,@4);
+                  storeTrailingComment(ps.component,@4);
                   if (np->getStoreSourceFlag())
                       storeComponentSourceCode(ps.component, @$);
                   storePos(ps.component, @$);
@@ -441,7 +441,7 @@ simplemoduledefinition
                   ps.propertyscope.pop();
                   ps.blockscope.pop();
                   ps.typescope.pop();
-                  setTrailingComment(ps.component,@6);
+                  storeTrailingComment(ps.component,@6);
                   if (np->getStoreSourceFlag())
                       storeComponentSourceCode(ps.component, @$);
                   storePos(ps.component, @$);
@@ -480,7 +480,7 @@ compoundmoduledefinition
                   ps.propertyscope.pop();
                   ps.blockscope.pop();
                   ps.typescope.pop();
-                  setTrailingComment(ps.component,@9);
+                  storeTrailingComment(ps.component,@9);
                   if (np->getStoreSourceFlag())
                       storeComponentSourceCode(ps.component, @$);
                   storePos(ps.component, @$);
@@ -519,7 +519,7 @@ networkdefinition
                   ps.propertyscope.pop();
                   ps.blockscope.pop();
                   ps.typescope.pop();
-                  setTrailingComment(ps.component,@5);
+                  storeTrailingComment(ps.component,@5);
                   if (np->getStoreSourceFlag())
                       storeComponentSourceCode(ps.component, @$);
                   storePos(ps.component, @$);
@@ -556,7 +556,7 @@ moduleinterfacedefinition
                   ps.propertyscope.pop();
                   ps.blockscope.pop();
                   ps.typescope.pop();
-                  setTrailingComment(ps.component,@6);
+                  storeTrailingComment(ps.component,@6);
                   if (np->getStoreSourceFlag())
                       storeComponentSourceCode(ps.component, @$);
                   storePos(ps.component, @$);
@@ -1696,7 +1696,7 @@ NEDElement *doParseNED2(NEDParser *p, const char *nedtext)
     ps.nedfile->setVersion("2");
 
     // store file comment
-    //FIXME ps.nedfile->setBannerComment(nedsource->getFileComment());
+    storeFileComment(ps.nedfile);
 
     ps.propertyscope.push(ps.nedfile);
 
