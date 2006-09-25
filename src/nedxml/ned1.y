@@ -1358,6 +1358,8 @@ NEDElement *doParseNED1(NEDParser *p, const char *nedtext)
     }
 
     yy_delete_buffer(handle);
+
+    //FIXME TODO: fill in @documentation properties from comments
     return ps.nedfile;
 }
 

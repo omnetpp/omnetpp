@@ -1726,6 +1726,8 @@ NEDElement *doParseNED2(NEDParser *p, const char *nedtext)
             INTERNAL_ERROR0(NULL, "error during parsing: imbalanced blockscope or typescope");
     }
     yy_delete_buffer(handle);
+
+    //FIXME TODO: fill in @documentation properties from comments
     return ps.nedfile;
 }
 
