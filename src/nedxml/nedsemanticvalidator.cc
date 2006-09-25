@@ -50,7 +50,7 @@ void NEDSemanticValidator::validateElement(NedFileNode *node)
 {
 }
 
-void NEDSemanticValidator::validateElement(WhitespaceNode *node)
+void NEDSemanticValidator::validateElement(CommentNode *node)
 {
 }
 

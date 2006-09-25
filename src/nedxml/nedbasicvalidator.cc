@@ -181,7 +181,7 @@ void NEDBasicValidator::validateElement(NedFileNode *node)
     //FIXME revise
 }
 
-void NEDBasicValidator::validateElement(WhitespaceNode *node)
+void NEDBasicValidator::validateElement(CommentNode *node)
 {
     //FIXME revise
 }

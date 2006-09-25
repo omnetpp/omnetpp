@@ -359,7 +359,7 @@ void NED1Generator::doModuleParameters(ParametersNode *node, const char *indent)
     for (NEDElement *child=node->getFirstChild(); child; child=child->getNextSibling())
     {
         int childTag = child->getTagCode();
-        if (childTag==NED_WHITESPACE)
+        if (childTag==NED_COMMENT)
             ; // ignore whitespace
         else if (childTag==NED_PROPERTY)
             doProperty((PropertyNode *)child, increaseIndent(indent), false, NULL);
@@ -402,7 +402,7 @@ void NED1Generator::doSubstParamGroup(NEDElement *node, const char *indent)
     for (NEDElement *child=node->getFirstChild(); child; child=child->getNextSibling())
     {
         int childTag = child->getTagCode();
-        if (childTag==NED_WHITESPACE || childTag==NED_CONDITION)
+        if (childTag==NED_COMMENT || childTag==NED_CONDITION)
             ; //ignore
         else if (childTag==NED_PROPERTY)
             doProperty((PropertyNode *)child, increaseIndent(indent), false, NULL);
@@ -430,7 +430,7 @@ void NED1Generator::doChannelParameters(ParametersNode *node, const char *indent
     for (NEDElement *child=node->getFirstChild(); child; child=child->getNextSibling())
     {
         int childTag = child->getTagCode();
-        if (childTag==NED_WHITESPACE)
+        if (childTag==NED_COMMENT)
             ; //ignore
         else if (childTag==NED_PROPERTY)
             doProperty((PropertyNode *)child, indent, false, NULL);
@@ -452,7 +452,7 @@ void NED1Generator::doConnectionAttributes(ParametersNode *node, const char *ind
     for (NEDElement *child=node->getFirstChild(); child; child=child->getNextSibling())
     {
         int childTag = child->getTagCode();
-        if (childTag==NED_WHITESPACE)
+        if (childTag==NED_COMMENT)
             ; //ignore
         else if (childTag==NED_PROPERTY)
             doProperty((PropertyNode *)child, indent, false, NULL);
@@ -584,7 +584,7 @@ void NED1Generator::doModuleGates(GatesNode *node, const char *indent)
     for (NEDElement *child=node->getFirstChild(); child; child=child->getNextSibling())
     {
         int childTag = child->getTagCode();
-        if (childTag==NED_WHITESPACE)
+        if (childTag==NED_COMMENT)
             ; // ignore whitespace
         else if (childTag==NED_GATE)
             doModuleGate((GateNode *)child, increaseIndent(indent), child->getNextSiblingWithTag(NED_GATE)==NULL, NULL);
@@ -630,7 +630,7 @@ void NED1Generator::doGatesizesGroup(NEDElement *node, const char *indent)
     for (NEDElement *child=node->getFirstChild(); child; child=child->getNextSibling())
     {
         int childTag = child->getTagCode();
-        if (childTag==NED_WHITESPACE || childTag==NED_CONDITION)
+        if (childTag==NED_COMMENT || childTag==NED_CONDITION)
             ; //ignore
         else if (childTag==NED_GATE)
             doGatesize((GateNode *)child, increaseIndent(indent), !_hasSiblingBefore(child->getNextSibling(), NED_GATE, NED_GATE_GROUP), NULL);

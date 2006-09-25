@@ -128,7 +128,7 @@ static struct NED1ParserState
 
     /* NED-I: modules, channels, networks */
     NedFileNode *nedfile;
-    WhitespaceNode *whitespace;
+    CommentNode *comment;
     ImportNode *import;
     ExtendsNode *extends;
     ChannelNode *channel;

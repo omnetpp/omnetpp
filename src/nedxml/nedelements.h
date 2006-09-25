@@ -24,7 +24,7 @@
 
 class FilesNode;
 class NedFileNode;
-class WhitespaceNode;
+class CommentNode;
 class ImportNode;
 class PropertyDeclNode;
 class ExtendsNode;
@@ -85,7 +85,7 @@ enum NEDElementCode {
     NED_NULL = 0,  // 0 is reserved
     NED_FILES,
     NED_NED_FILE,
-    NED_WHITESPACE,
+    NED_COMMENT,
     NED_IMPORT,
     NED_PROPERTY_DECL,
     NED_EXTENDS,
@@ -189,7 +189,7 @@ class FilesNode : public NEDElement
  * GENERATED CLASS. Represents the &lt;ned-file&gt; XML element in memory. DTD declaration:
  * 
  * <pre>
- * <!ELEMENT ned-file (whitespace*, (import|property-decl|property|channel|
+ * <!ELEMENT ned-file (comment*, (import|property-decl|property|channel|
  *                     channel-interface|simple-module|compound-module|module-interface)*)>
  * <!ATTLIST ned-file
  *      filename           CDATA     #REQUIRED
@@ -234,7 +234,7 @@ class NedFileNode : public NEDElement
     void setPackage(const char * val)  {package = val;}
 
     virtual NedFileNode *getNextNedFileNodeSibling() const;
-    virtual WhitespaceNode *getFirstWhitespaceChild() const;
+    virtual CommentNode *getFirstCommentChild() const;
     virtual ImportNode *getFirstImportChild() const;
     virtual PropertyDeclNode *getFirstPropertyDeclChild() const;
     virtual PropertyNode *getFirstPropertyChild() const;
@@ -247,18 +247,18 @@ class NedFileNode : public NEDElement
 };
 
 /**
- * GENERATED CLASS. Represents the &lt;whitespace&gt; XML element in memory. DTD declaration:
+ * GENERATED CLASS. Represents the &lt;comment&gt; XML element in memory. DTD declaration:
  * 
  * <pre>
- * <!ELEMENT whitespace EMPTY>
- * <!ATTLIST whitespace
+ * <!ELEMENT comment EMPTY>
+ * <!ATTLIST comment
  *      locid              NMTOKEN   #REQUIRED
  *      content            CDATA     #REQUIRED>
  * </pre>
  * 
  * @ingroup Data
  */
-class WhitespaceNode : public NEDElement
+class CommentNode : public NEDElement
 {
   private:
     std::string locid;
@@ -266,15 +266,15 @@ class WhitespaceNode : public NEDElement
   public:
     /** @name Constructors, destructor */
     //@{
-    WhitespaceNode();
-    WhitespaceNode(NEDElement *parent);
-    virtual ~WhitespaceNode() {}
+    CommentNode();
+    CommentNode(NEDElement *parent);
+    virtual ~CommentNode() {}
     //@}
 
     /** @name Redefined NEDElement methods, incl. generic access to attributes */
     //@{
-    virtual const char *getTagName() const {return "whitespace";}
-    virtual int getTagCode() const {return NED_WHITESPACE;}
+    virtual const char *getTagName() const {return "comment";}
+    virtual int getTagCode() const {return NED_COMMENT;}
     virtual int getNumAttributes() const;
     virtual const char *getAttributeName(int k) const;
     virtual const char *getAttribute(int k) const;
@@ -289,7 +289,7 @@ class WhitespaceNode : public NEDElement
     const char * getContent() const  {return content.c_str();}
     void setContent(const char * val)  {content = val;}
 
-    virtual WhitespaceNode *getNextWhitespaceNodeSibling() const;
+    virtual CommentNode *getNextCommentNodeSibling() const;
     //@}
 };
 
@@ -297,7 +297,7 @@ class WhitespaceNode : public NEDElement
  * GENERATED CLASS. Represents the &lt;import&gt; XML element in memory. DTD declaration:
  * 
  * <pre>
- * <!ELEMENT import (whitespace*)>
+ * <!ELEMENT import (comment*)>
  * <!ATTLIST import
  *      filename           CDATA     #REQUIRED>
  * </pre>
@@ -333,7 +333,7 @@ class ImportNode : public NEDElement
     void setFilename(const char * val)  {filename = val;}
 
     virtual ImportNode *getNextImportNodeSibling() const;
-    virtual WhitespaceNode *getFirstWhitespaceChild() const;
+    virtual CommentNode *getFirstCommentChild() const;
     //@}
 };
 
@@ -341,7 +341,7 @@ class ImportNode : public NEDElement
  * GENERATED CLASS. Represents the &lt;property-decl&gt; XML element in memory. DTD declaration:
  * 
  * <pre>
- * <!ELEMENT property-decl (whitespace*, property-key*, property*)>
+ * <!ELEMENT property-decl (comment*, property-key*, property*)>
  * <!ATTLIST property-decl
  *      name               NMTOKEN   #REQUIRED
  *      is-array           (true|false) "false">
@@ -381,7 +381,7 @@ class PropertyDeclNode : public NEDElement
     void setIsArray(bool val)  {isArray = val;}
 
     virtual PropertyDeclNode *getNextPropertyDeclNodeSibling() const;
-    virtual WhitespaceNode *getFirstWhitespaceChild() const;
+    virtual CommentNode *getFirstCommentChild() const;
     virtual PropertyKeyNode *getFirstPropertyKeyChild() const;
     virtual PropertyNode *getFirstPropertyChild() const;
     //@}
@@ -391,7 +391,7 @@ class PropertyDeclNode : public NEDElement
  * GENERATED CLASS. Represents the &lt;extends&gt; XML element in memory. DTD declaration:
  * 
  * <pre>
- * <!ELEMENT extends (whitespace*)>
+ * <!ELEMENT extends (comment*)>
  * <!ATTLIST extends
  *      name               NMTOKEN   #REQUIRED>
  * </pre>
@@ -427,7 +427,7 @@ class ExtendsNode : public NEDElement
     void setName(const char * val)  {name = val;}
 
     virtual ExtendsNode *getNextExtendsNodeSibling() const;
-    virtual WhitespaceNode *getFirstWhitespaceChild() const;
+    virtual CommentNode *getFirstCommentChild() const;
     //@}
 };
 
@@ -435,7 +435,7 @@ class ExtendsNode : public NEDElement
  * GENERATED CLASS. Represents the &lt;interface-name&gt; XML element in memory. DTD declaration:
  * 
  * <pre>
- * <!ELEMENT interface-name (whitespace*)>
+ * <!ELEMENT interface-name (comment*)>
  * <!ATTLIST interface-name
  *      name               NMTOKEN   #REQUIRED>
  * </pre>
@@ -471,7 +471,7 @@ class InterfaceNameNode : public NEDElement
     void setName(const char * val)  {name = val;}
 
     virtual InterfaceNameNode *getNextInterfaceNameNodeSibling() const;
-    virtual WhitespaceNode *getFirstWhitespaceChild() const;
+    virtual CommentNode *getFirstCommentChild() const;
     //@}
 };
 
@@ -479,7 +479,7 @@ class InterfaceNameNode : public NEDElement
  * GENERATED CLASS. Represents the &lt;simple-module&gt; XML element in memory. DTD declaration:
  * 
  * <pre>
- * <!ELEMENT simple-module (whitespace*, extends?, interface-name*, parameters?, gates?)>
+ * <!ELEMENT simple-module (comment*, extends?, interface-name*, parameters?, gates?)>
  * <!ATTLIST simple-module
  *      name               NMTOKEN   #REQUIRED
  *      is-network         (true|false) "false">
@@ -519,7 +519,7 @@ class SimpleModuleNode : public NEDElement
     void setIsNetwork(bool val)  {isNetwork = val;}
 
     virtual SimpleModuleNode *getNextSimpleModuleNodeSibling() const;
-    virtual WhitespaceNode *getFirstWhitespaceChild() const;
+    virtual CommentNode *getFirstCommentChild() const;
     virtual ExtendsNode *getFirstExtendsChild() const;
     virtual InterfaceNameNode *getFirstInterfaceNameChild() const;
     virtual ParametersNode *getFirstParametersChild() const;
@@ -531,7 +531,7 @@ class SimpleModuleNode : public NEDElement
  * GENERATED CLASS. Represents the &lt;module-interface&gt; XML element in memory. DTD declaration:
  * 
  * <pre>
- * <!ELEMENT module-interface (whitespace*, extends*, parameters?, gates?)>
+ * <!ELEMENT module-interface (comment*, extends*, parameters?, gates?)>
  * <!ATTLIST module-interface
  *      name               NMTOKEN   #REQUIRED>
  * </pre>
@@ -567,7 +567,7 @@ class ModuleInterfaceNode : public NEDElement
     void setName(const char * val)  {name = val;}
 
     virtual ModuleInterfaceNode *getNextModuleInterfaceNodeSibling() const;
-    virtual WhitespaceNode *getFirstWhitespaceChild() const;
+    virtual CommentNode *getFirstCommentChild() const;
     virtual ExtendsNode *getFirstExtendsChild() const;
     virtual ParametersNode *getFirstParametersChild() const;
     virtual GatesNode *getFirstGatesChild() const;
@@ -578,7 +578,7 @@ class ModuleInterfaceNode : public NEDElement
  * GENERATED CLASS. Represents the &lt;compound-module&gt; XML element in memory. DTD declaration:
  * 
  * <pre>
- * <!ELEMENT compound-module (whitespace*, extends?, interface-name*,
+ * <!ELEMENT compound-module (comment*, extends?, interface-name*,
  *                            parameters?, gates?, types?, submodules?, connections?)>
  * <!ATTLIST compound-module
  *      name               NMTOKEN   #REQUIRED
@@ -619,7 +619,7 @@ class CompoundModuleNode : public NEDElement
     void setIsNetwork(bool val)  {isNetwork = val;}
 
     virtual CompoundModuleNode *getNextCompoundModuleNodeSibling() const;
-    virtual WhitespaceNode *getFirstWhitespaceChild() const;
+    virtual CommentNode *getFirstCommentChild() const;
     virtual ExtendsNode *getFirstExtendsChild() const;
     virtual InterfaceNameNode *getFirstInterfaceNameChild() const;
     virtual ParametersNode *getFirstParametersChild() const;
@@ -634,7 +634,7 @@ class CompoundModuleNode : public NEDElement
  * GENERATED CLASS. Represents the &lt;channel-interface&gt; XML element in memory. DTD declaration:
  * 
  * <pre>
- * <!ELEMENT channel-interface (whitespace*, extends*, parameters?)>
+ * <!ELEMENT channel-interface (comment*, extends*, parameters?)>
  * <!ATTLIST channel-interface
  *      name                NMTOKEN   #REQUIRED>
  * </pre>
@@ -670,7 +670,7 @@ class ChannelInterfaceNode : public NEDElement
     void setName(const char * val)  {name = val;}
 
     virtual ChannelInterfaceNode *getNextChannelInterfaceNodeSibling() const;
-    virtual WhitespaceNode *getFirstWhitespaceChild() const;
+    virtual CommentNode *getFirstCommentChild() const;
     virtual ExtendsNode *getFirstExtendsChild() const;
     virtual ParametersNode *getFirstParametersChild() const;
     //@}
@@ -680,7 +680,7 @@ class ChannelInterfaceNode : public NEDElement
  * GENERATED CLASS. Represents the &lt;channel&gt; XML element in memory. DTD declaration:
  * 
  * <pre>
- * <!ELEMENT channel (whitespace*, extends?, interface-name*, parameters?)>
+ * <!ELEMENT channel (comment*, extends?, interface-name*, parameters?)>
  * <!ATTLIST channel
  *      is-withcppclass     (true|false)  "false"
  *      name                NMTOKEN   #REQUIRED>
@@ -720,7 +720,7 @@ class ChannelNode : public NEDElement
     void setName(const char * val)  {name = val;}
 
     virtual ChannelNode *getNextChannelNodeSibling() const;
-    virtual WhitespaceNode *getFirstWhitespaceChild() const;
+    virtual CommentNode *getFirstCommentChild() const;
     virtual ExtendsNode *getFirstExtendsChild() const;
     virtual InterfaceNameNode *getFirstInterfaceNameChild() const;
     virtual ParametersNode *getFirstParametersChild() const;
@@ -731,7 +731,7 @@ class ChannelNode : public NEDElement
  * GENERATED CLASS. Represents the &lt;parameters&gt; XML element in memory. DTD declaration:
  * 
  * <pre>
- * <!ELEMENT parameters (whitespace*, (property|param|pattern|param-group)*)>
+ * <!ELEMENT parameters (comment*, (property|param|pattern|param-group)*)>
  * <!ATTLIST parameters
  *     is-implicit         (true|false)  "false">
  * </pre>
@@ -767,7 +767,7 @@ class ParametersNode : public NEDElement
     void setIsImplicit(bool val)  {isImplicit = val;}
 
     virtual ParametersNode *getNextParametersNodeSibling() const;
-    virtual WhitespaceNode *getFirstWhitespaceChild() const;
+    virtual CommentNode *getFirstCommentChild() const;
     virtual PropertyNode *getFirstPropertyChild() const;
     virtual ParamNode *getFirstParamChild() const;
     virtual PatternNode *getFirstPatternChild() const;
@@ -779,7 +779,7 @@ class ParametersNode : public NEDElement
  * GENERATED CLASS. Represents the &lt;param-group&gt; XML element in memory. DTD declaration:
  * 
  * <pre>
- * <!ELEMENT param-group (whitespace*, (property|param|pattern)*, condition?)>
+ * <!ELEMENT param-group (comment*, (property|param|pattern)*, condition?)>
  * 
  * </pre>
  * 
@@ -811,7 +811,7 @@ class ParamGroupNode : public NEDElement
     //@{
 
     virtual ParamGroupNode *getNextParamGroupNodeSibling() const;
-    virtual WhitespaceNode *getFirstWhitespaceChild() const;
+    virtual CommentNode *getFirstCommentChild() const;
     virtual PropertyNode *getFirstPropertyChild() const;
     virtual ParamNode *getFirstParamChild() const;
     virtual PatternNode *getFirstPatternChild() const;
@@ -823,7 +823,7 @@ class ParamGroupNode : public NEDElement
  * GENERATED CLASS. Represents the &lt;param&gt; XML element in memory. DTD declaration:
  * 
  * <pre>
- * <!ELEMENT param (whitespace*, expression?, property*, condition?)>
+ * <!ELEMENT param (comment*, expression?, property*, condition?)>
  * <!ATTLIST param
  *      type               (double|int|string|bool|xml) #IMPLIED
  *      is-function        (true|false)  "false"
@@ -875,7 +875,7 @@ class ParamNode : public NEDElement
     void setIsDefault(bool val)  {isDefault = val;}
 
     virtual ParamNode *getNextParamNodeSibling() const;
-    virtual WhitespaceNode *getFirstWhitespaceChild() const;
+    virtual CommentNode *getFirstCommentChild() const;
     virtual ExpressionNode *getFirstExpressionChild() const;
     virtual PropertyNode *getFirstPropertyChild() const;
     virtual ConditionNode *getFirstConditionChild() const;
@@ -886,7 +886,7 @@ class ParamNode : public NEDElement
  * GENERATED CLASS. Represents the &lt;pattern&gt; XML element in memory. DTD declaration:
  * 
  * <pre>
- * <!ELEMENT pattern (whitespace*, expression?, property*)>
+ * <!ELEMENT pattern (comment*, expression?, property*)>
  * <!ATTLIST pattern
  *      pattern            CDATA     #REQUIRED
  *      value              CDATA     #IMPLIED
@@ -930,7 +930,7 @@ class PatternNode : public NEDElement
     void setIsDefault(bool val)  {isDefault = val;}
 
     virtual PatternNode *getNextPatternNodeSibling() const;
-    virtual WhitespaceNode *getFirstWhitespaceChild() const;
+    virtual CommentNode *getFirstCommentChild() const;
     virtual ExpressionNode *getFirstExpressionChild() const;
     virtual PropertyNode *getFirstPropertyChild() const;
     //@}
@@ -940,7 +940,7 @@ class PatternNode : public NEDElement
  * GENERATED CLASS. Represents the &lt;property&gt; XML element in memory. DTD declaration:
  * 
  * <pre>
- * <!ELEMENT property (whitespace*, property-key*, condition?)>
+ * <!ELEMENT property (comment*, property-key*, condition?)>
  * <!ATTLIST property
  *      is-implicit        (true|false) "false"
  *      name               NMTOKEN   #REQUIRED
@@ -984,7 +984,7 @@ class PropertyNode : public NEDElement
     void setIndex(const char * val)  {index = val;}
 
     virtual PropertyNode *getNextPropertyNodeSibling() const;
-    virtual WhitespaceNode *getFirstWhitespaceChild() const;
+    virtual CommentNode *getFirstCommentChild() const;
     virtual PropertyKeyNode *getFirstPropertyKeyChild() const;
     virtual ConditionNode *getFirstConditionChild() const;
     //@}
@@ -994,7 +994,7 @@ class PropertyNode : public NEDElement
  * GENERATED CLASS. Represents the &lt;property-key&gt; XML element in memory. DTD declaration:
  * 
  * <pre>
- * <!ELEMENT property-key (whitespace*, literal*)>
+ * <!ELEMENT property-key (comment*, literal*)>
  * <!ATTLIST property-key
  *      key                CDATA     #IMPLIED>
  * </pre>
@@ -1030,7 +1030,7 @@ class PropertyKeyNode : public NEDElement
     void setKey(const char * val)  {key = val;}
 
     virtual PropertyKeyNode *getNextPropertyKeyNodeSibling() const;
-    virtual WhitespaceNode *getFirstWhitespaceChild() const;
+    virtual CommentNode *getFirstCommentChild() const;
     virtual LiteralNode *getFirstLiteralChild() const;
     //@}
 };
@@ -1039,7 +1039,7 @@ class PropertyKeyNode : public NEDElement
  * GENERATED CLASS. Represents the &lt;gates&gt; XML element in memory. DTD declaration:
  * 
  * <pre>
- * <!ELEMENT gates (whitespace*, (gate|gate-group)*)>
+ * <!ELEMENT gates (comment*, (gate|gate-group)*)>
  * 
  * </pre>
  * 
@@ -1071,7 +1071,7 @@ class GatesNode : public NEDElement
     //@{
 
     virtual GatesNode *getNextGatesNodeSibling() const;
-    virtual WhitespaceNode *getFirstWhitespaceChild() const;
+    virtual CommentNode *getFirstCommentChild() const;
     virtual GateNode *getFirstGateChild() const;
     virtual GateGroupNode *getFirstGateGroupChild() const;
     //@}
@@ -1081,7 +1081,7 @@ class GatesNode : public NEDElement
  * GENERATED CLASS. Represents the &lt;gate-group&gt; XML element in memory. DTD declaration:
  * 
  * <pre>
- * <!ELEMENT gate-group (whitespace*, gate*, condition?)>
+ * <!ELEMENT gate-group (comment*, gate*, condition?)>
  * 
  * </pre>
  * 
@@ -1113,7 +1113,7 @@ class GateGroupNode : public NEDElement
     //@{
 
     virtual GateGroupNode *getNextGateGroupNodeSibling() const;
-    virtual WhitespaceNode *getFirstWhitespaceChild() const;
+    virtual CommentNode *getFirstCommentChild() const;
     virtual GateNode *getFirstGateChild() const;
     virtual ConditionNode *getFirstConditionChild() const;
     //@}
@@ -1123,7 +1123,7 @@ class GateGroupNode : public NEDElement
  * GENERATED CLASS. Represents the &lt;gate&gt; XML element in memory. DTD declaration:
  * 
  * <pre>
- * <!ELEMENT gate (whitespace*, expression?, property*, condition?)>
+ * <!ELEMENT gate (comment*, expression?, property*, condition?)>
  * <!ATTLIST gate
  *      name               NMTOKEN   #REQUIRED
  *      type               (input|output|inout) #IMPLIED
@@ -1171,7 +1171,7 @@ class GateNode : public NEDElement
     void setVectorSize(const char * val)  {vectorSize = val;}
 
     virtual GateNode *getNextGateNodeSibling() const;
-    virtual WhitespaceNode *getFirstWhitespaceChild() const;
+    virtual CommentNode *getFirstCommentChild() const;
     virtual ExpressionNode *getFirstExpressionChild() const;
     virtual PropertyNode *getFirstPropertyChild() const;
     virtual ConditionNode *getFirstConditionChild() const;
@@ -1182,7 +1182,7 @@ class GateNode : public NEDElement
  * GENERATED CLASS. Represents the &lt;types&gt; XML element in memory. DTD declaration:
  * 
  * <pre>
- * <!ELEMENT types (whitespace*, (channel|channel-interface|simple-module|
+ * <!ELEMENT types (comment*, (channel|channel-interface|simple-module|
  *                                compound-module|module-interface)*)>
  * 
  * </pre>
@@ -1215,7 +1215,7 @@ class TypesNode : public NEDElement
     //@{
 
     virtual TypesNode *getNextTypesNodeSibling() const;
-    virtual WhitespaceNode *getFirstWhitespaceChild() const;
+    virtual CommentNode *getFirstCommentChild() const;
     virtual ChannelNode *getFirstChannelChild() const;
     virtual ChannelInterfaceNode *getFirstChannelInterfaceChild() const;
     virtual SimpleModuleNode *getFirstSimpleModuleChild() const;
@@ -1228,7 +1228,7 @@ class TypesNode : public NEDElement
  * GENERATED CLASS. Represents the &lt;submodules&gt; XML element in memory. DTD declaration:
  * 
  * <pre>
- * <!ELEMENT submodules (whitespace*, submodule*)>
+ * <!ELEMENT submodules (comment*, submodule*)>
  * 
  * </pre>
  * 
@@ -1260,7 +1260,7 @@ class SubmodulesNode : public NEDElement
     //@{
 
     virtual SubmodulesNode *getNextSubmodulesNodeSibling() const;
-    virtual WhitespaceNode *getFirstWhitespaceChild() const;
+    virtual CommentNode *getFirstCommentChild() const;
     virtual SubmoduleNode *getFirstSubmoduleChild() const;
     //@}
 };
@@ -1269,7 +1269,7 @@ class SubmodulesNode : public NEDElement
  * GENERATED CLASS. Represents the &lt;submodule&gt; XML element in memory. DTD declaration:
  * 
  * <pre>
- * <!ELEMENT submodule (whitespace*, expression*, parameters?, gates?)>
+ * <!ELEMENT submodule (comment*, expression*, parameters?, gates?)>
  * <!ATTLIST submodule
  *      name               NMTOKEN   #REQUIRED
  *      type               NMTOKEN   #IMPLIED
@@ -1325,7 +1325,7 @@ class SubmoduleNode : public NEDElement
     void setVectorSize(const char * val)  {vectorSize = val;}
 
     virtual SubmoduleNode *getNextSubmoduleNodeSibling() const;
-    virtual WhitespaceNode *getFirstWhitespaceChild() const;
+    virtual CommentNode *getFirstCommentChild() const;
     virtual ExpressionNode *getFirstExpressionChild() const;
     virtual ParametersNode *getFirstParametersChild() const;
     virtual GatesNode *getFirstGatesChild() const;
@@ -1336,7 +1336,7 @@ class SubmoduleNode : public NEDElement
  * GENERATED CLASS. Represents the &lt;connections&gt; XML element in memory. DTD declaration:
  * 
  * <pre>
- * <!ELEMENT connections (whitespace*, (connection|connection-group)*)>
+ * <!ELEMENT connections (comment*, (connection|connection-group)*)>
  * <!ATTLIST connections
  *      allow-unconnected (true|false) "false">
  * </pre>
@@ -1372,7 +1372,7 @@ class ConnectionsNode : public NEDElement
     void setAllowUnconnected(bool val)  {allowUnconnected = val;}
 
     virtual ConnectionsNode *getNextConnectionsNodeSibling() const;
-    virtual WhitespaceNode *getFirstWhitespaceChild() const;
+    virtual CommentNode *getFirstCommentChild() const;
     virtual ConnectionNode *getFirstConnectionChild() const;
     virtual ConnectionGroupNode *getFirstConnectionGroupChild() const;
     //@}
@@ -1382,7 +1382,7 @@ class ConnectionsNode : public NEDElement
  * GENERATED CLASS. Represents the &lt;connection&gt; XML element in memory. DTD declaration:
  * 
  * <pre>
- * <!ELEMENT connection (whitespace*, expression*, channel-spec?, (loop|condition)*)>
+ * <!ELEMENT connection (comment*, expression*, channel-spec?, (loop|condition)*)>
  * <!ATTLIST connection
  *      src-module          NMTOKEN   #IMPLIED
  *      src-module-index    CDATA     #IMPLIED
@@ -1466,7 +1466,7 @@ class ConnectionNode : public NEDElement
     void setArrowDirection(int val);
 
     virtual ConnectionNode *getNextConnectionNodeSibling() const;
-    virtual WhitespaceNode *getFirstWhitespaceChild() const;
+    virtual CommentNode *getFirstCommentChild() const;
     virtual ExpressionNode *getFirstExpressionChild() const;
     virtual ChannelSpecNode *getFirstChannelSpecChild() const;
     virtual LoopNode *getFirstLoopChild() const;
@@ -1478,7 +1478,7 @@ class ConnectionNode : public NEDElement
  * GENERATED CLASS. Represents the &lt;channel-spec&gt; XML element in memory. DTD declaration:
  * 
  * <pre>
- * <!ELEMENT channel-spec (whitespace*, expression*, parameters?)>
+ * <!ELEMENT channel-spec (comment*, expression*, parameters?)>
  * <!ATTLIST channel-spec
  *      type               NMTOKEN   #IMPLIED
  *      like-type          NMTOKEN   #IMPLIED
@@ -1526,7 +1526,7 @@ class ChannelSpecNode : public NEDElement
     void setLikeParam(const char * val)  {likeParam = val;}
 
     virtual ChannelSpecNode *getNextChannelSpecNodeSibling() const;
-    virtual WhitespaceNode *getFirstWhitespaceChild() const;
+    virtual CommentNode *getFirstCommentChild() const;
     virtual ExpressionNode *getFirstExpressionChild() const;
     virtual ParametersNode *getFirstParametersChild() const;
     //@}
@@ -1536,7 +1536,7 @@ class ChannelSpecNode : public NEDElement
  * GENERATED CLASS. Represents the &lt;connection-group&gt; XML element in memory. DTD declaration:
  * 
  * <pre>
- * <!ELEMENT connection-group (whitespace*, (loop|condition)*, connection*)>
+ * <!ELEMENT connection-group (comment*, (loop|condition)*, connection*)>
  * 
  * </pre>
  * 
@@ -1568,7 +1568,7 @@ class ConnectionGroupNode : public NEDElement
     //@{
 
     virtual ConnectionGroupNode *getNextConnectionGroupNodeSibling() const;
-    virtual WhitespaceNode *getFirstWhitespaceChild() const;
+    virtual CommentNode *getFirstCommentChild() const;
     virtual LoopNode *getFirstLoopChild() const;
     virtual ConditionNode *getFirstConditionChild() const;
     virtual ConnectionNode *getFirstConnectionChild() const;
@@ -1579,7 +1579,7 @@ class ConnectionGroupNode : public NEDElement
  * GENERATED CLASS. Represents the &lt;loop&gt; XML element in memory. DTD declaration:
  * 
  * <pre>
- * <!ELEMENT loop (whitespace*, expression*)>
+ * <!ELEMENT loop (comment*, expression*)>
  * <!ATTLIST loop
  *      param-name          NMTOKEN   #REQUIRED
  *      from-value          CDATA     #IMPLIED
@@ -1623,7 +1623,7 @@ class LoopNode : public NEDElement
     void setToValue(const char * val)  {toValue = val;}
 
     virtual LoopNode *getNextLoopNodeSibling() const;
-    virtual WhitespaceNode *getFirstWhitespaceChild() const;
+    virtual CommentNode *getFirstCommentChild() const;
     virtual ExpressionNode *getFirstExpressionChild() const;
     //@}
 };
@@ -1632,7 +1632,7 @@ class LoopNode : public NEDElement
  * GENERATED CLASS. Represents the &lt;condition&gt; XML element in memory. DTD declaration:
  * 
  * <pre>
- * <!ELEMENT condition (whitespace*, expression?)>
+ * <!ELEMENT condition (comment*, expression?)>
  * <!ATTLIST condition
  *      condition           CDATA     #IMPLIED>
  * </pre>
@@ -1668,7 +1668,7 @@ class ConditionNode : public NEDElement
     void setCondition(const char * val)  {condition = val;}
 
     virtual ConditionNode *getNextConditionNodeSibling() const;
-    virtual WhitespaceNode *getFirstWhitespaceChild() const;
+    virtual CommentNode *getFirstCommentChild() const;
     virtual ExpressionNode *getFirstExpressionChild() const;
     //@}
 };
@@ -1677,7 +1677,7 @@ class ConditionNode : public NEDElement
  * GENERATED CLASS. Represents the &lt;expression&gt; XML element in memory. DTD declaration:
  * 
  * <pre>
- * <!ELEMENT expression (whitespace*, (operator|function|ident|literal))>
+ * <!ELEMENT expression (comment*, (operator|function|ident|literal))>
  * <!ATTLIST expression
  *      target              CDATA     #IMPLIED>
  * </pre>
@@ -1713,7 +1713,7 @@ class ExpressionNode : public NEDElement
     void setTarget(const char * val)  {target = val;}
 
     virtual ExpressionNode *getNextExpressionNodeSibling() const;
-    virtual WhitespaceNode *getFirstWhitespaceChild() const;
+    virtual CommentNode *getFirstCommentChild() const;
     virtual OperatorNode *getFirstOperatorChild() const;
     virtual FunctionNode *getFirstFunctionChild() const;
     virtual IdentNode *getFirstIdentChild() const;
@@ -1725,7 +1725,7 @@ class ExpressionNode : public NEDElement
  * GENERATED CLASS. Represents the &lt;operator&gt; XML element in memory. DTD declaration:
  * 
  * <pre>
- * <!ELEMENT operator (whitespace*, (operator|function|ident|literal)+)>
+ * <!ELEMENT operator (comment*, (operator|function|ident|literal)+)>
  * <!ATTLIST operator
  *      name                CDATA     #REQUIRED>
  * </pre>
@@ -1761,7 +1761,7 @@ class OperatorNode : public NEDElement
     void setName(const char * val)  {name = val;}
 
     virtual OperatorNode *getNextOperatorNodeSibling() const;
-    virtual WhitespaceNode *getFirstWhitespaceChild() const;
+    virtual CommentNode *getFirstCommentChild() const;
     virtual OperatorNode *getFirstOperatorChild() const;
     virtual FunctionNode *getFirstFunctionChild() const;
     virtual IdentNode *getFirstIdentChild() const;
@@ -1773,7 +1773,7 @@ class OperatorNode : public NEDElement
  * GENERATED CLASS. Represents the &lt;function&gt; XML element in memory. DTD declaration:
  * 
  * <pre>
- * <!ELEMENT function (whitespace*, (operator|function|ident|literal)*)>
+ * <!ELEMENT function (comment*, (operator|function|ident|literal)*)>
  * <!ATTLIST function
  *      name                NMTOKEN   #REQUIRED>
  * </pre>
@@ -1809,7 +1809,7 @@ class FunctionNode : public NEDElement
     void setName(const char * val)  {name = val;}
 
     virtual FunctionNode *getNextFunctionNodeSibling() const;
-    virtual WhitespaceNode *getFirstWhitespaceChild() const;
+    virtual CommentNode *getFirstCommentChild() const;
     virtual OperatorNode *getFirstOperatorChild() const;
     virtual FunctionNode *getFirstFunctionChild() const;
     virtual IdentNode *getFirstIdentChild() const;
@@ -1821,7 +1821,7 @@ class FunctionNode : public NEDElement
  * GENERATED CLASS. Represents the &lt;ident&gt; XML element in memory. DTD declaration:
  * 
  * <pre>
- * <!ELEMENT ident (whitespace*, expression*)>
+ * <!ELEMENT ident (comment*, expression*)>
  * <!ATTLIST ident
  *      module              CDATA     #IMPLIED
  *      module-index        CDATA     #IMPLIED
@@ -1865,7 +1865,7 @@ class IdentNode : public NEDElement
     void setName(const char * val)  {name = val;}
 
     virtual IdentNode *getNextIdentNodeSibling() const;
-    virtual WhitespaceNode *getFirstWhitespaceChild() const;
+    virtual CommentNode *getFirstCommentChild() const;
     virtual ExpressionNode *getFirstExpressionChild() const;
     //@}
 };
@@ -1874,7 +1874,7 @@ class IdentNode : public NEDElement
  * GENERATED CLASS. Represents the &lt;literal&gt; XML element in memory. DTD declaration:
  * 
  * <pre>
- * <!ELEMENT literal (whitespace*)>
+ * <!ELEMENT literal (comment*)>
  * <!ATTLIST literal
  *      type  (double|int|string|bool|unit|spec)  #REQUIRED
  *      unit-type           CDATA     #IMPLIED
@@ -1922,7 +1922,7 @@ class LiteralNode : public NEDElement
     void setValue(const char * val)  {value = val;}
 
     virtual LiteralNode *getNextLiteralNodeSibling() const;
-    virtual WhitespaceNode *getFirstWhitespaceChild() const;
+    virtual CommentNode *getFirstCommentChild() const;
     //@}
 };
 
@@ -1930,7 +1930,7 @@ class LiteralNode : public NEDElement
  * GENERATED CLASS. Represents the &lt;msg-file&gt; XML element in memory. DTD declaration:
  * 
  * <pre>
- * <!ELEMENT msg-file (whitespace*, (cplusplus|struct-decl|class-decl|message-decl|enum-decl|
+ * <!ELEMENT msg-file (comment*, (cplusplus|struct-decl|class-decl|message-decl|enum-decl|
  *                      enum|message|class|struct)*)>
  * <!ATTLIST msg-file
  *      filename            CDATA     #IMPLIED
@@ -1971,7 +1971,7 @@ class MsgFileNode : public NEDElement
     void setPackage(const char * val)  {package = val;}
 
     virtual MsgFileNode *getNextMsgFileNodeSibling() const;
-    virtual WhitespaceNode *getFirstWhitespaceChild() const;
+    virtual CommentNode *getFirstCommentChild() const;
     virtual CplusplusNode *getFirstCplusplusChild() const;
     virtual StructDeclNode *getFirstStructDeclChild() const;
     virtual ClassDeclNode *getFirstClassDeclChild() const;
@@ -1988,7 +1988,7 @@ class MsgFileNode : public NEDElement
  * GENERATED CLASS. Represents the &lt;cplusplus&gt; XML element in memory. DTD declaration:
  * 
  * <pre>
- * <!ELEMENT cplusplus (whitespace*)>
+ * <!ELEMENT cplusplus (comment*)>
  * <!ATTLIST cplusplus
  *      body                CDATA     #REQUIRED
  *      banner-comment      CDATA     #IMPLIED
@@ -2036,7 +2036,7 @@ class CplusplusNode : public NEDElement
     void setTrailingComment(const char * val)  {trailingComment = val;}
 
     virtual CplusplusNode *getNextCplusplusNodeSibling() const;
-    virtual WhitespaceNode *getFirstWhitespaceChild() const;
+    virtual CommentNode *getFirstCommentChild() const;
     //@}
 };
 
@@ -2044,7 +2044,7 @@ class CplusplusNode : public NEDElement
  * GENERATED CLASS. Represents the &lt;struct-decl&gt; XML element in memory. DTD declaration:
  * 
  * <pre>
- * <!ELEMENT struct-decl (whitespace*)>
+ * <!ELEMENT struct-decl (comment*)>
  * <!ATTLIST struct-decl
  *      name                NMTOKEN   #REQUIRED
  *      banner-comment      CDATA     #IMPLIED
@@ -2092,7 +2092,7 @@ class StructDeclNode : public NEDElement
     void setTrailingComment(const char * val)  {trailingComment = val;}
 
     virtual StructDeclNode *getNextStructDeclNodeSibling() const;
-    virtual WhitespaceNode *getFirstWhitespaceChild() const;
+    virtual CommentNode *getFirstCommentChild() const;
     //@}
 };
 
@@ -2100,7 +2100,7 @@ class StructDeclNode : public NEDElement
  * GENERATED CLASS. Represents the &lt;class-decl&gt; XML element in memory. DTD declaration:
  * 
  * <pre>
- * <!ELEMENT class-decl (whitespace*)>
+ * <!ELEMENT class-decl (comment*)>
  * <!ATTLIST class-decl
  *      name                NMTOKEN   #REQUIRED
  *      is-cobject      (true|false)  "false"
@@ -2152,7 +2152,7 @@ class ClassDeclNode : public NEDElement
     void setTrailingComment(const char * val)  {trailingComment = val;}
 
     virtual ClassDeclNode *getNextClassDeclNodeSibling() const;
-    virtual WhitespaceNode *getFirstWhitespaceChild() const;
+    virtual CommentNode *getFirstCommentChild() const;
     //@}
 };
 
@@ -2160,7 +2160,7 @@ class ClassDeclNode : public NEDElement
  * GENERATED CLASS. Represents the &lt;message-decl&gt; XML element in memory. DTD declaration:
  * 
  * <pre>
- * <!ELEMENT message-decl (whitespace*)>
+ * <!ELEMENT message-decl (comment*)>
  * <!ATTLIST message-decl
  *      name                NMTOKEN   #REQUIRED
  *      banner-comment      CDATA     #IMPLIED
@@ -2208,7 +2208,7 @@ class MessageDeclNode : public NEDElement
     void setTrailingComment(const char * val)  {trailingComment = val;}
 
     virtual MessageDeclNode *getNextMessageDeclNodeSibling() const;
-    virtual WhitespaceNode *getFirstWhitespaceChild() const;
+    virtual CommentNode *getFirstCommentChild() const;
     //@}
 };
 
@@ -2216,7 +2216,7 @@ class MessageDeclNode : public NEDElement
  * GENERATED CLASS. Represents the &lt;enum-decl&gt; XML element in memory. DTD declaration:
  * 
  * <pre>
- * <!ELEMENT enum-decl (whitespace*)>
+ * <!ELEMENT enum-decl (comment*)>
  * <!ATTLIST enum-decl
  *      name                NMTOKEN   #REQUIRED
  *      banner-comment      CDATA     #IMPLIED
@@ -2264,7 +2264,7 @@ class EnumDeclNode : public NEDElement
     void setTrailingComment(const char * val)  {trailingComment = val;}
 
     virtual EnumDeclNode *getNextEnumDeclNodeSibling() const;
-    virtual WhitespaceNode *getFirstWhitespaceChild() const;
+    virtual CommentNode *getFirstCommentChild() const;
     //@}
 };
 
@@ -2272,7 +2272,7 @@ class EnumDeclNode : public NEDElement
  * GENERATED CLASS. Represents the &lt;enum&gt; XML element in memory. DTD declaration:
  * 
  * <pre>
- * <!ELEMENT enum (whitespace*, enum-fields?)>
+ * <!ELEMENT enum (comment*, enum-fields?)>
  * <!ATTLIST enum
  *      name                NMTOKEN   #REQUIRED
  *      extends-name        NMTOKEN   #IMPLIED
@@ -2328,7 +2328,7 @@ class EnumNode : public NEDElement
     void setTrailingComment(const char * val)  {trailingComment = val;}
 
     virtual EnumNode *getNextEnumNodeSibling() const;
-    virtual WhitespaceNode *getFirstWhitespaceChild() const;
+    virtual CommentNode *getFirstCommentChild() const;
     virtual EnumFieldsNode *getFirstEnumFieldsChild() const;
     //@}
 };
@@ -2337,7 +2337,7 @@ class EnumNode : public NEDElement
  * GENERATED CLASS. Represents the &lt;enum-fields&gt; XML element in memory. DTD declaration:
  * 
  * <pre>
- * <!ELEMENT enum-fields (whitespace*, enum-field*)>
+ * <!ELEMENT enum-fields (comment*, enum-field*)>
  * <!ATTLIST enum-fields
  *      banner-comment      CDATA     #IMPLIED
  *      right-comment       CDATA     "&#10;" >
@@ -2377,7 +2377,7 @@ class EnumFieldsNode : public NEDElement
     void setRightComment(const char * val)  {rightComment = val;}
 
     virtual EnumFieldsNode *getNextEnumFieldsNodeSibling() const;
-    virtual WhitespaceNode *getFirstWhitespaceChild() const;
+    virtual CommentNode *getFirstCommentChild() const;
     virtual EnumFieldNode *getFirstEnumFieldChild() const;
     //@}
 };
@@ -2386,7 +2386,7 @@ class EnumFieldsNode : public NEDElement
  * GENERATED CLASS. Represents the &lt;enum-field&gt; XML element in memory. DTD declaration:
  * 
  * <pre>
- * <!ELEMENT enum-field (whitespace*)>
+ * <!ELEMENT enum-field (comment*)>
  * <!ATTLIST enum-field
  *      name                NMTOKEN   #REQUIRED
  *      value               CDATA     #IMPLIED
@@ -2434,7 +2434,7 @@ class EnumFieldNode : public NEDElement
     void setRightComment(const char * val)  {rightComment = val;}
 
     virtual EnumFieldNode *getNextEnumFieldNodeSibling() const;
-    virtual WhitespaceNode *getFirstWhitespaceChild() const;
+    virtual CommentNode *getFirstCommentChild() const;
     //@}
 };
 
@@ -2442,7 +2442,7 @@ class EnumFieldNode : public NEDElement
  * GENERATED CLASS. Represents the &lt;message&gt; XML element in memory. DTD declaration:
  * 
  * <pre>
- * <!ELEMENT message (whitespace*, properties?, fields?)>
+ * <!ELEMENT message (comment*, properties?, fields?)>
  * <!ATTLIST message
  *      name                NMTOKEN   #REQUIRED
  *      extends-name        NMTOKEN   #IMPLIED
@@ -2498,7 +2498,7 @@ class MessageNode : public NEDElement
     void setTrailingComment(const char * val)  {trailingComment = val;}
 
     virtual MessageNode *getNextMessageNodeSibling() const;
-    virtual WhitespaceNode *getFirstWhitespaceChild() const;
+    virtual CommentNode *getFirstCommentChild() const;
     virtual PropertiesNode *getFirstPropertiesChild() const;
     virtual FieldsNode *getFirstFieldsChild() const;
     //@}
@@ -2508,7 +2508,7 @@ class MessageNode : public NEDElement
  * GENERATED CLASS. Represents the &lt;class&gt; XML element in memory. DTD declaration:
  * 
  * <pre>
- * <!ELEMENT class (whitespace*, properties?, fields?)>
+ * <!ELEMENT class (comment*, properties?, fields?)>
  * <!ATTLIST class
  *      name                NMTOKEN   #REQUIRED
  *      extends-name        NMTOKEN   #IMPLIED
@@ -2564,7 +2564,7 @@ class ClassNode : public NEDElement
     void setTrailingComment(const char * val)  {trailingComment = val;}
 
     virtual ClassNode *getNextClassNodeSibling() const;
-    virtual WhitespaceNode *getFirstWhitespaceChild() const;
+    virtual CommentNode *getFirstCommentChild() const;
     virtual PropertiesNode *getFirstPropertiesChild() const;
     virtual FieldsNode *getFirstFieldsChild() const;
     //@}
@@ -2574,7 +2574,7 @@ class ClassNode : public NEDElement
  * GENERATED CLASS. Represents the &lt;struct&gt; XML element in memory. DTD declaration:
  * 
  * <pre>
- * <!ELEMENT struct (whitespace*, properties?,fields?)>
+ * <!ELEMENT struct (comment*, properties?,fields?)>
  * <!ATTLIST struct
  *      name                NMTOKEN   #REQUIRED
  *      extends-name        NMTOKEN   #IMPLIED
@@ -2630,7 +2630,7 @@ class StructNode : public NEDElement
     void setTrailingComment(const char * val)  {trailingComment = val;}
 
     virtual StructNode *getNextStructNodeSibling() const;
-    virtual WhitespaceNode *getFirstWhitespaceChild() const;
+    virtual CommentNode *getFirstCommentChild() const;
     virtual PropertiesNode *getFirstPropertiesChild() const;
     virtual FieldsNode *getFirstFieldsChild() const;
     //@}
@@ -2640,7 +2640,7 @@ class StructNode : public NEDElement
  * GENERATED CLASS. Represents the &lt;fields&gt; XML element in memory. DTD declaration:
  * 
  * <pre>
- * <!ELEMENT fields (whitespace*, field*)>
+ * <!ELEMENT fields (comment*, field*)>
  * <!ATTLIST fields
  *      banner-comment      CDATA     #IMPLIED
  *      right-comment       CDATA     "&#10;" >
@@ -2680,7 +2680,7 @@ class FieldsNode : public NEDElement
     void setRightComment(const char * val)  {rightComment = val;}
 
     virtual FieldsNode *getNextFieldsNodeSibling() const;
-    virtual WhitespaceNode *getFirstWhitespaceChild() const;
+    virtual CommentNode *getFirstCommentChild() const;
     virtual FieldNode *getFirstFieldChild() const;
     //@}
 };
@@ -2689,7 +2689,7 @@ class FieldsNode : public NEDElement
  * GENERATED CLASS. Represents the &lt;field&gt; XML element in memory. DTD declaration:
  * 
  * <pre>
- * <!ELEMENT field (whitespace*)>
+ * <!ELEMENT field (comment*)>
  * <!ATTLIST field
  *      name                NMTOKEN   #REQUIRED
  *      data-type           CDATA     #IMPLIED
@@ -2761,7 +2761,7 @@ class FieldNode : public NEDElement
     void setRightComment(const char * val)  {rightComment = val;}
 
     virtual FieldNode *getNextFieldNodeSibling() const;
-    virtual WhitespaceNode *getFirstWhitespaceChild() const;
+    virtual CommentNode *getFirstCommentChild() const;
     //@}
 };
 
@@ -2769,7 +2769,7 @@ class FieldNode : public NEDElement
  * GENERATED CLASS. Represents the &lt;properties&gt; XML element in memory. DTD declaration:
  * 
  * <pre>
- * <!ELEMENT properties (whitespace*, msgproperty*)>
+ * <!ELEMENT properties (comment*, msgproperty*)>
  * <!ATTLIST properties
  *      banner-comment      CDATA     #IMPLIED
  *      right-comment       CDATA     "&#10;" >
@@ -2809,7 +2809,7 @@ class PropertiesNode : public NEDElement
     void setRightComment(const char * val)  {rightComment = val;}
 
     virtual PropertiesNode *getNextPropertiesNodeSibling() const;
-    virtual WhitespaceNode *getFirstWhitespaceChild() const;
+    virtual CommentNode *getFirstCommentChild() const;
     virtual MsgpropertyNode *getFirstMsgpropertyChild() const;
     //@}
 };
@@ -2818,7 +2818,7 @@ class PropertiesNode : public NEDElement
  * GENERATED CLASS. Represents the &lt;msgproperty&gt; XML element in memory. DTD declaration:
  * 
  * <pre>
- * <!ELEMENT msgproperty (whitespace*)>
+ * <!ELEMENT msgproperty (comment*)>
  * <!ATTLIST msgproperty
  *      name                NMTOKEN   #REQUIRED
  *      value               CDATA     #IMPLIED
@@ -2866,7 +2866,7 @@ class MsgpropertyNode : public NEDElement
     void setRightComment(const char * val)  {rightComment = val;}
 
     virtual MsgpropertyNode *getNextMsgpropertyNodeSibling() const;
-    virtual WhitespaceNode *getFirstWhitespaceChild() const;
+    virtual CommentNode *getFirstCommentChild() const;
     //@}
 };
 

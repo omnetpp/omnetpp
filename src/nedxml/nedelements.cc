@@ -159,9 +159,9 @@ NedFileNode *NedFileNode::getNextNedFileNodeSibling() const
     return (NedFileNode *)getNextSiblingWithTag(NED_NED_FILE);
 }
 
-WhitespaceNode *NedFileNode::getFirstWhitespaceChild() const
+CommentNode *NedFileNode::getFirstCommentChild() const
 {
-    return (WhitespaceNode *)getFirstChildWithTag(NED_WHITESPACE);
+    return (CommentNode *)getFirstChildWithTag(NED_COMMENT);
 }
 
 ImportNode *NedFileNode::getFirstImportChild() const
@@ -204,22 +204,22 @@ ModuleInterfaceNode *NedFileNode::getFirstModuleInterfaceChild() const
     return (ModuleInterfaceNode *)getFirstChildWithTag(NED_MODULE_INTERFACE);
 }
 
-WhitespaceNode::WhitespaceNode()
+CommentNode::CommentNode()
 {
     applyDefaults();
 }
 
-WhitespaceNode::WhitespaceNode(NEDElement *parent) : NEDElement(parent)
+CommentNode::CommentNode(NEDElement *parent) : NEDElement(parent)
 {
     applyDefaults();
 }
 
-int WhitespaceNode::getNumAttributes() const
+int CommentNode::getNumAttributes() const
 {
     return 2;
 }
 
-const char *WhitespaceNode::getAttributeName(int k) const
+const char *CommentNode::getAttributeName(int k) const
 {
     switch (k) {
         case 0: return "locid";
@@ -228,7 +228,7 @@ const char *WhitespaceNode::getAttributeName(int k) const
     }
 }
 
-const char *WhitespaceNode::getAttribute(int k) const
+const char *CommentNode::getAttribute(int k) const
 {
     switch (k) {
         case 0: return locid.c_str();
@@ -237,7 +237,7 @@ const char *WhitespaceNode::getAttribute(int k) const
     }
 }
 
-void WhitespaceNode::setAttribute(int k, const char *val)
+void CommentNode::setAttribute(int k, const char *val)
 {
     switch (k) {
         case 0: locid = val; break;
@@ -246,7 +246,7 @@ void WhitespaceNode::setAttribute(int k, const char *val)
     }
 }
 
-const char *WhitespaceNode::getAttributeDefault(int k) const
+const char *CommentNode::getAttributeDefault(int k) const
 {
     switch (k) {
         case 0: return NULL;
@@ -255,9 +255,9 @@ const char *WhitespaceNode::getAttributeDefault(int k) const
     }
 }
 
-WhitespaceNode *WhitespaceNode::getNextWhitespaceNodeSibling() const
+CommentNode *CommentNode::getNextCommentNodeSibling() const
 {
-    return (WhitespaceNode *)getNextSiblingWithTag(NED_WHITESPACE);
+    return (CommentNode *)getNextSiblingWithTag(NED_COMMENT);
 }
 
 ImportNode::ImportNode()
@@ -312,9 +312,9 @@ ImportNode *ImportNode::getNextImportNodeSibling() const
     return (ImportNode *)getNextSiblingWithTag(NED_IMPORT);
 }
 
-WhitespaceNode *ImportNode::getFirstWhitespaceChild() const
+CommentNode *ImportNode::getFirstCommentChild() const
 {
-    return (WhitespaceNode *)getFirstChildWithTag(NED_WHITESPACE);
+    return (CommentNode *)getFirstChildWithTag(NED_COMMENT);
 }
 
 PropertyDeclNode::PropertyDeclNode()
@@ -375,9 +375,9 @@ PropertyDeclNode *PropertyDeclNode::getNextPropertyDeclNodeSibling() const
     return (PropertyDeclNode *)getNextSiblingWithTag(NED_PROPERTY_DECL);
 }
 
-WhitespaceNode *PropertyDeclNode::getFirstWhitespaceChild() const
+CommentNode *PropertyDeclNode::getFirstCommentChild() const
 {
-    return (WhitespaceNode *)getFirstChildWithTag(NED_WHITESPACE);
+    return (CommentNode *)getFirstChildWithTag(NED_COMMENT);
 }
 
 PropertyKeyNode *PropertyDeclNode::getFirstPropertyKeyChild() const
@@ -442,9 +442,9 @@ ExtendsNode *ExtendsNode::getNextExtendsNodeSibling() const
     return (ExtendsNode *)getNextSiblingWithTag(NED_EXTENDS);
 }
 
-WhitespaceNode *ExtendsNode::getFirstWhitespaceChild() const
+CommentNode *ExtendsNode::getFirstCommentChild() const
 {
-    return (WhitespaceNode *)getFirstChildWithTag(NED_WHITESPACE);
+    return (CommentNode *)getFirstChildWithTag(NED_COMMENT);
 }
 
 InterfaceNameNode::InterfaceNameNode()
@@ -499,9 +499,9 @@ InterfaceNameNode *InterfaceNameNode::getNextInterfaceNameNodeSibling() const
     return (InterfaceNameNode *)getNextSiblingWithTag(NED_INTERFACE_NAME);
 }
 
-WhitespaceNode *InterfaceNameNode::getFirstWhitespaceChild() const
+CommentNode *InterfaceNameNode::getFirstCommentChild() const
 {
-    return (WhitespaceNode *)getFirstChildWithTag(NED_WHITESPACE);
+    return (CommentNode *)getFirstChildWithTag(NED_COMMENT);
 }
 
 SimpleModuleNode::SimpleModuleNode()
@@ -562,9 +562,9 @@ SimpleModuleNode *SimpleModuleNode::getNextSimpleModuleNodeSibling() const
     return (SimpleModuleNode *)getNextSiblingWithTag(NED_SIMPLE_MODULE);
 }
 
-WhitespaceNode *SimpleModuleNode::getFirstWhitespaceChild() const
+CommentNode *SimpleModuleNode::getFirstCommentChild() const
 {
-    return (WhitespaceNode *)getFirstChildWithTag(NED_WHITESPACE);
+    return (CommentNode *)getFirstChildWithTag(NED_COMMENT);
 }
 
 ExtendsNode *SimpleModuleNode::getFirstExtendsChild() const
@@ -639,9 +639,9 @@ ModuleInterfaceNode *ModuleInterfaceNode::getNextModuleInterfaceNodeSibling() co
     return (ModuleInterfaceNode *)getNextSiblingWithTag(NED_MODULE_INTERFACE);
 }
 
-WhitespaceNode *ModuleInterfaceNode::getFirstWhitespaceChild() const
+CommentNode *ModuleInterfaceNode::getFirstCommentChild() const
 {
-    return (WhitespaceNode *)getFirstChildWithTag(NED_WHITESPACE);
+    return (CommentNode *)getFirstChildWithTag(NED_COMMENT);
 }
 
 ExtendsNode *ModuleInterfaceNode::getFirstExtendsChild() const
@@ -717,9 +717,9 @@ CompoundModuleNode *CompoundModuleNode::getNextCompoundModuleNodeSibling() const
     return (CompoundModuleNode *)getNextSiblingWithTag(NED_COMPOUND_MODULE);
 }
 
-WhitespaceNode *CompoundModuleNode::getFirstWhitespaceChild() const
+CommentNode *CompoundModuleNode::getFirstCommentChild() const
 {
-    return (WhitespaceNode *)getFirstChildWithTag(NED_WHITESPACE);
+    return (CommentNode *)getFirstChildWithTag(NED_COMMENT);
 }
 
 ExtendsNode *CompoundModuleNode::getFirstExtendsChild() const
@@ -809,9 +809,9 @@ ChannelInterfaceNode *ChannelInterfaceNode::getNextChannelInterfaceNodeSibling()
     return (ChannelInterfaceNode *)getNextSiblingWithTag(NED_CHANNEL_INTERFACE);
 }
 
-WhitespaceNode *ChannelInterfaceNode::getFirstWhitespaceChild() const
+CommentNode *ChannelInterfaceNode::getFirstCommentChild() const
 {
-    return (WhitespaceNode *)getFirstChildWithTag(NED_WHITESPACE);
+    return (CommentNode *)getFirstChildWithTag(NED_COMMENT);
 }
 
 ExtendsNode *ChannelInterfaceNode::getFirstExtendsChild() const
@@ -882,9 +882,9 @@ ChannelNode *ChannelNode::getNextChannelNodeSibling() const
     return (ChannelNode *)getNextSiblingWithTag(NED_CHANNEL);
 }
 
-WhitespaceNode *ChannelNode::getFirstWhitespaceChild() const
+CommentNode *ChannelNode::getFirstCommentChild() const
 {
-    return (WhitespaceNode *)getFirstChildWithTag(NED_WHITESPACE);
+    return (CommentNode *)getFirstChildWithTag(NED_COMMENT);
 }
 
 ExtendsNode *ChannelNode::getFirstExtendsChild() const
@@ -956,9 +956,9 @@ ParametersNode *ParametersNode::getNextParametersNodeSibling() const
     return (ParametersNode *)getNextSiblingWithTag(NED_PARAMETERS);
 }
 
-WhitespaceNode *ParametersNode::getFirstWhitespaceChild() const
+CommentNode *ParametersNode::getFirstCommentChild() const
 {
-    return (WhitespaceNode *)getFirstChildWithTag(NED_WHITESPACE);
+    return (CommentNode *)getFirstChildWithTag(NED_COMMENT);
 }
 
 PropertyNode *ParametersNode::getFirstPropertyChild() const
@@ -1029,9 +1029,9 @@ ParamGroupNode *ParamGroupNode::getNextParamGroupNodeSibling() const
     return (ParamGroupNode *)getNextSiblingWithTag(NED_PARAM_GROUP);
 }
 
-WhitespaceNode *ParamGroupNode::getFirstWhitespaceChild() const
+CommentNode *ParamGroupNode::getFirstCommentChild() const
 {
-    return (WhitespaceNode *)getFirstChildWithTag(NED_WHITESPACE);
+    return (CommentNode *)getFirstChildWithTag(NED_COMMENT);
 }
 
 PropertyNode *ParamGroupNode::getFirstPropertyChild() const
@@ -1134,9 +1134,9 @@ ParamNode *ParamNode::getNextParamNodeSibling() const
     return (ParamNode *)getNextSiblingWithTag(NED_PARAM);
 }
 
-WhitespaceNode *ParamNode::getFirstWhitespaceChild() const
+CommentNode *ParamNode::getFirstCommentChild() const
 {
-    return (WhitespaceNode *)getFirstChildWithTag(NED_WHITESPACE);
+    return (CommentNode *)getFirstChildWithTag(NED_COMMENT);
 }
 
 ExpressionNode *ParamNode::getFirstExpressionChild() const
@@ -1216,9 +1216,9 @@ PatternNode *PatternNode::getNextPatternNodeSibling() const
     return (PatternNode *)getNextSiblingWithTag(NED_PATTERN);
 }
 
-WhitespaceNode *PatternNode::getFirstWhitespaceChild() const
+CommentNode *PatternNode::getFirstCommentChild() const
 {
-    return (WhitespaceNode *)getFirstChildWithTag(NED_WHITESPACE);
+    return (CommentNode *)getFirstChildWithTag(NED_COMMENT);
 }
 
 ExpressionNode *PatternNode::getFirstExpressionChild() const
@@ -1293,9 +1293,9 @@ PropertyNode *PropertyNode::getNextPropertyNodeSibling() const
     return (PropertyNode *)getNextSiblingWithTag(NED_PROPERTY);
 }
 
-WhitespaceNode *PropertyNode::getFirstWhitespaceChild() const
+CommentNode *PropertyNode::getFirstCommentChild() const
 {
-    return (WhitespaceNode *)getFirstChildWithTag(NED_WHITESPACE);
+    return (CommentNode *)getFirstChildWithTag(NED_COMMENT);
 }
 
 PropertyKeyNode *PropertyNode::getFirstPropertyKeyChild() const
@@ -1360,9 +1360,9 @@ PropertyKeyNode *PropertyKeyNode::getNextPropertyKeyNodeSibling() const
     return (PropertyKeyNode *)getNextSiblingWithTag(NED_PROPERTY_KEY);
 }
 
-WhitespaceNode *PropertyKeyNode::getFirstWhitespaceChild() const
+CommentNode *PropertyKeyNode::getFirstCommentChild() const
 {
-    return (WhitespaceNode *)getFirstChildWithTag(NED_WHITESPACE);
+    return (CommentNode *)getFirstChildWithTag(NED_COMMENT);
 }
 
 LiteralNode *PropertyKeyNode::getFirstLiteralChild() const
@@ -1418,9 +1418,9 @@ GatesNode *GatesNode::getNextGatesNodeSibling() const
     return (GatesNode *)getNextSiblingWithTag(NED_GATES);
 }
 
-WhitespaceNode *GatesNode::getFirstWhitespaceChild() const
+CommentNode *GatesNode::getFirstCommentChild() const
 {
-    return (WhitespaceNode *)getFirstChildWithTag(NED_WHITESPACE);
+    return (CommentNode *)getFirstChildWithTag(NED_COMMENT);
 }
 
 GateNode *GatesNode::getFirstGateChild() const
@@ -1481,9 +1481,9 @@ GateGroupNode *GateGroupNode::getNextGateGroupNodeSibling() const
     return (GateGroupNode *)getNextSiblingWithTag(NED_GATE_GROUP);
 }
 
-WhitespaceNode *GateGroupNode::getFirstWhitespaceChild() const
+CommentNode *GateGroupNode::getFirstCommentChild() const
 {
-    return (WhitespaceNode *)getFirstChildWithTag(NED_WHITESPACE);
+    return (CommentNode *)getFirstChildWithTag(NED_COMMENT);
 }
 
 GateNode *GateGroupNode::getFirstGateChild() const
@@ -1570,9 +1570,9 @@ GateNode *GateNode::getNextGateNodeSibling() const
     return (GateNode *)getNextSiblingWithTag(NED_GATE);
 }
 
-WhitespaceNode *GateNode::getFirstWhitespaceChild() const
+CommentNode *GateNode::getFirstCommentChild() const
 {
-    return (WhitespaceNode *)getFirstChildWithTag(NED_WHITESPACE);
+    return (CommentNode *)getFirstChildWithTag(NED_COMMENT);
 }
 
 ExpressionNode *GateNode::getFirstExpressionChild() const
@@ -1638,9 +1638,9 @@ TypesNode *TypesNode::getNextTypesNodeSibling() const
     return (TypesNode *)getNextSiblingWithTag(NED_TYPES);
 }
 
-WhitespaceNode *TypesNode::getFirstWhitespaceChild() const
+CommentNode *TypesNode::getFirstCommentChild() const
 {
-    return (WhitespaceNode *)getFirstChildWithTag(NED_WHITESPACE);
+    return (CommentNode *)getFirstChildWithTag(NED_COMMENT);
 }
 
 ChannelNode *TypesNode::getFirstChannelChild() const
@@ -1716,9 +1716,9 @@ SubmodulesNode *SubmodulesNode::getNextSubmodulesNodeSibling() const
     return (SubmodulesNode *)getNextSiblingWithTag(NED_SUBMODULES);
 }
 
-WhitespaceNode *SubmodulesNode::getFirstWhitespaceChild() const
+CommentNode *SubmodulesNode::getFirstCommentChild() const
 {
-    return (WhitespaceNode *)getFirstChildWithTag(NED_WHITESPACE);
+    return (CommentNode *)getFirstChildWithTag(NED_COMMENT);
 }
 
 SubmoduleNode *SubmodulesNode::getFirstSubmoduleChild() const
@@ -1800,9 +1800,9 @@ SubmoduleNode *SubmoduleNode::getNextSubmoduleNodeSibling() const
     return (SubmoduleNode *)getNextSiblingWithTag(NED_SUBMODULE);
 }
 
-WhitespaceNode *SubmoduleNode::getFirstWhitespaceChild() const
+CommentNode *SubmoduleNode::getFirstCommentChild() const
 {
-    return (WhitespaceNode *)getFirstChildWithTag(NED_WHITESPACE);
+    return (CommentNode *)getFirstChildWithTag(NED_COMMENT);
 }
 
 ExpressionNode *SubmoduleNode::getFirstExpressionChild() const
@@ -1874,9 +1874,9 @@ ConnectionsNode *ConnectionsNode::getNextConnectionsNodeSibling() const
     return (ConnectionsNode *)getNextSiblingWithTag(NED_CONNECTIONS);
 }
 
-WhitespaceNode *ConnectionsNode::getFirstWhitespaceChild() const
+CommentNode *ConnectionsNode::getFirstCommentChild() const
 {
-    return (WhitespaceNode *)getFirstChildWithTag(NED_WHITESPACE);
+    return (CommentNode *)getFirstChildWithTag(NED_COMMENT);
 }
 
 ConnectionNode *ConnectionsNode::getFirstConnectionChild() const
@@ -2017,9 +2017,9 @@ ConnectionNode *ConnectionNode::getNextConnectionNodeSibling() const
     return (ConnectionNode *)getNextSiblingWithTag(NED_CONNECTION);
 }
 
-WhitespaceNode *ConnectionNode::getFirstWhitespaceChild() const
+CommentNode *ConnectionNode::getFirstCommentChild() const
 {
-    return (WhitespaceNode *)getFirstChildWithTag(NED_WHITESPACE);
+    return (CommentNode *)getFirstChildWithTag(NED_COMMENT);
 }
 
 ExpressionNode *ConnectionNode::getFirstExpressionChild() const
@@ -2108,9 +2108,9 @@ ChannelSpecNode *ChannelSpecNode::getNextChannelSpecNodeSibling() const
     return (ChannelSpecNode *)getNextSiblingWithTag(NED_CHANNEL_SPEC);
 }
 
-WhitespaceNode *ChannelSpecNode::getFirstWhitespaceChild() const
+CommentNode *ChannelSpecNode::getFirstCommentChild() const
 {
-    return (WhitespaceNode *)getFirstChildWithTag(NED_WHITESPACE);
+    return (CommentNode *)getFirstChildWithTag(NED_COMMENT);
 }
 
 ExpressionNode *ChannelSpecNode::getFirstExpressionChild() const
@@ -2171,9 +2171,9 @@ ConnectionGroupNode *ConnectionGroupNode::getNextConnectionGroupNodeSibling() co
     return (ConnectionGroupNode *)getNextSiblingWithTag(NED_CONNECTION_GROUP);
 }
 
-WhitespaceNode *ConnectionGroupNode::getFirstWhitespaceChild() const
+CommentNode *ConnectionGroupNode::getFirstCommentChild() const
 {
-    return (WhitespaceNode *)getFirstChildWithTag(NED_WHITESPACE);
+    return (CommentNode *)getFirstChildWithTag(NED_COMMENT);
 }
 
 LoopNode *ConnectionGroupNode::getFirstLoopChild() const
@@ -2251,9 +2251,9 @@ LoopNode *LoopNode::getNextLoopNodeSibling() const
     return (LoopNode *)getNextSiblingWithTag(NED_LOOP);
 }
 
-WhitespaceNode *LoopNode::getFirstWhitespaceChild() const
+CommentNode *LoopNode::getFirstCommentChild() const
 {
-    return (WhitespaceNode *)getFirstChildWithTag(NED_WHITESPACE);
+    return (CommentNode *)getFirstChildWithTag(NED_COMMENT);
 }
 
 ExpressionNode *LoopNode::getFirstExpressionChild() const
@@ -2313,9 +2313,9 @@ ConditionNode *ConditionNode::getNextConditionNodeSibling() const
     return (ConditionNode *)getNextSiblingWithTag(NED_CONDITION);
 }
 
-WhitespaceNode *ConditionNode::getFirstWhitespaceChild() const
+CommentNode *ConditionNode::getFirstCommentChild() const
 {
-    return (WhitespaceNode *)getFirstChildWithTag(NED_WHITESPACE);
+    return (CommentNode *)getFirstChildWithTag(NED_COMMENT);
 }
 
 ExpressionNode *ConditionNode::getFirstExpressionChild() const
@@ -2375,9 +2375,9 @@ ExpressionNode *ExpressionNode::getNextExpressionNodeSibling() const
     return (ExpressionNode *)getNextSiblingWithTag(NED_EXPRESSION);
 }
 
-WhitespaceNode *ExpressionNode::getFirstWhitespaceChild() const
+CommentNode *ExpressionNode::getFirstCommentChild() const
 {
-    return (WhitespaceNode *)getFirstChildWithTag(NED_WHITESPACE);
+    return (CommentNode *)getFirstChildWithTag(NED_COMMENT);
 }
 
 OperatorNode *ExpressionNode::getFirstOperatorChild() const
@@ -2452,9 +2452,9 @@ OperatorNode *OperatorNode::getNextOperatorNodeSibling() const
     return (OperatorNode *)getNextSiblingWithTag(NED_OPERATOR);
 }
 
-WhitespaceNode *OperatorNode::getFirstWhitespaceChild() const
+CommentNode *OperatorNode::getFirstCommentChild() const
 {
-    return (WhitespaceNode *)getFirstChildWithTag(NED_WHITESPACE);
+    return (CommentNode *)getFirstChildWithTag(NED_COMMENT);
 }
 
 OperatorNode *OperatorNode::getFirstOperatorChild() const
@@ -2529,9 +2529,9 @@ FunctionNode *FunctionNode::getNextFunctionNodeSibling() const
     return (FunctionNode *)getNextSiblingWithTag(NED_FUNCTION);
 }
 
-WhitespaceNode *FunctionNode::getFirstWhitespaceChild() const
+CommentNode *FunctionNode::getFirstCommentChild() const
 {
-    return (WhitespaceNode *)getFirstChildWithTag(NED_WHITESPACE);
+    return (CommentNode *)getFirstChildWithTag(NED_COMMENT);
 }
 
 OperatorNode *FunctionNode::getFirstOperatorChild() const
@@ -2614,9 +2614,9 @@ IdentNode *IdentNode::getNextIdentNodeSibling() const
     return (IdentNode *)getNextSiblingWithTag(NED_IDENT);
 }
 
-WhitespaceNode *IdentNode::getFirstWhitespaceChild() const
+CommentNode *IdentNode::getFirstCommentChild() const
 {
-    return (WhitespaceNode *)getFirstChildWithTag(NED_WHITESPACE);
+    return (CommentNode *)getFirstChildWithTag(NED_COMMENT);
 }
 
 ExpressionNode *IdentNode::getFirstExpressionChild() const
@@ -2696,9 +2696,9 @@ LiteralNode *LiteralNode::getNextLiteralNodeSibling() const
     return (LiteralNode *)getNextSiblingWithTag(NED_LITERAL);
 }
 
-WhitespaceNode *LiteralNode::getFirstWhitespaceChild() const
+CommentNode *LiteralNode::getFirstCommentChild() const
 {
-    return (WhitespaceNode *)getFirstChildWithTag(NED_WHITESPACE);
+    return (CommentNode *)getFirstChildWithTag(NED_COMMENT);
 }
 
 MsgFileNode::MsgFileNode()
@@ -2757,9 +2757,9 @@ MsgFileNode *MsgFileNode::getNextMsgFileNodeSibling() const
     return (MsgFileNode *)getNextSiblingWithTag(NED_MSG_FILE);
 }
 
-WhitespaceNode *MsgFileNode::getFirstWhitespaceChild() const
+CommentNode *MsgFileNode::getFirstCommentChild() const
 {
-    return (WhitespaceNode *)getFirstChildWithTag(NED_WHITESPACE);
+    return (CommentNode *)getFirstChildWithTag(NED_COMMENT);
 }
 
 CplusplusNode *MsgFileNode::getFirstCplusplusChild() const
@@ -2871,9 +2871,9 @@ CplusplusNode *CplusplusNode::getNextCplusplusNodeSibling() const
     return (CplusplusNode *)getNextSiblingWithTag(NED_CPLUSPLUS);
 }
 
-WhitespaceNode *CplusplusNode::getFirstWhitespaceChild() const
+CommentNode *CplusplusNode::getFirstCommentChild() const
 {
-    return (WhitespaceNode *)getFirstChildWithTag(NED_WHITESPACE);
+    return (CommentNode *)getFirstChildWithTag(NED_COMMENT);
 }
 
 StructDeclNode::StructDeclNode()
@@ -2940,9 +2940,9 @@ StructDeclNode *StructDeclNode::getNextStructDeclNodeSibling() const
     return (StructDeclNode *)getNextSiblingWithTag(NED_STRUCT_DECL);
 }
 
-WhitespaceNode *StructDeclNode::getFirstWhitespaceChild() const
+CommentNode *StructDeclNode::getFirstCommentChild() const
 {
-    return (WhitespaceNode *)getFirstChildWithTag(NED_WHITESPACE);
+    return (CommentNode *)getFirstChildWithTag(NED_COMMENT);
 }
 
 ClassDeclNode::ClassDeclNode()
@@ -3015,9 +3015,9 @@ ClassDeclNode *ClassDeclNode::getNextClassDeclNodeSibling() const
     return (ClassDeclNode *)getNextSiblingWithTag(NED_CLASS_DECL);
 }
 
-WhitespaceNode *ClassDeclNode::getFirstWhitespaceChild() const
+CommentNode *ClassDeclNode::getFirstCommentChild() const
 {
-    return (WhitespaceNode *)getFirstChildWithTag(NED_WHITESPACE);
+    return (CommentNode *)getFirstChildWithTag(NED_COMMENT);
 }
 
 MessageDeclNode::MessageDeclNode()
@@ -3084,9 +3084,9 @@ MessageDeclNode *MessageDeclNode::getNextMessageDeclNodeSibling() const
     return (MessageDeclNode *)getNextSiblingWithTag(NED_MESSAGE_DECL);
 }
 
-WhitespaceNode *MessageDeclNode::getFirstWhitespaceChild() const
+CommentNode *MessageDeclNode::getFirstCommentChild() const
 {
-    return (WhitespaceNode *)getFirstChildWithTag(NED_WHITESPACE);
+    return (CommentNode *)getFirstChildWithTag(NED_COMMENT);
 }
 
 EnumDeclNode::EnumDeclNode()
@@ -3153,9 +3153,9 @@ EnumDeclNode *EnumDeclNode::getNextEnumDeclNodeSibling() const
     return (EnumDeclNode *)getNextSiblingWithTag(NED_ENUM_DECL);
 }
 
-WhitespaceNode *EnumDeclNode::getFirstWhitespaceChild() const
+CommentNode *EnumDeclNode::getFirstCommentChild() const
 {
-    return (WhitespaceNode *)getFirstChildWithTag(NED_WHITESPACE);
+    return (CommentNode *)getFirstChildWithTag(NED_COMMENT);
 }
 
 EnumNode::EnumNode()
@@ -3230,9 +3230,9 @@ EnumNode *EnumNode::getNextEnumNodeSibling() const
     return (EnumNode *)getNextSiblingWithTag(NED_ENUM);
 }
 
-WhitespaceNode *EnumNode::getFirstWhitespaceChild() const
+CommentNode *EnumNode::getFirstCommentChild() const
 {
-    return (WhitespaceNode *)getFirstChildWithTag(NED_WHITESPACE);
+    return (CommentNode *)getFirstChildWithTag(NED_COMMENT);
 }
 
 EnumFieldsNode *EnumNode::getFirstEnumFieldsChild() const
@@ -3296,9 +3296,9 @@ EnumFieldsNode *EnumFieldsNode::getNextEnumFieldsNodeSibling() const
     return (EnumFieldsNode *)getNextSiblingWithTag(NED_ENUM_FIELDS);
 }
 
-WhitespaceNode *EnumFieldsNode::getFirstWhitespaceChild() const
+CommentNode *EnumFieldsNode::getFirstCommentChild() const
 {
-    return (WhitespaceNode *)getFirstChildWithTag(NED_WHITESPACE);
+    return (CommentNode *)getFirstChildWithTag(NED_COMMENT);
 }
 
 EnumFieldNode *EnumFieldsNode::getFirstEnumFieldChild() const
@@ -3370,9 +3370,9 @@ EnumFieldNode *EnumFieldNode::getNextEnumFieldNodeSibling() const
     return (EnumFieldNode *)getNextSiblingWithTag(NED_ENUM_FIELD);
 }
 
-WhitespaceNode *EnumFieldNode::getFirstWhitespaceChild() const
+CommentNode *EnumFieldNode::getFirstCommentChild() const
 {
-    return (WhitespaceNode *)getFirstChildWithTag(NED_WHITESPACE);
+    return (CommentNode *)getFirstChildWithTag(NED_COMMENT);
 }
 
 MessageNode::MessageNode()
@@ -3447,9 +3447,9 @@ MessageNode *MessageNode::getNextMessageNodeSibling() const
     return (MessageNode *)getNextSiblingWithTag(NED_MESSAGE);
 }
 
-WhitespaceNode *MessageNode::getFirstWhitespaceChild() const
+CommentNode *MessageNode::getFirstCommentChild() const
 {
-    return (WhitespaceNode *)getFirstChildWithTag(NED_WHITESPACE);
+    return (CommentNode *)getFirstChildWithTag(NED_COMMENT);
 }
 
 PropertiesNode *MessageNode::getFirstPropertiesChild() const
@@ -3534,9 +3534,9 @@ ClassNode *ClassNode::getNextClassNodeSibling() const
     return (ClassNode *)getNextSiblingWithTag(NED_CLASS);
 }
 
-WhitespaceNode *ClassNode::getFirstWhitespaceChild() const
+CommentNode *ClassNode::getFirstCommentChild() const
 {
-    return (WhitespaceNode *)getFirstChildWithTag(NED_WHITESPACE);
+    return (CommentNode *)getFirstChildWithTag(NED_COMMENT);
 }
 
 PropertiesNode *ClassNode::getFirstPropertiesChild() const
@@ -3621,9 +3621,9 @@ StructNode *StructNode::getNextStructNodeSibling() const
     return (StructNode *)getNextSiblingWithTag(NED_STRUCT);
 }
 
-WhitespaceNode *StructNode::getFirstWhitespaceChild() const
+CommentNode *StructNode::getFirstCommentChild() const
 {
-    return (WhitespaceNode *)getFirstChildWithTag(NED_WHITESPACE);
+    return (CommentNode *)getFirstChildWithTag(NED_COMMENT);
 }
 
 PropertiesNode *StructNode::getFirstPropertiesChild() const
@@ -3692,9 +3692,9 @@ FieldsNode *FieldsNode::getNextFieldsNodeSibling() const
     return (FieldsNode *)getNextSiblingWithTag(NED_FIELDS);
 }
 
-WhitespaceNode *FieldsNode::getFirstWhitespaceChild() const
+CommentNode *FieldsNode::getFirstCommentChild() const
 {
-    return (WhitespaceNode *)getFirstChildWithTag(NED_WHITESPACE);
+    return (CommentNode *)getFirstChildWithTag(NED_COMMENT);
 }
 
 FieldNode *FieldsNode::getFirstFieldChild() const
@@ -3796,9 +3796,9 @@ FieldNode *FieldNode::getNextFieldNodeSibling() const
     return (FieldNode *)getNextSiblingWithTag(NED_FIELD);
 }
 
-WhitespaceNode *FieldNode::getFirstWhitespaceChild() const
+CommentNode *FieldNode::getFirstCommentChild() const
 {
-    return (WhitespaceNode *)getFirstChildWithTag(NED_WHITESPACE);
+    return (CommentNode *)getFirstChildWithTag(NED_COMMENT);
 }
 
 PropertiesNode::PropertiesNode()
@@ -3857,9 +3857,9 @@ PropertiesNode *PropertiesNode::getNextPropertiesNodeSibling() const
     return (PropertiesNode *)getNextSiblingWithTag(NED_PROPERTIES);
 }
 
-WhitespaceNode *PropertiesNode::getFirstWhitespaceChild() const
+CommentNode *PropertiesNode::getFirstCommentChild() const
 {
-    return (WhitespaceNode *)getFirstChildWithTag(NED_WHITESPACE);
+    return (CommentNode *)getFirstChildWithTag(NED_COMMENT);
 }
 
 MsgpropertyNode *PropertiesNode::getFirstMsgpropertyChild() const
@@ -3931,9 +3931,9 @@ MsgpropertyNode *MsgpropertyNode::getNextMsgpropertyNodeSibling() const
     return (MsgpropertyNode *)getNextSiblingWithTag(NED_MSGPROPERTY);
 }
 
-WhitespaceNode *MsgpropertyNode::getFirstWhitespaceChild() const
+CommentNode *MsgpropertyNode::getFirstCommentChild() const
 {
-    return (WhitespaceNode *)getFirstChildWithTag(NED_WHITESPACE);
+    return (CommentNode *)getFirstChildWithTag(NED_COMMENT);
 }
 
 UnknownNode::UnknownNode()
@@ -4000,7 +4000,7 @@ NEDElement *NEDElementFactory::createNodeWithTag(const char *tagname)
 {
     if (tagname[0]=='f' && !strcmp(tagname,"files"))  return new FilesNode();
     if (tagname[0]=='n' && !strcmp(tagname,"ned-file"))  return new NedFileNode();
-    if (tagname[0]=='w' && !strcmp(tagname,"whitespace"))  return new WhitespaceNode();
+    if (tagname[0]=='c' && !strcmp(tagname,"comment"))  return new CommentNode();
     if (tagname[0]=='i' && !strcmp(tagname,"import"))  return new ImportNode();
     if (tagname[0]=='p' && !strcmp(tagname,"property-decl"))  return new PropertyDeclNode();
     if (tagname[0]=='e' && !strcmp(tagname,"extends"))  return new ExtendsNode();
@@ -4058,7 +4058,7 @@ NEDElement *NEDElementFactory::createNodeWithTag(int tagcode)
     switch (tagcode) {
         case NED_FILES: return new FilesNode();
         case NED_NED_FILE: return new NedFileNode();
-        case NED_WHITESPACE: return new WhitespaceNode();
+        case NED_COMMENT: return new CommentNode();
         case NED_IMPORT: return new ImportNode();
         case NED_PROPERTY_DECL: return new PropertyDeclNode();
         case NED_EXTENDS: return new ExtendsNode();
