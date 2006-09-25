@@ -294,9 +294,13 @@ void NEDDTDValidator::validateElement(ConnectionsNode *node)
 
 void NEDDTDValidator::validateElement(ConnectionNode *node)
 {
-    int tags[] = {NED_WHITESPACE,NED_EXPRESSION,NED_CHANNEL_SPEC,NED_WHERE, NED_NULL};
-    char mult[] = {'*','*','?','?', 0};
-    checkSequence(node, tags, mult);
+    Choice choices[] = {
+        {{NED_WHITESPACE, NED_NULL}, '*'},
+        {{NED_EXPRESSION, NED_NULL}, '*'},
+        {{NED_CHANNEL_SPEC, NED_NULL}, '?'},
+        {{NED_LOOP, NED_CONDITION, NED_NULL}, '*'},
+    };
+    checkSeqOfChoices(node, choices, sizeof(choices)/sizeof(Choice));
 
     checkNameAttribute(node, "src-module");
     checkRequiredAttribute(node, "src-gate");
@@ -331,22 +335,13 @@ void NEDDTDValidator::validateElement(ChannelSpecNode *node)
 
 void NEDDTDValidator::validateElement(ConnectionGroupNode *node)
 {
-    int tags[] = {NED_WHITESPACE,NED_CONNECTION,NED_WHERE, NED_NULL};
-    char mult[] = {'*','*','?', 0};
-    checkSequence(node, tags, mult);
-
-}
-
-void NEDDTDValidator::validateElement(WhereNode *node)
-{
     Choice choices[] = {
         {{NED_WHITESPACE, NED_NULL}, '*'},
         {{NED_LOOP, NED_CONDITION, NED_NULL}, '*'},
+        {{NED_CONNECTION, NED_NULL}, '*'},
     };
     checkSeqOfChoices(node, choices, sizeof(choices)/sizeof(Choice));
 
-    const char *vals0[] = {"true","false"};
-    checkEnumeratedAttribute(node, "at-front", vals0, sizeof(vals0)/sizeof(const char *));
 }
 
 void NEDDTDValidator::validateElement(LoopNode *node)

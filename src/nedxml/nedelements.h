@@ -50,7 +50,6 @@ class ConnectionsNode;
 class ConnectionNode;
 class ChannelSpecNode;
 class ConnectionGroupNode;
-class WhereNode;
 class LoopNode;
 class ConditionNode;
 class ExpressionNode;
@@ -112,7 +111,6 @@ enum NEDElementCode {
     NED_CONNECTION,
     NED_CHANNEL_SPEC,
     NED_CONNECTION_GROUP,
-    NED_WHERE,
     NED_LOOP,
     NED_CONDITION,
     NED_EXPRESSION,
@@ -1384,7 +1382,7 @@ class ConnectionsNode : public NEDElement
  * GENERATED CLASS. Represents the &lt;connection&gt; XML element in memory. DTD declaration:
  * 
  * <pre>
- * <!ELEMENT connection (whitespace*, expression*, channel-spec?, where?)>
+ * <!ELEMENT connection (whitespace*, expression*, channel-spec?, (loop|condition)*)>
  * <!ATTLIST connection
  *      src-module          NMTOKEN   #IMPLIED
  *      src-module-index    CDATA     #IMPLIED
@@ -1471,7 +1469,8 @@ class ConnectionNode : public NEDElement
     virtual WhitespaceNode *getFirstWhitespaceChild() const;
     virtual ExpressionNode *getFirstExpressionChild() const;
     virtual ChannelSpecNode *getFirstChannelSpecChild() const;
-    virtual WhereNode *getFirstWhereChild() const;
+    virtual LoopNode *getFirstLoopChild() const;
+    virtual ConditionNode *getFirstConditionChild() const;
     //@}
 };
 
@@ -1537,7 +1536,7 @@ class ChannelSpecNode : public NEDElement
  * GENERATED CLASS. Represents the &lt;connection-group&gt; XML element in memory. DTD declaration:
  * 
  * <pre>
- * <!ELEMENT connection-group (whitespace*, connection*, where?)>
+ * <!ELEMENT connection-group (whitespace*, (loop|condition)*, connection*)>
  * 
  * </pre>
  * 
@@ -1570,54 +1569,9 @@ class ConnectionGroupNode : public NEDElement
 
     virtual ConnectionGroupNode *getNextConnectionGroupNodeSibling() const;
     virtual WhitespaceNode *getFirstWhitespaceChild() const;
-    virtual ConnectionNode *getFirstConnectionChild() const;
-    virtual WhereNode *getFirstWhereChild() const;
-    //@}
-};
-
-/**
- * GENERATED CLASS. Represents the &lt;where&gt; XML element in memory. DTD declaration:
- * 
- * <pre>
- * <!ELEMENT where (whitespace*, (loop|condition)*)>
- * <!ATTLIST where
- *      at-front           (true|false) "false">
- * </pre>
- * 
- * @ingroup Data
- */
-class WhereNode : public NEDElement
-{
-  private:
-    bool atFront;
-  public:
-    /** @name Constructors, destructor */
-    //@{
-    WhereNode();
-    WhereNode(NEDElement *parent);
-    virtual ~WhereNode() {}
-    //@}
-
-    /** @name Redefined NEDElement methods, incl. generic access to attributes */
-    //@{
-    virtual const char *getTagName() const {return "where";}
-    virtual int getTagCode() const {return NED_WHERE;}
-    virtual int getNumAttributes() const;
-    virtual const char *getAttributeName(int k) const;
-    virtual const char *getAttribute(int k) const;
-    virtual void setAttribute(int k, const char *val);
-    virtual const char *getAttributeDefault(int k) const;
-    //@}
-
-    /** @name Typed access to attributes, children and siblings */
-    //@{
-    bool getAtFront() const  {return atFront;}
-    void setAtFront(bool val)  {atFront = val;}
-
-    virtual WhereNode *getNextWhereNodeSibling() const;
-    virtual WhitespaceNode *getFirstWhitespaceChild() const;
     virtual LoopNode *getFirstLoopChild() const;
     virtual ConditionNode *getFirstConditionChild() const;
+    virtual ConnectionNode *getFirstConnectionChild() const;
     //@}
 };
 
