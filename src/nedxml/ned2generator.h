@@ -93,7 +93,6 @@ class NED2Generator
     bool hasExpression(NEDElement *node, const char *attr);
     void printExpression(NEDElement *node, const char *attr, const char *indent);
     void printOptVector(NEDElement *node, const char *attr, const char *indent);
-    void printIfExpression(NEDElement *node, const char *attr, const char *indent);
     //@}
 
     /** @name Format and write comments to the output */

@@ -187,13 +187,6 @@ void NED2Generator::printOptVector(NEDElement *node, const char *attr, const cha
     }
 }
 
-void NED2Generator::printIfExpression(NEDElement *node, const char *attr, const char *indent)
-{
-    OUT << "ifXXX ";
-    printExpression(node,attr,indent);
-}
-
-
 //---------------------------------------------------------------------------
 
 void NED2Generator::appendBannerComment(const char *comment, const char *indent)
