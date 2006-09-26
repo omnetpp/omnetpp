@@ -1,10 +1,9 @@
 package org.omnetpp.common.properties;
 
 import org.eclipse.jface.viewers.DialogCellEditor;
-import org.eclipse.swt.graphics.RGB;
+import org.eclipse.jface.window.Window;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.FileDialog;
 
 public class ImageCellEditor extends DialogCellEditor {
 
@@ -22,13 +21,12 @@ public class ImageCellEditor extends DialogCellEditor {
 
 	@Override
 	protected Object openDialogBox(Control cellEditorWindow) {
-		// TODO Auto-generated method stub
-		FileDialog cellDialog = new FileDialog(cellEditorWindow.getShell());
-        String value = (String)getValue();
-        if (value != null) {
-			cellDialog.setFileName(value);
-		}
-        return cellDialog.open();
+		ImageSelectionDialog cellDialog = 
+			new ImageSelectionDialog(cellEditorWindow.getShell(), (String)getValue());
+
+		cellDialog.open(); 
+
+        return cellDialog.getFirstResult();
 	}
 
 }

@@ -1,1 +1,4 @@
+- 060925
+  + Added support for display property inheritance for submodules, compound modules and simple modules
+  + Added icon selector dialog to the property sheets
 - 060918 First internal weekly build

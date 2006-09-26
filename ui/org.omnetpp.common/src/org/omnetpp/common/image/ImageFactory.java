@@ -1,5 +1,19 @@
 package org.omnetpp.common.image;
 
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import org.eclipse.core.filesystem.EFS;
+import org.eclipse.core.filesystem.IFileStore;
+import org.eclipse.core.filesystem.URIUtil;
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.ImageRegistry;
@@ -52,6 +66,7 @@ public class ImageFactory {
         // create and register a default / notfound image 
         imageRegistry.put(DEFAULT_KEY, 
                 new ColorizableImageDescriptor(ImageFactory.class, DEFAULT_NAME));
+        
     }
     
     /**
@@ -217,6 +232,85 @@ public class ImageFactory {
         if(iDesc.canCreate()) return iDesc;
         
         return null;
+    }
+
+    
+    /**
+     * @return All image ID-s in the bitmap path (files with .gif .png .svg extension)
+     */
+    public static List<String> getImageNameList() {
+    	Set<String> result = new HashSet<String>();
+    	for(String basedir : imageDirs) {
+			try {
+				IFileStore baseStore = EFS.getStore(URIUtil.toURI(basedir).normalize());
+	    		result.addAll(getNameList(baseStore, baseStore.toURI().toString().length()));
+			} catch (CoreException e) {	}  
+    	}
+
+    	// TODO add also the current and dependent project's own bitmap folder 
+    	
+    	// scan the resource directory for images
+    	URL imagesResourceUrl= ImageFactory.class.getResource(IMAGE_DIR);
+		try {
+			// TODO beware that the toFileURL creates a copy of ALL icons if they are stored in a JAR file
+			// this is sub optimal. It would be better if we could create a filesystem supporting 
+			// the bundleresource: protocol directly (ie we could read directy from the bundle)
+			IFileStore resourceStore = EFS.getStore(FileLocator.toFileURL(imagesResourceUrl).toURI());
+			result.addAll(getNameList(resourceStore, resourceStore.toURI().toString().length()));
+		} catch (IOException e) {
+		} catch (CoreException e) {
+		} catch (URISyntaxException e) {
+		}
+
+    	List<String> orderedNames = new ArrayList<String>(result);
+    	Collections.sort(orderedNames);
+    	return orderedNames;
+    }
+
+    /**
+     * Get the image ID for a file or image IDs if it is a directory (recursively(
+     * @param fileStore A file or directory 
+     * @param stripBeginning (how much should be stripped at the beginning of the absolute path)
+     * @return
+     */
+    private static Set<String> getNameList(IFileStore fileStore, int stripBeginning) {
+    	Set<String> result = new HashSet<String>(1); 
+    	// check if this is a real file
+    	if (fileStore.fetchInfo().exists() && !fileStore.fetchInfo().isDirectory()) {
+    		String toAdd;
+			toAdd = fileStore.toURI().toString().substring(stripBeginning);
+			// convert backslash to slash on windows
+			toAdd = toAdd.replace('\\','/');
+			// strip the leading / -s if any
+			while (toAdd.charAt(0) == '/')
+					toAdd = toAdd.substring(1);
+			// check if this is an image file, otherwise return with empty result
+			if (!toAdd.endsWith(".gif") && !toAdd.endsWith(".png") && !toAdd.endsWith(".svg"))
+				return result;
+			
+			// strip the extension
+			toAdd = toAdd.substring(0, toAdd.length()-4);
+			
+			// look for size extensions and remove them
+			if(toAdd.endsWith("_s") || toAdd.endsWith("_l"))
+				toAdd = toAdd.substring(0, toAdd.length()-2);
+			if(toAdd.endsWith("_vs") || toAdd.endsWith("_vl"))
+				toAdd = toAdd.substring(0, toAdd.length()-3);
+			
+    		result.add(toAdd);
+    	}
+    	
+    	// if this is a directory (but not the internal dir)iterate through all contained files
+    	if (fileStore.fetchInfo().isDirectory() 
+    			&& !fileStore.fetchInfo().getName().startsWith("_internal"))
+			try {
+				for(IFileStore childToAdd : fileStore.childStores(EFS.NONE, null)) {
+					result.addAll(getNameList(childToAdd, stripBeginning));
+				}
+			} catch (CoreException e) { // do nothing if error occured
+			}
+    	
+    	return result;
     }
     
 }
