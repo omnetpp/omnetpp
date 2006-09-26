@@ -274,14 +274,14 @@ void NED2Generator::doExtends(ExtendsNode *node, const char *indent, bool islast
 {
     OUT << node->getName();
     if (!islast && sep)
-        OUT << sep;
+        OUT << (sep ? sep : "");
 }
 
 void NED2Generator::doInterfaceName(InterfaceNameNode *node, const char *indent, bool islast, const char *sep)
 {
     OUT << node->getName();
     if (!islast && sep)
-        OUT << sep;
+        OUT << (sep ? sep : "");
 }
 
 void NED2Generator::doSimpleModule(SimpleModuleNode *node, const char *indent, bool islast, const char *)
@@ -473,7 +473,7 @@ void NED2Generator::doPropertyKey(PropertyKeyNode *node, const char *indent, boo
         generateChildrenWithType(node, NED_LITERAL, increaseIndent(indent),",");
     }
     if (!islast && sep)
-        OUT << sep;
+        OUT << (sep ? sep : "");
 }
 
 void NED2Generator::doGates(GatesNode *node, const char *indent, bool islast, const char *)
@@ -670,7 +670,7 @@ void NED2Generator::doLoop(LoopNode *node, const char *indent, bool islast, cons
     printExpression(node, "to-value",indent);
 
     if (!islast)
-        OUT << sep;
+        OUT << (sep ? sep : "");
 }
 
 void NED2Generator::doCondition(ConditionNode *node, const char *indent, bool islast, const char *sep)
@@ -678,7 +678,7 @@ void NED2Generator::doCondition(ConditionNode *node, const char *indent, bool is
     OUT << "if ";
     printExpression(node, "condition",indent);
     if (!islast)
-        OUT << sep;
+        OUT << (sep ? sep : "");
 }
 
 void NED2Generator::printGate(NEDElement *conn, const char *modname, const char *modindexattr,
@@ -887,8 +887,8 @@ void NED2Generator::doLiteral(LiteralNode *node, const char *indent, bool islast
         OUT << node->getValue();
         if (isstring) OUT << "\"";
     }
-    if (!islast && sep!=NULL)
-        OUT << sep;
+    if (!islast)
+        OUT << (sep ? sep : "");
 }
 
 void NED2Generator::doCplusplus(CplusplusNode *node, const char *indent, bool islast, const char *)

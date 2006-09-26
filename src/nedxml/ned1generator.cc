@@ -878,7 +878,7 @@ void NED1Generator::doLoop(LoopNode *node, const char *indent, bool islast, cons
     printExpression(node, "to-value",indent);
 
     if (!islast)
-        OUT << sep;
+        OUT << (sep ? sep : "");
 }
 
 void NED1Generator::doCondition(ConditionNode *node, const char *indent, bool islast, const char *sep)
@@ -886,7 +886,7 @@ void NED1Generator::doCondition(ConditionNode *node, const char *indent, bool is
     OUT << "if ";
     printExpression(node, "condition",indent);
     if (!islast)
-        OUT << sep;
+        OUT << (sep ? sep : "");
 }
 
 void NED1Generator::printGate(NEDElement *conn, const char *modname, const char *modindexattr,
