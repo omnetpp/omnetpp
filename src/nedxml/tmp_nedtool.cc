@@ -95,7 +95,7 @@ void printUsage()
        "  -h  place output file into current directory\n"
        "  -I <dir>: add directory to NED include path\n"
        "  -X xml/ned/msg/off: following files are XML, NED or MSG up to '-X off'\n"
-       "  -Z: with -n: use old (3.x) NED syntax\n"
+       "  -Q: with -n: use old (3.x) NED syntax\n"
        "  -s <suffix>: suffix for generated files\n"
        "  -S <suffix>: when generating C++, suffix for generated header files\n"
        "  -e: do not parse expressions in NED input; expect unparsed expressions in XML\n"

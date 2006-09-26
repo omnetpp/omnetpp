@@ -11,6 +11,7 @@ import org.omnetpp.ned2.model.pojo.ChannelNode;
 import org.omnetpp.ned2.model.pojo.ChannelSpecNode;
 import org.omnetpp.ned2.model.pojo.ClassDeclNode;
 import org.omnetpp.ned2.model.pojo.ClassNode;
+import org.omnetpp.ned2.model.pojo.CommentNode;
 import org.omnetpp.ned2.model.pojo.CompoundModuleNode;
 import org.omnetpp.ned2.model.pojo.ConditionNode;
 import org.omnetpp.ned2.model.pojo.ConnectionGroupNode;
@@ -57,8 +58,6 @@ import org.omnetpp.ned2.model.pojo.SubmoduleNode;
 import org.omnetpp.ned2.model.pojo.SubmodulesNode;
 import org.omnetpp.ned2.model.pojo.TypesNode;
 import org.omnetpp.ned2.model.pojo.UnknownNode;
-import org.omnetpp.ned2.model.pojo.WhereNode;
-import org.omnetpp.ned2.model.pojo.WhitespaceNode;
 
 /**
  * Validates consistency of NED files.
@@ -117,7 +116,7 @@ public class NEDValidator extends AbstractNEDValidator implements NEDElementUtil
 		validateChildren(node);
 	}
 
-	protected void validateElement(WhitespaceNode node) {
+	protected void validateElement(CommentNode node) {
 		validateChildren(node);
 	}
 
@@ -379,7 +378,7 @@ public class NEDValidator extends AbstractNEDValidator implements NEDElementUtil
 		for (NEDElement child : node) {
 			NEDValidator validator = new NEDValidator(resolver, errors);
 			switch (child.getTagCode()) {
-				case NED_WHITESPACE: 
+				case NED_COMMENT: 
 					break;
 				case NED_SIMPLE_MODULE:
 				case NED_MODULE_INTERFACE:
@@ -510,10 +509,6 @@ public class NEDValidator extends AbstractNEDValidator implements NEDElementUtil
 	}
 
 	protected void validateElement(ConnectionGroupNode node) {
-		validateChildren(node);
-	}
-
-	protected void validateElement(WhereNode node) {
 		validateChildren(node);
 	}
 

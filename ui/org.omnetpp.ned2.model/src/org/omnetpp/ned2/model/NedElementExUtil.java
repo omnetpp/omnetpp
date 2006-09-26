@@ -34,8 +34,7 @@ public class NedElementExUtil implements NEDElementTags, NEDElementUtil {
 				if(currElement instanceof PropertyNode) {
 					PropertyNode currProp = (PropertyNode)currElement;
 					if(DISPLAY_PROPERTY.equals(currProp.getName()))
-						return currProp.getFirstPropertyKeyChild()
-											.getFirstLiteralChild().getValue();
+						return getPropertyValue(currProp);
 				}
 		} catch (NullPointerException e) {
 			// display string is in illegal format, missing value etc (e.g @display )
@@ -120,6 +119,20 @@ public class NedElementExUtil implements NEDElementTags, NEDElementUtil {
 		literalNode.setText(null);
 		// set notification back to the original state
 		literalNode.setNotifyEnabled(isNotifyEnabled);
+	}
+	
+	/**
+	 * Returns the value of the property (assigned to the first key (default value))
+	 * @param prop
+	 * @return
+	 */
+	public static String getPropertyValue(PropertyNode prop) {
+		PropertyKeyNode pkn = prop.getFirstPropertyKeyChild();
+		if (pkn == null ) return null;
+		LiteralNode ln = pkn.getFirstLiteralChild();
+		if (ln == null ) return null;
+		
+		return ln.getValue();
 	}
 	
     /**

@@ -92,6 +92,10 @@ public class ModelUtil {
 
 			// convert tree to pure Java objects
 			org.omnetpp.ned2.model.NEDElement pojoTree = swig2pojo(swigTree, null, errors);
+
+			// XXX for debugging 
+			// 
+
 			swigTree.delete();
 			return pojoTree;
 		} 
@@ -184,7 +188,7 @@ public class ModelUtil {
 	/**
 	 * Converts a NEDElement tree to an XML-like textual format. Useful for debugging.
 	 */
-	public static String printSwigElementTree(NEDElement swigNode, String indent) {
+	public static String generateXmlFromSwigElementTree(NEDElement swigNode, String indent) {
 		String result = indent;
 		result += "<" + swigNode.getTagName();
 		for (int i = 0; i < swigNode.getNumAttributes(); ++i)
@@ -196,14 +200,14 @@ public class ModelUtil {
 			result += "> \n";
 			for (NEDElement child = swigNode.getFirstChild(); child != null; child = child
 					.getNextSibling())
-				result += printSwigElementTree(child, indent + "  ");
+				result += generateXmlFromSwigElementTree(child, indent + "  ");
 
 			result += indent + "</" + swigNode.getTagName() + ">\n";
 		}
 		return result;
 	}
 
-	public static String printPojoElementTree(org.omnetpp.ned2.model.NEDElement pojoNode, String indent) {
+	public static String generateXmlFromPojoElementTree(org.omnetpp.ned2.model.NEDElement pojoNode, String indent) {
 		String result = indent;
 		result += "<" + pojoNode.getTagName();
 		for (int i = 0; i < pojoNode.getNumAttributes(); ++i)
@@ -220,7 +224,7 @@ public class ModelUtil {
 			result += "> " +  debugString + "\n";
 			for (org.omnetpp.ned2.model.NEDElement child = pojoNode.getFirstChild(); child != null; child = child
 					.getNextSibling())
-				result += printPojoElementTree(child, indent + "  ");
+				result += generateXmlFromPojoElementTree(child, indent + "  ");
 
 			result += indent + "</" + pojoNode.getTagName() + ">\n";
 		}

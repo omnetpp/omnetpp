@@ -6,14 +6,12 @@ import org.omnetpp.ned2.model.NEDElementUtil;
 import org.omnetpp.ned2.model.pojo.ChannelInterfaceNode;
 import org.omnetpp.ned2.model.pojo.ChannelNode;
 import org.omnetpp.ned2.model.pojo.CompoundModuleNode;
-import org.omnetpp.ned2.model.pojo.ImportNode;
 import org.omnetpp.ned2.model.pojo.ModuleInterfaceNode;
 import org.omnetpp.ned2.model.pojo.NEDElementTags;
 import org.omnetpp.ned2.model.pojo.NedFileNode;
 import org.omnetpp.ned2.model.pojo.PropertyDeclNode;
 import org.omnetpp.ned2.model.pojo.PropertyNode;
 import org.omnetpp.ned2.model.pojo.SimpleModuleNode;
-import org.omnetpp.ned2.model.pojo.WhitespaceNode;
 
 /**
  * Validates consistency of NED files.
@@ -40,7 +38,7 @@ public class NEDFileValidator implements NEDElementUtil, NEDElementTags {
 		for (NEDElement child : node) {
 			NEDValidator validator = new NEDValidator(resolver, errors);
 			switch (child.getTagCode()) {
-			case NED_WHITESPACE: break;
+			case NED_COMMENT: break;
 			case NED_IMPORT: break;
 			case NED_PROPERTY_DECL: validator.validate((PropertyDeclNode) child); break;
 			case NED_SIMPLE_MODULE: validator.validate((SimpleModuleNode) child); break;

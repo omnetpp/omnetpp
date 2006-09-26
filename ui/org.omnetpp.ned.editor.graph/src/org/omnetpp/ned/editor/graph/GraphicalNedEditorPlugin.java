@@ -29,6 +29,7 @@ import org.omnetpp.ned.editor.graph.properties.NedPropertySourceAdapterFactory;
 import org.omnetpp.ned2.model.CompoundModuleNodeEx;
 import org.omnetpp.ned2.model.ConnectionNodeEx;
 import org.omnetpp.ned2.model.NEDElement;
+import org.omnetpp.ned2.model.NedElementExUtil;
 import org.omnetpp.ned2.model.SubmoduleNodeEx;
 import org.omnetpp.ned2.model.pojo.PropertyNode;
 import org.omnetpp.resources.INEDComponent;
@@ -157,13 +158,15 @@ public class GraphicalNedEditorPlugin extends AbstractUIPlugin {
         	// determine which palette group it belongs to or put it to the default
         	PropertyNode property = (PropertyNode)comp.getProperty("group"); 
         	String group = (property == null) ? defaultGroupName
-        			        : property.getFirstPropertyKeyChild().getFirstLiteralChild().getValue();
+        			        : NedElementExUtil.getPropertyValue(property);
+        	
+        	if (group == null || "".equals(group))
+        		group = defaultGroupName;
         	
         	// get the correct drawer and create a new one if does not exists
         	PaletteDrawer currentDrawer = containerMap.get(group);
         	if (currentDrawer == null) {
         		currentDrawer = new PaletteDrawer(group, ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_TEMPLATE));
-//        		currentDrawer.setInitialState(state);
         		containerMap.put(group, currentDrawer);
         	}
         	
