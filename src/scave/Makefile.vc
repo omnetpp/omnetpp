@@ -157,8 +157,13 @@ resultfilemanager.obj: resultfilemanager.cc \
 scavetool.obj: scavetool.cc \
   ../utils/ver.h \
   resultfilemanager.h \
+  nodetype.h \
+  nodetyperegistry.h \
   idlist.h \
-  scavedefs.h
+  scavedefs.h \
+  dataflowmanager.h \
+  node.h \
+  channel.h
 slidingwinavg.obj: slidingwinavg.cc \
   channel.h \
   slidingwinavg.h \

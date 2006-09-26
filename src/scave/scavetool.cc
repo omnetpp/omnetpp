@@ -15,7 +15,8 @@
 
 #include "../utils/ver.h"
 #include "resultfilemanager.h"
-
+#include "nodetype.h"
+#include "nodetyperegistry.h"
 
 void printUsage()
 {
@@ -62,15 +63,15 @@ void printUsage()
     );
 }
 
-int main(int argc, char **argv)
+int filterCommand(int argc, char **argv)
 {
-    if (argc<2)
-    {
-        printUsage();
-        exit(0);
-    }
+    //TODO implement...
+    return 0;
+}
 
-//TODO implement the above options...
+int summaryCommand(int argc, char **argv)
+{
+    //TODO implement...
     ResultFileManager resultFileManager;
     for (int i=1; i<argc; i++)
     {
@@ -88,4 +89,38 @@ int main(int argc, char **argv)
     }
     return 0;
 }
+
+int infoCommand(int argc, char **argv)
+{
+//TODO process args
+
+    NodeTypeRegistry *registry = NodeTypeRegistry::instance();
+    NodeTypeVector nodeTypes = registry->getNodeTypes();
+    for (int i=0; i<nodeTypes.size(); i++)
+    {
+        NodeType *nodeType = nodeTypes[i];
+        printf("%s\n", nodeType->name());  // this is -b format
+    }
+    return 0;
+}
+
+int main(int argc, char **argv)
+{
+    if (argc<2)
+    {
+        printUsage();
+        exit(0);
+    }
+
+    const char *command = argv[1];
+    if (!strcmp(command, "f") || !strcmp(command, "filter"))
+        return filterCommand(argc, argv);
+    else if (!strcmp(command, "s") || !strcmp(command, "summary"))
+        return summaryCommand(argc, argv);
+    else if (!strcmp(command, "i") || !strcmp(command, "info"))
+        return infoCommand(argc, argv);
+    else
+        {fprintf(stderr, "unknown command `%s'", command);return 1;}
+}
+
 
