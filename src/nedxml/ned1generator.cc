@@ -214,6 +214,21 @@ void NED1Generator::printOptVector(NEDElement *node, const char *attr, const cha
 
 //---------------------------------------------------------------------------
 
+void NED1Generator::printComment(NEDElement *node, const char *commentLocId, const char *indent)
+{
+    CommentNode *comment = (CommentNode *)node->getFirstChildWithAttribute(NED_COMMENT, "locid", commentLocId);
+    if (!comment)
+    {
+        OUT << "\n";
+    }
+    else
+    {
+        // note: indent gets ignored now
+        OUT << comment->getContent();
+    }
+}
+
+/*XXX
 void NED1Generator::appendBannerComment(const char *comment, const char *indent)
 {
     if (!strnotnull(comment))
@@ -245,6 +260,7 @@ void NED1Generator::appendTrailingComment(const char *comment, const char *inden
 
     OUT << comment;
 }
+*/
 
 //---------------------------------------------------------------------------
 
@@ -255,13 +271,13 @@ void NED1Generator::doNedfiles(FilesNode *node, const char *indent, bool, const 
 
 void NED1Generator::doNedfile(NedFileNode *node, const char *indent, bool, const char *)
 {
-    //XXX appendBannerComment(node->getBannerComment(), indent);
+    printComment(node, "banner", indent);
     generateChildren(node, indent);
 }
 
 void NED1Generator::doImport(ImportNode *node, const char *indent, bool islast, const char *)
 {
-    //XXX appendBannerComment(node->getBannerComment(), indent);
+    printComment(node, "banner", indent);
     OUT << indent << "import \"" << node->getFilename() << "\";" << "\n";
 }
 
@@ -282,6 +298,7 @@ void NED1Generator::doInterfaceName(InterfaceNameNode *node, const char *indent,
 
 void NED1Generator::doSimpleModule(SimpleModuleNode *node, const char *indent, bool islast, const char *)
 {
+    printComment(node, "banner", indent);
     OUT << indent << "simple " << node->getName();
     printInheritance(node, indent);
     OUT << "\n";
@@ -299,6 +316,7 @@ void NED1Generator::doModuleInterface(ModuleInterfaceNode *node, const char *ind
 
 void NED1Generator::doCompoundModule(CompoundModuleNode *node, const char *indent, bool islast, const char *)
 {
+    printComment(node, "banner", indent);
     OUT << indent << (node->getIsNetwork() ? "network" : "module") << " " << node->getName();
     printInheritance(node, indent);
     OUT << "\n";
@@ -323,6 +341,7 @@ void NED1Generator::doChannelInterface(ChannelInterfaceNode *node, const char *i
 
 void NED1Generator::doChannel(ChannelNode *node, const char *indent, bool islast, const char *)
 {
+    printComment(node, "banner", indent);
     OUT << indent << "channel ";
     if (node->getIsWithcppclass())
         errors->add(node, ERRCAT_WARNING, NED2FEATURE "channel withcppclass");

@@ -98,10 +98,11 @@ class NED1Generator
 
     /** @name Format and write comments to the output */
     //@{
-    void appendBannerComment(const char *comment, const char *indent);
-    void appendRightComment(const char *comment, const char *indent);
-    void appendInlineRightComment(const char *comment, const char *indent);
-    void appendTrailingComment(const char *comment, const char *indent);
+    void printComment(NEDElement *node, const char *commentLocId, const char *indent);
+    //void appendBannerComment(const char *comment, const char *indent);
+    //void appendRightComment(const char *comment, const char *indent);
+    //void appendInlineRightComment(const char *comment, const char *indent);
+    //void appendTrailingComment(const char *comment, const char *indent);
     //@}
 
     /** @name Generate NED code from the given element */
