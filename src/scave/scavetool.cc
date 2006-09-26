@@ -92,14 +92,52 @@ int summaryCommand(int argc, char **argv)
 
 int infoCommand(int argc, char **argv)
 {
-//TODO process args
+    // process args
+    bool opt_brief = false;
+    for (int i=2; i<argc; i++)
+    {
+        const char *opt = argv[i];
+        if (!strcmp(opt, "-b"))
+            opt_brief = true;
+        else
+            {fprintf(stderr, "unknown option `%s'", opt);return 1;}
+    }
 
     NodeTypeRegistry *registry = NodeTypeRegistry::instance();
     NodeTypeVector nodeTypes = registry->getNodeTypes();
     for (int i=0; i<nodeTypes.size(); i++)
     {
         NodeType *nodeType = nodeTypes[i];
-        printf("%s\n", nodeType->name());  // this is -b format
+        if (nodeType->isHidden())
+            continue;
+
+        if (opt_brief)
+        {
+            // this is the -b format
+            printf("%s\n", nodeType->name());
+        }
+        else
+        {
+            // print name(parameters,...)
+            printf("%s", nodeType->name());
+            StringMap attrs, attrDefaults;
+            nodeType->getAttributes(attrs);
+            nodeType->getAttrDefaults(attrDefaults);
+            printf("(");
+            for (StringMap::iterator it=attrs.begin(); it!=attrs.end(); ++it)
+            {
+                if (it!=attrs.begin()) printf(",");
+                printf("%s", it->first.c_str());
+            }
+            printf("):  %s\n", nodeType->description());
+
+            // print parameter descriptions
+            for (StringMap::iterator it=attrs.begin(); it!=attrs.end(); ++it)
+            {
+                printf("   - %s: %s\n", it->first.c_str(), it->second.c_str());
+            }
+            printf("\n");
+        }
     }
     return 0;
 }
