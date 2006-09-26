@@ -45,6 +45,9 @@ void printUsage()
        "    -O <filename>:   output file name\n"
        "    -F <formatname>: format of output file: vec, sca, ...\n" //TODO
        "`summary' command:\n"
+       //TODO allow filtering by patterns here too?
+       //TODO specifying more than one flag should list tuples e.g. (module,statistic) pairs
+       // occurring in the input files
        "    -n :  print list of unique statistics names\n"
        "    -m :  print list of unique module name\n"
        "    -r :  print list of unique run Ids\n"
@@ -54,10 +57,9 @@ void printUsage()
        "    -s :  list filter names with parameter list (summary)\n"
        "    -v :  include descriptions in the output (default)\n"
        "\n"
-       "Function syntax:\n"
-       //TODO
-       "  Examples:\n"
-       "    winavg(10)\n"
+       "Function syntax: name(parameterlist).\n"
+       "  Examples: winavg(windowSize=10), winavg(10), mean()\n"
+       "\n"
        "Pattern syntax: Glob-type patterns are accepted.\n"
        //TODO
        "Examples:\n"
@@ -67,7 +69,71 @@ void printUsage()
 
 int filterCommand(int argc, char **argv)
 {
-    //TODO implement...
+    // options
+    bool opt_verbose = true; //XXX make false by default
+    std::string opt_statisticNamePattern;
+    std::string opt_moduleNamePattern;
+    std::string opt_runIdPattern;
+    std::string opt_configurationIdPattern;
+    std::string opt_filenamePattern;
+    std::string opt_outputFileName;
+    std::string opt_outputFormat;
+    std::vector<std::string> opt_filterList;
+    std::vector<std::string> opt_fileNames;
+
+    // parse options
+    for (int i=2; i<argc; i++)
+    {
+        const char *opt = argv[i];
+        if (!strcmp(opt, "-n") && i!=argc-1)
+            opt_statisticNamePattern = argv[++i];
+        else if (!strcmp(opt, "-m") && i!=argc-1)
+            opt_moduleNamePattern = argv[++i];
+        else if (!strcmp(opt, "-r") && i!=argc-1)
+            opt_runIdPattern = argv[++i];
+        else if (!strcmp(opt, "-c") && i!=argc-1)
+            opt_configurationIdPattern = argv[++i];
+        else if (!strcmp(opt, "-f") && i!=argc-1)
+            opt_filenamePattern = argv[++i];
+        else if (!strcmp(opt, "-a") && i!=argc-1)
+            opt_filterList.push_back(argv[++i]);
+        else if (!strcmp(opt, "-O") && i!=argc-1)
+            opt_outputFileName = argv[++i];
+        else if (!strcmp(opt, "-F") && i!=argc-1)
+            opt_outputFormat = argv[++i];
+        else
+            opt_fileNames.push_back(argv[i]);
+    }
+
+    // load files
+    ResultFileManager resultFileManager;
+    for (int i=0; i<opt_fileNames.size(); i++)
+    {
+        const char *fileName = opt_fileNames[i].c_str();
+        if (opt_verbose) printf("reading %s...", fileName);
+        try {
+            ResultFile *f = resultFileManager.loadFile(fileName);
+            if (!f)
+            {
+                if (opt_verbose) printf("\n");
+                fprintf(stderr, "Error: %s: load() returned null\n", fileName);
+            }
+            else if (f->numUnrecognizedLines>0)
+            {
+                if (opt_verbose) printf("\n");
+                fprintf(stderr, "WARNING: %s: %d invalid/incomplete lines out of %d\n", fileName, f->numUnrecognizedLines, f->numLines);
+            }
+            else
+            {
+                if (opt_verbose) printf(" %d lines\n", f->numLines);
+            }
+        } catch (Exception *e) {
+            fprintf(stdout, "Exception: %s\n", e->message());
+            delete e;
+        }
+    }
+
+    // TODO assemble filter network and execute it
     return 0;
 }
 
