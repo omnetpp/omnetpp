@@ -48,6 +48,7 @@ void printUsage()
        //TODO allow filtering by patterns here too?
        //TODO specifying more than one flag should list tuples e.g. (module,statistic) pairs
        // occurring in the input files
+       //TODO option: print matching vectorIDs and exit
        "    -n :  print list of unique statistics names\n"
        "    -m :  print list of unique module name\n"
        "    -r :  print list of unique run Ids\n"
@@ -107,10 +108,10 @@ int filterCommand(int argc, char **argv)
     }
 
     // load files
-    //TODO on Windows: manual globbing of wildcards
     ResultFileManager resultFileManager;
     for (int i=0; i<opt_fileNames.size(); i++)
     {
+        //TODO on Windows: manual globbing of wildcards
         const char *fileName = opt_fileNames[i].c_str();
         if (opt_verbose) printf("reading %s...", fileName);
         try {
@@ -149,6 +150,20 @@ int filterCommand(int argc, char **argv)
 
     FileRunList fileRunList = resultFileManager.getFileRuns(&fileList, &runList);
     if (opt_verbose) printf("total %d matching file-runs\n", fileRunList.size());
+
+    // filter statistics by module and name
+    IDList vectorIDList = resultFileManager.filterIDList(
+                        resultFileManager.getAllVectors(),
+                        &fileRunList,
+                        opt_moduleNamePattern.c_str(),
+                        opt_statisticNamePattern.c_str());
+    IDList scalarIDList = resultFileManager.filterIDList(
+                        resultFileManager.getAllScalars(),
+                        &fileRunList,
+                        opt_moduleNamePattern.c_str(),
+                        opt_statisticNamePattern.c_str());
+    if (opt_verbose) printf("module and name filter matches %d vectors and %d scalars\n",
+                        vectorIDList.size(), scalarIDList.size());
 
     // TODO assemble filter network and execute it
     return 0;
