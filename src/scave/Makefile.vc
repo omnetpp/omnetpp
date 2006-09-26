@@ -55,3 +55,140 @@ clean:
 
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
+arraybuilder.obj: arraybuilder.cc \
+  channel.h \
+  arraybuilder.h \
+  node.h \
+  commonnodes.h \
+  xyarray.h \
+  nodetype.h \
+  dataflowmanager.h
+channel.obj: channel.cc \
+  channel.h \
+  node.h
+commonnodes.obj: commonnodes.cc \
+  commonnodes.h \
+  channel.h \
+  node.h \
+  nodetype.h \
+  dataflowmanager.h
+compoundfilter.obj: compoundfilter.cc \
+  compoundfilter.h \
+  filternodes.h \
+  nodetyperegistry.h \
+  nodetype.h \
+  commonnodes.h \
+  dataflowmanager.h \
+  node.h \
+  channel.h
+dataflowmanager.obj: dataflowmanager.cc \
+  channel.h \
+  nodetype.h \
+  dataflowmanager.h \
+  node.h
+datasorter.obj: datasorter.cc \
+  resultfilemanager.h \
+  datasorter.h \
+  idlist.h \
+  scavedefs.h \
+  patmatch.h
+diffquot.obj: diffquot.cc \
+  channel.h \
+  diffquot.h \
+  node.h \
+  commonnodes.h \
+  nodetype.h \
+  dataflowmanager.h
+filewriter.obj: filewriter.cc \
+  channel.h \
+  filewriter.h \
+  node.h \
+  commonnodes.h \
+  nodetype.h \
+  dataflowmanager.h
+filternodes.obj: filternodes.cc \
+  channel.h \
+  filternodes.h \
+  node.h \
+  commonnodes.h \
+  nodetype.h \
+  dataflowmanager.h
+idlist.obj: idlist.cc \
+  idlist.h \
+  resultfilemanager.h \
+  scavedefs.h
+mergernodes.obj: mergernodes.cc \
+  channel.h \
+  mergernodes.h \
+  node.h \
+  commonnodes.h \
+  nodetype.h \
+  dataflowmanager.h
+nodetype.obj: nodetype.cc \
+  nodetype.h \
+  dataflowmanager.h \
+  node.h \
+  channel.h
+nodetyperegistry.obj: nodetyperegistry.cc \
+  nodetyperegistry.h \
+  arraybuilder.h \
+  vectorfilereader.h \
+  vectorfilewriter.h \
+  filewriter.h \
+  windowavg.h \
+  slidingwinavg.h \
+  filternodes.h \
+  mergernodes.h \
+  xyplotnode.h \
+  diffquot.h \
+  commonnodes.h \
+  xyarray.h \
+  node.h \
+  nodetype.h \
+  dataflowmanager.h \
+  channel.h
+patmatch.obj: patmatch.cc \
+  patmatch.h
+resultfilemanager.obj: resultfilemanager.cc \
+  patmatch.h \
+  resultfilemanager.h \
+  idlist.h \
+  scavedefs.h
+scavetool.obj: scavetool.cc \
+  ../utils/ver.h \
+  resultfilemanager.h \
+  idlist.h \
+  scavedefs.h
+slidingwinavg.obj: slidingwinavg.cc \
+  channel.h \
+  slidingwinavg.h \
+  node.h \
+  commonnodes.h \
+  nodetype.h \
+  dataflowmanager.h
+vectorfilereader.obj: vectorfilereader.cc \
+  channel.h \
+  vectorfilereader.h \
+  node.h \
+  nodetype.h \
+  dataflowmanager.h
+vectorfilewriter.obj: vectorfilewriter.cc \
+  channel.h \
+  vectorfilewriter.h \
+  node.h \
+  nodetype.h \
+  dataflowmanager.h
+windowavg.obj: windowavg.cc \
+  channel.h \
+  windowavg.h \
+  node.h \
+  commonnodes.h \
+  nodetype.h \
+  dataflowmanager.h
+xyplotnode.obj: xyplotnode.cc \
+  channel.h \
+  xyplotnode.h \
+  node.h \
+  commonnodes.h \
+  nodetype.h \
+  dataflowmanager.h
