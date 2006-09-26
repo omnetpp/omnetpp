@@ -17,6 +17,8 @@
 #include "resultfilemanager.h"
 #include "nodetype.h"
 #include "nodetyperegistry.h"
+#include "dataflowmanager.h"
+#include "vectorfilereader.h"
 
 void printUsage()
 {
@@ -49,6 +51,7 @@ void printUsage()
        //TODO specifying more than one flag should list tuples e.g. (module,statistic) pairs
        // occurring in the input files
        //TODO option: print matching vectorIDs and exit
+       //TODO: splitvec functionality (optionally, accept list of vector IDs)
        "    -n :  print list of unique statistics names\n"
        "    -m :  print list of unique module name\n"
        "    -r :  print list of unique run Ids\n"
@@ -165,7 +168,30 @@ int filterCommand(int argc, char **argv)
     if (opt_verbose) printf("module and name filter matches %d vectors and %d scalars\n",
                         vectorIDList.size(), scalarIDList.size());
 
-    // TODO assemble filter network and execute it
+    // assemble dataflow network for vectors
+    DataflowManager dfnet;
+
+    // 1. create filereader for each vector file
+    ResultFileList& filteredVectorFileList = *resultFileManager.getUniqueFiles(vectorIDList); //FIXME delete after done?
+    std::vector<VectorFileReaderNode*> vectorFileReaders;
+    for (int i=0; i<filteredVectorFileList.size(); i++)
+        vectorFileReaders.push_back(new VectorFileReaderNode(filteredVectorFileList[i]->fileSystemFilePath.c_str(), 64*1024));
+
+    // 2. ...
+/*
+    VectorFileReaderNode *src = new VectorFileReaderNode("big.vec", 64*1024);
+    PrinterNode *pr1 = new PrinterNode();
+    PrinterNode *pr2 = new PrinterNode();
+
+    net.addNode(src);
+    net.addNode(pr1);
+    net.addNode(pr2);
+
+    net.connect(src->addVector(7), &(pr1->in), pr1);
+    net.connect(src->addVector(12), &(pr2->in), pr2);
+
+    net.execute();
+*/
     return 0;
 }
 

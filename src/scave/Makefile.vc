@@ -159,9 +159,10 @@ scavetool.obj: scavetool.cc \
   resultfilemanager.h \
   nodetype.h \
   nodetyperegistry.h \
+  dataflowmanager.h \
+  vectorfilereader.h \
   idlist.h \
   scavedefs.h \
-  dataflowmanager.h \
   node.h \
   channel.h
 slidingwinavg.obj: slidingwinavg.cc \
