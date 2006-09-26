@@ -98,7 +98,7 @@ namespace std {
 /* FIXME find a better way... */
 %ignore  FilesNode;
 %ignore  NedFileNode;
-%ignore  WhitespaceNode;
+%ignore  CommentNode;
 %ignore  ImportNode;
 %ignore  PropertyDeclNode;
 %ignore  ExtendsNode;
@@ -124,7 +124,6 @@ namespace std {
 %ignore  ConnectionNode;
 %ignore  ChannelSpecNode;
 %ignore  ConnectionGroupNode;
-%ignore  WhereNode;
 %ignore  LoopNode;
 %ignore  ConditionNode;
 %ignore  ExpressionNode;
