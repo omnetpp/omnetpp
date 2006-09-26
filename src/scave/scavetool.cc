@@ -50,7 +50,9 @@ void printUsage()
        "    -r :  print list of unique run Ids\n"
        "    -c :  print list of unique configuration Ids (aka run numbers)\n"
        "`info' command:\n"
-       "    -b :  print filter names only (brief)\n"
+       "    -b :  list filter names only (brief)\n"
+       "    -s :  list filter names with parameter list (summary)\n"
+       "    -v :  include descriptions in the output (default)\n"
        "\n"
        "Function syntax:\n"
        //TODO
@@ -94,11 +96,16 @@ int infoCommand(int argc, char **argv)
 {
     // process args
     bool opt_brief = false;
+    bool opt_summary = false;
     for (int i=2; i<argc; i++)
     {
         const char *opt = argv[i];
         if (!strcmp(opt, "-b"))
             opt_brief = true;
+        else if (!strcmp(opt, "-s"))
+            opt_summary = true;
+        else if (!strcmp(opt, "-v"))
+            ; // no-op
         else
             {fprintf(stderr, "unknown option `%s'", opt);return 1;}
     }
@@ -129,14 +136,22 @@ int infoCommand(int argc, char **argv)
                 if (it!=attrs.begin()) printf(",");
                 printf("%s", it->first.c_str());
             }
-            printf("):  %s\n", nodeType->description());
+            printf(")");
 
-            // print parameter descriptions
-            for (StringMap::iterator it=attrs.begin(); it!=attrs.end(); ++it)
+            if (opt_summary)
             {
-                printf("   - %s: %s\n", it->first.c_str(), it->second.c_str());
+                printf("\n");
             }
-            printf("\n");
+            else
+            {
+                // print filter description and parameter descriptions
+                printf(":  %s\n", nodeType->description());
+                for (StringMap::iterator it=attrs.begin(); it!=attrs.end(); ++it)
+                {
+                    printf("   - %s: %s\n", it->first.c_str(), it->second.c_str());
+                }
+                printf("\n");
+            }
         }
     }
     return 0;
