@@ -70,16 +70,17 @@ void printUsage()
 int filterCommand(int argc, char **argv)
 {
     // options
-    bool opt_verbose = true; //XXX make false by default
+    bool opt_verbose = true; //XXX make false by default (and add -V verbose option)
     std::string opt_statisticNamePattern;
     std::string opt_moduleNamePattern;
     std::string opt_runIdPattern;
     std::string opt_configurationIdPattern;
-    std::string opt_filenamePattern;
+    std::string opt_filenamePattern = "*";  //XXX why is "" not equivalent??
     std::string opt_outputFileName;
     std::string opt_outputFormat;
     std::vector<std::string> opt_filterList;
     std::vector<std::string> opt_fileNames;
+    StringMap opt_runAttrPatterns; //FIXME options to fill this
 
     // parse options
     for (int i=2; i<argc; i++)
@@ -106,6 +107,7 @@ int filterCommand(int argc, char **argv)
     }
 
     // load files
+    //TODO on Windows: manual globbing of wildcards
     ResultFileManager resultFileManager;
     for (int i=0; i<opt_fileNames.size(); i++)
     {
@@ -132,6 +134,21 @@ int filterCommand(int argc, char **argv)
             delete e;
         }
     }
+
+    // get matching fileRuns
+    RunList runList = resultFileManager.filterRunList(
+                        resultFileManager.getRuns(),
+                        opt_runIdPattern.c_str(),
+                        opt_runAttrPatterns);
+    if (opt_verbose) printf("run filter matches %d runs\n", runList.size());
+
+    ResultFileList fileList = resultFileManager.filterFileList(
+                        resultFileManager.getFiles(),
+                        opt_filenamePattern.c_str());
+    if (opt_verbose) printf("filename filter matches %d files\n", fileList.size());
+
+    FileRunList fileRunList = resultFileManager.getFileRuns(&fileList, &runList);
+    if (opt_verbose) printf("total %d matching file-runs\n", fileRunList.size());
 
     // TODO assemble filter network and execute it
     return 0;
