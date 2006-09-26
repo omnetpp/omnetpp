@@ -383,11 +383,11 @@ module Host0
         tcp.toNetw <--> ip.toTcp;
 
         // IP to network interfaces
-        ppp[i].toNetw <--> ip.toIf[i] where i=0..sizeof(ppp)-1;
+        ppp[i].toNetw <--> ip.toIf[i] for i=0..sizeof(ppp)-1;
         // or:  ..... <--> ip.toIf++ where...
 
         // network interfaces to parent
-        ppp[i].phy <--> pppPort[i] where i=0..sizeof(ppp)-1;
+        ppp[i].phy <--> pppPort[i] for i=0..sizeof(ppp)-1;
 };
 
 //
@@ -473,11 +473,43 @@ network RandomGraph
         node[100]: Node {}
     connections:
         // brief syntax:
-        node[i].port++ <--> node[j].port++ where i=0..98, j=i+1..99, uniform()<0.3;
+        node[i].port++ <--> node[j].port++ for i=0..98, for j=i+1..99, if uniform()<0.3;
 
         // using a connection group
-        where i=0..98, j=i+1..99, uniform()<0.3 {
+        for i=0..98, for j=i+1..99, if uniform()<0.3 {
             node[i].port++ <--> node[j].port++;
+        };
+
+        for i=0..98, for j=i+1..99 {
+            node[i].port++ <--> node[j].port++ if uniform()<0.3;
+            node[i].port++ <--> node[j].port++ if uniform()<0.1;
+        };
+
+
+        for i=0..98, for j=i+1 .. 99, if uniform()<0.3 {
+            node[i].port++ <--> node[j].port++;
+            node[i].port++ <--> node[j].port++;
+        };
+
+        for i=0..98, for j=i+1..99 {
+            node[i].port++ <--> node[j].port++ if uniform()<0.3;
+
+            // dsfdsfdsfsd
+            node[i].port++
+               <--> // hhhh
+                node[j].port++ if uniform()<0.1; // dfdsfsdfsd
+                                                 //fgdffgfg
+
+            // fggfdgf
+
+            node[i].port++ <--> node[j].port++  // dfdsfsdfsd
+                                    if uniform()<0.1;     // dfdsfsdfsd
+
+        };
+
+        for i=0..98 {
+            node[i].port++ <--> node[j].port++ for j=i+1..99, if uniform()<0.3;
+            node[i].port++ <--> node[j].port++ for j=i+1..99, if uniform()<0.1;
         };
 };
 
