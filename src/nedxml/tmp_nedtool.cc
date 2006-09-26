@@ -44,6 +44,7 @@ using std::ifstream;
 using std::ios;
 
 //FIXME print warnings as warnings not errors! (and don't stop on them)
+//TODO: "preserve format" flag (genererate ned2 as ned2, and ned1 as ned1)
 
 
 // file types

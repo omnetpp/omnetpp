@@ -1130,13 +1130,13 @@ expression
 
 inputvalue  /* FIXME turn to isDefault=true, @prompt!!! */
         : INPUT_ '(' expr ',' expr ')'
-                { if (np->getParseExpressionsFlag()) $$ = createFunction("input", $3, $5); }
+                { if (np->getParseExpressionsFlag()) $$ = createFunction("input_OLDXXX", $3, $5); }
         | INPUT_ '(' expr ')'
-                { if (np->getParseExpressionsFlag()) $$ = createFunction("input", $3); }
+                { if (np->getParseExpressionsFlag()) $$ = createFunction("input_OLDXXX", $3); }
         | INPUT_ '(' ')'
-                { if (np->getParseExpressionsFlag()) $$ = createFunction("input"); }
+                { if (np->getParseExpressionsFlag()) $$ = createFunction("input_OLDXXX"); }
         | INPUT_
-                { if (np->getParseExpressionsFlag()) $$ = createFunction("input"); }
+                { if (np->getParseExpressionsFlag()) $$ = createFunction("input_OLDXXX"); }
         ;
 
 xmldocvalue
@@ -1236,23 +1236,23 @@ parameter_expr
         | REF NAME
                 {
                   if (np->getParseExpressionsFlag()) $$ = createIdent(@2);
-                  np->getErrors()->add(ps.params,"`ref' modifier no longer supported (add `function' "
+                  np->getErrors()->add(ps.substparams,"`ref' modifier no longer supported (add `function' "
                                      "modifier to destination parameter instead)");
                 }
         | REF ANCESTOR NAME
                 {
                   if (np->getParseExpressionsFlag()) $$ = createIdent(@3);
-                  np->getErrors()->add(ps.params,"`ancestor' and `ref' modifiers no longer supported");
+                  np->getErrors()->add(ps.substparams,"`ancestor' and `ref' modifiers no longer supported");
                 }
         | ANCESTOR REF NAME
                 {
                   if (np->getParseExpressionsFlag()) $$ = createIdent(@3);
-                  np->getErrors()->add(ps.params,"`ancestor' and `ref' modifiers no longer supported");
+                  np->getErrors()->add(ps.substparams,"`ancestor' and `ref' modifiers no longer supported");
                 }
         | ANCESTOR NAME
                 {
                   if (np->getParseExpressionsFlag()) $$ = createIdent(@2);
-                  np->getErrors()->add(ps.params,"`ancestor' modifier no longer supported");
+                  np->getErrors()->add(ps.substparams,"`ancestor' modifier no longer supported");
                 }
         ;
 
