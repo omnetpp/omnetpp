@@ -43,6 +43,8 @@ using std::ofstream;
 using std::ifstream;
 using std::ios;
 
+//FIXME print warnings as warnings not errors! (and don't stop on them)
+
 
 // file types
 enum {XML_FILE, NED_FILE, MSG_FILE, CPP_FILE, UNKNOWN_FILE};
