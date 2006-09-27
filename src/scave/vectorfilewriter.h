@@ -39,14 +39,17 @@ class VectorFileWriterNode : public Node
 
     private:
         PortVector ports;
-        std::string fname;
+        std::string fileName;
+        std::string fileHeader;
         FILE *f;
+        int prec;
 
     public:
-        VectorFileWriterNode(const char *filename);
+        VectorFileWriterNode(const char *filename, const char *fileHeader=NULL);
         virtual ~VectorFileWriterNode();
 
         Port *addVector(int vectorId, const char *moduleName, const char *name);
+        void setPrecision(int prec) {this->prec = prec;}
 
         virtual bool isReady() const;
         virtual void process();

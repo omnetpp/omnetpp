@@ -23,13 +23,16 @@
 #ifdef CHECK
 #undef CHECK
 #endif
-#define CHECK(fprintf)    if (fprintf<0) throw new Exception("Cannot write output vector file `%s'", fname.c_str())
+#define CHECK(fprintf)    if (fprintf<0) throw new Exception("Cannot write output vector file `%s'", fileName.c_str())
 
+#define DEFAULT_PRECISION  12
 
-VectorFileWriterNode::VectorFileWriterNode(const char *fileName)
+VectorFileWriterNode::VectorFileWriterNode(const char *fileName, const char *fileHeader)
 {
-    fname = fileName;
     f = NULL;
+    this->prec = DEFAULT_PRECISION;
+    this->fileName = fileName;
+    this->fileHeader = (fileHeader ? fileHeader : "");
 }
 
 VectorFileWriterNode::~VectorFileWriterNode()
@@ -55,13 +58,12 @@ void VectorFileWriterNode::process()
     // open file if needed
     if (!f)
     {
-        f = fopen(fname.c_str(), "w");
+        f = fopen(fileName.c_str(), "w");
         if (!f)
-            throw new Exception("cannot open `%s' for write", fname.c_str());
+            throw new Exception("cannot open `%s' for write", fileName.c_str());
 
-        //TODO: print file header
-
-        // print vector declarations
+        // print file header and vector declarations
+        CHECK(fprintf(f,"%s\n\n", fileHeader.c_str()));
         for (PortVector::iterator it=ports.begin(); it!=ports.end(); it++)
             CHECK(fprintf(f,"vector %ld  \"%s\"  \"%s\"  %d\n", it->id, it->moduleName.c_str(), it->name.c_str(), 1));
     }
@@ -74,7 +76,7 @@ void VectorFileWriterNode::process()
         {
             Datum a;
             chan->read(&a,1);
-            CHECK(fprintf(f,"%d\t%lg\t%lg\n", it->id, a.x, a.y));  // FIXME precision!!!
+            CHECK(fprintf(f,"%ld\t%.*g\t%.*g\n", it->id, prec, a.x, prec, a.y));
         }
     }
 
@@ -104,9 +106,9 @@ Node *VectorFileWriterNodeType::create(DataflowManager *mgr, StringMap& attrs) c
 {
     checkAttrNames(attrs);
 
-    const char *fname = attrs["filename"].c_str();
+    const char *fileName = attrs["filename"].c_str();
 
-    Node *node = new VectorFileWriterNode(fname);
+    Node *node = new VectorFileWriterNode(fileName);
     node->setNodeType(this);
     mgr->addNode(node);
     return node;
