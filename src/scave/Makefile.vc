@@ -161,6 +161,7 @@ scavetool.obj: scavetool.cc \
   nodetyperegistry.h \
   dataflowmanager.h \
   vectorfilereader.h \
+  vectorfilewriter.h \
   idlist.h \
   scavedefs.h \
   node.h \

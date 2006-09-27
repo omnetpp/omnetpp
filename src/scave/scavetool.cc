@@ -13,12 +13,14 @@
 *--------------------------------------------------------------*/
 
 
+#include <assert.h>
 #include "../utils/ver.h"
 #include "resultfilemanager.h"
 #include "nodetype.h"
 #include "nodetyperegistry.h"
 #include "dataflowmanager.h"
 #include "vectorfilereader.h"
+#include "vectorfilewriter.h"
 
 void printUsage()
 {
@@ -44,7 +46,7 @@ void printUsage()
        "    -f <pattern>:    filter for input file name (.vec or .sca)\n"
        "    -a <function>:   apply the given processing to the vector (see syntax below)\n"
        "                     This option may occur multiple times.\n"
-       "    -O <filename>:   output file name\n"
+       "    -O <filename>:   output file name\n"   //FIXME separate file for vectors and scalars I guess
        "    -F <formatname>: format of output file: vec, sca, ...\n" //TODO
        "`summary' command:\n"
        //TODO allow filtering by patterns here too?
@@ -168,30 +170,41 @@ int filterCommand(int argc, char **argv)
     if (opt_verbose) printf("module and name filter matches %d vectors and %d scalars\n",
                         vectorIDList.size(), scalarIDList.size());
 
+    //
     // assemble dataflow network for vectors
-    DataflowManager dfnet;
+    //
+    DataflowManager dataflowManager;
 
-    // 1. create filereader for each vector file
+    // create filereader for each vector file
     ResultFileList& filteredVectorFileList = *resultFileManager.getUniqueFiles(vectorIDList); //FIXME delete after done?
-    std::vector<VectorFileReaderNode*> vectorFileReaders;
+    std::map<ResultFile*, VectorFileReaderNode*> vectorFileReaders;
     for (int i=0; i<filteredVectorFileList.size(); i++)
-        vectorFileReaders.push_back(new VectorFileReaderNode(filteredVectorFileList[i]->fileSystemFilePath.c_str(), 64*1024));
+    {
+        ResultFile *resultFile = filteredVectorFileList[i];
+        VectorFileReaderNode *readerNode = new VectorFileReaderNode(resultFile->fileSystemFilePath.c_str(), 64*1024);
+        vectorFileReaders[resultFile] = readerNode;
+        dataflowManager.addNode(readerNode);
+    }
 
-    // 2. ...
-/*
-    VectorFileReaderNode *src = new VectorFileReaderNode("big.vec", 64*1024);
-    PrinterNode *pr1 = new PrinterNode();
-    PrinterNode *pr2 = new PrinterNode();
+    // writer node
+    VectorFileWriterNode *writerNode = new VectorFileWriterNode("_out_.vec"); //FIXME for now
+    dataflowManager.addNode(writerNode);
 
-    net.addNode(src);
-    net.addNode(pr1);
-    net.addNode(pr2);
+    // connect
+    for (int i=0; i<vectorIDList.size(); i++)
+    {
+         ID id = vectorIDList.get(i);
+         const VectorResult& vector = resultFileManager.getVector(id);
+         assert(vectorFileReaders.find(vector.fileRunRef->fileRef) != vectorFileReaders.end());
+         VectorFileReaderNode *readerNode = vectorFileReaders[vector.fileRunRef->fileRef];
+         dataflowManager.connect(
+                 readerNode->addVector(vector.vectorId),
+                 writerNode->addVector(i)); // vectors get renumbered; FIXME vector declaration lines???
+    }
 
-    net.connect(src->addVector(7), &(pr1->in), pr1);
-    net.connect(src->addVector(12), &(pr2->in), pr2);
+    // run!
+    dataflowManager.execute();  //FIXME catch exceptions etc
 
-    net.execute();
-*/
     return 0;
 }
 
