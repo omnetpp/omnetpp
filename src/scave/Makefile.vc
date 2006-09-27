@@ -162,10 +162,12 @@ scavetool.obj: scavetool.cc \
   dataflowmanager.h \
   vectorfilereader.h \
   vectorfilewriter.h \
+  filternodes.h \
   idlist.h \
   scavedefs.h \
   node.h \
-  channel.h
+  channel.h \
+  commonnodes.h
 slidingwinavg.obj: slidingwinavg.cc \
   channel.h \
   slidingwinavg.h \
