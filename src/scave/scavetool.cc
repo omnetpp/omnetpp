@@ -193,6 +193,7 @@ int filterCommand(int argc, char **argv)
     // connect
     for (int i=0; i<vectorIDList.size(); i++)
     {
+         //FIXME add filters etc
          ID id = vectorIDList.get(i);
          const VectorResult& vector = resultFileManager.getVector(id);
          assert(vectorFileReaders.find(vector.fileRunRef->fileRef) != vectorFileReaders.end());
