@@ -51,12 +51,12 @@ void printUsage()
        "                     This option may occur multiple times.\n"
        "    -O <filename>:   output file name\n"   //FIXME separate file for vectors and scalars I guess
        "    -F <formatname>: format of output file: vec, sca, ...\n" //TODO
+       //TODO option: print matching vectorIDs and exit
+       //TODO: dump scalars too!!!
        "`summary' command:\n"
        //TODO allow filtering by patterns here too?
        //TODO specifying more than one flag should list tuples e.g. (module,statistic) pairs
        // occurring in the input files
-       //TODO option: print matching vectorIDs and exit
-       //TODO: splitvec functionality (optionally, accept list of vector IDs)
        "    -n :  print list of unique statistics names\n"
        "    -m :  print list of unique module name\n"
        "    -r :  print list of unique run Ids\n"
