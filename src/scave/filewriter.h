@@ -26,11 +26,14 @@
 class FileWriterNode : public SingleSinkNode
 {
     private:
-        std::string fname;
+        std::string fileName;
+        std::string banner;
         FILE *f;
+        int prec;
     public:
-        FileWriterNode(const char *filename);
+        FileWriterNode(const char *filename, const char *banner=NULL);
         virtual ~FileWriterNode();
+        void setPrecision(int prec) {this->prec = prec;}
         virtual bool isReady() const;
         virtual void process();
         virtual bool finished() const;

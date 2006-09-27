@@ -15,6 +15,7 @@
 #ifndef _NODE_H_
 #define _NODE_H_
 
+#include "scavedefs.h"
 #include "util.h"
 
 

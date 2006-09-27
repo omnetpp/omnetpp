@@ -59,18 +59,21 @@ arraybuilder.obj: arraybuilder.cc \
   channel.h \
   arraybuilder.h \
   node.h \
+  scavedefs.h \
   commonnodes.h \
   xyarray.h \
   nodetype.h \
   dataflowmanager.h
 channel.obj: channel.cc \
   channel.h \
-  node.h
+  node.h \
+  scavedefs.h
 commonnodes.obj: commonnodes.cc \
   commonnodes.h \
   channel.h \
   node.h \
   nodetype.h \
+  scavedefs.h \
   dataflowmanager.h
 compoundfilter.obj: compoundfilter.cc \
   compoundfilter.h \
@@ -80,12 +83,14 @@ compoundfilter.obj: compoundfilter.cc \
   commonnodes.h \
   dataflowmanager.h \
   node.h \
-  channel.h
+  channel.h \
+  scavedefs.h
 dataflowmanager.obj: dataflowmanager.cc \
   channel.h \
   nodetype.h \
   dataflowmanager.h \
-  node.h
+  node.h \
+  scavedefs.h
 datasorter.obj: datasorter.cc \
   resultfilemanager.h \
   datasorter.h \
@@ -96,6 +101,7 @@ diffquot.obj: diffquot.cc \
   channel.h \
   diffquot.h \
   node.h \
+  scavedefs.h \
   commonnodes.h \
   nodetype.h \
   dataflowmanager.h
@@ -103,6 +109,7 @@ filewriter.obj: filewriter.cc \
   channel.h \
   filewriter.h \
   node.h \
+  scavedefs.h \
   commonnodes.h \
   nodetype.h \
   dataflowmanager.h
@@ -110,6 +117,7 @@ filternodes.obj: filternodes.cc \
   channel.h \
   filternodes.h \
   node.h \
+  scavedefs.h \
   commonnodes.h \
   nodetype.h \
   dataflowmanager.h
@@ -121,6 +129,7 @@ mergernodes.obj: mergernodes.cc \
   channel.h \
   mergernodes.h \
   node.h \
+  scavedefs.h \
   commonnodes.h \
   nodetype.h \
   dataflowmanager.h
@@ -128,7 +137,8 @@ nodetype.obj: nodetype.cc \
   nodetype.h \
   dataflowmanager.h \
   node.h \
-  channel.h
+  channel.h \
+  scavedefs.h
 nodetyperegistry.obj: nodetyperegistry.cc \
   nodetyperegistry.h \
   arraybuilder.h \
@@ -145,6 +155,7 @@ nodetyperegistry.obj: nodetyperegistry.cc \
   xyarray.h \
   node.h \
   nodetype.h \
+  scavedefs.h \
   dataflowmanager.h \
   channel.h
 patmatch.obj: patmatch.cc \
@@ -163,6 +174,7 @@ scavetool.obj: scavetool.cc \
   vectorfilereader.h \
   vectorfilewriter.h \
   filternodes.h \
+  filewriter.h \
   idlist.h \
   scavedefs.h \
   node.h \
@@ -172,6 +184,7 @@ slidingwinavg.obj: slidingwinavg.cc \
   channel.h \
   slidingwinavg.h \
   node.h \
+  scavedefs.h \
   commonnodes.h \
   nodetype.h \
   dataflowmanager.h
@@ -179,18 +192,21 @@ vectorfilereader.obj: vectorfilereader.cc \
   channel.h \
   vectorfilereader.h \
   node.h \
+  scavedefs.h \
   nodetype.h \
   dataflowmanager.h
 vectorfilewriter.obj: vectorfilewriter.cc \
   channel.h \
   vectorfilewriter.h \
   node.h \
+  scavedefs.h \
   nodetype.h \
   dataflowmanager.h
 windowavg.obj: windowavg.cc \
   channel.h \
   windowavg.h \
   node.h \
+  scavedefs.h \
   commonnodes.h \
   nodetype.h \
   dataflowmanager.h
@@ -198,6 +214,7 @@ xyplotnode.obj: xyplotnode.cc \
   channel.h \
   xyplotnode.h \
   node.h \
+  scavedefs.h \
   commonnodes.h \
   nodetype.h \
   dataflowmanager.h

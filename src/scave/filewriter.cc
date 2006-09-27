@@ -19,11 +19,18 @@
 #include "channel.h"
 #include "filewriter.h"
 
+#ifdef CHECK
+#undef CHECK
+#endif
+#define CHECK(fprintf)    if (fprintf<0) throw new Exception("Cannot write output vector file `%s'", fileName.c_str())
 
-FileWriterNode::FileWriterNode(const char *filename)
+
+FileWriterNode::FileWriterNode(const char *filename, const char *banner)
 {
-    fname = filename;
     f = NULL;
+    this->fileName = filename;
+    this->banner = (banner ? banner : "");
+    this->prec = DEFAULT_PRECISION;
 }
 
 FileWriterNode::~FileWriterNode()
@@ -40,9 +47,12 @@ void FileWriterNode::process()
     // open file if needed
     if (!f)
     {
-        f = fopen(fname.c_str(), "w");
+        f = fopen(fileName.c_str(), "w");
         if (!f)
-            throw new Exception("cannot open `%s' for write", fname.c_str());
+            throw new Exception("cannot open `%s' for write", fileName.c_str());
+
+        // print file header
+        CHECK(fprintf(f,"%s\n\n", banner.c_str()));
     }
 
     int n = in()->length();
@@ -50,7 +60,7 @@ void FileWriterNode::process()
     {
         Datum a;
         in()->read(&a,1);
-        fprintf(f,"%lg\t%lg\n", a.x, a.y); // FIXME max precision needed!!!
+        CHECK(fprintf(f,"%.*g\t%.*g\n", prec, a.x, prec, a.y));
     }
 
     if (in()->closing())
@@ -78,9 +88,9 @@ Node *FileWriterNodeType::create(DataflowManager *mgr, StringMap& attrs) const
 {
     checkAttrNames(attrs);
 
-    const char *fname = attrs["filename"].c_str();
+    const char *fileName = attrs["filename"].c_str();
 
-    Node *node = new FileWriterNode(fname);
+    Node *node = new FileWriterNode(fileName);
     node->setNodeType(this);
     mgr->addNode(node);
     return node;
