@@ -18,7 +18,7 @@
 
 #include "util.h"
 #include "nodetyperegistry.h"
-
+#include "stringtokenizer.h"
 #include "arraybuilder.h"
 #include "vectorfilereader.h"
 #include "vectorfilewriter.h"
@@ -105,4 +105,56 @@ NodeTypeVector NodeTypeRegistry::getNodeTypes()
         vect.push_back(it->second);
     return vect;
 }
+
+Node *NodeTypeRegistry::createNode(const char *filterSpec, DataflowManager *mgr)
+{
+    // parse filterSpec
+    std::string name;
+    std::vector<std::string> args;
+    parseFilterSpec(filterSpec, name, args);
+
+    // look up node type
+    NodeType *nodeType = getNodeType(name.c_str());
+
+    // check number of args match
+    StringMap attrs;
+    nodeType->getAttrDefaults(attrs);
+    if (attrs.size()!=args.size())
+        throw new Exception("error in filter spec `%s' -- %s expects %d parameters", filterSpec, name.c_str(), attrs.size());
+
+    // fill in args map
+    int i=0;
+    for (StringMap::iterator it=attrs.begin(); it!=attrs.end(); ++it, ++i)
+        if (!args[i].empty())
+            it->second = args[i];
+
+    // create filter
+    return nodeType->create(mgr, attrs);
+}
+
+void NodeTypeRegistry::parseFilterSpec(const char *filterSpec, std::string& name, std::vector<std::string>& args)
+{
+    args.clear();
+    const char *paren = strchr(filterSpec, '(');
+    if (!paren) {
+        // no left paren -- treat the whole string as filter name
+        name = filterSpec;
+        return;
+    }
+
+    // check that string ends in right paren
+    if (filterSpec[strlen(filterSpec)-1]!=')')
+        throw new Exception("syntax error in filter spec `%s'", filterSpec);
+
+    // filter name is the part before the left paren
+    name.assign(filterSpec, paren-filterSpec);
+
+    // arg list is the part between the parens -- split it up along commas
+    std::string arglist(paren+1, strlen(paren)-2);
+    StringTokenizer tokenizer(arglist.c_str(), ",");
+    const char *token;
+    while ((token = tokenizer.nextToken())!=NULL)
+        args.push_back(token);
+}
+
 

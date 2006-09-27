@@ -151,13 +151,13 @@ nodetyperegistry.obj: nodetyperegistry.cc \
   mergernodes.h \
   xyplotnode.h \
   diffquot.h \
-  commonnodes.h \
-  xyarray.h \
   node.h \
   nodetype.h \
   scavedefs.h \
   dataflowmanager.h \
-  channel.h
+  channel.h \
+  commonnodes.h \
+  xyarray.h
 patmatch.obj: patmatch.cc \
   patmatch.h
 resultfilemanager.obj: resultfilemanager.cc \

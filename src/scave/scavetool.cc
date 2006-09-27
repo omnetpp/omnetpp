@@ -76,11 +76,6 @@ void printUsage()
     );
 }
 
-FilterNode *createFilterNode(const char *filter)
-{
-    return new MeanNode();  //FIXME for now
-}
-
 int filterCommand(int argc, char **argv)
 {
     // options
@@ -216,13 +211,16 @@ int filterCommand(int argc, char **argv)
         // add filters
         for (int k=0; k<opt_filterList.size(); k++)
         {
+//TODO support filter to merge all into a single vector
             if (opt_verbose) printf("adding filter to each vector: %s\n", opt_filterList[k].c_str());
             for (int i=0; i<vectorIDList.size(); i++)
             {
-                 FilterNode *node = createFilterNode(opt_filterList[k].c_str());
-                 dataflowManager.addNode(node);
-                 dataflowManager.connect(vectorPorts[i], &(node->in));
-                 vectorPorts[i] = &(node->out);
+                 Node *node = NodeTypeRegistry::instance()->createNode(opt_filterList[k].c_str(), &dataflowManager);
+                 FilterNode *filterNode = dynamic_cast<FilterNode *>(node);
+                 if (!filterNode)
+                     throw new Exception("%s is not a filter node", opt_filterList[k].c_str());
+                 dataflowManager.connect(vectorPorts[i], &(filterNode->in));
+                 vectorPorts[i] = &(filterNode->out);
             }
         }
 
