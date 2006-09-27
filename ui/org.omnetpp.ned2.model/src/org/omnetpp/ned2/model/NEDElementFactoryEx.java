@@ -1,7 +1,6 @@
 package org.omnetpp.ned2.model;
 
 import org.omnetpp.ned2.model.pojo.NEDElementFactory;
-import org.omnetpp.ned2.model.pojo.SimpleModuleNode;
 
 public class NEDElementFactoryEx extends NEDElementFactory {
 

@@ -13,6 +13,7 @@ import org.omnetpp.ned2.model.IConnectable;
 import org.omnetpp.ned2.model.INamedGraphNode;
 import org.omnetpp.ned2.model.ISubmoduleContainer;
 import org.omnetpp.ned2.model.NEDElement;
+import org.omnetpp.ned2.model.SubmoduleNodeEx;
 import org.omnetpp.ned2.model.pojo.ConnectionsNode;
 
 /**
@@ -77,13 +78,16 @@ public class CloneSubmoduleCommand extends Command {
         // duplicate the subtree but do not add to the new parent yet
         newModule = (INamedGraphNode)((NEDElement)oldModule).deepDup(null);
         newModule.getDisplayString().setLocation(newBounds.getLocation());
-        newModule.setName(oldModule.getName()+"_copy");
 
         if (index < 0) {
             parent.addSubmodule(newModule);
         } else {
             parent.insertSubmodule(index, newModule);
         }
+
+        newModule.setName(oldModule.getName());
+        // make the cloned submodule's name unique within the parent
+        ((SubmoduleNodeEx)newModule).makeNameUnique();
 
         // keep track of the new modules so we can delete them in undo
         newModules.add(newModule);

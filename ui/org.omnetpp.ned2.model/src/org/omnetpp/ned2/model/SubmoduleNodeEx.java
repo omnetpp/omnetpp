@@ -1,7 +1,9 @@
 package org.omnetpp.ned2.model;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.omnetpp.common.displaymodel.DisplayString;
 import org.omnetpp.common.displaymodel.IDisplayString;
@@ -28,6 +30,43 @@ public class SubmoduleNodeEx extends SubmoduleNode implements INamedGraphNode {
         // TODO correctly handle the initial naming for new nodes (name must be unique)
         setName("unnamed");
         setType("node");
+    }
+    
+    /**
+     * @return The name of component but stripped any digits from the right ie: name123 would be name  
+     */
+    public String getNameBase() {
+    	String nameBase = getName();
+    	int i=nameBase.length()-1;
+    	while(i>=0 && Character.isDigit(nameBase.charAt(i))) --i; 
+    	// strip away the digits at the end
+    	return nameBase.substring(0,i+1);
+    }
+    
+    
+    /**
+     * Makes the current modulename unique, concatenating unique numbers at the end if necessary.
+     * This method is effective ONLY if the submodule is already placed into the compound module.
+     * ie. getCompoundModule should not return null;
+     */
+    public void makeNameUnique() {
+    	List<SubmoduleNodeEx> smls = getCompoundModule().getSubmodules();
+    	Set<String> nameSet = new HashSet<String>(smls.size());
+    	// create a set from the sibling submodules
+    	for(SubmoduleNodeEx sm : smls) 
+    		if (sm != this)
+    			nameSet.add(sm.getName().toLowerCase());
+    	
+    	// if there is no sibling with the same name we don't have to change the name
+    	if (!nameSet.contains(getName().toLowerCase()))
+    		return;
+    	
+    	// there is an other module with the same name, so find a new name
+    	String baseName = getNameBase();
+    	int i = 1;
+    	while(nameSet.contains(new String(baseName+i).toLowerCase())) i++;
+    	// we found a unique name
+    	setName(baseName+i);
     }
     
 	public DisplayString getDisplayString() {

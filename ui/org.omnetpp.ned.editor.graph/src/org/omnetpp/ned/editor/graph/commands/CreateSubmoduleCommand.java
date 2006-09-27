@@ -44,6 +44,8 @@ public class CreateSubmoduleCommand extends org.eclipse.gef.commands.Command {
     @Override
     public void redo() {
         parent.insertSubmodule(index, child);
+        //make the submodule name unique if needed
+        ((SubmoduleNodeEx)child).makeNameUnique();
     }
 
     @Override

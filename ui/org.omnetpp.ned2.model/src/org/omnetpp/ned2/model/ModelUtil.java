@@ -94,7 +94,7 @@ public class ModelUtil {
 			org.omnetpp.ned2.model.NEDElement pojoTree = swig2pojo(swigTree, null, errors);
 
 			// XXX for debugging 
-			// 
+			// System.out.println(generateXmlFromPojoElementTree(pojoTree, "")); 
 
 			swigTree.delete();
 			return pojoTree;

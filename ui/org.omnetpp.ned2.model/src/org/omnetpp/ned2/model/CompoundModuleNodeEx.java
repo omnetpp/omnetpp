@@ -61,6 +61,10 @@ public class CompoundModuleNodeEx extends CompoundModuleNode
 		return result;
 	}
 
+	/**
+	 * @param submoduleName
+	 * @return The submodule with the provided name
+	 */
 	public SubmoduleNodeEx getSubmoduleByName(String submoduleName) {
 		SubmodulesNode submodulesNode = getFirstSubmodulesChild();
 		if (submoduleName == null)

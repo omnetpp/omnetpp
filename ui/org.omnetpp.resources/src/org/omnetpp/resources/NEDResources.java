@@ -385,6 +385,9 @@ public class NEDResources implements INEDComponentResolver {
 	 * Gets called from incremental builder. 
 	 */
 	public void readNEDFile(IFile file) {
+		// XXX for debugging
+		// System.out.println(file.toString());
+		
 		// if this file is currently loaded in an editor, we don't read it from disk
 		if (connectCount.containsKey(file))
 			return;
