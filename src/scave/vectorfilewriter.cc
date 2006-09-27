@@ -20,6 +20,12 @@
 #include "vectorfilewriter.h"
 
 
+#ifdef CHECK
+#undef CHECK
+#endif
+#define CHECK(fprintf)    if (fprintf<0) throw new Exception("Cannot write output vector file `%s'", fname.c_str())
+
+
 VectorFileWriterNode::VectorFileWriterNode(const char *fileName)
 {
     fname = fileName;
@@ -30,16 +36,16 @@ VectorFileWriterNode::~VectorFileWriterNode()
 {
 }
 
-Port *VectorFileWriterNode::addVector(int vectorId)
+Port *VectorFileWriterNode::addVector(int vectorId, const char *moduleName, const char *name)
 {
-    ports.push_back(Pair(vectorId, this));
+    ports.push_back(Pair(vectorId, moduleName, name, this));
     return &(ports.back().port);
 }
 
 bool VectorFileWriterNode::isReady() const
 {
     for (PortVector::const_iterator it=ports.begin(); it!=ports.end(); it++)
-        if ((*it).port()->length()>0)
+        if (it->port()->length()>0)
             return true;
     return false;
 }
@@ -52,17 +58,23 @@ void VectorFileWriterNode::process()
         f = fopen(fname.c_str(), "w");
         if (!f)
             throw new Exception("cannot open `%s' for write", fname.c_str());
+
+        //TODO: print file header
+
+        // print vector declarations
+        for (PortVector::iterator it=ports.begin(); it!=ports.end(); it++)
+            CHECK(fprintf(f,"vector %ld  \"%s\"  \"%s\"  %d\n", it->id, it->moduleName.c_str(), it->name.c_str(), 1));
     }
 
     for (PortVector::iterator it=ports.begin(); it!=ports.end(); it++)
     {
-        Channel *chan = (*it).port();
+        Channel *chan = it->port();
         int n = chan->length();
         for (int i=0; i<n; i++)
         {
             Datum a;
             chan->read(&a,1);
-            fprintf(f,"%d\t%lg\t%lg\n", (*it).id, a.x, a.y);  // FIXME precision!!!
+            CHECK(fprintf(f,"%d\t%lg\t%lg\n", it->id, a.x, a.y));  // FIXME precision!!!
         }
     }
 
@@ -71,7 +83,7 @@ void VectorFileWriterNode::process()
 bool VectorFileWriterNode::finished() const
 {
     for (PortVector::const_iterator it=ports.begin(); it!=ports.end(); it++)
-        if (!(*it).port()->closing() || (*it).port()->length()>0)
+        if (!it->port()->closing() || it->port()->length()>0)
             return false;
     return true;
 }
@@ -105,6 +117,6 @@ Port *VectorFileWriterNodeType::getPort(Node *node, const char *portname) const
     // vector id is used as port name
     VectorFileWriterNode *node1 = dynamic_cast<VectorFileWriterNode *>(node);
     int vectorId = atoi(portname);  // FIXME check it's numeric at all
-    return node1->addVector(vectorId);
+    return node1->addVector(vectorId, "n/a", "n/a");
 }
 

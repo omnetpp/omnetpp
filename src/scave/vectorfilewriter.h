@@ -27,9 +27,13 @@ class VectorFileWriterNode : public Node
 {
     public:
         struct Pair {
-            Pair(int i, Node *owner) : id(i), port(owner) {}
             int id;
+            std::string moduleName;
+            std::string name;
             Port port;
+
+            Pair(int id, const char *moduleName, const char *name, Node *owner) : port(owner)
+                {this->id = id; this->moduleName = moduleName; this->name = name;}
         };
         typedef std::vector<Pair> PortVector;
 
@@ -42,7 +46,7 @@ class VectorFileWriterNode : public Node
         VectorFileWriterNode(const char *filename);
         virtual ~VectorFileWriterNode();
 
-        Port *addVector(int vectorId);
+        Port *addVector(int vectorId, const char *moduleName, const char *name);
 
         virtual bool isReady() const;
         virtual void process();

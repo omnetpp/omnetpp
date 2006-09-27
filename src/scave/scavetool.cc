@@ -193,14 +193,14 @@ int filterCommand(int argc, char **argv)
     // connect
     for (int i=0; i<vectorIDList.size(); i++)
     {
-         //FIXME add filters etc
+         //TODO add filters etc
          ID id = vectorIDList.get(i);
          const VectorResult& vector = resultFileManager.getVector(id);
          assert(vectorFileReaders.find(vector.fileRunRef->fileRef) != vectorFileReaders.end());
          VectorFileReaderNode *readerNode = vectorFileReaders[vector.fileRunRef->fileRef];
          dataflowManager.connect(
                  readerNode->addVector(vector.vectorId),
-                 writerNode->addVector(i)); // vectors get renumbered; FIXME vector declaration lines???
+                 writerNode->addVector(i, vector.moduleNameRef->c_str(), vector.nameRef->c_str())); // vectors get renumbered
     }
 
     // run!
