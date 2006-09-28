@@ -185,13 +185,13 @@ somedefinitions
 definition
         : import
 
-        | channeldefinition_old
+        | channeldefinition
                 { if (np->getStoreSourceFlag()) storeComponentSourceCode(ps.channel, @1); }
-        | simpledefinition_old
+        | simpledefinition
                 { if (np->getStoreSourceFlag()) storeComponentSourceCode(ps.module, @1); }
-        | moduledefinition_old
+        | moduledefinition
                 { if (np->getStoreSourceFlag()) storeComponentSourceCode(ps.module, @1); }
-        | networkdefinition_old
+        | networkdefinition
                 { if (np->getStoreSourceFlag()) storeComponentSourceCode(ps.module, @1); }
         ;
 
@@ -221,32 +221,32 @@ filename
 /*
  * Channel - old syntax
  */
-channeldefinition_old
-        : channelheader_old opt_channelattrblock_old endchannel_old
+channeldefinition
+        : channelheader opt_channelattrblock endchannel
                 { storePos(ps.channel, @$); }
         ;
 
-channelheader_old
+channelheader
         : CHANNEL NAME
                 {
                   ps.channel = (ChannelNode *)createNodeWithTag(NED_CHANNEL, ps.nedfile);
                   ps.channel->setName(toString(@2));
                   ps.extends = (ExtendsNode *)createNodeWithTag(NED_EXTENDS, ps.channel);
-                  ps.extends->setName("BasicChannel"); // implicit base class "BasicChannel"
+                  ps.extends->setName("BasicChannel"); // implicit base class "BasicChannel" FIXME why store if implicit?
                   ps.params = (ParametersNode *)createNodeWithTag(NED_PARAMETERS, ps.channel);
                   ps.params->setIsImplicit(true);
                   storeComments(ps.channel,@1,@2);
                 }
         ;
 
-opt_channelattrblock_old
+opt_channelattrblock
         :
-        | channelattrblock_old
+        | channelattrblock
                 { storePos(ps.params, @$); }
         ;
 
-channelattrblock_old
-        : channelattrblock_old CHANATTRNAME expression opt_semicolon
+channelattrblock
+        : channelattrblock CHANATTRNAME expression opt_semicolon
                 {
                   ps.params->setIsImplicit(false);
                   ps.param = addParameter(ps.params, @2);
@@ -264,7 +264,7 @@ channelattrblock_old
                 }
         ;
 
-endchannel_old
+endchannel
         : ENDCHANNEL NAME opt_semicolon
                 {
                   storeTrailingComment(ps.channel,@2);
@@ -278,15 +278,15 @@ endchannel_old
 /*
  * Simple module - old syntax
  */
-simpledefinition_old
-        : simpleheader_old
-            opt_paramblock_old
-            opt_gateblock_old
-          endsimple_old
+simpledefinition
+        : simpleheader
+            opt_paramblock
+            opt_gateblock
+          endsimple
                 { storePos(ps.module, @$); }
         ;
 
-simpleheader_old
+simpleheader
         : SIMPLE NAME
                 {
                   ps.module = (SimpleModuleNode *)createNodeWithTag(NED_SIMPLE_MODULE, ps.nedfile );
@@ -295,7 +295,7 @@ simpleheader_old
                 }
         ;
 
-endsimple_old
+endsimple
         : ENDSIMPLE NAME opt_semicolon
                 {
                   storeTrailingComment(ps.module,@2);
@@ -309,18 +309,18 @@ endsimple_old
 /*
  * Module - old syntax
  */
-moduledefinition_old
-        : moduleheader_old
-            opt_paramblock_old
-            opt_gateblock_old
-            opt_submodblock_old
-            opt_connblock_old
-            opt_displayblock_old
-          endmodule_old
+moduledefinition
+        : moduleheader
+            opt_paramblock
+            opt_gateblock
+            opt_submodblock
+            opt_connblock
+            opt_displayblock
+          endmodule
                 { storePos(ps.module, @$); }
         ;
 
-moduleheader_old
+moduleheader
         : MODULE NAME
                 {
                   ps.module = (CompoundModuleNode *)createNodeWithTag(NED_COMPOUND_MODULE, ps.nedfile );
@@ -329,7 +329,7 @@ moduleheader_old
                 }
         ;
 
-endmodule_old
+endmodule
         : ENDMODULE NAME opt_semicolon
                 {
                   storeTrailingComment(ps.module,@2);
@@ -343,12 +343,12 @@ endmodule_old
 /*
  * Display block - old syntax
  */
-opt_displayblock_old
-        : displayblock_old
+opt_displayblock
+        : displayblock
         |
         ;
 
-displayblock_old
+displayblock
         : DISPLAY ':' STRINGCONSTANT ';'
                 {
                   ps.property = addComponentProperty(ps.module, "display");
@@ -365,34 +365,34 @@ displayblock_old
 /*
  * Parameters - old syntax
  */
-opt_paramblock_old
-        : paramblock_old
+opt_paramblock
+        : paramblock
         |
         ;
 
-paramblock_old
+paramblock
         : PARAMETERS ':'
                 {
                   ps.params = (ParametersNode *)createNodeWithTag(NED_PARAMETERS, ps.module );
                   storeComments(ps.params,@1,@2);
                 }
-          opt_parameters_old
+          opt_parameters
                 {
                   storePos(ps.params, @$);
                 }
         ;
 
-opt_parameters_old
-        : parameters_old ';'
+opt_parameters
+        : parameters ';'
         |
         ;
 
-parameters_old
-        : parameters_old ',' parameter_old  /* comma as separator */
+parameters
+        : parameters ',' parameter  /* comma as separator */
                 {
                   storeComments(ps.param,@3);
                 }
-        | parameter_old
+        | parameter
                 {
                   storeComments(ps.param,@1);
                 }
@@ -401,7 +401,7 @@ parameters_old
 /*
  * Parameter
  */
-parameter_old
+parameter
         : NAME
                 {
                   ps.param = addParameter(ps.params, @1);
@@ -467,41 +467,41 @@ parameter_old
 /*
  * Gates - old syntax
  */
-opt_gateblock_old
-        : gateblock_old
+opt_gateblock
+        : gateblock
         |
         ;
 
-gateblock_old
+gateblock
         : GATES ':'
                 {
                   ps.gates = (GatesNode *)createNodeWithTag(NED_GATES, ps.module );
                   storeComments(ps.gates,@1,@2);
                 }
-          opt_gates_old
+          opt_gates
                 {
                   storePos(ps.gates, @$);
                 }
         ;
 
-opt_gates_old
-        : gates_old
+opt_gates
+        : gates
         |
         ;
 
-gates_old
-        : gates_old IN gatesI_old ';'
-        | IN  gatesI_old ';'
-        | gates_old OUT gatesO_old ';'
-        | OUT gatesO_old ';'
+gates
+        : gates IN gatesI ';'
+        | IN  gatesI ';'
+        | gates OUT gatesO ';'
+        | OUT gatesO ';'
         ;
 
-gatesI_old
-        : gatesI_old ',' gateI_old
-        | gateI_old
+gatesI
+        : gatesI ',' gateI
+        | gateI
         ;
 
-gateI_old
+gateI
         : NAME '[' ']'
                 {
                   ps.gate = addGate(ps.gates, @1);
@@ -519,12 +519,12 @@ gateI_old
                 }
         ;
 
-gatesO_old
-        : gatesO_old ',' gateO_old
-        | gateO_old
+gatesO
+        : gatesO ',' gateO
+        | gateO
         ;
 
-gateO_old
+gateO
         : NAME '[' ']'
                 {
                   ps.gate = addGate(ps.gates, @1);
@@ -545,34 +545,34 @@ gateO_old
 /*
  * Submodules - old syntax
  */
-opt_submodblock_old
-        : submodblock_old
+opt_submodblock
+        : submodblock
         |
         ;
 
-submodblock_old
+submodblock
         : SUBMODULES ':'
                 {
                   ps.submods = (SubmodulesNode *)createNodeWithTag(NED_SUBMODULES, ps.module );
                   storeComments(ps.submods,@1,@2);
                 }
-          opt_submodules_old
+          opt_submodules
                 {
                   storePos(ps.submods, @$);
                 }
         ;
 
-opt_submodules_old
-        : submodules_old
+opt_submodules
+        : submodules
         |
         ;
 
-submodules_old
-        : submodules_old submodule_old
-        | submodule_old
+submodules
+        : submodules submodule
+        | submodule
         ;
 
-submodule_old
+submodule
         : NAME ':' NAME opt_semicolon
                 {
                   ps.submod = (SubmoduleNode *)createNodeWithTag(NED_SUBMODULE, ps.submods);
@@ -580,7 +580,7 @@ submodule_old
                   ps.submod->setType(toString(@3));
                   storeComments(ps.submod,@1,@4);
                 }
-          submodule_body_old
+          submodule_body
                 {
                   storePos(ps.submod, @$);
                 }
@@ -592,7 +592,7 @@ submodule_old
                   addVector(ps.submod, "vector-size",@4,$4);
                   storeComments(ps.submod,@1,@5);
                 }
-          submodule_body_old
+          submodule_body
                 {
                   storePos(ps.submod, @$);
                 }
@@ -604,7 +604,7 @@ submodule_old
                   ps.submod->setLikeParam(toString(@3)); //FIXME store as expression!!!
                   storeComments(ps.submod,@1,@6);
                 }
-          submodule_body_old
+          submodule_body
                 {
                   storePos(ps.submod, @$);
                 }
@@ -617,39 +617,39 @@ submodule_old
                   addVector(ps.submod, "vector-size",@4,$4);
                   storeComments(ps.submod,@1,@7);
                 }
-          submodule_body_old
+          submodule_body
                 {
                   storePos(ps.submod, @$);
                 }
         ;
 
-submodule_body_old
-        : opt_substparamblocks_old
-          opt_gatesizeblocks_old
-          opt_submod_displayblock_old
+submodule_body
+        : opt_substparamblocks
+          opt_gatesizeblocks
+          opt_submod_displayblock
         ;
 
 /*
  * Substparameters - old syntax
  */
-opt_substparamblocks_old
-        : substparamblocks_old
+opt_substparamblocks
+        : substparamblocks
                 { storePos(ps.substparams, @$); /*must do it here because there might be multiple (conditional) gatesizes/parameters sections */ }
         |
         ;
 
-substparamblocks_old
-        : substparamblocks_old substparamblock_old
-        | substparamblock_old
+substparamblocks
+        : substparamblocks substparamblock
+        | substparamblock
         ;
 
-substparamblock_old
+substparamblock
         : PARAMETERS ':' /*FIXME empty "parameters:" in submodule doesn't get accepted! WFT??? */
                 {
                   createSubstparamsNodeIfNotExists();
                   storeComments(ps.substparams,@1,@2);
                 }
-          opt_substparameters_old
+          opt_substparameters
                 {
                 }
         | PARAMETERS IF expression ':'
@@ -660,7 +660,7 @@ substparamblock_old
                   ps.inGroup = true;
                   storeComments(ps.substparamgroup,@1,@4);
                 }
-          opt_substparameters_old
+          opt_substparameters
                 {
                   ps.condition = (ConditionNode *)createNodeWithTag(NED_CONDITION, ps.substparamgroup);
                   addExpression(ps.condition, "condition",@3,$3);
@@ -670,17 +670,17 @@ substparamblock_old
 
         ;
 
-opt_substparameters_old
-        : substparameters_old ';'
+opt_substparameters
+        : substparameters ';'
         |
         ;
 
-substparameters_old
-        : substparameters_old ',' substparameter_old   /* comma as separator */
-        | substparameter_old
+substparameters
+        : substparameters ',' substparameter   /* comma as separator */
+        | substparameter
         ;
 
-substparameter_old
+substparameter
         : NAME '=' expression
                 {
                   NEDElement *parent = ps.inGroup ? (NEDElement *)ps.substparamgroup : (NEDElement *)ps.substparams;
@@ -694,24 +694,24 @@ substparameter_old
 /*
  * Gatesizes - old syntax
  */
-opt_gatesizeblocks_old
-        : gatesizeblocks_old
+opt_gatesizeblocks
+        : gatesizeblocks
                 { storePos(ps.gatesizes, @$); /*must do it here because there might be multiple (conditional) gatesizes/parameters sections */ }
         |
         ;
 
-gatesizeblocks_old
-        : gatesizeblocks_old gatesizeblock_old
-        | gatesizeblock_old
+gatesizeblocks
+        : gatesizeblocks gatesizeblock
+        | gatesizeblock
         ;
 
-gatesizeblock_old
+gatesizeblock
         : GATESIZES ':'
                 {
                   createGatesizesNodeIfNotExists();
                   storeComments(ps.gatesizes,@1,@2);
                 }
-          opt_gatesizes_old
+          opt_gatesizes
                 {
                 }
         | GATESIZES IF expression ':'
@@ -722,7 +722,7 @@ gatesizeblock_old
                   ps.inGroup = true;
                   storeComments(ps.gatesizesgroup,@1,@4);
                 }
-          opt_gatesizes_old
+          opt_gatesizes
                 {
                   ps.condition = (ConditionNode *)createNodeWithTag(NED_CONDITION, ps.gatesizesgroup);
                   addExpression(ps.condition, "condition",@3,$3);
@@ -731,17 +731,17 @@ gatesizeblock_old
                 }
         ;
 
-opt_gatesizes_old
-        : gatesizes_old ';'
+opt_gatesizes
+        : gatesizes ';'
         |
         ;
 
-gatesizes_old
-        : gatesizes_old ',' gatesize_old
-        | gatesize_old
+gatesizes
+        : gatesizes ',' gatesize
+        | gatesize
         ;
 
-gatesize_old
+gatesize
         : NAME vector
                 {
                   NEDElement *parent = ps.inGroup ? (NEDElement *)ps.gatesizesgroup : (NEDElement *)ps.gatesizes;
@@ -762,7 +762,7 @@ gatesize_old
 /*
  * Submodule-displayblock - old syntax
  */
-opt_submod_displayblock_old
+opt_submod_displayblock
         : DISPLAY ':' STRINGCONSTANT ';'
                 {
                   ps.property = addComponentProperty(ps.submod, "display");
@@ -780,19 +780,19 @@ opt_submod_displayblock_old
 /*
  * Connections - old syntax  (about 7 shift/reduce)
  */
-opt_connblock_old
-        : connblock_old
+opt_connblock
+        : connblock
         |
         ;
 
-connblock_old
+connblock
         : CONNECTIONS NOCHECK ':'
                 {
                   ps.conns = (ConnectionsNode *)createNodeWithTag(NED_CONNECTIONS, ps.module );
                   ps.conns->setAllowUnconnected(true);
                   storeComments(ps.conns,@1,@3);
                 }
-          opt_connections_old
+          opt_connections
                 {
                   storePos(ps.conns, @$);
                 }
@@ -802,45 +802,45 @@ connblock_old
                   ps.conns->setAllowUnconnected(false);
                   storeComments(ps.conns,@1,@2);
                 }
-          opt_connections_old
+          opt_connections
                 {
                   storePos(ps.conns, @$);
                 }
         ;
 
-opt_connections_old
-        : connections_old
+opt_connections
+        : connections
         |
         ;
 
-connections_old
-        : connections_old connection_old
-        | connection_old
+connections
+        : connections connection
+        | connection
         ;
 
-connection_old
-        : loopconnection_old
-        | notloopconnection_old
+connection
+        : loopconnection
+        | notloopconnection
         ;
 
-loopconnection_old
+loopconnection
         : FOR
                 {
                   ps.conngroup = (ConnectionGroupNode *)createNodeWithTag(NED_CONNECTION_GROUP, ps.conns);
                   ps.inLoop=1;
                 }
-          loopvarlist_old DO notloopconnections_old ENDFOR opt_semicolon
+          loopvarlist DO notloopconnections ENDFOR opt_semicolon
                 {
                   ps.inLoop=0;
                 }
         ;
 
-loopvarlist_old
-        : loopvar_old ',' loopvarlist_old
-        | loopvar_old
+loopvarlist
+        : loopvar ',' loopvarlist
+        | loopvar
         ;
 
-loopvar_old
+loopvar
         : NAME '=' expression TO expression
                 {
                   ps.loop = (LoopNode *)createNodeWithTag(NED_LOOP, ps.conngroup);
@@ -852,7 +852,7 @@ loopvar_old
                 }
         ;
 
-opt_conncondition_old
+opt_conncondition
         : IF expression
                 {
                   if (!ps.inLoop)
@@ -866,7 +866,7 @@ opt_conncondition_old
         |
         ;
 
-opt_conn_displaystr_old
+opt_conn_displaystr
         : DISPLAY STRINGCONSTANT
                 {
                   bool hadChanSpec = ps.chanspec!=NULL;
@@ -885,33 +885,33 @@ opt_conn_displaystr_old
         |
         ;
 
-notloopconnections_old
-        : notloopconnections_old notloopconnection_old
-        | notloopconnection_old
+notloopconnections
+        : notloopconnections notloopconnection
+        | notloopconnection
         ;
 
-notloopconnection_old
-        : leftgatespec_old RIGHT_ARROW rightgatespec_old opt_conncondition_old opt_conn_displaystr_old comma_or_semicolon
+notloopconnection
+        : leftgatespec RIGHT_ARROW rightgatespec opt_conncondition opt_conn_displaystr comma_or_semicolon
                 {
                   ps.conn->setArrowDirection(NED_ARROWDIR_L2R);
                   storeComments(ps.conn,@1,@5);
                   storePos(ps.conn, @$);
                 }
-        | leftgatespec_old RIGHT_ARROW channeldescr_old RIGHT_ARROW rightgatespec_old opt_conncondition_old opt_conn_displaystr_old comma_or_semicolon
+        | leftgatespec RIGHT_ARROW channeldescr RIGHT_ARROW rightgatespec opt_conncondition opt_conn_displaystr comma_or_semicolon
                 {
                   ps.conn->setArrowDirection(NED_ARROWDIR_L2R);
                   removeRedundantChanSpecParams();
                   storeComments(ps.conn,@1,@7);
                   storePos(ps.conn, @$);
                 }
-        | leftgatespec_old LEFT_ARROW rightgatespec_old opt_conncondition_old opt_conn_displaystr_old comma_or_semicolon
+        | leftgatespec LEFT_ARROW rightgatespec opt_conncondition opt_conn_displaystr comma_or_semicolon
                 {
                   swapConnection(ps.conn);
                   ps.conn->setArrowDirection(NED_ARROWDIR_R2L);
                   storeComments(ps.conn,@1,@5);
                   storePos(ps.conn, @$);
                 }
-        | leftgatespec_old LEFT_ARROW channeldescr_old LEFT_ARROW rightgatespec_old opt_conncondition_old opt_conn_displaystr_old comma_or_semicolon
+        | leftgatespec LEFT_ARROW channeldescr LEFT_ARROW rightgatespec opt_conncondition opt_conn_displaystr comma_or_semicolon
                 {
                   swapConnection(ps.conn);
                   ps.conn->setArrowDirection(NED_ARROWDIR_R2L);
@@ -921,12 +921,12 @@ notloopconnection_old
                 }
         ;
 
-leftgatespec_old
-        : leftmod_old '.' leftgate_old
-        | parentleftgate_old
+leftgatespec
+        : leftmod '.' leftgate
+        | parentleftgate
         ;
 
-leftmod_old
+leftmod
         : NAME vector
                 {
                   ps.conn = (ConnectionNode *)createNodeWithTag(NED_CONNECTION, ps.inLoop ? (NEDElement *)ps.conngroup : (NEDElement*)ps.conns );
@@ -942,7 +942,7 @@ leftmod_old
                 }
         ;
 
-leftgate_old
+leftgate
         : NAME vector
                 {
                   ps.conn->setSrcGate( toString( @1) );
@@ -959,7 +959,7 @@ leftgate_old
                 }
         ;
 
-parentleftgate_old
+parentleftgate
         : NAME vector
                 {
                   ps.conn = (ConnectionNode *)createNodeWithTag(NED_CONNECTION, ps.inLoop ? (NEDElement *)ps.conngroup : (NEDElement*)ps.conns );
@@ -985,12 +985,12 @@ parentleftgate_old
                 }
         ;
 
-rightgatespec_old
-        : rightmod_old '.' rightgate_old
-        | parentrightgate_old
+rightgatespec
+        : rightmod '.' rightgate
+        | parentrightgate
         ;
 
-rightmod_old
+rightmod
         : NAME vector
                 {
                   ps.conn->setDestModule( toString(@1) );
@@ -1002,7 +1002,7 @@ rightmod_old
                 }
         ;
 
-rightgate_old
+rightgate
         : NAME vector
                 {
                   ps.conn->setDestGate( toString( @1) );
@@ -1019,7 +1019,7 @@ rightgate_old
                 }
         ;
 
-parentrightgate_old
+parentrightgate
         : NAME vector
                 {
                   ps.conn->setDestGate( toString( @1) );
@@ -1037,8 +1037,8 @@ parentrightgate_old
         ;
 
 
-channeldescr_old
-        : channelattrs_old
+channeldescr
+        : channelattrs
                 {
                   storePos(ps.chanspec, @$);
                   if (ps.chanspec->getFirstChildWithTag(NED_PARAMETERS)!=NULL)
@@ -1046,18 +1046,18 @@ channeldescr_old
                 }
         ;
 
-channelattrs_old
+channelattrs
         : NAME
                 {
                   if (!ps.chanspec)
                       ps.chanspec = createChannelSpec(ps.conn);
                   ps.chanspec->setType(toString(@1));
                 }
-        | chanattr_old
-        | channelattrs_old chanattr_old
+        | chanattr
+        | channelattrs chanattr
         ;
 
-chanattr_old
+chanattr
         : CHANATTRNAME expression
                 {
                   if (!ps.chanspec)
@@ -1071,14 +1071,14 @@ chanattr_old
 /*
  * Network - old syntax
  */
-networkdefinition_old
-        : networkheader_old
-            opt_substparamblocks_old
-          endnetwork_old
+networkdefinition
+        : networkheader
+            opt_substparamblocks
+          endnetwork
                 { storePos(ps.module, @$); }
         ;
 
-networkheader_old
+networkheader
         : NETWORK NAME ':' NAME opt_semicolon
                 {
                   ps.module = (CompoundModuleNode *)createNodeWithTag(NED_COMPOUND_MODULE, ps.nedfile );
@@ -1092,7 +1092,7 @@ networkheader_old
                 }
         ;
 
-endnetwork_old
+endnetwork
         : ENDNETWORK opt_semicolon
                 {
                   //setTrailingComment(ps.module,@1);
