@@ -109,7 +109,7 @@ class ScalarDataSorter
      * Looks at the data given by their Id, and returns a subset of them
      * where each (moduleName, scalarName) pair occurs only once.
      *
-     * Purpose: these pairs should offered as selection of X axis for a
+     * Purpose: these pairs should be offered as selection of X axis for a
      * scatter plot.
      */
     IDList getModuleAndNamePairs(const IDList& idlist, int maxcount);

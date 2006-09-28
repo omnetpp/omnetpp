@@ -14,7 +14,7 @@ COPTS=$(CFLAGS) $(XML_CFLAGS) -I. -I../common /Fd"scave.pdb"
 
 OBJS= arraybuilder.obj channel.obj commonnodes.obj compoundfilter.obj \
       dataflowmanager.obj datasorter.obj diffquot.obj \
-      filewriter.obj filternodes.obj \
+      filewriter.obj filternodes.obj stddev.obj \
       idlist.obj mergernodes.obj nodetype.obj nodetyperegistry.obj \
       patmatch.obj resultfilemanager.obj slidingwinavg.obj \
       vectorfilereader.obj vectorfilewriter.obj windowavg.obj \
@@ -151,6 +151,7 @@ nodetyperegistry.obj: nodetyperegistry.cc \
   mergernodes.h \
   xyplotnode.h \
   diffquot.h \
+  stddev.h \
   node.h \
   nodetype.h \
   scavedefs.h \
@@ -186,6 +187,15 @@ slidingwinavg.obj: slidingwinavg.cc \
   node.h \
   scavedefs.h \
   commonnodes.h \
+  nodetype.h \
+  dataflowmanager.h
+stddev.obj: stddev.cc \
+  channel.h \
+  stddev.h \
+  node.h \
+  scavedefs.h \
+  commonnodes.h \
+  xyarray.h \
   nodetype.h \
   dataflowmanager.h
 vectorfilereader.obj: vectorfilereader.cc \

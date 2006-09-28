@@ -29,6 +29,7 @@
 #include "mergernodes.h"
 #include "xyplotnode.h"
 #include "diffquot.h"
+#include "stddev.h"
 
 
 NodeTypeRegistry *NodeTypeRegistry::inst;
@@ -55,6 +56,7 @@ void NodeTypeRegistry::remove(NodeType *nodetype)
 NodeTypeRegistry::NodeTypeRegistry()
 {
     add(new ArrayBuilderNodeType());
+    add(new StddevNodeType());
     add(new VectorFileReaderNodeType());
     add(new VectorFileWriterNodeType());
     add(new FileWriterNodeType());

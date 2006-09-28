@@ -42,32 +42,32 @@ void printUsage()
        "   i, info:    prints list of available functions (to be used with `filter -a')\n"
        "Options:\n"
        "`filter' command:\n"
-       "    -n <pattern>:    filter for statistics name (see pattern syntax below)\n"
-       "    -m <pattern>:    filter for module name\n"
-       "    -r <pattern>:    filter for run Id\n"
-       "    -c <pattern>:    filter for configuration Id (aka run number)\n"
-       "    -f <pattern>:    filter for input file name (.vec or .sca)\n"
-       "    -a <function>:   apply the given processing to the vector (see syntax below)\n"
-       "                     This option may occur multiple times.\n"
-       "    -O <filename>:   output file name\n"   //FIXME separate file for vectors and scalars I guess
-       "    -F <formatname>: format of output file: vec, sca, ...\n" //TODO
+       "    -n <pattern>    filter for statistics name (see pattern syntax below)\n"
+       "    -m <pattern>    filter for module name\n"
+       "    -r <pattern>    filter for run Id\n"
+       "    -c <pattern>    filter for configuration Id (aka run number)\n"
+       "    -f <pattern>    filter for input file name (.vec or .sca)\n"
+       "    -a <function>   apply the given processing to the vector (see syntax below)\n"
+       "                    This option may occur multiple times.\n"
+       "    -O <filename>   output file name\n"   //FIXME separate file for vectors and scalars I guess
+       "    -F <formatname> format of output file: vec, sca, ...\n" //TODO
+       "    -V              print info about progress (verbose)\n"
        //TODO option: print matching vectorIDs and exit
        //TODO: dump scalars too!!!
        "`summary' command:\n"
        //TODO allow filtering by patterns here too?
        //TODO specifying more than one flag should list tuples e.g. (module,statistic) pairs
        // occurring in the input files
-       "    -n :  print list of unique statistics names\n"
-       "    -m :  print list of unique module name\n"
-       "    -r :  print list of unique run Ids\n"
-       "    -c :  print list of unique configuration Ids (aka run numbers)\n"
+       "    -n   print list of unique statistics names\n"
+       "    -m   print list of unique module name\n"
+       "    -r   print list of unique run Ids\n"
+       "    -c   print list of unique configuration Ids (aka run numbers)\n"
        "`info' command:\n"
-       "    -b :  list filter names only (brief)\n"
-       "    -s :  list filter names with parameter list (summary)\n"
-       "    -v :  include descriptions in the output (default)\n"
+       "    -b   list filter names only (brief)\n"
+       "    -s   list filter names with parameter list (summary)\n"
+       "    -v   include descriptions in the output (default)\n"
        "\n"
-       "Function syntax: name(parameterlist).\n"
-       "  Examples: winavg(windowSize=10), winavg(10), mean()\n"
+       "Function syntax: name(parameterlist). Examples: winavg(10), mean()\n"
        "\n"
        "Pattern syntax: Glob-type patterns are accepted.\n"
        //TODO
@@ -79,7 +79,7 @@ void printUsage()
 int filterCommand(int argc, char **argv)
 {
     // options
-    bool opt_verbose = true; //XXX make false by default (and add -V verbose option)
+    bool opt_verbose = false;
     std::string opt_statisticNamePattern;
     std::string opt_moduleNamePattern;
     std::string opt_runIdPattern;
@@ -92,14 +92,19 @@ int filterCommand(int argc, char **argv)
     StringMap opt_runAttrPatterns; //FIXME options to fill this
 
     //FIXME only exactly one of the next ones may be true
-    bool opt_writeVectorFile = false;    //TODO create option for this
-    bool opt_writeSeparateFiles = true; //TODO create option for this
+    bool opt_writeVectorFile = true;    //TODO create option for this
+    bool opt_writeSeparateFiles = false; //TODO create option for this
 
     // parse options
+    bool endOpts = false;
     for (int i=2; i<argc; i++)
     {
         const char *opt = argv[i];
-        if (!strcmp(opt, "-n") && i!=argc-1)
+        if (endOpts)
+            opt_fileNames.push_back(argv[i]);
+        else if (!strcmp(opt, "--"))
+            endOpts = true;
+        else if (!strcmp(opt, "-n") && i!=argc-1)
             opt_statisticNamePattern = argv[++i];
         else if (!strcmp(opt, "-m") && i!=argc-1)
             opt_moduleNamePattern = argv[++i];
@@ -115,8 +120,12 @@ int filterCommand(int argc, char **argv)
             opt_outputFileName = argv[++i];
         else if (!strcmp(opt, "-F") && i!=argc-1)
             opt_outputFormat = argv[++i];
-        else
+        else if (!strcmp(opt, "-V"))
+            opt_verbose = true;
+        else if (opt[0] != '-')
             opt_fileNames.push_back(argv[i]);
+        else
+            {fprintf(stderr, "unknown option `%s'", opt);return 1;}
     }
 
     try
@@ -280,21 +289,6 @@ int filterCommand(int argc, char **argv)
 int summaryCommand(int argc, char **argv)
 {
     //TODO implement...
-    ResultFileManager resultFileManager;
-    for (int i=1; i<argc; i++)
-    {
-        printf("Loading result file %s...\n", argv[i]);
-        try {
-            ResultFile *f = resultFileManager.loadFile(argv[i]);
-            if (!f)
-                fprintf(stdout, "Error: load() returned null\n");
-            else
-                printf("Done - %d unrecognized lines out of %d\n", f->numUnrecognizedLines, f->numLines);
-        } catch (Exception *e) {
-            fprintf(stdout, "Exception: %s\n", e->message());
-            delete e;
-        }
-    }
     return 0;
 }
 
