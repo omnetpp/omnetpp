@@ -16,6 +16,7 @@
 #pragma warning(disable:4786)
 #endif
 
+#include <math.h>
 #include "channel.h"
 #include "stddev.h"
 
@@ -40,7 +41,7 @@ void StddevNode::process()
     {
         Datum a;
         in()->read(&a,1);
-        //TODO collect a.x, a.y
+        collect(a.y);
     }
 }
 
@@ -48,6 +49,47 @@ bool StddevNode::finished() const
 {
     return in()->eof();
 }
+
+void StddevNode::collect(double val)
+{
+    if (++num_samples <= 0)
+        throw new Exception("StddevNode: observation count overflow");
+
+    sum_samples += val;
+    sqrsum_samples += val*val;
+
+    if (num_samples>1)
+    {
+        if (val<min_samples)
+            min_samples = val;
+        else if (val>max_samples)
+            max_samples = val;
+    }
+    else
+    {
+        min_samples = max_samples = val;
+    }
+}
+
+double StddevNode::variance() const
+{
+    if (num_samples<=1)
+        return 0.0;
+    else
+    {
+        double devsqr = (sqrsum_samples - sum_samples*sum_samples/num_samples)/(num_samples-1);
+        if (devsqr<=0)
+            return 0.0;
+        else
+            return devsqr;
+    }
+}
+
+double StddevNode::stddev() const
+{
+    return sqrt( variance() );
+}
+
 
 //------
 
