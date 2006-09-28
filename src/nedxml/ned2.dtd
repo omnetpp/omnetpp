@@ -17,7 +17,10 @@
      version            CDATA     #IMPLIED
      package            CDATA     #IMPLIED>
 
-<!-- comments and whitespace; comments include '//' marks -->
+<!-- comments and whitespace; comments include '//' marks. Note that although
+     nearly all elements may contain comment elements addording to this DTD,
+     they are currently unused within expressions and for loops and conditions.
+ -->
 <!ELEMENT comment EMPTY>
 <!ATTLIST comment
      locid              NMTOKEN   #REQUIRED

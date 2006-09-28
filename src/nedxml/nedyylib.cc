@@ -287,7 +287,7 @@ void swapExpressionChildren(NEDElement *node, const char *attr1, const char *att
     if (expr2) expr2->setTarget(attr1);
 }
 
-void moveChildren(NEDElement *from, NEDElement *to)
+void transferChildren(NEDElement *from, NEDElement *to)
 {
     while (from->getFirstChild())
         to->appendChild(from->removeChild(from->getFirstChild()));

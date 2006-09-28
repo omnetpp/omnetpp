@@ -1195,10 +1195,11 @@ connectionsitem
                   if (ps.chanspec)
                       ps.conn->appendChild(ps.conn->removeChild(ps.chanspec)); // move channelspec to conform DTD
                   if ($2) {
-                      moveChildren($2, ps.conn);
+                      transferChildren($2, ps.conn);
                       delete $2;
                   }
                   storePos(ps.conn, @$);
+                  storeComments(ps.conn,@$);
                 }
         ; /* no error recovery rule -- see discussion at top */
 
@@ -1208,7 +1209,7 @@ connectiongroup
                   //FIXME error if already in group (ps.inGroup)? otherwise we can't restore ps.conngroup....
                   ps.conngroup = (ConnectionGroupNode *)createNodeWithTag(NED_CONNECTION_GROUP, ps.conns);
                   if ($1) {
-                      moveChildren($1, ps.conngroup);
+                      transferChildren($1, ps.conngroup);
                       delete $1;
                   }
                   ps.inGroup = true;
@@ -1216,7 +1217,8 @@ connectiongroup
           connections '}' opt_semicolon
                 {
                   ps.inGroup = false;
-                  storePos(ps.conngroup, @$);
+                  storePos(ps.conngroup,@$);
+                  storeComments(ps.conngroup,@$);
                 }
         ;
 
@@ -1253,7 +1255,6 @@ loop
                   addExpression(ps.loop, "from-value",@4,$4);
                   addExpression(ps.loop, "to-value",@6,$6);
                   storePos(ps.loop, @$);
-                  storeComments(ps.loop,@$);
                   $$ = ps.loop;
                 }
         ;
@@ -1265,34 +1266,28 @@ connection
         : leftgatespec RIGHTARROW rightgatespec
                 {
                   ps.conn->setArrowDirection(NED_ARROWDIR_L2R);
-                  storeComments(ps.conn,@$);
                 }
         | leftgatespec RIGHTARROW channelspec RIGHTARROW rightgatespec
                 {
                   ps.conn->setArrowDirection(NED_ARROWDIR_L2R);
-                  storeComments(ps.conn,@$);
                 }
         | leftgatespec LEFTARROW rightgatespec
                 {
                   swapConnection(ps.conn);
                   ps.conn->setArrowDirection(NED_ARROWDIR_R2L);
-                  storeComments(ps.conn,@$);
                 }
         | leftgatespec LEFTARROW channelspec LEFTARROW rightgatespec
                 {
                   swapConnection(ps.conn);
                   ps.conn->setArrowDirection(NED_ARROWDIR_R2L);
-                  storeComments(ps.conn,@$);
                 }
         | leftgatespec DBLARROW rightgatespec
                 {
                   ps.conn->setArrowDirection(NED_ARROWDIR_BIDIR);
-                  storeComments(ps.conn,@$);
                 }
         | leftgatespec DBLARROW channelspec DBLARROW rightgatespec
                 {
                   ps.conn->setArrowDirection(NED_ARROWDIR_BIDIR);
-                  storeComments(ps.conn,@$);
                 }
         ;
 

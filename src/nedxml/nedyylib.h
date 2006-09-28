@@ -51,7 +51,7 @@ YYLTYPE trimDoubleBraces(YYLTYPE vectorpos);
 void swapAttributes(NEDElement *node, const char *attr1, const char *attr2);
 void swapExpressionChildren(NEDElement *node, const char *attr1, const char *attr2);
 void swapConnection(NEDElement *conn);
-void moveChildren(NEDElement *from, NEDElement *to);
+void transferChildren(NEDElement *from, NEDElement *to);
 
 const char *toString(YYLTYPE);
 const char *toString(long);
