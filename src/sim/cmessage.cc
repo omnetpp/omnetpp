@@ -313,6 +313,8 @@ void cMessage::_deleteEncapMsg()
     if (encapmsg->sharecount>0)
     {
         encapmsg->sharecount--;
+        if (encapmsg->ownerp == this)
+            encapmsg->ownerp = NULL;
     }
     else
     {
@@ -329,13 +331,15 @@ void cMessage::_detachEncapMsg()
 {
     if (encapmsg->sharecount>0)
     {
+        // "de-share" object - create our own copy
         encapmsg->sharecount--;
+        if (encapmsg->ownerp == this)
+            encapmsg->ownerp = NULL;
         take(encapmsg = (cMessage *)encapmsg->dup());
     }
     else
     {
-        // note: due to sharecounting, ownerp may be anything here (any former owner),
-        // so set it to ourselves
+        // note: due to sharecounting, ownerp may be pointing to a previous owner -- fix it
         encapmsg->ownerp = this;
     }
 }
@@ -387,6 +391,8 @@ cMessage *cMessage::decapsulate()
     if (encapmsg->sharecount>0)
     {
         encapmsg->sharecount--;
+        if (encapmsg->ownerp == this)
+            encapmsg->ownerp = NULL;
         cMessage *msg = (cMessage *)encapmsg->dup();
         encapmsg = NULL;
         return msg;

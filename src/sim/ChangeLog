@@ -1,3 +1,11 @@
+2006-09-28  Andras Varga
+
+	* cmessage.cc: fix in refcounting code: when decrementing refcount
+	for encapsulated msg, its ownerp should be NULL'ed out if it 
+	originally pointed to this message. This bug caused Tkenv to crash
+	when the encapsulated message's inspector was open (as it tried
+	to print fullPath()).
+
 2006-03-19  Andras Varga
 
 	* csimul.cc: added implementation of guessNextEvent() etc. Removed
