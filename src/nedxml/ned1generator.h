@@ -94,6 +94,8 @@ class NED1Generator
     void printExpression(NEDElement *node, const char *attr, const char *indent);
     void printOptVector(NEDElement *node, const char *attr, const char *indent);
     const char *getDisplayStringOf(NEDElement *node);
+    const char *getPromptTextOf(ParamNode *param);
+
     //@}
 
     /** @name Format and write comments to the output */

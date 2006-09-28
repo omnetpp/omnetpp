@@ -546,13 +546,39 @@ void NED1Generator::doModuleParam(ParamNode *node, const char *indent, bool isla
     OUT << (islast ? ";\n" : ",\n");
 }
 
+const char *NED1Generator::getPromptTextOf(ParamNode *param)
+{
+    PropertyNode *promptProp = (PropertyNode *)param->getFirstChildWithAttribute(NED_PROPERTY, "name", "prompt");
+    if (!promptProp)
+        return NULL;
+    PropertyKeyNode *propKey = (PropertyKeyNode *)promptProp->getFirstChildWithAttribute(NED_PROPERTY_KEY, "key", "");
+    if (!propKey)
+        return NULL;
+    LiteralNode *literal = (LiteralNode *)propKey->getFirstChildWithTag(NED_LITERAL);
+    if (!literal)
+        return NULL;
+    return literal->getText();
+}
+
 void NED1Generator::doSubstParam(ParamNode *node, const char *indent, bool islast, const char *)
 {
     if (node->getType()!=NED_PARTYPE_NONE)
         errors->add(node, ERRCAT_WARNING, NED2FEATURE "defining new parameter for a submodule");
 
     OUT << indent << node->getName() << " = ";
-    printExpression(node, "value", indent);
+    if (!node->getIsDefault())
+    {
+        printExpression(node, "value", indent);
+    }
+    else
+    {
+        OUT << "input(";
+        printExpression(node, "value", indent);
+        const char *prompt = getPromptTextOf(node);
+        if (prompt)
+            OUT << ", " << prompt;
+        OUT << ")";
+    }
 
     generateChildrenWithType(node, NED_PROPERTY, increaseIndent(indent), " ");
     if (node->getFirstChildWithTag(NED_CONDITION))
@@ -571,7 +597,7 @@ void NED1Generator::doProperty(PropertyNode *node, const char *indent, bool isla
     // only @display is recognized, but it needs to be printed at a different place
     //FIXME but gates, parameters etc cannot have @display property!!!
     //FIXME but parameters can have @prompt etc.
-    if (strcmp(node->getName(), "display")!=0)
+    if (strcmp(node->getName(), "display")!=0 && strcmp(node->getName(), "prompt")!=0)
         errors->add(node, ERRCAT_WARNING, NED2FEATURE "property");
 }
 
