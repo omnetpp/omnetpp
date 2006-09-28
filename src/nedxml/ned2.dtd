@@ -21,7 +21,7 @@
 <!ELEMENT comment EMPTY>
 <!ATTLIST comment
      locid              NMTOKEN   #REQUIRED
-     content            CDATA     #IMPLIED>
+     content            CDATA     "&#10;">
 
 <!ELEMENT import (comment*)>
 <!ATTLIST import

@@ -126,6 +126,10 @@ static struct NED1ParserState
     bool isAbstract;
     bool isReadonly;
 
+    /* used with the INPUT_ keyword */
+    bool hasPrompt;
+    YYLTYPE promptPos;
+
     /* NED-I: modules, channels, networks */
     NedFileNode *nedfile;
     CommentNode *comment;
@@ -689,6 +693,40 @@ substparameter
                   storeComments(ps.substparam,@1,@3);
                   storePos(ps.substparam, @$);
                 }
+        | NAME '=' INPUT_
+                {
+                  NEDElement *parent = ps.inGroup ? (NEDElement *)ps.substparamgroup : (NEDElement *)ps.substparams;
+                  ps.substparam = addParameter(parent,@1);
+                  ps.hasPrompt = false;
+                }
+          inputvalue
+                {
+                  ps.substparam->setIsDefault(true);
+                  if (ps.hasPrompt) {
+                      PropertyNode *prop = addProperty(ps.substparam, "prompt");
+                      PropertyKeyNode *propkey = (PropertyKeyNode *)createNodeWithTag(NED_PROPERTY_KEY, prop);
+                      propkey->appendChild(createLiteral(NED_CONST_STRING, trimQuotes(ps.promptPos), ps.promptPos));
+                  }
+                  if ($5)
+                      addExpression(ps.substparam, "value",@3,$5);
+                  storeComments(ps.substparam,@1,@5);
+                  storePos(ps.substparam, @$);
+                }
+        ;
+
+inputvalue
+        : '(' expr ',' expr ')'
+                {
+                  if (np->getParseExpressionsFlag()) $$ = createExpression($2);
+                  ps.hasPrompt = true;
+                  ps.promptPos = @4;
+                }
+        | '(' expr ')'
+                { if (np->getParseExpressionsFlag()) $$ = createExpression($2); }
+        | '(' ')'
+                { if (np->getParseExpressionsFlag()) $$ = NULL; }
+        |
+                { if (np->getParseExpressionsFlag()) $$ = NULL; }
         ;
 
 /*
@@ -1114,10 +1152,6 @@ expression
                 {
                   if (np->getParseExpressionsFlag()) $$ = createExpression($1);
                 }
-        | inputvalue
-                {
-                  if (np->getParseExpressionsFlag()) $$ = createExpression($1);
-                }
         | xmldocvalue
                 {
                   if (np->getParseExpressionsFlag()) $$ = createExpression($1);
@@ -1127,17 +1161,6 @@ expression
 /*
  * Expressions (3 shift-reduce conflicts here)
  */
-
-inputvalue  /* FIXME turn to isDefault=true, @prompt!!! */
-        : INPUT_ '(' expr ',' expr ')'
-                { if (np->getParseExpressionsFlag()) $$ = createFunction("input_OLDXXX", $3, $5); }
-        | INPUT_ '(' expr ')'
-                { if (np->getParseExpressionsFlag()) $$ = createFunction("input_OLDXXX", $3); }
-        | INPUT_ '(' ')'
-                { if (np->getParseExpressionsFlag()) $$ = createFunction("input_OLDXXX"); }
-        | INPUT_
-                { if (np->getParseExpressionsFlag()) $$ = createFunction("input_OLDXXX"); }
-        ;
 
 xmldocvalue
         : XMLDOC '(' stringliteral ',' stringliteral ')'
