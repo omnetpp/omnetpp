@@ -269,6 +269,9 @@ foreach $element (@elements)
     print JAVA "    public String getTagName() {\n";
     print JAVA "        return \"$element\";\n";
     print JAVA "    }\n\n";
+    print JAVA "    public static String getStaticTagName() {\n";
+    print JAVA "        return \"$element\";\n";
+    print JAVA "    }\n\n";
     print JAVA "    public int getTagCode() {\n";
     print JAVA "        return $enumname{$element};\n";
     print JAVA "    }\n\n";
@@ -433,7 +436,7 @@ print JAVA "    }\n\n";
 print JAVA "    public NEDElement createNodeWithTag(String tagname, NEDElement parent) {\n";
 foreach $element (@elements)
 {
-    print JAVA "        if (tagname.equals(\"$element\"))\n";
+    print JAVA "        if (tagname.equals($elementclass{$element}.getStaticTagName()))\n";
     print JAVA "            return new $elementclass{$element}(parent);\n";
 }
 print JAVA "        else\n";
