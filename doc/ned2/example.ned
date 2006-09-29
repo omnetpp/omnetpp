@@ -176,9 +176,11 @@ simple Queue
         input in2[5];  // input gates with fixed size
         output out;  // output gate
         inout thirdGate;
-};
+}
 
-simple VeryFastQueue1 extends Queue { }  // uses "Queue" C++ class
+simple VeryFastQueue1 extends Queue   // uses "Queue" C++ class
+{
+}
 
 simple VeryFastQueue2 extends Queue  // uses "Queue" C++ class; inherits params/gates
 {
@@ -186,14 +188,14 @@ simple VeryFastQueue2 extends Queue  // uses "Queue" C++ class; inherits params/
         msgPerSec = 1000000;  // no type -> sets base class' parameter
         bool isVeryFast = true;  // add new parameter
         novalue @addedproperty; // attach a property to novalue parameter without assigning a value to it
-};
+}
 
 simple QueueWithFourInputs extends Queue
 {
     gates:
         in[4];  // sets vector gate size to a fixed value
         input plusOneInput;  // adds plus one gate
-};
+}
 
 simple QueueWithNInputs extends Queue
 {
@@ -201,7 +203,7 @@ simple QueueWithNInputs extends Queue
         int numInputs @prompt("Number of input ports"); // add new parameter
     gates:
         in[numInputs];  // sets vector gate size to a fixed value
-};
+}
 
 // property syntax:
 //   @propertyname(key="value1","value2"; key="value"; key=5; key=false; key=true;
@@ -241,8 +243,8 @@ simple TCP1
         string tcpAlgorithmClass2 @classname("ITCPAlgorithm"); // alternative syntax:
                                                              // specify it accepts a class name, and specify base class
         @kernel(starttime=49);
-        @recordstats[stat1](storeintervall=5;averaging=true); // recording seqNum etc. into output vectors on/off, 'id' is the primary key (must be unique)
-        @recordstats[stat2](storeintervall=9;averaging=false); // recording seqNum etc. into output vectors on/off
+        @recordstats[stat1](storeintervall=5; averaging=true); // recording seqNum etc. into output vectors on/off, 'id' is the primary key (must be unique)
+        @recordstats[stat2](storeintervall=9; averaging=false); // recording seqNum etc. into output vectors on/off
         @display(i="block/transport");
     gates:
         inout toApp[] @labels(TCPControlInfo);  // inout; label means "sends/expects msg with TCPControlInfo"
@@ -273,19 +275,21 @@ module MobileHost1
 //    gatetype EthernetBus;
 //
 
-simple TCP2 {
+simple TCP2
+{
     gates:
         // receiver's labels must be superset of sender's labels (must be able to receive anything sent to it)
         // inout gates: labels must be exactly the same (superset relation must hold in both directions)
         inout toApp[] @inlabels(tcp2app) @outlabels(app2tcp) @mustbeconnected;
         inout toNetw @inlabels(tcp2net) @outlabels(net2tcp);
-};
+}
 
-simple Queue2 {
+simple Queue2
+{
     gates:
         input in[]; // means @labels("*");
         output out; // means @labels("*");
-};
+}
 
 
 //
@@ -366,12 +370,12 @@ module Host0
         inout ethPort[] @labels(Ethernet);  // type label implies "EthernetFrame" and UTP
         inout ethBusPort[] @labels(EthernetBus);  // type label implies "EthernetFrame" and coaxial cable
     submodules:
-        app: <> like TCPApp;
+        app: <> like TCPApp {};
         tcp: TCP1 {
             mss = 1024;
         };
-        ip: IP;
-        ppp[sizeof(pppPort)]: PPP;
+        ip: IP {};
+        ppp[sizeof(pppPort)]: PPP {};
 
     connections allowunconnected:
         app[i].toTcp <--> { @display(c="red"); delay=0; } <--> tcp.toApp;
@@ -388,12 +392,15 @@ module Host0
 
         // network interfaces to parent
         ppp[i].phy <--> pppPort[i] for i=0..sizeof(ppp)-1;
-};
+}
 
 //
 // parameter scopes
 //
-simple UDP1 { int maxpk; }
+simple UDP1
+{
+    int maxpk;
+}
 
 module Host1
 {
@@ -402,7 +409,8 @@ module Host1
         int mss0 = 1000;
         int mss = 500;
     types:
-        simple TCP1X extends TCP1 {
+        simple TCP1X extends TCP1
+        {
             int tmp;
         }
     submodules:
@@ -418,11 +426,11 @@ module Host1
             mss = this.tmp; // --> 200
             mss = mss;  // --> 500 (parent's)
             mss = udp.maxpk;
-        }
-        ip : IP {}
-     connections:
+        };
+        ip: IP {};
+    connections:
         tcp.out --> {delay = delay;} --> ip.in;
-};
+}
 
 //property @syntax error $#%$#%
 
@@ -435,7 +443,7 @@ channel Eth
         double delay2 = dist2delay(15m, 200000);
         double delay3 = dist2delay(15m); // default 200,000 km/s
         // channel parameters are implemented exactly like module parameters
-};
+}
 
 
 network Network1   // "network" is exactly as "module", but: not gates
@@ -443,22 +451,26 @@ network Network1   // "network" is exactly as "module", but: not gates
     parameters:
         int a;
     types: // defines locally used channel and module types  FIXME allow types before gates/params as well?
-        channel PPPLink {
+        channel PPPLink
+        {
             parameters:
                 @display(c="red");
                 double delay = 10us;  // TODO distance-based delay spec?
-        };
-        module HostX extends Host1 {
+        }
+        module HostX extends Host1
+        {
             double linkspeed;
-        };
-        channel SomeLink extends BasicChannel {};
+        }
+        channel SomeLink extends BasicChannel
+        {
+        }
     submodules:
-        host[100]: HostX;
+        host[100]: HostX {};
     connections:
         host[0].pppPort++ <--> PPPLink <--> host[1].pppPort++;
         host[0].pppPort++ <--> PPPLink {@display(c="green");} <--> host[3].pppPort++;
         host[0].pppPort[host[0].destgate] <--> SomeLink {datarate = host[0].linkspeed;} <--> host[3].pppPort++;
-};
+}
 
 
 simple Node
@@ -470,7 +482,7 @@ simple Node
 network RandomGraph
 {
     submodules:
-        node[100]: Node {}
+        node[100]: Node {};
     connections:
         // brief syntax:
         node[i].port++ <--> node[j].port++ for i=0..98, for j=i+1..99, if uniform()<0.3;
@@ -522,21 +534,21 @@ module Host2
         int N;
         string appType @moduleWithInterface(TCPApp); // "like TCPApp"
     submodules:
-        apps[N]: <appType> like TCPApp; // they're all of the same type
-};
+        apps[N]: <appType> like TCPApp {} // they're all of the same type
+}
 
 module ConfigurableHost
 {
     parameters:
         int N;
     submodules:
-        app: <> like TCPApp;
-        apps[N]: <> like *; // uses "typename" virtual parameter, type unchecked  FIXME do we need this???
-        apps[N]: <> like TCPApp;  // uses "typename" virtual parameter (idea of @type property was discarded)
-        apps[N]: <appType> like TCPApp;   // all modules are the same type (appType); conceptually, <> operator converts string to type
-        //apps[]: <appType[]> like TCPApp;  // with string arrays; not yet implemented
-        tcp: TCP;
-};
+        app: <> like TCPApp {};
+        apps[N]: <> like * {}; // uses "typename" virtual parameter, type unchecked  FIXME do we need this???
+        apps[N]: <> like TCPApp {};  // uses "typename" virtual parameter (idea of @type property was discarded)
+        apps[N]: <appType> like TCPApp {};   // all modules are the same type (appType); conceptually, <> operator converts string to type
+        //apps[]: <appType[]> like TCPApp {};  // with string arrays; not yet implemented
+        tcp: TCP {};
+}
 
 network Network2
 {
@@ -548,10 +560,12 @@ network Network2
 
             // if Host had a tcp submodule:
             /tcp*.mss/ = 1024;
-        }
-};
+        };
+}
 
-interface IHost {}
+interface IHost
+{
+}
 
 network Network3
 {
@@ -559,14 +573,16 @@ network Network3
         // this is also legal:
         host: <> like IHost {
             typename = "FTPApp";
-        }
+        };
         // would be the same as:
-        host: FTPApp;
-};
+        host: FTPApp {};
+}
 
 
 
-channelinterface IPPPChannel {}
+channelinterface IPPPChannel
+{
+}
 
 
 // "like" syntax for channels
@@ -575,21 +591,21 @@ network Network4
     parameters:
         string channelType;
     submodules:
-        host[100]: Host0;
+        host[100]: Host0 {};
     connections:
         host[0].pppPort++ <--> <channelType> like IPPPChannel <--> host[1].pppPort++;
         host[0].pppPort++ <--> <> like IPPPChannel <--> host[1].pppPort++; // how to specify typename?
         host[0].pppPort++ <--> <channelType> like * <--> host[1].pppPort++;
         host[0].pppPort++ <--> <> like * <--> host[1].pppPort++; // how to specify typename?
-};
+}
 
 // channel labels
 channel PPPLine
 {
-   parameters:
-      @labels(PPP); // must be a superset of sender gates' labels (must be able to handle at least those pks, and possible more)
-      @display(o="blue",3);
-};
+    parameters:
+        @labels(PPP); // must be a superset of sender gates' labels (must be able to handle at least those pks, and possible more)
+        @display(o="blue",3);
+}
 
 // channel delivers (gate expects) message on reception of first bit or last bit?
 module EtherMAC1
@@ -599,36 +615,36 @@ module EtherMAC1
 }
 channel PPPLine1
 {
-   parameters:
-      @deliverOnFirstBit;
-};
+    parameters:
+        @deliverOnFirstBit;
+}
 
 // channel with or without corresponding C++ class
 // (@withcppclass property idea was discarded)
 channel withcppclass PPPLine2   // FIXME find better syntax...
 {
-};
+}
 
 // modules as channels
 interface IBidirectionalChannel  // <-- predefined (built-in) type
 {
     gates:
-       inout a;
-       inout b;
-};
+        inout a;
+        inout b;
+}
 interface IUnidirectionalChannel  // <-- predefined (built-in) type
 {
     gates:
-       input i;
-       output o;
-};
+        input i;
+        output o;
+}
 
 module PPPLineModule like IBidirectionalChannel // <-- marks PPPLineModule as suitable for use as channel
 {
     gates:
-       inout a;
-       inout b;
-};
+        inout a;
+        inout b;
+}
 
 // example usage of modules as channels
 network PPPNet
@@ -637,7 +653,7 @@ network PPPNet
         simple Node { gates: inout g; }  //FIXME how could this be implemented in C++? what's the class name??
 
     submodules:
-        node[10]: Node;
+        node[10]: Node {}
     connections:
         node[0].g++ <--> PPPLineModule <--> node[1].g++; // would implicitly create submodules named c1,c2,..., and connect them
         node[0].g++ <--> PPPLineModule <--> node[3].g++; // allowed because PPPLineModule is "like" IBidirectionalChannel
@@ -658,17 +674,17 @@ network Network5
     submodules:
         gen1: Gen {  // there is no submodule group or conditional submodule; nor submodule refinement in subclasses
             interArrivalTime = 50s 200ms;
-        }
+        };
         gen2: Gen {
             interArrivalTime = normal(1,0.3) * const( exponential(30) );
-        }
+        };
         gen3: Gen {
             interArrivalTime = exponential(30);
-        }
+        };
         gen4: Gen {
             interArrivalTime = iatime;  // by ref
             interArrivalTime = const(iatime); // by value (evaluated once)
-        }
+        };
 }
 
 // units
@@ -694,7 +710,8 @@ simple Gen1
 network Network6
 {
     types:
-        simple Host {
+        simple Host 
+        {
             parameters:
                 int parX;
                 int parY;
@@ -721,6 +738,6 @@ network Network6
                     portA[34];
                     portB[3];
                 }
-        };
-};
+        }
+}
 
