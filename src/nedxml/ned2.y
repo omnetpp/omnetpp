@@ -656,7 +656,7 @@ param
                   if ($4)
                       ps.pattern->appendChild($4); // append optional condition
                   storePos(ps.pattern, @$);
-                  storeComments(ps.param,@$);
+                  storeComments(ps.pattern,@$);
                 }
         ; /* no error recovery rule -- see discussion at top */
 

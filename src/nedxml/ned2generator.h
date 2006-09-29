@@ -97,11 +97,10 @@ class NED2Generator
 
     /** @name Format and write comments to the output */
     //@{
-    void printComment(NEDElement *node, const char *commentLocId, const char *indent);
-    //void appendBannerComment(const char *comment, const char *indent);
-    //void appendRightComment(const char *comment, const char *indent);
-    //void appendInlineRightComment(const char *comment, const char *indent);
-    //void appendTrailingComment(const char *comment, const char *indent);
+    std::string getBannerComment(NEDElement *node, const char *indent);
+    std::string getRightComment(NEDElement *node, const char *indent);
+    std::string getInlineRightComment(NEDElement *node, const char *indent);
+    std::string getTrailingComment(NEDElement *node, const char *indent);
     //@}
 
     /** @name Generate NED code from the given element */
@@ -135,9 +134,9 @@ class NED2Generator
     void doConnectionGroup(ConnectionGroupNode *node, const char *indent, bool islast, const char *);
     void doLoop(LoopNode *node, const char *indent, bool islast, const char *);
     void doCondition(ConditionNode *node, const char *indent, bool islast, const char *);
-    void printGate(NEDElement *conn, const char *modname, const char *modindexattr,
-                   const char *gatename, const char *gateindexattr, bool isplusplus,
-                   int gatesubg, const char *indent);
+    void printConnectionGate(NEDElement *conn, const char *modname, const char *modindexattr,
+                             const char *gatename, const char *gateindexattr, bool isplusplus,
+                             int gatesubg, const char *indent);
 
     // expressions
     void doExpression(ExpressionNode *node, const char *indent, bool islast, const char *);

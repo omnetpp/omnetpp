@@ -253,7 +253,7 @@ class NedFileNode : public NEDElement
  * <!ELEMENT comment EMPTY>
  * <!ATTLIST comment
  *      locid              NMTOKEN   #REQUIRED
- *      content            CDATA     "&#10;">
+ *      content            CDATA     #IMPLIED>
  * </pre>
  * 
  * @ingroup Data

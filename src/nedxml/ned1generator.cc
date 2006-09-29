@@ -594,11 +594,21 @@ void NED1Generator::doPattern(PatternNode *node, const char *indent, bool islast
 
 void NED1Generator::doProperty(PropertyNode *node, const char *indent, bool islast, const char *sep)
 {
-    // only @display is recognized, but it needs to be printed at a different place
-    //FIXME but gates, parameters etc cannot have @display property!!!
-    //FIXME but parameters can have @prompt etc.
-    if (strcmp(node->getName(), "display")!=0 && strcmp(node->getName(), "prompt")!=0)
-        errors->add(node, ERRCAT_WARNING, NED2FEATURE "property");
+    // issue a warning, except for those few accepted occurrences of @display and @prompt
+    // note: no code needs to be generated here, that is done separately
+    int parentTag = node->getParent()->getTagCode();
+    if (strcmp(node->getName(), "display")==0)
+    {
+        if (parentTag!=NED_SUBMODULE && parentTag!=NED_CONNECTION)
+            errors->add(node, ERRCAT_WARNING, NED2FEATURE "@display may occur on submodules and connections only");
+    }
+    else if (strcmp(node->getName(), "prompt")==0)
+    {
+        if (parentTag!=NED_PARAM)
+            errors->add(node, ERRCAT_WARNING, NED2FEATURE "@prompt may occur in submodule parameter assigments and networks only");
+    }
+    else
+        errors->add(node, ERRCAT_WARNING, NED2FEATURE "property (except @display and @prompt)");
 }
 
 void NED1Generator::doPropertyKey(PropertyKeyNode *node, const char *indent, bool islast, const char *sep)
@@ -824,9 +834,9 @@ void NED1Generator::doConnection(ConnectionNode *node, const char *indent, bool 
     // print src
     OUT << indent;
     if (srcfirst)
-        printGate(node, node->getSrcModule(), "src-module-index", node->getSrcGate(), "src-gate-index", node->getSrcGatePlusplus(), node->getSrcGateSubg(), indent);
+        printConnectionGate(node, node->getSrcModule(), "src-module-index", node->getSrcGate(), "src-gate-index", node->getSrcGatePlusplus(), node->getSrcGateSubg(), indent);
     else
-        printGate(node, node->getDestModule(), "dest-module-index", node->getDestGate(), "dest-gate-index", node->getDestGatePlusplus(), node->getDestGateSubg(), indent);
+        printConnectionGate(node, node->getDestModule(), "dest-module-index", node->getDestGate(), "dest-gate-index", node->getDestGatePlusplus(), node->getDestGateSubg(), indent);
 
     // arrow
     OUT << arrow;
@@ -841,9 +851,9 @@ void NED1Generator::doConnection(ConnectionNode *node, const char *indent, bool 
     // print dest
     OUT << " ";
     if (srcfirst)
-        printGate(node, node->getDestModule(), "dest-module-index", node->getDestGate(), "dest-gate-index", node->getDestGatePlusplus(), node->getDestGateSubg(), indent);
+        printConnectionGate(node, node->getDestModule(), "dest-module-index", node->getDestGate(), "dest-gate-index", node->getDestGatePlusplus(), node->getDestGateSubg(), indent);
     else
-        printGate(node, node->getSrcModule(), "src-module-index", node->getSrcGate(), "src-gate-index", node->getSrcGatePlusplus(), node->getSrcGateSubg(), indent);
+        printConnectionGate(node, node->getSrcModule(), "src-module-index", node->getSrcGate(), "src-gate-index", node->getSrcGatePlusplus(), node->getSrcGateSubg(), indent);
 
     if (node->getFirstChildWithTag(NED_LOOP))
         errors->add(node, ERRCAT_WARNING, NED2FEATURE "per-connection `for'");
@@ -915,9 +925,9 @@ void NED1Generator::doCondition(ConditionNode *node, const char *indent, bool is
         OUT << (sep ? sep : "");
 }
 
-void NED1Generator::printGate(NEDElement *conn, const char *modname, const char *modindexattr,
-                             const char *gatename, const char *gateindexattr, bool isplusplus,
-                             int gatesubg, const char *indent)
+void NED1Generator::printConnectionGate(NEDElement *conn, const char *modname, const char *modindexattr,
+                                        const char *gatename, const char *gateindexattr, bool isplusplus,
+                                        int gatesubg, const char *indent)
 {
     if (strnotnull(modname)) {
         OUT << modname;

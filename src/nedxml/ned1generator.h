@@ -151,9 +151,9 @@ class NED1Generator
     void doConnectionGroup(ConnectionGroupNode *node, const char *indent, bool islast, const char *);
     void doLoop(LoopNode *node, const char *indent, bool islast, const char *);
     void doCondition(ConditionNode *node, const char *indent, bool islast, const char *);
-    void printGate(NEDElement *conn, const char *modname, const char *modindexattr,
-                   const char *gatename, const char *gateindexattr, bool isplusplus,
-                   int gatesubg, const char *indent);
+    void printConnectionGate(NEDElement *conn, const char *modname, const char *modindexattr,
+                             const char *gatename, const char *gateindexattr, bool isplusplus,
+                             int gatesubg, const char *indent);
 
     // expressions
     void doExpression(ExpressionNode *node, const char *indent, bool islast, const char *);
