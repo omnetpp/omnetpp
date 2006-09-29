@@ -328,6 +328,7 @@ channeldefinition
                 {
                   ps.propertyscope.pop();
                   ps.blockscope.pop();
+                  ps.component = ps.typescope.top();
                   ps.typescope.pop();
                   if (np->getStoreSourceFlag())
                       storeComponentSourceCode(ps.component, @$);
@@ -401,6 +402,7 @@ channelinterfacedefinition
                 {
                   ps.propertyscope.pop();
                   ps.blockscope.pop();
+                  ps.component = ps.typescope.top();
                   ps.typescope.pop();
                   if (np->getStoreSourceFlag())
                       storeComponentSourceCode(ps.component, @$);
@@ -447,6 +449,7 @@ simplemoduledefinition
                 {
                   ps.propertyscope.pop();
                   ps.blockscope.pop();
+                  ps.component = ps.typescope.top();
                   ps.typescope.pop();
                   if (np->getStoreSourceFlag())
                       storeComponentSourceCode(ps.component, @$);
@@ -486,6 +489,7 @@ compoundmoduledefinition
                 {
                   ps.propertyscope.pop();
                   ps.blockscope.pop();
+                  ps.component = ps.typescope.top();
                   ps.typescope.pop();
                   if (np->getStoreSourceFlag())
                       storeComponentSourceCode(ps.component, @$);
@@ -525,6 +529,7 @@ networkdefinition
                 {
                   ps.propertyscope.pop();
                   ps.blockscope.pop();
+                  ps.component = ps.typescope.top();
                   ps.typescope.pop();
                   if (np->getStoreSourceFlag())
                       storeComponentSourceCode(ps.component, @$);
@@ -562,6 +567,7 @@ moduleinterfacedefinition
                 {
                   ps.propertyscope.pop();
                   ps.blockscope.pop();
+                  ps.component = ps.typescope.top();
                   ps.typescope.pop();
                   if (np->getStoreSourceFlag())
                       storeComponentSourceCode(ps.component, @$);
