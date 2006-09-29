@@ -1,13 +1,10 @@
 package org.omnetpp.ned.editor.graph.commands;
 
 import org.eclipse.gef.commands.Command;
-import org.omnetpp.ned2.model.CompoundModuleNodeEx;
+import org.omnetpp.ned2.model.INamed;
+import org.omnetpp.ned2.model.ITopLevelElement;
 import org.omnetpp.ned2.model.NEDElement;
 import org.omnetpp.ned2.model.NedFileNodeEx;
-import org.omnetpp.ned2.model.pojo.ChannelInterfaceNode;
-import org.omnetpp.ned2.model.pojo.ChannelNode;
-import org.omnetpp.ned2.model.pojo.ModuleInterfaceNode;
-import org.omnetpp.ned2.model.pojo.SimpleModuleNode;
 
 /**
  * @author rhornig
@@ -30,11 +27,7 @@ public class CreateToplevelComponentCommand extends Command {
     public boolean canExecute() {
         return child != null && parent != null && 
         		parent instanceof NedFileNodeEx &&
-        		(child instanceof CompoundModuleNodeEx ||
-        		 child instanceof SimpleModuleNode ||
-        		 child instanceof ChannelNode ||
-        		 child instanceof ModuleInterfaceNode ||
-        		 child instanceof ChannelInterfaceNode);
+        		child instanceof ITopLevelElement;
     }
 
     @Override
@@ -46,6 +39,10 @@ public class CreateToplevelComponentCommand extends Command {
     @Override
     public void redo() {
         parent.insertChildBefore(insertBefore, child);
+        if (child instanceof INamed) {
+        	((INamed)child).setName("unnamed");
+        	// TODO make the element name unique if needed
+        }
     }
 
     @Override

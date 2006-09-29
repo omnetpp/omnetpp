@@ -13,7 +13,7 @@ import org.omnetpp.ned2.model.pojo.SubmodulesNode;
 
 public class CompoundModuleNodeEx extends CompoundModuleNode 
 								  implements ISubmoduleContainer, IConnectionContainer,
-								  			 INamedGraphNode {
+								  			 INamedGraphNode, ITopLevelElement {
     
 	// srcConns contains all connections where the sourcemodule is this module
 	protected List<ConnectionNodeEx> srcConns = new ArrayList<ConnectionNodeEx>();
@@ -33,7 +33,6 @@ public class CompoundModuleNodeEx extends CompoundModuleNode
 
 	
     private void init() {
-        // TODO correctly handle the initial naming for new nodes (name mUst be unique)
         setName("unnamed");
     }
 	

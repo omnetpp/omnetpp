@@ -100,7 +100,7 @@ public class NedFileEditPart extends ContainerEditPart implements LayerConstants
 
     @Override
     protected List getModelChildren() {
-    	return ((NedFileNodeEx)getNEDModel()).getCompoundModules();
+    	return ((NedFileNodeEx)getNEDModel()).getTopLevelElements();
     }
 
 }

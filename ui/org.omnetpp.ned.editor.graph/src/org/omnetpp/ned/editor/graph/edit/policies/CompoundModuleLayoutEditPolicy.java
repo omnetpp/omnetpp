@@ -25,6 +25,7 @@ import org.omnetpp.ned.editor.graph.commands.CreateSubmoduleCommand;
 import org.omnetpp.ned.editor.graph.commands.SetConstraintCommand;
 import org.omnetpp.ned2.model.INamedGraphNode;
 import org.omnetpp.ned2.model.ISubmoduleContainer;
+import org.omnetpp.ned2.model.SubmoduleNodeEx;
 
 
 /**
@@ -72,9 +73,13 @@ public class CompoundModuleLayoutEditPolicy extends DesktopLayoutEditPolicy {
 
     @Override
     protected Command getCreateCommand(CreateRequest request) {
+    	// only create a command if we want to create a submodule
+    	if (!(request.getNewObject() instanceof SubmoduleNodeEx))
+    		return null;
+    	
         CreateSubmoduleCommand create 
         		= new CreateSubmoduleCommand((ISubmoduleContainer) getHost().getModel(),
-        									 (INamedGraphNode) request.getNewObject());
+        									 (SubmoduleNodeEx) request.getNewObject());
         create.setLocation((Rectangle)getConstraintFor(request));
         create.setLabel("Add");
 

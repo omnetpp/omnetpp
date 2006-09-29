@@ -1,7 +1,12 @@
 package org.omnetpp.ned2.model;
 
+import org.omnetpp.ned2.model.pojo.ChannelInterfaceNode;
 import org.omnetpp.ned2.model.pojo.NEDElementFactory;
 
+/**
+ * @author rhornig
+ * Create model elements based on string or numeric id
+ */
 public class NEDElementFactoryEx extends NEDElementFactory {
 
 	public NEDElement createNodeWithTag(String tagname, NEDElement parent) {
@@ -15,6 +20,12 @@ public class NEDElementFactoryEx extends NEDElementFactory {
             return new SimpleModuleNodeEx(parent);
         if (tagname.equals(ConnectionNodeEx.getStaticTagName()))
             return new ConnectionNodeEx(parent);
+        if (tagname.equals(ChannelNodeEx.getStaticTagName()))
+            return new ChannelNodeEx(parent);
+        if (tagname.equals(ChannelInterfaceNodeEx.getStaticTagName()))
+            return new ChannelInterfaceNodeEx(parent);
+        if (tagname.equals(ModuleInterfaceNodeEx.getStaticTagName()))
+            return new ModuleInterfaceNodeEx(parent);
 
         return super.createNodeWithTag(tagname, parent);
 	}
@@ -30,6 +41,12 @@ public class NEDElementFactoryEx extends NEDElementFactory {
             return new SimpleModuleNodeEx(parent);
         if (tagcode==NED_CONNECTION)
             return new ConnectionNodeEx(parent);
+        if (tagcode==NED_CHANNEL)
+            return new ChannelNodeEx(parent);
+        if (tagcode==NED_CHANNEL_INTERFACE)
+            return new ChannelInterfaceNodeEx(parent);
+        if (tagcode==NED_MODULE_INTERFACE)
+            return new ModuleInterfaceNodeEx(parent);
         
 		return super.createNodeWithTag(tagcode, parent);
 	}

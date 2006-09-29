@@ -27,8 +27,7 @@ public class SubmoduleNodeEx extends SubmoduleNode implements INamedGraphNode {
 	}
 
     private void init() {
-        // TODO correctly handle the initial naming for new nodes (name must be unique)
-        setName("unnamed");
+        setName(INamed.INITIAL_NAME);
         setType("node");
     }
     

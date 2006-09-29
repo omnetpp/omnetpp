@@ -4,26 +4,21 @@ import org.omnetpp.common.displaymodel.DisplayString;
 import org.omnetpp.common.displaymodel.IDisplayString;
 import org.omnetpp.common.displaymodel.IDisplayStringProvider;
 import org.omnetpp.common.displaymodel.IDisplayString.Prop;
-import org.omnetpp.ned2.model.pojo.SimpleModuleNode;
+import org.omnetpp.ned2.model.pojo.ModuleInterfaceNode;
 
-public class SimpleModuleNodeEx extends SimpleModuleNode 
-				implements IDisplayStringProvider, IElement, INamed, ITopLevelElement  {
+public class ModuleInterfaceNodeEx extends ModuleInterfaceNode 
+		implements IDisplayStringProvider, IElement, INamed, ITopLevelElement {
+
 	protected DisplayString displayString = null;
-	
-	public SimpleModuleNodeEx() {
-        init();
+
+	public ModuleInterfaceNodeEx() {
+		super();
 	}
 
-	public SimpleModuleNodeEx(NEDElement parent) {
+	public ModuleInterfaceNodeEx(NEDElement parent) {
 		super(parent);
-        init();
 	}
 
-    private void init() {
-        // TODO correctly handle the initial naming for new nodes (name must be unique)
-        setName("unnamed");
-    }
-    
 	public DisplayString getDisplayString() {
 		if (displayString == null) {
 			displayString = new DisplayString(this, NedElementExUtil.getDisplayString(this));
@@ -36,6 +31,5 @@ public class SimpleModuleNodeEx extends SimpleModuleNode
 		NedElementExUtil.setDisplayString(this, displayString.toString());
         fireAttributeChangedToAncestors(IDisplayString.ATT_DISPLAYSTRING+"."+changedProp);
 	}
-
 
 }

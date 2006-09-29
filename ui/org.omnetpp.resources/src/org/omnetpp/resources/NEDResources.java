@@ -1,5 +1,6 @@
 package org.omnetpp.resources;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -13,10 +14,12 @@ import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.omnetpp.common.displaymodel.DisplayString;
 import org.omnetpp.common.displaymodel.IDisplayStringProvider;
+import org.omnetpp.ned2.model.CompoundModuleNodeEx;
 import org.omnetpp.ned2.model.ModelUtil;
 import org.omnetpp.ned2.model.NEDElement;
 import org.omnetpp.ned2.model.NEDElementUtil;
 import org.omnetpp.ned2.model.NEDSourceRegion;
+import org.omnetpp.ned2.model.SubmoduleNodeEx;
 import org.omnetpp.ned2.model.pojo.ChannelInterfaceNode;
 import org.omnetpp.ned2.model.pojo.ChannelNode;
 import org.omnetpp.ned2.model.pojo.CompoundModuleNode;
@@ -309,6 +312,29 @@ public class NEDResources implements INEDComponentResolver {
 		
 		DisplayString resDisp = ((IDisplayStringProvider)nedcomp.getNEDElement()).getDisplayString();
 		return resDisp;
+	}
+	
+	/**
+	 * @param name
+	 * @return All submodules (including inherited ones) belonging to the given module
+	 */
+	public List<SubmoduleNodeEx> getAllSubmodules(String name) {
+		INEDComponent nedcomp = getComponent(name);
+		List<SubmoduleNodeEx> smList = new ArrayList<SubmoduleNodeEx>();
+
+		if (nedcomp != null) {
+			List<INEDComponent> extendsChain = ((NEDComponent)nedcomp).resolveExtendsChain();
+			// start at the current component and gather all inherited submodules along the 
+			// imnheritence chanin
+			for(int i = extendsChain.size()-1; i>=0; --i)
+				// skip the non compound modules (if any)
+				if (extendsChain.get(i).getNEDElement() instanceof CompoundModuleNodeEx) {
+					CompoundModuleNodeEx cmod = (CompoundModuleNodeEx)(extendsChain.get(i).getNEDElement());
+					smList.addAll(cmod.getSubmodules());
+				}
+		}
+		
+		return smList;
 	}
 	
 	/* (non-Javadoc)

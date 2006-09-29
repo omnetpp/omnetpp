@@ -2,6 +2,7 @@ package org.omnetpp.ned2.model;
 
 public interface INamed {
 
+	static String INITIAL_NAME = "unnamed";
 	/**
 	 * Returns name attribute 
 	 */

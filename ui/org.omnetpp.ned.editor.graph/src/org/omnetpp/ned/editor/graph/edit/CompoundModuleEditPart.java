@@ -28,6 +28,7 @@ import org.omnetpp.ned.editor.graph.edit.policies.CompoundModuleLayoutEditPolicy
 import org.omnetpp.ned2.model.CompoundModuleNodeEx;
 import org.omnetpp.ned2.model.INamedGraphNode;
 import org.omnetpp.ned2.model.NEDElement;
+import org.omnetpp.ned2.model.SubmoduleNodeEx;
 import org.omnetpp.resources.NEDResourcesPlugin;
 
 public class CompoundModuleEditPart extends ModuleEditPart {
@@ -94,7 +95,17 @@ public class CompoundModuleEditPart extends ModuleEditPart {
 
     @Override
     protected List getModelChildren() {
-    	return ((CompoundModuleNodeEx)getNEDModel()).getSubmodules();
+        // define the properties that determine the visual appearence
+    	CompoundModuleNodeEx compModule = (CompoundModuleNodeEx)getNEDModel();
+    	List<SubmoduleNodeEx> smList = compModule.getSubmodules();
+
+    	// if it's an derived compound module add the inherited submodules to the list
+    	
+    	if (compModule.getFirstExtendsChild() != null) {
+    		smList.addAll(NEDResourcesPlugin.getNEDResources()
+        					.getAllSubmodules(compModule.getFirstExtendsChild().getName()));
+    	}
+    	return smList;
     }
     
     @Override

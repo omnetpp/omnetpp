@@ -14,11 +14,11 @@ public class NedFileNodeEx extends NedFileNode {
 		super(parent);
 	}
 
-	public List<CompoundModuleNodeEx> getCompoundModules() {
-		List<CompoundModuleNodeEx> result = new ArrayList<CompoundModuleNodeEx>();
+	public List<ITopLevelElement> getTopLevelElements() {
+		List<ITopLevelElement> result = new ArrayList<ITopLevelElement>();
 		for(NEDElement currChild : this) 
-			if (currChild instanceof CompoundModuleNodeEx) 
-				result.add((CompoundModuleNodeEx)currChild);
+			if (currChild instanceof ITopLevelElement) 
+				result.add((ITopLevelElement)currChild);
 				
 		return result;
 	}

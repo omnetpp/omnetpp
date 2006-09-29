@@ -25,12 +25,17 @@ import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.ned.editor.graph.misc.NedConnectionCreationTool;
 import org.omnetpp.ned.editor.graph.misc.NedSelectionTool;
 import org.omnetpp.ned.editor.graph.misc.SubmoduleFactory;
+import org.omnetpp.ned.editor.graph.misc.ToplevelComponentFactory;
 import org.omnetpp.ned.editor.graph.properties.NedPropertySourceAdapterFactory;
+import org.omnetpp.ned2.model.ChannelInterfaceNodeEx;
+import org.omnetpp.ned2.model.ChannelNodeEx;
 import org.omnetpp.ned2.model.CompoundModuleNodeEx;
 import org.omnetpp.ned2.model.ConnectionNodeEx;
+import org.omnetpp.ned2.model.INamed;
+import org.omnetpp.ned2.model.ModuleInterfaceNodeEx;
 import org.omnetpp.ned2.model.NEDElement;
 import org.omnetpp.ned2.model.NedElementExUtil;
-import org.omnetpp.ned2.model.SubmoduleNodeEx;
+import org.omnetpp.ned2.model.SimpleModuleNodeEx;
 import org.omnetpp.ned2.model.pojo.PropertyNode;
 import org.omnetpp.resources.INEDComponent;
 import org.omnetpp.resources.NEDResourcesPlugin;
@@ -99,9 +104,18 @@ public class GraphicalNedEditorPlugin extends AbstractUIPlugin {
         CombinedTemplateCreationEntry combined;
 
         combined = new CombinedTemplateCreationEntry(
+                "Simple module",
+                "A simple module that can be used as a basic building block",
+                new ToplevelComponentFactory(SimpleModuleNodeEx.getStaticTagName()), 
+                ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_SIMPLE),
+                ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_SIMPLE,"l",null,24)
+        );
+        drawer.add(combined);
+
+        combined = new CombinedTemplateCreationEntry(
                 "Submodule",
                 "A submodule that can be placed in any compound module",
-                new SimpleFactory(SubmoduleNodeEx.class), 
+                new SubmoduleFactory(INamed.INITIAL_NAME), 
                 ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_SIMPLE),
                 ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_SIMPLE,"l",null,24)
         );
@@ -110,9 +124,36 @@ public class GraphicalNedEditorPlugin extends AbstractUIPlugin {
         combined = new CombinedTemplateCreationEntry(
                 "Module",
                 "A compound module that is built up from several other modules",
-                new SimpleFactory(CompoundModuleNodeEx.class), 
+                new ToplevelComponentFactory(CompoundModuleNodeEx.getStaticTagName()), 
                 ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_MODULE),
                 ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_MODULE,"l",null,24)
+        );
+        drawer.add(combined);
+
+        combined = new CombinedTemplateCreationEntry(
+                "Interface",
+                "A compound module interface ",
+                new ToplevelComponentFactory(ModuleInterfaceNodeEx.getStaticTagName()), 
+                ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_MODULE),
+                ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_MODULE,"l",null,24)
+        );
+        drawer.add(combined);
+        
+        combined = new CombinedTemplateCreationEntry(
+                "Channel",
+                "A channel is a connection type",
+                new ToplevelComponentFactory(ChannelNodeEx.getStaticTagName()), 
+                ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_CONNECTION),
+                ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_CONNECTION,"l",null,24)
+        );
+        drawer.add(combined);
+
+        combined = new CombinedTemplateCreationEntry(
+                "Channel interface",
+                "A channel interface",
+                new ToplevelComponentFactory(ChannelInterfaceNodeEx.getStaticTagName()), 
+                ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_CONNECTION),
+                ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_CONNECTION,"l",null,24)
         );
         drawer.add(combined);
 
