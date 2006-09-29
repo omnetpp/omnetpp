@@ -98,9 +98,9 @@ class NED2Generator
     /** @name Format and write comments to the output */
     //@{
     std::string getBannerComment(NEDElement *node, const char *indent);
-    std::string getRightComment(NEDElement *node, const char *indent);
-    std::string getInlineRightComment(NEDElement *node, const char *indent);
-    std::string getTrailingComment(NEDElement *node, const char *indent);
+    std::string getRightComment(NEDElement *node);
+    std::string getInlineRightComment(NEDElement *node);
+    std::string getTrailingComment(NEDElement *node);
     //@}
 
     /** @name Generate NED code from the given element */

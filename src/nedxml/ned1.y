@@ -217,7 +217,7 @@ filename
                 {
                   ps.import = (ImportNode *)createNodeWithTag(NED_IMPORT, ps.nedfile );
                   ps.import->setFilename(toString(trimQuotes(@1)));
-                  storeComments(ps.import,@1);
+                  storeBannerAndRightComments(ps.import,@1);
                   storePos(ps.import, @$);
                 }
         ;
@@ -239,7 +239,7 @@ channelheader
                   ps.extends->setName("BasicChannel"); // implicit base class "BasicChannel" FIXME why store if implicit?
                   ps.params = (ParametersNode *)createNodeWithTag(NED_PARAMETERS, ps.channel);
                   ps.params->setIsImplicit(true);
-                  storeComments(ps.channel,@1,@2);
+                  storeBannerAndRightComments(ps.channel,@1,@2);
                 }
         ;
 
@@ -255,7 +255,7 @@ channelattrblock
                   ps.params->setIsImplicit(false);
                   ps.param = addParameter(ps.params, @2);
                   addExpression(ps.param, "value",@3,$3);
-                  storeComments(ps.param,@2,@3);
+                  storeBannerAndRightComments(ps.param,@2,@3);
                   storePos(ps.param, @2); // XXX rather: @2..@4
                 }
         | CHANATTRNAME expression opt_semicolon
@@ -263,7 +263,7 @@ channelattrblock
                   ps.params->setIsImplicit(false);
                   ps.param = addParameter(ps.params, @1);
                   addExpression(ps.param, "value",@2,$2);
-                  storeComments(ps.param,@1,@2);
+                  storeBannerAndRightComments(ps.param,@1,@2);
                   storePos(ps.param, @$);
                 }
         ;
@@ -295,7 +295,7 @@ simpleheader
                 {
                   ps.module = (SimpleModuleNode *)createNodeWithTag(NED_SIMPLE_MODULE, ps.nedfile );
                   ((SimpleModuleNode *)ps.module)->setName(toString(@2));
-                  storeComments(ps.module,@1,@2);
+                  storeBannerAndRightComments(ps.module,@1,@2);
                 }
         ;
 
@@ -329,7 +329,7 @@ moduleheader
                 {
                   ps.module = (CompoundModuleNode *)createNodeWithTag(NED_COMPOUND_MODULE, ps.nedfile );
                   ((CompoundModuleNode *)ps.module)->setName(toString(@2));
-                  storeComments(ps.module,@1,@2);
+                  storeBannerAndRightComments(ps.module,@1,@2);
                 }
         ;
 
@@ -378,7 +378,7 @@ paramblock
         : PARAMETERS ':'
                 {
                   ps.params = (ParametersNode *)createNodeWithTag(NED_PARAMETERS, ps.module );
-                  storeComments(ps.params,@1,@2);
+                  storeBannerAndRightComments(ps.params,@1,@2);
                 }
           opt_parameters
                 {
@@ -394,11 +394,11 @@ opt_parameters
 parameters
         : parameters ',' parameter  /* comma as separator */
                 {
-                  storeComments(ps.param,@3);
+                  storeBannerAndRightComments(ps.param,@3);
                 }
         | parameter
                 {
-                  storeComments(ps.param,@1);
+                  storeBannerAndRightComments(ps.param,@1);
                 }
         ;
 
@@ -480,7 +480,7 @@ gateblock
         : GATES ':'
                 {
                   ps.gates = (GatesNode *)createNodeWithTag(NED_GATES, ps.module );
-                  storeComments(ps.gates,@1,@2);
+                  storeBannerAndRightComments(ps.gates,@1,@2);
                 }
           opt_gates
                 {
@@ -511,14 +511,14 @@ gateI
                   ps.gate = addGate(ps.gates, @1);
                   ps.gate->setType(NED_GATETYPE_INPUT);
                   ps.gate->setIsVector(true);
-                  storeComments(ps.gate,@1,@3);
+                  storeBannerAndRightComments(ps.gate,@1,@3);
                   storePos(ps.gate, @$);
                 }
         | NAME
                 {
                   ps.gate = addGate(ps.gates, @1);
                   ps.gate->setType(NED_GATETYPE_INPUT);
-                  storeComments(ps.gate,@1);
+                  storeBannerAndRightComments(ps.gate,@1);
                   storePos(ps.gate, @$);
                 }
         ;
@@ -534,14 +534,14 @@ gateO
                   ps.gate = addGate(ps.gates, @1);
                   ps.gate->setType(NED_GATETYPE_OUTPUT);
                   ps.gate->setIsVector(true);
-                  storeComments(ps.gate,@1,@3);
+                  storeBannerAndRightComments(ps.gate,@1,@3);
                   storePos(ps.gate, @$);
                 }
         | NAME
                 {
                   ps.gate = addGate(ps.gates, @1);
                   ps.gate->setType(NED_GATETYPE_OUTPUT);
-                  storeComments(ps.gate,@1,@1);
+                  storeBannerAndRightComments(ps.gate,@1,@1);
                   storePos(ps.gate, @$);
                 }
         ;
@@ -558,7 +558,7 @@ submodblock
         : SUBMODULES ':'
                 {
                   ps.submods = (SubmodulesNode *)createNodeWithTag(NED_SUBMODULES, ps.module );
-                  storeComments(ps.submods,@1,@2);
+                  storeBannerAndRightComments(ps.submods,@1,@2);
                 }
           opt_submodules
                 {
@@ -582,7 +582,7 @@ submodule
                   ps.submod = (SubmoduleNode *)createNodeWithTag(NED_SUBMODULE, ps.submods);
                   ps.submod->setName(toString(@1));
                   ps.submod->setType(toString(@3));
-                  storeComments(ps.submod,@1,@4);
+                  storeBannerAndRightComments(ps.submod,@1,@4);
                 }
           submodule_body
                 {
@@ -594,7 +594,7 @@ submodule
                   ps.submod->setName(toString(@1));
                   ps.submod->setType(toString(@3));
                   addVector(ps.submod, "vector-size",@4,$4);
-                  storeComments(ps.submod,@1,@5);
+                  storeBannerAndRightComments(ps.submod,@1,@5);
                 }
           submodule_body
                 {
@@ -606,7 +606,7 @@ submodule
                   ps.submod->setName(toString(@1));
                   ps.submod->setLikeType(toString(@5));
                   ps.submod->setLikeParam(toString(@3)); //FIXME store as expression!!!
-                  storeComments(ps.submod,@1,@6);
+                  storeBannerAndRightComments(ps.submod,@1,@6);
                 }
           submodule_body
                 {
@@ -619,7 +619,7 @@ submodule
                   ps.submod->setLikeType(toString(@6));
                   ps.submod->setLikeParam(toString(@3)); //FIXME store as expression!!!
                   addVector(ps.submod, "vector-size",@4,$4);
-                  storeComments(ps.submod,@1,@7);
+                  storeBannerAndRightComments(ps.submod,@1,@7);
                 }
           submodule_body
                 {
@@ -651,7 +651,7 @@ substparamblock
         : PARAMETERS ':' /*FIXME empty "parameters:" in submodule doesn't get accepted! WFT??? */
                 {
                   createSubstparamsNodeIfNotExists();
-                  storeComments(ps.substparams,@1,@2);
+                  storeBannerAndRightComments(ps.substparams,@1,@2);
                 }
           opt_substparameters
                 {
@@ -662,7 +662,7 @@ substparamblock
                   createSubstparamsNodeIfNotExists();
                   ps.substparamgroup = (ParamGroupNode *)createNodeWithTag(NED_PARAM_GROUP, ps.substparams);
                   ps.inGroup = true;
-                  storeComments(ps.substparamgroup,@1,@4);
+                  storeBannerAndRightComments(ps.substparamgroup,@1,@4);
                 }
           opt_substparameters
                 {
@@ -690,7 +690,7 @@ substparameter
                   NEDElement *parent = ps.inGroup ? (NEDElement *)ps.substparamgroup : (NEDElement *)ps.substparams;
                   ps.substparam = addParameter(parent,@1);
                   addExpression(ps.substparam, "value",@3,$3);
-                  storeComments(ps.substparam,@1,@3);
+                  storeBannerAndRightComments(ps.substparam,@1,@3);
                   storePos(ps.substparam, @$);
                 }
         | NAME '=' INPUT_
@@ -709,7 +709,7 @@ substparameter
                   }
                   if ($5)
                       addExpression(ps.substparam, "value",@3,$5);
-                  storeComments(ps.substparam,@1,@5);
+                  storeBannerAndRightComments(ps.substparam,@1,@5);
                   storePos(ps.substparam, @$);
                 }
         ;
@@ -747,7 +747,7 @@ gatesizeblock
         : GATESIZES ':'
                 {
                   createGatesizesNodeIfNotExists();
-                  storeComments(ps.gatesizes,@1,@2);
+                  storeBannerAndRightComments(ps.gatesizes,@1,@2);
                 }
           opt_gatesizes
                 {
@@ -758,7 +758,7 @@ gatesizeblock
                   createGatesizesNodeIfNotExists();
                   ps.gatesizesgroup = (GateGroupNode *)createNodeWithTag(NED_GATE_GROUP, ps.gatesizes);
                   ps.inGroup = true;
-                  storeComments(ps.gatesizesgroup,@1,@4);
+                  storeBannerAndRightComments(ps.gatesizesgroup,@1,@4);
                 }
           opt_gatesizes
                 {
@@ -786,13 +786,13 @@ gatesize
                   ps.gatesize = addGate(parent,@1);
                   ps.gatesize->setIsVector(true);
                   addVector(ps.gatesize, "vector-size",@2,$2);
-                  storeComments(ps.gatesize,@1,@2);
+                  storeBannerAndRightComments(ps.gatesize,@1,@2);
                   storePos(ps.gatesize, @$);
                 }
         | NAME
                 {
                   ps.gatesize = addGate(ps.gatesizes,@1);
-                  storeComments(ps.gatesize,@1);
+                  storeBannerAndRightComments(ps.gatesize,@1);
                   storePos(ps.gatesize, @$);
                 }
         ;
@@ -828,7 +828,7 @@ connblock
                 {
                   ps.conns = (ConnectionsNode *)createNodeWithTag(NED_CONNECTIONS, ps.module );
                   ps.conns->setAllowUnconnected(true);
-                  storeComments(ps.conns,@1,@3);
+                  storeBannerAndRightComments(ps.conns,@1,@3);
                 }
           opt_connections
                 {
@@ -838,7 +838,7 @@ connblock
                 {
                   ps.conns = (ConnectionsNode *)createNodeWithTag(NED_CONNECTIONS, ps.module );
                   ps.conns->setAllowUnconnected(false);
-                  storeComments(ps.conns,@1,@2);
+                  storeBannerAndRightComments(ps.conns,@1,@2);
                 }
           opt_connections
                 {
@@ -885,7 +885,7 @@ loopvar
                   ps.loop->setParamName( toString(@1) );
                   addExpression(ps.loop, "from-value",@3,$3);
                   addExpression(ps.loop, "to-value",@5,$5);
-                  storeComments(ps.loop,@1,@5);
+                  storeBannerAndRightComments(ps.loop,@1,@5);
                   storePos(ps.loop, @$);
                 }
         ;
@@ -932,21 +932,21 @@ notloopconnection
         : leftgatespec RIGHT_ARROW rightgatespec opt_conncondition opt_conn_displaystr comma_or_semicolon
                 {
                   ps.conn->setArrowDirection(NED_ARROWDIR_L2R);
-                  storeComments(ps.conn,@1,@5);
+                  storeBannerAndRightComments(ps.conn,@1,@5);
                   storePos(ps.conn, @$);
                 }
         | leftgatespec RIGHT_ARROW channeldescr RIGHT_ARROW rightgatespec opt_conncondition opt_conn_displaystr comma_or_semicolon
                 {
                   ps.conn->setArrowDirection(NED_ARROWDIR_L2R);
                   removeRedundantChanSpecParams();
-                  storeComments(ps.conn,@1,@7);
+                  storeBannerAndRightComments(ps.conn,@1,@7);
                   storePos(ps.conn, @$);
                 }
         | leftgatespec LEFT_ARROW rightgatespec opt_conncondition opt_conn_displaystr comma_or_semicolon
                 {
                   swapConnection(ps.conn);
                   ps.conn->setArrowDirection(NED_ARROWDIR_R2L);
-                  storeComments(ps.conn,@1,@5);
+                  storeBannerAndRightComments(ps.conn,@1,@5);
                   storePos(ps.conn, @$);
                 }
         | leftgatespec LEFT_ARROW channeldescr LEFT_ARROW rightgatespec opt_conncondition opt_conn_displaystr comma_or_semicolon
@@ -954,7 +954,7 @@ notloopconnection
                   swapConnection(ps.conn);
                   ps.conn->setArrowDirection(NED_ARROWDIR_R2L);
                   removeRedundantChanSpecParams();
-                  storeComments(ps.conn,@1,@7);
+                  storeBannerAndRightComments(ps.conn,@1,@7);
                   storePos(ps.conn, @$);
                 }
         ;
@@ -1124,7 +1124,7 @@ networkheader
                   ((CompoundModuleNode *)ps.module)->setIsNetwork(true);
                   ps.extends = (ExtendsNode *)createNodeWithTag(NED_EXTENDS, ps.module);
                   ps.extends->setName(toString(@4));
-                  storeComments(ps.module,@1,@5);
+                  storeBannerAndRightComments(ps.module,@1,@5);
                   storePos(ps.extends, @4);
                   ps.inNetwork=1;
                 }

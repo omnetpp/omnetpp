@@ -159,13 +159,13 @@ void storeTrailingComment(NEDElement *node, YYLTYPE tokenpos)
     addComment(node, "trailing", np->getSource()->getTrailingComment(tokenpos));
 }
 
-void storeComments(NEDElement *node, YYLTYPE pos)
+void storeBannerAndRightComments(NEDElement *node, YYLTYPE pos)
 {
     storeBannerComment(node, pos);
     storeRightComment(node, pos);
 }
 
-void storeComments(NEDElement *node, YYLTYPE firstpos, YYLTYPE lastpos)
+void storeBannerAndRightComments(NEDElement *node, YYLTYPE firstpos, YYLTYPE lastpos)
 {
     YYLTYPE pos = firstpos;
     pos.last_line = lastpos.last_line;

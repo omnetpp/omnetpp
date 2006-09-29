@@ -247,7 +247,7 @@ import
                   ps.import = (ImportNode *)createNodeWithTag(NED_IMPORT, ps.nedfile);
                   ps.import->setFilename(toString(trimQuotes(@2)));
                   storePos(ps.import,@$);
-                  storeComments(ps.import,@$);
+                  storeBannerAndRightComments(ps.import,@$);
                 }
         ; /* no error recovery rule -- see discussion at top */
 
@@ -258,12 +258,12 @@ propertydecl
         : propertydecl_header opt_inline_properties ';'
                 {
                     storePos(ps.propertydecl, @$);
-                    storeComments(ps.propertydecl,@$);
+                    storeBannerAndRightComments(ps.propertydecl,@$);
                 }
         | propertydecl_header '(' opt_propertydecl_keys ')' opt_inline_properties ';'
                 {
                     storePos(ps.propertydecl, @$);
-                    storeComments(ps.propertydecl,@$);
+                    storeBannerAndRightComments(ps.propertydecl,@$);
                 }
         ; /* no error recovery rule -- see discussion at top */
 
@@ -307,7 +307,7 @@ fileproperty
         : property_namevalue ';'
                 {
                   storePos(ps.property, @$);
-                  storeComments(ps.property,@$);
+                  storeBannerAndRightComments(ps.property,@$);
                 }
         ;
 
@@ -343,7 +343,7 @@ channelheader
                   ((ChannelNode *)ps.component)->setName(toString(@2));
                 }
            opt_inheritance
-                { storeComments(ps.component,@$); }
+                { storeBannerAndRightComments(ps.component,@$); }
         | CHANNEL WITHCPPCLASS NAME
                 {
                   ps.component = (ChannelNode *)createNodeWithTag(NED_CHANNEL, ps.inTypes ? (NEDElement *)ps.types : (NEDElement *)ps.nedfile);
@@ -351,7 +351,7 @@ channelheader
                   ((ChannelNode *)ps.component)->setIsWithcppclass(true);
                 }
            opt_inheritance
-                { storeComments(ps.component,@$); }
+                { storeBannerAndRightComments(ps.component,@$); }
         ;
 
 opt_inheritance
@@ -416,7 +416,7 @@ channelinterfaceheader
                   ((ChannelInterfaceNode *)ps.component)->setName(toString(@2));
                 }
            opt_interfaceinheritance
-                { storeComments(ps.component,@$); }
+                { storeBannerAndRightComments(ps.component,@$); }
         ;
 
 opt_interfaceinheritance
@@ -462,7 +462,7 @@ simplemoduleheader
                   ((SimpleModuleNode *)ps.component)->setName(toString(@2));
                 }
           opt_inheritance
-                { storeComments(ps.component,@$); }
+                { storeBannerAndRightComments(ps.component,@$); }
         ;
 
 /*
@@ -501,7 +501,7 @@ compoundmoduleheader
                   ((CompoundModuleNode *)ps.component)->setName(toString(@2));
                 }
           opt_inheritance
-                { storeComments(ps.component,@$); }
+                { storeBannerAndRightComments(ps.component,@$); }
         ;
 
 /*
@@ -541,7 +541,7 @@ networkheader
                   ((CompoundModuleNode *)ps.component)->setIsNetwork(true);
                 }
           opt_inheritance
-                { storeComments(ps.component,@$); }
+                { storeBannerAndRightComments(ps.component,@$); }
         ;
 
 /*
@@ -577,7 +577,7 @@ moduleinterfaceheader
                   ((ModuleInterfaceNode *)ps.component)->setName(toString(@2));
                 }
            opt_interfaceinheritance
-                { storeComments(ps.component,@$); }
+                { storeBannerAndRightComments(ps.component,@$); }
         ;
 
 /*
@@ -595,7 +595,7 @@ opt_paramblock
         | PARAMETERS ':'
                 {
                   ps.parameters->setIsImplicit(false);
-                  storeComments(ps.parameters,@1,@2);
+                  storeBannerAndRightComments(ps.parameters,@1,@2);
                 }
           opt_params
                 { storePos(ps.parameters, @$); }
@@ -623,7 +623,7 @@ paramgroup
                     ps.paramgroup = (ParamGroupNode *)createNodeWithTag(NED_PARAM_GROUP, ps.parameters);
                     if (ps.inGroup)
                        np->getErrors()->add(ps.paramgroup,"nested parameter groups are not allowed");
-                    storeComments(ps.paramgroup,@1,@2);
+                    storeBannerAndRightComments(ps.paramgroup,@1,@2);
                     ps.inGroup = true;
                 }
           params '}'
@@ -631,6 +631,7 @@ paramgroup
                     ps.inGroup = false;
                     if ($1)
                         ps.paramgroup->appendChild($1); // append optional condition
+                    storeTrailingComment(ps.paramgroup,@$);
                     storePos(ps.paramgroup, @$);
                 }
         ;
@@ -650,7 +651,7 @@ param
                   if ($4)
                       ps.param->appendChild($4); // append optional condition
                   storePos(ps.param, @$);
-                  storeComments(ps.param,@$);
+                  storeBannerAndRightComments(ps.param,@$);
                 }
         | pattern_value
                 {
@@ -664,7 +665,7 @@ param
                   if ($4)
                       ps.pattern->appendChild($4); // append optional condition
                   storePos(ps.pattern, @$);
-                  storeComments(ps.pattern,@$);
+                  storeBannerAndRightComments(ps.pattern,@$);
                 }
         ; /* no error recovery rule -- see discussion at top */
 
@@ -787,7 +788,7 @@ property
                   if ($2)
                       ps.property->appendChild($2); // append optional condition
                   storePos(ps.property, @$);
-                  storeComments(ps.property,@$);
+                  storeBannerAndRightComments(ps.property,@$);
                 }
         ; /* no error recovery rule -- see discussion at top */
 
@@ -889,7 +890,7 @@ gateblock
                 {
                   assertNonEmpty(ps.blockscope);
                   ps.gates = (GatesNode *)createNodeWithTag(NED_GATES, ps.blockscope.top());
-                  storeComments(ps.gates,@1,@2);
+                  storeBannerAndRightComments(ps.gates,@1,@2);
                 }
           opt_gates
                 {
@@ -905,11 +906,11 @@ opt_gates
 gates
         : gates gatesitem
                 {
-                  storeComments(ps.gate,@2);
+                  storeBannerAndRightComments(ps.gate,@2);
                 }
         | gatesitem
                 {
-                  storeComments(ps.gate,@1);
+                  storeBannerAndRightComments(ps.gate,@1);
                 }
         ;
 
@@ -932,6 +933,7 @@ gategroup
                     if ($1)
                         ps.gategroup->appendChild($1); // append optional condition
                     storePos(ps.gategroup, @$);
+                    storeTrailingComment(ps.gategroup,@$);
                 }
         ;
 
@@ -1014,7 +1016,7 @@ typeblock
                 {
                   assertNonEmpty(ps.blockscope);
                   ps.types = (TypesNode *)createNodeWithTag(NED_TYPES, ps.blockscope.top());
-                  storeComments(ps.types,@1,@2);
+                  storeBannerAndRightComments(ps.types,@1,@2);
                   if (ps.inTypes)
                      np->getErrors()->add(ps.paramgroup,"more than one level of type nesting is not allowed");
                   ps.inTypes = true;
@@ -1060,7 +1062,7 @@ submodblock
                 {
                   assertNonEmpty(ps.blockscope);
                   ps.submods = (SubmodulesNode *)createNodeWithTag(NED_SUBMODULES, ps.blockscope.top());
-                  storeComments(ps.submods,@1,@2);
+                  storeBannerAndRightComments(ps.submods,@1,@2);
                 }
           opt_submodules
                 {
@@ -1081,7 +1083,7 @@ submodules
 submodule
         : submoduleheader ';'
                 {
-                  storeComments(ps.submod,@1,@2);
+                  storeBannerAndRightComments(ps.submod,@1,@2);
                   storePos(ps.submod, @$);
                 }
         | submoduleheader '{'
@@ -1090,7 +1092,7 @@ submodule
                   ps.parameters = (ParametersNode *)createNodeWithTag(NED_PARAMETERS, ps.submod);
                   ps.parameters->setIsImplicit(true);
                   ps.propertyscope.push(ps.parameters);
-                  storeComments(ps.submod,@1,@2);
+                  storeBannerAndRightComments(ps.submod,@1,@2);
                 }
           opt_paramblock
           opt_gateblock
@@ -1099,6 +1101,7 @@ submodule
                   ps.blockscope.pop();
                   ps.propertyscope.pop();
                   storePos(ps.submod, @$);
+                  storeTrailingComment(ps.submod,@$);
                 }
         ; /* no error recovery rule -- see discussion at top */
 
@@ -1167,7 +1170,7 @@ connblock
                   assertNonEmpty(ps.blockscope);
                   ps.conns = (ConnectionsNode *)createNodeWithTag(NED_CONNECTIONS, ps.blockscope.top());
                   ps.conns->setAllowUnconnected(true);
-                  storeComments(ps.conns,@1,@3);
+                  storeBannerAndRightComments(ps.conns,@1,@3);
                 }
           opt_connections
                 {
@@ -1177,7 +1180,7 @@ connblock
                 {
                   assertNonEmpty(ps.blockscope);
                   ps.conns = (ConnectionsNode *)createNodeWithTag(NED_CONNECTIONS, ps.blockscope.top());
-                  storeComments(ps.conns,@1,@2);
+                  storeBannerAndRightComments(ps.conns,@1,@2);
                 }
           opt_connections
                 {
@@ -1207,7 +1210,7 @@ connectionsitem
                       delete $2;
                   }
                   storePos(ps.conn, @$);
-                  storeComments(ps.conn,@$);
+                  storeBannerAndRightComments(ps.conn,@$);
                 }
         ; /* no error recovery rule -- see discussion at top */
 
@@ -1221,12 +1224,13 @@ connectiongroup
                       delete $1;
                   }
                   ps.inGroup = true;
+                  storeBannerAndRightComments(ps.conngroup,@1);
                 }
           connections '}' opt_semicolon
                 {
                   ps.inGroup = false;
                   storePos(ps.conngroup,@$);
-                  storeComments(ps.conngroup,@$);
+                  storeTrailingComment(ps.conngroup,@$);
                 }
         ;
 

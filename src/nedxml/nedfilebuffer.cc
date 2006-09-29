@@ -129,8 +129,8 @@ int NEDFileBuffer::lineType(char *s)
 
 int NEDFileBuffer::lineContainsCode(char *s)
 {
-    // tolerant version: punctuation (,;:) does not count as code
-    while (*s==' ' || *s=='\t' || *s==':' || *s==',' || *s==';') s++;
+    // tolerant version: punctuation (,;:{}()) does not count as code
+    while (*s==' ' || *s=='\t' || *s==':' || *s==',' || *s==';' || *s=='{' || *s=='}' || *s=='(' || *s==')') s++;
     if (*s=='/' && *(s+1)=='/') return false;
     if (!*s || *s=='\n') return false;
     return true;
