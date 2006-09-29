@@ -329,10 +329,10 @@ channeldefinition
                   ps.propertyscope.pop();
                   ps.blockscope.pop();
                   ps.typescope.pop();
-                  storeTrailingComment(ps.component,@4);
                   if (np->getStoreSourceFlag())
                       storeComponentSourceCode(ps.component, @$);
                   storePos(ps.component, @$);
+                  storeTrailingComment(ps.component,@$);
                 }
         ;
 
@@ -402,10 +402,10 @@ channelinterfacedefinition
                   ps.propertyscope.pop();
                   ps.blockscope.pop();
                   ps.typescope.pop();
-                  storeTrailingComment(ps.component,@4);
                   if (np->getStoreSourceFlag())
                       storeComponentSourceCode(ps.component, @$);
                   storePos(ps.component, @$);
+                  storeTrailingComment(ps.component,@$);
                 }
         ;
 
@@ -448,10 +448,10 @@ simplemoduledefinition
                   ps.propertyscope.pop();
                   ps.blockscope.pop();
                   ps.typescope.pop();
-                  storeTrailingComment(ps.component,@6);
                   if (np->getStoreSourceFlag())
                       storeComponentSourceCode(ps.component, @$);
                   storePos(ps.component, @$);
+                  storeTrailingComment(ps.component,@$);
                 }
         ;
 
@@ -487,10 +487,10 @@ compoundmoduledefinition
                   ps.propertyscope.pop();
                   ps.blockscope.pop();
                   ps.typescope.pop();
-                  storeTrailingComment(ps.component,@9);
                   if (np->getStoreSourceFlag())
                       storeComponentSourceCode(ps.component, @$);
                   storePos(ps.component, @$);
+                  storeTrailingComment(ps.component,@$);
                 }
         ;
 
@@ -526,10 +526,10 @@ networkdefinition
                   ps.propertyscope.pop();
                   ps.blockscope.pop();
                   ps.typescope.pop();
-                  storeTrailingComment(ps.component,@5);
                   if (np->getStoreSourceFlag())
                       storeComponentSourceCode(ps.component, @$);
                   storePos(ps.component, @$);
+                  storeTrailingComment(ps.component,@$);
                 }
         ;
 
@@ -563,10 +563,10 @@ moduleinterfacedefinition
                   ps.propertyscope.pop();
                   ps.blockscope.pop();
                   ps.typescope.pop();
-                  storeTrailingComment(ps.component,@6);
                   if (np->getStoreSourceFlag())
                       storeComponentSourceCode(ps.component, @$);
                   storePos(ps.component, @$);
+                  storeTrailingComment(ps.component,@$);
                 }
         ;
 
@@ -626,13 +626,13 @@ paramgroup
                     storeBannerAndRightComments(ps.paramgroup,@1,@2);
                     ps.inGroup = true;
                 }
-          params '}'
+          params '}' opt_semicolon
                 {
                     ps.inGroup = false;
                     if ($1)
                         ps.paramgroup->appendChild($1); // append optional condition
-                    storeTrailingComment(ps.paramgroup,@$);
                     storePos(ps.paramgroup, @$);
+                    storeTrailingComment(ps.paramgroup,@$);
                 }
         ;
 
@@ -927,7 +927,7 @@ gategroup
                        np->getErrors()->add(ps.gategroup,"nested gate groups are not allowed");
                     ps.inGroup = true;
                 }
-          gates '}'
+          gates '}' opt_semicolon
                 {
                     ps.inGroup = false;
                     if ($1)

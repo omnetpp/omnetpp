@@ -43,10 +43,11 @@ class NEDFileBuffer
     int commentBufLen;
 
   private:
-    int lineType(char *s);
-    int lineContainsCode(char *s);
-    int getIndent(char *s);
-    int lastColumn(char *s);
+    int getLineType(int lineNumber);
+    int getLineType(const char *s);
+    bool lineContainsCode(const char *s);
+    int getLineIndent(int lineNumber);
+    int getLineIndent(const char *s);
     char *getPosition(int line, int column);
 
     bool indexLines();

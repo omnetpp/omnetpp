@@ -119,39 +119,38 @@ bool NEDFileBuffer::indexLines()
     return true;
 }
 
-int NEDFileBuffer::lineType(char *s)
+int NEDFileBuffer::getLineType(int lineNumber)
+{
+    return getLineType(getPosition(lineNumber,0));
+}
+
+int NEDFileBuffer::getLineType(const char *s)
 {
     while (*s==' ' || *s=='\t') s++;
     if (*s=='/' && *(s+1)=='/') return COMMENT_LINE;
-    if (!*s || *s=='\n') return BLANK_LINE;
+    if (!*s || *s=='\n') return BLANK_LINE; // if there's only punctuation, it'll count as BLANK too
     return CODE_LINE;
 }
 
-int NEDFileBuffer::lineContainsCode(char *s)
+bool NEDFileBuffer::lineContainsCode(const char *s)
 {
-    // tolerant version: punctuation (,;:{}()) does not count as code
-    while (*s==' ' || *s=='\t' || *s==':' || *s==',' || *s==';' || *s=='{' || *s=='}' || *s=='(' || *s==')') s++;
+    // tolerant version: punctuation does not count as code
+    while (*s==' ' || *s=='\t' || *s==':' || *s==',' || *s==';' || *s=='{' || *s=='}') s++;
     if (*s=='/' && *(s+1)=='/') return false;
     if (!*s || *s=='\n') return false;
     return true;
 }
 
 
-int NEDFileBuffer::getIndent(char *s)
+int NEDFileBuffer::getLineIndent(int lineNumber)
+{
+    return getLineIndent(getPosition(lineNumber,0));
+}
+
+int NEDFileBuffer::getLineIndent(const char *s)
 {
     int co = 0;
     while (*s==' ' || *s=='\t')
-    {
-        co += (*s=='\t') ? 8-(co%8) : 1;
-        s++;
-    }
-    return co;
-}
-
-int NEDFileBuffer::lastColumn(char *s)
-{
-    int co = 0;
-    while (*(s+1) && *(s+1)!='\n')
     {
         co += (*s=='\t') ? 8-(co%8) : 1;
         s++;
@@ -209,23 +208,23 @@ const char *NEDFileBuffer::getFileComment()
 {
     if (end) {*end = savedChar; end=NULL;}
 
-    // seek end of comment block (that is, last blank line)
-    int li2 = 1;
-    int lastblank=0, lt;
-    while (li2<=numLines && (lt=lineType(getPosition(li2,0)))!=CODE_LINE)
-    {
-        if (lt==BLANK_LINE) lastblank=li2;
-        li2++;
-    }
+    // seek end of comment block (that is, last blank line before a code line or eof)
+    int lastBlank = -1;
+    int lineType;
+    int line;
+    for (line=1; line<=numLines && (lineType=getLineType(line))!=CODE_LINE; line++)
+        if (lineType==BLANK_LINE)
+            lastBlank = line;
 
     // if file doesn't contain code line, take the whole file
-    if (li2>numLines) lastblank=numLines;
+    if (line > numLines)
+        lastBlank = numLines;
 
     // return comment block
     YYLTYPE comment;
     comment.first_line = 1;
     comment.first_column = 0;
-    comment.last_line = lastblank+1;
+    comment.last_line = lastBlank+1;
     comment.last_column = 0;
     return stripComment(get(comment));
 }
@@ -238,11 +237,8 @@ const char *NEDFileBuffer::getFileComment()
 int NEDFileBuffer::topLineOfBannerComment(int li)
 {
     // seek beginning of comment block
-    int indent = getIndent(getPosition(li,0));
-    while (li>=2 &&
-           lineType(getPosition(li-1,0))==COMMENT_LINE  &&
-           getIndent(getPosition(li-1,0))<=indent
-           )
+    int codeLineIndent = getLineIndent(li);
+    while (li>=2 && getLineType(li-1)==COMMENT_LINE && getLineIndent(li-1) <= codeLineIndent)
         li--;
     return li;
 }
@@ -293,7 +289,7 @@ const char *NEDFileBuffer::getTrailingComment(YYLTYPE pos)
     {
         // seek fwd to next code line (or end of file)
         lineafter = pos.last_line+1;
-        while (lineafter<numLines && lineType(getPosition(lineafter,0))!=CODE_LINE)
+        while (lineafter<numLines && getLineType(lineafter)!=CODE_LINE)
             lineafter++;
 
         // now seek back to beginning of comment block

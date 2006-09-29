@@ -227,7 +227,10 @@ filename
  */
 channeldefinition
         : channelheader opt_channelattrblock endchannel
-                { storePos(ps.channel, @$); }
+                {
+                  storePos(ps.channel, @$);
+                  storeTrailingComment(ps.channel,@$);
+                }
         ;
 
 channelheader
@@ -270,13 +273,7 @@ channelattrblock
 
 endchannel
         : ENDCHANNEL NAME opt_semicolon
-                {
-                  storeTrailingComment(ps.channel,@2);
-                }
         | ENDCHANNEL opt_semicolon
-                {
-                  storeTrailingComment(ps.channel,@1);
-                }
         ;
 
 /*
@@ -287,7 +284,10 @@ simpledefinition
             opt_paramblock
             opt_gateblock
           endsimple
-                { storePos(ps.module, @$); }
+                {
+                  storePos(ps.module, @$);
+                  storeTrailingComment(ps.module,@$);
+                }
         ;
 
 simpleheader
@@ -301,13 +301,7 @@ simpleheader
 
 endsimple
         : ENDSIMPLE NAME opt_semicolon
-                {
-                  storeTrailingComment(ps.module,@2);
-                }
         | ENDSIMPLE opt_semicolon
-                {
-                  storeTrailingComment(ps.module,@1);
-                }
         ;
 
 /*
@@ -321,7 +315,10 @@ moduledefinition
             opt_connblock
             opt_displayblock
           endmodule
-                { storePos(ps.module, @$); }
+                {
+                  storePos(ps.module, @$);
+                  storeTrailingComment(ps.module,@$);
+                }
         ;
 
 moduleheader
@@ -335,13 +332,7 @@ moduleheader
 
 endmodule
         : ENDMODULE NAME opt_semicolon
-                {
-                  storeTrailingComment(ps.module,@2);
-                }
         | ENDMODULE opt_semicolon
-                {
-                  storeTrailingComment(ps.module,@1);
-                }
         ;
 
 /*
@@ -870,6 +861,9 @@ loopconnection
           loopvarlist DO notloopconnections ENDFOR opt_semicolon
                 {
                   ps.inLoop=0;
+                  storePos(ps.conngroup, @$);
+                  storeBannerAndRightComments(ps.conngroup,@1,@4); // "for..do"
+                  storeTrailingComment(ps.conngroup,@$);
                 }
         ;
 
@@ -885,7 +879,6 @@ loopvar
                   ps.loop->setParamName( toString(@1) );
                   addExpression(ps.loop, "from-value",@3,$3);
                   addExpression(ps.loop, "to-value",@5,$5);
-                  storeBannerAndRightComments(ps.loop,@1,@5);
                   storePos(ps.loop, @$);
                 }
         ;
