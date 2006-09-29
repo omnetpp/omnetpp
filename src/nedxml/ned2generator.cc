@@ -579,7 +579,7 @@ void NED2Generator::doSubmodule(SubmoduleNode *node, const char *indent, bool is
 
     if (!node->getFirstChildWithTag(NED_PARAMETERS) && !node->getFirstChildWithTag(NED_GATES))
     {
-        OUT << " {};" << getRightComment(node);
+        OUT << " {};" << getTrailingComment(node);
     }
     else
     {
