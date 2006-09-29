@@ -412,7 +412,7 @@ void NED1Generator::doSubstParamGroup(NEDElement *node, const char *indent)
         }
         else
         {
-            OUT << indent << "parameters ";
+            OUT << indent << "parameters";
             generateChildrenWithType(node, NED_CONDITION, increaseIndent(indent));
             OUT << ":\n";
         }
@@ -596,14 +596,16 @@ void NED1Generator::doProperty(PropertyNode *node, const char *indent, bool isla
 {
     // issue a warning, except for those few accepted occurrences of @display and @prompt
     // note: no code needs to be generated here, that is done separately
-    int parentTag = node->getParent()->getTagCode();
     if (strcmp(node->getName(), "display")==0)
     {
-        if (parentTag!=NED_SUBMODULE && parentTag!=NED_CONNECTION)
+        // must be submodule->parameters->property or connection->chanspec->parameters->property
+        NEDElement *grandparent = node->getParent() ? node->getParent()->getParent() : NULL;
+        if (!grandparent || (grandparent->getTagCode()!=NED_SUBMODULE && grandparent->getTagCode()!=NED_CHANNEL_SPEC))
             errors->add(node, ERRCAT_WARNING, NED2FEATURE "@display may occur on submodules and connections only");
     }
     else if (strcmp(node->getName(), "prompt")==0)
     {
+        int parentTag = node->getParent()->getTagCode();
         if (parentTag!=NED_PARAM)
             errors->add(node, ERRCAT_WARNING, NED2FEATURE "@prompt may occur in submodule parameter assigments and networks only");
     }
@@ -676,7 +678,7 @@ void NED1Generator::doGatesizesGroup(NEDElement *node, const char *indent)
         }
         else
         {
-            OUT << indent << "gatesizes ";
+            OUT << indent << "gatesizes";
             generateChildrenWithType(node, NED_CONDITION, increaseIndent(indent));
             OUT << ":\n";
         }
@@ -919,7 +921,7 @@ void NED1Generator::doLoop(LoopNode *node, const char *indent, bool islast, cons
 
 void NED1Generator::doCondition(ConditionNode *node, const char *indent, bool islast, const char *sep)
 {
-    OUT << "if ";
+    OUT << " if ";
     printExpression(node, "condition",indent);
     if (!islast)
         OUT << (sep ? sep : "");

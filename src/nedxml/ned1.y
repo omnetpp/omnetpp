@@ -886,13 +886,10 @@ loopvar
 opt_conncondition
         : IF expression
                 {
-                  if (!ps.inLoop)
-                  {
-                      // add condition to conn
-                      ps.condition = (ConditionNode *)createNodeWithTag(NED_CONDITION, ps.conn);
-                      addExpression(ps.condition, "condition",@2,$2);
-                      storePos(ps.condition, @$);
-                  }
+                  // add condition to conn
+                  ps.condition = (ConditionNode *)createNodeWithTag(NED_CONDITION, ps.conn);
+                  addExpression(ps.condition, "condition",@2,$2);
+                  storePos(ps.condition, @$);
                 }
         |
         ;
