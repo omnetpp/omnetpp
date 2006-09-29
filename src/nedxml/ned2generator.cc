@@ -200,21 +200,24 @@ static std::string formatComment(const char *comment, const char *indent, const 
     if (!comment || !comment[0])
         return defaultValue;
 
-    if (!indent) indent = "";
-
     // indent each line of comment; also ensure that if last line contains
-    // a comment (//), it gets terminated by newline
+    // a comment (//), it gets terminated by newline. If indent==NULL,
+    // keep original indent
     std::string ret;
     const char *curLine = comment;
     while (curLine[0])
     {
         const char *nextLine = strchr(curLine,'\n');
-        if (!nextLine) nextLine = curLine + strlen(curLine);
+        if (!nextLine)
+            nextLine = curLine + strlen(curLine);
         const char *commentStart = strstr(curLine, "//");
-        if (commentStart && commentStart<nextLine) // this line contains comment
-            ret += indent + std::string(commentStart, nextLine) + "\n"; // add indented comment
-        else
+        if (!commentStart || commentStart>=nextLine)
             ret += "\n"; // no comment in that line -- just add newline
+        else if (!indent)
+            ret += std::string(curLine, nextLine) + "\n"; // use original indent
+        else
+            ret += indent + std::string(commentStart, nextLine) + "\n"; // indent the comment
+
         curLine = nextLine[0] ? nextLine+1 : nextLine; // +1: skip newline
     }
     return ret;
@@ -229,19 +232,19 @@ std::string NED2Generator::getBannerComment(NEDElement *node, const char *indent
 std::string NED2Generator::getRightComment(NEDElement *node, const char *indent)
 {
     const char *comment = getComment(node, "right");
-    return formatComment(comment, indent, "\n");  //XXX use large indent? 1st line special case?
+    return formatComment(comment, NULL, "\n");
 }
 
 std::string NED2Generator::getInlineRightComment(NEDElement *node, const char *indent)
 {
     const char *comment = getComment(node, "right");
-    return formatComment(comment, indent, " ");  //XXX use large indent? 1st line special case?
+    return formatComment(comment, NULL, " ");
 }
 
 std::string NED2Generator::getTrailingComment(NEDElement *node, const char *indent)
 {
     const char *comment = getComment(node, "trailing");
-    return formatComment(comment, indent, "\n");  //XXX use large indent? 1st line special case?
+    return formatComment(comment, NULL, "\n");
 }
 
 //---------------------------------------------------------------------------
