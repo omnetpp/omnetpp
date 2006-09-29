@@ -259,7 +259,7 @@ channelattrblock
                   ps.param = addParameter(ps.params, @2);
                   addExpression(ps.param, "value",@3,$3);
                   storeBannerAndRightComments(ps.param,@2,@3);
-                  storePos(ps.param, @2); // XXX rather: @2..@4
+                  storePos(ps.param, @2,@4);
                 }
         | CHANATTRNAME expression opt_semicolon
                 {
@@ -354,6 +354,7 @@ displayblock
                   storePos(ps.propkey, @$);
                   storePos(literal, @3);
                   storePos(ps.property, @$);
+                  storeBannerAndRightComments(ps.property,@$);
                 }
         ;
 
@@ -385,10 +386,12 @@ opt_parameters
 parameters
         : parameters ',' parameter  /* comma as separator */
                 {
+                  storePos(ps.param, @3);
                   storeBannerAndRightComments(ps.param,@3);
                 }
         | parameter
                 {
+                  storePos(ps.param, @1);
                   storeBannerAndRightComments(ps.param,@1);
                 }
         ;
@@ -402,60 +405,52 @@ parameter
                   ps.param = addParameter(ps.params, @1);
                   ps.param->setType(NED_PARTYPE_DOUBLE);
                   ps.param->setIsFunction(true); // because CONST is missing
-                  storePos(ps.param, @$);
                 }
         | NAME ':' NUMERICTYPE
                 {
                   ps.param = addParameter(ps.params, @1);
                   ps.param->setType(NED_PARTYPE_DOUBLE);
                   ps.param->setIsFunction(true); // because CONST is missing
-                  storePos(ps.param, @$);
                 }
         | CONSTDECL NAME /* for compatibility */
                 {
                   ps.param = addParameter(ps.params, @2);
                   ps.param->setType(NED_PARTYPE_DOUBLE);
-                  storePos(ps.param, @$);
                 }
         | NAME ':' CONSTDECL
                 {
                   ps.param = addParameter(ps.params, @1);
                   ps.param->setType(NED_PARTYPE_DOUBLE);
-                  storePos(ps.param, @$);
                 }
         | NAME ':' CONSTDECL NUMERICTYPE
                 {
                   ps.param = addParameter(ps.params, @1);
                   ps.param->setType(NED_PARTYPE_DOUBLE);
-                  storePos(ps.param, @$);
                 }
         | NAME ':' NUMERICTYPE CONSTDECL
                 {
                   ps.param = addParameter(ps.params, @1);
                   ps.param->setType(NED_PARTYPE_DOUBLE);
-                  storePos(ps.param, @$);
                 }
         | NAME ':' STRINGTYPE
                 {
                   ps.param = addParameter(ps.params, @1);
                   ps.param->setType(NED_PARTYPE_STRING);
-                  storePos(ps.param, @$);
                 }
         | NAME ':' BOOLTYPE
                 {
                   ps.param = addParameter(ps.params, @1);
                   ps.param->setType(NED_PARTYPE_BOOL);
-                  storePos(ps.param, @$);
                 }
         | NAME ':' XMLTYPE
                 {
                   ps.param = addParameter(ps.params, @1);
                   ps.param->setType(NED_PARTYPE_XML);
-                  storePos(ps.param, @$);
                 }
         | NAME ':' ANYTYPE
                 {
                   np->getErrors()->add(ps.params,"type 'anytype' no longer supported");
+                  ps.param = addParameter(ps.params, @1); // add anyway to prevent crash
                 }
         ;
 
@@ -643,6 +638,7 @@ substparamblock
                 {
                   createSubstparamsNodeIfNotExists();
                   storeBannerAndRightComments(ps.substparams,@1,@2);
+                  // NOTE: no group -- unconditional parameters go directly under the ParametersNode
                 }
           opt_substparameters
                 {
@@ -739,6 +735,7 @@ gatesizeblock
                 {
                   createGatesizesNodeIfNotExists();
                   storeBannerAndRightComments(ps.gatesizes,@1,@2);
+                  // NOTE: no group -- unconditional gates go directly under the GatesNode
                 }
           opt_gatesizes
                 {
@@ -802,6 +799,7 @@ opt_submod_displayblock
                   storePos(ps.propkey, @$);
                   storePos(literal, @3);
                   storePos(ps.property, @$);
+                  storeBannerAndRightComments(ps.property,@$);
                 }
         |
         ;
@@ -922,21 +920,21 @@ notloopconnection
         : leftgatespec RIGHT_ARROW rightgatespec opt_conncondition opt_conn_displaystr comma_or_semicolon
                 {
                   ps.conn->setArrowDirection(NED_ARROWDIR_L2R);
-                  storeBannerAndRightComments(ps.conn,@1,@5);
+                  storeBannerAndRightComments(ps.conn,@$);
                   storePos(ps.conn, @$);
                 }
         | leftgatespec RIGHT_ARROW channeldescr RIGHT_ARROW rightgatespec opt_conncondition opt_conn_displaystr comma_or_semicolon
                 {
                   ps.conn->setArrowDirection(NED_ARROWDIR_L2R);
                   removeRedundantChanSpecParams();
-                  storeBannerAndRightComments(ps.conn,@1,@7);
+                  storeBannerAndRightComments(ps.conn,@$);
                   storePos(ps.conn, @$);
                 }
         | leftgatespec LEFT_ARROW rightgatespec opt_conncondition opt_conn_displaystr comma_or_semicolon
                 {
                   swapConnection(ps.conn);
                   ps.conn->setArrowDirection(NED_ARROWDIR_R2L);
-                  storeBannerAndRightComments(ps.conn,@1,@5);
+                  storeBannerAndRightComments(ps.conn,@$);
                   storePos(ps.conn, @$);
                 }
         | leftgatespec LEFT_ARROW channeldescr LEFT_ARROW rightgatespec opt_conncondition opt_conn_displaystr comma_or_semicolon
@@ -944,7 +942,7 @@ notloopconnection
                   swapConnection(ps.conn);
                   ps.conn->setArrowDirection(NED_ARROWDIR_R2L);
                   removeRedundantChanSpecParams();
-                  storeBannerAndRightComments(ps.conn,@1,@7);
+                  storeBannerAndRightComments(ps.conn,@$);
                   storePos(ps.conn, @$);
                 }
         ;
@@ -1103,7 +1101,10 @@ networkdefinition
         : networkheader
             opt_substparamblocks
           endnetwork
-                { storePos(ps.module, @$); }
+                {
+                  storePos(ps.module, @$);
+                  storeTrailingComment(ps.module,@$);
+                }
         ;
 
 networkheader
@@ -1123,7 +1124,6 @@ networkheader
 endnetwork
         : ENDNETWORK opt_semicolon
                 {
-                  //setTrailingComment(ps.module,@1);
                   ps.inNetwork=0;
                 }
         ;

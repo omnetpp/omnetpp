@@ -95,16 +95,15 @@ class NED1Generator
     void printOptVector(NEDElement *node, const char *attr, const char *indent);
     const char *getDisplayStringOf(NEDElement *node);
     const char *getPromptTextOf(ParamNode *param);
-
     //@}
 
-    /** @name Format and write comments to the output */
+    /** @name Getters for comments */
     //@{
-    void printComment(NEDElement *node, const char *commentLocId, const char *indent);
-    //void appendBannerComment(const char *comment, const char *indent);
-    //void appendRightComment(const char *comment, const char *indent);
-    //void appendInlineRightComment(const char *comment, const char *indent);
-    //void appendTrailingComment(const char *comment, const char *indent);
+    std::string concatInnerComments(NEDElement *node);
+    std::string getBannerComment(NEDElement *node, const char *indent);
+    std::string getRightComment(NEDElement *node);
+    std::string getInlineRightComment(NEDElement *node);
+    std::string getTrailingComment(NEDElement *node);
     //@}
 
     /** @name Generate NED code from the given element */

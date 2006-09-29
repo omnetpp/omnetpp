@@ -26,6 +26,7 @@ std::string slashifyFilename(const char *fname);
 
 NEDElement *createNodeWithTag(int tagcode, NEDElement *parent=NULL);
 void storePos(NEDElement *node, YYLTYPE pos);
+void storePos(NEDElement *node, YYLTYPE firstpos, YYLTYPE lastpos);
 
 PropertyNode *addProperty(NEDElement *node, const char *name);  // directly under the node
 PropertyNode *addComponentProperty(NEDElement *node, const char *name); // into ParametersNode child of node

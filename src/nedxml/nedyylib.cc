@@ -14,6 +14,7 @@
 *--------------------------------------------------------------*/
 
 
+#include <assert.h>
 #include "nedyylib.h"
 #include "nedfilebuffer.h"
 #include "nedyydefs.h"
@@ -61,13 +62,21 @@ NEDElement *createNodeWithTag(int tagcode, NEDElement *parent)
 
 void storePos(NEDElement *node, YYLTYPE pos)
 {
-   if (!node) return;  //XXX or: assert()
-   NEDSourceRegion region;
-   region.startLine = pos.first_line;
-   region.startColumn = pos.first_column;
-   region.endLine = pos.last_line;
-   region.endColumn = pos.last_column;
-   node->setSourceRegion(region);
+    assert(node);
+    NEDSourceRegion region;
+    region.startLine = pos.first_line;
+    region.startColumn = pos.first_column;
+    region.endLine = pos.last_line;
+    region.endColumn = pos.last_column;
+    node->setSourceRegion(region);
+}
+
+void storePos(NEDElement *node, YYLTYPE firstpos, YYLTYPE lastpos)
+{
+    YYLTYPE pos = firstpos;
+    pos.last_line = lastpos.last_line;
+    pos.last_column = lastpos.last_column;
+    storePos(node, pos);
 }
 
 //
@@ -403,6 +412,7 @@ NEDElement *unaryMinus(NEDElement *node)
     buf[0] = '-';
     strcpy(buf+1, constNode->getValue());
     constNode->setValue(buf);
+    constNode->setText(buf); // for int and double literals, text and value are the same string
     delete [] buf;
 
     return node;

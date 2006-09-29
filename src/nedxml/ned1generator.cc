@@ -214,53 +214,78 @@ void NED1Generator::printOptVector(NEDElement *node, const char *attr, const cha
 
 //---------------------------------------------------------------------------
 
-void NED1Generator::printComment(NEDElement *node, const char *commentLocId, const char *indent)
+//---------------------------------------------------------------------------
+
+static const char *getComment(NEDElement *node, const char *locId)
 {
-    CommentNode *comment = (CommentNode *)node->getFirstChildWithAttribute(NED_COMMENT, "locid", commentLocId);
-    if (!comment)
+    CommentNode *comment = (CommentNode *)node->getFirstChildWithAttribute(NED_COMMENT, "locid", locId);
+    return (comment && strnotnull(comment->getContent())) ? comment->getContent() : NULL;
+}
+
+static std::string formatComment(const char *comment, const char *indent, const char *defaultValue)
+{
+    if (!comment || !comment[0])
+        return defaultValue;
+
+    // indent each line of comment; also ensure that if last line contains
+    // a comment (//), it gets terminated by newline. If indent==NULL,
+    // keep original indent
+    std::string ret;
+    const char *curLine = comment;
+    while (curLine[0])
     {
-        OUT << "\n";
+        const char *nextLine = strchr(curLine,'\n');
+        if (!nextLine)
+            nextLine = curLine + strlen(curLine);
+        const char *commentStart = strstr(curLine, "//");
+        if (!commentStart || commentStart>=nextLine)
+            ret += "\n"; // no comment in that line -- just add newline
+        else if (!indent)
+            ret += std::string(curLine, nextLine) + "\n"; // use original indent
+        else
+            ret += indent + std::string(commentStart, nextLine) + "\n"; // indent the comment
+
+        curLine = nextLine[0] ? nextLine+1 : nextLine; // +1: skip newline
     }
-    else
+    return ret;
+}
+
+std::string NED1Generator::concatInnerComments(NEDElement *node)
+{
+    std::string ret;
+    for (NEDElement *child=node->getFirstChildWithTag(NED_COMMENT); child; child = child->getNextSiblingWithTag(NED_COMMENT))
     {
-        // note: indent gets ignored now
-        OUT << comment->getContent();
+        CommentNode *comment = (CommentNode *)child;
+        if (!strcmp(comment->getLocid(), "inner"))
+            ret += comment->getContent();
     }
+    return ret;
 }
 
-/*XXX
-void NED1Generator::appendBannerComment(const char *comment, const char *indent)
+std::string NED1Generator::getBannerComment(NEDElement *node, const char *indent)
 {
-    if (!strnotnull(comment))
-        return;
-
-    OUT << comment;
+    const char *comment = getComment(node, "banner");
+    std::string innerComments = concatInnerComments(node);
+    return formatComment(comment, indent, "") + formatComment(innerComments.c_str(), indent, "");
 }
 
-void NED1Generator::appendRightComment(const char *comment, const char *indent)
+std::string NED1Generator::getRightComment(NEDElement *node)
 {
-    if (!strnotnull(comment))
-        return;
-
-    OUT << comment;
+    const char *comment = getComment(node, "right");
+    return formatComment(comment, NULL, "\n");
 }
 
-void NED1Generator::appendInlineRightComment(const char *comment, const char *indent)
+std::string NED1Generator::getInlineRightComment(NEDElement *node)
 {
-    if (!strnotnull(comment))
-        return;
-
-    OUT << comment;
+    const char *comment = getComment(node, "right");
+    return formatComment(comment, NULL, " ");
 }
 
-void NED1Generator::appendTrailingComment(const char *comment, const char *indent)
+std::string NED1Generator::getTrailingComment(NEDElement *node)
 {
-    if (!strnotnull(comment))
-        return;
-
-    OUT << comment;
+    const char *comment = getComment(node, "trailing");
+    return formatComment(comment, NULL, "\n");
 }
-*/
 
 //---------------------------------------------------------------------------
 
@@ -271,14 +296,14 @@ void NED1Generator::doNedfiles(FilesNode *node, const char *indent, bool, const 
 
 void NED1Generator::doNedfile(NedFileNode *node, const char *indent, bool, const char *)
 {
-    printComment(node, "banner", indent);
+    OUT << getBannerComment(node, indent);
     generateChildren(node, indent);
 }
 
 void NED1Generator::doImport(ImportNode *node, const char *indent, bool islast, const char *)
 {
-    printComment(node, "banner", indent);
-    OUT << indent << "import \"" << node->getFilename() << "\";" << "\n";
+    OUT << getBannerComment(node, indent);
+    OUT << indent << "import \"" << node->getFilename() << "\";" << getRightComment(node);
 }
 
 void NED1Generator::doPropertyDecl(PropertyDeclNode *node, const char *indent, bool islast, const char *)
@@ -298,15 +323,15 @@ void NED1Generator::doInterfaceName(InterfaceNameNode *node, const char *indent,
 
 void NED1Generator::doSimpleModule(SimpleModuleNode *node, const char *indent, bool islast, const char *)
 {
-    printComment(node, "banner", indent);
+    OUT << getBannerComment(node, indent);
     OUT << indent << "simple " << node->getName();
     printInheritance(node, indent);
-    OUT << "\n";
+    OUT << getRightComment(node);
 
     generateChildrenWithType(node, NED_PARAMETERS, increaseIndent(indent));
     generateChildrenWithType(node, NED_GATES, increaseIndent(indent));
 
-    OUT << indent << "endsimple\n\n";
+    OUT << indent << "endsimple" << getTrailingComment(node);
 }
 
 void NED1Generator::doModuleInterface(ModuleInterfaceNode *node, const char *indent, bool islast, const char *)
@@ -316,10 +341,10 @@ void NED1Generator::doModuleInterface(ModuleInterfaceNode *node, const char *ind
 
 void NED1Generator::doCompoundModule(CompoundModuleNode *node, const char *indent, bool islast, const char *)
 {
-    printComment(node, "banner", indent);
+    OUT << getBannerComment(node, indent);
     OUT << indent << (node->getIsNetwork() ? "network" : "module") << " " << node->getName();
     printInheritance(node, indent);
-    OUT << "\n";
+    OUT << getRightComment(node);
 
     generateChildrenWithType(node, NED_PARAMETERS, increaseIndent(indent));
     generateChildrenWithType(node, NED_GATES, increaseIndent(indent));
@@ -329,9 +354,9 @@ void NED1Generator::doCompoundModule(CompoundModuleNode *node, const char *inden
 
     const char *dispstr = getDisplayStringOf(node);
     if (dispstr)
-        OUT << increaseIndent(indent) << "display: " << dispstr << ";\n";
+        OUT << increaseIndent(indent) << "display: " << dispstr << ";\n"; //FIXME bannercomment and rightcomment of display string property
 
-    OUT << indent << (node->getIsNetwork() ? "endnetwork" : "endmodule") << "\n\n";
+    OUT << indent << (node->getIsNetwork() ? "endnetwork" : "endmodule") << getTrailingComment(node);
 }
 
 void NED1Generator::doChannelInterface(ChannelInterfaceNode *node, const char *indent, bool islast, const char *)
@@ -341,17 +366,17 @@ void NED1Generator::doChannelInterface(ChannelInterfaceNode *node, const char *i
 
 void NED1Generator::doChannel(ChannelNode *node, const char *indent, bool islast, const char *)
 {
-    printComment(node, "banner", indent);
+    OUT << getBannerComment(node, indent);
     OUT << indent << "channel ";
     if (node->getIsWithcppclass())
         errors->add(node, ERRCAT_WARNING, NED2FEATURE "channel withcppclass");
     OUT << node->getName();
     printInheritance(node, indent);
-    OUT << "\n";
+    OUT << getRightComment(node);
 
     generateChildrenWithType(node, NED_PARAMETERS, increaseIndent(indent));
 
-    OUT << indent << "endchannel\n\n";
+    OUT << indent << "endchannel" << getTrailingComment(node);
 }
 
 void NED1Generator::doParameters(ParametersNode *node, const char *indent, bool islast, const char *)
@@ -372,8 +397,9 @@ void NED1Generator::doParameters(ParametersNode *node, const char *indent, bool 
 
 void NED1Generator::doModuleParameters(ParametersNode *node, const char *indent)
 {
+    OUT << getBannerComment(node, indent);
     if (node->getFirstChildWithTag(NED_PARAM))
-        OUT << indent << "parameters:\n";
+        OUT << indent << "parameters:" << getRightComment(node);
 
     for (NEDElement *child=node->getFirstChild(); child; child=child->getNextSibling())
     {
@@ -408,13 +434,15 @@ void NED1Generator::doSubstParamGroup(NEDElement *node, const char *indent)
         // print "parameters" or "parameters if"
         if (node->getFirstChildWithTag(NED_CONDITION)==NULL)
         {
-            OUT << indent << "parameters:\n";
+            OUT << getBannerComment(node, indent);
+            OUT << indent << "parameters:" << getRightComment(node);
         }
         else
         {
+            OUT << getBannerComment(node, indent);
             OUT << indent << "parameters";
             generateChildrenWithType(node, NED_CONDITION, increaseIndent(indent));
-            OUT << ":\n";
+            OUT << ":" << getRightComment(node);
         }
     }
 
@@ -488,6 +516,7 @@ void NED1Generator::doConnectionAttributes(ParametersNode *node, const char *ind
 
 void NED1Generator::doChannelParam(ParamNode *node, const char *indent)
 {
+    OUT << getBannerComment(node, indent);
     const char *name = node->getName();
     if (strcmp(name, "delay")==0 || strcmp(name, "error")==0 || strcmp(name, "datarate")==0)
     {
@@ -495,7 +524,7 @@ void NED1Generator::doChannelParam(ParamNode *node, const char *indent)
         OUT << (indent ? indent : " ");
         OUT << node->getName() << " ";
         printExpression(node, "value", indent);
-        OUT << (indent ? "\n" : "");
+        OUT << (indent ? "\n" : ""); //FIXME comment
     }
     else
     {
@@ -531,6 +560,7 @@ void NED1Generator::doModuleParam(ParamNode *node, const char *indent, bool isla
         default: INTERNAL_ERROR0(node, "wrong type");
     }
 
+    OUT << getBannerComment(node, indent);
     OUT << indent << node->getName();
     if (parType!=NULL)
         OUT << ": " << parType;
@@ -543,7 +573,7 @@ void NED1Generator::doModuleParam(ParamNode *node, const char *indent, bool isla
     if (node->getFirstChildWithTag(NED_CONDITION))
         errors->add(node, ERRCAT_WARNING, "conditional parameter assignments for NED-1 are not supported");
 
-    OUT << (islast ? ";\n" : ",\n");
+    OUT << (islast ? ";" : ",") << getRightComment(node);
 }
 
 const char *NED1Generator::getPromptTextOf(ParamNode *param)
@@ -565,10 +595,15 @@ void NED1Generator::doSubstParam(ParamNode *node, const char *indent, bool islas
     if (node->getType()!=NED_PARTYPE_NONE)
         errors->add(node, ERRCAT_WARNING, NED2FEATURE "defining new parameter for a submodule");
 
+    OUT << getBannerComment(node, indent);
     OUT << indent << node->getName() << " = ";
     if (!node->getIsDefault())
     {
         printExpression(node, "value", indent);
+    }
+    else if (!hasExpression(node, "value"))
+    {
+        OUT << "input";
     }
     else
     {
@@ -584,7 +619,7 @@ void NED1Generator::doSubstParam(ParamNode *node, const char *indent, bool islas
     if (node->getFirstChildWithTag(NED_CONDITION))
         errors->add(node, ERRCAT_WARNING, NED2FEATURE "conditional parameter assignment");
 
-    OUT << (islast ? ";\n" : ",\n");
+    OUT << (islast ? ";" : ",") << getRightComment(node);
 }
 
 void NED1Generator::doPattern(PatternNode *node, const char *indent, bool islast, const char *)
@@ -628,15 +663,13 @@ void NED1Generator::doGates(GatesNode *node, const char *indent, bool islast, co
         doModuleGates(node, indent);
     else
         INTERNAL_ERROR0(node,"unexpected gates section");
-
-    //OUT << indent << "gates:\n";
-    //generateChildren(node, increaseIndent(indent));
 }
 
 void NED1Generator::doModuleGates(GatesNode *node, const char *indent)
 {
+    OUT << getBannerComment(node, indent);
     if (node->getFirstChildWithTag(NED_GATE))
-        OUT << indent << "gates:\n";
+        OUT << indent << "gates:" << getRightComment(node);
 
     for (NEDElement *child=node->getFirstChild(); child; child=child->getNextSibling())
     {
@@ -674,13 +707,15 @@ void NED1Generator::doGatesizesGroup(NEDElement *node, const char *indent)
         // print "gates" or "gates if"
         if (node->getFirstChildWithTag(NED_CONDITION)==NULL)
         {
-            OUT << indent << "gatesizes:\n";
+            OUT << getBannerComment(node, indent);
+            OUT << indent << "gatesizes:" << getRightComment(node);
         }
         else
         {
+            OUT << getBannerComment(node, indent);
             OUT << indent << "gatesizes";
             generateChildrenWithType(node, NED_CONDITION, increaseIndent(indent));
-            OUT << ":\n";
+            OUT << ":" << getRightComment(node);
         }
     }
 
@@ -714,6 +749,7 @@ void NED1Generator::doGate(GateNode *node, const char *indent, bool islast, cons
 
 void NED1Generator::doModuleGate(GateNode *node, const char *indent, bool islast, const char *)
 {
+    OUT << getBannerComment(node, indent);
     OUT << indent;
     switch (node->getType())
     {
@@ -731,11 +767,12 @@ void NED1Generator::doModuleGate(GateNode *node, const char *indent, bool islast
     generateChildrenWithType(node, NED_PROPERTY, increaseIndent(indent), " ");
     if (node->getFirstChildWithTag(NED_CONDITION))
         errors->add(node, ERRCAT_WARNING, NED2FEATURE "conditional gate declaration");
-    OUT << ";\n";
+    OUT << ";" << getRightComment(node);
 }
 
 void NED1Generator::doGatesize(GateNode *node, const char *indent, bool islast, const char *)
 {
+    OUT << getBannerComment(node, indent);
     OUT << indent;
     if (node->getType()!=NED_GATETYPE_NONE)
         errors->add(node, ERRCAT_WARNING, NED2FEATURE "declaring new gates for submodules");
@@ -746,7 +783,7 @@ void NED1Generator::doGatesize(GateNode *node, const char *indent, bool islast, 
 
     generateChildrenWithType(node, NED_PROPERTY, increaseIndent(indent), " ");
     generateChildrenWithType(node, NED_CONDITION, increaseIndent(indent));
-    OUT << (islast ? ";\n" : ",\n");
+    OUT << (islast ? ";" : ",") << getRightComment(node);
 }
 
 void NED1Generator::doTypes(TypesNode *node, const char *indent, bool islast, const char *)
@@ -756,12 +793,14 @@ void NED1Generator::doTypes(TypesNode *node, const char *indent, bool islast, co
 
 void NED1Generator::doSubmodules(SubmodulesNode *node, const char *indent, bool islast, const char *)
 {
-    OUT << indent << "submodules:\n";
+    OUT << getBannerComment(node, indent);
+    OUT << indent << "submodules:" << getRightComment(node);
     generateChildren(node, increaseIndent(indent));
 }
 
 void NED1Generator::doSubmodule(SubmoduleNode *node, const char *indent, bool islast, const char *)
 {
+    OUT << getBannerComment(node, indent);
     OUT << indent << node->getName() << ": ";
 
     if (node->getLikeAny() || strnotnull(node->getLikeType()))
@@ -781,14 +820,14 @@ void NED1Generator::doSubmodule(SubmoduleNode *node, const char *indent, bool is
         OUT << node->getType();
         printOptVector(node, "vector-size",indent);
     }
-    OUT << ";\n";
+    OUT << ";" << getRightComment(node);
 
     generateChildrenWithType(node, NED_PARAMETERS, increaseIndent(indent));
     generateChildrenWithType(node, NED_GATES, increaseIndent(indent));
 
     const char *dispstr = getDisplayStringOf(node);
     if (dispstr)
-        OUT << increaseIndent(indent) << "display: " << dispstr << ";\n";
+        OUT << increaseIndent(indent) << "display: " << dispstr << ";\n"; //FIXME comments of the @property node
 }
 
 const char *NED1Generator::getDisplayStringOf(NEDElement *node)
@@ -811,11 +850,11 @@ const char *NED1Generator::getDisplayStringOf(NEDElement *node)
 
 void NED1Generator::doConnections(ConnectionsNode *node, const char *indent, bool islast, const char *)
 {
-    if (node->getAllowUnconnected()) {
-        OUT << indent << "connections nocheck:\n";
-    } else {
-        OUT << indent << "connections:\n";
-    }
+    OUT << getBannerComment(node, indent);
+    if (node->getAllowUnconnected())
+        OUT << indent << "connections nocheck:" << getRightComment(node);
+    else
+        OUT << indent << "connections:" << getRightComment(node);
     generateChildren(node, increaseIndent(indent));
 }
 
@@ -832,6 +871,8 @@ void NED1Generator::doConnection(ConnectionNode *node, const char *indent, bool 
                                  arrow = " <-->"; srcfirst = true; break;
         default: INTERNAL_ERROR0(node, "wrong arrow-dir");
     }
+
+    OUT << getBannerComment(node, indent);
 
     // print src
     OUT << indent;
@@ -876,7 +917,7 @@ void NED1Generator::doConnection(ConnectionNode *node, const char *indent, bool 
             OUT << " display " << dispstr;
     }
 
-    OUT << ";\n";
+    OUT << ";" << getRightComment(node);
 }
 
 void NED1Generator::doChannelSpec(ChannelSpecNode *node, const char *indent, bool islast, const char *)
@@ -899,13 +940,14 @@ void NED1Generator::doChannelSpec(ChannelSpecNode *node, const char *indent, boo
 
 void NED1Generator::doConnectionGroup(ConnectionGroupNode *node, const char *indent, bool islast, const char *)
 {
+    OUT << getBannerComment(node, indent);
     OUT << indent << "for ";
     generateChildrenWithType(node, NED_LOOP, increaseIndent(indent), ", ");
-    OUT << " do\n";
+    OUT << " do" << getRightComment(node);
 
     generateChildrenWithType(node, NED_CONNECTION, increaseIndent(indent));
 
-    OUT << indent << "endfor;\n";
+    OUT << indent << "endfor;" << getTrailingComment(node);
 }
 
 void NED1Generator::doLoop(LoopNode *node, const char *indent, bool islast, const char *sep)
