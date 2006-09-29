@@ -256,9 +256,15 @@ import
  */
 propertydecl
         : propertydecl_header opt_inline_properties ';'
-                { storePos(ps.propertydecl, @$); }
+                {
+                    storePos(ps.propertydecl, @$);
+                    storeComments(ps.propertydecl,@$);
+                }
         | propertydecl_header '(' opt_propertydecl_keys ')' opt_inline_properties ';'
-                { storePos(ps.propertydecl, @$); }
+                {
+                    storePos(ps.propertydecl, @$);
+                    storeComments(ps.propertydecl,@$);
+                }
         ; /* no error recovery rule -- see discussion at top */
 
 propertydecl_header
@@ -266,14 +272,12 @@ propertydecl_header
                 {
                   ps.propertydecl = (PropertyDeclNode *)createNodeWithTag(NED_PROPERTY_DECL, ps.nedfile);
                   ps.propertydecl->setName(toString(@3));
-                  storeComments(ps.propertydecl,@$);
                 }
         | PROPERTY '@' NAME '[' ']'
                 {
                   ps.propertydecl = (PropertyDeclNode *)createNodeWithTag(NED_PROPERTY_DECL, ps.nedfile);
                   ps.propertydecl->setName(toString(@3));
                   ps.propertydecl->setIsArray(true);
-                  storeComments(ps.propertydecl,@$);
                 }
         ;
 
@@ -301,7 +305,10 @@ propertydecl_key
  */
 fileproperty
         : property_namevalue ';'
-                { storePos(ps.property, @$); }
+                {
+                  storePos(ps.property, @$);
+                  storeComments(ps.property,@$);
+                }
         ;
 
 /*
@@ -334,17 +341,17 @@ channelheader
                 {
                   ps.component = (ChannelNode *)createNodeWithTag(NED_CHANNEL, ps.inTypes ? (NEDElement *)ps.types : (NEDElement *)ps.nedfile);
                   ((ChannelNode *)ps.component)->setName(toString(@2));
-                  storeComments(ps.component,@1,@2);
                 }
            opt_inheritance
+                { storeComments(ps.component,@$); }
         | CHANNEL WITHCPPCLASS NAME
                 {
                   ps.component = (ChannelNode *)createNodeWithTag(NED_CHANNEL, ps.inTypes ? (NEDElement *)ps.types : (NEDElement *)ps.nedfile);
                   ((ChannelNode *)ps.component)->setName(toString(@3));
                   ((ChannelNode *)ps.component)->setIsWithcppclass(true);
-                  storeComments(ps.component,@1,@3);
                 }
            opt_inheritance
+                { storeComments(ps.component,@$); }
         ;
 
 opt_inheritance
@@ -407,9 +414,9 @@ channelinterfaceheader
                 {
                   ps.component = (ChannelInterfaceNode *)createNodeWithTag(NED_CHANNEL_INTERFACE, ps.inTypes ? (NEDElement *)ps.types : (NEDElement *)ps.nedfile);
                   ((ChannelInterfaceNode *)ps.component)->setName(toString(@2));
-                  storeComments(ps.component,@1,@2);
                 }
            opt_interfaceinheritance
+                { storeComments(ps.component,@$); }
         ;
 
 opt_interfaceinheritance
@@ -453,9 +460,9 @@ simplemoduleheader
                 {
                   ps.component = (SimpleModuleNode *)createNodeWithTag(NED_SIMPLE_MODULE, ps.inTypes ? (NEDElement *)ps.types : (NEDElement *)ps.nedfile );
                   ((SimpleModuleNode *)ps.component)->setName(toString(@2));
-                  storeComments(ps.component,@1,@2);
                 }
           opt_inheritance
+                { storeComments(ps.component,@$); }
         ;
 
 /*
@@ -492,9 +499,9 @@ compoundmoduleheader
                 {
                   ps.component = (CompoundModuleNode *)createNodeWithTag(NED_COMPOUND_MODULE, ps.inTypes ? (NEDElement *)ps.types : (NEDElement *)ps.nedfile );
                   ((CompoundModuleNode *)ps.component)->setName(toString(@2));
-                  storeComments(ps.component,@1,@2);
                 }
           opt_inheritance
+                { storeComments(ps.component,@$); }
         ;
 
 /*
@@ -532,9 +539,9 @@ networkheader
                   ps.component = (CompoundModuleNode *)createNodeWithTag(NED_COMPOUND_MODULE, ps.inTypes ? (NEDElement *)ps.types : (NEDElement *)ps.nedfile );
                   ((CompoundModuleNode *)ps.component)->setName(toString(@2));
                   ((CompoundModuleNode *)ps.component)->setIsNetwork(true);
-                  storeComments(ps.component,@1,@2);
                 }
           opt_inheritance
+                { storeComments(ps.component,@$); }
         ;
 
 /*
@@ -568,9 +575,9 @@ moduleinterfaceheader
                 {
                   ps.component = (ModuleInterfaceNode *)createNodeWithTag(NED_MODULE_INTERFACE, ps.inTypes ? (NEDElement *)ps.types : (NEDElement *)ps.nedfile);
                   ((ModuleInterfaceNode *)ps.component)->setName(toString(@2));
-                  storeComments(ps.component,@1,@2);
                 }
            opt_interfaceinheritance
+                { storeComments(ps.component,@$); }
         ;
 
 /*
@@ -588,6 +595,7 @@ opt_paramblock
         | PARAMETERS ':'
                 {
                   ps.parameters->setIsImplicit(false);
+                  storeComments(ps.parameters,@1,@2);
                 }
           opt_params
                 { storePos(ps.parameters, @$); }

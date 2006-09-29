@@ -394,7 +394,7 @@ void NED2Generator::doParamGroup(ParamGroupNode *node, const char *indent, bool 
     int tags[] = {NED_PROPERTY, NED_PARAM, NED_PATTERN, NED_NULL};
     generateChildrenWithTypes(node, tags, increaseIndent(indent));
 
-    OUT << indent << "}\n";
+    OUT << indent << "};\n";
 }
 
 void NED2Generator::doParam(ParamNode *node, const char *indent, bool islast, const char *)
@@ -513,7 +513,7 @@ void NED2Generator::doGateGroup(GateGroupNode *node, const char *indent, bool is
 
     generateChildrenWithType(node, NED_GATE, increaseIndent(indent));
 
-    OUT << indent << "}\n";
+    OUT << indent << "};\n";
 }
 
 void NED2Generator::doGate(GateNode *node, const char *indent, bool islast, const char *)
@@ -579,14 +579,14 @@ void NED2Generator::doSubmodule(SubmoduleNode *node, const char *indent, bool is
 
     if (!node->getFirstChildWithTag(NED_PARAMETERS) && !node->getFirstChildWithTag(NED_GATES))
     {
-        OUT << ";" << getRightComment(node, indent);
+        OUT << " {};" << getRightComment(node, indent);
     }
     else
     {
         OUT << " {" << getRightComment(node, indent);
         generateChildrenWithType(node, NED_PARAMETERS, increaseIndent(indent));
         generateChildrenWithType(node, NED_GATES, increaseIndent(indent));
-        OUT << indent << "}\n";
+        OUT << indent << "};\n";
     }
 }
 
@@ -690,7 +690,7 @@ void NED2Generator::doConnectionGroup(ConnectionGroupNode *node, const char *ind
 
     OUT << " {" << getRightComment(node, indent);
     generateChildrenWithType(node, NED_CONNECTION, increaseIndent(indent));
-    OUT << indent << "}\n";
+    OUT << indent << "};\n";
 }
 
 void NED2Generator::doLoop(LoopNode *node, const char *indent, bool islast, const char *sep)
