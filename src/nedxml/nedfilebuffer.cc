@@ -291,29 +291,29 @@ YYLTYPE NEDFileBuffer::getTrailingCommentPos(YYLTYPE pos)
     if (lineContainsCode(endp))
         return createYYLTYPE(1,0,1,0); // empty pos, will be returned as ""
 
-    // seek 1st line after comment (lineafter)
-    int lineafter;
+    // seek 1st line after comment (lineAfter)
+    int lineAfter;
 
     if (pos.last_line>=numLines) // 'pos' ends on last line of file
     {
-        lineafter = numLines+1;
+        lineAfter = numLines+1;
     }
     else
     {
         // seek fwd to next code line (or end of file)
-        lineafter = pos.last_line+1;
-        while (lineafter<numLines && getLineType(lineafter)!=CODE_LINE)
-            lineafter++;
+        lineAfter = pos.last_line+1;
+        while (lineAfter<numLines && getLineType(lineAfter)!=CODE_LINE)
+            lineAfter++;
 
         // now seek back to beginning of comment block
-        lineafter = topLineOfBannerComment(lineafter);
+        lineAfter = topLineOfBannerComment(lineAfter);
     }
 
     // return comment block
     YYLTYPE commentPos;
     commentPos.first_line = pos.last_line;
     commentPos.first_column = pos.last_column;
-    commentPos.last_line = lineafter;
+    commentPos.last_line = lineAfter;
     commentPos.last_column = 0;
     return commentPos;
 }
@@ -340,10 +340,16 @@ const char *NEDFileBuffer::getNextInnerComment(YYLTYPE& pos)
             if (pos.first_line==pos.last_line && commentColumn >= pos.last_column)
                 return NULL; // comment is past the end of "pos"
 
-            YYLTYPE pos2 = pos;
-            pos2.last_line = pos2.first_line;
-            pos2.last_column = commentColumn;
-            YYLTYPE commentPos = getTrailingCommentPos(pos2);
+            // seek fwd to next code line (or end of block)
+            int lineAfter = pos.first_line+1;
+            while (lineAfter<pos.last_line && getLineType(lineAfter)!=CODE_LINE)
+                lineAfter++;
+
+            YYLTYPE commentPos;
+            commentPos.first_line = pos.first_line;
+            commentPos.first_column = commentColumn;
+            commentPos.last_line = lineAfter;
+            commentPos.last_column = 0;
 
             // skip comment
             pos.first_line = commentPos.last_line;

@@ -248,8 +248,6 @@ import
                   ps.import->setFilename(toString(trimQuotes(@2)));
                   storePos(ps.import,@$);
                   storeBannerAndRightComments(ps.import,@$);
-                  storeInnerComments(ps.import, @$);  //FIXME add innercomments everywhere!!!
-
                 }
         ; /* no error recovery rule -- see discussion at top */
 

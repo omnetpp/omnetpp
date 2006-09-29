@@ -95,8 +95,9 @@ class NED2Generator
     void printOptVector(NEDElement *node, const char *attr, const char *indent);
     //@}
 
-    /** @name Format and write comments to the output */
+    /** @name Getters for comments */
     //@{
+    std::string concatInnerComments(NEDElement *node);
     std::string getBannerComment(NEDElement *node, const char *indent);
     std::string getRightComment(NEDElement *node);
     std::string getInlineRightComment(NEDElement *node);

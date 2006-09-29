@@ -223,10 +223,23 @@ static std::string formatComment(const char *comment, const char *indent, const 
     return ret;
 }
 
+std::string NED2Generator::concatInnerComments(NEDElement *node)
+{
+    std::string ret;
+    for (NEDElement *child=node->getFirstChildWithTag(NED_COMMENT); child; child = child->getNextSiblingWithTag(NED_COMMENT))
+    {
+        CommentNode *comment = (CommentNode *)child;
+        if (!strcmp(comment->getLocid(), "inner"))
+            ret += comment->getContent();
+    }
+    return ret;
+}
+
 std::string NED2Generator::getBannerComment(NEDElement *node, const char *indent)
 {
     const char *comment = getComment(node, "banner");
-    return formatComment(comment, indent, "");
+    std::string innerComments = concatInnerComments(node);
+    return formatComment(comment, indent, "") + formatComment(innerComments.c_str(), indent, "");
 }
 
 std::string NED2Generator::getRightComment(NEDElement *node)

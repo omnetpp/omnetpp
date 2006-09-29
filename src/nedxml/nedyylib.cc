@@ -163,6 +163,7 @@ void storeBannerAndRightComments(NEDElement *node, YYLTYPE pos)
 {
     storeBannerComment(node, pos);
     storeRightComment(node, pos);
+    storeInnerComments(node, pos);
 }
 
 void storeBannerAndRightComments(NEDElement *node, YYLTYPE firstpos, YYLTYPE lastpos)
