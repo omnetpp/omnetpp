@@ -43,7 +43,6 @@ NEDElement *doParseNED2(NEDParser *p, const char *nedtext);
 NEDElement *doParseNED1(NEDParser *p, const char *nedtext);
 NEDElement *doParseMSG2(NEDParser *p, const char *nedtext);
 
-
 #endif
 
 

@@ -21,6 +21,7 @@
 #include <sys/stat.h>
 #include <assert.h>
 #include "nedfilebuffer.h"
+#include "nedyylib.h"
 
 //-----------------------------------------------------------
 
@@ -187,8 +188,11 @@ const char *NEDFileBuffer::get(YYLTYPE pos)
 {
     if (end) {*end = savedChar; end=NULL;}
 
-    // check: maybe NULLPOS
+    // if line is null, return NULL
     if (!pos.first_line || !pos.last_line)
+        return NULL;
+
+    if (isEmpty(pos))
         return "";
 
     // the meat of the whole stuff:
@@ -200,11 +204,13 @@ const char *NEDFileBuffer::get(YYLTYPE pos)
     return beg;
 }
 
-// getFileComment()
-//   all subsequent comment and blank lines will be included,
-//   up to the _last blank_ line
-//
 const char *NEDFileBuffer::getFileComment()
+{
+    return stripComment(get(getFileCommentPos()));
+}
+
+// all subsequent comment and blank lines will be included, up to the _last blank_ line
+YYLTYPE NEDFileBuffer::getFileCommentPos()
 {
     if (end) {*end = savedChar; end=NULL;}
 
@@ -221,12 +227,12 @@ const char *NEDFileBuffer::getFileComment()
         lastBlank = numLines;
 
     // return comment block
-    YYLTYPE comment;
-    comment.first_line = 1;
-    comment.first_column = 0;
-    comment.last_line = lastBlank+1;
-    comment.last_column = 0;
-    return stripComment(get(comment));
+    YYLTYPE commentPos;
+    commentPos.first_line = 1;
+    commentPos.first_column = 0;
+    commentPos.last_line = lastBlank+1;
+    commentPos.last_column = 0;
+    return commentPos;
 }
 
 // topLineOfBannerComment()
@@ -243,9 +249,12 @@ int NEDFileBuffer::topLineOfBannerComment(int li)
     return li;
 }
 
-// getBannerComment()
-//
 const char *NEDFileBuffer::getBannerComment(YYLTYPE pos)
+{
+    return stripComment(get(getBannerCommentPos(pos)));
+}
+
+YYLTYPE NEDFileBuffer::getBannerCommentPos(YYLTYPE pos)
 {
     if (end) {*end = savedChar; end=NULL;}
 
@@ -253,30 +262,34 @@ const char *NEDFileBuffer::getBannerComment(YYLTYPE pos)
     char *beg = getPosition(pos.first_line, pos.first_column);
     for (char *s=getPosition(pos.first_line, 0); s<beg; s++)
         if (*s!=' ' && *s!='\t')
-            return "";
+            return createYYLTYPE(1,0,1,0); // empty pos, will be returned as ""
 
     // return comment block
-    YYLTYPE comment;
-    comment.first_line = topLineOfBannerComment(pos.first_line);
-    comment.first_column = 0;
-    comment.last_line = pos.first_line;
-    comment.last_column = 0;
-    return stripComment(get(comment));
+    YYLTYPE commentPos;
+    commentPos.first_line = topLineOfBannerComment(pos.first_line);
+    commentPos.first_column = 0;
+    commentPos.last_line = pos.first_line;
+    commentPos.last_column = 0;
+    return commentPos;
 }
 
-// getTrailingComment()
+//
 //  also serves as "getRightComment"
-//  NOTE: only handles really trailing comments, ie. those
-//        after last_line.last_column
+//  NOTE: only handles really trailing comments, ie. those after last_line.last_column
 //
 const char *NEDFileBuffer::getTrailingComment(YYLTYPE pos)
+{
+    return stripComment(get(getTrailingCommentPos(pos)));
+}
+
+YYLTYPE NEDFileBuffer::getTrailingCommentPos(YYLTYPE pos)
 {
     if (end) {*end = savedChar; end=NULL;}
 
     // there must be no code after it on the same line
     char *endp = getPosition(pos.last_line, pos.last_column);
     if (lineContainsCode(endp))
-        return "";
+        return createYYLTYPE(1,0,1,0); // empty pos, will be returned as ""
 
     // seek 1st line after comment (lineafter)
     int lineafter;
@@ -297,12 +310,53 @@ const char *NEDFileBuffer::getTrailingComment(YYLTYPE pos)
     }
 
     // return comment block
-    YYLTYPE comment;
-    comment.first_line = pos.last_line;
-    comment.first_column = pos.last_column;
-    comment.last_line = lineafter;
-    comment.last_column = 0;
-    return stripComment(get(comment));
+    YYLTYPE commentPos;
+    commentPos.first_line = pos.last_line;
+    commentPos.first_column = pos.last_column;
+    commentPos.last_line = lineafter;
+    commentPos.last_column = 0;
+    return commentPos;
+}
+
+static const char *findCommentOnLine(const char *s)
+{
+    // find comment on this line
+    const char *beg = s;
+    while (*s!='\n' && (*s!='/' || *(s+1)!='/')) s++;
+    if (*s!='/' || *(s+1)!='/')
+        return NULL;
+    return s;
+}
+
+const char *NEDFileBuffer::getNextInnerComment(YYLTYPE& pos)
+{
+    while (!isEmpty(pos))
+    {
+        const char *s = getPosition(pos.first_line, pos.first_column);
+        const char *comment = findCommentOnLine(s);
+        if (comment)
+        {
+            int commentColumn = pos.first_column + comment - s;
+            if (pos.first_line==pos.last_line && commentColumn >= pos.last_column)
+                return NULL; // comment is past the end of "pos"
+
+            YYLTYPE pos2 = pos;
+            pos2.last_line = pos2.first_line;
+            pos2.last_column = commentColumn;
+            YYLTYPE commentPos = getTrailingCommentPos(pos2);
+
+            // skip comment
+            pos.first_line = commentPos.last_line;
+            pos.first_column = commentPos.last_column;
+
+            return stripComment(get(commentPos));
+        }
+
+        // go to beginning of next line
+        ++pos.first_line;
+        pos.first_column = 0;
+    }
+    return NULL;
 }
 
 YYLTYPE NEDFileBuffer::getFullTextPos()

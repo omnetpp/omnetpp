@@ -223,10 +223,12 @@ nederror.obj: nederror.cc \
   nedelement.h
 nedfilebuffer.obj: nedfilebuffer.cc \
   nedfilebuffer.h \
+  nedyylib.h \
   nedparser.h \
   nedelement.h \
   nedyydefs.h \
-  nederror.h
+  nederror.h \
+  nedelements.h
 nedparser.obj: nedparser.cc \
   nedparser.h \
   nedfilebuffer.h \

@@ -175,6 +175,17 @@ void storeBannerAndRightComments(NEDElement *node, YYLTYPE firstpos, YYLTYPE las
     storeRightComment(node, pos);
 }
 
+void storeInnerComments(NEDElement *node, YYLTYPE pos)
+{
+    for (;;)
+    {
+        const char *comment = np->getSource()->getNextInnerComment(pos); // updates "pos"
+        if (!comment)
+            break;
+        addComment(node, "inner", comment);
+    }
+}
+
 ParamNode *addParameter(NEDElement *params, YYLTYPE namepos)
 {
     ParamNode *param = (ParamNode *)createNodeWithTag(NED_PARAM,params);

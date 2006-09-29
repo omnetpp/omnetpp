@@ -40,6 +40,7 @@ void storeRightComment(NEDElement *node, YYLTYPE tokenpos);
 void storeTrailingComment(NEDElement *node, YYLTYPE tokenpos);
 void storeBannerAndRightComments(NEDElement *node, YYLTYPE pos);
 void storeBannerAndRightComments(NEDElement *node, YYLTYPE firstpos, YYLTYPE lastpos);
+void storeInnerComments(NEDElement *node, YYLTYPE pos);
 
 ParamNode *addParameter(NEDElement *params, YYLTYPE namepos);
 GateNode *addGate(NEDElement *gates, YYLTYPE namepos);
@@ -68,6 +69,21 @@ NEDElement *unaryMinus(NEDElement *node);
 void addVector(NEDElement *elem, const char *attrname, YYLTYPE exprpos, NEDElement *expr);
 void addLikeParam(NEDElement *elem, const char *attrname, YYLTYPE exprpos, NEDElement *expr);
 void addExpression(NEDElement *elem, const char *attrname, YYLTYPE exprpos, NEDElement *expr);
+
+
+inline bool isEmpty(YYLTYPE pos) {
+    return pos.first_line > pos.last_line ||
+           (pos.first_line == pos.last_line && pos.first_column >= pos.last_column);
+}
+
+inline YYLTYPE createYYLTYPE(int fl, int fc, int ll, int lc) {
+    YYLTYPE pos;
+    pos.first_line = fl;
+    pos.first_column = fc;
+    pos.last_line = ll;
+    pos.last_column = lc;
+    return pos;
+}
 
 #endif
 

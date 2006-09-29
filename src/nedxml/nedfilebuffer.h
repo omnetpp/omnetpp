@@ -54,6 +54,10 @@ class NEDFileBuffer
     int topLineOfBannerComment(int li);
     char *stripComment(const char *s);
 
+    YYLTYPE getFileCommentPos();
+    YYLTYPE getBannerCommentPos(YYLTYPE pos);
+    YYLTYPE getTrailingCommentPos(YYLTYPE pos);
+
   public:
     /**
      * Constructor.
@@ -102,6 +106,12 @@ class NEDFileBuffer
      * Returns trailing comment below text range passed in pos. Uses get()!
      */
     const char *getTrailingComment(YYLTYPE pos);
+
+    /**
+     * Returns the next comment inside the given region, and moves
+     * the region's start past the comment. Uses get()!
+     */
+    const char *getNextInnerComment(YYLTYPE& pos);
 
     /**
      * Returns 1:0...end.
