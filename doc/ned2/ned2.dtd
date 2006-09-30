@@ -17,7 +17,11 @@
      version            CDATA     #IMPLIED
      package            CDATA     #IMPLIED>
 
-<!-- comments and whitespace; comments include '//' marks -->
+<!-- comments and whitespace; comments include '//' marks. Note that although
+     nearly all elements may contain comment elements, there are places
+     (e.g. within expressions) where they are ignored by actual code.
+     Default value is a space or a newline, depending on the context.
+ -->
 <!ELEMENT comment EMPTY>
 <!ATTLIST comment
      locid              NMTOKEN   #REQUIRED
@@ -59,6 +63,7 @@
 <!ATTLIST channel-interface
      name                NMTOKEN   #REQUIRED>
 
+<!-- if there is no "extends", it defaults to "BasicChannel" -->
 <!ELEMENT channel (comment*, extends?, interface-name*, parameters?)>
 <!ATTLIST channel
      is-withcppclass     (true|false)  "false"
