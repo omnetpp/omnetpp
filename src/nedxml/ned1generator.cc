@@ -507,7 +507,6 @@ void NED1Generator::doChannelParameters(ParametersNode *node, const char *indent
 void NED1Generator::doConnectionAttributes(ParametersNode *node, const char *indent)
 {
     // only "delay", "error", "datarate" parameters need to be recognized
-    //FIXME "display" property is to be handled elsewhere
     for (NEDElement *child=node->getFirstChild(); child; child=child->getNextSibling())
     {
         int childTag = child->getTagCode();
@@ -536,7 +535,8 @@ void NED1Generator::doChannelParam(ParamNode *node, const char *indent)
         OUT << (indent ? indent : " ");
         OUT << node->getName() << " ";
         printExpression(node, "value", indent);
-        OUT << (indent ? "\n" : ""); //FIXME comment
+        if (indent)
+            OUT << ";" << getRightComment(node);
     }
     else
     {

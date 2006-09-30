@@ -63,6 +63,7 @@
 <!ATTLIST channel-interface
      name                NMTOKEN   #REQUIRED>
 
+<!-- if there is no "extends", it defaults to "BasicChannel" -->
 <!ELEMENT channel (comment*, extends?, interface-name*, parameters?)>
 <!ATTLIST channel
      is-withcppclass     (true|false)  "false"
