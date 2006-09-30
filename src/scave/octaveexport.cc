@@ -89,7 +89,7 @@ void OctaveExport::writeMatrixHeader(const char *name, int rows, int columns)
                     "# type: matrix\n"
                     "# rows: %d\n"
                     "# columns: %d\n",
-                    name, type, rows, columns));
+                    name, rows, columns));
 }
 
 void OctaveExport::writeString(const char *name, const char *value)
@@ -104,7 +104,7 @@ void OctaveExport::writeString(const char *name, const char *value)
 
 void OctaveExport::writeDescription(const char *name, const char *description)
 {
-    writeString(std_string(name)+"_descr", description);
+    writeString((std::string(name)+"_descr").c_str(), description);
 }
 
 void OctaveExport::saveVector(const char *name, const char *description,

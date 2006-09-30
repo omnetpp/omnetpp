@@ -58,7 +58,7 @@ class OctaveExport
 
     protected:
         void openFileIfNeeded();
-        void writeMatrixHeader(const char *name, const char *type, int rows, int columns);
+        void writeMatrixHeader(const char *name, int rows, int columns);
         void writeDescription(const char *name, const char *description);
         void writeString(const char *name, const char *value);
 
