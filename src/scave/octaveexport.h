@@ -58,7 +58,9 @@ class OctaveExport
 
     protected:
         void openFileIfNeeded();
-        void writeHeader(const char *name, const char *type, int rows, int columns);
+        void writeMatrixHeader(const char *name, const char *type, int rows, int columns);
+        void writeDescription(const char *name, const char *description);
+        void writeString(const char *name, const char *value);
 
     public:
         OctaveExport(const char *fileName);
@@ -67,9 +69,9 @@ class OctaveExport
         void setPrecision(int prec) {this->prec = prec;}
         std::string makeUniqueName(const char *name);
 
-        void saveVector(const char *name, const XYArray *vec, int startIndex, int endIndex);
-        void saveVectorX(const char *name, const XYArray *vec, int startIndex, int endIndex);
-        void saveVectorY(const char *name, const XYArray *vec, int startIndex, int endIndex);
+        void saveVector(const char *name, const char *description, const XYArray *vec, int startIndex=0, int endIndex=-1);
+        void saveVectorX(const char *name, const char *description, const XYArray *vec, int startIndex=0, int endIndex=-1);
+        void saveVectorY(const char *name, const char *description, const XYArray *vec, int startIndex=0, int endIndex=-1);
         void close();
 };
 

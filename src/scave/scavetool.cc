@@ -86,7 +86,7 @@ int filterCommand(int argc, char **argv)
     std::string opt_configurationIdPattern;
     std::string opt_filenamePattern = "*";  //XXX why is "" not equivalent??
     std::string opt_outputFileName;
-    std::string opt_outputFormat;
+    std::string opt_outputFormat;  //TBD vec, splitvec, octave, split octave, ...
     std::vector<std::string> opt_filterList;
     std::vector<std::string> opt_fileNames;
     StringMap opt_runAttrPatterns; //FIXME options to fill this
