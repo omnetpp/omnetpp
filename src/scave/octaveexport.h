@@ -23,7 +23,8 @@
 #include "exception.h"
 
 /**
- * Exports data in Octave's "save -text" format.
+ * Exports data in Octave's "save -text" format. This format can be loaded
+ * into R (r-project.org) as well.
  *
  * To see the an example, type the following commands in Octave:
  * <pre>
@@ -68,7 +69,7 @@ class OctaveExport
         virtual ~OctaveExport();
 
         void setPrecision(int prec) {this->prec = prec;}
-        std::string makeUniqueName(const char *name);
+        std::string makeUniqueName(const char *nameHint);
 
         void saveVector(const char *name, const char *description, const XYArray *vec, int startIndex=0, int endIndex=-1);
         void saveVectorX(const char *name, const char *description, const XYArray *vec, int startIndex=0, int endIndex=-1);

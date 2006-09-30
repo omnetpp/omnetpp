@@ -16,6 +16,7 @@
 #pragma warning(disable:4786)
 #endif
 
+#include <ctype.h>
 #include "octaveexport.h"
 
 #ifdef CHECK
@@ -40,7 +41,9 @@ void OctaveExport::openFileIfNeeded()
 {
     if (!f)
     {
-        f = fopen(fileName.c_str(), "w");
+        // note: we have to open the file in binary mode, because on Windows,
+        // cygwin-based Octave chokes on CR-LF...
+        f = fopen(fileName.c_str(), "wb");
         if (!f)
             throw new Exception("cannot open `%s' for write", fileName.c_str());
 
@@ -59,8 +62,15 @@ void OctaveExport::close()
     }
 }
 
-std::string OctaveExport::makeUniqueName(const char *name)
+std::string OctaveExport::makeUniqueName(const char *nameHint)
 {
+    // first, process the name. Only alphanumeric chars are allowed, the rest
+    // is replaced with underscore
+    std::string name = nameHint;
+    for (int i=0; i<name.length(); i++)
+        if (!isalnum(name[i]))
+            name[i] = '_';
+
     // check if it's already unique
     std::set<std::string>::const_iterator it = savedVars.find(name);
     if (it == savedVars.end())
@@ -69,10 +79,9 @@ std::string OctaveExport::makeUniqueName(const char *name)
     // try appending "_1", "_2", etc until it becomes unique
     for (int i=1; i>0; i++)
     {
-        char buf[32];
-        sprintf(buf,"_%d", i);
-        std::string newName = name;
-        newName += buf;
+        char suffix[32];
+        sprintf(suffix,"_%d", i);
+        std::string newName = name + suffix;
 
         std::set<std::string>::const_iterator it = savedVars.find(newName);
         if (it == savedVars.end())
