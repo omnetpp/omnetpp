@@ -22,7 +22,7 @@ typedef __int64 int64;
 typedef long long int64;
 #endif
 
-#define DEFAULT_PRECISION  12
+#define DEFAULT_PRECISION  14
 
 #endif
 

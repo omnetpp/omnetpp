@@ -64,6 +64,7 @@ class OctaveExport
         OctaveExport(const char *fileName);
         virtual ~OctaveExport();
 
+        void setPrecision(int prec) {this->prec = prec;}
         std::string makeUniqueName(const char *name);
 
         void saveVector(const char *name, const XYArray *vec, int startIndex, int endIndex);
