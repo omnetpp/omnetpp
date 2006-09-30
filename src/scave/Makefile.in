@@ -39,7 +39,7 @@ OBJS= arraybuilder.o channel.o commonnodes.o compoundfilter.o \
       idlist.o mergernodes.o nodetype.o nodetyperegistry.o \
       patmatch.o resultfilemanager.o slidingwinavg.o util.o \
       vectorfilereader.o vectorfilewriter.o windowavg.o \
-      xyplotnode.o
+      xyplotnode.o octaveexport.o
 #
 # Automatic rules
 #

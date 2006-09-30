@@ -39,7 +39,7 @@ class StddevNode : public SingleSinkNode
         virtual void process();
         virtual bool finished() const;
 
-        virtual long count() const   {return num_samples;}
+        virtual long count() const     {return num_samples;}
         virtual double sum() const     {return sum_samples;}
         virtual double sqrSum() const  {return sqrsum_samples;}
         virtual double min() const     {return min_samples;}

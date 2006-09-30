@@ -18,7 +18,7 @@ OBJS= arraybuilder.obj channel.obj commonnodes.obj compoundfilter.obj \
       idlist.obj mergernodes.obj nodetype.obj nodetyperegistry.obj \
       patmatch.obj resultfilemanager.obj slidingwinavg.obj \
       vectorfilereader.obj vectorfilewriter.obj windowavg.obj \
-      xyplotnode.obj
+      xyplotnode.obj octaveexport.obj
 
 #
 # Automatic rules
@@ -158,6 +158,9 @@ nodetyperegistry.obj: nodetyperegistry.cc \
   dataflowmanager.h \
   channel.h \
   commonnodes.h \
+  xyarray.h
+octaveexport.obj: octaveexport.cc \
+  octaveexport.h \
   xyarray.h
 patmatch.obj: patmatch.cc \
   patmatch.h
