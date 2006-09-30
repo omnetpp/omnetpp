@@ -15,6 +15,8 @@
 #ifndef _XYARRAY_H_
 #define _XYARRAY_H_
 
+#include "scavedefs.h"
+
 /**
  * ArrayBuilderNode returns the results in this class.
  */
@@ -27,9 +29,9 @@ class XYArray
     public:
         XYArray(double *xv, double *yv, size_t l) {x = xv; y = yv; len = l;}
         ~XYArray() {delete [] x; delete [] y;}
-        int length() {return len;}
-        double getX(int i)  {return (i>=0 && i<len) ? x[i] : 0;}
-        double getY(int i)  {return (i>=0 && i<len) ? y[i] : 0;}
+        int length() const  {return len;}
+        double getX(int i) const  {return (i>=0 && i<len) ? x[i] : 0;}
+        double getY(int i) const  {return (i>=0 && i<len) ? y[i] : 0;}
 };
 
 #endif

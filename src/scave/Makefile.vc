@@ -161,6 +161,7 @@ nodetyperegistry.obj: nodetyperegistry.cc \
   xyarray.h
 octaveexport.obj: octaveexport.cc \
   octaveexport.h \
+  scavedefs.h \
   xyarray.h
 patmatch.obj: patmatch.cc \
   patmatch.h
