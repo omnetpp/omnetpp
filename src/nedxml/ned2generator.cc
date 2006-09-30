@@ -434,18 +434,11 @@ void NED2Generator::doParam(ParamNode *node, const char *indent, bool islast, co
     if (hasExpression(node,"value"))
     {
         OUT << " = ";
-        bool parsedExpr = !strnotnull(node->getValue());
-        if (parsedExpr && node->getIsDefault())
-        {
+        if (node->getIsDefault())
             OUT << "default(";
-            printExpression(node, "value",indent);
+        printExpression(node, "value",indent);
+        if (node->getIsDefault())
             OUT << ")";
-        }
-        else
-        {
-            // if expressions are unparsed, the stored text already contains "default()"
-            printExpression(node, "value",indent);
-        }
     }
 
     const char *subindent = indent ? increaseIndent(indent) : DEFAULTINDENT;

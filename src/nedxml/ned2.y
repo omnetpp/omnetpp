@@ -117,6 +117,7 @@ static struct NED2ParserState
     int gateType;
     bool isFunction;
     bool isDefault;
+    YYLTYPE exprPos;
     int subgate;
     std::vector<NEDElement *> propvals; // temporarily collects property values
 
@@ -692,13 +693,13 @@ param_typenamevalue
                   ps.param = addParameter(ps.inParamGroup ? (NEDElement *)ps.paramgroup : (NEDElement *)ps.parameters, @3);
                   ps.param->setType(ps.paramType);
                   ps.param->setIsFunction(ps.isFunction);
-                  addExpression(ps.param, "value",@5,$5);
+                  addExpression(ps.param, "value",ps.exprPos,$5);
                   ps.param->setIsDefault(ps.isDefault);
                 }
         | NAME '=' paramvalue
                 {
                   ps.param = addParameter(ps.inParamGroup ? (NEDElement *)ps.paramgroup : (NEDElement *)ps.parameters, @1);
-                  addExpression(ps.param, "value",@3,$3); //FIXME wrong!!! stores text="default(5)" !!!!
+                  addExpression(ps.param, "value",ps.exprPos,$3);
                   ps.param->setIsDefault(ps.isDefault);
                 }
         | NAME
@@ -708,7 +709,7 @@ param_typenamevalue
         | TYPENAME '=' paramvalue  /* this is to assign module type with the "<> like Foo" syntax */
                 {
                   ps.param = addParameter(ps.inParamGroup ? (NEDElement *)ps.paramgroup : (NEDElement *)ps.parameters, @1);
-                  addExpression(ps.param, "value",@3,$3); //FIXME wrong!!! stores text="default(5)" !!!!
+                  addExpression(ps.param, "value", ps.exprPos,$3);
                   ps.param->setIsDefault(ps.isDefault);
                 }
         ;
@@ -718,7 +719,7 @@ pattern_value
                 {
                   ps.pattern = (PatternNode *)createNodeWithTag(NED_PATTERN, ps.inParamGroup ? (NEDElement *)ps.paramgroup : (NEDElement *)ps.parameters);
                   ps.pattern->setPattern(toString(@2));
-                  addExpression(ps.pattern, "value",@5,$5); //FIXME wrong!!! stores text="default(5)" !!!!
+                  addExpression(ps.pattern, "value",ps.exprPos,$5);
                   ps.pattern->setIsDefault(ps.isDefault);
                 }
         ;
@@ -745,11 +746,9 @@ opt_function
 
 paramvalue
         : expression
-                { $$ = $1; ps.isDefault = false; }
+                { $$ = $1; ps.isDefault = false; ps.exprPos = @1; }
         | DEFAULT '(' expression ')'
-                { /* FIXME this rule to be eliminated, because @3 cannot be returned... */
-                  $$ = $3; ps.isDefault = true;
-                }
+                { $$ = $3; ps.isDefault = true; ps.exprPos = @3; }
         ;
 
 opt_inline_properties
