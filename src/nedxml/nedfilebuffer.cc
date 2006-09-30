@@ -302,7 +302,7 @@ YYLTYPE NEDFileBuffer::getTrailingCommentPos(YYLTYPE pos)
     {
         // seek fwd to next code line (or end of file)
         lineAfter = pos.last_line+1;
-        while (lineAfter<numLines && getLineType(lineAfter)!=CODE_LINE)
+        while (lineAfter<=numLines && getLineType(lineAfter)!=CODE_LINE)
             lineAfter++;
 
         // now seek back to beginning of comment block
