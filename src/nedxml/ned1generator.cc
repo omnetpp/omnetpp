@@ -214,8 +214,6 @@ void NED1Generator::printOptVector(NEDElement *node, const char *attr, const cha
 
 //---------------------------------------------------------------------------
 
-//---------------------------------------------------------------------------
-
 static const char *getComment(NEDElement *node, const char *locId)
 {
     CommentNode *comment = (CommentNode *)node->getFirstChildWithAttribute(NED_COMMENT, "locid", locId);
@@ -309,10 +307,10 @@ void NED1Generator::doImport(ImportNode *node, const char *indent, bool islast, 
     // but we want to merge all imports under a single "import" keyword
     if (!node->getPrevSibling() || node->getPrevSibling()->getTagCode()!=NED_IMPORT)
     {
-        OUT << getBannerComment(node, indent);
         OUT << indent << "import\n";
     }
 
+    OUT << getBannerComment(node, indent);
     bool isLastImport = !node->getNextSibling() || node->getNextSibling()->getTagCode()!=NED_IMPORT;
     OUT << increaseIndent(indent) << "\"" << node->getFilename() << "\"";
     OUT << (isLastImport ? ";" : ",") << getRightComment(node);
