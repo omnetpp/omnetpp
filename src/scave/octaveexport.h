@@ -56,6 +56,7 @@ class OctaveExport
         int prec;
         std::set<std::string> savedVars;
 
+//FIXME create separate OctaveFileWriter and OctaveExport (which builds upon the former)
     protected:
         void openFileIfNeeded();
         void writeMatrixHeader(const char *name, int rows, int columns);
