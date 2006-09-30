@@ -90,6 +90,7 @@ class NED2Generator
     /** @name Utilities */
     //@{
     void printInheritance(NEDElement *node, const char *indent);
+    bool hasCondition(NEDElement *node);
     bool hasExpression(NEDElement *node, const char *attr);
     void printExpression(NEDElement *node, const char *attr, const char *indent);
     void printOptVector(NEDElement *node, const char *attr, const char *indent);
