@@ -101,7 +101,7 @@ public class NedHelper {
     public final static String[] highlightDocKeywords = { "author", "bug", "date", "see", "since", "todo", "version", "warning" };
     public final static String[] highlightNedTypes = { "bool", "double", "function", "inout", "input", "int", "output", "string", "xml" };
     public final static String[] highlightNedSpecialKeywords = { "-->", "<--", "<-->", ".." };
-    public final static String[] highlightNedKeywords = { "allowunconnected", "channel", "channelinterface", "connections", "extends", "gates", "if", "import", "index", "interface", "like", "module", "network", "package", "parameters", "property", "simple", "submodules", "this", "typename", "types", "where", "withcppclass" };
+    public final static String[] highlightNedKeywords = { "allowunconnected", "channel", "channelinterface", "connections", "extends", "for", "gates", "if", "import", "index", "interface", "like", "module", "network", "package", "parameters", "property", "simple", "submodules", "this", "typename", "types", "withcppclass" };
     public final static String[] highlightNedFunctions = { "acos", "asin", "atan", "atan2", "bernoulli", "beta", "binomial", "cauchy", "ceil", "chi_square", "const", "cos", "default", "erlang_k", "exp", "exponential", "fabs", "floor", "fmod", "gamma_d", "genk_exponential", "genk_intuniform", "genk_normal", "genk_truncnormal", "genk_uniform", "geometric", "hypergeometric", "hypot", "intuniform", "log", "log10", "lognormal", "max", "min", "negbinomial", "normal", "pareto_shifted", "poisson", "pow", "sin", "sizeof", "sqrt", "student_t", "tan", "triang", "truncnormal", "uniform", "weibull", "xmldoc" };
     public final static String[] highlightConstants = { "false", "true" };
 
@@ -115,7 +115,7 @@ public class NedHelper {
     public final static String[] proposedNedSectionNameKeywords = {"connections:", "connections allowunconnected:", "gates:", "parameters:", "submodules:", "types:"};
     public final static String[] proposedNedConnsKeywords = {"allowunconnected"};
     public final static String[] proposedNedInheritanceKeywords = {"extends", "like"};
-    public final static String[] proposedNedOtherKeywords = {"if", "index", "this", "typename", "where"};
+    public final static String[] proposedNedOtherKeywords = {"if", "index", "this", "typename", "for"};
     public final static String[] proposedNedFunctions = { "acos", "asin", "atan", "atan2", "bernoulli", "beta", "binomial", "cauchy", "ceil", "chi_square", "const", "cos", "default", "erlang_k", "exp", "exponential", "fabs", "floor", "fmod", "gamma_d", "genk_exponential", "genk_intuniform", "genk_normal", "genk_truncnormal", "genk_uniform", "geometric", "hypergeometric", "hypot", "intuniform", "log", "log10", "lognormal", "max", "min", "negbinomial", "normal", "pareto_shifted", "poisson", "pow", "sin", "sizeof", "sqrt", "student_t", "tan", "triang", "truncnormal", "uniform", "weibull", "xmldoc" };
     public final static String[] proposedConstants = { "false", "true" };
     public final static String[] proposedNedComponentPropertyNames = {"display(...)"}; //XXX offer as template! check what gets actually supported! also: "recordstats", "kernel", ... 

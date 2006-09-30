@@ -44,7 +44,7 @@ public class NedCompletionProcessor extends IncrementalCompletionProcessor {
 	protected static class Validator implements IContextInformationValidator, IContextInformationPresenter {
 
 		protected int fInstallOffset;
-		
+
 		/*
 		 * @see IContextInformationValidator#isContextInformationValid(int)
 		 */
@@ -58,7 +58,7 @@ public class NedCompletionProcessor extends IncrementalCompletionProcessor {
 		public void install(IContextInformation info, ITextViewer viewer, int offset) {
 			fInstallOffset= offset;
 		}
-		
+
 		/*
 		 * @see org.eclipse.jface.text.contentassist.IContextInformationPresenter#updatePresentation(int, TextPresentation)
 		 */
@@ -76,38 +76,38 @@ public class NedCompletionProcessor extends IncrementalCompletionProcessor {
 	protected static final int SECT_SUBMODULES = 5;
 	protected static final int SECT_SUBMODULE_PARAMETERS = 6;
 	protected static final int SECT_SUBMODULE_GATES = 7;
-	
+
 	protected static class CompletionInfo {
 		public String linePrefix; // relevant line (lines) just before the insertion point
-		public String linePrefixTrimmed; // like linePrefix, but last identifier (which the user is currently typing) chopped 
+		public String linePrefixTrimmed; // like linePrefix, but last identifier (which the user is currently typing) chopped
 		public String componentName;
 		public int sectionType; // SECT_xxx
 		public String submoduleTypeName;
 	}
-	
+
 	protected IContextInformationValidator fValidator= new Validator();
 
     public ICompletionProposal[] computeCompletionProposals(ITextViewer viewer, int documentOffset) {
 		long startMillis = System.currentTimeMillis(); // measure time
-	
+
 		List<ICompletionProposal> result = new ArrayList<ICompletionProposal>();
-	
+
 		// find out where we are: in which module, submodule, which section etc.
 		CompletionInfo info = computeCompletionInfo(viewer, documentOffset);
-		NEDResources res = NEDResourcesPlugin.getNEDResources();    	
-	
+		NEDResources res = NEDResourcesPlugin.getNEDResources();
+
 		String line = info.linePrefixTrimmed;
 		INEDComponent parentComponent = null;
 		if (info.componentName!=null)
-			parentComponent = res.getComponent(info.componentName); // hopefully autobuilder (reconciler) has already run on current source  
+			parentComponent = res.getComponent(info.componentName); // hopefully autobuilder (reconciler) has already run on current source
 		INEDComponent submoduleType = null;
 		if (info.submoduleTypeName!=null)
-			submoduleType = res.getComponent(info.submoduleTypeName); 
-	
+			submoduleType = res.getComponent(info.submoduleTypeName);
+
 		if (info.sectionType==SECT_GLOBAL || info.sectionType==SECT_TYPES)
 		{
 			System.out.println("testing proposals for GLOBAL and TYPES scope");
-				
+
 			// match various "extends" clauses
 			if (line.matches(".*\\bsimple .* extends"))
 				addProposals(viewer, documentOffset, result, res.getModuleNames(), "module type");
@@ -119,7 +119,7 @@ public class NedCompletionProcessor extends IncrementalCompletionProcessor {
 				addProposals(viewer, documentOffset, result, res.getModuleInterfaceNames(), "module interface type");
 			else if (line.matches(".*\\bchannelinterface .* extends"))
 				addProposals(viewer, documentOffset, result, res.getChannelInterfaceNames(), "channel interface type");
-	
+
 			// match "like" clauses
 			// XXX match "," as well (multiple interfaces)
 			if (line.matches(".*\\bsimple .* like"))
@@ -132,9 +132,9 @@ public class NedCompletionProcessor extends IncrementalCompletionProcessor {
 			if (!line.equals("") && !line.matches("\\b(extends|like)\\b"))
 				addProposals(viewer, documentOffset, result, NedHelper.proposedNedInheritanceKeywords, null);
 		}
-	
+
 		// propose line start: param names, gate names, keywords
-		if (line.equals("")) { 
+		if (line.equals("")) {
 			// offer param and gate names
 			if (info.sectionType == SECT_PARAMETERS && parentComponent!=null)
 				addProposals(viewer, documentOffset, result, parentComponent.getParamNames(), "parameter");
@@ -144,19 +144,19 @@ public class NedCompletionProcessor extends IncrementalCompletionProcessor {
 				addProposals(viewer, documentOffset, result, submoduleType.getParamNames(), "parameter");
 			if (info.sectionType == SECT_SUBMODULE_GATES && submoduleType!=null)
 				addProposals(viewer, documentOffset, result, submoduleType.getGateNames(), "gate");
-	
+
 			// offer param and gate type name keywords
 			if (info.sectionType == SECT_PARAMETERS)
 				addProposals(viewer, documentOffset, result, NedHelper.proposedNedParamTypes, null);
 			else if (info.sectionType == SECT_GATES)
 					addProposals(viewer, documentOffset, result, NedHelper.proposedNedGateTypes, null);
-	
+
 			// provide global start keywords and section names
 	    	if (info.sectionType==SECT_GLOBAL || info.sectionType==SECT_TYPES) {
 				addProposals(viewer, documentOffset, result, NedHelper.proposedNedGlobalStartingKeywords, null);
 	    	}
-	    	else if (info.sectionType==SECT_PARAMETERS || info.sectionType==SECT_GATES || 
-					info.sectionType==SECT_TYPES || info.sectionType==SECT_SUBMODULES) { 
+	    	else if (info.sectionType==SECT_PARAMETERS || info.sectionType==SECT_GATES ||
+					info.sectionType==SECT_TYPES || info.sectionType==SECT_SUBMODULES) {
 	    		addProposals(viewer, documentOffset, result, NedHelper.proposedNedSectionNameKeywords, null);
 	    	}
 	    	else if (info.sectionType==SECT_SUBMODULE_PARAMETERS) {
@@ -170,8 +170,8 @@ public class NedCompletionProcessor extends IncrementalCompletionProcessor {
 	    	else if (info.sectionType==SECT_SUBMODULES) {
 	    		addProposals(viewer, documentOffset, result, NedHelper.proposedNedSubmoduleTempl);
 	    	}
-		}    	
-	
+		}
+
 		// offer existing and standard property names after "@"
 		if (line.matches("@")) {
 			addProposals(viewer, documentOffset, result, NedHelper.proposedNedComponentPropertyNames, "standard property");
@@ -186,11 +186,11 @@ public class NedCompletionProcessor extends IncrementalCompletionProcessor {
 			if (info.sectionType == SECT_GATES || info.sectionType == SECT_SUBMODULE_GATES)
 				addProposals(viewer, documentOffset, result, NedHelper.proposedNedGatePropertyNames, "standard property");
 		}
-		
-		// expressions: after "=", opening "[", "if" or "where"
-		if (line.contains("=") || line.matches(".*\\b(if|where)\\b.*") || containsOpenBracket(line)) {
+
+		// expressions: after "=", opening "[", "if" or "for"
+		if (line.contains("=") || line.matches(".*\\b(if|for)\\b.*") || containsOpenBracket(line)) {
 			System.out.println("proposals for expressions");
-	
+
 			// offer parameter names, gate names, types,...
 			if (line.matches(".*\\bthis *\\.")) {
 				if (submoduleType!=null)
@@ -202,7 +202,7 @@ public class NedCompletionProcessor extends IncrementalCompletionProcessor {
 					addProposals(viewer, documentOffset, result, parentComponent.getSubmodNames(), "submodule");
 				}
 			}
-	    	else if (line.endsWith(".")) { 
+	    	else if (line.endsWith(".")) {
 	    		// after dot: offer params (and after sizeof(), gates too) of given submodule
 	    		if (parentComponent!=null) {
 					String submodTypeName = extractSubmoduleTypeName(line, parentComponent);
@@ -229,7 +229,7 @@ public class NedCompletionProcessor extends IncrementalCompletionProcessor {
 
 		    addProposals(viewer, documentOffset, result, NedHelper.proposedNedOtherKeywords, null);
 		}
-	
+
 		// complete submodule type name
 		if (info.sectionType == SECT_SUBMODULES) {
 			System.out.println("testing proposals for SUBMODULES scope");
@@ -249,7 +249,7 @@ public class NedCompletionProcessor extends IncrementalCompletionProcessor {
 				addProposals(viewer, documentOffset, result, res.getModuleNames(), "module type");
 			}
 		}
-	
+
 		if (info.sectionType == SECT_CONNECTIONS) {
 			System.out.println("testing proposals for CONNECTIONS scope");
 			if (line.matches(".*\\bconnections")) {
@@ -257,14 +257,14 @@ public class NedCompletionProcessor extends IncrementalCompletionProcessor {
 				addProposals(viewer, documentOffset, result, NedHelper.proposedNedConnsKeywords, null);
 			}
 
-			if (line.equals("") || line.endsWith("-->") || line.endsWith("<-->") || line.endsWith("<--")) { 
+			if (line.equals("") || line.endsWith("-->") || line.endsWith("<-->") || line.endsWith("<--")) {
 	    		// right at line start or after arrow: offer submodule names and parent module's gates
 	    		if (parentComponent!=null) {
 	    			addProposals(viewer, documentOffset, result, parentComponent.getSubmodNames(), "submodule");
 	    			addProposals(viewer, documentOffset, result, parentComponent.getGateNames(), "gate");
 	    		}
-	    	}  		
-	    	else if (line.endsWith(".")) { 
+	    	}
+	    	else if (line.endsWith(".")) {
 	    		// after dot: offer gates of given submodule
 	    		if (parentComponent!=null) {
 					String submodTypeName = extractSubmoduleTypeName(line, parentComponent);
@@ -277,20 +277,20 @@ public class NedCompletionProcessor extends IncrementalCompletionProcessor {
 
 			// offer templates for connection, loop connection, connection with channel, etc
 		    addProposals(viewer, documentOffset, result, NedHelper.proposedNedConnectionTempl);
-		}  		
-		
+		}
+
 		// offer keywords as fallback -- removed because those proposals rarely made sense
 		//if (result.isEmpty())
 		//	addProposals(viewer, documentOffset, result, NedHelper.proposedNedOtherKeywords, null);
-	
+
 	    // get all the template proposals from the parent
 		//XXX update templates (templates/ned.xml) to current NED syntax!!!
 	    List<ICompletionProposal> tmp = Arrays.asList(super.computeCompletionProposals(viewer, documentOffset));
 	    result.addAll(tmp);
-	    
+
 		long millis = System.currentTimeMillis()-startMillis;
 		System.out.println("Proposal creation: "+millis+"ms");
-	    
+
 	    return (ICompletionProposal[]) result.toArray(new ICompletionProposal[result.size()]);
 	}
 
@@ -305,7 +305,7 @@ public class NedCompletionProcessor extends IncrementalCompletionProcessor {
 		line = line.replaceFirst("^.*(-->|<--|<-->)", "");
 		// identifier followed by ".", potentially a submodule index ("[something]") in between
 		Matcher matcher = Pattern.compile("([A-Za-z_][A-Za-z0-9_]*) *(\\[[^\\[\\]]*\\])? *\\.$").matcher(line);
-		if (matcher.find()) { // use find() because line may start with garbage 
+		if (matcher.find()) { // use find() because line may start with garbage
 			String submoduleName = matcher.group(1);
 			NEDElement submodNode = parentComponent.getMember(submoduleName);
 			if (submodNode instanceof SubmoduleNode) {
@@ -330,7 +330,7 @@ public class NedCompletionProcessor extends IncrementalCompletionProcessor {
 	private void addProposals(ITextViewer viewer, int documentOffset, List<ICompletionProposal> result, Template[] templates) {
 	    result.addAll(Arrays.asList(createTemplateProposals(viewer, documentOffset, templates)));
 	}
-	
+
 	private CompletionInfo computeCompletionInfo(ITextViewer viewer, int documentOffset) {
 		IDocument docu = viewer.getDocument();
         int offset = documentOffset;
@@ -341,8 +341,8 @@ public class NedCompletionProcessor extends IncrementalCompletionProcessor {
     		// kill comments
     		source = source.replaceAll("(?m)//.*", "");
 
-    		// completion prefix (linePrefix): stuff after last semicolon, 
-    		// curly brace, "parameters:", "gates:", "connections:" etc. 
+    		// completion prefix (linePrefix): stuff after last semicolon,
+    		// curly brace, "parameters:", "gates:", "connections:" etc.
     		String prefix = source;
     		prefix = prefix.replaceAll("(?s)\\s+", " "); // normalize whitespace
     		prefix = prefix.replaceFirst(".*[;\\{\\}]", "");
@@ -353,7 +353,7 @@ public class NedCompletionProcessor extends IncrementalCompletionProcessor {
     		while (source.matches("(?s).*\\{[^\\{\\}]*\\}.*"))
     			source = source.replaceAll("(?s)\\{[^\\{\\}]*\\}", "###");
 
-			// detect what section we are in 
+			// detect what section we are in
 			int sectionType;
 			if (source.matches("(?s).*\\bconnections\\b.*"))
 				sectionType = SECT_CONNECTIONS;
@@ -387,7 +387,7 @@ public class NedCompletionProcessor extends IncrementalCompletionProcessor {
 				if (matcher2.lookingAt())
 					submoduleTypeName = matcher2.group(1);
 			}
-			
+
 			//System.out.println(">>>"+source+"<<<");
 			System.out.println("SECTIONTYPE:"+sectionType+"  COMPONENT:"+componentName+"  SUBMODTYPENAME:"+submoduleTypeName);
 			System.out.println("PREFIX: >>"+prefix+"<<");
@@ -405,7 +405,7 @@ public class NedCompletionProcessor extends IncrementalCompletionProcessor {
         	return null;
         }
 	}
-	
+
 	public IContextInformation[] computeContextInformation(ITextViewer viewer, int documentOffset) {
 		//XXX what the heck is this?
 		//		IContextInformation[] result= new IContextInformation[5];
@@ -416,19 +416,19 @@ public class NedCompletionProcessor extends IncrementalCompletionProcessor {
 		//		return result;
 		return null;
 	}
-	
+
 	public char[] getCompletionProposalAutoActivationCharacters() {
 		return new char[] { '.' };
 	}
-	
+
 	public char[] getContextInformationAutoActivationCharacters() {
 		return new char[] { '(' };
 	}
-	
+
 	public IContextInformationValidator getContextInformationValidator() {
 		return fValidator;
 	}
-	
+
 	public String getErrorMessage() {
 		return null;
 	}
