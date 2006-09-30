@@ -302,8 +302,20 @@ void NED1Generator::doNedfile(NedFileNode *node, const char *indent, bool, const
 
 void NED1Generator::doImport(ImportNode *node, const char *indent, bool islast, const char *)
 {
-    OUT << getBannerComment(node, indent);
-    OUT << indent << "import \"" << node->getFilename() << "\";" << getRightComment(node);
+    // In NED2 style, it would be just these 2 lines:
+    //OUT << getBannerComment(node, indent);
+    //OUT << indent << "import \"" << node->getFilename() << "\";" << getRightComment(node);
+
+    // but we want to merge all imports under a single "import" keyword
+    if (!node->getPrevSibling() || node->getPrevSibling()->getTagCode()!=NED_IMPORT)
+    {
+        OUT << getBannerComment(node, indent);
+        OUT << indent << "import\n";
+    }
+
+    bool isLastImport = !node->getNextSibling() || node->getNextSibling()->getTagCode()!=NED_IMPORT;
+    OUT << increaseIndent(indent) << "\"" << node->getFilename() << "\"";
+    OUT << (isLastImport ? ";" : ",") << getRightComment(node);
 }
 
 void NED1Generator::doPropertyDecl(PropertyDeclNode *node, const char *indent, bool islast, const char *)
