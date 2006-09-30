@@ -126,10 +126,6 @@ static struct NED1ParserState
     bool isAbstract;
     bool isReadonly;
 
-    /* used with the INPUT_ keyword */
-    bool hasPrompt;
-    YYLTYPE promptPos;
-
     /* NED-I: modules, channels, networks */
     NedFileNode *nedfile;
     CommentNode *comment;
@@ -682,36 +678,30 @@ substparameter
                 {
                   NEDElement *parent = ps.inGroup ? (NEDElement *)ps.substparamgroup : (NEDElement *)ps.substparams;
                   ps.substparam = addParameter(parent,@1);
-                  ps.hasPrompt = false;
+                  ps.substparam->setIsDefault(true);
                 }
           inputvalue
                 {
-                  ps.substparam->setIsDefault(true);
-                  if (ps.hasPrompt) {
-                      PropertyNode *prop = addProperty(ps.substparam, "prompt");
-                      PropertyKeyNode *propkey = (PropertyKeyNode *)createNodeWithTag(NED_PROPERTY_KEY, prop);
-                      propkey->appendChild(createLiteral(NED_CONST_STRING, trimQuotes(ps.promptPos), ps.promptPos));
-                  }
-                  if ($5)
-                      addExpression(ps.substparam, "value",@3,$5);
                   storeBannerAndRightComments(ps.substparam,@1,@5);
                   storePos(ps.substparam, @$);
                 }
         ;
 
 inputvalue
-        : '(' expr ',' expr ')'
+        : '(' expression ',' STRINGCONSTANT ')'
                 {
-                  if (np->getParseExpressionsFlag()) $$ = createExpression($2);
-                  ps.hasPrompt = true;
-                  ps.promptPos = @4;
+                  addExpression(ps.substparam, "value",@2,$2);
+
+                  PropertyNode *prop = addProperty(ps.substparam, "prompt");
+                  PropertyKeyNode *propkey = (PropertyKeyNode *)createNodeWithTag(NED_PROPERTY_KEY, prop);
+                  propkey->appendChild(createLiteral(NED_CONST_STRING, trimQuotes(@4), @4));
                 }
-        | '(' expr ')'
-                { if (np->getParseExpressionsFlag()) $$ = createExpression($2); }
+        | '(' expression ')'
+                {
+                  addExpression(ps.substparam, "value",@2,$2);
+                }
         | '(' ')'
-                { if (np->getParseExpressionsFlag()) $$ = NULL; }
         |
-                { if (np->getParseExpressionsFlag()) $$ = NULL; }
         ;
 
 /*

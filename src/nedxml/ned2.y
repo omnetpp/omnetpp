@@ -105,7 +105,9 @@ void yyerror (const char *s);
 static struct NED2ParserState
 {
     bool inTypes;
-    bool inGroup;
+    bool inParamGroup;
+    bool inGateGroup;
+    bool inConnGroup;
     std::stack<NEDElement *> propertyscope; // top(): where to insert properties as we parse them
     std::stack<NEDElement *> blockscope;    // top(): where to insert parameters, gates, etc
     std::stack<NEDElement *> typescope;     // top(): as blockscope, but ignore submodules and connection channels
@@ -627,14 +629,14 @@ paramgroup
         : opt_condition '{'
                 {
                     ps.paramgroup = (ParamGroupNode *)createNodeWithTag(NED_PARAM_GROUP, ps.parameters);
-                    if (ps.inGroup)
+                    if (ps.inParamGroup)
                        np->getErrors()->add(ps.paramgroup,"nested parameter groups are not allowed");
                     storeBannerAndRightComments(ps.paramgroup,@1,@2);
-                    ps.inGroup = true;
+                    ps.inParamGroup = true;
                 }
           params '}' opt_semicolon
                 {
-                    ps.inGroup = false;
+                    ps.inParamGroup = false;
                     if ($1)
                         ps.paramgroup->appendChild($1); // append optional condition
                     storePos(ps.paramgroup, @$);
@@ -650,7 +652,7 @@ param
           opt_inline_properties opt_condition ';'
                 {
                   ps.propertyscope.pop();
-                  if (ps.inGroup && $4)
+                  if (ps.inParamGroup && $4)
                       np->getErrors()->add(ps.param,"conditional parameters inside parameter/property groups are not allowed");
                   if ($4 && ps.param->getType()!=NED_PARTYPE_NONE)
                       np->getErrors()->add(ps.param,"parameter declaration cannot be conditional");
@@ -666,7 +668,7 @@ param
           opt_inline_properties opt_condition ';'
                 {
                   ps.propertyscope.pop();
-                  if (ps.inGroup && $4)
+                  if (ps.inParamGroup && $4)
                        np->getErrors()->add(ps.pattern,"conditional parameters inside parameter/property groups are not allowed");
                   if ($4)
                       ps.pattern->appendChild($4); // append optional condition
@@ -681,13 +683,13 @@ param
 param_typenamevalue
         : paramtype opt_function NAME
                 {
-                  ps.param = addParameter(ps.inGroup ? (NEDElement *)ps.paramgroup : (NEDElement *)ps.parameters, @3);
+                  ps.param = addParameter(ps.inParamGroup ? (NEDElement *)ps.paramgroup : (NEDElement *)ps.parameters, @3);
                   ps.param->setType(ps.paramType);
                   ps.param->setIsFunction(ps.isFunction);
                 }
         | paramtype opt_function NAME '=' paramvalue
                 {
-                  ps.param = addParameter(ps.inGroup ? (NEDElement *)ps.paramgroup : (NEDElement *)ps.parameters, @3);
+                  ps.param = addParameter(ps.inParamGroup ? (NEDElement *)ps.paramgroup : (NEDElement *)ps.parameters, @3);
                   ps.param->setType(ps.paramType);
                   ps.param->setIsFunction(ps.isFunction);
                   addExpression(ps.param, "value",@5,$5);
@@ -695,18 +697,18 @@ param_typenamevalue
                 }
         | NAME '=' paramvalue
                 {
-                  ps.param = addParameter(ps.inGroup ? (NEDElement *)ps.paramgroup : (NEDElement *)ps.parameters, @1);
-                  addExpression(ps.param, "value",@3,$3);
+                  ps.param = addParameter(ps.inParamGroup ? (NEDElement *)ps.paramgroup : (NEDElement *)ps.parameters, @1);
+                  addExpression(ps.param, "value",@3,$3); //FIXME wrong!!! stores text="default(5)" !!!!
                   ps.param->setIsDefault(ps.isDefault);
                 }
         | NAME
                 {
-                  ps.param = addParameter(ps.inGroup ? (NEDElement *)ps.paramgroup : (NEDElement *)ps.parameters, @1);
+                  ps.param = addParameter(ps.inParamGroup ? (NEDElement *)ps.paramgroup : (NEDElement *)ps.parameters, @1);
                 }
         | TYPENAME '=' paramvalue  /* this is to assign module type with the "<> like Foo" syntax */
                 {
-                  ps.param = addParameter(ps.inGroup ? (NEDElement *)ps.paramgroup : (NEDElement *)ps.parameters, @1);
-                  addExpression(ps.param, "value",@3,$3);
+                  ps.param = addParameter(ps.inParamGroup ? (NEDElement *)ps.paramgroup : (NEDElement *)ps.parameters, @1);
+                  addExpression(ps.param, "value",@3,$3); //FIXME wrong!!! stores text="default(5)" !!!!
                   ps.param->setIsDefault(ps.isDefault);
                 }
         ;
@@ -714,9 +716,9 @@ param_typenamevalue
 pattern_value
         : '/' pattern '/' '=' paramvalue
                 {
-                  ps.pattern = (PatternNode *)createNodeWithTag(NED_PATTERN, ps.inGroup ? (NEDElement *)ps.paramgroup : (NEDElement *)ps.parameters);
+                  ps.pattern = (PatternNode *)createNodeWithTag(NED_PATTERN, ps.inParamGroup ? (NEDElement *)ps.paramgroup : (NEDElement *)ps.parameters);
                   ps.pattern->setPattern(toString(@2));
-                  addExpression(ps.pattern, "value",@5,$5);
+                  addExpression(ps.pattern, "value",@5,$5); //FIXME wrong!!! stores text="default(5)" !!!!
                   ps.pattern->setIsDefault(ps.isDefault);
                 }
         ;
@@ -745,7 +747,9 @@ paramvalue
         : expression
                 { $$ = $1; ps.isDefault = false; }
         | DEFAULT '(' expression ')'
-                { $$ = $3; ps.isDefault = true; }
+                { /* FIXME this rule to be eliminated, because @3 cannot be returned... */
+                  $$ = $3; ps.isDefault = true;
+                }
         ;
 
 opt_inline_properties
@@ -789,7 +793,7 @@ pattern_elem
 property
         : property_namevalue opt_condition ';'
                 {
-                  if (ps.inGroup && $2)
+                  if (ps.inParamGroup && $2)
                        np->getErrors()->add(ps.param,"conditional properties inside parameter/property groups are not allowed");
                   if ($2)
                       ps.property->appendChild($2); // append optional condition
@@ -929,13 +933,13 @@ gategroup
         : opt_condition '{'
                 {
                     ps.gategroup = (GateGroupNode *)createNodeWithTag(NED_GATE_GROUP, ps.gates);
-                    if (ps.inGroup)
+                    if (ps.inGateGroup)
                        np->getErrors()->add(ps.gategroup,"nested gate groups are not allowed");
-                    ps.inGroup = true;
+                    ps.inGateGroup = true;
                 }
           gates '}' opt_semicolon
                 {
-                    ps.inGroup = false;
+                    ps.inGateGroup = false;
                     if ($1)
                         ps.gategroup->appendChild($1); // append optional condition
                     storePos(ps.gategroup, @$);
@@ -954,7 +958,7 @@ gate
           opt_inline_properties opt_condition ';'
                 {
                   ps.propertyscope.pop();
-                  if (ps.inGroup && $4)
+                  if (ps.inGateGroup && $4)
                        np->getErrors()->add(ps.gate,"conditional gates inside gate groups are not allowed");
                   if ($4 && ps.gate->getType()!=NED_GATETYPE_NONE)
                       np->getErrors()->add(ps.gate,"gate declaration cannot be conditional");
@@ -967,34 +971,34 @@ gate
 gate_typenamesize
         : gatetype NAME
                 {
-                  ps.gate = addGate(ps.inGroup ? (NEDElement *)ps.gategroup : (NEDElement *)ps.gates, @2);
+                  ps.gate = addGate(ps.inGateGroup ? (NEDElement *)ps.gategroup : (NEDElement *)ps.gates, @2);
                   ps.gate->setType(ps.gateType);
                 }
         | gatetype NAME '[' ']'
                 {
-                  ps.gate = addGate(ps.inGroup ? (NEDElement *)ps.gategroup : (NEDElement *)ps.gates, @2);
+                  ps.gate = addGate(ps.inGateGroup ? (NEDElement *)ps.gategroup : (NEDElement *)ps.gates, @2);
                   ps.gate->setType(ps.gateType);
                   ps.gate->setIsVector(true);
                 }
         | gatetype NAME vector
                 {
-                  ps.gate = addGate(ps.inGroup ? (NEDElement *)ps.gategroup : (NEDElement *)ps.gates, @2);
+                  ps.gate = addGate(ps.inGateGroup ? (NEDElement *)ps.gategroup : (NEDElement *)ps.gates, @2);
                   ps.gate->setType(ps.gateType);
                   ps.gate->setIsVector(true);
                   addVector(ps.gate, "vector-size",@3,$3);
                 }
         | NAME
                 {
-                  ps.gate = addGate(ps.inGroup ? (NEDElement *)ps.gategroup : (NEDElement *)ps.gates, @1);
+                  ps.gate = addGate(ps.inGateGroup ? (NEDElement *)ps.gategroup : (NEDElement *)ps.gates, @1);
                 }
         | NAME '[' ']'
                 {
-                  ps.gate = addGate(ps.inGroup ? (NEDElement *)ps.gategroup : (NEDElement *)ps.gates, @1);
+                  ps.gate = addGate(ps.inGateGroup ? (NEDElement *)ps.gategroup : (NEDElement *)ps.gates, @1);
                   ps.gate->setIsVector(true);
                 }
         | NAME vector
                 {
-                  ps.gate = addGate(ps.inGroup ? (NEDElement *)ps.gategroup : (NEDElement *)ps.gates, @1);
+                  ps.gate = addGate(ps.inGateGroup ? (NEDElement *)ps.gategroup : (NEDElement *)ps.gates, @1);
                   ps.gate->setIsVector(true);
                   addVector(ps.gate, "vector-size",@2,$2);
                 }
@@ -1223,18 +1227,20 @@ connectionsitem
 connectiongroup
         : opt_loops_and_conditions '{'
                 {
-                  //FIXME error if already in group (ps.inGroup)? otherwise we can't restore ps.conngroup....
+                  if (ps.inConnGroup)
+                      np->getErrors()->add(ps.conngroup,"nested connection groups are not allowed");
                   ps.conngroup = (ConnectionGroupNode *)createNodeWithTag(NED_CONNECTION_GROUP, ps.conns);
                   if ($1) {
+                      // for's and if's were collected in a temporary UnknownNode, put them under conngroup now
                       transferChildren($1, ps.conngroup);
                       delete $1;
                   }
-                  ps.inGroup = true;
+                  ps.inConnGroup = true;
                   storeBannerAndRightComments(ps.conngroup,@1);
                 }
           connections '}' opt_semicolon
                 {
-                  ps.inGroup = false;
+                  ps.inConnGroup = false;
                   storePos(ps.conngroup,@$);
                   storeTrailingComment(ps.conngroup,@$);
                 }
@@ -1319,13 +1325,13 @@ leftgatespec
 leftmod
         : NAME vector
                 {
-                  ps.conn = (ConnectionNode *)createNodeWithTag(NED_CONNECTION, ps.inGroup ? (NEDElement*)ps.conngroup : (NEDElement*)ps.conns );
+                  ps.conn = (ConnectionNode *)createNodeWithTag(NED_CONNECTION, ps.inConnGroup ? (NEDElement*)ps.conngroup : (NEDElement*)ps.conns );
                   ps.conn->setSrcModule( toString(@1) );
                   addVector(ps.conn, "src-module-index",@2,$2);
                 }
         | NAME
                 {
-                  ps.conn = (ConnectionNode *)createNodeWithTag(NED_CONNECTION, ps.inGroup ? (NEDElement*)ps.conngroup : (NEDElement*)ps.conns );
+                  ps.conn = (ConnectionNode *)createNodeWithTag(NED_CONNECTION, ps.inConnGroup ? (NEDElement*)ps.conngroup : (NEDElement*)ps.conns );
                   ps.conn->setSrcModule( toString(@1) );
                 }
         ;
@@ -1350,20 +1356,20 @@ leftgate
 parentleftgate
         : NAME
                 {
-                  ps.conn = (ConnectionNode *)createNodeWithTag(NED_CONNECTION, ps.inGroup ? (NEDElement*)ps.conngroup : (NEDElement*)ps.conns );
+                  ps.conn = (ConnectionNode *)createNodeWithTag(NED_CONNECTION, ps.inConnGroup ? (NEDElement*)ps.conngroup : (NEDElement*)ps.conns );
                   ps.conn->setSrcModule("");
                   ps.conn->setSrcGate(toString(@1));
                 }
         | NAME vector
                 {
-                  ps.conn = (ConnectionNode *)createNodeWithTag(NED_CONNECTION, ps.inGroup ? (NEDElement*)ps.conngroup : (NEDElement*)ps.conns );
+                  ps.conn = (ConnectionNode *)createNodeWithTag(NED_CONNECTION, ps.inConnGroup ? (NEDElement*)ps.conngroup : (NEDElement*)ps.conns );
                   ps.conn->setSrcModule("");
                   ps.conn->setSrcGate(toString(@1));
                   addVector(ps.conn, "src-gate-index",@2,$2);
                 }
         | NAME PLUSPLUS
                 {
-                  ps.conn = (ConnectionNode *)createNodeWithTag(NED_CONNECTION, ps.inGroup ? (NEDElement*)ps.conngroup : (NEDElement*)ps.conns );
+                  ps.conn = (ConnectionNode *)createNodeWithTag(NED_CONNECTION, ps.inConnGroup ? (NEDElement*)ps.conngroup : (NEDElement*)ps.conns );
                   ps.conn->setSrcModule("");
                   ps.conn->setSrcGate(toString(@1));
                   ps.conn->setSrcGatePlusplus(true);

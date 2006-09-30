@@ -529,6 +529,7 @@ void NED1Generator::doConnectionAttributes(ParametersNode *node, const char *ind
 
 void NED1Generator::doChannelParam(ParamNode *node, const char *indent)
 {
+    // this is used both in channel definitions and in connections
     OUT << getBannerComment(node, indent);
     const char *name = node->getName();
     if (strcmp(name, "delay")==0 || strcmp(name, "error")==0 || strcmp(name, "datarate")==0)
