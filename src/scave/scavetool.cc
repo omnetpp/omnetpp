@@ -301,7 +301,10 @@ int filterCommand(int argc, char **argv)
                 const VectorResult& vector = resultFileManager.getVector(vectorIDList.get(i));
                 std::string uniqueName = exporter.makeUniqueName(vector.nameRef->c_str());
 
-                std::string descr = "hello"; //XXX
+                std::string descr = *vector.nameRef + "; "
+                                  + *vector.moduleNameRef + "; "
+                                  + vector.fileRunRef->fileRef->fileSystemFilePath + "; "
+                                  + vector.fileRunRef->runRef->runName;
                 XYArray *xyArray = arrayBuilders[i]->getArray();
                 exporter.saveVector(uniqueName.c_str(), descr.c_str(), xyArray);
                 delete xyArray;
