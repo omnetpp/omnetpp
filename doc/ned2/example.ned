@@ -61,6 +61,9 @@
 //     }
 //   and usage: Foo.RADIO_FREQ.
 //
+// - XXX rename "interface" to "moduleinterface", to be consistent with "channelinterface" !!!
+// - XXX find a better name for "channel withclass"!!!
+//
 // - XXX do we need to support the "like *" phrase?
 //
 // - XXX IBidirectionalChannel, IUnidirectionalChannel: if a module
@@ -258,7 +261,7 @@ module MobileHost1
         double x;
         double y;
         @display(p=$x,$y); // $paramname is only resolved at runtime
-};
+}
 
 
 //
@@ -408,6 +411,7 @@ module Host1
         double delay;
         int mss0 = 1000;
         int mss = 500;
+        int bla = -1;
     types:
         simple TCP1X extends TCP1
         {
@@ -416,7 +420,7 @@ module Host1
     submodules:
         udp: UDP1 {
             maxpk = 2000;
-        }
+        };
         tcp: TCP1X {
             // reserved keywords: "this"
             // scope on right side: "parent"; one can explicitly write "this."
@@ -523,7 +527,7 @@ network RandomGraph
             node[i].port++ <--> node[j].port++ for j=i+1..99, if uniform()<0.3;
             node[i].port++ <--> node[j].port++ for j=i+1..99, if uniform()<0.1;
         };
-};
+}
 
 //
 // "like" syntax:
@@ -534,7 +538,7 @@ module Host2
         int N;
         string appType @moduleWithInterface(TCPApp); // "like TCPApp"
     submodules:
-        apps[N]: <appType> like TCPApp {} // they're all of the same type
+        apps[N]: <appType> like TCPApp {}; // they're all of the same type
 }
 
 module ConfigurableHost
@@ -653,7 +657,7 @@ network PPPNet
         simple Node { gates: inout g; }  //FIXME how could this be implemented in C++? what's the class name??
 
     submodules:
-        node[10]: Node {}
+        node[10]: Node {};
     connections:
         node[0].g++ <--> PPPLineModule <--> node[1].g++; // would implicitly create submodules named c1,c2,..., and connect them
         node[0].g++ <--> PPPLineModule <--> node[3].g++; // allowed because PPPLineModule is "like" IBidirectionalChannel
@@ -710,7 +714,7 @@ simple Gen1
 network Network6
 {
     types:
-        simple Host 
+        simple Host
         {
             parameters:
                 int parX;
@@ -730,14 +734,14 @@ network Network6
                 if index>9 {
                     parY = 3;  // declarations cannot be conditional, only assignments or refinements!
                     parZ = 655;
-                }
+                };
             gates:
                 port[5] if index==3;  // declarations cannot be conditional, only assignments or refinements!
                 port[8];
                 if index>9 {
                     portA[34];
                     portB[3];
-                }
-        }
+                };
+        };
 }
 
