@@ -93,7 +93,7 @@ class NED1Generator
     bool hasExpression(NEDElement *node, const char *attr);
     void printExpression(NEDElement *node, const char *attr, const char *indent);
     void printOptVector(NEDElement *node, const char *attr, const char *indent);
-    const char *getDisplayStringOf(NEDElement *node);
+    const char *getDisplayStringOf(NEDElement *node, PropertyNode *&outDisplayProp);
     const char *getPromptTextOf(ParamNode *param);
     //@}
 

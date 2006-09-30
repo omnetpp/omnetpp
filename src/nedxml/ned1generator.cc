@@ -362,9 +362,13 @@ void NED1Generator::doCompoundModule(CompoundModuleNode *node, const char *inden
     generateChildrenWithType(node, NED_SUBMODULES, increaseIndent(indent));
     generateChildrenWithType(node, NED_CONNECTIONS, increaseIndent(indent));
 
-    const char *dispstr = getDisplayStringOf(node);
+    PropertyNode *displayProp;
+    const char *dispstr = getDisplayStringOf(node, displayProp);
     if (dispstr)
-        OUT << increaseIndent(indent) << "display: " << dispstr << ";\n"; //FIXME bannercomment and rightcomment of display string property
+    {
+        OUT << getBannerComment(displayProp, increaseIndent(indent));
+        OUT << increaseIndent(indent) << "display: " << dispstr << ";" << getRightComment(displayProp);
+    }
 
     OUT << indent << (node->getIsNetwork() ? "endnetwork" : "endmodule") << getTrailingComment(node);
 }
@@ -836,14 +840,19 @@ void NED1Generator::doSubmodule(SubmoduleNode *node, const char *indent, bool is
     generateChildrenWithType(node, NED_PARAMETERS, increaseIndent(indent));
     generateChildrenWithType(node, NED_GATES, increaseIndent(indent));
 
-    const char *dispstr = getDisplayStringOf(node);
+    PropertyNode *displayProp;
+    const char *dispstr = getDisplayStringOf(node, displayProp);
     if (dispstr)
-        OUT << increaseIndent(indent) << "display: " << dispstr << ";\n"; //FIXME comments of the @property node
+    {
+        OUT << getBannerComment(displayProp, increaseIndent(indent));
+        OUT << increaseIndent(indent) << "display: " << dispstr << ";" << getRightComment(displayProp);
+    }
 }
 
-const char *NED1Generator::getDisplayStringOf(NEDElement *node)
+const char *NED1Generator::getDisplayStringOf(NEDElement *node, PropertyNode *&outDisplayProp)
 {
     // node must be a module, submodule or a connection-spec
+    outDisplayProp = NULL;
     ParametersNode *parameters = (ParametersNode *)node->getFirstChildWithTag(NED_PARAMETERS);
     if (!parameters)
         return NULL;
@@ -856,6 +865,7 @@ const char *NED1Generator::getDisplayStringOf(NEDElement *node)
     LiteralNode *literal = (LiteralNode *)propKey->getFirstChildWithTag(NED_LITERAL);
     if (!literal)
         return NULL;
+    outDisplayProp = displayProp;
     return literal->getText();
 }
 
@@ -922,7 +932,8 @@ void NED1Generator::doConnection(ConnectionNode *node, const char *indent, bool 
     NEDElement *chanSpecNode = node->getFirstChildWithTag(NED_CHANNEL_SPEC);
     if (chanSpecNode)
     {
-        const char *dispstr = getDisplayStringOf(chanSpecNode);
+        PropertyNode *dummy;
+        const char *dispstr = getDisplayStringOf(chanSpecNode, dummy);
         if (dispstr)
             OUT << " display " << dispstr;
     }
