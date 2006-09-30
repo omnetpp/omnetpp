@@ -17,6 +17,7 @@
 
 #include <stdio.h>
 #include <string>
+#include <set>
 #include "scavedefs.h"
 #include "xyarray.h"
 #include "exception.h"
@@ -53,6 +54,7 @@ class OctaveExport
         std::string fileName;
         FILE *f;
         int prec;
+        std::set<std::string> savedVars;
 
     protected:
         void openFileIfNeeded();
@@ -61,6 +63,8 @@ class OctaveExport
     public:
         OctaveExport(const char *fileName);
         virtual ~OctaveExport();
+
+        std::string makeUniqueName(const char *name);
 
         void saveVector(const char *name, const XYArray *vec, int startIndex, int endIndex);
         void saveVectorX(const char *name, const XYArray *vec, int startIndex, int endIndex);

@@ -53,13 +53,38 @@ void OctaveExport::close()
 {
     if (f)
     {
+        // close the file
         fclose(f);
         f = NULL;
     }
 }
 
+std::string OctaveExport::makeUniqueName(const char *name)
+{
+    // check if it's already unique
+    std::set<std::string>::const_iterator it = savedVars.find(name);
+    if (it == savedVars.end())
+        return name;
+
+    // try appending "_1", "_2", etc until it becomes unique
+    for (int i=1; i>0; i++)
+    {
+        char buf[32];
+        sprintf(buf,"_%d", i);
+        std::string newName = name;
+        newName += buf;
+
+        std::set<std::string>::const_iterator it = savedVars.find(newName);
+        if (it == savedVars.end())
+            return newName;
+    }
+    throw new Exception("banged head against the sky");
+}
+
 void OctaveExport::writeHeader(const char *name, const char *type, int rows, int columns)
 {
+    savedVars.insert(name);
+
     CHECK(fprintf(f,"# name: %s\n"
                     "# type: %s\n"
                     "# rows: %d\n"
