@@ -27,14 +27,16 @@
 // - The default base class is BasicChannel. That is:
 //     1. "--> {...} -->" means "--> BasicChannel {...} -->"
 //     2. "channel X {...}" means "channel X extends BasicChannel {...}"
-//        XXX wouldn't it be better to force the user spell out "extends BasicChannel"?? one less exception!!!
 //
-// XXX What about this: "module X extends ASimple" instead of "simple X extends ASimple"??
-//   Otherwise, if base type's implementation gets changed from simple to compound,
-//   all subclasses will have to be changed!!!! It can be still asserted that
-//   one doesn't try to add submodules to it in the subclass.
+//    It was considered to force the user spell out "extends BasicChannel", and discarded (inconvenient)
+//    It was considered to make NullChannel the default, and discarded (impractical and error-prone)
 //
-// - "simple X extends ASimpleModule": inherits the C++ implementation of ASimpleModule!
+// - This was considered and discarded: "module X extends ASimple" instead of "simple X extends ASimple"
+//   Was proposed because otherwise, if base type's implementation gets changed from
+//   simple to compound, all subclasses will have to be changed.
+//   Idea discarded because the confusion this would create is worse than the problem itself.
+//
+// - Note: "simple X extends ASimpleModule": inherits the C++ implementation of ASimpleModule!
 //   (That is, code CANNOT be modified via "extends" -- it always stays the same,
 //   that of the ultimate base class.) Subclass may add new parameters and gates
 //   (if it makes sense...) and set parameters and gate vector sizes.
@@ -45,8 +47,9 @@
 //   would be legal and would mean DIFFERENT things.
 //   ("simple X extends ACompoundModule" would still be illegal)
 //
-// - "module X extends ACompoundModule": subclass may NOT add further submodules,
-//   gates, connections. Parameters can be added or assigned a value.
+// - "module X extends ACompoundModule": subclass may add further submodules,
+//   gates, connections. Parameters can be added or assigned a value. It may not
+//   remove or modify inherited submodules (there's no syntax for that!)
 //
 //     XXX TODO: revise all "extends" examples below!
 //
@@ -92,8 +95,8 @@
 // - rules of conditionals must be defined exactly!
 //     o for inner types: NO CONDITIONAL
 //     o for properties: YES
-//     o for parameters: YES
-//     o for gates: YES
+//     o for parameters: only for assignment/property change, but not for declaration
+//     o for gates: only for gatesize/property change, but not for declaration
 //     o for submodules: NO
 //     o for connections: YES
 //
@@ -143,15 +146,6 @@
 //
 // STILL PROBLEM: what to do with conditional properties? like this:
 //   @display(c="green") if index==3;    <=== how to write this?
-//
-// FIXME PROBLEM: NED-I conditional connection inside a "for" cannot be
-// mapped to NED-2 which is BAD because it is VERY common!!!
-// Must allow 'if' inside connection groups as well!
-//
-// FIXME Additionally: "where" is too unfamiliar for programmers, and syntax
-// for mixing loops with conditionals is CONFUSING!!!
-// Ditch where, and use "for" + "if" instead?
-//    for i=0..N-1, for j=0..M-1, if i!=j {...} ???
 //
 
 package generic.queueing;  // default package for following components
