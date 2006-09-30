@@ -612,13 +612,14 @@ void NED1Generator::doSubstParam(ParamNode *node, const char *indent, bool islas
 
     OUT << getBannerComment(node, indent);
     OUT << indent << node->getName() << " = ";
-    if (!node->getIsDefault())
-    {
-        printExpression(node, "value", indent);
-    }
-    else if (!hasExpression(node, "value"))
+
+    if (!hasExpression(node, "value"))
     {
         OUT << "input";
+    }
+    else if (!node->getIsDefault())
+    {
+        printExpression(node, "value", indent);
     }
     else
     {

@@ -158,12 +158,12 @@ void storeBannerComment(NEDElement *node, YYLTYPE tokenpos)
     addComment(node, "banner", np->getSource()->getBannerComment(tokenpos));
 }
 
-void storeRightComment(NEDElement *node, YYLTYPE tokenpos)
+void storeRightComment(NEDElement *node, YYLTYPE tokenpos)  //FIXME don't store if it's just a newline
 {
     addComment(node, "right", np->getSource()->getTrailingComment(tokenpos));
 }
 
-void storeTrailingComment(NEDElement *node, YYLTYPE tokenpos)
+void storeTrailingComment(NEDElement *node, YYLTYPE tokenpos) //FIXME don't store if it's just a newline
 {
     addComment(node, "trailing", np->getSource()->getTrailingComment(tokenpos));
 }
