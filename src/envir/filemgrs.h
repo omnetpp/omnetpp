@@ -25,6 +25,7 @@
 #include "envirext.h"
 #include "util.h"
 
+#define DEFAULT_PRECISION 14
 
 /**
  * A cOutputVectorManager that uses a line-oriented text file as output.

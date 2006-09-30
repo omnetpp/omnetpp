@@ -66,7 +66,7 @@ cFileOutputVectorManager::cFileOutputVectorManager()
 {
     nextid = 0;
     f = NULL;
-    prec = ev.config()->getAsInt("General", "output-vector-precision", 12);
+    prec = ev.config()->getAsInt("General", "output-vector-precision", DEFAULT_PRECISION);
 }
 
 cFileOutputVectorManager::~cFileOutputVectorManager()
@@ -201,7 +201,7 @@ Register_Class(cFileOutputScalarManager);
 cFileOutputScalarManager::cFileOutputScalarManager()
 {
     f = NULL;
-    prec = ev.config()->getAsInt("General", "output-scalar-precision", 12);
+    prec = ev.config()->getAsInt("General", "output-scalar-precision", DEFAULT_PRECISION);
 }
 
 cFileOutputScalarManager::~cFileOutputScalarManager()
