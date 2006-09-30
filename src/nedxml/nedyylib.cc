@@ -138,10 +138,12 @@ PropertyNode *storeComponentSourceCode(NEDElement *node, YYLTYPE tokenpos)
 //
 // Comments
 //
-void addComment(NEDElement *node, const char *locId, const char *text)
+void addComment(NEDElement *node, const char *locId, const char *text, const char *defaultValue)
 {
-    if (!*text)
+    // don't store empty string or the default
+    if (!text[0] || strcmp(text,defaultValue)==0)
         return;
+
     CommentNode *comment = (CommentNode *)createNodeWithTag(NED_COMMENT);
     comment->setLocid(locId);
     comment->setContent(text);
@@ -150,22 +152,22 @@ void addComment(NEDElement *node, const char *locId, const char *text)
 
 void storeFileComment(NEDElement *node)
 {
-    addComment(node, "banner", np->getSource()->getFileComment());
+    addComment(node, "banner", np->getSource()->getFileComment(), "");
 }
 
 void storeBannerComment(NEDElement *node, YYLTYPE tokenpos)
 {
-    addComment(node, "banner", np->getSource()->getBannerComment(tokenpos));
+    addComment(node, "banner", np->getSource()->getBannerComment(tokenpos), "");
 }
 
-void storeRightComment(NEDElement *node, YYLTYPE tokenpos)  //FIXME don't store if it's just a newline
+void storeRightComment(NEDElement *node, YYLTYPE tokenpos)
 {
-    addComment(node, "right", np->getSource()->getTrailingComment(tokenpos));
+    addComment(node, "right", np->getSource()->getTrailingComment(tokenpos), "\n");
 }
 
-void storeTrailingComment(NEDElement *node, YYLTYPE tokenpos) //FIXME don't store if it's just a newline
+void storeTrailingComment(NEDElement *node, YYLTYPE tokenpos)
 {
-    addComment(node, "trailing", np->getSource()->getTrailingComment(tokenpos));
+    addComment(node, "trailing", np->getSource()->getTrailingComment(tokenpos), "\n");
 }
 
 void storeBannerAndRightComments(NEDElement *node, YYLTYPE pos)
@@ -192,7 +194,7 @@ void storeInnerComments(NEDElement *node, YYLTYPE pos)
         const char *comment = np->getSource()->getNextInnerComment(pos); // updates "pos"
         if (!comment)
             break;
-        addComment(node, "inner", comment);
+        addComment(node, "inner", comment, "");
     }
 }
 
