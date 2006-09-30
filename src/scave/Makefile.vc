@@ -180,11 +180,14 @@ scavetool.obj: scavetool.cc \
   vectorfilewriter.h \
   filternodes.h \
   filewriter.h \
+  arraybuilder.h \
+  octaveexport.h \
   idlist.h \
   scavedefs.h \
   node.h \
   channel.h \
-  commonnodes.h
+  commonnodes.h \
+  xyarray.h
 slidingwinavg.obj: slidingwinavg.cc \
   channel.h \
   slidingwinavg.h \

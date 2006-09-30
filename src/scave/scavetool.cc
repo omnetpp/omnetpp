@@ -24,6 +24,9 @@
 #include "vectorfilewriter.h"
 #include "filternodes.h"
 #include "filewriter.h"
+#include "arraybuilder.h"
+#include "octaveexport.h"
+
 
 void printUsage()
 {
@@ -86,14 +89,15 @@ int filterCommand(int argc, char **argv)
     std::string opt_configurationIdPattern;
     std::string opt_filenamePattern = "*";  //XXX why is "" not equivalent??
     std::string opt_outputFileName;
-    std::string opt_outputFormat;  //TBD vec, splitvec, octave, split octave, ...
+    std::string opt_outputFormat;  //TBD vec, splitvec, octave, split octave (and for octave: x, y, both),...
     std::vector<std::string> opt_filterList;
     std::vector<std::string> opt_fileNames;
     StringMap opt_runAttrPatterns; //FIXME options to fill this
 
     //FIXME only exactly one of the next ones may be true
-    bool opt_writeVectorFile = true;    //TODO create option for this
+    bool opt_writeVectorFile = false;    //TODO create option for this
     bool opt_writeSeparateFiles = false; //TODO create option for this
+    bool opt_writeOctaveFile = true; //TODO create option for this
 
     // parse options
     bool endOpts = false;
@@ -234,6 +238,7 @@ int filterCommand(int argc, char **argv)
         }
 
         // eventually, connect ports to writer node
+        std::vector<ArrayBuilderNode*> arrayBuilders; // for Octave output
         if (opt_writeVectorFile)
         {
             // everything goes to a common vector file
@@ -266,6 +271,18 @@ int filterCommand(int argc, char **argv)
                 dataflowManager.connect(vectorPorts[i], &(writerNode->in));
             }
         }
+        else if (opt_writeOctaveFile)
+        {
+            // for Octave, we must build arrays
+            if (opt_verbose) printf("adding array builders for Octave output\n");
+            for (int i=0; i<vectorIDList.size(); i++)
+            {
+                ArrayBuilderNode *arrayBuilderNode = new ArrayBuilderNode();
+                dataflowManager.addNode(arrayBuilderNode);
+                dataflowManager.connect(vectorPorts[i], &(arrayBuilderNode->in));
+                arrayBuilders.push_back(arrayBuilderNode);
+            }
+        }
         else
         {
             //XXX error - no output method
@@ -274,6 +291,24 @@ int filterCommand(int argc, char **argv)
         // run!
         if (opt_verbose) printf("running dataflow network...\n");
         dataflowManager.execute();
+
+        if (opt_writeOctaveFile)
+        {
+            // here we have to actually save it
+            OctaveExport exporter("data.octave"); //XXX filename
+            for (int i=0; i<vectorIDList.size(); i++)
+            {
+                const VectorResult& vector = resultFileManager.getVector(vectorIDList.get(i));
+                std::string uniqueName = exporter.makeUniqueName(vector.nameRef->c_str());
+
+                std::string descr = "hello"; //XXX
+                XYArray *xyArray = arrayBuilders[i]->getArray();
+                exporter.saveVector(uniqueName.c_str(), descr.c_str(), xyArray);
+                delete xyArray;
+            }
+            exporter.close();
+        }
+
         if (opt_verbose) printf("done\n");
     }
     catch (Exception *e)

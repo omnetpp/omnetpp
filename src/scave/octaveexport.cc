@@ -116,7 +116,7 @@ void OctaveExport::saveVector(const char *name, const char *description,
         writeDescription(name, description);
     if (endIndex==-1)
         endIndex = vec->length();
-    writeMatrixHeader(name, startIndex - endIndex, 2);
+    writeMatrixHeader(name, endIndex-startIndex, 2);
 
     // write data
     for (int i=startIndex; i<endIndex; i++)
@@ -132,7 +132,7 @@ void OctaveExport::saveVectorX(const char *name, const char *description,
         writeDescription(name, description);
     if (endIndex==-1)
         endIndex = vec->length();
-    writeMatrixHeader(name, startIndex - endIndex, 1);
+    writeMatrixHeader(name, endIndex-startIndex, 1);
 
     // write data
     for (int i=startIndex; i<endIndex; i++)
@@ -148,7 +148,7 @@ void OctaveExport::saveVectorY(const char *name, const char *description,
         writeDescription(name, description);
     if (endIndex==-1)
         endIndex = vec->length();
-    writeMatrixHeader(name, startIndex - endIndex, 1);
+    writeMatrixHeader(name, endIndex-startIndex, 1);
 
     // write data
     for (int i=startIndex; i<endIndex; i++)
