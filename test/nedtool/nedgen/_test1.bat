@@ -1,6 +1,8 @@
 @echo off
 
 : nedxml test: parse then regenerate .ned files
+: note: this must be run with and without -e flag (expr parsing)
+
 : FIXME turn into automated test!
 
 mkdir work 2>nul

@@ -1,6 +1,8 @@
 @echo off
 
 : nedxml test: convert old-syntax .ned files to ned2, then back -- result should be identical (almost)
+: note: this must be run with and without -e flag (expr parsing)
+
 : FIXME turn into automated test!
 
 mkdir work 2>nul
