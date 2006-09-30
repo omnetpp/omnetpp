@@ -900,8 +900,7 @@ void NED1Generator::doConnection(ConnectionNode *node, const char *indent, bool 
     // print channel attributes
     if (node->getFirstChildWithTag(NED_CHANNEL_SPEC))
     {
-        generateChildrenWithType(node, NED_CHANNEL_SPEC, indent);
-        OUT << arrow;
+        generateChildrenWithType(node, NED_CHANNEL_SPEC, indent, arrow);
     }
 
     // print dest
@@ -933,8 +932,11 @@ void NED1Generator::doConnection(ConnectionNode *node, const char *indent, bool 
     OUT << ";" << getRightComment(node);
 }
 
-void NED1Generator::doChannelSpec(ChannelSpecNode *node, const char *indent, bool islast, const char *)
+void NED1Generator::doChannelSpec(ChannelSpecNode *node, const char *indent, bool islast, const char *arrow)
 {
+    NEDElement *params = node->getFirstChildWithTag(NED_PARAMETERS);
+    bool hasParams = params && params->getFirstChildWithTag(NED_PARAM);
+
     if (node->getLikeAny() || strnotnull(node->getLikeType()))
     {
         errors->add(node, ERRCAT_WARNING, NED2FEATURE "channel `like'");
@@ -942,12 +944,16 @@ void NED1Generator::doChannelSpec(ChannelSpecNode *node, const char *indent, boo
     else if (strnotnull(node->getType()))
     {
         // concrete channel type
-        OUT << " " << node->getType();
-    }
+        OUT << " " << node->getType() << arrow;
 
-    if (node->getFirstChildWithTag(NED_PARAMETERS))
+        if (hasParams)
+            errors->add(node, ERRCAT_WARNING, NED2FEATURE "channel spec with parameters");
+    }
+    else if (node->getFirstChildWithTag(NED_PARAMETERS))
     {
         generateChildrenWithType(node, NED_PARAMETERS, increaseIndent(indent));
+        if (hasParams)
+            OUT << arrow;
     }
 }
 
