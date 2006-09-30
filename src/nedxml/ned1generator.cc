@@ -633,10 +633,11 @@ void NED1Generator::doProperty(PropertyNode *node, const char *indent, bool isla
     // note: no code needs to be generated here, that is done separately
     if (strcmp(node->getName(), "display")==0)
     {
-        // must be submodule->parameters->property or connection->chanspec->parameters->property
+        // must be submodule->parameters->property, module->parameters->property or
+        // connection->chanspec->parameters->property
         NEDElement *grandparent = node->getParent() ? node->getParent()->getParent() : NULL;
-        if (!grandparent || (grandparent->getTagCode()!=NED_SUBMODULE && grandparent->getTagCode()!=NED_CHANNEL_SPEC))
-            errors->add(node, ERRCAT_WARNING, NED2FEATURE "@display may occur on submodules and connections only");
+        if (!grandparent || (grandparent->getTagCode()!=NED_SUBMODULE && grandparent->getTagCode()!=NED_COMPOUND_MODULE && grandparent->getTagCode()!=NED_CHANNEL_SPEC))
+            errors->add(node, ERRCAT_WARNING, NED2FEATURE "@display may occur on submodules, connections and compound modules only");
     }
     else if (strcmp(node->getName(), "prompt")==0)
     {

@@ -188,8 +188,8 @@ const char *NEDFileBuffer::get(YYLTYPE pos)
 {
     if (end) {*end = savedChar; end=NULL;}
 
-    // if line is null, return NULL
-    if (!pos.first_line || !pos.last_line)
+    // return NULL
+    if (pos.first_line==0 && pos.last_line==0)
         return NULL;
 
     if (isEmpty(pos))
@@ -215,7 +215,7 @@ YYLTYPE NEDFileBuffer::getFileCommentPos()
     if (end) {*end = savedChar; end=NULL;}
 
     // seek end of comment block (that is, last blank line before a code line or eof)
-    int lastBlank = -1;
+    int lastBlank = 0;
     int lineType;
     int line;
     for (line=1; line<=numLines && (lineType=getLineType(line))!=CODE_LINE; line++)
