@@ -97,9 +97,13 @@ public class BrowseDataPage extends ScaveEditorPage {
 		manager.addListener(new IResultFilesChangeListener() {
 			public void idlistChanged(IDList idlist) {
 			}
-			public void resultFileManagerChanged(ResultFileManager manager) {
-				scalarsPanel.setIDList(manager.getAllScalars());
-				vectorsPanel.setIDList(manager.getAllVectors());
+			public void resultFileManagerChanged(final ResultFileManager manager) {
+				getDisplay().asyncExec(new Runnable() {
+					public void run() {
+						scalarsPanel.setIDList(manager.getAllScalars());
+						vectorsPanel.setIDList(manager.getAllVectors());
+					}
+				});
 			}
 		});
 	}

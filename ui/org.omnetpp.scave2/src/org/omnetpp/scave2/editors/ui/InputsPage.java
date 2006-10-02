@@ -84,10 +84,14 @@ public class InputsPage extends ScaveEditorPage {
         getLogicalDataTreeViewer().setLabelProvider(new InputsViewLabelProvider());
 
         scaveEditor.getResultFileManager().addListener(new IResultFilesChangeListener() {
-			public void resultFileManagerChanged(ResultFileManager manager) {
-				getFileRunTreeViewer().setInput(manager); // force refresh
-				getRunFileTreeViewer().setInput(manager);
-				getLogicalDataTreeViewer().setInput(manager);
+			public void resultFileManagerChanged(final ResultFileManager manager) {
+				getDisplay().asyncExec(new Runnable() {
+					public void run() {
+						getFileRunTreeViewer().setInput(manager); // force refresh
+						getRunFileTreeViewer().setInput(manager);
+						getLogicalDataTreeViewer().setInput(manager);
+					}
+				});
 			}
         });
         

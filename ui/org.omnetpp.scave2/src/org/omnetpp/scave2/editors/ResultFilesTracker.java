@@ -1,5 +1,9 @@
 package org.omnetpp.scave2.editors;
 
+import java.util.List;
+
+import javax.swing.text.html.HTMLDocument.HTMLReader.IsindexAction;
+
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceChangeEvent;
@@ -77,20 +81,20 @@ public class ResultFilesTracker implements INotifyChangedListener, IResourceChan
 			IResource resource = delta.getResource();
 			if (!(resource instanceof IFile))
 				return true;
-
-			//FIXME FIXME FIXME every file gets loaded, regardless Inputs!!! must check if it matches anything in Inputs
-			//XXX introduce isResultFile(IFile) and inputsMatches(IFile) methods for that
+			
 			IFile file = (IFile)resource;
 			switch (delta.getKind()) {
 			case IResourceDelta.ADDED:
-					loadFile(file);
+					if (isResultFile(file) && inputsMatches(file))
+						loadFile(file);
 					break;
 			case IResourceDelta.REMOVED:
 					unloadFile(file);
 					break;
 			case IResourceDelta.CHANGED:
 					unloadFile(file);
-					loadFile(file);
+					if (isResultFile(file) && inputsMatches(file))
+						loadFile(file);
 					break;
 			}
 			return false;
@@ -127,27 +131,37 @@ public class ResultFilesTracker implements INotifyChangedListener, IResourceChan
 	
 	private void loadFile(IFile file) {
 		System.out.println("loadFile: "+file);
-		try {
-			if (file.getContentDescription() != null &&
-					file.getContentDescription().getContentType() != null) {
-
-				IContentType contentType = file.getContentDescription().getContentType();
-				String osPath = file.getLocation().toOSString();
-				if (ContentTypes.SCALAR.equals(contentType.getId()) || ContentTypes.VECTOR.equals(contentType.getId()))
-					manager.loadFile(file.getFullPath().toString(), osPath);
-				else 
-					throw new RuntimeException("wrong file type:"+file.getFullPath()); //XXX proper error handling (e.g. remove file from Inputs?)
-			}
-		} catch (CoreException e) {
-			System.err.println("Cannot open resource: " + file.getFullPath()); //XXX proper error message
+		if (isResultFile(file)) {
+			String osPath = file.getLocation().toOSString();
+			manager.loadFile(file.getFullPath().toString(), osPath);
 		}
+		else 
+			throw new RuntimeException("wrong file type:"+file.getFullPath()); //XXX proper error handling (e.g. remove file from Inputs?)
 	}
 	
 	private void unloadFile(IFile file) {
 		System.out.println("unloadFile: "+file);
-		ResultFile resultFile = manager.getFile(file.getLocation().toOSString());
+		ResultFile resultFile = manager.getFile(file.getFullPath().toString());
 		if (resultFile != null)
 			manager.unloadFile(resultFile);
 	}
 	
+	private boolean isResultFile(IFile file) {
+		try {
+			if (file.getContentDescription() != null) {
+				IContentType contentType = file.getContentDescription().getContentType();
+				return ContentTypes.SCALAR.equals(contentType.getId()) || ContentTypes.VECTOR.equals(contentType.getId());
+			}
+		} catch (CoreException e) {
+			System.err.println("Cannot open resource: " + file.getFullPath()); //XXX proper error message
+		}
+		return false;
+	}
+	
+	private boolean inputsMatches(IFile file) {
+		for (InputFile inputfile : (List<InputFile>)inputs.getInputs())
+			if (inputfile.getName().equals(file.getFullPath().toString()))
+				return true;
+		return false;
+	}
 }
