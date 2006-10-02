@@ -27,6 +27,11 @@ public class FilterParamsPanel extends Composite {
 	public static final int
 		ALL_ROWS = MODULE_NAME_ROW | FILE_RUN_ROW | EXPERIMENT_MEASUREMENT_REPLICATION_ROW;
 	
+	/**
+	 * Number of visible items in combos.
+	 */
+	private static final int VISIBLE_ITEM_COUNT = 15;
+
 	private int rows;
 	private Composite composite1 = null;
 	private Label fileLabel = null;
@@ -155,10 +160,12 @@ public class FilterParamsPanel extends Composite {
 		moduleLabel.setText("Module name:");
 		moduleCombo = new CCombo(composite3, SWT.BORDER);
 		moduleCombo.setLayoutData(gridData7);
+		moduleCombo.setVisibleItemCount(VISIBLE_ITEM_COUNT);
 		dataLabel = new Label(composite3, SWT.NONE);
 		dataLabel.setText("Data name:");
 		dataCombo = new CCombo(composite3, SWT.BORDER);
 		dataCombo.setLayoutData(gridData8);
+		dataCombo.setVisibleItemCount(VISIBLE_ITEM_COUNT);
 	}
 
 	/**
@@ -186,10 +193,12 @@ public class FilterParamsPanel extends Composite {
 		fileLabel.setText("File name:");
 		fileCombo = new CCombo(composite1, SWT.BORDER);
 		fileCombo.setLayoutData(gridData11);
+		fileCombo.setVisibleItemCount(VISIBLE_ITEM_COUNT);
 		runLabel = new Label(composite1, SWT.NONE);
 		runLabel.setText("Run name:");
 		runCombo = new CCombo(composite1, SWT.BORDER);
 		runCombo.setLayoutData(gridData21);
+		runCombo.setVisibleItemCount(VISIBLE_ITEM_COUNT);
 	}
 
 	/**
@@ -219,13 +228,16 @@ public class FilterParamsPanel extends Composite {
 		experimentLabel.setText("Experiment:");
 		experimentCombo = new CCombo(composite2, SWT.BORDER);
 		experimentCombo.setLayoutData(gridData);
+		experimentCombo.setVisibleItemCount(VISIBLE_ITEM_COUNT);
 		measurementLabel = new Label(composite2, SWT.NONE);
 		measurementLabel.setText("Measurement:");
 		measurementCombo = new CCombo(composite2, SWT.BORDER);
 		measurementCombo.setLayoutData(gridData5);
+		measurementCombo.setVisibleItemCount(VISIBLE_ITEM_COUNT);
 		replicationLabel = new Label(composite2, SWT.NONE);
 		replicationLabel.setText("Replication:");
 		replicationCombo = new CCombo(composite2, SWT.BORDER);
 		replicationCombo.setLayoutData(gridData31);
+		replicationCombo.setVisibleItemCount(VISIBLE_ITEM_COUNT);
 	}
 }
