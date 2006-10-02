@@ -236,6 +236,7 @@ void NEDBasicValidator::validateElement(ParamGroupNode *node)
 void NEDBasicValidator::validateElement(ParamNode *node)
 {
     //FIXME revise
+    //TODO param declarations cannot occur in submodules, cannot be conditional, etc
 }
 
 void NEDBasicValidator::validateElement(PatternNode *node)
