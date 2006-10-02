@@ -30,7 +30,7 @@ public class ScaveEditorContributor extends ScaveModelActionBarContributor {
 //	public IAction createDatasetAction;
 //	public IAction createChartAction;
 	
-	private IAction editAction = new EditAction();
+	private IAction editAction;
 
 
 	/**
@@ -43,6 +43,7 @@ public class ScaveEditorContributor extends ScaveModelActionBarContributor {
 
 	public void init(IActionBars bars, IWorkbenchPage page) {
         super.init(bars, page);
+        editAction = registerAction(page, new EditAction());
 //      addResultFileAction = registerAction(page, new AddResultFileAction());
 //      addWildcardResultFileAction = registerAction(page, new AddWildcardResultFileAction());
 //      openAction = registerAction(page, new OpenAction());
@@ -87,6 +88,4 @@ public class ScaveEditorContributor extends ScaveModelActionBarContributor {
 		super.menuAboutToShow(menuManager);
 		menuManager.insertBefore("additions", editAction);
 	}
-	
-	
 }

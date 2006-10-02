@@ -8,6 +8,7 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Shell;
+import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave2.editors.ScaveEditor;
 
 /**
@@ -45,11 +46,17 @@ public class EditDialog extends TitleAreaDialog {
 		this.editor = editor;
 		this.object = object;
 		this.features = features;
+		this.form = createForm(object, features, editor.getResultFileManager());
 	}
 	
 	
 	
 	public EStructuralFeature[] getFeatures() {
+		return form.getFeatures();
+	}
+	
+	public static EStructuralFeature[] getEditableFeatures(EObject object, ScaveEditor editor) {
+		IScaveObjectEditForm form = createForm(object, null, editor.getResultFileManager());
 		return form.getFeatures();
 	}
 	
@@ -70,9 +77,6 @@ public class EditDialog extends TitleAreaDialog {
 		Composite panel = new Composite(composite, SWT.NONE);
 		panel.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		
-		form = features == null ?
-				ScaveObjectEditFormFactory.instance().createForm(object, editor.getResultFileManager()) :
-				ScaveObjectEditFormFactory.instance().createForm(object, features);
 		setTitle(form.getTitle());
 		setMessage(form.getDescription());
 		form.populatePanel(panel);
@@ -95,5 +99,11 @@ public class EditDialog extends TitleAreaDialog {
 				values[i] = form.getValue(features[i]);
 			}
 		}
+	}
+	
+	private static IScaveObjectEditForm createForm(EObject object, EStructuralFeature[] features, ResultFileManager manager) {
+		return features == null ?
+					ScaveObjectEditFormFactory.instance().createForm(object, manager) :
+					ScaveObjectEditFormFactory.instance().createForm(object, features);
 	}
 }

@@ -24,9 +24,9 @@ public class EditAction extends AbstractScaveAction {
 		
 			EObject object = (EObject)selection.getFirstElement(); //TODO edit several objects together?
 			EditDialog dialog = new EditDialog(scaveEditor.getSite().getShell(), object, scaveEditor);
+			EStructuralFeature[] features = dialog.getFeatures();
 			
-			if (dialog.open() == Window.OK) {
-				EStructuralFeature[] features = dialog.getFeatures();
+			if (features.length > 0 && dialog.open() == Window.OK) {
 				CompoundCommand command = new CompoundCommand("Edit");
 				for (int i = 0; i < features.length; ++i) {
 					Object oldValue = object.eGet(features[i]);
@@ -48,6 +48,7 @@ public class EditAction extends AbstractScaveAction {
 
 	@Override
 	public boolean isApplicable(ScaveEditor editor, IStructuredSelection selection) {
-		return selection.size() == 1 && selection.getFirstElement() instanceof EObject;
+		return selection.size() == 1 && selection.getFirstElement() instanceof EObject &&
+				EditDialog.getEditableFeatures((EObject)selection.getFirstElement(), editor).length > 0;
 	}
 }
