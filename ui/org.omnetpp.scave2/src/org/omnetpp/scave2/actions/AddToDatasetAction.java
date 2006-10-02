@@ -7,7 +7,10 @@ import org.eclipse.emf.edit.command.AddCommand;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.window.Window;
 import org.omnetpp.scave.model.Analysis;
+import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.Dataset;
+import org.omnetpp.scave.model.DatasetItem;
+import org.omnetpp.scave.model.Group;
 import org.omnetpp.scave.model.ScaveModelPackage;
 import org.omnetpp.scave2.editors.ScaveEditor;
 import org.omnetpp.scave2.editors.datatable.FilteredDataPanel;
@@ -39,19 +42,31 @@ public class AddToDatasetAction extends AbstractScaveAction {
 		if (status == Window.OK) {
 			Dataset dataset = dialog.getSelectedDataset();
 			if (dataset != null) {
+				// add the Add node before the first chart or group,
+				// so they are affected by this action
+				int index = 0;
+				List<DatasetItem> items = dataset.getItems();
+				for (; index < items.size(); ++index) {
+					DatasetItem item = items.get(index);
+					if (item instanceof Chart || item instanceof Group)
+						break;
+				}
+				
 				Command command = dialog.useFilter() ?
 					AddCommand.create(
 							editor.getEditingDomain(),
 							dataset,
 							ScaveModelPackage.eINSTANCE.getDataset_Items(),
-							ScaveModelUtil.createAdd(dialog.getFilterParams())) :
+							ScaveModelUtil.createAdd(dialog.getFilterParams()),
+							index) :
 					AddCommand.create(
 							editor.getEditingDomain(),
 							dataset,
 							ScaveModelPackage.eINSTANCE.getDataset_Items(),
 							ScaveModelUtil.createAdds(
 									activePanel.getTable().getSelectedItems(),
-									dialog.getRunIdKind()));
+									dialog.getRunIdKind()),
+							index);
 				editor.executeCommand(command);
 			}
 		}
