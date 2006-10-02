@@ -21,7 +21,7 @@
  *    component:     module simple network channel interface
  *    inheritance:   extends like withcppclass
  *    sections:      types parameters gates submodules connections allowunconnected
- *    param types:   double int string bool xml function
+ *    param types:   double int string bool xml volatile
  *    gate types:    input output inout
  *    conditional:   if
  *    connections:   --> <-- <--> while ..
@@ -98,7 +98,7 @@ static char textbuf[TEXTBUF_LEN];
 "string"                 { count(); return STRINGTYPE; }
 "bool"                   { count(); return BOOLTYPE; }
 "xml"                    { count(); return XMLTYPE; }
-"function"               { count(); return FUNCTION; }
+"volatile"               { count(); return VOLATILE; }
 "typename"               { count(); return TYPENAME; }
 
 "input"                  { count(); return INPUT_; }

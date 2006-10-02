@@ -515,7 +515,7 @@ void NED1Generator::doModuleParam(ParamNode *node, const char *indent, bool isla
     {
         case NED_PARTYPE_NONE:   break;
         case NED_PARTYPE_DOUBLE: case NED_PARTYPE_INT:
-                                 parType = node->getIsFunction() ? "numeric" : "numeric const"; break;
+                                 parType = node->getIsVolatile() ? "numeric" : "numeric const"; break;
         case NED_PARTYPE_STRING: parType = "string"; break;
         case NED_PARTYPE_BOOL:   parType = "bool"; break;
         case NED_PARTYPE_XML:    parType = "xml"; break;

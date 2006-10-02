@@ -76,7 +76,7 @@
 <!ELEMENT param (comment*, expression?, property*)>
 <!ATTLIST param
      type               (double|int|string|bool|xml) #IMPLIED
-     is-function        (true|false)  "false"
+     is-volatile        (true|false)  "false"
      name               NMTOKEN   #REQUIRED
      value              CDATA     #IMPLIED
      is-default         (true|false)  "false">

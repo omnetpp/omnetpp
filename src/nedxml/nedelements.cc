@@ -985,7 +985,7 @@ void ParamNode::setType(int val)
 ParamNode::ParamNode()
 {
     type = 0;
-    isFunction = false;
+    isVolatile = false;
     isDefault = false;
     applyDefaults();
 }
@@ -993,7 +993,7 @@ ParamNode::ParamNode()
 ParamNode::ParamNode(NEDElement *parent) : NEDElement(parent)
 {
     type = 0;
-    isFunction = false;
+    isVolatile = false;
     isDefault = false;
     applyDefaults();
 }
@@ -1007,7 +1007,7 @@ const char *ParamNode::getAttributeName(int k) const
 {
     switch (k) {
         case 0: return "type";
-        case 1: return "is-function";
+        case 1: return "is-volatile";
         case 2: return "name";
         case 3: return "value";
         case 4: return "is-default";
@@ -1019,7 +1019,7 @@ const char *ParamNode::getAttribute(int k) const
 {
     switch (k) {
         case 0: return enumToString(type, partype_vals, partype_nums, partype_n);
-        case 1: return boolToString(isFunction);
+        case 1: return boolToString(isVolatile);
         case 2: return name.c_str();
         case 3: return value.c_str();
         case 4: return boolToString(isDefault);
@@ -1031,7 +1031,7 @@ void ParamNode::setAttribute(int k, const char *val)
 {
     switch (k) {
         case 0: type = stringToEnum(val, partype_vals, partype_nums, partype_n); break;
-        case 1: isFunction = stringToBool(val); break;
+        case 1: isVolatile = stringToBool(val); break;
         case 2: name = val; break;
         case 3: value = val; break;
         case 4: isDefault = stringToBool(val); break;

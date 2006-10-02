@@ -777,7 +777,7 @@ class ParametersNode : public NEDElement
  * <!ELEMENT param (comment*, expression?, property*)>
  * <!ATTLIST param
  *      type               (double|int|string|bool|xml) #IMPLIED
- *      is-function        (true|false)  "false"
+ *      is-volatile        (true|false)  "false"
  *      name               NMTOKEN   #REQUIRED
  *      value              CDATA     #IMPLIED
  *      is-default         (true|false)  "false">
@@ -789,7 +789,7 @@ class ParamNode : public NEDElement
 {
   private:
     int type;
-    bool isFunction;
+    bool isVolatile;
     std::string name;
     std::string value;
     bool isDefault;
@@ -816,8 +816,8 @@ class ParamNode : public NEDElement
     //@{
     int getType() const  {return type;}
     void setType(int val);
-    bool getIsFunction() const  {return isFunction;}
-    void setIsFunction(bool val)  {isFunction = val;}
+    bool getIsVolatile() const  {return isVolatile;}
+    void setIsVolatile(bool val)  {isVolatile = val;}
     const char * getName() const  {return name.c_str();}
     void setName(const char * val)  {name = val;}
     const char * getValue() const  {return value.c_str();}

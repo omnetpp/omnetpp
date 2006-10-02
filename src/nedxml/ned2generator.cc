@@ -403,6 +403,8 @@ void NED2Generator::doParam(ParamNode *node, const char *indent, bool islast, co
     else
         OUT << " ";  // inline params, used for channel-spec in connections
 
+    if (node->getIsVolatile())
+        OUT << "volatile ";
     switch (node->getType())
     {
         case NED_PARTYPE_NONE:   break;
@@ -413,8 +415,6 @@ void NED2Generator::doParam(ParamNode *node, const char *indent, bool islast, co
         case NED_PARTYPE_XML:    OUT << "xml "; break;
         default: INTERNAL_ERROR0(node, "wrong type");
     }
-    if (node->getIsFunction())
-        OUT << "function ";
     OUT << node->getName();
     if (hasExpression(node,"value"))
     {

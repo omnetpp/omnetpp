@@ -19,7 +19,7 @@
 %token MODULE SIMPLE NETWORK CHANNEL INTERFACE CHANNELINTERFACE
 %token EXTENDS LIKE WITHCPPCLASS
 %token TYPES PARAMETERS GATES SUBMODULES CONNECTIONS ALLOWUNCONNECTED
-%token DOUBLETYPE INTTYPE STRINGTYPE BOOLTYPE XMLTYPE FUNCTION TYPENAME
+%token DOUBLETYPE INTTYPE STRINGTYPE BOOLTYPE XMLTYPE VOLATILE TYPENAME
 %token INPUT_ OUTPUT_ INOUT_
 %token IF FOR
 %token RIGHTARROW LEFTARROW DBLARROW TO
@@ -113,7 +113,7 @@ static struct NED2ParserState
     /* tmp flags, used with param, gate and conn */
     int paramType;
     int gateType;
-    bool isFunction;
+    bool isVolatile;
     bool isDefault;
     YYLTYPE exprPos;
     int subgate;
@@ -648,17 +648,17 @@ param
  * Parameter
  */
 param_typenamevalue
-        : paramtype opt_function NAME
+        : opt_volatile paramtype NAME
                 {
                   ps.param = addParameter(ps.parameters, @3);
                   ps.param->setType(ps.paramType);
-                  ps.param->setIsFunction(ps.isFunction);
+                  ps.param->setIsVolatile(ps.isVolatile);
                 }
-        | paramtype opt_function NAME '=' paramvalue
+        | opt_volatile paramtype NAME '=' paramvalue
                 {
                   ps.param = addParameter(ps.parameters, @3);
                   ps.param->setType(ps.paramType);
-                  ps.param->setIsFunction(ps.isFunction);
+                  ps.param->setIsVolatile(ps.isVolatile);
                   addExpression(ps.param, "value",ps.exprPos,$5);
                   ps.param->setIsDefault(ps.isDefault);
                 }
@@ -703,11 +703,11 @@ paramtype
                 { ps.paramType = NED_PARTYPE_XML; }
         ;
 
-opt_function
-        : FUNCTION
-                { ps.isFunction = true; }
+opt_volatile
+        : VOLATILE
+                { ps.isVolatile = true; }
         |
-                { ps.isFunction = false; }
+                { ps.isVolatile = false; }
         ;
 
 paramvalue
@@ -746,7 +746,7 @@ pattern_elem
         | IMPORT | PACKAGE | PROPERTY
         | MODULE | SIMPLE | NETWORK | CHANNEL | INTERFACE | CHANNELINTERFACE
         | EXTENDS | LIKE | WITHCPPCLASS
-        | DOUBLETYPE | INTTYPE | STRINGTYPE | BOOLTYPE | XMLTYPE | FUNCTION | TYPENAME
+        | DOUBLETYPE | INTTYPE | STRINGTYPE | BOOLTYPE | XMLTYPE | VOLATILE | TYPENAME
         | INPUT_ | OUTPUT_ | INOUT_ | IF | FOR
         | TYPES | PARAMETERS | GATES | SUBMODULES | CONNECTIONS | ALLOWUNCONNECTED
         | TRUE_ | FALSE_ | THIS_ | DEFAULT | CONST_ | SIZEOF | INDEX_ | XMLDOC

@@ -165,7 +165,7 @@ void NEDDTDValidator::validateElement(ParamNode *node)
     const char *vals0[] = {"double","int","string","bool","xml",""};
     checkEnumeratedAttribute(node, "type", vals0, sizeof(vals0)/sizeof(const char *));
     const char *vals1[] = {"true","false"};
-    checkEnumeratedAttribute(node, "is-function", vals1, sizeof(vals1)/sizeof(const char *));
+    checkEnumeratedAttribute(node, "is-volatile", vals1, sizeof(vals1)/sizeof(const char *));
     checkRequiredAttribute(node, "name");
     checkNameAttribute(node, "name");
     const char *vals4[] = {"true","false"};

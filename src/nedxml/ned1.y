@@ -396,13 +396,13 @@ parameter
                 {
                   ps.param = addParameter(ps.params, @1);
                   ps.param->setType(NED_PARTYPE_DOUBLE);
-                  ps.param->setIsFunction(true); // because CONST is missing
+                  ps.param->setIsVolatile(true); // because CONST is missing
                 }
         | NAME ':' NUMERICTYPE
                 {
                   ps.param = addParameter(ps.params, @1);
                   ps.param->setType(NED_PARTYPE_DOUBLE);
-                  ps.param->setIsFunction(true); // because CONST is missing
+                  ps.param->setIsVolatile(true); // because CONST is missing
                 }
         | CONSTDECL NAME /* for compatibility */
                 {
@@ -1207,8 +1207,7 @@ parameter_expr
         | REF NAME
                 {
                   if (np->getParseExpressionsFlag()) $$ = createIdent(@2);
-                  np->getErrors()->add(ps.substparams,"`ref' modifier no longer supported (add `function' "
-                                     "modifier to destination parameter instead)");
+                  np->getErrors()->add(ps.substparams,"`ref' modifier no longer supported (add `volatile' modifier to destination parameter instead)");
                 }
         | REF ANCESTOR NAME
                 {
