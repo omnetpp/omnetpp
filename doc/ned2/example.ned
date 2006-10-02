@@ -12,7 +12,7 @@
 // - CHANNELS: two implicit (built-in) channel types exist: NullChannel, BasicChannel.
 //   Their names can be referenced, ie one can write "channel X extends NullChannel..."
 //         channel withcppclass BasicChannel {
-//             double delay = 0;  // make it "double function" ???
+//             double delay = 0;  // make it "volatile double" ???
 //             double error = 0;
 //             double datarate = 0;
 //         };
@@ -63,17 +63,6 @@
 //         constant string LOOPBACK_IP_ADDRESS="127.0.0.1";
 //     }
 //   and usage: Foo.RADIO_FREQ.
-//
-// - XXX rename "function" to "volatile"! it is very confusing to see code like this:
-//     simple BasicSnrEval
-//     {
-//        parameters:
-//             double headerLength; // header length of the AirFrame (in bits)
-//             double function transmitterPower; // power used for transmission of messages (in mW)
-//             double function bitrate; // bitrate (in bits/sec)
-//     }
-//   It looks like one was expected to specify a function (i.e. some code) that produces transmitterPower...
-//   "volatile" will ring a bell with C programmers.
 //
 // - XXX rename "gate" to "port" everywhere? that is the industry standard terminology...
 //   OTOH port is already too overloaded in the INET Framework: TCP port (number),
@@ -174,7 +163,7 @@ simple Queue
         int capacity = 100;  // fixed value, cannot be overridden
         int processingTime = exponential(10); // const value returns always the same number
         int novalue;  // no value assigned here
-        int function waitTime = exponential(20); // evaluates exp(20) each
+        volatile int waitTime = exponential(20); // evaluates exp(20) each
                                                  // time the parameter accessed
     gates:
         input in[];  // input gates
@@ -319,7 +308,7 @@ simple GenericFTPApp
 {
     parameters:
         double connectInterval;
-        int function fileLength;
+        volatile int fileLength;
     gates:
         inout toTCP @inlabels(tcp2app) @outlabels(app2tcp);
 }
@@ -667,16 +656,16 @@ network PPPNet
 }
 
 
-// "volatile" parameters -- "function" keyword
+// "volatile" parameters
 simple Gen
 {
     parameters:
-        double function interArrivalTime;
+        volatile double interArrivalTime;
 }
 network Network5
 {
     parameters:
-        double function iatime;
+        volatile double iatime;
     submodules:
         gen1: Gen {  // there is no submodule group or conditional submodule; nor submodule refinement in subclasses
             interArrivalTime = 50s 200ms;
