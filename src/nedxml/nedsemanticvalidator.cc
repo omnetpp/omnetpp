@@ -99,11 +99,6 @@ void NEDSemanticValidator::validateElement(ParametersNode *node)
     // FIXME revise
 }
 
-void NEDSemanticValidator::validateElement(ParamGroupNode *node)
-{
-    // FIXME revise
-}
-
 void NEDSemanticValidator::validateElement(ParamNode *node)
 {
     // FIXME code comes from substparamnode -- REVISE
@@ -135,11 +130,6 @@ void NEDSemanticValidator::validateElement(PropertyKeyNode *node)
 }
 
 void NEDSemanticValidator::validateElement(GatesNode *node)
-{
-    // FIXME revise
-}
-
-void NEDSemanticValidator::validateElement(GateGroupNode *node)
 {
     // FIXME revise
 }

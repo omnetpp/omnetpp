@@ -976,84 +976,6 @@ PatternNode *ParametersNode::getFirstPatternChild() const
     return (PatternNode *)getFirstChildWithTag(NED_PATTERN);
 }
 
-ParamGroupNode *ParametersNode::getFirstParamGroupChild() const
-{
-    return (ParamGroupNode *)getFirstChildWithTag(NED_PARAM_GROUP);
-}
-
-ParamGroupNode::ParamGroupNode()
-{
-    applyDefaults();
-}
-
-ParamGroupNode::ParamGroupNode(NEDElement *parent) : NEDElement(parent)
-{
-    applyDefaults();
-}
-
-int ParamGroupNode::getNumAttributes() const
-{
-    return 0;
-}
-
-const char *ParamGroupNode::getAttributeName(int k) const
-{
-    switch (k) {
-        default: return 0;
-    }
-}
-
-const char *ParamGroupNode::getAttribute(int k) const
-{
-    switch (k) {
-        default: return 0;
-    }
-}
-
-void ParamGroupNode::setAttribute(int k, const char *val)
-{
-    switch (k) {
-        default: ;
-    }
-}
-
-const char *ParamGroupNode::getAttributeDefault(int k) const
-{
-    switch (k) {
-        default: return 0;
-    }
-}
-
-ParamGroupNode *ParamGroupNode::getNextParamGroupNodeSibling() const
-{
-    return (ParamGroupNode *)getNextSiblingWithTag(NED_PARAM_GROUP);
-}
-
-CommentNode *ParamGroupNode::getFirstCommentChild() const
-{
-    return (CommentNode *)getFirstChildWithTag(NED_COMMENT);
-}
-
-PropertyNode *ParamGroupNode::getFirstPropertyChild() const
-{
-    return (PropertyNode *)getFirstChildWithTag(NED_PROPERTY);
-}
-
-ParamNode *ParamGroupNode::getFirstParamChild() const
-{
-    return (ParamNode *)getFirstChildWithTag(NED_PARAM);
-}
-
-PatternNode *ParamGroupNode::getFirstPatternChild() const
-{
-    return (PatternNode *)getFirstChildWithTag(NED_PATTERN);
-}
-
-ConditionNode *ParamGroupNode::getFirstConditionChild() const
-{
-    return (ConditionNode *)getFirstChildWithTag(NED_CONDITION);
-}
-
 void ParamNode::setType(int val)
 {
     validateEnum(val, partype_vals, partype_nums, partype_n);
@@ -1147,11 +1069,6 @@ ExpressionNode *ParamNode::getFirstExpressionChild() const
 PropertyNode *ParamNode::getFirstPropertyChild() const
 {
     return (PropertyNode *)getFirstChildWithTag(NED_PROPERTY);
-}
-
-ConditionNode *ParamNode::getFirstConditionChild() const
-{
-    return (ConditionNode *)getFirstChildWithTag(NED_CONDITION);
 }
 
 PatternNode::PatternNode()
@@ -1303,11 +1220,6 @@ PropertyKeyNode *PropertyNode::getFirstPropertyKeyChild() const
     return (PropertyKeyNode *)getFirstChildWithTag(NED_PROPERTY_KEY);
 }
 
-ConditionNode *PropertyNode::getFirstConditionChild() const
-{
-    return (ConditionNode *)getFirstChildWithTag(NED_CONDITION);
-}
-
 PropertyKeyNode::PropertyKeyNode()
 {
     applyDefaults();
@@ -1428,74 +1340,6 @@ GateNode *GatesNode::getFirstGateChild() const
     return (GateNode *)getFirstChildWithTag(NED_GATE);
 }
 
-GateGroupNode *GatesNode::getFirstGateGroupChild() const
-{
-    return (GateGroupNode *)getFirstChildWithTag(NED_GATE_GROUP);
-}
-
-GateGroupNode::GateGroupNode()
-{
-    applyDefaults();
-}
-
-GateGroupNode::GateGroupNode(NEDElement *parent) : NEDElement(parent)
-{
-    applyDefaults();
-}
-
-int GateGroupNode::getNumAttributes() const
-{
-    return 0;
-}
-
-const char *GateGroupNode::getAttributeName(int k) const
-{
-    switch (k) {
-        default: return 0;
-    }
-}
-
-const char *GateGroupNode::getAttribute(int k) const
-{
-    switch (k) {
-        default: return 0;
-    }
-}
-
-void GateGroupNode::setAttribute(int k, const char *val)
-{
-    switch (k) {
-        default: ;
-    }
-}
-
-const char *GateGroupNode::getAttributeDefault(int k) const
-{
-    switch (k) {
-        default: return 0;
-    }
-}
-
-GateGroupNode *GateGroupNode::getNextGateGroupNodeSibling() const
-{
-    return (GateGroupNode *)getNextSiblingWithTag(NED_GATE_GROUP);
-}
-
-CommentNode *GateGroupNode::getFirstCommentChild() const
-{
-    return (CommentNode *)getFirstChildWithTag(NED_COMMENT);
-}
-
-GateNode *GateGroupNode::getFirstGateChild() const
-{
-    return (GateNode *)getFirstChildWithTag(NED_GATE);
-}
-
-ConditionNode *GateGroupNode::getFirstConditionChild() const
-{
-    return (ConditionNode *)getFirstChildWithTag(NED_CONDITION);
-}
-
 void GateNode::setType(int val)
 {
     validateEnum(val, gatetype_vals, gatetype_nums, gatetype_n);
@@ -1583,11 +1427,6 @@ ExpressionNode *GateNode::getFirstExpressionChild() const
 PropertyNode *GateNode::getFirstPropertyChild() const
 {
     return (PropertyNode *)getFirstChildWithTag(NED_PROPERTY);
-}
-
-ConditionNode *GateNode::getFirstConditionChild() const
-{
-    return (ConditionNode *)getFirstChildWithTag(NED_CONDITION);
 }
 
 TypesNode::TypesNode()
@@ -4011,13 +3850,11 @@ NEDElement *NEDElementFactory::createNodeWithTag(const char *tagname)
     if (tagname[0]=='c' && !strcmp(tagname,"channel-interface"))  return new ChannelInterfaceNode();
     if (tagname[0]=='c' && !strcmp(tagname,"channel"))  return new ChannelNode();
     if (tagname[0]=='p' && !strcmp(tagname,"parameters"))  return new ParametersNode();
-    if (tagname[0]=='p' && !strcmp(tagname,"param-group"))  return new ParamGroupNode();
     if (tagname[0]=='p' && !strcmp(tagname,"param"))  return new ParamNode();
     if (tagname[0]=='p' && !strcmp(tagname,"pattern"))  return new PatternNode();
     if (tagname[0]=='p' && !strcmp(tagname,"property"))  return new PropertyNode();
     if (tagname[0]=='p' && !strcmp(tagname,"property-key"))  return new PropertyKeyNode();
     if (tagname[0]=='g' && !strcmp(tagname,"gates"))  return new GatesNode();
-    if (tagname[0]=='g' && !strcmp(tagname,"gate-group"))  return new GateGroupNode();
     if (tagname[0]=='g' && !strcmp(tagname,"gate"))  return new GateNode();
     if (tagname[0]=='t' && !strcmp(tagname,"types"))  return new TypesNode();
     if (tagname[0]=='s' && !strcmp(tagname,"submodules"))  return new SubmodulesNode();
@@ -4069,13 +3906,11 @@ NEDElement *NEDElementFactory::createNodeWithTag(int tagcode)
         case NED_CHANNEL_INTERFACE: return new ChannelInterfaceNode();
         case NED_CHANNEL: return new ChannelNode();
         case NED_PARAMETERS: return new ParametersNode();
-        case NED_PARAM_GROUP: return new ParamGroupNode();
         case NED_PARAM: return new ParamNode();
         case NED_PATTERN: return new PatternNode();
         case NED_PROPERTY: return new PropertyNode();
         case NED_PROPERTY_KEY: return new PropertyKeyNode();
         case NED_GATES: return new GatesNode();
-        case NED_GATE_GROUP: return new GateGroupNode();
         case NED_GATE: return new GateNode();
         case NED_TYPES: return new TypesNode();
         case NED_SUBMODULES: return new SubmodulesNode();

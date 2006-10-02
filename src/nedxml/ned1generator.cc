@@ -92,16 +92,6 @@ inline bool strnotnull(const char *s)
     return s && s[0];
 }
 
-static bool _hasSiblingBefore(NEDElement *node, int searchTag, int stopTag)
-{
-    // true if: node itself is searchTag, or has searchTag before stopTag
-    // (and false if node is immediately a stopTag)
-    for (NEDElement *rest=node; rest && rest->getTagCode()!=stopTag; rest=rest->getNextSibling())
-         if (rest->getTagCode()==searchTag)
-             return true;
-    return false;
-}
-
 static bool _isNetworkNode(NEDElement *node)
 {
     return (node->getTagCode()==NED_COMPOUND_MODULE && ((CompoundModuleNode *)node)->getIsNetwork())
@@ -426,8 +416,6 @@ void NED1Generator::doModuleParameters(ParametersNode *node, const char *indent)
             doModuleParam((ParamNode *)child, increaseIndent(indent), child->getNextSiblingWithTag(NED_PARAM)==NULL, NULL);
         else if (childTag==NED_PATTERN)
             errors->add(node, ERRCAT_WARNING, NED2FEATURE "assigment by pattern matching");
-        else if (childTag==NED_PARAM_GROUP)
-            errors->add(node, ERRCAT_WARNING, NED2FEATURE "parameter group");
         else
             INTERNAL_ERROR0(node,"unexpected element");
     }
@@ -435,51 +423,21 @@ void NED1Generator::doModuleParameters(ParametersNode *node, const char *indent)
 
 void NED1Generator::doSubstParameters(ParametersNode *node, const char *indent)
 {
-    doSubstParamGroup(node, indent);
-}
-
-void NED1Generator::doSubstParamGroup(NEDElement *node, const char *indent)
-{
-    // node may be ParametersNode or ParamGroupNode
-
-    // print "parameters:" if there's a parameter until the next paramgroup (or at all)
-    if (_hasSiblingBefore(node->getFirstChild(), NED_PARAM, NED_PARAM_GROUP))
-    {
-        // print "parameters" or "parameters if"
-        if (node->getFirstChildWithTag(NED_CONDITION)==NULL)
-        {
-            OUT << getBannerComment(node, indent);
-            OUT << indent << "parameters:" << getRightComment(node);
-        }
-        else
-        {
-            OUT << getBannerComment(node, indent);
-            OUT << indent << "parameters";
-            generateChildrenWithType(node, NED_CONDITION, increaseIndent(indent));
-            OUT << ":" << getRightComment(node);
-        }
-    }
+    OUT << getBannerComment(node, indent);
+    if (node->getFirstChildWithTag(NED_PARAM))
+        OUT << indent << "parameters:" << getRightComment(node);
 
     for (NEDElement *child=node->getFirstChild(); child; child=child->getNextSibling())
     {
         int childTag = child->getTagCode();
-        if (childTag==NED_COMMENT || childTag==NED_CONDITION)
+        if (childTag==NED_COMMENT)
             ; //ignore
         else if (childTag==NED_PROPERTY)
             doProperty((PropertyNode *)child, increaseIndent(indent), false, NULL);
         else if (childTag==NED_PARAM)
-            doSubstParam((ParamNode *)child, increaseIndent(indent), !_hasSiblingBefore(child->getNextSibling(), NED_PARAM, NED_PARAM_GROUP), NULL);
+            doSubstParam((ParamNode *)child, increaseIndent(indent), child->getNextSiblingWithTag(NED_PARAM)==NULL, NULL);
         else if (childTag==NED_PATTERN)
             errors->add(node, ERRCAT_WARNING, NED2FEATURE "assignment by pattern matching");
-        else if (childTag==NED_PARAM_GROUP)
-        {
-            doSubstParamGroup(child, indent);
-
-            // if there is more NED_PARAM until the next NED_PARAM_GROUP or end,
-            // print "parameters:" (to return to unconditional scope)
-            if (_hasSiblingBefore(child->getNextSibling(), NED_PARAM, NED_PARAM_GROUP))
-                OUT << indent << "parameters:\n";
-        }
         else
             INTERNAL_ERROR0(node,"unexpected element");
     }
@@ -499,8 +457,6 @@ void NED1Generator::doChannelParameters(ParametersNode *node, const char *indent
             doChannelParam((ParamNode *)child, indent);
         else if (childTag==NED_PATTERN)
             errors->add(node, ERRCAT_WARNING, NED2FEATURE "assignment by pattern matching");
-        else if (childTag==NED_PARAM_GROUP)
-            errors->add(node, ERRCAT_WARNING, NED2FEATURE "parameter group");
         else
             INTERNAL_ERROR0(node,"unexpected element");
     }
@@ -520,8 +476,6 @@ void NED1Generator::doConnectionAttributes(ParametersNode *node, const char *ind
             doChannelParam((ParamNode *)child, NULL);
         else if (childTag==NED_PATTERN)
             errors->add(node, ERRCAT_WARNING, NED2FEATURE "patterns");
-        else if (childTag==NED_PARAM_GROUP)
-            errors->add(node, ERRCAT_WARNING, NED2FEATURE "parameter group");
         else
             INTERNAL_ERROR0(node,"unexpected element");
     }
@@ -545,13 +499,6 @@ void NED1Generator::doChannelParam(ParamNode *node, const char *indent)
     {
         errors->add(node, ERRCAT_WARNING, NED2FEATURE "channel parameters other than delay, error and datarate");
     }
-}
-
-void NED1Generator::doParamGroup(ParamGroupNode *node, const char *indent, bool islast, const char *)
-{
-    // we use doSubstParamGroup() instead, NED-1 doesn't allow groups elsewhere
-    // doParameters() ensures we never get here
-    INTERNAL_ERROR0(node, "should never get here");
 }
 
 void NED1Generator::doParam(ParamNode *node, const char *indent, bool islast, const char *)
@@ -585,8 +532,6 @@ void NED1Generator::doModuleParam(ParamNode *node, const char *indent, bool isla
 
     const char *subindent = indent ? increaseIndent(indent) : DEFAULTINDENT;
     generateChildrenWithType(node, NED_PROPERTY, subindent, " ");
-    if (node->getFirstChildWithTag(NED_CONDITION))
-        errors->add(node, ERRCAT_WARNING, "conditional parameter assignments for NED-1 are not supported");
 
     OUT << (islast ? ";" : ",") << getRightComment(node);
 }
@@ -632,8 +577,6 @@ void NED1Generator::doSubstParam(ParamNode *node, const char *indent, bool islas
     }
 
     generateChildrenWithType(node, NED_PROPERTY, increaseIndent(indent), " ");
-    if (node->getFirstChildWithTag(NED_CONDITION))
-        errors->add(node, ERRCAT_WARNING, NED2FEATURE "conditional parameter assignment");
 
     OUT << (islast ? ";" : ",") << getRightComment(node);
 }
@@ -695,63 +638,23 @@ void NED1Generator::doModuleGates(GatesNode *node, const char *indent)
             ; // ignore whitespace
         else if (childTag==NED_GATE)
             doModuleGate((GateNode *)child, increaseIndent(indent), child->getNextSiblingWithTag(NED_GATE)==NULL, NULL);
-        else if (childTag==NED_GATE_GROUP)
-            errors->add(node, ERRCAT_WARNING, NED2FEATURE "gate group");
         else
             INTERNAL_ERROR0(node,"unexpected element");
     }
 }
 
-void NED1Generator::doGateGroup(GateGroupNode *node, const char *indent, bool islast, const char *)
-{
-    // we use doSubmoduleGatesizes() instead, NED-1 doesn't allow groups elsewhere
-    // doGates() ensures we never get here
-    INTERNAL_ERROR0(node, "should never get here");
-}
-
 void NED1Generator::doSubmoduleGatesizes(GatesNode *node, const char *indent)
 {
-    doGatesizesGroup(node, indent);
-}
-
-void NED1Generator::doGatesizesGroup(NEDElement *node, const char *indent)
-{
-    // node may be GatesNode or GateGroupNode
-
-    // print "gates:" if there's a gate until the next gategroup (or at all)
-    if (_hasSiblingBefore(node->getFirstChild(), NED_GATE, NED_GATE_GROUP))
-    {
-        // print "gates" or "gates if"
-        if (node->getFirstChildWithTag(NED_CONDITION)==NULL)
-        {
-            OUT << getBannerComment(node, indent);
-            OUT << indent << "gatesizes:" << getRightComment(node);
-        }
-        else
-        {
-            OUT << getBannerComment(node, indent);
-            OUT << indent << "gatesizes";
-            generateChildrenWithType(node, NED_CONDITION, increaseIndent(indent));
-            OUT << ":" << getRightComment(node);
-        }
-    }
+    OUT << getBannerComment(node, indent);
+    OUT << indent << "gatesizes:" << getRightComment(node);
 
     for (NEDElement *child=node->getFirstChild(); child; child=child->getNextSibling())
     {
         int childTag = child->getTagCode();
-        if (childTag==NED_COMMENT || childTag==NED_CONDITION)
+        if (childTag==NED_COMMENT)
             ; //ignore
         else if (childTag==NED_GATE)
-            doGatesize((GateNode *)child, increaseIndent(indent), !_hasSiblingBefore(child->getNextSibling(), NED_GATE, NED_GATE_GROUP), NULL);
-        else if (childTag==NED_GATE_GROUP)
-        {
-            doGatesizesGroup(child, indent);
-
-            // if there is more NED_GATE until the next NED_GATE_GROUP or end,
-            // print "gatesizes:" (to return to unconditional scope)
-            if (_hasSiblingBefore(child->getNextSibling(), NED_GATE, NED_GATE_GROUP))
-                OUT << indent << "gatesizes:\n";
-        }
+            doGatesize((GateNode *)child, increaseIndent(indent), child->getNextSiblingWithTag(NED_GATE)==NULL, NULL);
         else
             INTERNAL_ERROR0(node,"unexpected element");
     }
@@ -782,8 +685,6 @@ void NED1Generator::doModuleGate(GateNode *node, const char *indent, bool islast
     if (hasExpression(node, "vector-size"))
         errors->add(node, ERRCAT_WARNING, NED2FEATURE "gate vector size in gate declaration");
     generateChildrenWithType(node, NED_PROPERTY, increaseIndent(indent), " ");
-    if (node->getFirstChildWithTag(NED_CONDITION))
-        errors->add(node, ERRCAT_WARNING, NED2FEATURE "conditional gate declaration");
     OUT << ";" << getRightComment(node);
 }
 
@@ -799,7 +700,6 @@ void NED1Generator::doGatesize(GateNode *node, const char *indent, bool islast, 
     printOptVector(node, "vector-size",indent);
 
     generateChildrenWithType(node, NED_PROPERTY, increaseIndent(indent), " ");
-    generateChildrenWithType(node, NED_CONDITION, increaseIndent(indent));
     OUT << (islast ? ";" : ",") << getRightComment(node);
 }
 
@@ -1234,8 +1134,6 @@ void NED1Generator::generateNedItem(NEDElement *node, const char *indent, bool i
             doChannel((ChannelNode *)node, indent, islast, arg); break;
         case NED_PARAMETERS:
             doParameters((ParametersNode *)node, indent, islast, arg); break;
-        case NED_PARAM_GROUP:
-            doParamGroup((ParamGroupNode *)node, indent, islast, arg); break;
         case NED_PARAM:
             doParam((ParamNode *)node, indent, islast, arg); break;
         case NED_PATTERN:
@@ -1246,8 +1144,6 @@ void NED1Generator::generateNedItem(NEDElement *node, const char *indent, bool i
             doPropertyKey((PropertyKeyNode *)node, indent, islast, arg); break;
         case NED_GATES:
             doGates((GatesNode *)node, indent, islast, arg); break;
-        case NED_GATE_GROUP:
-            doGateGroup((GateGroupNode *)node, indent, islast, arg); break;
         case NED_GATE:
             doGate((GateNode *)node, indent, islast, arg); break;
         case NED_TYPES:

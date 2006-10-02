@@ -224,13 +224,7 @@ void NEDBasicValidator::validateElement(CompoundModuleNode *node)
 void NEDBasicValidator::validateElement(ParametersNode *node)
 {
     // make sure parameter names are unique
-    // TODO consider paramgroups
     checkUniqueness(node, NED_PARAM, "name");
-}
-
-void NEDBasicValidator::validateElement(ParamGroupNode *node)
-{
-    //FIXME revise
 }
 
 void NEDBasicValidator::validateElement(ParamNode *node)
@@ -265,11 +259,6 @@ void NEDBasicValidator::validateElement(TypesNode *node)
 {
     // make sure type names are unique
     //FIXME checkUniqueness(node, NED_????, "name");
-}
-
-void NEDBasicValidator::validateElement(GateGroupNode *node)
-{
-    //FIXME revise
 }
 
 void NEDBasicValidator::validateElement(GateNode *node)

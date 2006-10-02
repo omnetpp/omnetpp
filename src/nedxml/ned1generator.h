@@ -124,11 +124,9 @@ class NED1Generator
     void doChannelParameters(ParametersNode *node, const char *indent);
     void doSubstParameters(ParametersNode *node, const char *indent);
     void doConnectionAttributes(ParametersNode *node, const char *indent);
-    void doParamGroup(ParamGroupNode *node, const char *indent, bool islast, const char *);
     void doParam(ParamNode *node, const char *indent, bool islast, const char *);
     void doModuleParam(ParamNode *node, const char *indent, bool islast, const char *);
     void doSubstParam(ParamNode *node, const char *indent, bool islast, const char *);
-    void doSubstParamGroup(NEDElement *node, const char *indent);
     void doChannelParam(ParamNode *node, const char *indent);
     void doPattern(PatternNode *node, const char *indent, bool islast, const char *);
     void doProperty(PropertyNode *node, const char *indent, bool islast, const char *);
@@ -136,8 +134,6 @@ class NED1Generator
     void doGates(GatesNode *node, const char *indent, bool islast, const char *);
     void doModuleGates(GatesNode *node, const char *indent);
     void doSubmoduleGatesizes(GatesNode *node, const char *indent);
-    void doGatesizesGroup(NEDElement *node, const char *indent);
-    void doGateGroup(GateGroupNode *node, const char *indent, bool islast, const char *);
     void doGate(GateNode *node, const char *indent, bool islast, const char *);
     void doModuleGate(GateNode *node, const char *indent, bool islast, const char *);
     void doGatesize(GateNode *node, const char *indent, bool islast, const char *);

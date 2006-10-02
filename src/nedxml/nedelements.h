@@ -35,13 +35,11 @@ class CompoundModuleNode;
 class ChannelInterfaceNode;
 class ChannelNode;
 class ParametersNode;
-class ParamGroupNode;
 class ParamNode;
 class PatternNode;
 class PropertyNode;
 class PropertyKeyNode;
 class GatesNode;
-class GateGroupNode;
 class GateNode;
 class TypesNode;
 class SubmodulesNode;
@@ -96,13 +94,11 @@ enum NEDElementCode {
     NED_CHANNEL_INTERFACE,
     NED_CHANNEL,
     NED_PARAMETERS,
-    NED_PARAM_GROUP,
     NED_PARAM,
     NED_PATTERN,
     NED_PROPERTY,
     NED_PROPERTY_KEY,
     NED_GATES,
-    NED_GATE_GROUP,
     NED_GATE,
     NED_TYPES,
     NED_SUBMODULES,
@@ -731,7 +727,7 @@ class ChannelNode : public NEDElement
  * GENERATED CLASS. Represents the &lt;parameters&gt; XML element in memory. DTD declaration:
  * 
  * <pre>
- * <!ELEMENT parameters (comment*, (property|param|pattern|param-group)*)>
+ * <!ELEMENT parameters (comment*, (property|param|pattern)*)>
  * <!ATTLIST parameters
  *     is-implicit         (true|false)  "false">
  * </pre>
@@ -771,51 +767,6 @@ class ParametersNode : public NEDElement
     virtual PropertyNode *getFirstPropertyChild() const;
     virtual ParamNode *getFirstParamChild() const;
     virtual PatternNode *getFirstPatternChild() const;
-    virtual ParamGroupNode *getFirstParamGroupChild() const;
-    //@}
-};
-
-/**
- * GENERATED CLASS. Represents the &lt;param-group&gt; XML element in memory. DTD declaration:
- * 
- * <pre>
- * <!ELEMENT param-group (comment*, (property|param|pattern)*, condition?)>
- * 
- * </pre>
- * 
- * @ingroup Data
- */
-class ParamGroupNode : public NEDElement
-{
-  private:
-  public:
-    /** @name Constructors, destructor */
-    //@{
-    ParamGroupNode();
-    ParamGroupNode(NEDElement *parent);
-    virtual ~ParamGroupNode() {}
-    //@}
-
-    /** @name Redefined NEDElement methods, incl. generic access to attributes */
-    //@{
-    virtual const char *getTagName() const {return "param-group";}
-    virtual int getTagCode() const {return NED_PARAM_GROUP;}
-    virtual int getNumAttributes() const;
-    virtual const char *getAttributeName(int k) const;
-    virtual const char *getAttribute(int k) const;
-    virtual void setAttribute(int k, const char *val);
-    virtual const char *getAttributeDefault(int k) const;
-    //@}
-
-    /** @name Typed access to attributes, children and siblings */
-    //@{
-
-    virtual ParamGroupNode *getNextParamGroupNodeSibling() const;
-    virtual CommentNode *getFirstCommentChild() const;
-    virtual PropertyNode *getFirstPropertyChild() const;
-    virtual ParamNode *getFirstParamChild() const;
-    virtual PatternNode *getFirstPatternChild() const;
-    virtual ConditionNode *getFirstConditionChild() const;
     //@}
 };
 
@@ -823,7 +774,7 @@ class ParamGroupNode : public NEDElement
  * GENERATED CLASS. Represents the &lt;param&gt; XML element in memory. DTD declaration:
  * 
  * <pre>
- * <!ELEMENT param (comment*, expression?, property*, condition?)>
+ * <!ELEMENT param (comment*, expression?, property*)>
  * <!ATTLIST param
  *      type               (double|int|string|bool|xml) #IMPLIED
  *      is-function        (true|false)  "false"
@@ -878,7 +829,6 @@ class ParamNode : public NEDElement
     virtual CommentNode *getFirstCommentChild() const;
     virtual ExpressionNode *getFirstExpressionChild() const;
     virtual PropertyNode *getFirstPropertyChild() const;
-    virtual ConditionNode *getFirstConditionChild() const;
     //@}
 };
 
@@ -940,7 +890,7 @@ class PatternNode : public NEDElement
  * GENERATED CLASS. Represents the &lt;property&gt; XML element in memory. DTD declaration:
  * 
  * <pre>
- * <!ELEMENT property (comment*, property-key*, condition?)>
+ * <!ELEMENT property (comment*, property-key*)>
  * <!ATTLIST property
  *      is-implicit        (true|false) "false"
  *      name               NMTOKEN   #REQUIRED
@@ -986,7 +936,6 @@ class PropertyNode : public NEDElement
     virtual PropertyNode *getNextPropertyNodeSibling() const;
     virtual CommentNode *getFirstCommentChild() const;
     virtual PropertyKeyNode *getFirstPropertyKeyChild() const;
-    virtual ConditionNode *getFirstConditionChild() const;
     //@}
 };
 
@@ -1039,7 +988,7 @@ class PropertyKeyNode : public NEDElement
  * GENERATED CLASS. Represents the &lt;gates&gt; XML element in memory. DTD declaration:
  * 
  * <pre>
- * <!ELEMENT gates (comment*, (gate|gate-group)*)>
+ * <!ELEMENT gates (comment*, gate*)>
  * 
  * </pre>
  * 
@@ -1073,49 +1022,6 @@ class GatesNode : public NEDElement
     virtual GatesNode *getNextGatesNodeSibling() const;
     virtual CommentNode *getFirstCommentChild() const;
     virtual GateNode *getFirstGateChild() const;
-    virtual GateGroupNode *getFirstGateGroupChild() const;
-    //@}
-};
-
-/**
- * GENERATED CLASS. Represents the &lt;gate-group&gt; XML element in memory. DTD declaration:
- * 
- * <pre>
- * <!ELEMENT gate-group (comment*, gate*, condition?)>
- * 
- * </pre>
- * 
- * @ingroup Data
- */
-class GateGroupNode : public NEDElement
-{
-  private:
-  public:
-    /** @name Constructors, destructor */
-    //@{
-    GateGroupNode();
-    GateGroupNode(NEDElement *parent);
-    virtual ~GateGroupNode() {}
-    //@}
-
-    /** @name Redefined NEDElement methods, incl. generic access to attributes */
-    //@{
-    virtual const char *getTagName() const {return "gate-group";}
-    virtual int getTagCode() const {return NED_GATE_GROUP;}
-    virtual int getNumAttributes() const;
-    virtual const char *getAttributeName(int k) const;
-    virtual const char *getAttribute(int k) const;
-    virtual void setAttribute(int k, const char *val);
-    virtual const char *getAttributeDefault(int k) const;
-    //@}
-
-    /** @name Typed access to attributes, children and siblings */
-    //@{
-
-    virtual GateGroupNode *getNextGateGroupNodeSibling() const;
-    virtual CommentNode *getFirstCommentChild() const;
-    virtual GateNode *getFirstGateChild() const;
-    virtual ConditionNode *getFirstConditionChild() const;
     //@}
 };
 
@@ -1123,7 +1029,7 @@ class GateGroupNode : public NEDElement
  * GENERATED CLASS. Represents the &lt;gate&gt; XML element in memory. DTD declaration:
  * 
  * <pre>
- * <!ELEMENT gate (comment*, expression?, property*, condition?)>
+ * <!ELEMENT gate (comment*, expression?, property*)>
  * <!ATTLIST gate
  *      name               NMTOKEN   #REQUIRED
  *      type               (input|output|inout) #IMPLIED
@@ -1174,7 +1080,6 @@ class GateNode : public NEDElement
     virtual CommentNode *getFirstCommentChild() const;
     virtual ExpressionNode *getFirstExpressionChild() const;
     virtual PropertyNode *getFirstPropertyChild() const;
-    virtual ConditionNode *getFirstConditionChild() const;
     //@}
 };
 

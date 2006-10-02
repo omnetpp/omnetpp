@@ -105,8 +105,6 @@ void yyerror (const char *s);
 static struct NED2ParserState
 {
     bool inTypes;
-    bool inParamGroup;
-    bool inGateGroup;
     bool inConnGroup;
     std::stack<NEDElement *> propertyscope; // top(): where to insert properties as we parse them
     std::stack<NEDElement *> blockscope;    // top(): where to insert parameters, gates, etc
@@ -134,14 +132,12 @@ static struct NED2ParserState
     InterfaceNameNode *interfacename;
     NEDElement *component;  // compound/simple module, module interface, channel or channel interface
     ParametersNode *parameters;
-    ParamGroupNode *paramgroup;
     ParamNode *param;
     PatternNode *pattern;
     PropertyNode *property;
     PropertyKeyNode *propkey;
     TypesNode *types;
     GatesNode *gates;
-    GateGroupNode *gategroup;
     GateNode *gate;
     SubmodulesNode *submods;
     SubmoduleNode *submod;
@@ -622,27 +618,7 @@ params
 
 paramsitem
         : param
-        | paramgroup
         | property
-        ;
-
-paramgroup
-        : opt_condition '{'
-                {
-                    ps.paramgroup = (ParamGroupNode *)createNodeWithTag(NED_PARAM_GROUP, ps.parameters);
-                    if (ps.inParamGroup)
-                       np->getErrors()->add(ps.paramgroup,"nested parameter groups are not allowed");
-                    storeBannerAndRightComments(ps.paramgroup,@1,@2);
-                    ps.inParamGroup = true;
-                }
-          params '}' opt_semicolon
-                {
-                    ps.inParamGroup = false;
-                    if ($1)
-                        ps.paramgroup->appendChild($1); // append optional condition
-                    storePos(ps.paramgroup, @$);
-                    storeTrailingComment(ps.paramgroup,@$);
-                }
         ;
 
 param
@@ -650,15 +626,9 @@ param
                 {
                   ps.propertyscope.push(ps.param);
                 }
-          opt_inline_properties opt_condition ';'
+          opt_inline_properties ';'
                 {
                   ps.propertyscope.pop();
-                  if (ps.inParamGroup && $4)
-                      np->getErrors()->add(ps.param,"conditional parameters inside parameter/property groups are not allowed");
-                  if ($4 && ps.param->getType()!=NED_PARTYPE_NONE)
-                      np->getErrors()->add(ps.param,"parameter declaration cannot be conditional");
-                  if ($4)
-                      ps.param->appendChild($4); // append optional condition
                   storePos(ps.param, @$);
                   storeBannerAndRightComments(ps.param,@$);
                 }
@@ -666,13 +636,9 @@ param
                 {
                   ps.propertyscope.push(ps.pattern);
                 }
-          opt_inline_properties opt_condition ';'
+          opt_inline_properties ';'
                 {
                   ps.propertyscope.pop();
-                  if (ps.inParamGroup && $4)
-                       np->getErrors()->add(ps.pattern,"conditional parameters inside parameter/property groups are not allowed");
-                  if ($4)
-                      ps.pattern->appendChild($4); // append optional condition
                   storePos(ps.pattern, @$);
                   storeBannerAndRightComments(ps.pattern,@$);
                 }
@@ -684,13 +650,13 @@ param
 param_typenamevalue
         : paramtype opt_function NAME
                 {
-                  ps.param = addParameter(ps.inParamGroup ? (NEDElement *)ps.paramgroup : (NEDElement *)ps.parameters, @3);
+                  ps.param = addParameter(ps.parameters, @3);
                   ps.param->setType(ps.paramType);
                   ps.param->setIsFunction(ps.isFunction);
                 }
         | paramtype opt_function NAME '=' paramvalue
                 {
-                  ps.param = addParameter(ps.inParamGroup ? (NEDElement *)ps.paramgroup : (NEDElement *)ps.parameters, @3);
+                  ps.param = addParameter(ps.parameters, @3);
                   ps.param->setType(ps.paramType);
                   ps.param->setIsFunction(ps.isFunction);
                   addExpression(ps.param, "value",ps.exprPos,$5);
@@ -698,17 +664,17 @@ param_typenamevalue
                 }
         | NAME '=' paramvalue
                 {
-                  ps.param = addParameter(ps.inParamGroup ? (NEDElement *)ps.paramgroup : (NEDElement *)ps.parameters, @1);
+                  ps.param = addParameter(ps.parameters, @1);
                   addExpression(ps.param, "value",ps.exprPos,$3);
                   ps.param->setIsDefault(ps.isDefault);
                 }
         | NAME
                 {
-                  ps.param = addParameter(ps.inParamGroup ? (NEDElement *)ps.paramgroup : (NEDElement *)ps.parameters, @1);
+                  ps.param = addParameter(ps.parameters, @1);
                 }
         | TYPENAME '=' paramvalue  /* this is to assign module type with the "<> like Foo" syntax */
                 {
-                  ps.param = addParameter(ps.inParamGroup ? (NEDElement *)ps.paramgroup : (NEDElement *)ps.parameters, @1);
+                  ps.param = addParameter(ps.parameters, @1);
                   addExpression(ps.param, "value", ps.exprPos,$3);
                   ps.param->setIsDefault(ps.isDefault);
                 }
@@ -717,7 +683,7 @@ param_typenamevalue
 pattern_value
         : '/' pattern '/' '=' paramvalue
                 {
-                  ps.pattern = (PatternNode *)createNodeWithTag(NED_PATTERN, ps.inParamGroup ? (NEDElement *)ps.paramgroup : (NEDElement *)ps.parameters);
+                  ps.pattern = (PatternNode *)createNodeWithTag(NED_PATTERN, ps.parameters);
                   ps.pattern->setPattern(toString(@2));
                   addExpression(ps.pattern, "value",ps.exprPos,$5);
                   ps.pattern->setIsDefault(ps.isDefault);
@@ -790,12 +756,8 @@ pattern_elem
  * Property
  */
 property
-        : property_namevalue opt_condition ';'
+        : property_namevalue ';'
                 {
-                  if (ps.inParamGroup && $2)
-                       np->getErrors()->add(ps.param,"conditional properties inside parameter/property groups are not allowed");
-                  if ($2)
-                      ps.property->appendChild($2); // append optional condition
                   storePos(ps.property, @$);
                   storeBannerAndRightComments(ps.property,@$);
                 }
@@ -913,36 +875,13 @@ opt_gates
         ;
 
 gates
-        : gates gatesitem
+        : gates gate
                 {
                   storeBannerAndRightComments(ps.gate,@2);
                 }
-        | gatesitem
+        | gate
                 {
                   storeBannerAndRightComments(ps.gate,@1);
-                }
-        ;
-
-gatesitem
-        : gategroup
-        | gate
-        ;
-
-gategroup
-        : opt_condition '{'
-                {
-                    ps.gategroup = (GateGroupNode *)createNodeWithTag(NED_GATE_GROUP, ps.gates);
-                    if (ps.inGateGroup)
-                       np->getErrors()->add(ps.gategroup,"nested gate groups are not allowed");
-                    ps.inGateGroup = true;
-                }
-          gates '}' opt_semicolon
-                {
-                    ps.inGateGroup = false;
-                    if ($1)
-                        ps.gategroup->appendChild($1); // append optional condition
-                    storePos(ps.gategroup, @$);
-                    storeTrailingComment(ps.gategroup,@$);
                 }
         ;
 
@@ -954,15 +893,9 @@ gate
                 {
                   ps.propertyscope.push(ps.gate);
                 }
-          opt_inline_properties opt_condition ';'
+          opt_inline_properties ';'
                 {
                   ps.propertyscope.pop();
-                  if (ps.inGateGroup && $4)
-                       np->getErrors()->add(ps.gate,"conditional gates inside gate groups are not allowed");
-                  if ($4 && ps.gate->getType()!=NED_GATETYPE_NONE)
-                      np->getErrors()->add(ps.gate,"gate declaration cannot be conditional");
-                  if ($4)
-                      ps.gate->appendChild($4); // append optional condition
                   storePos(ps.gate, @$);
                 }
         ; /* no error recovery rule -- see discussion at top */
@@ -970,34 +903,34 @@ gate
 gate_typenamesize
         : gatetype NAME
                 {
-                  ps.gate = addGate(ps.inGateGroup ? (NEDElement *)ps.gategroup : (NEDElement *)ps.gates, @2);
+                  ps.gate = addGate(ps.gates, @2);
                   ps.gate->setType(ps.gateType);
                 }
         | gatetype NAME '[' ']'
                 {
-                  ps.gate = addGate(ps.inGateGroup ? (NEDElement *)ps.gategroup : (NEDElement *)ps.gates, @2);
+                  ps.gate = addGate(ps.gates, @2);
                   ps.gate->setType(ps.gateType);
                   ps.gate->setIsVector(true);
                 }
         | gatetype NAME vector
                 {
-                  ps.gate = addGate(ps.inGateGroup ? (NEDElement *)ps.gategroup : (NEDElement *)ps.gates, @2);
+                  ps.gate = addGate(ps.gates, @2);
                   ps.gate->setType(ps.gateType);
                   ps.gate->setIsVector(true);
                   addVector(ps.gate, "vector-size",@3,$3);
                 }
         | NAME
                 {
-                  ps.gate = addGate(ps.inGateGroup ? (NEDElement *)ps.gategroup : (NEDElement *)ps.gates, @1);
+                  ps.gate = addGate(ps.gates, @1);
                 }
         | NAME '[' ']'
                 {
-                  ps.gate = addGate(ps.inGateGroup ? (NEDElement *)ps.gategroup : (NEDElement *)ps.gates, @1);
+                  ps.gate = addGate(ps.gates, @1);
                   ps.gate->setIsVector(true);
                 }
         | NAME vector
                 {
-                  ps.gate = addGate(ps.inGateGroup ? (NEDElement *)ps.gategroup : (NEDElement *)ps.gates, @1);
+                  ps.gate = addGate(ps.gates, @1);
                   ps.gate->setIsVector(true);
                   addVector(ps.gate, "vector-size",@2,$2);
                 }
@@ -1027,7 +960,7 @@ typeblock
                   ps.types = (TypesNode *)createNodeWithTag(NED_TYPES, ps.blockscope.top());
                   storeBannerAndRightComments(ps.types,@1,@2);
                   if (ps.inTypes)
-                     np->getErrors()->add(ps.paramgroup,"more than one level of type nesting is not allowed");
+                     np->getErrors()->add(ps.types,"more than one level of type nesting is not allowed");
                   ps.inTypes = true;
                 }
            opt_localtypes
@@ -1487,13 +1420,6 @@ channelspec_header
 /*
  * Condition
  */
-opt_condition
-        : condition
-           { $$ = $1; }
-        |
-           { $$ = NULL; }
-        ;
-
 condition
         : IF expression
                 {

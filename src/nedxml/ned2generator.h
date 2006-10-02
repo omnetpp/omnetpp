@@ -90,7 +90,6 @@ class NED2Generator
     /** @name Utilities */
     //@{
     void printInheritance(NEDElement *node, const char *indent);
-    bool hasCondition(NEDElement *node);
     bool hasExpression(NEDElement *node, const char *attr);
     void printExpression(NEDElement *node, const char *attr, const char *indent);
     void printOptVector(NEDElement *node, const char *attr, const char *indent);
@@ -119,13 +118,11 @@ class NED2Generator
     void doChannelInterface(ChannelInterfaceNode *node, const char *indent, bool islast, const char *);
     void doChannel(ChannelNode *node, const char *indent, bool islast, const char *);
     void doParameters(ParametersNode *node, const char *indent, bool islast, const char *);
-    void doParamGroup(ParamGroupNode *node, const char *indent, bool islast, const char *);
     void doParam(ParamNode *node, const char *indent, bool islast, const char *);
     void doPattern(PatternNode *node, const char *indent, bool islast, const char *);
     void doProperty(PropertyNode *node, const char *indent, bool islast, const char *);
     void doPropertyKey(PropertyKeyNode *node, const char *indent, bool islast, const char *);
     void doGates(GatesNode *node, const char *indent, bool islast, const char *);
-    void doGateGroup(GateGroupNode *node, const char *indent, bool islast, const char *);
     void doGate(GateNode *node, const char *indent, bool islast, const char *);
     void doTypes(TypesNode *node, const char *indent, bool islast, const char *);
     void doSubmodules(SubmodulesNode *node, const char *indent, bool islast, const char *);

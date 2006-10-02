@@ -148,11 +148,6 @@ void NED2Generator::printInheritance(NEDElement *node, const char *indent)
     }
 }
 
-bool NED2Generator::hasCondition(NEDElement *node)
-{
-    return node->getFirstChildWithTag(NED_CONDITION)!=NULL;
-}
-
 bool NED2Generator::hasExpression(NEDElement *node, const char *attr)
 {
     if (strnotnull(node->getAttribute(attr)))
@@ -391,29 +386,13 @@ void NED2Generator::doParameters(ParametersNode *node, const char *indent, bool 
 {
     // inside channel-spec, everything has to be on one line except it'd be too long
     // (rule of thumb: if it contains a param group or "parameters:" keyword is explicit)
-    bool inlineParams = node->getParent()->getTagCode()==NED_CHANNEL_SPEC &&
-                        node->getIsImplicit() &&
-                        !node->getFirstChildWithTag(NED_PARAM_GROUP);
+    bool inlineParams = node->getParent()->getTagCode()==NED_CHANNEL_SPEC && node->getIsImplicit();
 
     OUT << getBannerComment(node, indent);
     if (!node->getIsImplicit())
         OUT << indent << "parameters:" << getRightComment(node);
 
     generateChildren(node, inlineParams ? NULL : node->getIsImplicit() ? indent : increaseIndent(indent));
-}
-
-void NED2Generator::doParamGroup(ParamGroupNode *node, const char *indent, bool islast, const char *)
-{
-    OUT << getBannerComment(node, indent);
-    OUT << indent;
-    generateChildrenWithType(node, NED_CONDITION, increaseIndent(indent));
-    if (hasCondition(node)) OUT << " ";
-    OUT << "{" << getRightComment(node);
-
-    int tags[] = {NED_PROPERTY, NED_PARAM, NED_PATTERN, NED_NULL};
-    generateChildrenWithTypes(node, tags, increaseIndent(indent));
-
-    OUT << indent << "};" << getTrailingComment(node);
 }
 
 void NED2Generator::doParam(ParamNode *node, const char *indent, bool islast, const char *)
@@ -449,8 +428,6 @@ void NED2Generator::doParam(ParamNode *node, const char *indent, bool islast, co
 
     const char *subindent = indent ? increaseIndent(indent) : DEFAULTINDENT;
     generateChildrenWithType(node, NED_PROPERTY, subindent, " ");
-    if (hasCondition(node)) OUT << " ";
-    generateChildrenWithType(node, NED_CONDITION, subindent);
 
     if (indent)
         OUT << ";" << getRightComment(node);
@@ -465,8 +442,6 @@ void NED2Generator::doPattern(PatternNode *node, const char *indent, bool islast
     printExpression(node, "value",indent);
 
     generateChildrenWithType(node, NED_PROPERTY, increaseIndent(indent), " ");
-    if (hasCondition(node)) OUT << " ";
-    generateChildrenWithType(node, NED_CONDITION, increaseIndent(indent));
     OUT << ";" << getRightComment(node);
 }
 
@@ -490,8 +465,6 @@ void NED2Generator::doProperty(PropertyNode *node, const char *indent, bool isla
             generateChildrenWithType(node, NED_PROPERTY_KEY, subindent, "; ");
             OUT << ")";
         }
-        if (hasCondition(node)) OUT << " ";
-        generateChildrenWithType(node, NED_CONDITION, subindent);
         if (!sep && !indent)
             OUT << ";";
         else if (!sep)
@@ -519,19 +492,6 @@ void NED2Generator::doGates(GatesNode *node, const char *indent, bool islast, co
     generateChildren(node, increaseIndent(indent));
 }
 
-void NED2Generator::doGateGroup(GateGroupNode *node, const char *indent, bool islast, const char *)
-{
-    OUT << getBannerComment(node, indent);
-    OUT << indent;
-    generateChildrenWithType(node, NED_CONDITION, increaseIndent(indent));
-    if (hasCondition(node)) OUT << " ";
-    OUT << "{" << getRightComment(node);
-
-    generateChildrenWithType(node, NED_GATE, increaseIndent(indent));
-
-    OUT << indent << "};" << getTrailingComment(node);
-}
-
 void NED2Generator::doGate(GateNode *node, const char *indent, bool islast, const char *)
 {
     OUT << getBannerComment(node, indent);
@@ -550,8 +510,6 @@ void NED2Generator::doGate(GateNode *node, const char *indent, bool islast, cons
     printOptVector(node, "vector-size",indent);
 
     generateChildrenWithType(node, NED_PROPERTY, increaseIndent(indent), " ");
-    if (hasCondition(node)) OUT << " ";
-    generateChildrenWithType(node, NED_CONDITION, increaseIndent(indent));
     OUT << ";" << getRightComment(node);;
 }
 
@@ -1120,8 +1078,6 @@ void NED2Generator::generateNedItem(NEDElement *node, const char *indent, bool i
             doChannel((ChannelNode *)node, indent, islast, arg); break;
         case NED_PARAMETERS:
             doParameters((ParametersNode *)node, indent, islast, arg); break;
-        case NED_PARAM_GROUP:
-            doParamGroup((ParamGroupNode *)node, indent, islast, arg); break;
         case NED_PARAM:
             doParam((ParamNode *)node, indent, islast, arg); break;
         case NED_PATTERN:
@@ -1132,8 +1088,6 @@ void NED2Generator::generateNedItem(NEDElement *node, const char *indent, bool i
             doPropertyKey((PropertyKeyNode *)node, indent, islast, arg); break;
         case NED_GATES:
             doGates((GatesNode *)node, indent, islast, arg); break;
-        case NED_GATE_GROUP:
-            doGateGroup((GateGroupNode *)node, indent, islast, arg); break;
         case NED_GATE:
             doGate((GateNode *)node, indent, islast, arg); break;
         case NED_TYPES:

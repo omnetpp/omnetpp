@@ -26,7 +26,7 @@
 *--------------------------------------------------------------*/
 
 %token INCLUDE SIMPLE
-%token CHANNEL /*DELAY ERROR DATARATE are no longer tokens*/
+%token CHANNEL
 %token MODULE PARAMETERS GATES GATESIZES SUBMODULES CONNECTIONS DISPLAY
 %token IN OUT
 %token NOCHECK LEFT_ARROW RIGHT_ARROW
@@ -136,14 +136,12 @@ static struct NED1ParserState
     ParametersNode *params;
     ParamNode *param;
     ParametersNode *substparams;
-    ParamGroupNode *substparamgroup;
     ParamNode *substparam;
     PropertyNode *property;
     PropertyKeyNode *propkey;
     GatesNode *gates;
     GateNode *gate;
     GatesNode *gatesizes;
-    GateGroupNode *gatesizesgroup;
     GateNode *gatesize;
     SubmodulesNode *submods;
     SubmoduleNode *submod;
@@ -632,27 +630,17 @@ substparamblock
                 {
                   createSubstparamsNodeIfNotExists();
                   storeBannerAndRightComments(ps.substparams,@1,@2);
-                  // NOTE: no group -- unconditional parameters go directly under the ParametersNode
                 }
           opt_substparameters
-                {
-                }
         | PARAMETERS IF expression ':'
                 {
-                  // make conditional paramgroup
                   createSubstparamsNodeIfNotExists();
-                  ps.substparamgroup = (ParamGroupNode *)createNodeWithTag(NED_PARAM_GROUP, ps.substparams);
-                  ps.inGroup = true;
-                  storeBannerAndRightComments(ps.substparamgroup,@1,@4);
+                  delete $3;
+                  np->getErrors()->add(ps.substparams,"conditional parameters no longer supported -- "
+                                                      "please rewrite parameter assignments to use "
+                                                      "conditional expression syntax (cond ? a : b)");
                 }
           opt_substparameters
-                {
-                  ps.condition = (ConditionNode *)createNodeWithTag(NED_CONDITION, ps.substparamgroup);
-                  addExpression(ps.condition, "condition",@3,$3);
-                  storePos(ps.substparamgroup, @$);
-                  ps.inGroup = false;
-                }
-
         ;
 
 opt_substparameters
@@ -668,16 +656,14 @@ substparameters
 substparameter
         : NAME '=' expression
                 {
-                  NEDElement *parent = ps.inGroup ? (NEDElement *)ps.substparamgroup : (NEDElement *)ps.substparams;
-                  ps.substparam = addParameter(parent,@1);
+                  ps.substparam = addParameter(ps.substparams,@1);
                   addExpression(ps.substparam, "value",@3,$3);
                   storeBannerAndRightComments(ps.substparam,@1,@3);
                   storePos(ps.substparam, @$);
                 }
         | NAME '=' INPUT_
                 {
-                  NEDElement *parent = ps.inGroup ? (NEDElement *)ps.substparamgroup : (NEDElement *)ps.substparams;
-                  ps.substparam = addParameter(parent,@1);
+                  ps.substparam = addParameter(ps.substparams,@1);
                   ps.substparam->setIsDefault(true);
                 }
           inputvalue
@@ -723,26 +709,17 @@ gatesizeblock
                 {
                   createGatesizesNodeIfNotExists();
                   storeBannerAndRightComments(ps.gatesizes,@1,@2);
-                  // NOTE: no group -- unconditional gates go directly under the GatesNode
                 }
           opt_gatesizes
-                {
-                }
         | GATESIZES IF expression ':'
                 {
-                  // make conditional gategroup
-                  createGatesizesNodeIfNotExists();
-                  ps.gatesizesgroup = (GateGroupNode *)createNodeWithTag(NED_GATE_GROUP, ps.gatesizes);
-                  ps.inGroup = true;
-                  storeBannerAndRightComments(ps.gatesizesgroup,@1,@4);
+                  createSubstparamsNodeIfNotExists();
+                  delete $3;
+                  np->getErrors()->add(ps.substparams,"conditional gatesizes no longer supported -- "
+                                                      "please rewrite gatesize assignments to use "
+                                                      "conditional expression syntax (cond ? a : b)");
                 }
           opt_gatesizes
-                {
-                  ps.condition = (ConditionNode *)createNodeWithTag(NED_CONDITION, ps.gatesizesgroup);
-                  addExpression(ps.condition, "condition",@3,$3);
-                  ps.inGroup = false;
-                  storePos(ps.gatesizesgroup, @$);
-                }
         ;
 
 opt_gatesizes
@@ -758,17 +735,10 @@ gatesizes
 gatesize
         : NAME vector
                 {
-                  NEDElement *parent = ps.inGroup ? (NEDElement *)ps.gatesizesgroup : (NEDElement *)ps.gatesizes;
-                  ps.gatesize = addGate(parent,@1);
+                  ps.gatesize = addGate(ps.gatesizes,@1);
                   ps.gatesize->setIsVector(true);
                   addVector(ps.gatesize, "vector-size",@2,$2);
                   storeBannerAndRightComments(ps.gatesize,@1,@2);
-                  storePos(ps.gatesize, @$);
-                }
-        | NAME
-                {
-                  ps.gatesize = addGate(ps.gatesizes,@1);
-                  storeBannerAndRightComments(ps.gatesize,@1);
                   storePos(ps.gatesize, @$);
                 }
         ;
