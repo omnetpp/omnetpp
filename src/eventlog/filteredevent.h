@@ -17,6 +17,7 @@
 
 #include <vector>
 #include "eventlogdefs.h"
+#include "ievent.h"
 #include "event.h"
 
 class FilteredEventLog;
@@ -26,41 +27,46 @@ class FilteredEventLog;
  *
  * Filtered events are in a lazy double-linked list based on event numbers.
  */
-class FilteredEvent
+class FilteredEvent : public IEvent
 {
-    public:
-        typedef std::vector<FilteredMessageDependency *> FilteredMessageDependencyList;
-
     protected:
         FilteredEventLog *filteredEventLog;
 
         long eventNumber; // the corresponding event number
         long causeEventNumber; // the event number from which the message was sent that is being processed in this event
         FilteredMessageDependency *cause; // the message send which is processed in this event
-        FilteredMessageDependencyList *causes; // the arrival message sends of messages which we send in this even and are in the filtered set
-        FilteredMessageDependencyList *consequences; // the message sends and arrivals from this event to another in the filtered set
-
-        long previousFilteredEventNumber; // the event number of the previous matching filtered event or -1 if unknown
-        long nextFilteredEventNumber; // the event number of the next matching filtered event or -1 if unknown
+        MessageDependencyList *causes; // the arrival message sends of messages which we send in this even and are in the filtered set
+        MessageDependencyList *consequences; // the message sends and arrivals from this event to another in the filtered set
 
     public:
         FilteredEvent(FilteredEventLog *filteredEventLog, long eventNumber);
         ~FilteredEvent();
-        static void linkFilteredEvents(FilteredEvent *previousFilteredEvent, FilteredEvent *nextFilteredEvent);
 
-        Event *getEvent();
-        long getEventNumber() { return eventNumber; };
-        long getPreviousFilteredEventNumber() { return previousFilteredEventNumber; };
-        long getNextFilteredEventNumber() { return nextFilteredEventNumber; };
+        IEvent *getEvent();
 
-        FilteredEvent *getCauseFilteredEvent();
-        FilteredMessageDependency *getCause();
-        FilteredMessageDependencyList *getCauses();
-        FilteredMessageDependencyList *getConsequences();
+        // IEvent interface
+        virtual EventEntry *getEventEntry() { return getEvent()->getEventEntry(); }
+        virtual int getNumEventLogEntries() { return getEvent()->getNumEventLogEntries(); }
+        virtual EventLogEntry *getEventLogEntry(int index) { return getEvent()->getEventLogEntry(index); }
+
+        virtual long getEventNumber() { return eventNumber; }
+        virtual simtime_t getSimulationTime() { return getEvent()->getSimulationTime(); }
+        virtual long getMessageId() { return getEvent()->getMessageId(); }
+        virtual long getCauseEventNumber() { return getEvent()->getCauseEventNumber(); }
+
+        virtual FilteredEvent *getPreviousEvent();
+        virtual FilteredEvent *getNextEvent();
+
+        virtual FilteredEvent *getCauseEvent();
+        virtual FilteredMessageDependency *getCause();
+        virtual MessageDependencyList *getCauses();
+        virtual MessageDependencyList *getConsequences();
+
+        virtual void print(FILE *file = stdout) { getEvent()->print(); }
 
     protected:
-        FilteredMessageDependencyList *getCauses(Event *event, int consequenceMessageSendEntryNumber, int level);
-        FilteredMessageDependencyList *getConsequences(Event *event, int causeMessageSendEntryNumber, int level);
+        MessageDependencyList *getCauses(IEvent *event, int consequenceMessageSendEntryNumber, int level);
+        MessageDependencyList *getConsequences(IEvent *event, int causeMessageSendEntryNumber, int level);
 };
 
 #endif

@@ -12,7 +12,7 @@ CFLAGS=$(CFLAGS) /DWIN32_DLL
 #
 COPTS=$(CFLAGS) -I. -I../common -I../../include /Fd"eventlog.pdb"
 
-OBJS= eventlog.obj eventlogindex.obj messagedependency.obj event.obj eventlogentry.obj eventlogentries.obj filteredevent.obj filteredeventlog.obj eventlogentryfactory.obj stringpool.obj
+OBJS= ievent.obj ieventlog.obj eventlogfacade.obj eventlog.obj eventlogindex.obj messagedependency.obj event.obj eventlogentry.obj eventlogentries.obj filteredevent.obj filteredeventlog.obj eventlogentryfactory.obj stringpool.obj
 LIBS= eventlog.lib ../common/common.lib
 
 #

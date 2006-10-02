@@ -12,7 +12,6 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include <assert.h>
 #include "filereader.h"
 #include "stringpool.h"
 #include "eventlog.h"
@@ -49,25 +48,11 @@ void EventLog::parseInitializationLogEntries()
 
         if (eventLogEntry && !dynamic_cast<EventEntry *>(eventLogEntry))
             initializationLogEntries.push_back(eventLogEntry);
+
+        if (eventLogEntry && dynamic_cast<ModuleCreatedEntry *>(eventLogEntry))
+            initializationModuleCreatedEntries.push_back((ModuleCreatedEntry *)eventLogEntry);
     }
     while (reader->lineStartOffset() < firstOffset);
-}
-
-void EventLog::parse(long fromEventNumber, long toEventNumber)
-{
-    long fromOffset = getOffsetForEventNumber(fromEventNumber);
-    long toOffset = getOffsetForEventNumber(toEventNumber);
-    long offset = fromOffset;
-
-    if (fromOffset == -1 || toOffset == -1)
-        throw new Exception("Could not find requested events");
-
-    while (offset <= toOffset)
-    {
-        Event *event = new Event(this);
-        offset = event->parse(reader, offset);
-        cacheEvent(event);
-    }
 }
 
 void EventLog::printInitializationLogEntries(FILE *file)
@@ -76,20 +61,9 @@ void EventLog::printInitializationLogEntries(FILE *file)
         (*it)->print(file);
 }
 
-void EventLog::printEvents(FILE *file)
+Event *EventLog::getEventForEventNumber(long eventNumber, MatchKind matchKind)
 {
-    for (EventNumberToEventMap::iterator it = eventNumberToEventMap.begin(); it != eventNumberToEventMap.end(); it++)
-        it->second->print(file);
-}
-
-void EventLog::print(FILE *file)
-{
-    printInitializationLogEntries(file);
-    printEvents(file);
-}
-
-Event *EventLog::getEventForEventNumber(long eventNumber)
-{
+    // TODO: use matchKind
     EASSERT(eventNumber >= 0);
     EventNumberToEventMap::iterator it = eventNumberToEventMap.find(eventNumber);
 
@@ -108,6 +82,7 @@ Event *EventLog::getEventForEventNumber(long eventNumber)
 
 Event *EventLog::getEventForSimulationTime(simtime_t simulationTime, MatchKind matchKind)
 {
+    // TODO: use matchKind
     EASSERT(simulationTime >= 0);
     long offset = getOffsetForSimulationTime(simulationTime, matchKind);
 
@@ -143,6 +118,7 @@ Event *EventLog::getEventForEndOffset(long endOffset)
     else
         return getEventForBeginOffset(beginOffset);
 }
+
 
 Event *EventLog::cacheEvent(Event *event)
 {

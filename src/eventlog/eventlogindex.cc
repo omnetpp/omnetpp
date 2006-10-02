@@ -13,7 +13,6 @@
 *--------------------------------------------------------------*/
 
 #include <algorithm>
-#include <assert.h>
 #include "eventlogindex.h"
 #include "exception.h"
 
@@ -21,8 +20,8 @@
 EventLogIndex::EventLogIndex(FileReader *reader)
 {
     this->reader = reader;
-    firstEventNumber = -1;
-    lastEventNumber = -1;
+    firstEventNumber = EVENT_NOT_YET_CALCULATED;
+    lastEventNumber = EVENT_NOT_YET_CALCULATED;
 }
 
 EventLogIndex::~EventLogIndex()
@@ -32,7 +31,7 @@ EventLogIndex::~EventLogIndex()
 
 long EventLogIndex::getFirstEventNumber()
 {
-    if (firstEventNumber == -1)
+    if (firstEventNumber == EVENT_NOT_YET_CALCULATED)
     {
         long lineStartOffset, lineEndOffset;
         readToFirstEventLine(0, firstEventNumber, firstSimulationTime, lineStartOffset, lineEndOffset);
@@ -43,7 +42,7 @@ long EventLogIndex::getFirstEventNumber()
 
 long EventLogIndex::getLastEventNumber()
 {
-    if (lastEventNumber == -1)
+    if (lastEventNumber == EVENT_NOT_YET_CALCULATED)
     {
         long chunkSize = 100;
         long chunkOffset = reader->fileSize();
@@ -114,8 +113,10 @@ long EventLogIndex::getEndOffsetForBeginOffset(long beginOffset)
 bool EventLogIndex::positionToEventNumber(long eventNumber, MatchKind matchKind)
 {
     long offset = getOffsetForEventNumber(eventNumber, matchKind);
-    if (offset==-1)
+
+    if (offset == -1)
         return false; // eventNumber not found
+
     reader->seekTo(offset);
     return true;
 }
@@ -341,7 +342,8 @@ bool EventLogIndex::readToFirstEventLine(long readStartOffset, long& eventNumber
     // find event number and simulation time in line ("# 12345 t 1.2345")
     lineStartOffset = reader->lineStartOffset();
     lineEndOffset = lineStartOffset + strlen(line);
-    for (int i=1; i<tokenizer.numTokens()-1; i+=2)
+
+    for (int i = 1; i <tokenizer.numTokens() - 1; i += 2)
     {
         if (!strcmp(tokenizer.tokens()[i], "#"))
             eventNumber = atol(tokenizer.tokens()[i+1]);

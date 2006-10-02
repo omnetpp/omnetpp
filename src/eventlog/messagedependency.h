@@ -21,8 +21,8 @@
 #include "eventlogentry.h"
 #include "eventlogentries.h"
 
-class Event;
-class EventLog;
+class IEvent;
+class IEventLog;
 
 /**
  * Represents two places in the event log file which are associate with the
@@ -38,7 +38,7 @@ class EventLog;
 class MessageDependency
 {
     protected:
-        EventLog *eventLog;
+        IEventLog *eventLog;
 
         long causeEventNumber; // -2 means not yet calculated from the consequenceEventNumber, -1 means not found in file
         int causeMessageSendEntryNumber; // optional (-1) and refers to an entry of causeEvent
@@ -47,37 +47,41 @@ class MessageDependency
         int consequenceMessageSendEntryNumber; // optional (-1) and refers to an entry of consequenceEvent
 
     public:
-        MessageDependency(EventLog *eventLog,
-            long causeEventNumber, int causeMessageSendEntryNumber,
-            long consequenceEventNumber, int consequenceMessageSendEntryNumber);
+        MessageDependency(IEventLog *eventLog,
+                          long causeEventNumber, int causeMessageSendEntryNumber,
+                          long consequenceEventNumber, int consequenceMessageSendEntryNumber);
 
         long getCauseEventNumber();
-        Event *getCauseEvent();
+        IEvent *getCauseEvent();
 
         long getConsequenceEventNumber();
-        Event *getConsequenceEvent();
+        IEvent *getConsequenceEvent();
 
-        long getCauseMessageSendEntryNumber() { return causeMessageSendEntryNumber; };
+        long getCauseMessageSendEntryNumber() { return causeMessageSendEntryNumber; }
         EventLogEntry *getCauseMessageSendEntry();
 
-        long getConsequenceMessageSendEntryNumber() { return consequenceMessageSendEntryNumber; };
+        long getConsequenceMessageSendEntryNumber() { return consequenceMessageSendEntryNumber; }
         EventLogEntry *getConsequenceMessageSendEntry();
 
         simtime_t getCauseTime();
         simtime_t getConsequenceTime();
 
-        long getCauseMessageId() { return getCauseMessageSendEntry()->getMessageId(); };
-        long getConsequenceMessageId() { return getConsequenceMessageSendEntry()->getMessageId(); };
+        long getCauseMessageId() { return getCauseMessageSendEntry()->getMessageId(); }
+        long getConsequenceMessageId() { return getConsequenceMessageSendEntry()->getMessageId(); }
 
         EventLogEntry *getMessageSendEntry();
+
         void printCause(FILE *file = stdout);
         void printConsequence(FILE *file = stdout);
+        virtual void print(FILE *file = stdout);
 };
+
+typedef std::vector<MessageDependency *> MessageDependencyList;
 
 class MessageReuse : public MessageDependency
 {
     public:
-        MessageReuse(EventLog *eventLog, long senderEventNumber, int messageSendEntryNumber);
+        MessageReuse(IEventLog *eventLog, long senderEventNumber, int messageSendEntryNumber);
 };
 
 /**
@@ -86,16 +90,16 @@ class MessageReuse : public MessageDependency
 class MessageSend : public MessageDependency
 {
     public:
-        MessageSend(EventLog *eventLog, long senderEventNumber, int messageSendEntryNumber);
+        MessageSend(IEventLog *eventLog, long senderEventNumber, int messageSendEntryNumber);
 
-        long getSenderEventNumber() { return getCauseEventNumber(); };
-        Event *getSenderEvent() { return getCauseEvent(); };
+        long getSenderEventNumber() { return getCauseEventNumber(); }
+        IEvent *getSenderEvent() { return getCauseEvent(); }
 
-        long getArrivalEventNumber() { return getConsequenceEventNumber(); };
-        Event *getArrivalEvent() { return getConsequenceEvent(); };
+        long getArrivalEventNumber() { return getConsequenceEventNumber(); }
+        IEvent *getArrivalEvent() { return getConsequenceEvent(); }
 
-        simtime_t getSenderTime() { return getCauseTime(); };
-        simtime_t getArrivalTime() { return getConsequenceTime(); };
+        simtime_t getSenderTime() { return getCauseTime(); }
+        simtime_t getArrivalTime() { return getConsequenceTime(); }
 };
 
 class FilteredMessageDependency : public MessageDependency
@@ -105,19 +109,19 @@ class FilteredMessageDependency : public MessageDependency
         int middleMessageSendEntryNumber; // optional and refers to an entry of middleEvent
 
     public:
-        FilteredMessageDependency(EventLog *eventLog,
-            long causeEventNumber, int causeMessageSendEntryNumber,
-            long middleEventNumber, int middleMessageSendEntryNumber,
-            long consequenceEventNumber, int consequenceMessageSendEntryNumber);
+        FilteredMessageDependency(IEventLog *eventLog,
+                                  long causeEventNumber, int causeMessageSendEntryNumber,
+                                  long middleEventNumber, int middleMessageSendEntryNumber,
+                                  long consequenceEventNumber, int consequenceMessageSendEntryNumber);
 
-        long getMiddleEventNumber() { return middleEventNumber; };
-        Event *getMiddleEvent();
+        long getMiddleEventNumber() { return middleEventNumber; }
+        IEvent *getMiddleEvent();
         simtime_t getMiddleTime();
-        int getMiddleMessageSendEntryNumber() { return middleMessageSendEntryNumber; };
+        int getMiddleMessageSendEntryNumber() { return middleMessageSendEntryNumber; }
         EventLogEntry *getMiddleMessageSendEntry();
 
-        void print(FILE *file);
         void printMiddle(FILE *file);
+        virtual void print(FILE *file);
 };
 
 #endif

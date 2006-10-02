@@ -15,7 +15,8 @@
 #ifndef __EVENTLOGFACADE_H_
 #define __EVENTLOGFACADE_H_
 
-#include "eventlog.h"
+#include "ievent.h"
+#include "ieventlog.h"
 
 /**
  * A class that makes it possible to extract info about events, without
@@ -31,11 +32,10 @@
 class EventLogFacade
 {
     protected:
-        EventLog *eventLog;
+        IEventLog *eventLog;
 
     public:
-        EventLogFacade(EventLog *eventLog) { this->eventLog = eventLog;}
-        ~EventLogFacade() {}
+        EventLogFacade(IEventLog *eventLog);
 };
 
 #endif

@@ -23,6 +23,7 @@ long Event::numParsedEvent = 0;
 Event::Event(EventLog *eventLog)
 {
     this->eventLog = eventLog;
+
     beginOffset = -1;
     endOffset = -1;
     eventEntry = NULL;
@@ -54,87 +55,9 @@ Event::~Event()
     }
 }
 
-Event *Event::getCauseEvent()
-{
-    if (getCauseEventNumber() != -1)
-        return eventLog->getEventForEventNumber(getCauseEventNumber());
-    else
-        return NULL;
-}
-
-MessageSend *Event::getCause()
-{
-    if (cause == NULL)
-    {
-        Event *event = getCauseEvent();
-
-        if (event != NULL)
-        {
-            // find the "BS" or "SA" line in the cause event
-            for (int messageEntryNumber = 0; messageEntryNumber < event->eventLogEntries.size(); messageEntryNumber++)
-            {
-                EventLogEntry *eventLogEntry = event->eventLogEntries[messageEntryNumber];
-
-                if (eventLogEntry->isMessageSend() &&
-                    eventLogEntry->getMessageId() == getMessageId())
-                {
-                    cause = new MessageSend(eventLog, getCauseEventNumber(), messageEntryNumber);
-                    break;
-                }
-            }
-        }
-    }
-
-    return cause;
-}
-
-Event::MessageDependencyList *Event::getCauses()
-{
-    if (causes == NULL)
-    {
-        causes = new MessageDependencyList();
-
-        if (getCause() != NULL)
-            causes->push_back(getCause());
-
-        // add message reuses
-        for (int messageEntryNumber = 0; messageEntryNumber < eventLogEntries.size(); messageEntryNumber++)
-        {
-            EventLogEntry *eventLogEntry = eventLogEntries[messageEntryNumber];
-
-            if (eventLogEntry->isMessageSend() && eventLogEntry->getPreviousEventNumber() != getEventNumber())
-            {
-                // store "pe" key from "BS" or "SA" lines
-                causes->push_back(new MessageReuse(eventLog, getEventNumber(), messageEntryNumber));
-                break;
-            }
-        }
-    }
-
-    return causes;
-}
-
-Event::MessageDependencyList *Event::getConsequences()
-{
-    if (consequences == NULL)
-    {
-        consequences = new MessageDependencyList();
-
-        for (int messageEntryNumber = 0; messageEntryNumber < eventLogEntries.size(); messageEntryNumber++)
-        {
-            EventLogEntry *eventLogEntry = eventLogEntries[messageEntryNumber];
-
-            if (eventLogEntry->isMessageSend())
-                consequences->push_back(new MessageSend(eventLog, getEventNumber(), messageEntryNumber));
-        }
-    }
-
-    return consequences;
-}
-
 long Event::parse(FileReader *reader, long offset)
 {
-    if (eventEntry != NULL)
+    if (eventEntry)
         throw new Exception("Reusing event objects are not supported");
 
     beginOffset = offset;
@@ -175,4 +98,108 @@ void Event::print(FILE *file)
         EventLogEntry *eventLogEntry = *it;
         eventLogEntry->print(file);
     }
+}
+
+Event *Event::getPreviousEvent()
+{
+    if (!previousEvent)
+    {
+        previousEvent = eventLog->getEventForEndOffset(beginOffset);
+
+        if (previousEvent)
+            IEvent::linkEvents(previousEvent, this);
+    }
+
+    return (Event *)previousEvent;
+}
+
+Event *Event::getNextEvent()
+{
+    if (!nextEvent)
+    {
+        nextEvent = eventLog->getEventForBeginOffset(endOffset);
+
+        if (nextEvent)
+            Event::linkEvents(this, nextEvent);
+    }
+
+    return (Event *)nextEvent;
+}
+
+Event *Event::getCauseEvent()
+{
+    if (getCauseEventNumber() != -1)
+        return eventLog->getEventForEventNumber(getCauseEventNumber());
+    else
+        return NULL;
+}
+
+MessageSend *Event::getCause()
+{
+    if (!cause)
+    {
+        Event *event = getCauseEvent();
+
+        if (event)
+        {
+            // find the "BS" or "SA" line in the cause event
+            for (int messageEntryNumber = 0; messageEntryNumber < event->eventLogEntries.size(); messageEntryNumber++)
+            {
+                EventLogEntry *eventLogEntry = event->eventLogEntries[messageEntryNumber];
+
+                if (eventLogEntry->isMessageSend() &&
+                    eventLogEntry->getMessageId() == getMessageId())
+                {
+                    cause = new MessageSend(eventLog, getCauseEventNumber(), messageEntryNumber);
+                    break;
+                }
+            }
+        }
+    }
+
+    return cause;
+}
+
+MessageDependencyList *Event::getCauses()
+{
+    if (!causes)
+    {
+        causes = new MessageDependencyList();
+
+        if (getCause())
+            causes->push_back(getCause());
+
+        // add message reuses
+        for (int messageEntryNumber = 0; messageEntryNumber < eventLogEntries.size(); messageEntryNumber++)
+        {
+            EventLogEntry *eventLogEntry = eventLogEntries[messageEntryNumber];
+
+            if (eventLogEntry->isMessageSend() && eventLogEntry->getPreviousEventNumber() != getEventNumber())
+            {
+                // store "pe" key from "BS" or "SA" lines
+                causes->push_back(new MessageReuse(eventLog, getEventNumber(), messageEntryNumber));
+                break;
+            }
+        }
+    }
+
+    return causes;
+}
+
+MessageDependencyList *Event::getConsequences()
+{
+    if (!consequences)
+    {
+        consequences = new MessageDependencyList();
+
+        for (int messageEntryNumber = 0; messageEntryNumber < eventLogEntries.size(); messageEntryNumber++)
+        {
+            EventLogEntry *eventLogEntry = eventLogEntries[messageEntryNumber];
+
+            if (eventLogEntry->isMessageSend())
+                consequences->push_back(new MessageSend(eventLog, getEventNumber(), messageEntryNumber));
+        }
+    }
+
+    return consequences;
 }

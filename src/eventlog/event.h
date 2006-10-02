@@ -17,10 +17,13 @@
 
 #include <sstream>
 #include <vector>
+#include "ievent.h"
 #include "filereader.h"
 #include "eventlogentry.h"
 #include "eventlogentries.h"
 #include "messagedependency.h"
+
+class EventLog;
 
 /**
  * Manages all event log entries for a single event. (All lines belonging to an "E" line.)
@@ -28,11 +31,8 @@
  * remembered by callers, because they may get deleted when the event is
  * thrown out of the eventlog cache.
  */
-class Event
+class Event : public IEvent
 {
-    public:
-        typedef std::vector<MessageDependency *> MessageDependencyList;
-
     protected:
         EventLog *eventLog; // the corresponding event log
         long beginOffset; // file offset where the event starts
@@ -52,25 +52,30 @@ class Event
         Event(EventLog *eventLog);
         ~Event();
 
-        long getBeginOffset() { return beginOffset; };
-        long getEndOffset() { return endOffset; };
-
-        EventEntry *getEventEntry() { return eventEntry; };
-        long getEventNumber() { return eventEntry->eventNumber; };
-        simtime_t getSimulationTime() { return eventEntry->simulationTime; };
-        long getMessageId() { return eventEntry->messageId; };
-        long getCauseEventNumber() { return eventEntry->causeEventNumber; };
-        EventLogEntry *getEventLogEntry(int index) { return eventLogEntries[index]; };
-        int getNumEventLogEntries() { return eventLogEntries.size(); };
-
-        Event *getCauseEvent();
-        MessageSend *getCause();
-        MessageDependencyList *getCauses();
-        MessageDependencyList *getConsequences();
-
+        long getBeginOffset() { return beginOffset; }
+        long getEndOffset() { return endOffset; }
         long parse(FileReader *index, long offset);
-        static long getNumParsedEvent() { return numParsedEvent; };
-        void print(FILE *file = stdout);
+        static long getNumParsedEvent() { return numParsedEvent; }
+
+        // IEvent interface
+        virtual EventEntry *getEventEntry() { return eventEntry; }
+        virtual int getNumEventLogEntries() { return eventLogEntries.size(); }
+        virtual EventLogEntry *getEventLogEntry(int index) { return eventLogEntries[index]; }
+
+        virtual long getEventNumber() { return eventEntry->eventNumber; }
+        virtual simtime_t getSimulationTime() { return eventEntry->simulationTime; }
+        virtual long getMessageId() { return eventEntry->messageId; }
+        virtual long getCauseEventNumber() { return eventEntry->causeEventNumber; }
+
+        virtual Event *getPreviousEvent();
+        virtual Event *getNextEvent();
+
+        virtual Event *getCauseEvent();
+        virtual MessageSend *getCause();
+        virtual MessageDependencyList *getCauses();
+        virtual MessageDependencyList *getConsequences();
+
+        virtual void print(FILE *file = stdout);
 };
 
 #endif

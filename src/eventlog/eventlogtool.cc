@@ -49,8 +49,7 @@ void echo(int argc, char **argv)
     
         FileReader *fileReader = new FileReader(argv[2]);
         EventLog eventLog(fileReader);
-        eventLog.parse(from, to);
-        eventLog.print(stdout);
+        eventLog.print(stdout, from, to);
     } catch (Exception *e) {
         fprintf(stderr, "Error: %s\n", e->message());
     }
@@ -90,10 +89,10 @@ void consequences(int argc, char **argv)
         FileReader *fileReader = new FileReader(argv[2]);
         EventLog *eventLog = new EventLog(fileReader);
         FilteredEventLog filteredEventLog(eventLog, moduleIds, tracedEventNumber, true, true);
-        FilteredEvent *filteredEvent = filteredEventLog.getFilteredEvent(tracedEventNumber);
-        FilteredEvent::FilteredMessageDependencyList *messageDependencies = filteredEvent->getConsequences();
+        FilteredEvent *filteredEvent = filteredEventLog.getEventForEventNumber(tracedEventNumber);
+        MessageDependencyList *messageDependencies = filteredEvent->getConsequences();
 
-        for (FilteredEvent::FilteredMessageDependencyList::iterator it = messageDependencies->begin(); it != messageDependencies->end(); it++)
+        for (MessageDependencyList::iterator it = messageDependencies->begin(); it != messageDependencies->end(); it++)
             (*it)->print(stdout);
 
         fprintf(stderr, "Number of events parsed: %d and number of lines read: %ld\n", Event::getNumParsedEvent(), FileReader::getNumReadLines());

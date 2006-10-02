@@ -34,14 +34,6 @@
  */
 class EventLogIndex
 {
-    public:
-        enum MatchKind
-        {
-            EXACT, // means only one key is allowed to match and returns the offset of that key
-            FIRST, // multiple matches allowed and returns the first one or the previous if there are not matches at all
-            LAST // as FIRST but just the opposite
-        };
-
     protected:
         LineTokenizer tokenizer;
         FileReader *reader;

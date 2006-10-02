@@ -21,6 +21,7 @@
 #include "stringpool.h"
 #include "filereader.h"
 #include "event.h"
+#include "ieventlog.h"
 #include "eventlogindex.h"
 
 extern StringPool eventLogStringPool;
@@ -33,11 +34,14 @@ class EventLogEntry;
  * store pointers to Events or EventLogEntries, because this class may
  * thow them out of the cache any time.
  */
-class EventLog : public EventLogIndex
+class EventLog : public IEventLog, public EventLogIndex
 {
     protected:
         typedef std::vector<EventLogEntry *> EventLogEntryList;
         EventLogEntryList initializationLogEntries; // all entries from the beginning of the file to the first event
+
+        typedef std::vector<ModuleCreatedEntry *> ModuleCreatedEntryList;
+        ModuleCreatedEntryList initializationModuleCreatedEntries;
 
         typedef std::map<long, Event *> EventNumberToEventMap;
         EventNumberToEventMap eventNumberToEventMap; // all parsed events so far
@@ -50,16 +54,20 @@ class EventLog : public EventLogIndex
         ~EventLog();
 
         void parseInitializationLogEntries();
-        void parse(long fromEventNumber, long toEventNumber);
 
-        void printInitializationLogEntries(FILE *file = stdout);
-        void printEvents(FILE *file = stdout);
-        void print(FILE *file = stdout);
-
-        Event *getEventForEventNumber(long eventNumber);
-        Event *getEventForSimulationTime(simtime_t simulationTime, EventLogIndex::MatchKind matchKind = EXACT);
         Event *getEventForBeginOffset(long offset);
         Event *getEventForEndOffset(long offset);
+
+        // IEventLog interface
+        virtual ModuleCreatedEntry *getInitializationModule(int index) { return initializationModuleCreatedEntries[index]; }
+        virtual int getNumInitializationModules() { return initializationModuleCreatedEntries.size(); }
+
+        virtual Event *getFirstEvent() { return getEventForEventNumber(getFirstEventNumber()); }
+        virtual Event *getLastEvent() { return getEventForEventNumber(getLastEventNumber()); }
+        virtual Event *getEventForEventNumber(long eventNumber, MatchKind matchKind = EXACT);
+        virtual Event *getEventForSimulationTime(simtime_t simulationTime, MatchKind matchKind = EXACT);
+
+        virtual void printInitializationLogEntries(FILE *file = stdout);
 
     protected:
         Event *cacheEvent(Event *event);

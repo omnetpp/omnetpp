@@ -12,6 +12,7 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
+#include "event.h"
 #include "filteredevent.h"
 #include "filteredeventlog.h"
 
@@ -19,9 +20,6 @@ FilteredEvent::FilteredEvent(FilteredEventLog *filteredEventLog, long eventNumbe
 {
     this->eventNumber = eventNumber;
     this->filteredEventLog = filteredEventLog;
-
-    nextFilteredEventNumber = -1;
-    previousFilteredEventNumber = -1;
 
     causeEventNumber = -1;
     causes = NULL;
@@ -34,48 +32,74 @@ FilteredEvent::~FilteredEvent()
 
     if (causes)
     {
-        for (FilteredMessageDependencyList::iterator it = causes->begin(); it != causes->end(); it++)
+        for (MessageDependencyList::iterator it = causes->begin(); it != causes->end(); it++)
             delete *it;
         delete causes;
     }
 
     if (consequences)
     {
-        for (FilteredMessageDependencyList::iterator it = consequences->begin(); it != consequences->end(); it++)
+        for (MessageDependencyList::iterator it = consequences->begin(); it != consequences->end(); it++)
             delete *it;
         delete consequences;
     }
 }
 
-Event *FilteredEvent::getEvent()
+IEvent *FilteredEvent::getEvent()
 {
     return filteredEventLog->getEventLog()->getEventForEventNumber(eventNumber);
 }
 
-FilteredEvent *FilteredEvent::getCauseFilteredEvent()
+FilteredEvent *FilteredEvent::getPreviousEvent()
+{
+    if (!previousEvent)
+    {
+        previousEvent = filteredEventLog->getEventInDirection(eventNumber - 1, false);
+
+        if (previousEvent)
+            IEvent::linkEvents(previousEvent, this);
+    }
+
+    return (FilteredEvent *)previousEvent;
+}
+
+FilteredEvent *FilteredEvent::getNextEvent()
+{
+    if (!nextEvent)
+    {
+        nextEvent = filteredEventLog->getEventInDirection(eventNumber + 1, true);
+
+        if (nextEvent)
+            Event::linkEvents(this, nextEvent);
+    }
+
+    return (FilteredEvent *)nextEvent;
+}
+
+FilteredEvent *FilteredEvent::getCauseEvent()
 {
     if (causeEventNumber == -1)
     {
-        Event *causeEvent = getEvent()->getCauseEvent();
+        IEvent *causeEvent = getEvent()->getCauseEvent();
 
         // walk backwards on the cause chain until we find an event matched by the filter
         while (causeEvent)
         {
             if (filteredEventLog->matchesFilter(causeEvent))
-                return filteredEventLog->getFilteredEvent(causeEvent->getEventNumber());
+                return filteredEventLog->getEventForEventNumber(causeEvent->getEventNumber());
 
             causeEvent = causeEvent->getCauseEvent();
         }
     }
 
-    return filteredEventLog->getFilteredEvent(causeEventNumber);
+    return filteredEventLog->getEventForEventNumber(causeEventNumber);
 }
 
 FilteredMessageDependency *FilteredEvent::getCause()
 {
     if (cause == NULL)
     {
-        Event *causeEvent = getEvent();
+        IEvent *causeEvent = getEvent();
         MessageDependency *causeMessageDependency = causeEvent->getCause();
 
         while (causeEvent)
@@ -97,28 +121,28 @@ FilteredMessageDependency *FilteredEvent::getCause()
     return cause;
 }
 
-FilteredEvent::FilteredMessageDependencyList *FilteredEvent::getCauses()
+MessageDependencyList *FilteredEvent::getCauses()
 {
     if (causes == NULL)
     {
-        causes = new FilteredEvent::FilteredMessageDependencyList();
+        causes = new MessageDependencyList();
         getCauses(getEvent(), -1, 0);
     }
 
     return causes;
 }
 
-FilteredEvent::FilteredMessageDependencyList *FilteredEvent::getCauses(Event *event, int consequenceMessageSendEntryNumber, int level)
+MessageDependencyList *FilteredEvent::getCauses(IEvent *event, int consequenceMessageSendEntryNumber, int level)
 {
     // returns a list of dependencies, where the consequence is this event,
     // and the other end is no further away than getMaxCauseDepth() and
     // no events in between match the filter
-    Event::MessageDependencyList *eventCauses = event->getCauses();
+    MessageDependencyList *eventCauses = event->getCauses();
 
-    for (Event::MessageDependencyList::iterator it = eventCauses->begin(); it != eventCauses->end(); it++)
+    for (MessageDependencyList::iterator it = eventCauses->begin(); it != eventCauses->end(); it++)
     {
         MessageDependency *messageDependency = *it;
-        Event *causeEvent = messageDependency->getCauseEvent();
+        IEvent *causeEvent = messageDependency->getCauseEvent();
 
         //printf("*** Checking at level %d for cause event number %ld\n", level, causeEvent->getEventNumber());
 
@@ -136,26 +160,26 @@ FilteredEvent::FilteredMessageDependencyList *FilteredEvent::getCauses(Event *ev
     return causes;
 }
 
-FilteredEvent::FilteredMessageDependencyList *FilteredEvent::getConsequences()
+MessageDependencyList *FilteredEvent::getConsequences()
 {
     if (consequences == NULL)
     {
-        consequences = new FilteredEvent::FilteredMessageDependencyList();
+        consequences = new MessageDependencyList();
         getConsequences(getEvent(), -1, 0);
     }
 
     return consequences;
 }
 
-FilteredEvent::FilteredMessageDependencyList *FilteredEvent::getConsequences(Event *event, int causeMessageSendEntryNumber, int level)
+MessageDependencyList *FilteredEvent::getConsequences(IEvent *event, int causeMessageSendEntryNumber, int level)
 {
     // similar to getCause
-    Event::MessageDependencyList *eventConsequences = event->getConsequences();
+    MessageDependencyList *eventConsequences = event->getConsequences();
 
-    for (Event::MessageDependencyList::iterator it = eventConsequences->begin(); it != eventConsequences->end(); it++)
+    for (MessageDependencyList::iterator it = eventConsequences->begin(); it != eventConsequences->end(); it++)
     {
         MessageDependency *messageDependency = *it;
-        Event *consequenceEvent = messageDependency->getConsequenceEvent();
+        IEvent *consequenceEvent = messageDependency->getConsequenceEvent();
 
         if (consequenceEvent == NULL)
             continue; // skip cancelled self messages
@@ -174,11 +198,4 @@ FilteredEvent::FilteredMessageDependencyList *FilteredEvent::getConsequences(Eve
     }
 
     return consequences;
-}
-
-void FilteredEvent::linkFilteredEvents(FilteredEvent *previousFilteredEvent, FilteredEvent *nextFilteredEvent)
-{
-    // used to build the linked list
-    previousFilteredEvent->nextFilteredEventNumber = nextFilteredEvent->getEventNumber();
-    nextFilteredEvent->previousFilteredEventNumber = previousFilteredEvent->getEventNumber();
 }
