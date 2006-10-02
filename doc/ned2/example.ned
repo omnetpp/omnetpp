@@ -64,6 +64,21 @@
 //     }
 //   and usage: Foo.RADIO_FREQ.
 //
+// - XXX rename "function" to "volatile"! it is very confusing to see code like this:
+//     simple BasicSnrEval
+//     {
+//        parameters:
+//             double headerLength; // header length of the AirFrame (in bits)
+//             double function transmitterPower; // power used for transmission of messages (in mW)
+//             double function bitrate; // bitrate (in bits/sec)
+//     }
+//   It looks like one was expected to specify a function (i.e. some code) that produces transmitterPower...
+//   "volatile" will ring a bell with C programmers.
+//
+// - XXX rename "gate" to "port" everywhere? that is the industry standard terminology...
+//   OTOH port is already too overloaded in the INET Framework: TCP port (number),
+//   router port/switch port -- so maybe it is better to leave it as it is
+//
 // - XXX rename "interface" to "moduleinterface", to be consistent with "channelinterface" !!!
 // - XXX find a better name for "channel withclass"!!!
 //
@@ -112,40 +127,33 @@
 //
 // DO WE NEED "like *" ? Not much value in there...
 //
-// STATIC ANALYSIS IS NO GOOD WITH CONDITIONALS:
-// as param values, gate size, param/gate/module/submodule properties may
-// involve conditionals, they are UNDETERMINABLE with static analysis.
+// - CONDITIONAL PARAMETERS, PROPERTIES (@display) AND GATES (GATESIZES) ARE
+//   NOT SUPPORTED. Reasons:
+//    - inefficient at runtime. At network building, one cannot aggregate
+//      parameters on a "prototype module" and then copy it to instances,
+//      but on every instance the whole *procedure* would have to be repeated
+//      (turns declarative impl into imperative...)
+//    - as param values, gate size, param/gate/module/submodule properties may
+//      involve conditionals, they are UNDETERMINABLE with static analysis.
+//      e.g. one cannot tell with static analysis whether a parameter has
+//      been assigned or not.
+//    - strange things like multiple assigments would have to be allow too:
+//         submod: Foo {
+//            parameters:
+//               int a;
+//               a = 3 if index==1;
+//               a = 5;
+//            }
+//    - INCONSISTENCY: with wildcards, FIRST match counts; with conditional
+//      assignments, LAST match counts (it's impossible to do the other way!!!)
+//    - for params and gatesizes, it can be easily rewritten to use "?:" operator:
+//       example:
+//            par = (5 if index<3, 0 otherwise);
+//        generalized (v1 if c1, v2 if c2, v3 if c3, otherwise vdefault);
+//        same as (c1 ? v1 : c2 ? v2 : c3 ? v3 : vdefault)
 //
-// INCONSISTENCY:
-// with wildcards, FIRST match counts; with conditional assignments, LAST match
-// counts (it's impossible to do the other way!!!)
-//
-// and: parameter once assigned in base class or type MUST be allowed to be
-// set to a different value in subclass/place of usage!!!
-//
-// this must be allowed:
-//  {
-//    parameters:
-//      int a;
-//      a = 3 if index==1;
-//      a = 5;
-//  }
-//
-// TOO MANY PROBLEMS WITH CONDITIONAL ASSIGNMENT: move condition *inside*
-// the assignment instead of wrapping it? (extended ?: syntax).
-// That would solve the issue that whether a parameter conditionally assigned
-// in a base class should be regarded as assigned in the subclass (analysed
-// statically not during runtime!!!) Then conditionals could be moved
-// into the expression syntax altogether!!!! and we could get rid of
-// gate groups and param groups...
-//
-// example:
-//   par = (5 if index<3, 0 otherwise);
-// generalized (v1 if c1, v2 if c2, v3 if c3, otherwise vdefault);
-// same as (c1 ? v1 : c2 ? v2 : c3 ? v3 : vdefault)
-//
-// STILL PROBLEM: what to do with conditional properties? like this:
-//   @display(c="green") if index==3;    <=== how to write this?
+// - parameter once assigned in base class or type MUST be allowed to be
+//   set to a different value in subclass/place of usage!!!
 //
 
 package generic.queueing;  // default package for following components
@@ -702,40 +710,5 @@ simple Gen1
         string className = default("FIFO") @choice("FIFO","LIFO");
 
         double time3 = 10h 30s @unit(sec);
-}
-
-// conditional parameters
-network Network6
-{
-    types:
-        simple Host
-        {
-            parameters:
-                int parX;
-                int parY;
-                int parZ;
-            gates:
-                input port[];
-                inout portA[];
-                inout portB[];
-        }
-    submodules:
-        hosts[100]: Host {
-            parameters:
-                @display(c="green") if index==3;
-                @display(c="red");
-                parX = 45 if index>9;
-                if index>9 {
-                    parY = 3;  // declarations cannot be conditional, only assignments or refinements!
-                    parZ = 655;
-                };
-            gates:
-                port[5] if index==3;  // declarations cannot be conditional, only assignments or refinements!
-                port[8];
-                if index>9 {
-                    portA[34];
-                    portB[3];
-                };
-        };
 }
 
