@@ -1,8 +1,11 @@
 package org.omnetpp.ned.editor.graph.properties;
 
+import java.util.EnumSet;
+
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
 import org.eclipse.ui.views.properties.PropertyDescriptor;
 import org.eclipse.ui.views.properties.TextPropertyDescriptor;
+import org.omnetpp.common.displaymodel.DisplayString;
 import org.omnetpp.ned2.model.CompoundModuleNodeEx;
 
 public class CompoundModulePropertySource extends AbstractNedPropertySource {
@@ -10,6 +13,26 @@ public class CompoundModulePropertySource extends AbstractNedPropertySource {
     protected static IPropertyDescriptor[] descriptors;
     
     public enum Prop { Name, Display }
+    public static class CompoundModuleDisplayPropertySource extends DisplayPropertySource {
+        protected static IPropertyDescriptor[] propertyDescArray;
+        protected CompoundModuleNodeEx model;
+
+
+        public CompoundModuleDisplayPropertySource(CompoundModuleNodeEx model) {
+            super(model);
+            this.model = model;
+            setDisplayString(model.getDisplayString());
+            supportedProperties = EnumSet.range(DisplayString.Prop.X, 
+                                                DisplayString.Prop.MODULE_UNIT);
+        }
+
+        @Override
+        public void modelChanged() {
+            if(model != null)
+                setDisplayString(model.getDisplayString());
+        }
+
+    }
     
     static {
         PropertyDescriptor nameProp = new TextPropertyDescriptor(Prop.Name, "Name");

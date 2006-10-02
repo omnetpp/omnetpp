@@ -2,9 +2,13 @@ package org.omnetpp.ned.editor.graph.properties;
 
 import org.eclipse.core.runtime.IAdapterFactory;
 import org.eclipse.ui.views.properties.IPropertySource;
+import org.omnetpp.ned2.model.ChannelInterfaceNodeEx;
+import org.omnetpp.ned2.model.ChannelNodeEx;
 import org.omnetpp.ned2.model.CompoundModuleNodeEx;
 import org.omnetpp.ned2.model.ConnectionNodeEx;
+import org.omnetpp.ned2.model.ModuleInterfaceNodeEx;
 import org.omnetpp.ned2.model.NEDElement;
+import org.omnetpp.ned2.model.SimpleModuleNodeEx;
 import org.omnetpp.ned2.model.SubmoduleNodeEx;
 
 /**
@@ -28,8 +32,20 @@ public  class NedPropertySourceAdapterFactory implements IAdapterFactory {
             if (nedModel instanceof CompoundModuleNodeEx) 
                 adapter = new CompoundModulePropertySource((CompoundModuleNodeEx)nedModel);
 
+            if (nedModel instanceof SimpleModuleNodeEx) 
+                adapter = new SimpleModulePropertySource((SimpleModuleNodeEx)nedModel);
+
             if (nedModel instanceof ConnectionNodeEx) 
                 adapter = new ConnectionPropertySource((ConnectionNodeEx)nedModel);
+
+            if (nedModel instanceof ChannelNodeEx) 
+                adapter = new ChannelPropertySource((ChannelNodeEx)nedModel);
+
+            if (nedModel instanceof ModuleInterfaceNodeEx) 
+                adapter = new NamedNedPropertySource((ModuleInterfaceNodeEx)nedModel);
+
+            if (nedModel instanceof ChannelInterfaceNodeEx) 
+                adapter = new NamedNedPropertySource((ChannelInterfaceNodeEx)nedModel);
 
             // store the created adapter into the model so we can reuse it later
             if(adapter != null) 

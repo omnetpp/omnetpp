@@ -6,20 +6,22 @@ import org.eclipse.ui.views.properties.IPropertyDescriptor;
 import org.eclipse.ui.views.properties.PropertyDescriptor;
 import org.eclipse.ui.views.properties.TextPropertyDescriptor;
 import org.omnetpp.common.displaymodel.DisplayString;
-import org.omnetpp.ned2.model.ConnectionNodeEx;
+import org.omnetpp.ned2.model.ChannelNodeEx;
 
-public class ConnectionPropertySource extends AbstractNedPropertySource {
+public class ChannelPropertySource extends AbstractNedPropertySource {
 
-    protected static IPropertyDescriptor[] descriptors;
-    
-    public enum Prop { Channel, SrcModule, DestModule , Display }
+    protected IPropertyDescriptor[] descriptors;
+    protected ChannelNodeEx model;
+    protected ChannelDisplayPropertySource channelDisplayPropertySource;
 
-    public static class ConnectionDisplayPropertySource extends DisplayPropertySource {
+    public enum Prop { Name, Display }
+
+    public static class ChannelDisplayPropertySource extends DisplayPropertySource {
         protected static IPropertyDescriptor[] propertyDescArray;
-        protected ConnectionNodeEx model;
+        protected ChannelNodeEx model;
 
 
-        public ConnectionDisplayPropertySource(ConnectionNodeEx model) {
+        public ChannelDisplayPropertySource(ChannelNodeEx model) {
             super(model);
             this.model = model;
             setDisplayString(model.getDisplayString());
@@ -42,49 +44,47 @@ public class ConnectionPropertySource extends AbstractNedPropertySource {
 
     }
 
-    static {
-        PropertyDescriptor channelProp = new TextPropertyDescriptor(Prop.Channel, "Channel");
-        PropertyDescriptor displayProp = new TextPropertyDescriptor(Prop.Display, "Display");
-        descriptors = new IPropertyDescriptor[] { channelProp, displayProp };
-    }
-
-    protected ConnectionNodeEx model;
-    protected ConnectionDisplayPropertySource connectionDisplayPropertySource;
     
-    public ConnectionPropertySource(ConnectionNodeEx connectionNodeModel) {
-        super(connectionNodeModel);
-        model = connectionNodeModel;
+    public ChannelPropertySource(ChannelNodeEx channelNodeModel) {
+        super(channelNodeModel);
+        model = channelNodeModel;
         // create a nested displayPropertySource
-        connectionDisplayPropertySource = 
-            new ConnectionDisplayPropertySource(model);
+        channelDisplayPropertySource = 
+            new ChannelDisplayPropertySource(model);
+        
+        // set up property descriptors
+        PropertyDescriptor nameProp = new TextPropertyDescriptor(Prop.Name, "Name");
+        PropertyDescriptor displayProp = new TextPropertyDescriptor(Prop.Display, "Display");
+        descriptors = new IPropertyDescriptor[] { nameProp, displayProp };
     }
 
     @Override
     public Object getEditableValue() {
         // we don't need this if we don't want to embed this property source into an other propertysource
-        return model.toString();
+        return model.getName();
     }
 
     @Override
     public IPropertyDescriptor[] getPropertyDescriptors() {
+        
         return descriptors;
     }
 
     @Override
     public Object getPropertyValue(Object propName) {
-        if (Prop.Channel.equals(propName)) { 
-            return model.getChannelType(); 
+        if (Prop.Name.equals(propName)) { 
+            return model.getName(); 
         }
         if (Prop.Display.equals(propName)) { 
-            return connectionDisplayPropertySource; 
+            return channelDisplayPropertySource; 
         }
         return null;
     }
 
     @Override
     public void setPropertyValue(Object propName, Object value) {
-        if (Prop.Channel.equals(propName)) {
-            model.setChannelType(value.toString());
+        if (Prop.Name.equals(propName)) {
+            model.setName(value.toString());
         }
         if (Prop.Display.equals(propName)) {
             model.getDisplayString().set(value.toString());
@@ -93,7 +93,7 @@ public class ConnectionPropertySource extends AbstractNedPropertySource {
 
     @Override
     public boolean isPropertySet(Object propName) {
-        return Prop.Channel.equals(propName) || Prop.Display.equals(propName);
+        return Prop.Name.equals(propName) || Prop.Display.equals(propName);
     }
 
     @Override

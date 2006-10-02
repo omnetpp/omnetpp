@@ -1,33 +1,29 @@
 package org.omnetpp.ned.editor.graph.properties;
 
 import java.util.EnumSet;
-import java.util.Set;
 
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
 import org.eclipse.ui.views.properties.PropertyDescriptor;
 import org.eclipse.ui.views.properties.TextPropertyDescriptor;
 import org.omnetpp.common.displaymodel.DisplayString;
-import org.omnetpp.common.properties.EditableComboBoxPropertyDescriptor;
-import org.omnetpp.ned2.model.SubmoduleNodeEx;
-import org.omnetpp.resources.NEDResourcesPlugin;
+import org.omnetpp.ned2.model.SimpleModuleNodeEx;
 
-public class SubmodulePropertySource extends AbstractNedPropertySource {
+public class SimpleModulePropertySource extends NamedNedPropertySource {
 
     protected IPropertyDescriptor[] descriptors;
-    
-    public enum Prop { Name, Type, Display }
+    protected SimpleModuleNodeEx model;
+    protected SimpleModuleDisplayPropertySource simpleModuleDisplayPropertySource;
 
-    public static class SubmoduleDisplayPropertySource extends DisplayPropertySource {
+    public static class SimpleModuleDisplayPropertySource extends DisplayPropertySource {
         protected static IPropertyDescriptor[] propertyDescArray;
-        protected SubmoduleNodeEx model;
+        protected SimpleModuleNodeEx model;
 
-
-        public SubmoduleDisplayPropertySource(SubmoduleNodeEx model) {
+        public SimpleModuleDisplayPropertySource(SimpleModuleNodeEx model) {
             super(model);
             this.model = model;
             setDisplayString(model.getDisplayString());
-            supportedProperties = EnumSet.range(DisplayString.Prop.X, 
-                                                DisplayString.Prop.TOOLTIP);
+            supportedProperties = EnumSet.range(DisplayString.Prop.WIDTH, 
+                                                DisplayString.Prop.IMAGESIZE);
         }
 
         @Override
@@ -38,23 +34,19 @@ public class SubmodulePropertySource extends AbstractNedPropertySource {
 
     }
 
-    protected SubmoduleNodeEx model;
-    protected SubmoduleDisplayPropertySource submoduleDisplayPropertySource;
-    protected EditableComboBoxPropertyDescriptor typeProp;
-
+    public enum Prop { Name, Display }
     
-    public SubmodulePropertySource(SubmoduleNodeEx submoduleNodeModel) {
-        super(submoduleNodeModel);
-        model = submoduleNodeModel;
+    public SimpleModulePropertySource(SimpleModuleNodeEx simpleModuleNodeModel) {
+        super(simpleModuleNodeModel);
+        model = simpleModuleNodeModel;
         // create a nested displayPropertySource
-        submoduleDisplayPropertySource = 
-            new SubmoduleDisplayPropertySource(model);
+        simpleModuleDisplayPropertySource = 
+            new SimpleModuleDisplayPropertySource(model);
         
         // set up property descriptors
         PropertyDescriptor nameProp = new TextPropertyDescriptor(Prop.Name, "Name");
         PropertyDescriptor displayProp = new TextPropertyDescriptor(Prop.Display, "Display");
-        typeProp = new EditableComboBoxPropertyDescriptor(Prop.Type, "Type");
-        descriptors = new IPropertyDescriptor[] { nameProp, typeProp, displayProp };
+        descriptors = new IPropertyDescriptor[] { nameProp, displayProp };
     }
 
     @Override
@@ -65,10 +57,6 @@ public class SubmodulePropertySource extends AbstractNedPropertySource {
 
     @Override
     public IPropertyDescriptor[] getPropertyDescriptors() {
-        // fill in the type combobox
-        Set<String> moduleNames = NEDResourcesPlugin.getNEDResources().getModuleNames();
-        // TODO sort the types alphabetically
-        typeProp.setItems(moduleNames);
         
         return descriptors;
     }
@@ -78,11 +66,8 @@ public class SubmodulePropertySource extends AbstractNedPropertySource {
         if (Prop.Name.equals(propName)) { 
             return model.getName(); 
         }
-        if (Prop.Type.equals(propName)) { 
-            return model.getType(); 
-        }
         if (Prop.Display.equals(propName)) { 
-            return submoduleDisplayPropertySource; 
+            return simpleModuleDisplayPropertySource; 
         }
         return null;
     }
@@ -92,9 +77,6 @@ public class SubmodulePropertySource extends AbstractNedPropertySource {
         if (Prop.Name.equals(propName)) {
             model.setName(value.toString());
         }
-        if (Prop.Type.equals(propName)) {
-            model.setType(value.toString());
-        }
         if (Prop.Display.equals(propName)) {
             model.getDisplayString().set(value.toString());
         }
@@ -102,8 +84,7 @@ public class SubmodulePropertySource extends AbstractNedPropertySource {
 
     @Override
     public boolean isPropertySet(Object propName) {
-        return Prop.Name.equals(propName) || Prop.Type.equals(propName) ||
-            Prop.Display.equals(propName);
+        return Prop.Name.equals(propName) || Prop.Display.equals(propName);
     }
 
     @Override
