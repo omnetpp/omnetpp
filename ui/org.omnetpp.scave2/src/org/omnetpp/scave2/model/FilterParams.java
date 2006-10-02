@@ -104,7 +104,10 @@ public class FilterParams {
 		if (getExperimentNamePattern().length() > 0) sb.append("experiment=").append(getExperimentNamePattern()).append(" ");
 		if (getMeasurementNamePattern().length() > 0) sb.append("measurement=").append(getMeasurementNamePattern()).append(" ");
 		if (getReplicationNamePattern().length() > 0) sb.append("replication=").append(getReplicationNamePattern()).append(" ");
-		if (sb.length() > 0) sb.deleteCharAt(sb.length() - 1);
+		if (sb.length() > 0)
+			sb.deleteCharAt(sb.length() - 1);
+		else
+			sb.append("<all>");
 		return sb.toString();
 	}
 }
