@@ -15,6 +15,21 @@ import org.eclipse.ui.views.properties.IPropertySource2;
 import org.eclipse.ui.views.properties.PropertyDescriptor;
 import org.eclipse.ui.views.properties.TextPropertyDescriptor;
 
+/**
+ * Abstract base class for PropertySource wrappers.
+ * 
+ * <p> This is a facility to add property source behaviour to
+ * an existing hierarchy of classes. You can write a subclass of PropertySource
+ * for the objects having properties displayed on the property sheet.
+ * The subclass has getter/setter/default methods, the getter annotated with Property.
+ * The descriptors are generated from the Property annotations on the getters
+ * and the corresponding getter, default, or setter method is called when
+ * the property value, default value requested or set.
+ * The getter/setter/default method calls on the subclasses can be delegated
+ * the wrapped objects.  
+ *
+ * @author tomi
+ */
 public abstract class PropertySource implements IPropertySource2 {
 
 	static Map<Class,Entry> map;

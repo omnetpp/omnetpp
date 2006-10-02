@@ -7,7 +7,14 @@ import java.lang.annotation.Target;
 
 import org.eclipse.ui.views.properties.PropertyDescriptor;
 
-
+/**
+ * Annotation used to specify data for descriptors generated for
+ * subclasses of PropertySource.
+ * 
+ * @see PropertySource
+ *
+ * @author tomi
+ */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
 public @interface Property {
