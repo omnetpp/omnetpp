@@ -115,28 +115,28 @@ public class DataTable extends Table {
 	protected void addColumns() {
 		if (type==TYPE_SCALAR) {
 			addColumn("Directory", 60);
-			addColumn("File, Run#", 100);
-			addColumn("RunName", 100);
-			addColumn("Module", 160);
-			addColumn("Name", 100);
+			addColumn("File name#run number", 100);
+			addColumn("Run id", 100);
+			addColumn("Module name", 160);
+			addColumn("Data name", 100);
 			addColumn("Value", 80);
 		}
 		else if (type==TYPE_VECTOR) {
 			addColumn("Directory", 60);
-			addColumn("File, Run#", 100);
-			addColumn("RunName", 100);
-			addColumn("Module", 160);
-			addColumn("Name", 100);
+			addColumn("File name#run number", 100);
+			addColumn("Run id", 100);
+			addColumn("Module name", 160);
+			addColumn("Data name", 100);
 			addColumn("Count", 50);
 			addColumn("Mean", 60);
 			addColumn("Stddev", 60);
 		}
 		else if (type==TYPE_HISTOGRAM) {
 			addColumn("Directory", 60);
-			addColumn("File, Run#", 100);
-			addColumn("RunName", 100);
-			addColumn("Module", 160);
-			addColumn("Name", 100);
+			addColumn("File name#run number", 100);
+			addColumn("Run id", 100);
+			addColumn("Module name", 160);
+			addColumn("Data name", 100);
 			addColumn("Mean", 60);
 			addColumn("Stddev", 60);
 		}		

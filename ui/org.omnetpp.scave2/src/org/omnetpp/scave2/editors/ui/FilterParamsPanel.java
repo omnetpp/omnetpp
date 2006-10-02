@@ -195,7 +195,7 @@ public class FilterParamsPanel extends Composite {
 		fileCombo.setLayoutData(gridData11);
 		fileCombo.setVisibleItemCount(VISIBLE_ITEM_COUNT);
 		runLabel = new Label(composite1, SWT.NONE);
-		runLabel.setText("Run name:");
+		runLabel.setText("Run id:");
 		runCombo = new CCombo(composite1, SWT.BORDER);
 		runCombo.setLayoutData(gridData21);
 		runCombo.setVisibleItemCount(VISIBLE_ITEM_COUNT);
