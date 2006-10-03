@@ -1,12 +1,14 @@
 package org.omnetpp.common.properties;
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.ui.views.properties.ColorPropertyDescriptor;
@@ -14,6 +16,7 @@ import org.eclipse.ui.views.properties.IPropertyDescriptor;
 import org.eclipse.ui.views.properties.IPropertySource2;
 import org.eclipse.ui.views.properties.PropertyDescriptor;
 import org.eclipse.ui.views.properties.TextPropertyDescriptor;
+import org.omnetpp.common.util.StringUtils;
 
 /**
  * Abstract base class for PropertySource wrappers.
@@ -34,10 +37,13 @@ public abstract class PropertySource implements IPropertySource2 {
 
 	static Map<Class,Entry> map;
 
+	// Meta-data for property sources (per class).
 	static class Entry
 	{
-		IPropertyDescriptor[] descriptors;
-		Map<String,PropInfo> infos;
+		// Descriptors of a property source.
+		public IPropertyDescriptor[] descriptors;
+		// Maps property id to property info.
+		public Map<String,PropInfo> infos;
 		
 		public Entry(IPropertyDescriptor[] descriptors, Map<String,PropInfo> infos)
 		{
@@ -46,19 +52,23 @@ public abstract class PropertySource implements IPropertySource2 {
 		}
 	}
 	
+	// Holds getter/setter/default/descriptor factory methods for a property. 
 	static class PropInfo
 	{
 		Method getter;
 		Method setter;
 		Method defaultGetter;
+		Method descriptorFactory;
 		IPropertyDescriptor descriptor;
 		
 		public PropInfo(Method getter, Method setter,
-				Method defaultGetter, IPropertyDescriptor descriptor)
+				Method defaultGetter, Method descriptorFactory,
+				IPropertyDescriptor descriptor)
 		{
 			this.getter = getter;
 			this.setter = setter;
 			this.defaultGetter = defaultGetter;
+			this.descriptorFactory = descriptorFactory;
 			this.descriptor = descriptor;
 		}
 	}
@@ -95,11 +105,12 @@ public abstract class PropertySource implements IPropertySource2 {
 					String propName = propNameFromGetterName(getter.getName());
 					Class propType = getter.getReturnType();
 					IPropertyDescriptor descriptor;
-					descriptor = createPropertyDescriptor(propClass, propAnnotation, propName, propType);
 					Method setter = getPropertySetter(propClass, propName, propType);
 					Method defaultGetter = getPropertyDefaultGetter(propClass, propName, propType); 
+					Method descriptorFactory = getDescriptorFactoryMethod(propClass, propAnnotation, propName);
+					descriptor = createPropertyDescriptor(descriptorFactory, propAnnotation, propName, propType);
 					descriptors.add(descriptor);
-					infos.put((String)descriptor.getId(), new PropInfo(getter, setter, defaultGetter, descriptor));
+					infos.put((String)descriptor.getId(), new PropInfo(getter, setter, defaultGetter, descriptorFactory, descriptor));
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -206,7 +217,7 @@ public abstract class PropertySource implements IPropertySource2 {
 			   property.descriptorFactoryMethod() : "create" + propName + "Descriptor";
 	}
 	
-	private IPropertyDescriptor createPropertyDescriptor(Class<? extends PropertySource> propClass, Property property, String propName, Class<?> propType)
+	private IPropertyDescriptor createPropertyDescriptor(Method descriptorFactory, Property property, String propName, Class<?> propType)
 		throws Exception
 	{
 		String id = property.id().length() > 0 ? property.id() : propName;
@@ -216,7 +227,6 @@ public abstract class PropertySource implements IPropertySource2 {
 		String category = property.category();
 		String description = property.description();
 		String[] filterFlags = property.filterFlags();
-		Method descriptorFactory = getDescriptorFactoryMethod(propClass, property, propName);
 		PropertyDescriptor descriptor;
 		if (descriptorFactory != null) {
 			descriptor = (PropertyDescriptor)descriptorFactory.invoke(this, id, displayName);
@@ -276,7 +286,39 @@ public abstract class PropertySource implements IPropertySource2 {
 	
 	public IPropertyDescriptor[] getPropertyDescriptors() {
 		Entry entry = map.get(getClass());
+		updateDescriptors(entry);
 		return entry.descriptors;
+	}
+	
+	/**
+	 * Updates descriptors having a factory method.
+	 * XXX: not thread-safe
+	 */
+	private void updateDescriptors(Entry entry) {
+		for (int i = 0; i < entry.descriptors.length; ++i) {
+			IPropertyDescriptor descriptor = entry.descriptors[i];
+			PropInfo info = entry.infos.get(descriptor.getId());
+			entry.descriptors[i] = info.descriptor = updateDescriptor(info, descriptor);
+		}
+	}
+	
+	private IPropertyDescriptor updateDescriptor(PropInfo info, IPropertyDescriptor descriptor) {
+		try {
+			if (info.descriptorFactory != null) {
+				PropertyDescriptor newDescriptor = (PropertyDescriptor)info.descriptorFactory.invoke(this, descriptor.getId(), descriptor.getDisplayName());
+				if (StringUtils.isEmpty(newDescriptor.getCategory()))
+					newDescriptor.setCategory(descriptor.getCategory());
+				if (ArrayUtils.isEmpty(newDescriptor.getFilterFlags()));
+					newDescriptor.setFilterFlags(descriptor.getFilterFlags());
+				if (StringUtils.isEmpty(newDescriptor.getDescription()))
+					newDescriptor.setDescription(descriptor.getDescription());
+				return newDescriptor;
+			}
+		}
+		catch (InvocationTargetException e) {}
+		catch (IllegalAccessException e) {}
+		
+		return descriptor;
 	}
 	
 	public Object getEditableValue() {
