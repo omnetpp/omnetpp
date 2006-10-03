@@ -11,6 +11,7 @@ import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
+import org.eclipse.jface.window.ApplicationWindow;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.DropTarget;
@@ -39,6 +40,9 @@ import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave2.actions.EditAction;
 import org.omnetpp.scave2.actions.IScaveAction;
 import org.omnetpp.scave2.editors.ScaveEditor;
+import org.omnetpp.scave2.editors.datatable.DataTable;
+import org.omnetpp.scave2.editors.datatable.FilteredDataPanel;
+import org.omnetpp.scave2.editors.datatable.IDataTableListener;
 
 /**
  * Common functionality of Scave multi-page editor pages.
@@ -260,5 +264,27 @@ public class ScaveEditorPage extends ScrolledForm {
 				editAction.run();
 			}
 		});
+	}
+	
+	public void configureFilteredDataPanel(FilteredDataPanel panel) {
+		final DataTable table = panel.getTable();
+		table.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent event) {
+				showStatusMessage(String.format("Selected %d out of %d rows",
+						table.getSelectionCount(), table.getItemCount()));
+			}
+		});
+		table.addDataTableListener(new IDataTableListener() {
+			public void contentChanged(DataTable table) {
+				showStatusMessage(String.format("Selected %d out of %d rows",
+						table.getSelectionCount(), table.getItemCount()));
+			}
+		});
+	}
+	
+	public void showStatusMessage(String message) {
+		IWorkbenchWindow window = scaveEditor.getSite().getWorkbenchWindow();
+		if (window instanceof ApplicationWindow)
+			((ApplicationWindow)window).setStatus(message);
 	}
 }

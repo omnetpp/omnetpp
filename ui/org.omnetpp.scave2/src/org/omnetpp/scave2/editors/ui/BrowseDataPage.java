@@ -117,8 +117,11 @@ public class BrowseDataPage extends ScaveEditorPage {
 
 		// create pages
 		vectorsPanel = new FilteredDataPanel(tabfolder, SWT.NONE, DataTable.TYPE_VECTOR);
+		configureFilteredDataPanel(vectorsPanel);
 		scalarsPanel = new FilteredDataPanel(tabfolder, SWT.NONE, DataTable.TYPE_SCALAR);
+		configureFilteredDataPanel(scalarsPanel);
 		histogramsPanel = new FilteredDataPanel(tabfolder, SWT.NONE, DataTable.TYPE_HISTOGRAM);
+		configureFilteredDataPanel(histogramsPanel);
 		addItem("Vectors", vectorsPanel);
 		addItem("Scalars", scalarsPanel);
 		addItem("Histograms", histogramsPanel);

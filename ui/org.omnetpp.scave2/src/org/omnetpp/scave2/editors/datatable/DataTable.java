@@ -1,6 +1,12 @@
 package org.omnetpp.scave2.editors.datatable;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
 import org.eclipse.core.runtime.Assert;
+import org.eclipse.core.runtime.ListenerList;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
@@ -37,6 +43,7 @@ public class DataTable extends Table {
 	private int type;
 	private ResultFileManagerEx manager;
 	private IDList idlist;
+	private ListenerList listeners;
 	
 	public DataTable(Composite parent, int style, int type) {
 		super(parent, style | SWT.VIRTUAL | SWT.FULL_SELECTION);
@@ -90,6 +97,7 @@ public class DataTable extends Table {
 	public void setIDList(IDList idlist) {
 		this.idlist = idlist;
 		refresh();
+		fireContentChangedEvent();
 	}
 
 	public IDList getIDList() {
@@ -183,5 +191,21 @@ public class DataTable extends Table {
 		}		
 	}
 	
+	public void addDataTableListener(IDataTableListener listener) {
+		if (listeners == null)
+			listeners = new ListenerList();
+		listeners.add(listener);
+	}
 	
+	public void removeDataTableListener(IDataTableListener listener) {
+		if (listeners != null)
+			listeners.remove(listener);
+	}
+	
+	protected void fireContentChangedEvent() {
+		if (listeners != null) {
+			for (Object listener : new ArrayList(Arrays.asList(this.listeners.getListeners())))
+				((IDataTableListener)listener).contentChanged(this);
+		}
+	}
 }

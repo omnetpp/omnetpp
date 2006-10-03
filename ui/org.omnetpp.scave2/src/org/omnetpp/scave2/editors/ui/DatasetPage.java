@@ -188,5 +188,6 @@ public class DatasetPage extends ScaveEditorPage {
 				 : datasetType==DatasetType.HISTOGRAM ? DataTable.TYPE_HISTOGRAM 
 				 : -1;
 		filterPanel = new FilteredDataPanel(sashform, SWT.NONE, type);
+		configureFilteredDataPanel(filterPanel);
 	}
 }
