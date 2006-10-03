@@ -144,6 +144,11 @@
 // - parameter once assigned in base class or type MUST be allowed to be
 //   set to a different value in subclass/place of usage!!!
 //
+// RULE: moduleinterface/channelinterface: allow assignments in its parameters/
+//   allow gatesizes? if parameter is volatile, it will have to be compared as 
+//   expression!!
+//   
+//
 
 package generic.queueing;  // default package for following components
 
