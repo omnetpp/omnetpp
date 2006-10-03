@@ -265,7 +265,7 @@ public class VectorChart extends ZoomableCachingCanvas {
 	}
 	
 	public void setDisplaySymbols(Boolean value) {
-		displaySymbols = value != null ? value : true;
+		displaySymbols = value != null ? value : false;
 		scheduleRedraw();
 	}
 	
