@@ -26,7 +26,7 @@ import org.eclipse.ui.views.properties.TextPropertyDescriptor;
  * and the corresponding getter, default, or setter method is called when
  * the property value, default value requested or set.
  * The getter/setter/default method calls on the subclasses can be delegated
- * the wrapped objects.  
+ * to the wrapped objects.  
  *
  * @author tomi
  */
@@ -95,7 +95,7 @@ public abstract class PropertySource implements IPropertySource2 {
 					String propName = propNameFromGetterName(getter.getName());
 					Class propType = getter.getReturnType();
 					IPropertyDescriptor descriptor;
-					descriptor = createPropertyDescriptor(propAnnotation, propName, propType);
+					descriptor = createPropertyDescriptor(propClass, propAnnotation, propName, propType);
 					Method setter = getPropertySetter(propClass, propName, propType);
 					Method defaultGetter = getPropertyDefaultGetter(propClass, propName, propType); 
 					descriptors.add(descriptor);
@@ -187,7 +187,26 @@ public abstract class PropertySource implements IPropertySource2 {
 		return null;
 	}
 	
-	private IPropertyDescriptor createPropertyDescriptor(Property property, String propName, Class<?> propType)
+	private static Method getDescriptorFactoryMethod(Class<? extends PropertySource> propClass, Property property, String propName) {
+		try {
+			String methodName = getDescriptorFactoryMethodName(property, propName);
+			Method method = propClass.getMethod(methodName, Object.class, String.class);
+			if (method != null) {
+				int modifiers = method.getModifiers();
+				if (Modifier.isPublic(modifiers) && PropertyDescriptor.class.isAssignableFrom(method.getReturnType()))
+					return method;
+			}
+		}
+		catch (Exception e) {}
+		return null;
+	}
+	
+	private static String getDescriptorFactoryMethodName(Property property, String propName) {
+		return property.descriptorFactoryMethod().length() > 0 ?
+			   property.descriptorFactoryMethod() : "create" + propName + "Descriptor";
+	}
+	
+	private IPropertyDescriptor createPropertyDescriptor(Class<? extends PropertySource> propClass, Property property, String propName, Class<?> propType)
 		throws Exception
 	{
 		String id = property.id().length() > 0 ? property.id() : propName;
@@ -197,14 +216,20 @@ public abstract class PropertySource implements IPropertySource2 {
 		String category = property.category();
 		String description = property.description();
 		String[] filterFlags = property.filterFlags();
-		Class<? extends PropertyDescriptor> descriptorClass =
-			getPropertyDescriptorClass(property.descriptorClass(), propType);
-		
-		Constructor<? extends PropertyDescriptor> constructor =
-			descriptorClass.getConstructor(new Class[] {Object.class, String.class});
-		PropertyDescriptor descriptor = constructor.newInstance(new Object[] {id, displayName});
-		if (descriptor instanceof EnumPropertyDescriptor)
-			((EnumPropertyDescriptor)descriptor).setEnumType(propType);
+		Method descriptorFactory = getDescriptorFactoryMethod(propClass, property, propName);
+		PropertyDescriptor descriptor;
+		if (descriptorFactory != null) {
+			descriptor = (PropertyDescriptor)descriptorFactory.invoke(this, id, displayName);
+		}
+		else {
+			Class<? extends PropertyDescriptor> descriptorClass =
+				getPropertyDescriptorClass(property.descriptorClass(), propType);
+			Constructor<? extends PropertyDescriptor> constructor =
+				descriptorClass.getConstructor(Object.class, String.class);
+			descriptor = constructor.newInstance(id, displayName);
+			if (descriptor instanceof EnumPropertyDescriptor)
+				((EnumPropertyDescriptor)descriptor).setEnumType(propType);
+		}
 		if (category.length() > 0)
 			descriptor.setCategory(category);
 		if (description.length() > 0)
@@ -246,7 +271,7 @@ public abstract class PropertySource implements IPropertySource2 {
 	}
 	
 	/*
-	 * The rest is the implementation of IPropertySource interface.
+	 * The rest is the implementation of IPropertySource2 interface.
 	 */
 	
 	public IPropertyDescriptor[] getPropertyDescriptors() {
