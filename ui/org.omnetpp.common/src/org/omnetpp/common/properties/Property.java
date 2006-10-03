@@ -50,7 +50,8 @@ public @interface Property {
 	 * Name of the method in the PropertySource, that creates the descriptor for this property.
 	 * If not set, but there is a method named "create<property_name>Descriptor" it will be the 
 	 * factory method (property_name = name of the getter method - "get" or "is").
-	 * Factory methods must have an (Object id, String displayName) arg-list.
+	 * Factory methods must have an (Object id, String displayName) arg-list and return an
+	 * instance of PropertyDescriptor.
 	 */
 	String descriptorFactoryMethod() default "";
 
