@@ -2,10 +2,7 @@ package org.omnetpp.scave2.editors.ui;
 
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.ecore.EObject;
-import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.MouseAdapter;
-import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
@@ -86,11 +83,7 @@ public class ChartPage2 extends ScaveEditorPage {
 		// set up contents
 		Composite parent = getBody();
 		chartView = (VectorChart) ChartFactory.createChart(parent, this.chart, scaveEditor.getResultFileManager());
-		chartView.addMouseListener(new MouseAdapter() {
-			public void mouseUp(MouseEvent e) {
-				scaveEditor.setSelection(new StructuredSelection(chart));
-			}
-		});
+		configureChartView(chartView, chart);
 		
 		// create control strip (XXX temp code)
 		Composite controlStrip = createControlStrip(parent, chartView);

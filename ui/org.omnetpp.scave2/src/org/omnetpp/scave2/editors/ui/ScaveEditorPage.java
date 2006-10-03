@@ -1,8 +1,6 @@
 package org.omnetpp.scave2.editors.ui;
 
 import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.core.runtime.Path;
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.util.IPropertyChangeListener;
@@ -10,6 +8,7 @@ import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
+import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
@@ -21,6 +20,8 @@ import org.eclipse.swt.dnd.FileTransfer;
 import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
+import org.eclipse.swt.events.MouseAdapter;
+import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Color;
@@ -28,10 +29,14 @@ import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.ui.ISelectionListener;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
+import org.omnetpp.scave.model.Chart;
+import org.omnetpp.scave2.actions.EditAction;
 import org.omnetpp.scave2.actions.IScaveAction;
 import org.omnetpp.scave2.editors.ScaveEditor;
 
@@ -226,6 +231,33 @@ public class ScaveEditorPage extends ScrolledForm {
 		viewer.getTree().addSelectionListener(new SelectionAdapter() {
 			public void widgetDefaultSelected(SelectionEvent e) {
 				action.run();
+			}
+		});
+	}
+	
+	/**
+	 * Adds event adapter to the chart view so that clicking on the view
+	 * will select the chart object in the model.
+	 * Adds the "Edit..." item to the context menu of the view.
+	 */
+	public void configureChartView(final Control view, final Chart chart) {
+		// mouse click on the view selects the chart object in the model
+		view.addMouseListener(new MouseAdapter() {
+			public void mouseUp(MouseEvent e) {
+				scaveEditor.setSelection(new StructuredSelection(chart));
+			}
+		});
+		
+		// add Edit action to the context menu of the view
+		if (view.getMenu() == null)
+			view.setMenu(new Menu(view));
+		final EditAction editAction = new EditAction();
+		MenuItem item = new MenuItem(view.getMenu(), SWT.PUSH);
+		item.setText(editAction.getText());
+		item.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
+				scaveEditor.setSelection(new StructuredSelection(chart));
+				editAction.run();
 			}
 		});
 	}

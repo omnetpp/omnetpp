@@ -88,6 +88,8 @@ public class ChartSheetPage extends ScaveEditorPage {
 			else if (swtChart instanceof VectorChart) {
 				((VectorChart)swtChart).setDisplayLegend(false);
 			}
+			
+			configureChartView(swtChart, chart);
 
 			swtChart.addMouseListener(new MouseAdapter() { //FIXME this is a hack to get chart opened by double-click; to be done properly (SelectionListener, ask chart from widget)
 				public void mouseDoubleClick(MouseEvent e) {

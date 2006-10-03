@@ -2,10 +2,9 @@ package org.omnetpp.scave2.charting;
 
 import java.awt.Point;
 
-import org.eclipse.jface.preference.PreferenceDialog;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Menu;
@@ -25,24 +24,12 @@ public class InteractiveChart extends ChartSWTWrapper {
 		Menu menu = new Menu(this);
 	    MenuItem item = new MenuItem(menu, SWT.PUSH);
 	    item.setText("Zoom out");
-	    item.addSelectionListener(new SelectionListener() {
+	    item.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				zoomChart(0, 0, 5.0);
 			}
-			public void widgetDefaultSelected(SelectionEvent e) {}
-			});
-	    item = new MenuItem(menu, SWT.SEPARATOR);
-	    item = new MenuItem(menu, SWT.PUSH);
-	    item.setText("Properties");
-	    item.addSelectionListener(new SelectionListener() {
-			public void widgetSelected(SelectionEvent e) {
-				showPropertyDialog();
-			}
-
-			public void widgetDefaultSelected(SelectionEvent e) {
-			}
-	    });
-	    setMenu(menu);
+		});
+		setMenu(menu);
 	}
 
 	public void zoomChart(int x, int y, double ratio) {
@@ -71,11 +58,5 @@ public class InteractiveChart extends ChartSWTWrapper {
 	public void rubberBandSelectionMade(Rectangle r) {
 		System.out.println("SELECTED: " + r.toString());
 		// TODO zoom
-	}
-	
-	public void showPropertyDialog()
-	{
-		//PreferenceDialog dialog = new ChartPropertyDialog(getShell(), this);
-		//dialog.open();
 	}
 }
