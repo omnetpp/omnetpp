@@ -1,6 +1,8 @@
 package org.omnetpp.scave2.editors.ui;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -19,13 +21,14 @@ import org.omnetpp.scave2.model.ScaveModelUtil.RunIdKind;
  *
  * @author tomi
  */
+// TODO: gray out disabled composites
 public class DataItemsPanel extends Composite {
 
 	private Group group = null;
 	private Button useFilterRadio = null;
 	private Button useSelectionRadio = null;
 	private FilterParamsPanel filterParamsPanel = null;
-	private Composite composite2 = null;
+	private Composite selectIdentifierPanel = null;
 	private Button useRunNameRadio = null;
 	private Button useReplicationRadio = null;
 	private Label label = null;
@@ -68,7 +71,7 @@ public class DataItemsPanel extends Composite {
 	 * This method initializes composite2	
 	 *
 	 */
-	private void createComposite2() {
+	private void createSelectIdentifierPanel() {
 		GridData gridData5 = new GridData();
 		gridData5.horizontalIndent = 15;
 		GridData gridData2 = new GridData();
@@ -78,16 +81,16 @@ public class DataItemsPanel extends Composite {
 		GridData gridData3 = new GridData();
 		gridData3.horizontalAlignment = org.eclipse.swt.layout.GridData.FILL;
 		gridData3.horizontalIndent = 10;
-		composite2 = new Composite(group, SWT.NONE);
-		composite2.setLayoutData(gridData3);
-		composite2.setLayout(gridLayout2);
-		label = new Label(composite2, SWT.NONE);
+		selectIdentifierPanel = new Composite(group, SWT.NONE);
+		selectIdentifierPanel.setLayoutData(gridData3);
+		selectIdentifierPanel.setLayout(gridLayout2);
+		label = new Label(selectIdentifierPanel, SWT.NONE);
 		label.setText("Data items identified by");
-		useRunNameRadio = new Button(composite2, SWT.RADIO);
+		useRunNameRadio = new Button(selectIdentifierPanel, SWT.RADIO);
 		useRunNameRadio.setText("file path, run name, module name and data name");
 		useRunNameRadio.setSelection(true);
 		useRunNameRadio.setLayoutData(gridData2);
-		useReplicationRadio = new Button(composite2, SWT.RADIO);
+		useReplicationRadio = new Button(selectIdentifierPanel, SWT.RADIO);
 		useReplicationRadio.setText("experiment, measurement, replication, module name and data name");
 		useReplicationRadio.setLayoutData(gridData5);
 	}
@@ -112,10 +115,20 @@ public class DataItemsPanel extends Composite {
 		useFilterRadio = new Button(group, SWT.RADIO);
 		useFilterRadio.setText("Add data items matching with filter");
 		useFilterRadio.setSelection(true);
+		useFilterRadio.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
+				filterParamsPanel.setEnabled(useFilterRadio.getSelection());
+			}
+		});
 		createFilterPanel();
 		useSelectionRadio = new Button(group, SWT.RADIO);
 		useSelectionRadio.setText("Add selected data items");
-		createComposite2();
+		useSelectionRadio.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
+				selectIdentifierPanel.setEnabled(useSelectionRadio.getSelection());
+			}
+		});
+		createSelectIdentifierPanel();
 	}
 	
 	private void createFilterPanel() {
