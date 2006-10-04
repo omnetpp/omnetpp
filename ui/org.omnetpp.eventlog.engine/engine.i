@@ -15,6 +15,8 @@
 %}
 
 %{
+#include "ievent.h"
+#include "ieventlog.h"
 #include "event.h"
 #include "filteredevent.h"
 #include "messagedependency.h"
@@ -180,20 +182,66 @@ namespace std {
 %enddef
 */
 
+%typemap(javaout) EventLogEntry * {
+   return EventLogEntry.newEventLogEntry($jnicall, $owner);
+}
+
+%typemap(javaimports) EventLogEntry %{
+import java.lang.reflect.Constructor;
+%}
+
+%typemap(javacode) EventLogEntry %{
+   private static Constructor[] eventLogConstructors = new Constructor[100];
+
+   public static EventLogEntry newEventLogEntry(long cPtr, boolean isOwner) {
+	  try {
+         if (cPtr == 0)
+            return null;
+
+         int index = ScaveEngineJNI.EventLogEntry_getClassIndex(cPtr);
+         Constructor constructor = eventLogConstructors[index];
+      
+         if (constructor == null)
+         {
+            String name = "org.omnetpp.eventlog.engine." + ScaveEngineJNI.EventLogEntry_getClassName(cPtr);
+            Class clazz = Class.forName(name);
+            constructor = clazz.getDeclaredConstructor(long.class, boolean.class);
+            eventLogConstructors[index] = constructor;
+         }
+	  
+         return (EventLogEntry)constructor.newInstance(cPtr, isOwner);
+      }
+      catch (Exception e) {
+         throw new RuntimeException(e);
+      }
+   }
+%}
+
+%typemap(javacode) FileReader %{
+    public FileReader(String fileName, boolean cMemoryOwn) {
+	    this(fileName);
+	    this.swigCMemOwn = cMemoryOwn;
+    }
+%}
+
 typedef double simtime_t;
 
 %ignore eventLogStringPool;
 %ignore FILE;
 %ignore *::parse;
 %ignore *::print(FILE *);
-%ignore *::print(FILE *, long, long);
 %ignore *::print(FILE *, long);
+%ignore *::print(FILE *, long, long);
 %ignore *::printInitializationLogEntries(FILE *);
 %ignore *::printEvents(FILE *);
+%ignore *::printEvents(FILE *, long);
+%ignore *::printEvents(FILE *, long, long);
 %ignore *::printCause(FILE *);
 %ignore *::printConsequence(FILE *);
 %ignore *::printMiddle(FILE *);
 
+%include "ievent.h"
+%include "ieventlog.h"
 %include "event.h"
 %include "filteredevent.h"
 %include "messagedependency.h"
