@@ -945,7 +945,7 @@ class PropertyNode : public NEDElement
  * <pre>
  * <!ELEMENT property-key (comment*, literal*)>
  * <!ATTLIST property-key
- *      key                CDATA     #IMPLIED>
+ *      name               CDATA     #IMPLIED>
  * </pre>
  * 
  * @ingroup Data
@@ -953,7 +953,7 @@ class PropertyNode : public NEDElement
 class PropertyKeyNode : public NEDElement
 {
   private:
-    std::string key;
+    std::string name;
   public:
     /** @name Constructors, destructor */
     //@{
@@ -975,8 +975,8 @@ class PropertyKeyNode : public NEDElement
 
     /** @name Typed access to attributes, children and siblings */
     //@{
-    const char * getKey() const  {return key.c_str();}
-    void setKey(const char * val)  {key = val;}
+    const char * getName() const  {return name.c_str();}
+    void setName(const char * val)  {name = val;}
 
     virtual PropertyKeyNode *getNextPropertyKeyNodeSibling() const;
     virtual CommentNode *getFirstCommentChild() const;

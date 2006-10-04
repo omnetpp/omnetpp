@@ -1238,7 +1238,7 @@ int PropertyKeyNode::getNumAttributes() const
 const char *PropertyKeyNode::getAttributeName(int k) const
 {
     switch (k) {
-        case 0: return "key";
+        case 0: return "name";
         default: return 0;
     }
 }
@@ -1246,7 +1246,7 @@ const char *PropertyKeyNode::getAttributeName(int k) const
 const char *PropertyKeyNode::getAttribute(int k) const
 {
     switch (k) {
-        case 0: return key.c_str();
+        case 0: return name.c_str();
         default: return 0;
     }
 }
@@ -1254,7 +1254,7 @@ const char *PropertyKeyNode::getAttribute(int k) const
 void PropertyKeyNode::setAttribute(int k, const char *val)
 {
     switch (k) {
-        case 0: key = val; break;
+        case 0: name = val; break;
         default: ;
     }
 }

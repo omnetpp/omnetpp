@@ -294,7 +294,7 @@ propertydecl_key
         : NAME
                 {
                   ps.propkey = (PropertyKeyNode *)createNodeWithTag(NED_PROPERTY_KEY, ps.propertydecl);
-                  ps.propkey->setKey(toString(@1));
+                  ps.propkey->setName(toString(@1));
                   storePos(ps.propkey, @$);
                 }
         ;
@@ -797,7 +797,7 @@ property_key
         : NAME '=' property_values
                 {
                   ps.propkey = (PropertyKeyNode *)createNodeWithTag(NED_PROPERTY_KEY, ps.property);
-                  ps.propkey->setKey(toString(@1));
+                  ps.propkey->setName(toString(@1));
                   for (int i=0; i<ps.propvals.size(); i++)
                       ps.propkey->appendChild(ps.propvals[i]);
                   ps.propvals.clear();

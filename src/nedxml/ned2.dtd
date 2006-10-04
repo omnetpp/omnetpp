@@ -95,7 +95,7 @@
 
 <!ELEMENT property-key (comment*, literal*)>
 <!ATTLIST property-key
-     key                CDATA     #IMPLIED>
+     name               CDATA     #IMPLIED>
 
 <!ELEMENT gates (comment*, gate*)>
 

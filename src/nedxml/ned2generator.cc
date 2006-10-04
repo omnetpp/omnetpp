@@ -474,10 +474,10 @@ void NED2Generator::doProperty(PropertyNode *node, const char *indent, bool isla
 
 void NED2Generator::doPropertyKey(PropertyKeyNode *node, const char *indent, bool islast, const char *sep)
 {
-    OUT << node->getKey();
+    OUT << node->getName();
     if (node->getFirstChildWithTag(NED_LITERAL))
     {
-        if (strnotnull(node->getKey()))
+        if (strnotnull(node->getName()))
             OUT << "=";
         generateChildrenWithType(node, NED_LITERAL, increaseIndent(indent),",");
     }

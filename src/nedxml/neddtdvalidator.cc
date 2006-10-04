@@ -202,6 +202,7 @@ void NEDDTDValidator::validateElement(PropertyKeyNode *node)
     char mult[] = {'*','*', 0};
     checkSequence(node, tags, mult);
 
+    checkNameAttribute(node, "name");
 }
 
 void NEDDTDValidator::validateElement(GatesNode *node)
