@@ -112,10 +112,12 @@ public class FilteredDataPanel extends Composite {
 	
 	protected void runFilter() {
 		// run the filter on the unfiltered IDList, and set the result to the table
-		FilterParams params = getFilterParams();
-		IDList filteredIDList = ScaveModelUtil.filterIDList(idlist, params, table.getResultFileManager());
-		table.setIDList(filteredIDList);
-		filterPanel.setFilterText(params.toString());
+		if (idlist != null) {
+			FilterParams params = getFilterParams();
+			IDList filteredIDList = ScaveModelUtil.filterIDList(idlist, params, table.getResultFileManager());
+			table.setIDList(filteredIDList);
+			filterPanel.setFilterText(params.toString());
+		}
 	}
 	
 	public FilterParams getFilterParams() {
