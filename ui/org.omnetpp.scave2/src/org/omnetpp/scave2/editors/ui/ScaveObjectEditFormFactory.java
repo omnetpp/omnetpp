@@ -7,6 +7,7 @@ import org.omnetpp.scave.model.AddDiscardOp;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.ChartSheet;
 import org.omnetpp.scave.model.Dataset;
+import org.omnetpp.scave.model.InputFile;
 import org.omnetpp.scave.model.ProcessingOp;
 import org.omnetpp.scave.model.SetOperation;
 
@@ -40,6 +41,8 @@ public class ScaveObjectEditFormFactory {
 			return new ChartSheetEditForm((ChartSheet)object);
 		else if (object instanceof Dataset)
 			return new DatasetEditForm((Dataset)object);
+		else if (object instanceof InputFile)
+			return new InputFileEditForm((InputFile)object);
 		else if (object instanceof ProcessingOp)
 			return new ProcessingOperationEditForm((ProcessingOp)object);
 		else if (object instanceof SetOperation)
