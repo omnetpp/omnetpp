@@ -12,6 +12,7 @@ import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.window.ApplicationWindow;
+import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.DropTarget;
@@ -35,6 +36,8 @@ import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.ui.ISelectionListener;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.IWorkbenchWindow;
+import org.eclipse.ui.dialogs.CheckedTreeSelectionDialog;
+import org.eclipse.ui.dialogs.SelectionDialog;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave2.actions.EditAction;
@@ -260,7 +263,6 @@ public class ScaveEditorPage extends ScrolledForm {
 		item.setText(editAction.getText());
 		item.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
-				scaveEditor.setSelection(new StructuredSelection(chart));
 				editAction.run();
 			}
 		});
@@ -278,6 +280,26 @@ public class ScaveEditorPage extends ScrolledForm {
 			public void contentChanged(DataTable table) {
 				showStatusMessage(String.format("Selected %d out of %d rows",
 						table.getSelectionCount(), table.getItemCount()));
+			}
+		});
+		// add Edit action to the context menu of the view
+		if (table.getMenu() == null)
+			table.setMenu(new Menu(table));
+		MenuItem item = new MenuItem(table.getMenu(), SWT.PUSH);
+		item.setText("Columns...");
+		item.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
+				String[] columns = table.getColumnNames();
+				boolean[] initialSelection = new boolean[columns.length];
+				for (int i = 0; i < columns.length; ++i)
+					initialSelection[i] = table.isColumnVisible(i);
+				CheckboxSelectionDialog dialog = 
+					new CheckboxSelectionDialog(scaveEditor.getSite().getShell(), "Select visible columns", columns, initialSelection);
+				if (dialog.open() == Window.OK) {
+					boolean[] selection = dialog.getSelection();
+					for (int i = 0; i < selection.length; ++i)
+						table.setColumnVisible(i, selection[i]);
+				}
 			}
 		});
 	}
