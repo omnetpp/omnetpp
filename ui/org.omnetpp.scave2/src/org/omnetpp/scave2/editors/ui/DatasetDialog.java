@@ -41,6 +41,10 @@ public abstract class DatasetDialog extends Dialog {
 		return useFilter;
 	}
 	
+	public void setUseFilter(boolean flag) {
+		useFilter = flag;
+	}
+	
 	public FilterParams getFilterParams() {
 		return filterParams;
 	}
@@ -58,6 +62,7 @@ public abstract class DatasetDialog extends Dialog {
 	protected Composite createDataItemsPanel(Composite parent ) {
 		panel = new DataItemsPanel(parent, SWT.NONE);
 		panel.setLayoutData(new GridData(GridData.FILL_BOTH));
+		panel.setUseFilter(useFilter);
 		if (filterParams != null) {
 			panel.setFilterParams(filterParams);
 		}

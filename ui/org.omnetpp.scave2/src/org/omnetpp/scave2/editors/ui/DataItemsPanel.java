@@ -42,6 +42,11 @@ public class DataItemsPanel extends Composite {
 		return useFilterRadio.getSelection();
 	}
 	
+	public void setUseFilter(boolean flag) {
+		useFilterRadio.setSelection(flag);
+		useSelectionRadio.setSelection(!flag);
+	}
+	
 	public RunIdKind getRunIdKind() {
 		return useRunNameRadio.getSelection() ?
 				RunIdKind.FILE_RUN : RunIdKind.EXPERIMENT_MEASUREMENT_REPLICATION;
@@ -114,7 +119,6 @@ public class DataItemsPanel extends Composite {
 		group.setLayoutData(gridData4);
 		useFilterRadio = new Button(group, SWT.RADIO);
 		useFilterRadio.setText("Add data items matching with filter");
-		useFilterRadio.setSelection(true);
 		useFilterRadio.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				filterParamsPanel.setEnabled(useFilterRadio.getSelection());
