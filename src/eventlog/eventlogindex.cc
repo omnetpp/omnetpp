@@ -96,7 +96,7 @@ long EventLogIndex::getBeginOffsetForEndOffset(long endOffset)
     if (readToEventLine(false, endOffset, eventNumber, simulationTime, lineStartOffset, lineEndOffset))
         return lineStartOffset;
     else
-        return NULL;
+        return -1;
 }
 
 long EventLogIndex::getEndOffsetForBeginOffset(long beginOffset)
@@ -107,7 +107,7 @@ long EventLogIndex::getEndOffsetForBeginOffset(long beginOffset)
     if (readToEventLine(true, beginOffset + 1, eventNumber, simulationTime, lineStartOffset, lineEndOffset))
         return lineStartOffset;
     else
-        return NULL;
+        return -1;
 }
 
 bool EventLogIndex::positionToEventNumber(long eventNumber, MatchKind matchKind)
@@ -312,8 +312,12 @@ bool EventLogIndex::readToEventLine(bool forward, long readStartOffset, long& ev
 
         while (lineStartOffset == readStartOffset && tryOffset >= 0)
         {
-            tryOffset -= offsetDelta;
             result = readToFirstEventLine(tryOffset, eventNumber, simulationTime, lineStartOffset, lineEndOffset);
+
+            if (eventNumber == 0)
+                return false;
+
+            tryOffset -= offsetDelta;
         }
 
         return tryOffset >= 0 && result;

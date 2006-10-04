@@ -25,13 +25,14 @@
 class EventLogEntry
 {
     public:
-        static EventLogEntry *parseEntry(char *line);
         virtual void parse(char *line) = 0;
         virtual void print(FILE *fout) = 0;
+        virtual int getClassIndex() = 0;
+        virtual const char *getClassName() = 0;
 
         bool isMessageSend();
-        long getMessageId();
-        long getPreviousEventNumber();
+
+        static EventLogEntry *parseEntry(char *line);
 };
 
 /**
@@ -63,6 +64,8 @@ class EventLogMessage : public EventLogEntry
         EventLogMessage();
         virtual void parse(char *line);
         virtual void print(FILE *fout);
+        virtual int getClassIndex() { return 0; }
+        virtual const char *getClassName() { return "EventLogMessage"; }
 };
 
 #endif

@@ -86,6 +86,8 @@ print ENTRIES_H_FILE "
 #include \"eventlogentry.h\"
 ";
 
+$index = 1;
+
 foreach $class (@classes)
 {
    print ENTRIES_H_FILE "
@@ -105,8 +107,12 @@ class $class->{NAME} : public EventLogTokenBasedEntry
    public:
       virtual void parse(char **tokens, int numTokens);
       virtual void print(FILE *file);
+      virtual int getClassIndex() { return $index; }
+      virtual const char *getClassName() { return \"$class->{NAME}\"; }
 };
 ";
+
+   $index++;
 }
 
 print ENTRIES_H_FILE "

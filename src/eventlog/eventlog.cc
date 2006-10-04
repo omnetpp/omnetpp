@@ -32,6 +32,45 @@ EventLog::~EventLog()
         delete it->second;
 }
 
+long EventLog::getNumEventsApproximation()
+{
+    if (numEventsApproximation == -1)
+    {
+        Event *firstEvent = getFirstEvent();
+        Event *lastEvent = getLastEvent();
+
+        if (firstEvent == NULL)
+            numEventsApproximation = 0;
+        else
+        {
+            long beginOffset = firstEvent->getBeginOffset();
+            long endOffset = lastEvent->getEndOffset();
+            long averageSize = 0;
+            long averageCount = 0;
+
+            for (int i = 0; i < 1000; i++)
+            {
+                if (firstEvent) {
+                    averageSize += firstEvent->getEndOffset() - firstEvent->getBeginOffset();
+                    averageCount++;
+                    firstEvent = firstEvent->getNextEvent();
+                }
+
+                if (lastEvent) {
+                    averageSize += lastEvent->getEndOffset() - lastEvent->getBeginOffset();
+                    averageCount++;
+                    lastEvent = lastEvent->getPreviousEvent();
+                }
+            }
+
+            averageSize /= averageCount;
+            numEventsApproximation = (endOffset - beginOffset) / averageSize;
+        }
+    }
+
+    return numEventsApproximation;
+}
+
 void EventLog::parseInitializationLogEntries()
 {
     long firstOffset = getOffsetForEventNumber(0);
@@ -49,8 +88,10 @@ void EventLog::parseInitializationLogEntries()
         if (eventLogEntry && !dynamic_cast<EventEntry *>(eventLogEntry))
             initializationLogEntries.push_back(eventLogEntry);
 
-        if (eventLogEntry && dynamic_cast<ModuleCreatedEntry *>(eventLogEntry))
-            initializationModuleCreatedEntries.push_back((ModuleCreatedEntry *)eventLogEntry);
+        ModuleCreatedEntry *moduleCreatedEntry = dynamic_cast<ModuleCreatedEntry *>(eventLogEntry);
+
+        if (eventLogEntry && moduleCreatedEntry)
+            initializationModuleIdToModuleCreatedEntryMap[moduleCreatedEntry->moduleId] = moduleCreatedEntry;
     }
     while (reader->lineStartOffset() < firstOffset);
 }
@@ -118,7 +159,6 @@ Event *EventLog::getEventForEndOffset(long endOffset)
     else
         return getEventForBeginOffset(beginOffset);
 }
-
 
 Event *EventLog::cacheEvent(Event *event)
 {

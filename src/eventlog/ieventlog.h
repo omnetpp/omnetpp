@@ -22,8 +22,14 @@
 class IEventLog
 {
     public:
-        virtual ModuleCreatedEntry *getInitializationModule(int index) = 0;
-        virtual int getNumInitializationModules() = 0;
+        /**
+         * Returns the entry which describes the module with the given id.
+         */
+        virtual ModuleCreatedEntry *getModuleCreatedEntry(int moduleId) = 0;
+        /**
+         * Returns the number of module created entries which is actually the next unused module id.
+         */
+        virtual int getNumModuleCreatedEntries() = 0;
 
         /**
          * Returns the first event or NULL if the log is empty.
@@ -45,6 +51,11 @@ class IEventLog
         virtual IEvent *getEventForSimulationTime(simtime_t simulationTime, MatchKind matchKind = EXACT) = 0;
 
         /**
+         * Returns the approximate number of events present in the log.
+         */
+        virtual long getNumEventsApproximation() = 0;
+
+        /**
          * Prints initialization entries present before the first event.
          */
         virtual void printInitializationLogEntries(FILE *file = stdout) = 0;
@@ -55,8 +66,10 @@ class IEventLog
          * Returns true if the event with the given event number is included in the log.
          */
         virtual bool isIncludedInLog(long eventNumber) { return getEventForEventNumber(eventNumber) != NULL; }
-        virtual IEvent *getFirstEventNotBefore(long eventNumber) { return getEventForEventNumber(eventNumber, LAST); }
-        virtual IEvent *getLastEventNotAfter(long eventNumber) { return getEventForEventNumber(eventNumber, FIRST); }
+        virtual IEvent *getFirstEventNotBeforeEventNumber(long eventNumber) { return getEventForEventNumber(eventNumber, LAST); }
+        virtual IEvent *getLastEventNotAfterEventNumber(long eventNumber) { return getEventForEventNumber(eventNumber, FIRST); }
+        virtual IEvent *getFirstEventNotBeforeSimulationTime(simtime_t simulationTime) { return getEventForSimulationTime(simulationTime, LAST); }
+        virtual IEvent *getLastEventNotAfterSimulationTime(simtime_t simulationTime) { return getEventForSimulationTime(simulationTime, FIRST); }
 
         /**
          * Prints all or only the events in the requested range from the log.

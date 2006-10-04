@@ -25,6 +25,9 @@ class IEvent
         IEvent *previousEvent;
         IEvent *nextEvent;
 
+        // gui state for Event Log Table
+        bool isExpandedInEventLogTable;
+
     public:
         IEvent::IEvent();
 
@@ -41,9 +44,14 @@ class IEvent
          */
         virtual EventLogEntry *getEventLogEntry(int index) = 0;
 
+        // simple text lines
+        virtual int getNumEventLogMessages() = 0;
+        virtual EventLogMessage *getEventLogMessage(int index) = 0;
+
         // some of the data found in the 'E' entry (line), to get additional data query the entries
         virtual long getEventNumber() = 0;
         virtual simtime_t getSimulationTime() = 0;
+        virtual int getModuleId() = 0;
         virtual long getMessageId() = 0;
         virtual long getCauseEventNumber() = 0;
 
@@ -74,6 +82,11 @@ class IEvent
          */
         static void linkEvents(IEvent *previousEvent, IEvent *nextEvent);
         static void unlinkEvents(IEvent *previousEvent, IEvent *nextEvent);
+
+        /**
+         * Gui state.
+         */
+        bool getIsExpandedInEventLogTable() { return isExpandedInEventLogTable; }
 };
 
 #endif

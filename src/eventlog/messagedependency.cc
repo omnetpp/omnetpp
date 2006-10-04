@@ -19,31 +19,31 @@
 #include "messagedependency.h"
 
 MessageDependency::MessageDependency(IEventLog *eventLog,
-    long causeEventNumber, int causeMessageSendEntryNumber,
-    long consequenceEventNumber, int consequenceMessageSendEntryNumber)
+    long causeEventNumber, int causeBeginSendEntryNumber,
+    long consequenceEventNumber, int consequenceBeginSendEntryNumber)
 {
     this->eventLog = eventLog;
     this->causeEventNumber = causeEventNumber;
     this->consequenceEventNumber = consequenceEventNumber;
-    this->causeMessageSendEntryNumber = causeMessageSendEntryNumber;
-    this->consequenceMessageSendEntryNumber = consequenceMessageSendEntryNumber;
+    this->causeBeginSendEntryNumber = causeBeginSendEntryNumber;
+    this->consequenceBeginSendEntryNumber = consequenceBeginSendEntryNumber;
 
     EASSERT(causeEventNumber >= 0 || consequenceEventNumber >= 0);
 }
 
-EventLogEntry *MessageDependency::getMessageSendEntry()
+BeginSendEntry *MessageDependency::getBeginSendEntry()
 {
-    if (causeMessageSendEntryNumber != -1 && consequenceMessageSendEntryNumber != -1)
+    if (causeBeginSendEntryNumber != -1 && consequenceBeginSendEntryNumber != -1)
         return NULL;
-    else if (causeMessageSendEntryNumber != -1)
-        return getCauseMessageSendEntry();
+    else if (causeBeginSendEntryNumber != -1)
+        return getCauseBeginSendEntry();
     else
-        return getConsequenceMessageSendEntry();
+        return getConsequenceBeginSendEntry();
 }
 
-EventLogEntry *MessageDependency::getCauseMessageSendEntry()
+BeginSendEntry *MessageDependency::getCauseBeginSendEntry()
 {
-    return getCauseEvent()->getEventLogEntry(causeMessageSendEntryNumber);
+    return (BeginSendEntry *)getCauseEvent()->getEventLogEntry(causeBeginSendEntryNumber);
 }
 
 long MessageDependency::getCauseEventNumber()
@@ -53,7 +53,8 @@ long MessageDependency::getCauseEventNumber()
         // only consequence is present, calculate cause from it
         IEvent *consequenceEvent = getConsequenceEvent();
         EASSERT(consequenceEvent);
-        causeEventNumber = consequenceEvent->getEventLogEntry(consequenceMessageSendEntryNumber)->getPreviousEventNumber();
+        BeginSendEntry *beginSendEntry = (BeginSendEntry *)consequenceEvent->getEventLogEntry(consequenceBeginSendEntryNumber);
+        causeEventNumber = beginSendEntry->previousEventNumber;
     }
 
     return causeEventNumber;
@@ -74,9 +75,9 @@ simtime_t MessageDependency::getCauseTime()
     return getCauseEvent()->getSimulationTime();
 }
 
-EventLogEntry *MessageDependency::getConsequenceMessageSendEntry()
+BeginSendEntry *MessageDependency::getConsequenceBeginSendEntry()
 {
-    return getConsequenceEvent()->getEventLogEntry(consequenceMessageSendEntryNumber);
+    return (BeginSendEntry *)getConsequenceEvent()->getEventLogEntry(consequenceBeginSendEntryNumber);
 }
 
 long MessageDependency::getConsequenceEventNumber()
@@ -141,35 +142,20 @@ simtime_t MessageDependency::getConsequenceTime()
     {
         // find the arrival time of the message
         IEvent *event = getCauseEvent();
-        EventLogEntry *eventLogEntry = event->getEventLogEntry(causeMessageSendEntryNumber);
+        BeginSendEntry *beginSendEntry = (BeginSendEntry *)(event->getEventLogEntry(causeBeginSendEntryNumber));
 
-        // 1. BeginSendEntry
-        BeginSendEntry *beginSendEntry = dynamic_cast<BeginSendEntry *>(eventLogEntry);
+        // arrival time is in the EndSendEntry ("ES" line), find it
+        int i = causeBeginSendEntryNumber + 1;
 
-        if (beginSendEntry != NULL)
+        while (i < event->getNumEventLogEntries())
         {
-            // arrival time is in the EndSendEntry ("ES" line), find it
-            int i = causeMessageSendEntryNumber + 1;
+            EndSendEntry *endSendEntry = dynamic_cast<EndSendEntry *>(event->getEventLogEntry(i++));
 
-            while (i < event->getNumEventLogEntries())
-            {
-                eventLogEntry = event->getEventLogEntry(i++);
-                EndSendEntry *endSendEntry = dynamic_cast<EndSendEntry *>(eventLogEntry);
-
-                if (endSendEntry != NULL)
-                    return endSendEntry->arrivalTime;
-            }
-
-            throw new Exception("Missing end message send entry");
+            if (endSendEntry != NULL)
+                return endSendEntry->arrivalTime;
         }
 
-        // 2 . MessageScheduledEntry
-        MessageScheduledEntry *messageScheduledEntry = dynamic_cast<MessageScheduledEntry *>(eventLogEntry);
-
-        if (messageScheduledEntry != NULL)
-            return messageScheduledEntry->arrivalTime;
-
-        throw new Exception("Unknown message entry");
+        throw new Exception("Missing end message send entry");
     }
 }
 
@@ -184,8 +170,8 @@ void MessageDependency::printCause(FILE *file)
     if (getCauseEventNumber() >= 0)
         getCauseEvent()->getEventEntry()->print(file);
 
-    if (getCauseMessageSendEntryNumber() != -1)
-        getCauseMessageSendEntry()->print(file);
+    if (getCauseBeginSendEntryNumber() != -1)
+        getCauseBeginSendEntry()->print(file);
 }
 
 void MessageDependency::printConsequence(FILE *file)
@@ -193,33 +179,33 @@ void MessageDependency::printConsequence(FILE *file)
     if (getConsequenceEventNumber() >= 0)
        getConsequenceEvent()->getEventEntry()->print(file);
 
-    if (getConsequenceMessageSendEntryNumber() != -1)
-       getConsequenceMessageSendEntry()->print(file);
+    if (getConsequenceBeginSendEntryNumber() != -1)
+       getConsequenceBeginSendEntry()->print(file);
 }
 
 /**************************************************/
 
-MessageReuse::MessageReuse(IEventLog *eventLog, long senderEventNumber, int messageSendEntryNumber)
-    : MessageDependency(eventLog, EVENT_NOT_YET_CALCULATED, -1, senderEventNumber, messageSendEntryNumber)
+MessageReuse::MessageReuse(IEventLog *eventLog, long senderEventNumber, int BeginSendEntryNumber)
+    : MessageDependency(eventLog, EVENT_NOT_YET_CALCULATED, -1, senderEventNumber, BeginSendEntryNumber)
 {
 }
 
 /**************************************************/
 
-MessageSend::MessageSend(IEventLog *eventLog, long senderEventNumber, int messageSendEntryNumber)
-    : MessageDependency(eventLog, senderEventNumber, messageSendEntryNumber, EVENT_NOT_YET_CALCULATED, -1)
+MessageSend::MessageSend(IEventLog *eventLog, long senderEventNumber, int BeginSendEntryNumber)
+    : MessageDependency(eventLog, senderEventNumber, BeginSendEntryNumber, EVENT_NOT_YET_CALCULATED, -1)
 {
 }
 
 /**************************************************/
 FilteredMessageDependency::FilteredMessageDependency(IEventLog *eventLog,
-    long causeEventNumber, int causeMessageSendEntryNumber,
-    long middleEventNumber, int middleMessageSendEntryNumber,
-    long consequenceEventNumber, int consequenceMessageSendEntryNumber)
-    : MessageDependency(eventLog, causeEventNumber, causeMessageSendEntryNumber, consequenceEventNumber, consequenceMessageSendEntryNumber)
+    long causeEventNumber, int causeBeginSendEntryNumber,
+    long middleEventNumber, int middleBeginSendEntryNumber,
+    long consequenceEventNumber, int consequenceBeginSendEntryNumber)
+    : MessageDependency(eventLog, causeEventNumber, causeBeginSendEntryNumber, consequenceEventNumber, consequenceBeginSendEntryNumber)
 {
     this->middleEventNumber = middleEventNumber;
-    this->middleMessageSendEntryNumber = middleMessageSendEntryNumber;
+    this->middleBeginSendEntryNumber = middleBeginSendEntryNumber;
 }
 
 IEvent *FilteredMessageDependency::getMiddleEvent()
@@ -232,9 +218,9 @@ simtime_t FilteredMessageDependency::getMiddleTime()
     return getMiddleEvent()->getSimulationTime();
 }
 
-EventLogEntry *FilteredMessageDependency::getMiddleMessageSendEntry()
+BeginSendEntry *FilteredMessageDependency::getMiddleBeginSendEntry()
 {
-    return getMiddleEvent()->getEventLogEntry(middleMessageSendEntryNumber);
+    return (BeginSendEntry *)getMiddleEvent()->getEventLogEntry(middleBeginSendEntryNumber);
 }
 
 void FilteredMessageDependency::printMiddle(FILE *file)
@@ -242,8 +228,8 @@ void FilteredMessageDependency::printMiddle(FILE *file)
     if (getMiddleEventNumber() >= 0)
        getMiddleEvent()->getEventEntry()->print(file);
 
-    if (getMiddleMessageSendEntryNumber() != -1)
-       getMiddleMessageSendEntry()->print(file);
+    if (getMiddleBeginSendEntryNumber() != -1)
+       getMiddleBeginSendEntry()->print(file);
 }
 
 void FilteredMessageDependency::print(FILE *file)

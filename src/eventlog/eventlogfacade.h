@@ -36,6 +36,12 @@ class EventLogFacade
 
     public:
         EventLogFacade(IEventLog *eventLog);
+
+        IEvent *getNthEventInDirection(IEvent *event, bool forward = true, long distance = 1);
+
+        void getEventLogEntryForEventLogTableRowIndex(long fixPointEventNumber, long fixPointLineNumber, long lineNumber, IEvent **event, EventLogEntry **eventLogEntry);
+        IEvent *getEventForEventLogTableRowIndex(long fixPointEventNumber, long fixPointLineNumber, long lineNumber);
+        EventLogEntry *getEventLogEntryForEventLogTableRowIndex(long fixPointEventNumber, long fixPointLineNumber, long lineNumber);
 };
 
 #endif

@@ -41,7 +41,7 @@ CC ConnectionCreatedEntry
 // channel, channel attributes, etc
 }
 
-CD ConnectionRemovedEntry
+CD ConnectionDeletedEntry
 {
    sm int sourceModuleId
    sg int sourceGateId
@@ -75,20 +75,7 @@ E EventEntry
    msg long messageId
 }
 
-SA MessageScheduledEntry
-{
-   id long messageId
-   tid long messageTreeId
-// long messageEncapsulationId    FIXME these two are not currently recorded
-// long messageEncapsulationTreeId
-   c string messageClassName
-   n string messageFullName
-   sm int senderModuleId
-   t simtime_t arrivalTime
-   pe long previousEventNumber
-}
-
-CE MessageCancelledEntry
+CE CancelMessageEntry
 {
    id long messageId
 }
@@ -126,7 +113,7 @@ SH MessageSendHopEntry
 {
    sm int senderModuleId
    sg int senderGateId
-// FIXME this should be eliminated from simkernel
+// FIXME this should be eliminated from simkernel (eliminate sendDelay)
    ts simtime_t transmissionStart
    pd simtime_t propagationDelay
    td simtime_t transmissionDelay

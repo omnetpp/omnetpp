@@ -40,6 +40,8 @@ class FilteredEventLog : public IEventLog
         int maxConsequenceDepth; // maximum number of message dependencies considered when collecting consequences
 
         // state
+        long numEventsApproximation;
+
         typedef std::map<long, FilteredEvent *> EventNumberToFilteredEventMap;
         EventNumberToFilteredEventMap eventNumberToFilteredEventMap;
 
@@ -65,16 +67,18 @@ class FilteredEventLog : public IEventLog
         int getMaxConsequenceDepth() { return maxConsequenceDepth; }
 
         bool matchesFilter(IEvent *event);
-        FilteredEvent *getEventInDirection(long eventNumber, bool forward);
+        FilteredEvent *getMatchingEventInDirection(long startEventNumber, bool forward);
 
         // IEventLog interface
-        virtual ModuleCreatedEntry *getInitializationModule(int index) { return eventLog->getInitializationModule(index); }
-        virtual int getNumInitializationModules() { return eventLog->getNumInitializationModules(); }
+        virtual ModuleCreatedEntry *getModuleCreatedEntry(int index) { return eventLog->getModuleCreatedEntry(index); }
+        virtual int getNumModuleCreatedEntries() { return eventLog->getNumModuleCreatedEntries(); }
 
         virtual FilteredEvent *getFirstEvent();
         virtual FilteredEvent *getLastEvent();
         virtual FilteredEvent *getEventForEventNumber(long eventNumber, MatchKind matchKind = EXACT);
         virtual FilteredEvent *getEventForSimulationTime(simtime_t simulationTime, MatchKind matchKind = EXACT);
+
+        virtual long getNumEventsApproximation();
 
         virtual void printInitializationLogEntries(FILE *file = stdout) {  eventLog->printInitializationLogEntries(file); }
 

@@ -54,7 +54,7 @@ FilteredEvent *FilteredEvent::getPreviousEvent()
 {
     if (!previousEvent)
     {
-        previousEvent = filteredEventLog->getEventInDirection(eventNumber - 1, false);
+        previousEvent = filteredEventLog->getMatchingEventInDirection(eventNumber - 1, false);
 
         if (previousEvent)
             IEvent::linkEvents(previousEvent, this);
@@ -67,7 +67,7 @@ FilteredEvent *FilteredEvent::getNextEvent()
 {
     if (!nextEvent)
     {
-        nextEvent = filteredEventLog->getEventInDirection(eventNumber + 1, true);
+        nextEvent = filteredEventLog->getMatchingEventInDirection(eventNumber + 1, true);
 
         if (nextEvent)
             Event::linkEvents(this, nextEvent);
@@ -109,8 +109,8 @@ FilteredMessageDependency *FilteredEvent::getCause()
             if (filteredEventLog->matchesFilter(messageDependency->getCauseEvent()))
             {
                 cause = new FilteredMessageDependency(filteredEventLog->getEventLog(),
-                    messageDependency->getCauseEventNumber(), messageDependency->getCauseMessageSendEntryNumber(),
-                    causeMessageDependency->getCauseEventNumber(), causeMessageDependency->getCauseMessageSendEntryNumber(),
+                    messageDependency->getCauseEventNumber(), messageDependency->getCauseBeginSendEntryNumber(),
+                    causeMessageDependency->getCauseEventNumber(), causeMessageDependency->getCauseBeginSendEntryNumber(),
                     getEventNumber(), -1);
             }
 
@@ -132,7 +132,7 @@ MessageDependencyList *FilteredEvent::getCauses()
     return causes;
 }
 
-MessageDependencyList *FilteredEvent::getCauses(IEvent *event, int consequenceMessageSendEntryNumber, int level)
+MessageDependencyList *FilteredEvent::getCauses(IEvent *event, int consequenceBeginSendEntryNumber, int level)
 {
     // returns a list of dependencies, where the consequence is this event,
     // and the other end is no further away than getMaxCauseDepth() and
@@ -148,12 +148,12 @@ MessageDependencyList *FilteredEvent::getCauses(IEvent *event, int consequenceMe
 
         if (filteredEventLog->matchesFilter(causeEvent))
             causes->push_back(new FilteredMessageDependency(filteredEventLog->getEventLog(),
-                causeEvent->getEventNumber(), messageDependency->getCauseMessageSendEntryNumber(),
-                messageDependency->getConsequenceEventNumber(), messageDependency->getConsequenceMessageSendEntryNumber(),
-                getEventNumber(), consequenceMessageSendEntryNumber));
+                causeEvent->getEventNumber(), messageDependency->getCauseBeginSendEntryNumber(),
+                messageDependency->getConsequenceEventNumber(), messageDependency->getConsequenceBeginSendEntryNumber(),
+                getEventNumber(), consequenceBeginSendEntryNumber));
         else if (level < filteredEventLog->getMaxCauseDepth())
             getCauses(causeEvent,
-                consequenceMessageSendEntryNumber == -1 ? messageDependency->getConsequenceMessageSendEntryNumber() : consequenceMessageSendEntryNumber,
+                consequenceBeginSendEntryNumber == -1 ? messageDependency->getConsequenceBeginSendEntryNumber() : consequenceBeginSendEntryNumber,
                 level + 1);
     }
 
@@ -171,7 +171,7 @@ MessageDependencyList *FilteredEvent::getConsequences()
     return consequences;
 }
 
-MessageDependencyList *FilteredEvent::getConsequences(IEvent *event, int causeMessageSendEntryNumber, int level)
+MessageDependencyList *FilteredEvent::getConsequences(IEvent *event, int causeBeginSendEntryNumber, int level)
 {
     // similar to getCause
     MessageDependencyList *eventConsequences = event->getConsequences();
@@ -188,12 +188,12 @@ MessageDependencyList *FilteredEvent::getConsequences(IEvent *event, int causeMe
 
         if (filteredEventLog->matchesFilter(consequenceEvent))
             consequences->push_back(new FilteredMessageDependency(filteredEventLog->getEventLog(),
-                getEventNumber(), causeMessageSendEntryNumber,
-                messageDependency->getCauseEventNumber(), messageDependency->getCauseMessageSendEntryNumber(),
-                consequenceEvent->getEventNumber(), messageDependency->getConsequenceMessageSendEntryNumber()));
+                getEventNumber(), causeBeginSendEntryNumber,
+                messageDependency->getCauseEventNumber(), messageDependency->getCauseBeginSendEntryNumber(),
+                consequenceEvent->getEventNumber(), messageDependency->getConsequenceBeginSendEntryNumber()));
         else if (level < filteredEventLog->getMaxConsequenceDepth())
             getConsequences(consequenceEvent,
-                causeMessageSendEntryNumber == -1 ? messageDependency->getCauseMessageSendEntryNumber() : causeMessageSendEntryNumber,
+                causeBeginSendEntryNumber == -1 ? messageDependency->getCauseBeginSendEntryNumber() : causeBeginSendEntryNumber,
                 level + 1);
     }
 

@@ -36,43 +36,7 @@ EventLogEntry *EventLogEntry::parseEntry(char *line)
 
 bool EventLogEntry::isMessageSend()
 {
-    return
-        dynamic_cast<BeginSendEntry *>(this) != NULL ||
-        dynamic_cast<MessageScheduledEntry *>(this) != NULL;
-}
-
-long EventLogEntry::getMessageId()
-{
-    // 1. BeginSendEntry
-    BeginSendEntry *beginSendEntry = dynamic_cast<BeginSendEntry *>(this);
-
-    if (beginSendEntry != NULL)
-        return beginSendEntry->messageId;
-
-    // 2. MessageScheduledEntry
-    MessageScheduledEntry *messageScheduledEntry = dynamic_cast<MessageScheduledEntry *>(this);
-
-    if (messageScheduledEntry != NULL)
-        return messageScheduledEntry->messageId;
-
-    throw new Exception("Unknown message entry");
-}
-
-long EventLogEntry::getPreviousEventNumber()
-{
-    // 1. BeginSendEntry
-    BeginSendEntry *beginSendEntry = dynamic_cast<BeginSendEntry *>(this);
-
-    if (beginSendEntry != NULL)
-        return beginSendEntry->previousEventNumber;
-
-    // 2. MessageScheduledEntry
-    MessageScheduledEntry *messageScheduledEntry = dynamic_cast<MessageScheduledEntry *>(this);
-
-    if (messageScheduledEntry != NULL)
-        return messageScheduledEntry->previousEventNumber;
-
-    throw new Exception("Unknown message entry");
+    return dynamic_cast<BeginSendEntry *>(this) != NULL;
 }
 
 char *EventLogTokenBasedEntry::getToken(char **tokens, int numTokens, const char *sign)

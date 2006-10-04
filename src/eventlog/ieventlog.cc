@@ -16,7 +16,7 @@
 
 void IEventLog::printEvents(FILE *file, long fromEventNumber, long toEventNumber)
 {
-    IEvent *event = fromEventNumber == -1 ? getFirstEvent() : getFirstEventNotBefore(fromEventNumber);
+    IEvent *event = fromEventNumber == -1 ? getFirstEvent() : getFirstEventNotBeforeEventNumber(fromEventNumber);
 
     while (event != NULL && (toEventNumber == -1 || event->getEventNumber() <= toEventNumber))
     {

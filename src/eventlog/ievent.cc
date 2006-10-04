@@ -18,6 +18,7 @@ IEvent::IEvent()
 {
     nextEvent = NULL;
     previousEvent = NULL;
+    isExpandedInEventLogTable = true;
 }
 
 void IEvent::linkEvents(IEvent *previousEvent, IEvent *nextEvent)

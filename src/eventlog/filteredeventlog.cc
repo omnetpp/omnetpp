@@ -44,6 +44,11 @@ FilteredEventLog::~FilteredEventLog()
     delete eventLog;
 }
 
+long FilteredEventLog::getNumEventsApproximation()
+{
+    return -1;
+}
+
 bool FilteredEventLog::matchesFilter(IEvent *event)
 {
     EventNumberToFilterMatchesMap::iterator it = eventNumberToFilterMatchesMap.find(event->getEventNumber());
@@ -105,7 +110,7 @@ FilteredEvent* FilteredEventLog::getFirstEvent()
     if (!firstMatchingEvent)
     {
         long startEventNumber = firstEventNumber == -1 ? eventLog->getFirstEvent()->getEventNumber() : std::max(eventLog->getFirstEvent()->getEventNumber(), firstEventNumber);
-        firstMatchingEvent = getEventInDirection(startEventNumber, true);
+        firstMatchingEvent = getMatchingEventInDirection(startEventNumber, true);
     }
 
     return firstMatchingEvent;
@@ -116,7 +121,7 @@ FilteredEvent* FilteredEventLog::getLastEvent()
     if (!lastMatchingEvent)
     {
         long startEventNumber = lastEventNumber == -1 ? eventLog->getLastEvent()->getEventNumber() : std::min(eventLog->getLastEvent()->getEventNumber(), lastEventNumber);
-        lastMatchingEvent = getEventInDirection(startEventNumber, false);
+        lastMatchingEvent = getMatchingEventInDirection(startEventNumber, false);
     }
 
     return lastMatchingEvent;
@@ -146,7 +151,7 @@ FilteredEvent *FilteredEventLog::getEventForSimulationTime(simtime_t simulationT
     return NULL;
 }
 
-FilteredEvent* FilteredEventLog::getEventInDirection(long eventNumber, bool forward)
+FilteredEvent* FilteredEventLog::getMatchingEventInDirection(long eventNumber, bool forward)
 {
     IEvent *event = eventLog->getEventForEventNumber(eventNumber);
 

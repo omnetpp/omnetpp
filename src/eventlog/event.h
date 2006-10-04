@@ -38,6 +38,7 @@ class Event : public IEvent
         long beginOffset; // file offset where the event starts
         long endOffset; // file offset where the event ends (ie. begin of next event)
         EventEntry *eventEntry; // the event log entry that corresponds to the actual event ("E" line)
+        int numEventLogMessages;
 
         typedef std::vector<EventLogEntry *> EventLogEntryList;
         EventLogEntryList eventLogEntries; // all entries parsed from the file (lines below "E" line)
@@ -62,8 +63,12 @@ class Event : public IEvent
         virtual int getNumEventLogEntries() { return eventLogEntries.size(); }
         virtual EventLogEntry *getEventLogEntry(int index) { return eventLogEntries[index]; }
 
+        virtual int getNumEventLogMessages() { return numEventLogMessages; }
+        virtual EventLogMessage *getEventLogMessage(int index);
+
         virtual long getEventNumber() { return eventEntry->eventNumber; }
         virtual simtime_t getSimulationTime() { return eventEntry->simulationTime; }
+        virtual int getModuleId() { return eventEntry->moduleId; }
         virtual long getMessageId() { return eventEntry->messageId; }
         virtual long getCauseEventNumber() { return eventEntry->causeEventNumber; }
 

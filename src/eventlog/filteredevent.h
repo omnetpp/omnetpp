@@ -49,8 +49,12 @@ class FilteredEvent : public IEvent
         virtual int getNumEventLogEntries() { return getEvent()->getNumEventLogEntries(); }
         virtual EventLogEntry *getEventLogEntry(int index) { return getEvent()->getEventLogEntry(index); }
 
+        virtual int getNumEventLogMessages() { return getEvent()->getNumEventLogMessages(); }
+        virtual EventLogMessage *getEventLogMessage(int index) { return getEvent()->getEventLogMessage(index); }
+
         virtual long getEventNumber() { return eventNumber; }
         virtual simtime_t getSimulationTime() { return getEvent()->getSimulationTime(); }
+        virtual int getModuleId() { return getEvent()->getModuleId(); }
         virtual long getMessageId() { return getEvent()->getMessageId(); }
         virtual long getCauseEventNumber() { return getEvent()->getCauseEventNumber(); }
 

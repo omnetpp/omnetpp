@@ -41,15 +41,15 @@ class MessageDependency
         IEventLog *eventLog;
 
         long causeEventNumber; // -2 means not yet calculated from the consequenceEventNumber, -1 means not found in file
-        int causeMessageSendEntryNumber; // optional (-1) and refers to an entry of causeEvent
+        int causeBeginSendEntryNumber; // optional (-1) and refers to an entry of causeEvent
 
         long consequenceEventNumber; // -2 means not yet calculated from the causeEventNumber, -1 means not found in file
-        int consequenceMessageSendEntryNumber; // optional (-1) and refers to an entry of consequenceEvent
+        int consequenceBeginSendEntryNumber; // optional (-1) and refers to an entry of consequenceEvent
 
     public:
         MessageDependency(IEventLog *eventLog,
-                          long causeEventNumber, int causeMessageSendEntryNumber,
-                          long consequenceEventNumber, int consequenceMessageSendEntryNumber);
+                          long causeEventNumber, int causeBeginSendEntryNumber,
+                          long consequenceEventNumber, int consequenceBeginSendEntryNumber);
 
         long getCauseEventNumber();
         IEvent *getCauseEvent();
@@ -57,19 +57,19 @@ class MessageDependency
         long getConsequenceEventNumber();
         IEvent *getConsequenceEvent();
 
-        long getCauseMessageSendEntryNumber() { return causeMessageSendEntryNumber; }
-        EventLogEntry *getCauseMessageSendEntry();
+        long getCauseBeginSendEntryNumber() { return causeBeginSendEntryNumber; }
+        BeginSendEntry *getCauseBeginSendEntry();
 
-        long getConsequenceMessageSendEntryNumber() { return consequenceMessageSendEntryNumber; }
-        EventLogEntry *getConsequenceMessageSendEntry();
+        long getConsequenceBeginSendEntryNumber() { return consequenceBeginSendEntryNumber; }
+        BeginSendEntry *getConsequenceBeginSendEntry();
 
         simtime_t getCauseTime();
         simtime_t getConsequenceTime();
 
-        long getCauseMessageId() { return getCauseMessageSendEntry()->getMessageId(); }
-        long getConsequenceMessageId() { return getConsequenceMessageSendEntry()->getMessageId(); }
+        long getCauseMessageId() { return getCauseBeginSendEntry()->messageId; }
+        long getConsequenceMessageId() { return getConsequenceBeginSendEntry()->messageId; }
 
-        EventLogEntry *getMessageSendEntry();
+        BeginSendEntry *getBeginSendEntry();
 
         void printCause(FILE *file = stdout);
         void printConsequence(FILE *file = stdout);
@@ -81,7 +81,7 @@ typedef std::vector<MessageDependency *> MessageDependencyList;
 class MessageReuse : public MessageDependency
 {
     public:
-        MessageReuse(IEventLog *eventLog, long senderEventNumber, int messageSendEntryNumber);
+        MessageReuse(IEventLog *eventLog, long senderEventNumber, int BeginSendEntryNumber);
 };
 
 /**
@@ -90,7 +90,7 @@ class MessageReuse : public MessageDependency
 class MessageSend : public MessageDependency
 {
     public:
-        MessageSend(IEventLog *eventLog, long senderEventNumber, int messageSendEntryNumber);
+        MessageSend(IEventLog *eventLog, long senderEventNumber, int BeginSendEntryNumber);
 
         long getSenderEventNumber() { return getCauseEventNumber(); }
         IEvent *getSenderEvent() { return getCauseEvent(); }
@@ -106,19 +106,19 @@ class FilteredMessageDependency : public MessageDependency
 {
     protected:
         long middleEventNumber;
-        int middleMessageSendEntryNumber; // optional and refers to an entry of middleEvent
+        int middleBeginSendEntryNumber; // optional and refers to an entry of middleEvent
 
     public:
         FilteredMessageDependency(IEventLog *eventLog,
-                                  long causeEventNumber, int causeMessageSendEntryNumber,
-                                  long middleEventNumber, int middleMessageSendEntryNumber,
-                                  long consequenceEventNumber, int consequenceMessageSendEntryNumber);
+                                  long causeEventNumber, int causeBeginSendEntryNumber,
+                                  long middleEventNumber, int middleBeginSendEntryNumber,
+                                  long consequenceEventNumber, int consequenceBeginSendEntryNumber);
 
         long getMiddleEventNumber() { return middleEventNumber; }
         IEvent *getMiddleEvent();
         simtime_t getMiddleTime();
-        int getMiddleMessageSendEntryNumber() { return middleMessageSendEntryNumber; }
-        EventLogEntry *getMiddleMessageSendEntry();
+        int getMiddleBeginSendEntryNumber() { return middleBeginSendEntryNumber; }
+        BeginSendEntry *getMiddleBeginSendEntry();
 
         void printMiddle(FILE *file);
         virtual void print(FILE *file);

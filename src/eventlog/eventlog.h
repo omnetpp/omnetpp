@@ -37,11 +37,13 @@ class EventLogEntry;
 class EventLog : public IEventLog, public EventLogIndex
 {
     protected:
+        long numEventsApproximation;
+
         typedef std::vector<EventLogEntry *> EventLogEntryList;
         EventLogEntryList initializationLogEntries; // all entries from the beginning of the file to the first event
 
-        typedef std::vector<ModuleCreatedEntry *> ModuleCreatedEntryList;
-        ModuleCreatedEntryList initializationModuleCreatedEntries;
+        typedef std::map<int, ModuleCreatedEntry *> ModuleIdToModuleCreatedEntryMap;
+        ModuleIdToModuleCreatedEntryMap initializationModuleIdToModuleCreatedEntryMap;
 
         typedef std::map<long, Event *> EventNumberToEventMap;
         EventNumberToEventMap eventNumberToEventMap; // all parsed events so far
@@ -59,13 +61,15 @@ class EventLog : public IEventLog, public EventLogIndex
         Event *getEventForEndOffset(long offset);
 
         // IEventLog interface
-        virtual ModuleCreatedEntry *getInitializationModule(int index) { return initializationModuleCreatedEntries[index]; }
-        virtual int getNumInitializationModules() { return initializationModuleCreatedEntries.size(); }
+        virtual ModuleCreatedEntry *getModuleCreatedEntry(int moduleId) { return initializationModuleIdToModuleCreatedEntryMap[moduleId]; }
+        virtual int getNumModuleCreatedEntries() { return initializationModuleIdToModuleCreatedEntryMap.size(); }
 
         virtual Event *getFirstEvent() { return getEventForEventNumber(getFirstEventNumber()); }
         virtual Event *getLastEvent() { return getEventForEventNumber(getLastEventNumber()); }
         virtual Event *getEventForEventNumber(long eventNumber, MatchKind matchKind = EXACT);
         virtual Event *getEventForSimulationTime(simtime_t simulationTime, MatchKind matchKind = EXACT);
+
+        virtual long getNumEventsApproximation();
 
         virtual void printInitializationLogEntries(FILE *file = stdout);
 
