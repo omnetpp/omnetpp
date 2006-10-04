@@ -39,6 +39,15 @@ public class ScaveModelItemProviderAdapterFactory extends
 	}
 
 	@Override
+	public Adapter createDatasetsAdapter() {
+		if (datasetsItemProvider == null) {
+			datasetsItemProvider = new DatasetsItemProvider(this);
+		}
+
+		return datasetsItemProvider;
+	}
+
+	@Override
 	public Adapter createGroupAdapter() {
 		if (groupItemProvider == null) {
 			groupItemProvider = new GroupItemProvider(this);

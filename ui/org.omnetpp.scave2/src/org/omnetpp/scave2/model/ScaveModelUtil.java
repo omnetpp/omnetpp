@@ -37,6 +37,8 @@ import org.omnetpp.scave.model.ChartSheet;
 import org.omnetpp.scave.model.ChartSheets;
 import org.omnetpp.scave.model.Dataset;
 import org.omnetpp.scave.model.DatasetType;
+import org.omnetpp.scave.model.Datasets;
+import org.omnetpp.scave.model.Group;
 import org.omnetpp.scave.model.Property;
 import org.omnetpp.scave.model.ScaveModelFactory;
 import org.omnetpp.scave.model.ScaveModelPackage;
@@ -217,8 +219,16 @@ public class ScaveModelUtil {
 		List<Chart> charts = new ArrayList<Chart>();
 		for (Object item : items)
 			if (item instanceof Chart) {
-				Chart chart = (Chart)item;
 				charts.add((Chart)item);
+			}
+			else if (item instanceof Dataset || item instanceof Group) {
+				for (TreeIterator iter = ((EObject)item).eAllContents(); iter.hasNext(); ) {
+					Object object = iter.next();
+					if (object instanceof Chart)
+						charts.add((Chart)object);
+					else if (!(object instanceof Dataset || object instanceof Group))
+						iter.prune();
+				}
 			}
 		return charts;
 	}
