@@ -20,6 +20,7 @@ import org.omnetpp.scave.engine.ScalarResult;
 import org.omnetpp.scave.engine.VectorResult;
 import org.omnetpp.scave.engineext.ResultFileManagerEx;
 import org.omnetpp.scave.model.DatasetType;
+import org.omnetpp.scave2.model.RunAttribute;
 
 /**
  * This is a preconfigured VIRTUAL table, which displays a list of
@@ -45,14 +46,14 @@ public class DataTable extends Table {
 		private int weight;
 		private boolean visible;
 		
-		public Column(String text, int weight) {
+		public Column(String text, int weight, boolean visible) {
 			this.text = text;
 			this.weight = weight;
-			this.visible = true;
+			this.visible = visible;
 		}
 		
 		public Column clone() {
-			return new Column(this.text, this.weight);
+			return new Column(this.text, this.weight, this.visible);
 		}
 		
 		public boolean equals(Object other) {
@@ -64,15 +65,18 @@ public class DataTable extends Table {
 		}
 	}
 	
-	private static final Column COL_DIRECTORY = new Column("Directory", 60);
-	private static final Column COL_FILE_RUN = new Column("File name#run number", 100);
-	private static final Column COL_RUN_ID = new Column("Run id", 100);
-	private static final Column COL_MODULE = new Column("Module name", 160);
-	private static final Column COL_DATA = new Column("Data name", 100);
-	private static final Column COL_VALUE = new Column("Value", 80);
-	private static final Column COL_COUNT = new Column("Count", 50);
-	private static final Column COL_MEAN = new Column("Mean", 60);
-	private static final Column COL_STDDEV = new Column("Stddev", 60);
+	private static final Column COL_DIRECTORY = new Column("Directory", 60, true);
+	private static final Column COL_FILE_RUN = new Column("File name#run number", 100, true);
+	private static final Column COL_RUN_ID = new Column("Run id", 100, true);
+	private static final Column COL_MODULE = new Column("Module name", 160, true);
+	private static final Column COL_DATA = new Column("Data name", 100, true);
+	private static final Column COL_VALUE = new Column("Value", 80, true);
+	private static final Column COL_COUNT = new Column("Count", 50, true);
+	private static final Column COL_MEAN = new Column("Mean", 60, true);
+	private static final Column COL_STDDEV = new Column("Stddev", 60, true);
+	private static final Column COL_EXPERIMENT = new Column("Experiment", 60, false);
+	private static final Column COL_MEASUREMENT = new Column("Measurement", 60, false);
+	private static final Column COL_REPLICATION = new Column("Replication", 60, false);
 	
 	private int type;
 	private ResultFileManagerEx manager;
@@ -178,6 +182,9 @@ public class DataTable extends Table {
 		addColumn(COL_DIRECTORY);
 		addColumn(COL_FILE_RUN);
 		addColumn(COL_RUN_ID);
+		addColumn(COL_EXPERIMENT);
+		addColumn(COL_MEASUREMENT);
+		addColumn(COL_REPLICATION);
 		addColumn(COL_MODULE);
 		addColumn(COL_DATA);
 		
@@ -240,6 +247,18 @@ public class DataTable extends Table {
 				item.setText(i, result.getModuleName());
 			else if (COL_DATA.equals(column))
 				item.setText(i, result.getName());
+			else if (COL_EXPERIMENT.equals(column)) {
+				String experiment = result.getFileRun().getRun().getAttribute(RunAttribute.EXPERIMENT);
+				item.setText(i, experiment != null ? experiment : "n.a.");
+			}
+			else if (COL_MEASUREMENT.equals(column)) {
+				String measurement = result.getFileRun().getRun().getAttribute(RunAttribute.MEASUREMENT);
+				item.setText(i, measurement != null ? measurement : "n.a.");
+			}
+			else if (COL_REPLICATION.equals(column)) {
+				String replication = result.getFileRun().getRun().getAttribute(RunAttribute.REPLICATION);
+				item.setText(i, replication != null ? replication : "n.a.");
+			}
 			else if (type == TYPE_SCALAR) {
 				ScalarResult scalar = manager.getScalar(idlist.get(lineNumber));
 				if (COL_VALUE.equals(column))
