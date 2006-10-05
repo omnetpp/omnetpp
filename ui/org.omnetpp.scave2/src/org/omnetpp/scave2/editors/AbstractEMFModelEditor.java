@@ -700,7 +700,8 @@ public abstract class AbstractEMFModelEditor
 	public void configureTreeViewer(TreeViewer modelViewer) {
 		modelViewer.setContentProvider(new AdapterFactoryContentProvider(adapterFactory));
 		//modelViewer.setLabelProvider(new AdapterFactoryLabelProvider(adapterFactory));
-		modelViewer.setLabelProvider(new ScaveModelLabelProvider());
+		modelViewer.setLabelProvider(
+				new ScaveModelLabelProvider(new AdapterFactoryLabelProvider(adapterFactory)));
 
 		new AdapterFactoryTreeEditor(modelViewer.getTree(), adapterFactory); //XXX this appears to be something about in-place editing - do we need it?
 
@@ -747,7 +748,8 @@ public abstract class AbstractEMFModelEditor
 					//
 					contentOutlineViewer.setContentProvider(new AdapterFactoryContentProvider(adapterFactory));
 					//contentOutlineViewer.setLabelProvider(new AdapterFactoryLabelProvider(adapterFactory));
-					contentOutlineViewer.setLabelProvider(new ScaveModelLabelProvider());
+					contentOutlineViewer.setLabelProvider(
+							new ScaveModelLabelProvider(new AdapterFactoryLabelProvider(adapterFactory)));
 					initializeContentOutlineViewer(contentOutlineViewer); // should call setInput()
 
 					// Make sure our popups work.

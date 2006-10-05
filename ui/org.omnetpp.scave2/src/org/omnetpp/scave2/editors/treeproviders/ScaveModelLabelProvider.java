@@ -1,6 +1,7 @@
 package org.omnetpp.scave2.editors.treeproviders;
 
 import org.eclipse.emf.edit.provider.IWrapperItemProvider;
+import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.graphics.Image;
 import org.omnetpp.scave.model.Add;
@@ -34,8 +35,20 @@ import org.omnetpp.scave.model.SetOperation;
 //             the viewer notification contains the flag that labels need to be updated
 //             the generated notifyChanged() method works only with the generated label provider
 public class ScaveModelLabelProvider extends LabelProvider {
+	
+	ILabelProvider fallback;
+
+	public ScaveModelLabelProvider(ILabelProvider fallback) {
+		this.fallback = fallback;
+	}
+	
+	public void dispose() {
+		if (fallback != null)
+			fallback.dispose();
+	}
+	
 	public Image getImage(Object element) {
-		return null;  //XXX fall back to EMF-generated code?
+		return fallback != null ? fallback.getImage(element) : null;
 	}
 
 	public String getText(Object element) {
