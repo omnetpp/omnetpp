@@ -1,4 +1,48 @@
+2006-10-05
+----------
+
+Additions
+
+   + Number of selected/all table rows are displayed in the status line.
+
+   + Edit dialog is available from the context menu of charts.
+
+   + New dialog for editing input files.
+
+   + Visible columns of data tables can be selected.
+
+   + Icons readded to tree views.
+
+   + Input files can be specified by names containing ? and * wildcards.
+
+Fixes
+
+   + Column names changed to be consistent with the names used on the filter panel.
+
+   + When no filter is set, then "<all>" is displayed as the filter. (instead of "")
+
+   + Filter combos can show more items (max 15).
+
+   + "Add to dataset..." inserts the new items at beginning.
+
+   + Empty edit dialogs were shown when the object did not have any editable attribute.
+
+   + Property view is updated when the chart is selected on the property sheet.
+
+   + Fixing "Display symbols" property of vector chart.
+
+   + Default chart sheet were not created when the chart was created by pressing "Create chart..."
+     on the "Browse data" page.
+
+   + Double clicking on nodes in the "Inputs" page fills the filters parameters corresponding
+     to the ancestors of the clicked node too.
+
+   + Non-selected panel is disabled in "Create dataset"/"Add to dataset"/"Create chart" dialogs.
+
+
+
 2006-09-21
+----------
 
 Additions
 
