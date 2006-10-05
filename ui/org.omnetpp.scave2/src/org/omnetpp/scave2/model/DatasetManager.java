@@ -6,9 +6,12 @@ import java.util.List;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.util.EcoreUtil;
+import org.jfree.data.category.CategoryDataset;
+import org.jfree.data.category.DefaultCategoryDataset;
 import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.engine.Node;
 import org.omnetpp.scave.engine.ResultFileManager;
+import org.omnetpp.scave.engine.ScalarResult;
 import org.omnetpp.scave.engine.XYArray;
 import org.omnetpp.scave.model.Add;
 import org.omnetpp.scave.model.AddDiscardOp;
@@ -27,6 +30,7 @@ import org.omnetpp.scave.model.Select;
 import org.omnetpp.scave.model.SelectDeselectOp;
 import org.omnetpp.scave.model.SetOperation;
 import org.omnetpp.scave.model.util.ScaveModelSwitch;
+import org.omnetpp.scave2.charting.OutputVectorDataset;
 
 /**
  * This class calculates the content of a dataset
@@ -147,6 +151,29 @@ public class DatasetManager {
 		for (int i = 0; i < result.length; ++i)
 			result[i] = outputs.get(i).getArray();
 		return result;
+	}
+	
+	public static CategoryDataset createScalarDataset(IDList idlist, ResultFileManager manager) {
+		DefaultCategoryDataset ds = new DefaultCategoryDataset();
+
+		int sz = (int)idlist.size();
+		for (int i=0; i<sz; i++) {
+			ScalarResult d = manager.getScalar(idlist.get(i));
+			ds.addValue(d.getValue(),
+					d.getFileRun().getRun().getRunName(),
+					d.getModuleName()+"\n"+d.getName());
+		}
+		return ds;
+	}
+	
+	public static OutputVectorDataset createVectorDataset(Chart chart, Dataset dataset, ResultFileManager manager) {
+		XYArray[] dataValues = getDataFromDataset(manager, dataset, chart);
+		IDList idlist = getIDListFromDataset(manager, dataset, chart);
+		String[] dataNames = new String[(int)idlist.size()];
+		for (int i = 0; i < idlist.size(); ++i) {
+			dataNames[i] = manager.getItem(idlist.get(i)).getName();
+		}
+		return new OutputVectorDataset(dataNames, dataValues);
 	}
 	
 	public static IDList select(IDList source, List<SelectDeselectOp> filters, ResultFileManager manager, DatasetType type) {

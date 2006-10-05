@@ -35,6 +35,8 @@ import org.jfree.chart.renderer.category.LayeredBarRenderer;
 import org.jfree.chart.renderer.category.StackedBarRenderer;
 import org.jfree.chart.title.LegendTitle;
 import org.jfree.chart.title.TextTitle;
+import org.jfree.data.category.CategoryDataset;
+import org.jfree.data.general.Dataset;
 import org.jfree.ui.RectangleEdge;
 import org.omnetpp.common.util.Converter;
 import org.omnetpp.scave2.model.ChartProperties.BarPlacement;
@@ -84,6 +86,17 @@ public class ScalarChart extends InteractiveChart {
 	
 	public ScalarChart(Composite parent, int style) {
 		super(parent, style);
+	}
+	
+	public Dataset getDataset() {
+		return getPlot() != null ? getPlot().getDataset() : null;
+	}
+	
+	public void setDataset(CategoryDataset dataset) {
+		if (getPlot() != null) {
+			getPlot().setDataset(dataset);
+			scheduleRefresh();
+		}
 	}
 
 	/*=============================================

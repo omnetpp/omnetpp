@@ -59,8 +59,8 @@ public class ChartFactory {
 		interactiveChart.setChart(jfreechart);
 		// set chart data
 		IDList idlist = DatasetManager.getIDListFromDataset(manager, dataset, chart);
-		CategoryDataset categoryDataset = createChartWithRunsOnXAxis(idlist, manager);
-		jfreechart.getCategoryPlot().setDataset(categoryDataset);
+		CategoryDataset categoryDataset = DatasetManager.createScalarDataset(idlist, manager);
+		interactiveChart.setDataset(categoryDataset);
 		// set chart properties
 		setChartProperties(chart, interactiveChart);
 		return interactiveChart;
@@ -71,7 +71,7 @@ public class ChartFactory {
 		JFreeChart jfreechart = createEmptyVectorJFreeChart(chart.getName(), "X", "Y");
 		interactiveChart.setChart(jfreechart);
 		// set chart data
-		XYDataset data = createOutputVectorDataset(chart, dataset, manager);
+		XYDataset data = DatasetManager.createVectorDataset(chart, dataset, manager);
 		jfreechart.getXYPlot().setDataset(data);
 		if (data.getSeriesCount() <= 5)
 			addLegend(jfreechart);
@@ -80,7 +80,7 @@ public class ChartFactory {
 	}
 
 	private static VectorChart createVectorChart2(Composite parent, Chart chart, Dataset dataset, ResultFileManager manager) {
-		OutputVectorDataset data = createOutputVectorDataset(chart, dataset, manager);
+		OutputVectorDataset data = DatasetManager.createVectorDataset(chart, dataset, manager);
 
 		final VectorChart vectorChart = new VectorChart(parent, SWT.DOUBLE_BUFFERED);
 		vectorChart.setLayoutData(new GridData(SWT.FILL,SWT.FILL,true,true));
@@ -149,18 +149,6 @@ public class ChartFactory {
         jfreechart.addSubtitle(legend);
 	}
 	
-	private static CategoryDataset createChartWithRunsOnXAxis(IDList idlist, ResultFileManager manager) {
-		DefaultCategoryDataset ds = new DefaultCategoryDataset();
-
-		int sz = (int)idlist.size();
-		for (int i=0; i<sz; i++) {
-			ScalarResult d = manager.getScalar(idlist.get(i));
-			ds.addValue(d.getValue(),
-					d.getFileRun().getRun().getRunName(),
-					d.getModuleName()+"\n"+d.getName());
-		}
-		return ds;
-	}
 	
 	private static void setChartProperties(Chart chart, ScalarChart chartView) {
 		ChartProperties chartProperties = ChartProperties.createPropertySource(chart);
@@ -178,15 +166,5 @@ public class ChartFactory {
 			if (chartProperties.isPropertySet(id))
 				chartView.setProperty(id, chartProperties.getStringProperty(id));
 		}
-	}
-	
-	private static OutputVectorDataset createOutputVectorDataset(Chart chart, Dataset dataset, ResultFileManager manager) {
-		XYArray[] dataValues = DatasetManager.getDataFromDataset(manager, dataset, chart);
-		IDList idlist = DatasetManager.getIDListFromDataset(manager, dataset, chart);
-		String[] dataNames = new String[(int)idlist.size()];
-		for (int i = 0; i < idlist.size(); ++i) {
-			dataNames[i] = manager.getItem(idlist.get(i)).getName();
-		}
-		return new OutputVectorDataset(dataNames, dataValues);
 	}
 }
