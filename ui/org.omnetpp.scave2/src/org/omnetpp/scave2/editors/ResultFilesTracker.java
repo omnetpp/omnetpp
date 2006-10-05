@@ -1,5 +1,6 @@
 package org.omnetpp.scave2.editors;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.text.html.HTMLDocument.HTMLReader.IsindexAction;
@@ -10,6 +11,7 @@ import org.eclipse.core.resources.IResourceChangeEvent;
 import org.eclipse.core.resources.IResourceChangeListener;
 import org.eclipse.core.resources.IResourceDelta;
 import org.eclipse.core.resources.IResourceDeltaVisitor;
+import org.eclipse.core.resources.IResourceVisitor;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
@@ -107,17 +109,67 @@ public class ResultFilesTracker implements INotifyChangedListener, IResourceChan
 	 */
 	public void synchronize() {
 		System.out.println("ResultFileTracker.synchronize()");
+		matchPattern("/xxx/demo1.sca", "*demo*");
 		// TODO: handle wildcards
 		//XXX also: must unload files which have been removed from Inputs
 		//FIXME for now, a primitive solution, TO BE REPLACED: unload everything
 		for (ResultFile file : manager.getFiles().toArray())
 			manager.unloadFile(file);
-		for (Object inputFileObj : inputs.getInputs()) {
-			String resourcePath = ((InputFile)inputFileObj).getName();
-			loadFile(resourcePath);
+		
+		List<InputFile> files = new ArrayList<InputFile>();
+		List<InputFile> wildcards = new ArrayList<InputFile>();
+		partitionInputFiles(files, wildcards);
+		
+		// load files specified by path
+		for (InputFile inputfile : files) {
+			loadFile(inputfile.getName());
+		}
+		// load files matching with patterns
+		if (wildcards.size() > 0) {
+			List<IFile> allFiles = getResultFiles();
+			for (IFile file : allFiles)
+				for (InputFile wildcard : wildcards)
+					if (matchFile(file, wildcard))
+						loadFile(file);
 		}
 	}
 	
+	private void partitionInputFiles(List<InputFile> files, List<InputFile> wildcards) {
+		for (InputFile inputfile : (List<InputFile>)inputs.getInputs()) {
+			if (containsWildcard(inputfile.getName()))
+				wildcards.add(inputfile);
+			else
+				files.add(inputfile);
+		}
+	}
+	
+	private boolean containsWildcard(String fileSpec) {
+		return fileSpec.indexOf('?') >= 0 || fileSpec.indexOf('*') >= 0;
+	}
+	
+	/**
+	 * Returns the list of result files in the workspace.
+	 */
+	private List<IFile> getResultFiles() {
+		final List<IFile> files = new ArrayList<IFile>();
+		IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
+		try {
+			root.accept(new IResourceVisitor() {
+				public boolean visit(IResource resource) throws CoreException {
+					if (resource instanceof IFile && isResultFile((IFile)resource)) {
+						files.add((IFile)resource);
+						return false;
+					}
+					return true;
+				}
+			});
+		} catch (CoreException e) { e.printStackTrace(); }
+		return files;
+	}
+	
+	/**
+	 * Loads the file specified by <code>resourcePath</code> into the ResultFileManager.
+	 */
 	private void loadFile(String resourcePath) {
 		if (resourcePath != null) {
 			IWorkspaceRoot workspaceRoot = ResourcesPlugin.getWorkspace().getRoot();
@@ -129,6 +181,9 @@ public class ResultFilesTracker implements INotifyChangedListener, IResourceChan
 		}
 	}
 	
+	/**
+	 * Loads the specified <code>file</code> into the ResultFileManager.
+	 */
 	private void loadFile(IFile file) {
 		System.out.println("loadFile: "+file);
 		if (isResultFile(file)) {
@@ -139,6 +194,10 @@ public class ResultFilesTracker implements INotifyChangedListener, IResourceChan
 			throw new RuntimeException("wrong file type:"+file.getFullPath()); //XXX proper error handling (e.g. remove file from Inputs?)
 	}
 	
+	/**
+	 * Unloads the specified <code>file</code> from the ResultFileManager.
+	 * Has no effect when the file was not loaded.
+	 */
 	private void unloadFile(IFile file) {
 		System.out.println("unloadFile: "+file);
 		ResultFile resultFile = manager.getFile(file.getFullPath().toString());
@@ -146,6 +205,9 @@ public class ResultFilesTracker implements INotifyChangedListener, IResourceChan
 			manager.unloadFile(resultFile);
 	}
 	
+	/**
+	 * Returns true iff <code>file</code> is a result file (scalar or vector).
+	 */
 	private boolean isResultFile(IFile file) {
 		try {
 			if (file.getContentDescription() != null) {
@@ -158,10 +220,69 @@ public class ResultFilesTracker implements INotifyChangedListener, IResourceChan
 		return false;
 	}
 	
+	/**
+	 * Return true iff the <code>file</code> matches any of the input files.
+	 */
 	private boolean inputsMatches(IFile file) {
 		for (InputFile inputfile : (List<InputFile>)inputs.getInputs())
-			if (inputfile.getName().equals(file.getFullPath().toString()))
+			if (matchFile(file, inputfile))
 				return true;
 		return false;
+	}
+	
+	/**
+	 * Returns true if the <code>workspaceFile</code> matches with the file specification
+	 * <code>inputFile</code>.
+	 */
+	private boolean matchFile(IFile workspaceFile, InputFile fileSpec) {
+		String filePattern = fileSpec.getName();
+		String filePath = workspaceFile.getFullPath().toString();
+		return matchPattern(filePath, filePattern);
+	}
+	
+	/**
+	 * Matches <code>str</code> against the given <code>pattern</code>.
+	 * The pattern may contain '?' (any char) and '*' (any char sequence) wildcards.
+	 */
+	private static boolean matchPattern(String str, String pattern) {
+		return matchPattern(str, 0, str.length(), pattern, 0, pattern.length());
+	}
+	
+	/**
+	 * Matches the given string segment with the given pattern segment.
+	 */
+	private static boolean matchPattern(String str, int strStart, int strEnd, String pattern, int patternStart, int patternEnd) {
+		while (strStart < strEnd && patternStart < patternEnd) {
+			char strChar = str.charAt(strStart);
+			char patternChar = pattern.charAt(patternStart);
+			
+			switch (patternChar) {
+			case '?':
+				++strStart;
+				++patternStart;
+				break;
+			case '*':
+				if (patternStart + 1 == patternEnd) // last char is '*'
+					return true;
+				if (pattern.charAt(patternStart + 1) == strChar) { // try to match '*' with empty string
+					boolean matches = matchPattern(str, strStart, strEnd, pattern, patternStart + 1, patternEnd);
+					if (matches)
+						return true;
+				}
+				// match '*' with strChar
+				++strStart;
+				break;
+			default:
+				if (strChar == patternChar) {
+					++strStart;
+					++patternStart;
+				}
+				else
+					return false;
+				break;
+			}
+		}
+		
+		return strStart == strEnd && patternStart == patternEnd;
 	}
 }
