@@ -119,7 +119,7 @@
  */
 #define Define_Module(CLASSNAME) \
   static cModule *CLASSNAME##__create() {return new CLASSNAME();} \
-  EXECUTE_ON_STARTUP(CLASSNAME##__mod, modtypes.instance()->add(new cModuleType(#CLASSNAME,#CLASSNAME,(ModuleCreateFunc)CLASSNAME##__create));)
+  EXECUTE_ON_STARTUP(CLASSNAME##__mod, componentTypes.instance()->add(new cModuleType(#CLASSNAME,#CLASSNAME,(ModuleCreateFunc)CLASSNAME##__create));)
 
 /**
  * Similar to Define_Module(), except that it couples the class with the
@@ -134,7 +134,7 @@
  */
 #define Define_Module_Like(CLASSNAME,INTERFACENAME) \
   static cModule *CLASSNAME##__create() {return new CLASSNAME();} \
-  EXECUTE_ON_STARTUP(CLASSNAME##__mod, modtypes.instance()->add(new cModuleType(#CLASSNAME,#INTERFACENAME,(ModuleCreateFunc)CLASSNAME##__create));)
+  EXECUTE_ON_STARTUP(CLASSNAME##__mod, componentTypes.instance()->add(new cModuleType(#CLASSNAME,#INTERFACENAME,(ModuleCreateFunc)CLASSNAME##__create));)
 
 /**
  * This macro facilitates the declaration of a simple module class, and

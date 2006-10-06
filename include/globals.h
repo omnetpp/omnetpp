@@ -31,7 +31,7 @@ class cModuleType;
 SIM_API extern cDefaultList defaultList;
 
 SIM_API extern cSingleton<cArray> nedDeclarations; ///< List of all NED declarations (cNEDDeclaration)
-SIM_API extern cSingleton<cArray> componentTypes;  ///< List of all component types (cComponentType)
+SIM_API extern cSingleton<cArray> componentTypes;  ///< List of all component types (cComponentType) FIXME C++ class registrations?
 SIM_API extern cSingleton<cArray> nedFunctions;    ///< List if all NED functions (cMathFunction and cNEDFunction)
 SIM_API extern cSingleton<cArray> classes;         ///< List of all classes that can be instantiated using createOne(); see cClassFactory and Register_Class() macro
 SIM_API extern cSingleton<cArray> enums;           ///< List of all enum objects (cEnum)
