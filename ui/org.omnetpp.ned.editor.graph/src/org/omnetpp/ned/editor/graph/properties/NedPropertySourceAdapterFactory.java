@@ -2,6 +2,7 @@ package org.omnetpp.ned.editor.graph.properties;
 
 import org.eclipse.core.runtime.IAdapterFactory;
 import org.eclipse.ui.views.properties.IPropertySource;
+import org.omnetpp.common.properties.PropertySource;
 import org.omnetpp.ned2.model.ChannelInterfaceNodeEx;
 import org.omnetpp.ned2.model.ChannelNodeEx;
 import org.omnetpp.ned2.model.CompoundModuleNodeEx;
@@ -42,10 +43,10 @@ public  class NedPropertySourceAdapterFactory implements IAdapterFactory {
                 adapter = new ChannelPropertySource((ChannelNodeEx)nedModel);
 
             if (nedModel instanceof ModuleInterfaceNodeEx) 
-                adapter = new NamedNedPropertySource((ModuleInterfaceNodeEx)nedModel);
+                adapter = new ModuleInterfacePropertySource((ModuleInterfaceNodeEx)nedModel);
 
             if (nedModel instanceof ChannelInterfaceNodeEx) 
-                adapter = new NamedNedPropertySource((ChannelInterfaceNodeEx)nedModel);
+                adapter = new ChannelInterfacePropertySource((ChannelInterfaceNodeEx)nedModel);
 
             // store the created adapter into the model so we can reuse it later
             if(adapter != null) 

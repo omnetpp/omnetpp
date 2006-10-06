@@ -14,11 +14,9 @@ import org.omnetpp.ned2.model.NEDElement;
 
 //TODO Colors cannot be edited by hand. A derived ColorCellEditor is required
 //TODO Some property needs a combo box cell editor
-//TODO an icon selector / editorcell must be implemented
+//TODO implement number celll editor
 //TODO multi line text cell editor must be implemented
 //TODO implement getColorProperty/Def too so unknown colors will be displayed as default
-//TODO we need a constructor where we can set a default DisplayPropertySource which is used as
-//   default if a tag is empty (it is coming from the ancestor type)
 abstract public class DisplayPropertySource extends AbstractNedPropertySource {
 
     // string parser for handling the parsing of the display string tags 
@@ -31,6 +29,8 @@ abstract public class DisplayPropertySource extends AbstractNedPropertySource {
 
     public DisplayPropertySource(NEDElement model) {
         super(model);
+        // by default we provide only  the single line display property editor
+        supportedProperties.add(DisplayString.Prop.DISPLAY);
     }
     
     /**
@@ -38,7 +38,7 @@ abstract public class DisplayPropertySource extends AbstractNedPropertySource {
      * @return The property descriptor used for the property
      */
     public static IPropertyDescriptor getPropertyDescriptor(DisplayString.Prop prop) {
-        // TODO we need separate property descriptors for integers and the Images
+        // TODO we need separate property descriptors for integers and texts
         PropertyDescriptor pdesc;
         if(prop.getType() == DisplayString.PropType.STRING)
             pdesc = new TextPropertyDescriptor(prop, prop.getVisibleName());
@@ -88,13 +88,21 @@ abstract public class DisplayPropertySource extends AbstractNedPropertySource {
 
     @Override
     public Object getEditableValue() {
-        return this.toString();
+        return toString();
     }
 
     // property request for property sheet
     @Override
     public Object getPropertyValue(Object propObj) {
+    	if (!(propObj instanceof DisplayString.Prop)) 
+    		return null;
+    	
+        // check if we requested the "sigle line" DISPLAY property
+        if(propObj == DisplayString.Prop.DISPLAY)
+        	return getEditableValue();
+
         DisplayString.Prop prop = (DisplayString.Prop)propObj;
+        // otherwise look for a single tag/attribute 
         String tagVal = displayString.getAsString(prop);
         // if the property does not exists yet, return default empty value
         if (tagVal == null) 
@@ -108,6 +116,16 @@ abstract public class DisplayPropertySource extends AbstractNedPropertySource {
 
     @Override
     public void setPropertyValue(Object propObj, Object value) {
+    	if (!(propObj instanceof DisplayString.Prop)) 
+    		return;
+    	
+        // check if we requested the "sigle line" DISPLAY property
+        if(propObj == DisplayString.Prop.DISPLAY) {
+        	displayString.set((String)value);
+        	return;
+        }
+
+        // otherwise set a single attribute
         DisplayString.Prop prop = (DisplayString.Prop)propObj;
         // if it is a color, convert it to string
         if(value instanceof RGB)
@@ -122,11 +140,29 @@ abstract public class DisplayPropertySource extends AbstractNedPropertySource {
 
     @Override
     public void resetPropertyValue(Object prop) {
+    	if (!(prop instanceof DisplayString.Prop)) 
+    		return;
+
+        // check if we requested the "sigle line" DISPLAY property, reset the whole display string
+        if(prop == DisplayString.Prop.DISPLAY) {
+        	displayString.set(null);
+        	return;
+        }
+
+        // set only a single attribute
         displayString.set((DisplayString.Prop)prop, null);
     }
 
     @Override
     public boolean isPropertySet(Object prop) {
+    	if (!(prop instanceof DisplayString.Prop)) 
+    		return false;
+
+        // check if we requested the "sigle line" DISPLAY property
+        if(prop == DisplayString.Prop.DISPLAY)
+            return !"".equals(displayString.toString()); 
+
+        // otherwise check a single attribute
         String val = displayString.getAsString((DisplayString.Prop)prop);
         return val != null && !DisplayString.TagInstance.EMPTY_VALUE.equals(val);
     }

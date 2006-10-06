@@ -92,6 +92,47 @@ public class ConnectionNodeEx extends ConnectionNode implements IDisplayStringPr
 		return "";
 	}
 
+	/**
+	 * @return Identifier of the source module instance the connection connected to
+	 */
+	public String getSrcModuleWithIndex() {
+		String module = getSrcModule();
+		if(getSrcModuleIndex() != null && !"".equals(getSrcModuleIndex()))
+			module += "["+getSrcModuleIndex()+"]";
+		
+		return module;
+	}
+	
+	/**
+	 * @return Identifier of the destination gate instance the connection connected to
+	 */
+	public String getDestModuleWithIndex() {
+		String module = getDestModule();
+		if(getDestModuleIndex() != null && !"".equals(getDestModuleIndex()))
+			module += "["+getDestModuleIndex()+"]";
+		
+		return module;
+	}
+	
+	/**
+	 * @return The fully qualified src gate name (with module, index, gate, index)
+	 */
+	public String getSrcGateFullyQualified() {
+		String result = getSrcModuleWithIndex();
+		if (!"".equals(result)) result += ".";
+		result += getSrcGateWithIndex();
+		return result;
+	}
+	/**
+	 * @return The fully qualified dest gate name (with module, index, gate, index)
+	 */
+	public String getDestGateFullyQualified() {
+		String result = getDestModuleWithIndex();
+		if (!"".equals(result)) result += ".";
+		result += getDestGateWithIndex();
+		return result;
+	}
+	
 	@Override
 	public void setDestModule(String val) {
 		setDestModuleRef(getSubmoduleByName(val));
@@ -107,9 +148,12 @@ public class ConnectionNodeEx extends ConnectionNode implements IDisplayStringPr
 	 */
 	public String getSrcGateWithIndex() {
 		String gate = getSrcGate();
+		if(getSrcGatePlusplus())
+			gate += "++";
 		if(getSrcGateIndex() != null && !"".equals(getSrcGateIndex()))
 			gate += "["+getSrcGateIndex()+"]";
-		
+		if(getSrcGateSubg() == NED_SUBGATE_I) gate+="$i";
+		if(getSrcGateSubg() == NED_SUBGATE_O) gate+="$o";
 		return gate;
 	}
 	
@@ -118,8 +162,12 @@ public class ConnectionNodeEx extends ConnectionNode implements IDisplayStringPr
 	 */
 	public String getDestGateWithIndex() {
 		String gate = getDestGate();
+		if(getDestGatePlusplus())
+			gate += "++";
 		if(getDestGateIndex() != null && !"".equals(getDestGateIndex()))
 			gate += "["+getDestGateIndex()+"]";
+		if(getDestGateSubg() == NED_SUBGATE_I) gate+="$i";
+		if(getDestGateSubg() == NED_SUBGATE_O) gate+="$o";
 		
 		return gate;
 	}

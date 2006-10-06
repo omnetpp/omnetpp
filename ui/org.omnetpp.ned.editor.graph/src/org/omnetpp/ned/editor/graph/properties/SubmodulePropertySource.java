@@ -1,33 +1,29 @@
 package org.omnetpp.ned.editor.graph.properties;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.EnumSet;
-import java.util.Set;
+import java.util.List;
 
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
-import org.eclipse.ui.views.properties.PropertyDescriptor;
-import org.eclipse.ui.views.properties.TextPropertyDescriptor;
+import org.eclipse.ui.views.properties.IPropertySource2;
 import org.omnetpp.common.displaymodel.DisplayString;
 import org.omnetpp.common.properties.EditableComboBoxPropertyDescriptor;
 import org.omnetpp.ned2.model.SubmoduleNodeEx;
 import org.omnetpp.resources.NEDResourcesPlugin;
 
-public class SubmodulePropertySource extends AbstractNedPropertySource {
+public class SubmodulePropertySource extends DelegatingPropertySource {
 
-    protected IPropertyDescriptor[] descriptors;
-    
-    public enum Prop { Name, Type, Display }
-
-    public static class SubmoduleDisplayPropertySource extends DisplayPropertySource {
-        protected static IPropertyDescriptor[] propertyDescArray;
+	// submodule specific display property desc
+    protected static class SubmoduleDisplayPropertySource extends DisplayPropertySource {
         protected SubmoduleNodeEx model;
-
 
         public SubmoduleDisplayPropertySource(SubmoduleNodeEx model) {
             super(model);
             this.model = model;
             setDisplayString(model.getDisplayString());
-            supportedProperties = EnumSet.range(DisplayString.Prop.X, 
-                                                DisplayString.Prop.TOOLTIP);
+            supportedProperties.addAll( EnumSet.range(DisplayString.Prop.X, 
+            										  DisplayString.Prop.TOOLTIP));
         }
 
         @Override
@@ -35,87 +31,75 @@ public class SubmodulePropertySource extends AbstractNedPropertySource {
             if(model != null)
                 setDisplayString(model.getDisplayString());
         }
-
     }
 
-    protected SubmoduleNodeEx model;
-    protected SubmoduleDisplayPropertySource submoduleDisplayPropertySource;
-    protected EditableComboBoxPropertyDescriptor typeProp;
+    // Submodule specific properties
+    protected static class BasePropertySource implements IPropertySource2 {
+        public enum Prop { Type  }
+        protected IPropertyDescriptor[] descriptors;
+        protected SubmoduleNodeEx model;
+        EditableComboBoxPropertyDescriptor typeProp;
 
-    
+        public BasePropertySource(SubmoduleNodeEx connectionNodeModel) {
+            model = connectionNodeModel;
+            
+            // set up property descriptors
+			typeProp = new EditableComboBoxPropertyDescriptor(Prop.Type, "type");
+            typeProp.setCategory("Base");
+            typeProp.setDescription("The type of the submodule");
+            
+            descriptors = new IPropertyDescriptor[] { typeProp };
+        }
+
+        public Object getEditableValue() {
+            return model.getType();
+        }
+
+        public IPropertyDescriptor[] getPropertyDescriptors() {
+        	//fill the connection combobox with types
+            List<String> moduleNames = new ArrayList<String>(NEDResourcesPlugin.getNEDResources().getModuleNames());
+            Collections.sort(moduleNames);
+            typeProp.setItems(moduleNames);
+            return descriptors;
+        }
+
+        public Object getPropertyValue(Object propName) {
+            if (Prop.Type.equals(propName))  
+                return model.getType(); 
+            
+            return null;
+        }
+
+        public void setPropertyValue(Object propName, Object value) {
+            if (Prop.Type.equals(propName)) 
+                model.setType((String)value);
+        }
+
+        public boolean isPropertySet(Object propName) {
+            if (Prop.Type.equals(propName)) 
+            	return !"".equals(model.getType()) && (model.getType() != null);
+
+            return false;
+        }
+
+        public void resetPropertyValue(Object propName) {
+            if (Prop.Type.equals(propName)) 
+            	model.setType(null);
+        }
+
+        public boolean isPropertyResettable(Object propName) {
+            return true;
+        }
+    }
+
     public SubmodulePropertySource(SubmoduleNodeEx submoduleNodeModel) {
         super(submoduleNodeModel);
-        model = submoduleNodeModel;
         // create a nested displayPropertySource
-        submoduleDisplayPropertySource = 
-            new SubmoduleDisplayPropertySource(model);
+
+        addPropertySource(new NamePropertySource(submoduleNodeModel));
+        addPropertySource(new BasePropertySource(submoduleNodeModel));
+        addPropertySource(new SubmoduleDisplayPropertySource(submoduleNodeModel));
         
-        // set up property descriptors
-        PropertyDescriptor nameProp = new TextPropertyDescriptor(Prop.Name, "Name");
-        PropertyDescriptor displayProp = new TextPropertyDescriptor(Prop.Display, "Display");
-        typeProp = new EditableComboBoxPropertyDescriptor(Prop.Type, "Type");
-        descriptors = new IPropertyDescriptor[] { nameProp, typeProp, displayProp };
-    }
-
-    @Override
-    public Object getEditableValue() {
-        // we don't need this if we don't want to embed this property source into an other propertysource
-        return model.getName();
-    }
-
-    @Override
-    public IPropertyDescriptor[] getPropertyDescriptors() {
-        // fill in the type combobox
-        Set<String> moduleNames = NEDResourcesPlugin.getNEDResources().getModuleNames();
-        // TODO sort the types alphabetically
-        typeProp.setItems(moduleNames);
-        
-        return descriptors;
-    }
-
-    @Override
-    public Object getPropertyValue(Object propName) {
-        if (Prop.Name.equals(propName)) { 
-            return model.getName(); 
-        }
-        if (Prop.Type.equals(propName)) { 
-            return model.getType(); 
-        }
-        if (Prop.Display.equals(propName)) { 
-            return submoduleDisplayPropertySource; 
-        }
-        return null;
-    }
-
-    @Override
-    public void setPropertyValue(Object propName, Object value) {
-        if (Prop.Name.equals(propName)) {
-            model.setName(value.toString());
-        }
-        if (Prop.Type.equals(propName)) {
-            model.setType(value.toString());
-        }
-        if (Prop.Display.equals(propName)) {
-            model.getDisplayString().set(value.toString());
-        }
-    }
-
-    @Override
-    public boolean isPropertySet(Object propName) {
-        return Prop.Name.equals(propName) || Prop.Type.equals(propName) ||
-            Prop.Display.equals(propName);
-    }
-
-    @Override
-    public void resetPropertyValue(Object propName) {
-        if (Prop.Display.equals(propName)) {
-            model.getDisplayString().set(null);
-        }
-    }
-
-    @Override
-    public boolean isPropertyResettable(Object propName) {
-        return Prop.Display.equals(propName);
     }
 
 }

@@ -14,6 +14,7 @@ import org.omnetpp.ned2.model.pojo.ConnectionNode;
  * model (to the compound module's connectios section) (or removes it if both the new source and destination is NULL)
  * @author rhornig
  */
+// TODO handling of subgates $i and $o is missing
 public class ConnectionCommand extends Command {
 
 	protected IConnectable oldSrcModule;

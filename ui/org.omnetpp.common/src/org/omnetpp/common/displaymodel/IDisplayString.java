@@ -9,7 +9,7 @@ public interface IDisplayString {
     /**
      *	Property types used in the display string
      */
-    public enum PropType { STRING, INTEGER, UNIT, COLOR, IMAGE }
+    public enum PropType { READONLY, STRING, INTEGER, UNIT, COLOR, IMAGE }
 
     /**
      * Tag names used in the display string
@@ -23,7 +23,7 @@ public interface IDisplayString {
      *
      */
     public enum PropGroup {
-        Position, Shape, Style, Image, Range, Text, Connection, Misc
+        Base, Position, Style, Image, Range, Text, Connection, Misc, Background
     }
 
     /**
@@ -32,6 +32,8 @@ public interface IDisplayString {
      * user readable name and description
      */
     public enum Prop {
+    	// PROPERTY representing the whole display string in a single line
+    	DISPLAY(null, 0, PropType.STRING, PropGroup.Base, "display", "Display properties of the object"),
         // SUBMODULE / SIMPLEMODULE propeties
         // do not change the first and last element of the property group
         X(Tag.p, 0, PropType.UNIT , PropGroup.Position , "x", "X position of the module"),
@@ -43,7 +45,7 @@ public interface IDisplayString {
         // B tag
         WIDTH(Tag.b, 0, PropType.UNIT, PropGroup.Position, "shape width", "Width of shape. Default: match the image size or shape height (-1)"),
         HEIGHT(Tag.b, 1, PropType.UNIT, PropGroup.Position, "shape height", "Height of shape. Default: match the image size or shape width (-1)"),
-        SHAPE(Tag.b, 2, PropType.STRING, PropGroup.Shape, "shape", "Shape of object (rect / rect2 / rrect / oval / tri / tri2 / hex / hex2). Default: rect"),
+        SHAPE(Tag.b, 2, PropType.STRING, PropGroup.Style, "shape", "Shape of object (rect / rect2 / rrect / oval / tri / tri2 / hex / hex2). Default: rect"),
         // former O tag
         FILLCOL(Tag.b, 3, PropType.COLOR, PropGroup.Style, "shape fill color", "Fill color of the shape. Default: light blue"),
         BORDERCOL(Tag.b, 4, PropType.COLOR, PropGroup.Style, "shape border color", "Border color of the shape. Default: black"),
@@ -87,17 +89,17 @@ public interface IDisplayString {
         // BGTT tag
         MODULE_TOOLTIP(Tag.bgtt, 0, PropType.STRING, PropGroup.Text, "background tooltip", "Tooltip to be displayed over the module's background"),
         // BGI tag
-        MODULE_IMAGE(Tag.bgi, 0, PropType.IMAGE, PropGroup.Image, "background image", "An image to be displayed as a module background"),
-        MODULE_IMAGEARRANGEMENT(Tag.bgi, 1, PropType.STRING, PropGroup.Image, "background arrangement", "How to arrange the module's background image (fix, tile, strech, center) Default: fix"),
+        MODULE_IMAGE(Tag.bgi, 0, PropType.IMAGE, PropGroup.Background, "background image", "An image to be displayed as a module background"),
+        MODULE_IMAGEARRANGEMENT(Tag.bgi, 1, PropType.STRING, PropGroup.Background, "background arrangement", "How to arrange the module's background image (fix, tile, stretch, center) Default: fix"),
         // BGG tag
-        MODULE_TICKDISTANCE(Tag.bgg, 0, PropType.UNIT, PropGroup.Misc, "background grid tick distance", "Distance between two major ticks measured in units"),
-        MODULE_TICKNUMBER(Tag.bgg, 1, PropType.INTEGER, PropGroup.Misc, "background grid tick number", "Number of minor ticks between two major one"),
-        MODULE_GRIDCOL(Tag.bgg, 3, PropType.COLOR, PropGroup.Style, "background grid color", "Color of grid"),
+        MODULE_TICKDISTANCE(Tag.bgg, 0, PropType.UNIT, PropGroup.Background, "background grid tick distance", "Distance between two major ticks measured in units"),
+        MODULE_TICKNUMBER(Tag.bgg, 1, PropType.INTEGER, PropGroup.Background, "background grid tick number", "Number of minor ticks between two major one"),
+        MODULE_GRIDCOL(Tag.bgg, 3, PropType.COLOR, PropGroup.Background, "background grid color", "Color of grid"),
         // module layouting (how to layout the freemoving submodules)
         MODULE_LAYOUT_SEED(Tag.bgl, 0, PropType.INTEGER, PropGroup.Misc, "layout seed","Seed value for layout algorithm"),
         MODULE_LAYOUT_ALGORITHM(Tag.bgl, 1, PropType.STRING, PropGroup.Misc, "layout algorithm","Algorithm for child layouting. Default: spring"),
         // module scaling mixel per unit
-        MODULE_SCALE(Tag.bgs, 0, PropType.UNIT, PropGroup.Misc, "background scaling", "Number of pixels per unit"),
+        MODULE_SCALE(Tag.bgs, 0, PropType.UNIT, PropGroup.Background, "background scaling", "Number of pixels per unit"),
         MODULE_UNIT(Tag.bgs, 1, PropType.STRING, PropGroup.Text, "background unit", "Name of measurement unit"),
         // END of COMPOUNDMODULE properties
         

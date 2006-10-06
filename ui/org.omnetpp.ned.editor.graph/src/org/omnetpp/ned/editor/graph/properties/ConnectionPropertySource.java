@@ -1,34 +1,33 @@
 package org.omnetpp.ned.editor.graph.properties;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.EnumSet;
+import java.util.List;
 
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
+import org.eclipse.ui.views.properties.IPropertySource2;
 import org.eclipse.ui.views.properties.PropertyDescriptor;
-import org.eclipse.ui.views.properties.TextPropertyDescriptor;
 import org.omnetpp.common.displaymodel.DisplayString;
+import org.omnetpp.common.properties.EditableComboBoxPropertyDescriptor;
 import org.omnetpp.ned2.model.ConnectionNodeEx;
+import org.omnetpp.resources.NEDResourcesPlugin;
 
-public class ConnectionPropertySource extends AbstractNedPropertySource {
+public class ConnectionPropertySource extends DelegatingPropertySource {
 
-    protected static IPropertyDescriptor[] descriptors;
-    
-    public enum Prop { Channel, SrcModule, DestModule , Display }
-
-    public static class ConnectionDisplayPropertySource extends DisplayPropertySource {
+    // Display property source
+    protected static class ConnectionDisplayPropertySource extends DisplayPropertySource {
         protected static IPropertyDescriptor[] propertyDescArray;
         protected ConnectionNodeEx model;
-
 
         public ConnectionDisplayPropertySource(ConnectionNodeEx model) {
             super(model);
             this.model = model;
             setDisplayString(model.getDisplayString());
             // define which properties should be displayed in the property sheet
-//            supportedProperties = EnumSet.range(DisplayString.Prop.ROUTING_MODE, 
-//                                                DisplayString.Prop.BENDPOINTS);
             // we do not support all properties currently, just colow, width ans style
-            supportedProperties = EnumSet.range(DisplayString.Prop.CONNECTION_COL, 
-                    DisplayString.Prop.CONNECTION_STYLE);
+            supportedProperties.addAll(EnumSet.range(DisplayString.Prop.CONNECTION_COL, 
+                    								 DisplayString.Prop.CONNECTION_STYLE));
             
             supportedProperties.addAll(EnumSet.range(DisplayString.Prop.TEXT, DisplayString.Prop.TEXTPOS));
             supportedProperties.add(DisplayString.Prop.TOOLTIP);
@@ -42,70 +41,86 @@ public class ConnectionPropertySource extends AbstractNedPropertySource {
 
     }
 
-    static {
-        PropertyDescriptor channelProp = new TextPropertyDescriptor(Prop.Channel, "Channel");
-        PropertyDescriptor displayProp = new TextPropertyDescriptor(Prop.Display, "Display");
-        descriptors = new IPropertyDescriptor[] { channelProp, displayProp };
+    // Connection specific properties
+    protected static class BasePropertySource implements IPropertySource2 {
+        public enum Prop { Channel, SrcGate, DestGate }
+        protected IPropertyDescriptor[] descriptors;
+        protected ConnectionNodeEx model;
+        EditableComboBoxPropertyDescriptor channelProp;
+
+        public BasePropertySource(ConnectionNodeEx connectionNodeModel) {
+            model = connectionNodeModel;
+            
+            // set up property descriptors
+			channelProp = new EditableComboBoxPropertyDescriptor(Prop.Channel, "channel");
+            channelProp.setCategory("Base");
+            channelProp.setDescription("The channel type of the connection");
+            
+            PropertyDescriptor srcGateProp = new PropertyDescriptor(Prop.SrcGate, "source-gate");
+            srcGateProp.setCategory("Base");
+            srcGateProp.setDescription("The source gate of the connection (read only)");
+
+            PropertyDescriptor destGateProp = new PropertyDescriptor(Prop.DestGate, "dest-gate");
+            destGateProp.setCategory("Base");
+            destGateProp.setDescription("The destination gate of the connection (read only)");
+
+            descriptors = new IPropertyDescriptor[] { channelProp, srcGateProp, destGateProp };
+        }
+
+        public Object getEditableValue() {
+            return this;
+        }
+
+        public IPropertyDescriptor[] getPropertyDescriptors() {
+        	//fill the connection combobox with channel types
+        	List<String> channelNames = new ArrayList<String>(NEDResourcesPlugin.getNEDResources().getChannelNames());
+        	Collections.sort(channelNames);
+  			channelProp.setItems(channelNames);
+            return descriptors;
+        }
+
+        public Object getPropertyValue(Object propName) {
+            if (Prop.Channel.equals(propName))  
+                return model.getChannelType(); 
+            
+            if (Prop.SrcGate.equals(propName))  
+                return model.getSrcGateFullyQualified(); 
+
+            if (Prop.DestGate.equals(propName))  
+                return model.getDestGateFullyQualified(); 
+            
+            return null;
+        }
+
+        public void setPropertyValue(Object propName, Object value) {
+            if (Prop.Channel.equals(propName)) 
+                model.setChannelType(value.toString());
+        }
+
+        public boolean isPropertySet(Object propName) {
+            if (Prop.Channel.equals(propName)) 
+            	return Prop.Channel.equals(propName) && !"".equals(model.getChannelType()) && (model.getChannelType() != null);
+
+            return false;
+        }
+
+        public void resetPropertyValue(Object propName) {
+            if (Prop.Channel.equals(propName)) 
+            	model.setChannelType(null);
+        }
+
+        public boolean isPropertyResettable(Object propName) {
+            return Prop.Channel.equals(propName);
+        }
     }
 
-    protected ConnectionNodeEx model;
-    protected ConnectionDisplayPropertySource connectionDisplayPropertySource;
-    
+    // constructor 
     public ConnectionPropertySource(ConnectionNodeEx connectionNodeModel) {
         super(connectionNodeModel);
-        model = connectionNodeModel;
-        // create a nested displayPropertySource
-        connectionDisplayPropertySource = 
-            new ConnectionDisplayPropertySource(model);
+        // create a nested displayPropertySources
+        addPropertySource(new BasePropertySource(connectionNodeModel));	
+        addPropertySource(new ConnectionDisplayPropertySource(connectionNodeModel));
+        
     }
-
-    @Override
-    public Object getEditableValue() {
-        // we don't need this if we don't want to embed this property source into an other propertysource
-        return model.toString();
-    }
-
-    @Override
-    public IPropertyDescriptor[] getPropertyDescriptors() {
-        return descriptors;
-    }
-
-    @Override
-    public Object getPropertyValue(Object propName) {
-        if (Prop.Channel.equals(propName)) { 
-            return model.getChannelType(); 
-        }
-        if (Prop.Display.equals(propName)) { 
-            return connectionDisplayPropertySource; 
-        }
-        return null;
-    }
-
-    @Override
-    public void setPropertyValue(Object propName, Object value) {
-        if (Prop.Channel.equals(propName)) {
-            model.setChannelType(value.toString());
-        }
-        if (Prop.Display.equals(propName)) {
-            model.getDisplayString().set(value.toString());
-        }
-    }
-
-    @Override
-    public boolean isPropertySet(Object propName) {
-        return Prop.Channel.equals(propName) || Prop.Display.equals(propName);
-    }
-
-    @Override
-    public void resetPropertyValue(Object propName) {
-        if (Prop.Display.equals(propName)) {
-            model.getDisplayString().set(null);
-        }
-    }
-
-    @Override
-    public boolean isPropertyResettable(Object propName) {
-        return Prop.Display.equals(propName);
-    }
-
 }
+
