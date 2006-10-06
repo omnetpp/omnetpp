@@ -63,26 +63,22 @@ akaroarng.obj: akaroarng.cc \
   ../../include/cexception.h \
   akaroarng.h \
   ../../include/defs.h \
+  ../../include/regmacros.h \
+  ../../include/onstartup.h \
+  ../../include/errmsg.h \
   ../../include/opp_string.h \
-  ../../include/macros.h \
   ../../include/crng.h \
   ../../include/cconfig.h \
-  ../../include/onstartup.h \
-  ../../include/carray.h \
-  ../../include/ctypes.h \
-  ../../include/cobject.h \
-  ../../include/cpolymorphic.h \
-  ../../include/cvisitor.h \
-  ../../include/globals.h
+  ../../include/cpolymorphic.h
 akoutvectormgr.obj: akoutvectormgr.cc \
   ../../include/cenvir.h \
   omnetapp.h \
-  ../../include/csimul.h \
   ../../include/cmodule.h \
   ../../include/cstat.h \
-  ../../include/macros.h \
   akoutvectormgr.h \
   ../../include/defs.h \
+  ../../include/regmacros.h \
+  ../../include/onstartup.h \
   ../../include/carray.h \
   ../../include/globals.h \
   ../../include/cexception.h \
@@ -95,23 +91,25 @@ akoutvectormgr.obj: akoutvectormgr.cc \
   ../../include/util.h \
   ../../include/cpolymorphic.h \
   ../../include/cvisitor.h \
-  ../../include/onstartup.h \
-  ../../include/opp_string.h \
+  ../../include/cstringpool.h \
+  ../../include/cclassfactory.h \
   ../../include/errmsg.h \
+  ../../include/opp_string.h \
+  ../../include/unistd.h \
+  ../../include/ccomponent.h \
+  ../../include/cgate.h \
+  ../../include/csimulation.h \
+  ../../include/cdefaultlist.h \
   ../../include/cmsgheap.h \
   ../../include/ccoroutine.h \
-  ../../include/coutvect.h \
-  ../../include/cqueue.h \
-  ../../include/cgate.h \
-  ../../include/cdefaultlist.h \
-  ../../include/ctypes.h \
   filemgrs.h
 args.obj: args.cc \
   args.h \
   envdefs.h \
-  ../../include/defs.h
+  ../../include/defs.h \
+  ../../include/regmacros.h \
+  ../../include/onstartup.h
 cenvir.obj: cenvir.cc \
-  ../../include/ctypes.h \
   args.h \
   ../../include/distrib.h \
   cinifile.h \
@@ -124,32 +122,34 @@ cenvir.obj: cenvir.cc \
   filemgrs.h \
   akaroarng.h \
   akoutvectormgr.h \
+  envdefs.h \
   ../../include/defs.h \
-  ../../include/globals.h \
-  ../../include/cobject.h \
+  ../../include/regmacros.h \
   ../../include/onstartup.h \
+  ../../include/random.h \
+  ../../include/csimulation.h \
+  ../../include/crng.h \
   ../../include/util.h \
+  ../../include/globals.h \
+  ../../include/cmsgheap.h \
+  ../../include/ccoroutine.h \
+  ../../include/carray.h \
+  ../../include/cclassfactory.h \
+  ../../include/cobject.h \
   ../../include/cpolymorphic.h \
   ../../include/cexception.h \
   ../../include/cvisitor.h \
-  ../../include/opp_string.h \
-  envdefs.h \
-  ../../include/random.h \
-  ../../include/csimul.h \
-  ../../include/crng.h \
+  ../../include/cstringpool.h \
   ../../include/errmsg.h \
-  ../../include/cmsgheap.h \
-  ../../include/ccoroutine.h \
-  ../../include/coutvect.h \
+  ../../include/opp_string.h \
   ../../include/cconfig.h \
   patmatch.h \
-  ../../include/carray.h \
   ../../include/envirext.h \
   ../../include/platdep/time.h \
-  ../../include/cqueue.h \
+  ../../include/unistd.h \
+  ../../include/ccomponent.h \
   ../../include/cgate.h \
-  ../../include/cdefaultlist.h \
-  ../../include/macros.h
+  ../../include/cdefaultlist.h
 cinifile.obj: cinifile.cc \
   ../../include/cenvir.h \
   ../../include/util.h \
@@ -160,10 +160,14 @@ cinifile.obj: cinifile.cc \
   ../../include/platdep/fileutil.h \
   ../../include/cstrtokenizer.h \
   ../../include/defs.h \
+  ../../include/regmacros.h \
+  ../../include/onstartup.h \
   envdefs.h \
   ../../include/cconfig.h \
   ../../include/opp_string.h \
-  ../../include/cpolymorphic.h
+  ../../include/cpolymorphic.h \
+  ../../include/errmsg.h \
+  ../../include/unistd.h
 cxmldoccache.obj: cxmldoccache.cc \
   ../../include/cpolymorphic.h \
   cxmldoccache.h \
@@ -172,7 +176,10 @@ cxmldoccache.obj: cxmldoccache.cc \
   ../nedxml/saxparser.h \
   ../../include/defs.h \
   ../../include/util.h \
+  ../../include/regmacros.h \
+  ../../include/onstartup.h \
   envdefs.h \
+  ../../include/errmsg.h \
   ../../include/opp_string.h
 filemgrs.obj: filemgrs.cc \
   ../../include/defs.h \
@@ -180,11 +187,12 @@ filemgrs.obj: filemgrs.cc \
   ../../include/platdep/misc.h \
   ../../include/cenvir.h \
   omnetapp.h \
-  ../../include/csimul.h \
   ../../include/cmodule.h \
   ../../include/cstat.h \
-  ../../include/macros.h \
   filemgrs.h \
+  ../../include/regmacros.h \
+  ../../include/onstartup.h \
+  ../../include/unistd.h \
   ../../include/carray.h \
   ../../include/globals.h \
   ../../include/cexception.h \
@@ -196,16 +204,16 @@ filemgrs.obj: filemgrs.cc \
   ../../include/util.h \
   ../../include/cpolymorphic.h \
   ../../include/cvisitor.h \
-  ../../include/onstartup.h \
-  ../../include/opp_string.h \
+  ../../include/cstringpool.h \
+  ../../include/cclassfactory.h \
   ../../include/errmsg.h \
-  ../../include/cmsgheap.h \
-  ../../include/ccoroutine.h \
-  ../../include/coutvect.h \
-  ../../include/cqueue.h \
+  ../../include/opp_string.h \
+  ../../include/ccomponent.h \
   ../../include/cgate.h \
+  ../../include/csimulation.h \
   ../../include/cdefaultlist.h \
-  ../../include/ctypes.h
+  ../../include/cmsgheap.h \
+  ../../include/ccoroutine.h
 fsutils.obj: fsutils.cc \
   fsutils.h \
   ../../include/platdep/misc.h \
@@ -214,7 +222,10 @@ fsutils.obj: fsutils.cc \
   ../../include/cexception.h \
   ../../include/util.h \
   ../../include/opp_string.h \
-  ../../include/defs.h
+  ../../include/defs.h \
+  ../../include/regmacros.h \
+  ../../include/unistd.h \
+  ../../include/errmsg.h
 main.obj: main.cc \
   ../../include/cobject.h \
   ../../include/cenvir.h \
@@ -224,15 +235,17 @@ main.obj: main.cc \
   ../../include/cpolymorphic.h \
   ../../include/cexception.h \
   ../../include/cvisitor.h \
+  ../../include/cstringpool.h \
+  ../../include/regmacros.h \
+  ../../include/onstartup.h \
+  ../../include/errmsg.h \
   ../../include/opp_string.h
 omnetapp.obj: omnetapp.cc \
   args.h \
   omnetapp.h \
   patmatch.h \
   fsutils.h \
-  ../../include/ctypes.h \
   ../../include/ccoroutine.h \
-  ../../include/csimul.h \
   ../../include/cscheduler.h \
   ../../include/cpar.h \
   ../../include/random.h \
@@ -249,6 +262,8 @@ omnetapp.obj: omnetapp.cc \
   ../../include/platdep/fileglobber.c \
   envdefs.h \
   ../../include/defs.h \
+  ../../include/regmacros.h \
+  ../../include/onstartup.h \
   ../../include/carray.h \
   ../../include/globals.h \
   ../../include/cenvir.h \
@@ -259,23 +274,32 @@ omnetapp.obj: omnetapp.cc \
   ../../include/util.h \
   ../../include/cpolymorphic.h \
   ../../include/cvisitor.h \
-  ../../include/onstartup.h \
-  ../../include/opp_string.h \
+  ../../include/cstringpool.h \
+  ../../include/cclassfactory.h \
   ../../include/errmsg.h \
+  ../../include/opp_string.h \
+  ../../include/cexpression.h \
+  ../../include/csimulation.h \
   ../../include/cmsgheap.h \
-  ../../include/coutvect.h \
-  ../../include/cqueue.h \
+  ../../include/ccomponent.h \
   ../../include/cgate.h \
-  ../../include/cdefaultlist.h
+  ../../include/cdefaultlist.h \
+  ../../include/unistd.h
 patmatch.obj: patmatch.cc \
   patmatch.h \
   ../../include/cexception.h \
   ../../include/defs.h \
   envdefs.h \
+  ../../include/regmacros.h \
+  ../../include/onstartup.h \
+  ../../include/errmsg.h \
   ../../include/opp_string.h \
   ../../include/util.h
 speedmtr.obj: speedmtr.cc \
   speedmtr.h \
   ../../include/defs.h \
   envdefs.h \
-  ../../include/platdep/time.h
+  ../../include/platdep/time.h \
+  ../../include/regmacros.h \
+  ../../include/onstartup.h \
+  ../../include/unistd.h

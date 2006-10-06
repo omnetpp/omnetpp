@@ -21,7 +21,6 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "ctypes.h"
 #include "args.h"
 #include "distrib.h"
 #include "cinifile.h"
