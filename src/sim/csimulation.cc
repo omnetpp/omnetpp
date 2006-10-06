@@ -236,7 +236,8 @@ void cSimulation::setScheduler(cScheduler *sched)
 void cSimulation::loadNedFile(const char *nedfile)
 {
 #ifdef WITH_NETBUILDER
-    ::loadNedFile(nedfile, false);
+//FIXME
+//    ::loadNedFile(nedfile, false);
 #else
     throw new cRuntimeError("cannot load `%s': simulation kernel was compiled without "
                             "support for dynamic loading of NED files (WITH_NETBUILDER=no)", nedfile);
