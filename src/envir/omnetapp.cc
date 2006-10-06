@@ -29,9 +29,8 @@
 #include "patmatch.h"
 #include "fsutils.h"
 
-#include "ctypes.h"
 #include "ccoroutine.h"
-#include "csimul.h"
+#include "csimulation.h"
 #include "cscheduler.h"
 #include "cpar.h"
 #include "random.h"
@@ -242,6 +241,7 @@ void TOmnetApp::printHelp()
 
     ev << "The following components are available:\n";
 
+/*FIXME
     if (networks.instance()->items()>0)
     {
         ev << "  networks:\n";
@@ -268,6 +268,7 @@ void TOmnetApp::printHelp()
             ev << "    " << iter3()->name() << '\n';
         ev << "\n";
     }
+*/
 }
 
 const char *TOmnetApp::getRunSectionName(int runnumber)
@@ -582,7 +583,8 @@ void TOmnetApp::readPerRunOptions(int run_no)
     opt_cputimelimit = (long)cfg->getAsTime2(section, "General", "cpu-time-limit", 0.0);
     opt_netifcheckfreq = cfg->getAsInt2(section, "General", "netif-check-freq", 1);
 
-    cModule::pause_in_sendmsg = opt_pause_in_sendmsg;
+//FIXME this option to be removed from OmnetApp
+//    cModule::pause_in_sendmsg = opt_pause_in_sendmsg;
 
     // run RNG self-test
     cRNG *testrng;
@@ -807,7 +809,7 @@ void TOmnetApp::displayError(cException *e)
     if (e->moduleID()==-1)  //FIXME revise condition
         ev.printfmsg("Error: %s.", e->message());
     else
-        ev.printfmsg("Error in module (%s) %s: %s.", e->moduleClassName(), e->moduleFullPath(), e->message());
+        ev.printfmsg("Error in module (%s) %s: %s.", e->contextClassName(), e->contextFullPath(), e->message());
 }
 
 void TOmnetApp::displayMessage(cException *e)
@@ -815,7 +817,7 @@ void TOmnetApp::displayMessage(cException *e)
     if (e->moduleID()==-1)  //FIXME revise condition
         ev.printfmsg("%s.", e->message());
     else
-        ev.printfmsg("Module (%s) %s: %s.", e->moduleClassName(), e->moduleFullPath(), e->message());
+        ev.printfmsg("Module (%s) %s: %s.", e->contextClassName(), e->contextFullPath(), e->message());
 }
 
 bool TOmnetApp::idle()

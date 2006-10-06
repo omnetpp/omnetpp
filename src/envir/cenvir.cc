@@ -296,10 +296,10 @@ void cEnvir::messageDelivered( cMessage *msg )
     app->messageDelivered( msg );
 }
 
-void cEnvir::moduleMethodCalled(cModule *from, cModule *to, const char *method)
+void cEnvir::methodCalled(cComponent *from, cComponent *to, const char *method)
 {
     if (disable_tracing) return;
-    app->moduleMethodCalled(from, to, method);
+    app->moduleMethodCalled((cModule *)from, (cModule *)to, method); // FIXME change OmnetApp method signature too
 }
 
 void cEnvir::objectDeleted( cObject *obj )

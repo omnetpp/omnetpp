@@ -27,10 +27,9 @@
 #include "platdep/misc.h"
 #include "cenvir.h"
 #include "omnetapp.h"
-#include "csimul.h"
+#include "csimulation.h"
 #include "cmodule.h"
 #include "cstat.h"
-#include "macros.h"
 #include "filemgrs.h"
 
 using std::ostream;
@@ -249,7 +248,7 @@ void cFileOutputScalarManager::init()
     if (!initialized)
     {
         initialized = true;
-        fprintf(f,"run %d \"%s\"\n", simulation.runNumber(), simulation.networkType()->name());
+        fprintf(f,"run %d \"%s\"\n", simulation.runNumber(), "FIXME" /*simulation.networkType()->name()*/ ); //FIXME
     }
 }
 

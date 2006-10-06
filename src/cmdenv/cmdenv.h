@@ -19,8 +19,7 @@
 #ifndef __CMDENV_H
 #define __CMDENV_H
 
-#include "ctypes.h"
-#include "csimul.h"
+#include "csimulation.h"
 #include "omnetapp.h"
 #include <signal.h>
 

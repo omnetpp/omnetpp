@@ -210,7 +210,7 @@ int TCmdenvApp::run()
             readPerRunOptions(run_nr());
 
             // find network
-            cNetworkType *network = findNetwork(opt_network_name.c_str());
+            cNetworkType *network = NULL; //FIXME findNetwork(opt_network_name.c_str());
             if (!network)
                 throw new cRuntimeError("Network `%s' not found, check .ini and .ned files", opt_network_name.c_str());
 

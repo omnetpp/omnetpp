@@ -101,7 +101,17 @@ eventlogtool.obj: eventlogtool.cc \
   eventlogentries.h \
   messagedependency.h \
   filteredevent.h
-filteredevent.obj: filteredevent.cc
+filteredevent.obj: filteredevent.cc \
+  filteredevent.h \
+  filteredeventlog.h \
+  eventlogdefs.h \
+  event.h \
+  eventlogentry.h \
+  eventlogentries.h \
+  messagedependency.h \
+  eventlog.h \
+  stringpool.h \
+  eventlogindex.h
 filteredeventlog.obj: filteredeventlog.cc \
   filteredeventlog.h \
   eventlogdefs.h \

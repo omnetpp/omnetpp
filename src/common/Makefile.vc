@@ -46,3 +46,18 @@ clean:
 
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
+exception.obj: exception.cc \
+  exception.h
+filereader.obj: filereader.cc \
+  filereader.h \
+  exception.h
+filetokenizer.obj: filetokenizer.cc \
+  filetokenizer.h
+linetokenizer.obj: linetokenizer.cc \
+  exception.h \
+  linetokenizer.h
+stringtokenizer.obj: stringtokenizer.cc \
+  stringtokenizer.h
+util.obj: util.cc \
+  util.h \
+  exception.h
