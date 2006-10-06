@@ -74,6 +74,7 @@ long Event::parse(FileReader *reader, long offset)
         char *line = reader->readLine();
 
         if (!line) {
+            EASSERT(eventEntry);
             endOffset = reader->fileSize();
             return endOffset;
         }
@@ -89,6 +90,8 @@ long Event::parse(FileReader *reader, long offset)
         else if (readEventEntry)
             break; // stop at the start of next event
 
+        EASSERT(eventEntry);
+
         if (eventLogEntry)
             eventLogEntries.push_back(eventLogEntry);
 
@@ -98,7 +101,6 @@ long Event::parse(FileReader *reader, long offset)
     }
 
     //printf("*** Parsed event: %ld\n", getEventNumber());
-
     return endOffset = reader->lineStartOffset();
 }
 

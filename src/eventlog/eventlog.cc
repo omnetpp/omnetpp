@@ -179,13 +179,20 @@ Event *EventLog::getEventForBeginOffset(long offset)
 
     OffsetToEventMap::iterator it = offsetToEventMap.find(offset);
 
+    long eventNumber, lineStartOffset, lineEndOffset;
+    simtime_t simulationTime;
+
     if (it != offsetToEventMap.end())
         return it->second;
-    else
+    else if (readToFirstEventLine(offset, eventNumber, simulationTime, lineStartOffset, lineEndOffset))
     {
         Event *event = new Event(this);
         event->parse(reader, offset);
         return cacheEvent(event);
+    }
+    else {
+        offsetToEventMap[offset] = NULL;
+        return NULL;
     }
 }
 

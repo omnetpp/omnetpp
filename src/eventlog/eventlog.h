@@ -57,7 +57,13 @@ class EventLog : public IEventLog, public EventLogIndex
 
         void parseInitializationLogEntries();
 
+        /**
+         * Returns the event exactly starting at the given offset or NULL if there's no such event.
+         */
         Event *getEventForBeginOffset(long offset);
+        /**
+         * Returns the event exactly ending at the given offset or NULL if there's no such event.
+         */
         Event *getEventForEndOffset(long offset);
 
         // IEventLog interface

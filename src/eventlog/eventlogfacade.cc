@@ -64,20 +64,27 @@ EventLogEntry *EventLogFacade::getLastEventLogTableEntry()
 
 EventLogEntry *EventLogFacade::getEventLogTableEntryAndDistance(EventLogEntry *sourceEventLogEntry, EventLogEntry *targetEventLogEntry, long distance, long& reachedDistance)
 {
+    EASSERT(sourceEventLogEntry);
     EventLogEntry *eventLogEntry = sourceEventLogEntry;
     reachedDistance = 0;
 
     int index = getEventLogTableEntryIndexInEvent(eventLogEntry);
-    while (distance && eventLogEntry != targetEventLogEntry) {
+    EASSERT(index >= 0);
+
+    while (distance && eventLogEntry && eventLogEntry != targetEventLogEntry) {
         if (distance > 0) {
             eventLogEntry = getNextEventLogTableEntry(eventLogEntry, index);
             distance--;
-            reachedDistance++;
+
+            if (eventLogEntry)
+                reachedDistance++;
         }
         else {
             eventLogEntry = getPreviousEventLogTableEntry(eventLogEntry, index);
             distance++;
-            reachedDistance--;
+
+            if (eventLogEntry)
+                reachedDistance--;
         }
     }
 
