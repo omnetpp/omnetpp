@@ -85,21 +85,25 @@ public abstract class CachingCanvas extends LargeScrollableCanvas {
 			// draw missing tiles
 			for (LargeRect lrect : missingAreas) {
 				Rectangle rect = new Rectangle((int)(lrect.x-getViewportLeft()), (int)(lrect.y-getViewportTop()), (int)lrect.width, (int)lrect.height);
-				Image image = new Image(getDisplay(), rect);
-				GC imgc = new GC(image);
-				Graphics imgraphics = new SWTGraphics(imgc);  // we need to use Graphics because GC doesn't have translate() support
-				imgraphics.translate(-rect.x, -rect.y);
-				imgraphics.setClip(new org.eclipse.draw2d.geometry.Rectangle(rect));
 
-				paintCachableLayer(imgraphics);
-
-				imgraphics.dispose();
-				imgc.dispose();
-				
-				// draw the image on the screen, and also add it to the cache
-				gc.drawImage(image, rect.x, rect.y);
-				tileCache.add(lrect, image);
-				debugDrawTile(gc, lrect, new Color(null,255,0,0));
+				if (!rect.isEmpty())
+				{
+					Image image = new Image(getDisplay(), rect);
+					GC imgc = new GC(image);
+					Graphics imgraphics = new SWTGraphics(imgc);  // we need to use Graphics because GC doesn't have translate() support
+					imgraphics.translate(-rect.x, -rect.y);
+					imgraphics.setClip(new org.eclipse.draw2d.geometry.Rectangle(rect));
+	
+					paintCachableLayer(imgraphics);
+	
+					imgraphics.dispose();
+					imgc.dispose();
+					
+					// draw the image on the screen, and also add it to the cache
+					gc.drawImage(image, rect.x, rect.y);
+					tileCache.add(lrect, image);
+					debugDrawTile(gc, lrect, new Color(null,255,0,0));
+				}
 			}
 
 			// paint items that we don't want to cache
