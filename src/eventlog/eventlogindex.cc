@@ -56,7 +56,9 @@ long EventLogIndex::getLastEventNumber()
     
             if (readToFirstEventLine(readStartOffset, lastEventNumber, lastSimulationTime, lineStartOffset, lineEndOffset))
             {
-                while (readToFirstEventLine(readStartOffset, lastEventNumber, lastSimulationTime, lineStartOffset, readStartOffset));
+                long eventNumber;
+                while (readToFirstEventLine(readStartOffset, eventNumber, lastSimulationTime, lineStartOffset, readStartOffset))
+                    lastEventNumber = eventNumber;
                 break;
             }
         }

@@ -26,7 +26,6 @@ Event::Event(EventLog *eventLog)
 
     beginOffset = -1;
     endOffset = -1;
-    numEventLogMessages = 0;
     eventEntry = NULL;
     cause = NULL;
     causes = NULL;
@@ -56,6 +55,11 @@ Event::~Event()
     }
 }
 
+IEventLog *Event::getEventLog()
+{
+    return eventLog;
+}
+
 long Event::parse(FileReader *reader, long offset)
 {
     if (eventEntry)
@@ -69,10 +73,12 @@ long Event::parse(FileReader *reader, long offset)
     {
         char *line = reader->readLine();
 
-        if (!line)
-            return reader->fileSize();
+        if (!line) {
+            endOffset = reader->fileSize();
+            return endOffset;
+        }
 
-        EventLogEntry *eventLogEntry = EventLogEntry::parseEntry(line);
+        EventLogEntry *eventLogEntry = EventLogEntry::parseEntry(this, line);
         EventEntry *readEventEntry = dynamic_cast<EventEntry *>(eventLogEntry);
 
         // first line is an event entry
@@ -86,8 +92,9 @@ long Event::parse(FileReader *reader, long offset)
         if (eventLogEntry)
             eventLogEntries.push_back(eventLogEntry);
 
-        if (dynamic_cast<EventLogMessage *>(eventLogEntry))
-            numEventLogMessages++;
+        EventLogMessage *eventLogMessage = dynamic_cast<EventLogMessage *>(eventLogEntry);
+        if (eventLogMessage)
+            eventLogMessages.push_back(eventLogMessage);
     }
 
     //printf("*** Parsed event: %ld\n", getEventNumber());
@@ -101,24 +108,6 @@ void Event::print(FILE *file)
     {
         EventLogEntry *eventLogEntry = *it;
         eventLogEntry->print(file);
-    }
-}
-
-EventLogMessage *Event::getEventLogMessage(int index)
-{
-    int i = 0;
-
-    for (EventLogEntryList::iterator it = eventLogEntries.begin(); it != eventLogEntries.end(); it++)
-    {
-        EventLogMessage *eventLogMessage = dynamic_cast<EventLogMessage *>(*it);
-
-        if (eventLogMessage)
-        {
-            if (i == index)
-                return eventLogMessage;
-
-            i++;
-        }
     }
 }
 

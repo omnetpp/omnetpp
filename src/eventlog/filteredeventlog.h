@@ -78,7 +78,9 @@ class FilteredEventLog : public IEventLog
         virtual FilteredEvent *getEventForEventNumber(long eventNumber, MatchKind matchKind = EXACT);
         virtual FilteredEvent *getEventForSimulationTime(simtime_t simulationTime, MatchKind matchKind = EXACT);
 
-        virtual long getNumEventsApproximation();
+        virtual long getApproximateNumberOfEvents();
+        virtual double getApproximatePercentageForEventNumber(long eventNumber);
+        virtual FilteredEvent *getApproximateEventAt(double percentage);
 
         virtual void printInitializationLogEntries(FILE *file = stdout) {  eventLog->printInitializationLogEntries(file); }
 

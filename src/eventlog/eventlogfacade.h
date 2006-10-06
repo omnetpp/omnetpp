@@ -33,15 +33,28 @@ class EventLogFacade
 {
     protected:
         IEventLog *eventLog;
+        long approximateNumberOfEventLogTableEntries;
 
     public:
         EventLogFacade(IEventLog *eventLog);
 
-        IEvent *getNthEventInDirection(IEvent *event, bool forward = true, long distance = 1);
+        IEvent *getNeighbourEvent(IEvent *event, long distance = 1);
 
-        void getEventLogEntryForEventLogTableRowIndex(long fixPointEventNumber, long fixPointLineNumber, long lineNumber, IEvent **event, EventLogEntry **eventLogEntry);
-        IEvent *getEventForEventLogTableRowIndex(long fixPointEventNumber, long fixPointLineNumber, long lineNumber);
-        EventLogEntry *getEventLogEntryForEventLogTableRowIndex(long fixPointEventNumber, long fixPointLineNumber, long lineNumber);
+        // EventLogTable interface
+		EventLogEntry *getFirstEventLogTableEntry();
+		EventLogEntry *getLastEventLogTableEntry();
+        EventLogEntry *getPreviousEventLogTableEntry(EventLogEntry *eventLogEntry, int& index);
+        EventLogEntry *getNextEventLogTableEntry(EventLogEntry *eventLogEntry, int& index);
+        int getEventLogTableEntryIndexInEvent(EventLogEntry *eventLogEntry);
+        EventLogEntry *getEventLogTableEntryInEvent(IEvent *event, int index);
+        EventLogEntry *getEventLogTableEntryAndDistance(EventLogEntry *sourceEventLogEntry, EventLogEntry *targetEventLogEntry, long distance, long& reachedDistance);
+		long getDistanceToEventLogTableEntry(EventLogEntry *sourceEventLogEntry, EventLogEntry *targetEventLogEntry, long limit);
+		long getDistanceToFirstEventLogTableEntry(EventLogEntry *eventLogEntry, long limit);
+		long getDistanceToLastEventLogTableEntry(EventLogEntry *eventLogEntry, long limit);
+		EventLogEntry *getNeighbourEventLogTableEntry(EventLogEntry *eventLogEntry, long distance);
+        double getApproximatePercentageForEventLogTableEntry(EventLogEntry *eventLogEntry);
+		EventLogEntry *getApproximateEventLogEntryTableAt(double percentage);
+		long getApproximateNumberOfEventLogTableEntries();
 };
 
 #endif

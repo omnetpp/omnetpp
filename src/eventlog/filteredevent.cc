@@ -45,6 +45,11 @@ FilteredEvent::~FilteredEvent()
     }
 }
 
+IEventLog *FilteredEvent::getEventLog()
+{
+    return filteredEventLog;
+}
+
 IEvent *FilteredEvent::getEvent()
 {
     return filteredEventLog->getEventLog()->getEventForEventNumber(eventNumber);

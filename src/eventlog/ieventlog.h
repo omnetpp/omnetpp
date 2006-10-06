@@ -52,8 +52,11 @@ class IEventLog
 
         /**
          * Returns the approximate number of events present in the log.
+         * This value may be less, equal or greater than the real number of events.
          */
-        virtual long getNumEventsApproximation() = 0;
+        virtual long getApproximateNumberOfEvents() = 0;
+        virtual double getApproximatePercentageForEventNumber(long eventNumber) = 0;
+        virtual IEvent *getApproximateEventAt(double percentage) = 0;
 
         /**
          * Prints initialization entries present before the first event.

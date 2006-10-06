@@ -16,6 +16,7 @@
 #define __EVENT_H_
 
 #include <sstream>
+#include <algorithm>
 #include <vector>
 #include "ievent.h"
 #include "filereader.h"
@@ -38,10 +39,12 @@ class Event : public IEvent
         long beginOffset; // file offset where the event starts
         long endOffset; // file offset where the event ends (ie. begin of next event)
         EventEntry *eventEntry; // the event log entry that corresponds to the actual event ("E" line)
-        int numEventLogMessages;
 
         typedef std::vector<EventLogEntry *> EventLogEntryList;
         EventLogEntryList eventLogEntries; // all entries parsed from the file (lines below "E" line)
+
+        typedef std::vector<EventLogMessage *> EventLogMessageList;
+        EventLogMessageList eventLogMessages;
 
         MessageSend *cause; // the message send which is processed in this event
         MessageDependencyList *causes; // the arrival message sends of messages which we send in this event
@@ -59,12 +62,15 @@ class Event : public IEvent
         static long getNumParsedEvent() { return numParsedEvent; }
 
         // IEvent interface
+        virtual IEventLog *getEventLog();
+
         virtual EventEntry *getEventEntry() { return eventEntry; }
         virtual int getNumEventLogEntries() { return eventLogEntries.size(); }
         virtual EventLogEntry *getEventLogEntry(int index) { return eventLogEntries[index]; }
 
-        virtual int getNumEventLogMessages() { return numEventLogMessages; }
-        virtual EventLogMessage *getEventLogMessage(int index);
+        virtual int getNumEventLogMessages() { return eventLogMessages.size(); }
+        virtual EventLogMessage *getEventLogMessage(int index) { return eventLogMessages[index]; }
+        virtual int getEventLogMessageIndex(EventLogMessage *eventLogMessage) { return find(eventLogMessages.begin(), eventLogMessages.end(), eventLogMessage) - eventLogMessages.begin(); }
 
         virtual long getEventNumber() { return eventEntry->eventNumber; }
         virtual simtime_t getSimulationTime() { return eventEntry->simulationTime; }

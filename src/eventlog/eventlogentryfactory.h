@@ -20,7 +20,7 @@
 class EventLogEntryFactory
 {
    public:
-      EventLogTokenBasedEntry * parseEntry(char **tokens, int numTokens);
+      EventLogTokenBasedEntry * parseEntry(Event *event, char **tokens, int numTokens);
 };
 
 #endif

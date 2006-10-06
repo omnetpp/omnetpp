@@ -45,6 +45,8 @@ class FilteredEvent : public IEvent
         IEvent *getEvent();
 
         // IEvent interface
+        virtual IEventLog *getEventLog();
+
         virtual EventEntry *getEventEntry() { return getEvent()->getEventEntry(); }
         virtual int getNumEventLogEntries() { return getEvent()->getNumEventLogEntries(); }
         virtual EventLogEntry *getEventLogEntry(int index) { return getEvent()->getEventLogEntry(index); }

@@ -84,6 +84,8 @@ print ENTRIES_H_FILE "
 
 #include \"defs.h\"
 #include \"eventlogentry.h\"
+
+class Event;
 ";
 
 $index = 1;
@@ -94,7 +96,7 @@ foreach $class (@classes)
 class $class->{NAME} : public EventLogTokenBasedEntry
 {
    public:
-      $class->{NAME}();
+      $class->{NAME}(Event *event);
 
    public:";
    foreach $field (@{ $class->{FIELDS} })
@@ -127,6 +129,7 @@ close(ENTRIES_H_FILE);
 open(ENTRIES_CC_FILE, ">eventlogentries.cc");
 
 print ENTRIES_CC_FILE "
+#include \"event.h\"
 #include \"eventlogentries.h\"
 ";
 
@@ -136,8 +139,9 @@ foreach $class (@classes)
 
    # constructor
    print ENTRIES_CC_FILE "
-$className\::$className()
-{";
+$className\::$className(Event *event)
+{
+   this->event = event;";
    foreach $field (@{ $class->{FIELDS} })
    {
       if ($field->{TYPE} eq "string")
@@ -240,9 +244,10 @@ close(ENTRIES_CC_FILE);
 open(FACTORY_CC_FILE, ">eventlogentryfactory.cc");
 
 print FACTORY_CC_FILE "
+#include \"event.h\"
 #include \"eventlogentryfactory.h\"
 
-EventLogTokenBasedEntry * EventLogEntryFactory::parseEntry(char **tokens, int numTokens)
+EventLogTokenBasedEntry * EventLogEntryFactory::parseEntry(Event *event, char **tokens, int numTokens)
 {
    if (numTokens < 1)
       return NULL;
@@ -257,7 +262,7 @@ foreach $class (@classes)
 {
    print FACTORY_CC_FILE "
    else if (!strcmp(sign, \"$class->{SIGN}\"))
-      entry = new $class->{NAME}();
+      entry = new $class->{NAME}(event);
 ";
    }
 

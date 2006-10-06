@@ -14,89 +14,198 @@
 
 #include "ievent.h"
 #include "ieventlog.h"
+#include "event.h"
 #include "eventlogfacade.h"
 
 EventLogFacade::EventLogFacade(IEventLog *eventLog)
 {
     EASSERT(eventLog);
     this->eventLog = eventLog;
+
+    approximateNumberOfEventLogTableEntries = -1;
 }
 
-IEvent *EventLogFacade::getNthEventInDirection(IEvent *event, bool forward, long distance)
+IEvent *EventLogFacade::getNeighbourEvent(IEvent *event, long distance)
 {
-    while (distance > 0)
+    while (distance != 0)
     {
-        if (forward)
+        if (distance > 0) {
+            distance--;
             event = event->getNextEvent();
-        else
+        }
+        else {
+            distance++;
             event = event->getPreviousEvent();
-
-        distance--;
+        }
     }
 
     return event;
 }
 
-void EventLogFacade::getEventLogEntryForEventLogTableRowIndex(long fixPointEventNumber, long fixPointLineNumber, long lineNumber, IEvent **event, EventLogEntry **eventLogEntry)
+EventLogEntry *EventLogFacade::getFirstEventLogTableEntry()
 {
-    long lineNumberDelta = lineNumber - fixPointLineNumber;
-    bool forward = lineNumberDelta >= 0;
+	IEvent *event = eventLog->getFirstEvent();
+	
+	if (!event)
+		return NULL;
+	else
+		return getEventLogTableEntryInEvent(event, 0);
+}
 
-    IEvent *currentEvent;
-    if (forward)
-        currentEvent = eventLog->getEventForEventNumber(fixPointEventNumber);
-    else
-        currentEvent = eventLog->getEventForEventNumber(fixPointEventNumber)->getPreviousEvent();
+EventLogEntry *EventLogFacade::getLastEventLogTableEntry()
+{
+	IEvent *event = eventLog->getLastEvent();
+	
+	if (!event)
+		return NULL;
+	else
+		return getEventLogTableEntryInEvent(event, event->getNumEventLogMessages());
+}
 
-    int currentNumLines = currentEvent != NULL ? currentEvent->getNumEventLogMessages() + 1 : 0;
+EventLogEntry *EventLogFacade::getEventLogTableEntryAndDistance(EventLogEntry *sourceEventLogEntry, EventLogEntry *targetEventLogEntry, long distance, long& reachedDistance)
+{
+    EventLogEntry *eventLogEntry = sourceEventLogEntry;
+    reachedDistance = 0;
 
-    // search for event
-    while (currentEvent &&
-           ((forward && currentNumLines <= lineNumberDelta) ||
-            (!forward && currentNumLines < -lineNumberDelta)))
-    {
-        if (forward)
-        {
-            currentEvent = currentEvent->getNextEvent();
-            lineNumberDelta -= currentNumLines;
+    int index = getEventLogTableEntryIndexInEvent(eventLogEntry);
+    while (distance && eventLogEntry != targetEventLogEntry) {
+        if (distance > 0) {
+            eventLogEntry = getNextEventLogTableEntry(eventLogEntry, index);
+            distance--;
+            reachedDistance++;
         }
+        else {
+            eventLogEntry = getPreviousEventLogTableEntry(eventLogEntry, index);
+            distance++;
+            reachedDistance--;
+        }
+    }
+
+    return eventLogEntry;
+}
+
+EventLogEntry *EventLogFacade::getPreviousEventLogTableEntry(EventLogEntry *eventLogEntry, int& index)
+{
+    IEvent *event = eventLogEntry->getEvent();
+    index--;
+
+    if (index == -1) {
+        event = event->getPreviousEvent();
+
+        if (event)
+            index = event->getNumEventLogMessages();
+    }
+
+    if (!event)
+        return NULL;
+    else
+        return getEventLogTableEntryInEvent(event, index);
+}
+
+EventLogEntry *EventLogFacade::getNextEventLogTableEntry(EventLogEntry *eventLogEntry, int& index)
+{
+    IEvent *event = eventLogEntry->getEvent();
+    index++;
+
+    if (index == event->getNumEventLogMessages() + 1) {
+        event = event->getNextEvent();
+        index = 0;
+    }
+
+    if (!event)
+        return NULL;
+    else
+        return getEventLogTableEntryInEvent(event, index);
+}
+
+EventLogEntry *EventLogFacade::getEventLogTableEntryInEvent(IEvent *event, int index)
+{
+    EASSERT(index >= 0 && index <= event->getNumEventLogMessages());
+
+    if (index == 0)
+        return event->getEventEntry();
+    else
+        return event->getEventLogMessage(index - 1);
+}
+
+int EventLogFacade::getEventLogTableEntryIndexInEvent(EventLogEntry *eventLogEntry)
+{
+    if (dynamic_cast<EventEntry *>(eventLogEntry))
+        return 0;
+    else
+        return eventLogEntry->getEvent()->getEventLogMessageIndex((EventLogMessage *)eventLogEntry) + 1;
+}
+
+long EventLogFacade::getDistanceToEventLogTableEntry(EventLogEntry *sourceEventLogEntry, EventLogEntry *targetEventLogEntry, long limit)
+{
+    long reachedDistance;
+    getEventLogTableEntryAndDistance(sourceEventLogEntry, targetEventLogEntry, limit, reachedDistance);
+    return reachedDistance;
+}
+
+long EventLogFacade::getDistanceToFirstEventLogTableEntry(EventLogEntry *eventLogEntry, long limit)
+{
+    long reachedDistance;
+    getEventLogTableEntryAndDistance(eventLogEntry, NULL, -limit, reachedDistance);
+    return -reachedDistance;
+}
+
+long EventLogFacade::getDistanceToLastEventLogTableEntry(EventLogEntry *eventLogEntry, long limit)
+{
+    long reachedDistance;
+    getEventLogTableEntryAndDistance(eventLogEntry, NULL, limit, reachedDistance);
+    return reachedDistance;
+}
+
+EventLogEntry *EventLogFacade::getNeighbourEventLogTableEntry(EventLogEntry *eventLogEntry, long distance)
+{
+    long reachedDistance;
+    return getEventLogTableEntryAndDistance(eventLogEntry, NULL, distance, reachedDistance);
+}
+
+double EventLogFacade::getApproximatePercentageForEventLogTableEntry(EventLogEntry *eventLogEntry)
+{
+    return eventLog->getApproximatePercentageForEventNumber(eventLogEntry->getEvent()->getEventNumber());
+}
+
+EventLogEntry *EventLogFacade::getApproximateEventLogEntryTableAt(double percentage)
+{
+    return eventLog->getApproximateEventAt(percentage)->getEventEntry();
+}
+
+long EventLogFacade::getApproximateNumberOfEventLogTableEntries()
+{
+    if (approximateNumberOfEventLogTableEntries == -1)
+    {
+        IEvent *firstEvent = eventLog->getFirstEvent();
+        IEvent *lastEvent = eventLog->getLastEvent();
+
+        if (!firstEvent)
+            approximateNumberOfEventLogTableEntries = 0;
         else
         {
-            currentEvent = currentEvent->getPreviousEvent();
-            lineNumberDelta += currentNumLines;
-        }
+            long sum = 0;
+            long count = 0;
 
-        currentNumLines = currentEvent != NULL ? currentEvent->getNumEventLogMessages() + 1 : 0;
+            for (int i = 0; i < 100; i++)
+            {
+                if (firstEvent) {
+                    sum += firstEvent->getNumEventLogMessages() + 1;
+                    count++;
+                    firstEvent = firstEvent->getNextEvent();
+                }
+
+                if (lastEvent) {
+                    sum += lastEvent->getNumEventLogMessages() + 1;
+                    count++;
+                    lastEvent = lastEvent->getPreviousEvent();
+                }
+            }
+
+            double average = sum / count;
+            approximateNumberOfEventLogTableEntries = eventLog->getApproximateNumberOfEvents() * average;
+        }
     }
 
-    // get message line
-    EventLogEntry *currentEventLogEntry;
-
-    if (!currentEvent)
-        currentEventLogEntry = NULL;
-    else if (lineNumberDelta == 0)
-        currentEventLogEntry = currentEvent->getEventEntry();
-    else if (lineNumberDelta > 0)
-        currentEventLogEntry = currentEvent->getEventLogMessage(lineNumberDelta - 1);
-    else
-        currentEventLogEntry = currentEvent->getEventLogMessage(currentEvent->getNumEventLogMessages() + lineNumberDelta);
-
-    *event = currentEvent;
-    *eventLogEntry = currentEventLogEntry;
-}
-
-IEvent *EventLogFacade::getEventForEventLogTableRowIndex(long fixPointEventNumber, long fixPointLineNumber, long lineNumber)
-{
-    IEvent *event;
-    EventLogEntry *eventLogEntry;
-    getEventLogEntryForEventLogTableRowIndex(fixPointEventNumber, fixPointLineNumber, lineNumber, &event, &eventLogEntry);
-    return event;
-}
-
-EventLogEntry *EventLogFacade::getEventLogEntryForEventLogTableRowIndex(long fixPointEventNumber, long fixPointLineNumber, long lineNumber)
-{
-    IEvent *event;
-    EventLogEntry *eventLogEntry;
-    getEventLogEntryForEventLogTableRowIndex(fixPointEventNumber, fixPointLineNumber, lineNumber, &event, &eventLogEntry);
-    return eventLogEntry;
+    return approximateNumberOfEventLogTableEntries;
 }

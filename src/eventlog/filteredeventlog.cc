@@ -44,9 +44,19 @@ FilteredEventLog::~FilteredEventLog()
     delete eventLog;
 }
 
-long FilteredEventLog::getNumEventsApproximation()
+long FilteredEventLog::getApproximateNumberOfEvents()
 {
-    return -1;
+    throw new Exception("Not yet implemented");
+}
+
+double FilteredEventLog::getApproximatePercentageForEventNumber(long eventNumber)
+{
+    throw new Exception("Not yet implemented");
+}
+
+FilteredEvent *FilteredEventLog::getApproximateEventAt(double percentage)
+{
+    throw new Exception("Not yet implemented");
 }
 
 bool FilteredEventLog::matchesFilter(IEvent *event)

@@ -17,11 +17,11 @@
 #include "eventlogentry.h"
 #include "eventlogentryfactory.h"
 
-EventLogEntry *EventLogEntry::parseEntry(char *line)
+EventLogEntry *EventLogEntry::parseEntry(Event *event, char *line)
 {
     if (*line == '-')
     {
-        EventLogMessage *eventLogMessage = new EventLogMessage();
+        EventLogMessage *eventLogMessage = new EventLogMessage(event);
         eventLogMessage->parse(line);
         return eventLogMessage;
     }
@@ -30,7 +30,7 @@ EventLogEntry *EventLogEntry::parseEntry(char *line)
         LineTokenizer tokenizer;
         EventLogEntryFactory factory;
         tokenizer.tokenize(line);
-        return factory.parseEntry(tokenizer.tokens(), tokenizer.numTokens());
+        return factory.parseEntry(event, tokenizer.tokens(), tokenizer.numTokens());
     }
 }
 
@@ -80,8 +80,9 @@ void EventLogTokenBasedEntry::parse(char *line)
 
 /***********************************************/
 
-EventLogMessage::EventLogMessage()
+EventLogMessage::EventLogMessage(Event *event)
 {
+    this->event = event;
     text = NULL;
 }
 

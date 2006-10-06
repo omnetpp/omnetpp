@@ -31,6 +31,11 @@ class IEvent
     public:
         IEvent::IEvent();
 
+        /**
+         * Returns the corresponding event log.
+         */
+        virtual IEventLog *getEventLog() = 0;
+
         /** 
          * Returns the 'E' entry (line) corresponding to this event.
          */

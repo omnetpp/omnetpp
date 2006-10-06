@@ -18,21 +18,27 @@
 #include <sstream>
 #include "defs.h"
 
+class Event;
+
 /**
  * Base class for all kind of event log entries.
  * An entry is represented by a single line in the log file.
  */
 class EventLogEntry
 {
+    protected:
+        Event* event; // back pointer
+
     public:
         virtual void parse(char *line) = 0;
         virtual void print(FILE *fout) = 0;
         virtual int getClassIndex() = 0;
         virtual const char *getClassName() = 0;
 
+        Event *getEvent() { return event; }
         bool isMessageSend();
 
-        static EventLogEntry *parseEntry(char *line);
+        static EventLogEntry *parseEntry(Event *event, char *line);
 };
 
 /**
@@ -61,7 +67,7 @@ class EventLogMessage : public EventLogEntry
         const char *text;
 
     public: 
-        EventLogMessage();
+        EventLogMessage(Event *event);
         virtual void parse(char *line);
         virtual void print(FILE *fout);
         virtual int getClassIndex() { return 0; }

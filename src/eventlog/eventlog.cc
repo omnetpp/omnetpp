@@ -20,6 +20,7 @@ StringPool eventLogStringPool;
 
 EventLog::EventLog(FileReader *reader) : EventLogIndex(reader)
 {
+    approximateNumberOfEvents = -1;
     parseInitializationLogEntries();
 }
 
@@ -32,43 +33,81 @@ EventLog::~EventLog()
         delete it->second;
 }
 
-long EventLog::getNumEventsApproximation()
+long EventLog::getApproximateNumberOfEvents()
 {
-    if (numEventsApproximation == -1)
+    if (approximateNumberOfEvents == -1)
     {
         Event *firstEvent = getFirstEvent();
         Event *lastEvent = getLastEvent();
 
         if (firstEvent == NULL)
-            numEventsApproximation = 0;
+            approximateNumberOfEvents = 0;
         else
         {
             long beginOffset = firstEvent->getBeginOffset();
             long endOffset = lastEvent->getEndOffset();
-            long averageSize = 0;
-            long averageCount = 0;
+            long sum = 0;
+            long count = 0;
 
-            for (int i = 0; i < 1000; i++)
+            for (int i = 0; i < 100; i++)
             {
                 if (firstEvent) {
-                    averageSize += firstEvent->getEndOffset() - firstEvent->getBeginOffset();
-                    averageCount++;
+                    sum += firstEvent->getEndOffset() - firstEvent->getBeginOffset();
+                    count++;
                     firstEvent = firstEvent->getNextEvent();
                 }
 
                 if (lastEvent) {
-                    averageSize += lastEvent->getEndOffset() - lastEvent->getBeginOffset();
-                    averageCount++;
+                    sum += lastEvent->getEndOffset() - lastEvent->getBeginOffset();
+                    count++;
                     lastEvent = lastEvent->getPreviousEvent();
                 }
             }
 
-            averageSize /= averageCount;
-            numEventsApproximation = (endOffset - beginOffset) / averageSize;
+            double average = sum / count;
+            approximateNumberOfEvents = (endOffset - beginOffset) / average;
         }
     }
 
-    return numEventsApproximation;
+    return approximateNumberOfEvents;
+}
+
+double EventLog::getApproximatePercentageForEventNumber(long eventNumber)
+{
+    Event *firstEvent = getFirstEvent();
+    Event *lastEvent = getLastEvent();
+    Event *event = getEventForEventNumber(eventNumber);
+
+    if (firstEvent == NULL)
+        return 0;
+    else if (event == NULL)
+        return 0.5;
+    else {
+        long beginOffset = firstEvent->getBeginOffset();
+        long endOffset = lastEvent->getEndOffset();
+
+        return (double)event->getBeginOffset() / (endOffset - beginOffset);
+    }
+}
+
+Event *EventLog::getApproximateEventAt(double percentage)
+{
+    Event *firstEvent = getFirstEvent();
+    Event *lastEvent = getLastEvent();
+
+    if (firstEvent == NULL)
+        return NULL;
+    else {
+        long beginOffset = firstEvent->getBeginOffset();
+        long endOffset = lastEvent->getEndOffset();
+        long offset = (endOffset - beginOffset) * percentage;
+
+        long eventNumber, lineStartOffset, lineEndOffset;
+        simtime_t simulationTime;
+        readToFirstEventLine(offset, eventNumber, simulationTime, lineStartOffset, lineEndOffset);
+
+        return getEventForBeginOffset(lineStartOffset);
+    }
 }
 
 void EventLog::parseInitializationLogEntries()
@@ -83,7 +122,7 @@ void EventLog::parseInitializationLogEntries()
         if (!line)
             break;
 
-        EventLogEntry *eventLogEntry = EventLogEntry::parseEntry(line);
+        EventLogEntry *eventLogEntry = EventLogEntry::parseEntry(NULL, line);
 
         if (eventLogEntry && !dynamic_cast<EventEntry *>(eventLogEntry))
             initializationLogEntries.push_back(eventLogEntry);
