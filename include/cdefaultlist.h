@@ -34,7 +34,7 @@ class SIM_API cDefaultList : public cObject
 {
   private:
     friend class cObject;
-    cObject **vect;   // vector of objects
+    cObject **vect;   // vector of objects  -FIXME these varnames are likely to collide with user-defined members of cSimpleModule -- use better ones!
     int size;         // size of vector
     int count;        // number of elements stored
   public:
