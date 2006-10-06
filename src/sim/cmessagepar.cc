@@ -187,7 +187,7 @@ std::string cMessagePar::info() const
         case 'T': out << (dtr.res ? dtr.res->fullPath().c_str():"null") << " (T)"; break;
         case 'P': out << ptr.ptr << " (P)"; break;
         case 'O': out << (obj.obj ? obj.obj->fullPath().c_str():"null") << " (O)"; break;
-        case 'F': ff = findfunctionbyptr(func.f);
+        case 'F': ff = cMathFunction::findByPointer(func.f);
                   out << (ff ? ff->name() : "unknown") << "(";
                   switch(func.argc) {
                     case 0: out << ")"; break;
@@ -277,7 +277,7 @@ void cMessagePar::netPack(cCommBuffer *buffer)
         break;
 
     case 'F':
-        ff = findfunctionbyptr(func.f);
+        ff = cMathFunction::findByPointer(func.f);
         if (ff == NULL)
             throw new cRuntimeError(this,"netPack(): cannot transmit unregistered function");
 
@@ -984,7 +984,7 @@ string cMessagePar::getAsText() const
                  return string(bb);
        case 'D': sprintf(bb,"%g",dbl.val);
                  return string(bb);
-       case 'F': ff = findfunctionbyptr(func.f);
+       case 'F': ff = cMathFunction::findByPointer(func.f);
                  fn = ff ? ff->name() : "unknown";
                  switch(func.argc) {
                  case 0: sprintf(bb,"()"); break;

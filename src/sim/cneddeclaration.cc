@@ -136,6 +136,11 @@ int cNEDDeclaration::numPars() const
     return params.size();
 }
 
+cProperties *cNEDDeclaration::properties()
+{
+    return props;
+}
+
 const cNEDDeclaration::ParamDescription& cNEDDeclaration::paramDescription(int k) const
 {
     if (k<0 || k>=params.size())

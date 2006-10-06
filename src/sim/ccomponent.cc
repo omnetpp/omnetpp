@@ -48,6 +48,15 @@ void cComponent::netUnpack(cCommBuffer *buffer)
     throw new cRuntimeError(this,eCANTPACK);
 }
 
+void cComponent::setDeclaration(cNEDDeclaration *decl)
+{
+    this->decl = decl;
+}
+
+void cComponent::handleParameterChange(char const *)
+{
+}
+
 cProperties *cComponent::properties()
 {
     return props;

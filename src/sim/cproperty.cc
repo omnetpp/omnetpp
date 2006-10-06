@@ -16,6 +16,9 @@
 #include "cproperties.h"
 
 
+cStringPool cProperty::stringPool;
+
+
 cProperty::cProperty(const char *name)
 {
     isimplicit = islocked = false;
