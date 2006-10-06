@@ -68,17 +68,17 @@ class SIM_API cExpression : public cPolymorphic
      * Produces a one-line description of object contents into the buffer passed as argument.
      * See cObject for more details.
      */
-    virtual std::string info() const;
+    virtual std::string info() const {return "";}
 
     /**
      * Redefined to "de-inherit" it.
      */
-    virtual void netPack(cCommBuffer *buffer);
+    virtual void netPack(cCommBuffer *buffer) {} //FIXME exception?
 
     /**
      * Redefined to "de-inherit" it.
      */
-    virtual void netUnpack(cCommBuffer *buffer);
+    virtual void netUnpack(cCommBuffer *buffer) {} //FIXME exception?
     //@}
 
     /** @name Getter functions. Note that overloaded conversion operators also exist. */

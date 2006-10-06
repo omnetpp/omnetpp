@@ -174,8 +174,6 @@ class SIM_API cMathFunction : public cNoncopyableObject
 
 };
 
-cMathFunction *findfunctionbyptr(MathFunc f); // FIXME move into some class
-
 #endif
 
 
