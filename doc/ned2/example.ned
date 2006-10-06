@@ -5,8 +5,24 @@
 //
 // NAME SCOPES:
 // - all component type names must be unique
-// - identifier names within a component must be unique (ie a param cannot
-//   be named the same as a gate, a submodule or an inner type)
+// - identifier names within a component must be unique (ie submodule
+//   or inner type cannot be named the same, or the same as a gate or 
+//   parameter of the parent module)
+//     THIS MUST BE ENFORCED DURING VALIDATION!!!
+//
+// - sizeof() resolution:
+//     IN SUBMODULE SCOPE:
+//         sizeof(foo): must refer to a parent module gate vector, or 
+//                      sibling submodule vector (there cannot be ambiguity
+//                      here, because of the name uniqueness rule above)
+//                      NOTE: IT CANNOT REFER TO LOCAL GATE VECTOR !!!
+//         sizeof(this.foo): refers to local gate vector
+//         sizeof(foo.bar): refers to gatevector of sibling submodule
+//     IN CONNECTION SCOPE:
+//         same as above, only sizeof(this.foo) does not make sense 
+//     IN [PARENT] MODULE SCOPE:
+//         sizeof(foo), sizeof(this.foo): refers to that module's gatevector
+//         sizeof(foo.bar): makes no sense (thus illegal)
 //
 // TODO:
 // - CHANNELS: two implicit (built-in) channel types exist: NullChannel, BasicChannel.
@@ -147,6 +163,8 @@
 // RULE: moduleinterface/channelinterface: allow assignments in its parameters/
 //   allow gatesizes? if parameter is volatile, it will have to be compared as 
 //   expression!!
+//
+// - VALIDATION: 
 //   
 //
 
