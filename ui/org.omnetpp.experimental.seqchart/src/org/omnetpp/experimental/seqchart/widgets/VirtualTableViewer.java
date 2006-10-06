@@ -226,15 +226,15 @@ public class VirtualTableViewer extends ContentViewer {
 		int visibleItemCount = getVisibleItemCount();
 		IVirtualTableContentProvider virtualTableContentProvider = getVirtualTableContentProvider();
 
-		// step 1.
+		// step 1. set fix point and top index to reflect the new virtual table position
+		System.out.println("Index delta: " + indexDelta);
+		
 		if (indexDelta <= visibleItemCount) {
-			// scroll virtual table linearly according to changes in real table
-			//relocateFixPoint(fixPointElement, fixPointTableIndex + indexDelta);
-			
+			// scroll virtual table linearly according to the small scroll in the real table
 			double percentage = virtualTableContentProvider.getApproximatePercentageForElement(getTopElement());
 			int xxxTopIndex = (int)((itemCount - visibleItemCount) * percentage);
 			table.setTopIndex(xxxTopIndex);
-			relocateFixPoint(fixPointElement, fixPointTableIndex + newTopIndex - xxxTopIndex);
+			relocateFixPoint(fixPointElement, fixPointTableIndex - newTopIndex + xxxTopIndex);
 		}
 		else {
 			// jump to approximate element in virtual table based on real the table position
@@ -252,6 +252,7 @@ public class VirtualTableViewer extends ContentViewer {
 		boolean nearLastElement = lastElementDistance < reserveBelowBottom;
 
 		if (nearFirstElement && nearLastElement) {
+			// TODO: how will it be less than visibleItemCount?
 			fixTablePosition(oldTopIndex, firstElementDistance, virtualTableContentProvider.getFirstElement(), 0);
 			table.setItemCount(firstElementDistance + lastElementDistance + visibleItemCount);
 		}
