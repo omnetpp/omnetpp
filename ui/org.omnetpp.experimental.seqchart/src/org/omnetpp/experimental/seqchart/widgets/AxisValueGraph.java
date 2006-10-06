@@ -12,19 +12,6 @@ public class AxisValueGraph extends AxisGraph {
 	private static final Font VALUE_NAME_FONT = new Font(null, "Courier New", 8, 0);
 	private static final Color VALUE_NAME_COLOR = ColorFactory.asColor("black");
 	private static final Color NO_VALUE_COLOR = ColorFactory.asColor("white");
-	private static final Color TOO_MANY_VALUES_COLOR = ColorFactory.asColor("black");
-
-	// TODO: add more colors
-	private static final Color[] colors = {
-			ColorFactory.asColor("green"),
-			ColorFactory.asColor("red"),
-			ColorFactory.asColor("yellow"),
-			ColorFactory.asColor("purple"),
-			ColorFactory.asColor("cyan"),
-			ColorFactory.asColor("pink"),
-			ColorFactory.asColor("brown"),
-			ColorFactory.asColor("gray"),
-	};
 
 	private XYArray data;
 
@@ -34,9 +21,11 @@ public class AxisValueGraph extends AxisGraph {
 	        "DEFER",
 	        "WAITDIFS",
 	        "BACKOFF",
-	        "TRANSMITTING",
-	        "RECEIVING",
-	        "WAITSIFS"
+	        "WAITACK",
+	        "WAITBROADCAST",
+	        "WAITCTS",
+	        "WAITSIFS",
+	        "RECEIVE",
 	};
 	
 	public AxisValueGraph(SequenceChart sequenceChart, XYArray data) {
@@ -77,8 +66,7 @@ public class AxisValueGraph extends AxisGraph {
 				double nextSimulationTime = (i == size - 1) ? endSimulationTime : getSimulationTime(i + 1);
 	
 				int colorIndex = getValueIndex(i);
-				Color color = (colorIndex >= colors.length) ? TOO_MANY_VALUES_COLOR : colors[colorIndex];
-				graphics.setBackgroundColor(color);
+				graphics.setBackgroundColor(ColorFactory.getGoodColor(colorIndex));
 				
 				int x1 = sequenceChart.simulationTimeToPixel(simulationTime);
 				int x2 = sequenceChart.simulationTimeToPixel(nextSimulationTime);

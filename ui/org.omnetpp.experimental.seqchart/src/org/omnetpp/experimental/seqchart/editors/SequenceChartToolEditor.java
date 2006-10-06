@@ -12,9 +12,7 @@ import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -22,8 +20,6 @@ import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Menu;
-import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.IFileEditorInput;
@@ -35,18 +31,18 @@ import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.part.EditorPart;
 import org.omnetpp.common.canvas.RubberbandSupport;
-import org.omnetpp.eventlog.engine.EventEntry;
 import org.omnetpp.eventlog.engine.EventLog;
-import org.omnetpp.eventlog.engine.JavaFriendlyEventLogFacade;
-import org.omnetpp.eventlog.engine.MessageEntry;
-import org.omnetpp.eventlog.engine.ModuleEntry;
+import org.omnetpp.eventlog.engine.FileReader;
+import org.omnetpp.eventlog.engine.IEvent;
+import org.omnetpp.eventlog.engine.IEventLog;
+import org.omnetpp.eventlog.engine.IntSet;
+import org.omnetpp.eventlog.engine.ModuleCreatedEntry;
 import org.omnetpp.experimental.seqchart.SeqChartPlugin;
 import org.omnetpp.experimental.seqchart.moduletree.ModuleTreeBuilder;
 import org.omnetpp.experimental.seqchart.moduletree.ModuleTreeItem;
 import org.omnetpp.experimental.seqchart.widgets.SequenceChart;
 import org.omnetpp.scave.engine.DataflowManager;
 import org.omnetpp.scave.engine.IDList;
-import org.omnetpp.eventlog.engine.IntSet;
 import org.omnetpp.scave.engine.Node;
 import org.omnetpp.scave.engine.NodeType;
 import org.omnetpp.scave.engine.NodeTypeRegistry;
@@ -66,13 +62,12 @@ import org.omnetpp.scave.engineext.ResultFileManagerEx;
 public class SequenceChartToolEditor extends EditorPart implements INavigationLocationProvider {
 
 	private SequenceChart seqChart;
-	private Combo eventcombo;
 	
-	private EventLog eventLog;  // the log file loaded
+	private IEventLog eventLog;  // the log file loaded
 	private ModuleTreeItem moduleTree; // modules in eventLog
 	private ArrayList<ModuleTreeItem> axisModules; // which modules should have an axis
 	private int currentEventNumber = -1;
-	private EventLog filteredEventLog; // eventLog filtered for currentEventNumber
+	private IEventLog filteredEventLog; // eventLog filtered for currentEventNumber
 	private ResultFileManagerEx resultFileManager; 
 	private IDList idlist; // idlist of the loaded vector file
 	private XYArray[] stateVectors; // vector file loaded for the log file
@@ -91,8 +86,7 @@ public class SequenceChartToolEditor extends EditorPart implements INavigationLo
 		IFileEditorInput fileInput = (IFileEditorInput)input;
 		String logFileName = fileInput.getFile().getLocation().toFile().getAbsolutePath();
 
-		eventLog = new EventLog(logFileName);
-		System.out.println("read "+eventLog.getNumEvents()+" events in "+eventLog.getNumModules()+" modules from "+logFileName);
+		eventLog = new EventLog(new FileReader(logFileName, /* EventLog will delete it */false));
 
 		String vectorFileName = logFileName.replaceFirst("\\.log$", ".vec");
 		if (!vectorFileName.equals(logFileName) && new java.io.File(vectorFileName).exists()) {
@@ -158,14 +152,16 @@ public class SequenceChartToolEditor extends EditorPart implements INavigationLo
 		return xyArray;
 	}
 	
-	
-	
 	private void extractModuleTree() {
 		ArrayList<ModuleTreeItem> modules = new ArrayList<ModuleTreeItem>();
 		ModuleTreeBuilder treeBuilder = new ModuleTreeBuilder();
-		for (int i=0; i<eventLog.getNumModules(); i++) {
-			ModuleEntry mod = eventLog.getModule(i);
-			modules.add(treeBuilder.addModule(mod.getModuleFullPath(), mod.getModuleClassName(), mod.getModuleId()));
+		for (int i=0; i<eventLog.getNumModuleCreatedEntries(); i++) {
+			ModuleCreatedEntry entry = eventLog.getModuleCreatedEntry(i);
+			
+			if (entry != null)
+				modules.add(treeBuilder.addModule(entry.getFullName() + i, entry.getModuleClassName(), entry.getModuleId()));
+// FIXME: resurrect
+//			modules.add(treeBuilder.addModule(entry.getModuleFullPath(), entry.getModuleClassName(), entry.getModuleId()));
 		}
 		moduleTree = treeBuilder.getModuleTree();
 		axisModules = modules;
@@ -198,7 +194,7 @@ public class SequenceChartToolEditor extends EditorPart implements INavigationLo
 		seqChart.addSelectionListener(new SelectionAdapter() {
 			public void widgetDefaultSelected(SelectionEvent e) {
 				// on double-click, filter the event log
-				List<EventEntry> events = ((IEventLogSelection)seqChart.getSelection()).getEvents();
+				List<IEvent> events = ((IEventLogSelection)seqChart.getSelection()).getEvents();
 				if (events.size()>1) { 
 					//XXX pop up selection dialog instead?
 					MessageDialog.openInformation(getEditorSite().getShell(), "Information", "Ambiguous double-click: there are "+events.size()+" events under the mouse! Zooming may help.");
@@ -215,8 +211,6 @@ public class SequenceChartToolEditor extends EditorPart implements INavigationLo
 			}
 		});
 
-		// fill combo box with events
-		fillEventCombo();
 		// give eventLog to the chart for display
 		showFullSequenceChart();
 		
@@ -237,8 +231,6 @@ public class SequenceChartToolEditor extends EditorPart implements INavigationLo
 		Composite controlStrip = new Composite(upper, SWT.NONE);
 		RowLayout layout = new RowLayout();
 		controlStrip.setLayout(layout);
-		eventcombo = new Combo(controlStrip, SWT.NONE);
-		eventcombo.setVisibleItemCount(20);
 
 		Combo timelineSortMode = new Combo(controlStrip, SWT.NONE);
 		for (SequenceChart.TimelineSortMode t : SequenceChart.TimelineSortMode.values())
@@ -281,29 +273,6 @@ public class SequenceChartToolEditor extends EditorPart implements INavigationLo
 		
 		Button decreaseSpacing = new Button(controlStrip, SWT.NONE);
 		decreaseSpacing.setText("Decrease spacing");
-
-		// add event handlers
-		eventcombo.addSelectionListener(new SelectionListener() {
-			public void widgetDefaultSelected(SelectionEvent e) {
-				String sel = eventcombo.getText();
-				sel = sel.trim();
-				if (sel.startsWith("All")) {
-					showFullSequenceChart();
-				} else {
-					sel = sel.replaceFirst(" .*", "");
-					sel = sel.replaceAll("#", "");
-					int eventNumber = -1;
-					try {eventNumber = Integer.parseInt(sel);} catch (NumberFormatException ex) {}
-					if (eventNumber<0) {
-						MessageDialog.openError(getEditorSite().getShell(), "Error", "Please specify event number as \"#nnn\".");
-						return;
-					}
-					showSequenceChartForEvent(eventNumber);
-				}
-			}
-			public void widgetSelected(SelectionEvent e) {
-				widgetDefaultSelected(e);
-			}});
 
 		selectModules.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
@@ -384,42 +353,16 @@ public class SequenceChartToolEditor extends EditorPart implements INavigationLo
 		return controlStrip;
 	}
 
-	private void fillEventCombo() {
-		eventcombo.removeAll();
-    	eventcombo.add("All events");
-    	JavaFriendlyEventLogFacade logFacade = new JavaFriendlyEventLogFacade(eventLog);
-    	int n = logFacade.getNumEvents();
-    	if (n>1000) n = 1000;
-	    for (int i=0; i<n; i++) 
-	    	eventcombo.add(getLabelForEvent(logFacade, i));
-    	if (logFacade.getNumEvents()>n)
-    		eventcombo.add("...and "+(logFacade.getNumEvents()-n)+" more");
-    	eventcombo.select(0);
-	}
-
-	private String getLabelForEvent(JavaFriendlyEventLogFacade logFacade, int pos) {
-		String label = "#"+logFacade.getEvent_i_eventNumber(pos)
-			+" at t="+logFacade.getEvent_i_simulationTime(pos)
-			+", module ("+logFacade.getEvent_i_module_moduleClassName(pos)+")"
-			+logFacade.getEvent_i_module_moduleFullPath(pos)
-			+" (id="+logFacade.getEvent_i_module_moduleId(pos)+"),"
-			+" message ("+logFacade.getEvent_i_cause_messageClassName(pos)+")"
-			+logFacade.getEvent_i_cause_messageName(pos);
-		return label;
-	}
-
 	/**
 	 * Goes to the given event and updates the chart.
 	 */
 	private void showSequenceChartForEvent(int eventNumber) {
-		EventEntry event = eventLog.getEventByNumber(eventNumber);
+		IEvent event = eventLog.getEventForEventNumber(eventNumber);
 		if (event==null) {
 			MessageDialog.openError(getEditorSite().getShell(), "Error", "Event #"+eventNumber+" not found.");
 			return;
 		}
 		currentEventNumber = eventNumber;
-		String eventLabel = getLabelForEvent(new JavaFriendlyEventLogFacade(eventLog), eventLog.findEvent(event));
-		eventcombo.setText(eventLabel);
 		
 		filterEventLog();
 	}
@@ -444,8 +387,9 @@ public class SequenceChartToolEditor extends EditorPart implements INavigationLo
 			});
 		}
 
-		filteredEventLog = eventLog.traceEvent(eventLog.getEventByNumber(currentEventNumber), moduleIds, true, true, true);
-		System.out.println("filtered log: "+filteredEventLog.getNumEvents()+" events in "+filteredEventLog.getNumModules()+" modules");
+		// TODO: pass in null when all modules are included
+		// FIXME: resurrect filteredEventLog = new FilteredEventLog(eventLog, moduleIds, currentEventNumber, true, true);
+		filteredEventLog = eventLog;
 
 		ArrayList<XYArray> axisVectors = new ArrayList<XYArray>();
 		for (ModuleTreeItem treeItem : axisModules) {
@@ -465,7 +409,7 @@ public class SequenceChartToolEditor extends EditorPart implements INavigationLo
 	/**
 	 * Return the current filtered event log.
 	 */
-	public EventLog getFilteredEventLog() {
+	public IEventLog getFilteredEventLog() {
 		return filteredEventLog;
 	}
 
@@ -487,9 +431,10 @@ public class SequenceChartToolEditor extends EditorPart implements INavigationLo
 	}
 	
 	private void displayPopupMenu(MouseEvent e) {
+/* FIXME: resurrect this code
 		final int x = e.x;
 		Menu popupMenu = new Menu(seqChart);
-		ArrayList<EventEntry> events = new ArrayList<EventEntry>();
+		ArrayList<IEvent> events = new ArrayList<IEvent>();
 		ArrayList<MessageEntry> msgs = new ArrayList<MessageEntry>();
 		Point p = seqChart.toControl(seqChart.getDisplay().getCursorLocation());
 		seqChart.collectStuffUnderMouse(p.x, p.y, events, msgs);
@@ -528,7 +473,7 @@ public class SequenceChartToolEditor extends EditorPart implements INavigationLo
 		new MenuItem(popupMenu, SWT.SEPARATOR);
 		
 		// events submenu
-		for (final EventEntry event : events) {
+		for (final IEvent event : events) {
 			cascadeItem = new MenuItem(popupMenu, SWT.CASCADE);
 			cascadeItem.setText(seqChart.getEventText(event));
 			subMenu = new Menu(popupMenu);
@@ -619,6 +564,7 @@ public class SequenceChartToolEditor extends EditorPart implements INavigationLo
 		}
 		
 		seqChart.setMenu(popupMenu);
+*/
 	}
 
 	public void dispose() {

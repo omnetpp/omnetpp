@@ -4,8 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.core.runtime.Assert;
-import org.omnetpp.eventlog.engine.EventEntry;
-import org.omnetpp.eventlog.engine.EventLog;
+import org.omnetpp.eventlog.engine.IEvent;
+import org.omnetpp.eventlog.engine.IEventLog;
+import org.omnetpp.experimental.seqchart.widgets.IVirtualTableSelection;
 
 /**
  * Selection that is published by the sequence chart tool
@@ -13,26 +14,34 @@ import org.omnetpp.eventlog.engine.EventLog;
  *  
  * @author andras
  */
-public class EventLogSelection implements IEventLogSelection, Cloneable {
+public class EventLogSelection implements IEventLogSelection, IVirtualTableSelection, Cloneable {
 
-	private EventLog eventLog;
-	private List<EventEntry> events;
+	private IEventLog eventLog;
+	private List<IEvent> events;
 
-	public EventLogSelection(EventLog eventLog, List<EventEntry> events) {
+	public EventLogSelection(IEventLog eventLog, List<IEvent> events) {
 		Assert.isTrue(events!=null);
 		this.eventLog = eventLog;
 		this.events = events;
 	}
-	
-	public EventLog getEventLog() {
-		return eventLog;
-	}
 
-	public List<EventEntry> getEvents() {
+	public List getElements() {
 		return events;
 	}
 
-	public EventEntry getFirstEvent() {
+	public Object getInput() {
+		return eventLog;
+	}
+	
+	public IEventLog getEventLog() {
+		return eventLog;
+	}
+
+	public List<IEvent> getEvents() {
+		return events;
+	}
+
+	public IEvent getFirstEvent() {
 		return events.isEmpty()? null : events.get(0);
 	}
 
@@ -42,8 +51,8 @@ public class EventLogSelection implements IEventLogSelection, Cloneable {
 
 	@Override
 	public EventLogSelection clone() {
-		ArrayList<EventEntry> list = new ArrayList<EventEntry>();
-		for (EventEntry e : events)
+		ArrayList<IEvent> list = new ArrayList<IEvent>();
+		for (IEvent e : events)
 			list.add(e);
 		return new EventLogSelection(this.eventLog, list);
 	}
