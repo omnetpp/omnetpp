@@ -24,7 +24,7 @@ OMNETPP_TEST_DIR =      @OMNETPP_TEST_DIR@
 
 all: check-env components
 
-components: libs progs samples
+components: libs progs jnilibs samples
 
 
 #=====================================================================
@@ -33,95 +33,54 @@ components: libs progs samples
 #
 #=====================================================================
 
-LIBS=nedxml sim envir cmdenv scave
-PROGS=utils nedc
+LIBS=$(ENVIR_ILIB) common eventlog scave nedxml sim envir cmdenv
+#PROGS=utils nedc
+PROGS=utils   #FIXME nedc doesn't build yet
 SAMPLES=aloha cqn dyna fddi fifo hcube hist neddemo p-to-p queueing routing queues tictoc tokenring sockets
+JNILIBS=org.omnetpp.ned2.model \
+        org.omnetpp.scave.engine \
+       org.omnetpp.eventlog.engine
+#        org.omnetpp.experimental.simkernel    FIXME to be added back
 
 #
 # Group targets. Note that utils has to be built BEFORE other libs and progs
 # because tcl2c might be needed to build tkenv or gned.
 #
-libs: utils $(LIBS)
-progs: libs $(PROGS)
-samples: libs progs $(SAMPLES)
+libs: ver_h utils $(LIBS)
+eventlog scave nedxml sim envir cmdenv : common
+progs: ver_h $(PROGS)
+samples: rundemo $(SAMPLES)
+jnilibs : $(JNILIBS)
 
 #
 # Libraries
 #
-
-sim:
-	cd $(OMNETPP_SRC_DIR)/sim && $(MAKE)
-
-nedxml:
-	cd $(OMNETPP_SRC_DIR)/nedxml && $(MAKE)
-
-envir:
-	cd $(OMNETPP_SRC_DIR)/envir && $(MAKE)
-
-cmdenv:
-	cd $(OMNETPP_SRC_DIR)/cmdenv && $(MAKE)
-
-scave:
-	cd $(OMNETPP_SRC_DIR)/scave && $(MAKE)
+$(LIBS):
+	@echo ===== Compiling $@ ====
+	cd /d $(OMNETPP_SRC_DIR)/$@ && $(MAKE)
 
 #
 # Programs
 #
+$(PROGS):
+	@echo ===== Compiling $@ ====
+	cd /d $(OMNETPP_SRC_DIR)/$@ && $(MAKE)
 
-nedc:
-	cd $(OMNETPP_SRC_DIR)/nedc && $(MAKE)
-
-utils:
-	cd $(OMNETPP_SRC_DIR)/utils &&  $(MAKE)
+#
+# Native libs for the UI
+#
+$(JNILIBS):
+	@echo ===== Compiling $@ ====
+	cd /d $(OMNETPP_UI_DIR)/$@ && $(MAKE) clean
+	cd /d $(OMNETPP_UI_DIR)/$@ && $(MAKE)
 
 #
 # Sample programs
 #
 
-aloha:
-	cd $(OMNETPP_SAMPLES_DIR)/$@ && $(MAKE)
-
-cqn:
-	cd $(OMNETPP_SAMPLES_DIR)/$@ && $(MAKE)
-
-dyna:
-	cd $(OMNETPP_SAMPLES_DIR)/$@ && $(MAKE)
-
-fddi:
-	cd $(OMNETPP_SAMPLES_DIR)/$@ && $(MAKE)
-
-fifo:
-	cd $(OMNETPP_SAMPLES_DIR)/$@ && $(MAKE)
-
-hcube:
-	cd $(OMNETPP_SAMPLES_DIR)/$@ && $(MAKE)
-
-hist:
-	cd $(OMNETPP_SAMPLES_DIR)/$@ && $(MAKE)
-
-neddemo:
-	cd $(OMNETPP_SAMPLES_DIR)/$@ && $(MAKE)
-
-p-to-p:
-	cd $(OMNETPP_SAMPLES_DIR)/$@ && $(MAKE)
-
-queueing:
-	cd $(OMNETPP_SAMPLES_DIR)/$@ && $(MAKE)
-
-routing:
-	cd $(OMNETPP_SAMPLES_DIR)/$@ && $(MAKE)
-
-queues:
-	cd $(OMNETPP_SAMPLES_DIR)/$@ && $(MAKE)
-
-tictoc:
-	cd $(OMNETPP_SAMPLES_DIR)/$@ && $(MAKE)
-
-tokenring:
-	cd $(OMNETPP_SAMPLES_DIR)/$@ && $(MAKE)
-
-sockets:
-	cd $(OMNETPP_SAMPLES_DIR)/$@ && $(MAKE)
+$(SAMPLES):
+	@echo ===== Compiling $@ ====
+	cd /d $(OMNETPP_SAMPLES_DIR)/$@ && $(MAKE)
 
 #
 # Documentation

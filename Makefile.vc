@@ -58,7 +58,8 @@ JNILIBS=org.omnetpp.ned2.model \
 #       org.omnetpp.eventlog.engine \
 
 #
-# Group targets. Note that utils has to be built BEFORE other libs and progs.
+# Group targets. Note that utils has to be built BEFORE other libs and progs
+# because tcl2c might be needed to build tkenv or gned.
 #
 libs: ver_h utils $(LIBS)
 eventlog scave nedxml sim envir cmdenv : common
