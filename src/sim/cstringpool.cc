@@ -45,8 +45,10 @@ const char *cStringPool::get(const char *s)
 
 void cStringPool::release(const char *s)
 {
+    ASSERT(cStaticFlag::isSet()); // strings must be released before shutdown
+
     StringIntMap::iterator it = pool.find(const_cast<char *>(s));
-    ASSERT(it!=pool.end()); // assure correct usage by clients
+    ASSERT(it!=pool.end() && it->first==s); // assure correct usage by clients
     if (--(it->second) == 0)
     {
         delete [] s; // that is, it->first
