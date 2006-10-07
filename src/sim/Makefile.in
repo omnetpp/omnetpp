@@ -41,7 +41,7 @@ CPPOBJS_STD=\
     cenum.o cexception.o cfsm.o cfunction.o cgate.o chist.o \
     cksplit.o clcg32.o cllist.o clongpar.o cmersennetwister.o \
     cmessage.o cmessagepar.o cmodule.o cmsgheap.o \
-    cneddeclaration.o cnedfunction.o .oect.o coutvect.o \
+    cneddeclaration.o cnedfunction.o cobject.o coutvect.o \
     cpacket.o cpar.o cpolymorphic.o cproperties.o cproperty.o \
     cpsquare.o cqueue.o cscheduler.o csimplemodule.o \
     csimulation.o cstat.o cstlwatch.o cstringpar.o \
@@ -1085,7 +1085,6 @@ cscheduler.o: cscheduler.cc \
   ../../include/util.h \
   ../../include/regmacros.h \
   ../../include/onstartup.h \
-  ../../include/unistd.h \
   ../../include/cobject.h \
   ../../include/carray.h \
   ../../include/cmessagepar.h \
@@ -1156,7 +1155,6 @@ csimulation.o: csimulation.cc \
   ../../include/cmsgheap.h \
   ../../include/ccoroutine.h \
   ../../include/platdep/time.h \
-  ../../include/unistd.h \
   ../../include/errmsg.h \
   ../../include/opp_string.h \
   ../../include/cneddeclaration.h \
@@ -1437,7 +1435,6 @@ globals.o: globals.cc \
   ../../include/errmsg.h \
   ../../include/opp_string.h
 lex.expryy.o: lex.expryy.cc \
-  ../../include/unistd.h \
   ../../include/expryydefs.h \
   ../../include/util.h \
   ../../include/cdynamicexpression.h \
@@ -1497,7 +1494,6 @@ util.o: util.cc \
   ../../include/errmsg.h \
   ../../include/opp_string.h \
   ../../include/platdep/time.h \
-  ../../include/unistd.h \
   ../../include/random.h \
   ../../include/cmodule.h \
   ../../include/crng.h \
@@ -1551,7 +1547,6 @@ parsim/cadvlinkdelaylookahead.o: parsim/cadvlinkdelaylookahead.cc \
   parsim/cparsimsynchr.h \
   ../../include/cscheduler.h \
   ../../include/platdep/time.h \
-  ../../include/unistd.h \
   ../../include/cmodule.h \
   ../../include/ccomponent.h \
   ../../include/cgate.h \
@@ -1614,8 +1609,7 @@ parsim/cfilecomm.o: parsim/cfilecomm.cc \
   ../../include/cparsimcomm.h \
   ../../include/cpolymorphic.h \
   parsim/ccommbufferbase.h \
-  ../../include/ccommbuffer.h \
-  ../../include/unistd.h
+  ../../include/ccommbuffer.h
 parsim/cidealsimulationprot.o: parsim/cidealsimulationprot.cc \
   ../../include/cmessage.h \
   ../../include/cmodule.h \
@@ -1652,8 +1646,7 @@ parsim/cidealsimulationprot.o: parsim/cidealsimulationprot.cc \
   parsim/cparsimprotocolbase.h \
   parsim/cparsimsynchr.h \
   ../../include/cscheduler.h \
-  ../../include/platdep/time.h \
-  ../../include/unistd.h
+  ../../include/platdep/time.h
 parsim/cispeventlogger.o: parsim/cispeventlogger.cc \
   parsim/cispeventlogger.h \
   ../../include/cparsimcomm.h \
@@ -1670,7 +1663,6 @@ parsim/cispeventlogger.o: parsim/cispeventlogger.cc \
   ../../include/util.h \
   ../../include/regmacros.h \
   ../../include/onstartup.h \
-  ../../include/unistd.h \
   ../../include/cobject.h \
   ../../include/carray.h \
   ../../include/cmessagepar.h \
@@ -1723,7 +1715,6 @@ parsim/clinkdelaylookahead.o: parsim/clinkdelaylookahead.cc \
   parsim/cparsimsynchr.h \
   ../../include/cscheduler.h \
   ../../include/platdep/time.h \
-  ../../include/unistd.h \
   ../../include/cmodule.h \
   ../../include/ccomponent.h \
   ../../include/cgate.h \
@@ -1767,11 +1758,9 @@ parsim/cmpicomm.o: parsim/cmpicomm.cc \
   ../../include/onstartup.h \
   parsim/ccommbufferbase.h \
   ../../include/ccommbuffer.h \
-  ../../include/opp_string.h \
-  ../../include/unistd.h
+  ../../include/opp_string.h
 parsim/cnamedpipecomm.o: parsim/cnamedpipecomm.cc \
   parsim/cnamedpipecomm.h \
-  ../../include/unistd.h \
   ../../include/cexception.h \
   parsim/cmemcommbuffer.h \
   ../../include/cenvir.h \
@@ -1838,8 +1827,7 @@ parsim/cnosynchronization.o: parsim/cnosynchronization.cc \
   parsim/cparsimprotocolbase.h \
   parsim/cparsimsynchr.h \
   ../../include/cscheduler.h \
-  ../../include/platdep/time.h \
-  ../../include/unistd.h
+  ../../include/platdep/time.h
 parsim/cnullmessageprot.o: parsim/cnullmessageprot.cc \
   ../../include/cmessage.h \
   ../../include/cmodule.h \
@@ -1880,7 +1868,6 @@ parsim/cnullmessageprot.o: parsim/cnullmessageprot.cc \
   parsim/cparsimsynchr.h \
   ../../include/cscheduler.h \
   ../../include/platdep/time.h \
-  ../../include/unistd.h \
   parsim/cnmplookahead.h
 parsim/cparsimcomm.o: parsim/cparsimcomm.cc \
   ../../include/errmsg.h \
@@ -1930,8 +1917,7 @@ parsim/cparsimpartition.o: parsim/cparsimpartition.cc \
   ../../include/cgate.h \
   ../../include/cdefaultlist.h \
   ../../include/cscheduler.h \
-  ../../include/platdep/time.h \
-  ../../include/unistd.h
+  ../../include/platdep/time.h
 parsim/cparsimprotocolbase.o: parsim/cparsimprotocolbase.cc \
   ../../include/cmessage.h \
   ../../include/cmodule.h \
@@ -1965,8 +1951,7 @@ parsim/cparsimprotocolbase.o: parsim/cparsimprotocolbase.cc \
   ../../include/cdefaultlist.h \
   parsim/cparsimsynchr.h \
   ../../include/cscheduler.h \
-  ../../include/platdep/time.h \
-  ../../include/unistd.h
+  ../../include/platdep/time.h
 parsim/cplaceholdermod.o: parsim/cplaceholdermod.cc \
   parsim/cplaceholdermod.h \
   parsim/cproxygate.h \
@@ -2003,7 +1988,6 @@ parsim/cplaceholdermod.o: parsim/cplaceholdermod.cc \
   parsim/cparsimsynchr.h \
   ../../include/cscheduler.h \
   ../../include/platdep/time.h \
-  ../../include/unistd.h \
   ../../include/cmessage.h \
   ../../include/cmessagepar.h \
   ../../include/cfunction.h \

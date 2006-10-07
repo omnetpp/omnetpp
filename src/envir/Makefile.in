@@ -101,7 +101,6 @@ akoutvectormgr.o: akoutvectormgr.cc \
   ../../include/cclassfactory.h \
   ../../include/errmsg.h \
   ../../include/opp_string.h \
-  ../../include/unistd.h \
   ../../include/ccomponent.h \
   ../../include/cgate.h \
   ../../include/csimulation.h \
@@ -152,7 +151,6 @@ cenvir.o: cenvir.cc \
   patmatch.h \
   ../../include/envirext.h \
   ../../include/platdep/time.h \
-  ../../include/unistd.h \
   ../../include/ccomponent.h \
   ../../include/cgate.h \
   ../../include/cdefaultlist.h
@@ -172,8 +170,7 @@ cinifile.o: cinifile.cc \
   ../../include/cconfig.h \
   ../../include/opp_string.h \
   ../../include/cpolymorphic.h \
-  ../../include/errmsg.h \
-  ../../include/unistd.h
+  ../../include/errmsg.h
 cxmldoccache.o: cxmldoccache.cc \
   ../../include/cpolymorphic.h \
   cxmldoccache.h \
@@ -199,7 +196,6 @@ filemgrs.o: filemgrs.cc \
   filemgrs.h \
   ../../include/regmacros.h \
   ../../include/onstartup.h \
-  ../../include/unistd.h \
   ../../include/carray.h \
   ../../include/globals.h \
   ../../include/cexception.h \
@@ -230,7 +226,6 @@ fsutils.o: fsutils.cc \
   ../../include/opp_string.h \
   ../../include/defs.h \
   ../../include/regmacros.h \
-  ../../include/unistd.h \
   ../../include/errmsg.h
 main.o: main.cc \
   ../../include/cobject.h \
@@ -289,8 +284,7 @@ omnetapp.o: omnetapp.cc \
   ../../include/cexpression.h \
   ../../include/ccomponent.h \
   ../../include/cgate.h \
-  ../../include/cdefaultlist.h \
-  ../../include/unistd.h
+  ../../include/cdefaultlist.h
 patmatch.o: patmatch.cc \
   patmatch.h \
   ../../include/cexception.h \
@@ -307,5 +301,4 @@ speedmtr.o: speedmtr.cc \
   envdefs.h \
   ../../include/platdep/time.h \
   ../../include/regmacros.h \
-  ../../include/onstartup.h \
-  ../../include/unistd.h
+  ../../include/onstartup.h

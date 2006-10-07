@@ -57,13 +57,13 @@ EMBED_TCL_CODE=no
 #
 # Set to "yes" to enable simulation executables load NED files dynamically.
 #
-#FIXME turn off for now: WITH_NETBUILDER=yes
-WITH_NETBUILDER=no
+WITH_NETBUILDER=yes
 
 #
 # Set to "yes" to enable the parallel distributed simulation feature.
 #
-WITH_PARSIM=yes
+#FIXME: WITH_PARSIM=yes
+WITH_PARSIM=no
 
 #
 # Compiler and linker options for Tcl/Tk

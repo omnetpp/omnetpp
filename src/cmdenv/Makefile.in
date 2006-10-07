@@ -95,8 +95,7 @@ cmdenv.o: cmdenv.cc \
   ../../include/cgate.h \
   ../../include/cdefaultlist.h \
   ../../include/cmessagepar.h \
-  ../../include/cfunction.h \
-  ../../include/unistd.h
+  ../../include/cfunction.h
 enumstr.o: enumstr.cc \
   enumstr.h
 heap.o: heap.cc
