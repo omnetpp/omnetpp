@@ -54,7 +54,6 @@
 #include <string.h>         /* YYVERBOSE needs it */
 #endif
 
-#define yylloc expryylloc
 #define yyin expryyin
 #define yyout expryyout
 #define yyrestart expryyrestart

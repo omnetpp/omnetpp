@@ -50,9 +50,8 @@ S  [ \t\v\n\r\f]
 #include "expryydefs.h"
 #include "expr.tab.h"
 
-#define yylloc expryylloc
+#define yylval expryylval
 extern YYSTYPE yylval;
-extern YYLTYPE yylloc;
 
 // wrap symbols to allow several .lex files coexist
 #define comment     exprcomment
@@ -205,11 +204,6 @@ static void _count(int updateprevpos)
             }
         }
     }
-    /* printf("li=%d co=%d\n", pos.li, pos.co); good for debugging... */
-    yylloc.first_line   = prevpos.li;
-    yylloc.first_column = prevpos.co;
-    yylloc.last_line    = pos.li;
-    yylloc.last_column  = pos.co;
 }
 
 void count(void)
