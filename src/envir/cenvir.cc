@@ -41,7 +41,7 @@ using std::ostream;
 cEnvir ev;
 
 // the global list for the registration objects
-cSingleton<cArray> omnetapps("omnetapps");
+cRegistrationList omnetapps("omnetapps");
 
 // output buffer
 #define ENVIR_TEXTBUF_LEN 1024
@@ -247,7 +247,15 @@ void cEnvir::shutdown()
         delete app;
         app = NULL;
     }
+
     simulation.shutdown();
+
+    nedDeclarations.clear();
+    componentTypes.clear();
+    nedFunctions.clear();
+    classes.clear();
+    enums.clear();
+    omnetapps.clear();
 }
 
 //-----------------------------------------------------------------

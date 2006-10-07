@@ -17,18 +17,18 @@
 
 #include "globals.h"
 #include "carray.h"
-#include "onstartup.h"  // cSingleton
+#include "onstartup.h"
 #include "ccomponenttype.h"
 
 
 //
 // Global objects
 //
-cSingleton<cArray> nedDeclarations("NED declarations");
-cSingleton<cArray> componentTypes("component types");
-cSingleton<cArray> nedFunctions("NED functions");
-cSingleton<cArray> classes("classes");
-cSingleton<cArray> enums("enums");
+cRegistrationList nedDeclarations("NED declarations");
+cRegistrationList componentTypes("component types");
+cRegistrationList nedFunctions("NED functions");
+cRegistrationList classes("classes");
+cRegistrationList enums("enums");
 
 
 cModuleType *findModuleType(const char *s)

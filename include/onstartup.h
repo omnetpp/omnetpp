@@ -20,6 +20,8 @@
 
 #include "defs.h"
 
+class cArray;
+
 
 /**
  * Allows code fragments to be collected in global scope which will
@@ -64,15 +66,16 @@ class SIM_API ExecuteOnStartup
  *
  * @ingroup Internals
  */
-template<class T> class cSingleton
+class cRegistrationList
 {
   private:
-    T *inst;
+    cArray *inst;
     const char *tmpname;
   public:
-    cSingleton(const char *name) {tmpname = name;}
-    ~cSingleton() {delete inst;}
-    T *instance() {if (!inst) {inst=new T(tmpname); inst->removeFromOwnershipTree();} return inst;}
+    cRegistrationList(const char *name);
+    ~cRegistrationList();
+    cArray *instance();
+    void clear();
 };
 
 #endif

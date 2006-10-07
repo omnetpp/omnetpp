@@ -93,7 +93,7 @@ class cInspectorFactory : public cObject
 };
 
 ///< List of cInspectorFactory objects.
-extern cSingleton<cArray> inspectorfactories;
+extern cRegistrationList inspectorfactories;
 
 /**
  * Find a cInspectorFactory.

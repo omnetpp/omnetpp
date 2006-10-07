@@ -45,7 +45,7 @@ class TOmnetApp;
 class ArgList;
 class cConfiguration;
 
-extern ENVIR_API cSingleton<cArray> omnetapps;
+extern ENVIR_API cRegistrationList omnetapps;
 
 // registration class
 class ENVIR_API cOmnetAppRegistration : public cObject

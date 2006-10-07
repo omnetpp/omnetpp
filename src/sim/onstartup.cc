@@ -18,6 +18,7 @@
 
 #include "onstartup.h"
 #include "cexception.h"
+#include "carray.h"
 
 
 ExecuteOnStartup *ExecuteOnStartup::head;
@@ -56,4 +57,36 @@ void ExecuteOnStartup::executeAll()
     ExecuteOnStartup::head = NULL;
 }
 
+//----
+
+cRegistrationList::cRegistrationList(const char *name)
+{
+    tmpname = name;
+    inst = NULL;
+}
+
+cRegistrationList::~cRegistrationList()
+{
+    delete inst;
+}
+
+cArray *cRegistrationList::instance()
+{
+    if (!inst)
+    {
+        inst = new cArray(tmpname);
+        inst->removeFromOwnershipTree();
+    }
+    return inst;
+}
+
+void cRegistrationList::clear()
+{
+    if (inst)
+    {
+        inst->clear();
+        delete inst;
+        inst = NULL;
+    }
+}
 
