@@ -54,8 +54,7 @@ SAMPLES=aloha cqn dyna fddi fifo hcube hist neddemo p-to-p queueing routing queu
 JNILIBS=org.omnetpp.ned2.model \
         org.omnetpp.scave.engine \
         org.omnetpp.eventlog.engine
-#FIXME this does not build currently, to be added back:
-        org.omnetpp.experimental.simkernel
+#        org.omnetpp.experimental.simkernel   FIXME this does not build currently, to be added back
 
 #
 # Group targets. Note that utils has to be built BEFORE other libs and progs
