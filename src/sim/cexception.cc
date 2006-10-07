@@ -34,30 +34,12 @@ static char buffer[BUFLEN];
 static char buffer2[BUFLEN];
 
 
-//
-// Helper, called from every cException constructor.
-//
-// If an exception occurs in initialization code (during construction of
-// global objects, before main() is called), there's nobody who could
-// catch the error, so it would just cause a program abort.
-// Here we handle this case manually: if cException ctor is invoked before
-// main() has started, we print the error message and call exit(1).
-//
-static void exitIfStartupError(cException *e)
-{
-    if (!cStaticFlag::isSet())
-    {
-        ev.printfmsg("Error during startup/shutdown: %s. Exiting.", e->message());
-        exit(1);
-    }
-}
-
 cException::cException()
 {
     errorcode = eCUSTOM;
     storeCtx();
-    // 'message' remains empty
-    exitIfStartupError(this);
+    msg = "n/a";
+    exitIfStartupError();
 }
 
 cException::cException(int errc...)
@@ -66,7 +48,6 @@ cException::cException(int errc...)
     va_start(va, errc);
     init(NULL, errc, emsg[errc], va);
     va_end(va);
-    exitIfStartupError(this);
 }
 
 cException::cException(const char *msgformat...)
@@ -75,7 +56,6 @@ cException::cException(const char *msgformat...)
     va_start(va, msgformat);
     init(NULL, eCUSTOM, msgformat, va);
     va_end(va);
-    exitIfStartupError(this);
 }
 
 cException::cException(const cPolymorphic *where, int errc...)
@@ -84,7 +64,6 @@ cException::cException(const cPolymorphic *where, int errc...)
     va_start(va, errc);
     init(where, errc, emsg[errc], va);
     va_end(va);
-    exitIfStartupError(this);
 }
 
 cException::cException(const cPolymorphic *where, const char *msgformat...)
@@ -93,7 +72,6 @@ cException::cException(const cPolymorphic *where, const char *msgformat...)
     va_start(va, msgformat);
     init(where, eCUSTOM, msgformat, va);
     va_end(va);
-    exitIfStartupError(this);
 }
 
 void cException::storeCtx()
@@ -107,6 +85,15 @@ void cException::storeCtx()
         contextfullpath = simulation.context()->fullPath().c_str();
         if (simulation.contextModule())
             moduleid = simulation.contextModule()->id();
+    }
+}
+
+void cException::exitIfStartupError()
+{
+    if (!cStaticFlag::isSet())
+    {
+        ev.printfmsg("Error during startup/shutdown: %s. Exiting.", message());
+        abort();
     }
 }
 
@@ -134,7 +121,9 @@ void cException::init(const cPolymorphic *where, int errc, const char *fmt, va_l
     // store context
     storeCtx();
 
-    //__asm int 3;
+    // if a global object's ctor/dtor throws an exception, there won't be
+    // anyone around to catch it, so print it and abort here.
+    exitIfStartupError();
 }
 
 //---

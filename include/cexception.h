@@ -43,7 +43,7 @@ class SIM_API cException
 
     /**
      * Helper function for constructors: assembles and stores the message text.
-     * If obj is non-NULL, the message text will be prepended (if needed)
+     * If the first arg is non-NULL, the message text will be prepended (if needed)
      * with the object type and name, like this: "(cArray)array: ..."
      */
     void init(const cPolymorphic *obj, int errc, const char *fmt, va_list va);
@@ -51,14 +51,23 @@ class SIM_API cException
     // helper for init()
     void storeCtx();
 
+    // default constructor, for subclasses only.
+    cException();
+
+    //
+    // Helper, called from cException constructors.
+    //
+    // If an exception occurs in initialization code (during construction of
+    // global objects, before main() is called), there's nobody who could
+    // catch the error, so it would just cause a program abort.
+    // Here we handle this case manually: if cException ctor is invoked before
+    // main() has started, we print the error message and call exit(1).
+    //
+    void exitIfStartupError();
+
   public:
     /** @name Constructors, destructor */
     //@{
-    /**
-     * Default constructor.
-     */
-    cException();
-
     /**
      * Error is identified by an error code, and the message comes from a
      * string table. The error string may expect printf-like arguments
