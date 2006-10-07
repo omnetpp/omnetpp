@@ -801,15 +801,12 @@ fi
 #----------------------
 AC_CONFIG_FILES(
   Makefile
-  src/cmdenv/Makefile
-  src/envir/Makefile
-  src/gned/Makefile
-  src/nedxml/Makefile
-  src/nedc/Makefile
-  src/scalars/Makefile
-  src/plove/Makefile
   src/sim/Makefile
+  src/envir/Makefile
   src/tkenv/Makefile
+  src/cmdenv/Makefile
+  src/nedc/Makefile
+  src/nedxml/Makefile
   src/utils/Makefile
   src/utils/opp_makemake
   src/utils/opp_neddoc
@@ -830,6 +827,10 @@ AC_CONFIG_FILES(
   samples/sockets/Makefile
   test/Makefile
 )
+#FIXME todo add these:
+#  src/scave/Makefile
+#  src/eventlog/Makefile
+#  src/common/Makefile
 
 
 #----------------------

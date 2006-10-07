@@ -57,22 +57,22 @@ jnilibs : $(JNILIBS)
 #
 $(LIBS):
 	@echo ===== Compiling $@ ====
-	cd /d $(OMNETPP_SRC_DIR)/$@ && $(MAKE)
+	cd $(OMNETPP_SRC_DIR)/$@ && $(MAKE)
 
 #
 # Programs
 #
 $(PROGS):
 	@echo ===== Compiling $@ ====
-	cd /d $(OMNETPP_SRC_DIR)/$@ && $(MAKE)
+	cd $(OMNETPP_SRC_DIR)/$@ && $(MAKE)
 
 #
 # Native libs for the UI
 #
 $(JNILIBS):
 	@echo ===== Compiling $@ ====
-	cd /d $(OMNETPP_UI_DIR)/$@ && $(MAKE) clean
-	cd /d $(OMNETPP_UI_DIR)/$@ && $(MAKE)
+	cd $(OMNETPP_UI_DIR)/$@ && $(MAKE) clean
+	cd $(OMNETPP_UI_DIR)/$@ && $(MAKE)
 
 #
 # Sample programs
@@ -80,7 +80,7 @@ $(JNILIBS):
 
 $(SAMPLES):
 	@echo ===== Compiling $@ ====
-	cd /d $(OMNETPP_SAMPLES_DIR)/$@ && $(MAKE)
+	cd $(OMNETPP_SAMPLES_DIR)/$@ && $(MAKE)
 
 #
 # Documentation
@@ -119,6 +119,9 @@ check-env:
 	    echo '  *** Warning: Looks like @OMNETPP_LIB_DIR@ is not in LD_LIBRARY_PATH, shared libs may not work!'; \
 	  fi; \
 	fi
+
+ver_h:
+	@cd $(OMNETPP_SRC_DIR)/utils && cp ver.h.base ver.h && echo '#define' OMNETPP_RELEASE "$(OMNETPP_VERSION)" >>ver.h && echo '#define' OMNETPP_EDITION "$(OMNETPP_EDITION)" >>ver.h
 
 clean:
 	for i in $(LIBS) $(PROGS); do \
