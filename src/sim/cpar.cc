@@ -55,6 +55,11 @@ void cPar::netUnpack(cCommBuffer *buffer)
     //TBD
 }
 
+cComponent *cPar::ownerComponent()
+{
+    return dynamic_cast<cComponent *>(owner());
+}
+
 cProperties *cPar::properties() const
 {
     // props may actually point into the declaration object

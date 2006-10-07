@@ -102,6 +102,7 @@ NEDElement *NEDSymbolTable::getClassDeclaration(const char *name)
 void NEDSymbolTable::add(NEDElement *node)
 {
     int tag = node->getTagCode();
+//FIXME make common symbol table (it's a single name space)
     if (tag==NED_CHANNEL)
     {
         // add to channels table
@@ -112,12 +113,6 @@ void NEDSymbolTable::add(NEDElement *node)
     {
         // add to modules table
         modules[node->getAttribute("name")] = node;
-    }
-    else if (tag==NED_NETWORK)
-    {
-        // add to networks table
-        NetworkNode *net = (NetworkNode *)node;
-        networks[net->getName()] = net;
     }
     else if (tag==NED_ENUM)
     {
@@ -182,12 +177,15 @@ NEDElement *NEDClassicImportResolver::loadImport(const char *import)
     }
 
     // load and parse it
+/*FIXME
     NEDParser parser;
     parser.setParseExpressions(true);
     parser.parseNEDFile(fpath.c_str());
     NEDElement *tree = parser.getTree();
 
     return tree;
+*/
+return NULL; //XXX
 }
 
 //-----------
@@ -223,6 +221,7 @@ void NEDCompiler::validate(NEDElement *tree)
 
 void NEDCompiler::doValidate(NEDElement *tree)
 {
+/*XXX
     // DTD validation and additional basic validation
     NEDDTDValidator dtdvalidator;
     dtdvalidator.validate(tree);
@@ -289,5 +288,6 @@ void NEDCompiler::doValidate(NEDElement *tree)
             if (debug) fprintf(stderr,"dbg: %s %s added to symbol table\n",node->getTagName(), node->getAttribute("name"));
         }
     }
+*/
 }
 

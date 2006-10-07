@@ -123,26 +123,9 @@ class SIM_API cPar : public cObject
     cPar& operator=(const cPar& otherpar);
     //@}
 
-    /** @name Redefined cPolymorphic functions */
+    /** @name Redefined cObject functions */
     //@{
-    /**
-     * Redefined to return the parameter name.
-     */
-    virtual const char *fullName() const;
-
-    /**
-     * Redefined to return the parameter's full path, that is, the
-     * owner component's fullPath() plus "." plus the parameter name.
-     */
-    virtual std::string fullPath() const;
-
     /* Note: no dup() because this is an abstract class */
-
-    /**
-     * Produces a one-line description of object contents into the buffer passed as argument.
-     * See cObject for more details.
-     */
-    virtual std::string info() const;
 
     /**
      * Serializes the object into a buffer.
