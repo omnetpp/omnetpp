@@ -115,6 +115,14 @@ libsim_std$(SO_LIB_SUFFIX) : $(CPPOBJS)
 	$(SHLIB_LD) -o libsim_std$(SO_LIB_SUFFIX) $(CPPOBJS)
 	../utils/install-lib libsim_std$(SO_LIB_SUFFIX).$(OMNETPP_VERSION) $(OMNETPP_LIB_DIR) libsim_std$(SO_LIB_SUFFIX)
 
+expr.tab.h expr.tab.cc : expr.y
+	$(YACC) -p expryy -b expr -d expr.y
+	mv expr.tab.c expr.tab.cc
+
+lex.expryy.cc: expr.lex
+	$(LEX) -Pexpryy expr.lex
+	mv lex.expryy.c lex.expryy.cc
+
 depend:
 	$(MAKEDEPEND) -I../../include -- *.cc parsim/*.cc
 	$(MAKEDEPEND) -I../../include -fMakefile.in -- *.cc parsim/*.cc
