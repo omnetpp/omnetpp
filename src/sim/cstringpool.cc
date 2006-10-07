@@ -13,7 +13,7 @@
 *--------------------------------------------------------------*/
 
 #include "cstringpool.h"
-
+#include "cobject.h"
 
 cStringPool::cStringPool()
 {
@@ -27,6 +27,8 @@ cStringPool::~cStringPool()
 
 const char *cStringPool::get(const char *s)
 {
+    ASSERT(cStaticFlag::isSet()); // don't use stringpool on global objects
+
     StringIntMap::iterator it = pool.find(const_cast<char *>(s));
     if (it==pool.end())
     {

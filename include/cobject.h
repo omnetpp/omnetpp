@@ -314,7 +314,7 @@ class SIM_API cObject : public cPolymorphic
     virtual const char *fullPath(char *buffer, int buffersize) const;
 
     /**
-     * Turn name pooling on/off. This is an optimization feature that saves
+     * Turn name pooling on/off. Name pooling is an optimization technique that saves
      * memory if several objects have identical names.
      */
     virtual void setNamePooling(bool b);
@@ -432,7 +432,8 @@ class SIM_API cNoncopyableObject : public cObject, noncopyable
     /**
      * Constructor
      */
-    explicit cNoncopyableObject(const char *name=NULL) {setName(name);}
+    explicit cNoncopyableObject(const char *name=NULL, bool namepooling=true) : 
+        cObject(name, namepooling) {}
 
 //FIXME disable copy ctor as well
 

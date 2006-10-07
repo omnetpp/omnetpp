@@ -79,7 +79,7 @@ ostream& operator<<(ostream& os, struct tm d)
 //==========================================================================
 //=== cSimulation - member functions
 
-cSimulation::cSimulation(const char *name) : cNoncopyableObject(name)
+cSimulation::cSimulation(const char *name) : cNoncopyableObject(name, false)
 {
     assert(this==&simulation);
 
