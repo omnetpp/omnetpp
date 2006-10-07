@@ -76,8 +76,6 @@ CPPOBJS_MPI=\
 
 CPPOBJS= $(CPPOBJS_STD)
 
-CPPOBJS= $(CPPOBJS_STD)
-
 ifeq ($(WITH_NETBUILDER),yes)
 CPPOBJS += $(CPPOBJS_NETBUILDER)
 COPTS += -I../nedxml
@@ -124,8 +122,8 @@ lex.expryy.cc: expr.lex expr.tab.h
 	mv lex.expryy.c lex.expryy.cc
 
 depend:
-	$(MAKEDEPEND) -I../../include -- *.cc parsim/*.cc
-	$(MAKEDEPEND) -I../../include -fMakefile.in -- *.cc parsim/*.cc
+	$(MAKEDEPEND) -I../../include -- *.cc netbuilder/*.cc parsim/*.cc
+	$(MAKEDEPEND) -I../../include -fMakefile.in -- *.cc netbuilder/*.cc parsim/*.cc
 
 clean:
 	rm -f *.o parsim/*.o netbuilder/*.o

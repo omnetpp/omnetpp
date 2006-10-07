@@ -56,9 +56,11 @@ event.obj: event.cc \
   event.h \
   eventlog.h \
   eventlogentry.h \
+  ievent.h \
   eventlogentries.h \
   messagedependency.h \
   stringpool.h \
+  ieventlog.h \
   eventlogindex.h \
   eventlogdefs.h
 eventlog.obj: eventlog.cc \
@@ -66,27 +68,46 @@ eventlog.obj: eventlog.cc \
   eventlog.h \
   eventlogdefs.h \
   event.h \
+  ieventlog.h \
   eventlogindex.h \
+  ievent.h \
   eventlogentry.h \
   eventlogentries.h \
   messagedependency.h
 eventlogentries.obj: eventlogentries.cc \
+  event.h \
   eventlogentries.h \
-  eventlogentry.h
+  ievent.h \
+  eventlogentry.h \
+  messagedependency.h
 eventlogentry.obj: eventlogentry.cc \
   eventlog.h \
   eventlogentry.h \
   eventlogentryfactory.h \
   stringpool.h \
   event.h \
+  ieventlog.h \
   eventlogindex.h \
   eventlogdefs.h \
+  ievent.h \
   eventlogentries.h \
   messagedependency.h
 eventlogentryfactory.obj: eventlogentryfactory.cc \
+  event.h \
   eventlogentryfactory.h \
+  ievent.h \
+  eventlogentry.h \
   eventlogentries.h \
-  eventlogentry.h
+  messagedependency.h
+eventlogfacade.obj: eventlogfacade.cc \
+  ievent.h \
+  ieventlog.h \
+  event.h \
+  eventlogfacade.h \
+  eventlogentry.h \
+  messagedependency.h \
+  eventlogentries.h \
+  eventlogdefs.h
 eventlogindex.obj: eventlogindex.cc \
   eventlogindex.h \
   eventlogdefs.h
@@ -97,41 +118,57 @@ eventlogtool.obj: eventlogtool.cc \
   eventlogdefs.h \
   stringpool.h \
   event.h \
+  ieventlog.h \
+  ievent.h \
   eventlogentry.h \
   eventlogentries.h \
   messagedependency.h \
   filteredevent.h
 filteredevent.obj: filteredevent.cc \
+  event.h \
   filteredevent.h \
   filteredeventlog.h \
-  eventlogdefs.h \
-  event.h \
+  ievent.h \
   eventlogentry.h \
   eventlogentries.h \
   messagedependency.h \
+  eventlogdefs.h \
+  ieventlog.h \
   eventlog.h \
   stringpool.h \
   eventlogindex.h
 filteredeventlog.obj: filteredeventlog.cc \
   filteredeventlog.h \
   eventlogdefs.h \
+  ieventlog.h \
   eventlog.h \
   filteredevent.h \
-  stringpool.h \
-  event.h \
-  eventlogindex.h \
-  eventlogentry.h \
-  eventlogentries.h \
-  messagedependency.h
-messagedependency.obj: messagedependency.cc \
-  event.h \
-  eventlog.h \
+  ievent.h \
   eventlogentry.h \
   messagedependency.h \
   eventlogentries.h \
   stringpool.h \
-  eventlogindex.h \
-  eventlogdefs.h
+  event.h \
+  eventlogindex.h
+ievent.obj: ievent.cc \
+  ievent.h \
+  eventlogentry.h \
+  messagedependency.h \
+  eventlogentries.h
+ieventlog.obj: ieventlog.cc \
+  ieventlog.h \
+  eventlogdefs.h \
+  ievent.h \
+  eventlogentry.h \
+  messagedependency.h \
+  eventlogentries.h
+messagedependency.obj: messagedependency.cc \
+  eventlogdefs.h \
+  ievent.h \
+  ieventlog.h \
+  eventlogentry.h \
+  messagedependency.h \
+  eventlogentries.h
 stringpool.obj: stringpool.cc \
   stringpool.h \
   eventlogdefs.h

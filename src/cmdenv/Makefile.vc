@@ -56,28 +56,27 @@ cmdenv.obj: cmdenv.cc \
   ../../include/defs.h \
   ../../include/regmacros.h \
   ../../include/onstartup.h \
-  ../../include/cmodule.h \
-  ../../include/ccomponent.h \
-  ../../include/globals.h \
-  ../../include/carray.h \
-  ../../include/cgate.h \
   ../../include/csimulation.h \
-  ../../include/cobject.h \
-  ../../include/cdefaultlist.h \
-  ../../include/cenvir.h \
   ../../include/util.h \
+  ../../include/globals.h \
+  ../../include/cmsgheap.h \
+  ../../include/ccoroutine.h \
+  ../../include/carray.h \
+  ../../include/cclassfactory.h \
+  ../../include/cobject.h \
+  ../../include/cenvir.h \
   ../../include/cpolymorphic.h \
   ../../include/cexception.h \
   ../../include/cvisitor.h \
   ../../include/cstringpool.h \
   ../../include/errmsg.h \
   ../../include/opp_string.h \
-  ../../include/cclassfactory.h \
-  ../../include/cmsgheap.h \
-  ../../include/ccoroutine.h \
+  ../../include/cmodule.h \
+  ../../include/ccomponent.h \
+  ../../include/cgate.h \
+  ../../include/cdefaultlist.h \
   ../../include/cmessagepar.h \
-  ../../include/cfunction.h \
-  ../../include/unistd.h
+  ../../include/cfunction.h
 enumstr.obj: enumstr.cc \
   enumstr.h
 heap.obj: heap.cc

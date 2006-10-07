@@ -94,7 +94,6 @@
 #include "random.h"
 #include "regmacros.h"
 #include "stlwrap.h"
-#include "unistd.h"
 #include "util.h"
 #include "compat.h"
 

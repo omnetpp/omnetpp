@@ -46,8 +46,7 @@ components: libs progs jnilibs configsamples samples
 #
 #=====================================================================
 
-#LIBS=$(ENVIR_ILIB) common eventlog scave nedxml sim envir cmdenv
-LIBS=$(ENVIR_ILIB) common eventlog scave nedxml   #FIXME simkernel and envir don't build yet
+LIBS=$(ENVIR_ILIB) common eventlog scave nedxml sim envir cmdenv
 #PROGS=utils nedc
 PROGS=utils   #FIXME nedc doesn't build yet
 SAMPLES=aloha cqn dyna fddi fifo hcube hist neddemo p-to-p queueing routing queues tictoc tokenring sockets
