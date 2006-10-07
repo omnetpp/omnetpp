@@ -39,10 +39,11 @@ LIBS=$(ENVIR_ILIB) nedxml sim envir cmdenv
 #PROGS=utils nedc
 PROGS=utils   #FIXME nedc doesn't build yet
 SAMPLES=aloha cqn dyna fddi fifo hcube hist neddemo p-to-p queueing routing queues tictoc tokenring sockets
-JNILIBS=org.omnetpp.ned2.model \
-        org.omnetpp.scave.engine \
-        org.omnetpp.eventlog.engine
-#       org.omnetpp.experimental.simkernel    FIXME to be added back
+JNILIBS=
+#JNILIBS=org.omnetpp.ned2.model \
+#        org.omnetpp.scave.engine \
+#        org.omnetpp.experimental.simkernel \
+#        org.omnetpp.eventlog.engine
 
 #
 # Group targets. Note that utils has to be built BEFORE other libs and progs
