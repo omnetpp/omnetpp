@@ -39,7 +39,6 @@ cException::cException()
     errorcode = eCUSTOM;
     storeCtx();
     msg = "n/a";
-    exitIfStartupError();
 }
 
 cException::cException(int errc...)
@@ -92,7 +91,7 @@ void cException::exitIfStartupError()
 {
     if (!cStaticFlag::isSet())
     {
-        ev.printfmsg("Error during startup/shutdown: %s. Exiting.", message());
+        ev.printfmsg("Error during startup/shutdown: %s. Aborting.", message());
         abort();
     }
 }
