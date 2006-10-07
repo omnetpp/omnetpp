@@ -115,7 +115,8 @@ WITH_NETBUILDER=yes
 #
 # Set to "yes" to enable the parallel distributed simulation feature.
 #
-WITH_PARSIM=yes
+# WITH_PARSIM=yes
+WITH_PARSIM=no    # FIXME for now
 
 #
 # Choose between debug and release libraries here
