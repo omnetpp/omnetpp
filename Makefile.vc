@@ -53,9 +53,9 @@ PROGS=utils   #FIXME nedc doesn't build yet
 SAMPLES=aloha cqn dyna fddi fifo hcube hist neddemo p-to-p queueing routing queues tictoc tokenring sockets
 JNILIBS=org.omnetpp.ned2.model \
         org.omnetpp.scave.engine \
-        org.omnetpp.experimental.simkernel
+        org.omnetpp.eventlog.engine
 #FIXME this does not build currently, to be added back:
-#       org.omnetpp.eventlog.engine \
+        org.omnetpp.experimental.simkernel
 
 #
 # Group targets. Note that utils has to be built BEFORE other libs and progs
