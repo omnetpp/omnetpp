@@ -69,31 +69,34 @@ cmdenv.o: cmdenv.cc \
   ../envir/speedmtr.h \
   ../../include/platdep/time.h \
   ../../include/defs.h \
-  ../../include/ctypes.h \
-  ../../include/csimul.h \
-  ../envir/omnetapp.h \
-  ../../include/globals.h \
-  ../../include/cobject.h \
+  ../../include/regmacros.h \
   ../../include/onstartup.h \
-  ../../include/cenvir.h \
+  ../../include/csimulation.h \
+  ../envir/omnetapp.h \
   ../../include/util.h \
+  ../../include/globals.h \
+  ../../include/cmsgheap.h \
+  ../../include/ccoroutine.h \
+  ../../include/carray.h \
+  ../../include/cclassfactory.h \
+  ../../include/cobject.h \
+  ../../include/cenvir.h \
   ../../include/cpolymorphic.h \
   ../../include/cexception.h \
   ../../include/cvisitor.h \
-  ../../include/opp_string.h \
+  ../../include/cstringpool.h \
   ../../include/errmsg.h \
-  ../../include/cmsgheap.h \
-  ../../include/ccoroutine.h \
-  ../../include/coutvect.h \
-  ../../include/carray.h \
+  ../../include/opp_string.h \
   ../envir/envdefs.h \
   ../../include/envirext.h \
   ../../include/cconfig.h \
   ../../include/cmodule.h \
-  ../../include/cqueue.h \
+  ../../include/ccomponent.h \
   ../../include/cgate.h \
   ../../include/cdefaultlist.h \
-  ../../include/cpar.h
+  ../../include/cmessagepar.h \
+  ../../include/cfunction.h \
+  ../../include/unistd.h
 enumstr.o: enumstr.cc \
   enumstr.h
 heap.o: heap.cc

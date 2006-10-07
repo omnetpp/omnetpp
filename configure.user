@@ -57,7 +57,8 @@ EMBED_TCL_CODE=no
 #
 # Set to "yes" to enable simulation executables load NED files dynamically.
 #
-WITH_NETBUILDER=yes
+#FIXME turn off for now: WITH_NETBUILDER=yes
+WITH_NETBUILDER=no
 
 #
 # Set to "yes" to enable the parallel distributed simulation feature.

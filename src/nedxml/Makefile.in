@@ -33,8 +33,30 @@ XMLPARSER=@XMLPARSER@
 #
 COPTS=$(CPPFLAGS) $(CFLAGS) $(XML_CFLAGS) -I$(OMNETPP_INCL_DIR) -I. -DBUILDING_NEDXML
 
-OBJS= "TODO take it over from the .vc file!"
+#OBJS= nedelements.o nedelement.o nederror.o \
+#      nedvalidator.o neddtdvalidator.o neddtdvalidatorbase.o \
+#      #      nedbasicvalidator.o nedsemanticvalidator.o \
+#      nedfilebuffer.o nedparser.o nedyylib.o \
+#      #      ned2.tab.o lex.ned2yy.o \
+#      msg2.tab.o lex.msg2yy.o \
+#      #      ned1.tab.o lex.ned1yy.o \
+#      nedutil.o nedgenerator.o xmlgenerator.o nedtools.o \
+#      #      nedxmlparser.o nedsaxhandler.o saxparser_$(XMLPARSER).o \
+#      nedcompiler.o cppgenerator.o cppmsggenerator.o cppexprgenerator.o
+#
+#      # FIXME begin temporary def
+OBJS= nedelements.o nedelement.o nederror.o \
+      nedvalidator.o neddtdvalidator.o neddtdvalidatorbase.o \
+      nedbasicvalidator.o nedsemanticvalidator.o \
+      nedfilebuffer.o nedparser.o nedyylib.o \
+      ned2.tab.o lex.ned2yy.o nedtools.o \
+      nedutil.o ned2generator.o ned1generator.o xmlgenerator.o \
+      nedxmlparser.o nedsaxhandler.o saxparser_$(XMLPARSER).o \
+      ned1.tab.o lex.ned1yy.o \
+      msg2.tab.o lex.msg2yy.o
+# FIXME end temporary def
 
+ 
 #
 # Automatic rules
 #

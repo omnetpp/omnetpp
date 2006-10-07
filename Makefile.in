@@ -33,7 +33,8 @@ components: libs progs jnilibs samples
 #
 #=====================================================================
 
-LIBS=$(ENVIR_ILIB) common eventlog scave nedxml sim envir cmdenv
+#LIBS=$(ENVIR_ILIB) common eventlog scave nedxml sim envir cmdenv
+LIBS=$(ENVIR_ILIB) nedxml sim envir cmdenv
 #PROGS=utils nedc
 PROGS=utils   #FIXME nedc doesn't build yet
 SAMPLES=aloha cqn dyna fddi fifo hcube hist neddemo p-to-p queueing routing queues tictoc tokenring sockets
@@ -47,7 +48,7 @@ JNILIBS=org.omnetpp.ned2.model \
 # because tcl2c might be needed to build tkenv or gned.
 #
 libs: ver_h utils $(LIBS)
-eventlog scave nedxml sim envir cmdenv : common
+#FIXME put back: eventlog scave nedxml sim envir cmdenv : common
 progs: ver_h $(PROGS)
 samples: rundemo $(SAMPLES)
 jnilibs : $(JNILIBS)
