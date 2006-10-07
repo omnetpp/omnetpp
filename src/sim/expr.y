@@ -235,7 +235,7 @@ literal
 
 stringliteral
         : STRINGCONSTANT
-                { char *d; char *s = opp_parsequotedstr($1,d); *e++ = s; delete [] s; delete [] $1; }
+                { const char *dummy; char *s = opp_parsequotedstr($1,dummy); *e++ = s; delete [] s; delete [] $1; }
         ;
 
 boolliteral

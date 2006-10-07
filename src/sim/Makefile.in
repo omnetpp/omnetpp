@@ -48,31 +48,31 @@ CPPOBJS_STD=\
     cstringpool.o cstrtokenizer.o cstruct.o ctopo.o cvarhist.o \
     cvisitor.o cwatch.o cxmlelement.o cxmlpar.o distrib.o \
     errmsg.o globals.o lex.expryy.o minixpath.o onstartup.o \
-    task.o util.o
+    task.o util.o expr.tab.o
 
 CPPOBJS_NETBUILDER=\
-    netbuilder\cexpressionbuilder.o \
-    netbuilder\loadnedfile.o
+    netbuilder/cexpressionbuilder.o \
+    netbuilder/loadnedfile.o
 
 XXX_CPPOBJS_NETBUILDER=\
-    netbuilder\cdynamicchannel.o \
-    netbuilder\cdynamicmodule.o \
-    netbuilder\cexpressionbuilder.o \
-    netbuilder\cnednetworkbuilder.o \
-    netbuilder\loadnedfile.o
+    netbuilder/cdynamicchannel.o \
+    netbuilder/cdynamicmodule.o \
+    netbuilder/cexpressionbuilder.o \
+    netbuilder/cnednetworkbuilder.o \
+    netbuilder/loadnedfile.o
 
 CPPOBJS_PARSIM=\
-    parsim\ccommbuffer.o parsim\cmemcommbuffer.o \
-    parsim\cparsimpartition.o parsim\cplaceholdermod.o parsim\cproxygate.o \
-    parsim\cparsimprotocolbase.o parsim\cnosynchronization.o \
-    parsim\cnullmessageprot.o parsim\clinkdelaylookahead.o \
-    parsim\cidealsimulationprot.o parsim\cispeventlogger.o \
-    parsim\cparsimcomm.o parsim\ccommbufferbase.o parsim\cfilecomm.o \
-    parsim\cfilecommbuffer.o parsim\cnamedpipecomm-win.o parsim\parsimutil.o \
-    parsim\creceivedexception.o
+    parsim/ccommbuffer.o parsim\cmemcommbuffer.o \
+    parsim\cparsimpartition.o parsim/cplaceholdermod.o parsim/cproxygate.o \
+    parsim/cparsimprotocolbase.o parsim/cnosynchronization.o \
+    parsim/cnullmessageprot.o parsim/clinkdelaylookahead.o \
+    parsim/cidealsimulationprot.o parsim/cispeventlogger.o \
+    parsim/cparsimcomm.o parsim/ccommbufferbase.o parsim/cfilecomm.o \
+    parsim/cfilecommbuffer.o parsim/cnamedpipecomm-win.o parsim/parsimutil.o \
+    parsim/creceivedexception.o
 
 CPPOBJS_MPI=\
-    parsim\cmpicomm.o parsim\cmpicommbuffer.o
+    parsim/cmpicomm.o parsim/cmpicommbuffer.o
 
 CPPOBJS= $(CPPOBJS_STD)
 
@@ -119,7 +119,7 @@ expr.tab.h expr.tab.cc : expr.y
 	$(YACC) -p expryy -b expr -d expr.y
 	mv expr.tab.c expr.tab.cc
 
-lex.expryy.cc: expr.lex
+lex.expryy.cc: expr.lex expr.tab.h
 	$(LEX) -Pexpryy expr.lex
 	mv lex.expryy.c lex.expryy.cc
 
