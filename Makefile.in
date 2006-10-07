@@ -52,7 +52,7 @@ JNILIBS=
 libs: ver_h utils $(LIBS)
 #FIXME put back: eventlog scave nedxml sim envir cmdenv : common
 progs: ver_h $(PROGS)
-samples: rundemo $(SAMPLES)
+samples: $(SAMPLES)
 jnilibs : $(JNILIBS)
 
 #

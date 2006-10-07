@@ -109,6 +109,7 @@ depend:
 	$(MAKEDEPEND) -I../../include -fMakefile.vc -- *.cc netbuilder/*.cc parsim/*.cc
 
 clean:
+	-del expr.tab.h expr.tab.cc lex.expryy.cc
 	-del *.obj netbuilder\*.obj parsim\*.obj
 	-del sim_std.lib sim_std.dll sim_std.ilib sim_std.exp 2> nul
 	-del *.ilk *.idb *.pdb *.pch 2> nul
