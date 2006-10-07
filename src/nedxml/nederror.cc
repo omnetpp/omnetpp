@@ -136,7 +136,7 @@ void NEDInternalError(const char *file, int line, NEDElement *context, const cha
     else
         fprintf(stderr, "INTERNAL ERROR: %s:%d: %s\n", file, line, messagebuf);
     // exit(-1);
-    __asm int 3; //FIXME this windows-only
+    //__asm int 3; //FIXME this windows-only
 }
 
 NEDException::NEDException(const char *msgformat...)

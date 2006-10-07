@@ -56,7 +56,7 @@ OBJS= nedelements.o nedelement.o nederror.o \
       msg2.tab.o lex.msg2yy.o
 # FIXME end temporary def
 
- 
+
 #
 # Automatic rules
 #
@@ -87,16 +87,29 @@ nedelements.cc nedelements.h nedvalidator.cc nedvalidator.h : dtdclassgen.pl ned
 lex.yy.o: lex.yy.cc
 	$(CXX) -c $(COPTS) lex.yy.cc
 
-lex.yy.cc: ned.lex
-	$(LEX) -Pnedyy ned.lex
-	mv lex.nedyy.c lex.yy.cc
+ned1.tab.h ned1.tab.cc : ned1.y
+	$(YACC) -p ned1yy -b ned1 -d ned1.y
+	mv ned1.tab.c ned1.tab.cc
 
-ned.tab.o: ned.tab.h ned.tab.cc
-	$(CXX) -c $(COPTS) ned.tab.cc
+lex.ned1yy.cc: ned1.lex
+	$(LEX) -Pned1yy ned1.lex
+	mv lex.ned1yy.c lex.ned1yy.cc
 
-ned.tab.cc ned.tab.h: ned.y
-	$(YACC) -p nedyy -b ned -d ned.y
-	mv ned.tab.c ned.tab.cc
+ned2.tab.h ned2.tab.cc : ned2.y
+	$(YACC) --verbose --debug -p ned2yy -b ned2 -d ned2.y
+	mv ned2.tab.c ned2.tab.cc
+
+lex.ned2yy.cc: ned2.lex
+	$(LEX) -Pned2yy ned2.lex
+	mv lex.ned2yy.c lex.ned2yy.cc
+
+msg2.tab.h msg2.tab.cc : msg2.y
+	$(YACC) -p msg2yy -b msg2 -d msg2.y
+	mv msg2.tab.c msg2.tab.cc
+
+lex.msg2yy.cc: msg2.lex
+	$(LEX) -Pmsg2yy msg2.lex
+	mv lex.msg2yy.c lex.msg2yy.cc
 
 depend:
 	$(MAKEDEPEND) -I../../include -- *.cc
@@ -132,9 +145,16 @@ cppmsggenerator.o: cppmsggenerator.cc \
   nedelement.h \
   cppexprgenerator.h \
   nedcompiler.h
-lex.yy.o: lex.yy.cc \
-  nedgrammar.h \
-  ned.tab.h
+ned1generator.o: ned1generator.cc \
+  ned1generator.h \
+  nederror.h \
+  nedelements.h \
+  nedelement.h
+ned2generator.o: ned2generator.cc \
+  ned2generator.h \
+  nederror.h \
+  nedelements.h \
+  nedelement.h
 nedbasicvalidator.o: nedbasicvalidator.cc \
   nederror.h \
   nedbasicvalidator.h \
@@ -150,19 +170,21 @@ nedcompiler.o: nedcompiler.cc \
   nedsemanticvalidator.h \
   nedelement.h \
   nedelements.h \
-  nedgrammar.h \
+  nedyydefs.h \
+  neddtdvalidatorbase.h \
   nedvalidator.h
 neddtdvalidatorbase.o: neddtdvalidatorbase.cc \
   nederror.h \
-  neddtdvalidator.h \
+  neddtdvalidatorbase.h \
   nedelement.h \
-  nedelements.h \
-  nedvalidator.h
+  nedvalidator.h \
+  nedelements.h
 neddtdvalidator.o: neddtdvalidator.cc \
   nederror.h \
   neddtdvalidator.h \
   nedelement.h \
   nedelements.h \
+  neddtdvalidatorbase.h \
   nedvalidator.h
 nedelement.o: nedelement.cc \
   nedelement.h \
@@ -176,20 +198,18 @@ nederror.o: nederror.cc \
   nedelement.h
 nedfilebuffer.o: nedfilebuffer.cc \
   nedfilebuffer.h \
+  nedyylib.h \
   nedparser.h \
-  nedgrammar.h \
-  nedelement.h
-nedgenerator.o: nedgenerator.cc \
-  nedgenerator.h \
+  nedelement.h \
+  nedyydefs.h \
   nederror.h \
-  nedelements.h \
-  nedelement.h
+  nedelements.h
 nedparser.o: nedparser.cc \
   nedparser.h \
   nedfilebuffer.h \
   nedelements.h \
   nederror.h \
-  nedgrammar.h \
+  nedyydefs.h \
   nedelement.h
 nedsaxhandler.o: nedsaxhandler.cc \
   nedsaxhandler.h \
@@ -204,14 +224,14 @@ nedsemanticvalidator.o: nedsemanticvalidator.cc \
   nedelement.h \
   nedvalidator.h \
   nedelements.h
-ned.tab.o: ned.tab.cc \
-  nedgrammar.h \
+nedtools.o: nedtools.cc \
+  nedtools.h \
   nederror.h \
-  nedparser.h \
-  nedfilebuffer.h \
+  neddtdvalidator.h \
+  nedelement.h \
   nedelements.h \
-  nedutil.h \
-  nedelement.h
+  neddtdvalidatorbase.h \
+  nedvalidator.h
 nedutil.o: nedutil.cc \
   nederror.h \
   nedutil.h \
@@ -226,6 +246,14 @@ nedxmlparser.o: nedxmlparser.cc \
   nedsaxhandler.h \
   nederror.h \
   nedelement.h
+nedyylib.o: nedyylib.cc \
+  nedyylib.h \
+  nedfilebuffer.h \
+  nedyydefs.h \
+  nedelements.h \
+  nedparser.h \
+  nedelement.h \
+  nederror.h
 saxparser_expat.o: saxparser_expat.cc \
   saxparser.h
 saxparser_libxml.o: saxparser_libxml.cc \
@@ -234,6 +262,26 @@ saxparser_none.o: saxparser_none.cc \
   nederror.h \
   saxparser.h \
   nedelement.h
+tmp_nedtool.o: tmp_nedtool.cc \
+  nedparser.h \
+  nederror.h \
+  nedxmlparser.h \
+  neddtdvalidator.h \
+  nedbasicvalidator.h \
+  nedsemanticvalidator.h \
+  ned2generator.h \
+  ned1generator.h \
+  xmlgenerator.h \
+  nedtools.h \
+  ../../include/platdep/misc.h \
+  ../../include/platdep/fileutil.h \
+  ../utils/ver.h \
+  nedelement.h \
+  nedyydefs.h \
+  nedelements.h \
+  neddtdvalidatorbase.h \
+  nedvalidator.h \
+  ../../include/unistd.h
 xmlgenerator.o: xmlgenerator.cc \
   nedelements.h \
   xmlgenerator.h \
