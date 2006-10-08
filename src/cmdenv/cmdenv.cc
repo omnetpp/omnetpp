@@ -26,6 +26,7 @@
 #include "enumstr.h"
 #include "appreg.h"
 #include "csimplemodule.h"
+#include "ccomponenttype.h"
 #include "cmessage.h"
 #include "args.h"
 #include "speedmtr.h"
@@ -210,7 +211,7 @@ int TCmdenvApp::run()
             readPerRunOptions(run_nr());
 
             // find network
-            cNetworkType *network = NULL; //FIXME findNetwork(opt_network_name.c_str());
+            cModuleType *network = cModuleType::find(opt_network_name.c_str());
             if (!network)
                 throw new cRuntimeError("Network `%s' not found, check .ini and .ned files", opt_network_name.c_str());
 

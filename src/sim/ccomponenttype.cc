@@ -19,6 +19,7 @@
 #include "cchannel.h"
 #include "cenvir.h"
 #include "cexception.h"
+#include "globals.h"
 
 #ifdef WITH_PARSIM
 #include "ccommbuffer.h"
@@ -28,6 +29,11 @@
 
 cComponentType::cComponentType(const char *name) : cNoncopyableObject(name,false)
 {
+}
+
+cComponentType *cComponentType::find(const char *name)
+{
+    return dynamic_cast<cComponentType *>(componentTypes.instance()->get(name));
 }
 
 //----
@@ -119,6 +125,11 @@ cModule *cModuleType::createScheduleInit(char *modname, cModule *parentmod)
     return mod;
 }
 
+cModuleType *cModuleType::find(const char *name)
+{
+    return dynamic_cast<cModuleType *>(componentTypes.instance()->get(name));
+}
+
 //----
 
 cChannelType::cChannelType(const char *name) : cComponentType(name)
@@ -173,5 +184,10 @@ cChannel *cChannelType::create(const char *name, cModule *parentmod)
     // notify ev?
 
     return channel;
+}
+
+cChannelType *cChannelType::find(const char *name)
+{
+    return dynamic_cast<cChannelType *>(componentTypes.instance()->get(name));
 }
 

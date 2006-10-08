@@ -31,7 +31,7 @@ cDynamicChannelType::cDynamicChannelType(const char *name) : cChannelType(name)
 
 void cDynamicChannelType::addParametersTo(cChannel *channel)
 {
-    cNEDDeclaration *decl = cNEDResourceCache::instance()->lookup(name());
+    cNEDDeclaration *decl = (cNEDDeclaration *) cNEDResourceCache::instance()->lookup(name());
     //FIXME and...
 }
 

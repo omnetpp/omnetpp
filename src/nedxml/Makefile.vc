@@ -33,7 +33,8 @@ OBJS= nedelements.obj nedelement.obj nederror.obj \
       nedxmlparser.obj nedsaxhandler.obj saxparser_$(XMLPARSER).obj \
       ned1.tab.obj lex.ned1yy.obj \
       msg2.tab.obj lex.msg2yy.obj \
-      nedresourcecache.obj nedcompiler.obj
+      nedresourcecache.obj nedcomponent.obj \
+      nedcompiler.obj
 # FIXME end temporary def
 
 # FIXME begin temporary rules

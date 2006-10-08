@@ -31,14 +31,14 @@ cDynamicModuleType::cDynamicModuleType(const char *name) : cModuleType(name)
 
 void cDynamicModuleType::addParametersGatesTo(cModule *module)
 {
-    cNEDDeclaration *decl = cNEDResourceCache::instance()->lookup(name());
+    cNEDDeclaration *decl = (cNEDDeclaration *) cNEDResourceCache::instance()->lookup(name());
     //FIXME and...
 }
 
 
 void cDynamicModuleType::buildInside(cModule *module)
 {
-    cNEDDeclaration *decl = cNEDResourceCache::instance()->lookup(name());
+    cNEDDeclaration *decl = (cNEDDeclaration *) cNEDResourceCache::instance()->lookup(name());
     //FIXME and...
 }
 

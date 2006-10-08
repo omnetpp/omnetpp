@@ -112,9 +112,9 @@
  *
  * @hideinitializer
  */
-// Implementation note: this is basically a Register_Class().
+// Implementation note: this is basically a Register_Class(), making sure the class subclasses from cModule.
 #define Define_Module(CLASSNAME) \
-  cModule *CLASSNAME##__create() {return new CLASSNAME;} \
+  cPolymorphic *CLASSNAME##__create() {cModule *ret = new CLASSNAME; return ret; } \
   EXECUTE_ON_STARTUP(CLASSNAME##__class, classes.instance()->add(new cClassFactory(#CLASSNAME,CLASSNAME##__create, "module"));)
 
 /**
@@ -130,7 +130,7 @@
  */
 // Implementation note: this is basically a Register_Class(), only we lie about the class name.
 #define Define_Module_Like(CLASSNAME,NEDNAME) \
-  cModule *NEDNAME##__create() {return new CLASSNAME;} \
+  cPolymorphic *NEDNAME##__create() {cModule *ret = new CLASSNAME; return ret; } \
   EXECUTE_ON_STARTUP(NEDNAME##__class, classes.instance()->add(new cClassFactory(#NEDNAME,NEDNAME##__create, \
                      (std::string("module, implemented by ")+#CLASSNAME).c_str()));)
 
@@ -142,7 +142,7 @@
  */
 // Implementation note: this is basically a Register_Class().
 #define Define_Channel(CLASSNAME) \
-  cChannel *CLASSNAME##__create() {return new CLASSNAME;} \
+  cPolymorphic *CLASSNAME##__create() {cChannel *ret = new CLASSNAME; return ret; } \
   EXECUTE_ON_STARTUP(CLASSNAME##__class, classes.instance()->add(new cClassFactory(#CLASSNAME,CLASSNAME##__create, "channel"));)
 
 /**
@@ -158,7 +158,7 @@
  */
 // Implementation note: this is basically a Register_Class(), only we lie about the class name.
 #define Define_Channel_Like(CLASSNAME,NEDNAME) \
-  cChannel *NEDNAME##__create() {return new CLASSNAME;} \
+  cPolymorphic *NEDNAME##__create() {cChannel *ret = new CLASSNAME; return ret;} \
   EXECUTE_ON_STARTUP(NEDNAME##__class, classes.instance()->add(new cClassFactory(#NEDNAME,NEDNAME##__create, \
                      (std::string("channel, implemented by ")+#CLASSNAME).c_str()));)
 

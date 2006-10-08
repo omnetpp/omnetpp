@@ -71,7 +71,7 @@ class NEDResourceCache
     virtual NEDElement *getFile(const char *name);
 
     /** Get a component from the cache */
-    virtual NEDComponent *lookup(const char *name);
+    virtual NEDComponent *lookup(const char *name) const;
 };
 
 #endif

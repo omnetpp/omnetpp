@@ -64,6 +64,8 @@ void cNEDResourceCache::addComponent(const char *name, NEDElement *node)
     cNEDDeclaration *decl = buildNEDDeclaration(node);
     components[name] = decl;
 
+    printf("DBG: registered %s\n",name);//XXX remove
+
     // if module or channel, register corresponding object which can be used to instantiate it
     cComponentType *type = NULL;
     if (node->getTagCode()==NED_SIMPLE_MODULE)
@@ -76,10 +78,11 @@ void cNEDResourceCache::addComponent(const char *name, NEDElement *node)
         componentTypes.instance()->add(type);
 }
 
-cNEDDeclaration *cNEDResourceCache::lookup(const char *name)
-{
-    return dynamic_cast<cNEDDeclaration *>(NEDResourceCache::lookup(name));
-}
+//XXX
+//cNEDDeclaration *cNEDResourceCache::lookup(const char *name)
+//{
+//    return dynamic_cast<cNEDDeclaration *>(NEDResourceCache::lookup(name));
+//}
 
 NEDElement *cNEDResourceCache::parseAndValidateNedFile(const char *fname, bool isXML)
 {
@@ -147,7 +150,7 @@ bool cNEDResourceCache::areDependenciesResolved(NEDElement *node)
             continue;
 
         const char *name = child->getAttribute("name");
-        cNEDDeclaration *decl = lookup(name);
+        cNEDDeclaration *decl = (cNEDDeclaration *) lookup(name);
         if (!decl)
             return false;
     }
@@ -192,7 +195,7 @@ cNEDDeclaration *cNEDResourceCache::buildNEDDeclaration(NEDElement *node)
     for (NEDElement *child=node->getFirstChildWithTag(NED_EXTENDS); child; child=child->getNextSiblingWithTag(NED_EXTENDS))
     {
         const char *superName = ((ExtendsNode *)child)->getName();
-        cNEDDeclaration *superDecl = lookup(superName);
+        cNEDDeclaration *superDecl = (cNEDDeclaration *) lookup(superName);
         ASSERT(superDecl);
 
         // add inherited parameters

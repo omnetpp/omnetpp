@@ -1538,39 +1538,8 @@ netbuilder/cdynamicchanneltype.obj: netbuilder/cdynamicchanneltype.cc \
   ../../include/carray.h \
   ../../include/cclassfactory.h \
   ../../include/cexpression.h
-netbuilder/cdynamicmodule.obj: netbuilder/cdynamicmodule.cc \
-  netbuilder/cdynamicmoduletype.h \
-  netbuilder/cneddeclaration.h \
-  netbuilder/cnedresourcecache.h \
-  netbuilder/cnednetworkbuilder.h \
-  ../../include/cmodule.h \
-  ../../include/ccompoundmodule.h \
-  ../../include/ccomponenttype.h \
-  ../../include/ccomponent.h \
-  ../../include/globals.h \
-  ../../include/carray.h \
-  ../../include/cgate.h \
-  ../../include/csimulation.h \
-  ../../include/defs.h \
-  ../../include/cobject.h \
-  ../../include/cdefaultlist.h \
-  ../../include/regmacros.h \
-  ../../include/onstartup.h \
-  ../../include/cenvir.h \
-  ../../include/util.h \
-  ../../include/cpolymorphic.h \
-  ../../include/cexception.h \
-  ../../include/cvisitor.h \
-  ../../include/cstringpool.h \
-  ../../include/errmsg.h \
-  ../../include/opp_string.h \
-  ../../include/cclassfactory.h \
-  ../../include/cmsgheap.h \
-  ../../include/ccoroutine.h \
-  ../../include/cpar.h \
-  ../../include/cexpression.h
 netbuilder/cdynamicmoduletype.obj: netbuilder/cdynamicmoduletype.cc \
-  netbuilder/cdynamicmodule.h \
+  netbuilder/cdynamicmoduletype.h \
   netbuilder/cneddeclaration.h \
   netbuilder/cnedresourcecache.h \
   netbuilder/cnednetworkbuilder.h \
@@ -1681,17 +1650,15 @@ netbuilder/cnedresourcecache.obj: netbuilder/cnedresourcecache.cc \
   ../../include/cpar.h \
   ../../include/clongpar.h \
   ../../include/cdoublepar.h \
+  ../../include/globals.h \
   netbuilder/cdynamicmoduletype.h \
   netbuilder/cdynamicchanneltype.h \
   ../../include/defs.h \
   netbuilder/cneddeclaration.h \
   ../../include/regmacros.h \
   ../../include/onstartup.h \
-  ../../include/globals.h \
   ../../include/cobject.h \
   ../../include/cgate.h \
-  ../../include/carray.h \
-  ../../include/cclassfactory.h \
   ../../include/util.h \
   ../../include/cpolymorphic.h \
   ../../include/cvisitor.h \
@@ -1701,6 +1668,8 @@ netbuilder/cnedresourcecache.obj: netbuilder/cnedresourcecache.cc \
   ../../include/opp_string.h \
   ../../include/cdynamicexpression.h \
   ../../include/cexpression.h \
+  ../../include/carray.h \
+  ../../include/cclassfactory.h \
   ../../include/cmodule.h \
   ../../include/ccompoundmodule.h \
   netbuilder/cnednetworkbuilder.h \

@@ -519,7 +519,7 @@ void NEDCppGenerator::doNetwork(NetworkNode *node, const char *indent, int mode,
     const char *networkname = node->getName();
 
     // class declaration
-    out << "class " << networkname <<  " : public cNetworkType\n";
+    out << "class " << networkname <<  " : public cNetworkType\n"; //FIXME update this whole cppgenerator...
     out << "{\n";
     out << "  public:\n";
     out << "    " << networkname << "(const char *name) : cNetworkType(name) {}\n";

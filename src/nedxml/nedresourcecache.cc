@@ -50,10 +50,10 @@ NEDElement *NEDResourceCache::getFile(const char *name)
     return i==files.end() ? NULL : i->second;
 }
 
-NEDComponent *NEDResourceCache::lookup(const char *name)
+NEDComponent *NEDResourceCache::lookup(const char *name) const
 {
     // hash table lookup
-    NEDComponentMap::iterator i = components.find(name);
+    NEDComponentMap::const_iterator i = components.find(name);
     return i==components.end() ? NULL : i->second;
 }
 

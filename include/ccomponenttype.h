@@ -29,6 +29,11 @@ class SIM_API cComponentType : public cNoncopyableObject
 {
   public:
     cComponentType(const char *name=NULL);
+
+    /**
+     *XXX
+     */
+    static cComponentType *find(const char *name);
 };
 
 
@@ -53,6 +58,16 @@ class SIM_API cModuleType : public cComponentType
      * To be defined in subclasses.
      */
     virtual void addParametersGatesTo(cModule *mod) = 0;
+
+    /**
+     * Creates and connects submodules of a newly created module object.
+     * To be defined in subclasses.
+     *
+     * NOTE: If you have an old simulation model that attempts to call 
+     * this method directly, it is using an API call which has been DEPRECATED
+     * since OMNeT++ 2.3b1 -- please change the code to <tt>mod->buildInside()</tt>.
+     */
+    virtual void buildInside(cModule *mod) = 0;
 
   public:
     /** @name Constructors, destructor, assignment */
@@ -82,13 +97,6 @@ class SIM_API cModuleType : public cComponentType
     virtual cModule *create(const char *name, cModule *parentmod, int vectorsize, int index);
 
     /**
-     * DEPRECATED. It invokes <tt>mod->buildInside()</tt>; occurrences
-     * should be replaced by that code, too.
-     */
-    // note: this cannot be inline, due to header file dependencies
-    void buildInside(cModule *mod);
-
-    /**
      * This is a convenience function to get a module up and running in one step.
      *
      * First, the module is created using create() and buildInside(), then
@@ -104,7 +112,10 @@ class SIM_API cModuleType : public cComponentType
     virtual cModule *createScheduleInit(char *name, cModule *parentmod);
     //@}
 
-    //FIXME add static find() function to search the registry
+    /**
+     *XXX
+     */
+    static cModuleType *find(const char *name);
 };
 
 
@@ -147,7 +158,10 @@ class SIM_API cChannelType : public cComponentType
     virtual cChannel *create(const char *name, cModule *parentmod);
     //@}
 
-    //FIXME add static find() function to search the registry
+    /**
+     *XXX
+     */
+    static cChannelType *find(const char *name);
 };
 
 #endif

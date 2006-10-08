@@ -31,9 +31,6 @@ class cDynamicChannelType : public cChannelType
     /** Redefined from cChannelType */
     virtual void addParametersTo(cChannel *module);
 
-    /** Redefined from cChannelType */
-    virtual void buildInside(cChannel *module);
-
   public:
     cDynamicChannelType(const char *name);
 };

@@ -32,7 +32,6 @@ class  cModule;
 class  cSimpleModule;
 class  cCompoundModule;
 class  cSimulation;
-class  cNetworkType;
 class  cException;
 class  cScheduler;
 class  cParsimPartition;
@@ -78,7 +77,7 @@ class SIM_API cSimulation : public cNoncopyableObject
     cSimpleModule *runningmodp; // the module currently executing activity() (NULL if handleMessage() or in main)
     cComponent *contextmodp;  // component in context (or NULL)
     int contexttype;          // CTX_BUILD, CTX_EVENT, CTX_INITIALIZE or CTX_FINISH
-    cNetworkType *networktype; // network type
+    cModuleType *networktype; // network type
     cScheduler *schedulerp;   // event scheduler
 
     simtime_t sim_time;       // simulation time (time of current event)
@@ -87,7 +86,6 @@ class SIM_API cSimulation : public cNoncopyableObject
     int run_number;            // which simulation run
     cException *exception;     // helper variable to get exceptions back from activity()
     int exception_type;        // helper variable, also for getting exceptions back from activity()
-    cNEDFileLoader *nedfileloader; // helper, for loadNedFile()
 
   public:
     // internal: FES
@@ -204,31 +202,28 @@ class SIM_API cSimulation : public cNoncopyableObject
     cScheduler *scheduler() const  {return schedulerp;}
 
     /**
-     * FIXME  document 3 functions
-     *
-     * These functions delegate to the cNEDLoader class in the netbuilder
-     * part of the simulation kernel. They are present so that cEnvir
-     * and other libs outside the simkernel don't need to directly
-     * depend on nedxml or netbuilder classes, and conditional compilation
-     * (#ifdef WITH_NETBUILDER) can be localized to the simkernel.
-     */
-    void beginLoadingNedFiles();
-
-    /**
      * Load a NED file and create dynamic module types from it.
      * Works only if sim/netbuilder sources are linked in.
+     *
+     * These functions delegate to the netbuilder part of the simulation kernel,
+     * and they are present so that cEnvir and other libs outside the simkernel
+     * don't need to directly depend on nedxml or netbuilder classes, and
+     * conditional compilation (#ifdef WITH_NETBUILDER) can be limited to the
+     * simkernel.
      */
     void loadNedFile(const char *nedfile, bool isXML=false);
 
     /**
-     * FIXME
+     * Should be called after the last loadNedFile() call. This method warns
+     * if there are still NED components which could not be fully resolved
+     * due to missing super types or interfaces.
      */
     void doneLoadingNedFiles();
 
     /**
-     * Builds a new network. Relies on cNetworkType::setupNetwork().
+     * Builds a new network.
      */
-    void setupNetwork(cNetworkType *net, int run_num);
+    void setupNetwork(cModuleType *networkType, int runNumber);
 
     /**
      * Should be called after setupNetwork(), but before the first
@@ -259,10 +254,10 @@ class SIM_API cSimulation : public cNoncopyableObject
     //@{
 
     /**
-     * Returns the cNetworkType object that was used to set up
+     * Returns the cModuleType object that was instantiated to set up
      * the current simulation model.
      */
-    cNetworkType *networkType() const     {return networktype;}
+    cModuleType *networkType() const     {return networktype;}
 
     /**
      * Returns the current run number. A run is the execution of a

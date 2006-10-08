@@ -126,6 +126,10 @@ void cSimulation::shutdown()
     deleteNetwork();
     // let go of msgQueue (removeFromOwnershipTree() cannot be called)
     msgQueue.ownerp = NULL;
+
+#ifdef WITH_NETBUILDER
+    cNEDResourceCache::clear();
+#endif
 }
 
 void cSimulation::forEachChild(cVisitor *v)
@@ -326,7 +330,7 @@ cModule *cSimulation::moduleByPath(const char *path) const
     return modp;  // NULL if not found
 }
 
-void cSimulation::setupNetwork(cNetworkType *network, int run_num)
+void cSimulation::setupNetwork(cModuleType *network, int run_num)
 {
 #ifdef DEVELOPER_DEBUG
     printf("DEBUG: before setupNetwork: %d objects\n", cObject::liveObjectCount());
@@ -339,23 +343,24 @@ void cSimulation::setupNetwork(cNetworkType *network, int run_num)
     run_number = run_num;
 
     // set cNetworkType pointer
-    networktype = network;
+    networktype = network;  //FIXME check it's a module declared with the "network" keyword
 
     // just to be sure
     msgQueue.clear();
 
     try
     {
-        // call NEDC-generated network setup function
+        // set up the network by instantiating the toplevel module
         cContextTypeSwitcher tmp(CTX_BUILD);
-//XXX        networktype->setupNetwork();
+        cModule *mod = networktype->create(networktype->name(), NULL);
+        mod->buildInside();
     }
     catch (cException *)
     {
         // we could clean up the whole stuff with deleteNetwork()
         // before passing the exception back, but it is dangerous.
         // Module destructors may try to delete uninitialized pointers
-        // and crash. (Often ptrs incorrectly get initialized in initialize()
+        // and crash. (Often pointers incorrectly get initialized in initialize()
         // and not in the constructor.)
         //deleteNetwork();
         throw;

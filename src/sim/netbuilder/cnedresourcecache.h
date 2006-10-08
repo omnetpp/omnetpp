@@ -72,8 +72,9 @@ class SIM_API cNEDResourceCache : public NEDResourceCache
     /** Disposes of singleton instance */
     static void clear();
 
-    /** Just a typecast on base class's lookup(), utilizing covariant return types */
-    virtual cNEDDeclaration *NEDResourceCache::lookup(const char *name);
+    // note: cannot redefine lookup() to return cNEDDeclaration utilizing
+    // covariant return types, because VC 7.1 is too buggy and cannot handle it
+    //virtual cNEDDeclaration *lookup(const char *name) const;
 
     /**
      * Parses the given NED file, and converts modules/channels/interfaces to

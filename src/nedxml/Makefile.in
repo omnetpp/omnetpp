@@ -54,7 +54,8 @@ OBJS= nedelements.o nedelement.o nederror.o \
       nedxmlparser.o nedsaxhandler.o saxparser_$(XMLPARSER).o \
       ned1.tab.o lex.ned1yy.o \
       msg2.tab.o lex.msg2yy.o \
-      nedresourcecache.o nedcompiler.o
+      nedresourcecache.o nedcomponent.o \
+      nedcompiler.o
 # FIXME end temporary def
 
 
