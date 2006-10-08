@@ -31,6 +31,11 @@ NEDResourceCache::~NEDResourceCache()
         delete i->second;
 }
 
+NEDComponent *NEDResourceCache::createNEDComponent(NEDElement *tree)
+{
+    return new NEDComponent(tree);
+}
+
 bool NEDResourceCache::addFile(const char *name, NedFileNode *node)
 {
     NEDFileMap::iterator it = files.find(name);
@@ -69,7 +74,7 @@ void NEDResourceCache::collectComponents(NEDElement *node, const std::string& na
             if (getComponent(name.c_str()))
                 throw new NEDException("redeclaration of %s %s", child->getTagName(), name.c_str()); //XXX maybe just NEDError?
 
-            NEDComponent *component = new NEDComponent(child);
+            NEDComponent *component = createNEDComponent(child);
             components[name] = component;
 
             NEDElement *types = child->getFirstChildWithTag(NED_TYPES);

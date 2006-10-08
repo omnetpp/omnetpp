@@ -24,8 +24,8 @@
 
 
 /**
- * Wraps a NEDElement tree of a NED declaration (module, channel,
- * module interface or channel interface)
+ * Wraps a NEDElement tree of a NED declaration (module, channel, module
+ * interface or channel interface). May be extended by subclassing.
  *
  * @ingroup NEDCompiler
  */
@@ -35,9 +35,14 @@ class NEDComponent
     NEDElement *tree;
 
   public:
+    /** Constructor */
     NEDComponent(NEDElement *tree);
-    ~NEDComponent();
-    NEDElement *getTree();
+
+    /** Destructor */
+    virtual ~NEDComponent();
+
+    /** Returns the raw NEDElement tree representing the component */
+    virtual NEDElement *getTree();
 };
 
 #endif

@@ -45,27 +45,33 @@ class NEDResourceCache
     NEDComponentMap components;
 
   protected:
-    void collectComponents(NEDElement *node, const std::string& namespaceprefix);
+    virtual void collectComponents(NEDElement *node, const std::string& namespaceprefix);
+
+    /**
+     * Factory method for creating NEDComponent objects. Redefine if you want
+     * to add new stuff to NEDComponent by subclassing it.
+     */
+    virtual NEDComponent *createNEDComponent(NEDElement *tree);
 
   public:
     /** Constructor */
     NEDResourceCache();
 
     /** Destructor */
-    ~NEDResourceCache();
+    virtual ~NEDResourceCache();
 
     /**
      * Add a file (parsed into an object tree) to the cache. If the file
      * was already added, no processing takes place and the function
      * returns false; otherwise it returns true.
      */
-    bool addFile(const char *name, NedFileNode *node);
+    virtual bool addFile(const char *name, NedFileNode *node);
 
     /** Get a file (represented as object tree) from the cache */
-    NedFileNode *getFile(const char *name);
+    virtual NedFileNode *getFile(const char *name);
 
     /** Get a component from the cache */
-    NEDComponent *getComponent(const char *name);
+    virtual NEDComponent *getComponent(const char *name);
 };
 
 #endif
