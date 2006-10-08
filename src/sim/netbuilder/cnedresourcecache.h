@@ -30,8 +30,13 @@ class GateNode;
 class PropertyNode;
 
 /**
- * Stores dynamically loaded NED files. Extends nedxml's NEDResourceCache,
- * so that we can subclass NEDComponent.
+ * Stores dynamically loaded NED files, and one can look up NED declarations
+ * of modules, channels, module interfaces and channel interfaces in them.
+ * NED declarations are wrapped in cNEDDeclaration objects, which
+ * point back into the NEDElement trees of the loaded NED files.
+ *
+ * This cNEDResourceCache class extends nedxml's NEDResourceCache, and 
+ * cNEDDeclaration extends nexml's corresponding NEDComponent.
  */
 class SIM_API cNEDResourceCache : public NEDResourceCache
 {

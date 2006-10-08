@@ -32,23 +32,21 @@ class cProperties;
 
 
 /**
- * Represents the NED declaration of modules, module interfaces,
- * channels and channel interfaces. It stores gates and parameters;
- * submodules are NOT stored.
+ * Represents NED declarations of modules, module interfaces,
+ * channels and channel interfaces. All cNEDDeclaration objects are
+ * created and managed by cNEDResourceCache.
  *
- * Inherited parameters and gates are included. Values (parameters,
- * gate sizes) are converted into cPar form and stored in cPar form.
+ * cNEDDeclaration stores two things:
+ *  - a pointer to the complete NEDElement tree of the NED declaration;
+ *    this pointer points into the cNEDResourceCache.
+ *  - parameter and gate descriptions extracted from the NEDElement trees,
+ *    also following the inheritance chain. Inherited parameters and 
+ *    gates are included, and values (parameters and gate sizes) are 
+ *    converted into and stored in cPar form.
  *
  * cNEDDeclarations are used during network setup (and dynamic module
  * creation) to add gates and parameters to the freshly created module
  * object, and also to verify that module parameters set correctly.
- *
- * cNEDDeclarations may be created either dynamically or by the NED compiler,
- * from NED declarations of modules and channels. When a module or channel
- * needs to be created, the appropriate cNEDDeclaration object
- * is looked up from the list, and the component's parameters (and gates)
- * are created according to the description in the cNEDDeclaration
- * object.
  *
  * @ingroup Internals
  */
