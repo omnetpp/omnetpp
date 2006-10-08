@@ -28,7 +28,7 @@ class SIM_API cNEDResourceCache : public NEDResourceCache
 {
   protected:
     /** Redefined to return a cNEDComponent. */
-    virtual NEDComponent *createNEDComponent(NEDElement *tree);
+    virtual void addComponent(const char *name, NEDElement *node);
 
   public:
     /** Constructor */

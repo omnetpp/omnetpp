@@ -17,9 +17,10 @@
 #include "cnedcomponent.h"
 
 
-NEDComponent *NEDResourceCache::createNEDComponent(NEDElement *tree)
+void NEDResourceCache::addComponent(const char *name, NEDElement *node)
 {
-    return new cNEDComponent(tree);
+    cNEDComponent *component = new cNEDComponent(node);
+    components[name] = component;
 }
 
 cNEDComponent *NEDResourceCache::lookup(const char *name)
