@@ -32,8 +32,21 @@
 #include "clongpar.h"
 #include "cdoublepar.h"
 
-//FIXME this class should be turned into a singleton!!!!!!
-//FIXME so csimulation should not delete it!!!
+
+cNEDResourceCache *cNEDResourceCache::instance_;
+
+cNEDResourceCache *cNEDResourceCache::instance()
+{
+    if (!instance_)
+        instance_ = new cNEDResourceCache();
+    return instance_;
+}
+
+void cNEDResourceCache::clear()
+{
+    delete instance_;
+    instance_ = NULL;
+}
 
 void cNEDResourceCache::addComponent(const char *name, NEDElement *node)
 {

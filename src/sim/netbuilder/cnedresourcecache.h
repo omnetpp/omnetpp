@@ -35,12 +35,15 @@ class PropertyNode;
  * NED declarations are wrapped in cNEDDeclaration objects, which
  * point back into the NEDElement trees of the loaded NED files.
  *
- * This cNEDResourceCache class extends nedxml's NEDResourceCache, and 
+ * This cNEDResourceCache class extends nedxml's NEDResourceCache, and
  * cNEDDeclaration extends nexml's corresponding NEDComponent.
  */
 class SIM_API cNEDResourceCache : public NEDResourceCache
 {
   protected:
+    // the singleton instance
+    static cNEDResourceCache *instance_;
+
     // storage for NED components not resolved yet because of missing dependencies
     std::vector<NEDElement *> pendingList;
 
@@ -59,9 +62,15 @@ class SIM_API cNEDResourceCache : public NEDResourceCache
     cProperties *extractProperties(NEDElement *parent);
     cProperty *extractProperty(PropertyNode *propNode);
 
-  public:
-    /** Constructor */
+    // constructor is protected, because we want only one instance
     cNEDResourceCache() {}
+
+  public:
+    /** Access to singleton instance */
+    static cNEDResourceCache *instance();
+
+    /** Disposes of singleton instance */
+    static void clear();
 
     /** Just a typecast on base class's lookup(), utilizing covariant return types */
     virtual cNEDDeclaration *lookup(const char *name);

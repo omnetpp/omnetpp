@@ -119,11 +119,6 @@ cModule *cModuleType::createScheduleInit(char *modname, cModule *parentmod)
     return mod;
 }
 
-void cModuleType::buildInside(cModule *mod)
-{
-    mod->buildInside();
-}
-
 //----
 
 cChannelType::cChannelType(const char *name) : cComponentType(name)

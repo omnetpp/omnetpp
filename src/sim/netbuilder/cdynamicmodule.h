@@ -28,11 +28,6 @@
  */
 class cDynamicCompoundModuleType : public cModuleType
 {
-  protected:
-    CompoundModuleNode *modulenode;  // contains NEDElement tree
-
-    virtual cModule *createModuleObject();
-
   public:
     cDynamicCompoundModuleType(const char *name, CompoundModuleNode *moduleNode);
     virtual ~cDynamicCompoundModuleType();

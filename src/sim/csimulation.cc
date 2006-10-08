@@ -39,7 +39,7 @@
 #endif
 
 #ifdef WITH_NETBUILDER
-#include "netbuilder/loadnedfile.h"
+#include "netbuilder/cnedresourcecache.h"
 #endif
 
 using std::ostream;
@@ -91,7 +91,6 @@ cSimulation::cSimulation(const char *name) : cNoncopyableObject(name, false)
 
     systemmodp = NULL;
     schedulerp = NULL;
-    nedfileloader = NULL;
 
     delta = 32;
     size = 0;
@@ -234,19 +233,10 @@ void cSimulation::setScheduler(cScheduler *sched)
     schedulerp = sched;
 }
 
-void cSimulation::beginLoadingNedFiles()
-{
-#ifdef WITH_NETBUILDER
-    ASSERT(!nedfileloader); // ensure correct usage
-    nedfileloader = new cNEDFileLoader();
-#endif
-}
-
 void cSimulation::loadNedFile(const char *nedfile, bool isXML)
 {
 #ifdef WITH_NETBUILDER
-    ASSERT(nedfileloader);
-    nedfileloader->loadNedFile(nedfile, isXML);
+    cNEDResourceCache::instance()->loadNedFile(nedfile, isXML);
 #else
     throw new cRuntimeError("cannot load `%s': simulation kernel was compiled without "
                             "support for dynamic loading of NED files (WITH_NETBUILDER=no)", nedfile);
@@ -256,13 +246,9 @@ void cSimulation::loadNedFile(const char *nedfile, bool isXML)
 void cSimulation::doneLoadingNedFiles()
 {
 #ifdef WITH_NETBUILDER
-    ASSERT(nedfileloader); // ensure correct usage
-    nedfileloader->done();
-    delete nedfileloader;
-    nedfileloader = NULL;
+    cNEDResourceCache::instance()->done();
 #endif
 }
-
 
 int cSimulation::registerModule(cModule *mod)
 {

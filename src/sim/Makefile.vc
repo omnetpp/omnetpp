@@ -32,7 +32,9 @@ CPPOBJS_STD=\
 CPPOBJS_NETBUILDER=\
     netbuilder\cexpressionbuilder.obj \
     netbuilder\cneddeclaration.obj \
-    netbuilder\cnedresourcecache.obj
+    netbuilder\cnedresourcecache.obj \
+    netbuilder\cdynamicchannel.obj \
+    netbuilder\cdynamicmodule.obj
 
 XXX_CPPOBJS_NETBUILDER=\
     netbuilder\cdynamicchannel.obj \
@@ -1102,6 +1104,7 @@ csimulation.obj: csimulation.cc \
   ../../include/cstat.h \
   ../../include/cexception.h \
   ../../include/ccommbuffer.h \
+  netbuilder/cnedresourcecache.h \
   ../../include/ccomponent.h \
   ../../include/globals.h \
   ../../include/carray.h \
@@ -1122,7 +1125,10 @@ csimulation.obj: csimulation.cc \
   ../../include/ccoroutine.h \
   ../../include/platdep/time.h \
   ../../include/errmsg.h \
-  ../../include/opp_string.h
+  ../../include/opp_string.h \
+  netbuilder/cneddeclaration.h \
+  ../../include/cpar.h \
+  ../../include/cexpression.h
 cstat.obj: cstat.cc \
   ../../include/cstat.h \
   ../../include/random.h \
