@@ -31,11 +31,6 @@ NEDResourceCache::~NEDResourceCache()
         delete i->second;
 }
 
-NEDComponent *NEDResourceCache::createNEDComponent(NEDElement *tree)
-{
-    return new NEDComponent(tree);
-}
-
 bool NEDResourceCache::addFile(const char *name, NEDElement *node)
 {
     NEDFileMap::iterator it = files.find(name);
@@ -62,6 +57,12 @@ NEDComponent *NEDResourceCache::lookup(const char *name)
     return i==components.end() ? NULL : i->second;
 }
 
+void NEDResourceCache::addComponent(const char *name, NEDElement *node)
+{
+    NEDComponent *component = new NEDComponent(node);
+    components[name] = component;
+}
+
 void NEDResourceCache::collectComponents(NEDElement *node, const std::string& namespaceprefix)
 {
     for (NEDElement *child=node->getFirstChild(); child; child=child->getNextSibling())
@@ -75,8 +76,7 @@ void NEDResourceCache::collectComponents(NEDElement *node, const std::string& na
             if (lookup(name.c_str()))
                 throw new NEDException("redeclaration of %s %s", child->getTagName(), name.c_str()); //XXX maybe just NEDError?
 
-            NEDComponent *component = createNEDComponent(child);
-            components[name] = component;
+            addComponent(name.c_str(), child);
 
             NEDElement *types = child->getFirstChildWithTag(NED_TYPES);
             if (types)

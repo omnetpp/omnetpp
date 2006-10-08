@@ -48,10 +48,10 @@ class NEDResourceCache
     virtual void collectComponents(NEDElement *node, const std::string& namespaceprefix);
 
     /**
-     * Factory method for creating NEDComponent objects. Redefine if you want
-     * to add new stuff to NEDComponent by subclassing it.
+     * Wrap the given NEDElement into a NEDComponent and add it to the table.
+     * Redefine it if you want to subclass NEDComponent.
      */
-    virtual NEDComponent *createNEDComponent(NEDElement *tree);
+    virtual void addComponent(const char *name, NEDElement *node);
 
   public:
     /** Constructor */
