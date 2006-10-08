@@ -26,7 +26,9 @@ NEDResourceCache::NEDResourceCache()
 NEDResourceCache::~NEDResourceCache()
 {
     for (NEDFileMap::iterator i = files.begin(); i!=files.end(); ++i)
-        delete (*i).second;
+        delete i->second;
+    for (NEDComponentMap::iterator i = components.begin(); i!=components.end(); ++i)
+        delete i->second;
 }
 
 bool NEDResourceCache::addFile(const char *name, NedFileNode *node)
