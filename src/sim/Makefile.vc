@@ -31,7 +31,7 @@ CPPOBJS_STD=\
 
 CPPOBJS_NETBUILDER=\
     netbuilder\cexpressionbuilder.obj \
-    netbuilder\cnedcomponent.obj \
+    netbuilder\cneddeclaration.obj \
     netbuilder\cnedresourcecache.obj
 
 XXX_CPPOBJS_NETBUILDER=\
@@ -1584,16 +1584,16 @@ netbuilder/cexpressionbuilder.obj: netbuilder/cexpressionbuilder.cc \
   ../../include/cenvir.h \
   ../../include/cvisitor.h \
   ../../include/cstringpool.h
-netbuilder/cnedcomponent.obj: netbuilder/cnedcomponent.cc \
-  netbuilder/cnedcomponent.h \
+netbuilder/cneddeclaration.obj: netbuilder/cneddeclaration.cc \
+  netbuilder/cneddeclaration.h \
   ../../include/cexception.h \
-  ../../include/cpar.h \
   ../../include/cproperties.h \
   ../../include/defs.h \
-  netbuilder/nedcomponent.h \
   ../../include/globals.h \
   ../../include/cobject.h \
+  ../../include/cpar.h \
   ../../include/cgate.h \
+  netbuilder/nedcomponent.h \
   ../../include/regmacros.h \
   ../../include/onstartup.h \
   ../../include/carray.h \
@@ -1603,9 +1603,9 @@ netbuilder/cnedcomponent.obj: netbuilder/cnedcomponent.cc \
   ../../include/cpolymorphic.h \
   ../../include/cvisitor.h \
   ../../include/cstringpool.h \
+  ../../include/cexpression.h \
   ../../include/errmsg.h \
-  ../../include/opp_string.h \
-  ../../include/cexpression.h
+  ../../include/opp_string.h
 netbuilder/cnednetworkbuilder.obj: netbuilder/cnednetworkbuilder.cc \
   ../../include/cmodule.h \
   ../../include/cgate.h \
@@ -1646,13 +1646,13 @@ netbuilder/cnedresourcecache.obj: netbuilder/cnedresourcecache.cc \
   ../../include/clongpar.h \
   ../../include/cdoublepar.h \
   ../../include/defs.h \
-  netbuilder/cnedcomponent.h \
+  netbuilder/cneddeclaration.h \
   ../../include/regmacros.h \
   ../../include/onstartup.h \
-  netbuilder/nedcomponent.h \
   ../../include/globals.h \
   ../../include/cobject.h \
   ../../include/cgate.h \
+  netbuilder/nedcomponent.h \
   ../../include/carray.h \
   ../../include/cclassfactory.h \
   ../../include/util.h \

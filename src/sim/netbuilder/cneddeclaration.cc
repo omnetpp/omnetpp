@@ -13,9 +13,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include "cnedcomponent.h"
+#include "cneddeclaration.h"
 #include "cexception.h"
-#include "cpar.h"
 #include "cproperties.h"
 
 

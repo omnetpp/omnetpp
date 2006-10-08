@@ -17,17 +17,17 @@
 #ifndef __CNEDDECLARATION_H
 #define __CNEDDECLARATION_H
 
+#include <string>
+#include <vector>
+#include <map>
 #include "defs.h"
-#include "nedcomponent.h"
 #include "globals.h"
 #include "cobject.h"
 #include "cpar.h"
 #include "cgate.h"
-#include <string>
-#include <vector>
-#include <map>
 
-class cPar;
+#include "nedcomponent.h"
+
 class cProperties;
 
 

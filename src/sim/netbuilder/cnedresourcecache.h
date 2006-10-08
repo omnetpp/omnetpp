@@ -19,7 +19,6 @@
 
 #include "defs.h"
 #include "nedresourcecache.h"
-#include "cnedcomponent.h"
 #include "cneddeclaration.h"
 
 class cProperties;
