@@ -248,7 +248,7 @@ void cNEDFileLoader::buildNEDDeclaration(NEDElement *node)
                 cDynamicExpression *dynamicExpr = cExpressionBuilder().process(exprNode, false);
                 cPar *paramValue = new cDoublePar(); //FIXME of the right subclass!!!
                 paramValue->setExpression(dynamicExpr);
-                //FIXME add to declaration! decl->setParamValue(paramValue);
+                decl->setParamValue(paramName, paramValue);
             }
         }
     }
@@ -276,7 +276,7 @@ void cNEDFileLoader::buildNEDDeclaration(NEDElement *node)
                 cDynamicExpression *dynamicExpr = cExpressionBuilder().process(exprNode, false);
                 cPar *gatesize = new cLongPar();
                 gatesize->setExpression(dynamicExpr);
-                //FIXME add to declaration! decl->setGatesize(gatesize);
+                decl->setGateSize(gateName, gatesize);
             }
         }
     }

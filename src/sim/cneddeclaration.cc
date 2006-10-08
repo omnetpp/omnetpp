@@ -180,6 +180,20 @@ int cNEDDeclaration::findPar(const char *parname) const
     return i->second;
 }
 
+void cNEDDeclaration::setParamValue(const char *name, cPar *value)
+{
+    if (locked)
+        throw new cRuntimeError(this, "setParamValue(): too late, object already locked");
+    int k = findPar(name);
+    if (k==-1)
+        throw new cRuntimeError(this, "no such parameter: %s", name);
+
+    ParamDescription& desc = params[k];
+    if (desc.value)
+        delete desc.value;
+    desc.value = value;
+}
+
 int cNEDDeclaration::numGates() const
 {
     return gates.size();
@@ -192,6 +206,21 @@ int cNEDDeclaration::findGate(const char *name) const
         return -1;
     return i->second;
 }
+
+void cNEDDeclaration::setGateSize(const char *name, cPar *gateSize)
+{
+    if (locked)
+        throw new cRuntimeError(this, "setGateSize(): too late, object already locked");
+    int k = findGate(name);
+    if (k==-1)
+        throw new cRuntimeError(this, "no such gate: %s", name);
+
+    GateDescription& desc = gates[k];
+    if (desc.gatesize)
+        delete desc.gatesize;
+    desc.gatesize = gateSize;
+}
+
 
 //-------------------
 

@@ -227,6 +227,11 @@ class SIM_API cNEDDeclaration : public cNoncopyableObject
      * Check if a parameter exists.
      */
     bool hasPar(const char *s) const {return findPar(s)>=0;}
+
+    /**
+     * Sets the parameter value.
+     */
+    virtual void setParamValue(const char *paramName, cPar *value);
     //@}
 
     /** @name Gates */
@@ -262,6 +267,11 @@ class SIM_API cNEDDeclaration : public cNoncopyableObject
      * Check if a gate exists.
      */
     bool hasGate(const char *s) const  {return findGate(s)>=0;}
+
+    /**
+     * Sets the gate vector size.
+     */
+    virtual void setGateSize(const char *gateName, cPar *gateSize);
     //@}
 
     /**
