@@ -1,5 +1,5 @@
 //==========================================================================
-// CNEDCOMPONENT.H -
+// CNEDDECLARATION.H -
 //
 //                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
@@ -14,8 +14,8 @@
 *--------------------------------------------------------------*/
 
 
-#ifndef __CNEDCOMPONENT_H
-#define __CNEDCOMPONENT_H
+#ifndef __CNEDDECLARATION_H
+#define __CNEDDECLARATION_H
 
 #include "defs.h"
 #include "nedcomponent.h"
@@ -39,20 +39,20 @@ class cProperties;
  * Inherited parameters and gates are included. Values (parameters,
  * gate sizes) are converted into cPar form and stored in cPar form.
  *
- * cNEDComponents are used during network setup (and dynamic module
+ * cNEDDeclarations are used during network setup (and dynamic module
  * creation) to add gates and parameters to the freshly created module
  * object, and also to verify that module parameters set correctly.
  *
- * cNEDComponents may be created either dynamically or by the NED compiler,
+ * cNEDDeclarations may be created either dynamically or by the NED compiler,
  * from NED declarations of modules and channels. When a module or channel
- * needs to be created, the appropriate cNEDComponent object
+ * needs to be created, the appropriate cNEDDeclaration object
  * is looked up from the list, and the component's parameters (and gates)
- * are created according to the description in the cNEDComponent
+ * are created according to the description in the cNEDDeclaration
  * object.
  *
  * @ingroup Internals
  */
-class SIM_API cNEDComponent : public cNoncopyableObject, public NEDComponent
+class SIM_API cNEDDeclaration : public cNoncopyableObject, public NEDComponent
 {
   public:
     /**
@@ -118,12 +118,12 @@ class SIM_API cNEDComponent : public cNoncopyableObject, public NEDComponent
     /**
      * Constructor.
      */
-    cNEDComponent(const char *name, NEDElement *tree);
+    cNEDDeclaration(const char *name, NEDElement *tree);
 
     /**
      * Destructor.
      */
-    virtual ~cNEDComponent();
+    virtual ~cNEDDeclaration();
     //@}
 
     /** @name Redefined cObject methods */
@@ -143,14 +143,14 @@ class SIM_API cNEDComponent : public cNoncopyableObject, public NEDComponent
     //@{
     /**
      * Adds a parameter to the declaration. The contained cPar and cProperties
-     * objects in the struct will be taken over by cNEDComponent (and not
+     * objects in the struct will be taken over by cNEDDeclaration (and not
      * duplicated/copied).
      */
     virtual void addPar(const ParamDescription& paramDesc);
 
     /**
      * Adds a gate to the declaration. The contained cPar and cProperties
-     * objects in the struct will be taken over by cNEDComponent (and not
+     * objects in the struct will be taken over by cNEDDeclaration (and not
      * duplicated/copied).
      */
     virtual void addGate(const GateDescription& gateDesc);

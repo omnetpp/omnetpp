@@ -1,5 +1,5 @@
 //==========================================================================
-// CNEDCOMPONENT.CC -
+// CNEDDECLARATION.CC -
 //
 //                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
@@ -19,7 +19,7 @@
 #include "cproperties.h"
 
 
-cNEDComponent::ParamDescription::ParamDescription()
+cNEDDeclaration::ParamDescription::ParamDescription()
 {
     type = cPar::DOUBLE;
     isVolatile = false;
@@ -27,7 +27,7 @@ cNEDComponent::ParamDescription::ParamDescription()
     properties = NULL;
 }
 
-cNEDComponent::ParamDescription cNEDComponent::ParamDescription::deepCopy() const
+cNEDDeclaration::ParamDescription cNEDDeclaration::ParamDescription::deepCopy() const
 {
     ParamDescription tmp = *this;
     if (tmp.value)
@@ -37,7 +37,7 @@ cNEDComponent::ParamDescription cNEDComponent::ParamDescription::deepCopy() cons
     return tmp;
 }
 
-cNEDComponent::GateDescription::GateDescription()
+cNEDDeclaration::GateDescription::GateDescription()
 {
     type = cGate::INPUT;
     isVector = false;
@@ -45,7 +45,7 @@ cNEDComponent::GateDescription::GateDescription()
     properties = NULL;
 }
 
-cNEDComponent::GateDescription cNEDComponent::GateDescription::deepCopy() const
+cNEDDeclaration::GateDescription cNEDDeclaration::GateDescription::deepCopy() const
 {
     GateDescription tmp = *this;
     if (tmp.gatesize)
@@ -57,14 +57,14 @@ cNEDComponent::GateDescription cNEDComponent::GateDescription::deepCopy() const
 
 //-----
 
-cNEDComponent::cNEDComponent(const char *name, NEDElement *tree) :
+cNEDDeclaration::cNEDDeclaration(const char *name, NEDElement *tree) :
 cNoncopyableObject(name), NEDComponent(tree)
 {
     props = NULL;
     locked = false;
 }
 
-cNEDComponent::~cNEDComponent()
+cNEDDeclaration::~cNEDDeclaration()
 {
     for (int i=0; i<params.size(); i++)
         delete params[i].value;
@@ -72,31 +72,31 @@ cNEDComponent::~cNEDComponent()
         delete gates[i].gatesize;
 }
 
-std::string cNEDComponent::info() const
+std::string cNEDDeclaration::info() const
 {
     return ""; //FIXME todo
 }
 
-std::string cNEDComponent::detailedInfo() const
+std::string cNEDDeclaration::detailedInfo() const
 {
     return ""; //FIXME todo
 }
 
-void cNEDComponent::addExtendsName(const char *name)
+void cNEDDeclaration::addExtendsName(const char *name)
 {
     if (locked)
         throw new cRuntimeError(this, "addExtendsName(): too late, object already locked");
     extendsnames.push_back(name);
 }
 
-void cNEDComponent::addInterfaceName(const char *name)
+void cNEDDeclaration::addInterfaceName(const char *name)
 {
     if (locked)
         throw new cRuntimeError(this, "addInterfaceName(): too late, object already locked");
     interfacenames.push_back(name);
 }
 
-void cNEDComponent::addPar(const ParamDescription& paramDesc)
+void cNEDDeclaration::addPar(const ParamDescription& paramDesc)
 {
     if (locked)
         throw new cRuntimeError(this, "addPar(): too late, object already locked");
@@ -106,7 +106,7 @@ void cNEDComponent::addPar(const ParamDescription& paramDesc)
         take(paramDesc.value);
 }
 
-void cNEDComponent::addGate(const GateDescription& gateDesc)
+void cNEDDeclaration::addGate(const GateDescription& gateDesc)
 {
     if (locked)
         throw new cRuntimeError(this, "addGate(): too late, object already locked");
@@ -116,7 +116,7 @@ void cNEDComponent::addGate(const GateDescription& gateDesc)
         take(gateDesc.gatesize);
 }
 
-void cNEDComponent::setProperties(cProperties *p)
+void cNEDDeclaration::setProperties(cProperties *p)
 {
     if (locked)
         throw new cRuntimeError(this, "setProperties(): too late, object already locked");
@@ -127,38 +127,38 @@ void cNEDComponent::setProperties(cProperties *p)
     props->lock();
 }
 
-const char *cNEDComponent::interfaceName(int k) const
+const char *cNEDDeclaration::interfaceName(int k) const
 {
     if (k<0 || k>=interfacenames.size())
         throw new cRuntimeError(this, "interface index %d out of range 0..%d", k, interfacenames.size()-1);
     return interfacenames[k].c_str();
 }
 
-const char *cNEDComponent::extendsName(int k) const
+const char *cNEDDeclaration::extendsName(int k) const
 {
     if (k<0 || k>=extendsnames.size())
         throw new cRuntimeError(this, "extendsName(): index %d out of range 0..%d", k, extendsnames.size()-1);
     return extendsnames[k].c_str();
 }
 
-int cNEDComponent::numPars() const
+int cNEDDeclaration::numPars() const
 {
     return params.size();
 }
 
-cProperties *cNEDComponent::properties()
+cProperties *cNEDDeclaration::properties()
 {
     return props;
 }
 
-const cNEDComponent::ParamDescription& cNEDComponent::paramDescription(int k) const
+const cNEDDeclaration::ParamDescription& cNEDDeclaration::paramDescription(int k) const
 {
     if (k<0 || k>=params.size())
         throw new cRuntimeError(this, "parameter index %d out of range 0..%d", k, params.size()-1);
     return params[k];
 }
 
-const cNEDComponent::ParamDescription& cNEDComponent::paramDescription(const char *name) const
+const cNEDDeclaration::ParamDescription& cNEDDeclaration::paramDescription(const char *name) const
 {
     int k = findPar(name);
     if (k==-1)
@@ -166,14 +166,14 @@ const cNEDComponent::ParamDescription& cNEDComponent::paramDescription(const cha
     return params[k];
 }
 
-const cNEDComponent::GateDescription& cNEDComponent::gateDescription(int k) const
+const cNEDDeclaration::GateDescription& cNEDDeclaration::gateDescription(int k) const
 {
     if (k<0 || k>=gates.size())
         throw new cRuntimeError(this, "gate index %d out of range 0..%d", k, gates.size()-1);
     return gates[k];
 }
 
-const cNEDComponent::GateDescription& cNEDComponent::gateDescription(const char *name) const
+const cNEDDeclaration::GateDescription& cNEDDeclaration::gateDescription(const char *name) const
 {
     int k = findGate(name);
     if (k==-1)
@@ -181,7 +181,7 @@ const cNEDComponent::GateDescription& cNEDComponent::gateDescription(const char 
     return gates[k];
 }
 
-int cNEDComponent::findPar(const char *parname) const
+int cNEDDeclaration::findPar(const char *parname) const
 {
     StringToIntMap::const_iterator i = paramNameMap.find(parname);
     if (i==paramNameMap.end())
@@ -189,7 +189,7 @@ int cNEDComponent::findPar(const char *parname) const
     return i->second;
 }
 
-void cNEDComponent::setParamValue(const char *name, cPar *value)
+void cNEDDeclaration::setParamValue(const char *name, cPar *value)
 {
     if (locked)
         throw new cRuntimeError(this, "setParamValue(): too late, object already locked");
@@ -203,12 +203,12 @@ void cNEDComponent::setParamValue(const char *name, cPar *value)
     desc.value = value;
 }
 
-int cNEDComponent::numGates() const
+int cNEDDeclaration::numGates() const
 {
     return gates.size();
 }
 
-int cNEDComponent::findGate(const char *name) const
+int cNEDDeclaration::findGate(const char *name) const
 {
     StringToIntMap::const_iterator i = gateNameMap.find(name);
     if (i==gateNameMap.end())
@@ -216,7 +216,7 @@ int cNEDComponent::findGate(const char *name) const
     return i->second;
 }
 
-void cNEDComponent::setGateSize(const char *name, cPar *gateSize)
+void cNEDDeclaration::setGateSize(const char *name, cPar *gateSize)
 {
     if (locked)
         throw new cRuntimeError(this, "setGateSize(): too late, object already locked");
@@ -234,7 +234,7 @@ void cNEDComponent::setGateSize(const char *name, cPar *gateSize)
 //-------------------
 
 /*
-void cNEDComponent::assertParMatchesBase(cPar *par, const cPar *basepar,
+void cNEDDeclaration::assertParMatchesBase(cPar *par, const cPar *basepar,
                                                 const char *parname, const char *basename)
 {
     if (basepar->isSet() && par->isSet())
@@ -244,7 +244,7 @@ void cNEDComponent::assertParMatchesBase(cPar *par, const cPar *basepar,
         throw new cRuntimeError(this, "type of parameter `%s' differs from that in base `%s'", parname, basename);
 }
 
-bool cNEDComponent::parMatchesInterface(cPar *par, const cPar *ifpar)
+bool cNEDDeclaration::parMatchesInterface(cPar *par, const cPar *ifpar)
 {
     if (par->type()!=basepar->type() || par->isVolatile()!=ifpar->isVolatile())
         throw new cRuntimeError(this, "type of parameter `%s' differs from that in interface `%s'", parname, interfacename);

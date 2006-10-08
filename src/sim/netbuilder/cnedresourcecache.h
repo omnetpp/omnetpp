@@ -41,7 +41,7 @@ class SIM_API cNEDResourceCache : public NEDResourceCache
     std::vector<NEDElement *> pendingList;
 
   protected:
-    /** Redefined to return a cNEDComponent. */
+    /** Redefined to return a cNEDDeclaration. */
     virtual void addComponent(const char *name, NEDElement *node);
 
   protected:
@@ -49,9 +49,9 @@ class SIM_API cNEDResourceCache : public NEDResourceCache
     NEDElement *parseAndValidateNedFile(const char *nedfname, bool isXML);
     bool areDependenciesResolved(NEDElement *node);
     void tryResolvePendingDeclarations();
-    cNEDComponent *buildNEDDeclaration(NEDElement *node);
-    cNEDComponent::ParamDescription extractParamDescription(ParamNode *paramNode);
-    cNEDComponent::GateDescription extractGateDescription(GateNode *gateNode);
+    cNEDDeclaration *buildNEDDeclaration(NEDElement *node);
+    cNEDDeclaration::ParamDescription extractParamDescription(ParamNode *paramNode);
+    cNEDDeclaration::GateDescription extractGateDescription(GateNode *gateNode);
     cProperties *extractProperties(NEDElement *parent);
     cProperty *extractProperty(PropertyNode *propNode);
 
@@ -60,11 +60,11 @@ class SIM_API cNEDResourceCache : public NEDResourceCache
     cNEDResourceCache() {}
 
     /** Just a typecast on base class's lookup(), utilizing covariant return types */
-    virtual cNEDComponent *lookup(const char *name);
+    virtual cNEDDeclaration *lookup(const char *name);
 
     /**
      * Parses the given NED file, and converts modules/channels/interfaces to
-     * cNEDComponent. Components that depend on other components
+     * cNEDDeclaration. Components that depend on other components
      * (e.g. contain "extends") may be temporarily put off until all
      * dependencies are loaded.
      *
