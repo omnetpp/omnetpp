@@ -31,14 +31,18 @@ CPPOBJS_STD=\
 
 CPPOBJS_NETBUILDER=\
     netbuilder\cexpressionbuilder.obj \
-    netbuilder\loadnedfile.obj
+    netbuilder\loadnedfile.obj \
+    netbuilder\cnedcomponent.obj \
+    netbuilder\cnedresourcecache.obj
 
 XXX_CPPOBJS_NETBUILDER=\
     netbuilder\cdynamicchannel.obj \
     netbuilder\cdynamicmodule.obj \
     netbuilder\cexpressionbuilder.obj \
     netbuilder\cnednetworkbuilder.obj \
-    netbuilder\loadnedfile.obj
+    netbuilder\loadnedfile.obj \
+    netbuilder\cnedcomponent.obj \
+    netbuilder\cnedresourcecache.obj
 
 CPPOBJS_PARSIM=\
     parsim\ccommbuffer.obj parsim\cmemcommbuffer.obj \

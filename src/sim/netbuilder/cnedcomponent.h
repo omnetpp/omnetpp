@@ -17,11 +17,8 @@
 #ifndef __CNEDCOMPONENT_H
 #define __CNEDCOMPONENT_H
 
-#include <map>
-#include <vector>
-#include <string>
 #include "defs.h"
-#include "nedelements.h"
+#include "nedcomponent.h"
 
 
 /**
