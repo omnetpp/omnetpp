@@ -33,8 +33,8 @@ CPPOBJS_NETBUILDER=\
     netbuilder\cexpressionbuilder.obj \
     netbuilder\cneddeclaration.obj \
     netbuilder\cnedresourcecache.obj \
-    netbuilder\cdynamicchannel.obj \
-    netbuilder\cdynamicmodule.obj
+    netbuilder\cdynamicchanneltype.obj \
+    netbuilder\cdynamicmoduletype.obj
 
 CPPOBJS_PARSIM=\
     parsim\ccommbuffer.obj parsim\cmemcommbuffer.obj \
@@ -1385,6 +1385,29 @@ distrib.obj: distrib.cc \
   ../../include/errmsg.h \
   ../../include/opp_string.h
 errmsg.obj: errmsg.cc
+expr.tab.obj: expr.tab.cc \
+  ../../include/expryydefs.h \
+  ../../include/cdynamicexpression.h \
+  ../../include/cpar.h \
+  ../../include/cxmlelement.h \
+  ../../include/cexception.h \
+  ../../include/globals.h \
+  ../../include/cfunction.h \
+  ../../include/cnedfunction.h \
+  ../../include/cexpression.h \
+  ../../include/cpolymorphic.h \
+  ../../include/defs.h \
+  ../../include/util.h \
+  ../../include/regmacros.h \
+  ../../include/onstartup.h \
+  ../../include/cobject.h \
+  ../../include/cenvir.h \
+  ../../include/cvisitor.h \
+  ../../include/cstringpool.h \
+  ../../include/errmsg.h \
+  ../../include/opp_string.h \
+  ../../include/carray.h \
+  ../../include/cclassfactory.h
 globals.obj: globals.cc \
   ../../include/globals.h \
   ../../include/carray.h \
@@ -1402,6 +1425,16 @@ globals.obj: globals.cc \
   ../../include/cstringpool.h \
   ../../include/errmsg.h \
   ../../include/opp_string.h
+lex.expryy.obj: lex.expryy.cc \
+  ../../include/expryydefs.h \
+  expr.tab.h \
+  ../../include/util.h \
+  ../../include/cdynamicexpression.h \
+  ../../include/cexpression.h \
+  ../../include/cpolymorphic.h \
+  ../../include/defs.h \
+  ../../include/regmacros.h \
+  ../../include/onstartup.h
 minixpath.obj: minixpath.cc \
   minixpath.h \
   ../../include/cexception.h \
@@ -1478,8 +1511,8 @@ xxx.obj: xxx.cc \
   ../../include/regmacros.h \
   ../../include/onstartup.h \
   ../../include/util.h
-netbuilder/cdynamicchannel.obj: netbuilder/cdynamicchannel.cc \
-  netbuilder/cdynamicchannel.h \
+netbuilder/cdynamicchanneltype.obj: netbuilder/cdynamicchanneltype.cc \
+  netbuilder/cdynamicchanneltype.h \
   netbuilder/cneddeclaration.h \
   netbuilder/cnedresourcecache.h \
   netbuilder/cnednetworkbuilder.h \
@@ -1506,6 +1539,37 @@ netbuilder/cdynamicchannel.obj: netbuilder/cdynamicchannel.cc \
   ../../include/cclassfactory.h \
   ../../include/cexpression.h
 netbuilder/cdynamicmodule.obj: netbuilder/cdynamicmodule.cc \
+  netbuilder/cdynamicmoduletype.h \
+  netbuilder/cneddeclaration.h \
+  netbuilder/cnedresourcecache.h \
+  netbuilder/cnednetworkbuilder.h \
+  ../../include/cmodule.h \
+  ../../include/ccompoundmodule.h \
+  ../../include/ccomponenttype.h \
+  ../../include/ccomponent.h \
+  ../../include/globals.h \
+  ../../include/carray.h \
+  ../../include/cgate.h \
+  ../../include/csimulation.h \
+  ../../include/defs.h \
+  ../../include/cobject.h \
+  ../../include/cdefaultlist.h \
+  ../../include/regmacros.h \
+  ../../include/onstartup.h \
+  ../../include/cenvir.h \
+  ../../include/util.h \
+  ../../include/cpolymorphic.h \
+  ../../include/cexception.h \
+  ../../include/cvisitor.h \
+  ../../include/cstringpool.h \
+  ../../include/errmsg.h \
+  ../../include/opp_string.h \
+  ../../include/cclassfactory.h \
+  ../../include/cmsgheap.h \
+  ../../include/ccoroutine.h \
+  ../../include/cpar.h \
+  ../../include/cexpression.h
+netbuilder/cdynamicmoduletype.obj: netbuilder/cdynamicmoduletype.cc \
   netbuilder/cdynamicmodule.h \
   netbuilder/cneddeclaration.h \
   netbuilder/cnedresourcecache.h \
@@ -1617,6 +1681,8 @@ netbuilder/cnedresourcecache.obj: netbuilder/cnedresourcecache.cc \
   ../../include/cpar.h \
   ../../include/clongpar.h \
   ../../include/cdoublepar.h \
+  netbuilder/cdynamicmoduletype.h \
+  netbuilder/cdynamicchanneltype.h \
   ../../include/defs.h \
   netbuilder/cneddeclaration.h \
   ../../include/regmacros.h \
@@ -1634,7 +1700,16 @@ netbuilder/cnedresourcecache.obj: netbuilder/cnedresourcecache.cc \
   ../../include/errmsg.h \
   ../../include/opp_string.h \
   ../../include/cdynamicexpression.h \
-  ../../include/cexpression.h
+  ../../include/cexpression.h \
+  ../../include/cmodule.h \
+  ../../include/ccompoundmodule.h \
+  netbuilder/cnednetworkbuilder.h \
+  ../../include/ccomponent.h \
+  ../../include/csimulation.h \
+  ../../include/cdefaultlist.h \
+  ../../include/cmsgheap.h \
+  ../../include/ccoroutine.h \
+  ../../include/cchannel.h
 parsim/cadvlinkdelaylookahead.obj: parsim/cadvlinkdelaylookahead.cc \
   parsim/cadvlinkdelaylookahead.h \
   ../../include/cmessage.h \

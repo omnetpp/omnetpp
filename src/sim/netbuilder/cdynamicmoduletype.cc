@@ -1,5 +1,5 @@
 //==========================================================================
-//   CDYNAMICMODULE.CC
+//   CDYNAMICMODULETYPE.CC
 //
 //                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
@@ -19,7 +19,7 @@
 #include <time.h>
 #include <iostream>
 
-#include "cdynamicmodule.h"
+#include "cdynamicmoduletype.h"
 #include "cneddeclaration.h"
 #include "cnedresourcecache.h"
 #include "cnednetworkbuilder.h"

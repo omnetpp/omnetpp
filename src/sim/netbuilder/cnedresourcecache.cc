@@ -31,7 +31,9 @@
 #include "cpar.h"
 #include "clongpar.h"
 #include "cdoublepar.h"
-
+#include "globals.h"
+#include "cdynamicmoduletype.h"
+#include "cdynamicchanneltype.h"
 
 cNEDResourceCache *cNEDResourceCache::instance_;
 
@@ -48,6 +50,7 @@ void cNEDResourceCache::clear()
     instance_ = NULL;
 }
 
+//FIXME rename class to cNEDLoader
 void cNEDResourceCache::addComponent(const char *name, NEDElement *node)
 {
     if (!areDependenciesResolved(node))
@@ -61,7 +64,16 @@ void cNEDResourceCache::addComponent(const char *name, NEDElement *node)
     cNEDDeclaration *decl = buildNEDDeclaration(node);
     components[name] = decl;
 
-    //FIXME if module/channel, register corresponding cDynamicModuleType/..
+    // if module or channel, register corresponding object which can be used to instantiate it
+    cComponentType *type = NULL;
+    if (node->getTagCode()==NED_SIMPLE_MODULE)
+        type = new cDynamicModuleType(name);
+    else if (node->getTagCode()==NED_COMPOUND_MODULE)
+        type = new cDynamicModuleType(name);
+    else if (node->getTagCode()==NED_CHANNEL)
+        type = new cDynamicChannelType(name);
+    if (type)
+        componentTypes.instance()->add(type);
 }
 
 cNEDDeclaration *cNEDResourceCache::lookup(const char *name)

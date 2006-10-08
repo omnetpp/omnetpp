@@ -1,5 +1,5 @@
 //==========================================================================
-//   CDYNAMICCHANNEL.CC
+//   CDYNAMICCHANNELTYPE.CC
 //
 //                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
@@ -19,7 +19,7 @@
 #include <time.h>
 #include <iostream>
 
-#include "cdynamicchannel.h"
+#include "cdynamicchanneltype.h"
 #include "cneddeclaration.h"
 #include "cnedresourcecache.h"
 #include "cnednetworkbuilder.h"

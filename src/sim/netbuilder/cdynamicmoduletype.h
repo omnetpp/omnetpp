@@ -1,5 +1,5 @@
 //==========================================================================
-//  CDYNAMICMODULE.H - part of
+//  CDYNAMICMODULETYPE.H - part of
 //
 //                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
@@ -13,8 +13,8 @@
   `terms' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __CDYNAMICMODULE_H
-#define __CDYNAMICMODULE_H
+#ifndef __CDYNAMICMODULETYPE_H
+#define __CDYNAMICMODULETYPE_H
 
 #include "cmodule.h"
 #include "ccompoundmodule.h"

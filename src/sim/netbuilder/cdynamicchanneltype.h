@@ -1,5 +1,5 @@
 //==========================================================================
-//  CDYNAMICCHANNEL.H - part of
+//  CDYNAMICCHANNELTYPE.H - part of
 //
 //                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
@@ -13,8 +13,8 @@
   `terms' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __CDYNAMICCHANNEL_H
-#define __CDYNAMICCHANNEL_H
+#ifndef __CDYNAMICCHANNELTYPE_H
+#define __CDYNAMICCHANNELTYPE_H
 
 #include "cchannel.h"
 #include "ccomponenttype.h"
