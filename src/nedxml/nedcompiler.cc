@@ -74,15 +74,11 @@ NEDElement *NEDClassicImportResolver::loadImport(const char *import)
     }
 
     // load and parse it
-/*FIXME
-    NEDParser parser;
+NEDErrorStore *errors = new NEDErrorStore(); //FIXME should take NECCompiler's instead!!!!!
+    NEDParser parser(errors);
     parser.setParseExpressions(true);
-    parser.parseNEDFile(fpath.c_str());
-    NEDElement *tree = parser.getTree();
-
+    NEDElement *tree = parser.parseNEDFile(fpath.c_str());
     return tree;
-*/
-return NULL; //XXX
 }
 
 //-----------
@@ -118,6 +114,8 @@ void NEDCompiler::validate(NEDElement *tree)
 
 void NEDCompiler::doValidate(NEDElement *tree)
 {
+//FIXME this logic is broken!!!!
+
     // DTD validation and additional basic validation
     NEDDTDValidator dtdvalidator(errors);
     dtdvalidator.validate(tree);
@@ -167,19 +165,19 @@ void NEDCompiler::doValidate(NEDElement *tree)
                 if (debug) fprintf(stderr,"dbg: leaving import %s\n",fname);
             }
         }
+/*FIXME
         else
         {
             // semantic validation for this top-level element
-            NEDSemanticValidator validator(true,nedcache, errors);
+            NEDSemanticValidator validator(true, nedcache, errors);
             validator.validate(node);
             // no return on errors -- keep on until end of this file
 
             // add to symbol table
-            //XXX nedresourcecache->add(node);
+            nedcache->addFile(node);
             if (debug) fprintf(stderr,"dbg: %s %s added to symbol table\n",node->getTagName(), node->getAttribute("name"));
         }
-    }
-/*XXX
 */
+    }
 }
 
