@@ -49,9 +49,9 @@ class SIM_API cNEDResourceCache : public NEDResourceCache
     NEDElement *parseAndValidateNedFile(const char *nedfname, bool isXML);
     bool areDependenciesResolved(NEDElement *node);
     void tryResolvePendingDeclarations();
-    cNEDDeclaration *buildNEDDeclaration(NEDElement *node);
-    cNEDDeclaration::ParamDescription extractParamDescription(ParamNode *paramNode);
-    cNEDDeclaration::GateDescription extractGateDescription(GateNode *gateNode);
+    cNEDComponent *buildNEDDeclaration(NEDElement *node);
+    cNEDComponent::ParamDescription extractParamDescription(ParamNode *paramNode);
+    cNEDComponent::GateDescription extractGateDescription(GateNode *gateNode);
     cProperties *extractProperties(NEDElement *parent);
     cProperty *extractProperty(PropertyNode *propNode);
 
@@ -64,7 +64,7 @@ class SIM_API cNEDResourceCache : public NEDResourceCache
 
     /**
      * Parses the given NED file, and converts modules/channels/interfaces to
-     * cNEDDeclaration. Components that depend on other components
+     * cNEDComponent. Components that depend on other components
      * (e.g. contain "extends") may be temporarily put off until all
      * dependencies are loaded.
      *

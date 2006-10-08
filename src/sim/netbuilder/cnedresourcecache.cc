@@ -44,10 +44,10 @@ void cNEDResourceCache::addComponent(const char *name, NEDElement *node)
     }
 
     // Note: base class (nedxml's NEDResourceCache) has already checked for duplicates, no need here
-//FIXME!!!!!!!!!!!!!!
-    cNEDDeclaration *decl = buildNEDDeclaration(node);
-    cNEDComponent *component = new cNEDComponent(node); //FIXME merge cNEDDeclaration and cNEDComponent
-    components[name] = component;
+    cNEDComponent *decl = buildNEDDeclaration(node);
+    components[name] = decl;
+
+    //FIXME if module/channel, register corresponding cDynamicModuleType/..
 }
 
 cNEDComponent *cNEDResourceCache::lookup(const char *name)
@@ -121,9 +121,7 @@ bool cNEDResourceCache::areDependenciesResolved(NEDElement *node)
             continue;
 
         const char *name = child->getAttribute("name");
-//FIXME!@!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1
-//!!!        cNEDDeclaration *decl = cNEDDeclaration::find(name);
-        cNEDDeclaration *decl = NULL;
+        cNEDComponent *decl = lookup(name);
         if (!decl)
             return false;
     }
@@ -148,12 +146,12 @@ void cNEDResourceCache::tryResolvePendingDeclarations()
     }
 }
 
-cNEDDeclaration *cNEDResourceCache::buildNEDDeclaration(NEDElement *node)
+cNEDComponent *cNEDResourceCache::buildNEDDeclaration(NEDElement *node)
 {
     const char *name = node->getAttribute("name");
 
     // create declaration object
-    cNEDDeclaration *decl = new cNEDDeclaration(name);
+    cNEDComponent *decl = new cNEDComponent(name, node);
 
     // add "extends" and "like" names
     for (NEDElement *child=node->getFirstChild(); child; child=child->getNextSibling())
@@ -168,9 +166,7 @@ cNEDDeclaration *cNEDResourceCache::buildNEDDeclaration(NEDElement *node)
     for (NEDElement *child=node->getFirstChildWithTag(NED_EXTENDS); child; child=child->getNextSiblingWithTag(NED_EXTENDS))
     {
         const char *superName = ((ExtendsNode *)child)->getName();
-//FIXME!!!!!!!!!!!!!!!!!!!!1111
-//        cNEDDeclaration *superDecl = cNEDDeclaration::find(superName);
-        cNEDDeclaration *superDecl = NULL;
+        cNEDComponent *superDecl = lookup(superName);
         ASSERT(superDecl);
 
         // add inherited parameters
@@ -205,7 +201,7 @@ cNEDDeclaration *cNEDResourceCache::buildNEDDeclaration(NEDElement *node)
             if (!decl->hasPar(paramName))
             {
                 // new parameter -- add it
-                cNEDDeclaration::ParamDescription desc = extractParamDescription(paramNode);
+                cNEDComponent::ParamDescription desc = extractParamDescription(paramNode);
                 desc.declaredOn = name;
                 decl->addPar(desc);
             }
@@ -233,7 +229,7 @@ cNEDDeclaration *cNEDResourceCache::buildNEDDeclaration(NEDElement *node)
             if (!decl->hasGate(gateName))
             {
                 // new gate -- add it
-                cNEDDeclaration::GateDescription desc = extractGateDescription(gateNode);
+                cNEDComponent::GateDescription desc = extractGateDescription(gateNode);
                 desc.declaredOn = name;
                 decl->addGate(desc);
             }
@@ -253,9 +249,9 @@ cNEDDeclaration *cNEDResourceCache::buildNEDDeclaration(NEDElement *node)
     return decl;
 }
 
-cNEDDeclaration::ParamDescription cNEDResourceCache::extractParamDescription(ParamNode *paramNode)
+cNEDComponent::ParamDescription cNEDResourceCache::extractParamDescription(ParamNode *paramNode)
 {
-    cNEDDeclaration::ParamDescription desc;
+    cNEDComponent::ParamDescription desc;
     desc.name = paramNode->getName();
     int t = paramNode->getType();
     desc.type = t==NED_PARTYPE_DOUBLE ? cPar::DOUBLE :
@@ -269,9 +265,9 @@ cNEDDeclaration::ParamDescription cNEDResourceCache::extractParamDescription(Par
     return desc;
 }
 
-cNEDDeclaration::GateDescription cNEDResourceCache::extractGateDescription(GateNode *gateNode)
+cNEDComponent::GateDescription cNEDResourceCache::extractGateDescription(GateNode *gateNode)
 {
-    cNEDDeclaration::GateDescription desc;
+    cNEDComponent::GateDescription desc;
     desc.name = gateNode->getName();
     int t = gateNode->getType();
     desc.type = t==NED_GATETYPE_INPUT ? cGate::INPUT :

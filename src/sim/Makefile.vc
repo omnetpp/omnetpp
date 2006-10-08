@@ -32,8 +32,7 @@ CPPOBJS_STD=\
 CPPOBJS_NETBUILDER=\
     netbuilder\cexpressionbuilder.obj \
     netbuilder\cnedcomponent.obj \
-    netbuilder\cnedresourcecache.obj \
-    netbuilder\cneddeclaration.obj
+    netbuilder\cnedresourcecache.obj
 
 XXX_CPPOBJS_NETBUILDER=\
     netbuilder\cdynamicchannel.obj \
@@ -1587,16 +1586,11 @@ netbuilder/cexpressionbuilder.obj: netbuilder/cexpressionbuilder.cc \
   ../../include/cstringpool.h
 netbuilder/cnedcomponent.obj: netbuilder/cnedcomponent.cc \
   netbuilder/cnedcomponent.h \
-  ../../include/defs.h \
-  netbuilder/nedcomponent.h \
-  ../../include/regmacros.h \
-  ../../include/onstartup.h
-netbuilder/cneddeclaration.obj: netbuilder/cneddeclaration.cc \
-  netbuilder/cneddeclaration.h \
   ../../include/cexception.h \
   ../../include/cpar.h \
   ../../include/cproperties.h \
   ../../include/defs.h \
+  netbuilder/nedcomponent.h \
   ../../include/globals.h \
   ../../include/cobject.h \
   ../../include/cgate.h \
@@ -1653,7 +1647,6 @@ netbuilder/cnedresourcecache.obj: netbuilder/cnedresourcecache.cc \
   ../../include/cdoublepar.h \
   ../../include/defs.h \
   netbuilder/cnedcomponent.h \
-  netbuilder/cneddeclaration.h \
   ../../include/regmacros.h \
   ../../include/onstartup.h \
   netbuilder/nedcomponent.h \
