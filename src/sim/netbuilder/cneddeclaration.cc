@@ -229,6 +229,16 @@ void cNEDDeclaration::setGateSize(const char *name, cPar *gateSize)
     desc.gatesize = gateSize;
 }
 
+SubmodulesNode *cNEDDeclaration::getSubmodules()
+{
+    return (SubmodulesNode *)getTree()->getFirstChildWithTag(NED_SUBMODULES);
+}
+
+ConnectionsNode *cNEDDeclaration::getConnections()
+{
+    return (ConnectionsNode *)getTree()->getFirstChildWithTag(NED_CONNECTIONS);
+}
+
 
 //-------------------
 

@@ -1593,7 +1593,6 @@ netbuilder/cneddeclaration.obj: netbuilder/cneddeclaration.cc \
   ../../include/cobject.h \
   ../../include/cpar.h \
   ../../include/cgate.h \
-  netbuilder/nedcomponent.h \
   ../../include/regmacros.h \
   ../../include/onstartup.h \
   ../../include/carray.h \
@@ -1652,7 +1651,6 @@ netbuilder/cnedresourcecache.obj: netbuilder/cnedresourcecache.cc \
   ../../include/globals.h \
   ../../include/cobject.h \
   ../../include/cgate.h \
-  netbuilder/nedcomponent.h \
   ../../include/carray.h \
   ../../include/cclassfactory.h \
   ../../include/util.h \

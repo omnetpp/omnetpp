@@ -33,6 +33,7 @@
 #include "cdoublepar.h"
 
 //FIXME this class should be turned into a singleton!!!!!!
+//FIXME so csimulation should not delete it!!!
 
 void cNEDResourceCache::addComponent(const char *name, NEDElement *node)
 {

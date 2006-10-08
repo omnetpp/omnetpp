@@ -40,8 +40,8 @@ class cProperties;
  *  - a pointer to the complete NEDElement tree of the NED declaration;
  *    this pointer points into the cNEDResourceCache.
  *  - parameter and gate descriptions extracted from the NEDElement trees,
- *    also following the inheritance chain. Inherited parameters and 
- *    gates are included, and values (parameters and gate sizes) are 
+ *    also following the inheritance chain. Inherited parameters and
+ *    gates are included, and values (parameters and gate sizes) are
  *    converted into and stored in cPar form.
  *
  * cNEDDeclarations are used during network setup (and dynamic module
@@ -286,6 +286,23 @@ class SIM_API cNEDDeclaration : public cNoncopyableObject, public NEDComponent
      * Sets the gate vector size.
      */
     virtual void setGateSize(const char *gateName, cPar *gateSize);
+    //@}
+
+    /** @name Help for the dynamic builder */
+    //@{
+    /**
+     * Returns the <submodules> element from the NEDElement tree of this
+     * NED component declaration.
+     * Returns NULL if this declaration doesn't contain submodules.
+     */
+    virtual SubmodulesNode *getSubmodules();
+
+    /**
+     * Returns the <connections> element from the NEDElement tree of this
+     * NED component declaration.
+     * Returns NULL if this declaration doesn't contain connections.
+     */
+    virtual ConnectionsNode *getConnections();
     //@}
 };
 
