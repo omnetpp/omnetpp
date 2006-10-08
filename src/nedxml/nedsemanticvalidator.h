@@ -23,7 +23,7 @@
 #include <string.h>
 #include "nedvalidator.h"
 
-class NEDSymbolTable;
+class NEDResourceCache;
 
 /**
  * Performs semantic validation. Should be called after tree passed
@@ -35,7 +35,7 @@ class NEDSemanticValidator : public NEDValidatorBase
 {
   protected:
     bool parsedExpressions;
-    NEDSymbolTable *symboltable;
+    NEDResourceCache *nedresourcecache;
 
     // temporary variables:
     NEDElement *moduletypedecl;
@@ -46,9 +46,21 @@ class NEDSemanticValidator : public NEDValidatorBase
                           const char *gateName, bool hasGateIndex,
                           NEDElement *parent, NEDElement *conn, bool isSrc);
 
+    // internal helper
+    NEDElement *getXXXDeclaration(const char *name, int tagcode1, int tagcode2=-1);
+
+    // these utility methods look up name in nedresourcecache, and add an error if the type doesn't match
+    NEDElement *getModuleDeclaration(const char *name);
+    NEDElement *getChannelDeclaration(const char *name);
+    NEDElement *getModuleInterfaceDeclaration(const char *name);
+    NEDElement *getChannelInterfaceDeclaration(const char *name);
+
+    NEDElement *getEnumDeclaration(const char *name);
+    NEDElement *getClassDeclaration(const char *name);
+
   public:
     /** Constructor */
-    NEDSemanticValidator(bool parsedExpr, NEDSymbolTable *symbtab, NEDErrorStore *e);
+    NEDSemanticValidator(bool parsedExpr, NEDResourceCache *nedcache, NEDErrorStore *e);
 
     /** Destructor */
     virtual ~NEDSemanticValidator();

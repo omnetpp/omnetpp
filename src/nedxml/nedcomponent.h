@@ -25,7 +25,8 @@
 
 /**
  * Wraps a NEDElement tree of a NED declaration (module, channel, module
- * interface or channel interface). May be extended by subclassing.
+ * interface or channel interface), or declaration in a msg file (enum, 
+ * class, struct). May be extended by subclassing.
  *
  * @ingroup NEDCompiler
  */

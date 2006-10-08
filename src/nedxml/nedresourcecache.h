@@ -35,7 +35,7 @@
 class NEDResourceCache
 {
   protected:
-    typedef std::map<std::string, NedFileNode *> NEDFileMap;
+    typedef std::map<std::string, NEDElement *> NEDFileMap;
     typedef std::map<std::string, NEDComponent *> NEDComponentMap;
 
     // table of loaded NED files; maps file name to NED element.
@@ -65,13 +65,13 @@ class NEDResourceCache
      * was already added, no processing takes place and the function
      * returns false; otherwise it returns true.
      */
-    virtual bool addFile(const char *name, NedFileNode *node);
+    virtual bool addFile(const char *name, NEDElement *node);
 
     /** Get a file (represented as object tree) from the cache */
-    virtual NedFileNode *getFile(const char *name);
+    virtual NEDElement *getFile(const char *name);
 
     /** Get a component from the cache */
-    virtual NEDComponent *getComponent(const char *name);
+    virtual NEDComponent *lookup(const char *name);
 };
 
 #endif

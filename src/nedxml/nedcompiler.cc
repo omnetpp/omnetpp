@@ -32,109 +32,6 @@
 static bool debug=false;
 
 
-NEDFileCache::NEDFileCache()
-{
-}
-
-NEDFileCache::~NEDFileCache()
-{
-    for (NEDMap::iterator i = importedfiles.begin(); i!=importedfiles.end(); ++i)
-        delete (*i).second;
-}
-
-void NEDFileCache::addFile(const char *name, NEDElement *node)
-{
-    importedfiles[name] = node;
-}
-
-NEDElement *NEDFileCache::getFile(const char *name)
-{
-    // find name in hash table
-    NEDMap::iterator i = importedfiles.find(name);
-    return i==importedfiles.end() ? NULL : (*i).second;
-}
-
-//---------------
-
-NEDSymbolTable::NEDSymbolTable()
-{
-}
-
-NEDSymbolTable::~NEDSymbolTable()
-{
-}
-
-NEDElement *NEDSymbolTable::getChannelDeclaration(const char *name)
-{
-    // find name in hash table
-    NEDMap::iterator i = channels.find(name);
-    return i==channels.end() ? NULL : (*i).second;
-}
-
-NEDElement *NEDSymbolTable::getModuleDeclaration(const char *name)
-{
-    // find name in hash table
-    NEDMap::iterator i = modules.find(name);
-    return i==modules.end() ? NULL : (*i).second;
-}
-
-NEDElement *NEDSymbolTable::getNetworkDeclaration(const char *name)
-{
-    // find name in hash table
-    NEDMap::iterator i = networks.find(name);
-    return i==networks.end() ? NULL : (*i).second;
-}
-
-NEDElement *NEDSymbolTable::getEnumDeclaration(const char *name)
-{
-    // find name in hash table
-    NEDMap::iterator i = enums.find(name);
-    return i==enums.end() ? NULL : (*i).second;
-}
-
-NEDElement *NEDSymbolTable::getClassDeclaration(const char *name)
-{
-    // find name in hash table
-    NEDMap::iterator i = classes.find(name);
-    return i==classes.end() ? NULL : (*i).second;
-}
-
-void NEDSymbolTable::add(NEDElement *node)
-{
-    int tag = node->getTagCode();
-//FIXME make common symbol table (it's a single name space)
-    if (tag==NED_CHANNEL)
-    {
-        // add to channels table
-        ChannelNode *chan = (ChannelNode *)node;
-        channels[chan->getName()] = chan;
-    }
-    else if (tag==NED_SIMPLE_MODULE || tag==NED_COMPOUND_MODULE)
-    {
-        // add to modules table
-        modules[node->getAttribute("name")] = node;
-    }
-    else if (tag==NED_ENUM)
-    {
-        // add to enums table
-        EnumNode *e = (EnumNode *)node;
-        enums[e->getName()] = e;
-    }
-    else if (tag==NED_STRUCT || tag==NED_CLASS || tag==NED_MESSAGE)
-    {
-        // add to classes table
-        classes[node->getAttribute("name")] = node;
-    }
-    else
-    {
-        // collect stuff recursively from inside and add to hash tables
-        for (NEDElement *child=node->getFirstChild(); child; child=child->getNextSibling())
-            add(child);
-    }
-}
-
-//------------------
-
 void NEDClassicImportResolver::addImportPath(const char *dir)
 {
     importpath.push_back(std::string(dir));
@@ -190,10 +87,9 @@ return NULL; //XXX
 
 //-----------
 
-NEDCompiler::NEDCompiler(NEDFileCache *fcache, NEDSymbolTable *symbtab, NEDImportResolver *importres, NEDErrorStore *e)
+NEDCompiler::NEDCompiler(NEDResourceCache *cache, NEDImportResolver *importres, NEDErrorStore *e)
 {
-    filecache = fcache;
-    symboltable = symbtab;
+    nedcache = cache;
     importresolver = importres;
     errors = e;
 }
@@ -204,12 +100,13 @@ NEDCompiler::~NEDCompiler()
 
 void NEDCompiler::addImport(const char *name)
 {
-    imports[name] = NULL;
+//XXX    imports[name] = NULL;
 }
 
 bool NEDCompiler::isImported(const char *name)
 {
-    return imports.find(name)!=imports.end();
+//XXX    return imports.find(name)!=imports.end();
+return true;
 }
 
 void NEDCompiler::validate(NEDElement *tree)
@@ -221,13 +118,12 @@ void NEDCompiler::validate(NEDElement *tree)
 
 void NEDCompiler::doValidate(NEDElement *tree)
 {
-/*XXX
     // DTD validation and additional basic validation
-    NEDDTDValidator dtdvalidator;
+    NEDDTDValidator dtdvalidator(errors);
     dtdvalidator.validate(tree);
     if (!errors->empty()) return;
 
-    NEDBasicValidator basicvalidator(true);
+    NEDBasicValidator basicvalidator(true, errors);
     basicvalidator.validate(tree);
     if (!errors->empty()) return;
 
@@ -236,58 +132,54 @@ void NEDCompiler::doValidate(NEDElement *tree)
     {
         if (node->getTagCode()==NED_IMPORT)
         {
-            // import external declarations
-            for (ImportedFileNode *import=((ImportNode *)node)->getFirstImportedFileChild();
-                 import;
-                 import=import->getNextImportedFileNodeSibling())
+            ImportNode *import = (ImportNode *)node;
+            const char *fname = import->getFilename();
+
+            // if already imported, nothing to do
+            if (!isImported(fname))
             {
-                const char *fname = import->getFilename();
+                // register we've seen this import before
+                addImport(fname);
 
-                // if already imported, nothing to do
-                if (!isImported(fname))
+                // try to find file in cache
+                NEDElement *importedtree = nedcache->getFile(fname);
+
+                // not in cache, try to load via importresolver
+                if (!importedtree)
                 {
-                    // register we've seen this import before
-                    addImport(fname);
+                    if (debug) fprintf(stderr,"dbg: importing %s\n",fname);
+                    importedtree = importresolver->loadImport(fname);
 
-                    // try to find file in cache
-                    NEDElement *importedtree = filecache->getFile(fname);
-
-                    // not in cache, try to load via importresolver
+                    // if couldn't load, skip
                     if (!importedtree)
                     {
-                        if (debug) fprintf(stderr,"dbg: importing %s\n",fname);
-                        importedtree = importresolver->loadImport(fname);
-
-                        // if couldn't load, skip
-                        if (!importedtree)
-                        {
-                           errors->add(import, "could not import '%s'",fname);
-                           continue;
-                        }
-
-                        // add to file cache
-                        filecache->addFile(fname, importedtree);
+                       errors->add(import, "could not import '%s'",fname);
+                       continue;
                     }
 
-                    // recursive processing: add stuff in it to symbol table, further processing imports...
-                    if (debug) fprintf(stderr,"dbg: processing import %s\n",fname);
-                    doValidate(importedtree);
-                    if (debug) fprintf(stderr,"dbg: leaving import %s\n",fname);
+                    // add to file cache
+                    nedcache->addFile(fname, importedtree);
                 }
+
+                // recursive processing: add stuff in it to symbol table, further processing imports...
+                if (debug) fprintf(stderr,"dbg: processing import %s\n",fname);
+                doValidate(importedtree);
+                if (debug) fprintf(stderr,"dbg: leaving import %s\n",fname);
             }
         }
         else
         {
             // semantic validation for this top-level element
-            NEDSemanticValidator validator(true,symboltable);
+            NEDSemanticValidator validator(true,nedcache, errors);
             validator.validate(node);
             // no return on errors -- keep on until end of this file
 
             // add to symbol table
-            symboltable->add(node);
+            //XXX nedresourcecache->add(node);
             if (debug) fprintf(stderr,"dbg: %s %s added to symbol table\n",node->getTagName(), node->getAttribute("name"));
         }
     }
+/*XXX
 */
 }
 

@@ -24,94 +24,7 @@
 #include <vector>
 #include <string>
 #include "nedelements.h"
-
-
-struct ltstr
-{
-  bool operator()(const char* s1, const char* s2) const  {return strcmp(s1,s2)<0;}
-};
-typedef std::map<const char *,NEDElement *,ltstr> NEDMap;
-
-typedef std::vector<std::string> NEDStringVector;
-
-
-/**
- * Caches NED files already loaded. To be used with NEDCompiler.
- * A NEDFileCache instance can be reused when compiling several
- * independent files in a row.
- *
- * @ingroup NEDCompiler
- */
-class NEDFileCache
-{
-  protected:
-    NEDMap importedfiles;
-
-  public:
-    /** Constructor */
-    NEDFileCache();
-
-    /** Destructor */
-    ~NEDFileCache();
-
-    /** Add a file (parsed into an object tree) to the cache */
-    void addFile(const char *name, NEDElement *node);
-
-    /** Get a file (represented as object tree) from the cache */
-    NEDElement *getFile(const char *name);
-};
-
-
-/**
- * For fast lookup of module, channel, etc names. To be used with NEDCompiler.
- * Typically a new instance is needed for each NEDCompiler invocation.
- *
- * @ingroup NEDCompiler
- */
-class NEDSymbolTable
-{
-  protected:
-    // hash tables for channel, module and network declarations:
-    NEDMap channels;
-    NEDMap modules;
-    NEDMap networks;
-
-    // subclassing: enums, classes, messages, objects
-    NEDMap enums;
-    NEDMap classes;
-
-  public:
-    /** Constructor */
-    NEDSymbolTable();
-
-    /** Destructor */
-    ~NEDSymbolTable();
-
-    /**
-     * Add to the symbol table the given node (channel, simple module,
-     * compound module, network enum, struct, class, message) or
-     * all such nodes in the subtree.
-     */
-    void add(NEDElement *node);
-
-    /** @name Look up and return a component identified with its name */
-    //@{
-    /** Look up a channel declaration */
-    NEDElement *getChannelDeclaration(const char *name);
-
-    /** Look up a module declaration */
-    NEDElement *getModuleDeclaration(const char *name);
-
-    /** Look up a network declaration */
-    NEDElement *getNetworkDeclaration(const char *name);
-
-    /** Look up an enum declaration */
-    NEDElement *getEnumDeclaration(const char *name);
-
-    /** Look up a class declaration */
-    NEDElement *getClassDeclaration(const char *name);
-    //@}
-};
+#include "nedresourcecache.h"
 
 
 /**
@@ -145,6 +58,7 @@ class NEDImportResolver
 class NEDClassicImportResolver : public NEDImportResolver
 {
   protected:
+    typedef std::vector<std::string> NEDStringVector;
     NEDStringVector importpath;
 
   public:
@@ -186,10 +100,9 @@ class NEDClassicImportResolver : public NEDImportResolver
 class NEDCompiler
 {
   protected:
-    NEDMap imports;  // list of already imported modules (to avoid double importing)
+//XXX    NEDMap imports;  // list of already imported modules (to avoid double importing)
 
-    NEDFileCache *filecache;
-    NEDSymbolTable *symboltable;
+    NEDResourceCache *nedcache;
     NEDImportResolver *importresolver;
     NEDErrorStore *errors;
 
@@ -199,7 +112,7 @@ class NEDCompiler
 
   public:
     /** Constructor */
-    NEDCompiler(NEDFileCache *fcache, NEDSymbolTable *symtab, NEDImportResolver *importres, NEDErrorStore *e);
+    NEDCompiler(NEDResourceCache *nedcache, NEDImportResolver *importres, NEDErrorStore *e);
 
     /** Destructor */
     virtual ~NEDCompiler();

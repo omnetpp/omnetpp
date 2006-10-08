@@ -18,7 +18,7 @@
 
 #include "nederror.h"
 #include "nedsemanticvalidator.h"
-#include "nedcompiler.h" // for NEDSymbolTable
+#include "nedresourcecache.h"
 
 
 inline bool strnull(const char *s)
@@ -31,15 +31,57 @@ inline bool strnotnull(const char *s)
     return s && s[0];
 }
 
-NEDSemanticValidator::NEDSemanticValidator(bool parsedExpr, NEDSymbolTable *symbtab, NEDErrorStore *e)
+NEDSemanticValidator::NEDSemanticValidator(bool parsedExpr, NEDResourceCache *nedcache, NEDErrorStore *e)
    : NEDValidatorBase(e)
 {
     parsedExpressions = parsedExpr;
-    symboltable = symbtab;
+    nedresourcecache = nedcache;
 }
 
 NEDSemanticValidator::~NEDSemanticValidator()
 {
+}
+
+NEDElement *NEDSemanticValidator::getXXXDeclaration(const char *name, int tagcode1, int tagcode2)
+{
+    NEDComponent *component = nedresourcecache->lookup(name);
+    if (!component)
+        return NULL;
+
+    int type = component->getTree()->getTagCode();
+    if (type!=tagcode1 && type!=tagcode2)
+        return NULL;
+    return component->getTree();
+}
+
+NEDElement *NEDSemanticValidator::getModuleDeclaration(const char *name)
+{
+    return getXXXDeclaration(name, NED_SIMPLE_MODULE, NED_COMPOUND_MODULE);
+}
+
+NEDElement *NEDSemanticValidator::getChannelDeclaration(const char *name)
+{
+    return getXXXDeclaration(name, NED_CHANNEL);
+}
+
+NEDElement *NEDSemanticValidator::getModuleInterfaceDeclaration(const char *name)
+{
+    return getXXXDeclaration(name, NED_MODULE_INTERFACE);
+}
+
+NEDElement *NEDSemanticValidator::getChannelInterfaceDeclaration(const char *name)
+{
+    return getXXXDeclaration(name, NED_CHANNEL_INTERFACE);
+}
+
+NEDElement *NEDSemanticValidator::getEnumDeclaration(const char *name)
+{
+    return getXXXDeclaration(name, NED_ENUM);
+}
+
+NEDElement *NEDSemanticValidator::getClassDeclaration(const char *name)
+{
+    return getXXXDeclaration(name, NED_CLASS);
 }
 
 void NEDSemanticValidator::validateElement(FilesNode *node)
@@ -77,7 +119,7 @@ void NEDSemanticValidator::validateElement(SimpleModuleNode *node)
 {
     // FIXME revise
     // make sure module type name does not exist yet
-    if (symboltable->getModuleDeclaration(node->getName()))
+    if (getModuleDeclaration(node->getName()))
         errors->add(node, "redefinition of module with name '%s'",node->getName());
 }
 
@@ -90,7 +132,7 @@ void NEDSemanticValidator::validateElement(CompoundModuleNode *node)
 {
     // FIXME revise
     // make sure module type name does not exist yet
-    if (symboltable->getModuleDeclaration(node->getName()))
+    if (getModuleDeclaration(node->getName()))
         errors->add(node, "redefinition of module with name '%s'",node->getName());
 }
 
@@ -170,7 +212,7 @@ void NEDSemanticValidator::validateElement(SubmoduleNode *node)
     // FIXME revise
     // make sure module type exists
     const char *type_name = node->getType();
-    moduletypedecl = symboltable->getModuleDeclaration(type_name);
+    moduletypedecl = getModuleDeclaration(type_name);
     if (!moduletypedecl)
         errors->add(node, "unknown module type '%s'",type_name);
 }
@@ -231,7 +273,7 @@ void NEDSemanticValidator::validateConnGate(const char *submodName, bool hasSubm
                 errors->add(conn, "%s: missing submodule index ('%s' is a vector submodule)", q, submodName);
 
             // check gate
-            NEDElement *submodType = symboltable->getModuleDeclaration(submod->getType());
+            NEDElement *submodType = getModuleDeclaration(submod->getType());
             if (!submodType)
                 return; // we gave error earlier if submod type is not present
             NEDElement *gates = submodType->getFirstChildWithTag(NED_GATES);
@@ -270,7 +312,7 @@ void NEDSemanticValidator::validateElement(ChannelNode *node)
 {
     // FIXME revise
     // make sure channel type name does not exist yet
-    if (symboltable->getChannelDeclaration(node->getName()))
+    if (getChannelDeclaration(node->getName()))
         errors->add(node, "redefinition of channel with name '%s'",node->getName());
 }
 
@@ -341,7 +383,7 @@ void NEDSemanticValidator::validateElement(EnumNode *node)
 {
     // check extends-name
     const char *baseName = node->getExtendsName();
-    NEDElement *base = symboltable->getEnumDeclaration(baseName);
+    NEDElement *base = getEnumDeclaration(baseName);
     if (!base)
         errors->add(node, "unknown base enum type '%s'",baseName);
 }
@@ -358,7 +400,7 @@ void NEDSemanticValidator::validateElement(MessageNode *node)
 {
     // check extends-name
     const char *baseClassName = node->getExtendsName();
-    NEDElement *baseClass = symboltable->getClassDeclaration(baseClassName);
+    NEDElement *baseClass = getClassDeclaration(baseClassName);
     if (!baseClass)
         errors->add(node, "unknown base class '%s'",baseClassName);
 }
@@ -367,7 +409,7 @@ void NEDSemanticValidator::validateElement(ClassNode *node)
 {
     // check extends-name
     const char *baseClassName = node->getExtendsName();
-    NEDElement *baseClass = symboltable->getClassDeclaration(baseClassName);
+    NEDElement *baseClass = getClassDeclaration(baseClassName);
     if (!baseClass)
         errors->add(node, "unknown base class '%s'",baseClassName);
 }
@@ -376,7 +418,7 @@ void NEDSemanticValidator::validateElement(StructNode *node)
 {
     // check extends-name
     const char *baseClassName = node->getExtendsName();
-    NEDElement *baseClass = symboltable->getClassDeclaration(baseClassName);
+    NEDElement *baseClass = getClassDeclaration(baseClassName);
     if (!baseClass)
         errors->add(node, "unknown base class '%s'",baseClassName);
 }

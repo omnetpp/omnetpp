@@ -117,21 +117,27 @@ cppexprgenerator.obj: cppexprgenerator.cc \
   cppexprgenerator.h \
   nederror.h \
   nedelements.h \
-  nedelement.h
+  nedresourcecache.h \
+  nedelement.h \
+  nedcomponent.h
 cppgenerator.obj: cppgenerator.cc \
   nedelements.h \
   cppgenerator.h \
   nederror.h \
   nedelement.h \
   cppexprgenerator.h \
-  nedcompiler.h
+  nedcompiler.h \
+  nedresourcecache.h \
+  nedcomponent.h
 cppmsggenerator.obj: cppmsggenerator.cc \
   nedelements.h \
   cppgenerator.h \
   nederror.h \
   nedelement.h \
   cppexprgenerator.h \
-  nedcompiler.h
+  nedcompiler.h \
+  nedresourcecache.h \
+  nedcomponent.h
 lex.msg2yy.obj: lex.msg2yy.cc \
   ./unistd.h \
   nedyydefs.h \
@@ -196,6 +202,8 @@ nedcompiler.obj: nedcompiler.cc \
   nedsemanticvalidator.h \
   nedelement.h \
   nedelements.h \
+  nedresourcecache.h \
+  nedcomponent.h \
   nedyydefs.h \
   neddtdvalidatorbase.h \
   nedvalidator.h
@@ -257,10 +265,11 @@ nedsaxhandler.obj: nedsaxhandler.cc \
 nedsemanticvalidator.obj: nedsemanticvalidator.cc \
   nederror.h \
   nedsemanticvalidator.h \
-  nedcompiler.h \
+  nedresourcecache.h \
   nedelement.h \
   nedvalidator.h \
-  nedelements.h
+  nedelements.h \
+  nedcomponent.h
 nedtools.obj: nedtools.cc \
   nedtools.h \
   nederror.h \
