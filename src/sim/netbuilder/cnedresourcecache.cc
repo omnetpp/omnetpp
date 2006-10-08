@@ -22,8 +22,6 @@
 #include "nedbasicvalidator.h"
 #include "nedsemanticvalidator.h"
 
-//#include "loadnedfile.h"
-//#include "cneddeclaration.h"
 #include "cproperty.h"
 #include "cproperties.h"
 #include "ccomponenttype.h"
@@ -46,6 +44,7 @@ void cNEDResourceCache::addComponent(const char *name, NEDElement *node)
     }
 
     // Note: base class (nedxml's NEDResourceCache) has already checked for duplicates, no need here
+//FIXME!!!!!!!!!!!!!!
     cNEDDeclaration *decl = buildNEDDeclaration(node);
     cNEDComponent *component = new cNEDComponent(node); //FIXME merge cNEDDeclaration and cNEDComponent
     components[name] = component;
@@ -122,7 +121,9 @@ bool cNEDResourceCache::areDependenciesResolved(NEDElement *node)
             continue;
 
         const char *name = child->getAttribute("name");
-        cNEDDeclaration *decl = cNEDDeclaration::find(name);
+//FIXME!@!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1
+//!!!        cNEDDeclaration *decl = cNEDDeclaration::find(name);
+        cNEDDeclaration *decl = NULL;
         if (!decl)
             return false;
     }
@@ -167,7 +168,9 @@ cNEDDeclaration *cNEDResourceCache::buildNEDDeclaration(NEDElement *node)
     for (NEDElement *child=node->getFirstChildWithTag(NED_EXTENDS); child; child=child->getNextSiblingWithTag(NED_EXTENDS))
     {
         const char *superName = ((ExtendsNode *)child)->getName();
-        cNEDDeclaration *superDecl = cNEDDeclaration::find(superName);
+//FIXME!!!!!!!!!!!!!!!!!!!!1111
+//        cNEDDeclaration *superDecl = cNEDDeclaration::find(superName);
+        cNEDDeclaration *superDecl = NULL;
         ASSERT(superDecl);
 
         // add inherited parameters
