@@ -303,6 +303,11 @@ void NEDSemanticValidator::validateElement(ConnectionNode *node)
     validateConnGate(node->getDestModule(), destModIx, node->getDestGate(), destGateIx, compound, node, false);
 }
 
+void NEDSemanticValidator::validateElement(ChannelSpecNode *node)
+{
+    // FIXME revise
+}
+
 void NEDSemanticValidator::validateElement(ChannelInterfaceNode *node)
 {
     // FIXME revise

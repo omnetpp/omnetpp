@@ -351,6 +351,11 @@ void NEDBasicValidator::validateElement(ConnectionNode *node)
         errors->add(node, "wrong destination gate: cannot have both gate index and '++' operator specified");
 }
 
+void NEDBasicValidator::validateElement(ChannelSpecNode *node)
+{
+    //FIXME revise
+}
+
 void NEDBasicValidator::validateElement(ChannelInterfaceNode *node)
 {
     //FIXME revise

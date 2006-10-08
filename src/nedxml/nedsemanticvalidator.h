@@ -78,6 +78,8 @@ class NEDSemanticValidator : public NEDValidatorBase
     virtual void validateElement(SimpleModuleNode *node);
     virtual void validateElement(ModuleInterfaceNode *node);
     virtual void validateElement(CompoundModuleNode *node);
+    virtual void validateElement(ChannelInterfaceNode *node);
+    virtual void validateElement(ChannelNode *node);
     virtual void validateElement(ParametersNode *node);
     virtual void validateElement(ParamNode *node);
     virtual void validateElement(PatternNode *node);
@@ -85,12 +87,12 @@ class NEDSemanticValidator : public NEDValidatorBase
     virtual void validateElement(PropertyKeyNode *node);
     virtual void validateElement(GatesNode *node);
     virtual void validateElement(GateNode *node);
+    virtual void validateElement(TypesNode *node);
     virtual void validateElement(SubmodulesNode *node);
     virtual void validateElement(SubmoduleNode *node);
     virtual void validateElement(ConnectionsNode *node);
     virtual void validateElement(ConnectionNode *node);
-    virtual void validateElement(ChannelInterfaceNode *node);
-    virtual void validateElement(ChannelNode *node);
+    virtual void validateElement(ChannelSpecNode *node);
     virtual void validateElement(ConnectionGroupNode *node);
     virtual void validateElement(LoopNode *node);
     virtual void validateElement(ConditionNode *node);
