@@ -101,29 +101,25 @@
 
 
 /**
- * @name Module declaration macros
+ * @name Module and channel class declaration macros
  * @ingroup Macros
  */
 //@{
 
 /**
- * Announces the class as a module to \opp and couples it with the
- * NED interface of the same name. The macro expands to the definition
- * a cModuleType object.
- *
- * The NEDC compiler generates Define_Module() lines for all compound modules.
- * However, it is the user's responsibility to put Define_Module() lines for
- * all simple module types into one of the C++ sources.
+ * Announces the C++ simple module class to \opp, and couples it with the
+ * NED simple module declaration of the same name.
  *
  * @hideinitializer
  */
+// Implementation note: this is basically a Register_Class().
 #define Define_Module(CLASSNAME) \
-  static cModule *CLASSNAME##__create() {return new CLASSNAME();} \
-  EXECUTE_ON_STARTUP(CLASSNAME##__mod, componentTypes.instance()->add(new cModuleType(#CLASSNAME,#CLASSNAME,(ModuleCreateFunc)CLASSNAME##__create));)
+  cModule *CLASSNAME##__create() {return new CLASSNAME;} \
+  EXECUTE_ON_STARTUP(CLASSNAME##__class, classes.instance()->add(new cClassFactory(#CLASSNAME,CLASSNAME##__create, "module"));)
 
 /**
- * Similar to Define_Module(), except that it couples the class with the
- * NED interface of the given name.
+ * Announces the C++ simple module class to \opp, and couples it with the
+ * NED simple module declaration of the given name.
  *
  * While this macro continues to be supported, it is NOT RECOMMENDED because
  * modules defined with it don't show up in documentation generated with
@@ -132,28 +128,52 @@
  *
  * @hideinitializer
  */
-#define Define_Module_Like(CLASSNAME,INTERFACENAME) \
-  static cModule *CLASSNAME##__create() {return new CLASSNAME();} \
-  EXECUTE_ON_STARTUP(CLASSNAME##__mod, componentTypes.instance()->add(new cModuleType(#CLASSNAME,#INTERFACENAME,(ModuleCreateFunc)CLASSNAME##__create));)
+// Implementation note: this is basically a Register_Class(), only we lie about the class name.
+#define Define_Module_Like(CLASSNAME,NEDNAME) \
+  cModule *NEDNAME##__create() {return new CLASSNAME;} \
+  EXECUTE_ON_STARTUP(NEDNAME##__class, classes.instance()->add(new cClassFactory(#NEDNAME,NEDNAME##__create, \
+                     (std::string("module, implemented by ")+#CLASSNAME).c_str()));)
 
 /**
- * This macro facilitates the declaration of a simple module class, and
- * it expands to the definition of mandatory member functions.
- * (Currently only a constructor.)
- *
- * The macro is used like this:
- *
- * <PRE>
- *  class CLASSNAME : public cSimpleModule
- *  {
- *     Module_Class_Members(CLASSNAME,cSimpleModule,8192)
- *     virtual void activity();
- *  };
- * </PRE>
+ * Announces the C++ channel class to \opp, and couples it with the
+ * NED channel declaration of the same name.
  *
  * @hideinitializer
  */
-// TODO dummy args can be removed in a later version, when all models have been ported
+// Implementation note: this is basically a Register_Class().
+#define Define_Channel(CLASSNAME) \
+  cChannel *CLASSNAME##__create() {return new CLASSNAME;} \
+  EXECUTE_ON_STARTUP(CLASSNAME##__class, classes.instance()->add(new cClassFactory(#CLASSNAME,CLASSNAME##__create, "channel"));)
+
+/**
+ * Announces the C++ channel class to \opp, and couples it with the
+ * NED channel declaration of the given name.
+ *
+ * Use of this macro is NOT RECOMMENDED because channels defined with it
+ * don't show up in documentation generated with opp_neddoc.
+ * One can use NED's <tt>like</tt> feature with the normal
+ * Define_Channel() macro too, it doesn't require Define_Channel_Like().
+ *
+ * @hideinitializer
+ */
+// Implementation note: this is basically a Register_Class(), only we lie about the class name.
+#define Define_Channel_Like(CLASSNAME,NEDNAME) \
+  cChannel *NEDNAME##__create() {return new CLASSNAME;} \
+  EXECUTE_ON_STARTUP(NEDNAME##__class, classes.instance()->add(new cClassFactory(#NEDNAME,NEDNAME##__create, \
+                     (std::string("channel, implemented by ")+#CLASSNAME).c_str()));)
+
+
+
+/**
+ * DEPRECATED. This macro basically just expands to an empty constructor
+ * declaration, and should not be used. Existing occurrences should be
+ * replaced with a plain constructor declaration taking no parameters:
+ *
+ * <tt>ClassName() { ... }</tt>
+ *
+ * @hideinitializer
+ */
+// Note: dummy args can be removed in a later version, when all models have been ported
 #define Module_Class_Members(CLASSNAME,BASECLASS,STACK) \
     public: \
       CLASSNAME(const char *dummy1=0, cModule *dummy2=0, unsigned stk=STACK) : BASECLASS(0,0,stk) {}

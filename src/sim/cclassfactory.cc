@@ -23,24 +23,35 @@
 #endif
 
 
-cClassFactory::cClassFactory(const char *name, cPolymorphic *(*f)()) : cNoncopyableObject(name)
+cClassFactory::cClassFactory(const char *name, cPolymorphic *(*f)(), const char *description)
+  : cNoncopyableObject(name, false)
 {
     creatorfunc = f;
+    descr = description ? description : "";
 }
 
-cPolymorphic *createOne(const char *classname)
+std::string cClassFactory::info() const
 {
-    cClassFactory *p = (cClassFactory *)classes.instance()->get(classname);
+    return std::string("(") + descr + ")";
+}
+
+cClassFactory *cClassFactory::find(const char *classname)
+{
+    return dynamic_cast<cClassFactory *>(classes.instance()->get(classname));
+}
+
+cPolymorphic *cClassFactory::createOne(const char *classname)
+{
+    cClassFactory *p = find(classname);
     if (!p)
         throw new cRuntimeError("Class \"%s\" not found -- perhaps its code was not linked in, or the class wasn't registered via Register_Class()", classname);
     return p->createOne();
 }
 
-cPolymorphic *createOneIfClassIsKnown(const char *classname)
+cPolymorphic *cClassFactory::createOneIfClassIsKnown(const char *classname)
 {
-    cClassFactory *p = (cClassFactory *)classes.instance()->get(classname);
-    if (!p)
-        return NULL;
-    return p->createOne();
+    cClassFactory *p = find(classname);
+    return p ? p->createOne() : NULL;
 }
+
 

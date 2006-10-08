@@ -25,7 +25,6 @@ class cExpression;
 class cXMLElement;
 class cProperties;
 class cComponent;
-class cNEDDeclaration;
 
 
 /**

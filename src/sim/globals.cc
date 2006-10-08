@@ -24,7 +24,6 @@
 //
 // Global objects
 //
-cRegistrationList nedDeclarations("NED declarations");
 cRegistrationList componentTypes("component types");
 cRegistrationList nedFunctions("NED functions");
 cRegistrationList classes("classes");

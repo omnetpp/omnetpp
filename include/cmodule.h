@@ -316,7 +316,7 @@ class SIM_API cModule : public cComponent //noncopyable
      * It does the following:
      *
      *    - 1. checks if module parameters and gates conform to the module interface
-     *    (cNEDDeclaration object, generated from NED declaration of module)
+         FIXME revise comment
      *
      *    - 2. calls doBuildInside(), switching to the context of this module
      *    for the duration of the call (using simulation.setContextModule()).
@@ -396,7 +396,7 @@ class SIM_API cModule : public cComponent //noncopyable
     /**
      * Finds an immediate submodule with the given name and (optional)
      * index, and returns its pointer. If the submodule was not found,
-     * returns NULL.  
+     * returns NULL.
      * FIXME clarify - what if it's a vector and I provide no index, or vica versa?
      */
     cModule *submodule(const char *submodname, int idx=-1);
@@ -456,7 +456,7 @@ class SIM_API cModule : public cComponent //noncopyable
 
     /**
      * Returns the ID of the gate specified by name and index.
-     * Returns -1 if the gate doesn't exist. 
+     * Returns -1 if the gate doesn't exist.
      * FIXME clarify what if it's vector and sn is not given, and vica versa
      */
     int findGate(const char *gatename, int sn=-1) const;

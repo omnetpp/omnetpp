@@ -236,14 +236,10 @@
  * instantiate them), and for inspectors in graphical user interfaces like
  * Tkenv.
  *
- *   - cNEDDeclaration stores the list of gates and parameters declared for a
- *     module type
  *   - cModuleType can instantiate a module type
  *   - cChannelType can instantiate a channel type
- *   - cNetworkType can instantiate a network type (build up a network)
  *   - cMathFunction stores a pointer to a math function accessible from NED
- *   - cClassFactory can instantiate a class (it is the class behind
- *     the createOne() function)
+ *   - cClassFactory can instantiate a class, given the class name as string
  *   - cStructDescriptor provides a generic way to access data in a struct
  *     or class (somewhat analogous to Java reflection)
  *   - cEnum maps enum values to their string representations and vica versa

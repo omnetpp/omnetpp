@@ -20,7 +20,7 @@ CPPOBJS_STD=\
     cenum.obj cexception.obj cfsm.obj cfunction.obj cgate.obj chist.obj \
     cksplit.obj clcg32.obj cllist.obj clongpar.obj cmersennetwister.obj \
     cmessage.obj cmessagepar.obj cmodule.obj cmsgheap.obj \
-    cneddeclaration.obj cnedfunction.obj cobject.obj coutvect.obj \
+    cnedfunction.obj cobject.obj coutvect.obj \
     cpacket.obj cpar.obj cpolymorphic.obj cproperties.obj cproperty.obj \
     cpsquare.obj cqueue.obj cscheduler.obj csimplemodule.obj \
     csimulation.obj cstat.obj cstlwatch.obj cstringpar.obj \
@@ -243,7 +243,6 @@ cclassfactory.obj: cclassfactory.cc \
   ../../include/ccoroutine.h
 ccomponent.obj: ccomponent.cc \
   ../../include/ccomponent.h \
-  ../../include/cneddeclaration.h \
   ../../include/cproperties.h \
   ../../include/cpar.h \
   ../../include/crng.h \
@@ -261,16 +260,13 @@ ccomponent.obj: ccomponent.cc \
   ../../include/errmsg.h \
   ../../include/opp_string.h \
   ../../include/globals.h \
-  ../../include/cgate.h \
   ../../include/carray.h \
   ../../include/cclassfactory.h \
   ../../include/cexpression.h
 ccomponenttype.obj: ccomponenttype.cc \
   ../../include/ccomponenttype.h \
-  ../../include/cneddeclaration.h \
   ../../include/cmodule.h \
   ../../include/cchannel.h \
-  ../../include/globals.h \
   ../../include/cenvir.h \
   ../../include/cexception.h \
   ../../include/ccommbuffer.h \
@@ -283,16 +279,15 @@ ccomponenttype.obj: ccomponenttype.cc \
   ../../include/cstringpool.h \
   ../../include/regmacros.h \
   ../../include/onstartup.h \
-  ../../include/cpar.h \
-  ../../include/cgate.h \
-  ../../include/cexpression.h \
   ../../include/ccomponent.h \
+  ../../include/globals.h \
   ../../include/carray.h \
+  ../../include/cgate.h \
   ../../include/csimulation.h \
   ../../include/cdefaultlist.h \
+  ../../include/cclassfactory.h \
   ../../include/cmsgheap.h \
   ../../include/ccoroutine.h \
-  ../../include/cclassfactory.h \
   ../../include/errmsg.h \
   ../../include/opp_string.h
 ccompoundmodule.obj: ccompoundmodule.cc \
@@ -815,27 +810,6 @@ cmsgheap.obj: cmsgheap.cc \
   ../../include/csimulation.h \
   ../../include/cfunction.h \
   ../../include/ccoroutine.h
-cneddeclaration.obj: cneddeclaration.cc \
-  ../../include/cneddeclaration.h \
-  ../../include/cexception.h \
-  ../../include/cpar.h \
-  ../../include/cproperties.h \
-  ../../include/defs.h \
-  ../../include/globals.h \
-  ../../include/cobject.h \
-  ../../include/cgate.h \
-  ../../include/regmacros.h \
-  ../../include/onstartup.h \
-  ../../include/carray.h \
-  ../../include/cclassfactory.h \
-  ../../include/cenvir.h \
-  ../../include/util.h \
-  ../../include/cpolymorphic.h \
-  ../../include/cvisitor.h \
-  ../../include/cstringpool.h \
-  ../../include/errmsg.h \
-  ../../include/opp_string.h \
-  ../../include/cexpression.h
 cnedfunction.obj: cnedfunction.cc \
   ../../include/cnedfunction.h \
   ../../include/globals.h \
@@ -938,7 +912,6 @@ cpar.obj: cpar.cc \
   ../../include/cpar.h \
   ../../include/cproperties.h \
   ../../include/ccomponent.h \
-  ../../include/cneddeclaration.h \
   ../../include/csimulation.h \
   ../../include/ccommbuffer.h \
   ../../include/cobject.h \
@@ -958,7 +931,6 @@ cpar.obj: cpar.cc \
   ../../include/carray.h \
   ../../include/cclassfactory.h \
   ../../include/cdefaultlist.h \
-  ../../include/cgate.h \
   ../../include/cmsgheap.h \
   ../../include/ccoroutine.h
 cpolymorphic.obj: cpolymorphic.cc \
@@ -1147,10 +1119,7 @@ csimulation.obj: csimulation.cc \
   ../../include/ccoroutine.h \
   ../../include/platdep/time.h \
   ../../include/errmsg.h \
-  ../../include/opp_string.h \
-  ../../include/cneddeclaration.h \
-  ../../include/cpar.h \
-  ../../include/cexpression.h
+  ../../include/opp_string.h
 cstat.obj: cstat.cc \
   ../../include/cstat.h \
   ../../include/random.h \
@@ -1221,10 +1190,17 @@ cstringpar.obj: cstringpar.cc \
   ../../include/cdefaultlist.h
 cstringpool.obj: cstringpool.cc \
   ../../include/cstringpool.h \
+  ../../include/cobject.h \
   ../../include/defs.h \
   ../../include/util.h \
   ../../include/regmacros.h \
-  ../../include/onstartup.h
+  ../../include/onstartup.h \
+  ../../include/cenvir.h \
+  ../../include/cpolymorphic.h \
+  ../../include/cexception.h \
+  ../../include/cvisitor.h \
+  ../../include/errmsg.h \
+  ../../include/opp_string.h
 cstrtokenizer.obj: cstrtokenizer.cc \
   ../../include/cstrtokenizer.h \
   ../../include/defs.h \
@@ -1408,6 +1384,29 @@ distrib.obj: distrib.cc \
   ../../include/errmsg.h \
   ../../include/opp_string.h
 errmsg.obj: errmsg.cc
+expr.tab.obj: expr.tab.cc \
+  ../../include/expryydefs.h \
+  ../../include/cdynamicexpression.h \
+  ../../include/cpar.h \
+  ../../include/cxmlelement.h \
+  ../../include/cexception.h \
+  ../../include/globals.h \
+  ../../include/cfunction.h \
+  ../../include/cnedfunction.h \
+  ../../include/cexpression.h \
+  ../../include/cpolymorphic.h \
+  ../../include/defs.h \
+  ../../include/util.h \
+  ../../include/regmacros.h \
+  ../../include/onstartup.h \
+  ../../include/cobject.h \
+  ../../include/cenvir.h \
+  ../../include/cvisitor.h \
+  ../../include/cstringpool.h \
+  ../../include/errmsg.h \
+  ../../include/opp_string.h \
+  ../../include/carray.h \
+  ../../include/cclassfactory.h
 globals.obj: globals.cc \
   ../../include/globals.h \
   ../../include/carray.h \
@@ -1425,6 +1424,16 @@ globals.obj: globals.cc \
   ../../include/cstringpool.h \
   ../../include/errmsg.h \
   ../../include/opp_string.h
+lex.expryy.obj: lex.expryy.cc \
+  ../../include/expryydefs.h \
+  expr.tab.h \
+  ../../include/util.h \
+  ../../include/cdynamicexpression.h \
+  ../../include/cexpression.h \
+  ../../include/cpolymorphic.h \
+  ../../include/defs.h \
+  ../../include/regmacros.h \
+  ../../include/onstartup.h
 minixpath.obj: minixpath.cc \
   minixpath.h \
   ../../include/cexception.h \
@@ -1438,11 +1447,17 @@ minixpath.obj: minixpath.cc \
 onstartup.obj: onstartup.cc \
   ../../include/onstartup.h \
   ../../include/cexception.h \
+  ../../include/carray.h \
   ../../include/defs.h \
   ../../include/regmacros.h \
   ../../include/errmsg.h \
   ../../include/opp_string.h \
-  ../../include/util.h
+  ../../include/util.h \
+  ../../include/cobject.h \
+  ../../include/cenvir.h \
+  ../../include/cpolymorphic.h \
+  ../../include/cvisitor.h \
+  ../../include/cstringpool.h
 task.obj: task.cc \
   task.h
 util.obj: util.cc \
@@ -1596,7 +1611,6 @@ netbuilder/cnednetworkbuilder.obj: netbuilder/cnednetworkbuilder.cc \
   ../../include/cexpression.h
 netbuilder/loadnedfile.obj: netbuilder/loadnedfile.cc \
   netbuilder/loadnedfile.h \
-  ../../include/cneddeclaration.h \
   ../../include/cproperty.h \
   ../../include/cproperties.h \
   ../../include/ccomponenttype.h \
@@ -1611,15 +1625,14 @@ netbuilder/loadnedfile.obj: netbuilder/loadnedfile.cc \
   ../../include/clongpar.h \
   ../../include/cdoublepar.h \
   ../../include/defs.h \
-  ../../include/cobject.h \
-  ../../include/cgate.h \
+  ../../include/cpolymorphic.h \
+  ../../include/cstringpool.h \
+  ../../include/stlwrap.h \
   ../../include/regmacros.h \
   ../../include/onstartup.h \
   ../../include/util.h \
-  ../../include/cpolymorphic.h \
+  ../../include/cobject.h \
   ../../include/cvisitor.h \
-  ../../include/cstringpool.h \
-  ../../include/stlwrap.h \
   ../../include/errmsg.h \
   ../../include/carray.h \
   ../../include/cclassfactory.h \
@@ -1627,6 +1640,7 @@ netbuilder/loadnedfile.obj: netbuilder/loadnedfile.cc \
   ../../include/ccompoundmodule.h \
   netbuilder/cnednetworkbuilder.h \
   ../../include/ccomponent.h \
+  ../../include/cgate.h \
   ../../include/csimulation.h \
   ../../include/cdefaultlist.h \
   ../../include/cmsgheap.h \

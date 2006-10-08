@@ -18,7 +18,7 @@
 
 #include <vector>
 #include <map>
-#include "cneddeclaration.h"
+#include "defs.h"
 
 class cProperties;
 class cProperty;
@@ -47,6 +47,7 @@ class SIM_API cNEDFileLoader
     std::vector<NEDElement *> pendingList;
 
   protected:
+/*
     NEDElement *parseAndValidateNedFile(const char *nedfname, bool isXML);
     bool areDependenciesResolved(NEDElement *node);
     void tryResolvePendingDeclarations();
@@ -55,6 +56,7 @@ class SIM_API cNEDFileLoader
     cNEDDeclaration::GateDescription extractGateDescription(GateNode *gateNode);
     cProperties *extractProperties(NEDElement *parent);
     cProperty *extractProperty(PropertyNode *propNode);
+*/
 
   public:
     cNEDFileLoader();

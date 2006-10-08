@@ -26,7 +26,7 @@
 #include "nedsemanticvalidator.h"
 
 #include "loadnedfile.h"
-#include "cneddeclaration.h"
+//#include "cneddeclaration.h"
 #include "cproperty.h"
 #include "cproperties.h"
 #include "ccomponenttype.h"
@@ -52,6 +52,7 @@ cNEDFileLoader::~cNEDFileLoader()
         done();
 }
 
+/*
 NEDElement *cNEDFileLoader::parseAndValidateNedFile(const char *fname, bool isXML)
 {
     // load file
@@ -84,7 +85,6 @@ NEDElement *cNEDFileLoader::parseAndValidateNedFile(const char *fname, bool isXM
         throw new cRuntimeError("errors during DTD validation of file `%s'", fname);
     }
 
-/*XXX
     NEDBasicValidator basicvalidator(true);
     basicvalidator.validate(tree);
     if (errorsOccurred())
@@ -92,12 +92,13 @@ NEDElement *cNEDFileLoader::parseAndValidateNedFile(const char *fname, bool isXM
         delete tree;
         throw new cRuntimeError("errors during validation of file `%s'", fname);
     }
-*/
     return tree;
 }
+*/
 
 void cNEDFileLoader::loadNedFile(const char *nedfname, bool isXML)
 {
+/*
     // parse file
     NEDElement *tree = parseAndValidateNedFile(nedfname, isXML);
 
@@ -137,8 +138,10 @@ void cNEDFileLoader::loadNedFile(const char *nedfname, bool isXML)
 
     // and delete the rest
     delete tree;
+*/
 }
 
+/*
 bool cNEDFileLoader::areDependenciesResolved(NEDElement *node)
 {
     for (NEDElement *child=node->getFirstChild(); child; child=child->getNextSibling())
@@ -349,9 +352,11 @@ cProperty *cNEDFileLoader::extractProperty(PropertyNode *propNode)
     }
     return prop;
 }
+*/
 
 void cNEDFileLoader::done()
 {
+/*
     // we've loaded all NED files now, try resolving those which had missing dependencies
     tryResolvePendingDeclarations();
 
@@ -361,6 +366,6 @@ void cNEDFileLoader::done()
         //FIXME if not resolved, print error...
         delete tree;
     }
+*/
 }
-
 

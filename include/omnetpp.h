@@ -51,7 +51,6 @@
 #include "cmessagepar.h"
 #include "cmodule.h"
 #include "cmsgheap.h"
-#include "cneddeclaration.h"
 #include "cnedfunction.h"
 #include "cobject.h"
 #include "coutvect.h"

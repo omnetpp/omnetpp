@@ -18,7 +18,6 @@
 #include "cpar.h"
 #include "cproperties.h"
 #include "ccomponent.h"
-#include "cneddeclaration.h"
 #include "csimulation.h"
 
 #ifdef WITH_PARSIM

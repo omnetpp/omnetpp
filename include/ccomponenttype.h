@@ -21,59 +21,46 @@
 
 class cModule;
 class cChannel;
-class cNEDDeclaration;
-
 
 /**
- * Prototype for functions that are called by cModuleType objects
- * to create modules of a specific type.
- * @ingroup EnumsTypes
+ * Common base class for cModuleType and cChannelType
  */
-typedef cModule *(*ModuleCreateFunc)();
+class SIM_API cComponentType : public cNoncopyableObject
+{
+  public:
+    cComponentType(const char *name=NULL);
+};
 
 
 /**
- * Class for creating a module of a specific type.
+ * Abstract class for creating a module of a specific type.
  *
  * A cModuleType object exist for each module type (simple or compound).
- * A cModuleType object 'knows' how to create a module of a given type,
- * thus a module can be created without having to include the .h file
- * with the C++ declaration of the module class ("class FddiMAC...").
- * A cModuleType object is created through a Define_Module macro. Thus,
- * each module type must have a Define_Module() line, e.g:
- *
- * Define_Module( MySimpleModule );
- *
- * nedtool automatically generates Define_Module for compound modules, but the
- * user is responsible for adding one for each simple module type.
+ * FIXME document
  *
  * @ingroup Internals
  */
-class SIM_API cModuleType : public cNoncopyableObject
+class SIM_API cModuleType : public cComponentType
 {
     friend class cModule;
+  protected:
+    // internal
+    cModule *createModuleObject();
 
   protected:
-    char *interface_name;
-    cNEDDeclaration *iface;
-    ModuleCreateFunc create_func;
-
-    // internal: here it invokes create_func
-    virtual cModule *createModuleObject();
+    /**
+     * Adds parameters and gates to a newly created module object.
+     * To be defined in subclasses.
+     */
+    virtual void addParametersGatesTo(cModule *mod) = 0;
 
   public:
     /** @name Constructors, destructor, assignment */
     //@{
-
     /**
      * Constructor.
      */
-    cModuleType(const char *classname, const char *interf_name, ModuleCreateFunc cf);
-
-    /**
-     * Destructor.
-     */
-    virtual ~cModuleType();
+    cModuleType(const char *name=NULL);
     //@}
 
     /** @name Module creation */
@@ -95,20 +82,18 @@ class SIM_API cModuleType : public cNoncopyableObject
     virtual cModule *create(const char *name, cModule *parentmod, int vectorsize, int index);
 
     /**
-     * DEPRECATED. Use <tt>mod->buildInside()</tt> instead; that's what
-     * this method does anyway.
+     * DEPRECATED. It invokes <tt>mod->buildInside()</tt>; occurrences
+     * should be replaced by that code, too.
      */
-    virtual void buildInside(cModule *mod);
+    // note: this cannot be inline, due to header file dependencies
+    void buildInside(cModule *mod);
 
     /**
      * This is a convenience function to get a module up and running in one step.
      *
      * First, the module is created using create() and buildInside(), then
-     * starter messages are created (using mod->scheduleStart(simulation.simTime())),
-     * then initialize() is called (mod->callInitialize()). It is important that
-     * scheduleStart() be called before initialize(), because initialize()
-     * functions might contain scheduleAt() calls which could otherwise insert
-     * a message BEFORE the starter messages for module.
+     * a starter message is created (for activity() modules only),
+     * then initialize() is called (mod->callInitialize()).
      *
      * This method works for simple and compound modules alike. Not applicable
      * if the module:
@@ -117,14 +102,6 @@ class SIM_API cModuleType : public cNoncopyableObject
      *  - gates to be connected before initialize()
      */
     virtual cModule *createScheduleInit(char *name, cModule *parentmod);
-
-    /**
-     * Returns pointer to the module declaration object corresponding to this
-     * module type.
-     *
-     * @see cNEDDeclaration
-     */
-    virtual cNEDDeclaration *moduleNEDDeclaration();
     //@}
 
     //FIXME add static find() function to search the registry
@@ -132,15 +109,23 @@ class SIM_API cModuleType : public cNoncopyableObject
 
 
 /**
- * Abstract base class for channel types. One is expected to redefine the
- * create() method to construct and return a channel object (cChannel subclass)
- * of the appropriate type and attributes set. The class has to be registered
- * via the Define_Channel() macro.
+ * Abstract base class for creating a channel of a given type.
  *
  * @ingroup Internals
  */
-class SIM_API cChannelType : public cNoncopyableObject
+class SIM_API cChannelType : public cComponentType
 {
+  protected:
+    // internal
+    cChannel *createChannelObject();
+
+  protected:
+    /**
+     * Adds parameters to a newly created channel object.
+     * To be defined in subclasses.
+     */
+    virtual void addParametersTo(cChannel *channel) = 0;
+
   public:
     /** @name Constructors, destructor, assignment */
     //@{
@@ -148,14 +133,18 @@ class SIM_API cChannelType : public cNoncopyableObject
     /**
      * Constructor.
      */
-    cChannelType(const char *name=NULL) : cNoncopyableObject(name) {}
+    cChannelType(const char *name=NULL);
 
     /** @name Channel object creation */
     //@{
     /**
      * Factory method to create a channel object.
+     *
+     * In addition to creating an object of the correct type,
+     * this methods inserts it into the simulation's data structure,
+     * and adds the parameters specified in the NED declaration.
      */
-    virtual cChannel *create(const char *name) = 0;
+    virtual cChannel *create(const char *name, cModule *parentmod);
     //@}
 
     //FIXME add static find() function to search the registry

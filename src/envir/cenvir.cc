@@ -250,7 +250,6 @@ void cEnvir::shutdown()
 
     simulation.shutdown();
 
-    nedDeclarations.clear();
     componentTypes.clear();
     nedFunctions.clear();
     classes.clear();

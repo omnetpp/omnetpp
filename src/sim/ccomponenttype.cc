@@ -13,14 +13,10 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include <math.h>
-#include <string.h>          // strlen
-#include <stdarg.h>          // va_list
+#include <string.h>
 #include "ccomponenttype.h"
-#include "cneddeclaration.h"
 #include "cmodule.h"
 #include "cchannel.h"
-#include "globals.h"
 #include "cenvir.h"
 #include "cexception.h"
 
@@ -30,34 +26,14 @@
 #endif
 
 
-
-cModuleType::cModuleType(const char *classname,
-                         const char *interf_name,
-                         ModuleCreateFunc cf) :
-  cNoncopyableObject(classname)
+cComponentType::cComponentType(const char *name) : cNoncopyableObject(name,false)
 {
-    // create_func:
-    //   Ptr to a small function that creates a module of type classname.
-    //   E.g, if classname is "Processor", create_func points to a function
-    //   like this:
-    //      static cModule *Processor__create()
-    //      {
-    //           return (cModule *) new Processor();
-    //      }
-    //  For each module type, such a function is automatically created by
-    //  the Define_Module( classname ) macro.
-
-    create_func = cf;
-
-    // We cannot find() the interface object (and store its pointer) yet,
-    // because it might not have been created yet.
-    interface_name = opp_strdup(interf_name);
-    iface = NULL;
 }
 
-cModuleType::~cModuleType()
+//----
+
+cModuleType::cModuleType(const char *name) : cComponentType(name)
 {
-    delete [] interface_name;
 }
 
 cModule *cModuleType::create(const char *modname, cModule *parentmod)
@@ -67,11 +43,6 @@ cModule *cModuleType::create(const char *modname, cModule *parentmod)
 
 cModule *cModuleType::create(const char *modname, cModule *parentmod, int vectorsize, int index)
 {
-    // Creates a module.
-    //  In addition to creating an object of the correct type,
-    //  this function inserts it into cSimulation's module vector
-    //  and adds parameter and gate objects specified in the interface
-    //  description.
     cContextTypeSwitcher tmp(CTX_BUILD);
 
     // Object members of the new module class are collected to tmplist.
@@ -91,7 +62,7 @@ cModule *cModuleType::create(const char *modname, cModule *parentmod, int vector
 #endif
     // set up module: set name, module type, vector size, parent
     mod->setName(modname);
-    mod->setModuleType(this);
+    mod->setComponentType(this);
     if (vectorsize>=0)
         mod->setIndex(index, vectorsize);
     if (parentmod)
@@ -100,7 +71,7 @@ cModule *cModuleType::create(const char *modname, cModule *parentmod, int vector
     // set system module (must be done before takeAllObjectsFrom(tmplist) because
     // if parentmod==NULL, mod itself is on tmplist)
     if (!parentmod)
-         simulation.setSystemModule( mod );
+         simulation.setSystemModule(mod);
 
     // put the object members of the new module to their place
     mod->takeAllObjectsFrom(tmplist);
@@ -115,11 +86,9 @@ cModule *cModuleType::create(const char *modname, cModule *parentmod, int vector
     // set up RNG mapping
     ev.getRNGMappingFor(mod);
 
-/*FIXME replace with new code!!!
     // add parameters and gates to the new module
-    cNEDDeclaration *iface = moduleNEDDeclaration();
-    iface->addParametersGatesTo(mod);
-*/
+    addParametersGatesTo(mod);
+
     // notify envir
     ev.moduleCreated(mod);
 
@@ -129,29 +98,17 @@ cModule *cModuleType::create(const char *modname, cModule *parentmod, int vector
 
 cModule *cModuleType::createModuleObject()
 {
-    return create_func();
-}
-
-void cModuleType::buildInside(cModule *mod)
-{
-    mod->buildInside();
+    cPolymorphic *obj = cClassFactory::createOne(name());
+    if (!obj)
+        throw new cRuntimeError("module class %s not found", name()); //FIXME better msg
+    cModule *mod = dynamic_cast<cModule *>(obj);
+    if (!mod)
+        throw new cRuntimeError("class %s is not a module type", name()); //FIXME better msg
+    return mod;
 }
 
 cModule *cModuleType::createScheduleInit(char *modname, cModule *parentmod)
 {
-    // This is a convenience function to get a module up and running in one step.
-    //
-    // Should work for simple and compound modules alike.
-    // Not applicable if the module:
-    //  - has parameters to be set
-    //  - gate vector sizes to be set
-    //  - gates to be connected before initialize()
-    //
-    // First creates starter message for the new module(s), then calls
-    // initialize() for it (them). This order is important because initialize()
-    // functions might contain scheduleAt() calls which could otherwise insert
-    // a message BEFORE the starter messages for module...
-    //
     if (!parentmod)
         throw new cRuntimeError("createScheduleInit(): parent module pointer cannot be NULL "
                                 "when creating module named '%s' of type %s", modname, name());
@@ -162,13 +119,64 @@ cModule *cModuleType::createScheduleInit(char *modname, cModule *parentmod)
     return mod;
 }
 
-
-cNEDDeclaration *cModuleType::moduleNEDDeclaration()
+void cModuleType::buildInside(cModule *mod)
 {
-    if (!iface)
-        iface = cNEDDeclaration::find(interface_name);  //FIXMe check it's really a module declaration
-    if (!iface)
-        throw new cRuntimeError(eNOMODIF, interface_name, name());
-    return iface;
+    mod->buildInside();
+}
+
+//----
+
+cChannelType::cChannelType(const char *name) : cComponentType(name)
+{
+}
+
+cChannel *cChannelType::createChannelObject()
+{
+    cPolymorphic *obj = cClassFactory::createOne(name());
+    if (!obj)
+        throw new cRuntimeError("channel class %s not found", name()); //FIXME better msg
+    cChannel *channel = dynamic_cast<cChannel *>(obj);
+    if (!channel)
+        throw new cRuntimeError("class %s is not a channel type", name()); //FIXME better msg
+    return channel;
+}
+
+cChannel *cChannelType::create(const char *name, cModule *parentmod)
+{
+    if (!parentmod)
+         throw new cRuntimeError("no parent"); //FIXME better msg
+
+    cContextTypeSwitcher tmp(CTX_BUILD);
+
+    // Object members of the new channel class are collected to tmplist.
+    cDefaultList tmplist;
+    cDefaultList *oldlist = cObject::defaultOwner();
+    cObject::setDefaultOwner(&tmplist);
+
+    // create channel object
+    cChannel *channel = createChannelObject();
+
+    // set up channel: set name, channel type, etc
+    channel->setName(name);
+    channel->setComponentType(this);
+//XXX parentmod->insertChannel(channel);
+
+    // put the object members of the new module to their place
+    channel->takeAllObjectsFrom(tmplist);
+
+    // restore defaultowner
+    cObject::setDefaultOwner(oldlist);
+
+    // set up RNG mapping
+//XXX    ev.getRNGMappingFor(channel);
+
+    // add parameters to the new module
+    addParametersTo(channel);
+
+    //FIXME what else?
+    // register with simulation?
+    // notify ev?
+
+    return channel;
 }
 

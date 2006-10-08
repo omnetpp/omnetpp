@@ -13,15 +13,16 @@
 *--------------------------------------------------------------*/
 
 #include "ccomponent.h"
-#include "cneddeclaration.h"
+#include "ccomponenttype.h"
 #include "cproperties.h"
+#include "cdoublepar.h" //XXX
 #include "cpar.h"
 #include "crng.h"
 
 
 cComponent::cComponent(const char *name) : cDefaultList(name)
 {
-    decl = NULL;
+    componenttype = NULL;
     props = NULL;
     paramv = NULL;
     rngmapsize = 0;
@@ -48,9 +49,9 @@ void cComponent::netUnpack(cCommBuffer *buffer)
     throw new cRuntimeError(this,eCANTPACK);
 }
 
-void cComponent::setDeclaration(cNEDDeclaration *decl)
+void cComponent::setComponentType(cComponentType *componenttype)
 {
-    this->decl = decl;
+    this->componenttype = componenttype;
 }
 
 void cComponent::handleParameterChange(char const *)
@@ -74,7 +75,8 @@ cProperties *cComponent::unlockProperties()
 
 int cComponent::params() const
 {
-    return decl->numPars(); //XXX
+//XXX    return componenttype->numPars(); //XXX
+return 0;
 }
 
 const char *cComponent::parName(int k)
@@ -82,32 +84,39 @@ const char *cComponent::parName(int k)
     if (k<0 || k>=params())
         throw new cRuntimeError(this, "has no parameter #%d", k);
 return "";
-//XXX    return decl->parName(k);
+//XXX    return componenttype->parName(k);
 }
 
 cPar& cComponent::par(int k)
 {
-    if (k<0 || k>=decl->numPars())
+/*XXX
+    if (k<0 || k>=componenttype->numPars())
         throw new cRuntimeError(this, "has no parameter #%d", k);
     return *paramv[k];
+*/
+return *new cDoublePar();
 }
 
 cPar& cComponent::par(const char *parname)
 {
-    int k = decl->findPar(parname);
+/*XXX
+    int k = componenttype->findPar(parname);
     if (k<0)
         throw new cRuntimeError(this, "has no parameter called `%s'", parname);
     return *paramv[k];
+*/
+return *new cDoublePar();
 }
 
 int cComponent::findPar(const char *parname) const
 {
-    return decl->findPar(parname);
+//XXX    return componenttype->findPar(parname);
+return 0;
 }
 
 cProperties *cComponent::defaultParProperties(int k) const
 {
 return NULL;
-//XXX    return decl->parValue(k)->properties();
+//XXX    return componenttype->parValue(k)->properties();
 }
 

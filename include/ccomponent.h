@@ -19,7 +19,7 @@
 #include "cobject.h"
 #include "cdefaultlist.h"
 
-class cNEDDeclaration;
+class cComponentType;
 class cProperties;
 class cPar;
 class cRNG;
@@ -35,10 +35,10 @@ class SIM_API cComponent : public cDefaultList // noncopyable
 {
     friend class cPar; // needs to call handleParameterChange()
   protected:
-    cNEDDeclaration *decl;  // declaration object
+    cComponentType *componenttype;  // component type object
 
-    cProperties *props;    // if NULL, use the one from the component declaration
-    cPar **paramv; // parameters; num & order determined by the decl object
+    cProperties *props;    // if NULL, use the one from the component type
+    cPar **paramv; // parameters; num & order determined by the componenttype object
 
     short rngmapsize;  // size of rngmap array (RNGs>=rngmapsize are mapped one-to-one to physical RNGs)
     int *rngmap;       // maps local RNG numbers (may be NULL if rngmapsize==0)
@@ -52,11 +52,11 @@ class SIM_API cComponent : public cDefaultList // noncopyable
     // internal: invoked from within cEnvir::getRNGMappingFor(mod)
     void setRNGMap(short size, int *map) {rngmapsize=size; rngmap=map;}
 
-    // internal: sets associated cNEDDeclaration for the component;
+    // internal: sets associated cComponentType for the component;
     // called as part of the creation process.
-    virtual void setDeclaration(cNEDDeclaration *decl);
+    virtual void setComponentType(cComponentType *componenttype);
 
-    // internal: return parameter properties from the declaration object
+    // internal: return parameter properties from the component type object
     virtual cProperties *defaultParProperties(int k) const;
 
   protected:
@@ -117,9 +117,9 @@ class SIM_API cComponent : public cDefaultList // noncopyable
     /** @name Misc. */
     //@{
     /**
-     * Returns the component declaration object associated with this component type.
+     * Returns the associated component type.
      */
-    cNEDDeclaration *declaration() const  {return decl;}
+    cComponentType *componentType() const  {return componenttype;}
 
     /**
      * Redefined to return true in cModule and subclasses, otherwise returns false.
