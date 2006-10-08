@@ -24,25 +24,28 @@
 
 
 /**
- * Special cModuleType: takes all info from cNEDNetworkBuilder
+ * NEDXML-based cModuleType: takes all info from cNEDResourceCache
  */
-class cDynamicCompoundModuleType : public cModuleType
+class cDynamicModuleType : public cModuleType
 {
-  public:
-    cDynamicCompoundModuleType(const char *name, CompoundModuleNode *moduleNode);
-    virtual ~cDynamicCompoundModuleType();
+  protected:
+    /** Redefined from cModuleType */
+    virtual void addParametersGatesTo(cModule *module);
 
-    /**
-     * Build submodules and connections inside the module passed,
-     * based on info in the stored CompoundModuleNode.
-     */
+    /** Redefined from cModuleType */
     virtual void buildInside(cModule *module);
+
+  public:
+    cDynamicModuleType(const char *name);
 };
 
 
 /**
  *
  */
+//FIXME clarify
+//FIXME do we need such channel too?
+//FIXME do subclassed simple modules need to lie about their classname too?
 class cDynamicCompoundModule : public cCompoundModule
 {
     friend class cDynamicCompoundModuleType;

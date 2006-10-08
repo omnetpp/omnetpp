@@ -20,33 +20,31 @@
 #include <iostream>
 
 #include "cdynamicmodule.h"
+#include "cneddeclaration.h"
+#include "cnedresourcecache.h"
 #include "cnednetworkbuilder.h"
 
 
-cDynamicCompoundModuleType::cDynamicCompoundModuleType(const char *name, CompoundModuleNode *moduleNode) :
-  cModuleType(name, name, NULL)
+cDynamicModuleType::cDynamicModuleType(const char *name) : cModuleType(name)
 {
-    modulenode = moduleNode;
 }
 
-cModule *cDynamicCompoundModuleType::createModuleObject()
+void cDynamicModuleType::addParametersGatesTo(cModule *module)
 {
-    return new cDynamicCompoundModule();
+    cNEDDeclaration *decl = cNEDResourceCache::instance()->lookup(name());
+    //FIXME and...
 }
 
-void cDynamicCompoundModuleType::buildInside(cModule *mod)
-{
-    cNEDNetworkBuilder builder;
-    builder.buildInside(mod, modulenode);
-}
 
-cDynamicCompoundModuleType::~cDynamicCompoundModuleType()
+void cDynamicModuleType::buildInside(cModule *module)
 {
-    delete modulenode;
+    cNEDDeclaration *decl = cNEDResourceCache::instance()->lookup(name());
+    //FIXME and...
 }
 
 //--------------
 
+/*
 
 cDynamicCompoundModule::cDynamicCompoundModule()
 {
@@ -79,4 +77,4 @@ void cDynamicCompoundModule::doBuildInside()
     moduleType()->buildInside(this);
 }
 
-
+*/

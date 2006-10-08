@@ -20,24 +20,20 @@
 #include <iostream>
 
 #include "cdynamicchannel.h"
+#include "cneddeclaration.h"
+#include "cnedresourcecache.h"
 #include "cnednetworkbuilder.h"
 
 
-cDynamicChannelType::cDynamicChannelType(const char *name, ChannelNode *chan) :
-  cChannelType(name)
+cDynamicChannelType::cDynamicChannelType(const char *name) : cChannelType(name)
 {
-    channelnode = chan;
 }
 
-cDynamicChannelType::~cDynamicChannelType()
+void cDynamicChannelType::addParametersTo(cChannel *channel)
 {
-    delete channelnode;
+    cNEDDeclaration *decl = cNEDResourceCache::instance()->lookup(name());
+    //FIXME and...
 }
 
-cChannel *cDynamicChannelType::create(const char *name)
-{
-    cNEDNetworkBuilder builder;
-    cChannel *chan = builder.createChannel(name, channelnode);
-    return chan;
-}
+
 

@@ -23,21 +23,19 @@
 
 
 /**
- * Special cChannelType: takes all info from the stored NED tree
+ * NEDXML-based cChannelType: takes all info from cNEDResourceCache
  */
 class cDynamicChannelType : public cChannelType
 {
   protected:
-    ChannelNode *channelnode;  // contains NEDElement tree
+    /** Redefined from cChannelType */
+    virtual void addParametersTo(cChannel *module);
+
+    /** Redefined from cChannelType */
+    virtual void buildInside(cChannel *module);
 
   public:
-    cDynamicChannelType(const char *name, ChannelNode *channelnode);
-    virtual ~cDynamicChannelType();
-
-    /**
-     * Create a channel object using cNEDNetworkBuilder
-     */
-    virtual cChannel *create(const char *name);
+    cDynamicChannelType(const char *name);
 };
 
 
