@@ -32,7 +32,8 @@ OBJS= nedelements.obj nedelement.obj nederror.obj \
       nedutil.obj ned2generator.obj ned1generator.obj xmlgenerator.obj \
       nedxmlparser.obj nedsaxhandler.obj saxparser_$(XMLPARSER).obj \
       ned1.tab.obj lex.ned1yy.obj \
-      msg2.tab.obj lex.msg2yy.obj
+      msg2.tab.obj lex.msg2yy.obj \
+      nedresourcecache.obj nedcompiler.obj
 # FIXME end temporary def
 
 # FIXME begin temporary rules
@@ -198,6 +199,11 @@ nedcompiler.obj: nedcompiler.cc \
   nedyydefs.h \
   neddtdvalidatorbase.h \
   nedvalidator.h
+nedcomponent.obj: nedcomponent.cc \
+  nederror.h \
+  nedcomponent.h \
+  nedelement.h \
+  nedelements.h
 neddtdvalidator.obj: neddtdvalidator.cc \
   nederror.h \
   neddtdvalidator.h \
@@ -236,6 +242,12 @@ nedparser.obj: nedparser.cc \
   nederror.h \
   nedyydefs.h \
   nedelement.h
+nedresourcecache.obj: nedresourcecache.cc \
+  nederror.h \
+  nedresourcecache.h \
+  nedelement.h \
+  nedelements.h \
+  nedcomponent.h
 nedsaxhandler.obj: nedsaxhandler.cc \
   nedsaxhandler.h \
   nedelements.h \
