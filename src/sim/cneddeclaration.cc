@@ -57,6 +57,7 @@ cNEDDeclaration::GateDescription cNEDDeclaration::GateDescription::deepCopy() co
 cNEDDeclaration::cNEDDeclaration(const char *name) : cNoncopyableObject(name)
 {
     props = NULL;
+    locked = false;
 }
 
 cNEDDeclaration::~cNEDDeclaration()
@@ -69,7 +70,7 @@ cNEDDeclaration::~cNEDDeclaration()
 
 cNEDDeclaration *cNEDDeclaration::find(const char *name)
 {
-    return check_and_cast<cNEDDeclaration *>(nedDeclarations.instance()->get(name));
+    return dynamic_cast<cNEDDeclaration *>(nedDeclarations.instance()->get(name));
 }
 
 void cNEDDeclaration::addExtendsName(const char *name)

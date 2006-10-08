@@ -40,7 +40,7 @@ class PropertyNode;
  * - then we can instantiate _any_ network: it may contain module types that were
  *   read in dynamically, it'll work without problem.
  */
-class cNEDFileLoader
+class SIM_API cNEDFileLoader
 {
   protected:
     // storage for NED components not resolved yet because of missing dependencies

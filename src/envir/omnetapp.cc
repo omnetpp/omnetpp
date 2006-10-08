@@ -198,6 +198,7 @@ void TOmnetApp::setup()
              // iterate through file names
              ev.printf("\n");
 
+             simulation.beginLoadingNedFiles();
              cStringTokenizer tokenizer(nedfiles.c_str());
              const char *fname;
              while ((fname = tokenizer.nextToken())!=NULL)
@@ -209,6 +210,7 @@ void TOmnetApp::setup()
                  else if (fname[0])
                      globAndLoadNedFile(fname);
              }
+             simulation.doneLoadingNedFiles();
          }
      }
      catch (cException *e)

@@ -107,7 +107,8 @@ void cNEDFileLoader::loadNedFile(const char *nedfname, bool isXML)
     {
         tree->removeChild(node);
 
-        if (node->getTagCode()==NED_IMPORT ||
+        if (node->getTagCode()==NED_COMMENT ||
+            node->getTagCode()==NED_IMPORT ||
             node->getTagCode()==NED_PROPERTY_DECL ||
             node->getTagCode()==NED_PROPERTY)
         {
@@ -130,7 +131,7 @@ void cNEDFileLoader::loadNedFile(const char *nedfname, bool isXML)
             opp_string tagname(node->getTagName());
             delete node;
             delete tree;
-            throw new cRuntimeError("Error loading `%s': unsupported element", tagname.c_str());
+            throw new cRuntimeError("Error loading `%s': unsupported element <%s>", nedfname, tagname.c_str());
         }
     }
 
@@ -242,10 +243,13 @@ void cNEDFileLoader::buildNEDDeclaration(NEDElement *node)
 
             // assign parameter
             ExpressionNode *exprNode = paramNode->getFirstExpressionChild();
-            cDynamicExpression *dynamicExpr = cExpressionBuilder().process(exprNode, false);
-            cPar *paramValue = new cDoublePar(); //FIXME of the right subclass!!!
-            paramValue->setExpression(dynamicExpr);
-            //FIXME add to declaration! decl->setParamValue(paramValue);
+            if (exprNode)
+            {
+                cDynamicExpression *dynamicExpr = cExpressionBuilder().process(exprNode, false);
+                cPar *paramValue = new cDoublePar(); //FIXME of the right subclass!!!
+                paramValue->setExpression(dynamicExpr);
+                //FIXME add to declaration! decl->setParamValue(paramValue);
+            }
         }
     }
 
@@ -267,10 +271,13 @@ void cNEDFileLoader::buildNEDDeclaration(NEDElement *node)
 
             // assign gatesize
             ExpressionNode *exprNode = gateNode->getFirstExpressionChild();
-            cDynamicExpression *dynamicExpr = cExpressionBuilder().process(exprNode, false);
-            cPar *gatesize = new cLongPar();
-            gatesize->setExpression(dynamicExpr);
-            //FIXME add to declaration! decl->setGatesize(gatesize);
+            if (exprNode)
+            {
+                cDynamicExpression *dynamicExpr = cExpressionBuilder().process(exprNode, false);
+                cPar *gatesize = new cLongPar();
+                gatesize->setExpression(dynamicExpr);
+                //FIXME add to declaration! decl->setGatesize(gatesize);
+            }
         }
     }
 

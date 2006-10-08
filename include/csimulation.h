@@ -36,6 +36,7 @@ class  cNetworkType;
 class  cException;
 class  cScheduler;
 class  cParsimPartition;
+class  cNEDFileLoader;
 
 
 /**
@@ -86,6 +87,7 @@ class SIM_API cSimulation : public cNoncopyableObject
     int run_number;            // which simulation run
     cException *exception;     // helper variable to get exceptions back from activity()
     int exception_type;        // helper variable, also for getting exceptions back from activity()
+    cNEDFileLoader *nedfileloader; // helper, for loadNedFile()
 
   public:
     // internal: FES
@@ -202,15 +204,31 @@ class SIM_API cSimulation : public cNoncopyableObject
     cScheduler *scheduler() const  {return schedulerp;}
 
     /**
-     * Load a NED file and create dynamic module types from it.
-     * Works only if src/netbuilder sources are linked in.
+     * FIXME  document 3 functions
+     *
+     * These functions delegate to the cNEDLoader class in the netbuilder
+     * part of the simulation kernel. They are present so that cEnvir
+     * and other libs outside the simkernel don't need to directly
+     * depend on nedxml or netbuilder classes, and conditional compilation
+     * (#ifdef WITH_NETBUILDER) can be localized to the simkernel.
      */
-    void loadNedFile(const char *nedfile);
+    void beginLoadingNedFiles();
+
+    /**
+     * Load a NED file and create dynamic module types from it.
+     * Works only if sim/netbuilder sources are linked in.
+     */
+    void loadNedFile(const char *nedfile, bool isXML=false);
+
+    /**
+     * FIXME
+     */
+    void doneLoadingNedFiles();
 
     /**
      * Builds a new network. Relies on cNetworkType::setupNetwork().
      */
-    void setupNetwork(cNetworkType *net,int run_num);
+    void setupNetwork(cNetworkType *net, int run_num);
 
     /**
      * Should be called after setupNetwork(), but before the first
@@ -304,6 +322,7 @@ class SIM_API cSimulation : public cNoncopyableObject
      * or real-time simulation), the returned module may not be actually
      * the one executing the next event.
      */
+//FIXME change these functions to return events instead of modules?
     cSimpleModule *guessNextModule();
 
     /**

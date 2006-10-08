@@ -161,6 +161,6 @@ int cEnum::lookup(const char *str, int fallback)
 
 cEnum *cEnum::find(const char *name)
 {
-    return check_and_cast<cEnum *>(enums.instance()->get(name));
+    return dynamic_cast<cEnum *>(enums.instance()->get(name));
 }
 
