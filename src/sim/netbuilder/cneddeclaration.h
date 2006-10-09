@@ -48,6 +48,8 @@ class cProperties;
  * creation) to add gates and parameters to the freshly created module
  * object, and also to verify that module parameters set correctly.
  *
+ * cNEDDeclaration is a passive, data-only class.
+ *
  * @ingroup Internals
  */
 class SIM_API cNEDDeclaration : public cNoncopyableObject, public NEDComponent
@@ -92,6 +94,9 @@ class SIM_API cNEDDeclaration : public cNoncopyableObject, public NEDComponent
     // inheritance
     StringVector extendsnames;
     StringVector interfacenames;
+
+    // simple module/channel C++ class to instantiate
+    std::string implClassName;
 
     // properties
     cProperties *props;
@@ -170,6 +175,12 @@ class SIM_API cNEDDeclaration : public cNoncopyableObject, public NEDComponent
     virtual void addInterfaceName(const char *name);
 
     /**
+     * For simple modules and channels, sets the name of the C++ class that
+     * has to be instantiated.
+     */
+    virtual void setImplementationClassName(const char *name);
+
+    /**
      * Call lock() after setup is done.
      */
     void lock() {locked = true;}
@@ -196,6 +207,12 @@ class SIM_API cNEDDeclaration : public cNoncopyableObject, public NEDComponent
      * Returns the name of the kth interface (k=0..numInterfaceNames()-1).
      */
     const char *interfaceName(int k) const;
+
+    /**
+     * For simple modules and channels, it returns the name of the C++ class that
+     * has to be instantiated; otherwise it returns NULL.
+     */
+    const char *implementationClassName() const;
     //@}
 
     /** @name Properties */

@@ -72,9 +72,12 @@ class SIM_API cNEDResourceCache : public NEDResourceCache
     /** Disposes of singleton instance */
     static void clear();
 
-    // note: cannot redefine lookup() to return cNEDDeclaration utilizing
-    // covariant return types, because VC 7.1 is too buggy and cannot handle it
-    //virtual cNEDDeclaration *lookup(const char *name) const;
+    /**
+     * A call to base class's lookup(), plus a cast. Impl. note: we cannot just
+     * override lookup() with covariant return types, because VC 7.1 is buggy and
+     * cannot handle it properly.
+     */
+    virtual cNEDDeclaration *lookup2(const char *name) const;
 
     /**
      * Parses the given NED file, and converts modules/channels/interfaces to

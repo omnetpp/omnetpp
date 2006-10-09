@@ -95,6 +95,11 @@ void cNEDDeclaration::addInterfaceName(const char *name)
     interfacenames.push_back(name);
 }
 
+void cNEDDeclaration::setImplementationClassName(const char *name)
+{
+    implClassName = name ? name : "";
+}
+
 void cNEDDeclaration::addPar(const ParamDescription& paramDesc)
 {
     if (locked)
@@ -138,6 +143,11 @@ const char *cNEDDeclaration::extendsName(int k) const
     if (k<0 || k>=extendsnames.size())
         throw new cRuntimeError(this, "extendsName(): index %d out of range 0..%d", k, extendsnames.size()-1);
     return extendsnames[k].c_str();
+}
+
+const char *cNEDDeclaration::implementationClassName() const
+{
+    return implClassName.empty() ? NULL : implClassName.c_str();
 }
 
 int cNEDDeclaration::numPars() const

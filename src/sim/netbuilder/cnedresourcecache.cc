@@ -78,11 +78,10 @@ void cNEDResourceCache::addComponent(const char *name, NEDElement *node)
         componentTypes.instance()->add(type);
 }
 
-//XXX
-//cNEDDeclaration *cNEDResourceCache::lookup(const char *name)
-//{
-//    return dynamic_cast<cNEDDeclaration *>(NEDResourceCache::lookup(name));
-//}
+cNEDDeclaration *cNEDResourceCache::lookup2(const char *name) const
+{
+    return dynamic_cast<cNEDDeclaration *>(NEDResourceCache::lookup(name));
+}
 
 NEDElement *cNEDResourceCache::parseAndValidateNedFile(const char *fname, bool isXML)
 {
@@ -150,7 +149,7 @@ bool cNEDResourceCache::areDependenciesResolved(NEDElement *node)
             continue;
 
         const char *name = child->getAttribute("name");
-        cNEDDeclaration *decl = (cNEDDeclaration *) lookup(name);
+        cNEDDeclaration *decl = lookup2(name);
         if (!decl)
             return false;
     }
@@ -191,12 +190,18 @@ cNEDDeclaration *cNEDResourceCache::buildNEDDeclaration(NEDElement *node)
             decl->addInterfaceName(((InterfaceNameNode *)child)->getName());
     }
 
+    if (node->getTagCode()==NED_SIMPLE_MODULE || node->getTagCode()==NED_CHANNEL)
+        decl->setImplementationClassName(name);
+
     // add inherited parameters and gates
     for (NEDElement *child=node->getFirstChildWithTag(NED_EXTENDS); child; child=child->getNextSiblingWithTag(NED_EXTENDS))
     {
         const char *superName = ((ExtendsNode *)child)->getName();
-        cNEDDeclaration *superDecl = (cNEDDeclaration *) lookup(superName);
-        ASSERT(superDecl);
+        cNEDDeclaration *superDecl = lookup2(superName);
+        ASSERT(superDecl!=NULL); // because areDependenciesResolved() got passed
+
+        // propagate ultimate super class as C++ class name for simple modules and channels
+        decl->setImplementationClassName(superDecl->implementationClassName());
 
         // add inherited parameters
         for (int i=0; i<superDecl->numPars(); i++)
