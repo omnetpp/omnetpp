@@ -201,11 +201,6 @@ void cModule::removeSubmodule(cModule *mod)
     lastmodulefullpathmod = NULL;
 }
 
-void cModule::setModuleType(cModuleType *mtype)
-{
-    mod_type = mtype;
-}
-
 void cModule::setName(const char *s)
 {
     cObject::setName(s);

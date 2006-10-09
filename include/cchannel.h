@@ -20,6 +20,7 @@
 #define __CCHANNEL_H
 
 #include "ccomponent.h"
+#include "ccomponenttype.h"
 
 class cGate;
 class cMessage;
@@ -87,6 +88,11 @@ class SIM_API cChannel : public cComponent //noncopyable
 
     /** @name Channel information. */
     //@{
+    /**
+     * Convenience method: casts the return value of componentType() to cChannelType.
+     */
+    cChannelType *channelType() const  {return (cChannelType *)componentType();}
+
     /**
      * Returns the gate this channel is attached to.
      */

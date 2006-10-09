@@ -66,7 +66,6 @@ class SIM_API cModule : public cComponent //noncopyable
 
   protected:
     mutable char *fullname; // buffer to store full name of object
-    cModuleType *mod_type;  // type of this module
     int mod_id;             // id (subscript into cSimulation)
 
     // Note: parent module is stored in ownerp -- a module is always owned by its parent
@@ -117,10 +116,6 @@ class SIM_API cModule : public cComponent //noncopyable
     // internal: sets module index within vector (if module is part of
     // a module vector). Called as part of the module creation process.
     virtual void setIndex(int i, int n);
-
-    // internal: sets associated cModuleType for the module. Called as part of
-    // the module creation process.
-    virtual void setModuleType(cModuleType *mtype);
 
     // internal: inserts a submodule. Called as part of the module creation process.
     void insertSubmodule(cModule *mod);
@@ -347,9 +342,9 @@ class SIM_API cModule : public cComponent //noncopyable
     virtual bool isModule() const  {return true;}
 
     /**
-     * Returns the cModuleType object associated with this module type.
+     * Convenience method: casts the return value of componentType() to cModuleType.
      */
-    cModuleType *moduleType() const  {return mod_type;}
+    cModuleType *moduleType() const  {return (cModuleType *)componentType();}
 
     /**
      * Returns the module ID. It is actually the index of the module
