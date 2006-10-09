@@ -34,7 +34,8 @@ CPPOBJS_NETBUILDER=\
     netbuilder\cneddeclaration.obj \
     netbuilder\cnedresourcecache.obj \
     netbuilder\cdynamicchanneltype.obj \
-    netbuilder\cdynamicmoduletype.obj
+    netbuilder\cdynamicmoduletype.obj \
+    netbuilder\cnednetworkbuilder.obj
 
 CPPOBJS_PARSIM=\
     parsim\ccommbuffer.obj parsim\cmemcommbuffer.obj \

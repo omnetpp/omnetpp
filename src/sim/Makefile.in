@@ -52,14 +52,11 @@ CPPOBJS_STD=\
 
 CPPOBJS_NETBUILDER=\
     netbuilder/cexpressionbuilder.o \
-    netbuilder/loadnedfile.o
-
-XXX_CPPOBJS_NETBUILDER=\
-    netbuilder/cdynamicchannel.o \
-    netbuilder/cdynamicmodule.o \
-    netbuilder/cexpressionbuilder.o \
-    netbuilder/cnednetworkbuilder.o \
-    netbuilder/loadnedfile.o
+    netbuilder/cneddeclaration.o \
+    netbuilder/cnedresourcecache.o \
+    netbuilder/cdynamicchanneltype.o \
+    netbuilder/cdynamicmoduletype.o \
+    netbuilder/cnednetworkbuilder.o
 
 CPPOBJS_PARSIM=\
     parsim/ccommbuffer.o parsim\cmemcommbuffer.o \
