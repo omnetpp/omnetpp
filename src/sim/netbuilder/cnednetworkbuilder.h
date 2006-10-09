@@ -50,8 +50,8 @@ class cNEDNetworkBuilder
 
   protected:
     cModule *_submodule(cModule *parentmodp, const char *submodname, int idx=-1);
-/*
-    void addChannelAttr(cChannel *chanp, ChannelAttrNode *channelattr);
+
+//XXX    void addChannelAttr(cChannel *chanp, ChannelAttrNode *channelattr);
     cModuleType *findAndCheckModuleType(const char *modtypename, cModule *modp, const char *submodname);
     void addSubmodule(cModule *modp, SubmoduleNode *submod);
     void setDisplayString(cModule *submodp, SubmoduleNode *submod);
@@ -61,14 +61,13 @@ class cNEDNetworkBuilder
     void setupGateVectors(cModule *submodp, NEDElement *submod);
     cGate *getFirstUnusedParentModGate(cModule *mod, const char *gatename);
     cGate *getFirstUnusedSubmodGate(cModule *mod, const char *gatename);
-    void addLoopConnection(cModule *modp, ForLoopNode *forloop);
-    void doLoopVar(cModule *modp, LoopVarNode *loopvar);
+    void addConnectionGroup(cModule *modp, ConnectionGroupNode *conngroup);
+    void doLoop(cModule *modp, LoopNode *loop);
     void addConnection(cModule *modp, ConnectionNode *conn);
     cGate *resolveGate(cModule *modp, const char *modname, ExpressionNode *modindex,
                        const char *gatename, ExpressionNode *gateindex, bool isplusplus);
     cChannel *createChannelForConnection(ConnectionNode *conn, cModule *parentmodp);
     ExpressionNode *findExpression(NEDElement *node, const char *exprname);
-*/
 
   public:
     /** Constructor */

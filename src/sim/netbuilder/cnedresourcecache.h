@@ -73,7 +73,7 @@ class SIM_API cNEDResourceCache : public NEDResourceCache
     static void clear();
 
     /**
-     * A call to base class's lookup(), plus a cast. Impl. note: we cannot just
+     * A call to base class's lookup(), plus a cast. Implementation note: we cannot just
      * override lookup() with covariant return types, because VC 7.1 is buggy and
      * cannot handle it properly.
      */

@@ -79,7 +79,7 @@ class SIM_API cNEDDeclaration : public cNoncopyableObject, public NEDComponent
         std::string name;
         cGate::Type type; // input, output, inout
         bool isVector;
-        cPar *gatesize; // NULL if not vector or gatesize unspecified
+        cPar *gatesize; // NULL if not vector or gatesize unspecified; FIXME this should be just a cDynamicExpression!!!!
         cProperties *properties;
         std::string declaredOn;
 

@@ -23,6 +23,7 @@
 #include "cmodule.h"
 #include "cgate.h"
 #include "cchannel.h"
+#include "cbasicchannel.h"
 #include "ccomponenttype.h"
 
 #include "nedelements.h"
@@ -34,6 +35,7 @@
 #include "nedbasicvalidator.h"
 #include "nedsemanticvalidator.h"
 
+#include "cneddeclaration.h"
 #include "cnednetworkbuilder.h"
 
 
@@ -44,14 +46,25 @@ inline bool strnull(const char *s)
 
 void cNEDNetworkBuilder::addParameters(cComponent *component, cNEDDeclaration *decl)
 {
+    int n = decl->numPars();
+    for (int i=0; i<n; i++)
+    {
+        const cNEDDeclaration::ParamDescription& desc = decl->paramDescription(i);
+        //component->addPar(desc.value->dup());  FIXME
+    }
 }
 
 void cNEDNetworkBuilder::addGates(cModule *module, cNEDDeclaration *decl)
 {
-}
-
-void cNEDNetworkBuilder::buildInside(cModule *module, cNEDDeclaration *decl)
-{
+    int n = decl->numGates();
+    for (int i=0; i<n; i++)
+    {
+        const cNEDDeclaration::GateDescription& desc = decl->gateDescription(i);
+        const char *gateName = desc.name.c_str();
+        module->addGate(gateName, desc.type, desc.isVector);
+        if (desc.isVector)
+            module->setGateSize(gateName, desc.gatesize->expression()->longValue(module));
+    }
 }
 
 cModule *cNEDNetworkBuilder::_submodule(cModule *, const char *submodname, int idx)
@@ -67,37 +80,14 @@ cModule *cNEDNetworkBuilder::_submodule(cModule *, const char *submodname, int i
         return ((unsigned)idx>=v.size()) ? NULL : v[idx];
 }
 
-
-/*
-void cNEDNetworkBuilder::setupNetwork(NetworkNode *networknode)
-{
-    // this code is a simplified version of addSubmodule()
-    const char *modname = networknode->getName();
-    const char *modtypename = networknode->getTypeName();
-
-    cModuleType *modtype = findModuleType(modtypename);
-    if (!modtype)
-        throw new cRuntimeError("dynamic module builder: module type definition `%s' "
-                                "for network %s not found (Define_Module() missing from C++ source?)",
-                                modtypename, modname);
-
-    cModule *networkp = modtype->create(modname, NULL);
-
-    cContextSwitcher __ctx(networkp); // params need to be evaluated in the module's context
-    assignSubmoduleParams(networkp, networknode);
-    networkp->readInputParams();
-
-    networkp->buildInside();
-}
-
-void cNEDNetworkBuilder::buildInside(cModule *modp, CompoundModuleNode *modulenode)
+void cNEDNetworkBuilder::buildInside(cModule *modp, cNEDDeclaration *decl)
 {
     // set display string
-    setBackgroundDisplayString(modp, modulenode);
+//XXX    setBackgroundDisplayString(modp, modulenode);
 
     // loop through submods and add them
     submodMap.clear();
-    SubmodulesNode *submods = modulenode->getFirstSubmodulesChild();
+    SubmodulesNode *submods = decl->getSubmodules();
     if (submods)
     {
         for (SubmoduleNode *submod=submods->getFirstSubmoduleChild(); submod; submod=submod->getNextSubmoduleNodeSibling())
@@ -107,20 +97,20 @@ void cNEDNetworkBuilder::buildInside(cModule *modp, CompoundModuleNode *moduleno
     }
 
     // loop through connections and add them
-    ConnectionsNode *conns = modulenode->getFirstConnectionsChild();
+    ConnectionsNode *conns = decl->getConnections();
     if (conns)
     {
         for (NEDElement *child=conns->getFirstChild(); child; child=child->getNextSibling())
         {
             if (child->getTagCode()==NED_CONNECTION)
                 addConnection(modp, (ConnectionNode *)child);
-            else if (child->getTagCode()==NED_FOR_LOOP)
-                addLoopConnection(modp, (ForLoopNode *)child);
+            else if (child->getTagCode()==NED_CONNECTION_GROUP)
+                addConnectionGroup(modp, (ConnectionGroupNode *)child);
         }
     }
 
     // check if there are unconnected gates left
-    if (!conns || conns->getCheckUnconnected())
+    if (!conns || conns->getAllowUnconnected())
         modp->checkInternalConnections();
 
     // recursively build the submodules too (top-down)
@@ -131,6 +121,7 @@ void cNEDNetworkBuilder::buildInside(cModule *modp, CompoundModuleNode *moduleno
     }
 }
 
+/*XXX
 cChannel *cNEDNetworkBuilder::createChannel(const char *name, ChannelNode *channelnode)
 {
     cBasicChannel *chanp = new cBasicChannel(name);
@@ -140,7 +131,9 @@ cChannel *cNEDNetworkBuilder::createChannel(const char *name, ChannelNode *chann
     }
     return chanp;
 }
+*/
 
+/*XXX
 void cNEDNetworkBuilder::addChannelAttr(cChannel *chanp, ChannelAttrNode *channelattr)
 {
     const char *attrname = channelattr->getName();
@@ -149,6 +142,7 @@ void cNEDNetworkBuilder::addChannelAttr(cChannel *chanp, ChannelAttrNode *channe
     *p = evaluate(NULL,valueexpr); // note: this doesn't allow strings or "volatile" values
     chanp->addPar(p);
 }
+*/
 
 cModuleType *cNEDNetworkBuilder::findAndCheckModuleType(const char *modtypename, cModule *modp, const char *submodname)
 {
@@ -164,10 +158,10 @@ void cNEDNetworkBuilder::addSubmodule(cModule *modp, SubmoduleNode *submod)
 {
     // create submodule
     const char *submodname = submod->getName();
-    const char *submodtypename;
+    std::string submodtypename;
     if (strnull(submod->getLikeParam()))
     {
-        submodtypename = submod->getTypeName();
+        submodtypename = submod->getType();
     }
     else
     {
@@ -179,7 +173,7 @@ void cNEDNetworkBuilder::addSubmodule(cModule *modp, SubmoduleNode *submod)
 
     if (!vectorsizeexpr)
     {
-        cModuleType *submodtype = findAndCheckModuleType(submodtypename, modp, submodname);
+        cModuleType *submodtype = findAndCheckModuleType(submodtypename.c_str(), modp, submodname);
         cModule *submodp = submodtype->create(submodname, modp);
         ModulePtrVector& v = submodMap[submodname];
         v.push_back(submodp);
@@ -192,13 +186,13 @@ void cNEDNetworkBuilder::addSubmodule(cModule *modp, SubmoduleNode *submod)
     }
     else
     {
-        int vectorsize = (int) evaluate(modp, vectorsizeexpr);
+        int vectorsize = 3; //FIXME (int) evaluate(modp, vectorsizeexpr);
         ModulePtrVector& v = submodMap[submodname];
         cModuleType *submodtype = NULL;
         for (int i=0; i<vectorsize; i++)
         {
             if (!submodtype)
-                submodtype = findAndCheckModuleType(submodtypename, modp, submodname);
+                submodtype = findAndCheckModuleType(submodtypename.c_str(), modp, submodname);
             cModule *submodp = submodtype->create(submodname, modp, vectorsize, i);
             v.push_back(submodp);
 
@@ -217,80 +211,65 @@ void cNEDNetworkBuilder::addSubmodule(cModule *modp, SubmoduleNode *submod)
 
 void cNEDNetworkBuilder::setDisplayString(cModule *submodp, SubmoduleNode *submod)
 {
+/*XXX
     DisplayStringNode *dispstrnode = submod->getFirstDisplayStringChild();
     if (dispstrnode)
     {
         const char *dispstr = dispstrnode->getValue();
         submodp->setDisplayString(dispstr);
     }
+*/
 }
 
 void cNEDNetworkBuilder::setConnDisplayString(cGate *srcgatep, ConnectionNode *conn)
 {
+/*XXX
     DisplayStringNode *dispstrnode = conn->getFirstDisplayStringChild();
     if (dispstrnode)
     {
         const char *dispstr = dispstrnode->getValue();
         srcgatep->setDisplayString(dispstr);
     }
+*/
 }
 
 void cNEDNetworkBuilder::setBackgroundDisplayString(cModule *modp, CompoundModuleNode *mod)
 {
+/*XXX
     DisplayStringNode *dispstrnode = mod->getFirstDisplayStringChild();
     if (dispstrnode)
     {
         const char *dispstr = dispstrnode->getValue();
         modp->setBackgroundDisplayString(dispstr);
     }
+*/
 }
 
 void cNEDNetworkBuilder::assignSubmoduleParams(cModule *submodp, NEDElement *submod)
 {
-    SubstparamsNode *substparams = (SubstparamsNode *) submod->getFirstChildWithTag(NED_SUBSTPARAMS);
+    ParametersNode *substparams = (ParametersNode *) submod->getFirstChildWithTag(NED_PARAMETERS);
     cModule *modp = submodp->parentModule();
-    for (; substparams; substparams = substparams->getNextSubstparamsNodeSibling())
-    {
-        // evaluate condition
-        ExpressionNode *condexpr = findExpression(substparams, "condition");
-        bool cond = !condexpr || evaluate(modp, condexpr, submodp)!=0;
 
-        // process section
-        if (cond)
-        {
-            for (SubstparamNode *par=substparams->getFirstSubstparamChild(); par; par=par->getNextSubstparamNodeSibling())
-            {
-                // assign param value
-                const char *parname = par->getName();
-                cPar& p = submodp->par(parname);
-                assignParamValue(p, findExpression(par,"value"),modp,submodp);
-            }
-        }
+    for (ParamNode *par=substparams->getFirstParamChild(); par; par=par->getNextParamNodeSibling())
+    {
+        // assign param value
+        const char *parname = par->getName();
+        cPar& p = submodp->par(parname);
+//XXX        assignParamValue(p, findExpression(par,"value"),modp,submodp);
     }
 }
 
 void cNEDNetworkBuilder::setupGateVectors(cModule *submodp, NEDElement *submod)
 {
-    GatesizesNode *gatesizes = (GatesizesNode *) submod->getFirstChildWithTag(NED_GATESIZES);
+    GatesNode *gatesizes = (GatesNode *) submod->getFirstChildWithTag(NED_GATES);
     cModule *modp = submodp->parentModule();
-    for (; gatesizes; gatesizes = gatesizes->getNextGatesizesNodeSibling())
+    for (GateNode *gate=gatesizes->getFirstGateChild(); gate; gate=gate->getNextGateNodeSibling())
     {
-        // evaluate condition
-        ExpressionNode *condexpr = findExpression(gatesizes, "condition");
-        bool cond = !condexpr || evaluate(modp, condexpr, submodp)!=0;
-
-        // process section
-        if (cond)
-        {
-            for (GatesizeNode *gate=gatesizes->getFirstGatesizeChild(); gate; gate=gate->getNextGatesizeNodeSibling())
-            {
-                // set gate vector size
-                const char *gatename = gate->getName();
-                int vectorsize = (int) evaluate(modp, findExpression(gate, "vector-size"), submodp);
-                submodp->setGateSize(gatename, vectorsize);
-                //printf("DBG: gatesize: %s.%s[%d]\n", submodp->fullPath().c_str(), gatename, vectorsize);
-            }
-        }
+        // set gate vector size
+        const char *gatename = gate->getName();
+//XXX        int vectorsize = (int) evaluate(modp, findExpression(gate, "vector-size"), submodp);
+//XXX        submodp->setGateSize(gatename, vectorsize);
+        //printf("DBG: gatesize: %s.%s[%d]\n", submodp->fullPath().c_str(), gatename, vectorsize);
     }
 }
 
@@ -321,34 +300,36 @@ cGate *cNEDNetworkBuilder::getFirstUnusedSubmodGate(cModule *modp, const char *g
     return modp->gate(newBaseId+n);
 }
 
-void cNEDNetworkBuilder::addLoopConnection(cModule *modp, ForLoopNode *forloop)
+void cNEDNetworkBuilder::addConnectionGroup(cModule *modp, ConnectionGroupNode *conngroup)
 {
     loopVarSP = 0;
-    doLoopVar(modp, forloop->getFirstLoopVarChild());
+    //FIXME maybe it begins with condition?
+    doLoop(modp, conngroup->getFirstLoopChild());
 }
 
-void cNEDNetworkBuilder::doLoopVar(cModule *modp, LoopVarNode *loopvar)
+void cNEDNetworkBuilder::doLoop(cModule *modp, LoopNode *loop)
 {
-    ForLoopNode *forloop = (ForLoopNode *) loopvar->getParent();
+    ConnectionGroupNode *conngroup = (ConnectionGroupNode *) loop->getParent();
 
-    int start = (int) evaluate(modp, findExpression(loopvar, "from-value"));
-    int end = (int) evaluate(modp, findExpression(loopvar, "to-value"));
-    LoopVarNode *nextloopvar = loopvar->getNextLoopVarNodeSibling();
+    int start = 0;//XXX (int) evaluate(modp, findExpression(loop, "from-value"));
+    int end = 3; //XXX (int) evaluate(modp, findExpression(loop, "to-value"));
+    LoopNode *nextloopvar = loop->getNextLoopNodeSibling();
 
     // register loop var
     if (loopVarSP==MAX_LOOP_NESTING)
         throw new cRuntimeError("dynamic module builder: nesting of for loops is too deep, max %d is allowed", MAX_LOOP_NESTING);
     loopVarSP++;
-    loopVarStack[loopVarSP-1].varname = loopvar->getParamName();
+    loopVarStack[loopVarSP-1].varname = loop->getParamName();
     int& i = loopVarStack[loopVarSP-1].value;
 
     // do for loop
     if (nextloopvar)
     {
+        //FIXME maybe next one is an "if"??
         for (i=start; i<=end; i++)
         {
             // do nested loops
-            doLoopVar(modp, nextloopvar);
+            doLoop(modp, nextloopvar);
         }
     }
     else
@@ -356,7 +337,7 @@ void cNEDNetworkBuilder::doLoopVar(cModule *modp, LoopVarNode *loopvar)
         for (i=start; i<=end; i++)
         {
             // do connections
-            for (ConnectionNode *conn=forloop->getFirstConnectionChild(); conn; conn=conn->getNextConnectionNodeSibling())
+            for (ConnectionNode *conn=conngroup->getFirstConnectionChild(); conn; conn=conn->getNextConnectionNodeSibling())
             {
                 addConnection(modp, conn);
             }
@@ -373,9 +354,11 @@ void cNEDNetworkBuilder::addConnection(cModule *modp, ConnectionNode *conn)
     ExpressionNode *condexpr = findExpression(conn, "condition");
     if (condexpr)
     {
+/*XXX
         bool cond = evaluate(modp, condexpr)!=0;
         if (cond == false)
             return;
+*/
     }
 
     // find gates and create connection
@@ -423,6 +406,7 @@ cGate *cNEDNetworkBuilder::resolveGate(cModule *parentmodp,
     }
     else
     {
+/*XXX
         int modindex = !modindexp ? 0 : (int) evaluate(parentmodp, modindexp);
         modp = _submodule(parentmodp, modname,modindex);
         if (!modp)
@@ -434,6 +418,7 @@ cGate *cNEDNetworkBuilder::resolveGate(cModule *parentmodp,
                 throw new cRuntimeError("dynamic module builder: submodule `%s[%d]' in (%s)%s not found",
                                         modname, modindex, parentmodp->className(), parentmodp->fullPath().c_str());
         }
+*/
     }
 
     cGate *gatep = NULL;
@@ -453,17 +438,20 @@ cGate *cNEDNetworkBuilder::resolveGate(cModule *parentmodp,
     }
     else // (gateindexp)
     {
+/*XXX
         int gateindex = (int) evaluate(parentmodp, gateindexp);
         gatep = modp->gate(gatename, gateindex);
         if (!gatep)
             throw new cRuntimeError("dynamic module builder: module (%s)%s has no gate `%s[%d]'",
                                     modp->className(), modp->fullPath().c_str(), gatename, gateindex);
+*/
     }
     return gatep;
 }
 
 cChannel *cNEDNetworkBuilder::createChannelForConnection(ConnectionNode *conn, cModule *parentmodp)
 {
+/*XXX
     ConnAttrNode *connattr = conn->getFirstConnAttrChild();
     if (!connattr)
         return NULL;
@@ -496,6 +484,6 @@ cChannel *cNEDNetworkBuilder::createChannelForConnection(ConnectionNode *conn, c
         channel->addPar(par);
     }
     return channel;
-}
-
 */
+return new cBasicChannel();
+}
