@@ -28,6 +28,9 @@ class SIM_API cCompoundModule : public cModule // noncopyable
     friend class TCompoundModInspector;
 
   protected:
+    // overridden to delegate job to cModuleType
+    virtual void doBuildInside();
+
     // internal use
     virtual void arrived(cMessage *msg,int n,simtime_t t);
 

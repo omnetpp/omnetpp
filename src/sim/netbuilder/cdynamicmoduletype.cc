@@ -53,39 +53,4 @@ void cDynamicModuleType::buildInside(cModule *module)
     //FIXME and...
 }
 
-//--------------
 
-/*
-
-cDynamicCompoundModule::cDynamicCompoundModule()
-{
-}
-
-cDynamicCompoundModule::cDynamicCompoundModule(const cDynamicCompoundModule& mod)
-{
-    operator=(mod);
-}
-
-const char *cDynamicCompoundModule::className() const
-{
-    cModuleType *modtype = moduleType();
-    return modtype ? modtype->name() : cCompoundModule::className(); //"type n/a yet";
-}
-
-cDynamicCompoundModule& cDynamicCompoundModule::operator=(const cDynamicCompoundModule& mod)
-{
-    if (this==&mod)
-        return *this;
-
-    operator=(mod);
-    return *this;
-}
-
-
-void cDynamicCompoundModule::doBuildInside()
-{
-    // ask module type to build our internal structure
-    moduleType()->buildInside(this);
-}
-
-*/

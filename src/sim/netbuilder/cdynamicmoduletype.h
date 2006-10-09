@@ -42,42 +42,6 @@ class cDynamicModuleType : public cModuleType
     cDynamicModuleType(const char *name);
 };
 
-
-/**
- *
- */
-//FIXME clarify
-//FIXME do we need such channel too?
-//FIXME do subclassed simple modules need to lie about their classname too?
-class cDynamicCompoundModule : public cCompoundModule
-{
-    friend class cDynamicCompoundModuleType;
-  protected:
-    void doBuildInside();
-
-  public:
-    /** @name Constructors, destructor, assignment. */
-    //@{
-
-    /**
-     * Constructor. Note that module objects should not be created directly,
-     * only via their cModuleType objects. See cModule constructor for more info.
-     */
-    cDynamicCompoundModule();
-    //@}
-
-    /** @name Redefined cObject functions. */
-    //@{
-
-    /**
-     * We lie about the class name here, and return the module type instead
-     * (which is the name of the cModuleType object).
-     */
-    virtual const char *className() const;
-    //@}
-};
-
-
 #endif
 
 

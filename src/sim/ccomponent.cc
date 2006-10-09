@@ -39,6 +39,13 @@ cComponent::~cComponent()
     delete [] rngmap;
 }
 
+const char *cComponent::className() const
+{
+    // lie about the class name: return the NED type name instead of the real one,
+    // that is, "MobileHost" instead of "cCompoundModule" for example.
+    return componenttype ? componenttype->name() : cDefaultList::className();
+}
+
 void cComponent::netPack(cCommBuffer *buffer)
 {
     throw new cRuntimeError(this,eCANTPACK);

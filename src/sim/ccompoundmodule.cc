@@ -19,6 +19,7 @@
 #include <string.h>
 #include <assert.h>
 #include "ccompoundmodule.h"
+#include "ccomponenttype.h"
 #include "cmessage.h"
 
 
@@ -43,11 +44,21 @@ std::string cCompoundModule::info() const
     return out.str();
 }
 
+void cCompoundModule::doBuildInside()
+{
+    // ask module type to create submodules and internal connections
+    moduleType()->buildInside(this);
+}
+
 void cCompoundModule::arrived(cMessage *msg, int g, simtime_t)
 {
-    throw new cRuntimeError("Message (%s)`%s' arrived at COMPOUND module gate `%s' "
-                            "(which is not further connected)",
-                            msg->className(), msg->name(), gate(g)->fullPath().c_str());
+    cGate *gt = gate(g);
+    throw new cRuntimeError("Gate `%s' of compound module (%s)%s is not connected on the %s, "
+                            "upon arrival of message (%s)%s",
+                            gt->fullName(),
+                            className(), fullPath().c_str(),
+                            (gt->isConnectedOutside() ? "inside" : "outside"),
+                            msg->className(), msg->name());
 }
 
 void cCompoundModule::scheduleStart(simtime_t t)

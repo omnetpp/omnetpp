@@ -104,6 +104,12 @@ class SIM_API cComponent : public cDefaultList // noncopyable
     /** @name Redefined cPolymorphic functions */
     //@{
     /**
+     * Lie about the class name: we return the NED type name instead of the
+     * real one, that is, "MobileHost" instead of "cCompoundModule" for example.
+     */
+    virtual const char *className() const;
+
+    /**
      * Serialization not supported, this method is redefined to throw an error.
      */
     virtual void netPack(cCommBuffer *buffer);
