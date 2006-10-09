@@ -29,6 +29,15 @@ cDynamicChannelType::cDynamicChannelType(const char *name) : cChannelType(name)
 {
 }
 
+cChannel *cDynamicChannelType::createChannelObject()
+{
+    cNEDDeclaration *decl = cNEDResourceCache::instance()->lookup2(name());
+//FIXME assert that it's a channel
+    const char *classname = decl->implementationClassName();
+    ASSERT(classname!=NULL);
+    return instantiateChannelClass(classname);
+}
+
 void cDynamicChannelType::addParametersTo(cChannel *channel)
 {
     cNEDDeclaration *decl = cNEDResourceCache::instance()->lookup2(name());

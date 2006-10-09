@@ -29,6 +29,17 @@ cDynamicModuleType::cDynamicModuleType(const char *name) : cModuleType(name)
 {
 }
 
+cModule *cDynamicModuleType::createModuleObject()
+{
+    cNEDDeclaration *decl = cNEDResourceCache::instance()->lookup2(name());
+//FIXME assert that it's a module decl
+    const char *classname = decl->implementationClassName();
+    if (classname)
+        return instantiateModuleClass(classname);
+    else
+        return new cCompoundModule(); //FIXME should be cDynamicCompoundModule
+}
+
 void cDynamicModuleType::addParametersGatesTo(cModule *module)
 {
     cNEDDeclaration *decl = cNEDResourceCache::instance()->lookup2(name());

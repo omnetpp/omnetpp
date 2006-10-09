@@ -102,14 +102,12 @@ cModule *cModuleType::create(const char *modname, cModule *parentmod, int vector
     return mod;
 }
 
-cModule *cModuleType::createModuleObject()
+cModule *cModuleType::instantiateModuleClass(const char *classname)
 {
-    cPolymorphic *obj = cClassFactory::createOne(name());
-    if (!obj)
-        throw new cRuntimeError("module class %s not found", name()); //FIXME better msg
+    cPolymorphic *obj = cClassFactory::createOne(classname); // this won't return NULL
     cModule *mod = dynamic_cast<cModule *>(obj);
     if (!mod)
-        throw new cRuntimeError("class %s is not a module type", name()); //FIXME better msg
+        throw new cRuntimeError("class %s is not a module type", classname); //FIXME better msg
     return mod;
 }
 
@@ -136,14 +134,12 @@ cChannelType::cChannelType(const char *name) : cComponentType(name)
 {
 }
 
-cChannel *cChannelType::createChannelObject()
+cChannel *cChannelType::instantiateChannelClass(const char *classname)
 {
-    cPolymorphic *obj = cClassFactory::createOne(name());
-    if (!obj)
-        throw new cRuntimeError("channel class %s not found", name()); //FIXME better msg
+    cPolymorphic *obj = cClassFactory::createOne(classname); // this won't return NULL
     cChannel *channel = dynamic_cast<cChannel *>(obj);
     if (!channel)
-        throw new cRuntimeError("class %s is not a channel type", name()); //FIXME better msg
+        throw new cRuntimeError("class %s is not a channel type", classname); //FIXME better msg
     return channel;
 }
 

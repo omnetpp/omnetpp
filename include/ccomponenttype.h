@@ -49,10 +49,11 @@ class SIM_API cModuleType : public cComponentType
 {
     friend class cModule;
   protected:
-    // internal
-    cModule *createModuleObject();
+    /**
+     * Creates the module object. To be defined in subclasses.
+     */
+    virtual cModule *createModuleObject() = 0;
 
-  protected:
     /**
      * Adds parameters and gates to a newly created module object.
      * To be defined in subclasses.
@@ -63,11 +64,17 @@ class SIM_API cModuleType : public cComponentType
      * Creates and connects submodules of a newly created module object.
      * To be defined in subclasses.
      *
-     * NOTE: If you have an old simulation model that attempts to call 
+     * NOTE: If you have an old simulation model that attempts to call
      * this method directly, it is using an API call which has been DEPRECATED
      * since OMNeT++ 2.3b1 -- please change the code to <tt>mod->buildInside()</tt>.
      */
     virtual void buildInside(cModule *mod) = 0;
+
+    /**
+     * Utility function: instantiates the given class, and tries to cast the
+     * result to cModule. Raises an error if class was not found or could not be cast.
+     */
+    cModule *instantiateModuleClass(const char *classname);
 
   public:
     /** @name Constructors, destructor, assignment */
@@ -127,15 +134,22 @@ class SIM_API cModuleType : public cComponentType
 class SIM_API cChannelType : public cComponentType
 {
   protected:
-    // internal
-    cChannel *createChannelObject();
+    /**
+     * Creates the channel object. To be defined in subclasses.
+     */
+    virtual cChannel *createChannelObject() = 0;
 
-  protected:
     /**
      * Adds parameters to a newly created channel object.
      * To be defined in subclasses.
      */
     virtual void addParametersTo(cChannel *channel) = 0;
+
+    /**
+     * Utility function: instantiates the given class, and tries to cast the
+     * result to cChannel. Raises an error if class was not found or could not be cast.
+     */
+    cChannel *instantiateChannelClass(const char *classname);
 
   public:
     /** @name Constructors, destructor, assignment */

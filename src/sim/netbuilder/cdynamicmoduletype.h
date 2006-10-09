@@ -30,6 +30,9 @@ class cDynamicModuleType : public cModuleType
 {
   protected:
     /** Redefined from cModuleType */
+    virtual cModule *createModuleObject();
+
+    /** Redefined from cModuleType */
     virtual void addParametersGatesTo(cModule *module);
 
     /** Redefined from cModuleType */

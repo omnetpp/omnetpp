@@ -29,6 +29,9 @@ class cDynamicChannelType : public cChannelType
 {
   protected:
     /** Redefined from cChannelType */
+    virtual cChannel *createChannelObject();
+
+    /** Redefined from cChannelType */
     virtual void addParametersTo(cChannel *module);
 
   public:
