@@ -17,7 +17,7 @@
 #define __INSPFACTORY_H
 
 #include <tk.h>
-#include "macros.h"
+#include "onstartup.h"
 #include "inspector.h"
 #include "omnetapp.h"
 
@@ -28,36 +28,20 @@
 /**
  * Serves as a base class for inspector factories of specific classes.
  */
-class cInspectorFactory : public cObject
+class cInspectorFactory : public cNoncopyableObject
 {
   public:
     /** @name Constructors, destructor, assignment. */
     //@{
-
-    /**
-     * Copy constructor.
-     */
-    cInspectorFactory(const cInspectorFactory& ifc)  {setName(ifc.name());operator=(ifc);}
-
     /**
      * Constructor.
      */
-    cInspectorFactory(const char *name) : cObject(name) {}
+    cInspectorFactory(const char *name) : cNoncopyableObject(name,false) {}
 
     /**
      * Destructor.
      */
     virtual ~cInspectorFactory() {}
-
-    /**
-     * Assignment is not supported by this class: this method throws a cRuntimeError when called.
-     */
-    cInspectorFactory& operator=(const cInspectorFactory&)  {copyNotSupported();return *this;}
-
-    /**
-     * dup not supported
-     */
-    cPolymorphic *dup() const {copyNotSupported();return NULL;}
     //@}
 
 

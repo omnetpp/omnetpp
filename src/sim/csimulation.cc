@@ -480,18 +480,25 @@ cSimpleModule *cSimulation::selectNextModule()
     return modp;
 }
 
-cSimpleModule *cSimulation::guessNextModule()
+cMessage *cSimulation::guessNextEvent()
 {
-    // Guess what's the next event, to be displayed in the GUI.
-    // We shouldn't cause any change anywhere.
-
-    // determine the probable next event. No call to cSheduler!!!
-    cMessage *msg = msgQueue.peekFirst();
-    if (!msg)
-        return NULL;
-
+    // determine the probable next event. No call to cSheduler!
     // TBD if this event is "not good" (no module or module ended),
     // we might look for another event, but this is not done right now.
+    return msgQueue.peekFirst();
+}
+
+simtime_t cSimulation::guessNextSimtime()
+{
+    cMessage *msg = guessNextEvent();
+    return msg==NULL ? -1 : msg->arrivalTime();
+}
+
+cSimpleModule *cSimulation::guessNextModule()
+{
+    cMessage *msg = guessNextEvent();
+    if (!msg)
+        return NULL;
 
     // check if dest module exists and still running
     if (msg->arrivalModuleId()==-1)
@@ -501,7 +508,6 @@ cSimpleModule *cSimulation::guessNextModule()
         return NULL;
     if (modp->moduleState()==sENDED)
         return NULL;
-
     return modp;
 }
 

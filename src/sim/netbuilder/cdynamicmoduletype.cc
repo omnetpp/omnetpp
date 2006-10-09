@@ -38,7 +38,7 @@ cModule *cDynamicModuleType::createModuleObject()
     if (classname)
         return instantiateModuleClass(classname);
     else
-        return new cCompoundModule(); //FIXME should be cDynamicCompoundModule
+        return new cCompoundModule();
 }
 
 void cDynamicModuleType::addParametersGatesTo(cModule *module)

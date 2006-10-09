@@ -80,60 +80,83 @@ inspector.obj: inspector.cc \
   tkapp.h \
   tklib.h \
   inspector.h \
-  ../../include/defs.h \
-  ../../include/util.h \
-  ../../include/opp_string.h \
-  ../../include/random.h \
-  ../../include/distrib.h \
-  ../../include/cexception.h \
-  ../../include/errmsg.h \
-  ../../include/cobject.h \
-  ../../include/cdefaultlist.h \
-  ../../include/csimul.h \
-  ../../include/macros.h \
-  ../../include/ctypes.h \
   ../../include/carray.h \
-  ../../include/cqueue.h \
-  ../../include/cllist.h \
-  ../../include/globals.h \
-  ../../include/cwatch.h \
-  ../../include/cstlwatch.h \
-  ../../include/cpar.h \
-  ../../include/cgate.h \
-  ../../include/cmessage.h \
-  ../../include/cpacket.h \
-  ../../include/cmsgheap.h \
-  ../../include/cmodule.h \
-  ../../include/csimplemodule.h \
-  ../../include/cstat.h \
-  ../../include/cdensity.h \
-  ../../include/chist.h \
-  ../../include/cvarhist.h \
-  ../../include/cpsquare.h \
-  ../../include/cksplit.h \
-  ../../include/coutvect.h \
-  ../../include/cdetect.h \
-  ../../include/ctopo.h \
-  ../../include/cfsm.h \
-  ../../include/protocol.h \
-  ../../include/cenvir.h \
-  ../../include/cenum.h \
-  ../../include/cstruct.h \
-  ../../include/onstartup.h \
+  ../../include/cbasicchannel.h \
+  ../../include/cboolpar.h \
   ../../include/cchannel.h \
-  ../../include/cdispstr.h \
-  ../../include/envirext.h \
-  ../../include/cconfig.h \
-  ../../include/cxmlelement.h \
-  ../../include/cstrtokenizer.h \
-  ../../include/cscheduler.h \
-  ../../include/compat.h \
-  ../../include/cparsimcomm.h \
+  ../../include/cclassfactory.h \
   ../../include/ccommbuffer.h \
-  ../../include/crng.h \
-  ../../include/cpolymorphic.h \
-  ../../include/cvisitor.h \
+  ../../include/ccomponent.h \
+  ../../include/ccomponenttype.h \
+  ../../include/ccompoundmodule.h \
+  ../../include/cconfig.h \
   ../../include/ccoroutine.h \
+  ../../include/cdefaultlist.h \
+  ../../include/cdensity.h \
+  ../../include/cdetect.h \
+  ../../include/cdisplaystring.h \
+  ../../include/cdoublepar.h \
+  ../../include/cdynamicexpression.h \
+  ../../include/cenum.h \
+  ../../include/cenvir.h \
+  ../../include/cexception.h \
+  ../../include/cexpression.h \
+  ../../include/cfsm.h \
+  ../../include/cfunction.h \
+  ../../include/cgate.h \
+  ../../include/chist.h \
+  ../../include/cksplit.h \
+  ../../include/clcg32.h \
+  ../../include/cllist.h \
+  ../../include/clongpar.h \
+  ../../include/cmersennetwister.h \
+  ../../include/cmessage.h \
+  ../../include/cmessagepar.h \
+  ../../include/cmodule.h \
+  ../../include/cmsgheap.h \
+  ../../include/cnedfunction.h \
+  ../../include/cobject.h \
+  ../../include/coutvect.h \
+  ../../include/cpacket.h \
+  ../../include/cpar.h \
+  ../../include/cparsimcomm.h \
+  ../../include/cpolymorphic.h \
+  ../../include/cproperties.h \
+  ../../include/cproperty.h \
+  ../../include/cpsquare.h \
+  ../../include/cqueue.h \
+  ../../include/crng.h \
+  ../../include/cscheduler.h \
+  ../../include/csimplemodule.h \
+  ../../include/csimulation.h \
+  ../../include/cstat.h \
+  ../../include/cstlwatch.h \
+  ../../include/cstringpar.h \
+  ../../include/cstringpool.h \
+  ../../include/cstrtokenizer.h \
+  ../../include/cstruct.h \
+  ../../include/ctopo.h \
+  ../../include/cvarhist.h \
+  ../../include/cvisitor.h \
+  ../../include/cwatch.h \
+  ../../include/cxmlelement.h \
+  ../../include/cxmlpar.h \
+  ../../include/defs.h \
+  ../../include/distrib.h \
+  ../../include/envirext.h \
+  ../../include/errmsg.h \
+  ../../include/expryydefs.h \
+  ../../include/globals.h \
+  ../../include/index.h \
+  ../../include/mersennetwister.h \
+  ../../include/onstartup.h \
+  ../../include/opp_string.h \
+  ../../include/protocol.h \
+  ../../include/random.h \
+  ../../include/regmacros.h \
+  ../../include/stlwrap.h \
+  ../../include/util.h \
+  ../../include/compat.h \
   ../../include/platdep/time.h \
   tkutil.h
 inspfactory.obj: inspfactory.cc \
@@ -142,60 +165,83 @@ inspfactory.obj: inspfactory.cc \
   tklib.h \
   inspector.h \
   inspfactory.h \
-  ../../include/defs.h \
-  ../../include/util.h \
-  ../../include/opp_string.h \
-  ../../include/random.h \
-  ../../include/distrib.h \
-  ../../include/cexception.h \
-  ../../include/errmsg.h \
-  ../../include/cobject.h \
-  ../../include/cdefaultlist.h \
-  ../../include/csimul.h \
-  ../../include/macros.h \
-  ../../include/ctypes.h \
   ../../include/carray.h \
-  ../../include/cqueue.h \
-  ../../include/cllist.h \
-  ../../include/globals.h \
-  ../../include/cwatch.h \
-  ../../include/cstlwatch.h \
-  ../../include/cpar.h \
-  ../../include/cgate.h \
-  ../../include/cmessage.h \
-  ../../include/cpacket.h \
-  ../../include/cmsgheap.h \
-  ../../include/cmodule.h \
-  ../../include/csimplemodule.h \
-  ../../include/cstat.h \
-  ../../include/cdensity.h \
-  ../../include/chist.h \
-  ../../include/cvarhist.h \
-  ../../include/cpsquare.h \
-  ../../include/cksplit.h \
-  ../../include/coutvect.h \
-  ../../include/cdetect.h \
-  ../../include/ctopo.h \
-  ../../include/cfsm.h \
-  ../../include/protocol.h \
-  ../../include/cenvir.h \
-  ../../include/cenum.h \
-  ../../include/cstruct.h \
-  ../../include/onstartup.h \
+  ../../include/cbasicchannel.h \
+  ../../include/cboolpar.h \
   ../../include/cchannel.h \
-  ../../include/cdispstr.h \
-  ../../include/envirext.h \
-  ../../include/cconfig.h \
-  ../../include/cxmlelement.h \
-  ../../include/cstrtokenizer.h \
-  ../../include/cscheduler.h \
-  ../../include/compat.h \
-  ../../include/cparsimcomm.h \
+  ../../include/cclassfactory.h \
   ../../include/ccommbuffer.h \
-  ../../include/crng.h \
-  ../../include/cpolymorphic.h \
-  ../../include/cvisitor.h \
+  ../../include/ccomponent.h \
+  ../../include/ccomponenttype.h \
+  ../../include/ccompoundmodule.h \
+  ../../include/cconfig.h \
   ../../include/ccoroutine.h \
+  ../../include/cdefaultlist.h \
+  ../../include/cdensity.h \
+  ../../include/cdetect.h \
+  ../../include/cdisplaystring.h \
+  ../../include/cdoublepar.h \
+  ../../include/cdynamicexpression.h \
+  ../../include/cenum.h \
+  ../../include/cenvir.h \
+  ../../include/cexception.h \
+  ../../include/cexpression.h \
+  ../../include/cfsm.h \
+  ../../include/cfunction.h \
+  ../../include/cgate.h \
+  ../../include/chist.h \
+  ../../include/cksplit.h \
+  ../../include/clcg32.h \
+  ../../include/cllist.h \
+  ../../include/clongpar.h \
+  ../../include/cmersennetwister.h \
+  ../../include/cmessage.h \
+  ../../include/cmessagepar.h \
+  ../../include/cmodule.h \
+  ../../include/cmsgheap.h \
+  ../../include/cnedfunction.h \
+  ../../include/cobject.h \
+  ../../include/coutvect.h \
+  ../../include/cpacket.h \
+  ../../include/cpar.h \
+  ../../include/cparsimcomm.h \
+  ../../include/cpolymorphic.h \
+  ../../include/cproperties.h \
+  ../../include/cproperty.h \
+  ../../include/cpsquare.h \
+  ../../include/cqueue.h \
+  ../../include/crng.h \
+  ../../include/cscheduler.h \
+  ../../include/csimplemodule.h \
+  ../../include/csimulation.h \
+  ../../include/cstat.h \
+  ../../include/cstlwatch.h \
+  ../../include/cstringpar.h \
+  ../../include/cstringpool.h \
+  ../../include/cstrtokenizer.h \
+  ../../include/cstruct.h \
+  ../../include/ctopo.h \
+  ../../include/cvarhist.h \
+  ../../include/cvisitor.h \
+  ../../include/cwatch.h \
+  ../../include/cxmlelement.h \
+  ../../include/cxmlpar.h \
+  ../../include/defs.h \
+  ../../include/distrib.h \
+  ../../include/envirext.h \
+  ../../include/errmsg.h \
+  ../../include/expryydefs.h \
+  ../../include/globals.h \
+  ../../include/index.h \
+  ../../include/mersennetwister.h \
+  ../../include/onstartup.h \
+  ../../include/opp_string.h \
+  ../../include/protocol.h \
+  ../../include/random.h \
+  ../../include/regmacros.h \
+  ../../include/stlwrap.h \
+  ../../include/util.h \
+  ../../include/compat.h \
   ../../include/platdep/time.h \
   tkutil.h
 modinsp.obj: modinsp.cc \
@@ -208,7 +254,6 @@ modinsp.obj: modinsp.cc \
   ../../include/coutvect.h \
   ../../include/cstat.h \
   ../../include/cdensity.h \
-  ../../include/cdispstr.h \
   modinsp.h \
   tkapp.h \
   tklib.h \
@@ -216,86 +261,114 @@ modinsp.obj: modinsp.cc \
   arrow.h \
   graphlayout.h \
   ../../include/cmodule.h \
+  ../../include/ccomponent.h \
+  ../../include/globals.h \
+  ../../include/csimulation.h \
   ../../include/defs.h \
   ../../include/cobject.h \
-  ../../include/ccoroutine.h \
-  ../../include/globals.h \
-  ../../include/cqueue.h \
-  ../../include/csimul.h \
   ../../include/cdefaultlist.h \
+  ../../include/regmacros.h \
+  ../../include/onstartup.h \
   ../../include/cenvir.h \
   ../../include/util.h \
   ../../include/cpolymorphic.h \
   ../../include/cexception.h \
   ../../include/cvisitor.h \
-  ../../include/opp_string.h \
-  ../../include/onstartup.h \
+  ../../include/cstringpool.h \
   ../../include/errmsg.h \
+  ../../include/opp_string.h \
+  ../../include/cclassfactory.h \
   ../../include/cmsgheap.h \
+  ../../include/ccoroutine.h \
+  ../../include/ccomponenttype.h \
+  ../../include/cmessagepar.h \
+  ../../include/cfunction.h \
+  ../../include/cexpression.h \
   inspector.h \
-  tkutil.h \
-  ../../include/macros.h \
-  ../../include/ctypes.h
+  tkutil.h
 objinsp.obj: objinsp.cc \
   ../../include/omnetpp.h \
   tkapp.h \
   tklib.h \
   inspfactory.h \
   objinsp.h \
-  ../../include/defs.h \
-  ../../include/util.h \
-  ../../include/opp_string.h \
-  ../../include/random.h \
-  ../../include/distrib.h \
-  ../../include/cexception.h \
-  ../../include/errmsg.h \
-  ../../include/cobject.h \
-  ../../include/cdefaultlist.h \
-  ../../include/csimul.h \
-  ../../include/macros.h \
-  ../../include/ctypes.h \
   ../../include/carray.h \
-  ../../include/cqueue.h \
-  ../../include/cllist.h \
-  ../../include/globals.h \
-  ../../include/cwatch.h \
-  ../../include/cstlwatch.h \
-  ../../include/cpar.h \
-  ../../include/cgate.h \
-  ../../include/cmessage.h \
-  ../../include/cpacket.h \
-  ../../include/cmsgheap.h \
-  ../../include/cmodule.h \
-  ../../include/csimplemodule.h \
-  ../../include/cstat.h \
-  ../../include/cdensity.h \
-  ../../include/chist.h \
-  ../../include/cvarhist.h \
-  ../../include/cpsquare.h \
-  ../../include/cksplit.h \
-  ../../include/coutvect.h \
-  ../../include/cdetect.h \
-  ../../include/ctopo.h \
-  ../../include/cfsm.h \
-  ../../include/protocol.h \
-  ../../include/cenvir.h \
-  ../../include/cenum.h \
-  ../../include/cstruct.h \
-  ../../include/onstartup.h \
+  ../../include/cbasicchannel.h \
+  ../../include/cboolpar.h \
   ../../include/cchannel.h \
-  ../../include/cdispstr.h \
-  ../../include/envirext.h \
-  ../../include/cconfig.h \
-  ../../include/cxmlelement.h \
-  ../../include/cstrtokenizer.h \
-  ../../include/cscheduler.h \
-  ../../include/compat.h \
-  ../../include/cparsimcomm.h \
+  ../../include/cclassfactory.h \
   ../../include/ccommbuffer.h \
-  ../../include/crng.h \
-  ../../include/cpolymorphic.h \
-  ../../include/cvisitor.h \
+  ../../include/ccomponent.h \
+  ../../include/ccomponenttype.h \
+  ../../include/ccompoundmodule.h \
+  ../../include/cconfig.h \
   ../../include/ccoroutine.h \
+  ../../include/cdefaultlist.h \
+  ../../include/cdensity.h \
+  ../../include/cdetect.h \
+  ../../include/cdisplaystring.h \
+  ../../include/cdoublepar.h \
+  ../../include/cdynamicexpression.h \
+  ../../include/cenum.h \
+  ../../include/cenvir.h \
+  ../../include/cexception.h \
+  ../../include/cexpression.h \
+  ../../include/cfsm.h \
+  ../../include/cfunction.h \
+  ../../include/cgate.h \
+  ../../include/chist.h \
+  ../../include/cksplit.h \
+  ../../include/clcg32.h \
+  ../../include/cllist.h \
+  ../../include/clongpar.h \
+  ../../include/cmersennetwister.h \
+  ../../include/cmessage.h \
+  ../../include/cmessagepar.h \
+  ../../include/cmodule.h \
+  ../../include/cmsgheap.h \
+  ../../include/cnedfunction.h \
+  ../../include/cobject.h \
+  ../../include/coutvect.h \
+  ../../include/cpacket.h \
+  ../../include/cpar.h \
+  ../../include/cparsimcomm.h \
+  ../../include/cpolymorphic.h \
+  ../../include/cproperties.h \
+  ../../include/cproperty.h \
+  ../../include/cpsquare.h \
+  ../../include/cqueue.h \
+  ../../include/crng.h \
+  ../../include/cscheduler.h \
+  ../../include/csimplemodule.h \
+  ../../include/csimulation.h \
+  ../../include/cstat.h \
+  ../../include/cstlwatch.h \
+  ../../include/cstringpar.h \
+  ../../include/cstringpool.h \
+  ../../include/cstrtokenizer.h \
+  ../../include/cstruct.h \
+  ../../include/ctopo.h \
+  ../../include/cvarhist.h \
+  ../../include/cvisitor.h \
+  ../../include/cwatch.h \
+  ../../include/cxmlelement.h \
+  ../../include/cxmlpar.h \
+  ../../include/defs.h \
+  ../../include/distrib.h \
+  ../../include/envirext.h \
+  ../../include/errmsg.h \
+  ../../include/expryydefs.h \
+  ../../include/globals.h \
+  ../../include/index.h \
+  ../../include/mersennetwister.h \
+  ../../include/onstartup.h \
+  ../../include/opp_string.h \
+  ../../include/protocol.h \
+  ../../include/random.h \
+  ../../include/regmacros.h \
+  ../../include/stlwrap.h \
+  ../../include/util.h \
+  ../../include/compat.h \
   ../../include/platdep/time.h \
   inspector.h \
   tkutil.h \
@@ -312,26 +385,30 @@ statinsp.obj: statinsp.cc \
   tklib.h \
   inspfactory.h \
   statinsp.h \
+  ../../include/ccomponent.h \
+  ../../include/globals.h \
+  ../../include/cgate.h \
+  ../../include/csimulation.h \
   ../../include/defs.h \
   ../../include/cobject.h \
-  ../../include/ccoroutine.h \
-  ../../include/globals.h \
-  ../../include/cqueue.h \
-  ../../include/cgate.h \
-  ../../include/csimul.h \
   ../../include/cdefaultlist.h \
+  ../../include/regmacros.h \
+  ../../include/onstartup.h \
   ../../include/cenvir.h \
   ../../include/util.h \
   ../../include/cpolymorphic.h \
   ../../include/cexception.h \
   ../../include/cvisitor.h \
-  ../../include/opp_string.h \
-  ../../include/onstartup.h \
+  ../../include/cstringpool.h \
   ../../include/errmsg.h \
+  ../../include/opp_string.h \
+  ../../include/cclassfactory.h \
   ../../include/cmsgheap.h \
-  ../../include/macros.h \
+  ../../include/ccoroutine.h \
+  ../../include/cmessagepar.h \
+  ../../include/cfunction.h \
+  ../../include/cexpression.h \
   inspector.h \
-  ../../include/ctypes.h \
   tkutil.h
 structinsp.obj: structinsp.cc \
   ../../include/cstruct.h \
@@ -340,26 +417,23 @@ structinsp.obj: structinsp.cc \
   inspfactory.h \
   structinsp.h \
   ../../include/cobject.h \
-  ../../include/cenum.h \
   ../../include/cenvir.h \
   ../../include/defs.h \
   ../../include/util.h \
   ../../include/cpolymorphic.h \
   ../../include/cexception.h \
   ../../include/cvisitor.h \
-  ../../include/opp_string.h \
-  ../../include/macros.h \
-  inspector.h \
+  ../../include/cstringpool.h \
+  ../../include/regmacros.h \
   ../../include/onstartup.h \
-  ../../include/carray.h \
-  ../../include/ctypes.h \
-  ../../include/globals.h \
+  ../../include/errmsg.h \
+  ../../include/opp_string.h \
+  inspector.h \
   tkutil.h
 tkapp.obj: tkapp.cc \
   ../../include/cenvir.h \
   ../../include/csimplemodule.h \
   ../../include/cmessage.h \
-  ../../include/ctypes.h \
   ../../include/cscheduler.h \
   tkdefs.h \
   tkapp.h \
@@ -368,73 +442,75 @@ tkapp.obj: tkapp.cc \
   inspfactory.h \
   modinsp.h \
   ../../include/platdep/time.h \
+  ../utils/ver.h \
   ../../include/defs.h \
+  ../../include/regmacros.h \
+  ../../include/onstartup.h \
   ../../include/cmodule.h \
-  ../../include/cobject.h \
-  ../../include/ccoroutine.h \
+  ../../include/ccomponent.h \
   ../../include/globals.h \
   ../../include/carray.h \
-  ../../include/cqueue.h \
   ../../include/cgate.h \
-  ../../include/csimul.h \
+  ../../include/csimulation.h \
+  ../../include/cobject.h \
   ../../include/cdefaultlist.h \
   ../../include/util.h \
   ../../include/cpolymorphic.h \
   ../../include/cexception.h \
   ../../include/cvisitor.h \
-  ../../include/opp_string.h \
-  ../../include/onstartup.h \
+  ../../include/cstringpool.h \
   ../../include/errmsg.h \
+  ../../include/opp_string.h \
+  ../../include/cclassfactory.h \
   ../../include/cmsgheap.h \
-  ../../include/coutvect.h \
-  ../../include/cpar.h \
-  tkutil.h \
-  ../../include/macros.h
+  ../../include/ccoroutine.h \
+  ../../include/cmessagepar.h \
+  ../../include/cfunction.h \
+  tkutil.h
 tkcmd.obj: tkcmd.cc \
   ../../include/cenvir.h \
   ../../include/carray.h \
-  ../../include/csimul.h \
   ../../include/csimplemodule.h \
   ../../include/cmessage.h \
   ../../include/cchannel.h \
   ../../include/cstat.h \
   ../../include/cwatch.h \
-  ../../include/ctypes.h \
   ../../include/cstruct.h \
-  ../../include/cdispstr.h \
   tkapp.h \
   tklib.h \
   inspector.h \
   inspfactory.h \
   visitor.h \
   ../../include/defs.h \
+  ../../include/regmacros.h \
+  ../../include/onstartup.h \
   ../../include/cobject.h \
   ../../include/util.h \
   ../../include/cpolymorphic.h \
   ../../include/cexception.h \
   ../../include/cvisitor.h \
-  ../../include/opp_string.h \
+  ../../include/cstringpool.h \
   ../../include/errmsg.h \
+  ../../include/opp_string.h \
+  ../../include/cmodule.h \
+  ../../include/ccomponent.h \
   ../../include/globals.h \
+  ../../include/cgate.h \
+  ../../include/csimulation.h \
+  ../../include/cdefaultlist.h \
+  ../../include/cclassfactory.h \
   ../../include/cmsgheap.h \
   ../../include/ccoroutine.h \
-  ../../include/coutvect.h \
-  ../../include/onstartup.h \
-  ../../include/cmodule.h \
-  ../../include/cqueue.h \
-  ../../include/cgate.h \
-  ../../include/cdefaultlist.h \
-  ../../include/cpar.h \
-  ../../include/cenum.h \
-  tkutil.h \
-  ../../include/macros.h
+  ../../include/cmessagepar.h \
+  ../../include/cfunction.h \
+  ../../include/ccomponenttype.h \
+  tkutil.h
 tklib.obj: tklib.cc \
   tklib.h \
   tkapp.h
 tkutil.obj: tkutil.cc \
   ../../include/cobject.h \
   ../../include/cmodule.h \
-  ../../include/csimul.h \
   tkapp.h \
   visitor.h \
   tkutil.h \
@@ -444,17 +520,20 @@ tkutil.obj: tkutil.cc \
   ../../include/cpolymorphic.h \
   ../../include/cexception.h \
   ../../include/cvisitor.h \
-  ../../include/opp_string.h \
-  ../../include/ccoroutine.h \
-  ../../include/globals.h \
-  ../../include/carray.h \
-  ../../include/cqueue.h \
-  ../../include/cgate.h \
-  ../../include/cdefaultlist.h \
+  ../../include/cstringpool.h \
+  ../../include/regmacros.h \
   ../../include/onstartup.h \
   ../../include/errmsg.h \
+  ../../include/opp_string.h \
+  ../../include/ccomponent.h \
+  ../../include/globals.h \
+  ../../include/carray.h \
+  ../../include/cgate.h \
+  ../../include/csimulation.h \
+  ../../include/cdefaultlist.h \
+  ../../include/cclassfactory.h \
   ../../include/cmsgheap.h \
-  ../../include/coutvect.h
+  ../../include/ccoroutine.h
 visitor.obj: visitor.cc \
   ../../include/cenvir.h \
   ../../include/cobject.h \
@@ -470,17 +549,25 @@ visitor.obj: visitor.cc \
   ../../include/cgate.h \
   visitor.h \
   ../../include/defs.h \
+  ../../include/regmacros.h \
+  ../../include/onstartup.h \
   ../../include/util.h \
   ../../include/cpolymorphic.h \
   ../../include/cexception.h \
   ../../include/cvisitor.h \
+  ../../include/cstringpool.h \
+  ../../include/errmsg.h \
   ../../include/opp_string.h \
-  ../../include/ccoroutine.h \
+  ../../include/ccomponent.h \
   ../../include/globals.h \
   ../../include/carray.h \
-  ../../include/csimul.h \
+  ../../include/csimulation.h \
   ../../include/cdefaultlist.h \
-  ../../include/onstartup.h \
-  ../../include/errmsg.h \
+  ../../include/cclassfactory.h \
   ../../include/cmsgheap.h \
+  ../../include/ccoroutine.h \
+  ../../include/cmessagepar.h \
+  ../../include/cfunction.h \
+  ../../include/cexpression.h \
+  ../../include/ccomponenttype.h \
   tkapp.h
