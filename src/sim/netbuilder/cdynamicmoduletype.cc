@@ -32,6 +32,7 @@ cDynamicModuleType::cDynamicModuleType(const char *name) : cModuleType(name)
 cModule *cDynamicModuleType::createModuleObject()
 {
     cNEDDeclaration *decl = cNEDResourceCache::instance()->lookup2(name());
+    ASSERT(decl!=NULL);
 //FIXME assert that it's a module decl
     const char *classname = decl->implementationClassName();
     if (classname)
@@ -43,14 +44,17 @@ cModule *cDynamicModuleType::createModuleObject()
 void cDynamicModuleType::addParametersGatesTo(cModule *module)
 {
     cNEDDeclaration *decl = cNEDResourceCache::instance()->lookup2(name());
-    //FIXME and...
+    ASSERT(decl!=NULL);
+    cNEDNetworkBuilder().addParameters(module, decl);
+    cNEDNetworkBuilder().addGates(module, decl);
 }
 
 
 void cDynamicModuleType::buildInside(cModule *module)
 {
     cNEDDeclaration *decl = cNEDResourceCache::instance()->lookup2(name());
-    //FIXME and...
+    ASSERT(decl!=NULL);
+    cNEDNetworkBuilder().buildInside(module, decl);
 }
 
 

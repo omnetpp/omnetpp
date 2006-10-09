@@ -42,15 +42,33 @@ inline bool strnull(const char *s)
     return !s || !s[0];
 }
 
-cNEDNetworkBuilder::cNEDNetworkBuilder()
-{
-    loopVarSP = 0;
-}
-
-cNEDNetworkBuilder::~cNEDNetworkBuilder()
+void cNEDNetworkBuilder::addParameters(cComponent *component, cNEDDeclaration *decl)
 {
 }
 
+void cNEDNetworkBuilder::addGates(cModule *module, cNEDDeclaration *decl)
+{
+}
+
+void cNEDNetworkBuilder::buildInside(cModule *module, cNEDDeclaration *decl)
+{
+}
+
+cModule *cNEDNetworkBuilder::_submodule(cModule *, const char *submodname, int idx)
+{
+    SubmodMap::iterator i = submodMap.find(std::string(submodname));
+    if (i==submodMap.end())
+        return NULL;
+
+    ModulePtrVector& v = i->second;
+    if (idx<0)
+        return (v.size()!=1 || v[0]->isVector()) ? NULL : v[0];
+    else
+        return ((unsigned)idx>=v.size()) ? NULL : v[idx];
+}
+
+
+/*
 void cNEDNetworkBuilder::setupNetwork(NetworkNode *networknode)
 {
     // this code is a simplified version of addSubmodule()
@@ -196,18 +214,6 @@ void cNEDNetworkBuilder::addSubmodule(cModule *modp, SubmoduleNode *submod)
     // on this level too.
 }
 
-cModule *cNEDNetworkBuilder::_submodule(cModule *, const char *submodname, int idx)
-{
-    SubmodMap::iterator i = submodMap.find(std::string(submodname));
-    if (i==submodMap.end())
-        return NULL;
-
-    ModulePtrVector& v = i->second;
-    if (idx<0)
-        return (v.size()!=1 || v[0]->isVector()) ? NULL : v[0];
-    else
-        return ((unsigned)idx>=v.size()) ? NULL : v[idx];
-}
 
 void cNEDNetworkBuilder::setDisplayString(cModule *submodp, SubmoduleNode *submod)
 {
@@ -492,4 +498,4 @@ cChannel *cNEDNetworkBuilder::createChannelForConnection(ConnectionNode *conn, c
     return channel;
 }
 
-
+*/

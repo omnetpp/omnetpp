@@ -20,22 +20,18 @@
 #include <map>
 #include <vector>
 #include "nedelements.h"
-#include "cpar.h"
 
 class cModule;
 class cGate;
 class cChannel;
 class cPar;
-
+class cNEDDeclaration;
 
 #define MAX_LOOP_NESTING 32
 
 
 /**
- * Builds a network from the NED file.
- * Assumes object tree has already passed all validation stages (DTD, basic, semantic).
- *
- * See also loadNedFile()
+ * Stateless object to assist in building the network, based on NED files.
  *
  * @ingroup NetworkBuilder
  */
@@ -54,7 +50,8 @@ class cNEDNetworkBuilder
 
   protected:
     cModule *_submodule(cModule *parentmodp, const char *submodname, int idx=-1);
-//XXX    void addChannelAttr(cChannel *chanp, ChannelAttrNode *channelattr);
+/*
+    void addChannelAttr(cChannel *chanp, ChannelAttrNode *channelattr);
     cModuleType *findAndCheckModuleType(const char *modtypename, cModule *modp, const char *submodname);
     void addSubmodule(cModule *modp, SubmoduleNode *submod);
     void setDisplayString(cModule *submodp, SubmoduleNode *submod);
@@ -64,44 +61,35 @@ class cNEDNetworkBuilder
     void setupGateVectors(cModule *submodp, NEDElement *submod);
     cGate *getFirstUnusedParentModGate(cModule *mod, const char *gatename);
     cGate *getFirstUnusedSubmodGate(cModule *mod, const char *gatename);
-//XXX    void addLoopConnection(cModule *modp, ForLoopNode *forloop);
-//XXX    void doLoopVar(cModule *modp, LoopVarNode *loopvar);
+    void addLoopConnection(cModule *modp, ForLoopNode *forloop);
+    void doLoopVar(cModule *modp, LoopVarNode *loopvar);
     void addConnection(cModule *modp, ConnectionNode *conn);
     cGate *resolveGate(cModule *modp, const char *modname, ExpressionNode *modindex,
                        const char *gatename, ExpressionNode *gateindex, bool isplusplus);
     cChannel *createChannelForConnection(ConnectionNode *conn, cModule *parentmodp);
     ExpressionNode *findExpression(NEDElement *node, const char *exprname);
-
+*/
 
   public:
-    /**
-     * Constructor.
-     */
-    cNEDNetworkBuilder();
+    /** Constructor */
+    cNEDNetworkBuilder() {}
 
     /**
-     * Destructor.
+     * Adds parameters from the given NED declaration. Invoked from cDynamicModule.
      */
-    ~cNEDNetworkBuilder();
+    void addParameters(cComponent *component, cNEDDeclaration *decl);
 
     /**
-     * Creates the toplevel module, based on the info in the passed NEDElement tree.
-     * Invoked from cDynamicNetwork.
+     * Adds gates to the module from the given NED declaration.
+     * Invoked from cDynamicModule.
      */
-//XXX    void setupNetwork(NetworkNode *networknode);
+    void addGates(cModule *module, cNEDDeclaration *decl);
 
     /**
      * Builds submodules and internal connections, based on the info in the
      * passed NEDElement tree. Invoked from cDynamicModule.
      */
-    void buildInside(cModule *module, CompoundModuleNode *modulenode);
-
-    /**
-     * Creates a channel object, based on the info in the passed NEDElement tree.
-     * Invoked from cDynamicChannel.
-     */
-    cChannel *createChannel(const char *name, ChannelNode *channelnode);
-
+    void buildInside(cModule *module, cNEDDeclaration *decl);
 };
 
 #endif

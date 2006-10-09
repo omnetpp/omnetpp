@@ -23,7 +23,7 @@
 #include "cexpressionbuilder.h"
 #include "cfunction.h"
 #include "cnedfunction.h"
-
+#include "cpar.h"
 
 cExpressionBuilder::cExpressionBuilder()
 {
@@ -269,6 +269,8 @@ cDynamicExpression *cExpressionBuilder::process(ExpressionNode *node, bool inSub
 
 void cExpressionBuilder::assign(cPar *par, cDynamicExpression *expr)
 {
+    //FIXME todo optimize: if it's a single constant, single XML value etc!
 
+    par->setExpression(expr);
 }
 
