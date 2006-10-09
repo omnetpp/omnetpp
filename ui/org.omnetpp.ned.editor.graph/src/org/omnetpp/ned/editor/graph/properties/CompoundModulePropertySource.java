@@ -14,8 +14,12 @@ public class CompoundModulePropertySource extends DelegatingPropertySource {
             super(model);
             this.model = model;
             setDisplayString(model.getDisplayString());
-            supportedProperties.addAll(EnumSet.range(DisplayString.Prop.X, 
-                                                	 DisplayString.Prop.MODULE_UNIT));
+            // submodule inherited properties
+            supportedProperties.addAll(EnumSet.range(DisplayString.Prop.WIDTH, 
+                                                	 DisplayString.Prop.OVIMAGECOLORPCT));
+            // direct compound module properties
+            supportedProperties.addAll(EnumSet.range(DisplayString.Prop.MODULE_X, 
+               	 									 DisplayString.Prop.MODULE_UNIT));
         }
 
         @Override

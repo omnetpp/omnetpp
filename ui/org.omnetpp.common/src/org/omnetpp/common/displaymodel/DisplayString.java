@@ -21,10 +21,10 @@ public class DisplayString implements IDisplayString {
     
     // contains the default fallback values for the different tags if a variable is used in that position
     public static final DisplayString VARIABLE_DEFAULTS 
-        = new DisplayString("i=,,30;i2=,,30;is=40;b=40,40,rect,#8080ff,black,2;t=,t,blue;r=100,,black,1;bgb=-1,-1,grey75,black,2");
+        = new DisplayString("i=,,30;i2=,,30;is=40;b=40,40,rect,#8080ff,black,2;t=,t,blue;r=100,,black,1;bgb=-1,-1,grey75,black,2;bgg=100,1,grey50");
     // contains the default fallback values for the different tags if it is empty
     public static final DisplayString EMPTY_DEFAULTS 
-        = new DisplayString("i=,,30;i2=,,30;is=40;b=-1,-1,rect,#8080ff,black,2;t=,t,blue;r=,,black,1;bgg=,,,grey;bgb=-1,-1,grey75,black,2");
+        = new DisplayString("i=,,30;i2=,,30;is=40;b=-1,-1,rect,#8080ff,black,2;t=,t,blue;r=,,black,1;bgb=-1,-1,grey75,black,2;bgg=,1,grey50");
 
     // hold default values (if specified in derived calsses)
     // first look in 'this' then in 'defaults' then in 'variableDefaults' or 'emptyDefaults' 
