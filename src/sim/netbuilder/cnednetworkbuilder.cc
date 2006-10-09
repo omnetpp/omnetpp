@@ -390,7 +390,7 @@ void cNEDNetworkBuilder::addConnection(cModule *modp, ConnectionNode *conn)
 {
     // check condition first
     ExpressionNode *condexpr = findExpression(conn, "condition");
-    if (condexpr && evaluateAsBool(condexpr, modp, false)==false);
+    if (condexpr && evaluateAsBool(condexpr, modp, false)==false)
         return;
 
     // find gates and create connection
@@ -533,7 +533,7 @@ ExpressionNode *cNEDNetworkBuilder::findExpression(NEDElement *node, const char 
 long cNEDNetworkBuilder::evaluateAsLong(ExpressionNode *exprNode, cComponent *context, bool inSubcomponentScope)
 {
     cDynamicExpression *e = cExpressionBuilder().process(exprNode, inSubcomponentScope);
-    return e->longValue(context);
+    return e->longValue(context); //FIXME this can be speeded up by caching cDynamicExpressions, and not recreating them every time
 }
 
 bool cNEDNetworkBuilder::evaluateAsBool(ExpressionNode *exprNode, cComponent *context, bool inSubcomponentScope)
