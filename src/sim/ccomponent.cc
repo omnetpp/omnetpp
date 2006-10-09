@@ -127,3 +127,11 @@ return NULL;
 //XXX    return componenttype->parValue(k)->properties();
 }
 
+void cComponent::readInputParams()
+{
+    int n = params();
+    for (int i=0; i<n; i++)
+        if (!par(i).isSet())
+            par(i).read();
+}
+

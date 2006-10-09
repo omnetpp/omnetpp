@@ -52,9 +52,6 @@ class cNEDNetworkBuilder
     typedef std::map<std::string,ModulePtrVector> SubmodMap;
     SubmodMap submodMap;
 
-    // buffer for expressions
-//XXX    cPar::ExprElem *xelemsBuf;
-
   protected:
     cModule *_submodule(cModule *parentmodp, const char *submodname, int idx=-1);
 //XXX    void addChannelAttr(cChannel *chanp, ChannelAttrNode *channelattr);
@@ -65,7 +62,6 @@ class cNEDNetworkBuilder
     void setBackgroundDisplayString(cModule *modp, CompoundModuleNode *mod);
     void assignSubmoduleParams(cModule *submodp, NEDElement *submod);
     void setupGateVectors(cModule *submodp, NEDElement *submod);
-    void readInputParams(cModule *submodp);
     cGate *getFirstUnusedParentModGate(cModule *mod, const char *gatename);
     cGate *getFirstUnusedSubmodGate(cModule *mod, const char *gatename);
 //XXX    void addLoopConnection(cModule *modp, ForLoopNode *forloop);
@@ -76,27 +72,6 @@ class cNEDNetworkBuilder
     cChannel *createChannelForConnection(ConnectionNode *conn, cModule *parentmodp);
     ExpressionNode *findExpression(NEDElement *node, const char *exprname);
 
-    double evaluate(cModule *modp, ExpressionNode *expr, cModule *submodp=NULL);
-
-/*XXX
-    cPar *resolveParamRef(ParamRefNode *node, cModule *parentmodp, cModule *submodp);
-
-    double evaluateNode(NEDElement *node, cModule *parentmodp, cModule *submodp);
-    double evalOperator(OperatorNode *node, cModule *parentmodp, cModule *submodp);
-    double evalFunction(FunctionNode *node, cModule *parentmodp, cModule *submodp);
-    double evalParamref(ParamRefNode *node, cModule *parentmodp, cModule *submodp);
-    double evalIdent(IdentNode *node, cModule *parentmodp, cModule *submodp);
-    double evalConst(ConstNode *node, cModule *parentmodp, cModule *submodp);
-*/
-    void assignParamValue(cPar& p, ExpressionNode *expr, cModule *parentmodp, cModule *submodp);
-
-    bool needsDynamicExpression(ExpressionNode *expr);
-//XXX    void addXElems(NEDElement *node, cPar::ExprElem *xelems, int& pos, cModule *submodp);
-//XXX    void addXElemsOperator(OperatorNode *node, cPar::ExprElem *xelems, int& pos, cModule *submodp);
-//XXX    void addXElemsFunction(FunctionNode *node, cPar::ExprElem *xelems, int& pos, cModule *submodp);
-//XXX    void addXElemsParamref(ParamRefNode *node, cPar::ExprElem *xelems, int& pos, cModule *submodp);
-//XXX    void addXElemsIdent(IdentNode *node, cPar::ExprElem *xelems, int& pos, cModule *submodp);
-//XXX    void addXElemsConst(ConstNode *node, cPar::ExprElem *xelems, int& pos, cModule *submodp);
 
   public:
     /**

@@ -267,3 +267,8 @@ cDynamicExpression *cExpressionBuilder::process(ExpressionNode *node, bool inSub
     return ret;
 }
 
+void cExpressionBuilder::assign(cPar *par, cDynamicExpression *expr)
+{
+
+}
+

@@ -59,6 +59,9 @@ class SIM_API cComponent : public cDefaultList // noncopyable
     // internal: return parameter properties from the component type object
     virtual cProperties *defaultParProperties(int k) const;
 
+    // internal: invokes the read() method on all unset parameters
+    virtual void readInputParams();
+
   protected:
     /**
      * This method is called by the simulation kernel to notify the module

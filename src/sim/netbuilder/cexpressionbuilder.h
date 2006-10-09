@@ -50,7 +50,15 @@ class cExpressionBuilder
     cExpressionBuilder();
     ~cExpressionBuilder();
 
-    cDynamicExpression *process(ExpressionNode *node, bool inSubcomponentScope);
+    cDynamicExpression *process(ExpressionNode *node, bool inSubcomponentScope); //FIXME rename to buildExpression()
+
+    /**
+     * Sets cPar to the given cDynamicExpression, performing basic optimizations:
+     * if the expression can be represented in cPar without using dynamic
+     * expressions (i.e. it is just a constant number), it does so and deletes
+     * the expression.
+     */
+    void assign(cPar *par, cDynamicExpression *expr);
 };
 
 #endif
