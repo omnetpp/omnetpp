@@ -32,10 +32,8 @@ module TandemQueue
             display: "p=60,80;i=block/switch";
 
         queue: Queue[numQueues];
-            gatesizes if index==0:
-                in[sizeof(in)];
-            gatesizes if index!=0:
-                in[1];
+            gatesizes:
+                in[index==0 ? sizeof(in) : 1];
             display: "p=60,160,row,80;i=block/queue;q=queue";
 
     connections nocheck:

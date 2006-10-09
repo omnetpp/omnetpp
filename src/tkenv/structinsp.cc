@@ -20,6 +20,7 @@
 #include <string.h>
 #include <math.h>
 
+#include "cenum.h"
 #include "cstruct.h"
 
 #include "tkapp.h"
@@ -78,7 +79,7 @@ void TStructPanel::displayStruct(cStructDescriptor *sd, int level)
                    if (sd->getFieldEnumName(fld))
                    {
                        // display enum value as int and as string
-                       cEnum* enm = findEnum(sd->getFieldEnumName(fld));
+                       cEnum* enm = cEnum::find(sd->getFieldEnumName(fld));
                        if (enm)
                        {
                            int key = atol(tmpbuf);
@@ -132,7 +133,7 @@ void TStructPanel::displayStruct(cStructDescriptor *sd, int level)
                        if (sd->getFieldEnumName(fld))
                        {
                            // display enum value as int and as string
-                           cEnum* enm = findEnum(sd->getFieldEnumName(fld));
+                           cEnum* enm = cEnum::find(sd->getFieldEnumName(fld));
                            if (enm)
                            {
                                int key = atol(tmpbuf);

@@ -24,7 +24,8 @@
 
 #include "cobject.h"
 #include "cmodule.h"
-#include "csimul.h"
+#include "csimulation.h"
+
 #include "tkapp.h"
 #include "patmatch.h"
 #include "visitor.h"
@@ -147,8 +148,8 @@ void feedCollectionIntoInspectorListbox(cCollectObjectsVisitor *visitor, Tcl_Int
         // a small hack: leave out "gates" and "params" arrays of modules
         if (dynamic_cast<cArray *>(objs[i]) &&
             dynamic_cast<cModule *>(objs[i]->owner()) &&
-            (objs[i]==&(dynamic_cast<cModule *>(objs[i]->owner())->gatev) ||
-             objs[i]==&(dynamic_cast<cModule *>(objs[i]->owner())->paramv))
+            (objs[i]==&(dynamic_cast<cModule *>(objs[i]->owner())->gatev)
+            /* || objs[i]==&(dynamic_cast<cModule *>(objs[i]->owner())->paramv) FIXME!!! */ )
            )
            continue;
 

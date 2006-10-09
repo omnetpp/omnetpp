@@ -35,6 +35,10 @@
 #include "cstat.h"
 #include "cdensity.h"
 #include "cdisplaystring.h"
+#include "cqueue.h"
+#include "ccompoundmodule.h"
+#include "cchannel.h"
+#include "cbasicchannel.h"
 
 #include "modinsp.h"
 #include "tkapp.h"
@@ -738,7 +742,7 @@ int TGraphicalModWindow::getDisplayStringPar(Tcl_Interp *interp, int argc, const
 
    if (par->type()=='S')
    {
-      Tcl_SetResult(interp, TCLCONST(par->stringValue()), TCL_VOLATILE);
+      Tcl_SetResult(interp, TCLCONST(par->stringValue().c_str()), TCL_VOLATILE);
    }
    else
    {
@@ -844,7 +848,7 @@ void TCompoundModInspector::update()
    fillListboxWithSubmodules(".nb.submods", mod);
 
    deleteInspectorListbox( ".nb.params" );
-   fillInspectorListbox(".nb.params", &mod->paramv, false);
+//XXX   fillInspectorListbox(".nb.params", &mod->paramv, false);
 
    deleteInspectorListbox( ".nb.gates" );
    fillInspectorListbox(".nb.gates", &mod->gatev, false);
@@ -926,7 +930,7 @@ void TSimpleModInspector::update()
    }
 
    deleteInspectorListbox( ".nb.params" );
-   fillInspectorListbox(".nb.params", &mod->paramv, false);
+//XXX   fillInspectorListbox(".nb.params", &mod->paramv, false);
 
    deleteInspectorListbox( ".nb.gates" );
    fillInspectorListbox(".nb.gates", &mod->gatev, false);
@@ -1108,25 +1112,7 @@ int TGraphicalGateWindow::redraw(Tcl_Interp *interp, int, const char **)
    // draw connections
    for (g = gate->sourceGate(); g->toGate()!=NULL; g=g->toGate())
    {
-        char chan[128] = "";
-        if (g->datarate() && g->datarate()->doubleValue()!=0)
-        {
-            strcat(chan,"datarate ");
-            strcat(chan, g->datarate()->toString().c_str());
-            strcat(chan,"bps  ");
-        }
-        if (g->delay() && g->delay()->doubleValue()!=0)
-        {
-            strcat(chan,"delay ");
-            strcat(chan, g->delay()->toString().c_str());
-            strcat(chan,"s  ");
-        }
-        if (g->error() && g->error()->doubleValue()!=0)
-        {
-            strcat(chan,"error ");
-            strcat(chan, g->error()->toString().c_str());
-            strcat(chan,"  ");
-        }
+        cChannel *channel = g->channel();
         char srcgateptr[32], destgateptr[32];
         ptrToStr(g,srcgateptr);
         ptrToStr(g->toGate(),destgateptr);
@@ -1135,7 +1121,7 @@ int TGraphicalGateWindow::redraw(Tcl_Interp *interp, int, const char **)
                       canvas, " ",
                       srcgateptr, " ",
                       destgateptr, " ",
-                      "{",chan,"} ",
+                      "{", (channel?channel->info().c_str():""), "} ",
                       "{", dispstr,"} ",
                       NULL ));
    }

@@ -124,7 +124,7 @@ void cFilteredCollectObjectsVisitor::visit(cObject *obj)
         ((category&CATEGORY_STATISTICS) &&(dynamic_cast<cOutVector *>(obj) ||
                                            dynamic_cast<cWatchBase *>(obj) ||
                                            dynamic_cast<cStatistic *>(obj))) ||
-        ((category&CATEGORY_MODPARAMS) &&(dynamic_cast<cModulePar *>(obj))) ||
+        ((category&CATEGORY_MODPARAMS) &&(dynamic_cast<cPar *>(obj))) ||
         ((category&CATEGORY_CHANSGATES) &&(dynamic_cast<cChannel *>(obj) ||
                                            dynamic_cast<cGate *>(obj))) ||
         ((category&CATEGORY_OTHERS) && (!dynamic_cast<cModule *>(obj) &&
@@ -134,7 +134,7 @@ void cFilteredCollectObjectsVisitor::visit(cObject *obj)
                                         !dynamic_cast<cFSM *>(obj) &&
                                         !dynamic_cast<cOutVector *>(obj) &&
                                         !dynamic_cast<cStatistic *>(obj) &&
-                                        !dynamic_cast<cModulePar *>(obj) &&
+                                        !dynamic_cast<cPar *>(obj) &&
                                         !dynamic_cast<cChannel *>(obj) &&
                                         !dynamic_cast<cGate *>(obj)));
     ok = ok && (!objfullpathpattern || objfullpathpattern->matches(obj->fullPath().c_str()));
