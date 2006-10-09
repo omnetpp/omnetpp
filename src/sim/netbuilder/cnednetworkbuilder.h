@@ -50,7 +50,8 @@ class cNEDNetworkBuilder
 
   protected:
     cModule *_submodule(cModule *parentmodp, const char *submodname, int idx=-1);
-
+    void addSubmodulesAndConnections(cModule *modp, cNEDDeclaration *decl);
+    void buildRecursively(cModule *modp, cNEDDeclaration *decl);
 //XXX    void addChannelAttr(cChannel *chanp, ChannelAttrNode *channelattr);
     cModuleType *findAndCheckModuleType(const char *modtypename, cModule *modp, const char *submodname);
     void addSubmodule(cModule *modp, SubmoduleNode *submod);
@@ -68,6 +69,8 @@ class cNEDNetworkBuilder
                        const char *gatename, ExpressionNode *gateindex, bool isplusplus);
     cChannel *createChannelForConnection(ConnectionNode *conn, cModule *parentmodp);
     ExpressionNode *findExpression(NEDElement *node, const char *exprname);
+    long evaluateAsLong(ExpressionNode *exprNode, cComponent *context, bool inSubcomponentScope);
+    bool evaluateAsBool(ExpressionNode *exprNode, cComponent *context, bool inSubcomponentScope);
 
   public:
     /** Constructor */

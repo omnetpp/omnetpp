@@ -30,10 +30,7 @@ cRegistrationList classes("classes");
 cRegistrationList enums("enums");
 
 
-cModuleType *findModuleType(const char *s)
+cModuleType *findModuleType(const char *name)
 {
-    // compatibility
-    //FIXME check it is a module type
-//    return cComponentType::find(name);
-return NULL; //XXX
+    return cModuleType::find(name);
 }

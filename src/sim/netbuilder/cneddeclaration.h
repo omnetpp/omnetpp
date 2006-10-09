@@ -191,7 +191,7 @@ class SIM_API cNEDDeclaration : public cNoncopyableObject, public NEDComponent
     /**
      * Returns the number of "extends" names.
      */
-    int numExtendsNames() const  {return interfacenames.size();}
+    int numExtendsNames() const  {return extendsnames.size();}
 
     /**
      * Returns the name of the kth "extends" name (k=0..numExtendsNames()-1).
