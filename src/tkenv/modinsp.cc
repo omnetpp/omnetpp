@@ -34,7 +34,7 @@
 #include "coutvect.h"
 #include "cstat.h"
 #include "cdensity.h"
-#include "cdispstr.h"
+#include "cdisplaystring.h"
 
 #include "modinsp.h"
 #include "tkapp.h"
@@ -348,7 +348,7 @@ void TGraphicalModWindow::getSubmoduleCoords(cModule *submod, bool& explicitcoor
         Tcl_Interp *interp = getTkApplication()->getInterp();
         CHK(Tcl_VarEval(interp,"messagebox {Error} "
                         "{Error: invalid layout `", layout, "' in `p' tag "
-                        "of display string \"", ds.getString(), "\"} error ok", NULL));
+                        "of display string \"", ds.toString(), "\"} error ok", NULL));
     }
 }
 
@@ -508,12 +508,12 @@ void TGraphicalModWindow::redrawModules()
                         ptrToStr(submod), " ",
                         coords,
                         "{", submod->fullName(), "} ",
-                        "{", ds.getString(), "} ",
+                        "{", ds.toString(), "} ",
                         NULL ));
     }
 
     // draw enclosing module
-    const char *dispstr = parentmodule->hasBackgroundDisplayString() ? parentmodule->backgroundDisplayString().getString() : "";
+    const char *dispstr = parentmodule->hasBackgroundDisplayString() ? parentmodule->backgroundDisplayString().toString() : "";
     CHK(Tcl_VarEval(interp, "draw_enclosingmod ",
                        canvas, " ",
                        ptrToStr(parentmodule), " ",
@@ -543,7 +543,7 @@ void TGraphicalModWindow::redrawModules()
                 sprintf(indices,"%d %d %d %d",
                         gate->index(), gate->size(),
                         dest_gate->index(), dest_gate->size());
-                const char *dispstr = gate->hasDisplayString() ? gate->displayString().getString() : "";
+                const char *dispstr = gate->hasDisplayString() ? gate->displayString().toString() : "";
 
                 CHK(Tcl_VarEval(interp, "draw_connection ",
                         canvas, " ",
@@ -990,7 +990,7 @@ void TGateInspector::update()
    char buf[64];
    sprintf(buf,"#%d", g->id());
    setLabel(".main.id.e", buf);
-   setEntry(".main.dispstr.e", g->displayString().getString());
+   setEntry(".main.dispstr.e", g->displayString().toString());
    cBasicChannel *ch = dynamic_cast<cBasicChannel*>(g->channel());
    if (ch)
    {
@@ -1112,25 +1112,25 @@ int TGraphicalGateWindow::redraw(Tcl_Interp *interp, int, const char **)
         if (g->datarate() && g->datarate()->doubleValue()!=0)
         {
             strcat(chan,"datarate ");
-            strcat(chan, g->datarate()->getAsText().c_str());
+            strcat(chan, g->datarate()->toString().c_str());
             strcat(chan,"bps  ");
         }
         if (g->delay() && g->delay()->doubleValue()!=0)
         {
             strcat(chan,"delay ");
-            strcat(chan, g->delay()->getAsText().c_str());
+            strcat(chan, g->delay()->toString().c_str());
             strcat(chan,"s  ");
         }
         if (g->error() && g->error()->doubleValue()!=0)
         {
             strcat(chan,"error ");
-            strcat(chan, g->error()->getAsText().c_str());
+            strcat(chan, g->error()->toString().c_str());
             strcat(chan,"  ");
         }
         char srcgateptr[32], destgateptr[32];
         ptrToStr(g,srcgateptr);
         ptrToStr(g->toGate(),destgateptr);
-        const char *dispstr = g->hasDisplayString() ? g->displayString().getString() : "";
+        const char *dispstr = g->hasDisplayString() ? g->displayString().toString() : "";
         CHK(Tcl_VarEval(interp, "draw_conn ",
                       canvas, " ",
                       srcgateptr, " ",

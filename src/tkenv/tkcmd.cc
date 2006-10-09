@@ -19,16 +19,20 @@
 
 #include "cenvir.h"
 #include "carray.h"
-#include "csimul.h"
+#include "csimulation.h"
 #include "csimplemodule.h"
+#include "ccompoundmodule.h"
+#include "ccomponenttype.h"
+#include "cpar.h"
 #include "cmessage.h"
 #include "cchannel.h"
 #include "cstat.h"
 #include "cwatch.h"
-#include "ctypes.h"
 #include "cstruct.h"
-#include "cdispstr.h"
-#include "cdispstr.h"
+#include "cdisplaystring.h"
+#include "cqueue.h"
+#include "coutvect.h"
+
 #include "tkapp.h"
 #include "tklib.h"
 #include "inspector.h"
@@ -432,7 +436,7 @@ int getRunNumber_cmd(ClientData, Tcl_Interp *interp, int argc, const char **)
 int getNetworkType_cmd(ClientData, Tcl_Interp *interp, int argc, const char **)
 {
    if (argc!=1) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
-   cNetworkType *n = simulation.networkType();
+   cModuleType *n = simulation.networkType();
    Tcl_SetResult(interp, TCLCONST(!n ? "" : n->name()), TCL_VOLATILE);
    return TCL_OK;
 }
@@ -514,13 +518,13 @@ int getObjectField_cmd(ClientData, Tcl_Interp *interp, int argc, const char **ar
    } else if (!strcmp(field,"displayString")) {
        if (dynamic_cast<cModule *>(object)) {
            cModule *mod = dynamic_cast<cModule *>(object);
-           const char *str = mod->hasDisplayString() ? mod->displayString().getString() : "";
+           const char *str = mod->hasDisplayString() ? mod->displayString().toString() : "";
            Tcl_SetResult(interp, TCLCONST(str), TCL_VOLATILE);
        } else if (dynamic_cast<cMessage *>(object)) {
            Tcl_SetResult(interp, TCLCONST(dynamic_cast<cMessage *>(object)->displayString()), TCL_VOLATILE);
        } else if (dynamic_cast<cGate *>(object)) {
            cGate *g = dynamic_cast<cGate *>(object);
-           const char *str = g->hasDisplayString() ? g->displayString().getString() : "";
+           const char *str = g->hasDisplayString() ? g->displayString().toString() : "";
            Tcl_SetResult(interp, TCLCONST(str), TCL_VOLATILE);
        } else {
            Tcl_SetResult(interp, "no such field in this object", TCL_STATIC); return TCL_ERROR;
@@ -528,7 +532,7 @@ int getObjectField_cmd(ClientData, Tcl_Interp *interp, int argc, const char **ar
    } else if (!strcmp(field,"backgroundDisplayString")) {
        if (dynamic_cast<cModule *>(object)) {
            cModule *mod = dynamic_cast<cModule *>(object);
-           const char *str = mod->hasBackgroundDisplayString() ? mod->backgroundDisplayString().getString() : "";
+           const char *str = mod->hasBackgroundDisplayString() ? mod->backgroundDisplayString().toString() : "";
            Tcl_SetResult(interp, TCLCONST(str), TCL_VOLATILE);
        } else {
            Tcl_SetResult(interp, "no such field in this object", TCL_STATIC); return TCL_ERROR;
@@ -1058,7 +1062,7 @@ int getModulePar_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv
    const char *parname = argv[2];
    string result;
 
-   TRY( result = mod->par(parname).getAsText() );
+   TRY( result = mod->par(parname).toString() );
 
    Tcl_SetResult(interp, TCLCONST(result.c_str()), TCL_VOLATILE);
    return TCL_OK;
@@ -1072,7 +1076,7 @@ int setModulePar_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv
    const char *parname = argv[2];
    const char *value = argv[3];
 
-   TRY( mod->par(parname).setFromText(value,'?') );
+   TRY( mod->par(parname).parse(value) );
 
    return TCL_OK;
 }
@@ -1408,29 +1412,36 @@ int objectMessageQueue_cmd(ClientData, Tcl_Interp *interp, int argc, const char 
 
 int objectNetworks_cmd(ClientData, Tcl_Interp *interp, int argc, const char **)
 {
-   if (argc!=1) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
+//FIXME eliminate from Tcl code -- i.e. implement based on componentTypes
+/*
+  if (argc!=1) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
    Tcl_SetResult(interp, ptrToStr( networks.instance() ), TCL_VOLATILE);
+*/
    return TCL_OK;
 }
 
 int objectModuleTypes_cmd(ClientData, Tcl_Interp *interp, int argc, const char **)
 {
+//FIXME this is not only modules -- change Tcl code!
    if (argc!=1) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
-   Tcl_SetResult(interp, ptrToStr( modtypes.instance() ), TCL_VOLATILE);
+   Tcl_SetResult(interp, ptrToStr( componentTypes.instance() ), TCL_VOLATILE);
    return TCL_OK;
 }
 
 int objectChannelTypes_cmd(ClientData, Tcl_Interp *interp, int argc, const char **)
 {
+//FIXME eliminate from Tcl code -- i.e. implement based on componentTypes
+/*
    if (argc!=1) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
    Tcl_SetResult(interp, ptrToStr( channeltypes.instance() ), TCL_VOLATILE);
+*/
    return TCL_OK;
 }
 
 int objectFunctions_cmd(ClientData, Tcl_Interp *interp, int argc, const char **)
 {
    if (argc!=1) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
-   Tcl_SetResult(interp, ptrToStr( functions.instance() ), TCL_VOLATILE);
+   Tcl_SetResult(interp, ptrToStr( nedFunctions.instance() ), TCL_VOLATILE);
    return TCL_OK;
 }
 

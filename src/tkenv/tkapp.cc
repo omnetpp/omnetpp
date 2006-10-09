@@ -620,7 +620,8 @@ void TOmnetTkApp::loadNedFile(const char *fname)
 
 void TOmnetTkApp::newNetwork(const char *network_name)
 {
-    cNetworkType *network = findNetwork( network_name );
+    cModuleType *network = cModuleType::find( network_name );
+    //FIXME check it can be used as network
     if (!network)
     {
         CHK(Tcl_VarEval(interp,"messagebox {Confirm} {Network '", network_name, "' not found.} info ok",NULL));
@@ -680,7 +681,8 @@ void TOmnetTkApp::newRun(int run)
         run_nr = run;
         readPerRunOptions(run_nr);
 
-        cNetworkType *network = findNetwork(opt_network_name.c_str());
+        cModuleType *network = cModuleType::find(opt_network_name.c_str());
+        //FIXME check if it can be instantiated as network
         if (!network)
         {
             CHK(Tcl_VarEval(interp,"messagebox {Confirm} {Network '", opt_network_name.c_str(), "' not found.} info ok",NULL));
@@ -734,11 +736,6 @@ void TOmnetTkApp::stopAtBreakpoint(const char *label, cSimpleModule *mod)
 
     // breakpointhit_flag will cause event loop to exit in runSimulation...()
     breakpointhit_flag = true;
-
-    if (mod->usesActivity())
-    {
-        mod->pause();
-    }
 }
 
 TInspector *TOmnetTkApp::inspect(cObject *obj, int type, const char *geometry, void *dat)
@@ -955,25 +952,12 @@ void TOmnetTkApp::clearPerformanceDisplay()
 void TOmnetTkApp::printEventBanner(cSimpleModule *module)
 {
     char banner[MAX_OBJECTFULLPATH+60];
-    if (module->phase()[0]==0)
-    {
-        sprintf(banner,"** Event #%ld.  T=%s.  Module #%u `%s'\n",
-                simulation.eventNumber(),
-                simtimeToStr(simulation.simTime()),
-                module->id(),
-                module->fullPath().c_str()
-              );
-    }
-    else
-    {
-        sprintf(banner,"** Event #%ld.  T=%s.  Module `%s' (id=%u). Phase `%s'.\n",
-                simulation.eventNumber(),
-                simtimeToStr(simulation.simTime()),
-                module->fullPath().c_str(),
-                module->id(),
-                module->phase()
-              );
-    }
+    sprintf(banner,"** Event #%ld.  T=%s.  Module #%u `%s'\n",
+            simulation.eventNumber(),
+            simtimeToStr(simulation.simTime()),
+            module->id(),
+            module->fullPath().c_str()
+          );
 
     // insert into main window
     if (opt_use_mainwindow)
@@ -1041,8 +1025,8 @@ void TOmnetTkApp::readOptions()
     opt_print_banners = cfg->getAsBool( "Tkenv", "print-banners", true );
     opt_use_mainwindow = cfg->getAsBool( "Tkenv", "use-mainwindow", true );
     opt_expressmode_autoupdate = cfg->getAsBool( "Tkenv", "expressmode-autoupdate", true );
-    opt_bitmap_path = cfg->getAsFilename( "Tkenv", "bitmap-path", "").c_str();
-    opt_plugin_path = cfg->getAsFilename( "Tkenv", "plugin-path", "").c_str();
+//FIXME    opt_bitmap_path = cfg->getAsFilename( "Tkenv", "bitmap-path", "").c_str();
+//FIXME    opt_plugin_path = cfg->getAsFilename( "Tkenv", "plugin-path", "").c_str();
 }
 
 void TOmnetTkApp::readPerRunOptions(int run_nr)

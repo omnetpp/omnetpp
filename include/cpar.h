@@ -65,8 +65,8 @@ class SIM_API cPar : public cObject
     };
 
   public:
-    // internal: sets the ISFUNCTION flag
-    virtual void setIsFunction(bool f) {if (f) flags|=FL_ISVOLATILE; else flags&=~FL_ISVOLATILE;}
+    // internal: sets the ISVOLATILE flag
+    virtual void setIsVolatile(bool f) {if (f) flags|=FL_ISVOLATILE; else flags&=~FL_ISVOLATILE;}
 
     // internal: mark value as unset; the current value (if set) becomes the default value
     virtual void markAsUnset();

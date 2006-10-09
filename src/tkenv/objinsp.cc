@@ -380,7 +380,7 @@ void TParInspector::update()
    TInspector::update();
 
    cPar *p = static_cast<cPar *>(object);
-   setEntry(".main.value.e", p->getAsText().c_str());
+   setEntry(".main.value.e", p->toString().c_str());
 
    char *t;
    switch (p->type())
@@ -400,9 +400,9 @@ void TParInspector::update()
    }
    setLabel(".main.type.e", t );
    setEntry(".main.newtype.e", "" );
-   setEntry(".main.prompt.e", correct(p->prompt()) );
-   setEntry(".main.input.e", p->isInput() ? "1" : "0" );
-   setInspectButton(".main.indirection",p->redirection(), true, INSP_DEFAULT);
+//XXX   setEntry(".main.prompt.e", correct(p->prompt()) );
+   setEntry(".main.input.e", p->isSet() ? "1" : "0" ); //FIXME rename dialog field in Tcl
+//XXX   setInspectButton(".main.indirection",p->redirection(), true, INSP_DEFAULT);
 }
 
 void TParInspector::writeBack()
@@ -410,12 +410,12 @@ void TParInspector::writeBack()
    Tcl_Interp *interp = getTkApplication()->getInterp();
    cPar *p = static_cast<cPar *>(object);
 
-   char newtype = getEntry(".main.newtype.e")[0];
+   char newtype = getEntry(".main.newtype.e")[0];  //FIXME this will be ignored, make it readonly on the GUI
    if (!newtype) newtype = '?';
 
    bool ok = false;
    try {
-      ok = p->setFromText(getEntry(".main.value.e"), newtype);
+      ok = p->parse(getEntry(".main.value.e"));
       if (!ok)
          throw new cException(newtype=='?' ? "Syntax error, value not changed." : "Syntax error or wrong type, value not changed.");
    } catch (cException *e) {
@@ -425,8 +425,11 @@ void TParInspector::writeBack()
    }
    if (ok)
       setEntry(".main.newtype.e", "");
-   p->setPrompt( getEntry(".main.prompt.e") );
-   p->setInput( getEntry(".main.input.e")[0]=='1' );
+//   p->setPrompt( getEntry(".main.prompt.e") );  //FIXME remove prompt from the GUI
+   if (getEntry(".main.input.e")[0]=='1')
+       p->markAsUnset();
+   else
+       p->applyDefaultValue();
 
    TInspector::writeBack();    // must be there after all changes
 }
