@@ -4,13 +4,15 @@ import java.util.EnumSet;
 
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
 import org.eclipse.ui.views.properties.IPropertySource2;
+import org.eclipse.ui.views.properties.PropertyDescriptor;
 import org.omnetpp.common.displaymodel.DisplayString;
 import org.omnetpp.common.properties.CheckboxPropertyDescriptor;
+import org.omnetpp.common.properties.PropertySource;
 import org.omnetpp.ned2.model.CompoundModuleNodeEx;
 
 public class CompoundModulePropertySource extends DelegatingPropertySource {
     // compound module display properties
-    private static class CompoundModuleDisplayPropertySource extends DisplayPropertySource {
+    protected static class CompoundModuleDisplayPropertySource extends DisplayPropertySource {
         protected CompoundModuleNodeEx model;
 
         public CompoundModuleDisplayPropertySource(CompoundModuleNodeEx model) {
@@ -34,24 +36,32 @@ public class CompoundModulePropertySource extends DelegatingPropertySource {
     
     // compound module specific properties
     protected static class BasePropertySource implements IPropertySource2 {
-        public enum Prop { Network  }
+        public static final String BASE_CATEGORY = "Base";
+        public enum Prop { Network, Submodules }
         protected IPropertyDescriptor[] descriptors;
         protected CompoundModuleNodeEx model;
         CheckboxPropertyDescriptor networkProp;
+        SubmoduleListPropertySource submodlist;
 
         public BasePropertySource(CompoundModuleNodeEx connectionNodeModel) {
             model = connectionNodeModel;
             
+            // create a property source for the submodule list
+            submodlist = new SubmoduleListPropertySource(model);
             // set up property descriptors
             networkProp = new CheckboxPropertyDescriptor(Prop.Network, "network");
-            networkProp.setCategory("Base");
+            networkProp.setCategory(BASE_CATEGORY);
             networkProp.setDescription("Is this compound module used as a network instance?");
+
+            PropertyDescriptor submodProp = new PropertyDescriptor(Prop.Submodules,"submodules");
+            submodProp.setCategory(BASE_CATEGORY);
+            submodProp.setDescription("List of submodules and inherited submodules");
             
-            descriptors = new IPropertyDescriptor[] { networkProp };
+            descriptors = new IPropertyDescriptor[] { networkProp , submodProp};
         }
 
         public Object getEditableValue() {
-            return model.getIsNetwork();
+            return null;
         }
 
         public IPropertyDescriptor[] getPropertyDescriptors() {
@@ -61,6 +71,9 @@ public class CompoundModulePropertySource extends DelegatingPropertySource {
         public Object getPropertyValue(Object propName) {
             if (Prop.Network.equals(propName))  
                 return model.getIsNetwork(); 
+
+            if (Prop.Submodules.equals(propName))  
+                return submodlist; 
             
             return null;
         }

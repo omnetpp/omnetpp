@@ -7,7 +7,7 @@ import org.omnetpp.ned2.model.SimpleModuleNodeEx;
 
 public class SimpleModulePropertySource extends DelegatingPropertySource {
 
-    public static class SimpleModuleDisplayPropertySource extends DisplayPropertySource {
+    protected static class SimpleModuleDisplayPropertySource extends DisplayPropertySource {
         protected SimpleModuleNodeEx model;
 
         public SimpleModuleDisplayPropertySource(SimpleModuleNodeEx model) {

@@ -17,7 +17,7 @@ import org.omnetpp.ned2.model.NEDElement;
 //TODO implement number celll editor
 //TODO multi line text cell editor must be implemented
 //TODO implement getColorProperty/Def too so unknown colors will be displayed as default
-abstract public class DisplayPropertySource extends AbstractNedPropertySource {
+abstract public class DisplayPropertySource extends NotifiedPropertySource {
 
     // string parser for handling the parsing of the display string tags 
     protected DisplayString displayString = null;

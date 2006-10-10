@@ -10,7 +10,8 @@ import org.omnetpp.common.displaymodel.IDisplayString;
 import org.omnetpp.common.displaymodel.IDisplayString.Prop;
 import org.omnetpp.ned2.model.pojo.SubmoduleNode;
 
-public class SubmoduleNodeEx extends SubmoduleNode implements INamedGraphNode {
+public class SubmoduleNodeEx extends SubmoduleNode 
+                            implements INamedGraphNode, IIndexable, ITyped {
     // srcConns contains all connections where the sourcemodule is this module
 	protected List<ConnectionNodeEx> srcConns = new ArrayList<ConnectionNodeEx>();
 	// destConns contains all connections where the destmodule is this module
@@ -31,6 +32,21 @@ public class SubmoduleNodeEx extends SubmoduleNode implements INamedGraphNode {
         setType("node");
     }
     
+    public String getIndex() {
+        return getVectorSize();
+    }
+
+    public String getNameWithIndex() {
+        String result = getName();
+        if (getIndex() != null && !"".equals(getIndex()))
+            result += "["+getIndex()+"]";
+        return result;
+    }
+
+    public void setIndex(String indexstring) {
+        setVectorSize(indexstring);
+    }
+
     /**
      * @return The name of component but stripped any digits from the right ie: name123 would be name  
      */

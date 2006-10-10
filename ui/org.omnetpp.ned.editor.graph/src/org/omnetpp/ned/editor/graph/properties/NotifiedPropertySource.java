@@ -5,15 +5,19 @@ import org.eclipse.ui.views.properties.IPropertySource2;
 import org.omnetpp.ned2.model.INEDChangeListener;
 import org.omnetpp.ned2.model.NEDElement;
 
-abstract public class AbstractNedPropertySource 
+/**
+ * @author rhornig
+ * A property source that is notified of the underlying model changes
+ */
+abstract public class NotifiedPropertySource 
                             implements IPropertySource2, INEDChangeListener {
     /**
      * Default construtor doesn't register itself as a model listener 
      */
-    AbstractNedPropertySource() {
+    NotifiedPropertySource() {
     }
     
-    AbstractNedPropertySource(NEDElement model) {
+    NotifiedPropertySource(NEDElement model) {
         // register the propertysource as a listener for the model so it will be notified
         // once someone changes the underlying model
         model.addListener(this);
