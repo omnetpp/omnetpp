@@ -96,7 +96,7 @@ public class NedElementExUtil implements NEDElementTags, NEDElementUtil {
         }
 		
 		// look for propertykey
-		NEDElement propertyKeyNode = displayPropertyNode.getFirstChildWithAttribute(NED_PROPERTY_KEY, PropertyKeyNode.ATT_KEY, ""); 
+		NEDElement propertyKeyNode = displayPropertyNode.getFirstChildWithAttribute(NED_PROPERTY_KEY, PropertyKeyNode.ATT_NAME, ""); 
 		if (propertyKeyNode == null) {
 			propertyKeyNode = NEDElementFactoryEx.getInstance().createNodeWithTag(NED_PROPERTY_KEY);
 			displayPropertyNode.appendChild(propertyKeyNode);

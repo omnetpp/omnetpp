@@ -2,7 +2,6 @@ package org.omnetpp.ned.editor.graph.properties;
 
 import org.eclipse.core.runtime.IAdapterFactory;
 import org.eclipse.ui.views.properties.IPropertySource;
-import org.omnetpp.common.properties.PropertySource;
 import org.omnetpp.ned2.model.ChannelInterfaceNodeEx;
 import org.omnetpp.ned2.model.ChannelNodeEx;
 import org.omnetpp.ned2.model.CompoundModuleNodeEx;

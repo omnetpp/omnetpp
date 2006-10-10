@@ -27,13 +27,11 @@ import org.omnetpp.ned2.model.pojo.CompoundModuleNode;
 import org.omnetpp.ned2.model.pojo.ConnectionGroupNode;
 import org.omnetpp.ned2.model.pojo.ConnectionNode;
 import org.omnetpp.ned2.model.pojo.ConnectionsNode;
-import org.omnetpp.ned2.model.pojo.GateGroupNode;
 import org.omnetpp.ned2.model.pojo.GateNode;
 import org.omnetpp.ned2.model.pojo.GatesNode;
 import org.omnetpp.ned2.model.pojo.ImportNode;
 import org.omnetpp.ned2.model.pojo.ModuleInterfaceNode;
 import org.omnetpp.ned2.model.pojo.NedFileNode;
-import org.omnetpp.ned2.model.pojo.ParamGroupNode;
 import org.omnetpp.ned2.model.pojo.ParamNode;
 import org.omnetpp.ned2.model.pojo.ParametersNode;
 import org.omnetpp.ned2.model.pojo.PropertyNode;
@@ -126,9 +124,7 @@ public class NedTreeEditPart extends AbstractTreeEditPart implements
         			(child instanceof SubmodulesNode) ||
         			(child instanceof SubmoduleNode) ||
         			(child instanceof GateNode) ||
-        			(child instanceof GateGroupNode) ||
         			(child instanceof ParamNode) ||
-        			(child instanceof ParamGroupNode) ||
         			(child instanceof PropertyNode) ||
         			(child instanceof ConnectionNode) ||
         			(child instanceof ConnectionGroupNode) ||

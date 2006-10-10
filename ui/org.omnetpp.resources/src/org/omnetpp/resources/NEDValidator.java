@@ -28,7 +28,6 @@ import org.omnetpp.ned2.model.pojo.FieldNode;
 import org.omnetpp.ned2.model.pojo.FieldsNode;
 import org.omnetpp.ned2.model.pojo.FilesNode;
 import org.omnetpp.ned2.model.pojo.FunctionNode;
-import org.omnetpp.ned2.model.pojo.GateGroupNode;
 import org.omnetpp.ned2.model.pojo.GateNode;
 import org.omnetpp.ned2.model.pojo.GatesNode;
 import org.omnetpp.ned2.model.pojo.IdentNode;
@@ -43,7 +42,6 @@ import org.omnetpp.ned2.model.pojo.MsgFileNode;
 import org.omnetpp.ned2.model.pojo.MsgpropertyNode;
 import org.omnetpp.ned2.model.pojo.NedFileNode;
 import org.omnetpp.ned2.model.pojo.OperatorNode;
-import org.omnetpp.ned2.model.pojo.ParamGroupNode;
 import org.omnetpp.ned2.model.pojo.ParamNode;
 import org.omnetpp.ned2.model.pojo.ParametersNode;
 import org.omnetpp.ned2.model.pojo.PatternNode;
@@ -207,24 +205,8 @@ public class NEDValidator extends AbstractNEDValidator implements NEDElementUtil
 		validateChildren(node);
 	}
 
-	protected void validateElement(ParamGroupNode node) {
-		validateChildren(node);
-	}
-
 	protected void validateElement(ParamNode node) {
 		// structural, not checked by the DTD
-		if (node.getParent() instanceof ParamGroupNode) {
-			// definitions not allowed inside groups
-			if (node.getType() != NED_PARTYPE_NONE) {
-				errors.add(node, "parameters cannot be defined inside a group");
-				return;
-			}
-			// conditionals not allowed inside groups
-			if (node.getFirstChildWithTag(NED_CONDITION) != null) {
-				errors.add(node, "conditionals are not allowed inside a group");
-				return;
-			}
-		}
 
 		// parameter definitions
 		String parname = node.getName();
@@ -303,25 +285,7 @@ public class NEDValidator extends AbstractNEDValidator implements NEDElementUtil
 		validateChildren(node);
 	}
 
-	protected void validateElement(GateGroupNode node) {
-		validateChildren(node);
-	}
-
 	protected void validateElement(GateNode node) {
-		// structural, not checked by the DTD
-		if (node.getParent() instanceof GateGroupNode) {
-			// definitions not allowed inside groups
-			if (node.getType() != NED_GATETYPE_NONE) {
-				errors.add(node, "gates cannot be defined inside a group");
-				return;
-			}
-			// conditionals not allowed inside groups
-			if (node.getFirstChildWithTag(NED_CONDITION) != null) {
-				errors.add(node, "conditionals are not allowed inside a group");
-				return;
-			}
-		}
-
 		// gate definitions
 		String gatename = node.getName();
 		if (node.getType()!=NED_GATETYPE_NONE) {

@@ -134,7 +134,7 @@ public class NEDResources implements INEDComponentResolver {
 		ParamNode param = new ParamNode(parent);
 		param.setName(name);
 		param.setType(type);
-		param.setIsFunction(false);
+		param.setIsVolatile(false);
 		param.setIsDefault(false);
 		//TODO add default value of zero
 		param.setSourceLocation("internal");
