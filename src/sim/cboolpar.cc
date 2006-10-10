@@ -165,12 +165,6 @@ bool cBoolPar::isNumeric() const
     return true;
 }
 
-cBoolPar& cBoolPar::read()
-{
-    // FIXME TBD
-    return *this;
-}
-
 void cBoolPar::convertToConst()
 {
     setBoolValue(boolValue());

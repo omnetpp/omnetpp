@@ -166,12 +166,6 @@ bool cXMLPar::isNumeric() const
     return false;
 }
 
-cXMLPar& cXMLPar::read()
-{
-    // FIXME TBD
-    return *this;
-}
-
 void cXMLPar::convertToConst()
 {
     setXMLValue(xmlValue());

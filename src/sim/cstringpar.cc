@@ -163,12 +163,6 @@ bool cStringPar::isNumeric() const
     return false;
 }
 
-cStringPar& cStringPar::read()
-{
-    // FIXME TBD
-    return *this;
-}
-
 void cStringPar::convertToConst()
 {
     setStringValue(stringValue().c_str());

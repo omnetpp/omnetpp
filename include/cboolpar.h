@@ -173,11 +173,6 @@ class SIM_API cBoolPar : public cPar
     //@{
 
     /**
-     * Reads the object value from the ini file or from the user.
-     */
-    virtual cBoolPar& read();
-
-    /**
      * Replaces for non-const values, replaces the stored expression with its
      * evaluation.
      */

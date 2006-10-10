@@ -169,12 +169,6 @@ bool cLongPar::isNumeric() const
     return true;
 }
 
-cLongPar& cLongPar::read()
-{
-    // FIXME TBD
-    return *this;
-}
-
 void cLongPar::convertToConst()
 {
     setLongValue(longValue());

@@ -173,11 +173,6 @@ class SIM_API cDoublePar : public cPar
     //@{
 
     /**
-     * Reads the object value from the ini file or from the user.
-     */
-    virtual cDoublePar& read();
-
-    /**
      * Replaces for non-const values, replaces the stored expression with its
      * evaluation.
      */

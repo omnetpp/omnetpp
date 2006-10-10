@@ -280,7 +280,7 @@ class SIM_API cPar : public cObject
     /**
      * Reads the object value from the ini file or from the user.
      */
-    virtual cPar& read() = 0;
+    virtual void read();
 
     /**
      * Replaces for non-const values, replaces the stored expression with its

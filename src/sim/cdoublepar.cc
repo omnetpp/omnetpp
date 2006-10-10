@@ -169,12 +169,6 @@ bool cDoublePar::isNumeric() const
     return true;
 }
 
-cDoublePar& cDoublePar::read()
-{
-    // FIXME TBD
-    return *this;
-}
-
 void cDoublePar::convertToConst()
 {
     setDoubleValue(doubleValue());

@@ -97,7 +97,7 @@ int cComponent::findPar(const char *parname) const
     int n = params();
     for (int i=0; i<n; i++)
         if (paramv[i]->isName(parname))
-            return *paramv[i];
+            return i;
     return -1;
 }
 

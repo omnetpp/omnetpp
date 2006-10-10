@@ -144,6 +144,52 @@ int cPar::cmpbyvalue(cPar *one, cPar *other)
     return sgn(x);
 }
 
+void cPar::read()
+{
+//FIXME shouldn't most of this go out into cEnvir???
+
+    // get it from ini file
+    std::string str = ev.getParameter(simulation.runNumber(), fullPath().c_str());
+    if (!str.empty())
+    {
+        bool success = parse(str.c_str());
+        if (!success)
+            throw new cRuntimeError("Wrong value `%s' for parameter `%s'", str.c_str(), fullPath().c_str());
+        return;
+    }
+
+    // maybe we should use default value
+    bool useDefault = ev.getParameterUseDefault(simulation.runNumber(), fullPath().c_str());
+    if (useDefault)
+    {
+        applyDefaultValue();
+        return;
+    }
+
+    // otherwise, we have to ask the user
+    bool success = false;
+    while (!success)
+    {
+        std::string promptstr; //FIXME fill this in from @prompt property
+        std::string reply;
+        if (!promptstr.empty())
+            reply = ev.gets(promptstr.c_str(), toString().c_str());
+        else
+            reply = ev.gets((std::string("Enter parameter `")+fullPath()+"':").c_str(), toString().c_str());
+
+        try {
+            success = false;
+            success = parse(reply.c_str());
+            if (!success)
+                throw new cRuntimeError("Syntax error, please try again.");
+        }
+        catch (cException *e) {
+            ev.printfmsg("%s", e->message());
+            delete e;
+        }
+    }
+}
+
 //----
 #include "cboolpar.h"
 #include "clongpar.h"
