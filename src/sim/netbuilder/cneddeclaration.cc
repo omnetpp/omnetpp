@@ -16,6 +16,7 @@
 #include "cneddeclaration.h"
 #include "cexception.h"
 #include "cproperties.h"
+#include "cdynamicexpression.h"
 
 
 cNEDDeclaration::ParamDescription::ParamDescription()
@@ -48,7 +49,7 @@ cNEDDeclaration::GateDescription cNEDDeclaration::GateDescription::deepCopy() co
 {
     GateDescription tmp = *this;
     if (tmp.gatesize)
-        tmp.gatesize = (cPar *) tmp.gatesize->dup();
+        tmp.gatesize = tmp.gatesize->dup();
     if (tmp.properties)
         tmp.properties = tmp.properties->dup();
     return tmp;
@@ -116,8 +117,6 @@ void cNEDDeclaration::addGate(const GateDescription& gateDesc)
         throw new cRuntimeError(this, "addGate(): too late, object already locked");
     gateNameMap[gateDesc.name] = gates.size();
     gates.push_back(gateDesc);
-    if (gateDesc.gatesize)
-        take(gateDesc.gatesize);
 }
 
 void cNEDDeclaration::setProperties(cProperties *p)
@@ -225,7 +224,7 @@ int cNEDDeclaration::findGate(const char *name) const
     return i->second;
 }
 
-void cNEDDeclaration::setGateSize(const char *name, cPar *gateSize)
+void cNEDDeclaration::setGateSize(const char *name, cDynamicExpression *gatesize)
 {
     if (locked)
         throw new cRuntimeError(this, "setGateSize(): too late, object already locked");
@@ -234,9 +233,8 @@ void cNEDDeclaration::setGateSize(const char *name, cPar *gateSize)
         throw new cRuntimeError(this, "no such gate: %s", name);
 
     GateDescription& desc = gates[k];
-    if (desc.gatesize)
-        delete desc.gatesize;
-    desc.gatesize = gateSize;
+    delete desc.gatesize;
+    desc.gatesize = gatesize;
 }
 
 SubmodulesNode *cNEDDeclaration::getSubmodules()

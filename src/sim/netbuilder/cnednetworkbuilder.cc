@@ -59,7 +59,8 @@ void cNEDNetworkBuilder::addParameters(cComponent *component, cNEDDeclaration *d
     for (int i=0; i<n; i++)
     {
         const cNEDDeclaration::ParamDescription& desc = decl->paramDescription(i);
-        component->addPar(desc.name.c_str(), desc.value->dup());
+        cPar *value = desc.value ? desc.value->dup() : cPar::createWithType(desc.type);
+        component->addPar(desc.name.c_str(), value);
     }
 }
 
@@ -72,7 +73,7 @@ void cNEDNetworkBuilder::addGates(cModule *module, cNEDDeclaration *decl)
         const char *gateName = desc.name.c_str();
         module->addGate(gateName, desc.type, desc.isVector);
         if (desc.isVector)
-            module->setGateSize(gateName, desc.gatesize->expression()->longValue(module));
+            module->setGateSize(gateName, desc.gatesize->longValue(module));
     }
 }
 

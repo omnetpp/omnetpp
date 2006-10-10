@@ -29,6 +29,7 @@
 #include "nedcomponent.h"
 
 class cProperties;
+class cDynamicExpression;
 
 
 /**
@@ -63,7 +64,7 @@ class SIM_API cNEDDeclaration : public cNoncopyableObject, public NEDComponent
         std::string name;
         cPar::Type type;
         bool isVolatile;
-        cPar *value;  // NULL if there's no default value
+        cPar *value;  // NULL if there's no default value; FIXME make it never NULL and implicitly store type as well???
         cProperties *properties;
         std::string declaredOn;
 
@@ -79,7 +80,7 @@ class SIM_API cNEDDeclaration : public cNoncopyableObject, public NEDComponent
         std::string name;
         cGate::Type type; // input, output, inout
         bool isVector;
-        cPar *gatesize; // NULL if not vector or gatesize unspecified; FIXME this should be just a cDynamicExpression!!!!
+        cDynamicExpression *gatesize; // NULL if not vector or gatesize unspecified
         cProperties *properties;
         std::string declaredOn;
 
@@ -302,7 +303,7 @@ class SIM_API cNEDDeclaration : public cNoncopyableObject, public NEDComponent
     /**
      * Sets the gate vector size.
      */
-    virtual void setGateSize(const char *gateName, cPar *gateSize);
+    virtual void setGateSize(const char *gateName, cDynamicExpression *gatesize);
     //@}
 
     /** @name Help for the dynamic builder */

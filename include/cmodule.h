@@ -75,9 +75,6 @@ class SIM_API cModule : public cComponent //noncopyable
     cModule *firstsubmodp;  // pointer to first submodule
     cModule *lastsubmodp;   // pointer to last submodule (needed for efficient append operation)
 
-  public:
-    // The following members are only made public for use by the inspector
-    // classes. Do not use them directly from simple modules.
     std::vector<cGate*> gatev;  // stores the gates of this module
 
   protected:

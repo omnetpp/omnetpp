@@ -73,6 +73,8 @@ class SIM_API cGate : public cObject
     bool hasDisplayString() {return dispstr!=NULL;}
 
   public:
+//FIXME add properties
+
     /** @name Constructors, destructor, assignment. */
     //@{
 

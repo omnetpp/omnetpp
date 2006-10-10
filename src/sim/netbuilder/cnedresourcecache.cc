@@ -272,9 +272,7 @@ cNEDDeclaration *cNEDResourceCache::buildNEDDeclaration(NEDElement *node)
             ExpressionNode *exprNode = gateNode->getFirstExpressionChild();
             if (exprNode)
             {
-                cDynamicExpression *dynamicExpr = cExpressionBuilder().process(exprNode, false);
-                cPar *gatesize = new cLongPar();
-                gatesize->setExpression(dynamicExpr);
+                cDynamicExpression *gatesize = cExpressionBuilder().process(exprNode, false);
                 decl->setGateSize(gateName, gatesize);
             }
         }

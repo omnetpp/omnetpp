@@ -144,3 +144,23 @@ int cPar::cmpbyvalue(cPar *one, cPar *other)
     return sgn(x);
 }
 
+//----
+#include "cboolpar.h"
+#include "clongpar.h"
+#include "cdoublepar.h"
+#include "cstringpar.h"
+#include "cxmlpar.h"
+
+cPar *cPar::createWithType(Type type)
+{
+    switch (type)
+    {
+        case BOOL:    return new cBoolPar();
+        case DOUBLE:  return new cDoublePar();
+        case LONG:    return new cLongPar();
+        case STRING:  return new cStringPar();
+        case XML:     return new cXMLPar();
+        default:      throw new cRuntimeError("cPar::createWithType(): no such type: %d", type);
+    }
+}
+

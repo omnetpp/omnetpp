@@ -43,9 +43,6 @@ class SIM_API cComponent : public cDefaultList // noncopyable
     int *rngmap;       // maps local RNG numbers (may be NULL if rngmapsize==0)
     bool ev_enabled;   // if output from ev<< is enabled   FIXME utilize cObject::flags
 
-  public:
-    // The following member is only made public for use by the inspector
-    // classes. Do not use them directly from simple modules.
     std::vector<cPar*> paramv;  // stores the parameters of this component
 
   public:

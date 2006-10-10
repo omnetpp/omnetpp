@@ -78,6 +78,9 @@ class SIM_API cPar : public cObject
     // internal: sets owner component (module/channel) and index of this param in it
     cComponent *ownerComponent();
 
+    // internal: create a parameter object representing the given type
+    static cPar *createWithType(Type type);
+
   protected:
     /** @name Event hooks */
     //@{
