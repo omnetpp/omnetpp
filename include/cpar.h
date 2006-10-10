@@ -47,7 +47,7 @@ class SIM_API cPar : public cObject
     // Flags are stored in cObject "flags" field. Values should be chosen so that
     // there is no collision with bits used by cObject.
     enum {
-      FL_ISVOLATILE = 4,  // whether it was declared as "function" in NED
+      FL_ISVOLATILE = 4,  // whether it was declared as "volatile" in NED
       FL_ISSET = 8,       // whether value is set (corresponds to old "input" flag)
       FL_HASDEFAULT = 16, // whether it has a default value
       FL_ISEXPR = 32,     // whether it stores a constant or an expression
