@@ -83,6 +83,7 @@ void cDynamicExpression::setExpression(Elem e[], int n)
 
 cDynamicExpression::StkValue cDynamicExpression::evaluate(cComponent *context) const
 {
+printf("DBG cDynamicExpression::evaluate: %s\n", toString().c_str()); //XXX
     const int stksize = 20;
     StkValue stk[stksize];
 
@@ -574,7 +575,6 @@ bool cDynamicExpression::parse(const char *text)
     delete [] elems;
     elems = tmpelems;
     nelems = tmpnelems;
-printf("DBG cDynamicExpression::parse ``%s'' --> %s\n", text, toString().c_str()); //XXX
     return true;
 }
 

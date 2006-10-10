@@ -25,7 +25,7 @@
 #include "regmacros.h"
 
 
-cNEDFunction::cNEDFunction(const char *name, NEDFunction f, const char *argtypes, const char *rettype)
+cNEDFunction::cNEDFunction(const char *name, NEDFunction f, const char *argtypes, const char *rettype) : cNoncopyableObject(name,false)
 {
     this->f = f;
 

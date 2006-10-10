@@ -72,7 +72,7 @@ void cNEDNetworkBuilder::addGates(cModule *module, cNEDDeclaration *decl)
         const cNEDDeclaration::GateDescription& desc = decl->gateDescription(i);
         const char *gateName = desc.name.c_str();
         module->addGate(gateName, desc.type, desc.isVector);
-        if (desc.isVector)
+        if (desc.isVector && desc.gatesize!=NULL)
             module->setGateSize(gateName, desc.gatesize->longValue(module));
     }
 }

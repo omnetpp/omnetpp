@@ -25,6 +25,8 @@
 #endif
 
 
+//FIXME longValue() etc methods in subclasses should check isInput() flag!
+
 cPar::cPar()
 {
     props = NULL;

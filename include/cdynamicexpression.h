@@ -172,12 +172,14 @@ class SIM_API cDynamicExpression : public cExpression
         StkValue(bool b)  {*this=b;}
         StkValue(long l)  {*this=l;}
         StkValue(double d)  {*this=d;}
+        StkValue(const char *s)  {*this=s;}
         StkValue(std::string s)  {*this=s;}
         StkValue(cXMLElement *x)  {*this=x;}
         StkValue(const cPar& par) {*this=par;}
         void operator=(bool b)  {type=BOOL; bl=b;}
         void operator=(long l)  {type=DBL; dbl=l;}
         void operator=(double d)  {type=DBL; dbl=d;}
+        void operator=(const char *s)  {type=STR; str=s?s:"";}
         void operator=(std::string s)  {type=STR; str=s;}
         void operator=(cXMLElement *x)  {type=XML; xml=x;}
         void operator=(const cPar& par);

@@ -150,7 +150,7 @@ void cExpressionBuilder::doFunction(FunctionNode *node)
 //FIXME handle "const" operator as well!
     if (!strcmp(funcname,"index"))
     {
-        elems[pos++] = cNEDFunction::find("moduleIndex",0);   //FIXME rename to "index";  what if we don't find it
+        elems[pos++] = cNEDFunction::find("__moduleIndex",0);   //FIXME rename to "index";  what if we don't find it
         return;
     }
     else if (!strcmp(funcname,"sizeof"))
@@ -163,7 +163,7 @@ void cExpressionBuilder::doFunction(FunctionNode *node)
         const char *name = op1->getName();
 
         elems[pos++] = name;
-        elems[pos++] = cNEDFunction::find("sizeof",0);   //FIXME write "sizeof"; what if we don't find it
+        elems[pos++] = cNEDFunction::find("__sizeof",0);   //FIXME write "sizeof"; what if we don't find it
 
         ele// TBD this is duplicate code -- same occurs in evaluated expressions as well
         cModule *parentmodp = submodp->parentModule();
@@ -224,8 +224,7 @@ void cExpressionBuilder::doIdent(IdentNode *node)
     elems[pos++] = varname;
     //FIXME todo: what if this.param, other[4].param etc???
     //FIXME rather use global variables for these special funcs!
-    //XXX test findfunction!!!
-    cNEDFunction *f = cNEDFunction::find(inSubcomponentScope ? "__parentParameter" : "__parameter",1);   
+    cNEDFunction *f = cNEDFunction::find(inSubcomponentScope ? "__parentParameter" : "__parameter",1);
     ASSERT(f); //FIXME rather a good error msg
     elems[pos++] = f;
 
