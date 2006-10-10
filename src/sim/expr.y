@@ -16,27 +16,27 @@
 
 /* Reserved words */
 %token DOUBLETYPE INTTYPE STRINGTYPE BOOLTYPE XMLTYPE
-%token TRUE_ FALSE_ THIS_ DEFAULT CONST_ SIZEOF INDEX_ XMLDOC
+%token TRUE_ FALSE_ THIS_ DEFAULT_ CONST_ SIZEOF_ INDEX_ XMLDOC_
 
 /* Other tokens: identifiers, numeric literals, operators etc */
 %token NAME INTCONSTANT REALCONSTANT STRINGCONSTANT
-%token EQ NE GE LE
-%token AND OR XOR NOT
-%token BIN_AND BIN_OR BIN_XOR BIN_COMPL
-%token SHIFT_LEFT SHIFT_RIGHT
+%token EQ_ NE_ GE_ LE_
+%token AND_ OR_ XOR_ NOT_
+%token BINAND_ BINOR_ BINXOR_ BINCOMPL_
+%token SHIFTLEFT_ SHIFTRIGHT_
 
 %token INVALID_CHAR   /* just to generate parse error */
 
 /* Operator precedences (low to high) and associativity */
 %left '?' ':'
-%left AND OR XOR
-%left EQ NE '>' GE '<' LE
-%left BIN_AND BIN_OR BIN_XOR
-%left SHIFT_LEFT SHIFT_RIGHT
+%left AND_ OR_ XOR_
+%left EQ_ NE_ '>' GE_ '<' LE_
+%left BINAND_ BINOR_ BINXOR_
+%left SHIFTLEFT_ SHIFTRIGHT_
 %left '+' '-'
 %left '*' '/' '%'
 %right '^'
-%left UMIN NOT BIN_COMPL
+%left UMIN_ NOT_ BINCOMPL_
 
 %start expression
 
@@ -113,14 +113,14 @@ static void addFunction(const char *funcname, int numargs)
 expression
         : expr
         | xmldocvalue
-        | DEFAULT '(' expr ')'
+        | DEFAULT_ '(' expr ')'
                 { yyerror("default() is not supported here"); }
         ;
 
 xmldocvalue
-        : XMLDOC '(' stringliteral ',' stringliteral ')'
+        : XMLDOC_ '(' stringliteral ',' stringliteral ')'
                 { *e++ = 1; /*FIXME TBD*/ }
-        | XMLDOC '(' stringliteral ')'
+        | XMLDOC_ '(' stringliteral ')'
                 { *e++ = 1; /*FIXME TBD*/ }
         ;
 
@@ -144,46 +144,46 @@ expr
                 { *e++ = '^'; }
 
         | '-' expr
-                %prec UMIN
+                %prec UMIN_
                 { *e++ = 'M'; }
 
-        | expr EQ expr
+        | expr EQ_ expr
                 { *e++ = '='; }
-        | expr NE expr
+        | expr NE_ expr
                 { *e++ = '!'; }
         | expr '>' expr
                 { *e++ = '>'; }
-        | expr GE expr
+        | expr GE_ expr
                 { *e++ = '}'; }
         | expr '<' expr
                 { *e++ = '<'; }
-        | expr LE expr
+        | expr LE_ expr
                 { *e++ = '{'; }
 
-        | expr AND expr
+        | expr AND_ expr
                 { *e++ = 'A'; }
-        | expr OR expr
+        | expr OR_ expr
                 { *e++ = 'O'; }
-        | expr XOR expr
+        | expr XOR_ expr
                 { *e++ = 'X'; }
 
-        | NOT expr
-                %prec UMIN
+        | NOT_ expr
+                %prec UMIN_
                 { *e++ = 'N'; }
 
-        | expr BIN_AND expr
+        | expr BINAND_ expr
                 { *e++ = '&'; }
-        | expr BIN_OR expr
+        | expr BINOR_ expr
                 { *e++ = '|'; }
-        | expr BIN_XOR expr
+        | expr BINXOR_ expr
                 { *e++ = '#'; }
 
-        | BIN_COMPL expr
-                %prec UMIN
+        | BINCOMPL_ expr
+                %prec UMIN_
                 { *e++ = '~'; }
-        | expr SHIFT_LEFT expr
+        | expr SHIFTLEFT_ expr
                 { *e++ = 'L'; }
-        | expr SHIFT_RIGHT expr
+        | expr SHIFTRIGHT_ expr
                 { *e++ = 'R'; }
         | expr '?' expr ':' expr
                 { *e++ = '?'; }
@@ -222,7 +222,7 @@ special_expr
                 { *e++ = 0; /*FIXME simulation.contextModule()->index()*/ }
         | INDEX_ '(' ')'
                 { *e++ = 0; /*FIXME simulation.contextModule()->index()*/ }
-        | SIZEOF '(' identifier ')'
+        | SIZEOF_ '(' identifier ')'
                 { *e++ = 0; /*FIXME simulation.contextModule()->size()*/ }
         ;
 

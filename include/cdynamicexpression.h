@@ -33,38 +33,54 @@ class SIM_API cDynamicExpression : public cExpression
 {
   public:
     /**
-     * One component in a (reversed Polish) expression
+     * Operations supported by this class:
+     *  - add, subtract, multiply, divide ("+" is also string concatenation)
+     *  - modulo, power of, negation (-1)
+     *  - equal, not equal, greater, greater or equal, less, less or equal
+     *  - inline if (the C/C++ ?: operator)
+     *  - logical and, or, xor, not
+     *  - bitwise and, or, xor, not (1's complement)
+     *  - left shift, right shift
+     */
+    enum OpType {
+        ADD, SUB, MUL, DIV, MOD, POW, NEG,
+        EQ, NE, GT, GE, LT, LE, IIF, AND, OR, XOR, NOT,
+        BIN_AND, BIN_OR, BIN_XOR, BIN_NOT, LSHIFT, RSHIFT
+    };
+
+    /**
+     * One element in a (reverse Polish) expression
      */
     class Elem
     {
       friend class cDynamicExpression;
       private:
-        // Type chars:   FIXME use enum
-        //   B  bool
-        //   D  double (there's no long -- we calculate everything in double)
-        //   S  string
-        //   X  pointer to an "external" cXMLElement
-        //   P  pointer to an "external" parameter object
-        //   F  cMathFunction: function with 0/1/2/3/4 double arguments
-        //   A  cNEDFunction: function taking/returning StkValue (NEDFunction)
-        //   @  math operator (+-*%/^=!<{>}?); see operator=(char)
+        // Types:
+        //  - bool
+        //  - double (there's no long -- we calculate everything in double)
+        //  - string
+        //  - pointer to an "external" cXMLElement
+        //  - pointer to an "external" cPar object
+        //  - cMathFunction: function with 0/1/2/3/4 double arguments
+        //  - cNEDFunction: function taking/returning StkValue (NEDFunction)
+        //  - math operator (+-*/%^...)
         //
-        char type;    // B,D,S... (see above)
+        enum {UNDEF, BOOL, DBL, STR, XML, CPAR, MATHFUNC, NEDFUNC, OP} type;
         union {
-            bool b;           // B
-            double d;         // D
-            const char *s;    // S
-            cXMLElement *x;   // X
-            cPar *p;          // P
-            cMathFunction *f; // F
-            cNEDFunction *af; // A
-            char op;          // @, op = +-*/%^=!<{>}?...
+            bool b;
+            double d;
+            const char *s;
+            cXMLElement *x;
+            cPar *p;
+            cMathFunction *f;
+            cNEDFunction *af;
+            OpType op;
         };
 
       public:
-        Elem()  {type=0;}
-        Elem(const Elem& other)  {type='0'; operator=(other);}
-        ~Elem()  {if (type=='S') delete [] s;}
+        Elem()  {type=UNDEF;}
+        Elem(const Elem& other)  {type=UNDEF; operator=(other);}
+        ~Elem()  {if (type==STR) delete [] s;}
 
         /**
          * Assignment operator -- we need to copy Elem at a hundred places
@@ -75,43 +91,43 @@ class SIM_API cDynamicExpression : public cExpression
          * Effect during evaluation of the expression: pushes the given boolean
          * constant to the evaluation stack.
          */
-        void operator=(bool _b)  {type='B'; b=_b;}
+        void operator=(bool _b)  {type=BOOL; b=_b;}
 
         /**
          * Effect during evaluation of the expression: pushes the given number
          * (which is converted to double) to the evaluation stack.
          */
-        void operator=(int _i)  {type='D'; d=_i;}
+        void operator=(int _i)  {type=DBL; d=_i;}
 
         /**
          * Effect during evaluation of the expression: pushes the given number
          * (which is converted to double) to the evaluation stack.
          */
-        void operator=(short _i)  {type='D'; d=_i;}
+        void operator=(short _i)  {type=DBL; d=_i;}
 
         /**
          * Effect during evaluation of the expression: pushes the given number
          * (which is converted to double) to the evaluation stack.
          */
-        void operator=(long _l)  {type='D'; d=_l;}
+        void operator=(long _l)  {type=DBL; d=_l;}
 
         /**
          * Effect during evaluation of the expression: pushes the given number
          * (which is converted to double) to the evaluation stack.
          */
-        void operator=(double _d)  {type='D'; d=_d;}
+        void operator=(double _d)  {type=DBL; d=_d;}
 
         /**
          * Effect during evaluation of the expression: pushes the given string
          * to the evaluation stack.
          */
-        void operator=(const char *_s)  {type='S'; s=opp_strdup(_s);}
+        void operator=(const char *_s)  {type=STR; s=opp_strdup(_s);}
 
         /**
          * Effect during evaluation of the expression: pushes the given
          * cXMLElement pointer to the evaluation stack.
          */
-        void operator=(cXMLElement *_x)  {type='X'; x=_x;}
+        void operator=(cXMLElement *_x)  {type=XML; x=_x;}
 
         /**
          * Effect during evaluation of the expression: takes the value of
@@ -120,38 +136,26 @@ class SIM_API cDynamicExpression : public cExpression
          * This is how NED-language parameter references in expressions
          * are handled.
          */
-        void operator=(cPar *_p)  {type='P'; ASSERT(_p); p=_p;}
+        void operator=(cPar *_p)  {type=CPAR; ASSERT(_p); p=_p;}
 
         /**
          * Effect during evaluation of the expression: Call a function
          * taking 0..4 doubles and returning a double.
          */
-        void operator=(cMathFunction *_f)  {type='F'; ASSERT(_f); f=_f;}
+        void operator=(cMathFunction *_f)  {type=MATHFUNC; ASSERT(_f); f=_f;}
 
         /**
          * Effect during evaluation of the expression: call a function
          * that function takes an array of StkValues and returns a StkValue.
          */
-        void operator=(cNEDFunction *_f)  {type='A'; ASSERT(_f); af=_f;}
+        void operator=(cNEDFunction *_f)  {type=NEDFUNC; ASSERT(_f); af=_f;}
 
         /**
          * Operation. During evaluation of the expression, two items (or three,
          * with '?') are popped out of the stack, the given operator
          * is applied to them and the result is pushed back on the stack.
-         *
-         * Supported operations:
-         *     - + - * /  add, subtract, multiply, divide ("+" is also string concatenation)
-         *     - \% ^     modulo, power of
-         *     - = !      equal, not equal
-         *     - > }      greater, greater or equal
-         *     - < {      less, less or equal
-         *     - ?        inline if (the C/C++ ?: operator)
-         *     - A O X N  logical and, or, xor, not
-         *     - & | # ~  bitwise and, or, xor, not (1's complement)
-         *     - M        negation (-1)
-         *     - L R      left shift, right shift
          */
-        void operator=(char _op)  {type='@'; op=_op;}
+        void operator=(OpType _op)  {type=OP; op=_op;}
     };
 
     /**
@@ -162,7 +166,7 @@ class SIM_API cDynamicExpression : public cExpression
      */
     struct StkValue
     {
-        enum {UNDEF=0, BOOL='B', DBL='D', STR='S', XML='X'} type;
+        enum {UNDEF, BOOL, DBL, STR, XML} type;
         bool bl;
         double dbl;
         std::string str;

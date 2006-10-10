@@ -91,34 +91,39 @@ printf("DBG cDynamicExpression::evaluate: %s\n", toString().c_str()); //XXX
     for (int i = 0; i < nelems; i++)
     {
        Elem& e = elems[i];
-       switch (toupper(e.type))
+       switch (e.type)
        {
-           case 'B':
+           case Elem::BOOL:
              if (tos>=stksize-1)
                  throw new cRuntimeError(this,eBADEXP);
              stk[++tos] = e.b;
              break;
-           case 'D':
+
+           case Elem::DBL:
              if (tos>=stksize-1)
                  throw new cRuntimeError(this,eBADEXP);
              stk[++tos] = e.d;
              break;
-           case 'S':
+
+           case Elem::STR:
              if (tos>=stksize-1)
                  throw new cRuntimeError(this,eBADEXP);
              stk[++tos] = e.s;
              break;
-           case 'X':
+
+           case Elem::XML:
              if (tos>=stksize-1)
                  throw new cRuntimeError(this,eBADEXP);
              stk[++tos] = e.x;
              break;
-           case 'P':
+
+           case Elem::CPAR:
              if (tos>=stksize-1)
                  throw new cRuntimeError(this,eBADEXP);
              stk[++tos] = *(e.p); break;
              break;
-           case 'A':
+
+           case Elem::NEDFUNC:
              {
              int numargs = e.af->numArgs();
              int argpos = tos-numargs+1; // stk[] index of 1st arg to pass
@@ -132,7 +137,8 @@ printf("DBG cDynamicExpression::evaluate: %s\n", toString().c_str()); //XXX
              tos = argpos;
              break;
              }
-           case 'F':
+
+           case Elem::MATHFUNC:
              switch (e.f->numArgs())
              {
                case 0:
@@ -173,32 +179,34 @@ printf("DBG cDynamicExpression::evaluate: %s\n", toString().c_str()); //XXX
                    throw new cRuntimeError(this,eBADEXP);
              }
              break;
-           case '@':
-             if (e.op=='N' || e.op=='~' || e.op=='M')
+
+           case Elem::OP:
+             if (e.op==NEG || e.op==NOT || e.op==BIN_NOT)
              {
                  // unary
                  if (tos<0)
                      throw new cRuntimeError(this,eBADEXP);
+                 //FIXME better error messages! "cannot convert from x to y" etc!!
                  switch (e.op)
                  {
-                     case '~':         //FIXME better error messages! "cannot convert from x to y" etc!!
-                         if (stk[tos].type!=StkValue::DBL)
-                             throw new cRuntimeError(this,eBADEXP);
-                         stk[tos] = (double)~ulong(stk[tos].dbl);
-                         break;
-                     case 'M':
+                     case NEG:
                          if (stk[tos].type!=StkValue::DBL)
                              throw new cRuntimeError(this,eBADEXP);
                          stk[tos] = -stk[tos].dbl;
                          break;
-                     case 'N':
+                     case NOT:
                          if (stk[tos].type!=StkValue::BOOL)
                              throw new cRuntimeError(this,eBADEXP);
                          stk[tos] = !stk[tos].bl;
                          break;
+                     case BIN_NOT:
+                         if (stk[tos].type!=StkValue::DBL)
+                             throw new cRuntimeError(this,eBADEXP);
+                         stk[tos] = (double)~ulong(stk[tos].dbl);
+                         break;
                  }
              }
-             else if (e.op=='?')
+             else if (e.op==IIF)
              {
                  // tertiary
                  if (tos<2)
@@ -216,7 +224,7 @@ printf("DBG cDynamicExpression::evaluate: %s\n", toString().c_str()); //XXX
                      throw new cRuntimeError(this,eBADEXP);
                  switch(e.op)
                  {
-                   case '+':
+                   case ADD:
                        // double addition or string concatenation
                        if (stk[tos-1].type==StkValue::DBL && stk[tos].type==StkValue::DBL)
                            stk[tos-1] = stk[tos-1].dbl + stk[tos].dbl;
@@ -226,79 +234,79 @@ printf("DBG cDynamicExpression::evaluate: %s\n", toString().c_str()); //XXX
                            throw new cRuntimeError(this,eBADEXP);
                        tos--;
                        break;
-                   case '-':
+                   case SUB:
                        if (stk[tos].type!=StkValue::DBL || stk[tos-1].type!=StkValue::DBL)
                            throw new cRuntimeError(this,eBADEXP);
                        stk[tos-1] = stk[tos-1].dbl - stk[tos].dbl;
                        tos--;
                        break;
-                   case '*':
+                   case MUL:
                        if (stk[tos].type!=StkValue::DBL || stk[tos-1].type!=StkValue::DBL)
                            throw new cRuntimeError(this,eBADEXP);
                        stk[tos-1] = stk[tos-1].dbl * stk[tos].dbl;
                        tos--;
                        break;
-                   case '/':
+                   case DIV:
                        if (stk[tos].type!=StkValue::DBL || stk[tos-1].type!=StkValue::DBL)
                            throw new cRuntimeError(this,eBADEXP);
                        stk[tos-1] = stk[tos-1].dbl / stk[tos].dbl;
                        tos--;
                        break;
-                   case '%':
+                   case MOD:
                        if (stk[tos].type!=StkValue::DBL || stk[tos-1].type!=StkValue::DBL)
                            throw new cRuntimeError(this,eBADEXP);
                        stk[tos-1] = (double)(ulong(stk[tos-1].dbl) % ulong(stk[tos].dbl));
                        tos--;
                        break;
-                   case '^':
+                   case POW:
                        if (stk[tos].type!=StkValue::DBL || stk[tos-1].type!=StkValue::DBL)
                            throw new cRuntimeError(this,eBADEXP);
                        stk[tos-1] = pow(stk[tos-1].dbl, stk[tos].dbl);
                        tos--;
                        break;
-                   case 'A':
+                   case AND:
                        if (stk[tos].type!=StkValue::BOOL || stk[tos-1].type!=StkValue::BOOL)
                            throw new cRuntimeError(this,eBADEXP);
                        stk[tos-1] = stk[tos-1].bl && stk[tos].bl;
                        tos--;
                        break;
-                   case 'O':
+                   case OR:
                        if (stk[tos].type!=StkValue::BOOL || stk[tos-1].type!=StkValue::BOOL)
                            throw new cRuntimeError(this,eBADEXP);
                        stk[tos-1] = stk[tos-1].bl || stk[tos].bl;
                        tos--;
                        break;
-                   case 'X':
+                   case XOR:
                        if (stk[tos].type!=StkValue::BOOL || stk[tos-1].type!=StkValue::BOOL)
                            throw new cRuntimeError(this,eBADEXP);
                        stk[tos-1] = stk[tos-1].bl != stk[tos].bl;
                        tos--;
                        break;
-                   case '&':
+                   case BIN_AND:
                        if (stk[tos].type!=StkValue::DBL || stk[tos-1].type!=StkValue::DBL)
                            throw new cRuntimeError(this,eBADEXP);
                        stk[tos-1] = (double)(ulong(stk[tos-1].dbl) & ulong(stk[tos].dbl));
                        tos--;
                        break;
-                   case '|':
+                   case BIN_OR:
                        if (stk[tos].type!=StkValue::DBL || stk[tos-1].type!=StkValue::DBL)
                            throw new cRuntimeError(this,eBADEXP);
                        stk[tos-1] = (double)(ulong(stk[tos-1].dbl) | ulong(stk[tos].dbl));
                        tos--;
                        break;
-                   case '#':
+                   case BIN_XOR:
                        if (stk[tos].type!=StkValue::DBL || stk[tos-1].type!=StkValue::DBL)
                            throw new cRuntimeError(this,eBADEXP);
                        stk[tos-1] = (double)(ulong(stk[tos-1].dbl) ^ ulong(stk[tos].dbl));
                        tos--;
                        break;
-                   case 'L':
+                   case LSHIFT:
                        if (stk[tos].type!=StkValue::DBL || stk[tos-1].type!=StkValue::DBL)
                            throw new cRuntimeError(this,eBADEXP);
                        stk[tos-1] = (double)(ulong(stk[tos-1].dbl) << ulong(stk[tos].dbl));
                        tos--;
                        break;
-                   case 'R':
+                   case RSHIFT:
                        if (stk[tos].type!=StkValue::DBL || stk[tos-1].type!=StkValue::DBL)
                            throw new cRuntimeError(this,eBADEXP);
                        stk[tos-1] = (double)(ulong(stk[tos-1].dbl) >> ulong(stk[tos].dbl));
@@ -314,22 +322,22 @@ printf("DBG cDynamicExpression::evaluate: %s\n", toString().c_str()); //XXX
                                  else \
                                      throw new cRuntimeError(this,eBADEXP); \
                                  tos--;
-                   case '=':
+                   case EQ:
                        COMPARISON(==);
                        break;
-                   case '!':
+                   case NE:
                        COMPARISON(!=);
                        break;
-                   case '<':
+                   case LT:
                        COMPARISON(<);
                        break;
-                   case '{':
+                   case LE:
                        COMPARISON(<=);
                        break;
-                   case '>':
+                   case GT:
                        COMPARISON(>);
                        break;
-                   case '}':
+                   case GE:
                        COMPARISON(>=);
                        break;
 #undef COMPARISON
@@ -411,13 +419,13 @@ std::string cDynamicExpression::toString() const
            Elem& e = elems[i];
            switch (e.type)
            {
-               case 'B':
+               case Elem::BOOL:
                  if (tos>=stksize-1)
                      throw new cRuntimeError(this,eBADEXP);
                  strstk[++tos] = (e.b ? "true" : "false");
                  pristk[tos] = 0;
                  break;
-               case 'D':
+               case Elem::DBL:
                  {
                  if (tos>=stksize-1)
                      throw new cRuntimeError(this,eBADEXP);
@@ -427,29 +435,29 @@ std::string cDynamicExpression::toString() const
                  pristk[tos] = 0;
                  }
                  break;
-               case 'S':
+               case Elem::STR:
                  if (tos>=stksize-1)
                      throw new cRuntimeError(this,eBADEXP);
                  strstk[++tos] = std::string("\"") + e.s+"\"";
                  pristk[tos] = 0;
                  break;
-               case 'X':
+               case Elem::XML:
                  if (tos>=stksize-1)
                      throw new cRuntimeError(this,eBADEXP);
                  strstk[++tos] = std::string("<") + (e.x ? e.x->getTagName() : "null") +">"; //FIXME plus location info?
                  pristk[tos] = 0;
                  break;
-               case 'P':
+               case Elem::CPAR:
                  if (!e.p || tos>=stksize-1)
                      throw new cRuntimeError(this,eBADEXP);
                  strstk[++tos] = e.p->fullPath();
                  pristk[tos] = 0;
                  break;
-               case 'F':
-               case 'A':
+               case Elem::MATHFUNC:
+               case Elem::NEDFUNC:
                  {
-                 int numargs = (e.type=='F') ? e.f->numArgs() : e.af->numArgs();
-                 std::string name = (e.type=='F') ? e.f->name() : e.af->name();
+                 int numargs = (e.type==Elem::MATHFUNC) ? e.f->numArgs() : e.af->numArgs();
+                 std::string name = (e.type==Elem::MATHFUNC) ? e.f->name() : e.af->name();
                  int argpos = tos-numargs+1; // strstk[] index of 1st arg to pass
                  if (argpos<0)
                      throw new cRuntimeError(this,eBADEXP);
@@ -462,23 +470,23 @@ std::string cDynamicExpression::toString() const
                  pristk[tos] = 0;
                  break;
                  }
-               case '@':
-                 if (e.op=='N' || e.op=='~' || e.op=='M')
+               case Elem::OP:
+                 if (e.op==NEG || e.op==NOT || e.op==BIN_NOT)
                  {
                      if (tos<0)
                          throw new cRuntimeError(this,eBADEXP);
                      const char *op;
                      switch (e.op)
                      {
-                         case 'N': op=" !"; break;
-                         case '~': op=" ~"; break;
-                         case 'M': op=" -"; break;
+                         case NEG: op=" -"; break;
+                         case NOT: op=" !"; break;
+                         case BIN_NOT: op=" ~"; break;
                          default:  op=" ???";
                      }
                      strstk[tos] = std::string(op) + strstk[tos]; // pri=0: never needs parens
                      pristk[tos] = 0;
                  }
-                 if (e.op=='?')  // conditional (tertiary)
+                 if (e.op==IIF)  // conditional (tertiary)
                  {
                      if (tos<2)
                          throw new cRuntimeError(this,eBADEXP);
@@ -497,35 +505,35 @@ std::string cDynamicExpression::toString() const
                      {
                          //
                          // Precedences, based on expr.y:
-                         //   prec=7: AND OR XOR
-                         //   prec=6: EQ NE '>' GE '<' LE
-                         //   prec=5: BIN_AND BIN_OR BIN_XOR
-                         //   prec=4: SHIFT_LEFT SHIFT_RIGHT
-                         //   prec=3: '+' '-'
-                         //   prec=2: '*' '/' '%'
-                         //   prec=1: '^'
-                         //   prec=0: UMIN NOT BIN_COMPL
+                         //   prec=7: && || ##
+                         //   prec=6: == != > >= < <=
+                         //   prec=5: & | #
+                         //   prec=4: << >>
+                         //   prec=3: + -
+                         //   prec=2: * / %
+                         //   prec=1: ^
+                         //   prec=0: UMIN ! ~
                          //
-                         case '+': op=" + "; pri=3; break;
-                         case '-': op=" - "; pri=3; break;
-                         case '*': op=" * "; pri=2; break;
-                         case '/': op=" / "; pri=2; break;
-                         case '%': op=" % "; pri=2; break;
-                         case '^': op=" ^ "; pri=1; break;
-                         case '=': op=" = "; pri=6; break;
-                         case '<': op=" < "; pri=6; break;
-                         case '>': op=" > "; pri=6; break;
-                         case '!': op=" != "; pri=6; break;
-                         case '{': op=" <= "; pri=6; break;
-                         case '}': op=" >= "; pri=6; break;
-                         case 'A': op=" && "; pri=7; break;
-                         case 'O': op=" || "; pri=7; break;
-                         case 'X': op=" ## "; pri=7; break;
-                         case '&': op=" & "; pri=5; break;
-                         case '|': op=" | "; pri=5; break;
-                         case '#': op=" # "; pri=5; break;
-                         case 'L': op=" << "; pri=4; break;
-                         case 'R': op=" >> "; pri=4; break;
+                         case ADD: op=" + "; pri=3; break;
+                         case SUB: op=" - "; pri=3; break;
+                         case MUL: op=" * "; pri=2; break;
+                         case DIV: op=" / "; pri=2; break;
+                         case MOD: op=" % "; pri=2; break;
+                         case POW: op=" ^ "; pri=1; break;
+                         case EQ:  op=" = "; pri=6; break;
+                         case LT:  op=" < "; pri=6; break;
+                         case GT:  op=" > "; pri=6; break;
+                         case NE:  op=" != "; pri=6; break;
+                         case LE:  op=" <= "; pri=6; break;
+                         case GE:  op=" >= "; pri=6; break;
+                         case AND: op=" && "; pri=7; break;
+                         case OR:  op=" || "; pri=7; break;
+                         case XOR: op=" ## "; pri=7; break;
+                         case BIN_AND: op=" & "; pri=5; break;
+                         case BIN_OR:  op=" | "; pri=5; break;
+                         case BIN_XOR: op=" # "; pri=5; break;
+                         case LSHIFT:  op=" << "; pri=4; break;
+                         case RSHIFT:  op=" >> "; pri=4; break;
                          default:  op=" ??? "; pri=10; break;
                      }
 

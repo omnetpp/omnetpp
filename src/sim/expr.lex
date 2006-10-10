@@ -80,11 +80,11 @@ static char textbuf[TEXTBUF_LEN];
 "true"                   { count(); return TRUE_; }
 "false"                  { count(); return FALSE_; }
 "this"                   { count(); return THIS_; }
-"default"                { count(); return DEFAULT; }
+"default"                { count(); return DEFAULT_; }
 "const"                  { count(); return CONST_; }
-"sizeof"                 { count(); return SIZEOF; }
+"sizeof"                 { count(); return SIZEOF_; }
 "index"                  { count(); return INDEX_; }
-"xmldoc"                 { count(); return XMLDOC; }
+"xmldoc"                 { count(); return XMLDOC_; }
 
 {L}({L}|{D})*           { count(); yylval = opp_strdup(yytext); return NAME; }
 {D}+                    { count(); yylval = opp_strdup(yytext); return INTCONSTANT; }
@@ -104,17 +104,17 @@ static char textbuf[TEXTBUF_LEN];
 "."                     { count(); return ('.'); }
 "?"                     { count(); return ('?'); }
 
-"||"                    { count(); return OR; }
-"&&"                    { count(); return AND; }
-"##"                    { count(); return XOR; }
-"!"                     { count(); return NOT; }
+"||"                    { count(); return OR_; }
+"&&"                    { count(); return AND_; }
+"##"                    { count(); return XOR_; }
+"!"                     { count(); return NOT_; }
 
-"|"                     { count(); return BIN_OR; }
-"&"                     { count(); return BIN_AND; }
-"#"                     { count(); return BIN_XOR; }
-"~"                     { count(); return BIN_COMPL; }
-"<<"                    { count(); return SHIFT_LEFT; }
-">>"                    { count(); return SHIFT_RIGHT; }
+"|"                     { count(); return BINOR_; }
+"&"                     { count(); return BINAND_; }
+"#"                     { count(); return BINXOR_; }
+"~"                     { count(); return BINCOMPL_; }
+"<<"                    { count(); return SHIFTLEFT_; }
+">>"                    { count(); return SHIFTRIGHT_; }
 
 "^"                     { count(); return '^'; }
 "+"                     { count(); return '+'; }
@@ -125,10 +125,10 @@ static char textbuf[TEXTBUF_LEN];
 "<"                     { count(); return '<'; }
 ">"                     { count(); return '>'; }
 
-"=="                    { count(); return EQ; }
-"!="                    { count(); return NE; }
-"<="                    { count(); return LE; }
-">="                    { count(); return GE; }
+"=="                    { count(); return EQ_; }
+"!="                    { count(); return NE_; }
+"<="                    { count(); return LE_; }
+">="                    { count(); return GE_; }
 
 {S}                     { count(); }
 .                       { count(); return INVALID_CHAR; }

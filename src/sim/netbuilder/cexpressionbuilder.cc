@@ -70,11 +70,11 @@ void cExpressionBuilder::doOperator(OperatorNode *node)
     {
         // unary:
         if (!strcmp(name,"-"))
-            elems[pos++] = 'M';
+            elems[pos++] = cDynamicExpression::NEG;
         else if (!strcmp(name,"!"))
-            elems[pos++] = 'N';
+            elems[pos++] = cDynamicExpression::NOT;
         else if (!strcmp(name,"~"))
-            elems[pos++] = '~';
+            elems[pos++] = cDynamicExpression::BIN_NOT;
         else
             throw new cRuntimeError("dynamic module builder: unexpected operator %s", name);
     }
@@ -84,49 +84,49 @@ void cExpressionBuilder::doOperator(OperatorNode *node)
 
         // arithmetic
         if (!strcmp(name,"+"))
-            elems[pos++] = '+';
+            elems[pos++] = cDynamicExpression::ADD;
         else if (!strcmp(name,"-"))
-            elems[pos++] = '-';
+            elems[pos++] = cDynamicExpression::SUB;
         else if (!strcmp(name,"*"))
-            elems[pos++] = '*';
+            elems[pos++] = cDynamicExpression::MUL;
         else if (!strcmp(name,"/"))
-            elems[pos++] = '/';
+            elems[pos++] = cDynamicExpression::DIV;
         else if (!strcmp(name,"%"))
-            elems[pos++] = '%';
+            elems[pos++] = cDynamicExpression::MOD;
         else if (!strcmp(name,"^"))
-            elems[pos++] = '^';
+            elems[pos++] = cDynamicExpression::POW;
 
         // logical
         else if (!strcmp(name,"=="))
-            elems[pos++] = '=';
+            elems[pos++] = cDynamicExpression::EQ;
         else if (!strcmp(name,"!="))
-            elems[pos++] = '!';
+            elems[pos++] = cDynamicExpression::NE;
         else if (!strcmp(name,"<"))
-            elems[pos++] = '<';
+            elems[pos++] = cDynamicExpression::LT;
         else if (!strcmp(name,"<="))
-            elems[pos++] = '{';
+            elems[pos++] = cDynamicExpression::LE;
         else if (!strcmp(name,">"))
-            elems[pos++] = '>';
+            elems[pos++] = cDynamicExpression::GT;
         else if (!strcmp(name,">="))
-            elems[pos++] = '}';
+            elems[pos++] = cDynamicExpression::GE;
         else if (!strcmp(name,"&&"))
-            elems[pos++] = 'A';
+            elems[pos++] = cDynamicExpression::AND;
         else if (!strcmp(name,"||"))
-            elems[pos++] = 'O';
+            elems[pos++] = cDynamicExpression::OR;
         else if (!strcmp(name,"##"))
-            elems[pos++] = 'X';
+            elems[pos++] = cDynamicExpression::XOR;
 
         // bitwise
         else if (!strcmp(name,"&"))
-            elems[pos++] = '&';
+            elems[pos++] = cDynamicExpression::BIN_AND;
         else if (!strcmp(name,"|"))
-            elems[pos++] = '|';
+            elems[pos++] = cDynamicExpression::BIN_OR;
         else if (!strcmp(name,"#"))
-            elems[pos++] = '#';
+            elems[pos++] = cDynamicExpression::BIN_XOR;
         else if (!strcmp(name,"<<"))
-            elems[pos++] = 'L';
+            elems[pos++] = cDynamicExpression::LSHIFT;
         else if (!strcmp(name,">>"))
-            elems[pos++] = 'R';
+            elems[pos++] = cDynamicExpression::RSHIFT;
         else
             throw new cRuntimeError("dynamic module builder: unexpected operator %s", name);
     }
@@ -134,7 +134,7 @@ void cExpressionBuilder::doOperator(OperatorNode *node)
     {
         // tertiary can only be "?:"
         if (!strcmp(name,"?:"))
-            elems[pos++] = '?';
+            elems[pos++] = cDynamicExpression::IIF;
         else
             throw new cRuntimeError("dynamic module builder: unexpected operator %s", name);
     }
