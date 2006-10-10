@@ -851,7 +851,7 @@ void TCompoundModInspector::update()
 //XXX   fillInspectorListbox(".nb.params", &mod->paramv, false);
 
    deleteInspectorListbox( ".nb.gates" );
-   fillInspectorListbox(".nb.gates", &mod->gatev, false);
+//XXX   fillInspectorListbox(".nb.gates", &mod->gatev, false);
 }
 
 void TCompoundModInspector::writeBack()
@@ -933,7 +933,7 @@ void TSimpleModInspector::update()
 //XXX   fillInspectorListbox(".nb.params", &mod->paramv, false);
 
    deleteInspectorListbox( ".nb.gates" );
-   fillInspectorListbox(".nb.gates", &mod->gatev, false);
+//XXX   fillInspectorListbox(".nb.gates", &mod->gatev, false);
 
    deleteInspectorListbox( ".nb.vars" );
    fillInspectorListbox(".nb.vars", mod, false);

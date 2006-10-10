@@ -441,6 +441,16 @@ class SIM_API cNoncopyableObject : public cObject, noncopyable
      * Duplication not supported, this method is redefined to throw an error.
      */
     virtual cNoncopyableObject *dup() const;
+
+    /**
+     * Redefined to throw an error.
+     */
+    virtual void netPack(cCommBuffer *buffer);
+
+    /**
+     * Redefined to throw an error.
+     */
+    virtual void netUnpack(cCommBuffer *buffer);
 };
 
 

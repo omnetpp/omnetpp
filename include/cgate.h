@@ -60,7 +60,6 @@ class SIM_API cGate : public cObject
 
     cChannel *channelp; // channel object (if exists)  FIXME move display string here?
 
-    cModule *omodp;     // owner module  //FIXME can we use ownerp directly? if cArray get thrown out from cModule
     int gateid;         // gate number within the module
 
     cGate *fromgatep;   // previous and next gate
@@ -131,17 +130,6 @@ class SIM_API cGate : public cObject
      * Sets object's name. Redefined to update the stored fullName string.
      */
     virtual void setName(const char *s);
-
-    /**
-     * Redefined. (Reason: a C++ rule that overloaded virtual methods must be redefined together.)
-     */
-    virtual std::string fullPath() const;
-
-    /**
-     * The original fullPath() method is redefined to hide the
-     * internal array (a cArray) used to store the gate objects.
-     */
-    virtual const char *fullPath(char *buffer, int bufsize) const;
 
     /**
      * Writes textual information about this object to the stream.
@@ -231,7 +219,7 @@ class SIM_API cGate : public cObject
     /**
      * Returns a pointer to the owner module of the gate.
      */
-    cModule *ownerModule() const {return omodp;}
+    cModule *ownerModule() const {return (cModule *)owner();}
 
     /**
      * Returns gate ID, the position of the gate in the array of all gates of

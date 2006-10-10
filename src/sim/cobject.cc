@@ -415,7 +415,19 @@ int cObject::cmpbyname(cObject *one, cObject *other)
 cNoncopyableObject *cNoncopyableObject::dup() const
 {
     throw new cRuntimeError(this, "dup(): %s subclasses from cNoncopyableObject, "
-                                  "which does not support dup()", className());
+                                  "and does not support dup()", className());
+}
+
+void cNoncopyableObject::netPack(cCommBuffer *buffer)
+{
+    throw new cRuntimeError(this, "netPack(): %s subclasses from cNoncopyableObject, and "
+                                  "does not support pack/unpack operations", className());
+}
+
+void cNoncopyableObject::netUnpack(cCommBuffer *buffer)
+{
+    throw new cRuntimeError(this, "netUnpack(): %s subclasses from cNoncopyableObject, and "
+                                  "does not support pack/unpack operations", className());
 }
 
 //-----

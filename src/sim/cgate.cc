@@ -61,7 +61,7 @@ cGate::cGate(const char *s, char tp) : cObject(s)
     serno = 0;
     vectsize = -1;  // not a vector
 
-    omodp = NULL; gateid = -1; // to be set later
+    gateid = -1; // to be set later
     channelp = NULL;
 
     dispstr = NULL;
@@ -113,39 +113,6 @@ const char *cGate::fullName() const
     return fullname;
 }
 
-std::string cGate::fullPath() const
-{
-    // TBD make use of cModule's cached fullPath()
-    return std::string(fullPath(fullpathbuf,MAX_OBJECTFULLPATH));
-}
-
-const char *cGate::fullPath(char *buffer, int bufsize) const
-{
-    // check we got a decent buffer
-    if (!buffer || bufsize<4)
-    {
-        if (buffer) buffer[0]='\0';
-        return "(fullPath(): no buffer or buffer too small)";
-    }
-
-    // hide gate vector: skip directly to owner module
-    // append parent path + "."
-    char *buf = buffer;
-    if (omodp!=NULL)
-    {
-        omodp->fullPath(buf,bufsize);
-        int len = strlen(buf);
-        buf+=len;
-        bufsize-=len;
-        *buf++ = '.';
-        bufsize--;
-    }
-
-    // append our own name
-    opp_strprettytrunc(buf, fullName(), bufsize-1);
-    return buffer;
-}
-
 void cGate::writeContents(ostream& os)
 {
     os << "  type:  " <<  (gatetype()==INPUT ? "input" : gatetype()==OUTPUT ? "output" : "inout") << '\n';
@@ -158,8 +125,8 @@ void cGate::writeContents(ostream& os)
 std::string cGate::info() const
 {
     const char *arrow;
-    cGate const * g;
-    cGate const * conng;
+    cGate const *g;
+    cGate const *conng;
 
     if (gatetype()==OUTPUT)
         {arrow = "--> "; g = togatep; conng = this;}
@@ -187,7 +154,7 @@ std::string cGate::info() const
 
 void cGate::setOwnerModule(cModule *m, int gid)
 {
-    omodp = m;
+    ASSERT(m==owner()); // must be already owned by that module
     gateid = gid;
 }
 

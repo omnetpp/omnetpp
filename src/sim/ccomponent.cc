@@ -24,7 +24,6 @@ cComponent::cComponent(const char *name) : cDefaultList(name)
 {
     componenttype = NULL;
     props = NULL;
-    paramv = NULL;
     rngmapsize = 0;
     rngmap = 0;
     ev_enabled = true;
@@ -32,11 +31,10 @@ cComponent::cComponent(const char *name) : cDefaultList(name)
 
 cComponent::~cComponent()
 {
-    delete props;
+    delete props; //XXX really?
+    delete [] rngmap;
     for (int i=0; i<params(); i++)
         delete paramv[i];
-    delete [] paramv;
-    delete [] rngmap;
 }
 
 const char *cComponent::className() const
@@ -44,16 +42,6 @@ const char *cComponent::className() const
     // lie about the class name: return the NED type name instead of the real one,
     // that is, "MobileHost" instead of "cCompoundModule" for example.
     return componenttype ? componenttype->name() : cDefaultList::className();
-}
-
-void cComponent::netPack(cCommBuffer *buffer)
-{
-    throw new cRuntimeError(this,eCANTPACK);
-}
-
-void cComponent::netUnpack(cCommBuffer *buffer)
-{
-    throw new cRuntimeError(this,eCANTPACK);
 }
 
 void cComponent::setComponentType(cComponentType *componenttype)
@@ -80,51 +68,37 @@ cProperties *cComponent::unlockProperties()
     return props;
 }
 
-int cComponent::params() const
+void cComponent::addPar(const char *parname, cPar *par)
 {
-//XXX    return componenttype->numPars(); //XXX
-return 0;
-}
-
-const char *cComponent::parName(int k)
-{
-    if (k<0 || k>=params())
-        throw new cRuntimeError(this, "has no parameter #%d", k);
-return "";
-//XXX    return componenttype->parName(k);
+    if (findPar(parname)>=0)
+       throw new cRuntimeError(this, "addPar(): Parameter %s.%s already present", fullPath().c_str(), parname);
+    par->setName(parname);
+    take(par);
+    paramv.push_back(par);
 }
 
 cPar& cComponent::par(int k)
 {
-/*XXX
-    if (k<0 || k>=componenttype->numPars())
-        throw new cRuntimeError(this, "has no parameter #%d", k);
+    if (k<0 || k>=paramv.size())
+        throw new cRuntimeError(this, "parameter index %d out of range", k);
     return *paramv[k];
-*/
-return *new cDoublePar();
 }
 
 cPar& cComponent::par(const char *parname)
 {
-/*XXX
-    int k = componenttype->findPar(parname);
+    int k = findPar(parname);
     if (k<0)
         throw new cRuntimeError(this, "has no parameter called `%s'", parname);
     return *paramv[k];
-*/
-return *new cDoublePar();
 }
 
 int cComponent::findPar(const char *parname) const
 {
-//XXX    return componenttype->findPar(parname);
-return 0;
-}
-
-cProperties *cComponent::defaultParProperties(int k) const
-{
-return NULL;
-//XXX    return componenttype->parValue(k)->properties();
+    int n = params();
+    for (int i=0; i<n; i++)
+        if (paramv[i]->isName(parname))
+            return *paramv[i];
+    return -1;
 }
 
 void cComponent::readInputParams()

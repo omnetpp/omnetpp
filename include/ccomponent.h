@@ -15,13 +15,14 @@
 #ifndef __CCOMPONENT_H
 #define __CCOMPONENT_H
 
+#include <vector>
 #include "defs.h"
 #include "cobject.h"
+#include "cpar.h"
 #include "cdefaultlist.h"
 
 class cComponentType;
 class cProperties;
-class cPar;
 class cRNG;
 
 /**
@@ -36,13 +37,16 @@ class SIM_API cComponent : public cDefaultList // noncopyable
     friend class cPar; // needs to call handleParameterChange()
   protected:
     cComponentType *componenttype;  // component type object
-
     cProperties *props;    // if NULL, use the one from the component type
-    cPar **paramv; // parameters; num & order determined by the componenttype object
 
     short rngmapsize;  // size of rngmap array (RNGs>=rngmapsize are mapped one-to-one to physical RNGs)
     int *rngmap;       // maps local RNG numbers (may be NULL if rngmapsize==0)
-    bool ev_enabled;   // if output from ev<< is enabled
+    bool ev_enabled;   // if output from ev<< is enabled   FIXME utilize cObject::flags
+
+  public:
+    // The following member is only made public for use by the inspector
+    // classes. Do not use them directly from simple modules.
+    std::vector<cPar*> paramv;  // stores the parameters of this component
 
   public:
     // internal: currently used by Cmdenv
@@ -56,8 +60,9 @@ class SIM_API cComponent : public cDefaultList // noncopyable
     // called as part of the creation process.
     virtual void setComponentType(cComponentType *componenttype);
 
-    // internal: return parameter properties from the component type object
-    virtual cProperties *defaultParProperties(int k) const;
+    // internal: adds a new parameter to the component; called as part of the
+    // creation process
+    virtual void addPar(const char *parname, cPar *par);
 
     // internal: invokes the read() method on all unset parameters
     virtual void readInputParams();
@@ -111,16 +116,6 @@ class SIM_API cComponent : public cDefaultList // noncopyable
      * real one, that is, "MobileHost" instead of "cCompoundModule" for example.
      */
     virtual const char *className() const;
-
-    /**
-     * Serialization not supported, this method is redefined to throw an error.
-     */
-    virtual void netPack(cCommBuffer *buffer);
-
-    /**
-     * Serialization not supported, this method is redefined to throw an error.
-     */
-    virtual void netUnpack(cCommBuffer *buffer);
     //@}
 
     /** @name Misc. */
@@ -163,13 +158,7 @@ class SIM_API cComponent : public cDefaultList // noncopyable
     /**
      * Returns total number of the module's parameters.
      */
-    virtual int params() const;  // FIXME change to numParams
-
-    /**
-     * Returns name of the module parameter identified with its
-     * index k. Throws an error if the parameter does not exist.
-     */
-    virtual const char *parName(int k);
+    virtual int params() const  {return paramv.size();} //XXX rename to numParams
 
     /**
      * Returns reference to the module parameter identified with its
@@ -178,10 +167,22 @@ class SIM_API cComponent : public cDefaultList // noncopyable
     virtual cPar& par(int k);
 
     /**
+     * Returns reference to the module parameter identified with its
+     * index k. Throws an error if the parameter does not exist.
+     */
+    const cPar& par(int k) const  {return const_cast<cComponent *>(this)->par(k);}
+
+    /**
      * Returns reference to the module parameter specified with its name.
      * Throws an error if the parameter does not exist.
      */
     virtual cPar& par(const char *parname);
+
+    /**
+     * Returns reference to the module parameter specified with its name.
+     * Throws an error if the parameter does not exist.
+     */
+    const cPar& par(const char *parname) const  {return const_cast<cComponent *>(this)->par(parname);}
 
     /**
      * Returns index of the module parameter specified with its name.

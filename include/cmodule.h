@@ -15,9 +15,9 @@
 #ifndef __CMODULE_H
 #define __CMODULE_H
 
+#include <vector>
 #include "ccomponent.h"
 #include "globals.h"
-#include "carray.h"
 #include "cgate.h"
 #include "csimulation.h"
 
@@ -78,7 +78,7 @@ class SIM_API cModule : public cComponent //noncopyable
   public:
     // The following members are only made public for use by the inspector
     // classes. Do not use them directly from simple modules.
-    cArray gatev;           // vector of gates
+    std::vector<cGate*> gatev;  // stores the gates of this module
 
   protected:
     int  idx;               // index if module vector, 0 otherwise
@@ -214,12 +214,6 @@ class SIM_API cModule : public cComponent //noncopyable
   public:
     /** @name Constructors, destructor, assignment. */
     //@{
-
-    /**
-     * Copy constructor.
-     */
-    cModule(const cModule& mod);
-
     /**
      * Constructor. Note that module objects should not be created directly,
      * only via their cModuleType objects. cModuleType::create() will do
@@ -233,18 +227,10 @@ class SIM_API cModule : public cComponent //noncopyable
      * Destructor.
      */
     virtual ~cModule();
-
-    /**
-     * Assignment operator. The name member doesn't get copied;
-     * see cObject's operator=() for more details.
-     */
-    cModule& operator=(const cModule& mod);
     //@}
 
     /** @name Redefined cObject functions. */
     //@{
-
-    /* No dup() because this is an abstract class. */
 
     /**
      * Calls v->visit(this) for each contained object.
@@ -407,37 +393,36 @@ class SIM_API cModule : public cComponent //noncopyable
 
     /** @name Gates. */
     //@{
-
+//XXX make these methods virtual?
     /**
      * Returns the total size of the gate array. Since the array may contain
      * unused elements, the number of actual gates used might be less.
      */
-    int gates() const {return gatev.items();}
+    virtual int gates() const {return gatev.size();}   //XXX rename to numGates
 
     /**
      * Returns a gate by its ID. Note that the gate array may contain "holes",
      * that is, this function can return NULL for some IDs in the 0..gates()-1
      * range. NULL is returned for IDs out of range as well.
      */
-    cGate *gate(int g) {return (cGate*)gatev[g];}
+    virtual cGate *gate(int g);
 
     /**
      * Returns a gate by its ID. Note that the gate array may contain "holes",
      * that is, this function can return NULL for some IDs in the 0..gates()-1
      * range. NULL is returned for IDs out of range as well.
      */
-    const cGate *gate(int g) const {return (const cGate*)gatev[g];}
-
-    /**
-     * Looks up a gate by its name and index. Returns NULL if the gate does
-     * not exist.
-     */
-    cGate *gate(const char *gatename,int sn=-1);
+    const cGate *gate(int g) const {return const_cast<cModule *>(this)->gate(g);}
 
     /**
      * Looks up a gate by its name and index. Returns NULL if the gate does not exist.
      */
-    const cGate *gate(const char *gatename,int sn=-1) const;
+    virtual cGate *gate(const char *gatename, int index=-1);
+
+    /**
+     * Looks up a gate by its name and index. Returns NULL if the gate does not exist.
+     */
+    const cGate *gate(const char *gatename, int index=-1) const {return const_cast<cModule *>(this)->gate(gatename, index);}
 
     /**
      * Returns the size of the gate vector with the given name. It returns 1 for
@@ -447,20 +432,20 @@ class SIM_API cModule : public cComponent //noncopyable
      * The gate vector size can also be obtained by calling the cGate::size() method
      * of any gate object in the vector.
      */
-    int gateSize(const char *gatename) const;
+    virtual int gateSize(const char *gatename) const;
 
     /**
      * Returns the ID of the gate specified by name and index.
      * Returns -1 if the gate doesn't exist.
-     * FIXME clarify what if it's vector and sn is not given, and vica versa
+     * FIXME clarify what if it's vector and index is not given, and vica versa
      */
-    int findGate(const char *gatename, int sn=-1) const;
+    virtual int findGate(const char *gatename, int index=-1) const;
 
     /**
      * Checks if a gate exists.
-     * FIXME clarify what if it's vector and sn is not given, and vica versa
+     * FIXME clarify what if it's vector and index is not given, and vica versa
      */
-    bool hasGate(const char *gatename, int sn=-1) const {return findGate(gatename,sn)>=0;}
+    bool hasGate(const char *gatename, int index=-1) const {return findGate(gatename,index)>=0;}
 
     /**
      * For compound modules, it checks if all gates are connected inside
@@ -548,7 +533,7 @@ class SIM_API cModule : public cComponent //noncopyable
 
     /** @name Display strings, animation. */
     //@{
-
+          //FIXME revise these methods!!!
     /**
      * Returns the display string which defines presentation when the module
      * is displayed as a submodule in a compound module graphics.

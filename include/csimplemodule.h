@@ -131,7 +131,7 @@ class SIM_API cSimpleModule : public cModule //noncopyable
      * macro and can also be compiled with OMNeT++ versions earlier than
      * 3.2. The first two args are unused in this and later versions.
      */
-    cSimpleModule(const char *name, cModule *parent, unsigned stacksize);
+    cSimpleModule(const char *dummy1, cModule *dummy2, unsigned stacksize);
 
     /**
      * Destructor.

@@ -94,7 +94,7 @@ class SIM_API cArray : public cObject
     };
 
   private:
-    bool tkownership;
+    bool tkownership; //FIXME utilize cObject::flags
     cObject **vect;   // vector of objects
     int size;         // size of vector
     int delta;        // if needed, grows by delta
