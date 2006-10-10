@@ -40,7 +40,7 @@
 <!ATTLIST extends
      name               NMTOKEN   #REQUIRED>
 
-<!--XXX rename to "like" ? -->
+<!--XXX rename to "like-name" ? -->
 <!ELEMENT interface-name (comment*)>
 <!ATTLIST interface-name
      name               NMTOKEN   #REQUIRED>
@@ -70,16 +70,14 @@
      is-withcppclass     (true|false)  "false"
      name                NMTOKEN   #REQUIRED>
 
-<!ELEMENT parameters (comment*, (property|param|pattern|param-group)*)>
+<!ELEMENT parameters (comment*, (property|param|pattern)*)>
 <!ATTLIST parameters
     is-implicit         (true|false)  "false">
 
-<!ELEMENT param-group (comment*, (property|param|pattern)*, condition?)>
-
-<!ELEMENT param (comment*, expression?, property*, condition?)>
+<!ELEMENT param (comment*, expression?, property*)>
 <!ATTLIST param
      type               (double|int|string|bool|xml) #IMPLIED
-     is-function        (true|false)  "false"
+     is-volatile        (true|false)  "false"
      name               NMTOKEN   #REQUIRED
      value              CDATA     #IMPLIED
      is-default         (true|false)  "false">
@@ -90,7 +88,7 @@
      value              CDATA     #IMPLIED
      is-default         (true|false)  "false">
 
-<!ELEMENT property (comment*, property-key*, condition?)>
+<!ELEMENT property (comment*, property-key*)>
 <!ATTLIST property
      is-implicit        (true|false) "false"
      name               NMTOKEN   #REQUIRED
@@ -98,13 +96,11 @@
 
 <!ELEMENT property-key (comment*, literal*)>
 <!ATTLIST property-key
-     key                CDATA     #IMPLIED>
+     name               CDATA     #IMPLIED>
 
-<!ELEMENT gates (comment*, (gate|gate-group)*)>
+<!ELEMENT gates (comment*, gate*)>
 
-<!ELEMENT gate-group (comment*, gate*, condition?)>
-
-<!ELEMENT gate (comment*, expression?, property*, condition?)>
+<!ELEMENT gate (comment*, expression?, property*)>
 <!ATTLIST gate
      name               NMTOKEN   #REQUIRED
      type               (input|output|inout) #IMPLIED
