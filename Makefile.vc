@@ -47,8 +47,7 @@ components: libs progs jnilibs configsamples samples
 #=====================================================================
 
 LIBS=$(ENVIR_ILIB) common eventlog scave nedxml sim envir cmdenv tkenv
-#PROGS=utils nedc
-PROGS=utils   #FIXME nedc doesn't build yet
+PROGS=utils nedc
 SAMPLES=aloha cqn dyna fddi fifo hcube hist neddemo p-to-p queueing routing queues tictoc tokenring sockets
 JNILIBS=org.omnetpp.ned2.model \
         org.omnetpp.scave.engine \

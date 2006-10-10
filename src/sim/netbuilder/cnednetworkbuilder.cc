@@ -59,7 +59,7 @@ void cNEDNetworkBuilder::addParameters(cComponent *component, cNEDDeclaration *d
     for (int i=0; i<n; i++)
     {
         const cNEDDeclaration::ParamDescription& desc = decl->paramDescription(i);
-        //component->addPar(desc.value->dup());  FIXME
+        component->addPar(desc.name.c_str(), desc.value->dup());
     }
 }
 

@@ -11,7 +11,7 @@ COPTS=$(CFLAGS) /I "$(OMNETPP_INCL_DIR)"
 #
 # Targets
 #
-all : nedtool.exe
+all : # nedtool.exe --FIXME add this back
 	copy opp_msgc $(OMNETPP_BIN_DIR:/=\)
 	copy opp_msgc.cmd $(OMNETPP_BIN_DIR:/=\)
 	copy nedc.bat $(OMNETPP_BIN_DIR:/=\)

@@ -124,7 +124,10 @@ class SIM_API cPar : public cObject
 
     /** @name Redefined cObject functions */
     //@{
-    /* Note: no dup() because this is an abstract class */
+    /**
+     * Redefined change return type to cPar.
+     */
+    virtual cPar *dup() const;
 
     /**
      * Serializes the object into a buffer.

@@ -54,6 +54,11 @@ void cPar::netUnpack(cCommBuffer *buffer)
     //TBD
 }
 
+cPar *cPar::dup() const
+{
+    throw new cRuntimeError(this, eCANTDUP);  // cannot dup because this is an abstract class
+}
+
 cComponent *cPar::ownerComponent()
 {
     return dynamic_cast<cComponent *>(owner());
