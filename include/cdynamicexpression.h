@@ -56,7 +56,7 @@ class SIM_API cDynamicExpression : public cExpression
             const char *s;    // S
             cXMLElement *x;   // X
             cPar *p;          // P
-            cMathFunction *f;     // F
+            cMathFunction *f; // F
             cNEDFunction *af; // A
             char op;          // @, op = +-*/%^=!<{>}?...
         };
@@ -120,19 +120,19 @@ class SIM_API cDynamicExpression : public cExpression
          * This is how NED-language parameter references in expressions
          * are handled.
          */
-        void operator=(cPar *_p)  {type='P'; p=_p;}
+        void operator=(cPar *_p)  {type='P'; ASSERT(_p); p=_p;}
 
         /**
          * Effect during evaluation of the expression: Call a function
          * taking 0..4 doubles and returning a double.
          */
-        void operator=(cMathFunction *_f)  {type='F'; f=_f;}
+        void operator=(cMathFunction *_f)  {type='F'; ASSERT(_f); f=_f;}
 
         /**
          * Effect during evaluation of the expression: call a function
          * that function takes an array of StkValues and returns a StkValue.
          */
-        void operator=(cNEDFunction *_f)  {type='A'; af=_f;}
+        void operator=(cNEDFunction *_f)  {type='A'; ASSERT(_f); af=_f;}
 
         /**
          * Operation. During evaluation of the expression, two items (or three,

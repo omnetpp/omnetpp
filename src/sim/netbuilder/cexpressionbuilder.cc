@@ -222,8 +222,12 @@ void cExpressionBuilder::doIdent(IdentNode *node)
 {
     const char *varname = node->getName();
     elems[pos++] = varname;
-    //FIXME todo: maybe parentParameter etc, depending on inSubcomponentScope
-    elems[pos++] = cNEDFunction::find("parameter",0);   //FIXME what if we don't find it
+    //FIXME todo: what if this.param, other[4].param etc???
+    //FIXME rather use global variables for these special funcs!
+    //XXX test findfunction!!!
+    cNEDFunction *f = cNEDFunction::find(inSubcomponentScope ? "__parentParameter" : "__parameter",1);   
+    ASSERT(f); //FIXME rather a good error msg
+    elems[pos++] = f;
 
 }
 

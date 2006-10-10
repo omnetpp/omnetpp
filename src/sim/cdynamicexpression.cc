@@ -102,18 +102,20 @@ cDynamicExpression::StkValue cDynamicExpression::evaluate(cComponent *context) c
                  throw new cRuntimeError(this,eBADEXP);
              stk[++tos] = e.d;
              break;
+           case 'S':
+             if (tos>=stksize-1)
+                 throw new cRuntimeError(this,eBADEXP);
+             stk[++tos] = e.s;
+             break;
+           case 'X':
+             if (tos>=stksize-1)
+                 throw new cRuntimeError(this,eBADEXP);
+             stk[++tos] = e.x;
+             break;
            case 'P':
              if (tos>=stksize-1)
                  throw new cRuntimeError(this,eBADEXP);
-             switch (e.p->type())
-             {
-                 case 'B': stk[++tos] = e.p->boolValue(); break;
-                 case 'L': stk[++tos] = (double)e.p->longValue(); break;
-                 case 'D': stk[++tos] = e.p->doubleValue(); break;
-                 case 'S': stk[++tos] = e.p->stringValue(); break;
-                 case 'X': stk[++tos] = e.p->xmlValue(); break;
-                 default: throw new cRuntimeError(this,eBADEXP);
-             }
+             stk[++tos] = *(e.p); break;
              break;
            case 'A':
              {
@@ -171,153 +173,168 @@ cDynamicExpression::StkValue cDynamicExpression::evaluate(cComponent *context) c
              }
              break;
            case '@':
-             if (tos<1)
-                 throw new cRuntimeError(this,eBADEXP);
-             switch(e.op)
+             if (e.op=='N' || e.op=='~' || e.op=='M')
              {
-               case '+':
-                   // double addition or string concatenation
-                   if (stk[tos-1].type==StkValue::DBL && stk[tos].type==StkValue::DBL)
-                       stk[tos-1] = stk[tos-1].dbl + stk[tos].dbl;
-                   else if (stk[tos-1].type==StkValue::STR && stk[tos].type==StkValue::STR)
-                       stk[tos-1] = stk[tos-1].str + stk[tos].str;
-                   else
-                       throw new cRuntimeError(this,eBADEXP);
-                   tos--;
-                   break;
-               case '-':
-                   if (stk[tos].type!=StkValue::DBL || stk[tos-1].type!=StkValue::DBL)
-                       throw new cRuntimeError(this,eBADEXP);
-                   stk[tos-1] = stk[tos-1].dbl - stk[tos].dbl;
-                   tos--;
-                   break;
-               case '*':
-                   if (stk[tos].type!=StkValue::DBL || stk[tos-1].type!=StkValue::DBL)
-                       throw new cRuntimeError(this,eBADEXP);
-                   stk[tos-1] = stk[tos-1].dbl * stk[tos].dbl;
-                   tos--;
-                   break;
-               case '/':
-                   if (stk[tos].type!=StkValue::DBL || stk[tos-1].type!=StkValue::DBL)
-                       throw new cRuntimeError(this,eBADEXP);
-                   stk[tos-1] = stk[tos-1].dbl / stk[tos].dbl;
-                   tos--;
-                   break;
-               case '%':
-                   if (stk[tos].type!=StkValue::DBL || stk[tos-1].type!=StkValue::DBL)
-                       throw new cRuntimeError(this,eBADEXP);
-                   stk[tos-1] = (double)(ulong(stk[tos-1].dbl) % ulong(stk[tos].dbl));
-                   tos--;
-                   break;
-               case '^':
-                   if (stk[tos].type!=StkValue::DBL || stk[tos-1].type!=StkValue::DBL)
-                       throw new cRuntimeError(this,eBADEXP);
-                   stk[tos-1] = pow(stk[tos-1].dbl, stk[tos].dbl);
-                   tos--;
-                   break;
-               case 'A':
-                   if (stk[tos].type!=StkValue::BOOL || stk[tos-1].type!=StkValue::BOOL)
-                       throw new cRuntimeError(this,eBADEXP);
-                   stk[tos-1] = stk[tos-1].bl && stk[tos].bl;
-                   tos--;
-                   break;
-               case 'O':
-                   if (stk[tos].type!=StkValue::BOOL || stk[tos-1].type!=StkValue::BOOL)
-                       throw new cRuntimeError(this,eBADEXP);
-                   stk[tos-1] = stk[tos-1].bl || stk[tos].bl;
-                   tos--;
-                   break;
-               case 'X':
-                   if (stk[tos].type!=StkValue::BOOL || stk[tos-1].type!=StkValue::BOOL)
-                       throw new cRuntimeError(this,eBADEXP);
-                   stk[tos-1] = stk[tos-1].bl != stk[tos].bl;
-                   tos--;
-                   break;
-               case 'N':
-                   if (stk[tos].type!=StkValue::BOOL)
-                       throw new cRuntimeError(this,eBADEXP);
-                   stk[tos] = !stk[tos].bl;
-                   break;
-               case '&':
-                   if (stk[tos].type!=StkValue::DBL || stk[tos-1].type!=StkValue::DBL)
-                       throw new cRuntimeError(this,eBADEXP);
-                   stk[tos-1] = (double)(ulong(stk[tos-1].dbl) & ulong(stk[tos].dbl));
-                   tos--;
-                   break;
-               case '|':
-                   if (stk[tos].type!=StkValue::DBL || stk[tos-1].type!=StkValue::DBL)
-                       throw new cRuntimeError(this,eBADEXP);
-                   stk[tos-1] = (double)(ulong(stk[tos-1].dbl) | ulong(stk[tos].dbl));
-                   tos--;
-                   break;
-               case '#':
-                   if (stk[tos].type!=StkValue::DBL || stk[tos-1].type!=StkValue::DBL)
-                       throw new cRuntimeError(this,eBADEXP);
-                   stk[tos-1] = (double)(ulong(stk[tos-1].dbl) ^ ulong(stk[tos].dbl));
-                   tos--;
-                   break;
-               case '~':
-                   if (stk[tos].type!=StkValue::DBL)
-                       throw new cRuntimeError(this,eBADEXP);
-                   stk[tos-1] = (double)~ulong(stk[tos-1].dbl);
-                   tos--;
-                   break;
-               case 'M':
-                   if (stk[tos].type!=StkValue::DBL)
-                       throw new cRuntimeError(this,eBADEXP);
-                   stk[tos] = -stk[tos].dbl;
-                   break;
-               case 'L':
-                   if (stk[tos].type!=StkValue::DBL || stk[tos-1].type!=StkValue::DBL)
-                       throw new cRuntimeError(this,eBADEXP);
-                   stk[tos-1] = (double)(ulong(stk[tos-1].dbl) << ulong(stk[tos].dbl));
-                   tos--;
-                   break;
-               case 'R':
-                   if (stk[tos].type!=StkValue::DBL || stk[tos-1].type!=StkValue::DBL)
-                       throw new cRuntimeError(this,eBADEXP);
-                   stk[tos-1] = (double)(ulong(stk[tos-1].dbl) >> ulong(stk[tos].dbl));
-                   tos--;
-                   break;
-                   break;
-
+                 // unary
+                 if (tos<0)
+                     throw new cRuntimeError(this,eBADEXP);
+                 switch (e.op)
+                 {
+                     case '~':         //FIXME better error messages! "cannot convert from x to y" etc!!
+                         if (stk[tos].type!=StkValue::DBL)
+                             throw new cRuntimeError(this,eBADEXP);
+                         stk[tos] = (double)~ulong(stk[tos].dbl);
+                         break;
+                     case 'M':
+                         if (stk[tos].type!=StkValue::DBL)
+                             throw new cRuntimeError(this,eBADEXP);
+                         stk[tos] = -stk[tos].dbl;
+                         break;
+                     case 'N':
+                         if (stk[tos].type!=StkValue::BOOL)
+                             throw new cRuntimeError(this,eBADEXP);
+                         stk[tos] = !stk[tos].bl;
+                         break;
+                 }
+             }
+             else if (e.op=='?')
+             {
+                 // tertiary
+                 if (tos<2)
+                     throw new cRuntimeError(this,eBADEXP);
+                 // 1st arg must be bool, others 2nd and 3rd can be anything
+                 if (stk[tos-2].type!=StkValue::BOOL)
+                     throw new cRuntimeError(this,eBADEXP);
+                 stk[tos-2] = (stk[tos-2].bl ? stk[tos-1] : stk[tos]);
+                 tos-=2;
+             }
+             else
+             {
+                 // binary
+                 if (tos<1)
+                     throw new cRuntimeError(this,eBADEXP);
+                 switch(e.op)
+                 {
+                   case '+':
+                       // double addition or string concatenation
+                       if (stk[tos-1].type==StkValue::DBL && stk[tos].type==StkValue::DBL)
+                           stk[tos-1] = stk[tos-1].dbl + stk[tos].dbl;
+                       else if (stk[tos-1].type==StkValue::STR && stk[tos].type==StkValue::STR)
+                           stk[tos-1] = stk[tos-1].str + stk[tos].str;
+                       else
+                           throw new cRuntimeError(this,eBADEXP);
+                       tos--;
+                       break;
+                   case '-':
+                       if (stk[tos].type!=StkValue::DBL || stk[tos-1].type!=StkValue::DBL)
+                           throw new cRuntimeError(this,eBADEXP);
+                       stk[tos-1] = stk[tos-1].dbl - stk[tos].dbl;
+                       tos--;
+                       break;
+                   case '*':
+                       if (stk[tos].type!=StkValue::DBL || stk[tos-1].type!=StkValue::DBL)
+                           throw new cRuntimeError(this,eBADEXP);
+                       stk[tos-1] = stk[tos-1].dbl * stk[tos].dbl;
+                       tos--;
+                       break;
+                   case '/':
+                       if (stk[tos].type!=StkValue::DBL || stk[tos-1].type!=StkValue::DBL)
+                           throw new cRuntimeError(this,eBADEXP);
+                       stk[tos-1] = stk[tos-1].dbl / stk[tos].dbl;
+                       tos--;
+                       break;
+                   case '%':
+                       if (stk[tos].type!=StkValue::DBL || stk[tos-1].type!=StkValue::DBL)
+                           throw new cRuntimeError(this,eBADEXP);
+                       stk[tos-1] = (double)(ulong(stk[tos-1].dbl) % ulong(stk[tos].dbl));
+                       tos--;
+                       break;
+                   case '^':
+                       if (stk[tos].type!=StkValue::DBL || stk[tos-1].type!=StkValue::DBL)
+                           throw new cRuntimeError(this,eBADEXP);
+                       stk[tos-1] = pow(stk[tos-1].dbl, stk[tos].dbl);
+                       tos--;
+                       break;
+                   case 'A':
+                       if (stk[tos].type!=StkValue::BOOL || stk[tos-1].type!=StkValue::BOOL)
+                           throw new cRuntimeError(this,eBADEXP);
+                       stk[tos-1] = stk[tos-1].bl && stk[tos].bl;
+                       tos--;
+                       break;
+                   case 'O':
+                       if (stk[tos].type!=StkValue::BOOL || stk[tos-1].type!=StkValue::BOOL)
+                           throw new cRuntimeError(this,eBADEXP);
+                       stk[tos-1] = stk[tos-1].bl || stk[tos].bl;
+                       tos--;
+                       break;
+                   case 'X':
+                       if (stk[tos].type!=StkValue::BOOL || stk[tos-1].type!=StkValue::BOOL)
+                           throw new cRuntimeError(this,eBADEXP);
+                       stk[tos-1] = stk[tos-1].bl != stk[tos].bl;
+                       tos--;
+                       break;
+                   case '&':
+                       if (stk[tos].type!=StkValue::DBL || stk[tos-1].type!=StkValue::DBL)
+                           throw new cRuntimeError(this,eBADEXP);
+                       stk[tos-1] = (double)(ulong(stk[tos-1].dbl) & ulong(stk[tos].dbl));
+                       tos--;
+                       break;
+                   case '|':
+                       if (stk[tos].type!=StkValue::DBL || stk[tos-1].type!=StkValue::DBL)
+                           throw new cRuntimeError(this,eBADEXP);
+                       stk[tos-1] = (double)(ulong(stk[tos-1].dbl) | ulong(stk[tos].dbl));
+                       tos--;
+                       break;
+                   case '#':
+                       if (stk[tos].type!=StkValue::DBL || stk[tos-1].type!=StkValue::DBL)
+                           throw new cRuntimeError(this,eBADEXP);
+                       stk[tos-1] = (double)(ulong(stk[tos-1].dbl) ^ ulong(stk[tos].dbl));
+                       tos--;
+                       break;
+                   case 'L':
+                       if (stk[tos].type!=StkValue::DBL || stk[tos-1].type!=StkValue::DBL)
+                           throw new cRuntimeError(this,eBADEXP);
+                       stk[tos-1] = (double)(ulong(stk[tos-1].dbl) << ulong(stk[tos].dbl));
+                       tos--;
+                       break;
+                   case 'R':
+                       if (stk[tos].type!=StkValue::DBL || stk[tos-1].type!=StkValue::DBL)
+                           throw new cRuntimeError(this,eBADEXP);
+                       stk[tos-1] = (double)(ulong(stk[tos-1].dbl) >> ulong(stk[tos].dbl));
+                       tos--;
+                       break;
 #define COMPARISON(RELATION) \
-                             if (stk[tos-1].type==StkValue::DBL && stk[tos].type==StkValue::DBL) \
-                                 stk[tos-1] = (stk[tos-1].dbl RELATION stk[tos].dbl); \
-                             else if (stk[tos-1].type==StkValue::STR && stk[tos].type==StkValue::STR) \
-                                 stk[tos-1] = (stk[tos-1].str RELATION stk[tos].str); \
-                             else if (stk[tos-1].type==StkValue::BOOL && stk[tos].type==StkValue::BOOL) \
-                                 stk[tos-1] = (stk[tos-1].bl RELATION stk[tos].bl); \
-                             else \
-                                 throw new cRuntimeError(this,eBADEXP); \
-                             tos--;
-               case '=':
-                   COMPARISON(==);
-                   break;
-               case '!':
-                   COMPARISON(!=);
-                   break;
-               case '<':
-                   COMPARISON(<);
-                   break;
-               case '{':
-                   COMPARISON(<=);
-                   break;
-               case '>':
-                   COMPARISON(>);
-                   break;
-               case '}':
-                   COMPARISON(>=);
-                   break;
+                                 if (stk[tos-1].type==StkValue::DBL && stk[tos].type==StkValue::DBL) \
+                                     stk[tos-1] = (stk[tos-1].dbl RELATION stk[tos].dbl); \
+                                 else if (stk[tos-1].type==StkValue::STR && stk[tos].type==StkValue::STR) \
+                                     stk[tos-1] = (stk[tos-1].str RELATION stk[tos].str); \
+                                 else if (stk[tos-1].type==StkValue::BOOL && stk[tos].type==StkValue::BOOL) \
+                                     stk[tos-1] = (stk[tos-1].bl RELATION stk[tos].bl); \
+                                 else \
+                                     throw new cRuntimeError(this,eBADEXP); \
+                                 tos--;
+                   case '=':
+                       COMPARISON(==);
+                       break;
+                   case '!':
+                       COMPARISON(!=);
+                       break;
+                   case '<':
+                       COMPARISON(<);
+                       break;
+                   case '{':
+                       COMPARISON(<=);
+                       break;
+                   case '>':
+                       COMPARISON(>);
+                       break;
+                   case '}':
+                       COMPARISON(>=);
+                       break;
 #undef COMPARISON
-               case '?':
-                   // 1st arg must be bool, others 2nd and 3rd can be anything
-                   if (stk[tos-2].type!=StkValue::BOOL) throw new cRuntimeError(this,eBADEXP);
-                   stk[tos-2] = (stk[tos-2].bl ? stk[tos-1] : stk[tos]);
-                   tos-=2;
-                   break;
-               default:
-                   throw new cRuntimeError(this,eBADEXP);
+                   default:
+                       throw new cRuntimeError(this,eBADEXP);
+                 }
              }
              break;
            default:
@@ -409,6 +426,18 @@ std::string cDynamicExpression::toString() const
                  pristk[tos] = 0;
                  }
                  break;
+               case 'S':
+                 if (tos>=stksize-1)
+                     throw new cRuntimeError(this,eBADEXP);
+                 strstk[++tos] = std::string("\"") + e.s+"\"";
+                 pristk[tos] = 0;
+                 break;
+               case 'X':
+                 if (tos>=stksize-1)
+                     throw new cRuntimeError(this,eBADEXP);
+                 strstk[++tos] = std::string("<") + (e.x ? e.x->getTagName() : "null") +">"; //FIXME plus location info?
+                 pristk[tos] = 0;
+                 break;
                case 'P':
                  if (!e.p || tos>=stksize-1)
                      throw new cRuntimeError(this,eBADEXP);
@@ -433,16 +462,10 @@ std::string cDynamicExpression::toString() const
                  break;
                  }
                case '@':
-                 if (tos<1)
-                     throw new cRuntimeError(this,eBADEXP);
-                 if (e.op=='?')  // conditional (tertiary)
+                 if (e.op=='N' || e.op=='~' || e.op=='M')
                  {
-                     strstk[tos-2] = strstk[tos-2] + " ? " + strstk[tos-1] + " : " + strstk[tos];
-                     tos-=2;
-                     pristk[tos] = 8;
-                 }
-                 else if (e.op=='N' || e.op=='~' || e.op=='M')
-                 {
+                     if (tos<0)
+                         throw new cRuntimeError(this,eBADEXP);
                      const char *op;
                      switch (e.op)
                      {
@@ -454,8 +477,19 @@ std::string cDynamicExpression::toString() const
                      strstk[tos] = std::string(op) + strstk[tos]; // pri=0: never needs parens
                      pristk[tos] = 0;
                  }
+                 if (e.op=='?')  // conditional (tertiary)
+                 {
+                     if (tos<2)
+                         throw new cRuntimeError(this,eBADEXP);
+                     strstk[tos-2] = strstk[tos-2] + " ? " + strstk[tos-1] + " : " + strstk[tos];
+                     tos-=2;
+                     pristk[tos] = 8;
+                 }
                  else
                  {
+                     // binary
+                     if (tos<1)
+                         throw new cRuntimeError(this,eBADEXP);
                      int pri;
                      const char *op;
                      switch(e.op)
@@ -540,6 +574,7 @@ bool cDynamicExpression::parse(const char *text)
     delete [] elems;
     elems = tmpelems;
     nelems = tmpnelems;
+printf("DBG cDynamicExpression::parse ``%s'' --> %s\n", text, toString().c_str()); //XXX
     return true;
 }
 
