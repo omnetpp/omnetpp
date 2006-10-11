@@ -1,5 +1,6 @@
 //=========================================================================
 //  FILETOKENIZER.H - part of
+//
 //                  OMNeT++/OMNEST
 //           Discrete System Simulation in C++
 //
@@ -20,7 +21,7 @@
 
 /**
  * Tokenizes a file, line by line. Supposed to be VERY efficient because
- * it'll be used on several hundred-megabyte files: the code avoids 
+ * it'll be used on several hundred-megabyte files: the code avoids
  * string copies, avoids scanning the string more than once, etc.
  */
 //FIXME this class is obsolete -- replace with FileReader + LineTokenizer

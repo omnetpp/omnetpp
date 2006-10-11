@@ -1,11 +1,8 @@
 //=========================================================================
-//
 //  ERRMSG.CC - part of
+//
 //                  OMNeT++/OMNEST
 //           Discrete System Simulation in C++
-//
-//   Contents:
-//    emsg[]:  error message table
 //
 //  Author: Andras Varga
 //
