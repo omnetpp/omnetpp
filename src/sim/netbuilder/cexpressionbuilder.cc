@@ -150,7 +150,9 @@ void cExpressionBuilder::doFunction(FunctionNode *node)
 //FIXME handle "const" operator as well!
     if (!strcmp(funcname,"index"))
     {
-        elems[pos++] = cNEDFunction::find("__moduleIndex",0);   //FIXME rename to "index";  what if we don't find it
+        if (!inSubcomponentScope)
+            throw new cRuntimeError("dynamic module builder: `index' operator is only supported on submodule parameters");
+        elems[pos++] = new NEDSupport::ModuleIndex();
         return;
     }
     else if (!strcmp(funcname,"sizeof"))
@@ -220,14 +222,9 @@ void cExpressionBuilder::doFunction(FunctionNode *node)
 
 void cExpressionBuilder::doIdent(IdentNode *node)
 {
-    const char *varname = node->getName();
-    elems[pos++] = varname;
+    const char *parname = node->getName();
     //FIXME todo: what if this.param, other[4].param etc???
-    //FIXME rather use global variables for these special funcs!
-    cNEDFunction *f = cNEDFunction::find(inSubcomponentScope ? "__parentParameter" : "__parameter",1);
-    ASSERT(f); //FIXME rather a good error msg
-    elems[pos++] = f;
-
+    elems[pos++] = new NEDSupport::ParameterRef(parname, inSubcomponentScope, false);
 }
 
 void cExpressionBuilder::doLiteral(LiteralNode *node)

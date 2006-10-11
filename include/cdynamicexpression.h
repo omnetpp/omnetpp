@@ -48,6 +48,8 @@ class SIM_API cDynamicExpression : public cExpression
         BIN_AND, BIN_OR, BIN_XOR, BIN_NOT, LSHIFT, RSHIFT
     };
 
+    class Functor; // forward decl
+
     /**
      * One element in a (reverse Polish) expression
      */
@@ -65,7 +67,7 @@ class SIM_API cDynamicExpression : public cExpression
         //  - cNEDFunction: function taking/returning StkValue (NEDFunction)
         //  - math operator (+-*/%^...)
         //
-        enum {UNDEF, BOOL, DBL, STR, XML, CPAR, MATHFUNC, NEDFUNC, OP} type;
+        enum {UNDEF, BOOL, DBL, STR, XML, CPAR, MATHFUNC, NEDFUNC, FUNCTOR, OP} type;
         union {
             bool b;
             double d;
@@ -74,13 +76,14 @@ class SIM_API cDynamicExpression : public cExpression
             cPar *p;
             cMathFunction *f;
             cNEDFunction *af;
+            Functor *fu;
             OpType op;
         };
 
       public:
         Elem()  {type=UNDEF;}
         Elem(const Elem& other)  {type=UNDEF; operator=(other);}
-        ~Elem()  {if (type==STR) delete [] s;}
+        ~Elem();
 
         /**
          * Assignment operator -- we need to copy Elem at a hundred places
@@ -151,9 +154,13 @@ class SIM_API cDynamicExpression : public cExpression
         void operator=(cNEDFunction *_f)  {type=NEDFUNC; ASSERT(_f); af=_f;}
 
         /**
-         * Operation. During evaluation of the expression, two items (or three,
-         * with '?') are popped out of the stack, the given operator
-         * is applied to them and the result is pushed back on the stack.
+         * Function object, with an interface not unlike cNEDFunction.
+         * This object will be deleted by expression's destructor.
+         */
+        void operator=(Functor *_f)  {type=FUNCTOR; ASSERT(_f); fu=_f;}
+
+        /**
+         * Unary, binary or tertiary (?: only) operations.
          */
         void operator=(OpType _op)  {type=OP; op=_op;}
     };
@@ -300,13 +307,6 @@ class SIM_API cDynamicExpression : public cExpression
 
     /** @name Miscellaneous utility functions. */
     //@{
-
-    /**
-     * Reads the object value from the ini file or from the user.
-     * FIXME clarify this.... (or maybe remove this function)
-     */
-    virtual cDynamicExpression& read();
-
     /**
      * Converts the expression to string.
      */
@@ -318,21 +318,6 @@ class SIM_API cDynamicExpression : public cExpression
      */
     virtual bool parse(const char *text);
     //@}
-
-    /** @name Utility functions for evaluating NED expressions */
-    //@{
-    static StkValue moduleIndex(cComponent *context, StkValue args[], int numargs);
-    static StkValue parentModuleIndex(cComponent *context, StkValue args[], int numargs);
-    static StkValue parameter(cComponent *context, StkValue args[], int numargs);
-    static StkValue parentParameter(cComponent *context, StkValue args[], int numargs);
-    static StkValue siblingModuleParameter(cComponent *context, StkValue args[], int numargs);
-    static StkValue indexedSiblingModuleParameter(cComponent *context, StkValue args[], int numargs);
-    static StkValue sizeofIdent(cComponent *context, StkValue args[], int numargs);
-    static StkValue sizeofGate(cComponent *context, StkValue args[], int numargs);
-    static StkValue sizeofParentModuleGate(cComponent *context, StkValue args[], int numargs);
-    static StkValue sizeofSiblingModuleGate(cComponent *context, StkValue args[], int numargs);
-    static StkValue sizeofIndexedSiblingModuleGate(cComponent *context, StkValue args[], int numargs);
-    //@}
 };
 
 namespace NEDSupport
@@ -342,9 +327,10 @@ typedef cDynamicExpression::StkValue StkValue; // abbreviation for local use
 
 class ModuleIndex : public cDynamicExpression::Functor
 {
-  protected:
   public:
     ModuleIndex();
+    ModuleIndex *dup() const {return new ModuleIndex();}
+    virtual const char *fullName() const {return "index";}
     virtual const char *argTypes() const {return "";}
     virtual char returnType() const {return 'L';}
     virtual StkValue evaluate(cComponent *context, StkValue args[], int numargs);
@@ -362,6 +348,8 @@ class ParameterRef : public cDynamicExpression::Functor
     std::string paramName;
   public:
     ParameterRef(const char *paramName, bool ofParent, bool printThis);
+    ParameterRef *dup() const {return new ParameterRef(paramName.c_str(), ofParent, printThis);}
+    virtual const char *fullName() const {return paramName.c_str();}
     virtual const char *argTypes() const {return "";}
     virtual char returnType() const {return '*';}
     virtual StkValue evaluate(cComponent *context, StkValue args[], int numargs);
@@ -380,6 +368,8 @@ class SiblingModuleParameterRef : public cDynamicExpression::Functor
     std::string paramName;
   public:
     SiblingModuleParameterRef(const char *moduleName, const char *paramName, bool ofParent, bool withModuleIndex);
+    SiblingModuleParameterRef *dup() const {return new SiblingModuleParameterRef(moduleName.c_str(), paramName.c_str(), ofParent, withModuleIndex);}
+    virtual const char *fullName() const {return paramName.c_str();}
     virtual const char *argTypes() const {return withModuleIndex ? "L" : "";}
     virtual char returnType() const {return '*';}
     virtual StkValue evaluate(cComponent *context, StkValue args[], int numargs);

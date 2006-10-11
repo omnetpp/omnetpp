@@ -118,13 +118,6 @@ class SIM_API cExpression : public cPolymorphic
 
     /** @name Miscellaneous utility functions. */
     //@{
-
-    /**
-     * Reads the object value from the ini file or from the user.
-     * FIXME clarify this....FIXME do we really need this function HERE? not only in cPar?
-     */
-    virtual cExpression& read() = 0;
-
     /**
      * Converts the expression to string.
      */

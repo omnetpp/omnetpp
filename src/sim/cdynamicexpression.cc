@@ -30,20 +30,33 @@
 
 void cDynamicExpression::Elem::operator=(const Elem& other)
 {
-    if (type=='S') delete [] s;
+    if (type==STR)
+        delete [] s;
     memcpy(this, &other, sizeof(Elem));
-    if (type=='S') s = opp_strdup(s);
+    if (type==STR)
+        s = opp_strdup(s);
+    else if (type==FUNCTOR)
+        fu = (Functor *) fu->dup();
+}
+
+cDynamicExpression::Elem::~Elem()
+{
+    if (type==STR)
+        delete [] s;
+    else if (type==FUNCTOR)
+        delete fu;
 }
 
 void cDynamicExpression::StkValue::operator=(const cPar& par)
 {
-    switch (par.type()) {
-        case 'B': *this = par.boolValue(); break;
-        case 'D': *this = par.doubleValue(); break;
-        case 'L': *this = par.doubleValue(); break;
-        case 'S': *this = par.stringValue(); break;
-        case 'X': *this = par.xmlValue(); break;
-        default: throw new cRuntimeError("internal error: bad cPar type: %s", par.fullPath().c_str());
+    switch (par.type())
+    {
+      case 'B': *this = par.boolValue(); break;
+      case 'D': *this = par.doubleValue(); break;
+      case 'L': *this = par.doubleValue(); break;
+      case 'S': *this = par.stringValue(); break;
+      case 'X': *this = par.xmlValue(); break;
+      default: throw new cRuntimeError("internal error: bad cPar type: %s", par.fullPath().c_str());
     }
 }
 
@@ -128,21 +141,6 @@ printf("DBG cDynamicExpression::evaluate: %s\n", toString().c_str()); //XXX
              stk[++tos] = *(e.p); break;
              break;
 
-           case Elem::NEDFUNC:
-             {
-             int numargs = e.af->numArgs();
-             int argpos = tos-numargs+1; // stk[] index of 1st arg to pass
-             if (argpos<0)
-                 throw new cRuntimeError(this,eESTKUFLOW);
-             const char *argtypes = e.af->argTypes();
-             for (int i=0; i<numargs; i++)
-                 if (stk[argpos+i].type != (argtypes[i]=='L' ? 'D' : argtypes[i]))
-                     throw new cRuntimeError(this,eEBADARGS,e.af->name());
-             stk[argpos] = e.af->functionPointer()(context, stk+argpos, numargs);
-             tos = argpos;
-             break;
-             }
-
            case Elem::MATHFUNC:
              switch (e.f->numArgs())
              {
@@ -184,6 +182,36 @@ printf("DBG cDynamicExpression::evaluate: %s\n", toString().c_str()); //XXX
                    throw new cRuntimeError(this,eBADEXP);
              }
              break;
+
+           case Elem::NEDFUNC:
+             {
+             int numargs = e.af->numArgs();
+             int argpos = tos-numargs+1; // stk[] index of 1st arg to pass
+             if (argpos<0)
+                 throw new cRuntimeError(this,eESTKUFLOW);
+             const char *argtypes = e.af->argTypes();
+             for (int i=0; i<numargs; i++)
+                 if (stk[argpos+i].type != (argtypes[i]=='L' ? 'D' : argtypes[i]))
+                     throw new cRuntimeError(this,eEBADARGS,e.af->name());
+             stk[argpos] = e.af->functionPointer()(context, stk+argpos, numargs);
+             tos = argpos;
+             break;
+             }
+
+           case Elem::FUNCTOR:
+             {
+             int numargs = e.fu->numArgs();
+             int argpos = tos-numargs+1; // stk[] index of 1st arg to pass
+             if (argpos<0)
+                 throw new cRuntimeError(this,eESTKUFLOW);
+             const char *argtypes = e.fu->argTypes();
+             for (int i=0; i<numargs; i++)
+                 if (stk[argpos+i].type != (argtypes[i]=='L' ? 'D' : argtypes[i]))
+                     throw new cRuntimeError(this,eEBADARGS,e.fu->fullName());
+             stk[argpos] = e.fu->evaluate(context, stk+argpos, numargs);
+             tos = argpos;
+             break;
+             }
 
            case Elem::OP:
              if (e.op==NEG || e.op==NOT || e.op==BIN_NOT)
@@ -400,12 +428,6 @@ cXMLElement *cDynamicExpression::xmlValue(cComponent *context)
     return v.xml;
 }
 
-cDynamicExpression& cDynamicExpression::read()
-{
-    // TODO
-    return *this;
-}
-
 std::string cDynamicExpression::toString() const
 {
     // We perform the same algorithm as during evaluation (i.e. stack machine),
@@ -473,6 +495,16 @@ std::string cDynamicExpression::toString() const
                  strstk[argpos] = tmp;
                  tos = argpos;
                  pristk[tos] = 0;
+                 break;
+                 }
+               case Elem::FUNCTOR:
+                 {
+                 int numargs = e.fu->numArgs();
+                 int argpos = tos-numargs+1; // strstk[] index of 1st arg to pass
+                 if (argpos<0)
+                     throw new cRuntimeError(this,eESTKUFLOW);
+                 strstk[argpos] = e.fu->toString(strstk+argpos, numargs);
+                 tos = argpos;
                  break;
                  }
                case Elem::OP:
