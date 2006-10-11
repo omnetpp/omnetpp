@@ -9,7 +9,6 @@ import org.omnetpp.figures.GateAnchor;
 import org.omnetpp.figures.SubmoduleFigure;
 import org.omnetpp.figures.layout.SubmoduleConstraint;
 import org.omnetpp.ned2.model.SubmoduleNodeEx;
-import org.omnetpp.resources.NEDResources;
 import org.omnetpp.resources.NEDResourcesPlugin;
 
 
@@ -105,6 +104,17 @@ public class SubmoduleEditPart extends ModuleEditPart {
     public float getScale() {
         // get the container compound module's scaling factor
         return ((CompoundModuleEditPart)getParent()).getScale();
+    }
+    
+    public boolean isSelectable() {
+        // TODO this is not a correct solutin because we cannot connect these modules via connections
+        // however this feature is required
+
+        // selection should be allowed ONLY if the submodule is defined in the current compound module
+        // if we inherited the submodule, we should not allow selection (and editing in this module)
+        // we own the submodule if the submodule is declared in the current compound module
+        // ie. our parent controllers model is the same object as our model's parent
+        return getParent().getModel() == ((SubmoduleNodeEx)getModel()).getCompoundModule();
     }
     
 }

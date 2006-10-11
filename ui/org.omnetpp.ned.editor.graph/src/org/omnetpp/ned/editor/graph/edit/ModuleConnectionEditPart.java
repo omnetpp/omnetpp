@@ -1,29 +1,19 @@
 package org.omnetpp.ned.editor.graph.edit;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.eclipse.draw2d.IFigure;
-import org.eclipse.draw2d.ManhattanConnectionRouter;
-import org.eclipse.draw2d.RelativeBendpoint;
 import org.eclipse.draw2d.RoutingAnimator;
 import org.eclipse.gef.EditPart;
 import org.eclipse.gef.EditPolicy;
 import org.eclipse.gef.editparts.AbstractConnectionEditPart;
-import org.omnetpp.common.color.ColorFactory;
-import org.omnetpp.common.displaymodel.ConnectionDisplayString;
-import org.omnetpp.common.displaymodel.DisplayString;
 import org.omnetpp.common.displaymodel.IDisplayStringChangeListener;
 import org.omnetpp.common.displaymodel.IDisplayString.Prop;
 import org.omnetpp.figures.ConnectionFigure;
-import org.omnetpp.figures.LayerSupport;
 import org.omnetpp.ned.editor.graph.edit.policies.NedConnectionEditPolicy;
 import org.omnetpp.ned.editor.graph.edit.policies.NedConnectionEndpointEditPolicy;
 import org.omnetpp.ned2.model.ConnectionNodeEx;
 import org.omnetpp.ned2.model.INEDChangeListener;
 import org.omnetpp.ned2.model.NEDElement;
 import org.omnetpp.ned2.model.NEDElementUtil;
-import org.omnetpp.ned2.model.WireBendpointModel;
 
 /**
  * Implements a Connection Editpart to represnt a Wire like connection.
