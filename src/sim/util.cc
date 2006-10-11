@@ -349,15 +349,15 @@ int opp_vsscanf(const char *s, const char *fmt, va_list va)
 
 //==========================================================================
 
-void opp_error(int errc...)
+void opp_error(ErrorCode errorcode...)
 {
     va_list va;
-    va_start(va, errc);
+    va_start(va, errorcode);
     char message[512];
-    vsprintf(message,emsg[errc],va);
+    vsprintf(message, cErrorMessages::get(errorcode), va);
     va_end(va);
 
-    throw new cRuntimeError(errc, message);
+    throw new cRuntimeError(errorcode, message);
 }
 
 void opp_error(const char *msgformat...)
@@ -365,28 +365,28 @@ void opp_error(const char *msgformat...)
     va_list va;
     va_start(va, msgformat);
     char message[512];
-    vsprintf(message,msgformat,va);
+    vsprintf(message, msgformat, va);
     va_end(va);
 
-    throw new cRuntimeError(eUSER,message);
+    throw new cRuntimeError(eUSER, message);
 }
 
-void opp_warning(int errc...)
+void opp_warning(ErrorCode errorcode...)
 {
     va_list va;
-    va_start(va, errc);
+    va_start(va, errorcode);
     char message[512];
-    vsprintf(message,emsg[errc],va);
+    vsprintf(message, cErrorMessages::get(errorcode),va);
     va_end(va);
 
     if (!simulation.contextModule())
     {
         // we're called from global context
-        ev.printfmsg( "%s.", message);
+        ev.printfmsg("%s.", message);
     }
     else
     {
-        ev.printfmsg( "Module %s: %s.", simulation.contextModule()->fullPath().c_str(), message);
+        ev.printfmsg("Module %s: %s.", simulation.contextModule()->fullPath().c_str(), message);
     }
 }
 
@@ -401,23 +401,23 @@ void opp_warning(const char *msgformat...)
     if (!simulation.contextModule())
     {
         // we're called from global context
-        ev.printfmsg( "%s.", message);
+        ev.printfmsg("%s.", message);
     }
     else
     {
-        ev.printfmsg( "Module %s: %s.", simulation.contextModule()->fullPath().c_str(), message);
+        ev.printfmsg("Module %s: %s.", simulation.contextModule()->fullPath().c_str(), message);
     }
 }
 
-void opp_terminate(int errc...)
+void opp_terminate(ErrorCode errorcode...)
 {
     va_list va;
-    va_start(va, errc);
+    va_start(va, errorcode);
     char message[512];
-    vsprintf(message,emsg[errc],va);
+    vsprintf(message, cErrorMessages::get(errorcode),va);
     va_end(va);
 
-    throw new cTerminationException(errc,message);
+    throw new cTerminationException(errorcode,message);
 }
 
 void opp_terminate(const char *msgformat...)

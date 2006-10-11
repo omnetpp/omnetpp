@@ -18,70 +18,56 @@
 #ifndef __ERRMSG_H
 #define __ERRMSG_H
 
+#include "defs.h"
 
-//
-// Error codes
-//
-enum {
-        eOK          =  0,
-        eBADCAST     =  1,
-        eCIRCREF     =  2,
-        eNUMARGS     =  3,
-        eNOMODIF     =  4,
-        eUISTARTUP   =  5,
-        eSTOPSIMRCVD =  6,
-        eNOMOD       =  7,
-        eNOGATE      =  8,
-        eINGATE      =  9,
-        eNOPARAM     = 10,
-        eNOMEM       = 11,
-        eINCAUSAL    = 12,
-        eMODFIN      = 13,
-        eBADTRANSF   = 14,
-        eBADINIT     = 15,
-        eUNEXP       = 16,
-        eNORECV      = 17,
-        eSTKLOW      = 18,
-        eENDEDOK     = 19,
-        eMODINI      = 20,
-        eNULLPTR     = 21,
-        eNULLREF     = 22,
-        eOUTVECT     = 23,
-        ePARCHF      = 24,
-        eNEGTIME     = 25,
-        eMATH        = 26,
-        eFPERR       = 27,
-        eNEGTOUT     = 28,
-        eNODEL       = 29,
-        eCANCEL      = 30,
-        eNONET       = 31,
-        eBADEXP      = 32,
-        eFINISH      = 33,
-        eENDSIM      = 34,
-        eREALTIME    = 35,
-        eSIMTIME     = 36,
-        eCANTDUP     = 37,
-        eINFLOOP     = 38,
-        eSTATECHG    = 39,
-        eCANTCOPY    = 40,
-        eBADGATE     = 41,
-        eNOTCONN     = 42,
-        eLOCKED      = 43,
-        eCANTPACK    = 44,
-        eNOCHANDEF   = 45,
-        eNOSUCHNET   = 46,
-        eNOPARSIM    = 47,
-        eBADARGS     = 48,
-        eBACKSCHED   = 49,
-        eOUTGATE     = 50,
-        eCHERROR     = 51, //NL
-        eCHDELAY     = 52, //NL
-        eARRAY       = 53, //NL
-        eCUSTOM      = 54,
-        eNOMEM2      = 55,
-        eUSER        = 56
+/**
+ * Error codes
+ */
+enum ErrorCode
+{
+    eOK = 0,  // eOK must have zero numeric value
+    eBACKSCHED,
+    eBADCAST,
+    eBADEXP,
+    eBADINIT,
+    eCANCEL,
+    eCANTCOPY,
+    eCANTDUP,
+    eCANTPACK,
+    eCUSTOM,
+    eENDEDOK,
+    eENDSIM,
+    eFINISH,
+    eINFLOOP,
+    eLOCKED,
+    eMODFIN,
+    eMODINI,
+    eNEGTIME,
+    eNEGTOUT,
+    eNOCHANDEF,
+    eNONET,
+    eNOPARSIM,
+    eNORECV,
+    eNOSUCHNET,
+    eNUMARGS,
+    eREALTIME,
+    eSIMTIME,
+    eSTATECHG,
+    eSTKLOW,
+    eSTOPSIMRCVD,
+    eUSER
 };
 
-extern char *emsg[];
+/**
+ * Provides error messages for error codes.
+ *
+ * @ingroup Internals
+ */
+class SIM_API cErrorMessages
+{
+  public:
+    cErrorMessages() {}
+    static const char *get(ErrorCode e);
+};
 
 #endif

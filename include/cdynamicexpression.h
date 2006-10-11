@@ -302,6 +302,21 @@ class SIM_API cDynamicExpression : public cExpression
      */
     virtual bool parse(const char *text);
     //@}
+
+    /** @name Utility functions for evaluating NED expressions */
+    //@{
+    static StkValue moduleIndex(cComponent *context, StkValue args[], int numargs);
+    static StkValue parentModuleIndex(cComponent *context, StkValue args[], int numargs);
+    static StkValue parameter(cComponent *context, StkValue args[], int numargs);
+    static StkValue parentParameter(cComponent *context, StkValue args[], int numargs);
+    static StkValue siblingModuleParameter(cComponent *context, StkValue args[], int numargs);
+    static StkValue indexedSiblingModuleParameter(cComponent *context, StkValue args[], int numargs);
+    static StkValue sizeofIdent(cComponent *context, StkValue args[], int numargs);
+    static StkValue sizeofGate(cComponent *context, StkValue args[], int numargs);
+    static StkValue sizeofParentModuleGate(cComponent *context, StkValue args[], int numargs);
+    static StkValue sizeofSiblingModuleGate(cComponent *context, StkValue args[], int numargs);
+    static StkValue sizeofIndexedSiblingModuleGate(cComponent *context, StkValue args[], int numargs);
+    //@}
 };
 
 #endif

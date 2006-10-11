@@ -46,7 +46,7 @@ class SIM_API cException
      * If the first arg is non-NULL, the message text will be prepended (if needed)
      * with the object type and name, like this: "(cArray)array: ..."
      */
-    void init(const cPolymorphic *obj, int errc, const char *fmt, va_list va);
+    void init(const cPolymorphic *obj, ErrorCode errorcode, const char *fmt, va_list va);
 
     // helper for init()
     void storeCtx();
@@ -73,7 +73,7 @@ class SIM_API cException
      * string table. The error string may expect printf-like arguments
      * (%s, %d) which also have to be passed to the constructor.
      */
-    cException(int errcode,...);
+    cException(ErrorCode errcode,...);
 
     /**
      * To be called like printf(). The error code is set to eCUSTOM.
@@ -87,7 +87,7 @@ class SIM_API cException
      * The 1st arg is the object where the error occurred: its class and
      * object name will be prepended to the message like this: "(cArray)arr".
      */
-    cException(const cPolymorphic *where, int errcode,...);
+    cException(const cPolymorphic *where, ErrorCode errcode,...);
 
     /**
      * To be called like printf(). The error code is set to eCUSTOM.
@@ -160,7 +160,7 @@ class SIM_API cTerminationException : public cException
      * string table. The error string may expect printf-like arguments
      * (%s, %d) which also have to be passed to the constructor.
      */
-    cTerminationException(int errcode,...);
+    cTerminationException(ErrorCode errcode,...);
 
     /**
      * To be called like printf(). The error code is set to eCUSTOM.
@@ -188,7 +188,7 @@ class SIM_API cRuntimeError : public cException
      * string table. The error string may expect printf-like arguments
      * (%s, %d) which also have to be passed to the constructor.
      */
-    cRuntimeError(int errcode,...);
+    cRuntimeError(ErrorCode errcode,...);
 
     /**
      * To be called like printf(). The error code is set to eCUSTOM.
@@ -202,7 +202,7 @@ class SIM_API cRuntimeError : public cException
      * The 1st arg is the object where the error occurred: its class and
      * object name will be prepended to the message like this: "(cArray)arr".
      */
-    cRuntimeError(const cPolymorphic *where, int errcode,...);
+    cRuntimeError(const cPolymorphic *where, ErrorCode errcode,...);
 
     /**
      * To be called like printf(). The error code is set to eCUSTOM.

@@ -41,11 +41,11 @@ cException::cException()
     msg = "n/a";
 }
 
-cException::cException(int errc...)
+cException::cException(ErrorCode errorcode...)
 {
     va_list va;
-    va_start(va, errc);
-    init(NULL, errc, emsg[errc], va);
+    va_start(va, errorcode);
+    init(NULL, errorcode, cErrorMessages::get(errorcode), va);
     va_end(va);
 }
 
@@ -57,11 +57,11 @@ cException::cException(const char *msgformat...)
     va_end(va);
 }
 
-cException::cException(const cPolymorphic *where, int errc...)
+cException::cException(const cPolymorphic *where, ErrorCode errorcode...)
 {
     va_list va;
-    va_start(va, errc);
-    init(where, errc, emsg[errc], va);
+    va_start(va, errorcode);
+    init(where, errorcode, cErrorMessages::get(errorcode), va);
     va_end(va);
 }
 
@@ -96,10 +96,10 @@ void cException::exitIfStartupError()
     }
 }
 
-void cException::init(const cPolymorphic *where, int errc, const char *fmt, va_list va)
+void cException::init(const cPolymorphic *where, ErrorCode errorcode, const char *fmt, va_list va)
 {
     // store error code
-    errorcode = errc;
+    errorcode = errorcode;
 
     // print "(%s)%s:" conditionally:
     //  - if object is the module itself: skip
@@ -127,11 +127,11 @@ void cException::init(const cPolymorphic *where, int errc, const char *fmt, va_l
 
 //---
 
-cTerminationException::cTerminationException(int errc...)
+cTerminationException::cTerminationException(ErrorCode errorcode...)
 {
     va_list va;
-    va_start(va, errc);
-    init(NULL, errc, emsg[errc], va);
+    va_start(va, errorcode);
+    init(NULL, errorcode, cErrorMessages::get(errorcode), va);
     va_end(va);
 }
 
@@ -145,11 +145,11 @@ cTerminationException::cTerminationException(const char *msgformat...)
 
 //---
 
-cRuntimeError::cRuntimeError(int errc...)
+cRuntimeError::cRuntimeError(ErrorCode errorcode...)
 {
     va_list va;
-    va_start(va, errc);
-    init(NULL, errc, emsg[errc], va);
+    va_start(va, errorcode);
+    init(NULL, errorcode, cErrorMessages::get(errorcode), va);
     va_end(va);
     breakIntoDebuggerIfRequested();
 }
@@ -163,11 +163,11 @@ cRuntimeError::cRuntimeError(const char *msgformat...)
     breakIntoDebuggerIfRequested();
 }
 
-cRuntimeError::cRuntimeError(const cPolymorphic *where, int errc...)
+cRuntimeError::cRuntimeError(const cPolymorphic *where, ErrorCode errorcode...)
 {
     va_list va;
-    va_start(va, errc);
-    init(where, errc, emsg[errc], va);
+    va_start(va, errorcode);
+    init(where, errorcode, cErrorMessages::get(errorcode), va);
     va_end(va);
     breakIntoDebuggerIfRequested();
 }

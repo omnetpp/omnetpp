@@ -732,7 +732,7 @@ cMessagePar& cMessagePar::setRedirection(cMessagePar *par)
     while (p)
     {
         if (p==this)
-            throw new cRuntimeError(this,eCIRCREF);
+            throw new cRuntimeError(this,"circular reference in indirections");
         p = p->isRedirected() ? p->ind.par : NULL;
     }
 
