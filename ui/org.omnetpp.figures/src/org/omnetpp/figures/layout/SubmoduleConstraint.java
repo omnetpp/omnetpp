@@ -16,10 +16,10 @@ public class SubmoduleConstraint extends Rectangle {
 	protected int vectorIndex = 0;
 	protected int vectorSize = 0;
 
-	public SubmoduleConstraint(IDisplayString dps) {
+	public SubmoduleConstraint(IDisplayString dps, Float scale) {
 		super();
 		// copy the location and size from the displaystring
-		Point loc = dps.getLocation();
+		Point loc = dps.getLocation(scale);
         // special case:
         // Integer.MIN_VALUE signals that the coordinate is unpinned and the
         // layouter can move it freely (if no location is specified in the displaystring)
@@ -27,7 +27,7 @@ public class SubmoduleConstraint extends Rectangle {
         	loc = new Point(Integer.MIN_VALUE, Integer.MIN_VALUE);
 
         setLocation(loc);
-        setSize(dps.getSize());
+        setSize(dps.getSize(scale));
 	}
 
 	public void setVectorName(String name) {

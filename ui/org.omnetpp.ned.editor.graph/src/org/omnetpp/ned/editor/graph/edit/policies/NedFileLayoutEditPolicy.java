@@ -127,7 +127,7 @@ public class NedFileLayoutEditPolicy extends FlowLayoutEditPolicy {
 
         // if size constrant is not specified, then remove it from the model too
         // TODO is this needed?
-        if ((modelConstraint.width < 0 || modelConstraint.height < 0) && module.getDisplayString().getCompoundSize() == null)
+        if ((modelConstraint.width < 0 || modelConstraint.height < 0) && module.getDisplayString().getCompoundSize(null) == null)
             cmd.setSize(null);
         
         return cmd;

@@ -99,5 +99,10 @@ abstract public class ModuleEditPart extends ContainerEditPart implements NodeEd
 		else if (INamedGraphNode.ATT_DEST_CONNECTION.equals(attr))
 			refreshTargetConnections();
 	}
+    
+    /**
+     * @return The scale factor of the module
+     */
+    public abstract float getScale();
 
 }

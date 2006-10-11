@@ -308,7 +308,7 @@ public class CompoundModuleFigure extends ModuleFigure
         // set the location and size using the models helper methods
         // if the size is specified in the displaystring we should set it as preferred size
         // otherwise getPreferredSize should return the size calculated from the children
-    	Dimension newSize = dps.getCompoundSize();
+    	Dimension newSize = dps.getCompoundSize(null);
     	Dimension oldSize = getSize();
     	
     	long seed = dps.getAsIntDef(IDisplayString.Prop.MODULE_LAYOUT_SEED, 1);
@@ -359,16 +359,17 @@ public class CompoundModuleFigure extends ModuleFigure
         		ColorFactory.asColor(dps.getAsStringDef(IDisplayString.Prop.MODULE_BORDERCOL)), 
         		dps.getAsIntDef(IDisplayString.Prop.MODULE_BORDERWIDTH, -1));
 
+        // scaling support
+        setScale(
+                dps.getAsFloatDef(IDisplayString.Prop.MODULE_SCALE, 1),
+                dps.getAsStringDef(IDisplayString.Prop.MODULE_UNIT));
+
         // grid support
         setGrid(
-        		dps.unit2pixel(dps.getAsIntDef(IDisplayString.Prop.MODULE_TICKDISTANCE, -1)), 
+        		dps.unit2pixel(dps.getAsIntDef(IDisplayString.Prop.MODULE_TICKDISTANCE, -1), null), 
         		dps.getAsIntDef(IDisplayString.Prop.MODULE_TICKNUMBER, -1), 
         		ColorFactory.asColor(dps.getAsStringDef(IDisplayString.Prop.MODULE_GRIDCOL)));
 
-        // scaling support
-        setScale(
-        		dps.getAsFloatDef(IDisplayString.Prop.MODULE_SCALE, 1),
-        		dps.getAsStringDef(IDisplayString.Prop.MODULE_UNIT));
         
         invalidate();
 	}

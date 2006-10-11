@@ -27,18 +27,18 @@ public class SetCompoundModuleConstraintCommand extends Command {
 
     @Override
     public void execute() {
-        oldSize = module.getDisplayString().getCompoundSize();
+        oldSize = module.getDisplayString().getCompoundSize(null);
         redo();
     }
 
     @Override
     public void redo() {
-        module.getDisplayString().setCompoundSize(newSize);
+        module.getDisplayString().setCompoundSize(newSize, null);
     }
 
     @Override
     public void undo() {
-        module.getDisplayString().setCompoundSize(oldSize);
+        module.getDisplayString().setCompoundSize(oldSize, null);
     }
 
     public void setSize(Dimension p) {

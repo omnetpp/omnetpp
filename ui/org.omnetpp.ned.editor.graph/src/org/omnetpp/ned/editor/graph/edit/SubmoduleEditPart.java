@@ -80,8 +80,13 @@ public class SubmoduleEditPart extends ModuleEditPart {
         								.getEffectiveDisplayString(submNode.getType());
         dps.setDefaults(fallbackDps);
         
+        // get the scale factor for this submodule (coming from the containing compound module's displaystring)
+        float scale = getScale();
+        // set it in the figure, so size and range indicator can use it
+        getSubmoduleFigure().setScale(scale);
         // set the layout constraint for the figure (should be set BEFORE figure.setDisplayString() )
-        SubmoduleConstraint constr = new SubmoduleConstraint(dps);
+        // along with the scaling factor coming from the compound module
+        SubmoduleConstraint constr = new SubmoduleConstraint(dps, scale);
         constr.setVectorName(nameToDisplay);
         // FIXME put the correct values here from the model
         constr.setVectorSize(5);
@@ -92,10 +97,14 @@ public class SubmoduleEditPart extends ModuleEditPart {
         getSubmoduleFigure().setDisplayString(dps);
 
         // TODO implement a separate PIN decoration decorator figure in submodule figure
-        if (dps.getLocation() != null)
+        if (dps.getLocation(scale) != null)
         	getSubmoduleFigure().setImageDecoration(ImageFactory.getImage(ImageFactory.DEFAULT_PIN));
         
     }
-    
+
+    public float getScale() {
+        // get the container compound module's scaling factor
+        return ((CompoundModuleEditPart)getParent()).getScale();
+    }
     
 }

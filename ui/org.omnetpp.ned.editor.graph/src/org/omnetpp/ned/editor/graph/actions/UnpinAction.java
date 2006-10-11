@@ -49,7 +49,7 @@ public class UnpinAction extends org.eclipse.gef.ui.actions.SelectionAction {
 				return false;
 			// at least one submodule must have a location
 			SubmoduleNodeEx smod = (SubmoduleNodeEx)((SubmoduleEditPart)o).getModel(); 
-			if (smod.getDisplayString().getLocation() != null) 
+			if (smod.getDisplayString().getLocation(null) != null) 
 				endresult = true;
 		}
 		return endresult;

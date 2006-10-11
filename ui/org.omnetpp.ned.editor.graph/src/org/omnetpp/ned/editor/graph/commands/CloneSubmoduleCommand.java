@@ -28,9 +28,11 @@ public class CloneSubmoduleCommand extends Command {
     private Map<INamedGraphNode, Rectangle> bounds;
     private Map<INamedGraphNode, Integer> indices;
     private Map<INamedGraphNode, INamedGraphNode> old2newMapping;
+    private float scale = 1.0f;
 
-    public CloneSubmoduleCommand(ISubmoduleContainer parent) {
+    public CloneSubmoduleCommand(ISubmoduleContainer parent, float scale) {
         super("Clone");
+        this.scale = scale;
         this.parent = parent;
         modules = new LinkedList<INamedGraphNode> ();
     }
@@ -77,7 +79,11 @@ public class CloneSubmoduleCommand extends Command {
 
         // duplicate the subtree but do not add to the new parent yet
         newModule = (INamedGraphNode)((NEDElement)oldModule).deepDup(null);
-        newModule.getDisplayString().setLocation(newBounds.getLocation());
+        // FIXME is this working ok if we clone inside a scaled compound module???
+        // if not, we should provide a correct scaling factor
+//             float scale = ((CompoundModuleNodeEx)parent).getDisplayString().getScale();
+
+        newModule.getDisplayString().setLocation(newBounds.getLocation(), scale);
 
         if (index < 0) {
             parent.addSubmodule(newModule);

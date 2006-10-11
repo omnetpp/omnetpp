@@ -18,12 +18,14 @@ public class SetConstraintCommand extends Command {
     private Point oldPos;
     private Dimension oldSize;
     private INamedGraphNode module;
+    private float scale = 1.0f;
 
-    public SetConstraintCommand(INamedGraphNode newModule) {
+    public SetConstraintCommand(INamedGraphNode newModule, float scale) {
     	super();
+        this.scale = scale;
         module = newModule;
-        newPos = module.getDisplayString().getLocation();
-        newSize = module.getDisplayString().getSize();
+        newPos = module.getDisplayString().getLocation(scale);
+        newSize = module.getDisplayString().getSize(scale);
     }
 
     @Override
@@ -37,19 +39,19 @@ public class SetConstraintCommand extends Command {
 
     @Override
     public void execute() {
-        oldSize = module.getDisplayString().getSize();
-        oldPos = module.getDisplayString().getLocation();
+        oldSize = module.getDisplayString().getSize(scale);
+        oldPos = module.getDisplayString().getLocation(scale);
         redo();
     }
 
     @Override
     public void redo() {
-        module.getDisplayString().setConstraint(newPos, newSize);
+        module.getDisplayString().setConstraint(newPos, newSize, scale);
     }
 
     @Override
     public void undo() {
-        module.getDisplayString().setConstraint(oldPos, oldSize);
+        module.getDisplayString().setConstraint(oldPos, oldSize, scale);
     }
 
     public void setConstraint(Rectangle r) {

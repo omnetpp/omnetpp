@@ -23,6 +23,8 @@ import org.omnetpp.ned.editor.graph.actions.UnpinAction;
 import org.omnetpp.ned.editor.graph.commands.CloneSubmoduleCommand;
 import org.omnetpp.ned.editor.graph.commands.CreateSubmoduleCommand;
 import org.omnetpp.ned.editor.graph.commands.SetConstraintCommand;
+import org.omnetpp.ned.editor.graph.edit.ModuleEditPart;
+import org.omnetpp.ned2.model.CompoundModuleNodeEx;
 import org.omnetpp.ned2.model.INamedGraphNode;
 import org.omnetpp.ned2.model.ISubmoduleContainer;
 import org.omnetpp.ned2.model.SubmoduleNodeEx;
@@ -62,7 +64,9 @@ public class CompoundModuleLayoutEditPolicy extends DesktopLayoutEditPolicy {
     @SuppressWarnings("unchecked")
 	@Override
     protected Command getCloneCommand(ChangeBoundsRequest request) {
-        CloneSubmoduleCommand cloneCmd = new CloneSubmoduleCommand((ISubmoduleContainer) getHost().getModel());
+        CloneSubmoduleCommand cloneCmd 
+            = new CloneSubmoduleCommand((ISubmoduleContainer) getHost().getModel(), 
+                                        ((ModuleEditPart)getHost()).getScale());
 
         for (GraphicalEditPart currPart : (List<GraphicalEditPart>)request.getEditParts()) {
             cloneCmd.addModule((INamedGraphNode)currPart.getModel(), 
@@ -97,14 +101,17 @@ public class CompoundModuleLayoutEditPolicy extends DesktopLayoutEditPolicy {
         if (modelConstraint.width < 0) modelConstraint.x += figureBounds.width / 2;
         if (modelConstraint.height < 0) modelConstraint.y += figureBounds.height / 2;
 
+        // get the compound module scaling factor
+        float scale = ((ModuleEditPart)child).getScale();
+        
         // create the constraint change command 
         INamedGraphNode module = (INamedGraphNode) child.getModel();
-        SetConstraintCommand cmd = new SetConstraintCommand(module);
+        SetConstraintCommand cmd = new SetConstraintCommand(module, scale);
         cmd.setConstraint(modelConstraint);
 
         // if size constrant is not specified, then remove it from the model too
         // TODO is this needed?
-        if ((modelConstraint.width < 0 || modelConstraint.height < 0) && module.getDisplayString().getSize() == null)
+        if ((modelConstraint.width < 0 || modelConstraint.height < 0) && module.getDisplayString().getSize(null) == null)
             cmd.setSize(null);
         
         return cmd;
@@ -141,10 +148,13 @@ public class CompoundModuleLayoutEditPolicy extends DesktopLayoutEditPolicy {
         // create the constraint change command 
         INamedGraphNode module = (INamedGraphNode) child.getModel();
         // do not create a command for submodules that do not have a location
-        if (module.getDisplayString().getLocation() == null)
+        if (module.getDisplayString().getLocation(null) == null)
         	return null;
+
+        // get the compound module scaling factor
+        float scale = ((ModuleEditPart)child).getScale();
         // otherwise create a command that deletes the location from the displayestring
-        SetConstraintCommand cmd = new SetConstraintCommand(module);
+        SetConstraintCommand cmd = new SetConstraintCommand(module, scale);
         // delete the location info, so the node can be moved freely by the layouting algorythm
         // we leave the size unchanged
         cmd.setLocation(null);

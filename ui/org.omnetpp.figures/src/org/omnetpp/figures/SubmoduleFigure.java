@@ -46,6 +46,7 @@ public class SubmoduleFigure extends ModuleFigure implements HandleBounds {
     protected TooltipFigure tooltipFigure = new TooltipFigure();
     protected Shape rangeFigure = new Ellipse();
     protected CalloutFigure calloutFigure = new CalloutFigure();
+    protected float scale = 1.0f;
 
     public SubmoduleFigure() {
         setLayoutManager(new StackLayout());
@@ -307,7 +308,7 @@ public class SubmoduleFigure extends ModuleFigure implements HandleBounds {
 		lastDisplayString = dps;
         // range support
         setRange(
-        		dps.getRange(),
+        		dps.getRange(getScale()),
         		ColorFactory.asColor(dps.getAsStringDef(IDisplayString.Prop.RANGEFILLCOL)),
         		ColorFactory.asColor(dps.getAsStringDef(IDisplayString.Prop.RANGEBORDERCOL)),
         		dps.getAsIntDef(IDisplayString.Prop.RANGEBORDERWIDTH, -1));
@@ -333,8 +334,8 @@ public class SubmoduleFigure extends ModuleFigure implements HandleBounds {
         // set the figure properties
         setShape(img, 
         		dps.getAsStringDef(IDisplayString.Prop.SHAPE), 
-        		dps.getSize().width, 
-        		dps.getSize().height,
+        		dps.getSize(getScale()).width, 
+        		dps.getSize(getScale()).height,
         		ColorFactory.asColor(dps.getAsStringDef(IDisplayString.Prop.FILLCOL)),
         		ColorFactory.asColor(dps.getAsStringDef(IDisplayString.Prop.BORDERCOL)),
         		dps.getAsIntDef(IDisplayString.Prop.BORDERWIDTH, -1));
@@ -355,4 +356,21 @@ public class SubmoduleFigure extends ModuleFigure implements HandleBounds {
 
         invalidate();
 	}
+
+    
+    /**
+     * @return The current scaling factor for the submodule
+     */
+    public float getScale() {
+        return scale;
+    }
+
+    /**
+     * Sets the scale factor
+     * @param scale
+     */
+    public void setScale(float scale) {
+        this.scale = scale;
+    }
+
 }

@@ -202,37 +202,41 @@ public interface IDisplayString {
 
 	/**
 	 * Converts a unit based location to pixel based
+     * @param scale A scaling parameter to convert to and from unit. If it's NULL the local scaling
+     *              factor stored in the display string will be used
 	 * @return The location property (in pixel)
 	 */
-	public Point getLocation();
+	public Point getLocation(Float scale);
 
 	/**
 	 * @return The size of submodule (in pixels)
 	 */
-	public Dimension getSize();
+	public Dimension getSize(Float scale);
 
 	/**
 	 * @return The size of compound module (in pixels)
 	 */
-	public Dimension getCompoundSize();
+	public Dimension getCompoundSize(Float scale);
 
 	/**
      * Returns the range converted to pixels
      * @return
      */
-    public int getRange();
+    public int getRange(Float scale);
 
     /**
 	 * Converts the provided value (in pixel) to unit
 	 * @param pixel 
+     * @param overrideScale If not NULL it will be used as scaling factor instead of the stored one
 	 * @return Value in units
 	 */
-	public float pixel2unit(int pixel);
+	public float pixel2unit(int pixel, Float overrideScale);
 	
 	/**
 	 * Converts the provided value (in unit) to pixel
 	 * @param unit
+     * @param overrideScale If not NULL it will be used as scaling factor instead of the stored one
 	 * @return
 	 */
-	public int unit2pixel(float unit);
+	public int unit2pixel(float unit, Float overrideScale);
 }

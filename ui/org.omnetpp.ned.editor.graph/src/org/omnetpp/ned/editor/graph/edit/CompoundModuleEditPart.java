@@ -170,4 +170,11 @@ public class CompoundModuleEditPart extends ModuleEditPart {
 	public GateAnchor getConnectionAnchor(String gate) {
 		return new CompoundModuleGateAnchor(getFigure());
 	}
+    
+    /**
+     * @return The current scaling factor of the compound module
+     */
+    public float getScale() {
+        return ((CompoundModuleNodeEx)getModel()).getDisplayString().getScale();
+    }
 }

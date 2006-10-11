@@ -36,7 +36,9 @@ public class CreateSubmoduleCommand extends org.eclipse.gef.commands.Command {
         setLabel("Create " + child.getName());
 
         if (rect != null) {
-            child.getDisplayString().setConstraint(rect.getLocation(), rect.getSize());
+            // get the scaling factor from the container module
+            float scale = ((CompoundModuleNodeEx)parent).getDisplayString().getScale();
+            child.getDisplayString().setConstraint(rect.getLocation(), rect.getSize(), scale);
         }
         redo();
     }

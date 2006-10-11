@@ -33,6 +33,9 @@ public class DisplayString implements IDisplayString {
     // use only a week reference so if the referenced fallback displaystring is deleted
     // along with the containing model element, it will not be held in the memory
     protected WeakReference<DisplayString> defaults = null;
+    // stores a reference to the container object's (ie. compound module) display string
+    // it is used to access values from there (example scale value)
+//    protected WeakReference<IDisplayStringProvider> containerDpsProvider = null;
     // whether notification is enabled or not
     protected boolean notifyEnabled = true;
     
@@ -169,19 +172,37 @@ public class DisplayString implements IDisplayString {
      * @return The currently set default display string
      */
     public DisplayString getDefaults() {
-    	if (defaults != null)
-    		return defaults.get();
-    	return null;
-	}
+        if (defaults != null)
+            return defaults.get();
+        return null;
+    }
+
+    /**
+     * Sets the default display string used if the current object has empty or null value for a
+     * requested property
+     * @param defaults
+     */
+    public void setDefaults(DisplayString defaults) {
+        this.defaults = new WeakReference<DisplayString>(defaults);
+    }
+
+    /**
+     * @return The currently set container display string
+     */
+//    public IDisplayStringProvider getContainerDisplayString() {
+//    	if (containerDpsProvider != null)
+//    		return containerDpsProvider.get();
+//    	return null;
+//	}
 
 	/**
-	 * Sets the default display string used if the current object has empty or null value for a
+	 * Sets the container objects (for accessing properties like scale factor)
 	 * requested property
-	 * @param defaults
+	 * @param containerDpsProv
 	 */
-	public void setDefaults(DisplayString defaults) {
-		this.defaults = new WeakReference<DisplayString>(defaults);
-	}
+//	public void setContainerDisplayString(IDisplayStringProvider containerDpsProv) {
+//		this.containerDpsProvider = new WeakReference<IDisplayStringProvider>(containerDpsProv);
+//	}
 
 	/**
      * Returns the value of the given tag on the given position
@@ -401,28 +422,40 @@ public class DisplayString implements IDisplayString {
     /* (non-Javadoc)
 	 * @see org.omnetpp.ned2.model.IDisplayString#getScale()
 	 */
-    // FIXME XXX scaling must be calculated differently for submodule and compound module
-    // submodule's scale should be the same as it's containing compoundmodule scale
 	public float getScale() {
+//        // if we have a container (ie we are a submodule), get the scaling factor from there
+//        if (getContainerDisplayString() != null)
+//            return getContainerDisplayString().getDisplayString().getScale();
+        
 		return getAsFloatDef(Prop.MODULE_SCALE, 1.0f);
 	}
     
     // helper functions for setting and getting the location and size properties
 	/**
-	 * Converts the provided value (in pixel) to unit
-	 * @param pixel 
-	 * @return Value in units
 	 */
-	public final float pixel2unit(int pixel) {
+	/**
+     * Converts the provided value (in pixel) to unit
+     * @param pixel 
+     * @param overrideScale If not NULL it will be used as scaling factor instead of the stored one
+     * @return Value in units
+	 */
+	public final float pixel2unit(int pixel, Float overrideScale) {
+        if (overrideScale != null)
+            return pixel / overrideScale;
+        
 		return  pixel / getScale();
 	}
 
 	/**
 	 * Converts the provided value (in unit) to pixel
 	 * @param unit
+     * @param overrideScale If not NULL it will be used as scaling factor instead of the stored one
 	 * @return
 	 */
-	public final int unit2pixel(float unit) {
+	public final int unit2pixel(float unit, Float overrideScale) {
+        if (overrideScale != null)
+            return (int)(unit * overrideScale);
+        
 		return (int)(unit * getScale());
 	}
 	
@@ -430,8 +463,8 @@ public class DisplayString implements IDisplayString {
      * Returns the range converted to pixels
      * @return
      */
-    public int getRange() {
-    	int range = unit2pixel(getAsFloatDef(DisplayString.Prop.RANGE, -1.0f));
+    public int getRange(Float scale) {
+    	int range = unit2pixel(getAsFloatDef(DisplayString.Prop.RANGE, -1.0f), scale);
     	if (range <= 0) range = -1;
     	return range;
     }
@@ -439,20 +472,20 @@ public class DisplayString implements IDisplayString {
     /* (non-Javadoc)
 	 * @see org.omnetpp.ned2.model.IDisplayString#getLocation()
 	 */
-    public Point getLocation() {
+    public Point getLocation(Float scale) {
         Float x = getAsFloat(Prop.X);
         Float y = getAsFloat(Prop.Y);
         // if it's unspecified in any direction we should return a NULL constraint
         if (x == null || y == null)
             return null;
         
-        return new Point (unit2pixel(x), unit2pixel(y));
+        return new Point (unit2pixel(x, scale), unit2pixel(y, scale));
     }
 
     /**
      * @param location Where to place the element (in pixels)
      */
-    public void setLocation(Point location) {
+    public void setLocation(Point location, Float scale) {
     	// disable the notification so we will not send two notify for the two coordinate change
     	boolean tempNotifyState = notifyEnabled;
     	// disable the notification so we will not send two notify for the two coordinate change
@@ -462,8 +495,8 @@ public class DisplayString implements IDisplayString {
             set(Prop.X, null);
             set(Prop.Y, null);
         } else { 
-            set(Prop.X, String.valueOf(pixel2unit(location.x)));
-            set(Prop.Y, String.valueOf(pixel2unit(location.y)));
+            set(Prop.X, String.valueOf(pixel2unit(location.x, scale)));
+            set(Prop.Y, String.valueOf(pixel2unit(location.y, scale)));
         }
         // restore original notify state
     	notifyEnabled = tempNotifyState;
@@ -476,10 +509,10 @@ public class DisplayString implements IDisplayString {
     /* (non-Javadoc)
 	 * @see org.omnetpp.ned2.model.IDisplayString#getSize()
 	 */
-    public Dimension getSize() {
-    	int width = unit2pixel(getAsFloatDef(Prop.WIDTH, -1.0f));
+    public Dimension getSize(Float scale) {
+    	int width = unit2pixel(getAsFloatDef(Prop.WIDTH, -1.0f), scale);
         width = width > 0 ? width : -1; 
-        int height = unit2pixel(getAsFloatDef(Prop.HEIGHT, -1.0f));
+        int height = unit2pixel(getAsFloatDef(Prop.HEIGHT, -1.0f), scale);
         height = height > 0 ? height : -1; 
         
         return new Dimension(width, height);
@@ -490,7 +523,7 @@ public class DisplayString implements IDisplayString {
      * Sets the size of the element (in pixels)
      * @param size
      */
-    public void setSize(Dimension size) {
+    public void setSize(Dimension size, Float scale) {
     	// disable the notification so we will not send two notify for the two coordinate change
     	boolean tempNotifyState = notifyEnabled;
     	notifyEnabled = false;
@@ -498,13 +531,13 @@ public class DisplayString implements IDisplayString {
         if (size == null || size.width < 0 ) 
             set(Prop.WIDTH, null);
         else
-            set(Prop.WIDTH, String.valueOf(pixel2unit(size.width)));
+            set(Prop.WIDTH, String.valueOf(pixel2unit(size.width, scale)));
 
         // if the size is unspecified, remove the size constraint from the model
         if (size == null || size.height < 0) 
             set(Prop.HEIGHT, null);
         else
-            set(Prop.HEIGHT, String.valueOf(pixel2unit(size.height)));
+            set(Prop.HEIGHT, String.valueOf(pixel2unit(size.height, scale)));
 
         // restore original notify state
     	notifyEnabled = tempNotifyState;
@@ -517,10 +550,10 @@ public class DisplayString implements IDisplayString {
     /**
      * @return The size of module (pixel) if represented as compound (bgb tag)
      */
-    public Dimension getCompoundSize() {
-    	int width = unit2pixel(getAsFloatDef(Prop.MODULE_WIDTH, -1.0f));
+    public Dimension getCompoundSize(Float scale) {
+    	int width = unit2pixel(getAsFloatDef(Prop.MODULE_WIDTH, -1.0f), scale);
         width = width > 0 ? width : -1; 
-        int height = unit2pixel(getAsFloatDef(Prop.MODULE_HEIGHT, -1.0f));
+        int height = unit2pixel(getAsFloatDef(Prop.MODULE_HEIGHT, -1.0f), scale);
         height = height > 0 ? height : -1; 
         
         return new Dimension(width, height);
@@ -531,7 +564,7 @@ public class DisplayString implements IDisplayString {
      * Sets the size of the element (in pixels)
      * @param size
      */
-    public void setCompoundSize(Dimension size) {
+    public void setCompoundSize(Dimension size, Float scale) {
     	// disable the notification so we will not send two notify for the two coordinate change
     	boolean tempNotifyState = notifyEnabled;
     	notifyEnabled = false;
@@ -539,13 +572,13 @@ public class DisplayString implements IDisplayString {
         if (size == null || size.width < 0 ) 
             set(Prop.MODULE_WIDTH, null);
         else
-            set(Prop.MODULE_WIDTH, String.valueOf(pixel2unit(size.width)));
+            set(Prop.MODULE_WIDTH, String.valueOf(pixel2unit(size.width, scale)));
 
         // if the size is unspecified, remove the size constraint from the model
         if (size == null || size.height < 0) 
             set(Prop.MODULE_HEIGHT, null);
         else
-            set(Prop.MODULE_HEIGHT, String.valueOf(pixel2unit(size.height)));
+            set(Prop.MODULE_HEIGHT, String.valueOf(pixel2unit(size.height, scale)));
 
         // restore original notify state
     	notifyEnabled = tempNotifyState;
@@ -560,13 +593,13 @@ public class DisplayString implements IDisplayString {
      * @param loc
      * @param size
      */
-    public void setConstraint(Point loc, Dimension size) {
+    public void setConstraint(Point loc, Dimension size, Float scale) {
     	// disable the notification so we will not send two notify for the two coordinate change
     	boolean tempNotifyState = notifyEnabled;
     	notifyEnabled = false;
     	
-    	setLocation(loc);
-    	setSize(size);
+    	setLocation(loc, scale);
+    	setSize(size, scale);
     	
         // restore original notify state
     	notifyEnabled = tempNotifyState;

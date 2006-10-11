@@ -41,8 +41,8 @@ public class TopLevelFigure extends Label {
         // set the figure properties
         setShape(img, 
         		dps.getAsStringDef(IDisplayString.Prop.SHAPE), 
-        		dps.getSize().width, 
-        		dps.getSize().height,
+        		dps.getSize(null).width, 
+        		dps.getSize(null).height,
         		ColorFactory.asColor(dps.getAsStringDef(IDisplayString.Prop.FILLCOL)),
         		ColorFactory.asColor(dps.getAsStringDef(IDisplayString.Prop.BORDERCOL)),
         		dps.getAsIntDef(IDisplayString.Prop.BORDERWIDTH, -1));
