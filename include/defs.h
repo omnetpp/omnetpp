@@ -137,10 +137,5 @@ typedef void (*VoidDelFunc)(void *);
  */
 typedef void *(*VoidDupFunc)(void *);
 
-// Calls to registration macros like Register_Class() may be easily mistaken
-// by the compiler as function declaration. To prevent accidents caused by that 
-// from happening, we include the header file which #defines them right here.
-#include "regmacros.h"  
-
 #endif
 

@@ -31,11 +31,7 @@ class cStructDescriptor;
 
 
 //FIXME cPolymorphic doesn't have name()!!!! why not declare it here...? and why not move isName() and foreach() here??
-//FIXME plus: could we remove fullPath() ? some objects don't know their owners!!! and why should they?
-//  - search can still be made to work (visitors can keep track of current parent!)
-//  - what about fullPath() printed in error messages...?
 //FIXME deprecate using cObject as base class for user classes!!! nobody can use ownership...
-//FIXME use 'noncopyable' everywhere in the sim lib it's applicable
 
 
 /**

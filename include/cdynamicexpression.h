@@ -166,7 +166,8 @@ class SIM_API cDynamicExpression : public cExpression
      */
     struct StkValue
     {
-        enum {UNDEF, BOOL, DBL, STR, XML} type;
+        // Note: char codes need to be present and be consistent with cNEDFunction::argTypes()
+        enum {UNDEF=0, BOOL='B', DBL='D', STR='S', XML='X'} type;
         bool bl;
         double dbl;
         std::string str;
@@ -187,6 +188,21 @@ class SIM_API cDynamicExpression : public cExpression
         void operator=(std::string s)  {type=STR; str=s;}
         void operator=(cXMLElement *x)  {type=XML; xml=x;}
         void operator=(const cPar& par);
+    };
+
+    /**
+     * Function object base class. We use function objects to handle NED parameter
+     * references, "index" and "sizeof" operators, and references to NED "for" loop
+     * variables.
+     */
+    class Functor : public cPolymorphic
+    {
+      public:
+        int numArgs() {return strlen(argTypes());}
+        virtual const char *argTypes() const = 0;
+        virtual char returnType() const = 0;
+        virtual StkValue evaluate(cComponent *context, StkValue args[], int numargs) = 0;
+        virtual std::string toString(std::string args[], int numargs) = 0;
     };
 
   protected:
@@ -317,6 +333,80 @@ class SIM_API cDynamicExpression : public cExpression
     static StkValue sizeofSiblingModuleGate(cComponent *context, StkValue args[], int numargs);
     static StkValue sizeofIndexedSiblingModuleGate(cComponent *context, StkValue args[], int numargs);
     //@}
+};
+
+namespace NEDSupport
+{
+
+typedef cDynamicExpression::StkValue StkValue; // abbreviation for local use
+
+class ModuleIndex : public cDynamicExpression::Functor
+{
+  protected:
+  public:
+    ModuleIndex();
+    virtual const char *argTypes() const {return "";}
+    virtual char returnType() const {return 'L';}
+    virtual StkValue evaluate(cComponent *context, StkValue args[], int numargs);
+    virtual std::string toString(std::string args[], int numargs);
+};
+
+/**
+ * Variations: parameter, parentParameter
+ */
+class ParameterRef : public cDynamicExpression::Functor
+{
+  protected:
+    bool ofParent;  // if true, return parentModule->par(paramname)
+    bool printThis; // whether toString() should prefix paramName with "this."
+    std::string paramName;
+  public:
+    ParameterRef(const char *paramName, bool ofParent, bool printThis);
+    virtual const char *argTypes() const {return "";}
+    virtual char returnType() const {return '*';}
+    virtual StkValue evaluate(cComponent *context, StkValue args[], int numargs);
+    virtual std::string toString(std::string args[], int numargs);
+};
+
+/**
+ * siblingModuleParameter, indexedSiblingModuleParameter
+ */
+class SiblingModuleParameterRef : public cDynamicExpression::Functor
+{
+  protected:
+    bool ofParent;  // if true, return parentModule->submodule(...)->par(parname)
+    std::string moduleName;
+    bool withModuleIndex;
+    std::string paramName;
+  public:
+    SiblingModuleParameterRef(const char *moduleName, const char *paramName, bool ofParent, bool withModuleIndex);
+    virtual const char *argTypes() const {return withModuleIndex ? "L" : "";}
+    virtual char returnType() const {return '*';}
+    virtual StkValue evaluate(cComponent *context, StkValue args[], int numargs);
+    virtual std::string toString(std::string args[], int numargs);
+};
+
+/*XXX TODO
+static StkValue sizeofIdent(cComponent *context, StkValue args[], int numargs);
+static StkValue sizeofGate(cComponent *context, StkValue args[], int numargs);
+static StkValue sizeofParentModuleGate(cComponent *context, StkValue args[], int numargs);
+static StkValue sizeofSiblingModuleGate(cComponent *context, StkValue args[], int numargs);
+static StkValue sizeofIndexedSiblingModuleGate(cComponent *context, StkValue args[], int numargs);
+
+class Sizeof : public Functor
+{
+  protected:
+    bool ofParent;
+    bool bstd::string paramName;
+    std::string moduleName;
+  public:
+    virtual const char *argTypes() const {return "";}
+    virtual char returnType() const {return 'L';}
+    virtual StkValue evaluate(cComponent *context, StkValue args[], int numargs);
+    virtual std::string toString(std::string args[], int numargs) {return "index";}
+};
+*/
+
 };
 
 #endif
