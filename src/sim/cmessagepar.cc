@@ -38,6 +38,7 @@
 using std::ostream;
 using std::string;
 
+//FIXME strip down cMessagePar class!!! remove expression support, etc
 
 //==============================================
 //=== Registration

@@ -35,6 +35,10 @@ const char *cErrorMessages::get(ErrorCode e)
       case eCUSTOM:    return "%s";
       case eENDEDOK:   return "No more events -- simulation ended";
       case eENDSIM:    return "Simulation stopped with endSimulation()";
+      case eESTKOFLOW: return "Error in dynamic expression: stack overflow";
+      case eESTKUFLOW: return "Error in dynamic expression: stack underflow";
+      case eEBADARGS:  return "Error in dynamic expression: `%s': wrong argument type(s)";
+      case eECANTCAST: return "Cannot cast result of expression to %s";
       case eFINISH:    return "All finish() functions called, simulation ended";
       case eINFLOOP:   return "FSM: infinite loop of transient states (now in state %s)";
       case eLOCKED:    return "Object is locked against modifications, try unlockProperties() on parent object";
