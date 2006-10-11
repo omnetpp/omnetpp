@@ -24,6 +24,9 @@
 //         sizeof(foo), sizeof(this.foo): refers to that module's gatevector
 //         sizeof(foo.bar): makes no sense (thus illegal)
 //
+// - "index" operator: it always returns the same (sub)module's index in whose "parameters"
+//    block it is defined. It is NOT POSSIBLE to obtain the parent module's index.
+//
 // TODO:
 // - CHANNELS: two implicit (built-in) channel types exist: NullChannel, BasicChannel.
 //   Their names can be referenced, ie one can write "channel X extends NullChannel..."
