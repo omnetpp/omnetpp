@@ -2405,15 +2405,14 @@ IdentNode::IdentNode(NEDElement *parent) : NEDElement(parent)
 
 int IdentNode::getNumAttributes() const
 {
-    return 3;
+    return 2;
 }
 
 const char *IdentNode::getAttributeName(int k) const
 {
     switch (k) {
         case 0: return "module";
-        case 1: return "module-index";
-        case 2: return "name";
+        case 1: return "name";
         default: return 0;
     }
 }
@@ -2422,8 +2421,7 @@ const char *IdentNode::getAttribute(int k) const
 {
     switch (k) {
         case 0: return module.c_str();
-        case 1: return moduleIndex.c_str();
-        case 2: return name.c_str();
+        case 1: return name.c_str();
         default: return 0;
     }
 }
@@ -2432,8 +2430,7 @@ void IdentNode::setAttribute(int k, const char *val)
 {
     switch (k) {
         case 0: module = val; break;
-        case 1: moduleIndex = val; break;
-        case 2: name = val; break;
+        case 1: name = val; break;
         default: ;
     }
 }
@@ -2442,8 +2439,7 @@ const char *IdentNode::getAttributeDefault(int k) const
 {
     switch (k) {
         case 0: return "";
-        case 1: return "";
-        case 2: return NULL;
+        case 1: return NULL;
         default: return 0;
     }
 }
@@ -2458,9 +2454,24 @@ CommentNode *IdentNode::getFirstCommentChild() const
     return (CommentNode *)getFirstChildWithTag(NED_COMMENT);
 }
 
-ExpressionNode *IdentNode::getFirstExpressionChild() const
+OperatorNode *IdentNode::getFirstOperatorChild() const
 {
-    return (ExpressionNode *)getFirstChildWithTag(NED_EXPRESSION);
+    return (OperatorNode *)getFirstChildWithTag(NED_OPERATOR);
+}
+
+FunctionNode *IdentNode::getFirstFunctionChild() const
+{
+    return (FunctionNode *)getFirstChildWithTag(NED_FUNCTION);
+}
+
+IdentNode *IdentNode::getFirstIdentChild() const
+{
+    return (IdentNode *)getFirstChildWithTag(NED_IDENT);
+}
+
+LiteralNode *IdentNode::getFirstLiteralChild() const
+{
+    return (LiteralNode *)getFirstChildWithTag(NED_LITERAL);
 }
 
 void LiteralNode::setType(int val)

@@ -376,9 +376,11 @@ void NEDDTDValidator::validateElement(FunctionNode *node)
 
 void NEDDTDValidator::validateElement(IdentNode *node)
 {
-    int tags[] = {NED_COMMENT,NED_EXPRESSION, NED_NULL};
-    char mult[] = {'*','*', 0};
-    checkSequence(node, tags, mult);
+    Choice choices[] = {
+        {{NED_COMMENT, NED_NULL}, '*'},
+        {{NED_OPERATOR, NED_FUNCTION, NED_IDENT, NED_LITERAL, NED_NULL}, '?'},
+    };
+    checkSeqOfChoices(node, choices, sizeof(choices)/sizeof(Choice));
 
     checkRequiredAttribute(node, "name");
     checkNameAttribute(node, "name");

@@ -25,6 +25,11 @@
 #include "cnedfunction.h"
 #include "cpar.h"
 
+inline bool strnull(const char *s)
+{
+    return !s || !s[0];
+}
+
 cExpressionBuilder::cExpressionBuilder()
 {
     elems = NULL;
@@ -147,13 +152,16 @@ void cExpressionBuilder::doFunction(FunctionNode *node)
     int argcount = node->getNumChildren();
 
     // operators should be handled specially
-//FIXME handle "const" operator as well!
     if (!strcmp(funcname,"index"))
     {
         if (!inSubcomponentScope)
             throw new cRuntimeError("dynamic module builder: `index' operator is only supported on submodule parameters");
         elems[pos++] = new NEDSupport::ModuleIndex();
         return;
+    }
+    else if (!strcmp(funcname,"const"))
+    {
+        throw new cRuntimeError("dynamic module builder: `const' operator: not yet!"); //XXX
     }
     else if (!strcmp(funcname,"sizeof"))
     {
@@ -223,8 +231,12 @@ void cExpressionBuilder::doFunction(FunctionNode *node)
 void cExpressionBuilder::doIdent(IdentNode *node)
 {
     const char *parname = node->getName();
-    //FIXME todo: what if this.param, other[4].param etc???
-    elems[pos++] = new NEDSupport::ParameterRef(parname, inSubcomponentScope, false);
+    const char *modulename = node->getModule();
+    bool hasChild = node->getFirstChild()!=NULL;
+    if (strnull(modulename))
+        elems[pos++] = new NEDSupport::ParameterRef(parname, inSubcomponentScope, false);
+    else if (!node->getFirstChild())
+        elems[pos++] = new NEDSupport::SiblingModuleParameterRef(modulename, parname, inSubcomponentScope, hasChild);
 }
 
 void cExpressionBuilder::doLiteral(LiteralNode *node)

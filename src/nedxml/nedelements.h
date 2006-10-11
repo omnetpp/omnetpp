@@ -1726,10 +1726,9 @@ class FunctionNode : public NEDElement
  * GENERATED CLASS. Represents the &lt;ident&gt; XML element in memory. DTD declaration:
  * 
  * <pre>
- * <!ELEMENT ident (comment*, expression*)>
+ * <!ELEMENT ident (comment*, (operator|function|ident|literal)?)>
  * <!ATTLIST ident
  *      module              CDATA     #IMPLIED
- *      module-index        CDATA     #IMPLIED
  *      name                NMTOKEN   #REQUIRED>
  * </pre>
  * 
@@ -1739,7 +1738,6 @@ class IdentNode : public NEDElement
 {
   private:
     std::string module;
-    std::string moduleIndex;
     std::string name;
   public:
     /** @name Constructors, destructor */
@@ -1764,14 +1762,15 @@ class IdentNode : public NEDElement
     //@{
     const char * getModule() const  {return module.c_str();}
     void setModule(const char * val)  {module = val;}
-    const char * getModuleIndex() const  {return moduleIndex.c_str();}
-    void setModuleIndex(const char * val)  {moduleIndex = val;}
     const char * getName() const  {return name.c_str();}
     void setName(const char * val)  {name = val;}
 
     virtual IdentNode *getNextIdentNodeSibling() const;
     virtual CommentNode *getFirstCommentChild() const;
-    virtual ExpressionNode *getFirstExpressionChild() const;
+    virtual OperatorNode *getFirstOperatorChild() const;
+    virtual FunctionNode *getFirstFunctionChild() const;
+    virtual IdentNode *getFirstIdentChild() const;
+    virtual LiteralNode *getFirstLiteralChild() const;
     //@}
 };
 

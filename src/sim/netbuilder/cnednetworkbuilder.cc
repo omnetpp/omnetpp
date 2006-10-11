@@ -514,7 +514,7 @@ cChannel *cNEDNetworkBuilder::createChannelForConnection(ConnectionNode *conn, c
     }
     return channel;
 */
-return new cBasicChannel();
+    return NULL;
 }
 
 ExpressionNode *cNEDNetworkBuilder::findExpression(NEDElement *node, const char *exprname)

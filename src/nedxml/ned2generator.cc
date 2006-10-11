@@ -872,7 +872,11 @@ void NED2Generator::doIdent(IdentNode *node, const char *indent, bool islast, co
 {
     if (strnotnull(node->getModule())) {
         OUT << node->getModule();
-        printOptVector(node, "module-index", indent);
+        if (node->getFirstChild()) {
+            OUT << "[";
+            generateChildren(node,indent,NULL);
+            OUT << "]";
+        }
         OUT << ".";
     }
 

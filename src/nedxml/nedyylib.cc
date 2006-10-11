@@ -351,15 +351,13 @@ IdentNode *createIdent(YYLTYPE parampos)
     return ident;
 }
 
-IdentNode *createIdent(YYLTYPE parampos, YYLTYPE modulepos, NEDElement *moduleindexexpr)
+IdentNode *createIdent(YYLTYPE parampos, YYLTYPE modulepos, NEDElement *moduleindexoperand)
 {
     IdentNode *ident = (IdentNode *)createNodeWithTag(NED_IDENT);
     ident->setName(toString(parampos));
     ident->setModule(toString(modulepos));
-    if (moduleindexexpr) {
-        ((ExpressionNode *)moduleindexexpr)->setTarget("module-index");
-        ident->appendChild(moduleindexexpr);
-    }
+    if (moduleindexoperand)
+        ident->appendChild(moduleindexoperand);
     return ident;
 }
 

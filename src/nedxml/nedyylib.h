@@ -62,7 +62,7 @@ ExpressionNode *createExpression(NEDElement *expr);
 OperatorNode *createOperator(const char *op, NEDElement *operand1, NEDElement *operand2=NULL, NEDElement *operand3=NULL);
 FunctionNode *createFunction(const char *funcname, NEDElement *arg1=NULL, NEDElement *arg2=NULL, NEDElement *arg3=NULL, NEDElement *arg4=NULL);
 IdentNode *createIdent(YYLTYPE parampos);
-IdentNode *createIdent(YYLTYPE parampos, YYLTYPE modulepos, NEDElement *moduleindexexpr=NULL);
+IdentNode *createIdent(YYLTYPE parampos, YYLTYPE modulepos, NEDElement *moduleindexoperand=NULL);
 LiteralNode *createLiteral(int type, YYLTYPE valuepos, YYLTYPE textpos);
 LiteralNode *createQuantity(const char *text);
 NEDElement *unaryMinus(NEDElement *node);

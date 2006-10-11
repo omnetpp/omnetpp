@@ -1551,8 +1551,8 @@ identifier
                 { if (np->getParseExpressionsFlag()) $$ = createIdent(@3, @1); }
         | NAME '.' NAME
                 { if (np->getParseExpressionsFlag()) $$ = createIdent(@3, @1); }
-        | NAME vector '.' NAME
-                { if (np->getParseExpressionsFlag()) $$ = createIdent(@4, @1, $2); }
+        | NAME '[' expr ']' '.' NAME
+                { if (np->getParseExpressionsFlag()) $$ = createIdent(@6, @1, $3); }
         ;
 
 special_expr
