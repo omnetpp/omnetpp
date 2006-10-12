@@ -148,10 +148,8 @@ void cNEDNetworkBuilder::addSubmodulesAndConnections(cModule *modp, cNEDDeclarat
     {
         for (NEDElement *child=conns->getFirstChild(); child; child=child->getNextSibling())
         {
-            if (child->getTagCode()==NED_CONNECTION)
-                addConnection(modp, (ConnectionNode *)child);
-            else if (child->getTagCode()==NED_CONNECTION_GROUP)
-                addConnectionGroup(modp, (ConnectionGroupNode *)child);
+            if (child->getTagCode()==NED_CONNECTION || child->getTagCode()==NED_CONNECTION_GROUP)
+                addConnectionOrConnectionGroup(modp, child);
         }
     }
 
@@ -355,61 +353,91 @@ cGate *cNEDNetworkBuilder::getFirstUnusedSubmodGate(cModule *modp, const char *g
     return modp->gate(newBaseId+n);
 }
 
-void cNEDNetworkBuilder::addConnectionGroup(cModule *modp, ConnectionGroupNode *conngroup)
+void cNEDNetworkBuilder::addConnectionOrConnectionGroup(cModule *modp, NEDElement *connOrConnGroup)
 {
     loopVarSP = 0;
-    //FIXME maybe it begins with condition?
-    doLoop(modp, conngroup->getFirstLoopChild());
+
+    // find first "for" or "if" (they're children of connOrConnGroup)
+    NEDElement *child = connOrConnGroup->getFirstChild();
+    while (child && child->getTagCode()!=NED_LOOP && child->getTagCode()!=NED_CONDITION)
+        child = child->getNextSibling();
+
+
+   if (child)
+        doLoopOrCondition(modp, child);
+    else
+        doAddConnOrConnGroup(modp, connOrConnGroup);
 }
 
-void cNEDNetworkBuilder::doLoop(cModule *modp, LoopNode *loop)
+void cNEDNetworkBuilder::doLoopOrCondition(cModule *modp, NEDElement *loopOrCondition)
 {
-    ConnectionGroupNode *conngroup = (ConnectionGroupNode *) loop->getParent();
-
-    int start = (int) evaluateAsLong(findExpression(loop, "from-value"), modp, false);
-    int end = (int) evaluateAsLong(findExpression(loop, "to-value"), modp, false);
-    LoopNode *nextloopvar = loop->getNextLoopNodeSibling();
-
-    // register loop var
-    if (loopVarSP==MAX_LOOP_NESTING)
-        throw new cRuntimeError("dynamic module builder: nesting of for loops is too deep, max %d is allowed", MAX_LOOP_NESTING);
-    loopVarSP++;
-    loopVarStack[loopVarSP-1].varname = loop->getParamName();
-    int& i = loopVarStack[loopVarSP-1].value;
-
-    // do for loop
-    if (nextloopvar)
+    if (loopOrCondition->getTagCode()==NED_CONDITION)
     {
-        //FIXME maybe next one is an "if"??
+        // check condition
+        ConditionNode *condition = (ConditionNode *)loopOrCondition;
+        ExpressionNode *condexpr = findExpression(condition, "condition");
+        if (condexpr && evaluateAsBool(condexpr, modp, false)==true)
+        {
+            // do the body of the "if": either further "for"'s and "if"'s, or
+            // the connection(group) itself that we are children of.
+            if (loopOrCondition->getNextSibling())
+                doLoopOrCondition(modp, loopOrCondition->getNextSibling());
+            else
+                doAddConnOrConnGroup(modp, loopOrCondition->getParent());
+        }
+    }
+    else if (loopOrCondition->getTagCode()==NED_LOOP)
+    {
+        LoopNode *loop = (LoopNode *)loopOrCondition;
+        int start = (int) evaluateAsLong(findExpression(loop, "from-value"), modp, false);
+        int end = (int) evaluateAsLong(findExpression(loop, "to-value"), modp, false);
+
+        // register loop var
+        if (loopVarSP==MAX_LOOP_NESTING)
+            throw new cRuntimeError("dynamic module builder: nesting of for loops is too deep, max %d is allowed", MAX_LOOP_NESTING);
+        loopVarSP++;
+        loopVarStack[loopVarSP-1].varname = loop->getParamName();
+        int& i = loopVarStack[loopVarSP-1].value;
+
         for (i=start; i<=end; i++)
         {
-            // do nested loops
-            doLoop(modp, nextloopvar);
+            // do the body of the "for": either further "for"'s and "if"'s, or
+            // the connection(group) itself that we are children of.
+            if (loopOrCondition->getNextSibling())
+                doLoopOrCondition(modp, loopOrCondition->getNextSibling());
+            else
+                doAddConnOrConnGroup(modp, loopOrCondition->getParent());
         }
+
+        // deregister loop var
+        loopVarSP--;
     }
     else
     {
-        for (i=start; i<=end; i++)
-        {
-            // do connections
-            for (ConnectionNode *conn=conngroup->getFirstConnectionChild(); conn; conn=conn->getNextConnectionNodeSibling())
-            {
-                addConnection(modp, conn);
-            }
-        }
+        ASSERT(false);
     }
-
-    // deregister loop var
-    loopVarSP--;
 }
 
-void cNEDNetworkBuilder::addConnection(cModule *modp, ConnectionNode *conn)
+void cNEDNetworkBuilder::doAddConnOrConnGroup(cModule *modp, NEDElement *connOrConnGroup)
 {
-    // check condition first
-    ExpressionNode *condexpr = findExpression(conn, "condition");
-    if (condexpr && evaluateAsBool(condexpr, modp, false)==false)
-        return;
+    if (connOrConnGroup->getTagCode()==NED_CONNECTION)
+    {
+        doAddConnection(modp, (ConnectionNode*)connOrConnGroup);
+    }
+    else if (connOrConnGroup->getTagCode()==NED_CONNECTION_GROUP)
+    {
+        ConnectionGroupNode *conngroup = (ConnectionGroupNode *)connOrConnGroup;
+        for (ConnectionNode *conn=conngroup->getFirstConnectionChild(); conn; conn=conn->getNextConnectionNodeSibling())
+            doAddConnection(modp, conn);
+    }
+    else
+    {
+        ASSERT(false);
+    }
+}
 
+void cNEDNetworkBuilder::doAddConnection(cModule *modp, ConnectionNode *conn)
+{
     // find gates and create connection
     cGate *srcg = resolveGate(modp, conn->getSrcModule(), findExpression(conn, "src-module-index"),
                                     conn->getSrcGate(), findExpression(conn, "src-gate-index"),

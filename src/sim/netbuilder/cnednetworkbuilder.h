@@ -62,9 +62,12 @@ class cNEDNetworkBuilder
     void setupGateVectors(cModule *submodp, NEDElement *submod);
     cGate *getFirstUnusedParentModGate(cModule *mod, const char *gatename);
     cGate *getFirstUnusedSubmodGate(cModule *mod, const char *gatename);
-    void addConnectionGroup(cModule *modp, ConnectionGroupNode *conngroup);
-    void doLoop(cModule *modp, LoopNode *loop);
-    void addConnection(cModule *modp, ConnectionNode *conn);
+
+    void addConnectionOrConnectionGroup(cModule *modp, NEDElement *connOrConnGroup);
+    void doLoopOrCondition(cModule *modp, NEDElement *loopOrCondition);
+    void doAddConnOrConnGroup(cModule *modp, NEDElement *connOrConnGroup);
+    void doAddConnection(cModule *modp, ConnectionNode *conn);
+
     cGate *resolveGate(cModule *modp, const char *modname, ExpressionNode *modindex,
                        const char *gatename, ExpressionNode *gateindex, bool isplusplus);
     cChannel *createChannelForConnection(ConnectionNode *conn, cModule *parentmodp);
