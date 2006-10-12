@@ -41,8 +41,7 @@ cPar::~cPar()
 
 cPar& cPar::operator=(const cPar& other)
 {
-    // Note: subclasses should call beforeChange()/afterChange()
-    flags = other.flags;
+    // Note: subclasses should call beforeChange()/afterChange()!
     return *this;
 }
 
@@ -88,7 +87,7 @@ void cPar::beforeChange()
 
 void cPar::afterChange()
 {
-    flags |= FL_ISSET | FL_HASCHANGED;
+    flags |= FL_HASCHANGED;
 
     if (simulation.contextType()==CTX_EVENT) // don't call during build, initialize or finish
     {
@@ -146,8 +145,27 @@ int cPar::cmpbyvalue(cPar *one, cPar *other)
     return sgn(x);
 }
 
+
 void cPar::read()
 {
+    printf("    read() of %s\n", fullPath().c_str()); //XXX
+
+    // get the value
+    doReadValue();
+    ASSERT(isSet()); // part of doReadValue()'s job
+
+    // convert non-volatile values to constant
+    if (isVolatile())
+        convertToConst();
+
+    // convert "const" subexpressions to constant
+    //FIXME TODO -- or better delegate to cExpression
+}
+
+
+void cPar::doReadValue()
+{
+
 //FIXME shouldn't most of this go out into cEnvir???
 
     // get it from ini file
@@ -157,12 +175,12 @@ void cPar::read()
         bool success = parse(str.c_str());
         if (!success)
             throw new cRuntimeError("Wrong value `%s' for parameter `%s'", str.c_str(), fullPath().c_str());
-        return;
     }
+    if (isSet())
+        return;
 
     // maybe we should use default value
-    bool useDefault = ev.getParameterUseDefault(simulation.runNumber(), fullPath().c_str());
-    if (useDefault)
+    if (hasDefaultValue() && ev.getParameterUseDefault(simulation.runNumber(), fullPath().c_str()))
     {
         applyDefaultValue();
         return;
@@ -190,6 +208,7 @@ void cPar::read()
             delete e;
         }
     }
+    applyDefaultValue();
 }
 
 //----

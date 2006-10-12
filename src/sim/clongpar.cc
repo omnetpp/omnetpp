@@ -73,6 +73,7 @@ cLongPar& cLongPar::setLongValue(long l)
     beforeChange();
     deleteOld();
     val = l;
+    flags |= FL_ISSET;
     afterChange();
     return *this;
 }
@@ -82,6 +83,7 @@ cLongPar& cLongPar::setDoubleValue(double d)
     beforeChange();
     deleteOld();
     val = double_to_long(d);
+    flags |= FL_ISSET;
     afterChange();
     return *this;
 }
@@ -100,17 +102,8 @@ cLongPar& cLongPar::setExpression(cExpression *e)
 {
     beforeChange();
     deleteOld();
-    if (flags & FL_ISVOLATILE)
-    {
-        expr = e;
-        flags |= FL_ISEXPR;
-    }
-    else
-    {
-        // not a "function" param: evaluate expression once, and store the result
-        val = e->longValue();
-        delete e;
-    }
+    expr = e;
+    flags |= FL_ISEXPR | FL_ISSET;
     afterChange();
     return *this;
 }
@@ -195,7 +188,7 @@ bool cLongPar::parse(const char *text)
         long num = strtol(word, &endp, 10); // FIXME TBD try as "units" as well
         if (*endp == '\0')
         {
-            val = num;
+            setLongValue(num);
             return true;
         }
     }

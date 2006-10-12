@@ -65,7 +65,7 @@ class SIM_API cPar : public cObject
     };
 
   public:
-    // internal: sets the ISVOLATILE flag
+    // internal: sets the ISVOLATILE flag; NOTE: may be necessary to invoke convertToConst() as well!
     virtual void setIsVolatile(bool f) {if (f) flags|=FL_ISVOLATILE; else flags&=~FL_ISVOLATILE;}
 
     // internal: mark value as unset; the current value (if set) becomes the default value
@@ -74,6 +74,9 @@ class SIM_API cPar : public cObject
     // internal: if !ISSET and has a default value, set it to the default;
     // do nothing if there's no default value
     virtual void applyDefaultValue();
+
+    // internal: called as part of read(): gets the value from omnetpp.ini or from the user.
+    virtual void doReadValue();
 
     // internal: sets owner component (module/channel) and index of this param in it
     cComponent *ownerComponent();
@@ -230,8 +233,12 @@ class SIM_API cPar : public cObject
     virtual cPar& setXMLValue(cXMLElement *node) = 0;
 
     /**
-     * Sets the value to the given expression. This object will
-     * assume the responsibility to delete the expression object.
+     * Sets the value to the given expression. This object will assume
+     * the responsibility to delete the expression object.
+     *
+     * Note: if the parameter is marked as non-volatile (isVolatile()==false),
+     * one should not set an expression as value. This is not enforced
+     * by cPar though.
      */
     virtual cPar& setExpression(cExpression *e) = 0;
     //@}
@@ -278,7 +285,17 @@ class SIM_API cPar : public cObject
     //@{
 
     /**
-     * Reads the object value from the ini file or from the user.
+     * This method does the final touches on the parameter. It is invoked
+     * at some point on all parameter objects before we start the simulation.
+     *
+     * - if the parameter is not set, gets the value from omnetpp.ini or
+     *   interactively from the user, or sets the default value.
+     *
+     * - if the parameter is non-volatile, (isVolatile()==false), converts
+     *   possible expression value to a constant (see convertToConst()).
+     *
+     * - if the parameter is volatile but contains "const" subexpressions,
+     *   these parts are converted to a constant value.
      */
     virtual void read();
 

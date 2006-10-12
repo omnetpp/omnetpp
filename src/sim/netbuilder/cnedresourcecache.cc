@@ -222,6 +222,8 @@ cNEDDeclaration *cNEDResourceCache::buildNEDDeclaration(NEDElement *node)
 
             decl->addGate(superDecl->gateDescription(i).deepCopy());
         }
+        printf("SUPER:\n%s", superDecl->detailedInfo().c_str()); //XXX
+        printf("DERIVED:\n%s", decl->detailedInfo().c_str()); //XXX
     }
 
     // parse new parameters
@@ -244,10 +246,11 @@ cNEDDeclaration *cNEDResourceCache::buildNEDDeclaration(NEDElement *node)
             ExpressionNode *exprNode = paramNode->getFirstExpressionChild();
             if (exprNode)
             {
+                cNEDDeclaration::ParamDescription& desc = const_cast<cNEDDeclaration::ParamDescription&>(decl->paramDescription(paramName));
                 cDynamicExpression *dynamicExpr = cExpressionBuilder().process(exprNode, false);
-                cPar *paramValue = new cDoublePar(); //FIXME of the right subclass!!!
-                paramValue->setExpression(dynamicExpr);
-                decl->setParamValue(paramName, paramValue);
+                desc.value->setExpression(dynamicExpr);
+                if (paramNode->getIsDefault())
+                    desc.value->markAsUnset();
             }
         }
     }
@@ -286,13 +289,14 @@ cNEDDeclaration::ParamDescription cNEDResourceCache::extractParamDescription(Par
     cNEDDeclaration::ParamDescription desc;
     desc.name = paramNode->getName();
     int t = paramNode->getType();
-    desc.type = t==NED_PARTYPE_DOUBLE ? cPar::DOUBLE :
-                t==NED_PARTYPE_INT ? cPar::LONG :
-                t==NED_PARTYPE_STRING ? cPar::STRING :
-                t==NED_PARTYPE_BOOL ? cPar::BOOL :
-                t==NED_PARTYPE_XML ? cPar::XML :
-                (cPar::Type)-1;
-    desc.isVolatile = paramNode->getIsVolatile();
+    cPar::Type type = t==NED_PARTYPE_DOUBLE ? cPar::DOUBLE :
+                      t==NED_PARTYPE_INT ? cPar::LONG :
+                      t==NED_PARTYPE_STRING ? cPar::STRING :
+                      t==NED_PARTYPE_BOOL ? cPar::BOOL :
+                      t==NED_PARTYPE_XML ? cPar::XML :
+                      (cPar::Type)-1;
+    desc.value = cPar::createWithType(type); // gets created with isSet()==false
+    desc.value->setIsVolatile(paramNode->getIsVolatile());
     desc.properties = extractProperties(paramNode);
     return desc;
 }

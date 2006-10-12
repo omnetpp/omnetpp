@@ -156,7 +156,7 @@ cObject::cObject(const char *name, bool namepooling)
 
 cObject::cObject(const cObject& obj)
 {
-    flags = obj.flags & FL_NAMEPOOLING;
+    flags = obj.flags; // copy all flags, incl namepooling
     namep = NULL;
     setName(obj.name());
     defaultowner->doInsert(this);
@@ -261,12 +261,14 @@ cDefaultList *cObject::defaultOwner()
     return defaultowner;
 }
 
-cObject& cObject::operator=(const cObject&)
+cObject& cObject::operator=(const cObject& obj)
 {
-    // Nothing to do:
+    // Not too much to do:
     // - ownership not affected
     // - name string is NOT copied from other object
-    // - FL_NAMEPOOLING not taken over
+    // - flags are taken over, except for FL_NAMEPOOLING which is preserved
+    unsigned short namePooling = flags & FL_NAMEPOOLING;
+    flags = (obj.flags & ~FL_NAMEPOOLING) | namePooling;
     return *this;
 }
 

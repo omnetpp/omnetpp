@@ -89,6 +89,7 @@ cXMLPar& cXMLPar::setXMLValue(cXMLElement *node)
     beforeChange();
     deleteOld();
     val = node;
+    flags |= FL_ISSET;
     afterChange();
     return *this;
 }
@@ -97,17 +98,8 @@ cXMLPar& cXMLPar::setExpression(cExpression *e)
 {
     beforeChange();
     deleteOld();
-    if (flags & FL_ISVOLATILE)
-    {
-        expr = e;
-        flags |= FL_ISEXPR;
-    }
-    else
-    {
-        // not a "function" param: evaluate expression once, and store the result
-        val = e->xmlValue();
-        delete e;
-    }
+    expr = e;
+    flags |= FL_ISEXPR | FL_ISSET;
     afterChange();
     return *this;
 }

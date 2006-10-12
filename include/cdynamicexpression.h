@@ -195,6 +195,7 @@ class SIM_API cDynamicExpression : public cExpression
         void operator=(std::string s)  {type=STR; str=s;}
         void operator=(cXMLElement *x)  {type=XML; xml=x;}
         void operator=(const cPar& par);
+        std::string toString();
     };
 
     /**
@@ -272,37 +273,37 @@ class SIM_API cDynamicExpression : public cExpression
      * Throws an error if the expression has some problem (i.e. stack
      * overflow/underflow, "cannot cast", "function not found", etc.)
      */
-    virtual StkValue evaluate(cComponent *context=NULL) const;
+    virtual StkValue evaluate(cComponent *context) const;
 
     /**
      * Evaluate the expression and convert the result to bool if possible;
      * throw an error if conversion from that type is not supported.
      */
-    virtual bool boolValue(cComponent *context=NULL);
+    virtual bool boolValue(cComponent *context);
 
     /**
      * Evaluate the expression and convert the result to long if possible;
      * throw an error if conversion from that type is not supported.
      */
-    virtual long longValue(cComponent *context=NULL);
+    virtual long longValue(cComponent *context);
 
     /**
      * Evaluate the expression and convert the result to double if possible;
      * throw an error if conversion from that type is not supported.
      */
-    virtual double doubleValue(cComponent *context=NULL);
+    virtual double doubleValue(cComponent *context);
 
     /**
      * Evaluate the expression and convert the result to string if possible;
      * throw an error if conversion from that type is not supported.
      */
-    virtual std::string stringValue(cComponent *context=NULL);
+    virtual std::string stringValue(cComponent *context);
 
     /**
      * Evaluate the expression and convert the result to an XML tree if possible;
      * throw an error if conversion from that type is not supported.
      */
-    virtual cXMLElement *xmlValue(cComponent *context=NULL);
+    virtual cXMLElement *xmlValue(cComponent *context);
     //@}
 
     /** @name Miscellaneous utility functions. */

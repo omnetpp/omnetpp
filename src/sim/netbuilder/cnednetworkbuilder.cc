@@ -55,12 +55,16 @@ static void dump(NEDElement *node)
 
 void cNEDNetworkBuilder::addParameters(cComponent *component, cNEDDeclaration *decl)
 {
+    printf("adding params of %s to %s\n", decl->name(), component->fullPath().c_str()); //XXX
+    printf("DECL:\n%s", decl->detailedInfo().c_str()); //XXX
+
     int n = decl->numPars();
     for (int i=0; i<n; i++)
     {
         const cNEDDeclaration::ParamDescription& desc = decl->paramDescription(i);
-        cPar *value = desc.value ? desc.value->dup() : cPar::createWithType(desc.type);
-        component->addPar(desc.name.c_str(), value);  //FIXME observe volatile flag (here?)
+        ASSERT(desc.value);
+        component->addPar(desc.name.c_str(), desc.value->dup());
+        printf("  added param %s, isSet=%d\n", desc.name.c_str(), component->par(desc.name.c_str()).isSet()); //XXX
     }
 }
 
@@ -92,12 +96,14 @@ cModule *cNEDNetworkBuilder::_submodule(cModule *, const char *submodname, int i
 
 void cNEDNetworkBuilder::buildInside(cModule *modp, cNEDDeclaration *decl)
 {
+    printf("started buildinside of %s\n", modp->fullPath().c_str()); //XXX
     // set display string
-//XXX    setBackgroundDisplayString(modp, modulenode);
+//FIXME    setBackgroundDisplayString(modp, modulenode);
 
-    // loop through submods and add them
+    // add submodules and connections. Submodules and connections are inherited:
+    // we need to start start with the the base classes, and do this compound
+    // module last.
     submodMap.clear();
-
     buildRecursively(modp, decl);
 
     // recursively build the submodules too (top-down)
@@ -106,6 +112,7 @@ void cNEDNetworkBuilder::buildInside(cModule *modp, cNEDDeclaration *decl)
        cModule *m = submod();
        m->buildInside();
     }
+    printf("done buildinside of %s\n", modp->fullPath().c_str()); //XXX
 }
 
 void cNEDNetworkBuilder::buildRecursively(cModule *modp, cNEDDeclaration *decl)
@@ -123,7 +130,7 @@ void cNEDNetworkBuilder::buildRecursively(cModule *modp, cNEDDeclaration *decl)
 
 void cNEDNetworkBuilder::addSubmodulesAndConnections(cModule *modp, cNEDDeclaration *decl)
 {
-    printf("buildInside of %s, decl %s\n", modp->fullPath().c_str(), decl->name()); //XXX
+    printf("  adding submodules and connections of decl %s to %s\n", decl->name(), modp->fullPath().c_str()); //XXX
     //dump(decl->getTree()); XXX
 
     SubmodulesNode *submods = decl->getSubmodules();
@@ -153,6 +160,8 @@ void cNEDNetworkBuilder::addSubmodulesAndConnections(cModule *modp, cNEDDeclarat
     //FIXME not quite like this, BUT: if allowUnconnected=false, must check gates of submodules ADDED HERE (not all!)
     if (!conns || conns->getAllowUnconnected())
         modp->checkInternalConnections();
+
+    printf("  done adding submodules and connections of decl %s to %s\n", decl->name(), modp->fullPath().c_str()); //XXX
 }
 
 /*XXX
@@ -286,12 +295,19 @@ void cNEDNetworkBuilder::assignSubmoduleParams(cModule *submodp, NEDElement *sub
         return;
 
     cModule *modp = submodp->parentModule();
-    for (ParamNode *par=substparams->getFirstParamChild(); par; par=par->getNextParamNodeSibling())
+    for (ParamNode *parnode=substparams->getFirstParamChild(); parnode; parnode=parnode->getNextParamNodeSibling())
     {
         // assign param value
-        const char *parname = par->getName();
-        cPar& p = submodp->par(parname);
-//XXX        assignParamValue(p, findExpression(par,"value"),modp,submodp);
+        ExpressionNode *exprNode = findExpression(parnode, "value");
+        if (exprNode)
+        {
+            const char *parname = parnode->getName();
+            cPar *p = &(submodp->par(parname));
+            cDynamicExpression *e = cExpressionBuilder().process(exprNode, true);
+            p->setExpression(e);
+            if (parnode->getIsDefault())
+                p->markAsUnset();
+        }
     }
 }
 

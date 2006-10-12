@@ -21,8 +21,6 @@
 
 cNEDDeclaration::ParamDescription::ParamDescription()
 {
-    type = cPar::DOUBLE;
-    isVolatile = false;
     value = NULL;
     properties = NULL;
 }
@@ -61,7 +59,7 @@ cNEDDeclaration::cNEDDeclaration(const char *name, NEDElement *tree) :
 cNoncopyableObject(name), NEDComponent(tree)
 {
     props = NULL;
-    locked = false;
+    locked = false;   //FIXME check if locking makes sense
 }
 
 cNEDDeclaration::~cNEDDeclaration()
@@ -79,7 +77,40 @@ std::string cNEDDeclaration::info() const
 
 std::string cNEDDeclaration::detailedInfo() const
 {
-    return ""; //FIXME todo
+    std::stringstream out;
+    out << "  name " << name() << "\n";
+    if (numExtendsNames()>0)
+    {
+        out << "  extends ";
+        for (int i=0; i<numExtendsNames(); i++)
+            out << (i?", ":"") << extendsName(i);
+        out << "\n";
+    }
+
+    if (numInterfaceNames()>0)
+    {
+        out << "  like ";
+        for (int i=0; i<numInterfaceNames(); i++)
+            out << (i?", ":"") << interfaceName(i);
+        out << "\n";
+    }
+
+    out << "  C++ class " << implClassName << "\n";
+
+    for (int i=0; i<params.size(); i++)
+    {
+        const ParamDescription& desc = paramDescription(i);
+        out << "  param " << desc.name << " SET:" << (desc.value->isSet()?"true":"false");
+        out << " value=" << desc.value->info() << "\n";
+    }
+
+    for (int i=0; i<gates.size(); i++)
+    {
+        const GateDescription& desc = gateDescription(i);
+        out << "  gate " << desc.name << ": ...\n";
+    }
+
+    return out.str();
 }
 
 void cNEDDeclaration::addExtendsName(const char *name)
@@ -195,20 +226,6 @@ int cNEDDeclaration::findPar(const char *parname) const
     if (i==paramNameMap.end())
         return -1;
     return i->second;
-}
-
-void cNEDDeclaration::setParamValue(const char *name, cPar *value)
-{
-    if (locked)
-        throw new cRuntimeError(this, "setParamValue(): too late, object already locked");
-    int k = findPar(name);
-    if (k==-1)
-        throw new cRuntimeError(this, "no such parameter: %s", name);
-
-    ParamDescription& desc = params[k];
-    if (desc.value)
-        delete desc.value;
-    desc.value = value;
 }
 
 int cNEDDeclaration::numGates() const

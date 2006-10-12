@@ -62,10 +62,8 @@ class SIM_API cNEDDeclaration : public cNoncopyableObject, public NEDComponent
     struct ParamDescription
     {
         std::string name;
-        cPar::Type type;
-        bool isVolatile;
-        cPar *value;  // NULL if there's no default value; FIXME make it never NULL and implicitly store type as well???
-        cProperties *properties;
+        cPar *value;  // stores type, isVolatile, isSet flag as well -- never NULL
+        cProperties *properties;  //FIXME needed, or make it part of value??
         std::string declaredOn;
 
         ParamDescription();
@@ -259,11 +257,6 @@ class SIM_API cNEDDeclaration : public cNoncopyableObject, public NEDComponent
      * Check if a parameter exists.
      */
     bool hasPar(const char *s) const {return findPar(s)>=0;}
-
-    /**
-     * Sets the parameter value.
-     */
-    virtual void setParamValue(const char *paramName, cPar *value);
     //@}
 
     /** @name Gates */

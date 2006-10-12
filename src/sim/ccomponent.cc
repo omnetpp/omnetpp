@@ -103,6 +103,7 @@ int cComponent::findPar(const char *parname) const
 
 void cComponent::readInputParams()
 {
+    printf("  readInputParams of %s:\n", fullPath().c_str());//XXX
     int n = params();
     for (int i=0; i<n; i++)
         if (!par(i).isSet())

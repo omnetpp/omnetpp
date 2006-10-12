@@ -81,6 +81,7 @@ cStringPar& cStringPar::setStringValue(const char *s)
     beforeChange();
     deleteOld();
     val = (s ? s : "");
+    flags |= FL_ISSET;
     afterChange();
     return *this;
 }
@@ -94,17 +95,8 @@ cStringPar& cStringPar::setExpression(cExpression *e)
 {
     beforeChange();
     deleteOld();
-    if (flags & FL_ISVOLATILE)
-    {
-        expr = e;
-        flags |= FL_ISEXPR;
-    }
-    else
-    {
-        // not a "function" param: evaluate expression once, and store the result
-        val = e->stringValue();
-        delete e;
-    }
+    expr = e;
+    flags |= FL_ISEXPR | FL_ISSET;
     afterChange();
     return *this;
 }

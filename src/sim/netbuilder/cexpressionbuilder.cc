@@ -24,10 +24,17 @@
 #include "cfunction.h"
 #include "cnedfunction.h"
 #include "cpar.h"
+#include "xmlgenerator.h"
 
 inline bool strnull(const char *s)
 {
     return !s || !s[0];
+}
+
+static void dump(NEDElement *node)
+{
+    generateXML(std::cout, node, false);
+    std::cout.flush();
 }
 
 cExpressionBuilder::cExpressionBuilder()
@@ -275,6 +282,8 @@ cDynamicExpression *cExpressionBuilder::process(ExpressionNode *node, bool inSub
 
     delete [] elems;
     elems = NULL;
+
+std::cout << "    nedelement to expr returning: " << ret->toString() << "\n"; //XXX
 
     return ret;
 }

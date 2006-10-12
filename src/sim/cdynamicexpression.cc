@@ -60,6 +60,19 @@ void cDynamicExpression::StkValue::operator=(const cPar& par)
     }
 }
 
+std::string cDynamicExpression::StkValue::toString()
+{
+    char buf[32];
+    switch (type)
+    {
+      case BOOL: return bl ? "true" : "false";
+      case DBL:  sprintf(buf, "%g", dbl); return buf;
+      case STR:  return std::string("\"")+str+"\"";
+      case XML:  return std::string("<")+xml->getTagName()+">"; //XXX
+      default:   throw new cRuntimeError("internal error: bad StkValue type");
+    }
+}
+
 
 cDynamicExpression::cDynamicExpression()
 {
@@ -101,7 +114,7 @@ void cDynamicExpression::setExpression(Elem e[], int n)
 
 cDynamicExpression::StkValue cDynamicExpression::evaluate(cComponent *context) const
 {
-printf("DBG cDynamicExpression::evaluate: %s\n", toString().c_str()); //XXX
+printf("    evaluating: %s\n", toString().c_str()); //XXX
     const int stksize = 20;
     StkValue stk[stksize];
 
@@ -385,6 +398,9 @@ printf("DBG cDynamicExpression::evaluate: %s\n", toString().c_str()); //XXX
     }
     if (tos!=0)
         throw new cRuntimeError(this,eBADEXP);
+
+printf("        ==> returning %s\n", stk[tos].toString().c_str()); //XXX
+
     return stk[tos];
 }
 
@@ -634,7 +650,7 @@ ModuleIndex::ModuleIndex()
 
 StkValue ModuleIndex::evaluate(cComponent *context, StkValue args[], int numargs)
 {
-    ASSERT(numargs==0);
+    ASSERT(numargs==0 && context!=NULL);
     cModule *module = dynamic_cast<cModule *>(context);
     if (!module)
         throw new cRuntimeError(context,"cannot evaluate `index' operator in expression: context is not a module");
@@ -655,7 +671,7 @@ ParameterRef::ParameterRef(const char *paramName, bool ofParent, bool printThis)
 
 StkValue ParameterRef::evaluate(cComponent *context, StkValue args[], int numargs)
 {
-    ASSERT(numargs==0);
+    ASSERT(numargs==0 && context!=NULL);
     cModule *module = dynamic_cast<cModule *>(ofParent ? context->owner() : context);
     if (!module)
         throw new cRuntimeError(context,eENOPARENT);
@@ -680,6 +696,7 @@ SiblingModuleParameterRef::SiblingModuleParameterRef(const char *moduleName, con
 
 StkValue SiblingModuleParameterRef::evaluate(cComponent *context, StkValue args[], int numargs)
 {
+    ASSERT(context!=NULL);
     ASSERT(!withModuleIndex || (withModuleIndex && numargs==1 && args[0].type==StkValue::DBL));
     cModule *compoundModule = dynamic_cast<cModule *>(ofParent ? context->owner() : context); // this works for channels too
     if (!compoundModule)
