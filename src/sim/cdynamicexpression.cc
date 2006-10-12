@@ -758,7 +758,7 @@ StkValue LoopVar::evaluate(cComponent *context, StkValue args[], int numargs)
 std::string LoopVar::toString(std::string args[], int numargs)
 {
     // return varName;
-    return std::string("%")+varName;  //XXX debugging only
+    return std::string("(loopvar)")+varName;  //XXX debugging only
 }
 
 

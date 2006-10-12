@@ -240,7 +240,10 @@ bool cExpressionBuilder::isLoopVar(const char *parname)
 {
     const char **varNames = NEDSupport::LoopVar::getVarNames();
     int n = NEDSupport::LoopVar::getNumVars();
-    return std::find(varNames, varNames+n, parname) != varNames+n;
+    for (int i=0; i<n; i++)
+        if (strcmp(varNames[i], parname)==0)
+            return true;
+    return false;
 }
 
 void cExpressionBuilder::doIdent(IdentNode *node)
@@ -248,8 +251,6 @@ void cExpressionBuilder::doIdent(IdentNode *node)
     const char *parname = node->getName();
     const char *modulename = node->getModule();
     bool hasChild = node->getFirstChild()!=NULL;
-
-printf("**** %s loopvar:%d\n", parname, isLoopVar(parname));
 
     if (strnull(modulename) && isLoopVar(parname))
         elems[pos++] = new NEDSupport::LoopVar(parname);

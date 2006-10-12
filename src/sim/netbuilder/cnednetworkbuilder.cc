@@ -397,7 +397,8 @@ void cNEDNetworkBuilder::doLoopOrCondition(cModule *modp, NEDElement *loopOrCond
         long start = evaluateAsLong(findExpression(loop, "from-value"), modp, false);
         long end = evaluateAsLong(findExpression(loop, "to-value"), modp, false);
 
-        // register loop var
+        // do loop
+        printf("---for %s=%ld..%ld\n", loop->getParamName(), start, end); //XXX
         long& i = NEDSupport::LoopVar::pushVar(loop->getParamName());
         for (i=start; i<=end; i++)
         {
@@ -405,6 +406,7 @@ void cNEDNetworkBuilder::doLoopOrCondition(cModule *modp, NEDElement *loopOrCond
             // the connection(group) itself that we are children of.
             doConnOrConnGroupBody(modp, loopOrCondition->getParent(), loopOrCondition->getNextSibling());
         }
+        printf("---endfor %s\n", loop->getParamName()); //XXX
         NEDSupport::LoopVar::popVar();
     }
     else
