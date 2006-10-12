@@ -7,10 +7,10 @@ import org.omnetpp.ned2.model.pojo.NedFileNode;
 
 public class NedFileNodeEx extends NedFileNode {
 	
-	public NedFileNodeEx() {
+	NedFileNodeEx() {
 	}
 
-	public NedFileNodeEx(NEDElement parent) {
+	NedFileNodeEx(NEDElement parent) {
 		super(parent);
 	}
 

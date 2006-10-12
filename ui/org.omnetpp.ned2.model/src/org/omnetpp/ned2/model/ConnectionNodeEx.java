@@ -8,16 +8,16 @@ import org.omnetpp.common.displaymodel.IDisplayString.Prop;
 import org.omnetpp.ned2.model.pojo.ChannelSpecNode;
 import org.omnetpp.ned2.model.pojo.ConnectionNode;
 
-public class ConnectionNodeEx extends ConnectionNode implements IDisplayStringProvider {
+public class ConnectionNodeEx extends ConnectionNode implements IStringTyped, IDisplayStringProvider {
 	private IConnectable srcModuleRef;
 	private IConnectable destModuleRef;
 	private ConnectionDisplayString displayString = null;
 
-	public ConnectionNodeEx() {
+	ConnectionNodeEx() {
 		setArrowDirection(ConnectionNodeEx.NED_ARROWDIR_L2R);
 	}
 
-	public ConnectionNodeEx(NEDElement parent) {
+	ConnectionNodeEx(NEDElement parent) {
 		super(parent);
 		setArrowDirection(ConnectionNodeEx.NED_ARROWDIR_L2R);
 	}
@@ -196,7 +196,7 @@ public class ConnectionNodeEx extends ConnectionNode implements IDisplayStringPr
     public String getChannelType() {
         ChannelSpecNode channelSpecNode = (ChannelSpecNode)getFirstChildWithTag(NED_CHANNEL_SPEC);
         if(channelSpecNode == null)
-            return "";
+            return null;
 
         return channelSpecNode.getType();
     }
@@ -208,5 +208,13 @@ public class ConnectionNodeEx extends ConnectionNode implements IDisplayStringPr
                 appendChild(channelSpecNode);
             }
             channelSpecNode.setType(type);
+    }
+
+    public String getType() {
+        return getChannelType();
+    }
+
+    public void setType(String type) {
+        setChannelType(type);
     }
 }

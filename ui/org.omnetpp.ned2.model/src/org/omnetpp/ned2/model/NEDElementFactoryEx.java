@@ -26,6 +26,10 @@ public class NEDElementFactoryEx extends NEDElementFactory {
             return new ChannelInterfaceNodeEx(parent);
         if (tagname.equals(ModuleInterfaceNodeEx.getStaticTagName()))
             return new ModuleInterfaceNodeEx(parent);
+        if (tagname.equals(GateNodeEx.getStaticTagName()))
+            return new GateNodeEx(parent);
+        if (tagname.equals(ParamNodeEx.getStaticTagName()))
+            return new ParamNodeEx(parent);
 
         return super.createNodeWithTag(tagname, parent);
 	}
@@ -47,6 +51,10 @@ public class NEDElementFactoryEx extends NEDElementFactory {
             return new ChannelInterfaceNodeEx(parent);
         if (tagcode==NED_MODULE_INTERFACE)
             return new ModuleInterfaceNodeEx(parent);
+        if (tagcode==NED_GATE)
+            return new GateNodeEx(parent);
+        if (tagcode==NED_PARAM)
+            return new ParamNodeEx(parent);
         
 		return super.createNodeWithTag(tagcode, parent);
 	}

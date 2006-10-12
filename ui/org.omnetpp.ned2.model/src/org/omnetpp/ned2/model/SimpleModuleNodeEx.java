@@ -4,17 +4,18 @@ import org.omnetpp.common.displaymodel.DisplayString;
 import org.omnetpp.common.displaymodel.IDisplayString;
 import org.omnetpp.common.displaymodel.IDisplayStringProvider;
 import org.omnetpp.common.displaymodel.IDisplayString.Prop;
+import org.omnetpp.ned2.model.pojo.ExtendsNode;
 import org.omnetpp.ned2.model.pojo.SimpleModuleNode;
 
 public class SimpleModuleNodeEx extends SimpleModuleNode 
-				implements IDisplayStringProvider, IParentable, INamed, ITopLevelElement  {
+				implements IDisplayStringProvider, IParentable, INamed, IDerived, ITopLevelElement  {
 	protected DisplayString displayString = null;
 	
-	public SimpleModuleNodeEx() {
+	SimpleModuleNodeEx() {
         init();
 	}
 
-	public SimpleModuleNodeEx(NEDElement parent) {
+	SimpleModuleNodeEx(NEDElement parent) {
 		super(parent);
         init();
 	}
@@ -31,7 +32,24 @@ public class SimpleModuleNodeEx extends SimpleModuleNode
 		return displayString;
 	}
 	
-	public void propertyChanged(Prop changedProp) {
+    public String getExtends() {
+        ExtendsNode extendsNode = getFirstExtendsChild();
+        if(extendsNode == null)
+            return null;
+
+        return extendsNode.getName();
+    }
+
+    public void setExtends(String ext) {
+        ExtendsNode extendsNode = getFirstExtendsChild();
+            if (extendsNode == null) {
+                extendsNode = (ExtendsNode)NEDElementFactoryEx.getInstance().createNodeWithTag(NED_EXTENDS);
+                appendChild(extendsNode);
+            }
+            extendsNode.setName(ext);
+    }
+
+    public void propertyChanged(Prop changedProp) {
 		// syncronize it to the underlying model 
 		NedElementExUtil.setDisplayString(this, displayString.toString());
         fireAttributeChangedToAncestors(IDisplayString.ATT_DISPLAYSTRING+"."+changedProp);

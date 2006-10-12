@@ -9,11 +9,12 @@ import org.omnetpp.common.displaymodel.IDisplayString;
 import org.omnetpp.common.displaymodel.IDisplayString.Prop;
 import org.omnetpp.ned2.model.pojo.CompoundModuleNode;
 import org.omnetpp.ned2.model.pojo.ConnectionsNode;
+import org.omnetpp.ned2.model.pojo.ExtendsNode;
 import org.omnetpp.ned2.model.pojo.SubmoduleNode;
 import org.omnetpp.ned2.model.pojo.SubmodulesNode;
 
 public class CompoundModuleNodeEx extends CompoundModuleNode
-								  implements INamedGraphNode, ITopLevelElement {
+								  implements INamedGraphNode, IDerived, ITopLevelElement {
 
 	// srcConns contains all connections where the sourcemodule is this module
 	protected List<ConnectionNodeEx> srcConns = new ArrayList<ConnectionNodeEx>();
@@ -22,11 +23,11 @@ public class CompoundModuleNodeEx extends CompoundModuleNode
 
 	protected DisplayString displayString = null;
 
-	public CompoundModuleNodeEx() {
+	CompoundModuleNodeEx() {
 		init();
 	}
 
-	public CompoundModuleNodeEx(NEDElement parent) {
+	CompoundModuleNodeEx(NEDElement parent) {
 		super(parent);
 		init();
 	}
@@ -220,5 +221,24 @@ public class CompoundModuleNodeEx extends CompoundModuleNode
 
 		return result;
 	}
+    
+    ///////////////////////////////////////////////////////////////////////
+    // extend support
+    public String getExtends() {
+        ExtendsNode extendsNode = (ExtendsNode)getFirstExtendsChild();
+        if(extendsNode == null)
+            return null;
+
+        return extendsNode.getName();
+    }
+
+    public void setExtends(String ext) {
+        ExtendsNode extendsNode = getFirstExtendsChild();
+            if (extendsNode == null) {
+                extendsNode = (ExtendsNode)NEDElementFactoryEx.getInstance().createNodeWithTag(NED_EXTENDS);
+                appendChild(extendsNode);
+            }
+            extendsNode.setName(ext);
+    }
 
 }

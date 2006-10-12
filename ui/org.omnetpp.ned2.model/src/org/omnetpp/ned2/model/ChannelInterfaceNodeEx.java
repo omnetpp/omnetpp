@@ -11,11 +11,11 @@ public class ChannelInterfaceNodeEx extends ChannelInterfaceNode
 
 	protected DisplayString displayString = null;
 
-	public ChannelInterfaceNodeEx() {
+	ChannelInterfaceNodeEx() {
 		super();
 	}
 
-	public ChannelInterfaceNodeEx(NEDElement parent) {
+	ChannelInterfaceNodeEx(NEDElement parent) {
 		super(parent);
 	}
 

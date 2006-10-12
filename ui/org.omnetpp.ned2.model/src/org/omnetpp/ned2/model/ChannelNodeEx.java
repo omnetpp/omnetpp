@@ -5,17 +5,18 @@ import org.omnetpp.common.displaymodel.IDisplayString;
 import org.omnetpp.common.displaymodel.IDisplayStringProvider;
 import org.omnetpp.common.displaymodel.IDisplayString.Prop;
 import org.omnetpp.ned2.model.pojo.ChannelNode;
+import org.omnetpp.ned2.model.pojo.ExtendsNode;
 
 public class ChannelNodeEx extends ChannelNode 
-				implements IDisplayStringProvider, IParentable, INamed, ITopLevelElement {
+				implements IDisplayStringProvider, IParentable, INamed, IDerived, ITopLevelElement {
 
 	protected DisplayString displayString = null;
 
-	public ChannelNodeEx() {
+	ChannelNodeEx() {
 		super();
 	}
 
-	public ChannelNodeEx(NEDElement parent) {
+	ChannelNodeEx(NEDElement parent) {
 		super(parent);
 	}
 
@@ -32,4 +33,20 @@ public class ChannelNodeEx extends ChannelNode
         fireAttributeChangedToAncestors(IDisplayString.ATT_DISPLAYSTRING+"."+changedProp);
 	}
 
+    public String getExtends() {
+        ExtendsNode extendsNode = getFirstExtendsChild();
+        if(extendsNode == null)
+            return null;
+
+        return extendsNode.getName();
+    }
+
+    public void setExtends(String ext) {
+        ExtendsNode extendsNode = getFirstExtendsChild();
+            if (extendsNode == null) {
+                extendsNode = (ExtendsNode)NEDElementFactoryEx.getInstance().createNodeWithTag(NED_EXTENDS);
+                appendChild(extendsNode);
+            }
+            extendsNode.setName(ext);
+    }
 }

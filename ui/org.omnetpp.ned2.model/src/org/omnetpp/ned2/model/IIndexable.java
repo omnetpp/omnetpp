@@ -6,9 +6,9 @@ package org.omnetpp.ned2.model;
  */
 public interface IIndexable extends INamed {
     
-    public String getIndex();
+    public String getVectorSize();
     
-    public void setIndex(String indexstring);
+    public void setVectorSize(String indexstring);
     
     public String getNameWithIndex();
     

@@ -12,18 +12,18 @@ import org.omnetpp.common.displaymodel.IDisplayString.Prop;
 import org.omnetpp.ned2.model.pojo.SubmoduleNode;
 
 public class SubmoduleNodeEx extends SubmoduleNode
-                            implements INamedGraphNode, IIndexable, ITyped {
+                            implements INamedGraphNode, IIndexable, IStringTyped {
     // srcConns contains all connections where the sourcemodule is this module
 	protected List<ConnectionNodeEx> srcConns = new ArrayList<ConnectionNodeEx>();
 	// destConns contains all connections where the destmodule is this module
 	protected List<ConnectionNodeEx> destConns = new ArrayList<ConnectionNodeEx>();
 	protected DisplayString displayString = null;
 
-	public SubmoduleNodeEx() {
+	SubmoduleNodeEx() {
         init();
 	}
 
-	public SubmoduleNodeEx(NEDElement parent) {
+	SubmoduleNodeEx(NEDElement parent) {
 		super(parent);
         init();
 	}
@@ -33,19 +33,11 @@ public class SubmoduleNodeEx extends SubmoduleNode
         setType("node");
     }
 
-    public String getIndex() {
-        return getVectorSize();
-    }
-
     public String getNameWithIndex() {
         String result = getName();
-        if (getIndex() != null && !"".equals(getIndex()))
-            result += "["+getIndex()+"]";
+        if (getVectorSize() != null && !"".equals(getVectorSize()))
+            result += "["+getVectorSize()+"]";
         return result;
-    }
-
-    public void setIndex(String indexstring) {
-        setVectorSize(indexstring);
     }
 
     /**

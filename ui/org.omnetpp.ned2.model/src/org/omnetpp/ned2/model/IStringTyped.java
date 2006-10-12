@@ -4,7 +4,7 @@ package org.omnetpp.ned2.model;
  * @author rhornig
  * Elements that have type-like property
  */
-public interface ITyped {
+public interface IStringTyped {
     /**
      * @return The type of the object
      */

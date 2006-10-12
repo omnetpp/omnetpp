@@ -11,11 +11,11 @@ public class ModuleInterfaceNodeEx extends ModuleInterfaceNode
 
 	protected DisplayString displayString = null;
 
-	public ModuleInterfaceNodeEx() {
+	ModuleInterfaceNodeEx() {
 		super();
 	}
 
-	public ModuleInterfaceNodeEx(NEDElement parent) {
+	ModuleInterfaceNodeEx(NEDElement parent) {
 		super(parent);
 	}
 
