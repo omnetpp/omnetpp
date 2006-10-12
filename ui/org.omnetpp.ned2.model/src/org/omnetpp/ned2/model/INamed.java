@@ -1,5 +1,9 @@
 package org.omnetpp.ned2.model;
 
+/**
+ * @author rhornig
+ * Objects that have a name property
+ */
 public interface INamed {
 
 	static String INITIAL_NAME = "unnamed";

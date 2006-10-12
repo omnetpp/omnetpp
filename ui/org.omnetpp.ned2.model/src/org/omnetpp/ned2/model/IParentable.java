@@ -1,5 +1,9 @@
 package org.omnetpp.ned2.model;
 
+/**
+ * @author rhornig
+ * An object that can be added / removed to/from the model tree
+ */
 public interface IParentable {
 
 	/**

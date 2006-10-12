@@ -26,7 +26,6 @@ import org.omnetpp.ned.editor.graph.commands.SetConstraintCommand;
 import org.omnetpp.ned.editor.graph.edit.ModuleEditPart;
 import org.omnetpp.ned2.model.CompoundModuleNodeEx;
 import org.omnetpp.ned2.model.INamedGraphNode;
-import org.omnetpp.ned2.model.ISubmoduleContainer;
 import org.omnetpp.ned2.model.SubmoduleNodeEx;
 
 
@@ -65,7 +64,7 @@ public class CompoundModuleLayoutEditPolicy extends DesktopLayoutEditPolicy {
 	@Override
     protected Command getCloneCommand(ChangeBoundsRequest request) {
         CloneSubmoduleCommand cloneCmd 
-            = new CloneSubmoduleCommand((ISubmoduleContainer) getHost().getModel(), 
+            = new CloneSubmoduleCommand((CompoundModuleNodeEx) getHost().getModel(), 
                                         ((ModuleEditPart)getHost()).getScale());
 
         for (GraphicalEditPart currPart : (List<GraphicalEditPart>)request.getEditParts()) {
@@ -82,7 +81,7 @@ public class CompoundModuleLayoutEditPolicy extends DesktopLayoutEditPolicy {
     		return null;
     	
         CreateSubmoduleCommand create 
-        		= new CreateSubmoduleCommand((ISubmoduleContainer) getHost().getModel(),
+        		= new CreateSubmoduleCommand((CompoundModuleNodeEx) getHost().getModel(),
         									 (SubmoduleNodeEx) request.getNewObject());
         create.setLocation((Rectangle)getConstraintFor(request));
         create.setLabel("Add");

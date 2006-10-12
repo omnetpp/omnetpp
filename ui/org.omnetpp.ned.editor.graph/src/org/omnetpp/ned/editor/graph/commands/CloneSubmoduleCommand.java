@@ -11,7 +11,6 @@ import org.omnetpp.ned2.model.CompoundModuleNodeEx;
 import org.omnetpp.ned2.model.ConnectionNodeEx;
 import org.omnetpp.ned2.model.IConnectable;
 import org.omnetpp.ned2.model.INamedGraphNode;
-import org.omnetpp.ned2.model.ISubmoduleContainer;
 import org.omnetpp.ned2.model.NEDElement;
 import org.omnetpp.ned2.model.SubmoduleNodeEx;
 import org.omnetpp.ned2.model.pojo.ConnectionsNode;
@@ -24,13 +23,13 @@ public class CloneSubmoduleCommand extends Command {
 
     private List<INamedGraphNode> modules, newModules;
     private List<ConnectionNodeEx> newConnections;
-    private ISubmoduleContainer parent;
+    private CompoundModuleNodeEx parent;
     private Map<INamedGraphNode, Rectangle> bounds;
     private Map<INamedGraphNode, Integer> indices;
     private Map<INamedGraphNode, INamedGraphNode> old2newMapping;
     private float scale = 1.0f;
 
-    public CloneSubmoduleCommand(ISubmoduleContainer parent, float scale) {
+    public CloneSubmoduleCommand(CompoundModuleNodeEx parent, float scale) {
         super("Clone");
         this.scale = scale;
         this.parent = parent;

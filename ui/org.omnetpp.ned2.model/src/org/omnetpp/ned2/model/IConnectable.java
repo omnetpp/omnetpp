@@ -2,8 +2,6 @@ package org.omnetpp.ned2.model;
 
 import java.util.List;
 
-import org.omnetpp.ned2.model.pojo.GateNode;
-
 /**
  * @author rhornig
  * Generic interface implemented by all nodes that can be connected via gates (Compound and submodule)

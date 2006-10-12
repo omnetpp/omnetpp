@@ -4,7 +4,6 @@ import org.eclipse.gef.commands.Command;
 import org.omnetpp.ned2.model.CompoundModuleNodeEx;
 import org.omnetpp.ned2.model.ConnectionNodeEx;
 import org.omnetpp.ned2.model.IConnectable;
-import org.omnetpp.ned2.model.IConnectionContainer;
 import org.omnetpp.ned2.model.IParentable;
 import org.omnetpp.ned2.model.SubmoduleNodeEx;
 import org.omnetpp.ned2.model.pojo.ConnectionNode;
@@ -27,7 +26,7 @@ public class ConnectionCommand extends Command {
 	// connection model to be changed
     protected ConnectionNodeEx connNode;
     protected ConnectionNodeEx connNodeNextSibling = null;
-    protected IConnectionContainer parent = null;
+    protected CompoundModuleNodeEx parent = null;
 
     @Override
     public String getLabel() {
@@ -107,7 +106,7 @@ public class ConnectionCommand extends Command {
             connNodeNextSibling = (ConnectionNodeEx)connNode.getNextConnectionNodeSibling();
             // store the parent too so we now where to put it back during undo
             // FIXME this does not work if connections are placed in connection groups
-            parent = (IConnectionContainer)connNode.getParent().getParent();
+            parent = (CompoundModuleNodeEx)connNode.getParent().getParent();
             // now detach from both src and dest modules
             connNode.setSrcModuleRef(null);
             connNode.setDestModuleRef(null);
