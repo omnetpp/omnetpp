@@ -64,6 +64,7 @@ class cNEDNetworkBuilder
     cGate *getFirstUnusedSubmodGate(cModule *mod, const char *gatename);
 
     void addConnectionOrConnectionGroup(cModule *modp, NEDElement *connOrConnGroup);
+    void doConnOrConnGroupBody(cModule *modp, NEDElement *connOrConnGroup, NEDElement *loopOrCondition);
     void doLoopOrCondition(cModule *modp, NEDElement *loopOrCondition);
     void doAddConnOrConnGroup(cModule *modp, NEDElement *connOrConnGroup);
     void doAddConnection(cModule *modp, ConnectionNode *conn);

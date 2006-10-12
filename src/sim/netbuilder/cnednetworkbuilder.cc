@@ -355,19 +355,31 @@ cGate *cNEDNetworkBuilder::getFirstUnusedSubmodGate(cModule *modp, const char *g
 
 void cNEDNetworkBuilder::addConnectionOrConnectionGroup(cModule *modp, NEDElement *connOrConnGroup)
 {
+    // this is tricky: elements representing "for" and "if" in NED are children
+    // of the ConnectionNode or ConnectionGroupNode. So, first we have to go through
+    // and execute the LoopNode and ConditionNode children recursively to get
+    // nested loops etc, then after (inside) the last one create the connection(s)
+    // themselves, which is (are) then parent of the LoopNode/ConditionNode.
     loopVarSP = 0;
 
     // find first "for" or "if" (they're children of connOrConnGroup)
     NEDElement *child = connOrConnGroup->getFirstChild();
     while (child && child->getTagCode()!=NED_LOOP && child->getTagCode()!=NED_CONDITION)
         child = child->getNextSibling();
+    NEDElement *loopOrCondition = child;
 
+    doConnOrConnGroupBody(modp, connOrConnGroup, loopOrCondition);
+}
 
-   if (child)
-        doLoopOrCondition(modp, child);
+void cNEDNetworkBuilder::doConnOrConnGroupBody(cModule *modp, NEDElement *connOrConnGroup, NEDElement *loopOrCondition)
+{
+    // if there's a "for" or "if", do that, otherwise create the connection(s) themselves
+    if (loopOrCondition)
+        doLoopOrCondition(modp, loopOrCondition);
     else
         doAddConnOrConnGroup(modp, connOrConnGroup);
 }
+
 
 void cNEDNetworkBuilder::doLoopOrCondition(cModule *modp, NEDElement *loopOrCondition)
 {
@@ -380,10 +392,7 @@ void cNEDNetworkBuilder::doLoopOrCondition(cModule *modp, NEDElement *loopOrCond
         {
             // do the body of the "if": either further "for"'s and "if"'s, or
             // the connection(group) itself that we are children of.
-            if (loopOrCondition->getNextSibling())
-                doLoopOrCondition(modp, loopOrCondition->getNextSibling());
-            else
-                doAddConnOrConnGroup(modp, loopOrCondition->getParent());
+            doConnOrConnGroupBody(modp, loopOrCondition->getParent(), loopOrCondition->getNextSibling());
         }
     }
     else if (loopOrCondition->getTagCode()==NED_LOOP)
@@ -401,12 +410,9 @@ void cNEDNetworkBuilder::doLoopOrCondition(cModule *modp, NEDElement *loopOrCond
 
         for (i=start; i<=end; i++)
         {
-            // do the body of the "for": either further "for"'s and "if"'s, or
+            // do the body of the "if": either further "for"'s and "if"'s, or
             // the connection(group) itself that we are children of.
-            if (loopOrCondition->getNextSibling())
-                doLoopOrCondition(modp, loopOrCondition->getNextSibling());
-            else
-                doAddConnOrConnGroup(modp, loopOrCondition->getParent());
+            doConnOrConnGroupBody(modp, loopOrCondition->getParent(), loopOrCondition->getNextSibling());
         }
 
         // deregister loop var
@@ -422,7 +428,7 @@ void cNEDNetworkBuilder::doAddConnOrConnGroup(cModule *modp, NEDElement *connOrC
 {
     if (connOrConnGroup->getTagCode()==NED_CONNECTION)
     {
-        doAddConnection(modp, (ConnectionNode*)connOrConnGroup);
+        doAddConnection(modp, (ConnectionNode *)connOrConnGroup);
     }
     else if (connOrConnGroup->getTagCode()==NED_CONNECTION_GROUP)
     {
