@@ -56,7 +56,6 @@ static void dump(NEDElement *node)
 void cNEDNetworkBuilder::addParameters(cComponent *component, cNEDDeclaration *decl)
 {
     printf("adding params of %s to %s\n", decl->name(), component->fullPath().c_str()); //XXX
-    printf("DECL:\n%s", decl->detailedInfo().c_str()); //XXX
 
     int n = decl->numPars();
     for (int i=0; i<n; i++)
@@ -360,19 +359,16 @@ void cNEDNetworkBuilder::addConnectionOrConnectionGroup(cModule *modp, NEDElemen
     // and execute the LoopNode and ConditionNode children recursively to get
     // nested loops etc, then after (inside) the last one create the connection(s)
     // themselves, which is (are) then parent of the LoopNode/ConditionNode.
-    loopVarSP = 0;
-
-    // find first "for" or "if" (they're children of connOrConnGroup)
-    NEDElement *child = connOrConnGroup->getFirstChild();
-    while (child && child->getTagCode()!=NED_LOOP && child->getTagCode()!=NED_CONDITION)
-        child = child->getNextSibling();
-    NEDElement *loopOrCondition = child;
-
-    doConnOrConnGroupBody(modp, connOrConnGroup, loopOrCondition);
+    NEDSupport::LoopVar::reset();
+    doConnOrConnGroupBody(modp, connOrConnGroup, connOrConnGroup->getFirstChild());
 }
 
 void cNEDNetworkBuilder::doConnOrConnGroupBody(cModule *modp, NEDElement *connOrConnGroup, NEDElement *loopOrCondition)
 {
+    // find first "for" or "if" at loopOrCondition (or among its next siblings)
+    while (loopOrCondition && loopOrCondition->getTagCode()!=NED_LOOP && loopOrCondition->getTagCode()!=NED_CONDITION)
+        loopOrCondition = loopOrCondition->getNextSibling();
+
     // if there's a "for" or "if", do that, otherwise create the connection(s) themselves
     if (loopOrCondition)
         doLoopOrCondition(modp, loopOrCondition);
@@ -398,25 +394,18 @@ void cNEDNetworkBuilder::doLoopOrCondition(cModule *modp, NEDElement *loopOrCond
     else if (loopOrCondition->getTagCode()==NED_LOOP)
     {
         LoopNode *loop = (LoopNode *)loopOrCondition;
-        int start = (int) evaluateAsLong(findExpression(loop, "from-value"), modp, false);
-        int end = (int) evaluateAsLong(findExpression(loop, "to-value"), modp, false);
+        long start = evaluateAsLong(findExpression(loop, "from-value"), modp, false);
+        long end = evaluateAsLong(findExpression(loop, "to-value"), modp, false);
 
         // register loop var
-        if (loopVarSP==MAX_LOOP_NESTING)
-            throw new cRuntimeError("dynamic module builder: nesting of for loops is too deep, max %d is allowed", MAX_LOOP_NESTING);
-        loopVarSP++;
-        loopVarStack[loopVarSP-1].varname = loop->getParamName();
-        int& i = loopVarStack[loopVarSP-1].value;
-
+        long& i = NEDSupport::LoopVar::pushVar(loop->getParamName());
         for (i=start; i<=end; i++)
         {
             // do the body of the "if": either further "for"'s and "if"'s, or
             // the connection(group) itself that we are children of.
             doConnOrConnGroupBody(modp, loopOrCondition->getParent(), loopOrCondition->getNextSibling());
         }
-
-        // deregister loop var
-        loopVarSP--;
+        NEDSupport::LoopVar::popVar();
     }
     else
     {
@@ -583,12 +572,14 @@ ExpressionNode *cNEDNetworkBuilder::findExpression(NEDElement *node, const char 
 
 long cNEDNetworkBuilder::evaluateAsLong(ExpressionNode *exprNode, cComponent *context, bool inSubcomponentScope)
 {
+    //FIXME this can be speeded up by caching cDynamicExpressions, and not recreating them every time. eg. use a NEDElement.id()-to-Expression map!
     cDynamicExpression *e = cExpressionBuilder().process(exprNode, inSubcomponentScope);
-    return e->longValue(context); //FIXME this can be speeded up by caching cDynamicExpressions, and not recreating them every time. eg. use a NEDElement.id()-to-Expression map!
+    return e->longValue(context);
 }
 
 bool cNEDNetworkBuilder::evaluateAsBool(ExpressionNode *exprNode, cComponent *context, bool inSubcomponentScope)
 {
+    //FIXME this can be speeded up by caching cDynamicExpressions, and not recreating them every time. eg. use a NEDElement.id()-to-Expression map!
     cDynamicExpression *e = cExpressionBuilder().process(exprNode, inSubcomponentScope);
     return e->boolValue(context);
 }

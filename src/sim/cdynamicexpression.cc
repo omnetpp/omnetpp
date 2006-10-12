@@ -662,6 +662,8 @@ std::string ModuleIndex::toString(std::string args[], int numargs)
     return "index";
 }
 
+//----
+
 ParameterRef::ParameterRef(const char *paramName, bool ofParent, bool printThis)
 {
     this->paramName = paramName;
@@ -685,6 +687,8 @@ std::string ParameterRef::toString(std::string args[], int numargs)
     else
         return paramName;
 }
+
+//----
 
 SiblingModuleParameterRef::SiblingModuleParameterRef(const char *moduleName, const char *paramName, bool ofParent, bool withModuleIndex)
 {
@@ -716,6 +720,47 @@ std::string SiblingModuleParameterRef::toString(std::string args[], int numargs)
     else
         return moduleName+"."+paramName;
 }
+
+//----
+
+const char *LoopVar::varNames[32];
+long LoopVar::vars[32];
+int LoopVar::varCount = 0;
+
+long& LoopVar::pushVar(const char *varName)
+{
+    ASSERT(varCount<32);
+    varNames[varCount] = varName;
+    return vars[varCount++];
+}
+
+void LoopVar::popVar()
+{
+    ASSERT(varCount>0);
+    varCount--;
+}
+
+void LoopVar::reset()
+{
+    varCount = 0;
+}
+
+StkValue LoopVar::evaluate(cComponent *context, StkValue args[], int numargs)
+{
+    ASSERT(numargs==0);
+    const char *var = varName.c_str();
+    for (int i=0; i<varCount; i++)
+        if (strcmp(var, varNames[i])==0)
+            return vars[i];
+    throw new cRuntimeError(context, "loop variable %s not found", varName.c_str());
+}
+
+std::string LoopVar::toString(std::string args[], int numargs)
+{
+    // return varName;
+    return std::string("%")+varName;  //XXX debugging only
+}
+
 
 };
 

@@ -208,7 +208,7 @@ cNEDDeclaration *cNEDResourceCache::buildNEDDeclaration(NEDElement *node)
         {
             const char *paramName = superDecl->paramName(i);
             if (decl->hasPar(paramName))
-                throw new cRuntimeError("already exists"); //XXX improve
+                throw new cRuntimeError("already exists"); //XXX improve msg
 
             decl->addPar(superDecl->paramDescription(i).deepCopy());
         }
@@ -218,12 +218,10 @@ cNEDDeclaration *cNEDResourceCache::buildNEDDeclaration(NEDElement *node)
         {
             const char *gateName = superDecl->gateName(i);
             if (decl->hasGate(gateName))
-                throw new cRuntimeError("already exists"); //XXX improve
+                throw new cRuntimeError("already exists"); //XXX improve msg
 
             decl->addGate(superDecl->gateDescription(i).deepCopy());
         }
-        printf("SUPER:\n%s", superDecl->detailedInfo().c_str()); //XXX
-        printf("DERIVED:\n%s", decl->detailedInfo().c_str()); //XXX
     }
 
     // parse new parameters

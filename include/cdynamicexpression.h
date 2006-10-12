@@ -377,6 +377,35 @@ class SiblingModuleParameterRef : public cDynamicExpression::Functor
     virtual std::string toString(std::string args[], int numargs);
 };
 
+/**
+ * i,j in NED "for" loops
+ */
+class LoopVar : public cDynamicExpression::Functor
+{
+  private:
+    // the loopvar stack (vars of nested loops are pushed on the stack by cNEDNetworkBuilder)
+    static const char *varNames[32];
+    static long vars[32];
+    static int varCount;
+  public:
+    static long& pushVar(const char *varName);
+    static void popVar();
+    static void reset();
+    static const char **getVarNames() {return varNames;}
+    static int getNumVars() {return varCount;}
+
+  protected:
+    std::string varName;
+  public:
+    LoopVar(const char *varName) {this->varName = varName;}
+    LoopVar *dup() const {return new LoopVar(varName.c_str());}
+    virtual const char *fullName() const {return varName.c_str();}
+    virtual const char *argTypes() const {return "";}
+    virtual char returnType() const {return 'L';}
+    virtual StkValue evaluate(cComponent *context, StkValue args[], int numargs);
+    virtual std::string toString(std::string args[], int numargs);
+};
+
 /*XXX TODO
 static StkValue sizeofIdent(cComponent *context, StkValue args[], int numargs);
 static StkValue sizeofGate(cComponent *context, StkValue args[], int numargs);

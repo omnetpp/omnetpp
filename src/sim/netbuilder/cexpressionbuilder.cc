@@ -17,6 +17,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include <algorithm>
 
 #include "nedelements.h"
 #include "nederror.h"
@@ -235,12 +236,24 @@ void cExpressionBuilder::doFunction(FunctionNode *node)
     }
 }
 
+bool cExpressionBuilder::isLoopVar(const char *parname)
+{
+    const char **varNames = NEDSupport::LoopVar::getVarNames();
+    int n = NEDSupport::LoopVar::getNumVars();
+    return std::find(varNames, varNames+n, parname) != varNames+n;
+}
+
 void cExpressionBuilder::doIdent(IdentNode *node)
 {
     const char *parname = node->getName();
     const char *modulename = node->getModule();
     bool hasChild = node->getFirstChild()!=NULL;
-    if (strnull(modulename))
+
+printf("**** %s loopvar:%d\n", parname, isLoopVar(parname));
+
+    if (strnull(modulename) && isLoopVar(parname))
+        elems[pos++] = new NEDSupport::LoopVar(parname);
+    else if (strnull(modulename))
         elems[pos++] = new NEDSupport::ParameterRef(parname, inSubcomponentScope, false);
     else if (!node->getFirstChild())
         elems[pos++] = new NEDSupport::SiblingModuleParameterRef(modulename, parname, inSubcomponentScope, hasChild);
@@ -260,7 +273,8 @@ void cExpressionBuilder::doLiteral(LiteralNode *node)
     }
 }
 
-cDynamicExpression *cExpressionBuilder::process(ExpressionNode *node, bool inSubcomponentScope)
+cDynamicExpression *cExpressionBuilder::process(ExpressionNode *node,
+                                                bool inSubcomponentScope)
 {
     // create dynamically evaluated expression (reverse Polish).
     // we don't know the size in advance, so first collect it in elems[1000],

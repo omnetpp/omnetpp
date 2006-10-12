@@ -34,10 +34,13 @@
 class cExpressionBuilder
 {
   protected:
+    // configuration
     bool inSubcomponentScope;
+
+    // state
     cDynamicExpression::Elem *elems;
-    int pos;
-    int limit;
+    int pos;   // length of expression so far
+    int limit; // allocated size of the elems[] vector
 
   protected:
     void doNode(NEDElement *node);
@@ -45,12 +48,13 @@ class cExpressionBuilder
     void doFunction(FunctionNode *node);
     void doIdent(IdentNode *node);
     void doLiteral(LiteralNode *node);
+    bool isLoopVar(const char *parname);
 
   public:
     cExpressionBuilder();
     ~cExpressionBuilder();
 
-    cDynamicExpression *process(ExpressionNode *node, bool inSubcomponentScope); //FIXME rename to buildExpression()
+    cDynamicExpression *process(ExpressionNode *node, bool inSubcomponentScope);
 
     /**
      * Sets cPar to the given cDynamicExpression, performing basic optimizations:
