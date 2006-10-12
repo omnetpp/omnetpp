@@ -534,7 +534,9 @@ void NEDBasicValidator::validateElement(IdentNode *node)
     checkExpressionAttributes(node, expr, opt, 2);
 
     // FIXME loopvar and gatename for sizeof is also represented as IdentNode!!!
+    //FIXME also: if we don't find a param, it may still come from a submodule --this can only be done with semantic validation
 
+/*
     // make sure parameter exists
     if (strnull(node->getModule()))
     {
@@ -552,6 +554,7 @@ void NEDBasicValidator::validateElement(IdentNode *node)
             //    errors->add(node, "compound module has no parameter named '%s'", paramName);
         }
     }
+*/
 }
 
 // TODO merge into Ref code

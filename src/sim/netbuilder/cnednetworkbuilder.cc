@@ -60,7 +60,7 @@ void cNEDNetworkBuilder::addParameters(cComponent *component, cNEDDeclaration *d
     {
         const cNEDDeclaration::ParamDescription& desc = decl->paramDescription(i);
         cPar *value = desc.value ? desc.value->dup() : cPar::createWithType(desc.type);
-        component->addPar(desc.name.c_str(), value);
+        component->addPar(desc.name.c_str(), value);  //FIXME observe volatile flag (here?)
     }
 }
 
@@ -124,7 +124,7 @@ void cNEDNetworkBuilder::buildRecursively(cModule *modp, cNEDDeclaration *decl)
 void cNEDNetworkBuilder::addSubmodulesAndConnections(cModule *modp, cNEDDeclaration *decl)
 {
     printf("buildInside of %s, decl %s\n", modp->fullPath().c_str(), decl->name()); //XXX
-    //dump(decl->getTree());
+    //dump(decl->getTree()); XXX
 
     SubmodulesNode *submods = decl->getSubmodules();
     if (submods)
@@ -534,7 +534,7 @@ ExpressionNode *cNEDNetworkBuilder::findExpression(NEDElement *node, const char 
 long cNEDNetworkBuilder::evaluateAsLong(ExpressionNode *exprNode, cComponent *context, bool inSubcomponentScope)
 {
     cDynamicExpression *e = cExpressionBuilder().process(exprNode, inSubcomponentScope);
-    return e->longValue(context); //FIXME this can be speeded up by caching cDynamicExpressions, and not recreating them every time
+    return e->longValue(context); //FIXME this can be speeded up by caching cDynamicExpressions, and not recreating them every time. eg. use a NEDElement.id()-to-Expression map!
 }
 
 bool cNEDNetworkBuilder::evaluateAsBool(ExpressionNode *exprNode, cComponent *context, bool inSubcomponentScope)
