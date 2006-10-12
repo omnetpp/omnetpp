@@ -357,6 +357,8 @@ public class NEDComponent implements ITypeInfo, NEDElementTags {
 	}
 
     public Collection<NEDElement> getSubmods() {
+        if (needsUpdate)
+            refreshInheritedMembers();
         return allSubmodules.values();
     }
 

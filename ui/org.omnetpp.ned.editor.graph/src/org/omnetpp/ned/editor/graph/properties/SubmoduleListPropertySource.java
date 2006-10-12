@@ -24,9 +24,6 @@ public class SubmoduleListPropertySource extends NotifiedPropertySource {
 
     @Override
     public IPropertyDescriptor[] getPropertyDescriptors() {
-//        List<SubmoduleNodeEx> submodules = NEDResourcesPlugin.getNEDResources().getAllSubmodules(model.getName());
-// XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-        // FIXME not working. does not return submodules correctly
         List<SubmoduleNodeEx> submodules = model.getAllSubmodules();
         
         pdesc = new PropertyDescriptor[submodules.size()];

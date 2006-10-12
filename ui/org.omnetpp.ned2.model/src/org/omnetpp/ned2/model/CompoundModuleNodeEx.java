@@ -72,9 +72,7 @@ public class CompoundModuleNodeEx extends CompoundModuleNode
      */
     public List<SubmoduleNodeEx> getAllSubmodules() {
         ITypeInfo it = getTypeInfo();
-        // if no typeinfo present fall back to the current module list
-        if (it == null)
-            return getOwnSubmodules();
+        Assert.isNotNull(it);
         
         List<SubmoduleNodeEx> result = new ArrayList<SubmoduleNodeEx>();
         for(NEDElement currChild : it.getSubmods())
