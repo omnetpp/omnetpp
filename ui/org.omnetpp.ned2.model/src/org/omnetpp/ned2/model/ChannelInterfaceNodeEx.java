@@ -7,7 +7,7 @@ import org.omnetpp.common.displaymodel.IDisplayString.Prop;
 import org.omnetpp.ned2.model.pojo.ChannelInterfaceNode;
 
 public class ChannelInterfaceNodeEx extends ChannelInterfaceNode 
-		implements IDisplayStringProvider, IElement, INamed, ITopLevelElement {
+		implements IDisplayStringProvider, IParentable, INamed, ITopLevelElement {
 
 	protected DisplayString displayString = null;
 

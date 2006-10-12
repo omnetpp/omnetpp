@@ -1,10 +1,6 @@
 package org.omnetpp.ned2.model;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.eclipse.core.runtime.Assert;
-import org.eclipse.draw2d.Bendpoint;
 import org.omnetpp.common.displaymodel.ConnectionDisplayString;
 import org.omnetpp.common.displaymodel.DisplayString;
 import org.omnetpp.common.displaymodel.IDisplayStringProvider;
@@ -183,23 +179,6 @@ public class ConnectionNodeEx extends ConnectionNode implements IDisplayStringPr
 			if (subMod == null) throw new NEDElementException(this, "'"+moduleName+"': undefined submodule");
 			return subMod;
 		}
-	}
-
-	public List getBendpoints() {
-		// TODO Implement bendpoints model
-		return new ArrayList();
-	}
-
-	public void insertBendpoint(int index, Bendpoint wbp) {
-		// TODO Implement this
-	}
-
-	public void removeBendpoint(int index) {
-		// TODO Implement this
-	}
-
-	public void setBendpoint(int index, Bendpoint bp) {
-		// TODO Implement this
 	}
 
 	public DisplayString getDisplayString() {

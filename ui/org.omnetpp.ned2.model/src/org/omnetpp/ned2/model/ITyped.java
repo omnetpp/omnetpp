@@ -2,7 +2,7 @@ package org.omnetpp.ned2.model;
 
 /**
  * @author rhornig
- * Elemets that has a type - like property
+ * Elements that have type-like property
  */
 public interface ITyped {
     /**

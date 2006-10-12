@@ -1,6 +1,6 @@
 package org.omnetpp.ned2.model;
 
-public interface IElement {
+public interface IParentable {
 
 	/**
 	 * Removes this node from the parent

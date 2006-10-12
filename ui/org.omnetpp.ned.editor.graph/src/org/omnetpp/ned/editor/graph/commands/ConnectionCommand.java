@@ -5,7 +5,7 @@ import org.omnetpp.ned2.model.CompoundModuleNodeEx;
 import org.omnetpp.ned2.model.ConnectionNodeEx;
 import org.omnetpp.ned2.model.IConnectable;
 import org.omnetpp.ned2.model.IConnectionContainer;
-import org.omnetpp.ned2.model.IElement;
+import org.omnetpp.ned2.model.IParentable;
 import org.omnetpp.ned2.model.SubmoduleNodeEx;
 import org.omnetpp.ned2.model.pojo.ConnectionNode;
 
@@ -62,7 +62,7 @@ public class ConnectionCommand extends Command {
     	IConnectable dMod = destModule != null ? destModule : connNode.getDestModuleRef();
 
     	if(sMod instanceof SubmoduleNodeEx && dMod instanceof SubmoduleNodeEx &&
-    			((IElement)sMod).getParent() == ((IElement)dMod).getParent()) 
+    			((IParentable)sMod).getParent() == ((IParentable)dMod).getParent()) 
     		return true;
     	
     	// if one module is bubmodule and the other is compound, the compound module MUST contain the submodule

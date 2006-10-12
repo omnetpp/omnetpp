@@ -7,7 +7,7 @@ import org.omnetpp.common.displaymodel.IDisplayString.Prop;
 import org.omnetpp.ned2.model.pojo.ModuleInterfaceNode;
 
 public class ModuleInterfaceNodeEx extends ModuleInterfaceNode 
-		implements IDisplayStringProvider, IElement, INamed, ITopLevelElement {
+		implements IDisplayStringProvider, IParentable, INamed, ITopLevelElement {
 
 	protected DisplayString displayString = null;
 

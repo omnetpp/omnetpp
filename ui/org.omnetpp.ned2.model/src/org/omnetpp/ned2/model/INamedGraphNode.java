@@ -6,6 +6,6 @@ import org.omnetpp.common.displaymodel.IDisplayStringProvider;
  * Submodule model interface
  * @author rhornig
  */
-public interface INamedGraphNode extends IDisplayStringProvider, IConnectable, IElement, INamed  {
+public interface INamedGraphNode extends IDisplayStringProvider, IConnectable, IParentable, INamed  {
 
 }
