@@ -1,24 +1,36 @@
-package org.omnetpp.resources;
+package org.omnetpp.ned2.model;
 
+import java.util.Collection;
 import java.util.Set;
 
 import org.eclipse.core.resources.IFile;
-import org.omnetpp.ned2.model.NEDElement;
 
 /**
  * Wraps a NED component: a ChannelNode, ChannelInterfaceNode, SimpleModuleNode, 
  * CompoundModuleNode or ModuleInterfaceNode subtree; provides easy lookup 
  * of its gates, parameters, properties, submodules, inner types.
- * This class is primarily for supporting content assist-style functionality.
+ * Enables the model element so have some additional cross-model info like a 
+ * list of names in the inheritence chain, the containing workspace file 
+ * inherited parameter, gate, connection and submodule lists
  *
  * XXX: stuff like getType(), getDocu(), getValue() etc should be declared on the Ex classes!
  * XXX: getContainingComponent() should be defined on Ex classes as well
+ * TODO: - would love to see: reference to the ancestor module (extends)
+ *       - extends chain (name and NEDElement list)
+ *       - derived list (name and NEDElement) of elements directly or indirectly derived from this element
+ *       - methods returning the NEDElement list instead of simple name list (for all methods)
+ *       - access to toplevel components via this interface ??? 
  */
-public interface INEDComponent {
+public interface ITypeInfo {
 	/**
 	 * Convenience method: returns the name of the module/interface/channel/etc.
 	 */
 	public String getName();
+    
+    /**
+     * @return The resolver implementation that created this typeInfo object
+     */
+    public ITypeResolver getResolver();
 	
 	/**
 	 * Returns underlying NEDElement subtree.
@@ -58,6 +70,7 @@ public interface INEDComponent {
 	public boolean hasOwnInnerType(String name);
 
 	public Set<String> getOwnSubmodNames();
+    public Collection<NEDElement> getOwnSubmods();
 	public boolean hasOwnSubmod(String name);
 
 	// same as above, for inherited members as well
@@ -79,5 +92,6 @@ public interface INEDComponent {
 	public boolean hasInnerType(String name);
 
 	public Set<String> getSubmodNames();
+    public Collection<NEDElement> getSubmods();
 	public boolean hasSubmod(String name);
 }

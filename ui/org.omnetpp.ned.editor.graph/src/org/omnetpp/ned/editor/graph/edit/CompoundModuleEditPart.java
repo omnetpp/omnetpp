@@ -97,7 +97,7 @@ public class CompoundModuleEditPart extends ModuleEditPart {
     protected List getModelChildren() {
         // define the properties that determine the visual appearence
     	CompoundModuleNodeEx compModule = (CompoundModuleNodeEx)getNEDModel();
-    	List<SubmoduleNodeEx> smList = compModule.getSubmodules();
+    	List<SubmoduleNodeEx> smList = compModule.getOwnSubmodules();
 
     	// if it's an derived compound module add the inherited submodules to the list
     	

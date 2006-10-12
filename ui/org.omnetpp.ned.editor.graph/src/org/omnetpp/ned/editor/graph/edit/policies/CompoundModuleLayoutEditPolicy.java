@@ -68,7 +68,7 @@ public class CompoundModuleLayoutEditPolicy extends DesktopLayoutEditPolicy {
                                         ((ModuleEditPart)getHost()).getScale());
 
         for (GraphicalEditPart currPart : (List<GraphicalEditPart>)request.getEditParts()) {
-            cloneCmd.addModule((INamedGraphNode)currPart.getModel(), 
+            cloneCmd.addModule((SubmoduleNodeEx)currPart.getModel(), 
             					(Rectangle) getConstraintForClone(currPart, request));
         }
         return cloneCmd;

@@ -15,8 +15,11 @@ import org.eclipse.core.runtime.CoreException;
 import org.omnetpp.common.displaymodel.DisplayString;
 import org.omnetpp.common.displaymodel.IDisplayStringProvider;
 import org.omnetpp.ned2.model.CompoundModuleNodeEx;
+import org.omnetpp.ned2.model.ITypeInfo;
+import org.omnetpp.ned2.model.ITypeResolver;
 import org.omnetpp.ned2.model.ModelUtil;
 import org.omnetpp.ned2.model.NEDElement;
+import org.omnetpp.ned2.model.NEDElementFactoryEx;
 import org.omnetpp.ned2.model.NEDElementUtil;
 import org.omnetpp.ned2.model.NEDSourceRegion;
 import org.omnetpp.ned2.model.SubmoduleNodeEx;
@@ -26,6 +29,7 @@ import org.omnetpp.ned2.model.pojo.CompoundModuleNode;
 import org.omnetpp.ned2.model.pojo.GateNode;
 import org.omnetpp.ned2.model.pojo.GatesNode;
 import org.omnetpp.ned2.model.pojo.ModuleInterfaceNode;
+import org.omnetpp.ned2.model.pojo.NEDElementTags;
 import org.omnetpp.ned2.model.pojo.NedFileNode;
 import org.omnetpp.ned2.model.pojo.ParamNode;
 import org.omnetpp.ned2.model.pojo.ParametersNode;
@@ -46,7 +50,7 @@ import org.omnetpp.ned2.model.swig.NEDErrorStore;
  *  
  * @author andras
  */
-public class NEDResources implements INEDComponentResolver {
+public class NEDResources implements ITypeResolver {
 
 	// markers created during parsing
 	public static final String NEDPROBLEM_MARKERID = "org.omnetpp.resources.nedproblem";
@@ -60,19 +64,19 @@ public class NEDResources implements INEDComponentResolver {
 	private HashMap<IFile, Integer> connectCount = new HashMap<IFile, Integer>();
 	
 	// table of toplevel components (points into nedFiles trees)
-	private HashMap<String, INEDComponent> components = new HashMap<String, INEDComponent>();
+	private HashMap<String, ITypeInfo> components = new HashMap<String, ITypeInfo>();
 
 	// tables of toplevel components, classified (points into nedFiles trees)
     private boolean needsRehash = false;  // if tables below need to be rebuilt
-	private HashMap<String, INEDComponent> modules = new HashMap<String, INEDComponent>();
-	private HashMap<String, INEDComponent> channels = new HashMap<String, INEDComponent>();
-	private HashMap<String, INEDComponent> moduleInterfaces = new HashMap<String, INEDComponent>();
-	private HashMap<String, INEDComponent> channelInterfaces = new HashMap<String, INEDComponent>();
+	private HashMap<String, ITypeInfo> modules = new HashMap<String, ITypeInfo>();
+	private HashMap<String, ITypeInfo> channels = new HashMap<String, ITypeInfo>();
+	private HashMap<String, ITypeInfo> moduleInterfaces = new HashMap<String, ITypeInfo>();
+	private HashMap<String, ITypeInfo> channelInterfaces = new HashMap<String, ITypeInfo>();
 
-	private INEDComponent basicChannelType = null;
-	private INEDComponent nullChannelType = null;
-	private INEDComponent bidirChannelType = null;
-	private INEDComponent unidirChannelType = null;
+	private ITypeInfo basicChannelType = null;
+	private ITypeInfo nullChannelType = null;
+	private ITypeInfo bidirChannelType = null;
+	private ITypeInfo unidirChannelType = null;
 
 	/**
 	 * Constructor.
@@ -86,16 +90,19 @@ public class NEDResources implements INEDComponentResolver {
 	 */
 	protected void createBuiltInNEDTypes() {
 		// create built-in channel type NullChannel
-		ChannelNode nullChannel= new ChannelNode();
+		ChannelNode nullChannel = (ChannelNode)NEDElementFactoryEx
+                                    .getInstance().createNodeWithTag(NEDElementTags.NED_CHANNEL);
 		nullChannel.setName("NullChannel");
 		nullChannel.setIsWithcppclass(true);
 		nullChannelType = new NEDComponent(nullChannel, null, this); 
 
 		// create built-in channel type BasicChannel
-		ChannelNode basicChannel = new ChannelNode();
+		ChannelNode basicChannel = (ChannelNode) NEDElementFactoryEx
+                                    .getInstance().createNodeWithTag(NEDElementTags.NED_CHANNEL);
 		basicChannel.setName("BasicChannel");
 		basicChannel.setIsWithcppclass(true);
-		ParametersNode params = new ParametersNode(basicChannel);
+		ParametersNode params = (ParametersNode) NEDElementFactoryEx
+		                    .getInstance().createNodeWithTag(NEDElementTags.NED_PARAMETERS);
 		createImplicitChannelParameter(params, "delay", NEDElementUtil.NED_PARTYPE_DOUBLE);
 		createImplicitChannelParameter(params, "error", NEDElementUtil.NED_PARTYPE_DOUBLE);
 		createImplicitChannelParameter(params, "datarate", NEDElementUtil.NED_PARTYPE_DOUBLE);
@@ -106,16 +113,20 @@ public class NEDResources implements INEDComponentResolver {
         //  interface IBidirectionalChannel { gates: inout a; inout b; }
 		//  interface IUnidirectionalChannel {gates: input i; output o; }
 		//
-		ModuleInterfaceNode bidirChannel = new ModuleInterfaceNode();
+		ModuleInterfaceNode bidirChannel =(ModuleInterfaceNode)NEDElementFactoryEx
+                                .getInstance().createNodeWithTag(NEDElementTags.NED_MODULE_INTERFACE);
 		bidirChannel.setName("IBidirectionalChannel");
-		GatesNode gates = new GatesNode(bidirChannel);
+		GatesNode gates = (GatesNode) NEDElementFactoryEx
+                                .getInstance().createNodeWithTag(NEDElementTags.NED_GATES);
 		createGate(gates, "a", NEDElementUtil.NED_GATETYPE_INOUT);
 		createGate(gates, "b", NEDElementUtil.NED_GATETYPE_INOUT);
 		bidirChannelType = new NEDComponent(bidirChannel, null, this); 
 		
-		ModuleInterfaceNode unidirChannel = new ModuleInterfaceNode();
+		ModuleInterfaceNode unidirChannel = (ModuleInterfaceNode) NEDElementFactoryEx
+                                .getInstance().createNodeWithTag(NEDElementTags.NED_MODULE_INTERFACE);
 		unidirChannel.setName("IUnidirectionalChannel");
-		GatesNode gates2 = new GatesNode(unidirChannel);
+        GatesNode gates2 = (GatesNode) NEDElementFactoryEx
+                                        .getInstance().createNodeWithTag(NEDElementTags.NED_GATES);
 		createGate(gates2, "i", NEDElementUtil.NED_GATETYPE_INPUT);
 		createGate(gates2, "o", NEDElementUtil.NED_GATETYPE_OUTPUT);
 		unidirChannelType = new NEDComponent(unidirChannel, null, this);
@@ -123,7 +134,8 @@ public class NEDResources implements INEDComponentResolver {
 
 	/* utility method */
 	protected NEDElement createGate(GatesNode gates, String name, int type) {
-		GateNode g = new GateNode(gates);
+		GateNode g = (GateNode) NEDElementFactoryEx
+                            .getInstance().createNodeWithTag(NEDElementTags.NED_GATE);
 		g.setName(name);
 		g.setType(type);
 		return g;
@@ -131,7 +143,8 @@ public class NEDResources implements INEDComponentResolver {
 
 	/* utility method */
 	protected NEDElement createImplicitChannelParameter(NEDElement parent, String name, int type) {
-		ParamNode param = new ParamNode(parent);
+		ParamNode param = (ParamNode) NEDElementFactoryEx
+                                .getInstance().createNodeWithTag(NEDElementTags.NED_PARAM);
 		param.setName(name);
 		param.setType(type);
 		param.setIsVolatile(false);
@@ -142,14 +155,14 @@ public class NEDResources implements INEDComponentResolver {
 	}
 	
 	/* (non-Javadoc)
-	 * @see org.omnetpp.resources.INEDComponentResolver#getNEDFiles()
+	 * @see org.omnetpp.resources.ITypeResolver#getNEDFiles()
 	 */
 	public Set<IFile> getNEDFiles() {
 		return nedFiles.keySet();
 	}
 
 	/* (non-Javadoc)
-	 * @see org.omnetpp.resources.INEDComponentResolver#getNEDFileContents(org.eclipse.core.resources.IFile)
+	 * @see org.omnetpp.resources.ITypeResolver#getNEDFileContents(org.eclipse.core.resources.IFile)
 	 */
 	public NEDElement getNEDFileContents(IFile file) {
 		if (needsRehash)
@@ -158,7 +171,7 @@ public class NEDResources implements INEDComponentResolver {
 	}
 
 	/* (non-Javadoc)
-	 * @see org.omnetpp.resources.INEDComponentResolver#containsNEDErrors(org.eclipse.core.resources.IFile)
+	 * @see org.omnetpp.resources.ITypeResolver#containsNEDErrors(org.eclipse.core.resources.IFile)
 	 */
 	public boolean containsNEDErrors(IFile file) {
         return hasErrorMarker(file, NEDPROBLEM_MARKERID) || hasErrorMarker(file, NEDCONSISTENCYPROBLEM_MARKERID);
@@ -181,12 +194,12 @@ public class NEDResources implements INEDComponentResolver {
 	}
 	
 	/* (non-Javadoc)
-	 * @see org.omnetpp.resources.INEDComponentResolver#getComponentAt(org.eclipse.core.resources.IFile, int)
+	 * @see org.omnetpp.resources.ITypeResolver#getComponentAt(org.eclipse.core.resources.IFile, int)
 	 */
-	public INEDComponent getComponentAt(IFile file, int lineNumber) {
+	public ITypeInfo getComponentAt(IFile file, int lineNumber) {
 		if (needsRehash)
 			rehash();
-		for (INEDComponent component : components.values()) {
+		for (ITypeInfo component : components.values()) {
 			if (file.equals(component.getNEDFile())) {
 				NEDSourceRegion region = component.getNEDElement().getSourceRegion();
 				if (region!=null && region.containsLine(lineNumber))
@@ -197,52 +210,52 @@ public class NEDResources implements INEDComponentResolver {
 	}
 
 	/* (non-Javadoc)
-	 * @see org.omnetpp.resources.INEDComponentResolver#getAllComponents()
+	 * @see org.omnetpp.resources.ITypeResolver#getAllComponents()
 	 */
-	public Collection<INEDComponent> getAllComponents() {
+	public Collection<ITypeInfo> getAllComponents() {
 		if (needsRehash)
 			rehash();
 		return components.values();
 	}
 
 	/* (non-Javadoc)
-	 * @see org.omnetpp.resources.INEDComponentResolver#getModules()
+	 * @see org.omnetpp.resources.ITypeResolver#getModules()
 	 */
-	public Collection<INEDComponent> getModules() {
+	public Collection<ITypeInfo> getModules() {
 		if (needsRehash)
 			rehash();
 		return modules.values();
 	}
 
 	/* (non-Javadoc)
-	 * @see org.omnetpp.resources.INEDComponentResolver#getChannels()
+	 * @see org.omnetpp.resources.ITypeResolver#getChannels()
 	 */
-	public Collection<INEDComponent> getChannels() {
+	public Collection<ITypeInfo> getChannels() {
 		if (needsRehash)
 			rehash();
 		return channels.values();
 	}
 
 	/* (non-Javadoc)
-	 * @see org.omnetpp.resources.INEDComponentResolver#getModuleInterfaces()
+	 * @see org.omnetpp.resources.ITypeResolver#getModuleInterfaces()
 	 */
-	public Collection<INEDComponent> getModuleInterfaces() {
+	public Collection<ITypeInfo> getModuleInterfaces() {
 		if (needsRehash)
 			rehash();
 		return moduleInterfaces.values();
 	}
 
 	/* (non-Javadoc)
-	 * @see org.omnetpp.resources.INEDComponentResolver#getChannelInterfaces()
+	 * @see org.omnetpp.resources.ITypeResolver#getChannelInterfaces()
 	 */
-	public Collection<INEDComponent> getChannelInterfaces() {
+	public Collection<ITypeInfo> getChannelInterfaces() {
 		if (needsRehash)
 			rehash();
 		return channelInterfaces.values();
 	}
 
 	/* (non-Javadoc)
-	 * @see org.omnetpp.resources.INEDComponentResolver#getModuleNames()
+	 * @see org.omnetpp.resources.ITypeResolver#getModuleNames()
 	 */
 	public Set<String> getModuleNames() {
 		if (needsRehash)
@@ -251,7 +264,7 @@ public class NEDResources implements INEDComponentResolver {
 	}
 
 	/* (non-Javadoc)
-	 * @see org.omnetpp.resources.INEDComponentResolver#getChannelNames()
+	 * @see org.omnetpp.resources.ITypeResolver#getChannelNames()
 	 */
 	public Set<String> getChannelNames() {
 		if (needsRehash)
@@ -260,7 +273,7 @@ public class NEDResources implements INEDComponentResolver {
 	}
 
 	/* (non-Javadoc)
-	 * @see org.omnetpp.resources.INEDComponentResolver#getModuleInterfaceNames()
+	 * @see org.omnetpp.resources.ITypeResolver#getModuleInterfaceNames()
 	 */
 	public Set<String> getModuleInterfaceNames() {
 		if (needsRehash)
@@ -269,7 +282,7 @@ public class NEDResources implements INEDComponentResolver {
 	}
 
 	/* (non-Javadoc)
-	 * @see org.omnetpp.resources.INEDComponentResolver#getChannelInterfaceNames()
+	 * @see org.omnetpp.resources.ITypeResolver#getChannelInterfaceNames()
 	 */
 	public Set<String> getChannelInterfaceNames() {
 		if (needsRehash)
@@ -278,9 +291,9 @@ public class NEDResources implements INEDComponentResolver {
 	}
 
 	/* (non-Javadoc)
-	 * @see org.omnetpp.resources.INEDComponentResolver#getComponent(java.lang.String)
+	 * @see org.omnetpp.resources.ITypeResolver#getComponent(java.lang.String)
 	 */
-	public INEDComponent getComponent(String name) {
+	public ITypeInfo getComponent(String name) {
 		if (needsRehash)
 			rehash();
 		return components.get(name);
@@ -298,11 +311,11 @@ public class NEDResources implements INEDComponentResolver {
 	 * @param nedcomp The ned component we need the display string for
 	 * @return The effective display string for the top level ned component
 	 */
-	public DisplayString getEffectiveDisplayString(INEDComponent nedcomp) {
+	public DisplayString getEffectiveDisplayString(ITypeInfo nedcomp) {
 		if ((nedcomp == null) || !(nedcomp.getNEDElement() instanceof IDisplayStringProvider))
 			return null;
 		
-		List<INEDComponent> extendsChain = ((NEDComponent)nedcomp).resolveExtendsChain();
+		List<ITypeInfo> extendsChain = ((NEDComponent)nedcomp).resolveExtendsChain();
 		// start at the current component and ends one before the base component
 		for(int i = extendsChain.size()-1; i>=1; --i) {
 			DisplayString currDisp = ((IDisplayStringProvider)extendsChain.get(i).getNEDElement()).getDisplayString();
@@ -319,18 +332,18 @@ public class NEDResources implements INEDComponentResolver {
 	 * @return All submodules (including inherited ones) belonging to the given module
 	 */
 	public List<SubmoduleNodeEx> getAllSubmodules(String name) {
-		INEDComponent nedcomp = getComponent(name);
+		ITypeInfo nedcomp = getComponent(name);
 		List<SubmoduleNodeEx> smList = new ArrayList<SubmoduleNodeEx>();
 
 		if (nedcomp != null) {
-			List<INEDComponent> extendsChain = ((NEDComponent)nedcomp).resolveExtendsChain();
+			List<ITypeInfo> extendsChain = ((NEDComponent)nedcomp).resolveExtendsChain();
 			// start at the current component and gather all inherited submodules along the 
 			// imnheritence chanin
 			for(int i = extendsChain.size()-1; i>=0; --i)
 				// skip the non compound modules (if any)
 				if (extendsChain.get(i).getNEDElement() instanceof CompoundModuleNodeEx) {
 					CompoundModuleNodeEx cmod = (CompoundModuleNodeEx)(extendsChain.get(i).getNEDElement());
-					smList.addAll(cmod.getSubmodules());
+					smList.addAll(cmod.getOwnSubmodules());
 				}
 		}
 		
@@ -338,9 +351,9 @@ public class NEDResources implements INEDComponentResolver {
 	}
 	
 	/* (non-Javadoc)
-	 * @see org.omnetpp.resources.INEDComponentResolver#wrapNEDElement(org.omnetpp.ned2.model.NEDElement)
+	 * @see org.omnetpp.resources.ITypeResolver#wrapNEDElement(org.omnetpp.ned2.model.NEDElement)
 	 */
-	public INEDComponent wrapNEDElement(NEDElement componentNode) {
+	public ITypeInfo wrapNEDElement(NEDElement componentNode) {
 		return new NEDComponent(componentNode, null, this); 
 	}
 
@@ -518,7 +531,7 @@ public class NEDResources implements INEDComponentResolver {
             for (NEDElement node : tree) {
             	// find node's name and where it should be inserted
             	String name = null;
-            	HashMap<String, INEDComponent> map = null;
+            	HashMap<String, ITypeInfo> map = null;
             	if (node instanceof ChannelNode) {
             		name = ((ChannelNode)node).getName();
             		map = channels;
@@ -559,7 +572,7 @@ public class NEDResources implements INEDComponentResolver {
 						}
             		}
             		else {
-            			INEDComponent component = new NEDComponent(node, file, this); 
+            			ITypeInfo component = new NEDComponent(node, file, this); 
             			map.put(name, component);
             			components.put(name, component);
             		}

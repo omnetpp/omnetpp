@@ -1,6 +1,7 @@
 package org.omnetpp.resources;
 
 import org.eclipse.core.runtime.Assert;
+import org.omnetpp.ned2.model.ITypeResolver;
 import org.omnetpp.ned2.model.NEDElement;
 import org.omnetpp.ned2.model.NEDElementUtil;
 import org.omnetpp.ned2.model.pojo.ChannelInterfaceNode;
@@ -19,17 +20,17 @@ import org.omnetpp.ned2.model.pojo.SimpleModuleNode;
  * @author andras
  */
 //XXX move to org.omnetpp.ned2.model plugin? then INEDComponent,
-//INEDComponentResolver etc would have to be moved as well, and that plugin
+//ITypeResolver etc would have to be moved as well, and that plugin
 //would have to depend on org.eclipse.resources because of IFile!!!
 
 //FIXME validation of embedded types!!!!
 //FIXME finish validator functions! e.g. turn on expression parsing
 
 public class NEDFileValidator implements NEDElementUtil, NEDElementTags {
-	INEDComponentResolver resolver;
+	ITypeResolver resolver;
 	INEDErrorStore errors;
 
-	public NEDFileValidator(INEDComponentResolver resolver, INEDErrorStore errors) {
+	public NEDFileValidator(ITypeResolver resolver, INEDErrorStore errors) {
 		this.resolver = resolver;
 		this.errors = errors;
 	}

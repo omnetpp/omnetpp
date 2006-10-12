@@ -14,10 +14,10 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IFileEditorInput;
 import org.omnetpp.ned.editor.text.NedHelper;
+import org.omnetpp.ned2.model.ITypeInfo;
 import org.omnetpp.ned2.model.ModelUtil;
 import org.omnetpp.ned2.model.NEDElement;
 import org.omnetpp.ned2.model.NEDSourceRegion;
-import org.omnetpp.resources.INEDComponent;
 import org.omnetpp.resources.NEDResources;
 import org.omnetpp.resources.NEDResourcesPlugin;
 
@@ -38,7 +38,7 @@ public class NedTextHover implements ITextHover {
 
 		// if we find a NED component with that name, display its source code
 		NEDResources res = NEDResourcesPlugin.getNEDResources();    	
-		INEDComponent component = res.getComponent(word);
+		ITypeInfo component = res.getComponent(word);
 		
 		if (component!=null)
 			return ModelUtil.generateNedSource(component.getNEDElement(), true);
@@ -92,7 +92,7 @@ public class NedTextHover implements ITextHover {
 			IFile file = ((IFileEditorInput)editor.getEditorInput()).getFile();
 			
 			// find component and NEDElements under the cursor 
-			INEDComponent c = res.getComponentAt(file, line);
+			ITypeInfo c = res.getComponentAt(file, line);
 			String result = "";
 			if (c!=null) {
 				NEDElement[] nodes = c.getNEDElementsAt(line, column);

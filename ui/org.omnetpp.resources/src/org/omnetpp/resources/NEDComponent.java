@@ -1,12 +1,15 @@
 package org.omnetpp.resources;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.Assert;
+import org.omnetpp.ned2.model.ITypeInfo;
+import org.omnetpp.ned2.model.ITypeResolver;
 import org.omnetpp.ned2.model.NEDElement;
 import org.omnetpp.ned2.model.NEDSourceRegion;
 import org.omnetpp.ned2.model.pojo.ChannelInterfaceNode;
@@ -24,9 +27,9 @@ import org.omnetpp.ned2.model.pojo.SubmoduleNode;
 /**
  * Default implementation of INEDComponent.
  */
-public class NEDComponent implements INEDComponent, NEDElementTags {
+public class NEDComponent implements ITypeInfo, NEDElementTags {
 
-	protected INEDComponentResolver resolver;
+	protected ITypeResolver resolver;
 	
 	protected NEDElement componentNode;
 	protected IFile file;
@@ -58,10 +61,13 @@ public class NEDComponent implements INEDComponent, NEDElementTags {
 	 * @param nedfile file containing the definition
 	 * @param res will be used to resolve inheritance (collect gates, params etc from base classes)
 	 */
-	public NEDComponent(NEDElement node, IFile nedfile, INEDComponentResolver res) {
+	public NEDComponent(NEDElement node, IFile nedfile, ITypeResolver res) {
 		resolver = res;
 		file = nedfile;
 		componentNode = node;
+        // register the created component in the NEDElement so we will have access to it 
+        // directly from the model
+        node.setTypeInfo(this);
 		
 		// collect stuff from component declaration
 		collect(ownProperties, NED_PROPERTY, NED_PARAMETERS, PropertyNode.ATT_NAME, null);
@@ -86,7 +92,11 @@ public class NEDComponent implements INEDComponent, NEDElementTags {
 		needsUpdate = true;
 	}
 
-	/**
+    public ITypeResolver getResolver() {
+        return resolver;
+    }
+
+    /**
 	 * Collect parameter declarations, gate declarations, inner types, etc into a hash table
 	 * @param hashmap  			stores result
 	 * @param tagCode			types of elements to collect (NED_xxx constant)
@@ -116,10 +126,10 @@ public class NEDComponent implements INEDComponent, NEDElementTags {
 	 * Follow inheritance chain, and return the list of super classes 
 	 * starting from the base class and ending with the current class
 	 */
-	public List<INEDComponent> resolveExtendsChain() {
-	    ArrayList<INEDComponent> tmp = new ArrayList<INEDComponent>();
+	public List<ITypeInfo> resolveExtendsChain() {
+	    ArrayList<ITypeInfo> tmp = new ArrayList<ITypeInfo>();
     	tmp.add(this);
-	    INEDComponent currentComponent = this;
+	    ITypeInfo currentComponent = this;
 	    while (true) {
 		    NEDElement currentComponentNode = currentComponent.getNEDElement();
 	    	NEDElement extendsNode = currentComponentNode.getFirstChildWithTag(NED_EXTENDS);
@@ -148,8 +158,8 @@ public class NEDComponent implements INEDComponent, NEDElementTags {
 		allSubmodules.clear();
 		allMembers.clear();
 
-		List<INEDComponent> extendsChain = resolveExtendsChain();
-		for (INEDComponent icomponent : extendsChain) {
+		List<ITypeInfo> extendsChain = resolveExtendsChain();
+		for (ITypeInfo icomponent : extendsChain) {
 			Assert.isTrue(icomponent instanceof NEDComponent);
 			NEDComponent component = (NEDComponent)icomponent;
 			allProperties.putAll(component.ownProperties);
@@ -252,6 +262,10 @@ public class NEDComponent implements INEDComponent, NEDElementTags {
 		return ownSubmodules.keySet();
 	}
 
+    public Collection<NEDElement> getOwnSubmods() {
+        return ownSubmodules.values();
+    }
+
 	/* INEDComponent method */
 	public boolean hasOwnSubmod(String name) {
 		return ownSubmodules.containsKey(name);
@@ -342,7 +356,11 @@ public class NEDComponent implements INEDComponent, NEDElementTags {
 		return allSubmodules.keySet();
 	}
 
-	/* INEDComponent method */
+    public Collection<NEDElement> getSubmods() {
+        return allSubmodules.values();
+    }
+
+    /* INEDComponent method */
 	public boolean hasSubmod(String name) {
 		if (needsUpdate)
 			refreshInheritedMembers();
@@ -369,4 +387,6 @@ public class NEDComponent implements INEDComponent, NEDElementTags {
 			refreshInheritedMembers();
 		return allMembers.get(name);
 	}
+
+
 }

@@ -1,12 +1,11 @@
-package org.omnetpp.resources;
+package org.omnetpp.ned2.model;
 
 import java.util.Collection;
 import java.util.Set;
 
 import org.eclipse.core.resources.IFile;
-import org.omnetpp.ned2.model.NEDElement;
 
-public interface INEDComponentResolver {
+public interface ITypeResolver {
 
 	/**
 	 * Returns NED files in the workspace.
@@ -36,32 +35,32 @@ public interface INEDComponentResolver {
 	 *  
 	 * @param file - must not be null
 	 */
-	public INEDComponent getComponentAt(IFile file, int lineNumber);
+	public ITypeInfo getComponentAt(IFile file, int lineNumber);
 	
 	/**
 	 * Returns all components in the NED files.
 	 */
-	public Collection<INEDComponent> getAllComponents();
+	public Collection<ITypeInfo> getAllComponents();
 
 	/**
 	 * Returns all simple and compound modules in the NED files.
 	 */
-	public Collection<INEDComponent> getModules();
+	public Collection<ITypeInfo> getModules();
 
 	/**
 	 * Returns all channels in the NED files.
 	 */
-	public Collection<INEDComponent> getChannels();
+	public Collection<ITypeInfo> getChannels();
 
 	/**
 	 * Returns all module interfaces in the NED files.
 	 */
-	public Collection<INEDComponent> getModuleInterfaces();
+	public Collection<ITypeInfo> getModuleInterfaces();
 
 	/**
 	 * Returns all channel interfaces in the NED files.
 	 */
-	public Collection<INEDComponent> getChannelInterfaces();
+	public Collection<ITypeInfo> getChannelInterfaces();
 
 	/**
 	 * Returns all module names in the NED files.
@@ -86,13 +85,13 @@ public interface INEDComponentResolver {
 	/**
 	 * Returns a component by name.
 	 */
-	public INEDComponent getComponent(String name);
+	public ITypeInfo getComponent(String name);
 
 	/**
-	 * Creates and returns an INEDComponent for the given NEDElement representing
+	 * Creates and returns an ITypeInfo for the given NEDElement representing
 	 * a module type, channel type, etc. The component will NOT be registered
 	 * in the resolver. This method was created for handling inner types.
 	 */
-	public INEDComponent wrapNEDElement(NEDElement componentNode);
+	public ITypeInfo wrapNEDElement(NEDElement componentNode);
 	
 }

@@ -1,6 +1,7 @@
 package org.omnetpp.ned2.model;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import org.eclipse.core.runtime.Assert;
@@ -54,7 +55,7 @@ public class CompoundModuleNodeEx extends CompoundModuleNode
      * @param child
      * @return
      */
-	public List<SubmoduleNodeEx> getSubmodules() {
+	public List<SubmoduleNodeEx> getOwnSubmodules() {
 		List<SubmoduleNodeEx> result = new ArrayList<SubmoduleNodeEx>();
 		SubmodulesNode submodulesNode = getFirstSubmodulesChild();
 		if (submodulesNode == null)
@@ -65,6 +66,23 @@ public class CompoundModuleNodeEx extends CompoundModuleNode
 
 		return result;
 	}
+    
+    /**
+     * @return All submodules direct and inherited submodules 
+     */
+    public List<SubmoduleNodeEx> getAllSubmodules() {
+        ITypeInfo it = getTypeInfo();
+        // if no typeinfo present fall back to the current module list
+        if (it == null)
+            return getOwnSubmodules();
+        
+        List<SubmoduleNodeEx> result = new ArrayList<SubmoduleNodeEx>();
+        for(NEDElement currChild : it.getSubmods())
+            if (currChild instanceof SubmoduleNodeEx)
+                result.add((SubmoduleNodeEx)currChild);
+        
+        return result;
+    }
 
 	/**
 	 * @param submoduleName
@@ -78,19 +96,23 @@ public class CompoundModuleNodeEx extends CompoundModuleNode
 					.getFirstChildWithAttribute(NED_SUBMODULE, SubmoduleNode.ATT_NAME, submoduleName);
 	}
 
-	public void addSubmodule(INamedGraphNode child) {
+	/**
+     * Add a 
+	 * @param child
+	 */
+	public void addSubmodule(SubmoduleNodeEx child) {
         SubmodulesNode snode = getFirstSubmodulesChild();
         if (snode == null)
             snode = (SubmodulesNode)NEDElementFactoryEx.getInstance().createNodeWithTag(NEDElementFactoryEx.NED_SUBMODULES, this);
 
-        snode.appendChild((NEDElement)child);
+        snode.appendChild(child);
 	}
 
     /**
      * Remove a specfic child from the parent.
      * @param child
      */
-	public void removeSubmodule(INamedGraphNode child) {
+	public void removeSubmodule(SubmoduleNodeEx child) {
         child.removeFromParent();
         SubmodulesNode snode = getFirstSubmodulesChild();
 		if (snode != null && !snode.hasChildren())
@@ -102,7 +124,7 @@ public class CompoundModuleNodeEx extends CompoundModuleNode
      * @param child Child to be inserted
      * @param insertBefore Sibling element where the child will be inserted
      */
-	public void insertSubmodule(int index, INamedGraphNode child) {
+	public void insertSubmodule(int index, SubmoduleNodeEx child) {
 		// check wheter Submodules node exists and create one if doesn't
 		SubmodulesNode snode = getFirstSubmodulesChild();
 		if (snode == null)
@@ -112,7 +134,7 @@ public class CompoundModuleNodeEx extends CompoundModuleNode
 		for(int i=0; (i<index) && (insertBefore!=null); ++i)
 			insertBefore = insertBefore.getNextSibling();
 
-		snode.insertChildBefore(insertBefore, (NEDElement)child);
+		snode.insertChildBefore(insertBefore, child);
 	}
 
     /**
@@ -120,13 +142,13 @@ public class CompoundModuleNodeEx extends CompoundModuleNode
      * @param insertBefore
      * @param child
      */
-	public void insertSubmodule(INamedGraphNode insertBefore, INamedGraphNode child) {
+	public void insertSubmodule(SubmoduleNodeEx insertBefore, SubmoduleNodeEx child) {
 		// check wheter Submodules node exists and create one if doesn't
 		SubmodulesNode snode = getFirstSubmodulesChild();
 		if (snode == null)
 			snode = (SubmodulesNode)NEDElementFactoryEx.getInstance().createNodeWithTag(NEDElementFactoryEx.NED_SUBMODULES, this);
 
-		snode.insertChildBefore((NEDElement)insertBefore, (NEDElement)child);
+		snode.insertChildBefore(insertBefore, child);
 	}
 
     ////////////////////////////////////////////////////////////////////////////////////////

@@ -2,7 +2,6 @@ package org.omnetpp.ned.editor.graph.commands;
 
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.omnetpp.ned2.model.CompoundModuleNodeEx;
-import org.omnetpp.ned2.model.INamedGraphNode;
 import org.omnetpp.ned2.model.SubmoduleNodeEx;
 
 /**
@@ -11,14 +10,14 @@ import org.omnetpp.ned2.model.SubmoduleNodeEx;
  */
 public class CreateSubmoduleCommand extends org.eclipse.gef.commands.Command {
 
-    private INamedGraphNode child;
+    private SubmoduleNodeEx child;
     private Rectangle rect;
     private CompoundModuleNodeEx parent;
     // TODO substitute index based positioning with sibling based one
     private int index = -1;
 
     
-    public CreateSubmoduleCommand(CompoundModuleNodeEx parent, INamedGraphNode child) {
+    public CreateSubmoduleCommand(CompoundModuleNodeEx parent, SubmoduleNodeEx child) {
     	this.child = child;
     	this.parent = parent;
     }

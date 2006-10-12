@@ -3,6 +3,8 @@ package org.omnetpp.resources;
 import java.util.HashMap;
 
 import org.eclipse.core.runtime.Assert;
+import org.omnetpp.ned2.model.ITypeInfo;
+import org.omnetpp.ned2.model.ITypeResolver;
 import org.omnetpp.ned2.model.NEDElement;
 import org.omnetpp.ned2.model.NEDElementUtil;
 import org.omnetpp.ned2.model.pojo.AbstractNEDValidator;
@@ -63,14 +65,14 @@ import org.omnetpp.ned2.model.pojo.UnknownNode;
  * @author andras
  */
 // XXX move to org.omnetpp.ned2.model plugin? then INEDComponent,
-// INEDComponentResolver etc would have to be moved as well, and that plugin
+// ITypeResolver etc would have to be moved as well, and that plugin
 // would have to depend on org.eclipse.resources because of IFile!!!
 //
 // FIXME validation of embedded types!!!!
 //
 public class NEDValidator extends AbstractNEDValidator implements NEDElementUtil {
 
-	INEDComponentResolver resolver;
+	ITypeResolver resolver;
 
 	INEDErrorStore errors;
 
@@ -79,19 +81,19 @@ public class NEDValidator extends AbstractNEDValidator implements NEDElementUtil
 	
 	// non-null while we're validating a submodule
 	SubmoduleNode submoduleNode;
-	INEDComponent submoduleType; // null for the "like *" case(!); valid while submoduleNode!=null
+	ITypeInfo submoduleType; // null for the "like *" case(!); valid while submoduleNode!=null
 
 	// non-null while we're validating a channelspec of a connection
 	ChannelSpecNode channelSpecNode;
-	INEDComponent channelSpecType; // may be null; valid while channelSpecNode!=null
+	ITypeInfo channelSpecType; // may be null; valid while channelSpecNode!=null
 
 	// members of the component currently being validated
 	HashMap<String, NEDElement> members = new HashMap<String, NEDElement>();
 
 	// contents of the "types:" section of the component currently being validated
-	HashMap<String, INEDComponent> innerTypes = new HashMap<String, INEDComponent>();
+	HashMap<String, ITypeInfo> innerTypes = new HashMap<String, ITypeInfo>();
 	
-	public NEDValidator(INEDComponentResolver resolver, INEDErrorStore errors) {
+	public NEDValidator(ITypeResolver resolver, INEDErrorStore errors) {
 		this.resolver = resolver;
 		this.errors = errors;
 	}
@@ -132,7 +134,7 @@ public class NEDValidator extends AbstractNEDValidator implements NEDElementUtil
 
 		// referenced component must exist and must be the same type as this one
 		String name = node.getName();
-		INEDComponent e = resolver.getComponent(name);
+		ITypeInfo e = resolver.getComponent(name);
 		if (e == null) {
 			errors.add(node, "no such component: '" + name+"'");
 			return;
@@ -411,8 +413,8 @@ public class NEDValidator extends AbstractNEDValidator implements NEDElementUtil
 		submoduleNode = null;
 	}
 
-	protected INEDComponent resolveTypeName(String typeName) {
-		INEDComponent component = innerTypes.get(typeName);
+	protected ITypeInfo resolveTypeName(String typeName) {
+		ITypeInfo component = innerTypes.get(typeName);
 		if (component!=null)
 			return component;
 		return resolver.getComponent(typeName);

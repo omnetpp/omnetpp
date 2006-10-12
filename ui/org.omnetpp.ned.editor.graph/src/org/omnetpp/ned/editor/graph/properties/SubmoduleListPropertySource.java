@@ -1,13 +1,11 @@
 package org.omnetpp.ned.editor.graph.properties;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
 import org.eclipse.ui.views.properties.PropertyDescriptor;
 import org.omnetpp.ned2.model.CompoundModuleNodeEx;
 import org.omnetpp.ned2.model.SubmoduleNodeEx;
-import org.omnetpp.resources.NEDResourcesPlugin;
 
 /**
  * @author rhornig
@@ -26,7 +24,10 @@ public class SubmoduleListPropertySource extends NotifiedPropertySource {
 
     @Override
     public IPropertyDescriptor[] getPropertyDescriptors() {
-        List<SubmoduleNodeEx> submodules = NEDResourcesPlugin.getNEDResources().getAllSubmodules(model.getName());
+//        List<SubmoduleNodeEx> submodules = NEDResourcesPlugin.getNEDResources().getAllSubmodules(model.getName());
+// XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+        // FIXME not working. does not return submodules correctly
+        List<SubmoduleNodeEx> submodules = model.getAllSubmodules();
         
         pdesc = new PropertyDescriptor[submodules.size()];
         totalSubmoduleCount = inheritedSubmoduleCount = 0;

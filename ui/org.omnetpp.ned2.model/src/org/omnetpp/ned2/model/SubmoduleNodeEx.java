@@ -58,7 +58,7 @@ public class SubmoduleNodeEx extends SubmoduleNode
      * ie. getCompoundModule should not return null;
      */
     public void makeNameUnique() {
-    	List<SubmoduleNodeEx> smls = getCompoundModule().getSubmodules();
+    	List<SubmoduleNodeEx> smls = getCompoundModule().getOwnSubmodules();
     	Set<String> nameSet = new HashSet<String>(smls.size());
     	// create a set from the sibling submodules
     	for(SubmoduleNodeEx sm : smls)

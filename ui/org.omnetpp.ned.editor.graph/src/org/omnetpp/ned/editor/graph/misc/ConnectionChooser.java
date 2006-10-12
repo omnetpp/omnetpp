@@ -8,11 +8,11 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.MenuItem;
 import org.omnetpp.ned2.model.CompoundModuleNodeEx;
 import org.omnetpp.ned2.model.IConnectable;
+import org.omnetpp.ned2.model.ITypeInfo;
 import org.omnetpp.ned2.model.ModelUtil;
 import org.omnetpp.ned2.model.SubmoduleNodeEx;
 import org.omnetpp.ned2.model.pojo.ConnectionNode;
 import org.omnetpp.ned2.model.pojo.GateNode;
-import org.omnetpp.resources.INEDComponent;
 import org.omnetpp.resources.NEDResourcesPlugin;
 
 /**
@@ -38,7 +38,7 @@ public class ConnectionChooser {
 			moduleType = ((SubmoduleNodeEx)module).getType();
 		}
 		
-		INEDComponent comp = NEDResourcesPlugin.getNEDResources().getComponent(moduleType);
+		ITypeInfo comp = NEDResourcesPlugin.getNEDResources().getComponent(moduleType);
 		if (comp == null)
 			return result;
 		

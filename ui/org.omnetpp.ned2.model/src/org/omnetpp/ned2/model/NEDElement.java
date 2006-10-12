@@ -26,6 +26,7 @@ public abstract class NEDElement extends PlatformObject implements Iterable<NEDE
 	private NEDElement nextsibling;
 	private static long lastid;
     private HashMap<Object,Object> userData;
+    private ITypeInfo typeInfo;
     
     // whether notification is enabled or not
     private boolean notifyEnabled = true;
@@ -694,6 +695,25 @@ public abstract class NEDElement extends PlatformObject implements Iterable<NEDE
             child.deepDup(result);
         
         return result;
+    }
+
+    /**
+     * @return The TypeInfo belonging to the nearest containing (toplevel) component 
+     * that was added by the incremental builder (type resolver). Or NULL if none was found.
+     * Cross references and other supporting lists can be accesed via typeInfo
+     */
+    public ITypeInfo getTypeInfo() {
+        if (typeInfo != null || getParent() == null)
+            return typeInfo;
+        // return the typinfo of the parent
+        return getParent().getTypeInfo();
+    }
+
+    /**
+     * @param typeInfo Sets the component type info data. Should be used by the incremental builder ONLY.
+     */
+    public void setTypeInfo(ITypeInfo typeInfo) {
+        this.typeInfo = typeInfo;
     }
 
 };

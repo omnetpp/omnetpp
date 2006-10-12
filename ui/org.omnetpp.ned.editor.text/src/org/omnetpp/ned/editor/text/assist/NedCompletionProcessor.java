@@ -18,9 +18,9 @@ import org.eclipse.jface.text.contentassist.IContextInformationPresenter;
 import org.eclipse.jface.text.contentassist.IContextInformationValidator;
 import org.eclipse.jface.text.templates.Template;
 import org.omnetpp.ned.editor.text.NedHelper;
+import org.omnetpp.ned2.model.ITypeInfo;
 import org.omnetpp.ned2.model.NEDElement;
 import org.omnetpp.ned2.model.pojo.SubmoduleNode;
-import org.omnetpp.resources.INEDComponent;
 import org.omnetpp.resources.NEDResources;
 import org.omnetpp.resources.NEDResourcesPlugin;
 
@@ -97,10 +97,10 @@ public class NedCompletionProcessor extends IncrementalCompletionProcessor {
 		NEDResources res = NEDResourcesPlugin.getNEDResources();
 
 		String line = info.linePrefixTrimmed;
-		INEDComponent parentComponent = null;
+		ITypeInfo parentComponent = null;
 		if (info.componentName!=null)
 			parentComponent = res.getComponent(info.componentName); // hopefully autobuilder (reconciler) has already run on current source
-		INEDComponent submoduleType = null;
+		ITypeInfo submoduleType = null;
 		if (info.submoduleTypeName!=null)
 			submoduleType = res.getComponent(info.submoduleTypeName);
 
@@ -207,7 +207,7 @@ public class NedCompletionProcessor extends IncrementalCompletionProcessor {
 	    		if (parentComponent!=null) {
 					String submodTypeName = extractSubmoduleTypeName(line, parentComponent);
 					System.out.println(" offering params of type "+submodTypeName);
-					INEDComponent submodType = res.getComponent(submodTypeName);
+					ITypeInfo submodType = res.getComponent(submodTypeName);
 					if (submodType!=null) {
 						if (line.matches(".*\\bsizeof *\\(.*"))
 							addProposals(viewer, documentOffset, result, submodType.getGateNames(), "gate");
@@ -269,7 +269,7 @@ public class NedCompletionProcessor extends IncrementalCompletionProcessor {
 	    		if (parentComponent!=null) {
 					String submodTypeName = extractSubmoduleTypeName(line, parentComponent);
 					System.out.println(" offering gates of type "+submodTypeName);
-					INEDComponent submodType = res.getComponent(submodTypeName);
+					ITypeInfo submodType = res.getComponent(submodTypeName);
 					if (submodType!=null)
 						addProposals(viewer, documentOffset, result, submodType.getGateNames(), "gate");
 	    		}
@@ -300,7 +300,7 @@ public class NedCompletionProcessor extends IncrementalCompletionProcessor {
         return line.contains("[");
 	}
 
-	private String extractSubmoduleTypeName(String line, INEDComponent parentComponent) {
+	private String extractSubmoduleTypeName(String line, ITypeInfo parentComponent) {
 		// first, get rid of everything before any arrow(s), because it causes a problem for the next regexp
 		line = line.replaceFirst("^.*(-->|<--|<-->)", "");
 		// identifier followed by ".", potentially a submodule index ("[something]") in between
