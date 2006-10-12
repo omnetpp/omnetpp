@@ -384,24 +384,19 @@ public class DisplayString implements IDisplayString {
 	 * @see org.omnetpp.ned2.model.IDisplayString#getAsIntDef(org.omnetpp.ned2.model.DisplayString.Prop, int)
 	 */
     public int getAsIntDef(Prop propName, int defValue) {
-        int val = defValue;
-        try {
-            val = getAsIntegerDef(propName).intValue();
-        } catch (Exception e) {
-        }
-        return val;
+        Integer propValue = getAsIntegerDef(propName);
+        return propValue == null ? defValue : propValue.intValue();
     }
 
 	/* (non-Javadoc)
 	 * @see org.omnetpp.ned2.model.IDisplayString#getAsFloatDef(org.omnetpp.ned2.model.DisplayString.Prop, float)
 	 */
 	public float getAsFloatDef(Prop propName, float defValue) {
-        float val = defValue;
         try {
-            val = Float.valueOf(getAsStringDef(propName));
-        } catch (Exception e) {
-        }
-        return val;
+            String propValue = getAsStringDef(propName);
+            return propValue == null ? defValue : Float.valueOf(propValue);
+        } catch (NumberFormatException e) { }
+        return defValue;
 	}
 	
 	/**
@@ -423,10 +418,6 @@ public class DisplayString implements IDisplayString {
 	 * @see org.omnetpp.ned2.model.IDisplayString#getScale()
 	 */
 	public float getScale() {
-//        // if we have a container (ie we are a submodule), get the scaling factor from there
-//        if (getContainerDisplayString() != null)
-//            return getContainerDisplayString().getDisplayString().getScale();
-        
 		return getAsFloatDef(Prop.MODULE_SCALE, 1.0f);
 	}
     

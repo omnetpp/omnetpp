@@ -615,6 +615,8 @@ public class ColorFactory {
         RGB result = null;
         int rgbVal = 0;
         try {
+            if (value == null)
+                return null;
             // check for color constants
             RGB constRGB = str2rgbRegistry.getRGB(value.toLowerCase());
             // return a new RGB object, because RGB is mutable
@@ -626,8 +628,7 @@ public class ColorFactory {
                 rgbVal = Integer.parseInt(value.substring(1), 16);
                 result = new RGB((rgbVal >> 16) & 255, (rgbVal >> 8) & 255, rgbVal & 255);
             }
-        } catch (Exception e) {
-        }
+        } catch (NumberFormatException e) { }
         return result;
     }
     

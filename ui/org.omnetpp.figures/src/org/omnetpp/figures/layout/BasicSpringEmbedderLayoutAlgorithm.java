@@ -119,7 +119,7 @@ public class BasicSpringEmbedderLayoutAlgorithm extends AbstractGraphLayoutAlgor
 
 	@Override
 	public void addMovableNode(Object mod, int width, int height) {
-	    assert(findNode(mod)==null);
+	    Assert.isTrue(findNode(mod)==null);
 
 	    allNodesAreFixed = false;
 
@@ -135,7 +135,7 @@ public class BasicSpringEmbedderLayoutAlgorithm extends AbstractGraphLayoutAlgor
 
 	@Override
 	public void addFixedNode(Object mod, int x, int y, int width, int height) {
-	    assert(findNode(mod)==null);
+	    Assert.isTrue(findNode(mod)==null);
 
 	    haveFixedNode = true;
 
@@ -153,7 +153,7 @@ public class BasicSpringEmbedderLayoutAlgorithm extends AbstractGraphLayoutAlgor
 
 	@Override
 	public void addAnchoredNode(Object mod, String anchorname, int offx, int offy, int width, int height) {
-	    assert(findNode(mod)==null);
+	    Assert.isTrue(findNode(mod)==null);
 
 	    haveAnchoredNode = true;
 	    allNodesAreFixed = false;
@@ -188,13 +188,13 @@ public class BasicSpringEmbedderLayoutAlgorithm extends AbstractGraphLayoutAlgor
 
 	@Override
 	public void addEdge(Object from, Object to, int len) {
-	   assert(findNode(from)!=null && findNode(to)!=null);
+	   Assert.isTrue(findNode(from)!=null && findNode(to)!=null);
 
 	    Edge e = new Edge();
 	    e.from = findNode(from);
 	    e.to = findNode(to);
 	    e.len = len>0 ? len : defaultEdgeLen;
-	    assert(e.to!=null && e.from!=null);
+	    Assert.isTrue(e.to!=null && e.from!=null);
 
 	    // heuristics to take submodule size into account
 	    e.len += 2*(Math.min(e.from.sx,e.from.sy)+Math.min(e.to.sx,e.to.sy));
@@ -340,7 +340,7 @@ public class BasicSpringEmbedderLayoutAlgorithm extends AbstractGraphLayoutAlgor
 
 	@Override
 	public Point getNodePosition(Object mod) {
-	    assert(findNode(mod)!=null);
+	    Assert.isTrue(findNode(mod)!=null);
 
 	    Node n = findNode(mod);
 	    return new Point(n.x, n.y);
@@ -370,7 +370,7 @@ public class BasicSpringEmbedderLayoutAlgorithm extends AbstractGraphLayoutAlgor
             if (n.color!=-1) continue;  // already assigned
 
             // breadth-width search to color all connected nodes (transitive closure)
-            assert(todoList.size()==0);
+            Assert.isTrue(todoList.size()==0);
             todoList.add(n); // start at this node
             while (!todoList.isEmpty())
             {

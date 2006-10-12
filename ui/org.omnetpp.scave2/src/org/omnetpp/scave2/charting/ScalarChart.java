@@ -44,24 +44,24 @@ import org.omnetpp.scave2.model.ChartProperties.LegendAnchor;
 import org.omnetpp.scave2.model.ChartProperties.LegendPosition;
 
 public class ScalarChart extends InteractiveChart {
-	
+
 	private static final String DEFAULT_TITLE = "";
 	private static final String DEFAULT_X_AXIS_TITLE = "";
 	private static final String DEFAULT_Y_AXIS_TITLE = "";
-	
+
 	private static final double DEFAULT_BAR_BASELINE = 0.0;
 	private static final BarPlacement DEFAULT_BAR_PLACEMENT = BarPlacement.Aligned;
-	
+
 	private static final boolean DEFAULT_DISPLAY_LEGEND = false;
 	private static final boolean DEFAULT_LEGEND_BORDER = false;
 	private static final LegendPosition DEFAULT_LEGEND_POSITION = LegendPosition.Below;
 	private static final LegendAnchor DEFAULT_LEGEND_ANCHOR = LegendAnchor.North;
-	
+
 	private static final boolean DEFAULT_INVERT_XY = false;
 	private static final boolean DEFAULT_SHOW_GRID = false;
 	private static final double DEFAULT_X_LABELS_ROTATED_BY = 0.0;
 	private static final boolean DEFAULT_Y_LOGARITHMIC = false;
-	
+
 	private String title;
 	private Font titleFont;
 	private String xAxisTitle;
@@ -69,29 +69,29 @@ public class ScalarChart extends InteractiveChart {
 	private Font axisTitleFont;
 	private Font tickLabelFont;
 	private double xAxisLabelsRotatedBy;
-	
+
 	private boolean displayLegend;
 	private Font legendFont;
 	private boolean legendBorder;
 	private LegendPosition legendPosition;
 	private LegendAnchor legendAnchor;
-	
+
 	private Double barBaseline;
 	private BarPlacement barPlacement;
-	
+
 	private Double yMin;
 	private Double yMax;
 	private Boolean invertXY;
 	private Boolean gridVisible;
-	
+
 	public ScalarChart(Composite parent, int style) {
 		super(parent, style);
 	}
-	
+
 	public Dataset getDataset() {
 		return getPlot() != null ? getPlot().getDataset() : null;
 	}
-	
+
 	public void setDataset(CategoryDataset dataset) {
 		if (getPlot() != null) {
 			getPlot().setDataset(dataset);
@@ -100,7 +100,7 @@ public class ScalarChart extends InteractiveChart {
 	}
 
 	/*=============================================
-	 *               Properties   
+	 *               Properties
 	 *=============================================*/
 	public void setProperty(String name, String value) {
 		if (chart == null)
@@ -148,33 +148,33 @@ public class ScalarChart extends InteractiveChart {
 		else if (PROP_Y_AXIS_LOGARITHMIC.equals(name))
 			setYLogarithmic(Converter.stringToBoolean(value));
 	}
-	
+
 	public String getTitle() {
 		return title;
 	}
-	
+
 	public void setTitle(String value) {
 		if (value == null)
 			value = DEFAULT_TITLE;
-		
+
 		title = value;
-		
+
 		if (chart != null) {
 			chart.setTitle(value);
 			scheduleRefresh();
 		}
 	}
-	
+
 	public Font getTitleFont() {
 		return titleFont;
 	}
-	
+
 	public void setTitleFont(Font font) {
 		if (font == null)
 			return;
-		
+
 		titleFont = font;
-		
+
 		if (chart != null) {
 			if (chart.getTitle() != null)
 				chart.getTitle().setFont(font);
@@ -183,47 +183,47 @@ public class ScalarChart extends InteractiveChart {
 			scheduleRefresh();
 		}
 	}
-	
+
 	public String getXAxisTitle() {
 		return xAxisTitle;
 	}
-	
+
 	public void setXAxisTitle(String title) {
 		if (title == null)
 			title = DEFAULT_X_AXIS_TITLE;
-		
+
 		xAxisTitle = title;
-		
+
 		if (chart != null) {
 			getPlot().getDomainAxis().setLabel(title);
 			scheduleRefresh();
 		}
 	}
-	
+
 	public String getYAxisTitle() {
 		return yAxisTitle;
 	}
-	
+
 	public void setYAxisTitle(String title) {
 		if (title == null)
 			title = DEFAULT_Y_AXIS_TITLE;
-		
+
 		yAxisTitle = title;
-		
+
 		if (chart != null) {
 			getPlot().getRangeAxis().setLabel(title);
 			scheduleRefresh();
 		}
 	}
-	
+
 	public Font getAxisTitleFont() {
 		return axisTitleFont;
 	}
-	
+
 	public void setAxisTitleFont(Font font) {
 		if (font == null)
 			return;
-		
+
 		axisTitleFont = font;
 
 		if (chart != null) {
@@ -232,32 +232,32 @@ public class ScalarChart extends InteractiveChart {
 			scheduleRefresh();
 		}
 	}
-	
+
 	public Font getLabelFont() {
 		return tickLabelFont;
 	}
-	
+
 	public void setLabelFont(Font font) {
 		if (font == null)
 			return;
-		
+
 		tickLabelFont = font;
-		
+
 		if (chart != null) {
 			getPlot().getDomainAxis().setTickLabelFont(font);
 			getPlot().getRangeAxis().setTickLabelFont(font);
 			scheduleRefresh();
 		}
 	}
-	
+
 	public Double getXAxisLabelsRotatedBy() {
 		return xAxisLabelsRotatedBy;
 	}
-	
+
 	public void setXAxisLabelsRotatedBy(Double angle) {
 		if (angle == null)
 			angle = DEFAULT_X_LABELS_ROTATED_BY;
-		
+
 		xAxisLabelsRotatedBy = angle;
 
 		if (chart != null) {
@@ -266,17 +266,17 @@ public class ScalarChart extends InteractiveChart {
 			scheduleRefresh();
 		}
 	}
-	
+
 	public Boolean getDisplayLegend() {
 		return displayLegend;
 	}
-	
+
 	public void setDisplayLegend(Boolean value) {
 		if (value == null)
 			value = DEFAULT_DISPLAY_LEGEND;
 
 		displayLegend = value;
-		
+
 		if (chart != null) {
 			if (value) {
 				chart.removeLegend();
@@ -291,39 +291,39 @@ public class ScalarChart extends InteractiveChart {
 			scheduleRefresh();
 		}
 	}
-	
+
 	public Boolean getLegendBorder() {
 		return legendBorder;
 	}
-	
+
 	public void setLegendBorder(Boolean value) {
 		if (value == null)
 			value = DEFAULT_LEGEND_BORDER;
 
 		legendBorder = value;
-		
+
 		if (chart != null && chart.getLegend() != null) {
 			chart.getLegend().setBorder(value ? new BlockBorder() : BlockBorder.NONE);
 			scheduleRefresh();
 		}
 	}
-	
+
 	public Font getLegendFont() {
 		return legendFont;
 	}
-	
+
 	public void setLegendFont(Font font) {
 		if (font == null)
 			return;
 
 		legendFont = font;
-		
+
 		if (chart != null && chart.getLegend() != null) {
 			chart.getLegend().setItemFont(font);
 			scheduleRefresh();
 		}
 	}
-	
+
 	public LegendPosition getLegendPosition() {
 		return legendPosition;
 	}
@@ -331,9 +331,9 @@ public class ScalarChart extends InteractiveChart {
 	public void setLegendPosition(LegendPosition value) {
 		if (value == null)
 			value = DEFAULT_LEGEND_POSITION;
-		
+
 		legendPosition = value;
-		
+
 		if (chart != null && chart.getLegend() != null) {
 			RectangleEdge position = null;
 			switch (value) {
@@ -344,13 +344,13 @@ public class ScalarChart extends InteractiveChart {
 			case Right: position = RectangleEdge.RIGHT; break;
 			default: Assert.isLegal(false, "Unknown LegendPosition: " + value);
 			}
-			
+
 			if (position != null)
 				chart.getLegend().setPosition(position);
 			scheduleRefresh();
 		}
 	}
-	
+
 	public LegendAnchor getLegendAnchoring() {
 		return legendAnchor;
 	}
@@ -360,7 +360,7 @@ public class ScalarChart extends InteractiveChart {
 			value = DEFAULT_LEGEND_ANCHOR;
 
 		legendAnchor = value;
-		
+
 		if (chart != null && chart.getLegend() != null) {
 			// TODO
 			scheduleRefresh();
@@ -370,13 +370,13 @@ public class ScalarChart extends InteractiveChart {
 	public Double getBarBaseline() {
 		return barBaseline;
 	}
-	
+
 	public void setBarBaseline(Double value) {
 		if (value == null)
 			value = DEFAULT_BAR_BASELINE;
-		
+
 		barBaseline = value;
-		
+
 		if (chart != null) {
 			CategoryPlot plot = (CategoryPlot)chart.getPlot();
 			if (plot.getRenderer() instanceof BarRenderer) {
@@ -386,27 +386,27 @@ public class ScalarChart extends InteractiveChart {
 			scheduleRefresh();
 		}
 	}
-	
+
 	public BarPlacement getBarPlacement() {
 		return barPlacement;
 	}
-	
+
 	public void setBarPlacement(BarPlacement value) {
 		if (value == null)
 			value = DEFAULT_BAR_PLACEMENT;
-		
+
 		barPlacement = value;
-		
+
 		if (chart != null) {
 			BarRenderer renderer = null;
 			switch (value) {
-			case Aligned: renderer = new BarRenderer(); break; 
+			case Aligned: renderer = new BarRenderer(); break;
 			case Overlap: renderer = new LayeredBarRenderer(); break;
 			case InFront: renderer = new LayeredBarRenderer(); break;
 			case Stacked: renderer = new StackedBarRenderer(); break;
 			default: Assert.isLegal(false, "Unknown BarPlacement value: " + value); break;
 			}
-			
+
 			if (renderer != null) {
 				CategoryPlot plot = (CategoryPlot)chart.getPlot();
 				plot.setRenderer(renderer);
@@ -414,14 +414,14 @@ public class ScalarChart extends InteractiveChart {
 			scheduleRefresh();
 		}
 	}
-	
+
 	public Double getYMin() {
 		return yMin;
 	}
-	
+
 	public void setYMin(Double value) {
 		yMin = value;
-		
+
 		if (chart != null) {
 			if (value != null)
 				getPlot().getRangeAxis().setLowerBound(value);
@@ -430,14 +430,14 @@ public class ScalarChart extends InteractiveChart {
 			scheduleRefresh();
 		}
 	}
-	
+
 	public Double getYMax() {
 		return yMax;
 	}
-	
+
 	public void setYMax(Double value) {
 		yMax = value;
-		
+
 		if (chart != null) {
 			if (value != null)
 				getPlot().getRangeAxis().setUpperBound(value);
@@ -446,31 +446,31 @@ public class ScalarChart extends InteractiveChart {
 			scheduleRefresh();
 		}
 	}
-	
+
 	public Boolean getInvertXY() {
 		return invertXY;
 	}
-	
+
 	public void setInvertXY(Boolean value) {
 		if (value == null)
 			value = DEFAULT_INVERT_XY;
-		
+
 		invertXY = value;
-		
+
 		if (chart != null) {
 			getPlot().setOrientation(value ? PlotOrientation.HORIZONTAL : PlotOrientation.VERTICAL);
 			scheduleRefresh();
 		}
 	}
-	
+
 	public Boolean getGridVisible() {
 		return gridVisible;
 	}
-	
+
 	public void setGridVisible(Boolean value) {
 		if (value == null)
 			value = DEFAULT_SHOW_GRID;
-		
+
 		gridVisible = value;
 
 		if (chart != null) {
@@ -486,11 +486,11 @@ public class ScalarChart extends InteractiveChart {
 			scheduleRefresh();
 		}
 	}
-	
+
 	private void setYLogarithmic(Boolean value) {
 		if (value == null)
 			value = DEFAULT_Y_LOGARITHMIC;
-		
+
 		if (chart != null) {
 			if (value) {
 				LogarithmicAxis axis = new LogarithmicAxis(yAxisTitle);
@@ -502,9 +502,9 @@ public class ScalarChart extends InteractiveChart {
 			scheduleRefresh();
 		}
 	}
-	
+
 	private CategoryPlot getPlot() {
-		assert chart != null;
+		Assert.isTrue(chart != null);
 		return (CategoryPlot)chart.getPlot();
 	}
 }

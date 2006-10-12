@@ -28,17 +28,17 @@ public class NedElementExUtil implements NEDElementTags, NEDElementUtil {
             NEDElement channelSpecNode = node.getFirstChildWithTag(NED_CHANNEL_SPEC);
             node = channelSpecNode;
         }
-
-        try {
-			for(NEDElement currElement : node.getFirstChildWithTag(NED_PARAMETERS))
+        
+        if (node == null) return null;
+        
+        NEDElement parametersNode = node.getFirstChildWithTag(NED_PARAMETERS);
+        if (parametersNode != null)
+			for(NEDElement currElement : parametersNode)
 				if(currElement instanceof PropertyNode) {
 					PropertyNode currProp = (PropertyNode)currElement;
 					if(DISPLAY_PROPERTY.equals(currProp.getName()))
 						return getPropertyValue(currProp);
 				}
-		} catch (NullPointerException e) {
-			// display string is in illegal format, missing value etc (e.g @display )
-		}
 		return null;
 	}
 	

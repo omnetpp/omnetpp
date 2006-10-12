@@ -13,8 +13,10 @@ import java.awt.event.MouseMotionListener;
 import java.util.ArrayList;
 import java.util.Random;
 
+import org.eclipse.core.runtime.Assert;
+
 public class ForceDirectedEmbedding
-{	
+{
 	// Algorithm parameters
 	// Magnetism between vertexs having connections.
 	public double connectionSpringCoefficient = 0.1;
@@ -32,7 +34,7 @@ public class ForceDirectedEmbedding
 
 	// Friction reduces energy.
 	public double frictionCoefficient = 0.1;
-	
+
 	// change time step to have acceleration error in range
 	public boolean adaptive = true;
 
@@ -73,7 +75,7 @@ public class ForceDirectedEmbedding
 
 	// Maximum number of cycles of relaxing.
 	public int maxCycle = 10000;
-	
+
 	// Maximum number of cycles of relaxing.
 	public int maxProbCycle = 10;
 
@@ -82,7 +84,7 @@ public class ForceDirectedEmbedding
 
 	// the component to layout
 	private GraphComponent graphComponent;
-	
+
 	IForceDirectedEmbeddingListener listener;
 
 	// Constructors
@@ -155,13 +157,13 @@ public class ForceDirectedEmbedding
 				addMul(tps, tps, h * h / 8, b1);
 				addMul(tvs, vs, h / 2, b1);
 				b(b2, tps, tvs);
-			
+
 				// b3 = b[yn + h / 2 * yn' + h * h / 8 * b1, yn' + h / 2 * b2]
 				addMul(tps, ps, h / 2, vs);
 				addMul(tps, tps, h * h / 8, b2);// ???? b1
 				addMul(tvs, vs, h / 2, b2);
 				b(b3, tps, tvs);
-			
+
 				// b4 = b[yn + h * yn' + h * h / 2 * b3, yn' + h * b3]
 				addMul(tps, ps, h, vs);
 				addMul(tps, tps, h * h / 2, b3);
@@ -175,13 +177,13 @@ public class ForceDirectedEmbedding
 
 				if (!adaptive)
 					break;
-				
+
 				if (accelerationError < accelerationMinErrorLimit) {
 					hLow = h;
 					h = (hLow + hHigh) / 2;
 				}
 				else if (accelerationError > accelerationMaxErrorLimit) {
-					hHigh = h;					
+					hHigh = h;
 					h = (hLow + hHigh) / 2;
 				}
 				else
@@ -203,7 +205,7 @@ public class ForceDirectedEmbedding
 			add(dvs, dvs, b4);
 			mul(dvs, h / 6, dvs);
 			add(vs, vs, dvs);
-			
+
 			// Maximize velocity
 			for (int i = 0; i < vs.length; i++) {
 				if (vs[i].getLength() > maxVelocity) {
@@ -211,7 +213,7 @@ public class ForceDirectedEmbedding
 					vs[i].multiply(maxVelocity);
 				}
 			}
-				
+
 			// Check if relaxed
 			cycle++;
 
@@ -229,7 +231,7 @@ public class ForceDirectedEmbedding
 				}
 
 			addToVertexPositions(dps);
-			
+
 			if (listener != null)
 				listener.positionsChanged();
 		}
@@ -259,10 +261,10 @@ public class ForceDirectedEmbedding
 
 	private Pt[] createPtArray() {
 		Pt[] result = new Pt[graphComponent.getVertexCount() + 1];
-		
+
 		for (int i = 0; i < result.length; i++)
 			result[i] = new Pt(0, 0);
-		
+
 		return result;
 	}
 
@@ -270,9 +272,9 @@ public class ForceDirectedEmbedding
 	private double diff(Pt[] b1, Pt[] b2, Pt[] b3, Pt[] b4)
 	{
 		double max = 0;
-		assert (b1.length == b2.length);
-		assert (b2.length == b3.length);
-		assert (b3.length == b4.length);
+		Assert.isTrue((b1.length == b2.length));
+		Assert.isTrue(b2.length == b3.length);
+		Assert.isTrue(b3.length == b4.length);
 
 		for (int i = 0; i < b1.length; i++) {
 			max = Math.max(max, b1[i].getDistance(b2[i]));
@@ -285,16 +287,16 @@ public class ForceDirectedEmbedding
 
 	private void addToVertexPositions(Pt[] dps)
 	{
-		assert (dps.length == graphComponent.getVertexCount());
+		Assert.isTrue(dps.length == graphComponent.getVertexCount());
 
 		for (int i = 0; i < graphComponent.getVertexCount(); i++)
 			graphComponent.getVertex(i).pt.add(dps[i]);
 	}
-	
+
 	// result = a + b * c
 	private void addMul(Pt[] result, Pt[] a, double b, Pt[] c)
 	{
-		assert (a.length == c.length);
+		Assert.isTrue(a.length == c.length);
 
 		for (int i = 0; i < result.length; i++)
 			result[i].assign(c[i].copy().multiply(b).add(a[i]));
@@ -303,7 +305,7 @@ public class ForceDirectedEmbedding
 	// result = a + b
 	private void add(Pt[] result, Pt[] a, Pt[] b)
 	{
-		assert (a.length == b.length);
+		Assert.isTrue(a.length == b.length);
 
 		for (int i = 0; i < result.length; i++)
 			result[i].assign(a[i].copy().add(b[i]));
@@ -322,11 +324,11 @@ public class ForceDirectedEmbedding
 		// Reset fs
 		for (int i = 0; i < fs.length; i++) {
 			fs[i].setZero();
-			
+
 			if (i < graphComponent.getVertexCount())
 				graphComponent.getVertex(i).fs.clear();
 		}
-		
+
 		// Apply connection spring force
 		if (connectionSpringCoefficient != 0)
 			for (int i = 0; i < graphComponent.getEdgeCount(); i++) {
@@ -417,10 +419,10 @@ public class ForceDirectedEmbedding
 						double distance = d.getLength();
 						double modifiedDistance = distance - Math.sqrt(vertex1.rs.width * vertex1.rs.width + vertex1.rs.height * vertex1.rs.height) / 2 - Math.sqrt(vertex2.rs.width * vertex2.rs.width + vertex2.rs.height * vertex2.rs.height) / 2;
 						double electricForce = vertexElectricRepealCoefficient * vertex1.charge * vertex2.charge / modifiedDistance / modifiedDistance;
-	
+
 						if (modifiedDistance <= 0 || electricForce > maxElectricForce)
 							electricForce = maxElectricForce * vertex1.charge * vertex2.charge;
-	
+
 						addForcePair(vertex1, vertex2, fs[i], fs[j], electricForce, d, distance);
 					}
 				}
@@ -446,7 +448,7 @@ public class ForceDirectedEmbedding
 					}
 				}
 			}
-		
+
 		// Apply graph component bounding forces
 		if (vertexElectricRepealCoefficient != 0)
 			for (int i = 0; i < graphComponent.getVertexCount(); i++) {
@@ -459,7 +461,7 @@ public class ForceDirectedEmbedding
 
 				d = new Pt(ps[i].x + vertex.rs.width / 2 - graphComponent.rc.pt.x - graphComponent.rc.rs.width, 0);
 				distance = d.getLength();
-				electricForce = vertexElectricRepealCoefficient * vertex.charge / distance / distance;	
+				electricForce = vertexElectricRepealCoefficient * vertex.charge / distance / distance;
 				addForcePair(vertex, null, fs[i], null, electricForce, d, distance);
 
 				d = new Pt(0, ps[i].y - vertex.rs.height / 2 - graphComponent.rc.pt.y);
@@ -469,14 +471,14 @@ public class ForceDirectedEmbedding
 
 				d = new Pt(0, ps[i].y + vertex.rs.height / 2 - graphComponent.rc.pt.y - graphComponent.rc.rs.height);
 				distance = d.getLength();
-				electricForce = vertexElectricRepealCoefficient * vertex.charge / distance / distance;	
+				electricForce = vertexElectricRepealCoefficient * vertex.charge / distance / distance;
 				addForcePair(vertex, null, fs[i], null, electricForce, d, distance);
 			}
-		
+
 		// Apply vertex position constraint
 		for (int i = 0; i < graphComponent.getVertexCount(); i++) {
 			Vertex vertex = graphComponent.getVertex(i);
-			
+
 			if (vertex.positionConstraint != null) {
 				Pt force = vertex.positionConstraint.getForce(ps[i]);
 				addForce(vertex, fs[i], force);
@@ -490,10 +492,10 @@ public class ForceDirectedEmbedding
 				fs[i].x -= frictionCoefficient * vlen * vs[i].x;
 				fs[i].y -= frictionCoefficient * vlen * vs[i].y;
 			}
-		
+
 		// Convert forces to acceleration
 		for (int i = 0; i < graphComponent.getVertexCount(); i++)
-			fs[i].divide(graphComponent.getVertex(i).mass);		
+			fs[i].divide(graphComponent.getVertex(i).mass);
 	}
 
 	private void addForcePair(Vertex vertex1, Vertex vertex2, Pt f1, Pt f2, double force, Pt d, double distance)
@@ -510,19 +512,19 @@ public class ForceDirectedEmbedding
 			forceY = random.nextDouble() - 0.5;
 		}
 
-		assert (!Double.isNaN(forceX));
-		assert (!Double.isNaN(forceY));
+		Assert.isTrue(!Double.isNaN(forceX));
+		Assert.isTrue(!Double.isNaN(forceY));
 
 		if (f1 != null) {
 			f1.x += forceX;
 			f1.y += forceY;
 		}
-		
+
 		if (f2 != null) {
 			f2.x -= forceX;
 			f2.y -= forceY;
 		}
-		
+
 		if (vertex1 != null)
 			vertex1.fs.add(new Pt(forceX, forceY));
 
@@ -620,7 +622,7 @@ public class ForceDirectedEmbedding
 			graphComponent.addEdge(new Edge(vertex4, vertex11));
 			graphComponent.addEdge(new Edge(vertex4, vertex12));
 			graphComponent.addEdge(new Edge(vertex4, vertex13));
-		}		
+		}
 
 		TestCanvas testCanvas = new TestCanvas(graphComponent);
 		testCanvas.setSize(500, 500);
@@ -629,7 +631,7 @@ public class ForceDirectedEmbedding
 		frame.add(testCanvas);
 		frame.show();
 		testCanvas.embed();
-		
+
 		//for (Vertex vertex : graphComponent.getVertices())
 		//	System.out.println(vertex.pt);
 	}
@@ -637,11 +639,11 @@ public class ForceDirectedEmbedding
 
 class TestCanvas extends Canvas implements ForceDirectedEmbedding.IForceDirectedEmbeddingListener {
 	private GraphComponent graphComponent;
-	
+
 	private ForceDirectedEmbedding embedding;
 
 	private Vertex dragVertex;
-	
+
 	private Pt dragPt;
 
 	private Point dragPoint;
@@ -678,7 +680,7 @@ class TestCanvas extends Canvas implements ForceDirectedEmbedding.IForceDirected
 				}
 				else if (e.getKeyCode() == 27)
 					System.exit(0);
-				
+
 				repaint();
 			}
 
@@ -718,10 +720,10 @@ class TestCanvas extends Canvas implements ForceDirectedEmbedding.IForceDirected
 			public void mouseDragged(MouseEvent e) {
 				long begin = System.currentTimeMillis();
 				Pt fixPt = new Pt(dragPt.x + e.getX() - dragPoint.getX(), dragPt.y + e.getY() - dragPoint.getY());
-				
+
 				IVertexPositionConstraint positionConstraint = dragVertex.positionConstraint;
-				
-				if (begin - last > 100 && 
+
+				if (begin - last > 100 &&
 					(positionConstraint == null ||
 					!(positionConstraint instanceof FixPositionConstraint) ||
 					!((FixPositionConstraint)positionConstraint).pt.equals(fixPt)))
@@ -759,7 +761,7 @@ class TestCanvas extends Canvas implements ForceDirectedEmbedding.IForceDirected
 			}
 		}
 	}
-	
+
 	@Override
 	public void paint(Graphics g)
 	{
@@ -767,13 +769,13 @@ class TestCanvas extends Canvas implements ForceDirectedEmbedding.IForceDirected
 		double centerX = 0;//getWidth() / 2.0;
 		double centerY = 0;//getHeight() / 2.0;
 		g.setColor(new Color(0, 0, 0));
-		
+
 		int x = (int)(graphComponent.rc.pt.x + centerX);
 		int y = (int)(graphComponent.rc.pt.y + centerY);
 		int width = (int)graphComponent.rc.rs.width;
 		int height = (int)graphComponent.rc.rs.height;
 		g.drawRect(x, y, width, height);
-		
+
 		for (Vertex vertex : graphComponent.getVertices()) {
 			x = (int)(vertex.pt.x + centerX);
 			y = (int)(vertex.pt.y + centerY);
@@ -790,13 +792,13 @@ class TestCanvas extends Canvas implements ForceDirectedEmbedding.IForceDirected
 					int y1 = (int)(vertex.pt.y + centerY + vertex.rs.height / 2);
 					int x2 = (int)(vertex.pt.x + centerX + vertex.rs.height / 2 + f.x * forceScale);
 					int y2 = (int)(vertex.pt.y + centerY + vertex.rs.height / 2 + f.y * forceScale);
-	
+
 					g.drawLine(x1, y1, x2, y2);
 					g.drawLine(x1 + 1, y1, x2 + 1, y2);
 					g.drawLine(x1, y1 + 1, x2, y2 + 1);
 				}
 		}
-		
+
 		for (Edge edge : graphComponent.getEdges()) {
 			int x1 = (int)(edge.source.pt.x + centerX + edge.source.rs.height / 2);
 			int y1 = (int)(edge.source.pt.y + centerY + edge.source.rs.height / 2);
@@ -812,12 +814,12 @@ class Pt {
 	public double x;
 
 	public double y;
-	
+
 	public Pt(double x, double y) {
 		this.x = x;
 		this.y = y;
 	}
-	
+
 	public Pt(Pt pt) {
 		x = pt.x;
 		y = pt.y;
@@ -826,14 +828,14 @@ class Pt {
 	public Pt copy() {
 		return new Pt(x, y);
 	}
-	
+
 	public Pt assign(Pt pt) {
 		x = pt.x;
 		y = pt.y;
-		
+
 		return this;
 	}
-	
+
 	public void setZero() {
 		x = 0;
 		y = 0;
@@ -842,14 +844,14 @@ class Pt {
 	public double getLength() {
 		return Math.sqrt(x * x + y * y);
 	}
-	
+
 	public double getDistance(Pt other) {
 		double dx = x - other.x;
 		double dy = y - other.y;
 
 		return Math.sqrt(dx * dx + dy * dy);
 	}
-	
+
 	public Pt Normalize() {
 		double length = getLength();
 		x /= length;
@@ -857,7 +859,7 @@ class Pt {
 
 		return this;
 	}
-	
+
 	public Pt add(Pt pt) {
 		x += pt.x;
 		y += pt.y;
@@ -878,7 +880,7 @@ class Pt {
 
 		return this;
 	}
-	
+
 	public Pt divide(double d) {
 		x /= d;
 		y /= d;
@@ -893,7 +895,7 @@ class Pt {
 	public Pt transpse() {
 		return new Pt(y, -x);
 	}
-	
+
 	public static Pt getNil() {
 		return new Pt(Double.NaN, Double.NaN);
 	}
@@ -938,7 +940,7 @@ class Pt {
 
 class Ln {
 	public Pt begin;
-	
+
 	public Pt end;
 
 	public Ln(Pt begin, Pt end) {
@@ -949,14 +951,14 @@ class Ln {
 
 	public Pt getClosestPoint(Pt pt) {
 		Pt n = getDirectionVector().transpse();
-		
+
 		return intersect(new Ln(pt, n.add(pt)));
 	}
 
 	public Pt getDirectionVector() {
 		Pt v = end.copy().subtract(begin);
 		v.Normalize();
-		
+
 		return v;
 	}
 
@@ -974,7 +976,7 @@ class Ln {
 		double c = determinant(x1 - x2, y1 - y2, x3 - x4, y3 - y4);
 		double x = determinant(a, x1 - x2, b, x3 - x4) / c;
 		double y = determinant(a, y1 - y2, b, y3 - y4) / c;
-		
+
 		return new Pt(x, y);
 	}
 
@@ -1023,7 +1025,7 @@ class Rs {
 		this.width = width;
 		this.height = height;
 	}
-	
+
 	public static Rs getNil() {
 		return new Rs(Double.NaN, Double.NaN);
 	}
@@ -1068,7 +1070,7 @@ class Rs {
 
 class Rc {
 	public Pt pt;
-	
+
 	public Rs rs;
 
 	public Rc(double x, double y, double width, double height) {
@@ -1104,7 +1106,7 @@ class Rc {
 	public Pt getBottomRight() {
 		return new Pt(pt.x + rs.width, pt.y + rs.height);
 	}
-	
+
 	public static Rc getNil() {
 		return new Rc(Pt.getNil(), Rs.getNil());
 	}
@@ -1147,19 +1149,19 @@ class Rc {
 
 class GraphComponent {
 	public Rc rc;
-	
+
 	private ArrayList<Vertex> vertices = new ArrayList<Vertex>();
-	
+
 	private ArrayList<Edge> edges = new ArrayList<Edge>();
 
 	public GraphComponent(Rc rc) {
 		this.rc = rc;
 	}
-	
+
 	public void addVertex(Vertex vertex) {
 		vertices.add(vertex);
 	}
-	
+
 	public void addEdge(Edge edge) {
 		edges.add(edge);
 	}
@@ -1195,7 +1197,7 @@ class GraphComponent {
 
 interface IVertexPositionConstraint {
 	Pt getForce(Pt pt);
-	
+
 	Pt getFinalPosition(Pt pt);
 }
 
@@ -1208,7 +1210,7 @@ class FixPositionConstraint implements IVertexPositionConstraint {
 
 	public Pt getForce(Pt pt) {
 		Pt d = this.pt.copy().subtract(pt);
-		
+
 		return d;
 	}
 
@@ -1226,7 +1228,7 @@ class LinePositionConstraint implements IVertexPositionConstraint {
 
 	public Pt getForce(Pt pt) {
 		Pt d = ln.getClosestPoint(pt).copy().subtract(pt);
-		
+
 		return d;
 	}
 
@@ -1239,18 +1241,18 @@ class Vertex {
 	public Pt pt;
 
 	public Rs rs;
-	
+
 	public double mass;
-	
+
 	public double charge;
-	
+
 	public ArrayList<Pt> fs = new ArrayList<Pt>();
-	
+
 	public IVertexPositionConstraint positionConstraint;
 
 	public Vertex() {
 	}
-	
+
 	public Vertex(Pt pt, Rs rc, double mass, double charge) {
 		this.pt = pt;
 		this.rs = rc;
@@ -1265,9 +1267,9 @@ class Vertex {
 
 class Edge {
 	public Vertex source;
-	
+
 	public Vertex target;
-	
+
 	public Edge() {
 	}
 

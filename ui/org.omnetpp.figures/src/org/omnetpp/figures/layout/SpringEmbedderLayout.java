@@ -3,6 +3,7 @@ package org.omnetpp.figures.layout;
 import java.util.Iterator;
 import java.util.List;
 
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.draw2d.Connection;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.LayoutManager;
@@ -22,7 +23,7 @@ public class SpringEmbedderLayout extends XYLayout {
 	protected AbstractGraphLayoutAlgorithm alg;
 	protected long algSeed = 1971;
 	/**
-	 * 
+	 *
 	 * @param nodeParent The parent figure of the nodes
 	 * @param connectionParent The parent figure of the connection figures
 	 */
@@ -31,9 +32,9 @@ public class SpringEmbedderLayout extends XYLayout {
 		this.nodeParent = nodeParent;
 		this.edgeParent = edgeParent;
  	}
-	
+
 	/**
-	 * Calls the autoLayout algorithm using all curreny specified constraints. 
+	 * Calls the autoLayout algorithm using all curreny specified constraints.
 	 * @param nodeParent The Parent figure of the nodes
 	 * @param edgeParent The parent figure of the connections (usually the ConnectionLayer)
 	 */
@@ -51,23 +52,23 @@ public class SpringEmbedderLayout extends XYLayout {
 		if (height <= 0) height = DEFAULT_MAX_HEIGHT;
 		//autoLayouter.setConfineToArea(width, height, 50);
 		autoLayouter.setScaleToArea(width, height, 50);
-		
-		// iterate over the nodes and add them to the algorithm 
+
+		// iterate over the nodes and add them to the algorithm
 		// all child figures on this layer are considered as node
 		for(IFigure node : (List<IFigure>)nodeParent.getChildren()) {
 			// get the associated constraint (coordinates) if any
             Rectangle constr = (Rectangle)getConstraint(node);
-            
-            if (constr == null || (constr.x == Integer.MIN_VALUE && constr.y == Integer.MIN_VALUE)) 
+
+            if (constr == null || (constr.x == Integer.MIN_VALUE && constr.y == Integer.MIN_VALUE))
             	autoLayouter.addMovableNode(node, node.getPreferredSize().width, node.getPreferredSize().height);
             else
             	// add as fixed node
-            	autoLayouter.addFixedNode(node, 
+            	autoLayouter.addFixedNode(node,
             			constr.x, constr.y,
             			constr.width, constr.height);
 		}
-		
-		// iterate over the connections and add them to the algorithm 
+
+		// iterate over the connections and add them to the algorithm
 		// all child figures of type Connection on this layer are considered as edge
 		for(IFigure edge : (List<IFigure>)edgeParent.getChildren())
 			if (edge instanceof Connection) {
@@ -83,10 +84,10 @@ public class SpringEmbedderLayout extends XYLayout {
 				} else {  // both are submodules
 					autoLayouter.addEdge(srcFig, targetFig, 0);
 				}
-				
+
 			}
-		
-		
+
+
 		return autoLayouter;
 	}
 
@@ -95,29 +96,29 @@ public class SpringEmbedderLayout extends XYLayout {
 		super.invalidate();
 		alg = null;
 	}
-	
+
 	public void initLayout() {
     	alg = createAutoLayouter(nodeParent, edgeParent);
 		alg.setSeed(algSeed);
-    	// execute the algorithm 
+    	// execute the algorithm
     	alg.execute();
 //    	System.out.println("Layouting figure :"+nodeParent+" seed: "+algSeed);
 	}
-	
+
 	/**
      * Implements the algorithm to layout the components of the given container figure.
      * Each component is laid out using its own layout constraint specifying its size
      * and position. Copied from XYLayout BUT places the middlepoint if the children to the
      * specified constraint location.
-     * 
+     *
      * @see LayoutManager#layout(IFigure)
      */
     @Override
     public void layout(IFigure parent) {
-    	
+
     	if (alg == null)
     		initLayout();
-    	
+
     	// lay out the children according to the autolayouter
         Iterator children = parent.getChildren().iterator();
         Point offset = getOrigin(parent);
@@ -135,7 +136,7 @@ public class SpringEmbedderLayout extends XYLayout {
             		bounds.setSize(f.getPreferredSize());
             	} else
             	// not found in the algorithm result so do not layout this child
-            		assert(false);
+            		Assert.isTrue(false);
             }
 
             if (bounds.width == -1 || bounds.height == -1) {

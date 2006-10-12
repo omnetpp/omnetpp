@@ -69,12 +69,12 @@ public class ReplayAnimationController implements IAnimationEnvironment {
 	/**
 	 * The list of loaded animation primitives. This may contain more animation primitives than
 	 * that is rendered to the canvas. This list is ordered by end animation time.
-	 * 
+	 *
 	 * In fact the list is ordered by end simulation time and as soon as any item is required at a given simulation time,
 	 * then all the primitives at the very same end simulation time are ordered in place by their end animation time.
 	 */
 	protected ArrayList<IAnimationPrimitive> endOrderedAnimationPrimitives = new ArrayList<IAnimationPrimitive>();
-	
+
 	/**
 	 * The list of currently active animation primitives. These will be called to animate at the current position.
 	 * At any given time it should contain an animation primitive iff the current animation position is between the
@@ -295,14 +295,14 @@ public class ReplayAnimationController implements IAnimationEnvironment {
 
 		controllerStateChanged();
 	}
-	
+
 	/**
 	 * Checks if the current animation position is valid or not.
 	 */
 	public boolean isCurrentAnimationPositionValid() {
 		return currentAnimationPosition.isValid();
 	}
-	
+
 	/**
 	 * Checks if the current animation position is at the very beginning.
 	 */
@@ -316,7 +316,7 @@ public class ReplayAnimationController implements IAnimationEnvironment {
 	public boolean isAtAnimationEnd() {
 		return currentAnimationPosition.equals(endAnimationPosition);
 	}
-	
+
 	/**
 	 * Calculates the begin animation position.
 	 */
@@ -508,7 +508,7 @@ public class ReplayAnimationController implements IAnimationEnvironment {
 				return handleMessageAnimationPrimitives.get(index).getBeginSimulationTime();
 			}
 		}, handleMessageAnimationPrimitives.size(), simulationTime, false);
-		
+
 		index--;
 
 		if (index != -1)
@@ -527,7 +527,7 @@ public class ReplayAnimationController implements IAnimationEnvironment {
 				return handleMessageAnimationPrimitives.get(index).getBeginAnimationTime();
 			}
 		}, handleMessageAnimationPrimitives.size(), animationTime, false);
-		
+
 		index--;
 
 		if (index != -1)
@@ -545,7 +545,7 @@ public class ReplayAnimationController implements IAnimationEnvironment {
 				return handleMessageAnimationPrimitives.get(index).getAnimationNumber();
 			}
 		}, handleMessageAnimationPrimitives.size(), animationNumber, false);
-		
+
 		index--;
 
 		if (index != -1)
@@ -637,7 +637,7 @@ public class ReplayAnimationController implements IAnimationEnvironment {
 				return beginOrderedAnimationPrimitives .get(index).getBeginSimulationTime();
 			}
 		}, beginOrderedAnimationPrimitives.size(), simulationTime, false);
-		
+
 		index--;
 
 		if (index != -1)
@@ -668,14 +668,14 @@ public class ReplayAnimationController implements IAnimationEnvironment {
 						return beginOrderedAnimationPrimitives .get(index).getBeginSimulationTime();
 					}
 				}, beginOrderedAnimationPrimitives.size(), simulationTime, false);
-				
+
 				index--;
-				
+
 				// FIXME: check if -1 really means interpolation before the firtst event
 				IAnimationPrimitive previousAnimationPrimitive;
-				long animationNumber; 
+				long animationNumber;
 				double previousSimulationTime;
- 
+
 				if (index == -1) {
 					previousAnimationPrimitive = null;
 					animationNumber = 0;
@@ -686,10 +686,10 @@ public class ReplayAnimationController implements IAnimationEnvironment {
 					animationNumber = previousAnimationPrimitive.getAnimationNumber();
 					previousSimulationTime = previousAnimationPrimitive.getBeginSimulationTime();
 				}
-				
+
 				double nextSimulationTime = getSimulationTimeForAnimationNumber(animationNumber + 1);
 				double animationTimeDelta = (simulationTime - previousSimulationTime) / (nextSimulationTime - previousSimulationTime);
-				
+
 				if (animationTimeDelta < 0)
 					return animationNumber;
 				else
@@ -865,11 +865,11 @@ public class ReplayAnimationController implements IAnimationEnvironment {
 			ensureValidAnimationPosition();
 			positionChanged();
 			updateAnimationModel();
-	
+
 			System.out.println("Displaying " + activeAnimationPrimitives.size() + " primitives at -> " + currentAnimationPosition);
-			
+
 			getRootFigure().getLayoutManager().layout(getRootFigure());
-	
+
 			for (IAnimationPrimitive animationPrimitive : activeAnimationPrimitives)
 				animationPrimitive.animateAt(currentAnimationPosition);
 		}
@@ -931,7 +931,7 @@ public class ReplayAnimationController implements IAnimationEnvironment {
 		this.defaultRealTimeToAnimationTimeScale = defaultRealTimeToAnimationTimeScale;
 		this.stopAnimationPosition = stopAnimationPosition;
 		setRunning(true);
-		
+
 		// start from beginning if no position
 		if (!currentAnimationPosition.isValid())
 			setAnimationPosition(ensureBeginAnimationPosition());
@@ -1011,50 +1011,50 @@ public class ReplayAnimationController implements IAnimationEnvironment {
 			if (debug) {
 				if (beginOrderedIndexValid && (forward ? beginAnimationTime < previousBeginAnimationTime : beginAnimationTime > previousBeginAnimationTime))
 					throw new RuntimeException("Begin ordered animation primitives are not correctly ordered");
-				
+
 				if (endOrderedIndexValid && (forward ? endAnimationTime < previousEndAnimationTime : endAnimationTime > previousEndAnimationTime))
 					throw new RuntimeException("End ordered animation primitives are not correctly ordered");
 			}
-			
+
 			if (forward ? beginAnimationTime > newAnimationTime : beginAnimationTime <= newAnimationTime) {
 				beginOrderedIndex = -1;
 				beginOrderedIndexValid = false;
 				beginOrderedAnimationPrimitive = null;
 			}
-			
+
 			if (forward ? endAnimationTime >= newAnimationTime : endAnimationTime < newAnimationTime) {
 				endOrderedIndex = -1;
 				endOrderedIndexValid = false;
 				endOrderedAnimationPrimitive = null;
 			}
 
-			if (forward) {	
+			if (forward) {
 				if (beginOrderedIndexValid && (!endOrderedIndexValid || beginAnimationTime <= endAnimationTime)) {
 					if (!beginOrderedAnimationPrimitive.isActive()) {
 						System.out.println("Forward animation activate: " +
 							beginOrderedAnimationPrimitive.getClass().getSimpleName() +
 							"(" + beginOrderedAnimationPrimitive.getBeginAnimationTime() + "-" + beginOrderedAnimationPrimitive.getEndAnimationTime() + ")" +
 							":" + beginOrderedIndex);
-	
+
 						beginOrderedAnimationPrimitive.activate();
 						activeAnimationPrimitives.add(beginOrderedAnimationPrimitive);
 					}
 
 					beginOrderedIndex++;
 				}
-	
+
 				// compare using > to allow activations to happen before deactivations having the same time
 				if (endOrderedIndexValid  && (!beginOrderedIndexValid || endAnimationTime < beginAnimationTime)) {
 					if (endOrderedAnimationPrimitive.isActive()) {
 						System.out.println("Forward animation deactivate: " +
-							endOrderedAnimationPrimitive.getClass().getSimpleName() + 
+							endOrderedAnimationPrimitive.getClass().getSimpleName() +
 							"(" + endOrderedAnimationPrimitive.getBeginAnimationTime() + "-" + endOrderedAnimationPrimitive.getEndAnimationTime() + ")" +
 							":" + endOrderedIndex);
-	
+
 						endOrderedAnimationPrimitive.deactivate();
 						activeAnimationPrimitives.remove(endOrderedAnimationPrimitive);
 					}
-					
+
 					endOrderedIndex++;
 				}
 			}
@@ -1065,7 +1065,7 @@ public class ReplayAnimationController implements IAnimationEnvironment {
 							endOrderedAnimationPrimitive.getClass().getSimpleName() +
 							"(" + endOrderedAnimationPrimitive.getBeginAnimationTime() + "-" + endOrderedAnimationPrimitive.getEndAnimationTime() + ")" +
 							":" + endOrderedIndex);
-	
+
 						endOrderedAnimationPrimitive.activate();
 						activeAnimationPrimitives.add(endOrderedAnimationPrimitive);
 					}
@@ -1080,7 +1080,7 @@ public class ReplayAnimationController implements IAnimationEnvironment {
 							beginOrderedAnimationPrimitive.getClass().getSimpleName() +
 							"(" + beginOrderedAnimationPrimitive.getBeginAnimationTime() + "-" + beginOrderedAnimationPrimitive.getEndAnimationTime() + ")" +
 							":" + beginOrderedIndex);
-	
+
 						beginOrderedAnimationPrimitive.deactivate();
 						activeAnimationPrimitives.remove(beginOrderedAnimationPrimitive);
 					}
@@ -1088,7 +1088,7 @@ public class ReplayAnimationController implements IAnimationEnvironment {
 					beginOrderedIndex--;
 				}
 			}
-			
+
 			previousBeginAnimationTime = beginAnimationTime;
 			previousEndAnimationTime = endAnimationTime;
 		}
@@ -1113,7 +1113,7 @@ public class ReplayAnimationController implements IAnimationEnvironment {
 					return endOrderedAnimationPrimitives.get(index).getEndSimulationTime();
 				}
 			}, endOrderedAnimationPrimitives.size(), beginSimulationTime, true);
-		
+
 		int endSortIndex = getAnimationPrimitiveIndexForValue(new IValueProvider() {
 			public double getValue(int index) {
 				return endOrderedAnimationPrimitives.get(index).getEndSimulationTime();
@@ -1123,19 +1123,19 @@ public class ReplayAnimationController implements IAnimationEnvironment {
 		// FIXME: hack to sort the whole bloody shit for now
 		beginSortIndex = 0;
 		endSortIndex = endOrderedAnimationPrimitives.size();
-		
+
 		if (endSortIndex - beginSortIndex > 1) {
 			// copy to temporary array
 			IAnimationPrimitive[] endOrderedAnimationPrimitivesFragment = new IAnimationPrimitive[endSortIndex - beginSortIndex];
 			for (int i = beginSortIndex; i < endSortIndex; i++)
 				endOrderedAnimationPrimitivesFragment[i - beginSortIndex] = endOrderedAnimationPrimitives.get(i);
-	
+
 			// sort based on end animation time
 			Arrays.sort(endOrderedAnimationPrimitivesFragment, new Comparator<IAnimationPrimitive>() {
 				public int compare(IAnimationPrimitive p1, IAnimationPrimitive p2) {
 					double time1 = p1.getEndAnimationTime();
 					double time2 = p2.getEndAnimationTime();
-					
+
 					if (time1 == time2)
 						return 0;
 					else if (time1 < time2)
@@ -1144,13 +1144,13 @@ public class ReplayAnimationController implements IAnimationEnvironment {
 						return 1;
 				}
 			});
-	
+
 			// copy back to original place
 			for (int i = beginSortIndex; i < endSortIndex; i++)
 				endOrderedAnimationPrimitives.set(i, endOrderedAnimationPrimitivesFragment[i - beginSortIndex]);
 		}
 	}
-	
+
 	/**
 	 * Notifies listeners about the new simulation time.
 	 */
@@ -1180,7 +1180,7 @@ public class ReplayAnimationController implements IAnimationEnvironment {
 	 * If more than one equal values are found, returns the first one
 	 * (if first==true) or the one after the last one (if first==false) of them.
 	 * If none are found, returns the next one.
-	 * 
+	 *
 	 * The returned index may be used to insert into the list, so valid values are [0, size].
 	 * The flag specifies in what order the same values are to be inserted.
 	 *
@@ -1207,7 +1207,7 @@ public class ReplayAnimationController implements IAnimationEnvironment {
 	        			mid++;
 	        	}
 	        	while (mid >= 0 && mid < size && valueProvider.getValue(mid) == value);
-	        	
+
 	        	if (!first)
 	        		index++;
 	        	break;
@@ -1224,7 +1224,7 @@ public class ReplayAnimationController implements IAnimationEnvironment {
 		if (index < 0 || index > size)
 			return -1;
 		else {
-			assert((first && valueProvider.getValue(index) < value) ||
+			Assert.isTrue((first && valueProvider.getValue(index) < value) ||
 				   (!first && valueProvider.getValue(index) > value));
 			return index;
 		}
@@ -1286,7 +1286,7 @@ public class ReplayAnimationController implements IAnimationEnvironment {
 
 			if (logFileReader == null)
 				logFileReader = new BufferedReader(new InputStreamReader(file.getContents()));
-			
+
 			if (!loadAnimationPosition.isValid())
 				loadAnimationPosition = new AnimationPosition(0, 0, 0, 0);
 
@@ -1353,7 +1353,7 @@ public class ReplayAnimationController implements IAnimationEnvironment {
 						System.out.println("wrong trace: SH line without BS"); //XXX proper error handling
 						lastLoadedMessage = null;
 					}
-						
+
 					// TODO: handle ts different then E's t
 					// FIXME: animationPrimitives are sorted by eventNumber, beginSimulationTime and animationNumber
 					// and the binary search relies upon this
@@ -1370,7 +1370,7 @@ public class ReplayAnimationController implements IAnimationEnvironment {
 						System.out.println("wrong trace: SD line without BS"); //XXX proper error handling
 						lastLoadedMessage = null;
 					}
-						
+
 					int senderModuleId = getIntegerToken(tokens, "sm");
 					int destModuleId = getIntegerToken(tokens, "dm");
 					//int destGateId = getIntegerToken(tokens, "dg");

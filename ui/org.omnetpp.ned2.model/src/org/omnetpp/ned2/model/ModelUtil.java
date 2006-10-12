@@ -26,7 +26,10 @@ public class ModelUtil {
 	 * @param keepSyntax if set, sources parsed in old syntax (NED-1) will be generated in old syntax as well 
 	 */
 	public static String generateNedSource(org.omnetpp.ned2.model.NEDElement treeRoot, boolean keepSyntax) {
-		NEDErrorStore errors = new NEDErrorStore();
+		// for debuggind
+        // System.out.println(generateXmlFromPojoElementTree(treeRoot,""));
+        
+        NEDErrorStore errors = new NEDErrorStore();
 		errors.setPrintToStderr(true); //XXX just for debugging
 		if (keepSyntax && treeRoot instanceof NedFileNode && "1".equals(((NedFileNode)treeRoot).getVersion())) {
 			NED1Generator ng = new NED1Generator(errors);
