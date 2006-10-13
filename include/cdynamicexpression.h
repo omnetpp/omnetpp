@@ -321,6 +321,8 @@ class SIM_API cDynamicExpression : public cExpression
     //@}
 };
 
+//FIXME move these out to some nedsupport.h
+
 namespace NEDSupport
 {
 

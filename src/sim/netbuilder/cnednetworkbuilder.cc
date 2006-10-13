@@ -156,8 +156,8 @@ void cNEDNetworkBuilder::addSubmodulesAndConnections(cModule *modp, cNEDDeclarat
 
     // check if there are unconnected gates left
     //FIXME not quite like this, BUT: if allowUnconnected=false, must check gates of submodules ADDED HERE (not all!)
-    if (!conns || conns->getAllowUnconnected())
-        modp->checkInternalConnections();
+//XXX    if (!conns || !conns->getAllowUnconnected())
+//XXX        modp->checkInternalConnections();
 
     printf("  done adding submodules and connections of decl %s to %s\n", decl->name(), modp->fullPath().c_str()); //XXX
 }
@@ -389,8 +389,11 @@ void cNEDNetworkBuilder::doLoopOrCondition(cModule *modp, NEDElement *loopOrCond
         {
             // do the body of the "if": either further "for"'s and "if"'s, or
             // the connection(group) itself that we are children of.
+            printf("---if: true, doing body\n"); //XXX
             doConnOrConnGroupBody(modp, loopOrCondition->getParent(), loopOrCondition->getNextSibling());
+            printf("---endif\n"); //XXX
         }
+        else printf("---if: FALSE\n"); //XXX
     }
     else if (loopOrCondition->getTagCode()==NED_LOOP)
     {
@@ -426,7 +429,9 @@ void cNEDNetworkBuilder::doAddConnOrConnGroup(cModule *modp, NEDElement *connOrC
     {
         ConnectionGroupNode *conngroup = (ConnectionGroupNode *)connOrConnGroup;
         for (ConnectionNode *conn=conngroup->getFirstConnectionChild(); conn; conn=conn->getNextConnectionNodeSibling())
-            doAddConnection(modp, conn);
+        {
+            doConnOrConnGroupBody(modp, conn, conn->getFirstChild());
+        }
     }
     else
     {

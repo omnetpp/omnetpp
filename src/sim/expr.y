@@ -131,62 +131,62 @@ expr
                 { yyerror("const() is not supported here"); }
 
         | expr '+' expr
-                { *e++ = '+'; }
+                { *e++ = cDynamicExpression::ADD; }
         | expr '-' expr
-                { *e++ = '-'; }
+                { *e++ = cDynamicExpression::SUB; }
         | expr '*' expr
-                { *e++ = '*'; }
+                { *e++ = cDynamicExpression::MUL; }
         | expr '/' expr
-                { *e++ = '/'; }
+                { *e++ = cDynamicExpression::DIV; }
         | expr '%' expr
-                { *e++ = '%'; }
+                { *e++ = cDynamicExpression::MOD; }
         | expr '^' expr
-                { *e++ = '^'; }
+                { *e++ = cDynamicExpression::POW; }
 
         | '-' expr
                 %prec UMIN_
-                { *e++ = 'M'; }
+                { *e++ = cDynamicExpression::NEG; }
 
         | expr EQ_ expr
-                { *e++ = '='; }
+                { *e++ = cDynamicExpression::EQ; }
         | expr NE_ expr
-                { *e++ = '!'; }
+                { *e++ = cDynamicExpression::NE; }
         | expr '>' expr
-                { *e++ = '>'; }
+                { *e++ = cDynamicExpression::GT; }
         | expr GE_ expr
-                { *e++ = '}'; }
+                { *e++ = cDynamicExpression::GE; }
         | expr '<' expr
-                { *e++ = '<'; }
+                { *e++ = cDynamicExpression::LT; }
         | expr LE_ expr
-                { *e++ = '{'; }
+                { *e++ = cDynamicExpression::LE; }
 
         | expr AND_ expr
-                { *e++ = 'A'; }
+                { *e++ = cDynamicExpression::AND; }
         | expr OR_ expr
-                { *e++ = 'O'; }
+                { *e++ = cDynamicExpression::OR; }
         | expr XOR_ expr
-                { *e++ = 'X'; }
+                { *e++ = cDynamicExpression::XOR; }
 
         | NOT_ expr
                 %prec UMIN_
-                { *e++ = 'N'; }
+                { *e++ = cDynamicExpression::NOT; }
 
         | expr BINAND_ expr
-                { *e++ = '&'; }
+                { *e++ = cDynamicExpression::BIN_AND; }
         | expr BINOR_ expr
-                { *e++ = '|'; }
+                { *e++ = cDynamicExpression::BIN_OR; }
         | expr BINXOR_ expr
-                { *e++ = '#'; }
+                { *e++ = cDynamicExpression::BIN_XOR; }
 
         | BINCOMPL_ expr
                 %prec UMIN_
-                { *e++ = '~'; }
+                { *e++ = cDynamicExpression::BIN_NOT; }
         | expr SHIFTLEFT_ expr
-                { *e++ = 'L'; }
+                { *e++ = cDynamicExpression::LSHIFT; }
         | expr SHIFTRIGHT_ expr
-                { *e++ = 'R'; }
+                { *e++ = cDynamicExpression::RSHIFT; }
         | expr '?' expr ':' expr
-                { *e++ = '?'; }
+                { *e++ = cDynamicExpression::IIF; }
 
         | NAME '(' ')'
                 { addFunction($1,0); delete [] $1; }
@@ -234,7 +234,13 @@ literal
 
 stringliteral
         : STRINGCONSTANT
-                { const char *dummy; char *s = opp_parsequotedstr($1,dummy); *e++ = s; delete [] s; delete [] $1; }
+                {
+                  const char *dummy;
+                  char *s = opp_parsequotedstr($1,dummy);
+                  *e++ = s;
+                  delete [] s;
+                  delete [] $1;
+                }
         ;
 
 boolliteral

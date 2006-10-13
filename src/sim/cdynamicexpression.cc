@@ -481,7 +481,7 @@ std::string cDynamicExpression::toString() const
                case Elem::STR:
                  if (tos>=stksize-1)
                      throw new cRuntimeError(this,eESTKOFLOW);
-                 strstk[++tos] = std::string("\"") + e.s+"\"";
+                 strstk[++tos] = std::string("\"") + (e.s?e.s:"")+"\"";
                  pristk[tos] = 0;
                  break;
                case Elem::XML:
