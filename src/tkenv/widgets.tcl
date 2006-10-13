@@ -183,6 +183,16 @@ proc iconbutton {w args} {
     return $w
 }
 
+proc pack_iconbutton {w args} {
+    eval iconbutton $w $args
+    pack $w -anchor n -side left -padx 0 -pady 2
+}
+
+proc rpack_iconbutton {w args} {
+    eval iconbutton $w $args
+    pack $w -anchor n -side right -padx 0 -pady 2
+}
+
 proc combo {w list {cmd {}}} {
     # implements a combo box widget (which is missing from Tk)
     # using a menubutton and a menu

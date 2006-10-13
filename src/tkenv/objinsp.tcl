@@ -79,10 +79,8 @@ proc create_messageinspector {name geom} {
     set w $name
     create_inspector_toplevel $w $geom
 
-    iconbutton $w.toolbar.apply  -image $icons(apply) -command "opp_writebackinspector $w; opp_updateinspectors"
-    iconbutton $w.toolbar.revert -image $icons(revert) -command "opp_updateinspectors"
-    pack $w.toolbar.revert -anchor n -side right -padx 0 -pady 2
-    pack $w.toolbar.apply -anchor n -side right -padx 0 -pady 2
+    pack_iconbutton $w.toolbar.apply  -image $icons(apply) -command "opp_writebackinspector $w; opp_updateinspectors"
+    pack_iconbutton $w.toolbar.revert -image $icons(revert) -command "opp_updateinspectors"
 
     set help_tips($w.toolbar.apply)   {Apply changes (Enter)}
     set help_tips($w.toolbar.revert)  {Revert}
@@ -171,10 +169,8 @@ proc create_parinspector {name geom} {
     set w $name
     create_inspector_toplevel $w $geom
 
-    iconbutton $w.toolbar.apply  -image $icons(apply) -command "opp_writebackinspector $w; opp_updateinspectors"
-    iconbutton $w.toolbar.revert -image $icons(revert) -command "opp_updateinspectors"
-    pack $w.toolbar.revert -anchor n -side right -padx 0 -pady 2
-    pack $w.toolbar.apply -anchor n -side right -padx 0 -pady 2
+    pack_iconbutton $w.toolbar.apply  -image $icons(apply) -command "opp_writebackinspector $w; opp_updateinspectors"
+    pack_iconbutton $w.toolbar.revert -image $icons(revert) -command "opp_updateinspectors"
 
     set help_tips($w.toolbar.apply)   {Apply changes (Enter)}
     set help_tips($w.toolbar.revert)  {Revert}

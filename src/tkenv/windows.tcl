@@ -39,11 +39,8 @@ proc create_messagewindow {name} {
     wm title $w "Sent/Delivered Messages"
 
     frame $w.toolbar
-    iconbutton $w.toolbar.sep1   -separator
-    iconbutton $w.toolbar.find   -image $icons(find) -command "findDialog $w.main.text"
-    foreach i {sep1 find} {
-       pack $w.toolbar.$i -anchor n -side left -padx 0 -pady 2
-    }
+    pack_iconbutton $w.toolbar.sep1   -separator
+    pack_iconbutton $w.toolbar.find   -image $icons(find) -command "findDialog $w.main.text"
     set help_tips($w.toolbar.find)   {Find string in window}
 
     frame $w.main
@@ -175,12 +172,10 @@ proc create_fileviewer {filename} {
     wm title $w $filename
 
     frame $w.toolbar
-    iconbutton $w.toolbar.sep1   -separator
-    iconbutton $w.toolbar.find   -image $icons(find) -command "findDialog $w.main.text"
-    foreach i {sep1 find} {
-       pack $w.toolbar.$i -anchor n -side left -padx 0 -pady 2
-    }
+    pack_iconbutton $w.toolbar.sep1   -separator
+    pack_iconbutton $w.toolbar.find   -image $icons(find) -command "findDialog $w.main.text"
     set help_tips($w.toolbar.find)   {Find string in window}
+
     pack $w.toolbar  -anchor center -expand 0 -fill x -side top
 
     #frame $w.butt

@@ -47,12 +47,9 @@ proc create_inspector_toplevel {w geom} {
     frame $w.toolbar -relief raised -bd 1
     pack $w.toolbar -anchor w -side top -fill x -expand 0
 
-    iconbutton $w.toolbar.sep0 -separator
-    iconbutton $w.toolbar.owner -image $icons(parent) ;#command assigned from C++
-    iconbutton $w.toolbar.sep01 -separator
-    pack $w.toolbar.sep0 -anchor n -side left -padx 0 -pady 2
-    pack $w.toolbar.owner -anchor n -side left -padx 0 -pady 2
-    pack $w.toolbar.sep01 -anchor n -side left -padx 0 -pady 2
+    pack_iconbutton $w.toolbar.sep0 -separator
+    pack_iconbutton $w.toolbar.owner -image $icons(parent) ;#command assigned from C++
+    pack_iconbutton $w.toolbar.sep01 -separator
 
     set help_tips($w.toolbar.owner) {Inspect owner object}
 
@@ -446,6 +443,13 @@ proc inspect_this {win type} {
     opp_inspect $object $type
 }
 
+proc inspect_componenttype {win {type "(default)"}} {
+    # extract object pointer from window path name and create inspector
+    regexp {\.(ptr.*)-[0-9]+} $win match ptr
+
+    set typeptr [opp_getcomponenttypeobject $ptr]
+    opp_inspect $typeptr $type
+}
 
 #
 # Called from balloon.tcl, supposed to return tooltip for a widget (or item

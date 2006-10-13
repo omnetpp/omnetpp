@@ -60,12 +60,9 @@ proc create_graphicalgatewindow {name geom} {
     create_inspector_toplevel $w $geom
 
     # create toolbar
-    iconbutton $w.toolbar.ascont -image $icons(asobject) -command "inspect_this $w {As Object}"
-    iconbutton $w.toolbar.sep1   -separator
-    iconbutton $w.toolbar.redraw -image $icons(redraw) -command "opp_inspectorcommand $w redraw"
-    foreach i {ascont sep1 redraw} {
-       pack $w.toolbar.$i -anchor n -side left -padx 0 -pady 2
-    }
+    pack_iconbutton $w.toolbar.ascont -image $icons(asobject) -command "inspect_this $w {As Object}"
+    pack_iconbutton $w.toolbar.sep1   -separator
+    pack_iconbutton $w.toolbar.redraw -image $icons(redraw) -command "opp_inspectorcommand $w redraw"
 
     set help_tips($w.toolbar.ascont) {Inspect as object}
     set help_tips($w.toolbar.redraw) {Redraw}

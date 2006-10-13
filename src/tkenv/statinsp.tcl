@@ -42,11 +42,7 @@ proc create_histogramwindow {name geom} {
     # make the window respond to resize events
     bind $w <Configure> "opp_updateinspector $w"
 
-    iconbutton $w.toolbar.obj -image $icons(asobject) -command "inspect_this $w {As Object}"
-    foreach i {obj} {
-       pack $w.toolbar.$i -anchor n -side left -padx 0 -pady 2
-    }
-
+    pack_iconbutton $w.toolbar.obj -image $icons(asobject) -command "inspect_this $w {As Object}"
     set help_tips($w.toolbar.obj) {Inspect as object}
 
     frame $w.main
@@ -235,11 +231,7 @@ proc create_statisticinspector {name geom} {
     set w $name
     create_inspector_toplevel $w $geom
 
-    iconbutton $w.toolbar.graph -image $icons(asgraphics) -command "inspect_this $w {As Graphics}"
-    foreach i {graph} {
-       pack $w.toolbar.$i -anchor n -side left -padx 0 -pady 2
-    }
-
+    pack_iconbutton $w.toolbar.graph -image $icons(asgraphics) -command "inspect_this $w {As Graphics}"
     set help_tips($w.toolbar.graph) {Inspect as histogram graphics}
 
     frame $w.main
