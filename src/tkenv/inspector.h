@@ -83,6 +83,8 @@ class TInspector
       void setLabel(const char *label, const char *val);
       void setLabel(const char *label, long l);
       void setLabel(const char *label, double d);
+      void setText(const char *entry, const char *val);
+      void setReadonlyText(const char *entry, const char *val);
       const char *getEntry(const char *entry);
       void setInspectButton(const char *button, cObject *object, bool displayfullpath, int inspectortype);
       void setToolbarInspectButton(const char *button, cObject *object, int inspectortype);

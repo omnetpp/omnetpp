@@ -39,13 +39,14 @@ proc create_objinspector {name geom} {
     label-sunkenlabel $nb.info.fullpath {Full path:} ;# TBD make it disabled editfield, and next ones too
     label-sunkenlabel $nb.info.class {C++ class:}
     label-sunkenlabel $nb.info.info {Info:}
-    label-message $nb.info.details {Detailed info:} ;# TBD make it disabled text
+    #label-message $nb.info.details {Detailed info:}
+    label-text $nb.info.details {Detailed info:} 10
 
     pack $nb.info.name -fill x -side top
     pack $nb.info.fullpath -fill x -side top
     pack $nb.info.class -fill x -side top
     pack $nb.info.info -fill x -side top
-    pack $nb.info.details -fill x -side top
+    pack $nb.info.details -expand 1 -fill both -side top
 
     # page 2: fields
     if {$fieldspage_needed} {

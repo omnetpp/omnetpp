@@ -86,7 +86,7 @@ void TObjInspector::update()
    setLabel(".nb.info.class.e",object->className());
 
    setLabel(".nb.info.info.e",object->info().c_str());
-   setLabel(".nb.info.details.e",object->detailedInfo().c_str());
+   setReadonlyText(".nb.info.details.t",object->detailedInfo().c_str());
 
    if (fieldspage)
        fieldspage->update();
