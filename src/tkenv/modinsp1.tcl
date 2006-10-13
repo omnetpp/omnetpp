@@ -57,11 +57,9 @@ proc create_compoundmodinspector {name geom} {
     pack $nb -expand 1 -fill both
 
     notebook_addpage $nb info    {Info}
-    notebook_addpage $nb submods {Submodules}
-    notebook_addpage $nb params  {Params}
-    notebook_addpage $nb gates   {Gates}
+    notebook_addpage $nb contents {Contents}
 
-    notebook_showpage $nb info
+    notebook_showpage $nb contents
 
     # page 1: info
     label-entry $nb.info.name {Module name:}
@@ -74,9 +72,7 @@ proc create_compoundmodinspector {name geom} {
     pack $nb.info.dispstrpt -anchor center -fill x -side top
 
     # other pages:
-    create_inspector_listbox $nb.submods
-    create_inspector_listbox $nb.params
-    create_inspector_listbox $nb.gates
+    create_inspector_listbox $nb.contents
 }
 
 proc create_simplemodinspector {name geom} {
@@ -116,12 +112,9 @@ proc create_simplemodinspector {name geom} {
     pack $nb -expand 1 -fill both
 
     notebook_addpage $nb info    {Info}
-    notebook_addpage $nb params  {Params}
-    notebook_addpage $nb gates   {Gates}
-    notebook_addpage $nb vars    {Contents}
-    notebook_addpage $nb submods {Submodules}
+    notebook_addpage $nb contents {Contents}
 
-    notebook_showpage $nb info
+    notebook_showpage $nb contents
 
     # page 1: info
     label-entry $nb.info.name {Module name:}
@@ -142,10 +135,7 @@ proc create_simplemodinspector {name geom} {
     pack $nb.info.stackused -anchor center  -fill x -side top
 
     # other pages:
-    create_inspector_listbox $nb.params
-    create_inspector_listbox $nb.gates
-    create_inspector_listbox $nb.vars
-    create_inspector_listbox $nb.submods
+    create_inspector_listbox $nb.contents
 }
 
 proc runsimulation_local {w mode} {

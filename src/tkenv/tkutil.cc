@@ -142,6 +142,7 @@ void insertIntoInspectorListbox(Tcl_Interp *interp, const char *listbox, cObject
 
 void feedCollectionIntoInspectorListbox(cCollectObjectsVisitor *visitor, Tcl_Interp *interp, const char *listbox, bool fullpath)
 {
+//FIXME what's this ? !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     int n = visitor->getArraySize();
     cObject **objs = visitor->getArray();
 

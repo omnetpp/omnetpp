@@ -844,14 +844,8 @@ void TCompoundModInspector::update()
    setEntry(".nb.info.dispstr.e", mod->displayString());
    setEntry(".nb.info.dispstrpt.e", mod->backgroundDisplayString());
 
-   deleteInspectorListbox( ".nb.submods" );
-   fillListboxWithSubmodules(".nb.submods", mod);
-
-   deleteInspectorListbox( ".nb.params" );
-//XXX   fillInspectorListbox(".nb.params", &mod->paramv, false);
-
-   deleteInspectorListbox( ".nb.gates" );
-//XXX   fillInspectorListbox(".nb.gates", &mod->gatev, false);
+   deleteInspectorListbox( ".nb.contents" );
+   fillInspectorListbox(".nb.contents", mod, false);
 }
 
 void TCompoundModInspector::writeBack()
@@ -929,17 +923,8 @@ void TSimpleModInspector::update()
       setLabel(".nb.info.stackused.e", "n/a" );
    }
 
-   deleteInspectorListbox( ".nb.params" );
-//XXX   fillInspectorListbox(".nb.params", &mod->paramv, false);
-
-   deleteInspectorListbox( ".nb.gates" );
-//XXX   fillInspectorListbox(".nb.gates", &mod->gatev, false);
-
-   deleteInspectorListbox( ".nb.vars" );
-   fillInspectorListbox(".nb.vars", mod, false);
-
-   deleteInspectorListbox( ".nb.submods" );
-   fillListboxWithSubmodules(".nb.submods", mod);
+   deleteInspectorListbox( ".nb.contents" );
+   fillInspectorListbox(".nb.contents", mod, false);
 }
 
 void TSimpleModInspector::writeBack()

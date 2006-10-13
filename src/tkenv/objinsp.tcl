@@ -101,7 +101,7 @@ proc create_messageinspector {name geom} {
     notebook_addpage $nb controlinfo {Control Info}
     notebook_addpage $nb params      {Params}
 
-    notebook_showpage $nb info
+    notebook_showpage $nb fields
 
     # page 1: info
     label-entry $nb.info.name Name:
