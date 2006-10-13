@@ -32,6 +32,8 @@ cClassFactory::cClassFactory(const char *name, cPolymorphic *(*f)(), const char 
 
 std::string cClassFactory::info() const
 {
+    if (descr.empty())
+        return "";
     return std::string("(") + descr + ")";
 }
 

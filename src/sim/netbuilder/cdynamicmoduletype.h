@@ -39,7 +39,20 @@ class cDynamicModuleType : public cModuleType
     virtual void buildInside(cModule *module);
 
   public:
+    /**
+     * Constructor.
+     */
     cDynamicModuleType(const char *name);
+
+    /**
+     * Produces a one-line description.
+     */
+    virtual std::string info() const;
+
+    /**
+     * Produces a detailed, multi-line description.
+     */
+    virtual std::string detailedInfo() const;
 };
 
 #endif

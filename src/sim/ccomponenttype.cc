@@ -27,8 +27,9 @@
 #endif
 
 
-cComponentType::cComponentType(const char *name) : cNoncopyableObject(name,false)
+cComponentType::cComponentType(const char *name, const char *description) : cNoncopyableObject(name,false)
 {
+    setDescription(description);
 }
 
 cComponentType *cComponentType::find(const char *name)
@@ -36,9 +37,14 @@ cComponentType *cComponentType::find(const char *name)
     return dynamic_cast<cComponentType *>(componentTypes.instance()->get(name));
 }
 
+std::string cComponentType::info() const
+{
+    return desc;
+}
+
 //----
 
-cModuleType::cModuleType(const char *name) : cComponentType(name)
+cModuleType::cModuleType(const char *name, const char *description) : cComponentType(name, description)
 {
 }
 
@@ -130,7 +136,7 @@ cModuleType *cModuleType::find(const char *name)
 
 //----
 
-cChannelType::cChannelType(const char *name) : cComponentType(name)
+cChannelType::cChannelType(const char *name, const char *description) : cComponentType(name, description)
 {
 }
 

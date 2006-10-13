@@ -29,6 +29,20 @@ cDynamicModuleType::cDynamicModuleType(const char *name) : cModuleType(name)
 {
 }
 
+std::string cDynamicModuleType::info() const
+{
+    cNEDDeclaration *decl = cNEDResourceCache::instance()->lookup2(name());
+    ASSERT(decl!=NULL);
+    return decl->info();
+}
+
+std::string cDynamicModuleType::detailedInfo() const
+{
+    cNEDDeclaration *decl = cNEDResourceCache::instance()->lookup2(name());
+    ASSERT(decl!=NULL);
+    return decl->detailedInfo();
+}
+
 cModule *cDynamicModuleType::createModuleObject()
 {
     cNEDDeclaration *decl = cNEDResourceCache::instance()->lookup2(name());

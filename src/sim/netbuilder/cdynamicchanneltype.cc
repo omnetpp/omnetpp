@@ -29,6 +29,20 @@ cDynamicChannelType::cDynamicChannelType(const char *name) : cChannelType(name)
 {
 }
 
+std::string cDynamicChannelType::info() const
+{
+    cNEDDeclaration *decl = cNEDResourceCache::instance()->lookup2(name());
+    ASSERT(decl!=NULL);
+    return decl->info();
+}
+
+std::string cDynamicChannelType::detailedInfo() const
+{
+    cNEDDeclaration *decl = cNEDResourceCache::instance()->lookup2(name());
+    ASSERT(decl!=NULL);
+    return decl->detailedInfo();
+}
+
 cChannel *cDynamicChannelType::createChannelObject()
 {
     cNEDDeclaration *decl = cNEDResourceCache::instance()->lookup2(name());

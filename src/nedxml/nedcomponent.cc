@@ -29,7 +29,7 @@ NEDComponent::~NEDComponent()
     // nothing -- we don't manage the tree, only cache a pointer to it
 }
 
-NEDElement *NEDComponent::getTree()
+NEDElement *NEDComponent::getTree() const
 {
     return tree;
 }

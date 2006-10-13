@@ -36,6 +36,30 @@ cNEDFunction::cNEDFunction(const char *name, NEDFunction f, const char *argtypes
     this->numargs = strlen(argtypes);
 }
 
+static const char *typeName(char t)
+{
+    switch (t)
+    {
+        case 'B': return "bool";
+        case 'L': return "long";
+        case 'D': return "double";
+        case 'S': return "string";
+        case 'X': return "cXMLElement";
+        case '*': return "any";
+        default:  return "?";
+    }
+}
+
+std::string cNEDFunction::info() const
+{
+    std::stringstream out;
+    out << "(";
+    for (int i=0; i<strlen(argtypes.c_str()); i++)
+        out << (i?",":"") << typeName(argtypes[i]);
+    out << ") -> " << typeName(rettype);
+    return out.str();
+}
+
 cNEDFunction *cNEDFunction::find(const char *name, int argcount)
 {
     cArray *a = nedFunctions.instance();

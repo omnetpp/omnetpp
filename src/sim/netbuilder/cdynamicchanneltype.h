@@ -35,7 +35,20 @@ class cDynamicChannelType : public cChannelType
     virtual void addParametersTo(cChannel *module);
 
   public:
+    /**
+     * Constructor.
+     */
     cDynamicChannelType(const char *name);
+
+    /**
+     * Produces a one-line description.
+     */
+    virtual std::string info() const;
+
+    /**
+     * Produces a detailed, multi-line description.
+     */
+    virtual std::string detailedInfo() const;
 };
 
 

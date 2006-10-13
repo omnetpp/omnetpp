@@ -17,6 +17,8 @@
 #include "cexception.h"
 #include "cproperties.h"
 #include "cdynamicexpression.h"
+#include "ned2generator.h"
+#include "nederror.h"
 
 
 cNEDDeclaration::ParamDescription::ParamDescription()
@@ -72,16 +74,36 @@ cNEDDeclaration::~cNEDDeclaration()
 
 std::string cNEDDeclaration::info() const
 {
-    return ""; //FIXME todo
+    std::stringstream out;
+    if (numExtendsNames()>0)
+    {
+        out << "extends ";
+        for (int i=0; i<numExtendsNames(); i++)
+            out << (i?", ":"") << extendsName(i);
+        out << "  ";
+    }
+
+    if (numInterfaceNames()>0)
+    {
+        out << "like ";
+        for (int i=0; i<numInterfaceNames(); i++)
+            out << (i?", ":"") << interfaceName(i);
+        out << "  ";
+    }
+
+    if (!implClassName.empty())
+        out << "C++ class: " << implClassName;
+
+    return out.str();
 }
 
 std::string cNEDDeclaration::detailedInfo() const
 {
     std::stringstream out;
-    out << "  name " << name() << "\n";
+    out << "Name: " << name() << "\n";
     if (numExtendsNames()>0)
     {
-        out << "  extends ";
+        out << "Extends: ";
         for (int i=0; i<numExtendsNames(); i++)
             out << (i?", ":"") << extendsName(i);
         out << "\n";
@@ -89,14 +111,17 @@ std::string cNEDDeclaration::detailedInfo() const
 
     if (numInterfaceNames()>0)
     {
-        out << "  like ";
+        out << "Like: ";
         for (int i=0; i<numInterfaceNames(); i++)
             out << (i?", ":"") << interfaceName(i);
         out << "\n";
     }
 
-    out << "  C++ class " << implClassName << "\n";
+    if (!implClassName.empty())
+        out << "C++ class: " << implClassName << "\n";
 
+    out << "Parameters (incl. inherited ones):\n";
+    if (params.size()==0) out << "  none\n";
     for (int i=0; i<params.size(); i++)
     {
         const ParamDescription& desc = paramDescription(i);
@@ -104,11 +129,18 @@ std::string cNEDDeclaration::detailedInfo() const
         out << " value=" << desc.value->info() << ", ISEXPR=" << (desc.value->isConstant()?0:1) << ", " << desc.value->toString() << "\n";
     }
 
+    out << "Gates (incl. inherited ones):\n";
+    if (gates.size()==0) out << "  none\n";
     for (int i=0; i<gates.size(); i++)
     {
         const GateDescription& desc = gateDescription(i);
         out << "  gate " << desc.name << ": ...\n";
     }
+    out << "________________________________\n\n";
+
+    // NED
+    NEDErrorStore errors;
+    generateNED2(out, getTree(), &errors);
 
     return out.str();
 }

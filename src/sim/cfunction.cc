@@ -104,6 +104,16 @@ cMathFunction::cMathFunction(const char *name, MathFunc4Args f, int ac) : cNonco
                                 "number of arguments %d, should be 4", name, ac);
 }
 
+std::string cMathFunction::info() const
+{
+    std::stringstream out;
+    out << "(";
+    for (int i=0; i<argc; i++)
+        out << (i?",":"") << "double";
+    out << ") -> double";
+    return out.str();
+}
+
 MathFuncNoArg cMathFunction::mathFuncNoArg()
 {
     if (argc!=0)

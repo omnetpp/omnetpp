@@ -81,7 +81,7 @@ std::string cEnum::info() const
     if (items==0)
         return std::string("empty");
     std::stringstream out;
-    out << items << " values";
+    out << items << " values";  //FIXME rather: print a few values (like "ECHO_REQ=1,...")
     return out.str();
 }
 

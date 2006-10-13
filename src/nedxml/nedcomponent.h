@@ -43,7 +43,7 @@ class NEDComponent
     virtual ~NEDComponent();
 
     /** Returns the raw NEDElement tree representing the component */
-    virtual NEDElement *getTree();
+    virtual NEDElement *getTree() const;
 };
 
 #endif
