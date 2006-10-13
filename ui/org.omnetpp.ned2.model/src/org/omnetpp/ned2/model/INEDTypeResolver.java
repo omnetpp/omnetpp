@@ -5,7 +5,7 @@ import java.util.Set;
 
 import org.eclipse.core.resources.IFile;
 
-public interface ITypeResolver {
+public interface INEDTypeResolver {
 
 	/**
 	 * Returns NED files in the workspace.
@@ -35,32 +35,32 @@ public interface ITypeResolver {
 	 *  
 	 * @param file - must not be null
 	 */
-	public ITypeInfo getComponentAt(IFile file, int lineNumber);
+	public INEDTypeInfo getComponentAt(IFile file, int lineNumber);
 	
 	/**
 	 * Returns all components in the NED files.
 	 */
-	public Collection<ITypeInfo> getAllComponents();
+	public Collection<INEDTypeInfo> getAllComponents();
 
 	/**
 	 * Returns all simple and compound modules in the NED files.
 	 */
-	public Collection<ITypeInfo> getModules();
+	public Collection<INEDTypeInfo> getModules();
 
 	/**
 	 * Returns all channels in the NED files.
 	 */
-	public Collection<ITypeInfo> getChannels();
+	public Collection<INEDTypeInfo> getChannels();
 
 	/**
 	 * Returns all module interfaces in the NED files.
 	 */
-	public Collection<ITypeInfo> getModuleInterfaces();
+	public Collection<INEDTypeInfo> getModuleInterfaces();
 
 	/**
 	 * Returns all channel interfaces in the NED files.
 	 */
-	public Collection<ITypeInfo> getChannelInterfaces();
+	public Collection<INEDTypeInfo> getChannelInterfaces();
 
 	/**
 	 * Returns all module names in the NED files.
@@ -85,13 +85,13 @@ public interface ITypeResolver {
 	/**
 	 * Returns a component by name.
 	 */
-	public ITypeInfo getComponent(String name);
+	public INEDTypeInfo getComponent(String name);
 
 	/**
-	 * Creates and returns an ITypeInfo for the given NEDElement representing
+	 * Creates and returns an INEDTypeInfo for the given NEDElement representing
 	 * a module type, channel type, etc. The component will NOT be registered
 	 * in the resolver. This method was created for handling inner types.
 	 */
-	public ITypeInfo wrapNEDElement(NEDElement componentNode);
+	public INEDTypeInfo wrapNEDElement(NEDElement componentNode);
 	
 }

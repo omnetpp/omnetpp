@@ -38,7 +38,7 @@ public class ChannelNodeEx extends ChannelNode
 	}
 
     // EXTENDS support
-    public String getExtends() {
+    public String getFirstExtends() {
         ExtendsNode extendsNode = getFirstExtendsChild();
         if(extendsNode == null)
             return null;
@@ -46,7 +46,7 @@ public class ChannelNodeEx extends ChannelNode
         return extendsNode.getName();
     }
 
-    public void setExtends(String ext) {
+    public void setFirstExtends(String ext) {
         ExtendsNode extendsNode = getFirstExtendsChild();
             if (extendsNode == null) {
                 extendsNode = (ExtendsNode)NEDElementFactoryEx.getInstance().createNodeWithTag(NED_EXTENDS);
@@ -55,16 +55,16 @@ public class ChannelNodeEx extends ChannelNode
             extendsNode.setName(ext);
     }
     
-    public ITypeInfo getExtendsTypeInfo() {
-        String extendsName = getExtends(); 
+    public INEDTypeInfo getFirstExtendsNEDTypeInfo() {
+        String extendsName = getFirstExtends(); 
         if ( extendsName == null || "".equals(extendsName))
             return null;
 
-        return getContainerTypeInfo().getResolver().getComponent(extendsName);
+        return getContainerNEDTypeInfo().getResolver().getComponent(extendsName);
     }
 
-    public NEDElement getExtendsRef() {
-        ITypeInfo it = getExtendsTypeInfo();
+    public NEDElement getFirstExtendsRef() {
+        INEDTypeInfo it = getFirstExtendsNEDTypeInfo();
         return it == null ? null : it.getNEDElement();
     }
 

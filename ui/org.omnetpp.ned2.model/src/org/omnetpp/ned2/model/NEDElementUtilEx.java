@@ -62,7 +62,7 @@ public class NEDElementUtilEx implements NEDElementTags, NEDElementUtil {
         if (node instanceof IStringTyped)
             defaultNode = ((IStringTyped)node).getTypeRef();
         else if (node instanceof IDerived)
-            defaultNode = ((IDerived)node).getExtendsRef();
+            defaultNode = ((IDerived)node).getFirstExtendsRef();
         // if we do not have type or do not extend anybody we return the same displaystring
         if (defaultNode == null)
             return result;

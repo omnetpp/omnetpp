@@ -1,7 +1,4 @@
 package org.omnetpp.ned2.model;
-
-
-
 /**
  * Implement this to get notified about changes in a NED tree.
  * @author andras

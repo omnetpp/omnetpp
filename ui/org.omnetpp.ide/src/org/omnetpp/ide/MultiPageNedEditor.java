@@ -14,7 +14,7 @@ import org.eclipse.ui.part.FileEditorInput;
 import org.eclipse.ui.part.MultiPageEditorPart;
 import org.omnetpp.ned.editor.graph.GraphicalNedEditor;
 import org.omnetpp.ned.editor.text.TextualNedEditor;
-import org.omnetpp.ned2.model.ModelUtil;
+import org.omnetpp.ned2.model.NEDTreeUtil;
 import org.omnetpp.ned2.model.NedFileNodeEx;
 import org.omnetpp.resources.NEDResources;
 import org.omnetpp.resources.NEDResourcesPlugin;
@@ -99,7 +99,7 @@ public class MultiPageNedEditor extends MultiPageEditorPart implements
             res.setNEDFileContents(ifile, modelRoot);
             
             // generate the text representation
-            String textEditorContent = ModelUtil.generateNedSource(modelRoot, true);
+            String textEditorContent = NEDTreeUtil.generateNedSource(modelRoot, true);
             // put it into the text editor
             nedEditor.setText(textEditorContent);
 		} 
@@ -168,7 +168,7 @@ public class MultiPageNedEditor extends MultiPageEditorPart implements
     		NEDResourcesPlugin.getNEDResources().setNEDFileContents(ifile, modelRoot);
             
             // generate the text representation
-            String textEditorContent = ModelUtil.generateNedSource(modelRoot, true);
+            String textEditorContent = NEDTreeUtil.generateNedSource(modelRoot, true);
             // put it into the text editor
             nedEditor.setText(textEditorContent);
 		}

@@ -27,7 +27,7 @@ public abstract class NEDElement extends PlatformObject implements Iterable<NEDE
 	private NEDElement nextsibling;
 	private static long lastid;
     private HashMap<Object,Object> userData;
-    private ITypeInfo typeInfo;
+    private INEDTypeInfo typeInfo;
     
     // whether notification is enabled or not
     private boolean notifyEnabled = true;
@@ -591,11 +591,14 @@ public abstract class NEDElement extends PlatformObject implements Iterable<NEDE
 	}
 
 	/**
-	 * ENable or disable change notification
-	 * @param notifyEnabled
+     * Enable or disable change notification
+	 * @param notifyEnabled The new state requested.
+	 * @return The original notification state before the call.
 	 */
-	public void setNotifyEnabled(boolean notifyEnabled) {
+	public boolean setNotifyEnabled(boolean notifyEnabled) {
+        boolean oldState = this.notifyEnabled;
 		this.notifyEnabled = notifyEnabled;
+        return oldState;
 	}
     
     /**
@@ -703,12 +706,12 @@ public abstract class NEDElement extends PlatformObject implements Iterable<NEDE
      * that was added by the incremental builder (type resolver). Or NULL if none was found.
      * Cross references and other supporting lists can be accesed via typeInfo
      */
-    public ITypeInfo getContainerTypeInfo() {
-        ITypeInfo result = null;
+    public INEDTypeInfo getContainerNEDTypeInfo() {
+        INEDTypeInfo result = null;
         if (typeInfo != null || getParent() == null)
             result = typeInfo;
         else // return the typinfo of the parent
-            result = getParent().getContainerTypeInfo();
+            result = getParent().getContainerNEDTypeInfo();
 
         // we should not call this on a node that does not have a typeinfo or is not in the model hierarchy
         Assert.isNotNull(result);
@@ -718,7 +721,7 @@ public abstract class NEDElement extends PlatformObject implements Iterable<NEDE
     /**
      * @param typeInfo Sets the component type info data. Should be used by the incremental builder ONLY.
      */
-    public void setTypeInfo(ITypeInfo typeInfo) {
+    public void setNEDTypeInfo(INEDTypeInfo typeInfo) {
         this.typeInfo = typeInfo;
     }
 

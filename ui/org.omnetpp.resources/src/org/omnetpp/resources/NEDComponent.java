@@ -8,8 +8,8 @@ import java.util.Set;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.Assert;
-import org.omnetpp.ned2.model.ITypeInfo;
-import org.omnetpp.ned2.model.ITypeResolver;
+import org.omnetpp.ned2.model.INEDTypeInfo;
+import org.omnetpp.ned2.model.INEDTypeResolver;
 import org.omnetpp.ned2.model.NEDElement;
 import org.omnetpp.ned2.model.NEDSourceRegion;
 import org.omnetpp.ned2.model.pojo.ChannelInterfaceNode;
@@ -27,9 +27,9 @@ import org.omnetpp.ned2.model.pojo.SubmoduleNode;
 /**
  * Default implementation of INEDComponent.
  */
-public class NEDComponent implements ITypeInfo, NEDElementTags {
+public class NEDComponent implements INEDTypeInfo, NEDElementTags {
 
-	protected ITypeResolver resolver;
+	protected INEDTypeResolver resolver;
 	
 	protected NEDElement componentNode;
 	protected IFile file;
@@ -54,6 +54,9 @@ public class NEDComponent implements ITypeInfo, NEDElementTags {
 
 	// sum of all own+inherited stuff
 	protected HashMap<String, NEDElement> allMembers = new HashMap<String, NEDElement>();
+    
+    // all types which extends this component
+    protected List<INEDTypeInfo> allDerivedTypes = new ArrayList<INEDTypeInfo>();
 
 	/**
 	 * Constructor
@@ -61,13 +64,13 @@ public class NEDComponent implements ITypeInfo, NEDElementTags {
 	 * @param nedfile file containing the definition
 	 * @param res will be used to resolve inheritance (collect gates, params etc from base classes)
 	 */
-	public NEDComponent(NEDElement node, IFile nedfile, ITypeResolver res) {
+	public NEDComponent(NEDElement node, IFile nedfile, INEDTypeResolver res) {
 		resolver = res;
 		file = nedfile;
 		componentNode = node;
         // register the created component in the NEDElement so we will have access to it 
         // directly from the model
-        node.setTypeInfo(this);
+        node.setNEDTypeInfo(this);
 		
 		// collect stuff from component declaration
 		collect(ownProperties, NED_PROPERTY, NED_PARAMETERS, PropertyNode.ATT_NAME, null);
@@ -92,7 +95,7 @@ public class NEDComponent implements ITypeInfo, NEDElementTags {
 		needsUpdate = true;
 	}
 
-    public ITypeResolver getResolver() {
+    public INEDTypeResolver getResolver() {
         return resolver;
     }
 
@@ -126,10 +129,10 @@ public class NEDComponent implements ITypeInfo, NEDElementTags {
 	 * Follow inheritance chain, and return the list of super classes 
 	 * starting from the base class and ending with the current class
 	 */
-	public List<ITypeInfo> resolveExtendsChain() {
-	    ArrayList<ITypeInfo> tmp = new ArrayList<ITypeInfo>();
+	public List<INEDTypeInfo> resolveExtendsChain() {
+	    ArrayList<INEDTypeInfo> tmp = new ArrayList<INEDTypeInfo>();
     	tmp.add(this);
-	    ITypeInfo currentComponent = this;
+	    INEDTypeInfo currentComponent = this;
 	    while (true) {
 		    NEDElement currentComponentNode = currentComponent.getNEDElement();
 	    	NEDElement extendsNode = currentComponentNode.getFirstChildWithTag(NED_EXTENDS);
@@ -157,9 +160,11 @@ public class NEDComponent implements ITypeInfo, NEDElementTags {
 		allInnerTypes.clear();
 		allSubmodules.clear();
 		allMembers.clear();
+        allDerivedTypes.clear();
 
-		List<ITypeInfo> extendsChain = resolveExtendsChain();
-		for (ITypeInfo icomponent : extendsChain) {
+        // collect all inherited members
+		List<INEDTypeInfo> extendsChain = resolveExtendsChain();
+		for (INEDTypeInfo icomponent : extendsChain) {
 			Assert.isTrue(icomponent instanceof NEDComponent);
 			NEDComponent component = (NEDComponent)icomponent;
 			allProperties.putAll(component.ownProperties);
@@ -169,6 +174,21 @@ public class NEDComponent implements ITypeInfo, NEDElementTags {
 			allSubmodules.putAll(component.ownSubmodules);
 			allMembers.putAll(component.ownMembers);
 		}
+        
+        // collect all types that are derived from this
+        for(INEDTypeInfo currentComp : getResolver().getAllComponents()) {
+            NEDElement element = currentComp.getNEDElement();
+            for(NEDElement child : element) {
+                if (child instanceof ExtendsNode) {
+                    String extendsName = ((ExtendsNode)child).getName();
+                    if (getName().equals(extendsName)) {
+                        allDerivedTypes.add(currentComp);
+                        break;
+                    }
+                }
+            }
+        }
+        
 		needsUpdate = false;
 	}
 
@@ -180,22 +200,22 @@ public class NEDComponent implements ITypeInfo, NEDElementTags {
 		needsUpdate = true;
 	}
 
-	/* INEDComponent method */
+	
 	public String getName() {
 		return componentNode.getAttribute("name");
 	}
 	
-	/* INEDComponent method */
+	
 	public NEDElement getNEDElement() {
 		return componentNode;
 	}
 
-	/* INEDComponent method */
+	
 	public IFile getNEDFile() {
 		return file;
 	}
 
-	/* INEDComponent method */
+	
 	public NEDElement[] getNEDElementsAt(int line, int column) {
 		ArrayList<NEDElement> list = new ArrayList<NEDElement>();
 		NEDSourceRegion region = componentNode.getSourceRegion();
@@ -217,47 +237,63 @@ public class NEDComponent implements ITypeInfo, NEDElementTags {
 		}
 	}
 
-	/* INEDComponent method */
+	
 	public Set<String> getOwnParamNames() {
 		return ownParams.keySet();
 	}
 
-	/* INEDComponent method */
+    public Collection<NEDElement> getOwnParams() {
+        return ownParams.values();
+    }
+
+	
 	public boolean hasOwnParam(String name) {
 		return ownParams.containsKey(name);
 	}
 
-	/* INEDComponent method */
+	
 	public Set<String> getOwnPropertyNames() {
 		return ownProperties.keySet();
 	}
 	
-	/* INEDComponent method */
+    public Collection<NEDElement> getOwnProperties() {
+        return ownProperties.values();
+    }
+
+	
 	public boolean hasOwnProperty(String name) {
 		return ownProperties.containsKey(name);
 	}
 
-	/* INEDComponent method */
+	
 	public Set<String> getOwnGateNames() {
 		return ownGates.keySet();
 	}
 	
-	/* INEDComponent method */
+    public Collection<NEDElement> getOwnGates() {
+        return ownGates.values();
+    }
+
+	
 	public boolean hasOwnGate(String name) {
 		return ownGates.containsKey(name);
 	}
 	
-	/* INEDComponent method */
+	
 	public Set<String> getOwnInnerTypeNames() {
 		return ownInnerTypes.keySet();
 	}
 
-	/* INEDComponent method */
+    public Collection<NEDElement> getOwnInnerTypes() {
+        return ownInnerTypes.values();
+    }
+
+	
 	public boolean hasOwnInnerType(String name) {
 		return ownInnerTypes.containsKey(name);
 	}
 
-	/* INEDComponent method */
+	
 	public Set<String> getOwnSubmodNames() {
 		return ownSubmodules.keySet();
 	}
@@ -266,90 +302,118 @@ public class NEDComponent implements ITypeInfo, NEDElementTags {
         return ownSubmodules.values();
     }
 
-	/* INEDComponent method */
+	
 	public boolean hasOwnSubmod(String name) {
 		return ownSubmodules.containsKey(name);
 	}
 
-	/* INEDComponent method */
+	
 	public Set<String> getOwnMemberNames() {
 		return ownMembers.keySet();
 	}
 
-	/* INEDComponent method */
+    public Collection<NEDElement> getOwnMembers() {
+        return ownMembers.values();
+    }
+
+	
 	public boolean hasOwnMember(String name) {
 		return ownMembers.containsKey(name);
 	}
 
-	/* INEDComponent method */
+	
 	public NEDElement getOwnMember(String name) {
 		return ownMembers.get(name);
 	}
 
-	/* INEDComponent method */
+	
 	public Set<String> getParamNames() {
 		if (needsUpdate)
 			refreshInheritedMembers();
 		return allParams.keySet();
 	}
 
-	/* INEDComponent method */
+    public Collection<NEDElement> getParams() {
+        if (needsUpdate)
+            refreshInheritedMembers();
+        return allParams.values();
+    }
+
+	
 	public boolean hasParam(String name) {
 		if (needsUpdate)
 			refreshInheritedMembers();
 		return allParams.containsKey(name);
 	}
 
-	/* INEDComponent method */
+	
 	public Set<String> getPropertyNames() {
 		if (needsUpdate)
 			refreshInheritedMembers();
 		return allProperties.keySet();
 	}
 
-	/* INEDComponent method */
+    public Collection<NEDElement> getProperties() {
+        if (needsUpdate)
+            refreshInheritedMembers();
+        return allProperties.values();
+    }
+
+	
 	public boolean hasProperty(String name) {
 		if (needsUpdate)
 			refreshInheritedMembers();
 		return allProperties.containsKey(name);
 	}
 
-	/* INEDComponent method */
+	
 	public NEDElement getProperty(String name) {
 		if (needsUpdate)
 			refreshInheritedMembers();
 		return allProperties.get(name);
 	}
 	
-	/* INEDComponent method */
+	
 	public Set<String> getGateNames() {
 		if (needsUpdate)
 			refreshInheritedMembers();
 		return allGates.keySet();
 	}
 
-	/* INEDComponent method */
+    public Collection<NEDElement> getGates() {
+        if (needsUpdate)
+            refreshInheritedMembers();
+        return allGates.values();
+    }
+
+	
 	public boolean hasGate(String name) {
 		if (needsUpdate)
 			refreshInheritedMembers();
 		return allGates.containsKey(name);
 	}
 
-	/* INEDComponent method */
+	
 	public Set<String> getInnerTypeNames() {
 		if (needsUpdate)
 			refreshInheritedMembers();
 		return allInnerTypes.keySet();
 	}
 
-	/* INEDComponent method */
+    public Collection<NEDElement> getInnerTypes() {
+        if (needsUpdate)
+            refreshInheritedMembers();
+        return allInnerTypes.values();
+    }
+
+	
 	public boolean hasInnerType(String name) {
 		if (needsUpdate)
 			refreshInheritedMembers();
 		return allInnerTypes.containsKey(name);
 	}
 
-	/* INEDComponent method */
+	
 	public Set<String> getSubmodNames() {
 		if (needsUpdate)
 			refreshInheritedMembers();
@@ -362,33 +426,44 @@ public class NEDComponent implements ITypeInfo, NEDElementTags {
         return allSubmodules.values();
     }
 
-    /* INEDComponent method */
+    
 	public boolean hasSubmod(String name) {
 		if (needsUpdate)
 			refreshInheritedMembers();
 		return allSubmodules.containsKey(name);
 	}
 
-	/* INEDComponent method */
+	
 	public Set<String> getMemberNames() {
 		if (needsUpdate)
 			refreshInheritedMembers();
 		return allMembers.keySet();
 	}
 
-	/* INEDComponent method */
+    public Collection<NEDElement> getMembers() {
+        if (needsUpdate)
+            refreshInheritedMembers();
+        return allMembers.values();
+    }
+
+	
 	public boolean hasMember(String name) {
 		if (needsUpdate)
 			refreshInheritedMembers();
 		return allMembers.containsKey(name);
 	}
 
-	/* INEDComponent method */
+	
 	public NEDElement getMember(String name) {
 		if (needsUpdate)
 			refreshInheritedMembers();
 		return allMembers.get(name);
 	}
 
+    public List<INEDTypeInfo> getAllDerivedTypes() {
+        if (needsUpdate)
+            refreshInheritedMembers();
+        return allDerivedTypes;
+    }
 
 }

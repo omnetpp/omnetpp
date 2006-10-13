@@ -1,9 +1,7 @@
 package org.omnetpp.resources;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Set;
 import java.util.StringTokenizer;
 
@@ -12,17 +10,13 @@ import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
-import org.omnetpp.common.displaymodel.DisplayString;
-import org.omnetpp.common.displaymodel.IDisplayStringProvider;
-import org.omnetpp.ned2.model.CompoundModuleNodeEx;
-import org.omnetpp.ned2.model.ITypeInfo;
-import org.omnetpp.ned2.model.ITypeResolver;
-import org.omnetpp.ned2.model.ModelUtil;
+import org.omnetpp.ned2.model.INEDTypeInfo;
+import org.omnetpp.ned2.model.INEDTypeResolver;
 import org.omnetpp.ned2.model.NEDElement;
 import org.omnetpp.ned2.model.NEDElementFactoryEx;
 import org.omnetpp.ned2.model.NEDElementUtil;
 import org.omnetpp.ned2.model.NEDSourceRegion;
-import org.omnetpp.ned2.model.SubmoduleNodeEx;
+import org.omnetpp.ned2.model.NEDTreeUtil;
 import org.omnetpp.ned2.model.pojo.ChannelInterfaceNode;
 import org.omnetpp.ned2.model.pojo.ChannelNode;
 import org.omnetpp.ned2.model.pojo.CompoundModuleNode;
@@ -50,7 +44,7 @@ import org.omnetpp.ned2.model.swig.NEDErrorStore;
  *  
  * @author andras
  */
-public class NEDResources implements ITypeResolver {
+public class NEDResources implements INEDTypeResolver {
 
 	// markers created during parsing
 	public static final String NEDPROBLEM_MARKERID = "org.omnetpp.resources.nedproblem";
@@ -64,19 +58,19 @@ public class NEDResources implements ITypeResolver {
 	private HashMap<IFile, Integer> connectCount = new HashMap<IFile, Integer>();
 	
 	// table of toplevel components (points into nedFiles trees)
-	private HashMap<String, ITypeInfo> components = new HashMap<String, ITypeInfo>();
+	private HashMap<String, INEDTypeInfo> components = new HashMap<String, INEDTypeInfo>();
 
 	// tables of toplevel components, classified (points into nedFiles trees)
     private boolean needsRehash = false;  // if tables below need to be rebuilt
-	private HashMap<String, ITypeInfo> modules = new HashMap<String, ITypeInfo>();
-	private HashMap<String, ITypeInfo> channels = new HashMap<String, ITypeInfo>();
-	private HashMap<String, ITypeInfo> moduleInterfaces = new HashMap<String, ITypeInfo>();
-	private HashMap<String, ITypeInfo> channelInterfaces = new HashMap<String, ITypeInfo>();
+	private HashMap<String, INEDTypeInfo> modules = new HashMap<String, INEDTypeInfo>();
+	private HashMap<String, INEDTypeInfo> channels = new HashMap<String, INEDTypeInfo>();
+	private HashMap<String, INEDTypeInfo> moduleInterfaces = new HashMap<String, INEDTypeInfo>();
+	private HashMap<String, INEDTypeInfo> channelInterfaces = new HashMap<String, INEDTypeInfo>();
 
-	private ITypeInfo basicChannelType = null;
-	private ITypeInfo nullChannelType = null;
-	private ITypeInfo bidirChannelType = null;
-	private ITypeInfo unidirChannelType = null;
+	private INEDTypeInfo basicChannelType = null;
+	private INEDTypeInfo nullChannelType = null;
+	private INEDTypeInfo bidirChannelType = null;
+	private INEDTypeInfo unidirChannelType = null;
 
 	/**
 	 * Constructor.
@@ -196,10 +190,10 @@ public class NEDResources implements ITypeResolver {
 	/* (non-Javadoc)
 	 * @see org.omnetpp.resources.ITypeResolver#getComponentAt(org.eclipse.core.resources.IFile, int)
 	 */
-	public ITypeInfo getComponentAt(IFile file, int lineNumber) {
+	public INEDTypeInfo getComponentAt(IFile file, int lineNumber) {
 		if (needsRehash)
 			rehash();
-		for (ITypeInfo component : components.values()) {
+		for (INEDTypeInfo component : components.values()) {
 			if (file.equals(component.getNEDFile())) {
 				NEDSourceRegion region = component.getNEDElement().getSourceRegion();
 				if (region!=null && region.containsLine(lineNumber))
@@ -212,7 +206,7 @@ public class NEDResources implements ITypeResolver {
 	/* (non-Javadoc)
 	 * @see org.omnetpp.resources.ITypeResolver#getAllComponents()
 	 */
-	public Collection<ITypeInfo> getAllComponents() {
+	public Collection<INEDTypeInfo> getAllComponents() {
 		if (needsRehash)
 			rehash();
 		return components.values();
@@ -221,7 +215,7 @@ public class NEDResources implements ITypeResolver {
 	/* (non-Javadoc)
 	 * @see org.omnetpp.resources.ITypeResolver#getModules()
 	 */
-	public Collection<ITypeInfo> getModules() {
+	public Collection<INEDTypeInfo> getModules() {
 		if (needsRehash)
 			rehash();
 		return modules.values();
@@ -230,7 +224,7 @@ public class NEDResources implements ITypeResolver {
 	/* (non-Javadoc)
 	 * @see org.omnetpp.resources.ITypeResolver#getChannels()
 	 */
-	public Collection<ITypeInfo> getChannels() {
+	public Collection<INEDTypeInfo> getChannels() {
 		if (needsRehash)
 			rehash();
 		return channels.values();
@@ -239,7 +233,7 @@ public class NEDResources implements ITypeResolver {
 	/* (non-Javadoc)
 	 * @see org.omnetpp.resources.ITypeResolver#getModuleInterfaces()
 	 */
-	public Collection<ITypeInfo> getModuleInterfaces() {
+	public Collection<INEDTypeInfo> getModuleInterfaces() {
 		if (needsRehash)
 			rehash();
 		return moduleInterfaces.values();
@@ -248,7 +242,7 @@ public class NEDResources implements ITypeResolver {
 	/* (non-Javadoc)
 	 * @see org.omnetpp.resources.ITypeResolver#getChannelInterfaces()
 	 */
-	public Collection<ITypeInfo> getChannelInterfaces() {
+	public Collection<INEDTypeInfo> getChannelInterfaces() {
 		if (needsRehash)
 			rehash();
 		return channelInterfaces.values();
@@ -293,39 +287,16 @@ public class NEDResources implements ITypeResolver {
 	/* (non-Javadoc)
 	 * @see org.omnetpp.resources.ITypeResolver#getComponent(java.lang.String)
 	 */
-	public ITypeInfo getComponent(String name) {
+	public INEDTypeInfo getComponent(String name) {
 		if (needsRehash)
 			rehash();
 		return components.get(name);
 	}
 
-	/**
-	 * @param name
-	 * @return All submodules (including inherited ones) belonging to the given module
-	 */
-	public List<SubmoduleNodeEx> getAllSubmodules(String name) {
-		ITypeInfo nedcomp = getComponent(name);
-		List<SubmoduleNodeEx> smList = new ArrayList<SubmoduleNodeEx>();
-
-		if (nedcomp != null) {
-			List<ITypeInfo> extendsChain = ((NEDComponent)nedcomp).resolveExtendsChain();
-			// start at the current component and gather all inherited submodules along the 
-			// imnheritence chanin
-			for(int i = extendsChain.size()-1; i>=0; --i)
-				// skip the non compound modules (if any)
-				if (extendsChain.get(i).getNEDElement() instanceof CompoundModuleNodeEx) {
-					CompoundModuleNodeEx cmod = (CompoundModuleNodeEx)(extendsChain.get(i).getNEDElement());
-					smList.addAll(cmod.getOwnSubmodules());
-				}
-		}
-		
-		return smList;
-	}
-	
 	/* (non-Javadoc)
 	 * @see org.omnetpp.resources.ITypeResolver#wrapNEDElement(org.omnetpp.ned2.model.NEDElement)
 	 */
-	public ITypeInfo wrapNEDElement(NEDElement componentNode) {
+	public INEDTypeInfo wrapNEDElement(NEDElement componentNode) {
 		return new NEDComponent(componentNode, null, this); 
 	}
 
@@ -370,7 +341,7 @@ public class NEDResources implements ITypeResolver {
 		// parse the NED text and put it into the hash table
 		NEDErrorStore errors = new NEDErrorStore();
 		errors.setPrintToStderr(false);
-		NEDElement tree = ModelUtil.parseNedSource(text, errors);
+		NEDElement tree = NEDTreeUtil.parseNedSource(text, errors);
 		convertErrorsToMarkers(file, errors);
 
 		// store it even if there were errors (needed by content assist)
@@ -406,7 +377,7 @@ public class NEDResources implements ITypeResolver {
 		// parse the NED file and put it into the hash table
 		String fileName = file.getLocation().toFile().getPath();
 		NEDErrorStore errors = new NEDErrorStore();
-		NEDElement tree = ModelUtil.loadNedSource(fileName, errors);
+		NEDElement tree = NEDTreeUtil.loadNedSource(fileName, errors);
 		convertErrorsToMarkers(file, errors);
 
 		// only store it if there were no errors
@@ -503,7 +474,7 @@ public class NEDResources implements ITypeResolver {
             for (NEDElement node : tree) {
             	// find node's name and where it should be inserted
             	String name = null;
-            	HashMap<String, ITypeInfo> map = null;
+            	HashMap<String, INEDTypeInfo> map = null;
             	if (node instanceof ChannelNode) {
             		name = ((ChannelNode)node).getName();
             		map = channels;
@@ -544,7 +515,7 @@ public class NEDResources implements ITypeResolver {
 						}
             		}
             		else {
-            			ITypeInfo component = new NEDComponent(node, file, this); 
+            			INEDTypeInfo component = new NEDComponent(node, file, this); 
             			map.put(name, component);
             			components.put(name, component);
             		}

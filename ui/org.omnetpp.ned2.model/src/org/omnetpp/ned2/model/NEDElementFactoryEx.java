@@ -1,6 +1,5 @@
 package org.omnetpp.ned2.model;
 
-import org.omnetpp.ned2.model.pojo.ChannelInterfaceNode;
 import org.omnetpp.ned2.model.pojo.NEDElementFactory;
 
 /**

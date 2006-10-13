@@ -58,7 +58,7 @@ public class SubmoduleNodeEx extends SubmoduleNode
      * ie. getCompoundModule should not return null;
      */
     public void makeNameUnique() {
-    	List<SubmoduleNodeEx> smls = getCompoundModule().getOwnSubmodules();
+    	List<SubmoduleNodeEx> smls = getCompoundModule().getSubmodules();
     	Set<String> nameSet = new HashSet<String>(smls.size());
     	// create a set from the sibling submodules
     	for(SubmoduleNodeEx sm : smls)
@@ -141,16 +141,16 @@ public class SubmoduleNodeEx extends SubmoduleNode
     }
 
     // type support
-    public ITypeInfo getTypeTypeInfo() {
+    public INEDTypeInfo getTypeNEDTypeInfo() {
         String typeName = getType(); 
         if ( typeName == null || "".equals(typeName))
             return null;
 
-        return getContainerTypeInfo().getResolver().getComponent(typeName);
+        return getContainerNEDTypeInfo().getResolver().getComponent(typeName);
     }
 
     public NEDElement getTypeRef() {
-        ITypeInfo it = getTypeTypeInfo();
+        INEDTypeInfo it = getTypeNEDTypeInfo();
         return it == null ? null : it.getNEDElement();
     }
 

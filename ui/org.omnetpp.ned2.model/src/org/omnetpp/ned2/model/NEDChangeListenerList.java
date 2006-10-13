@@ -1,8 +1,9 @@
 package org.omnetpp.ned2.model;
 
-
-
-
+/**
+ * @author rhornig
+ * Supports a listener list used for change and strunctural notification in a NEDElement tree
+ */
 public class NEDChangeListenerList {
 
 	INEDChangeListener[] array = new INEDChangeListener[0];

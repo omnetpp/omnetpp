@@ -8,8 +8,8 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.MenuItem;
 import org.omnetpp.ned2.model.CompoundModuleNodeEx;
 import org.omnetpp.ned2.model.IConnectable;
-import org.omnetpp.ned2.model.ITypeInfo;
-import org.omnetpp.ned2.model.ModelUtil;
+import org.omnetpp.ned2.model.INEDTypeInfo;
+import org.omnetpp.ned2.model.NEDTreeUtil;
 import org.omnetpp.ned2.model.SubmoduleNodeEx;
 import org.omnetpp.ned2.model.pojo.ConnectionNode;
 import org.omnetpp.ned2.model.pojo.GateNode;
@@ -38,7 +38,7 @@ public class ConnectionChooser {
 			moduleType = ((SubmoduleNodeEx)module).getType();
 		}
 		
-		ITypeInfo comp = NEDResourcesPlugin.getNEDResources().getComponent(moduleType);
+		INEDTypeInfo comp = NEDResourcesPlugin.getNEDResources().getComponent(moduleType);
 		if (comp == null)
 			return result;
 		
@@ -125,7 +125,7 @@ public class ConnectionChooser {
 	protected static void addToMenu(BlockingMenu menu, ConnectionNode conn) {
 		MenuItem mi = menu.addMenuItem(SWT.PUSH);
 		mi.setData(conn);
-		String label = ModelUtil.generateNedSource(conn, false).trim(); 
+		String label = NEDTreeUtil.generateNedSource(conn, false).trim(); 
 		mi.setText(label);
 	}
 	

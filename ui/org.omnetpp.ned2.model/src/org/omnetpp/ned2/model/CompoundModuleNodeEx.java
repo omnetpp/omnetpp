@@ -6,7 +6,6 @@ import java.util.List;
 import org.eclipse.core.runtime.Assert;
 import org.omnetpp.common.displaymodel.DisplayString;
 import org.omnetpp.common.displaymodel.IDisplayString;
-import org.omnetpp.common.displaymodel.IDisplayStringProvider;
 import org.omnetpp.common.displaymodel.IDisplayString.Prop;
 import org.omnetpp.ned2.model.pojo.CompoundModuleNode;
 import org.omnetpp.ned2.model.pojo.ConnectionsNode;
@@ -61,7 +60,7 @@ public class CompoundModuleNodeEx extends CompoundModuleNode
      * @param child
      * @return
      */
-	public List<SubmoduleNodeEx> getOwnSubmodules() {
+	public List<SubmoduleNodeEx> getSubmodules() {
 		List<SubmoduleNodeEx> result = new ArrayList<SubmoduleNodeEx>();
 		SubmodulesNode submodulesNode = getFirstSubmodulesChild();
 		if (submodulesNode == null)
@@ -74,10 +73,10 @@ public class CompoundModuleNodeEx extends CompoundModuleNode
 	}
     
     /**
-     * @return All submodules direct and inherited submodules 
+     * @return All direct and inherited submodules 
      */
     public List<SubmoduleNodeEx> getAllSubmodules() {
-        ITypeInfo it = getContainerTypeInfo();
+        INEDTypeInfo it = getContainerNEDTypeInfo();
         Assert.isNotNull(it);
         
         List<SubmoduleNodeEx> result = new ArrayList<SubmoduleNodeEx>();
@@ -250,7 +249,7 @@ public class CompoundModuleNodeEx extends CompoundModuleNode
     
     ///////////////////////////////////////////////////////////////////////
     // extend support
-    public String getExtends() {
+    public String getFirstExtends() {
         ExtendsNode extendsNode = (ExtendsNode)getFirstExtendsChild();
         if(extendsNode == null)
             return null;
@@ -258,7 +257,7 @@ public class CompoundModuleNodeEx extends CompoundModuleNode
         return extendsNode.getName();
     }
 
-    public void setExtends(String ext) {
+    public void setFirstExtends(String ext) {
         ExtendsNode extendsNode = getFirstExtendsChild();
             if (extendsNode == null) {
                 extendsNode = (ExtendsNode)NEDElementFactoryEx.getInstance().createNodeWithTag(NED_EXTENDS);
@@ -267,16 +266,16 @@ public class CompoundModuleNodeEx extends CompoundModuleNode
             extendsNode.setName(ext);
     }
 
-    public ITypeInfo getExtendsTypeInfo() {
-        String extendsName = getExtends(); 
+    public INEDTypeInfo getFirstExtendsNEDTypeInfo() {
+        String extendsName = getFirstExtends(); 
         if ( extendsName == null || "".equals(extendsName))
             return null;
 
-        return getContainerTypeInfo().getResolver().getComponent(extendsName);
+        return getContainerNEDTypeInfo().getResolver().getComponent(extendsName);
     }
 
-    public NEDElement getExtendsRef() {
-        ITypeInfo it = getExtendsTypeInfo();
+    public NEDElement getFirstExtendsRef() {
+        INEDTypeInfo it = getFirstExtendsNEDTypeInfo();
         return it == null ? null : it.getNEDElement();
     }
 }

@@ -31,7 +31,7 @@ import org.omnetpp.ned2.model.ChannelInterfaceNodeEx;
 import org.omnetpp.ned2.model.ChannelNodeEx;
 import org.omnetpp.ned2.model.CompoundModuleNodeEx;
 import org.omnetpp.ned2.model.ConnectionNodeEx;
-import org.omnetpp.ned2.model.ITypeInfo;
+import org.omnetpp.ned2.model.INEDTypeInfo;
 import org.omnetpp.ned2.model.INamed;
 import org.omnetpp.ned2.model.ModuleInterfaceNodeEx;
 import org.omnetpp.ned2.model.NEDElement;
@@ -181,7 +181,7 @@ public class GraphicalNedEditorPlugin extends AbstractUIPlugin {
         Collections.sort(typeNames);
         
         for(String name : typeNames) {
-        	ITypeInfo comp = NEDResourcesPlugin.getNEDResources().getComponent(name);
+        	INEDTypeInfo comp = NEDResourcesPlugin.getNEDResources().getComponent(name);
         	NEDElement nedElement = comp.getNEDElement();
         	// set the default images for the palette entry
         	ImageDescriptor imageDescNorm = ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_SIMPLE,null,null,0);

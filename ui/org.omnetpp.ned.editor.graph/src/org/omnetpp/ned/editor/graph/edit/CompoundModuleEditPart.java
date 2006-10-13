@@ -18,33 +18,25 @@ import org.eclipse.gef.editparts.ViewportAutoexposeHelper;
 import org.eclipse.gef.editparts.ViewportExposeHelper;
 import org.eclipse.gef.editparts.ViewportMouseWheelHelper;
 import org.eclipse.gef.editpolicies.SnapFeedbackPolicy;
-import org.omnetpp.common.displaymodel.DisplayString;
-import org.omnetpp.common.displaymodel.IDisplayString;
-import org.omnetpp.common.displaymodel.IDisplayString.Prop;
 import org.omnetpp.figures.CompoundModuleFigure;
 import org.omnetpp.figures.CompoundModuleGateAnchor;
 import org.omnetpp.figures.GateAnchor;
 import org.omnetpp.ned.editor.graph.edit.policies.CompoundModuleLayoutEditPolicy;
 import org.omnetpp.ned2.model.CompoundModuleNodeEx;
-import org.omnetpp.ned2.model.INamedGraphNode;
 import org.omnetpp.ned2.model.NEDElement;
-import org.omnetpp.ned2.model.SubmoduleNodeEx;
-import org.omnetpp.resources.NEDResourcesPlugin;
 
 public class CompoundModuleEditPart extends ModuleEditPart {
-
 
     @Override
     protected void createEditPolicies() {
         super.createEditPolicies();
-        installEditPolicy(EditPolicy.LAYOUT_ROLE, new CompoundModuleLayoutEditPolicy((XYLayout) getContentPane()
-                .getLayoutManager()));
+        installEditPolicy(EditPolicy.LAYOUT_ROLE, 
+                          new CompoundModuleLayoutEditPolicy((XYLayout) getContentPane().getLayoutManager()));
         installEditPolicy("Snap Feedback", new SnapFeedbackPolicy()); //$NON-NLS-1$
     }
 
     /**
      * Creates a new Module Figure and returns it.
-     * 
      * @return Figure representing the module.
      */
     @Override
@@ -54,7 +46,6 @@ public class CompoundModuleEditPart extends ModuleEditPart {
 
     /**
      * Returns the Figure of this as a ModuleFigure.
-     * 
      * @return ModuleFigure of this.
      */
     protected CompoundModuleFigure getCompoundModuleFigure() {
@@ -68,16 +59,12 @@ public class CompoundModuleEditPart extends ModuleEditPart {
 
     @Override
     public Object getAdapter(Class key) {
-        
         if (key == AutoexposeHelper.class) return new ViewportAutoexposeHelper(this);
-        
         if (key == ExposeHelper.class) return new ViewportExposeHelper(this);
-
         if (key == MouseWheelHelper.class) return new ViewportMouseWheelHelper(this);
-
         // snap to grig/guide adaptor
         if (key == SnapToHelper.class) {
-            List snapStrategies = new ArrayList();
+            List<SnapToGeometry> snapStrategies = new ArrayList<SnapToGeometry>();
             Boolean val = (Boolean) getViewer().getProperty(SnapToGeometry.PROPERTY_SNAP_ENABLED);
             if (val != null && val.booleanValue()) snapStrategies.add(new SnapToGeometry(this));
 
@@ -95,17 +82,8 @@ public class CompoundModuleEditPart extends ModuleEditPart {
 
     @Override
     protected List getModelChildren() {
-        // define the properties that determine the visual appearence
-    	CompoundModuleNodeEx compModule = (CompoundModuleNodeEx)getNEDModel();
-    	List<SubmoduleNodeEx> smList = compModule.getOwnSubmodules();
-
-    	// if it's an derived compound module add the inherited submodules to the list
-    	
-    	if (compModule.getFirstExtendsChild() != null) {
-    		smList.addAll(NEDResourcesPlugin.getNEDResources()
-        					.getAllSubmodules(compModule.getFirstExtendsChild().getName()));
-    	}
-    	return smList;
+        // return all submodule including inherited ones
+    	return ((CompoundModuleNodeEx)getNEDModel()).getAllSubmodules();
     }
     
     @Override
@@ -118,22 +96,18 @@ public class CompoundModuleEditPart extends ModuleEditPart {
     }
     
 	/**
-     * Updates the visual aspect of this.
+     * Updates the visual aspect of this compound module
      */
     @Override
     protected void refreshVisuals() {
-        
         // define the properties that determine the visual appearence
     	CompoundModuleNodeEx compModule = (CompoundModuleNodeEx)getNEDModel();
-    	
         getCompoundModuleFigure().setName(compModule.getName());
-
     	getCompoundModuleFigure().setDisplayString(compModule.getEffectiveDisplayString());
-        
     }
 
 	/**
-	 * Returns whether the compound module is selectable (mouse is over the borering area)
+	 * Returns whether the compound module is selectable (mouse is over the bordering area)
 	 * for the slection tool based on the current mouse target coordinates.
 	 * @param x
 	 * @param y

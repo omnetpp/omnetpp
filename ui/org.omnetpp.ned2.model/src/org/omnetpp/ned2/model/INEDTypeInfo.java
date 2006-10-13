@@ -1,6 +1,7 @@
 package org.omnetpp.ned2.model;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Set;
 
 import org.eclipse.core.resources.IFile;
@@ -21,7 +22,7 @@ import org.eclipse.core.resources.IFile;
  *       - methods returning the NEDElement list instead of simple name list (for all methods)
  *       - access to toplevel components via this interface ??? 
  */
-public interface ITypeInfo {
+public interface INEDTypeInfo {
 	/**
 	 * Convenience method: returns the name of the module/interface/channel/etc.
 	 */
@@ -30,7 +31,7 @@ public interface ITypeInfo {
     /**
      * @return The resolver implementation that created this typeInfo object
      */
-    public ITypeResolver getResolver();
+    public INEDTypeResolver getResolver();
 	
 	/**
 	 * Returns underlying NEDElement subtree.
@@ -54,19 +55,24 @@ public interface ITypeInfo {
 	// these methods are for members declared on this component (ie exluding inherited ones)
 	// member: gate/param/property/submod/innertype
 	public Set<String> getOwnMemberNames();
+    public Collection<NEDElement> getOwnMembers();
 	public boolean hasOwnMember(String name);
 	public NEDElement getOwnMember(String name);
 	
 	public Set<String> getOwnParamNames();
+    public Collection<NEDElement> getOwnParams();
 	public boolean hasOwnParam(String name);
 
 	public Set<String> getOwnPropertyNames();
+    public Collection<NEDElement> getOwnProperties();
 	public boolean hasOwnProperty(String name);
 	
 	public Set<String> getOwnGateNames();
+    public Collection<NEDElement> getOwnGates();
 	public boolean hasOwnGate(String name);
 
-	public Set<String> getOwnInnerTypeNames();
+    public Set<String> getOwnInnerTypeNames();
+    public Collection<NEDElement> getOwnInnerTypes();
 	public boolean hasOwnInnerType(String name);
 
 	public Set<String> getOwnSubmodNames();
@@ -75,23 +81,33 @@ public interface ITypeInfo {
 
 	// same as above, for inherited members as well
 	public Set<String> getMemberNames();
+    public Collection<NEDElement> getMembers();
 	public boolean hasMember(String name);
 	public NEDElement getMember(String name);
 	
 	public Set<String> getParamNames();
+    public Collection<NEDElement> getParams();
 	public boolean hasParam(String name);
 
 	public Set<String> getPropertyNames();
+    public Collection<NEDElement> getProperties();
 	public boolean hasProperty(String name);
 	public NEDElement getProperty(String name);
 	
 	public Set<String> getGateNames();
-	public boolean hasGate(String name);
+    public Collection<NEDElement> getGates();
+    public boolean hasGate(String name);
 
 	public Set<String> getInnerTypeNames();
+    public Collection<NEDElement> getInnerTypes();
 	public boolean hasInnerType(String name);
 
 	public Set<String> getSubmodNames();
     public Collection<NEDElement> getSubmods();
 	public boolean hasSubmod(String name);
+    
+    /**
+     * @return All types derived from this type
+     */
+    public List<INEDTypeInfo> getAllDerivedTypes();
 }

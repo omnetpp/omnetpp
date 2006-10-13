@@ -19,7 +19,7 @@ public interface IStringTyped {
      * @return The TRypeInfo object of the TYPE of this component. ie this method checks the typename
      *         of this element and looks up the typeinfo object to that  
      */
-    public ITypeInfo getTypeTypeInfo();
+    public INEDTypeInfo getTypeNEDTypeInfo();
     
     /**
      * @return The model element that represents the type of this element

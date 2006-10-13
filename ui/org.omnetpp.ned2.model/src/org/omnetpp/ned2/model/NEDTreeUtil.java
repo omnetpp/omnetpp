@@ -14,9 +14,9 @@ import org.omnetpp.ned2.model.swig.NEDSourceRegion;
 import org.omnetpp.ned2.model.swig.NEDTools;
 
 /**
- * Utility functions
+ * Utility functions working on NEDELelemt trees. Conversions, serialization, dumping of trees. 
  */
-public class ModelUtil {
+public class NEDTreeUtil {
 
 	/**
 	 * Generate NED code from the given NEDElement tree. The root node

@@ -14,8 +14,8 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IFileEditorInput;
 import org.omnetpp.ned.editor.text.NedHelper;
-import org.omnetpp.ned2.model.ITypeInfo;
-import org.omnetpp.ned2.model.ModelUtil;
+import org.omnetpp.ned2.model.INEDTypeInfo;
+import org.omnetpp.ned2.model.NEDTreeUtil;
 import org.omnetpp.ned2.model.NEDElement;
 import org.omnetpp.ned2.model.NEDSourceRegion;
 import org.omnetpp.resources.NEDResources;
@@ -38,10 +38,10 @@ public class NedTextHover implements ITextHover {
 
 		// if we find a NED component with that name, display its source code
 		NEDResources res = NEDResourcesPlugin.getNEDResources();    	
-		ITypeInfo component = res.getComponent(word);
+		INEDTypeInfo component = res.getComponent(word);
 		
 		if (component!=null)
-			return ModelUtil.generateNedSource(component.getNEDElement(), true);
+			return NEDTreeUtil.generateNedSource(component.getNEDElement(), true);
 
 		//XXX just for debugging
 		//return getNEDElementsUnderCursor(textViewer, hoverRegion);
@@ -92,7 +92,7 @@ public class NedTextHover implements ITextHover {
 			IFile file = ((IFileEditorInput)editor.getEditorInput()).getFile();
 			
 			// find component and NEDElements under the cursor 
-			ITypeInfo c = res.getComponentAt(file, line);
+			INEDTypeInfo c = res.getComponentAt(file, line);
 			String result = "";
 			if (c!=null) {
 				NEDElement[] nodes = c.getNEDElementsAt(line, column);

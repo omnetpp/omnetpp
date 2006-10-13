@@ -224,16 +224,16 @@ public class ConnectionNodeEx extends ConnectionNode implements IStringTyped, ID
         setChannelType(type);
     }
 
-    public ITypeInfo getTypeTypeInfo() {
+    public INEDTypeInfo getTypeNEDTypeInfo() {
         String typeName = getType(); 
         if ( typeName == null || "".equals(typeName))
             return null;
 
-        return getContainerTypeInfo().getResolver().getComponent(typeName);
+        return getContainerNEDTypeInfo().getResolver().getComponent(typeName);
     }
 
     public NEDElement getTypeRef() {
-        ITypeInfo it = getTypeTypeInfo();
+        INEDTypeInfo it = getTypeNEDTypeInfo();
         return it == null ? null : it.getNEDElement();
     }
 }
