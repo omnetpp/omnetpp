@@ -172,6 +172,7 @@
 <!ATTLIST operator
      name                CDATA     #REQUIRED>
 
+<!-- functions, "index", "const" and "sizeof" -->
 <!ELEMENT function (comment*, (operator|function|ident|literal)*)>
 <!ATTLIST function
      name                NMTOKEN   #REQUIRED>

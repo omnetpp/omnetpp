@@ -444,6 +444,8 @@ void cNEDNetworkBuilder::doAddConnection(cModule *modp, ConnectionNode *conn)
                                      conn->getDestGatePlusplus());
     cChannel *channel = createChannelForConnection(conn,modp);
 
+    printf("    creating connection: %s --> %s, channel %s\n", srcg->fullPath().c_str(), destg->fullPath().c_str(), (channel ? channel->info().c_str() : "none")); //XXX
+
     // check directions
     cGate *errg = NULL;
     if (srcg->ownerModule()==modp ? srcg->type()!='I' : srcg->type()!='O')

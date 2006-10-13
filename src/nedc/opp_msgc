@@ -357,7 +357,7 @@ while ($msg =~ s/enum\s+([A-Za-z0-9_ \t]+?)\s*{(.*?)};?//s)
     print H "};\n\n";
 
     print CC "EXECUTE_ON_STARTUP($enumname,\n";
-    print CC "    cEnum *e = findEnum(\"$enumname\");\n";
+    print CC "    cEnum *e = cEnum::find(\"$enumname\");\n";
     print CC "    if (!e) enums.instance()->add(e = new cEnum(\"$enumname\"));\n";
     foreach $fieldname (@fieldlist)
     {
@@ -369,7 +369,7 @@ while ($msg =~ s/enum\s+([A-Za-z0-9_ \t]+?)\s*{(.*?)};?//s)
     {
         # add to base enum, too
         print CC "EXECUTE_ON_STARTUP(_${baseenum}_${enumname},\n";
-        print CC "    cEnum *e = findEnum(\"$baseenum\");\n";
+        print CC "    cEnum *e = cEnum::find(\"$baseenum\");\n";
         print CC "    if (!e) enums.instance()->add(e = new cEnum(\"$baseenum\"));\n";
         foreach $fieldname (@fieldlist)
         {
@@ -912,7 +912,7 @@ sub generateClass
         }
         print H " *     $realmsgclass& operator=(const $realmsgclass& other) {$msgclass\:\:operator=(other); return *this;}\n";
         if ($classtype eq "cobject") {
-            print H " *     virtual cPolymorphic *dup() const {return new $realmsgclass(*this);}\n";
+            print H " *     virtual $realmsgclass *dup() const {return new $realmsgclass(*this);}\n";
         }
         print H " *     // ADD CODE HERE to redefine and implement pure virtual functions from $msgclass\n";
         print H " * };\n";
@@ -976,14 +976,10 @@ sub generateClass
     if (!$gap) {
         print H "    $msgclass& operator=(const $msgclass& other);\n";
     }
-    # unfortunately we don't know whether this class is cPolymorphic or not, so we can't add a dup() there...
-    # TODO once we drop MSVC 6.0 support, we can use covariant return types here, and that'll solve the problem.
-    if ($classtype eq "cobject") {
-        if ($gap) {
-            print H "    virtual cPolymorphic *dup() const {throw new cException(\"You forgot to manually add a dup() function to class $realmsgclass\");}\n";
-        } else {
-            print H "    virtual cPolymorphic *dup() const {return new $msgclass(*this);}\n";
-        }
+    if ($gap) {
+        print H "    virtual $msgclass *dup() const {throw new cException(\"You forgot to manually add a dup() function to class $realmsgclass\");}\n";
+    } else {
+        print H "    virtual $msgclass *dup() const {return new $msgclass(*this);}\n";
     }
     print H "    virtual void netPack(cCommBuffer *b);\n";
     print H "    virtual void netUnpack(cCommBuffer *b);\n";
@@ -1408,10 +1404,6 @@ sub generateDescriptorClass
     print CC "  public:\n";
     print CC "    $msgdescclass();\n";
     print CC "    virtual ~$msgdescclass();\n";
-    print CC "    $msgdescclass& operator=(const $msgdescclass& other);\n";
-    print CC "    virtual cPolymorphic *dup() const {return new $msgdescclass(*this);}\n";
-
-
     print CC "\n";
     print CC "    virtual int getFieldCount();\n";
     print CC "    virtual const char *getFieldName(int field);\n";

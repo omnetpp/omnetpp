@@ -165,7 +165,6 @@ void cExpressionBuilder::doFunction(FunctionNode *node)
         if (!inSubcomponentScope)
             throw new cRuntimeError("dynamic module builder: `index' operator is only supported on submodule parameters");
         elems[pos++] = new NEDSupport::ModuleIndex();
-        return;
     }
     else if (!strcmp(funcname,"const"))
     {
@@ -173,77 +172,52 @@ void cExpressionBuilder::doFunction(FunctionNode *node)
     }
     else if (!strcmp(funcname,"sizeof"))
     {
-/*
-        const char *parname = node->getName();
-        const char *modulename = node->getModule();
-        bool hasChild = node->getFirstChild()!=NULL;
+        // operands are in a child "ident" node
+        IdentNode *identnode = node->getFirstIdentChild();
+        ASSERT(identnode);
 
+        const char *ident = identnode->getName();
+        const char *modulename = identnode->getModule();
+        bool hasChild = identnode->getFirstChild()!=NULL;
+
+        // XXX actually we could decide here from the NED declarations
+        // if it's sizeof(parentModuleGateVector) or sizeof(submoduleVector),
+        // we don't have to do it at runtime in the Sizeof functor class.
         if (strnull(modulename))
-            elems[pos++] = new NEDSupport::ParameterRef(parname, inSubcomponentScope, false);
-        else if (!node->getFirstChild())
-            elems[pos++] = new NEDSupport::SiblingModuleParameterRef(modulename, parname, inSubcomponentScope, hasChild);
-*/
-        throw new cRuntimeError("dynamic module builder: sizeof: not yet");
+            elems[pos++] = new NEDSupport::Sizeof(ident, inSubcomponentScope, false);
+        else //FIXME handle "this.ident"
+            //XXX elems[pos++] = new NEDSupport::Sizeof(modulename, ident, inSubcomponentScope, hasChild);
+            throw new cRuntimeError("dynamic module builder: sizeof(module.ident): not yet");
+    }
+    else // normal function
+    {
+        // push args first
+        for (NEDElement *child=node->getFirstChild(); child; child=child->getNextSibling())
+            doNode(child);
 
-/*FIXME convert into sizeof; this will depend on inSubcomponentScope
-
-        IdentNode *op1 = node->getFirstIdentChild();
-        ASSERT(op1);
-        const char *name = op1->getName();
-
-        elems[pos++] = name;
-        elems[pos++] = cNEDFunction::find("__sizeof",0);   //FIXME write "sizeof"; what if we don't find it
-
-        ele// TBD this is duplicate code -- same occurs in evaluated expressions as well
-        cModule *parentmodp = submodp->parentModule();
-        if (!parentmodp)
-            throw new cRuntimeError("dynamic module builder: sizeof() occurs in wrong context", name);
-
-        // find among parent module gates
-        cGate *g = parentmodp->gate(name);
-        if (g)
+        // normal function: find it and add to reverse Polish expression
+        cMathFunction *functype = cMathFunction::find(funcname,argcount);
+        cNEDFunction *nedfunctype = cNEDFunction::find(funcname,argcount);
+        if (functype)
         {
-            elems[pos++] = g->size();
-            return;
+            switch (argcount)
+            {
+                case 0: elems[pos++] = functype->mathFuncNoArg(); break;
+                case 1: elems[pos++] = functype->mathFunc1Arg(); break;
+                case 2: elems[pos++] = functype->mathFunc2Args(); break;
+                case 3: elems[pos++] = functype->mathFunc3Args(); break;
+                case 4: elems[pos++] = functype->mathFunc4Args(); break;
+                default: throw new cRuntimeError("dynamic module builder: internal error: function with %d args???", funcname, argcount);
+            }
         }
-
-        // if not found, find among submodules. If there's no such submodule, it may
-        // be that such submodule vector never existed, or can be that it's zero
-        // size -- we cannot tell, so we have to return 0.
-        cModule *m = _submodule(parentmodp, name,0);
-        if (!m && _submodule(parentmodp, name))
-            throw new cRuntimeError("dynamic module builder: sizeof(): %s is not a vector submodule", name);
-        elems[pos++] = m ? m->size() : 0;
-        return;
-*/
-    }
-
-    // push args first
-    for (NEDElement *child=node->getFirstChild(); child; child=child->getNextSibling())
-        doNode(child);
-
-    // normal function: find it and add to reverse Polish expression
-    cMathFunction *functype = cMathFunction::find(funcname,argcount);
-    cNEDFunction *nedfunctype = cNEDFunction::find(funcname,argcount);
-    if (functype)
-    {
-        switch (argcount)
+        else if (nedfunctype)
         {
-            case 0: elems[pos++] = functype->mathFuncNoArg(); break;
-            case 1: elems[pos++] = functype->mathFunc1Arg(); break;
-            case 2: elems[pos++] = functype->mathFunc2Args(); break;
-            case 3: elems[pos++] = functype->mathFunc3Args(); break;
-            case 4: elems[pos++] = functype->mathFunc4Args(); break;
-            default: throw new cRuntimeError("dynamic module builder: internal error: function with %d args???", funcname, argcount);
+            elems[pos++] = nedfunctype;
         }
-    }
-    else if (nedfunctype)
-    {
-        elems[pos++] = nedfunctype;
-    }
-    else
-    {
-        throw new cRuntimeError("dynamic module builder: function %s with %d args not found", funcname, argcount);
+        else
+        {
+            throw new cRuntimeError("dynamic module builder: function %s with %d args not found", funcname, argcount);
+        }
     }
 }
 
@@ -268,7 +242,7 @@ void cExpressionBuilder::doIdent(IdentNode *node)
         elems[pos++] = new NEDSupport::LoopVar(parname);
     else if (strnull(modulename))
         elems[pos++] = new NEDSupport::ParameterRef(parname, inSubcomponentScope, false);
-    else if (!node->getFirstChild())
+    else
         elems[pos++] = new NEDSupport::SiblingModuleParameterRef(modulename, parname, inSubcomponentScope, hasChild);
 }
 

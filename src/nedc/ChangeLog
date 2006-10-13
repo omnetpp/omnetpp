@@ -1,3 +1,9 @@
+2006-11-13  Andras Varga
+
+	* opp_msgc: generate covariant return types for dup(), replace 
+	findEnum() with cEnum::find(). FIXME: add #error into the generated
+	code to warn user that the file has to be re-generated
+
 2006-01-09  Andras Varga
 
 	* nedtool, opp_msgc: return exit code 0 when called without args (just
