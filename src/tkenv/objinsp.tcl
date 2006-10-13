@@ -178,19 +178,11 @@ proc create_parinspector {name geom} {
     frame $w.main
     pack $w.main -anchor center -expand 1 -fill both -side top
 
-    label-entry $w.main.value Value:
-    label-sunkenlabel $w.main.type Type:
-    label-entry $w.main.newtype {New type:}
-    label-entry $w.main.prompt Prompt:
-    label-entry $w.main.input {Input flag:}
-    label-button $w.main.indirection {Redirected to:}
+    label-entry $w.main.value "Value:"
+    label-entry $w.main.isset "Set?"
 
     pack $w.main.value -fill x -side top
-    pack $w.main.type -fill x -side top
-    pack $w.main.newtype -fill x -side top
-    pack $w.main.prompt -fill x -side top
-    pack $w.main.input -fill x -side top
-    pack $w.main.indirection -fill x -side top
+    pack $w.main.isset -fill x -side top
 }
 
 

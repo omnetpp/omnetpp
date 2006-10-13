@@ -381,28 +381,7 @@ void TParInspector::update()
 
    cPar *p = static_cast<cPar *>(object);
    setEntry(".main.value.e", p->toString().c_str());
-
-   char *t;
-   switch (p->type())
-   {
-       case 'C': t=" C character"   ; break;
-       case 'S': t=" S string"      ; break;
-       case 'B': t=" B boolean"     ; break;
-       case 'L': t=" L long int"    ; break;
-       case 'D': t=" D double"      ; break;
-       case 'F': t=" F function"    ; break;
-       case 'X': t=" X expression"  ; break;
-       case 'T': t=" T distribution"; break;
-       case 'P': t=" P void* ptr"   ; break;
-       case 'O': t=" O object ptr"  ; break;
-       case 'M': t=" M XML element" ; break;
-       default:  t=" ??? unknown";
-   }
-   setLabel(".main.type.e", t );
-   setEntry(".main.newtype.e", "" );
-//XXX   setEntry(".main.prompt.e", correct(p->prompt()) );
-   setEntry(".main.input.e", p->isSet() ? "1" : "0" ); //FIXME rename dialog field in Tcl
-//XXX   setInspectButton(".main.indirection",p->redirection(), true, INSP_DEFAULT);
+   setEntry(".main.isset.e", p->isSet() ? "yes" : "no");
 }
 
 void TParInspector::writeBack()
@@ -410,26 +389,21 @@ void TParInspector::writeBack()
    Tcl_Interp *interp = getTkApplication()->getInterp();
    cPar *p = static_cast<cPar *>(object);
 
-   char newtype = getEntry(".main.newtype.e")[0];  //FIXME this will be ignored, make it readonly on the GUI
-   if (!newtype) newtype = '?';
-
    bool ok = false;
    try {
       ok = p->parse(getEntry(".main.value.e"));
       if (!ok)
-         throw new cException(newtype=='?' ? "Syntax error, value not changed." : "Syntax error or wrong type, value not changed.");
+         throw new cException("Syntax error, value not changed.");
    } catch (cException *e) {
       TclQuotedString msg(e->message());
       delete e;
       CHK(Tcl_VarEval(interp,"messagebox {Error} ", msg.get(), " error ok", NULL));
    }
-   if (ok)
-      setEntry(".main.newtype.e", "");
-//   p->setPrompt( getEntry(".main.prompt.e") );  //FIXME remove prompt from the GUI
-   if (getEntry(".main.input.e")[0]=='1')
-       p->markAsUnset();
-   else
+
+   if (getEntry(".main.isset.e")[0]=='y')
        p->applyDefaultValue();
+   else
+       p->markAsUnset();
 
    TInspector::writeBack();    // must be there after all changes
 }

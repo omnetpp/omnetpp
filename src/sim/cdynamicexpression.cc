@@ -24,9 +24,6 @@
 #include "cenvir.h"
 #include "cmodule.h"
 
-//FIXME add handling of functors! they must be deleted in cDynamicExpression dtor!
-//FIXME functors must support dup()!
-
 
 void cDynamicExpression::Elem::operator=(const Elem& other)
 {
@@ -232,7 +229,6 @@ printf("    evaluating: %s\n", toString().c_str()); //XXX
                  // unary
                  if (tos<0)
                      throw new cRuntimeError(this,eESTKUFLOW);
-                 //FIXME better error messages! "cannot convert from x to y" etc!!
                  switch (e.op)
                  {
                      case NEG:
