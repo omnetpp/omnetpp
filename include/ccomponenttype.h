@@ -15,7 +15,7 @@
 #ifndef __CCOMPONENTTYPE_H
 #define __CCOMPONENTTYPE_H
 
-#include <stdarg.h>
+#include <string>
 #include "cobject.h"
 
 
@@ -27,8 +27,39 @@ class cChannel;
  */
 class SIM_API cComponentType : public cNoncopyableObject
 {
+  protected:
+    std::string desc;
+
   public:
-    cComponentType(const char *name=NULL);
+    /** @name Constructors, destructor, assignment */
+    //@{
+    /**
+     * Constructor.
+     */
+    cComponentType(const char *name=NULL, const char *description=NULL);
+    //@}
+
+    /** @name Redefined cObject methods. */
+    //@{
+    /**
+     * Produces a one-line description of object contents into the buffer passed as argument.
+     * See cObject for more details.
+     */
+    virtual std::string info() const;
+    //@}
+
+    /** @name Description string */
+    //@{
+    /**
+     * Sets a description string.
+     */
+    void setDescription(const char *s)  {desc = s?s:"";}
+
+    /**
+     * Returns a description string.
+     */
+    const char *description() const  {return desc.c_str();}
+    //@}
 
     /**
      *XXX
@@ -83,7 +114,7 @@ class SIM_API cModuleType : public cComponentType
     /**
      * Constructor.
      */
-    cModuleType(const char *name=NULL);
+    cModuleType(const char *name=NULL, const char *description=NULL);
     //@}
 
     /** @name Module creation */
@@ -159,7 +190,7 @@ class SIM_API cChannelType : public cComponentType
     /**
      * Constructor.
      */
-    cChannelType(const char *name=NULL);
+    cChannelType(const char *name=NULL, const char *description=NULL);
 
     /** @name Channel object creation */
     //@{

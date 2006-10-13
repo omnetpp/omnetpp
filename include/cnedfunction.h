@@ -62,6 +62,14 @@ class SIM_API cNEDFunction : public cNoncopyableObject
     virtual ~cNEDFunction() {}
     //@}
 
+    /** @name Redefined cObject methods. */
+    //@{
+    /**
+     * Produces a one-line description of object contents into the buffer passed as argument.
+     */
+    virtual std::string info() const;
+    //@}
+
     /** @name Member access. */
     //@{
     /**

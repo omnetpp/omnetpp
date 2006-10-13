@@ -118,6 +118,14 @@ class SIM_API cMathFunction : public cNoncopyableObject
     virtual ~cMathFunction() {}
     //@}
 
+    /** @name Redefined cObject methods. */
+    //@{
+    /**
+     * Produces a one-line description of object contents into the buffer passed as argument.
+     */
+    virtual std::string info() const;
+    //@}
+
     /** @name Member access. */
     //@{
     /**

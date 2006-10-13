@@ -62,9 +62,7 @@ class SIM_API cClassFactory : public cNoncopyableObject
     cPolymorphic *createOne() const  {return creatorfunc();}
 
     /**
-     * Creates an instance of a particular class by calling the creator
-     * function. The result has to be cast to the appropriate type
-     * (preferably by dynamic_cast or check_and_cast).
+     * Returns a description string.
      */
     const char *description() const  {return descr.c_str();}
     //@}
