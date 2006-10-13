@@ -109,7 +109,7 @@ cArray& cArray::operator=(const cArray& list)
 
     clear();
 
-    cObject::operator=( list );
+    cObject::operator=(list);
 
     tkownership = list.tkownership;
     size = list.size;

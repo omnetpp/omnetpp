@@ -22,7 +22,7 @@ cPlaceHolderModule::cPlaceHolderModule(const cPlaceHolderModule& mod)
     operator=(mod);
 }
 
-cPlaceHolderModule::cPlaceHolderModule() 
+cPlaceHolderModule::cPlaceHolderModule()
 {
 }
 
@@ -33,7 +33,7 @@ cPlaceHolderModule::~cPlaceHolderModule()
 cPlaceHolderModule& cPlaceHolderModule::operator=(const cPlaceHolderModule& mod)
 {
     if (this==&mod) return *this;
-    cModule::operator=( mod );
+    cModule::operator=(mod);
     return *this;
 }
 

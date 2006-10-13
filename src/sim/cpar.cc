@@ -42,6 +42,7 @@ cPar::~cPar()
 cPar& cPar::operator=(const cPar& other)
 {
     // Note: subclasses should call beforeChange()/afterChange()!
+    cObject::operator=(other);
     return *this;
 }
 

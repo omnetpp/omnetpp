@@ -56,14 +56,15 @@ static void dump(NEDElement *node)
 void cNEDNetworkBuilder::addParameters(cComponent *component, cNEDDeclaration *decl)
 {
     printf("adding params of %s to %s\n", decl->name(), component->fullPath().c_str()); //XXX
-
+    printf("DECL {\n%s\n}\n", decl->detailedInfo().c_str()); //XXX
     int n = decl->numPars();
     for (int i=0; i<n; i++)
     {
         const cNEDDeclaration::ParamDescription& desc = decl->paramDescription(i);
         ASSERT(desc.value);
         component->addPar(desc.name.c_str(), desc.value->dup());
-        printf("  added param %s, isSet=%d\n", desc.name.c_str(), component->par(desc.name.c_str()).isSet()); //XXX
+        cPar& par = component->par(desc.name.c_str());
+        printf("  added param %s, isSet=%d, isExpr=%d, info: %s\n", desc.name.c_str(), par.isSet(), !par.isConstant(), par.info().c_str()); //XXX
     }
 }
 

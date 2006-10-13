@@ -125,7 +125,7 @@ cKSplit& cKSplit::operator=(const cKSplit& res)
 {
     if (this==&res) return *this;
 
-    cDensityEstBase::operator= (res);
+    cDensityEstBase::operator=(res);
 
     num_cells = res.num_cells;
 

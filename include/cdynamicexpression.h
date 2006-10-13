@@ -229,7 +229,7 @@ class SIM_API cDynamicExpression : public cExpression
     /**
      * Copy constructor.
      */
-    cDynamicExpression(const cDynamicExpression& other) {operator=(other);}
+    cDynamicExpression(const cDynamicExpression& other) {elems=NULL; operator=(other);}
 
     /**
      * Destructor.

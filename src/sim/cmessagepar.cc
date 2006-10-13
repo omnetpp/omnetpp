@@ -1416,7 +1416,7 @@ cMessagePar& cMessagePar::operator=(const cMessagePar& val)
     beforeChange();
     deleteOld();
 
-    cObject::operator=( val );
+    cObject::operator=(val);
     typechar = val.typechar;
     changedflag = val.changedflag;
     inputflag = val.inputflag;

@@ -63,7 +63,7 @@ cEnum& cEnum::operator=(const cEnum& list)
         delete [] vect[i].string;
     delete [] vect;
 
-    cObject::operator=( list );
+    cObject::operator=(list);
 
     size = list.size;
     items = list.items;

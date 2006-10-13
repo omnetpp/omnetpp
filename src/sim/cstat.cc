@@ -108,7 +108,7 @@ cStatistic& cStatistic::operator=(const cStatistic& res)   //--VA
 {
     if (this==&res) return *this;
 
-    cObject::operator=( res );
+    cObject::operator=(res);
     genk = res.genk;
     dropAndDelete(td);
     dropAndDelete(ra);

@@ -101,7 +101,7 @@ std::string cNEDDeclaration::detailedInfo() const
     {
         const ParamDescription& desc = paramDescription(i);
         out << "  param " << desc.name << " SET:" << (desc.value->isSet()?"true":"false");
-        out << " value=" << desc.value->info() << "\n";
+        out << " value=" << desc.value->info() << ", ISEXPR=" << (desc.value->isConstant()?0:1) << ", " << desc.value->toString() << "\n";
     }
 
     for (int i=0; i<gates.size(); i++)
