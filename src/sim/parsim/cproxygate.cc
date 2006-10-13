@@ -35,25 +35,6 @@ cProxyGate::cProxyGate(const char *name, char type) : cGate(name, type)
     data = NULL;
 }
 
-cProxyGate::cProxyGate(const cProxyGate& gate) : cGate(NULL, 0)
-{
-    setName(gate.name());
-    operator=(gate);
-}
-
-cProxyGate& cProxyGate::operator=(const cProxyGate& gate)
-{
-    if (this == &gate)
-        return *this;
-
-    cGate::operator = (gate);
-    partition = gate.partition;
-    remoteProcId = gate.remoteProcId;
-    remoteModuleId = gate.remoteModuleId;
-    remoteGateId = gate.remoteGateId;
-    return *this;
-}
-
 std::string cProxyGate::info() const
 {
     std::stringstream out;

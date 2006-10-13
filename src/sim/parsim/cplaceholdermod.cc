@@ -16,12 +16,6 @@
 #include "cproxygate.h"
 
 
-cPlaceHolderModule::cPlaceHolderModule(const cPlaceHolderModule& mod)
-{
-    setName(mod.name());
-    operator=(mod);
-}
-
 cPlaceHolderModule::cPlaceHolderModule()
 {
 }
@@ -30,15 +24,7 @@ cPlaceHolderModule::~cPlaceHolderModule()
 {
 }
 
-cPlaceHolderModule& cPlaceHolderModule::operator=(const cPlaceHolderModule& mod)
-{
-    if (this==&mod) return *this;
-    cModule::operator=(mod);
-    return *this;
-}
-
-
-void cPlaceHolderModule::arrived(cMessage *msg,int n,simtime_t t)
+void cPlaceHolderModule::arrived(cMessage *msg, int n, simtime_t t)
 {
     throw new cRuntimeError(this, "internal error: arrived() called");
 }
@@ -91,3 +77,5 @@ void parsim_dummy()
     // prevent "unused variable" warnings:
     (void)fc; (void)npc; (void)ns; (void)np; (void)ip; (void)ldla;
 }
+
+

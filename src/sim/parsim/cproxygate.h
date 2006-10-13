@@ -46,7 +46,7 @@ class cParsimPartition;
  *
  * @ingroup Parsim
  */
-class cProxyGate : public cGate
+class cProxyGate : public cGate // noncopyable
 {
   private:
     cParsimPartition *partition;
@@ -64,11 +64,6 @@ class cProxyGate : public cGate
     cProxyGate(const char *name, char tp);
 
     /**
-     * Copy constructor.
-     */
-    cProxyGate(const cProxyGate& gate);
-
-    /**
      * Destructor.
      */
     virtual ~cProxyGate()  {}
@@ -76,16 +71,6 @@ class cProxyGate : public cGate
 
     /** @name Redefined cObject member functions */
     //@{
-    /**
-     * Duplicates the gate object.
-     */
-    virtual cPolymorphic *dup() const   {return new cProxyGate(*this);}
-
-    /**
-     * Assigment operator.
-     */
-    cProxyGate& operator=(const cProxyGate& gate);
-
     /**
      * Redefined here to display remoteProcId, remoteModId and remoteGateId.
      */

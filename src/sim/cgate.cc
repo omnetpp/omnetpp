@@ -36,22 +36,8 @@
 
 using std::ostream;
 
-//=========================================================================
-//=== cGate -- member functions
 
-cGate::cGate(const cGate& gate) : cObject()
-{
-    fullname = NULL;
-
-    channelp = NULL;
-
-    dispstr = NULL;
-
-    setName(gate.name());
-    operator=(gate);
-}
-
-cGate::cGate(const char *s, char tp) : cObject(s)
+cGate::cGate(const char *s, char tp) : cNoncopyableObject(s)
 {
     fullname = NULL;
 
@@ -78,11 +64,6 @@ void cGate::forEachChild(cVisitor *v)
 {
     if (channelp)
         v->visit(channelp);
-}
-
-cGate& cGate::operator=(const cGate& gate)
-{
-    throw new cRuntimeError(this, eCANTDUP);
 }
 
 void cGate::setName(const char *s)

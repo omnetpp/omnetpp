@@ -37,7 +37,7 @@ class  cDisplayString;
  *
  * @ingroup SimCore
  */
-class SIM_API cGate : public cObject
+class SIM_API cGate : public cNoncopyableObject
 {
     friend class cModule;
 
@@ -77,12 +77,6 @@ class SIM_API cGate : public cObject
 
     /** @name Constructors, destructor, assignment. */
     //@{
-
-    /**
-     * Copy constructor.
-     */
-    cGate(const cGate& gate);
-
     /**
      * Constructor. Type is one of cGate::INPUT, cGate::OUTPUT and cGate::INOUT.
      */
@@ -92,23 +86,10 @@ class SIM_API cGate : public cObject
      * Destructor.
      */
     virtual ~cGate();
-
-    /**
-     * Assignment operator. The name member doesn't get copied;
-     * see cObject's operator=() for more details.
-     */
-    cGate& operator=(const cGate& gate);
     //@}
 
     /** @name Redefined cObject member functions */
     //@{
-
-    /**
-     * Creates and returns an exact copy of this object.
-     * See cObject for more details.
-     */
-    virtual cGate *dup() const  {return new cGate(*this);}
-
     /**
      * Calls v->visit(this) for each contained object.
      * See cObject for more details.

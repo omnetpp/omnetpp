@@ -26,7 +26,7 @@
  *
  * @ingroup Parsim
  */
-class SIM_API cPlaceHolderModule : public cModule
+class SIM_API cPlaceHolderModule : public cModule // so, noncopyable
 {
   protected:
     // internal: "virtual ctor" for cGate: creates cProxyGate
@@ -35,12 +35,6 @@ class SIM_API cPlaceHolderModule : public cModule
   public:
     /** @name Constructors, destructor, assignment. */
     //@{
-
-    /**
-     * Copy constructor.
-     */
-    cPlaceHolderModule(const cPlaceHolderModule& mod);
-
     /**
      * Constructor. Note that module objects should not be created directly,
      * only via their cModuleType objects. See cModule constructor for more info.
@@ -51,21 +45,6 @@ class SIM_API cPlaceHolderModule : public cModule
      * Destructor.
      */
     virtual ~cPlaceHolderModule();
-
-    /**
-     * Assignment operator. The name member doesn't get copied; see cObject's operator=() for more details.
-     */
-    cPlaceHolderModule& operator=(const cPlaceHolderModule& mod);
-    //@}
-
-    /** @name Redefined cObject functions. */
-    //@{
-
-    /**
-     * Creates and returns an exact copy of this object.
-     * See cObject for more details.
-     */
-    virtual cPolymorphic *dup() const   {return new cPlaceHolderModule(*this);}
     //@}
 
     /** @name Redefined cModule functions */
