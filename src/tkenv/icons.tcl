@@ -338,4 +338,11 @@ set icons(param_vs) [image create photo -data {
     NQXaZGBKoKH1PC7xlibVNneMqSkPLacBiUbEkRITAQA7
 }]
 
+set icons(modtype) [image create photo -data {
+    R0lGODlhFAATALMAAAAAAABAAISE/8bGxs7OAP//EP//xv//////////////////
+    /////////////////yH5BAEAAAMALAAAAAAUABMAAAREcMhJq734hs17t17IgWJI
+    BtI3jNU2qSuaxe48ADiN4gAGCALdANi7/IIfog8oVBqZSUHRchQOp5WcVZsx2XSw
+    r3hMiQAAOw==
+}]
+
 

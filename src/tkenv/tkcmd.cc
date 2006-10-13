@@ -74,6 +74,7 @@ int getObjectInfoString_cmd(ClientData, Tcl_Interp *, int, const char **);
 int getObjectField_cmd(ClientData, Tcl_Interp *, int, const char **);
 int getObjectBaseClass_cmd(ClientData, Tcl_Interp *, int, const char **);
 int getObjectId_cmd(ClientData, Tcl_Interp *, int, const char **);
+int getComponentTypeObject_cmd(ClientData, Tcl_Interp *, int, const char **);
 int getChildObjects_cmd(ClientData, Tcl_Interp *, int, const char **);
 int getNumChildObjects_cmd(ClientData, Tcl_Interp *, int, const char **);
 int hasChildObjects_cmd(ClientData, Tcl_Interp *, int, const char **);
@@ -152,6 +153,7 @@ OmnetTclCommand tcl_commands[] = {
    { "opp_getobjectid",      getObjectId_cmd          }, // args: <pointer>  ret: object ID (if object has one) or ""
    { "opp_getobjectinfostring",getObjectInfoString_cmd}, // args: <pointer>  ret: info()
    { "opp_getobjectfield",   getObjectField_cmd       }, // args: <pointer> <field>  ret: value of object field (if supported)
+   { "opp_getcomponenttypeobject",getComponentTypeObject_cmd}, // args: <pointer> ret: cComponentType
    { "opp_getchildobjects",  getChildObjects_cmd      }, // args: <pointer> ret: list with its child object ptrs
    { "opp_getnumchildobjects",getNumChildObjects_cmd  }, // args: <pointer> ret: length of child objects list
    { "opp_haschildobjects",  hasChildObjects_cmd      }, // args: <pointer> ret: 0 or 1
@@ -613,6 +615,18 @@ int getObjectId_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
    {
        Tcl_SetResult(interp, "", TCL_STATIC);
    }
+   return TCL_OK;
+}
+
+int getComponentTypeObject_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
+{
+   if (argc!=2) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
+   cObject *object = (cObject *)strToPtr( argv[1] );
+   if (!object) {Tcl_SetResult(interp, "null or malformed pointer", TCL_STATIC); return TCL_ERROR;}
+   cComponent *component = dynamic_cast<cModule *>(object);
+   if (!component) {Tcl_SetResult(interp, "object is not a module or channel", TCL_STATIC); return TCL_ERROR;}
+
+   Tcl_SetResult(interp, ptrToStr(component->componentType()), TCL_VOLATILE);
    return TCL_OK;
 }
 
