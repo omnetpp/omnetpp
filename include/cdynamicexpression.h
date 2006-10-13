@@ -406,6 +406,26 @@ class LoopVar : public cDynamicExpression::Functor
     virtual std::string toString(std::string args[], int numargs);
 };
 
+
+/**
+ * sizeof operator. See also: SiblingModuleSizeof
+ */
+class Sizeof : public cDynamicExpression::Functor
+{
+  protected:
+    bool ofParent;  // if true, return parentModule->gateSize(ident)
+    bool printThis; // whether toString() should prefix paramName with "this."
+    std::string ident;
+  public:
+    Sizeof(const char *ident, bool ofParent, bool printThis);
+    Sizeof *dup() const {return new Sizeof(ident.c_str(), ofParent, printThis);}
+    virtual const char *fullName() const {return ident.c_str();}
+    virtual const char *argTypes() const {return "";}
+    virtual char returnType() const {return 'L';}
+    virtual StkValue evaluate(cComponent *context, StkValue args[], int numargs);
+    virtual std::string toString(std::string args[], int numargs);
+};
+
 /*XXX TODO
 static StkValue sizeofIdent(cComponent *context, StkValue args[], int numargs);
 static StkValue sizeofGate(cComponent *context, StkValue args[], int numargs);

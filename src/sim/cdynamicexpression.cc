@@ -761,6 +761,47 @@ std::string LoopVar::toString(std::string args[], int numargs)
     return std::string("(loopvar)")+varName;  //XXX debugging only
 }
 
+//---
+
+Sizeof::Sizeof(const char *ident, bool ofParent, bool printThis)
+{
+    this->ident = ident;
+    this->ofParent = ofParent;
+    this->printThis = printThis;
+}
+
+StkValue Sizeof::evaluate(cComponent *context, StkValue args[], int numargs)
+{
+    ASSERT(numargs==0 && context!=NULL);
+    cModule *module = dynamic_cast<cModule *>(ofParent ? context->owner() : context);
+    if (!module)
+        throw new cRuntimeError(context,eENOPARENT);
+
+    // ident might be a gate vector of the *parent* module, or a sibling submodule vector
+    // Note: it might NOT mean gate vector of this module
+    if (module->hasGate(ident.c_str()))
+    {
+        return (long) module->gateSize(ident.c_str()); // returns 1 if it's not a vector
+    }
+    else
+    {
+        // Find ident among submodules. If there's no such submodule, it may
+        // be that such submodule vector never existed, or can be that it's zero
+        // size -- we cannot tell, so we have to return 0 (and cannot throw error).
+        cModule *siblingModule = module->submodule(ident.c_str(), 0); // returns NULL if submodule is not a vector
+        if (!siblingModule && module->submodule(ident.c_str()))
+            return 1L; // return 1 if submodule exists but not a vector
+        return (long) siblingModule ? siblingModule->size() : 0L;
+    }
+
+}
+
+std::string Sizeof::toString(std::string args[], int numargs)
+{
+    return std::string(printThis ? "sizeof(this." : "sizeof(") + ident + ")";
+}
+
+
 
 };
 

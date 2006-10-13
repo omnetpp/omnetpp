@@ -173,7 +173,18 @@ void cExpressionBuilder::doFunction(FunctionNode *node)
     }
     else if (!strcmp(funcname,"sizeof"))
     {
+/*
+        const char *parname = node->getName();
+        const char *modulename = node->getModule();
+        bool hasChild = node->getFirstChild()!=NULL;
+
+        if (strnull(modulename))
+            elems[pos++] = new NEDSupport::ParameterRef(parname, inSubcomponentScope, false);
+        else if (!node->getFirstChild())
+            elems[pos++] = new NEDSupport::SiblingModuleParameterRef(modulename, parname, inSubcomponentScope, hasChild);
+*/
         throw new cRuntimeError("dynamic module builder: sizeof: not yet");
+
 /*FIXME convert into sizeof; this will depend on inSubcomponentScope
 
         IdentNode *op1 = node->getFirstIdentChild();
@@ -252,6 +263,7 @@ void cExpressionBuilder::doIdent(IdentNode *node)
     const char *modulename = node->getModule();
     bool hasChild = node->getFirstChild()!=NULL;
 
+//FIXME handle "this." prefix!
     if (strnull(modulename) && isLoopVar(parname))
         elems[pos++] = new NEDSupport::LoopVar(parname);
     else if (strnull(modulename))
