@@ -3,6 +3,9 @@ package org.omnetpp.ned2.model;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.core.runtime.Assert;
+import org.omnetpp.common.displaymodel.DisplayString;
+import org.omnetpp.common.displaymodel.IDisplayStringProvider;
 import org.omnetpp.ned2.model.pojo.ChannelInterfaceNode;
 import org.omnetpp.ned2.model.pojo.ChannelNode;
 import org.omnetpp.ned2.model.pojo.ChannelSpecNode;
@@ -19,9 +22,13 @@ import org.omnetpp.ned2.model.pojo.PropertyNode;
 import org.omnetpp.ned2.model.pojo.SimpleModuleNode;
 import org.omnetpp.ned2.model.pojo.SubmoduleNode;
 
-public class NedElementExUtil implements NEDElementTags, NEDElementUtil {
+public class NEDElementUtilEx implements NEDElementTags, NEDElementUtil {
 	public static final String DISPLAY_PROPERTY = "display";
 	
+	/**
+	 * @param node The node in question
+	 * @return The display string in unparesed form
+	 */
 	public static String getDisplayString(NEDElement node) {
         // channel node is special. we have to look inside the channelSpec node for the display string
         if (node instanceof ConnectionNode) {
@@ -41,6 +48,30 @@ public class NedElementExUtil implements NEDElementTags, NEDElementUtil {
 				}
 		return null;
 	}
+
+    /**
+     * Gets the effective displaystring (parsed )belonging to a node. It uses 
+     * the node's type or the base node (extends) as a fallback displaystring.
+     * @param node
+     * @return The parsed displaystring (with defaults set to 
+     */
+    public static DisplayString getEffectiveDisplayString(IDisplayStringProvider node) {
+        DisplayString result = node.getDisplayString();
+        NEDElement defaultNode = null;
+        // if node supports typing use the type's diplay property
+        if (node instanceof IStringTyped)
+            defaultNode = ((IStringTyped)node).getTypeRef();
+        else if (node instanceof IDerived)
+            defaultNode = ((IDerived)node).getExtendsRef();
+        // if we do not have type or do not extend anybody we return the same displaystring
+        if (defaultNode == null)
+            return result;
+
+        Assert.isTrue(defaultNode instanceof IDisplayStringProvider);
+        // otherwise set the default display string
+        result.setDefaults(((IDisplayStringProvider)defaultNode).getEffectiveDisplayString());
+        return result;
+    }
 	
 	/**
 	 * Sets the display property of a given node.

@@ -73,11 +73,7 @@ public class SubmoduleEditPart extends ModuleEditPart {
 
     	// parse a dispaly string, so it's easier to get values from it.
     	// for other visula properties
-        DisplayString dps = submNode.getDisplayString();
-        // get a fallback display string for the module type
-        DisplayString fallbackDps = NEDResourcesPlugin.getNEDResources()
-        								.getEffectiveDisplayString(submNode.getType());
-        dps.setDefaults(fallbackDps);
+        DisplayString dps = submNode.getEffectiveDisplayString();
         
         // get the scale factor for this submodule (coming from the containing compound module's displaystring)
         float scale = getScale();

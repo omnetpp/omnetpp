@@ -183,13 +183,17 @@ public class ConnectionNodeEx extends ConnectionNode implements IStringTyped, ID
 
 	public DisplayString getDisplayString() {
 		if (displayString == null)
-			displayString = new ConnectionDisplayString(this, NedElementExUtil.getDisplayString(this));
+			displayString = new ConnectionDisplayString(this, NEDElementUtilEx.getDisplayString(this));
 		return displayString;
 	}
 
-	public void propertyChanged(Prop changedProp) {
+    public DisplayString getEffectiveDisplayString() {
+        return NEDElementUtilEx.getEffectiveDisplayString(this);
+    }
+
+    public void propertyChanged(Prop changedProp) {
 		// syncronize it to the underlying model
-		NedElementExUtil.setDisplayString(this, displayString.toString());
+		NEDElementUtilEx.setDisplayString(this, displayString.toString());
 //        fireAttributeChangedToAncestors(IDisplayString.ATT_DISPLAYSTRING+"."+changedProp);
 	}
 
@@ -210,11 +214,26 @@ public class ConnectionNodeEx extends ConnectionNode implements IStringTyped, ID
             channelSpecNode.setType(type);
     }
 
+    // type management
+    
     public String getType() {
         return getChannelType();
     }
 
     public void setType(String type) {
         setChannelType(type);
+    }
+
+    public ITypeInfo getTypeTypeInfo() {
+        String typeName = getType(); 
+        if ( typeName == null || "".equals(typeName))
+            return null;
+
+        return getContainerTypeInfo().getResolver().getComponent(typeName);
+    }
+
+    public NEDElement getTypeRef() {
+        ITypeInfo it = getTypeTypeInfo();
+        return it == null ? null : it.getNEDElement();
     }
 }

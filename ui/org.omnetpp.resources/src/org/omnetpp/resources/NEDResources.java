@@ -300,34 +300,6 @@ public class NEDResources implements ITypeResolver {
 	}
 
 	/**
-	 * @param typeName The name of the toplevel component 
-	 * @return The effective display string for the top level ned component
-	 */
-	public DisplayString getEffectiveDisplayString(String typeName) {
-		return getEffectiveDisplayString(getComponent(typeName));
-	}
-	
-	/**
-	 * @param nedcomp The ned component we need the display string for
-	 * @return The effective display string for the top level ned component
-	 */
-	public DisplayString getEffectiveDisplayString(ITypeInfo nedcomp) {
-		if ((nedcomp == null) || !(nedcomp.getNEDElement() instanceof IDisplayStringProvider))
-			return null;
-		
-		List<ITypeInfo> extendsChain = ((NEDComponent)nedcomp).resolveExtendsChain();
-		// start at the current component and ends one before the base component
-		for(int i = extendsChain.size()-1; i>=1; --i) {
-			DisplayString currDisp = ((IDisplayStringProvider)extendsChain.get(i).getNEDElement()).getDisplayString();
-			DisplayString nextDisp = ((IDisplayStringProvider)extendsChain.get(i-1).getNEDElement()).getDisplayString();
-			currDisp.setDefaults(nextDisp);
-		}
-		
-		DisplayString resDisp = ((IDisplayStringProvider)nedcomp.getNEDElement()).getDisplayString();
-		return resDisp;
-	}
-	
-	/**
 	 * @param name
 	 * @return All submodules (including inherited ones) belonging to the given module
 	 */

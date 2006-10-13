@@ -15,5 +15,12 @@ public interface IDisplayStringProvider extends IDisplayStringChangeListener {
      * causes displayStringChanged() notification. 
      */
     public DisplayString getDisplayString();
+    
+    /**
+     * @return The displaystring object, but sets it's default handling in a way that the
+     * base object's display properties are used as defaults. ie. the display properties are inherited.
+     * either from the base object (extends) or the type (for submodules and connections)
+     */
+    public DisplayString getEffectiveDisplayString();
 
 }

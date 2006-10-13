@@ -22,17 +22,22 @@ public class ChannelNodeEx extends ChannelNode
 
 	public DisplayString getDisplayString() {
 		if (displayString == null) {
-			displayString = new DisplayString(this, NedElementExUtil.getDisplayString(this));
+			displayString = new DisplayString(this, NEDElementUtilEx.getDisplayString(this));
 		}
 		return displayString;
 	}
+
+    public DisplayString getEffectiveDisplayString() {
+        return NEDElementUtilEx.getEffectiveDisplayString(this);
+    }
 	
 	public void propertyChanged(Prop changedProp) {
 		// syncronize it to the underlying model 
-		NedElementExUtil.setDisplayString(this, displayString.toString());
+		NEDElementUtilEx.setDisplayString(this, displayString.toString());
         fireAttributeChangedToAncestors(IDisplayString.ATT_DISPLAYSTRING+"."+changedProp);
 	}
 
+    // EXTENDS support
     public String getExtends() {
         ExtendsNode extendsNode = getFirstExtendsChild();
         if(extendsNode == null)
@@ -49,4 +54,18 @@ public class ChannelNodeEx extends ChannelNode
             }
             extendsNode.setName(ext);
     }
+    
+    public ITypeInfo getExtendsTypeInfo() {
+        String extendsName = getExtends(); 
+        if ( extendsName == null || "".equals(extendsName))
+            return null;
+
+        return getContainerTypeInfo().getResolver().getComponent(extendsName);
+    }
+
+    public NEDElement getExtendsRef() {
+        ITypeInfo it = getExtendsTypeInfo();
+        return it == null ? null : it.getNEDElement();
+    }
+
 }

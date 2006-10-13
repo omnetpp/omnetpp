@@ -35,7 +35,7 @@ import org.omnetpp.ned2.model.ITypeInfo;
 import org.omnetpp.ned2.model.INamed;
 import org.omnetpp.ned2.model.ModuleInterfaceNodeEx;
 import org.omnetpp.ned2.model.NEDElement;
-import org.omnetpp.ned2.model.NedElementExUtil;
+import org.omnetpp.ned2.model.NEDElementUtilEx;
 import org.omnetpp.ned2.model.SimpleModuleNodeEx;
 import org.omnetpp.ned2.model.pojo.PropertyNode;
 import org.omnetpp.resources.NEDResourcesPlugin;
@@ -187,8 +187,7 @@ public class GraphicalNedEditorPlugin extends AbstractUIPlugin {
         	ImageDescriptor imageDescNorm = ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_SIMPLE,null,null,0);
         	ImageDescriptor imageDescLarge = ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_SIMPLE,"l",null,0);
         	if (nedElement instanceof IDisplayStringProvider) {
-        		IDisplayString dps = NEDResourcesPlugin.getNEDResources()
-        								.getEffectiveDisplayString(NEDResourcesPlugin.getNEDResources().getComponent(name));
+                IDisplayString dps = ((IDisplayStringProvider)nedElement).getEffectiveDisplayString();
         		String iid = dps.getAsStringDef(IDisplayString.Prop.IMAGE);
         		if (iid != null && !"".equals(iid)) {
                 	imageDescNorm = ImageFactory.getDescriptor(iid,"vs",null,0);
@@ -199,7 +198,7 @@ public class GraphicalNedEditorPlugin extends AbstractUIPlugin {
         	// determine which palette group it belongs to or put it to the default
         	PropertyNode property = (PropertyNode)comp.getProperty("group"); 
         	String group = (property == null) ? defaultGroupName
-        			        : NedElementExUtil.getPropertyValue(property);
+        			        : NEDElementUtilEx.getPropertyValue(property);
         	
         	if (group == null || "".equals(group))
         		group = defaultGroupName;

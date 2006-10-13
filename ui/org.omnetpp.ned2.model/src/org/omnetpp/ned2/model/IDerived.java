@@ -16,4 +16,15 @@ public interface IDerived {
      * @param ext The object's name that is extended
      */
     public void setExtends(String ext);
+
+    /**
+     * @return The TTypeInfo object of the base object of this component. ie this method checks the base type
+     *         of this element and looks up the typeinfo object to that  
+     */
+    public ITypeInfo getExtendsTypeInfo();
+    
+    /**
+     * @return The model element that represents the base object of this element
+     */
+    public NEDElement getExtendsRef();
 }

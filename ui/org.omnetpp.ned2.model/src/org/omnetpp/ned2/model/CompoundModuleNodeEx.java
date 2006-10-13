@@ -1,12 +1,12 @@
 package org.omnetpp.ned2.model;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 import org.eclipse.core.runtime.Assert;
 import org.omnetpp.common.displaymodel.DisplayString;
 import org.omnetpp.common.displaymodel.IDisplayString;
+import org.omnetpp.common.displaymodel.IDisplayStringProvider;
 import org.omnetpp.common.displaymodel.IDisplayString.Prop;
 import org.omnetpp.ned2.model.pojo.CompoundModuleNode;
 import org.omnetpp.ned2.model.pojo.ConnectionsNode;
@@ -40,16 +40,22 @@ public class CompoundModuleNodeEx extends CompoundModuleNode
 
 	public DisplayString getDisplayString() {
 		if (displayString == null)
-			displayString = new DisplayString(this, NedElementExUtil.getDisplayString(this));
+			displayString = new DisplayString(this, NEDElementUtilEx.getDisplayString(this));
 		return displayString;
 	}
+    
+    public DisplayString getEffectiveDisplayString() {
+        return NEDElementUtilEx.getEffectiveDisplayString(this);
+    }
 
+    // notification support
 	public void propertyChanged(Prop changedProp) {
 		// syncronize it to the underlying model
-		NedElementExUtil.setDisplayString(this, displayString.toString());
+		NEDElementUtilEx.setDisplayString(this, displayString.toString());
         fireAttributeChangedToAncestors(IDisplayString.ATT_DISPLAYSTRING+"."+changedProp);
 	}
 
+    // submodule related methods
     /**
      * Returns all submodule containd in the module.
      * @param child
@@ -71,7 +77,7 @@ public class CompoundModuleNodeEx extends CompoundModuleNode
      * @return All submodules direct and inherited submodules 
      */
     public List<SubmoduleNodeEx> getAllSubmodules() {
-        ITypeInfo it = getTypeInfo();
+        ITypeInfo it = getContainerTypeInfo();
         Assert.isNotNull(it);
         
         List<SubmoduleNodeEx> result = new ArrayList<SubmoduleNodeEx>();
@@ -261,4 +267,16 @@ public class CompoundModuleNodeEx extends CompoundModuleNode
             extendsNode.setName(ext);
     }
 
+    public ITypeInfo getExtendsTypeInfo() {
+        String extendsName = getExtends(); 
+        if ( extendsName == null || "".equals(extendsName))
+            return null;
+
+        return getContainerTypeInfo().getResolver().getComponent(extendsName);
+    }
+
+    public NEDElement getExtendsRef() {
+        ITypeInfo it = getExtendsTypeInfo();
+        return it == null ? null : it.getNEDElement();
+    }
 }

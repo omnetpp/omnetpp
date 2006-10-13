@@ -3,6 +3,7 @@ package org.omnetpp.ned2.model;
 import java.util.HashMap;
 import java.util.Iterator;
 
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.PlatformObject;
 
 /**
@@ -698,15 +699,20 @@ public abstract class NEDElement extends PlatformObject implements Iterable<NEDE
     }
 
     /**
-     * @return The TypeInfo belonging to the nearest containing (toplevel) component 
+     * @return The TypeInfo belonging to the containing (toplevel) component 
      * that was added by the incremental builder (type resolver). Or NULL if none was found.
      * Cross references and other supporting lists can be accesed via typeInfo
      */
-    public ITypeInfo getTypeInfo() {
+    public ITypeInfo getContainerTypeInfo() {
+        ITypeInfo result = null;
         if (typeInfo != null || getParent() == null)
-            return typeInfo;
-        // return the typinfo of the parent
-        return getParent().getTypeInfo();
+            result = typeInfo;
+        else // return the typinfo of the parent
+            result = getParent().getContainerTypeInfo();
+
+        // we should not call this on a node that does not have a typeinfo or is not in the model hierarchy
+        Assert.isNotNull(result);
+        return result;
     }
 
     /**

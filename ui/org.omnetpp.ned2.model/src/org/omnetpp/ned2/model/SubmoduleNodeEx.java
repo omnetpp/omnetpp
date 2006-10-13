@@ -79,14 +79,18 @@ public class SubmoduleNodeEx extends SubmoduleNode
 
 	public DisplayString getDisplayString() {
 		if (displayString == null) {
-			displayString = new DisplayString(this, NedElementExUtil.getDisplayString(this));
+			displayString = new DisplayString(this, NEDElementUtilEx.getDisplayString(this));
 		}
 		return displayString;
 	}
 
-	public void propertyChanged(Prop changedProp) {
+    public DisplayString getEffectiveDisplayString() {
+        return NEDElementUtilEx.getEffectiveDisplayString(this);
+    }
+
+    public void propertyChanged(Prop changedProp) {
 		// syncronize it to the underlying model
-		NedElementExUtil.setDisplayString(this, displayString.toString());
+		NEDElementUtilEx.setDisplayString(this, displayString.toString());
         fireAttributeChangedToAncestors(IDisplayString.ATT_DISPLAYSTRING+"."+changedProp);
 	}
 
@@ -134,6 +138,20 @@ public class SubmoduleNodeEx extends SubmoduleNode
 	@Override
     public String debugString() {
         return "srcConnSize="+srcConns.size()+" destConnSize="+destConns.size();
+    }
+
+    // type support
+    public ITypeInfo getTypeTypeInfo() {
+        String typeName = getType(); 
+        if ( typeName == null || "".equals(typeName))
+            return null;
+
+        return getContainerTypeInfo().getResolver().getComponent(typeName);
+    }
+
+    public NEDElement getTypeRef() {
+        ITypeInfo it = getTypeTypeInfo();
+        return it == null ? null : it.getNEDElement();
     }
 
 }

@@ -14,4 +14,15 @@ public interface IStringTyped {
      * @param type
      */
     public void setType(String type);
+    
+    /**
+     * @return The TRypeInfo object of the TYPE of this component. ie this method checks the typename
+     *         of this element and looks up the typeinfo object to that  
+     */
+    public ITypeInfo getTypeTypeInfo();
+    
+    /**
+     * @return The model element that represents the type of this element
+     */
+    public NEDElement getTypeRef();
 }

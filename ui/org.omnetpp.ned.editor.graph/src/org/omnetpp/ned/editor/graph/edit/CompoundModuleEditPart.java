@@ -128,16 +128,7 @@ public class CompoundModuleEditPart extends ModuleEditPart {
     	
         getCompoundModuleFigure().setName(compModule.getName());
 
-        // parse a dispaly string, so it's easier to get values from it.
-    	DisplayString dps = compModule.getDisplayString();
-        // get a fallback display string for the module type
-    	// the effective display string of its first ancestor (if any)
-    	if (compModule.getFirstExtendsChild() != null) {
-    		DisplayString fallbackDps = NEDResourcesPlugin.getNEDResources()
-        								.getEffectiveDisplayString(compModule.getFirstExtendsChild().getName());
-        	dps.setDefaults(fallbackDps);
-    	}
-    	getCompoundModuleFigure().setDisplayString(dps);
+    	getCompoundModuleFigure().setDisplayString(compModule.getEffectiveDisplayString());
         
     }
 
