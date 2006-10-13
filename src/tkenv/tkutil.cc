@@ -142,21 +142,11 @@ void insertIntoInspectorListbox(Tcl_Interp *interp, const char *listbox, cObject
 
 void feedCollectionIntoInspectorListbox(cCollectObjectsVisitor *visitor, Tcl_Interp *interp, const char *listbox, bool fullpath)
 {
-//FIXME what's this ? !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     int n = visitor->getArraySize();
     cObject **objs = visitor->getArray();
 
     for (int i=0; i<n; i++)
     {
-        // a small hack: leave out "gates" and "params" arrays of modules
-        if (dynamic_cast<cArray *>(objs[i]) &&
-            dynamic_cast<cModule *>(objs[i]->owner())
-            /* &&
-            (objs[i]==&(dynamic_cast<cModule *>(objs[i]->owner())->gatev)
-            || objs[i]==&(dynamic_cast<cModule *>(objs[i]->owner())->paramv)) FIXME!!! */
-           )
-           continue;
-
         // insert into listbox
         insertIntoInspectorListbox(interp, listbox, objs[i], fullpath);
     }

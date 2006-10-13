@@ -668,10 +668,8 @@ proc filteredobjectlist_window_close {} {
 # helper proc for filteredobjectlist_window
 #
 proc getClassNames {} {
-    # modules and channels are not registered as classes, add them manually
-    set classes [concat [opp_getchildobjects [opp_object_classes]] \
-                        [opp_getchildobjects [opp_object_channeltypes]] \
-                        [opp_getchildobjects [opp_object_moduletypes]] ]
+    set classes [opp_getchildobjects [opp_object_classes]]
+
     # get the names
     set classnames {}
     foreach classptr $classes {

@@ -113,10 +113,10 @@ int objectSimulation_cmd(ClientData, Tcl_Interp *, int, const char **);
 int objectSystemModule_cmd(ClientData, Tcl_Interp *, int, const char **);
 int objectMessageQueue_cmd(ClientData, Tcl_Interp *, int, const char **);
 int objectNetworks_cmd(ClientData, Tcl_Interp *, int, const char **);
-int objectModuleTypes_cmd(ClientData, Tcl_Interp *, int, const char **);
-int objectChannelTypes_cmd(ClientData, Tcl_Interp *, int, const char **);
+int objectComponentTypes_cmd(ClientData, Tcl_Interp *, int, const char **);
 int objectFunctions_cmd(ClientData, Tcl_Interp *, int, const char **);
 int objectClasses_cmd(ClientData, Tcl_Interp *, int, const char **);
+int objectEnums_cmd(ClientData, Tcl_Interp *, int, const char **);
 
 int loadNEDFile_cmd(ClientData, Tcl_Interp *, int, const char **);
 
@@ -191,11 +191,10 @@ OmnetTclCommand tcl_commands[] = {
    { "opp_object_simulation",   objectSimulation_cmd   },
    { "opp_object_systemmodule", objectSystemModule_cmd },
    { "opp_object_messagequeue", objectMessageQueue_cmd },
-   { "opp_object_networks",     objectNetworks_cmd     },
-   { "opp_object_moduletypes",  objectModuleTypes_cmd  },
-   { "opp_object_channeltypes", objectChannelTypes_cmd },
-   { "opp_object_functions",    objectFunctions_cmd    },
+   { "opp_object_componenttypes",objectComponentTypes_cmd},
    { "opp_object_classes",      objectClasses_cmd      },
+   { "opp_object_functions",    objectFunctions_cmd    },
+   { "opp_object_enums",        objectEnums_cmd        },
    // NEDXML
    { "opp_loadnedfile",         loadNEDFile_cmd        },   // args: <ptr> ret: <xml>
    // experimental
@@ -1410,31 +1409,10 @@ int objectMessageQueue_cmd(ClientData, Tcl_Interp *interp, int argc, const char 
    return TCL_OK;
 }
 
-int objectNetworks_cmd(ClientData, Tcl_Interp *interp, int argc, const char **)
+int objectComponentTypes_cmd(ClientData, Tcl_Interp *interp, int argc, const char **)
 {
-//FIXME eliminate from Tcl code -- i.e. implement based on componentTypes
-/*
-  if (argc!=1) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
-   Tcl_SetResult(interp, ptrToStr( networks.instance() ), TCL_VOLATILE);
-*/
-   return TCL_OK;
-}
-
-int objectModuleTypes_cmd(ClientData, Tcl_Interp *interp, int argc, const char **)
-{
-//FIXME this is not only modules -- change Tcl code!
-   if (argc!=1) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
+    if (argc!=1) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
    Tcl_SetResult(interp, ptrToStr( componentTypes.instance() ), TCL_VOLATILE);
-   return TCL_OK;
-}
-
-int objectChannelTypes_cmd(ClientData, Tcl_Interp *interp, int argc, const char **)
-{
-//FIXME eliminate from Tcl code -- i.e. implement based on componentTypes
-/*
-   if (argc!=1) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
-   Tcl_SetResult(interp, ptrToStr( channeltypes.instance() ), TCL_VOLATILE);
-*/
    return TCL_OK;
 }
 
@@ -1449,6 +1427,13 @@ int objectClasses_cmd(ClientData, Tcl_Interp *interp, int argc, const char **)
 {
    if (argc!=1) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
    Tcl_SetResult(interp, ptrToStr( classes.instance() ), TCL_VOLATILE);
+   return TCL_OK;
+}
+
+int objectEnums_cmd(ClientData, Tcl_Interp *interp, int argc, const char **)
+{
+   if (argc!=1) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
+   Tcl_SetResult(interp, ptrToStr( enums.instance() ), TCL_VOLATILE);
    return TCL_OK;
 }
 

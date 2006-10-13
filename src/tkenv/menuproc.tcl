@@ -191,7 +191,8 @@ proc new_network {} {
     if [check_running] return
 
     # get list of network names
-    set networks [opp_getchildobjects [opp_object_networks]]
+    set networks [opp_getchildobjects [opp_object_componenttypes]]
+#FIXME FIXME FIXME select network types only!!!!!!
     set netnames {}
     foreach net $networks {
         lappend netnames [opp_getobjectfullname $net]
@@ -574,16 +575,16 @@ proc inspect_messagequeue {} {
     opp_inspect [opp_object_messagequeue] (default)
 }
 
-proc inspect_networks {} {
-    opp_inspect [opp_object_networks] {(default)}
+proc inspect_componenttypes {} {
+    opp_inspect [opp_object_componenttypes] {(default)}
 }
 
-proc inspect_moduletypes {} {
-    opp_inspect [opp_object_moduletypes] {(default)}
+proc inspect_classes {} {
+    opp_inspect [opp_object_classes] {(default)}
 }
 
-proc inspect_channeltypes {} {
-    opp_inspect [opp_object_channeltypes] {(default)}
+proc inspect_enums {} {
+    opp_inspect [opp_object_enums] {(default)}
 }
 
 proc inspect_functions {} {
