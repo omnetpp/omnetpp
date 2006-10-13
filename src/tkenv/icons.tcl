@@ -321,3 +321,21 @@ set icons(1pixtransp) [image create photo -data {
     R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7
 }]
 
+set icons(16pixtransp) [image create photo -data {
+    R0lGODlhEAAQAIAAAAAAAP///yH5BAEAAAAALAAAAAAQABAAAAIOhI+py+0Po5y0
+    2ouzPgUAOw==
+}]
+
+set icons(gate_vs) [image create photo -data {
+    R0lGODlhEAAQALMAAAAAAP//AP//////////////////////////////////////
+    /////////////////yH5BAEAAAIALAAAAAAQABAAAAQjUMhJq704680t+OCHAUFp
+    AqN5pmqAXmT7eq3LqnMVhl3vaxEAOw==
+}]
+
+set icons(param_vs) [image create photo -data {
+    R0lGODlhEAAQALMAAAAAAACAAAAAgACAgMDAwICAgAD/AAAA/8DAwP///wAAAP//
+    /8DAwJycnICAgFPGxiH5BAEAAAkALAAAAAAQABAAAAQuMMlJq7046/T2JA/hcUW3
+    NQXaZGBKoKH1PC7xlibVNneMqSkPLacBiUbEkRITAQA7
+}]
+
+

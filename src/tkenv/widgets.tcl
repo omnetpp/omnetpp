@@ -640,8 +640,8 @@ proc _focusTableEntry {e c} {
 proc multicolumnlistbox {w columnlist args} {
     global HAVE_BLT
     if {$HAVE_BLT} {
-        blt::treeview $w -font "arial 8" -allowduplicates yes
-        $w column configure treeView -hide yes
+        blt::treeview $w -font "arial 8" -allowduplicates yes -flat yes
+        $w column configure treeView -hide no -width 16 -state disabled
         if {$args!=""} {
              eval $w config $args
         }
@@ -707,10 +707,12 @@ proc multicolumnlistbox_blt_sortcolumn {w column} {
 # format {name1 value1 name2 value2 ...}, conventiently produced from
 # arrays by the command "array get".
 #
-proc multicolumnlistbox_insert {w rowname data} {
+proc multicolumnlistbox_insert {w rowname data {icon ""}} {
+    global icons
     global HAVE_BLT
     if {$HAVE_BLT} {
-        $w insert end $rowname -data $data
+        if {$icon==""} {set icon $icons(16pixtransp)}
+        $w insert end $rowname -data $data -button no -icons [list $icon $icon] -activeicons [list $icon $icon]
     } else {
         global mclistbox
         array set ary $data
