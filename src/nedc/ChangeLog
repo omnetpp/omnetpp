@@ -1,3 +1,7 @@
+2006-10-14  Andras Varga
+
+	* opp_msgc: added version check into generated code
+
 2006-10-04  Andras Varga
 
 	* opp_msgc: don't accept reserved words as identifiers
