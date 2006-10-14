@@ -455,7 +455,7 @@ class ENVIR_API cEnvir : public std::ostream
      * Sets up RNG mapping (which maps module-local RNG numbers to "physical"
      * RNGs) for the given module.
      */
-    void getRNGMappingFor(cModule *mod);
+    void getRNGMappingFor(cComponent *component);
     //@}
 
     /** @name Methods for recording data from output vectors.

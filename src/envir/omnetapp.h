@@ -233,7 +233,7 @@ class ENVIR_API TOmnetApp
     //@{
     int numRNGs();
     cRNG *rng(int k);
-    void getRNGMappingFor(cModule *mod);
+    void getRNGMappingFor(cComponent *component);
     //@}
 
     /** @name Methods for recording data from output vectors; called by cEnvir's similar functions */

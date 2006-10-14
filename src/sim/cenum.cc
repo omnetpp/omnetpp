@@ -20,7 +20,6 @@
 
 #include <stdio.h>           // sprintf, fprintf
 #include <string.h>          // memcmp, memcpy, memset
-#include <assert.h>
 #include "globals.h"
 #include "csimulation.h"
 #include "cenum.h"
@@ -129,7 +128,7 @@ void cEnum::insert(int key, const char *str)
     if (vect[k].string)
     {
         // found a slot with this key, check consistency (strings must be the same)
-        assert(vect[k].key==key);
+        ASSERT(vect[k].key==key);
         if (strcmp(vect[k].string, str))
             throw new cRuntimeError("Key mismatch for enum %s: %s and %s have the same value (%d)",
                                     name(), vect[k].string, str, key);

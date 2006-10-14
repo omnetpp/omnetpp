@@ -15,7 +15,6 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include <assert.h>
 #include <ctype.h>
 #include <string.h>
 #include "minixpath.h"
@@ -130,7 +129,7 @@ cXMLElement *MiniXPath::recursiveMatch(cXMLElement *node, const char *pathexpr)
 // handle "/" or "//" at front of pattern
 cXMLElement *MiniXPath::matchSeparator(cXMLElement *node, const char *seppathexpr)
 {
-    assert(!*seppathexpr || *seppathexpr=='/');
+    ASSERT(!*seppathexpr || *seppathexpr=='/');
     if (!*seppathexpr)
         return node; // end of pattern
     else if (*(seppathexpr+1)=='/')

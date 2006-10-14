@@ -20,7 +20,6 @@
 
 #include <stdio.h>
 #include <string.h>
-#include <assert.h>
 #include <stdarg.h>
 #include "ctopo.h"
 #include "cpar.h"

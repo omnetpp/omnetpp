@@ -53,6 +53,7 @@ class SIM_API cNEDLoader : public NEDResourceCache
 
   protected:
     // utility functions
+    void registerBuiltinDeclarations();
     NEDElement *parseAndValidateNedFile(const char *nedfname, bool isXML);
     bool areDependenciesResolved(NEDElement *node);
     void tryResolvePendingDeclarations();
@@ -63,7 +64,7 @@ class SIM_API cNEDLoader : public NEDResourceCache
     cProperty *extractProperty(PropertyNode *propNode);
 
     // constructor is protected, because we want only one instance
-    cNEDLoader() {}
+    cNEDLoader();
 
   public:
     /** Access to singleton instance */

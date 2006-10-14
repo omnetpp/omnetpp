@@ -16,7 +16,6 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include <assert.h>
 #include <stdlib.h>
 #include "cstrtokenizer.h"
 

@@ -18,7 +18,6 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include <assert.h>
 #include <string.h>   // strlen
 #include "globals.h"
 #include "coutvect.h"

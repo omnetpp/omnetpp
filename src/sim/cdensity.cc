@@ -21,7 +21,6 @@
 #include <stdio.h>
 #include <string.h>
 #include <math.h>
-#include <assert.h>
 #include "globals.h"
 #include "cdensity.h"
 #include "cexception.h"

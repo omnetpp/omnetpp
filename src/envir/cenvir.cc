@@ -478,9 +478,9 @@ cRNG *cEnvir::rng(int k)
     return app->rng(k);
 }
 
-void cEnvir::getRNGMappingFor(cModule *mod)
+void cEnvir::getRNGMappingFor(cComponent *component)
 {
-    app->getRNGMappingFor(mod);
+    app->getRNGMappingFor(component);
 }
 
 //---------------------------------------------------------

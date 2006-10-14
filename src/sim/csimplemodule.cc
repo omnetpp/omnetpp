@@ -20,7 +20,6 @@
 
 #include <stdio.h>           // sprintf
 #include <string.h>          // strcpy
-#include <assert.h>
 #include <exception>
 #include "csimplemodule.h"
 #include "cgate.h"
@@ -45,7 +44,7 @@ void cSimpleModule::activate(void *p)
             simulation.transferTo(after_cleanup_transfer_to);
         else
             simulation.transferToMain();
-        assert(/*invoking transferTo() on an already deleted module?*/ 0);
+        ASSERT(/*invoking transferTo() on an already deleted module?*/ 0);
     }
 
     cSimpleModule *mod = (cSimpleModule *)p;
@@ -62,9 +61,9 @@ void cSimpleModule::activate(void *p)
 
         // The End
         simulation.transferToMain(); // send back exception
-        assert(!after_cleanup_transfer_to);
+        ASSERT(!after_cleanup_transfer_to);
         simulation.transferToMain(); // for stack_cleanup_requested
-        assert(/*invoking transferTo() on an already deleted module?*/ 0);
+        ASSERT(/*invoking transferTo() on an already deleted module?*/ 0);
     }
 
     // rename message
@@ -89,7 +88,7 @@ void cSimpleModule::activate(void *p)
             simulation.transferTo(after_cleanup_transfer_to);
         else
             simulation.transferToMain();
-        assert(/*invoking transferTo() on an already deleted module?*/ 0);
+        ASSERT(/*invoking transferTo() on an already deleted module?*/ 0);
     }
     catch (cEndModuleException *e)
     {
@@ -127,7 +126,7 @@ void cSimpleModule::activate(void *p)
         simulation.transferTo(after_cleanup_transfer_to);
     else
         simulation.transferToMain();
-    assert(/*invoking transferTo() on an already deleted module?*/ 0);
+    ASSERT(/*invoking transferTo() on an already deleted module?*/ 0);
 }
 
 // legacy constructor, only for backwards compatiblity; first two args are unused
@@ -189,7 +188,7 @@ cSimpleModule::~cSimpleModule()
         {                    // FIXME is this a good place?
             stack_cleanup_requested = true;
             after_cleanup_transfer_to = simulation.runningModule();
-            assert(!after_cleanup_transfer_to || after_cleanup_transfer_to->usesActivity());
+            ASSERT(!after_cleanup_transfer_to || after_cleanup_transfer_to->usesActivity());
             simulation.transferTo(this);
             stack_cleanup_requested = false;
         }

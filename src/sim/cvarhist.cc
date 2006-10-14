@@ -23,7 +23,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
-#include <assert.h>
 #include "globals.h"
 #include "random.h"
 #include "distrib.h"
@@ -187,7 +186,7 @@ void cVarHistogram::createEquiProbableCells()
     }
 
     // this version automatically sets the cell boundaries...
-    assert(max_num_cells>=2); // maybe 1 is enough...
+    ASSERT(max_num_cells>=2); // maybe 1 is enough...
 
     // allocate cellv and bin_bounds
     cellv = new unsigned [max_num_cells];
@@ -283,7 +282,7 @@ void cVarHistogram::transform() //--LG
     }
     else
     {
-        assert(transform_type==HIST_TR_NO_TRANSFORM);
+        ASSERT(transform_type==HIST_TR_NO_TRANSFORM);
 
         // all manually added bin bounds must be in the range
         if (range_mode != RANGE_NOTSET)

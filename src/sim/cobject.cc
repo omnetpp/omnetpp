@@ -17,7 +17,6 @@
 
 #include <stdio.h>           // sprintf
 #include <string.h>          // strcpy, strlen etc.
-#include <assert.h>
 #include "cobject.h"
 #include "csimulation.h"
 #include "cenvir.h"
@@ -252,7 +251,7 @@ void cObject::dropAndDelete(cObject *obj)
 
 void cObject::setDefaultOwner(cDefaultList *list)
 {
-    assert(list!=NULL);
+    ASSERT(list!=NULL);
     defaultowner = list;
 }
 

@@ -20,7 +20,6 @@
 
 #include <stdio.h>           // sprintf
 #include <string.h>          // memcpy
-#include <assert.h>
 #include "globals.h"
 #include "carray.h"
 #include "cexception.h"
@@ -95,7 +94,7 @@ cDefaultList::~cDefaultList()
 
 void cDefaultList::doInsert(cObject *obj)
 {
-    assert(obj!=this || this==&defaultList);
+    ASSERT(obj!=this || this==&defaultList);
 
     if (count>=size)
     {
@@ -121,7 +120,7 @@ void cDefaultList::doInsert(cObject *obj)
 
 void cDefaultList::ownedObjectDeleted(cObject *obj)
 {
-    assert(obj && obj->ownerp==this);
+    ASSERT(obj && obj->ownerp==this);
 
     // move last object to obj's old position
     int pos = obj->pos;
@@ -130,7 +129,7 @@ void cDefaultList::ownedObjectDeleted(cObject *obj)
 
 void cDefaultList::yieldOwnership(cObject *obj, cObject *newowner)
 {
-    assert(obj && obj->ownerp==this && count>0);
+    ASSERT(obj && obj->ownerp==this && count>0);
 
     // give object to its new owner
     obj->ownerp = newowner;

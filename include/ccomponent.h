@@ -50,7 +50,7 @@ class SIM_API cComponent : public cDefaultList // noncopyable
     void setEvEnabled(bool e)  {ev_enabled = e;}
     bool isEvEnabled() {return ev_enabled;}
 
-    // internal: invoked from within cEnvir::getRNGMappingFor(mod)
+    // internal: invoked from within cEnvir::getRNGMappingFor(component)
     void setRNGMap(short size, int *map) {rngmapsize=size; rngmap=map;}
 
     // internal: sets associated cComponentType for the component;
@@ -128,7 +128,7 @@ class SIM_API cComponent : public cDefaultList // noncopyable
     virtual bool isModule() const  {return false;}
 
     /**
-     * Returns the component's parent module. (The parent of a channel object 
+     * Returns the component's parent module. (The parent of a channel object
      * is the module containing the connection.) For the system module, it returns
      * NULL.
      */

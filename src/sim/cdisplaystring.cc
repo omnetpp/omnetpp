@@ -15,7 +15,6 @@
 
 #include <string.h>
 #include <stdio.h>
-#include <assert.h>
 #include "cenvir.h"
 #include "cmodule.h"
 #include "cgate.h"
@@ -82,7 +81,7 @@ void cDisplayString::notify()
         case CONNECTION: ev.displayStringChanged((cGate *)object); break;
         case MODULE: ev.displayStringChanged((cModule *)object); break;
         case MODULEBACKGROUND: ev.backgroundDisplayStringChanged((cModule *)object); break;
-        default: assert(0); // internal error: bad role
+        default: ASSERT(0); // internal error: bad role
     }
 }
 

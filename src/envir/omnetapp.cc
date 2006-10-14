@@ -696,10 +696,10 @@ cRNG *TOmnetApp::rng(int k)
     return rngs[k];
 }
 
-void TOmnetApp::getRNGMappingFor(cModule *mod)
+void TOmnetApp::getRNGMappingFor(cComponent *component)
 {
     cConfiguration *cfg = getConfig();
-    std::vector<opp_string> entries = cfg->getEntriesWithPrefix("General", mod->fullPath().c_str(), ".rng-");
+    std::vector<opp_string> entries = cfg->getEntriesWithPrefix("General", component->fullPath().c_str(), ".rng-");
     if (entries.size()==0)
         return;
 
@@ -712,20 +712,20 @@ void TOmnetApp::getRNGMappingFor(cModule *mod)
         int modRng = strtol(entries[i].c_str(), &s1, 10);
         int physRng = strtol(entries[i+1].c_str(), &s2, 10);
         if (*s1!='\0' || *s2!='\0')
-            throw new cRuntimeError("Configuration error: rng-%s=%s of module %s: "
+            throw new cRuntimeError("Configuration error: rng-%s=%s of module/channel %s: "
                                     "numeric RNG indices expected",
-                                    entries[i].c_str(), entries[i+1].c_str(), mod->fullPath().c_str());
+                                    entries[i].c_str(), entries[i+1].c_str(), component->fullPath().c_str());
 
         if (physRng>numRNGs())
-            throw new cRuntimeError("Configuration error: rng-%d=%d of module %s: "
+            throw new cRuntimeError("Configuration error: rng-%d=%d of module/channel %s: "
                                     "RNG index out of range (num-rngs=%d)",
-                                    modRng, physRng, mod->fullPath().c_str(), numRNGs());
+                                    modRng, physRng, component->fullPath().c_str(), numRNGs());
         if (modRng>=mapsize)
         {
             if (modRng>=100)
-                throw new cRuntimeError("Configuration error: rng-%d=... of module %s: "
+                throw new cRuntimeError("Configuration error: rng-%d=... of module/channel %s: "
                                         "local RNG index out of supported range 0..99",
-                                        modRng, mod->fullPath().c_str());
+                                        modRng, component->fullPath().c_str());
             while (mapsize<=modRng)
             {
                 tmpmap[mapsize] = mapsize;
@@ -740,7 +740,7 @@ void TOmnetApp::getRNGMappingFor(cModule *mod)
     {
         int *map = new int[mapsize];
         memcpy(map, tmpmap, mapsize*sizeof(int));
-        mod->setRNGMap(mapsize, map);
+        component->setRNGMap(mapsize, map);
     }
 }
 

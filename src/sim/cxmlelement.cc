@@ -15,7 +15,6 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include <assert.h>
 #include <ctype.h>
 #include <string.h>
 #include <iostream>

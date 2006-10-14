@@ -19,7 +19,6 @@
 #include <stdio.h>   // sprintf
 #include <stdlib.h>  // atol
 #include <string.h>
-#include <assert.h>
 #include "cstruct.h"
 #include "carray.h"
 #include "cenum.h"
@@ -29,13 +28,13 @@
 
 void cStructDescriptor::long2string(long l, char *buf, int bufsize)
 {
-    assert(bufsize>=10);
+    ASSERT(bufsize>=10);
     sprintf(buf, "%ld", l);
 }
 
 void cStructDescriptor::ulong2string(unsigned long l, char *buf, int bufsize)
 {
-    assert(bufsize>=10);
+    ASSERT(bufsize>=10);
     sprintf(buf, "%lu", l);
 }
 
@@ -54,7 +53,7 @@ unsigned long cStructDescriptor::string2ulong(const char *s)
 
 void cStructDescriptor::bool2string(bool b, char *buf, int bufsize)
 {
-    assert(bufsize>=7);
+    ASSERT(bufsize>=7);
     strcpy(buf, b ? "true" : "false");
 }
 
@@ -67,7 +66,7 @@ bool cStructDescriptor::string2bool(const char *s)
 
 void cStructDescriptor::double2string(double d, char *buf, int bufsize)
 {
-    assert(bufsize>=20);
+    ASSERT(bufsize>=20);
     sprintf(buf, "%f", d);
 }
 
@@ -80,7 +79,7 @@ double cStructDescriptor::string2double(const char *s)
 
 void cStructDescriptor::enum2string(long e, const char *enumname, char *buf, int bufsize)
 {
-    assert(bufsize>=30); // FIXME: very crude check
+    ASSERT(bufsize>=30); // FIXME: very crude check
 
     sprintf(buf,"%ld",e);
     cEnum *enump = cEnum::find(enumname);

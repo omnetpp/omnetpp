@@ -50,7 +50,56 @@ void cNEDLoader::clear()
     instance_ = NULL;
 }
 
-//FIXME rename class to cNEDLoader
+cNEDLoader::cNEDLoader()
+{
+    registerBuiltinDeclarations();
+}
+
+void cNEDLoader::registerBuiltinDeclarations()
+{
+    // NED code to define built-in types
+    const char *nedcode =
+        "channel withcppclass cBasicChannel\n"
+        "{\n"
+        "    double delay = 0;\n"
+        "    double error = 0;\n"
+        "    double datarate = 0;\n"
+        "}\n"
+
+        "channel withcppclass cNullChannel\n";
+        "{\n"
+        "}\n"
+
+        "interface IBidirectionalChannel\n"
+        "{\n"
+        "    gates:\n"
+        "        inout a;\n"
+        "        inout b;\n"
+        "}\n"
+
+        "interface IUnidirectionalChannel\n"
+        "{\n"
+        "    gates:\n"
+        "        input i;\n"
+        "        output o;\n"
+        "}\n"
+    ;
+
+    NEDErrorStore errors;
+    NEDParser parser(&errors);
+    NEDElement *tree = parser.parseNEDText(nedcode);
+    //FIXME check errors; run validation perhaps, etc!
+
+    try
+    {
+        addFile("[builtin-declarations]", tree);
+    }
+    catch (NEDException *e)
+    {
+        throw new cRuntimeError("NED error: %s", e->errorMessage()); // FIXME or something
+    }
+}
+
 void cNEDLoader::addComponent(const char *name, NEDElement *node)
 {
     if (!areDependenciesResolved(node))

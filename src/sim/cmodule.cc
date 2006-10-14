@@ -17,7 +17,6 @@
 
 #include <stdio.h>           // sprintf
 #include <string.h>          // strcpy
-#include <assert.h>
 #include "cmodule.h"
 #include "csimplemodule.h"
 #include "cgate.h"
@@ -28,6 +27,7 @@
 #include "cenvir.h"
 #include "cexception.h"
 #include "cdisplaystring.h"
+#include "cchannel.h"
 #include "util.h"
 
 // static members:
@@ -41,15 +41,10 @@ cModule::cModule()
     idx=0; vectsize=-1;
     fullname = NULL;
 
-    rngmap = NULL;
-    rngmapsize = 0;
-
     dispstr = NULL;
     bgdispstr = NULL;
 
     prevp = nextp = firstsubmodp = lastsubmodp = NULL;
-
-    ev_enabled = true; // may get overridden from cEnvir::moduleCreated() hook
 
     // gates and parameter will be added by cModuleType
 }
@@ -98,8 +93,6 @@ cModule::~cModule()
         simulation.deregisterModule(this);
     if (parentModule())
         parentModule()->removeSubmodule(this);
-
-    delete [] rngmap;
 
     delete [] fullname;
     delete dispstr;
@@ -173,6 +166,16 @@ void cModule::removeSubmodule(cModule *mod)
 
     // cached module fullPath() possibly became invalid
     lastmodulefullpathmod = NULL;
+}
+
+void cModule::insertChannel(cChannel *channel)
+{
+    take(channel);
+}
+
+void cModule::removeChannel(cChannel *channel)
+{
+    // nothing, not even drop(channel) -- see comment in removeSubmodule() why
 }
 
 void cModule::setName(const char *s)
@@ -334,7 +337,7 @@ int cModule::setGateSize(const char *gname, int newsize)
         // we either move the vector backwards (newpos<oldpos) or to a completely new,
         // non-overlapping region (newpos>=oldpos+oldsize); the assert() below makes
         // sure this is really the case.
-        assert(newpos<oldpos || newpos>=oldpos+oldsize);
+        ASSERT(newpos<oldpos || newpos>=oldpos+oldsize);
         for (i=0; i<oldsize; i++)
         {
             cGate *gate = gatev[oldpos+i];
@@ -457,7 +460,7 @@ int cModule::findGate(const char *s, int index) const
        return i;
     else if (index<g->size())
        // assert may be removed later
-       {assert( gate(i+index)->index()==index ); return i+index;}
+       {ASSERT( gate(i+index)->index()==index ); return i+index;}
     else
        return -1;
 }

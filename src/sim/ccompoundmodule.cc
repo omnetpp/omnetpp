@@ -17,7 +17,6 @@
 
 #include <stdio.h>
 #include <string.h>
-#include <assert.h>
 #include "ccompoundmodule.h"
 #include "ccomponenttype.h"
 #include "cmessage.h"

@@ -167,7 +167,7 @@ cChannel *cChannelType::create(const char *name, cModule *parentmod)
     // set up channel: set name, channel type, etc
     channel->setName(name);
     channel->setComponentType(this);
-//XXX parentmod->insertChannel(channel);
+    parentmod->insertChannel(channel);
 
     // put the object members of the new module to their place
     channel->takeAllObjectsFrom(tmplist);
@@ -176,7 +176,7 @@ cChannel *cChannelType::create(const char *name, cModule *parentmod)
     cObject::setDefaultOwner(oldlist);
 
     // set up RNG mapping
-//XXX    ev.getRNGMappingFor(channel);
+    ev.getRNGMappingFor(channel);
 
     // add parameters to the new module
     addParametersTo(channel);

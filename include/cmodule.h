@@ -58,6 +58,7 @@ class SIM_API cModule : public cComponent //noncopyable
     friend class cGate;
     friend class cSimulation;
     friend class cModuleType;
+    friend class cChannelType;
     friend class cSubModIterator;
 
   public:
@@ -84,23 +85,11 @@ class SIM_API cModule : public cComponent //noncopyable
     cDisplayString *dispstr;   // display string as submodule (icon, etc)
     cDisplayString *bgdispstr; // display string when enclosing module (background color, etc)
 
-    bool ev_enabled;        // in Cmdenv this tells if ev<< output if printed for this module
-
-    short rngmapsize;       // size of rngmap array (RNGs>=rngmapsize are mapped one-to-one to physical RNGs)
-    int *rngmap;            // maps local RNG numbers (may be NULL if rngmapsize==0)
-
   public:
     // internal: used from Tkenv: find out if cGate has a display string.
     // displayString() would create the object immediately which we want to avoid.
     bool hasDisplayString() {return dispstr!=NULL;}
     bool hasBackgroundDisplayString() {return bgdispstr!=NULL;}
-
-    // internal: currently used by Cmdenv
-    void setEvEnabled(bool e)  {ev_enabled = e;}
-    bool isEvEnabled() {return ev_enabled;}
-
-    // internal: invoked from within cEnvir::getRNGMappingFor(mod)
-    void setRNGMap(short size, int *map) {rngmapsize=size; rngmap=map;}
 
   protected:
     // internal: called when a message arrives at a gate which is no further
@@ -119,6 +108,12 @@ class SIM_API cModule : public cComponent //noncopyable
 
     // internal: removes a submodule
     void removeSubmodule(cModule *mod);
+
+    // internal: inserts a channel. Called as part of the network setup process.
+    void insertChannel(cChannel *channel);
+
+    // internal: removes a channel
+    void removeChannel(cChannel *channel);
 
     // internal: "virtual ctor" for cGate, because in cPlaceHolderModule
     // we'll need different gate objects

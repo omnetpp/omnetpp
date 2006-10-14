@@ -23,7 +23,6 @@
 
 #include <string.h>    // strcpy
 #include <stdio.h>     // vsprintf()
-#include <assert.h>
 #include "cmodule.h"
 #include "csimplemodule.h"
 #include "cmessage.h"
@@ -81,7 +80,7 @@ ostream& operator<<(ostream& os, struct tm d)
 
 cSimulation::cSimulation(const char *name) : cNoncopyableObject(name, false)
 {
-    assert(this==&simulation);
+    ASSERT(this==&simulation);
 
     msgQueue.setName("scheduled-events");
 
