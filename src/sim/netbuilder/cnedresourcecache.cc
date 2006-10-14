@@ -194,6 +194,7 @@ cNEDDeclaration *cNEDResourceCache::buildNEDDeclaration(NEDElement *node)
         decl->setImplementationClassName(name);
 
     // add inherited parameters and gates
+    //FIXME copy "interfaces" from parents too!!!!
     for (NEDElement *child=node->getFirstChildWithTag(NED_EXTENDS); child; child=child->getNextSiblingWithTag(NED_EXTENDS))
     {
         const char *superName = ((ExtendsNode *)child)->getName();

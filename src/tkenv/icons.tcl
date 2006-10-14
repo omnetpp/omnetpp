@@ -227,10 +227,10 @@ set icons(finish) [image create photo -data {
 
 set icons(findobj) [image create photo -data {
     R0lGODlhFAATALMAAAAAAOnqvkZJuQAAwACA/8PDw25ubp6enkAAAIAAAMbGxv//
-    /////////////////yH5BAEAAAEALAAAAAAUABMAAARwMMhJqzU4652lEWAojoLh
-    kWhoBkbhukAMvPTatsj85kXWey7EQUF8HRA1YAFQpC17N+BMwcG9bE/qBtb7sZ5O
-    GtKF1W0PzygLM/YdEZsKAG0UAiwVXuFoGAzueBQIOQADCn6AgRaGf4mKFIyPkhMR
-    AAA7
+    AP8AAADAAP///////yH5BAEAAAEALAAAAAAUABMAAAR3MMhJq70YF8BBYWAWIF5h
+    kiCDIUfFHEhobUEqgZ5q5anOFAgMoNajdI6SYU8nIS2ei2HAQ2QGNgBoVAK8FAwb
+    rXTaajS4hmEWOh4BzCbDYHDsWBAkwEAxb1PMAYASe30XgIdnhHQWiIFnAYptdXWD
+    fBwiFoQTEQAAOw==
 }]
 
 set icons(chan_vs) [image create photo -data {
@@ -345,4 +345,36 @@ set icons(modtype) [image create photo -data {
     r3hMiQAAOw==
 }]
 
+set icons(channel) [image create photo -data {
+    R0lGODlhFAATALMAAAAAAMbGxoCAgP//////////////////////////////////
+    /////////////////yH5BAEAAAAALAAAAAAUABMAAAQpMMhJq7046827BkIojqQA
+    SECqrqw6tbDrzV4cv/YdgGUfnrSgcEgsZiIAOw==
+}]
+
+set icons(copy) [image create photo -data {
+    R0lGODlhFAATALMAAAAAAAAAhMbGxv//////////////////////////////////
+    /////////////////yH5BAEAAAIALAAAAAAUABMAAARGUMhJq734gs1zBUM4bN4E
+    iiBQCmkavDB2ioE4vNrI1fRtzaHa5hajtDY8m8+oFHJAgc8TkLRFPU7OMlOllWBg
+    3GpMLptLEQA7
+}]
+
+set icons(cut) [image create photo -data {
+    R0lGODlhFAATALMAAAAAAAAAhMbGxgAA////////////////////////////////
+    /////////////////yH5BAEAAAIALAAAAAAUABMAAARFUMhJq7Vg5ou3AB4ngVoo
+    kqPJoZ96gRksViQ7p/aN61UABIMBLxgQBI7C2eBYLBqTl6WkOYVapMasICjCOpG3
+    pZNHLnMiADs=
+}]
+
+set icons(paste) [image create photo -data {
+    R0lGODlhFAATALMAAAAAAAAAhISEAISEhMbGxv//AP//////////////////////
+    /////////////////yH5BAEAAAQALAAAAAAUABMAAARVkMhJq704T8CBlh1XFKFn
+    AYMwACQLqIJJveupyltadrqd/rAfDgQcBI7IwJBAgwUMUOjxVHxGDc9ApZnKHrHT
+    WfUa1c6CAi8SewpZyeZMcv6p2+/1CAA7
+}]
+
+set icons(props) [image create photo -data {
+    R0lGODlhFAATALMAAAAAAMbGxv//////////////////////////////////////
+    /////////////////yH5BAEAAAEALAAAAAAUABMAAAQ5MMhJq704awy6/94FCGRp
+    CoCIgh6qnmdqjexIypUNlzhF17TX7qaq8YTD3uRnVEp0SRHws6lar9cIADs=
+}]
 

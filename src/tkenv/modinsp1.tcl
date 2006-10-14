@@ -44,7 +44,7 @@ proc moduleinspector_add_run_buttons {w} {
     set help_tips($w.toolbar.fastrun) {Run faster: no animation and rare inspector updates (F6)}
     set help_tips($w.toolbar.exprrun) {Run at full speed: no text output, animation or inspector updates (F7)}
     set help_tips($w.toolbar.mrun)    {Run until next event in this module}
-    set help_tips($w.toolbar.mfast)   {Fast run until next event in this module (Ctrl-F4)}
+    set help_tips($w.toolbar.mfast)   {Fast run until next event in this module (Ctrl+F4)}
     set help_tips($w.toolbar.until)   {Run until time or event number}
     set help_tips($w.toolbar.stop)    {Stop running simulation (F8)}
 }
@@ -184,29 +184,32 @@ proc _create_modulewindow {name geom iscompound} {
         pack_iconbutton $w.toolbar.graph  -image $icons(asgraphics) -command "inspect_this $w {As Graphics}"
         pack_iconbutton $w.toolbar.obj    -image $icons(asobject) -command "inspect_this $w {As Object}"
         pack_iconbutton $w.toolbar.sep1   -separator
+        pack_iconbutton $w.toolbar.copy   -image $icons(copy) -command "edit_copy $w.main.text"
+        pack_iconbutton $w.toolbar.find   -image $icons(find) -command "findDialog $w.main.text"
+        pack_iconbutton $w.toolbar.sep3   -separator
 
         moduleinspector_add_run_buttons $w
-
-        pack_iconbutton $w.toolbar.sep3   -separator
-        pack_iconbutton $w.toolbar.find   -image $icons(find) -command "findDialog $w.main.text"
 
         set help_tips($w.toolbar.owner)  {Inspect parent module}
         set help_tips($w.toolbar.graph)  {Inspect as network graphics}
         set help_tips($w.toolbar.obj)    {Inspect as object}
-        set help_tips($w.toolbar.find)   {Find string in window}
+        set help_tips($w.toolbar.copy)   {Copy selected text to clipboard (Ctrl+C)}
+        set help_tips($w.toolbar.find)   {Find string in window (Ctrl+F}
 
     } else {
         # for simple module
         pack_iconbutton $w.toolbar.obj    -image $icons(asobject) -command "inspect_this $w {As Object}"
         pack_iconbutton $w.toolbar.sep1   -separator
+        pack_iconbutton $w.toolbar.copy   -image $icons(copy) -command "edit_copy $w.main.text"
+        pack_iconbutton $w.toolbar.find   -image $icons(find) -command "findDialog $w.main.text"
+        pack_iconbutton $w.toolbar.sep2   -separator
 
         moduleinspector_add_run_buttons $w
 
-        pack_iconbutton $w.toolbar.find   -image $icons(find) -command "findDialog $w.main.text"
-
         set help_tips($w.toolbar.owner)  {Inspect parent module}
         set help_tips($w.toolbar.obj)    {Inspect as object}
-        set help_tips($w.toolbar.find)   {Find string in window}
+        set help_tips($w.toolbar.copy)   {Copy selected text to clipboard (Ctrl+C)}
+        set help_tips($w.toolbar.find)   {Find string in window (Ctrl+F}
     }
 
     #frame $w.statusbar

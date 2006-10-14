@@ -118,10 +118,10 @@ proc create_omnetpp_window {} {
 
     # Edit menu
     foreach i {
-      {command -command edit_copy -label {Copy} -accel {Ctrl-C} -underline 0}
+      {command -command edit_copy -label {Copy} -accel {Ctrl+C} -underline 0}
       {separator}
-      {command -command edit_find -label {Find...} -accel {Ctrl-F} -underline 0}
-      {command -command edit_findnext -label {Find next} -accel {Ctrl-N,F3} -underline 5}
+      {command -command edit_find -label {Find...} -accel {Ctrl+F} -underline 0}
+      {command -command edit_findnext -label {Find next} -accel {Ctrl+N,F3} -underline 5}
     } {
       eval .menubar.editmenu$m add $i
     }
@@ -165,7 +165,7 @@ proc create_omnetpp_window {} {
       {separator}
       {cascade -label {Available components} -underline 10 -menu .menubar.inspectmenu$m.components}
       {separator}
-      {command -command inspect_filteredobjectlist -label {Show 'Find/inspect objects' window} -accel {Ctrl-S} -underline 0}
+      {command -command inspect_filteredobjectlist -label {Show 'Find/inspect objects' window} -accel {Ctrl+S} -underline 0}
       {command -command inspect_bypointer -label {Inspect by pointer...} -underline 4}
       {separator}
       {command -command opp_updateinspectors -label {Refresh inspectors} -underline 0}
@@ -226,11 +226,15 @@ proc create_omnetpp_window {} {
     #  {restart  -image $icons(restart) -command {rebuild}}
 
     foreach i {
-      {sep01    -separator}
+      {sep00    -separator}
       {newrun   -image $icons(newrun)  -command {new_run}}
       {newnet   -image $icons(newnet)  -command {new_network}}
       {loadned  -image $icons(loadned) -command {load_nedfile}}
-
+      {sep5     -separator}
+      {network  -image $icons(network) -command {inspect_systemmodule}}
+      {sep01    -separator}
+      {copy     -image $icons(copy)    -command {edit_copy}}
+      {find     -image $icons(find)    -command {edit_find}}
       {sep0     -separator}
       {step     -image $icons(step)    -command {one_step}}
       {sep1     -separator}
@@ -243,13 +247,9 @@ proc create_omnetpp_window {} {
       {stop     -image $icons(stop)    -command {stop_simulation}}
       {sep4     -separator}
       {finish   -image $icons(finish)  -command {call_finish}}
-      {sep5     -separator}
-      {network  -image $icons(network) -command {inspect_systemmodule}}
-      {sep6     -separator}
-      {find     -image $icons(find)    -command {edit_find}}
-      {sep7     -separator}
+      {sep02     -separator}
       {objs     -image $icons(findobj) -command {inspect_filteredobjectlist}}
-      {sep8     -separator}
+      {sep6     -separator}
       {tline    -image $icons(fes)     -command {toggle_timeline}}
       {tree     -image $icons(tree)    -command {toggle_treeview}}
       {sep9     -separator}
@@ -261,6 +261,7 @@ proc create_omnetpp_window {} {
 
     set help_tips(.toolbar.loadned) {Load NED file for compound module definitions}
     set help_tips(.toolbar.newrun)  {Set up a run}
+    set help_tips(.toolbar.copy)    {Copy selected text to clipboard (Ctrl+C)}
     set help_tips(.toolbar.newnet)  {Set up a network}
     set help_tips(.toolbar.step)    {Execute one event (F4)}
     set help_tips(.toolbar.run)     {Run with full animation (F5)}
@@ -271,11 +272,11 @@ proc create_omnetpp_window {} {
     set help_tips(.toolbar.restart) {Rebuild network}
     set help_tips(.toolbar.finish)  {Call finish()}
     set help_tips(.toolbar.network) {Inspect network}
-    set help_tips(.toolbar.objs)    {Find/inspect objects (Ctrl-S)}
+    set help_tips(.toolbar.objs)    {Find/inspect objects (Ctrl+S)}
     set help_tips(.toolbar.tline)   {Show/hide timeline}
     set help_tips(.toolbar.tree)    {Show/hide object tree}
     set help_tips(.toolbar.options) {Simulation options}
-    set help_tips(.toolbar.find)    {Find string in main window (Ctrl-F)}
+    set help_tips(.toolbar.find)    {Find string in main window (Ctrl+F)}
 
     #################################
     # Create status bars

@@ -490,9 +490,8 @@ proc _doFind {w findstring case words regexp backwards} {
 # filteredobjectlist_window --
 #
 # Implements the "Find/inspect objects" dialog.
-# Currently only used to open module windows.
 #
-proc filteredobjectlist_window {} {
+proc filteredobjectlist_window {{ptr ""}} {
     global config tmp icons help_tips
     global HAVE_BLT
 
@@ -500,6 +499,7 @@ proc filteredobjectlist_window {} {
 
     # if already exists, show it
     if {[winfo exists $w]} {
+        # FIXME fill in "search in" field
         wm deiconify $w; return
     }
 
