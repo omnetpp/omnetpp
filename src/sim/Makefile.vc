@@ -27,7 +27,7 @@ CPPOBJS_STD=\
     cstringpool.obj cstrtokenizer.obj cstruct.obj ctopo.obj cvarhist.obj \
     cvisitor.obj cwatch.obj cxmlelement.obj cxmlpar.obj distrib.obj \
     errmsg.obj globals.obj lex.expryy.obj minixpath.obj onstartup.obj \
-    task.obj util.obj  expr.tab.obj
+    task.obj util.obj  expr.tab.obj nedsupport.obj
 
 CPPOBJS_NETBUILDER=\
     netbuilder\cexpressionbuilder.obj \
@@ -1487,6 +1487,36 @@ minixpath.obj: minixpath.cc \
   ../../include/errmsg.h \
   ../../include/opp_string.h \
   ../../include/util.h
+nedsupport.obj: nedsupport.cc \
+  ../../include/cdynamicexpression.h \
+  ../../include/cxmlelement.h \
+  ../../include/cfunction.h \
+  ../../include/cnedfunction.h \
+  ../../include/cexception.h \
+  ../../include/cenvir.h \
+  ../../include/cmodule.h \
+  ../../include/nedsupport.h \
+  ../../include/cexpression.h \
+  ../../include/cpolymorphic.h \
+  ../../include/defs.h \
+  ../../include/util.h \
+  ../../include/regmacros.h \
+  ../../include/onstartup.h \
+  ../../include/globals.h \
+  ../../include/cobject.h \
+  ../../include/carray.h \
+  ../../include/cclassfactory.h \
+  ../../include/cvisitor.h \
+  ../../include/cstringpool.h \
+  ../../include/errmsg.h \
+  ../../include/opp_string.h \
+  ../../include/ccomponent.h \
+  ../../include/cgate.h \
+  ../../include/csimulation.h \
+  ../../include/cpar.h \
+  ../../include/cdefaultlist.h \
+  ../../include/cmsgheap.h \
+  ../../include/ccoroutine.h
 onstartup.obj: onstartup.cc \
   ../../include/onstartup.h \
   ../../include/cexception.h \
@@ -1618,6 +1648,7 @@ netbuilder/cexpressionbuilder.obj: netbuilder/cexpressionbuilder.cc \
   ../../include/cfunction.h \
   ../../include/cnedfunction.h \
   ../../include/cpar.h \
+  ../../include/nedsupport.h \
   ../../include/cdynamicexpression.h \
   ../../include/cexception.h \
   ../../include/cexpression.h \

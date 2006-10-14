@@ -40,6 +40,7 @@
 #include "cnednetworkbuilder.h"
 #include "cnedloader.h"
 #include "cexpressionbuilder.h"
+#include "nedsupport.h"
 
 
 inline bool strnull(const char *s)

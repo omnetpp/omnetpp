@@ -94,6 +94,7 @@
 #include "regmacros.h"
 #include "stlwrap.h"
 #include "util.h"
+#include "nedsupport.h"
 #include "compat.h"
 
 #endif

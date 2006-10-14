@@ -48,7 +48,7 @@ CPPOBJS_STD=\
     cstringpool.o cstrtokenizer.o cstruct.o ctopo.o cvarhist.o \
     cvisitor.o cwatch.o cxmlelement.o cxmlpar.o distrib.o \
     errmsg.o globals.o lex.expryy.o minixpath.o onstartup.o \
-    task.o util.o expr.tab.o
+    task.o util.o expr.tab.o nedsupport.o
 
 CPPOBJS_NETBUILDER=\
     netbuilder/cexpressionbuilder.o \

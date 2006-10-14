@@ -26,6 +26,7 @@
 #include "cnedfunction.h"
 #include "cpar.h"
 #include "xmlgenerator.h"
+#include "nedsupport.h"
 
 inline bool strnull(const char *s)
 {
