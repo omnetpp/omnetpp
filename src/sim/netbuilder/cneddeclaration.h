@@ -35,11 +35,11 @@ class cDynamicExpression;
 /**
  * Represents NED declarations of modules, module interfaces,
  * channels and channel interfaces. All cNEDDeclaration objects are
- * created and managed by cNEDResourceCache.
+ * created and managed by cNEDLoader.
  *
  * cNEDDeclaration stores two things:
  *  - a pointer to the complete NEDElement tree of the NED declaration;
- *    this pointer points into the cNEDResourceCache.
+ *    this pointer points into the cNEDLoader.
  *  - parameter and gate descriptions extracted from the NEDElement trees,
  *    also following the inheritance chain. Inherited parameters and
  *    gates are included, and values (parameters and gate sizes) are

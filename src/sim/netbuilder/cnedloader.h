@@ -1,5 +1,5 @@
 //==========================================================================
-// CNEDRESOURCECACHE.H -
+// CNEDLOADER.H -
 //
 //                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
@@ -14,8 +14,8 @@
 *--------------------------------------------------------------*/
 
 
-#ifndef __CNEDRESOURCECACHE_H
-#define __CNEDRESOURCECACHE_H
+#ifndef __CNEDLOADER_H
+#define __CNEDLOADER_H
 
 #include "defs.h"
 #include "nedresourcecache.h"
@@ -35,14 +35,14 @@ class PropertyNode;
  * NED declarations are wrapped in cNEDDeclaration objects, which
  * point back into the NEDElement trees of the loaded NED files.
  *
- * This cNEDResourceCache class extends nedxml's NEDResourceCache, and
+ * This cNEDLoader class extends nedxml's NEDResourceCache, and
  * cNEDDeclaration extends nexml's corresponding NEDComponent.
  */
-class SIM_API cNEDResourceCache : public NEDResourceCache
+class SIM_API cNEDLoader : public NEDResourceCache
 {
   protected:
     // the singleton instance
-    static cNEDResourceCache *instance_;
+    static cNEDLoader *instance_;
 
     // storage for NED components not resolved yet because of missing dependencies
     std::vector<NEDElement *> pendingList;
@@ -63,11 +63,11 @@ class SIM_API cNEDResourceCache : public NEDResourceCache
     cProperty *extractProperty(PropertyNode *propNode);
 
     // constructor is protected, because we want only one instance
-    cNEDResourceCache() {}
+    cNEDLoader() {}
 
   public:
     /** Access to singleton instance */
-    static cNEDResourceCache *instance();
+    static cNEDLoader *instance();
 
     /** Disposes of singleton instance */
     static void clear();

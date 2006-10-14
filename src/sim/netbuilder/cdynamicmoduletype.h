@@ -24,7 +24,7 @@
 
 
 /**
- * NEDXML-based cModuleType: takes all info from cNEDResourceCache
+ * NEDXML-based cModuleType: takes all info from cNEDLoader
  */
 class cDynamicModuleType : public cModuleType
 {

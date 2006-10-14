@@ -21,7 +21,7 @@
 
 #include "cdynamicchanneltype.h"
 #include "cneddeclaration.h"
-#include "cnedresourcecache.h"
+#include "cnedloader.h"
 #include "cnednetworkbuilder.h"
 
 
@@ -31,21 +31,21 @@ cDynamicChannelType::cDynamicChannelType(const char *name) : cChannelType(name)
 
 std::string cDynamicChannelType::info() const
 {
-    cNEDDeclaration *decl = cNEDResourceCache::instance()->lookup2(name());
+    cNEDDeclaration *decl = cNEDLoader::instance()->lookup2(name());
     ASSERT(decl!=NULL);
     return decl->info();
 }
 
 std::string cDynamicChannelType::detailedInfo() const
 {
-    cNEDDeclaration *decl = cNEDResourceCache::instance()->lookup2(name());
+    cNEDDeclaration *decl = cNEDLoader::instance()->lookup2(name());
     ASSERT(decl!=NULL);
     return decl->detailedInfo();
 }
 
 cChannel *cDynamicChannelType::createChannelObject()
 {
-    cNEDDeclaration *decl = cNEDResourceCache::instance()->lookup2(name());
+    cNEDDeclaration *decl = cNEDLoader::instance()->lookup2(name());
     ASSERT(decl!=NULL);
 //FIXME assert that it's a channel
     const char *classname = decl->implementationClassName();
@@ -55,7 +55,7 @@ cChannel *cDynamicChannelType::createChannelObject()
 
 void cDynamicChannelType::addParametersTo(cChannel *channel)
 {
-    cNEDDeclaration *decl = cNEDResourceCache::instance()->lookup2(name());
+    cNEDDeclaration *decl = cNEDLoader::instance()->lookup2(name());
     ASSERT(decl!=NULL);
     cNEDNetworkBuilder().addParameters(channel, decl);
 }

@@ -23,7 +23,7 @@
 
 
 /**
- * NEDXML-based cChannelType: takes all info from cNEDResourceCache
+ * NEDXML-based cChannelType: takes all info from cNEDLoader
  */
 class cDynamicChannelType : public cChannelType
 {

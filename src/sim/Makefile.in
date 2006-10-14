@@ -53,7 +53,7 @@ CPPOBJS_STD=\
 CPPOBJS_NETBUILDER=\
     netbuilder/cexpressionbuilder.o \
     netbuilder/cneddeclaration.o \
-    netbuilder/cnedresourcecache.o \
+    netbuilder/cnedloader.o \
     netbuilder/cdynamicchanneltype.o \
     netbuilder/cdynamicmoduletype.o \
     netbuilder/cnednetworkbuilder.o

@@ -21,7 +21,7 @@
 
 #include "cdynamicmoduletype.h"
 #include "cneddeclaration.h"
-#include "cnedresourcecache.h"
+#include "cnedloader.h"
 #include "cnednetworkbuilder.h"
 
 
@@ -31,21 +31,21 @@ cDynamicModuleType::cDynamicModuleType(const char *name) : cModuleType(name)
 
 std::string cDynamicModuleType::info() const
 {
-    cNEDDeclaration *decl = cNEDResourceCache::instance()->lookup2(name());
+    cNEDDeclaration *decl = cNEDLoader::instance()->lookup2(name());
     ASSERT(decl!=NULL);
     return decl->info();
 }
 
 std::string cDynamicModuleType::detailedInfo() const
 {
-    cNEDDeclaration *decl = cNEDResourceCache::instance()->lookup2(name());
+    cNEDDeclaration *decl = cNEDLoader::instance()->lookup2(name());
     ASSERT(decl!=NULL);
     return decl->detailedInfo();
 }
 
 cModule *cDynamicModuleType::createModuleObject()
 {
-    cNEDDeclaration *decl = cNEDResourceCache::instance()->lookup2(name());
+    cNEDDeclaration *decl = cNEDLoader::instance()->lookup2(name());
     ASSERT(decl!=NULL);
 //FIXME assert that it's a module decl
     const char *classname = decl->implementationClassName();
@@ -57,7 +57,7 @@ cModule *cDynamicModuleType::createModuleObject()
 
 void cDynamicModuleType::addParametersGatesTo(cModule *module)
 {
-    cNEDDeclaration *decl = cNEDResourceCache::instance()->lookup2(name());
+    cNEDDeclaration *decl = cNEDLoader::instance()->lookup2(name());
     ASSERT(decl!=NULL);
     cNEDNetworkBuilder().addParameters(module, decl);
     cNEDNetworkBuilder().addGates(module, decl);
@@ -66,7 +66,7 @@ void cDynamicModuleType::addParametersGatesTo(cModule *module)
 
 void cDynamicModuleType::buildInside(cModule *module)
 {
-    cNEDDeclaration *decl = cNEDResourceCache::instance()->lookup2(name());
+    cNEDDeclaration *decl = cNEDLoader::instance()->lookup2(name());
     ASSERT(decl!=NULL);
     cNEDNetworkBuilder().buildInside(module, decl);
 }

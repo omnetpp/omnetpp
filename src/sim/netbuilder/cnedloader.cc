@@ -1,5 +1,5 @@
 //==========================================================================
-// CNEDRESOURCECACHE.CC -
+// CNEDLOADER.CC -
 //
 //                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
@@ -13,7 +13,7 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include "cnedresourcecache.h"
+#include "cnedloader.h"
 #include "nedelements.h"
 #include "nederror.h"
 #include "nedparser.h"
@@ -35,23 +35,23 @@
 #include "cdynamicmoduletype.h"
 #include "cdynamicchanneltype.h"
 
-cNEDResourceCache *cNEDResourceCache::instance_;
+cNEDLoader *cNEDLoader::instance_;
 
-cNEDResourceCache *cNEDResourceCache::instance()
+cNEDLoader *cNEDLoader::instance()
 {
     if (!instance_)
-        instance_ = new cNEDResourceCache();
+        instance_ = new cNEDLoader();
     return instance_;
 }
 
-void cNEDResourceCache::clear()
+void cNEDLoader::clear()
 {
     delete instance_;
     instance_ = NULL;
 }
 
 //FIXME rename class to cNEDLoader
-void cNEDResourceCache::addComponent(const char *name, NEDElement *node)
+void cNEDLoader::addComponent(const char *name, NEDElement *node)
 {
     if (!areDependenciesResolved(node))
     {
@@ -78,12 +78,12 @@ void cNEDResourceCache::addComponent(const char *name, NEDElement *node)
         componentTypes.instance()->add(type);
 }
 
-cNEDDeclaration *cNEDResourceCache::lookup2(const char *name) const
+cNEDDeclaration *cNEDLoader::lookup2(const char *name) const
 {
     return dynamic_cast<cNEDDeclaration *>(NEDResourceCache::lookup(name));
 }
 
-NEDElement *cNEDResourceCache::parseAndValidateNedFile(const char *fname, bool isXML)
+NEDElement *cNEDLoader::parseAndValidateNedFile(const char *fname, bool isXML)
 {
     // load file
     NEDElement *tree = 0;
@@ -125,7 +125,7 @@ NEDElement *cNEDResourceCache::parseAndValidateNedFile(const char *fname, bool i
     return tree;
 }
 
-void cNEDResourceCache::loadNedFile(const char *nedfname, bool isXML)
+void cNEDLoader::loadNedFile(const char *nedfname, bool isXML)
 {
     // parse file
     NEDElement *tree = parseAndValidateNedFile(nedfname, isXML);
@@ -141,7 +141,7 @@ void cNEDResourceCache::loadNedFile(const char *nedfname, bool isXML)
 }
 
 
-bool cNEDResourceCache::areDependenciesResolved(NEDElement *node)
+bool cNEDLoader::areDependenciesResolved(NEDElement *node)
 {
     for (NEDElement *child=node->getFirstChild(); child; child=child->getNextSibling())
     {
@@ -156,7 +156,7 @@ bool cNEDResourceCache::areDependenciesResolved(NEDElement *node)
     return true;
 }
 
-void cNEDResourceCache::tryResolvePendingDeclarations()
+void cNEDLoader::tryResolvePendingDeclarations()
 {
     bool again = true;
     while (again)
@@ -174,7 +174,7 @@ void cNEDResourceCache::tryResolvePendingDeclarations()
     }
 }
 
-cNEDDeclaration *cNEDResourceCache::buildNEDDeclaration(NEDElement *node)
+cNEDDeclaration *cNEDLoader::buildNEDDeclaration(NEDElement *node)
 {
     const char *name = node->getAttribute("name");
 
@@ -283,7 +283,7 @@ cNEDDeclaration *cNEDResourceCache::buildNEDDeclaration(NEDElement *node)
     return decl;
 }
 
-cNEDDeclaration::ParamDescription cNEDResourceCache::extractParamDescription(ParamNode *paramNode)
+cNEDDeclaration::ParamDescription cNEDLoader::extractParamDescription(ParamNode *paramNode)
 {
     cNEDDeclaration::ParamDescription desc;
     desc.name = paramNode->getName();
@@ -300,7 +300,7 @@ cNEDDeclaration::ParamDescription cNEDResourceCache::extractParamDescription(Par
     return desc;
 }
 
-cNEDDeclaration::GateDescription cNEDResourceCache::extractGateDescription(GateNode *gateNode)
+cNEDDeclaration::GateDescription cNEDLoader::extractGateDescription(GateNode *gateNode)
 {
     cNEDDeclaration::GateDescription desc;
     desc.name = gateNode->getName();
@@ -314,7 +314,7 @@ cNEDDeclaration::GateDescription cNEDResourceCache::extractGateDescription(GateN
     return desc;
 }
 
-cProperties *cNEDResourceCache::extractProperties(NEDElement *parent)
+cProperties *cNEDLoader::extractProperties(NEDElement *parent)
 {
     cProperties *props = NULL;
     for (NEDElement *child=parent->getFirstChildWithTag(NED_PROPERTY); child; child=child->getNextSiblingWithTag(NED_PROPERTY))
@@ -328,7 +328,7 @@ cProperties *cNEDResourceCache::extractProperties(NEDElement *parent)
     return props;
 }
 
-cProperty *cNEDResourceCache::extractProperty(PropertyNode *propNode)
+cProperty *cNEDLoader::extractProperty(PropertyNode *propNode)
 {
     cProperty *prop = new cProperty(propNode->getName());
     prop->setIsImplicit(propNode->getIsImplicit());
@@ -352,7 +352,7 @@ cProperty *cNEDResourceCache::extractProperty(PropertyNode *propNode)
 }
 
 
-void cNEDResourceCache::done()
+void cNEDLoader::done()
 {
     // we've loaded all NED files now, try resolving those which had missing dependencies
     tryResolvePendingDeclarations();

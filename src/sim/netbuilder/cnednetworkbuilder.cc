@@ -38,7 +38,7 @@
 
 #include "cneddeclaration.h"
 #include "cnednetworkbuilder.h"
-#include "cnedresourcecache.h"
+#include "cnedloader.h"
 #include "cexpressionbuilder.h"
 
 
@@ -120,7 +120,7 @@ void cNEDNetworkBuilder::buildRecursively(cModule *modp, cNEDDeclaration *decl)
     if (decl->numExtendsNames() > 0)
     {
         const char *superName = decl->extendsName(0);
-        cNEDDeclaration *superDecl = cNEDResourceCache::instance()->lookup2(superName);
+        cNEDDeclaration *superDecl = cNEDLoader::instance()->lookup2(superName);
         ASSERT(superDecl!=NULL);
         buildRecursively(modp, superDecl);
     }
@@ -515,7 +515,7 @@ cChannel *cNEDNetworkBuilder::createChannelForConnection(ConnectionNode *conn, c
     std::string channeltypename;
     if (strnull(channel->getLikeParam()))
     {
-        channeltypename = strnull(channel->getType()) ? "cBasicChannel" :  channel->getType();
+        channeltypename = strnull(channel->getType()) ? "cBasicChannel" : channel->getType();
     }
     else
     {

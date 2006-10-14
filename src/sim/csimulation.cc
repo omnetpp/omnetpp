@@ -39,7 +39,7 @@
 #endif
 
 #ifdef WITH_NETBUILDER
-#include "netbuilder/cnedresourcecache.h"
+#include "netbuilder/cnedloader.h"
 #endif
 
 using std::ostream;
@@ -128,7 +128,7 @@ void cSimulation::shutdown()
     msgQueue.ownerp = NULL;
 
 #ifdef WITH_NETBUILDER
-    cNEDResourceCache::clear();
+    cNEDLoader::clear();
 #endif
 }
 
@@ -240,7 +240,7 @@ void cSimulation::setScheduler(cScheduler *sched)
 void cSimulation::loadNedFile(const char *nedfile, bool isXML)
 {
 #ifdef WITH_NETBUILDER
-    cNEDResourceCache::instance()->loadNedFile(nedfile, isXML);
+    cNEDLoader::instance()->loadNedFile(nedfile, isXML);
 #else
     throw new cRuntimeError("cannot load `%s': simulation kernel was compiled without "
                             "support for dynamic loading of NED files (WITH_NETBUILDER=no)", nedfile);
@@ -250,7 +250,7 @@ void cSimulation::loadNedFile(const char *nedfile, bool isXML)
 void cSimulation::doneLoadingNedFiles()
 {
 #ifdef WITH_NETBUILDER
-    cNEDResourceCache::instance()->done();
+    cNEDLoader::instance()->done();
 #endif
 }
 
