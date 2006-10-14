@@ -272,7 +272,7 @@ proc create_omnetpp_window {} {
     set help_tips(.toolbar.restart) {Rebuild network}
     set help_tips(.toolbar.finish)  {Call finish()}
     set help_tips(.toolbar.network) {Inspect network}
-    set help_tips(.toolbar.objs)    {Find/inspect objects (Ctrl+S)}
+    set help_tips(.toolbar.objs)    {Find and inspect messages, queues, watched variables, statistics, etc (Ctrl+S)}
     set help_tips(.toolbar.tline)   {Show/hide timeline}
     set help_tips(.toolbar.tree)    {Show/hide object tree}
     set help_tips(.toolbar.options) {Simulation options}

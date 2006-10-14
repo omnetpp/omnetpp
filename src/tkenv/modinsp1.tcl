@@ -17,37 +17,58 @@
 #  non-graphical module inspectors etc.
 #
 
+proc moduleinspector_add_run_buttons {w} {
+    global icons help_tips
+
+    pack_iconbutton $w.toolbar.objs    -image $icons(findobj) -command "inspect_filteredobjectlist $w"
+    pack_iconbutton $w.toolbar.sep11   -separator
+
+    pack_iconbutton $w.toolbar.run     -image $icons(run)     -command {run_normal}
+    pack_iconbutton $w.toolbar.fastrun -image $icons(fast)    -command {run_fast}
+    pack_iconbutton $w.toolbar.exprrun -image $icons(express) -command {run_express}
+    pack_iconbutton $w.toolbar.sep12   -separator
+
+    pack_iconbutton $w.toolbar.mrun    -image $icons(mrun)    -command "runsimulation_local $w normal"
+    pack_iconbutton $w.toolbar.mfast   -image $icons(mfast)   -command "runsimulation_local $w fast"
+    pack_iconbutton $w.toolbar.sep13   -separator
+
+    pack_iconbutton $w.toolbar.until   -image $icons(until)   -command {run_until}
+    pack_iconbutton $w.toolbar.sep14   -separator
+
+    pack_iconbutton $w.toolbar.stop    -image $icons(stop)    -command {stop_simulation}
+    pack_iconbutton $w.toolbar.sep16   -separator
+
+    bind $w <Control-F4> "runsimulation_local $w fast"
+
+    set help_tips($w.toolbar.objs)    {Find and inspect messages, queues, watched variables, statistics, etc (Ctrl+S)}
+    set help_tips($w.toolbar.run)     {Run with full animation (F5)}
+    set help_tips($w.toolbar.fastrun) {Run faster: no animation and rare inspector updates (F6)}
+    set help_tips($w.toolbar.exprrun) {Run at full speed: no text output, animation or inspector updates (F7)}
+    set help_tips($w.toolbar.mrun)    {Run until next event in this module}
+    set help_tips($w.toolbar.mfast)   {Fast run until next event in this module (Ctrl+F4)}
+    set help_tips($w.toolbar.until)   {Run until time or event number}
+    set help_tips($w.toolbar.stop)    {Stop running simulation (F8)}
+}
+
+
 proc create_compoundmodinspector {name geom} {
     global icons help_tips
 
     set w $name
     create_inspector_toplevel $w $geom
 
-    iconbutton $w.toolbar.graph  -image $icons(asgraphics) -command "inspect_this $w {As Graphics}"
-    iconbutton $w.toolbar.win    -image $icons(asoutput) -command "inspect_this $w {Module output}"
-    iconbutton $w.toolbar.sep1   -separator
-    #iconbutton $w.toolbar.parent -image $icons(parent) ;#command assigned from C++
-    #iconbutton $w.toolbar.sep2   -separator
-    iconbutton $w.toolbar.mrun   -image $icons(mrun) -command "runsimulation_local $w normal"
-    iconbutton $w.toolbar.mfast  -image $icons(mfast) -command "runsimulation_local $w fast"
-    iconbutton $w.toolbar.stop   -image $icons(stop) -command "stop_simulation"
-    foreach i {graph win sep1 mrun mfast stop} {
-       pack $w.toolbar.$i -anchor n -side left -padx 0 -pady 2
-    }
+    pack_iconbutton $w.toolbar.graph   -image $icons(asgraphics) -command "inspect_this $w {As Graphics}"
+    pack_iconbutton $w.toolbar.win     -image $icons(asoutput) -command "inspect_this $w {Module output}"
+    pack_iconbutton $w.toolbar.sep1    -separator
 
-    iconbutton $w.toolbar.apply  -image $icons(apply) -command "opp_writebackinspector $w; opp_updateinspectors"
-    iconbutton $w.toolbar.revert -image $icons(revert) -command "opp_updateinspectors"
-    pack $w.toolbar.revert -anchor n -side right -padx 0 -pady 2
-    pack $w.toolbar.apply -anchor n -side right -padx 0 -pady 2
+    moduleinspector_add_run_buttons $w
 
-    bind $w <Control-F4> "runsimulation_local $w fast"
+    rpack_iconbutton $w.toolbar.apply  -image $icons(apply) -command "opp_writebackinspector $w; opp_updateinspectors"
+    rpack_iconbutton $w.toolbar.revert -image $icons(revert) -command "opp_updateinspectors"
 
     set help_tips($w.toolbar.owner)   {Inspect parent module}
     set help_tips($w.toolbar.graph)   {Inspect as network graphics}
     set help_tips($w.toolbar.win)     {See module output}
-    set help_tips($w.toolbar.mrun)    {Run until next event in this module}
-    set help_tips($w.toolbar.mfast)   {Fast run until next event in this module (Ctrl+F4)}
-    set help_tips($w.toolbar.stop)    {Stop running simulation (F8)}
     set help_tips($w.toolbar.apply)   {Apply changes (Enter)}
     set help_tips($w.toolbar.revert)  {Revert}
 
@@ -85,26 +106,16 @@ proc create_simplemodinspector {name geom} {
     set w $name
     create_inspector_toplevel $w $geom
 
-    iconbutton $w.toolbar.win    -image $icons(asoutput) -command "inspect_this $w {Module output}"
-    iconbutton $w.toolbar.sep1   -separator
-    #iconbutton $w.toolbar.parent -image $icons(parent) ;#command assigned from C++
-    #iconbutton $w.toolbar.sep2   -separator
-    iconbutton $w.toolbar.mrun   -image $icons(mrun) -command "runsimulation_local $w normal"
-    iconbutton $w.toolbar.mfast  -image $icons(mfast) -command "runsimulation_local $w fast"
-    iconbutton $w.toolbar.stop   -image $icons(stop) -command "stop_simulation"
-    foreach i {win sep1 mrun mfast stop} {
-       pack $w.toolbar.$i -anchor n -side left -padx 0 -pady 2
-    }
-    iconbutton $w.toolbar.apply  -image $icons(apply) -command "opp_writebackinspector $w; opp_updateinspectors"
-    iconbutton $w.toolbar.revert -image $icons(revert) -command "opp_updateinspectors"
-    pack $w.toolbar.revert -anchor n -side right -padx 0 -pady 2
-    pack $w.toolbar.apply -anchor n -side right -padx 0 -pady 2
+    pack_iconbutton $w.toolbar.win    -image $icons(asoutput) -command "inspect_this $w {Module output}"
+    pack_iconbutton $w.toolbar.sep1   -separator
+
+    moduleinspector_add_run_buttons $w
+
+    rpack_iconbutton $w.toolbar.apply  -image $icons(apply) -command "opp_writebackinspector $w; opp_updateinspectors"
+    rpack_iconbutton $w.toolbar.revert -image $icons(revert) -command "opp_updateinspectors"
 
     set help_tips($w.toolbar.owner)   {Inspect parent module}
     set help_tips($w.toolbar.win)     {See module output}
-    set help_tips($w.toolbar.mrun)    {Run until next event in this module}
-    set help_tips($w.toolbar.mfast)   {Fast run until next event in this module (Ctrl+F4)}
-    set help_tips($w.toolbar.stop)    {Stop running simulation (F8)}
     set help_tips($w.toolbar.apply)   {Apply changes (Enter)}
     set help_tips($w.toolbar.revert)  {Revert}
 
@@ -179,50 +190,35 @@ proc _create_modulewindow {name geom iscompound} {
     # Add icons
     if {$iscompound} {
         # for compound module
-        iconbutton $w.toolbar.graph  -image $icons(asgraphics) -command "inspect_this $w {As Graphics}"
-        iconbutton $w.toolbar.obj    -image $icons(asobject) -command "inspect_this $w {As Object}"
-        iconbutton $w.toolbar.sep1   -separator
-        #iconbutton $w.toolbar.parent -image $icons(parent) ;#command assigned from C++
-        #iconbutton $w.toolbar.sep2   -separator
-        iconbutton $w.toolbar.mrun   -image $icons(mrun) -command "runsimulation_local $w normal"
-        iconbutton $w.toolbar.mfast  -image $icons(mfast) -command "runsimulation_local $w fast"
-        iconbutton $w.toolbar.stop   -image $icons(stop) -command "stop_simulation"
-        iconbutton $w.toolbar.sep3   -separator
-        iconbutton $w.toolbar.find   -image $icons(find) -command "findDialog $w.main.text"
-        foreach i {obj graph sep1 mrun mfast stop sep3 find} {
-           pack $w.toolbar.$i -anchor n -side left -padx 0 -pady 2
-        }
-        bind $w <Control-F4> "runsimulation_local $w fast"
+        pack_iconbutton $w.toolbar.graph  -image $icons(asgraphics) -command "inspect_this $w {As Graphics}"
+        pack_iconbutton $w.toolbar.obj    -image $icons(asobject) -command "inspect_this $w {As Object}"
+        pack_iconbutton $w.toolbar.sep1   -separator
+        pack_iconbutton $w.toolbar.copy   -image $icons(copy) -command "edit_copy $w.main.text"
+        pack_iconbutton $w.toolbar.find   -image $icons(find) -command "findDialog $w.main.text"
+        pack_iconbutton $w.toolbar.sep3   -separator
+
+        moduleinspector_add_run_buttons $w
 
         set help_tips($w.toolbar.owner)  {Inspect parent module}
         set help_tips($w.toolbar.graph)  {Inspect as network graphics}
         set help_tips($w.toolbar.obj)    {Inspect as object}
-        set help_tips($w.toolbar.mrun)   {Run until next event in this module}
-        set help_tips($w.toolbar.mfast)  {Fast run until next event in this module (Ctrl+F4)}
-        set help_tips($w.toolbar.stop)   {Stop running simulation (F8)}
-        set help_tips($w.toolbar.find)   {Find string in window}
+        set help_tips($w.toolbar.copy)   {Copy selected text to clipboard (Ctrl+C)}
+        set help_tips($w.toolbar.find)   {Find string in window (Ctrl+F}
+
     } else {
         # for simple module
-        iconbutton $w.toolbar.obj    -image $icons(asobject) -command "inspect_this $w {As Object}"
-        iconbutton $w.toolbar.sep1   -separator
-        #iconbutton $w.toolbar.parent -image $icons(parent) ;#command assigned from C++
-        #iconbutton $w.toolbar.sep2   -separator
-        iconbutton $w.toolbar.mrun   -image $icons(mrun) -command "runsimulation_local $w normal"
-        iconbutton $w.toolbar.mfast  -image $icons(mfast) -command "runsimulation_local $w fast"
-        iconbutton $w.toolbar.stop   -image $icons(stop) -command "stop_simulation"
-        iconbutton $w.toolbar.sep3   -separator
-        iconbutton $w.toolbar.find   -image $icons(find) -command "findDialog $w.main.text"
-        foreach i {obj sep1 mrun mfast stop sep3 find} {
-           pack $w.toolbar.$i -anchor n -side left -padx 0 -pady 2
-        }
-        bind $w <Control-F4> "runsimulation_local $w fast"
+        pack_iconbutton $w.toolbar.obj    -image $icons(asobject) -command "inspect_this $w {As Object}"
+        pack_iconbutton $w.toolbar.sep1   -separator
+        pack_iconbutton $w.toolbar.copy   -image $icons(copy) -command "edit_copy $w.main.text"
+        pack_iconbutton $w.toolbar.find   -image $icons(find) -command "findDialog $w.main.text"
+        pack_iconbutton $w.toolbar.sep2   -separator
+
+        moduleinspector_add_run_buttons $w
 
         set help_tips($w.toolbar.owner)  {Inspect parent module}
         set help_tips($w.toolbar.obj)    {Inspect as object}
-        set help_tips($w.toolbar.mrun)   {Run until next event in this module}
-        set help_tips($w.toolbar.mfast)  {Fast run until next event in this module (Ctrl+F4)}
-        set help_tips($w.toolbar.stop)   {Stop running simulation (F8)}
-        set help_tips($w.toolbar.find)   {Find string in window}
+        set help_tips($w.toolbar.copy)   {Copy selected text to clipboard (Ctrl+C)}
+        set help_tips($w.toolbar.find)   {Find string in window (Ctrl+F}
     }
 
     #frame $w.statusbar

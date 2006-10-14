@@ -76,10 +76,11 @@ proc comboSelectionDialog {title text label variable list} {
 
 proc display_stopdialog {} {
     # Create a dialog that can be used to stop a running simulation
-    global opp fonts
+    global opp fonts tmp
 
     # 1. Create and configure dialog
-    set w .stopdialog
+    set tmp(stopdialog) [winfo toplevel [focus]].stopdialog
+    set w $tmp(stopdialog)
 
     if {[winfo exists $w]} return
 
@@ -130,9 +131,12 @@ proc stopdialog_autoupdate {w} {
 proc remove_stopdialog {} {
     # Remove the dialog created by display_stopdialog
 
-    global opp
-    set w .stopdialog
+    global opp tmp
+    if ![info exist tmp(stopdialog)] {
+        return
+    }
 
+    set w $tmp(stopdialog)
     if {![winfo exists $w]} return
 
     # Restore the focus before deleting the window, since otherwise the

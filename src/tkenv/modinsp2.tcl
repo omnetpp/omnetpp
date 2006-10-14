@@ -564,31 +564,20 @@ proc create_graphicalmodwindow {name geom} {
     create_inspector_toplevel $w $geom
 
     # create toolbar
-    iconbutton $w.toolbar.ascont -image $icons(asobject) -command "inspect_this $w {As Object}"
-    iconbutton $w.toolbar.win    -image $icons(asoutput) -command "inspect_this $w {Module output}"
-    iconbutton $w.toolbar.sep1   -separator
-    #iconbutton $w.toolbar.parent -image $icons(parent) ;#command assigned from C++
-    #iconbutton $w.toolbar.sep2   -separator
-    iconbutton $w.toolbar.mrun   -image $icons(mrun) -command "runsimulation_local $w normal"
-    iconbutton $w.toolbar.mfast  -image $icons(mfast) -command "runsimulation_local $w fast"
-    iconbutton $w.toolbar.stop   -image $icons(stop) -command "stop_simulation"
-    iconbutton $w.toolbar.sep3   -separator
-    iconbutton $w.toolbar.redraw -image $icons(redraw) -command "opp_inspectorcommand $w relayout"
-    foreach i {ascont win sep1 mrun mfast stop sep3 redraw} {
-       pack $w.toolbar.$i -anchor n -side left -padx 0 -pady 2
-    }
+    pack_iconbutton $w.toolbar.ascont  -image $icons(asobject) -command "inspect_this $w {As Object}"
+    pack_iconbutton $w.toolbar.win     -image $icons(asoutput) -command "inspect_this $w {Module output}"
+    pack_iconbutton $w.toolbar.sep1    -separator
+
+    moduleinspector_add_run_buttons $w
+
+    pack_iconbutton $w.toolbar.redraw  -image $icons(redraw) -command "opp_inspectorcommand $w relayout"
 
     animcontrol $w.toolbar.animspeed
     pack $w.toolbar.animspeed -anchor c -expand 0 -fill none -side left -padx 5 -pady 0
 
-    bind $w <Control-F4> "runsimulation_local $w fast"
-
     set help_tips($w.toolbar.owner)   {Inspect parent module}
     set help_tips($w.toolbar.ascont)  {Inspect as object}
     set help_tips($w.toolbar.win)     {See module output}
-    set help_tips($w.toolbar.mrun)    {Run until next event in this module}
-    set help_tips($w.toolbar.mfast)   {Fast run until next event in this module (Ctrl+F4)}
-    set help_tips($w.toolbar.stop)    {Stop running simulation (F8)}
     set help_tips($w.toolbar.redraw)  {Re-layout}
     set help_tips($w.toolbar.animspeed) {Animation speed -- see Options dialog}
 
