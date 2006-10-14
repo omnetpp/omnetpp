@@ -21,6 +21,8 @@ proc moduleinspector_add_run_buttons {w} {
     global icons help_tips
 
     pack_iconbutton $w.toolbar.type    -image $icons(modtype) -command "inspect_componenttype $w"
+    pack_iconbutton $w.toolbar.sep15   -separator
+    pack_iconbutton $w.toolbar.objs    -image $icons(findobj) -command "inspect_filteredobjectlist $w"
     pack_iconbutton $w.toolbar.sep11   -separator
 
     pack_iconbutton $w.toolbar.run     -image $icons(run)     -command {run_normal}
@@ -36,7 +38,7 @@ proc moduleinspector_add_run_buttons {w} {
     pack_iconbutton $w.toolbar.sep14   -separator
 
     pack_iconbutton $w.toolbar.stop    -image $icons(stop)    -command {stop_simulation}
-    pack_iconbutton $w.toolbar.sep15   -separator
+    pack_iconbutton $w.toolbar.sep16   -separator
 
     bind $w <Control-F4> "runsimulation_local $w fast"
 

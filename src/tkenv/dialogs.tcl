@@ -497,9 +497,13 @@ proc filteredobjectlist_window {{ptr ""}} {
 
     set w .objdlg
 
-    # if already exists, show it
+    if {$ptr==""} {set ptr [opp_object_simulation]}
+
+    # if already exists, update the "search in" field and show it
     if {[winfo exists $w]} {
-        # FIXME fill in "search in" field
+        $w.f.filter.searchin.e delete 0 end
+        $w.f.filter.searchin.e insert 0 [opp_getobjectfullpath $ptr]
+        #FIXME also clear listbox contents?
         wm deiconify $w; return
     }
 
@@ -548,6 +552,9 @@ proc filteredobjectlist_window {{ptr ""}} {
 
     #label $w.f.filter.title -text "Filter list of all objects in the simulation:" -justify left -anchor w
     #pack $w.f.filter.title -anchor w -expand 1 -fill x -side top
+
+    label-entry $w.f.filter.searchin "Search inside:" [opp_getobjectfullpath $ptr]
+    pack $w.f.filter.searchin -anchor w -expand 0 -fill x -side top
 
     labelframe $w.f.filter.pars -text "Search by class and object name:"
     pack $w.f.filter.pars -anchor center -expand 0 -fill x -side top
@@ -689,6 +696,24 @@ proc filteredobjectlist_refresh {w} {
     global config tmp HAVE_BLT
     global filtobjlist_state
 
+    # resolve root object
+    set rootobjectname [$w.f.filter.searchin.e get]
+    if {$rootobjectname=="simulation"} {
+        set rootobject [opp_object_simulation]
+    } else {
+        if [catch {
+            set rootobject [opp_modulebypath $rootobjectname]
+        } err] {
+            tk_messageBox -title "Error" -icon error -type ok -parent $w -message "Error: $err."
+            return
+        }
+        if {$rootobject==[opp_object_nullpointer]} {
+            tk_messageBox -title "Error" -icon error -type ok -parent $w \
+                -message "Please enter a module name or 'simulation' in the 'Search inside' field -- '$rootobjectname' could not be resolved."
+            return
+        }
+    }
+
     set tmp(category) ""
     set categories {m q p c s g v o}
     foreach {c} $categories {
@@ -709,7 +734,7 @@ proc filteredobjectlist_refresh {w} {
     # get list
     set maxcount $config(filtobjlist-maxcount)
     if [catch {
-        set objlist [opp_getsubobjectsfilt [opp_object_simulation] $tmp(category) $class $name $maxcount $order]
+        set objlist [opp_getsubobjectsfilt $rootobject $tmp(category) $class $name $maxcount $order]
     } err] {
         tk_messageBox -title "Error" -icon error -type ok -parent $w -message "Error: $err."
         set objlist {}
