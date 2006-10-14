@@ -46,7 +46,7 @@ proc create_compoundmodinspector {name geom} {
     set help_tips($w.toolbar.graph)   {Inspect as network graphics}
     set help_tips($w.toolbar.win)     {See module output}
     set help_tips($w.toolbar.mrun)    {Run until next event in this module}
-    set help_tips($w.toolbar.mfast)   {Fast run until next event in this module (Ctrl-F4)}
+    set help_tips($w.toolbar.mfast)   {Fast run until next event in this module (Ctrl+F4)}
     set help_tips($w.toolbar.stop)    {Stop running simulation (F8)}
     set help_tips($w.toolbar.apply)   {Apply changes (Enter)}
     set help_tips($w.toolbar.revert)  {Revert}
@@ -103,7 +103,7 @@ proc create_simplemodinspector {name geom} {
     set help_tips($w.toolbar.owner)   {Inspect parent module}
     set help_tips($w.toolbar.win)     {See module output}
     set help_tips($w.toolbar.mrun)    {Run until next event in this module}
-    set help_tips($w.toolbar.mfast)   {Fast run until next event in this module (Ctrl-F4)}
+    set help_tips($w.toolbar.mfast)   {Fast run until next event in this module (Ctrl+F4)}
     set help_tips($w.toolbar.stop)    {Stop running simulation (F8)}
     set help_tips($w.toolbar.apply)   {Apply changes (Enter)}
     set help_tips($w.toolbar.revert)  {Revert}
@@ -198,7 +198,7 @@ proc _create_modulewindow {name geom iscompound} {
         set help_tips($w.toolbar.graph)  {Inspect as network graphics}
         set help_tips($w.toolbar.obj)    {Inspect as object}
         set help_tips($w.toolbar.mrun)   {Run until next event in this module}
-        set help_tips($w.toolbar.mfast)  {Fast run until next event in this module (Ctrl-F4)}
+        set help_tips($w.toolbar.mfast)  {Fast run until next event in this module (Ctrl+F4)}
         set help_tips($w.toolbar.stop)   {Stop running simulation (F8)}
         set help_tips($w.toolbar.find)   {Find string in window}
     } else {
@@ -220,7 +220,7 @@ proc _create_modulewindow {name geom iscompound} {
         set help_tips($w.toolbar.owner)  {Inspect parent module}
         set help_tips($w.toolbar.obj)    {Inspect as object}
         set help_tips($w.toolbar.mrun)   {Run until next event in this module}
-        set help_tips($w.toolbar.mfast)  {Fast run until next event in this module (Ctrl-F4)}
+        set help_tips($w.toolbar.mfast)  {Fast run until next event in this module (Ctrl+F4)}
         set help_tips($w.toolbar.stop)   {Stop running simulation (F8)}
         set help_tips($w.toolbar.find)   {Find string in window}
     }

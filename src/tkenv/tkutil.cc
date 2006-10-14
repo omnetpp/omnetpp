@@ -134,7 +134,9 @@ void insertIntoInspectorListbox(Tcl_Interp *interp, const char *listbox, cObject
                             "name {",(fullpath ? obj->fullPath().c_str() : obj->fullName()),"} "
                             "class {",obj->className(),"} "
                             "info ",TclQuotedString(obj->info().c_str()).get(),
-                            "}",NULL));
+                            "} ",
+                            "[get_icon_for_object {",ptr,"}]",
+                            NULL));
 }
 
 void feedCollectionIntoInspectorListbox(cCollectObjectsVisitor *visitor, Tcl_Interp *interp, const char *listbox, bool fullpath)

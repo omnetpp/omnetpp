@@ -75,7 +75,7 @@ proc setupTkOptions {} {
        event add <<Redo>> <Control-Key-Y>
    }
 
-   # for some reason, Ctrl-v (Paste) doesn't work out-of-the box with Tk 8.3/8.4 on Unix,
+   # for some reason, Ctrl+v (Paste) doesn't work out-of-the box with Tk 8.3/8.4 on Unix,
    # we need the following lines:
    bind Entry <Control-v> {}
    bind Text <Control-v> {}
@@ -181,6 +181,16 @@ proc iconbutton {w args} {
         #W2K: bind $w <Leave> [list $w config -relief flat]
     }
     return $w
+}
+
+proc pack_iconbutton {w args} {
+    eval iconbutton $w $args
+    pack $w -anchor n -side left -padx 0 -pady 2
+}
+
+proc rpack_iconbutton {w args} {
+    eval iconbutton $w $args
+    pack $w -anchor n -side right -padx 0 -pady 2
 }
 
 proc combo {w list {cmd {}}} {
@@ -640,8 +650,8 @@ proc _focusTableEntry {e c} {
 proc multicolumnlistbox {w columnlist args} {
     global HAVE_BLT
     if {$HAVE_BLT} {
-        blt::treeview $w -font "arial 8" -allowduplicates yes
-        $w column configure treeView -hide yes
+        blt::treeview $w -font "arial 8" -allowduplicates yes -flat yes
+        $w column configure treeView -hide no -width 15 -state disabled
         if {$args!=""} {
              eval $w config $args
         }
@@ -707,10 +717,12 @@ proc multicolumnlistbox_blt_sortcolumn {w column} {
 # format {name1 value1 name2 value2 ...}, conventiently produced from
 # arrays by the command "array get".
 #
-proc multicolumnlistbox_insert {w rowname data} {
+proc multicolumnlistbox_insert {w rowname data {icon ""}} {
+    global icons
     global HAVE_BLT
     if {$HAVE_BLT} {
-        $w insert end $rowname -data $data
+        if {$icon==""} {set icon $icons(16pixtransp)}
+        $w insert end $rowname -data $data -button no -icons [list $icon $icon] -activeicons [list $icon $icon]
     } else {
         global mclistbox
         array set ary $data

@@ -283,19 +283,19 @@ proc new_run {} {
     }
 }
 
-proc edit_copy {} {
+proc edit_copy {{w .main.text}} {
    # implements Edit|Copy
-   tk_textCopy .main.text
+   tk_textCopy $w
 }
 
-proc edit_find {} {
+proc edit_find {{w .main.text}} {
    # implements Edit|Find...
-   findDialog .main.text
+   findDialog $w
 }
 
-proc edit_findnext {} {
+proc edit_findnext {{w .main.text}} {
    # implements Edit|Find next
-   findNext .main.text
+   findNext $w
 }
 
 proc toggle_treeview {} {
@@ -549,9 +549,13 @@ proc clear_windows {} {
     catch {.messagewindow.main.text delete 1.0 end}
 }
 
-proc inspect_filteredobjectlist {} {
+proc inspect_filteredobjectlist {{w ""}} {
     # implements Find/inspect objects...
-    filteredobjectlist_window
+    set ptr ""
+    if {$w!="" && ![regexp {\.(ptr.*)-([0-9]+)} $w match ptr type]} {
+        error "window name $w doesn't look like an inspector window"
+    }
+    filteredobjectlist_window $ptr
 }
 
 proc inspect_bypointer {} {

@@ -222,6 +222,22 @@ void TInspector::setLabel( const char *label, double d )
    CHK(Tcl_VarEval(interp, windowname,label," config -text {",buf,"}",NULL));
 }
 
+void TInspector::setText(const char *entry, const char *val)
+{
+   Tcl_Interp *interp = getTkApplication()->getInterp();
+   if (!val) val="";
+   CHK(Tcl_VarEval(interp, windowname,entry," delete 1.0 end", NULL));
+   CHK(Tcl_VarEval(interp, windowname,entry," insert 1.0 {",val,"}",NULL));
+}
+
+void TInspector::setReadonlyText(const char *entry, const char *val)
+{
+   Tcl_Interp *interp = getTkApplication()->getInterp();
+   CHK(Tcl_VarEval(interp, windowname,entry," config -state normal", NULL));
+   setText(entry, val);
+   CHK(Tcl_VarEval(interp, windowname,entry," config -state disabled", NULL));
+}
+
 const char *TInspector::getEntry( const char *entry )
 {
    Tcl_Interp *interp = getTkApplication()->getInterp();

@@ -45,7 +45,7 @@ proc create_objinspector {name geom} {
     pack $nb.info.fullpath -fill x -side top
     pack $nb.info.class -fill x -side top
     pack $nb.info.info -fill x -side top
-    pack $nb.info.details -fill x -side top
+    pack $nb.info.details -expand 1 -fill both -side top
 
     # page 2: fields
     if {$fieldspage_needed} {
@@ -78,10 +78,8 @@ proc create_messageinspector {name geom} {
     set w $name
     create_inspector_toplevel $w $geom
 
-    iconbutton $w.toolbar.apply  -image $icons(apply) -command "opp_writebackinspector $w; opp_updateinspectors"
-    iconbutton $w.toolbar.revert -image $icons(revert) -command "opp_updateinspectors"
-    pack $w.toolbar.revert -anchor n -side right -padx 0 -pady 2
-    pack $w.toolbar.apply -anchor n -side right -padx 0 -pady 2
+    pack_iconbutton $w.toolbar.apply  -image $icons(apply) -command "opp_writebackinspector $w; opp_updateinspectors"
+    pack_iconbutton $w.toolbar.revert -image $icons(revert) -command "opp_updateinspectors"
 
     set help_tips($w.toolbar.apply)   {Apply changes (Enter)}
     set help_tips($w.toolbar.revert)  {Revert}
@@ -170,10 +168,8 @@ proc create_parinspector {name geom} {
     set w $name
     create_inspector_toplevel $w $geom
 
-    iconbutton $w.toolbar.apply  -image $icons(apply) -command "opp_writebackinspector $w; opp_updateinspectors"
-    iconbutton $w.toolbar.revert -image $icons(revert) -command "opp_updateinspectors"
-    pack $w.toolbar.revert -anchor n -side right -padx 0 -pady 2
-    pack $w.toolbar.apply -anchor n -side right -padx 0 -pady 2
+    pack_iconbutton $w.toolbar.apply  -image $icons(apply) -command "opp_writebackinspector $w; opp_updateinspectors"
+    pack_iconbutton $w.toolbar.revert -image $icons(revert) -command "opp_updateinspectors"
 
     set help_tips($w.toolbar.apply)   {Apply changes (Enter)}
     set help_tips($w.toolbar.revert)  {Revert}

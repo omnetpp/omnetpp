@@ -1081,7 +1081,8 @@ int moduleByPath_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv
 {
    if (argc!=2) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
    const char *path = argv[1];
-   cModule *mod = simulation.moduleByPath(path);
+   cModule *mod;
+   TRY(mod = simulation.moduleByPath(path));
    Tcl_SetResult(interp, ptrToStr(mod), TCL_VOLATILE);
    return TCL_OK;
 }

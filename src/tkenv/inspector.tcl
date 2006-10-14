@@ -47,12 +47,9 @@ proc create_inspector_toplevel {w geom} {
     frame $w.toolbar -relief raised -bd 1
     pack $w.toolbar -anchor w -side top -fill x -expand 0
 
-    iconbutton $w.toolbar.sep0 -separator
-    iconbutton $w.toolbar.owner -image $icons(parent) ;#command assigned from C++
-    iconbutton $w.toolbar.sep01 -separator
-    pack $w.toolbar.sep0 -anchor n -side left -padx 0 -pady 2
-    pack $w.toolbar.owner -anchor n -side left -padx 0 -pady 2
-    pack $w.toolbar.sep01 -anchor n -side left -padx 0 -pady 2
+    pack_iconbutton $w.toolbar.sep0 -separator
+    pack_iconbutton $w.toolbar.owner -image $icons(parent) ;#command assigned from C++
+    pack_iconbutton $w.toolbar.sep01 -separator
 
     set help_tips($w.toolbar.owner) {Inspect owner object}
 
@@ -148,8 +145,36 @@ proc choosecolorcode {ptr} {
     return [lindex $colors $i]
 }
 
+# icons used in the tree view and listboxes
+set treeicons(cCompoundModule) {compound_vs}
+set treeicons(cSimpleModule)   {simple_vs}
+set treeicons(cPlaceHolderModule) {placeholder_vs}
+set treeicons(cGate)           {gate_vs}
+set treeicons(cPar)            {param_vs}
+set treeicons(cMessage)        {message_vs}
+set treeicons(cQueue)          {queue_vs}
+set treeicons(cLinkedList)     {queue_vs}
+set treeicons(cArray)          {container_vs}
+set treeicons(cMessageHeap)    {container_vs}
+set treeicons(cChannel)        {chan_vs}
+set treeicons(cStatistic)      {stat_vs}
+set treeicons(cOutVector)      {outvect_vs}
+
 #
-# gets called by WM
+# Returns the icon of an object (for tree view / listbox)
+#
+proc get_icon_for_object {ptr} {
+    global icons treeicons
+    set class [opp_getobjectbaseclass $ptr]
+    if [info exists treeicons($class)] {
+       return $icons($treeicons($class))
+    } else {
+       return $icons(cogwheel_vs)
+    }
+}
+
+#
+# gets called by the WM (Window Manager)
 #
 proc close_inspector_toplevel {w} {
     # invokes app->deleteInspector(insp)

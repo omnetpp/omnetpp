@@ -490,16 +490,19 @@ proc _doFind {w findstring case words regexp backwards} {
 # filteredobjectlist_window --
 #
 # Implements the "Find/inspect objects" dialog.
-# Currently only used to open module windows.
 #
-proc filteredobjectlist_window {} {
+proc filteredobjectlist_window {{ptr ""}} {
     global config tmp icons help_tips
     global HAVE_BLT
 
     set w .objdlg
 
-    # if already exists, show it
+    if {$ptr==""} {set ptr [opp_object_simulation]}
+
+    # if already exists, update the "search in" field and show it
     if {[winfo exists $w]} {
+        $w.f.filter.searchin.e delete 0 end
+        $w.f.filter.searchin.e insert 0 [opp_getobjectfullpath $ptr]
         wm deiconify $w; return
     }
 
@@ -548,6 +551,9 @@ proc filteredobjectlist_window {} {
 
     #label $w.f.filter.title -text "Filter list of all objects in the simulation:" -justify left -anchor w
     #pack $w.f.filter.title -anchor w -expand 1 -fill x -side top
+
+    label-entry $w.f.filter.searchin "Search inside:" [opp_getobjectfullpath $ptr]
+    pack $w.f.filter.searchin -anchor w -expand 0 -fill x -side top
 
     labelframe $w.f.filter.pars -text "Search by class and object name:"
     pack $w.f.filter.pars -anchor center -expand 0 -fill x -side top
@@ -691,6 +697,24 @@ proc filteredobjectlist_refresh {w} {
     global config tmp HAVE_BLT
     global filtobjlist_state
 
+    # resolve root object
+    set rootobjectname [$w.f.filter.searchin.e get]
+    if {$rootobjectname=="simulation"} {
+        set rootobject [opp_object_simulation]
+    } else {
+        if [catch {
+            set rootobject [opp_modulebypath $rootobjectname]
+        } err] {
+            tk_messageBox -title "Error" -icon error -type ok -parent $w -message "Error: $err."
+            return
+        }
+        if {$rootobject==[opp_object_nullpointer]} {
+            tk_messageBox -title "Error" -icon error -type ok -parent $w \
+                -message "Please enter a module name or 'simulation' in the 'Search inside' field -- '$rootobjectname' could not be resolved."
+            return
+        }
+    }
+
     set tmp(category) ""
     set categories {m q p c s g v o}
     foreach {c} $categories {
@@ -711,7 +735,7 @@ proc filteredobjectlist_refresh {w} {
     # get list
     set maxcount $config(filtobjlist-maxcount)
     if [catch {
-        set objlist [opp_getsubobjectsfilt [opp_object_simulation] $tmp(category) $class $name $maxcount $order]
+        set objlist [opp_getsubobjectsfilt $rootobject $tmp(category) $class $name $maxcount $order]
     } err] {
         tk_messageBox -title "Error" -icon error -type ok -parent $w -message "Error: $err."
         set objlist {}
@@ -737,7 +761,7 @@ proc filteredobjectlist_refresh {w} {
             $w.f.numobj config -text "Found $num objects:"
         }
         foreach ptr $objlist {
-            multicolumnlistbox_insert $lb $ptr [list ptr $ptr class [opp_getobjectclassname $ptr] name [opp_getobjectfullpath $ptr] info [opp_getobjectinfostring $ptr]]
+            multicolumnlistbox_insert $lb $ptr [list ptr $ptr class [opp_getobjectclassname $ptr] name [opp_getobjectfullpath $ptr] info [opp_getobjectinfostring $ptr]] [get_icon_for_object $ptr]
         }
         set filtobjlist_state(outofdate) 0
         #$lb selection set 0

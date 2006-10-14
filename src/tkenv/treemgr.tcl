@@ -14,21 +14,6 @@
 #----------------------------------------------------------------#
 
 
-# icons used in the tree view
-set treeicons(cCompoundModule) {compound_vs}
-set treeicons(cSimpleModule)   {simple_vs}
-set treeicons(cPlaceHolderModule) {placeholder_vs}
-set treeicons(cMessage)        {message_vs}
-set treeicons(cQueue)          {queue_vs}
-set treeicons(cLinkedList)     {queue_vs}
-set treeicons(cArray)          {container_vs}
-set treeicons(cHead)           {container_vs}
-set treeicons(cBag)            {container_vs}
-set treeicons(cMessageHeap)    {container_vs}
-set treeicons(cChannel)        {chan_vs}
-set treeicons(cStatistic)      {stat_vs}
-set treeicons(cOutVector)      {outvect_vs}
-
 
 # initTreeManager --
 #
@@ -93,7 +78,7 @@ proc updateTreeManager {} {
 # We use the object pointer as tree element key.
 #
 proc getNodeInfo {w op {key {}}} {
-    global icons treeicons
+    global icons
 
     set ptr $key
     switch $op {
@@ -109,12 +94,7 @@ proc getNodeInfo {w op {key {}}} {
       }
 
       icon {
-        set class [opp_getobjectbaseclass $ptr]
-        if [info exists treeicons($class)] {
-           return $icons($treeicons($class))
-        } else {
-           return $icons(cogwheel_vs)
-        }
+        return [get_icon_for_object $ptr]
       }
 
       haschildren {

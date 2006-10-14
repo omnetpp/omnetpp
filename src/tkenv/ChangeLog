@@ -1,3 +1,10 @@
+2006-10-14  Andras Varga
+
+	* several smaller improvements: added object icons to listboxes;
+	in the "Find/inspect" dialog one can specify the module in which
+	to search; "copy to clipboard" icon added to the main toolbar and
+	module log windows, etc
+
 2006-04-13  Andras Varga
 
 	* tkutil.cc: fixed a bug in setObjectListResult() [crash reported by 
