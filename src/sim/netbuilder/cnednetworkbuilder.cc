@@ -529,41 +529,40 @@ cGate *cNEDNetworkBuilder::resolveGate(cModule *parentmodp,
 
 cChannel *cNEDNetworkBuilder::createChannelForConnection(ConnectionNode *conn, cModule *parentmodp)
 {
-/*XXX
-    ConnAttrNode *connattr = conn->getFirstConnAttrChild();
-    if (!connattr)
+    ChannelSpecNode *channel = conn->getFirstChannelSpecChild();
+    if (!channel)
         return NULL;
 
-    if (!strcmp(connattr->getName(),"channel"))
+    // create channel object
+    std::string channeltypename;
+    if (strnull(channel->getLikeParam()))
     {
-        // find channel name
-        ExpressionNode *expr = findExpression(connattr,"value");
-        ConstNode *cnode = expr->getFirstConstChild();
-        if (!cnode || cnode->getType()!=NED_CONST_STRING)
-            throw new cRuntimeError("dynamic module builder: channel type should be string constant");
-        const char *channeltypename = cnode->getValue();
-
-        // create channel
-        cChannelType *channeltype = findChannelType(channeltypename);
-        if (!channeltype)
-            throw new cRuntimeError("dynamic module builder: channel type %s not found", channeltypename);
-        cChannel *channel = channeltype->create("channel");
-        return channel;
+        channeltypename = channel->getType();
+    }
+    else
+    {
+        const char *parname = channel->getLikeParam();
+        channeltypename = parentmodp->par(parname).stringValue();
     }
 
-    // connection attributes
-    cBasicChannel *channel = new cBasicChannel();
-    for (ConnAttrNode *child=conn->getFirstConnAttrChild(); child; child = child->getNextConnAttrNodeSibling())
-    {
-        const char *name = child->getName();
-        ExpressionNode *expr = findExpression(child,"value");
-        cPar *par = new cPar(name);
-        assignParamValue(*par, expr, parentmodp,NULL);
-        channel->addPar(par);
-    }
-    return channel;
-*/
-    return NULL;
+    cChannelType *channeltype = findAndCheckChannelType(channeltypename.c_str(), parentmodp);
+    cChannel *channelp = channeltype->create("channel", parentmodp);
+
+    cContextSwitcher __ctx(channelp); // params need to be evaluated in the channel's context
+//XXX    setDisplayString(channelp, channel);
+    assignSubmoduleParams(channelp, channel);   //XXX
+    channelp->readInputParams();
+    return channelp;
+}
+
+cChannelType *cNEDNetworkBuilder::findAndCheckChannelType(const char *channeltypename, cModule *modp)
+{
+    cChannelType *channeltype = cChannelType::find(channeltypename);
+    if (!channeltype)
+        throw new cRuntimeError("dynamic network builder: channel type definition `%s' in (%s)%s not found "
+                                "(Define_Channel() missing from C++ source?)",
+                                channeltypename, modp->className(), modp->fullPath().c_str());
+    return channeltype;
 }
 
 ExpressionNode *cNEDNetworkBuilder::findExpression(NEDElement *node, const char *exprname)

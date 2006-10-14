@@ -52,7 +52,6 @@ class cNEDNetworkBuilder
     cModule *_submodule(cModule *parentmodp, const char *submodname, int idx=-1);
     void addSubmodulesAndConnections(cModule *modp, cNEDDeclaration *decl);
     void buildRecursively(cModule *modp, cNEDDeclaration *decl);
-//XXX    void addChannelAttr(cChannel *chanp, ChannelAttrNode *channelattr);
     cModuleType *findAndCheckModuleType(const char *modtypename, cModule *modp, const char *submodname);
     void addSubmodule(cModule *modp, SubmoduleNode *submod);
     void setDisplayString(cModule *submodp, SubmoduleNode *submod);
@@ -71,6 +70,7 @@ class cNEDNetworkBuilder
 
     cGate *resolveGate(cModule *modp, const char *modname, ExpressionNode *modindex,
                        const char *gatename, ExpressionNode *gateindex, bool isplusplus);
+    cChannelType *findAndCheckChannelType(const char *channeltypename, cModule *modp);
     cChannel *createChannelForConnection(ConnectionNode *conn, cModule *parentmodp);
     ExpressionNode *findExpression(NEDElement *node, const char *exprname);
     long evaluateAsLong(ExpressionNode *exprNode, cComponent *context, bool inSubcomponentScope);
