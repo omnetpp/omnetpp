@@ -67,8 +67,6 @@ proc create_compoundmodinspector {name geom} {
     rpack_iconbutton $w.toolbar.apply  -image $icons(apply) -command "opp_writebackinspector $w; opp_updateinspectors"
     rpack_iconbutton $w.toolbar.revert -image $icons(revert) -command "opp_updateinspectors"
 
-    bind $w <Control-F4> "runsimulation_local $w fast"
-
     set help_tips($w.toolbar.owner)   {Inspect parent module}
     set help_tips($w.toolbar.graph)   {Inspect as network graphics}
     set help_tips($w.toolbar.win)     {See module output}

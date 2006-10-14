@@ -226,11 +226,11 @@ set icons(finish) [image create photo -data {
 }]
 
 set icons(findobj) [image create photo -data {
-    R0lGODlhFAATALMAAAAAAOnqvkZJuQAAwACA/8PDw25ubp6enkAAAIAAAMbGxv//
-    AP8AAADAAP///////yH5BAEAAAEALAAAAAAUABMAAAR3MMhJq70YF8BBYWAWIF5h
-    kiCDIUfFHEhobUEqgZ5q5anOFAgMoNajdI6SYU8nIS2ei2HAQ2QGNgBoVAK8FAwb
-    rXTaajS4hmEWOh4BzCbDYHDsWBAkwEAxb1PMAYASe30XgIdnhHQWiIFnAYptdXWD
-    fBwiFoQTEQAAOw==
+    R0lGODlhFAATALMAAAAAAOnqvkZJuQAAwLe+/8PDw25ubp6enkAAAMAAANzc3P//
+    AP8AAACAAP///////yH5BAEAAAEALAAAAAAUABMAAASGMMhJq70YF8BBSWAWIICi
+    FAUJJhhyODDMHEhobc4aM4BdeStGIpbCAHIJhhBGcHSekiNIOHQ0SYvsAhAtIKtN
+    J0C7laRiaIdhQ+ZGX45GA2bgjrVuCSneKBgGA08dFggkAAMKgHkVcgGNEoiKF42U
+    DQGRgRaVjpaXiZkTgoKQiRwiFpETEQAAOw==
 }]
 
 set icons(chan_vs) [image create photo -data {

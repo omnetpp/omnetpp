@@ -651,7 +651,7 @@ proc multicolumnlistbox {w columnlist args} {
     global HAVE_BLT
     if {$HAVE_BLT} {
         blt::treeview $w -font "arial 8" -allowduplicates yes -flat yes
-        $w column configure treeView -hide no -width 16 -state disabled
+        $w column configure treeView -hide no -width 15 -state disabled
         if {$args!=""} {
              eval $w config $args
         }
