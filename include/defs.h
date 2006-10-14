@@ -21,8 +21,8 @@
 #include <stddef.h>     // size_t
 #include <math.h>       // HUGE_VAL
 
-// OMNeT++ version -- must match NEDC_VERSION in nedxml source!
-#define OMNETPP_VERSION 0x0302
+// OMNeT++ version -- must match NEDC_VERSION and MSGC_VERSION in nedxml!
+#define OMNETPP_VERSION 0x0400
 
 //=== Windows DLL IMPORT/EXPORT stuff
 #ifndef __WIN32__
