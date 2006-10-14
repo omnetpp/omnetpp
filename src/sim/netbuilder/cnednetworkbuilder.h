@@ -57,7 +57,7 @@ class cNEDNetworkBuilder
     void setDisplayString(cModule *submodp, SubmoduleNode *submod);
     void setConnDisplayString(cGate *srcgatep, ConnectionNode *conn);
     void setBackgroundDisplayString(cModule *modp, CompoundModuleNode *mod);
-    void assignSubmoduleParams(cModule *submodp, NEDElement *submod);
+    void assignComponentParams(cComponent *subcomponentp, NEDElement *subcomponent);
     void setupGateVectors(cModule *submodp, NEDElement *submod);
     cGate *getFirstUnusedParentModGate(cModule *mod, const char *gatename);
     cGate *getFirstUnusedSubmodGate(cModule *mod, const char *gatename);

@@ -339,12 +339,6 @@ class SIM_API cModule : public cComponent //noncopyable
     int id() const  {return mod_id;}
 
     /**
-     * Returns the module's parent module. For the system module, it returns
-     * NULL.
-     */
-    cModule *parentModule() const  {return dynamic_cast<cModule *>(owner());}
-
-    /**
      * Returns true if this module is in a module vector.
      */
     bool isVector() const  {return vectsize>=0;}

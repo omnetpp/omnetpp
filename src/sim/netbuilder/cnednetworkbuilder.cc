@@ -162,29 +162,6 @@ void cNEDNetworkBuilder::addSubmodulesAndConnections(cModule *modp, cNEDDeclarat
     printf("  done adding submodules and connections of decl %s to %s\n", decl->name(), modp->fullPath().c_str()); //XXX
 }
 
-/*XXX
-cChannel *cNEDNetworkBuilder::createChannel(const char *name, ChannelNode *channelnode)
-{
-    cBasicChannel *chanp = new cBasicChannel(name);
-    for (ChannelAttrNode *chattr=channelnode->getFirstChannelAttrChild(); chattr; chattr=chattr->getNextChannelAttrNodeSibling())
-    {
-        addChannelAttr(chanp, chattr);
-    }
-    return chanp;
-}
-*/
-
-/*XXX
-void cNEDNetworkBuilder::addChannelAttr(cChannel *chanp, ChannelAttrNode *channelattr)
-{
-    const char *attrname = channelattr->getName();
-    cPar *p = new cPar(attrname);
-    ExpressionNode *valueexpr = findExpression(channelattr, "value");
-    *p = evaluateAsLong(valueexpr,NULL,false); // note: this doesn't allow strings or "volatile" values
-    chanp->addPar(p);
-}
-*/
-
 cModuleType *cNEDNetworkBuilder::findAndCheckModuleType(const char *modtypename, cModule *modp, const char *submodname)
 {
     cModuleType *modtype = cModuleType::find(modtypename);
@@ -221,7 +198,7 @@ void cNEDNetworkBuilder::addSubmodule(cModule *modp, SubmoduleNode *submod)
 
         cContextSwitcher __ctx(submodp); // params need to be evaluated in the module's context
         setDisplayString(submodp, submod);
-        assignSubmoduleParams(submodp, submod);
+        assignComponentParams(submodp, submod);
         submodp->readInputParams();
         setupGateVectors(submodp, submod);
     }
@@ -239,7 +216,7 @@ void cNEDNetworkBuilder::addSubmodule(cModule *modp, SubmoduleNode *submod)
 
             cContextSwitcher __ctx(submodp); // params need to be evaluated in the module's context
             setDisplayString(submodp, submod);
-            assignSubmoduleParams(submodp, submod);
+            assignComponentParams(submodp, submod);
             submodp->readInputParams();
             setupGateVectors(submodp, submod);
         }
@@ -286,13 +263,13 @@ void cNEDNetworkBuilder::setBackgroundDisplayString(cModule *modp, CompoundModul
 */
 }
 
-void cNEDNetworkBuilder::assignSubmoduleParams(cModule *submodp, NEDElement *submod)
+void cNEDNetworkBuilder::assignComponentParams(cComponent *subcomponentp, NEDElement *subcomponent)
 {
-    ParametersNode *substparams = (ParametersNode *) submod->getFirstChildWithTag(NED_PARAMETERS);
+    ParametersNode *substparams = (ParametersNode *) subcomponent->getFirstChildWithTag(NED_PARAMETERS);
     if (!substparams)
         return;
 
-    cModule *modp = submodp->parentModule();
+    cModule *modp = subcomponentp->parentModule();
     for (ParamNode *parnode=substparams->getFirstParamChild(); parnode; parnode=parnode->getNextParamNodeSibling())
     {
         // assign param value
@@ -300,7 +277,7 @@ void cNEDNetworkBuilder::assignSubmoduleParams(cModule *submodp, NEDElement *sub
         if (exprNode)
         {
             const char *parname = parnode->getName();
-            cPar *p = &(submodp->par(parname));
+            cPar *p = &(subcomponentp->par(parname));
             cDynamicExpression *e = cExpressionBuilder().process(exprNode, true);
             p->setExpression(e);
             if (parnode->getIsDefault())
@@ -534,24 +511,26 @@ cChannel *cNEDNetworkBuilder::createChannelForConnection(ConnectionNode *conn, c
         return NULL;
 
     // create channel object
+    cChannel *channelp = NULL;
     std::string channeltypename;
     if (strnull(channel->getLikeParam()))
     {
-        channeltypename = channel->getType();
+        channeltypename = strnull(channel->getType()) ? "cBasicChannel" :  channel->getType();
     }
     else
     {
+        // "like"
         const char *parname = channel->getLikeParam();
         channeltypename = parentmodp->par(parname).stringValue();
     }
 
     cChannelType *channeltype = findAndCheckChannelType(channeltypename.c_str(), parentmodp);
-    cChannel *channelp = channeltype->create("channel", parentmodp);
+    channelp = channeltype->create("channel", parentmodp);
 
     cContextSwitcher __ctx(channelp); // params need to be evaluated in the channel's context
-//XXX    setDisplayString(channelp, channel);
-    assignSubmoduleParams(channelp, channel);   //XXX
+    assignComponentParams(channelp, channel);
     channelp->readInputParams();
+//FIXME setDisplayString(channelp, channel);
     return channelp;
 }
 
