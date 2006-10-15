@@ -191,8 +191,7 @@ proc new_network {} {
     if [check_running] return
 
     # get list of network names
-    set networks [opp_getchildobjects [opp_object_componenttypes]]
-#FIXME FIXME FIXME select network types only!!!!!!
+    set networks [opp_getnetworktypes]
     set netnames {}
     foreach net $networks {
         lappend netnames [opp_getobjectfullname $net]

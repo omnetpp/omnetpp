@@ -22,6 +22,7 @@
 #include <stdio.h>   // for sprintf
 #include <typeinfo>  // for type_info
 #include "defs.h"
+#include "errmsg.h"
 
 // forward declarations
 class cComponent;
@@ -203,7 +204,7 @@ SIM_API int opp_vsscanf(const char *s, const char *fmt, va_list va);
  *
  * Terminates the simulation with an error message.
  */
-SIM_API void opp_error(int errcode,...);
+SIM_API void opp_error(ErrorCode errcode,...);
 
 /**
  * DEPRECATED: use <tt>throw new cRuntimeError(...)</tt> instead!
@@ -223,7 +224,7 @@ SIM_API void opp_error(const char *msg,...);
  * to the standard error, and in Tkenv it will probably pop up an
  * [OK] dialog.
  */
-SIM_API void opp_warning(int errcode,...);
+SIM_API void opp_warning(ErrorCode errcode,...);
 
 /**
  * This method can be used to report non-fatal discrepancies to the user.
@@ -242,7 +243,7 @@ SIM_API void opp_warning(const char *msg,...);
  *
  * Print message and set error number.
  */
-SIM_API void opp_terminate(int errcode,...);
+SIM_API void opp_terminate(ErrorCode errcode,...);
 
 /**
  * DEPRECATED.

@@ -117,6 +117,14 @@ class SIM_API cModuleType : public cComponentType
     cModuleType(const char *name=NULL, const char *description=NULL);
     //@}
 
+    /** @name Misc */
+    //@{
+    /**
+     * Returns true if the module was declared with the "network" keyword.
+     */
+    virtual bool isNetwork() const = 0;
+    //@}
+
     /** @name Module creation */
     //@{
 

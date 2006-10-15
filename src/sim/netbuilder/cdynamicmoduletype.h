@@ -53,6 +53,11 @@ class cDynamicModuleType : public cModuleType
      * Produces a detailed, multi-line description.
      */
     virtual std::string detailedInfo() const;
+
+    /**
+     * Returns true if the module type was declared with the "network" keyword.
+     */
+    virtual bool isNetwork() const;
 };
 
 #endif

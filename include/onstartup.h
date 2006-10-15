@@ -49,15 +49,15 @@ class cArray;
  */
 class SIM_API ExecuteOnStartup
 {
-     private:
-         void (*code_to_exec)();
-         ExecuteOnStartup *next;
-         static ExecuteOnStartup *head;
-     public:
-         ExecuteOnStartup(void (*code_to_exec)());
-         ~ExecuteOnStartup();
-         void execute();
-         static void executeAll();
+  private:
+    void (*code_to_exec)();
+    ExecuteOnStartup *next;
+    static ExecuteOnStartup *head;
+  public:
+    ExecuteOnStartup(void (*code_to_exec)());
+    ~ExecuteOnStartup();
+    void execute();
+    static void executeAll();
 };
 
 

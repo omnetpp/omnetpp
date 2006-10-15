@@ -85,6 +85,7 @@ int stopSimulation_cmd(ClientData, Tcl_Interp *, int, const char **);
 int simulationIsStopping_cmd(ClientData, Tcl_Interp *, int, const char **);
 int getSimOption_cmd(ClientData, Tcl_Interp *, int, const char **);
 int setSimOption_cmd(ClientData, Tcl_Interp *, int, const char **);
+int getNetworkTypes_cmd(ClientData, Tcl_Interp *, int, const char **);
 int getStringHashCode_cmd(ClientData, Tcl_Interp *, int, const char **);
 int displayString_cmd(ClientData, Tcl_Interp *, int, const char **);
 int hsbToRgb_cmd(ClientData, Tcl_Interp *, int, const char **);
@@ -165,6 +166,7 @@ OmnetTclCommand tcl_commands[] = {
    { "opp_simulationisstopping", simulationIsStopping_cmd}, // args: -
    { "opp_getsimoption",     getSimOption_cmd         }, // args: <option-namestr>
    { "opp_setsimoption",     setSimOption_cmd         }, // args: <option-namestr> <value>
+   { "opp_getnetworktypes",  getNetworkTypes_cmd      }, // args: - ret: ptrlist
    { "opp_getstringhashcode",getStringHashCode_cmd    }, // args: <string> ret: numeric hash code
    { "opp_displaystring",    displayString_cmd        }, // args: <displaystring> <command> <args>
    { "opp_hsb_to_rgb",       hsbToRgb_cmd             }, // args: <@hhssbb> ret: <#rrggbb>
@@ -890,6 +892,20 @@ int setSimOption_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv
       app->opt_expressmode_autoupdate = (argv[2][0]!='0');
    else
       return TCL_ERROR;
+   return TCL_OK;
+}
+
+int getNetworkTypes_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
+{
+   cArray *types = componentTypes.instance();
+   Tcl_Obj *listobj = Tcl_NewListObj(0, NULL);
+   for (int i=0; i<types->items(); i++)
+   {
+       cModuleType *t = dynamic_cast<cModuleType *>(types->get(i));
+       if (t && t->isNetwork())
+           Tcl_ListObjAppendElement(interp, listobj, Tcl_NewStringObj(ptrToStr(t), -1));
+   }
+   Tcl_SetObjResult(interp, listobj);
    return TCL_OK;
 }
 

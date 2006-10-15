@@ -43,6 +43,14 @@ std::string cDynamicModuleType::detailedInfo() const
     return decl->detailedInfo();
 }
 
+bool cDynamicModuleType::isNetwork() const
+{
+    cNEDDeclaration *decl = cNEDLoader::instance()->lookup2(name());
+    ASSERT(decl!=NULL);
+    NEDElement *tree = decl->getTree();
+    return tree->getTagCode()==NED_COMPOUND_MODULE && ((CompoundModuleNode *)tree)->getIsNetwork();
+}
+
 cModule *cDynamicModuleType::createModuleObject()
 {
     cNEDDeclaration *decl = cNEDLoader::instance()->lookup2(name());
