@@ -24,30 +24,33 @@
  *
  * @ingroup SimCore
  */
-class SIM_API cBasicChannel : public cChannel
+//FIXME create cNullChannel class as well
+class SIM_API cBasicChannel : public cChannel // noncopyable
 {
   private:
+    enum {
+      FL_ISDISABLED = 0x10,
+      FL_DELAY_NONZERO = 0x20,
+      FL_ERROR_NONZERO = 0x40,
+      FL_DATARATE_NONZERO = 0x80,
+      FL_BASICCHANNELFLAGS = 0xF0,
+    };
+
+    // cached values of parameters (note: parameters are non-volatile)
+    double delay_;    // propagation delay
+    double error_;    // bit error rate
+    double datarate_; // data rate
+
     // stores the end of the last transmission; used if there is a datarate
     simtime_t transm_finishes;
 
-    // cached parameters
-    enum {
-      FL_CONSTDISABLED = 0x10,
-      FL_ISDISABLED = 0x20,
-      FL_HASDELAY = 0x40,
-      FL_CONSTDELAY = 0x80,
-      FL_HASERROR = 0x100,
-      FL_CONSTERROR = 0x200,
-      FL_HASDATARATE = 0x400,
-      FL_CONSTDATARATE = 0x800,
-      FL_BASICCHANNELFLAGS = 0x0FF0,
-    };
-    double delaypar;    // propagation delay (if FL_HASDELAY and FL_CONSTDELAY)
-    double errorpar;    // bit error rate (if FL_HASERROR and FL_CONSTERROR)
-    double dataratepar; // data rate (if FL_HASDATARATE and FL_CONSTDATARATE)
-
   protected:
     void rereadPars();
+
+    /**
+     * Called back when a parameter changes. Redefined from cComponent.
+     */
+    virtual void handleParameterChange(const char *parname);
 
   public:
     /** @name Constructors, destructor */
@@ -71,16 +74,6 @@ class SIM_API cBasicChannel : public cChannel
      * See cObject for more details.
      */
     virtual std::string info() const;
-
-    /**
-     * Serializes the object into a buffer.
-     */
-    virtual void netPack(cCommBuffer *buffer);
-
-    /**
-     * Deserializes the object from a buffer.
-     */
-    virtual void netUnpack(cCommBuffer *buffer);
     //@}
 
     /** @name Setting and getting channel attributes. */
@@ -121,22 +114,22 @@ class SIM_API cBasicChannel : public cChannel
     /**
      * Returns the delay of the channel.
      */
-    virtual double delay()  {return par("delay").doubleValue();}
+    virtual double delay()  {return delay_;}
 
     /**
      * Returns the bit error rate of the channel.
      */
-    virtual double error()  {return par("error").doubleValue();}
+    virtual double error()  {return error_;}
 
     /**
      * Returns the data rate of the channel.
      */
-    virtual double datarate()  {return par("datarate").doubleValue();}
+    virtual double datarate()  {return datarate_;}
 
     /**
      * Returns the "disabled" parameter of the channel.
      */
-    virtual bool disabled()  {return par("disabled").boolValue();}
+    virtual bool disabled()  {return flags & FL_ISDISABLED;}
     //@}
 
     /** @name Transmission state. */

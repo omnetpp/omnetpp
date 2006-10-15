@@ -61,6 +61,7 @@ void cNEDLoader::registerBuiltinDeclarations()
     const char *nedcode =
         "channel withcppclass cBasicChannel\n"
         "{\n"
+        "    bool disabled = false;\n"
         "    double delay = 0;\n"
         "    double error = 0;\n"
         "    double datarate = 0;\n"

@@ -47,23 +47,32 @@ std::string cBasicChannel::info() const
     return cChannel::info();
 }
 
-void cBasicChannel::netPack(cCommBuffer *buffer)
-{
-    throw new cRuntimeError(this,"netPack() not implemented");
-}
-
-void cBasicChannel::netUnpack(cCommBuffer *buffer)
-{
-    throw new cRuntimeError(this,"netUnpack() not implemented");
-}
-
 void cBasicChannel::rereadPars()
 {
-    flags &= ~FL_BASICCHANNELFLAGS;
+printf("CHANNEL %s PARAMS REREAD\n", fullPath().c_str());//XXX
+    delay_ = par("delay");
+    error_ = par("error");
+    datarate_ = par("datarate");
 
-    cPar& delay = par("delay");
-    if (!delay.isVolatile() && delay.doubleValue()==0) flags |= FL_CONSTDELAY;
-    //...FIXME todo!!! plus: call this from parameterChanged()! plus call this from initialize()!!
+    if (delay_<0)
+        throw new cRuntimeError(this, "negative delay %g", delay_);
+    if (error_<0 || error_>1)
+        throw new cRuntimeError(this,"wrong bit error rate %g", error_);
+    if (datarate_<0)
+        throw new cRuntimeError(this, "negative datarate %g", datarate_);
+
+    flags &= ~FL_BASICCHANNELFLAGS;
+    if (par("disabled")) flags |= FL_ISDISABLED;
+    if (delay_!=0) flags |= FL_DELAY_NONZERO;
+    if (error_!=0) flags |= FL_ERROR_NONZERO;
+    if (datarate_!=0) flags |= FL_DATARATE_NONZERO;
+
+    // FIXME call this from initialize()!!
+}
+
+void cBasicChannel::handleParameterChange(const char *)
+{
+    rereadPars();
 }
 
 void cBasicChannel::setDelay(double d)
@@ -88,7 +97,7 @@ void cBasicChannel::setDisabled(bool d)
 
 bool cBasicChannel::isBusy() const
 {
-    return simulation.simTime()<transm_finishes;
+    return simulation.simTime() < transm_finishes;
 }
 
 bool cBasicChannel::deliver(cMessage *msg, simtime_t t)
@@ -96,39 +105,28 @@ bool cBasicChannel::deliver(cMessage *msg, simtime_t t)
     // if channel is disabled, signal that message should be deleted
     if (flags & FL_ISDISABLED)
         return false;
-    if (!(flags & FL_CONSTDISABLED && par("disabled").boolValue()))
-        return false;
 
     // must wait until previous transmissions end
     if (t < transm_finishes)
         t = transm_finishes;
 
-    if (flags & FL_HASDATARATE)
+    // datarate modeling
+    if (flags & FL_DATARATE_NONZERO)
     {
-        double datarate = (flags & FL_CONSTDATARATE) ? dataratepar : par("datarate").doubleValue();
-        if (datarate<0)
-            throw new cRuntimeError(this, "negative datarate %g", datarate);
-        if (datarate>0)
-            t += (simtime_t) (msg->length() / datarate);
+        t += (simtime_t) (msg->length() / datarate_);
         transm_finishes = t;
     }
 
-    // propagation delay modelling
-    if (flags & FL_HASDELAY)
+    // propagation delay modeling
+    if (flags & FL_DELAY_NONZERO)
     {
-        simtime_t delay = (flags & FL_CONSTDELAY) ? delaypar : par("delay").doubleValue();
-        if (delay<0)
-            throw new cRuntimeError(this,"negative delay %g", delay);
-        t += delay;
+        t += delay_;
     }
 
-    // bit error rate modelling
-    if (flags & FL_HASERROR)
+    // bit error rate modeling
+    if (flags & FL_ERROR_NONZERO)
     {
-        double error = (flags & FL_CONSTERROR) ? errorpar : par("error").doubleValue();
-        if (error<0 || error>1)
-            throw new cRuntimeError(this,"wring bit error rate %g", error);
-        if (dblrand() < 1.0 - pow(1.0-error, msg->length()))
+        if (dblrand() < 1.0 - pow(1.0-error_, msg->length()))
             msg->setBitError(true);
     }
 
