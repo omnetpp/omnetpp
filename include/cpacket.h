@@ -70,7 +70,7 @@ class SIM_API cPacket : public cMessage
     virtual cPacket *dup() const  {return new cPacket(*this);}
 
     /**
-     * Produces a one-line description of object contents into the buffer passed as argument.
+     * Produces a one-line description of object contents.
      * See cObject for more details.
      */
     virtual std::string info() const;

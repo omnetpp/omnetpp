@@ -210,10 +210,10 @@ class SIM_API cKSplit : public cDensityEstBase
     virtual cKSplit *dup() const  {return new cKSplit (*this);}
 
     /**
-     * Writes textual information about this object to the stream.
+     * Produces a multi-line description of the object's contents.
      * See cObject for more details.
      */
-    virtual void writeContents(std::ostream& os);
+    virtual std::string detailedInfo() const;
 
     /**
      * Serializes the object into a PVM or MPI send buffer.

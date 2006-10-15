@@ -180,22 +180,22 @@ class SIM_API cMessage : public cObject
     virtual cMessage *dup() const  {return new cMessage(*this);}
 
     /**
-     * Produces a one-line description of object contents into the buffer passed as argument.
+     * Produces a one-line description of object contents.
      * See cObject for more details.
      */
     virtual std::string info() const;
+
+    /**
+     * Produces a multi-line description of the object's contents.
+     * See cObject for more details.
+     */
+    virtual std::string detailedInfo() const;
 
     /**
      * Calls v->visit(this) for each contained object.
      * See cObject for more details.
      */
     virtual void forEachChild(cVisitor *v);
-
-    /**
-     * Writes textual information about this object to the stream.
-     * See cObject for more details.
-     */
-    virtual void writeContents(std::ostream& os);
 
     /**
      * Serializes the object into a PVM or MPI send buffer

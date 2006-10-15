@@ -57,16 +57,6 @@ std::string cFSM::info() const
     return out.str();
 }
 
-void cFSM::writeContents(ostream& os)
-{
-   cObject::writeContents(os);
-
-   if (!_statename)
-       os << "\n  State: " << _state << "\n";
-   else
-       os << "\n  State: " << _statename << " (" << _state << ")\n";
-}
-
 void cFSM::netPack(cCommBuffer *buffer)
 {
     throw new cRuntimeError(this,"netPack() not implemented");

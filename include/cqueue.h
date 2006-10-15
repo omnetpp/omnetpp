@@ -167,7 +167,7 @@ class SIM_API cQueue : public cObject
     virtual cQueue *dup() const  {return new cQueue(*this);}
 
     /**
-     * Produces a one-line description of object contents into the buffer passed as argument.
+     * Produces a one-line description of object contents.
      * See cObject for more details.
      */
     virtual std::string info() const;

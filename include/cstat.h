@@ -303,16 +303,16 @@ class SIM_API cStdDev : public cStatistic
     virtual cStdDev *dup() const  {return new cStdDev(*this);}
 
     /**
-     * Produces a one-line description of object contents into the buffer passed as argument.
+     * Produces a one-line description of object contents.
      * See cObject for more details.
      */
     virtual std::string info() const;
 
     /**
-     * Writes textual information about this object to the stream.
+     * Produces a multi-line description of the object.
      * See cObject for more details.
      */
-    virtual void writeContents(std::ostream& os);
+    virtual std::string detailedInfo() const;
 
     /**
      * Serializes the object into a PVM or MPI send buffer.

@@ -211,8 +211,9 @@ std::string cMessagePar::info() const
     return out.str();
 }
 
-void cMessagePar::writeContents(ostream& os)
+std::string cMessagePar::detailedInfo() const
 {
+    std::stringstream os;
     if (isRedirected())
     {
         os << "  Type:   redirection ('I')\n";
@@ -223,6 +224,7 @@ void cMessagePar::writeContents(ostream& os)
         os << "  Type:  " << typechar << '\n';
         os << "  Value: " << getAsText().c_str() << '\n';
     }
+    return os.str();
 }
 
 void cMessagePar::forEachChild(cVisitor *v)

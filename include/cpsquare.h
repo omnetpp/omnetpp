@@ -73,6 +73,12 @@ class SIM_API cPSquare : public cDensityEstBase
     virtual cPSquare *dup() const  {return new cPSquare(*this);}
 
     /**
+     * Produces a multi-line description of the object's contents.
+     * See cObject for more details.
+     */
+    virtual std::string detailedInfo() const;
+
+    /**
      * Serializes the object into a PVM or MPI send buffer.
      * Used by the simulation kernel for parallel execution.
      * See cObject for more details.
@@ -85,12 +91,6 @@ class SIM_API cPSquare : public cDensityEstBase
      * See cObject for more details.
      */
     virtual void netUnpack(cCommBuffer *buffer);
-
-    /**
-     * Writes textual information about this object to the stream.
-     * See cObject for more details.
-     */
-    virtual void writeContents(std::ostream& os);
     //@}
 
   private:

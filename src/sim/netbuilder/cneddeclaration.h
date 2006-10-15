@@ -131,7 +131,7 @@ class SIM_API cNEDDeclaration : public cNoncopyableObject, public NEDComponent
     /** @name Redefined cObject methods */
     //@{
     /**
-     * Produces a one-line description of object contents into the buffer passed as argument.
+     * Produces a one-line description of object contents.
      */
     virtual std::string info() const;
 

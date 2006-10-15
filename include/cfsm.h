@@ -224,16 +224,10 @@ class SIM_API cFSM : public cObject
     virtual cFSM *dup() const  {return new cFSM(*this);}
 
     /**
-     * Produces a one-line description of object contents into the buffer passed as argument.
+     * Produces a one-line description of object contents.
      * See cObject for more details.
      */
     virtual std::string info() const;
-
-    /**
-     * Writes textual information about this object to the stream.
-     * See cObject for more details.
-     */
-    virtual void writeContents(std::ostream& os);
 
     /**
      * Serializes the object into a PVM or MPI send buffer.

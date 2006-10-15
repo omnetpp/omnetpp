@@ -58,7 +58,7 @@ class SIM_API cChannel : public cComponent //noncopyable
     /** @name Redefined cObject functions. */
     //@{
     /**
-     * Produces a one-line description of object contents into the buffer passed as argument.
+     * Produces a one-line description of object contents.
      * See cObject for more details.
      */
     virtual std::string info() const;
@@ -68,12 +68,6 @@ class SIM_API cChannel : public cComponent //noncopyable
      * See cObject for more details.
      */
     virtual void forEachChild(cVisitor *v);
-
-    /**
-     * Writes textual information about this object to the stream.
-     * See cObject for more details.
-     */
-    virtual void writeContents(std::ostream& os);  // FIXME eliminate writecontents from everywhere
 
     /**
      * Serializes the object into a buffer.

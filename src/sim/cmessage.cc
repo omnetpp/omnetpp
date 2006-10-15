@@ -149,8 +149,9 @@ void cMessage::forEachChild(cVisitor *v)
     }
 }
 
-void cMessage::writeContents(ostream& os)
+std::string cMessage::detailedInfo() const
 {
+    std::stringstream os;
     os << "  sender:    id=" << senderModuleId() << '\n';
     os << "  dest.:     id=" << arrivalModuleId() << '\n';
     os << "  sent:      " << simtimeToStr(sendingTime()) << '\n';
@@ -160,22 +161,28 @@ void cMessage::writeContents(ostream& os)
     os << "  priority:  " << priority() << '\n';
     os << "  error:     " << (hasBitError() ? "true" : "false") << '\n';
     os << "  timestamp: " << simtimeToStr(timestamp()) << '\n';
-    if (parlistp) {
+    if (parlistp)
+    {
         os << "  parameter list:\n";
-        parlistp->writeContents( os );
-    } else {
+        os << parlistp->detailedInfo();
+    } else
+    {
         os << "  no parameter list\n";
     }
-    if (encapmsg) {
+
+    if (encapmsg)
+    {
         os << "  encapsulated message:\n";
 #ifdef REFCOUNTING
-        _detachEncapMsg();  // see method comment why this is needed
+        const_cast<cMessage *>(this)->_detachEncapMsg();  // see method comment why this is needed
 #endif
-        encapmsg->writeContents( os );
+        os << encapmsg->detailedInfo();
     }
-    if (ctrlp) {
+
+    if (ctrlp)
         os << "  control info: (" << ctrlp->className() << ") " << ctrlp->detailedInfo() << "\n";
-    }
+
+    return os.str();
 }
 
 void cMessage::netPack(cCommBuffer *buffer)

@@ -97,7 +97,7 @@ class SIM_API cGate : public cNoncopyableObject
     virtual void forEachChild(cVisitor *v);
 
     /**
-     * Produces a one-line description of object contents into the buffer passed as argument.
+     * Produces a one-line description of object contents.
      * See cObject for more details.
      */
     virtual std::string info() const;
@@ -113,12 +113,6 @@ class SIM_API cGate : public cNoncopyableObject
      * Sets object's name. Redefined to update the stored fullName string.
      */
     virtual void setName(const char *s);
-
-    /**
-     * Writes textual information about this object to the stream.
-     * See cObject for more details.
-     */
-    virtual void writeContents(std::ostream& os);
     //@}
 
     /**

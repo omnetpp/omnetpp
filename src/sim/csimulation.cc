@@ -157,16 +157,45 @@ const char *cSimulation::fullPath(char *buffer, int bufsize) const
     return buffer;
 }
 
+static std::string xmlquote(const std::string& str)
+{
+    if (!strchr(str.c_str(), '<') && !strchr(str.c_str(), '>'))
+        return str;
+
+    std::stringstream out;
+    for (const char *s=str.c_str(); *s; s++)
+    {
+        char c = *s;
+        if (c=='<')
+           out << "&lt;";
+        else if (c=='>')
+           out << "&gt;";
+        else
+           out << c;
+    }
+    return out.str();
+}
+
 class cSnapshotWriterVisitor : public cVisitor
 {
   protected:
     ostream& os;
+    int indentlevel;
   public:
-    cSnapshotWriterVisitor(ostream& ostr) : os(ostr) {}
+    cSnapshotWriterVisitor(ostream& ostr) : os(ostr) {indentlevel=0;}
     virtual void visit(cObject *obj) {
-        obj->writeTo(os);
-        if (os.fail()) throw EndTraversalException();
+        std::string indent(2*indentlevel, ' ');
+        os << indent << "<object class=\"" << obj->className() << "\" fullpath=\"" << xmlquote(obj->fullPath()) << "\">\n";
+        os << indent << "  <info>" << xmlquote(obj->info()) << "</info>\n";
+        std::string details = obj->detailedInfo();
+        if (!details.empty())
+            os << indent << "  <detailedinfo>" << xmlquote(details) << "</detailedinfo>\n";
+        indentlevel++;
         obj->forEachChild(this);
+        indentlevel--;
+        os << indent << "</object>\n\n";
+
+        if (os.fail()) throw EndTraversalException();
     }
 };
 
@@ -181,22 +210,18 @@ bool cSimulation::snapshot(cObject *object, const char *label)
 
     ostream& os = *osptr;
 
-    os << "================================================" << "\n";
-    os << "||               SNAPSHOT                     ||" << "\n";
-    os << "================================================" << "\n";
-    os << "| Of object:    `" << object->fullPath() << "'" << "\n";
-    os << "| Label:        `" << (label?label:"") << "'" << "\n";
-    os << "| Sim. time:     " << simtimeToStr(simTime()) << "\n";
-//XXX    os << "| Network:      `" << networktype->name() << "'\n";
-    os << "| Run no.        " << run_number << '\n';
-    if (context())
-        os << "| Initiated from: `" << context()->fullPath() << "'\n";
-    else
-        os << "| Initiated by:  user\n";
-    os << "================================================" << "\n\n";
+    os << "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>\n";
+    os << "<snapshot\n";
+    os << "    object=\"" << xmlquote(object->fullPath()) << "\"\n";
+    os << "    label=\"" << xmlquote(label?label:"") << "\"\n";
+    os << "    simtime=\"" << xmlquote(simtimeToStr(simTime())) << "\"\n";
+    os << "    network=\"" << xmlquote(networktype?networktype->name():"") << "\"\n";
+    os << "    runnumber=\"" << run_number << "\">\n";
 
     cSnapshotWriterVisitor v(os);
     v.process(object);
+
+    os << "</snapshot>\n";
 
     bool success = !os.fail();
     ev.releaseStreamForSnapshot(&os);
@@ -221,12 +246,6 @@ static void writesubmodules(ostream& os, cModule *p, int indent )
     for (int i=0; i<=simulation.lastModuleId(); i++)
         if (simulation.module(i) && p==simulation.module(i)->parentModule())
             writesubmodules(os, simulation.module(i), indent+4 );
-}
-
-void cSimulation::writeContents( ostream& os )
-{
-    os << "  Modules in the network:\n";
-    writesubmodules(os, systemModule(), 5 );
 }
 
 void cSimulation::setScheduler(cScheduler *sched)

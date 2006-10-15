@@ -155,15 +155,17 @@ cKSplit& cKSplit::operator=(const cKSplit& res)
     return (*this);
 }
 
-void cKSplit::writeContents(ostream& os)
+std::string cKSplit::detailedInfo() const
 {
-   cDensityEstBase::writeContents(os);
+   std::stringstream os;
+   os << cDensityEstBase::detailedInfo();
 
    int nn = num_samples<=num_cells+1 ? num_samples : num_cells+1; //???
 
    os << "\n  cells:\n";
    for (int i=0; i<nn; i++)
       os << "       >=" << basepoint(i) << ": " << cell(i) << endl;
+   return os.str();
 }
 
 void cKSplit::setCritFunc(CritFunc _critfunc, double *_critdata)

@@ -120,12 +120,6 @@ class SIM_API cSimulation : public cNoncopyableObject
     virtual void forEachChild(cVisitor *v);
 
     /**
-     * Writes textual information about this object to the stream.
-     * See cObject for more details.
-     */
-    virtual void writeContents(std::ostream& os);
-
-    /**
      * Redefined. (Reason: a C++ rule that overloaded virtual methods must be redefined together.)
      */
     virtual std::string fullPath() const;

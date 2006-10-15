@@ -94,15 +94,6 @@ const char *cGate::fullName() const
     return fullname;
 }
 
-void cGate::writeContents(ostream& os)
-{
-    os << "  type:  " <<  (gatetype()==INPUT ? "input" : gatetype()==OUTPUT ? "output" : "inout") << '\n';
-    cGate *inside = (gatetype()==INPUT) ? togatep : fromgatep; //FIXME for inout???
-    cGate *outside = (gatetype()==INPUT) ? fromgatep : togatep; //FIXME for inout???
-    os << "  inside connection:  " << (inside?inside->fullPath().c_str():"(not connected)") << '\n';
-    os << "  outside connection: " << (outside?outside->fullPath().c_str():"(not connected)") << '\n';
-}
-
 std::string cGate::info() const
 {
     const char *arrow;

@@ -71,7 +71,7 @@ class SIM_API cBoolPar : public cPar
     virtual cBoolPar *dup() const  {return new cBoolPar(*this);}
 
     /**
-     * Produces a one-line description of object contents into the buffer passed as argument.
+     * Produces a one-line description of object contents.
      */
     virtual std::string info() const;
 

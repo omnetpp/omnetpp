@@ -343,9 +343,10 @@ double cPSquare::cell(int k) const
     return n[k+2] - n[k+1] + (k==0);
 }
 
-void cPSquare::writeContents(ostream& os)
+std::string cPSquare::detailedInfo() const
 {
-   cDensityEstBase::writeContents(os);
+   std::stringstream os;
+   os << cDensityEstBase::detailedInfo();
 
    int nn = numobs<=numcells+1 ? numobs : numcells+1;
 
@@ -353,7 +354,7 @@ void cPSquare::writeContents(ostream& os)
    os << "      #samples\t<=marker\n";
    for (int i=1; i<=nn; i++)
       os << "       " << n[i] << "\t " << q[i] << endl;
-
+   return os.str();
 }
 
 double cPSquare::cdf(double x) const

@@ -69,7 +69,7 @@ class SIM_API cXMLPar : public cPar
     virtual cXMLPar *dup() const  {return new cXMLPar(*this);}
 
     /**
-     * Produces a one-line description of object contents into the buffer passed as argument.
+     * Produces a one-line description of object contents.
      */
     virtual std::string info() const;
 

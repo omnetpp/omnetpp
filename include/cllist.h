@@ -165,7 +165,7 @@ class SIM_API cLinkedList : public cObject
     virtual cLinkedList *dup() const  {return new cLinkedList(*this);}
 
     /**
-     * Produces a one-line description of object contents into the buffer passed as argument.
+     * Produces a one-line description of object contents.
      * See cObject for more details.
      */
     virtual std::string info() const;

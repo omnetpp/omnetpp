@@ -89,7 +89,7 @@ class SIM_API cProperties : cPolymorphic
     virtual cProperties *dup() const   {return new cProperties(*this);}
 
     /**
-     * Produces a one-line description of object contents into the buffer passed as argument.
+     * Produces a one-line description of object contents.
      */
     virtual std::string info() const;
 

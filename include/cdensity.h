@@ -128,10 +128,9 @@ class SIM_API cDensityEstBase : public cStdDev
     /* No dup() because this is an abstract class. */
 
     /**
-     * Writes textual information about this object to the stream.
-     * See cObject for more details.
+     * Produces a multi-line description of the object's contents.
      */
-    virtual void writeContents(std::ostream& os);
+    virtual std::string detailedInfo() const;
 
     /**
      * Serializes the object into a PVM or MPI send buffer.

@@ -66,7 +66,7 @@ typedef int (*CompareFunc)(cObject *a, cObject *b);
  *
  * When subclassing cObject, some virtual member functions are expected to be
  * redefined: dup() are mandatory to be redefined, and often
- * you'll want to redefine info() and writeContents() as well.
+ * you'll want to redefine info() and detailedInfo() as well.
  *
  * <b>Ownership management</b> helps \opp catch common programming
  * errors. As a definition, <i>ownership means the exclusive right and duty
@@ -168,9 +168,6 @@ class SIM_API cObject : public cPolymorphic
 
     // internal
     static void setDefaultOwner(cDefaultList *list);
-
-    // called internally by cSimpleModule::snapshot(), and in turn it calls writeContents()
-    virtual void writeTo(std::ostream& os);
 
   protected:
     /** @name Ownership control.
@@ -342,21 +339,6 @@ class SIM_API cObject : public cPolymorphic
      * the current event.
      */
     static cDefaultList *defaultOwner();
-
-    //@}
-
-    /** @name Reflection, support for debugging and snapshots. */
-    //@{
-    /**
-     * This function is indirectly invoked by snapshot(). It is
-     * expected to write textual information about the object and other
-     * objects it contains to the stream.
-     *
-     * This default version (cObject::writeContents()) prints detailedInfo()
-     * and uses forEachChild() to call info() for contained objects. It only needs
-     * to be redefined if this behaviour is should be customized.
-     */
-    virtual void writeContents(std::ostream& os);
     //@}
 
     /** @name Miscellaneous functions. */
@@ -432,7 +414,7 @@ class SIM_API cNoncopyableObject : public cObject, noncopyable
     /**
      * Constructor
      */
-    explicit cNoncopyableObject(const char *name=NULL, bool namepooling=true) : 
+    explicit cNoncopyableObject(const char *name=NULL, bool namepooling=true) :
         cObject(name, namepooling) {}
 
 //FIXME disable copy ctor as well

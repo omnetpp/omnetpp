@@ -61,11 +61,6 @@ void cChannel::forEachChild(cVisitor *v)
     cDefaultList::forEachChild(v);
 }
 
-void cChannel::writeContents(ostream& os)
-{
-    //FIXME throw out this function from everywhere
-}
-
 void cChannel::netPack(cCommBuffer *buffer)
 {
     throw new cRuntimeError(this,"netPack() not implemented");

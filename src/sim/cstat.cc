@@ -283,11 +283,12 @@ double cStdDev::variance() const
 
 double cStdDev::stddev() const
 {
-    return sqrt( variance() );
+    return sqrt(variance());
 }
 
-void cStdDev::writeContents(ostream& os)
+std::string cStdDev::detailedInfo() const
 {
+    std::stringstream os;
     os <<   "  Number of values = " << num_samples << "\n";
     if (num_samples==1)
         os << "  Value          = " << min_samples << "\n";
@@ -298,6 +299,7 @@ void cStdDev::writeContents(ostream& os)
         os << "  Minimal value  = " << min_samples << "\n";
         os << "  Maximal value  = " << max_samples << "\n";
     }
+    return os.str();
 }
 
 void cStdDev::clearResult()

@@ -67,7 +67,7 @@ class SIM_API cBasicChannel : public cChannel
     /** @name Redefined cObject functions. */
     //@{
     /**
-     * Produces a one-line description of object contents into the buffer passed as argument.
+     * Produces a one-line description of object contents.
      * See cObject for more details.
      */
     virtual std::string info() const;

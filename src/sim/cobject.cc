@@ -56,18 +56,6 @@ void printAllObjects()
 //=== Internally used visitors
 
 /**
- * Calls os << obj->info() for every object.
- */
-class cPrintInfoVisitor : public cVisitor
-{
-  protected:
-    ostream& os;
-  public:
-    cPrintInfoVisitor(ostream& ostr) : os(ostr) {}
-    virtual void visit(cObject *obj) {os << obj->info() << "\n";}
-};
-
-/**
  * Finds a child object by name.
  */
 class cChildObjectFinderVisitor : public cVisitor
@@ -372,20 +360,6 @@ const char *cObject::fullPath(char *buffer, int bufsize) const
 
 void cObject::forEachChild(cVisitor *v)
 {
-}
-
-void cObject::writeTo(ostream& os)
-{
-    os << "(" << className() << ") `" << fullPath() << "' begin\n";
-    writeContents( os );
-    os << "end\n\n";
-}
-
-void cObject::writeContents(ostream& os)
-{
-    os << detailedInfo() << std::endl;
-    cPrintInfoVisitor v(os);
-    v.processChildrenOf(this);
 }
 
 cObject *cObject::findObject(const char *objname, bool deep)

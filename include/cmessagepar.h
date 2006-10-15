@@ -364,16 +364,16 @@ class SIM_API cMessagePar : public cObject   // FIXME simplify and DEPRECATE thi
     virtual cMessagePar *dup() const  {return new cMessagePar(*this);}
 
     /**
-     * Produces a one-line description of object contents into the buffer passed as argument.
+     * Produces a one-line description of object contents.
      * See cObject for more details.
      */
     virtual std::string info() const;
 
     /**
-     * Writes textual information about this object to the stream.
+     * Produces a multi-line description of the object's contents.
      * See cObject for more details.
      */
-    virtual void writeContents(std::ostream& os);
+    virtual std::string detailedInfo() const;
 
     /**
      * Calls v->visit(this) for the contained object, if there's any.
