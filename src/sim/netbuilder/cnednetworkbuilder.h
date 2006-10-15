@@ -70,8 +70,8 @@ class cNEDNetworkBuilder
 
     cGate *resolveGate(cModule *modp, const char *modname, ExpressionNode *modindex,
                        const char *gatename, ExpressionNode *gateindex, bool isplusplus);
-    cChannelType *findAndCheckChannelType(const char *channeltypename, cModule *modp);
-    cChannel *createChannelForConnection(ConnectionNode *conn, cModule *parentmodp);
+    cChannel *createChannel(ChannelSpecNode *channelspec, cModule *parentmodp);
+    cChannelType *findAndCheckChannelType(const char *channeltypename);
     ExpressionNode *findExpression(NEDElement *node, const char *exprname);
     long evaluateAsLong(ExpressionNode *exprNode, cComponent *context, bool inSubcomponentScope);
     bool evaluateAsBool(ExpressionNode *exprNode, cComponent *context, bool inSubcomponentScope);

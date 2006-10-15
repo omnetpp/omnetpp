@@ -17,7 +17,6 @@
 #include "cproperties.h"
 #include "cpar.h"
 #include "crng.h"
-#include "cmodule.h"
 
 
 cComponent::cComponent(const char *name) : cDefaultList(name)
@@ -47,11 +46,6 @@ const char *cComponent::className() const
 void cComponent::setComponentType(cComponentType *componenttype)
 {
     this->componenttype = componenttype;
-}
-
-cModule *cComponent::parentModule() const  
-{
-    return dynamic_cast<cModule *>(owner());
 }
 
 void cComponent::handleParameterChange(char const *)

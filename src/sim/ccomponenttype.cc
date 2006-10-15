@@ -151,9 +151,6 @@ cChannel *cChannelType::instantiateChannelClass(const char *classname)
 
 cChannel *cChannelType::create(const char *name, cModule *parentmod)
 {
-    if (!parentmod)
-         throw new cRuntimeError("no parent"); //FIXME better msg
-
     cContextTypeSwitcher tmp(CTX_BUILD);
 
     // Object members of the new channel class are collected to tmplist.
@@ -167,9 +164,9 @@ cChannel *cChannelType::create(const char *name, cModule *parentmod)
     // set up channel: set name, channel type, etc
     channel->setName(name);
     channel->setComponentType(this);
-    parentmod->insertChannel(channel);
 
     // put the object members of the new module to their place
+    parentmod->take(channel); // temporarily -- then connection's src gate will take() it
     channel->takeAllObjectsFrom(tmplist);
 
     // restore defaultowner

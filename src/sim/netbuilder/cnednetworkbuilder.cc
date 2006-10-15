@@ -271,6 +271,7 @@ void cNEDNetworkBuilder::assignComponentParams(cComponent *subcomponentp, NEDEle
         return;
 
     cModule *modp = subcomponentp->parentModule();
+    ASSERT(modp);
     for (ParamNode *parnode=substparams->getFirstParamChild(); parnode; parnode=parnode->getNextParamNodeSibling())
     {
         // assign param value
@@ -426,9 +427,8 @@ void cNEDNetworkBuilder::doAddConnection(cModule *modp, ConnectionNode *conn)
     cGate *destg = resolveGate(modp, conn->getDestModule(), findExpression(conn, "dest-module-index"),
                                      conn->getDestGate(), findExpression(conn, "dest-gate-index"),
                                      conn->getDestGatePlusplus());
-    cChannel *channel = createChannelForConnection(conn,modp);
 
-    printf("    creating connection: %s --> %s, channel %s\n", srcg->fullPath().c_str(), destg->fullPath().c_str(), (channel ? channel->info().c_str() : "none")); //XXX
+    printf("    creating connection: %s --> %s\n", srcg->fullPath().c_str(), destg->fullPath().c_str());
 
     // check directions
     cGate *errg = NULL;
@@ -442,13 +442,20 @@ void cNEDNetworkBuilder::doAddConnection(cModule *modp, ConnectionNode *conn)
                                 errg->fullPath().c_str(), modp->className(), modp->fullPath().c_str());
 
     // connect
-    if (channel)
-        srcg->connectTo(destg, channel);
-    else
+    ChannelSpecNode *channelspec = conn->getFirstChannelSpecChild();
+    if (!channelspec)
+    {
         srcg->connectTo(destg);
+    }
+    else
+    {
+        cChannel *channel = createChannel(channelspec, modp);
+        srcg->connectTo(destg, channel);
+        assignComponentParams(channel, channelspec);
+        channel->readInputParams();
 
-    // display string
-    setConnDisplayString(srcg, conn);
+        //XXX display string
+    }
 }
 
 cGate *cNEDNetworkBuilder::resolveGate(cModule *parentmodp,
@@ -505,43 +512,34 @@ cGate *cNEDNetworkBuilder::resolveGate(cModule *parentmodp,
     return gatep;
 }
 
-cChannel *cNEDNetworkBuilder::createChannelForConnection(ConnectionNode *conn, cModule *parentmodp)
+cChannel *cNEDNetworkBuilder::createChannel(ChannelSpecNode *channelspec, cModule *parentmodp)
 {
-    ChannelSpecNode *channel = conn->getFirstChannelSpecChild();
-    if (!channel)
-        return NULL;
-
     // create channel object
     cChannel *channelp = NULL;
     std::string channeltypename;
-    if (strnull(channel->getLikeParam()))
+    if (strnull(channelspec->getLikeParam()))
     {
-        channeltypename = strnull(channel->getType()) ? "cBasicChannel" : channel->getType();
+        channeltypename = strnull(channelspec->getType()) ? "cBasicChannel" : channelspec->getType();
     }
     else
     {
         // "like"
-        const char *parname = channel->getLikeParam();
+        const char *parname = channelspec->getLikeParam();
         channeltypename = parentmodp->par(parname).stringValue();
     }
 
-    cChannelType *channeltype = findAndCheckChannelType(channeltypename.c_str(), parentmodp);
+    cChannelType *channeltype = findAndCheckChannelType(channeltypename.c_str());
     channelp = channeltype->create("channel", parentmodp);
 
-    cContextSwitcher __ctx(channelp); // params need to be evaluated in the channel's context
-    assignComponentParams(channelp, channel);
-    channelp->readInputParams();
-//FIXME setDisplayString(channelp, channel);
     return channelp;
 }
 
-cChannelType *cNEDNetworkBuilder::findAndCheckChannelType(const char *channeltypename, cModule *modp)
+cChannelType *cNEDNetworkBuilder::findAndCheckChannelType(const char *channeltypename)
 {
     cChannelType *channeltype = cChannelType::find(channeltypename);
     if (!channeltype)
-        throw new cRuntimeError("dynamic network builder: channel type definition `%s' in (%s)%s not found "
-                                "(Define_Channel() missing from C++ source?)",
-                                channeltypename, modp->className(), modp->fullPath().c_str());
+        throw new cRuntimeError("dynamic network builder: channel type definition `%s' not found "
+                                "(Define_Channel() missing from C++ source?)", channeltypename);
     return channeltype;
 }
 

@@ -109,12 +109,6 @@ class SIM_API cModule : public cComponent //noncopyable
     // internal: removes a submodule
     void removeSubmodule(cModule *mod);
 
-    // internal: inserts a channel. Called as part of the network setup process.
-    void insertChannel(cChannel *channel);
-
-    // internal: removes a channel
-    void removeChannel(cChannel *channel);
-
     // internal: "virtual ctor" for cGate, because in cPlaceHolderModule
     // we'll need different gate objects
     virtual cGate *createGateObject(const char *gname, char tp);
@@ -318,6 +312,12 @@ class SIM_API cModule : public cComponent //noncopyable
      * Redefined from cComponent to return true.
      */
     virtual bool isModule() const  {return true;}
+
+    /**
+     * Returns the module containing this module. For the system module,
+     * it returns NULL.
+     */
+    virtual cModule *parentModule() const;
 
     /**
      * Convenience method: casts the return value of componentType() to cModuleType.

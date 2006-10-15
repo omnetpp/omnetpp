@@ -89,6 +89,15 @@ class SIM_API cChannel : public cComponent //noncopyable
     /** @name Channel information. */
     //@{
     /**
+     * Returns the compound module containing this channel. That is,
+     * the channel is either between two submodules of parentModule(),
+     * or between parentModule() and one of its submodules.
+     * (For completeness, it may also connect two gates of parentModule()
+     * on the inside).
+     */
+    virtual cModule *parentModule() const;
+
+    /**
      * Convenience method: casts the return value of componentType() to cChannelType.
      */
     cChannelType *channelType() const  {return (cChannelType *)componentType();}

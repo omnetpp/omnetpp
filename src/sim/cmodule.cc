@@ -168,14 +168,9 @@ void cModule::removeSubmodule(cModule *mod)
     lastmodulefullpathmod = NULL;
 }
 
-void cModule::insertChannel(cChannel *channel)
+cModule *cModule::parentModule() const
 {
-    take(channel);
-}
-
-void cModule::removeChannel(cChannel *channel)
-{
-    // nothing, not even drop(channel) -- see comment in removeSubmodule() why
+    return dynamic_cast<cModule *>(owner());
 }
 
 void cModule::setName(const char *s)

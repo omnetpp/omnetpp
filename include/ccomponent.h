@@ -128,12 +128,11 @@ class SIM_API cComponent : public cDefaultList // noncopyable
     virtual bool isModule() const  {return false;}
 
     /**
-     * Returns the component's parent module. (The parent of a channel object
-     * is the module containing the connection.) For the system module, it returns
-     * NULL.
+     * Returns the module containing this module/channel. This is not necessarily
+     * the same object as owner(), especially for channel objects. For the system
+     * module, it returns NULL.
      */
-    //Note: this method cannot go inline due to circular dependencies.
-    cModule *parentModule() const;
+    virtual cModule *parentModule() const = 0;
 
     /**
      * Returns the global RNG mapped to local RNG number k. For large indices

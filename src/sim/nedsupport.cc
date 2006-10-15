@@ -57,7 +57,7 @@ ParameterRef::ParameterRef(const char *paramName, bool ofParent, bool printThis)
 StkValue ParameterRef::evaluate(cComponent *context, StkValue args[], int numargs)
 {
     ASSERT(numargs==0 && context!=NULL);
-    cModule *module = dynamic_cast<cModule *>(ofParent ? context->owner() : context);
+    cModule *module = dynamic_cast<cModule *>(ofParent ? context->parentModule() : context);
     if (!module)
         throw new cRuntimeError(context,eENOPARENT);
     return module->par(paramName.c_str());
@@ -85,7 +85,7 @@ StkValue SiblingModuleParameterRef::evaluate(cComponent *context, StkValue args[
 {
     ASSERT(context!=NULL);
     ASSERT(!withModuleIndex || (withModuleIndex && numargs==1 && args[0].type==StkValue::DBL));
-    cModule *compoundModule = dynamic_cast<cModule *>(ofParent ? context->owner() : context); // this works for channels too
+    cModule *compoundModule = dynamic_cast<cModule *>(ofParent ? context->parentModule() : context); // this works for channels too
     if (!compoundModule)
         throw new cRuntimeError(context,eENOPARENT);
     int moduleIndex = withModuleIndex ? (int)args[0].dbl : -1;
@@ -156,7 +156,7 @@ Sizeof::Sizeof(const char *ident, bool ofParent, bool printThis)
 StkValue Sizeof::evaluate(cComponent *context, StkValue args[], int numargs)
 {
     ASSERT(numargs==0 && context!=NULL);
-    cModule *module = dynamic_cast<cModule *>(ofParent ? context->owner() : context);
+    cModule *module = dynamic_cast<cModule *>(ofParent ? context->parentModule() : context);
     if (!module)
         throw new cRuntimeError(context,eENOPARENT);
 
@@ -203,7 +203,7 @@ StkValue cDynamicExpression::sizeofIdent(cComponent *context, StkValue args[], i
 
     // ident might be a gate vector of the *parent* module, or a sibling submodule vector
     // Note: it might NOT mean gate vector of this module
-    cModule *parentModule = dynamic_cast<cModule *>(context->owner()); // this works for channels too
+    cModule *parentModule = dynamic_cast<cModule *>(context->parentModule()); // this works for channels too
     if (!parentModule)
         throw new cRuntimeError(context, "sizeof(%s) occurs in wrong context", ident);
     if (parentModule->hasGate(ident))
@@ -242,7 +242,7 @@ StkValue cDynamicExpression::sizeofParentModuleGate(cComponent *context, StkValu
 {
     ASSERT(numargs==1 && args[0].type==StkValue::STR);
     const char *gateName = args[0].str.c_str();
-    cModule *parentModule = dynamic_cast<cModule *>(context->owner()); // this works for channels too
+    cModule *parentModule = dynamic_cast<cModule *>(context->parentModule()); // this works for channels too
     if (!parentModule)
         throw new cRuntimeError(context, "sizeof() occurs in wrong context", gateName);
     if (!parentModule->hasGate(gateName))
@@ -259,7 +259,7 @@ StkValue cDynamicExpression::sizeofSiblingModuleGate(cComponent *context, StkVal
     const char *siblingModuleName = args[0].str.c_str();
     const char *gateName = args[1].str.c_str();
 
-    cModule *parentModule = dynamic_cast<cModule *>(context->owner()); // this works for channels too
+    cModule *parentModule = dynamic_cast<cModule *>(context->parentModule()); // this works for channels too
     if (!parentModule)
         throw new cRuntimeError(context, "sizeof() occurs in wrong context", gateName);
     cModule *siblingModule = parentModule->submodule(siblingModuleName); // returns NULL if submodule is not a vector
@@ -277,7 +277,7 @@ StkValue cDynamicExpression::sizeofIndexedSiblingModuleGate(cComponent *context,
     const char *gateName = args[1].str.c_str();
     const char *siblingModuleName = args[1].str.c_str();
     int siblingModuleIndex = (int)args[2].dbl;
-    cModule *parentModule = dynamic_cast<cModule *>(context->owner()); // this works for channels too
+    cModule *parentModule = dynamic_cast<cModule *>(context->parentModule()); // this works for channels too
     cModule *siblingModule = parentModule ? parentModule->submodule(siblingModuleName, siblingModuleIndex) : NULL;
     if (!siblingModule)
         throw new cRuntimeError(context,"sizeof(): cannot find submodule %[%d]",

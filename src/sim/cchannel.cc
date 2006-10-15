@@ -76,6 +76,17 @@ void cChannel::netUnpack(cCommBuffer *buffer)
     throw new cRuntimeError(this,"netUnpack() not implemented");
 }
 
+cModule *cChannel::parentModule() const
+{
+    // find which (compound) module contains this connection
+    if (!fromgatep)
+        return NULL;
+    cModule *ownerMod = fromgatep->ownerModule();
+    if (!ownerMod)
+        return NULL;
+    return fromgatep->type()==cGate::INPUT ? ownerMod : ownerMod->parentModule();
+}
+
 bool cChannel::deliver(cMessage *msg, simtime_t t)
 {
     // just hand over msg to next gate

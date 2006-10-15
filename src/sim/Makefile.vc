@@ -248,7 +248,6 @@ ccomponent.obj: ccomponent.cc \
   ../../include/cproperties.h \
   ../../include/cpar.h \
   ../../include/crng.h \
-  ../../include/cmodule.h \
   ../../include/defs.h \
   ../../include/cobject.h \
   ../../include/cdefaultlist.h \
@@ -265,11 +264,7 @@ ccomponent.obj: ccomponent.cc \
   ../../include/globals.h \
   ../../include/carray.h \
   ../../include/cclassfactory.h \
-  ../../include/cexpression.h \
-  ../../include/cgate.h \
-  ../../include/csimulation.h \
-  ../../include/cmsgheap.h \
-  ../../include/ccoroutine.h
+  ../../include/cexpression.h
 ccomponenttype.obj: ccomponenttype.cc \
   ../../include/ccomponenttype.h \
   ../../include/cmodule.h \
@@ -799,6 +794,7 @@ cmodule.obj: cmodule.cc \
   ../../include/cenvir.h \
   ../../include/cexception.h \
   ../../include/cdisplaystring.h \
+  ../../include/cchannel.h \
   ../../include/util.h \
   ../../include/ccomponent.h \
   ../../include/globals.h \
@@ -1738,6 +1734,7 @@ netbuilder/cnednetworkbuilder.obj: netbuilder/cnednetworkbuilder.cc \
   netbuilder/cnednetworkbuilder.h \
   netbuilder/cnedloader.h \
   netbuilder/cexpressionbuilder.h \
+  ../../include/nedsupport.h \
   ../../include/ccomponent.h \
   ../../include/globals.h \
   ../../include/csimulation.h \
