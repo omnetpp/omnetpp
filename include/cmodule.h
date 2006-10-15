@@ -62,6 +62,98 @@ class SIM_API cModule : public cComponent //noncopyable
     friend class cSubModIterator;
 
   public:
+    /**
+     * Iterates through submodules of a compound module.
+     *
+     * Example:
+     * \code
+     * for (cModule::SubmoduleIterator i(*modp); !i.end(); i++)
+     * {
+     *     cModule *submodp = i();
+     *     ...
+     * }
+     * \endcode
+     */
+    class SubmoduleIterator
+    {
+      private:
+        cModule *p;
+
+      public:
+        /**
+         * Constructor. It takes the parent module on which to iterate.
+         */
+        SubmoduleIterator(const cModule *m)  {init(m);}
+
+        /**
+         * Reinitializes the iterator.
+         */
+        void init(const cModule *m)  {p = m ? const_cast<cModule *>(m->firstsubmodp) : NULL;}
+
+        /**
+         * Returns pointer to the current module. The pointer then
+         * may be cast to the appropriate cModule subclass.
+         * Returns NULL if the iterator has reached the end of the list.
+         */
+        cModule *operator()() const {return p;}
+
+        /**
+         * Returns true if the iterator reached the end of the list.
+         */
+        bool end() const  {return (bool)(p==NULL);}
+
+        /**
+         * Returns the current module, then moves the iterator to the
+         * next module. Returns NULL if the iterator has already reached
+         * the end of the list.
+         */
+        cModule *operator++(int)  {if (!p) return NULL; cModule *t=p; p=p->nextp; return t;}
+    };
+
+    /**
+     * Walks along the channels attached to the gates of a module.
+     * Note: these are *not* the same channels whose parentModule() returns
+     * the iterated module.
+     */
+    class ChannelIterator
+    {
+      private:
+        const cModule *module;
+        int k;
+
+      public:
+        /**
+         * Constructor. The iterator will walk on the module passed as argument.
+         */
+        ChannelIterator(const cModule *m)  {init(m);}
+
+        /**
+         * Reinitializes the iterator object.
+         */
+        void init(const cModule *m);
+
+        /**
+         * Returns the current object, or NULL if the iterator is not
+         * at a valid position.
+         */
+        cChannel *operator()()  {return module->gate(k)->channel();}
+
+        /**
+         * Returns true if the iterator has reached the end of the module's gates.
+         */
+        bool end() const   {return k>=module->gates();}
+
+        /**
+         * Returns the current object, then moves the iterator to the next item.
+         * If the iterator has reached end of the module, nothing happens;
+         * you have to call init() again to restart iterating.
+         * If gates or channels are added or removed during interation, the behaviour
+         * is undefined.
+         */
+        cChannel *operator++(int);
+    };
+
+  public:
     static std::string lastmodulefullpath; // cached result of last fullPath() call
     static const cModule *lastmodulefullpathmod; // module of lastmodulefullpath
 
@@ -552,51 +644,13 @@ class SIM_API cModule : public cComponent //noncopyable
 
 
 /**
- * Iterates through submodules of a compound module.
- *
- * Example:
- * \code
- * for (cSubModIterator i(*modp); !i.end(); i++)
- * {
- *     cModule *submodp = i();
- *     ...
- * }
- * \endcode
+ * DEPRECATED -- use cModule::SubmoduleIterator instead.
  */
-class SIM_API cSubModIterator
+class SIM_API cSubModIterator : public cModule::SubmoduleIterator
 {
-  private:
-    cModule *p;
-
   public:
-    /**
-     * Constructor. It takes the parent module.
-     */
-    cSubModIterator(const cModule& h)  {p = &h ? h.firstsubmodp : NULL;}
-
-    /**
-     * Reinitializes the iterator.
-     */
-    void init(const cModule& h)  {p = &h ? h.firstsubmodp : NULL;}
-
-    /**
-     * Returns pointer to the current module. The pointer then
-     * may be cast to the appropriate cModule subclass.
-     * Returns NULL of the iterator has reached the end of the list.
-     */
-    cModule *operator()() const {return p;}
-
-    /**
-     * Returns true if the iterator reached the end of the list.
-     */
-    bool end() const  {return (bool)(p==NULL);}
-
-    /**
-     * Returns the current module, then moves the iterator to the
-     * next module. Returns NULL if the iterator has already reached
-     * the end of the list.
-     */
-    cModule *operator++(int)  {if (!p) return NULL; cModule *t=p; p=p->nextp; return t;}
+    cSubModIterator(const cModule& m) : cModule::SubmoduleIterator(&m) {}
+    void init(const cModule& m) {cModule::SubmoduleIterator::init(&m);}
 };
 
 #endif

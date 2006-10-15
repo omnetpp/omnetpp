@@ -655,6 +655,28 @@ void cModule::bubble(const char *text)
     ev.bubble(this, text);
 }
 
+//----
 
+void cModule::ChannelIterator::init(const cModule *m)
+{
+    module = m;
+    k = 0;
 
+    // fast-forward to first non-empty slot
+    while ((!module->gate(k) || !module->gate(k)->channel()) && k<module->gates())
+        k++;
+}
+
+cChannel *cModule::ChannelIterator::operator++(int)
+{
+    if (k>=module->gates())
+        return NULL;
+
+    cChannel *obj = module->gate(k)->channel();
+
+    k++;
+    while ((!module->gate(k) || !module->gate(k)->channel()) && k<module->gates())
+        k++;
+    return obj;
+}
 
