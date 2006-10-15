@@ -67,7 +67,7 @@ cNoncopyableObject(name), NEDComponent(tree)
 cNEDDeclaration::~cNEDDeclaration()
 {
     for (int i=0; i<params.size(); i++)
-        delete params[i].value;
+        dropAndDelete(params[i].value);
     for (int i=0; i<gates.size(); i++)
         delete gates[i].gatesize;
 }

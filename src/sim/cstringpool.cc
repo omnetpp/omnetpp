@@ -45,7 +45,9 @@ const char *cStringPool::get(const char *s)
 
 void cStringPool::release(const char *s)
 {
-    ASSERT(cStaticFlag::isSet()); // strings must be released before shutdown
+    if (!cStaticFlag::isSet())
+        throw new cRuntimeError("cStringPool: release(\"%s\"): strings must be released before shutdown! "
+                                "(Hint: some object with that name being deleted too late?)", s);
 
     StringIntMap::iterator it = pool.find(const_cast<char *>(s));
     ASSERT(it!=pool.end() && it->first==s); // assure correct usage by clients

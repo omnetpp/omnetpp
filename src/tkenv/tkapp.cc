@@ -231,6 +231,10 @@ void TOmnetTkApp::shutdown()
     // delete network if not yet done
     simulation.deleteNetwork();
 
+    // pull down inspector factories
+    inspectorfactories.clear();
+
+    // shut down base class
     TOmnetApp::shutdown();
 }
 
