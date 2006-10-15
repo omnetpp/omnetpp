@@ -110,6 +110,7 @@ int inspectorCommand_cmd(ClientData, Tcl_Interp *, int, const char **);
 int hasDescriptor_cmd(ClientData, Tcl_Interp *, int, const char **);
 
 int objectNullPointer_cmd(ClientData, Tcl_Interp *, int, const char **);
+int objectDefaultList_cmd(ClientData, Tcl_Interp *, int, const char **);
 int objectSimulation_cmd(ClientData, Tcl_Interp *, int, const char **);
 int objectSystemModule_cmd(ClientData, Tcl_Interp *, int, const char **);
 int objectMessageQueue_cmd(ClientData, Tcl_Interp *, int, const char **);
@@ -190,6 +191,7 @@ OmnetTclCommand tcl_commands[] = {
    { "opp_hasdescriptor",     hasDescriptor_cmd     }, // args: <window>
    // Functions that return object pointers
    { "opp_object_nullpointer",  objectNullPointer_cmd  },
+   { "opp_object_defaultlist",  objectDefaultList_cmd  },
    { "opp_object_simulation",   objectSimulation_cmd   },
    { "opp_object_systemmodule", objectSystemModule_cmd },
    { "opp_object_messagequeue", objectMessageQueue_cmd },
@@ -1400,6 +1402,13 @@ int objectNullPointer_cmd(ClientData, Tcl_Interp *interp, int argc, const char *
 {
    if (argc!=1) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
    Tcl_SetResult(interp, ptrToStr( NULL ), TCL_VOLATILE);
+   return TCL_OK;
+}
+
+int objectDefaultList_cmd(ClientData, Tcl_Interp *interp, int argc, const char **)
+{
+   if (argc!=1) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
+   Tcl_SetResult(interp, ptrToStr( &defaultList ), TCL_VOLATILE);
    return TCL_OK;
 }
 
