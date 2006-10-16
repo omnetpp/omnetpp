@@ -228,6 +228,11 @@ class SIM_API cPar : public cObject
     virtual cPar& setStringValue(const char *s) = 0;
 
     /**
+     * Sets the value to the given string value.
+     */
+    virtual cPar& setStringValue(const std::string& s)  {setStringValue(s.c_str()); return *this;}
+
+    /**
      * Sets the value to the given cXMLElement.
      */
     virtual cPar& setXMLValue(cXMLElement *node) = 0;
@@ -381,6 +386,11 @@ class SIM_API cPar : public cObject
     cPar& operator=(const char *s)  {return setStringValue(s);}
 
     /**
+     * Equivalent to setStringValue().
+     */
+    cPar& operator=(const std::string& s)  {return setStringValue(s);}
+
+    /**
      * Equivalent to setXMLValue().
      */
     cPar& operator=(cXMLElement *node)  {return setXMLValue(node);}
@@ -444,6 +454,16 @@ class SIM_API cPar : public cObject
      * Equivalent to stringValue().
      */
     operator std::string() const  {return stringValue();}
+
+    /**
+     * Equivalent to stringValue(), but may can only be invoked when the
+     * parameter's value is a string constant, and not the result of expression
+     * evaluation. (In the latter case, an error is thrown.) This practically
+     * means that this method cannot be applied on parameters declared as
+     * "volatile" in NED -- for those you have to use <tt>stringValue().c_str()</tt>.
+     */
+    operator const char *() const;
+
 
     /**
      * Equivalent to xmlValue().
