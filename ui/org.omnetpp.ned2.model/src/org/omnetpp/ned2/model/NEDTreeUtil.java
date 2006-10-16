@@ -104,7 +104,7 @@ public class NEDTreeUtil {
 		} 
 		catch (RuntimeException e) {
 			errors.add(NEDErrorCategory.ERRCAT_ERROR.ordinal(), "", "internal error: "+e);
-			//e.printStackTrace(); //XXX should go into the log
+            NEDModelPlugin.log(e);
 			return null;
 		}
 	}

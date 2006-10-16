@@ -31,7 +31,7 @@ public abstract class NEDElement extends PlatformObject implements Iterable<NEDE
     
     // whether notification is enabled or not
     private boolean notifyEnabled = true;
-    private transient NEDChangeListenerList listeners = null;
+    protected transient NEDChangeListenerList listeners = null;
 
 	public Iterator<NEDElement> iterator() {
 		final NEDElement e = this;
@@ -567,19 +567,22 @@ public abstract class NEDElement extends PlatformObject implements Iterable<NEDE
         }
 	}
 
-    protected void fireAttributeChanged(NEDElement node, String attr) {
-        if(listeners != null && isNotifyEnabled()) 
-            listeners.fireAttributeChanged(node, attr);
+    public void fireAttributeChanged(NEDElement node, String attr) {
+        if(listeners == null || !isNotifyEnabled())
+            return;
+        listeners.fireAttributeChanged(node, attr);
     }
 
-    protected void fireChildInserted(NEDElement node, NEDElement where, NEDElement child) {
-        if(listeners != null && isNotifyEnabled()) 
-            listeners.fireChildInserted(node, where, child);
+    public void fireChildInserted(NEDElement node, NEDElement where, NEDElement child) {
+        if(listeners == null || !isNotifyEnabled())
+            return;
+        listeners.fireChildInserted(node, where, child);
     }
 
-    protected void fireChildRemoved(NEDElement node, NEDElement child) {
-        if(listeners != null && isNotifyEnabled()) 
-            listeners.fireChildRemoved(node, child);
+    public void fireChildRemoved(NEDElement node, NEDElement child) {
+        if(listeners == null || !isNotifyEnabled())
+            return;
+        listeners.fireChildRemoved(node, child);
     }
 
 	/**
@@ -722,7 +725,10 @@ public abstract class NEDElement extends PlatformObject implements Iterable<NEDE
      * @param typeInfo Sets the component type info data. Should be used by the incremental builder ONLY.
      */
     public void setNEDTypeInfo(INEDTypeInfo typeInfo) {
+        Assert.isNotNull(typeInfo);
+        removeListener(this.typeInfo);
         this.typeInfo = typeInfo;
+        addListener(this.typeInfo);
     }
 
 };

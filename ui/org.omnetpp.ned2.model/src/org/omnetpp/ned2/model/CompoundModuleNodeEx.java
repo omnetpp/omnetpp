@@ -56,11 +56,11 @@ public class CompoundModuleNodeEx extends CompoundModuleNode
 
     // submodule related methods
     /**
-     * Returns all submodule containd in the module.
+     * Returns all submodule containd in THIS module.
      * @param child
      * @return
      */
-	public List<SubmoduleNodeEx> getSubmodules() {
+	protected List<SubmoduleNodeEx> getOwnSubmodules() {
 		List<SubmoduleNodeEx> result = new ArrayList<SubmoduleNodeEx>();
 		SubmodulesNode submodulesNode = getFirstSubmodulesChild();
 		if (submodulesNode == null)
@@ -75,23 +75,22 @@ public class CompoundModuleNodeEx extends CompoundModuleNode
     /**
      * @return All direct and inherited submodules 
      */
-    public List<SubmoduleNodeEx> getAllSubmodules() {
-        INEDTypeInfo it = getContainerNEDTypeInfo();
-        Assert.isNotNull(it);
+    public List<SubmoduleNodeEx> getSubmodules() {
+        List<SubmoduleNodeEx> result = getOwnSubmodules();
         
-        List<SubmoduleNodeEx> result = new ArrayList<SubmoduleNodeEx>();
-        for(NEDElement currChild : it.getSubmods())
-            if (currChild instanceof SubmoduleNodeEx)
-                result.add((SubmoduleNodeEx)currChild);
+        // FIXME beware this can lead to an infite recursion if we have a circle in the extend chanin
+        NEDElement extendsElem = getFirstExtendsRef();
+        if (extendsElem != null && extendsElem instanceof CompoundModuleNodeEx) 
+            result.addAll(((CompoundModuleNodeEx)extendsElem).getSubmodules());
         
         return result;
     }
 
 	/**
 	 * @param submoduleName
-	 * @return The submodule with the provided name
+	 * @return The submodule (only in THIS module ) with the provided name
 	 */
-	public SubmoduleNodeEx getSubmoduleByName(String submoduleName) {
+	protected SubmoduleNodeEx getOwnSubmoduleByName(String submoduleName) {
 		SubmodulesNode submodulesNode = getFirstSubmodulesChild();
 		if (submoduleName == null)
 			return null;
@@ -99,8 +98,27 @@ public class CompoundModuleNodeEx extends CompoundModuleNode
 					.getFirstChildWithAttribute(NED_SUBMODULE, SubmoduleNode.ATT_NAME, submoduleName);
 	}
 
+    /**
+     * @param submoduleName
+     * @return The submodule (in all ancestor modules) with the provided name (or NULL if 
+     * not found)
+     */
+    public SubmoduleNodeEx getSubmoduleByName(String submoduleName) {
+        // first look in the current module
+        SubmoduleNodeEx submoduleNode = getOwnSubmoduleByName(submoduleName);
+        if (submoduleName != null)
+            return submoduleNode;
+        // then look in ancestors
+        // FIXME beware this can lead to an infite recursion if we have a circle in the extend chanin
+        NEDElement extendsElem = getFirstExtendsRef();
+        if (extendsElem != null && extendsElem instanceof CompoundModuleNodeEx) 
+            return ((CompoundModuleNodeEx)extendsElem).getSubmoduleByName(submoduleName);
+
+        // not found
+        return null;
+    }
 	/**
-     * Add a 
+     * Add a submodule to THIS module
 	 * @param child
 	 */
 	public void addSubmodule(SubmoduleNodeEx child) {
@@ -112,7 +130,7 @@ public class CompoundModuleNodeEx extends CompoundModuleNode
 	}
 
     /**
-     * Remove a specfic child from the parent.
+     * Remove a specfic child from this module.
      * @param child
      */
 	public void removeSubmodule(SubmoduleNodeEx child) {

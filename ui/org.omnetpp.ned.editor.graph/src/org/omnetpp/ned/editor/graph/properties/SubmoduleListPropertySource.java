@@ -24,7 +24,7 @@ public class SubmoduleListPropertySource extends NotifiedPropertySource {
 
     @Override
     public IPropertyDescriptor[] getPropertyDescriptors() {
-        List<SubmoduleNodeEx> submodules = model.getAllSubmodules();
+        List<SubmoduleNodeEx> submodules = model.getSubmodules();
         
         pdesc = new PropertyDescriptor[submodules.size()];
         totalSubmoduleCount = inheritedSubmoduleCount = 0;

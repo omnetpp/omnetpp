@@ -83,13 +83,13 @@ public class CompoundModuleEditPart extends ModuleEditPart {
     @Override
     protected List getModelChildren() {
         // return all submodule including inherited ones
-    	return ((CompoundModuleNodeEx)getNEDModel()).getAllSubmodules();
+    	return ((CompoundModuleNodeEx)getNEDModel()).getSubmodules();
     }
     
     @Override
     public void attributeChanged(NEDElement node, String attr) {
     	super.attributeChanged(node, attr);
-    	// NEDED only if the scaling property has changed
+    	// NEEDED only if the scaling property has changed
    		refreshChildrenVisuals();
     	// refresh only ourselves
     	refreshVisuals();

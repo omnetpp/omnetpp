@@ -7,6 +7,16 @@ import org.eclipse.core.resources.IFile;
 
 public interface INEDTypeResolver {
 
+    /**
+     * Mark the whole resolver invalid
+     */
+    public void invalidate();
+    
+    /**
+     * Recalculate everything if the state is invalid
+     */
+    public void rehashIfNeeded();
+    
 	/**
 	 * Returns NED files in the workspace.
 	 */

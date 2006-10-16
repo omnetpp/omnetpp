@@ -10,6 +10,7 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.Assert;
 import org.omnetpp.ned2.model.INEDTypeInfo;
 import org.omnetpp.ned2.model.INEDTypeResolver;
+import org.omnetpp.ned2.model.ITopLevelElement;
 import org.omnetpp.ned2.model.NEDElement;
 import org.omnetpp.ned2.model.NEDSourceRegion;
 import org.omnetpp.ned2.model.pojo.ChannelInterfaceNode;
@@ -58,6 +59,8 @@ public class NEDComponent implements INEDTypeInfo, NEDElementTags {
     // all types which extends this component
     protected List<INEDTypeInfo> allDerivedTypes = new ArrayList<INEDTypeInfo>();
 
+    private boolean notifyInProgress = false;
+
 	/**
 	 * Constructor
 	 * @param node NEDElement tree to be wrapped
@@ -71,27 +74,9 @@ public class NEDComponent implements INEDTypeInfo, NEDElementTags {
         // register the created component in the NEDElement so we will have access to it 
         // directly from the model
         node.setNEDTypeInfo(this);
-		
-		// collect stuff from component declaration
-		collect(ownProperties, NED_PROPERTY, NED_PARAMETERS, PropertyNode.ATT_NAME, null);
-		collect(ownParams, NED_PARAM, NED_PARAMETERS, ParamNode.ATT_NAME, ParamNode.ATT_TYPE);
-		collect(ownGates, NED_GATE, NED_GATES, GateNode.ATT_NAME, GateNode.ATT_TYPE);
-		collect(ownSubmodules, NED_SUBMODULE, NED_SUBMODULES, SubmoduleNode.ATT_NAME, null);
-		// XXX would be more efficient to collect the following in one pass:
-		collect(ownInnerTypes, NED_SIMPLE_MODULE, NED_TYPES, SimpleModuleNode.ATT_NAME, null);
-		collect(ownInnerTypes, NED_COMPOUND_MODULE, NED_TYPES, CompoundModuleNode.ATT_NAME, null);
-		collect(ownInnerTypes, NED_CHANNEL, NED_TYPES, ChannelNode.ATT_NAME, null);
-		collect(ownInnerTypes, NED_MODULE_INTERFACE, NED_TYPES, ModuleInterfaceNode.ATT_NAME, null);
-		collect(ownInnerTypes, NED_CHANNEL_INTERFACE, NED_TYPES, ChannelInterfaceNode.ATT_NAME, null);
-
-		// collect them in one common hashtable as well (we assume there's no name clash -- 
-		// that should be checked beforehand by validation!)
-		ownMembers.putAll(ownProperties);
-		ownMembers.putAll(ownParams);
-		ownMembers.putAll(ownGates);
-		ownMembers.putAll(ownSubmodules);
-		ownMembers.putAll(ownInnerTypes);
-		
+		// the own member are filled at creation
+        refreshOwnMembers();
+		// theinherited memebers will be collected on demeand
 		needsUpdate = true;
 	}
 
@@ -150,6 +135,37 @@ public class NEDComponent implements INEDTypeInfo, NEDElementTags {
 	    return tmp;
 	}
 
+    /**
+     * Refreshes the own members
+     */
+    protected void refreshOwnMembers() {
+        ownProperties.clear();
+        ownParams.clear();
+        ownGates.clear();
+        ownSubmodules.clear();
+        ownInnerTypes.clear();
+        ownMembers.clear();
+        // collect stuff from component declaration
+        collect(ownProperties, NED_PROPERTY, NED_PARAMETERS, PropertyNode.ATT_NAME, null);
+        collect(ownParams, NED_PARAM, NED_PARAMETERS, ParamNode.ATT_NAME, ParamNode.ATT_TYPE);
+        collect(ownGates, NED_GATE, NED_GATES, GateNode.ATT_NAME, GateNode.ATT_TYPE);
+        collect(ownSubmodules, NED_SUBMODULE, NED_SUBMODULES, SubmoduleNode.ATT_NAME, null);
+        // XXX would be more efficient to collect the following in one pass:
+        collect(ownInnerTypes, NED_SIMPLE_MODULE, NED_TYPES, SimpleModuleNode.ATT_NAME, null);
+        collect(ownInnerTypes, NED_COMPOUND_MODULE, NED_TYPES, CompoundModuleNode.ATT_NAME, null);
+        collect(ownInnerTypes, NED_CHANNEL, NED_TYPES, ChannelNode.ATT_NAME, null);
+        collect(ownInnerTypes, NED_MODULE_INTERFACE, NED_TYPES, ModuleInterfaceNode.ATT_NAME, null);
+        collect(ownInnerTypes, NED_CHANNEL_INTERFACE, NED_TYPES, ChannelInterfaceNode.ATT_NAME, null);
+
+        // collect them in one common hashtable as well (we assume there's no name clash -- 
+        // that should be checked beforehand by validation!)
+        ownMembers.putAll(ownProperties);
+        ownMembers.putAll(ownParams);
+        ownMembers.putAll(ownGates);
+        ownMembers.putAll(ownSubmodules);
+        ownMembers.putAll(ownInnerTypes);
+    }
+    
 	/**
 	 * Collect all inherited parameters, gates, properties, submodules, etc. 
 	 */
@@ -196,7 +212,7 @@ public class NEDComponent implements INEDTypeInfo, NEDElementTags {
 	 * Causes information about inherited members to be discarded, and
 	 * later re-built on demand. 
 	 */
-	public void componentsChanged() {
+	public void invalidate() {
 		needsUpdate = true;
 	}
 
@@ -464,6 +480,69 @@ public class NEDComponent implements INEDTypeInfo, NEDElementTags {
         if (needsUpdate)
             refreshInheritedMembers();
         return allDerivedTypes;
+    }
+
+    public void attributeChanged(NEDElement node, String attr) {
+        if (notifyInProgress)
+            return;
+        notifyInProgress = true;
+        // if a name property has changed everything should be rebuilt because inheritence might be changed
+        if ("name".equals(attr) && node instanceof ITopLevelElement) { 
+            getResolver().invalidate();
+            getResolver().rehashIfNeeded();
+        }
+        // TODO test if the name attribute has changed and pass it to NEDResources 
+        // because in that case the whole model (All files) have to be rebuilt
+        for(INEDTypeInfo derivedType: getAllDerivedTypes())
+            derivedType.getNEDElement().fireAttributeChanged(node, attr);
+        // refresh all ownMemebers
+        refreshOwnMembers();
+        // invalidate and recalculate / refresh all derived and instance lists
+        invalidate();
+        // notify derived types before change
+        for(INEDTypeInfo derivedType: getAllDerivedTypes())
+            derivedType.getNEDElement().fireAttributeChanged(node, attr);
+        // TODO notify instances (ie. submodules)
+        // send notifcations to all types using us as a type (ie. instances of ourselves)
+        notifyInProgress = false;
+    }
+
+    public void childInserted(NEDElement node, NEDElement where, NEDElement child) {
+        if (notifyInProgress)
+            return;
+        notifyInProgress = true;
+        
+        for(INEDTypeInfo derivedType: getAllDerivedTypes())
+            derivedType.getNEDElement().fireChildInserted(node, where, child);
+        // refresh all ownMemebers
+        refreshOwnMembers();
+        // invalidate and recalculate / refresh all derived and instance lists
+        invalidate();
+        // notify derived types before change
+        for(INEDTypeInfo derivedType: getAllDerivedTypes())
+            derivedType.getNEDElement().fireChildInserted(node, where, child);
+        // TODO notify instances (ie. submodules)
+        // send notifcations to all types using us as a type (ie. instances of ourselves)
+        notifyInProgress = false;
+    }
+
+    public void childRemoved(NEDElement node, NEDElement child) {
+        if (notifyInProgress)
+            return;
+        notifyInProgress = true;
+
+        for(INEDTypeInfo derivedType: getAllDerivedTypes())
+            derivedType.getNEDElement().fireChildRemoved(node, child);
+        // refresh all ownMemebers
+        refreshOwnMembers();
+        // invalidate and recalculate / refresh all derived and instance lists
+        invalidate();
+        // notify derived types before change
+        for(INEDTypeInfo derivedType: getAllDerivedTypes())
+            derivedType.getNEDElement().fireChildRemoved(node, child);
+        // TODO notify instances (ie. submodules)
+        // send notifcations to all types using us as a type (ie. instances of ourselves)
+        notifyInProgress = false;
     }
 
 }

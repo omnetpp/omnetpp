@@ -1,5 +1,7 @@
 package org.omnetpp.ned2.model;
 
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 
@@ -7,7 +9,8 @@ import org.osgi.framework.BundleContext;
  * The main plugin class to be used in the desktop.
  */
 public class NEDModelPlugin extends AbstractUIPlugin {
-
+    public static final String PLUGIN_ID = "org.omnetpp.ned2.model"; 
+    
 	//The shared instance.
 	private static NEDModelPlugin plugin;
 
@@ -46,4 +49,9 @@ public class NEDModelPlugin extends AbstractUIPlugin {
 	public static NEDModelPlugin getDefault() {
 		return plugin;
 	}
+    
+    public static void log(Exception e) {
+        IStatus status = new Status(Status.ERROR, PLUGIN_ID, 1, e.getMessage(), e);
+        getDefault().getLog().log(status);
+    }
 }

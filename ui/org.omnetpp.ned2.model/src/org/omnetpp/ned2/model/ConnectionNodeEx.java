@@ -3,6 +3,7 @@ package org.omnetpp.ned2.model;
 import org.eclipse.core.runtime.Assert;
 import org.omnetpp.common.displaymodel.ConnectionDisplayString;
 import org.omnetpp.common.displaymodel.DisplayString;
+import org.omnetpp.common.displaymodel.IDisplayString;
 import org.omnetpp.common.displaymodel.IDisplayStringProvider;
 import org.omnetpp.common.displaymodel.IDisplayString.Prop;
 import org.omnetpp.ned2.model.pojo.ChannelSpecNode;
@@ -175,7 +176,7 @@ public class ConnectionNodeEx extends ConnectionNode implements IStringTyped, ID
 		if("".equals(moduleName))
 			return compMod;
 		else {
-			INamedGraphNode subMod = compMod.getSubmoduleByName(moduleName);
+			INamedGraphNode subMod = compMod.getOwnSubmoduleByName(moduleName);
 			if (subMod == null) throw new NEDElementException(this, "'"+moduleName+"': undefined submodule");
 			return subMod;
 		}
@@ -194,7 +195,7 @@ public class ConnectionNodeEx extends ConnectionNode implements IStringTyped, ID
     public void propertyChanged(Prop changedProp) {
 		// syncronize it to the underlying model
 		NEDElementUtilEx.setDisplayString(this, displayString.toString());
-//        fireAttributeChangedToAncestors(IDisplayString.ATT_DISPLAYSTRING+"."+changedProp);
+        fireAttributeChangedToAncestors(IDisplayString.ATT_DISPLAYSTRING+"."+changedProp);
 	}
 
     public String getChannelType() {

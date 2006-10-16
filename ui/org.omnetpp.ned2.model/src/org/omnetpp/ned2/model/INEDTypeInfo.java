@@ -22,7 +22,7 @@ import org.eclipse.core.resources.IFile;
  *       - methods returning the NEDElement list instead of simple name list (for all methods)
  *       - access to toplevel components via this interface ??? 
  */
-public interface INEDTypeInfo {
+public interface INEDTypeInfo extends INEDChangeListener {
 	/**
 	 * Convenience method: returns the name of the module/interface/channel/etc.
 	 */
@@ -43,6 +43,10 @@ public interface INEDTypeInfo {
 	 */
 	public IFile getNEDFile();
 
+    /**
+     * SIgnals that the info has been invalidated and must be rebuilt next time accessed.
+     */
+    public void invalidate();
 	/**
 	 * Returns the list of nesting NED elements that extend over the given line:column
 	 * in the source file. The list contains the component's root node as well.

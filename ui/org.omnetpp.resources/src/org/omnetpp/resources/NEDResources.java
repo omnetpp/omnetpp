@@ -553,4 +553,8 @@ public class NEDResources implements INEDTypeResolver {
 		//System.out.println("rehash() took "+dt+"ms");
 		//System.out.println("memleak check: native NEDElements: "+org.omnetpp.ned2.model.swig.NEDElement.getNumExisting()+" / "+org.omnetpp.ned2.model.swig.NEDElement.getNumCreated());
 	}
+
+    public void invalidate() {
+        needsRehash = true;
+    }
 }

@@ -15,7 +15,6 @@ import org.eclipse.gef.palette.PaletteGroup;
 import org.eclipse.gef.palette.PaletteRoot;
 import org.eclipse.gef.palette.PanningSelectionToolEntry;
 import org.eclipse.gef.palette.ToolEntry;
-import org.eclipse.gef.requests.SimpleFactory;
 import org.eclipse.gef.tools.MarqueeSelectionTool;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
@@ -24,8 +23,7 @@ import org.omnetpp.common.displaymodel.IDisplayStringProvider;
 import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.ned.editor.graph.misc.NedConnectionCreationTool;
 import org.omnetpp.ned.editor.graph.misc.NedSelectionTool;
-import org.omnetpp.ned.editor.graph.misc.SubmoduleFactory;
-import org.omnetpp.ned.editor.graph.misc.ToplevelComponentFactory;
+import org.omnetpp.ned.editor.graph.misc.ModelFactory;
 import org.omnetpp.ned.editor.graph.properties.NedPropertySourceAdapterFactory;
 import org.omnetpp.ned2.model.ChannelInterfaceNodeEx;
 import org.omnetpp.ned2.model.ChannelNodeEx;
@@ -37,6 +35,7 @@ import org.omnetpp.ned2.model.ModuleInterfaceNodeEx;
 import org.omnetpp.ned2.model.NEDElement;
 import org.omnetpp.ned2.model.NEDElementUtilEx;
 import org.omnetpp.ned2.model.SimpleModuleNodeEx;
+import org.omnetpp.ned2.model.SubmoduleNodeEx;
 import org.omnetpp.ned2.model.pojo.PropertyNode;
 import org.omnetpp.resources.NEDResourcesPlugin;
 
@@ -86,7 +85,7 @@ public class GraphicalNedEditorPlugin extends AbstractUIPlugin {
         tool = new ConnectionCreationToolEntry(
                 "Connection",
                 "The connection tool can be used to connect various modules and submodules",
-                new SimpleFactory(ConnectionNodeEx.class), 
+                new ModelFactory(ConnectionNodeEx.getStaticTagName()), 
                 ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_CONNECTION),
                 ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_CONNECTION,"l", null, 24)//$NON-NLS-1$
         );
@@ -106,7 +105,7 @@ public class GraphicalNedEditorPlugin extends AbstractUIPlugin {
         combined = new CombinedTemplateCreationEntry(
                 "Simple module",
                 "A simple module that can be used as a basic building block",
-                new ToplevelComponentFactory(SimpleModuleNodeEx.getStaticTagName()), 
+                new ModelFactory(SimpleModuleNodeEx.getStaticTagName(), INamed.INITIAL_NAME), 
                 ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_SIMPLE),
                 ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_SIMPLE,"l",null,24)
         );
@@ -115,7 +114,7 @@ public class GraphicalNedEditorPlugin extends AbstractUIPlugin {
         combined = new CombinedTemplateCreationEntry(
                 "Submodule",
                 "A submodule that can be placed in any compound module",
-                new SubmoduleFactory(INamed.INITIAL_NAME), 
+                new ModelFactory(SubmoduleNodeEx.getStaticTagName(), INamed.INITIAL_NAME, INamed.INITIAL_NAME.toLowerCase()), 
                 ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_SIMPLE),
                 ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_SIMPLE,"l",null,24)
         );
@@ -124,7 +123,7 @@ public class GraphicalNedEditorPlugin extends AbstractUIPlugin {
         combined = new CombinedTemplateCreationEntry(
                 "Module",
                 "A compound module that is built up from several other modules",
-                new ToplevelComponentFactory(CompoundModuleNodeEx.getStaticTagName()), 
+                new ModelFactory(CompoundModuleNodeEx.getStaticTagName(), INamed.INITIAL_NAME), 
                 ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_MODULE),
                 ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_MODULE,"l",null,24)
         );
@@ -133,7 +132,7 @@ public class GraphicalNedEditorPlugin extends AbstractUIPlugin {
         combined = new CombinedTemplateCreationEntry(
                 "Interface",
                 "A compound module interface ",
-                new ToplevelComponentFactory(ModuleInterfaceNodeEx.getStaticTagName()), 
+                new ModelFactory(ModuleInterfaceNodeEx.getStaticTagName(), INamed.INITIAL_NAME), 
                 ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_MODULE),
                 ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_MODULE,"l",null,24)
         );
@@ -142,7 +141,7 @@ public class GraphicalNedEditorPlugin extends AbstractUIPlugin {
         combined = new CombinedTemplateCreationEntry(
                 "Channel",
                 "A channel is a connection type",
-                new ToplevelComponentFactory(ChannelNodeEx.getStaticTagName()), 
+                new ModelFactory(ChannelNodeEx.getStaticTagName(), INamed.INITIAL_NAME, INamed.INITIAL_NAME.toLowerCase()), 
                 ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_CONNECTION),
                 ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_CONNECTION,"l",null,24)
         );
@@ -151,7 +150,7 @@ public class GraphicalNedEditorPlugin extends AbstractUIPlugin {
         combined = new CombinedTemplateCreationEntry(
                 "Channel interface",
                 "A channel interface",
-                new ToplevelComponentFactory(ChannelInterfaceNodeEx.getStaticTagName()), 
+                new ModelFactory(ChannelInterfaceNodeEx.getStaticTagName(), INamed.INITIAL_NAME), 
                 ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_CONNECTION),
                 ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_CONNECTION,"l",null,24)
         );
@@ -213,7 +212,7 @@ public class GraphicalNedEditorPlugin extends AbstractUIPlugin {
         	// create the tool entry
         	CombinedTemplateCreationEntry combined = new CombinedTemplateCreationEntry(
                     name, "A submodule with type "+name,
-                    new SubmoduleFactory(name), 
+                    new ModelFactory(name), 
                     imageDescNorm, imageDescLarge );
         	// add to the selected drawer
             currentDrawer.add(combined);
