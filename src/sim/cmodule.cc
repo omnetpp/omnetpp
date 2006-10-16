@@ -345,6 +345,7 @@ int cModule::setGateSize(const char *gname, int newsize)
     for (i=oldsize; i<newsize; i++)
     {
         cGate *gate = createGateObject(gname, tp);
+        take(gate);
         gatev[newpos+i] = gate;
     }
 
