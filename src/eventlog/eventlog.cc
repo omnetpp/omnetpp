@@ -99,8 +99,8 @@ Event *EventLog::getApproximateEventAt(double percentage)
         return NULL;
     else {
         long beginOffset = firstEvent->getBeginOffset();
-        long endOffset = lastEvent->getEndOffset();
-        long offset = (endOffset - beginOffset) * percentage;
+        long endOffset = lastEvent->getBeginOffset();
+        long offset = beginOffset + (endOffset - beginOffset) * percentage;
 
         long eventNumber, lineStartOffset, lineEndOffset;
         simtime_t simulationTime;

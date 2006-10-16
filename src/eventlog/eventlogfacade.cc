@@ -177,7 +177,16 @@ double EventLogFacade::getApproximatePercentageForEventLogTableEntry(EventLogEnt
 
 EventLogEntry *EventLogFacade::getApproximateEventLogEntryTableAt(double percentage)
 {
-    return eventLog->getApproximateEventAt(percentage)->getEventEntry();
+    if (percentage == 1) {
+        IEvent* event = eventLog->getLastEvent();
+ 
+        if (event == NULL)
+            return NULL;
+        else
+            return event->getEventLogMessage(event->getNumEventLogMessages() - 1);
+    }
+    else
+        return eventLog->getApproximateEventAt(percentage)->getEventEntry();
 }
 
 long EventLogFacade::getApproximateNumberOfEventLogTableEntries()
