@@ -32,7 +32,6 @@
 #include "distrib.h" // dummy()
 
 
-//==========================================================================
 // functions to support expressions compiled by nedtool
 
 double min(double a, double b)      {return a<b ? a : b;}
@@ -42,8 +41,8 @@ Define_Function( min,  2 )
 Define_Function( max,  2 )
 
 
-//==========================================================================
-//=== utility functions
+//----
+// utility functions
 
 char *simtimeToStr(simtime_t t, char *buf)
 {
@@ -347,7 +346,7 @@ int opp_vsscanf(const char *s, const char *fmt, va_list va)
     }
 }
 
-//==========================================================================
+//----
 
 void opp_error(ErrorCode errorcode...)
 {
@@ -431,7 +430,7 @@ void opp_terminate(const char *msgformat...)
     throw new cTerminationException(message);
 }
 
-//==========================================================================
+//----
 
 const char *opp_typename(const std::type_info& t)
 {
@@ -448,7 +447,7 @@ const char *opp_typename(const std::type_info& t)
     return s;
 }
 
-//==========================================================================
+//----
 
 char *opp_quotestr(const char *txt)
 {
@@ -505,7 +504,7 @@ char *opp_parsequotedstr(const char *txt, const char *&endp)
     return buf;
 }
 
-//==========================================================================
+//----
 
 cContextSwitcher::cContextSwitcher(cComponent *thisptr)
 {
@@ -552,7 +551,7 @@ cContextTypeSwitcher::~cContextTypeSwitcher()
     simulation.setContextType(contexttype);
 }
 
-//==========================================================================
+//----
 // dummy function to force over-optimizing Unix linkers to include these symbols
 // in the library
 

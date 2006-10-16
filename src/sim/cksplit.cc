@@ -35,21 +35,16 @@
 using std::ostream;
 using std::endl;
 
-//=========================================================================
-//=== Registration
 
 Register_Class(cKSplit);
 
-//=========================================================================
-//#define DISTRIBUTE_ON_CHILD_SPLIT --obsolete
 
 #if K<2 || (K>2 && K==2*(K/2))
 #  error "K must be 2 or a >=3 odd number"
 #endif
 
-//==========================================================================
-// Cell division criteria
-//   They are used to decide whether a cell should be split.
+//----
+// Cell division criteria - they are used to decide whether a cell should be split.
 
 double critdata_default[] = {20, 4, 2};
 
@@ -78,7 +73,7 @@ double divfunc_babak(const cKSplit&, cKSplit::Grid& g, double mother, double *d)
      return lambda<1.0 ? lambda : 1.0;
 }
 
-//==========================================================================
+//----
 
 cKSplit::cKSplit(const cKSplit& r) : cDensityEstBase()
 {
@@ -747,7 +742,7 @@ void cKSplit::loadFromFile(FILE *f)
    }
 }
 
-//========================================================================
+//----
 
 cKSplit::Iterator::Iterator(const cKSplit& _ks, bool _beg)
 {

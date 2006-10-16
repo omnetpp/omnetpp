@@ -39,14 +39,10 @@
 #define MIN(a,b) ((a)<(b) ? (a) : (b))
 #define MAX(a,b) ((a)>(b) ? (a) : (b))
 
-//=========================================================================
-//=== Registration
 
 Register_Class(cLongHistogram);
 Register_Class(cDoubleHistogram);
 
-//==========================================================================
-// cHistogramBase - member functions
 
 cHistogramBase::cHistogramBase(const char *name, int numcells) :
 cDensityEstBase(name)
@@ -165,7 +161,7 @@ void cHistogramBase::setNumCells(int numcells)
 }
 
 
-//=========================================================================
+//----
 // cEqdHistogramBase - member functions
 
 cEqdHistogramBase::cEqdHistogramBase(const char *name, int numcells) :
@@ -277,7 +273,7 @@ void cEqdHistogramBase::loadFromFile(FILE *f)
     freadvarsf(f,"%g\t #= cellsize", &cellsize);
 }
 
-//=========================================================================
+//----
 // cLongHistogram - member functions
 
 cLongHistogram::cLongHistogram(const char *name, int numcells) :
@@ -367,7 +363,7 @@ double cLongHistogram::random() const
     }
 }
 
-//==========================================================================
+//----
 // cDoubleHistogram - member functions
 
 cDoubleHistogram::cDoubleHistogram(const char *name, int numcells) :

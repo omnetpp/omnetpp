@@ -26,10 +26,8 @@
 #include "cmessage.h"
 #include "cmsgheap.h"
 
-//=== Registration
 Register_Class(cMessageHeap);
 
-//==========================================================================
 
 inline int operator <= (cMessage& a, cMessage& b)
 {
@@ -60,8 +58,7 @@ static int qsort_cmp_msgs(const void *p1, const void *p2)
     return (m1->insertOrder() < m2->insertOrder()) ? -1 : 1;
 }
 
-//==========================================================================
-//=== cMessageHeap - member functions
+//----
 
 cMessageHeap::cMessageHeap(const char *name, int siz) : cObject(name, false)
 {

@@ -30,7 +30,7 @@
 #include "ccommbuffer.h"
 #endif
 
-//=== Registration
+
 Register_Class(cDefaultList);
 
 

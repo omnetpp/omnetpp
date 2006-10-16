@@ -28,16 +28,17 @@
 #include "ccommbuffer.h"
 #endif
 
-//=== Registration
 Register_Class(cArray);
+
 
 void cArray::Iterator::init(const cArray& a, bool athead)
 {
-    array = const_cast<cArray *>(&a); // Khmm... I don't want a separate Const_Iterator as well...
+    array = const_cast<cArray *>(&a); // we don't want a separate Const_Iterator class
 
     if (athead)
     {
         // fast-forward to first non-empty slot
+        // (Note: we exploit that get(k) just returns NULL when k is out of bounds)
         k = 0;
         while (!array->get(k) && k<array->items())
             k++;

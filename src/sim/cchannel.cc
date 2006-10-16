@@ -71,6 +71,37 @@ void cChannel::netUnpack(cCommBuffer *buffer)
     throw new cRuntimeError(this,"netUnpack() not implemented");
 }
 
+void cChannel::callInitialize()
+{
+    cComponent::callInitialize();
+}
+
+bool cChannel::callInitialize(int stage)
+{
+    // This is the interface for calling initialize(). Channels don't contain further
+    // subcomponents, so just we just invoke initialize() in the right context here.
+    int numStages = numInitStages();
+    if (stage < numStages)
+    {
+        // temporarily switch context for the duration of the call
+        cContextSwitcher tmp(this);
+        cContextTypeSwitcher tmp2(CTX_INITIALIZE);
+        initialize(stage);
+    }
+
+    bool moreStages = stage < numStages-1;
+    return moreStages; // return true if there's more stages to do
+}
+
+void cChannel::callFinish()
+{
+    // This is the interface for calling finish(). Channels don't contain further
+    // subcomponents, so just we just invoke finish() in the right context here.
+    cContextSwitcher tmp(this);
+    cContextTypeSwitcher tmp2(CTX_FINISH);
+    finish();
+}
+
 cModule *cChannel::parentModule() const
 {
     // find which (compound) module contains this connection

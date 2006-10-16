@@ -31,13 +31,6 @@
 
 using std::ostream;
 
-//=========================================================================
-//=== Registration
-
-// cDensityEstBase is an abstract class -- needs no registration
-
-//==========================================================================
-// cDensityEstBase - member functions
 
 cDensityEstBase::cDensityEstBase(const char *name ) : cStdDev(name)
 {

@@ -43,23 +43,16 @@
 
 using std::ostream;
 
-
 #ifdef DEVELOPER_DEBUG
 #include <set>
 extern std::set<cObject*> objectlist;
 void printAllObjects();
 #endif
 
-
-//==========================================================================
-//=== Global object:
-
 cSimulation simulation("simulation");
 
-//==========================================================================
 
 // writing date and time on a stream - used in cSimulation::writeresult(..)
-
 ostream& operator<<(ostream& os, struct tm d)
 {
     static char *month[] =
@@ -74,9 +67,6 @@ ostream& operator<<(ostream& os, struct tm d)
     return os;
 }
 
-
-//==========================================================================
-//=== cSimulation - member functions
 
 cSimulation::cSimulation(const char *name) : cNoncopyableObject(name, false)
 {

@@ -40,12 +40,7 @@ using std::string;
 
 //FIXME strip down cMessagePar class!!! remove expression support, etc
 
-//==============================================
-//=== Registration
 Register_Class(cMessagePar);
-
-//==========================================================================
-//=== cDoubleExpression - member functions
 
 string cDoubleExpression::getAsText()
 {
@@ -59,8 +54,7 @@ bool cDoubleExpression::parseText(const char *text)
     throw new cRuntimeError("cDoubleExpression: parseText() does not work with compiled expressions");
 }
 
-//==========================================================================
-//=== cMessagePar - member functions
+//----
 
 char *cMessagePar::possibletypes = "SBLDFIXCTP";
 

@@ -48,9 +48,31 @@ void cComponent::setComponentType(cComponentType *componenttype)
     this->componenttype = componenttype;
 }
 
-void cComponent::handleParameterChange(char const *)
+void cComponent::initialize()
 {
+    // Called before simulation starts (or usually after dynamic module was created).
+    // Should be redefined by user.
 }
+
+void cComponent::finish()
+{
+    // Called at the end of a successful simulation (and usually before destroying a dynamic module).
+    // Should be redefined by user.
+}
+
+void cComponent::handleParameterChange(const char *)
+{
+    // Called when a module parameter changes.
+    // Can be redefined by user.
+}
+
+void cComponent::callInitialize()
+{
+    int stage = 0;
+    while (callInitialize(stage))
+        ++stage;
+}
+
 
 cProperties *cComponent::properties()
 {

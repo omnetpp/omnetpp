@@ -31,11 +31,8 @@
 using std::ostream;
 
 
-//=== Registration
 Register_Class(cQueue);
 
-//=========================================================================
-//=== cQueue - member functions
 
 cQueue::cQueue(const cQueue& queue) : cObject()
 {

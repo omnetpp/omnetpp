@@ -36,17 +36,15 @@
 #define MIN(a,b) ((a)<(b) ? (a) : (b))
 #define MAX(a,b) ((a)>(b) ? (a) : (b))
 
-//=========================================================================
-//=== Registration
 Register_Class(cVarHistogram);
 
-//=========================================================================
+//----
 // cVarHistogram - member functions
-//
-// num_cells = -1 means that 0 bin boundaries are defined ( num_cells+1 is 0 )
+
 cVarHistogram::cVarHistogram(const char *name, int maxnumcells, int transformtype ) :
 cHistogramBase(name,-1) //--LG
 {
+    // num_cells==-1 means that no bin boundaries are defined (num_cells+1 is 0)
     range_mode = RANGE_NOTSET;
     transform_type = transformtype;
     max_num_cells = maxnumcells;

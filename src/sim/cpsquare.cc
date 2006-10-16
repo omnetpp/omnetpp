@@ -34,13 +34,10 @@
 using std::ostream;
 using std::endl;
 
-//=========================================================================
-//=== Registration
 
 Register_Class(cPSquare);
 
-//=========================================================================
-//
+
 cPSquare::cPSquare(const cPSquare& r) : cDensityEstBase()
 {
     setName( r.name() );

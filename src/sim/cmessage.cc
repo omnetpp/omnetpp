@@ -36,15 +36,13 @@
 
 using std::ostream;
 
-//=== registration
+
 Register_Class(cMessage);
 
 // static members of cMessage
 long cMessage::total_msgs = 0;
 long cMessage::live_msgs = 0;
 
-//=========================================================================
-//=== cMessage - member functions
 
 cMessage::cMessage(const cMessage& msg) : cObject(msg)
 {

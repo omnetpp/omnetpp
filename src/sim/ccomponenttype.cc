@@ -124,7 +124,7 @@ cModule *cModuleType::createScheduleInit(char *modname, cModule *parentmod)
                                 "when creating module named '%s' of type %s", modname, name());
     cModule *mod = create(modname, parentmod);
     mod->buildInside();
-    mod->scheduleStart( simulation.simTime() );
+    mod->scheduleStart(simulation.simTime());
     mod->callInitialize();
     return mod;
 }

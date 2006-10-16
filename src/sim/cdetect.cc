@@ -28,14 +28,6 @@
 #include "csimulation.h"  // simTime()
 #include "cdetect.h"
 
-//=NL======================================================================
-// cTransientDetection - all functions are inline
-
-//=NL======================================================================
-// cAccuracyDetection - all functions are inline
-
-//=NL======================================================================
-// cTDExpandingWindows - member functions
 
 cTDExpandingWindows::cTDExpandingWindows(const cTDExpandingWindows& r) : cTransientDetection()
 {
@@ -214,8 +206,7 @@ void cTDExpandingWindows::detectTransient()
   }
 }
 
-//==NL======================================================================
-// cADByStddev - member functions
+//----
 
 cADByStddev::cADByStddev(const cADByStddev& r) : cAccuracyDetection()
 {

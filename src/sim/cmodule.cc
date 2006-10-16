@@ -55,7 +55,7 @@ cModule::~cModule()
     ev.moduleDeleted(this);
 
     // delete submodules
-    for (cSubModIterator submod(*this); !submod.end(); )
+    for (SubmoduleIterator submod(this); !submod.end(); )
     {
         if (submod() == (cModule *)simulation.runningModule())
         {
@@ -373,7 +373,7 @@ bool cModule::checkInternalConnections() const
     }
 
     // check submodules
-    for (cSubModIterator submod(*this); !submod.end(); submod++)
+    for (SubmoduleIterator submod(this); !submod.end(); submod++)
     {
        cModule *m = submod();
        for(j=0; j<m->gates(); j++)
@@ -388,7 +388,7 @@ bool cModule::checkInternalConnections() const
 
 int cModule::findSubmodule(const char *submodname, int idx)
 {
-    for (cSubModIterator i(*this); !i.end(); i++)
+    for (SubmoduleIterator i(this); !i.end(); i++)
         if (i()->isName(submodname) &&
             ((idx==-1 && !i()->isVector()) || i()->index()==idx)
            )
@@ -398,7 +398,7 @@ int cModule::findSubmodule(const char *submodname, int idx)
 
 cModule *cModule::submodule(const char *submodname, int idx)
 {
-    for (cSubModIterator i(*this); !i.end(); i++)
+    for (SubmoduleIterator i(this); !i.end(); i++)
         if (i()->isName(submodname) &&
             ((idx==-1 && !i()->isVector()) || i()->index()==idx)
            )
@@ -552,29 +552,9 @@ void cModule::changeParentTo(cModule *mod)
     ev.moduleReparented(this,oldparent);
 }
 
-void cModule::initialize()
-{
-    // Called before simulation starts (or usually after dynamic module was created).
-    // Should be redefined by user.
-}
-
-void cModule::finish()
-{
-    // Called after end of simulation (and usually before destroying a dynamic module).
-    // Should be redefined by user.
-}
-
-void cModule::handleParameterChange(const char *)
-{
-    // Called when a module parameter changes.
-    // Can be redefined by user.
-}
-
 void cModule::callInitialize()
 {
-    int stage = 0;
-    while (callInitialize(stage))
-        ++stage;
+    cComponent::callInitialize();
 }
 
 bool cModule::callInitialize(int stage)
@@ -591,13 +571,15 @@ bool cModule::callInitialize(int stage)
         initialize(stage);
     }
 
-    // ...then for submods (meanwhile determine if more stages are needed)
+    // ...then for submodules and channels (meanwhile determine if more stages are needed)
     bool moreStages = stage < numStages-1;
-    for (cSubModIterator submod(*this); !submod.end(); submod++)
-    {
+    for (SubmoduleIterator submod(this); !submod.end(); submod++)
         if (submod()->callInitialize(stage))
             moreStages = true;
-    }
+
+    for (ChannelIterator chan(this); !chan.end(); chan++)
+        if (chan()->callInitialize(stage))
+            moreStages = true;
 
     return moreStages; // return true if there's more stages to do
 }
@@ -606,11 +588,12 @@ void cModule::callFinish()
 {
     // This is the interface for calling finish().
 
-    // first call it for submods...
-    for (cSubModIterator submod(*this); !submod.end(); submod++)
-    {
+    // first call it for submodules and channels...
+    for (SubmoduleIterator submod(this); !submod.end(); submod++)
         submod()->callFinish();
-    }
+
+    for (ChannelIterator chan(this); !chan.end(); chan++)
+        chan()->callFinish();
 
     // ...then for this module, in our context
     cContextSwitcher tmp(this);
@@ -663,7 +646,7 @@ void cModule::ChannelIterator::init(const cModule *m)
     k = 0;
 
     // fast-forward to first non-empty slot
-    while ((!module->gate(k) || !module->gate(k)->channel()) && k<module->gates())
+    while (k<module->gates() && (!module->gate(k) || !module->gate(k)->channel()))
         k++;
 }
 
@@ -675,7 +658,7 @@ cChannel *cModule::ChannelIterator::operator++(int)
     cChannel *obj = module->gate(k)->channel();
 
     k++;
-    while ((!module->gate(k) || !module->gate(k)->channel()) && k<module->gates())
+    while (k<module->gates() && (!module->gate(k) || !module->gate(k)->channel()))
         k++;
     return obj;
 }

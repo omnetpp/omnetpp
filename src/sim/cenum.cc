@@ -25,11 +25,8 @@
 #include "cenum.h"
 #include "cexception.h"
 
-//=== Registration
-Register_Class(cEnum);
 
-//==========================================================================
-//=== cEnum - member functions
+Register_Class(cEnum);
 
 cEnum::cEnum(const cEnum& list) : cObject()
 {

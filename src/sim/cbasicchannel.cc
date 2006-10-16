@@ -47,6 +47,11 @@ std::string cBasicChannel::info() const
     return cChannel::info();
 }
 
+void cBasicChannel::initialize()
+{
+    rereadPars();
+}
+
 void cBasicChannel::rereadPars()
 {
 printf("CHANNEL %s PARAMS REREAD\n", fullPath().c_str());//XXX

@@ -42,12 +42,10 @@
 using std::ostream;
 
 
-//=========================================================================
-//=== Registration
 Register_Class(cStdDev);
 Register_Class(cWeightedStdDev);
 
-//=========================================================================
+//----
 // cStatistic - almost all functions are inline
 
 cStatistic::cStatistic(const cStatistic& r) : cObject()
@@ -177,8 +175,7 @@ void cStatistic::freadvarsf (FILE *f,  const char *fmt, ...)
     opp_vsscanf(line,fmt,args);
 }
 
-//==========================================================================
-// cStdDev - member functions
+//----
 
 cStdDev::cStdDev(const char *s) : cStatistic(s)
 {
@@ -336,8 +333,7 @@ void cStdDev::loadFromFile(FILE *f)
     freadvarsf(f,"%g\t #= square sum", &sqrsum_samples);
 }
 
-//==========================================================================
-// cWeightedStdDev - member functions
+//----
 
 void cWeightedStdDev::netPack(cCommBuffer *buffer)
 {

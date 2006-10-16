@@ -26,10 +26,8 @@
 #include "ccommbuffer.h"
 #endif
 
-//=== registration
 Register_Class(cPacket);
 
-//=========================================================================
 
 cPacket::cPacket(const cPacket& m) : cMessage()
 {

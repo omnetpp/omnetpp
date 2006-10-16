@@ -80,6 +80,28 @@ class SIM_API cChannel : public cComponent //noncopyable
     virtual void netUnpack(cCommBuffer *buffer);
     //@}
 
+    /** @name Public methods for invoking initialize()/finish(), redefined from cComponent.
+     * initialize(), numInitStages(), and finish() are themselves also declared in
+     * cComponent, and can be redefined in channel classes by the user to perform
+     * initialization and finalization (result recording, etc) tasks.
+     */
+    //@{
+    /**
+     * Interface for calling initialize() from outside.
+     */
+    virtual void callInitialize();
+
+    /**
+     * Interface for calling initialize() from outside.
+     */
+    virtual bool callInitialize(int stage);
+
+    /**
+     * Interface for calling finish() from outside.
+     */
+    virtual void callFinish();
+    //@}
+
     /** @name Channel information. */
     //@{
     /**

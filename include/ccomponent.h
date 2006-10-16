@@ -65,17 +65,62 @@ class SIM_API cComponent : public cDefaultList // noncopyable
     virtual void readInputParams();
 
   protected:
+    /** @name Initialization, finish and parameter change hooks.
+     *
+     * Initialize and finish functions may be provided by the user,
+     * to perform special tasks at the beginning and the end of the simulation.
+     * The functions are made protected because they are supposed
+     * to be called only via callInitialize() and callFinish().
+     *
+     * The initialization process was designed to support multi-stage
+     * initialization of compound modules (i.e. initialization in several
+     * 'waves'). (Calling the initialize() function of a simple module is
+     * hence a special case). The initialization process is performed
+     * on a module like this. First, the number of necessary initialization
+     * stages is determined by calling numInitStages(), then initialize(stage)
+     * is called with <tt>0,1,...numstages-1</tt> as argument. The default
+     * implementation of numInitStages() and initialize(stage) provided here
+     * defaults to single-stage initialization, that is, numInitStages()
+     * returns 1 and initialize(stage) simply calls initialize() if stage is 0.
+     */
+    //@{
+
     /**
-     * This method is called by the simulation kernel to notify the module
-     * that the value of an existing module parameter got changed.
-     * Redefining this method allows simple modules to be prepared for
-     * parameter changes, e.g. by re-reading the value.
+     * Multi-stage initialization hook. This default implementation does
+     * single-stage init, that is, calls initialize() if stage is 0.
+     */
+    virtual void initialize(int stage) {if (stage==0) initialize();}
+
+    /**
+     * Multi-stage initialization hook, should be redefined to return the
+     * number of initialization stages required. This default implementation
+     * does single-stage init, that is, returns 1.
+     */
+    virtual int numInitStages() const  {return 1;}
+
+    /**
+     * Single-stage initialization hook. This default implementation
+     * does nothing.
+     */
+    virtual void initialize();
+
+    /**
+     * Finish hook. finish() is called after end of simulation, if it
+     * terminated without error. This default implementation does nothing.
+     */
+    virtual void finish();
+
+    /**
+     * This method is called by the simulation kernel to notify the module or
+     * channel that the value of an existing parameter got changed.
+     * Redefining this method allows simple modules and channels to be react on
+     * parameter changes, for example by re-reading the value.
      * This default implementation does nothing.
      *
      * To make it easier to write predictable simple modules, the function does
      * NOT get called during initialize() or finish(). If you need
      * notifications within those two functions as well, add the following
-     * code to them:
+     * code into your initialize() and/or finish() methods:
      *
      * <pre>
      * for (int i=0; i<params(); i++)
@@ -86,6 +131,7 @@ class SIM_API cComponent : public cDefaultList // noncopyable
      * handleParameterChange(), to avoid creating an infinite notification loop.
      */
     virtual void handleParameterChange(const char *parname);
+    //@}
 
   public:
     /** @name Constructors, destructor, assignment. */
@@ -139,6 +185,33 @@ class SIM_API cComponent : public cDefaultList // noncopyable
      * (k >= map size) the global RNG k is returned, provided it exists.
      */
     cRNG *rng(int k) const  {return ev.rng(k<rngmapsize ? rngmap[k] : k);}
+    //@}
+
+    /** @name Interface for calling initialize()/finish().
+     * Those functions may not be called directly, only via
+     * callInitialize() and callFinish() provided here.
+     */
+    //@{
+
+    /**
+     * Interface for calling initialize() from outside.
+     * Implements full multi-stage init for this module and its submodules.
+     */
+    virtual void callInitialize();
+
+    /**
+     * Interface for calling initialize() from outside.  This method includes
+     * calling initialize() of contained components (submodules, channels) as well.
+     * It does a single stage of initialization, and returns <tt>true</tt>
+     * if more stages are required.
+     */
+    virtual bool callInitialize(int stage) = 0;
+
+    /**
+     * Interface for calling finish() from outside. This method includes
+     * calling finish() of contained components (submodules, channels) as well.
+     */
+    virtual void callFinish() = 0;
     //@}
 
     /** @name Properties. */

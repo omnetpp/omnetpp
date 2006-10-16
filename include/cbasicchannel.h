@@ -48,6 +48,11 @@ class SIM_API cBasicChannel : public cChannel // noncopyable
     void rereadPars();
 
     /**
+     * Called when the simulation starts. Redefined from cComponent.
+     */
+    virtual void initialize();
+
+    /**
      * Called back when a parameter changes. Redefined from cComponent.
      */
     virtual void handleParameterChange(const char *parname);

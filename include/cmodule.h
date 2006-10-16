@@ -48,8 +48,8 @@ typedef void (*DisplayStringNotifyFunc)(cModule*,bool,void*);
  * and a set of virtual methods.
  *
  * For navigating around in the module tree, see:
- * parentModule(), submodule(), cSubModIterator, moduleByRelativePath(),
- * cSimulation::moduleByPath().
+ * parentModule(), submodule(), cModule::SubmoduleIterator,
+ * moduleByRelativePath(), cSimulation::moduleByPath().
  *
  * @ingroup SimCore
  */
@@ -59,7 +59,6 @@ class SIM_API cModule : public cComponent //noncopyable
     friend class cSimulation;
     friend class cModuleType;
     friend class cChannelType;
-    friend class cSubModIterator;
 
   public:
     /**
@@ -171,8 +170,8 @@ class SIM_API cModule : public cComponent //noncopyable
     std::vector<cGate*> gatev;  // stores the gates of this module
 
   protected:
-    int  idx;               // index if module vector, 0 otherwise
-    int  vectsize;          // vector size, -1 if not a vector
+    int idx;               // index if module vector, 0 otherwise
+    int vectsize;          // vector size, -1 if not a vector
 
     cDisplayString *dispstr;   // display string as submodule (icon, etc)
     cDisplayString *bgdispstr; // display string when enclosing module (background color, etc)
@@ -206,29 +205,8 @@ class SIM_API cModule : public cComponent //noncopyable
     virtual cGate *createGateObject(const char *gname, char tp);
 
   protected:
-    /** @name Initialization, finish and parameter change hooks.
-     *
-     * Initialize and finish functions should (may) be provided by the user,
-     * to perform special tasks at the beginning and the end of the simulation.
-     * The functions are made protected because they are supposed
-     * to be called only via callInitialize() and callFinish().
-     *
-     * The initialization process was designed to support multi-stage
-     * initialization of compound modules (i.e. initialization in several
-     * 'waves'). (Calling the initialize() function of a simple module is
-     * hence a special case). The initialization process is performed
-     * on a module like this. First, the number of necessary initialization
-     * stages is determined by calling numInitStages(), then initialize(stage)
-     * is called with <tt>0,1,...numstages-1</tt> as argument. The default
-     * implementation of numInitStages() and initialize(stage) provided here
-     * defaults to single-stage initialization, that is, numInitStages()
-     * returns 1 and initialize(stage) simply calls initialize() if stage is 0.
-     *
-     * All initialization and finish functions are redefined in cCompoundModule
-     * to recursively traverse all submodules.
-     */
+    /** @name Initialization and finish hooks, redefined from cComponent. */  //XXX comment??
     //@{
-
     /**
      * Should be refined in subclasses representing compound modules
      * to build submodule and internal connections of this module.
@@ -240,53 +218,6 @@ class SIM_API cModule : public cComponent //noncopyable
      * @see buildInside()
      */
     virtual void doBuildInside() {}
-
-    /**
-     * Multi-stage initialization hook. This default implementation does
-     * single-stage init, that is, calls initialize() if stage is 0.
-     */
-    virtual void initialize(int stage) {if(stage==0) initialize();}
-
-    /**
-     * Multi-stage initialization hook, should be redefined to return the
-     * number of initialization stages required. This default implementation
-     * does single-stage init, that is, returns 1.
-     */
-    virtual int numInitStages() const  {return 1;}
-
-    /**
-     * Single-stage initialization hook. This default implementation
-     * does nothing.
-     */
-    virtual void initialize();
-
-    /**
-     * Finish hook. finish() is called after end of simulation, if it
-     * terminated without error. This default implementation does nothing.
-     */
-    virtual void finish();
-
-    /**
-     * This method is called by the simulation kernel to notify the module
-     * that the value of an existing module parameter got changed.
-     * Redefining this method allows simple modules to be prepared for
-     * parameter changes, e.g. by re-reading the value.
-     * This default implementation does nothing.
-     *
-     * To make it easier to write predictable simple modules, the function does
-     * NOT get called during initialize() or finish(). If you need
-     * notifications within those two functions as well, add the following
-     * code to them:
-     *
-     * <pre>
-     * for (int i=0; i<params(); i++)
-     *     handleParameterChange(par(i).name());
-     * </pre>
-     *
-     * Also, one must be extremely careful when changing parameters from inside
-     * handleParameterChange(), to avoid creating an infinite notification loop.
-     */
-    virtual void handleParameterChange(const char *parname);
     //@}
 
   public:
@@ -538,26 +469,24 @@ class SIM_API cModule : public cComponent //noncopyable
     //@{
     /**
      * Searches for the parameter in the parent modules, up to the system
-     * module. It the parameter is not found, throws cRuntimeError.
+     * module. If the parameter is not found, throws cRuntimeError.
      */
     cPar& ancestorPar(const char *parname);
     //@}
 
-    /** @name Interface for calling initialize()/finish().
-     * Those functions may not be called directly, only via
-     * callInitialize() and callFinish() provided here.
+    /** @name Public methods for invoking initialize()/finish(), redefined from cComponent.
+     * initialize(), numInitStages(), and finish() are themselves also declared in
+     * cComponent, and can be redefined in simple modules by the user to perform
+     * initialization and finalization (result recording, etc) tasks.
      */
     //@{
-
     /**
      * Interface for calling initialize() from outside.
-     * Implements full multi-stage init for this module and its submodules.
      */
     virtual void callInitialize();
 
     /**
-     * Interface for calling initialize() from outside. It does a single stage
-     * of initialization, and returns <tt>true</tt> if more stages are required.
+     * Interface for calling initialize() from outside.
      */
     virtual bool callInitialize(int stage);
 

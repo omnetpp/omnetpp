@@ -25,10 +25,9 @@
 
 using std::ostream;
 
-//=== registration
+
 Register_Class(cFSM);
 
-//=========================================================================
 
 cFSM::cFSM(const char *name) :
   cObject(name)

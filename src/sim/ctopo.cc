@@ -31,10 +31,8 @@
 #include "ccommbuffer.h"
 #endif
 
-//=== Registration
 Register_Class(cTopology);
 
-//==========================================================================
 
 cTopology::LinkIn *cTopology::Node::in(int i)
 {
@@ -50,8 +48,7 @@ cTopology::LinkOut *cTopology::Node::out(int i)
     return (cTopology::LinkOut *)(out_links+i);
 }
 
-//==========================================================================
-//=== cTopology - member functions
+//----
 
 cTopology::cTopology(const char *name) : cObject(name)
 {

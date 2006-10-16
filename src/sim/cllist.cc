@@ -28,11 +28,9 @@
 #include "ccommbuffer.h"
 #endif
 
-//=== Registration
+
 Register_Class(cLinkedList);
 
-//=========================================================================
-//=== cLinkedList - member functions
 
 cLinkedList::cLinkedList(const cLinkedList& llist) : cObject()
 {

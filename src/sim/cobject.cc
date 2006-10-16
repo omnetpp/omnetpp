@@ -35,7 +35,6 @@ using std::ostream;
 
 bool cStaticFlag::staticflag;
 
-//=== Registration
 Register_Class(cObject);
 
 
@@ -51,9 +50,8 @@ void printAllObjects()
 }
 #endif
 
-
-//==========================================================================
-//=== Internally used visitors
+//----
+// Internally used visitors
 
 /**
  * Finds a child object by name.
@@ -94,8 +92,7 @@ class cRecursiveObjectFinderVisitor : public cVisitor
     cObject *getResult() {return result;}
 };
 
-//==========================================================================
-//=== cObject - member functions
+//----
 
 // static class members
 char cObject::fullpathbuf[MAX_OBJECTFULLPATH];
