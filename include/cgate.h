@@ -128,11 +128,10 @@ class SIM_API cGate : public cNoncopyableObject
     //@{
 
     /**
-     * Specifies that the gate is owned by module m, and it
-     * is at index g in the gate vector. This function should
-     * not be directly called by the user.
+     * Specifies the gate's owner module m, and id within the gates of that
+     * module. This function should not be directly called by the user.
      */
-    void setOwnerModule(cModule *m, int gid);
+    void setOwnerModule(cModule *m, int id);
 
     /**
      * Specifies that the gate is at index sn in a gate array

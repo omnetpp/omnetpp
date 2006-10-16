@@ -124,10 +124,10 @@ std::string cGate::info() const
     return out.str();
 }
 
-void cGate::setOwnerModule(cModule *m, int gid)
+void cGate::setOwnerModule(cModule *m, int id)
 {
     ASSERT(m==owner()); // must be already owned by that module
-    gateid = gid;
+    gateid = id;
 }
 
 void cGate::setIndex(int sn, int vs)

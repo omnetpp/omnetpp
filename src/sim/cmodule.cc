@@ -244,12 +244,13 @@ cGate *cModule::addGate(const char *gname, char tp, bool isvector)
     if (findGate(gname)>=0)
        throw new cRuntimeError(this, "addGate(): Gate %s.%s already present", fullPath().c_str(), gname);
 
-    cGate *newg = createGateObject(gname, tp);
-    take(newg);
-    gatev.push_back(newg);
+    cGate *newgate = createGateObject(gname, tp);
+    take(newgate);
+    newgate->setOwnerModule(this, gatev.size());
+    gatev.push_back(newgate);
     if (isvector)
-        newg->setIndex(0,0);
-    return newg;
+        newgate->setIndex(0,0);
+    return newgate;
 }
 
 int cModule::setGateSize(const char *gname, int newsize)
