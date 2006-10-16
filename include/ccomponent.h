@@ -62,7 +62,7 @@ class SIM_API cComponent : public cDefaultList // noncopyable
     virtual void addPar(const char *parname, cPar *par);
 
     // internal: invokes the read() method on all unset parameters
-    virtual void readInputParams();
+    virtual void readParams();
 
   protected:
     /** @name Initialization, finish and parameter change hooks.

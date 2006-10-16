@@ -157,21 +157,25 @@ int cPar::cmpbyvalue(cPar *one, cPar *other)
     return sgn(x);
 }
 
-
 void cPar::read()
 {
     printf("    read() of %s\n", fullPath().c_str()); //XXX
+    printf("       BEFORE: %s\n", info().c_str()); //XXX
 
-    // get the value
-    doReadValue();
-    ASSERT(isSet()); // part of doReadValue()'s job
+    // obtain value if parameter is not set yet
+    if (!isSet())
+        doReadValue();
+
+    ASSERT(isSet());
 
     // convert non-volatile values to constant
-    if (isVolatile())
+    if (!isVolatile())
         convertToConst();
 
     // convert "const" subexpressions to constant
     //FIXME TODO -- or better delegate to cExpression
+
+    printf("       AFTER:  %s\n", info().c_str()); //XXX
 }
 
 

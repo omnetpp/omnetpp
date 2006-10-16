@@ -200,7 +200,7 @@ void cNEDNetworkBuilder::addSubmodule(cModule *modp, SubmoduleNode *submod)
         cContextSwitcher __ctx(submodp); // params need to be evaluated in the module's context
         setDisplayString(submodp, submod);
         assignComponentParams(submodp, submod);
-        submodp->readInputParams();
+        submodp->readParams();
         setupGateVectors(submodp, submod);
     }
     else
@@ -218,7 +218,7 @@ void cNEDNetworkBuilder::addSubmodule(cModule *modp, SubmoduleNode *submod)
             cContextSwitcher __ctx(submodp); // params need to be evaluated in the module's context
             setDisplayString(submodp, submod);
             assignComponentParams(submodp, submod);
-            submodp->readInputParams();
+            submodp->readParams();
             setupGateVectors(submodp, submod);
         }
     }
@@ -452,7 +452,7 @@ void cNEDNetworkBuilder::doAddConnection(cModule *modp, ConnectionNode *conn)
         cChannel *channel = createChannel(channelspec, modp);
         srcg->connectTo(destg, channel);
         assignComponentParams(channel, channelspec);
-        channel->readInputParams();
+        channel->readParams();
 
         //XXX display string
     }

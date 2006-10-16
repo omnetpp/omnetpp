@@ -361,7 +361,7 @@ void cSimulation::setupNetwork(cModuleType *network, int run_num)
         // set up the network by instantiating the toplevel module
         cContextTypeSwitcher tmp(CTX_BUILD);
         cModule *mod = networktype->create(networktype->name(), NULL);
-        mod->readInputParams();
+        mod->readParams();
         mod->buildInside();
     }
     catch (cException *)

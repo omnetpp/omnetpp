@@ -727,6 +727,7 @@ int NED2Generator::getOperatorPriority(const char *op, int args)
     {
         // %left '?' ':'
         if (!strcmp(op,"?:")) return 1;
+        INTERNAL_ERROR1(NULL, "getOperatorPriority(): unknown tertiary operator '%s'", op);
     }
 
     if (args==2)
@@ -764,6 +765,7 @@ int NED2Generator::getOperatorPriority(const char *op, int args)
 
         // %right EXP
         if (!strcmp(op,"^"))  return 8;
+        INTERNAL_ERROR1(NULL, "getOperatorPriority(): unknown binary operator '%s'", op);
     }
 
     if (args==1)
@@ -772,8 +774,10 @@ int NED2Generator::getOperatorPriority(const char *op, int args)
         if (!strcmp(op,"-"))  return 9;
         if (!strcmp(op,"!"))  return 9;
         if (!strcmp(op,"~"))  return 9;
+        INTERNAL_ERROR1(NULL, "getOperatorPriority(): unknown unary operator '%s'", op);
     }
-    INTERNAL_ERROR1(NULL, "getOperatorPriority(): unknown operator '%s'", op);
+
+    INTERNAL_ERROR1(NULL, "getOperatorPriority(): bad number of args: %d", args);
     return -1;
 }
 

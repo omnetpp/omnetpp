@@ -464,7 +464,6 @@ class SIM_API cPar : public cObject
      */
     operator const char *() const;
 
-
     /**
      * Equivalent to xmlValue().
      */
