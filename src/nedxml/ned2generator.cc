@@ -810,12 +810,16 @@ void NED2Generator::doOperator(OperatorNode *node, const char *indent, bool isla
         bool spacious = (prio<=2);  // we want spaces around &&, ||, ##
 
         NEDElement *parent = node->getParent();
-        if (parent && parent->getTagCode()==NED_OPERATOR) {
+        if (parent && parent->getTagCode()==NED_OPERATOR)
+        {
             OperatorNode *parentop = (OperatorNode *)parent;
-            int parentprio = getOperatorPriority(parentop->getName(),2 ); //FIXME 2 ???
-            if (parentprio>prio) {
+            int parentprio = getOperatorPriority(parentop->getName(), parentop->getNumChildren());
+            if (parentprio>prio)
+            {
                 needsParen = true;
-            } else if (parentprio==prio) {
+            }
+            else if (parentprio==prio)
+            {
                 // TBD can be refined (make use of associativity & precedence rules)
                 needsParen = true;
             }
