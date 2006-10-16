@@ -1,5 +1,6 @@
 package org.omnetpp.experimental.seqchart.widgets;
 
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.draw2d.Graphics;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.swt.SWT;

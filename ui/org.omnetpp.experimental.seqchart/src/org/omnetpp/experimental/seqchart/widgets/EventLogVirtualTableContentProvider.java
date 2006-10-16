@@ -35,7 +35,7 @@ public class EventLogVirtualTableContentProvider implements IVirtualTableContent
 	public long getDistanceToElement(Object sourceElement, Object targetElement, long limit)
 	{
 		if (debug)
-			System.out.println("Virtual table content provider getDistanceToElement: " + limit);
+			System.out.println("Virtual table content provider getDistanceToElement sourceElement: " + sourceElement + " targetElement: " + targetElement + " limit: " + limit);
 
 		if (sourceElement == null || targetElement == null)
 			throw new IllegalArgumentException();
@@ -48,7 +48,7 @@ public class EventLogVirtualTableContentProvider implements IVirtualTableContent
 
 	public long getDistanceToFirstElement(Object element, long limit) {
 		if (debug)
-			System.out.println("Virtual table content provider getDistanceToFirstElement: " + limit);
+			System.out.println("Virtual table content provider getDistanceToFirstElement element: " + element + " limit: " + limit);
 
 		if (element == null)
 			throw new IllegalArgumentException();
@@ -61,7 +61,7 @@ public class EventLogVirtualTableContentProvider implements IVirtualTableContent
 
 	public long getDistanceToLastElement(Object element, long limit) {
 		if (debug)
-			System.out.println("Virtual table content provider getDistanceToLastElement: " + limit);
+			System.out.println("Virtual table content provider getDistanceToLastElement element: " + element + " limit: " + limit);
 
 		if (element == null)
 			throw new IllegalArgumentException();
@@ -74,7 +74,7 @@ public class EventLogVirtualTableContentProvider implements IVirtualTableContent
 
 	public Object getNeighbourElement(Object element, long distance) {
 		if (debug)
-			System.out.println("Virtual table content provider getNeighbourElement: " + distance);
+			System.out.println("Virtual table content provider getNeighbourElement element: " + element + " distance: " + distance);
 
 		if (element == null)
 			throw new IllegalArgumentException();
@@ -87,7 +87,7 @@ public class EventLogVirtualTableContentProvider implements IVirtualTableContent
 
 	public double getApproximatePercentageForElement(Object element) {
 		if (debug)
-			System.out.println("Virtual table content provider getApproximatePercentageForElement");
+			System.out.println("Virtual table content provider getApproximatePercentageForElement element: " + element);
 
 		if (element == null)
 			throw new IllegalArgumentException();
@@ -100,7 +100,7 @@ public class EventLogVirtualTableContentProvider implements IVirtualTableContent
 
 	public Object getApproximateElementAt(double percentage) {
 		if (debug)
-			System.out.println("Virtual table content provider getApproximateElementAt: " + percentage);
+			System.out.println("Virtual table content provider getApproximateElementAt percentage: " + percentage);
 
 		if (percentage < 0 || percentage > 1)
 			throw new IllegalArgumentException();

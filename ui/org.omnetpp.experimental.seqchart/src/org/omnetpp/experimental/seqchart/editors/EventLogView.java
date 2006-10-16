@@ -52,8 +52,8 @@ public class EventLogView extends ViewPart {
 		tableColumn4.setWidth(800);
 		tableColumn4.setText("Details / log message");
 
-		virtualTableViewer = createLongTableViewer(table);
-		//virtualTableViewer = createEventLogTableViewer(table);
+		//virtualTableViewer = createLongTableViewer(table);
+		virtualTableViewer = createEventLogTableViewer(table);
 		
 		// we want to provide selection for the sequence chart tool (an IEditPart)
 		getSite().setSelectionProvider(virtualTableViewer);
@@ -76,7 +76,8 @@ public class EventLogView extends ViewPart {
 	protected VirtualTableViewer createLongTableViewer(Table table) {
 		VirtualTableViewer virtualTableViewer = new VirtualTableViewer(table);
 		virtualTableViewer.setContentProvider(new LongVirtualTableContentProvider());
-		virtualTableViewer.setInput(1000000L);
+		//virtualTableViewer.setInput(100L);
+		virtualTableViewer.setInput(1000000000L);
 		virtualTableViewer.setLabelProvider(new LongVirtualTableItemProvider());
 		
 		return virtualTableViewer;

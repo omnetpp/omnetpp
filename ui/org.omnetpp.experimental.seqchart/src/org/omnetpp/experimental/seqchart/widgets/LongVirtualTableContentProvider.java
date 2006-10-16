@@ -8,7 +8,19 @@ import org.eclipse.jface.viewers.Viewer;
 public class LongVirtualTableContentProvider implements IVirtualTableContentProvider {
 	protected static boolean debug = true;
 
+	protected double sleepScale = 0.1;
+
 	protected long maxValue;
+	
+	protected long sleep(long value) {
+		try {
+			Thread.sleep((int)(value * sleepScale));
+		}
+		catch (Exception e) {			
+		}
+		
+		return value;
+	}
 
 	public Object getFirstElement() {
 		if (debug)
@@ -29,20 +41,14 @@ public class LongVirtualTableContentProvider implements IVirtualTableContentProv
 		if (debug)
 			System.out.println("Virtual table content provider getDistanceToElement sourceElement: " + sourceElement + " targetElement: " + targetElement + " limit: " + limit);
 
-		try {
-			Thread.sleep(limit);
-		}
-		catch (Exception e) {			
-		}
-
 		long sourceValue = (Long)sourceElement;
 		long targetValue = (Long)targetElement;
 		long delta = Math.abs(targetValue - sourceValue);
 		
 		if (delta > limit)
-			return limit;
+			return sleep(limit);
 		else
-			return delta;
+			return sleep(delta);
 	}
 
 	public long getDistanceToFirstElement(Object element, long limit) {
@@ -51,16 +57,10 @@ public class LongVirtualTableContentProvider implements IVirtualTableContentProv
 
 		long value = (Long)element;
 		
-		try {
-			Thread.sleep(limit);
-		}
-		catch (Exception e) {			
-		}
-
 		if (value > limit)
-			return limit;
+			return sleep(limit);
 		else
-			return value;
+			return sleep(value);
 	}
 
 	public long getDistanceToLastElement(Object element, long limit) {
@@ -69,16 +69,10 @@ public class LongVirtualTableContentProvider implements IVirtualTableContentProv
 
 		long value = (Long)element;
 		
-		try {
-			Thread.sleep(limit);
-		}
-		catch (Exception e) {			
-		}
-
 		if (maxValue - value > limit)
-			return limit;
+			return sleep(limit);
 		else
-			return maxValue - value;
+			return sleep(maxValue - value);
 	}
 
 	public Object getNeighbourElement(Object element, long distance) {
@@ -87,16 +81,15 @@ public class LongVirtualTableContentProvider implements IVirtualTableContentProv
 
 		long value = (Long)element;
 		
-		try {
-			Thread.sleep(distance);
-		}
-		catch (Exception e) {			
-		}
+		if (value + distance < 0)
+			distance = -value;
 		
-		if ((value + distance < 0) || (value + distance > maxValue))
-			return null;
-		else
-			return value + distance;
+		if (value + distance > maxValue)
+			distance = maxValue - value;
+		
+		sleep(distance);
+
+		return value + distance;
 	}
 
 	public double getApproximatePercentageForElement(Object element) {

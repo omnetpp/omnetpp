@@ -15,11 +15,30 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableItem;
 
 public class VirtualTableViewer extends ContentViewer {
+	/**
+	 * The underlying table widget.
+	 */
 	protected Table table;
 	
+	/**
+	 * This is an element close to the visible area.
+	 */
 	protected Object fixPointElement;
 	
+	/**
+	 * The index of the fix point element in the real table.
+	 */
 	protected int fixPointTableIndex;
+
+	/**
+	 * A flag used to avoid recursively call into fix table.
+	 */
+	protected boolean alreadyInFixTable;
+
+	/**
+	 * The top index of the read table when the table was last fixed.
+	 */
+	protected int oldTopIndex;
 
 	protected boolean followSelection = true;
 	
@@ -28,14 +47,16 @@ public class VirtualTableViewer extends ContentViewer {
 		
 		table.addListener(SWT.SetData, new Listener() {
 			public void handleEvent(Event e) {
-				TableItem item = (TableItem)e.item;
-				Object element = getVirtualTableContentProvider().getNeighbourElement(fixPointElement, e.index - fixPointTableIndex);
-				getVirtualTableItemProvider().fillTableItem(item, element);
+				int indexDelta = e.index - fixPointTableIndex;
+				if (Math.abs(indexDelta) < getVisibleItemCount() * 2) {
+					Object element = getVirtualTableContentProvider().getNeighbourElement(fixPointElement, e.index - fixPointTableIndex);
+					getVirtualTableItemProvider().fillTableItem((TableItem)e.item, element);
+				}
 			}
 		});
 		table.addPaintListener(new PaintListener() {
 			public void paintControl(PaintEvent e) {
-				fixTable2();
+				fixTable();
 			}
 		});
 	}
@@ -165,7 +186,11 @@ public class VirtualTableViewer extends ContentViewer {
 				int reserveBelowBottom = visibleItemCount;
 				int oldTopIndex = getTopIndex();
 				int newTopIndex = (int)(reserveAboveTop + ((itemCount - reserveAboveTop - reserveBelowBottom - visibleItemCount) * percentage));
+
 				fixTablePosition(oldTopIndex, newTopIndex, element, newTopIndex + visibleItemCount / 2);
+
+				table.clearAll();
+				table.redraw();
 			}
 		}
 	}
@@ -208,112 +233,75 @@ public class VirtualTableViewer extends ContentViewer {
 		fixPointTableIndex = index;
 	}
 
-	boolean alreadyInFixTable;
-	
-	int oldTopIndex;
-	int oldBottomIndex;
-	
-	protected void fixTable2() {
-		int itemCount = getItemCount();
-		int newTopIndex = getTopIndex();
-		int newBottomIndex = getBottomIndex();
+	protected void fixTable() {
+		int currentTopIndex = getTopIndex();
 		
-		if (newTopIndex == oldTopIndex)
+		if (alreadyInFixTable || currentTopIndex == oldTopIndex)
 			return;
-		
-		int indexDelta = newTopIndex - oldTopIndex;
-		boolean forward = indexDelta > 0;
+		else
+			alreadyInFixTable = true;
+
+		int itemCount = getItemCount();
+		int currentBottomIndex = getBottomIndex();
 		int visibleItemCount = getVisibleItemCount();
+		int newTopIndex = -1;
+		int newFixPointTableIndex = -1;
+		Object newFixPointElement = null;
 		IVirtualTableContentProvider virtualTableContentProvider = getVirtualTableContentProvider();
+		int indexDelta = currentTopIndex - oldTopIndex;
+		boolean forward = indexDelta > 0;
 
 		// step 1. set fix point and top index to reflect the new virtual table position
 		System.out.println("Index delta: " + indexDelta);
 		
-		if (indexDelta <= visibleItemCount) {
-			// scroll virtual table linearly according to the small scroll in the real table
-			double percentage = virtualTableContentProvider.getApproximatePercentageForElement(getTopElement());
-			int xxxTopIndex = (int)((itemCount - visibleItemCount) * percentage);
-			table.setTopIndex(xxxTopIndex);
-			relocateFixPoint(fixPointElement, fixPointTableIndex - newTopIndex + xxxTopIndex);
+		if (Math.abs(indexDelta) < visibleItemCount) {
+			// scroll virtual table linearly according to the small scroll in the real table and move real table back to its old position
+			newTopIndex = oldTopIndex;
+			newFixPointElement = fixPointElement;
+			newFixPointTableIndex = fixPointTableIndex - indexDelta;
 		}
 		else {
-			// jump to approximate element in virtual table based on real the table position
-			double percentage = (double)newTopIndex / (itemCount - visibleItemCount);
-			Object element = virtualTableContentProvider.getApproximateElementAt(percentage);
-			relocateFixPoint(element, forward ? newBottomIndex : newTopIndex);
+			// jump to approximate element in virtual table based on real the table position and leave real table position as it is
+			double percentage = (double)currentTopIndex / (itemCount - visibleItemCount);
+			newTopIndex = currentTopIndex;
+			newFixPointElement = virtualTableContentProvider.getApproximateElementAt(percentage);
+			newFixPointTableIndex = forward ? currentBottomIndex : currentTopIndex;
 		}
 
-		// step 2. if we are near the beginning or the end make sure that there are as many real table lines as virtual table lines below and/or above the table
+		// step 2. move table and selection and set new fix point
+		fixTablePosition(currentTopIndex, newTopIndex, newFixPointElement, newFixPointTableIndex);
+
+		// step 3. if we are near the beginning or the end make sure that there are as many real table lines as virtual table lines below and/or above the table
 		int reserveAboveTop = visibleItemCount;
-		int reserveBelowBottom = visibleItemCount;
+		int reserveBelowTop = visibleItemCount;
 		int firstElementDistance = (int)virtualTableContentProvider.getDistanceToFirstElement(getTopElement(), reserveAboveTop);
-		int lastElementDistance = (int)virtualTableContentProvider.getDistanceToLastElement(getBottomElement(), reserveBelowBottom);
+		int lastElementDistance = (int)virtualTableContentProvider.getDistanceToLastElement(getBottomElement(), reserveBelowTop);
 		boolean nearFirstElement = firstElementDistance < reserveAboveTop;
-		boolean nearLastElement = lastElementDistance < reserveBelowBottom;
+		boolean nearLastElement = lastElementDistance < reserveBelowTop;
 
 		if (nearFirstElement && nearLastElement) {
-			// TODO: how will it be less than visibleItemCount?
-			fixTablePosition(oldTopIndex, firstElementDistance, virtualTableContentProvider.getFirstElement(), 0);
-			table.setItemCount(firstElementDistance + lastElementDistance + visibleItemCount);
+			fixTablePosition(newTopIndex, firstElementDistance, virtualTableContentProvider.getFirstElement(), 0);
+			table.setItemCount(1 + (int)virtualTableContentProvider.getDistanceToLastElement(virtualTableContentProvider.getFirstElement(), Long.MAX_VALUE));
 		}
 		else if (nearFirstElement)
-			fixTablePosition(oldTopIndex, firstElementDistance, virtualTableContentProvider.getFirstElement(), 0);
+			fixTablePosition(newTopIndex, firstElementDistance, virtualTableContentProvider.getFirstElement(), 0);
 		else if (nearLastElement)
-			fixTablePosition(oldTopIndex, itemCount - lastElementDistance - visibleItemCount, virtualTableContentProvider.getLastElement(), itemCount - 1);
+			fixTablePosition(newTopIndex, itemCount - visibleItemCount - lastElementDistance, virtualTableContentProvider.getLastElement(), itemCount - 1);
+		else {
+			double percentage = virtualTableContentProvider.getApproximatePercentageForElement(getTopElement());
+			int modifiedTopIndex = visibleItemCount + (int)((itemCount - visibleItemCount * 3) * percentage);
+			fixTablePosition(newTopIndex, modifiedTopIndex, fixPointElement, fixPointTableIndex - newTopIndex + modifiedTopIndex);
+		}
 
-		// step 3. move fix point to the top of the visible area
+		// step 4. relocated fix point to the top of the visible area, so that it's close to what is visible
 		relocateFixPoint(getTopElement(), getTopIndex());
 		
+		// step 5. remember the last set top index for the next call to fixTable
 		oldTopIndex = getTopIndex();
-		oldBottomIndex = getBottomIndex();
-	}
-	
-	protected void fixTable() {
-		if (alreadyInFixTable)
-			return;
-		else
-			alreadyInFixTable = true;
-		
-		System.out.println("fixTable");
 
-		int itemCount = getItemCount();
-		int oldTopIndex = getTopIndex();
-		int oldBottomIndex = getBottomIndex();
-		Object topElement = getTopElement();
-		Object bottomElement = getBottomElement();
-		int visibleItemCount = getVisibleItemCount();
-		int reserveAboveTop = visibleItemCount;
-		int reserveBelowBottom = visibleItemCount;
-		IVirtualTableContentProvider virtualTableContentProvider = getVirtualTableContentProvider();
-		int firstElementDistance = (int)virtualTableContentProvider.getDistanceToFirstElement(topElement, reserveAboveTop);
-		int lastElementDistance = (int)virtualTableContentProvider.getDistanceToLastElement(bottomElement, reserveBelowBottom);
-		
-		//System.out.println("Top element before fix table: " + topElement + " top index: " + oldTopIndex);
-
-		if (firstElementDistance < reserveAboveTop) {
-			if (!isFirstElement(fixPointElement) || fixPointTableIndex != 0)
-				fixTablePosition(oldTopIndex, firstElementDistance, virtualTableContentProvider.getFirstElement(), 0);
-		}
-		else if (lastElementDistance  < reserveBelowBottom) {
-			if (!isLastElement(fixPointElement) || fixPointTableIndex != itemCount - 1)
-				fixTablePosition(oldTopIndex, itemCount - lastElementDistance - visibleItemCount, virtualTableContentProvider.getLastElement(), itemCount - 1);
-		}
-		else {
-			double percentage = virtualTableContentProvider.getApproximatePercentageForElement(topElement);
-			int newTopIndex = (int)(reserveAboveTop + ((itemCount - reserveAboveTop - reserveBelowBottom - visibleItemCount) * percentage));
-			
-			if (oldTopIndex != newTopIndex) {
-				int deltaTopIndex = newTopIndex - oldTopIndex;
-	
-				if (Math.abs(deltaTopIndex) > visibleItemCount * 2) {
-					percentage = (double)oldTopIndex / (itemCount - visibleItemCount);
-					Object element = virtualTableContentProvider.getApproximateElementAt(percentage);					
-					fixTablePosition(oldTopIndex, oldTopIndex, element, deltaTopIndex > 0 ? oldTopIndex : oldBottomIndex);
-				}
-				else
-					fixTablePosition(oldTopIndex, newTopIndex, topElement, newTopIndex);
-			}
-		}
+		table.clearAll();
+		table.redraw();
+		System.out.println("Top element after fixTable: " + getTopElement() + " new top index: " + getTopIndex());
 		
 		alreadyInFixTable = false;
 	}
@@ -323,14 +311,13 @@ public class VirtualTableViewer extends ContentViewer {
 		relocateFixPoint(fixPointElement, fixPointTableIndex);
 
 		if (oldTopIndex != newTopIndex) {
-			table.setSelection(table.getSelectionIndex() + deltaTopIndex);
+			int selectedIndex = table.getSelectionIndex();
+
+			if (selectedIndex != -1)
+				table.setSelection(selectedIndex + deltaTopIndex);
+
 			table.setTopIndex(newTopIndex);
 		}
-
-		table.clearAll();
-		table.redraw();
-
-		System.out.println("Top element after relocate: " + getTopElement() + " new top index: " + newTopIndex + " delta top index: " + deltaTopIndex);
 	}
 
 	protected int getItemCount() {
