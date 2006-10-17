@@ -86,7 +86,9 @@ double EventLog::getApproximatePercentageForEventNumber(long eventNumber)
         long beginOffset = firstEvent->getBeginOffset();
         long endOffset = lastEvent->getEndOffset();
 
-        return (double)event->getBeginOffset() / (endOffset - beginOffset);
+        double percentage = (double)event->getBeginOffset() / (endOffset - beginOffset);
+
+        return std::min(std::max(percentage, 0.0), 1.0);
     }
 }
 
@@ -112,10 +114,9 @@ Event *EventLog::getApproximateEventAt(double percentage)
 
 void EventLog::parseInitializationLogEntries()
 {
-    long firstOffset = getOffsetForEventNumber(0);
     reader->seekTo(0);
 
-    do
+    while (true)
     {
         char *line = reader->readLine();
 
@@ -124,15 +125,17 @@ void EventLog::parseInitializationLogEntries()
 
         EventLogEntry *eventLogEntry = EventLogEntry::parseEntry(NULL, line);
 
-        if (eventLogEntry && !dynamic_cast<EventEntry *>(eventLogEntry))
+        if (dynamic_cast<EventEntry *>(eventLogEntry))
+            break;
+
+        if (eventLogEntry)
             initializationLogEntries.push_back(eventLogEntry);
 
         ModuleCreatedEntry *moduleCreatedEntry = dynamic_cast<ModuleCreatedEntry *>(eventLogEntry);
 
-        if (eventLogEntry && moduleCreatedEntry)
+        if (moduleCreatedEntry)
             initializationModuleIdToModuleCreatedEntryMap[moduleCreatedEntry->moduleId] = moduleCreatedEntry;
     }
-    while (reader->lineStartOffset() < firstOffset);
 }
 
 void EventLog::printInitializationLogEntries(FILE *file)

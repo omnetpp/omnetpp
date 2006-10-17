@@ -43,8 +43,8 @@ void printOffsets(int argc, char **argv)
 void echo(int argc, char **argv)
 {
     try {
-        long from = atol(argv[3]);
-        long to = atol(argv[4]);
+        long from = argc > 3 ? atol(argv[3]) : -1;
+        long to = argc > 4 ? atol(argv[4]) : -1;
         fprintf(stderr, "Echoing log file %s from event number %d to %d\n", argv[2], from, to);
     
         FileReader *fileReader = new FileReader(argv[2]);
