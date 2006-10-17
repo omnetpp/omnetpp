@@ -212,7 +212,7 @@ public class GraphicalNedEditorPlugin extends AbstractUIPlugin {
         	// create the tool entry
         	CombinedTemplateCreationEntry combined = new CombinedTemplateCreationEntry(
                     name, "A submodule with type "+name,
-                    new ModelFactory(name), 
+                    new ModelFactory(SubmoduleNodeEx.getStaticTagName(),name, name), 
                     imageDescNorm, imageDescLarge );
         	// add to the selected drawer
             currentDrawer.add(combined);

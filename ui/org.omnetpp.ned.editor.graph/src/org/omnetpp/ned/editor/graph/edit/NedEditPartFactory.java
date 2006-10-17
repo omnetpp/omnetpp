@@ -1,5 +1,6 @@
 package org.omnetpp.ned.editor.graph.edit;
 
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.gef.EditPart;
 import org.eclipse.gef.EditPartFactory;
 import org.omnetpp.ned2.model.CompoundModuleNodeEx;
@@ -32,7 +33,7 @@ public class NedEditPartFactory implements EditPartFactory {
         else if (model instanceof ITopLevelElement)
             child = new TopLevelEditPart();
         else {
-            System.out.println("Unknown model element: " + model.toString());
+            Assert.isTrue(false,"Unknown model element: "+model.getClass().getName());
             return null;
         }
         child.setModel(model);
