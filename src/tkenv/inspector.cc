@@ -299,6 +299,12 @@ void TInspector::fillInspectorListbox(const char *listbox, cObject *object, bool
    sprintf(w, "%s%s.main.list", windowname,listbox);
    int n = fillListboxWithChildObjects(object, interp, w, deep);
 
+   // The following is needed because BLT tends to crash when item count goes
+   // from 3 to 0 (e.g. in samples/fifo, Fast mode). Adding a dummy line when
+   // listbox is empty solves the problem...
+   if (n==0)
+       CHK(Tcl_VarEval(interp, "multicolumnlistbox_adddummyline ", w, NULL));
+
    // set "number of items" display
    sprintf(w, "%s.label", listbox);
    sprintf(buf,"%d objects", n);

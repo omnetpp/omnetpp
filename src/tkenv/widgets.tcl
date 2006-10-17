@@ -853,6 +853,17 @@ proc multicolumnlistbox_deleteall {w} {
     }
 }
 
+#
+# Inserts a dummy line.
+#
+proc multicolumnlistbox_adddummyline {w} {
+    global HAVE_BLT icons
+    if {$HAVE_BLT} {
+        set icon $icons(16pixtransp)
+        $w insert end [opp_object_nullpointer] -icons [list $icon $icon] -activeicons [list $icon $icon]
+    }
+}
+
 
 # center --
 #
