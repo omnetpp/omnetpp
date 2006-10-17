@@ -314,7 +314,7 @@ class SIM_API cSimulation : public cObject
 
     /**
      * To be called between events from the environment of the simulation
-     * (e.g. from Tkenv), this function returns pointer to the event
+     * (e.g. from Tkenv), this function returns a pointer to the event
      * at the head of the FES. It is only guaranteed to be the next event
      * with sequential simulation; with parallel, distributed or real-time
      * simulation there might be another event coming from other processes
