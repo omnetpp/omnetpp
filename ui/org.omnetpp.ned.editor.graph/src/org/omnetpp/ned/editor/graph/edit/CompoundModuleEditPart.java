@@ -23,7 +23,9 @@ import org.omnetpp.figures.CompoundModuleGateAnchor;
 import org.omnetpp.figures.GateAnchor;
 import org.omnetpp.ned.editor.graph.edit.policies.CompoundModuleLayoutEditPolicy;
 import org.omnetpp.ned2.model.CompoundModuleNodeEx;
+import org.omnetpp.ned2.model.INamedGraphNode;
 import org.omnetpp.ned2.model.NEDElement;
+import org.omnetpp.ned2.model.SubmoduleNodeEx;
 
 public class CompoundModuleEditPart extends ModuleEditPart {
 
@@ -50,6 +52,14 @@ public class CompoundModuleEditPart extends ModuleEditPart {
      */
     protected CompoundModuleFigure getCompoundModuleFigure() {
         return (CompoundModuleFigure) getFigure();
+    }
+
+
+    /**
+     * @return Helper function to return the model object with correct type
+     */
+    public CompoundModuleNodeEx getCompoundModuleModel() {
+        return (CompoundModuleNodeEx)getModel();
     }
 
     @Override
@@ -86,6 +96,26 @@ public class CompoundModuleEditPart extends ModuleEditPart {
     	return ((CompoundModuleNodeEx)getNEDModel()).getSubmodules();
     }
     
+    /**
+     * Returns a list of connections for which this is the srcModule.
+     * 
+     * @return List of connections.
+     */
+    @Override
+    protected List getModelSourceConnections() {
+        return getCompoundModuleModel().getSrcConnections();
+    }
+
+    /**
+     * Returns a list of connections for which this is the destModule.
+     * 
+     * @return List of connections.
+     */
+    @Override
+    protected List getModelTargetConnections() {
+        return getCompoundModuleModel().getDestConnections();
+    }
+
     @Override
     public void attributeChanged(NEDElement node, String attr) {
     	super.attributeChanged(node, attr);

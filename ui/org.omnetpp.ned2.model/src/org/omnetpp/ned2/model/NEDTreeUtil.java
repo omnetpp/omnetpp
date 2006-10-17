@@ -148,13 +148,6 @@ public class NEDTreeUtil {
 			errors.add(swigNode, e.getMessage()); // error message
 			if (pojoNode!=null) {
 				// throw out element that caused the error.
-				// it's not so easy to get rid of a ConnectionNodeEx though.
-				// XXX build "removal support" into NEDElement instead of this ugly cast...?
-				if (pojoNode instanceof ConnectionNodeEx) {
-					ConnectionNodeEx conn = (ConnectionNodeEx)pojoNode;
-					conn.setSrcModuleRef(null);
-					conn.setDestModuleRef(null);
-				}
 				parent.removeChild(pojoNode);
 			}
 			return null;

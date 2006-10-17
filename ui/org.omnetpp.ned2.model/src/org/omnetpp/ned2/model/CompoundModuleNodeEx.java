@@ -3,7 +3,6 @@ package org.omnetpp.ned2.model;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.core.runtime.Assert;
 import org.omnetpp.common.displaymodel.DisplayString;
 import org.omnetpp.common.displaymodel.IDisplayString;
 import org.omnetpp.common.displaymodel.IDisplayString.Prop;
@@ -175,40 +174,116 @@ public class CompoundModuleNodeEx extends CompoundModuleNode
     ////////////////////////////////////////////////////////////////////////////////////////
     // connection related methods
     
+//
+//    public void attachSrcConnection(ConnectionNodeEx conn) {
+//        Assert.isTrue(!srcConns.contains(conn));
+//        srcConns.add(conn);
+//        addConnection(conn);
+//        fireAttributeChangedToAncestors(ATT_SRC_CONNECTION);
+//    }
+//
+//    public void detachSrcConnection(ConnectionNodeEx conn) {
+//        Assert.isTrue(srcConns.contains(conn));
+//        srcConns.remove(conn);
+//        removeConnection(conn);
+//        fireAttributeChangedToAncestors(ATT_SRC_CONNECTION);
+//    }
+//
+//    public void attachDestConnection(ConnectionNodeEx conn) {
+//        Assert.isTrue(!destConns.contains(conn));
+//        destConns.add(conn);
+//        addConnection(conn);
+//        fireAttributeChangedToAncestors(ATT_DEST_CONNECTION);
+//    }
+//
+//    public void detachDestConnection(ConnectionNodeEx conn) {
+//        Assert.isTrue(destConns.contains(conn));
+//        destConns.remove(conn);
+//        removeConnection(conn);
+//        fireAttributeChangedToAncestors(ATT_DEST_CONNECTION);
+//    }
+
+    /**
+     * @param srcName srcModule to filter for ("" for compound module and NULL if not filtering is required)
+     * @param destName destModule to filter for ("" for compound module and NULL if not filtering is required)
+     * @return Returns ALL connections contained in this module with matching src and dest module
+     */
+    private List<ConnectionNodeEx> getOwnConnections(String srcName, String destName) {
+        List<ConnectionNodeEx> result = new ArrayList<ConnectionNodeEx>();
+        ConnectionsNode connectionsNode = getFirstConnectionsChild();
+        if (connectionsNode == null)
+            return result;
+        for(NEDElement currChild : connectionsNode)
+            // FIXME this skips connection groups. we should include the contenet of conection groups too
+            if (currChild instanceof ConnectionNodeEx) {
+                ConnectionNodeEx connChild = (ConnectionNodeEx)currChild;
+                // by default add the connection
+                boolean addIt = true;
+                if (srcName != null) {
+                    // do not add if module name is not matching the filter criteria
+                    if (!srcName.equals(connChild.getSrcModule()))
+                        addIt = false;
+                }
+                if (destName != null) {
+                    // do not add if module name is not matching the filter criteria
+                    if (!destName.equals(connChild.getDestModule()))
+                        addIt = false;
+                }
+                
+                if (addIt) 
+                    result.add(connChild);
+            }
+
+        return result;
+    }
+    
+    /**
+     * Returns ALL connections contained in / and inherited by this module
+     * @return
+     */
+    private List<ConnectionNodeEx> getConnections(String srcName, String destName) {
+        List<ConnectionNodeEx> result = getOwnConnections(srcName, destName);
+        
+        // FIXME beware this can lead to an infite recursion if we have a circle in the extend chanin
+        NEDElement extendsElem = getFirstExtendsRef();
+        if (extendsElem != null && extendsElem instanceof CompoundModuleNodeEx)  
+            result.addAll(((CompoundModuleNodeEx)extendsElem).getConnections(srcName, destName));
+        
+        return result;
+    }
+    
+    /**
+     * Returns ALL connections contained in / and inherited by this module where this module is the source
+     * @return
+     */
     public List<ConnectionNodeEx> getSrcConnections() {
-        return srcConns;
+        return getConnections("", null);
     }
 
+    /**
+     * Returns ALL connections contained in / and inherited by this module where this module is the destination
+     * @return
+     */
     public List<ConnectionNodeEx> getDestConnections() {
-        return destConns;
+        return getConnections(null, "");
     }
 
-    public void attachSrcConnection(ConnectionNodeEx conn) {
-        Assert.isTrue(!srcConns.contains(conn));
-        srcConns.add(conn);
-        addConnection(conn);
-        fireAttributeChangedToAncestors(ATT_SRC_CONNECTION);
+    /**
+     * Returns ALL connections contained in / and inherited by the provided module 
+     * where this module is the source
+     * @return
+     */
+    public List<ConnectionNodeEx> getSrcConnectionsFor(SubmoduleNodeEx submoduleNodeModel) {
+        return getConnections(submoduleNodeModel.getName(), null);
     }
 
-    public void detachSrcConnection(ConnectionNodeEx conn) {
-        Assert.isTrue(srcConns.contains(conn));
-        srcConns.remove(conn);
-        removeConnection(conn);
-        fireAttributeChangedToAncestors(ATT_SRC_CONNECTION);
-    }
-
-    public void attachDestConnection(ConnectionNodeEx conn) {
-        Assert.isTrue(!destConns.contains(conn));
-        destConns.add(conn);
-        addConnection(conn);
-        fireAttributeChangedToAncestors(ATT_DEST_CONNECTION);
-    }
-
-    public void detachDestConnection(ConnectionNodeEx conn) {
-        Assert.isTrue(destConns.contains(conn));
-        destConns.remove(conn);
-        removeConnection(conn);
-        fireAttributeChangedToAncestors(ATT_DEST_CONNECTION);
+    /**
+     * Returns ALL connections contained in / and inherited by the provided module 
+     * where this module is the destinaion
+     * @return
+     */
+    public List<ConnectionNodeEx> getDestConnectionsFor(SubmoduleNodeEx submoduleNodeModel) {
+        return getConnections(null, submoduleNodeModel.getName());
     }
 
     /**
@@ -249,24 +324,8 @@ public class CompoundModuleNodeEx extends CompoundModuleNode
 			snode.removeFromParent();
 	}
 
-    /**
-     * Returns all connections containedin this module
-     * @return
-     */
-	public List<ConnectionNodeEx> getConnections() {
-		List<ConnectionNodeEx> result = new ArrayList<ConnectionNodeEx>();
-		ConnectionsNode connectionsNode = getFirstConnectionsChild();
-		if (connectionsNode == null)
-			return result;
-		for(NEDElement currChild : connectionsNode)
-			if (currChild instanceof ConnectionNodeEx)
-				result.add((ConnectionNodeEx)currChild);
-
-		return result;
-	}
-    
     ///////////////////////////////////////////////////////////////////////
-    // extend support
+    // extends support
     public String getFirstExtends() {
         ExtendsNode extendsNode = (ExtendsNode)getFirstExtendsChild();
         if(extendsNode == null)
@@ -296,4 +355,5 @@ public class CompoundModuleNodeEx extends CompoundModuleNode
         INEDTypeInfo it = getFirstExtendsNEDTypeInfo();
         return it == null ? null : it.getNEDElement();
     }
+
 }

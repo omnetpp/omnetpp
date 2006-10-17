@@ -1,5 +1,7 @@
 package org.omnetpp.ned.editor.graph.edit;
 
+import java.util.List;
+
 import org.eclipse.draw2d.ConnectionAnchor;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.geometry.Point;
@@ -8,6 +10,7 @@ import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.figures.GateAnchor;
 import org.omnetpp.figures.SubmoduleFigure;
 import org.omnetpp.figures.layout.SubmoduleConstraint;
+import org.omnetpp.ned2.model.INamedGraphNode;
 import org.omnetpp.ned2.model.SubmoduleNodeEx;
 import org.omnetpp.resources.NEDResourcesPlugin;
 
@@ -30,10 +33,16 @@ public class SubmoduleEditPart extends ModuleEditPart {
      * 
      * @return Figure of this as a SubmoduleFigure
      */
-    protected SubmoduleFigure getSubmoduleFigure() {
-        return (SubmoduleFigure) getFigure();
+    public SubmoduleFigure getSubmoduleFigure() {
+        return (SubmoduleFigure)getFigure();
     }
 
+    /**
+     * @return Helper function to return the model object with correct type
+     */
+    public SubmoduleNodeEx getSubmoduleModel() {
+        return (SubmoduleNodeEx)getModel();
+    }
 	/**
 	 * Compute the source connection anchor to be assigned based on the current mouse 
 	 * location and available gates. 
@@ -55,7 +64,27 @@ public class SubmoduleEditPart extends ModuleEditPart {
 		return new GateAnchor(getFigure());
 	}
 
-	/**
+    /**
+     * Returns a list of connections for which this is the srcModule.
+     * 
+     * @return List of connections.
+     */
+    @Override
+    protected List getModelSourceConnections() {
+        return getSubmoduleModel().getCompoundModule().getSrcConnectionsFor(getSubmoduleModel());
+    }
+
+    /**
+     * Returns a list of connections for which this is the destModule.
+     * 
+     * @return List of connections.
+     */
+    @Override
+    protected List getModelTargetConnections() {
+        return getSubmoduleModel().getCompoundModule().getDestConnectionsFor(getSubmoduleModel());
+    }
+
+    /**
      * Updates the visual aspect of this.
      */
     @Override

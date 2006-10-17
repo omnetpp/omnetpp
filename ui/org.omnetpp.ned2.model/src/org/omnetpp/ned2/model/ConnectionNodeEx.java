@@ -10,8 +10,8 @@ import org.omnetpp.ned2.model.pojo.ChannelSpecNode;
 import org.omnetpp.ned2.model.pojo.ConnectionNode;
 
 public class ConnectionNodeEx extends ConnectionNode implements IStringTyped, IDisplayStringProvider {
-	private IConnectable srcModuleRef;
-	private IConnectable destModuleRef;
+//	private IConnectable srcModuleRef;
+//	private IConnectable destModuleRef;
 	private ConnectionDisplayString displayString = null;
 
 	ConnectionNodeEx() {
@@ -23,72 +23,31 @@ public class ConnectionNodeEx extends ConnectionNode implements IStringTyped, ID
 		setArrowDirection(ConnectionNodeEx.NED_ARROWDIR_L2R);
 	}
 
-    public String getAttributeDefault(int k) {
-        // Override the default value of "src-module" and "dest-module" to null (==unset).
-    	// The original value of "" causes an exception if we create a ConnectionNodeEx
-    	// without a parent, because applyDefaults() in the ctor would try to set
-    	// srcModuleRef/destModuleRef to the enclosing compound module (which doesn't exist).
-    	// Ctor without parent is needed by GEF's CreationTool, see org.eclipse.gef.requests.SimpleFactory.
-    	Assert.isTrue(getAttributeName(0).equals(ATT_SRC_MODULE) && getAttributeName(6).equals(ATT_DEST_MODULE));
-        switch (k) {
-            case 0: return null;
-            case 6: return null;
-            default: return super.getAttributeDefault(k);
-        }
+    // helper functions to set the module names using references
+    public IConnectable getSrcModuleRef() {
+        // if the source is empty return the containing compound module
+        if ("".equals(getSrcModule()))
+            return getCompoundModule();
+        return getCompoundModule().getSubmoduleByName(getSrcModule());
     }
 
-	public IConnectable getSrcModuleRef() {
-		return srcModuleRef;
-	}
+    public void setSrcModuleRef(IConnectable srcModule) {
+        String newModule = (srcModule instanceof CompoundModuleNodeEx) ? "" : srcModule.getName();
+        setSrcModule(newModule);
+    }
 
-	public void setSrcModuleRef(IConnectable srcModule) {
-		if(srcModuleRef == srcModule)
-			return;
+    public IConnectable getDestModuleRef() {
+        // if the source is empty return the containing compound module
+        if ("".equals(getDestModule()))
+            return getCompoundModule();
+        return getCompoundModule().getSubmoduleByName(getDestModule());
+    }
 
-		if (srcModuleRef != null)
-			srcModuleRef.detachSrcConnection(this);
-		srcModuleRef = srcModule;
-        if(srcModuleRef != null)
-            srcModuleRef.attachSrcConnection(this);
-
-        fireAttributeChangedToAncestors(ATT_SRC_MODULE);
-	}
-
-	public IConnectable getDestModuleRef() {
-		return destModuleRef;
-	}
-
-	public void setDestModuleRef(IConnectable destModule) {
-		if (destModuleRef == destModule)
-			return;
-
-		if (destModuleRef != null)
-			destModuleRef.detachDestConnection(this);
-		destModuleRef = destModule;
-        if (destModuleRef != null)
-            destModuleRef.attachDestConnection(this);
-
-        fireAttributeChangedToAncestors(ATT_DEST_MODULE);
-	}
-
-	@Override
-	public String getDestModule() {
-		// if the destination is a submodule module return its name
-		if(destModuleRef instanceof SubmoduleNodeEx)
-			return ((INamed)destModuleRef).getName();
-		// else (if the destination is a compound module) return empty as a name
-		return "";
-	}
-
-	@Override
-	public String getSrcModule() {
-		// if the source is a submodule module return its name
-		if(srcModuleRef instanceof SubmoduleNodeEx)
-			return ((INamed)srcModuleRef).getName();
-		// else (if the source is a compound module) return empty as a name
-		return "";
-	}
-
+    public void setDestModuleRef(IConnectable destModule) {
+        String newModule = (destModule instanceof CompoundModuleNodeEx) ? "" : destModule.getName();
+        setDestModule(newModule);
+    }
+    
 	/**
 	 * @return Identifier of the source module instance the connection connected to
 	 */
@@ -130,16 +89,6 @@ public class ConnectionNodeEx extends ConnectionNode implements IStringTyped, ID
 		return result;
 	}
 
-	@Override
-	public void setDestModule(String val) {
-		setDestModuleRef(getSubmoduleByName(val));
-	}
-
-	@Override
-	public void setSrcModule(String val) {
-		setSrcModuleRef(getSubmoduleByName(val));
-	}
-
 	/**
 	 * @return Identifier of the source gate instance the connection connected to
 	 */
@@ -169,19 +118,6 @@ public class ConnectionNodeEx extends ConnectionNode implements IStringTyped, ID
 		return gate;
 	}
 
-	private INamedGraphNode getSubmoduleByName(String moduleName) {
-		CompoundModuleNodeEx compMod = (CompoundModuleNodeEx)getParentWithTag(NED_COMPOUND_MODULE);
-		Assert.isTrue(compMod != null);
-		// check if the module name is empty. we should return the parent compoud module
-		if("".equals(moduleName))
-			return compMod;
-		else {
-			INamedGraphNode subMod = compMod.getOwnSubmoduleByName(moduleName);
-			if (subMod == null) throw new NEDElementException(this, "'"+moduleName+"': undefined submodule");
-			return subMod;
-		}
-	}
-
 	public DisplayString getDisplayString() {
 		if (displayString == null)
 			displayString = new ConnectionDisplayString(this, NEDElementUtilEx.getDisplayString(this));
@@ -198,7 +134,19 @@ public class ConnectionNodeEx extends ConnectionNode implements IStringTyped, ID
         fireAttributeChangedToAncestors(IDisplayString.ATT_DISPLAYSTRING+"."+changedProp);
 	}
 
-    public String getChannelType() {
+    /**
+     * @return The compound module containing the definition of this connection
+     */
+    public CompoundModuleNodeEx getCompoundModule() {
+        NEDElement parent = getParent(); 
+        while (parent != null && !(parent instanceof CompoundModuleNodeEx)) 
+            parent = parent.getParent();
+        return (CompoundModuleNodeEx)parent;
+    }
+
+    // type management
+    
+    public String getType() {
         ChannelSpecNode channelSpecNode = (ChannelSpecNode)getFirstChildWithTag(NED_CHANNEL_SPEC);
         if(channelSpecNode == null)
             return null;
@@ -206,23 +154,13 @@ public class ConnectionNodeEx extends ConnectionNode implements IStringTyped, ID
         return channelSpecNode.getType();
     }
 
-    public void setChannelType(String type) {
-        ChannelSpecNode channelSpecNode = (ChannelSpecNode)getFirstChildWithTag(NED_CHANNEL_SPEC);
-            if (channelSpecNode == null) {
-                channelSpecNode = (ChannelSpecNode)NEDElementFactoryEx.getInstance().createNodeWithTag(NED_CHANNEL_SPEC);
-                appendChild(channelSpecNode);
-            }
-            channelSpecNode.setType(type);
-    }
-
-    // type management
-    
-    public String getType() {
-        return getChannelType();
-    }
-
     public void setType(String type) {
-        setChannelType(type);
+        ChannelSpecNode channelSpecNode = (ChannelSpecNode)getFirstChildWithTag(NED_CHANNEL_SPEC);
+        if (channelSpecNode == null) {
+            channelSpecNode = (ChannelSpecNode)NEDElementFactoryEx.getInstance().createNodeWithTag(NED_CHANNEL_SPEC);
+            appendChild(channelSpecNode);
+        }
+        channelSpecNode.setType(type);
     }
 
     public INEDTypeInfo getTypeNEDTypeInfo() {

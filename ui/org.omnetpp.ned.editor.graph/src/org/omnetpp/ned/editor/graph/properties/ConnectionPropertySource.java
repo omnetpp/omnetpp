@@ -81,7 +81,7 @@ public class ConnectionPropertySource extends DelegatingPropertySource {
 
         public Object getPropertyValue(Object propName) {
             if (Prop.Channel.equals(propName))  
-                return model.getChannelType(); 
+                return model.getType(); 
             
             if (Prop.SrcGate.equals(propName))  
                 return model.getSrcGateFullyQualified(); 
@@ -94,19 +94,19 @@ public class ConnectionPropertySource extends DelegatingPropertySource {
 
         public void setPropertyValue(Object propName, Object value) {
             if (Prop.Channel.equals(propName)) 
-                model.setChannelType(value.toString());
+                model.setType(value.toString());
         }
 
         public boolean isPropertySet(Object propName) {
             if (Prop.Channel.equals(propName)) 
-            	return Prop.Channel.equals(propName) && !"".equals(model.getChannelType()) && (model.getChannelType() != null);
+            	return Prop.Channel.equals(propName) && !"".equals(model.getType()) && (model.getType() != null);
 
             return false;
         }
 
         public void resetPropertyValue(Object propName) {
             if (Prop.Channel.equals(propName)) 
-            	model.setChannelType(null);
+            	model.setType(null);
         }
 
         public boolean isPropertyResettable(Object propName) {

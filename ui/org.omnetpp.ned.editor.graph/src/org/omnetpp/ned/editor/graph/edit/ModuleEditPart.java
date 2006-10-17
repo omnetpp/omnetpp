@@ -1,7 +1,5 @@
 package org.omnetpp.ned.editor.graph.edit;
 
-import java.util.List;
-
 import org.eclipse.draw2d.ConnectionAnchor;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.gef.ConnectionEditPart;
@@ -10,7 +8,6 @@ import org.eclipse.gef.NodeEditPart;
 import org.eclipse.gef.Request;
 import org.eclipse.gef.requests.DropRequest;
 import org.omnetpp.figures.GateAnchor;
-import org.omnetpp.figures.ModuleFigure;
 import org.omnetpp.ned.editor.graph.edit.policies.NedComponentEditPolicy;
 import org.omnetpp.ned.editor.graph.edit.policies.NedNodeEditPolicy;
 import org.omnetpp.ned2.model.ConnectionNodeEx;
@@ -30,25 +27,6 @@ abstract public class ModuleEditPart extends ContainerEditPart implements NodeEd
 		installEditPolicy(EditPolicy.GRAPHICAL_NODE_ROLE, new NedNodeEditPolicy());
 	}
 
-	/**
-	 * Returns a list of connections for which this is the srcModule.
-	 * 
-	 * @return List of connections.
-	 */
-	@Override
-	protected List getModelSourceConnections() {
-		return ((INamedGraphNode)getNEDModel()).getSrcConnections();
-	}
-
-	/**
-	 * Returns a list of connections for which this is the destModule.
-	 * 
-	 * @return List of connections.
-	 */
-	@Override
-	protected List getModelTargetConnections() {
-		return ((INamedGraphNode)getNEDModel()).getDestConnections();
-	}
 
 	/**
 	 * Compute the source connection anchor to be assigned based on the current mouse 

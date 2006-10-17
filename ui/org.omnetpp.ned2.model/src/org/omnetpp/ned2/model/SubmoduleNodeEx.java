@@ -14,9 +14,9 @@ import org.omnetpp.ned2.model.pojo.SubmoduleNode;
 public class SubmoduleNodeEx extends SubmoduleNode
                             implements INamedGraphNode, IIndexable, IStringTyped {
     // srcConns contains all connections where the sourcemodule is this module
-	protected List<ConnectionNodeEx> srcConns = new ArrayList<ConnectionNodeEx>();
+//	protected List<ConnectionNodeEx> srcConns = new ArrayList<ConnectionNodeEx>();
 	// destConns contains all connections where the destmodule is this module
-	protected List<ConnectionNodeEx> destConns = new ArrayList<ConnectionNodeEx>();
+//	protected List<ConnectionNodeEx> destConns = new ArrayList<ConnectionNodeEx>();
 	protected DisplayString displayString = null;
 
 	SubmoduleNodeEx() {
@@ -94,50 +94,70 @@ public class SubmoduleNodeEx extends SubmoduleNode
         fireAttributeChangedToAncestors(IDisplayString.ATT_DISPLAYSTRING+"."+changedProp);
 	}
 
+	/**
+	 * @return The compound module containing the definition of this connection
+	 */
 	public CompoundModuleNodeEx getCompoundModule() {
-		if (getParent() == null) return null;
-		return (CompoundModuleNodeEx)(getParent().getParent());
-	}
+        NEDElement parent = getParent(); 
+        while (parent != null && !(parent instanceof CompoundModuleNodeEx)) 
+            parent = parent.getParent();
+        return (CompoundModuleNodeEx)parent;
 
+//		if (getParent() == null) return null;
+//		return (CompoundModuleNodeEx)(getParent().getParent());
+	}
+    
+	// connection related methods
+    
+	/**
+	 * @return All source connections that connect to this node and defined 
+     * in the parent compound module connections defined in derived modules 
+     * are NOT included here
+	 */
 	public List<ConnectionNodeEx> getSrcConnections() {
-		return srcConns;
+		return getCompoundModule().getSrcConnectionsFor(this);
 	}
 
+    /**
+     * @return All connections that connect to this node and defined in the 
+     * parent compound module connections defined in derived modules are 
+     * NOT included here
+     */
 	public List<ConnectionNodeEx> getDestConnections() {
-		return destConns;
+		return getCompoundModule().getDestConnectionsFor(this);
 	}
-
-    public void attachSrcConnection(ConnectionNodeEx conn) {
-        Assert.isTrue(!srcConns.contains(conn));
-        srcConns.add(conn);
-        getCompoundModule().addConnection(conn);
-        fireAttributeChangedToAncestors(ATT_SRC_CONNECTION);
-    }
-
-    public void detachSrcConnection(ConnectionNodeEx conn) {
-        Assert.isTrue(srcConns.contains(conn));
-        srcConns.remove(conn);
-        getCompoundModule().removeConnection(conn);
-        fireAttributeChangedToAncestors(ATT_SRC_CONNECTION);
-    }
-
-    public void attachDestConnection(ConnectionNodeEx conn) {
-        Assert.isTrue(!destConns.contains(conn));
-        destConns.add(conn);
-        getCompoundModule().addConnection(conn);
-        fireAttributeChangedToAncestors(ATT_DEST_CONNECTION);
-    }
-
-    public void detachDestConnection(ConnectionNodeEx conn) {
-        Assert.isTrue(destConns.contains(conn));
-        destConns.remove(conn);
-        getCompoundModule().removeConnection(conn);
-        fireAttributeChangedToAncestors(ATT_DEST_CONNECTION);
-    }
+//
+//    public void attachSrcConnection(ConnectionNodeEx conn) {
+//        Assert.isTrue(!srcConns.contains(conn));
+//        srcConns.add(conn);
+//        getCompoundModule().addConnection(conn);
+//        fireAttributeChangedToAncestors(ATT_SRC_CONNECTION);
+//    }
+//
+//    public void detachSrcConnection(ConnectionNodeEx conn) {
+//        Assert.isTrue(srcConns.contains(conn));
+//        srcConns.remove(conn);
+//        getCompoundModule().removeConnection(conn);
+//        fireAttributeChangedToAncestors(ATT_SRC_CONNECTION);
+//    }
+//
+//    public void attachDestConnection(ConnectionNodeEx conn) {
+//        Assert.isTrue(!destConns.contains(conn));
+//        destConns.add(conn);
+//        getCompoundModule().addConnection(conn);
+//        fireAttributeChangedToAncestors(ATT_DEST_CONNECTION);
+//    }
+//
+//    public void detachDestConnection(ConnectionNodeEx conn) {
+//        Assert.isTrue(destConns.contains(conn));
+//        destConns.remove(conn);
+//        getCompoundModule().removeConnection(conn);
+//        fireAttributeChangedToAncestors(ATT_DEST_CONNECTION);
+//    }
 
 	@Override
     public String debugString() {
-        return "srcConnSize="+srcConns.size()+" destConnSize="+destConns.size();
+        return "submodule: "+getName();
     }
 
     // type support
