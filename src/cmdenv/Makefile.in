@@ -64,19 +64,20 @@ cmdenv.o: cmdenv.cc \
   enumstr.h \
   ../envir/appreg.h \
   ../../include/csimplemodule.h \
+  ../../include/ccomponenttype.h \
   ../../include/cmessage.h \
   ../envir/args.h \
   ../envir/speedmtr.h \
   ../../include/platdep/time.h \
   ../../include/defs.h \
-  ../../include/regmacros.h \
-  ../../include/onstartup.h \
   ../../include/csimulation.h \
   ../envir/omnetapp.h \
   ../../include/util.h \
   ../../include/globals.h \
   ../../include/cmsgheap.h \
   ../../include/ccoroutine.h \
+  ../../include/errmsg.h \
+  ../../include/onstartup.h \
   ../../include/carray.h \
   ../../include/cclassfactory.h \
   ../../include/cobject.h \
@@ -85,7 +86,7 @@ cmdenv.o: cmdenv.cc \
   ../../include/cexception.h \
   ../../include/cvisitor.h \
   ../../include/cstringpool.h \
-  ../../include/errmsg.h \
+  ../../include/regmacros.h \
   ../../include/opp_string.h \
   ../envir/envdefs.h \
   ../../include/envirext.h \
@@ -93,7 +94,9 @@ cmdenv.o: cmdenv.cc \
   ../../include/cmodule.h \
   ../../include/ccomponent.h \
   ../../include/cgate.h \
+  ../../include/cpar.h \
   ../../include/cdefaultlist.h \
+  ../../include/cexpression.h \
   ../../include/cmessagepar.h \
   ../../include/cfunction.h
 enumstr.o: enumstr.cc \

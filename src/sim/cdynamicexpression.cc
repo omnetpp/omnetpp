@@ -246,6 +246,7 @@ printf("    evaluating: %s\n", toString().c_str()); //XXX
                              throw new cRuntimeError(this,eEBADARGS,"~");
                          stk[tos] = (double)~ulong(stk[tos].dbl);
                          break;
+                     default: ASSERT(false);
                  }
              }
              else if (e.op==IIF)
