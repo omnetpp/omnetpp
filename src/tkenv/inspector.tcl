@@ -298,7 +298,7 @@ proc extendContextMenu {rules} {
 proc popup_insp_menu {ptr X Y} {
     global contextmenurules
 
-    if {$ptr==""} return
+    if {$ptr=="" || $ptr==[opp_object_nullpointer]} return
 
     # create popup menu
     catch {destroy .popup}
@@ -399,7 +399,7 @@ proc inspect_item_in {lb} {
     # inspect the current item in the listbox of an inspector listwindow
 
     set ptr [lindex [multicolumnlistbox_curselection $lb] 0]
-    if {$ptr != ""} {
+    if {$ptr != "" && $ptr != [opp_object_nullpointer]} {
         opp_inspect $ptr {(default)}
     }
 }

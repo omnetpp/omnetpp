@@ -38,8 +38,8 @@ config editor-case-sensitive	{0}
 config editor-whole-words	{0}
 config filtobjlist-order	{Class}
 inspector "fifonet" "fifonet" "2" "313x304+591+150"
-inspector "fifonet.gen" "FFGenerator" "1" "460x312+32+88"
 inspector "fifonet" "fifonet" "1" "460x312+24+31"
+inspector "fifonet.gen" "FFGenerator" "1" "460x312+32+88"
 inspector "fifonet" "FifoNet" "2" "443x277+370+366"
 inspector "component types" "cArray" "1" "417x488+48+62"
 

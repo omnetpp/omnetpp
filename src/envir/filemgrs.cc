@@ -31,6 +31,7 @@
 #include "cmodule.h"
 #include "cstat.h"
 #include "filemgrs.h"
+#include "ccomponenttype.h"
 
 using std::ostream;
 using std::ofstream;
@@ -248,7 +249,7 @@ void cFileOutputScalarManager::init()
     if (!initialized)
     {
         initialized = true;
-        fprintf(f,"run %d \"%s\"\n", simulation.runNumber(), "FIXME" /*simulation.networkType()->name()*/ ); //FIXME
+        fprintf(f,"run %d \"%s\"\n", simulation.runNumber(), simulation.networkType()->name());
     }
 }
 

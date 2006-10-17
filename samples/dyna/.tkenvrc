@@ -21,9 +21,11 @@ option expressmode_autoupdate	{1}
 config rununtil-event	{}
 config last-nedfile	{}
 config filtobjlist-category	{mqsgvo}
+config display-timeline	{1}
 config filtobjlist-maxcount	{100000}
 config editor-findstring	{}
 config rununtil-time	{}
+config dontshow	{}
 config editor-regexp	{0}
 config filtobjlist-class	{}
 config rununtil-mode	{Express (tracing off)}
@@ -31,10 +33,12 @@ config filtobjlist-name	{}
 config confirm-exit	{1}
 config editor-backwards	{1}
 config display-treeview	{1}
+config timeline-maxnumevents	{1000}
 config editor-case-sensitive	{0}
 config editor-whole-words	{0}
 config filtobjlist-order	{Class}
 inspector "dyna.client[2]" "Client" "3" "504x162+13+362"
 inspector "dyna.server" "Server" "3" "502x125+14+556"
+inspector "dyna" "dyna" "2" "466x368+48+62"
 inspector "dyna" "ClientServer" "2" "405x417+70+60"
 
