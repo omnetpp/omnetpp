@@ -30,6 +30,7 @@ class EventLogEntry
         Event* event; // back pointer
 
     public:
+	virtual ~EventLogEntry() {}
         virtual void parse(char *line) = 0;
         virtual void print(FILE *fout) = 0;
         virtual int getClassIndex() = 0;
@@ -75,3 +76,5 @@ class EventLogMessage : public EventLogEntry
 };
 
 #endif
+
+

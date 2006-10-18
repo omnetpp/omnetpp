@@ -56,8 +56,8 @@ void FileReader::checkConsistence()
     bool ok = bufferend-buffer==buffersize &&
               databeg<=dataend && databeg>=buffer && dataend<=bufferend &&
               strlen(databeg)==dataend-databeg;
-    if (!ok)
-        __asm int 3;
+//XXX    if (!ok)
+//XXX        __asm int 3;
 }
 
 size_t FileReader::readMore()

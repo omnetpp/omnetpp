@@ -34,7 +34,8 @@ class IEvent
         long cachedTimelineCoordinateSystemVersion;
 
     public:
-        IEvent::IEvent();
+        IEvent();
+        virtual ~IEvent() {}
 
         /**
          * Returns the corresponding event log.

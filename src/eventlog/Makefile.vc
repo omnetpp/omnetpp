@@ -29,7 +29,7 @@ LIBS= eventlog.lib ../common/common.lib
 all : eventlogentries.cc eventlog.lib eventlogtool.exe
 
 eventlogentries.cc eventlogentries.h eventlogfactory.cc : eventlogentries.txt eventlogentries.pl
-	perl eventlogentries.pl
+	$(PERL) eventlogentries.pl
 
 eventlog.lib : $(OBJS)
 	$(AR) /out:eventlog.lib $(OBJS)
@@ -39,9 +39,6 @@ eventlog.lib : $(OBJS)
 eventlogtool.exe : eventlogtool.obj $(LIBS)
 	$(LINK) $(LDFLAGS) /nologo /out:eventlogtool.exe eventlogtool.obj $(LIBS)
 	copy eventlogtool.exe $(OMNETPP_BIN_DIR:/=\)
-
-doc:
-	$(DOXYGEN:/=\) doxy.cfg
 
 depend:
 	$(MAKEDEPEND) -I. -fMakefile.vc -- *.cc

@@ -808,6 +808,9 @@ AC_CONFIG_FILES(
   src/cmdenv/Makefile
   src/nedc/Makefile
   src/nedxml/Makefile
+  src/common/Makefile
+  src/scave/Makefile
+  src/eventlog/Makefile
   src/utils/Makefile
   src/utils/opp_makemake
   src/utils/opp_neddoc

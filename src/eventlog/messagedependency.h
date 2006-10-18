@@ -50,6 +50,7 @@ class MessageDependency
         MessageDependency(IEventLog *eventLog,
                           long causeEventNumber, int causeBeginSendEntryNumber,
                           long consequenceEventNumber, int consequenceBeginSendEntryNumber);
+        virtual ~MessageDependency() {}
 
         long getCauseEventNumber();
         IEvent *getCauseEvent();
@@ -125,3 +126,6 @@ class FilteredMessageDependency : public MessageDependency
 };
 
 #endif
+
+
+

@@ -6252,7 +6252,7 @@ fi
 #----------------------
 # Files to be generated
 #----------------------
-                                                                                                                                                                                                                                                                    ac_config_files="$ac_config_files Makefile src/sim/Makefile src/envir/Makefile src/tkenv/Makefile src/cmdenv/Makefile src/nedc/Makefile src/nedxml/Makefile src/utils/Makefile src/utils/opp_makemake src/utils/opp_neddoc samples/aloha/Makefile samples/cqn/Makefile samples/dyna/Makefile samples/fddi/Makefile samples/fifo/Makefile samples/hcube/Makefile samples/hist/Makefile samples/neddemo/Makefile samples/p-to-p/Makefile samples/queueing/Makefile samples/routing/Makefile samples/queues/Makefile samples/tictoc/Makefile samples/tokenring/Makefile samples/sockets/Makefile test/Makefile"
+                                                                                                                                                                                                                                                                                                  ac_config_files="$ac_config_files Makefile src/sim/Makefile src/envir/Makefile src/tkenv/Makefile src/cmdenv/Makefile src/nedc/Makefile src/nedxml/Makefile src/common/Makefile src/scave/Makefile src/eventlog/Makefile src/utils/Makefile src/utils/opp_makemake src/utils/opp_neddoc samples/aloha/Makefile samples/cqn/Makefile samples/dyna/Makefile samples/fddi/Makefile samples/fifo/Makefile samples/hcube/Makefile samples/hist/Makefile samples/neddemo/Makefile samples/p-to-p/Makefile samples/queueing/Makefile samples/routing/Makefile samples/queues/Makefile samples/tictoc/Makefile samples/tokenring/Makefile samples/sockets/Makefile test/Makefile"
 
 #FIXME todo add these:
 #  src/scave/Makefile
@@ -6910,6 +6910,9 @@ do
   "src/cmdenv/Makefile" ) CONFIG_FILES="$CONFIG_FILES src/cmdenv/Makefile" ;;
   "src/nedc/Makefile" ) CONFIG_FILES="$CONFIG_FILES src/nedc/Makefile" ;;
   "src/nedxml/Makefile" ) CONFIG_FILES="$CONFIG_FILES src/nedxml/Makefile" ;;
+  "src/common/Makefile" ) CONFIG_FILES="$CONFIG_FILES src/common/Makefile" ;;
+  "src/scave/Makefile" ) CONFIG_FILES="$CONFIG_FILES src/scave/Makefile" ;;
+  "src/eventlog/Makefile" ) CONFIG_FILES="$CONFIG_FILES src/eventlog/Makefile" ;;
   "src/utils/Makefile" ) CONFIG_FILES="$CONFIG_FILES src/utils/Makefile" ;;
   "src/utils/opp_makemake" ) CONFIG_FILES="$CONFIG_FILES src/utils/opp_makemake" ;;
   "src/utils/opp_neddoc" ) CONFIG_FILES="$CONFIG_FILES src/utils/opp_neddoc" ;;

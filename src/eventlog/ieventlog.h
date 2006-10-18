@@ -22,6 +22,8 @@
 class IEventLog
 {
     public:
+	virtual ~IEventLog() {}
+	
         /**
          * Returns the entry which describes the module with the given id.
          */

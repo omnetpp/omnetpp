@@ -155,7 +155,7 @@ template <typename T> long EventLogIndex::binarySearchForOffset(bool eventNumber
     long lowerOffset, upperOffset;
 
     // find key in map (lower_bound() finds equal or first greater key)
-    std::map<T, long>::iterator it = keyToOffsetMap->lower_bound(key);
+    typename std::map<T, long>::iterator it = keyToOffsetMap->lower_bound(key);
 
     // exact match in cache?
     if (it != keyToOffsetMap->end() && it->first == key)

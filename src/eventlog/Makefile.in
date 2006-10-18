@@ -6,6 +6,7 @@ AR=@AR@
 SHLIB_LD=@SHLIB_LD@
 RANLIB=@RANLIB@
 MAKEDEPEND=@MAKEDEPEND@
+PERL=@PERL@
 
 CFLAGS=@CFLAGS@
 
@@ -27,6 +28,7 @@ SO_LIB_SUFFIX=@SO_LIB_SUFFIX@
 COPTS=$(CFLAGS) -I. -I../common -I../../include
 
 OBJS= ievent.o ieventlog.o eventlogfacade.o eventlog.o eventlogindex.o messagedependency.o event.o eventlogentry.o eventlogentries.o filteredevent.o filteredeventlog.o eventlogentryfactory.o stringpool.o
+LIBS= -leventlog -lcommon
 
 #
 # Automatic rules
@@ -39,21 +41,179 @@ OBJS= ievent.o ieventlog.o eventlogfacade.o eventlog.o eventlogindex.o messagede
 #
 # Targets
 #
-all: eventlog$(LIB_SUFFIX)
+all: eventlogentries.cc libeventlog$(LIB_SUFFIX) eventlogtool
 
-eventlog$(A_LIB_SUFFIX) : $(OBJS)
-	$(AR) eventlog$(A_LIB_SUFFIX) $(OBJS)
-	$(RANLIB) eventlog$(A_LIB_SUFFIX)
-	../utils/install-lib eventlog$(A_LIB_SUFFIX).$(OMNETPP_VERSION) $(OMNETPP_LIB_DIR) eventlog$(A_LIB_SUFFIX)
-eventlog$(SO_LIB_SUFFIX) : $(OBJS)
-	$(SHLIB_LD) -o eventlog$(SO_LIB_SUFFIX) $(OBJS)
-	../utils/install-lib eventlog$(SO_LIB_SUFFIX).$(OMNETPP_VERSION) $(OMNETPP_LIB_DIR) eventlog$(SO_LIB_SUFFIX)
+eventlogentries.cc eventlogentries.h eventlogfactory.cc : eventlogentries.txt eventlogentries.pl
+	$(PERL) eventlogentries.pl
+
+libeventlog$(A_LIB_SUFFIX) : $(OBJS)
+	$(AR) libeventlog$(A_LIB_SUFFIX) $(OBJS)
+	$(RANLIB) libeventlog$(A_LIB_SUFFIX)
+	../utils/install-lib libeventlog$(A_LIB_SUFFIX).$(OMNETPP_VERSION) $(OMNETPP_LIB_DIR) libeventlog$(A_LIB_SUFFIX)
+libeventlog$(SO_LIB_SUFFIX) : $(OBJS)
+	$(SHLIB_LD) -o libeventlog$(SO_LIB_SUFFIX) $(OBJS)
+	../utils/install-lib libeventlog$(SO_LIB_SUFFIX).$(OMNETPP_VERSION) $(OMNETPP_LIB_DIR) libeventlog$(SO_LIB_SUFFIX)
+
+eventlogtool : eventlogtool.o  libeventlog$(LIB_SUFFIX)
+	$(CXX) $(LDFLAGS) -o eventlogtool eventlogtool.o -L$(OMNETPP_LIB_DIR) $(LIBS)
+	../utils/install-prog eventlogtool $(OMNETPP_BIN_DIR)
 
 depend:
-	$(MAKEDEPEND) -I. -I../envir -I../../include -- *.cc
-	$(MAKEDEPEND) -I. -I../envir -I../../include -fMakefile.in -- *.cc
+	$(MAKEDEPEND) -I. -I../common -- *.cc
+	$(MAKEDEPEND) -I. -I../common -fMakefile.in -- *.cc
 
 clean:
-	rm -f *.o eventlog$(A_LIB_SUFFIX) eventlog$(SO_LIB_SUFFIX)
+	rm -f *.o libeventlog$(A_LIB_SUFFIX) libeventlog$(SO_LIB_SUFFIX) eventlogtool
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
+event.o: event.cc \
+  ../common/linetokenizer.h \
+  ../common/filereader.h \
+  event.h \
+  eventlog.h \
+  eventlogentry.h \
+  ievent.h \
+  eventlogentries.h \
+  messagedependency.h \
+  stringpool.h \
+  ieventlog.h \
+  eventlogindex.h \
+  eventlogdefs.h \
+  ../common/exception.h
+eventlog.o: eventlog.cc \
+  ../common/filereader.h \
+  stringpool.h \
+  eventlog.h \
+  eventlogdefs.h \
+  ../common/exception.h \
+  event.h \
+  ieventlog.h \
+  eventlogindex.h \
+  ievent.h \
+  eventlogentry.h \
+  eventlogentries.h \
+  messagedependency.h \
+  ../common/linetokenizer.h
+eventlogentries.o: eventlogentries.cc \
+  event.h \
+  eventlogentries.h \
+  ievent.h \
+  ../common/filereader.h \
+  eventlogentry.h \
+  messagedependency.h
+eventlogentry.o: eventlogentry.cc \
+  ../common/linetokenizer.h \
+  eventlog.h \
+  eventlogentry.h \
+  eventlogentryfactory.h \
+  stringpool.h \
+  ../common/filereader.h \
+  event.h \
+  ieventlog.h \
+  eventlogindex.h \
+  eventlogdefs.h \
+  ../common/exception.h \
+  ievent.h \
+  eventlogentries.h \
+  messagedependency.h
+eventlogentryfactory.o: eventlogentryfactory.cc \
+  event.h \
+  eventlogentryfactory.h \
+  ievent.h \
+  ../common/filereader.h \
+  eventlogentry.h \
+  eventlogentries.h \
+  messagedependency.h
+eventlogfacade.o: eventlogfacade.cc \
+  ievent.h \
+  ieventlog.h \
+  event.h \
+  eventlogfacade.h \
+  eventlogentry.h \
+  messagedependency.h \
+  ../common/filereader.h \
+  eventlogentries.h \
+  eventlogdefs.h \
+  ../common/exception.h
+eventlogindex.o: eventlogindex.cc \
+  eventlogindex.h \
+  ../common/exception.h \
+  eventlogdefs.h \
+  ../common/filereader.h \
+  ../common/linetokenizer.h
+eventlogtool.o: eventlogtool.cc \
+  ../common/filereader.h \
+  eventlogindex.h \
+  eventlog.h \
+  filteredeventlog.h \
+  ../common/exception.h \
+  eventlogdefs.h \
+  ../common/linetokenizer.h \
+  stringpool.h \
+  event.h \
+  ieventlog.h \
+  ievent.h \
+  eventlogentry.h \
+  eventlogentries.h \
+  messagedependency.h \
+  filteredevent.h
+filteredevent.o: filteredevent.cc \
+  event.h \
+  filteredevent.h \
+  filteredeventlog.h \
+  ievent.h \
+  ../common/filereader.h \
+  eventlogentry.h \
+  eventlogentries.h \
+  messagedependency.h \
+  eventlogdefs.h \
+  ../common/exception.h \
+  ieventlog.h \
+  eventlog.h \
+  stringpool.h \
+  eventlogindex.h \
+  ../common/linetokenizer.h
+filteredeventlog.o: filteredeventlog.cc \
+  filteredeventlog.h \
+  eventlogdefs.h \
+  ieventlog.h \
+  eventlog.h \
+  filteredevent.h \
+  ../common/exception.h \
+  ievent.h \
+  eventlogentry.h \
+  messagedependency.h \
+  ../common/filereader.h \
+  eventlogentries.h \
+  stringpool.h \
+  event.h \
+  eventlogindex.h \
+  ../common/linetokenizer.h
+ievent.o: ievent.cc \
+  ievent.h \
+  eventlogentry.h \
+  messagedependency.h \
+  ../common/filereader.h \
+  eventlogentries.h
+ieventlog.o: ieventlog.cc \
+  ieventlog.h \
+  eventlogdefs.h \
+  ievent.h \
+  ../common/exception.h \
+  eventlogentry.h \
+  messagedependency.h \
+  ../common/filereader.h \
+  eventlogentries.h
+messagedependency.o: messagedependency.cc \
+  eventlogdefs.h \
+  ievent.h \
+  ieventlog.h \
+  eventlogentry.h \
+  messagedependency.h \
+  ../common/exception.h \
+  ../common/filereader.h \
+  eventlogentries.h
+stringpool.o: stringpool.cc \
+  stringpool.h \
+  eventlogdefs.h \
+  ../common/exception.h
