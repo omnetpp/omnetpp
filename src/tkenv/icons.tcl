@@ -377,3 +377,10 @@ set icons(props) [image create photo -data {
     CoCIgh6qnmdqjexIypUNlzhF17TX7qaq8YTD3uRnVEp0SRHws6lar9cIADs=
 }]
 
+set icons(down_vs) [image create photo -data {
+    R0lGODlhBQATALMAAAAAAP//////////////////////////////////////////
+    /////////////////yH5BAEAAAEALAAAAAAFABMAAAQPMMhJq70XaB32BFgojmEE
+    ADs=
+}]
+
+
