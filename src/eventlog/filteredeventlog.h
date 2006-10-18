@@ -75,6 +75,7 @@ class FilteredEventLog : public IEventLog
 
         virtual FilteredEvent *getFirstEvent();
         virtual FilteredEvent *getLastEvent();
+        virtual Event *getNeighbourEvent(IEvent *event, long distance = 1);
         virtual FilteredEvent *getEventForEventNumber(long eventNumber, MatchKind matchKind = EXACT);
         virtual FilteredEvent *getEventForSimulationTime(simtime_t simulationTime, MatchKind matchKind = EXACT);
 

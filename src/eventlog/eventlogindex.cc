@@ -262,17 +262,24 @@ template <typename T> long EventLogIndex::binarySearchForOffset(bool eventNumber
 
 template <typename T> long EventLogIndex::linearSearchForOffset(bool eventNumberBased, long offset, T key, MatchKind matchKind, bool exactMatchFound)
 {
+    // this is a search either forward or backward based on matchKind
     if (matchKind == EXACT)
         throw new Exception("Invalid match kind");
 
-    // linear search forward
     long previousOffset = offset;
     long eventNumber, lineStartOffset, lineEndOffset;
     simtime_t simulationTime;
 
     while (offset != -1)
     {
-        readToEventLine(matchKind == LAST, offset, eventNumber, simulationTime, lineStartOffset, lineEndOffset);
+        bool readEventLine = readToEventLine(matchKind == LAST, offset, eventNumber, simulationTime, lineStartOffset, lineEndOffset);
+
+        if (!readEventLine) {
+            if (exactMatchFound)
+                return previousOffset;
+            else
+                return -1;
+        }
 
         T readKey;
 
@@ -281,14 +288,15 @@ template <typename T> long EventLogIndex::linearSearchForOffset(bool eventNumber
         else
             readKey = simulationTime;
 
-        if (exactMatchFound && readKey != key)
-            return previousOffset;
-        
-        if (!exactMatchFound && matchKind == LAST && readKey > key)
-            return offset;
+        if (!exactMatchFound) {
+            if (matchKind == LAST && readKey > key)
+                return offset;
 
-        if (!exactMatchFound && matchKind == FIRST && readKey < key)
-            return offset;
+            if (matchKind == FIRST && readKey < key)
+                return offset;
+        }
+        else if (readKey != key)
+            return previousOffset;
 
         previousOffset = lineStartOffset;
 
@@ -316,7 +324,7 @@ bool EventLogIndex::readToEventLine(bool forward, long readStartOffset, long& ev
         {
             result = readToFirstEventLine(tryOffset, eventNumber, simulationTime, lineStartOffset, lineEndOffset);
 
-            if (eventNumber == 0)
+            if (lineStartOffset == readStartOffset && eventNumber == 0)
                 return false;
 
             tryOffset -= offsetDelta;

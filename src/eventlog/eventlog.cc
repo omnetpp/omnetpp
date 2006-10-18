@@ -20,6 +20,8 @@ StringPool eventLogStringPool;
 
 EventLog::EventLog(FileReader *reader) : EventLogIndex(reader)
 {
+    lastNeighbourEventNumber = -1;
+    lastNeighbourEvent = NULL;
     approximateNumberOfEvents = -1;
     parseInitializationLogEntries();
 }
@@ -147,20 +149,45 @@ void EventLog::printInitializationLogEntries(FILE *file)
 Event *EventLog::getEventForEventNumber(long eventNumber, MatchKind matchKind)
 {
     // TODO: use matchKind
-    EASSERT(eventNumber >= 0);
-    EventNumberToEventMap::iterator it = eventNumberToEventMap.find(eventNumber);
+    if (matchKind == EXACT) {
+        EASSERT(eventNumber >= 0);
+        EventNumberToEventMap::iterator it = eventNumberToEventMap.find(eventNumber);
 
-    if (it != eventNumberToEventMap.end())
-        return it->second;
-    else
-    {
-        long offset = getOffsetForEventNumber(eventNumber);
-
-        if (offset == -1)
-            return NULL;
-        else
-            return getEventForBeginOffset(offset);
+        if (it != eventNumberToEventMap.end())
+            return it->second;
     }
+
+    long offset = getOffsetForEventNumber(eventNumber, matchKind);
+
+    if (offset == -1)
+        return NULL;
+    else
+        return getEventForBeginOffset(offset);
+}
+
+Event *EventLog::getNeighbourEvent(IEvent *event, long distance)
+{
+    long eventNumber = event->getEventNumber() + distance;
+
+    if (lastNeighbourEventNumber != -1 && abs(eventNumber - lastNeighbourEventNumber) < abs(distance))
+        return getNeighbourEvent(lastNeighbourEvent, eventNumber - lastNeighbourEventNumber);
+
+    while (event != NULL && distance != 0)
+    {
+        if (distance > 0) {
+            distance--;
+            event = event->getNextEvent();
+        }
+        else {
+            distance++;
+            event = event->getPreviousEvent();
+        }
+    }
+
+    lastNeighbourEventNumber = eventNumber;
+    lastNeighbourEvent = (Event *)event;
+
+    return lastNeighbourEvent;
 }
 
 Event *EventLog::getEventForSimulationTime(simtime_t simulationTime, MatchKind matchKind)

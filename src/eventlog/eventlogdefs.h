@@ -64,5 +64,11 @@ enum MatchKind
     FIRST, // multiple matches allowed and returns the first one or the previous if there are not matches at all
     LAST // as FIRST but just the opposite
 };
+    
+enum TimelineMode {
+	LINEAR,
+	STEP,
+	NON_LINEAR
+};
 
 #endif

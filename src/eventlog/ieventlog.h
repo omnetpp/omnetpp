@@ -40,6 +40,10 @@ class IEventLog
          */
         virtual IEvent *getLastEvent() = 0;
         /**
+         * Returns the event at the given instance. 0 means the parameter event will be returned.
+         */
+        virtual IEvent *getNeighbourEvent(IEvent *event, long distance = 1) = 0;
+        /**
          * Returns the requested event or NULL if there's no such event included in the log.
          * The given event number may not be included in the log.
          */

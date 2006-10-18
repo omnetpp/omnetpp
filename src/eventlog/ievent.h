@@ -25,8 +25,13 @@ class IEvent
         IEvent *previousEvent;
         IEvent *nextEvent;
 
-        // gui state for Event Log Table
+    public:
+        // gui state for EventLogTable
         bool isExpandedInEventLogTable;
+
+        // gui state for SequenceChart
+        double cachedTimelineCoordinate;
+        long cachedTimelineCoordinateSystemVersion;
 
     public:
         IEvent::IEvent();
@@ -87,11 +92,6 @@ class IEvent
          */
         static void linkEvents(IEvent *previousEvent, IEvent *nextEvent);
         static void unlinkEvents(IEvent *previousEvent, IEvent *nextEvent);
-
-        /**
-         * Gui state.
-         */
-        bool getIsExpandedInEventLogTable() { return isExpandedInEventLogTable; }
 };
 
 #endif

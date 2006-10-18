@@ -38,6 +38,8 @@ class EventLog : public IEventLog, public EventLogIndex
 {
     protected:
         long approximateNumberOfEvents;
+        long lastNeighbourEventNumber;
+        Event *lastNeighbourEvent;
 
         typedef std::vector<EventLogEntry *> EventLogEntryList;
         EventLogEntryList initializationLogEntries; // all entries from the beginning of the file to the first event
@@ -72,6 +74,7 @@ class EventLog : public IEventLog, public EventLogIndex
 
         virtual Event *getFirstEvent() { return getEventForEventNumber(getFirstEventNumber()); }
         virtual Event *getLastEvent() { return getEventForEventNumber(getLastEventNumber()); }
+        virtual Event *getNeighbourEvent(IEvent *event, long distance = 1);
         virtual Event *getEventForEventNumber(long eventNumber, MatchKind matchKind = EXACT);
         virtual Event *getEventForSimulationTime(simtime_t simulationTime, MatchKind matchKind = EXACT);
 

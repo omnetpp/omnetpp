@@ -12,10 +12,50 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
+#include <time.h>
 #include "filereader.h"
 #include "eventlogindex.h"
 #include "eventlog.h"
 #include "filteredeventlog.h"
+
+void readLines(int argc, char **argv)
+{
+    try {
+        fprintf(stderr, "Reading lines from log%s\n", argv[2]);
+        FileReader fileReader(argv[2]);
+        long begin = clock();
+        long lineCount = 0;
+
+        while (fileReader.readLine()) lineCount++;
+
+        long end = clock();
+        fprintf(stderr, "Reading %ld lines completed in %g seconds\n", lineCount, (double)(end - begin) / CLOCKS_PER_SEC);
+    } catch (Exception *e) {
+        fprintf(stderr, "Error: %s\n", e->message());
+    }
+}
+
+void loadEvents(int argc, char **argv)
+{
+    try {
+        fprintf(stderr, "Loading events from log file into memory %s\n", argv[2]);
+        FileReader *fileReader = new FileReader(argv[2]);
+        EventLog eventLog(fileReader);
+        long begin = clock();
+        long eventCount = 0;
+
+        IEvent *event = eventLog.getFirstEvent();
+        while (event) {
+            eventCount++;
+            event = event->getNextEvent();
+        }
+
+        long end = clock();
+        fprintf(stderr, "Loading %ld events completed in %g seconds\n", eventCount, (double)(end - begin) / CLOCKS_PER_SEC);
+    } catch (Exception *e) {
+        fprintf(stderr, "Error: %s\n", e->message());
+    }
+}
 
 void printOffsets(int argc, char **argv)
 {
@@ -104,6 +144,8 @@ void consequences(int argc, char **argv)
 void usage()
 {
     fprintf(stderr, "Usage:\n");
+    fprintf(stderr, " eventlogtool readlines <logfile>\n");
+    fprintf(stderr, " eventlogtool loadevents <logfile>\n");
     fprintf(stderr, " eventlogtool offsets <logfile> [<eventnumber>*]\n");
     fprintf(stderr, " eventlogtool echo <logfile> <starteventnumber> <endeventnumber>\n");
     fprintf(stderr, " eventlogtool filter <logfile> <tracedEventNumber> <fromeventnumber> <toeventnumber>\n");
@@ -114,6 +156,10 @@ int main(int argc, char **argv)
 {
     if (argc<2)
         usage();
+    else if (!strcmp(argv[1], "readlines"))
+        readLines(argc, argv);
+    else if (!strcmp(argv[1], "loadevents"))
+        loadEvents(argc, argv);
     else if (!strcmp(argv[1], "offsets"))
         printOffsets(argc, argv);
     else if (!strcmp(argv[1], "echo"))

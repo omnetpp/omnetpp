@@ -19,6 +19,8 @@ IEvent::IEvent()
     nextEvent = NULL;
     previousEvent = NULL;
     isExpandedInEventLogTable = true;
+    cachedTimelineCoordinate = -1;
+    cachedTimelineCoordinateSystemVersion = -1;
 }
 
 void IEvent::linkEvents(IEvent *previousEvent, IEvent *nextEvent)

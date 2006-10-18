@@ -59,6 +59,11 @@ FilteredEvent *FilteredEventLog::getApproximateEventAt(double percentage)
     throw new Exception("Not yet implemented");
 }
 
+Event *FilteredEventLog::getNeighbourEvent(IEvent *event, long distance)
+{
+    throw new Exception("Not yet implemented");
+}
+
 bool FilteredEventLog::matchesFilter(IEvent *event)
 {
     EventNumberToFilterMatchesMap::iterator it = eventNumberToFilterMatchesMap.find(event->getEventNumber());

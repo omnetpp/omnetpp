@@ -18,6 +18,8 @@
 #include "ievent.h"
 #include "ieventlog.h"
 
+#define PTR(ptr) if (ptr == 0) throw new Exception("NULL ptr exception");
+
 /**
  * A class that makes it possible to extract info about events, without
  * returning objects. (Wherever a C++ method returns an object pointer,
@@ -33,12 +35,16 @@ class EventLogFacade
 {
     protected:
         IEventLog *eventLog;
+
+        // EventLogTable state
         long approximateNumberOfEventLogTableEntries;
+
+        // SequenceChart state
+        long timelineCoordinateSystemVersion;
+        TimelineMode timelineMode;
 
     public:
         EventLogFacade(IEventLog *eventLog);
-
-        IEvent *getNeighbourEvent(IEvent *event, long distance = 1);
 
         // EventLogTable interface
 		EventLogEntry *getFirstEventLogTableEntry();
@@ -55,6 +61,34 @@ class EventLogFacade
         double getApproximatePercentageForEventLogTableEntry(EventLogEntry *eventLogEntry);
 		EventLogEntry *getApproximateEventLogEntryTableAt(double percentage);
 		long getApproximateNumberOfEventLogTableEntries();
+
+        // SequenceChart interface
+        TimelineMode getTimelineMode() { return timelineMode; }
+        void setTimelineMode(TimelineMode timelineMode) { this->timelineMode = timelineMode; invalidateTimelineCoordinateSystem(); }
+        double getTimelineCoordinate(IEvent *event);
+        void invalidateTimelineCoordinateSystem() { timelineCoordinateSystemVersion++; }
+
+        IEvent *getLastEventBeforeTimelineCoordinate(double timelineCoordinate);
+        IEvent *getFirstEventAfterTimelineCoordinate(double timelineCoordinate);
+
+        double getSimulationTimeForTimelineCoordinate(double timelineCoordinate);
+        double getTimelineCoordinateForSimulationTime(double simulationTime);
+
+        // class short cuts
+        int64 Event_getPreviousEvent(int64 ptr) { PTR(ptr); return (int64)((IEvent*)ptr)->getPreviousEvent(); }
+        int64 Event_getNextEvent(int64 ptr) { PTR(ptr); return (int64)((IEvent*)ptr)->getNextEvent(); }
+        double Event_getTimelineCoordinate(int64 ptr) { PTR(ptr); return getTimelineCoordinate((IEvent*)ptr); }
+        long Event_getEventNumber(int64 ptr) { PTR(ptr); return ((IEvent*)ptr)->getEventNumber(); }
+        int Event_getModuleId(int64 ptr) { PTR(ptr); return ((IEvent*)ptr)->getModuleId(); }
+        int Event_getNumCauses(int64 ptr) { PTR(ptr); return ((IEvent*)ptr)->getCauses()->size(); }
+        int Event_getNumConsequences(int64 ptr) { PTR(ptr); return ((IEvent*)ptr)->getConsequences()->size(); }
+        int64 Event_getCause(int64 ptr, int index) { PTR(ptr); return (int64)((IEvent*)ptr)->getCauses()->at(index); }
+        int64 Event_getConsequence(int64 ptr, int index) { PTR(ptr); return (int64)((IEvent*)ptr)->getConsequences()->at(index); }
+
+        const char *MessageDependency_getMessageName(int64 ptr) { PTR(ptr); return ((MessageDependency*)ptr)->getBeginSendEntry()->messageFullName; }
+        bool MessageDependency_isMessageSend(int64 ptr) { PTR(ptr); return dynamic_cast<MessageSend *>((MessageDependency*)ptr); }
+        int64 MessageDependency_getCauseEvent(int64 ptr) { PTR(ptr); return (int64)((MessageDependency*)ptr)->getCauseEvent(); }
+        int64 MessageDependency_getConsequenceEvent(int64 ptr) { PTR(ptr); return (int64)((MessageDependency*)ptr)->getConsequenceEvent(); }
 };
 
 #endif
