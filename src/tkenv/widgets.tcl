@@ -193,6 +193,15 @@ proc rpack_iconbutton {w args} {
     pack $w -anchor n -side right -padx 0 -pady 2
 }
 
+proc config_iconbutton {w icon command tooltip} {
+    global help_tips
+
+    $w config -image $icon
+    $w config -command $command
+    set help_tips($w) $tooltip
+}
+
+
 proc combo {w list {cmd {}}} {
     # implements a combo box widget (which is missing from Tk)
     # using a menubutton and a menu
