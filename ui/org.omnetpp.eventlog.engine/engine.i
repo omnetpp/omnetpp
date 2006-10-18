@@ -224,6 +224,12 @@ import java.lang.reflect.Constructor;
     }
 %}
 
+%typemap(javacode) IEvent %{
+    public long getPtr() {
+        return swigCPtr;
+    }
+%}
+
 typedef double simtime_t;
 
 %ignore eventLogStringPool;
