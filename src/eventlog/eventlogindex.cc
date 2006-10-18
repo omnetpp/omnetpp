@@ -348,12 +348,13 @@ bool EventLogIndex::readToFirstEventLine(long readStartOffset, long& eventNumber
         line = reader->readLine();
         if (!line)
             return false;
-        tokenizer.tokenize(line);
-        if (tokenizer.numTokens()>=3 && !strcmp(tokenizer.tokens()[0], "E"))
+
+        if (line[0] == 'E' && line[1] == ' ')
             break;
     }
 
     // find event number and simulation time in line ("# 12345 t 1.2345")
+    tokenizer.tokenize(line);
     lineStartOffset = reader->lineStartOffset();
     lineEndOffset = lineStartOffset + strlen(line);
 

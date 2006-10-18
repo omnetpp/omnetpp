@@ -23,10 +23,15 @@ void readLines(int argc, char **argv)
     try {
         fprintf(stderr, "Reading lines from log%s\n", argv[2]);
         FileReader fileReader(argv[2]);
+        LineTokenizer tokenizer;
         long begin = clock();
         long lineCount = 0;
+        char *line;
 
-        while (fileReader.readLine()) lineCount++;
+        while (line = fileReader.readLine()) {
+            tokenizer.tokenize(line);
+            lineCount++;
+        }
 
         long end = clock();
         fprintf(stderr, "Reading %ld lines completed in %g seconds\n", lineCount, (double)(end - begin) / CLOCKS_PER_SEC);
