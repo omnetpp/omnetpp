@@ -142,5 +142,10 @@ public class SubmoduleEditPart extends ModuleEditPart {
 //        return getParent().getModel() == ((SubmoduleNodeEx)getModel()).getCompoundModule();
         return true;
     }
+
+    @Override
+    public CompoundModuleEditPart getCompoundModulePart() {
+        return (CompoundModuleEditPart)getParent();
+    }
     
 }

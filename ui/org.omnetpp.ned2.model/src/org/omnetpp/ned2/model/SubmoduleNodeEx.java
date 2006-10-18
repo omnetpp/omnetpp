@@ -1,11 +1,9 @@
 package org.omnetpp.ned2.model;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.eclipse.core.runtime.Assert;
 import org.omnetpp.common.displaymodel.DisplayString;
 import org.omnetpp.common.displaymodel.IDisplayString;
 import org.omnetpp.common.displaymodel.IDisplayString.Prop;
@@ -13,10 +11,6 @@ import org.omnetpp.ned2.model.pojo.SubmoduleNode;
 
 public class SubmoduleNodeEx extends SubmoduleNode
                             implements INamedGraphNode, IIndexable, IStringTyped {
-    // srcConns contains all connections where the sourcemodule is this module
-//	protected List<ConnectionNodeEx> srcConns = new ArrayList<ConnectionNodeEx>();
-	// destConns contains all connections where the destmodule is this module
-//	protected List<ConnectionNodeEx> destConns = new ArrayList<ConnectionNodeEx>();
 	protected DisplayString displayString = null;
 
 	SubmoduleNodeEx() {
@@ -102,9 +96,6 @@ public class SubmoduleNodeEx extends SubmoduleNode
         while (parent != null && !(parent instanceof CompoundModuleNodeEx)) 
             parent = parent.getParent();
         return (CompoundModuleNodeEx)parent;
-
-//		if (getParent() == null) return null;
-//		return (CompoundModuleNodeEx)(getParent().getParent());
 	}
     
 	// connection related methods
@@ -172,6 +163,17 @@ public class SubmoduleNodeEx extends SubmoduleNode
     public NEDElement getTypeRef() {
         INEDTypeInfo it = getTypeNEDTypeInfo();
         return it == null ? null : it.getNEDElement();
+    }
+
+    // connection notifications received from ConnectionNode objects
+    public void fireSrcConnectionChanged(ConnectionNodeEx conn) {
+        // TODO maybe dont have to send it to all ancestors
+        fireAttributeChangedToAncestors(ATT_SRC_CONNECTION);
+    }
+
+    public void fireDestConnectionChanged(ConnectionNodeEx conn) {
+        // TODO maybe dont have to send it to all ancestors
+        fireAttributeChangedToAncestors(ATT_DEST_CONNECTION);
     }
 
 }

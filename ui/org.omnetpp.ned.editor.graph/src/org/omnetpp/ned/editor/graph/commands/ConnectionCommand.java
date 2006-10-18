@@ -1,6 +1,7 @@
 package org.omnetpp.ned.editor.graph.commands;
 
 import org.eclipse.gef.commands.Command;
+import org.omnetpp.ned.editor.graph.edit.ModuleEditPart;
 import org.omnetpp.ned2.model.CompoundModuleNodeEx;
 import org.omnetpp.ned2.model.ConnectionNodeEx;
 import org.omnetpp.ned2.model.IConnectable;
@@ -24,27 +25,34 @@ public class ConnectionCommand extends Command {
     protected IConnectable destModule;
 	protected ConnectionNode newConn = new ConnectionNode();
 	// connection model to be changed
-    protected ConnectionNodeEx connNode;
+    protected ConnectionNodeEx connModel;
     protected ConnectionNodeEx connNodeNextSibling = null;
     protected CompoundModuleNodeEx parent = null;
+    private ModuleEditPart editPart;
 
     @Override
     public String getLabel() {
-        if (connNode != null && srcModule == null && destModule == null)
+        if (connModel != null && srcModule == null && destModule == null)
             return "Delete connection";
         
-        if (connNode != null && srcModule != null && destModule != null)
+        if (connModel != null && srcModule != null && destModule != null)
             return "Create connection";
 
         return "Move connection";
     }
 
-    public ConnectionCommand(ConnectionNodeEx conn) {
-        connNode = conn;
-        oldSrcModule = connNode.getSrcModuleRef();
-        oldDestModule = connNode.getDestModuleRef();
-        oldConn = (ConnectionNode)connNode.dup(null);
-        newConn = (ConnectionNode)connNode.dup(null);
+    /**
+     * Create delet a connection element and insert it into the compoundParent as container
+     * @param conn Conection Model 
+     * @param compoundEditPart Connection's container's (compound module) controller object
+     */
+    public ConnectionCommand(ConnectionNodeEx conn, ModuleEditPart compoundEditPart) {
+        connModel = conn;
+        editPart = compoundEditPart;
+        oldSrcModule = connModel.getSrcModuleRef();
+        oldDestModule = connModel.getDestModuleRef();
+        oldConn = (ConnectionNode)connModel.dup(null);
+        newConn = (ConnectionNode)connModel.dup(null);
     }
     
     
@@ -57,8 +65,8 @@ public class ConnectionCommand extends Command {
     	if(srcModule == null && destModule == null)
     		return true;
     	// we can connect two submodules module ONLY if they are siblings (ie they have the same parent)
-    	IConnectable sMod = srcModule != null ? srcModule : connNode.getSrcModuleRef();
-    	IConnectable dMod = destModule != null ? destModule : connNode.getDestModuleRef();
+    	IConnectable sMod = srcModule != null ? srcModule : connModel.getSrcModuleRef();
+    	IConnectable dMod = destModule != null ? destModule : connModel.getDestModuleRef();
 
     	if(sMod instanceof SubmoduleNodeEx && dMod instanceof SubmoduleNodeEx &&
     			((IParentable)sMod).getParent() == ((IParentable)dMod).getParent()) 
@@ -85,47 +93,53 @@ public class ConnectionCommand extends Command {
 
     @Override
     public void redo() {
-        if (srcModule != null && oldSrcModule != srcModule) 
-            connNode.setSrcModuleRef(srcModule);
-        
-        if (newConn.getSrcGate() != null && !newConn.getSrcGate().equals(oldConn.getSrcGate()))
-            connNode.setSrcGate(newConn.getSrcGate());
-        
-        if (destModule != null && oldDestModule != destModule) 
-            connNode.setDestModuleRef(destModule);
-        
-        if (newConn.getDestGate() != null &&  !newConn.getDestGate().equals(oldConn.getDestGate()))
-            connNode.setDestGate(newConn.getDestGate());
-        
-        copyConn(newConn, connNode);
-        
         // if both src and dest module should be detached then remove it 
         // from the model totally (ie delete it)
         if (srcModule == null && destModule == null) {
             // just store the NEXT sibling so we can put it back during undo to the right place
-            connNodeNextSibling = (ConnectionNodeEx)connNode.getNextConnectionNodeSibling();
+            connNodeNextSibling = (ConnectionNodeEx)connModel.getNextConnectionNodeSibling();
             // store the parent too so we now where to put it back during undo
             // FIXME this does not work if connections are placed in connection groups
-            parent = (CompoundModuleNodeEx)connNode.getParent().getParent();
+            parent = (CompoundModuleNodeEx)connModel.getParent().getParent();
             // now detach from both src and dest modules
-            connNode.setSrcModuleRef(null);
-            connNode.setDestModuleRef(null);
+            connModel.setSrcModuleRef(null);
+            connModel.setDestModuleRef(null);
             // and remove from the parent too
-           	connNode.removeFromParent();
+            connModel.removeFromParent();
+            return;
         }
+
+        // if the connection is not yet added to the compound module, add it, so later change notification will be handled correctly
+        if(connModel.getParent() == null) 
+            editPart.getCompoundModulePart().getCompoundModuleModel().addConnection(connModel);
+
+        if (srcModule != null && oldSrcModule != srcModule) 
+            connModel.setSrcModuleRef(srcModule);
+        
+        if (newConn.getSrcGate() != null && !newConn.getSrcGate().equals(oldConn.getSrcGate()))
+            connModel.setSrcGate(newConn.getSrcGate());
+        
+        if (destModule != null && oldDestModule != destModule) 
+            connModel.setDestModuleRef(destModule);
+        
+        if (newConn.getDestGate() != null && !newConn.getDestGate().equals(oldConn.getDestGate()))
+            connModel.setDestGate(newConn.getDestGate());
+        // copy the rest of the connection data (notification will be generated)
+        copyConn(newConn, connModel);
+        
     }
 
     @Override
     public void undo() {
         // if it was removed from the model, put it back
-        if (connNode.getParent() == null && parent != null)
-            parent.insertConnection(connNodeNextSibling, connNode);
+        if (connModel.getParent() == null && parent != null)
+            parent.insertConnection(connNodeNextSibling, connModel);
         
         // attach to the original modules and gates
-        connNode.setSrcModuleRef(oldSrcModule);
-        connNode.setDestModuleRef(oldDestModule);
+        connModel.setSrcModuleRef(oldSrcModule);
+        connModel.setDestModuleRef(oldDestModule);
 
-        copyConn(oldConn, connNode);
+        copyConn(oldConn, connModel);
     }
 
 	/**
@@ -135,15 +149,19 @@ public class ConnectionCommand extends Command {
 	 * @param to
 	 */
 	public static void copyConn(ConnectionNode from, ConnectionNode to) {
+//        to.setSrcModule(from.getSrcModule());
 		to.setSrcModuleIndex(from.getSrcModuleIndex());
         to.setSrcGate(from.getSrcGate());
         to.setSrcGateIndex(from.getSrcGateIndex());
         to.setSrcGatePlusplus(from.getSrcGatePlusplus());
+        to.setSrcGateSubg(from.getSrcGateSubg());
         
+//        to.setDestModule(from.getDestModule());
         to.setDestModuleIndex(from.getDestModuleIndex());
         to.setDestGate(from.getDestGate());
         to.setDestGateIndex(from.getDestGateIndex());
         to.setDestGatePlusplus(from.getDestGatePlusplus());
+        to.setDestGateSubg(from.getDestGateSubg());
         
         to.setArrowDirection(from.getArrowDirection());
 	}

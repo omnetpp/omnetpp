@@ -1,8 +1,10 @@
 package org.omnetpp.ned.editor.graph.edit;
 
 import org.eclipse.gef.editparts.AbstractGraphicalEditPart;
+import org.omnetpp.ned2.model.ConnectionNodeEx;
 import org.omnetpp.ned2.model.INEDChangeListener;
 import org.omnetpp.ned2.model.NEDElement;
+import org.omnetpp.ned2.model.SubmoduleNodeEx;
 
 /**
  * Provides support for Container EditParts.
@@ -65,12 +67,14 @@ abstract public class ContainerEditPart
 	public void childInserted(NEDElement node, NEDElement where, NEDElement child) {
 		// TODO maybe addChild would be a better idea (faster)
 		System.out.println("childInserted for: "+this+": (node="+node+", where="+where+", child="+child+")");
-		refreshChildren();
+		if (child instanceof SubmoduleNodeEx)
+		    refreshChildren();
 	}
 
 	public void childRemoved(NEDElement node, NEDElement child) {
 		// TODO maybe removeChild would be a better idea (faster)
 		System.out.println("childRemoved for: "+this+": (node="+node+", child="+child+")");
-		refreshChildren();
+        if (child instanceof SubmoduleNodeEx)
+            refreshChildren();
 	}
 }

@@ -10,6 +10,17 @@ public interface IConnectable extends INamed {
 	public final String ATT_DEST_CONNECTION = "destConnection";
 	public final String ATT_SRC_CONNECTION = "srcConnection";
 
+  /**
+   * Refresh the src connections for this node. Sends a notification that a connection 
+   * has connected/disconnected to thisnode
+   */
+  void fireSrcConnectionChanged(ConnectionNodeEx conn);
+
+  /**
+   * Refresh the dest connections for this node. Sends a notification that a connection 
+   * has connected/disconnected to thisnode
+   */
+  void fireDestConnectionChanged(ConnectionNodeEx conn);
 //	/**
 //	 * Returns connections whose "src" side is this component 
 //	 * (ie this compound module or submodule; for others it returns

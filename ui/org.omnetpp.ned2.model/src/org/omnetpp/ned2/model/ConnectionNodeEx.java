@@ -1,6 +1,5 @@
 package org.omnetpp.ned2.model;
 
-import org.eclipse.core.runtime.Assert;
 import org.omnetpp.common.displaymodel.ConnectionDisplayString;
 import org.omnetpp.common.displaymodel.DisplayString;
 import org.omnetpp.common.displaymodel.IDisplayString;
@@ -22,28 +21,81 @@ public class ConnectionNodeEx extends ConnectionNode implements IStringTyped, ID
 		super(parent);
 		setArrowDirection(ConnectionNodeEx.NED_ARROWDIR_L2R);
 	}
+    
+    @Override
+    public void setSrcModule(String val) {
+        IConnectable prevModule;
+        prevModule = getSrcModuleRef();
 
+        super.setSrcModule(val);
+        
+        // send notification to the old source module
+        if (prevModule != null)
+            prevModule.fireSrcConnectionChanged(this);
+        
+        // send notification to the new source module
+        IConnectable postModule = getSrcModuleRef();
+        if (postModule != null)
+            postModule.fireSrcConnectionChanged(this);
+    }
+    
+    @Override
+    public void setDestModule(String val) {
+        IConnectable prevModule;
+        prevModule = getDestModuleRef();
+
+        super.setDestModule(val);
+        
+        // send notification to the old dest module
+        if (prevModule != null)
+            prevModule.fireDestConnectionChanged(this);
+        
+        // send notification to the new source module
+        IConnectable postModule = getDestModuleRef();
+        if (postModule != null)
+            postModule.fireDestConnectionChanged(this);
+    }
+    
     // helper functions to set the module names using references
     public IConnectable getSrcModuleRef() {
+        if (getSrcModule() == null)
+            return null;
+        CompoundModuleNodeEx cm = getCompoundModule(); 
         // if the source is empty return the containing compound module
         if ("".equals(getSrcModule()))
-            return getCompoundModule();
-        return getCompoundModule().getSubmoduleByName(getSrcModule());
+            return cm;
+        if (cm != null)
+            return cm.getSubmoduleByName(getSrcModule());
+        
+        return null;
     }
 
     public void setSrcModuleRef(IConnectable srcModule) {
+        if (srcModule == null) {
+            setSrcModule(null);
+            return;
+        }
         String newModule = (srcModule instanceof CompoundModuleNodeEx) ? "" : srcModule.getName();
         setSrcModule(newModule);
     }
 
     public IConnectable getDestModuleRef() {
+        if (getDestModule() == null)
+            return null;
+        CompoundModuleNodeEx cm = getCompoundModule(); 
         // if the source is empty return the containing compound module
         if ("".equals(getDestModule()))
-            return getCompoundModule();
-        return getCompoundModule().getSubmoduleByName(getDestModule());
+            return cm;
+        if (cm != null)
+            return getCompoundModule().getSubmoduleByName(getDestModule());
+        return null;
     }
 
     public void setDestModuleRef(IConnectable destModule) {
+        if (destModule == null) {
+            setDestModule(null);
+            return;
+        }
         String newModule = (destModule instanceof CompoundModuleNodeEx) ? "" : destModule.getName();
         setDestModule(newModule);
     }

@@ -13,6 +13,7 @@ import org.omnetpp.figures.ConnectionFigure;
 import org.omnetpp.figures.GateAnchor;
 import org.omnetpp.figures.ModuleFigure;
 import org.omnetpp.ned.editor.graph.commands.ConnectionCommand;
+import org.omnetpp.ned.editor.graph.edit.CompoundModuleEditPart;
 import org.omnetpp.ned.editor.graph.edit.ModuleEditPart;
 import org.omnetpp.ned2.model.ConnectionNodeEx;
 import org.omnetpp.ned2.model.INamedGraphNode;
@@ -36,7 +37,7 @@ public class NedNodeEditPolicy extends GraphicalNodeEditPolicy {
 	@Override
     protected Command getConnectionCreateCommand(CreateConnectionRequest request) {
         ConnectionNodeEx conn = (ConnectionNodeEx)request.getNewObject();
-        ConnectionCommand command = new ConnectionCommand(conn);
+        ConnectionCommand command = new ConnectionCommand(conn, (ModuleEditPart)getHost());
         command.setSrcModule(getGraphNodeModel());
         GateAnchor anchor = (GateAnchor)getModuleEditPart().getSourceConnectionAnchor(request);
         if (anchor == null) 
@@ -61,7 +62,7 @@ public class NedNodeEditPolicy extends GraphicalNodeEditPolicy {
     @Override
     protected Command getReconnectTargetCommand(ReconnectRequest request) {
     	ConnectionNodeEx conn = (ConnectionNodeEx) request.getConnectionEditPart().getModel();
-        ConnectionCommand cmd = new ConnectionCommand(conn);
+        ConnectionCommand cmd = new ConnectionCommand(conn, (CompoundModuleEditPart)getHost());
 
         GateAnchor anchor = (GateAnchor)getModuleEditPart().getTargetConnectionAnchor(request);
         if (anchor == null) 
@@ -75,7 +76,7 @@ public class NedNodeEditPolicy extends GraphicalNodeEditPolicy {
     @Override
     protected Command getReconnectSourceCommand(ReconnectRequest request) {
     	ConnectionNodeEx conn = (ConnectionNodeEx) request.getConnectionEditPart().getModel();
-        ConnectionCommand cmd = new ConnectionCommand(conn);
+        ConnectionCommand cmd = new ConnectionCommand(conn, (CompoundModuleEditPart)getHost());
 
         GateAnchor anchor = (GateAnchor)getModuleEditPart().getSourceConnectionAnchor(request);
         if (anchor == null) 

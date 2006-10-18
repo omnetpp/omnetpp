@@ -93,7 +93,7 @@ public class CompoundModuleEditPart extends ModuleEditPart {
     @Override
     protected List getModelChildren() {
         // return all submodule including inherited ones
-    	return ((CompoundModuleNodeEx)getNEDModel()).getSubmodules();
+    	return getCompoundModuleModel().getSubmodules();
     }
     
     /**
@@ -131,9 +131,8 @@ public class CompoundModuleEditPart extends ModuleEditPart {
     @Override
     protected void refreshVisuals() {
         // define the properties that determine the visual appearence
-    	CompoundModuleNodeEx compModule = (CompoundModuleNodeEx)getNEDModel();
-        getCompoundModuleFigure().setName(compModule.getName());
-    	getCompoundModuleFigure().setDisplayString(compModule.getEffectiveDisplayString());
+        getCompoundModuleFigure().setName(getCompoundModuleModel().getName());
+    	getCompoundModuleFigure().setDisplayString(getCompoundModuleModel().getEffectiveDisplayString());
     }
 
 	/**
@@ -171,5 +170,10 @@ public class CompoundModuleEditPart extends ModuleEditPart {
      */
     public float getScale() {
         return ((CompoundModuleNodeEx)getModel()).getDisplayString().getScale();
+    }
+
+    @Override
+    public CompoundModuleEditPart getCompoundModulePart() {
+        return this;
     }
 }

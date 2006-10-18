@@ -356,4 +356,16 @@ public class CompoundModuleNodeEx extends CompoundModuleNode
         return it == null ? null : it.getNEDElement();
     }
 
+    // connection notifications received from ConnectionNode objects
+    public void fireSrcConnectionChanged(ConnectionNodeEx conn) {
+        // TODO maybe dont have to send it to all ancestors
+        fireAttributeChangedToAncestors(ATT_SRC_CONNECTION);
+    }
+
+    public void fireDestConnectionChanged(ConnectionNodeEx conn) {
+        // TODO maybe dont have to send it to all ancestors
+        fireAttributeChangedToAncestors(ATT_DEST_CONNECTION);
+    }
+
+
 }
