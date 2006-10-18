@@ -55,3 +55,5 @@ depend:
 
 clean:
 	rm -f *.o eventlog$(A_LIB_SUFFIX) eventlog$(SO_LIB_SUFFIX)
+
+# DO NOT DELETE THIS LINE -- make depend depends on it.
