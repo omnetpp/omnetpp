@@ -88,6 +88,16 @@ public class SequenceChartToolEditor extends EditorPart implements INavigationLo
 
 		eventLog = new EventLog(new FileReader(logFileName, /* EventLog will delete it */false));
 
+		/*
+		eventLog = new FilteredEventLog(
+				new EventLog(new FileReader(logFileName, false)),
+				null,
+				100000,
+				true,
+				true
+		);
+		*/
+
 		String vectorFileName = logFileName.replaceFirst("\\.log$", ".vec");
 		if (!vectorFileName.equals(logFileName) && new java.io.File(vectorFileName).exists()) {
 			stateVectors = readVectorFile(vectorFileName);
@@ -159,9 +169,7 @@ public class SequenceChartToolEditor extends EditorPart implements INavigationLo
 			ModuleCreatedEntry entry = eventLog.getModuleCreatedEntry(i);
 			
 			if (entry != null)
-				modules.add(treeBuilder.addModule(entry.getFullName() + i, entry.getModuleClassName(), entry.getModuleId()));
-// FIXME: resurrect
-//			modules.add(treeBuilder.addModule(entry.getModuleFullPath(), entry.getModuleClassName(), entry.getModuleId()));
+				modules.add(treeBuilder.addModule(entry.getParentModuleId(), entry.getModuleId(), entry.getModuleClassName(), entry.getFullName() + i));
 		}
 		moduleTree = treeBuilder.getModuleTree();
 		axisModules = modules;
@@ -241,7 +249,7 @@ public class SequenceChartToolEditor extends EditorPart implements INavigationLo
 		Combo timelineMode = new Combo(controlStrip, SWT.NONE);
 		for (SequenceChart.TimelineMode t : SequenceChart.TimelineMode.values())
 			timelineMode.add(t.name());
-		timelineMode.select(seqChart.getTimelineMode().ordinal());
+		// TODO: timelineMode.select(seqChart.getTimelineMode().ordinal());
 		timelineMode.setVisibleItemCount(SequenceChart.TimelineMode.values().length);
 		
 		Button showNonDeliveryMessages = new Button(controlStrip, SWT.CHECK);

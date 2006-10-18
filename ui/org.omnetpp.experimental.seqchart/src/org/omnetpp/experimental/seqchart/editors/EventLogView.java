@@ -1,17 +1,26 @@
 package org.omnetpp.experimental.seqchart.editors;
 
+import org.eclipse.jface.dialogs.IInputValidator;
+import org.eclipse.jface.dialogs.InputDialog;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.ui.ISelectionListener;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.part.ViewPart;
-import org.omnetpp.experimental.seqchart.widgets.EventLogVirtualTableItemProvider;
+import org.omnetpp.eventlog.engine.IEvent;
+import org.omnetpp.eventlog.engine.IEventLog;
 import org.omnetpp.experimental.seqchart.widgets.EventLogVirtualTableContentProvider;
-import org.omnetpp.experimental.seqchart.widgets.LongVirtualTableItemProvider;
+import org.omnetpp.experimental.seqchart.widgets.EventLogVirtualTableItemProvider;
 import org.omnetpp.experimental.seqchart.widgets.LongVirtualTableContentProvider;
+import org.omnetpp.experimental.seqchart.widgets.LongVirtualTableItemProvider;
 import org.omnetpp.experimental.seqchart.widgets.VirtualTableViewer;
 
 /**
@@ -54,7 +63,9 @@ public class EventLogView extends ViewPart {
 
 		//virtualTableViewer = createLongTableViewer(table);
 		virtualTableViewer = createEventLogTableViewer(table);
-		
+	
+		addPopupMenu();
+
 		// we want to provide selection for the sequence chart tool (an IEditPart)
 		getSite().setSelectionProvider(virtualTableViewer);
 
@@ -70,6 +81,51 @@ public class EventLogView extends ViewPart {
 		virtualTableViewer.setSelection(getSite().getSelectionProvider().getSelection());
 	}
 
+	private void addPopupMenu() {
+		Menu popupMenu = new Menu(virtualTableViewer.getControl());
+
+		// center menu item
+		MenuItem subMenuItem = new MenuItem(popupMenu, SWT.PUSH);
+		subMenuItem.setText("Goto event");
+		subMenuItem.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
+				InputDialog dialog = new InputDialog(null, "Goto event", "Please enter the event number to go to", null, new IInputValidator() {
+					public String isValid(String newText) {
+						try {
+							int eventNumber = Integer.parseInt(newText);
+							
+							if (eventNumber >= 0)
+								return null;
+							else
+								return "Negative event number";
+						}
+						catch (Exception e) {
+							return "Not a number";
+						}
+					}
+				});
+
+				dialog.open();
+
+				try {
+					int eventNumber = Integer.parseInt(dialog.getValue());
+					IEventLog eventLog = (IEventLog)virtualTableViewer.getInput();
+					IEvent event = eventLog.getEventForEventNumber(eventNumber);
+
+					if (event != null)
+						virtualTableViewer.gotoElement(event.getEventEntry());
+					else
+						MessageDialog.openError(null, "Goto event" , "No such event: " + eventNumber);
+				}
+				catch (Exception x) {
+					// void
+				}
+			}
+		});
+
+		virtualTableViewer.getControl().setMenu(popupMenu);
+	}
+	
 	/**
 	 * For debug purposes.
 	 */

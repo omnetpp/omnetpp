@@ -69,8 +69,8 @@ public class AxisValueGraph extends AxisGraph {
 				int colorIndex = getValueIndex(i);
 				graphics.setBackgroundColor(ColorFactory.getGoodColor(colorIndex));
 
-				int x1 = sequenceChart.simulationTimeToPixel(simulationTime);
-				int x2 = sequenceChart.simulationTimeToPixel(nextSimulationTime);
+				int x1 = sequenceChart.getViewportPixelForSimulationTime(simulationTime);
+				int x2 = sequenceChart.getViewportPixelForSimulationTime(nextSimulationTime);
 
 				if (phase == 0) {
 					graphics.fillRectangle(x1, 0, x2 - x1, getHeight());

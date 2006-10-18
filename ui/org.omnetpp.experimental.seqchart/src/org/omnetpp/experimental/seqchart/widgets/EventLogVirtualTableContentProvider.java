@@ -6,7 +6,7 @@ import org.omnetpp.eventlog.engine.EventLogFacade;
 import org.omnetpp.eventlog.engine.IEventLog;
 
 public class EventLogVirtualTableContentProvider implements IVirtualTableContentProvider {
-	protected static boolean debug = true;
+	protected static boolean debug = false;
 
 	protected IEventLog eventLog;
 	

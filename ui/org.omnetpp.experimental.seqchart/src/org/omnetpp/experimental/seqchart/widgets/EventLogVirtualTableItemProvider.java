@@ -23,8 +23,14 @@ public class EventLogVirtualTableItemProvider extends LabelProvider implements I
 		if (eventEntry != null) {
 			item.setForeground(ColorConstants.blue);
 			item.setText(0, "#" + event.getEventNumber());
-			item.setText(1, event.getSimulationTime() + "s");
-			String s = "module (" + moduleCreatedEntry.getModuleClassName() + ") " + moduleCreatedEntry.getFullName(); // TODO: full path
+			item.setText(1, event.getSimulationTime() + "s"); 
+			
+			String s;
+			
+			if (moduleCreatedEntry != null)
+				s = "module (" + moduleCreatedEntry.getModuleClassName() + ") " + moduleCreatedEntry.getFullName(); // TODO: full path
+			else
+				s = "module <unknown>";
 
 			if (beginSendEntry == null)
 				item.setText(2, s);
