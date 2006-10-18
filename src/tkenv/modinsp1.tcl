@@ -23,16 +23,17 @@ proc moduleinspector_add_run_buttons {w} {
     pack_iconbutton $w.toolbar.objs    -image $icons(findobj) -command "inspect_filteredobjectlist $w"
     pack_iconbutton $w.toolbar.sep11   -separator
 
-    pack_iconbutton $w.toolbar.run     -image $icons(run)     -command {run_normal}
-    pack_iconbutton $w.toolbar.fastrun -image $icons(fast)    -command {run_fast}
-    pack_iconbutton $w.toolbar.exprrun -image $icons(express) -command {run_express}
-    pack_iconbutton $w.toolbar.sep12   -separator
-
     pack_iconbutton $w.toolbar.mrun    -image $icons(mrun)    -command "runsimulation_local $w normal"
     pack_iconbutton $w.toolbar.mfast   -image $icons(mfast)   -command "runsimulation_local $w fast"
     pack_iconbutton $w.toolbar.sep13   -separator
 
-    pack_iconbutton $w.toolbar.until   -image $icons(until)   -command {run_until}
+    pack_iconbutton $w.toolbar.vrun     -image $icons(run)     -command {run_normal}
+    pack_iconbutton $w.toolbar.vruncfg  -image $icons(down_vs) -command "moduleinspector_setrunmode $w.toolbar.vrun"
+
+    #pack_iconbutton $w.toolbar.fastrun -image $icons(fast)    -command {run_fast}
+    #pack_iconbutton $w.toolbar.exprrun -image $icons(express) -command {run_express}
+    #pack_iconbutton $w.toolbar.sep12   -separator
+    #pack_iconbutton $w.toolbar.until   -image $icons(until)   -command {run_until}
     pack_iconbutton $w.toolbar.sep14   -separator
 
     pack_iconbutton $w.toolbar.stop    -image $icons(stop)    -command {stop_simulation}
@@ -40,16 +41,34 @@ proc moduleinspector_add_run_buttons {w} {
 
     bind $w <Control-F4> "runsimulation_local $w fast"
 
-    set help_tips($w.toolbar.objs)    {Find and inspect messages, queues, watched variables, statistics, etc (Ctrl+S)}
-    set help_tips($w.toolbar.run)     {Run with full animation (F5)}
-    set help_tips($w.toolbar.fastrun) {Run faster: no animation and rare inspector updates (F6)}
-    set help_tips($w.toolbar.exprrun) {Run at full speed: no text output, animation or inspector updates (F7)}
+    set help_tips($w.toolbar.vrun)    {Run with full animation (F5)}
     set help_tips($w.toolbar.mrun)    {Run until next event in this module}
     set help_tips($w.toolbar.mfast)   {Fast run until next event in this module (Ctrl+F4)}
-    set help_tips($w.toolbar.until)   {Run until time or event number}
-    set help_tips($w.toolbar.stop)    {Stop running simulation (F8)}
+    set help_tips($w.toolbar.stop)    {Stop the simulation (F8)}
 }
 
+#
+# Invoked by the small down arrow next to the "Run" icon on the toolbar, and displays
+# a menu to select between Run, Fast, Express and Until. $w is the icon button to configure.
+#
+proc moduleinspector_setrunmode {w} {
+    global icons help_tips
+
+    catch {destroy .popup}
+    menu .popup -tearoff 0
+
+    .popup add command -label "Run" \
+        -command [list config_iconbutton $w $icons(run)  run_normal "Run with full animation (F5)"]
+    .popup add command -label "Fast Run" \
+        -command [list config_iconbutton $w $icons(fast) run_fast "Run faster: no animation and rare inspector updates (F6)"]
+    .popup add command -label "Express Run" \
+        -command [list config_iconbutton $w $icons(express) run_express "Run at full speed: no text output, animation or inspector updates (F7)"]
+    .popup add command -label "Until..."  \
+        -command [list config_iconbutton $w $icons(until) run_until "Run until time or event number"]
+
+    .popup post [winfo rootx $w] [expr [winfo rooty $w]+[winfo height $w]]
+
+}
 
 proc create_compoundmodinspector {name geom} {
     global icons help_tips

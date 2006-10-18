@@ -79,8 +79,14 @@ proc display_stopdialog {} {
     global opp fonts tmp
 
     # 1. Create and configure dialog
-    set tmp(stopdialog) [winfo toplevel [focus]].stopdialog
-    set w $tmp(stopdialog)
+    set topwindow "."
+    catch {set topwindow [winfo toplevel [focus]]}
+    if {$topwindow=="" || $topwindow=="."} {
+        set w .stopdialog
+    } else {
+        set w $topwindow.stopdialog
+    }
+    set tmp(stopdialog) $w
 
     if {[winfo exists $w]} return
 

@@ -87,17 +87,16 @@ set icons(until) [image create photo -data {
 }]
 
 set icons(mrun) [image create photo -data {
-    R0lGODlhGQATALMAAEAAAMbGxoAAAP///8AAAAAAAP//////////////////////
-    /////////////////yH5BAEAAAEALAAAAAAZABMAAARAMMhJq704680pIRYhCF0g
-    kt5Ynqh0rqPqCgAco2PdsXGQ27Hab3fTDTksnY9mUy6dGhH0uAFAA9Zracvter+S
-    CAA7
+    R0lGODlhGAATALMAAEAAAMbGxoAAAP///8AAAAAAAP//////////////////////
+    /////////////////yH5BAEAAAEALAAAAAAYABMAAAQ6MMhJq7046827D0L4SaEA
+    imWXriIFUGg7xeQ7yxdrk7ilj7CQrdTzEYdEDVHIS2EA0CgUSK1ar1hKBAA7
 }]
 
 set icons(mfast) [image create photo -data {
-    R0lGODlhGQATALMAAEAAAMbGxoAAAP///8AAAAAAAP//////////////////////
-    /////////////////yH5BAEAAAEALAAAAAAZABMAAARSMMhJq704680JsR4oCCJJ
-    EWOFmufIBuu7lqkUsyhA17c56iqXCyZM/XYCXU93DLqAN2CzNY0BA9PJ6kpMUrI2
-    b4uLFVMA5ADagk5z3vC4fK6JAAA7
+    R0lGODlhGAATALMAAEAAAMbGxoAAAP///8AAAAAAAP//////////////////////
+    /////////////////yH5BAEAAAEALAAAAAAYABMAAAQ+MMhJq7046827D0JoAVoo
+    gKIpkZnqpiwrpSLlxnbdCiSfnxiTz9cBGI89lhDICSmFm+VThUEiP9isdsvFRgAA
+    Ow==
 }]
 
 set icons(stop) [image create photo -data {
@@ -377,4 +376,11 @@ set icons(props) [image create photo -data {
     /////////////////yH5BAEAAAEALAAAAAAUABMAAAQ5MMhJq704awy6/94FCGRp
     CoCIgh6qnmdqjexIypUNlzhF17TX7qaq8YTD3uRnVEp0SRHws6lar9cIADs=
 }]
+
+set icons(down_vs) [image create photo -data {
+    R0lGODlhBQATALMAAAAAAP//////////////////////////////////////////
+    /////////////////yH5BAEAAAEALAAAAAAFABMAAAQPMMhJq70XaB32BFgojmEE
+    ADs=
+}]
+
 
