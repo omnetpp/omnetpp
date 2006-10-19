@@ -401,8 +401,10 @@ proc draw_connection {c gateptr dispstr srcptr destptr src_i src_n dest_i dest_n
        if {![info exists tags(o)]} {set tags(o) {}}
        set fill [lindex $tags(o) 0]
        if {$fill == ""} {set fill black}
+       if {$fill == "-"} {set fill ""}
        set width [lindex $tags(o) 1]
        if {$width == ""} {set width 1}
+       if {$width == "0"} {set fill ""}
 
        $c create line $arrow_coords -arrow last -fill $fill -width $width -tags "dx tooltip conn $gateptr"
 

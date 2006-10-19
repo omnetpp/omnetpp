@@ -1,3 +1,8 @@
+2006-10-19  Andras Varga
+
+	* modinsp2.tcl: connection arrows with zero thickness ("o=,0") are 
+	not drawn.
+
 2006-10-14  Andras Varga
 
 	* several smaller improvements: added object icons to listboxes;
