@@ -231,8 +231,6 @@ proc create_omnetpp_window {} {
       {newnet   -image $icons(newnet)  -command {new_network}}
       {loadned  -image $icons(loadned) -command {load_nedfile}}
       {sep5     -separator}
-      {network  -image $icons(network) -command {inspect_systemmodule}}
-      {sep01    -separator}
       {copy     -image $icons(copy)    -command {edit_copy}}
       {find     -image $icons(find)    -command {edit_find}}
       {sep0     -separator}
@@ -248,6 +246,8 @@ proc create_omnetpp_window {} {
       {sep4     -separator}
       {finish   -image $icons(finish)  -command {call_finish}}
       {sep02     -separator}
+      {network  -image $icons(network) -command {inspect_systemmodule}}
+      {sep01    -separator}
       {objs     -image $icons(findobj) -command {inspect_filteredobjectlist}}
       {sep6     -separator}
       {tline    -image $icons(fes)     -command {toggle_timeline}}
