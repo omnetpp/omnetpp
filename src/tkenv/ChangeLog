@@ -3,6 +3,8 @@
 	* modinsp2.tcl: connection arrows with zero thickness ("o=,0") are 
 	not drawn.
 
+	* "Save window contents" toolbar icon added to text windows
+
 2006-10-14  Andras Varga
 
 	* several smaller improvements: added object icons to listboxes;

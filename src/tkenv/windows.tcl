@@ -39,9 +39,7 @@ proc create_messagewindow {name} {
     wm title $w "Sent/Delivered Messages"
 
     frame $w.toolbar
-    pack_iconbutton $w.toolbar.sep1   -separator
-    pack_iconbutton $w.toolbar.find   -image $icons(find) -command "findDialog $w.main.text"
-    set help_tips($w.toolbar.find)   {Find string in window}
+    textwindow_add_icons $w
 
     frame $w.main
     text $w.main.text -yscrollcommand "$w.main.sb set" -width 88 -height 15
@@ -138,16 +136,27 @@ proc loadfile {win filename} {
     $t see insert
 }
 
-proc savefile {win filename} {
-    if [catch {open $filename w} f] {
-       messagebox {Error} "Error: $f" info ok
-       return
+proc savefile {win {filename ""}} {
+    global config
+
+    if {$filename == ""} {
+        set filename $config(log-save-filename)
+        set filename [tk_getSaveFile -title {Save Log Window Contents} -parent $win \
+                      -defaultextension "out" -initialfile $filename \
+                      -filetypes {{{Log files} {*.out}} {{All files} {*}}}]
+        if {$filename == ""} return
+        set config(log-save-filename) $filename
     }
-    if [catch {puts -nonewline $f [$win.main.text get 1.0 end]} err] {
-       messagebox {Error} "Error: $err" error ok
-       return
+
+    if [catch {
+       set f [open $filename w]
+       set txt $win.main.text
+       if {$txt == "..main.text"} {set txt .main.text}
+       puts -nonewline $f [$txt get 1.0 end]
+       close $f
+    } err] {
+       messagebox {Error} "Error: $err" info ok
     }
-    close $f
 }
 
 #
@@ -172,20 +181,19 @@ proc create_fileviewer {filename} {
     wm title $w $filename
 
     frame $w.toolbar
-    pack_iconbutton $w.toolbar.sep1   -separator
+
+    pack_iconbutton $w.toolbar.copy   -image $icons(copy) -command "edit_copy $w.main.text"
     pack_iconbutton $w.toolbar.find   -image $icons(find) -command "findDialog $w.main.text"
-    set help_tips($w.toolbar.find)   {Find string in window}
+    pack_iconbutton $w.toolbar.sep20  -separator
+    pack_iconbutton $w.toolbar.save   -image $icons(save) -command "savefile $w $filename"
+    pack_iconbutton $w.toolbar.sep21  -separator
+
+    set help_tips($w.toolbar.copy)   {Copy selected text to clipboard (Ctrl+C)}
+    set help_tips($w.toolbar.find)   {Find string in window (Ctrl+F}
+    set help_tips($w.toolbar.save)   {Save window contents to file}
+
 
     pack $w.toolbar  -anchor center -expand 0 -fill x -side top
-
-    #frame $w.butt
-    #button $w.butt.close -text Close -command "destroy $w"
-    #button $w.butt.save -text Save -command "savefile $w $filename"
-    #button $w.butt.reload -text Reload -command "loadfile $w $filename"
-    #pack $w.butt -expand 0 -fill x -side bottom
-    #pack $w.butt.close -expand 0 -side right -padx 5 -pady 5
-    #pack $w.butt.save -expand 0 -side right -padx 5 -pady 5
-    #pack $w.butt.reload -expand 0 -side right -padx 5 -pady 5
 
     frame $w.main  -borderwidth 1 -relief sunken
     pack $w.main  -anchor center -expand 1 -fill both -ipadx 0 -ipady 0 -padx 0 -pady 0 -side top

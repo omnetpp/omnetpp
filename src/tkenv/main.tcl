@@ -40,6 +40,7 @@ set config(rununtil-time) ""
 set config(rununtil-event) ""
 set config(display-timeline) 1
 set config(timeline-maxnumevents) 1000
+set config(log-save-filename) "omnetpp.out"
 
 set pluginlist {}
 
@@ -233,6 +234,7 @@ proc create_omnetpp_window {} {
       {sep5     -separator}
       {copy     -image $icons(copy)    -command {edit_copy}}
       {find     -image $icons(find)    -command {edit_find}}
+      {save     -image $icons(save)    -command {savefile "."}}
       {sep0     -separator}
       {step     -image $icons(step)    -command {one_step}}
       {sep1     -separator}
