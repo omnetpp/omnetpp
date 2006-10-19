@@ -40,6 +40,7 @@ set config(rununtil-time) ""
 set config(rununtil-event) ""
 set config(display-timeline) 1
 set config(timeline-maxnumevents) 1000
+set config(log-save-filename) "omnetpp.out"
 
 set pluginlist {}
 
@@ -231,10 +232,9 @@ proc create_omnetpp_window {} {
       {newnet   -image $icons(newnet)  -command {new_network}}
       {loadned  -image $icons(loadned) -command {load_nedfile}}
       {sep5     -separator}
-      {network  -image $icons(network) -command {inspect_systemmodule}}
-      {sep01    -separator}
       {copy     -image $icons(copy)    -command {edit_copy}}
       {find     -image $icons(find)    -command {edit_find}}
+      {save     -image $icons(save)    -command {savefile "."}}
       {sep0     -separator}
       {step     -image $icons(step)    -command {one_step}}
       {sep1     -separator}
@@ -248,6 +248,8 @@ proc create_omnetpp_window {} {
       {sep4     -separator}
       {finish   -image $icons(finish)  -command {call_finish}}
       {sep02     -separator}
+      {network  -image $icons(network) -command {inspect_systemmodule}}
+      {sep01    -separator}
       {objs     -image $icons(findobj) -command {inspect_filteredobjectlist}}
       {sep6     -separator}
       {tline    -image $icons(fes)     -command {toggle_timeline}}
@@ -272,7 +274,7 @@ proc create_omnetpp_window {} {
     set help_tips(.toolbar.restart) {Rebuild network}
     set help_tips(.toolbar.finish)  {Call finish()}
     set help_tips(.toolbar.network) {Inspect network}
-    set help_tips(.toolbar.objs)    {Find/inspect objects (Ctrl+S)}
+    set help_tips(.toolbar.objs)    {Find and inspect messages, queues, watched variables, statistics, etc (Ctrl+S)}
     set help_tips(.toolbar.tline)   {Show/hide timeline}
     set help_tips(.toolbar.tree)    {Show/hide object tree}
     set help_tips(.toolbar.options) {Simulation options}

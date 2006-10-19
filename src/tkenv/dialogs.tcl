@@ -82,7 +82,7 @@ proc display_stopdialog {} {
     set topwindow "."
     catch {set topwindow [winfo toplevel [focus]]}
     if {$topwindow=="" || $topwindow=="."} {
-    set w .stopdialog
+        set w .stopdialog
     } else {
         set w $topwindow.stopdialog
     }
@@ -513,7 +513,6 @@ proc filteredobjectlist_window {{ptr ""}} {
     if {[winfo exists $w]} {
         $w.f.filter.searchin.e delete 0 end
         $w.f.filter.searchin.e insert 0 [opp_getobjectfullpath $ptr]
-        #FIXME also clear listbox contents?
         wm deiconify $w; return
     }
 

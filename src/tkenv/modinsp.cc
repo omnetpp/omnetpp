@@ -52,14 +52,6 @@
 #define UNKNOWNICON_HEIGHT 32
 
 
-// Module state as text:
-char *modstate[] = {
-  "Ended",    // sENDED
-  "Ready" ,   // sREADY
-  ""
-};
-
-
 void _dummy_for_modinsp() {}
 
 //=======================================================================
@@ -897,16 +889,13 @@ void TSimpleModInspector::update()
 
    cSimpleModule *mod = static_cast<cSimpleModule *>(object);
 
-   //setToolbarInspectButton(".toolbar.parent", mod->parentModule(),INSP_DEFAULT);
-
    char buf[40];
    setEntry(".nb.info.name.e", mod->name());
    sprintf(buf,"%ld", (long)mod->id());
    setLabel(".nb.info.id.e", buf);
-   //setLabel(".nb.info.phase.e", mod->phase() );
-   setEntry(".nb.info.dispstr.e", mod->displayString() );
-   setEntry(".nb.info.dispstrpt.e", mod->backgroundDisplayString() );
-   setLabel(".nb.info.state.e",  modstate[ mod->moduleState() ]  );
+   setEntry(".nb.info.dispstr.e", mod->displayString());
+   setEntry(".nb.info.dispstrpt.e", mod->backgroundDisplayString());
+   setLabel(".nb.info.state.e",  mod->isTerminated() ? "normal" : "terminated");
    if (mod->usesActivity())
    {
       unsigned stk = mod->stackSize();

@@ -629,14 +629,15 @@ proc edit_textfile {} {
          {{NED files}              {*.ned}}
          {{C++ files}              {*.cc *.cpp}}
          {{C++ headers}            {*.h}}
+         {{Saved log files}        {*.out}}
          {{Output vectors}         {*.vec}}
          {{Output scalars}         {*.sca}}
          {{Snapshot files}         {*.sna}}
-         {{Inspector lists} {*.lst}}
-         {{All files}       {*}}
+         {{Inspector lists}        {*.lst}}
+         {{All files}              {*}}
     }
     set filename [tk_getOpenFile -title {View/Edit text file} \
-                  -defaultextension "txt" -initialfile "" \
+                  -defaultextension "out" -initialfile "" \
                   -filetypes $types]
 
     if {$filename!=""} {

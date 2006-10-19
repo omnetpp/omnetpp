@@ -204,37 +204,24 @@ proc _create_modulewindow {name geom iscompound} {
         pack_iconbutton $w.toolbar.graph  -image $icons(asgraphics) -command "inspect_this $w {As Graphics}"
         pack_iconbutton $w.toolbar.obj    -image $icons(asobject) -command "inspect_this $w {As Object}"
         pack_iconbutton $w.toolbar.sep1   -separator
-        pack_iconbutton $w.toolbar.copy   -image $icons(copy) -command "edit_copy $w.main.text"
-        pack_iconbutton $w.toolbar.find   -image $icons(find) -command "findDialog $w.main.text"
-        pack_iconbutton $w.toolbar.sep3   -separator
+        set help_tips($w.toolbar.owner)  {Inspect parent module}
+        set help_tips($w.toolbar.obj)    {Inspect as object}
+
+        textwindow_add_icons $w
 
         moduleinspector_add_run_buttons $w
-
-        set help_tips($w.toolbar.owner)  {Inspect parent module}
-        set help_tips($w.toolbar.graph)  {Inspect as network graphics}
-        set help_tips($w.toolbar.obj)    {Inspect as object}
-        set help_tips($w.toolbar.copy)   {Copy selected text to clipboard (Ctrl+C)}
-        set help_tips($w.toolbar.find)   {Find string in window (Ctrl+F}
 
     } else {
         # for simple module
         pack_iconbutton $w.toolbar.obj    -image $icons(asobject) -command "inspect_this $w {As Object}"
         pack_iconbutton $w.toolbar.sep1   -separator
-        pack_iconbutton $w.toolbar.copy   -image $icons(copy) -command "edit_copy $w.main.text"
-        pack_iconbutton $w.toolbar.find   -image $icons(find) -command "findDialog $w.main.text"
-        pack_iconbutton $w.toolbar.sep2   -separator
-
-        moduleinspector_add_run_buttons $w
-
         set help_tips($w.toolbar.owner)  {Inspect parent module}
         set help_tips($w.toolbar.obj)    {Inspect as object}
-        set help_tips($w.toolbar.copy)   {Copy selected text to clipboard (Ctrl+C)}
-        set help_tips($w.toolbar.find)   {Find string in window (Ctrl+F}
-    }
 
-    #frame $w.statusbar
-    #label $w.statusbar.name -anchor w -relief groove -text {(unknown module)}
-    #label $w.statusbar.phase -anchor w -relief groove -text {Phase: -}
+        textwindow_add_icons $w
+
+        moduleinspector_add_run_buttons $w
+    }
 
     frame $w.main
     text $w.main.text -yscrollcommand "$w.main.sb set" -width 80 -height 15

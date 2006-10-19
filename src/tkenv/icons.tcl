@@ -383,4 +383,11 @@ set icons(down_vs) [image create photo -data {
     ADs=
 }]
 
+set icons(save) [image create photo -data {
+    R0lGODlhFAATALMAAAAAAISEAMbGxv//////////////////////////////////
+    /////////////////yH5BAEAAAIALAAAAAAUABMAAARBUMhJq734gs17t0AAYONY
+    hSa4gSLZni+bTqg7S7UW04Hobb2bINQrGoMs3y9HIf5wO6iSAxU6PVXNEpvper/g
+    SwQAOw==
+}]
+
 

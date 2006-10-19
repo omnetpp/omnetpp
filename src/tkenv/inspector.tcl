@@ -226,6 +226,19 @@ proc setClipboard {str} {
 #    UTILITY FUNCTIONS FOR INSPECTOR WINDOWS
 #===================================================================
 
+proc textwindow_add_icons {w} {
+    global icons
+
+    pack_iconbutton $w.toolbar.copy   -image $icons(copy) -command "edit_copy $w.main.text"
+    pack_iconbutton $w.toolbar.find   -image $icons(find) -command "findDialog $w.main.text"
+    pack_iconbutton $w.toolbar.save   -image $icons(save) -command "savefile $w"
+    pack_iconbutton $w.toolbar.sep21  -separator
+
+    set help_tips($w.toolbar.copy)   {Copy selected text to clipboard (Ctrl+C)}
+    set help_tips($w.toolbar.find)   {Find string in window (Ctrl+F}
+    set help_tips($w.toolbar.save)   {Save window contents to file}
+}
+
 proc create_inspector_listbox {w} {
     # create a listbox
 
