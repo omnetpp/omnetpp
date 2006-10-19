@@ -104,10 +104,13 @@ std::string cMessage::info() const
 
     std::stringstream out;
     const char *deletedstr = "<deleted module>";
-    //out << "T=" << simtimeToStr(delivd);
 
-    out << "T=" << simtimeToStrShort(delivd);
-    out << ", in dt=" << simtimeToStrShort(delivd-simulation.simTime());
+    if (delivd >= simulation.simTime())
+    {
+        // if it arrived in the past, dt is usually unimportant, don't print it
+        out << "T=" << simtimeToStrShort(delivd);
+        out << ", in dt=" << simtimeToStrShort(delivd-simulation.simTime());
+    }
 
 #define MODNAME(modp) ((modp) ? (modp)->fullPath().c_str() : deletedstr)
     if (kind()==MK_STARTER)
