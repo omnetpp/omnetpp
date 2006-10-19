@@ -45,7 +45,7 @@ void cSimpleModule::activate(void *p)
             simulation.transferTo(after_cleanup_transfer_to);
         else
             simulation.transferToMain();
-        assert(/*invoking transferTo() on an already deleted module?*/ 0);
+        assert("INTERNAL ERROR: switched to the fiber of an already deleted module",false);
     }
 
     cSimpleModule *mod = (cSimpleModule *)p;
@@ -64,7 +64,7 @@ void cSimpleModule::activate(void *p)
         simulation.transferToMain(); // send back exception
         assert(!after_cleanup_transfer_to);
         simulation.transferToMain(); // for stack_cleanup_requested
-        assert(/*invoking transferTo() on an already deleted module?*/ 0);
+        assert("INTERNAL ERROR: switched to the fiber of an already deleted module",false);
     }
 
     // rename message
@@ -73,39 +73,41 @@ void cSimpleModule::activate(void *p)
     sprintf(buf,"timeout-%d", mod->id());
     starter->setName(buf);
 
-    // call activity(). At this point, initialize() has already been called
-    // from cSimulation::startRun(), or manually in the case of dynamically
-    // created modules.
+    bool stackCleanupException_caught = false;
     try
     {
+        //
+        // call activity(). At this point, initialize() has already been called
+        // from cSimulation::startRun(), or manually in the case of dynamically
+        // created modules.
+        //
         mod->activity();
+
+        // mark module as finished
         mod->state = sENDED;
     }
     catch (cStackCleanupException *e)
     {
-        // job done -- transfer back where we came from
+        // IMPORTANT: No transferTo() in catch blocks! See [Note] below.
+        stackCleanupException_caught = true;
         delete e;
-        if (after_cleanup_transfer_to)
-            simulation.transferTo(after_cleanup_transfer_to);
-        else
-            simulation.transferToMain();
-        assert(/*invoking transferTo() on an already deleted module?*/ 0);
     }
     catch (cEndModuleException *e)
     {
-        // hand exception to cSimulation::transferTo() and switch back
+        // IMPORTANT: No transferTo() in catch blocks! See [Note] below.
         simulation.exception = e;
         simulation.exception_type = 2;
     }
     catch (cTerminationException *e)
     {
-        // hand exception to cSimulation::transferTo() and switch back
+        // IMPORTANT: No transferTo() in catch blocks! See [Note] below.
         simulation.exception = e;
         simulation.exception_type = 1;
     }
     catch (cException *e)
     {
-        // hand exception to cSimulation::transferTo() and switch back
+        // IMPORTANT: No transferTo() in catch blocks! It crashes Visual C++, see
+        // http://forums.microsoft.com/MSDN/ShowPost.aspx?PostID=835791&SiteID=1&mode=1
         simulation.exception = e;
         simulation.exception_type = 0;
     }
@@ -121,13 +123,21 @@ void cSimpleModule::activate(void *p)
     //    simulation.exception_type = 0;
     //}
 
-    // The End
-    simulation.transferToMain(); // send back exception -- will come back sometime for stack cleanup
+    //
+    // [1] with Visual C++, SwitchToFiber() calls in catch blocks crash mess up exception handling,
+    //     see http://forums.microsoft.com/MSDN/ShowPost.aspx?PostID=835791&SiteID=1&mode=1
+    //
+
+    if (!stackCleanupException_caught)
+    {
+        // Exception caught from simple module. We send back the exception hand exception to cSimulation::transferTo() and switch back
+        simulation.transferToMain();
+    }
     if (after_cleanup_transfer_to)
         simulation.transferTo(after_cleanup_transfer_to);
     else
         simulation.transferToMain();
-    assert(/*invoking transferTo() on an already deleted module?*/ 0);
+    assert("INTERNAL ERROR: switched to the fiber of an already deleted module",false);
 }
 
 cSimpleModule::cSimpleModule(const cSimpleModule& mod)

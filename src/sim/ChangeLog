@@ -1,3 +1,10 @@
+2006-10-19  Andras Varga
+
+	* csimplemodule.cc: bugfix: worked around Visual C++ bug that causes
+	exception handling to mess up when SwitchToFiber() is called within
+	a catch block. See Microsoft forum patch:
+	http://forums.microsoft.com/MSDN/ShowPost.aspx?PostID=835791&SiteID=1&mode=1
+
 2006-09-28  Andras Varga
 
 	* cmessage.cc: fix in refcounting code: when decrementing refcount
