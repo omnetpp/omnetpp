@@ -282,8 +282,8 @@ void BasicSpringEmbedderLayout::execute()
             maxdcounter=0;
     }
     clock_t end = clock();
-    printf("DBG: layout done in %g secs, %d iterations (%g sec/iter)\n",
-           (end-beg)/(double)CLOCKS_PER_SEC, i, (end-beg)/(double)CLOCKS_PER_SEC/i);
+    //printf("DBG: layout done in %g secs, %d iterations (%g sec/iter)\n",
+    //       (end-beg)/(double)CLOCKS_PER_SEC, i, (end-beg)/(double)CLOCKS_PER_SEC/i);
 
     // clean up canvas after the drawing
     if (interp && canvas)
