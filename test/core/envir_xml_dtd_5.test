@@ -31,4 +31,4 @@ node->debugDump();
 %exitcode: 1
 
 %contains-regex: stdout
-Validation error:.*extraElem
+Validation error:.*(extraElem|foo)

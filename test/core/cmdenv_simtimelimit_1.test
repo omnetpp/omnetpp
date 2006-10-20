@@ -40,6 +40,6 @@ time: 5.
 time: 5s
 
 %contains: stdout
-finish() at 5.1s
+finish() at 5s
 
 
