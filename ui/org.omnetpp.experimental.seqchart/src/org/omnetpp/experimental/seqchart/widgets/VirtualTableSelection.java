@@ -6,7 +6,7 @@ public class VirtualTableSelection implements IVirtualTableSelection {
 	protected Object input;
 	protected List elements;
 
-	VirtualTableSelection(Object input, List elements) {
+	public VirtualTableSelection(Object input, List elements) {
 		this.input = input;
 		this.elements = elements;
 	}

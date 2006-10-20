@@ -2,7 +2,7 @@ package org.omnetpp.experimental.seqchart.widgets;
 
 import org.eclipse.jface.viewers.Viewer;
 import org.omnetpp.eventlog.engine.EventLogEntry;
-import org.omnetpp.eventlog.engine.EventLogFacade;
+import org.omnetpp.eventlog.engine.EventLogTableFacade;
 import org.omnetpp.eventlog.engine.IEventLog;
 
 public class EventLogVirtualTableContentProvider implements IVirtualTableContentProvider {
@@ -10,26 +10,26 @@ public class EventLogVirtualTableContentProvider implements IVirtualTableContent
 
 	protected IEventLog eventLog;
 	
-	protected EventLogFacade eventLogFacade;
+	protected EventLogTableFacade eventLogTableFacade;
 
 	public Object getFirstElement() {
 		if (debug)
 			System.out.println("Virtual table content provider getFirstElement");
 
-		if (eventLogFacade == null)
+		if (eventLogTableFacade == null)
 			return null;
 		else
-			return eventLogFacade.getFirstEventLogTableEntry();
+			return eventLogTableFacade.getFirstEntry();
 	}
 
 	public Object getLastElement() {
 		if (debug)
 			System.out.println("Virtual table content provider getLastElement");
 
-		if (eventLogFacade == null)
+		if (eventLogTableFacade == null)
 			return null;
 		else
-			return eventLogFacade.getLastEventLogTableEntry();
+			return eventLogTableFacade.getLastEntry();
 	}
 
 	public long getDistanceToElement(Object sourceElement, Object targetElement, long limit)
@@ -40,10 +40,10 @@ public class EventLogVirtualTableContentProvider implements IVirtualTableContent
 		if (sourceElement == null || targetElement == null)
 			throw new IllegalArgumentException();
 
-		if (eventLogFacade == null)
+		if (eventLogTableFacade == null)
 			return 0;
 		else
-			return eventLogFacade.getDistanceToEventLogTableEntry((EventLogEntry)sourceElement, (EventLogEntry)targetElement, (int)limit);
+			return eventLogTableFacade.getDistanceToEntry((EventLogEntry)sourceElement, (EventLogEntry)targetElement, (int)limit);
 	}
 
 	public long getDistanceToFirstElement(Object element, long limit) {
@@ -53,10 +53,10 @@ public class EventLogVirtualTableContentProvider implements IVirtualTableContent
 		if (element == null)
 			throw new IllegalArgumentException();
 
-		if (eventLogFacade == null)
+		if (eventLogTableFacade == null)
 			return 0;
 		else
-			return eventLogFacade.getDistanceToFirstEventLogTableEntry((EventLogEntry)element, (int)limit);
+			return eventLogTableFacade.getDistanceToFirstEntry((EventLogEntry)element, (int)limit);
 	}
 
 	public long getDistanceToLastElement(Object element, long limit) {
@@ -66,10 +66,10 @@ public class EventLogVirtualTableContentProvider implements IVirtualTableContent
 		if (element == null)
 			throw new IllegalArgumentException();
 
-		if (eventLogFacade == null)
+		if (eventLogTableFacade == null)
 			return 0;
 		else
-			return eventLogFacade.getDistanceToLastEventLogTableEntry((EventLogEntry)element, (int)limit);
+			return eventLogTableFacade.getDistanceToLastEntry((EventLogEntry)element, (int)limit);
 	}
 
 	public Object getNeighbourElement(Object element, long distance) {
@@ -79,10 +79,10 @@ public class EventLogVirtualTableContentProvider implements IVirtualTableContent
 		if (element == null)
 			throw new IllegalArgumentException();
 
-		if (eventLogFacade == null)
+		if (eventLogTableFacade == null)
 			return null;
 		else
-			return eventLogFacade.getNeighbourEventLogTableEntry((EventLogEntry)element, (int)distance);
+			return eventLogTableFacade.getNeighbourEntry((EventLogEntry)element, (int)distance);
 	}
 
 	public double getApproximatePercentageForElement(Object element) {
@@ -92,10 +92,10 @@ public class EventLogVirtualTableContentProvider implements IVirtualTableContent
 		if (element == null)
 			throw new IllegalArgumentException();
 
-		if (eventLogFacade == null)
+		if (eventLogTableFacade == null)
 			return 0;
 		else
-			return eventLogFacade.getApproximatePercentageForEventLogTableEntry((EventLogEntry)element);
+			return eventLogTableFacade.getApproximatePercentageForEntry((EventLogEntry)element);
 	}
 
 	public Object getApproximateElementAt(double percentage) {
@@ -105,20 +105,20 @@ public class EventLogVirtualTableContentProvider implements IVirtualTableContent
 		if (percentage < 0 || percentage > 1)
 			throw new IllegalArgumentException();
 
-		if (eventLogFacade == null)
+		if (eventLogTableFacade == null)
 			return null;
 		else
-			return eventLogFacade.getApproximateEventLogEntryTableAt(percentage);
+			return eventLogTableFacade.getApproximateEventLogEntryTableAt(percentage);
 	}
 
 	public long getApproximateNumberOfElements() {
 		if (debug)
 			System.out.println("Virtual table content provider getApproximateNumberOfElements");
 
-		if (eventLogFacade == null)
+		if (eventLogTableFacade == null)
 			return 0;
 		else
-			return eventLogFacade.getApproximateNumberOfEventLogTableEntries();
+			return eventLogTableFacade.getApproximateNumberOfEntries();
 	}
 
 	public void dispose() {
@@ -128,12 +128,12 @@ public class EventLogVirtualTableContentProvider implements IVirtualTableContent
 		eventLog = (IEventLog)newInput;
 		
 		if (eventLog == null)
-			eventLogFacade = null;
+			eventLogTableFacade = null;
 		else
-			eventLogFacade = new EventLogFacade(eventLog);
+			eventLogTableFacade = new EventLogTableFacade(eventLog);
 	}
 
-	public EventLogFacade getEventLogFacade() {
-		return eventLogFacade;
+	public EventLogTableFacade getEventLogTableFacade() {
+		return eventLogTableFacade;
 	}
 }

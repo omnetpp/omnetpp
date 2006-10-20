@@ -10,18 +10,19 @@ import java.util.Hashtable;
 public class ModuleTreeBuilder {
 	private Hashtable<Integer, ModuleTreeItem> moduleIdToModuleMap = new Hashtable<Integer, ModuleTreeItem>();
 
-	private ModuleTreeItem treeRoot;
+	private ModuleTreeItem treeRoot = new ModuleTreeItem();
 	
 	public ModuleTreeItem addModule(int parentModuleId, int moduleId, String moduleClassName, String moduleFullName) {
 		ModuleTreeItem parentModule = (ModuleTreeItem)moduleIdToModuleMap.get(parentModuleId);
+		
+		if (parentModule == null)
+			parentModule = treeRoot;
+		
 		ModuleTreeItem module = new ModuleTreeItem(moduleFullName, parentModule);
 		module.setModuleId(moduleId);
 		module.setModuleClassName(moduleClassName);
 		moduleIdToModuleMap.put(moduleId, module);
 		
-		if (treeRoot == null)
-			treeRoot = module;
-
 		return module;
 	}
 	

@@ -1,5 +1,7 @@
 package org.omnetpp.experimental.seqchart.editors;
 
+import java.util.ArrayList;
+
 import org.eclipse.jface.dialogs.IInputValidator;
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -15,12 +17,15 @@ import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.ui.ISelectionListener;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.part.ViewPart;
+import org.omnetpp.eventlog.engine.EventEntry;
 import org.omnetpp.eventlog.engine.IEvent;
 import org.omnetpp.eventlog.engine.IEventLog;
 import org.omnetpp.experimental.seqchart.widgets.EventLogVirtualTableContentProvider;
 import org.omnetpp.experimental.seqchart.widgets.EventLogVirtualTableItemProvider;
+import org.omnetpp.experimental.seqchart.widgets.IVirtualTableSelection;
 import org.omnetpp.experimental.seqchart.widgets.LongVirtualTableContentProvider;
 import org.omnetpp.experimental.seqchart.widgets.LongVirtualTableItemProvider;
+import org.omnetpp.experimental.seqchart.widgets.VirtualTableSelection;
 import org.omnetpp.experimental.seqchart.widgets.VirtualTableViewer;
 
 /**
@@ -72,8 +77,13 @@ public class EventLogView extends ViewPart {
 		// follow selection
 		getSite().getPage().addSelectionListener(new ISelectionListener() {
 			public void selectionChanged(IWorkbenchPart part, ISelection selection) {
-				if (part != virtualTableViewer)
-					virtualTableViewer.setSelection(selection);
+				if (part != virtualTableViewer && selection instanceof EventLogSelection) {
+					EventLogSelection eventLogSelection = (EventLogSelection)selection;
+					ArrayList<EventEntry> eventEntries = new ArrayList<EventEntry>();
+					for (IEvent event : eventLogSelection.getEvents())
+						eventEntries.add(event.getEventEntry());
+					virtualTableViewer.setSelection(new VirtualTableSelection(eventLogSelection.getInput(), eventEntries));
+				}
 			}
 		});
 		

@@ -33,6 +33,7 @@ import org.eclipse.ui.part.EditorPart;
 import org.omnetpp.common.canvas.RubberbandSupport;
 import org.omnetpp.eventlog.engine.EventLog;
 import org.omnetpp.eventlog.engine.FileReader;
+import org.omnetpp.eventlog.engine.FilteredEventLog;
 import org.omnetpp.eventlog.engine.IEvent;
 import org.omnetpp.eventlog.engine.IEventLog;
 import org.omnetpp.eventlog.engine.IntSet;
@@ -61,13 +62,11 @@ import org.omnetpp.scave.engineext.ResultFileManagerEx;
 //FIXME unhook from listeners (there are "widget is disposed" errors in the log after the editor is closed)  
 public class SequenceChartToolEditor extends EditorPart implements INavigationLocationProvider {
 
-	private SequenceChart seqChart;
-	
+	private SequenceChart sequenceChart;
 	private IEventLog eventLog;  // the log file loaded
 	private ModuleTreeItem moduleTree; // modules in eventLog
-	private ArrayList<ModuleTreeItem> axisModules; // which modules should have an axis
-	private int currentEventNumber = -1;
-	private IEventLog filteredEventLog; // eventLog filtered for currentEventNumber
+	private ArrayList<ModuleTreeItem> selectedAxisModules; // which modules should have an axis
+	private int tracedEventNumber = -1;
 	private ResultFileManagerEx resultFileManager; 
 	private IDList idlist; // idlist of the loaded vector file
 	private XYArray[] stateVectors; // vector file loaded for the log file
@@ -85,18 +84,7 @@ public class SequenceChartToolEditor extends EditorPart implements INavigationLo
 		
 		IFileEditorInput fileInput = (IFileEditorInput)input;
 		String logFileName = fileInput.getFile().getLocation().toFile().getAbsolutePath();
-
 		eventLog = new EventLog(new FileReader(logFileName, /* EventLog will delete it */false));
-
-		/*
-		eventLog = new FilteredEventLog(
-				new EventLog(new FileReader(logFileName, false)),
-				null,
-				100000,
-				true,
-				true
-		);
-		*/
 
 		String vectorFileName = logFileName.replaceFirst("\\.log$", ".vec");
 		if (!vectorFileName.equals(logFileName) && new java.io.File(vectorFileName).exists()) {
@@ -106,7 +94,7 @@ public class SequenceChartToolEditor extends EditorPart implements INavigationLo
 		
 		setPartName(input.getName());
 		
-		extractModuleTree();
+		buildModuleTree();
 
 		// try to open the log view
 		try {
@@ -162,17 +150,28 @@ public class SequenceChartToolEditor extends EditorPart implements INavigationLo
 		return xyArray;
 	}
 	
-	private void extractModuleTree() {
-		ArrayList<ModuleTreeItem> modules = new ArrayList<ModuleTreeItem>();
+	private void buildModuleTree() {
 		ModuleTreeBuilder treeBuilder = new ModuleTreeBuilder();
-		for (int i=0; i<eventLog.getNumModuleCreatedEntries(); i++) {
+		for (int i = 1; i <= eventLog.getNumModuleCreatedEntries(); i++) {
 			ModuleCreatedEntry entry = eventLog.getModuleCreatedEntry(i);
 			
 			if (entry != null)
-				modules.add(treeBuilder.addModule(entry.getParentModuleId(), entry.getModuleId(), entry.getModuleClassName(), entry.getFullName() + i));
+				treeBuilder.addModule(entry.getParentModuleId(), entry.getModuleId(), entry.getModuleClassName(), entry.getFullName() + i);
 		}
+
 		moduleTree = treeBuilder.getModuleTree();
-		axisModules = modules;
+	}
+	
+	private ArrayList<ModuleTreeItem> getAllAxisModules() {
+		final ArrayList<ModuleTreeItem> modules = new ArrayList<ModuleTreeItem>();
+		moduleTree.visitLeaves(new ModuleTreeItem.IModuleTreeItemVisitor() {
+			public void visit(ModuleTreeItem treeItem) {
+				if (treeItem != moduleTree)
+					modules.add(treeItem);
+			}
+		});
+
+		return modules;
 	}
 	
 	@Override
@@ -182,13 +181,13 @@ public class SequenceChartToolEditor extends EditorPart implements INavigationLo
 		upper.setLayout(new GridLayout());
 
 		// create sequence chart widget
-		seqChart = new SequenceChart(upper, SWT.DOUBLE_BUFFERED);
-		seqChart.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-		seqChart.setBackground(CHART_BACKGROUND_COLOR);
-		new RubberbandSupport(seqChart, SWT.CTRL) {
+		sequenceChart = new SequenceChart(upper, SWT.DOUBLE_BUFFERED);
+		sequenceChart.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+		sequenceChart.setBackground(CHART_BACKGROUND_COLOR);
+		new RubberbandSupport(sequenceChart, SWT.CTRL) {
 			@Override
 			public void rubberBandSelectionMade(Rectangle r) {
-				seqChart.zoomToRectangle(new org.eclipse.draw2d.geometry.Rectangle(r));
+				sequenceChart.zoomToRectangle(new org.eclipse.draw2d.geometry.Rectangle(r));
 				markLocation();
 			}
 		};
@@ -196,13 +195,13 @@ public class SequenceChartToolEditor extends EditorPart implements INavigationLo
 		// create control strip (this needs the seqChart pointer)
 		Composite controlStrip = createControlStrip(upper);
 		controlStrip.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
-		controlStrip.moveAbove(seqChart);
+		controlStrip.moveAbove(sequenceChart);
 
 		// set up operations: click, double-click
-		seqChart.addSelectionListener(new SelectionAdapter() {
+		sequenceChart.addSelectionListener(new SelectionAdapter() {
 			public void widgetDefaultSelected(SelectionEvent e) {
 				// on double-click, filter the event log
-				List<IEvent> events = ((IEventLogSelection)seqChart.getSelection()).getEvents();
+				List<IEvent> events = ((IEventLogSelection)sequenceChart.getSelection()).getEvents();
 				if (events.size()>1) { 
 					//XXX pop up selection dialog instead?
 					MessageDialog.openInformation(getEditorSite().getShell(), "Information", "Ambiguous double-click: there are "+events.size()+" events under the mouse! Zooming may help.");
@@ -212,7 +211,7 @@ public class SequenceChartToolEditor extends EditorPart implements INavigationLo
 			}
 		});
 		
-		seqChart.addMouseListener(new MouseAdapter() {
+		sequenceChart.addMouseListener(new MouseAdapter() {
 			public void mouseDown(MouseEvent e) {
 				if (e.button == 3)
 					displayPopupMenu(e);
@@ -222,13 +221,13 @@ public class SequenceChartToolEditor extends EditorPart implements INavigationLo
 		// give eventLog to the chart for display
 		showFullSequenceChart();
 		
-		getSite().setSelectionProvider(seqChart);
+		getSite().setSelectionProvider(sequenceChart);
 		
 		// follow selection
 		getSite().getPage().addSelectionListener(new ISelectionListener() {
 			public void selectionChanged(IWorkbenchPart part, ISelection selection) {
-				if (part!=seqChart) {
-					seqChart.setSelection(selection);
+				if (part!=sequenceChart) {
+					sequenceChart.setSelection(selection);
 					markLocation();
 				}
 			}
@@ -243,7 +242,7 @@ public class SequenceChartToolEditor extends EditorPart implements INavigationLo
 		Combo timelineSortMode = new Combo(controlStrip, SWT.NONE);
 		for (SequenceChart.TimelineSortMode t : SequenceChart.TimelineSortMode.values())
 			timelineSortMode.add(t.name());
-		timelineSortMode.select(seqChart.getTimelineSortMode().ordinal());
+		timelineSortMode.select(sequenceChart.getTimelineSortMode().ordinal());
 		timelineSortMode.setVisibleItemCount(SequenceChart.TimelineSortMode.values().length);
 		
 		Combo timelineMode = new Combo(controlStrip, SWT.NONE);
@@ -289,72 +288,72 @@ public class SequenceChartToolEditor extends EditorPart implements INavigationLo
 
 		zoomIn.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
-				seqChart.zoomIn();
+				sequenceChart.zoomIn();
 				markLocation();
 			}});
 		
 		zoomOut.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
-				seqChart.zoomOut();
+				sequenceChart.zoomOut();
 				markLocation();
 			}});
 
 		increaseSpacing.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
-				seqChart.setAxisSpacing(seqChart.getAxisSpacing()+5);
+				sequenceChart.setAxisSpacing(sequenceChart.getAxisSpacing()+5);
 			}});
 		
 		decreaseSpacing.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
-				if (seqChart.getAxisSpacing()>5)
-					seqChart.setAxisSpacing(seqChart.getAxisSpacing()-5);
+				if (sequenceChart.getAxisSpacing()>5)
+					sequenceChart.setAxisSpacing(sequenceChart.getAxisSpacing()-5);
 			}});
 		
-		showMessageNames.setSelection(seqChart.getShowMessageNames());
+		showMessageNames.setSelection(sequenceChart.getShowMessageNames());
 		showMessageNames.addSelectionListener(new SelectionAdapter () {
 			public void widgetSelected(SelectionEvent e) {
-				seqChart.setShowMessageNames(((Button)e.getSource()).getSelection());
+				sequenceChart.setShowMessageNames(((Button)e.getSource()).getSelection());
 			}
 		});
 		
-		showNonDeliveryMessages.setSelection(seqChart.getShowNonDeliveryMessages());
+		showNonDeliveryMessages.setSelection(sequenceChart.getShowNonDeliveryMessages());
 		showNonDeliveryMessages.addSelectionListener(new SelectionAdapter () {
 			public void widgetSelected(SelectionEvent e) {
-				seqChart.setShowNonDeliveryMessages(((Button)e.getSource()).getSelection());
+				sequenceChart.setShowNonDeliveryMessages(((Button)e.getSource()).getSelection());
 			}
 		});
 		
-		showEventNumbers.setSelection(seqChart.getShowEventNumbers());
+		showEventNumbers.setSelection(sequenceChart.getShowEventNumbers());
 		showEventNumbers.addSelectionListener(new SelectionAdapter () {
 			public void widgetSelected(SelectionEvent e) {
-				seqChart.setShowEventNumbers(((Button)e.getSource()).getSelection());
+				sequenceChart.setShowEventNumbers(((Button)e.getSource()).getSelection());
 			}
 		});
 
-		showArrowHeads.setSelection(seqChart.getShowArrowHeads());
+		showArrowHeads.setSelection(sequenceChart.getShowArrowHeads());
 		showArrowHeads.addSelectionListener(new SelectionAdapter () {
 			public void widgetSelected(SelectionEvent e) {
-				seqChart.setShowArrowHeads(((Button)e.getSource()).getSelection());
+				sequenceChart.setShowArrowHeads(((Button)e.getSource()).getSelection());
 			}
 		});
 		
-		canvasCaching.setSelection(seqChart.getCaching());
+		canvasCaching.setSelection(sequenceChart.getCaching());
 		canvasCaching.addSelectionListener(new SelectionAdapter () {
 			public void widgetSelected(SelectionEvent e) {
-				seqChart.setCaching(((Button)e.getSource()).getSelection());
-				seqChart.redraw();
+				sequenceChart.setCaching(((Button)e.getSource()).getSelection());
+				sequenceChart.redraw();
 			}
 		});
 
 		timelineMode.addSelectionListener(new SelectionAdapter () {
 			public void widgetSelected(SelectionEvent e) {
-				seqChart.setTimelineMode(SequenceChart.TimelineMode.values()[((Combo)e.getSource()).getSelectionIndex()]);
+				sequenceChart.setTimelineMode(SequenceChart.TimelineMode.values()[((Combo)e.getSource()).getSelectionIndex()]);
 			}
 		});
 		
 		timelineSortMode.addSelectionListener(new SelectionAdapter () {
 			public void widgetSelected(SelectionEvent e) {
-				seqChart.setTimelineSortMode(SequenceChart.TimelineSortMode.values()[((Combo)e.getSource()).getSelectionIndex()]);
+				sequenceChart.setTimelineSortMode(SequenceChart.TimelineSortMode.values()[((Combo)e.getSource()).getSelectionIndex()]);
 			}
 		});
 		
@@ -366,27 +365,32 @@ public class SequenceChartToolEditor extends EditorPart implements INavigationLo
 	 */
 	private void showSequenceChartForEvent(int eventNumber) {
 		IEvent event = eventLog.getEventForEventNumber(eventNumber);
-		if (event==null) {
-			MessageDialog.openError(getEditorSite().getShell(), "Error", "Event #"+eventNumber+" not found.");
-			return;
+
+		if (event == null)
+			MessageDialog.openError(getEditorSite().getShell(), "Error", "Event #" + eventNumber + " not found.");
+		else {
+			tracedEventNumber = eventNumber;	
+			showFilteredEventLog();
 		}
-		currentEventNumber = eventNumber;
-		
-		filterEventLog();
 	}
 
 	private void showFullSequenceChart() {
-		currentEventNumber = -1;
-		filterEventLog();
+		tracedEventNumber = -1;
+		selectedAxisModules = getAllAxisModules();
+		showEventLog(eventLog, selectedAxisModules);
 	}
 	
 	/**
 	 * Filters event log by the currently selected event number and modules.
 	 */
-	private void filterEventLog() {
+	private void showFilteredEventLog() {
+		showFilteredEventLog(eventLog, selectedAxisModules, tracedEventNumber);
+	}
+
+	private void showFilteredEventLog(IEventLog eventLog, ArrayList<ModuleTreeItem> axisModules, int eventNumber) {
 		final IntSet moduleIds = new IntSet();
 
-		for (int i=0; i<axisModules.size(); i++) {
+		for (int i = 0; i < axisModules.size(); i++) {
 			ModuleTreeItem treeItem = axisModules.get(i);
 			treeItem.visitLeaves(new ModuleTreeItem.IModuleTreeItemVisitor() {
 				public void visit(ModuleTreeItem treeItem) {
@@ -395,10 +399,10 @@ public class SequenceChartToolEditor extends EditorPart implements INavigationLo
 			});
 		}
 
-		// TODO: pass in null when all modules are included
-		// FIXME: resurrect filteredEventLog = new FilteredEventLog(eventLog, moduleIds, currentEventNumber, true, true);
-		filteredEventLog = eventLog;
+		showEventLog(new FilteredEventLog(eventLog, moduleIds, eventNumber, true, true), axisModules);
+	}
 
+	private void showEventLog(IEventLog eventLog,  ArrayList<ModuleTreeItem> axisModules) {
 		ArrayList<XYArray> axisVectors = new ArrayList<XYArray>();
 		for (ModuleTreeItem treeItem : axisModules) {
 			axisVectors.add(null);
@@ -411,30 +415,23 @@ public class SequenceChartToolEditor extends EditorPart implements INavigationLo
 					}
 		}
 		
-		seqChart.setParameters(filteredEventLog, axisModules, axisVectors);
-	}
-
-	/**
-	 * Return the current filtered event log.
-	 */
-	public IEventLog getFilteredEventLog() {
-		return filteredEventLog;
+		sequenceChart.setParameters(eventLog, axisModules, axisVectors);
 	}
 
 	protected void displayModuleTreeDialog() {
-		ModuleTreeDialog dialog = new ModuleTreeDialog(getSite().getShell(), moduleTree, axisModules);
+		ModuleTreeDialog dialog = new ModuleTreeDialog(getSite().getShell(), moduleTree, selectedAxisModules);
 		dialog.open();
 		Object[] selection = dialog.getResult(); 
 		if (selection != null) { // not cancelled
-			axisModules = new ArrayList<ModuleTreeItem>();
+			selectedAxisModules = new ArrayList<ModuleTreeItem>();
 			for (Object sel : selection)
-				axisModules.add((ModuleTreeItem)sel);
+				selectedAxisModules.add((ModuleTreeItem)sel);
 
 			System.out.println("Selected:");
-			for (ModuleTreeItem sel : axisModules)
+			for (ModuleTreeItem sel : selectedAxisModules)
 				System.out.println(" "+sel.getModuleFullPath());
 
-			filterEventLog();
+			showFilteredEventLog();
 		}
 	}
 	
@@ -581,7 +578,7 @@ public class SequenceChartToolEditor extends EditorPart implements INavigationLo
 
 	@Override
 	public void setFocus() {
-		seqChart.setFocus();
+		sequenceChart.setFocus();
 	}
 
 	@Override
@@ -636,7 +633,7 @@ public class SequenceChartToolEditor extends EditorPart implements INavigationLo
 		}
 
 		public void restoreLocation() {
-			seqChart.gotoSimulationTimeRange(startSimulationTime, endSimulationTime);
+			sequenceChart.gotoSimulationTimeRange(startSimulationTime, endSimulationTime);
 		}
 
 		public void restoreState(IMemento memento) {
@@ -661,6 +658,6 @@ public class SequenceChartToolEditor extends EditorPart implements INavigationLo
 	}
 
 	public INavigationLocation createNavigationLocation() {
-		return new SequenceChartLocation(seqChart.getViewportLeftSimulationTime(), seqChart.getViewportRightSimulationTime());
+		return new SequenceChartLocation(sequenceChart.getViewportLeftSimulationTime(), sequenceChart.getViewportRightSimulationTime());
 	}
 }
