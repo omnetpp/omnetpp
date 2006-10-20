@@ -17,6 +17,8 @@ Tkenv:
   - added "Copy to clipboard" and "Save window contents" toolbar icons to all
     text windows. (Copy has already been available with Ctrl+C.)
 
+  - main window position gets saved and restored
+
 Bugfixes:
   - fix: worked around a Visual C++ bug that caused certain activity()-based
     modules crash when the simulation was restarted. See Microsoft forum post:
