@@ -1,6 +1,49 @@
 What's New
 ==========
 
+OMNeT++ 3.3 (Oct 2006)
+----------------------
+This release contains several GUI enhancements in Tkenv, and several bugfixes.
+Tkenv:
+  - display string enhancement: connections with zero thickness set ("o=,0")
+    now do not appear in the network graphics.
+
+  - added object icons to inspector listboxes
+
+  - added Run/Fast/Express buttons to every module inspector window, as well as
+    a "Find/inspect messages, queues, etc within this module" button. These
+    functions are all available via hotkeys too (F5,F6,F7,Ctrl+S).
+
+  - added "Copy to clipboard" and "Save window contents" toolbar icons to all
+    text windows. (Copy has already been available with Ctrl+C.)
+
+Bugfixes:
+  - fix: worked around a Visual C++ bug that caused certain activity()-based
+    modules crash when the simulation was restarted. See Microsoft forum post:
+    http://forums.microsoft.com/MSDN/ShowPost.aspx?PostID=835791&SiteID=1&mode=1
+
+  - fix: gamma_d() was bogus for the alpha<1 case [reported by Patrick McDonnell]
+
+  - fixed a bug which sometimes caused Tkenv to crash when inspecting an
+    internally refcounted message.
+
+  - fixed a bug in Tkenv's setObjectListResult() [crash reported by Rodolfo
+    Ribeiro Gomes and others]
+
+  - fix: on some Linux systems, Tkenv used unreadably small font size in some
+    dialogs
+
+  - opp_msgc improvements: don't accept reserved words as identifiers; added
+    OMNeT++ version check into generated code
+
+  - fix: the simulation can now be in a directory whose path name contains spaces
+    (e.g. "Program Files"); opp_nmakemake also fixed to accept include paths
+    with spaces.
+
+  - many other minor fixes and improvements; see the ChangeLogs of the
+    corresponding source directories for more details.
+
+
 OMNeT++ 3.2p1 (Jan 2006)
 ------------------------
 This is a maintenance release. Changes include:
