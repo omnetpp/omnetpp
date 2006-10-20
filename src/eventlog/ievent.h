@@ -42,6 +42,15 @@ class IEvent
          */
         virtual IEventLog *getEventLog() = 0;
 
+        /**
+         * Returns the begin offset of the event in the log file.
+         */
+        virtual long getBeginOffset() = 0;
+        /**
+         * Returns the end offset of the event in the log file.
+         */
+        virtual long getEndOffset() = 0;
+
         /** 
          * Returns the 'E' entry (line) corresponding to this event.
          */

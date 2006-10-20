@@ -23,7 +23,8 @@
 class FilteredEventLog;
 
 /**
- * Events stored in the FilteredEventLog.
+ * Events stored in the FilteredEventLog. This class uses the Event class by delegation so that multiple
+ * filtered events can share the same event object.
  *
  * Filtered events are in a lazy double-linked list based on event numbers.
  */
@@ -46,6 +47,9 @@ class FilteredEvent : public IEvent
 
         // IEvent interface
         virtual IEventLog *getEventLog();
+
+        virtual long getBeginOffset() { return getEvent()->getBeginOffset(); }
+        virtual long getEndOffset() { return getEvent()->getEndOffset(); }
 
         virtual EventEntry *getEventEntry() { return getEvent()->getEventEntry(); }
         virtual int getNumEventLogEntries() { return getEvent()->getNumEventLogEntries(); }

@@ -31,16 +31,6 @@ MessageDependency::MessageDependency(IEventLog *eventLog,
     EASSERT(causeEventNumber >= 0 || consequenceEventNumber >= 0);
 }
 
-BeginSendEntry *MessageDependency::getBeginSendEntry()
-{
-    if (causeBeginSendEntryNumber != -1 && consequenceBeginSendEntryNumber != -1)
-        return NULL;
-    else if (causeBeginSendEntryNumber != -1)
-        return getCauseBeginSendEntry();
-    else
-        return getConsequenceBeginSendEntry();
-}
-
 BeginSendEntry *MessageDependency::getCauseBeginSendEntry()
 {
     return (BeginSendEntry *)getCauseEvent()->getEventLogEntry(causeBeginSendEntryNumber);

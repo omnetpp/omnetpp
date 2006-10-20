@@ -56,13 +56,14 @@ class Event : public IEvent
         Event(EventLog *eventLog);
         ~Event();
 
-        long getBeginOffset() { return beginOffset; }
-        long getEndOffset() { return endOffset; }
         long parse(FileReader *index, long offset);
         static long getNumParsedEvent() { return numParsedEvent; }
 
         // IEvent interface
         virtual IEventLog *getEventLog();
+
+        virtual long getBeginOffset() { return beginOffset; }
+        virtual long getEndOffset() { return endOffset; }
 
         virtual EventEntry *getEventEntry() { return eventEntry; }
         virtual int getNumEventLogEntries() { return eventLogEntries.size(); }

@@ -186,7 +186,9 @@ MessageDependencyList *Event::getCauses()
         {
             BeginSendEntry *beginSendEntry = dynamic_cast<BeginSendEntry *>(eventLogEntries[messageEntryNumber]);
 
-            if (beginSendEntry && beginSendEntry->previousEventNumber != getEventNumber())
+            if (beginSendEntry && 
+                beginSendEntry->previousEventNumber != -1 &&
+                beginSendEntry->previousEventNumber != getEventNumber())
             {
                 // store "pe" key from "BS" or "SA" lines
                 causes->push_back(new MessageReuse(eventLog, getEventNumber(), messageEntryNumber));

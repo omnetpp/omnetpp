@@ -70,8 +70,6 @@ class MessageDependency
         long getCauseMessageId() { return getCauseBeginSendEntry()->messageId; }
         long getConsequenceMessageId() { return getConsequenceBeginSendEntry()->messageId; }
 
-        BeginSendEntry *getBeginSendEntry();
-
         void printCause(FILE *file = stdout);
         void printConsequence(FILE *file = stdout);
         virtual void print(FILE *file = stdout);

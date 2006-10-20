@@ -21,8 +21,16 @@
 
 class IEventLog
 {
+    protected:
+        /**
+         * Remembers the last IEvent returned by getNeighbourEvent so that subsequent calls might return much faster.
+         */
+        long lastNeighbourEventNumber;
+        IEvent *lastNeighbourEvent;
+
     public:
-	virtual ~IEventLog() {}
+        IEventLog();
+        virtual ~IEventLog() {}
 	
         /**
          * Returns the entry which describes the module with the given id.
@@ -42,10 +50,6 @@ class IEventLog
          */
         virtual IEvent *getLastEvent() = 0;
         /**
-         * Returns the event at the given instance. 0 means the parameter event will be returned.
-         */
-        virtual IEvent *getNeighbourEvent(IEvent *event, long distance = 1) = 0;
-        /**
          * Returns the requested event or NULL if there's no such event included in the log.
          * The given event number may not be included in the log.
          */
@@ -61,7 +65,6 @@ class IEventLog
          * This value may be less, equal or greater than the real number of events.
          */
         virtual long getApproximateNumberOfEvents() = 0;
-        virtual double getApproximatePercentageForEventNumber(long eventNumber) = 0;
         virtual IEvent *getApproximateEventAt(double percentage) = 0;
 
         /**
@@ -70,6 +73,10 @@ class IEventLog
         virtual void printInitializationLogEntries(FILE *file = stdout) = 0;
 
     public:
+        /**
+         * Returns the event at the given instance. 0 means the parameter event will be returned.
+         */
+        virtual IEvent *getNeighbourEvent(IEvent *event, long distance = 1);
 
         /**
          * Returns true if the event with the given event number is included in the log.
@@ -79,6 +86,8 @@ class IEventLog
         virtual IEvent *getLastEventNotAfterEventNumber(long eventNumber) { return getEventForEventNumber(eventNumber, FIRST); }
         virtual IEvent *getFirstEventNotBeforeSimulationTime(simtime_t simulationTime) { return getEventForSimulationTime(simulationTime, LAST); }
         virtual IEvent *getLastEventNotAfterSimulationTime(simtime_t simulationTime) { return getEventForSimulationTime(simulationTime, FIRST); }
+
+        virtual double getApproximatePercentageForEventNumber(long eventNumber);
 
         /**
          * Prints all or only the events in the requested range from the log.

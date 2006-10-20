@@ -20,8 +20,6 @@ StringPool eventLogStringPool;
 
 EventLog::EventLog(FileReader *reader) : EventLogIndex(reader)
 {
-    lastNeighbourEventNumber = -1;
-    lastNeighbourEvent = NULL;
     approximateNumberOfEvents = -1;
     parseInitializationLogEntries();
 }
@@ -50,8 +48,9 @@ long EventLog::getApproximateNumberOfEvents()
             long endOffset = lastEvent->getEndOffset();
             long sum = 0;
             long count = 0;
+            int eventCount = 100;
 
-            for (int i = 0; i < 100; i++)
+            for (int i = 0; i < eventCount; i++)
             {
                 if (firstEvent) {
                     sum += firstEvent->getEndOffset() - firstEvent->getBeginOffset();
@@ -66,32 +65,12 @@ long EventLog::getApproximateNumberOfEvents()
                 }
             }
 
-            double average = sum / count;
+            double average = (double)sum / count;
             approximateNumberOfEvents = (endOffset - beginOffset) / average;
         }
     }
 
     return approximateNumberOfEvents;
-}
-
-double EventLog::getApproximatePercentageForEventNumber(long eventNumber)
-{
-    Event *firstEvent = getFirstEvent();
-    Event *lastEvent = getLastEvent();
-    Event *event = getEventForEventNumber(eventNumber);
-
-    if (firstEvent == NULL)
-        return 0;
-    else if (event == NULL)
-        return 0.5;
-    else {
-        long beginOffset = firstEvent->getBeginOffset();
-        long endOffset = lastEvent->getEndOffset();
-
-        double percentage = (double)event->getBeginOffset() / (endOffset - beginOffset);
-
-        return std::min(std::max(percentage, 0.0), 1.0);
-    }
 }
 
 Event *EventLog::getApproximateEventAt(double percentage)
@@ -106,11 +85,14 @@ Event *EventLog::getApproximateEventAt(double percentage)
         long endOffset = lastEvent->getBeginOffset();
         long offset = beginOffset + (endOffset - beginOffset) * percentage;
 
-        long eventNumber, lineStartOffset, lineEndOffset;
+        long eventNumber, lineStartOffset = -1, lineEndOffset;
         simtime_t simulationTime;
         readToFirstEventLine(offset, eventNumber, simulationTime, lineStartOffset, lineEndOffset);
 
-        return getEventForBeginOffset(lineStartOffset);
+        if (lineStartOffset == -1)
+            return getLastEvent();
+        else
+            return getEventForBeginOffset(lineStartOffset);
     }
 }
 
@@ -148,9 +130,10 @@ void EventLog::printInitializationLogEntries(FILE *file)
 
 Event *EventLog::getEventForEventNumber(long eventNumber, MatchKind matchKind)
 {
+    EASSERT(eventNumber >= 0);
+
     // TODO: use matchKind
     if (matchKind == EXACT) {
-        EASSERT(eventNumber >= 0);
         EventNumberToEventMap::iterator it = eventNumberToEventMap.find(eventNumber);
 
         if (it != eventNumberToEventMap.end())
@@ -167,33 +150,14 @@ Event *EventLog::getEventForEventNumber(long eventNumber, MatchKind matchKind)
 
 Event *EventLog::getNeighbourEvent(IEvent *event, long distance)
 {
-    long eventNumber = event->getEventNumber() + distance;
-
-    if (lastNeighbourEventNumber != -1 && abs(eventNumber - lastNeighbourEventNumber) < abs(distance))
-        return getNeighbourEvent(lastNeighbourEvent, eventNumber - lastNeighbourEventNumber);
-
-    while (event != NULL && distance != 0)
-    {
-        if (distance > 0) {
-            distance--;
-            event = event->getNextEvent();
-        }
-        else {
-            distance++;
-            event = event->getPreviousEvent();
-        }
-    }
-
-    lastNeighbourEventNumber = eventNumber;
-    lastNeighbourEvent = (Event *)event;
-
-    return lastNeighbourEvent;
+    return (Event *)IEventLog::getNeighbourEvent(event, distance);
 }
 
 Event *EventLog::getEventForSimulationTime(simtime_t simulationTime, MatchKind matchKind)
 {
     // TODO: use matchKind
     EASSERT(simulationTime >= 0);
+
     long offset = getOffsetForSimulationTime(simulationTime, matchKind);
 
     if (offset == -1)
@@ -202,26 +166,26 @@ Event *EventLog::getEventForSimulationTime(simtime_t simulationTime, MatchKind m
         return getEventForBeginOffset(offset);
 }
 
-Event *EventLog::getEventForBeginOffset(long offset)
+Event *EventLog::getEventForBeginOffset(long beginOffset)
 {
-    if (offset < 0)
-        throw new Exception("Offset number must be >= 0, %d", offset);
+    if (beginOffset < 0)
+        throw new Exception("Offset number must be >= 0, %d", beginOffset);
 
-    OffsetToEventMap::iterator it = offsetToEventMap.find(offset);
+    OffsetToEventMap::iterator it = offsetToEventMap.find(beginOffset);
 
     long eventNumber, lineStartOffset, lineEndOffset;
     simtime_t simulationTime;
 
     if (it != offsetToEventMap.end())
         return it->second;
-    else if (readToFirstEventLine(offset, eventNumber, simulationTime, lineStartOffset, lineEndOffset))
+    else if (reader->fileSize() != beginOffset)
     {
         Event *event = new Event(this);
-        event->parse(reader, offset);
+        event->parse(reader, beginOffset);
         return cacheEvent(event);
     }
     else {
-        offsetToEventMap[offset] = NULL;
+        offsetToEventMap[beginOffset] = NULL;
         return NULL;
     }
 }

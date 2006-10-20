@@ -22,12 +22,15 @@
 #include "filteredevent.h"
 
 /**
- * This is a "view" of the EventLog, showing only a subset of events and relationships
+ * This is a "view" of the EventLog, including only a subset of events and their dependencies. This class
+ * uses EventLog by delegation so that multiple instances might share the same EventLog object.
  */
 class FilteredEventLog : public IEventLog
 {
     protected:
         IEventLog *eventLog;
+        long approximateNumberOfEvents;
+        double approximateMatchingEventRatio;
 
         // filter parameters
         long tracedEventNumber; // the event number from which causes and consequences are followed or -1
@@ -75,7 +78,7 @@ class FilteredEventLog : public IEventLog
 
         virtual FilteredEvent *getFirstEvent();
         virtual FilteredEvent *getLastEvent();
-        virtual Event *getNeighbourEvent(IEvent *event, long distance = 1);
+        virtual FilteredEvent *getNeighbourEvent(IEvent *event, long distance = 1);
         virtual FilteredEvent *getEventForEventNumber(long eventNumber, MatchKind matchKind = EXACT);
         virtual FilteredEvent *getEventForSimulationTime(simtime_t simulationTime, MatchKind matchKind = EXACT);
 
@@ -92,6 +95,7 @@ class FilteredEventLog : public IEventLog
         bool matchesDependency(IEvent *event);
         bool causesEvent(IEvent *cause, IEvent *consequence);
         bool consequencesEvent(IEvent *cause, IEvent *consequence);
+        double getApproximateMatchingEventRatio();
 };
 
 #endif

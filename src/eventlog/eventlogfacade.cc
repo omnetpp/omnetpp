@@ -21,353 +21,116 @@ EventLogFacade::EventLogFacade(IEventLog *eventLog)
 {
     EASSERT(eventLog);
     this->eventLog = eventLog;
-
-    approximateNumberOfEventLogTableEntries = -1;
-    timelineCoordinateSystemVersion = 0;
 }
 
-EventLogEntry *EventLogFacade::getFirstEventLogTableEntry()
+IEvent* EventLogFacade::Event_getEvent(int64 ptr)
 {
-	IEvent *event = eventLog->getFirstEvent();
-	
-	if (!event)
-		return NULL;
-	else
-		return getEventLogTableEntryInEvent(event, 0);
+    PTR(ptr);
+    return (IEvent*)ptr;
 }
 
-EventLogEntry *EventLogFacade::getLastEventLogTableEntry()
+int64 EventLogFacade::Event_getPreviousEvent(int64 ptr)
 {
-	IEvent *event = eventLog->getLastEvent();
-	
-	if (!event)
-		return NULL;
-	else
-		return getEventLogTableEntryInEvent(event, event->getNumEventLogMessages());
+    PTR(ptr);
+    return (int64)((IEvent*)ptr)->getPreviousEvent();
 }
 
-EventLogEntry *EventLogFacade::getEventLogTableEntryAndDistance(EventLogEntry *sourceEventLogEntry, EventLogEntry *targetEventLogEntry, long distance, long& reachedDistance)
+int64 EventLogFacade::Event_getNextEvent(int64 ptr)
 {
-    EASSERT(sourceEventLogEntry);
-    EventLogEntry *eventLogEntry = sourceEventLogEntry;
-    reachedDistance = 0;
-
-    int index = getEventLogTableEntryIndexInEvent(eventLogEntry);
-    EASSERT(index >= 0);
-
-    while (distance && eventLogEntry && eventLogEntry != targetEventLogEntry) {
-        if (distance > 0) {
-            eventLogEntry = getNextEventLogTableEntry(eventLogEntry, index);
-            distance--;
-
-            if (eventLogEntry)
-                reachedDistance++;
-        }
-        else {
-            eventLogEntry = getPreviousEventLogTableEntry(eventLogEntry, index);
-            distance++;
-
-            if (eventLogEntry)
-                reachedDistance--;
-        }
-    }
-
-    return eventLogEntry;
+    PTR(ptr);
+    return (int64)((IEvent*)ptr)->getNextEvent();
 }
 
-EventLogEntry *EventLogFacade::getPreviousEventLogTableEntry(EventLogEntry *eventLogEntry, int& index)
+long EventLogFacade::Event_getEventNumber(int64 ptr)
 {
-    IEvent *event = eventLogEntry->getEvent();
-    index--;
-
-    if (index == -1) {
-        event = event->getPreviousEvent();
-
-        if (event)
-            index = event->getNumEventLogMessages();
-    }
-
-    if (!event)
-        return NULL;
-    else
-        return getEventLogTableEntryInEvent(event, index);
+    PTR(ptr);
+    return ((IEvent*)ptr)->getEventNumber();
 }
 
-EventLogEntry *EventLogFacade::getNextEventLogTableEntry(EventLogEntry *eventLogEntry, int& index)
+int EventLogFacade::Event_getModuleId(int64 ptr)
 {
-    IEvent *event = eventLogEntry->getEvent();
-    index++;
-
-    if (index == event->getNumEventLogMessages() + 1) {
-        event = event->getNextEvent();
-        index = 0;
-    }
-
-    if (!event)
-        return NULL;
-    else
-        return getEventLogTableEntryInEvent(event, index);
+    PTR(ptr);
+    return ((IEvent*)ptr)->getModuleId();
 }
 
-EventLogEntry *EventLogFacade::getEventLogTableEntryInEvent(IEvent *event, int index)
+int EventLogFacade::Event_getNumCauses(int64 ptr)
 {
-    EASSERT(index >= 0 && index <= event->getNumEventLogMessages());
-
-    if (index == 0)
-        return event->getEventEntry();
-    else
-        return event->getEventLogMessage(index - 1);
+    PTR(ptr);
+    return ((IEvent*)ptr)->getCauses()->size();
 }
 
-int EventLogFacade::getEventLogTableEntryIndexInEvent(EventLogEntry *eventLogEntry)
+int EventLogFacade::Event_getNumConsequences(int64 ptr)
 {
-    if (dynamic_cast<EventEntry *>(eventLogEntry))
-        return 0;
-    else
-        return eventLogEntry->getEvent()->getEventLogMessageIndex((EventLogMessage *)eventLogEntry) + 1;
+    PTR(ptr);
+    return ((IEvent*)ptr)->getConsequences()->size();
 }
 
-long EventLogFacade::getDistanceToEventLogTableEntry(EventLogEntry *sourceEventLogEntry, EventLogEntry *targetEventLogEntry, long limit)
+int64 EventLogFacade::Event_getCause(int64 ptr, int index)
 {
-    long reachedDistance;
-    getEventLogTableEntryAndDistance(sourceEventLogEntry, targetEventLogEntry, limit, reachedDistance);
-    return reachedDistance;
+    PTR(ptr);
+    return (int64)((IEvent*)ptr)->getCauses()->at(index);
 }
 
-long EventLogFacade::getDistanceToFirstEventLogTableEntry(EventLogEntry *eventLogEntry, long limit)
+int64 EventLogFacade::Event_getConsequence(int64 ptr, int index)
 {
-    long reachedDistance;
-    getEventLogTableEntryAndDistance(eventLogEntry, NULL, -limit, reachedDistance);
-    return -reachedDistance;
+    PTR(ptr);
+    return (int64)((IEvent*)ptr)->getConsequences()->at(index);
 }
 
-long EventLogFacade::getDistanceToLastEventLogTableEntry(EventLogEntry *eventLogEntry, long limit)
+const char *EventLogFacade::MessageDependency_getCauseMessageName(int64 ptr)
 {
-    long reachedDistance;
-    getEventLogTableEntryAndDistance(eventLogEntry, NULL, limit, reachedDistance);
-    return reachedDistance;
+    PTR(ptr);
+    return ((MessageDependency*)ptr)->getCauseBeginSendEntry()->messageFullName;
 }
 
-EventLogEntry *EventLogFacade::getNeighbourEventLogTableEntry(EventLogEntry *eventLogEntry, long distance)
+const char *EventLogFacade::MessageDependency_getConsequenceMessageName(int64 ptr)
 {
-    long reachedDistance;
-    return getEventLogTableEntryAndDistance(eventLogEntry, NULL, distance, reachedDistance);
+    PTR(ptr);
+    return ((MessageDependency*)ptr)->getConsequenceBeginSendEntry()->messageFullName;
 }
 
-double EventLogFacade::getApproximatePercentageForEventLogTableEntry(EventLogEntry *eventLogEntry)
+MessageDependencyKind EventLogFacade::MessageDependency_getKind(int64 ptr)
 {
-    return eventLog->getApproximatePercentageForEventNumber(eventLogEntry->getEvent()->getEventNumber());
+    PTR(ptr);
+    if (MessageDependency_isMessageSend(ptr))
+        return SEND;
+    else if (MessageDependency_isMessageReuse(ptr))
+        return REUSE;
+    else return FILTERED;
 }
 
-EventLogEntry *EventLogFacade::getApproximateEventLogEntryTableAt(double percentage)
+bool EventLogFacade::MessageDependency_isMessageSend(int64 ptr)
 {
-    if (percentage == 1) {
-        IEvent* event = eventLog->getLastEvent();
- 
-        if (!event)
-            return NULL;
-        else
-            return event->getEventLogMessage(event->getNumEventLogMessages() - 1);
-    }
-    else
-        return eventLog->getApproximateEventAt(percentage)->getEventEntry();
+    PTR(ptr);
+    return dynamic_cast<MessageSend*>((MessageDependency*)ptr);
 }
 
-long EventLogFacade::getApproximateNumberOfEventLogTableEntries()
+bool EventLogFacade::MessageDependency_isMessageReuse(int64 ptr)
 {
-    if (approximateNumberOfEventLogTableEntries == -1)
-    {
-        IEvent *firstEvent = eventLog->getFirstEvent();
-        IEvent *lastEvent = eventLog->getLastEvent();
-
-        if (!firstEvent)
-            approximateNumberOfEventLogTableEntries = 0;
-        else
-        {
-            long sum = 0;
-            long count = 0;
-
-            for (int i = 0; i < 100; i++)
-            {
-                if (firstEvent) {
-                    sum += firstEvent->getNumEventLogMessages() + 1;
-                    count++;
-                    firstEvent = firstEvent->getNextEvent();
-                }
-
-                if (lastEvent) {
-                    sum += lastEvent->getNumEventLogMessages() + 1;
-                    count++;
-                    lastEvent = lastEvent->getPreviousEvent();
-                }
-            }
-
-            double average = sum / count;
-            approximateNumberOfEventLogTableEntries = eventLog->getApproximateNumberOfEvents() * average;
-        }
-    }
-
-    return approximateNumberOfEventLogTableEntries;
+    PTR(ptr);
+    return dynamic_cast<MessageReuse*>((MessageDependency*)ptr);
 }
 
-double EventLogFacade::getTimelineCoordinate(IEvent *event)
+bool EventLogFacade::MessageDependency_isFilteredMessageDependency(int64 ptr)
 {
-    long cachedTimelineCoordinateSystemVersion = event->cachedTimelineCoordinateSystemVersion;
-
-    if (this->timelineCoordinateSystemVersion > cachedTimelineCoordinateSystemVersion) {
-        double timelineCoordinate;
-
-        switch (timelineMode) {
-            case LINEAR:
-                timelineCoordinate = event->getSimulationTime();
-                break;
-            case STEP:
-                timelineCoordinate = event->getEventNumber();
-                break;
-            case NON_LINEAR:
-                // TODO: copied from Java code
-	        	//double timelineCoordinate = previousTimelineCoordinate + Math.atan((simulationTime - previousSimulationTime) / nonLinearFocus) / Math.PI * 2;
-	        	//logFacade.setEvent_i_timelineCoordinate(i, timelineCoordinate);
-	        	//previousTimelineCoordinate = timelineCoordinate;
-                throw new Exception("Not yet implemented");
-                break;
-            default:
-                throw new Exception("Unknown timeline mode");
-        }
-
-        event->cachedTimelineCoordinate = timelineCoordinate;
-        event->cachedTimelineCoordinateSystemVersion = timelineCoordinateSystemVersion;
-    }
-
-    return event->cachedTimelineCoordinate;
+    PTR(ptr);
+    return dynamic_cast<FilteredMessageDependency*>((MessageDependency*)ptr);
 }
 
-IEvent *EventLogFacade::getLastEventBeforeTimelineCoordinate(double timelineCoordinate)
+int64 EventLogFacade::MessageDependency_getCauseEvent(int64 ptr)
 {
-    switch (timelineMode) {
-        case LINEAR:
-            // TODO:
-            throw new Exception("Not yet implemented");
-            break;
-        case STEP:
-            return eventLog->getLastEventNotAfterEventNumber((long)floor(timelineCoordinate));
-        case NON_LINEAR:
-            // TODO:
-            throw new Exception("Not yet implemented");
-            break;
-        default:
-            throw new Exception("Unknown timeline mode");
-    }
+    PTR(ptr);
+    return (int64)((MessageDependency*)ptr)->getCauseEvent();
 }
 
-IEvent *EventLogFacade::getFirstEventAfterTimelineCoordinate(double timelineCoordinate)
+int64 EventLogFacade::MessageDependency_getConsequenceEvent(int64 ptr)
 {
-    switch (timelineMode) {
-        case LINEAR:
-            // TODO:
-            throw new Exception("Not yet implemented");
-            break;
-        case STEP:
-            return eventLog->getFirstEventNotBeforeEventNumber((long)ceil(timelineCoordinate));
-        case NON_LINEAR:
-            // TODO:
-            throw new Exception("Not yet implemented");
-            break;
-        default:
-            throw new Exception("Unknown timeline mode");
-    }
-}
-	
-double EventLogFacade::getSimulationTimeForTimelineCoordinate(double timelineCoordinate)
-{
-    switch (getTimelineMode())
-    {
-	    case LINEAR:
-		    return timelineCoordinate;
-	    case STEP:
-	    case NON_LINEAR:
-            {
-		    IEvent *event = getLastEventBeforeTimelineCoordinate(timelineCoordinate);
-		    double eventSimulationTime;
-		    double eventTimelineCoordinate;
-    		
-   		    // if before the first event
-		    if (!event) {
-			    eventSimulationTime = 0;
-			    eventTimelineCoordinate = 0;
-                event = eventLog->getFirstEvent();
-		    }
-		    else {
-                eventSimulationTime = event->getSimulationTime();
-                eventTimelineCoordinate = getTimelineCoordinate(event);
-		    }
-
-		    // linear approximation between two enclosing events
-            IEvent *nextEvent = event->getNextEvent();
-            double nextEventSimulationTime;
-            double nextEventTimelineCoordinate;
-
-            if (nextEvent) {
-                nextEventSimulationTime = nextEvent->getSimulationTime();
-                nextEventTimelineCoordinate = getTimelineCoordinate(nextEvent);
-            }
-            else
-    		    // after the last event simulationTime and timelineCoordinate are proportional
-			    return eventSimulationTime + timelineCoordinate - eventTimelineCoordinate;
-
-            double simulationTimeDelta = nextEventSimulationTime - eventSimulationTime;
-		    double timelineCoordinateDelta = nextEventTimelineCoordinate - eventTimelineCoordinate;
-
-		    if (timelineCoordinateDelta == 0) //XXX this can happen in STEP mode when pos==-1, and 1st event is at timeline zero. perhaps getLastEventPositionBeforeTimelineCoordinate() should check "<=" not "<" ?
-			    return eventSimulationTime;
-
-		    EASSERT(timelineCoordinateDelta > 0);
-
-		    return eventSimulationTime + simulationTimeDelta * (timelineCoordinate - eventTimelineCoordinate) / timelineCoordinateDelta;
-            }
-	    default:
-		    throw new Exception("Unknown timeline mode");
-    }
+    PTR(ptr);
+    return (int64)((MessageDependency*)ptr)->getConsequenceEvent();
 }
 
-double EventLogFacade::getTimelineCoordinateForSimulationTime(double simulationTime)
+const char *EventLogFacade::FilteredMessageDependency_getMiddleMessageName(int64 ptr)
 {
-	switch (getTimelineMode())
-	{
-    	case LINEAR:
-    		return simulationTime;
-    		/*
-    	case STEP:
-    	case NON_LINEAR:
-    		int pos = eventLog.getLastEventPositionBefore(simulationTime);
-    		double eventSimulationTime;
-    		double eventTimelineCoordinate;
-    		
-    		// if before the first event
-    		if (pos == -1) {
-    			eventSimulationTime = 0;
-    			eventTimelineCoordinate = 0;
-    		}
-    		else {
-    			eventSimulationTime = logFacade.getEvent_i_simulationTime(pos);
-    			eventTimelineCoordinate = logFacade.getEvent_i_timelineCoordinate(pos);
-			}
-
-    		// after the last event simulationTime and timelineCoordinate are proportional
-    		if (pos == eventLog.getNumEvents() - 1)
-    			return eventTimelineCoordinate + simulationTime - eventSimulationTime;
-
-			// linear approximation between two enclosing events
-    		double simulationTimeDelta = logFacade.getEvent_i_simulationTime(pos + 1) - eventSimulationTime;
-    		double timelineCoordinateDelta = logFacade.getEvent_i_timelineCoordinate(pos + 1) - eventTimelineCoordinate;
-       		
-    		if (simulationTimeDelta == 0) //XXX this can happen in STEP mode when pos==-1, and 1st event is at timeline zero. perhaps getLastEventPositionBeforeTimelineCoordinate() should check "<=" not "<" ?
-    			return eventTimelineCoordinate;
-    		Assert.isTrue(simulationTimeDelta > 0);
-
-    		return eventTimelineCoordinate + timelineCoordinateDelta * (simulationTime - eventSimulationTime) / simulationTimeDelta;
-	*/
-    	default:
-    		throw new Exception("Unknown timeline mode");
-	}
+    PTR(ptr);
+    return ((FilteredMessageDependency*)ptr)->getMiddleBeginSendEntry()->messageFullName;
 }

@@ -29,6 +29,9 @@ FilteredEventLog::FilteredEventLog(IEventLog *eventLog,
     this->includeConsequences = includeConsequences;
     this->firstEventNumber = firstEventNumber;
     this->lastEventNumber = lastEventNumber;
+
+    approximateNumberOfEvents = -1;
+    approximateMatchingEventRatio = -1;
     firstMatchingEvent = NULL;
     lastMatchingEvent = NULL;
     maxCauseDepth = maxConsequenceDepth = 100;
@@ -46,26 +49,85 @@ FilteredEventLog::~FilteredEventLog()
 
 long FilteredEventLog::getApproximateNumberOfEvents()
 {
-    throw new Exception("Not yet implemented");
+    if (approximateNumberOfEvents == -1)
+    {
+        if (tracedEventNumber != -1) {
+            // TODO: start from traced event number and go forward/backward and return approximation
+            throw new Exception("Not yet implemented");
+        }
+        else {
+            // TODO: what if filter is event range limited?
+            FilteredEvent *firstEvent = getFirstEvent();
+            FilteredEvent *lastEvent = getLastEvent();
+
+            if (firstEvent == NULL)
+                approximateNumberOfEvents = 0;
+            else
+            {
+                long beginOffset = firstEvent->getBeginOffset();
+                long endOffset = lastEvent->getEndOffset();
+                long sumMatching = 0;
+                long sumNotMatching = 0;
+                long count = 0;
+                int eventCount = 100;
+
+                // TODO: perhaps it would be better to read in random events
+                for (int i = 0; i < eventCount; i++)
+                {
+                    if (firstEvent) {
+                        FilteredEvent *previousEvent = firstEvent;
+                        sumMatching += firstEvent->getEndOffset() - firstEvent->getBeginOffset();
+                        count++;
+                        firstEvent = firstEvent->getNextEvent();
+                        if (firstEvent) 
+                            sumNotMatching += firstEvent->getBeginOffset() - previousEvent->getEndOffset();
+                    }
+
+                    if (lastEvent) {
+                        FilteredEvent *previousEvent = lastEvent;
+                        sumMatching += lastEvent->getEndOffset() - lastEvent->getBeginOffset();
+                        count++;
+                        lastEvent = lastEvent->getPreviousEvent();
+                        if (lastEvent)
+                            sumNotMatching += previousEvent->getBeginOffset() - lastEvent->getEndOffset();
+                    }
+                }
+
+                double averageMatching = (double)sumMatching / count;
+                double averageNotMatching = (double)sumNotMatching / count;
+                approximateMatchingEventRatio = averageMatching / (averageMatching + averageNotMatching);
+                approximateNumberOfEvents = (endOffset - beginOffset) / averageMatching * approximateMatchingEventRatio;
+            }
+        }
+    }
+
+    return approximateNumberOfEvents;
 }
 
 double FilteredEventLog::getApproximatePercentageForEventNumber(long eventNumber)
 {
-    throw new Exception("Not yet implemented");
+    if (tracedEventNumber != -1)
+        throw new Exception("Not yet implemented");
+    else
+        // TODO: what if filter is event range limited
+        return IEventLog::getApproximatePercentageForEventNumber(eventNumber);
 }
 
 FilteredEvent *FilteredEventLog::getApproximateEventAt(double percentage)
 {
-    throw new Exception("Not yet implemented");
+    IEvent *event = eventLog->getApproximateEventAt(percentage);
+
+    return this->getMatchingEventInDirection(event->getEventNumber(), true);
 }
 
-Event *FilteredEventLog::getNeighbourEvent(IEvent *event, long distance)
+FilteredEvent *FilteredEventLog::getNeighbourEvent(IEvent *event, long distance)
 {
-    throw new Exception("Not yet implemented");
+    return (FilteredEvent *)IEventLog::getNeighbourEvent(event, distance);
 }
 
 bool FilteredEventLog::matchesFilter(IEvent *event)
 {
+    EASSERT(event);
     EventNumberToFilterMatchesMap::iterator it = eventNumberToFilterMatchesMap.find(event->getEventNumber());
 
     // if cached, return it
@@ -168,6 +230,7 @@ FilteredEvent *FilteredEventLog::getEventForSimulationTime(simtime_t simulationT
 
 FilteredEvent* FilteredEventLog::getMatchingEventInDirection(long eventNumber, bool forward)
 {
+    EASSERT(eventNumber >= 0);
     IEvent *event = eventLog->getEventForEventNumber(eventNumber);
 
     while (event)

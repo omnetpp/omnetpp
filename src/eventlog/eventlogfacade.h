@@ -26,18 +26,11 @@
  * SWIG-generated wrapper creates a corresponding Java object with the
  * pointer value inside. This has disastrous effect on performance
  * when dealing with huge amounts of data).
- *
- * IMPORTANT! Java code MUST NOT ask members of objects that don't exist!
- * Otherwise there will be a crash. For example, if getEvent_i_hasCause(i)
- * returns false, then getEvent_i_cause_messageClassName(i) will CRASH!
  */
 class EventLogFacade
 {
     protected:
         IEventLog *eventLog;
-
-        // EventLogTable state
-        long approximateNumberOfEventLogTableEntries;
 
         // SequenceChart state
         long timelineCoordinateSystemVersion;
@@ -45,50 +38,28 @@ class EventLogFacade
 
     public:
         EventLogFacade(IEventLog *eventLog);
+        virtual ~EventLogFacade() {}
 
-        // EventLogTable interface
-		EventLogEntry *getFirstEventLogTableEntry();
-		EventLogEntry *getLastEventLogTableEntry();
-        EventLogEntry *getPreviousEventLogTableEntry(EventLogEntry *eventLogEntry, int& index);
-        EventLogEntry *getNextEventLogTableEntry(EventLogEntry *eventLogEntry, int& index);
-        int getEventLogTableEntryIndexInEvent(EventLogEntry *eventLogEntry);
-        EventLogEntry *getEventLogTableEntryInEvent(IEvent *event, int index);
-        EventLogEntry *getEventLogTableEntryAndDistance(EventLogEntry *sourceEventLogEntry, EventLogEntry *targetEventLogEntry, long distance, long& reachedDistance);
-		long getDistanceToEventLogTableEntry(EventLogEntry *sourceEventLogEntry, EventLogEntry *targetEventLogEntry, long limit);
-		long getDistanceToFirstEventLogTableEntry(EventLogEntry *eventLogEntry, long limit);
-		long getDistanceToLastEventLogTableEntry(EventLogEntry *eventLogEntry, long limit);
-		EventLogEntry *getNeighbourEventLogTableEntry(EventLogEntry *eventLogEntry, long distance);
-        double getApproximatePercentageForEventLogTableEntry(EventLogEntry *eventLogEntry);
-		EventLogEntry *getApproximateEventLogEntryTableAt(double percentage);
-		long getApproximateNumberOfEventLogTableEntries();
+        IEvent* Event_getEvent(int64 ptr);
+        int64 Event_getPreviousEvent(int64 ptr);
+        int64 Event_getNextEvent(int64 ptr);
+        long Event_getEventNumber(int64 ptr);
+        int Event_getModuleId(int64 ptr);
+        int Event_getNumCauses(int64 ptr);
+        int Event_getNumConsequences(int64 ptr);
+        int64 Event_getCause(int64 ptr, int index);
+        int64 Event_getConsequence(int64 ptr, int index);
 
-        // SequenceChart interface
-        TimelineMode getTimelineMode() { return timelineMode; }
-        void setTimelineMode(TimelineMode timelineMode) { this->timelineMode = timelineMode; invalidateTimelineCoordinateSystem(); }
-        double getTimelineCoordinate(IEvent *event);
-        void invalidateTimelineCoordinateSystem() { timelineCoordinateSystemVersion++; }
+        const char *MessageDependency_getCauseMessageName(int64 ptr);
+        const char *MessageDependency_getConsequenceMessageName(int64 ptr);
+        MessageDependencyKind MessageDependency_getKind(int64 ptr);
+        bool MessageDependency_isMessageSend(int64 ptr);
+        bool MessageDependency_isMessageReuse(int64 ptr);
+        bool MessageDependency_isFilteredMessageDependency(int64 ptr);
+        int64 MessageDependency_getCauseEvent(int64 ptr);
+        int64 MessageDependency_getConsequenceEvent(int64 ptr);
 
-        IEvent *getLastEventBeforeTimelineCoordinate(double timelineCoordinate);
-        IEvent *getFirstEventAfterTimelineCoordinate(double timelineCoordinate);
-
-        double getSimulationTimeForTimelineCoordinate(double timelineCoordinate);
-        double getTimelineCoordinateForSimulationTime(double simulationTime);
-
-        // class short cuts
-        int64 Event_getPreviousEvent(int64 ptr) { PTR(ptr); return (int64)((IEvent*)ptr)->getPreviousEvent(); }
-        int64 Event_getNextEvent(int64 ptr) { PTR(ptr); return (int64)((IEvent*)ptr)->getNextEvent(); }
-        double Event_getTimelineCoordinate(int64 ptr) { PTR(ptr); return getTimelineCoordinate((IEvent*)ptr); }
-        long Event_getEventNumber(int64 ptr) { PTR(ptr); return ((IEvent*)ptr)->getEventNumber(); }
-        int Event_getModuleId(int64 ptr) { PTR(ptr); return ((IEvent*)ptr)->getModuleId(); }
-        int Event_getNumCauses(int64 ptr) { PTR(ptr); return ((IEvent*)ptr)->getCauses()->size(); }
-        int Event_getNumConsequences(int64 ptr) { PTR(ptr); return ((IEvent*)ptr)->getConsequences()->size(); }
-        int64 Event_getCause(int64 ptr, int index) { PTR(ptr); return (int64)((IEvent*)ptr)->getCauses()->at(index); }
-        int64 Event_getConsequence(int64 ptr, int index) { PTR(ptr); return (int64)((IEvent*)ptr)->getConsequences()->at(index); }
-
-        const char *MessageDependency_getMessageName(int64 ptr) { PTR(ptr); return ((MessageDependency*)ptr)->getBeginSendEntry()->messageFullName; }
-        bool MessageDependency_isMessageSend(int64 ptr) { PTR(ptr); return dynamic_cast<MessageSend *>((MessageDependency*)ptr); }
-        int64 MessageDependency_getCauseEvent(int64 ptr) { PTR(ptr); return (int64)((MessageDependency*)ptr)->getCauseEvent(); }
-        int64 MessageDependency_getConsequenceEvent(int64 ptr) { PTR(ptr); return (int64)((MessageDependency*)ptr)->getConsequenceEvent(); }
+        const char *FilteredMessageDependency_getMiddleMessageName(int64 ptr);
 };
 
 #endif
