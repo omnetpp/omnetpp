@@ -10,7 +10,7 @@ There are two macros provided:
 Requirements: MSVC 6.0.SP1. Without SP1, AddNedFile may crash the IDE due to
 bugs in the Visual Studio Scripting Host.
 
-NOTE: An OMNeT++ Wizard is not provided in OMNeT++/OMNEST 3.0, 3.1 or 3.2;
+NOTE: An OMNeT++ Wizard is not provided in OMNeT++/OMNEST 3.0 or later;
 we recommend that you start your project by copying one of the sample
 simulations provided.
 
