@@ -64,7 +64,7 @@ void cSimpleModule::activate(void *p)
         simulation.transferToMain(); // send back exception
         assert(!after_cleanup_transfer_to);
         simulation.transferToMain(); // for stack_cleanup_requested
-        assert(("INTERNAL ERROR: switched to the fiber of an already deleted module",falsei));
+        assert(("INTERNAL ERROR: switched to the fiber of an already deleted module",false));
     }
 
     // rename message
