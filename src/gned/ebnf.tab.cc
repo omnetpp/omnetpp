@@ -1970,13 +1970,13 @@ yyreduce:
         case 11:
 #line 230 "ebnf.y"
     {GNED( IMPORTS_KEY = np->create("imports",NEDFILE_KEY);
-                       setComments(IMPORTS_KEY,(yylsp[0])); )}
+                       setComments(IMPORTS_KEY,(yylsp[0])); );}
     break;
 
   case 12:
 #line 233 "ebnf.y"
     {/* GNED( setTrailingComment(IMPORTS_KEY,@3); )
-                  * comment already stored with last filename */}
+                  * comment already stored with last filename */;}
     break;
 
   case 15:
@@ -1984,87 +1984,87 @@ yyreduce:
     {NEDC( do_include ((yyvsp[0])); )
                  GNED( IMPORT_KEY = np->create("import",IMPORTS_KEY);
                        np->set(IMPORT_KEY,"name",trimQuotes((yylsp[0])));
-                       setComments(IMPORT_KEY,(yylsp[0])); )}
+                       setComments(IMPORT_KEY,(yylsp[0])); );}
     break;
 
   case 16:
 #line 253 "ebnf.y"
-    {NEDC( do_channel ((yyvsp[-1]), NULL, NULL, NULL); )}
+    {NEDC( do_channel ((yyvsp[-1]), NULL, NULL, NULL); );}
     break;
 
   case 17:
 #line 256 "ebnf.y"
-    {NEDC( do_channel ((yyvsp[-2]), (yyvsp[-1]), NULL, NULL); )}
+    {NEDC( do_channel ((yyvsp[-2]), (yyvsp[-1]), NULL, NULL); );}
     break;
 
   case 18:
 #line 258 "ebnf.y"
-    {NEDC( do_channel ((yyvsp[-2]), NULL, (yyvsp[-1]), NULL); )}
+    {NEDC( do_channel ((yyvsp[-2]), NULL, (yyvsp[-1]), NULL); );}
     break;
 
   case 19:
 #line 260 "ebnf.y"
-    {NEDC( do_channel ((yyvsp[-2]), NULL, NULL, (yyvsp[-1])); )}
+    {NEDC( do_channel ((yyvsp[-2]), NULL, NULL, (yyvsp[-1])); );}
     break;
 
   case 20:
 #line 263 "ebnf.y"
-    {NEDC( do_channel ((yyvsp[-3]), (yyvsp[-2]), (yyvsp[-1]), NULL); )}
+    {NEDC( do_channel ((yyvsp[-3]), (yyvsp[-2]), (yyvsp[-1]), NULL); );}
     break;
 
   case 21:
 #line 265 "ebnf.y"
-    {NEDC( do_channel ((yyvsp[-3]), (yyvsp[-2]), NULL, (yyvsp[-1])); )}
+    {NEDC( do_channel ((yyvsp[-3]), (yyvsp[-2]), NULL, (yyvsp[-1])); );}
     break;
 
   case 22:
 #line 267 "ebnf.y"
-    {NEDC( do_channel ((yyvsp[-3]), NULL, (yyvsp[-2]), (yyvsp[-1])); )}
+    {NEDC( do_channel ((yyvsp[-3]), NULL, (yyvsp[-2]), (yyvsp[-1])); );}
     break;
 
   case 23:
 #line 269 "ebnf.y"
-    {NEDC( do_channel ((yyvsp[-3]), (yyvsp[-1]), (yyvsp[-2]), NULL); )}
+    {NEDC( do_channel ((yyvsp[-3]), (yyvsp[-1]), (yyvsp[-2]), NULL); );}
     break;
 
   case 24:
 #line 271 "ebnf.y"
-    {NEDC( do_channel ((yyvsp[-3]), (yyvsp[-1]), NULL, (yyvsp[-2])); )}
+    {NEDC( do_channel ((yyvsp[-3]), (yyvsp[-1]), NULL, (yyvsp[-2])); );}
     break;
 
   case 25:
 #line 273 "ebnf.y"
-    {NEDC( do_channel ((yyvsp[-3]), NULL, (yyvsp[-1]), (yyvsp[-2])); )}
+    {NEDC( do_channel ((yyvsp[-3]), NULL, (yyvsp[-1]), (yyvsp[-2])); );}
     break;
 
   case 26:
 #line 276 "ebnf.y"
-    {NEDC( do_channel ((yyvsp[-4]), (yyvsp[-3]), (yyvsp[-2]), (yyvsp[-1])); )}
+    {NEDC( do_channel ((yyvsp[-4]), (yyvsp[-3]), (yyvsp[-2]), (yyvsp[-1])); );}
     break;
 
   case 27:
 #line 278 "ebnf.y"
-    {NEDC( do_channel ((yyvsp[-4]), (yyvsp[-3]), (yyvsp[-1]), (yyvsp[-2])); )}
+    {NEDC( do_channel ((yyvsp[-4]), (yyvsp[-3]), (yyvsp[-1]), (yyvsp[-2])); );}
     break;
 
   case 28:
 #line 280 "ebnf.y"
-    {NEDC( do_channel ((yyvsp[-4]), (yyvsp[-2]), (yyvsp[-3]), (yyvsp[-1])); )}
+    {NEDC( do_channel ((yyvsp[-4]), (yyvsp[-2]), (yyvsp[-3]), (yyvsp[-1])); );}
     break;
 
   case 29:
 #line 282 "ebnf.y"
-    {NEDC( do_channel ((yyvsp[-4]), (yyvsp[-1]), (yyvsp[-3]), (yyvsp[-2])); )}
+    {NEDC( do_channel ((yyvsp[-4]), (yyvsp[-1]), (yyvsp[-3]), (yyvsp[-2])); );}
     break;
 
   case 30:
 #line 284 "ebnf.y"
-    {NEDC( do_channel ((yyvsp[-4]), (yyvsp[-2]), (yyvsp[-1]), (yyvsp[-3])); )}
+    {NEDC( do_channel ((yyvsp[-4]), (yyvsp[-2]), (yyvsp[-1]), (yyvsp[-3])); );}
     break;
 
   case 31:
 #line 286 "ebnf.y"
-    {NEDC( do_channel ((yyvsp[-4]), (yyvsp[-1]), (yyvsp[-2]), (yyvsp[-3])); )}
+    {NEDC( do_channel ((yyvsp[-4]), (yyvsp[-1]), (yyvsp[-2]), (yyvsp[-3])); );}
     break;
 
   case 32:
@@ -2072,48 +2072,48 @@ yyreduce:
     {NEDC( (yyval) = (yyvsp[0]); inside_nonvoid_function=1;)
                  GNED( CHANNEL_KEY = np->create("channel",NEDFILE_KEY);
                        np->set(CHANNEL_KEY,"name",(yylsp[0]));
-                       setComments(CHANNEL_KEY,(yylsp[-1]),(yylsp[0])); )}
+                       setComments(CHANNEL_KEY,(yylsp[-1]),(yylsp[0])); );}
     break;
 
   case 33:
 #line 300 "ebnf.y"
-    {NEDC( inside_nonvoid_function=0; )}
+    {NEDC( inside_nonvoid_function=0; );}
     break;
 
   case 34:
 #line 301 "ebnf.y"
-    {GNED( setTrailingComment(CHANNEL_KEY,(yylsp[-2])); )}
+    {GNED( setTrailingComment(CHANNEL_KEY,(yylsp[-2])); );}
     break;
 
   case 35:
 #line 303 "ebnf.y"
-    {NEDC( inside_nonvoid_function=0; )}
+    {NEDC( inside_nonvoid_function=0; );}
     break;
 
   case 36:
 #line 304 "ebnf.y"
-    {GNED( setTrailingComment(CHANNEL_KEY,(yylsp[-2])); )}
+    {GNED( setTrailingComment(CHANNEL_KEY,(yylsp[-2])); );}
     break;
 
   case 37:
 #line 310 "ebnf.y"
     {NEDC( (yyval) = (yyvsp[-1]); )
                  GNED( CHANATTR_KEY = addChanAttr(CHANNEL_KEY,"error",(yylsp[-1]));
-                       setComments(CHANATTR_KEY,(yylsp[-2]),(yylsp[0])); )}
+                       setComments(CHANATTR_KEY,(yylsp[-2]),(yylsp[0])); );}
     break;
 
   case 38:
 #line 317 "ebnf.y"
     {NEDC( (yyval) = (yyvsp[-1]); )
                  GNED( CHANATTR_KEY = addChanAttr(CHANNEL_KEY,"delay",(yylsp[-1]));
-                       setComments(CHANATTR_KEY,(yylsp[-2]),(yylsp[0])); )}
+                       setComments(CHANATTR_KEY,(yylsp[-2]),(yylsp[0])); );}
     break;
 
   case 39:
 #line 324 "ebnf.y"
     {NEDC( (yyval) = (yyvsp[-1]); )
                  GNED( CHANATTR_KEY = addChanAttr(CHANNEL_KEY,"datarate",(yylsp[-1]));
-                       setComments(CHANATTR_KEY,(yylsp[-2]),(yylsp[0])); )}
+                       setComments(CHANATTR_KEY,(yylsp[-2]),(yylsp[0])); );}
     break;
 
   case 41:
@@ -2121,19 +2121,19 @@ yyreduce:
     {NEDC( do_simple ((yyvsp[-1])); )
                  GNED( MODULE_KEY = np->create("simple",NEDFILE_KEY);
                        np->set(MODULE_KEY,"name", (yylsp[-1]));
-                       setComments(MODULE_KEY,(yylsp[-2]),(yylsp[0])); )}
+                       setComments(MODULE_KEY,(yylsp[-2]),(yylsp[0])); );}
     break;
 
   case 42:
 #line 348 "ebnf.y"
     {NEDC( end_simple ((yyvsp[-1])); )
-                 GNED( setTrailingComment(MODULE_KEY,(yylsp[-1])); )}
+                 GNED( setTrailingComment(MODULE_KEY,(yylsp[-1])); );}
     break;
 
   case 43:
 #line 351 "ebnf.y"
     {NEDC( end_simple (NULL); )
-                 GNED( setTrailingComment(MODULE_KEY,(yylsp[-1])); )}
+                 GNED( setTrailingComment(MODULE_KEY,(yylsp[-1])); );}
     break;
 
   case 45:
@@ -2141,30 +2141,30 @@ yyreduce:
     {NEDC( do_module ((yyvsp[-1])); )
                  GNED( MODULE_KEY = np->create("module",NEDFILE_KEY);
                        np->set(MODULE_KEY,"name", (yylsp[-1]));
-                       setComments(MODULE_KEY,(yylsp[-2]),(yylsp[0])); )}
+                       setComments(MODULE_KEY,(yylsp[-2]),(yylsp[0])); );}
     break;
 
   case 46:
 #line 376 "ebnf.y"
     {NEDC( end_module ((yyvsp[-1])); )
-                 GNED( setTrailingComment(MODULE_KEY,(yylsp[-1])); )}
+                 GNED( setTrailingComment(MODULE_KEY,(yylsp[-1])); );}
     break;
 
   case 47:
 #line 379 "ebnf.y"
     {NEDC( end_module (NULL); )
-                 GNED( setTrailingComment(MODULE_KEY,(yylsp[-1])); )}
+                 GNED( setTrailingComment(MODULE_KEY,(yylsp[-1])); );}
     break;
 
   case 49:
 #line 386 "ebnf.y"
-    {NEDC( do_machine(jar_strdup("default")); )}
+    {NEDC( do_machine(jar_strdup("default")); );}
     break;
 
   case 60:
 #line 396 "ebnf.y"
     {GNED( MACHINES_KEY = np->create("machines",MODULE_KEY);
-                       setComments(MACHINES_KEY,(yylsp[-1]),(yylsp[0])); )}
+                       setComments(MACHINES_KEY,(yylsp[-1]),(yylsp[0])); );}
     break;
 
   case 66:
@@ -2172,202 +2172,202 @@ yyreduce:
     {NEDC( do_machine ((yyvsp[0])); )
                  GNED( MACHINE_KEY = np->create("machine",MACHINES_KEY);
                        np->set(MACHINE_KEY,"name", (yylsp[0]));
-                       setComments(MACHINE_KEY,(yylsp[0]),(yylsp[0])); )}
+                       setComments(MACHINE_KEY,(yylsp[0]),(yylsp[0])); );}
     break;
 
   case 67:
 #line 421 "ebnf.y"
     {NEDC( do_displaystr_enclosing ((yyvsp[-1])); )
-                 GNED( setDisplayString(MODULE_KEY,(yylsp[-1])); )}
+                 GNED( setDisplayString(MODULE_KEY,(yylsp[-1])); );}
     break;
 
   case 68:
 #line 427 "ebnf.y"
     {NEDC( do_parameters (); )
                  GNED( PARAMS_KEY = np->create("params",MODULE_KEY);
-                       setComments(PARAMS_KEY,(yylsp[-1]),(yylsp[0])); )}
+                       setComments(PARAMS_KEY,(yylsp[-1]),(yylsp[0])); );}
     break;
 
   case 72:
 #line 440 "ebnf.y"
-    {GNED( setComments(PARAM_KEY,(yylsp[0])); )}
+    {GNED( setComments(PARAM_KEY,(yylsp[0])); );}
     break;
 
   case 73:
 #line 443 "ebnf.y"
-    {GNED( setComments(PARAM_KEY,(yylsp[0])); )}
+    {GNED( setComments(PARAM_KEY,(yylsp[0])); );}
     break;
 
   case 74:
 #line 448 "ebnf.y"
     {NEDC( do_parameter ((yyvsp[0]), TYPE_NUMERIC); )
-                 GNED( PARAM_KEY=addParameter(PARAMS_KEY,(yylsp[0]),TYPE_NUMERIC); )}
+                 GNED( PARAM_KEY=addParameter(PARAMS_KEY,(yylsp[0]),TYPE_NUMERIC); );}
     break;
 
   case 75:
 #line 451 "ebnf.y"
     {NEDC( do_parameter ((yyvsp[-2]), TYPE_NUMERIC); )
-                 GNED( PARAM_KEY=addParameter(PARAMS_KEY,(yylsp[-2]),TYPE_NUMERIC); )}
+                 GNED( PARAM_KEY=addParameter(PARAMS_KEY,(yylsp[-2]),TYPE_NUMERIC); );}
     break;
 
   case 76:
 #line 454 "ebnf.y"
     {NEDC( do_parameter ((yyvsp[0]), TYPE_CONST_NUM); )
-                 GNED( PARAM_KEY=addParameter(PARAMS_KEY,(yylsp[0]),TYPE_CONST_NUM); )}
+                 GNED( PARAM_KEY=addParameter(PARAMS_KEY,(yylsp[0]),TYPE_CONST_NUM); );}
     break;
 
   case 77:
 #line 457 "ebnf.y"
     {NEDC( do_parameter ((yyvsp[-2]), TYPE_CONST_NUM); )
-                 GNED( PARAM_KEY=addParameter(PARAMS_KEY,(yylsp[-2]),TYPE_CONST_NUM); )}
+                 GNED( PARAM_KEY=addParameter(PARAMS_KEY,(yylsp[-2]),TYPE_CONST_NUM); );}
     break;
 
   case 78:
 #line 460 "ebnf.y"
     {NEDC( do_parameter ((yyvsp[-3]), TYPE_CONST_NUM); )
-                 GNED( PARAM_KEY=addParameter(PARAMS_KEY,(yylsp[-3]),TYPE_CONST_NUM); )}
+                 GNED( PARAM_KEY=addParameter(PARAMS_KEY,(yylsp[-3]),TYPE_CONST_NUM); );}
     break;
 
   case 79:
 #line 463 "ebnf.y"
     {NEDC( do_parameter ((yyvsp[-3]), TYPE_CONST_NUM); )
-                 GNED( PARAM_KEY=addParameter(PARAMS_KEY,(yylsp[-3]),TYPE_CONST_NUM); )}
+                 GNED( PARAM_KEY=addParameter(PARAMS_KEY,(yylsp[-3]),TYPE_CONST_NUM); );}
     break;
 
   case 80:
 #line 466 "ebnf.y"
     {NEDC( do_parameter ((yyvsp[-2]), TYPE_STRING); )
-                 GNED( PARAM_KEY=addParameter(PARAMS_KEY,(yylsp[-2]),TYPE_STRING); )}
+                 GNED( PARAM_KEY=addParameter(PARAMS_KEY,(yylsp[-2]),TYPE_STRING); );}
     break;
 
   case 81:
 #line 469 "ebnf.y"
     {NEDC( do_parameter ((yyvsp[-2]), TYPE_BOOL); )
-                 GNED( PARAM_KEY=addParameter(PARAMS_KEY,(yylsp[-2]),TYPE_BOOL); )}
+                 GNED( PARAM_KEY=addParameter(PARAMS_KEY,(yylsp[-2]),TYPE_BOOL); );}
     break;
 
   case 82:
 #line 472 "ebnf.y"
     {NEDC( do_parameter ((yyvsp[-2]), TYPE_XML); )
-                 GNED( PARAM_KEY=addParameter(PARAMS_KEY,(yylsp[-2]),TYPE_XML); )}
+                 GNED( PARAM_KEY=addParameter(PARAMS_KEY,(yylsp[-2]),TYPE_XML); );}
     break;
 
   case 83:
 #line 475 "ebnf.y"
     {NEDC( do_parameter ((yyvsp[-2]), TYPE_ANYTYPE); )
-                 GNED( PARAM_KEY=addParameter(PARAMS_KEY,(yylsp[-2]),TYPE_ANYTYPE); )}
+                 GNED( PARAM_KEY=addParameter(PARAMS_KEY,(yylsp[-2]),TYPE_ANYTYPE); );}
     break;
 
   case 84:
 #line 481 "ebnf.y"
     {NEDC( do_gates (); )
                  GNED( GATES_KEY = np->create("gates",MODULE_KEY);
-                       setComments(GATES_KEY,(yylsp[-1]),(yylsp[0])); )}
+                       setComments(GATES_KEY,(yylsp[-1]),(yylsp[0])); );}
     break;
 
   case 94:
 #line 506 "ebnf.y"
     {NEDC( do_gatedecl( (yyvsp[-2]), 1, 1 ); )
                  GNED( GATE_KEY=addGate(GATES_KEY,  (yylsp[-2]), 1, 1 );
-                       setComments(GATE_KEY,(yylsp[-2]),(yylsp[0])); )}
+                       setComments(GATE_KEY,(yylsp[-2]),(yylsp[0])); );}
     break;
 
   case 95:
 #line 510 "ebnf.y"
     {NEDC( do_gatedecl( (yyvsp[0]), 1, 0 ); )
                  GNED( GATE_KEY=addGate(GATES_KEY,  (yylsp[0]), 1, 0 );
-                       setComments(GATE_KEY,(yylsp[0])); )}
+                       setComments(GATE_KEY,(yylsp[0])); );}
     break;
 
   case 98:
 #line 522 "ebnf.y"
     {NEDC( do_gatedecl( (yyvsp[-2]), 0, 1 ); )
                  GNED( GATE_KEY=addGate(GATES_KEY,  (yylsp[-2]), 0, 1 );
-                       setComments(GATE_KEY,(yylsp[-2]),(yylsp[0])); )}
+                       setComments(GATE_KEY,(yylsp[-2]),(yylsp[0])); );}
     break;
 
   case 99:
 #line 526 "ebnf.y"
     {NEDC( do_gatedecl( (yyvsp[0]), 0, 0 ); )
                  GNED( GATE_KEY=addGate(GATES_KEY,  (yylsp[0]), 0, 0 );
-                       setComments(GATE_KEY,(yylsp[0])); )}
+                       setComments(GATE_KEY,(yylsp[0])); );}
     break;
 
   case 100:
 #line 533 "ebnf.y"
     {NEDC( do_submodules (); )
                  GNED( SUBMODS_KEY = np->create("submods",MODULE_KEY);
-                       setComments(SUBMODS_KEY,(yylsp[-1]),(yylsp[0])); )}
+                       setComments(SUBMODS_KEY,(yylsp[-1]),(yylsp[0])); );}
     break;
 
   case 106:
 #line 551 "ebnf.y"
     {NEDC( do_submodule1 ((yyvsp[-3]), NULL, (yyvsp[-1]), NULL); )
                  GNED( SUBMOD_KEY=addSubmodule(SUBMODS_KEY, (yylsp[-3]), NULLPOS, (yylsp[-1]), NULLPOS);
-                       setComments(SUBMOD_KEY,(yylsp[-3]),(yylsp[0]));  )}
+                       setComments(SUBMOD_KEY,(yylsp[-3]),(yylsp[0]));  );}
     break;
 
   case 107:
 #line 555 "ebnf.y"
-    {NEDC( do_submodule2 ((yyvsp[-5]), NULL, (yyvsp[-3]), NULL); )}
+    {NEDC( do_submodule2 ((yyvsp[-5]), NULL, (yyvsp[-3]), NULL); );}
     break;
 
   case 109:
 #line 558 "ebnf.y"
     {NEDC( do_submodule1 ((yyvsp[-4]), (yyvsp[-1]), (yyvsp[-2]), NULL); )
                  GNED( SUBMOD_KEY=addSubmodule(SUBMODS_KEY, (yylsp[-4]), (yylsp[-1]), (yylsp[-2]), NULLPOS);
-                       setComments(SUBMOD_KEY,(yylsp[-4]),(yylsp[0]));  )}
+                       setComments(SUBMOD_KEY,(yylsp[-4]),(yylsp[0]));  );}
     break;
 
   case 110:
 #line 562 "ebnf.y"
-    {NEDC( do_submodule2 ((yyvsp[-6]), (yyvsp[-3]), (yyvsp[-4]), NULL); )}
+    {NEDC( do_submodule2 ((yyvsp[-6]), (yyvsp[-3]), (yyvsp[-4]), NULL); );}
     break;
 
   case 112:
 #line 565 "ebnf.y"
     {NEDC( do_submodule1 ((yyvsp[-5]), NULL, (yyvsp[-3]), (yyvsp[-1])); )
                  GNED( SUBMOD_KEY=addSubmodule(SUBMODS_KEY, (yylsp[-5]), NULLPOS, (yylsp[-3]), (yylsp[-1]));
-                       setComments(SUBMOD_KEY,(yylsp[-5]),(yylsp[0]));  )}
+                       setComments(SUBMOD_KEY,(yylsp[-5]),(yylsp[0]));  );}
     break;
 
   case 113:
 #line 569 "ebnf.y"
-    {NEDC( do_submodule2 ((yyvsp[-7]), NULL, (yyvsp[-5]), (yyvsp[-3])); )}
+    {NEDC( do_submodule2 ((yyvsp[-7]), NULL, (yyvsp[-5]), (yyvsp[-3])); );}
     break;
 
   case 115:
 #line 572 "ebnf.y"
     {NEDC( do_submodule1 ((yyvsp[-6]), (yyvsp[-3]), (yyvsp[-4]), (yyvsp[-1])); )
                  GNED( SUBMOD_KEY=addSubmodule(SUBMODS_KEY, (yylsp[-6]), (yylsp[-3]), (yylsp[-4]), (yylsp[-1]));
-                       setComments(SUBMOD_KEY,(yylsp[-6]),(yylsp[0]));  )}
+                       setComments(SUBMOD_KEY,(yylsp[-6]),(yylsp[0]));  );}
     break;
 
   case 116:
 #line 576 "ebnf.y"
-    {NEDC( do_submodule2 ((yyvsp[-8]), (yyvsp[-5]), (yyvsp[-6]), (yyvsp[-3])); )}
+    {NEDC( do_submodule2 ((yyvsp[-8]), (yyvsp[-5]), (yyvsp[-6]), (yyvsp[-3])); );}
     break;
 
   case 118:
 #line 582 "ebnf.y"
-    {NEDC( do_readallparameters(); )}
+    {NEDC( do_readallparameters(); );}
     break;
 
   case 119:
 #line 585 "ebnf.y"
-    {NEDC( end_submodule (); )}
+    {NEDC( end_submodule (); );}
     break;
 
   case 121:
 #line 591 "ebnf.y"
-    {NEDC( do_empty_onlist(); )}
+    {NEDC( do_empty_onlist(); );}
     break;
 
   case 124:
 #line 601 "ebnf.y"
     {NEDC( do_onlist(); )
                  GNED( SUBSTMACHINES_KEY = np->create("substmachines",in_network?NETWORK_KEY:SUBMOD_KEY);
-                       setComments(SUBSTMACHINES_KEY,(yylsp[-1]),(yylsp[0])); )}
+                       setComments(SUBSTMACHINES_KEY,(yylsp[-1]),(yylsp[0])); );}
     break;
 
   case 126:
@@ -2375,31 +2375,31 @@ yyreduce:
     {NEDC( open_if((yyvsp[-1])); do_onlist(); )
                  GNED( SUBSTMACHINES_KEY = np->create("substmachines",in_network?NETWORK_KEY:SUBMOD_KEY);
                        np->set(SUBSTMACHINES_KEY,"condition",(yylsp[-1]));
-                       setComments(SUBSTMACHINES_KEY,(yylsp[-3]),(yylsp[0])); )}
+                       setComments(SUBSTMACHINES_KEY,(yylsp[-3]),(yylsp[0])); );}
     break;
 
   case 127:
 #line 611 "ebnf.y"
-    {NEDC( close_if(); )}
+    {NEDC( close_if(); );}
     break;
 
   case 129:
 #line 617 "ebnf.y"
-    {NEDC( do_empty_onlist(); )}
+    {NEDC( do_empty_onlist(); );}
     break;
 
   case 132:
 #line 627 "ebnf.y"
     {NEDC( do_on_mach((yyvsp[0])); )
                  GNED( SUBSTMACHINE_KEY = addSubstmachine(SUBSTMACHINES_KEY,(yylsp[0]));
-                       setComments(SUBSTMACHINE_KEY,(yylsp[0])); )}
+                       setComments(SUBSTMACHINE_KEY,(yylsp[0])); );}
     break;
 
   case 137:
 #line 644 "ebnf.y"
     {NEDC( do_substparams (); )
                  GNED( SUBSTPARAMS_KEY = np->create("substparams",in_network?NETWORK_KEY:SUBMOD_KEY);
-                       setComments(SUBSTPARAMS_KEY,(yylsp[-1]),(yylsp[0])); )}
+                       setComments(SUBSTPARAMS_KEY,(yylsp[-1]),(yylsp[0])); );}
     break;
 
   case 139:
@@ -2407,26 +2407,26 @@ yyreduce:
     {NEDC( open_if((yyvsp[-1])); do_substparams(); )
                  GNED( SUBSTPARAMS_KEY = np->create("substparams",in_network?NETWORK_KEY:SUBMOD_KEY);
                        np->set(SUBSTPARAMS_KEY,"condition",(yylsp[-1]));
-                       setComments(SUBSTPARAMS_KEY,(yylsp[-3]),(yylsp[0])); )}
+                       setComments(SUBSTPARAMS_KEY,(yylsp[-3]),(yylsp[0])); );}
     break;
 
   case 140:
 #line 654 "ebnf.y"
-    {NEDC( close_if(); )}
+    {NEDC( close_if(); );}
     break;
 
   case 145:
 #line 669 "ebnf.y"
     {NEDC( do_substparameter ((yyvsp[-2]), (yyvsp[0]));)
                  GNED( SUBSTPARAM_KEY = addSubstparam(SUBSTPARAMS_KEY,(yylsp[-2]),(yylsp[0]));
-                       setComments(SUBSTPARAM_KEY,(yylsp[-2]),(yylsp[0])); )}
+                       setComments(SUBSTPARAM_KEY,(yylsp[-2]),(yylsp[0])); );}
     break;
 
   case 148:
 #line 681 "ebnf.y"
     {NEDC( do_gatesizes (); )
                  GNED( GATESIZES_KEY = np->create("gatesizes",SUBMOD_KEY);
-                       setComments(GATESIZES_KEY,(yylsp[-1]),(yylsp[0])); )}
+                       setComments(GATESIZES_KEY,(yylsp[-1]),(yylsp[0])); );}
     break;
 
   case 150:
@@ -2434,32 +2434,32 @@ yyreduce:
     {NEDC( open_if((yyvsp[-1])); do_gatesizes (); )
                  GNED( GATESIZES_KEY = np->create("gatesizes",SUBMOD_KEY);
                        np->set(GATESIZES_KEY,"condition",(yylsp[-1]));
-                       setComments(GATESIZES_KEY,(yylsp[-3]),(yylsp[0])); )}
+                       setComments(GATESIZES_KEY,(yylsp[-3]),(yylsp[0])); );}
     break;
 
   case 151:
 #line 691 "ebnf.y"
-    {NEDC( close_if(); )}
+    {NEDC( close_if(); );}
     break;
 
   case 156:
 #line 706 "ebnf.y"
     {NEDC( do_gatesize ((yyvsp[-1]), (yyvsp[0])); )
                  GNED( GATESIZE_KEY = addGateSize(GATESIZES_KEY,(yylsp[-1]),(yylsp[0]));
-                       setComments(GATESIZE_KEY,(yylsp[-1]),(yylsp[0])); )}
+                       setComments(GATESIZE_KEY,(yylsp[-1]),(yylsp[0])); );}
     break;
 
   case 157:
 #line 710 "ebnf.y"
     {NEDC( do_gatesize ((yyvsp[0]), NULL); )
                  GNED( GATESIZE_KEY = addGateSize(GATESIZES_KEY,(yylsp[0]),NULLPOS);
-                       setComments(GATESIZE_KEY,(yylsp[0])); )}
+                       setComments(GATESIZE_KEY,(yylsp[0])); );}
     break;
 
   case 158:
 #line 717 "ebnf.y"
     {NEDC( do_displaystr_submod ((yyvsp[-1])); )
-                 GNED( setDisplayString(SUBMOD_KEY,(yylsp[-1])); )}
+                 GNED( setDisplayString(SUBMOD_KEY,(yylsp[-1])); );}
     break;
 
   case 160:
@@ -2467,7 +2467,7 @@ yyreduce:
     {NEDC( set_checkconns(0); do_connections(); )
                  GNED( CONNS_KEY = np->create("conns",MODULE_KEY);
                        np->set(CONNS_KEY,"nocheck","1");
-                       setComments(CONNS_KEY,(yylsp[-2]),(yylsp[0])); )}
+                       setComments(CONNS_KEY,(yylsp[-2]),(yylsp[0])); );}
     break;
 
   case 162:
@@ -2475,75 +2475,75 @@ yyreduce:
     {NEDC( set_checkconns(1); do_connections(); )
                  GNED( CONNS_KEY = np->create("conns",MODULE_KEY);
                        np->set(CONNS_KEY,"nocheck","0");
-                       setComments(CONNS_KEY,(yylsp[-1]),(yylsp[0])); )}
+                       setComments(CONNS_KEY,(yylsp[-1]),(yylsp[0])); );}
     break;
 
   case 170:
 #line 754 "ebnf.y"
     {NEDC( do_for (); )
                  GNED( FORLOOP_KEY = np->create("forloop",CONNS_KEY);
-                       in_loop=1; setComments(FORLOOP_KEY,(yylsp[0])); )}
+                       in_loop=1; setComments(FORLOOP_KEY,(yylsp[0])); );}
     break;
 
   case 171:
 #line 758 "ebnf.y"
     {NEDC( end_for (); )
-                 GNED( in_loop=0; setTrailingComment(FORLOOP_KEY,(yylsp[0])); )}
+                 GNED( in_loop=0; setTrailingComment(FORLOOP_KEY,(yylsp[0])); );}
     break;
 
   case 174:
 #line 769 "ebnf.y"
     {NEDC( do_index ((yyvsp[-4]), (yyvsp[-2]), (yyvsp[0])); )
                  GNED( LOOPVAR_KEY=addLoopVar(FORLOOP_KEY,(yylsp[-4]),(yylsp[-2]),(yylsp[0]));
-                       setComments(LOOPVAR_KEY,(yylsp[-4]),(yylsp[0])); )}
+                       setComments(LOOPVAR_KEY,(yylsp[-4]),(yylsp[0])); );}
     break;
 
   case 175:
 #line 776 "ebnf.y"
     {NEDC( do_condition((yyvsp[0])); )
-                 GNED( np->set(CONN_KEY,"condition",(yylsp[0])); )}
+                 GNED( np->set(CONN_KEY,"condition",(yylsp[0])); );}
     break;
 
   case 176:
 #line 779 "ebnf.y"
-    {NEDC( do_condition(NULL); )}
+    {NEDC( do_condition(NULL); );}
     break;
 
   case 177:
 #line 784 "ebnf.y"
     {NEDC( (yyval) = (yyvsp[0]); )
-                 GNED( setDisplayString(CONN_KEY,(yylsp[0])); )}
+                 GNED( setDisplayString(CONN_KEY,(yylsp[0])); );}
     break;
 
   case 178:
 #line 787 "ebnf.y"
-    {NEDC( (yyval) = NULL; )}
+    {NEDC( (yyval) = NULL; );}
     break;
 
   case 181:
 #line 797 "ebnf.y"
     {NEDC( end_connection (NULL, 'R', (yyvsp[0])); )
-                 GNED( np->set(CONN_KEY,"arrowdir-l2r",1L); setComments(CONN_KEY,(yylsp[-4]),(yylsp[0])); )}
+                 GNED( np->set(CONN_KEY,"arrowdir-l2r",1L); setComments(CONN_KEY,(yylsp[-4]),(yylsp[0])); );}
     break;
 
   case 182:
 #line 800 "ebnf.y"
     {NEDC( end_connection ((yyvsp[-4]), 'R', (yyvsp[0])); )
-                 GNED( np->set(CONN_KEY,"arrowdir-l2r",1L); setComments(CONN_KEY,(yylsp[-6]),(yylsp[0])); )}
+                 GNED( np->set(CONN_KEY,"arrowdir-l2r",1L); setComments(CONN_KEY,(yylsp[-6]),(yylsp[0])); );}
     break;
 
   case 183:
 #line 803 "ebnf.y"
     {NEDC( end_connection (NULL, 'L', (yyvsp[0])); )
                  GNED( swapConnection(CONN_KEY);
-                       np->set(CONN_KEY,"arrowdir-l2r",0L); setComments(CONN_KEY,(yylsp[-4]),(yylsp[0])); )}
+                       np->set(CONN_KEY,"arrowdir-l2r",0L); setComments(CONN_KEY,(yylsp[-4]),(yylsp[0])); );}
     break;
 
   case 184:
 #line 807 "ebnf.y"
     {NEDC( end_connection ((yyvsp[-4]), 'L', (yyvsp[0])); )
                  GNED( swapConnection(CONN_KEY);
-                 np->set(CONN_KEY,"arrowdir-l2r",0L); setComments(CONN_KEY,(yylsp[-6]),(yylsp[0])); )}
+                 np->set(CONN_KEY,"arrowdir-l2r",0L); setComments(CONN_KEY,(yylsp[-6]),(yylsp[0])); );}
     break;
 
   case 187:
@@ -2551,34 +2551,34 @@ yyreduce:
     {NEDC( do_mod_L ((yyvsp[-1]), (yyvsp[0])); )
                  GNED( CONN_KEY = np->create("conn",in_loop?FORLOOP_KEY:CONNS_KEY);
                        np->set(CONN_KEY, "src-ownerkey", findSubmoduleKey((yylsp[-1])));
-                       np->set(CONN_KEY, "src-mod-index", trimBrackets((yylsp[0]))); )}
+                       np->set(CONN_KEY, "src-mod-index", trimBrackets((yylsp[0]))); );}
     break;
 
   case 188:
 #line 824 "ebnf.y"
     {NEDC( do_mod_L ((yyvsp[0]), NULL); )
                  GNED( CONN_KEY = np->create("conn",in_loop?FORLOOP_KEY:CONNS_KEY);
-                       np->set(CONN_KEY, "src-ownerkey", findSubmoduleKey((yylsp[0]))); )}
+                       np->set(CONN_KEY, "src-ownerkey", findSubmoduleKey((yylsp[0]))); );}
     break;
 
   case 189:
 #line 831 "ebnf.y"
     {NEDC( do_gate_L ((yyvsp[-1]), (yyvsp[0])); )
                  GNED( np->set(CONN_KEY, "srcgate", (yylsp[-1]));
-                       np->set(CONN_KEY, "src-gate-index", trimBrackets((yylsp[0]))); )}
+                       np->set(CONN_KEY, "src-gate-index", trimBrackets((yylsp[0]))); );}
     break;
 
   case 190:
 #line 835 "ebnf.y"
     {NEDC( do_gate_L ((yyvsp[0]), NULL); )
-                 GNED( np->set(CONN_KEY, "srcgate", (yylsp[0])); )}
+                 GNED( np->set(CONN_KEY, "srcgate", (yylsp[0])); );}
     break;
 
   case 191:
 #line 838 "ebnf.y"
     {NEDC( do_gate_L ((yyvsp[-1]), NULL); )
                  GNED( np->set(CONN_KEY, "srcgate", (yylsp[-1]));
-                       np->set(CONN_KEY, "src-gate-plusplus", "1"); )}
+                       np->set(CONN_KEY, "src-gate-plusplus", "1"); );}
     break;
 
   case 192:
@@ -2587,7 +2587,7 @@ yyreduce:
                  GNED( CONN_KEY = np->create("conn",in_loop?FORLOOP_KEY:CONNS_KEY);
                        np->set(CONN_KEY, "src-ownerkey", MODULE_KEY);
                        np->set(CONN_KEY, "srcgate", (yylsp[-1]));
-                       np->set(CONN_KEY, "src-gate-index", trimBrackets((yylsp[0]))); )}
+                       np->set(CONN_KEY, "src-gate-index", trimBrackets((yylsp[0]))); );}
     break;
 
   case 193:
@@ -2595,7 +2595,7 @@ yyreduce:
     {NEDC( do_mod_L (NULL, NULL); do_gate_L ((yyvsp[0]), NULL); )
                  GNED( CONN_KEY = np->create("conn",in_loop?FORLOOP_KEY:CONNS_KEY);
                        np->set(CONN_KEY, "src-ownerkey", MODULE_KEY);
-                       np->set(CONN_KEY, "srcgate", (yylsp[0])); )}
+                       np->set(CONN_KEY, "srcgate", (yylsp[0])); );}
     break;
 
   case 194:
@@ -2604,40 +2604,40 @@ yyreduce:
                  GNED( CONN_KEY = np->create("conn",in_loop?FORLOOP_KEY:CONNS_KEY);
                        np->set(CONN_KEY, "src-ownerkey", MODULE_KEY);
                        np->set(CONN_KEY, "srcgate", (yylsp[-1]));
-                       np->set(CONN_KEY, "src-gate-plusplus", "1");  )}
+                       np->set(CONN_KEY, "src-gate-plusplus", "1");  );}
     break;
 
   case 197:
 #line 870 "ebnf.y"
     {NEDC( do_mod_R ((yyvsp[-1]), (yyvsp[0])); )
                  GNED( np->set(CONN_KEY, "dest-ownerkey", findSubmoduleKey((yylsp[-1])));
-                       np->set(CONN_KEY, "dest-mod-index", trimBrackets((yylsp[0]))); )}
+                       np->set(CONN_KEY, "dest-mod-index", trimBrackets((yylsp[0]))); );}
     break;
 
   case 198:
 #line 874 "ebnf.y"
     {NEDC( do_mod_R ((yyvsp[0]), NULL); )
-                 GNED( np->set(CONN_KEY, "dest-ownerkey", findSubmoduleKey((yylsp[0]))); )}
+                 GNED( np->set(CONN_KEY, "dest-ownerkey", findSubmoduleKey((yylsp[0]))); );}
     break;
 
   case 199:
 #line 880 "ebnf.y"
     {NEDC( do_gate_R ((yyvsp[-1]), (yyvsp[0])); )
                  GNED( np->set(CONN_KEY, "destgate", (yylsp[-1]));
-                       np->set(CONN_KEY, "dest-gate-index", trimBrackets((yylsp[0]))); )}
+                       np->set(CONN_KEY, "dest-gate-index", trimBrackets((yylsp[0]))); );}
     break;
 
   case 200:
 #line 884 "ebnf.y"
     {NEDC( do_gate_R ((yyvsp[0]), NULL); )
-                 GNED( np->set(CONN_KEY, "destgate", (yylsp[0])); )}
+                 GNED( np->set(CONN_KEY, "destgate", (yylsp[0])); );}
     break;
 
   case 201:
 #line 887 "ebnf.y"
     {NEDC( do_gate_R ((yyvsp[-1]), NULL); )
                  GNED( np->set(CONN_KEY, "destgate", (yylsp[-1]));
-                       np->set(CONN_KEY, "dest-gate-plusplus", "1"); )}
+                       np->set(CONN_KEY, "dest-gate-plusplus", "1"); );}
     break;
 
   case 202:
@@ -2645,14 +2645,14 @@ yyreduce:
     {NEDC( do_mod_R (NULL, NULL); do_gate_R ((yyvsp[-1]), (yyvsp[0])); )
                  GNED( np->set(CONN_KEY, "dest-ownerkey", MODULE_KEY);
                        np->set(CONN_KEY, "destgate", (yylsp[-1]));
-                       np->set(CONN_KEY, "dest-gate-index", trimBrackets((yylsp[0]))); )}
+                       np->set(CONN_KEY, "dest-gate-index", trimBrackets((yylsp[0]))); );}
     break;
 
   case 203:
 #line 899 "ebnf.y"
     {NEDC( do_mod_R (NULL, NULL); do_gate_R ((yyvsp[0]), NULL); )
                  GNED( np->set(CONN_KEY, "dest-ownerkey", MODULE_KEY);
-                       np->set(CONN_KEY, "destgate", (yylsp[0])); )}
+                       np->set(CONN_KEY, "destgate", (yylsp[0])); );}
     break;
 
   case 204:
@@ -2660,445 +2660,445 @@ yyreduce:
     {NEDC( do_mod_R (NULL, NULL); do_gate_R ((yyvsp[-1]), NULL); )
                  GNED( np->set(CONN_KEY, "dest-ownerkey", MODULE_KEY);
                        np->set(CONN_KEY, "destgate", (yylsp[-1]));
-                       np->set(CONN_KEY, "dest-gate-plusplus", "1"); )}
+                       np->set(CONN_KEY, "dest-gate-plusplus", "1"); );}
     break;
 
   case 205:
 #line 912 "ebnf.y"
-    {NEDC( (yyval) = do_channeldescr( NULL, NULL, NULL, NULL); )}
+    {NEDC( (yyval) = do_channeldescr( NULL, NULL, NULL, NULL); );}
     break;
 
   case 206:
 #line 914 "ebnf.y"
-    {NEDC( (yyval) = do_channeldescr((yyvsp[0]), NULL,NULL,NULL); )}
+    {NEDC( (yyval) = do_channeldescr((yyvsp[0]), NULL,NULL,NULL); );}
     break;
 
   case 207:
 #line 916 "ebnf.y"
-    {NEDC( (yyval) = do_channeldescr( NULL, (yyvsp[0]), NULL, NULL); )}
+    {NEDC( (yyval) = do_channeldescr( NULL, (yyvsp[0]), NULL, NULL); );}
     break;
 
   case 208:
 #line 918 "ebnf.y"
-    {NEDC( (yyval) = do_channeldescr( NULL, NULL, (yyvsp[0]), NULL); )}
+    {NEDC( (yyval) = do_channeldescr( NULL, NULL, (yyvsp[0]), NULL); );}
     break;
 
   case 209:
 #line 920 "ebnf.y"
-    {NEDC( (yyval) = do_channeldescr( NULL, NULL, NULL, (yyvsp[0])); )}
+    {NEDC( (yyval) = do_channeldescr( NULL, NULL, NULL, (yyvsp[0])); );}
     break;
 
   case 210:
 #line 923 "ebnf.y"
-    {NEDC( (yyval) = do_channeldescr( NULL, (yyvsp[-1]), (yyvsp[0]), NULL); )}
+    {NEDC( (yyval) = do_channeldescr( NULL, (yyvsp[-1]), (yyvsp[0]), NULL); );}
     break;
 
   case 211:
 #line 925 "ebnf.y"
-    {NEDC( (yyval) = do_channeldescr( NULL, (yyvsp[-1]), NULL, (yyvsp[0])); )}
+    {NEDC( (yyval) = do_channeldescr( NULL, (yyvsp[-1]), NULL, (yyvsp[0])); );}
     break;
 
   case 212:
 #line 927 "ebnf.y"
-    {NEDC( (yyval) = do_channeldescr( NULL, NULL, (yyvsp[-1]), (yyvsp[0])); )}
+    {NEDC( (yyval) = do_channeldescr( NULL, NULL, (yyvsp[-1]), (yyvsp[0])); );}
     break;
 
   case 213:
 #line 929 "ebnf.y"
-    {NEDC( (yyval) = do_channeldescr( NULL, (yyvsp[0]), (yyvsp[-1]), NULL); )}
+    {NEDC( (yyval) = do_channeldescr( NULL, (yyvsp[0]), (yyvsp[-1]), NULL); );}
     break;
 
   case 214:
 #line 931 "ebnf.y"
-    {NEDC( (yyval) = do_channeldescr( NULL, (yyvsp[0]), NULL, (yyvsp[-1])); )}
+    {NEDC( (yyval) = do_channeldescr( NULL, (yyvsp[0]), NULL, (yyvsp[-1])); );}
     break;
 
   case 215:
 #line 933 "ebnf.y"
-    {NEDC( (yyval) = do_channeldescr( NULL, NULL, (yyvsp[0]), (yyvsp[-1])); )}
+    {NEDC( (yyval) = do_channeldescr( NULL, NULL, (yyvsp[0]), (yyvsp[-1])); );}
     break;
 
   case 216:
 #line 936 "ebnf.y"
-    {NEDC( (yyval) = do_channeldescr( NULL, (yyvsp[-2]), (yyvsp[-1]), (yyvsp[0])); )}
+    {NEDC( (yyval) = do_channeldescr( NULL, (yyvsp[-2]), (yyvsp[-1]), (yyvsp[0])); );}
     break;
 
   case 217:
 #line 938 "ebnf.y"
-    {NEDC( (yyval) = do_channeldescr( NULL, (yyvsp[-2]), (yyvsp[0]), (yyvsp[-1])); )}
+    {NEDC( (yyval) = do_channeldescr( NULL, (yyvsp[-2]), (yyvsp[0]), (yyvsp[-1])); );}
     break;
 
   case 218:
 #line 940 "ebnf.y"
-    {NEDC( (yyval) = do_channeldescr( NULL, (yyvsp[-1]), (yyvsp[-2]), (yyvsp[0])); )}
+    {NEDC( (yyval) = do_channeldescr( NULL, (yyvsp[-1]), (yyvsp[-2]), (yyvsp[0])); );}
     break;
 
   case 219:
 #line 942 "ebnf.y"
-    {NEDC( (yyval) = do_channeldescr( NULL, (yyvsp[0]), (yyvsp[-2]), (yyvsp[-1])); )}
+    {NEDC( (yyval) = do_channeldescr( NULL, (yyvsp[0]), (yyvsp[-2]), (yyvsp[-1])); );}
     break;
 
   case 220:
 #line 944 "ebnf.y"
-    {NEDC( (yyval) = do_channeldescr( NULL, (yyvsp[-1]), (yyvsp[0]), (yyvsp[-2])); )}
+    {NEDC( (yyval) = do_channeldescr( NULL, (yyvsp[-1]), (yyvsp[0]), (yyvsp[-2])); );}
     break;
 
   case 221:
 #line 946 "ebnf.y"
-    {NEDC( (yyval) = do_channeldescr( NULL, (yyvsp[0]), (yyvsp[-1]), (yyvsp[-2])); )}
+    {NEDC( (yyval) = do_channeldescr( NULL, (yyvsp[0]), (yyvsp[-1]), (yyvsp[-2])); );}
     break;
 
   case 222:
 #line 951 "ebnf.y"
     {NEDC( (yyval) = (yyvsp[0]); )
-                 GNED( CONNATTR_KEY=addConnAttr(CONN_KEY,"channel",(yylsp[0])); )}
+                 GNED( CONNATTR_KEY=addConnAttr(CONN_KEY,"channel",(yylsp[0])); );}
     break;
 
   case 223:
 #line 957 "ebnf.y"
     {NEDC( (yyval) = (yyvsp[0]); )
-                 GNED( CONNATTR_KEY=addConnAttr(CONN_KEY,"delay",(yylsp[0])); )}
+                 GNED( CONNATTR_KEY=addConnAttr(CONN_KEY,"delay",(yylsp[0])); );}
     break;
 
   case 224:
 #line 963 "ebnf.y"
     {NEDC( (yyval) = (yyvsp[0]); )
-                 GNED( CONNATTR_KEY=addConnAttr(CONN_KEY,"error",(yylsp[0])); )}
+                 GNED( CONNATTR_KEY=addConnAttr(CONN_KEY,"error",(yylsp[0])); );}
     break;
 
   case 225:
 #line 969 "ebnf.y"
     {NEDC( (yyval) = (yyvsp[0]); )
-                 GNED( CONNATTR_KEY=addConnAttr(CONN_KEY,"datarate",(yylsp[0])); )}
+                 GNED( CONNATTR_KEY=addConnAttr(CONN_KEY,"datarate",(yylsp[0])); );}
     break;
 
   case 226:
 #line 975 "ebnf.y"
     {NEDC( do_system ((yyvsp[-3])); )
                  GNED( NETWORK_KEY = addNetwork(NEDFILE_KEY,(yylsp[-3]),(yylsp[-1]),NULLPOS);
-                       setComments(NETWORK_KEY,(yylsp[-4]),(yylsp[0])); in_network=1;)}
+                       setComments(NETWORK_KEY,(yylsp[-4]),(yylsp[0])); in_network=1;);}
     break;
 
   case 227:
 #line 979 "ebnf.y"
-    {NEDC( do_systemmodule ((yyvsp[-5]), (yyvsp[-3]), NULL); )}
+    {NEDC( do_systemmodule ((yyvsp[-5]), (yyvsp[-3]), NULL); );}
     break;
 
   case 228:
 #line 981 "ebnf.y"
-    {NEDC( do_readallparameters(); )}
+    {NEDC( do_readallparameters(); );}
     break;
 
   case 229:
 #line 983 "ebnf.y"
-    {NEDC( end_system (); )}
+    {NEDC( end_system (); );}
     break;
 
   case 230:
 #line 985 "ebnf.y"
-    {NEDC( do_system ((yyvsp[-5])); )}
+    {NEDC( do_system ((yyvsp[-5])); );}
     break;
 
   case 231:
 #line 987 "ebnf.y"
     {NEDC( do_systemmodule ((yyvsp[-7]), (yyvsp[-5]), (yyvsp[-3])); )
                  GNED( NETWORK_KEY = addNetwork(NEDFILE_KEY,(yylsp[-7]),(yylsp[-5]),(yylsp[-3]));
-                       setComments(NETWORK_KEY,(yylsp[-8]),(yylsp[-2])); )}
+                       setComments(NETWORK_KEY,(yylsp[-8]),(yylsp[-2])); );}
     break;
 
   case 232:
 #line 991 "ebnf.y"
-    {NEDC( do_readallparameters(); )}
+    {NEDC( do_readallparameters(); );}
     break;
 
   case 233:
 #line 993 "ebnf.y"
-    {NEDC( end_system (); )}
+    {NEDC( end_system (); );}
     break;
 
   case 234:
 #line 998 "ebnf.y"
-    {GNED( setTrailingComment(NETWORK_KEY,(yylsp[-1])); in_network=0; )}
+    {GNED( setTrailingComment(NETWORK_KEY,(yylsp[-1])); in_network=0; );}
     break;
 
   case 235:
 #line 1003 "ebnf.y"
-    {NEDC( (yyval) = (yyvsp[-1]); )}
+    {NEDC( (yyval) = (yyvsp[-1]); );}
     break;
 
   case 238:
 #line 1013 "ebnf.y"
-    {NEDC( (yyval) = do_inputvalue((yyvsp[-3]), (yyvsp[-1])); )}
+    {NEDC( (yyval) = do_inputvalue((yyvsp[-3]), (yyvsp[-1])); );}
     break;
 
   case 239:
 #line 1015 "ebnf.y"
-    {NEDC( (yyval) = do_inputvalue((yyvsp[-1]), NULL); )}
+    {NEDC( (yyval) = do_inputvalue((yyvsp[-1]), NULL); );}
     break;
 
   case 240:
 #line 1017 "ebnf.y"
-    {NEDC( (yyval) = do_inputvalue(NULL, NULL); )}
+    {NEDC( (yyval) = do_inputvalue(NULL, NULL); );}
     break;
 
   case 241:
 #line 1019 "ebnf.y"
-    {NEDC( (yyval) = do_inputvalue(NULL, NULL); )}
+    {NEDC( (yyval) = do_inputvalue(NULL, NULL); );}
     break;
 
   case 242:
 #line 1025 "ebnf.y"
-    {NEDC( (yyval) = end_expr( (yyvsp[0]) ); )}
+    {NEDC( (yyval) = end_expr( (yyvsp[0]) ); );}
     break;
 
   case 243:
 #line 1030 "ebnf.y"
-    {NEDC( (yyval) = (yyvsp[0]); )}
+    {NEDC( (yyval) = (yyvsp[0]); );}
     break;
 
   case 244:
 #line 1032 "ebnf.y"
-    {NEDC( (yyval) = (yyvsp[-1]); )}
+    {NEDC( (yyval) = (yyvsp[-1]); );}
     break;
 
   case 245:
 #line 1035 "ebnf.y"
-    {NEDC( (yyval) = do_op( 2, '+', (yyvsp[-2]),(yyvsp[0]),NULL); )}
+    {NEDC( (yyval) = do_op( 2, '+', (yyvsp[-2]),(yyvsp[0]),NULL); );}
     break;
 
   case 246:
 #line 1037 "ebnf.y"
-    {NEDC( (yyval) = do_op( 2, '-', (yyvsp[-2]),(yyvsp[0]),NULL); )}
+    {NEDC( (yyval) = do_op( 2, '-', (yyvsp[-2]),(yyvsp[0]),NULL); );}
     break;
 
   case 247:
 #line 1039 "ebnf.y"
-    {NEDC( (yyval) = do_op( 2, '*', (yyvsp[-2]),(yyvsp[0]),NULL); )}
+    {NEDC( (yyval) = do_op( 2, '*', (yyvsp[-2]),(yyvsp[0]),NULL); );}
     break;
 
   case 248:
 #line 1041 "ebnf.y"
-    {NEDC( (yyval) = do_op( 2, '/', (yyvsp[-2]),(yyvsp[0]),NULL); )}
+    {NEDC( (yyval) = do_op( 2, '/', (yyvsp[-2]),(yyvsp[0]),NULL); );}
     break;
 
   case 249:
 #line 1043 "ebnf.y"
-    {NEDC( (yyval) = do_op( 2, '%', (yyvsp[-2]),(yyvsp[0]),NULL); )}
+    {NEDC( (yyval) = do_op( 2, '%', (yyvsp[-2]),(yyvsp[0]),NULL); );}
     break;
 
   case 250:
 #line 1045 "ebnf.y"
-    {NEDC( (yyval) = do_op( 2, '^', (yyvsp[-2]),(yyvsp[0]),NULL); )}
+    {NEDC( (yyval) = do_op( 2, '^', (yyvsp[-2]),(yyvsp[0]),NULL); );}
     break;
 
   case 251:
 #line 1049 "ebnf.y"
-    {NEDC( (yyval) = do_addminus((yyvsp[0])); )}
+    {NEDC( (yyval) = do_addminus((yyvsp[0])); );}
     break;
 
   case 252:
 #line 1052 "ebnf.y"
-    {NEDC( (yyval) = do_op( 2, '=', (yyvsp[-2]),(yyvsp[0]),NULL); )}
+    {NEDC( (yyval) = do_op( 2, '=', (yyvsp[-2]),(yyvsp[0]),NULL); );}
     break;
 
   case 253:
 #line 1054 "ebnf.y"
-    {NEDC( (yyval) = do_op( 2, '!', (yyvsp[-2]),(yyvsp[0]),NULL); )}
+    {NEDC( (yyval) = do_op( 2, '!', (yyvsp[-2]),(yyvsp[0]),NULL); );}
     break;
 
   case 254:
 #line 1056 "ebnf.y"
-    {NEDC( (yyval) = do_op( 2, '>', (yyvsp[-2]),(yyvsp[0]),NULL); )}
+    {NEDC( (yyval) = do_op( 2, '>', (yyvsp[-2]),(yyvsp[0]),NULL); );}
     break;
 
   case 255:
 #line 1058 "ebnf.y"
-    {NEDC( (yyval) = do_op( 2, '}', (yyvsp[-2]),(yyvsp[0]),NULL); )}
+    {NEDC( (yyval) = do_op( 2, '}', (yyvsp[-2]),(yyvsp[0]),NULL); );}
     break;
 
   case 256:
 #line 1060 "ebnf.y"
-    {NEDC( (yyval) = do_op( 2, '<', (yyvsp[-2]),(yyvsp[0]),NULL); )}
+    {NEDC( (yyval) = do_op( 2, '<', (yyvsp[-2]),(yyvsp[0]),NULL); );}
     break;
 
   case 257:
 #line 1062 "ebnf.y"
-    {NEDC( (yyval) = do_op( 2, '{', (yyvsp[-2]),(yyvsp[0]),NULL); )}
+    {NEDC( (yyval) = do_op( 2, '{', (yyvsp[-2]),(yyvsp[0]),NULL); );}
     break;
 
   case 258:
 #line 1065 "ebnf.y"
-    {NEDC( (yyval) = do_func(2,jar_strdup("bool_and"), (yyvsp[-2]),(yyvsp[0]),NULL,NULL); )}
+    {NEDC( (yyval) = do_func(2,jar_strdup("bool_and"), (yyvsp[-2]),(yyvsp[0]),NULL,NULL); );}
     break;
 
   case 259:
 #line 1067 "ebnf.y"
-    {NEDC( (yyval) = do_func(2,jar_strdup("bool_or"), (yyvsp[-2]),(yyvsp[0]),NULL,NULL); )}
+    {NEDC( (yyval) = do_func(2,jar_strdup("bool_or"), (yyvsp[-2]),(yyvsp[0]),NULL,NULL); );}
     break;
 
   case 260:
 #line 1069 "ebnf.y"
-    {NEDC( (yyval) = do_func(2,jar_strdup("bool_xor"), (yyvsp[-2]),(yyvsp[0]),NULL,NULL); )}
+    {NEDC( (yyval) = do_func(2,jar_strdup("bool_xor"), (yyvsp[-2]),(yyvsp[0]),NULL,NULL); );}
     break;
 
   case 261:
 #line 1072 "ebnf.y"
-    {NEDC( (yyval) = do_func(1,jar_strdup("bool_not"), (yyvsp[0]),NULL,NULL,NULL); )}
+    {NEDC( (yyval) = do_func(1,jar_strdup("bool_not"), (yyvsp[0]),NULL,NULL,NULL); );}
     break;
 
   case 262:
 #line 1075 "ebnf.y"
-    {NEDC( (yyval) = do_func(2,jar_strdup("bin_and"), (yyvsp[-2]),(yyvsp[0]),NULL,NULL); )}
+    {NEDC( (yyval) = do_func(2,jar_strdup("bin_and"), (yyvsp[-2]),(yyvsp[0]),NULL,NULL); );}
     break;
 
   case 263:
 #line 1077 "ebnf.y"
-    {NEDC( (yyval) = do_func(2,jar_strdup("bin_or"), (yyvsp[-2]),(yyvsp[0]),NULL,NULL); )}
+    {NEDC( (yyval) = do_func(2,jar_strdup("bin_or"), (yyvsp[-2]),(yyvsp[0]),NULL,NULL); );}
     break;
 
   case 264:
 #line 1079 "ebnf.y"
-    {NEDC( (yyval) = do_func(2,jar_strdup("bin_xor"), (yyvsp[-2]),(yyvsp[0]),NULL,NULL); )}
+    {NEDC( (yyval) = do_func(2,jar_strdup("bin_xor"), (yyvsp[-2]),(yyvsp[0]),NULL,NULL); );}
     break;
 
   case 265:
 #line 1082 "ebnf.y"
-    {NEDC( (yyval) = do_func(1,jar_strdup("bin_compl"), (yyvsp[0]),NULL,NULL,NULL); )}
+    {NEDC( (yyval) = do_func(1,jar_strdup("bin_compl"), (yyvsp[0]),NULL,NULL,NULL); );}
     break;
 
   case 266:
 #line 1084 "ebnf.y"
-    {NEDC( (yyval) = do_func(2,jar_strdup("shift_left"), (yyvsp[-2]),(yyvsp[0]),NULL,NULL); )}
+    {NEDC( (yyval) = do_func(2,jar_strdup("shift_left"), (yyvsp[-2]),(yyvsp[0]),NULL,NULL); );}
     break;
 
   case 267:
 #line 1086 "ebnf.y"
-    {NEDC( (yyval) = do_func(2,jar_strdup("shift_right"), (yyvsp[-2]),(yyvsp[0]),NULL,NULL); )}
+    {NEDC( (yyval) = do_func(2,jar_strdup("shift_right"), (yyvsp[-2]),(yyvsp[0]),NULL,NULL); );}
     break;
 
   case 268:
 #line 1088 "ebnf.y"
-    {NEDC( (yyval) = do_op( 3, '?', (yyvsp[-4]),(yyvsp[-2]),(yyvsp[0])); )}
+    {NEDC( (yyval) = do_op( 3, '?', (yyvsp[-4]),(yyvsp[-2]),(yyvsp[0])); );}
     break;
 
   case 269:
 #line 1090 "ebnf.y"
-    {NEDC( (yyval) = do_func(0,(yyvsp[-2]), NULL,NULL,NULL,NULL); )}
+    {NEDC( (yyval) = do_func(0,(yyvsp[-2]), NULL,NULL,NULL,NULL); );}
     break;
 
   case 270:
 #line 1092 "ebnf.y"
-    {NEDC( (yyval) = do_func(1,(yyvsp[-3]), (yyvsp[-1]),NULL,NULL,NULL); )}
+    {NEDC( (yyval) = do_func(1,(yyvsp[-3]), (yyvsp[-1]),NULL,NULL,NULL); );}
     break;
 
   case 271:
 #line 1094 "ebnf.y"
-    {NEDC( (yyval) = do_func(2,(yyvsp[-5]), (yyvsp[-3]),(yyvsp[-1]),NULL,NULL); )}
+    {NEDC( (yyval) = do_func(2,(yyvsp[-5]), (yyvsp[-3]),(yyvsp[-1]),NULL,NULL); );}
     break;
 
   case 272:
 #line 1096 "ebnf.y"
-    {NEDC( (yyval) = do_func(3,(yyvsp[-7]), (yyvsp[-5]),(yyvsp[-3]),(yyvsp[-1]),NULL); )}
+    {NEDC( (yyval) = do_func(3,(yyvsp[-7]), (yyvsp[-5]),(yyvsp[-3]),(yyvsp[-1]),NULL); );}
     break;
 
   case 273:
 #line 1098 "ebnf.y"
-    {NEDC( (yyval) = do_func(3,(yyvsp[-9]), (yyvsp[-7]),(yyvsp[-5]),(yyvsp[-3]),(yyvsp[-1])); )}
+    {NEDC( (yyval) = do_func(3,(yyvsp[-9]), (yyvsp[-7]),(yyvsp[-5]),(yyvsp[-3]),(yyvsp[-1])); );}
     break;
 
   case 279:
 #line 1111 "ebnf.y"
-    {NEDC( (yyval) = do_parname (0,0,(yyvsp[0]),0,1); )}
+    {NEDC( (yyval) = do_parname (0,0,(yyvsp[0]),0,1); );}
     break;
 
   case 280:
 #line 1113 "ebnf.y"
-    {NEDC( (yyval) = do_parname (0,0,(yyvsp[0]),0,0); )}
+    {NEDC( (yyval) = do_parname (0,0,(yyvsp[0]),0,0); );}
     break;
 
   case 281:
 #line 1115 "ebnf.y"
-    {NEDC( (yyval) = do_parname (0,0,(yyvsp[0]),1,1); )}
+    {NEDC( (yyval) = do_parname (0,0,(yyvsp[0]),1,1); );}
     break;
 
   case 282:
 #line 1117 "ebnf.y"
-    {NEDC( (yyval) = do_parname (0,0,(yyvsp[0]),1,0); )}
+    {NEDC( (yyval) = do_parname (0,0,(yyvsp[0]),1,0); );}
     break;
 
   case 283:
 #line 1119 "ebnf.y"
-    {NEDC( (yyval) = do_parname (0,0,(yyvsp[0]),1,0); )}
+    {NEDC( (yyval) = do_parname (0,0,(yyvsp[0]),1,0); );}
     break;
 
   case 284:
 #line 1122 "ebnf.y"
-    {NEDC( (yyval) = do_parname ((yyvsp[-2]),0,(yyvsp[0]),0,1); )}
+    {NEDC( (yyval) = do_parname ((yyvsp[-2]),0,(yyvsp[0]),0,1); );}
     break;
 
   case 285:
 #line 1124 "ebnf.y"
-    {NEDC( (yyval) = do_parname ((yyvsp[-2]),0,(yyvsp[0]),0,0); )}
+    {NEDC( (yyval) = do_parname ((yyvsp[-2]),0,(yyvsp[0]),0,0); );}
     break;
 
   case 286:
 #line 1127 "ebnf.y"
-    {NEDC( (yyval) = do_parname ((yyvsp[-3]),(yyvsp[-2]),(yyvsp[0]),0,1); )}
+    {NEDC( (yyval) = do_parname ((yyvsp[-3]),(yyvsp[-2]),(yyvsp[0]),0,1); );}
     break;
 
   case 287:
 #line 1129 "ebnf.y"
-    {NEDC( (yyval) = do_parname ((yyvsp[-3]),(yyvsp[-2]),(yyvsp[0]),0,0); )}
+    {NEDC( (yyval) = do_parname ((yyvsp[-3]),(yyvsp[-2]),(yyvsp[0]),0,0); );}
     break;
 
   case 288:
 #line 1134 "ebnf.y"
-    {NEDC( (yyval) = make_literal_expr(TYPE_STRING,(yyvsp[0])); )}
+    {NEDC( (yyval) = make_literal_expr(TYPE_STRING,(yyvsp[0])); );}
     break;
 
   case 289:
 #line 1139 "ebnf.y"
-    {NEDC( (yyval) = make_literal_expr(TYPE_BOOL,jar_strdup("true")); )}
+    {NEDC( (yyval) = make_literal_expr(TYPE_BOOL,jar_strdup("true")); );}
     break;
 
   case 290:
 #line 1141 "ebnf.y"
-    {NEDC( (yyval) = make_literal_expr(TYPE_BOOL,jar_strdup("false")); )}
+    {NEDC( (yyval) = make_literal_expr(TYPE_BOOL,jar_strdup("false")); );}
     break;
 
   case 291:
 #line 1146 "ebnf.y"
-    {NEDC( (yyval) = make_literal_expr(TYPE_NUMERIC,(yyvsp[0])); )}
+    {NEDC( (yyval) = make_literal_expr(TYPE_NUMERIC,(yyvsp[0])); );}
     break;
 
   case 292:
 #line 1151 "ebnf.y"
-    {NEDC( (yyval) = make_literal_expr(TYPE_NUMERIC,jar_strdup("(long)sub_i")); )}
+    {NEDC( (yyval) = make_literal_expr(TYPE_NUMERIC,jar_strdup("(long)sub_i")); );}
     break;
 
   case 293:
 #line 1153 "ebnf.y"
-    {NEDC( (yyval) = do_sizeof ((yyvsp[-1])); )}
+    {NEDC( (yyval) = do_sizeof ((yyvsp[-1])); );}
     break;
 
   case 297:
 #line 1164 "ebnf.y"
-    {NEDC( (yyval) = do_timeconstant((yyvsp[-2]),(yyvsp[-1]),(yyvsp[0])); )}
+    {NEDC( (yyval) = do_timeconstant((yyvsp[-2]),(yyvsp[-1]),(yyvsp[0])); );}
     break;
 
   case 298:
 #line 1166 "ebnf.y"
-    {NEDC( (yyval) = do_timeconstant((yyvsp[-2]),(yyvsp[-1]),(yyvsp[0])); )}
+    {NEDC( (yyval) = do_timeconstant((yyvsp[-2]),(yyvsp[-1]),(yyvsp[0])); );}
     break;
 
   case 299:
 #line 1168 "ebnf.y"
-    {NEDC( (yyval) = do_timeconstant((yyvsp[-1]),(yyvsp[0]),NULL); )}
+    {NEDC( (yyval) = do_timeconstant((yyvsp[-1]),(yyvsp[0]),NULL); );}
     break;
 
   case 300:
 #line 1170 "ebnf.y"
-    {NEDC( (yyval) = do_timeconstant((yyvsp[-1]),(yyvsp[0]),NULL); )}
+    {NEDC( (yyval) = do_timeconstant((yyvsp[-1]),(yyvsp[0]),NULL); );}
     break;
 
 
