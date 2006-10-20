@@ -123,6 +123,7 @@ proc setupTkOptions {} {
        option add *Entry.font       $fonts(normal)
        option add *Listbox.font     $fonts(fixed)
        option add *Text.font        $fonts(fixed)
+       option add *TreeView.font    $fonts(fixed)
        option add *Button.font      $fonts(bold)
 
        # make menus look more contemporary
@@ -639,7 +640,7 @@ proc _focusTableEntry {e c} {
 proc multicolumnlistbox {w columnlist args} {
     global HAVE_BLT
     if {$HAVE_BLT} {
-        blt::treeview $w -font "arial 8" -allowduplicates yes
+        blt::treeview $w -allowduplicates yes
         $w column configure treeView -hide yes
         if {$args!=""} {
              eval $w config $args

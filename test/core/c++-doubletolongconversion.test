@@ -1,7 +1,11 @@
 %description:
 Test double-to-long conversions: 
 - fraction part gets truncated
-- if doesn't fit into a long, result is zero
+
+The rest is inconsistent:
+- when converting a negative double to unsigned long, the result may be 
+  (MAX_ULONG-x) or zero (newer gcc [4.0>=?] yields zero)
+- if doesn't fit into a long, result is MAX_LONG (gcc), or something else (msvc)
 
 %activity:
 
@@ -24,6 +28,6 @@ PRINT(-3.99)
 %contains-regex: stdout
 d=3.01, l=3, ul=3
 d=3.99, l=3, ul=3
-d=-3.01, l=-3, ul=(4294967293|9223372036854775808)
-d=-3.99, l=-3, ul=(4294967293|9223372036854775808)
+d=-3.01, l=-3, ul=(0|4294967293|9223372036854775808)
+d=-3.99, l=-3, ul=(0|4294967293|9223372036854775808)
 
