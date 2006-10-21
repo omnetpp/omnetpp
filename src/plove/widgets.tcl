@@ -113,6 +113,8 @@ proc setupTkOptions {} {
       set fonts(msgname) -Adobe-Helvetica-Medium-R-Normal-*-*-$s-*-*-*-*-*-*
       set fonts(fixed)   FixedSys
       set fonts(balloon) opp_balloon
+
+      option add *TreeView.font  $fonts(normal)
    }
 
    if {$tcl_platform(platform) == "unix"} {
