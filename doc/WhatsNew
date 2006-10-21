@@ -20,11 +20,10 @@ Tkenv:
   - main window position gets saved and restored
 
 Bugfixes:
-  - fix: worked around a Visual C++ bug that caused certain activity()-based
-    modules crash when the simulation was restarted. See Microsoft forum post:
-    http://forums.microsoft.com/MSDN/ShowPost.aspx?PostID=835791&SiteID=1&mode=1
-
   - fix: gamma_d() was bogus for the alpha<1 case [reported by Patrick McDonnell]
+
+  - fix: worked around a fiber-related Visual C++ problem that caused certain 
+    activity()-based modules crash when the simulation was restarted.
 
   - fixed a bug which sometimes caused Tkenv to crash when inspecting an
     internally refcounted message.
