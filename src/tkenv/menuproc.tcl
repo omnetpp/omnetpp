@@ -549,10 +549,10 @@ proc clear_windows {} {
     catch {.messagewindow.main.text delete 1.0 end}
 }
 
-proc inspect_filteredobjectlist {{w ""}} {
+proc inspect_filteredobjectlist {{w "."}} {
     # implements Find/inspect objects...
     set ptr ""
-    if {$w!="" && ![regexp {\.(ptr.*)-([0-9]+)} $w match ptr type]} {
+    if {$w!="" && $w!="." && ![regexp {\.(ptr.*)-([0-9]+)} $w match ptr type]} {
         error "window name $w doesn't look like an inspector window"
     }
     filteredobjectlist_window $ptr
