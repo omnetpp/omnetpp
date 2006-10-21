@@ -265,6 +265,7 @@ proc create_omnetpp_window {} {
     set help_tips(.toolbar.loadned) {Load NED file for compound module definitions}
     set help_tips(.toolbar.newrun)  {Set up a run}
     set help_tips(.toolbar.copy)    {Copy selected text to clipboard (Ctrl+C)}
+    set help_tips(.toolbar.save)    {Save window contents to file}
     set help_tips(.toolbar.newnet)  {Set up a network}
     set help_tips(.toolbar.step)    {Execute one event (F4)}
     set help_tips(.toolbar.run)     {Run with full animation (F5)}

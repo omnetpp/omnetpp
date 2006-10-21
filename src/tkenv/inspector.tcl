@@ -227,7 +227,7 @@ proc setClipboard {str} {
 #===================================================================
 
 proc textwindow_add_icons {w} {
-    global icons
+    global icons help_tips
 
     pack_iconbutton $w.toolbar.copy   -image $icons(copy) -command "edit_copy $w.main.text"
     pack_iconbutton $w.toolbar.find   -image $icons(find) -command "findDialog $w.main.text"
