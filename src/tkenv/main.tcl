@@ -41,6 +41,7 @@ set config(rununtil-event) ""
 set config(display-timeline) 1
 set config(timeline-maxnumevents) 1000
 set config(log-save-filename) "omnetpp.out"
+set config(mainwin-geom) ""
 
 set pluginlist {}
 
@@ -264,6 +265,7 @@ proc create_omnetpp_window {} {
     set help_tips(.toolbar.loadned) {Load NED file for compound module definitions}
     set help_tips(.toolbar.newrun)  {Set up a run}
     set help_tips(.toolbar.copy)    {Copy selected text to clipboard (Ctrl+C)}
+    set help_tips(.toolbar.save)    {Save window contents to file}
     set help_tips(.toolbar.newnet)  {Set up a network}
     set help_tips(.toolbar.step)    {Execute one event (F4)}
     set help_tips(.toolbar.run)     {Run with full animation (F5)}
@@ -421,8 +423,8 @@ proc bind_runcommands {w} {
 }
 
 proc bind_othercommands {w} {
-    bind $w <Control-s> {inspect_filteredobjectlist}
-    bind $w <Control-S> {inspect_filteredobjectlist}
+    bind $w <Control-s> [list inspect_filteredobjectlist $w]
+    bind $w <Control-S> [list inspect_filteredobjectlist $w]
 }
 
 proc bind_findcommands_to_textwidget {txt} {

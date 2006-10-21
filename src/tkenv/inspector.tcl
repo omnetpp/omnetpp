@@ -76,6 +76,7 @@ proc create_inspector_toplevel {w geom} {
     bind $w.infobar.color <Button-3> [list inspectorNamePopup $ptr %X %Y]
 
     bind_runcommands $w
+    bind_othercommands $w
 }
 
 proc choosecolorcode {ptr} {
@@ -227,7 +228,7 @@ proc setClipboard {str} {
 #===================================================================
 
 proc textwindow_add_icons {w} {
-    global icons
+    global icons help_tips
 
     pack_iconbutton $w.toolbar.copy   -image $icons(copy) -command "edit_copy $w.main.text"
     pack_iconbutton $w.toolbar.find   -image $icons(find) -command "findDialog $w.main.text"

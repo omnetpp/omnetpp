@@ -43,6 +43,7 @@ proc moduleinspector_add_run_buttons {w} {
 
     bind $w <Control-F4> "runsimulation_local $w fast"
 
+    set help_tips($w.toolbar.objs)    {Find and inspect messages, queues, watched variables, statistics, etc (Ctrl+S)}
     set help_tips($w.toolbar.vrun)    {Run with full animation (F5)}
     set help_tips($w.toolbar.mrun)    {Run until next event in this module}
     set help_tips($w.toolbar.mfast)   {Fast run until next event in this module (Ctrl+F4)}
@@ -205,6 +206,7 @@ proc _create_modulewindow {name geom iscompound} {
         pack_iconbutton $w.toolbar.obj    -image $icons(asobject) -command "inspect_this $w {As Object}"
         pack_iconbutton $w.toolbar.sep1   -separator
         set help_tips($w.toolbar.owner)  {Inspect parent module}
+        set help_tips($w.toolbar.graph)  {Inspect as network graphics}
         set help_tips($w.toolbar.obj)    {Inspect as object}
 
         textwindow_add_icons $w

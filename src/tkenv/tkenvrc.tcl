@@ -49,6 +49,8 @@ proc save_tkenvrc {{fname ".tkenvrc"}} {
             puts $fout "option $key\t{$value}"
         }
 
+        set config(mainwin-geom) [wm geometry .]
+
         foreach key [array names config] {
             set value $config($key)
             puts $fout "config $key\t{$value}"
@@ -115,6 +117,10 @@ proc load_tkenvrc {{fname ".tkenvrc"}} {
 #
 #
 proc reflectSettingsInGui {} {
+   global config
+
+   catch {wm geometry . $config(mainwin-geom)}
+
    toggle_treeview
    toggle_treeview
    toggle_timeline
