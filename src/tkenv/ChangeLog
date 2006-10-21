@@ -1,3 +1,5 @@
+2006-10-21  ------ omnetpp-3.3 released ------
+
 2006-10-19  Andras Varga
 
 	* modinsp2.tcl: connection arrows with zero thickness ("o=,0") are 

@@ -1,3 +1,5 @@
+2006-10-21  ------ omnetpp-3.3 released ------
+
 2006-10-04  Andras Varga
 
 	* ned.y: msg file syntax handling made more liberal: accept expressions
