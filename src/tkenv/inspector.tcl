@@ -76,6 +76,7 @@ proc create_inspector_toplevel {w geom} {
     bind $w.infobar.color <Button-3> [list inspectorNamePopup $ptr %X %Y]
 
     bind_runcommands $w
+    bind_othercommands $w
 }
 
 proc choosecolorcode {ptr} {

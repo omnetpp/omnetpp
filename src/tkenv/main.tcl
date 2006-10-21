@@ -423,8 +423,8 @@ proc bind_runcommands {w} {
 }
 
 proc bind_othercommands {w} {
-    bind $w <Control-s> {inspect_filteredobjectlist}
-    bind $w <Control-S> {inspect_filteredobjectlist}
+    bind $w <Control-s> [list inspect_filteredobjectlist $w]
+    bind $w <Control-S> [list inspect_filteredobjectlist $w]
 }
 
 proc bind_findcommands_to_textwidget {txt} {
