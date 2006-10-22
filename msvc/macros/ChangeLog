@@ -10,6 +10,10 @@
 
 2004-11-23  ------ omnetpp-3.0b1 released ------
 
+2004-11-21  Andras Varga
+
+	* added addMSGfileToProject() macro
+
 2004-11-03  ------ omnetpp-3.0a9 released ------
 
 2004-10-04  ------ omnetpp-3.0a8 released ------
@@ -34,11 +38,11 @@
 
 2003-02-15  ------ omnetpp-2.3b1 released ------
 
-2002-12-22  Andras Varga
+2002-05-04  ------ omnetpp-2.2 released ------
 
-	* ring.ned: display string corrected do that modules are really
-	arranged as a link
 
-	* omnetpp.ini: network=2 added to Run 2; added Run 3 and Run 4
+2001-03-21  Andras Varga
 
-	* MSVC project and makefiles: updated compile flags
+	* ------ omnetpp-2.1 released ------
+
+	* added the MSVC macro file to the repository

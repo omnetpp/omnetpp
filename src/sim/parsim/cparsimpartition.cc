@@ -199,6 +199,7 @@ void cParsimPartition::processReceivedBuffer(cCommBuffer *buffer, int tag, int s
 
 void cParsimPartition::processReceivedMessage(cMessage *msg, int destModuleId, int destGateId, int sourceProcId)
 {
+    msg->setSrcProcId(sourceProcId);
     cModule *mod = sim->module(destModuleId);
     if (!mod)
         throw new cRuntimeError("parallel simulation error: destination module id=%d for message \"%s\""

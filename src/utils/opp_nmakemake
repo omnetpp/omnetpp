@@ -223,7 +223,7 @@ could not figure out.
         $dir = $arg;
         $dir =~ s/^-I//;
         $dir = abs2rel($dir, $basedir);
-        $includes .= " -I".$dir;
+        $includes .= " -I".quote($dir);
         if ($tstamp eq "y" && $dir ne ".")
         {
             push(@tstampdirs, $dir);
@@ -234,7 +234,7 @@ could not figure out.
         $dir = $arg;
         $dir =~ s/^-L//;
         $dir = abs2rel($dir, $basedir);
-        $libpath .= " /libpath:\"$dir\"";
+        $libpath .= " /libpath:".quote($dir);
     }
     elsif ($arg =~ /^-l/)
     {
@@ -379,7 +379,7 @@ foreach $i (@linkdirs)
 @extdirtstamps = ();
 foreach $i (@tstampdirs)
 {
-    push(@extdirtstamps, "$i/.tstamp");
+    push(@extdirtstamps, quote($i."/.tstamp"));
 }
 
 if ($ignorened eq "y") {
@@ -783,6 +783,14 @@ sub abs2rel($;$;$;)
     my $rel = $cur.$abs;
 
     return $rel;
+}
+
+
+sub quote($)
+{
+    my($dir) = @_;
+    if ($dir =~ / /) {$dir = "\"$dir\"";}
+    return $dir;
 }
 
 

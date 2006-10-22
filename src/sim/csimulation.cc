@@ -601,17 +601,12 @@ void cSimulation::doOneEvent(cSimpleModule *mod)
     // increment event count
     event_num++;
 
-    // simulation time (as read via simTime() from modules) is set in
-    // selectNextModule()) which is called right before the next doOneEvent().
-    // However, for Tkenv code (single-stepping, "Run until") it's too late,
-    // so we have to update simtime for Tkenv's benefit here. (If we run parallel
-    // simulation, the actual event may be different from what we expect here
-    // because of reception of external events, but it doesn't matter -- simtime
-    // will be overwritten by selectNextModule() with the correct value
-    // before executing the next event.
-    cMessage *maybe_next_msg = msgQueue.peekFirst();
-    if (maybe_next_msg)
-        sim_time = maybe_next_msg->arrivalTime();
+    // Note: simulation time (as read via simTime() from modules) is updated
+    // in selectNextModule()) called right before the next doOneEvent().
+    // It must not be updated here, because it will interfere with parallel 
+    // simulation (cIdealSimulationProtocol, etc) that relies on simTime() 
+    // returning the time of the last executed event. If Tkenv wants to display
+    // the time of the next event, it should call guessNextSimtime().
 }
 
 void cSimulation::transferToMain()

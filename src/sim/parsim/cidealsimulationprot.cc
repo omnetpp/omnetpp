@@ -31,19 +31,12 @@
 #include "messagetags.h"
 #include "macros.h"
 
-// TBD needs to use cMessage::srcProcId()
 
 Register_Class(cIdealSimulationProtocol);
 
 // load 100,000 values from eventlog at once (~800K allocated memory)
 #define TABLESIZE   100000
 
-// helper function
-inline bool cIdealSimulationProtocol::isExternalMessage(cMessage *msg)
-{
-    cModule *srcmod = sim->module(msg->senderModuleId());
-    return dynamic_cast<cPlaceHolderModule *>(srcmod) != NULL;
-}
 
 cIdealSimulationProtocol::cIdealSimulationProtocol() : cParsimProtocolBase()
 {
@@ -65,7 +58,7 @@ void cIdealSimulationProtocol::startRun()
 {
     char fname[200];
     sprintf(fname, "ispeventlog-%d.dat", comm->getProcId());
-    fin = fopen(fname,"r");
+    fin = fopen(fname,"rb");
     if (!fin)
         throw new cRuntimeError("cIdealSimulationProtocol error: cannot open file `%s' for read", fname);
 
@@ -79,6 +72,7 @@ void cIdealSimulationProtocol::endRun()
 
 void cIdealSimulationProtocol::processReceivedMessage(cMessage *msg, int destModuleId, int destGateId, int sourceProcId)
 {
+    msg->setPriority(sourceProcId);
     cParsimProtocolBase::processReceivedMessage(msg, destModuleId, destGateId, sourceProcId);
 }
 
@@ -90,34 +84,34 @@ cMessage *cIdealSimulationProtocol::getNextEvent()
             return NULL;
 
     cMessage *msg = sim->msgQueue.peekFirst();
-    simtime_t t = msg->arrivalTime();
+    simtime_t msgTime = msg->arrivalTime();
 
     // if we aren't at the next external even yet --> nothing special to do
-    if (t<nextExternalEvent.t)
+    if (msgTime < nextExternalEvent.t)
     {
-        // ASSERT(!isExternalMessage(msg)); -- TBD check: this might be the perf bottleneck?!
+        ASSERT(msg->srcProcId()==-1); // must be local message
         return msg;
     }
 
-    // if we got to the external event
-    if (t==nextExternalEvent.t)
+    // if we reached the next external event in the log file, do it
+    if (msg->srcProcId()==nextExternalEvent.srcProcId && msgTime==nextExternalEvent.t)
     {
-        if (isExternalMessage(msg))
-        {
-            if (debug) ev << "expected external event for " << simtimeToStr(nextExternalEvent.t)
-                          << " already here (arrived earlier), good!"<< endl;
-            readNextRecordedEvent();
-        }
+        if (debug) ev << "expected external event (srcProcId=" << msg->srcProcId()
+                      << " t=" << simtimeToStr(nextExternalEvent.t)
+                      << ") has already arrived, good!"<< endl;
+        readNextRecordedEvent();
+        msg->setPriority(0);
         return msg;
     }
 
-    // t>nextExternalEvent -- here we have to wait until external event arrives
+    // next external event not yet here, we have to wait until we've received it
+    ASSERT(msgTime > nextExternalEvent.t);
     if (debug)
     {
-        ev << "next local event at " << simtimeToStr(t);
-        ev << " is PAST external event expected at " << simtimeToStr(nextExternalEvent.t);
-        ev << " -- waiting..." << endl;
-        ev.printf("DBG:next external event: %.30g, next local event: %.30g\n", nextExternalEvent.t, t);
+        ev << "next local event at " << simtimeToStr(msgTime) << " is PAST the "
+              "next external event expected for t=" << simtimeToStr(nextExternalEvent.t) <<
+              " -- waiting..." << endl;
+        //printf("DBG:next external event: %.30g, next local event: %.30g\n", nextExternalEvent.t, msgTime);
     }
 
     do
@@ -125,16 +119,21 @@ cMessage *cIdealSimulationProtocol::getNextEvent()
         if (!receiveBlocking())
             return NULL;
         msg = sim->msgQueue.peekFirst();
+        msgTime = msg->arrivalTime();
     }
-    while (msg->arrivalTime()>nextExternalEvent.t || !isExternalMessage(msg));
+    while (msg->srcProcId()!=nextExternalEvent.srcProcId || msgTime > nextExternalEvent.t);
 
-    if (msg->arrivalTime()!=nextExternalEvent.t)
+    if (msgTime < nextExternalEvent.t)
     {
         throw new cRuntimeError("cIdealSimulationProtocol: event trace does not match actual events: "
-                                "expected event with timestamp %.18g, and got one with timestamp %.18g",
-                                nextExternalEvent.t, msg->arrivalTime());
+                                "expected event with timestamp %.18g from proc=%d, and got one with timestamp %.18g",
+                                nextExternalEvent.t, nextExternalEvent.srcProcId, msgTime);
     }
+
+    // we have the next external event we wanted, return it
+    ASSERT(msgTime==nextExternalEvent.t);
     readNextRecordedEvent();
+    msg->setPriority(0);
     return msg;
 }
 
@@ -144,7 +143,7 @@ void cIdealSimulationProtocol::readNextRecordedEvent()
     if (nextPos==numItems)
     {
         nextPos = 0;
-        numItems = fread(table, sizeof(table[0]), tableSize, fin);
+        numItems = fread(table, sizeof(ExternalEvent), tableSize, fin);
         if (numItems==0)
             throw new cTerminationException("cIdealSimulationProtocol: end of event trace file");
     }
@@ -152,6 +151,7 @@ void cIdealSimulationProtocol::readNextRecordedEvent()
     // get next entry from table
     nextExternalEvent = table[nextPos++];
 
-    if (debug) ev << "next external event: " << simtimeToStr(nextExternalEvent.t) << endl;
+    if (debug) ev << "next expected external event: srcProcId=" << nextExternalEvent.srcProcId
+                  << " t=" << simtimeToStr(nextExternalEvent.t) << endl;
 }
 

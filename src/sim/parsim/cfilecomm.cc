@@ -159,7 +159,7 @@ bool cFileCommunications::receiveNonblocking(int filtTag, cCommBuffer *buffer, i
             // "permission denied".
             for (int i=0; i<20; i++)
             {
-                usleep(500000); // wait 0.1s
+                usleep(500000); // wait 0.5s
                 ev.printf("cFileCommunications: retrying to open file %s (previous attempt failed)\n", fname);
                 f = fopen(fname,"rb");
                 if (f) break;

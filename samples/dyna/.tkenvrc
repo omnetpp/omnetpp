@@ -18,11 +18,13 @@ option bubbles	{1}
 option animation_speed	{1.94}
 option bkpts_enabled	{1}
 option expressmode_autoupdate	{1}
+config mainwin-geom	{673x454+260+0}
 config rununtil-event	{}
 config last-nedfile	{}
 config filtobjlist-category	{mqsgvo}
 config display-timeline	{1}
 config filtobjlist-maxcount	{100000}
+config log-save-filename	{omnetpp.out}
 config editor-findstring	{}
 config rununtil-time	{}
 config dontshow	{}
@@ -39,6 +41,7 @@ config editor-whole-words	{0}
 config filtobjlist-order	{Class}
 inspector "dyna.client[2]" "Client" "3" "504x162+13+362"
 inspector "dyna" "dyna" "2" "466x368+48+62"
+inspector "dyna.client[2]" "Client" "1" "460x312+154+328"
 inspector "dyna.server" "Server" "3" "502x125+14+556"
 inspector "dyna" "ClientServer" "2" "405x417+70+60"
 

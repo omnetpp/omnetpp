@@ -126,9 +126,9 @@ class cParsimPartition : public cPolymorphic
      * Called when a cTerminationException occurs (i.e. the simulation is
      * about to be finished normally), this methods notifies other partitions
      * about the exception.
-	 *
-	 * This methods "eats" exceptions that occur during broadcast. (We're not
-	 * interested in stacked exceptions.)
+     *
+     * This methods "eats" exceptions that occur during broadcast. (We're not
+     * interested in stacked exceptions.)
      */
     virtual void broadcastTerminationException(cTerminationException *e);
 
@@ -137,8 +137,8 @@ class cParsimPartition : public cPolymorphic
      * stopped with an error), this methods notifies other partitions
      * about the exception.
      *
-	 * This methods "eats" exceptions that occur during broadcast. (We're not
-	 * interested in stacked exceptions.)
+     * This methods "eats" exceptions that occur during broadcast. (We're not
+     * interested in stacked exceptions.)
      */
     virtual void broadcastException(cException *e);
 };

@@ -395,6 +395,26 @@ double cMySQLConfiguration::getAsTime(const char *sect, const char *key, double 
     return strToSimtime(s);
 }
 
+std::string cIniFile::getAsFilename(const char *sect, const char *key, const char *defaultval)
+{
+    sEntry *entry = _findEntry(sect, key);
+    if (!entry)
+    {
+       if (!defaultval)
+          defaultval = "";
+       if (warnings)
+          ev.printf("Entry [%s]/%s= not in ini file, \"%s\" used as default\n",
+                     sect,key,defaultval);
+       return defaultval;
+    }
+
+    if (!entry->value || !*entry->value)
+       return "";
+
+    const char *baseDir = files[entry->file_id].directory;
+    return tidyFilename(concatDirAndFile(baseDir, entry->value).c_str());
+}
+
 std::string cMySQLConfiguration::getAsFilenames(const char *sect, const char *key, const char *defaultval)
 {
     sEntry *entry = _findEntry(sect, key);
@@ -529,6 +549,19 @@ const char *cMySQLConfiguration::getAsString2(const char *sect1, const char *sec
     const char *a = getAsString(sect1,key,defaultval);
     if (notfound)
          a = getAsString(sect2,key,defaultval);
+    warnings = w;
+    if (notfound && warnings)
+         ev.printf("Configuration entry %s= not in [%s] or [%s], \"%s\" used as default\n",
+                   key,sect1,sect2,defaultval?defaultval:"");
+    return a;
+}
+
+std::string cMySQLConfiguration::getAsFilename2(const char *sect1, const char *sect2, const char *key, const char *defaultval)
+{
+    bool w = warnings; warnings = false;
+    std::string a = getAsFilename(sect1,key,defaultval);
+    if (notfound)
+         a = getAsFilename(sect2,key,defaultval);
     warnings = w;
     if (notfound && warnings)
          ev.printf("Configuration entry %s= not in [%s] or [%s], \"%s\" used as default\n",

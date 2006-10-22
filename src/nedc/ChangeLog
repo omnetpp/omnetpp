@@ -1,8 +1,20 @@
-2006-11-13  Andras Varga
+2006-10-13  Andras Varga
 
 	* opp_msgc: generate covariant return types for dup(), replace 
 	findEnum() with cEnum::find(). FIXME: add #error into the generated
 	code to warn user that the file has to be re-generated
+
+2006-10-21  ------ omnetpp-3.3 released ------
+
+2006-10-14  Andras Varga
+
+	* opp_msgc: added version check into generated code
+
+2006-10-04  Andras Varga
+
+	* opp_msgc: don't accept reserved words as identifiers
+
+2006-01-12  ------ omnetpp-3.2p1 released ------
 
 2006-01-09  Andras Varga
 

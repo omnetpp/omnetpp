@@ -32,7 +32,7 @@ void opp_mysql_connectToDB(MYSQL *mysql, cConfiguration *cfg, const char *prefix
     const char *socket = cfg->getAsString("General", (pfx+"mysql-socket").c_str(), NULL);
     unsigned int clientflag = (unsigned int) cfg->getAsInt("General", (pfx+"mysql-clientflag").c_str(), 0);
     bool usepipe = cfg->getAsBool("General", (pfx+"mysql-use-pipe").c_str(), false);
-    std::string optionsfile = cfg->getAsFilenames("General", (pfx+"mysql-options-file").c_str(), NULL);
+    std::string optionsfile = cfg->getAsFilename("General", (pfx+"mysql-options-file").c_str(), NULL);
 
     // set options, then connect
     if (!optionsfile.empty())

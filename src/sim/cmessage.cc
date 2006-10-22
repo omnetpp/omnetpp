@@ -65,7 +65,7 @@ cMessage::cMessage(const char *name, int k, long ln, int pri, bool err) : cObjec
     contextptr = NULL;
     ctrlp = NULL;
     sharecount = 0;
-    srcprocid = 0;
+    srcprocid = -1;
 
     frommod=fromgate=-1;
     tomod=togate=-1;
@@ -102,32 +102,35 @@ std::string cMessage::info() const
 
     std::stringstream out;
     const char *deletedstr = "<deleted module>";
-    //out << "T=" << simtimeToStr(delivd);
 
-    out << "T=" << simtimeToStrShort(delivd);
-    out << ", in dt=" << simtimeToStrShort(delivd-simulation.simTime());
+    if (delivd > simulation.simTime())
+    {
+        // if it arrived in the past, dt is usually unimportant, don't print it
+        out << "at T=" << simtimeToStrShort(delivd);
+        out << ", in dt=" << simtimeToStrShort(delivd-simulation.simTime()) << "; ";
+    }
 
 #define MODNAME(modp) ((modp) ? (modp)->fullPath().c_str() : deletedstr)
     if (kind()==MK_STARTER)
     {
         cModule *tomodp = simulation.module(tomod);
-        out << "; starter for " << MODNAME(tomodp) << " (id=" << tomod << ") ";
+        out << "starter for " << MODNAME(tomodp) << " (id=" << tomod << ") ";
     }
     else if (kind()==MK_TIMEOUT)
     {
         cModule *tomodp = simulation.module(tomod);
-        out << "; timeout for " << MODNAME(tomodp) << " (id=" << tomod << ") ";
+        out << "timeoutmsg for " << MODNAME(tomodp) << " (id=" << tomod << ") ";
     }
     else if (frommod==tomod)
     {
         cModule *tomodp = simulation.module(tomod);
-        out << "; selfmsg for " << MODNAME(tomodp) << " (id=" << tomod << ") ";
+        out << "selfmsg for " << MODNAME(tomodp) << " (id=" << tomod << ") ";
     }
     else
     {
         cModule *frommodp = simulation.module(frommod);
         cModule *tomodp = simulation.module(tomod);
-        out << "; src=" << MODNAME(frommodp) << " (id=" << frommod << ") ";
+        out << "src=" << MODNAME(frommodp) << " (id=" << frommod << ") ";
         out << " dest=" << MODNAME(tomodp) << " (id=" << tomod << ") ";
     }
 #undef MODNAME
@@ -266,7 +269,7 @@ cMessage& cMessage::operator=(const cMessage& msg)
     len = msg.len;
     error = msg.error;
     tstamp = msg.tstamp;
-    srcprocid = msg.srcprocid; // probably redundant
+    srcprocid = msg.srcprocid;
 
     created = msg.created;
 
@@ -318,6 +321,8 @@ void cMessage::_deleteEncapMsg()
     if (encapmsg->sharecount>0)
     {
         encapmsg->sharecount--;
+        if (encapmsg->ownerp == this)
+            encapmsg->ownerp = NULL;
     }
     else
     {
@@ -334,13 +339,15 @@ void cMessage::_detachEncapMsg()
 {
     if (encapmsg->sharecount>0)
     {
+        // "de-share" object - create our own copy
         encapmsg->sharecount--;
+        if (encapmsg->ownerp == this)
+            encapmsg->ownerp = NULL;
         take(encapmsg = (cMessage *)encapmsg->dup());
     }
     else
     {
-        // note: due to sharecounting, ownerp may be anything here (any former owner),
-        // so set it to ourselves
+        // note: due to sharecounting, ownerp may be pointing to a previous owner -- fix it
         encapmsg->ownerp = this;
     }
 }
@@ -367,7 +374,7 @@ void cMessage::encapsulate(cMessage *msg)
 
     if (msg)
     {
-        if (msg->owner()!=simulation.context())
+        if (msg->owner()!=simulation.contextSimpleModule())
             throw new cRuntimeError(this,"encapsulate(): not owner of message (%s)%s, owner is (%s)%s",
                                     msg->className(), msg->fullName(),
                                     msg->owner()->className(), msg->owner()->fullPath().c_str());
@@ -392,6 +399,8 @@ cMessage *cMessage::decapsulate()
     if (encapmsg->sharecount>0)
     {
         encapmsg->sharecount--;
+        if (encapmsg->ownerp == this)
+            encapmsg->ownerp = NULL;
         cMessage *msg = (cMessage *)encapmsg->dup();
         encapmsg = NULL;
         return msg;
@@ -411,7 +420,7 @@ cMessage *cMessage::encapsulatedMsg() const
     // so that other messages are not affected in case the user modifies
     // the encapsulated message via the returned pointer.
     // Trick: this is a const method, so we can only do changes via a
-    // non-const copy if the 'this' pointer.
+    // non-const copy of the 'this' pointer.
     if (encapmsg)
         const_cast<cMessage *>(this)->_detachEncapMsg();
 #endif

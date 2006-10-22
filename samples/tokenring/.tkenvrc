@@ -18,11 +18,13 @@ option bubbles	{1}
 option animation_speed	{1}
 option bkpts_enabled	{1}
 option expressmode_autoupdate	{1}
+config mainwin-geom	{990x692+-117+137}
 config rununtil-event	{}
 config last-nedfile	{}
 config filtobjlist-category	{mqsgvo}
 config display-timeline	{1}
 config filtobjlist-maxcount	{100000}
+config log-save-filename	{omnetpp.out}
 config editor-findstring	{}
 config rununtil-time	{}
 config dontshow	{}
@@ -37,8 +39,11 @@ config timeline-maxnumevents	{1000}
 config editor-case-sensitive	{0}
 config editor-whole-words	{0}
 config filtobjlist-order	{Class}
+inspector "token.comp[1]" "Computer" "2" "367x377+120+155"
+inspector "token.comp[4].sink.End-to-End Delay histogram (K-split)" "cKSplit" "2" "386x215+372+272"
 inspector "token" "token" "2" "335x287+8+35"
-inspector "token.comp[4].sink.End-to-End Delay histogram (K-split)" "cKSplit" "2" "386x215+348+465"
+inspector "token.comp[0].gen" "Generator" "1" "460x399+96+124"
+inspector "token.comp[1].gen" "Generator" "1" "460x312+24+31"
 inspector "token.comp[0]" "Computer" "2" "298x298+15+405"
 inspector "token.comp[0].mac.Queueing time (sec)" "cOutVector" "2" "379x201+355+228"
 inspector "token.comp[0].mac.sendQueue" "cQueue" "1" "379x186+354+8"

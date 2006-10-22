@@ -2,7 +2,41 @@
 
 	* filemgrs.cc: default precision changed to 14
 
-2005-10-19  ------ omnetpp-3.2 released ------ 
+2006-10-21  ------ omnetpp-3.3 released ------
+
+2006-09-13  Andras Varga
+
+	* fix: the simulation can now be in a directory whose path name 
+	contains spaces (e.g. "Program Files" or "OMNEST Demo")
+
+	* cInifile::getAsFilenames() enhancement (as part of the above fix):
+	if directory name contains spaces, quotes are used to escape it.
+
+	* cinifile.cc/h: added getAsFilename()
+
+2006-06-26  Andras Varga
+
+	* cinifile.cc: clearContents() made public.
+
+2006-03-19  Andras Varga
+
+	* omnetapp.cc: optimized checkTimeLimits() to call gettimeofday() less
+	frequently.
+
+2006-02-27  Andras Varga
+
+	* cenvir.cc: implemented getParsimProcId() and getParsimNumPartitions()
+
+2006-02-06  Andras Varga
+
+	* envir.cc: undisposedObject() to print warning if it's called after 
+	shutdown (when app==NULL). Source of such call is the destructor of
+	the global cDefaultList. Typically only global variables go to 
+	that list, and we strongly disapprove global vars.
+
+2006-01-12  ------ omnetpp-3.2p1 released ------
+
+2005-10-19  ------ omnetpp-3.2 released ------
 
 2005-09-22  Andras Varga
 

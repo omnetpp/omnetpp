@@ -1,3 +1,12 @@
+2006-10-21  ------ omnetpp-3.3 released ------
+
+2006-10-19  Andras Varga
+
+	* opp_nmakemake: bugfix: running it with a -I"path with space" option,
+	the quotes didn't make it into the generated Makefile.vc
+
+2006-01-12  ------ omnetpp-3.2p1 released ------
+
 2006-01-09  Andras Varga
 
 	* opp_nmakemake: failed if a directory name contained "++" when the -b

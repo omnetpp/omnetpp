@@ -54,7 +54,15 @@ enum eMessageKind
   MK_PARSIM_BEGIN = -1000  /// values -1000...-2000 reserved for parallel simulation
 };
 
-//==========================================================================
+/**
+ * Maximum number of partitions for parallel simulation.
+ *
+ * @ingroup ParsimBrief
+ * @ingroup Parsim
+ */
+// Note: it cannot go to cparsimcomm.h, without causing unwanted dependency on sim/parsim
+#define MAX_PARSIM_PARTITIONS  32768 // srcprocid in cMessage
+
 
 /**
  * The message class in \opp. cMessage objects may represent events,
@@ -106,7 +114,7 @@ class SIM_API cMessage : public cObject
                                // 1: shared once (shared among two messages);
                                // 2: shared twice (shared among three messages); etc.
                                // max sharecount is 127 (after that, a new msg is created).
-    unsigned char srcprocid;   // reserved for use by parallel execution: id of source partition
+    short srcprocid;           // reserved for use by parallel execution: id of source partition
     cArray *parlistp;          // ptr to list of parameters
     cMessage *encapmsg;        // ptr to encapsulated msg
     cPolymorphic *ctrlp;       // ptr to "control info"
@@ -677,12 +685,12 @@ class SIM_API cMessage : public cObject
     /**
      * Used internally by the parallel simulation kernel.
      */
-    void setSrcProcId(unsigned char procId) {srcprocid=procId;}
+    void setSrcProcId(int procId) {srcprocid = (short)procId;}
 
     /**
      * Used internally by the parallel simulation kernel.
      */
-    unsigned char srcProcId() {return srcprocid;}
+    int srcProcId() {return srcprocid;}
     //@}
 
     /** @name Miscellaneous. */

@@ -250,7 +250,7 @@ class ENVIR_API cEnvir : public std::ostream
      *
      * If a compound module (or a module with dynamically created submodules)
      * is deleted, one should not assume anything about the relative order
-     * in which moduleDeleted() is called for the module and its submodules.
+     * moduleDeleted() is called for the module and its submodules.
      */
     void moduleDeleted(cModule *module);
 
@@ -294,14 +294,14 @@ class ENVIR_API cEnvir : public std::ostream
     //@{
 
     /**
-     * Called by the simulation kernel (cMessagePar) to obtain value for an input
+     * Called by the simulation kernel (cPar) to obtain value for an input
      * module parameter. Returns empty string if the configuration doesn't specify
      * a value for this parameter.
      */
     std::string getParameter(int run_no, const char *parname);
 
     /**
-     * Called by the simulation kernel (cMessagePar) to learn whether it should
+     * Called by the simulation kernel (cPar) to learn whether it should
      * use the default value for a parameter if getParameter() fails.
      */
     bool getParameterUseDefault(int run_no, const char *parname);
@@ -542,6 +542,17 @@ class ENVIR_API cEnvir : public std::ostream
      * Access to original command-line arguments.
      */
     char **argVector();
+
+    /**
+     * Returns the partitionID when parallel simulation is active.
+     */
+    int getParsimProcId();
+
+    /**
+     * Returns the number of partitions when parallel simulation is active;
+     * otherwise it returns 0.
+     */
+    int getParsimNumPartitions();
 
     /**
      * The function underlying cSimulation::getUniqueNumber().

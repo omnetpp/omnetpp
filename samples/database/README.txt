@@ -14,7 +14,7 @@ The first one is implemented as a simple module (cMySQLNetBuilder),
 and it is intended as an example that can be customised at will.
 The latter three are plug-in extensions to Envir (cMySQLConfiguration,
 cMySQLOutputVectorManager and cMySQLOutputScalarManager) and they are
-completely generic -- they can be used with any simulation model to make them 
+completely generic -- they can be used with any simulation model to make them
 datatabase-enabled, without having to change a single line of source code.
 
 Possible uses of a database include:
@@ -47,19 +47,22 @@ Directory contents:
 Steps to get things up and running (These instructions use Linux command-line
 syntax, but the equivalent will work on Windows too):
 
-1. First, you obviously need a working MySQL database. The code has been 
+1. First, you obviously need a working MySQL database. The code has been
    tested with MySQL 4.1, so that's what we recommend. Make sure you can
    log in using the MySQL console ("mysql"), and you can create tables,
-   insert rows etc using SQL. 
-   
+   insert rows etc using SQL.
+
    $ mysql test   # test is the database name; any other database can be used
    mysql> CREATE TABLE dummy (name CHAR(80));
    mysql> DROP TABLE dummy;
    mysql> exit;
 
-   Also make sure that you have the necessary header files (mysql.h, etc) 
-   and libraries (libmysqlclient.so on Linux, mysqlclient.lib on Windows) 
-   to build programs with MySQL access. If you are installing from RPM
+   On Windows, you'll likely need the -W, -p and -u <username> options to
+   "mysql" to log in; the default user is root/root.
+
+   Also make sure that you have the necessary header files (mysql.h, etc)
+   and libraries (libmysqlclient.so on Linux, libmysql.lib+libmysql.dll on
+   Windows) to build programs with MySQL access. If you are installing from RPM
    in Linux, you need the "-devel" package to get these files. If installed,
    they usually can be found in /usr/include/mysql and /usr/lib. On Windows,
    you need the full package (~40 Meg) not just the Essentials one.
@@ -82,33 +85,41 @@ syntax, but the equivalent will work on Windows too):
 3. Take the given C++ sources, and compile them into your simulation.
    (Use Token Ring sample simulation if you're unsure -- the sample database
    contents for demonstrating cMySQLConfiguration is for this model.)
-   To get the sources built, the MySQL headers AND OMNeT++'s src/envir 
+   To get the sources built, the MySQL headers AND OMNeT++'s src/envir
    directory need to be in the include path (-I compiler options),
    and you need to link against the MySQL library (-lmysqlclient).
 
-   For example, to add database support to the Token Ring model, you'd do the 
+   For example, to add database support to the Token Ring model, you'd do the
    following:
 
    $ cd samples/database
    $ cp *.cc *.h ../tokenring
    $ cd ../tokenring
-   $ opp_makemake -f -N -x -I/usr/include/mysql -I$HOME/omnetpp/src/envir \ 
-   -lmysqlclient 
+   $ opp_makemake -f -N -x -I/usr/include/mysql -I$HOME/omnetpp/src/envir
+           -lmysqlclient
    $ make
 
    On Windows, the last commands would look like this (provided you installed
-   MySQL into C:\MySQL):
+   MySQL into C:\MySQL;):
 
-   > opp_nmakemake -f -N -x -IC:/MySQL/include -IC:/OMNeT++/src/envir \ 
-   -LC:/MySQL/lib -lmysqlclient.lib
+   > opp_nmakemake -f -N -x -IC:/MySQL/include -IC:/OMNeT++/src/envir
+           -LC:/MySQL/lib -llibmysql.lib
    > nmake -f Makefile.vc
-   
+
+   NOTE that on Windows you need to link against libmysql.lib and **not**
+   mysqlclient.lib as on Linux; and the program will need libmysql.dll as well
+   to run. You won't be able to link against mysqlclient.lib because of multi-
+   threaded/single-threaded library issues (there'll be always undefined
+   symbols.) If you installed MySQL to the default location under Program Files,
+   you'd better use the short directory names like C:/PROGRA~1/MySQL/MYSQLS~1.1
+   in the opp_nmakemake command line (dir /x displays them.)
+
    On Linux, you can also build a shared library, and have it loaded
    into the simulation dynamically (using the load-libs= omnetpp.ini
    entry).
 
 4. Fill the database with the input data. If you want to use cMySQLConfiguration,
-   this means INSERTs into the config, configsection and configentry tables, 
+   this means INSERTs into the config, configsection and configentry tables,
    and with cMySQLNetBuilder, into the network, node, link and parameter tables.
 
    To use the sample cMySQLConfiguration data for the Token Ring model, run the
@@ -147,21 +158,21 @@ syntax, but the equivalent will work on Windows too):
 
    Not all of them make sense together and most have defaults. For example,
    with a Linux MySQL default installation and no password (which is, BTW,
-   not recommended) I got away with setting the mysql-database= entry only. 
+   not recommended) I got away with setting the mysql-database= entry only.
    Look up the MySQL documentation if in trouble.
 
-   For the Token Ring example, the provided sample ini file will likely work, 
+   For the Token Ring example, the provided sample ini file will likely work,
    just copy it over from the example1/ directory:
-  
+
    $ cp tokenring-db.ini ../../tokenring
    $ cd ../../tokenring
 
 6. Run the simulation with the new ini file.
- 
+
    $ ./tokenring -f tokenring-db.ini
 
-   If you get an "Error connecting to MySQL", you'll need to play with 
-   the settings in Step 5. 
+   If you get an "Error connecting to MySQL", you'll need to play with
+   the settings in Step 5.
 
    When you click Run, your output vectors and output scalars will go into
    the database.

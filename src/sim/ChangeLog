@@ -1,3 +1,40 @@
+2006-10-21  ------ omnetpp-3.3 released ------
+
+2006-10-19  Andras Varga
+
+	* csimplemodule.cc: bugfix: worked around Visual C++ bug that causes
+	exception handling to mess up when SwitchToFiber() is called within
+	a catch block. See Microsoft forum patch:
+	http://forums.microsoft.com/MSDN/ShowPost.aspx?PostID=835791&SiteID=1&mode=1
+
+2006-09-28  Andras Varga
+
+	* cmessage.cc: fix in refcounting code: when decrementing refcount
+	for encapsulated msg, its ownerp should be NULL'ed out if it 
+	originally pointed to this message. This bug caused Tkenv to crash
+	when the encapsulated message's inspector was open (as it tried
+	to print fullPath()).
+
+2006-03-19  Andras Varga
+
+	* csimul.cc: added implementation of guessNextEvent() etc. Removed
+	updating simTime() from doOneEvent() which interfered with some 
+	parallel simulation algorithms (caused false "causality violation"
+	errors).
+
+2006-03-15  Andras Varga
+
+	* distrib.cc: gamma_d() was bogus for the alpha<1 case [reported by
+	Patrick McDonnell]. For alpha>1, use Marsaglia2000 instead of 
+	Cheng-Feast79.
+
+2006-02-27  Andras Varga
+
+	* cmersennetwister.cc, clcg32.cc: initialize() updated for parallel
+	simulation
+
+2006-01-12  ------ omnetpp-3.2p1 released ------
+
 2005-10-19  ------ omnetpp-3.2 released ------
 
 2005-10-05  Andras Varga

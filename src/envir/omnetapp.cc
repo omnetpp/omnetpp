@@ -38,7 +38,7 @@
 #include "cmodule.h"
 #include "cxmlelement.h"
 #include "cxmldoccache.h"
-#include "cstrtokenizer.h"
+#include "cstrtokenizer2.h"
 
 #ifdef WITH_PARSIM
 #include "cparsimcomm.h"
@@ -198,7 +198,7 @@ void TOmnetApp::setup()
              // iterate through file names
              ev.printf("\n");
 
-             cStringTokenizer tokenizer(nedfiles.c_str());
+             cStringTokenizer2 tokenizer(nedfiles.c_str());
              const char *fname;
              while ((fname = tokenizer.nextToken())!=NULL)
              {
@@ -486,9 +486,10 @@ void TOmnetApp::processFileName(opp_string& fname)
                                     fname.c_str());
         int pid = getpid();
 
-        // add ".<hostname>.<pid>" to fname
+        // add ".<hostname>.<pid>" to fname (note: parsimProcId cannot be appended
+        // because of initialization order)
         opp_string origfname = fname;
-        fname.reserve(strlen(origfname.c_str())+1+strlen(hostname)+10+1);
+        fname.reserve(strlen(origfname.c_str())+strlen(hostname)+30);
         sprintf(fname.buffer(),"%s.%s.%d", origfname.buffer(), hostname, pid);
     }
 }
@@ -585,7 +586,7 @@ void TOmnetApp::readPerRunOptions(int run_no)
         cRNG *rng;
         CREATE_BY_CLASSNAME(rng, opt_rng_class.c_str(), cRNG, "random number generator");
         rngs[i] = rng;
-        rngs[i]->initialize(run_no, i, num_rngs, getConfig());
+        rngs[i]->initialize(run_no, i, num_rngs, getParsimProcId(), getParsimNumPartitions(), getConfig());
     }
 
     // init nextuniquenumber -- startRun() is too late because simple module ctors have run by then
@@ -838,7 +839,9 @@ void TOmnetApp::checkTimeLimits()
 {
     if (opt_simtimelimit!=0 && simulation.simTime()>=opt_simtimelimit)
          throw new cTerminationException(eSIMTIME);
-    if (opt_cputimelimit==0)
+    if (opt_cputimelimit==0) // no limit
+         return;
+    if (ev.disable_tracing && simulation.eventNumber()&0xFF!=0) // optimize: in Express mode, don't call gettimeofday() on every event
          return;
     timeval now;
     gettimeofday(&now, NULL);

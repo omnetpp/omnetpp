@@ -66,7 +66,6 @@ class ENVIR_API cIniFile : public cConfiguration
     sEntry *_findEntry(const char *section, const char *key);
     const char *_getValue(const char *section, const char *key, bool raw);
     void _readFile(const char *fname, int section_id);
-    void clearContents();
 
     bool warnings;
     bool notfound;
@@ -84,6 +83,7 @@ class ENVIR_API cIniFile : public cConfiguration
     //@{
     void readFile(const char *fname);
     void setWarnings(bool warn) {warnings = warn;}
+    void clearContents();
     //@}
 
     /** @name Redefined section query methods from cConfiguration */
@@ -100,6 +100,7 @@ class ENVIR_API cIniFile : public cConfiguration
     virtual double getAsDouble(const char *section, const char *key, double defaultvalue=0.0);
     virtual double getAsTime(const char *section, const char *key, double defaultvalue=0.0);
     virtual const char *getAsString(const char *section, const char *key, const char *defaultvalue=""); // quotes stripped (if any)
+    virtual std::string getAsFilename(const char *section, const char *key, const char *defaultvalue="");
     virtual std::string getAsFilenames(const char *section, const char *key, const char *defaultvalue="");
     virtual const char *getAsCustom(const char *section, const char *key, const char *defaultvalue=NULL); // with quotes (if any)
     virtual const char *getBaseDirectoryFor(const char *section, const char *key);
@@ -116,6 +117,7 @@ class ENVIR_API cIniFile : public cConfiguration
     virtual double getAsDouble2(const char *section1, const char *section2, const char *key, double defaultvalue=0.0);
     virtual double getAsTime2(const char *section1, const char *section2, const char *key, double defaultvalue=0.0);
     virtual const char *getAsString2(const char *section1, const char *section2, const char *key, const char *defaultvalue="");
+    virtual std::string getAsFilename2(const char *section1, const char *section2, const char *key, const char *defaultvalue="");
     virtual std::string getAsFilenames2(const char *section1, const char *section2, const char *key, const char *defaultvalue="");
     virtual const char *getAsCustom2(const char *section1, const char *section2, const char *key, const char *defaultvalue="");
     virtual const char *getBaseDirectoryFor(const char *section1, const char *section2, const char *key);
