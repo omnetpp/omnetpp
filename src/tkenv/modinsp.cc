@@ -895,7 +895,7 @@ void TSimpleModInspector::update()
    setLabel(".nb.info.id.e", buf);
    setEntry(".nb.info.dispstr.e", mod->displayString());
    setEntry(".nb.info.dispstrpt.e", mod->backgroundDisplayString());
-   setLabel(".nb.info.state.e",  mod->isTerminated() ? "normal" : "terminated");
+   setLabel(".nb.info.state.e",  mod->isTerminated() ? "terminated" : "normal");
    if (mod->usesActivity())
    {
       unsigned stk = mod->stackSize();
