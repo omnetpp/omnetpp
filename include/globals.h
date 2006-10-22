@@ -34,6 +34,7 @@ SIM_API extern cRegistrationList componentTypes;  ///< List of all component typ
 SIM_API extern cRegistrationList nedFunctions;    ///< List if all NED functions (cMathFunction and cNEDFunction)
 SIM_API extern cRegistrationList classes;         ///< List of all classes that can be instantiated using createOne(); see cClassFactory and Register_Class() macro
 SIM_API extern cRegistrationList enums;           ///< List of all enum objects (cEnum)
+SIM_API extern cRegistrationList classDescriptors;///< List of all class descriptors (cStructDescriptor)
 
 
 /**

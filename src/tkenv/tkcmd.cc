@@ -1407,8 +1407,7 @@ int hasDescriptor_cmd(ClientData, Tcl_Interp *interp, int argc, const char **arg
    splitInspectorName( argv[1], object, type);
    if (!object) {Tcl_SetResult(interp, "wrong inspectorname string", TCL_STATIC); return TCL_ERROR;}
 
-   cStructDescriptor *sd = object->createDescriptor();
-   delete sd;
+   cStructDescriptor *sd = object->getDescriptor();
    Tcl_SetResult(interp, TCLCONST(sd ? "1" : "0"), TCL_VOLATILE);
    return TCL_OK;
 }

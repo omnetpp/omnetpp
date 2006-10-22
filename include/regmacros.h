@@ -163,6 +163,13 @@
                      (std::string("channel, implemented by ")+#CLASSNAME).c_str()));)
 
 
+/**
+ * Internal. Registers a class descriptor which provides reflection information.
+ *
+ * @hideinitializer
+ */
+#define Register_ClassDescriptor(DESCRIPTORCLASS) \
+  EXECUTE_ON_STARTUP(DESCRIPTORCLASS##__descr, classDescriptors.instance()->add(new DESCRIPTORCLASS());)
 
 /**
  * DEPRECATED. This macro basically just expands to an empty constructor

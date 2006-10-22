@@ -123,8 +123,7 @@ struct NEDCppGenerator::ClassDesc
 enum
 {
     FIELDTYPE_BASIC,
-    FIELDTYPE_STRUCT,
-    FIELDTYPE_SPECIAL
+    FIELDTYPE_STRUCT
 };
 
 struct NEDCppGenerator::FieldDesc
@@ -138,7 +137,7 @@ struct NEDCppGenerator::FieldDesc
     std::string fenumname;
     bool fispointer;
 
-    int fkind;                  // FIELDTYPE_BASIC, FIELDTYPE_STRUCT, FIELDTYPE_SPECIAL
+    int fkind;                  // FIELDTYPE_BASIC, FIELDTYPE_STRUCT
     int classtype; // if fkind==FIELDTYPE_STRUCT
     std::string datatype;
     std::string argtype;
@@ -491,10 +490,6 @@ void NEDCppGenerator::prepareForCodeGeneration(NEDElement *node, NEDCppGenerator
                     if (fld[i].fval != "")
                         fld[i].fval = "0";
                 }
-            }
-            else if (fld[i].fkind == FIELDTYPE_SPECIAL)
-            {
-                // ...
             }
             else
             {
@@ -886,7 +881,7 @@ void NEDCppGenerator::generateDescriptorClass(NEDCppGenerator::ClassDesc& cld, N
     out << "    " << cld.msgdescclass << "& operator=(const " << cld.msgdescclass << "& other);\n";
     out << "    virtual cPolymorphic *dup() const {return new " << cld.msgdescclass << "(*this);}\n";
     out << "\n";
-    out << "    virtual int getFieldCount();\n";
+    out << "    virtual int getFieldCount(object);\n";
     out << "    virtual const char *getFieldName(int field);\n";
     out << "    virtual int getFieldType(int field);\n";
     out << "    virtual const char *getFieldTypeString(int field);\n";
@@ -916,10 +911,10 @@ void NEDCppGenerator::generateDescriptorClass(NEDCppGenerator::ClassDesc& cld, N
     out << "\n";
 
     // getFieldCount()
-    out << "int " << cld.msgdescclass << "::getFieldCount()\n";
+    out << "int " << cld.msgdescclass << "::getFieldCount(void *object)\n";
     out << "{\n";
     if (cld.hasbasedescriptor)
-        out << "    return " << cld.msgbasedescclass << "::getFieldCount() + " << numfields << ";\n";
+        out << "    return " << cld.msgbasedescclass << "::getFieldCount(object) + " << numfields << ";\n";
     else
         out << "    return " << numfields << ";\n";
     out << "}\n";
@@ -930,9 +925,9 @@ void NEDCppGenerator::generateDescriptorClass(NEDCppGenerator::ClassDesc& cld, N
     out << "{\n";
     if (cld.hasbasedescriptor)
     {
-        out << "    if (field < " << cld.msgbasedescclass << "::getFieldCount())\n";
+        out << "    if (field < " << cld.msgbasedescclass << "::getFieldCount(object))\n";
         out << "        return " << cld.msgbasedescclass << "::getFieldType(field);\n";
-        out << "    field -= " << cld.msgbasedescclass << "::getFieldCount();\n";
+        out << "    field -= " << cld.msgbasedescclass << "::getFieldCount(object);\n";
     }
     out << "    switch (field) {\n";
     for (i=0; i<numfields; i++)
@@ -947,8 +942,6 @@ void NEDCppGenerator::generateDescriptorClass(NEDCppGenerator::ClassDesc& cld, N
             out << "        case " << i << ": return FT_BASIC" << arr << ";\n";
         else if (fld[i].fkind == FIELDTYPE_STRUCT)
             out << "        case " << i << ": return FT_STRUCT" << arr << ";\n";
-        else if (fld[i].fkind == FIELDTYPE_SPECIAL)
-            out << "        case " << i << ": return FT_SPECIAL" << arr << ";\n";
         else
             INTERNAL_ERROR1(NULL,"generateDescriptorClass(): invalid fieldtype %d", fld[i].fkind);
     }
@@ -962,9 +955,9 @@ void NEDCppGenerator::generateDescriptorClass(NEDCppGenerator::ClassDesc& cld, N
     out << "{\n";
     if (cld.hasbasedescriptor)
     {
-        out << "    if (field < " << cld.msgbasedescclass << "::getFieldCount())\n";
+        out << "    if (field < " << cld.msgbasedescclass << "::getFieldCount(object))\n";
         out << "        return " << cld.msgbasedescclass << "::getFieldName(field);\n";
-        out << "    field -= " << cld.msgbasedescclass << "::getFieldCount();\n";
+        out << "    field -= " << cld.msgbasedescclass << "::getFieldCount(object);\n";
     }
     out << "    switch (field) {\n";
     for (i=0; i<numfields; i++)
@@ -979,9 +972,9 @@ void NEDCppGenerator::generateDescriptorClass(NEDCppGenerator::ClassDesc& cld, N
     out << "{\n";
     if (cld.hasbasedescriptor)
     {
-        out << "    if (field < " << cld.msgbasedescclass << "::getFieldCount())\n";
+        out << "    if (field < " << cld.msgbasedescclass << "::getFieldCount(object))\n";
         out << "        return " << cld.msgbasedescclass << "::getFieldTypeString(field);\n";
-        out << "    field -= " << cld.msgbasedescclass << "::getFieldCount();\n";
+        out << "    field -= " << cld.msgbasedescclass << "::getFieldCount(object);\n";
     }
     out << "    switch (field) {\n";
     for (i=0; i<numfields; i++)
@@ -996,9 +989,9 @@ void NEDCppGenerator::generateDescriptorClass(NEDCppGenerator::ClassDesc& cld, N
     out << "{\n";
     if (cld.hasbasedescriptor)
     {
-        out << "    if (field < " << cld.msgbasedescclass << "::getFieldCount())\n";
+        out << "    if (field < " << cld.msgbasedescclass << "::getFieldCount(object))\n";
         out << "        return " << cld.msgbasedescclass << "::getFieldEnumName(field);\n";
-        out << "    field -= " << cld.msgbasedescclass << "::getFieldCount();\n";
+        out << "    field -= " << cld.msgbasedescclass << "::getFieldCount(object);\n";
     }
     out << "    switch (field) {\n";
     for (i=0; i<numfields; i++)
@@ -1014,9 +1007,9 @@ void NEDCppGenerator::generateDescriptorClass(NEDCppGenerator::ClassDesc& cld, N
     out << "{\n";
     if (cld.hasbasedescriptor)
     {
-        out << "    if (field < " << cld.msgbasedescclass << "::getFieldCount())\n";
+        out << "    if (field < " << cld.msgbasedescclass << "::getFieldCount(object))\n";
         out << "        return " << cld.msgbasedescclass << "::getArraySize(field);\n";
-        out << "    field -= " << cld.msgbasedescclass << "::getFieldCount();\n";
+        out << "    field -= " << cld.msgbasedescclass << "::getFieldCount(object);\n";
     }
     out << "    " << cld.msgclass << " *pp = (" << cld.msgclass << " *)p;\n";
     out << "    switch (field) {\n";
@@ -1042,9 +1035,9 @@ void NEDCppGenerator::generateDescriptorClass(NEDCppGenerator::ClassDesc& cld, N
     out << "{\n";
     if (cld.hasbasedescriptor)
     {
-        out << "    if (field < " << cld.msgbasedescclass << "::getFieldCount())\n";
+        out << "    if (field < " << cld.msgbasedescclass << "::getFieldCount(object))\n";
         out << "        return " << cld.msgbasedescclass << "::getFieldAsString(field,i,resultbuf,bufsize);\n";
-        out << "    field -= " << cld.msgbasedescclass << "::getFieldCount();\n";
+        out << "    field -= " << cld.msgbasedescclass << "::getFieldCount(object);\n";
     }
     out << "    " << cld.msgclass << " *pp = (" << cld.msgclass << " *)p;\n";
     out << "    switch (field) {\n";
@@ -1079,10 +1072,6 @@ void NEDCppGenerator::generateDescriptorClass(NEDCppGenerator::ClassDesc& cld, N
         {
             out << "        case " << i << ": return false;\n";
         }
-        else if (fld[i].fkind == FIELDTYPE_SPECIAL)
-        {
-            out << "        case " << i << ": return false; //TBD!!!\n";
-        }
         else
         {
             INTERNAL_ERROR1(NULL,"generateDescriptorClass(): invalid fieldtype %d", fld[i].fkind);
@@ -1098,9 +1087,9 @@ void NEDCppGenerator::generateDescriptorClass(NEDCppGenerator::ClassDesc& cld, N
     out << "{\n";
     if (cld.hasbasedescriptor)
     {
-        out << "    if (field < " << cld.msgbasedescclass << "::getFieldCount())\n";
+        out << "    if (field < " << cld.msgbasedescclass << "::getFieldCount(object))\n";
         out << "        return " << cld.msgbasedescclass << "::setFieldAsString(field,i,value);\n";
-        out << "    field -= " << cld.msgbasedescclass << "::getFieldCount();\n";
+        out << "    field -= " << cld.msgbasedescclass << "::getFieldCount(object);\n";
     }
     out << "    " << cld.msgclass << " *pp = (" << cld.msgclass << " *)p;\n";
     out << "    switch (field) {\n";
@@ -1135,10 +1124,6 @@ void NEDCppGenerator::generateDescriptorClass(NEDCppGenerator::ClassDesc& cld, N
         {
             out << "        case " << i << ": return false;\n";
         }
-        else if (fld[i].fkind == FIELDTYPE_SPECIAL)
-        {
-            out << "        case " << i << ": return false; //TBD!!!\n";
-        }
         else
         {
             INTERNAL_ERROR1(NULL,"generateDescriptorClass(): invalid fieldtype %d", fld[i].fkind);
@@ -1154,9 +1139,9 @@ void NEDCppGenerator::generateDescriptorClass(NEDCppGenerator::ClassDesc& cld, N
     out << "{\n";
     if (cld.hasbasedescriptor)
     {
-        out << "    if (field < " << cld.msgbasedescclass << "::getFieldCount())\n";
+        out << "    if (field < " << cld.msgbasedescclass << "::getFieldCount(object))\n";
         out << "        return " << cld.msgbasedescclass << "::getFieldStructName(field);\n";
-        out << "    field -= " << cld.msgbasedescclass << "::getFieldCount();\n";
+        out << "    field -= " << cld.msgbasedescclass << "::getFieldCount(object);\n";
     }
     out << "    switch (field) {\n";
     for (i=0; i<numfields; i++)
@@ -1172,9 +1157,9 @@ void NEDCppGenerator::generateDescriptorClass(NEDCppGenerator::ClassDesc& cld, N
     out << "{\n";
     if (cld.hasbasedescriptor)
     {
-        out << "    if (field < " << cld.msgbasedescclass << "::getFieldCount())\n";
+        out << "    if (field < " << cld.msgbasedescclass << "::getFieldCount(object))\n";
         out << "        return " << cld.msgbasedescclass << "::getFieldStructPointer(field, i);\n";
-        out << "    field -= " << cld.msgbasedescclass << "::getFieldCount();\n";
+        out << "    field -= " << cld.msgbasedescclass << "::getFieldCount(object);\n";
     }
     out << "    " << cld.msgclass << " *pp = (" << cld.msgclass << " *)p;\n";
     out << "    switch (field) {\n";

@@ -16,7 +16,6 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include <memory>
 #include <string.h>
 #include <math.h>
 
@@ -54,18 +53,17 @@ void TStructPanel::flushIfNeeded(int limit)
 }
 
 
-void TStructPanel::displayStruct(cStructDescriptor *sd, int level)
+void TStructPanel::displayStruct(void *object, cStructDescriptor *sd, int level)
 {
    // print everything in a buffer, and periodically display it as the buffer gets full.
    // this is a temporary solution, should be replaced by something more professional!
 
    int indent = level*4;
 
-   for (int fld=0; fld<sd->getFieldCount(); fld++)
+   for (int fld=0; fld<sd->getFieldCount(object); fld++)
    {
-       int type = sd->getFieldType(fld);
+       int type = sd->getFieldType(object, fld);
        bool isarray = type==cStructDescriptor::FT_BASIC_ARRAY ||
-                      type==cStructDescriptor::FT_SPECIAL_ARRAY ||
                       type==cStructDescriptor::FT_STRUCT_ARRAY;
        cStructDescriptor *sd1;
 
@@ -75,32 +73,27 @@ void TStructPanel::displayStruct(cStructDescriptor *sd, int level)
            {
                case cStructDescriptor::FT_BASIC:
                    tmpbuf[0]='\0';
-                   sd->getFieldAsString(fld, 0, tmpbuf, MAXWRITE);
-                   if (sd->getFieldEnumName(fld))
+                   sd->getFieldAsString(object, fld, 0, tmpbuf, MAXWRITE);
+                   if (sd->getFieldEnumName(object, fld))
                    {
                        // display enum value as int and as string
-                       cEnum* enm = cEnum::find(sd->getFieldEnumName(fld));
+                       cEnum* enm = cEnum::find(sd->getFieldEnumName(object, fld));
                        if (enm)
                        {
                            int key = atol(tmpbuf);
                            sprintf(tmpbuf, "%d (%s)", key, enm->stringFor(key));
                        }
                    }
-                   sprintf(writeptr,"%*s%s %s  =  %s\n", indent, "", sd->getFieldTypeString(fld), sd->getFieldName(fld), tmpbuf);
-                   flushIfNeeded(FLUSHLIMIT);
-                   break;
-               case cStructDescriptor::FT_SPECIAL:
-                   sprintf(writeptr,"%*s%s %s  =  ...\n", indent, "", sd->getFieldTypeString(fld), sd->getFieldName(fld)); //FIXME
+                   sprintf(writeptr,"%*s%s %s  =  %s\n", indent, "", sd->getFieldTypeString(object, fld), sd->getFieldName(object, fld), tmpbuf);
                    flushIfNeeded(FLUSHLIMIT);
                    break;
                case cStructDescriptor::FT_STRUCT:
                    tmpbuf[0]='\0';
-                   sd->getFieldAsString(fld, 0, tmpbuf, MAXWRITE);
-                   sprintf(writeptr,"%*s%s %s  =  %s ", indent, "", sd->getFieldTypeString(fld), sd->getFieldName(fld), tmpbuf);
+                   sd->getFieldAsString(object, fld, 0, tmpbuf, MAXWRITE);
+                   sprintf(writeptr,"%*s%s %s  =  %s ", indent, "", sd->getFieldTypeString(object, fld), sd->getFieldName(object, fld), tmpbuf);
                    flushIfNeeded(FLUSHLIMIT);
 
-                   sd1 = cStructDescriptor::createDescriptorFor(sd->getFieldStructName(fld),
-                                                                sd->getFieldStructPointer(fld,0));
+                   sd1 = cStructDescriptor::getDescriptorFor(sd->getFieldStructName(object, fld));
                    if (!sd1)
                    {
                        sprintf(writeptr, (tmpbuf[0] ? "\n" : "{...}\n"));
@@ -110,51 +103,45 @@ void TStructPanel::displayStruct(cStructDescriptor *sd, int level)
                    {
                        sprintf(writeptr,"{\n");
                        flushIfNeeded(FLUSHLIMIT);
-                       displayStruct(sd1,level+1);
-                       delete sd1;
+                       displayStruct(sd->getFieldStructPointer(object, fld,0), sd1, level+1);
                        sprintf(writeptr,"%*s}\n", indent, "");
                        flushIfNeeded(FLUSHLIMIT);
                    }
                    break;
                default:
-                   sprintf(writeptr,"%*s%s %s  =  (unknown type)\n", indent, "", sd->getFieldTypeString(fld), sd->getFieldName(fld));
+                   sprintf(writeptr,"%*s%s %s  =  (unknown type)\n", indent, "", sd->getFieldTypeString(object, fld), sd->getFieldName(object, fld));
                    flushIfNeeded(FLUSHLIMIT);
            }
        }
        else
        {
-           int size = sd->getArraySize(fld);
+           int size = sd->getArraySize(object, fld);
            for (int i=0; i<size; i++)
            {
                switch(type)
                {
                    case cStructDescriptor::FT_BASIC_ARRAY:
-                       sd->getFieldAsString(fld, i, tmpbuf, MAXWRITE); // FIXME: error handling!
-                       if (sd->getFieldEnumName(fld))
+                       sd->getFieldAsString(object, fld, i, tmpbuf, MAXWRITE); // FIXME: error handling!
+                       if (sd->getFieldEnumName(object, fld))
                        {
                            // display enum value as int and as string
-                           cEnum* enm = cEnum::find(sd->getFieldEnumName(fld));
+                           cEnum* enm = cEnum::find(sd->getFieldEnumName(object, fld));
                            if (enm)
                            {
                                int key = atol(tmpbuf);
                                sprintf(tmpbuf, "%d (%s)", key, enm->stringFor(key));
                            }
                        }
-                       sprintf(writeptr,"%*s%s %s[%d]  =  %s\n", indent, "", sd->getFieldTypeString(fld), sd->getFieldName(fld), i, tmpbuf);
-                       flushIfNeeded(FLUSHLIMIT);
-                       break;
-                   case cStructDescriptor::FT_SPECIAL_ARRAY:
-                       sprintf(writeptr,"%*s%s %s[%d]  =  ...\n", indent, "", sd->getFieldTypeString(fld), sd->getFieldName(fld), i); //FIXME
+                       sprintf(writeptr,"%*s%s %s[%d]  =  %s\n", indent, "", sd->getFieldTypeString(object, fld), sd->getFieldName(object, fld), i, tmpbuf);
                        flushIfNeeded(FLUSHLIMIT);
                        break;
                    case cStructDescriptor::FT_STRUCT_ARRAY:
                        tmpbuf[0]='\0';
-                       sd->getFieldAsString(fld, i, tmpbuf, MAXWRITE);
-                       sprintf(writeptr,"%*s%s %s[%d]  =  %s ", indent, "", sd->getFieldTypeString(fld), sd->getFieldName(fld), i, tmpbuf);
+                       sd->getFieldAsString(object, fld, i, tmpbuf, MAXWRITE);
+                       sprintf(writeptr,"%*s%s %s[%d]  =  %s ", indent, "", sd->getFieldTypeString(object, fld), sd->getFieldName(object, fld), i, tmpbuf);
                        flushIfNeeded(FLUSHLIMIT);
 
-                       sd1 = cStructDescriptor::createDescriptorFor(sd->getFieldStructName(fld),
-                                                                    sd->getFieldStructPointer(fld,i));
+                       sd1 = cStructDescriptor::getDescriptorFor(sd->getFieldStructName(object, fld));
                        if (!sd1)
                        {
                            sprintf(writeptr, (tmpbuf[0] ? "\n" : "{...}\n"));
@@ -164,14 +151,13 @@ void TStructPanel::displayStruct(cStructDescriptor *sd, int level)
                        {
                            sprintf(writeptr,"{\n");
                            flushIfNeeded(FLUSHLIMIT);
-                           displayStruct(sd1,level+1);
-                           delete sd1;
+                           displayStruct(sd->getFieldStructPointer(object, fld,i), sd1, level+1);
                            sprintf(writeptr,"}\n");
                            flushIfNeeded(FLUSHLIMIT);
                        }
                        break;
                    default:
-                       sprintf(writeptr,"%*s%s %s[%d]  =  (unknown type)\n", indent, "", sd->getFieldTypeString(fld), sd->getFieldName(fld), i);
+                       sprintf(writeptr,"%*s%s %s[%d]  =  (unknown type)\n", indent, "", sd->getFieldTypeString(object, fld), sd->getFieldName(object, fld), i);
                        flushIfNeeded(FLUSHLIMIT);
                }
            }
@@ -193,7 +179,7 @@ void TStructPanel::update()
    }
 
    // get descriptor object
-   cStructDescriptor *sd = object->createDescriptor();
+   cStructDescriptor *sd = object->getDescriptor();
    if (!sd)
    {
        CHK(Tcl_VarEval(interp, widgetname, ".txt insert 1.0 {class ", object->className()," {\n"
@@ -209,8 +195,7 @@ void TStructPanel::update()
    sprintf(writeptr,"class %s {\n", object->className());
    flushIfNeeded(FLUSHLIMIT);
 
-   displayStruct(sd,1);
-   delete sd;
+   displayStruct(object, sd, 1);
 
    sprintf(writeptr,"}\n");
 
@@ -230,13 +215,13 @@ int TStructPanel::inspectorCommand(Tcl_Interp *interp, int argc, const char **ar
    //
    if (argc<1) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
 
-   std::auto_ptr<cStructDescriptor> sd(object->createDescriptor());
+   cStructDescriptor *sd = object->getDescriptor();
 
    if (strcmp(argv[0],"count")==0)   // 'opp_inspectorcommand <inspector> fieldcount ...'
    {
       if (argc!=1) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
       char buf[20];
-      sprintf(buf, "%d", sd->getFieldCount());
+      sprintf(buf, "%d", sd->getFieldCount(object));
       Tcl_SetResult(interp, buf, TCL_VOLATILE);
       return TCL_OK;
    }
@@ -245,19 +230,15 @@ int TStructPanel::inspectorCommand(Tcl_Interp *interp, int argc, const char **ar
    {
       if (argc!=2) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
       int fld = atoi(argv[1]);
-      int type = sd->getFieldType(fld);
+      int type = sd->getFieldType(object, fld);
       switch(type)
       {
           case cStructDescriptor::FT_BASIC:
               Tcl_SetResult(interp, "basic", TCL_STATIC); break;
-          case cStructDescriptor::FT_SPECIAL:
-              Tcl_SetResult(interp, "special", TCL_STATIC); break;
           case cStructDescriptor::FT_STRUCT:
               Tcl_SetResult(interp, "struct", TCL_STATIC); break;
           case cStructDescriptor::FT_BASIC_ARRAY:
               Tcl_SetResult(interp, "basic array", TCL_STATIC); break;
-          case cStructDescriptor::FT_SPECIAL_ARRAY:
-              Tcl_SetResult(interp, "special array", TCL_STATIC); break;
           case cStructDescriptor::FT_STRUCT_ARRAY:
               Tcl_SetResult(interp, "struct array", TCL_STATIC); break;
           default:
@@ -270,7 +251,7 @@ int TStructPanel::inspectorCommand(Tcl_Interp *interp, int argc, const char **ar
    {
       if (argc!=2) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
       int fld = atoi(argv[1]);
-      Tcl_SetResult(interp, TCLCONST(sd->getFieldName(fld)), TCL_VOLATILE);
+      Tcl_SetResult(interp, TCLCONST(sd->getFieldName(object, fld)), TCL_VOLATILE);
       return TCL_OK;
    }
 
@@ -278,7 +259,7 @@ int TStructPanel::inspectorCommand(Tcl_Interp *interp, int argc, const char **ar
    {
       if (argc!=2) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
       int fld = atoi(argv[1]);
-      Tcl_SetResult(interp, TCLCONST(sd->getFieldTypeString(fld)), TCL_VOLATILE);
+      Tcl_SetResult(interp, TCLCONST(sd->getFieldTypeString(object, fld)), TCL_VOLATILE);
       return TCL_OK;
    }
 
@@ -287,7 +268,7 @@ int TStructPanel::inspectorCommand(Tcl_Interp *interp, int argc, const char **ar
       if (argc!=2) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
       int fld = atoi(argv[1]);
       char buf[20];
-      sprintf(buf, "%d", sd->getArraySize(fld));
+      sprintf(buf, "%d", sd->getArraySize(object, fld));
       Tcl_SetResult(interp, buf, TCL_VOLATILE);
       return TCL_OK;
    }
@@ -299,7 +280,7 @@ int TStructPanel::inspectorCommand(Tcl_Interp *interp, int argc, const char **ar
       int i=0;
       if (argc==4)
          i = atoi(argv[2]);
-      if (!sd->getFieldAsString(fld, i, tmpbuf, MAXWRITE))
+      if (!sd->getFieldAsString(object, fld, i, tmpbuf, MAXWRITE))
       {
          Tcl_SetResult(interp, "error in getFieldAsString()", TCL_STATIC);
          return TCL_ERROR;
@@ -312,7 +293,7 @@ int TStructPanel::inspectorCommand(Tcl_Interp *interp, int argc, const char **ar
    {
       if (argc!=2) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
       int fld = atoi(argv[1]);
-      Tcl_SetResult(interp, TCLCONST(sd->getFieldEnumName(fld)), TCL_VOLATILE);
+      Tcl_SetResult(interp, TCLCONST(sd->getFieldEnumName(object, fld)), TCL_VOLATILE);
       return TCL_OK;
    }
 
@@ -320,7 +301,7 @@ int TStructPanel::inspectorCommand(Tcl_Interp *interp, int argc, const char **ar
    {
       if (argc!=2) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
       int fld = atoi(argv[1]);
-      Tcl_SetResult(interp, TCLCONST(sd->getFieldStructName(fld)), TCL_VOLATILE);
+      Tcl_SetResult(interp, TCLCONST(sd->getFieldStructName(object, fld)), TCL_VOLATILE);
       return TCL_OK;
    }
    return TCL_ERROR;

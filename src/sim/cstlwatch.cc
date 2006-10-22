@@ -29,24 +29,24 @@ class SIM_API cStdVectorWatcherDescriptor : public cStructDescriptor //noncopyab
     cStdVectorWatcherDescriptor();
     virtual ~cStdVectorWatcherDescriptor();
 
-    virtual int getFieldCount();
-    virtual const char *getFieldName(int field);
-    virtual int getFieldType(int field);
-    virtual const char *getFieldTypeString(int field);
-    virtual const char *getFieldEnumName(int field);
-    virtual int getArraySize(int field);
+    virtual int getFieldCount(void *object);
+    virtual const char *getFieldName(void *object, int field);
+    virtual int getFieldType(void *object, int field);
+    virtual const char *getFieldTypeString(void *object, int field);
+    virtual const char *getFieldEnumName(void *object, int field);
+    virtual int getArraySize(void *object, int field);
 
-    virtual bool getFieldAsString(int field, int i, char *resultbuf, int bufsize);
-    virtual bool setFieldAsString(int field, int i, const char *value);
+    virtual bool getFieldAsString(void *object, int field, int i, char *resultbuf, int bufsize);
+    virtual bool setFieldAsString(void *object, int field, int i, const char *value);
 
-    virtual const char *getFieldStructName(int field);
-    virtual void *getFieldStructPointer(int field, int i);
-    virtual sFieldWrapper *getFieldWrapper(int field, int i);
+    virtual const char *getFieldStructName(void *object, int field);
+    virtual void *getFieldStructPointer(void *object, int field, int i);
 };
 
-Register_Class(cStdVectorWatcherDescriptor);
+Register_ClassDescriptor(cStdVectorWatcherDescriptor);
 
-cStdVectorWatcherDescriptor::cStdVectorWatcherDescriptor() : cStructDescriptor("cStdVectorWatcherBase")
+cStdVectorWatcherDescriptor::cStdVectorWatcherDescriptor() :
+cStructDescriptor("cStdVectorWatcher", "cStdVectorWatcherBase")
 {
 }
 
@@ -54,12 +54,12 @@ cStdVectorWatcherDescriptor::~cStdVectorWatcherDescriptor()
 {
 }
 
-int cStdVectorWatcherDescriptor::getFieldCount()
+int cStdVectorWatcherDescriptor::getFieldCount(void *)
 {
     return 1;
 }
 
-int cStdVectorWatcherDescriptor::getFieldType(int field)
+int cStdVectorWatcherDescriptor::getFieldType(void *, int field)
 {
     switch (field) {
         case 0: return FT_BASIC_ARRAY;
@@ -67,68 +67,64 @@ int cStdVectorWatcherDescriptor::getFieldType(int field)
     }
 }
 
-const char *cStdVectorWatcherDescriptor::getFieldName(int field)
+const char *cStdVectorWatcherDescriptor::getFieldName(void *object, int field)
 {
-    cStdVectorWatcherBase *pp = (cStdVectorWatcherBase *)p;
+    cStdVectorWatcherBase *pp = (cStdVectorWatcherBase *)object;
     switch (field) {
         case 0: return pp->name();
         default: return NULL;
     }
 }
 
-const char *cStdVectorWatcherDescriptor::getFieldTypeString(int field)
+const char *cStdVectorWatcherDescriptor::getFieldTypeString(void *object, int field)
 {
-    cStdVectorWatcherBase *pp = (cStdVectorWatcherBase *)p;
+    cStdVectorWatcherBase *pp = (cStdVectorWatcherBase *)object;
     switch (field) {
         case 0: return pp->elemTypeName();
         default: return NULL;
     }
 }
 
-const char *cStdVectorWatcherDescriptor::getFieldEnumName(int field)
+const char *cStdVectorWatcherDescriptor::getFieldEnumName(void *object, int field)
 {
     switch (field) {
         default: return NULL;
     }
 }
 
-int cStdVectorWatcherDescriptor::getArraySize(int field)
+int cStdVectorWatcherDescriptor::getArraySize(void *object, int field)
 {
-    cStdVectorWatcherBase *pp = (cStdVectorWatcherBase *)p;
+    cStdVectorWatcherBase *pp = (cStdVectorWatcherBase *)object;
     switch (field) {
         case 0: return pp->size();
         default: return 0;
     }
 }
 
-bool cStdVectorWatcherDescriptor::getFieldAsString(int field, int i, char *resultbuf, int bufsize)
+bool cStdVectorWatcherDescriptor::getFieldAsString(void *object, int field, int i, char *resultbuf, int bufsize)
 {
-    cStdVectorWatcherBase *pp = (cStdVectorWatcherBase *)p;
+    cStdVectorWatcherBase *pp = (cStdVectorWatcherBase *)object;
     switch (field) {
         case 0: oppstring2string(pp->at(i).c_str(),resultbuf,bufsize); return true;
         default: return false;
     }
 }
 
-bool cStdVectorWatcherDescriptor::setFieldAsString(int field, int i, const char *value)
+bool cStdVectorWatcherDescriptor::setFieldAsString(void *object, int field, int i, const char *value)
 {
     return false; // not supported
 }
 
-const char *cStdVectorWatcherDescriptor::getFieldStructName(int field)
+const char *cStdVectorWatcherDescriptor::getFieldStructName(void *object, int field)
 {
     return NULL;
 }
 
-void *cStdVectorWatcherDescriptor::getFieldStructPointer(int field, int i)
+void *cStdVectorWatcherDescriptor::getFieldStructPointer(void *object, int field, int i)
 {
     return NULL;
 }
 
-sFieldWrapper *cStdVectorWatcherDescriptor::getFieldWrapper(int field, int i)
-{
-    return NULL;
-}
 
 //--------------------------------
 
@@ -152,10 +148,8 @@ std::string cStdVectorWatcherBase::detailedInfo() const
     return out.str();
 }
 
-cStructDescriptor *cStdVectorWatcherBase::createDescriptor()
+cStructDescriptor *cStdVectorWatcherBase::getDescriptor()
 {
-    cStructDescriptor *sd = new cStdVectorWatcherDescriptor();
-    sd->setStruct(this);
-    return sd;
+    return cStructDescriptor::getDescriptorFor("cStdVectorWatcher");
 }
 

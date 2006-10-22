@@ -67,8 +67,7 @@ void TObjInspector::createWindow()
    CHK(Tcl_VarEval(interp, "create_objinspector ", windowname, " \"", geometry, "\"", NULL ));
 
    // try if it has a descriptor
-   cStructDescriptor *sd = object->createDescriptor();
-   delete sd;
+   cStructDescriptor *sd = object->getDescriptor();
    if (sd)
    {
        char fieldspagewidget[256];
@@ -203,8 +202,7 @@ void TMessageInspector::createWindow()
    CHK(Tcl_VarEval(interp, "create_messageinspector ", windowname, " \"", geometry, "\"", NULL ));
 
    // try if it has a descriptor
-   cStructDescriptor *sd = object->createDescriptor();
-   delete sd;
+   cStructDescriptor *sd = object->getDescriptor();
    if (sd)
    {
        char fieldspagewidget[256];
@@ -291,8 +289,7 @@ class TWatchInspectorFactory : public cInspectorFactory
 
     bool supportsObject(cObject *obj) {
         // if it has a structdescriptor, we say we don't support it because we leave it to TObjInspector
-        cStructDescriptor *sd = obj->createDescriptor();
-        delete sd;
+        cStructDescriptor *sd = obj->getDescriptor();
         return !sd && dynamic_cast<cWatchBase *>(obj)!=NULL;
     }
     int inspectorType() {return INSP_OBJECT;}

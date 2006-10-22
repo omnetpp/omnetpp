@@ -53,20 +53,19 @@ class SIM_API cStructDescriptor : public cNoncopyableObject
     /// Field types.
     enum {
         FT_BASIC,         ///< int, long, double, bool, char*, char[]
-        FT_SPECIAL,       ///< another data type that requires special presentation (e.g IP address)
         FT_STRUCT,        ///< embedded structure, for which there's another cStructDescriptor
         FT_BASIC_ARRAY,   ///< array of FT_BASIC
-        FT_SPECIAL_ARRAY, ///< array of FT_SPECIAL
         FT_STRUCT_ARRAY,  ///< array of FT_STRUCT
         FT_INVALID        ///< invalid type (signals error condition)
     };
 
-  protected:
+  private:
     std::string baseclassname;
     cStructDescriptor *baseclassdesc;
-    void *p;
 
   protected:
+    virtual cStructDescriptor *getBaseClassDescriptor();
+
     // utility functions for converting from/to strings
     static void long2string(long l, char *buf, int bufsize);
     static void ulong2string(unsigned long l, char *buf, int bufsize);
@@ -86,9 +85,9 @@ class SIM_API cStructDescriptor : public cNoncopyableObject
     //@{
 
     /**
-     * Constructor. The argument is the client object.
+     * Constructor.
      */
-    cStructDescriptor(const char *_baseclassname=NULL);
+    cStructDescriptor(const char *classname, const char *_baseclassname=NULL);
 
     /**
      * Destructor.
@@ -100,26 +99,10 @@ class SIM_API cStructDescriptor : public cNoncopyableObject
     //@{
 
     /**
-     * Creates and returns a descriptor object for the struct passed as argument.
-     * The class of the descriptor object will be determined from the 1st argument:
-     * an instance of the class classname+"Descriptor" will be created.
-     * The passed struct will be the client object for the descriptor object.
+     * Returns the descriptor object for the given class. The returned
+     * descriptor object is a singleton, and must not be deleted.
      */
-    static cStructDescriptor *createDescriptorFor(const char *classname, void *p);
-    //@}
-
-    /** @name Getting and setting client object. */
-    //@{
-
-    /**
-     * Sets client object.
-     */
-    void setStruct(void *_p);
-
-    /**
-     * Returns client object.
-     */
-    void *getStruct() const  {return p;}
+    static cStructDescriptor *getDescriptorFor(const char *classname);
     //@}
 
     /** @name Querying and setting fields of the client object. */
@@ -129,31 +112,32 @@ class SIM_API cStructDescriptor : public cNoncopyableObject
      * Must be redefined in subclasses to return the number of fields
      * in the client object.
      */
-    virtual int getFieldCount() = 0;
+    virtual int getFieldCount(void *object) = 0;
 
     /**
      * Must be redefined in subclasses to return the name of a field
      * in the client object.
      * The argument must be in the 0..getFieldCount()-1 range, inclusive.
      */
-    virtual const char *getFieldName(int field) = 0;
+    virtual const char *getFieldName(void *object, int field) = 0;
 
     /**
      * Must be redefined in subclasses to return the type of a field
      * in the client object.
      * The argument must be in the 0..getFieldCount()-1 range, inclusive.
-     * The returned field type is one of the FT_BASIC, FT_SPECIAL,
-     * FT_STRUCT, FT_BASIC_ARRAY, FT_SPECIAL_ARRAY, FT_STRUCT_ARRAY constants,
-     * or FT_INVALID if there's no such field.
+     * The returned field type is one of the FT_BASIC, FT_STRUCT,
+     * FT_BASIC_ARRAY, FT_STRUCT_ARRAY constants, or FT_INVALID if there's
+     * no such field.
      */
-    virtual int getFieldType(int field) = 0;
+    //FIXME replace by 2 booleans: isArray, isStruct
+    virtual int getFieldType(void *object, int field) = 0;
 
     /**
      * Must be redefined in subclasses to return the type of a field
      * in the client object as a string.
      * The argument must be in the 0..getFieldCount()-1 range, inclusive.
      */
-    virtual const char *getFieldTypeString(int field) = 0;
+    virtual const char *getFieldTypeString(void *object, int field) = 0;
 
     /**
      * Returns the enum name associated with the field. This makes only
@@ -162,13 +146,13 @@ class SIM_API cStructDescriptor : public cNoncopyableObject
      *
      * @see cEnum
      */
-    virtual const char *getFieldEnumName(int field) = 0;
+    virtual const char *getFieldEnumName(void *object, int field) = 0;
 
     /**
      * Must be redefined in subclasses to return the array size of a field
      * in the client object. If the field is not an array, it should return 0.
      */
-    virtual int getArraySize(int field) = 0;
+    virtual int getArraySize(void *object, int field) = 0;
 
     /**
      * Must be redefined in subclasses to return the value of a basic field
@@ -176,7 +160,7 @@ class SIM_API cStructDescriptor : public cNoncopyableObject
      * It is an error if this method is invoked for non-basic fields.
      * Returns true if no error occurred, false otherwise.
      */
-    virtual bool getFieldAsString(int field, int i, char *buf, int bufsize) = 0;
+    virtual bool getFieldAsString(void *object, int field, int i, char *buf, int bufsize) = 0;
 
     /**
      * Must be redefined in subclasses to set the value of a basic field
@@ -184,16 +168,7 @@ class SIM_API cStructDescriptor : public cNoncopyableObject
      * It is an error if this method is invoked for non-basic fields.
      * Returns true if no error occurred, false otherwise.
      */
-    virtual bool setFieldAsString(int field, int i, const char *value) = 0;
-
-    /**
-     * Must be redefined in subclasses to return a wrapper for an
-     * FT_SPECIAL(_ARRAY) field in the client object. There's no corresponding
-     * setFieldWrapper() method -- setting the field value should can take
-     * place via the wrapper object returned here.
-     * Returns NULL if no associated wrapper is defined for this field.
-     */
-    virtual sFieldWrapper *getFieldWrapper(int field, int i) = 0;
+    virtual bool setFieldAsString(void *object, int field, int i, const char *value) = 0;
 
     /**
      * Must be redefined in subclasses to return the type name of an
@@ -201,7 +176,7 @@ class SIM_API cStructDescriptor : public cNoncopyableObject
      * The return value may be used then as classname
      * to create a descriptor object for this structure field.
      */
-    virtual const char *getFieldStructName(int field) = 0;
+    virtual const char *getFieldStructName(void *object, int field) = 0;
 
     /**
      * Must be redefined in subclasses to return the pointer of an
@@ -209,57 +184,10 @@ class SIM_API cStructDescriptor : public cNoncopyableObject
      * The return value may be used then as client object pointer
      * to create a descriptor object for this structure field.
      */
-    virtual void *getFieldStructPointer(int field, int i) = 0;
+    virtual void *getFieldStructPointer(void *object, int field, int i) = 0;
     //@}
 };
 
-
-/**
- * Supporting class for cStructDescriptor. Abstract base class. Subclasses can
- * be used to represent FT_SPECIAL fields for a cStructDescriptor.
- *
- * Additional getter/setter members will be necessary to make sFieldWrappers
- * useful.
- */
-class SIM_API sFieldWrapper
-{
-  public:
-    /**
-     * Constructor. In subclasses, the constructor will need to take
-     * a pointer to actual object or member it is wrapping, and store
-     * it in a private data member (also to be added in subclasses).
-     */
-    sFieldWrapper() {}
-
-    /**
-     * Destructor.
-     */
-    virtual ~sFieldWrapper() {}
-
-    /**
-     * Must be redefined in subclasses to return the type of the field
-     * as a string.
-     */
-    virtual const char *fieldType() = 0;
-
-    /**
-     * Must be redefined in subclasses to return the value of the field
-     * as a string.
-     *
-     * Other (more specific) get..() methods will typically need to be
-     * added to the class to make it useful.
-     */
-    virtual void getAsString(char *buf, int bufsize) = 0;
-
-    /**
-     * Must be redefined in subclasses to set the value of the field
-     * as a string.
-     *
-     * Other (more specific) set..() methods will typically need to be added
-     * to the class to make it useful.
-     */
-    virtual void setAsString(const char *value) = 0;
-};
-
 #endif
+
 

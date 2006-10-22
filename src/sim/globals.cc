@@ -28,6 +28,7 @@ cRegistrationList componentTypes("component types");
 cRegistrationList nedFunctions("NED functions");
 cRegistrationList classes("classes");
 cRegistrationList enums("enums");
+cRegistrationList classDescriptors("class descriptors");
 
 
 cModuleType *findModuleType(const char *name)

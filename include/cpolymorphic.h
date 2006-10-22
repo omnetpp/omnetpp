@@ -61,10 +61,8 @@ class cStructDescriptor;
 class SIM_API cPolymorphic
 {
   public:
-    // internal: creates and returns a descriptor object for this object passed
-    // as argument. This version return an instance of the class className()+
-    // "Descriptor".
-    virtual cStructDescriptor *createDescriptor();
+    // internal: returns a descriptor object for this object
+    virtual cStructDescriptor *getDescriptor();
 
   public:
     /**

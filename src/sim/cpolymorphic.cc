@@ -24,9 +24,9 @@ const char *cPolymorphic::className() const
     return opp_typename(typeid(*this));
 }
 
-cStructDescriptor *cPolymorphic::createDescriptor()
+cStructDescriptor *cPolymorphic::getDescriptor()
 {
-    return cStructDescriptor::createDescriptorFor(className(), (void *)this);
+    return cStructDescriptor::getDescriptorFor(className());
 }
 
 const char *cPolymorphic::fullName() const

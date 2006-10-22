@@ -246,6 +246,7 @@ void cEnvir::shutdown()
     nedFunctions.clear();
     classes.clear();
     enums.clear();
+    classDescriptors.clear();
     omnetapps.clear();
 }
 

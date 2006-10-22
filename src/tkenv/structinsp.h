@@ -34,7 +34,7 @@ class TStructPanel : public TInspectorPanel
       char *writeptr;
 
       void flushIfNeeded(int limit);
-      void displayStruct(cStructDescriptor *sd, int level);
+      void displayStruct(void *object, cStructDescriptor *sd, int level);
 
    public:
       TStructPanel(const char *widgetname, cPolymorphic *obj);
