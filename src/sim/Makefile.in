@@ -49,7 +49,8 @@ CPPOBJS_STD=\
     cstringpool.o cstrtokenizer.o cstruct.o ctopo.o cvarhist.o \
     cvisitor.o cwatch.o cxmlelement.o cxmlpar.o distrib.o \
     errmsg.o globals.o lex.expryy.o minixpath.o onstartup.o \
-    task.o util.o expr.tab.o nedsupport.o sim_std_m.o
+    task.o util.o expr.tab.o nedsupport.o sim_std_m.o \
+    ccommbuffer.o cparsimcomm.o
 
 CPPOBJS_NETBUILDER=\
     netbuilder/cexpressionbuilder.o \
@@ -60,12 +61,12 @@ CPPOBJS_NETBUILDER=\
     netbuilder/cnednetworkbuilder.o
 
 CPPOBJS_PARSIM=\
-    parsim/ccommbuffer.o parsim\cmemcommbuffer.o \
+    parsim\cmemcommbuffer.o \
     parsim\cparsimpartition.o parsim/cplaceholdermod.o parsim/cproxygate.o \
     parsim/cparsimprotocolbase.o parsim/cnosynchronization.o \
     parsim/cnullmessageprot.o parsim/clinkdelaylookahead.o \
     parsim/cidealsimulationprot.o parsim/cispeventlogger.o \
-    parsim/cparsimcomm.o parsim/ccommbufferbase.o parsim/cfilecomm.o \
+    parsim/ccommbufferbase.o parsim/cfilecomm.o \
     parsim/cfilecommbuffer.o parsim/cnamedpipecomm-win.o parsim/parsimutil.o \
     parsim/creceivedexception.o
 

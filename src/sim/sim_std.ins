@@ -3,6 +3,11 @@
 // Usage: opp_msgc -Xnc -Xns sim_std.ins
 //
 
+cplusplus {{
+// function to reference from outside, to force linker include this file
+void std_sim_descriptor_dummy() {}
+}}
+
 class cNoncopyableObject extends cObject
 {
 };

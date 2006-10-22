@@ -39,12 +39,10 @@ config timeline-maxnumevents	{1000}
 config editor-case-sensitive	{0}
 config editor-whole-words	{0}
 config filtobjlist-order	{Class}
-inspector "token.comp[1]" "Computer" "2" "367x377+72+93"
-inspector "token" "token" "2" "367x347+48+62"
-inspector "token.comp[2].mac.token" "TRToken" "1" "460x312+120+155"
+inspector "token.comp[2]" "Computer" "2" "367x377+24+31"
 inspector "token.comp[0].mac.Queueing time (sec)" "cOutVector" "2" "379x201+355+228"
 inspector "token.comp[0].mac.sendQueue" "cQueue" "1" "379x186+354+8"
-inspector "token.comp[2]" "Computer" "2" "367x377+24+31"
-inspector "simulation.scheduled-events.2-->0" "TRFrame" "1" "460x312+48+62"
+inspector "simulation.scheduled-events.3-->4" "TRFrame" "1" "440x432+96+124"
+inspector "simulation.scheduled-events.2-->0" "TRFrame" "1" "507x540+48+62"
 inspector "token" "TokenRing" "2" "343x375+1+-4"
 

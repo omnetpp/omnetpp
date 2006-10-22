@@ -156,6 +156,7 @@ inspector.obj: inspector.cc \
   ../../include/regmacros.h \
   ../../include/stlwrap.h \
   ../../include/util.h \
+  ../../include/nedsupport.h \
   ../../include/compat.h \
   ../../include/platdep/time.h \
   tkutil.h
@@ -241,6 +242,7 @@ inspfactory.obj: inspfactory.cc \
   ../../include/regmacros.h \
   ../../include/stlwrap.h \
   ../../include/util.h \
+  ../../include/nedsupport.h \
   ../../include/compat.h \
   ../../include/platdep/time.h \
   tkutil.h
@@ -254,6 +256,10 @@ modinsp.obj: modinsp.cc \
   ../../include/coutvect.h \
   ../../include/cstat.h \
   ../../include/cdensity.h \
+  ../../include/cdisplaystring.h \
+  ../../include/cqueue.h \
+  ../../include/ccompoundmodule.h \
+  ../../include/cbasicchannel.h \
   modinsp.h \
   tkapp.h \
   tklib.h \
@@ -267,8 +273,6 @@ modinsp.obj: modinsp.cc \
   ../../include/defs.h \
   ../../include/cobject.h \
   ../../include/cdefaultlist.h \
-  ../../include/regmacros.h \
-  ../../include/onstartup.h \
   ../../include/cenvir.h \
   ../../include/util.h \
   ../../include/cpolymorphic.h \
@@ -276,6 +280,8 @@ modinsp.obj: modinsp.cc \
   ../../include/cvisitor.h \
   ../../include/cstringpool.h \
   ../../include/errmsg.h \
+  ../../include/regmacros.h \
+  ../../include/onstartup.h \
   ../../include/opp_string.h \
   ../../include/cclassfactory.h \
   ../../include/cmsgheap.h \
@@ -368,6 +374,7 @@ objinsp.obj: objinsp.cc \
   ../../include/regmacros.h \
   ../../include/stlwrap.h \
   ../../include/util.h \
+  ../../include/nedsupport.h \
   ../../include/compat.h \
   ../../include/platdep/time.h \
   inspector.h \
@@ -392,8 +399,6 @@ statinsp.obj: statinsp.cc \
   ../../include/defs.h \
   ../../include/cobject.h \
   ../../include/cdefaultlist.h \
-  ../../include/regmacros.h \
-  ../../include/onstartup.h \
   ../../include/cenvir.h \
   ../../include/util.h \
   ../../include/cpolymorphic.h \
@@ -401,6 +406,8 @@ statinsp.obj: statinsp.cc \
   ../../include/cvisitor.h \
   ../../include/cstringpool.h \
   ../../include/errmsg.h \
+  ../../include/regmacros.h \
+  ../../include/onstartup.h \
   ../../include/opp_string.h \
   ../../include/cclassfactory.h \
   ../../include/cmsgheap.h \
@@ -411,6 +418,7 @@ statinsp.obj: statinsp.cc \
   inspector.h \
   tkutil.h
 structinsp.obj: structinsp.cc \
+  ../../include/cenum.h \
   ../../include/cstruct.h \
   tkapp.h \
   tklib.h \
@@ -424,9 +432,9 @@ structinsp.obj: structinsp.cc \
   ../../include/cexception.h \
   ../../include/cvisitor.h \
   ../../include/cstringpool.h \
+  ../../include/errmsg.h \
   ../../include/regmacros.h \
   ../../include/onstartup.h \
-  ../../include/errmsg.h \
   ../../include/opp_string.h \
   inspector.h \
   tkutil.h
@@ -435,6 +443,8 @@ tkapp.obj: tkapp.cc \
   ../../include/csimplemodule.h \
   ../../include/cmessage.h \
   ../../include/cscheduler.h \
+  ../../include/ccomponenttype.h \
+  ../../include/csimulation.h \
   tkdefs.h \
   tkapp.h \
   tklib.h \
@@ -444,15 +454,12 @@ tkapp.obj: tkapp.cc \
   ../../include/platdep/time.h \
   ../utils/ver.h \
   ../../include/defs.h \
-  ../../include/regmacros.h \
-  ../../include/onstartup.h \
   ../../include/cmodule.h \
   ../../include/ccomponent.h \
   ../../include/globals.h \
-  ../../include/carray.h \
   ../../include/cgate.h \
-  ../../include/csimulation.h \
   ../../include/cobject.h \
+  ../../include/cpar.h \
   ../../include/cdefaultlist.h \
   ../../include/util.h \
   ../../include/cpolymorphic.h \
@@ -460,30 +467,39 @@ tkapp.obj: tkapp.cc \
   ../../include/cvisitor.h \
   ../../include/cstringpool.h \
   ../../include/errmsg.h \
+  ../../include/regmacros.h \
+  ../../include/onstartup.h \
   ../../include/opp_string.h \
+  ../../include/cexpression.h \
+  ../../include/carray.h \
   ../../include/cclassfactory.h \
-  ../../include/cmsgheap.h \
-  ../../include/ccoroutine.h \
   ../../include/cmessagepar.h \
   ../../include/cfunction.h \
+  ../../include/cmsgheap.h \
+  ../../include/ccoroutine.h \
   tkutil.h
 tkcmd.obj: tkcmd.cc \
   ../../include/cenvir.h \
   ../../include/carray.h \
+  ../../include/csimulation.h \
   ../../include/csimplemodule.h \
+  ../../include/ccompoundmodule.h \
+  ../../include/ccomponenttype.h \
+  ../../include/cpar.h \
   ../../include/cmessage.h \
   ../../include/cchannel.h \
   ../../include/cstat.h \
   ../../include/cwatch.h \
   ../../include/cstruct.h \
+  ../../include/cdisplaystring.h \
+  ../../include/cqueue.h \
+  ../../include/coutvect.h \
   tkapp.h \
   tklib.h \
   inspector.h \
   inspfactory.h \
   visitor.h \
   ../../include/defs.h \
-  ../../include/regmacros.h \
-  ../../include/onstartup.h \
   ../../include/cobject.h \
   ../../include/util.h \
   ../../include/cpolymorphic.h \
@@ -491,19 +507,20 @@ tkcmd.obj: tkcmd.cc \
   ../../include/cvisitor.h \
   ../../include/cstringpool.h \
   ../../include/errmsg.h \
+  ../../include/regmacros.h \
+  ../../include/onstartup.h \
   ../../include/opp_string.h \
-  ../../include/cmodule.h \
-  ../../include/ccomponent.h \
   ../../include/globals.h \
-  ../../include/cgate.h \
-  ../../include/csimulation.h \
-  ../../include/cdefaultlist.h \
-  ../../include/cclassfactory.h \
   ../../include/cmsgheap.h \
   ../../include/ccoroutine.h \
+  ../../include/cclassfactory.h \
+  ../../include/cmodule.h \
+  ../../include/ccomponent.h \
+  ../../include/cgate.h \
+  ../../include/cdefaultlist.h \
+  ../../include/cexpression.h \
   ../../include/cmessagepar.h \
   ../../include/cfunction.h \
-  ../../include/ccomponenttype.h \
   tkutil.h
 tklib.obj: tklib.cc \
   tklib.h \
@@ -511,6 +528,7 @@ tklib.obj: tklib.cc \
 tkutil.obj: tkutil.cc \
   ../../include/cobject.h \
   ../../include/cmodule.h \
+  ../../include/csimulation.h \
   tkapp.h \
   visitor.h \
   tkutil.h \
@@ -521,16 +539,17 @@ tkutil.obj: tkutil.cc \
   ../../include/cexception.h \
   ../../include/cvisitor.h \
   ../../include/cstringpool.h \
+  ../../include/errmsg.h \
   ../../include/regmacros.h \
   ../../include/onstartup.h \
-  ../../include/errmsg.h \
   ../../include/opp_string.h \
   ../../include/ccomponent.h \
   ../../include/globals.h \
-  ../../include/carray.h \
   ../../include/cgate.h \
-  ../../include/csimulation.h \
+  ../../include/cpar.h \
   ../../include/cdefaultlist.h \
+  ../../include/cexpression.h \
+  ../../include/carray.h \
   ../../include/cclassfactory.h \
   ../../include/cmsgheap.h \
   ../../include/ccoroutine.h
@@ -549,20 +568,20 @@ visitor.obj: visitor.cc \
   ../../include/cgate.h \
   visitor.h \
   ../../include/defs.h \
-  ../../include/regmacros.h \
-  ../../include/onstartup.h \
   ../../include/util.h \
   ../../include/cpolymorphic.h \
   ../../include/cexception.h \
   ../../include/cvisitor.h \
   ../../include/cstringpool.h \
   ../../include/errmsg.h \
+  ../../include/regmacros.h \
+  ../../include/onstartup.h \
   ../../include/opp_string.h \
   ../../include/ccomponent.h \
   ../../include/globals.h \
-  ../../include/carray.h \
   ../../include/csimulation.h \
   ../../include/cdefaultlist.h \
+  ../../include/carray.h \
   ../../include/cclassfactory.h \
   ../../include/cmsgheap.h \
   ../../include/ccoroutine.h \

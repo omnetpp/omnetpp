@@ -21,7 +21,7 @@
 #include "ccommbuffer.h"
 #include "util.h"  // opp_string
 #include "cobject.h"
-#include "ctypes.h"    // createOne()
+#include "cclassfactory.h"    // createOne()
 
 
 void cCommBuffer::packObject(cObject *obj)

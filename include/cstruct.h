@@ -64,8 +64,6 @@ class SIM_API cStructDescriptor : public cNoncopyableObject
     cStructDescriptor *baseclassdesc;
 
   protected:
-    virtual cStructDescriptor *getBaseClassDescriptor();
-
     // utility functions for converting from/to strings
     static void long2string(long l, char *buf, int bufsize);
     static void ulong2string(unsigned long l, char *buf, int bufsize);
@@ -107,6 +105,11 @@ class SIM_API cStructDescriptor : public cNoncopyableObject
 
     /** @name Querying and setting fields of the client object. */
     //@{
+
+    /**
+     * Returns the descriptor for the base class, if available.
+     */
+    virtual cStructDescriptor *getBaseClassDescriptor();
 
     /**
      * Must be redefined in subclasses to return the number of fields

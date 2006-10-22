@@ -564,6 +564,7 @@ cContextTypeSwitcher::~cContextTypeSwitcher()
 #include "cpsquare.h"
 #include "cstrtokenizer.h"
 //void _dummy_for_env();
+void std_sim_descriptor_dummy();
 void _sim_dummy_func()
 {
       cPacket x;
@@ -586,6 +587,7 @@ void _sim_dummy_func()
       ps.info();
       cStringTokenizer tok("");
       tok.nextToken();
+      std_sim_descriptor_dummy();
       //_dummy_for_env();
 }
 
