@@ -39,9 +39,9 @@ TEST_ERROR(hypergeometric(2,3,-1));
 */
 
 %contains: stdout
-gamma_d(0,1): gamma(): alpha and beta params must be positive (alpha=0, beta=1)
-gamma_d(1,0): gamma(): alpha and beta params must be positive (alpha=1, beta=0)
-gamma_d(-1,-1): gamma(): alpha and beta params must be positive (alpha=-1, beta=-1)
+gamma_d(0,1): gamma(): alpha and theta params must be positive (alpha=0, theta=1)
+gamma_d(1,0): gamma(): alpha and theta params must be positive (alpha=1, theta=0)
+gamma_d(-1,-1): gamma(): alpha and theta params must be positive (alpha=-1, theta=-1)
 beta(0,1): beta(): alpha1 and alpha2 parameters must be positive (alpha1=0, alpha2=1)
 beta(1,0): beta(): alpha1 and alpha2 parameters must be positive (alpha1=1, alpha2=0)
 beta(-1,-1): beta(): alpha1 and alpha2 parameters must be positive (alpha1=-1, alpha2=-1)

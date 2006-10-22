@@ -13,6 +13,7 @@ module DisplayStringTest
         active: Active;
         textAndTooltip: TextAndTooltip;
         connTextAndTooltip: ConnTextAndTooltip;
+        connColors: ConnColors;
         nedParams: NedParams;
         background: Background;
 endmodule

@@ -62,12 +62,13 @@ void Dist::activity()
 
     // write file
     FILE *f = fopen(filename, "w");
-    fprintf(f,"\"x\",\"theoretical %s pdf\",\"measured %s\" pdf\n",distname.c_str(), distname.c_str());
-
+    fprintf(f,"\"x\",\"theoretical %s pdf\",\"measured %s pdf\",measured mean,measured std dev\n",distname.c_str(), distname.c_str());
+    fprintf(f,",,,%lg,%lg\n",h->mean(),h->stddev());
+    const int off=3;  // data begin on line 3 in the Excel sheet
     for (int k=0; k<h->cells(); k++)
     {
         fprintf(f,"%lg,\"=",(h->basepoint(k)+h->basepoint(k+1))/2);
-        fprintf(f,excel,k+2,k+2,k+2,k+2,k+2,k+2,k+2,k+2,k+2,k+2);
+        fprintf(f,excel,k+off,k+off,k+off,k+off,k+off,k+off,k+off,k+off,k+off,k+off);
         fprintf(f,"\",%lg\n",h->cellPDF(k));
     }
     fclose(f);

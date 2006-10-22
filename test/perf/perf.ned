@@ -55,3 +55,22 @@ endnetwork
 network sendTest_2 : SendTest_2
 endnetwork
 
+simple ScheduledEvents_1
+    parameters:
+        iaTime: numeric,
+        numScheduledMsgs: numeric;
+endsimple
+
+network scheduledEvents_1 : ScheduledEvents_1
+endnetwork
+
+simple ScheduleAndCancel_1
+    parameters:
+        iaTime: numeric,
+        numScheduledMsgs: numeric,
+        cancelsPerEvent;
+endsimple
+
+network scheduleAndCancel_1 : ScheduleAndCancel_1
+endnetwork
+
