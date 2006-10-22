@@ -19,12 +19,14 @@ $Usage = 'opp_msgc - part of OMNeT++. (c) 2002-2005 Andras Varga
 Translates .msg files into C++
 
 Usage: opp_msgc [-s <cc-file-suffix>] [-t <h-file-suffix>]
-                [-I <dir> -I ...] [-h] <nedfile>
+                [-I <dir> -I ...] [-h] [-Xnc] [-Xnd] <nedfile>
   -I <dir>    add directory to include path
   -s <suffix> output C++ file suffix (defaults to: _m.cc)
   -t <suffix> output C++ header file suffix (defaults to: _m.h)
   -P <symbol> add dllexport/dllimport symbol to class declarations
   -h          output in current directory
+  -Xnc        do not generate the classes, only object descriptions
+  -Xnd        do not generate object descriptions
 ';
 
 if ($#ARGV == -1)
@@ -40,6 +42,8 @@ $filename = '';
 $ccsuffix = '_m.cc';
 $hsuffix = '_m.h';
 $exportdef = '';
+$generate_classes = 1;
+$generate_descriptions = 1;
 while (@ARGV)
 {
     $arg = shift @ARGV;
@@ -77,6 +81,14 @@ while (@ARGV)
     elsif ($arg eq "-h")
     {
         $here = "true";
+    }
+    elsif ($arg eq "-Xnc")
+    {
+        $generate_classes = 0;
+    }
+    elsif ($arg eq "-Xnd")
+    {
+        $generate_descriptions = 0;
     }
     elsif ($filename eq '')
     {
@@ -623,12 +635,16 @@ while ($msg =~ s/(message|class|struct)\s+(.+?)\s*{(.*?)};?//s)
 
     # now generate code
     prepareForCodeGeneration();
-    if ($classtype eq 'struct') {
-        generateStruct();
-    } else {
-        generateClass();
+    if ($generate_classes) {
+        if ($classtype eq 'struct') {
+            generateStruct();
+        } else {
+            generateClass();
+        }
     }
-    generateDescriptorClass();
+    if ($generate_descriptions) {
+        generateDescriptorClass();
+    }
 }
 
 $scrap = $msg;
