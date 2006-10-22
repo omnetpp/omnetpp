@@ -74,7 +74,7 @@ class SIM_API cSimulation : public cNoncopyableObject
 
     // simulation global vars
     cModule *systemmodp;      // pointer to system module
-    cSimpleModule *runningmodp; // the module currently executing activity() (NULL if handleMessage() or in main)
+    cSimpleModule *activitymodp; // the module currently executing activity() (NULL if handleMessage() or in main)
     cComponent *contextmodp;  // component in context (or NULL)
     int contexttype;          // CTX_BUILD, CTX_EVENT, CTX_INITIALIZE or CTX_FINISH
     cModuleType *networktype; // network type
@@ -85,7 +85,6 @@ class SIM_API cSimulation : public cNoncopyableObject
 
     int run_number;            // which simulation run
     cException *exception;     // helper variable to get exceptions back from activity()
-    int exception_type;        // helper variable, also for getting exceptions back from activity()
 
   public:
     // internal: FES
@@ -371,9 +370,11 @@ class SIM_API cSimulation : public cNoncopyableObject
     void setGlobalContext()  {contextmodp=NULL; cObject::setDefaultOwner(&defaultList);}
 
     /**
-     * Returns the currently executing simple module.
+     * Returns the module whose activity() method is currently active.
+     * Returns NULL if no module is running, or the current module uses
+     * handleMessage().
      */
-    cSimpleModule *runningModule() const {return runningmodp;}
+    cSimpleModule *activityModule() const {return activitymodp;}
 
     /**
      * Returns the component (module or channel) currently in context.

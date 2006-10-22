@@ -57,7 +57,7 @@ cModule::~cModule()
     // delete submodules
     for (SubmoduleIterator submod(this); !submod.end(); )
     {
-        if (submod() == (cModule *)simulation.runningModule())
+        if (submod() == (cModule *)simulation.activityModule())
         {
             throw new cRuntimeError("Cannot delete a compound module from one of its submodules!");
             // The reason is that deleteModule() of the currently executing

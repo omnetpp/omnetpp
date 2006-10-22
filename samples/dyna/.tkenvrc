@@ -38,7 +38,7 @@ config editor-case-sensitive	{0}
 config editor-whole-words	{0}
 config filtobjlist-order	{Class}
 inspector "dyna.client[2]" "Client" "3" "504x162+13+362"
-inspector "dyna.server" "Server" "3" "502x125+14+556"
 inspector "dyna" "dyna" "2" "466x368+48+62"
+inspector "dyna.server" "Server" "3" "502x125+14+556"
 inspector "dyna" "ClientServer" "2" "405x417+70+60"
 

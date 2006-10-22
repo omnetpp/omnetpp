@@ -18,6 +18,7 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
+#include <assert.h>
 #include <stdio.h>           // sprintf
 #include <string.h>          // strcpy
 #include <exception>
@@ -38,16 +39,19 @@ cSimpleModule *cSimpleModule::after_cleanup_transfer_to;
 
 void cSimpleModule::activate(void *p)
 {
+    cSimpleModule *mod = (cSimpleModule *)p;
+
     if (stack_cleanup_requested)
     {
+        // module has just been created, but already deleted
+        mod->isterminated = true;
+        mod->stackalreadyunwound = true;
         if (after_cleanup_transfer_to)
             simulation.transferTo(after_cleanup_transfer_to);
         else
             simulation.transferToMain();
-        ASSERT(/*invoking transferTo() on an already deleted module?*/ 0);
+        assert(("INTERNAL ERROR: switch to the fiber of a module already terminated",false));
     }
-
-    cSimpleModule *mod = (cSimpleModule *)p;
 
     // The starter message should be the same as the timeoutmsg member of
     // cSimpleModule. If not, then something is wrong...
@@ -55,15 +59,11 @@ void cSimpleModule::activate(void *p)
     if (starter!=mod->timeoutmsg)
     {
         // hand exception to cSimulation::transferTo() and switch back
+        mod->isterminated = true;
+        mod->stackalreadyunwound = true;
         simulation.exception = new cRuntimeError("scheduleStart() should have been called for dynamically created module `%s'", mod->fullPath().c_str());
-        simulation.exception_type = 0;
-        mod->state = sENDED;
-
-        // The End
-        simulation.transferToMain(); // send back exception
-        ASSERT(!after_cleanup_transfer_to);
-        simulation.transferToMain(); // for stack_cleanup_requested
-        ASSERT(/*invoking transferTo() on an already deleted module?*/ 0);
+        simulation.transferToMain();
+        assert(("INTERNAL ERROR: switch to the fiber of a module already terminated",false));
     }
 
     // rename message
@@ -72,70 +72,77 @@ void cSimpleModule::activate(void *p)
     sprintf(buf,"timeout-%d", mod->id());
     starter->setName(buf);
 
-    // call activity(). At this point, initialize() has already been called
-    // from cSimulation::startRun(), or manually in the case of dynamically
-    // created modules.
+    cException *exception = NULL;
     try
     {
+        //
+        // call activity(). At this point, initialize() has already been called
+        // from cSimulation::startRun(), or manually in the case of dynamically
+        // created modules.
+        //
         mod->activity();
-        mod->state = sENDED;
-    }
-    catch (cStackCleanupException *e)
-    {
-        // job done -- transfer back where we came from
-        delete e;
-        if (after_cleanup_transfer_to)
-            simulation.transferTo(after_cleanup_transfer_to);
-        else
-            simulation.transferToMain();
-        ASSERT(/*invoking transferTo() on an already deleted module?*/ 0);
-    }
-    catch (cEndModuleException *e)
-    {
-        // hand exception to cSimulation::transferTo() and switch back
-        simulation.exception = e;
-        simulation.exception_type = 2;
-    }
-    catch (cTerminationException *e)
-    {
-        // hand exception to cSimulation::transferTo() and switch back
-        simulation.exception = e;
-        simulation.exception_type = 1;
     }
     catch (cException *e)
     {
-        // hand exception to cSimulation::transferTo() and switch back
-        simulation.exception = e;
-        simulation.exception_type = 0;
+        // IMPORTANT: No transferTo() in catch blocks! See Note 2 below.
+        exception = e;
     }
     catch (std::exception e)
     {
-        simulation.exception = new cRuntimeError("standard C++ exception %s: %s",
-                                                 opp_typename(typeid(e)), e.what());
-        simulation.exception_type = 0;
+        // wrap it into a cRuntimeError
+        exception = new cRuntimeError("standard C++ exception %s: %s", opp_typename(typeid(e)), e.what());
     }
-    //catch (...) -- this is probably not a good idea because makes debugging difficult
-    //{
-    //    simulation.exception = new cRuntimeError("unknown exception occurred");
-    //    simulation.exception_type = 0;
-    //}
 
-    // The End
-    simulation.transferToMain(); // send back exception -- will come back sometime for stack cleanup
-    if (after_cleanup_transfer_to)
-        simulation.transferTo(after_cleanup_transfer_to);
-    else
+    /*
+     * Note 1: catch(...) is probably not a good idea because makes just-in-time debugging impossible on Windows
+     * Note 2: with Visual C++, SwitchToFiber() calls in catch blocks crash mess up exception handling,
+     *        see http://forums.microsoft.com/MSDN/ShowPost.aspx?PostID=835791&SiteID=1&mode=1
+     */
+
+    // When we get here, the module is already terminated. No further cStackCleanupException
+    // will need to be thrown, as the stack has has already been unwound by an exception
+    // or by having returned from activity() normally.
+    mod->isterminated = true;
+    mod->stackalreadyunwound = true;
+
+    if (!exception)
+    {
+        // Module function terminated normally, without exception. Just mark
+        // the module as finished, and transfer to the main coroutine (fiber).
         simulation.transferToMain();
-    ASSERT(/*invoking transferTo() on an already deleted module?*/ 0);
+        assert(("INTERNAL ERROR: switch to the fiber of a module already terminated",false));
+    }
+    else if (dynamic_cast<cStackCleanupException *>(exception))
+    {
+        // A cStackCleanupException exception has been thrown on purpose,
+        // to force stack unwinding in the coroutine (fiber) function, activity().
+        // Just transfer back to whoever forced the stack cleanup (the main coroutine
+        // or some other simple module) and nothing else to do.
+        delete exception;
+        if (after_cleanup_transfer_to)
+            simulation.transferTo(after_cleanup_transfer_to);
+        else
+            simulation.transferToMain();  //FIXME turn this into transferTo(NULL)?
+        assert(("INTERNAL ERROR: switch to the fiber of a module already terminated",false));
+    }
+    else
+    {
+        // Some exception (likely cRuntimeError, cTerminationException, or
+        // cDeleteModuleException) occurred within the activity() function.
+        // Pass this exception to the main coroutine so that it can be displayed as
+        // an error dialog or the like.
+        simulation.exception = exception;
+        simulation.transferToMain();
+        assert(("INTERNAL ERROR: switch to the fiber of a module already terminated",false));
+    }
 }
 
 // legacy constructor, only for backwards compatiblity; first two args are unused
 cSimpleModule::cSimpleModule(const char *, cModule *, unsigned stksize)
 {
-    state = sREADY;
     coroutine = NULL;
-
     usesactivity = (stksize!=0);
+    isterminated = stackalreadyunwound = false;
 
     // for an activity() module, timeoutmsg will be created in scheduleStart()
     // which must always be called
@@ -155,10 +162,9 @@ cSimpleModule::cSimpleModule(const char *, cModule *, unsigned stksize)
 
 cSimpleModule::cSimpleModule(unsigned stksize)
 {
-    state = sREADY;
     coroutine = NULL;
-
     usesactivity = (stksize!=0);
+    isterminated = stackalreadyunwound = false;
 
     // for an activity() module, timeoutmsg will be created in scheduleStart()
     // which must always be called
@@ -184,10 +190,11 @@ cSimpleModule::~cSimpleModule()
     if (usesActivity())
     {
         // clean up user's objects on coroutine stack by forcing an exception inside the coroutine
-        if (state!=sENDED)   // FIXME khmm -- the not yet started ones are also here
-        {                    // FIXME is this a good place?
+        if (!stackalreadyunwound)
+        {
+            //FIXME: check this is OK for brand new modules too (no transferTo() yet)
             stack_cleanup_requested = true;
-            after_cleanup_transfer_to = simulation.runningModule();
+            after_cleanup_transfer_to = simulation.activityModule();
             ASSERT(!after_cleanup_transfer_to || after_cleanup_transfer_to->usesActivity());
             simulation.transferTo(this);
             stack_cleanup_requested = false;
@@ -227,16 +234,21 @@ void cSimpleModule::forEachChild(cVisitor *v)
 
 void cSimpleModule::setId(int n)
 {
-    cModule::setId( n );
+    cModule::setId(n);
 
     if (timeoutmsg)
         timeoutmsg->setArrival(this,n);
 }
 
-void cSimpleModule::end()
+void cSimpleModule::halt()
 {
-    state = sENDED;
-    throw new cEndModuleException;
+    if (!usesactivity)
+        throw new cRuntimeError("halt() can only be invoked from activity()-based simple modules");
+
+    isterminated = true;
+    simulation.transferToMain();
+    assert(stack_cleanup_requested);
+    throw new cStackCleanupException();
 }
 
 void cSimpleModule::error(const char *fmt...) const
@@ -283,11 +295,11 @@ void cSimpleModule::scheduleStart(simtime_t t)
 
 void cSimpleModule::deleteModule()
 {
-    if (simulation.context()==this)
+    if (simulation.activityModule()==this)
     {
-        // we're inside the currently executing module: get outta here quickly,
-        // and leave simulation.deleteModule(id()) to whoever catches the exception
-        throw new cEndModuleException(true);
+        // this module is committing suicide: gotta get outta here, and leave
+        // doing simulation.deleteModule(id()) to whoever catches the exception
+        throw new cDeleteModuleException();
     }
 
     // simple case: we're being deleted from main or from another module
@@ -490,7 +502,7 @@ void cSimpleModule::cancelAndDelete(cMessage *msg)
 
 void cSimpleModule::arrived( cMessage *msg, int ongate, simtime_t t)
 {
-    if (state==sENDED)
+    if (isterminated)
         throw new cRuntimeError(eMODFIN,fullPath().c_str());
     if (t<simTime())
         throw new cRuntimeError("causality violation: message `%s' arrival time %s at module `%s' "

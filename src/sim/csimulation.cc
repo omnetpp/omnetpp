@@ -74,7 +74,7 @@ cSimulation::cSimulation(const char *name) : cNoncopyableObject(name, false)
 
     msgQueue.setName("scheduled-events");
 
-    runningmodp = NULL;
+    activitymodp = NULL;
     contextmodp = NULL;
     contexttype = CTX_EVENT;
 
@@ -431,7 +431,7 @@ void cSimulation::deleteNetwork()
     if (!systemmodp)
         return;  // network already deleted
 
-    if (runningmodp!=NULL)
+    if (contextModule()!=NULL)
         throw new cRuntimeError("Attempt to delete network during simulation");
 
     // delete all modules recursively
@@ -469,7 +469,7 @@ cSimpleModule *cSimulation::selectNextModule()
 
     // check if destination module exists and is still running
     cSimpleModule *modp = (cSimpleModule *)vect[msg->arrivalModuleId()];
-    if (!modp || modp->moduleState()==sENDED)
+    if (!modp || modp->isTerminated())
     {
         // Deleted/ended modules may have self-messages and sent messages
         // pending for them. Here we choose just to ignore them (delete them without
@@ -513,9 +513,7 @@ cSimpleModule *cSimulation::guessNextModule()
     if (msg->arrivalModuleId()==-1)
         return NULL;
     cSimpleModule *modp = (cSimpleModule *)vect[msg->arrivalModuleId()];
-    if (!modp)
-        return NULL;
-    if (modp->moduleState()==sENDED)
+    if (!modp || modp->isTerminated())
         return NULL;
     return modp;
 }
@@ -527,28 +525,33 @@ void cSimulation::transferTo(cSimpleModule *modp)
 
     // switch to activity() of the simple module
     simulation.exception = NULL;
-    runningmodp = modp;
+    activitymodp = modp;
     cCoroutine::switchTo(modp->coroutine);
-
-    // if exception occurred in activity(), take it from cSimpleModule::activate() and pass it up
-    if (simulation.exception)
-    {
-        // alas, type info was lost, so we have to recover manually...
-        // TBD change to using dynamic_cast
-        if (simulation.exception_type==0)
-            throw (cException *)simulation.exception;
-        else if (simulation.exception_type==1)
-            throw (cTerminationException *)simulation.exception;
-        else if (simulation.exception_type==2)
-            throw (cEndModuleException *)simulation.exception;
-        else
-            throw new cRuntimeError("some exception occurred");
-    }
 
     if (modp->stackOverflow())
         throw new cRuntimeError("Stack violation in module (%s)%s: module stack too small? "
                                 "Try increasing it in the class' Module_Class_Members() or constructor",
                                 modp->className(), modp->fullPath().c_str());
+
+    // if exception occurred in activity(), re-throw it. This allows us to handle
+    // handleMessage() and activity() in an uniform way in the upper layer.
+    cException *e = simulation.exception;
+    simulation.exception = NULL;
+    if (simulation.exception)
+    {
+        // unfortunately, if we just further throw e, type info gets lost and
+        // the exception can only be caught as cException* and not e.g. as
+        // cRuntimeException. So we have to do the following magic to allow
+        // for more specific catches.
+        if (dynamic_cast<cDeleteModuleException *>(e))
+            throw (cDeleteModuleException *)e;
+        if (dynamic_cast<cTerminationException *>(e))
+            throw (cTerminationException *)e;
+        if (dynamic_cast<cRuntimeError *>(e))
+            throw (cRuntimeError *)e;
+        else
+            throw e;
+    }
 }
 
 void cSimulation::doOneEvent(cSimpleModule *mod)
@@ -565,7 +568,7 @@ void cSimulation::doOneEvent(cSimpleModule *mod)
             // when the module executes a receive() or wait() call.
             // If there was an error during simulation, the call will throw an exception
             // (which originally occurred inside activity()).
-            transferTo( mod );
+            transferTo(mod);
         }
         else
         {
@@ -573,25 +576,22 @@ void cSimulation::doOneEvent(cSimpleModule *mod)
             cMessage *msg = msgQueue.getFirst();
 
             // notify the environment about the message
-            ev.messageDelivered( msg );
+            ev.messageDelivered(msg);
 
             // if there was an error during simulation, handleMessage() will come back
             // with an exception
-            mod->handleMessage( msg );
+            mod->handleMessage(msg);
         }
     }
-    catch (cEndModuleException *e)
+    catch (cDeleteModuleException *e)
     {
-        // handle locally
-        // TBD make separate cDeleteModuleException
         setGlobalContext();
-        if (e->moduleToBeDeleted())
-            delete mod;
+        delete mod;
         delete e;
     }
     catch (cException *)
     {
-        // temporarily catch the exception to restore global context
+        // restore global context before throwing exception further
         setGlobalContext();
         throw;
     }
@@ -616,9 +616,9 @@ void cSimulation::doOneEvent(cSimpleModule *mod)
 
 void cSimulation::transferToMain()
 {
-    if (runningmodp!=NULL)
+    if (activitymodp!=NULL)
     {
-        runningmodp = NULL;
+        activitymodp = NULL;
         cCoroutine::switchToMain();     // stack switch
     }
 }

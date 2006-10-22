@@ -23,12 +23,6 @@
 
 class cQueue;
 
-// module state codes //FIXME remove?
-enum {
-       sENDED,    // module terminated
-       sREADY     // module is active
-};
-
 /**
  * Base class for all simple module classes.
  * cSimpleModule, although stuffed with simulation-related functionality,
@@ -69,8 +63,9 @@ class SIM_API cSimpleModule : public cModule //noncopyable
     friend class TSimpleModInspector;
 
   private:
-    bool usesactivity;      // uses activity() or handleMessage()
-    int state;              // ended/ready/waiting for msg
+    bool usesactivity;      // uses activity() or handleMessage() FIXME merge into flags
+    bool isterminated;      // for both activity and handleMessage modules. FIXME merge into flags
+    bool stackalreadyunwound; // only for activity modules. FIXME merge into flags
     cMessage *timeoutmsg;   // msg used in wait() and receive() with timeout
     cCoroutine *coroutine;
 
@@ -164,7 +159,17 @@ class SIM_API cSimpleModule : public cModule //noncopyable
 
     /**
      * Deletes the module and all its (dynamically created) submodules.
-     * A running module can also delete itself.
+     *
+     * A running module can also delete itself. When an activity()-based
+     * simple module deletes itself from within its activity(), the
+     * deleteModule() call will not return (it throws an exception which
+     * gets caught by the simulation kernel, and the simulation kernel
+     * will delete the module).
+     *
+     * When a handleMessage()-based module deletes itself, the deleteModule()
+     * returns normally -- then, of course, the code should not try to
+     * access data members or functions of the deleted module, an should
+     * return as soon as possible.
      */
     virtual void deleteModule();
     //@}
@@ -173,9 +178,15 @@ class SIM_API cSimpleModule : public cModule //noncopyable
     //@{
 
     /**
-     * Returns event handling scheme.
+     * Returns the event handling scheme: activity() or handleMessage().
      */
     bool usesActivity() const  {return usesactivity;}
+
+    /**
+     * Returns true if the module has already terminated, by having called end()
+     * or returning from the activity() method.
+     */
+    bool isTerminated() const {return isterminated;}
     //@}
 
     /** @name Simulation time. */
@@ -344,8 +355,7 @@ class SIM_API cSimpleModule : public cModule //noncopyable
 
     /** @name Receiving messages.
      *
-     * These functions can only be used with activity(), but not with
-     * handleMessage().
+     * These methods may only be invoked from activity()-based simple modules.
      */
     //@{
 
@@ -395,20 +405,6 @@ class SIM_API cSimpleModule : public cModule //noncopyable
 
     /** @name Stopping the module or the simulation. */
     //@{
-
-    /**
-     * Ends the run of the simple module. The simulation is not stopped
-     * (unless this is the last running module.) The implementation simply
-     * throws a cEndModuleException.
-     *
-     * Note that end() does NOT delete the module; its state is simply
-     * set to Ended and it won't take part in further simulation.
-     * If you also want to delete the module, use deleteModule(); however,
-     * this implies that the module's finish() method won't be called
-     * at the end of the simulation.
-     */
-    void end();
-
     /**
      * Causes the whole simulation to stop. The implementation simply
      * throws a cTerminationException.
@@ -416,10 +412,17 @@ class SIM_API cSimpleModule : public cModule //noncopyable
     void endSimulation();
 
     /**
-     * DEPRECATED. Equivalent to <tt>throw new cRuntimeError(
-     * ...<i>same argument list</i>...)</tt>.
+     * May only be invoked from activity()-based simple modules.
+     * Execution of the simple module stops in this call, and any further
+     * messages sent to module will cause a runtime error.
      */
-    void error(const char *fmt,...) const;
+    void halt();
+
+    /**
+     * DEPRECATED. Equivalent to <tt>throw new cRuntimeError(
+     * <i>same argument list</i>)</tt>.
+     */
+    void error(const char *format,...) const;
     //@}
 
     /** @name Statistics collection */
@@ -463,14 +466,6 @@ class SIM_API cSimpleModule : public cModule //noncopyable
      * @see cCoroutine
      */
     virtual unsigned stackUsage() const;
-    //@}
-
-    /** @name Miscellaneous. */
-    //@{
-    /**
-     * Returns module state.
-     */
-    int moduleState() const {return state;}
     //@}
 };
 

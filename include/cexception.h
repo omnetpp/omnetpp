@@ -213,27 +213,14 @@ class SIM_API cRuntimeError : public cException
 };
 
 /**
- * This exception is only thrown from cModule::end(), and from deleteModule()
+ * This exception is only thrown from cSimpleModule::deleteModule()
  * if the current module is to be deleted, in order to exit that module
  * immediately.
  *
  * @ingroup Internals
  */
-class SIM_API cEndModuleException : public cException
+class SIM_API cDeleteModuleException : public cException
 {
-  private:
-    bool del; // if true, currently running module should be deleted
-
-  public:
-    /**
-     * Constructor. If the bool argument is true, the module should be deleted.
-     */
-    cEndModuleException(bool moduleToBeDeleted=false) {del = moduleToBeDeleted;}
-
-    /**
-     * If true, the module should be deleted.
-     */
-    bool moduleToBeDeleted() {return del;}
 };
 
 /**
