@@ -119,22 +119,22 @@ class SIM_API cBasicChannel : public cChannel // noncopyable
     /**
      * Returns the delay of the channel.
      */
-    virtual double delay()  {return delay_;}
+    virtual double delay() const {return delay_;}
 
     /**
      * Returns the bit error rate of the channel.
      */
-    virtual double error()  {return error_;}
+    virtual double error() const  {return error_;}
 
     /**
      * Returns the data rate of the channel.
      */
-    virtual double datarate()  {return datarate_;}
+    virtual double datarate() const  {return datarate_;}
 
     /**
      * Returns the "disabled" parameter of the channel.
      */
-    virtual bool disabled()  {return flags & FL_ISDISABLED;}
+    virtual bool disabled() const  {return flags & FL_ISDISABLED;}
     //@}
 
     /** @name Transmission state. */

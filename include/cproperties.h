@@ -30,7 +30,7 @@ class cProperty;
  *
  * @ingroup Internals
  */
-class SIM_API cProperties : cPolymorphic
+class SIM_API cProperties : public cPolymorphic
 {
   protected:
     bool islocked;

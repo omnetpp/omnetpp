@@ -37,7 +37,7 @@ class cProperties;
  *
  * @ingroup Internals
  */
-class SIM_API cProperty : cPolymorphic
+class SIM_API cProperty : public cPolymorphic
 {
   protected:
     // property names and property key names are stringpooled to reduce memory consumption
