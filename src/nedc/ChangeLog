@@ -1,3 +1,7 @@
+2006-10-22  Andras Varga
+
+	* opp_msgc: added -Xnc, -Xnd, -Xns options
+
 2006-10-13  Andras Varga
 
 	* opp_msgc: generate covariant return types for dup(), replace 

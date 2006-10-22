@@ -27,6 +27,7 @@ Usage: opp_msgc [-s <cc-file-suffix>] [-t <h-file-suffix>]
   -h          output in current directory
   -Xnc        do not generate the classes, only object descriptions
   -Xnd        do not generate object descriptions
+  -Xns        do not generate setters in object descriptions
 ';
 
 if ($#ARGV == -1)
@@ -44,6 +45,7 @@ $hsuffix = '_m.h';
 $exportdef = '';
 $generate_classes = 1;
 $generate_descriptions = 1;
+$generate_setters_in_descr = 1;
 while (@ARGV)
 {
     $arg = shift @ARGV;
@@ -89,6 +91,10 @@ while (@ARGV)
     elsif ($arg eq "-Xnd")
     {
         $generate_descriptions = 0;
+    }
+    elsif ($arg eq "-Xns")
+    {
+        $generate_setters_in_descr = 0;
     }
     elsif ($filename eq '')
     {
@@ -1681,39 +1687,43 @@ sub generateDescriptorClass
     print CC "            return baseclassdesc->setFieldAsString(field,i,value);\n";
     print CC "        field -= baseclassdesc->getFieldCount();\n";
     print CC "    }\n";
-    print CC "    $msgclass *pp = ($msgclass *)p;\n";
-    print CC "    switch (field) {\n";
-    for ($i=0; $i<$fieldcount; $i++)
-    {
-        if ($fkind{$fieldlist[$i]} eq 'basic') {
-            if ($classtype eq 'struct') {
-                if ($fisarray{$fieldlist[$i]}) {
-                    if ($farraysize{$fieldlist[$i]} ne '') {
-                        print CC "        case $i: if (i>=$farraysize{$fieldlist[$i]}) return false;\n";
+    if ($generate_setters_in_descr) {
+        print CC "    $msgclass *pp = ($msgclass *)p;\n";
+        print CC "    switch (field) {\n";
+        for ($i=0; $i<$fieldcount; $i++)
+        {
+            if ($fkind{$fieldlist[$i]} eq 'basic') {
+                if ($classtype eq 'struct') {
+                    if ($fisarray{$fieldlist[$i]}) {
+                        if ($farraysize{$fieldlist[$i]} ne '') {
+                            print CC "        case $i: if (i>=$farraysize{$fieldlist[$i]}) return false;\n";
+                        } else {
+                            print CC "        case $i: if (i>=pp->$varsize{$fieldlist[$i]}) return false;\n";
+                        }
+                        print CC "                pp->$var{$fieldlist[$i]}\[i\] = $fromstring{$fieldlist[$i]}(value); return true;\n";
                     } else {
-                        print CC "        case $i: if (i>=pp->$varsize{$fieldlist[$i]}) return false;\n";
+                        print CC "        case $i: pp->$var{$fieldlist[$i]} = $fromstring{$fieldlist[$i]}(value); return true;\n";
                     }
-                    print CC "                pp->$var{$fieldlist[$i]}\[i\] = $fromstring{$fieldlist[$i]}(value); return true;\n";
                 } else {
-                    print CC "        case $i: pp->$var{$fieldlist[$i]} = $fromstring{$fieldlist[$i]}(value); return true;\n";
+                    if ($fisarray{$fieldlist[$i]}) {
+                        print CC "        case $i: pp->$setter{$fieldlist[$i]}(i,$fromstring{$fieldlist[$i]}(value)); return true;\n";
+                    } else {
+                        print CC "        case $i: pp->$setter{$fieldlist[$i]}($fromstring{$fieldlist[$i]}(value)); return true;\n";
+                    }
                 }
+            } elsif ($fkind{$fieldlist[$i]} eq 'struct') {
+                print CC "        case $i: return false;\n";
+            } elsif ($fkind{$fieldlist[$i]} eq 'special') {
+                print CC "        case $i: return false; //TBD!!!\n";
             } else {
-                if ($fisarray{$fieldlist[$i]}) {
-                    print CC "        case $i: pp->$setter{$fieldlist[$i]}(i,$fromstring{$fieldlist[$i]}(value)); return true;\n";
-                } else {
-                    print CC "        case $i: pp->$setter{$fieldlist[$i]}($fromstring{$fieldlist[$i]}(value)); return true;\n";
-                }
+                die 'internal error';
             }
-        } elsif ($fkind{$fieldlist[$i]} eq 'struct') {
-            print CC "        case $i: return false;\n";
-        } elsif ($fkind{$fieldlist[$i]} eq 'special') {
-            print CC "        case $i: return false; //TBD!!!\n";
-        } else {
-            die 'internal error';
         }
+        print CC "        default: return false;\n";
+        print CC "    }\n";
+    } else {
+        print CC "    return false;\n";
     }
-    print CC "        default: return false;\n";
-    print CC "    }\n";
     print CC "}\n";
     print CC "\n";
 
