@@ -27,7 +27,7 @@ CPPOBJS_STD=\
     cstringpool.obj cstrtokenizer.obj cstruct.obj ctopo.obj cvarhist.obj \
     cvisitor.obj cwatch.obj cxmlelement.obj cxmlpar.obj distrib.obj \
     errmsg.obj globals.obj lex.expryy.obj minixpath.obj onstartup.obj \
-    task.obj util.obj  expr.tab.obj nedsupport.obj
+    task.obj util.obj  expr.tab.obj nedsupport.obj sim_std_m.obj
 
 CPPOBJS_NETBUILDER=\
     netbuilder\cexpressionbuilder.obj \
@@ -101,6 +101,9 @@ lex.expryy.cc: expr.lex expr.tab.h
 	$(LEX:/=\) -Pexpryy expr.lex
 	copy lex.expryy.c lex.expryy.cc
 	del lex.expryy.c
+
+sim_std_m.cc sim_std_m.h : sim_std.ins
+	$(MSGC:/=\) -Xnc -Xns sim_std.ins
 
 depend:
 	$(MAKEDEPEND) -I../../include -fMakefile.vc -- *.cc netbuilder/*.cc parsim/*.cc

@@ -7,6 +7,7 @@ AR=@AR@
 RANLIB=@RANLIB@
 SHLIB_LD=@SHLIB_LD@
 MAKEDEPEND=@MAKEDEPEND@
+MSGC=@MSGC@
 
 CFLAGS=@CFLAGS@
 
@@ -48,7 +49,7 @@ CPPOBJS_STD=\
     cstringpool.o cstrtokenizer.o cstruct.o ctopo.o cvarhist.o \
     cvisitor.o cwatch.o cxmlelement.o cxmlpar.o distrib.o \
     errmsg.o globals.o lex.expryy.o minixpath.o onstartup.o \
-    task.o util.o expr.tab.o nedsupport.o
+    task.o util.o expr.tab.o nedsupport.o sim_std_m.o
 
 CPPOBJS_NETBUILDER=\
     netbuilder/cexpressionbuilder.o \
@@ -121,6 +122,9 @@ lex.expryy.cc: expr.lex expr.tab.h
 depend:
 	$(MAKEDEPEND) -I../../include -- *.cc netbuilder/*.cc parsim/*.cc
 	$(MAKEDEPEND) -I../../include -fMakefile.in -- *.cc netbuilder/*.cc parsim/*.cc
+
+sim_std_m.cc sim_std_m.h : sim_std.ins
+	$(MSGC) -Xnc -Xns sim_std.ins
 
 clean:
 	rm -f expr.tab.h expr.tab.cc lex.expryy.cc
