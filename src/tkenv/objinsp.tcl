@@ -61,7 +61,7 @@ proc create_objinspector {name geom} {
         notebook_showpage $nb fields
     }
 
-    # experimental page
+    # XXX experimental page
     inspector_createfields2page $w
 }
 

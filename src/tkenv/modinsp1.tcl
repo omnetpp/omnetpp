@@ -116,6 +116,9 @@ proc create_compoundmodinspector {name geom} {
 
     # other pages:
     create_inspector_listbox $nb.contents
+
+    # XXX experimental page
+    inspector_createfields2page $w
 }
 
 proc create_simplemodinspector {name geom} {
@@ -169,6 +172,9 @@ proc create_simplemodinspector {name geom} {
 
     # other pages:
     create_inspector_listbox $nb.contents
+
+    # XXX experimental page
+    inspector_createfields2page $w
 }
 
 proc runsimulation_local {w mode} {
