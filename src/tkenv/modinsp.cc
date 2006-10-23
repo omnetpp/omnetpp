@@ -836,7 +836,7 @@ void TCompoundModInspector::update()
    setEntry(".nb.info.dispstr.e", mod->displayString());
    setEntry(".nb.info.dispstrpt.e", mod->backgroundDisplayString());
 
-   deleteInspectorListbox( ".nb.contents" );
+   deleteInspectorListbox(".nb.contents");
    fillInspectorListbox(".nb.contents", mod, false);
 }
 
@@ -912,7 +912,7 @@ void TSimpleModInspector::update()
       setLabel(".nb.info.stackused.e", "n/a" );
    }
 
-   deleteInspectorListbox( ".nb.contents" );
+   deleteInspectorListbox(".nb.contents");
    fillInspectorListbox(".nb.contents", mod, false);
 }
 

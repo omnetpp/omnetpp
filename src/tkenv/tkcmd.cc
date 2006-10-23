@@ -1561,7 +1561,7 @@ static char tmpbuf[16384];  //XXX
 
 int classDescriptor_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
-   TRY_
+   E_TRY
    if (argc<4) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
    void *object = strToPtr(argv[1]);
    cStructDescriptor *sd = (cStructDescriptor *)strToPtr(argv[2]);
@@ -1698,6 +1698,6 @@ int classDescriptor_cmd(ClientData, Tcl_Interp *interp, int argc, const char **a
       return TCL_OK;
    }
    return TCL_ERROR;
-   _CATCH;
+   E_CATCH;
 }
 

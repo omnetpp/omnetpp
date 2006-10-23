@@ -24,8 +24,6 @@
 
 class TObjInspector : public TInspector
 {
-   protected:
-      TStructPanel *fieldspage;
    public:
       TObjInspector(cObject *obj,int typ,const char *geom,void *dat=NULL);
       ~TObjInspector();
@@ -49,7 +47,6 @@ class TContainerInspector : public TInspector
 class TMessageInspector: public TInspector
 {
    protected:
-      TStructPanel *fieldspage;
       TStructPanel *controlinfopage;
    public:
       TMessageInspector(cObject *obj,int typ,const char *geom,void *dat=NULL);

@@ -231,22 +231,26 @@ proc create_statisticinspector {name geom} {
     set w $name
     create_inspector_toplevel $w $geom
 
+    set nb [inspector_createnotebook $w]
+
+    # XXX experimental page
+    inspector_createfields2page $w
+
+    notebook_addpage $nb info  {Info}
+
     pack_iconbutton $w.toolbar.graph -image $icons(asgraphics) -command "inspect_this $w {As Graphics}"
     set help_tips($w.toolbar.graph) {Inspect as histogram graphics}
 
-    frame $w.main
-    pack $w.main -anchor center -expand 0 -fill both -side top
+    label-sunkenlabel $nb.info.count Count:
+    label-sunkenlabel $nb.info.mean Mean:
+    label-sunkenlabel $nb.info.stddev Std.dev:
+    label-sunkenlabel $nb.info.min Min:
+    label-sunkenlabel $nb.info.max Max:
 
-    label-sunkenlabel $w.main.count Count:
-    label-sunkenlabel $w.main.mean Mean:
-    label-sunkenlabel $w.main.stddev Std.dev:
-    label-sunkenlabel $w.main.min Min:
-    label-sunkenlabel $w.main.max Max:
-
-    pack $w.main.count -fill x -side top
-    pack $w.main.mean -fill x -side top
-    pack $w.main.stddev -fill x -side top
-    pack $w.main.min -fill x -side top
-    pack $w.main.max -fill x -side top
+    pack $nb.info.count -fill x -side top
+    pack $nb.info.mean -fill x -side top
+    pack $nb.info.stddev -fill x -side top
+    pack $nb.info.min -fill x -side top
+    pack $nb.info.max -fill x -side top
 }
 

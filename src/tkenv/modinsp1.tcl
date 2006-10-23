@@ -94,10 +94,7 @@ proc create_compoundmodinspector {name geom} {
     set help_tips($w.toolbar.apply)   {Apply changes (Enter)}
     set help_tips($w.toolbar.revert)  {Revert}
 
-    set nb $w.nb
-    notebook $nb
-    $nb config -width 460 -height 260
-    pack $nb -expand 1 -fill both
+    set nb [inspector_createnotebook $w]
 
     notebook_addpage $nb info    {Info}
     notebook_addpage $nb contents {Contents}
@@ -142,10 +139,7 @@ proc create_simplemodinspector {name geom} {
 
     bind $w <Control-F4> "runsimulation_local $w fast"
 
-    set nb $w.nb
-    notebook $nb
-    $nb config -width 460 -height 260
-    pack $nb -expand 1 -fill both
+    set nb [inspector_createnotebook $w]
 
     notebook_addpage $nb info    {Info}
     notebook_addpage $nb contents {Contents}

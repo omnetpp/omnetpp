@@ -18,7 +18,7 @@ option bubbles	{1}
 option animation_speed	{1.5}
 option bkpts_enabled	{1}
 option expressmode_autoupdate	{1}
-config mainwin-geom	{673x454+48+62}
+config mainwin-geom	{640x350+120+155}
 config rununtil-event	{}
 config last-nedfile	{}
 config filtobjlist-category	{mqsgvo}
@@ -39,14 +39,7 @@ config timeline-maxnumevents	{1000}
 config editor-case-sensitive	{0}
 config editor-whole-words	{0}
 config filtobjlist-order	{Class}
-inspector "Histograms" "Histograms" "1" "493x413+91+249"
-inspector "component types.cBasicChannel" "cDynamicChannelType" "1" "460x312+134+137"
-inspector "Histograms.LongHistogram" "cLongHistogram" "2" "320x195+9+2"
-inspector "Histograms" "HistogramDemo" "1" "385x247+186+341"
-inspector "Histograms.VarHistogram" "cVarHistogram" "1" "290x167+172+239"
-inspector "Histograms.DoubleHistogram" "cDoubleHistogram" "2" "321x207+7+231"
-inspector "Histograms.VarHistogram" "cVarHistogram" "2" "322x185+8+472"
-inspector "Histograms.PSquare" "cPSquare" "2" "334x194+347+2"
-inspector "component types" "cArray" "1" "417x488+24+31"
-inspector "Histograms.K-Split" "cKSplit" "2" "386x322+347+230"
+inspector "Histograms" "Histograms" "1" "460x312+24+31"
+inspector "Histograms.K-Split" "cKSplit" "1" "558x506+72+93"
+inspector "Histograms.K-Split" "cKSplit" "2" "386x344+48+62"
 

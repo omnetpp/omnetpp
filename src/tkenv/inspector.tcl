@@ -513,7 +513,15 @@ proc get_help_tip {w x y item} {
    return ""
 }
 
-#===================================================================
+
+proc inspector_createnotebook {w} {
+    set nb $w.nb
+    notebook $nb
+    $nb config -width 460 -height 260
+    pack $nb -expand 1 -fill both
+    return $nb
+}
+
 
 proc create_structpanel {w} {
     # TBD textarea is a temporary solution -- should be sth like a property sheet.
@@ -526,12 +534,10 @@ proc create_structpanel {w} {
     pack $w.txt -anchor center -expand 1 -fill both -side left
 }
 
-#===================================================================
-
 proc inspector_createfields2page {w} {
     global treeroots
     set nb $w.nb
-    notebook_addpage $nb fields2 {Fields2}
+    notebook_addpage $nb fields2 {Fields}
 
     if {![regexp {\.(ptr.*)-([0-9]+)} $w match object type]} {
         error "window name $w doesn't look like an inspector window"
@@ -559,10 +565,7 @@ proc inspector_createfields2page {w} {
         }
     }
 
-    # show it
-    notebook_showpage $nb fields2
-
-    refresh_fields2page $w
+    refresh_fields2page $w   ;#FIXME this should be done from C++
 }
 
 proc refresh_fields2page {w} {

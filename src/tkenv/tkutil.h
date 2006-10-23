@@ -48,9 +48,9 @@
       return TCL_ERROR; \
   }
 
-#define TRY_ try {
+#define E_TRY   try {
 
-#define _CATCH \
+#define E_CATCH \
   } catch (cException *e) { \
       Tcl_SetResult(interp, TCLCONST(e->message()), TCL_VOLATILE); \
       delete e; \

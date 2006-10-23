@@ -73,11 +73,11 @@ void TStatisticInspector::update()
 
    cStatistic *stat = static_cast<cStatistic *>(object);
 
-   setLabel(".main.count.e", (double) stat->samples() );
-   setLabel(".main.mean.e", stat->mean() );
-   setLabel(".main.stddev.e", stat->stddev() );
-   setLabel(".main.min.e", stat->min() );
-   setLabel(".main.max.e", stat->max() );
+   setLabel(".nb.info.count.e", (double) stat->samples() );
+   setLabel(".nb.info.mean.e", stat->mean() );
+   setLabel(".nb.info.stddev.e", stat->stddev() );
+   setLabel(".nb.info.min.e", stat->min() );
+   setLabel(".nb.info.max.e", stat->max() );
 }
 
 

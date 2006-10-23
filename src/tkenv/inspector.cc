@@ -286,7 +286,7 @@ void TInspector::setToolbarInspectButton(const char *button, cObject *object, in
    }
 }
 
-void TInspector::deleteInspectorListbox( const char *listbox)
+void TInspector::deleteInspectorListbox(const char *listbox)
 {
    Tcl_Interp *interp = getTkApplication()->getInterp();
    CHK(Tcl_VarEval(interp, "multicolumnlistbox_deleteall ", windowname,listbox,".main.list",NULL));
