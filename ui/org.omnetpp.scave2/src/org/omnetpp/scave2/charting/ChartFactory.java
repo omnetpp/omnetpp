@@ -46,7 +46,6 @@ public class ChartFactory {
 		Dataset dataset = ScaveModelUtil.findEnclosingDataset(chart);
 		switch (dataset.getType().getValue()) {
 		case DatasetType.SCALAR: return createScalarChart(parent, chart, dataset, manager);
-		//case DatasetType.VECTOR: return createVectorChart(parent, chart, dataset, manager);
 		case DatasetType.VECTOR: return createVectorChart2(parent, chart, dataset, manager);
 		case DatasetType.HISTOGRAM: return createHistogramChart(parent, chart, dataset, manager);
 		}
@@ -64,6 +63,17 @@ public class ChartFactory {
 		// set chart properties
 		setChartProperties(chart, interactiveChart);
 		return interactiveChart;
+	}
+	
+	private static ScalarChart2 createScalarChart2(Composite parent, Chart chart, Dataset dataset, ResultFileManager manager) {
+		ScalarChart2 scalarChart = new ScalarChart2(parent, SWT.NONE);
+		// set chart data
+		IDList idlist = DatasetManager.getIDListFromDataset(manager, dataset, chart);
+		CategoryDataset categoryDataset = DatasetManager.createScalarDataset(idlist, manager);
+		scalarChart.setDataset(categoryDataset);
+		// set chart properties
+		setChartProperties(chart, scalarChart);
+		return scalarChart;
 	}
 
 	private static InteractiveChart createVectorChart(Composite parent, Chart chart, Dataset dataset, ResultFileManager manager) {
@@ -160,6 +170,15 @@ public class ChartFactory {
 	}
 	
 	private static void setChartProperties(Chart chart, VectorChart chartView) {
+		ChartProperties chartProperties = ChartProperties.createPropertySource(chart);
+		for (IPropertyDescriptor descriptor : chartProperties.getPropertyDescriptors()) {
+			String id = (String)descriptor.getId();
+			if (chartProperties.isPropertySet(id))
+				chartView.setProperty(id, chartProperties.getStringProperty(id));
+		}
+	}
+
+	private static void setChartProperties(Chart chart, ScalarChart2 chartView) {
 		ChartProperties chartProperties = ChartProperties.createPropertySource(chart);
 		for (IPropertyDescriptor descriptor : chartProperties.getPropertyDescriptors()) {
 			String id = (String)descriptor.getId();

@@ -4,6 +4,7 @@ import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.Property;
@@ -16,7 +17,7 @@ import org.omnetpp.scave2.editors.ScaveEditor;
 public class ChartPage extends ScaveEditorPage {
 
 	private Chart chart; // the underlying model
-	private InteractiveChart chartView;
+	private Control chartView;
 
 	public ChartPage(Composite parent, ScaveEditor editor, Chart chart) {
 		super(parent, SWT.V_SCROLL, editor);
@@ -67,7 +68,7 @@ public class ChartPage extends ScaveEditorPage {
 		
 		// set up contents
 		Composite parent = getChartComposite();
-		chartView = (InteractiveChart)ChartFactory.createChart(parent, this.chart, scaveEditor.getResultFileManager());
+		chartView = ChartFactory.createChart(parent, this.chart, scaveEditor.getResultFileManager());
 		configureChartView(chartView, chart);
 	}
 }
