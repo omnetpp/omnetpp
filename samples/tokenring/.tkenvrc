@@ -42,5 +42,6 @@ config filtobjlist-order	{Class}
 inspector "token" "token" "2" "367x347+24+31"
 inspector "simulation.scheduled-events.2-->0" "TRFrame" "1" "507x540+46+56"
 inspector "token" "TokenRing" "2" "343x375+1+-4"
+inspector "component types.token" "cDynamicModuleType" "1" "460x312+48+62"
 inspector "simulation.scheduled-events.3-->4" "TRFrame" "1" "440x432+96+124"
 

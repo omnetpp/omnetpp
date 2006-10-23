@@ -153,6 +153,7 @@ cNoncopyableObject(classname, false)
 {
     baseclassname = _baseclassname ? _baseclassname : "";
     baseclassdesc = NULL;
+    inheritancechainlength = 1;
 }
 
 cStructDescriptor::~cStructDescriptor()
@@ -161,9 +162,19 @@ cStructDescriptor::~cStructDescriptor()
 
 cStructDescriptor *cStructDescriptor::getBaseClassDescriptor()
 {
-    if (!baseclassdesc)
-        baseclassdesc = baseclassname.empty() ? NULL : getDescriptorFor(baseclassname.c_str());
+    if (!baseclassdesc && !baseclassname.empty())
+    {
+        baseclassdesc = getDescriptorFor(baseclassname.c_str());
+        if (baseclassdesc)
+            inheritancechainlength = 1 + baseclassdesc->getInheritanceChainLength();
+    }
     return baseclassdesc;
+}
+
+int cStructDescriptor::getInheritanceChainLength()
+{
+    getBaseClassDescriptor(); // force resolution of inheritance
+    return inheritancechainlength;
 }
 
 cStructDescriptor *cStructDescriptor::getDescriptorFor(const char *classname)
@@ -171,4 +182,30 @@ cStructDescriptor *cStructDescriptor::getDescriptorFor(const char *classname)
     return dynamic_cast<cStructDescriptor *>(classDescriptors.instance()->get(classname));
 }
 
+cStructDescriptor *cStructDescriptor::getDescriptorFor(cPolymorphic *object)
+{
+    // find descriptor by class name
+    cStructDescriptor *desc = cStructDescriptor::getDescriptorFor(object->className());
+    if (desc)
+        return desc;
+
+    // bad luck: no descriptor for exactly this class. Try to find one for some base class.
+    //XXX we could even cache the result in a {classname->descriptor} hashtable.
+    cStructDescriptor *bestDesc = NULL;
+    int bestInheritanceChainLength = -1;
+    cArray *array = classDescriptors.instance();
+    for (int i=0; i<array->items(); i++)
+    {
+        cStructDescriptor *desc = dynamic_cast<cStructDescriptor *>(array->get(i));
+        if (!desc || !desc->doesSupport(object))
+            continue; // skip holes
+        int inheritanceChainLength = desc->getInheritanceChainLength();
+        if (inheritanceChainLength > bestInheritanceChainLength)
+        {
+            bestDesc = desc;
+            bestInheritanceChainLength = inheritanceChainLength;
+        }
+    }
+    return bestDesc;
+}
 

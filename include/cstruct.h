@@ -62,6 +62,7 @@ class SIM_API cStructDescriptor : public cNoncopyableObject
   private:
     std::string baseclassname;
     cStructDescriptor *baseclassdesc;
+    int inheritancechainlength;
 
   protected:
     // utility functions for converting from/to strings
@@ -104,15 +105,35 @@ class SIM_API cStructDescriptor : public cNoncopyableObject
      * descriptor object is a singleton, and must not be deleted.
      */
     static cStructDescriptor *getDescriptorFor(const char *classname);
+
+    /**
+     * Returns the descriptor object for the given object. This can return
+     * descriptor for a base class, if there isn't an exact match.
+     * The returned descriptor object is a singleton, and must not be deleted.
+     */
+    static cStructDescriptor *getDescriptorFor(cPolymorphic *object);
     //@}
 
     /** @name Querying and setting fields of the client object. */
     //@{
 
     /**
+     * Returns true if this descriptor supports the given object's class.
+     * If obj can be cast (dynamic_cast) to the class the descriptor supports,
+     * the method should return true.
+     */
+    virtual bool doesSupport(cPolymorphic *obj) {return false;}
+
+    /**
      * Returns the descriptor for the base class, if available.
      */
     virtual cStructDescriptor *getBaseClassDescriptor();
+
+    /**
+     * Returns the number of base classes up to the root -- as far as
+     * it's reflected in the descriptors.
+     */
+    int getInheritanceChainLength();
 
     /**
      * Must be redefined in subclasses to return the number of fields

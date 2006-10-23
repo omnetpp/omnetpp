@@ -64,7 +64,6 @@ class cModule extends cComponent
         omitGetVerb = true;
     fields:
         bool isSimple;
-        bool isModule;
         int id;
         bool isVector;
         int index;
@@ -80,8 +79,6 @@ class cSimpleModule extends cModule
     fields:
         bool usesActivity;
         bool isTerminated;
-        simtime_t simTime;
-        bool stackOverflow;
         unsigned int stackSize;
         unsigned int stackUsage;
 };

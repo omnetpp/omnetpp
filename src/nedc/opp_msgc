@@ -1471,6 +1471,7 @@ sub generateDescriptorClass
     print CC "    $msgdescclass();\n";
     print CC "    virtual ~$msgdescclass();\n";
     print CC "\n";
+    print CC "    virtual bool doesSupport(cPolymorphic *obj);\n";
     print CC "    virtual int getFieldCount(void *object);\n";
     print CC "    virtual const char *getFieldName(void *object, int field);\n";
     print CC "    virtual int getFieldType(void *object, int field);\n";
@@ -1497,6 +1498,13 @@ sub generateDescriptorClass
 
     print CC "$msgdescclass\:\:~$msgdescclass()\n";
     print CC "{\n";
+    print CC "}\n";
+    print CC "\n";
+
+    # doesSupport()
+    print CC "bool $msgdescclass\:\:doesSupport(cPolymorphic *obj)\n";
+    print CC "{\n";
+    print CC "    return dynamic_cast<$msgclass *>(obj)!=NULL;\n";
     print CC "}\n";
     print CC "\n";
 

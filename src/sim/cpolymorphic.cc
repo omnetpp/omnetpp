@@ -26,7 +26,7 @@ const char *cPolymorphic::className() const
 
 cStructDescriptor *cPolymorphic::getDescriptor()
 {
-    return cStructDescriptor::getDescriptorFor(className());
+    return cStructDescriptor::getDescriptorFor(this);
 }
 
 const char *cPolymorphic::fullName() const
