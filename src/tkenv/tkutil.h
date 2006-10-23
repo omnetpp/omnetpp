@@ -48,6 +48,15 @@
       return TCL_ERROR; \
   }
 
+#define TRY_ try {
+
+#define _CATCH \
+  } catch (cException *e) { \
+      Tcl_SetResult(interp, TCLCONST(e->message()), TCL_VOLATILE); \
+      delete e; \
+      return TCL_ERROR; \
+  }
+
 
 //
 // Quoting strings for Tcl_Eval

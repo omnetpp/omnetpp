@@ -20,19 +20,24 @@ class cObject
         string detailedInfo;
 };
 
-class cNoncopyableObject extends cObject
-{
-};
+//
+// NOTE: we lie a bit about the inheritance hierarchy, and hide cNoncopyableObject
+// and cDefaultList. They are too internal to be displayed on the GUI.
+//
 
-class cDefaultList extends cNoncopyableObject
-{
-    properties:
-        omitGetVerb = true;
-    fields:
-        int defaultListItems;
-};
+//class cNoncopyableObject extends cObject
+//{
+//};
 
-class cComponent extends cDefaultList
+//class cDefaultList extends cNoncopyableObject
+//{
+//    properties:
+//        omitGetVerb = true;
+//    fields:
+//        int defaultListItems;
+//};
+
+class cComponent extends cObject //really: cDefaultList
 {
     properties:
         omitGetVerb = true;
@@ -63,13 +68,12 @@ class cModule extends cComponent
     properties:
         omitGetVerb = true;
     fields:
-        bool isSimple;
         int id;
+        bool isSimple;
         bool isVector;
         int index;
         int size;
         int gates;
-        bool checkInternalConnections;
 };
 
 class cSimpleModule extends cModule
@@ -97,7 +101,7 @@ class cArray extends cObject
 };
 
 
-class cComponentType extends cNoncopyableObject
+class cComponentType extends cObject //really: cNoncopyableObject
 {
 };
 
@@ -115,7 +119,7 @@ class cChannelType extends cComponentType
 
 //----
 
-class cGate extends cNoncopyableObject
+class cGate extends cObject //really: cNoncopyableObject
 {
     properties:
         omitGetVerb = true;
@@ -196,9 +200,6 @@ class cStatistic extends cObject
 
 class cStdDev extends cStatistic
 {
-    properties:
-        omitGetVerb = true;
-    fields:
 };
 
 class cWeightedStdDev extends cStdDev
@@ -280,19 +281,35 @@ class cFSM extends cObject
         omitGetVerb = true;
     fields:
         int state;
-        int inTransientState;
+        string stateName;
 };
 
-class cMathFunction extends cNoncopyableObject
+class cMathFunction extends cObject //really: cNoncopyableObject
 {
+    properties:
+        omitGetVerb = true;
+    fields:
+        int numArgs;
 };
 
-class cNEDFunction extends cNoncopyableObject
+class cNEDFunction extends cObject //really: cNoncopyableObject
 {
+    properties:
+        omitGetVerb = true;
+    fields:
+        char returnType;
+        int numArgs;
+        string argTypes;
 };
 
-class cOutVector extends cNoncopyableObject
+class cOutVector extends cObject //really: cNoncopyableObject
 {
+    properties:
+        omitGetVerb = true;
+    fields:
+        bool isEnabled;
+        long valuesReceived;
+        long valuesStored;
 };
 
 class cPar extends cObject
@@ -328,7 +345,6 @@ class cLinkedList extends cObject
         omitGetVerb = true;
     fields:
         int length;
-        bool empty;
 };
 
 class cMessageHeap extends cObject
@@ -337,7 +353,6 @@ class cMessageHeap extends cObject
         omitGetVerb = true;
     fields:
         int length;
-        bool empty;
 };
 
 class cQueue extends cObject
@@ -346,20 +361,19 @@ class cQueue extends cObject
         omitGetVerb = true;
     fields:
         int length;
-        bool empty;
         bool takeOwnership;
 };
 
-class cSimulation extends cNoncopyableObject
+class cSimulation extends cObject //really: cNoncopyableObject
 {
     properties:
         omitGetVerb = true;
     fields:
-        int lastModuleId;
         int runNumber;
         simtime_t simTime;
         long eventNumber;
         int contextType;
+        int lastModuleId;
 };
 
 class cScheduler extends cPolymorphic
@@ -387,9 +401,14 @@ class cXMLElement
     properties:
         omitGetVerb = true;
     fields:
+        string getTagName;  //XXX get rid of "get" somehow -- @label(tagname)?
+        string getNodeValue;
+        string getSourceLocation;
         bool hasAttributes;
-        //XXX const cXMLAttributeMap& getAttributes;
         bool hasChildren;
+        //XXX const cXMLAttributeMap& getAttributes;
         //XXX cXMLElementList getChildren;
 };
+
+
 

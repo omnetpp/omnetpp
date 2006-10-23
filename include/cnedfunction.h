@@ -75,22 +75,22 @@ class SIM_API cNEDFunction : public cNoncopyableObject
     /**
      * Returns the function pointer.
      */
-    NEDFunction functionPointer()  {return f;}
+    NEDFunction functionPointer() const  {return f;}
 
     /**
      * Return type B/L/D/S/X.
      */
-    char returnType() {return rettype;}
+    char returnType() const  {return rettype;}
 
     /**
      * Returns the number of arguments
      */
-    int numArgs() {return numargs;}
+    int numArgs() const  {return numargs;}
 
     /**
      * Argument types as a string of B/L/D/S/X characters.
      */
-    const char *argTypes() {return argtypes.c_str();}
+    const char *argTypes() const  {return argtypes.c_str();}
     //@}
 
     /**

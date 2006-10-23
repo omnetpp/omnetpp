@@ -131,7 +131,7 @@ class SIM_API cMathFunction : public cNoncopyableObject
     /**
      * Argument count to function.
      */
-    int numArgs() {return argc;}
+    int numArgs() const  {return argc;}
 
     /**
      * Returns function pointer as double function with unchecked arg list
