@@ -514,8 +514,6 @@ proc get_help_tip {w x y item} {
 }
 
 #===================================================================
-#    STRUCT (FIELDS) PANEL
-#===================================================================
 
 proc create_structpanel {w} {
     # TBD textarea is a temporary solution -- should be sth like a property sheet.
@@ -528,4 +526,176 @@ proc create_structpanel {w} {
     pack $w.txt -anchor center -expand 1 -fill both -side left
 }
 
+#===================================================================
+
+proc inspector_createfields2page {w} {
+    global treeroots
+    set nb $w.nb
+    notebook_addpage $nb fields2 {Fields2}
+
+    if {![regexp {\.(ptr.*)-([0-9]+)} $w match object type]} {
+        error "window name $w doesn't look like an inspector window"
+    }
+    set treeroots($nb.fields2.tree) $object
+
+    # create treeview with scrollbars
+    scrollbar $nb.fields2.vsb -command "$nb.fields2.tree yview"
+    scrollbar $nb.fields2.hsb -command "$nb.fields2.tree xview" -orient horiz
+    canvas $nb.fields2.tree -bg white -relief sunken -bd 2
+    $nb.fields2.tree config -yscrollcommand "$nb.fields2.vsb set" -xscrollcommand "$nb.fields2.hsb set"
+
+    Tree:init $nb.fields2.tree getFieldNodeInfo
+
+    grid $nb.fields2.tree $nb.fields2.vsb -sticky news
+    grid $nb.fields2.hsb  x               -sticky news
+    grid rowconfig $nb.fields2 0 -weight 1
+    grid columnconfig $nb.fields2 0 -weight 1
+
+    bind $nb.fields2.tree <Button-1> {
+        catch {destroy .popup}
+        set key [Tree:nodeat %W %x %y]
+        if {$key!=""} {
+            Tree:setselection %W $key
+        }
+    }
+
+    # show it
+    notebook_showpage $nb fields2
+
+    refresh_fields2page $w
+}
+
+proc refresh_fields2page {w} {
+    set nb $w.nb
+    set tree $nb.fields2.tree
+    set tmp(treeroot) $w
+
+    Tree:build $tree
+    $tree xview moveto 0
+}
+
+proc getFieldNodeInfo {w op {key {}}} {
+    global icons treeroots
+
+    # key: objectptr-descriptorptr-fieldnum-index
+    set obj ""
+    set sd ""
+    set fieldnum ""
+    set index ""
+    regexp {^fld-(ptr.*)-(ptr.*)-([^-]*)-([^-]*)$} $key dummy obj sd fieldnum index
+    #puts "DBG --> $obj -- $sd -- field=$fieldnum -- index=$index"
+
+    switch $op {
+
+      text {
+        if {$fieldnum==""} {
+            # no specific field -- return class name
+            set name [opp_classdescriptor $obj $sd name]
+            return $name
+        }
+        set typename [opp_classdescriptor $obj $sd fieldtypename $fieldnum]
+        set type [opp_classdescriptor $obj $sd fieldtype $fieldnum]
+        set name [opp_classdescriptor $obj $sd fieldname $fieldnum]
+        if {$index!=""} {
+            append name "\[$index\]"
+        } elseif {$type=="basic array" || $type=="struct array"} {
+            set size [opp_classdescriptor $obj $sd fieldarraysize $fieldnum]
+            append name "\[$size\]"
+        }
+        if {$type=="struct" || $type=="struct array"} {
+            append name " {...}"
+        }
+        set value [opp_classdescriptor $obj $sd fieldvalue $fieldnum $index]
+        if {$value==""} {
+            return "$name ($typename)"
+        } else {
+            return "$name = $value ($typename)"
+        }
+
+      }
+
+      options {
+          return ""
+      }
+
+      icon {
+          return ""
+      }
+
+      haschildren {
+          set children [getFieldNodeInfo $w children $key]
+          if {$children==""} {
+              return 0
+          } else {
+              return 1
+          }
+      }
+
+      children {
+          if {$fieldnum==""} {
+              # no field given -- so return field list
+              set children {}
+              set fromfield 0
+              set numfields [opp_classdescriptor $obj $sd fieldcount]
+
+              set baseclassdesc [opp_classdescriptor $obj $sd baseclassdesc]
+              if {$baseclassdesc!=[opp_object_nullpointer]} {
+                  # display base class fields separately
+                  lappend children "fld-$obj-$baseclassdesc--"
+                  set fromfield [opp_classdescriptor $obj $baseclassdesc fieldcount]
+              }
+
+              # assemble fields list
+              for {set i $fromfield} {$i<$numfields} {incr i} {
+                  lappend children "fld-$obj-$sd-$i-"
+              }
+              return $children
+          }
+          set type [opp_classdescriptor $obj $sd fieldtype $fieldnum]
+          if {$type=="basic"} {
+              return ""
+          } elseif {$type=="struct"} {
+              set fieldptr [opp_classdescriptor $obj $sd fieldstructpointer $fieldnum]
+              set fielddesc [opp_classdescriptor $obj $sd fieldstructdesc $fieldnum]
+              if {$fielddesc==""} {
+                  return ""  ;# nothing known about it
+              } else {
+                  # resolve children now, otherwise we'd dislay the type as an extra level
+                  set key "fld-$fieldptr-$fielddesc--"
+                  return [getFieldNodeInfo $w children $key]
+              }
+          } elseif {$index!=""} {
+              # array already expanded, but we may expand further if each element is a struct
+              if {$type=="struct array"} {
+                  set fieldptr [opp_classdescriptor $obj $sd fieldstructpointer $fieldnum $index]
+                  set fielddesc [opp_classdescriptor $obj $sd fieldstructdesc $fieldnum]
+                  if {$fielddesc==""} {
+                      return ""  ;# nothing known about it
+                  } else {
+                      # resolve children now, otherwise we'd dislay the type as an extra level
+                      set key "fld-$fieldptr-$fielddesc--"
+                      return [getFieldNodeInfo $w children $key]
+                  }
+              } else {
+                  return ""
+              }
+          } elseif {$type=="basic array" || $type=="struct array"} {
+              # expand array: enumerate all indices
+              set n [opp_classdescriptor $obj $sd fieldarraysize $fieldnum]
+              set children {}
+              for {set i 0} {$i<$n} {incr i} {
+                  lappend children "fld-$obj-$sd-$fieldnum-$i"
+              }
+              return $children
+          } else {
+              error "wrong fieldtype $type"
+          }
+      }
+
+      root {
+          set rootobj $treeroots($w)
+          return "fld-$rootobj-[opp_getclassdescriptor $rootobj]--"
+      }
+    }
+}
 

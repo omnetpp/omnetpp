@@ -21,7 +21,7 @@
 proc initTreeManager {} {
     global widgets
 
-    Tree:init $widgets(manager).tree
+    Tree:init $widgets(manager).tree getNodeInfo
 
     #
     # bindings for the tree

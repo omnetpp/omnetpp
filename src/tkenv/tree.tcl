@@ -52,11 +52,13 @@ image create bitmap Tree:closedbm -data $data -maskdata $maskdata \
 
 
 #
-# Initialize a new tree widget. $w must be a previously created Tk canvas.
+# Initialize a new tree widget. $w must be a previously created Tk canvas, and
+# f a content provider procedure (like getNodeInfo).
 #
-proc Tree:init {w} {
+proc Tree:init {w f} {
   global Tree
-  set v [getNodeInfo $w root]
+  set Tree($w:function) $f
+  set v [$Tree($w:function) $w root]
   set Tree($w:$v:open) 0
   set Tree($w:selection) {}
   set Tree($w:selidx) {}
@@ -85,7 +87,7 @@ proc Tree:getselection w {
 #
 proc Tree:open {w v} {
   global Tree
-  if {[info exists Tree($w:$v:open)] && $Tree($w:$v:open)==0 && [getNodeInfo $w haschildren $v]} {
+  if {[info exists Tree($w:$v:open)] && $Tree($w:$v:open)==0 && [$Tree($w:function) $w haschildren $v]} {
     set Tree($w:$v:open) 1
     Tree:build $w
   }
@@ -141,7 +143,7 @@ proc Tree:build {w} {
   $w delete all
   catch {unset Tree($w:buildpending)}
   set Tree($w:y) 30
-  Tree:buildlayer $w [getNodeInfo $w root] 10
+  Tree:buildlayer $w [$Tree($w:function) $w root] 10
   $w config -scrollregion [$w bbox all]
   Tree:drawselection $w
 }
@@ -152,19 +154,19 @@ proc Tree:build {w} {
 #
 proc Tree:buildlayer {w v in} {
   global Tree fonts
-  if {$v==[getNodeInfo $w root]} {
+  if {$v==[$Tree($w:function) $w root]} {
     set vx {}
   } else {
     set vx $v
   }
   set start [expr $Tree($w:y)-10]
-  foreach c [getNodeInfo $w children $v] {
+  foreach c [$Tree($w:function) $w children $v] {
     set y $Tree($w:y)
     incr Tree($w:y) 17
     $w create line $in $y [expr $in+10] $y -fill gray50
-    set text [getNodeInfo $w text $c]
-    set options [getNodeInfo $w options $c]
-    set icon [getNodeInfo $w icon $c]
+    set text [$Tree($w:function) $w text $c]
+    set options [$Tree($w:function) $w options $c]
+    set icon [$Tree($w:function) $w icon $c]
     set x [expr $in+12]
     if {[string length $icon]>0} {
       set tags [list "node-$c" "tooltip"]
@@ -174,7 +176,7 @@ proc Tree:buildlayer {w v in} {
     set tags [list "node-$c" "text-$c" "tooltip"]
     set j [$w create text $x $y -text $text -font $fonts(normal) -anchor w -tags $tags]
     eval $w itemconfig $j $options
-    if [getNodeInfo $w haschildren $c] {
+    if [$Tree($w:function) $w haschildren $c] {
       if {[info exists Tree($w:$c:open)] && $Tree($w:$c:open)} {
          set j [$w create image $in $y -image Tree:openbm]
          $w bind $j <1> "set Tree($w:$c:open) 0; Tree:build $w"

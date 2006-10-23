@@ -27,7 +27,10 @@ proc create_objinspector {name geom} {
     $nb config -width 460 -height 260
     pack $nb -expand 1 -fill both
 
-    if {[opp_getclassdescriptor $w]==[opp_object_nullpointer]} {
+    if {![regexp {\.(ptr.*)-([0-9]+)} $w match object type]} {
+        error "window name $w doesn't look like an inspector window"
+    }
+    if {[opp_getclassdescriptor $object]==[opp_object_nullpointer]} {
         set fieldspage_needed 0
     } else {
         set fieldspage_needed 1
@@ -57,6 +60,9 @@ proc create_objinspector {name geom} {
         create_structpanel $nb.fields
         notebook_showpage $nb fields
     }
+
+    # experimental page
+    inspector_createfields2page $w
 }
 
 proc create_containerinspector {name geom args} {
@@ -94,7 +100,10 @@ proc create_messageinspector {name geom} {
     $nb config -width 460 -height 260
     pack $nb -expand 1 -fill both
 
-    if {[opp_getclassdescriptor $w]==[opp_object_nullpointer]} {
+    if {![regexp {\.(ptr.*)-([0-9]+)} $w match object type]} {
+        error "window name $w doesn't look like an inspector window"
+    }
+    if {[opp_getclassdescriptor $object]==[opp_object_nullpointer]} {
         set fieldspage_needed 0
     } else {
         set fieldspage_needed 1
@@ -154,6 +163,9 @@ proc create_messageinspector {name geom} {
 
     # page 5: control info
     create_structpanel $nb.controlinfo
+
+    inspector_createfields2page $w   ;#FIXME tmp
+
 }
 
 proc create_watchinspector {name geom} {
