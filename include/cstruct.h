@@ -75,8 +75,11 @@ class SIM_API cStructDescriptor : public cNoncopyableObject
     static double string2double(const char *s);
     static void enum2string(long e, const char *enumname, char *buf, int bufsize);
     static long string2enum(const char *s, const char *enumname);
+    static void oppstring2string(const char *s, char *buf, int bufsize);
     static void oppstring2string(const opp_string& str, char *buf, int bufsize);
+    static void oppstring2string(const std::string& str, char *buf, int bufsize);
     static void string2oppstring(const char *s, opp_string& str);
+    static void string2oppstring(const char *s, std::string& str);
 
   public:
     /** @name Constructors, destructor, assignment. */

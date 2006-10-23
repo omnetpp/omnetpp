@@ -123,7 +123,24 @@ void cStructDescriptor::oppstring2string(const opp_string& str, char *buf, int b
     buf[buflen-1] = '\0';
 }
 
+void cStructDescriptor::oppstring2string(const std::string& str, char *buf, int buflen)
+{
+    strncpy(buf, str.c_str(), buflen);
+    buf[buflen-1] = '\0';
+}
+
 void cStructDescriptor::string2oppstring(const char *s, opp_string& str)
+{
+    str = s;
+}
+
+void cStructDescriptor::oppstring2string(const char *s, char *buf, int buflen)
+{
+    strncpy(buf, s, buflen);
+    buf[buflen-1] = '\0';
+}
+
+void cStructDescriptor::string2oppstring(const char *s, std::string& str)
 {
     str = s;
 }

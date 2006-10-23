@@ -606,6 +606,9 @@ proc getFieldNodeInfo {w op {key {}}} {
             append name " {...}"
         }
         set value [opp_classdescriptor $obj $sd fieldvalue $fieldnum $index]
+        regsub -all "\n" $value "; " value
+        regsub -all "   +" $value "  " value
+        if {$typename=="string"} {set value "\"$value\""}
         if {$value==""} {
             return "$name ($typename)"
         } else {

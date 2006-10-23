@@ -18,11 +18,13 @@ option bubbles	{1}
 option animation_speed	{1.62}
 option bkpts_enabled	{1}
 option expressmode_autoupdate	{1}
+config mainwin-geom	{673x328+149+21}
 config rununtil-event	{}
 config last-nedfile	{}
 config filtobjlist-category	{mqsgvo}
 config display-timeline	{1}
 config filtobjlist-maxcount	{100000}
+config log-save-filename	{omnetpp.out}
 config editor-findstring	{}
 config rununtil-time	{}
 config dontshow	{}
@@ -37,8 +39,10 @@ config timeline-maxnumevents	{1000}
 config editor-case-sensitive	{0}
 config editor-whole-words	{0}
 config filtobjlist-order	{Class}
-inspector "fifonet.sink" "FFSink" "1" "460x312+103+290"
-inspector "fifonet" "fifonet" "2" "367x304+72+93"
+inspector "fifonet" "fifonet" "2" "367x304+497+391"
+inspector "simulation.scheduled-events.sendMessageEvent" "cMessage" "1" "513x452+46+126"
+inspector "component types.FFSink" "cDynamicModuleType" "1" "460x312+120+155"
 inspector "fifonet" "FifoNet" "2" "443x277+370+366"
+inspector "component types.fifonet" "cDynamicModuleType" "1" "460x312+48+62"
 inspector "component types" "cArray" "1" "417x488+48+62"
 

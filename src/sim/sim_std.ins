@@ -8,6 +8,18 @@ cplusplus {{
 void std_sim_descriptor_dummy() {}
 }}
 
+class cObject
+{
+    properties:
+        omitGetVerb = true;
+    fields:
+        string name;
+        string fullName;
+        string fullPath;
+        string info;
+        string detailedInfo;
+};
+
 class cNoncopyableObject extends cObject
 {
 };
@@ -128,19 +140,22 @@ class cMessage extends cObject
     properties:
         omitGetVerb = true;
     fields:
+        bool isSelfMessage;
+        bool isScheduled;
         int kind;
         int priority;
         long length;
         long byteLength;
         bool hasBitError;
+        simtime_t creationTime;
+        simtime_t sendingTime;
+        simtime_t arrivalTime;
         simtime_t timestamp;
-        bool isSelfMessage;
-        bool isScheduled;
         int senderModuleId;
         int senderGateId;
         int arrivalModuleId;
         int arrivalGateId;
-        simtime_t creationTime;
+
 };
 
 class cMessagePar extends cObject

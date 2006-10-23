@@ -105,7 +105,7 @@ bool cStdVectorWatcherDescriptor::getFieldAsString(void *object, int field, int 
 {
     cStdVectorWatcherBase *pp = (cStdVectorWatcherBase *)object;
     switch (field) {
-        case 0: oppstring2string(pp->at(i).c_str(),resultbuf,bufsize); return true;
+        case 0: oppstring2string(pp->at(i), resultbuf, bufsize); return true;
         default: return false;
     }
 }
