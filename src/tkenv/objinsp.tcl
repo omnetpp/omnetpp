@@ -27,7 +27,11 @@ proc create_objinspector {name geom} {
     $nb config -width 460 -height 260
     pack $nb -expand 1 -fill both
 
-    set fieldspage_needed [opp_hasdescriptor $w]
+    if {[opp_getclassdescriptor $w]==[opp_object_nullpointer]} {
+        set fieldspage_needed 0
+    } else {
+        set fieldspage_needed 1
+    }
 
     notebook_addpage $nb info {General}
     if {$fieldspage_needed} {
@@ -90,7 +94,11 @@ proc create_messageinspector {name geom} {
     $nb config -width 460 -height 260
     pack $nb -expand 1 -fill both
 
-    set fieldspage_needed [opp_hasdescriptor $w]
+    if {[opp_getclassdescriptor $w]==[opp_object_nullpointer]} {
+        set fieldspage_needed 0
+    } else {
+        set fieldspage_needed 1
+    }
 
     notebook_addpage $nb info     {General}
     notebook_addpage $nb send     {Sending/Arrival}
