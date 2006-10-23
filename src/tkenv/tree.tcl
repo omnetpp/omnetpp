@@ -160,6 +160,7 @@ proc Tree:buildlayer {w v in} {
     set vx $v
   }
   set start [expr $Tree($w:y)-10]
+  set y $Tree($w:y)
   foreach c [$Tree($w:function) $w children $v] {
     set y $Tree($w:y)
     incr Tree($w:y) 17

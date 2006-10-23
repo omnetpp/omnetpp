@@ -588,33 +588,35 @@ proc getFieldNodeInfo {w op {key {}}} {
     switch $op {
 
       text {
-        if {$fieldnum==""} {
-            # no specific field -- return class name
-            set name [opp_classdescriptor $obj $sd name]
-            return $name
-        }
-        set typename [opp_classdescriptor $obj $sd fieldtypename $fieldnum]
-        set type [opp_classdescriptor $obj $sd fieldtype $fieldnum]
-        set name [opp_classdescriptor $obj $sd fieldname $fieldnum]
-        if {$index!=""} {
-            append name "\[$index\]"
-        } elseif {$type=="basic array" || $type=="struct array"} {
-            set size [opp_classdescriptor $obj $sd fieldarraysize $fieldnum]
-            append name "\[$size\]"
-        }
-        if {$type=="struct" || $type=="struct array"} {
-            append name " {...}"
-        }
-        set value [opp_classdescriptor $obj $sd fieldvalue $fieldnum $index]
-        regsub -all "\n" $value "; " value
-        regsub -all "   +" $value "  " value
-        if {$typename=="string"} {set value "\"$value\""}
-        if {$value==""} {
-            return "$name ($typename)"
-        } else {
-            return "$name = $value ($typename)"
-        }
+          if {$obj==[opp_object_nullpointer]} {return "<object is NULL>"}
+          if {$sd==[opp_object_nullpointer]} {return "<no descriptor for object>"}
 
+          if {$fieldnum==""} {
+              # no specific field -- return class name
+              set name [opp_classdescriptor $obj $sd name]
+              return $name
+          }
+          set typename [opp_classdescriptor $obj $sd fieldtypename $fieldnum]
+          set type [opp_classdescriptor $obj $sd fieldtype $fieldnum]
+          set name [opp_classdescriptor $obj $sd fieldname $fieldnum]
+          if {$index!=""} {
+              append name "\[$index\]"
+          } elseif {$type=="basic array" || $type=="struct array"} {
+              set size [opp_classdescriptor $obj $sd fieldarraysize $fieldnum]
+              append name "\[$size\]"
+          }
+          if {$type=="struct" || $type=="struct array"} {
+              append name " {...}"
+          }
+          set value [opp_classdescriptor $obj $sd fieldvalue $fieldnum $index]
+          regsub -all "\n" $value "; " value
+          regsub -all "   +" $value "  " value
+          if {$typename=="string"} {set value "\"$value\""}
+          if {$value==""} {
+              return "$name ($typename)"
+          } else {
+              return "$name = $value ($typename)"
+          }
       }
 
       options {
@@ -635,6 +637,10 @@ proc getFieldNodeInfo {w op {key {}}} {
       }
 
       children {
+          if {$obj==[opp_object_nullpointer] || $sd==[opp_object_nullpointer]} {
+              return ""
+          }
+
           if {$fieldnum==""} {
               # no field given -- so return field list
               set children {}
@@ -696,8 +702,9 @@ proc getFieldNodeInfo {w op {key {}}} {
       }
 
       root {
-          set rootobj $treeroots($w)
-          return "fld-$rootobj-[opp_getclassdescriptor $rootobj]--"
+          set obj $treeroots($w)
+          set desc [opp_getclassdescriptor $obj]
+          return "fld-$obj-$desc--"
       }
     }
 }
