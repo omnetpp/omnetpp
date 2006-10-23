@@ -722,7 +722,7 @@ sub prepareForCodeGeneration
 
     # check base class and determine type of object
     if ($msgbase eq '') {
-        if ($keyword eq 'message') {
+        if ($keyword eq 'message' || $msgname eq 'cObject') {
             $classtype = 'cobject';
         } elsif ($keyword eq 'class') {
             $classtype = 'noncobject';
