@@ -964,39 +964,39 @@ void TGateInspector::update()
 
    cGate *g = static_cast<cGate *>(object);
 
-   setEntry(".main.name.e", g->name());
+   setEntry(".nb.info.name.e", g->name());
    char buf[64];
    sprintf(buf,"#%d", g->id());
-   setLabel(".main.id.e", buf);
-   setEntry(".main.dispstr.e", g->displayString().toString());
+   setLabel(".nb.info.id.e", buf);
+   setEntry(".nb.info.dispstr.e", g->displayString().toString());
    cBasicChannel *ch = dynamic_cast<cBasicChannel*>(g->channel());
    if (ch)
    {
-       setEntry(".main.delay.e", ch->delay());
-       setEntry(".main.error.e", ch->error());
-       setEntry(".main.datarate.e", ch->datarate());
+       setEntry(".nb.info.delay.e", ch->delay());
+       setEntry(".nb.info.error.e", ch->error());
+       setEntry(".nb.info.datarate.e", ch->datarate());
    }
    else
    {
-       setEntry(".main.delay.e", 0.0);
-       setEntry(".main.error.e", 0.0);
-       setEntry(".main.datarate.e", 0.0);
+       setEntry(".nb.info.delay.e", 0.0);
+       setEntry(".nb.info.error.e", 0.0);
+       setEntry(".nb.info.datarate.e", 0.0);
    }
-   setLabel(".main.trfinish.e", g->transmissionFinishes());
+   setLabel(".nb.info.trfinish.e", g->transmissionFinishes());
 
-   setInspectButton(".main.from", g->fromGate(), true, INSP_DEFAULT);
-   setInspectButton(".main.to", g->toGate(), true, INSP_DEFAULT);
+   setInspectButton(".nb.info.from", g->fromGate(), true, INSP_DEFAULT);
+   setInspectButton(".nb.info.to", g->toGate(), true, INSP_DEFAULT);
 }
 
 void TGateInspector::writeBack()
 {
    cGate *g = static_cast<cGate *>(object);
-   g->setName(getEntry(".main.name.e"));
-   g->displayString().parse(getEntry(".main.dispstr.e"));
+   g->setName(getEntry(".nb.info.name.e"));
+   g->displayString().parse(getEntry(".nb.info.dispstr.e"));
    cBasicChannel *ch = dynamic_cast<cBasicChannel*>(g->channel());
-   double delay = atof(getEntry(".main.delay.e"));
-   double error = atof(getEntry(".main.error.e"));
-   double datarate = atof(getEntry(".main.datarate.e"));
+   double delay = atof(getEntry(".nb.info.delay.e"));
+   double error = atof(getEntry(".nb.info.error.e"));
+   double datarate = atof(getEntry(".nb.info.datarate.e"));
    if (delay!=0 || error!=0 || datarate!=0 || ch!=NULL)
    {
        if (!ch)
