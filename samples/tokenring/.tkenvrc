@@ -18,7 +18,7 @@ option bubbles	{1}
 option animation_speed	{1}
 option bkpts_enabled	{1}
 option expressmode_autoupdate	{1}
-config mainwin-geom	{590x393+299+81}
+config mainwin-geom	{590x393+347+92}
 config rununtil-event	{}
 config last-nedfile	{}
 config filtobjlist-category	{mqsgvo}
@@ -39,10 +39,9 @@ config timeline-maxnumevents	{1000}
 config editor-case-sensitive	{0}
 config editor-whole-words	{0}
 config filtobjlist-order	{Class}
-inspector "token.comp[2]" "Computer" "2" "367x377+24+31"
-inspector "token.comp[0].mac.Queueing time (sec)" "cOutVector" "2" "379x201+355+228"
-inspector "token.comp[0].mac.sendQueue" "cQueue" "1" "379x186+354+8"
-inspector "simulation.scheduled-events.3-->4" "TRFrame" "1" "440x432+96+124"
-inspector "simulation.scheduled-events.2-->0" "TRFrame" "1" "507x540+48+62"
+inspector "token" "token" "2" "367x347+24+31"
+inspector "simulation.scheduled-events.token" "TRToken" "1" "460x496+207+163"
+inspector "simulation.scheduled-events.2-->0" "TRFrame" "1" "507x540+46+56"
 inspector "token" "TokenRing" "2" "343x375+1+-4"
+inspector "simulation.scheduled-events.3-->4" "TRFrame" "1" "440x432+96+124"
 
