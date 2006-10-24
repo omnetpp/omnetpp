@@ -80,6 +80,10 @@ proc setupTkOptions {} {
    bind Entry <Control-v> {}
    bind Text <Control-v> {}
 
+   # set up wheel support for a few extra widget types
+   bindMouseWheel Canvas
+   bindMouseWheel TreeView
+
    #
    # fonts() array elements:
    #  normal:  menus, labels etc
@@ -1149,3 +1153,52 @@ proc showTextOnceDialog {key} {
     destroy $w
 }
 
+#
+# Creates mouse wheel bindings for the given widget or widget class.
+# Note: wheel events are only delivered to the widget IF IT HAS FOCUS!
+#
+# Code copied almost verbatim from lib/tk8.4/text.tcl.
+#
+proc bindMouseWheel {w} {
+
+    # The MouseWheel will typically only fire on Windows.  However,
+    # someone could use the "event generate" command to produce one
+    # on other platforms.
+
+    if {[string equal [tk windowingsystem] "classic"]
+        || [string equal [tk windowingsystem] "aqua"]} {
+        bind $w <MouseWheel> {
+            %W yview scroll [expr {- (%D)}] units
+        }
+        bind $w <Option-MouseWheel> {
+            %W yview scroll [expr {-10 * (%D)}] units
+        }
+        bind $w <Shift-MouseWheel> {
+            %W xview scroll [expr {- (%D)}] units
+        }
+        bind $w <Shift-Option-MouseWheel> {
+            %W xview scroll [expr {-10 * (%D)}] units
+        }
+    } else {
+        bind $w <MouseWheel> {
+            %W yview scroll [expr {- (%D / 120) * 4}] units
+        }
+    }
+
+    if {[string equal "x11" [tk windowingsystem]]} {
+        # Support for mousewheels on Linux/Unix commonly comes through mapping
+        # the wheel to the extended buttons.  If you have a mousewheel, find
+        # Linux configuration info at:
+        #       http://www.inria.fr/koala/colas/mouse-wheel-scroll/
+        bind $w <4> {
+            if {!$tk_strictMotif} {
+                %W yview scroll -5 units
+            }
+        }
+        bind $w <5> {
+            if {!$tk_strictMotif} {
+                %W yview scroll 5 units
+            }
+        }
+    }
+}

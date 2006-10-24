@@ -72,6 +72,7 @@ proc Tree:init {w f} {
   set Tree($w:selidx) {}
   set Tree($w:lastid) 0
   Tree:buildwhenidle $w
+  $w config -takefocus 1 -highlightcolor gray -highlightthickness 1
 }
 
 #
@@ -153,8 +154,14 @@ proc Tree:build {w} {
   catch {unset Tree($w:buildpending)}
   set Tree($w:y) 30
   Tree:buildlayer $w [$Tree($w:function) $w root] 10
-  $w config -scrollregion [$w bbox all]
   Tree:drawselection $w
+  $w config -scrollregion [$w bbox all]
+
+  ## attempt to prevent scrolling when nodes don't fill the canvas. doesn't work.
+  #set bbox [$w bbox all]
+  #set h [winfo height $w]
+  #if {[lindex $bbox 3]<$h} {lset bbox 3 $h}
+  #$w config -scrollregion $bbox
 }
 
 #
