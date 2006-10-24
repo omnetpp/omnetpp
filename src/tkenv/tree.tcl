@@ -73,6 +73,7 @@ proc Tree:init {w f} {
   set Tree($w:lastid) 0
   Tree:buildwhenidle $w
   $w config -takefocus 1 -highlightcolor gray -highlightthickness 1
+  Tree:addbindings $w
 }
 
 #
@@ -97,7 +98,9 @@ proc Tree:getselection w {
 #
 proc Tree:open {w v} {
   global Tree
-  if {[info exists Tree($w:$v:open)] && $Tree($w:$v:open)==0 && [$Tree($w:function) $w haschildren $v]} {
+  set isopen 0
+  catch {set isopen $Tree($w:$v:open)}
+  if {!$isopen && [$Tree($w:function) $w haschildren $v]} {
     set Tree($w:$v:open) 1
     Tree:build $w
   }
@@ -108,7 +111,9 @@ proc Tree:open {w v} {
 #
 proc Tree:close {w v} {
   global Tree
-  if {[info exists Tree($w:$v:open)] && $Tree($w:$v:open)==1} {
+  set isopen 0
+  catch {set isopen $Tree($w:$v:open)}
+  if {$isopen} {
     set Tree($w:$v:open) 0
     Tree:build $w
   }
@@ -134,6 +139,14 @@ proc Tree:toggle {w v} {
 proc Tree:nodeat {w x y} {
   set x [$w canvasx $x]
   set y [$w canvasy $y]
+  return [Tree:nodeatcc $w $x $y]
+}
+
+#
+# Return the full pathname of the label for widget $w that is located
+# at canvas coordinates $x, $y
+#
+proc Tree:nodeatcc {w x y} {
   foreach m [$w find overlapping $x $y $x $y] {
     foreach tag [$w gettags $m] {
       if [string match "node-*" $tag] {
@@ -180,9 +193,13 @@ proc Tree:buildlayer {w v in} {
   foreach c [$Tree($w:function) $w children $v] {
     set y $Tree($w:y)
     $w create line $in $y [expr $in+10] $y -fill gray50
+
+    # get data
     set text [$Tree($w:function) $w text $c]
     set options [$Tree($w:function) $w options $c]
     set icon [$Tree($w:function) $w icon $c]
+
+    # draw icon and text
     set x [expr $in+12]
     if {[string length $icon]>0} {
       set tags [list "node-$c" "tooltip"]
@@ -191,13 +208,19 @@ proc Tree:buildlayer {w v in} {
     }
     set tags [list "node-$c" "text-$c" "tooltip"]
     set ismultiline [expr [string first "\n" $text]!=-1]
-    #set j [$w create text $x $y -text $text -font $fonts(normal) -anchor w -tags $tags]
     set isopen 0
     if {$ismultiline && [info exists Tree($w:$c:open)]} {set isopen $Tree($w:$c:open)}
     set j [Tree:createtext $w $x $y $text $isopen $tags]
     eval $w itemconfig $j $options
+
+    # draw helper line for keyboard navigation
+    set bbox [$w bbox $j]
+    set top [lindex [$w bbox $j] 1]
     set bottom [lindex [$w bbox $j] 3]
+    $w create line 0 $top 0 $bottom -tags [list "node-$c" "helper"] -fill ""
     set Tree($w:y) [expr $bottom + 8]
+
+    # draw [+] or [-] symbols
     if {$ismultiline || [$Tree($w:function) $w haschildren $c]} {
       if {[info exists Tree($w:$c:open)] && $Tree($w:$c:open)} {
          set j [$w create image $in $y -image Tree:openbm]
@@ -271,4 +294,66 @@ proc Tree:buildwhenidle w {
     after idle "Tree:build $w"
   }
 }
+
+#
+# Internal use only.
+# Add keyboard bindings to the tree widget
+#
+proc Tree:addbindings w {
+  bind $w <Up> {Tree:up %W}
+  bind $w <Down> {Tree:down %W}
+  bind $w <Return> {Tree:togglestate %W}
+  bind $w <space> {Tree:togglestate %W}
+}
+
+#
+# Internal use only.
+# Move selection to the element above the selected one
+#
+proc Tree:up w {
+  set sel [Tree:getselection $w]
+  if {$sel!=""} {
+    set bbox [$w bbox "node-$sel"]
+    set y [expr [lindex $bbox 1]-5]
+    set nodeabove [Tree:nodeatcc $w 0 $y]
+    if {$nodeabove!=""} {
+        Tree:setselection $w $nodeabove
+    }
+  }
+}
+
+#
+# Internal use only.
+# Move selection to the element below the selected one
+#
+proc Tree:down w {
+  set sel [Tree:getselection $w]
+  if {$sel!=""} {
+    set bbox [$w bbox "node-$sel"]
+    set y [expr [lindex $bbox 3]+5]
+    set nodebelow [Tree:nodeatcc $w 0 $y]
+    if {$nodebelow!=""} {
+        Tree:setselection $w $nodebelow
+    }
+  }
+}
+
+#
+# Internal use only.
+# Opens the selected node if it's closed, and closes it if it's open
+#
+proc Tree:togglestate w {
+  global Tree
+  set v [Tree:getselection $w]
+  if {$v!=""} {
+    set isopen 0
+    catch {set isopen $Tree($w:$v:open)}
+    if {$isopen} {
+      Tree:close $w $v
+    } else {
+      Tree:open $w $v
+    }
+  }
+}
+
 
