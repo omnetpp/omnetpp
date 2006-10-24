@@ -62,6 +62,7 @@ proc Tree:init {w f} {
   set Tree($w:$v:open) 0
   set Tree($w:selection) {}
   set Tree($w:selidx) {}
+  set Tree($w:lastid) 0
   Tree:buildwhenidle $w
 }
 
@@ -175,7 +176,8 @@ proc Tree:buildlayer {w v in} {
       incr x 20
     }
     set tags [list "node-$c" "text-$c" "tooltip"]
-    set j [$w create text $x $y -text $text -font $fonts(normal) -anchor w -tags $tags]
+    #set j [$w create text $x $y -text $text -font $fonts(normal) -anchor w -tags $tags]
+    set j [Tree:createtext $w $x $y $text $tags]
     eval $w itemconfig $j $options
     if [$Tree($w:function) $w haschildren $c] {
       if {[info exists Tree($w:$c:open)] && $Tree($w:$c:open)} {
@@ -190,6 +192,27 @@ proc Tree:buildlayer {w v in} {
   }
   set j [$w create line $in $start $in [expr $y+1] -fill gray50 ]
   $w lower $j
+}
+
+#
+# Internal use only.
+# Displays the given text. "\b" charachers switch *bold* on/off. Returns tag.
+#
+proc Tree:createtext {w x y txt tags} {
+    global fonts Tree
+
+    set tag $Tree($w:lastid)
+    incr Tree($w:lastid)
+    lappend $tags $tag
+
+    set bold 0
+    foreach txtfrag [split $txt "\b"] {
+        set font [expr $bold ? {$fonts(bold)} : {$fonts(normal)}]
+        set id [$w create text $x $y -text $txtfrag -anchor w -font $font -tags $tags]
+        set x [lindex [$w bbox $id] 2]
+        set bold [expr !$bold]
+    }
+    return $tag
 }
 
 #

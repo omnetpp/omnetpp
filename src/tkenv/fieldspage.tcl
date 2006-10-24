@@ -14,7 +14,7 @@
 #----------------------------------------------------------------#
 
 
-proc inspector_createfields2pageA {w} {
+proc inspector_createfields2page {w} {
     global treeroots
     set nb $w.nb
     notebook_addpage $nb fields2 {Fields}
@@ -60,7 +60,6 @@ proc refresh_fields2page {w} {
 proc getFieldNodeInfo {w op {key {}}} {
     global icons treeroots
 
-    #set separatebaseclasses 0
     set separatebaseclasses 1
 
     # key: objectptr-descriptorptr-fieldnum-index
@@ -101,7 +100,7 @@ proc getFieldNodeInfo {w op {key {}}} {
             if {$value==""} {
                 return "$name ($typename)"
             } else {
-                return "$name = $value ($typename)"
+                return "$name = \b$value\b ($typename)"
             }
         }
 
@@ -197,7 +196,7 @@ proc getFieldNodeInfo {w op {key {}}} {
 
 #============================
 
-proc inspector_createfields2page {w} {
+proc inspector_createfields2pageX {w} {
     global treeroots
     set nb $w.nb
     notebook_addpage $nb fields2 {Fields}
