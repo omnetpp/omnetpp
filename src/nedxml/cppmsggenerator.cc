@@ -881,19 +881,20 @@ void NEDCppGenerator::generateDescriptorClass(NEDCppGenerator::ClassDesc& cld, N
     out << "    " << cld.msgdescclass << "& operator=(const " << cld.msgdescclass << "& other);\n";
     out << "    virtual cPolymorphic *dup() const {return new " << cld.msgdescclass << "(*this);}\n";
     out << "\n";
-    out << "    virtual int getFieldCount(object);\n";
-    out << "    virtual const char *getFieldName(int field);\n";
-    out << "    virtual int getFieldType(int field);\n";
-    out << "    virtual const char *getFieldTypeString(int field);\n";
-    out << "    virtual const char *getFieldEnumName(int field);\n";
-    out << "    virtual int getArraySize(int field);\n";
+    out << "    virtual int getFieldCount(void *object);\n";
+    out << "    virtual const char *getFieldName(void *object, int field);\n";
+    out << "    virtual int getFieldType(void *object, int field);\n";
+    out << "    virtual const char *getFieldTypeString(void *object, int field);\n";
+    out << "    virtual const char *getFieldEnumName(void *object, int field);\n";
+    out << "    virtual const char *getFieldProperty(void *object, int field, const char *propertyname);\n";
+    out << "    virtual int getArraySize(void *object, int field);\n";
     out << "\n";
-    out << "    virtual bool getFieldAsString(int field, int i, char *resultbuf, int bufsize);\n";
-    out << "    virtual bool setFieldAsString(int field, int i, const char *value);\n";
+    out << "    virtual bool getFieldAsString(void *object, int field, int i, char *resultbuf, int bufsize);\n";
+    out << "    virtual bool setFieldAsString(void *object, int field, int i, const char *value);\n";
     out << "\n";
-    out << "    virtual const char *getFieldStructName(int field);\n";
-    out << "    virtual void *getFieldStructPointer(int field, int i);\n";
-    out << "    virtual sFieldWrapper *getFieldWrapper(int field, int i);\n";
+    out << "    virtual const char *getFieldStructName(void *object, int field);\n";
+    out << "    virtual void *getFieldStructPointer(void *object, int field, int i);\n";
+    out << "    virtual sFieldWrapper *getFieldWrapper(void *object, int field, int i);\n";
     out << "};\n\n";
 
     // register descriptor class
