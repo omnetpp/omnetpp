@@ -20,6 +20,13 @@
 #  `license' for details on this and other legal matters.
 #----------------------------------------------------------------#
 
+#
+# Changes by Andras Varga:
+# - Tree:init to take content provider procedure
+# - texts may contain "\b" to turn *bold* on/off
+# - multi-line text accepted (beware when mixing with bold:
+#   on each "\b", text jumps back to the top!)
+#
 
 #
 # Bitmaps used to show which parts of the tree can be opened.
@@ -164,7 +171,6 @@ proc Tree:buildlayer {w v in} {
   set y $Tree($w:y)
   foreach c [$Tree($w:function) $w children $v] {
     set y $Tree($w:y)
-    incr Tree($w:y) 17
     $w create line $in $y [expr $in+10] $y -fill gray50
     set text [$Tree($w:function) $w text $c]
     set options [$Tree($w:function) $w options $c]
@@ -179,6 +185,8 @@ proc Tree:buildlayer {w v in} {
     #set j [$w create text $x $y -text $text -font $fonts(normal) -anchor w -tags $tags]
     set j [Tree:createtext $w $x $y $text $tags]
     eval $w itemconfig $j $options
+    set bottom [lindex [$w bbox $j] 3]
+    set Tree($w:y) [expr $bottom + 8]
     if [$Tree($w:function) $w haschildren $c] {
       if {[info exists Tree($w:$c:open)] && $Tree($w:$c:open)} {
          set j [$w create image $in $y -image Tree:openbm]
@@ -201,14 +209,17 @@ proc Tree:buildlayer {w v in} {
 proc Tree:createtext {w x y txt tags} {
     global fonts Tree
 
-    set tag $Tree($w:lastid)
+    set tag "_$Tree($w:lastid)"
     incr Tree($w:lastid)
-    lappend $tags $tag
+    lappend tags $tag
+
+    # position center of 1st line on y given coord (we use "nw" achor)
+    incr y -6
 
     set bold 0
     foreach txtfrag [split $txt "\b"] {
         set font [expr $bold ? {$fonts(bold)} : {$fonts(normal)}]
-        set id [$w create text $x $y -text $txtfrag -anchor w -font $font -tags $tags]
+        set id [$w create text $x $y -text $txtfrag -anchor nw -font $font -tags $tags]
         set x [lindex [$w bbox $id] 2]
         set bold [expr !$bold]
     }
