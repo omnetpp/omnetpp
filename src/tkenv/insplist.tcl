@@ -103,7 +103,7 @@ proc inspectorlist_add {w} {
     set pil_name($key)   $objname
     set pil_class($key)  $classname
     set pil_type($key)   $type
-    set pil_geom($key)   [wm geometry $w]
+    set pil_geom($key)   [winfo geometry $w]
     #debug "$key added to insp list"
 }
 
@@ -138,7 +138,7 @@ proc inspectorlist_tkenvrc_get_contents {} {
        if [regexp {\.(ptr.*)-([0-9]+)} $win match object type] {
            set objname [opp_getobjectfullpath $object]
            set class [opp_getobjectclassname $object]
-           set geom [wm geometry $win]
+           set geom [winfo geometry $win]
 
            append res "inspector \"$objname\" \"$class\" \"$type\" \"$geom\"\n"
        }

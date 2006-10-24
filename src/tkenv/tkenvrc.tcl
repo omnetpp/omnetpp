@@ -49,7 +49,7 @@ proc save_tkenvrc {{fname ".tkenvrc"}} {
             puts $fout "option $key\t{$value}"
         }
 
-        set config(mainwin-geom) [wm geometry .]
+        set config(mainwin-geom) [winfo geometry .]
 
         foreach key [array names config] {
             set value $config($key)
