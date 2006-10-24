@@ -26,7 +26,8 @@
 # - texts may contain "\b" to turn *bold* on/off
 # - multi-line text accepted (beware when mixing with bold:
 #   on each "\b", text jumps back to the top!)
-#
+# - multi-line texts can be opened/closed (if there're child nodes
+#   as well, they open/close together with the text)
 
 #
 # Bitmaps used to show which parts of the tree can be opened.
@@ -182,12 +183,15 @@ proc Tree:buildlayer {w v in} {
       incr x 20
     }
     set tags [list "node-$c" "text-$c" "tooltip"]
+    set ismultiline [expr [string first "\n" $text]!=-1]
     #set j [$w create text $x $y -text $text -font $fonts(normal) -anchor w -tags $tags]
-    set j [Tree:createtext $w $x $y $text $tags]
+    set isopen 0
+    if {$ismultiline && [info exists Tree($w:$c:open)]} {set isopen $Tree($w:$c:open)}
+    set j [Tree:createtext $w $x $y $text $isopen $tags]
     eval $w itemconfig $j $options
     set bottom [lindex [$w bbox $j] 3]
     set Tree($w:y) [expr $bottom + 8]
-    if [$Tree($w:function) $w haschildren $c] {
+    if {$ismultiline || [$Tree($w:function) $w haschildren $c]} {
       if {[info exists Tree($w:$c:open)] && $Tree($w:$c:open)} {
          set j [$w create image $in $y -image Tree:openbm]
          $w bind $j <1> "set Tree($w:$c:open) 0; Tree:build $w"
@@ -206,8 +210,10 @@ proc Tree:buildlayer {w v in} {
 # Internal use only.
 # Displays the given text. "\b" charachers switch *bold* on/off. Returns tag.
 #
-proc Tree:createtext {w x y txt tags} {
+proc Tree:createtext {w x y txt isopen tags} {
     global fonts Tree
+
+    if {!$isopen} {regsub -all "\n" $txt " \\ " txt}
 
     set tag "_$Tree($w:lastid)"
     incr Tree($w:lastid)
