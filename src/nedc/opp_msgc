@@ -446,6 +446,7 @@ while ($msg =~ s/(message|class|struct)\s+(.+?)\s*{(.*?)};?//s)
     @fieldlist = ();
     @baseclassfieldlist = ();
     @proplist = ();
+    undef %fprops;
     undef %pval;
 
     if ($msghdr =~ /^([^ \t\n]+?)\s*extends\s*([^ \t\n]+?)$/s)
@@ -531,6 +532,7 @@ while ($msg =~ s/(message|class|struct)\s+(.+?)\s*{(.*?)};?//s)
         while ($fields =~ s/^(.*?);//s)
         {
             $field = $1;
+
             # abstract
             if ($field =~ s/^\s*abstract\s+//s) {
                 $isabstract = 1;
@@ -556,6 +558,11 @@ while ($msg =~ s/(message|class|struct)\s+(.+?)\s*{(.*?)};?//s)
             } else {
                 $fieldenum = '';
             }
+
+            # properties, with @propertyname(value) syntax
+            %fieldprop = ();
+            $field =~ s|\@([_a-z0-9]+)\((.*?)\)|$fieldprop{$1}=$2;""|gsei;
+            $field =~ s|\@([_a-z0-9]+)|$fieldprop{$1}=1;""|gsei;
 
             # default value
             if ($field =~ s/=\s*(.*?)\s*$//s) {
@@ -599,6 +606,10 @@ while ($msg =~ s/(message|class|struct)\s+(.+?)\s*{(.*?)};?//s)
                 $farraysize{$fieldname} = $arraysize;
                 $fenumname{$fieldname} = $fieldenum;
                 #print "$msgname field=$fieldname type=$ftype{$fieldname} value=$fval{$fieldname} isarray=$fisarray{$fieldname} arraysize=$farraysize{$fieldname}\n";
+                for $key (keys(%fieldprop)) {
+                    $fprops{$fieldname}->{$key} = $fieldprop{$key};
+                    #print "$key => $fprops{$fieldname}->{$key}\n";
+                }
             }
             # ...or just fieldname
             elsif ($field =~ /^\s*([A-Za-z_][A-Za-z0-9_]*)\s*$/s)
@@ -1465,6 +1476,13 @@ sub generateStruct
 #
 sub generateDescriptorClass
 {
+    for $fieldname (keys %fprops) {
+        print "XXX $fieldname:\n";
+        $ref = $fprops{$fieldname};
+        for $key (keys %$ref) {
+            print "XXX  \@$key => $fprops{$fieldname}->{$key}\n";
+        }
+    }
     print CC "class $msgdescclass : public cStructDescriptor\n";
     print CC "{\n";
     print CC "  public:\n";

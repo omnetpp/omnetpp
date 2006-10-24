@@ -1,3 +1,5 @@
+XXX stores properties; @prop and @prop(value) syntax supported
+
 2006-10-22  Andras Varga
 
 	* opp_msgc: added -Xnc, -Xnd, -Xns options
