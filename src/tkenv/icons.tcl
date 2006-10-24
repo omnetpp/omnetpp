@@ -390,4 +390,7 @@ set icons(save) [image create photo -data {
     SwQAOw==
 }]
 
-
+set icons(node_xs) [image create photo -data {
+    R0lGODlhBgAHALMAAAAAwP///wAAgAAA/wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+    AAAAAAAAAAAAAAAAACwAAAAABgAHAAAEEDDIOaqtIIOhM9cCKIzkGAEAOw==
+}]

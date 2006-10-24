@@ -60,6 +60,9 @@ proc refresh_fields2page {w} {
 proc getFieldNodeInfo {w op {key {}}} {
     global icons treeroots
 
+    #set separatebaseclasses 0
+    set separatebaseclasses 1
+
     # key: objectptr-descriptorptr-fieldnum-index
     set obj ""
     set sd ""
@@ -131,7 +134,7 @@ proc getFieldNodeInfo {w op {key {}}} {
                 set numfields [opp_classdescriptor $obj $sd fieldcount]
 
                 set baseclassdesc [opp_classdescriptor $obj $sd baseclassdesc]
-                if {$baseclassdesc!=[opp_object_nullpointer]} {
+                if {$baseclassdesc!=[opp_object_nullpointer] && $separatebaseclasses} {
                     # display base class fields separately
                     lappend children "fld-$obj-$baseclassdesc--"
                     set fromfield [opp_classdescriptor $obj $baseclassdesc fieldcount]
@@ -202,7 +205,7 @@ proc inspector_createfields2page {w} {
     multicolumnlistbox $nb.fields2.list {
        {value  Value   200}
        {type   Type    80}
-       {ptr    Pointer}
+       {on     Declared-on}
     } -width 400 -yscrollcommand "$nb.fields2.vsb set" -xscrollcommand "$nb.fields2.hsb set"
     scrollbar $nb.fields2.hsb  -command "$nb.fields2.list xview" -orient horiz
     scrollbar $nb.fields2.vsb  -command "$nb.fields2.list yview"
@@ -213,7 +216,7 @@ proc inspector_createfields2page {w} {
 
     set tree $nb.fields2.list
 
-    $tree config -flat no
+    $tree config -flat no -hideroot yes
     $tree column configure treeView -text "Name" -hide no -width 160 -state disabled
 
     #set root [$tree insert end ROOT -data {value 42 type struct}]
@@ -224,7 +227,7 @@ proc inspector_createfields2page {w} {
         error "window name $w doesn't look like an inspector window"
     }
 
-    fillTreeview $tree $object
+    fillTreeview $tree $object   ;#FIXME should be called from C++ on updates
 }
 
 proc fillTreeview {tree obj} {
@@ -235,11 +238,15 @@ proc fillTreeview {tree obj} {
 }
 
 proc _doFillTreeview {tree path key} {
+    global icons
 
     set data [_getFieldDataFor $key]
     set name [lindex $data 1]
-    set newpath [concat $path $name]
-    $tree insert end $newpath -data $data
+    set newpath [concat $path [list $name]]
+    #set icon $icons(1pixtransp)
+    #set icon $icons(cogwheel_vs)
+    set icon $icons(node_xs)
+    $tree insert end $newpath -data $data -icons [list $icon $icon] -activeicons [list $icon $icon]
 
     foreach child [getFieldNodeInfo $tree children $key] {
         _doFillTreeview $tree $newpath $child
@@ -258,10 +265,10 @@ proc _getFieldDataFor {key} {
     if {$obj==[opp_object_nullpointer]} {return "<object is NULL>"}
     if {$sd==[opp_object_nullpointer]} {return "<no descriptor for object>"}
 
+    set declname [opp_classdescriptor $obj $sd name]
+
     if {$fieldnum==""} {
-        # no specific field -- return class name
-        set name [opp_classdescriptor $obj $sd name]
-        return [list treeView $name value "" type "" ptr $obj]
+        return [list treeView $declname value "" type "" on ""]
     }
 
     set typename [opp_classdescriptor $obj $sd fieldtypename $fieldnum]
@@ -273,14 +280,14 @@ proc _getFieldDataFor {key} {
         set size [opp_classdescriptor $obj $sd fieldarraysize $fieldnum]
         append name "\[$size\]"
     }
-    if {$type=="struct" || $type=="struct array"} {
-        append name " {...}"
-    }
+    #if {$type=="struct" || $type=="struct array"} {
+    #    append name " {...}"
+    #}
     set value [opp_classdescriptor $obj $sd fieldvalue $fieldnum $index]
     regsub -all "\n" $value "; " value
     regsub -all "   +" $value "  " value
     if {$typename=="string"} {set value "\"$value\""}
 
-    return [list treeView $name value $value type $typename ptr $obj]
+    return [list treeView $name value $value type $typename on $declname]
 }
 
