@@ -1168,20 +1168,20 @@ proc bindMouseWheel {w} {
     if {[string equal [tk windowingsystem] "classic"]
         || [string equal [tk windowingsystem] "aqua"]} {
         bind $w <MouseWheel> {
-            %W yview scroll [expr {- (%D)}] units
+            if [canScrollY %W] {
+                %W yview scroll [expr {- (%D)}] units
+            }
         }
         bind $w <Option-MouseWheel> {
-            %W yview scroll [expr {-10 * (%D)}] units
-        }
-        bind $w <Shift-MouseWheel> {
-            %W xview scroll [expr {- (%D)}] units
-        }
-        bind $w <Shift-Option-MouseWheel> {
-            %W xview scroll [expr {-10 * (%D)}] units
+            if [canScrollY %W] {
+                %W yview scroll [expr {-10 * (%D)}] units
+            }
         }
     } else {
         bind $w <MouseWheel> {
-            %W yview scroll [expr {- (%D / 120) * 4}] units
+            if [canScrollY %W] {
+                %W yview scroll [expr {- (%D / 120) * 4}] units
+            }
         }
     }
 
@@ -1191,14 +1191,25 @@ proc bindMouseWheel {w} {
         # Linux configuration info at:
         #       http://www.inria.fr/koala/colas/mouse-wheel-scroll/
         bind $w <4> {
-            if {!$tk_strictMotif} {
+            if {!$tk_strictMotif && [canScrollY %W]} {
                 %W yview scroll -5 units
             }
         }
         bind $w <5> {
-            if {!$tk_strictMotif} {
+            if {!$tk_strictMotif && [canScrollY %W]} {
                 %W yview scroll 5 units
             }
         }
+    }
+}
+
+proc canScrollY {w} {
+    if {[winfo class $w]!="Canvas"} {
+        return 1
+    } else {
+        set bbox [$w bbox all]
+        set contentHeight [expr [lindex $bbox 3] - [lindex $bbox 1]]
+        set widgetHeight [winfo height $w]
+        return [expr $contentHeight > $widgetHeight]
     }
 }

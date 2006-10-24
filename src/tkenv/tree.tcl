@@ -232,7 +232,8 @@ proc Tree:createtext {w x y txt isopen tags} {
     set bold 0
     foreach txtfrag [split $txt "\b"] {
         set font [expr $bold ? {$fonts(bold)} : {$fonts(normal)}]
-        set id [$w create text $x $y -text $txtfrag -anchor nw -font $font -tags $tags]
+        set color [expr $bold ? {"blue4"} : {"black"}]
+        set id [$w create text $x $y -text $txtfrag -anchor nw -font $font -fill $color -tags $tags]
         set x [lindex [$w bbox $id] 2]
         set bold [expr !$bold]
     }

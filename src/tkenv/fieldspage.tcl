@@ -42,6 +42,7 @@ proc inspector_createfields2page {w} {
 
     bind $nb.fields2.tree <Button-1> {
         catch {destroy .popup}
+        focus %W
         set key [Tree:nodeat %W %x %y]
         if {$key!=""} {
             Tree:setselection %W $key
