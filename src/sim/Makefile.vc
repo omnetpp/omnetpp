@@ -246,6 +246,23 @@ cclassfactory.obj: cclassfactory.cc \
   ../../include/cexpression.h \
   ../../include/cmsgheap.h \
   ../../include/ccoroutine.h
+ccommbuffer.obj: ccommbuffer.cc \
+  ../../include/ccommbuffer.h \
+  ../../include/util.h \
+  ../../include/cobject.h \
+  ../../include/cclassfactory.h \
+  ../../include/cpolymorphic.h \
+  ../../include/defs.h \
+  ../../include/regmacros.h \
+  ../../include/onstartup.h \
+  ../../include/errmsg.h \
+  ../../include/cenvir.h \
+  ../../include/cexception.h \
+  ../../include/cvisitor.h \
+  ../../include/cstringpool.h \
+  ../../include/opp_string.h \
+  ../../include/globals.h \
+  ../../include/carray.h
 ccomponent.obj: ccomponent.cc \
   ../../include/ccomponent.h \
   ../../include/ccomponenttype.h \
@@ -969,6 +986,18 @@ cpar.obj: cpar.cc \
   ../../include/cdefaultlist.h \
   ../../include/cmsgheap.h \
   ../../include/ccoroutine.h
+cparsimcomm.obj: cparsimcomm.cc \
+  ../../include/errmsg.h \
+  ../../include/ccommbuffer.h \
+  ../../include/cparsimcomm.h \
+  ../../include/cenvir.h \
+  ../../include/cexception.h \
+  ../../include/defs.h \
+  ../../include/cpolymorphic.h \
+  ../../include/util.h \
+  ../../include/regmacros.h \
+  ../../include/onstartup.h \
+  ../../include/opp_string.h
 cpolymorphic.obj: cpolymorphic.cc \
   ../../include/cpolymorphic.h \
   ../../include/cexception.h \
@@ -1893,20 +1922,6 @@ parsim/cadvlinkdelaylookahead.obj: parsim/cadvlinkdelaylookahead.cc \
   ../../include/cdefaultlist.h \
   ../../include/cexpression.h \
   ../../include/ccomponenttype.h
-parsim/ccommbuffer.obj: parsim/ccommbuffer.cc \
-  ../../include/ccommbuffer.h \
-  ../../include/util.h \
-  ../../include/cobject.h \
-  ../../include/cpolymorphic.h \
-  ../../include/defs.h \
-  ../../include/regmacros.h \
-  ../../include/onstartup.h \
-  ../../include/errmsg.h \
-  ../../include/cenvir.h \
-  ../../include/cexception.h \
-  ../../include/cvisitor.h \
-  ../../include/cstringpool.h \
-  ../../include/opp_string.h
 parsim/ccommbufferbase.obj: parsim/ccommbufferbase.cc \
   parsim/ccommbufferbase.h \
   ../../include/cexception.h \
@@ -2226,18 +2241,6 @@ parsim/cnullmessageprot.obj: parsim/cnullmessageprot.cc \
   ../../include/platdep/time.h \
   parsim/cnmplookahead.h \
   ../../include/ccomponenttype.h
-parsim/cparsimcomm.obj: parsim/cparsimcomm.cc \
-  ../../include/errmsg.h \
-  ../../include/ccommbuffer.h \
-  ../../include/cparsimcomm.h \
-  ../../include/cenvir.h \
-  ../../include/cexception.h \
-  ../../include/defs.h \
-  ../../include/cpolymorphic.h \
-  ../../include/util.h \
-  ../../include/regmacros.h \
-  ../../include/onstartup.h \
-  ../../include/opp_string.h
 parsim/cparsimpartition.obj: parsim/cparsimpartition.cc \
   ../../include/cmessage.h \
   ../../include/errmsg.h \

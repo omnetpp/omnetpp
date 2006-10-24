@@ -13,12 +13,12 @@ class cObject
     properties:
         omitGetVerb = true;
     fields:
-        string name;
-        string fullName;
-        string fullPath;
-        string info;
-        string detailedInfo;
-};
+        string name @category(basic);
+        string fullName @category(basic);
+        string fullPath @category(basic);
+        string info @category(basic);
+        string detailedInfo @category(basic);
+}
 
 //
 // NOTE: we lie a bit about the inheritance hierarchy, and hide cNoncopyableObject
@@ -27,95 +27,95 @@ class cObject
 
 //class cNoncopyableObject extends cObject
 //{
-//};
+//}
 
 //class cDefaultList extends cNoncopyableObject
 //{
 //    properties:
 //        omitGetVerb = true;
 //    fields:
-//        int defaultListItems;
-//};
+//        int defaultListItems @category(general);
+//}
 
 class cComponent extends cObject //really: cDefaultList
 {
     properties:
         omitGetVerb = true;
     fields:
-        bool isModule;
-        int params;
-};
+        bool isModule @category(general);
+        int params @category(general);
+}
 
 class cChannel extends cComponent
 {
-};
+}
 
 class cBasicChannel extends cChannel
 {
     properties:
         omitGetVerb = true;
     fields:
-        double delay;
-        double error;
-        double datarate;
-        bool disabled;
-        bool isBusy;
-        simtime_t transmissionFinishes;
-};
+        double delay @category(general);
+        double error @category(general);
+        double datarate @category(general);
+        bool disabled @category(general);
+        bool isBusy @category(state);
+        simtime_t transmissionFinishes @category(state);
+}
 
 class cModule extends cComponent
 {
     properties:
         omitGetVerb = true;
     fields:
-        int id;
-        bool isSimple;
-        bool isVector;
-        int index;
-        int size;
-        int gates;
-};
+        int id @category(general);
+        bool isSimple @category(general);
+        bool isVector @category(general);
+        int index @category(general);
+        int size @category(general);
+        int gates @category(general);
+}
 
 class cSimpleModule extends cModule
 {
     properties:
         omitGetVerb = true;
     fields:
-        bool usesActivity;
-        bool isTerminated;
-        unsigned int stackSize;
-        unsigned int stackUsage;
-};
+        bool isTerminated @category(state);
+        bool usesActivity @category(activity);
+        unsigned int stackSize @category(activity);
+        unsigned int stackUsage @category(activity);
+}
 
 class cCompoundModule extends cModule
 {
-};
+}
 
 class cArray extends cObject
 {
     properties:
         omitGetVerb = true;
     fields:
-        int items;
-        bool takeOwnership;
-};
+        int items @category(general);
+        bool takeOwnership @category(general);
+}
 
 
 class cComponentType extends cObject //really: cNoncopyableObject
 {
-};
+}
 
 class cModuleType extends cComponentType
 {
     properties:
         omitGetVerb = true;
     fields:
-        bool isNetwork;
-};
+        bool isNetwork @category(general);
+}
 
 class cChannelType extends cComponentType
 {
-};
+}
 
 //----
 
@@ -124,61 +124,66 @@ class cGate extends cObject //really: cNoncopyableObject
     properties:
         omitGetVerb = true;
     fields:
-        char type;
-        int id;
-        bool isVector;
-        int index;
-        bool isBusy;
-        simtime_t transmissionFinishes;
-        bool isConnectedOutside;
-        bool isConnectedInside;
-        bool isConnected;
-        bool isRouteOK;
-};
+        char type @category(general);
+        int id @category(general);
+        bool isVector @category(general);
+        int index @category(general);
+        bool isBusy @category(state);
+        simtime_t transmissionFinishes @category(state);
+        bool isConnectedOutside @category(connection);
+        bool isConnectedInside @category(connection);
+        bool isConnected @category(connection);
+        bool isRouteOK @category(connection);
+}
 
 class cMessage extends cObject
 {
     properties:
         omitGetVerb = true;
     fields:
-        bool isSelfMessage;
-        bool isScheduled;
-        int kind;
-        int priority;
-        long length;
-        long byteLength;
-        bool hasBitError;
-        simtime_t creationTime;
-        simtime_t sendingTime;
-        simtime_t arrivalTime;
-        simtime_t timestamp;
-        int senderModuleId;
-        int senderGateId;
-        int arrivalModuleId;
-        int arrivalGateId;
-        //XXX cMessage *encapsulatedMsg;
-};
+        int kind @category(general);
+        int priority @category(general);
+        long length @category(general);
+        long byteLength @category(general);
+        bool hasBitError @category(general);
+
+        bool isScheduled @category(sending);
+        bool isSelfMessage @category(sending);
+        simtime_t creationTime @category(sending);
+        simtime_t sendingTime @category(sending);
+        simtime_t arrivalTime @category(sending);
+        simtime_t timestamp @category(sending);
+        int senderModuleId @category(sending);
+        int senderGateId @category(sending);
+        int arrivalModuleId @category(sending);
+        int arrivalGateId @category(sending);
+
+        //XXX cMessage *encapsulatedMsg @category(general);
+        //XXX cProperties *controlInfo();
+        //XXX void *contextPointer
+        //XXX various IDs
+}
 
 class cMessagePar extends cObject
 {
     properties:
         omitGetVerb = true;
     fields:
-        bool takeOwnership;
-        char type;
-        bool isNumeric;
-        bool isConstant;
-        bool isInput;
-};
+        bool takeOwnership @category(general);
+        char type @category(general);
+        bool isNumeric @category(general);
+        bool isConstant @category(general);
+        bool isInput @category(general);
+}
 
 class cPacket extends cMessage
 {
     properties:
         omitGetVerb = true;
     fields:
-        short protocol;
-        short pdu;
-};
+        short protocol @category(general);
+        short pdu @category(general);
+}
 
 //----
 
@@ -187,83 +192,80 @@ class cStatistic extends cObject
     properties:
         omitGetVerb = true;
     fields:
-        long samples;
-        double weights;
-        double sum;
-        double sqrSum;
-        double min;
-        double max;
-        double mean;
-        double stddev;
-        double variance;
-};
+        long samples @category(general);
+        double weights @category(general);
+        double sum @category(general);
+        double sqrSum @category(general);
+        double min @category(general);
+        double max @category(general);
+        double mean @category(general);
+        double stddev @category(general);
+        double variance @category(general);
+}
 
 class cStdDev extends cStatistic
 {
-};
+}
 
 class cWeightedStdDev extends cStdDev
 {
-};
+}
 
 class cDensityEstBase extends cStdDev
 {
     properties:
         omitGetVerb = true;
     fields:
-        bool transformed;
-        int cells;
-        unsigned long underflowCell;
-        unsigned long overflowCell;
-};
+        bool transformed @category(histogram);
+        int cells @category(histogram);
+        unsigned long underflowCell @category(histogram);
+        unsigned long overflowCell @category(histogram);
+        //XXX cells[]?
+}
 
 class cHistogramBase extends cDensityEstBase
 {
-    properties:
-        omitGetVerb = true;
-    fields:
-        int cells;
-};
+}
 
 class cEqdHistogramBase extends cHistogramBase
 {
-};
+}
 
 class cVarHistogram extends cHistogramBase
 {
-};
+}
 
 class cLongHistogram extends cEqdHistogramBase
 {
-};
+}
 
 class cDoubleHistogram extends cEqdHistogramBase
 {
-};
+}
 
 class cKSplit extends cDensityEstBase
 {
-};
+}
 
 class cPSquare extends cDensityEstBase
 {
-};
+}
 
 class cTransientDetection extends cObject
 {
-};
+}
 
 class cAccuracyDetection extends cObject
 {
-};
+}
 
 class cTDExpandingWindows extends cTransientDetection
 {
-};
+}
 
 class cADByStddev extends cAccuracyDetection
 {
-};
+}
 
 //----
 
@@ -272,143 +274,146 @@ class cExpression extends cPolymorphic
     properties:
         omitGetVerb = true;
     fields:
-        //XXX string toString;
-};
+        //XXX string toString @category(general);
+}
 
 class cFSM extends cObject
 {
     properties:
         omitGetVerb = true;
     fields:
-        int state;
-        string stateName;
-};
+        int state @category(general);
+        string stateName @category(general);
+}
 
 class cMathFunction extends cObject //really: cNoncopyableObject
 {
     properties:
         omitGetVerb = true;
     fields:
-        int numArgs;
-};
+        int numArgs @category(general);
+}
 
 class cNEDFunction extends cObject //really: cNoncopyableObject
 {
     properties:
         omitGetVerb = true;
     fields:
-        char returnType;
-        int numArgs;
-        string argTypes;
-};
+        char returnType @category(general);
+        int numArgs @category(general);
+        string argTypes @category(general);
+}
 
 class cOutVector extends cObject //really: cNoncopyableObject
 {
     properties:
         omitGetVerb = true;
     fields:
-        bool isEnabled;
-        long valuesReceived;
-        long valuesStored;
-};
+        bool isEnabled @category(general);
+        long valuesReceived @category(general);
+        long valuesStored @category(general);
+}
 
 class cPar extends cObject
 {
     properties:
         omitGetVerb = true;
     fields:
-        char type;
-        bool isNumeric;
-        bool isVolatile;
-        bool isConstant;
-        bool isSet;
-        bool hasDefaultValue;
-};
+        char type @category(general);
+        bool isNumeric @category(general);
+        bool isVolatile @category(general);
+        bool isConstant @category(general);
+        bool isSet @category(general);
+        bool hasDefaultValue @category(general);
+}
 
 class cProperties extends cPolymorphic
 {
-};
+}
 
 class cProperty extends cPolymorphic
 {
     properties:
         omitGetVerb = true;
     fields:
-        bool isImplicit;
-        short index;
-        //XXX const std::vector<const char *>& keys;
-};
+        bool isImplicit @category(general);
+        short index @category(general);
+        //XXX const std::vector<const char *>& keys @category(general);
+}
 
 class cLinkedList extends cObject
 {
     properties:
         omitGetVerb = true;
     fields:
-        int length;
-};
+        int length @category(general);
+}
 
 class cMessageHeap extends cObject
 {
     properties:
         omitGetVerb = true;
     fields:
-        int length;
-};
+        int length @category(general);
+        //XXX elements?
+}
 
 class cQueue extends cObject
 {
     properties:
         omitGetVerb = true;
     fields:
-        int length;
-        bool takeOwnership;
-};
+        int length @category(general);
+        bool takeOwnership @category(general);
+        //XXX elements?
+}
 
 class cSimulation extends cObject //really: cNoncopyableObject
 {
     properties:
         omitGetVerb = true;
     fields:
-        int runNumber;
-        simtime_t simTime;
-        long eventNumber;
-        int contextType;
-        int lastModuleId;
-};
+        int runNumber @category(general);
+        simtime_t simTime @category(general);
+        long eventNumber @category(general);
+        int contextType @category(general);
+        int lastModuleId @category(general);
+        //XXX modules?
+}
 
 class cScheduler extends cPolymorphic
 {
-};
+}
 
 class cSequentialScheduler extends cScheduler
 {
-};
+}
 
 class cRealTimeScheduler extends cScheduler
 {
-};
+}
 
 class cTopology extends cObject
 {
     properties:
         omitGetVerb = true;
     fields:
-        int nodes;
-};
+        int nodes @category(general);
+}
 
 class cXMLElement
 {
     properties:
         omitGetVerb = true;
     fields:
-        string getTagName;  //XXX get rid of "get" somehow -- @label(tagname)?
-        string getNodeValue;
-        string getSourceLocation;
-        bool hasAttributes;
-        bool hasChildren;
-        //XXX const cXMLAttributeMap& getAttributes;
-        //XXX cXMLElementList getChildren;
-};
+        string getTagName @category(general);  //XXX get rid of "get" somehow -- @label(tagname)?
+        string getNodeValue @category(general);
+        string getSourceLocation @category(general);
+        bool hasAttributes @category(general);
+        bool hasChildren @category(general);
+        //XXX const cXMLAttributeMap& getAttributes @category(general);
+        //XXX cXMLElementList getChildren @category(general);
+}
 
 
 
