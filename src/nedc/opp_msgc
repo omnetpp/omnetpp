@@ -562,7 +562,7 @@ while ($msg =~ s/(message|class|struct)\s+(.+?)\s*{(.*?)};?//s)
             # properties, with @propertyname(value) syntax
             %fieldprop = ();
             $field =~ s|\@([_a-z0-9]+)\((.*?)\)|$fieldprop{$1}=$2;""|gsei;
-            $field =~ s|\@([_a-z0-9]+)|$fieldprop{$1}=1;""|gsei;
+            $field =~ s|\@([_a-z0-9]+)|$fieldprop{$1}="true";""|gsei;
 
             # default value
             if ($field =~ s/=\s*(.*?)\s*$//s) {
@@ -1476,13 +1476,6 @@ sub generateStruct
 #
 sub generateDescriptorClass
 {
-    for $fieldname (keys %fprops) {
-        print "XXX $fieldname:\n";
-        $ref = $fprops{$fieldname};
-        for $key (keys %$ref) {
-            print "XXX  \@$key => $fprops{$fieldname}->{$key}\n";
-        }
-    }
     print CC "class $msgdescclass : public cStructDescriptor\n";
     print CC "{\n";
     print CC "  public:\n";
@@ -1495,6 +1488,7 @@ sub generateDescriptorClass
     print CC "    virtual int getFieldType(void *object, int field);\n";
     print CC "    virtual const char *getFieldTypeString(void *object, int field);\n";
     print CC "    virtual const char *getFieldEnumName(void *object, int field);\n";
+    print CC "    virtual const char *getFieldProperty(void *object, int field, const char *propertyname);\n";
     print CC "    virtual int getArraySize(void *object, int field);\n";
     print CC "\n";
     print CC "    virtual bool getFieldAsString(void *object, int field, int i, char *resultbuf, int bufsize);\n";
@@ -1616,6 +1610,33 @@ sub generateDescriptorClass
     {
         if ($fenumname{$fieldlist[$i]} ne '') {
             print CC "        case $i: return \"$fenumname{$fieldlist[$i]}\";\n";
+        }
+    }
+    print CC "        default: return NULL;\n";
+    print CC "    }\n";
+    print CC "}\n";
+    print CC "\n";
+
+    # getFieldProperty()
+    print CC "const char *$msgdescclass\:\:getFieldProperty(void *object, int field, const char *propertyname)\n";
+    print CC "{\n";
+    print CC "    cStructDescriptor *basedesc = getBaseClassDescriptor();\n";
+    print CC "    if (basedesc) {\n";
+    print CC "        if (field < basedesc->getFieldCount(object))\n";
+    print CC "            return basedesc->getFieldProperty(object, field, propertyname);\n";
+    print CC "        field -= basedesc->getFieldCount(object);\n";
+    print CC "    }\n";
+    print CC "    switch (field) {\n";
+    for ($i=0; $i<$fieldcount; $i++)
+    {
+        $fieldname = $fieldlist[$i];
+        $ref = $fprops{$fieldname};
+        if (keys(%$ref) != ()) {
+            print CC "        case $i:\n";
+            for $key (keys %$ref) {
+                print CC "            if (!strcmp(propertyname,\"$key\")) return \"$fprops{$fieldname}->{$key}\";\n";
+            }
+            print CC "            return NULL;\n";
         }
     }
     print CC "        default: return NULL;\n";
