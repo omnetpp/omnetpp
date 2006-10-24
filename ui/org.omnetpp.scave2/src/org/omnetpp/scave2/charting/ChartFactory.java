@@ -57,8 +57,7 @@ public class ChartFactory {
 		JFreeChart jfreechart = createEmptyScalarJFreeChart(chart.getName(), "Category", "Value");
 		interactiveChart.setChart(jfreechart);
 		// set chart data
-		IDList idlist = DatasetManager.getIDListFromDataset(manager, dataset, chart);
-		CategoryDataset categoryDataset = DatasetManager.createScalarDataset(idlist, manager);
+		CategoryDataset categoryDataset = DatasetManager.createScalarDataset(chart, dataset, manager);
 		interactiveChart.setDataset(categoryDataset);
 		// set chart properties
 		setChartProperties(chart, interactiveChart);
@@ -68,8 +67,7 @@ public class ChartFactory {
 	private static ScalarChart2 createScalarChart2(Composite parent, Chart chart, Dataset dataset, ResultFileManager manager) {
 		ScalarChart2 scalarChart = new ScalarChart2(parent, SWT.NONE);
 		// set chart data
-		IDList idlist = DatasetManager.getIDListFromDataset(manager, dataset, chart);
-		CategoryDataset categoryDataset = DatasetManager.createScalarDataset(idlist, manager);
+		CategoryDataset categoryDataset = DatasetManager.createScalarDataset(chart, dataset, manager);
 		scalarChart.setDataset(categoryDataset);
 		// set chart properties
 		setChartProperties(chart, scalarChart);
@@ -83,8 +81,14 @@ public class ChartFactory {
 		// set chart data
 		XYDataset data = DatasetManager.createVectorDataset(chart, dataset, manager);
 		jfreechart.getXYPlot().setDataset(data);
-		if (data.getSeriesCount() <= 5)
-			addLegend(jfreechart);
+		if (data.getSeriesCount() <= 5) {
+			LegendTitle legend = new LegendTitle(jfreechart.getPlot());
+			legend.setMargin(new RectangleInsets(1.0, 1.0, 1.0, 1.0));
+			legend.setBorder(new BlockBorder());
+			legend.setBackgroundPaint(Color.white);
+			legend.setPosition(RectangleEdge.BOTTOM);
+			jfreechart.addSubtitle(legend);
+		}
 		
 		return interactiveChart;
 	}
@@ -150,16 +154,6 @@ public class ChartFactory {
 		return jfreechart;
 	}
 	
-	private static void addLegend(JFreeChart jfreechart) {
-        LegendTitle legend = new LegendTitle(jfreechart.getPlot());
-        legend.setMargin(new RectangleInsets(1.0, 1.0, 1.0, 1.0));
-        legend.setBorder(new BlockBorder());
-        legend.setBackgroundPaint(Color.white);
-        legend.setPosition(RectangleEdge.BOTTOM);
-        jfreechart.addSubtitle(legend);
-	}
-	
-	
 	private static void setChartProperties(Chart chart, ScalarChart chartView) {
 		ChartProperties chartProperties = ChartProperties.createPropertySource(chart);
 		for (IPropertyDescriptor descriptor : chartProperties.getPropertyDescriptors()) {
@@ -169,16 +163,7 @@ public class ChartFactory {
 		}
 	}
 	
-	private static void setChartProperties(Chart chart, VectorChart chartView) {
-		ChartProperties chartProperties = ChartProperties.createPropertySource(chart);
-		for (IPropertyDescriptor descriptor : chartProperties.getPropertyDescriptors()) {
-			String id = (String)descriptor.getId();
-			if (chartProperties.isPropertySet(id))
-				chartView.setProperty(id, chartProperties.getStringProperty(id));
-		}
-	}
-
-	private static void setChartProperties(Chart chart, ScalarChart2 chartView) {
+	private static void setChartProperties(Chart chart, ChartCanvas chartView) {
 		ChartProperties chartProperties = ChartProperties.createPropertySource(chart);
 		for (IPropertyDescriptor descriptor : chartProperties.getPropertyDescriptors()) {
 			String id = (String)descriptor.getId();

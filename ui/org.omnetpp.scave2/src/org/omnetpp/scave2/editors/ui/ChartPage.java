@@ -9,6 +9,7 @@ import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.Property;
 import org.omnetpp.scave.model.ScaveModelPackage;
+import org.omnetpp.scave2.charting.ChartCanvas;
 import org.omnetpp.scave2.charting.ChartFactory;
 import org.omnetpp.scave2.charting.InteractiveChart;
 import org.omnetpp.scave2.charting.ScalarChart;
@@ -36,21 +37,25 @@ public class ChartPage extends ScaveEditorPage {
 			switch (notification.getEventType()) {
 			case Notification.ADD:
 				property = (Property)notification.getNewValue();
-				if (chartView instanceof ScalarChart)
-					((ScalarChart)chartView).setProperty(property.getName(), property.getValue());
+				updateChart(property.getName(), property.getValue());
 				break;
 			case Notification.REMOVE:
 				property = (Property)notification.getOldValue();
-				if (chartView instanceof ScalarChart)
-					((ScalarChart)chartView).setProperty(property.getName(), null);
+				updateChart(property.getName(), null);
 				break;
 			}
 		}
 		else if (pkg.getProperty_Value().equals(notification.getFeature())) {
 			Property property = (Property)notification.getNotifier();
-			if (chartView instanceof ScalarChart)
-				((ScalarChart)chartView).setProperty(property.getName(), (String)notification.getNewValue());
+			updateChart(property.getName(), (String)notification.getNewValue());
 		}
+	}
+	
+	private void updateChart(String propName, String propValue) {
+		if (chartView instanceof ScalarChart)
+			((ScalarChart)chartView).setProperty(propName, propValue);
+		else if (chartView instanceof ChartCanvas)
+			((ChartCanvas)chartView).setProperty(propName, propValue);
 	}
 	
 	public Composite getChartComposite() {

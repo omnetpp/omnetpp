@@ -31,7 +31,7 @@ public class Legend {
 		}
 		
 		public void calculateSize(GC gc) {
-			Point size = gc.stringExtent(text);
+			Point size = gc.textExtent(text);
 			width = size.x + 9; // place for mark
 			height = size.y;
 		}
@@ -43,7 +43,7 @@ public class Legend {
 			gc.fillOval(x + 2 , y + (height - 5) / 2, 5, 5);
 			// draw text
 			gc.setForeground(ColorFactory.asColor("black"));
-			gc.drawString(text, x + 9, y, true);
+			gc.drawText(text, x + 9, y, true);
 		}
 	}
 	
@@ -200,7 +200,7 @@ public class Legend {
 			break;
 		case Left:
 			bounds.x = left + horizontalMargin;
-			bounds.y = top + (parent.height - bounds.y) * (dy + 1) / 2;
+			bounds.y = top + (parent.height - bounds.height) * (dy + 1) / 2;
 			left = Math.min(left + bounds.width + 2 * horizontalMargin, right);
 			break;
 		case Right:

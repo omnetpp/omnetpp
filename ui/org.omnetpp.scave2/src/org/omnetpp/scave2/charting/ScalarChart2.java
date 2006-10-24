@@ -3,14 +3,7 @@ package org.omnetpp.scave2.charting;
 import static org.omnetpp.scave2.model.ChartProperties.PROP_AXIS_TITLE_FONT;
 import static org.omnetpp.scave2.model.ChartProperties.PROP_BAR_BASELINE;
 import static org.omnetpp.scave2.model.ChartProperties.PROP_BAR_PLACEMENT;
-import static org.omnetpp.scave2.model.ChartProperties.PROP_DISPLAY_LEGEND;
-import static org.omnetpp.scave2.model.ChartProperties.PROP_GRAPH_TITLE;
-import static org.omnetpp.scave2.model.ChartProperties.PROP_GRAPH_TITLE_FONT;
 import static org.omnetpp.scave2.model.ChartProperties.PROP_LABEL_FONT;
-import static org.omnetpp.scave2.model.ChartProperties.PROP_LEGEND_ANCHORING;
-import static org.omnetpp.scave2.model.ChartProperties.PROP_LEGEND_BORDER;
-import static org.omnetpp.scave2.model.ChartProperties.PROP_LEGEND_FONT;
-import static org.omnetpp.scave2.model.ChartProperties.PROP_LEGEND_POSITION;
 import static org.omnetpp.scave2.model.ChartProperties.PROP_XY_GRID;
 import static org.omnetpp.scave2.model.ChartProperties.PROP_XY_INVERT;
 import static org.omnetpp.scave2.model.ChartProperties.PROP_X_AXIS_TITLE;
@@ -20,25 +13,24 @@ import static org.omnetpp.scave2.model.ChartProperties.PROP_Y_AXIS_MAX;
 import static org.omnetpp.scave2.model.ChartProperties.PROP_Y_AXIS_MIN;
 import static org.omnetpp.scave2.model.ChartProperties.PROP_Y_AXIS_TITLE;
 
-import java.awt.Font;
-
 import org.eclipse.draw2d.Graphics;
 import org.eclipse.draw2d.geometry.Insets;
-import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.GC;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.graphics.Transform;
 import org.eclipse.swt.widgets.Composite;
 import org.jfree.data.category.CategoryDataset;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.util.Converter;
+import org.omnetpp.common.util.GeomUtils;
 import org.omnetpp.scave2.model.ChartProperties.BarPlacement;
-import org.omnetpp.scave2.model.ChartProperties.LegendAnchor;
-import org.omnetpp.scave2.model.ChartProperties.LegendPosition;
 
-public class ScalarChart2 extends ZoomableCachingCanvas {
+public class ScalarChart2 extends ChartCanvas {
 
-	private static final String DEFAULT_TITLE = "";
 	private static final String DEFAULT_X_AXIS_TITLE = "";
 	private static final String DEFAULT_Y_AXIS_TITLE = "";
 
@@ -46,11 +38,6 @@ public class ScalarChart2 extends ZoomableCachingCanvas {
 	private static final BarPlacement DEFAULT_BAR_PLACEMENT = BarPlacement.Aligned;
 	private static final Color DEFAULT_BACKGROUND_COLOR = ColorFactory.defaultBackground;
 	private static final Color DEFAULT_BAR_OUTLINE_COLOR = ColorFactory.asColor("grey80");
-	
-	private static final boolean DEFAULT_DISPLAY_LEGEND = false;
-	private static final boolean DEFAULT_LEGEND_BORDER = false;
-	private static final LegendPosition DEFAULT_LEGEND_POSITION = LegendPosition.Below;
-	private static final LegendAnchor DEFAULT_LEGEND_ANCHOR = LegendAnchor.North;
 
 	private static final boolean DEFAULT_INVERT_XY = false;
 	private static final boolean DEFAULT_SHOW_GRID = false;
@@ -64,21 +51,12 @@ public class ScalarChart2 extends ZoomableCachingCanvas {
 	private int hgapMajor = 20;
 	
 	
-	private String title;
-	private Font titleFont;
 	private String xAxisTitle;
 	private String yAxisTitle;
 	private Font axisTitleFont;
-	private Font tickLabelFont;
-	private double xAxisLabelsRotatedBy;
+	private RowLabels rowLabels = new RowLabels(null, DEFAULT_X_LABELS_ROTATED_BY);
 
-	private boolean displayLegend;
-	private Font legendFont;
-	private boolean legendBorder;
-	private LegendPosition legendPosition;
-	private LegendAnchor legendAnchor;
-
-	private Double barBaseline;
+	private double barBaseline;
 	private BarPlacement barPlacement;
 	private Color backgroundColor = DEFAULT_BACKGROUND_COLOR;
 	private Color barOutlineColor = DEFAULT_BAR_OUTLINE_COLOR;
@@ -87,7 +65,7 @@ public class ScalarChart2 extends ZoomableCachingCanvas {
 	private Double yMax;
 	private Boolean invertXY;
 	private Boolean gridVisible;
-
+	
 	public ScalarChart2(Composite parent, int style) {
 		super(parent, style | SWT.DOUBLE_BUFFERED);
 		setCaching(true);
@@ -96,8 +74,16 @@ public class ScalarChart2 extends ZoomableCachingCanvas {
 
 	public void setDataset(CategoryDataset dataset) {
 		this.dataset = dataset;
+		setLegend();
 		calculateArea();
-		scheduleRefresh();
+		scheduleRedraw();
+	}
+	
+	private void setLegend() {
+		legend.clearLegendItems();
+		for (int i = 0; i < dataset.getColumnCount(); ++i) {
+			legend.addLegendItem(getBarColor(i), dataset.getColumnKey(i).toString());
+		}
 	}
 	
 	private void calculateArea() {
@@ -109,9 +95,8 @@ public class ScalarChart2 extends ZoomableCachingCanvas {
 		double maxY = Double.MIN_VALUE;
 		for (int row = 0; row < cRows; ++row)
 			for (int column = 0; column < cColumns; ++column) {
-				double value = dataset.getValue(row, column).doubleValue();
-				minY = Math.min(minY, value);
-				maxY = Math.max(maxY, value);
+				minY = Math.min(minY, getBottomY(row, column));
+				maxY = Math.max(maxY, getTopY(row, column));
 			}
 		setArea(minX, minY, maxX, maxY);
 	}
@@ -121,31 +106,16 @@ public class ScalarChart2 extends ZoomableCachingCanvas {
 	 *=============================================*/
 	public void setProperty(String name, String value) {
 		// Titles
-		if (PROP_GRAPH_TITLE.equals(name))
-			setTitle(value);
-		else if (PROP_GRAPH_TITLE_FONT.equals(name))
-			setTitleFont(Converter.stringToAwtfont(value));
-		else if (PROP_X_AXIS_TITLE.equals(name))
+		if (PROP_X_AXIS_TITLE.equals(name))
 			setXAxisTitle(value);
 		else if (PROP_Y_AXIS_TITLE.equals(name))
 			setYAxisTitle(value);
 		else if (PROP_AXIS_TITLE_FONT.equals(name))
-			setAxisTitleFont(Converter.stringToAwtfont(value));
+			setAxisTitleFont(Converter.stringToSwtfont(value));
 		else if (PROP_LABEL_FONT.equals(name))
-			setLabelFont(Converter.stringToAwtfont(value));
+			setLabelFont(Converter.stringToSwtfont(value));
 		else if (PROP_X_LABELS_ROTATE_BY.equals(name))
 			setXAxisLabelsRotatedBy(Converter.stringToDouble(value));
-		// Legend
-		else if (PROP_DISPLAY_LEGEND.equals(name))
-			setDisplayLegend(Converter.stringToBoolean(value));
-		else if (PROP_LEGEND_BORDER.equals(name))
-			setLegendBorder(Converter.stringToBoolean(value));
-		else if (PROP_LEGEND_FONT.equals(name))
-			setLegendFont(Converter.stringToAwtfont(value));
-		else if (PROP_LEGEND_POSITION.equals(name))
-			setLegendPosition(Converter.stringToEnum(value, LegendPosition.class));
-		else if (PROP_LEGEND_ANCHORING.equals(name))
-			setLegendAnchoring(Converter.stringToEnum(value, LegendAnchor.class));
 		// Bars
 		else if (PROP_BAR_BASELINE.equals(name))
 			setBarBaseline(Converter.stringToDouble(value));
@@ -162,30 +132,16 @@ public class ScalarChart2 extends ZoomableCachingCanvas {
 			setGridVisible(Converter.stringToBoolean(value));
 		else if (PROP_Y_AXIS_LOGARITHMIC.equals(name))
 			setYLogarithmic(Converter.stringToBoolean(value));
+		else
+			super.setProperty(name, value);
 	}
 
 	public String getTitle() {
-		return title;
-	}
-
-	public void setTitle(String value) {
-		if (value == null)
-			value = DEFAULT_TITLE;
-
-		title = value;
-		scheduleRefresh();
+		return title.getText();
 	}
 
 	public Font getTitleFont() {
-		return titleFont;
-	}
-
-	public void setTitleFont(Font font) {
-		if (font == null)
-			return;
-
-		titleFont = font;
-		scheduleRefresh();
+		return title.getFont();
 	}
 
 	public String getXAxisTitle() {
@@ -197,7 +153,7 @@ public class ScalarChart2 extends ZoomableCachingCanvas {
 			title = DEFAULT_X_AXIS_TITLE;
 
 		xAxisTitle = title;
-		scheduleRefresh();
+		scheduleRedraw();
 	}
 
 	public String getYAxisTitle() {
@@ -209,7 +165,7 @@ public class ScalarChart2 extends ZoomableCachingCanvas {
 			title = DEFAULT_Y_AXIS_TITLE;
 
 		yAxisTitle = title;
-		scheduleRefresh();
+		scheduleRedraw();
 	}
 
 	public Font getAxisTitleFont() {
@@ -221,91 +177,23 @@ public class ScalarChart2 extends ZoomableCachingCanvas {
 			return;
 
 		axisTitleFont = font;
-		scheduleRefresh();
-	}
-
-	public Font getLabelFont() {
-		return tickLabelFont;
+		scheduleRedraw();
 	}
 
 	public void setLabelFont(Font font) {
 		if (font == null)
 			return;
 
-		tickLabelFont = font;
-		scheduleRefresh();
-	}
-
-	public Double getXAxisLabelsRotatedBy() {
-		return xAxisLabelsRotatedBy;
+		rowLabels.setFont(font);
+		scheduleRedraw();
 	}
 
 	public void setXAxisLabelsRotatedBy(Double angle) {
 		if (angle == null)
 			angle = DEFAULT_X_LABELS_ROTATED_BY;
 
-		xAxisLabelsRotatedBy = angle;
-		scheduleRefresh();
-	}
-
-	public Boolean getDisplayLegend() {
-		return displayLegend;
-	}
-
-	public void setDisplayLegend(Boolean value) {
-		if (value == null)
-			value = DEFAULT_DISPLAY_LEGEND;
-
-		displayLegend = value;
-		scheduleRefresh();
-	}
-
-	public Boolean getLegendBorder() {
-		return legendBorder;
-	}
-
-	public void setLegendBorder(Boolean value) {
-		if (value == null)
-			value = DEFAULT_LEGEND_BORDER;
-
-		legendBorder = value;
-		scheduleRefresh();
-	}
-
-	public Font getLegendFont() {
-		return legendFont;
-	}
-
-	public void setLegendFont(Font font) {
-		if (font == null)
-			return;
-
-		legendFont = font;
-		scheduleRefresh();
-	}
-
-	public LegendPosition getLegendPosition() {
-		return legendPosition;
-	}
-
-	public void setLegendPosition(LegendPosition value) {
-		if (value == null)
-			value = DEFAULT_LEGEND_POSITION;
-
-		legendPosition = value;
-		scheduleRefresh();
-	}
-
-	public LegendAnchor getLegendAnchoring() {
-		return legendAnchor;
-	}
-
-	public void setLegendAnchoring(LegendAnchor value) {
-		if (value == null)
-			value = DEFAULT_LEGEND_ANCHOR;
-
-		legendAnchor = value;
-		scheduleRefresh();
+		rowLabels.setRotation(angle);
+		scheduleRedraw();
 	}
 
 	public Double getBarBaseline() {
@@ -317,7 +205,7 @@ public class ScalarChart2 extends ZoomableCachingCanvas {
 			value = DEFAULT_BAR_BASELINE;
 
 		barBaseline = value;
-		scheduleRefresh();
+		scheduleRedraw();
 	}
 
 	public BarPlacement getBarPlacement() {
@@ -329,7 +217,7 @@ public class ScalarChart2 extends ZoomableCachingCanvas {
 			value = DEFAULT_BAR_PLACEMENT;
 
 		barPlacement = value;
-		scheduleRefresh();
+		scheduleRedraw();
 	}
 
 	public Double getYMin() {
@@ -338,7 +226,7 @@ public class ScalarChart2 extends ZoomableCachingCanvas {
 
 	public void setYMin(Double value) {
 		yMin = value;
-		scheduleRefresh();
+		scheduleRedraw();
 	}
 
 	public Double getYMax() {
@@ -347,7 +235,7 @@ public class ScalarChart2 extends ZoomableCachingCanvas {
 
 	public void setYMax(Double value) {
 		yMax = value;
-		scheduleRefresh();
+		scheduleRedraw();
 	}
 
 	public Boolean getInvertXY() {
@@ -359,7 +247,7 @@ public class ScalarChart2 extends ZoomableCachingCanvas {
 			value = DEFAULT_INVERT_XY;
 
 		invertXY = value;
-		scheduleRefresh();
+		scheduleRedraw();
 	}
 
 	public Boolean getGridVisible() {
@@ -371,18 +259,35 @@ public class ScalarChart2 extends ZoomableCachingCanvas {
 			value = DEFAULT_SHOW_GRID;
 
 		gridVisible = value;
-		scheduleRefresh();
+		scheduleRedraw();
 	}
 
 	private void setYLogarithmic(Boolean value) {
 		if (value == null)
 			value = DEFAULT_Y_LOGARITHMIC;
-		scheduleRefresh();
+		scheduleRedraw();
 	}
+	
+	/*=============================================
+	 *               Drawing
+	 *=============================================*/
+
+	@Override
+	protected void beforePaint(GC gc) {
+		// Calculate space occupied by title and legend and set insets accordingly
+		Rectangle remaining = title.layout(gc, getClientArea());
+		remaining = legend.layout(gc, remaining);
+		remaining = rowLabels.layout(gc, remaining);
+
+		Insets insets = GeomUtils.subtract(getClientArea(), remaining);
+		setInsets(insets);
+		super.beforePaint(gc);
+	}
+	
 	
 	@Override
 	protected void paintCachableLayer(Graphics graphics) {
-		Rectangle clip = graphics.getClip(new Rectangle());
+		org.eclipse.draw2d.geometry.Rectangle clip = graphics.getClip(new org.eclipse.draw2d.geometry.Rectangle());
 		
 		graphics.setBackgroundColor(backgroundColor);
 		graphics.fillRectangle(clip);
@@ -405,12 +310,12 @@ public class ScalarChart2 extends ZoomableCachingCanvas {
 		graphics.setForegroundColor(barOutlineColor);
 		graphics.drawRectangle(x, y, width, height);
 		if (width > 1 && height > 1) {
-			graphics.setBackgroundColor(getBarColor(row, column));
+			graphics.setBackgroundColor(getBarColor(column));
 			graphics.fillRectangle(x+1, y+1, width-2, height-2);
 		}
 	}
 	
-	protected Color getBarColor(int row, int column) {
+	protected Color getBarColor(int column) {
 		return ColorFactory.getGoodColor(column);
 	}
 	
@@ -452,10 +357,83 @@ public class ScalarChart2 extends ZoomableCachingCanvas {
 
 	@Override
 	protected void paintNoncachableLayer(GC gc) {
-		// TODO: draw title, legend, axes
+		// TODO: draw axes
+		title.draw(gc);
+		legend.draw(gc);
+		rowLabels.draw(gc);
 	}
 	
-	private void scheduleRefresh() {
+	class RowLabels {
 		
+		private Font font;
+		private Transform transform = new Transform(getDisplay()); // XXX
+		private double rotation;
+		
+		private Rectangle bounds;
+		
+		public RowLabels(Font font, double rotation) {
+			this.font = font;
+			this.rotation = rotation;
+		}
+		
+		public void setFont(Font font) {
+			this.font = font;
+		}
+		
+		public void setRotation(double angle) {
+			this.rotation = angle;
+		}
+		
+		public Rectangle layout(GC gc, Rectangle parent) {
+			Font saveFont = gc.getFont();
+			if (font != null)
+				gc.setFont(font);
+			
+			gc.getTransform(transform);
+			transform.rotate((float)rotation);
+			gc.setTransform(transform);
+
+			int height = 0;
+			for (int row = 0; row < dataset.getRowCount(); ++row) {
+				String label = dataset.getRowKey(row).toString();
+				Point size = gc.textExtent(label);
+				System.out.println("Height: " + size.y);
+				height = Math.max(height, size.y);
+			}
+			
+			transform.rotate((float)-rotation);
+			gc.setTransform(transform);
+			gc.setFont(saveFont);
+			
+			bounds = new Rectangle(
+						parent.x, parent.y + parent.height - height,
+						parent.width, height);
+			
+			return new Rectangle(parent.x, parent.y, parent.width, parent.height - height);
+		}
+		
+		public void draw(GC gc) {
+			int cColumns = dataset.getColumnCount();
+			
+			Font saveFont = gc.getFont();
+			if (font != null)
+				gc.setFont(font);
+			
+			gc.getTransform(transform);
+			transform.rotate((float)rotation);
+			gc.setTransform(transform);
+			
+			for (int row = 0; row < dataset.getRowCount(); ++row) {
+				String label = dataset.getRowKey(row).toString();
+				Point size = gc.textExtent(label);
+				int left = toCanvasX(getLeftX(row, 0));
+				int right = toCanvasX(getRightX(row, cColumns - 1));
+				gc.drawText(label, left + (right - left - size.x) / 2, bounds.y);
+			}
+			
+			transform.rotate((float)-rotation);
+			gc.setTransform(transform);
+			gc.setFont(saveFont);
+		}
 	}
 }

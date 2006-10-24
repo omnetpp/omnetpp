@@ -153,15 +153,14 @@ public class DatasetManager {
 		return result;
 	}
 	
-	public static CategoryDataset createScalarDataset(IDList idlist, ResultFileManager manager) {
+	public static CategoryDataset createScalarDataset(Chart chart, Dataset dataset, ResultFileManager manager) {
+		IDList idlist = DatasetManager.getIDListFromDataset(manager, dataset, chart);
 		DefaultCategoryDataset ds = new DefaultCategoryDataset();
-
-		int sz = (int)idlist.size();
-		for (int i=0; i<sz; i++) {
-			ScalarResult d = manager.getScalar(idlist.get(i));
-			ds.addValue(d.getValue(),
-					d.getFileRun().getRun().getRunName(),
-					d.getModuleName()+"\n"+d.getName());
+		for (int i = 0; i < idlist.size(); ++i) {
+			ScalarResult scalar = manager.getScalar(idlist.get(i));
+			ds.addValue(scalar.getValue(),
+					scalar.getFileRun().getRun().getRunName(),
+					scalar.getModuleName()+"\n"+scalar.getName());
 		}
 		return ds;
 	}

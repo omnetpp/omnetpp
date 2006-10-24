@@ -16,10 +16,12 @@ import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.ChartSheet;
 import org.omnetpp.scave.model.ScaveModelPackage;
+import org.omnetpp.scave2.charting.ChartCanvas;
 import org.omnetpp.scave2.charting.ChartFactory;
 import org.omnetpp.scave2.charting.ScalarChart;
 import org.omnetpp.scave2.charting.VectorChart;
 import org.omnetpp.scave2.editors.ScaveEditor;
+import org.omnetpp.scave2.model.ChartProperties;
 
 public class ChartSheetPage extends ScaveEditorPage {
 
@@ -38,6 +40,8 @@ public class ChartSheetPage extends ScaveEditorPage {
 			setPageTitle("Charts: " + getChartSheetName(chartsheet));
 			setFormTitle("Charts: " + getChartSheetName(chartsheet));
 		}
+		
+		// TODO: update charts
 	}
 	
 	public Composite getChartSheetComposite() {
@@ -81,24 +85,30 @@ public class ChartSheetPage extends ScaveEditorPage {
 		for (final Chart chart : charts) {
 			Control swtChart = ChartFactory.createChart(parent, chart, scaveEditor.getResultFileManager());
 			addChart(swtChart);
-			
-			if (swtChart instanceof ScalarChart) {
-				((ScalarChart)swtChart).setDisplayLegend(false);
-			}
-			else if (swtChart instanceof VectorChart) {
-				((VectorChart)swtChart).setDisplayLegend(false);
-			}
-			
 			configureChartView(swtChart, chart);
 
-			swtChart.addMouseListener(new MouseAdapter() { //FIXME this is a hack to get chart opened by double-click; to be done properly (SelectionListener, ask chart from widget)
-				public void mouseDoubleClick(MouseEvent e) {
-					scaveEditor.openChart(chart);
-				}
-			});
 		}
 	}
 	
+	@Override
+	public void configureChartView(Control view, final Chart chart) {
+		
+		if (view instanceof ScalarChart) {
+			((ScalarChart)view).setDisplayLegend(false);
+		}
+		else if (view instanceof ChartCanvas) {
+			((ChartCanvas)view).setProperty(ChartProperties.PROP_DISPLAY_LEGEND, "false");
+		}
+		
+		view.addMouseListener(new MouseAdapter() { //FIXME this is a hack to get chart opened by double-click; to be done properly (SelectionListener, ask chart from widget)
+			public void mouseDoubleClick(MouseEvent e) {
+				scaveEditor.openChart(chart);
+			}
+		});
+
+		super.configureChartView(view, chart);
+	}
+
 	private static String getChartSheetName(ChartSheet chartSheet) {
 		return chartSheet.getName() != null ? chartSheet.getName() : "<unnamed>";
 	}
