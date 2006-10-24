@@ -14,6 +14,9 @@
 #----------------------------------------------------------------#
 
 
+#
+# Creates a Fields page for a tabbed inspector window.
+#
 proc inspector_createfields2page {w} {
     global treeroots
     set nb $w.nb
@@ -60,14 +63,15 @@ proc refresh_fields2page {w} {
 proc getFieldNodeInfo {w op {key {}}} {
     global icons treeroots
 
-    set separatebaseclasses 1
+    set separatebaseclasses 0
 
     # key: objectptr-descriptorptr-fieldnum-index
     set obj ""
     set sd ""
     set fieldnum ""
     set index ""
-    regexp {^fld-(ptr.*)-(ptr.*)-([^-]*)-([^-]*)$} $key dummy obj sd fieldnum index
+    #XXX would it be faster using [string split]?
+    regexp {^fld-(ptr.*)-(ptr.*)-([^-]*)-([^-]*)-([^-]*)$} $key dummy obj sd cat fieldnum index
     #puts "DBG --> $obj -- $sd -- field=$fieldnum -- index=$index"
 
     switch $op {
@@ -76,10 +80,14 @@ proc getFieldNodeInfo {w op {key {}}} {
             if {$obj==[opp_object_nullpointer]} {return "<object is NULL>"}
             if {$sd==[opp_object_nullpointer]} {return "<no descriptor for object>"}
 
-            if {$fieldnum==""} {
+            if {$cat=="" && $fieldnum==""} {
                 # no specific field -- return class name
                 set name [opp_classdescriptor $obj $sd name]
                 return $name
+            }
+            if {$cat!="" && $fieldnum==""} {
+                # only category given -- return that
+                return "\b$cat\b"
             }
             set typename [opp_classdescriptor $obj $sd fieldtypename $fieldnum]
             set type [opp_classdescriptor $obj $sd fieldtype $fieldnum]
@@ -94,8 +102,7 @@ proc getFieldNodeInfo {w op {key {}}} {
                 append name " {...}"
             }
             set value [opp_classdescriptor $obj $sd fieldvalue $fieldnum $index]
-            #regsub -all "\n" $value "; " value
-            regsub -all "   +" $value "  " value
+            #FIXME display enumname too!
             if {$typename=="string"} {set value "\"$value\""}
             if {$value==""} {
                 return "$name ($typename)"
@@ -125,7 +132,18 @@ proc getFieldNodeInfo {w op {key {}}} {
             if {$obj==[opp_object_nullpointer] || $sd==[opp_object_nullpointer]} {
                 return ""
             }
-
+            if {$cat==""} {
+                # no category given, so return list of categories
+                set numfields [opp_classdescriptor $obj $sd fieldcount]
+                for {set i 0} {$i<$numfields} {incr i} {
+                    set fieldcat [opp_classdescriptor $obj $sd fieldproperty $i "category"]
+                    set categories($fieldcat) 1
+                }
+                foreach fieldcat [lsort [array names categories]] {
+                    lappend children "fld-$obj-$sd-$fieldcat--"
+                }
+                return $children
+            }
             if {$fieldnum==""} {
                 # no field given -- so return field list
                 set children {}
@@ -135,13 +153,15 @@ proc getFieldNodeInfo {w op {key {}}} {
                 set baseclassdesc [opp_classdescriptor $obj $sd baseclassdesc]
                 if {$baseclassdesc!=[opp_object_nullpointer] && $separatebaseclasses} {
                     # display base class fields separately
-                    lappend children "fld-$obj-$baseclassdesc--"
+                    lappend children "fld-$obj-$baseclassdesc-$cat--"
                     set fromfield [opp_classdescriptor $obj $baseclassdesc fieldcount]
                 }
 
                 # assemble fields list
                 for {set i $fromfield} {$i<$numfields} {incr i} {
-                    lappend children "fld-$obj-$sd-$i-"
+                    if {$cat==[opp_classdescriptor $obj $sd fieldproperty $i "category"]} {
+                        lappend children "fld-$obj-$sd-$cat-$i-"
+                    }
                 }
                 return $children
             }
@@ -155,7 +175,7 @@ proc getFieldNodeInfo {w op {key {}}} {
                     return ""  ;# nothing known about it
                 } else {
                     # resolve children now, otherwise we'd dislay the type as an extra level
-                    set key "fld-$fieldptr-$fielddesc--"
+                    set key "fld-$fieldptr-$fielddesc---"
                     return [getFieldNodeInfo $w children $key]
                 }
             } elseif {$index!=""} {
@@ -167,7 +187,7 @@ proc getFieldNodeInfo {w op {key {}}} {
                         return ""  ;# nothing known about it
                     } else {
                         # resolve children now, otherwise we'd dislay the type as an extra level
-                        set key "fld-$fieldptr-$fielddesc--"
+                        set key "fld-$fieldptr-$fielddesc---"
                         return [getFieldNodeInfo $w children $key]
                     }
                 } else {
@@ -178,7 +198,7 @@ proc getFieldNodeInfo {w op {key {}}} {
                 set n [opp_classdescriptor $obj $sd fieldarraysize $fieldnum]
                 set children {}
                 for {set i 0} {$i<$n} {incr i} {
-                    lappend children "fld-$obj-$sd-$fieldnum-$i"
+                    lappend children "fld-$obj-$sd-$cat-$fieldnum-$i"
                 }
                 return $children
             } else {
@@ -189,13 +209,16 @@ proc getFieldNodeInfo {w op {key {}}} {
         root {
             set obj $treeroots($w)
             set desc [opp_getclassdescriptor $obj]
-            return "fld-$obj-$desc--"
+            return "fld-$obj-$desc---"
         }
     }
 }
 
 #============================
 
+#
+# This alternative version of the Fields table uses a BLT treeview widget.
+#
 proc inspector_createfields2pageX {w} {
     global treeroots
     set nb $w.nb
@@ -231,7 +254,7 @@ proc inspector_createfields2pageX {w} {
 
 proc fillTreeview {tree obj} {
     set desc [opp_getclassdescriptor $obj]
-    set key "fld-$obj-$desc--"
+    set key "fld-$obj-$desc---"
 
     _doFillTreeview $tree {} $key
 }
