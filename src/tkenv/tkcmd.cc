@@ -1591,7 +1591,8 @@ int classDescriptor_cmd(ClientData, Tcl_Interp *interp, int argc, const char **a
       if (argc!=5) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
       const char *propertyname = argv[4];
 
-      Tcl_SetResult(interp, TCLCONST(sd->getProperty(object, propertyname)), TCL_VOLATILE);
+      // "object" is unused, but what the hell
+      Tcl_SetResult(interp, TCLCONST(sd->getProperty(propertyname)), TCL_VOLATILE);
       return TCL_OK;
    }
 

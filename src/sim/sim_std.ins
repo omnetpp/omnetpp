@@ -10,9 +10,8 @@ void std_sim_descriptor_dummy() {}
 
 class cObject
 {
-    properties:
-        omitGetVerb = true;
     fields:
+        @omitGetVerb(true);
         string name @category(basic);
         string fullName @category(basic);
         string fullPath @category(basic);
@@ -39,9 +38,8 @@ class cObject
 
 class cComponent extends cObject //really: cDefaultList
 {
-    properties:
-        omitGetVerb = true;
     fields:
+        @omitGetVerb(true);
         bool isModule @category(general);
         int params @category(general);
 }
@@ -52,9 +50,8 @@ class cChannel extends cComponent
 
 class cBasicChannel extends cChannel
 {
-    properties:
-        omitGetVerb = true;
     fields:
+        @omitGetVerb(true);
         double delay @category(general);
         double error @category(general);
         double datarate @category(general);
@@ -65,9 +62,8 @@ class cBasicChannel extends cChannel
 
 class cModule extends cComponent
 {
-    properties:
-        omitGetVerb = true;
     fields:
+        @omitGetVerb(true);
         int id @category(general);
         bool isSimple @category(general);
         bool isVector @category(general);
@@ -78,9 +74,8 @@ class cModule extends cComponent
 
 class cSimpleModule extends cModule
 {
-    properties:
-        omitGetVerb = true;
     fields:
+        @omitGetVerb(true);
         bool isTerminated @category(state);
         bool usesActivity @category(activity);
         unsigned int stackSize @category(activity);
@@ -93,9 +88,8 @@ class cCompoundModule extends cModule
 
 class cArray extends cObject
 {
-    properties:
-        omitGetVerb = true;
     fields:
+        @omitGetVerb(true);
         int items @category(general);
         bool takeOwnership @category(general);
 }
@@ -107,9 +101,8 @@ class cComponentType extends cObject //really: cNoncopyableObject
 
 class cModuleType extends cComponentType
 {
-    properties:
-        omitGetVerb = true;
     fields:
+        @omitGetVerb(true);
         bool isNetwork @category(general);
 }
 
@@ -121,9 +114,8 @@ class cChannelType extends cComponentType
 
 class cGate extends cObject //really: cNoncopyableObject
 {
-    properties:
-        omitGetVerb = true;
     fields:
+        @omitGetVerb(true);
         char type @category(general);
         int id @category(general);
         bool isVector @category(general);
@@ -138,9 +130,8 @@ class cGate extends cObject //really: cNoncopyableObject
 
 class cMessage extends cObject
 {
-    properties:
-        omitGetVerb = true;
     fields:
+        @omitGetVerb(true);
         int kind @category(general);
         int priority @category(general);
         long length @category(general);
@@ -166,9 +157,8 @@ class cMessage extends cObject
 
 class cMessagePar extends cObject
 {
-    properties:
-        omitGetVerb = true;
     fields:
+        @omitGetVerb(true);
         bool takeOwnership @category(general);
         char type @category(general);
         bool isNumeric @category(general);
@@ -178,9 +168,8 @@ class cMessagePar extends cObject
 
 class cPacket extends cMessage
 {
-    properties:
-        omitGetVerb = true;
     fields:
+        @omitGetVerb(true);
         short protocol @category(general);
         short pdu @category(general);
 }
@@ -189,9 +178,8 @@ class cPacket extends cMessage
 
 class cStatistic extends cObject
 {
-    properties:
-        omitGetVerb = true;
     fields:
+        @omitGetVerb(true);
         long samples @category(general);
         double weights @category(general);
         double sum @category(general);
@@ -213,9 +201,8 @@ class cWeightedStdDev extends cStdDev
 
 class cDensityEstBase extends cStdDev
 {
-    properties:
-        omitGetVerb = true;
     fields:
+        @omitGetVerb(true);
         bool transformed @category(histogram);
         int cells @category(histogram);
         unsigned long underflowCell @category(histogram);
@@ -271,34 +258,30 @@ class cADByStddev extends cAccuracyDetection
 
 class cExpression extends cPolymorphic
 {
-    properties:
-        omitGetVerb = true;
     fields:
+        @omitGetVerb(true);
         //XXX string toString @category(general);
 }
 
 class cFSM extends cObject
 {
-    properties:
-        omitGetVerb = true;
     fields:
+        @omitGetVerb(true);
         int state @category(general);
         string stateName @category(general);
 }
 
 class cMathFunction extends cObject //really: cNoncopyableObject
 {
-    properties:
-        omitGetVerb = true;
     fields:
+        @omitGetVerb(true);
         int numArgs @category(general);
 }
 
 class cNEDFunction extends cObject //really: cNoncopyableObject
 {
-    properties:
-        omitGetVerb = true;
     fields:
+        @omitGetVerb(true);
         char returnType @category(general);
         int numArgs @category(general);
         string argTypes @category(general);
@@ -306,9 +289,8 @@ class cNEDFunction extends cObject //really: cNoncopyableObject
 
 class cOutVector extends cObject //really: cNoncopyableObject
 {
-    properties:
-        omitGetVerb = true;
     fields:
+        @omitGetVerb(true);
         bool isEnabled @category(general);
         long valuesReceived @category(general);
         long valuesStored @category(general);
@@ -316,9 +298,8 @@ class cOutVector extends cObject //really: cNoncopyableObject
 
 class cPar extends cObject
 {
-    properties:
-        omitGetVerb = true;
     fields:
+        @omitGetVerb(true);
         char type @category(general);
         bool isNumeric @category(general);
         bool isVolatile @category(general);
@@ -333,9 +314,8 @@ class cProperties extends cPolymorphic
 
 class cProperty extends cPolymorphic
 {
-    properties:
-        omitGetVerb = true;
     fields:
+        @omitGetVerb(true);
         bool isImplicit @category(general);
         short index @category(general);
         //XXX const std::vector<const char *>& keys @category(general);
@@ -343,26 +323,23 @@ class cProperty extends cPolymorphic
 
 class cLinkedList extends cObject
 {
-    properties:
-        omitGetVerb = true;
     fields:
+        @omitGetVerb(true);
         int length @category(general);
 }
 
 class cMessageHeap extends cObject
 {
-    properties:
-        omitGetVerb = true;
     fields:
+        @omitGetVerb(true);
         int length @category(general);
         //XXX elements?
 }
 
 class cQueue extends cObject
 {
-    properties:
-        omitGetVerb = true;
     fields:
+        @omitGetVerb(true);
         int length @category(general);
         bool takeOwnership @category(general);
         //XXX elements?
@@ -370,9 +347,8 @@ class cQueue extends cObject
 
 class cSimulation extends cObject //really: cNoncopyableObject
 {
-    properties:
-        omitGetVerb = true;
     fields:
+        @omitGetVerb(true);
         int runNumber @category(general);
         simtime_t simTime @category(general);
         long eventNumber @category(general);
@@ -395,17 +371,15 @@ class cRealTimeScheduler extends cScheduler
 
 class cTopology extends cObject
 {
-    properties:
-        omitGetVerb = true;
     fields:
+        @omitGetVerb(true);
         int nodes @category(general);
 }
 
 class cXMLElement
 {
-    properties:
-        omitGetVerb = true;
     fields:
+        @omitGetVerb(true);
         string getTagName @category(general);  //XXX get rid of "get" somehow -- @label(tagname)?
         string getNodeValue @category(general);
         string getSourceLocation @category(general);
