@@ -1,8 +1,6 @@
 package org.omnetpp.scave2.model.provider;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
 import org.eclipse.emf.common.command.Command;
 import org.eclipse.emf.common.command.CompoundCommand;
@@ -32,7 +30,7 @@ public class DatasetItemProvider extends org.omnetpp.scave.model.provider.Datase
 		Command addCommand = super.createAddCommand(domain, owner, feature, collection, index); 
 		
 		Collection<Chart> charts = ScaveModelUtil.collectUnreferencedCharts(collection);
-		if (charts.size() > 0) {
+		if (charts.size() > 0 && owner.eResource() != null) {
 			CompoundCommand command = new CompoundCommand(addCommand.getLabel(), addCommand.getDescription());
 			command.append(addCommand);
 			ChartSheet chartsheet = ScaveModelUtil.getOrCreateDefaultChartSheet(domain, command, owner.eResource());

@@ -31,7 +31,7 @@ public class DatasetsItemProvider extends
 		Command addCommand = super.createAddCommand(domain, owner, feature, collection, index); 
 		
 		Collection<Chart> charts = ScaveModelUtil.collectUnreferencedCharts(collection);
-		if (charts.size() > 0) {
+		if (charts.size() > 0 && owner.eResource() != null) {
 			CompoundCommand command = new CompoundCommand(addCommand.getLabel(), addCommand.getDescription());
 			command.append(addCommand);
 			ChartSheet chartsheet = ScaveModelUtil.getOrCreateDefaultChartSheet(domain, command, owner.eResource());

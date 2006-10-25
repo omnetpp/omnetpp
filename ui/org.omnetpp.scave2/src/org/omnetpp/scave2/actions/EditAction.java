@@ -49,6 +49,7 @@ public class EditAction extends AbstractScaveAction {
 	@Override
 	public boolean isApplicable(ScaveEditor editor, IStructuredSelection selection) {
 		return selection.size() == 1 && selection.getFirstElement() instanceof EObject &&
+				((EObject)selection.getFirstElement()).eResource() != null &&
 				EditDialog.getEditableFeatures((EObject)selection.getFirstElement(), editor).length > 0;
 	}
 }
