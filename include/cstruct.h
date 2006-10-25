@@ -136,6 +136,14 @@ class SIM_API cStructDescriptor : public cNoncopyableObject
     int getInheritanceChainLength();
 
     /**
+     * Returns the value of the given property of the descriptor as a single string.
+     * Returns NULL if there's no such property. For structured property values
+     * (with multiple keys and/or list(s) inside), the value is returned as a
+     * single unparsed string.
+     */
+    virtual const char *getProperty(const char *propertyname) = 0;
+
+    /**
      * Must be redefined in subclasses to return the number of fields
      * in the client object.
      */
