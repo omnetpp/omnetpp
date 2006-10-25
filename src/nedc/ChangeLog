@@ -1,4 +1,9 @@
 XXX stores properties; @prop and @prop(value) syntax supported
+XXX class-level properties supported:
+XXX     @customize, @omitGetVerb (or: @customize(true), @omitGetVerb(true))
+XXX field properties supported:
+XXX     @enum(enumname); for arrays: @sizeGetter(methodname), @sizeSetter(methodname)
+
 
 2006-10-22  Andras Varga
 

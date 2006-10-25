@@ -829,6 +829,14 @@ sub prepareForCodeGeneration
                 $getter{$fieldname} = "get".$capfieldname;
                 $getsize{$fieldname} = "get".$capfieldname."ArraySize";
             }
+
+            # allow customization of names
+            if ($fprops{$fieldname}->{sizeSetter} ne '') {
+                $alloc{$fieldname} = $fprops{$fieldname}->{sizeSetter};
+            }
+            if ($fprops{$fieldname}->{sizeGetter} ne '') {
+                $getsize{$fieldname} = $fprops{$fieldname}->{sizeGetter};
+            }
         }
 
         # pointer
