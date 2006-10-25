@@ -169,7 +169,18 @@ proc getFieldNodeInfo {w op {key ""}} {
         }
 
         icon {
-            return ""
+            switch $keytype {
+                obj {
+                    #FIXME this never gets called...
+                    return [get_icon_for_object $obj]
+                }
+                struct -
+                group -
+                field -
+                findex {
+                    return ""
+                }
+            }
         }
 
         haschildren {

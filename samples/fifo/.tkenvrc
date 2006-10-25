@@ -40,8 +40,8 @@ config editor-case-sensitive	{0}
 config editor-whole-words	{0}
 config filtobjlist-order	{Class}
 inspector "fifonet" "fifonet" "2" "367x304+613+11"
+inspector "fifonet.fifo" "FFBitFifo" "1" "535x390+24+31"
 inspector "fifonet" "fifonet" "1" "498x490+123+36"
 inspector "simulation.scheduled-events.job" "cMessage" "1" "724x531+69+101"
-inspector "fifonet.fifo" "FFBitFifo" "1" "535x390+24+31"
 inspector "component types.fifonet" "cDynamicModuleType" "1" "717x624+24+31"
 
