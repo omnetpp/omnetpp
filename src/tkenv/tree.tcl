@@ -83,6 +83,7 @@ proc Tree:setselection {w v} {
   global Tree
   set Tree($w:selection) $v
   Tree:drawselection $w
+  #FIXME ensure that selection is visible (may scroll up or down)
 }
 
 #

@@ -80,10 +80,57 @@ proc getFieldNodeInfo {w op {key ""}} {
     switch $op {
 
         text {
-            return $keyargs
-
             if {$obj==[opp_object_nullpointer]} {return "<object is NULL>"}
             if {$sd==[opp_object_nullpointer]} {return "<no descriptor for object>"}
+
+            switch $keytype {
+                obj {
+                    set name [opp_object_fullname $obj]
+                    set classname [opp_object_classname $obj]
+                    return "$name ($classname)"
+                }
+                struct {
+                    set name [opp_classdescriptor name $obj $sd]
+                    return $keyargs
+                }
+
+                group {
+                    set groupname [lindex $keyargs 3]
+                    return "\b$groupname\b"
+                }
+
+                field -
+                findex {
+                    set fieldid [lindex $keyargs 3]
+                    set index [lindex $keyargs 4]
+                    set typename [opp_classdescriptor $obj $sd fieldtypename $fieldid]
+                    set isarray [opp_classdescriptor $obj $sd fieldisarray $fieldid]
+                    set iscompound [opp_classdescriptor $obj $sd fieldiscompound $fieldid]
+                    set name [opp_classdescriptor $obj $sd fieldname $fieldid]
+                    if {$index!=""} {
+                        append name "\[$index\]"
+                    } elseif {$isarray} {
+                        set size [opp_classdescriptor $obj $sd fieldarraysize $fieldid]
+                        append name "\[$size\]"
+                    }
+                    if {$iscompound} {
+                        append name " {...}"
+                    }
+                    set value [opp_classdescriptor $obj $sd fieldvalue $fieldid $index]
+                    #FIXME display enumname too!
+                    if {$typename=="string"} {set value "\"$value\""}
+                    if {$value==""} {
+                        return "$name ($typename)"
+                    } else {
+                        return "$name = \b$value\b ($typename)"
+                    }
+                }
+
+                default {
+                    error "bad keytype '$keytype'"
+                }
+            }
+
 
             if {$group=="" && $fieldid==""} {
                 # no specific field -- return class name
@@ -163,7 +210,7 @@ proc getFieldNodeInfo {w op {key ""}} {
                         }
                     }
                     return $children
-                 }
+                }
 
                 group {
                     # return fields in the given group
