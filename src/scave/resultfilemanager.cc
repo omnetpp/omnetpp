@@ -928,6 +928,7 @@ StringVector ResultFileManager::getModuleFilterHints(const IDList& idlist)
 
     // sort and concatenate them, and return the result
     StringVector wildvec = coll.get();
+	wildvec.push_back(std::string("*"));
     std::sort(vec.begin(), vec.end());
     std::sort(wildvec.begin(), wildvec.end());
     //vec.insert(vec.end(), wildvec.begin(), wildvec.end());
@@ -942,7 +943,7 @@ StringVector ResultFileManager::getNameFilterHints(const IDList& idlist)
     StringVector vec;
     DuplicateStringCollector coll;
 
-    for (StringSet::iterator i=names.begin(); i!=names.end(); i++)
+	for (StringSet::iterator i=names.begin(); i!=names.end(); i++)
     {
         std::string a = (*i);
         vec.push_back(a);
@@ -962,6 +963,7 @@ StringVector ResultFileManager::getNameFilterHints(const IDList& idlist)
 
     // sort and concatenate them, and return the result
     StringVector wildvec = coll.get();
+	wildvec.push_back(std::string("*"));
     std::sort(vec.begin(), vec.end());
     std::sort(wildvec.begin(), wildvec.end());
     //vec.insert(vec.end(), wildvec.begin(), wildvec.end());
