@@ -157,6 +157,14 @@ public class ScaveModelActionBarContributor
 		validateAction = new ValidateAction();
 		controlAction = new ControlAction();
 	}
+	
+	public ScaveModelActionBarContributor(boolean createGlobalActions) {
+		if (createGlobalActions) {
+			loadResourceAction = new LoadResourceAction();
+			validateAction = new ValidateAction();
+			controlAction = new ControlAction();
+		}
+	}
 
 	/**
 	 * This adds Separators for editor additions to the tool bar.
