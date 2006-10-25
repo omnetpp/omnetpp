@@ -29,11 +29,11 @@ class SIM_API cStdVectorWatcherDescriptor : public cStructDescriptor //noncopyab
     cStdVectorWatcherDescriptor();
     virtual ~cStdVectorWatcherDescriptor();
 
+    virtual const char *getProperty(const char *propertyname);
     virtual int getFieldCount(void *object);
     virtual const char *getFieldName(void *object, int field);
     virtual int getFieldType(void *object, int field);
     virtual const char *getFieldTypeString(void *object, int field);
-    virtual const char *getFieldEnumName(void *object, int field);
     virtual const char *getFieldProperty(void *object, int field, const char *propertyname);
     virtual int getArraySize(void *object, int field);
 
@@ -53,6 +53,11 @@ cStructDescriptor("cStdVectorWatcher", "cStdVectorWatcherBase")
 
 cStdVectorWatcherDescriptor::~cStdVectorWatcherDescriptor()
 {
+}
+
+const char *cStdVectorWatcherDescriptor::getProperty(const char *propertyname)
+{
+    return NULL;
 }
 
 int cStdVectorWatcherDescriptor::getFieldCount(void *)
@@ -86,12 +91,7 @@ const char *cStdVectorWatcherDescriptor::getFieldTypeString(void *object, int fi
     }
 }
 
-const char *cStdVectorWatcherDescriptor::getFieldEnumName(void *object, int field)
-{
-    return NULL;
-}
-
-const char *getFieldProperty(void *object, int field, const char *propertyname)
+const char *cStdVectorWatcherDescriptor::getFieldProperty(void *object, int field, const char *propertyname)
 {
     return NULL;
 }

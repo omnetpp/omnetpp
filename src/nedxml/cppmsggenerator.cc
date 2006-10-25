@@ -134,7 +134,6 @@ struct NEDCppGenerator::FieldDesc
     bool fisabstract;
     bool fisarray;
     std::string farraysize;
-    std::string fenumname;
     bool fispointer;
 
     int fkind;                  // FIELDTYPE_BASIC, FIELDTYPE_STRUCT
@@ -323,7 +322,6 @@ void NEDCppGenerator::prepareForCodeGeneration(NEDElement *node, NEDCppGenerator
             fld[i].fisabstract = field->getIsAbstract();
             fld[i].fisarray = field->getIsVector();
             fld[i].farraysize = field->getVectorSize();
-            fld[i].fenumname = field->getEnumName();
         }
 
         for (i=0; i<numfields; i++)
@@ -881,11 +879,11 @@ void NEDCppGenerator::generateDescriptorClass(NEDCppGenerator::ClassDesc& cld, N
     out << "    " << cld.msgdescclass << "& operator=(const " << cld.msgdescclass << "& other);\n";
     out << "    virtual cPolymorphic *dup() const {return new " << cld.msgdescclass << "(*this);}\n";
     out << "\n";
+    out << "    virtual const char *getProperty(const char *propertyname);\n";
     out << "    virtual int getFieldCount(void *object);\n";
     out << "    virtual const char *getFieldName(void *object, int field);\n";
     out << "    virtual int getFieldType(void *object, int field);\n";
     out << "    virtual const char *getFieldTypeString(void *object, int field);\n";
-    out << "    virtual const char *getFieldEnumName(void *object, int field);\n";
     out << "    virtual const char *getFieldProperty(void *object, int field, const char *propertyname);\n";
     out << "    virtual int getArraySize(void *object, int field);\n";
     out << "\n";
@@ -908,6 +906,14 @@ void NEDCppGenerator::generateDescriptorClass(NEDCppGenerator::ClassDesc& cld, N
 
     out << cld.msgdescclass << "::~" << cld.msgdescclass << "()\n";
     out << "{\n";
+    out << "}\n";
+    out << "\n";
+
+    // getProperty()
+    out << "const char *" << cld.msgdescclass << "::getProperty(const char *propertyname)\n";
+    out << "{\n";
+    //FIXME TODO
+    out << "    return NULL;\n";
     out << "}\n";
     out << "\n";
 
@@ -980,24 +986,6 @@ void NEDCppGenerator::generateDescriptorClass(NEDCppGenerator::ClassDesc& cld, N
     out << "    switch (field) {\n";
     for (i=0; i<numfields; i++)
         out << "        case " << i << ": return \"" << fld[i].ftype << "\";\n";
-    out << "        default: return NULL;\n";
-    out << "    }\n";
-    out << "}\n";
-    out << "\n";
-
-    // getFieldEnumName()
-    out << "const char *" << cld.msgdescclass << "::getFieldEnumName(int field)\n";
-    out << "{\n";
-    if (cld.hasbasedescriptor)
-    {
-        out << "    if (field < " << cld.msgbasedescclass << "::getFieldCount(object))\n";
-        out << "        return " << cld.msgbasedescclass << "::getFieldEnumName(field);\n";
-        out << "    field -= " << cld.msgbasedescclass << "::getFieldCount(object);\n";
-    }
-    out << "    switch (field) {\n";
-    for (i=0; i<numfields; i++)
-        if (fld[i].fenumname != "")
-            out << "        case " << i << ": return \"" << fld[i].fenumname << "\";\n";
     out << "        default: return NULL;\n";
     out << "    }\n";
     out << "}\n";

@@ -175,15 +175,6 @@ class SIM_API cStructDescriptor : public cNoncopyableObject
     virtual const char *getFieldTypeString(void *object, int field) = 0;
 
     /**
-     * Returns the enum name associated with the field. This makes only
-     * sense with integer-type fields (short, int, long, etc.).
-     * Returns NULL if there's no associated enum.
-     *
-     * @see cEnum
-     */
-    virtual const char *getFieldEnumName(void *object, int field) = 0;
-
-    /**
      * Returns the value of the given property of the field as a single string.
      * Returns NULL if there's no such property. For structured property values
      * (with multiple keys and/or list(s) inside), the value is returned as a

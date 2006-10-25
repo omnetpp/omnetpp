@@ -15,10 +15,10 @@ option animation_msgcolors	{1}
 option penguin_mode	{0}
 option showlayouting	{0}
 option bubbles	{1}
-option animation_speed	{1.62}
+option animation_speed	{1.5}
 option bkpts_enabled	{1}
 option expressmode_autoupdate	{1}
-config mainwin-geom	{673x328+149+21}
+config mainwin-geom	{640x249+135+155}
 config rununtil-event	{}
 config last-nedfile	{}
 config filtobjlist-category	{mqsgvo}
@@ -39,10 +39,9 @@ config timeline-maxnumevents	{1000}
 config editor-case-sensitive	{0}
 config editor-whole-words	{0}
 config filtobjlist-order	{Class}
-inspector "fifonet" "fifonet" "2" "367x304+497+391"
-inspector "fifonet.fifo.queue" "cQueue" "1" "460x312+66+333"
-inspector "simulation.scheduled-events.sendMessageEvent" "cMessage" "1" "513x452+46+126"
-inspector "component types.FFSink" "cDynamicModuleType" "1" "460x312+120+155"
-inspector "fifonet" "FifoNet" "2" "443x277+370+366"
-inspector "component types.fifonet" "cDynamicModuleType" "1" "460x312+48+62"
+inspector "fifonet" "fifonet" "2" "367x304+613+11"
+inspector "fifonet" "fifonet" "1" "498x490+123+36"
+inspector "simulation.scheduled-events.job" "cMessage" "1" "724x531+69+101"
+inspector "fifonet.fifo" "FFBitFifo" "1" "535x390+24+31"
+inspector "component types.fifonet" "cDynamicModuleType" "1" "717x624+24+31"
 

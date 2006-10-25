@@ -1,6 +1,6 @@
 # Tkenv configuration
-option updatefreq_fast	{10}
-option updatefreq_express	{1000}
+option updatefreq_fast	{50}
+option updatefreq_express	{10000}
 option stepdelay	{300 ms}
 option use_mainwindow	{1}
 option print_banners	{1}
@@ -15,10 +15,10 @@ option animation_msgcolors	{1}
 option penguin_mode	{0}
 option showlayouting	{0}
 option bubbles	{1}
-option animation_speed	{1}
+option animation_speed	{1.5}
 option bkpts_enabled	{1}
 option expressmode_autoupdate	{1}
-config mainwin-geom	{587x453+320+80}
+config mainwin-geom	{812x366+134+60}
 config rununtil-event	{}
 config last-nedfile	{}
 config filtobjlist-category	{mqsgvo}
@@ -39,10 +39,9 @@ config timeline-maxnumevents	{1000}
 config editor-case-sensitive	{0}
 config editor-whole-words	{0}
 config filtobjlist-order	{Class}
-inspector "token" "token" "2" "367x347+24+31"
-inspector "token" "TokenRing" "2" "343x375+1+-4"
-inspector "simulation.scheduled-events.2-->0" "TRFrame" "1" "507x540+46+56"
-inspector "simulation.scheduled-events.3-->4" "TRFrame" "1" "440x432+96+124"
-inspector "simulation.scheduled-events.token" "TRToken" "1" "581x406+90+72"
-inspector "component types.Computer" "cDynamicModuleType" "1" "460x312+120+155"
+inspector "token.comp[2]" "Computer" "1" "460x521+24+31"
+inspector "token" "token" "2" "367x347+351+160"
+inspector "token.comp[2]" "Computer" "2" "367x377+24+31"
+inspector "token.comp[2]" "Computer" "3" "503x253+120+155"
+inspector "component types.Computer" "cDynamicModuleType" "1" "460x312+24+31"
 

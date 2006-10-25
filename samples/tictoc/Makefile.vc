@@ -162,19 +162,10 @@ makefiles:
 re-makemake: makefiles
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
-tictoc10_m.obj: tictoc10_m.cpp \
-  tictoc10_m.h
-tictoc11_m.obj: tictoc11_m.cpp \
-  tictoc11_m.h
-tictoc12_m.obj: tictoc12_m.cpp \
-  tictoc12_m.h
 txc1.obj: txc1.cpp
-txc10.obj: txc10.cpp \
-  tictoc10_m.h
-txc11.obj: txc11.cpp \
-  tictoc11_m.h
-txc12.obj: txc12.cpp \
-  tictoc12_m.h
+txc10.obj: txc10.cpp
+txc11.obj: txc11.cpp
+txc12.obj: txc12.cpp
 txc2.obj: txc2.cpp
 txc3.obj: txc3.cpp
 txc4.obj: txc4.cpp

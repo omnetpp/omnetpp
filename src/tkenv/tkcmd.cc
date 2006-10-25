@@ -1585,6 +1585,16 @@ int classDescriptor_cmd(ClientData, Tcl_Interp *interp, int argc, const char **a
       return TCL_OK;
    }
 
+   // 'opp_classdescriptor <object> <classdescr> property <propertyname>'
+   if (strcmp(cmd,"property")==0)
+   {
+      if (argc!=5) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
+      const char *propertyname = argv[4];
+
+      Tcl_SetResult(interp, TCLCONST(sd->getProperty(object, propertyname)), TCL_VOLATILE);
+      return TCL_OK;
+   }
+
    if (strcmp(cmd,"fieldcount")==0)
    {
       if (argc!=4) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
@@ -1660,15 +1670,6 @@ int classDescriptor_cmd(ClientData, Tcl_Interp *interp, int argc, const char **a
       return TCL_OK;
    }
 
-   // 'opp_classdescriptor <object> <classdescr> fieldenumname <fieldindex>'
-   if (strcmp(cmd,"fieldenumname")==0)
-   {
-      if (argc!=5) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
-      int fld = atoi(argv[4]);
-      Tcl_SetResult(interp, TCLCONST(sd->getFieldEnumName(object, fld)), TCL_VOLATILE);
-      return TCL_OK;
-   }
-
    // 'opp_classdescriptor <object> <classdescr> fieldproperty <fieldindex> <propertyname>'
    if (strcmp(cmd,"fieldproperty")==0)
    {
@@ -1680,7 +1681,7 @@ int classDescriptor_cmd(ClientData, Tcl_Interp *interp, int argc, const char **a
       return TCL_OK;
    }
 
-   // 'opp_classdescriptor <object> <classdescr> fieldenumname <fieldindex>'
+   // 'opp_classdescriptor <object> <classdescr> fieldstructname <fieldindex>'
    if (strcmp(cmd,"fieldstructname")==0)
    {
       if (argc!=5) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
