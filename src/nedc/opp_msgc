@@ -445,9 +445,8 @@ while ($msg =~ s/(message|class|struct)\s+(.+?)\s*{(.*?)};?//s)
     # reset
     @fieldlist = ();
     @baseclassfieldlist = ();
-    @proplist = ();
     undef %fprops;
-    undef %pval;
+    undef %props;
 
     if ($msghdr =~ /^([^ \t\n]+?)\s*extends\s*([^ \t\n]+?)$/s)
     {
@@ -502,8 +501,7 @@ while ($msg =~ s/(message|class|struct)\s+(.+?)\s*{(.*?)};?//s)
             {
                 $propname = $1;
                 $propvalue = $2;
-                push(@proplist,$propname);
-                $pval{$propname} = $propvalue;
+                $props{$propname} = $propvalue;
 
                 if ($propname =~ /^($reservedwords)$/) {
                     print STDERR "*** Error: property name '$propname' is a reserved word\n"; $ret=1;
@@ -533,6 +531,19 @@ while ($msg =~ s/(message|class|struct)\s+(.+?)\s*{(.*?)};?//s)
         {
             $field = $1;
 
+            # is this a single property, not a field?
+            if ($field =~ s|^\s*\@([_a-z0-9]+)\((.*?)\)\s*$|$props{$1}=$2;""|sei) {
+                next;
+            }
+            if ($field =~ s|^\s*\@([_a-z0-9]+)\s*$|$props{$1}="true";""|sei) {
+                next;
+            }
+
+            # properties, with @propertyname(value) syntax
+            %fieldprop = ();
+            $field =~ s|\@([_a-z0-9]+)\((.*?)\)|$fieldprop{$1}=$2;""|gsei;
+            $field =~ s|\@([_a-z0-9]+)|$fieldprop{$1}="true";""|gsei;
+
             # abstract
             if ($field =~ s/^\s*abstract\s+//s) {
                 $isabstract = 1;
@@ -558,11 +569,6 @@ while ($msg =~ s/(message|class|struct)\s+(.+?)\s*{(.*?)};?//s)
             } else {
                 $fieldenum = '';
             }
-
-            # properties, with @propertyname(value) syntax
-            %fieldprop = ();
-            $field =~ s|\@([_a-z0-9]+)\((.*?)\)|$fieldprop{$1}=$2;""|gsei;
-            $field =~ s|\@([_a-z0-9]+)|$fieldprop{$1}="true";""|gsei;
 
             # default value
             if ($field =~ s/=\s*(.*?)\s*$//s) {
@@ -764,7 +770,7 @@ sub prepareForCodeGeneration
     #
     # produce all sorts of derived names
     #
-    if ($pval{"customize"} eq "true") {
+    if ($props{"customize"} eq "true") {
         $gap = 1;
         $msgclass = $msgname."_Base";
         $realmsgclass = $msgname;
@@ -789,7 +795,7 @@ sub prepareForCodeGeneration
         $msgbaseclass = $msgbase;
     }
 
-    if ($pval{"omitGetVerb"} eq "true") {
+    if ($props{"omitGetVerb"} eq "true") {
         $omitgetverb = 1;
     } else {
         $omitgetverb = 0;
@@ -1483,6 +1489,7 @@ sub generateDescriptorClass
     print CC "    virtual ~$msgdescclass();\n";
     print CC "\n";
     print CC "    virtual bool doesSupport(cPolymorphic *obj);\n";
+    print CC "    virtual const char *getProperty(const char *propertyname) = 0;\n";
     print CC "    virtual int getFieldCount(void *object);\n";
     print CC "    virtual const char *getFieldName(void *object, int field);\n";
     print CC "    virtual int getFieldType(void *object, int field);\n";
@@ -1517,6 +1524,17 @@ sub generateDescriptorClass
     print CC "bool $msgdescclass\:\:doesSupport(cPolymorphic *obj)\n";
     print CC "{\n";
     print CC "    return dynamic_cast<$msgclass *>(obj)!=NULL;\n";
+    print CC "}\n";
+    print CC "\n";
+
+    # getProperty()
+    print CC "const char *$msgdescclass\:\:getProperty(const char *propertyname)\n";
+    print CC "{\n";
+    for $key (keys %props) {
+        print CC "    if (!strcmp(propertyname,\"$key\")) return \"$props{$key}\";\n";
+    }
+    print CC "    cStructDescriptor *basedesc = getBaseClassDescriptor();\n";
+    print CC "    return basedesc ? basedesc->getProperty(propertyname) : NULL;\n";
     print CC "}\n";
     print CC "\n";
 
