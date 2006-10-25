@@ -60,6 +60,11 @@ public class SetOperationEditForm implements IScaveObjectEditForm {
 	private CCombo runNameCombo;
 	private Text fromRunsWhereText;
 	
+	/**
+	 * Number of visible items in combos.
+	 */
+	private static final int VISIBLE_ITEM_COUNT = 15;
+	
 	public SetOperationEditForm(SetOperation setOperation, ResultFileManager manager) {
 		this.setOperation = setOperation;
 		
@@ -102,6 +107,7 @@ public class SetOperationEditForm implements IScaveObjectEditForm {
 		label.setLayoutData(new GridData());
 		sourceDatasetCombo = new CCombo(panel, SWT.BORDER | SWT.READ_ONLY);
 		sourceDatasetCombo.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+		sourceDatasetCombo.setVisibleItemCount(VISIBLE_ITEM_COUNT);
 		String[] datasetNames = new String[sourceDatasets.size()];
 		datasetNames[0] = "All";
 		for (int i = 1; i < sourceDatasets.size(); ++i)
@@ -117,11 +123,13 @@ public class SetOperationEditForm implements IScaveObjectEditForm {
 		label.setLayoutData(new GridData());
 		moduleNameCombo = new CCombo(group, SWT.BORDER);
 		moduleNameCombo.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+		moduleNameCombo.setVisibleItemCount(VISIBLE_ITEM_COUNT);
 		label = new Label(group, SWT.NONE);
 		label.setText("Name:");
 		label.setLayoutData(new GridData());
 		nameCombo = new CCombo(group, SWT.BORDER);
 		nameCombo.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+		nameCombo.setVisibleItemCount(VISIBLE_ITEM_COUNT);
 		
 		// file/run
 		group = new Group(panel, SWT.NONE);
@@ -132,11 +140,13 @@ public class SetOperationEditForm implements IScaveObjectEditForm {
 		label.setLayoutData(new GridData());
 		fileNameCombo = new CCombo(group, SWT.BORDER);
 		fileNameCombo.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+		fileNameCombo.setVisibleItemCount(VISIBLE_ITEM_COUNT);
 		label = new Label(group, SWT.NONE);
 		label.setText("Run name:");
 		label.setLayoutData(new GridData());
 		runNameCombo = new CCombo(group, SWT.BORDER);
 		runNameCombo.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+		runNameCombo.setVisibleItemCount(VISIBLE_ITEM_COUNT);
 		label = new Label(group, SWT.NONE);
 		label.setText("Only runs where:");
 		label.setLayoutData(new GridData());
@@ -152,16 +162,19 @@ public class SetOperationEditForm implements IScaveObjectEditForm {
 		label.setLayoutData(new GridData());
 		experimentNameCombo = new CCombo(group, SWT.BORDER);
 		experimentNameCombo.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+		experimentNameCombo.setVisibleItemCount(VISIBLE_ITEM_COUNT);
 		label = new Label(group, SWT.NONE);
 		label.setText("Measurement:");
 		label.setLayoutData(new GridData());
 		measurementNameCombo = new CCombo(group, SWT.BORDER);
 		measurementNameCombo.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+		measurementNameCombo.setVisibleItemCount(VISIBLE_ITEM_COUNT);
 		label = new Label(group, SWT.NONE);
 		label.setText("Replication:");
 		label.setLayoutData(new GridData());
 		replicationNameCombo = new CCombo(group, SWT.BORDER);
 		replicationNameCombo.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+		replicationNameCombo.setVisibleItemCount(VISIBLE_ITEM_COUNT);
 	
 		// set filter hints
 		nameCombo.setItems(filterHints.getDataNameHints());

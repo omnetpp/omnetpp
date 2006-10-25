@@ -98,6 +98,10 @@ public class ChartEditForm implements IScaveObjectEditForm {
 	private Button[] legendPositionRadios;
 	private Button[] legendAnchorRadios;
 	
+	/**
+	 * Number of visible items in combos.
+	 */
+	private static final int VISIBLE_ITEM_COUNT = 15;
 	
 	public ChartEditForm(Chart chart) {
 		this.chart = chart;
@@ -175,7 +179,9 @@ public class ChartEditForm implements IScaveObjectEditForm {
 		displaySymbolsCheckbox = createCheckboxField("Display symbols", group);
 		displaySymbolsCheckbox.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2,1));
 		symbolTypeCombo = createComboField("Symbol type", group);
+		symbolTypeCombo.setVisibleItemCount(VISIBLE_ITEM_COUNT);
 		symbolSizeCombo = createComboField("Symbol size", group);
+		symbolSizeCombo.setVisibleItemCount(VISIBLE_ITEM_COUNT);
 		lineStyleRadios = createRadioGroup("Lines", panel, 1, LineStyle.class);
 		hideLinesCheckbox = createCheckboxField("Hide", panel);
 		// Legend

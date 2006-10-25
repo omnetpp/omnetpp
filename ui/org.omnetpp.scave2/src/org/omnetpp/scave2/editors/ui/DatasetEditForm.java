@@ -46,6 +46,10 @@ public class DatasetEditForm implements IScaveObjectEditForm {
 	private Text nameText;
 	private CCombo basedOnCombo;
 	
+	/**
+	 * Number of visible items in combos.
+	 */
+	private static final int VISIBLE_ITEM_COUNT = 15;
 
 	
 	public DatasetEditForm(Dataset dataset) {
@@ -104,6 +108,7 @@ public class DatasetEditForm implements IScaveObjectEditForm {
 		basedOnLabel.setLayoutData(new GridData());
 		basedOnCombo = new CCombo(panel, SWT.BORDER | SWT.READ_ONLY);
 		basedOnCombo.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+		basedOnCombo.setVisibleItemCount(VISIBLE_ITEM_COUNT);
 		String[] datasetNames = new String[baseDatasets.size()];
 		for (int i = 0; i < baseDatasets.size(); ++i) {
 			Dataset dataset = baseDatasets.get(i);

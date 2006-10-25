@@ -59,6 +59,12 @@ public class ProcessingOperationEditForm implements IScaveObjectEditForm {
 	private Label description;
 	private Table paramsTable;
 	
+	/**
+	 * Number of visible items in combos.
+	 */
+	private static final int VISIBLE_ITEM_COUNT = 15;
+	
+	
 	// columns in the params table
 	private static final int
 		COLUMN_NAME = 0,
@@ -108,6 +114,7 @@ public class ProcessingOperationEditForm implements IScaveObjectEditForm {
 		group.setText("Operation");
 		
 		operationCombo = new CCombo(group, SWT.BORDER | SWT.READ_ONLY);
+		operationCombo.setVisibleItemCount(VISIBLE_ITEM_COUNT);
 		operationCombo.setItems(operationNames);
 		operationCombo.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 		operationCombo.addSelectionListener(new SelectionAdapter() {
