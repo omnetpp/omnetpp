@@ -75,6 +75,9 @@ public class SpringEmbedderLayout extends XYLayout {
 				Connection conn = (Connection)edge;
 				IFigure srcFig = conn.getSourceAnchor().getOwner();
 				IFigure targetFig = conn.getTargetAnchor().getOwner();
+                // add the edge ONLY if it has figures at both side
+                if (srcFig == null || targetFig == null)
+                    continue;
 				// if this is an edge coming from outside to a submodule
 				if (srcFig instanceof CompoundModuleFigure) {
 					autoLayouter.addEdgeToBorder(targetFig, 0);

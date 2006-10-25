@@ -18,11 +18,13 @@ import org.eclipse.gef.editparts.ViewportAutoexposeHelper;
 import org.eclipse.gef.editparts.ViewportExposeHelper;
 import org.eclipse.gef.editparts.ViewportMouseWheelHelper;
 import org.eclipse.gef.editpolicies.SnapFeedbackPolicy;
+import org.omnetpp.common.displaymodel.IDisplayString;
 import org.omnetpp.figures.CompoundModuleFigure;
 import org.omnetpp.figures.CompoundModuleGateAnchor;
 import org.omnetpp.figures.GateAnchor;
 import org.omnetpp.ned.editor.graph.edit.policies.CompoundModuleLayoutEditPolicy;
 import org.omnetpp.ned2.model.CompoundModuleNodeEx;
+import org.omnetpp.ned2.model.ConnectionNodeEx;
 import org.omnetpp.ned2.model.INamedGraphNode;
 import org.omnetpp.ned2.model.NEDElement;
 import org.omnetpp.ned2.model.SubmoduleNodeEx;
@@ -119,13 +121,49 @@ public class CompoundModuleEditPart extends ModuleEditPart {
     @Override
     public void attributeChanged(NEDElement node, String attr) {
     	super.attributeChanged(node, attr);
-    	// NEEDED only if the scaling property has changed
-   		refreshChildrenVisuals();
-    	// refresh only ourselves
-    	refreshVisuals();
+    	// TODO NEEDED only if the scaling property has changed (check if node is CompoundNode and attr is displaystring)
+        if (node instanceof CompoundModuleNodeEx && attr.startsWith(IDisplayString.ATT_DISPLAYSTRING))
+            refreshChildrenVisuals();
+    	// refresh only ourselves. Child changes do not change the apperaence
+        if (node == getModel()) 
+            refreshVisuals();
+        // a connection was modified
+        if (node instanceof ConnectionNodeEx || SubmoduleNodeEx.ATT_NAME.equals(attr)) {
+            refreshSourceConnections();
+            refreshTargetConnections();
+            refreshChildrenConnections();
+        }
     }
     
-	/**
+    @Override
+    public void childInserted(NEDElement node, NEDElement where, NEDElement child) {
+        super.childInserted(node, where, child);
+
+        if (child instanceof SubmoduleNodeEx)
+            refreshChildren();
+        
+        if (child instanceof ConnectionNodeEx) {
+            refreshSourceConnections();
+            refreshTargetConnections();
+            refreshChildrenConnections();
+        }
+    }
+
+    @Override
+    public void childRemoved(NEDElement node, NEDElement child) {
+        super.childRemoved(node, child);
+        
+        if (child instanceof SubmoduleNodeEx)
+            refreshChildren();
+
+        if (child instanceof ConnectionNodeEx) {
+            refreshSourceConnections();
+            refreshTargetConnections();
+            refreshChildrenConnections();
+        }
+    }
+
+    /**
      * Updates the visual aspect of this compound module
      */
     @Override

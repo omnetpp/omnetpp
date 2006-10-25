@@ -61,7 +61,8 @@ public class ConnectionCommand extends Command {
      */
     @Override
     public boolean canExecute() {
-    	// allow deletion (both module is null)
+        
+        // allow deletion (both module is null)
     	if(srcModule == null && destModule == null)
     		return true;
     	// we can connect two submodules module ONLY if they are siblings (ie they have the same parent)

@@ -11,7 +11,8 @@ import org.omnetpp.ned2.model.pojo.SubmoduleNode;
 
 public class SubmoduleNodeEx extends SubmoduleNode
                             implements INamedGraphNode, IIndexable, IStringTyped {
-	protected DisplayString displayString = null;
+
+    protected DisplayString displayString = null;
 
 	SubmoduleNodeEx() {
         init();
@@ -117,34 +118,6 @@ public class SubmoduleNodeEx extends SubmoduleNode
 	public List<ConnectionNodeEx> getDestConnections() {
 		return getCompoundModule().getDestConnectionsFor(this);
 	}
-//
-//    public void attachSrcConnection(ConnectionNodeEx conn) {
-//        Assert.isTrue(!srcConns.contains(conn));
-//        srcConns.add(conn);
-//        getCompoundModule().addConnection(conn);
-//        fireAttributeChangedToAncestors(ATT_SRC_CONNECTION);
-//    }
-//
-//    public void detachSrcConnection(ConnectionNodeEx conn) {
-//        Assert.isTrue(srcConns.contains(conn));
-//        srcConns.remove(conn);
-//        getCompoundModule().removeConnection(conn);
-//        fireAttributeChangedToAncestors(ATT_SRC_CONNECTION);
-//    }
-//
-//    public void attachDestConnection(ConnectionNodeEx conn) {
-//        Assert.isTrue(!destConns.contains(conn));
-//        destConns.add(conn);
-//        getCompoundModule().addConnection(conn);
-//        fireAttributeChangedToAncestors(ATT_DEST_CONNECTION);
-//    }
-//
-//    public void detachDestConnection(ConnectionNodeEx conn) {
-//        Assert.isTrue(destConns.contains(conn));
-//        destConns.remove(conn);
-//        getCompoundModule().removeConnection(conn);
-//        fireAttributeChangedToAncestors(ATT_DEST_CONNECTION);
-//    }
 
 	@Override
     public String debugString() {
@@ -163,17 +136,6 @@ public class SubmoduleNodeEx extends SubmoduleNode
     public NEDElement getTypeRef() {
         INEDTypeInfo it = getTypeNEDTypeInfo();
         return it == null ? null : it.getNEDElement();
-    }
-
-    // connection notifications received from ConnectionNode objects
-    public void fireSrcConnectionChanged(ConnectionNodeEx conn) {
-        // TODO maybe dont have to send it to all ancestors
-        fireAttributeChangedToAncestors(ATT_SRC_CONNECTION);
-    }
-
-    public void fireDestConnectionChanged(ConnectionNodeEx conn) {
-        // TODO maybe dont have to send it to all ancestors
-        fireAttributeChangedToAncestors(ATT_DEST_CONNECTION);
     }
 
 }

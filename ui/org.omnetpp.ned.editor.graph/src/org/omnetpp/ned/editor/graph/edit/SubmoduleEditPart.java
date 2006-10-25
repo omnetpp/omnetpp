@@ -10,7 +10,10 @@ import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.figures.GateAnchor;
 import org.omnetpp.figures.SubmoduleFigure;
 import org.omnetpp.figures.layout.SubmoduleConstraint;
+import org.omnetpp.ned2.model.ConnectionNodeEx;
+import org.omnetpp.ned2.model.IConnectable;
 import org.omnetpp.ned2.model.INamedGraphNode;
+import org.omnetpp.ned2.model.NEDElement;
 import org.omnetpp.ned2.model.SubmoduleNodeEx;
 import org.omnetpp.resources.NEDResourcesPlugin;
 
@@ -82,6 +85,15 @@ public class SubmoduleEditPart extends ModuleEditPart {
     @Override
     protected List getModelTargetConnections() {
         return getSubmoduleModel().getCompoundModule().getDestConnectionsFor(getSubmoduleModel());
+    }
+
+    @Override
+    public void attributeChanged(NEDElement node, String attr) {
+        super.attributeChanged(node, attr);
+        // refresh only ourselves. Child changes do not change the apperaence
+        if (node == getModel()) 
+            refreshVisuals();
+
     }
 
     /**

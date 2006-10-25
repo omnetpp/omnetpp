@@ -14,7 +14,9 @@ import org.omnetpp.ned2.model.ConnectionNodeEx;
 import org.omnetpp.ned2.model.IConnectable;
 import org.omnetpp.ned2.model.INamedGraphNode;
 import org.omnetpp.ned2.model.NEDElement;
+import org.omnetpp.ned2.model.NEDElementUtil;
 import org.omnetpp.ned2.model.SubmoduleNodeEx;
+import org.omnetpp.ned2.model.pojo.NEDElementTags;
 
 /**
  * Base abstract controller for NedModel and NedFigures. Provides support for 
@@ -65,37 +67,6 @@ abstract public class ModuleEditPart extends ContainerEditPart implements NodeEd
 		return getConnectionAnchorAt(pt);
 	}
 
-	/* (non-Javadoc)
-	 * @see org.omnetpp.ned.editor.graph.edit.ContainerEditPart#attributeChanged(org.omnetpp.ned2.model.NEDElement, java.lang.String)
-	 */
-	@Override
-	public void attributeChanged(NEDElement node, String attr) {
-		super.attributeChanged(node, attr);
-
-		// SubmoduleNodeEx and CompoundModuleNodeEx fire ATT_SRC(DEST)_CONNECTION 
-		// attribute change if a connection gets added/removed
-		if (IConnectable.ATT_DEST_CONNECTION.equals(attr) )
-		    refreshTargetConnections();
-        if (IConnectable.ATT_SRC_CONNECTION.equals(attr) )
-			refreshSourceConnections();
-        
-	}
-    
-    public void childInserted(NEDElement node, NEDElement where, NEDElement child) {
-        super.childInserted(node, where, child);
-        if (child instanceof ConnectionNodeEx) {
-            refreshSourceConnections();
-            refreshTargetConnections();
-        }
-    }
-
-    public void childRemoved(NEDElement node, NEDElement child) {
-        super.childRemoved(node, child);
-        if (child instanceof ConnectionNodeEx) {
-            refreshSourceConnections();
-            refreshTargetConnections();
-        }
-    }
     /**
      * @return The scale factor of the module
      */

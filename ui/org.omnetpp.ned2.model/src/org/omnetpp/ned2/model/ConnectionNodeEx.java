@@ -9,8 +9,6 @@ import org.omnetpp.ned2.model.pojo.ChannelSpecNode;
 import org.omnetpp.ned2.model.pojo.ConnectionNode;
 
 public class ConnectionNodeEx extends ConnectionNode implements IStringTyped, IDisplayStringProvider {
-//	private IConnectable srcModuleRef;
-//	private IConnectable destModuleRef;
 	private ConnectionDisplayString displayString = null;
 
 	ConnectionNodeEx() {
@@ -21,40 +19,6 @@ public class ConnectionNodeEx extends ConnectionNode implements IStringTyped, ID
 		super(parent);
 		setArrowDirection(ConnectionNodeEx.NED_ARROWDIR_L2R);
 	}
-    
-    @Override
-    public void setSrcModule(String val) {
-        IConnectable prevModule;
-        prevModule = getSrcModuleRef();
-
-        super.setSrcModule(val);
-        
-        // send notification to the old source module
-        if (prevModule != null)
-            prevModule.fireSrcConnectionChanged(this);
-        
-        // send notification to the new source module
-        IConnectable postModule = getSrcModuleRef();
-        if (postModule != null)
-            postModule.fireSrcConnectionChanged(this);
-    }
-    
-    @Override
-    public void setDestModule(String val) {
-        IConnectable prevModule;
-        prevModule = getDestModuleRef();
-
-        super.setDestModule(val);
-        
-        // send notification to the old dest module
-        if (prevModule != null)
-            prevModule.fireDestConnectionChanged(this);
-        
-        // send notification to the new source module
-        IConnectable postModule = getDestModuleRef();
-        if (postModule != null)
-            postModule.fireDestConnectionChanged(this);
-    }
     
     // helper functions to set the module names using references
     public IConnectable getSrcModuleRef() {
@@ -70,6 +34,10 @@ public class ConnectionNodeEx extends ConnectionNode implements IStringTyped, ID
         return null;
     }
 
+    /**
+     * Sets the source side module using reference instead of using name
+     * @param srcModule 
+     */
     public void setSrcModuleRef(IConnectable srcModule) {
         if (srcModule == null) {
             setSrcModule(null);
@@ -87,10 +55,14 @@ public class ConnectionNodeEx extends ConnectionNode implements IStringTyped, ID
         if ("".equals(getDestModule()))
             return cm;
         if (cm != null)
-            return getCompoundModule().getSubmoduleByName(getDestModule());
+            return cm.getSubmoduleByName(getDestModule());
         return null;
     }
 
+    /**
+     * Sets the source side module using reference instead of using name
+     * @param srcModule 
+     */
     public void setDestModuleRef(IConnectable destModule) {
         if (destModule == null) {
             setDestModule(null);
@@ -194,6 +166,14 @@ public class ConnectionNodeEx extends ConnectionNode implements IStringTyped, ID
         while (parent != null && !(parent instanceof CompoundModuleNodeEx)) 
             parent = parent.getParent();
         return (CompoundModuleNodeEx)parent;
+    }
+    
+    /**
+     * Checks if the current connection is valid (has valid submodules at both end) 
+     * @return 
+     */
+    public boolean isValid() {
+        return getSrcModuleRef() != null && getDestModuleRef() != null;
     }
 
     // type management

@@ -15,11 +15,6 @@ import org.omnetpp.ned2.model.pojo.SubmodulesNode;
 public class CompoundModuleNodeEx extends CompoundModuleNode
 								  implements INamedGraphNode, IDerived, ITopLevelElement {
 
-	// srcConns contains all connections where the sourcemodule is this module
-	protected List<ConnectionNodeEx> srcConns = new ArrayList<ConnectionNodeEx>();
-	// destConns contains all connections where the destmodule is this module
-	protected List<ConnectionNodeEx> destConns = new ArrayList<ConnectionNodeEx>();
-
 	protected DisplayString displayString = null;
 
 	CompoundModuleNodeEx() {
@@ -90,9 +85,10 @@ public class CompoundModuleNodeEx extends CompoundModuleNode
 	 * @return The submodule (only in THIS module ) with the provided name
 	 */
 	protected SubmoduleNodeEx getOwnSubmoduleByName(String submoduleName) {
-		SubmodulesNode submodulesNode = getFirstSubmodulesChild();
-		if (submoduleName == null)
-			return null;
+	    if (submoduleName == null)
+	        return null;
+
+        SubmodulesNode submodulesNode = getFirstSubmodulesChild();
 		return (SubmoduleNodeEx)submodulesNode
 					.getFirstChildWithAttribute(NED_SUBMODULE, SubmoduleNode.ATT_NAME, submoduleName);
 	}
@@ -105,7 +101,7 @@ public class CompoundModuleNodeEx extends CompoundModuleNode
     public SubmoduleNodeEx getSubmoduleByName(String submoduleName) {
         // first look in the current module
         SubmoduleNodeEx submoduleNode = getOwnSubmoduleByName(submoduleName);
-        if (submoduleName != null)
+        if (submoduleNode != null)
             return submoduleNode;
         // then look in ancestors
         // FIXME beware this can lead to an infite recursion if we have a circle in the extend chanin
@@ -173,40 +169,12 @@ public class CompoundModuleNodeEx extends CompoundModuleNode
 
     ////////////////////////////////////////////////////////////////////////////////////////
     // connection related methods
-    
-//
-//    public void attachSrcConnection(ConnectionNodeEx conn) {
-//        Assert.isTrue(!srcConns.contains(conn));
-//        srcConns.add(conn);
-//        addConnection(conn);
-//        fireAttributeChangedToAncestors(ATT_SRC_CONNECTION);
-//    }
-//
-//    public void detachSrcConnection(ConnectionNodeEx conn) {
-//        Assert.isTrue(srcConns.contains(conn));
-//        srcConns.remove(conn);
-//        removeConnection(conn);
-//        fireAttributeChangedToAncestors(ATT_SRC_CONNECTION);
-//    }
-//
-//    public void attachDestConnection(ConnectionNodeEx conn) {
-//        Assert.isTrue(!destConns.contains(conn));
-//        destConns.add(conn);
-//        addConnection(conn);
-//        fireAttributeChangedToAncestors(ATT_DEST_CONNECTION);
-//    }
-//
-//    public void detachDestConnection(ConnectionNodeEx conn) {
-//        Assert.isTrue(destConns.contains(conn));
-//        destConns.remove(conn);
-//        removeConnection(conn);
-//        fireAttributeChangedToAncestors(ATT_DEST_CONNECTION);
-//    }
 
     /**
+     * 
      * @param srcName srcModule to filter for ("" for compound module and NULL if not filtering is required)
      * @param destName destModule to filter for ("" for compound module and NULL if not filtering is required)
-     * @return Returns ALL connections contained in this module with matching src and dest module
+     * @return ALL VALID!!! connections contained in this module with matching src and dest module name
      */
     private List<ConnectionNodeEx> getOwnConnections(String srcName, String destName) {
         List<ConnectionNodeEx> result = new ArrayList<ConnectionNodeEx>();
@@ -218,20 +186,18 @@ public class CompoundModuleNodeEx extends CompoundModuleNode
             if (currChild instanceof ConnectionNodeEx) {
                 ConnectionNodeEx connChild = (ConnectionNodeEx)currChild;
                 // by default add the connection
-                boolean addIt = true;
-                if (srcName != null) {
-                    // do not add if module name is not matching the filter criteria
-                    if (!srcName.equals(connChild.getSrcModule()))
-                        addIt = false;
-                }
-                if (destName != null) {
-                    // do not add if module name is not matching the filter criteria
-                    if (!destName.equals(connChild.getDestModule()))
-                        addIt = false;
-                }
+                if (srcName != null && !srcName.equals(connChild.getSrcModule()))
+                    continue;
                 
-                if (addIt) 
-                    result.add(connChild);
+                if (destName != null && !destName.equals(connChild.getDestModule()))
+                    continue;
+                
+                // skip invlaid connections (those that has onknow modules at either side)
+                if (!connChild.isValid())
+                    continue;
+
+                // if all was ok, add it to the list
+                result.add(connChild);
             }
 
         return result;
@@ -355,17 +321,5 @@ public class CompoundModuleNodeEx extends CompoundModuleNode
         INEDTypeInfo it = getFirstExtendsNEDTypeInfo();
         return it == null ? null : it.getNEDElement();
     }
-
-    // connection notifications received from ConnectionNode objects
-    public void fireSrcConnectionChanged(ConnectionNodeEx conn) {
-        // TODO maybe dont have to send it to all ancestors
-        fireAttributeChangedToAncestors(ATT_SRC_CONNECTION);
-    }
-
-    public void fireDestConnectionChanged(ConnectionNodeEx conn) {
-        // TODO maybe dont have to send it to all ancestors
-        fireAttributeChangedToAncestors(ATT_DEST_CONNECTION);
-    }
-
 
 }

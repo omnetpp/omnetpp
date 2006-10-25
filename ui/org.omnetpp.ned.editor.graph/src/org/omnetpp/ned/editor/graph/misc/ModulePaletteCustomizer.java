@@ -17,7 +17,7 @@ public class ModulePaletteCustomizer extends PaletteCustomizer {
      */
     @Override
     public EntryPage getPropertiesPage(PaletteEntry entry) {
-        if (entry.getType().equals(PaletteDrawer.PALETTE_TYPE_DRAWER)) { return new ModuleDrawerEntryPage(); }
+        if (PaletteDrawer.PALETTE_TYPE_DRAWER.equals( entry.getType() )) { return new ModuleDrawerEntryPage(); }
         return new ModuleEntryPage();
     }
 

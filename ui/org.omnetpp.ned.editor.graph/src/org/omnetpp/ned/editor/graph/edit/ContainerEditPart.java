@@ -55,26 +55,25 @@ abstract public class ContainerEditPart
     		((ContainerEditPart)child).refreshVisuals();
     }
 
-	public void attributeChanged(NEDElement node, String attr) {
-		// refresh only if a node attribute changed. Child changes are discarded
-		// FIXME check whether this works correctly if we display the vector size too
-		
+    /**
+     * Refreshes all connections (source and destination) attached to the submodule children
+     */
+    protected void refreshChildrenConnections() {
+        for(Object child : getChildren()) {
+            ((ContainerEditPart)child).refreshSourceConnections();
+            ((ContainerEditPart)child).refreshTargetConnections();
+        }
+    }
+
+    public void attributeChanged(NEDElement node, String attr) {
 		System.out.println("attrChange for: "+this+" (node="+node+"attr="+attr+")");
-		if (node == getModel()) 
-			refreshVisuals();
 	}
     
 	public void childInserted(NEDElement node, NEDElement where, NEDElement child) {
-		// TODO maybe addChild would be a better idea (faster)
 		System.out.println("childInserted for: "+this+": (node="+node+", where="+where+", child="+child+")");
-		if (child instanceof SubmoduleNodeEx)
-		    refreshChildren();
 	}
 
 	public void childRemoved(NEDElement node, NEDElement child) {
-		// TODO maybe removeChild would be a better idea (faster)
 		System.out.println("childRemoved for: "+this+": (node="+node+", child="+child+")");
-        if (child instanceof SubmoduleNodeEx)
-            refreshChildren();
 	}
 }
