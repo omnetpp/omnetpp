@@ -101,9 +101,13 @@ public class DatasetsAndChartsPage extends ScaveEditorPage {
 				datasetsPanel.getTreeViewer(), 
 				new EditAction());
 		configureViewerButton(
-				datasetsPanel.getNewNodeButton(),
+				datasetsPanel.getNewChildButton(),
 				datasetsPanel.getTreeViewer(),
-				new NewAction(scaveEditor.getAnalysis().getDatasets()));
+				new NewAction(scaveEditor.getAnalysis().getDatasets(), true));
+		configureViewerButton(
+				datasetsPanel.getNewSiblingButton(),
+				datasetsPanel.getTreeViewer(),
+				new NewAction(null, false));
 		configureViewerButton(
 				datasetsPanel.getRemoveNodeButton(), 
 				datasetsPanel.getTreeViewer(),
@@ -134,9 +138,13 @@ public class DatasetsAndChartsPage extends ScaveEditorPage {
 				chartSheetsPanel.getTreeViewer(), 
 				new EditAction());
 		configureViewerButton(
-				chartSheetsPanel.getNewChartSheetButton(),
+				chartSheetsPanel.getNewChildButton(),
 				chartSheetsPanel.getTreeViewer(),
-				new NewAction(scaveEditor.getAnalysis().getChartSheets())); //XXX "New chart sheet"?
+				new NewAction(scaveEditor.getAnalysis().getChartSheets(), true)); //XXX "New chart sheet"?
+		configureViewerButton(
+				chartSheetsPanel.getNewSiblingButton(),
+				chartSheetsPanel.getTreeViewer(),
+				new NewAction(null, false));
 		configureViewerButton(
 				chartSheetsPanel.getRemoveChartSheetButton(), 
 				chartSheetsPanel.getTreeViewer(),

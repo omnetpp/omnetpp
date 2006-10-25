@@ -119,9 +119,13 @@ public class DatasetPage extends ScaveEditorPage {
 		
 		// set up actions
 		configureViewerButton(
-				datasetPanel.getAddButton(),
+				datasetPanel.getNewChildButton(),
 				datasetPanel.getTreeViewer(),
-				new NewAction(dataset));
+				new NewAction(dataset, true));
+		configureViewerButton(
+				datasetPanel.getNewSiblingButton(),
+				datasetPanel.getTreeViewer(),
+				new NewAction(dataset, false));
 		configureViewerButton(
 				datasetPanel.getRemoveButton(), 
 				datasetPanel.getTreeViewer(),
@@ -142,8 +146,6 @@ public class DatasetPage extends ScaveEditorPage {
 				datasetPanel.getOpenChartButton(),
 				datasetPanel.getTreeViewer(), 
 				new OpenAction());
-		
-		
 	}
 
 	@Override

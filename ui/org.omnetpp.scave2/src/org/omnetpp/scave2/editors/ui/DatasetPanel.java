@@ -7,7 +7,8 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 
 public class DatasetPanel extends TreeWithButtonsPanel {
 	
-	private Button addButton;
+	private Button newChildButton;
+	private Button newSiblingButton;
 	private Button removeButton;
 	private Button editButton;
 	private Button groupButton;
@@ -23,7 +24,8 @@ public class DatasetPanel extends TreeWithButtonsPanel {
 	private void initialize() {
 		Composite buttonPanel = getButtonPanel(); 
 		FormToolkit toolkit = getFormToolkit();
-		addButton = toolkit.createButton(buttonPanel, "Add...", SWT.NONE);
+		newChildButton = toolkit.createButton(buttonPanel, "New child...", SWT.NONE);
+		newSiblingButton = toolkit.createButton(buttonPanel, "New sibling...", SWT.NONE);
 		removeButton = toolkit.createButton(buttonPanel, "Remove", SWT.NONE);
 		editButton = toolkit.createButton(buttonPanel, "Edit...", SWT.NONE);
 		groupButton = toolkit.createButton(buttonPanel, "Group", SWT.NONE);
@@ -32,8 +34,12 @@ public class DatasetPanel extends TreeWithButtonsPanel {
 		openChartButton = toolkit.createButton(buttonPanel, "Open chart", SWT.NONE);
 	}
 
-	public Button getAddButton() {
-		return addButton;
+	public Button getNewChildButton() {
+		return newChildButton;
+	}
+
+	public Button getNewSiblingButton() {
+		return newSiblingButton;
 	}
 
 	public Button getRemoveButton() {

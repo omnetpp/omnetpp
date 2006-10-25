@@ -8,7 +8,8 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 public class ChartSheetsPanel extends TreeWithButtonsPanel {
 	
 	private Button openChartSheetButton;
-	private Button newChartSheetButton;
+	private Button newChildButton;
+	private Button newSiblingButton;
 	private Button editChartSheetButton;
 	private Button removeChartSheetButton;
 	
@@ -21,7 +22,8 @@ public class ChartSheetsPanel extends TreeWithButtonsPanel {
 		Composite buttonPanel = getButtonPanel();
 		FormToolkit toolkit = getFormToolkit();
 		openChartSheetButton = toolkit.createButton(buttonPanel, "Open Chart Sheet", SWT.NONE);
-		newChartSheetButton = toolkit.createButton(buttonPanel, "New...", SWT.NONE);
+		newChildButton = toolkit.createButton(buttonPanel, "New child...", SWT.NONE);
+		newSiblingButton = toolkit.createButton(buttonPanel, "New sibling...", SWT.NONE);
 		editChartSheetButton = toolkit.createButton(buttonPanel, "Edit...", SWT.NONE);
 		removeChartSheetButton = toolkit.createButton(buttonPanel, "Remove", SWT.NONE);
 	}
@@ -30,8 +32,12 @@ public class ChartSheetsPanel extends TreeWithButtonsPanel {
 		return editChartSheetButton;
 	}
 
-	public Button getNewChartSheetButton() {
-		return newChartSheetButton;
+	public Button getNewChildButton() {
+		return newChildButton;
+	}
+	
+	public Button getNewSiblingButton() {
+		return newSiblingButton;
 	}
 
 	public Button getOpenChartSheetButton() {

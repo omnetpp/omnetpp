@@ -8,7 +8,8 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 public class DatasetsPanel extends TreeWithButtonsPanel {
 	
 	private Button openDatasetButton;
-	private Button newNodeButton;
+	private Button newChildButton;
+	private Button newSiblingButton;
 	private Button editNodeButton;
 	private Button removeNodeButton;
 	
@@ -21,7 +22,8 @@ public class DatasetsPanel extends TreeWithButtonsPanel {
 		Composite buttonPanel = getButtonPanel();
 		FormToolkit toolkit = getFormToolkit();
 		openDatasetButton = toolkit.createButton(buttonPanel, "Open Dataset", SWT.NONE);
-		newNodeButton = toolkit.createButton(buttonPanel, "New...", SWT.NONE);
+		newChildButton = toolkit.createButton(buttonPanel, "New child...", SWT.NONE);
+		newSiblingButton = toolkit.createButton(buttonPanel, "New sibling...", SWT.NONE);
 		editNodeButton = toolkit.createButton(buttonPanel, "Edit...", SWT.NONE);
 		removeNodeButton = toolkit.createButton(buttonPanel, "Remove", SWT.NONE);
 	}
@@ -30,8 +32,12 @@ public class DatasetsPanel extends TreeWithButtonsPanel {
 		return editNodeButton;
 	}
 
-	public Button getNewNodeButton() {
-		return newNodeButton;
+	public Button getNewChildButton() {
+		return newChildButton;
+	}
+
+	public Button getNewSiblingButton() {
+		return newSiblingButton;
 	}
 
 	public Button getOpenDatasetButton() {

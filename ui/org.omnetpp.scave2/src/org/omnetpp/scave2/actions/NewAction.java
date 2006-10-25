@@ -11,21 +11,29 @@ import org.omnetpp.scave2.editors.ScaveEditor;
 import org.omnetpp.scave2.wizard.NewScaveObjectWizard;
 
 /**
- * Appends a new child to the children of the selected object.
- * It opens a wizard where the type of the new child and its
+ * Adds a new child or sibling to the selected object.
+ * It opens a wizard where the type of the new node and its
  * attributes can be entered.
  */
 public class NewAction extends AbstractScaveAction {
 	private EObject defaultParent;
+	private boolean createChild;
 	
 	public NewAction() {
-		this(null);
+		this(null, true);
 	}
 
-	public NewAction(EObject defaultParent) {
+	public NewAction(EObject defaultParent, boolean createChild) {
 		this.defaultParent = defaultParent;
-		setText("New...");
-		setToolTipText("Create new item");
+		this.createChild = createChild;
+		if (createChild) {
+			setText("New child...");
+			setToolTipText("Create new child");
+		}
+		else {
+			setText("New sibling...");
+			setToolTipText("Create new sibling");
+		}
 	}
 	
 	@Override
@@ -51,8 +59,10 @@ public class NewAction extends AbstractScaveAction {
 	}
 	
 	private EObject getParent(IStructuredSelection selection) {
-		if (selection!=null && selection.size()==1 && selection.getFirstElement() instanceof EObject)
-			return (EObject)selection.getFirstElement();
+		if (selection!=null && selection.size()==1 && selection.getFirstElement() instanceof EObject) {
+			EObject object = (EObject)selection.getFirstElement();
+			return createChild ? object : object.eContainer();
+		}
 		else
 			return defaultParent;
 	}
