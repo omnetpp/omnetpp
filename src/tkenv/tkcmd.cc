@@ -1605,25 +1605,39 @@ int classDescriptor_cmd(ClientData, Tcl_Interp *interp, int argc, const char **a
       return TCL_OK;
    }
 
-   // 'opp_classdescriptor <object> <classdescr> fieldtype <fieldindex>'
-   if (strcmp(cmd,"fieldtype")==0)
+   // 'opp_classdescriptor <object> <classdescr> fieldisarray <fieldindex>'
+   if (strcmp(cmd,"fieldisarray")==0)
    {
       if (argc!=5) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
       int fld = atoi(argv[4]);
-      int type = sd->getFieldType(object, fld);
-      switch(type)
-      {
-          case cClassDescriptor::FT_BASIC:
-              Tcl_SetResult(interp, "basic", TCL_STATIC); break;
-          case cClassDescriptor::FT_STRUCT:
-              Tcl_SetResult(interp, "struct", TCL_STATIC); break;
-          case cClassDescriptor::FT_BASIC_ARRAY:
-              Tcl_SetResult(interp, "basic array", TCL_STATIC); break;
-          case cClassDescriptor::FT_STRUCT_ARRAY:
-              Tcl_SetResult(interp, "struct array", TCL_STATIC); break;
-          default:
-              Tcl_SetResult(interp, "invalid", TCL_STATIC);
-      }
+      Tcl_SetResult(interp, TCLCONST(sd->getFieldIsArray(object, fld) ? "1" : "0"), TCL_STATIC);
+      return TCL_OK;
+   }
+
+   // 'opp_classdescriptor <object> <classdescr> fieldiscompound <fieldindex>'
+   if (strcmp(cmd,"fieldiscompound")==0)
+   {
+      if (argc!=5) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
+      int fld = atoi(argv[4]);
+      Tcl_SetResult(interp, TCLCONST(sd->getFieldIsCompound(object, fld) ? "1" : "0"), TCL_STATIC);
+      return TCL_OK;
+   }
+
+   // 'opp_classdescriptor <object> <classdescr> fieldispointer <fieldindex>'
+   if (strcmp(cmd,"fieldispointer")==0)
+   {
+      if (argc!=5) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
+      int fld = atoi(argv[4]);
+      Tcl_SetResult(interp, TCLCONST(sd->getFieldIsPointer(object, fld) ? "1" : "0"), TCL_STATIC);
+      return TCL_OK;
+   }
+
+   // 'opp_classdescriptor <object> <classdescr> fieldisobject <fieldindex>'
+   if (strcmp(cmd,"fieldisobject")==0)
+   {
+      if (argc!=5) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
+      int fld = atoi(argv[4]);
+      Tcl_SetResult(interp, TCLCONST(sd->getFieldIsObject(object, fld) ? "1" : "0"), TCL_STATIC);
       return TCL_OK;
    }
 

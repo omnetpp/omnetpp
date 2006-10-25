@@ -39,9 +39,10 @@ config timeline-maxnumevents	{1000}
 config editor-case-sensitive	{0}
 config editor-whole-words	{0}
 config filtobjlist-order	{Class}
-inspector "token.comp[2]" "Computer" "1" "460x521+24+31"
 inspector "token" "token" "2" "367x347+351+160"
+inspector "token.comp[2]" "Computer" "1" "460x521+24+31"
 inspector "token.comp[2]" "Computer" "2" "367x377+24+31"
 inspector "token.comp[2]" "Computer" "3" "503x253+120+155"
+inspector "simulation.scheduled-events.token" "TRToken" "1" "460x312+96+124"
 inspector "component types.Computer" "cDynamicModuleType" "1" "460x312+24+31"
 

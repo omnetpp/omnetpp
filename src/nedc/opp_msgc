@@ -1495,7 +1495,7 @@ sub generateDescriptorClass
     print CC "    virtual const char *getProperty(const char *propertyname);\n";
     print CC "    virtual int getFieldCount(void *object);\n";
     print CC "    virtual const char *getFieldName(void *object, int field);\n";
-    print CC "    virtual int getFieldType(void *object, int field);\n";
+    print CC "    virtual unsigned int getFieldTypeFlags(void *object, int field);\n";
     print CC "    virtual const char *getFieldTypeString(void *object, int field);\n";
     print CC "    virtual const char *getFieldProperty(void *object, int field, const char *propertyname);\n";
     print CC "    virtual int getArraySize(void *object, int field);\n";
@@ -1548,32 +1548,28 @@ sub generateDescriptorClass
     print CC "}\n";
     print CC "\n";
 
-    # getFieldType()
-    print CC "int $msgdescclass\:\:getFieldType(void *object, int field)\n";
+    # getFieldTypeFlags()
+    print CC "unsigned int $msgdescclass\:\:getFieldTypeFlags(void *object, int field)\n";
     print CC "{\n";
     print CC "    cClassDescriptor *basedesc = getBaseClassDescriptor();\n";
     print CC "    if (basedesc) {\n";
     print CC "        if (field < basedesc->getFieldCount(object))\n";
-    print CC "            return basedesc->getFieldType(object, field);\n";
+    print CC "            return basedesc->getFieldTypeFlags(object, field);\n";
     print CC "        field -= basedesc->getFieldCount(object);\n";
     print CC "    }\n";
     print CC "    switch (field) {\n";
     for ($i=0; $i<$fieldcount; $i++)
     {
-        if ($fisarray{$fieldlist[$i]}) {
-            $arr = '_ARRAY';
-        } else {
-            $arr = '';
-        }
-        if ($fkind{$fieldlist[$i]} eq 'basic') {
-            print CC "        case $i: return FT_BASIC${arr};\n";
-        } elsif ($fkind{$fieldlist[$i]} eq 'struct') {
-            print CC "        case $i: return FT_STRUCT${arr};\n";
-        } else {
-            die 'internal error';
-        }
+        @flags = ();
+        push(@flags, "FD_ISARRAY") if ($fisarray{$fieldlist[$i]});
+        push(@flags, "FD_ISCOMPOUND") if ($fkind{$fieldlist[$i]} eq 'struct');
+        push(@flags, "FD_ISPOINTER") if (0);  #FIXME
+        push(@flags, "FD_ISOBJECT") if ($classtype{$ftype{$fieldlist[$i]}} eq 'cobject');
+        $flags = join(" | ", @flags);
+        $flags = "0" if (@flags==());
+        print CC "        case $i: return $flags;\n";
     }
-    print CC "        default: return FT_INVALID;\n";
+    print CC "        default: return 0;\n";
     print CC "    }\n";
     print CC "}\n";
     print CC "\n";

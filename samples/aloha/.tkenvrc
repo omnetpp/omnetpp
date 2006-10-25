@@ -18,11 +18,13 @@ option bubbles	{1}
 option animation_speed	{2.81}
 option bkpts_enabled	{1}
 option expressmode_autoupdate	{0}
+config mainwin-geom	{671x454+24+31}
 config rununtil-event	{}
 config last-nedfile	{}
 config filtobjlist-category	{amqpcsgvo}
 config display-timeline	{1}
 config filtobjlist-maxcount	{100000}
+config log-save-filename	{omnetpp.out}
 config editor-findstring	{}
 config rununtil-time	{}
 config dontshow	{}
@@ -37,9 +39,11 @@ config timeline-maxnumevents	{1000}
 config editor-case-sensitive	{0}
 config editor-whole-words	{0}
 config filtobjlist-order	{Class}
-inspector "alohaNet.server.collision multiplicity" "cOutVector" "2" "386x326+396+380"
 inspector "alohaNet.server.channel utilization" "cOutVector" "2" "386x326+3+19"
+inspector "alohaNet.server.collision multiplicity" "cOutVector" "2" "386x326+396+380"
 inspector "alohaNet.server.collision length" "cOutVector" "2" "386x326+3+378"
 inspector "alohaNet" "alohaNet" "2" "725x591+72+93"
+inspector "alohaNet" "alohaNet" "1" "484x485+24+31"
+inspector "component types.alohaNet" "cDynamicModuleType" "1" "611x525+48+62"
 inspector "alohaNet" "ALOHAnet" "2" "617x576+22+29"
 

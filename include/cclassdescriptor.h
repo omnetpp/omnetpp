@@ -1,11 +1,11 @@
 //==========================================================================
-//  CSTRUCT.H - part of
+//  CCLASSDESCRIPTOR.H - part of
 //                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
 //
 //
 //  Declaration of the following classes:
-//    cClassDescriptor  : meta-info about structures
+//    cClassDescriptor  : metainfo about structs and classes
 //
 //==========================================================================
 
@@ -16,8 +16,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __CSTRUCT_H
-#define __CSTRUCT_H
+#ifndef __CCLASSDESCRIPTOR_H
+#define __CCLASSDESCRIPTOR_H
 
 #include <string>
 #include "cobject.h"
@@ -52,11 +52,11 @@ class SIM_API cClassDescriptor : public cNoncopyableObject
   public:
     /// Field types.
     enum {
-        FT_BASIC,         ///< int, long, double, bool, char*, char[]
-        FT_STRUCT,        ///< embedded structure, for which there's another cClassDescriptor
-        FT_BASIC_ARRAY,   ///< array of FT_BASIC
-        FT_STRUCT_ARRAY,  ///< array of FT_STRUCT
-        FT_INVALID        ///< invalid type (signals error condition)
+        FD_ISARRAY = 0x01,    ///< field is an array: int a[]; int a[10];
+        FD_ISCOMPOUND = 0x02, ///< basic type (T) is struct or class: T a; T *a; T a[10]; T *a[]
+        FD_ISPOINTER = 0x04,  ///< field is pointer or pointer array: T *a; T *a[]; T *a[10];
+        FD_ISOBJECT = 0x08,   ///< if ISCOMPOUND: basic type (T) subclasses from cPolymorphic
+        FD_ZARRO = 0x0
     };
 
   private:
@@ -157,15 +157,20 @@ class SIM_API cClassDescriptor : public cNoncopyableObject
     virtual const char *getFieldName(void *object, int field) = 0;
 
     /**
-     * Must be redefined in subclasses to return the type of a field
-     * in the client object.
+     * Must be redefined in subclasses to return the type flags of a field
+     * in the client object. Flags is a binary OR of the following:
+     * FD_ISARRAY, FD_ISCOMPOUND, FD_ISPOINTER, FD_ISOBJECT.
      * The argument must be in the 0..getFieldCount()-1 range, inclusive.
-     * The returned field type is one of the FT_BASIC, FT_STRUCT,
-     * FT_BASIC_ARRAY, FT_STRUCT_ARRAY constants, or FT_INVALID if there's
-     * no such field.
      */
-    //FIXME replace by 2 booleans: isArray, isStruct
-    virtual int getFieldType(void *object, int field) = 0;
+    virtual unsigned int getFieldTypeFlags(void *object, int field) = 0;
+
+    /** @name Utility functions based on getFieldTypeFlags() */
+    //@{
+    bool getFieldIsArray(void *object, int field) {return getFieldTypeFlags(object, field) & FD_ISARRAY;}
+    bool getFieldIsCompound(void *object, int field) {return getFieldTypeFlags(object, field) & FD_ISCOMPOUND;}
+    bool getFieldIsPointer(void *object, int field) {return getFieldTypeFlags(object, field) & FD_ISPOINTER;}
+    bool getFieldIsObject(void *object, int field) {return getFieldTypeFlags(object, field) & FD_ISOBJECT;}
+    //@}
 
     /**
      * Must be redefined in subclasses to return the type of a field
@@ -189,10 +194,10 @@ class SIM_API cClassDescriptor : public cNoncopyableObject
     virtual int getArraySize(void *object, int field) = 0;
 
     /**
-     * Must be redefined in subclasses to return the value of a basic field
-     * (of type FT_BASIC(_ARRAY)) in the client object as a string.
-     * It is an error if this method is invoked for non-basic fields.
-     * Returns true if no error occurred, false otherwise.
+     * Must be redefined in subclasses to return the value of a non-compound field
+     * in the client object as a string. It is an error if this method is invoked
+     * for compound fields. Returns true if no error occurred, false otherwise.
+     * @see getFieldIsCompound()
      */
     virtual bool getFieldAsString(void *object, int field, int i, char *buf, int bufsize) = 0;
 
@@ -205,18 +210,15 @@ class SIM_API cClassDescriptor : public cNoncopyableObject
     virtual bool setFieldAsString(void *object, int field, int i, const char *value) = 0;
 
     /**
-     * Must be redefined in subclasses to return the type name of an
-     * FT_STRUCT(_ARRAY) field in the client object.
-     * The return value may be used then as classname
-     * to create a descriptor object for this structure field.
+     * Must be redefined in subclasses to return the type name of a compound field
+     * in the client object. If it is a pointer, the "*" is removed. The return value
+     * may be used then as classname to create a descriptor object for this compound field.
      */
     virtual const char *getFieldStructName(void *object, int field) = 0;
 
     /**
-     * Must be redefined in subclasses to return the pointer of an
-     * FT_STRUCT(_ARRAY) field in the client object.
-     * The return value may be used then as client object pointer
-     * to create a descriptor object for this structure field.
+     * Must be redefined in subclasses to return the pointer of a compound field
+     * in the client object.
      */
     virtual void *getFieldStructPointer(void *object, int field, int i) = 0;
     //@}

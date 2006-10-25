@@ -32,7 +32,7 @@ class SIM_API cStdVectorWatcherDescriptor : public cClassDescriptor //noncopyabl
     virtual const char *getProperty(const char *propertyname);
     virtual int getFieldCount(void *object);
     virtual const char *getFieldName(void *object, int field);
-    virtual int getFieldType(void *object, int field);
+    virtual unsigned int getFieldTypeFlags(void *object, int field);
     virtual const char *getFieldTypeString(void *object, int field);
     virtual const char *getFieldProperty(void *object, int field, const char *propertyname);
     virtual int getArraySize(void *object, int field);
@@ -65,11 +65,11 @@ int cStdVectorWatcherDescriptor::getFieldCount(void *)
     return 1;
 }
 
-int cStdVectorWatcherDescriptor::getFieldType(void *, int field)
+unsigned int cStdVectorWatcherDescriptor::getFieldTypeFlags(void *, int field)
 {
     switch (field) {
-        case 0: return FT_BASIC_ARRAY;
-        default: return FT_INVALID;
+        case 0: return FD_ISARRAY; // as far as we're concerned. We don't know about FD_ISCOMPOUND, FD_ISPOINTER, FD_ISOBJECT
+        default: return FD_ZARRO;
     }
 }
 

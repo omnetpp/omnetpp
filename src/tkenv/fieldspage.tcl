@@ -91,15 +91,16 @@ proc getFieldNodeInfo {w op {key {}}} {
                 return "\b$cat\b"
             }
             set typename [opp_classdescriptor $obj $sd fieldtypename $fieldnum]
-            set type [opp_classdescriptor $obj $sd fieldtype $fieldnum]
+            set isarray [opp_classdescriptor $obj $sd fieldisarray $fieldnum]
+            set iscompound [opp_classdescriptor $obj $sd fieldiscompound $fieldnum]
             set name [opp_classdescriptor $obj $sd fieldname $fieldnum]
             if {$index!=""} {
                 append name "\[$index\]"
-            } elseif {$type=="basic array" || $type=="struct array"} {
+            } elseif {$isarray} {
                 set size [opp_classdescriptor $obj $sd fieldarraysize $fieldnum]
                 append name "\[$size\]"
             }
-            if {$type=="struct" || $type=="struct array"} {
+            if {$iscompound} {
                 append name " {...}"
             }
             set value [opp_classdescriptor $obj $sd fieldvalue $fieldnum $index]
@@ -166,10 +167,11 @@ proc getFieldNodeInfo {w op {key {}}} {
                 }
                 return $children
             }
-            set type [opp_classdescriptor $obj $sd fieldtype $fieldnum]
-            if {$type=="basic"} {
+            set isarray [opp_classdescriptor $obj $sd fieldisarray $fieldnum]
+            set iscompound [opp_classdescriptor $obj $sd fieldiscompound $fieldnum]
+            if {!$isarray && !$iscompound} {
                 return ""
-            } elseif {$type=="struct"} {
+            } elseif {!$isarray && $iscompound} {
                 set fieldptr [opp_classdescriptor $obj $sd fieldstructpointer $fieldnum]
                 set fielddesc [opp_classdescriptor $obj $sd fieldstructdesc $fieldnum]
                 if {$fielddesc==""} {
@@ -181,7 +183,7 @@ proc getFieldNodeInfo {w op {key {}}} {
                 }
             } elseif {$index!=""} {
                 # array already expanded, but we may expand further if each element is a struct
-                if {$type=="struct array"} {
+                if {$iscompound} {
                     set fieldptr [opp_classdescriptor $obj $sd fieldstructpointer $fieldnum $index]
                     set fielddesc [opp_classdescriptor $obj $sd fieldstructdesc $fieldnum]
                     if {$fielddesc==""} {
@@ -194,7 +196,7 @@ proc getFieldNodeInfo {w op {key {}}} {
                 } else {
                     return ""
                 }
-            } elseif {$type=="basic array" || $type=="struct array"} {
+            } elseif {$isarray} {
                 # expand array: enumerate all indices
                 set n [opp_classdescriptor $obj $sd fieldarraysize $fieldnum]
                 set children {}
@@ -295,15 +297,15 @@ proc _getFieldDataFor {key} {
     }
 
     set typename [opp_classdescriptor $obj $sd fieldtypename $fieldnum]
-    set type [opp_classdescriptor $obj $sd fieldtype $fieldnum]
+    set isarray [opp_classdescriptor $obj $sd fieldisarray $fieldnum]
     set name [opp_classdescriptor $obj $sd fieldname $fieldnum]
     if {$index!=""} {
         append name "\[$index\]"
-    } elseif {$type=="basic array" || $type=="struct array"} {
+    } elseif {$isarray} {
         set size [opp_classdescriptor $obj $sd fieldarraysize $fieldnum]
         append name "\[$size\]"
     }
-    #if {$type=="struct" || $type=="struct array"} {
+    #if {$iscompound} {
     #    append name " {...}"
     #}
     set value [opp_classdescriptor $obj $sd fieldvalue $fieldnum $index]

@@ -882,7 +882,7 @@ void NEDCppGenerator::generateDescriptorClass(NEDCppGenerator::ClassDesc& cld, N
     out << "    virtual const char *getProperty(const char *propertyname);\n";
     out << "    virtual int getFieldCount(void *object);\n";
     out << "    virtual const char *getFieldName(void *object, int field);\n";
-    out << "    virtual int getFieldType(void *object, int field);\n";
+    out << "    virtual unsigned int getFieldTypeFlags(void *object, int field);\n";
     out << "    virtual const char *getFieldTypeString(void *object, int field);\n";
     out << "    virtual const char *getFieldProperty(void *object, int field, const char *propertyname);\n";
     out << "    virtual int getArraySize(void *object, int field);\n";
@@ -937,22 +937,7 @@ void NEDCppGenerator::generateDescriptorClass(NEDCppGenerator::ClassDesc& cld, N
         out << "    field -= " << cld.msgbasedescclass << "::getFieldCount(object);\n";
     }
     out << "    switch (field) {\n";
-    for (i=0; i<numfields; i++)
-    {
-        const char *arr;
-        if (fld[i].fisarray)
-            arr = "_ARRAY";
-        else
-            arr = "";
-
-        if (fld[i].fkind == FIELDTYPE_BASIC)
-            out << "        case " << i << ": return FT_BASIC" << arr << ";\n";
-        else if (fld[i].fkind == FIELDTYPE_STRUCT)
-            out << "        case " << i << ": return FT_STRUCT" << arr << ";\n";
-        else
-            INTERNAL_ERROR1(NULL,"generateDescriptorClass(): invalid fieldtype %d", fld[i].fkind);
-    }
-    out << "        default: return FT_INVALID;\n";
+    // TODO
     out << "    }\n";
     out << "}\n";
     out << "\n";
