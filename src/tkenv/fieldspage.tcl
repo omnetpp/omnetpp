@@ -61,50 +61,53 @@ proc refresh_fields2page {w} {
     $tree xview moveto 0
 }
 
-proc getFieldNodeInfo {w op {key {}}} {
+#
+# Possible keys:
+#   obj-<ptr>
+#   struct-<ptr>-<descptr>
+#   group-<ptr>-<descptr>-<groupname>
+#   field-<ptr>-<descptr>-<fieldid>
+#   findex-<ptr>-<descptr>-<fieldid>-<index>
+#
+proc getFieldNodeInfo {w op {key ""}} {
     global icons treeroots
 
-    set separatebaseclasses 0
-
-    # key: objectptr-descriptorptr-fieldnum-index
-    set obj ""
-    set sd ""
-    set group ""
-    set fieldnum ""
-    set index ""
-    #XXX would it be faster using [string split]?
-    regexp {^fld-(ptr.*)-(ptr.*)-([^-]*)-([^-]*)-([^-]*)$} $key dummy obj sd group fieldnum index
-    #puts "DBG --> $obj -- $sd -- field=$fieldnum -- index=$index"
+    set keyargs [split $key "-"]
+    set keytype [lindex $keyargs 0]
+    set obj [lindex $keyargs 1]
+    set sd [lindex $keyargs 2]
 
     switch $op {
 
         text {
+            return $keyargs
+
             if {$obj==[opp_object_nullpointer]} {return "<object is NULL>"}
             if {$sd==[opp_object_nullpointer]} {return "<no descriptor for object>"}
 
-            if {$group=="" && $fieldnum==""} {
+            if {$group=="" && $fieldid==""} {
                 # no specific field -- return class name
                 set name [opp_classdescriptor $obj $sd name]
                 return $name
             }
-            if {$group!="" && $fieldnum==""} {
+            if {$group!="" && $fieldid==""} {
                 # only group given -- return that
                 return "\b$group\b"
             }
-            set typename [opp_classdescriptor $obj $sd fieldtypename $fieldnum]
-            set isarray [opp_classdescriptor $obj $sd fieldisarray $fieldnum]
-            set iscompound [opp_classdescriptor $obj $sd fieldiscompound $fieldnum]
-            set name [opp_classdescriptor $obj $sd fieldname $fieldnum]
+            set typename [opp_classdescriptor $obj $sd fieldtypename $fieldid]
+            set isarray [opp_classdescriptor $obj $sd fieldisarray $fieldid]
+            set iscompound [opp_classdescriptor $obj $sd fieldiscompound $fieldid]
+            set name [opp_classdescriptor $obj $sd fieldname $fieldid]
             if {$index!=""} {
                 append name "\[$index\]"
             } elseif {$isarray} {
-                set size [opp_classdescriptor $obj $sd fieldarraysize $fieldnum]
+                set size [opp_classdescriptor $obj $sd fieldarraysize $fieldid]
                 append name "\[$size\]"
             }
             if {$iscompound} {
                 append name " {...}"
             }
-            set value [opp_classdescriptor $obj $sd fieldvalue $fieldnum $index]
+            set value [opp_classdescriptor $obj $sd fieldvalue $fieldid $index]
             #FIXME display enumname too!
             if {$typename=="string"} {set value "\"$value\""}
             if {$value==""} {
@@ -132,88 +135,106 @@ proc getFieldNodeInfo {w op {key {}}} {
         }
 
         children {
-            if {$obj==[opp_object_nullpointer] || $sd==[opp_object_nullpointer]} {
-                return ""
-            }
-            if {$group==""} {
-                # no group given, so return list of groups
-                set numfields [opp_classdescriptor $obj $sd fieldcount]
-                for {set i 0} {$i<$numfields} {incr i} {
-                    set fieldgroup [opp_classdescriptor $obj $sd fieldproperty $i "group"]
-                    set groups($fieldgroup) 1
-                }
-                foreach fieldgroup [lsort [array names groups]] {
-                    lappend children "fld-$obj-$sd-$fieldgroup--"
-                }
-                return $children
-            }
-            if {$fieldnum==""} {
-                # no field given -- so return field list
-                set children {}
-                set fromfield 0
-                set numfields [opp_classdescriptor $obj $sd fieldcount]
+            switch $keytype {
+                obj -
+                struct {
+                    if {$obj==[opp_object_nullpointer]} {return ""}
+                    if {$keytype=="obj"} {set sd [opp_getclassdescriptorfor $obj]}
+                    if {$sd==[opp_object_nullpointer]} {return ""}
 
-                set baseclassdesc [opp_classdescriptor $obj $sd baseclassdesc]
-                if {$baseclassdesc!=[opp_object_nullpointer] && $separatebaseclasses} {
-                    # display base class fields separately
-                    lappend children "fld-$obj-$baseclassdesc-$group--"
-                    set fromfield [opp_classdescriptor $obj $baseclassdesc fieldcount]
+                    # collect list of groups
+                    set numfields [opp_classdescriptor $obj $sd fieldcount]
+                    for {set i 0} {$i<$numfields} {incr i} {
+                        set fieldgroup [opp_classdescriptor $obj $sd fieldproperty $i "group"]
+                        set groups($fieldgroup) 1
+                    }
+                    set children ""
+                    foreach fieldgroup [lsort [array names groups]] {
+                        if {$fieldgroup!=""} {
+                            lappend children "group-$obj-$sd-$fieldgroup"
+                        }
+                    }
+
+                    # plus fields with no groups
+                    for {set i 0} {$i<$numfields} {incr i} {
+                        set fieldgroup [opp_classdescriptor $obj $sd fieldproperty $i "group"]
+                        if {$fieldgroup==""} {
+                            lappend children "field-$obj-$sd-$i"
+                        }
+                    }
+                    return $children
+                 }
+
+                group {
+                    # return fields in the given group
+                    set groupname [lindex $keyargs 3]
+                    set children ""
+                    set numfields [opp_classdescriptor $obj $sd fieldcount]
+                    for {set i 0} {$i<$numfields} {incr i} {
+                        if {$groupname==[opp_classdescriptor $obj $sd fieldproperty $i "group"]} {
+                            lappend children "field-$obj-$sd-$i"
+                        }
+                    }
+                    return $children
                 }
 
-                # assemble fields list
-                for {set i $fromfield} {$i<$numfields} {incr i} {
-                    if {$group==[opp_classdescriptor $obj $sd fieldproperty $i "group"]} {
-                        lappend children "fld-$obj-$sd-$group-$i-"
+                field {
+                    set fieldid [lindex $keyargs 3]
+                    set isarray [opp_classdescriptor $obj $sd fieldisarray $fieldid]
+                    if {$isarray} {
+                        # expand array: enumerate all indices
+                        set n [opp_classdescriptor $obj $sd fieldarraysize $fieldid]
+                        set children ""
+                        for {set i 0} {$i<$n} {incr i} {
+                            lappend children "findex-$obj-$sd-$fieldid-$i"
+                        }
+                        return $children
                     }
-                }
-                return $children
-            }
-            set isarray [opp_classdescriptor $obj $sd fieldisarray $fieldnum]
-            set iscompound [opp_classdescriptor $obj $sd fieldiscompound $fieldnum]
-            if {!$isarray && !$iscompound} {
-                return ""
-            } elseif {!$isarray && $iscompound} {
-                set fieldptr [opp_classdescriptor $obj $sd fieldstructpointer $fieldnum]
-                set fielddesc [opp_classdescriptor $obj $sd fieldstructdesc $fieldnum]
-                if {$fielddesc==""} {
-                    return ""  ;# nothing known about it
-                } else {
-                    # resolve children now, otherwise we'd dislay the type as an extra level
-                    set key "fld-$fieldptr-$fielddesc---"
-                    return [getFieldNodeInfo $w children $key]
-                }
-            } elseif {$index!=""} {
-                # array already expanded, but we may expand further if each element is a struct
-                if {$iscompound} {
-                    set fieldptr [opp_classdescriptor $obj $sd fieldstructpointer $fieldnum $index]
-                    set fielddesc [opp_classdescriptor $obj $sd fieldstructdesc $fieldnum]
-                    if {$fielddesc==""} {
-                        return ""  ;# nothing known about it
-                    } else {
-                        # resolve children now, otherwise we'd dislay the type as an extra level
-                        set key "fld-$fieldptr-$fielddesc---"
-                        return [getFieldNodeInfo $w children $key]
+                    set iscompound [opp_classdescriptor $obj $sd fieldiscompound $fieldid]
+                    if {$iscompound} {
+                        # return children on this class/struct
+                        set isobject [opp_classdescriptor $obj $sd fieldisobject $fieldid]
+                        set fieldptr [opp_classdescriptor $obj $sd fieldstructpointer $fieldid]
+                        if {$isobject} {
+                            return [getFieldNodeInfo $w children "obj-$fieldptr"]
+                        } else {
+                            set fielddesc [opp_classdescriptor $obj $sd fieldstructdesc $fieldid]
+                            if {$fielddesc==""} {return ""}  ;# nothing known about it
+                            set tmpkey "struct-$fieldptr-$fielddesc"
+                            return [getFieldNodeInfo $w children $tmpkey]
+                        }
                     }
-                } else {
                     return ""
                 }
-            } elseif {$isarray} {
-                # expand array: enumerate all indices
-                set n [opp_classdescriptor $obj $sd fieldarraysize $fieldnum]
-                set children {}
-                for {set i 0} {$i<$n} {incr i} {
-                    lappend children "fld-$obj-$sd-$group-$fieldnum-$i"
+
+                findex {
+                    set fieldid [lindex $keyargs 3]
+                    set index [lindex $keyargs 4]
+                    set iscompound [opp_classdescriptor $obj $sd fieldiscompound $fieldid]
+                    if {$iscompound} {
+                        # return children on this class/struct
+                        set isobject [opp_classdescriptor $obj $sd fieldisobject $fieldid]
+                        set fieldptr [opp_classdescriptor $obj $sd fieldstructpointer $fieldid $index]
+                        if {$isobject} {
+                            return [getFieldNodeInfo $w children "obj-$fieldptr"]
+                        } else {
+                            set fielddesc [opp_classdescriptor $obj $sd fieldstructdesc $fieldid]
+                            if {$fielddesc==""} {return ""}  ;# nothing known about it
+                            set tmpkey "struct-$fieldptr-$fielddesc"
+                            return [getFieldNodeInfo $w children $tmpkey]
+                        }
+                    }
+                    return ""
                 }
-                return $children
-            } else {
-                error "wrong fieldtype $type"
+
+                default {
+                    error "bad keytype '$keytype'"
+                }
             }
         }
 
         root {
-            set obj $treeroots($w)
-            set desc [opp_getclassdescriptor $obj]
-            return "fld-$obj-$desc---"
+            return "obj-$treeroots($w)"
         }
     }
 }
@@ -280,36 +301,36 @@ proc _doFillTreeview {tree path key} {
 }
 
 proc _getFieldDataFor {key} {
-    # key: objectptr-descriptorptr-fieldnum-index
+    # key: objectptr-descriptorptr-fieldid-index
     set obj ""
     set sd ""
-    set fieldnum ""
+    set fieldid ""
     set index ""
-    regexp {^fld-(ptr.*)-(ptr.*)-([^-]*)-([^-]*)$} $key dummy obj sd fieldnum index
-    #puts "DBG --> $obj -- $sd -- field=$fieldnum -- index=$index"
+    regexp {^fld-(ptr.*)-(ptr.*)-([^-]*)-([^-]*)$} $key dummy obj sd fieldid index
+    #puts "DBG --> $obj -- $sd -- field=$fieldid -- index=$index"
 
     if {$obj==[opp_object_nullpointer]} {return "<object is NULL>"}
     if {$sd==[opp_object_nullpointer]} {return "<no descriptor for object>"}
 
     set declname [opp_classdescriptor $obj $sd name]
 
-    if {$fieldnum==""} {
+    if {$fieldid==""} {
         return [list treeView $declname value "" type "" on ""]
     }
 
-    set typename [opp_classdescriptor $obj $sd fieldtypename $fieldnum]
-    set isarray [opp_classdescriptor $obj $sd fieldisarray $fieldnum]
-    set name [opp_classdescriptor $obj $sd fieldname $fieldnum]
+    set typename [opp_classdescriptor $obj $sd fieldtypename $fieldid]
+    set isarray [opp_classdescriptor $obj $sd fieldisarray $fieldid]
+    set name [opp_classdescriptor $obj $sd fieldname $fieldid]
     if {$index!=""} {
         append name "\[$index\]"
     } elseif {$isarray} {
-        set size [opp_classdescriptor $obj $sd fieldarraysize $fieldnum]
+        set size [opp_classdescriptor $obj $sd fieldarraysize $fieldid]
         append name "\[$size\]"
     }
     #if {$iscompound} {
     #    append name " {...}"
     #}
-    set value [opp_classdescriptor $obj $sd fieldvalue $fieldnum $index]
+    set value [opp_classdescriptor $obj $sd fieldvalue $fieldid $index]
     regsub -all "\n" $value "; " value
     regsub -all "   +" $value "  " value
     if {$typename=="string"} {set value "\"$value\""}

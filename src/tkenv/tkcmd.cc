@@ -109,6 +109,7 @@ int updateInspectors_cmd(ClientData, Tcl_Interp *, int, const char **);
 int inspectorType_cmd(ClientData, Tcl_Interp *, int, const char **);
 int inspectorCommand_cmd(ClientData, Tcl_Interp *, int, const char **);
 int getClassDescriptor_cmd(ClientData, Tcl_Interp *, int, const char **);
+int getClassDescriptorFor_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv);
 int classDescriptor_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv);
 
 int objectNullPointer_cmd(ClientData, Tcl_Interp *, int, const char **);
@@ -192,6 +193,7 @@ OmnetTclCommand tcl_commands[] = {
    { "opp_inspectortype",     inspectorType_cmd     }, // translates inspector type code to namestr and v.v.
    { "opp_inspectorcommand",  inspectorCommand_cmd  }, // args: <window> <args-to-be-passed-to-inspectorCommand>
    { "opp_getclassdescriptor",getClassDescriptor_cmd}, // args: <window>
+   { "opp_getclassdescriptorfor", getClassDescriptorFor_cmd}, // args: <objptr>
    { "opp_classdescriptor",   classDescriptor_cmd   }, // args: <descrptr> <objptr> ...
    // Functions that return object pointers
    { "opp_object_nullpointer",  objectNullPointer_cmd  },
@@ -1554,6 +1556,15 @@ int colorizeImage_cmd(ClientData, Tcl_Interp *interp, int argc, const char **arg
            pixel[blueoffset] = b;
        }
    }
+   return TCL_OK;
+}
+
+int getClassDescriptorFor_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
+{
+   if (argc<2) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
+   cPolymorphic *object = (cPolymorphic *) strToPtr(argv[1]);
+   cClassDescriptor *sd = object ? object->getDescriptor() : NULL;
+   Tcl_SetResult(interp, ptrToStr(sd), TCL_VOLATILE);
    return TCL_OK;
 }
 
