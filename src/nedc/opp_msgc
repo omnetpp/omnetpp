@@ -563,11 +563,9 @@ while ($msg =~ s/(message|class|struct)\s+(.+?)\s*{(.*?)};?//s)
             # Implementing proper imports will solve this issue.
             #
 
-            # enum
+            # enum() -- treat it as @enum()
             if ($field =~ s/enum\s*\((.*?)\)\s*//s) {
-                $fieldenum = $1;
-            } else {
-                $fieldenum = '';
+                $fieldprop{"enum"} = $1;
             }
 
             # default value
@@ -610,7 +608,6 @@ while ($msg =~ s/(message|class|struct)\s+(.+?)\s*{(.*?)};?//s)
                 $fisabstract{$fieldname} = $isabstract;
                 $fisarray{$fieldname} = $isarray;
                 $farraysize{$fieldname} = $arraysize;
-                $fenumname{$fieldname} = $fieldenum;
                 #print "$msgname field=$fieldname type=$ftype{$fieldname} value=$fval{$fieldname} isarray=$fisarray{$fieldname} arraysize=$farraysize{$fieldname}\n";
                 for $key (keys(%fieldprop)) {
                     $fprops{$fieldname}->{$key} = $fieldprop{$key};
@@ -627,9 +624,6 @@ while ($msg =~ s/(message|class|struct)\s+(.+?)\s*{(.*?)};?//s)
                 }
                 if ($isarray) {
                     print STDERR "*** Error: cannot set array field of the base class in '$msgname'\n"; $ret=1;
-                }
-                if ($fieldenum ne '') {
-                    print STDERR "*** Error: cannot specify enum for base class field in '$msgname'\n"; $ret=1;
                 }
                 if ($fieldvalue eq '') {
                     print STDERR "*** Error: missing field type in '$msgname'\n"; $ret=1;
@@ -711,13 +705,14 @@ exit $ret;
 #
 #  $fieldcount
 #  @fieldlist
+#  %props
 #
 #  %ftype{fieldname}
 #  %fval{fieldname}
 #  %fisabstract{fieldname}
 #  %fisarray{fieldname}
 #  %farraysize{fieldname}
-#  %fenumname{fieldname}
+#  %%fprops{fieldname}
 #
 #  %fkind{fieldname}
 #  %datatype{fieldname}
@@ -806,8 +801,8 @@ sub prepareForCodeGeneration
         if ($fisabstract{$fieldname} && !$gap) {
             print STDERR "*** Error: abstract fields need 'customize=true' property in '$msgname'\n"; $ret=1;
         }
-        if ($fenumname{$fieldname} ne '' && !grep(/^\Q$fenumname{$fieldname}\E$/,@enums)) {
-            print STDERR "*** Error: undeclared enum '$fenumname{$fieldname}' used in '$msgname'\n"; $ret=1;
+        if ($fprops{$fieldname}->{"enum"} ne '' && !grep(/^\Q$fprops{$fieldname}->{"enum"}\E$/,@enums)) {
+            print STDERR "*** Error: undeclared enum '$fprops{$fieldname}->{enum}' used in '$msgname'\n"; $ret=1;
         }
         if ($classtype{$ftype{$fieldname}} eq 'cobject' && ($classtype eq 'noncobject' || $classtype eq 'struct')) {
             print STDERR "*** Error: cannot use cObject field '$ftype{$fieldname} $fieldname' in struct or non-cObject class '$msgname'\n"; $ret=1;
@@ -1494,7 +1489,6 @@ sub generateDescriptorClass
     print CC "    virtual const char *getFieldName(void *object, int field);\n";
     print CC "    virtual int getFieldType(void *object, int field);\n";
     print CC "    virtual const char *getFieldTypeString(void *object, int field);\n";
-    print CC "    virtual const char *getFieldEnumName(void *object, int field);\n";
     print CC "    virtual const char *getFieldProperty(void *object, int field, const char *propertyname);\n";
     print CC "    virtual int getArraySize(void *object, int field);\n";
     print CC "\n";
@@ -1608,27 +1602,6 @@ sub generateDescriptorClass
     for ($i=0; $i<$fieldcount; $i++)
     {
         print CC "        case $i: return \"$ftype{$fieldlist[$i]}\";\n";
-    }
-    print CC "        default: return NULL;\n";
-    print CC "    }\n";
-    print CC "}\n";
-    print CC "\n";
-
-    # getFieldEnumName()
-    print CC "const char *$msgdescclass\:\:getFieldEnumName(void *object, int field)\n";
-    print CC "{\n";
-    print CC "    cStructDescriptor *basedesc = getBaseClassDescriptor();\n";
-    print CC "    if (basedesc) {\n";
-    print CC "        if (field < basedesc->getFieldCount(object))\n";
-    print CC "            return basedesc->getFieldEnumName(object, field);\n";
-    print CC "        field -= basedesc->getFieldCount(object);\n";
-    print CC "    }\n";
-    print CC "    switch (field) {\n";
-    for ($i=0; $i<$fieldcount; $i++)
-    {
-        if ($fenumname{$fieldlist[$i]} ne '') {
-            print CC "        case $i: return \"$fenumname{$fieldlist[$i]}\";\n";
-        }
     }
     print CC "        default: return NULL;\n";
     print CC "    }\n";
