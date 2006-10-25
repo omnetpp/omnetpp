@@ -69,10 +69,11 @@ proc getFieldNodeInfo {w op {key {}}} {
     # key: objectptr-descriptorptr-fieldnum-index
     set obj ""
     set sd ""
+    set group ""
     set fieldnum ""
     set index ""
     #XXX would it be faster using [string split]?
-    regexp {^fld-(ptr.*)-(ptr.*)-([^-]*)-([^-]*)-([^-]*)$} $key dummy obj sd cat fieldnum index
+    regexp {^fld-(ptr.*)-(ptr.*)-([^-]*)-([^-]*)-([^-]*)$} $key dummy obj sd group fieldnum index
     #puts "DBG --> $obj -- $sd -- field=$fieldnum -- index=$index"
 
     switch $op {
@@ -81,14 +82,14 @@ proc getFieldNodeInfo {w op {key {}}} {
             if {$obj==[opp_object_nullpointer]} {return "<object is NULL>"}
             if {$sd==[opp_object_nullpointer]} {return "<no descriptor for object>"}
 
-            if {$cat=="" && $fieldnum==""} {
+            if {$group=="" && $fieldnum==""} {
                 # no specific field -- return class name
                 set name [opp_classdescriptor $obj $sd name]
                 return $name
             }
-            if {$cat!="" && $fieldnum==""} {
-                # only category given -- return that
-                return "\b$cat\b"
+            if {$group!="" && $fieldnum==""} {
+                # only group given -- return that
+                return "\b$group\b"
             }
             set typename [opp_classdescriptor $obj $sd fieldtypename $fieldnum]
             set isarray [opp_classdescriptor $obj $sd fieldisarray $fieldnum]
@@ -134,15 +135,15 @@ proc getFieldNodeInfo {w op {key {}}} {
             if {$obj==[opp_object_nullpointer] || $sd==[opp_object_nullpointer]} {
                 return ""
             }
-            if {$cat==""} {
-                # no category given, so return list of categories
+            if {$group==""} {
+                # no group given, so return list of groups
                 set numfields [opp_classdescriptor $obj $sd fieldcount]
                 for {set i 0} {$i<$numfields} {incr i} {
-                    set fieldcat [opp_classdescriptor $obj $sd fieldproperty $i "category"]
-                    set categories($fieldcat) 1
+                    set fieldgroup [opp_classdescriptor $obj $sd fieldproperty $i "group"]
+                    set groups($fieldgroup) 1
                 }
-                foreach fieldcat [lsort [array names categories]] {
-                    lappend children "fld-$obj-$sd-$fieldcat--"
+                foreach fieldgroup [lsort [array names groups]] {
+                    lappend children "fld-$obj-$sd-$fieldgroup--"
                 }
                 return $children
             }
@@ -155,14 +156,14 @@ proc getFieldNodeInfo {w op {key {}}} {
                 set baseclassdesc [opp_classdescriptor $obj $sd baseclassdesc]
                 if {$baseclassdesc!=[opp_object_nullpointer] && $separatebaseclasses} {
                     # display base class fields separately
-                    lappend children "fld-$obj-$baseclassdesc-$cat--"
+                    lappend children "fld-$obj-$baseclassdesc-$group--"
                     set fromfield [opp_classdescriptor $obj $baseclassdesc fieldcount]
                 }
 
                 # assemble fields list
                 for {set i $fromfield} {$i<$numfields} {incr i} {
-                    if {$cat==[opp_classdescriptor $obj $sd fieldproperty $i "category"]} {
-                        lappend children "fld-$obj-$sd-$cat-$i-"
+                    if {$group==[opp_classdescriptor $obj $sd fieldproperty $i "group"]} {
+                        lappend children "fld-$obj-$sd-$group-$i-"
                     }
                 }
                 return $children
@@ -201,7 +202,7 @@ proc getFieldNodeInfo {w op {key {}}} {
                 set n [opp_classdescriptor $obj $sd fieldarraysize $fieldnum]
                 set children {}
                 for {set i 0} {$i<$n} {incr i} {
-                    lappend children "fld-$obj-$sd-$cat-$fieldnum-$i"
+                    lappend children "fld-$obj-$sd-$group-$fieldnum-$i"
                 }
                 return $children
             } else {
