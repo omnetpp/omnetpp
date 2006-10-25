@@ -2,13 +2,14 @@ package org.omnetpp.scave2.editors.datatable;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.ListenerList;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
@@ -39,11 +40,17 @@ import org.omnetpp.scave2.model.RunAttribute;
  * @author andras
  */
 public class DataTable extends Table {
+	
 	public static final int TYPE_SCALAR = 0;
 	public static final int TYPE_VECTOR = 1;
 	public static final int TYPE_HISTOGRAM = 2;
 	
 	static class Column {
+		/**
+		 * Key used in getData(),setData()
+		 */
+		public static final String KEY = "DataTable.Column";
+		
 		private String text;
 		private int weight;
 		private boolean visible;
@@ -216,9 +223,48 @@ public class DataTable extends Table {
 		initDefaultColumnState(column);
 		loadColumnState(newColumn);
 		columns.add(newColumn);
+		
 		TableColumn tableColumn = new TableColumn(this, SWT.NONE);
 		tableColumn.setText(newColumn.text);
 		tableColumn.setWidth(newColumn.visible ? newColumn.weight : 0);
+		tableColumn.setData(Column.KEY, newColumn);
+		tableColumn.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
+				TableColumn tableColumn = (TableColumn)e.widget;
+				Column column = (Column)tableColumn.getData(Column.KEY);
+				int sortDirection = (getSortColumn() == tableColumn && getSortDirection() == SWT.DOWN ? SWT.UP : SWT.DOWN);
+				setSortColumn(tableColumn);
+				setSortDirection(sortDirection);
+				sortBy(column, sortDirection);
+			}
+		});
+	}
+	
+	public void sortBy(Column column, int direction) {
+		boolean ascending = direction == SWT.DOWN;
+		if (COL_DIRECTORY.equals(column))
+			idlist.sortByDirectory(manager, ascending);
+		else if (COL_FILE_RUN.equals(column))
+			idlist.sortByFileAndRun(manager); // XXX ascending
+		else if (COL_RUN_ID.equals(column))
+			idlist.sortByRun(manager, ascending);
+		else if (COL_MODULE.equals(column))
+			idlist.sortByModule(manager, ascending);
+		else if (COL_DATA.equals(column))
+			idlist.sortByName(manager, ascending);
+		else if (COL_VALUE.equals(column))
+			idlist.sortScalarsByValue(manager, ascending);
+		else if (COL_COUNT.equals(column))
+			idlist.sortVectorsByLength(manager, ascending);
+		else if (COL_MEAN.equals(column))
+			idlist.sortVectorsByMean(manager, ascending);
+		else if (COL_STDDEV.equals(column))
+			idlist.sortVectorsByStdDev(manager, ascending);
+		else {
+			// XXX experiment/measurement/replication not yet supported
+			return;
+		}
+		setIDList(idlist);
 	}
 	
 	protected void layoutColumns() {
