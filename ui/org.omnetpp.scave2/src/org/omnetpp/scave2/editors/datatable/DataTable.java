@@ -7,6 +7,7 @@ import java.util.List;
 
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.ListenerList;
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
@@ -20,6 +21,7 @@ import org.omnetpp.scave.engine.ScalarResult;
 import org.omnetpp.scave.engine.VectorResult;
 import org.omnetpp.scave.engineext.ResultFileManagerEx;
 import org.omnetpp.scave.model.DatasetType;
+import org.omnetpp.scave2.Activator;
 import org.omnetpp.scave2.model.RunAttribute;
 
 /**
@@ -83,6 +85,7 @@ public class DataTable extends Table {
 	private IDList idlist;
 	private ListenerList listeners;
 	private List<Column> columns;
+	private IPreferenceStore preferences = Activator.getDefault().getPreferenceStore(); // XXX
 	
 	public DataTable(Composite parent, int style, int type) {
 		super(parent, style | SWT.VIRTUAL | SWT.FULL_SELECTION);
@@ -156,7 +159,9 @@ public class DataTable extends Table {
 	
 	public void setColumnVisible(int index, boolean visible) {
 		if (visible != columns.get(index).visible) {
-			columns.get(index).visible = visible;
+			Column column = columns.get(index);
+			column.visible = visible;
+			saveColumnState(column);
 			layoutColumns();
 		}
 	}
@@ -207,10 +212,13 @@ public class DataTable extends Table {
 	}
 	
 	protected void addColumn(Column column) {
-		columns.add(column.clone());
+		Column newColumn = column.clone();
+		initDefaultColumnState(column);
+		loadColumnState(newColumn);
+		columns.add(newColumn);
 		TableColumn tableColumn = new TableColumn(this, SWT.NONE);
-		tableColumn.setText(column.text);
-		tableColumn.setWidth(column.visible ? column.weight : 0);
+		tableColumn.setText(newColumn.text);
+		tableColumn.setWidth(newColumn.visible ? newColumn.weight : 0);
 	}
 	
 	protected void layoutColumns() {
@@ -295,5 +303,24 @@ public class DataTable extends Table {
 			for (Object listener : new ArrayList(Arrays.asList(this.listeners.getListeners())))
 				((IDataTableListener)listener).contentChanged(this);
 		}
+	}
+	
+	protected String getPreferenceStoreKey(Column column, String field) {
+		return "DataTable." + type + "." + column.text + "." + field; 
+	}
+	
+	protected void initDefaultColumnState(Column column) {
+		if (preferences != null)
+			preferences.setDefault(getPreferenceStoreKey(column, "visible"), column.visible);
+	}
+	
+	protected void saveColumnState(Column column) {
+		if (preferences != null)
+			preferences.setValue(getPreferenceStoreKey(column, "visible"), column.visible);
+	}
+	
+	protected void loadColumnState(Column column) {
+		if (preferences != null)
+			column.visible = preferences.getBoolean(getPreferenceStoreKey(column, "visible"));
 	}
 }

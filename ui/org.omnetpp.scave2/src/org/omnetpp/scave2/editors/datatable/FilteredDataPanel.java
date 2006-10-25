@@ -30,7 +30,6 @@ import org.omnetpp.scave2.model.ScaveModelUtil;
  *  
  * @author andras
  */
-//XXX tables and filter should include the experiment, measurement, replication fields as well
 //XXX filter should include expressions ("where load>10")
 //XXX make filter panel foldable?
 public class FilteredDataPanel extends Composite {
