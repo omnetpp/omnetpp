@@ -5,7 +5,7 @@
 //
 //
 //  Declaration of the following classes:
-//    cStructDescriptor : meta-info about structures
+//    cClassDescriptor : meta-info about structures
 //
 //==========================================================================
 
@@ -19,65 +19,65 @@
 #include <stdio.h>   // sprintf
 #include <stdlib.h>  // atol
 #include <string.h>
-#include "cstruct.h"
+#include "cclassdescriptor.h"
 #include "carray.h"
 #include "cenum.h"
 #include "util.h"
 #include "cclassfactory.h"  // createOne()
 
 
-void cStructDescriptor::long2string(long l, char *buf, int bufsize)
+void cClassDescriptor::long2string(long l, char *buf, int bufsize)
 {
     ASSERT(bufsize>=10);
     sprintf(buf, "%ld", l);
 }
 
-void cStructDescriptor::ulong2string(unsigned long l, char *buf, int bufsize)
+void cClassDescriptor::ulong2string(unsigned long l, char *buf, int bufsize)
 {
     ASSERT(bufsize>=10);
     sprintf(buf, "%lu", l);
 }
 
 
-long cStructDescriptor::string2long(const char *s)
+long cClassDescriptor::string2long(const char *s)
 {
     return atol(s);
 }
 
 
-unsigned long cStructDescriptor::string2ulong(const char *s)
+unsigned long cClassDescriptor::string2ulong(const char *s)
 {
     return (unsigned long) atol(s);
 }
 
 
-void cStructDescriptor::bool2string(bool b, char *buf, int bufsize)
+void cClassDescriptor::bool2string(bool b, char *buf, int bufsize)
 {
     ASSERT(bufsize>=7);
     strcpy(buf, b ? "true" : "false");
 }
 
 
-bool cStructDescriptor::string2bool(const char *s)
+bool cClassDescriptor::string2bool(const char *s)
 {
     return s[0]=='t' || s[0]=='T' || s[0]=='y' || s[0]=='Y' || s[0]=='1';
 }
 
 
-void cStructDescriptor::double2string(double d, char *buf, int bufsize)
+void cClassDescriptor::double2string(double d, char *buf, int bufsize)
 {
     ASSERT(bufsize>=20);
     sprintf(buf, "%f", d);
 }
 
 
-double cStructDescriptor::string2double(const char *s)
+double cClassDescriptor::string2double(const char *s)
 {
     return atof(s);
 }
 
 
-void cStructDescriptor::enum2string(long e, const char *enumname, char *buf, int bufsize)
+void cClassDescriptor::enum2string(long e, const char *enumname, char *buf, int bufsize)
 {
     ASSERT(bufsize>=30); // FIXME: very crude check
 
@@ -97,7 +97,7 @@ void cStructDescriptor::enum2string(long e, const char *enumname, char *buf, int
 }
 
 
-long cStructDescriptor::string2enum(const char *s, const char *enumname)
+long cClassDescriptor::string2enum(const char *s, const char *enumname)
 {
     // return zero if string cannot be parsed
 
@@ -117,30 +117,30 @@ long cStructDescriptor::string2enum(const char *s, const char *enumname)
     return enump->lookup(s,0);
 }
 
-void cStructDescriptor::oppstring2string(const opp_string& str, char *buf, int buflen)
+void cClassDescriptor::oppstring2string(const opp_string& str, char *buf, int buflen)
 {
     strncpy(buf, str.c_str(), buflen);
     buf[buflen-1] = '\0';
 }
 
-void cStructDescriptor::oppstring2string(const std::string& str, char *buf, int buflen)
+void cClassDescriptor::oppstring2string(const std::string& str, char *buf, int buflen)
 {
     strncpy(buf, str.c_str(), buflen);
     buf[buflen-1] = '\0';
 }
 
-void cStructDescriptor::string2oppstring(const char *s, opp_string& str)
+void cClassDescriptor::string2oppstring(const char *s, opp_string& str)
 {
     str = s;
 }
 
-void cStructDescriptor::oppstring2string(const char *s, char *buf, int buflen)
+void cClassDescriptor::oppstring2string(const char *s, char *buf, int buflen)
 {
     strncpy(buf, s, buflen);
     buf[buflen-1] = '\0';
 }
 
-void cStructDescriptor::string2oppstring(const char *s, std::string& str)
+void cClassDescriptor::string2oppstring(const char *s, std::string& str)
 {
     str = s;
 }
@@ -148,7 +148,7 @@ void cStructDescriptor::string2oppstring(const char *s, std::string& str)
 
 //-----------------------------------------------------------
 
-cStructDescriptor::cStructDescriptor(const char *classname, const char *_baseclassname) :
+cClassDescriptor::cClassDescriptor(const char *classname, const char *_baseclassname) :
 cNoncopyableObject(classname, false)
 {
     baseclassname = _baseclassname ? _baseclassname : "";
@@ -156,11 +156,11 @@ cNoncopyableObject(classname, false)
     inheritancechainlength = 1;
 }
 
-cStructDescriptor::~cStructDescriptor()
+cClassDescriptor::~cClassDescriptor()
 {
 }
 
-cStructDescriptor *cStructDescriptor::getBaseClassDescriptor()
+cClassDescriptor *cClassDescriptor::getBaseClassDescriptor()
 {
     if (!baseclassdesc && !baseclassname.empty())
     {
@@ -171,32 +171,32 @@ cStructDescriptor *cStructDescriptor::getBaseClassDescriptor()
     return baseclassdesc;
 }
 
-int cStructDescriptor::getInheritanceChainLength()
+int cClassDescriptor::getInheritanceChainLength()
 {
     getBaseClassDescriptor(); // force resolution of inheritance
     return inheritancechainlength;
 }
 
-cStructDescriptor *cStructDescriptor::getDescriptorFor(const char *classname)
+cClassDescriptor *cClassDescriptor::getDescriptorFor(const char *classname)
 {
-    return dynamic_cast<cStructDescriptor *>(classDescriptors.instance()->get(classname));
+    return dynamic_cast<cClassDescriptor *>(classDescriptors.instance()->get(classname));
 }
 
-cStructDescriptor *cStructDescriptor::getDescriptorFor(cPolymorphic *object)
+cClassDescriptor *cClassDescriptor::getDescriptorFor(cPolymorphic *object)
 {
     // find descriptor by class name
-    cStructDescriptor *desc = cStructDescriptor::getDescriptorFor(object->className());
+    cClassDescriptor *desc = cClassDescriptor::getDescriptorFor(object->className());
     if (desc)
         return desc;
 
     // bad luck: no descriptor for exactly this class. Try to find one for some base class.
     //XXX we could even cache the result in a {classname->descriptor} hashtable.
-    cStructDescriptor *bestDesc = NULL;
+    cClassDescriptor *bestDesc = NULL;
     int bestInheritanceChainLength = -1;
     cArray *array = classDescriptors.instance();
     for (int i=0; i<array->items(); i++)
     {
-        cStructDescriptor *desc = dynamic_cast<cStructDescriptor *>(array->get(i));
+        cClassDescriptor *desc = dynamic_cast<cClassDescriptor *>(array->get(i));
         if (!desc || !desc->doesSupport(object))
             continue; // skip holes
         int inheritanceChainLength = desc->getInheritanceChainLength();

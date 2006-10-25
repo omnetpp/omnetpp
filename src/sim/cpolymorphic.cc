@@ -17,16 +17,16 @@
 
 #include "cpolymorphic.h"
 #include "cexception.h"
-#include "cstruct.h"
+#include "cclassdescriptor.h"
 
 const char *cPolymorphic::className() const
 {
     return opp_typename(typeid(*this));
 }
 
-cStructDescriptor *cPolymorphic::getDescriptor()
+cClassDescriptor *cPolymorphic::getDescriptor()
 {
-    return cStructDescriptor::getDescriptorFor(this);
+    return cClassDescriptor::getDescriptorFor(this);
 }
 
 const char *cPolymorphic::fullName() const

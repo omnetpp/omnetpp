@@ -295,7 +295,7 @@ void NEDCppGenerator::prepareForCodeGeneration(NEDElement *node, NEDCppGenerator
     }
     else
     {
-        cld.msgbasedescclass = "cStructDescriptor";
+        cld.msgbasedescclass = "cClassDescriptor";
     }
 
 

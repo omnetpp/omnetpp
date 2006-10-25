@@ -134,7 +134,7 @@ inspector.obj: inspector.cc \
   ../../include/cstringpar.h \
   ../../include/cstringpool.h \
   ../../include/cstrtokenizer.h \
-  ../../include/cstruct.h \
+  ../../include/cclassdescriptor.h \
   ../../include/ctopo.h \
   ../../include/cvarhist.h \
   ../../include/cvisitor.h \
@@ -220,7 +220,7 @@ inspfactory.obj: inspfactory.cc \
   ../../include/cstringpar.h \
   ../../include/cstringpool.h \
   ../../include/cstrtokenizer.h \
-  ../../include/cstruct.h \
+  ../../include/cclassdescriptor.h \
   ../../include/ctopo.h \
   ../../include/cvarhist.h \
   ../../include/cvisitor.h \
@@ -352,7 +352,7 @@ objinsp.obj: objinsp.cc \
   ../../include/cstringpar.h \
   ../../include/cstringpool.h \
   ../../include/cstrtokenizer.h \
-  ../../include/cstruct.h \
+  ../../include/cclassdescriptor.h \
   ../../include/ctopo.h \
   ../../include/cvarhist.h \
   ../../include/cvisitor.h \
@@ -419,7 +419,7 @@ statinsp.obj: statinsp.cc \
   tkutil.h
 structinsp.obj: structinsp.cc \
   ../../include/cenum.h \
-  ../../include/cstruct.h \
+  ../../include/cclassdescriptor.h \
   tkapp.h \
   tklib.h \
   inspfactory.h \
@@ -490,7 +490,7 @@ tkcmd.obj: tkcmd.cc \
   ../../include/cchannel.h \
   ../../include/cstat.h \
   ../../include/cwatch.h \
-  ../../include/cstruct.h \
+  ../../include/cclassdescriptor.h \
   ../../include/cdisplaystring.h \
   ../../include/cqueue.h \
   ../../include/coutvect.h \

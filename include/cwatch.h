@@ -223,7 +223,7 @@ class SIM_API cWatch_cPolymorphic : public cWatchBase
     virtual const char *className() const {return r.className();}
     virtual std::string info() const {return r.info();}
     virtual bool supportsAssignment() const {return false;}
-    virtual cStructDescriptor *getDescriptor() {return r.getDescriptor();}
+    virtual cClassDescriptor *getDescriptor() {return r.getDescriptor();}
 };
 
 /**
@@ -239,7 +239,7 @@ class SIM_API cWatch_cPolymorphicPtr : public cWatchBase
     virtual const char *className() const {return rp? rp->className() : "n/a";}
     virtual std::string info() const {return rp ? rp->info() : "<null>";}
     virtual bool supportsAssignment() const {return false;}
-    virtual cStructDescriptor *getDescriptor() {return rp ? rp->getDescriptor() : NULL;}
+    virtual cClassDescriptor *getDescriptor() {return rp ? rp->getDescriptor() : NULL;}
 };
 
 

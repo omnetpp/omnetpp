@@ -5,7 +5,7 @@
 //            Discrete System Simulation in C++
 //
 //  Implementation of
-//    cStructDescriptor-based inspector
+//    cClassDescriptor-based inspector
 //
 //==========================================================================
 
@@ -20,7 +20,7 @@
 #include <math.h>
 
 #include "cenum.h"
-#include "cstruct.h"
+#include "cclassdescriptor.h"
 
 #include "tkapp.h"
 #include "tklib.h"
@@ -53,7 +53,7 @@ void TStructPanel::flushIfNeeded(int limit)
 }
 
 
-void TStructPanel::displayStruct(void *object, cStructDescriptor *sd, int level)
+void TStructPanel::displayStruct(void *object, cClassDescriptor *sd, int level)
 {
    // print everything in a buffer, and periodically display it as the buffer gets full.
    // this is a temporary solution, should be replaced by something more professional!
@@ -63,15 +63,15 @@ void TStructPanel::displayStruct(void *object, cStructDescriptor *sd, int level)
    for (int fld=0; fld<sd->getFieldCount(object); fld++)
    {
        int type = sd->getFieldType(object, fld);
-       bool isarray = type==cStructDescriptor::FT_BASIC_ARRAY ||
-                      type==cStructDescriptor::FT_STRUCT_ARRAY;
-       cStructDescriptor *sd1;
+       bool isarray = type==cClassDescriptor::FT_BASIC_ARRAY ||
+                      type==cClassDescriptor::FT_STRUCT_ARRAY;
+       cClassDescriptor *sd1;
 
        if (!isarray)
        {
            switch(type)
            {
-               case cStructDescriptor::FT_BASIC:
+               case cClassDescriptor::FT_BASIC:
                    tmpbuf[0]='\0';
                    sd->getFieldAsString(object, fld, 0, tmpbuf, MAXWRITE);
                    if (sd->getFieldProperty(object, fld, "enum"))
@@ -87,13 +87,13 @@ void TStructPanel::displayStruct(void *object, cStructDescriptor *sd, int level)
                    sprintf(writeptr,"%*s%s %s  =  %s\n", indent, "", sd->getFieldTypeString(object, fld), sd->getFieldName(object, fld), tmpbuf);
                    flushIfNeeded(FLUSHLIMIT);
                    break;
-               case cStructDescriptor::FT_STRUCT:
+               case cClassDescriptor::FT_STRUCT:
                    tmpbuf[0]='\0';
                    sd->getFieldAsString(object, fld, 0, tmpbuf, MAXWRITE);
                    sprintf(writeptr,"%*s%s %s  =  %s ", indent, "", sd->getFieldTypeString(object, fld), sd->getFieldName(object, fld), tmpbuf);
                    flushIfNeeded(FLUSHLIMIT);
 
-                   sd1 = cStructDescriptor::getDescriptorFor(sd->getFieldStructName(object, fld));
+                   sd1 = cClassDescriptor::getDescriptorFor(sd->getFieldStructName(object, fld));
                    if (!sd1)
                    {
                        sprintf(writeptr, (tmpbuf[0] ? "\n" : "{...}\n"));
@@ -120,7 +120,7 @@ void TStructPanel::displayStruct(void *object, cStructDescriptor *sd, int level)
            {
                switch(type)
                {
-                   case cStructDescriptor::FT_BASIC_ARRAY:
+                   case cClassDescriptor::FT_BASIC_ARRAY:
                        sd->getFieldAsString(object, fld, i, tmpbuf, MAXWRITE); // FIXME: error handling!
                        if (sd->getFieldProperty(object, fld, "enum"))
                        {
@@ -135,13 +135,13 @@ void TStructPanel::displayStruct(void *object, cStructDescriptor *sd, int level)
                        sprintf(writeptr,"%*s%s %s[%d]  =  %s\n", indent, "", sd->getFieldTypeString(object, fld), sd->getFieldName(object, fld), i, tmpbuf);
                        flushIfNeeded(FLUSHLIMIT);
                        break;
-                   case cStructDescriptor::FT_STRUCT_ARRAY:
+                   case cClassDescriptor::FT_STRUCT_ARRAY:
                        tmpbuf[0]='\0';
                        sd->getFieldAsString(object, fld, i, tmpbuf, MAXWRITE);
                        sprintf(writeptr,"%*s%s %s[%d]  =  %s ", indent, "", sd->getFieldTypeString(object, fld), sd->getFieldName(object, fld), i, tmpbuf);
                        flushIfNeeded(FLUSHLIMIT);
 
-                       sd1 = cStructDescriptor::getDescriptorFor(sd->getFieldStructName(object, fld));
+                       sd1 = cClassDescriptor::getDescriptorFor(sd->getFieldStructName(object, fld));
                        if (!sd1)
                        {
                            sprintf(writeptr, (tmpbuf[0] ? "\n" : "{...}\n"));
@@ -179,7 +179,7 @@ void TStructPanel::update()
    }
 
    // get descriptor object
-   cStructDescriptor *sd = object->getDescriptor();
+   cClassDescriptor *sd = object->getDescriptor();
    if (!sd)
    {
        CHK(Tcl_VarEval(interp, widgetname, ".txt insert 1.0 {class ", object->className()," {\n"

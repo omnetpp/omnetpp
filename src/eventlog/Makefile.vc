@@ -108,6 +108,16 @@ eventlogfacade.obj: eventlogfacade.cc \
 eventlogindex.obj: eventlogindex.cc \
   eventlogindex.h \
   eventlogdefs.h
+eventlogtablefacade.obj: eventlogtablefacade.cc \
+  ievent.h \
+  ieventlog.h \
+  event.h \
+  eventlogtablefacade.h \
+  eventlogentry.h \
+  messagedependency.h \
+  eventlogentries.h \
+  eventlogdefs.h \
+  eventlogfacade.h
 eventlogtool.obj: eventlogtool.cc \
   eventlogindex.h \
   eventlog.h \
@@ -166,6 +176,16 @@ messagedependency.obj: messagedependency.cc \
   eventlogentry.h \
   messagedependency.h \
   eventlogentries.h
+sequencechartfacade.obj: sequencechartfacade.cc \
+  ievent.h \
+  ieventlog.h \
+  event.h \
+  sequencechartfacade.h \
+  eventlogentry.h \
+  messagedependency.h \
+  eventlogentries.h \
+  eventlogdefs.h \
+  eventlogfacade.h
 stringpool.obj: stringpool.cc \
   stringpool.h \
   eventlogdefs.h

@@ -240,7 +240,7 @@
  *   - cChannelType can instantiate a channel type
  *   - cMathFunction stores a pointer to a math function accessible from NED
  *   - cClassFactory can instantiate a class, given the class name as string
- *   - cStructDescriptor provides a generic way to access data in a struct
+ *   - cClassDescriptor provides a generic way to access data in a struct
  *     or class (somewhat analogous to Java reflection)
  *   - cEnum maps enum values to their string representations and vica versa
  *

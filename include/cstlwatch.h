@@ -45,7 +45,7 @@ class SIM_API cStdVectorWatcherBase : public cWatchBase
     virtual const char *elemTypeName() const = 0;
     virtual int size() const = 0;
     virtual std::string at(int i) const = 0;
-    virtual cStructDescriptor *getDescriptor();
+    virtual cClassDescriptor *getDescriptor();
 };
 
 

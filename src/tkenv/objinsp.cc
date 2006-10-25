@@ -251,7 +251,7 @@ class TWatchInspectorFactory : public cInspectorFactory
 
     bool supportsObject(cObject *obj) {
         // if it has a structdescriptor, we say we don't support it because we leave it to TObjInspector
-        cStructDescriptor *sd = obj->getDescriptor();
+        cClassDescriptor *sd = obj->getDescriptor();
         return !sd && dynamic_cast<cWatchBase *>(obj)!=NULL;
     }
     int inspectorType() {return INSP_OBJECT;}

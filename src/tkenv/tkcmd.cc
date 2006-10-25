@@ -28,7 +28,7 @@
 #include "cchannel.h"
 #include "cstat.h"
 #include "cwatch.h"
-#include "cstruct.h"
+#include "cclassdescriptor.h"
 #include "cdisplaystring.h"
 #include "cqueue.h"
 #include "coutvect.h"
@@ -1406,7 +1406,7 @@ int getClassDescriptor_cmd(ClientData, Tcl_Interp *interp, int argc, const char 
    if (argc!=2) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
 
    cObject *object = (cObject *)strToPtr(argv[1]);
-   cStructDescriptor *sd = object ? object->getDescriptor() : NULL;
+   cClassDescriptor *sd = object ? object->getDescriptor() : NULL;
    Tcl_SetResult(interp, ptrToStr(sd), TCL_VOLATILE);
    return TCL_OK;
 }
@@ -1564,7 +1564,7 @@ int classDescriptor_cmd(ClientData, Tcl_Interp *interp, int argc, const char **a
    E_TRY
    if (argc<4) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
    void *object = strToPtr(argv[1]);
-   cStructDescriptor *sd = (cStructDescriptor *)strToPtr(argv[2]);
+   cClassDescriptor *sd = (cClassDescriptor *)strToPtr(argv[2]);
    if (!object) {Tcl_SetResult(interp, "object is null", TCL_STATIC); return TCL_ERROR;}
    if (!sd) {Tcl_SetResult(interp, "classdescriptor is null", TCL_STATIC); return TCL_ERROR;}
    const char *cmd = argv[3];
@@ -1613,13 +1613,13 @@ int classDescriptor_cmd(ClientData, Tcl_Interp *interp, int argc, const char **a
       int type = sd->getFieldType(object, fld);
       switch(type)
       {
-          case cStructDescriptor::FT_BASIC:
+          case cClassDescriptor::FT_BASIC:
               Tcl_SetResult(interp, "basic", TCL_STATIC); break;
-          case cStructDescriptor::FT_STRUCT:
+          case cClassDescriptor::FT_STRUCT:
               Tcl_SetResult(interp, "struct", TCL_STATIC); break;
-          case cStructDescriptor::FT_BASIC_ARRAY:
+          case cClassDescriptor::FT_BASIC_ARRAY:
               Tcl_SetResult(interp, "basic array", TCL_STATIC); break;
-          case cStructDescriptor::FT_STRUCT_ARRAY:
+          case cClassDescriptor::FT_STRUCT_ARRAY:
               Tcl_SetResult(interp, "struct array", TCL_STATIC); break;
           default:
               Tcl_SetResult(interp, "invalid", TCL_STATIC);
@@ -1697,7 +1697,7 @@ int classDescriptor_cmd(ClientData, Tcl_Interp *interp, int argc, const char **a
       if (argc!=5) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
       int fld = atoi(argv[4]);
       const char *fieldStructName = sd->getFieldStructName(object, fld);
-      Tcl_SetResult(interp, ptrToStr(cStructDescriptor::getDescriptorFor(fieldStructName)), TCL_VOLATILE);
+      Tcl_SetResult(interp, ptrToStr(cClassDescriptor::getDescriptorFor(fieldStructName)), TCL_VOLATILE);
       return TCL_OK;
    }
 

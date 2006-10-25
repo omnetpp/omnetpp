@@ -1485,7 +1485,7 @@ sub generateStruct
 #
 sub generateDescriptorClass
 {
-    print CC "class $msgdescclass : public cStructDescriptor\n";
+    print CC "class $msgdescclass : public cClassDescriptor\n";
     print CC "{\n";
     print CC "  public:\n";
     print CC "    $msgdescclass();\n";
@@ -1512,7 +1512,7 @@ sub generateDescriptorClass
 
     # ctor, dtor
     $fieldcount = $#fieldlist+1;
-    print CC "$msgdescclass\:\:$msgdescclass() : cStructDescriptor(\"$msgclass\", \"$msgbaseclass\")\n";
+    print CC "$msgdescclass\:\:$msgdescclass() : cClassDescriptor(\"$msgclass\", \"$msgbaseclass\")\n";
     print CC "{\n";
     print CC "}\n";
     print CC "\n";
@@ -1535,7 +1535,7 @@ sub generateDescriptorClass
     for $key (keys %props) {
         print CC "    if (!strcmp(propertyname,\"$key\")) return \"$props{$key}\";\n";
     }
-    print CC "    cStructDescriptor *basedesc = getBaseClassDescriptor();\n";
+    print CC "    cClassDescriptor *basedesc = getBaseClassDescriptor();\n";
     print CC "    return basedesc ? basedesc->getProperty(propertyname) : NULL;\n";
     print CC "}\n";
     print CC "\n";
@@ -1543,7 +1543,7 @@ sub generateDescriptorClass
     # getFieldCount()
     print CC "int $msgdescclass\:\:getFieldCount(void *object)\n";
     print CC "{\n";
-    print CC "    cStructDescriptor *basedesc = getBaseClassDescriptor();\n";
+    print CC "    cClassDescriptor *basedesc = getBaseClassDescriptor();\n";
     print CC "    return basedesc ? $fieldcount+basedesc->getFieldCount(object) : $fieldcount;\n";
     print CC "}\n";
     print CC "\n";
@@ -1551,7 +1551,7 @@ sub generateDescriptorClass
     # getFieldType()
     print CC "int $msgdescclass\:\:getFieldType(void *object, int field)\n";
     print CC "{\n";
-    print CC "    cStructDescriptor *basedesc = getBaseClassDescriptor();\n";
+    print CC "    cClassDescriptor *basedesc = getBaseClassDescriptor();\n";
     print CC "    if (basedesc) {\n";
     print CC "        if (field < basedesc->getFieldCount(object))\n";
     print CC "            return basedesc->getFieldType(object, field);\n";
@@ -1581,7 +1581,7 @@ sub generateDescriptorClass
     # getFieldName()
     print CC "const char *$msgdescclass\:\:getFieldName(void *object, int field)\n";
     print CC "{\n";
-    print CC "    cStructDescriptor *basedesc = getBaseClassDescriptor();\n";
+    print CC "    cClassDescriptor *basedesc = getBaseClassDescriptor();\n";
     print CC "    if (basedesc) {\n";
     print CC "        if (field < basedesc->getFieldCount(object))\n";
     print CC "            return basedesc->getFieldName(object, field);\n";
@@ -1600,7 +1600,7 @@ sub generateDescriptorClass
     # getFieldTypeString()
     print CC "const char *$msgdescclass\:\:getFieldTypeString(void *object, int field)\n";
     print CC "{\n";
-    print CC "    cStructDescriptor *basedesc = getBaseClassDescriptor();\n";
+    print CC "    cClassDescriptor *basedesc = getBaseClassDescriptor();\n";
     print CC "    if (basedesc) {\n";
     print CC "        if (field < basedesc->getFieldCount(object))\n";
     print CC "            return basedesc->getFieldTypeString(object, field);\n";
@@ -1619,7 +1619,7 @@ sub generateDescriptorClass
     # getFieldProperty()
     print CC "const char *$msgdescclass\:\:getFieldProperty(void *object, int field, const char *propertyname)\n";
     print CC "{\n";
-    print CC "    cStructDescriptor *basedesc = getBaseClassDescriptor();\n";
+    print CC "    cClassDescriptor *basedesc = getBaseClassDescriptor();\n";
     print CC "    if (basedesc) {\n";
     print CC "        if (field < basedesc->getFieldCount(object))\n";
     print CC "            return basedesc->getFieldProperty(object, field, propertyname);\n";
@@ -1646,7 +1646,7 @@ sub generateDescriptorClass
     # getArraySize()
     print CC "int $msgdescclass\:\:getArraySize(void *object, int field)\n";
     print CC "{\n";
-    print CC "    cStructDescriptor *basedesc = getBaseClassDescriptor();\n";
+    print CC "    cClassDescriptor *basedesc = getBaseClassDescriptor();\n";
     print CC "    if (basedesc) {\n";
     print CC "        if (field < basedesc->getFieldCount(object))\n";
     print CC "            return basedesc->getArraySize(object, field);\n";
@@ -1673,7 +1673,7 @@ sub generateDescriptorClass
     # getFieldAsString()
     print CC "bool $msgdescclass\:\:getFieldAsString(void *object, int field, int i, char *resultbuf, int bufsize)\n";
     print CC "{\n";
-    print CC "    cStructDescriptor *basedesc = getBaseClassDescriptor();\n";
+    print CC "    cClassDescriptor *basedesc = getBaseClassDescriptor();\n";
     print CC "    if (basedesc) {\n";
     print CC "        if (field < basedesc->getFieldCount(object))\n";
     print CC "            return basedesc->getFieldAsString(object,field,i,resultbuf,bufsize);\n";
@@ -1728,7 +1728,7 @@ sub generateDescriptorClass
     # setFieldAsString()
     print CC "bool $msgdescclass\:\:setFieldAsString(void *object, int field, int i, const char *value)\n";
     print CC "{\n";
-    print CC "    cStructDescriptor *basedesc = getBaseClassDescriptor();\n";
+    print CC "    cClassDescriptor *basedesc = getBaseClassDescriptor();\n";
     print CC "    if (basedesc) {\n";
     print CC "        if (field < basedesc->getFieldCount(object))\n";
     print CC "            return basedesc->setFieldAsString(object,field,i,value);\n";
@@ -1775,7 +1775,7 @@ sub generateDescriptorClass
     # getFieldStructName()
     print CC "const char *$msgdescclass\:\:getFieldStructName(void *object, int field)\n";
     print CC "{\n";
-    print CC "    cStructDescriptor *basedesc = getBaseClassDescriptor();\n";
+    print CC "    cClassDescriptor *basedesc = getBaseClassDescriptor();\n";
     print CC "    if (basedesc) {\n";
     print CC "        if (field < basedesc->getFieldCount(object))\n";
     print CC "            return basedesc->getFieldStructName(object, field);\n";
@@ -1796,7 +1796,7 @@ sub generateDescriptorClass
     # getFieldStructPointer()
     print CC "void *$msgdescclass\:\:getFieldStructPointer(void *object, int field, int i)\n";
     print CC "{\n";
-    print CC "    cStructDescriptor *basedesc = getBaseClassDescriptor();\n";
+    print CC "    cClassDescriptor *basedesc = getBaseClassDescriptor();\n";
     print CC "    if (basedesc) {\n";
     print CC "        if (field < basedesc->getFieldCount(object))\n";
     print CC "            return basedesc->getFieldStructPointer(object, field, i);\n";

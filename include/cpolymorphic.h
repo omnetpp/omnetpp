@@ -27,7 +27,7 @@
 #include "regmacros.h"
 
 class cCommBuffer;
-class cStructDescriptor;
+class cClassDescriptor;
 
 
 //FIXME cPolymorphic doesn't have name()!!!! why not declare it here...? and why not move isName() and foreach() here??
@@ -62,7 +62,7 @@ class SIM_API cPolymorphic
 {
   public:
     // internal: returns a descriptor object for this object
-    virtual cStructDescriptor *getDescriptor();
+    virtual cClassDescriptor *getDescriptor();
 
   public:
     /**

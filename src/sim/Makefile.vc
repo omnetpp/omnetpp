@@ -24,7 +24,7 @@ CPPOBJS_STD=\
     cpacket.obj cpar.obj cpolymorphic.obj cproperties.obj cproperty.obj \
     cpsquare.obj cqueue.obj cscheduler.obj csimplemodule.obj \
     csimulation.obj cstat.obj cstlwatch.obj cstringpar.obj \
-    cstringpool.obj cstrtokenizer.obj cstruct.obj ctopo.obj cvarhist.obj \
+    cstringpool.obj cstrtokenizer.obj cclassdescriptor.obj ctopo.obj cvarhist.obj \
     cvisitor.obj cwatch.obj cxmlelement.obj cxmlpar.obj distrib.obj \
     errmsg.obj globals.obj lex.expryy.obj minixpath.obj onstartup.obj \
     task.obj util.obj  expr.tab.obj nedsupport.obj sim_std_m.obj \
@@ -219,6 +219,24 @@ cchannel.obj: cchannel.cc \
   ../../include/ccoroutine.h \
   ../../include/cclassfactory.h \
   ../../include/opp_string.h
+cclassdescriptor.obj: cclassdescriptor.cc \
+  ../../include/cclassdescriptor.h \
+  ../../include/carray.h \
+  ../../include/cenum.h \
+  ../../include/util.h \
+  ../../include/cclassfactory.h \
+  ../../include/cobject.h \
+  ../../include/cenvir.h \
+  ../../include/defs.h \
+  ../../include/cpolymorphic.h \
+  ../../include/cexception.h \
+  ../../include/cvisitor.h \
+  ../../include/cstringpool.h \
+  ../../include/regmacros.h \
+  ../../include/onstartup.h \
+  ../../include/errmsg.h \
+  ../../include/opp_string.h \
+  ../../include/globals.h
 cclassfactory.obj: cclassfactory.cc \
   ../../include/cclassfactory.h \
   ../../include/cexception.h \
@@ -891,7 +909,7 @@ cobject.obj: cobject.cc \
   ../../include/cexception.h \
   ../../include/util.h \
   ../../include/cdefaultlist.h \
-  ../../include/cstruct.h \
+  ../../include/cclassdescriptor.h \
   ../../include/ccommbuffer.h \
   ../../include/defs.h \
   ../../include/cpolymorphic.h \
@@ -1001,7 +1019,7 @@ cparsimcomm.obj: cparsimcomm.cc \
 cpolymorphic.obj: cpolymorphic.cc \
   ../../include/cpolymorphic.h \
   ../../include/cexception.h \
-  ../../include/cstruct.h \
+  ../../include/cclassdescriptor.h \
   ../../include/defs.h \
   ../../include/util.h \
   ../../include/regmacros.h \
@@ -1226,7 +1244,7 @@ cstat.obj: cstat.cc \
   ../../include/opp_string.h
 cstlwatch.obj: cstlwatch.cc \
   ../../include/cstlwatch.h \
-  ../../include/cstruct.h \
+  ../../include/cclassdescriptor.h \
   ../../include/globals.h \
   ../../include/cobject.h \
   ../../include/cwatch.h \
@@ -1278,24 +1296,6 @@ cstringpool.obj: cstringpool.cc \
 cstrtokenizer.obj: cstrtokenizer.cc \
   ../../include/cstrtokenizer.h \
   ../../include/defs.h
-cstruct.obj: cstruct.cc \
-  ../../include/cstruct.h \
-  ../../include/carray.h \
-  ../../include/cenum.h \
-  ../../include/util.h \
-  ../../include/cclassfactory.h \
-  ../../include/cobject.h \
-  ../../include/cenvir.h \
-  ../../include/defs.h \
-  ../../include/cpolymorphic.h \
-  ../../include/cexception.h \
-  ../../include/cvisitor.h \
-  ../../include/cstringpool.h \
-  ../../include/regmacros.h \
-  ../../include/onstartup.h \
-  ../../include/errmsg.h \
-  ../../include/opp_string.h \
-  ../../include/globals.h
 ctopo.obj: ctopo.cc \
   ../../include/ctopo.h \
   ../../include/cpar.h \
@@ -1624,7 +1624,7 @@ sim_std_m.obj: sim_std_m.cc \
   ../../include/cstringpar.h \
   ../../include/cstringpool.h \
   ../../include/cstrtokenizer.h \
-  ../../include/cstruct.h \
+  ../../include/cclassdescriptor.h \
   ../../include/ctopo.h \
   ../../include/cvarhist.h \
   ../../include/cvisitor.h \

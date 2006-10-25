@@ -17,13 +17,13 @@
 
 #include <stdio.h>
 #include "cstlwatch.h"
-#include "cstruct.h"
+#include "cclassdescriptor.h"
 #include "globals.h"
 
 //
 // Internal
 //
-class SIM_API cStdVectorWatcherDescriptor : public cStructDescriptor //noncopyable
+class SIM_API cStdVectorWatcherDescriptor : public cClassDescriptor //noncopyable
 {
   public:
     cStdVectorWatcherDescriptor();
@@ -47,7 +47,7 @@ class SIM_API cStdVectorWatcherDescriptor : public cStructDescriptor //noncopyab
 Register_ClassDescriptor(cStdVectorWatcherDescriptor);
 
 cStdVectorWatcherDescriptor::cStdVectorWatcherDescriptor() :
-cStructDescriptor("cStdVectorWatcher", "cStdVectorWatcherBase")
+cClassDescriptor("cStdVectorWatcher", "cStdVectorWatcherBase")
 {
 }
 
@@ -152,8 +152,8 @@ std::string cStdVectorWatcherBase::detailedInfo() const
     return out.str();
 }
 
-cStructDescriptor *cStdVectorWatcherBase::getDescriptor()
+cClassDescriptor *cStdVectorWatcherBase::getDescriptor()
 {
-    return cStructDescriptor::getDescriptorFor("cStdVectorWatcher");
+    return cClassDescriptor::getDescriptorFor("cStdVectorWatcher");
 }
 

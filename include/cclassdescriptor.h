@@ -5,7 +5,7 @@
 //
 //
 //  Declaration of the following classes:
-//    cStructDescriptor  : meta-info about structures
+//    cClassDescriptor  : meta-info about structures
 //
 //==========================================================================
 
@@ -29,16 +29,16 @@ class sFieldWrapper;
  * Abstract base class for structure description classes, used mainly
  * with message subclassing.
  *
- * Subclasses of cStructDescriptor encapsulate the kind of reflection
+ * Subclasses of cClassDescriptor encapsulate the kind of reflection
  * information (in the Java sense) which is needed by Tkenv to display
  * fields in a message, struct or object created with the .msg syntax.
- * The cStructDescriptor subclass is generated along with the message class,
+ * The cClassDescriptor subclass is generated along with the message class,
  * (struct, object, etc.).
  *
  * When Tkenv encounters a message object, it creates an appropriate
- * cStructDescriptor object and uses that to find out what fields the
+ * cClassDescriptor object and uses that to find out what fields the
  * message object has, what are their values etc. The message object
- * is said to be the `client object' of the cStructDescriptor object.
+ * is said to be the `client object' of the cClassDescriptor object.
  *
  * In this class, the copy constructor, dup() and the assignment operator
  * are redefined to raise an error (throw cRuntimeError), since they would
@@ -47,13 +47,13 @@ class sFieldWrapper;
  * @ingroup Internals
  * @see sFieldWrapper
  */
-class SIM_API cStructDescriptor : public cNoncopyableObject
+class SIM_API cClassDescriptor : public cNoncopyableObject
 {
   public:
     /// Field types.
     enum {
         FT_BASIC,         ///< int, long, double, bool, char*, char[]
-        FT_STRUCT,        ///< embedded structure, for which there's another cStructDescriptor
+        FT_STRUCT,        ///< embedded structure, for which there's another cClassDescriptor
         FT_BASIC_ARRAY,   ///< array of FT_BASIC
         FT_STRUCT_ARRAY,  ///< array of FT_STRUCT
         FT_INVALID        ///< invalid type (signals error condition)
@@ -61,7 +61,7 @@ class SIM_API cStructDescriptor : public cNoncopyableObject
 
   private:
     std::string baseclassname;
-    cStructDescriptor *baseclassdesc;
+    cClassDescriptor *baseclassdesc;
     int inheritancechainlength;
 
   protected:
@@ -89,12 +89,12 @@ class SIM_API cStructDescriptor : public cNoncopyableObject
     /**
      * Constructor.
      */
-    cStructDescriptor(const char *classname, const char *_baseclassname=NULL);
+    cClassDescriptor(const char *classname, const char *_baseclassname=NULL);
 
     /**
      * Destructor.
      */
-    virtual ~cStructDescriptor();
+    virtual ~cClassDescriptor();
     //@}
 
     /** @name Getting descriptor for an object or a struct. */
@@ -104,14 +104,14 @@ class SIM_API cStructDescriptor : public cNoncopyableObject
      * Returns the descriptor object for the given class. The returned
      * descriptor object is a singleton, and must not be deleted.
      */
-    static cStructDescriptor *getDescriptorFor(const char *classname);
+    static cClassDescriptor *getDescriptorFor(const char *classname);
 
     /**
      * Returns the descriptor object for the given object. This can return
      * descriptor for a base class, if there isn't an exact match.
      * The returned descriptor object is a singleton, and must not be deleted.
      */
-    static cStructDescriptor *getDescriptorFor(cPolymorphic *object);
+    static cClassDescriptor *getDescriptorFor(cPolymorphic *object);
     //@}
 
     /** @name Querying and setting fields of the client object. */
@@ -127,7 +127,7 @@ class SIM_API cStructDescriptor : public cNoncopyableObject
     /**
      * Returns the descriptor for the base class, if available.
      */
-    virtual cStructDescriptor *getBaseClassDescriptor();
+    virtual cClassDescriptor *getBaseClassDescriptor();
 
     /**
      * Returns the number of base classes up to the root -- as far as

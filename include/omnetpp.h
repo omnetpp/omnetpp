@@ -71,7 +71,7 @@
 #include "cstringpar.h"
 #include "cstringpool.h"
 #include "cstrtokenizer.h"
-#include "cstruct.h"
+#include "cclassdescriptor.h"
 #include "ctopo.h"
 #include "cvarhist.h"
 #include "cvisitor.h"
