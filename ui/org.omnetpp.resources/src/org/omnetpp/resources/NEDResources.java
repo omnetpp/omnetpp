@@ -148,25 +148,16 @@ public class NEDResources implements INEDTypeResolver {
 		return param;
 	}
 	
-	/* (non-Javadoc)
-	 * @see org.omnetpp.resources.ITypeResolver#getNEDFiles()
-	 */
 	public Set<IFile> getNEDFiles() {
 		return nedFiles.keySet();
 	}
 
-	/* (non-Javadoc)
-	 * @see org.omnetpp.resources.ITypeResolver#getNEDFileContents(org.eclipse.core.resources.IFile)
-	 */
 	public NEDElement getNEDFileContents(IFile file) {
 		if (needsRehash)
 			rehash();
 		return nedFiles.get(file);
 	}
 
-	/* (non-Javadoc)
-	 * @see org.omnetpp.resources.ITypeResolver#containsNEDErrors(org.eclipse.core.resources.IFile)
-	 */
 	public boolean containsNEDErrors(IFile file) {
         return hasErrorMarker(file, NEDPROBLEM_MARKERID) || hasErrorMarker(file, NEDCONSISTENCYPROBLEM_MARKERID);
 	}
@@ -187,9 +178,6 @@ public class NEDResources implements INEDTypeResolver {
 		}
 	}
 	
-	/* (non-Javadoc)
-	 * @see org.omnetpp.resources.ITypeResolver#getComponentAt(org.eclipse.core.resources.IFile, int)
-	 */
 	public INEDTypeInfo getComponentAt(IFile file, int lineNumber) {
 		if (needsRehash)
 			rehash();
@@ -203,99 +191,72 @@ public class NEDResources implements INEDTypeResolver {
 		return null;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.omnetpp.resources.ITypeResolver#getAllComponents()
-	 */
 	public Collection<INEDTypeInfo> getAllComponents() {
 		if (needsRehash)
 			rehash();
 		return components.values();
 	}
 
-	/* (non-Javadoc)
-	 * @see org.omnetpp.resources.ITypeResolver#getModules()
-	 */
 	public Collection<INEDTypeInfo> getModules() {
 		if (needsRehash)
 			rehash();
 		return modules.values();
 	}
 
-	/* (non-Javadoc)
-	 * @see org.omnetpp.resources.ITypeResolver#getChannels()
-	 */
 	public Collection<INEDTypeInfo> getChannels() {
 		if (needsRehash)
 			rehash();
 		return channels.values();
 	}
 
-	/* (non-Javadoc)
-	 * @see org.omnetpp.resources.ITypeResolver#getModuleInterfaces()
-	 */
 	public Collection<INEDTypeInfo> getModuleInterfaces() {
 		if (needsRehash)
 			rehash();
 		return moduleInterfaces.values();
 	}
 
-	/* (non-Javadoc)
-	 * @see org.omnetpp.resources.ITypeResolver#getChannelInterfaces()
-	 */
 	public Collection<INEDTypeInfo> getChannelInterfaces() {
 		if (needsRehash)
 			rehash();
 		return channelInterfaces.values();
 	}
 
-	/* (non-Javadoc)
-	 * @see org.omnetpp.resources.ITypeResolver#getModuleNames()
-	 */
-	public Set<String> getModuleNames() {
+    public Set<String> getAllComponentNames() {
+        if (needsRehash)
+            rehash();
+        return components.keySet();
+    }
+
+    public Set<String> getModuleNames() {
 		if (needsRehash)
 			rehash();
 		return modules.keySet();
 	}
 
-	/* (non-Javadoc)
-	 * @see org.omnetpp.resources.ITypeResolver#getChannelNames()
-	 */
 	public Set<String> getChannelNames() {
 		if (needsRehash)
 			rehash();
 		return channels.keySet();
 	}
 
-	/* (non-Javadoc)
-	 * @see org.omnetpp.resources.ITypeResolver#getModuleInterfaceNames()
-	 */
 	public Set<String> getModuleInterfaceNames() {
 		if (needsRehash)
 			rehash();
 		return moduleInterfaces.keySet();
 	}
 
-	/* (non-Javadoc)
-	 * @see org.omnetpp.resources.ITypeResolver#getChannelInterfaceNames()
-	 */
 	public Set<String> getChannelInterfaceNames() {
 		if (needsRehash)
 			rehash();
 		return channelInterfaces.keySet();
 	}
 
-	/* (non-Javadoc)
-	 * @see org.omnetpp.resources.ITypeResolver#getComponent(java.lang.String)
-	 */
 	public INEDTypeInfo getComponent(String name) {
 		if (needsRehash)
 			rehash();
 		return components.get(name);
 	}
 
-	/* (non-Javadoc)
-	 * @see org.omnetpp.resources.ITypeResolver#wrapNEDElement(org.omnetpp.ned2.model.NEDElement)
-	 */
 	public INEDTypeInfo wrapNEDElement(NEDElement componentNode) {
 		return new NEDComponent(componentNode, null, this); 
 	}

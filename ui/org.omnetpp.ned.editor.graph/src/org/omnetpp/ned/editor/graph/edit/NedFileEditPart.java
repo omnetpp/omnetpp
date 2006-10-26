@@ -28,8 +28,11 @@ import org.eclipse.gef.tools.DeselectAllTracker;
 import org.eclipse.gef.tools.MarqueeDragTracker;
 import org.eclipse.swt.SWT;
 import org.omnetpp.ned.editor.graph.edit.policies.NedFileLayoutEditPolicy;
+import org.omnetpp.ned2.model.CompoundModuleNodeEx;
+import org.omnetpp.ned2.model.ITopLevelElement;
 import org.omnetpp.ned2.model.NEDElement;
 import org.omnetpp.ned2.model.NedFileNodeEx;
+import org.omnetpp.resources.NEDResourcesPlugin;
 
 /**
  * Holds all other NedEditParts under this. It is activated by
@@ -103,4 +106,32 @@ public class NedFileEditPart extends ContainerEditPart implements LayerConstants
     	return ((NedFileNodeEx)getNEDModel()).getTopLevelElements();
     }
 
+    public void attributeChanged(NEDElement node, String attr) {
+        super.attributeChanged(node, attr);
+        if (node instanceof ITopLevelElement && CompoundModuleNodeEx.ATT_NAME.equals(attr)) {
+            // invalidate the resource cache so we will see the added element next time
+            NEDResourcesPlugin.getNEDResources().invalidate();
+            refreshChildren();
+        }
+    }
+    
+    public void childInserted(NEDElement node, NEDElement where, NEDElement child) {
+        super.childInserted(node, where, child);
+        // TODO addChild would be better
+        if (child instanceof ITopLevelElement) {
+            // invalidate the resource cache so we will see the added element next time
+            NEDResourcesPlugin.getNEDResources().invalidate();
+            refreshChildren();
+        }
+    }
+
+    public void childRemoved(NEDElement node, NEDElement child) {
+        super.childRemoved(node, child);
+        // remove child would be better
+        if (child instanceof ITopLevelElement) {
+            // invalidate the resource cache so we will see the added element next time
+            NEDResourcesPlugin.getNEDResources().invalidate();
+            refreshChildren();
+        }
+    }
 }

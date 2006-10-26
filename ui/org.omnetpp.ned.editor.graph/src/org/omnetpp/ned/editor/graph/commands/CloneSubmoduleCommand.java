@@ -10,7 +10,7 @@ import org.eclipse.gef.commands.Command;
 import org.omnetpp.ned2.model.CompoundModuleNodeEx;
 import org.omnetpp.ned2.model.ConnectionNodeEx;
 import org.omnetpp.ned2.model.IConnectable;
-import org.omnetpp.ned2.model.NEDElement;
+import org.omnetpp.ned2.model.NEDElementUtilEx;
 import org.omnetpp.ned2.model.SubmoduleNodeEx;
 import org.omnetpp.ned2.model.pojo.ConnectionsNode;
 
@@ -76,13 +76,13 @@ public class CloneSubmoduleCommand extends Command {
     	SubmoduleNodeEx newModule = null;
 
         // duplicate the subtree but do not add to the new parent yet
-        newModule = (SubmoduleNodeEx)((NEDElement)oldModule).deepDup(null);
+        newModule = (SubmoduleNodeEx)oldModule.deepDup(null);
 
         newModule.getDisplayString().setLocation(newBounds.getLocation(), scale);
 
         // make the cloned submodule's name unique within the parent, before inserting into the modell
         // so it wont generate unnecessary notifications
-        newModule.setUniqueName(oldModule.getName(), parent);
+        newModule.setName(NEDElementUtilEx.getUniqueNameFor(newModule, parent.getSubmodules()));
 
         if (index < 0) {
             parent.addSubmodule(newModule);

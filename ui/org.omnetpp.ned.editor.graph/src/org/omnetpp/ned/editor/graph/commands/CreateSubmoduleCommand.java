@@ -2,6 +2,7 @@ package org.omnetpp.ned.editor.graph.commands;
 
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.omnetpp.ned2.model.CompoundModuleNodeEx;
+import org.omnetpp.ned2.model.NEDElementUtilEx;
 import org.omnetpp.ned2.model.SubmoduleNodeEx;
 
 /**
@@ -44,7 +45,7 @@ public class CreateSubmoduleCommand extends org.eclipse.gef.commands.Command {
     @Override
     public void redo() {
         //make the submodule name unique if needed before inserting into the model
-        child.setUniqueName(child.getName(), parent);
+        child.setName(NEDElementUtilEx.getUniqueNameFor(child, parent.getSubmodules()));
         parent.insertSubmodule(index, child);
     }
 

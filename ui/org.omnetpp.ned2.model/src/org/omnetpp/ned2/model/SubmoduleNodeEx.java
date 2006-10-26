@@ -1,8 +1,6 @@
 package org.omnetpp.ned2.model;
 
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import org.omnetpp.common.displaymodel.DisplayString;
 import org.omnetpp.common.displaymodel.IDisplayString;
@@ -35,42 +33,6 @@ public class SubmoduleNodeEx extends SubmoduleNode
         return result;
     }
 
-    /**
-     * @return The name of component but stripped any digits from the right ie: name123 would be name
-     */
-    private String getNameBase(String name) {
-    	String nameBase = name;
-    	int i=nameBase.length()-1;
-    	while(i>=0 && Character.isDigit(nameBase.charAt(i))) --i;
-    	// strip away the digits at the end
-    	return nameBase.substring(0,i+1);
-    }
-
-
-    /**
-     * Makes the current modulename unique, concatenating unique numbers at the end if necessary.
-     * @param newName A new name hint (this will be used as a base name for naming)
-     * @param compMod The containing compound module so it can check whether the name is really unique 
-     */
-    public void setUniqueName(String newName, CompoundModuleNodeEx compMod) {
-    	List<SubmoduleNodeEx> smls = compMod.getSubmodules();
-    	Set<String> nameSet = new HashSet<String>(smls.size());
-    	// create a set from the sibling submodules
-    	for(SubmoduleNodeEx sm : smls)
-    		if (sm != this)
-    			nameSet.add(sm.getName().toLowerCase());
-
-    	// if there is no sibling with the same name we don't have to change the name
-    	if (!nameSet.contains(newName.toLowerCase()))
-    		return;
-
-    	// there is an other module with the same name, so find a new name
-    	String baseName = getNameBase(newName);
-    	int i = 1;
-    	while(nameSet.contains(new String(baseName+i).toLowerCase())) i++;
-    	// we found a unique name
-    	setName(baseName+i);
-    }
 
 	public DisplayString getDisplayString() {
 		if (displayString == null) {

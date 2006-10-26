@@ -19,10 +19,10 @@ import org.omnetpp.ned2.model.NEDElementUtil;
  * Implements a Connection Editpart to represnt a Wire like connection.
  * 
  */
-public class ModuleConnectionEditPart extends AbstractConnectionEditPart implements INEDChangeListener, IDisplayStringChangeListener {
+public class ModuleConnectionEditPart extends AbstractConnectionEditPart implements INEDChangeListener {
 
-	private EditPart sourceEditPart; 
-	private EditPart targetEditPart;
+	private EditPart sourceEditPartEx; 
+	private EditPart targetEditPartEx;
 
 	@Override
     public void activate() {
@@ -30,9 +30,6 @@ public class ModuleConnectionEditPart extends AbstractConnectionEditPart impleme
         super.activate();
         // register as listener of the model object
         getConnectionModel().addListener(this);
-        // register to the given node's display string as a listener
-        // FIXME not necessary should be removed
-        getConnectionModel().getDisplayString().setChangeListener(this);
     }
 
     @Override
@@ -40,9 +37,6 @@ public class ModuleConnectionEditPart extends AbstractConnectionEditPart impleme
         if (!isActive()) return;
         // deregister as listener of the model object
         getConnectionModel().removeListener(this);
-        // unregister from the model's display string
-        // FIXME should be removed
-        getConnectionModel().getDisplayString().setChangeListener(null);
         super.deactivate();
     }
 
@@ -64,19 +58,17 @@ public class ModuleConnectionEditPart extends AbstractConnectionEditPart impleme
     /**
      * @see org.eclipse.gef.ConnectionEditPart#getSource()
      */
-    // FIXME remove
     @Override
     public EditPart getSource() {
-    	return sourceEditPart;
+    	return sourceEditPartEx;
     }
 
     /**
      * @see org.eclipse.gef.ConnectionEditPart#getTarget()
      */
-    // FIXME remove
     @Override
     public EditPart getTarget() {
-    	return targetEditPart;
+    	return targetEditPartEx;
     }
 
     /**
@@ -85,21 +77,22 @@ public class ModuleConnectionEditPart extends AbstractConnectionEditPart impleme
      *
      * @param editPart  EditPart which is the source.
      */
+    // FIXME we should (re)set the figure's anchor to point to the correct module figure
     @Override
     public void setSource(EditPart editPart) {
-    	if (sourceEditPart == editPart)
+    	if (sourceEditPartEx == editPart)
     		return;
     	
-    	sourceEditPart = editPart;
-    	if (sourceEditPart != null) {
+    	sourceEditPartEx = editPart;
+    	if (sourceEditPartEx != null) {
     		// attach the connection edit part to the compound module as a parent
-        	if (sourceEditPart instanceof CompoundModuleEditPart)
-        		setParent(sourceEditPart);
-        	else if (sourceEditPart instanceof SubmoduleEditPart)
-        		setParent(sourceEditPart.getParent());
-    	} else if (targetEditPart == null)
+        	if (sourceEditPartEx instanceof CompoundModuleEditPart)
+        		setParent(sourceEditPartEx);
+        	else if (sourceEditPartEx instanceof SubmoduleEditPart)
+        		setParent(sourceEditPartEx.getParent());
+    	} else if (targetEditPartEx == null)
     		setParent(null);
-    	if (sourceEditPart != null && targetEditPart != null)
+    	if (sourceEditPartEx != null && targetEditPartEx != null)
     		refresh();
     }
 
@@ -108,20 +101,21 @@ public class ModuleConnectionEditPart extends AbstractConnectionEditPart impleme
      * to add the connection as the child of a compound module
      * @param editPart  EditPart which is the target.
      */
+    // FIXME we should (re)set the figure's anchor to point to the correct module figure
     @Override
     public void setTarget(EditPart editPart) {
-    	if (targetEditPart == editPart)
+    	if (targetEditPartEx == editPart)
     		return;
-    	targetEditPart = editPart;
-    	if (targetEditPart != null) {
+    	targetEditPartEx = editPart;
+    	if (targetEditPartEx != null) {
     		// attach the connection edit part to the compound module as a parent
-        	if (targetEditPart instanceof CompoundModuleEditPart)
-        		setParent(targetEditPart);
-        	else if (targetEditPart instanceof SubmoduleEditPart)
-        		setParent(targetEditPart.getParent());
-    	} else if (sourceEditPart == null)
+        	if (targetEditPartEx instanceof CompoundModuleEditPart)
+        		setParent(targetEditPartEx);
+        	else if (targetEditPartEx instanceof SubmoduleEditPart)
+        		setParent(targetEditPartEx.getParent());
+    	} else if (sourceEditPartEx == null)
     		setParent(null);
-    	if (sourceEditPart != null && targetEditPart != null)
+    	if (sourceEditPartEx != null && targetEditPartEx != null)
     		refresh();
     }
 
@@ -143,8 +137,6 @@ public class ModuleConnectionEditPart extends AbstractConnectionEditPart impleme
     @Override
     protected IFigure createFigure() {
         ConnectionFigure conn = new ConnectionFigure();
-        conn.addRoutingListener(RoutingAnimator.getDefault());
-
         return conn;    
     }
 
@@ -164,7 +156,6 @@ public class ModuleConnectionEditPart extends AbstractConnectionEditPart impleme
      */
     @Override
     protected void refreshVisuals() {
-        // XXX do we need this here?
         ConnectionFigure cfig = (ConnectionFigure)getConnectionFigure();  
         cfig.setDisplayString(getConnectionModel().getDisplayString());
         cfig.setArrowEnabled(getConnectionModel().getArrowDirection() != NEDElementUtil.NED_ARROWDIR_BIDIR);
@@ -183,9 +174,4 @@ public class ModuleConnectionEditPart extends AbstractConnectionEditPart impleme
 		// DO nothing. we don't care about child addition removal in a connection subtree 
 	}
 
-    // FIXME remove. we should receive notification only from the ned model, not directly from display string
-	public void propertyChanged(Prop changedProp) {
-		// connection router changed
-		refreshVisuals();
-	}
 }

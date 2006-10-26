@@ -1,7 +1,8 @@
 package org.omnetpp.ned2.model;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.eclipse.core.runtime.Assert;
 import org.omnetpp.common.displaymodel.DisplayString;
@@ -10,9 +11,7 @@ import org.omnetpp.ned2.model.pojo.ChannelInterfaceNode;
 import org.omnetpp.ned2.model.pojo.ChannelNode;
 import org.omnetpp.ned2.model.pojo.ChannelSpecNode;
 import org.omnetpp.ned2.model.pojo.CompoundModuleNode;
-import org.omnetpp.ned2.model.pojo.ConnectionGroupNode;
 import org.omnetpp.ned2.model.pojo.ConnectionNode;
-import org.omnetpp.ned2.model.pojo.ConnectionsNode;
 import org.omnetpp.ned2.model.pojo.LiteralNode;
 import org.omnetpp.ned2.model.pojo.ModuleInterfaceNode;
 import org.omnetpp.ned2.model.pojo.NEDElementTags;
@@ -165,58 +164,54 @@ public class NEDElementUtilEx implements NEDElementTags, NEDElementUtil {
 		
 		return ln.getValue();
 	}
-	
+    
     /**
-     * Filters the connections within the given ConnectionsNode by the "src-module" attribute 
+     * @return The name of component but stripped any digits from the right ie: name123 would be name
      */
-    public static List<ConnectionNodeEx> getSourceConnections(ConnectionsNode conns, String moduleName) {
-		// connections may occur as direct children, or within ConnectionGroupNodes
-		ArrayList<ConnectionNodeEx> list = new ArrayList<ConnectionNodeEx>();
-		if (conns == null)
-			return list;
-		for (NEDElement child : conns) {
-			if (child instanceof ConnectionNodeEx) {
-				ConnectionNodeEx conn = (ConnectionNodeEx)child;
-				if (conn.getSrcModule().equals(moduleName))
-					list.add(conn);
-			}
-			if (child instanceof ConnectionGroupNode) {
-				for (NEDElement child2 : conns) {
-					if (child2 instanceof ConnectionNodeEx) {
-						ConnectionNodeEx conn = (ConnectionNodeEx)child2;
-						if (conn.getSrcModule().equals(moduleName))
-							list.add(conn);
-					}
-				}
-			}
-		}
-    	return list;
+    private static String getNameBase(String name) {
+        String nameBase = name;
+        int i=nameBase.length()-1;
+        while(i>=0 && Character.isDigit(nameBase.charAt(i))) --i;
+        // strip away the digits at the end
+        return nameBase.substring(0,i+1);
+    }
+
+    /**
+     * Calculates a unique name for the provided model element 
+     * @param namedElement
+     * @param contextCollection A collection of INamed elements wich proviedes a context in which the name should be unique
+     * @return The new unique name, or the original name if it was unique
+     */
+    public static String getUniqueNameFor(INamed namedElement, Set<String> contextCollection) {
+
+        String currentName = namedElement.getName();
+        // if there is no name in the context with the same name we don't have to change the name
+        if (!contextCollection.contains(currentName))
+            return currentName;
+
+        // there is an other module with the same name, so find a new name
+        String baseName = getNameBase(currentName);
+        int i = 1;
+        while(contextCollection.contains(new String(baseName+i))) 
+            i++;
+
+        // we've found a unique name
+        return baseName+i;
     }
     
     /**
-     * Filters the connections within the given ConnectionsNode by the "dest-module" attribute 
+     * Calculates a unique name for the provided model element 
+     * @param namedElement
+     * @param contextCollection A collection of strings wich proviedes a context in which the name should be unique
+     * @return The new unique name, or the original name if it was unique
      */
-	public static List<ConnectionNodeEx> getTargetConnections(ConnectionsNode conns, String moduleName) {
-		// connections may occur as direct children, or within ConnectionGroupNodes
-		ArrayList<ConnectionNodeEx> list = new ArrayList<ConnectionNodeEx>();
-		if (conns == null)
-			return list;
-		for (NEDElement child : conns) {
-			if (child instanceof ConnectionNodeEx) {
-				ConnectionNodeEx conn = (ConnectionNodeEx)child;
-				if (conn.getDestModule().equals(moduleName))
-					list.add(conn);
-			}
-			if (child instanceof ConnectionGroupNode) {
-				for (NEDElement child2 : conns) {
-					if (child2 instanceof ConnectionNodeEx) {
-						ConnectionNodeEx conn = (ConnectionNodeEx)child2;
-						if (conn.getDestModule().equals(moduleName))
-							list.add(conn);
-					}
-				}
-			}
-		}
-    	return list;
-	}
+    public static String getUniqueNameFor(INamed namedElement, Collection<? extends INamed> contextCollection) {
+        Set<String> nameSet = new HashSet<String>(contextCollection.size());
+        // create a string set from the sibling submodules (except the node we want to make unique)
+        for(INamed sm : contextCollection)
+            if (sm != namedElement)
+                nameSet.add(sm.getName());
+        return getUniqueNameFor(namedElement, nameSet);
+    }
+    
 }

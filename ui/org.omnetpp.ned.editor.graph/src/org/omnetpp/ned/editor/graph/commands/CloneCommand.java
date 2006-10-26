@@ -2,9 +2,14 @@ package org.omnetpp.ned.editor.graph.commands;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 import org.eclipse.gef.commands.Command;
+import org.omnetpp.ned2.model.INamed;
+import org.omnetpp.ned2.model.ITopLevelElement;
 import org.omnetpp.ned2.model.NEDElement;
+import org.omnetpp.ned2.model.NEDElementUtilEx;
+import org.omnetpp.resources.NEDResourcesPlugin;
 
 /**
  * Clones a set of {@link NEDElement} (copy operation)
@@ -21,7 +26,7 @@ public class CloneCommand extends Command {
     private NEDElement insertBefore;
 
     /**
-     * Creates a generic cloning command that is able to clona any number of nodes and add them
+     * Creates a generic cloning command that is able to clon any number of nodes and add them
      * to the provided parent node.
      * @param parent The parent node where the newly cloned nodes should go
      * @param insertBefore A sibling in the parent before we should insert the cloned nodes
@@ -51,7 +56,11 @@ public class CloneCommand extends Command {
     protected NEDElement clonePart(NEDElement oldNode ) {
         // duplicate the subtree but do not add to the new parent yet
     	NEDElement newNode = oldNode.deepDup(null);
-        // TODO we should set a unique name for the cloned nodes here
+        // set a unique name is this is a named toplevel element
+        if ((newNode instanceof INamed) && (newNode instanceof ITopLevelElement)) {
+            Set<String> context = NEDResourcesPlugin.getNEDResources().getAllComponentNames();
+            ((INamed)newNode).setName(NEDElementUtilEx.getUniqueNameFor((INamed)newNode, context));
+        }
 
     	// insert into the parent at the correct position
         parent.insertChildBefore(insertBefore, newNode);

@@ -1,10 +1,14 @@
 package org.omnetpp.ned.editor.graph.commands;
 
+import java.util.Set;
+
 import org.eclipse.gef.commands.Command;
 import org.omnetpp.ned2.model.INamed;
 import org.omnetpp.ned2.model.ITopLevelElement;
 import org.omnetpp.ned2.model.NEDElement;
+import org.omnetpp.ned2.model.NEDElementUtilEx;
 import org.omnetpp.ned2.model.NedFileNodeEx;
+import org.omnetpp.resources.NEDResourcesPlugin;
 
 /**
  * @author rhornig
@@ -38,11 +42,18 @@ public class CreateToplevelComponentCommand extends Command {
 
     @Override
     public void redo() {
-        parent.insertChildBefore(insertBefore, child);
-        if (child instanceof INamed) {
-        	((INamed)child).setName("unnamed");
-        	// TODO make the element name unique if needed
+        
+        if ((child instanceof INamed) && (child instanceof ITopLevelElement)) {
+            INamed namedChild = (INamed)child;
+            // if no name is present set to default
+            if (namedChild.getName() == null || "".equals(namedChild.getName()))
+                namedChild.setName("unnamed");
+            // make the name unique
+            Set<String> context = NEDResourcesPlugin.getNEDResources().getAllComponentNames();
+            namedChild.setName(NEDElementUtilEx.getUniqueNameFor(namedChild, context));
         }
+
+        parent.insertChildBefore(insertBefore, child);
     }
 
     @Override
