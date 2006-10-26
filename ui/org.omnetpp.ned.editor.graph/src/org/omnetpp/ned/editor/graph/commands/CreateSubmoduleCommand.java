@@ -43,19 +43,15 @@ public class CreateSubmoduleCommand extends org.eclipse.gef.commands.Command {
 
     @Override
     public void redo() {
+        //make the submodule name unique if needed before inserting into the model
+        child.setUniqueName(child.getName(), parent);
         parent.insertSubmodule(index, child);
-        //make the submodule name unique if needed
-        ((SubmoduleNodeEx)child).makeNameUnique();
     }
 
     @Override
     public void undo() {
         parent.removeSubmodule(child);
     }
-
-//    public void setIndex(int index) {
-//        this.index = index;
-//    }
 
     public void setLocation(Rectangle r) {
         rect = r;

@@ -204,7 +204,7 @@ public class CompoundModuleNodeEx extends CompoundModuleNode
     }
     
     /**
-     * Returns ALL connections contained in / and inherited by this module
+     * Returns ALL VALID!!! connections contained in / and inherited by this module
      * @return
      */
     private List<ConnectionNodeEx> getConnections(String srcName, String destName) {
@@ -219,7 +219,7 @@ public class CompoundModuleNodeEx extends CompoundModuleNode
     }
     
     /**
-     * Returns ALL connections contained in / and inherited by this module where this module is the source
+     * Returns ALL VALID connections contained in / and inherited by this module where this module is the source
      * @return
      */
     public List<ConnectionNodeEx> getSrcConnections() {
@@ -227,7 +227,7 @@ public class CompoundModuleNodeEx extends CompoundModuleNode
     }
 
     /**
-     * Returns ALL connections contained in / and inherited by this module where this module is the destination
+     * Returns ALL VALID connections contained in / and inherited by this module where this module is the destination
      * @return
      */
     public List<ConnectionNodeEx> getDestConnections() {
@@ -235,7 +235,7 @@ public class CompoundModuleNodeEx extends CompoundModuleNode
     }
 
     /**
-     * Returns ALL connections contained in / and inherited by the provided module 
+     * Returns ALL VALID connections contained in / and inherited by the provided module 
      * where this module is the source
      * @return
      */
@@ -244,7 +244,7 @@ public class CompoundModuleNodeEx extends CompoundModuleNode
     }
 
     /**
-     * Returns ALL connections contained in / and inherited by the provided module 
+     * Returns ALL VALID connections contained in / and inherited by the provided module 
      * where this module is the destinaion
      * @return
      */

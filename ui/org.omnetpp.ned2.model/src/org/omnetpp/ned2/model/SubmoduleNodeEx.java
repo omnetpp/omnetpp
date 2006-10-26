@@ -38,8 +38,8 @@ public class SubmoduleNodeEx extends SubmoduleNode
     /**
      * @return The name of component but stripped any digits from the right ie: name123 would be name
      */
-    public String getNameBase() {
-    	String nameBase = getName();
+    private String getNameBase(String name) {
+    	String nameBase = name;
     	int i=nameBase.length()-1;
     	while(i>=0 && Character.isDigit(nameBase.charAt(i))) --i;
     	// strip away the digits at the end
@@ -49,11 +49,11 @@ public class SubmoduleNodeEx extends SubmoduleNode
 
     /**
      * Makes the current modulename unique, concatenating unique numbers at the end if necessary.
-     * This method is effective ONLY if the submodule is already placed into the compound module.
-     * ie. getCompoundModule should not return null;
+     * @param newName A new name hint (this will be used as a base name for naming)
+     * @param compMod The containing compound module so it can check whether the name is really unique 
      */
-    public void makeNameUnique() {
-    	List<SubmoduleNodeEx> smls = getCompoundModule().getOwnSubmodules();
+    public void setUniqueName(String newName, CompoundModuleNodeEx compMod) {
+    	List<SubmoduleNodeEx> smls = compMod.getSubmodules();
     	Set<String> nameSet = new HashSet<String>(smls.size());
     	// create a set from the sibling submodules
     	for(SubmoduleNodeEx sm : smls)
@@ -61,11 +61,11 @@ public class SubmoduleNodeEx extends SubmoduleNode
     			nameSet.add(sm.getName().toLowerCase());
 
     	// if there is no sibling with the same name we don't have to change the name
-    	if (!nameSet.contains(getName().toLowerCase()))
+    	if (!nameSet.contains(newName.toLowerCase()))
     		return;
 
     	// there is an other module with the same name, so find a new name
-    	String baseName = getNameBase();
+    	String baseName = getNameBase(newName);
     	int i = 1;
     	while(nameSet.contains(new String(baseName+i).toLowerCase())) i++;
     	// we found a unique name

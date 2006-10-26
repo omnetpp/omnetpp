@@ -31,6 +31,7 @@ public class ModuleConnectionEditPart extends AbstractConnectionEditPart impleme
         // register as listener of the model object
         getConnectionModel().addListener(this);
         // register to the given node's display string as a listener
+        // FIXME not necessary should be removed
         getConnectionModel().getDisplayString().setChangeListener(this);
     }
 
@@ -40,6 +41,7 @@ public class ModuleConnectionEditPart extends AbstractConnectionEditPart impleme
         // deregister as listener of the model object
         getConnectionModel().removeListener(this);
         // unregister from the model's display string
+        // FIXME should be removed
         getConnectionModel().getDisplayString().setChangeListener(null);
         super.deactivate();
     }
@@ -62,6 +64,7 @@ public class ModuleConnectionEditPart extends AbstractConnectionEditPart impleme
     /**
      * @see org.eclipse.gef.ConnectionEditPart#getSource()
      */
+    // FIXME remove
     @Override
     public EditPart getSource() {
     	return sourceEditPart;
@@ -70,6 +73,7 @@ public class ModuleConnectionEditPart extends AbstractConnectionEditPart impleme
     /**
      * @see org.eclipse.gef.ConnectionEditPart#getTarget()
      */
+    // FIXME remove
     @Override
     public EditPart getTarget() {
     	return targetEditPart;
@@ -179,6 +183,7 @@ public class ModuleConnectionEditPart extends AbstractConnectionEditPart impleme
 		// DO nothing. we don't care about child addition removal in a connection subtree 
 	}
 
+    // FIXME remove. we should receive notification only from the ned model, not directly from display string
 	public void propertyChanged(Prop changedProp) {
 		// connection router changed
 		refreshVisuals();

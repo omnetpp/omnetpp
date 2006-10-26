@@ -77,21 +77,18 @@ public class CloneSubmoduleCommand extends Command {
 
         // duplicate the subtree but do not add to the new parent yet
         newModule = (SubmoduleNodeEx)((NEDElement)oldModule).deepDup(null);
-        // FIXME is this working ok if we clone inside a scaled compound module???
-        // if not, we should provide a correct scaling factor
-//             float scale = ((CompoundModuleNodeEx)parent).getDisplayString().getScale();
 
         newModule.getDisplayString().setLocation(newBounds.getLocation(), scale);
+
+        // make the cloned submodule's name unique within the parent, before inserting into the modell
+        // so it wont generate unnecessary notifications
+        newModule.setUniqueName(oldModule.getName(), parent);
 
         if (index < 0) {
             parent.addSubmodule(newModule);
         } else {
             parent.insertSubmodule(index, newModule);
         }
-
-        newModule.setName(oldModule.getName());
-        // make the cloned submodule's name unique within the parent
-        ((SubmoduleNodeEx)newModule).makeNameUnique();
 
         // keep track of the new modules so we can delete them in undo
         newModules.add(newModule);
