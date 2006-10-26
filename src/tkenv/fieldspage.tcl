@@ -49,6 +49,19 @@ proc inspector_createfields2page {w} {
         }
     }
 
+    bind $nb.fields2.tree <Double-1> {
+        catch {destroy .popup}
+        focus %W
+        set key [Tree:nodeat %W %x %y]
+        getFieldNodeInfo_inspect %W $key
+    }
+
+    bind $nb.fields2.tree <Return> {
+        catch {destroy .popup}
+        set key [Tree:getselection %W]
+        getFieldNodeInfo_inspect %W $key
+   }
+
     refresh_fields2page $w   ;#FIXME this should be done from C++
 }
 
@@ -134,22 +147,31 @@ proc getFieldNodeInfo {w op {key ""}} {
                 }
                 field -
                 findex {
-                    set fieldid [lindex $keyargs 3]
-                    set index [lindex $keyargs 4]
-                    set isobject [opp_classdescriptor $obj $sd fieldisobject $fieldid]
-                    set isarray [opp_classdescriptor $obj $sd fieldisarray $fieldid]
-                    if {$isobject && (!$isarray || $index!="")} {
-                        set fieldptr [opp_classdescriptor $obj $sd fieldstructpointer $fieldid $index]
-                        if [opp_isnotnull $fieldptr] {
-                            return [get_icon_for_object $fieldptr]
-                        }
-                    }
+                    set fieldptr [getFieldNodeInfo_resolveObject $keyargs]
+                    if [opp_isnull $fieldptr] {return ""}
+                    return [get_icon_for_object $fieldptr]
+                }
+            }
+        }
+
+        tooltip {
+            switch $keytype {
+                obj -
+                struct -
+                group {
                     return ""
+                }
+                field -
+                findex {
+                    set fieldid [lindex $keyargs 3]
+                    set tooltip [opp_classdescriptor $obj $sd fieldproperty $fieldid]
+                    return $tooltip
                 }
             }
         }
 
         haschildren {
+            # FIXME can be improved performance-wise
             set children [getFieldNodeInfo $w children $key]
             if {$children==""} {
                 return 0
@@ -353,6 +375,44 @@ proc getFieldNodeInfo_getFieldText {obj sd fieldid index} {
         }
     }
 }
+
+#
+# If the given key (in split form) identifies an object (cClassDescriptor
+# isObject), returns its pointer. Otherwise returns [opp_null].
+#
+#
+proc getFieldNodeInfo_resolveObject {keyargs} {
+    set keytype [lindex $keyargs 0]
+
+    if {$keytype=="field" || $keytype=="findex"} {
+        set obj [lindex $keyargs 1]
+        set sd [lindex $keyargs 2]
+        set fieldid [lindex $keyargs 3]
+        set index [lindex $keyargs 4]
+        set isobject [opp_classdescriptor $obj $sd fieldisobject $fieldid]
+        set isarray [opp_classdescriptor $obj $sd fieldisarray $fieldid]
+
+        if {$isobject && (!$isarray || $index!="")} {
+            return [opp_classdescriptor $obj $sd fieldstructpointer $fieldid $index]
+        }
+    }
+    return [opp_null]
+}
+
+
+#
+# Invoked on hitting Enter or double-clicking in the tree, it opens
+# an inspector for the given object.
+#
+proc getFieldNodeInfo_inspect {w key} {
+    set keyargs [split $key "-"]
+    set ptr [getFieldNodeInfo_resolveObject $keyargs]
+    if [opp_isnotnull $ptr] {
+        opp_inspect $ptr "(default)"
+    }
+}
+
+
 
 ##
 ## This alternative version of the Fields table uses a BLT treeview widget.

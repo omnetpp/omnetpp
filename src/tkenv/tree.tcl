@@ -336,6 +336,8 @@ proc Tree:addbindings w {
   bind $w <Down> {Tree:down %W}
   bind $w <Return> {Tree:togglestate %W}
   bind $w <space> {Tree:togglestate %W}
+  bind $w <Left> {Tree:togglestate %W}
+  bind $w <Right> {Tree:togglestate %W}
 }
 
 #
