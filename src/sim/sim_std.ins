@@ -47,7 +47,7 @@ class cComponent extends cObject //really: cDefaultList
         @omitGetVerb(true);
         bool isModule @group(general);
         //int params @group(general);
-        cPar par[] @sizeGetter(params) @group(general) @label(parameters);
+        cPar par[] @sizeGetter(params) @group(parameters/gates) @label(parameters);
 }
 
 class cChannel extends cComponent
@@ -66,6 +66,8 @@ class cBasicChannel extends cChannel
         simtime_t transmissionFinishes @group(state);
 }
 
+class cGate;
+
 class cModule extends cComponent
 {
     fields:
@@ -75,7 +77,8 @@ class cModule extends cComponent
         bool isVector @group(general);
         int index @group(general);
         int size @group(general);
-        int gates @group(general);
+        //int gates @group(general);
+        cGate *gate[] @sizeGetter(gates) @group(parameters/gates) @label(gates);
 }
 
 class cSimpleModule extends cModule
