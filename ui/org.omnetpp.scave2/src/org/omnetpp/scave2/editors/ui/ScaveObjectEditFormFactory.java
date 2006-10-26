@@ -36,7 +36,7 @@ public class ScaveObjectEditFormFactory {
 	public IScaveObjectEditForm createForm(EObject object, ResultFileManager manager) {
 		
 		if (object instanceof Chart)
-			return new ChartEditForm((Chart)object);
+			return new ChartEditForm((Chart)object, manager);
 		else if (object instanceof ChartSheet)
 			return new ChartSheetEditForm((ChartSheet)object);
 		else if (object instanceof Dataset)

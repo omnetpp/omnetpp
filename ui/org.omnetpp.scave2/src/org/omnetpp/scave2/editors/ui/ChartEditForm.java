@@ -25,6 +25,8 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -32,12 +34,16 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
-import org.omnetpp.common.util.StringUtils;
+import org.omnetpp.scave.engine.IDList;
+import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.model.Chart;
+import org.omnetpp.scave.model.Dataset;
+import org.omnetpp.scave.model.DatasetType;
 import org.omnetpp.scave.model.Property;
-import org.omnetpp.scave.model.ScaveModelFactory;
 import org.omnetpp.scave.model.ScaveModelPackage;
 import org.omnetpp.scave2.model.ChartProperties;
+import org.omnetpp.scave2.model.DatasetManager;
+import org.omnetpp.scave2.model.ScaveModelUtil;
 import org.omnetpp.scave2.model.ChartProperties.LegendAnchor;
 import org.omnetpp.scave2.model.ChartProperties.LegendPosition;
 import org.omnetpp.scave2.model.ChartProperties.LineStyle;
@@ -64,6 +70,9 @@ public class ChartEditForm implements IScaveObjectEditForm {
 	 * The edited chart.
 	 */
 	private Chart chart;
+	private DatasetType type;
+	private String[] lineNames;
+	private ResultFileManager manager;
 	
 	// controls
 	private Text nameText;
@@ -86,11 +95,16 @@ public class ChartEditForm implements IScaveObjectEditForm {
 	private Button showGridCheckbox;
 	
 	private CCombo applyToLinesCombo;
-	private Button displaySymbolsCheckbox;
-	private CCombo symbolTypeCombo;
-	private CCombo symbolSizeCombo;
-	private Button[] lineStyleRadios;
-	private Button hideLinesCheckbox;
+	int visiblePanelIndex;
+	private Composite linePropsPanel[]; // for each line
+	private Button displaySymbolsCheckbox[];
+	private CCombo symbolTypeCombo[];
+	private CCombo symbolSizeCombo[];
+	private Button[] lineStyleRadios[];
+	private Button hideLinesCheckbox[];
+	
+	private Text baselineText;
+	private CCombo barPlacementCombo;
 	
 	private Button displayLegendCheckbox;
 	private Button displayBorderCheckbox;
@@ -103,10 +117,20 @@ public class ChartEditForm implements IScaveObjectEditForm {
 	 */
 	private static final int VISIBLE_ITEM_COUNT = 15;
 	
-	public ChartEditForm(Chart chart) {
+	public ChartEditForm(Chart chart, ResultFileManager manager) {
+		Dataset dataset = ScaveModelUtil.findEnclosingDataset(chart);
 		this.chart = chart;
+		this.type = dataset.getType();
+		this.manager = manager;
+		if (type == DatasetType.VECTOR_LITERAL) {
+			IDList idlist = DatasetManager.getIDListFromDataset(manager, dataset, chart);
+			String[] names = DatasetManager.getResultItemIDs(idlist, manager);
+			this.lineNames = new String[names.length + 1];
+			this.lineNames[0] = "all";
+			System.arraycopy(names, 0, this.lineNames, 1, names.length);
+		}
 	}
-
+	
 	/**
 	 * Returns the title displayed on the top of the dialog.
 	 */
@@ -155,7 +179,6 @@ public class ChartEditForm implements IScaveObjectEditForm {
 		labelFontText = createTextField("Label font", group);
 		xLabelsRotateByCombo = createComboField("Rotate X labels by", group);
 		xLabelsRotateByCombo.setItems(new String[] {"0", "30", "45", "60", "90"});
-		
 		// Axes
 		panel = createTab("Axes", tabfolder, 2);
 		group = createGroup("Axis bounds", panel, 3);
@@ -174,16 +197,42 @@ public class ChartEditForm implements IScaveObjectEditForm {
 		group = createGroup("Grid", panel, 1);
 		showGridCheckbox = createCheckboxField("show grid", group);
 		// Lines
-		panel = createTab("Lines", tabfolder, 1);
-		group = createGroup("Symbols", panel);
-		displaySymbolsCheckbox = createCheckboxField("Display symbols", group);
-		displaySymbolsCheckbox.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2,1));
-		symbolTypeCombo = createComboField("Symbol type", group);
-		symbolTypeCombo.setVisibleItemCount(VISIBLE_ITEM_COUNT);
-		symbolSizeCombo = createComboField("Symbol size", group);
-		symbolSizeCombo.setVisibleItemCount(VISIBLE_ITEM_COUNT);
-		lineStyleRadios = createRadioGroup("Lines", panel, 1, LineStyle.class);
-		hideLinesCheckbox = createCheckboxField("Hide", panel);
+		if (type == DatasetType.VECTOR_LITERAL) {
+			panel = createTab("Lines", tabfolder, 2);
+			applyToLinesCombo = createComboField("Apply to lines", panel);
+			applyToLinesCombo.setItems(lineNames);
+			applyToLinesCombo.addSelectionListener(new SelectionAdapter() {
+				public void widgetSelected(SelectionEvent e) {
+					switchPanel(((CCombo)e.widget).getSelectionIndex());
+				}
+			});
+			int cLines = lineNames.length;
+			linePropsPanel = new Composite[cLines];
+			displaySymbolsCheckbox = new Button[cLines];
+			symbolTypeCombo = new CCombo[cLines];
+			symbolSizeCombo = new CCombo[cLines];
+			lineStyleRadios = new Button[cLines][];
+			hideLinesCheckbox = new Button[cLines];
+			for (int i = 0; i < lineNames.length; ++i) {
+				linePropsPanel[i] = new Composite(panel, SWT.NONE);
+				linePropsPanel[i].setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1));
+				linePropsPanel[i].setLayout(new GridLayout());
+				makeVisible(linePropsPanel[i], i == visiblePanelIndex);
+				group = createGroup("Symbols", linePropsPanel[i]);
+				displaySymbolsCheckbox[i] = createCheckboxField("Display symbols", group);
+				displaySymbolsCheckbox[i].setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2,1));
+				symbolTypeCombo[i] = createComboField("Symbol type", group, SymbolType.class);
+				symbolSizeCombo[i] = createComboField("Symbol size", group);
+				lineStyleRadios[i] = createRadioGroup("Lines", linePropsPanel[i], 1, LineStyle.class);
+				hideLinesCheckbox[i] = createCheckboxField("Hide", linePropsPanel[i]);
+			}
+		}
+		// Bars
+		else if (type == DatasetType.SCALAR_LITERAL) {
+			panel = createTab("Bars", tabfolder, 2);
+			baselineText = createTextField("Baseline", panel);
+			barPlacementCombo = createComboField("Bar placement", panel, BarPlacement.class);
+		}
 		// Legend
 		panel = createTab("Legend", tabfolder, 1);
 		displayLegendCheckbox = createCheckboxField("Display legend", panel);
@@ -193,8 +242,21 @@ public class ChartEditForm implements IScaveObjectEditForm {
 		legendFontText = createTextField("Legend font", group);
 		legendPositionRadios = createRadioGroup("Position", panel, 3, LegendPosition.class);
 		legendAnchorRadios = createRadioGroup("Anchoring", panel, 4, LegendAnchor.class);
-		
-		
+	}
+	
+	private void switchPanel(int index) {
+		if (index >= 0 && index < linePropsPanel.length && index != visiblePanelIndex) {
+			makeVisible(linePropsPanel[visiblePanelIndex], false);
+			visiblePanelIndex = index;
+			makeVisible(linePropsPanel[visiblePanelIndex], true);
+		}
+	}
+	
+	private void makeVisible(Composite panel, boolean visible) {
+		GridData griddata = (GridData)panel.getLayoutData();
+		griddata.exclude = !visible;
+		panel.setVisible(visible);
+		panel.getParent().layout();
 	}
 	
 	private CTabFolder createTabFolder(Composite parent) {
@@ -240,10 +302,22 @@ public class ChartEditForm implements IScaveObjectEditForm {
 	}
 	
 	private CCombo createComboField(String labelText, Composite parent) {
+		return createComboField(labelText, parent, null);
+	}
+	
+	private CCombo createComboField(String labelText, Composite parent, Class<? extends Enum<?>> type) {
 		Label label = new Label(parent, SWT.NONE);
 		label.setText(labelText);
 		CCombo combo = new CCombo(parent, SWT.BORDER);
 		combo.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+		combo.setVisibleItemCount(VISIBLE_ITEM_COUNT);
+		if (type != null) {
+			Enum<?>[] values = type.getEnumConstants();
+			String[] names = new String[values.length];
+			for (int i = 0; i < values.length; ++i)
+				names[i] = values[i].name();
+			combo.setItems(names);
+		}
 		return combo;
 	}
 	
@@ -273,8 +347,6 @@ public class ChartEditForm implements IScaveObjectEditForm {
 		}
 		return radios;
 	}
-	
-	
 
 	public Object getValue(EStructuralFeature feature) {
 		switch (feature.getFeatureID()) {
@@ -318,11 +390,21 @@ public class ChartEditForm implements IScaveObjectEditForm {
 		props.setProperty(PROP_XY_INVERT, invertAxesCheckbox.getSelection());
 		props.setProperty(PROP_XY_GRID, showGridCheckbox.getSelection());
 		// Lines
-		props.setProperty(PROP_DISPLAY_SYMBOLS, displaySymbolsCheckbox.getSelection());
-		props.setProperty(PROP_SYMBOL_TYPE, symbolTypeCombo.getText()); // XXX
-		props.setProperty(PROP_SYMBOL_SIZE, getSelection(symbolSizeCombo, SymbolType.class));
-		props.setProperty(PROP_LINE_TYPE, getSelection(lineStyleRadios, LineStyle.class));
-		props.setProperty(PROP_HIDE_LINE, hideLinesCheckbox.getSelection());
+		if (type == DatasetType.VECTOR_LITERAL) {
+			for (int i = 0; i < lineNames.length; ++i) {
+				String suffix = i == 0 ? "" : "/"+lineNames[i];
+				props.setProperty(PROP_DISPLAY_SYMBOLS+suffix, displaySymbolsCheckbox[i].getSelection());
+				props.setProperty(PROP_SYMBOL_TYPE+suffix, getSelection(symbolTypeCombo[i], SymbolType.class));
+				props.setProperty(PROP_SYMBOL_SIZE+suffix, symbolSizeCombo[i].getText());
+				props.setProperty(PROP_LINE_TYPE+suffix, getSelection(lineStyleRadios[i], LineStyle.class));
+				props.setProperty(PROP_HIDE_LINE+suffix, hideLinesCheckbox[i].getSelection());
+			}
+		}
+		// Bars
+		else if (type == DatasetType.SCALAR_LITERAL) {
+			props.setProperty(PROP_BAR_BASELINE, baselineText.getText());
+			props.setProperty(PROP_BAR_PLACEMENT, getSelection(barPlacementCombo, BarPlacement.class));
+		}
 		// Legend
 		props.setProperty(PROP_DISPLAY_LEGEND, displayLegendCheckbox.getSelection());
 		props.setProperty(PROP_LEGEND_BORDER, displayBorderCheckbox.getSelection());
@@ -370,11 +452,21 @@ public class ChartEditForm implements IScaveObjectEditForm {
 		invertAxesCheckbox.setSelection(props.getBooleanProperty(PROP_XY_INVERT));
 		showGridCheckbox.setSelection(props.getBooleanProperty(PROP_XY_GRID));
 		// Lines
-		displaySymbolsCheckbox.setSelection(props.getBooleanProperty(PROP_DISPLAY_SYMBOLS));
-		setSelection(symbolTypeCombo, props.getEnumProperty(PROP_SYMBOL_TYPE, SymbolType.class));
-		symbolSizeCombo.setText(props.getStringProperty(PROP_SYMBOL_SIZE));
-		setSelection(lineStyleRadios, props.getEnumProperty(PROP_LINE_TYPE, LineStyle.class));
-		hideLinesCheckbox.setSelection(props.getBooleanProperty(PROP_HIDE_LINE));
+		if (type == DatasetType.VECTOR_LITERAL) {
+			for (int i = 0; i < lineNames.length; ++i) {
+				String suffix = i == 0 ? "" : "/" + lineNames[i];
+				displaySymbolsCheckbox[i].setSelection(props.getBooleanProperty(PROP_DISPLAY_SYMBOLS+suffix));
+				setSelection(symbolTypeCombo[i], props.getEnumProperty(PROP_SYMBOL_TYPE+suffix, SymbolType.class));
+				symbolSizeCombo[i].setText(props.getStringProperty(PROP_SYMBOL_SIZE+suffix));
+				setSelection(lineStyleRadios[i], props.getEnumProperty(PROP_LINE_TYPE+suffix, LineStyle.class));
+				hideLinesCheckbox[i].setSelection(props.getBooleanProperty(PROP_HIDE_LINE+suffix));
+			}
+		}
+		// Bars
+		else if (type == DatasetType.SCALAR_LITERAL) {
+			baselineText.setText(props.getStringProperty(PROP_BAR_BASELINE));
+			setSelection(barPlacementCombo, props.getEnumProperty(PROP_BAR_PLACEMENT, BarPlacement.class));
+		}
 		// Legend
 		displayLegendCheckbox.setSelection(props.getBooleanProperty(PROP_DISPLAY_LEGEND));
 		displayBorderCheckbox.setSelection(props.getBooleanProperty(PROP_LEGEND_BORDER));
@@ -393,6 +485,6 @@ public class ChartEditForm implements IScaveObjectEditForm {
 	
 	private void setSelection(CCombo combo, Enum<?> value) {
 		if (value != null)
-			combo.setText(value.toString());
+			combo.setText(value.name());
 	}
 }

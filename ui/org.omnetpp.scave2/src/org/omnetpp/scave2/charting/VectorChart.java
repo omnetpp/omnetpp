@@ -28,6 +28,8 @@ import static org.omnetpp.scave2.model.ChartProperties.PROP_Y_AXIS_TITLE;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.draw2d.Graphics;
@@ -68,35 +70,57 @@ public class VectorChart extends ChartCanvas {
 	private static final Color DEFAULT_INSETS_BACKGROUND_COLOR = new Color(null, 236, 233, 216);
 	private static final Color DEFAULT_INSETS_LINE_COLOR = new Color(null, 0, 0, 0);
 	private static final int DEFAULT_TICK_SPACING = 100; // space between ticks in pixels
-	private static final IVectorPlotter DEFAULT_DEFAULT_PLOTTER = new LinesVectorPlotter();
-	private static final IChartSymbol DEFAULT_DEFAULT_SYMBOL = new SquareSymbol(3);
 	
 	private static final String DEFAULT_X_TITLE = "";
 	private static final String DEFAULT_Y_TITLE = "";
 	
-	private static final IChartSymbol NULL_SYMBOL = new ChartSymbol() {
-		public void drawSymbol(Graphics graphics, int x, int y) {}
-	};
-	
-	private static final IVectorPlotter NULL_PLOTTER = new VectorPlotter() {
-		public void plot(XYDataset dataset, int series, Graphics graphics, VectorChart chart, IChartSymbol symbol) {}
-	};
-	
 	private OutputVectorDataset dataset;
-	private IVectorPlotter defaultPlotter = DEFAULT_DEFAULT_PLOTTER;
-	private IChartSymbol defaultSymbol = DEFAULT_DEFAULT_SYMBOL;
 	private int antialias = SWT.ON; // SWT.ON, SWT.OFF, SWT.DEFAULT
 	private Color insetsBackgroundColor = DEFAULT_INSETS_BACKGROUND_COLOR;
 	private Color insetsLineColor = DEFAULT_INSETS_LINE_COLOR;
-	private boolean displaySymbols = true;
-	private boolean hideLines = false;
 	
+	static class LineProperties {
+		
+		private static final IVectorPlotter DEFAULT_PLOTTER = new LinesVectorPlotter();
+		private static final IChartSymbol DEFAULT_SYMBOL = new SquareSymbol(3);
+		private static final IChartSymbol NULL_SYMBOL = new ChartSymbol() {
+			public void drawSymbol(Graphics graphics, int x, int y) {}
+		};
+		private static final IVectorPlotter NULL_PLOTTER = new VectorPlotter() {
+			public void plot(XYDataset dataset, int series, Graphics graphics, VectorChart chart, IChartSymbol symbol) {}
+		};
+		
+		IVectorPlotter plotter;
+		IChartSymbol symbol;
+		Boolean displaySymbols;
+		Boolean hideLines;
+		
+		public LineProperties() {
+			this.plotter = DEFAULT_PLOTTER;
+			this.symbol = DEFAULT_SYMBOL;
+			this.displaySymbols = true;
+			this.hideLines = false;
+		}
+		
+		public IVectorPlotter getPlotter() {
+			return hideLines != null && hideLines ? NULL_PLOTTER : plotter;
+		}
+		
+		public IChartSymbol getSymbol() {
+			return displaySymbols != null && displaySymbols ? symbol : NULL_SYMBOL;
+		}
+	}
+	
+	private static final String KEY_ALL = null;
+	
+	private Map<String, LineProperties> lineProperties = new HashMap<String,LineProperties>();
 	private Axes axes = new Axes(DEFAULT_X_TITLE, DEFAULT_Y_TITLE, null);
 	private TickLabels tickLabels = new TickLabels(DEFAULT_TICK_LINE_COLOR, DEFAULT_TICK_LABEL_COLOR, null, DEFAULT_TICK_SPACING);
 	
 	public VectorChart(Composite parent, int style) {
 		super(parent, style);
 		super.setInsets(new Insets(18,40,18,40));
+		lineProperties.put(KEY_ALL, new LineProperties());
 	}
 	
 	public OutputVectorDataset getDataset() {
@@ -105,12 +129,12 @@ public class VectorChart extends ChartCanvas {
 
 	public void setDataset(OutputVectorDataset dataset) {
 		this.dataset = dataset;
-		setLegend();
+		updateLegend();
 		calculateArea();
 		scheduleRedraw();
 	}
 	
-	private void setLegend() {
+	private void updateLegend() {
 		legend.clearLegendItems();
 		for (int i = 0; i < dataset.getSeriesCount(); ++i) {
 			legend.addLegendItem(getLineColor(i), dataset.getSeriesKey(i).toString());
@@ -121,6 +145,7 @@ public class VectorChart extends ChartCanvas {
 	 *          Properties
 	 *==================================*/
 	public void setProperty(String name, String value) {
+		Assert.isLegal(name != null);
 		// Titles
 		if (PROP_X_AXIS_TITLE.equals(name))
 			setXAxisTitle(value);
@@ -150,20 +175,45 @@ public class VectorChart extends ChartCanvas {
 		else if (PROP_XY_GRID.equals(name))
 			setGridVisibility(Converter.stringToBoolean(value));
 		// Lines
-		else if (PROP_DISPLAY_SYMBOLS.equals(name))
+		else if (PROP_DISPLAY_SYMBOLS.equals(name)) {
 			setDisplaySymbols(Converter.stringToBoolean(value));
-		else if (PROP_SYMBOL_TYPE.equals(name))
-			setDefaultSymbol(Converter.stringToEnum(value, SymbolType.class));
-		else if (PROP_SYMBOL_SIZE.equals(name))
+		}
+		else if (PROP_SYMBOL_TYPE.equals(name)) {
+			setDefaultSymbolType(Converter.stringToEnum(value, SymbolType.class));
+		}
+		else if (PROP_SYMBOL_SIZE.equals(name)) {
 			setDefaultSymbolSize(Converter.stringToInteger(value));
-		else if (PROP_LINE_TYPE.equals(name))
+		}
+		else if (PROP_LINE_TYPE.equals(name)) {
 			setDefaultLineType(Converter.stringToEnum(value, LineStyle.class));
-		else if (PROP_HIDE_LINE.equals(name))
-			setHideLines(Converter.stringToBoolean(value));
+		}
+		else if (name.startsWith(PROP_HIDE_LINE))
+			setHideLines(getKey(name), Converter.stringToBoolean(value));
 		else
 			super.setProperty(name, value);
 	}
 	
+	private String getKey(String name) {
+		int index = name.indexOf('/');
+		return index >= 0 ? name.substring(index + 1) : KEY_ALL;
+	}
+	
+	protected LineProperties getLineProperties(String key) {
+		LineProperties properties = lineProperties.get(key);
+		return (properties != null ? properties : getDefaultLineProperties());
+	}
+	
+	protected LineProperties getDefaultLineProperties() {
+		return lineProperties.get(KEY_ALL);
+	}
+	
+	protected LineProperties getOrCreateLineProperties(String key) {
+		LineProperties properties = lineProperties.get(key);
+		if (properties == null)
+			lineProperties.put(key, properties = new LineProperties());
+		return properties;
+	}
+
 	public void setXAxisTitle(String value) {
 		axes.setXTitle(value != null ? value : DEFAULT_X_TITLE);
 		scheduleRedraw();
@@ -182,11 +232,13 @@ public class VectorChart extends ChartCanvas {
 	}
 
 	public IVectorPlotter getDefaultLineType() {
-		return defaultPlotter;
+		LineProperties props = getDefaultLineProperties();
+		return props.plotter;
 	}
 
 	public void setDefaultLineType(IVectorPlotter defaultPlotter) {
-		this.defaultPlotter = defaultPlotter;
+		LineProperties props = getDefaultLineProperties();
+		props.plotter = defaultPlotter;
 		scheduleRedraw();
 	}
 	
@@ -200,24 +252,29 @@ public class VectorChart extends ChartCanvas {
 		case Step: setDefaultLineType(new SampleHoldVectorPlotter()); break;
 		case Spline: /*TODO*/ break; 
 		}
-		scheduleRedraw();
 	}
 
 	public IChartSymbol getDefaultSymbol() {
-		return defaultSymbol;
+		LineProperties props = getDefaultLineProperties();
+		return props.symbol;
 	}
 
 	public void setDefaultSymbol(IChartSymbol defaultSymbol) {
 		Assert.isLegal(defaultSymbol != null);
-		this.defaultSymbol = defaultSymbol;
+		LineProperties props = getDefaultLineProperties();
+		props.symbol = defaultSymbol;
 		scheduleRedraw();
 	}
 	
 	public void setDefaultSymbol(SymbolType symbolType) {
+		setDefaultSymbolType(symbolType);
+	}
+
+	public void setDefaultSymbolType(SymbolType symbolType) {
 		if (symbolType == null)
 			return;
 		
-		int size = defaultSymbol.getSizeHint();
+		int size = getDefaultSymbol().getSizeHint();
 		switch (symbolType) {
 		case Cross: setDefaultSymbol(new CrossSymbol(size)); break;
 		case Diamond: setDefaultSymbol(new DiamondSymbol(size)); break;
@@ -226,23 +283,25 @@ public class VectorChart extends ChartCanvas {
 		case Square: setDefaultSymbol(new SquareSymbol(size)); break;
 		case Triangle: setDefaultSymbol(new TriangleSymbol(size)); break;
 		}
-		scheduleRedraw();
 	}
 	
 	public void setDisplaySymbols(Boolean value) {
-		displaySymbols = value != null ? value : false;
+		LineProperties props = getDefaultLineProperties();
+		props.displaySymbols = value != null ? value : false;
 		scheduleRedraw();
 	}
 	
 	public void setDefaultSymbolSize(Integer size) {
 		if (size == null)
 			return;
-		defaultSymbol.setSizeHint(size);
+		LineProperties props = getDefaultLineProperties();
+		props.symbol.setSizeHint(size);
 		scheduleRedraw();
 	}
 	
-	public void setHideLines(Boolean value) {
-		hideLines = value != null ? value : false;
+	public void setHideLines(String key, Boolean value) {
+		LineProperties props = getOrCreateLineProperties(key);
+		props.hideLines = value != null ? value : false;
 		scheduleRedraw();
 	}
 	
@@ -337,14 +396,23 @@ public class VectorChart extends ChartCanvas {
 	@Override
 	protected void paintCachableLayer(Graphics graphics) {
 		graphics.setAntialias(antialias);
-		IVectorPlotter plotter = hideLines ? NULL_PLOTTER : defaultPlotter;
-		IChartSymbol symbol = displaySymbols ? defaultSymbol : NULL_SYMBOL;
 		for (int series=0; series<dataset.getSeriesCount(); series++) {
+			String key = dataset.getSeriesKey(series).toString();
+			IVectorPlotter plotter = getPlotter(key);
+			IChartSymbol symbol = getSymbol(key);
 			Color color = getLineColor(series);
 			graphics.setForegroundColor(color);
 			graphics.setBackgroundColor(color);
 			plotter.plot(dataset, series, graphics, this, symbol);
 		}
+	}
+	
+	private IVectorPlotter getPlotter(String key) {
+		return getLineProperties(key).getPlotter();
+	}
+	
+	private IChartSymbol getSymbol(String key) {
+		return getLineProperties(key).getSymbol();
 	}
 	
 	private Color getLineColor(int index) {

@@ -1,6 +1,7 @@
 package org.omnetpp.scave2.charting;
 
 import java.awt.Color;
+import java.util.List;
 
 import org.eclipse.draw2d.ColorConstants;
 import org.eclipse.swt.SWT;
@@ -33,6 +34,7 @@ import org.omnetpp.scave.engine.XYArray;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.Dataset;
 import org.omnetpp.scave.model.DatasetType;
+import org.omnetpp.scave.model.Property;
 import org.omnetpp.scave2.model.ChartProperties;
 import org.omnetpp.scave2.model.DatasetManager;
 import org.omnetpp.scave2.model.ScaveModelUtil;
@@ -164,11 +166,9 @@ public class ChartFactory {
 	}
 	
 	private static void setChartProperties(Chart chart, ChartCanvas chartView) {
-		ChartProperties chartProperties = ChartProperties.createPropertySource(chart);
-		for (IPropertyDescriptor descriptor : chartProperties.getPropertyDescriptors()) {
-			String id = (String)descriptor.getId();
-			if (chartProperties.isPropertySet(id))
-				chartView.setProperty(id, chartProperties.getStringProperty(id));
+		List<Property> properties = (List<Property>)chart.getProperties();
+		for (Property property : properties) {
+			chartView.setProperty(property.getName(), property.getValue());
 		}
 	}
 }

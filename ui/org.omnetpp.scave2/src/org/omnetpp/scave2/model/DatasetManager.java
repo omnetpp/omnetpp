@@ -1,6 +1,7 @@
 package org.omnetpp.scave2.model;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.eclipse.core.runtime.Assert;
@@ -11,6 +12,8 @@ import org.jfree.data.category.DefaultCategoryDataset;
 import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.engine.Node;
 import org.omnetpp.scave.engine.ResultFileManager;
+import org.omnetpp.scave.engine.ResultItem;
+import org.omnetpp.scave.engine.Run;
 import org.omnetpp.scave.engine.ScalarResult;
 import org.omnetpp.scave.engine.XYArray;
 import org.omnetpp.scave.model.Add;
@@ -31,6 +34,8 @@ import org.omnetpp.scave.model.SelectDeselectOp;
 import org.omnetpp.scave.model.SetOperation;
 import org.omnetpp.scave.model.util.ScaveModelSwitch;
 import org.omnetpp.scave2.charting.OutputVectorDataset;
+
+import com.sun.corba.se.spi.legacy.connection.GetEndPointInfoAgainException;
 
 /**
  * This class calculates the content of a dataset
@@ -168,11 +173,57 @@ public class DatasetManager {
 	public static OutputVectorDataset createVectorDataset(Chart chart, Dataset dataset, ResultFileManager manager) {
 		XYArray[] dataValues = getDataFromDataset(manager, dataset, chart);
 		IDList idlist = getIDListFromDataset(manager, dataset, chart);
-		String[] dataNames = new String[(int)idlist.size()];
-		for (int i = 0; i < idlist.size(); ++i) {
-			dataNames[i] = manager.getItem(idlist.get(i)).getName();
-		}
+		String[] dataNames = getResultItemIDs(idlist, manager);
 		return new OutputVectorDataset(dataNames, dataValues);
+	}
+	
+	public static String[] getResultItemNames(IDList idlist, ResultFileManager manager) {
+		return getResultItemIDs(idlist, manager);
+	}
+
+	/**
+	 * Returns the ids of data items in the <code>idlist</code>.
+	 * The id is formed from the file name, run number, run id, module name,
+	 * data name, experiment, measurement and replication.
+	 * Constant fields will be omitted from the id.
+	 */
+	public static String[] getResultItemIDs(IDList idlist, ResultFileManager manager) {
+		String[][] nameFragments = new String[(int)idlist.size()][];
+		for (int i = 0; i < idlist.size(); ++i) {
+			ResultItem item = manager.getItem(idlist.get(i));
+			Run run = item.getFileRun().getRun();
+			nameFragments[i] = new String[8];
+			nameFragments[i][0] = item.getFileRun().getFile().getFilePath();
+			nameFragments[i][1] = String.valueOf(run.getRunNumber());
+			nameFragments[i][2] = String.valueOf(run.getRunName());
+			nameFragments[i][3] = item.getModuleName();
+			nameFragments[i][4] = item.getName();
+			nameFragments[i][5] = run.getAttribute(RunAttribute.EXPERIMENT);
+			nameFragments[i][6] = run.getAttribute(RunAttribute.REPLICATION);
+			nameFragments[i][7] = run.getAttribute(RunAttribute.MEASUREMENT);
+		}
+
+		boolean[] same = new boolean[8];
+		Arrays.fill(same, true);
+		for (int i = 1; i < nameFragments.length; ++i) {
+			for (int j = 0; j < 8; ++j)
+				if (same[j] && !nameFragments[0][j].equals(nameFragments[i][j]))
+					same[j] = false;
+		}
+		
+		String[] result = new String[nameFragments.length];
+		for (int i = 0; i < result.length; ++i) {
+			StringBuffer id = new StringBuffer(30);
+			for (int j = 0; j < 8; ++j)
+				if (!same[j])
+					id.append(nameFragments[i][j]).append(" ");
+			if (id.length() == 0)
+				id.append(i);
+			else
+				id.deleteCharAt(id.length() - 1);
+			result[i] = id.toString();
+		}
+		return result;
 	}
 	
 	public static IDList select(IDList source, List<SelectDeselectOp> filters, ResultFileManager manager, DatasetType type) {
