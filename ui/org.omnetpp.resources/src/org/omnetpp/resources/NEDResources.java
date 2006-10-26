@@ -488,6 +488,8 @@ public class NEDResources implements INEDTypeResolver {
 		needsRehash = false;
 
 		// run "semantic validator" for each file
+        // FIXME this must be run in the background (it's a long running task)
+        // top level element insertion is slow because of this validation
 		for (IFile file : nedFiles.keySet()) {
 			final IFile ifile = file;
 			INEDErrorStore errors = new INEDErrorStore() {  // XXX make a better one
@@ -516,6 +518,7 @@ public class NEDResources implements INEDTypeResolver {
 	}
 
     public void invalidate() {
+        System.out.println("NEDResources invalidate");
         needsRehash = true;
     }
 }

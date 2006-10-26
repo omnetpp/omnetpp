@@ -34,8 +34,11 @@ public class NEDComponent implements INEDTypeInfo, NEDElementTags {
 	
 	protected NEDElement componentNode;
 	protected IFile file;
+    static int refreshInheritedCount = 0;
+    static int refreshOwnCount = 0;
 	
 	// own stuff
+    boolean needsOwnUpdate;
 	protected HashMap<String, NEDElement> ownProperties = new HashMap<String, NEDElement>();
 	protected HashMap<String, NEDElement> ownParams = new HashMap<String, NEDElement>();
 	protected HashMap<String, NEDElement> ownGates = new HashMap<String, NEDElement>();
@@ -74,9 +77,8 @@ public class NEDComponent implements INEDTypeInfo, NEDElementTags {
         // register the created component in the NEDElement so we will have access to it 
         // directly from the model
         node.setNEDTypeInfo(this);
-		// the own member are filled at creation
-        refreshOwnMembers();
-		// theinherited memebers will be collected on demeand
+		// the inherited and own members will be collected on demeand
+        needsOwnUpdate = true;
 		needsUpdate = true;
 	}
 
@@ -139,6 +141,10 @@ public class NEDComponent implements INEDTypeInfo, NEDElementTags {
      * Refreshes the own members
      */
     protected void refreshOwnMembers() {
+        // XXX for debuging
+        ++refreshOwnCount;
+        System.out.println("NEDComponent for "+getName()+" ownRefersh: " + refreshOwnCount);
+
         ownProperties.clear();
         ownParams.clear();
         ownGates.clear();
@@ -164,12 +170,20 @@ public class NEDComponent implements INEDTypeInfo, NEDElementTags {
         ownMembers.putAll(ownGates);
         ownMembers.putAll(ownSubmodules);
         ownMembers.putAll(ownInnerTypes);
+        needsOwnUpdate = false;
     }
     
 	/**
 	 * Collect all inherited parameters, gates, properties, submodules, etc. 
 	 */
 	protected void refreshInheritedMembers() {
+        ++refreshInheritedCount;
+        System.out.println("NEDComponent for "+getName()+" inheritedRefersh: " + refreshInheritedCount);
+
+        // first wee need our own members updated
+        if (needsOwnUpdate)
+            refreshOwnMembers();
+        
 		allProperties.clear();
 		allParams.clear();
 		allGates.clear();
@@ -213,25 +227,23 @@ public class NEDComponent implements INEDTypeInfo, NEDElementTags {
 	 * later re-built on demand. 
 	 */
 	public void invalidate() {
+        System.out.println("NEDComponent invalidate");
+        needsOwnUpdate = true;
 		needsUpdate = true;
 	}
-
 	
 	public String getName() {
 		return componentNode.getAttribute("name");
 	}
-	
-	
+		
 	public NEDElement getNEDElement() {
 		return componentNode;
 	}
-
 	
 	public IFile getNEDFile() {
 		return file;
 	}
 
-	
 	public NEDElement[] getNEDElementsAt(int line, int column) {
 		ArrayList<NEDElement> list = new ArrayList<NEDElement>();
 		NEDSourceRegion region = componentNode.getSourceRegion();
@@ -255,90 +267,126 @@ public class NEDComponent implements INEDTypeInfo, NEDElementTags {
 
 	
 	public Set<String> getOwnParamNames() {
+        if (needsOwnUpdate)
+            refreshOwnMembers();
 		return ownParams.keySet();
 	}
 
     public Collection<NEDElement> getOwnParams() {
+        if (needsOwnUpdate)
+            refreshOwnMembers();
         return ownParams.values();
     }
-
 	
 	public boolean hasOwnParam(String name) {
+        if (needsOwnUpdate)
+            refreshOwnMembers();
 		return ownParams.containsKey(name);
 	}
 
 	
 	public Set<String> getOwnPropertyNames() {
+        if (needsOwnUpdate)
+            refreshOwnMembers();
 		return ownProperties.keySet();
 	}
 	
     public Collection<NEDElement> getOwnProperties() {
+        if (needsOwnUpdate)
+            refreshOwnMembers();
         return ownProperties.values();
     }
 
 	
 	public boolean hasOwnProperty(String name) {
+        if (needsOwnUpdate)
+            refreshOwnMembers();
 		return ownProperties.containsKey(name);
 	}
 
 	
 	public Set<String> getOwnGateNames() {
+        if (needsOwnUpdate)
+            refreshOwnMembers();
 		return ownGates.keySet();
 	}
 	
     public Collection<NEDElement> getOwnGates() {
+        if (needsOwnUpdate)
+            refreshOwnMembers();
         return ownGates.values();
     }
 
 	
 	public boolean hasOwnGate(String name) {
+        if (needsOwnUpdate)
+            refreshOwnMembers();
 		return ownGates.containsKey(name);
 	}
 	
 	
 	public Set<String> getOwnInnerTypeNames() {
+        if (needsOwnUpdate)
+            refreshOwnMembers();
 		return ownInnerTypes.keySet();
 	}
 
     public Collection<NEDElement> getOwnInnerTypes() {
+        if (needsOwnUpdate)
+            refreshOwnMembers();
         return ownInnerTypes.values();
     }
 
 	
 	public boolean hasOwnInnerType(String name) {
+        if (needsOwnUpdate)
+            refreshOwnMembers();
 		return ownInnerTypes.containsKey(name);
 	}
 
 	
 	public Set<String> getOwnSubmodNames() {
+        if (needsOwnUpdate)
+            refreshOwnMembers();
 		return ownSubmodules.keySet();
 	}
 
     public Collection<NEDElement> getOwnSubmods() {
+        if (needsOwnUpdate)
+            refreshOwnMembers();
         return ownSubmodules.values();
     }
 
 	
 	public boolean hasOwnSubmod(String name) {
+        if (needsOwnUpdate)
+            refreshOwnMembers();
 		return ownSubmodules.containsKey(name);
 	}
-
 	
 	public Set<String> getOwnMemberNames() {
+        if (needsOwnUpdate)
+            refreshOwnMembers();
 		return ownMembers.keySet();
 	}
 
     public Collection<NEDElement> getOwnMembers() {
+        if (needsOwnUpdate)
+            refreshOwnMembers();
         return ownMembers.values();
     }
 
 	
 	public boolean hasOwnMember(String name) {
+        if (needsOwnUpdate)
+            refreshOwnMembers();
 		return ownMembers.containsKey(name);
 	}
 
 	
 	public NEDElement getOwnMember(String name) {
+        if (needsOwnUpdate)
+            refreshOwnMembers();
 		return ownMembers.get(name);
 	}
 
