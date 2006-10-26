@@ -20,34 +20,31 @@ class cObject
         string detailedInfo @group(basic);
 }
 
-//
-// NOTE: we lie a bit about the inheritance hierarchy, and hide cNoncopyableObject
-// and cDefaultList. They are too internal to be displayed on the GUI.
-//
-
 //XXX TODO: add @enum to gate type, param type etc
+//XXX TODO: add @tooltip!
+//XXX FIXME @group name cannot contain space or hyphen "-"!!!!
+//XXX FIXME property values cannot contain ")" (will confuse perl pattern matcher-based parser)
 
-//class cNoncopyableObject extends cObject
-//{
-//}
+class cNoncopyableObject extends cObject
+{
+}
 
-//class cDefaultList extends cNoncopyableObject
-//{
-//    properties:
-//        omitGetVerb = true;
-//    fields:
-//        int defaultListItems @group(general);
-//}
+class cDefaultList extends cNoncopyableObject
+{
+    properties:
+        omitGetVerb = true;
+    fields:
+        cObject *defaultListGet[] @sizeGetter(defaultListItems) @label(contents) @group(contents) ;
+}
 
 class cPar;
 
-class cComponent extends cObject //really: cDefaultList
+class cComponent extends cDefaultList
 {
     fields:
         @omitGetVerb(true);
         bool isModule @group(general);
-        //int params @group(general);
-        cPar par[] @sizeGetter(params) @group(parameters/gates) @label(parameters);
+        cPar par[] @sizeGetter(params) @label(parameters) @group(parameters/gates);
 }
 
 class cChannel extends cComponent
@@ -77,7 +74,6 @@ class cModule extends cComponent
         bool isVector @group(general);
         int index @group(general);
         int size @group(general);
-        //int gates @group(general);
         cGate *gate[] @sizeGetter(gates) @group(parameters/gates) @label(gates);
 }
 
@@ -99,12 +95,12 @@ class cArray extends cObject
 {
     fields:
         @omitGetVerb(true);
-        int items @group(general);
         bool takeOwnership @group(general);
+        cObject *get[] @sizeGetter(items) @label(contents) @group(general);
 }
 
 
-class cComponentType extends cObject //really: cNoncopyableObject
+class cComponentType extends cNoncopyableObject
 {
 }
 
@@ -121,14 +117,17 @@ class cChannelType extends cComponentType
 
 //----
 
-class cGate extends cObject //really: cNoncopyableObject
+enum GateType;
+
+class cGate extends cNoncopyableObject
 {
     fields:
         @omitGetVerb(true);
-        char type @group(general);
+        char type @group(general) @enum(GateType);
         int id @group(general);
         bool isVector @group(general);
         int index @group(general);
+        cChannel *channel @group(general);
         bool isBusy @group(state);
         simtime_t transmissionFinishes @group(state);
         bool isConnectedOutside @group(connection);
@@ -158,8 +157,8 @@ class cMessage extends cObject
         int arrivalModuleId @group(sending);
         int arrivalGateId @group(sending);
 
-        //XXX cMessage *encapsulatedMsg @group(general);
-        //XXX cProperties *controlInfo();
+        cMessage *encapsulatedMsg @group(general);
+        cPolymorphic *controlInfo @group(general);
         //XXX void *contextPointer
         //XXX various IDs
 }
@@ -280,14 +279,14 @@ class cFSM extends cObject
         string stateName @group(general);
 }
 
-class cMathFunction extends cObject //really: cNoncopyableObject
+class cMathFunction extends cNoncopyableObject
 {
     fields:
         @omitGetVerb(true);
         int numArgs @group(general);
 }
 
-class cNEDFunction extends cObject //really: cNoncopyableObject
+class cNEDFunction extends cNoncopyableObject
 {
     fields:
         @omitGetVerb(true);
@@ -296,7 +295,7 @@ class cNEDFunction extends cObject //really: cNoncopyableObject
         string argTypes @group(general);
 }
 
-class cOutVector extends cObject //really: cNoncopyableObject
+class cOutVector extends cNoncopyableObject
 {
     fields:
         @omitGetVerb(true);
@@ -354,7 +353,7 @@ class cQueue extends cObject
         //XXX elements?
 }
 
-class cSimulation extends cObject //really: cNoncopyableObject
+class cSimulation extends cNoncopyableObject
 {
     fields:
         @omitGetVerb(true);

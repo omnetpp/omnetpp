@@ -32,6 +32,7 @@
 #include "cdisplaystring.h"
 #include "cqueue.h"
 #include "coutvect.h"
+#include "cenum.h"
 
 #include "tkapp.h"
 #include "tklib.h"
@@ -111,6 +112,7 @@ int inspectorCommand_cmd(ClientData, Tcl_Interp *, int, const char **);
 int getClassDescriptor_cmd(ClientData, Tcl_Interp *, int, const char **);
 int getClassDescriptorFor_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv);
 int classDescriptor_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv);
+int getNameForEnum_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv);
 
 int objectNullPointer_cmd(ClientData, Tcl_Interp *, int, const char **);
 int objectDefaultList_cmd(ClientData, Tcl_Interp *, int, const char **);
@@ -195,6 +197,8 @@ OmnetTclCommand tcl_commands[] = {
    { "opp_getclassdescriptor",getClassDescriptor_cmd}, // args: <window>
    { "opp_getclassdescriptorfor", getClassDescriptorFor_cmd}, // args: <objptr>
    { "opp_classdescriptor",   classDescriptor_cmd   }, // args: <descrptr> <objptr> ...
+   { "opp_getnameforenum",    getNameForEnum_cmd    }, // args: <enumname> <number>
+
    // Functions that return object pointers
    { "opp_object_nullpointer",  objectNullPointer_cmd  },
    { "opp_object_defaultlist",  objectDefaultList_cmd  },
@@ -1565,6 +1569,16 @@ int getClassDescriptorFor_cmd(ClientData, Tcl_Interp *interp, int argc, const ch
    cPolymorphic *object = (cPolymorphic *) strToPtr(argv[1]);
    cClassDescriptor *sd = object ? object->getDescriptor() : NULL;
    Tcl_SetResult(interp, ptrToStr(sd), TCL_VOLATILE);
+   return TCL_OK;
+}
+
+int getNameForEnum_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
+{
+   if (argc<3) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
+   const char *enumName = argv[1];
+   int value = atoi(argv[2]);
+   cEnum *e = cEnum::find(enumName);
+   Tcl_SetResult(interp, TCLCONST(e ? e->stringFor(value) : ""), TCL_VOLATILE);
    return TCL_OK;
 }
 

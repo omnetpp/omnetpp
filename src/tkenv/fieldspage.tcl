@@ -235,7 +235,7 @@ proc getFieldNodeInfo_getGroupKeys {obj sd} {
     set numfields [opp_classdescriptor $obj $sd fieldcount]
     for {set i 0} {$i<$numfields} {incr i} {
         set fieldgroup [opp_classdescriptor $obj $sd fieldproperty $i "group"]
-        set groups($fieldgroup) 1
+        set groups($fieldgroup) $i
     }
 
     # convert them to keys
@@ -328,8 +328,9 @@ proc getFieldNodeInfo_getFieldText {obj sd fieldid index} {
         set value [opp_classdescriptor $obj $sd fieldvalue $fieldid $index]
         set enumname [opp_classdescriptor $obj $sd fieldproperty $fieldid "enum"]
         if {$enumname!=""} {
-            append typename " enum $enumname"
-            set value "XXX ($value)"  ;#FIXME
+            append typename " - enum $enumname"
+            set symbolicname [opp_getnameforenum $enumname $value]
+            set value "$symbolicname ($value)"
         }
         if {$typename=="string"} {set value "\"$value\""}
 
@@ -350,99 +351,97 @@ proc getFieldNodeInfo_getFieldText {obj sd fieldid index} {
     }
 }
 
-#============================
-
+##
+## This alternative version of the Fields table uses a BLT treeview widget.
+##
+#proc inspector_createfields2pageX {w} {
+#    global treeroots
+#    set nb $w.nb
+#    notebook_addpage $nb fields2 {Fields}
 #
-# This alternative version of the Fields table uses a BLT treeview widget.
+#    multicolumnlistbox $nb.fields2.list {
+#       {value  Value   200}
+#       {type   Type    80}
+#       {on     Declared-on}
+#    } -width 400 -yscrollcommand "$nb.fields2.vsb set" -xscrollcommand "$nb.fields2.hsb set"
+#    scrollbar $nb.fields2.hsb  -command "$nb.fields2.list xview" -orient horiz
+#    scrollbar $nb.fields2.vsb  -command "$nb.fields2.list yview"
+#    grid $nb.fields2.list $nb.fields2.vsb -sticky news
+#    grid $nb.fields2.hsb  x           -sticky news
+#    grid rowconfig    $nb.fields2 0 -weight 1 -minsize 0
+#    grid columnconfig $nb.fields2 0 -weight 1 -minsize 0
 #
-proc inspector_createfields2pageX {w} {
-    global treeroots
-    set nb $w.nb
-    notebook_addpage $nb fields2 {Fields}
-
-    multicolumnlistbox $nb.fields2.list {
-       {value  Value   200}
-       {type   Type    80}
-       {on     Declared-on}
-    } -width 400 -yscrollcommand "$nb.fields2.vsb set" -xscrollcommand "$nb.fields2.hsb set"
-    scrollbar $nb.fields2.hsb  -command "$nb.fields2.list xview" -orient horiz
-    scrollbar $nb.fields2.vsb  -command "$nb.fields2.list yview"
-    grid $nb.fields2.list $nb.fields2.vsb -sticky news
-    grid $nb.fields2.hsb  x           -sticky news
-    grid rowconfig    $nb.fields2 0 -weight 1 -minsize 0
-    grid columnconfig $nb.fields2 0 -weight 1 -minsize 0
-
-    set tree $nb.fields2.list
-
-    $tree config -flat no -hideroot yes
-    $tree column configure treeView -text "Name" -hide no -width 160 -state disabled
-
-    #set root [$tree insert end ROOT -data {value 42 type struct}]
-    #set one  [$tree insert end {ROOT ONE} -data {value 42 type short}]
-    #set two  [$tree insert end {ROOT TWO} -data {value 42 type double}]
-
-    if {![regexp {\.(ptr.*)-([0-9]+)} $w match object type]} {
-        error "window name $w doesn't look like an inspector window"
-    }
-
-    fillTreeview $tree $object   ;#FIXME should be called from C++ on updates
-}
-
-proc fillTreeview {tree obj} {
-    set desc [opp_getclassdescriptor $obj]
-    set key "fld-$obj-$desc---"
-
-    _doFillTreeview $tree {} $key
-}
-
-proc _doFillTreeview {tree path key} {
-    global icons
-
-    set data [_getFieldDataFor $key]
-    set name [lindex $data 1]
-    set newpath [concat $path [list $name]]
-    #set icon $icons(1pixtransp)
-    #set icon $icons(cogwheel_vs)
-    set icon $icons(node_xs)
-    $tree insert end $newpath -data $data -icons [list $icon $icon] -activeicons [list $icon $icon]
-
-    foreach child [getFieldNodeInfo $tree children $key] {
-        _doFillTreeview $tree $newpath $child
-    }
-}
-
-proc _getFieldDataFor {key} {
-    # key: objectptr-descriptorptr-fieldid-index
-    set obj ""
-    set sd ""
-    set fieldid ""
-    set index ""
-    regexp {^fld-(ptr.*)-(ptr.*)-([^-]*)-([^-]*)$} $key dummy obj sd fieldid index
-    #puts "DBG --> $obj -- $sd -- field=$fieldid -- index=$index"
-
-    if {$obj==[opp_object_nullpointer]} {return "<object is NULL>"}
-    if {$sd==[opp_object_nullpointer]} {return "<no descriptor for object>"}
-
-    set declname [opp_classdescriptor $obj $sd name]
-
-    if {$fieldid==""} {
-        return [list treeView $declname value "" type "" on ""]
-    }
-
-    set typename [opp_classdescriptor $obj $sd fieldtypename $fieldid]
-    set isarray [opp_classdescriptor $obj $sd fieldisarray $fieldid]
-    set name [opp_classdescriptor $obj $sd fieldname $fieldid]
-    if {$index!=""} {
-        append name "\[$index\]"
-    } elseif {$isarray} {
-        set size [opp_classdescriptor $obj $sd fieldarraysize $fieldid]
-        append name "\[$size\]"
-    }
-    set value [opp_classdescriptor $obj $sd fieldvalue $fieldid $index]
-    regsub -all "\n" $value "; " value
-    regsub -all "   +" $value "  " value
-    if {$typename=="string"} {set value "\"$value\""}
-
-    return [list treeView $name value $value type $typename on $declname]
-}
+#    set tree $nb.fields2.list
+#
+#    $tree config -flat no -hideroot yes
+#    $tree column configure treeView -text "Name" -hide no -width 160 -state disabled
+#
+#    #set root [$tree insert end ROOT -data {value 42 type struct}]
+#    #set one  [$tree insert end {ROOT ONE} -data {value 42 type short}]
+#    #set two  [$tree insert end {ROOT TWO} -data {value 42 type double}]
+#
+#    if {![regexp {\.(ptr.*)-([0-9]+)} $w match object type]} {
+#        error "window name $w doesn't look like an inspector window"
+#    }
+#
+#    fillTreeview $tree $object   ;#FIXME should be called from C++ on updates
+#}
+#
+#proc fillTreeview {tree obj} {
+#    set desc [opp_getclassdescriptor $obj]
+#    set key "fld-$obj-$desc---"
+#
+#    _doFillTreeview $tree {} $key
+#}
+#
+#proc _doFillTreeview {tree path key} {
+#    global icons
+#
+#    set data [_getFieldDataFor $key]
+#    set name [lindex $data 1]
+#    set newpath [concat $path [list $name]]
+#    #set icon $icons(1pixtransp)
+#    #set icon $icons(cogwheel_vs)
+#    set icon $icons(node_xs)
+#    $tree insert end $newpath -data $data -icons [list $icon $icon] -activeicons [list $icon $icon]
+#
+#    foreach child [getFieldNodeInfo $tree children $key] {
+#        _doFillTreeview $tree $newpath $child
+#    }
+#}
+#
+#proc _getFieldDataFor {key} {
+#    # key: objectptr-descriptorptr-fieldid-index
+#    set obj ""
+#    set sd ""
+#    set fieldid ""
+#    set index ""
+#    regexp {^fld-(ptr.*)-(ptr.*)-([^-]*)-([^-]*)$} $key dummy obj sd fieldid index
+#    #puts "DBG --> $obj -- $sd -- field=$fieldid -- index=$index"
+#
+#    if {$obj==[opp_object_nullpointer]} {return "<object is NULL>"}
+#    if {$sd==[opp_object_nullpointer]} {return "<no descriptor for object>"}
+#
+#    set declname [opp_classdescriptor $obj $sd name]
+#
+#    if {$fieldid==""} {
+#        return [list treeView $declname value "" type "" on ""]
+#    }
+#
+#    set typename [opp_classdescriptor $obj $sd fieldtypename $fieldid]
+#    set isarray [opp_classdescriptor $obj $sd fieldisarray $fieldid]
+#    set name [opp_classdescriptor $obj $sd fieldname $fieldid]
+#    if {$index!=""} {
+#        append name "\[$index\]"
+#    } elseif {$isarray} {
+#        set size [opp_classdescriptor $obj $sd fieldarraysize $fieldid]
+#        append name "\[$size\]"
+#    }
+#    set value [opp_classdescriptor $obj $sd fieldvalue $fieldid $index]
+#    regsub -all "\n" $value "; " value
+#    regsub -all "   +" $value "  " value
+#    if {$typename=="string"} {set value "\"$value\""}
+#
+#    return [list treeView $name value $value type $typename on $declname]
+#}
 
