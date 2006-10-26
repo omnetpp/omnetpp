@@ -196,11 +196,12 @@ public class ConnectionNodeEx extends ConnectionNode implements IStringTyped, ID
     }
 
     public INEDTypeInfo getTypeNEDTypeInfo() {
-        String typeName = getType(); 
-        if ( typeName == null || "".equals(typeName))
+        String typeName = getType();
+        INEDTypeInfo typeInfo = getContainerNEDTypeInfo(); 
+        if ( typeName == null || "".equals(typeName) || typeInfo == null)
             return null;
 
-        return getContainerNEDTypeInfo().getResolver().getComponent(typeName);
+        return typeInfo.getResolver().getComponent(typeName);
     }
 
     public NEDElement getTypeRef() {

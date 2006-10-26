@@ -76,7 +76,7 @@ public class NedNodeEditPolicy extends GraphicalNodeEditPolicy {
     @Override
     protected Command getReconnectSourceCommand(ReconnectRequest request) {
     	ConnectionNodeEx conn = (ConnectionNodeEx) request.getConnectionEditPart().getModel();
-        ConnectionCommand cmd = new ConnectionCommand(conn, (CompoundModuleEditPart)getHost());
+        ConnectionCommand cmd = new ConnectionCommand(conn, (ModuleEditPart)getHost());
 
         GateAnchor anchor = (GateAnchor)getModuleEditPart().getSourceConnectionAnchor(request);
         if (anchor == null) 

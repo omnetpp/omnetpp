@@ -88,11 +88,12 @@ public class SubmoduleNodeEx extends SubmoduleNode
 
     // type support
     public INEDTypeInfo getTypeNEDTypeInfo() {
-        String typeName = getType(); 
-        if ( typeName == null || "".equals(typeName))
+        String typeName = getType();
+        INEDTypeInfo typeInfo = getContainerNEDTypeInfo(); 
+        if ( typeName == null || "".equals(typeName) || typeInfo == null)
             return null;
 
-        return getContainerNEDTypeInfo().getResolver().getComponent(typeName);
+        return typeInfo.getResolver().getComponent(typeName);
     }
 
     public NEDElement getTypeRef() {

@@ -144,7 +144,7 @@ public class NedContentOutlinePage extends ContentOutlinePage {
 	 * @param input the input of this outline page
 	 */
 	public void setInput(Object input) {
-		Assert.isTrue(input instanceof IFileEditorInput);
+		Assert.isTrue(input instanceof IFileEditorInput || input == null);
 		fInput = (IFileEditorInput) input;
 		System.out.println(this+".setInput( " + input+ ") called");
 		update();
@@ -163,6 +163,7 @@ public class NedContentOutlinePage extends ContentOutlinePage {
 				control.setRedraw(false);
 
 				// set file contents as input
+                // FIXME fInput might be NULL if called durnign dispose
 				IFile file = fInput.getFile();
 				NEDElement tree = NEDResourcesPlugin.getNEDResources().getNEDFileContents(file);
 				viewer.setInput(tree);

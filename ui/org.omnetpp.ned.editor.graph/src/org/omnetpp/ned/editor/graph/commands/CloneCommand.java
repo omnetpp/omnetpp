@@ -58,7 +58,7 @@ public class CloneCommand extends Command {
     	NEDElement newNode = oldNode.deepDup(null);
         // set a unique name is this is a named toplevel element
         if ((newNode instanceof INamed) && (newNode instanceof ITopLevelElement)) {
-            Set<String> context = NEDResourcesPlugin.getNEDResources().getAllComponentNames();
+            Set<String> context = NEDResourcesPlugin.getNEDResources().getReservedNames();
             ((INamed)newNode).setName(NEDElementUtilEx.getUniqueNameFor((INamed)newNode, context));
         }
 

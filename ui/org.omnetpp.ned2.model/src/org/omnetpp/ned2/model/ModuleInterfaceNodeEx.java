@@ -51,10 +51,11 @@ public class ModuleInterfaceNodeEx extends ModuleInterfaceNode
 
     public INEDTypeInfo getFirstExtendsNEDTypeInfo() {
         String extendsName = getFirstExtends(); 
-        if ( extendsName == null || "".equals(extendsName))
+        INEDTypeInfo typeInfo = getContainerNEDTypeInfo(); 
+        if ( extendsName == null || "".equals(extendsName) || typeInfo == null)
             return null;
 
-        return getContainerNEDTypeInfo().getResolver().getComponent(extendsName);
+        return typeInfo.getResolver().getComponent(extendsName);
     }
 
     public NEDElement getFirstExtendsRef() {

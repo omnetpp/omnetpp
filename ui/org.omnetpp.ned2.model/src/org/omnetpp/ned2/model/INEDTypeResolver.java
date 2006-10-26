@@ -73,10 +73,14 @@ public interface INEDTypeResolver {
 	public Collection<INEDTypeInfo> getChannelInterfaces();
 
     /**
-     * Returns all component name in the NED files.
+     * Returns all VALID component name in the NED files.
      */
     public Set<String> getAllComponentNames();
 
+    /**
+     * Returns ALL names reserved (used) in the NED files (including duplicates)
+     */
+    public Set<String> getReservedNames();
     /**
 	 * Returns all module names in the NED files.
 	 */

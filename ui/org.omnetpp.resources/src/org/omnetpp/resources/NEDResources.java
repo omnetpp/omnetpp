@@ -2,6 +2,7 @@ package org.omnetpp.resources;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.StringTokenizer;
 
@@ -59,7 +60,10 @@ public class NEDResources implements INEDTypeResolver {
 	
 	// table of toplevel components (points into nedFiles trees)
 	private HashMap<String, INEDTypeInfo> components = new HashMap<String, INEDTypeInfo>();
-
+    
+    // reserved (used) names (contains all names including dupliates)
+	private Set<String> reservedNames = new HashSet<String>();
+    
 	// tables of toplevel components, classified (points into nedFiles trees)
     private boolean needsRehash = false;  // if tables below need to be rebuilt
 	private HashMap<String, INEDTypeInfo> modules = new HashMap<String, INEDTypeInfo>();
@@ -227,6 +231,12 @@ public class NEDResources implements INEDTypeResolver {
         return components.keySet();
     }
 
+    public Set<String> getReservedNames() {
+        if (needsRehash)
+            rehash();
+        return reservedNames;
+    }
+    
     public Set<String> getModuleNames() {
 		if (needsRehash)
 			rehash();
@@ -410,11 +420,14 @@ public class NEDResources implements INEDTypeResolver {
 		//long startMillis = System.currentTimeMillis();
 		if (!needsRehash)
 			return;
+        
+        Set<String> duplicates = new HashSet<String>();
 		components.clear();
 		channels.clear();
 		channelInterfaces.clear();
 		modules.clear();
 		moduleInterfaces.clear();
+        reservedNames.clear();
 
 		components.put(nullChannelType.getName(), nullChannelType);
 		components.put(basicChannelType.getName(), basicChannelType);
@@ -469,8 +482,10 @@ public class NEDResources implements INEDTypeResolver {
 								addMarker(file, NEDCONSISTENCYPROBLEM_MARKERID, IMarker.SEVERITY_ERROR, message, line); 
 							}
 							else {
+                                // add it to the duplicate set so we can remove them before the end
+                                duplicates.add(name);
 								String message = node.getTagName()+" '"+name+"' already defined in "+otherFile.getLocation().toOSString();
-							    addMarker(file, NEDCONSISTENCYPROBLEM_MARKERID, IMarker.SEVERITY_WARNING, message, line);
+							    addMarker(file, NEDCONSISTENCYPROBLEM_MARKERID, IMarker.SEVERITY_ERROR, message, line);
 							}
 						} catch (CoreException e) {
 						}
@@ -480,9 +495,19 @@ public class NEDResources implements INEDTypeResolver {
             			map.put(name, component);
             			components.put(name, component);
             		}
+                    // add to the name list even if it was duplicate
+                    reservedNames.add(name);
             	}
  			}
 		}
+        // now we should remove all types that were duplicates
+        for (String dupName : duplicates) {
+            channels.remove(dupName);
+            channelInterfaces.remove(dupName);
+            modules.remove(dupName);
+            moduleInterfaces.remove(dupName);
+            components.remove(dupName);
+        }
 
 		// rehash done!
 		needsRehash = false;
@@ -518,7 +543,7 @@ public class NEDResources implements INEDTypeResolver {
 	}
 
     public void invalidate() {
-        System.out.println("NEDResources invalidate");
+        System.out.println("NEDResources invalidated");
         needsRehash = true;
     }
 }

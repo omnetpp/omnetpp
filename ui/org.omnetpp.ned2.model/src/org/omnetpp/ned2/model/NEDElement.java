@@ -708,6 +708,7 @@ public abstract class NEDElement extends PlatformObject implements Iterable<NEDE
      * @return The TypeInfo belonging to the containing (toplevel) component 
      * that was added by the incremental builder (type resolver). Or NULL if none was found.
      * Cross references and other supporting lists can be accesed via typeInfo
+     * The typeInfo can be NULL if this element is duplicated or invalid
      */
     public INEDTypeInfo getContainerNEDTypeInfo() {
         INEDTypeInfo result = null;
@@ -716,8 +717,6 @@ public abstract class NEDElement extends PlatformObject implements Iterable<NEDE
         else // return the typinfo of the parent
             result = getParent().getContainerNEDTypeInfo();
 
-        // we should not call this on a node that does not have a typeinfo or is not in the model hierarchy
-        Assert.isNotNull(result);
         return result;
     }
 
@@ -726,6 +725,7 @@ public abstract class NEDElement extends PlatformObject implements Iterable<NEDE
      */
     public void setNEDTypeInfo(INEDTypeInfo typeInfo) {
         Assert.isNotNull(typeInfo);
+        Assert.isTrue(this instanceof ITopLevelElement, "TypeInfo should be set only on a TopLevelElement");
         removeListener(this.typeInfo);
         this.typeInfo = typeInfo;
         addListener(this.typeInfo);
