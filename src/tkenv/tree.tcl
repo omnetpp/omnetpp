@@ -191,6 +191,15 @@ proc Tree:nodeatcc {w x y} {
 }
 
 #
+# Returns the tooltip for the given node
+#
+proc Tree:gettooltip {w v} {
+  global Tree
+  if {$v==""} {return ""}
+  return [$Tree($w:function) $w tooltip $v]
+}
+
+#
 # Draw the tree on the canvas
 #
 proc Tree:build {w} {

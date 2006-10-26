@@ -490,6 +490,11 @@ proc get_help_tip {w x y item} {
           set ptr [graphmodwin_qlen_getqptr $w $modptr]
        } elseif {[lsearch $tags "node-ptr*"] != -1} {
           regexp "ptr.*" $tags ptr
+       } elseif {[lsearch $tags "node-*"] != -1} {
+          set i [lsearch $tags "node-*"]
+          set tag [lindex $tags $i]
+          regexp "node-(.*)" $tag match node
+          return [Tree:gettooltip $w $node]
        }
        set ptr [lindex $ptr 0]
 

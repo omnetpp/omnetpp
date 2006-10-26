@@ -164,7 +164,7 @@ proc getFieldNodeInfo {w op {key ""}} {
                 field -
                 findex {
                     set fieldid [lindex $keyargs 3]
-                    set tooltip [opp_classdescriptor $obj $sd fieldproperty $fieldid]
+                    set tooltip [opp_classdescriptor $obj $sd fieldproperty $fieldid "tooltip"]
                     return $tooltip
                 }
             }

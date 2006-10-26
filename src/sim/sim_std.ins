@@ -13,8 +13,8 @@ class cObject
     fields:
         @omitGetVerb(true);
         string className @group(basic);
-        string name @group(basic);
-        string fullName @group(basic);
+        string name @group(basic) @tooltip(name without index);
+        string fullName @group(basic) @tooltip(name with submodule, gate etc index);
         string fullPath @group(basic);
         string info @group(basic);
         string detailedInfo @group(basic);
@@ -33,7 +33,7 @@ class cDefaultList extends cNoncopyableObject
     properties:
         omitGetVerb = true;
     fields:
-        cObject *defaultListGet[] @sizeGetter(defaultListItems) @label(contents) @group(contents) ;
+        cObject *defaultListGet[] @sizeGetter(defaultListItems) @label(contents) @group(contents);
 }
 
 class cPar;
