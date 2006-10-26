@@ -28,6 +28,8 @@
 #   on each "\b", text jumps back to the top!)
 # - multi-line texts can be opened/closed (if there're child nodes
 #   as well, they open/close together with the text)
+# - added keyboard navigation and proc Tree:view
+#
 
 #
 # Bitmaps used to show which parts of the tree can be opened.
@@ -83,7 +85,7 @@ proc Tree:setselection {w v} {
   global Tree
   set Tree($w:selection) $v
   Tree:drawselection $w
-  #FIXME ensure that selection is visible (may scroll up or down)
+  Tree:view $w $v
 }
 
 #
@@ -92,6 +94,35 @@ proc Tree:setselection {w v} {
 proc Tree:getselection w {
   global Tree
   return $Tree($w:selection)
+}
+
+#
+# Scroll the canvas so that the given node becomes visible,
+# provided it's currently displayed at all.
+#
+proc Tree:view {w v} {
+  set bbox [$w bbox "node-$v"]
+  if {$bbox!=""} {
+    set done 0
+    while {!$done} {
+      set again 1
+      set y1 [lindex $bbox 1]
+      set y2 [lindex $bbox 3]
+      set cy1 [$w canvasy 0]
+      set cy2 [expr $cy1 + [winfo height $w]]
+      if {$y1 < $cy1} {
+          # scroll up
+          $w yview scroll -1 units
+          update idletasks
+      } elseif {$y2 > $cy2} {
+          # scroll down
+          $w yview scroll 1 units
+          update idletasks
+      } else {
+          set done 1
+      }
+    }
+  }
 }
 
 #
