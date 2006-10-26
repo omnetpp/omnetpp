@@ -26,6 +26,7 @@
 #include "parsim/cplaceholdermod.h"
 #endif
 
+//FIXME add separate nedSource() property, so that it can be inspected!!!!
 
 cComponentType::cComponentType(const char *name, const char *description) : cNoncopyableObject(name,false)
 {

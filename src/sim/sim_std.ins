@@ -37,12 +37,14 @@ class cDefaultList extends cNoncopyableObject
 }
 
 class cPar;
+class cComponentType;
 
 class cComponent extends cDefaultList
 {
     fields:
         @omitGetVerb(true);
         bool isModule @group(general);
+        cComponentType *componentType @group(general);
         cPar par[] @sizeGetter(params) @label(parameters) @group(parameters, gates);
 }
 
@@ -101,6 +103,9 @@ class cArray extends cObject
 
 class cComponentType extends cNoncopyableObject
 {
+    fields:
+        @omitGetVerb(true);
+        string description @group(general);
 }
 
 class cModuleType extends cComponentType
