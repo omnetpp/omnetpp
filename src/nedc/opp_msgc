@@ -710,9 +710,10 @@ exit $ret;
 #  %ftype{fieldname}
 #  %fval{fieldname}
 #  %fisabstract{fieldname}
+#  %fispointer{$fieldname}
 #  %fisarray{fieldname}
 #  %farraysize{fieldname}
-#  %%fprops{fieldname}
+#  %fprops{fieldname}->{propname}
 #
 #  %fkind{fieldname}
 #  %datatype{fieldname}
@@ -840,14 +841,14 @@ sub prepareForCodeGeneration
         }
 
         # pointer
-        $ftype = $ftype{$fieldname};
-        if ($ftype =~ /^(.*?)\s*\*$/) {
-            $ftype = $1;
-            $fpointer = 1;
-            print STDERR "*** Error: pointers not supported yet in '$msgname'\n"; $ret=1;
+        if ($ftype{$fieldname} =~ /^(.*?)\s*\*$/) {
+            $ftype{$fieldname} = $1;
+            $fispointer{$fieldname} = 1;
         } else {
-            $fpointer = 0;
+            $fispointer{$fieldname} = 0;
         }
+
+        $ftype = $ftype{$fieldname};
 
         # data type, argument type, conversion to/from string...
         if (grep(/^\Q$ftype\E$/,@classes)) {
@@ -1022,6 +1023,9 @@ sub generateClass
     print H "  protected:\n";
     foreach $fieldname (@fieldlist)
     {
+        if ($fispointer{$fieldname}) {
+            print STDERR "*** Error: pointers not supported yet in '$msgname'\n"; $ret=1; return;
+        }
         if (!$fisabstract{$fieldname}) {
             if ($fisarray{$fieldname} && $farraysize{$fieldname} ne '') {
                 print H "    $datatype{$fieldname} $var{$fieldname}\[$farraysize{$fieldname}\];\n";
@@ -1802,19 +1806,28 @@ sub generateDescriptorClass
     print CC "    switch (field) {\n";
     for ($i=0; $i<$fieldcount; $i++)
     {
-        if ($fkind{$fieldlist[$i]} eq 'struct') {
+        $fieldname = $fieldlist[$i];
+
+        if ($fkind{$fieldname} eq 'struct') {
             if ($classtype eq 'struct') {
-                if ($fisarray{$fieldlist[$i]}) {
-                    print CC "        case $i: return (void *)&pp->$var{$fieldlist[$i]}\[i\]; break;\n";
+                if ($fisarray{$fieldname}) {
+                    $value = "pp->$var{$fieldname}\[i\]";
                 } else {
-                    print CC "        case $i: return (void *)&pp->$var{$fieldlist[$i]}; break;\n";
+                    $value = "pp->$var{$fieldname}";
                 }
             } else {
-                if ($fisarray{$fieldlist[$i]}) {
-                    print CC "        case $i: return (void *)&pp->$getter{$fieldlist[$i]}(i); break;\n";
+                if ($fisarray{$fieldname}) {
+                    $value = "pp->$getter{$fieldname}(i)";
                 } else {
-                    print CC "        case $i: return (void *)&pp->$getter{$fieldlist[$i]}(); break;\n";
+                    $value = "pp->$getter{$fieldname}()";
                 }
+            }
+            $cast = "(void *)";
+            $cast .= "static_cast<cPolymorphic *>" if ($classtype{$ftype{$fieldname}} eq 'cobject');
+            if ($fispointer{$fieldname}) {
+                print CC "        case $i: return $cast($value); break;\n";
+            } else {
+                print CC "        case $i: return $cast(\&$value); break;\n";
             }
         }
     }
