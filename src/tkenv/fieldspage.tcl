@@ -62,6 +62,8 @@ proc refresh_fields2page {w} {
 }
 
 #
+# Content provider for the inspector treeview.
+#
 # Possible keys:
 #   obj-<ptr>
 #   struct-<ptr>-<descptr>
@@ -85,13 +87,13 @@ proc getFieldNodeInfo {w op {key ""}} {
 
             switch $keytype {
                 obj {
-                    set name [opp_object_fullname $obj]
-                    set classname [opp_object_classname $obj]
+                    set name [opp_getobjectfullname $obj]
+                    set classname [opp_getobjectclassname $obj]
                     return "$name ($classname)"
                 }
                 struct {
                     set name [opp_classdescriptor name $obj $sd]
-                    return $keyargs
+                    return $name
                 }
 
                 group {
@@ -103,64 +105,12 @@ proc getFieldNodeInfo {w op {key ""}} {
                 findex {
                     set fieldid [lindex $keyargs 3]
                     set index [lindex $keyargs 4]
-                    set typename [opp_classdescriptor $obj $sd fieldtypename $fieldid]
-                    set isarray [opp_classdescriptor $obj $sd fieldisarray $fieldid]
-                    set iscompound [opp_classdescriptor $obj $sd fieldiscompound $fieldid]
-                    set name [opp_classdescriptor $obj $sd fieldname $fieldid]
-                    if {$index!=""} {
-                        append name "\[$index\]"
-                    } elseif {$isarray} {
-                        set size [opp_classdescriptor $obj $sd fieldarraysize $fieldid]
-                        append name "\[$size\]"
-                    }
-                    if {$iscompound} {
-                        append name " {...}"
-                    }
-                    set value [opp_classdescriptor $obj $sd fieldvalue $fieldid $index]
-                    #FIXME display enumname too!
-                    if {$typename=="string"} {set value "\"$value\""}
-                    if {$value==""} {
-                        return "$name ($typename)"
-                    } else {
-                        return "$name = \b$value\b ($typename)"
-                    }
+                    return [getFieldNodeInfo_getFieldText $obj $sd $fieldid $index]
                 }
 
                 default {
                     error "bad keytype '$keytype'"
                 }
-            }
-
-
-            if {$group=="" && $fieldid==""} {
-                # no specific field -- return class name
-                set name [opp_classdescriptor $obj $sd name]
-                return $name
-            }
-            if {$group!="" && $fieldid==""} {
-                # only group given -- return that
-                return "\b$group\b"
-            }
-            set typename [opp_classdescriptor $obj $sd fieldtypename $fieldid]
-            set isarray [opp_classdescriptor $obj $sd fieldisarray $fieldid]
-            set iscompound [opp_classdescriptor $obj $sd fieldiscompound $fieldid]
-            set name [opp_classdescriptor $obj $sd fieldname $fieldid]
-            if {$index!=""} {
-                append name "\[$index\]"
-            } elseif {$isarray} {
-                set size [opp_classdescriptor $obj $sd fieldarraysize $fieldid]
-                append name "\[$size\]"
-            }
-            if {$iscompound} {
-                append name " {...}"
-            }
-            set value [opp_classdescriptor $obj $sd fieldvalue $fieldid $index]
-            #FIXME display enumname too!
-            if {$typename=="string"} {set value "\"$value\""}
-            if {$value==""} {
-                return "$name ($typename)"
-            } else {
-                return "$name = \b$value\b ($typename)"
             }
         }
 
@@ -200,40 +150,15 @@ proc getFieldNodeInfo {w op {key ""}} {
                     if {$keytype=="obj"} {set sd [opp_getclassdescriptorfor $obj]}
                     if {$sd==[opp_object_nullpointer]} {return ""}
 
-                    # collect list of groups
-                    set numfields [opp_classdescriptor $obj $sd fieldcount]
-                    for {set i 0} {$i<$numfields} {incr i} {
-                        set fieldgroup [opp_classdescriptor $obj $sd fieldproperty $i "group"]
-                        set groups($fieldgroup) 1
-                    }
-                    set children ""
-                    foreach fieldgroup [lsort [array names groups]] {
-                        if {$fieldgroup!=""} {
-                            lappend children "group-$obj-$sd-$fieldgroup"
-                        }
-                    }
-
-                    # plus fields with no groups
-                    for {set i 0} {$i<$numfields} {incr i} {
-                        set fieldgroup [opp_classdescriptor $obj $sd fieldproperty $i "group"]
-                        if {$fieldgroup==""} {
-                            lappend children "field-$obj-$sd-$i"
-                        }
-                    }
-                    return $children
+                    set children1 [getFieldNodeInfo_getFieldsInGroup $obj $sd ""]
+                    set children2 [getFieldNodeInfo_getGroupKeys $obj $sd]
+                    return [concat $children1 $children2]
                 }
 
                 group {
                     # return fields in the given group
                     set groupname [lindex $keyargs 3]
-                    set children ""
-                    set numfields [opp_classdescriptor $obj $sd fieldcount]
-                    for {set i 0} {$i<$numfields} {incr i} {
-                        if {$groupname==[opp_classdescriptor $obj $sd fieldproperty $i "group"]} {
-                            lappend children "field-$obj-$sd-$i"
-                        }
-                    }
-                    return $children
+                    return [getFieldNodeInfo_getFieldsInGroup $obj $sd $groupname]
                 }
 
                 field {
@@ -241,12 +166,7 @@ proc getFieldNodeInfo {w op {key ""}} {
                     set isarray [opp_classdescriptor $obj $sd fieldisarray $fieldid]
                     if {$isarray} {
                         # expand array: enumerate all indices
-                        set n [opp_classdescriptor $obj $sd fieldarraysize $fieldid]
-                        set children ""
-                        for {set i 0} {$i<$n} {incr i} {
-                            lappend children "findex-$obj-$sd-$fieldid-$i"
-                        }
-                        return $children
+                        return [getFieldNodeInfo_getElementsInArray $obj $sd $fieldid]
                     }
                     set iscompound [opp_classdescriptor $obj $sd fieldiscompound $fieldid]
                     if {$iscompound} {
@@ -293,6 +213,103 @@ proc getFieldNodeInfo {w op {key ""}} {
 
         root {
             return "obj-$treeroots($w)"
+        }
+    }
+}
+
+#
+# Helper proc for getFieldNodeInfo.
+# Collects field groups, and converts them to keys.
+#
+proc getFieldNodeInfo_getGroupKeys {obj sd} {
+    # collect list of groups
+    set numfields [opp_classdescriptor $obj $sd fieldcount]
+    for {set i 0} {$i<$numfields} {incr i} {
+        set fieldgroup [opp_classdescriptor $obj $sd fieldproperty $i "group"]
+        set groups($fieldgroup) 1
+    }
+
+    # convert them to keys
+    set children {}
+    foreach fieldgroup [lsort [array names groups]] {
+        if {$fieldgroup!=""} {
+            lappend children "group-$obj-$sd-$fieldgroup"
+        }
+    }
+    return $children
+}
+
+
+#
+# Helper proc for getFieldNodeInfo.
+# Return fields in the given group; groupname may be "" (meaning no group).
+#
+proc getFieldNodeInfo_getFieldsInGroup {obj sd groupname} {
+    set children {}
+    set numfields [opp_classdescriptor $obj $sd fieldcount]
+    for {set i 0} {$i<$numfields} {incr i} {
+        if {$groupname==[opp_classdescriptor $obj $sd fieldproperty $i "group"]} {
+            lappend children "field-$obj-$sd-$i"
+        }
+    }
+    return $children
+}
+
+#
+# Helper proc for getFieldNodeInfo.
+# Expands array by enumerating all indices, and returns the list of corresponding keys.
+#
+proc getFieldNodeInfo_getElementsInArray {obj sd fieldid} {
+    set children {}
+    set n [opp_classdescriptor $obj $sd fieldarraysize $fieldid]
+    for {set i 0} {$i<$n} {incr i} {
+        lappend children "findex-$obj-$sd-$fieldid-$i"
+    }
+    return $children
+}
+
+#
+# Helper proc for getFieldNodeInfo. Produces text for a field.
+#
+proc getFieldNodeInfo_getFieldText {obj sd fieldid index} {
+
+    set typename [opp_classdescriptor $obj $sd fieldtypename $fieldid]
+    set isarray [opp_classdescriptor $obj $sd fieldisarray $fieldid]
+    set iscompound [opp_classdescriptor $obj $sd fieldiscompound $fieldid]
+    set isobject [opp_classdescriptor $obj $sd fieldisobject $fieldid]
+
+    set name [opp_classdescriptor $obj $sd fieldname $fieldid]
+
+    # if it's an unexpanded array, return "name[size]" immediately
+    if {$isarray && $index==""} {
+        set size [opp_classdescriptor $obj $sd fieldarraysize $fieldid]
+        return "$name\[$size\] ($typename)"
+    }
+
+    if {$index!=""} {
+        append name "\[$index\]"
+    }
+
+    if {$iscompound} {
+        # if it's an object, try to say something about it...
+        if {$isobject} {
+            set fieldobj [opp_classdescriptor $obj $sd fieldstructpointer $fieldid $index]
+            set fieldobjname [opp_getobjectfullname $fieldobj]
+            set fieldobjclassname [opp_getobjectclassname $fieldobj]
+            set fieldobjinfo [opp_getobjectinfostring $fieldobj]
+            return "$name = \b($fieldobjclassname) $fieldobjname: $fieldobjinfo\b ($typename)"
+        } else {
+            return "$name ($typename)"
+        }
+    } else {
+        # plain field, return "name = value" text
+        set value [opp_classdescriptor $obj $sd fieldvalue $fieldid $index]
+        #FIXME display enumname too!
+        if {$typename=="string"} {set value "\"$value\""}
+        if {$value==""} {
+            return "$name ($typename)"
+        } else {
+            return "$name = \b$value\b ($typename)"
         }
     }
 }

@@ -13,7 +13,7 @@ class cObject
     fields:
         @omitGetVerb(true);
         string name @group(basic);
-        string fullName; // no @group, to make it stand out
+        string fullName @group(basic);
         string fullPath @group(basic);
         string info @group(basic);
         string detailedInfo @group(basic);
