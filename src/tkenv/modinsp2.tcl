@@ -1107,14 +1107,14 @@ proc graphmodwin_qlen_getqptr {c modptr} {
 
 proc graphmodwin_qlen_dblclick c {
    set qptr [graphmodwin_qlen_getqptr_current $c]
-   if {$qptr!="" && $qptr!=[opp_object_nullpointer]} {
+   if {$qptr!="" && $qptr!=[opp_null]} {
        opp_inspect $qptr "(default)"
    }
 }
 
 proc graphmodwin_qlen_rightclick {c X Y} {
    set qptr [graphmodwin_qlen_getqptr_current $c]
-   if {$qptr!="" && $qptr!=[opp_object_nullpointer]} {
+   if {$qptr!="" && $qptr!=[opp_null]} {
        popup_insp_menu $qptr $X $Y
    }
 }

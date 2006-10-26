@@ -114,7 +114,9 @@ int getClassDescriptorFor_cmd(ClientData, Tcl_Interp *interp, int argc, const ch
 int classDescriptor_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv);
 int getNameForEnum_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv);
 
-int objectNullPointer_cmd(ClientData, Tcl_Interp *, int, const char **);
+int nullPointer_cmd(ClientData, Tcl_Interp *, int, const char **);
+int isNullPointer_cmd(ClientData, Tcl_Interp *, int, const char **);
+int isNotNullPointer_cmd(ClientData, Tcl_Interp *, int, const char **);
 int objectDefaultList_cmd(ClientData, Tcl_Interp *, int, const char **);
 int objectSimulation_cmd(ClientData, Tcl_Interp *, int, const char **);
 int objectSystemModule_cmd(ClientData, Tcl_Interp *, int, const char **);
@@ -200,7 +202,9 @@ OmnetTclCommand tcl_commands[] = {
    { "opp_getnameforenum",    getNameForEnum_cmd    }, // args: <enumname> <number>
 
    // Functions that return object pointers
-   { "opp_object_nullpointer",  objectNullPointer_cmd  },
+   { "opp_null",                nullPointer_cmd        },
+   { "opp_isnull",              isNullPointer_cmd      }, // args: <ptr>
+   { "opp_isnotnull",           isNotNullPointer_cmd   }, // args: <ptr>
    { "opp_object_defaultlist",  objectDefaultList_cmd  },
    { "opp_object_simulation",   objectSimulation_cmd   },
    { "opp_object_systemmodule", objectSystemModule_cmd },
@@ -1418,10 +1422,26 @@ int getClassDescriptor_cmd(ClientData, Tcl_Interp *interp, int argc, const char 
 }
 
 //--------------
-int objectNullPointer_cmd(ClientData, Tcl_Interp *interp, int argc, const char **)
+int nullPointer_cmd(ClientData, Tcl_Interp *interp, int argc, const char **)
 {
    if (argc!=1) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
    Tcl_SetResult(interp, ptrToStr(NULL), TCL_VOLATILE);
+   return TCL_OK;
+}
+
+int isNullPointer_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
+{
+   if (argc!=2) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
+   const char *ptr = argv[1];
+   Tcl_SetResult(interp, TCLCONST(strcmp(ptr,ptrToStr(NULL))==0 ? "1" : "0"), TCL_STATIC);
+   return TCL_OK;
+}
+
+int isNotNullPointer_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
+{
+   if (argc!=2) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
+   const char *ptr = argv[1];
+   Tcl_SetResult(interp, TCLCONST(strcmp(ptr,ptrToStr(NULL))==0 ? "0" : "1"), TCL_STATIC);
    return TCL_OK;
 }
 

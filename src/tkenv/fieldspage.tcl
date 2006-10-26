@@ -82,8 +82,8 @@ proc getFieldNodeInfo {w op {key ""}} {
     switch $op {
 
         text {
-            if {$obj==[opp_object_nullpointer]} {return "<object is NULL>"}
-            if {$sd==[opp_object_nullpointer]} {return "<no descriptor for object>"}
+            if [opp_isnull $obj] {return "<object is NULL>"}
+            if [opp_isnull $sd] {return "<no descriptor for object>"}
 
             switch $keytype {
                 obj {
@@ -135,7 +135,9 @@ proc getFieldNodeInfo {w op {key ""}} {
                     set isarray [opp_classdescriptor $obj $sd fieldisarray $fieldid]
                     if {$isobject && (!$isarray || $index!="")} {
                         set fieldptr [opp_classdescriptor $obj $sd fieldstructpointer $fieldid $index]
-                        return [get_icon_for_object $fieldptr]
+                        if [opp_isnotnull $fieldptr] {
+                            return [get_icon_for_object $fieldptr]
+                        }
                     }
                     return ""
                 }
@@ -155,9 +157,9 @@ proc getFieldNodeInfo {w op {key ""}} {
             switch $keytype {
                 obj -
                 struct {
-                    if {$obj==[opp_object_nullpointer]} {return ""}
+                    if {$obj==[opp_null]} {return ""}
                     if {$keytype=="obj"} {set sd [opp_getclassdescriptorfor $obj]}
-                    if {$sd==[opp_object_nullpointer]} {return ""}
+                    if {$sd==[opp_null]} {return ""}
 
                     set children1 [getFieldNodeInfo_getFieldsInGroup $obj $sd ""]
                     set children2 [getFieldNodeInfo_getGroupKeys $obj $sd]
@@ -182,6 +184,7 @@ proc getFieldNodeInfo {w op {key ""}} {
                         # return children on this class/struct
                         set isobject [opp_classdescriptor $obj $sd fieldisobject $fieldid]
                         set fieldptr [opp_classdescriptor $obj $sd fieldstructpointer $fieldid]
+                        if [opp_isnull $fieldptr] {return ""}
                         if {$isobject} {
                             return [getFieldNodeInfo $w children "obj-$fieldptr"]
                         } else {
@@ -202,6 +205,7 @@ proc getFieldNodeInfo {w op {key ""}} {
                         # return children on this class/struct
                         set isobject [opp_classdescriptor $obj $sd fieldisobject $fieldid]
                         set fieldptr [opp_classdescriptor $obj $sd fieldstructpointer $fieldid $index]
+                        if [opp_isnull $fieldptr] {return ""}
                         if {$isobject} {
                             return [getFieldNodeInfo $w children "obj-$fieldptr"]
                         } else {
@@ -302,26 +306,25 @@ proc getFieldNodeInfo_getFieldText {obj sd fieldid index} {
         set name "\[$index\]"
     }
 
+    # we'll want to print the field type, except for expanded array elements
+    # (no need to repeat it, as it's printed in the "name[size]" node already)
+    if {$index==""} {
+        set typenametext " ($typename)"
+    } else {
+        set typenametext ""
+    }
+
     if {$iscompound} {
         # if it's an object, try to say something about it...
         if {$isobject} {
             set fieldobj [opp_classdescriptor $obj $sd fieldstructpointer $fieldid $index]
+            if [opp_isnull $fieldobj] {return "$name = \bNULL\b$typenametext"}
             set fieldobjname [opp_getobjectfullname $fieldobj]
             set fieldobjclassname [opp_getobjectclassname $fieldobj]
             set fieldobjinfo [opp_getobjectinfostring $fieldobj]
-            if {$index!=""} {
-                # when printing array elements, omit typename which would repeat
-                return "$name = \b($fieldobjclassname) $fieldobjname: $fieldobjinfo\b"
-            } else {
-                return "$name = \b($fieldobjclassname) $fieldobjname: $fieldobjinfo\b ($typename)"
-            }
+            return "$name = \b($fieldobjclassname) $fieldobjname: $fieldobjinfo\b$typenametext"
         } else {
-            if {$index!=""} {
-                # when printing array elements, omit typename which would repeat
-                return "$name"
-            } else {
-                return "$name ($typename)"
-            }
+            return "$name$typenametext"
         }
     } else {
         # plain field, return "name = value" text
@@ -333,20 +336,10 @@ proc getFieldNodeInfo_getFieldText {obj sd fieldid index} {
             set value "$symbolicname ($value)"
         }
         if {$typename=="string"} {set value "\"$value\""}
-
-        if {$index!=""} {
-            # when printing array elements, omit typename which would repeat
-            if {$value==""} {
-                return "$name"
-            } else {
-                return "$name = \b$value\b"
-            }
+        if {$value==""} {
+            return "$name$typenametext"
         } else {
-            if {$value==""} {
-                return "$name ($typename)"
-            } else {
-                return "$name = \b$value\b ($typename)"
-            }
+            return "$name = \b$value\b$typenametext"
         }
     }
 }
@@ -419,8 +412,8 @@ proc getFieldNodeInfo_getFieldText {obj sd fieldid index} {
 #    regexp {^fld-(ptr.*)-(ptr.*)-([^-]*)-([^-]*)$} $key dummy obj sd fieldid index
 #    #puts "DBG --> $obj -- $sd -- field=$fieldid -- index=$index"
 #
-#    if {$obj==[opp_object_nullpointer]} {return "<object is NULL>"}
-#    if {$sd==[opp_object_nullpointer]} {return "<no descriptor for object>"}
+#    if {$obj==[opp_null]} {return "<object is NULL>"}
+#    if {$sd==[opp_null]} {return "<no descriptor for object>"}
 #
 #    set declname [opp_classdescriptor $obj $sd name]
 #
