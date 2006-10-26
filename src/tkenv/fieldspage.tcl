@@ -67,9 +67,13 @@ proc refresh_fields2page {w} {
 # Possible keys:
 #   obj-<ptr>
 #   struct-<ptr>-<descptr>
-#   group-<ptr>-<descptr>-<groupname>
+#   group-<ptr>-<descptr>-<groupid>
 #   field-<ptr>-<descptr>-<fieldid>
 #   findex-<ptr>-<descptr>-<fieldid>-<index>
+#
+# groupid is id of a field (ie a fieldid) which has the right group.
+# We use that because the group name itself may contain space, hyphen
+# and other unwanted characters.
 #
 proc getFieldNodeInfo {w op {key ""}} {
     global icons treeroots
@@ -97,7 +101,8 @@ proc getFieldNodeInfo {w op {key ""}} {
                 }
 
                 group {
-                    set groupname [lindex $keyargs 3]
+                    set groupid [lindex $keyargs 3]
+                    set groupname [opp_classdescriptor $obj $sd fieldproperty $groupid "group"]
                     return "\b$groupname\b"
                 }
 
@@ -244,9 +249,9 @@ proc getFieldNodeInfo_getGroupKeys {obj sd} {
 
     # convert them to keys
     set children {}
-    foreach fieldgroup [lsort [array names groups]] {
-        if {$fieldgroup!=""} {
-            lappend children "group-$obj-$sd-$fieldgroup"
+    foreach groupname [lsort [array names groups]] {
+        if {$groupname!=""} {
+            lappend children "group-$obj-$sd-$groups($groupname)"
         }
     }
     return $children
@@ -257,8 +262,13 @@ proc getFieldNodeInfo_getGroupKeys {obj sd} {
 # Helper proc for getFieldNodeInfo.
 # Return fields in the given group; groupname may be "" (meaning no group).
 #
-proc getFieldNodeInfo_getFieldsInGroup {obj sd groupname} {
+proc getFieldNodeInfo_getFieldsInGroup {obj sd groupid} {
     set children {}
+    if {$groupid!=""} {
+        set groupname [opp_classdescriptor $obj $sd fieldproperty $groupid "group"]
+    } else {
+        set groupname ""
+    }
     set numfields [opp_classdescriptor $obj $sd fieldcount]
     for {set i 0} {$i<$numfields} {incr i} {
         if {$groupname==[opp_classdescriptor $obj $sd fieldproperty $i "group"]} {

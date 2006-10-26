@@ -22,7 +22,6 @@ class cObject
 
 //XXX TODO: add @enum to gate type, param type etc
 //XXX TODO: add @tooltip!
-//XXX FIXME @group name cannot contain space or hyphen "-"!!!!
 //XXX FIXME property values cannot contain ")" (will confuse perl pattern matcher-based parser)
 
 class cNoncopyableObject extends cObject
@@ -44,7 +43,7 @@ class cComponent extends cDefaultList
     fields:
         @omitGetVerb(true);
         bool isModule @group(general);
-        cPar par[] @sizeGetter(params) @label(parameters) @group(parameters/gates);
+        cPar par[] @sizeGetter(params) @label(parameters) @group(parameters, gates);
 }
 
 class cChannel extends cComponent
@@ -74,7 +73,7 @@ class cModule extends cComponent
         bool isVector @group(general);
         int index @group(general);
         int size @group(general);
-        cGate *gate[] @sizeGetter(gates) @group(parameters/gates) @label(gates);
+        cGate *gate[] @sizeGetter(gates) @group(parameters, gates) @label(gates);
 }
 
 class cSimpleModule extends cModule
