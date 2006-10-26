@@ -12,6 +12,7 @@ class cObject
 {
     fields:
         @omitGetVerb(true);
+        string className @group(basic);
         string name @group(basic);
         string fullName @group(basic);
         string fullPath @group(basic);
@@ -45,8 +46,8 @@ class cComponent extends cObject //really: cDefaultList
     fields:
         @omitGetVerb(true);
         bool isModule @group(general);
-        int params @group(general);
-        cPar par[] @sizeGetter(params) @group(general);
+        //int params @group(general);
+        cPar par[] @sizeGetter(params) @group(general) @label(parameters);
 }
 
 class cChannel extends cComponent

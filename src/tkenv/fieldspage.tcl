@@ -121,13 +121,22 @@ proc getFieldNodeInfo {w op {key ""}} {
         icon {
             switch $keytype {
                 obj {
-                    #FIXME this never gets called...
                     return [get_icon_for_object $obj]
                 }
                 struct -
-                group -
+                group {
+                    return ""
+                }
                 field -
                 findex {
+                    set fieldid [lindex $keyargs 3]
+                    set index [lindex $keyargs 4]
+                    set isobject [opp_classdescriptor $obj $sd fieldisobject $fieldid]
+                    set isarray [opp_classdescriptor $obj $sd fieldisarray $fieldid]
+                    if {$isobject && (!$isarray || $index!="")} {
+                        set fieldptr [opp_classdescriptor $obj $sd fieldstructpointer $fieldid $index]
+                        return [get_icon_for_object $fieldptr]
+                    }
                     return ""
                 }
             }
@@ -278,7 +287,9 @@ proc getFieldNodeInfo_getFieldText {obj sd fieldid index} {
     set iscompound [opp_classdescriptor $obj $sd fieldiscompound $fieldid]
     set isobject [opp_classdescriptor $obj $sd fieldisobject $fieldid]
 
-    set name [opp_classdescriptor $obj $sd fieldname $fieldid]
+    # field name can be overridden with @label property
+    set name [opp_classdescriptor $obj $sd fieldproperty $fieldid "label"]
+    if {$name==""} {set name [opp_classdescriptor $obj $sd fieldname $fieldid]}
 
     # if it's an unexpanded array, return "name[size]" immediately
     if {$isarray && $index==""} {
@@ -286,8 +297,9 @@ proc getFieldNodeInfo_getFieldText {obj sd fieldid index} {
         return "$name\[$size\] ($typename)"
     }
 
+    # when showing array elements, omit name and just show "[index]" instead
     if {$index!=""} {
-        append name "\[$index\]"
+        set name "\[$index\]"
     }
 
     if {$iscompound} {
@@ -297,19 +309,43 @@ proc getFieldNodeInfo_getFieldText {obj sd fieldid index} {
             set fieldobjname [opp_getobjectfullname $fieldobj]
             set fieldobjclassname [opp_getobjectclassname $fieldobj]
             set fieldobjinfo [opp_getobjectinfostring $fieldobj]
-            return "$name = \b($fieldobjclassname) $fieldobjname: $fieldobjinfo\b ($typename)"
+            if {$index!=""} {
+                # when printing array elements, omit typename which would repeat
+                return "$name = \b($fieldobjclassname) $fieldobjname: $fieldobjinfo\b"
+            } else {
+                return "$name = \b($fieldobjclassname) $fieldobjname: $fieldobjinfo\b ($typename)"
+            }
         } else {
-            return "$name ($typename)"
+            if {$index!=""} {
+                # when printing array elements, omit typename which would repeat
+                return "$name"
+            } else {
+                return "$name ($typename)"
+            }
         }
     } else {
         # plain field, return "name = value" text
         set value [opp_classdescriptor $obj $sd fieldvalue $fieldid $index]
-        #FIXME display enumname too!
+        set enumname [opp_classdescriptor $obj $sd fieldproperty $fieldid "enum"]
+        if {$enumname!=""} {
+            append typename " enum $enumname"
+            set value "XXX ($value)"  ;#FIXME
+        }
         if {$typename=="string"} {set value "\"$value\""}
-        if {$value==""} {
-            return "$name ($typename)"
+
+        if {$index!=""} {
+            # when printing array elements, omit typename which would repeat
+            if {$value==""} {
+                return "$name"
+            } else {
+                return "$name = \b$value\b"
+            }
         } else {
-            return "$name = \b$value\b ($typename)"
+            if {$value==""} {
+                return "$name ($typename)"
+            } else {
+                return "$name = \b$value\b ($typename)"
+            }
         }
     }
 }
@@ -402,9 +438,6 @@ proc _getFieldDataFor {key} {
         set size [opp_classdescriptor $obj $sd fieldarraysize $fieldid]
         append name "\[$size\]"
     }
-    #if {$iscompound} {
-    #    append name " {...}"
-    #}
     set value [opp_classdescriptor $obj $sd fieldvalue $fieldid $index]
     regsub -all "\n" $value "; " value
     regsub -all "   +" $value "  " value
