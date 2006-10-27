@@ -103,8 +103,8 @@ lex.expryy.cc: expr.lex expr.tab.h
 	copy lex.expryy.c lex.expryy.cc
 	del lex.expryy.c
 
-sim_std_m.cc sim_std_m.h : sim_std.ins
-	$(MSGC:/=\) -Xnc -Xns sim_std.ins
+sim_std_m.cc sim_std_m.h : sim_std.msg
+	$(MSGC:/=\) -Xnc -Xns sim_std.msg
 
 depend:
 	$(MAKEDEPEND) -I../../include -fMakefile.vc -- *.cc netbuilder/*.cc parsim/*.cc

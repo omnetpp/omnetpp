@@ -124,8 +124,8 @@ depend:
 	$(MAKEDEPEND) -I../../include -- *.cc netbuilder/*.cc parsim/*.cc
 	$(MAKEDEPEND) -I../../include -fMakefile.in -- *.cc netbuilder/*.cc parsim/*.cc
 
-sim_std_m.cc sim_std_m.h : sim_std.ins
-	$(MSGC) -Xnc -Xns sim_std.ins
+sim_std_m.cc sim_std_m.h : sim_std.msg
+	$(MSGC) -Xnc -Xns sim_std.msg
 
 clean:
 	rm -f expr.tab.h expr.tab.cc lex.expryy.cc
