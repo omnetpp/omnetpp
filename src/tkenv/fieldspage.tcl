@@ -245,6 +245,10 @@ proc getFieldNodeInfo {w op {key ""}} {
                     return ""
                 }
 
+                root {
+                    return "obj-$obj"
+                }
+
                 default {
                     error "bad keytype '$keytype'"
                 }
@@ -252,7 +256,9 @@ proc getFieldNodeInfo {w op {key ""}} {
         }
 
         root {
-            return "obj-$treeroots($w)"
+            # add an extra level to make the root object appear in the tree as well
+            #return "obj-$treeroots($w)"
+            return "root-$treeroots($w)"
         }
     }
 }

@@ -39,7 +39,7 @@ config timeline-maxnumevents	{1000}
 config editor-case-sensitive	{0}
 config editor-whole-words	{0}
 config filtobjlist-order	{Class}
-inspector "Histograms" "Histograms" "1" "460x396+24+31"
+inspector "Histograms" "Histograms" "1" "600x609+111+78"
 inspector "Histograms.K-Split" "cKSplit" "1" "558x506+72+93"
 inspector "Histograms.K-Split" "cKSplit" "2" "386x344+48+62"
 
