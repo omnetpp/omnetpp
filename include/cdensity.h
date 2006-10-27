@@ -345,8 +345,6 @@ class SIM_API cDensityEstBase : public cStdDev
     //@}
 };
 
-std::ostream& operator<<(std::ostream& os, const cDensityEstBase::Cell& cell);
-
 #endif
 
 

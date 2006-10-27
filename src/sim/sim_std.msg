@@ -20,10 +20,56 @@
 // Usage: opp_msgc -Xnc -Xns sim_std.ins
 //
 
-cplusplus {{
-// function to reference from outside, to force linker include this file
+
+cplusplus
+{{
+
+//
+// Register enums from the sim. kernel
+//
+EXECUTE_ON_STARTUP(cGate_Type,
+    cEnum *e = new cEnum("cGate_Type");
+    enums.instance()->add(e);
+    e->insert(cGate::INPUT,  "INPUT");
+    e->insert(cGate::OUTPUT, "OUTPUT");
+    e->insert(cGate::INOUT,  "INOUT");
+);
+
+EXECUTE_ON_STARTUP(cPar_Type,
+    cEnum *e = new cEnum("cPar_Type");
+    enums.instance()->add(e);
+    e->insert(cPar::BOOL,   "BOOL");
+    e->insert(cPar::DOUBLE, "DOUBLE");
+    e->insert(cPar::LONG,   "LONG");
+    e->insert(cPar::STRING, "STRING");
+    e->insert(cPar::XML,    "XML");
+);
+
+//
+// Define operator<< for some classes
+//
+std::ostream& operator<<(std::ostream& os, const cDisplayString& d) {
+    return os << "\"" << d.toString() << "\"";
+}
+
+typedef cDensityEstBase::Cell cDensityEstBase_Cell;
+std::ostream& operator<<(std::ostream& os, const cDensityEstBase::Cell& cell) {
+    return os << "[" << cell.lower << ", " << cell.upper << ")  ==>  " << cell.value << " (" << cell.relativeFreq << ")";
+}
+
+//
+// This function is to be referenced from sim. kernel classes, to force the
+// linker to include this file in executables
+//
 void std_sim_descriptor_dummy() {}
+
 }}
+
+enum cPar_Type;
+enum cGate_Type;
+
+struct cDensityEstBase_Cell;
+
 
 class cObject
 {
@@ -52,6 +98,7 @@ class cDefaultList extends cNoncopyableObject
 
 class cPar;
 class cComponentType;
+class noncobject cDisplayString;
 
 class cComponent extends cDefaultList
 {
@@ -89,6 +136,8 @@ class cModule extends cComponent
         bool isVector @group(general);
         int index @group(general);
         int size @group(general);
+        cDisplayString displayString @group(general);
+        cDisplayString backgroundDisplayString @group(general);
         cGate *gate[] @sizeGetter(gates) @group(parameters, gates) @label(gates);
 }
 
@@ -106,14 +155,7 @@ class cCompoundModule extends cModule
 {
 }
 
-class cArray extends cObject
-{
-    fields:
-        @omitGetVerb(true);
-        bool takeOwnership @group(general);
-        cObject *get[] @sizeGetter(items) @label(contents) @group(general);
-}
-
+//----
 
 class cComponentType extends cNoncopyableObject
 {
@@ -135,19 +177,6 @@ class cChannelType extends cComponentType
 
 //----
 
-enum cGate_Type;
-
-cplusplus {{
-// Register this enum manually
-EXECUTE_ON_STARTUP(cGate_Type,
-    cEnum *e = new cEnum("cGate_Type");
-    enums.instance()->add(e);
-    e->insert(cGate::INPUT,  "INPUT");
-    e->insert(cGate::OUTPUT, "OUTPUT");
-    e->insert(cGate::INOUT,  "INOUT");
-);
-}}
-
 class cGate extends cNoncopyableObject
 {
     fields:
@@ -157,6 +186,7 @@ class cGate extends cNoncopyableObject
         bool isVector @group(general);
         int index @group(general);
         cChannel *channel @group(general);
+        cDisplayString displayString @group(general);
         bool isBusy @group(state);
         simtime_t transmissionFinishes @group(state);
         cGate *fromGate @group(connection);
@@ -169,6 +199,23 @@ class cGate extends cNoncopyableObject
         bool isRouteOK @group(connection);
 }
 
+//----
+
+class cDisplayString
+{
+    fields:
+        @omitGetVerb(true);
+        string toString;
+}
+
+class cArray extends cObject
+{
+    fields:
+        @omitGetVerb(true);
+        bool takeOwnership @group(general);
+        cObject *get[] @sizeGetter(items) @label(contents) @group(general);
+}
+
 class cMessage extends cObject
 {
     fields:
@@ -178,6 +225,7 @@ class cMessage extends cObject
         long length @group(general);
         long byteLength @group(general);
         bool hasBitError @group(general);
+        string displayString @group(general);
 
         bool isScheduled @group(sending);
         bool isSelfMessage @group(sending);
@@ -244,12 +292,6 @@ class cWeightedStdDev extends cStdDev
 {
 }
 
-cplusplus {{
-typedef cDensityEstBase::Cell cDensityEstBase_Cell;
-}}
-
-struct cDensityEstBase_Cell;
-
 class cDensityEstBase extends cStdDev
 {
     fields:
@@ -311,7 +353,7 @@ class cExpression extends cPolymorphic
 {
     fields:
         @omitGetVerb(true);
-        //XXX string toString @group(general);
+        string toString;
 }
 
 class cFSM extends cObject
@@ -346,21 +388,6 @@ class cOutVector extends cNoncopyableObject
         long valuesReceived @group(general);
         long valuesStored @group(general);
 }
-
-enum cPar_Type;
-
-cplusplus {{
-// Register this enum manually
-EXECUTE_ON_STARTUP(cPar_Type,
-    cEnum *e = new cEnum("cPar_Type");
-    enums.instance()->add(e);
-    e->insert(cPar::BOOL,   "BOOL");
-    e->insert(cPar::DOUBLE, "DOUBLE");
-    e->insert(cPar::LONG,   "LONG");
-    e->insert(cPar::STRING, "STRING");
-    e->insert(cPar::XML,    "XML");
-);
-}}
 
 class cPar extends cObject
 {

@@ -353,8 +353,3 @@ cDensityEstBase::Cell cDensityEstBase::cellInfo(int k) const
     return c;
 }
 
-std::ostream& operator<<(std::ostream& os, const cDensityEstBase::Cell& cell)
-{
-    return os << "[" << cell.lower << ", " << cell.upper << ") ==> " << cell.value << " (" << cell.relativeFreq << ")";
-}
-
