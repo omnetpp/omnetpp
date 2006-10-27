@@ -177,6 +177,14 @@ int cClassDescriptor::getInheritanceChainLength()
     return inheritancechainlength;
 }
 
+const char *cClassDescriptor::getFieldDeclaredOn(void *object, int field)
+{
+    cClassDescriptor *base = getBaseClassDescriptor();
+    if (base && field < base->getFieldCount(object))
+        return base->getFieldDeclaredOn(object, field);
+    return name();
+}
+
 cClassDescriptor *cClassDescriptor::getDescriptorFor(const char *classname)
 {
     return dynamic_cast<cClassDescriptor *>(classDescriptors.instance()->get(classname));

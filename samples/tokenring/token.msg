@@ -10,6 +10,7 @@
 
 enum TRTypes
 {
+    TR_ZARRO = 0;
     TR_TOKEN = 1;
     TR_FRAME = 2;
 };

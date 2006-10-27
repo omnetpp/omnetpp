@@ -173,6 +173,11 @@ class SIM_API cClassDescriptor : public cNoncopyableObject
     //@}
 
     /**
+     * Returns the name of the class on which the given field was declared.
+     */
+    virtual const char *getFieldDeclaredOn(void *object, int field);
+
+    /**
      * Must be redefined in subclasses to return the type of a field
      * in the client object as a string.
      * The argument must be in the 0..getFieldCount()-1 range, inclusive.
