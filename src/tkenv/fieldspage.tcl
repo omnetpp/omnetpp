@@ -356,7 +356,13 @@ proc getFieldNodeInfo_getFieldText {obj sd fieldid index} {
             set fieldobjinfo [opp_getobjectinfostring $fieldobj]
             return "$name = \b($fieldobjclassname) $fieldobjname: $fieldobjinfo\b$typenametext"
         } else {
-            return "$name$typenametext"
+            # a value can be generated via operator<<
+            set value [opp_classdescriptor $obj $sd fieldvalue $fieldid $index]
+            if {$value==""} {
+                return "$name$typenametext"
+            } else {
+                return "$name = \b$value\b$typenametext"
+            }
         }
     } else {
         # plain field, return "name = value" text
