@@ -1543,7 +1543,8 @@ sub generateDescriptorClass
     print CC "const char *$msgdescclass\:\:getProperty(const char *propertyname)\n";
     print CC "{\n";
     for $key (keys %props) {
-        print CC "    if (!strcmp(propertyname,\"$key\")) return \"$props{$key}\";\n";
+        $prop = quote($props{$key});
+        print CC "    if (!strcmp(propertyname,\"$key\")) return \"$prop\";\n";
     }
     print CC "    cClassDescriptor *basedesc = getBaseClassDescriptor();\n";
     print CC "    return basedesc ? basedesc->getProperty(propertyname) : NULL;\n";
@@ -1639,7 +1640,8 @@ sub generateDescriptorClass
         if (keys(%$ref) != ()) {
             print CC "        case $i:\n";
             for $key (keys %$ref) {
-                print CC "            if (!strcmp(propertyname,\"$key\")) return \"$fprops{$fieldname}->{$key}\";\n";
+                $prop = quote($fprops{$fieldname}->{$key});
+                print CC "            if (!strcmp(propertyname,\"$key\")) return \"$prop\";\n";
             }
             print CC "            return NULL;\n";
         }
@@ -1843,4 +1845,14 @@ sub generateDescriptorClass
     print CC "\n";
 }
 
+#
+# replace newlines with \n, and prefix quotes with backslash
+#
+sub quote($)
+{
+    my($text) = @_;
+    $text =~ s/\n/\\n/gs;
+    $text =~ s/"/\\"/g;
+    return $text;
+}
 
