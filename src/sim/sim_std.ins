@@ -389,7 +389,7 @@ class cMessageHeap extends cObject
     fields:
         @omitGetVerb(true);
         int length @group(general);
-        //XXX elements?
+        cMessage *peek[] @sizeGetter(length) @group(general) @label(messages);
 }
 
 class cQueue extends cObject
@@ -408,9 +408,11 @@ class cSimulation extends cNoncopyableObject
         int runNumber @group(general);
         simtime_t simTime @group(general);
         long eventNumber @group(general);
-        int contextType @group(general);
-        int lastModuleId @group(general);
-        //XXX modules?
+        //int contextType @group(general);
+        cMessageHeap messageQueue @label(futureEvents) @group(general);
+        int lastModuleId @group(modules);
+        cModule *systemModule @group(modules);
+        cModule *module[] @sizeGetter(lastModuleId) @group(modules) @label(modules);
 }
 
 class cScheduler extends cPolymorphic
@@ -436,9 +438,9 @@ class cXMLElement
 {
     fields:
         @omitGetVerb(true);
-        string getTagName @group(general);  //XXX get rid of "get" somehow -- @label(tagname)?
-        string getNodeValue @group(general);
-        string getSourceLocation @group(general);
+        string getTagName @group(general) @label(tagName);
+        string getNodeValue @group(general) @label(nodeValue);
+        string getSourceLocation @group(general) @label(sourceLocation);
         bool hasAttributes @group(general);
         bool hasChildren @group(general);
         //XXX const cXMLAttributeMap& getAttributes @group(general);

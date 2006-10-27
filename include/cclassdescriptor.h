@@ -199,18 +199,18 @@ class SIM_API cClassDescriptor : public cNoncopyableObject
     virtual int getArraySize(void *object, int field) = 0;
 
     /**
-     * Must be redefined in subclasses to return the value of a non-compound field
-     * in the client object as a string. It is an error if this method is invoked
-     * for compound fields. Returns true if no error occurred, false otherwise.
-     * @see getFieldIsCompound()
+     * Must be redefined in subclasses to return the value of the given field
+     * in the client object as a string. Returns true if no error occurred,
+     * false otherwise. For compound fields, the message compiler generates
+     * code which calls operator<<.
      */
     virtual bool getFieldAsString(void *object, int field, int i, char *buf, int bufsize) = 0;
 
     /**
-     * Must be redefined in subclasses to set the value of a basic field
-     * (of type FT_BASIC(_ARRAY)) in the client object as a string.
-     * It is an error if this method is invoked for non-basic fields.
-     * Returns true if no error occurred, false otherwise.
+     * Must be redefined in subclasses to set the value of a field
+     * in the client object from the given value string.
+     * Returns true if successful, and false if an error occurred or the
+     * field does not support setting.
      */
     virtual bool setFieldAsString(void *object, int field, int i, const char *value) = 0;
 
