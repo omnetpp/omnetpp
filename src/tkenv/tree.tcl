@@ -114,7 +114,7 @@ proc Tree:view {w v} {
           # scroll up
           $w yview scroll -1 units
           update idletasks
-      } elseif {$y2 > $cy2} {
+      } elseif {$y2 > $cy2 && ($y2-$y1 < $cy2-$cy1)} {
           # scroll down
           $w yview scroll 1 units
           update idletasks
@@ -389,13 +389,7 @@ proc Tree:togglestate w {
   global Tree
   set v [Tree:getselection $w]
   if {$v!=""} {
-    set isopen 0
-    catch {set isopen $Tree($w:$v:open)}
-    if {$isopen} {
-      Tree:close $w $v
-    } else {
-      Tree:open $w $v
-    }
+    Tree:toggle $w $v
   }
 }
 
