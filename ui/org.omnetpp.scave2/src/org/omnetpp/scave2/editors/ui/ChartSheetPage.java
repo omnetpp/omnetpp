@@ -1,6 +1,8 @@
 package org.omnetpp.scave2.editors.ui;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
@@ -18,6 +20,7 @@ import org.omnetpp.scave.model.ChartSheet;
 import org.omnetpp.scave.model.ScaveModelPackage;
 import org.omnetpp.scave2.charting.ChartCanvas;
 import org.omnetpp.scave2.charting.ChartFactory;
+import org.omnetpp.scave2.charting.ChartUpdater;
 import org.omnetpp.scave2.charting.ScalarChart;
 import org.omnetpp.scave2.charting.VectorChart;
 import org.omnetpp.scave2.editors.ScaveEditor;
@@ -28,6 +31,7 @@ public class ChartSheetPage extends ScaveEditorPage {
 	private ChartSheet chartsheet; // the underlying model
 
 	private LiveTable chartsArea;
+	private List<ChartUpdater> updaters = new ArrayList<ChartUpdater>();
 	
 	public ChartSheetPage(Composite parent, ScaveEditor editor, ChartSheet chartsheet) {
 		super(parent, SWT.V_SCROLL | SWT.H_SCROLL, editor);
@@ -40,8 +44,8 @@ public class ChartSheetPage extends ScaveEditorPage {
 			setPageTitle("Charts: " + getChartSheetName(chartsheet));
 			setFormTitle("Charts: " + getChartSheetName(chartsheet));
 		}
-		
-		// TODO: update charts
+		for (ChartUpdater updater : updaters)
+			updater.updateChart(notification);
 	}
 	
 	public Composite getChartSheetComposite() {
@@ -49,9 +53,10 @@ public class ChartSheetPage extends ScaveEditorPage {
 		return chartsArea;
 	}
 	
-	public void addChart(Control chart) {
-		chart.setLayoutData(new GridData(320,200));
-		chartsArea.configureChild(chart);
+	public void addChart(Chart chart, Control view) {
+		view.setLayoutData(new GridData(320,200));
+		chartsArea.configureChild(view);
+		updaters.add(new ChartUpdater(chart, view));
 	}
 	
 	private void initialize() {
@@ -84,7 +89,7 @@ public class ChartSheetPage extends ScaveEditorPage {
 		Composite parent = getChartSheetComposite();
 		for (final Chart chart : charts) {
 			Control swtChart = ChartFactory.createChart(parent, chart, scaveEditor.getResultFileManager());
-			addChart(swtChart);
+			addChart(chart, swtChart);
 			configureChartView(swtChart, chart);
 
 		}

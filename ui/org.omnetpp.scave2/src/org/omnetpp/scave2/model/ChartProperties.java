@@ -7,20 +7,7 @@ import org.eclipse.emf.edit.command.RemoveCommand;
 import org.eclipse.emf.edit.command.SetCommand;
 import org.eclipse.emf.edit.domain.AdapterFactoryEditingDomain;
 import org.eclipse.emf.edit.domain.EditingDomain;
-import org.eclipse.jface.viewers.CellEditor;
-import org.eclipse.jface.viewers.CheckboxCellEditor;
-import org.eclipse.jface.viewers.ComboBoxCellEditor;
-import org.eclipse.jface.viewers.ILabelProvider;
-import org.eclipse.jface.viewers.ILabelProviderListener;
-import org.eclipse.jface.viewers.LabelProvider;
-import org.eclipse.jface.viewers.TextCellEditor;
 import org.eclipse.swt.graphics.FontData;
-import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.widgets.Composite;
-import org.eclipse.ui.views.properties.IPropertyDescriptor;
-import org.eclipse.ui.views.properties.IPropertySource2;
-import org.eclipse.ui.views.properties.PropertyDescriptor;
-import org.omnetpp.common.properties.EnumCellEditor;
 import org.omnetpp.common.properties.PropertySource;
 import org.omnetpp.common.util.Converter;
 import org.omnetpp.common.util.StringUtils;
@@ -57,11 +44,9 @@ public class ChartProperties extends PropertySource {
 		PROP_BAR_BASELINE		= "Bars.Baseline",
 		PROP_BAR_PLACEMENT		= "Bar.Placement",
 		// Lines
-		PROP_DISPLAY_SYMBOLS	= "Symbols.Display",
 		PROP_SYMBOL_TYPE		= "Symbols.Type",
 		PROP_SYMBOL_SIZE		= "Symbols.Size",
 		PROP_LINE_TYPE			= "Line.Type",
-		PROP_HIDE_LINE			= "Lines.Hide",
 		// Legend
 		PROP_DISPLAY_LEGEND		= "Legend.Display",
 		PROP_LEGEND_BORDER		= "Legend.Border",
@@ -70,6 +55,7 @@ public class ChartProperties extends PropertySource {
 		PROP_LEGEND_ANCHORING	= "Legend.Anchoring";
 
 	public enum SymbolType {
+		None,
 		Cross,
 		Diamond,
 		Oval,
@@ -82,7 +68,7 @@ public class ChartProperties extends PropertySource {
 		None,
 		Linear,
 		Step,
-		Spline,
+		Pins,
 	}
 	
 	public enum BarPlacement {
@@ -118,6 +104,15 @@ public class ChartProperties extends PropertySource {
 		case DatasetType.VECTOR: return new VectorChartProperties(chart);
 		case DatasetType.HISTOGRAM: return new HistogramChartProperties(chart);
 		default: return new ChartProperties(chart);
+		}
+	}
+	
+	public static ChartProperties createPropertySource(DatasetType type, List<Property> properties) {
+		switch (type.getValue()) {
+		case DatasetType.SCALAR: return new ScalarChartProperties(properties);
+		case DatasetType.VECTOR: return new VectorChartProperties(properties);
+		case DatasetType.HISTOGRAM: return new HistogramChartProperties(properties);
+		default: return new ChartProperties(properties);
 		}
 	}
 	
@@ -248,25 +243,34 @@ public class ChartProperties extends PropertySource {
 		/*======================================================================
 		 *                             Lines
 		 *======================================================================*/
-		@org.omnetpp.common.properties.Property(category="Lines",id=PROP_DISPLAY_SYMBOLS)
-		public boolean getDisplaySymbols() { return getBooleanProperty(PROP_DISPLAY_SYMBOLS); }
-		public void setDisplaySymbols(boolean flag) { setProperty(PROP_DISPLAY_SYMBOLS, flag); }
-
-		@org.omnetpp.common.properties.Property(category="Lines",id=PROP_SYMBOL_TYPE)
-		public SymbolType getSymbolType() { return getEnumProperty(PROP_SYMBOL_TYPE, SymbolType.class); }
-		public void setSymbolType(SymbolType type) { setProperty(PROP_SYMBOL_TYPE, type); }
+		@org.omnetpp.common.properties.Property(category="Lines",id="Lines",displayName="default")
+		public LineProperties getDefaultLineProperties() { return new LineProperties(null); }
 		
-		@org.omnetpp.common.properties.Property(category="Lines",id=PROP_SYMBOL_SIZE)
-		public String getSymbolSize() { return getStringProperty(PROP_SYMBOL_SIZE); }
-		public void setSymbolSize(String size) { setProperty(PROP_SYMBOL_SIZE, size); }
+		public LineProperties getLineProperties(String lineId) { return new LineProperties(lineId); }
 		
-		@org.omnetpp.common.properties.Property(category="Lines",id=PROP_LINE_TYPE)
-		public LineStyle getLineType() { return getEnumProperty(PROP_LINE_TYPE, LineStyle.class); }
-		public void setLineType(LineStyle style) { setProperty(PROP_LINE_TYPE, style); }
-		
-		@org.omnetpp.common.properties.Property(category="Lines",id=PROP_HIDE_LINE)
-		public boolean getHideLine() { return getBooleanProperty(PROP_HIDE_LINE); }
-		public void setHideLine(boolean flag) { setProperty(PROP_HIDE_LINE, flag); }
+		public class LineProperties extends PropertySource {
+			private String lineId;
+			
+			public LineProperties(String lineId) {
+				this.lineId = lineId;
+			}
+			
+			private String propertyName(String baseName) {
+				return lineId == null ? baseName : baseName + "/" + lineId;
+			}
+			
+			@org.omnetpp.common.properties.Property(category="Lines",id=PROP_SYMBOL_TYPE)
+			public SymbolType getSymbolType() { return getEnumProperty(propertyName(PROP_SYMBOL_TYPE), SymbolType.class); }
+			public void setSymbolType(SymbolType type) { setProperty(propertyName(PROP_SYMBOL_TYPE), type); }
+			
+			@org.omnetpp.common.properties.Property(category="Lines",id=PROP_SYMBOL_SIZE)
+			public String getSymbolSize() { return getStringProperty(propertyName(PROP_SYMBOL_SIZE)); }
+			public void setSymbolSize(String size) { setProperty(propertyName(PROP_SYMBOL_SIZE), size); }
+			
+			@org.omnetpp.common.properties.Property(category="Lines",id=PROP_LINE_TYPE)
+			public LineStyle getLineType() { return getEnumProperty(propertyName(PROP_LINE_TYPE), LineStyle.class); }
+			public void setLineType(LineStyle style) { setProperty(propertyName(PROP_LINE_TYPE), style); }
+		}
 	}
 
 	public static class ScalarChartProperties extends ChartProperties

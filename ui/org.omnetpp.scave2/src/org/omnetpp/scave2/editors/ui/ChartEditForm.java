@@ -47,6 +47,7 @@ import org.omnetpp.scave2.model.ScaveModelUtil;
 import org.omnetpp.scave2.model.ChartProperties.LegendAnchor;
 import org.omnetpp.scave2.model.ChartProperties.LegendPosition;
 import org.omnetpp.scave2.model.ChartProperties.LineStyle;
+import org.omnetpp.scave2.model.ChartProperties.VectorChartProperties.LineProperties;
 
 /**
  * Edit form of charts.
@@ -55,7 +56,6 @@ import org.omnetpp.scave2.model.ChartProperties.LineStyle;
  *
  * @author tomi
  */
-// TODO: scalar chart properties
 public class ChartEditForm implements IScaveObjectEditForm {
 	
 	/**
@@ -71,8 +71,16 @@ public class ChartEditForm implements IScaveObjectEditForm {
 	 */
 	private Chart chart;
 	private DatasetType type;
+	private ChartProperties properties;
+	
 	private String[] lineNames;
-	private ResultFileManager manager;
+	
+	private static String[] symbolSizes;
+	static {
+		symbolSizes = new String[21];
+		for (int i = 0; i <= 20; ++i)
+			symbolSizes[i] = String.valueOf(i);
+	}
 	
 	// controls
 	private Text nameText;
@@ -95,13 +103,9 @@ public class ChartEditForm implements IScaveObjectEditForm {
 	private Button showGridCheckbox;
 	
 	private CCombo applyToLinesCombo;
-	int visiblePanelIndex;
-	private Composite linePropsPanel[]; // for each line
-	private Button displaySymbolsCheckbox[];
-	private CCombo symbolTypeCombo[];
-	private CCombo symbolSizeCombo[];
-	private Button[] lineStyleRadios[];
-	private Button hideLinesCheckbox[];
+	private CCombo symbolTypeCombo;
+	private CCombo symbolSizeCombo;
+	private Button[] lineStyleRadios;
 	
 	private Text baselineText;
 	private CCombo barPlacementCombo;
@@ -117,11 +121,15 @@ public class ChartEditForm implements IScaveObjectEditForm {
 	 */
 	private static final int VISIBLE_ITEM_COUNT = 15;
 	
+	private static final String UNSET = "(no change)";
+	
+	private static final String USER_DATA_KEY = "ChartEditForm";
+	
 	public ChartEditForm(Chart chart, ResultFileManager manager) {
 		Dataset dataset = ScaveModelUtil.findEnclosingDataset(chart);
 		this.chart = chart;
 		this.type = dataset.getType();
-		this.manager = manager;
+		this.properties = ChartProperties.createPropertySource(chart);
 		if (type == DatasetType.VECTOR_LITERAL) {
 			IDList idlist = DatasetManager.getIDListFromDataset(manager, dataset, chart);
 			String[] names = DatasetManager.getResultItemIDs(idlist, manager);
@@ -177,8 +185,7 @@ public class ChartEditForm implements IScaveObjectEditForm {
 		yAxisTitleText = createTextField("Y axis title", group);
 		axisTitleFontText = createTextField("Axis title font", group);
 		labelFontText = createTextField("Label font", group);
-		xLabelsRotateByCombo = createComboField("Rotate X labels by", group);
-		xLabelsRotateByCombo.setItems(new String[] {"0", "30", "45", "60", "90"});
+		xLabelsRotateByCombo = createComboField("Rotate X labels by", group, new String[] {"0", "30", "45", "60", "90"});
 		// Axes
 		panel = createTab("Axes", tabfolder, 2);
 		group = createGroup("Axis bounds", panel, 3);
@@ -199,39 +206,26 @@ public class ChartEditForm implements IScaveObjectEditForm {
 		// Lines
 		if (type == DatasetType.VECTOR_LITERAL) {
 			panel = createTab("Lines", tabfolder, 2);
-			applyToLinesCombo = createComboField("Apply to lines", panel);
-			applyToLinesCombo.setItems(lineNames);
+			applyToLinesCombo = createComboField("Apply to lines", panel, lineNames);
 			applyToLinesCombo.addSelectionListener(new SelectionAdapter() {
 				public void widgetSelected(SelectionEvent e) {
-					switchPanel(((CCombo)e.widget).getSelectionIndex());
+					updateLinePropertyEditFields((VectorChartProperties)properties);
 				}
 			});
-			int cLines = lineNames.length;
-			linePropsPanel = new Composite[cLines];
-			displaySymbolsCheckbox = new Button[cLines];
-			symbolTypeCombo = new CCombo[cLines];
-			symbolSizeCombo = new CCombo[cLines];
-			lineStyleRadios = new Button[cLines][];
-			hideLinesCheckbox = new Button[cLines];
-			for (int i = 0; i < lineNames.length; ++i) {
-				linePropsPanel[i] = new Composite(panel, SWT.NONE);
-				linePropsPanel[i].setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1));
-				linePropsPanel[i].setLayout(new GridLayout());
-				makeVisible(linePropsPanel[i], i == visiblePanelIndex);
-				group = createGroup("Symbols", linePropsPanel[i]);
-				displaySymbolsCheckbox[i] = createCheckboxField("Display symbols", group);
-				displaySymbolsCheckbox[i].setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2,1));
-				symbolTypeCombo[i] = createComboField("Symbol type", group, SymbolType.class);
-				symbolSizeCombo[i] = createComboField("Symbol size", group);
-				lineStyleRadios[i] = createRadioGroup("Lines", linePropsPanel[i], 1, LineStyle.class);
-				hideLinesCheckbox[i] = createCheckboxField("Hide", linePropsPanel[i]);
-			}
+			Composite subpanel = new Composite(panel, SWT.NONE);
+			subpanel.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1));
+			subpanel.setLayout(new GridLayout());
+			group = createGroup("Symbols", subpanel);
+			symbolTypeCombo = createComboField("Symbol type", group, SymbolType.class, true);
+			symbolSizeCombo = createComboField("Symbol size", group, symbolSizes, true);
+			symbolSizeCombo.setVisibleItemCount(symbolSizes.length + 1);
+			lineStyleRadios = createRadioGroup("Lines", subpanel, 1, LineStyle.class, true);
 		}
 		// Bars
 		else if (type == DatasetType.SCALAR_LITERAL) {
 			panel = createTab("Bars", tabfolder, 2);
 			baselineText = createTextField("Baseline", panel);
-			barPlacementCombo = createComboField("Bar placement", panel, BarPlacement.class);
+			barPlacementCombo = createComboField("Bar placement", panel, BarPlacement.class, false);
 		}
 		// Legend
 		panel = createTab("Legend", tabfolder, 1);
@@ -240,23 +234,8 @@ public class ChartEditForm implements IScaveObjectEditForm {
 		displayBorderCheckbox = createCheckboxField("Border", group);
 		displayBorderCheckbox.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
 		legendFontText = createTextField("Legend font", group);
-		legendPositionRadios = createRadioGroup("Position", panel, 3, LegendPosition.class);
-		legendAnchorRadios = createRadioGroup("Anchoring", panel, 4, LegendAnchor.class);
-	}
-	
-	private void switchPanel(int index) {
-		if (index >= 0 && index < linePropsPanel.length && index != visiblePanelIndex) {
-			makeVisible(linePropsPanel[visiblePanelIndex], false);
-			visiblePanelIndex = index;
-			makeVisible(linePropsPanel[visiblePanelIndex], true);
-		}
-	}
-	
-	private void makeVisible(Composite panel, boolean visible) {
-		GridData griddata = (GridData)panel.getLayoutData();
-		griddata.exclude = !visible;
-		panel.setVisible(visible);
-		panel.getParent().layout();
+		legendPositionRadios = createRadioGroup("Position", panel, 3, LegendPosition.class, false);
+		legendAnchorRadios = createRadioGroup("Anchoring", panel, 4, LegendAnchor.class, false);
 	}
 	
 	private CTabFolder createTabFolder(Composite parent) {
@@ -301,24 +280,28 @@ public class ChartEditForm implements IScaveObjectEditForm {
 		return text;
 	}
 	
-	private CCombo createComboField(String labelText, Composite parent) {
-		return createComboField(labelText, parent, null);
+	private CCombo createComboField(String labelText, Composite parent, String[] items) {
+		return createComboField(labelText, parent, items, false);
 	}
-	
-	private CCombo createComboField(String labelText, Composite parent, Class<? extends Enum<?>> type) {
+
+	private CCombo createComboField(String labelText, Composite parent, String[] items, boolean optional) {
 		Label label = new Label(parent, SWT.NONE);
 		label.setText(labelText);
-		CCombo combo = new CCombo(parent, SWT.BORDER);
+		int style = type == null ? SWT.BORDER : SWT.BORDER | SWT.READ_ONLY;
+		CCombo combo = new CCombo(parent, style);
 		combo.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 		combo.setVisibleItemCount(VISIBLE_ITEM_COUNT);
-		if (type != null) {
-			Enum<?>[] values = type.getEnumConstants();
-			String[] names = new String[values.length];
-			for (int i = 0; i < values.length; ++i)
-				names[i] = values[i].name();
-			combo.setItems(names);
-		}
+		combo.setItems(items);
+		if (optional) combo.add(UNSET, 0);
 		return combo;
+	}
+	
+	private CCombo createComboField(String labelText, Composite parent, Class<? extends Enum<?>> type, boolean optional) {
+		Enum<?>[] values = type.getEnumConstants();
+		String[] items = new String[values.length];
+		for (int i = 0; i < values.length; ++i)
+			items[i] = values[i].name();
+		return createComboField(labelText, parent, items, optional);
 	}
 	
 	private Button createCheckboxField(String labelText, Composite parent) {
@@ -328,22 +311,28 @@ public class ChartEditForm implements IScaveObjectEditForm {
 		return checkbox;
 	}
 
-	private Button createRadioField(String labelText, Composite parent) {
+	private Button createRadioField(String labelText, Composite parent, Object value) {
 		Button radio = new Button(parent, SWT.RADIO);
 		radio.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 		radio.setText(labelText);
+		radio.setData(USER_DATA_KEY, value);
 		return radio;
 	}
 	
-	private Button[] createRadioGroup(String groupLabel, Composite parent, int numOfColumns, Class<? extends Enum<?>> type, String... radioLabels) {
+	private Button[] createRadioGroup(String groupLabel, Composite parent, int numOfColumns, Class<? extends Enum<?>> type, boolean optional, String... radioLabels) {
 		Group group = createGroup(groupLabel, parent, numOfColumns);
 		Enum<?>[] values = type.getEnumConstants();
-		Button[] radios = new Button[values.length];
-		for (int i = 0; i < values.length; ++i) {
-			Enum<?> value = values[i];
-			String radioLabel = radioLabels != null && i < radioLabels.length ?
-					radioLabels[i] : value.name().toLowerCase();
-			radios[i] = createRadioField(radioLabel, group);
+		int numOfRadios = optional ? values.length + 1 : values.length;
+		Button[] radios = new Button[numOfRadios];
+		int i = 0;
+		if (optional) {
+			radios[i++] = createRadioField(UNSET, group, null);
+		}
+		for (int j = 0; j < values.length; ++j) {
+			Enum<?> value = values[j];
+			String radioLabel = radioLabels != null && j < radioLabels.length ?	radioLabels[j] :
+								value.name().toLowerCase();
+			radios[i++] = createRadioField(radioLabel, group, value);
 		}
 		return radios;
 	}
@@ -371,108 +360,142 @@ public class ChartEditForm implements IScaveObjectEditForm {
 	}
 	
 	private List<Property> getProperties() {
-		ChartProperties props = new ChartProperties(new ArrayList<Property>());
+		ChartProperties newProps = ChartProperties.createPropertySource(type, new ArrayList<Property>());
+		
 		// Titles
-		props.setProperty(PROP_GRAPH_TITLE, graphTitleText.getText());
-		props.setProperty(PROP_GRAPH_TITLE_FONT, graphTitleFontText.getText());
-		props.setProperty(PROP_X_AXIS_TITLE, xAxisTitleText.getText());
-		props.setProperty(PROP_Y_AXIS_TITLE, yAxisTitleText.getText());
-		props.setProperty(PROP_AXIS_TITLE_FONT, axisTitleFontText.getText());
-		props.setProperty(PROP_LABEL_FONT, labelFontText.getText());
-		props.setProperty(PROP_X_LABELS_ROTATE_BY, xLabelsRotateByCombo.getText());
+		newProps.setGraphTitle(graphTitleText.getText());
+		newProps.setProperty(PROP_GRAPH_TITLE_FONT, graphTitleFontText.getText()); // XXX font
+		newProps.setXAxisTitle(xAxisTitleText.getText());
+		newProps.setYAxisTitle(yAxisTitleText.getText());
+		newProps.setProperty(PROP_AXIS_TITLE_FONT, axisTitleFontText.getText()); // XXX font
+		newProps.setProperty(PROP_LABEL_FONT, labelFontText.getText()); // XXX font
+		newProps.setXLabelsRotate(xLabelsRotateByCombo.getText());
 		// Axes
-		props.setProperty(PROP_X_AXIS_MIN, xAxisMinText.getText());
-		props.setProperty(PROP_X_AXIS_MAX, xAxisMaxText.getText());
-		props.setProperty(PROP_Y_AXIS_MIN, yAxisMinText.getText());
-		props.setProperty(PROP_Y_AXIS_MAX, yAxisMaxText.getText());
-		props.setProperty(PROP_X_AXIS_LOGARITHMIC, xAxisLogCheckbox.getSelection());
-		props.setProperty(PROP_Y_AXIS_LOGARITHMIC, yAxisLogCheckbox.getSelection());
-		props.setProperty(PROP_XY_INVERT, invertAxesCheckbox.getSelection());
-		props.setProperty(PROP_XY_GRID, showGridCheckbox.getSelection());
+		newProps.setProperty(PROP_X_AXIS_MIN, xAxisMinText.getText()); // XXX
+		newProps.setProperty(PROP_X_AXIS_MAX, xAxisMaxText.getText()); // XXX
+		newProps.setYAxisMin(yAxisMinText.getText());
+		newProps.setYAxisMax(yAxisMaxText.getText());
+		newProps.setProperty(PROP_X_AXIS_LOGARITHMIC, xAxisLogCheckbox.getSelection()); // XXX
+		newProps.setYAxisLogarithmic(yAxisLogCheckbox.getSelection());
+		newProps.setXYInvert(invertAxesCheckbox.getSelection());
+		newProps.setXYGrid(showGridCheckbox.getSelection());
 		// Lines
 		if (type == DatasetType.VECTOR_LITERAL) {
-			for (int i = 0; i < lineNames.length; ++i) {
-				String suffix = i == 0 ? "" : "/"+lineNames[i];
-				props.setProperty(PROP_DISPLAY_SYMBOLS+suffix, displaySymbolsCheckbox[i].getSelection());
-				props.setProperty(PROP_SYMBOL_TYPE+suffix, getSelection(symbolTypeCombo[i], SymbolType.class));
-				props.setProperty(PROP_SYMBOL_SIZE+suffix, symbolSizeCombo[i].getText());
-				props.setProperty(PROP_LINE_TYPE+suffix, getSelection(lineStyleRadios[i], LineStyle.class));
-				props.setProperty(PROP_HIDE_LINE+suffix, hideLinesCheckbox[i].getSelection());
-			}
+			int index = applyToLinesCombo.getSelectionIndex();
+			String lineId = index == 0 ? null : lineNames[index];
+			getLineProperties((VectorChartProperties)newProps, lineId);
 		}
 		// Bars
 		else if (type == DatasetType.SCALAR_LITERAL) {
-			props.setProperty(PROP_BAR_BASELINE, baselineText.getText());
-			props.setProperty(PROP_BAR_PLACEMENT, getSelection(barPlacementCombo, BarPlacement.class));
+			ScalarChartProperties props = (ScalarChartProperties)newProps;
+			props.setBarBaseline(baselineText.getText());
+			props.setBarPlacement(getSelection(barPlacementCombo, BarPlacement.class));
 		}
 		// Legend
-		props.setProperty(PROP_DISPLAY_LEGEND, displayLegendCheckbox.getSelection());
-		props.setProperty(PROP_LEGEND_BORDER, displayBorderCheckbox.getSelection());
-		props.setProperty(PROP_LEGEND_FONT, legendFontText.getText());
-		props.setProperty(PROP_LEGEND_POSITION, getSelection(legendPositionRadios, LegendPosition.class));
-		props.setProperty(PROP_LEGEND_ANCHORING, getSelection(legendAnchorRadios, LegendAnchor.class));
+		newProps.setDisplayLegend(displayLegendCheckbox.getSelection());
+		newProps.setLegendBorder(displayBorderCheckbox.getSelection());
+		newProps.setProperty(PROP_LEGEND_FONT, legendFontText.getText()); // XXX font
+		newProps.setLegendPosition(getSelection(legendPositionRadios, LegendPosition.class));
+		newProps.setLegendAnchoring(getSelection(legendAnchorRadios, LegendAnchor.class));
 		
-		return props.getProperties();
+		return newProps.getProperties();
+	}
+	
+	private void getLineProperties(VectorChartProperties newProps, String lineId) {
+		List<Property> origProps = (List<Property>)chart.getProperties();
+		
+		SymbolType symbolType = getSelection(symbolTypeCombo, SymbolType.class);
+		String symbolSize = getSelection(symbolSizeCombo);
+		LineStyle lineStyle = getSelection(lineStyleRadios, LineStyle.class);
+		
+		// copy orig line properties
+		boolean all = lineId == null;
+		for (Property property : origProps) {
+			String name = property.getName();
+			String value = property.getValue();
+			if (name.startsWith(PROP_SYMBOL_TYPE)) {
+				if (!all || symbolType == null)
+					newProps.setProperty(name, value);
+			}
+			else if (name.startsWith(PROP_SYMBOL_SIZE)) {
+				if (!all || symbolSize == null)
+					newProps.setProperty(name, value);
+			}
+			else if (name.startsWith(PROP_LINE_TYPE)) {
+				if (!all || lineStyle == null)
+					newProps.setProperty(name, value);
+			}
+		}
+		// set new properties
+		LineProperties lineProps = newProps.getLineProperties(lineId);
+		if (!all || symbolType != null)
+			lineProps.setSymbolType(symbolType);
+		if (!all || symbolSize != null)
+			lineProps.setSymbolSize(symbolSize);
+		if (!all || lineStyle != null)
+			lineProps.setLineType(lineStyle);
 	}
 	
 	/**
 	 * Returns the selected radio button as the enum value it represents. 
 	 */
 	private <T extends Enum<T>> T getSelection(Button[] radios, Class<T> type) {
-		T[] values = type.getEnumConstants();
 		for (int i = 0; i < radios.length; ++i)
 			if (radios[i].getSelection())
-				return values[i];
+				return (T)radios[i].getData(USER_DATA_KEY);
 		return null;
 	}
 	
 	private <T extends Enum<T>> T getSelection(CCombo combo, Class<T> type) {
 		T[] values = type.getEnumConstants();
-		int index = combo.getSelectionIndex();
-		return index >= 0 ? values[index] : null;
+		String selection = combo.getText();
+		for (int i = 0; i < values.length; ++i)
+			if (values[i].name().equals(selection))
+				return values[i];
+		return null;
+	}
+	
+	private String getSelection(CCombo combo) {
+		String text = combo.getText();
+		return UNSET.equals(text) ? null : text;
 	}
 	
 	private void setProperties(List<Property> properties) {
-		ChartProperties props = new ChartProperties((List<Property>)chart.getProperties());
+		ChartProperties props = ChartProperties.createPropertySource(chart);
 		// Titles
-		graphTitleText.setText(props.getStringProperty(PROP_GRAPH_TITLE));
-		graphTitleFontText.setText(props.getStringProperty(PROP_GRAPH_TITLE_FONT));
-		xAxisTitleText.setText(props.getStringProperty(PROP_X_AXIS_TITLE));
-		yAxisTitleText.setText(props.getStringProperty(PROP_Y_AXIS_TITLE));
-		axisTitleFontText.setText(props.getStringProperty(PROP_AXIS_TITLE_FONT));
-		labelFontText.setText(props.getStringProperty(PROP_LABEL_FONT));
-		xLabelsRotateByCombo.setText(props.getStringProperty(PROP_X_LABELS_ROTATE_BY));
+		graphTitleText.setText(props.getGraphTitle());
+		graphTitleFontText.setText(props.getStringProperty(PROP_GRAPH_TITLE_FONT)); // XXX font
+		xAxisTitleText.setText(props.getXAxisTitle());
+		yAxisTitleText.setText(props.getYAxisTitle());
+		axisTitleFontText.setText(props.getStringProperty(PROP_AXIS_TITLE_FONT)); // XXX font
+		labelFontText.setText(props.getStringProperty(PROP_LABEL_FONT)); // XXX font
+		xLabelsRotateByCombo.setText(props.getXLabelsRotate());
 		// Axes
-		xAxisMinText.setText(props.getStringProperty(PROP_X_AXIS_MIN));
-		xAxisMaxText.setText(props.getStringProperty(PROP_X_AXIS_MAX));
-		yAxisMinText.setText(props.getStringProperty(PROP_Y_AXIS_MIN));
-		yAxisMaxText.setText(props.getStringProperty(PROP_Y_AXIS_MAX));
-		xAxisLogCheckbox.setSelection(props.getBooleanProperty(PROP_X_AXIS_LOGARITHMIC));
-		yAxisLogCheckbox.setSelection(props.getBooleanProperty(PROP_Y_AXIS_LOGARITHMIC));
-		invertAxesCheckbox.setSelection(props.getBooleanProperty(PROP_XY_INVERT));
-		showGridCheckbox.setSelection(props.getBooleanProperty(PROP_XY_GRID));
+		xAxisMinText.setText(props.getStringProperty(PROP_X_AXIS_MIN)); // XXX for vector chart only
+		xAxisMaxText.setText(props.getStringProperty(PROP_X_AXIS_MAX)); // XXX for vector chart only
+		yAxisMinText.setText(props.getYAxisMin());
+		yAxisMaxText.setText(props.getYAxisMax());
+		xAxisLogCheckbox.setSelection(props.getBooleanProperty(PROP_X_AXIS_LOGARITHMIC)); // XXX for vector charts only
+		yAxisLogCheckbox.setSelection(props.getYAxisLogarithmic());
+		invertAxesCheckbox.setSelection(props.getXYInvert());
+		showGridCheckbox.setSelection(props.getXYGrid());
 		// Lines
 		if (type == DatasetType.VECTOR_LITERAL) {
-			for (int i = 0; i < lineNames.length; ++i) {
-				String suffix = i == 0 ? "" : "/" + lineNames[i];
-				displaySymbolsCheckbox[i].setSelection(props.getBooleanProperty(PROP_DISPLAY_SYMBOLS+suffix));
-				setSelection(symbolTypeCombo[i], props.getEnumProperty(PROP_SYMBOL_TYPE+suffix, SymbolType.class));
-				symbolSizeCombo[i].setText(props.getStringProperty(PROP_SYMBOL_SIZE+suffix));
-				setSelection(lineStyleRadios[i], props.getEnumProperty(PROP_LINE_TYPE+suffix, LineStyle.class));
-				hideLinesCheckbox[i].setSelection(props.getBooleanProperty(PROP_HIDE_LINE+suffix));
-			}
+			applyToLinesCombo.select(0);
+			updateLinePropertyEditFields((VectorChartProperties)props);
 		}
 		// Bars
 		else if (type == DatasetType.SCALAR_LITERAL) {
-			baselineText.setText(props.getStringProperty(PROP_BAR_BASELINE));
-			setSelection(barPlacementCombo, props.getEnumProperty(PROP_BAR_PLACEMENT, BarPlacement.class));
+			ScalarChartProperties scalarProps = (ScalarChartProperties)props;
+			baselineText.setText(scalarProps.getBarBaseline());
+			setSelection(barPlacementCombo, scalarProps.getBarPlacement());
 		}
 		// Legend
-		displayLegendCheckbox.setSelection(props.getBooleanProperty(PROP_DISPLAY_LEGEND));
-		displayBorderCheckbox.setSelection(props.getBooleanProperty(PROP_LEGEND_BORDER));
-		legendFontText.setText(props.getStringProperty(PROP_LEGEND_FONT));
-		setSelection(legendPositionRadios, props.getEnumProperty(PROP_LEGEND_POSITION, LegendPosition.class));
-		setSelection(legendAnchorRadios, props.getEnumProperty(PROP_LEGEND_ANCHORING, LegendAnchor.class));
+		displayLegendCheckbox.setSelection(props.getDisplayLegend());
+		displayBorderCheckbox.setSelection(props.getLegendBorder());
+		legendFontText.setText(props.getStringProperty(PROP_LEGEND_FONT)); // XXX font
+		setSelection(legendPositionRadios, props.getLegendPosition());
+		setSelection(legendAnchorRadios, props.getLegendAnchoring());
 	}
 	
 	/**
@@ -480,11 +503,37 @@ public class ChartEditForm implements IScaveObjectEditForm {
 	 */
 	private void setSelection(Button[] radios, Enum<?> value) {
 		for (int i = 0; i < radios.length; ++i)
-			radios[i].setSelection(value != null && value.ordinal() == i);
+			radios[i].setSelection(radios[i].getData(USER_DATA_KEY) == value);
 	}
 	
 	private void setSelection(CCombo combo, Enum<?> value) {
 		if (value != null)
 			combo.setText(value.name());
+		else
+			combo.setText(UNSET);
+	}
+	
+	private void setSelection(CCombo combo, String value) {
+		if (value != null && value.length() > 0)
+			combo.setText(value);
+		else
+			combo.setText(UNSET);
+	}
+	
+	private void updateLinePropertyEditFields(VectorChartProperties props) {
+		int index = applyToLinesCombo.getSelectionIndex();
+		if (index == 0) {
+			setSelection(symbolTypeCombo, (SymbolType)null);
+			setSelection(symbolSizeCombo, (String)null);
+			setSelection(lineStyleRadios, (LineStyle)null);
+			
+		}
+		else if (index > 0) {
+			String lineId = lineNames[index];
+			LineProperties lineProps = props.getLineProperties(lineId);
+			setSelection(symbolTypeCombo, lineProps.getSymbolType());
+			setSelection(symbolSizeCombo, lineProps.getSymbolSize());
+			setSelection(lineStyleRadios, lineProps.getLineType());
+		}
 	}
 }

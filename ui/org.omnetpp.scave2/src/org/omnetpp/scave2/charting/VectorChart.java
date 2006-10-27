@@ -1,16 +1,7 @@
 package org.omnetpp.scave2.charting;
 
 import static org.omnetpp.scave2.model.ChartProperties.PROP_AXIS_TITLE_FONT;
-import static org.omnetpp.scave2.model.ChartProperties.PROP_DISPLAY_LEGEND;
-import static org.omnetpp.scave2.model.ChartProperties.PROP_DISPLAY_SYMBOLS;
-import static org.omnetpp.scave2.model.ChartProperties.PROP_GRAPH_TITLE;
-import static org.omnetpp.scave2.model.ChartProperties.PROP_GRAPH_TITLE_FONT;
-import static org.omnetpp.scave2.model.ChartProperties.PROP_HIDE_LINE;
 import static org.omnetpp.scave2.model.ChartProperties.PROP_LABEL_FONT;
-import static org.omnetpp.scave2.model.ChartProperties.PROP_LEGEND_ANCHORING;
-import static org.omnetpp.scave2.model.ChartProperties.PROP_LEGEND_BORDER;
-import static org.omnetpp.scave2.model.ChartProperties.PROP_LEGEND_FONT;
-import static org.omnetpp.scave2.model.ChartProperties.PROP_LEGEND_POSITION;
 import static org.omnetpp.scave2.model.ChartProperties.PROP_LINE_TYPE;
 import static org.omnetpp.scave2.model.ChartProperties.PROP_SYMBOL_SIZE;
 import static org.omnetpp.scave2.model.ChartProperties.PROP_SYMBOL_TYPE;
@@ -52,13 +43,12 @@ import org.omnetpp.scave2.charting.plotter.IChartSymbol;
 import org.omnetpp.scave2.charting.plotter.IVectorPlotter;
 import org.omnetpp.scave2.charting.plotter.LinesVectorPlotter;
 import org.omnetpp.scave2.charting.plotter.OvalSymbol;
+import org.omnetpp.scave2.charting.plotter.PinsVectorPlotter;
 import org.omnetpp.scave2.charting.plotter.PlusSymbol;
 import org.omnetpp.scave2.charting.plotter.SampleHoldVectorPlotter;
 import org.omnetpp.scave2.charting.plotter.SquareSymbol;
 import org.omnetpp.scave2.charting.plotter.TriangleSymbol;
 import org.omnetpp.scave2.charting.plotter.VectorPlotter;
-import org.omnetpp.scave2.model.ChartProperties.LegendAnchor;
-import org.omnetpp.scave2.model.ChartProperties.LegendPosition;
 import org.omnetpp.scave2.model.ChartProperties.LineStyle;
 import org.omnetpp.scave2.model.ChartProperties.SymbolType;
 
@@ -81,8 +71,10 @@ public class VectorChart extends ChartCanvas {
 	
 	static class LineProperties {
 		
-		private static final IVectorPlotter DEFAULT_PLOTTER = new LinesVectorPlotter();
-		private static final IChartSymbol DEFAULT_SYMBOL = new SquareSymbol(3);
+		static final SymbolType DEFAULT_SYMBOL_TYPE = SymbolType.Square;
+		static final Integer DEFAULT_SYMBOL_SIZE = Integer.valueOf(3);
+		static final LineStyle DEFAULT_LINE_STYLE = LineStyle.Linear;
+		
 		private static final IChartSymbol NULL_SYMBOL = new ChartSymbol() {
 			public void drawSymbol(Graphics graphics, int x, int y) {}
 		};
@@ -90,25 +82,9 @@ public class VectorChart extends ChartCanvas {
 			public void plot(XYDataset dataset, int series, Graphics graphics, VectorChart chart, IChartSymbol symbol) {}
 		};
 		
-		IVectorPlotter plotter;
-		IChartSymbol symbol;
-		Boolean displaySymbols;
-		Boolean hideLines;
-		
-		public LineProperties() {
-			this.plotter = DEFAULT_PLOTTER;
-			this.symbol = DEFAULT_SYMBOL;
-			this.displaySymbols = true;
-			this.hideLines = false;
-		}
-		
-		public IVectorPlotter getPlotter() {
-			return hideLines != null && hideLines ? NULL_PLOTTER : plotter;
-		}
-		
-		public IChartSymbol getSymbol() {
-			return displaySymbols != null && displaySymbols ? symbol : NULL_SYMBOL;
-		}
+		SymbolType symbolType;
+		Integer symbolSize;
+		LineStyle lineStyle;
 	}
 	
 	private static final String KEY_ALL = null;
@@ -175,20 +151,12 @@ public class VectorChart extends ChartCanvas {
 		else if (PROP_XY_GRID.equals(name))
 			setGridVisibility(Converter.stringToBoolean(value));
 		// Lines
-		else if (PROP_DISPLAY_SYMBOLS.equals(name)) {
-			setDisplaySymbols(Converter.stringToBoolean(value));
-		}
-		else if (PROP_SYMBOL_TYPE.equals(name)) {
-			setDefaultSymbolType(Converter.stringToEnum(value, SymbolType.class));
-		}
-		else if (PROP_SYMBOL_SIZE.equals(name)) {
-			setDefaultSymbolSize(Converter.stringToInteger(value));
-		}
-		else if (PROP_LINE_TYPE.equals(name)) {
-			setDefaultLineType(Converter.stringToEnum(value, LineStyle.class));
-		}
-		else if (name.startsWith(PROP_HIDE_LINE))
-			setHideLines(getKey(name), Converter.stringToBoolean(value));
+		else if (name.startsWith(PROP_SYMBOL_TYPE))
+			setSymbolType(getKey(name), Converter.stringToEnum(value, SymbolType.class));
+		else if (name.startsWith(PROP_SYMBOL_SIZE))
+			setSymbolSize(getKey(name), Converter.stringToInteger(value));
+		else if (name.startsWith(PROP_LINE_TYPE))
+			setLineStyle(getKey(name), Converter.stringToEnum(value, LineStyle.class));
 		else
 			super.setProperty(name, value);
 	}
@@ -197,10 +165,9 @@ public class VectorChart extends ChartCanvas {
 		int index = name.indexOf('/');
 		return index >= 0 ? name.substring(index + 1) : KEY_ALL;
 	}
-	
+
 	protected LineProperties getLineProperties(String key) {
-		LineProperties properties = lineProperties.get(key);
-		return (properties != null ? properties : getDefaultLineProperties());
+		return lineProperties.get(key);
 	}
 	
 	protected LineProperties getDefaultLineProperties() {
@@ -231,77 +198,40 @@ public class VectorChart extends ChartCanvas {
 		}
 	}
 
-	public IVectorPlotter getDefaultLineType() {
-		LineProperties props = getDefaultLineProperties();
-		return props.plotter;
+	public LineStyle getLineStyle (String key) {
+		LineProperties props = getLineProperties(key);
+		if (props == null || props.lineStyle == null)
+			props = getDefaultLineProperties();
+		return props.lineStyle != null ? props.lineStyle : LineProperties.DEFAULT_LINE_STYLE;
 	}
 
-	public void setDefaultLineType(IVectorPlotter defaultPlotter) {
-		LineProperties props = getDefaultLineProperties();
-		props.plotter = defaultPlotter;
-		scheduleRedraw();
-	}
-	
-	public void setDefaultLineType(LineStyle type) {
-		if (type == null)
-			return;
-		
-		switch (type) {
-		case None: setDefaultLineType(new DotsVectorPlotter()); break;
-		case Linear: setDefaultLineType(new LinesVectorPlotter()); break;
-		case Step: setDefaultLineType(new SampleHoldVectorPlotter()); break;
-		case Spline: /*TODO*/ break; 
-		}
-	}
-
-	public IChartSymbol getDefaultSymbol() {
-		LineProperties props = getDefaultLineProperties();
-		return props.symbol;
-	}
-
-	public void setDefaultSymbol(IChartSymbol defaultSymbol) {
-		Assert.isLegal(defaultSymbol != null);
-		LineProperties props = getDefaultLineProperties();
-		props.symbol = defaultSymbol;
-		scheduleRedraw();
-	}
-	
-	public void setDefaultSymbol(SymbolType symbolType) {
-		setDefaultSymbolType(symbolType);
-	}
-
-	public void setDefaultSymbolType(SymbolType symbolType) {
-		if (symbolType == null)
-			return;
-		
-		int size = getDefaultSymbol().getSizeHint();
-		switch (symbolType) {
-		case Cross: setDefaultSymbol(new CrossSymbol(size)); break;
-		case Diamond: setDefaultSymbol(new DiamondSymbol(size)); break;
-		case Oval: setDefaultSymbol(new OvalSymbol(size)); break;
-		case Plus: setDefaultSymbol(new PlusSymbol(size)); break;
-		case Square: setDefaultSymbol(new SquareSymbol(size)); break;
-		case Triangle: setDefaultSymbol(new TriangleSymbol(size)); break;
-		}
-	}
-	
-	public void setDisplaySymbols(Boolean value) {
-		LineProperties props = getDefaultLineProperties();
-		props.displaySymbols = value != null ? value : false;
-		scheduleRedraw();
-	}
-	
-	public void setDefaultSymbolSize(Integer size) {
-		if (size == null)
-			return;
-		LineProperties props = getDefaultLineProperties();
-		props.symbol.setSizeHint(size);
-		scheduleRedraw();
-	}
-	
-	public void setHideLines(String key, Boolean value) {
+	public void setLineStyle(String key, LineStyle type) {
 		LineProperties props = getOrCreateLineProperties(key);
-		props.hideLines = value != null ? value : false;
+		props.lineStyle = type;
+	}
+
+	public SymbolType getSymbolType(String key) {
+		LineProperties props = getLineProperties(key);
+		if (props == null || props.symbolType == null)
+			props = getDefaultLineProperties();
+		return props.symbolType != null ? props.symbolType : LineProperties.DEFAULT_SYMBOL_TYPE;
+	}
+	
+	public void setSymbolType(String key, SymbolType symbolType) {
+		LineProperties props = getOrCreateLineProperties(key);
+		props.symbolType = symbolType;
+	}
+	
+	public int getSymbolSize(String key) {
+		LineProperties props = getLineProperties(key);
+		if (props == null || props.symbolSize == null)
+			props = getDefaultLineProperties();
+		return props.symbolSize != null ? props.symbolSize : LineProperties.DEFAULT_SYMBOL_SIZE;
+	}
+	
+	public void setSymbolSize(String key, Integer size) {
+		LineProperties props = getOrCreateLineProperties(key);
+		props.symbolSize = size;
 		scheduleRedraw();
 	}
 	
@@ -408,11 +338,33 @@ public class VectorChart extends ChartCanvas {
 	}
 	
 	private IVectorPlotter getPlotter(String key) {
-		return getLineProperties(key).getPlotter();
+		LineStyle style = getLineStyle(key);
+		switch (style) {
+		case None: return new DotsVectorPlotter();
+		case Linear: return new LinesVectorPlotter();
+		case Step: return new SampleHoldVectorPlotter();
+		case Pins: return new PinsVectorPlotter();
+		default:
+			Assert.isTrue(false, "Unknown LineStyle: " + style);
+			return LineProperties.NULL_PLOTTER;
+		}
 	}
 	
 	private IChartSymbol getSymbol(String key) {
-		return getLineProperties(key).getSymbol();
+		SymbolType type = getSymbolType(key);
+		int size = getSymbolSize(key);
+		switch (type) {
+		case None: return LineProperties.NULL_SYMBOL;
+		case Cross: return new CrossSymbol(size);
+		case Diamond: return new DiamondSymbol(size);
+		case Oval: return new OvalSymbol(size);
+		case Plus: return new PlusSymbol(size);
+		case Square: return new SquareSymbol(size);
+		case Triangle: return new TriangleSymbol(size);
+		default:
+			Assert.isTrue(false, "Unknown SymbolType: " + type);
+			return LineProperties.NULL_SYMBOL;
+		}
 	}
 	
 	private Color getLineColor(int index) {

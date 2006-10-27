@@ -1,7 +1,9 @@
 package org.omnetpp.scave2.editors.ui;
 
+import org.eclipse.emf.common.command.CompoundCommand;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
+import org.eclipse.emf.edit.command.SetCommand;
 import org.eclipse.jface.dialogs.TitleAreaDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
@@ -21,7 +23,7 @@ import org.omnetpp.scave2.editors.ScaveEditor;
  * @author tomi
  */
 public class EditDialog extends TitleAreaDialog {
-
+	
 	private ScaveEditor editor;
 	private EObject object;
 	private EStructuralFeature[] features;
@@ -69,6 +71,23 @@ public class EditDialog extends TitleAreaDialog {
 		super.configureShell(newShell);
 		newShell.setText("Edit " + object.eClass().getName());
 	}
+	
+	
+
+	@Override
+	protected void buttonPressed(int buttonId) {
+		if (IDialogConstants.APPLY_ID == buttonId)
+			applyPressed();
+		else
+			super.buttonPressed(buttonId);
+	}
+
+	@Override
+	protected void createButtonsForButtonBar(Composite parent) {
+		createButton(parent, IDialogConstants.OK_ID, IDialogConstants.OK_LABEL, true);
+		createButton(parent, IDialogConstants.APPLY_ID, IDialogConstants.APPLY_LABEL, false);
+		createButton(parent, IDialogConstants.CANCEL_ID, IDialogConstants.CANCEL_LABEL, false);
+	}
 
 	@Override
 	protected Control createDialogArea(Composite parent) {
@@ -92,6 +111,10 @@ public class EditDialog extends TitleAreaDialog {
 		super.okPressed();
 	}
 	
+	protected void applyPressed() {
+		applyChanges();
+	}
+	
 	private void applyChanges() {
 		if (features != null) {
 			values = new Object[features.length];
@@ -99,6 +122,22 @@ public class EditDialog extends TitleAreaDialog {
 				values[i] = form.getValue(features[i]);
 			}
 		}
+		
+		CompoundCommand command = new CompoundCommand("Edit");
+		for (int i = 0; i < features.length; ++i) {
+			Object oldValue = object.eGet(features[i]);
+			Object newValue = getValue(i);
+			boolean isDirty = oldValue == null && newValue != null ||
+							  oldValue != null && !oldValue.equals(newValue);
+			if (isDirty) {
+				command.append(SetCommand.create(
+					editor.getEditingDomain(),
+					object,
+					features[i],
+					newValue));
+			}
+		}
+		editor.executeCommand(command);
 	}
 	
 	private static IScaveObjectEditForm createForm(EObject object, EStructuralFeature[] features, ResultFileManager manager) {

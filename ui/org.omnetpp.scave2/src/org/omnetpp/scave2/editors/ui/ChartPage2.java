@@ -1,5 +1,7 @@
 package org.omnetpp.scave2.editors.ui;
 
+import java.util.List;
+
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.swt.SWT;
@@ -17,6 +19,7 @@ import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.Property;
 import org.omnetpp.scave.model.ScaveModelPackage;
 import org.omnetpp.scave2.charting.ChartFactory;
+import org.omnetpp.scave2.charting.ChartUpdater;
 import org.omnetpp.scave2.charting.VectorChart;
 import org.omnetpp.scave2.charting.plotter.IChartSymbol;
 import org.omnetpp.scave2.charting.plotter.IVectorPlotter;
@@ -26,11 +29,13 @@ public class ChartPage2 extends ScaveEditorPage {
 
 	private Chart chart; // the underlying model
 	private VectorChart chartView;
+	private ChartUpdater updater;
 
 	public ChartPage2(Composite parent, ScaveEditor editor, Chart chart) {
 		super(parent, SWT.V_SCROLL, editor);
 		this.chart = chart;
 		initialize();
+		this.updater = new ChartUpdater(chart, chartView);
 	}
 	
 	public void updatePage(Notification notification) {
@@ -44,23 +49,7 @@ public class ChartPage2 extends ScaveEditorPage {
 			setPageTitle("Chart: " + getChartName(chart));
 			setFormTitle("Chart: " + getChartName(chart));
 		}
-		else if (pkg.getChart_Properties().equals(notification.getFeature())) {
-			Property property;
-			switch (notification.getEventType()) {
-			case Notification.ADD:
-				property = (Property)notification.getNewValue();
-				chartView.setProperty(property.getName(), property.getValue());
-				break;
-			case Notification.REMOVE:
-				property = (Property)notification.getOldValue();
-				chartView.setProperty(property.getName(), null);
-				break;
-			}
-		}
-		else if (pkg.getProperty_Value().equals(notification.getFeature())) {
-			Property property = (Property)notification.getNotifier();
-			chartView.setProperty(property.getName(), (String)notification.getNewValue());
-		}
+		updater.updateChart(notification);
 	}
 
 	private String getChartName(Chart chart) {
@@ -115,35 +104,6 @@ public class ChartPage2 extends ScaveEditorPage {
 		Button zoomOutY = new Button(controlStrip, SWT.NONE);
 		zoomOutY.setText("Zoom v");
 
-		Combo lineType = new Combo(controlStrip, SWT.NONE);
-		lineType.setItems(new String[] {
-				"LinesVectorPlotter",
-				"PointsVectorPlotter",
-				"DotsVectorPlotter",
-				"PinsVectorPlotter",
-				"SampleHoldVectorPlotter",
-		});
-		lineType.setVisibleItemCount(lineType.getItemCount());
-		lineType.select(0); //XXX
-
-		Combo symbolType = new Combo(controlStrip, SWT.NONE);
-		symbolType.setItems(new String[] {
-				"SquareSymbol",
-				"DiamondSymbol",
-				"TriangleSymbol",
-				"OvalSymbol",
-				"CrossSymbol",
-				"PlusSymbol",
-		});
-		symbolType.setVisibleItemCount(symbolType.getItemCount());
-		symbolType.select(0); //XXX
-
-		Combo symbolSize = new Combo(controlStrip, SWT.NONE);
-		for (int i=0; i<=20; i++)
-			symbolSize.add(""+i);
-		symbolSize.setVisibleItemCount(symbolSize.getItemCount());
-		symbolSize.select(4); //XXX
-
 		// add event handlers
 		zoomInX.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
@@ -179,40 +139,6 @@ public class ChartPage2 extends ScaveEditorPage {
 			}
 		});
 		
-		lineType.addSelectionListener(new SelectionAdapter () {
-			public void widgetSelected(SelectionEvent e) {
-				Combo combo = ((Combo)e.getSource());
-				String sel = combo.getItem(combo.getSelectionIndex());
-				try {
-					chart.setDefaultLineType((IVectorPlotter)(Class.forName("org.omnetpp.scave2.charting.plotter."+sel).newInstance()));
-				} catch (Exception e1) {
-					e1.printStackTrace();
-				}
-			}
-		});
-
-		symbolType.addSelectionListener(new SelectionAdapter () {
-			public void widgetSelected(SelectionEvent e) {
-				Combo combo = ((Combo)e.getSource());
-				String sel = combo.getItem(combo.getSelectionIndex());
-				int oldSizeHint = chart.getDefaultSymbol().getSizeHint();
-				try {
-					chart.setDefaultSymbol((IChartSymbol)(Class.forName("org.omnetpp.scave2.charting.plotter."+sel).newInstance()));
-					chart.getDefaultSymbol().setSizeHint(oldSizeHint);
-				} catch (Exception e1) {
-					e1.printStackTrace();
-				}
-			}
-		});
-		
-		symbolSize.addSelectionListener(new SelectionAdapter () {
-			public void widgetSelected(SelectionEvent e) {
-				Combo combo = ((Combo)e.getSource());
-				String sel = combo.getItem(combo.getSelectionIndex());
-				chart.getDefaultSymbol().setSizeHint(Integer.parseInt(sel));
-				chart.clearCanvasCacheAndRedraw();
-			}
-		});
 		return controlStrip;
 	}
 }

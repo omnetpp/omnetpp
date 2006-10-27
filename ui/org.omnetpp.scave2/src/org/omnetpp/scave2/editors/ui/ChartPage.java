@@ -11,6 +11,7 @@ import org.omnetpp.scave.model.Property;
 import org.omnetpp.scave.model.ScaveModelPackage;
 import org.omnetpp.scave2.charting.ChartCanvas;
 import org.omnetpp.scave2.charting.ChartFactory;
+import org.omnetpp.scave2.charting.ChartUpdater;
 import org.omnetpp.scave2.charting.InteractiveChart;
 import org.omnetpp.scave2.charting.ScalarChart;
 import org.omnetpp.scave2.editors.ScaveEditor;
@@ -19,11 +20,13 @@ public class ChartPage extends ScaveEditorPage {
 
 	private Chart chart; // the underlying model
 	private Control chartView;
+	private ChartUpdater updater;
 
 	public ChartPage(Composite parent, ScaveEditor editor, Chart chart) {
 		super(parent, SWT.V_SCROLL, editor);
 		this.chart = chart;
 		initialize();
+		updater = new ChartUpdater(chart, chartView);
 	}
 	
 	public void updatePage(Notification notification) {
@@ -32,30 +35,7 @@ public class ChartPage extends ScaveEditorPage {
 			setPageTitle("Chart: " + chart.getName());
 			setFormTitle("Chart: " + chart.getName());
 		}
-		else if (pkg.getChart_Properties().equals(notification.getFeature())) {
-			Property property;
-			switch (notification.getEventType()) {
-			case Notification.ADD:
-				property = (Property)notification.getNewValue();
-				updateChart(property.getName(), property.getValue());
-				break;
-			case Notification.REMOVE:
-				property = (Property)notification.getOldValue();
-				updateChart(property.getName(), null);
-				break;
-			}
-		}
-		else if (pkg.getProperty_Value().equals(notification.getFeature())) {
-			Property property = (Property)notification.getNotifier();
-			updateChart(property.getName(), (String)notification.getNewValue());
-		}
-	}
-	
-	private void updateChart(String propName, String propValue) {
-		if (chartView instanceof ScalarChart)
-			((ScalarChart)chartView).setProperty(propName, propValue);
-		else if (chartView instanceof ChartCanvas)
-			((ChartCanvas)chartView).setProperty(propName, propValue);
+		updater.updateChart(notification);
 	}
 	
 	public Composite getChartComposite() {

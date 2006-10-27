@@ -1,3 +1,30 @@
+2006-10-27
+----------
+
+Additions
+
+   + Line properties can be set per line in the "Edit" dialog of charts.
+
+   + "Edit" dialogs have an "Apply" button.
+
+   + Data table configuration (visible columns) are saved into the plugin's preferences.
+
+   + Sorting works for data tables (except run attribute columns).
+
+Fixes
+
+   + Unused menu items ("Validate", "Control", "Load resource...") removed from the menus.
+
+   + Number of visible items are increased for some combo fields.
+
+   + "New" buttons are replaced with "New child..." and "New sibling" buttons.
+
+   + "Module name" and "Data name" filter hints contain the '*' wildcard.
+
+   + Fixing the crash that happened when the user clicked on the "Dataset" page after she
+     deleted the dataset.
+
+
 2006-10-05
 ----------
 

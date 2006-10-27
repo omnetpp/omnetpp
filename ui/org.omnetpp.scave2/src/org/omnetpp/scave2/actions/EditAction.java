@@ -1,11 +1,8 @@
 package org.omnetpp.scave2.actions;
 
-import org.eclipse.emf.common.command.CompoundCommand;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
-import org.eclipse.emf.edit.command.SetCommand;
 import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.jface.window.Window;
 import org.omnetpp.scave2.editors.ScaveEditor;
 import org.omnetpp.scave2.editors.ui.EditDialog;
 
@@ -21,28 +18,11 @@ public class EditAction extends AbstractScaveAction {
 	@Override
 	protected void doRun(ScaveEditor scaveEditor, IStructuredSelection selection) {
 		if (isApplicable(scaveEditor, selection)) {
-		
 			EObject object = (EObject)selection.getFirstElement(); //TODO edit several objects together?
 			EditDialog dialog = new EditDialog(scaveEditor.getSite().getShell(), object, scaveEditor);
 			EStructuralFeature[] features = dialog.getFeatures();
-			
-			if (features.length > 0 && dialog.open() == Window.OK) {
-				CompoundCommand command = new CompoundCommand("Edit");
-				for (int i = 0; i < features.length; ++i) {
-					Object oldValue = object.eGet(features[i]);
-					Object newValue = dialog.getValue(i);
-					boolean isDirty = oldValue == null && newValue != null ||
-									  oldValue != null && !oldValue.equals(newValue);
-					if (isDirty) {
-						command.append(SetCommand.create(
-							scaveEditor.getEditingDomain(),
-							object,
-							features[i],
-							newValue));
-					}
-				}
-				scaveEditor.executeCommand(command);
-			}
+			if (features.length > 0)
+				dialog.open();
 		}
 	}
 
