@@ -1,0 +1,88 @@
+package org.omnetpp.ned.editor.graph.properties;
+
+import java.util.Map;
+
+import org.eclipse.ui.views.properties.IPropertyDescriptor;
+import org.eclipse.ui.views.properties.PropertyDescriptor;
+import org.omnetpp.ned2.model.INamed;
+import org.omnetpp.ned2.model.NEDElement;
+import org.omnetpp.ned2.model.ParamNodeEx;
+
+/**
+ * @author rhornig
+ * Property source to display all submodules for a given compound module
+ */
+public class ParameterListPropertySource extends NotifiedPropertySource {
+    protected NEDElement model;
+    protected PropertyDescriptor[] pdesc;
+    protected int totalParamCount;
+    protected int inheritedParamCount;
+    
+    public ParameterListPropertySource(NEDElement model) {
+        super(model);
+        this.model = model;
+    }
+
+    @Override
+    public IPropertyDescriptor[] getPropertyDescriptors() {
+        Map<String, NEDElement> params = model.getContainerNEDTypeInfo().getParams();
+        Map<String, NEDElement> paramValues = model.getContainerNEDTypeInfo().getParamValues();
+        
+        pdesc = new PropertyDescriptor[params.size()];
+        totalParamCount = inheritedParamCount = 0;
+        for(NEDElement paramElement : params.values()) {
+            ParamNodeEx paramDefNode = (ParamNodeEx)paramElement;
+            ParamNodeEx paramValueNode = ((ParamNodeEx)paramValues.get(paramDefNode.getName()));
+            String typeString = (paramDefNode.getIsVolatile() ? "volatile " : "") + paramDefNode.getAttribute(ParamNodeEx.ATT_TYPE);
+            String valueString = paramValueNode== null ? "" :paramValueNode.getValue();
+            String definedIn = "";
+            if (paramDefNode.getContainingTopLevelElement() != model) {
+                inheritedParamCount++;
+                definedIn= " (inherited from "+((INamed)paramDefNode.getContainingTopLevelElement()).getName()+")";
+            }
+            pdesc[totalParamCount] = new PropertyDescriptor(valueString + definedIn, typeString +" "+paramDefNode.getName());
+            pdesc[totalParamCount].setCategory("parameters");
+            pdesc[totalParamCount].setDescription("Parameter "+paramDefNode.getName()+" with type "+typeString+definedIn+" - (read only)");
+            totalParamCount++;
+        }
+        
+        return pdesc;
+    }
+
+    @Override
+    public Object getEditableValue() {
+        // yust a little summary - show the number of submodules
+        String summary = "";
+        // if the property descriptor is not yet build, build it now
+        if (pdesc == null) 
+            getPropertyDescriptors();
+        
+        if (pdesc != null )
+            summary ="total: "+totalParamCount+" (inherited: "+inheritedParamCount+")";
+        return summary;
+    }
+
+    @Override
+    public Object getPropertyValue(Object id) {
+        return id;
+    }
+
+    @Override
+    public boolean isPropertyResettable(Object id) {
+        return false;
+    }
+
+    @Override
+    public boolean isPropertySet(Object id) {
+        return false;
+    }
+
+    @Override
+    public void resetPropertyValue(Object id) {
+    }
+
+    @Override
+    public void setPropertyValue(Object id, Object value) {
+    }
+
+}

@@ -16,4 +16,14 @@ public class ParamNodeEx extends ParamNode implements INamed, IParentable {
         super(parent);
     }
 
+    /**
+     * @return Which module or channel or any named alament contains this parameter definition
+     */
+    public NEDElement getContainingTopLevelElement() {
+        NEDElement parent = getParent(); 
+        while (parent != null && !(parent instanceof ITopLevelElement)) 
+            parent = parent.getParent();
+        return parent;
+    }
+
 }

@@ -195,7 +195,7 @@ public class GraphicalNedEditorPlugin extends AbstractUIPlugin {
         	}
         	
         	// determine which palette group it belongs to or put it to the default
-        	PropertyNode property = (PropertyNode)comp.getProperty("group"); 
+        	PropertyNode property = (PropertyNode)comp.getProperties().get("group"); 
         	String group = (property == null) ? defaultGroupName
         			        : NEDElementUtilEx.getPropertyValue(property);
         	

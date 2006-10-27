@@ -1,8 +1,7 @@
 package org.omnetpp.ned2.model;
 
-import java.util.Collection;
 import java.util.List;
-import java.util.Set;
+import java.util.Map;
 
 import org.eclipse.core.resources.IFile;
 
@@ -58,57 +57,24 @@ public interface INEDTypeInfo extends INEDChangeListener {
 	// TODO comment!
 	// these methods are for members declared on this component (ie exluding inherited ones)
 	// member: gate/param/property/submod/innertype
-	public Set<String> getOwnMemberNames();
-    public Collection<NEDElement> getOwnMembers();
-	public boolean hasOwnMember(String name);
-	public NEDElement getOwnMember(String name);
-	
-	public Set<String> getOwnParamNames();
-    public Collection<NEDElement> getOwnParams();
-	public boolean hasOwnParam(String name);
-
-	public Set<String> getOwnPropertyNames();
-    public Collection<NEDElement> getOwnProperties();
-	public boolean hasOwnProperty(String name);
-	
-	public Set<String> getOwnGateNames();
-    public Collection<NEDElement> getOwnGates();
-	public boolean hasOwnGate(String name);
-
-    public Set<String> getOwnInnerTypeNames();
-    public Collection<NEDElement> getOwnInnerTypes();
-	public boolean hasOwnInnerType(String name);
-
-	public Set<String> getOwnSubmodNames();
-    public Collection<NEDElement> getOwnSubmods();
-	public boolean hasOwnSubmod(String name);
+    public Map<String, NEDElement> getOwnMembers();
+    public Map<String, NEDElement> getOwnParams();
+    public Map<String, NEDElement> getOwnParamValues();
+    public Map<String, NEDElement> getOwnProperties();
+    public Map<String, NEDElement> getOwnGates();
+    public Map<String, NEDElement> getOwnGateSizes();
+    public Map<String, NEDElement> getOwnInnerTypes();
+    public Map<String, NEDElement> getOwnSubmods();
 
 	// same as above, for inherited members as well
-	public Set<String> getMemberNames();
-    public Collection<NEDElement> getMembers();
-	public boolean hasMember(String name);
-	public NEDElement getMember(String name);
-	
-	public Set<String> getParamNames();
-    public Collection<NEDElement> getParams();
-	public boolean hasParam(String name);
-
-	public Set<String> getPropertyNames();
-    public Collection<NEDElement> getProperties();
-	public boolean hasProperty(String name);
-	public NEDElement getProperty(String name);
-	
-	public Set<String> getGateNames();
-    public Collection<NEDElement> getGates();
-    public boolean hasGate(String name);
-
-	public Set<String> getInnerTypeNames();
-    public Collection<NEDElement> getInnerTypes();
-	public boolean hasInnerType(String name);
-
-	public Set<String> getSubmodNames();
-    public Collection<NEDElement> getSubmods();
-	public boolean hasSubmod(String name);
+    public Map<String, NEDElement> getMembers();
+    public Map<String, NEDElement> getParams();
+    public Map<String, NEDElement> getParamValues();
+    public Map<String, NEDElement> getProperties();
+    public Map<String, NEDElement> getGates();
+    public Map<String, NEDElement> getGateSizes();
+    public Map<String, NEDElement> getInnerTypes();
+    public Map<String, NEDElement> getSubmods();
     
     /**
      * @return All types derived from this type

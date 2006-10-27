@@ -37,17 +37,20 @@ public class CompoundModulePropertySource extends DelegatingPropertySource {
     // compound module specific properties
     protected static class BasePropertySource implements IPropertySource2 {
         public static final String BASE_CATEGORY = "Base";
-        public enum Prop { Network, Submodules }
+        public enum Prop { Network, Submodules, Parameters, Gates, Properties }
         protected IPropertyDescriptor[] descriptors;
         protected CompoundModuleNodeEx model;
         CheckboxPropertyDescriptor networkProp;
         SubmoduleListPropertySource submodlist;
+        ParameterListPropertySource paramlist;
 
         public BasePropertySource(CompoundModuleNodeEx connectionNodeModel) {
             model = connectionNodeModel;
             
             // create a property source for the submodule list
             submodlist = new SubmoduleListPropertySource(model);
+            // one ofr the parameters list
+            paramlist = new ParameterListPropertySource(model);
             // set up property descriptors
             networkProp = new CheckboxPropertyDescriptor(Prop.Network, "network");
             networkProp.setCategory(BASE_CATEGORY);
@@ -57,7 +60,11 @@ public class CompoundModulePropertySource extends DelegatingPropertySource {
             submodProp.setCategory(BASE_CATEGORY);
             submodProp.setDescription("List of submodules and inherited submodules");
             
-            descriptors = new IPropertyDescriptor[] { networkProp , submodProp};
+            PropertyDescriptor paramsProp = new PropertyDescriptor(Prop.Parameters,"parameters");
+            paramsProp.setCategory(BASE_CATEGORY);
+            paramsProp.setDescription("List of parameters and inherited parameters");
+
+            descriptors = new IPropertyDescriptor[] { networkProp , submodProp, paramsProp};
         }
 
         public Object getEditableValue() {
@@ -75,6 +82,9 @@ public class CompoundModulePropertySource extends DelegatingPropertySource {
             if (Prop.Submodules.equals(propName))  
                 return submodlist; 
             
+            if (Prop.Parameters.equals(propName))  
+                return paramlist; 
+
             return null;
         }
 

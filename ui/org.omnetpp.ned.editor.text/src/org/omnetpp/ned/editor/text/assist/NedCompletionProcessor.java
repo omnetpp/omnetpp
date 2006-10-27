@@ -137,13 +137,13 @@ public class NedCompletionProcessor extends IncrementalCompletionProcessor {
 		if (line.equals("")) {
 			// offer param and gate names
 			if (info.sectionType == SECT_PARAMETERS && parentComponent!=null)
-				addProposals(viewer, documentOffset, result, parentComponent.getParamNames(), "parameter");
+				addProposals(viewer, documentOffset, result, parentComponent.getParams().keySet(), "parameter");
 			if (info.sectionType == SECT_GATES && parentComponent!=null)
-				addProposals(viewer, documentOffset, result, parentComponent.getGateNames(), "gate");
+				addProposals(viewer, documentOffset, result, parentComponent.getGates().keySet(), "gate");
 			if (info.sectionType == SECT_SUBMODULE_PARAMETERS && submoduleType!=null)
-				addProposals(viewer, documentOffset, result, submoduleType.getParamNames(), "parameter");
+				addProposals(viewer, documentOffset, result, submoduleType.getParams().keySet(), "parameter");
 			if (info.sectionType == SECT_SUBMODULE_GATES && submoduleType!=null)
-				addProposals(viewer, documentOffset, result, submoduleType.getGateNames(), "gate");
+				addProposals(viewer, documentOffset, result, submoduleType.getGates().keySet(), "gate");
 
 			// offer param and gate type name keywords
 			if (info.sectionType == SECT_PARAMETERS)
@@ -176,9 +176,9 @@ public class NedCompletionProcessor extends IncrementalCompletionProcessor {
 		if (line.matches("@")) {
 			addProposals(viewer, documentOffset, result, NedHelper.proposedNedComponentPropertyNames, "standard property");
 			if (info.sectionType == SECT_PARAMETERS && parentComponent!=null)
-				addProposals(viewer, documentOffset, result, parentComponent.getPropertyNames(), "property");
+				addProposals(viewer, documentOffset, result, parentComponent.getProperties().keySet(), "property");
 			if (info.sectionType == SECT_SUBMODULE_PARAMETERS && submoduleType!=null)
-				addProposals(viewer, documentOffset, result, submoduleType.getPropertyNames(), "property");
+				addProposals(viewer, documentOffset, result, submoduleType.getProperties().keySet(), "property");
 		}
 		else if (line.endsWith("@")) {
 			if (info.sectionType == SECT_PARAMETERS || info.sectionType == SECT_SUBMODULE_PARAMETERS)
@@ -194,12 +194,12 @@ public class NedCompletionProcessor extends IncrementalCompletionProcessor {
 			// offer parameter names, gate names, types,...
 			if (line.matches(".*\\bthis *\\.")) {
 				if (submoduleType!=null)
-					addProposals(viewer, documentOffset, result, submoduleType.getParamNames(), "parameter");
+					addProposals(viewer, documentOffset, result, submoduleType.getParams().keySet(), "parameter");
 			}
 			else if (line.matches(".*\\bsizeof *\\(")) {
 				if (parentComponent!=null) {
-					addProposals(viewer, documentOffset, result, parentComponent.getGateNames(), "gate");
-					addProposals(viewer, documentOffset, result, parentComponent.getSubmodNames(), "submodule");
+					addProposals(viewer, documentOffset, result, parentComponent.getGates().keySet(), "gate");
+					addProposals(viewer, documentOffset, result, parentComponent.getSubmods().keySet(), "submodule");
 				}
 			}
 	    	else if (line.endsWith(".")) {
@@ -210,14 +210,14 @@ public class NedCompletionProcessor extends IncrementalCompletionProcessor {
 					INEDTypeInfo submodType = res.getComponent(submodTypeName);
 					if (submodType!=null) {
 						if (line.matches(".*\\bsizeof *\\(.*"))
-							addProposals(viewer, documentOffset, result, submodType.getGateNames(), "gate");
-						addProposals(viewer, documentOffset, result, submodType.getParamNames(), "param");
+							addProposals(viewer, documentOffset, result, submodType.getGates().keySet(), "gate");
+						addProposals(viewer, documentOffset, result, submodType.getParams().keySet(), "param");
 					}
 	    		}
 	    	}
 			else {
 				if (parentComponent!=null) {
-					addProposals(viewer, documentOffset, result, parentComponent.getParamNames(), "parameter");
+					addProposals(viewer, documentOffset, result, parentComponent.getParams().keySet(), "parameter");
 				}
 			}
 			addProposals(viewer, documentOffset, result, NedHelper.proposedConstants, null);
@@ -239,7 +239,7 @@ public class NedCompletionProcessor extends IncrementalCompletionProcessor {
 			}
 			else if (line.matches(".*: *<")) {  // "like" syntax
 				if (parentComponent!=null)
-					addProposals(viewer, documentOffset, result, parentComponent.getParamNames(), "parameter");
+					addProposals(viewer, documentOffset, result, parentComponent.getParams().keySet(), "parameter");
 			}
 			else if (line.matches(".*: *<.*>")) {   // "like" syntax, cont'd
 					addProposals(viewer, documentOffset, result, new String[]{" like "}, null);
@@ -260,8 +260,8 @@ public class NedCompletionProcessor extends IncrementalCompletionProcessor {
 			if (line.equals("") || line.endsWith("-->") || line.endsWith("<-->") || line.endsWith("<--")) {
 	    		// right at line start or after arrow: offer submodule names and parent module's gates
 	    		if (parentComponent!=null) {
-	    			addProposals(viewer, documentOffset, result, parentComponent.getSubmodNames(), "submodule");
-	    			addProposals(viewer, documentOffset, result, parentComponent.getGateNames(), "gate");
+	    			addProposals(viewer, documentOffset, result, parentComponent.getSubmods().keySet(), "submodule");
+	    			addProposals(viewer, documentOffset, result, parentComponent.getGates().keySet(), "gate");
 	    		}
 	    	}
 	    	else if (line.endsWith(".")) {
@@ -271,7 +271,7 @@ public class NedCompletionProcessor extends IncrementalCompletionProcessor {
 					System.out.println(" offering gates of type "+submodTypeName);
 					INEDTypeInfo submodType = res.getComponent(submodTypeName);
 					if (submodType!=null)
-						addProposals(viewer, documentOffset, result, submodType.getGateNames(), "gate");
+						addProposals(viewer, documentOffset, result, submodType.getGates().keySet(), "gate");
 	    		}
 	    	}
 
@@ -307,7 +307,7 @@ public class NedCompletionProcessor extends IncrementalCompletionProcessor {
 		Matcher matcher = Pattern.compile("([A-Za-z_][A-Za-z0-9_]*) *(\\[[^\\[\\]]*\\])? *\\.$").matcher(line);
 		if (matcher.find()) { // use find() because line may start with garbage
 			String submoduleName = matcher.group(1);
-			NEDElement submodNode = parentComponent.getMember(submoduleName);
+			NEDElement submodNode = parentComponent.getMembers().get(submoduleName);
 			if (submodNode instanceof SubmoduleNode) {
 				SubmoduleNode submod = (SubmoduleNode) submodNode;
 				String submodTypeName = submod.getType();

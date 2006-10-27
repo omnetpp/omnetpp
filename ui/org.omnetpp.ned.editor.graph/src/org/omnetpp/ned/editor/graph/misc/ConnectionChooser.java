@@ -42,8 +42,8 @@ public class ConnectionChooser {
 		if (comp == null)
 			return result;
 		
-		for(String s : comp.getGateNames()) {
-			GateNode currGate = (GateNode)comp.getMember(s);
+		for(String s : comp.getGates().keySet()) {
+			GateNode currGate = (GateNode)comp.getMembers().get(s);
 			if (currGate.getType() == gateType)
 				result.add(currGate);
 		}

@@ -1,10 +1,9 @@
 package org.omnetpp.resources;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
+import java.util.Map;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.Assert;
@@ -40,8 +39,10 @@ public class NEDComponent implements INEDTypeInfo, NEDElementTags {
 	// own stuff
     boolean needsOwnUpdate;
 	protected HashMap<String, NEDElement> ownProperties = new HashMap<String, NEDElement>();
-	protected HashMap<String, NEDElement> ownParams = new HashMap<String, NEDElement>();
+    protected HashMap<String, NEDElement> ownParams = new HashMap<String, NEDElement>();
+    protected HashMap<String, NEDElement> ownParamValues = new HashMap<String, NEDElement>();
 	protected HashMap<String, NEDElement> ownGates = new HashMap<String, NEDElement>();
+    protected HashMap<String, NEDElement> ownGateSizes = new HashMap<String, NEDElement>();
 	protected HashMap<String, NEDElement> ownInnerTypes = new HashMap<String, NEDElement>();
 	protected HashMap<String, NEDElement> ownSubmodules = new HashMap<String, NEDElement>();
 
@@ -51,8 +52,10 @@ public class NEDComponent implements INEDTypeInfo, NEDElementTags {
 	// own plus inherited
 	boolean needsUpdate;
 	protected HashMap<String, NEDElement> allProperties = new HashMap<String, NEDElement>();
-	protected HashMap<String, NEDElement> allParams = new HashMap<String, NEDElement>();
-	protected HashMap<String, NEDElement> allGates = new HashMap<String, NEDElement>();
+    protected HashMap<String, NEDElement> allParams = new HashMap<String, NEDElement>();
+    protected HashMap<String, NEDElement> allParamValues = new HashMap<String, NEDElement>();
+    protected HashMap<String, NEDElement> allGates = new HashMap<String, NEDElement>();
+    protected HashMap<String, NEDElement> allGateSizes = new HashMap<String, NEDElement>();
 	protected HashMap<String, NEDElement> allInnerTypes = new HashMap<String, NEDElement>();
 	protected HashMap<String, NEDElement> allSubmodules = new HashMap<String, NEDElement>();
 
@@ -103,7 +106,7 @@ public class NEDComponent implements INEDTypeInfo, NEDElementTags {
 			// search nodes within section ("gates:", "parameters:", etc)
 			for (NEDElement node : section) {
 				if (tagCode==-1 || node.getTagCode()==tagCode) {
-					if (typeAttr==null || node.getAttribute(typeAttr)!=null) {
+					if (typeAttr==null || !(node.getAttribute(typeAttr)==null || "".equals(node.getAttribute(typeAttr)))) {
 						String name = node.getAttribute(nameAttr);
 						hashmap.put(name, node);
 					}
@@ -147,14 +150,18 @@ public class NEDComponent implements INEDTypeInfo, NEDElementTags {
 
         ownProperties.clear();
         ownParams.clear();
+        ownParamValues.clear();
         ownGates.clear();
+        ownGateSizes.clear();
         ownSubmodules.clear();
         ownInnerTypes.clear();
         ownMembers.clear();
         // collect stuff from component declaration
         collect(ownProperties, NED_PROPERTY, NED_PARAMETERS, PropertyNode.ATT_NAME, null);
         collect(ownParams, NED_PARAM, NED_PARAMETERS, ParamNode.ATT_NAME, ParamNode.ATT_TYPE);
+        collect(ownParamValues, NED_PARAM, NED_PARAMETERS, ParamNode.ATT_NAME, null);
         collect(ownGates, NED_GATE, NED_GATES, GateNode.ATT_NAME, GateNode.ATT_TYPE);
+        collect(ownGateSizes, NED_GATE, NED_GATES, GateNode.ATT_NAME, null);
         collect(ownSubmodules, NED_SUBMODULE, NED_SUBMODULES, SubmoduleNode.ATT_NAME, null);
         // XXX would be more efficient to collect the following in one pass:
         collect(ownInnerTypes, NED_SIMPLE_MODULE, NED_TYPES, SimpleModuleNode.ATT_NAME, null);
@@ -170,6 +177,7 @@ public class NEDComponent implements INEDTypeInfo, NEDElementTags {
         ownMembers.putAll(ownGates);
         ownMembers.putAll(ownSubmodules);
         ownMembers.putAll(ownInnerTypes);
+
         needsOwnUpdate = false;
     }
     
@@ -186,7 +194,9 @@ public class NEDComponent implements INEDTypeInfo, NEDElementTags {
         
 		allProperties.clear();
 		allParams.clear();
+        allParamValues.clear();
 		allGates.clear();
+        allGateSizes.clear();
 		allInnerTypes.clear();
 		allSubmodules.clear();
 		allMembers.clear();
@@ -197,12 +207,14 @@ public class NEDComponent implements INEDTypeInfo, NEDElementTags {
 		for (INEDTypeInfo icomponent : extendsChain) {
 			Assert.isTrue(icomponent instanceof NEDComponent);
 			NEDComponent component = (NEDComponent)icomponent;
-			allProperties.putAll(component.ownProperties);
-			allParams.putAll(component.ownParams);
-			allGates.putAll(component.ownGates);
-			allInnerTypes.putAll(component.ownInnerTypes);
-			allSubmodules.putAll(component.ownSubmodules);
-			allMembers.putAll(component.ownMembers);
+			allProperties.putAll(component.getOwnProperties());
+			allParams.putAll(component.getOwnParams());
+            allParamValues.putAll(component.getOwnParamValues());
+			allGates.putAll(component.getOwnGates());
+            allGateSizes.putAll(component.getOwnGateSizes());
+			allInnerTypes.putAll(component.getOwnInnerTypes());
+			allSubmodules.putAll(component.getOwnSubmods());
+			allMembers.putAll(component.getOwnMembers());
 		}
         
         // collect all types that are derived from this
@@ -265,264 +277,101 @@ public class NEDComponent implements INEDTypeInfo, NEDElementTags {
 		}
 	}
 
-	
-	public Set<String> getOwnParamNames() {
+    public Map<String, NEDElement> getOwnParams() {
         if (needsOwnUpdate)
             refreshOwnMembers();
-		return ownParams.keySet();
-	}
-
-    public Collection<NEDElement> getOwnParams() {
-        if (needsOwnUpdate)
-            refreshOwnMembers();
-        return ownParams.values();
+        return ownParams;
     }
-	
-	public boolean hasOwnParam(String name) {
-        if (needsOwnUpdate)
-            refreshOwnMembers();
-		return ownParams.containsKey(name);
-	}
-
-	
-	public Set<String> getOwnPropertyNames() {
-        if (needsOwnUpdate)
-            refreshOwnMembers();
-		return ownProperties.keySet();
-	}
-	
-    public Collection<NEDElement> getOwnProperties() {
-        if (needsOwnUpdate)
-            refreshOwnMembers();
-        return ownProperties.values();
-    }
-
-	
-	public boolean hasOwnProperty(String name) {
-        if (needsOwnUpdate)
-            refreshOwnMembers();
-		return ownProperties.containsKey(name);
-	}
-
-	
-	public Set<String> getOwnGateNames() {
-        if (needsOwnUpdate)
-            refreshOwnMembers();
-		return ownGates.keySet();
-	}
-	
-    public Collection<NEDElement> getOwnGates() {
-        if (needsOwnUpdate)
-            refreshOwnMembers();
-        return ownGates.values();
-    }
-
-	
-	public boolean hasOwnGate(String name) {
-        if (needsOwnUpdate)
-            refreshOwnMembers();
-		return ownGates.containsKey(name);
-	}
-	
-	
-	public Set<String> getOwnInnerTypeNames() {
-        if (needsOwnUpdate)
-            refreshOwnMembers();
-		return ownInnerTypes.keySet();
-	}
-
-    public Collection<NEDElement> getOwnInnerTypes() {
-        if (needsOwnUpdate)
-            refreshOwnMembers();
-        return ownInnerTypes.values();
-    }
-
-	
-	public boolean hasOwnInnerType(String name) {
-        if (needsOwnUpdate)
-            refreshOwnMembers();
-		return ownInnerTypes.containsKey(name);
-	}
-
-	
-	public Set<String> getOwnSubmodNames() {
-        if (needsOwnUpdate)
-            refreshOwnMembers();
-		return ownSubmodules.keySet();
-	}
-
-    public Collection<NEDElement> getOwnSubmods() {
-        if (needsOwnUpdate)
-            refreshOwnMembers();
-        return ownSubmodules.values();
-    }
-
-	
-	public boolean hasOwnSubmod(String name) {
-        if (needsOwnUpdate)
-            refreshOwnMembers();
-		return ownSubmodules.containsKey(name);
-	}
-	
-	public Set<String> getOwnMemberNames() {
-        if (needsOwnUpdate)
-            refreshOwnMembers();
-		return ownMembers.keySet();
-	}
-
-    public Collection<NEDElement> getOwnMembers() {
-        if (needsOwnUpdate)
-            refreshOwnMembers();
-        return ownMembers.values();
-    }
-
-	
-	public boolean hasOwnMember(String name) {
-        if (needsOwnUpdate)
-            refreshOwnMembers();
-		return ownMembers.containsKey(name);
-	}
-
-	
-	public NEDElement getOwnMember(String name) {
-        if (needsOwnUpdate)
-            refreshOwnMembers();
-		return ownMembers.get(name);
-	}
-
-	
-	public Set<String> getParamNames() {
-		if (needsUpdate)
-			refreshInheritedMembers();
-		return allParams.keySet();
-	}
-
-    public Collection<NEDElement> getParams() {
-        if (needsUpdate)
-            refreshInheritedMembers();
-        return allParams.values();
-    }
-
-	
-	public boolean hasParam(String name) {
-		if (needsUpdate)
-			refreshInheritedMembers();
-		return allParams.containsKey(name);
-	}
-
-	
-	public Set<String> getPropertyNames() {
-		if (needsUpdate)
-			refreshInheritedMembers();
-		return allProperties.keySet();
-	}
-
-    public Collection<NEDElement> getProperties() {
-        if (needsUpdate)
-            refreshInheritedMembers();
-        return allProperties.values();
-    }
-
-	
-	public boolean hasProperty(String name) {
-		if (needsUpdate)
-			refreshInheritedMembers();
-		return allProperties.containsKey(name);
-	}
-
-	
-	public NEDElement getProperty(String name) {
-		if (needsUpdate)
-			refreshInheritedMembers();
-		return allProperties.get(name);
-	}
-	
-	
-	public Set<String> getGateNames() {
-		if (needsUpdate)
-			refreshInheritedMembers();
-		return allGates.keySet();
-	}
-
-    public Collection<NEDElement> getGates() {
-        if (needsUpdate)
-            refreshInheritedMembers();
-        return allGates.values();
-    }
-
-	
-	public boolean hasGate(String name) {
-		if (needsUpdate)
-			refreshInheritedMembers();
-		return allGates.containsKey(name);
-	}
-
-	
-	public Set<String> getInnerTypeNames() {
-		if (needsUpdate)
-			refreshInheritedMembers();
-		return allInnerTypes.keySet();
-	}
-
-    public Collection<NEDElement> getInnerTypes() {
-        if (needsUpdate)
-            refreshInheritedMembers();
-        return allInnerTypes.values();
-    }
-
-	
-	public boolean hasInnerType(String name) {
-		if (needsUpdate)
-			refreshInheritedMembers();
-		return allInnerTypes.containsKey(name);
-	}
-
-	
-	public Set<String> getSubmodNames() {
-		if (needsUpdate)
-			refreshInheritedMembers();
-		return allSubmodules.keySet();
-	}
-
-    public Collection<NEDElement> getSubmods() {
-        if (needsUpdate)
-            refreshInheritedMembers();
-        return allSubmodules.values();
-    }
-
     
-	public boolean hasSubmod(String name) {
-		if (needsUpdate)
-			refreshInheritedMembers();
-		return allSubmodules.containsKey(name);
-	}
-
-	
-	public Set<String> getMemberNames() {
-		if (needsUpdate)
-			refreshInheritedMembers();
-		return allMembers.keySet();
-	}
-
-    public Collection<NEDElement> getMembers() {
-        if (needsUpdate)
-            refreshInheritedMembers();
-        return allMembers.values();
+    public Map<String, NEDElement> getOwnParamValues() {
+        if (needsOwnUpdate)
+            refreshOwnMembers();
+        return ownParamValues;
+    }
+    
+    public Map<String, NEDElement> getOwnProperties() {
+        if (needsOwnUpdate)
+            refreshOwnMembers();
+        return ownProperties;
     }
 
-	
-	public boolean hasMember(String name) {
-		if (needsUpdate)
-			refreshInheritedMembers();
-		return allMembers.containsKey(name);
-	}
+    public Map<String, NEDElement> getOwnGates() {
+        if (needsOwnUpdate)
+            refreshOwnMembers();
+        return ownGates;
+    }
 
-	
-	public NEDElement getMember(String name) {
-		if (needsUpdate)
-			refreshInheritedMembers();
-		return allMembers.get(name);
-	}
+    public Map<String, NEDElement> getOwnGateSizes() {
+        if (needsOwnUpdate)
+            refreshOwnMembers();
+        return ownGateSizes;
+    }
+
+    public Map<String, NEDElement> getOwnInnerTypes() {
+        if (needsOwnUpdate)
+            refreshOwnMembers();
+        return ownInnerTypes;
+    }
+
+    public Map<String, NEDElement> getOwnSubmods() {
+        if (needsOwnUpdate)
+            refreshOwnMembers();
+        return ownSubmodules;
+    }
+
+    public Map<String, NEDElement> getOwnMembers() {
+        if (needsOwnUpdate)
+            refreshOwnMembers();
+        return ownMembers;
+    }
+
+    public Map<String, NEDElement> getParams() {
+        if (needsUpdate)
+            refreshInheritedMembers();
+        return allParams;
+    }
+
+    public Map<String, NEDElement> getParamValues() {
+        if (needsUpdate)
+            refreshInheritedMembers();
+        return allParamValues;
+    }
+
+    public Map<String, NEDElement> getProperties() {
+        if (needsUpdate)
+            refreshInheritedMembers();
+        return allProperties;
+    }
+
+    public Map<String, NEDElement> getGates() {
+        if (needsUpdate)
+            refreshInheritedMembers();
+        return allGates;
+    }
+
+    public Map<String, NEDElement> getGateSizes() {
+        if (needsUpdate)
+            refreshInheritedMembers();
+        return allGateSizes;
+    }
+
+    public Map<String, NEDElement> getInnerTypes() {
+        if (needsUpdate)
+            refreshInheritedMembers();
+        return allInnerTypes;
+    }
+
+    public Map<String, NEDElement> getSubmods() {
+        if (needsUpdate)
+            refreshInheritedMembers();
+        return allSubmodules;
+    }
+
+    public Map<String, NEDElement> getMembers() {
+        if (needsUpdate)
+            refreshInheritedMembers();
+        return allMembers;
+    }
 
     public List<INEDTypeInfo> getAllDerivedTypes() {
         if (needsUpdate)

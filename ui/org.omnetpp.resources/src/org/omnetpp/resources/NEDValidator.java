@@ -148,11 +148,11 @@ public class NEDValidator extends AbstractNEDValidator implements NEDElementUtil
 		//XXX enforce channel inheritance rules, wrt "withcppclass" keyword
 
 		// if all OK, add inherited members to our member list
-		for (String memberName : e.getMemberNames()) {
+		for (String memberName : e.getMembers().keySet()) {
 			if (members.containsKey(memberName))
 				errors.add(node, "conflict: '"+memberName+"' occurs in multiple base interfaces");
 			else
-			    members.put(memberName, e.getMember(memberName));
+			    members.put(memberName, e.getMembers().get(memberName));
 		}
 		
 		// then process children
@@ -239,7 +239,7 @@ public class NEDValidator extends AbstractNEDValidator implements NEDElementUtil
 				errors.add(node, "cannot assign parameters of a submodule of unknown type");
 				return;
 			}
-			decl = (ParamNode) submoduleType.getMember(parname);
+			decl = (ParamNode) submoduleType.getMembers().get(parname);
 			if (decl==null || decl.getTagCode()!=NED_PARAM) {
 				errors.add(node, "'"+parname+"': type '"+submoduleType.getName()+"' has no such parameter");
 				return;
@@ -251,7 +251,7 @@ public class NEDValidator extends AbstractNEDValidator implements NEDElementUtil
 				errors.add(node, "cannot assign parameters of a channel of unknown type");
 				return;
 			}
-			decl = (ParamNode) channelSpecType.getMember(parname);
+			decl = (ParamNode) channelSpecType.getMembers().get(parname);
 			if (decl==null || decl.getTagCode()!=NED_PARAM) {
 				errors.add(node, "'"+parname+"': type '"+channelSpecType.getName()+"' has no such parameter");
 				return;
@@ -313,7 +313,7 @@ public class NEDValidator extends AbstractNEDValidator implements NEDElementUtil
 				errors.add(node, "cannot configure gates of a submodule of unknown type");
 				return;
 			}
-			decl = (GateNode) submoduleType.getMember(gatename);
+			decl = (GateNode) submoduleType.getMembers().get(gatename);
 			if (decl==null || decl.getTagCode()!=NED_GATE) {
 				errors.add(node, "'"+gatename+"': type '"+submoduleType.getName()+"' has no such gate");
 				return;

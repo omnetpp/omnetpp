@@ -99,7 +99,7 @@ public class NedHelper {
     public final static String[] highlightPrivateDocTodo = { "CHECKME", "FIXME", "TBD", "TODO" };
     public final static String[] highlightDocTags = { "a", "b", "body", "br", "center", "caption", "code", "dd", "dfn", "dl", "dt", "em", "form", "font", "hr", "h1", "h2", "h3", "i", "input", "img", "li", "meta", "multicol", "ol", "p", "small", "span", "strong", "sub", "sup", "table", "td", "th", "tr", "tt", "kbd", "ul", "var" };
     public final static String[] highlightDocKeywords = { "author", "bug", "date", "see", "since", "todo", "version", "warning" };
-    public final static String[] highlightNedTypes = { "bool", "double", "function", "inout", "input", "int", "output", "string", "xml" };
+    public final static String[] highlightNedTypes = { "bool", "double", "volatile", "inout", "input", "int", "output", "string", "xml" };
     public final static String[] highlightNedSpecialKeywords = { "-->", "<--", "<-->", ".." };
     public final static String[] highlightNedKeywords = { "allowunconnected", "channel", "channelinterface", "connections", "extends", "for", "gates", "if", "import", "index", "interface", "like", "module", "network", "package", "parameters", "property", "simple", "submodules", "this", "typename", "types", "withcppclass" };
     public final static String[] highlightNedFunctions = { "acos", "asin", "atan", "atan2", "bernoulli", "beta", "binomial", "cauchy", "ceil", "chi_square", "const", "cos", "default", "erlang_k", "exp", "exponential", "fabs", "floor", "fmod", "gamma_d", "genk_exponential", "genk_intuniform", "genk_normal", "genk_truncnormal", "genk_uniform", "geometric", "hypergeometric", "hypot", "intuniform", "log", "log10", "lognormal", "max", "min", "negbinomial", "normal", "pareto_shifted", "poisson", "pow", "sin", "sizeof", "sqrt", "student_t", "tan", "triang", "truncnormal", "uniform", "weibull", "xmldoc" };
@@ -109,7 +109,7 @@ public class NedHelper {
     public final static String[] proposedPrivateDocTodo = highlightPrivateDocTodo;
     public final static String[] proposedDocTags = highlightDocTags;
     public final static String[] proposedDocKeywords = highlightDocKeywords;
-    public final static String[] proposedNedParamTypes = { "bool", "double", "int", "string", "bool function", "double function", "int function", "string function", "xml" };
+    public final static String[] proposedNedParamTypes = { "bool", "double", "int", "string", "volatile bool", "volatile double", "volatile int", "volatile string", "xml" };
     public final static String[] proposedNedGateTypes = { "inout", "input", "output" };
     public final static String[] proposedNedGlobalStartingKeywords = { "channel", "channel withcppclass", "channelinterface", "import", "interface", "module", "network", "package", "property", "simple"};
     public final static String[] proposedNedSectionNameKeywords = {"connections:", "connections allowunconnected:", "gates:", "parameters:", "submodules:", "types:"};
