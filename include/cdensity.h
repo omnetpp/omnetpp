@@ -21,8 +21,6 @@
 
 #include "cstat.h"
 
-//==========================================================================
-
 /**
  * Common base class for density estimation classes. Provides several
  * pure virtual functions, so it is an abstract class, no instances
@@ -69,14 +67,31 @@
 class SIM_API cDensityEstBase : public cStdDev
 {
   public:
-    // to range_mode:
-    enum { RANGE_INVALID,   // --> needs to be set
-           RANGE_FIXED,     // --> fixed range (lower,upper)
-           RANGE_AUTO,
-           RANGE_AUTOLOWER, // --> will be determined from firstvals[],
-           RANGE_AUTOUPPER, //        using min and/or max and range_ext_fact
-           RANGE_NOTSET     // --> not set, but it's OK (cVarHistogram only)
-         };
+    /**
+     * Constants for histogram range_mode
+     */
+    enum {
+        RANGE_INVALID,   // --> needs to be set
+        RANGE_FIXED,     // --> fixed range (lower,upper)
+        RANGE_AUTO,
+        RANGE_AUTOLOWER, // --> will be determined from firstvals[],
+        RANGE_AUTOUPPER, //        using min and/or max and range_ext_fact
+        RANGE_NOTSET     // --> not set, but it's OK (cVarHistogram only)
+    };
+
+    /**
+     * Information about a cell. This struct is not used internally by
+     * histogram and histogram-like classes, only to return information
+     * to the user.
+     */
+    struct Cell
+    {
+        double lower;  // lower cell bound (inclusive)
+        double upper;  // lower cell bound (exclusive)
+        double value;  // counter (or its estimate)
+        double relativeFreq;  // value / total
+        Cell() {lower=upper=value=relativeFreq=0;}
+    };
 
   protected:
     double rangemin,rangemax;   // range for distribution density collection
@@ -303,6 +318,12 @@ class SIM_API cDensityEstBase : public cStdDev
      * range.
      */
     virtual unsigned long overflowCell() const {return cell_over;}
+
+    /**
+     * Combines the functionality of basepoint(), cell() and cellPDF() into a
+     * single call.
+     */
+    virtual Cell cellInfo(int k) const;
     //@}
 
     /** @name Density and cumulated density approximation functions. */
@@ -323,6 +344,8 @@ class SIM_API cDensityEstBase : public cStdDev
     virtual double cdf(double x) const = 0;
     //@}
 };
+
+std::ostream& operator<<(std::ostream& os, const cDensityEstBase::Cell& cell);
 
 #endif
 

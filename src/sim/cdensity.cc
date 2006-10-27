@@ -341,3 +341,20 @@ void cDensityEstBase::loadFromFile(FILE *f)
     }
 }
 
+cDensityEstBase::Cell cDensityEstBase::cellInfo(int k) const
+{
+    if (k<0 || k>=cells())
+        return Cell();
+    Cell c;
+    c.lower = basepoint(k);
+    c.upper = basepoint(k+1);
+    c.value = cell(k);
+    c.relativeFreq = cellPDF(k);
+    return c;
+}
+
+std::ostream& operator<<(std::ostream& os, const cDensityEstBase::Cell& cell)
+{
+    return os << "[" << cell.lower << ", " << cell.upper << ") ==> " << cell.value << " (" << cell.relativeFreq << ")";
+}
+

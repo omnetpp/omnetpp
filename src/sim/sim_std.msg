@@ -30,8 +30,8 @@ class cObject
     fields:
         @omitGetVerb(true);
         string className @group(basic);
-        string name @group(basic) @tooltip(name without index);
-        string fullName @group(basic) @tooltip(name with submodule, gate etc index);
+        string name @group(basic) @tooltip(name without index); //XXX leave fullName with @label(name)???
+        string fullName @group(basic) @label(name) @tooltip(name with submodule, gate etc index);
         string fullPath @group(basic);
         string info @group(basic);
         string detailedInfo @group(basic);
@@ -244,15 +244,21 @@ class cWeightedStdDev extends cStdDev
 {
 }
 
+cplusplus {{
+typedef cDensityEstBase::Cell cDensityEstBase_Cell;
+}}
+
+struct cDensityEstBase_Cell;
+
 class cDensityEstBase extends cStdDev
 {
     fields:
         @omitGetVerb(true);
         bool transformed @group(histogram);
-        int cells @group(histogram);
         unsigned long underflowCell @group(histogram);
         unsigned long overflowCell @group(histogram);
-        //XXX cells[]?
+        int cells @group(histogram);
+        cDensityEstBase_Cell cellInfo[] @sizeGetter(cells) @group(histogram);
 }
 
 class cHistogramBase extends cDensityEstBase
