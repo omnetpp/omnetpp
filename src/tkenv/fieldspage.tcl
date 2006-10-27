@@ -13,6 +13,7 @@
 #  `license' for details on this and other legal matters.
 #----------------------------------------------------------------#
 
+# FIXME: if a node appears under itself in the tree --> infinite recursion!!!!
 
 #
 # Creates a Fields page for a tabbed inspector window.
