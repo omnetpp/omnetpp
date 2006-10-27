@@ -159,6 +159,10 @@ class cGate extends cNoncopyableObject
         cChannel *channel @group(general);
         bool isBusy @group(state);
         simtime_t transmissionFinishes @group(state);
+        cGate *fromGate @group(connection);
+        cGate *toGate @group(connection);
+        cGate *sourceGate @group(connection) @tooltip(end of 'toGate' chain);
+        cGate *destinationGate @group(connection) @tooltip(beginning of 'fromGate' chain);
         bool isConnectedOutside @group(connection);
         bool isConnectedInside @group(connection);
         bool isConnected @group(connection);
