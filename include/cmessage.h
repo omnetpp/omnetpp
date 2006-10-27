@@ -585,6 +585,13 @@ class SIM_API cMessage : public cObject
     cGate *senderGate() const;
 
     /**
+     * Returns a pointer to the arrival module. It returns NULL if the message
+     * hasn't been sent/scheduled yet, or if the module got deleted
+     * in the meantime.
+     */
+    cModule *arrivalModule() const {return simulation.module(tomod);}
+
+    /**
      * Returns pointers to the gate from which the message was sent and
      * on which gate it arrived. A NULL pointer is returned
      * for new (unsent) messages and messages sent via scheduleAt().

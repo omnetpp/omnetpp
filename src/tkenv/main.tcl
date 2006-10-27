@@ -164,6 +164,7 @@ proc create_omnetpp_window {} {
     foreach i {
       {command -command inspect_systemmodule -label {Network} -underline 0}
       {command -command inspect_messagequeue -label {Scheduled events (FES)} -underline 0}
+      {command -command inspect_simulation   -label {Simulation} -underline 1}
       {separator}
       {cascade -label {Available components} -underline 10 -menu .menubar.inspectmenu$m.components}
       {separator}

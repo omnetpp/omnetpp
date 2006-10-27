@@ -35,11 +35,8 @@ class cObject
         string fullPath @group(basic);
         string info @group(basic);
         string detailedInfo @group(basic);
+        cObject *owner @group(basic);
 }
-
-//XXX TODO: add @enum to gate type, param type etc
-//XXX TODO: add @tooltip!
-//XXX FIXME property values cannot contain ")" (will confuse perl pattern matcher-based parser)
 
 class cNoncopyableObject extends cObject
 {
@@ -186,8 +183,12 @@ class cMessage extends cObject
         simtime_t timestamp @group(sending);
         int senderModuleId @group(sending);
         int senderGateId @group(sending);
+        cModule *senderModule @group(sending);
+        cGate *senderGate @group(sending);
         int arrivalModuleId @group(sending);
         int arrivalGateId @group(sending);
+        cModule *arrivalModule @group(sending);
+        cGate *arrivalGate @group(sending);
 
         cMessage *encapsulatedMsg @group(general);
         cPolymorphic *controlInfo @group(general);

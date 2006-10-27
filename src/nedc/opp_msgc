@@ -535,6 +535,8 @@ while ($msg =~ s/(message|class|struct)\s+(.+?)\s*{(.*?)};?//s)
         {
             $field = $1;
 
+            #XXX property values cannot contain parens "(..)", because regex doesn't count parens, just stops at first ")"...
+
             # is this a single property, not a field?
             if ($field =~ s|^\s*\@([_a-z0-9]+)\((.*?)\)\s*$|$props{$1}=$2;""|sei) {
                 next;

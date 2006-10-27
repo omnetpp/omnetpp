@@ -578,6 +578,11 @@ proc inspect_messagequeue {} {
     opp_inspect [opp_object_messagequeue] (default)
 }
 
+proc inspect_simulation {} {
+    # implements Inspect|Simulation...
+    opp_inspect [opp_object_simulation] (default)
+}
+
 proc inspect_componenttypes {} {
     opp_inspect [opp_object_componenttypes] {(default)}
 }
