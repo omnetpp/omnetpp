@@ -1,5 +1,22 @@
+//==============================================================
+//   SIM_STD.MSG  - part of
+//                     OMNeT++/OMNEST
+//            Discrete System Simulation in C++
 //
-// XXX Experimental property descriptors for the simkernel classes.
+//  Author: Andras Varga
+//
+//==============================================================
+
+//--------------------------------------------------------------
+// Copyright (C) 1992-2005 Andras Varga
+//
+//  This file is distributed WITHOUT ANY WARRANTY. See the file
+//  `license' for details on this and other legal matters.
+//--------------------------------------------------------------
+
+
+//
+// Property descriptors for the simkernel classes.
 // Usage: opp_msgc -Xnc -Xns sim_std.ins
 //
 
@@ -121,13 +138,24 @@ class cChannelType extends cComponentType
 
 //----
 
-enum GateType;
+enum cGate_Type;
+
+cplusplus {{
+// Register this enum manually
+EXECUTE_ON_STARTUP(cGate_Type,
+    cEnum *e = new cEnum("cGate_Type");
+    enums.instance()->add(e);
+    e->insert(cGate::INPUT,  "INPUT");
+    e->insert(cGate::OUTPUT, "OUTPUT");
+    e->insert(cGate::INOUT,  "INOUT");
+);
+}}
 
 class cGate extends cNoncopyableObject
 {
     fields:
         @omitGetVerb(true);
-        char type @group(general) @enum(GateType);
+        char type @group(general) @enum(cGate_Type);
         int id @group(general);
         bool isVector @group(general);
         int index @group(general);
@@ -308,16 +336,32 @@ class cOutVector extends cNoncopyableObject
         long valuesStored @group(general);
 }
 
+enum cPar_Type;
+
+cplusplus {{
+// Register this enum manually
+EXECUTE_ON_STARTUP(cPar_Type,
+    cEnum *e = new cEnum("cPar_Type");
+    enums.instance()->add(e);
+    e->insert(cPar::BOOL,   "BOOL");
+    e->insert(cPar::DOUBLE, "DOUBLE");
+    e->insert(cPar::LONG,   "LONG");
+    e->insert(cPar::STRING, "STRING");
+    e->insert(cPar::XML,    "XML");
+);
+}}
+
 class cPar extends cObject
 {
     fields:
         @omitGetVerb(true);
-        char type @group(general);
+        char type @group(general) @enum(cPar_Type);
         bool isNumeric @group(general);
         bool isVolatile @group(general);
         bool isConstant @group(general);
         bool isSet @group(general);
         bool hasDefaultValue @group(general);
+        string toString @group(general);
 }
 
 class cProperties extends cPolymorphic
