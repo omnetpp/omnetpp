@@ -13,7 +13,6 @@
 #  `license' for details on this and other legal matters.
 #----------------------------------------------------------------#
 
-# FIXME: if a node appears under itself in the tree --> infinite recursion!!!!
 
 #
 # Creates a Fields page for a tabbed inspector window.
@@ -67,35 +66,41 @@ proc inspector_createfields2page {w} {
 }
 
 proc refresh_fields2page {w} {
-    set nb $w.nb
-    set tree $nb.fields2.tree
-    set tmp(treeroot) $w
+    set tree $w.nb.fields2.tree
+    if ![winfo exist $tree] {return}
 
     Tree:build $tree
-    $tree xview moveto 0
+    #$tree xview moveto 0
 }
 
 #
 # Content provider for the inspector treeview.
 #
 # Possible keys:
-#   obj-<ptr>
-#   struct-<ptr>-<descptr>
-#   group-<ptr>-<descptr>-<groupid>
-#   field-<ptr>-<descptr>-<fieldid>
-#   findex-<ptr>-<descptr>-<fieldid>-<index>
+#   <depth>-obj-<ptr>
+#   <depth>-struct-<ptr>-<descptr>
+#   <depth>-group-<ptr>-<descptr>-<groupid>
+#   <depth>-field-<ptr>-<descptr>-<fieldid>
+#   <depth>-findex-<ptr>-<descptr>-<fieldid>-<index>
 #
 # groupid is id of a field (ie a fieldid) which has the right group.
 # We use that because the group name itself may contain space, hyphen
 # and other unwanted characters.
 #
+# depth is the depth in the displayed tree (0 for root, 1 for its children, etc).
+# It is needed to make multiple appearances of the same object unique. Without it,
+# if a node appears under itself in the tree, that causes infinite recursion.
+# (crash scenario without depth: open the object's "owner" field, then the object
+# itself within its owner --> bang!).
+#
 proc getFieldNodeInfo {w op {key ""}} {
     global icons treeroots
 
     set keyargs [split $key "-"]
-    set keytype [lindex $keyargs 0]
-    set obj [lindex $keyargs 1]
-    set sd [lindex $keyargs 2]
+    set depth [lindex $keyargs 0]
+    set keytype [lindex $keyargs 1]
+    set obj [lindex $keyargs 2]
+    set sd [lindex $keyargs 3]
 
     switch $op {
 
@@ -115,15 +120,15 @@ proc getFieldNodeInfo {w op {key ""}} {
                 }
 
                 group {
-                    set groupid [lindex $keyargs 3]
+                    set groupid [lindex $keyargs 4]
                     set groupname [opp_classdescriptor $obj $sd fieldproperty $groupid "group"]
                     return "\b$groupname\b"
                 }
 
                 field -
                 findex {
-                    set fieldid [lindex $keyargs 3]
-                    set index [lindex $keyargs 4]
+                    set fieldid [lindex $keyargs 4]
+                    set index [lindex $keyargs 5]
                     return [getFieldNodeInfo_getFieldText $obj $sd $fieldid $index]
                 }
 
@@ -164,7 +169,7 @@ proc getFieldNodeInfo {w op {key ""}} {
                 }
                 field -
                 findex {
-                    set fieldid [lindex $keyargs 3]
+                    set fieldid [lindex $keyargs 4]
                     set tooltip [opp_classdescriptor $obj $sd fieldproperty $fieldid "tooltip"]
                     return $tooltip
                 }
@@ -182,6 +187,7 @@ proc getFieldNodeInfo {w op {key ""}} {
         }
 
         children {
+            incr depth
             switch $keytype {
                 obj -
                 struct {
@@ -189,23 +195,23 @@ proc getFieldNodeInfo {w op {key ""}} {
                     if {$keytype=="obj"} {set sd [opp_getclassdescriptorfor $obj]}
                     if {$sd==[opp_null]} {return ""}
 
-                    set children1 [getFieldNodeInfo_getFieldsInGroup $obj $sd ""]
-                    set children2 [getFieldNodeInfo_getGroupKeys $obj $sd]
+                    set children1 [getFieldNodeInfo_getFieldsInGroup $depth $obj $sd ""]
+                    set children2 [getFieldNodeInfo_getGroupKeys $depth $obj $sd]
                     return [concat $children1 $children2]
                 }
 
                 group {
                     # return fields in the given group
-                    set groupname [lindex $keyargs 3]
-                    return [getFieldNodeInfo_getFieldsInGroup $obj $sd $groupname]
+                    set groupname [lindex $keyargs 4]
+                    return [getFieldNodeInfo_getFieldsInGroup $depth $obj $sd $groupname]
                 }
 
                 field {
-                    set fieldid [lindex $keyargs 3]
+                    set fieldid [lindex $keyargs 4]
                     set isarray [opp_classdescriptor $obj $sd fieldisarray $fieldid]
                     if {$isarray} {
                         # expand array: enumerate all indices
-                        return [getFieldNodeInfo_getElementsInArray $obj $sd $fieldid]
+                        return [getFieldNodeInfo_getElementsInArray $depth $obj $sd $fieldid]
                     }
                     set iscompound [opp_classdescriptor $obj $sd fieldiscompound $fieldid]
                     if {$iscompound} {
@@ -214,11 +220,11 @@ proc getFieldNodeInfo {w op {key ""}} {
                         set fieldptr [opp_classdescriptor $obj $sd fieldstructpointer $fieldid]
                         if [opp_isnull $fieldptr] {return ""}
                         if {$isobject} {
-                            return [getFieldNodeInfo $w children "obj-$fieldptr"]
+                            return [getFieldNodeInfo $w children "$depth-obj-$fieldptr"]
                         } else {
                             set fielddesc [opp_classdescriptor $obj $sd fieldstructdesc $fieldid]
                             if {$fielddesc==""} {return ""}  ;# nothing known about it
-                            set tmpkey "struct-$fieldptr-$fielddesc"
+                            set tmpkey "$depth-struct-$fieldptr-$fielddesc"
                             return [getFieldNodeInfo $w children $tmpkey]
                         }
                     }
@@ -226,8 +232,8 @@ proc getFieldNodeInfo {w op {key ""}} {
                 }
 
                 findex {
-                    set fieldid [lindex $keyargs 3]
-                    set index [lindex $keyargs 4]
+                    set fieldid [lindex $keyargs 4]
+                    set index [lindex $keyargs 5]
                     set iscompound [opp_classdescriptor $obj $sd fieldiscompound $fieldid]
                     if {$iscompound} {
                         # return children on this class/struct
@@ -235,11 +241,11 @@ proc getFieldNodeInfo {w op {key ""}} {
                         set fieldptr [opp_classdescriptor $obj $sd fieldstructpointer $fieldid $index]
                         if [opp_isnull $fieldptr] {return ""}
                         if {$isobject} {
-                            return [getFieldNodeInfo $w children "obj-$fieldptr"]
+                            return [getFieldNodeInfo $w children "$depth-obj-$fieldptr"]
                         } else {
                             set fielddesc [opp_classdescriptor $obj $sd fieldstructdesc $fieldid]
                             if {$fielddesc==""} {return ""}  ;# nothing known about it
-                            set tmpkey "struct-$fieldptr-$fielddesc"
+                            set tmpkey "$depth-struct-$fieldptr-$fielddesc"
                             return [getFieldNodeInfo $w children $tmpkey]
                         }
                     }
@@ -247,7 +253,7 @@ proc getFieldNodeInfo {w op {key ""}} {
                 }
 
                 root {
-                    return "obj-$obj"
+                    return "0-obj-$obj"
                 }
 
                 default {
@@ -258,8 +264,8 @@ proc getFieldNodeInfo {w op {key ""}} {
 
         root {
             # add an extra level to make the root object appear in the tree as well
-            #return "obj-$treeroots($w)"
-            return "root-$treeroots($w)"
+            #return "0-obj-$treeroots($w)"
+            return "0-root-$treeroots($w)"
         }
     }
 }
@@ -268,7 +274,7 @@ proc getFieldNodeInfo {w op {key ""}} {
 # Helper proc for getFieldNodeInfo.
 # Collects field groups, and converts them to keys.
 #
-proc getFieldNodeInfo_getGroupKeys {obj sd} {
+proc getFieldNodeInfo_getGroupKeys {depth obj sd} {
     # collect list of groups
     set numfields [opp_classdescriptor $obj $sd fieldcount]
     for {set i 0} {$i<$numfields} {incr i} {
@@ -280,7 +286,7 @@ proc getFieldNodeInfo_getGroupKeys {obj sd} {
     set children {}
     foreach groupname [lsort [array names groups]] {
         if {$groupname!=""} {
-            lappend children "group-$obj-$sd-$groups($groupname)"
+            lappend children "$depth-group-$obj-$sd-$groups($groupname)"
         }
     }
     return $children
@@ -291,7 +297,7 @@ proc getFieldNodeInfo_getGroupKeys {obj sd} {
 # Helper proc for getFieldNodeInfo.
 # Return fields in the given group; groupname may be "" (meaning no group).
 #
-proc getFieldNodeInfo_getFieldsInGroup {obj sd groupid} {
+proc getFieldNodeInfo_getFieldsInGroup {depth obj sd groupid} {
     set children {}
     if {$groupid!=""} {
         set groupname [opp_classdescriptor $obj $sd fieldproperty $groupid "group"]
@@ -301,7 +307,7 @@ proc getFieldNodeInfo_getFieldsInGroup {obj sd groupid} {
     set numfields [opp_classdescriptor $obj $sd fieldcount]
     for {set i 0} {$i<$numfields} {incr i} {
         if {$groupname==[opp_classdescriptor $obj $sd fieldproperty $i "group"]} {
-            lappend children "field-$obj-$sd-$i"
+            lappend children "$depth-field-$obj-$sd-$i"
         }
     }
     return $children
@@ -311,11 +317,11 @@ proc getFieldNodeInfo_getFieldsInGroup {obj sd groupid} {
 # Helper proc for getFieldNodeInfo.
 # Expands array by enumerating all indices, and returns the list of corresponding keys.
 #
-proc getFieldNodeInfo_getElementsInArray {obj sd fieldid} {
+proc getFieldNodeInfo_getElementsInArray {depth obj sd fieldid} {
     set children {}
     set n [opp_classdescriptor $obj $sd fieldarraysize $fieldid]
     for {set i 0} {$i<$n} {incr i} {
-        lappend children "findex-$obj-$sd-$fieldid-$i"
+        lappend children "$depth-findex-$obj-$sd-$fieldid-$i"
     }
     return $children
 }
@@ -395,13 +401,14 @@ proc getFieldNodeInfo_getFieldText {obj sd fieldid index} {
 #
 #
 proc getFieldNodeInfo_resolveObject {keyargs} {
-    set keytype [lindex $keyargs 0]
+    set depth [lindex $keyargs 0]
+    set keytype [lindex $keyargs 1]
 
     if {$keytype=="field" || $keytype=="findex"} {
-        set obj [lindex $keyargs 1]
-        set sd [lindex $keyargs 2]
-        set fieldid [lindex $keyargs 3]
-        set index [lindex $keyargs 4]
+        set obj [lindex $keyargs 2]
+        set sd [lindex $keyargs 3]
+        set fieldid [lindex $keyargs 4]
+        set index [lindex $keyargs 5]
         set isobject [opp_classdescriptor $obj $sd fieldisobject $fieldid]
         set isarray [opp_classdescriptor $obj $sd fieldisarray $fieldid]
 
