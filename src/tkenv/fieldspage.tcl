@@ -440,13 +440,15 @@ proc getFieldNodeInfo_resolveObject {keyargs} {
 
 #
 # Invoked on hitting Enter or double-clicking in the tree, it opens
-# an inspector for the given object.
+# an inspector for the given object. Or at least opens/closes that tree branch.
 #
 proc getFieldNodeInfo_inspect {w key} {
     set keyargs [split $key "-"]
     set ptr [getFieldNodeInfo_resolveObject $keyargs]
     if [opp_isnotnull $ptr] {
         opp_inspect $ptr "(default)"
+    } else {
+        Tree:toggle $w $key
     }
 }
 
