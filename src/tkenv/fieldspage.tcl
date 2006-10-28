@@ -371,6 +371,7 @@ proc getFieldNodeInfo_getFieldText {obj sd fieldid index} {
         if {$isobject} {
             set fieldobj [opp_classdescriptor $obj $sd fieldstructpointer $fieldid $index]
             if [opp_isnull $fieldobj] {return "$name = \bNULL\b$typenametext"}
+            #FIXME this is wrong!!! isobject means iscPolymorphic not iscObject!
             if {[opp_getobjectowner $fieldobj]==$obj} {
                 set fieldobjname [opp_getobjectfullname $fieldobj]
             } else {
