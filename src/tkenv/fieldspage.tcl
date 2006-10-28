@@ -177,12 +177,19 @@ proc getFieldNodeInfo {w op {key ""}} {
         }
 
         haschildren {
-            # FIXME can be improved performance-wise
-            set children [getFieldNodeInfo $w children $key]
-            if {$children==""} {
-                return 0
-            } else {
-                return 1
+            switch $keytype {
+                group -
+                root {
+                    return 1  ;# sure has children
+                }
+                obj -
+                struct -
+                field -
+                findex {
+                    # FIXME can be improved performance-wise (this actually collects all children!)
+                    set children [getFieldNodeInfo $w children $key]
+                    return [expr [llength $children]!=0]
+                }
             }
         }
 
@@ -364,10 +371,20 @@ proc getFieldNodeInfo_getFieldText {obj sd fieldid index} {
         if {$isobject} {
             set fieldobj [opp_classdescriptor $obj $sd fieldstructpointer $fieldid $index]
             if [opp_isnull $fieldobj] {return "$name = \bNULL\b$typenametext"}
+            if {[opp_getobjectowner $fieldobj]==$obj} {
+                set fieldobjname [opp_getobjectfullname $fieldobj]
+            } else {
+                set fieldobjname [opp_getobjectfullpath $fieldobj]
+            }
             set fieldobjname [opp_getobjectfullname $fieldobj]
             set fieldobjclassname [opp_getobjectclassname $fieldobj]
             set fieldobjinfo [opp_getobjectinfostring $fieldobj]
-            return "$name = \b($fieldobjclassname) $fieldobjname: $fieldobjinfo\b$typenametext"
+            if {$fieldobjinfo!=""} {
+                set fieldobjinfotext ": $fieldobjinfo"
+            } else {
+                set fieldobjinfotext ""
+            }
+            return "$name = \b($fieldobjclassname) $fieldobjname$fieldobjinfotext\b$typenametext"
         } else {
             # a value can be generated via operator<<
             set value [opp_classdescriptor $obj $sd fieldvalue $fieldid $index]
