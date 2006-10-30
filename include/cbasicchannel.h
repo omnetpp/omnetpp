@@ -29,6 +29,7 @@ class SIM_API cBasicChannel : public cChannel // noncopyable
 {
   private:
     enum {
+      FL_INITIALIZED = 0x08,
       FL_ISDISABLED = 0x10,
       FL_DELAY_NONZERO = 0x20,
       FL_ERROR_NONZERO = 0x40,
@@ -45,6 +46,7 @@ class SIM_API cBasicChannel : public cChannel // noncopyable
     simtime_t transm_finishes;
 
   protected:
+    void checkInitialized() const;
     void rereadPars();
 
     /**
@@ -119,22 +121,22 @@ class SIM_API cBasicChannel : public cChannel // noncopyable
     /**
      * Returns the delay of the channel.
      */
-    virtual double delay() const {return delay_;}
+    virtual double delay() const {checkInitialized(); return delay_;}
 
     /**
      * Returns the bit error rate of the channel.
      */
-    virtual double error() const  {return error_;}
+    virtual double error() const  {checkInitialized(); return error_;}
 
     /**
      * Returns the data rate of the channel.
      */
-    virtual double datarate() const  {return datarate_;}
+    virtual double datarate() const  {checkInitialized(); return datarate_;}
 
     /**
      * Returns the "disabled" parameter of the channel.
      */
-    virtual bool disabled() const  {return flags & FL_ISDISABLED;}
+    virtual bool disabled() const  {checkInitialized(); return flags & FL_ISDISABLED;}
     //@}
 
     /** @name Transmission state. */

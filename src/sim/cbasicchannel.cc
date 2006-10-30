@@ -36,6 +36,7 @@ Register_Class(cBasicChannel);
 cBasicChannel::cBasicChannel(const char *name) : cChannel(name)
 {
     transm_finishes = 0.0;
+    delay_ = error_ = datarate_ = 0.0;
 }
 
 cBasicChannel::~cBasicChannel()
@@ -50,6 +51,13 @@ std::string cBasicChannel::info() const
 void cBasicChannel::initialize()
 {
     rereadPars();
+    flags |= FL_INITIALIZED;
+}
+
+void cBasicChannel::checkInitialized() const
+{
+    if (!(flags & FL_INITIALIZED))
+        throw new cRuntimeError(this, "channel object not initialized yet, try calling the same method in a later init stage");
 }
 
 void cBasicChannel::rereadPars()

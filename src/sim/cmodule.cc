@@ -575,12 +575,12 @@ bool cModule::callInitialize(int stage)
 
     // ...then for submodules and channels (meanwhile determine if more stages are needed)
     bool moreStages = stage < numStages-1;
-    for (SubmoduleIterator submod(this); !submod.end(); submod++)
-        if (submod()->callInitialize(stage))
-            moreStages = true;
-
     for (ChannelIterator chan(this); !chan.end(); chan++)
         if (chan()->callInitialize(stage))
+            moreStages = true;
+
+    for (SubmoduleIterator submod(this); !submod.end(); submod++)
+        if (submod()->callInitialize(stage))
             moreStages = true;
 
     return moreStages; // return true if there's more stages to do
@@ -591,11 +591,11 @@ void cModule::callFinish()
     // This is the interface for calling finish().
 
     // first call it for submodules and channels...
+    for (ChannelIterator chan(this); !chan.end(); chan++)
+        chan()->callFinish();
     for (SubmoduleIterator submod(this); !submod.end(); submod++)
         submod()->callFinish();
 
-    for (ChannelIterator chan(this); !chan.end(); chan++)
-        chan()->callFinish();
 
     // ...then for this module, in our context
     cContextSwitcher tmp(this);
