@@ -116,7 +116,16 @@ double cStringPar::doubleValue() const
     throw new cRuntimeError(this, eBADCAST, "string", "double");
 }
 
-std::string cStringPar::stringValue() const
+const char *cStringPar::stringValue() const
+{
+    if (flags & FL_ISEXPR)
+        throw new cRuntimeError(this, "stringValue() and conversion to `const char *' cannot be invoked "
+                                "on parameters declared `volatile string' in NED -- use stdstringValue() "
+                                "or conversion to `std::string' instead.");
+    return val.c_str();
+}
+
+std::string cStringPar::stdstringValue() const
 {
     return evaluate();
 }
@@ -157,7 +166,7 @@ bool cStringPar::isNumeric() const
 
 void cStringPar::convertToConst()
 {
-    setStringValue(stringValue().c_str());
+    setStringValue(stdstringValue().c_str());
 }
 
 std::string cStringPar::toString() const

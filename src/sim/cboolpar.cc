@@ -118,7 +118,12 @@ double cBoolPar::doubleValue() const
     throw new cRuntimeError(this, eBADCAST, "bool", "double");
 }
 
-std::string cBoolPar::stringValue() const
+const char *cBoolPar::stringValue() const
+{
+    throw new cRuntimeError(this, eBADCAST, "bool", "string");
+}
+
+std::string cBoolPar::stdstringValue() const
 {
     throw new cRuntimeError(this, eBADCAST, "bool", "string");
 }

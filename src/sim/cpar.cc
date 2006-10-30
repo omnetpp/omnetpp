@@ -140,17 +140,6 @@ bool cPar::equals(cPar& other)
     }
 }
 
-const char *cPar::c_str() const
-{
-    if (!isConstant())
-        throw new cRuntimeError(this, "c_str() and the `const char *' operator cannot be invoked "
-                                "on parameters declared `volatile string' in NED -- assign the "
-                                "parameter to an std::string, or use stringValue().c_str() instead.");
-
-    // return pointer to the string stored in a cStringPar data member
-    return stringValue().c_str();
-}
-
 int cPar::cmpbyvalue(cPar *one, cPar *other)
 {
     double x = one->doubleValue() - other->doubleValue();

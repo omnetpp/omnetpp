@@ -119,7 +119,12 @@ double cXMLPar::doubleValue() const
     throw new cRuntimeError(this, eBADCAST, "XML", "double");
 }
 
-std::string cXMLPar::stringValue() const
+const char *cXMLPar::stringValue() const
+{
+    throw new cRuntimeError(this, eBADCAST, "XML", "string");
+}
+
+std::string cXMLPar::stdstringValue() const
 {
     throw new cRuntimeError(this, eBADCAST, "XML", "string");
 }

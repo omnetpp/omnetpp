@@ -123,7 +123,12 @@ double cLongPar::doubleValue() const
     return evaluate();
 }
 
-std::string cLongPar::stringValue() const
+const char *cLongPar::stringValue() const
+{
+    throw new cRuntimeError(this, eBADCAST, "int/long", "string");
+}
+
+std::string cLongPar::stdstringValue() const
 {
     throw new cRuntimeError(this, eBADCAST, "int/long", "string");
 }

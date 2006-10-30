@@ -272,8 +272,18 @@ class SIM_API cPar : public cObject
 
     /**
      * Returns value as const char *. Only for string (S) type.
+     * This method may can only be invoked when the parameter's value is a
+     * string constant and not the result of expression evaluation (otherwise
+     * an error is thrown). This practically means this method cannot be used
+     * on parameters declared as "volatile string" in NED; they can only be
+     * accessed using stdstringValue().
      */
-    virtual std::string stringValue() const = 0;
+    virtual const char *stringValue() const = 0;
+
+    /**
+     * Returns value as string. Only for string (S) type.
+     */
+    virtual std::string stdstringValue() const = 0;
 
     /**
      * Returns value as pointer to cXMLElement. The cPar type must be XML (M).
@@ -453,21 +463,12 @@ class SIM_API cPar : public cObject
     /**
      * Equivalent to stringValue().
      */
-    operator std::string() const  {return stringValue();}
+    operator const char *() const  {return stringValue();}
 
     /**
-     * Equivalent to c_str().
+     * Equivalent to stdstringValue().
      */
-    operator const char *() const {return c_str();}
-
-    /**
-     * Equivalent to stringValue(), but may can only be invoked when the
-     * parameter's value is a string constant, and not the result of expression
-     * evaluation. (In the latter case, an error is thrown.) This practically
-     * means that parameters declared as "volatile string" in NED cannot
-     * be converted to const char * directly, only to std::string.
-     */
-    const char *c_str() const;
+    operator std::string() const  {return stdstringValue();}
 
     /**
      * Equivalent to xmlValue().

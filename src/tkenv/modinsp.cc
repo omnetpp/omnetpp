@@ -734,7 +734,7 @@ int TGraphicalModWindow::getDisplayStringPar(Tcl_Interp *interp, int argc, const
 
    if (par->type()=='S')
    {
-      Tcl_SetResult(interp, TCLCONST(par->stringValue().c_str()), TCL_VOLATILE);
+      Tcl_SetResult(interp, TCLCONST(par->stdstringValue().c_str()), TCL_VOLATILE);
    }
    else
    {

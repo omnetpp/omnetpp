@@ -142,7 +142,12 @@ class SIM_API cLongPar : public cPar
     /**
      * Raises an error: cannot convert long to string.
      */
-    virtual std::string stringValue() const;
+    virtual const char *stringValue() const;
+
+    /**
+     * Raises an error: cannot convert long to string.
+     */
+    virtual std::string stdstringValue() const;
 
     /**
      * Raises an error: cannot convert long to XML.

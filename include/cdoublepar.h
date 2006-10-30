@@ -142,7 +142,12 @@ class SIM_API cDoublePar : public cPar
     /**
      * Raises an error: cannot convert double to string.
      */
-    virtual std::string stringValue() const;
+    virtual const char *stringValue() const;
+
+    /**
+     * Raises an error: cannot convert double to string.
+     */
+    virtual std::string stdstringValue() const;
 
     /**
      * Raises an error: cannot convert double to XML.

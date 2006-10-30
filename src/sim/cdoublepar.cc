@@ -123,7 +123,12 @@ double cDoublePar::doubleValue() const
     return evaluate();
 }
 
-std::string cDoublePar::stringValue() const
+const char *cDoublePar::stringValue() const
+{
+    throw new cRuntimeError(this, eBADCAST, "double", "string");
+}
+
+std::string cDoublePar::stdstringValue() const
 {
     throw new cRuntimeError(this, eBADCAST, "double", "string");
 }

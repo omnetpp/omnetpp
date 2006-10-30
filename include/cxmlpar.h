@@ -140,7 +140,12 @@ class SIM_API cXMLPar : public cPar
     /**
      * Raises an error: cannot convert XML to string.
      */
-    virtual std::string stringValue() const;
+    virtual const char *stringValue() const;
+
+    /**
+     * Raises an error: cannot convert XML to string.
+     */
+    virtual std::string stdstringValue() const;
 
     /**
      * Returns the value of the parameter.
