@@ -1,5 +1,7 @@
 package org.omnetpp.ned2.model;
 
+import java.util.Map;
+
 import org.omnetpp.common.displaymodel.DisplayString;
 import org.omnetpp.common.displaymodel.IDisplayString;
 import org.omnetpp.common.displaymodel.IDisplayStringProvider;
@@ -8,7 +10,8 @@ import org.omnetpp.ned2.model.pojo.ExtendsNode;
 import org.omnetpp.ned2.model.pojo.SimpleModuleNode;
 
 public class SimpleModuleNodeEx extends SimpleModuleNode 
-				implements IDisplayStringProvider, IParentable, INamed, IDerived, ITopLevelElement  {
+				implements IDisplayStringProvider, IParentable, 
+                           INamed, IDerived, ITopLevelElement, IParametrized  {
 	protected DisplayString displayString = null;
 	
 	SimpleModuleNodeEx() {
@@ -74,5 +77,13 @@ public class SimpleModuleNodeEx extends SimpleModuleNode
         return it == null ? null : it.getNEDElement();
     }
 
+    // parameter query support
+    public Map<String, NEDElement> getParamValues() {
+        return getContainerNEDTypeInfo().getParamValues();
+    }
+
+    public Map<String, NEDElement> getParams() {
+        return getContainerNEDTypeInfo().getParams();
+    }
 
 }

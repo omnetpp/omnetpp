@@ -1,14 +1,18 @@
 package org.omnetpp.ned2.model;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.omnetpp.common.displaymodel.DisplayString;
 import org.omnetpp.common.displaymodel.IDisplayString;
 import org.omnetpp.common.displaymodel.IDisplayString.Prop;
+import org.omnetpp.ned2.model.pojo.ParametersNode;
 import org.omnetpp.ned2.model.pojo.SubmoduleNode;
 
 public class SubmoduleNodeEx extends SubmoduleNode
-                            implements INamedGraphNode, IIndexable, IStringTyped {
+                            implements INamedGraphNode, IIndexable, IStringTyped, IParametrized {
 
     protected DisplayString displayString = null;
 
@@ -101,4 +105,40 @@ public class SubmoduleNodeEx extends SubmoduleNode
         return it == null ? null : it.getNEDElement();
     }
 
+    
+    /**
+     * @return All parameters assigned in this submodule's body
+     */
+    public List<ParamNodeEx> getOwnParams() {
+        // FIXME does not include parameters in param groups !!!
+        List<ParamNodeEx> result = new ArrayList<ParamNodeEx>();
+        ParametersNode parametersNode = getFirstParametersChild();
+        if (parametersNode == null)
+            return result;
+        for(NEDElement currChild : parametersNode)
+            if (currChild instanceof ParamNodeEx)
+                result.add((ParamNodeEx)currChild);
+
+        return result;
+    }
+    
+    // parameter query support
+    public Map<String, NEDElement> getParamValues() {
+        INEDTypeInfo info = getTypeNEDTypeInfo();
+        Map<String, NEDElement> result = 
+            (info == null) ? new HashMap<String, NEDElement>() : info.getParamValues();
+        
+        // add our own assigned parameters
+        for (ParamNodeEx ownParam : getOwnParams()) 
+            result.put(ownParam.getName(), ownParam);
+        
+        return result;
+    }
+
+    public Map<String, NEDElement> getParams() {
+        INEDTypeInfo info = getTypeNEDTypeInfo();
+        if (info == null)
+            return new HashMap<String, NEDElement>();
+        return info.getParams();
+    }
 }

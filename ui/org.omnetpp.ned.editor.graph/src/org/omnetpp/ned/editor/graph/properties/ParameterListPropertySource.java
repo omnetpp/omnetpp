@@ -5,6 +5,7 @@ import java.util.Map;
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
 import org.eclipse.ui.views.properties.PropertyDescriptor;
 import org.omnetpp.ned2.model.INamed;
+import org.omnetpp.ned2.model.IParametrized;
 import org.omnetpp.ned2.model.NEDElement;
 import org.omnetpp.ned2.model.ParamNodeEx;
 
@@ -13,19 +14,19 @@ import org.omnetpp.ned2.model.ParamNodeEx;
  * Property source to display all submodules for a given compound module
  */
 public class ParameterListPropertySource extends NotifiedPropertySource {
-    protected NEDElement model;
+    protected IParametrized model;
     protected PropertyDescriptor[] pdesc;
     protected int totalParamCount;
     protected int inheritedParamCount;
     
-    public ParameterListPropertySource(NEDElement model) {
-        super(model);
+    public ParameterListPropertySource(IParametrized model) {
+        super((NEDElement)model);
         this.model = model;
     }
 
     @Override
     public IPropertyDescriptor[] getPropertyDescriptors() {
-        Map<String, NEDElement> params = model.getContainerNEDTypeInfo().getParams();
+        Map<String, NEDElement> params = model.getParams();
         
         pdesc = new PropertyDescriptor[params.size()];
         totalParamCount = inheritedParamCount = 0;
@@ -63,7 +64,7 @@ public class ParameterListPropertySource extends NotifiedPropertySource {
     public Object getPropertyValue(Object id) {
         if (!(id instanceof ParamNodeEx))
             return getEditableValue();
-        Map<String, NEDElement> paramValues = model.getContainerNEDTypeInfo().getParamValues();
+        Map<String, NEDElement> paramValues = model.getParamValues();
         ParamNodeEx paramDefNode = (ParamNodeEx)id;
         ParamNodeEx paramValueNode = ((ParamNodeEx)paramValues.get(paramDefNode.getName()));
         String valueString = paramValueNode== null ? "" :paramValueNode.getValue();

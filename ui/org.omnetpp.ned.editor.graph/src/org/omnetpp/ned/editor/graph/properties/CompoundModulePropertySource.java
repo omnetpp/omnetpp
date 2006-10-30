@@ -64,7 +64,7 @@ public class CompoundModulePropertySource extends MergedPropertySource {
             paramsProp.setCategory(BASE_CATEGORY);
             paramsProp.setDescription("List of parameters and inherited parameters");
 
-            descriptors = new IPropertyDescriptor[] { networkProp , submodProp, paramsProp};
+            descriptors = new IPropertyDescriptor[] { networkProp  };
         }
 
         public Object getEditableValue() {
@@ -111,6 +111,14 @@ public class CompoundModulePropertySource extends MergedPropertySource {
         // create a nested displayPropertySource
         mergePropertySource(new NamePropertySource(compModuleNodeModel));
         mergePropertySource(new BasePropertySource(compModuleNodeModel));
+        mergePropertySource(new DelegatingPropertySource(
+                new ParameterListPropertySource(compModuleNodeModel),
+                "parameters",
+                "List of parameters and inherited parameters"));
+        mergePropertySource(new DelegatingPropertySource(
+                new SubmoduleListPropertySource(compModuleNodeModel),
+                "submodules",
+                "List of direct and inherited submodules"));
         mergePropertySource(new CompoundModuleDisplayPropertySource(compModuleNodeModel));
     }
 

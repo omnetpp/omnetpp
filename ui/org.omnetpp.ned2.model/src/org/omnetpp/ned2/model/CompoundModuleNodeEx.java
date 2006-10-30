@@ -2,6 +2,7 @@ package org.omnetpp.ned2.model;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.omnetpp.common.displaymodel.DisplayString;
 import org.omnetpp.common.displaymodel.IDisplayString;
@@ -13,7 +14,8 @@ import org.omnetpp.ned2.model.pojo.SubmoduleNode;
 import org.omnetpp.ned2.model.pojo.SubmodulesNode;
 
 public class CompoundModuleNodeEx extends CompoundModuleNode
-								  implements INamedGraphNode, IDerived, ITopLevelElement {
+						implements INamedGraphNode, IDerived, 
+                                   ITopLevelElement, IParametrized {
 
 	protected DisplayString displayString = null;
 
@@ -323,4 +325,12 @@ public class CompoundModuleNodeEx extends CompoundModuleNode
         return it == null ? null : it.getNEDElement();
     }
 
+    // parameter query support
+    public Map<String, NEDElement> getParamValues() {
+        return getContainerNEDTypeInfo().getParamValues();
+    }
+
+    public Map<String, NEDElement> getParams() {
+        return getContainerNEDTypeInfo().getParams();
+    }
 }
