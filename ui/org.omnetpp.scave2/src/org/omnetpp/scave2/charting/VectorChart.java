@@ -26,15 +26,21 @@ import org.eclipse.core.runtime.Assert;
 import org.eclipse.draw2d.Graphics;
 import org.eclipse.draw2d.geometry.Insets;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.events.MouseMoveListener;
 import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.GC;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 import org.jfree.data.xy.XYDataset;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.util.Converter;
 import org.omnetpp.common.util.GeomUtils;
+import org.omnetpp.scave2.Activator;
 import org.omnetpp.scave2.charting.plotter.ChartSymbol;
 import org.omnetpp.scave2.charting.plotter.CrossSymbol;
 import org.omnetpp.scave2.charting.plotter.DiamondSymbol;
@@ -54,7 +60,7 @@ import org.omnetpp.scave2.model.ChartProperties.SymbolType;
 
 //XXX strange effects when resized and vertical scrollbar pulled...
 public class VectorChart extends ChartCanvas {
-	
+
 	private static final Color DEFAULT_TICK_LINE_COLOR = new Color(null, 160, 160, 160);
 	private static final Color DEFAULT_TICK_LABEL_COLOR = new Color(null, 0, 0, 0);
 	private static final Color DEFAULT_INSETS_BACKGROUND_COLOR = new Color(null, 236, 233, 216);
@@ -92,6 +98,7 @@ public class VectorChart extends ChartCanvas {
 	private Map<String, LineProperties> lineProperties = new HashMap<String,LineProperties>();
 	private Axes axes = new Axes(DEFAULT_X_TITLE, DEFAULT_Y_TITLE, null);
 	private TickLabels tickLabels = new TickLabels(DEFAULT_TICK_LINE_COLOR, DEFAULT_TICK_LABEL_COLOR, null, DEFAULT_TICK_SPACING);
+	private CrossHair crosshair = new CrossHair();
 	
 	public VectorChart(Composite parent, int style) {
 		super(parent, style);
@@ -319,6 +326,7 @@ public class VectorChart extends ChartCanvas {
 		remaining = legend.layout(gc, remaining);
 		remaining = tickLabels.layout(gc, remaining);
 		remaining = axes.layout(gc, remaining);
+		remaining = crosshair.layout(gc, remaining);
 
 		Insets insets = GeomUtils.subtract(getClientArea(), remaining);
 		setInsets(insets);
@@ -392,6 +400,7 @@ public class VectorChart extends ChartCanvas {
 		legend.draw(gc);
 		tickLabels.draw(gc);
 		axes.draw(gc);
+		crosshair.draw(gc);
 	}
 
 	class TickLabels {
@@ -518,6 +527,131 @@ public class VectorChart extends ChartCanvas {
 			else if (tickIntvl.divide(BigDecimal.valueOf(2)).compareTo(tickSpacing) > 0)
 				tickIntvl = tickIntvl.divide(BigDecimal.valueOf(2));
 			return tickIntvl;
+		}
+	}
+	
+	
+	private static final Cursor CROSS_CURSOR = new Cursor(null, SWT.CURSOR_CROSS);
+	private static final Font CROSS_HAIR_NORMAL_FONT = new Font(null, "Arial", 8, SWT.NORMAL);
+	private static final Font CROSS_HAIR_BOLD_FONT = new Font(null, "Arial", 8, SWT.BOLD);
+
+	static class DPoint {
+		double x;
+		double y;
+		
+		public DPoint(double x, double y) {
+			this.x = x;
+			this.y = y;
+		}
+	}
+	
+	class CrossHair {
+		
+		Rectangle rect;
+		private int x = Integer.MAX_VALUE;
+		private int y = Integer.MAX_VALUE;
+		
+		public CrossHair() {
+			addMouseMoveListener(new MouseMoveListener() {
+				public void mouseMove(MouseEvent e) {
+					if (e.button == 0 && e.stateMask == 0) {
+						x = e.x;
+						y = e.y;
+						redraw();
+					}
+					if (rect != null && rect.contains(x,y))
+						setCursor(CROSS_CURSOR);
+					else
+						setCursor(null);
+				}
+			});
+		}
+		
+		public Rectangle layout(GC gc, Rectangle rect) {
+			this.rect = rect;
+			return rect;
+		}
+		
+		public void draw(GC gc) {
+			if (rect != null && rect.contains(x, y)) {
+				int[] saveLineDash = gc.getLineDash();
+				int saveLineWidth = gc.getLineWidth();
+				Color saveForeground = gc.getForeground();
+				
+				gc.setLineDash(new int[] {3, 3});
+				gc.setLineWidth(1);
+				gc.setForeground(ColorFactory.asColor("red"));
+				gc.drawLine(rect.x, y, rect.x + rect.width, y);
+				gc.drawLine(x, rect.y, x, rect.y + rect.height);
+				
+				DPoint dataPoint = dataPointNearTo(x, y, 5);
+				Font font = dataPoint != null ? CROSS_HAIR_BOLD_FONT : CROSS_HAIR_NORMAL_FONT; 
+				String coordinates =
+					String.format("%.3g,%.3g",
+						dataPoint != null ? dataPoint.x : fromCanvasX(x),
+						dataPoint != null ? dataPoint.y : fromCanvasY(y));
+				gc.setFont(font);
+				Point size = gc.textExtent(coordinates);
+				int left = x + 3;
+				int top = y - size.y - 4;
+				if (left + size.x + 3 > rect.x + rect.width)
+					left = x - size.x - 6;
+				if (top < rect.y)
+					top = y + 3;
+				gc.setForeground(ColorFactory.asColor("black"));
+				gc.setBackground(getBackground());
+				gc.setLineStyle(SWT.LINE_SOLID);
+				gc.drawRectangle(left, top, size.x + 3, size.y + 1);
+				gc.drawText(coordinates, left + 2, top + 1);
+				
+				gc.setLineDash(saveLineDash);
+				gc.setLineWidth(saveLineWidth);
+				gc.setForeground(saveForeground);
+			}
+		}
+		
+		private DPoint dataPointNearTo(int x, int y, int d) {
+			for (int series = 0; series < dataset.getSeriesCount(); ++series) {
+				int start = 0;
+				int end = dataset.getItemCount(series) - 1;
+				
+				while (start <= end) {
+					int mid = (end + start) / 2;
+					int midX = toCanvasX(dataset.getXValue(series, mid));
+					System.out.println(String.format("start=%d mid=%d end=%d", start, mid, end));
+					
+					if (Math.abs(midX - x) <= d) {
+						for (int i = mid; i >= start; --i) {
+							double xx = dataset.getXValue(series, i);
+							double yy = dataset.getYValue(series, i);
+							int dx = toCanvasX(xx) - x;
+							int dy = toCanvasY(yy) - y;
+							if (dx * dx + dy * dy <= d * d)
+								return new DPoint(xx, yy);
+							if (Math.abs(dx) > d)
+								break;
+						}
+						for (int i = mid + 1; i <= end; ++i) {
+							double xx = dataset.getXValue(series, i);
+							double yy = dataset.getYValue(series, i);
+							int dx = toCanvasX(xx) - x;
+							int dy = toCanvasY(yy) - y;
+							if (dx * dx + dy * dy <= d * d)
+								return new DPoint(xx, yy);
+							if (Math.abs(dx) > d)
+								break;
+						}
+						break;
+					}
+					else if (midX - x < 0) {
+						start = mid + 1;
+					}
+					else if (midX - x > 0) {
+						end = mid - 1;
+					}
+				}
+			}
+			return null;
 		}
 	}
 	
