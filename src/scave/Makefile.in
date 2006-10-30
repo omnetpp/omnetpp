@@ -31,15 +31,16 @@ XMLPARSER=@XMLPARSER@
 #
 # Local definitions
 #
-COPTS=$(CPPFLAGS) $(CFLAGS) $(XML_CFLAGS) -I$(OMNETPP_INCL_DIR) -I. -DBUILDING_NEDXML
+COPTS=$(CFLAGS) $(XML_CFLAGS) -I. -I../common
 
 OBJS= arraybuilder.o channel.o commonnodes.o compoundfilter.o \
-      cstrtokenizer.o dataflowmanager.o datasorter.o diffquot.o \
-      eventlog.o exception.o filetokenizer.o filewriter.o filternodes.o \
+      dataflowmanager.o datasorter.o diffquot.o \
+      filewriter.o filternodes.o stddev.o \
       idlist.o mergernodes.o nodetype.o nodetyperegistry.o \
-      patmatch.o resultfilemanager.o slidingwinavg.o util.o \
+      patmatch.o resultfilemanager.o slidingwinavg.o \
       vectorfilereader.o vectorfilewriter.o windowavg.o \
       xyplotnode.o octaveexport.o
+
 #
 # Automatic rules
 #
@@ -65,8 +66,8 @@ libscave$(SO_LIB_SUFFIX) : $(OBJS)
 	../utils/install-lib libscave$(SO_LIB_SUFFIX).$(OMNETPP_VERSION) $(OMNETPP_LIB_DIR) libscave$(SO_LIB_SUFFIX)
 
 depend:
-	$(MAKEDEPEND) -I../../include -- *.cc
-	$(MAKEDEPEND) -I../../include -fMakefile.in -- *.cc
+	$(MAKEDEPEND) -I. -I../common -- *.cc
+	$(MAKEDEPEND) -I. -I../common -fMakefile.in -- *.cc
 
 doc:
 	# NOTE: doxy.cfg has the output directory hardcoded!
@@ -77,4 +78,246 @@ clean:
 	rm -f libscave$(A_LIB_SUFFIX) libscave$(SO_LIB_SUFFIX)
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
-
+arraybuilder.o: arraybuilder.cc \
+  channel.h \
+  arraybuilder.h \
+  ../../include/util.h \
+  node.h \
+  ../../include/defs.h \
+  ../../include/errmsg.h \
+  scavedefs.h \
+  commonnodes.h \
+  xyarray.h \
+  nodetype.h \
+  dataflowmanager.h
+channel.o: channel.cc \
+  channel.h \
+  ../../include/util.h \
+  node.h \
+  ../../include/defs.h \
+  ../../include/errmsg.h \
+  scavedefs.h
+commonnodes.o: commonnodes.cc \
+  commonnodes.h \
+  channel.h \
+  node.h \
+  nodetype.h \
+  scavedefs.h \
+  ../../include/util.h \
+  ../../include/defs.h \
+  ../../include/errmsg.h \
+  dataflowmanager.h
+compoundfilter.o: compoundfilter.cc \
+  ../../include/util.h \
+  compoundfilter.h \
+  filternodes.h \
+  nodetyperegistry.h \
+  ../../include/defs.h \
+  ../../include/errmsg.h \
+  nodetype.h \
+  commonnodes.h \
+  dataflowmanager.h \
+  node.h \
+  channel.h \
+  scavedefs.h
+dataflowmanager.o: dataflowmanager.cc \
+  channel.h \
+  nodetype.h \
+  dataflowmanager.h \
+  ../../include/util.h \
+  node.h \
+  ../../include/defs.h \
+  ../../include/errmsg.h \
+  scavedefs.h
+datasorter.o: datasorter.cc \
+  resultfilemanager.h \
+  ../../include/util.h \
+  datasorter.h \
+  idlist.h \
+  scavedefs.h \
+  ../../include/defs.h \
+  ../../include/errmsg.h \
+  patmatch.h
+diffquot.o: diffquot.cc \
+  channel.h \
+  diffquot.h \
+  ../../include/util.h \
+  node.h \
+  ../../include/defs.h \
+  ../../include/errmsg.h \
+  scavedefs.h \
+  commonnodes.h \
+  nodetype.h \
+  dataflowmanager.h
+filewriter.o: filewriter.cc \
+  channel.h \
+  filewriter.h \
+  ../../include/util.h \
+  node.h \
+  ../../include/defs.h \
+  ../../include/errmsg.h \
+  scavedefs.h \
+  commonnodes.h \
+  nodetype.h \
+  dataflowmanager.h
+filternodes.o: filternodes.cc \
+  channel.h \
+  filternodes.h \
+  ../../include/util.h \
+  node.h \
+  ../../include/defs.h \
+  ../../include/errmsg.h \
+  scavedefs.h \
+  commonnodes.h \
+  nodetype.h \
+  dataflowmanager.h
+idlist.o: idlist.cc \
+  idlist.h \
+  resultfilemanager.h \
+  scavedefs.h \
+  ../../include/util.h \
+  ../../include/defs.h \
+  ../../include/errmsg.h
+mergernodes.o: mergernodes.cc \
+  channel.h \
+  mergernodes.h \
+  ../../include/util.h \
+  node.h \
+  ../../include/defs.h \
+  ../../include/errmsg.h \
+  scavedefs.h \
+  commonnodes.h \
+  nodetype.h \
+  dataflowmanager.h
+nodetype.o: nodetype.cc \
+  ../../include/util.h \
+  nodetype.h \
+  ../../include/defs.h \
+  ../../include/errmsg.h \
+  dataflowmanager.h \
+  node.h \
+  channel.h \
+  scavedefs.h
+nodetyperegistry.o: nodetyperegistry.cc \
+  ../../include/util.h \
+  nodetyperegistry.h \
+  arraybuilder.h \
+  vectorfilereader.h \
+  vectorfilewriter.h \
+  filewriter.h \
+  windowavg.h \
+  slidingwinavg.h \
+  filternodes.h \
+  mergernodes.h \
+  xyplotnode.h \
+  diffquot.h \
+  stddev.h \
+  ../../include/defs.h \
+  ../../include/errmsg.h \
+  node.h \
+  nodetype.h \
+  scavedefs.h \
+  dataflowmanager.h \
+  channel.h \
+  commonnodes.h \
+  xyarray.h
+octaveexport.o: octaveexport.cc \
+  octaveexport.h \
+  scavedefs.h \
+  xyarray.h
+patmatch.o: patmatch.cc \
+  patmatch.h
+resultfilemanager.o: resultfilemanager.cc \
+  patmatch.h \
+  resultfilemanager.h \
+  idlist.h \
+  ../../include/util.h \
+  scavedefs.h \
+  ../../include/defs.h \
+  ../../include/errmsg.h
+scavetool.o: scavetool.cc \
+  ../utils/ver.h \
+  resultfilemanager.h \
+  nodetype.h \
+  nodetyperegistry.h \
+  dataflowmanager.h \
+  vectorfilereader.h \
+  vectorfilewriter.h \
+  filternodes.h \
+  filewriter.h \
+  arraybuilder.h \
+  octaveexport.h \
+  idlist.h \
+  ../../include/util.h \
+  scavedefs.h \
+  ../../include/defs.h \
+  ../../include/errmsg.h \
+  node.h \
+  channel.h \
+  commonnodes.h \
+  xyarray.h
+slidingwinavg.o: slidingwinavg.cc \
+  channel.h \
+  slidingwinavg.h \
+  ../../include/util.h \
+  node.h \
+  ../../include/defs.h \
+  ../../include/errmsg.h \
+  scavedefs.h \
+  commonnodes.h \
+  nodetype.h \
+  dataflowmanager.h
+stddev.o: stddev.cc \
+  channel.h \
+  stddev.h \
+  ../../include/util.h \
+  node.h \
+  ../../include/defs.h \
+  ../../include/errmsg.h \
+  scavedefs.h \
+  commonnodes.h \
+  xyarray.h \
+  nodetype.h \
+  dataflowmanager.h
+vectorfilereader.o: vectorfilereader.cc \
+  channel.h \
+  vectorfilereader.h \
+  ../../include/util.h \
+  node.h \
+  ../../include/defs.h \
+  ../../include/errmsg.h \
+  scavedefs.h \
+  nodetype.h \
+  dataflowmanager.h
+vectorfilewriter.o: vectorfilewriter.cc \
+  channel.h \
+  vectorfilewriter.h \
+  ../../include/util.h \
+  node.h \
+  ../../include/defs.h \
+  ../../include/errmsg.h \
+  scavedefs.h \
+  nodetype.h \
+  dataflowmanager.h
+windowavg.o: windowavg.cc \
+  channel.h \
+  windowavg.h \
+  ../../include/util.h \
+  node.h \
+  ../../include/defs.h \
+  ../../include/errmsg.h \
+  scavedefs.h \
+  commonnodes.h \
+  nodetype.h \
+  dataflowmanager.h
+xyplotnode.o: xyplotnode.cc \
+  channel.h \
+  xyplotnode.h \
+  ../../include/util.h \
+  node.h \
+  ../../include/defs.h \
+  ../../include/errmsg.h \
+  scavedefs.h \
+  commonnodes.h \
+  nodetype.h \
+  dataflowmanager.h
