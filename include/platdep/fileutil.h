@@ -25,6 +25,7 @@
 #endif
 
 #include <string>
+#include <string.h>
 
 inline void splitFileName(const char *pathname, std::string& dir, std::string& fnameonly)
 {

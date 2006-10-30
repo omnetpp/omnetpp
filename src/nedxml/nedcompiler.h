@@ -22,7 +22,7 @@
 
 #include <map>
 #include <vector>
-#include <string>
+#include <string.h>
 #include "nedelements.h"
 
 

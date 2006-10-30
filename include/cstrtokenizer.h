@@ -19,6 +19,7 @@
 #ifndef __STRINGTOKENIZER_H
 #define __STRINGTOKENIZER_H
 
+#include <string.h>
 #include <string>
 #include <vector>
 #include "defs.h"

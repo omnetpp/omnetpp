@@ -142,6 +142,9 @@ fi
 if test -d /usr/include/tcl8.5; then
     TK_CFLAGS="-I/usr/include/tcl8.5"
 fi
+if test -d /usr/include/tcl8.6; then
+    TK_CFLAGS="-I/usr/include/tcl8.6"
+fi
 
 #----------------------
 # Read user settings (and allow override the above settings)
@@ -581,16 +584,16 @@ if test $tcltk_ok = no -a "$cygwin" = yes; then
                   tcltk_ok, TK_LIBS="$opp_x11lib -lcygtk85 -lcygtcl85")
 fi
 if test $tcltk_ok = no; then
-    OPP_CHECK_LIB(Tcl/Tk 8.4, tk.h, Tk_MainLoop(), $opp_x11inc $TK_CFLAGS, $opp_x11lib -ltk84 -ltcl84,
-                  tcltk_ok, TK_LIBS="$opp_x11lib -ltk84 -ltcl84")
+    OPP_CHECK_LIB(Tcl/Tk 8.6, tk.h, Tk_MainLoop(), $opp_x11inc $TK_CFLAGS, $opp_x11lib -ltk86 -ltcl86,
+                  tcltk_ok, TK_LIBS="$opp_x11lib -ltk86 -ltcl86")
 fi
 if test $tcltk_ok = no; then
-    OPP_CHECK_LIB(Tcl/Tk 8.4, tk.h, Tk_MainLoop(), $opp_x11inc $TK_CFLAGS, $opp_x11lib -ltk8.4 -ltcl8.4,
-                  tcltk_ok, TK_LIBS="$opp_x11lib -ltk8.4 -ltcl8.4")
+    OPP_CHECK_LIB(Tcl/Tk 8.6, tk.h, Tk_MainLoop(), $opp_x11inc $TK_CFLAGS, $opp_x11lib -ltk8.6 -ltcl8.6,
+                  tcltk_ok, TK_LIBS="$opp_x11lib -ltk8.6 -ltcl8.6")
 fi
 if test $tcltk_ok = no -a "$cygwin" = yes; then
-    OPP_CHECK_LIB(Tcl/Tk 8.4, tk.h, Tk_MainLoop(), $opp_x11inc $TK_CFLAGS, $opp_x11lib -lcygtk84 -lcygtcl84,
-                  tcltk_ok, TK_LIBS="$opp_x11lib -lcygtk84 -lcygtcl84")
+    OPP_CHECK_LIB(Tcl/Tk 8.6, tk.h, Tk_MainLoop(), $opp_x11inc $TK_CFLAGS, $opp_x11lib -lcygtk86 -lcygtcl86,
+                  tcltk_ok, TK_LIBS="$opp_x11lib -lcygtk86 -lcygtcl86")
 fi
 if test $tcltk_ok = no; then
     # try to give a hint in the error message about the problem

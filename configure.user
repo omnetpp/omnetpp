@@ -24,7 +24,7 @@
 #CFLAGS='-g -Wno-unused'
 #CFLAGS='-g -Wall'
 #CFLAGS='-gstabs+3 -Wall'
-CFLAGS='-O2 -DNDEBUG=1'
+CFLAGS='-O2 -DNDEBUG=1 -fpermissive'
 
 #
 # CFLAGS for simulation models: opp_makemake will generate Makefiles with this

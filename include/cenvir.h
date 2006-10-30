@@ -21,6 +21,7 @@
 #define __CENVIR_H
 
 #include <sstream>
+#include <streambuf>
 #include <iostream>
 #include "defs.h"
 
@@ -600,7 +601,7 @@ class ENVIR_API cEnvir : public std::ostream
 template <class E, class T>
 int basic_evbuf<E,T>::sync() {
     _ev->sputn(this->pbase(), this->pptr()-this->pbase());
-    setp(this->pbase(),this->epptr());
+    std::streambuf::setp(this->pbase(),this->epptr());
     return 0;
 }
 

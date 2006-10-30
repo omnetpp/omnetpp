@@ -15,7 +15,7 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-
+#include <limits.h>
 #include "csocketrtscheduler.h"
 
 Register_Class(cSocketRTScheduler);

@@ -1,12 +1,13 @@
-/* A Bison parser, made by GNU Bison 2.1.  */
+/* A Bison parser, made by GNU Bison 3.0.4.  */
 
-/* Skeleton parser for Yacc-like parsing with Bison,
-   Copyright (C) 1984, 1989, 1990, 2000, 2001, 2002, 2003, 2004, 2005 Free Software Foundation, Inc.
+/* Bison interface for Yacc-like parsers in C
 
-   This program is free software; you can redistribute it and/or modify
+   Copyright (C) 1984, 1989-1990, 2000-2015 Free Software Foundation, Inc.
+
+   This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
-   the Free Software Foundation; either version 2, or (at your option)
-   any later version.
+   the Free Software Foundation, either version 3 of the License, or
+   (at your option) any later version.
 
    This program is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -14,97 +15,112 @@
    GNU General Public License for more details.
 
    You should have received a copy of the GNU General Public License
-   along with this program; if not, write to the Free Software
-   Foundation, Inc., 51 Franklin Street, Fifth Floor,
-   Boston, MA 02110-1301, USA.  */
+   along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
 
-/* As a special exception, when this file is copied by Bison into a
-   Bison output file, you may use that output file without restriction.
-   This special exception was added by the Free Software Foundation
-   in version 1.24 of Bison.  */
+/* As a special exception, you may create a larger work that contains
+   part or all of the Bison parser skeleton and distribute that work
+   under terms of your choice, so long as that work isn't itself a
+   parser generator using the skeleton or a modified version thereof
+   as a parser skeleton.  Alternatively, if you modify or redistribute
+   the parser skeleton itself, you may (at your option) remove this
+   special exception, which will cause the skeleton and the resulting
+   Bison output files to be licensed under the GNU General Public
+   License without this special exception.
 
-/* Tokens.  */
+   This special exception was added by the Free Software Foundation in
+   version 2.2 of Bison.  */
+
+#ifndef YY_YY_EBNF_TAB_H_INCLUDED
+# define YY_YY_EBNF_TAB_H_INCLUDED
+/* Debug traces.  */
+#ifndef YYDEBUG
+# define YYDEBUG 0
+#endif
+#if YYDEBUG
+extern int yydebug;
+#endif
+
+/* Token type.  */
 #ifndef YYTOKENTYPE
 # define YYTOKENTYPE
-   /* Put the tokens into the symbol table, so that GDB and other debuggers
-      know about them.  */
-   enum yytokentype {
-     INCLUDE = 258,
-     SIMPLE = 259,
-     CHANNEL = 260,
-     DELAY = 261,
-     ERROR = 262,
-     DATARATE = 263,
-     MODULE = 264,
-     PARAMETERS = 265,
-     GATES = 266,
-     GATESIZES = 267,
-     SUBMODULES = 268,
-     CONNECTIONS = 269,
-     DISPLAY = 270,
-     IN = 271,
-     OUT = 272,
-     NOCHECK = 273,
-     LEFT_ARROW = 274,
-     RIGHT_ARROW = 275,
-     FOR = 276,
-     TO = 277,
-     DO = 278,
-     IF = 279,
-     LIKE = 280,
-     NETWORK = 281,
-     ENDSIMPLE = 282,
-     ENDMODULE = 283,
-     ENDCHANNEL = 284,
-     ENDNETWORK = 285,
-     ENDFOR = 286,
-     MACHINES = 287,
-     ON = 288,
-     IO_INTERFACES = 289,
-     IFPAIR = 290,
-     INTCONSTANT = 291,
-     REALCONSTANT = 292,
-     NAME = 293,
-     STRING = 294,
-     _TRUE = 295,
-     _FALSE = 296,
-     INPUT = 297,
-     REF = 298,
-     ANCESTOR = 299,
-     NED_CONST = 300,
-     NUMERICTYPE = 301,
-     STRINGTYPE = 302,
-     BOOLTYPE = 303,
-     XMLTYPE = 304,
-     ANYTYPE = 305,
-     PLUS = 306,
-     MIN = 307,
-     MUL = 308,
-     DIV = 309,
-     MOD = 310,
-     EXP = 311,
-     SIZEOF = 312,
-     SUBMODINDEX = 313,
-     PLUSPLUS = 314,
-     EQ = 315,
-     NE = 316,
-     GT = 317,
-     GE = 318,
-     LS = 319,
-     LE = 320,
-     AND = 321,
-     OR = 322,
-     XOR = 323,
-     NOT = 324,
-     BIN_AND = 325,
-     BIN_OR = 326,
-     BIN_XOR = 327,
-     BIN_COMPL = 328,
-     SHIFT_LEFT = 329,
-     SHIFT_RIGHT = 330,
-     INVALID_CHAR = 331,
-     UMIN = 332
-   };
+  enum yytokentype
+  {
+    INCLUDE = 258,
+    SIMPLE = 259,
+    CHANNEL = 260,
+    DELAY = 261,
+    ERROR = 262,
+    DATARATE = 263,
+    MODULE = 264,
+    PARAMETERS = 265,
+    GATES = 266,
+    GATESIZES = 267,
+    SUBMODULES = 268,
+    CONNECTIONS = 269,
+    DISPLAY = 270,
+    IN = 271,
+    OUT = 272,
+    NOCHECK = 273,
+    LEFT_ARROW = 274,
+    RIGHT_ARROW = 275,
+    FOR = 276,
+    TO = 277,
+    DO = 278,
+    IF = 279,
+    LIKE = 280,
+    NETWORK = 281,
+    ENDSIMPLE = 282,
+    ENDMODULE = 283,
+    ENDCHANNEL = 284,
+    ENDNETWORK = 285,
+    ENDFOR = 286,
+    MACHINES = 287,
+    ON = 288,
+    IO_INTERFACES = 289,
+    IFPAIR = 290,
+    INTCONSTANT = 291,
+    REALCONSTANT = 292,
+    NAME = 293,
+    STRING = 294,
+    _TRUE = 295,
+    _FALSE = 296,
+    INPUT = 297,
+    REF = 298,
+    ANCESTOR = 299,
+    NED_CONST = 300,
+    NUMERICTYPE = 301,
+    STRINGTYPE = 302,
+    BOOLTYPE = 303,
+    XMLTYPE = 304,
+    ANYTYPE = 305,
+    PLUS = 306,
+    MIN = 307,
+    MUL = 308,
+    DIV = 309,
+    MOD = 310,
+    EXP = 311,
+    SIZEOF = 312,
+    SUBMODINDEX = 313,
+    PLUSPLUS = 314,
+    EQ = 315,
+    NE = 316,
+    GT = 317,
+    GE = 318,
+    LS = 319,
+    LE = 320,
+    AND = 321,
+    OR = 322,
+    XOR = 323,
+    NOT = 324,
+    BIN_AND = 325,
+    BIN_OR = 326,
+    BIN_XOR = 327,
+    BIN_COMPL = 328,
+    SHIFT_LEFT = 329,
+    SHIFT_RIGHT = 330,
+    INVALID_CHAR = 331,
+    UMIN = 332
+  };
 #endif
 /* Tokens.  */
 #define INCLUDE 258
@@ -183,31 +199,30 @@
 #define INVALID_CHAR 331
 #define UMIN 332
 
-
-
-
-#if ! defined (YYSTYPE) && ! defined (YYSTYPE_IS_DECLARED)
+/* Value type.  */
+#if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 typedef int YYSTYPE;
-# define yystype YYSTYPE /* obsolescent; will be withdrawn */
-# define YYSTYPE_IS_DECLARED 1
 # define YYSTYPE_IS_TRIVIAL 1
+# define YYSTYPE_IS_DECLARED 1
 #endif
 
-extern YYSTYPE yylval;
-
-#if ! defined (YYLTYPE) && ! defined (YYLTYPE_IS_DECLARED)
-typedef struct YYLTYPE
+/* Location type.  */
+#if ! defined YYLTYPE && ! defined YYLTYPE_IS_DECLARED
+typedef struct YYLTYPE YYLTYPE;
+struct YYLTYPE
 {
   int first_line;
   int first_column;
   int last_line;
   int last_column;
-} YYLTYPE;
-# define yyltype YYLTYPE /* obsolescent; will be withdrawn */
+};
 # define YYLTYPE_IS_DECLARED 1
 # define YYLTYPE_IS_TRIVIAL 1
 #endif
 
+
+extern YYSTYPE yylval;
 extern YYLTYPE yylloc;
+int yyparse (void);
 
-
+#endif /* !YY_YY_EBNF_TAB_H_INCLUDED  */

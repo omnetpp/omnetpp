@@ -21,6 +21,7 @@
 #include <sstream>
 #include <iostream>
 #include <memory>
+#include <string.h>
 #include "patmatch.h"
 #include "scalarmanager.h"
 #include "filetokenizer.h"

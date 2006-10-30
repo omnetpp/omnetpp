@@ -59,7 +59,7 @@ int parsened_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
     {
        if (i+1>=argc)
        {
-           interp->result="wrong arg count -- missing argument?";
+           Tcl_SetResult(interp, "wrong arg count -- missing argument?", TCL_STATIC);
            return TCL_ERROR;
        }
 
@@ -75,19 +75,19 @@ int parsened_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
           nedfilekey = atoi(argv[++i]);
        else
        {
-           sprintf(interp->result, "unrecognized arg %s", argv[i]);
+           Tcl_SetResult(interp, "unrecognized arg", TCL_STATIC);
            return TCL_ERROR;
        }
     }
 
     if ((filename && nedtext) || (!filename && !nedtext))
     {
-       interp->result="one of -file and -text options must be present";
+       Tcl_SetResult(interp, "one of -file and -text options must be present", TCL_STATIC);
        return TCL_ERROR;
     }
     if (nedfilekey==-1 || !nedarray || !errorsarray)
     {
-       interp->result="-nedfilekey, -nedarray, -errorsarray options must be present";
+       Tcl_SetResult(interp, "-nedfilekey, -nedarray, -errorsarray options must be present", TCL_STATIC);
        return TCL_ERROR;
     }
 

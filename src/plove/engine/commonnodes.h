@@ -15,6 +15,7 @@
 #ifndef _COMMONNODES_H_
 #define _COMMONNODES_H_
 
+#include <string.h>
 #include "node.h"
 #include "nodetype.h"
 

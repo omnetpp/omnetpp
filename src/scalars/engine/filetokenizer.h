@@ -17,6 +17,7 @@
 
 #include <vector>
 #include <string>
+#include <string.h>
 
 /**
  * Tokenizes a file, line by line. Supposed to be VERY efficient because

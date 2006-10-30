@@ -229,7 +229,7 @@ while ($msg =~ s/cppinclude\s+(["\<].*?["\>])//s)
     print STDERR "*** Warning: cppinclude is deprecated, use cplusplus {{ ... }} syntax instead\n";
     print H "#include $1\n";
 }
-while ($msg =~ s/cplusplus\s+{{(.*?)}};?//s)
+while ($msg =~ s/cplusplus\s+\{\{(.*?)\}\};?//s)
 {
     print H "// cplusplus {{ ... }} section:\n";
     print H "$1";
