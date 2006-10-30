@@ -202,6 +202,11 @@ void NEDSemanticValidator::validateElement(GateNode *node)
 //        errors->add(node, "gate '%s' is not a vector gate",gatename);
 }
 
+void NEDSemanticValidator::validateElement(TypesNode *node)
+{
+    // FIXME revise
+}
+
 void NEDSemanticValidator::validateElement(SubmodulesNode *node)
 {
     // FIXME revise
