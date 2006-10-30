@@ -338,12 +338,16 @@ cNEDDeclaration::ParamDescription cNEDLoader::extractParamDescription(ParamNode 
     cNEDDeclaration::ParamDescription desc;
     desc.name = paramNode->getName();
     int t = paramNode->getType();
+    if (t==NED_PARTYPE_NONE)
+        throw new cRuntimeError("undeclared parameter `%s'", paramNode->getName()); //XXX improve msg
+
     cPar::Type type = t==NED_PARTYPE_DOUBLE ? cPar::DOUBLE :
                       t==NED_PARTYPE_INT ? cPar::LONG :
                       t==NED_PARTYPE_STRING ? cPar::STRING :
                       t==NED_PARTYPE_BOOL ? cPar::BOOL :
                       t==NED_PARTYPE_XML ? cPar::XML :
                       (cPar::Type)-1;
+    ASSERT(type!=-1);
     desc.value = cPar::createWithType(type); // gets created with isSet()==false
     desc.value->setIsVolatile(paramNode->getIsVolatile());
     desc.properties = extractProperties(paramNode);

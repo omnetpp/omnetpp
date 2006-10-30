@@ -18,7 +18,7 @@ option bubbles	{1}
 option animation_speed	{1.5}
 option bkpts_enabled	{1}
 option expressmode_autoupdate	{1}
-config mainwin-geom	{812x366+134+60}
+config mainwin-geom	{640x350+72+93}
 config rununtil-event	{}
 config last-nedfile	{}
 config filtobjlist-category	{mqsgvo}
@@ -39,10 +39,5 @@ config timeline-maxnumevents	{1000}
 config editor-case-sensitive	{0}
 config editor-whole-words	{0}
 config filtobjlist-order	{Class}
-inspector "token" "token" "2" "367x251+461+181"
-inspector "token.numStations" "cDoublePar" "1" "248x98+72+93"
-inspector "token" "token" "1" "662x496+72+93"
-inspector "token.comp[0]" "Computer" "2" "367x377+96+124"
-inspector "simulation.scheduled-events.token" "TRToken" "1" "718x461+96+124"
-inspector "component types.Computer" "cDynamicModuleType" "1" "631x523+48+62"
+inspector "token" "token" "2" "367x347+96+124"
 
