@@ -208,6 +208,7 @@ public class VectorChart extends ChartCanvas {
 	public void setLineStyle(String key, LineStyle type) {
 		LineProperties props = getOrCreateLineProperties(key);
 		props.lineStyle = type;
+		scheduleRedraw();
 	}
 
 	public SymbolType getSymbolType(String key) {
@@ -220,6 +221,7 @@ public class VectorChart extends ChartCanvas {
 	public void setSymbolType(String key, SymbolType symbolType) {
 		LineProperties props = getOrCreateLineProperties(key);
 		props.symbolType = symbolType;
+		scheduleRedraw();
 	}
 	
 	public int getSymbolSize(String key) {
