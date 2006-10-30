@@ -123,6 +123,7 @@ cenvir.o: cenvir.cc \
   appreg.h \
   ../../include/cmodule.h \
   fsutils.h \
+  cstrtokenizer2.h \
   speedmtr.h \
   filemgrs.h \
   akaroarng.h \
@@ -173,6 +174,9 @@ cinifile.o: cinifile.cc \
   ../../include/cpolymorphic.h \
   ../../include/regmacros.h \
   ../../include/onstartup.h
+cstrtokenizer2.o: cstrtokenizer2.cc \
+  cstrtokenizer2.h \
+  ../../include/defs.h
 cxmldoccache.o: cxmldoccache.cc \
   ../../include/cpolymorphic.h \
   cxmldoccache.h \
@@ -259,7 +263,7 @@ omnetapp.o: omnetapp.cc \
   ../../include/cmodule.h \
   ../../include/cxmlelement.h \
   cxmldoccache.h \
-  ../../include/cstrtokenizer.h \
+  cstrtokenizer2.h \
   ../../include/cparsimcomm.h \
   ../../include/platdep/time.h \
   ../../include/platdep/misc.h \

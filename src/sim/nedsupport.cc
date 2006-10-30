@@ -92,7 +92,7 @@ StkValue SiblingModuleParameterRef::evaluate(cComponent *context, StkValue args[
     cModule *siblingModule = compoundModule->submodule(moduleName.c_str(), moduleIndex);
     if (!siblingModule)
         throw new cRuntimeError(context,"cannot find submodule `%[%d]' for parameter `%s[%d].%s'",
-                                moduleName, moduleIndex, moduleName, moduleIndex, paramName);
+                                moduleName.c_str(), moduleIndex, moduleName.c_str(), moduleIndex, paramName.c_str());
     return siblingModule->par(paramName.c_str());
 }
 

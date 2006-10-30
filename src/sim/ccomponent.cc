@@ -100,7 +100,7 @@ void cComponent::addPar(const char *parname, cPar *par)
 
 cPar& cComponent::par(int k)
 {
-    if (k<0 || k>=paramv.size())
+    if (k<0 || k>=(int)paramv.size())
         throw new cRuntimeError(this, "parameter index %d out of range", k);
     return *paramv[k];
 }

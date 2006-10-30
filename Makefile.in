@@ -25,7 +25,7 @@ OMNETPP_TEST_DIR =      @OMNETPP_TEST_DIR@
 
 all: check-env components
 
-components: libs progs jnilibs samples
+components: base jnilibs samples
 
 
 #=====================================================================
@@ -34,8 +34,7 @@ components: libs progs jnilibs samples
 #
 #=====================================================================
 
-LIBS=$(ENVIR_ILIB) common eventlog scave nedxml sim envir cmdenv tkenv
-PROGS=utils nedc
+BASE=common eventlog scave nedxml sim envir cmdenv tkenv utils nedc
 SAMPLES=aloha cqn dyna fifo hcube hist neddemo p-to-p queueing routing queues tictoc tokenring sockets
 JNILIBS=
 #JNILIBS=org.omnetpp.ned2.model \
@@ -44,26 +43,22 @@ JNILIBS=
 #        org.omnetpp.eventlog.engine
 
 #
-# Group targets. Note that utils has to be built BEFORE other libs and progs
-# because tcl2c might be needed to build tkenv or gned.
+# Group targets.
 #
-libs: ver_h utils $(LIBS)
-eventlog scave nedxml sim envir cmdenv : common
-progs: ver_h $(PROGS)
-samples: $(SAMPLES)
+base: ver_h $(BASE)
 jnilibs : $(JNILIBS)
+samples: $(SAMPLES)
+
+# dependencies (because of ver.h, tcl2c, opp_msgc, etc)
+common eventlog scave nedxml sim envir cmdenv tkenv nedc : utils
+eventlog scave nedxml sim envir cmdenv : common
+nedc : nedxml
+sim : nedc
 
 #
-# Libraries
+# Core libraries and programs
 #
-$(LIBS):
-	@echo ===== Compiling $@ ====
-	cd $(OMNETPP_SRC_DIR)/$@ && $(MAKE)
-
-#
-# Programs
-#
-$(PROGS):
+$(BASE):
 	@echo ===== Compiling $@ ====
 	cd $(OMNETPP_SRC_DIR)/$@ && $(MAKE)
 
@@ -95,7 +90,7 @@ docu:
 #
 # Test
 #
-tests: libs progs
+tests: base
 	cd $(OMNETPP_TEST_DIR) && $(MAKE)
 
 #=====================================================================
@@ -125,7 +120,7 @@ ver_h:
 	@cd $(OMNETPP_SRC_DIR)/utils && cp ver.h.base ver.h && echo '#define' OMNETPP_RELEASE "$(OMNETPP_VERSION)" >>ver.h && echo '#define' OMNETPP_EDITION "$(OMNETPP_EDITION)" >>ver.h
 
 clean:
-	for i in $(LIBS) $(PROGS); do \
+	for i in $(BASE); do \
 	    (cd $(OMNETPP_SRC_DIR)/$$i && $(MAKE) clean); \
 	done
 	- rm $(OMNETPP_BIN_DIR)/*
@@ -136,7 +131,7 @@ clean:
 	cd $(OMNETPP_TEST_DIR) && $(MAKE) clean
 
 depend: utils
-	for i in $(LIBS) $(PROGS); do \
+	for i in $(BASE); do \
 	    (cd $(OMNETPP_SRC_DIR)/$$i && $(MAKE) depend); \
 	done
 	for i in $(SAMPLES); do \

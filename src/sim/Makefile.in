@@ -236,6 +236,24 @@ cchannel.o: cchannel.cc \
   ../../include/ccoroutine.h \
   ../../include/cclassfactory.h \
   ../../include/opp_string.h
+cclassdescriptor.o: cclassdescriptor.cc \
+  ../../include/cclassdescriptor.h \
+  ../../include/carray.h \
+  ../../include/cenum.h \
+  ../../include/util.h \
+  ../../include/cclassfactory.h \
+  ../../include/cobject.h \
+  ../../include/cenvir.h \
+  ../../include/defs.h \
+  ../../include/cpolymorphic.h \
+  ../../include/cexception.h \
+  ../../include/cvisitor.h \
+  ../../include/cstringpool.h \
+  ../../include/regmacros.h \
+  ../../include/onstartup.h \
+  ../../include/errmsg.h \
+  ../../include/opp_string.h \
+  ../../include/globals.h
 cclassfactory.o: cclassfactory.cc \
   ../../include/cclassfactory.h \
   ../../include/cexception.h \
@@ -263,6 +281,23 @@ cclassfactory.o: cclassfactory.cc \
   ../../include/cexpression.h \
   ../../include/cmsgheap.h \
   ../../include/ccoroutine.h
+ccommbuffer.o: ccommbuffer.cc \
+  ../../include/ccommbuffer.h \
+  ../../include/util.h \
+  ../../include/cobject.h \
+  ../../include/cclassfactory.h \
+  ../../include/cpolymorphic.h \
+  ../../include/defs.h \
+  ../../include/regmacros.h \
+  ../../include/onstartup.h \
+  ../../include/errmsg.h \
+  ../../include/cenvir.h \
+  ../../include/cexception.h \
+  ../../include/cvisitor.h \
+  ../../include/cstringpool.h \
+  ../../include/opp_string.h \
+  ../../include/globals.h \
+  ../../include/carray.h
 ccomponent.o: ccomponent.cc \
   ../../include/ccomponent.h \
   ../../include/ccomponenttype.h \
@@ -734,6 +769,7 @@ cmersennetwister.o: cmersennetwister.cc \
   ../../include/util.h \
   ../../include/cexception.h \
   ../../include/cmersennetwister.h \
+  ../../include/cmessage.h \
   ../../include/defs.h \
   ../../include/errmsg.h \
   ../../include/opp_string.h \
@@ -748,7 +784,12 @@ cmersennetwister.o: cmersennetwister.cc \
   ../../include/cpolymorphic.h \
   ../../include/cvisitor.h \
   ../../include/cstringpool.h \
-  ../../include/regmacros.h
+  ../../include/regmacros.h \
+  ../../include/cmessagepar.h \
+  ../../include/csimulation.h \
+  ../../include/cfunction.h \
+  ../../include/cmsgheap.h \
+  ../../include/ccoroutine.h
 cmessage.o: cmessage.cc \
   ../../include/globals.h \
   ../../include/cmodule.h \
@@ -885,7 +926,7 @@ cobject.o: cobject.cc \
   ../../include/cexception.h \
   ../../include/util.h \
   ../../include/cdefaultlist.h \
-  ../../include/cstruct.h \
+  ../../include/cclassdescriptor.h \
   ../../include/ccommbuffer.h \
   ../../include/defs.h \
   ../../include/cpolymorphic.h \
@@ -980,10 +1021,22 @@ cpar.o: cpar.cc \
   ../../include/cdefaultlist.h \
   ../../include/cmsgheap.h \
   ../../include/ccoroutine.h
+cparsimcomm.o: cparsimcomm.cc \
+  ../../include/errmsg.h \
+  ../../include/ccommbuffer.h \
+  ../../include/cparsimcomm.h \
+  ../../include/cenvir.h \
+  ../../include/cexception.h \
+  ../../include/defs.h \
+  ../../include/cpolymorphic.h \
+  ../../include/util.h \
+  ../../include/regmacros.h \
+  ../../include/onstartup.h \
+  ../../include/opp_string.h
 cpolymorphic.o: cpolymorphic.cc \
   ../../include/cpolymorphic.h \
   ../../include/cexception.h \
-  ../../include/cstruct.h \
+  ../../include/cclassdescriptor.h \
   ../../include/defs.h \
   ../../include/util.h \
   ../../include/regmacros.h \
@@ -1208,7 +1261,7 @@ cstat.o: cstat.cc \
   ../../include/opp_string.h
 cstlwatch.o: cstlwatch.cc \
   ../../include/cstlwatch.h \
-  ../../include/cstruct.h \
+  ../../include/cclassdescriptor.h \
   ../../include/globals.h \
   ../../include/cobject.h \
   ../../include/cwatch.h \
@@ -1260,24 +1313,6 @@ cstringpool.o: cstringpool.cc \
 cstrtokenizer.o: cstrtokenizer.cc \
   ../../include/cstrtokenizer.h \
   ../../include/defs.h
-cstruct.o: cstruct.cc \
-  ../../include/cstruct.h \
-  ../../include/carray.h \
-  ../../include/cenum.h \
-  ../../include/util.h \
-  ../../include/cclassfactory.h \
-  ../../include/cobject.h \
-  ../../include/cenvir.h \
-  ../../include/defs.h \
-  ../../include/cpolymorphic.h \
-  ../../include/cexception.h \
-  ../../include/cvisitor.h \
-  ../../include/cstringpool.h \
-  ../../include/regmacros.h \
-  ../../include/onstartup.h \
-  ../../include/errmsg.h \
-  ../../include/opp_string.h \
-  ../../include/globals.h
 ctopo.o: ctopo.cc \
   ../../include/ctopo.h \
   ../../include/cpar.h \
@@ -1833,20 +1868,6 @@ parsim/ccommbufferbase.o: parsim/ccommbufferbase.cc \
   ../../include/errmsg.h \
   ../../include/onstartup.h \
   ../../include/opp_string.h
-parsim/ccommbuffer.o: parsim/ccommbuffer.cc \
-  ../../include/ccommbuffer.h \
-  ../../include/util.h \
-  ../../include/cobject.h \
-  ../../include/cpolymorphic.h \
-  ../../include/defs.h \
-  ../../include/regmacros.h \
-  ../../include/onstartup.h \
-  ../../include/errmsg.h \
-  ../../include/cenvir.h \
-  ../../include/cexception.h \
-  ../../include/cvisitor.h \
-  ../../include/cstringpool.h \
-  ../../include/opp_string.h
 parsim/cfilecommbuffer.o: parsim/cfilecommbuffer.cc \
   parsim/cfilecommbuffer.h \
   ../../include/util.h \
@@ -1922,6 +1943,7 @@ parsim/cidealsimulationprot.o: parsim/cidealsimulationprot.cc \
   ../../include/platdep/time.h
 parsim/cispeventlogger.o: parsim/cispeventlogger.cc \
   parsim/cispeventlogger.h \
+  parsim/cidealsimulationprot.h \
   ../../include/cparsimcomm.h \
   parsim/cplaceholdermod.h \
   ../../include/cmodule.h \
@@ -2154,18 +2176,6 @@ parsim/cnullmessageprot.o: parsim/cnullmessageprot.cc \
   ../../include/platdep/time.h \
   parsim/cnmplookahead.h \
   ../../include/ccomponenttype.h
-parsim/cparsimcomm.o: parsim/cparsimcomm.cc \
-  ../../include/errmsg.h \
-  ../../include/ccommbuffer.h \
-  ../../include/cparsimcomm.h \
-  ../../include/cenvir.h \
-  ../../include/cexception.h \
-  ../../include/defs.h \
-  ../../include/cpolymorphic.h \
-  ../../include/util.h \
-  ../../include/regmacros.h \
-  ../../include/onstartup.h \
-  ../../include/opp_string.h
 parsim/cparsimpartition.o: parsim/cparsimpartition.cc \
   ../../include/cmessage.h \
   ../../include/errmsg.h \
@@ -2248,6 +2258,7 @@ parsim/cplaceholdermod.o: parsim/cplaceholdermod.cc \
   parsim/cnamedpipecomm.h \
   parsim/cnosynchronization.h \
   parsim/cnullmessageprot.h \
+  parsim/cispeventlogger.h \
   parsim/cidealsimulationprot.h \
   parsim/clinkdelaylookahead.h \
   ../../include/cmodule.h \
