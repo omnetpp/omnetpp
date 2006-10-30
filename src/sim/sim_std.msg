@@ -76,12 +76,11 @@ class cObject
     fields:
         @omitGetVerb(true);
         string className @group(basic);
-        string name @group(basic) @tooltip(name without index); //XXX leave fullName with @label(name)???
-        string fullName @group(basic) @label(name) @tooltip(name with submodule, gate etc index);
+        string fullName @group(basic) @label(name) @tooltip(name with index);
         string fullPath @group(basic);
         string info @group(basic);
         string detailedInfo @group(basic);
-        cObject *owner @group(basic);
+        cObject *owner @group(owner or parent);
 }
 
 class cNoncopyableObject extends cObject
@@ -117,10 +116,7 @@ class cBasicChannel extends cChannel
 {
     fields:
         @omitGetVerb(true);
-        double delay @group(general);
-        double error @group(general);
-        double datarate @group(general);
-        bool disabled @group(general);
+        // Note: no need to spell out delay etc, they come from cComponent parameters
         bool isBusy @group(state);
         simtime_t transmissionFinishes @group(state);
 }
@@ -185,7 +181,6 @@ class cGate extends cNoncopyableObject
         int id @group(general);
         bool isVector @group(general);
         int index @group(general);
-        cChannel *channel @group(general);
         cDisplayString displayString @group(general);
         bool isBusy @group(state);
         simtime_t transmissionFinishes @group(state);
@@ -197,6 +192,7 @@ class cGate extends cNoncopyableObject
         bool isConnectedInside @group(connection);
         bool isConnected @group(connection);
         bool isRouteOK @group(connection);
+        cChannel *channel @group(connection);
 }
 
 //----
