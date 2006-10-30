@@ -40,4 +40,5 @@ config editor-case-sensitive	{0}
 config editor-whole-words	{0}
 config filtobjlist-order	{Class}
 inspector "token" "token" "2" "367x347+96+124"
+inspector "token.comp[0].out" "cGate" "2" "246x261+24+31"
 
