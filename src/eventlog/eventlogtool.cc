@@ -73,7 +73,7 @@ void printOffsets(int argc, char **argv)
             printf("Event #%ld --> file offset %ld (0x%lx)\n", eventNumber, offset, offset);
             if (offset!=-1) { //XXX comment out
                 fileReader->seekTo(offset);
-                printf("  - line at that offset: %s\n", fileReader->readNextLine());
+                printf("  - line at that offset: %.*s\n", fileReader->getLastLineLength(), fileReader->readNextLine());
             }
             //eventLogIndex.dumpTable();
         }
