@@ -45,7 +45,7 @@ JNILIBS=
 #
 # Group targets.
 #
-base: ver_h $(BASE)
+base: $(BASE)
 jnilibs : $(JNILIBS)
 samples: $(SAMPLES)
 
@@ -115,9 +115,6 @@ check-env:
 	    echo '  *** Warning: Looks like @OMNETPP_LIB_DIR@ is not in LD_LIBRARY_PATH, shared libs may not work!'; \
 	  fi; \
 	fi
-
-ver_h:
-	@cd $(OMNETPP_SRC_DIR)/utils && cp ver.h.base ver.h && echo '#define' OMNETPP_RELEASE "$(OMNETPP_VERSION)" >>ver.h && echo '#define' OMNETPP_EDITION "$(OMNETPP_EDITION)" >>ver.h
 
 clean:
 	for i in $(BASE); do \
