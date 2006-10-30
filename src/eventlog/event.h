@@ -46,6 +46,9 @@ class Event : public IEvent
         typedef std::vector<EventLogMessage *> EventLogMessageList;
         EventLogMessageList eventLogMessages;
 
+        /**
+         * A is a cause of B if and only if B is a consequence of A.
+         */
         MessageSend *cause; // the message send which is processed in this event
         MessageDependencyList *causes; // the arrival message sends of messages which we send in this event
         MessageDependencyList *consequences; // message sends in this event
@@ -56,7 +59,10 @@ class Event : public IEvent
         Event(EventLog *eventLog);
         ~Event();
 
-        long parse(FileReader *index, long offset);
+        /**
+         * Parse an event starting at the given offset.
+         */
+        long parse(FileReader *reader, long offset);
         static long getNumParsedEvent() { return numParsedEvent; }
 
         // IEvent interface

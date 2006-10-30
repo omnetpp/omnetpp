@@ -12,7 +12,6 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include "linetokenizer.h"
 #include "filereader.h"
 #include "event.h"
 #include "eventlog.h"
@@ -62,33 +61,35 @@ IEventLog *Event::getEventLog()
 
 long Event::parse(FileReader *reader, long offset)
 {
-    if (eventEntry)
-        throw new Exception("Reusing event objects are not supported");
+    EASSERT(offset >= 0);
+    EASSERT(!eventEntry);
 
     beginOffset = offset;
     numParsedEvent++;
     reader->seekTo(offset);
 
+    if (PRINT_DEBUG_MESSAGES) printf("Parsing event at offset: %ld\n", offset);
+
     while (true)
     {
-        char *line = reader->readLine();
+        char *line = reader->readNextLine();
 
         if (!line) {
             EASSERT(eventEntry);
-            endOffset = reader->fileSize();
+            endOffset = reader->getFileSize();
             return endOffset;
         }
 
-        EventLogEntry *eventLogEntry = EventLogEntry::parseEntry(this, line);
+        EventLogEntry *eventLogEntry = EventLogEntry::parseEntry(this, line, reader->getLastLineLength());
         EventEntry *readEventEntry = dynamic_cast<EventEntry *>(eventLogEntry);
 
-        // first line is an event entry
+        // first line must be an event entry
         if (!eventEntry) {
             EASSERT(readEventEntry);
             eventEntry = readEventEntry;
         }
         else if (readEventEntry)
-            break; // stop at the start of next event
+            break; // stop at the start of the next event
 
         EASSERT(eventEntry);
 
@@ -100,8 +101,7 @@ long Event::parse(FileReader *reader, long offset)
             eventLogMessages.push_back(eventLogMessage);
     }
 
-    //printf("*** Parsed event: %ld\n", getEventNumber());
-    return endOffset = reader->lineStartOffset();
+    return endOffset = reader->getLastLineStartOffset();
 }
 
 void Event::print(FILE *file)
@@ -115,7 +115,7 @@ void Event::print(FILE *file)
 
 Event *Event::getPreviousEvent()
 {
-    if (!previousEvent)
+    if (!previousEvent && eventLog->getFirstEvent() != this)
     {
         previousEvent = eventLog->getEventForEndOffset(beginOffset);
 
@@ -128,7 +128,7 @@ Event *Event::getPreviousEvent()
 
 Event *Event::getNextEvent()
 {
-    if (!nextEvent)
+    if (!nextEvent && eventLog->getLastEvent() != this)
     {
         nextEvent = eventLog->getEventForBeginOffset(endOffset);
 

@@ -12,24 +12,24 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include "linetokenizer.h"
 #include "eventlog.h"
 #include "eventlogentry.h"
 #include "eventlogentryfactory.h"
 
-EventLogEntry *EventLogEntry::parseEntry(Event *event, char *line)
+LineTokenizer EventLogEntry::tokenizer;
+
+EventLogEntry *EventLogEntry::parseEntry(Event *event, char *line, int length)
 {
     if (*line == '-')
     {
         EventLogMessage *eventLogMessage = new EventLogMessage(event);
-        eventLogMessage->parse(line);
+        eventLogMessage->parse(line, length);
         return eventLogMessage;
     }
     else
     {
-        LineTokenizer tokenizer;
         EventLogEntryFactory factory;
-        tokenizer.tokenize(line);
+        tokenizer.tokenize(line, length);
         return factory.parseEntry(event, tokenizer.tokens(), tokenizer.numTokens());
     }
 }
@@ -71,10 +71,9 @@ const char *EventLogTokenBasedEntry::getStringToken(char **tokens, int numTokens
     return eventLogStringPool.get(getToken(tokens, numTokens, sign));
 }
 
-void EventLogTokenBasedEntry::parse(char *line)
+void EventLogTokenBasedEntry::parse(char *line, int length)
 {
-    LineTokenizer tokenizer;
-    tokenizer.tokenize(line);
+    tokenizer.tokenize(line, length);
     parse(tokenizer.tokens(), tokenizer.numTokens());
 }
 
@@ -86,9 +85,26 @@ EventLogMessage::EventLogMessage(Event *event)
     text = NULL;
 }
 
-void EventLogMessage::parse(char *line)
+void EventLogMessage::parse(char *line, int length)
 {
+    char *s = line + length - 1;
+    char ch = '\0';
+
+    if (length > 0) {
+        ch = *s;
+        *s = '\0';
+    }
+
+    if (length > 1 && *(s - 1) == '\r')
+        *(s - 1) = '\0';
+
     text = eventLogStringPool.get(line + 2);
+
+    if (length > 0)
+        *s = ch;
+
+    if (length > 1)
+        *(s - 1) = '\r';
 }
 
 void EventLogMessage::print(FILE *fout)

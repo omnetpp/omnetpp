@@ -107,19 +107,21 @@ FilteredMessageDependency *FilteredEvent::getCause()
         IEvent *causeEvent = getEvent();
         MessageDependency *causeMessageDependency = causeEvent->getCause();
 
-        while (causeEvent)
-        {
-            MessageDependency *messageDependency = causeEvent->getCause();
+        if (causeMessageDependency) {
+            MessageDependency *messageDependency;
 
-            if (filteredEventLog->matchesFilter(messageDependency->getCauseEvent()))
+            while (causeEvent && (messageDependency = causeEvent->getCause()))
             {
-                cause = new FilteredMessageDependency(filteredEventLog->getEventLog(),
-                    messageDependency->getCauseEventNumber(), messageDependency->getCauseBeginSendEntryNumber(),
-                    causeMessageDependency->getCauseEventNumber(), causeMessageDependency->getCauseBeginSendEntryNumber(),
-                    getEventNumber(), -1);
-            }
+                if (filteredEventLog->matchesFilter(messageDependency->getCauseEvent()))
+                {
+                    cause = new FilteredMessageDependency(filteredEventLog->getEventLog(),
+                        messageDependency->getCauseEventNumber(), messageDependency->getCauseBeginSendEntryNumber(),
+                        causeMessageDependency->getCauseEventNumber(), causeMessageDependency->getCauseBeginSendEntryNumber(),
+                        getEventNumber(), -1);
+                }
 
-            causeEvent = causeEvent->getCauseEvent();
+                causeEvent = causeEvent->getCauseEvent();
+            }
         }
     }
 

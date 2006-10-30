@@ -70,8 +70,8 @@ class EventLog : public IEventLog, public EventLogIndex
         virtual ModuleCreatedEntry *getModuleCreatedEntry(int moduleId) { return initializationModuleIdToModuleCreatedEntryMap[moduleId]; }
         virtual int getNumModuleCreatedEntries() { return initializationModuleIdToModuleCreatedEntryMap.size(); }
 
-        virtual Event *getFirstEvent() { return getEventForEventNumber(getFirstEventNumber()); }
-        virtual Event *getLastEvent() { return getEventForEventNumber(getLastEventNumber()); }
+        virtual Event *getFirstEvent() { return getEventForBeginOffset(getFirstEventOffset()); }
+        virtual Event *getLastEvent() { return getEventForBeginOffset(getLastEventOffset()); }
         virtual Event *getNeighbourEvent(IEvent *event, long distance = 1);
         virtual Event *getEventForEventNumber(long eventNumber, MatchKind matchKind = EXACT);
         virtual Event *getEventForSimulationTime(simtime_t simulationTime, MatchKind matchKind = EXACT);

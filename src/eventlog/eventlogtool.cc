@@ -25,16 +25,13 @@ void readLines(int argc, char **argv)
         FileReader fileReader(argv[2]);
         LineTokenizer tokenizer;
         long begin = clock();
-        long lineCount = 0;
         char *line;
 
-        while (line = fileReader.readLine()) {
-            tokenizer.tokenize(line);
-            lineCount++;
-        }
+        while (line = fileReader.readNextLine())
+            tokenizer.tokenize(line, fileReader.getLastLineLength());
 
         long end = clock();
-        fprintf(stderr, "Reading %ld lines completed in %g seconds\n", lineCount, (double)(end - begin) / CLOCKS_PER_SEC);
+        fprintf(stderr, "Reading of %ld lines and %ld bytes completed in %g seconds\n", fileReader.getNumReadLines(), fileReader.getNumReadBytes(), (double)(end - begin) / CLOCKS_PER_SEC);
     } catch (Exception *e) {
         fprintf(stderr, "Error: %s\n", e->message());
     }
@@ -56,7 +53,7 @@ void loadEvents(int argc, char **argv)
         }
 
         long end = clock();
-        fprintf(stderr, "Loading %ld events completed in %g seconds\n", eventCount, (double)(end - begin) / CLOCKS_PER_SEC);
+        fprintf(stderr, "Loading of %ld events and %ld lines and %ld bytes completed in %g seconds\n", eventCount, fileReader->getNumReadLines(), fileReader->getNumReadBytes(), (double)(end - begin) / CLOCKS_PER_SEC);
     } catch (Exception *e) {
         fprintf(stderr, "Error: %s\n", e->message());
     }
@@ -76,7 +73,7 @@ void printOffsets(int argc, char **argv)
             printf("Event #%ld --> file offset %ld (0x%lx)\n", eventNumber, offset, offset);
             if (offset!=-1) { //XXX comment out
                 fileReader->seekTo(offset);
-                printf("  - line at that offset: %s\n", fileReader->readLine());
+                printf("  - line at that offset: %s\n", fileReader->readNextLine());
             }
             //eventLogIndex.dumpTable();
         }
@@ -114,7 +111,7 @@ void filter(int argc, char **argv)
         FilteredEventLog filteredEventLog(eventLog, NULL, tracedEventNumber, true, true, fromEventNumber, toEventNumber);
         filteredEventLog.print(stdout);
 
-        fprintf(stderr, "Number of events parsed: %d and number of lines read: %ld\n", Event::getNumParsedEvent(), FileReader::getNumReadLines());
+        fprintf(stderr, "Number of events parsed: %d and number of lines read: %ld\n", Event::getNumParsedEvent(), fileReader->getNumReadLines());
     } catch (Exception *e) {
         fprintf(stderr, "Error: %s\n", e->message());
     }
@@ -140,7 +137,7 @@ void consequences(int argc, char **argv)
         for (MessageDependencyList::iterator it = messageDependencies->begin(); it != messageDependencies->end(); it++)
             (*it)->print(stdout);
 
-        fprintf(stderr, "Number of events parsed: %d and number of lines read: %ld\n", Event::getNumParsedEvent(), FileReader::getNumReadLines());
+        fprintf(stderr, "Number of events parsed: %d and number of lines read: %ld\n", Event::getNumParsedEvent(), fileReader->getNumReadLines());
     } catch (Exception *e) {
         fprintf(stderr, "Error: %s\n", e->message());
     }

@@ -16,12 +16,13 @@
 #include "eventlogindex.h"
 #include "exception.h"
 
-
 EventLogIndex::EventLogIndex(FileReader *reader)
 {
     this->reader = reader;
     firstEventNumber = EVENT_NOT_YET_CALCULATED;
     lastEventNumber = EVENT_NOT_YET_CALCULATED;
+    firstEventOffset = -1;
+    lastEventOffset = -1;
 }
 
 EventLogIndex::~EventLogIndex()
@@ -33,8 +34,8 @@ long EventLogIndex::getFirstEventNumber()
 {
     if (firstEventNumber == EVENT_NOT_YET_CALCULATED)
     {
-        long lineStartOffset, lineEndOffset;
-        readToFirstEventLine(0, firstEventNumber, firstSimulationTime, lineStartOffset, lineEndOffset);
+        long lineEndOffset;
+        readToEventLine(true, 0, firstEventNumber, firstSimulationTime, firstEventOffset, lineEndOffset);
     }
 
     return firstEventNumber;
@@ -44,27 +45,25 @@ long EventLogIndex::getLastEventNumber()
 {
     if (lastEventNumber == EVENT_NOT_YET_CALCULATED)
     {
-        long chunkSize = 100;
-        long chunkOffset = reader->fileSize();
-
-        while (true)
-        {
-            long lineStartOffset, lineEndOffset;
-            long readStartOffset = chunkOffset;
-
-            chunkOffset -= chunkSize;
-    
-            if (readToFirstEventLine(readStartOffset, lastEventNumber, lastSimulationTime, lineStartOffset, lineEndOffset))
-            {
-                long eventNumber;
-                while (readToFirstEventLine(readStartOffset, eventNumber, lastSimulationTime, lineStartOffset, readStartOffset))
-                    lastEventNumber = eventNumber;
-                break;
-            }
-        }
+        long lineEndOffset;
+        readToEventLine(false, reader->getFileSize(), lastEventNumber, lastSimulationTime, lastEventOffset, lineEndOffset);
     }
 
     return lastEventNumber;
+}
+
+long EventLogIndex::getFirstEventOffset()
+{
+    getFirstEventNumber();
+
+    return firstEventOffset;
+}
+
+long EventLogIndex::getLastEventOffset()
+{
+    getLastEventNumber();
+
+    return lastEventOffset;
 }
 
 bool EventLogIndex::needsToBeStored(long eventNumber)
@@ -133,8 +132,7 @@ long EventLogIndex::getOffsetForEventNumber(long eventNumber, MatchKind matchKin
 {
     long offset = binarySearchForOffset(true, &eventNumberToOffsetMap, eventNumber, matchKind);
 
-    //printf("*** Found event number: %ld at offset: %ld\n", eventNumber, offset);
-    //fflush(stdout);
+    if (PRINT_DEBUG_MESSAGES) printf("Found event number: %ld at offset: %ld\n", eventNumber, offset);
 
     return offset;
 }
@@ -143,8 +141,7 @@ long EventLogIndex::getOffsetForSimulationTime(simtime_t simulationTime, MatchKi
 {
     long offset = binarySearchForOffset(false, &simulationTimeToOffsetMap, simulationTime, matchKind);
 
-    //printf("*** Found simulation time: %.*g at offset: %ld\n", 12, simulationTime, offset);
-    //fflush(stdout);
+    if (PRINT_DEBUG_MESSAGES) printf("*** Found simulation time: %.*g at offset: %ld\n", 12, simulationTime, offset);
 
     return offset;
 }
@@ -166,7 +163,7 @@ template <typename T> long EventLogIndex::binarySearchForOffset(bool eventNumber
 
         // figure out start positions for binary search
         if (it == keyToOffsetMap->end())
-            upperOffset = reader->fileSize();
+            upperOffset = reader->getFileSize();
         else
             upperOffset = it->second;
         
@@ -197,7 +194,7 @@ template <typename T> long EventLogIndex::binarySearchForOffset(bool eventNumber
             long midEventNumber, midEventStartOffset, midEventEndOffset;
             simtime_t midSimulationTime;
 
-            if (readToFirstEventLine(midOffset, midEventNumber, midSimulationTime, midEventStartOffset, midEventEndOffset))
+            if (readToEventLine(true, midOffset, midEventNumber, midSimulationTime, midEventStartOffset, midEventEndOffset))
             {
                 //printf("  found event #%ld at offset=%ld\n", midEventNumber, midEventStartOffset);
                 T midKey;
@@ -312,40 +309,22 @@ template <typename T> long EventLogIndex::linearSearchForOffset(bool eventNumber
 
 bool EventLogIndex::readToEventLine(bool forward, long readStartOffset, long& eventNumber, simtime_t& simulationTime, long& lineStartOffset, long& lineEndOffset)
 {
-    if (forward)
-        return readToFirstEventLine(readStartOffset, eventNumber, simulationTime, lineStartOffset, lineEndOffset);
-    else
-    {
-        bool result;
-        long offsetDelta = 10;
-        long tryOffset = lineStartOffset = readStartOffset;
-
-        while (lineStartOffset == readStartOffset && tryOffset >= 0)
-        {
-            result = readToFirstEventLine(tryOffset, eventNumber, simulationTime, lineStartOffset, lineEndOffset);
-
-            if (lineStartOffset == readStartOffset && eventNumber == 0)
-                return false;
-
-            tryOffset -= offsetDelta;
-        }
-
-        return tryOffset >= 0 && result;
-    }
-}
-
-bool EventLogIndex::readToFirstEventLine(long readStartOffset, long& eventNumber, simtime_t& simulationTime, long& lineStartOffset, long& lineEndOffset)
-{
     eventNumber = -1;
     simulationTime = -1;
     reader->seekTo(readStartOffset);
 
     char *line;
 
+    if (PRINT_DEBUG_MESSAGES) printf("Reading to first event line from offset: %ld in direction: %s\n", readStartOffset, forward ? "forward" : "backward");
+
     // find first "E" line, return false if none found
     while (true)
     {
-        line = reader->readLine();
+        if (forward)
+            line = reader->readNextLine();
+        else
+            line = reader->readPreviousLine();
+
         if (!line)
             return false;
 
@@ -354,8 +333,8 @@ bool EventLogIndex::readToFirstEventLine(long readStartOffset, long& eventNumber
     }
 
     // find event number and simulation time in line ("# 12345 t 1.2345")
-    tokenizer.tokenize(line);
-    lineStartOffset = reader->lineStartOffset();
+    tokenizer.tokenize(line, reader->getLastLineLength());
+    lineStartOffset = reader->getLastLineStartOffset();
     lineEndOffset = lineStartOffset + strlen(line);
 
     for (int i = 1; i <tokenizer.numTokens() - 1; i += 2)
@@ -371,12 +350,13 @@ bool EventLogIndex::readToFirstEventLine(long readStartOffset, long& eventNumber
         return true;
 
     // bad luck
-    throw new Exception("Wrong file format: no event number in 'E' line, line %d", reader->lineNum());
+    throw new Exception("Wrong file format: no event number in 'E' line, line %d", reader->getNumReadLines());
 }
 
 void EventLogIndex::dumpTable()
 {
     printf("Stored eventNumberToOffsetMap:\n");
+
     for (EventNumberToOffsetMap::iterator it = eventNumberToOffsetMap.begin(); it!=eventNumberToOffsetMap.end(); ++it)
         printf("  #%ld --> offset %ld (0x%lx)\n", it->first, it->second, it->second);
 }

@@ -17,6 +17,8 @@
 
 #include "exception.h"
 
+#define PRINT_DEBUG_MESSAGES false
+
 // define int64, our equivalent of Java's "long" type
 #ifdef _MSC_VER
 typedef __int64 int64;

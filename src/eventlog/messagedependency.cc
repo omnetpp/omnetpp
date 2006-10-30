@@ -33,6 +33,7 @@ MessageDependency::MessageDependency(IEventLog *eventLog,
 
 BeginSendEntry *MessageDependency::getCauseBeginSendEntry()
 {
+    EASSERT(causeBeginSendEntryNumber != -1);
     return (BeginSendEntry *)getCauseEvent()->getEventLogEntry(causeBeginSendEntryNumber);
 }
 
@@ -67,6 +68,7 @@ simtime_t MessageDependency::getCauseTime()
 
 BeginSendEntry *MessageDependency::getConsequenceBeginSendEntry()
 {
+    EASSERT(consequenceBeginSendEntryNumber != -1);
     return (BeginSendEntry *)getConsequenceEvent()->getEventLogEntry(consequenceBeginSendEntryNumber);
 }
 
@@ -210,6 +212,7 @@ simtime_t FilteredMessageDependency::getMiddleTime()
 
 BeginSendEntry *FilteredMessageDependency::getMiddleBeginSendEntry()
 {
+    EASSERT(middleBeginSendEntryNumber != -1);
     return (BeginSendEntry *)getMiddleEvent()->getEventLogEntry(middleBeginSendEntryNumber);
 }
 

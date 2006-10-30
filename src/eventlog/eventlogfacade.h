@@ -50,6 +50,7 @@ class EventLogFacade
         int64 Event_getCause(int64 ptr, int index);
         int64 Event_getConsequence(int64 ptr, int index);
 
+        MessageDependency* MessageDependency_getMessageDependency(int64 ptr);
         const char *MessageDependency_getCauseMessageName(int64 ptr);
         const char *MessageDependency_getConsequenceMessageName(int64 ptr);
         MessageDependencyKind MessageDependency_getKind(int64 ptr);

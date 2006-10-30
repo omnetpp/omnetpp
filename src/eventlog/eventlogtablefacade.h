@@ -37,11 +37,8 @@ class EventLogTableFacade : EventLogFacade
 
 		EventLogEntry *getFirstEntry();
 		EventLogEntry *getLastEntry();
-        EventLogEntry *getPreviousEntry(EventLogEntry *eventLogEntry, int& index);
-        EventLogEntry *getNextEntry(EventLogEntry *eventLogEntry, int& index);
         int getEntryIndexInEvent(EventLogEntry *eventLogEntry);
         EventLogEntry *getEntryInEvent(IEvent *event, int index);
-        EventLogEntry *getEntryAndDistance(EventLogEntry *sourceEventLogEntry, EventLogEntry *targetEventLogEntry, long distance, long& reachedDistance);
 		long getDistanceToEntry(EventLogEntry *sourceEventLogEntry, EventLogEntry *targetEventLogEntry, long limit);
 		long getDistanceToFirstEntry(EventLogEntry *eventLogEntry, long limit);
 		long getDistanceToLastEntry(EventLogEntry *eventLogEntry, long limit);
@@ -49,6 +46,11 @@ class EventLogTableFacade : EventLogFacade
         double getApproximatePercentageForEntry(EventLogEntry *eventLogEntry);
 		EventLogEntry *getApproximateEventLogEntryTableAt(double percentage);
 		long getApproximateNumberOfEntries();
+
+    protected:
+        EventLogEntry *getPreviousEntry(EventLogEntry *eventLogEntry, int& index);
+        EventLogEntry *getNextEntry(EventLogEntry *eventLogEntry, int& index);
+        EventLogEntry *getEntryAndDistance(EventLogEntry *sourceEventLogEntry, EventLogEntry *targetEventLogEntry, long distance, long& reachedDistance);
 };
 
 #endif

@@ -12,9 +12,12 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
+#include <algorithm>
+#include <set>
 #include "ievent.h"
 #include "ieventlog.h"
 #include "event.h"
+#include "messagedependency.h"
 #include "sequencechartfacade.h"
 
 SequenceChartFacade::SequenceChartFacade(IEventLog *eventLog) : EventLogFacade(eventLog)
@@ -211,4 +214,58 @@ double SequenceChartFacade::getTimelineCoordinateForSimulationTime(double simula
     	default:
     		throw new Exception("Unknown timeline mode");
 	}
+}
+
+std::vector<int64> *SequenceChartFacade::getIntersectingMessageDependencies(int64 startEventPtr, int64 endEventPtr)
+{
+    int i;
+    IEvent *event;
+    int lookaheadCount = 100;
+    std::set<int64> messageDependencies;
+    IEvent *startEvent = (IEvent *)startEventPtr;
+    IEvent *endEvent = (IEvent *)endEventPtr;
+    long startEventNumber = startEvent->getEventNumber();
+    long endEventNumber = endEvent->getEventNumber();
+
+    for (event = startEvent, i = 0; i < lookaheadCount && event; event = event->getPreviousEvent(), i++) {
+        MessageDependencyList *consequences = event->getCauses();
+
+        for (MessageDependencyList::iterator it = consequences->begin(); it != consequences->end(); it++) {
+            MessageDependency *messageDependency = *it;
+            long eventNumber = messageDependency->getConsequenceEventNumber();
+
+            if (endEventNumber < eventNumber)
+                messageDependencies.insert((int64)messageDependency);
+        }
+    }
+
+    for (IEvent *event = startEvent; event != endEvent; event = event->getNextEvent()) {
+        MessageDependencyList *causes = event->getCauses();
+
+        for (MessageDependencyList::iterator it = causes->begin(); it != causes->end(); it++)
+            messageDependencies.insert((int64)*it);
+
+        MessageDependencyList *consequences = event->getCauses();
+
+        for (MessageDependencyList::iterator it = consequences->begin(); it != consequences->end(); it++)
+            messageDependencies.insert((int64)*it);
+    }
+
+    for (event = endEvent, i = 0; i < lookaheadCount && event; event = event->getNextEvent(), i++) {
+        MessageDependencyList *causes = event->getCauses();
+
+        for (MessageDependencyList::iterator it = causes->begin(); it != causes->end(); it++) {
+            MessageDependency *messageDependency = *it;
+            long eventNumber = messageDependency->getCauseEventNumber();
+
+            if (eventNumber < startEventNumber)
+                messageDependencies.insert((int64)messageDependency);
+        }
+    }
+
+    std::vector<int64> *result = new std::vector<int64>;
+    result->resize(messageDependencies.size());
+    std::copy(messageDependencies.begin(), messageDependencies.end(), result->begin());
+
+    return result;
 }

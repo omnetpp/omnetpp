@@ -17,6 +17,7 @@
 
 #include <sstream>
 #include "defs.h"
+#include "linetokenizer.h"
 
 class Event;
 
@@ -28,10 +29,11 @@ class EventLogEntry
 {
     protected:
         Event* event; // back pointer
+        static LineTokenizer tokenizer; // not thread safe
 
     public:
-	virtual ~EventLogEntry() {}
-        virtual void parse(char *line) = 0;
+        virtual ~EventLogEntry() {}
+        virtual void parse(char *line, int length) = 0;
         virtual void print(FILE *fout) = 0;
         virtual int getClassIndex() = 0;
         virtual const char *getClassName() = 0;
@@ -39,7 +41,7 @@ class EventLogEntry
         Event *getEvent() { return event; }
         bool isMessageSend();
 
-        static EventLogEntry *parseEntry(Event *event, char *line);
+        static EventLogEntry *parseEntry(Event *event, char *line, int length);
 };
 
 /**
@@ -55,7 +57,7 @@ class EventLogTokenBasedEntry : public EventLogEntry
         const char *getStringToken(char **tokens, int numTokens, const char *sign);
 
     public:
-        virtual void parse(char *line);
+        virtual void parse(char *line, int length);
         virtual void parse(char **tokens, int numTokens) = 0;
 };
 
@@ -69,7 +71,7 @@ class EventLogMessage : public EventLogEntry
 
     public: 
         EventLogMessage(Event *event);
-        virtual void parse(char *line);
+        virtual void parse(char *line, int length);
         virtual void print(FILE *fout);
         virtual int getClassIndex() { return 0; }
         virtual const char *getClassName() { return "EventLogMessage"; }

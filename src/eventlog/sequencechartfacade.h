@@ -15,6 +15,7 @@
 #ifndef __SEQUENCECHARTFACADE_H_
 #define __SEQUENCECHARTFACADE_H_
 
+#include <vector>
 #include "ievent.h"
 #include "ieventlog.h"
 #include "eventlogfacade.h"
@@ -47,6 +48,8 @@ class SequenceChartFacade : public EventLogFacade
 
         double getSimulationTimeForTimelineCoordinate(double timelineCoordinate);
         double getTimelineCoordinateForSimulationTime(double simulationTime);
+
+        std::vector<int64> *getIntersectingMessageDependencies(int64 startEventPtr, int64 endEventPtr);
 };
 
 #endif

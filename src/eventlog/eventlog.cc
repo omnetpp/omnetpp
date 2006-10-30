@@ -87,7 +87,7 @@ Event *EventLog::getApproximateEventAt(double percentage)
 
         long eventNumber, lineStartOffset = -1, lineEndOffset;
         simtime_t simulationTime;
-        readToFirstEventLine(offset, eventNumber, simulationTime, lineStartOffset, lineEndOffset);
+        readToEventLine(true, offset, eventNumber, simulationTime, lineStartOffset, lineEndOffset);
 
         if (lineStartOffset == -1)
             return getLastEvent();
@@ -100,14 +100,16 @@ void EventLog::parseInitializationLogEntries()
 {
     reader->seekTo(0);
 
+    if (PRINT_DEBUG_MESSAGES) printf("Parsing initialization log entries at: 0\n");
+
     while (true)
     {
-        char *line = reader->readLine();
+        char *line = reader->readNextLine();
 
         if (!line)
             break;
 
-        EventLogEntry *eventLogEntry = EventLogEntry::parseEntry(NULL, line);
+        EventLogEntry *eventLogEntry = EventLogEntry::parseEntry(NULL, line, reader->getLastLineLength());
 
         if (dynamic_cast<EventEntry *>(eventLogEntry))
             break;
@@ -178,7 +180,7 @@ Event *EventLog::getEventForBeginOffset(long beginOffset)
 
     if (it != offsetToEventMap.end())
         return it->second;
-    else if (reader->fileSize() != beginOffset)
+    else if (reader->getFileSize() != beginOffset)
     {
         Event *event = new Event(this);
         event->parse(reader, beginOffset);

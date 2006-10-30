@@ -46,14 +46,15 @@ class EventLogIndex
 
         long firstEventNumber;
         long lastEventNumber;
+        long firstEventOffset;
+        long lastEventOffset;
         simtime_t firstSimulationTime;
         simtime_t lastSimulationTime;
 
     protected:
         // return true if the given offset should be stored in the map (not already there, etc)
         bool needsToBeStored(long eventNumber);
-        // true if OK, false if no "E" line found till the end of file
-        bool readToFirstEventLine(long readStartOffset, long& eventNumber, simtime_t& simulationTime, long& lineStartOffset, long& lineEndOffset);
+        // true if OK, false if no "E" line found till the end of file in the given direction
         // reads the first event line in the given direction starting from the given offset
         bool readToEventLine(bool forward, long readStartOffset, long& eventNumber, simtime_t& simulationTime, long& lineStartOffset, long& lineEndOffset);
 
@@ -68,6 +69,8 @@ class EventLogIndex
 
         long getFirstEventNumber();
         long getLastEventNumber();
+        long getFirstEventOffset();
+        long getLastEventOffset();
         long getBeginOffsetForEndOffset(long endOffset);
         long getEndOffsetForBeginOffset(long beginOffset);
         long getOffsetForEventNumber(long eventNumber, MatchKind matchKind = EXACT);
