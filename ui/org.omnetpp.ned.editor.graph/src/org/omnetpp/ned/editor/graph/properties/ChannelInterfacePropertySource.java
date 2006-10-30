@@ -2,11 +2,16 @@ package org.omnetpp.ned.editor.graph.properties;
 
 import org.omnetpp.ned2.model.ChannelInterfaceNodeEx;
 
-public class ChannelInterfacePropertySource extends DelegatingPropertySource {
+public class ChannelInterfacePropertySource extends MergedPropertySource {
 
-    public ChannelInterfacePropertySource(ChannelInterfaceNodeEx channelNodeModel) {
-    	super(channelNodeModel);
-        addPropertySource(new NamePropertySource(channelNodeModel));
+
+    public ChannelInterfacePropertySource(ChannelInterfaceNodeEx nodeModel) {
+    	super(nodeModel);
+        mergePropertySource(new NamePropertySource(nodeModel));
+        mergePropertySource(new DelegatingPropertySource(
+                new ParameterListPropertySource(nodeModel),
+                "parameters",
+                "List of parameters and inherited parameters"));
     }
 
 }

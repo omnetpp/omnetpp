@@ -10,7 +10,7 @@ import org.omnetpp.common.properties.CheckboxPropertyDescriptor;
 import org.omnetpp.common.properties.PropertySource;
 import org.omnetpp.ned2.model.CompoundModuleNodeEx;
 
-public class CompoundModulePropertySource extends DelegatingPropertySource {
+public class CompoundModulePropertySource extends MergedPropertySource {
     // compound module display properties
     protected static class CompoundModuleDisplayPropertySource extends DisplayPropertySource {
         protected CompoundModuleNodeEx model;
@@ -37,7 +37,7 @@ public class CompoundModulePropertySource extends DelegatingPropertySource {
     // compound module specific properties
     protected static class BasePropertySource implements IPropertySource2 {
         public static final String BASE_CATEGORY = "Base";
-        public enum Prop { Network, Submodules, Parameters, Gates, Properties }
+        public enum Prop { Network, Submodules, Parameters, Gates }
         protected IPropertyDescriptor[] descriptors;
         protected CompoundModuleNodeEx model;
         CheckboxPropertyDescriptor networkProp;
@@ -109,9 +109,9 @@ public class CompoundModulePropertySource extends DelegatingPropertySource {
     public CompoundModulePropertySource(CompoundModuleNodeEx compModuleNodeModel) {
         super(compModuleNodeModel);
         // create a nested displayPropertySource
-        addPropertySource(new NamePropertySource(compModuleNodeModel));
-        addPropertySource(new BasePropertySource(compModuleNodeModel));
-        addPropertySource(new CompoundModuleDisplayPropertySource(compModuleNodeModel));
+        mergePropertySource(new NamePropertySource(compModuleNodeModel));
+        mergePropertySource(new BasePropertySource(compModuleNodeModel));
+        mergePropertySource(new CompoundModuleDisplayPropertySource(compModuleNodeModel));
     }
 
 }

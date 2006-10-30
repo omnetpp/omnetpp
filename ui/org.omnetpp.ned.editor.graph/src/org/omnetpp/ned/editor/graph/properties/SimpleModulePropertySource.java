@@ -5,7 +5,7 @@ import java.util.EnumSet;
 import org.omnetpp.common.displaymodel.DisplayString;
 import org.omnetpp.ned2.model.SimpleModuleNodeEx;
 
-public class SimpleModulePropertySource extends DelegatingPropertySource {
+public class SimpleModulePropertySource extends MergedPropertySource {
 
     protected static class SimpleModuleDisplayPropertySource extends DisplayPropertySource {
         protected SimpleModuleNodeEx model;
@@ -26,12 +26,18 @@ public class SimpleModulePropertySource extends DelegatingPropertySource {
 
     }
 
-    public SimpleModulePropertySource(SimpleModuleNodeEx simpleModuleNodeModel) {
-        super(simpleModuleNodeModel);
+    public SimpleModulePropertySource(SimpleModuleNodeEx nodeModel) {
+        super(nodeModel);
         //create name
-        addPropertySource(new NamePropertySource(simpleModuleNodeModel));
+        mergePropertySource(new NamePropertySource(nodeModel));
+        // parameter list property
+        mergePropertySource(new DelegatingPropertySource(
+                                        new ParameterListPropertySource(nodeModel),
+                                        "parameters",
+                                        "List of parameters and inherited parameters"));
+        
         // create a nested displayPropertySource
-        addPropertySource(new SimpleModuleDisplayPropertySource(simpleModuleNodeModel));
+        mergePropertySource(new SimpleModuleDisplayPropertySource(nodeModel));
         
     }
 

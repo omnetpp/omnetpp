@@ -5,7 +5,7 @@ import java.util.EnumSet;
 import org.omnetpp.common.displaymodel.DisplayString;
 import org.omnetpp.ned2.model.ChannelNodeEx;
 
-public class ChannelPropertySource extends DelegatingPropertySource {
+public class ChannelPropertySource extends MergedPropertySource {
 
     protected static class ChannelDisplayPropertySource extends DisplayPropertySource {
         protected ChannelNodeEx model;
@@ -32,13 +32,17 @@ public class ChannelPropertySource extends DelegatingPropertySource {
 
     /**
      * Constructor
-     * @param channelNodeModel
+     * @param nodeModel
      */
-    public ChannelPropertySource(ChannelNodeEx channelNodeModel) {
-    	super(channelNodeModel);
-        addPropertySource(new NamePropertySource(channelNodeModel));
+    public ChannelPropertySource(ChannelNodeEx nodeModel) {
+    	super(nodeModel);
+        mergePropertySource(new NamePropertySource(nodeModel));
+        mergePropertySource(new DelegatingPropertySource(
+                new ParameterListPropertySource(nodeModel),
+                "parameters",
+                "List of parameters and inherited parameters"));
         // create a displayPropertySource
-        addPropertySource(new ChannelDisplayPropertySource(channelNodeModel));
+        mergePropertySource(new ChannelDisplayPropertySource(nodeModel));
     }
 
 }

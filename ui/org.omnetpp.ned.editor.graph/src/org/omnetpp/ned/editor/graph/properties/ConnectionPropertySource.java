@@ -13,7 +13,7 @@ import org.omnetpp.common.properties.EditableComboBoxPropertyDescriptor;
 import org.omnetpp.ned2.model.ConnectionNodeEx;
 import org.omnetpp.resources.NEDResourcesPlugin;
 
-public class ConnectionPropertySource extends DelegatingPropertySource {
+public class ConnectionPropertySource extends MergedPropertySource {
 
     // Display property source
     protected static class ConnectionDisplayPropertySource extends DisplayPropertySource {
@@ -118,8 +118,8 @@ public class ConnectionPropertySource extends DelegatingPropertySource {
     public ConnectionPropertySource(ConnectionNodeEx connectionNodeModel) {
         super(connectionNodeModel);
         // create a nested displayPropertySources
-        addPropertySource(new BasePropertySource(connectionNodeModel));	
-        addPropertySource(new ConnectionDisplayPropertySource(connectionNodeModel));
+        mergePropertySource(new BasePropertySource(connectionNodeModel));	
+        mergePropertySource(new ConnectionDisplayPropertySource(connectionNodeModel));
         
     }
 }

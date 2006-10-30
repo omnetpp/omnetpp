@@ -12,7 +12,7 @@ import org.omnetpp.common.properties.EditableComboBoxPropertyDescriptor;
 import org.omnetpp.ned2.model.SubmoduleNodeEx;
 import org.omnetpp.resources.NEDResourcesPlugin;
 
-public class SubmodulePropertySource extends DelegatingPropertySource {
+public class SubmodulePropertySource extends MergedPropertySource {
 
 	// submodule specific display property desc
     protected static class SubmoduleDisplayPropertySource extends DisplayPropertySource {
@@ -35,7 +35,7 @@ public class SubmodulePropertySource extends DelegatingPropertySource {
 
     // Submodule specific properties
     protected static class BasePropertySource implements IPropertySource2 {
-        public enum Prop { Type  }
+        public enum Prop { Type }
         protected IPropertyDescriptor[] descriptors;
         protected SubmoduleNodeEx model;
         EditableComboBoxPropertyDescriptor typeProp;
@@ -96,9 +96,9 @@ public class SubmodulePropertySource extends DelegatingPropertySource {
         super(submoduleNodeModel);
         // create a nested displayPropertySource
 
-        addPropertySource(new NamePropertySource(submoduleNodeModel));
-        addPropertySource(new BasePropertySource(submoduleNodeModel));
-        addPropertySource(new SubmoduleDisplayPropertySource(submoduleNodeModel));
+        mergePropertySource(new NamePropertySource(submoduleNodeModel));
+        mergePropertySource(new BasePropertySource(submoduleNodeModel));
+        mergePropertySource(new SubmoduleDisplayPropertySource(submoduleNodeModel));
         
     }
 

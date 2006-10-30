@@ -26,22 +26,19 @@ public class ParameterListPropertySource extends NotifiedPropertySource {
     @Override
     public IPropertyDescriptor[] getPropertyDescriptors() {
         Map<String, NEDElement> params = model.getContainerNEDTypeInfo().getParams();
-        Map<String, NEDElement> paramValues = model.getContainerNEDTypeInfo().getParamValues();
         
         pdesc = new PropertyDescriptor[params.size()];
         totalParamCount = inheritedParamCount = 0;
         for(NEDElement paramElement : params.values()) {
             ParamNodeEx paramDefNode = (ParamNodeEx)paramElement;
-            ParamNodeEx paramValueNode = ((ParamNodeEx)paramValues.get(paramDefNode.getName()));
             String typeString = (paramDefNode.getIsVolatile() ? "volatile " : "") + paramDefNode.getAttribute(ParamNodeEx.ATT_TYPE);
-            String valueString = paramValueNode== null ? "" :paramValueNode.getValue();
             String definedIn = "";
             if (paramDefNode.getContainingTopLevelElement() != model) {
                 inheritedParamCount++;
                 definedIn= " (inherited from "+((INamed)paramDefNode.getContainingTopLevelElement()).getName()+")";
             }
-            pdesc[totalParamCount] = new PropertyDescriptor(valueString + definedIn, typeString +" "+paramDefNode.getName());
-            pdesc[totalParamCount].setCategory("parameters");
+            pdesc[totalParamCount] = new PropertyDescriptor(paramDefNode, typeString +" "+paramDefNode.getName());
+            pdesc[totalParamCount].setCategory("Parameters");
             pdesc[totalParamCount].setDescription("Parameter "+paramDefNode.getName()+" with type "+typeString+definedIn+" - (read only)");
             totalParamCount++;
         }
@@ -64,7 +61,13 @@ public class ParameterListPropertySource extends NotifiedPropertySource {
 
     @Override
     public Object getPropertyValue(Object id) {
-        return id;
+        if (!(id instanceof ParamNodeEx))
+            return getEditableValue();
+        Map<String, NEDElement> paramValues = model.getContainerNEDTypeInfo().getParamValues();
+        ParamNodeEx paramDefNode = (ParamNodeEx)id;
+        ParamNodeEx paramValueNode = ((ParamNodeEx)paramValues.get(paramDefNode.getName()));
+        String valueString = paramValueNode== null ? "" :paramValueNode.getValue();
+        return valueString;
     }
 
     @Override
