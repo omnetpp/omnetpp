@@ -25,6 +25,8 @@
 #include "eventlogindex.h"
 #include "eventlog.h"
 #include "eventlogfacade.h"
+#include "eventlogtablefacade.h"
+#include "sequencechartfacade.h"
 #include "filteredeventlog.h"
 #include "filereader.h"
 %}
@@ -41,13 +43,11 @@
 
 %include "eventlogdefs.h"
 
-%typemap(jni) ID "jlong";
-
+%typemap(jni)    ID    "jlong";
 %typemap(jni)    int64 "jlong"
 %typemap(jtype)  int64 "long"
 %typemap(jstype) int64 "long"
 %typemap(javain) int64 "$javainput"
-
 
 %include "std_common.i"
 %include "std_string.i"
@@ -56,25 +56,23 @@
 %include "std_vector.i"
 %include "std_map.i"
 
-
 namespace std {
 
-%typemap(javacode) vector<string> %{
-    public String[] toArray() {
-        int sz = (int) size();
-        String[] array = new String[sz];
-        for (int i=0; i<sz; i++)
-            array[i] = get(i);
-        return array;
-    }
-    public static StringVector fromArray(String[] array) {
-        StringVector vector = new StringVector();
-        for (int i=0; i<array.length; i++)
-            vector.add(array[i]);
-        return vector;
-    }
-
-%}
+   %typemap(javacode) vector<string> %{
+       public String[] toArray() {
+           int sz = (int) size();
+           String[] array = new String[sz];
+              for (int i=0; i<sz; i++)
+               array[i] = get(i);
+           return array;
+       }
+       public static StringVector fromArray(String[] array) {
+           StringVector vector = new StringVector();
+           for (int i=0; i<array.length; i++)
+               vector.add(array[i]);
+           return vector;
+       }
+   %}
 
    %typemap(javacode) vector<Run*> %{
         public Run[] toArray() {
@@ -155,12 +153,16 @@ namespace std {
 
    %template(IntSet) set<int>;
 
+   %template(LongSet) set<int64>;
+
    specialize_std_map_on_both(int,,,,int,,,);
 
    %template(IntIntMap) map<int,int>;
 
    %template(IntVector) vector<int>;
 
+   specialize_std_vector(int64);
+   %template(LongVector) vector<int64>;
 };
 
 /*
@@ -230,6 +232,14 @@ import java.lang.reflect.Constructor;
     }
 %}
 
+%typemap(javacode) MessageDependency %{
+    public long getPtr() {
+        return swigCPtr;
+    }
+%}
+
+%newobject SequenceChartFacade::getIntersectingMessageDependencies;
+
 typedef double simtime_t;
 
 %ignore eventLogStringPool;
@@ -256,5 +266,7 @@ typedef double simtime_t;
 %include "eventlogindex.h"
 %include "eventlog.h"
 %include "eventlogfacade.h"
+%include "eventlogtablefacade.h"
+%include "sequencechartfacade.h"
 %include "filteredeventlog.h"
 %include "filereader.h"
