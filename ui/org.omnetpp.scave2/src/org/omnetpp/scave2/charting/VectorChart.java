@@ -457,11 +457,10 @@ public class VectorChart extends ChartCanvas {
 				gc.setFont(font);
 			
 			//draw X ticks
-			BigDecimal tickStartX = getTickStart(fromCanvasX(plotBounds.x), getZoomX());
-			BigDecimal tickEndX = getTickEnd(fromCanvasX(plotBounds.x + plotBounds.width), getZoomX());
-			BigDecimal tickDeltaX = getTickDelta(getZoomX());
-
-			for (BigDecimal t=tickStartX; t.compareTo(tickEndX)<0; t = t.add(tickDeltaX)) {
+			Ticks ticks = new Ticks(fromCanvasX(plotBounds.x),
+									fromCanvasX(plotBounds.x + plotBounds.width),
+									spacing / getZoomX());
+			for (BigDecimal t : ticks) {
 				int x = toCanvasX(t.doubleValue());
 				if (x < plotBounds.x || x > plotBounds.x + plotBounds.width)
 					continue;
@@ -479,11 +478,10 @@ public class VectorChart extends ChartCanvas {
 
 			//draw Y ticks
 			//XXX factor out common code with X axis ticks
-			BigDecimal tickStartY = getTickStart(fromCanvasY(plotBounds.y + plotBounds.height), getZoomY());
-			BigDecimal tickEndY = getTickEnd(fromCanvasY(plotBounds.y), getZoomY());
-			BigDecimal tickDeltaY = getTickDelta(getZoomY());
-
-			for (BigDecimal t=tickStartY; t.compareTo(tickEndY)<0; t = t.add(tickDeltaY)) {
+			ticks = new Ticks(fromCanvasY(plotBounds.y + plotBounds.height),
+							  fromCanvasY(plotBounds.y),
+							  spacing / getZoomY());
+			for (BigDecimal t : ticks) {
 				int y = toCanvasY(t.doubleValue());
 				if (y < plotBounds.y || y > plotBounds.y + plotBounds.height)
 					continue;
@@ -501,32 +499,6 @@ public class VectorChart extends ChartCanvas {
 			}
 			
 			gc.setFont(saveFont);
-		}
-		
-		private BigDecimal getTickStart(double start, double zoom) {
-			int tickScale = (int)Math.ceil(Math.log10(spacing / zoom));
-			BigDecimal tickStart = new BigDecimal(start).setScale(-tickScale, RoundingMode.FLOOR);
-			return tickStart;
-		}
-		
-		private BigDecimal getTickEnd(double end, double zoom) {
-			int tickScale = (int)Math.ceil(Math.log10(spacing / zoom));
-			BigDecimal tickEnd = new BigDecimal(end).setScale(-tickScale, RoundingMode.CEILING);
-			return tickEnd;
-		}
-		
-		private BigDecimal getTickDelta(double zoom) {
-			int tickScale = (int)Math.ceil(Math.log10(spacing / zoom));
-			BigDecimal tickSpacing = BigDecimal.valueOf(spacing / zoom);
-			BigDecimal tickIntvl = new BigDecimal(1).scaleByPowerOfTen(tickScale);
-
-			// use 2, 4, 6, 8, etc. if possible
-			if (tickIntvl.divide(BigDecimal.valueOf(5)).compareTo(tickSpacing) > 0)
-				tickIntvl = tickIntvl.divide(BigDecimal.valueOf(5));
-			// use 5, 10, 15, 20, etc. if possible
-			else if (tickIntvl.divide(BigDecimal.valueOf(2)).compareTo(tickSpacing) > 0)
-				tickIntvl = tickIntvl.divide(BigDecimal.valueOf(2));
-			return tickIntvl;
 		}
 	}
 	

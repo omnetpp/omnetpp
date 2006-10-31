@@ -130,9 +130,7 @@ public class Legend {
 		if (!visible)
 			return parent;
 		
-		Font saveFont = gc.getFont();
-		if (font != null)
-			gc.setFont(font);
+		gc.setFont(font);
 		
 		// measure items
 		for (int i = 0; i < items.size(); ++i)
@@ -165,8 +163,6 @@ public class Legend {
 				bounds.height = Math.max(bounds.height, item.height);
 			}
 		}
-		
-		gc.setFont(saveFont);
 		
 		// calculate legend position
 		int dx, dy;

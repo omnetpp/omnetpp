@@ -8,6 +8,12 @@ import static org.omnetpp.scave2.model.ChartProperties.PROP_LEGEND_BORDER;
 import static org.omnetpp.scave2.model.ChartProperties.PROP_LEGEND_FONT;
 import static org.omnetpp.scave2.model.ChartProperties.PROP_LEGEND_POSITION;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.util.Iterator;
+import java.util.NoSuchElementException;
+
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.widgets.Composite;
 import org.omnetpp.common.util.Converter;
@@ -17,13 +23,15 @@ import org.omnetpp.scave2.model.ChartProperties.LegendPosition;
 public abstract class ChartCanvas extends ZoomableCachingCanvas {
 
 	protected static final String DEFAULT_TITLE = "";
+	protected static final Font DEFAULT_TITLE_FONT = new Font(null, "Arial", 10, SWT.NORMAL);
 	protected static final boolean DEFAULT_DISPLAY_LEGEND = false;
 	protected static final boolean DEFAULT_LEGEND_BORDER = false;
 	protected static final LegendPosition DEFAULT_LEGEND_POSITION = LegendPosition.Above;
 	protected static final LegendAnchor DEFAULT_LEGEND_ANCHOR = LegendAnchor.North;
+	protected static final Font DEFAULT_LEGEND_FONT = new Font(null, "Arial", 8, SWT.NORMAL);
 	
-	protected Title title = new Title(DEFAULT_TITLE, null);
-	protected Legend legend = new Legend(DEFAULT_DISPLAY_LEGEND, DEFAULT_LEGEND_BORDER, null, DEFAULT_LEGEND_POSITION, DEFAULT_LEGEND_ANCHOR);
+	protected Title title = new Title(DEFAULT_TITLE, DEFAULT_TITLE_FONT);
+	protected Legend legend = new Legend(DEFAULT_DISPLAY_LEGEND, DEFAULT_LEGEND_BORDER, DEFAULT_LEGEND_FONT, DEFAULT_LEGEND_POSITION, DEFAULT_LEGEND_ANCHOR);
 	
 	private Runnable scheduledRedraw;
 	
@@ -59,7 +67,7 @@ public abstract class ChartCanvas extends ZoomableCachingCanvas {
 
 	public void setTitleFont(Font value) {
 		if (value == null)
-			return;
+			value = DEFAULT_TITLE_FONT;
 		title.setFont(value);
 		scheduleRedraw();
 	}
@@ -80,7 +88,7 @@ public abstract class ChartCanvas extends ZoomableCachingCanvas {
 	
 	public void setLegendFont(Font value) {
 		if (value == null)
-			return;
+			value = DEFAULT_LEGEND_FONT;
 		legend.setFont(value);
 		scheduleRedraw();
 	}
@@ -109,6 +117,55 @@ public abstract class ChartCanvas extends ZoomableCachingCanvas {
 				}
 			};
 			getDisplay().asyncExec(scheduledRedraw);
+		}
+	}
+	
+	class Ticks implements Iterable<BigDecimal> {
+		
+		private BigDecimal start;
+		private BigDecimal end;
+		private BigDecimal delta;
+		
+		public Ticks(double start, double end, double delta) {
+			int scale = (int)Math.ceil(Math.log10(delta));
+			this.start = new BigDecimal(start).setScale(-scale, RoundingMode.FLOOR);
+			this.end = new BigDecimal(end).setScale(-scale, RoundingMode.CEILING);
+			BigDecimal spacing = BigDecimal.valueOf(delta);
+			this.delta = new BigDecimal(1).scaleByPowerOfTen(scale);
+			// use 2, 4, 6, 8, etc. if possible
+			if (this.delta.divide(BigDecimal.valueOf(5)).compareTo(spacing) > 0)
+				this.delta = this.delta.divide(BigDecimal.valueOf(5));
+			// use 5, 10, 15, 20, etc. if possible
+			else if (this.delta.divide(BigDecimal.valueOf(2)).compareTo(spacing) > 0)
+				this.delta = this.delta.divide(BigDecimal.valueOf(2));
+		}
+
+		public Iterator<BigDecimal> iterator() {
+			class TickIterator implements Iterator<BigDecimal> {
+				BigDecimal current;
+				
+				public TickIterator() {
+					current = start;
+				}
+				
+				public boolean hasNext() {
+					return current.compareTo(end) < 0;
+				}
+
+				public BigDecimal next() {
+					if (!hasNext())
+						throw new NoSuchElementException();
+					BigDecimal result = current;
+					current = current.add(delta);
+					return result;
+				}
+
+				public void remove() {
+					throw new UnsupportedOperationException();
+				}
+			};
+			
+			return new TickIterator();
 		}
 	}
 }

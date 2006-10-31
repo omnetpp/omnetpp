@@ -13,7 +13,11 @@ import static org.omnetpp.scave2.model.ChartProperties.PROP_Y_AXIS_MAX;
 import static org.omnetpp.scave2.model.ChartProperties.PROP_Y_AXIS_MIN;
 import static org.omnetpp.scave2.model.ChartProperties.PROP_Y_AXIS_TITLE;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+
 import org.eclipse.draw2d.Graphics;
+import org.eclipse.draw2d.SWTGraphics;
 import org.eclipse.draw2d.geometry.Insets;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
@@ -31,9 +35,6 @@ import org.omnetpp.scave2.model.ChartProperties.BarPlacement;
 
 public class ScalarChart2 extends ChartCanvas {
 
-	private static final String DEFAULT_X_AXIS_TITLE = "";
-	private static final String DEFAULT_Y_AXIS_TITLE = "";
-
 	private static final double DEFAULT_BAR_BASELINE = 0.0;
 	private static final BarPlacement DEFAULT_BAR_PLACEMENT = BarPlacement.Aligned;
 	private static final Color DEFAULT_BACKGROUND_COLOR = ColorFactory.defaultBackground;
@@ -41,7 +42,6 @@ public class ScalarChart2 extends ChartCanvas {
 
 	private static final boolean DEFAULT_INVERT_XY = false;
 	private static final boolean DEFAULT_SHOW_GRID = false;
-	private static final double DEFAULT_X_LABELS_ROTATED_BY = 0.0;
 	private static final boolean DEFAULT_Y_LOGARITHMIC = false;
 	
 	private CategoryDataset dataset;
@@ -49,12 +49,10 @@ public class ScalarChart2 extends ChartCanvas {
 	private int widthBar = 10;
 	private int hgapMinor = 5;
 	private int hgapMajor = 20;
-	
-	
-	private String xAxisTitle;
-	private String yAxisTitle;
-	private Font axisTitleFont;
-	private RowLabels rowLabels = new RowLabels(null, DEFAULT_X_LABELS_ROTATED_BY);
+
+	private ValueAxis valueAxis = new ValueAxis();
+	private DomainAxis domainAxis = new DomainAxis();
+	private Plot plot = new Plot();
 
 	private double barBaseline;
 	private BarPlacement barPlacement;
@@ -145,54 +143,53 @@ public class ScalarChart2 extends ChartCanvas {
 	}
 
 	public String getXAxisTitle() {
-		return xAxisTitle;
+		return domainAxis.title;
 	}
 
 	public void setXAxisTitle(String title) {
 		if (title == null)
 			title = DEFAULT_X_AXIS_TITLE;
 
-		xAxisTitle = title;
+		domainAxis.title = title;
 		scheduleRedraw();
 	}
 
 	public String getYAxisTitle() {
-		return yAxisTitle;
+		return valueAxis.title;
 	}
 
 	public void setYAxisTitle(String title) {
 		if (title == null)
 			title = DEFAULT_Y_AXIS_TITLE;
 
-		yAxisTitle = title;
+		valueAxis.title = title;
 		scheduleRedraw();
 	}
 
 	public Font getAxisTitleFont() {
-		return axisTitleFont;
+		return domainAxis.titleFont;
 	}
 
 	public void setAxisTitleFont(Font font) {
 		if (font == null)
 			return;
 
-		axisTitleFont = font;
+		domainAxis.titleFont = font;
+		valueAxis.font = font;
 		scheduleRedraw();
 	}
 
 	public void setLabelFont(Font font) {
 		if (font == null)
-			return;
-
-		rowLabels.setFont(font);
+			font = DEFAULT_DOMAIN_LABELS_FONT;
+		domainAxis.font = font;
 		scheduleRedraw();
 	}
 
 	public void setXAxisLabelsRotatedBy(Double angle) {
 		if (angle == null)
 			angle = DEFAULT_X_LABELS_ROTATED_BY;
-
-		rowLabels.setRotation(angle);
+		domainAxis.rotation = angle;
 		scheduleRedraw();
 	}
 
@@ -277,7 +274,9 @@ public class ScalarChart2 extends ChartCanvas {
 		// Calculate space occupied by title and legend and set insets accordingly
 		Rectangle remaining = title.layout(gc, getClientArea());
 		remaining = legend.layout(gc, remaining);
-		remaining = rowLabels.layout(gc, remaining);
+		remaining = valueAxis.layout(gc, remaining);
+		remaining = domainAxis.layout(gc, remaining);
+		remaining = plot.layout(gc, remaining);
 
 		Insets insets = GeomUtils.subtract(getClientArea(), remaining);
 		setInsets(insets);
@@ -354,86 +353,162 @@ public class ScalarChart2 extends ChartCanvas {
 			this.column = column;
 		}
 	}
+	
+	private Rectangle getPlotRectagle() {
+		return plot.getRectangle();
+	}
 
 	@Override
 	protected void paintNoncachableLayer(GC gc) {
 		// TODO: draw axes
 		title.draw(gc);
 		legend.draw(gc);
-		rowLabels.draw(gc);
+		valueAxis.draw(gc);
+		domainAxis.draw(gc);
 	}
 	
-	class RowLabels {
+	class Plot {
+		private Rectangle rect;
 		
-		private Font font;
-		private Transform transform = new Transform(getDisplay()); // XXX
-		private double rotation;
-		
-		private Rectangle bounds;
-		
-		public RowLabels(Font font, double rotation) {
-			this.font = font;
-			this.rotation = rotation;
+		public Rectangle getRectangle() {
+			return rect;
 		}
 		
-		public void setFont(Font font) {
-			this.font = font;
+		public Rectangle layout(GC gc, Rectangle rect) {
+			this.rect = rect;
+			return rect;
 		}
 		
-		public void setRotation(double angle) {
-			this.rotation = angle;
-		}
-		
-		public Rectangle layout(GC gc, Rectangle parent) {
-			Font saveFont = gc.getFont();
-			if (font != null)
-				gc.setFont(font);
+		public void draw(GC gc) {
 			
-			gc.getTransform(transform);
-			transform.rotate((float)rotation);
-			gc.setTransform(transform);
-
-			int height = 0;
+		}
+	}
+	
+	private static final String DEFAULT_X_AXIS_TITLE = "";
+	private static final String DEFAULT_Y_AXIS_TITLE = "";
+	private static final Font DEFAULT_AXIS_TITLE_FONT = new Font(null, "Arial", 10, SWT.NORMAL);
+	private static final Font DEFAULT_DOMAIN_LABELS_FONT = new Font(null, "Arial", 8, SWT.NORMAL);
+	private static final double DEFAULT_X_LABELS_ROTATED_BY = 0.0;
+	
+	class DomainAxis {
+		private Rectangle rect;
+		private int labelsHeight;
+		private String title = DEFAULT_X_AXIS_TITLE;
+		private Font titleFont = DEFAULT_AXIS_TITLE_FONT;
+		private Font font = DEFAULT_DOMAIN_LABELS_FONT;
+		private double rotation = DEFAULT_X_LABELS_ROTATED_BY;
+		
+		public Rectangle layout(GC gc, Rectangle rect) {
+			Graphics graphics = new SWTGraphics(gc);
+			graphics.pushState();
+			//
+			graphics.setFont(titleFont);
+			int titleHeight = gc.textExtent(title).y;
+			//
+			gc.setFont(font);
+			labelsHeight = 0;
 			for (int row = 0; row < dataset.getRowCount(); ++row) {
 				String label = dataset.getRowKey(row).toString();
 				Point size = gc.textExtent(label);
 				System.out.println("Height: " + size.y);
-				height = Math.max(height, size.y);
+				labelsHeight = Math.max(labelsHeight, size.y);
 			}
 			
-			transform.rotate((float)-rotation);
-			gc.setTransform(transform);
-			gc.setFont(saveFont);
+			int height = 10 + labelsHeight + titleHeight;
+			graphics.popState();
+			graphics.dispose();
 			
-			bounds = new Rectangle(
-						parent.x, parent.y + parent.height - height,
-						parent.width, height);
-			
-			return new Rectangle(parent.x, parent.y, parent.width, parent.height - height);
+			this.rect = new Rectangle(rect.x, rect.y + rect.height - height, rect.width, height);
+			return new Rectangle(rect.x, rect.y, rect.width, Math.max(rect.height - height, 0));
 		}
 		
 		public void draw(GC gc) {
+			Graphics graphics = new SWTGraphics(gc);
+			graphics.pushState();
+			// draw axis
+			graphics.setLineStyle(SWT.LINE_SOLID);
+			graphics.setLineWidth(1);
+			graphics.setForegroundColor(ColorFactory.asColor("black"));
+			Rectangle plotRect = getPlotRectagle();
+			graphics.drawLine(plotRect.x, rect.y + 5, plotRect.x + plotRect.width, rect.y + 5);
+			// draw labels
 			int cColumns = dataset.getColumnCount();
-			
-			Font saveFont = gc.getFont();
-			if (font != null)
-				gc.setFont(font);
-			
-			gc.getTransform(transform);
-			transform.rotate((float)rotation);
-			gc.setTransform(transform);
-			
+			graphics.setFont(font);
 			for (int row = 0; row < dataset.getRowCount(); ++row) {
 				String label = dataset.getRowKey(row).toString();
 				Point size = gc.textExtent(label);
 				int left = toCanvasX(getLeftX(row, 0));
 				int right = toCanvasX(getRightX(row, cColumns - 1));
-				gc.drawText(label, left + (right - left - size.x) / 2, bounds.y);
+				
+				graphics.restoreState();
+				graphics.translate(left + (right - left - size.x) / 2, rect.y + 10 + labelsHeight / 2);
+				graphics.rotate((float)rotation);
+				graphics.drawText(label, - (right - left - size.x) / 2, - labelsHeight / 2);
 			}
 			
-			transform.rotate((float)-rotation);
-			gc.setTransform(transform);
-			gc.setFont(saveFont);
+			// draw axis title
+			graphics.setFont(titleFont);
+			Point size = gc.textExtent(title);
+			graphics.drawText(title, plotRect.x + (plotRect.width - size.x) / 2, rect.y + 10);
+
+			graphics.popState();
+			graphics.dispose();
 		}
 	}
+	
+	class ValueAxis {
+		private Rectangle rect;
+		Point axisStart, axisEnd;
+		Rectangle titleRect;
+		
+		private String title = DEFAULT_Y_AXIS_TITLE;
+		private Font font = DEFAULT_AXIS_TITLE_FONT;
+		
+		public Rectangle layout(GC gc, Rectangle rect) {
+			gc.setFont(font);
+			Point titleSize = gc.textExtent(title);
+			int width = titleSize.y + 30 + 10; 
+			axisStart = new Point(rect.x + width - 5, rect.y);
+			axisEnd = new Point(rect.x + width - 5, rect.y + rect.height);
+			titleRect = new Rectangle(rect.x, rect.y + (rect.height - titleSize.x) / 2, titleSize.y, titleSize.x);
+			this.rect = new Rectangle(rect.x, rect.y, width, rect.height);
+			return new Rectangle(rect.x + width, rect.y, Math.max(rect.width - width, 0), rect.height);
+		}
+		
+		public void draw(GC gc) {
+			Graphics graphics = new SWTGraphics(gc);
+			graphics.pushState();
+
+			// synchronize layout rectangle with plot's rectangle
+			Rectangle plotRect = getPlotRectagle();
+			layout(gc, new Rectangle(rect.x, plotRect.y, rect.width, plotRect.height));
+			// draw line
+			graphics.setLineStyle(SWT.LINE_SOLID);
+			graphics.setLineWidth(1);
+			graphics.setForegroundColor(ColorFactory.asColor("black"));
+			graphics.drawLine(axisStart.x, axisStart.y, axisEnd.x, axisEnd.y);
+			// draw ticks
+			Ticks ticks = new Ticks(fromCanvasY(plotRect.y + plotRect.height),
+									fromCanvasY(plotRect.y),
+									100 / getZoomY());
+			for (BigDecimal tick : ticks) {
+				int y = toCanvasY(tick.doubleValue());
+				if (y >= plotRect.y && y <= plotRect.y + plotRect.height) {
+					graphics.drawLine(axisStart.x - 3, y, axisStart.x, y);
+					String label = tick.toPlainString();
+					Point size = gc.textExtent(label);
+					graphics.drawText(label, axisStart.x - 2 - size.x, y - size.y / 2);
+				}
+			}
+			// draw title
+			graphics.setFont(font);
+			graphics.translate(titleRect.x + titleRect.width / 2, titleRect.y + titleRect.y / 2);
+			graphics.rotate(-90);
+			graphics.drawText(title, - titleRect.height / 2, - titleRect.width / 2);
+
+			graphics.popState();
+			graphics.dispose();
+		}
+	}
+	
 }

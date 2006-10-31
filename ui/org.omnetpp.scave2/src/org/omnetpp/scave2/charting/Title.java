@@ -44,17 +44,10 @@ public class Title {
 		if (text == null || text.length() == 0)
 			return parent;
 		
-		Font saveFont = null;
-		if (font != null) {
-			saveFont = gc.getFont();
-			gc.setFont(font);
-		}
+		gc.setFont(font);
 		
 		Point size = gc.stringExtent(text);
 		bounds = new Rectangle(parent.x + (parent.width - size.x) / 2, parent.y, size.x, size.y);
-		
-		if (saveFont != null)
-			gc.setFont(saveFont);
 		
 		return new Rectangle(parent.x, Math.min(bounds.y + bounds.height, parent.y + parent.height),
 				parent.width, Math.max(parent.height - bounds.height, 0));
@@ -64,15 +57,7 @@ public class Title {
 		if (text == null || text.length() == 0)
 			return;
 		
-		Font saveFont = null;
-		if (font != null) {
-			saveFont = gc.getFont();
-			gc.setFont(font);
-		}
-		
+		gc.setFont(font);
 		gc.drawString(text, bounds.x, bounds.y, true);
-		
-		if (saveFont != null)
-			gc.setFont(saveFont);
 	}
 }
