@@ -17,8 +17,6 @@
 #include "eventlog.h"
 #include "eventlogentry.h"
 
-long Event::numParsedEvent = 0;
-
 Event::Event(EventLog *eventLog)
 {
     this->eventLog = eventLog;
@@ -65,7 +63,6 @@ long Event::parse(FileReader *reader, long offset)
     EASSERT(!eventEntry);
 
     beginOffset = offset;
-    numParsedEvent++;
     reader->seekTo(offset);
 
     if (PRINT_DEBUG_MESSAGES) printf("Parsing event at offset: %ld\n", offset);

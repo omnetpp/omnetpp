@@ -14,167 +14,248 @@
 
 #include <time.h>
 #include "filereader.h"
+#include "linetokenizer.h"
 #include "eventlogindex.h"
 #include "eventlog.h"
 #include "filteredeventlog.h"
 
-void readLines(int argc, char **argv)
-{
-    try {
-        fprintf(stderr, "Reading lines from log%s\n", argv[2]);
-        FileReader fileReader(argv[2]);
-        LineTokenizer tokenizer;
-        long begin = clock();
-        char *line;
+struct Options {
+    char *inputFileName;
+    char *outputFileName;
+    FILE *outputFile;
+    long fromEventNumber;
+    long toEventNumber;
+    bool traceBackward;
+    bool traceForward;
+    std::vector<long> *eventNumbers;
+    bool verbose;
 
-        while (line = fileReader.readNextLine())
-            tokenizer.tokenize(line, fileReader.getLastLineLength());
-
-        long end = clock();
-        fprintf(stderr, "Reading of %ld lines and %ld bytes completed in %g seconds\n", fileReader.getNumReadLines(), fileReader.getNumReadBytes(), (double)(end - begin) / CLOCKS_PER_SEC);
-    } catch (Exception *e) {
-        fprintf(stderr, "Error: %s\n", e->message());
+    Options() {
+        inputFileName = NULL;
+        outputFileName = NULL;
+        outputFile = NULL;
+        fromEventNumber = -1;
+        toEventNumber = -1;
+        traceBackward = true;
+        traceForward = true;
+        eventNumbers = NULL;
+        verbose = false;
     }
+};
+
+void readLines(Options options)
+{
+    if (options.verbose)
+        fprintf(stdout, "# Reading lines from log file %s\n", options.inputFileName);
+
+    char *line;
+    LineTokenizer tokenizer;
+    FileReader fileReader(options.inputFileName);
+
+    long begin = clock();
+
+    while (line = fileReader.readNextLine())
+        tokenizer.tokenize(line, fileReader.getLastLineLength());
+
+    long end = clock();
+
+    if (options.verbose)
+        fprintf(stdout, "# Reading of %ld lines and %ld bytes from log file %s completed in %g seconds\n", fileReader.getNumReadLines(), fileReader.getNumReadBytes(), options.inputFileName, (double)(end - begin) / CLOCKS_PER_SEC);
 }
 
-void loadEvents(int argc, char **argv)
+void loadEvents(Options options)
 {
-    try {
-        fprintf(stderr, "Loading events from log file into memory %s\n", argv[2]);
-        FileReader *fileReader = new FileReader(argv[2]);
-        EventLog eventLog(fileReader);
-        long begin = clock();
-        long eventCount = 0;
+    if (options.verbose)
+        fprintf(stdout, "# Loading events from log file %s\n", options.inputFileName);
 
-        IEvent *event = eventLog.getFirstEvent();
-        while (event) {
-            eventCount++;
-            event = event->getNextEvent();
+    FileReader *fileReader = new FileReader(options.inputFileName);
+    EventLog eventLog(fileReader);
+    long begin = clock();
+
+    IEvent *event = eventLog.getFirstEvent();
+    while (event)
+        event = event->getNextEvent();
+
+    long end = clock();
+
+    if (options.verbose)
+        fprintf(stdout, "# Loading of %ld events, %ld lines and %ld bytes form log file %s completed in %g seconds\n", eventLog.getNumParsedEvents(), fileReader->getNumReadLines(), fileReader->getNumReadBytes(), options.inputFileName, (double)(end - begin) / CLOCKS_PER_SEC);
+}
+
+void printOffsets(Options options)
+{
+    if (options.verbose)
+        fprintf(stdout, "# Printing event offsets from log file %s\n", options.inputFileName);
+
+    FileReader *fileReader = new FileReader(options.inputFileName);
+    EventLogIndex eventLogIndex(fileReader);
+
+    long begin = clock();
+
+    for (std::vector<long>::iterator it = options.eventNumbers->begin(); it != options.eventNumbers->end(); it++) {
+        long offset = eventLogIndex.getOffsetForEventNumber(*it);
+
+        if (options.verbose)
+            fprintf(stdout, "# Event #%ld --> file offset %ld (0x%lx)\n", *it, offset, offset);
+
+        fprintf(options.outputFile, "%ld\n", offset);
+
+        if (offset != -1 && options.verbose) {
+            fileReader->seekTo(offset);
+            fprintf(stdout, "#  - line at that offset: %.*s\n", fileReader->getLastLineLength(), fileReader->readNextLine());
         }
-
-        long end = clock();
-        fprintf(stderr, "Loading of %ld events and %ld lines and %ld bytes completed in %g seconds\n", eventCount, fileReader->getNumReadLines(), fileReader->getNumReadBytes(), (double)(end - begin) / CLOCKS_PER_SEC);
-    } catch (Exception *e) {
-        fprintf(stderr, "Error: %s\n", e->message());
     }
+
+    long end = clock();
+
+    if (options.verbose)
+        fprintf(stdout, "# Printing offsets for %ld events while reading %ld lines and %ld bytes form log file %s completed in %g seconds\n", options.eventNumbers->size(), fileReader->getNumReadLines(), fileReader->getNumReadBytes(), options.inputFileName, (double)(end - begin) / CLOCKS_PER_SEC);
 }
 
-void printOffsets(int argc, char **argv)
+void echo(Options options)
 {
-    try {
-        fprintf(stderr, "Printing event offsets from event log file %s\n", argv[2]);
-    
-        FileReader *fileReader = new FileReader(argv[2]);
-        EventLogIndex eventLogIndex(fileReader);
-        
-        for (int i = 3; i < argc; i++) {
-            long eventNumber = atol(argv[i]);
-            long offset = eventLogIndex.getOffsetForEventNumber(eventNumber);
-            printf("Event #%ld --> file offset %ld (0x%lx)\n", eventNumber, offset, offset);
-            if (offset!=-1) { //XXX comment out
-                fileReader->seekTo(offset);
-                printf("  - line at that offset: %.*s\n", fileReader->getLastLineLength(), fileReader->readNextLine());
-            }
-            //eventLogIndex.dumpTable();
-        }
-    } catch (Exception *e) {
-        fprintf(stderr, "Error: %s\n", e->message());
-    }
-}
+    if (options.verbose)
+        fprintf(stdout, "# Echoing events from log file %s from event number %ld to %ld\n", options.inputFileName, options.fromEventNumber, options.toEventNumber);
 
-void echo(int argc, char **argv)
-{
-    try {
-        long fromEventNumber = argc > 3 ? atol(argv[3]) : -1;
-        long toEventNumber = argc > 4 ? atol(argv[4]) : -1;
-        fprintf(stderr, "Echoing log file %s from event number %d to %d\n", argv[2], fromEventNumber, toEventNumber);
-    
-        FileReader *fileReader = new FileReader(argv[2]);
-        EventLog eventLog(fileReader);
-        eventLog.print(stdout, fromEventNumber, toEventNumber);
-    } catch (Exception *e) {
-        fprintf(stderr, "Error: %s\n", e->message());
-    }
+    FileReader *fileReader = new FileReader(options.inputFileName);
+    EventLog eventLog(fileReader);
+
+    long begin = clock();
+    eventLog.print(options.outputFile, options.fromEventNumber, options.toEventNumber);
+    long end = clock();
+
+    if (options.verbose)
+        fprintf(stdout, "# Parsing of %ld events, %ld lines and %ld bytes form log file %s completed in %g seconds\n", eventLog.getNumParsedEvents(), fileReader->getNumReadLines(), fileReader->getNumReadBytes(), options.inputFileName, (double)(end - begin) / CLOCKS_PER_SEC);
 }
         
-void filter(int argc, char **argv)
+void filter(Options options)
 {
-    try {
-        long tracedEventNumber = atol(argv[3]);
-        long fromEventNumber = argc > 4 ? atol(argv[4]) : -1;
-        long toEventNumber = argc > 5 ? atol(argv[5]) : -1;
-        fprintf(stderr, "Filtering log file: %s for event number: %ld from event number: %ld to event number: %ld\n",
-            argv[2], tracedEventNumber, fromEventNumber, toEventNumber);
-    
-        FileReader *fileReader = new FileReader(argv[2]);
-        EventLog *eventLog = new EventLog(fileReader);
-        FilteredEventLog filteredEventLog(eventLog, NULL, tracedEventNumber, true, true, fromEventNumber, toEventNumber);
+    long tracedEventNumber = options.eventNumbers ? options.eventNumbers->at(0) : -1;
 
-        long begin = clock();
-        filteredEventLog.print(stdout);
-        long end = clock();
+    if (options.verbose)
+        fprintf(stdout, "# Filtering events from log file %s for traced event number %ld from event number %ld to event number %ld\n",
+            options.inputFileName, tracedEventNumber, options.fromEventNumber, options.toEventNumber);
 
-        fprintf(stderr, "Number of events parsed: %ld and number of lines read: %ld and number of bytes read: %ld completed in %g seconds\n",
-            Event::getNumParsedEvent(), fileReader->getNumReadLines(), fileReader->getNumReadBytes(), (double)(end - begin) / CLOCKS_PER_SEC);
-    } catch (Exception *e) {
-        fprintf(stderr, "Error: %s\n", e->message());
-    }
-}
-        
-void consequences(int argc, char **argv)
-{
-    try {
-        long tracedEventNumber = atol(argv[3]);
-        std::set<int> *moduleIds = new std::set<int>();
+    FileReader *fileReader = new FileReader(options.inputFileName);
+    EventLog *eventLog = new EventLog(fileReader);
+    FilteredEventLog filteredEventLog(eventLog, NULL, tracedEventNumber, options.traceBackward, options.traceForward, options.fromEventNumber, options.toEventNumber);
 
-        for (int i = 4; i < argc; i++)
-            moduleIds->insert(atoi(argv[i]));
+    long begin = clock();
+    filteredEventLog.print(options.outputFile);
+    long end = clock();
 
-        fprintf(stderr, "Filtering log file: %s for event number: %ld\n", argv[2], tracedEventNumber);
-    
-        FileReader *fileReader = new FileReader(argv[2]);
-        EventLog *eventLog = new EventLog(fileReader);
-        FilteredEventLog filteredEventLog(eventLog, moduleIds, tracedEventNumber, true, true);
-        FilteredEvent *filteredEvent = filteredEventLog.getEventForEventNumber(tracedEventNumber);
-        MessageDependencyList *messageDependencies = filteredEvent->getConsequences();
-
-        for (MessageDependencyList::iterator it = messageDependencies->begin(); it != messageDependencies->end(); it++)
-            (*it)->print(stdout);
-
-        fprintf(stderr, "Number of events parsed: %d and number of lines read: %ld\n", Event::getNumParsedEvent(), fileReader->getNumReadLines());
-    } catch (Exception *e) {
-        fprintf(stderr, "Error: %s\n", e->message());
-    }
+    if (options.verbose)
+        fprintf(stdout, "# Parsing of %ld events, %ld lines and %ld bytes form log file %s completed in %g seconds\n", eventLog->getNumParsedEvents(), fileReader->getNumReadLines(), fileReader->getNumReadBytes(), options.inputFileName, (double)(end - begin) / CLOCKS_PER_SEC);
 }
         
 void usage()
 {
-    fprintf(stderr, "Usage:\n");
-    fprintf(stderr, " eventlogtool readlines <logfile>\n");
-    fprintf(stderr, " eventlogtool loadevents <logfile>\n");
-    fprintf(stderr, " eventlogtool offsets <logfile> [<eventnumber>*]\n");
-    fprintf(stderr, " eventlogtool echo <logfile> <starteventnumber> <endeventnumber>\n");
-    fprintf(stderr, " eventlogtool filter <logfile> <tracedEventNumber> <fromeventnumber> <toeventnumber>\n");
-    fprintf(stderr, " eventlogtool consequences <logfile> <tracedEventNumber> <moduleid>*\n");
+    fprintf(stderr, ""
+"Usage:\n"
+"   eventlogtool <command> [options]* [input-file-name]\n"
+"\n"
+"   Commands:\n"
+"      readlines  - reads the input lines one at a time and outputs nothing, options are ignored.\n"
+"      loadevents - loads the whole input file at once into memory and outputs nothing, options are ignored.\n"
+"      offsets    - prints the file offsets for the given even numbers (-e) one per line, all other options are ignored\n"
+"      echo       - echos the input to the output, range options are supported\n"
+"      filter     - filters the input according to the varios options, only one event number is traced, but\n"
+"                   it may be outside of the specified event number or simulation time region.\n"
+"\n"
+"   Options: Not all options may be used for all commands. Some options optionally accept a list of\n"
+"            space separated tokens as a single parameter. Name and type filters may include patterns.\n"
+"      input-file-name                   <file-name>\n"
+"      -o      --output                  <file-name>\n"
+"         defaults to standard output\n"
+"      -fe     --from-event-number       <integer>\n"
+"         inclusive\n"
+"      -te     --to-event-number         <integer>\n"
+"         inclusive\n"
+"      -ft     --from-simulation-time    <number>\n"
+"         inclusive\n"
+"      -tt     --to-simulation-time      <number>\n"
+"         inclusive\n"
+"      -e      --event-numbers           <integer>+\n"
+"      -b      --omit-trace-backward\n"
+"      -f      --omit-trace-forward\n"
+"      -mi     --module-ids              <integer>+\n"
+"         compound module ids are allowed\n"
+"      -mn     --module-names            <pattern>+\n"
+"      -mt     --module-types            <pattern>+\n"
+"      -sid    --message-ids             <integer>+\n"
+"      -stid   --message-tids            <integer>+\n"
+"      -seid   --message-eids            <integer>+\n"
+"      -setid  --message-etids           <integer>+\n"
+"      -sn     --message-names           <pattern>+\n"
+"      -st     --message-types           <pattern>+\n"
+"      -ol     --omit-log-lines\n"
+"      -v      --verbose\n"
+"         prints performance information\n");
 }
 
 int main(int argc, char **argv)
 {
-    if (argc<2)
+    if (argc < 2)
         usage();
-    else if (!strcmp(argv[1], "readlines"))
-        readLines(argc, argv);
-    else if (!strcmp(argv[1], "loadevents"))
-        loadEvents(argc, argv);
-    else if (!strcmp(argv[1], "offsets"))
-        printOffsets(argc, argv);
-    else if (!strcmp(argv[1], "echo"))
-        echo(argc, argv);
-    else if (!strcmp(argv[1], "filter"))
-        filter(argc, argv);
-    else if (!strcmp(argv[1], "consequences"))
-        consequences(argc, argv);
-    else
-        usage();
+    else {
+        char *command = argv[1];
+        Options options;
+        LineTokenizer tokenizer;
+
+        for (int i = 2; i < argc; i++) {
+            if (!strcmp(argv[i], "-o") || !strcmp(argv[i], "--output"))
+                options.outputFileName = argv[++i];
+            else if (!strcmp(argv[i], "-v") || !strcmp(argv[i], "--verbose"))
+                options.verbose = true;
+            else if (!strcmp(argv[i], "-fe") || !strcmp(argv[i], "--from-event-number"))
+                options.fromEventNumber = atol(argv[++i]);
+            else if (!strcmp(argv[i], "-te") || !strcmp(argv[i], "--to-event-number"))
+                options.toEventNumber = atol(argv[++i]);
+            else if (!strcmp(argv[i], "-e") || !strcmp(argv[i], "--event-numbers")) {
+                i++;
+                tokenizer.tokenize(argv[i], strlen(argv[i]));
+                options.eventNumbers = new std::vector<long>();
+                char **tokens = tokenizer.tokens();
+
+                for (int j = 0; j < tokenizer.numTokens(); j++)
+                    options.eventNumbers->push_back(atol(tokens[j]));
+            }
+            else if (!strcmp(argv[i], "-b") || !strcmp(argv[i], "--trace-backward"))
+                options.traceBackward = true;
+            else if (!strcmp(argv[i], "-f") || !strcmp(argv[i], "--trace-forward"))
+                options.traceForward = true;
+            else if (i == argc - 1)
+                options.inputFileName = argv[i];
+
+            // TODO: some options still not handled
+        }
+
+        if (options.outputFileName)
+            options.outputFile = fopen(options.outputFileName, "wb");
+        else
+            options.outputFile = stdout;
+
+        try {
+            if (!strcmp(command, "readlines"))
+                readLines(options);
+            else if (!strcmp(command, "loadevents"))
+                loadEvents(options);
+            else if (!strcmp(command, "offsets"))
+                printOffsets(options);
+            else if (!strcmp(command, "echo"))
+                echo(options);
+            else if (!strcmp(command, "filter"))
+                filter(options);
+            else
+                usage();
+        }
+        catch (Exception *e) {
+            fprintf(stderr, "Error: %s\n", e->message());
+        }
+
+        if (options.outputFileName)
+            fclose(options.outputFile);
+    }
+
     return 0;
 }

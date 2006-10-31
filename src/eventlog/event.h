@@ -53,8 +53,6 @@ class Event : public IEvent
         MessageDependencyList *causes; // the arrival message sends of messages which we send in this event
         MessageDependencyList *consequences; // message sends in this event
 
-        static long numParsedEvent; // the number of events parsed so far
-
     public:
         Event(EventLog *eventLog);
         ~Event();
@@ -63,7 +61,6 @@ class Event : public IEvent
          * Parse an event starting at the given offset.
          */
         long parse(FileReader *reader, long offset);
-        static long getNumParsedEvent() { return numParsedEvent; }
 
         // IEvent interface
         virtual IEventLog *getEventLog();

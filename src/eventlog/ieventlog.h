@@ -28,6 +28,8 @@ class IEventLog
         long lastNeighbourEventNumber;
         IEvent *lastNeighbourEvent;
 
+        long numParsedEvents;
+
     public:
         IEventLog();
         virtual ~IEventLog() {}
@@ -99,6 +101,11 @@ class IEventLog
          * The given event numbers may not be included in the log.
          */
         virtual void print(FILE *file = stdout, long fromEventNumber = -1, long toEventNumber = -1);
+
+        /**
+         * Returns the number of events parsed so far.
+         */
+        long getNumParsedEvents() { return numParsedEvents; }
 };
 
 #endif

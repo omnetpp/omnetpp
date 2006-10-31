@@ -184,6 +184,7 @@ Event *EventLog::getEventForBeginOffset(long beginOffset)
     {
         Event *event = new Event(this);
         event->parse(reader, beginOffset);
+        numParsedEvents++;
         return cacheEvent(event);
     }
     else {

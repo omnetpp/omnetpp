@@ -52,8 +52,9 @@ long FilteredEventLog::getApproximateNumberOfEvents()
     if (approximateNumberOfEvents == -1)
     {
         if (tracedEventNumber != -1) {
-            // TODO: start from traced event number and go forward/backward and return approximation
-            throw new Exception("Not yet implemented");
+            // TODO: this is clearly not good and should return a much better approximationk
+            // TODO: maybe start from traced event number and go forward/backward and return approximation
+            return 1000;
         }
         else {
             // TODO: what if filter is event range limited?
@@ -107,7 +108,8 @@ long FilteredEventLog::getApproximateNumberOfEvents()
 double FilteredEventLog::getApproximatePercentageForEventNumber(long eventNumber)
 {
     if (tracedEventNumber != -1)
-        throw new Exception("Not yet implemented");
+        // TODO: this is clearly not good and should return a much better approximationk
+        return IEventLog::getApproximatePercentageForEventNumber(eventNumber);
     else
         // TODO: what if filter is event range limited
         return IEventLog::getApproximatePercentageForEventNumber(eventNumber);

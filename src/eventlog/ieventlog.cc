@@ -18,6 +18,7 @@ IEventLog::IEventLog()
 {
     lastNeighbourEventNumber = -1;
     lastNeighbourEvent = NULL;
+    numParsedEvents = 0;
 }
 
 void IEventLog::printEvents(FILE *file, long fromEventNumber, long toEventNumber)
