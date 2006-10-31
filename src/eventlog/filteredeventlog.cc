@@ -128,17 +128,17 @@ FilteredEvent *FilteredEventLog::getNeighbourEvent(IEvent *event, long distance)
 bool FilteredEventLog::matchesFilter(IEvent *event)
 {
     EASSERT(event);
-    EventNumberToFilterMatchesMap::iterator it = eventNumberToFilterMatchesMap.find(event->getEventNumber());
+    EventNumberToBooleanMap::iterator it = eventNumberToFilterMatchesFlagMap.find(event->getEventNumber());
 
     // if cached, return it
-    if (it != eventNumberToFilterMatchesMap.end())
+    if (it != eventNumberToFilterMatchesFlagMap.end())
         return it->second;
 
     //printf("*** Matching filter to event: %ld\n", event->getEventNumber());
 
     bool matches = matchesEvent(event);
     matches &= matchesDependency(event);
-    eventNumberToFilterMatchesMap[event->getEventNumber()] = matches;
+    eventNumberToFilterMatchesFlagMap[event->getEventNumber()] = matches;
     return matches;
 }
 
@@ -173,11 +173,11 @@ bool FilteredEventLog::matchesDependency(IEvent *event)
 
     // event is cause of traced event
     if (tracedEventNumber > event->getEventNumber() && includeCauses)
-        return consequencesEvent(event, eventLog->getEventForEventNumber(tracedEventNumber));
+        return isCauseOfTracedEvent(event);
 
     // event is consequence of traced event
-//    if (tracedEventNumber < event->getEventNumber() && includeConsequences)
-//        return causesEvent(eventLog->getEventForEventNumber(tracedEventNumber), event);
+    if (tracedEventNumber < event->getEventNumber() && includeConsequences)
+        return isConsequenceOfTracedEvent(event);
 
     return false;
 }
@@ -258,42 +258,17 @@ FilteredEvent* FilteredEventLog::getMatchingEventInDirection(long eventNumber, b
     return NULL;
 }
 
-bool FilteredEventLog::causesEvent(IEvent *cause, IEvent *consequence)
+bool FilteredEventLog::isCauseOfTracedEvent(IEvent *cause)
 {
-    // like consequenceEvent(), but searching from the opposite direction
-    MessageDependencyList *causes = consequence->getCauses();
+    EventNumberToBooleanMap::iterator it = eventNumberToTraceableEventFlagMap.find(cause->getEventNumber());
 
-    for (MessageDependencyList::iterator it = causes->begin(); it != causes->end(); it++)
-    {
-        MessageDependency *messageDependency = *it;
-        IEvent *causeEvent = messageDependency->getCauseEvent();
+    // check cache
+    if (it != eventNumberToTraceableEventFlagMap.end())
+        return it->second;
 
-        if (causeEvent)
-        {
-            EventNumberToFilterMatchesMap::iterator it = eventNumberToFilterMatchesMap.find(causeEvent->getEventNumber());
-
-            // check cache
-            if (it != eventNumberToFilterMatchesMap.end() && it->second)
-                return true;
-
-            // if we reached the cause event, we're done
-            if (cause->getEventNumber() == causeEvent->getEventNumber())
-                return true;
-
-            // try depth-first search if we haven't passed the cause event yet
-            if (cause->getEventNumber() < causeEvent->getEventNumber() &&
-                causesEvent(cause, causeEvent))
-                return true;
-        }
-    }
-
-    return false;
-}
-
-bool FilteredEventLog::consequencesEvent(IEvent *cause, IEvent *consequence)
-{
     // returns true if "consequence" can be reached from "cause", using
     // the consequences chain. We use depth-first search.
+    bool result = false;
     MessageDependencyList *consequences = cause->getConsequences();
 
     for (MessageDependencyList::iterator it = consequences->begin(); it != consequences->end(); it++)
@@ -303,24 +278,53 @@ bool FilteredEventLog::consequencesEvent(IEvent *cause, IEvent *consequence)
 
         if (consequenceEvent)
         {
-            EventNumberToFilterMatchesMap::iterator it = eventNumberToFilterMatchesMap.find(consequenceEvent->getEventNumber());
-
-            // check cache
-            if (it != eventNumberToFilterMatchesMap.end() && it->second)
-                return true;
-
             // if we reached the consequence event, we're done
-            if (consequence->getEventNumber() == consequenceEvent->getEventNumber())
-                return true;
+            if (tracedEventNumber == consequenceEvent->getEventNumber())
+                result = true;
 
             // try depth-first search if we haven't passed the consequence event yet
-            if (consequence->getEventNumber() > consequenceEvent->getEventNumber() &&
-                consequencesEvent(consequenceEvent, consequence))
-                return true;
+            if (tracedEventNumber > consequenceEvent->getEventNumber() &&
+                isCauseOfTracedEvent(consequenceEvent))
+                result = true;
         }
     }
 
-    return false;
+    return result;
+}
+
+bool FilteredEventLog::isConsequenceOfTracedEvent(IEvent *consequence)
+{
+    EventNumberToBooleanMap::iterator it = eventNumberToTraceableEventFlagMap.find(consequence->getEventNumber());
+
+    // check cache
+    if (it != eventNumberToTraceableEventFlagMap.end())
+        return it->second;
+
+    // like consequenceEvent(), but searching from the opposite direction
+    bool result = false;
+    MessageDependencyList *causes = consequence->getCauses();
+
+    for (MessageDependencyList::iterator it = causes->begin(); it != causes->end(); it++)
+    {
+        MessageDependency *messageDependency = *it;
+        IEvent *causeEvent = messageDependency->getCauseEvent();
+
+        if (causeEvent)
+        {
+            // if we reached the cause event, we're done
+            if (tracedEventNumber == causeEvent->getEventNumber())
+                result = true;
+
+            // try depth-first search if we haven't passed the cause event yet
+            if (tracedEventNumber < causeEvent->getEventNumber() &&
+                isConsequenceOfTracedEvent(causeEvent))
+                result = true;
+        }
+    }
+
+    eventNumberToTraceableEventFlagMap[consequence->getEventNumber()] = result;
+
+    return result;
 }
 
 FilteredEvent* FilteredEventLog::cacheFilteredEvent(long eventNumber)

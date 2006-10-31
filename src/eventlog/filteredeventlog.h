@@ -48,8 +48,9 @@ class FilteredEventLog : public IEventLog
         typedef std::map<long, FilteredEvent *> EventNumberToFilteredEventMap;
         EventNumberToFilteredEventMap eventNumberToFilteredEventMap;
 
-        typedef std::map<long, bool> EventNumberToFilterMatchesMap;
-        EventNumberToFilterMatchesMap eventNumberToFilterMatchesMap; // a cache of whether the given event number matches the filter or not
+        typedef std::map<long, bool> EventNumberToBooleanMap;
+        EventNumberToBooleanMap eventNumberToFilterMatchesFlagMap; // a cache of whether the given event number matches the filter or not
+        EventNumberToBooleanMap eventNumberToTraceableEventFlagMap;
 
         FilteredEvent *firstMatchingEvent;
         FilteredEvent *lastMatchingEvent;
@@ -93,8 +94,8 @@ class FilteredEventLog : public IEventLog
         FilteredEvent *cacheFilteredEvent(FilteredEvent *filteredEvent);
         bool matchesEvent(IEvent *event);
         bool matchesDependency(IEvent *event);
-        bool causesEvent(IEvent *cause, IEvent *consequence);
-        bool consequencesEvent(IEvent *cause, IEvent *consequence);
+        bool isCauseOfTracedEvent(IEvent *cause);
+        bool isConsequenceOfTracedEvent(IEvent *consequence);
         double getApproximateMatchingEventRatio();
 };
 

@@ -22,6 +22,7 @@ FilteredEvent::FilteredEvent(FilteredEventLog *filteredEventLog, long eventNumbe
     this->filteredEventLog = filteredEventLog;
 
     causeEventNumber = -1;
+    cause = NULL;
     causes = NULL;
     consequences = NULL;
 }
