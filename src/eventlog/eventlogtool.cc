@@ -85,13 +85,13 @@ void printOffsets(int argc, char **argv)
 void echo(int argc, char **argv)
 {
     try {
-        long from = argc > 3 ? atol(argv[3]) : -1;
-        long to = argc > 4 ? atol(argv[4]) : -1;
-        fprintf(stderr, "Echoing log file %s from event number %d to %d\n", argv[2], from, to);
+        long fromEventNumber = argc > 3 ? atol(argv[3]) : -1;
+        long toEventNumber = argc > 4 ? atol(argv[4]) : -1;
+        fprintf(stderr, "Echoing log file %s from event number %d to %d\n", argv[2], fromEventNumber, toEventNumber);
     
         FileReader *fileReader = new FileReader(argv[2]);
         EventLog eventLog(fileReader);
-        eventLog.print(stdout, from, to);
+        eventLog.print(stdout, fromEventNumber, toEventNumber);
     } catch (Exception *e) {
         fprintf(stderr, "Error: %s\n", e->message());
     }
@@ -101,17 +101,21 @@ void filter(int argc, char **argv)
 {
     try {
         long tracedEventNumber = atol(argv[3]);
-        long fromEventNumber = atol(argv[4]);
-        long toEventNumber = atol(argv[5]);
+        long fromEventNumber = argc > 4 ? atol(argv[4]) : -1;
+        long toEventNumber = argc > 5 ? atol(argv[5]) : -1;
         fprintf(stderr, "Filtering log file: %s for event number: %ld from event number: %ld to event number: %ld\n",
             argv[2], tracedEventNumber, fromEventNumber, toEventNumber);
     
         FileReader *fileReader = new FileReader(argv[2]);
         EventLog *eventLog = new EventLog(fileReader);
         FilteredEventLog filteredEventLog(eventLog, NULL, tracedEventNumber, true, true, fromEventNumber, toEventNumber);
-        filteredEventLog.print(stdout);
 
-        fprintf(stderr, "Number of events parsed: %d and number of lines read: %ld\n", Event::getNumParsedEvent(), fileReader->getNumReadLines());
+        long begin = clock();
+        filteredEventLog.print(stdout);
+        long end = clock();
+
+        fprintf(stderr, "Number of events parsed: %ld and number of lines read: %ld and number of bytes read: %ld completed in %g seconds\n",
+            Event::getNumParsedEvent(), fileReader->getNumReadLines(), fileReader->getNumReadBytes(), (double)(end - begin) / CLOCKS_PER_SEC);
     } catch (Exception *e) {
         fprintf(stderr, "Error: %s\n", e->message());
     }

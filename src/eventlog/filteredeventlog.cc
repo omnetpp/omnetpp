@@ -176,8 +176,8 @@ bool FilteredEventLog::matchesDependency(IEvent *event)
         return consequencesEvent(event, eventLog->getEventForEventNumber(tracedEventNumber));
 
     // event is consequence of traced event
-    if (tracedEventNumber < event->getEventNumber() && includeConsequences)
-        return causesEvent(eventLog->getEventForEventNumber(tracedEventNumber), event);
+//    if (tracedEventNumber < event->getEventNumber() && includeConsequences)
+//        return causesEvent(eventLog->getEventForEventNumber(tracedEventNumber), event);
 
     return false;
 }
