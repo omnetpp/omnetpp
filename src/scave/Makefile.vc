@@ -11,7 +11,6 @@ CFLAGS=$(CFLAGS) /DWIN32_DLL
 # Local definitions
 #
 COPTS=$(CFLAGS) $(XML_CFLAGS) -I. -I../common /Fd"scave.pdb"
-x
 OBJS= arraybuilder.obj channel.obj commonnodes.obj compoundfilter.obj \
       dataflowmanager.obj datasorter.obj diffquot.obj \
       filewriter.obj filternodes.obj stddev.obj \

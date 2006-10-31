@@ -174,9 +174,9 @@ class CmpBase {
         CmpBase(ResultFileManager *m) {mgr = m;}
 };
 
-class CmpFileAndRun : public CmpBase {
+class FileAndRunLess : public CmpBase {
     public:
-        CmpFileAndRun(ResultFileManager *m) : CmpBase(m) {}
+        FileAndRunLess(ResultFileManager *m) : CmpBase(m) {}
         bool operator()(ID a, ID b) { // implements operator<
             const FileRun *da = mgr->getItem(a).fileRunRef;
             const FileRun *db = mgr->getItem(b).fileRunRef;
@@ -189,9 +189,24 @@ class CmpFileAndRun : public CmpBase {
         }
 };
 
-class CmpRunAndFile : public CmpBase {
+class FileAndRunMore : public CmpBase {
     public:
-        CmpRunAndFile(ResultFileManager *m) : CmpBase(m) {}
+        FileAndRunMore(ResultFileManager *m) : CmpBase(m) {}
+        bool operator()(ID a, ID b) { // implements operator<
+            const FileRun *da = mgr->getItem(a).fileRunRef;
+            const FileRun *db = mgr->getItem(b).fileRunRef;
+            if (da==db)
+                return false;
+            else if (da->fileRef==db->fileRef)
+                return db->runRef->runName < da->runRef->runName;
+            else
+                return db->fileRef->filePath < da->fileRef->filePath;
+        }
+};
+
+class RunAndFileLess : public CmpBase {
+    public:
+        RunAndFileLess(ResultFileManager *m) : CmpBase(m) {}
         bool operator()(ID a, ID b) { // implements operator<
             const FileRun *da = mgr->getItem(a).fileRunRef;
             const FileRun *db = mgr->getItem(b).fileRunRef;
@@ -204,16 +219,41 @@ class CmpRunAndFile : public CmpBase {
         }
 };
 
-void IDList::sortByFileAndRun(ResultFileManager *mgr)
+class RunAndFileMore : public CmpBase {
+    public:
+        RunAndFileMore(ResultFileManager *m) : CmpBase(m) {}
+        bool operator()(ID a, ID b) { // implements operator<
+            const FileRun *da = mgr->getItem(a).fileRunRef;
+            const FileRun *db = mgr->getItem(b).fileRunRef;
+            if (da==db)
+                return false;
+            else if (da->runRef==db->runRef)
+                return db->fileRef->filePath < da->fileRef->filePath;
+            else
+                return db->runRef->runName < da->runRef->runName;
+        }
+};
+
+void IDList::sortByFileAndRun(ResultFileManager *mgr, bool ascending)
 {
     checkV();
-    std::sort(v->begin(), v->end(), CmpFileAndRun(mgr));
+    if (v->size()>=2 && FileAndRunLess(mgr)(v->at(0), v->at(v->size()-1))!=ascending)
+       reverse();
+    if (ascending)
+        std::sort(v->begin(), v->end(), FileAndRunLess(mgr));
+    else
+        std::sort(v->begin(), v->end(), FileAndRunMore(mgr));
 }
 
-void IDList::sortByRunAndFile(ResultFileManager *mgr)
+void IDList::sortByRunAndFile(ResultFileManager *mgr, bool ascending)
 {
     checkV();
-    std::sort(v->begin(), v->end(), CmpRunAndFile(mgr));
+    if (v->size()>=2 && RunAndFileLess(mgr)(v->at(0), v->at(v->size()-1))!=ascending)
+       reverse();
+    if (ascending)
+        std::sort(v->begin(), v->end(), RunAndFileLess(mgr));
+    else
+        std::sort(v->begin(), v->end(), RunAndFileMore(mgr));
 }
 
 #define CMP(clazz,method) class clazz : public CmpBase { \
@@ -318,6 +358,43 @@ void IDList::sortVectorsByStdDev(ResultFileManager *mgr, bool ascending)
 {
     checkIntegrityAllVectors(mgr);
     // TODO
+}
+
+
+class RunAttributeLess : CmpBase {
+	private:
+		const char* attrName;
+	public:
+		RunAttributeLess(ResultFileManager* m, const char* attrName)
+			: CmpBase(m), attrName(attrName) {}
+		bool operator()(ID a, ID b) {
+			const char* aValue = mgr->uncheckedGetItem(a).fileRunRef->runRef->getAttribute(attrName);
+			const char* bValue = mgr->uncheckedGetItem(b).fileRunRef->runRef->getAttribute(attrName);
+			return ((aValue && bValue) ? less(aValue, bValue) : aValue);
+		}
+};
+
+class RunAttributeMore : CmpBase {
+	private:
+		const char* attrName;
+	public:
+		RunAttributeMore(ResultFileManager* m, const char* attrName)
+			: CmpBase(m), attrName(attrName) {}
+		bool operator()(ID a, ID b) {
+			const char* aValue = mgr->uncheckedGetItem(a).fileRunRef->runRef->getAttribute(attrName);
+			const char* bValue = mgr->uncheckedGetItem(b).fileRunRef->runRef->getAttribute(attrName);
+			return ((bValue && aValue) ? less(bValue, aValue) : bValue);
+		}
+};
+
+void IDList::sortByRunAttribute(ResultFileManager *mgr, const char* runAttribute, bool ascending) {
+	checkIntegrity(mgr);
+    if (v->size()>=2 && RunAttributeLess(mgr, runAttribute)(v->at(0), v->at(v->size()-1)) != ascending)
+       reverse();
+	if (ascending)
+		std::sort(v->begin(), v->end(), RunAttributeLess(mgr, runAttribute));
+	else
+		std::sort(v->begin(), v->end(), RunAttributeMore(mgr, runAttribute));
 }
 
 void IDList::reverse()

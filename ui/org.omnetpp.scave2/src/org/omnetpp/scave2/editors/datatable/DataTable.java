@@ -245,7 +245,7 @@ public class DataTable extends Table {
 		if (COL_DIRECTORY.equals(column))
 			idlist.sortByDirectory(manager, ascending);
 		else if (COL_FILE_RUN.equals(column))
-			idlist.sortByFileAndRun(manager); // XXX ascending
+			idlist.sortByFileAndRun(manager, ascending);
 		else if (COL_RUN_ID.equals(column))
 			idlist.sortByRun(manager, ascending);
 		else if (COL_MODULE.equals(column))
@@ -260,10 +260,12 @@ public class DataTable extends Table {
 			idlist.sortVectorsByMean(manager, ascending);
 		else if (COL_STDDEV.equals(column))
 			idlist.sortVectorsByStdDev(manager, ascending);
-		else {
-			// XXX experiment/measurement/replication not yet supported
-			return;
-		}
+		else if (COL_EXPERIMENT.equals(column))
+			idlist.sortByRunAttribute(manager, RunAttribute.EXPERIMENT, ascending);
+		else if (COL_MEASUREMENT.equals(column))
+			idlist.sortByRunAttribute(manager, RunAttribute.MEASUREMENT, ascending);
+		else if (COL_REPLICATION.equals(column))
+			idlist.sortByRunAttribute(manager, RunAttribute.REPLICATION, ascending);
 		setIDList(idlist);
 	}
 	

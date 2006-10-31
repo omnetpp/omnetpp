@@ -68,8 +68,8 @@ class IDList
         void intersect(IDList& ids);  // this = intersection(this,ids)
         IDList getSubsetByIndices(int *array, int n) const;
         IDList dup() const;
-        void sortByFileAndRun(ResultFileManager *mgr);
-        void sortByRunAndFile(ResultFileManager *mgr);
+        void sortByFileAndRun(ResultFileManager *mgr, bool ascending);
+        void sortByRunAndFile(ResultFileManager *mgr, bool ascending);
         int itemTypes() const;  // SCALAR, VECTOR or their binary OR
         bool areAllScalars() const;
         bool areAllVectors() const;
@@ -83,6 +83,7 @@ class IDList
         void sortVectorsByLength(ResultFileManager *mgr, bool ascending);
         void sortVectorsByMean(ResultFileManager *mgr, bool ascending);
         void sortVectorsByStdDev(ResultFileManager *mgr, bool ascending);
+		void sortByRunAttribute(ResultFileManager *mgr, const char* runAttr, bool ascending);
         void reverse();
         void toByteArray(char *array, int n) const;
         void fromByteArray(char *array, int n);
