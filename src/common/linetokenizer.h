@@ -24,6 +24,9 @@
 class LineTokenizer
 {
   private:
+    int lineBufferSize;
+    char *lineBuffer;
+
     // storage of tokens
     char **vec;
     int vecsize;
@@ -44,7 +47,7 @@ class LineTokenizer
      * Tokenizes the line. Returns the number of tokens on the line.
      * Throws exception on error.
      */
-    int tokenize(char *line);
+    int tokenize(char *line, int length);
 
     /**
      * Number of tokens read by the last tokenize() call.

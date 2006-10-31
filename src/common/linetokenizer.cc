@@ -23,17 +23,30 @@ LineTokenizer::LineTokenizer()
 {
     vecsize = 16000;  // max 16,000 tokens per line (still vec<64K)
     vec = new char *[vecsize];
+
+    lineBufferSize = 1000;
+    lineBuffer = new char[lineBufferSize];
 }
 
 LineTokenizer::~LineTokenizer()
 {
     delete [] vec;
+    delete lineBuffer;
 }
 
-int LineTokenizer::tokenize(char *line)
+int LineTokenizer::tokenize(char *line, int length)
 {
+    if (length > lineBufferSize)
+        throw new Exception("Cannot tokenize lines longer than %d", lineBufferSize);
+
+    strncpy(lineBuffer, line, lineBufferSize);
+
+    char *s = lineBuffer + length - 1;
+    while (s >= lineBuffer && (*s == '\r' || *s == '\n'))
+        *s-- = '\0';
+
     numtokens = 0;
-    char *s = line;
+    s = lineBuffer;
 
     // loop through the tokens on the line
     for (;;)
