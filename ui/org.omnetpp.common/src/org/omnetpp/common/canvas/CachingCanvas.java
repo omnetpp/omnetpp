@@ -9,6 +9,7 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.graphics.Transform;
 import org.eclipse.swt.widgets.Composite;
 import org.omnetpp.common.canvas.ITileCache.Tile;
 
@@ -59,10 +60,8 @@ public abstract class CachingCanvas extends LargeScrollableCanvas {
 		
 		if (!doCaching) {
 			// paint directly on the GC
-			Graphics graphics = new SWTGraphics(gc);
-			paintCachableLayer(graphics);
+			paintCachableLayer(gc);
 			paintNoncachableLayer(gc);
-			graphics.dispose();
 		}
 		else {
 			Rectangle clip = gc.getClipping();
@@ -90,13 +89,15 @@ public abstract class CachingCanvas extends LargeScrollableCanvas {
 				{
 					Image image = new Image(getDisplay(), rect);
 					GC imgc = new GC(image);
-					Graphics imgraphics = new SWTGraphics(imgc);  // we need to use Graphics because GC doesn't have translate() support
-					imgraphics.translate(-rect.x, -rect.y);
-					imgraphics.setClip(new org.eclipse.draw2d.geometry.Rectangle(rect));
+					Transform transform = new Transform(getDisplay());
+					imgc.getTransform(transform);
+					transform.translate(-rect.x, -rect.y);
+					imgc.setTransform(transform);
+					imgc.setClipping(rect);
+					
+					paintCachableLayer(imgc);
 	
-					paintCachableLayer(imgraphics);
-	
-					imgraphics.dispose();
+					transform.dispose();
 					imgc.dispose();
 					
 					// draw the image on the screen, and also add it to the cache
@@ -140,7 +141,7 @@ public abstract class CachingCanvas extends LargeScrollableCanvas {
 	 * Paint everything in this method that can be cached. This may be called several
 	 * times during a repaint, with different clip rectangles.
 	 */
-	protected abstract void paintCachableLayer(Graphics graphics);
+	protected abstract void paintCachableLayer(GC gc);
 
 	/**
 	 * Paint in this method anything that you don't want to be cached 

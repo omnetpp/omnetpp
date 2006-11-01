@@ -1,7 +1,10 @@
 package org.omnetpp.common.util;
 
+import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Insets;
-import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.draw2d.geometry.Point;
+import org.eclipse.draw2d.geometry.Rectangle;
+import org.eclipse.draw2d.geometry.Transform;
 
 /**
  * Various 2D geometry routines.
@@ -12,9 +15,9 @@ public class GeomUtils {
 	
 	public static Insets subtract(Rectangle outer, Rectangle inner) {
 		return new Insets(Math.max(inner.y - outer.y, 0),
-						  Math.max(inner.x - outer.x, 0),
-						  Math.max(outer.y + outer.height - inner.y - inner.height, 0),
-						  Math.max(outer.x + outer.width - inner.x - inner.width, 0));
+				  Math.max(inner.x - outer.x, 0),
+				  Math.max(outer.y + outer.height - inner.y - inner.height, 0),
+				  Math.max(outer.x + outer.width - inner.x - inner.width, 0));
 	}
 	
 	public static Rectangle add(Rectangle rect, Insets insets) {
@@ -31,5 +34,15 @@ public class GeomUtils {
 				rect.y + insets.top,
 				rect.width - insets.getWidth(),
 				rect.height - insets.getHeight());
+	}
+	
+	public static Dimension rotatedSize(Dimension size, double rotation) {
+		Transform transform = new Transform();
+		transform.setRotation(Math.toRadians(rotation));
+		Point p1 = transform.getTransformed(new Point(size.width / 2, size.height / 2));
+		Point p2 = transform.getTransformed(new Point(size.width / 2, - size.height / 2));
+		return new Dimension(
+				Math.max(Math.abs(p1.x), Math.abs(p2.x)),
+				Math.max(Math.abs(p1.y), Math.abs(p2.y)));
 	}
 }

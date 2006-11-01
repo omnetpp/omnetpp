@@ -1034,8 +1034,11 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 	}
 	
 	@Override
-	protected void paintCachableLayer(Graphics graphics) {
+	protected void paintCachableLayer(GC gc) {
+		Graphics graphics = new SWTGraphics(gc);
 		paintFigure(graphics);
+		graphics.dispose();
+		
 	}
 
 	@Override

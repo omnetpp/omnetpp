@@ -24,6 +24,7 @@ import java.util.Map;
 
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.draw2d.Graphics;
+import org.eclipse.draw2d.SWTGraphics;
 import org.eclipse.draw2d.geometry.Insets;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseEvent;
@@ -33,7 +34,7 @@ import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.jfree.data.xy.XYDataset;
@@ -322,19 +323,21 @@ public class VectorChart extends ChartCanvas {
 	@Override
 	protected void beforePaint(GC gc) {
 		// Calculate space occupied by title and legend and set insets accordingly
-		Rectangle remaining = title.layout(gc, getClientArea());
+		Rectangle area = new Rectangle(getClientArea());
+		Rectangle remaining = title.layout(gc, area);
 		remaining = legend.layout(gc, remaining);
 		remaining = tickLabels.layout(gc, remaining);
 		remaining = axes.layout(gc, remaining);
 		remaining = crosshair.layout(gc, remaining);
 
-		Insets insets = GeomUtils.subtract(getClientArea(), remaining);
+		Insets insets = GeomUtils.subtract(area, remaining);
 		setInsets(insets);
 		super.beforePaint(gc);
 	}
 	
 	@Override
-	protected void paintCachableLayer(Graphics graphics) {
+	protected void paintCachableLayer(GC gc) {
+		Graphics graphics = new SWTGraphics(gc);
 		graphics.setAntialias(antialias);
 		for (int series=0; series<dataset.getSeriesCount(); series++) {
 			String key = dataset.getSeriesKey(series).toString();
@@ -345,6 +348,7 @@ public class VectorChart extends ChartCanvas {
 			graphics.setBackgroundColor(color);
 			plotter.plot(dataset, series, graphics, this, symbol);
 		}
+		graphics.dispose();
 	}
 	
 	private IVectorPlotter getPlotter(String key) {
@@ -444,7 +448,7 @@ public class VectorChart extends ChartCanvas {
 			bounds = constraint;
 			int height = gc.getFontMetrics().getHeight();
 			Insets insets = new Insets(height + 4, 40, height + 4, 40);
-			plotBounds = GeomUtils.subtract(constraint, insets);
+			plotBounds = constraint.getCropped(insets);
 
 			gc.setFont(saveFont);
 			
@@ -526,11 +530,10 @@ public class VectorChart extends ChartCanvas {
 		public CrossHair() {
 			addMouseMoveListener(new MouseMoveListener() {
 				public void mouseMove(MouseEvent e) {
-					if (e.button == 0 && e.stateMask == 0) {
-						x = e.x;
-						y = e.y;
-						redraw();
-					}
+					x = e.x;
+					y = e.y;
+					redraw();
+					
 					if (rect != null && rect.contains(x,y))
 						setCursor(CROSS_CURSOR);
 					else

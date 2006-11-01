@@ -3,7 +3,8 @@ package org.omnetpp.scave2.charting;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.draw2d.geometry.Rectangle;
+
 
 /**
  * This class layouts and draws a title on a vector chart.

@@ -7,7 +7,9 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.draw2d.Graphics;
+import org.eclipse.draw2d.SWTGraphics;
+import org.eclipse.draw2d.geometry.Rectangle;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.scave2.model.ChartProperties.LegendAnchor;
 import org.omnetpp.scave2.model.ChartProperties.LegendPosition;
@@ -19,7 +21,7 @@ import org.omnetpp.scave2.model.ChartProperties.LegendPosition;
  */
 public class Legend {
 	
-	static class Item {
+	class Item {
 		String text;
 		Color color;
 		int x, y;	// location relative to the legend top-left
@@ -38,6 +40,7 @@ public class Legend {
 		
 		public void draw(GC gc, int x, int y) {
 			// draw oval
+			if (font != null) gc.setFont(font);
 			gc.setForeground(color);
 			gc.setBackground(color);
 			gc.fillOval(x + 2 , y + (height - 5) / 2, 5, 5);
@@ -221,16 +224,15 @@ public class Legend {
 	public void draw(GC gc) {
 		if (!visible)
 			return;
-		Font saveFont = gc.getFont();
-		if (font != null)
-			gc.setFont(font);
+		Graphics graphics = new SWTGraphics(gc);
+		graphics.pushState();
 		
 		// draw background and border
-		gc.setBackground(ColorFactory.asColor("white"));
-		gc.fillRectangle(bounds);
+		graphics.setBackgroundColor(ColorFactory.asColor("white"));
+		graphics.fillRectangle(bounds);
 		if (drawBorder) {
-			gc.setForeground(ColorFactory.asColor("black"));
-			gc.drawRectangle(bounds);
+			graphics.setForegroundColor(ColorFactory.asColor("black"));
+			graphics.drawRectangle(bounds);
 		}
 		// draw items
 		int left = bounds.x;
@@ -239,6 +241,8 @@ public class Legend {
 			Item item = items.get(i);
 			item.draw(gc, left+item.x, top + item.y);
 		}
-		gc.setFont(saveFont);
+
+		graphics.popState();
+		graphics.dispose();
 	}
 }

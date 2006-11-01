@@ -13,9 +13,14 @@ import java.math.RoundingMode;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
+import org.eclipse.draw2d.Graphics;
+import org.eclipse.draw2d.SWTGraphics;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.graphics.GC;
+import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.swt.widgets.Composite;
+import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.util.Converter;
 import org.omnetpp.scave2.model.ChartProperties.LegendAnchor;
 import org.omnetpp.scave2.model.ChartProperties.LegendPosition;
@@ -56,6 +61,15 @@ public abstract class ChartCanvas extends ZoomableCachingCanvas {
 			setLegendPosition(Converter.stringToEnum(value, LegendPosition.class));
 		else if (PROP_LEGEND_ANCHORING.equals(name))
 			setLegendAnchor(Converter.stringToEnum(value, LegendAnchor.class));
+	}
+	
+	
+	public Axis getHorizontalAxis() {
+		return null;
+	}
+	
+	public Axis getVerticalAxis() {
+		return null;
 	}
 	
 	public void setTitle(String value) {
@@ -167,5 +181,65 @@ public abstract class ChartCanvas extends ZoomableCachingCanvas {
 			
 			return new TickIterator();
 		}
+	}
+	
+	protected abstract class Axis {
+		public abstract Ticks getTicks();
+	}
+	
+	protected static final boolean DEFAULT_SHOW_GRID = false;
+	
+	protected class Grid {
+		private Rectangle rect;
+		protected boolean visible = DEFAULT_SHOW_GRID;
+		
+		public Rectangle layout(GC gc, Rectangle rect) {
+			this.rect = rect;
+			return rect;
+		}
+		
+		public void draw(GC gc) {
+			if (visible) {
+				Graphics graphics = new SWTGraphics(gc);
+				graphics.pushState();
+				
+				graphics.setForegroundColor(ColorFactory.asColor("red"));
+				graphics.drawRectangle(rect);
+				
+				Axis axis;
+				graphics.setForegroundColor(ColorFactory.asColor("black"));
+				graphics.setLineStyle(SWT.LINE_DOT);
+				if ((axis = getHorizontalAxis()) != null) {
+					for (BigDecimal tick : axis.getTicks()) {
+						int x = toCanvasX(tick.doubleValue());
+						graphics.drawLine(x, rect.y, x, rect.y + rect.height);
+					}
+				}
+				if ((axis = getVerticalAxis()) != null) {
+					for (BigDecimal tick : axis.getTicks()) {
+						int y = toCanvasY(tick.doubleValue());
+						graphics.drawLine(rect.x, y, rect.x + rect.width, y);
+					}
+				}
+				
+				graphics.popState();
+				graphics.dispose();
+			}
+		}
+	}
+	
+	protected static class PlotArea {
+		public double minX;
+		public double maxX;
+		public double minY;
+		public double maxY;
+
+		public PlotArea(double minX, double maxX, double minY, double maxY) {
+			this.minX = minX;
+			this.maxX = maxX;
+			this.minY = minY;
+			this.maxY = maxY;
+		}
+		
 	}
 }
