@@ -129,7 +129,7 @@ public class ChartEditForm implements IScaveObjectEditForm {
 		Dataset dataset = ScaveModelUtil.findEnclosingDataset(chart);
 		this.chart = chart;
 		this.type = dataset.getType();
-		this.properties = ChartProperties.createPropertySource(chart);
+		this.properties = ChartProperties.createPropertySource(chart, null);
 		if (type == DatasetType.VECTOR_LITERAL) {
 			IDList idlist = DatasetManager.getIDListFromDataset(manager, dataset, chart);
 			String[] names = DatasetManager.getResultItemIDs(idlist, manager);
@@ -461,7 +461,7 @@ public class ChartEditForm implements IScaveObjectEditForm {
 	}
 	
 	private void setProperties(List<Property> properties) {
-		ChartProperties props = ChartProperties.createPropertySource(chart);
+		ChartProperties props = ChartProperties.createPropertySource(chart, null);
 		// Titles
 		graphTitleText.setText(props.getGraphTitle());
 		graphTitleFontText.setText(props.getStringProperty(PROP_GRAPH_TITLE_FONT)); // XXX font

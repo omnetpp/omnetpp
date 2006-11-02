@@ -8,10 +8,17 @@ import org.eclipse.emf.edit.command.SetCommand;
 import org.eclipse.emf.edit.domain.AdapterFactoryEditingDomain;
 import org.eclipse.emf.edit.domain.EditingDomain;
 import org.eclipse.swt.graphics.FontData;
+import org.eclipse.ui.views.properties.IPropertyDescriptor;
+import org.eclipse.ui.views.properties.IPropertySource2;
+import org.eclipse.ui.views.properties.PropertyDescriptor;
+import org.omnetpp.common.properties.BasePropertySource;
 import org.omnetpp.common.properties.PropertySource;
 import org.omnetpp.common.util.Converter;
 import org.omnetpp.common.util.StringUtils;
+import org.omnetpp.scave.engine.IDList;
+import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.model.Chart;
+import org.omnetpp.scave.model.Dataset;
 import org.omnetpp.scave.model.DatasetType;
 import org.omnetpp.scave.model.Property;
 import org.omnetpp.scave.model.ScaveModelFactory;
@@ -97,13 +104,13 @@ public class ChartProperties extends PropertySource {
 		NorthWest,
 	}
 	
-	public static ChartProperties createPropertySource(Chart chart) {
+	public static ChartProperties createPropertySource(Chart chart, ResultFileManager manager) {
 		DatasetType type = ScaveModelUtil.getDatasetType(chart);
 		switch (type.getValue()) {
-		case DatasetType.SCALAR: return new ScalarChartProperties(chart);
-		case DatasetType.VECTOR: return new VectorChartProperties(chart);
-		case DatasetType.HISTOGRAM: return new HistogramChartProperties(chart);
-		default: return new ChartProperties(chart);
+		case DatasetType.SCALAR: return new ScalarChartProperties(chart, manager);
+		case DatasetType.VECTOR: return new VectorChartProperties(chart, manager);
+		case DatasetType.HISTOGRAM: return new HistogramChartProperties(chart, manager);
+		default: return new ChartProperties(chart, manager);
 		}
 	}
 	
@@ -116,17 +123,19 @@ public class ChartProperties extends PropertySource {
 		}
 	}
 	
-	private List<Property> properties;
-	private Chart owner;
+	protected List<Property> properties;
+	protected Chart owner;
+	protected ResultFileManager manager;
 	
 	public ChartProperties(List<Property> properties) {
 		this.properties = properties;
 		this.owner = null;
 	}
 	
-	public ChartProperties(Chart chart) {
+	public ChartProperties(Chart chart, ResultFileManager manager) {
 		this.properties = chart.getProperties();
 		this.owner = chart;
+		this.manager = manager;
 	}
 	
 	public List<Property> getProperties() {
@@ -223,8 +232,8 @@ public class ChartProperties extends PropertySource {
 			super(properties);
 		}
 		
-		public VectorChartProperties(Chart chart) {
-			super(chart);
+		public VectorChartProperties(Chart chart, ResultFileManager manager) {
+			super(chart, manager);
 		}
 		/*======================================================================
 		 *                             Axes
@@ -243,10 +252,40 @@ public class ChartProperties extends PropertySource {
 		/*======================================================================
 		 *                             Lines
 		 *======================================================================*/
-		@org.omnetpp.common.properties.Property(category="Lines",id="Lines",displayName="default")
-		public LineProperties getDefaultLineProperties() { return new LineProperties(null); }
+		private static final String DEFAULT_LINE_PROPERTIES_ID = "default";
+		
+		@org.omnetpp.common.properties.Property(category="Plot",id="Lines",displayName="Lines")
+		public LinesPropertySource getLineProperties() { return new LinesPropertySource(); }
 		
 		public LineProperties getLineProperties(String lineId) { return new LineProperties(lineId); }
+
+		public class LinesPropertySource extends BasePropertySource {
+			IPropertyDescriptor[] descriptors;
+			
+			public LinesPropertySource() {
+				Dataset dataset;
+				if (owner != null && manager != null &&
+						(dataset = ScaveModelUtil.findEnclosingDataset(owner)) != null) {
+					IDList idlist = DatasetManager.getIDListFromDataset(manager, dataset, owner);
+					String[] names = DatasetManager.getResultItemNames(idlist, manager);
+					descriptors = new IPropertyDescriptor[names.length + 1];
+					descriptors[0] = new PropertyDescriptor(DEFAULT_LINE_PROPERTIES_ID, "default");
+					for (int i= 0; i < names.length; ++i)
+						descriptors[i+1] = new PropertyDescriptor(names[i], names[i]);
+				}
+				else
+					descriptors = new IPropertyDescriptor[0];
+			}
+			
+			public IPropertyDescriptor[] getPropertyDescriptors() {
+				return descriptors;
+			}
+
+			public Object getPropertyValue(Object id) {
+				return getLineProperties(id == DEFAULT_LINE_PROPERTIES_ID ? null : (String)id);
+			}
+		}
+		
 		
 		public class LineProperties extends PropertySource {
 			private String lineId;
@@ -259,7 +298,7 @@ public class ChartProperties extends PropertySource {
 				return lineId == null ? baseName : baseName + "/" + lineId;
 			}
 			
-			@org.omnetpp.common.properties.Property(category="Lines",id=PROP_SYMBOL_TYPE)
+			@org.omnetpp.common.properties.Property(category="Lines",id=PROP_SYMBOL_TYPE,optional=true)
 			public SymbolType getSymbolType() { return getEnumProperty(propertyName(PROP_SYMBOL_TYPE), SymbolType.class); }
 			public void setSymbolType(SymbolType type) { setProperty(propertyName(PROP_SYMBOL_TYPE), type); }
 			
@@ -267,11 +306,12 @@ public class ChartProperties extends PropertySource {
 			public String getSymbolSize() { return getStringProperty(propertyName(PROP_SYMBOL_SIZE)); }
 			public void setSymbolSize(String size) { setProperty(propertyName(PROP_SYMBOL_SIZE), size); }
 			
-			@org.omnetpp.common.properties.Property(category="Lines",id=PROP_LINE_TYPE)
+			@org.omnetpp.common.properties.Property(category="Lines",id=PROP_LINE_TYPE,optional=true)
 			public LineStyle getLineType() { return getEnumProperty(propertyName(PROP_LINE_TYPE), LineStyle.class); }
 			public void setLineType(LineStyle style) { setProperty(propertyName(PROP_LINE_TYPE), style); }
 		}
 	}
+	
 
 	public static class ScalarChartProperties extends ChartProperties
 	{
@@ -279,8 +319,8 @@ public class ChartProperties extends PropertySource {
 			super(properties);
 		}
 		
-		public ScalarChartProperties(Chart chart) {
-			super(chart);
+		public ScalarChartProperties(Chart chart, ResultFileManager manager) {
+			super(chart, manager);
 		}
 		
 		/*======================================================================
@@ -301,8 +341,8 @@ public class ChartProperties extends PropertySource {
 			super(properties);
 		}
 		
-		public HistogramChartProperties(Chart chart) {
-			super(chart);
+		public HistogramChartProperties(Chart chart, ResultFileManager manager) {
+			super(chart, manager);
 		}
 		
 		// TODO

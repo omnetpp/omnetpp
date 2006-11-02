@@ -23,6 +23,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.internal.IChangeListener;
+import org.eclipse.ui.views.properties.IPropertySheetPage;
 import org.omnetpp.scave.engine.ResultFile;
 import org.omnetpp.scave.engineext.ResultFileManagerEx;
 import org.omnetpp.scave.model.Analysis;
@@ -165,6 +166,20 @@ public class ScaveEditor extends AbstractEMFModelEditor {
 	@Override
 	protected void initializeContentOutlineViewer(Viewer contentOutlineViewer) {
 		contentOutlineViewer.setInput(getAnalysis());
+	}
+	
+	/** Override base method to set the property source provider. */
+	@Override
+	public IPropertySheetPage getPropertySheetPage() {
+		if (propertySheetPage == null) {
+			// this will initialize propertySheetPage
+			super.getPropertySheetPage();
+			propertySheetPage.setPropertySourceProvider(
+				new ScavePropertySourceProvider(adapterFactory, manager));
+			return propertySheetPage;
+		}
+		else
+			return super.getPropertySheetPage();
 	}
 
 	/**

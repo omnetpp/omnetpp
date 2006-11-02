@@ -154,7 +154,7 @@ public class ChartFactory {
 	}
 	
 	private static void setChartProperties(Chart chart, ScalarChart chartView) {
-		ChartProperties chartProperties = ChartProperties.createPropertySource(chart);
+		ChartProperties chartProperties = ChartProperties.createPropertySource(chart, null/*XXX*/);
 		for (IPropertyDescriptor descriptor : chartProperties.getPropertyDescriptors()) {
 			String id = (String)descriptor.getId();
 			if (chartProperties.isPropertySet(id))

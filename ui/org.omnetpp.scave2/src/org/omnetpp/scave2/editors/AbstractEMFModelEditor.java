@@ -812,8 +812,6 @@ public abstract class AbstractEMFModelEditor
 						getActionBarContributor().shareGlobalActions(this, actionBars);
 					}
 				};
-			propertySheetPage.setPropertySourceProvider(
-					new ScavePropertySourceProvider(adapterFactory));
 		}
 
 		return propertySheetPage;

@@ -593,7 +593,6 @@ public class VectorChart extends ChartCanvas {
 				while (start <= end) {
 					int mid = (end + start) / 2;
 					int midX = toCanvasX(dataset.getXValue(series, mid));
-					System.out.println(String.format("start=%d mid=%d end=%d", start, mid, end));
 					
 					if (Math.abs(midX - x) <= d) {
 						for (int i = mid; i >= start; --i) {
