@@ -35,7 +35,7 @@ public class ChartPage2 extends ScaveEditorPage {
 		super(parent, SWT.V_SCROLL, editor);
 		this.chart = chart;
 		initialize();
-		this.updater = new ChartUpdater(chart, chartView);
+		this.updater = new ChartUpdater(chart, chartView, scaveEditor.getResultFileManager());
 	}
 	
 	public void updatePage(Notification notification) {
@@ -67,25 +67,36 @@ public class ChartPage2 extends ScaveEditorPage {
 		setExpandHorizontal(true);
 		setExpandVertical(true);
 		setBackground(ColorFactory.asColor("white"));
-		getBody().setLayout(new GridLayout(1,false));
+		getBody().setLayout(new GridLayout(2,false));
 
 		// set up contents
 		Composite parent = getBody();
 		chartView = (VectorChart) ChartFactory.createChart(parent, this.chart, scaveEditor.getResultFileManager());
+		chartView.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1));
 		configureChartView(chartView, chart);
 		
 		// create control strip (XXX temp code)
-		Composite controlStrip = createControlStrip(parent, chartView);
-		controlStrip.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
-		controlStrip.moveAbove(chartView);
+		createControlStrip(parent, chartView);
+
+		Button refresh = new Button(parent, SWT.NONE);
+		refresh.setText("Refresh");
+		refresh.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false));
+		refresh.moveAbove(chartView);
+		refresh.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
+				updater.updateDataset();
+			}
+		});
 	}
 
 	//XXX temporary code
 	private Composite createControlStrip(Composite parent, final VectorChart chart) {
 		Composite controlStrip = new Composite(parent, SWT.NONE);
-		RowLayout layout = new RowLayout();
-		controlStrip.setLayout(layout);
+		controlStrip.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
+		controlStrip.setLayout(new RowLayout());
+		controlStrip.moveAbove(chartView);
 
+		
 		Button canvasCaching = new Button(controlStrip, SWT.CHECK);
 		canvasCaching.setText("Caching");
 
@@ -103,7 +114,7 @@ public class ChartPage2 extends ScaveEditorPage {
 
 		Button zoomOutY = new Button(controlStrip, SWT.NONE);
 		zoomOutY.setText("Zoom v");
-
+		
 		// add event handlers
 		zoomInX.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
@@ -123,7 +134,7 @@ public class ChartPage2 extends ScaveEditorPage {
 			public void widgetSelected(SelectionEvent e) {
 				chart.zoomYBy(1/1.5);
 			}});
-
+		
 		canvasCaching.setSelection(chart.getCaching());
 		canvasCaching.addSelectionListener(new SelectionAdapter () {
 			public void widgetSelected(SelectionEvent e) {

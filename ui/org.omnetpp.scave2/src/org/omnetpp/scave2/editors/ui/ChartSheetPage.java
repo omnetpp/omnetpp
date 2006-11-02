@@ -10,8 +10,11 @@ import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.omnetpp.common.color.ColorFactory;
@@ -56,7 +59,7 @@ public class ChartSheetPage extends ScaveEditorPage {
 	public void addChart(Chart chart, Control view) {
 		view.setLayoutData(new GridData(320,200));
 		chartsArea.configureChild(view);
-		updaters.add(new ChartUpdater(chart, view));
+		updaters.add(new ChartUpdater(chart, view, scaveEditor.getResultFileManager()));
 	}
 	
 	private void initialize() {
@@ -68,6 +71,16 @@ public class ChartSheetPage extends ScaveEditorPage {
 		setExpandVertical(true);
 		GridLayout layout = new GridLayout();
 		getBody().setLayout(layout);
+		
+		Button refreshButton = new Button(getBody(), SWT.NONE);
+		refreshButton.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false));
+		refreshButton.setText("Refresh");
+		refreshButton.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
+				for (ChartUpdater updater : updaters)
+					updater.updateDataset();
+			}
+		});
 		
 		chartsArea = new LiveTable(getBody(), SWT.DOUBLE_BUFFERED);
 		chartsArea.setLayoutData(new GridData(SWT.FILL,SWT.FILL, true, true));
