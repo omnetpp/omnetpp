@@ -207,25 +207,25 @@ void $className\::print(FILE *fout)
       {
          print ENTRIES_CC_FILE "
    if ($field->{NAME} != NULL)
-   {
-      ::fprintf(fout, \" $field->{SIGN} \\\"$field->{PRINTFTYPE}\\\"\", $field->{NAME});
+   {";
+         print ENTRIES_CC_FILE "
+      if (strchr($field->{NAME}, ' '))
+         ::fprintf(fout, \" $field->{SIGN} \\\"$field->{PRINTFTYPE}\\\"\", $field->{NAME});
+      else
+         ::fprintf(fout, \" $field->{SIGN} $field->{PRINTFTYPE}\", $field->{NAME});
    }";
       }
       elsif ($field->{TYPE} eq "simtime_t")
       {
          print ENTRIES_CC_FILE "
    if ($field->{NAME} != -1)
-   {
-      ::fprintf(fout, \" $field->{SIGN} $field->{PRINTFTYPE}\", 12, $field->{NAME});
-   }";
+      ::fprintf(fout, \" $field->{SIGN} $field->{PRINTFTYPE}\", 12, $field->{NAME});";
       }
       else
       {
          print ENTRIES_CC_FILE "
    if ($field->{NAME} != -1)
-   {
-      ::fprintf(fout, \" $field->{SIGN} $field->{PRINTFTYPE}\", $field->{NAME});
-   }";
+      ::fprintf(fout, \" $field->{SIGN} $field->{PRINTFTYPE}\", $field->{NAME});";
       }
    }
 

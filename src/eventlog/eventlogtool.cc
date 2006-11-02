@@ -148,11 +148,14 @@ void filter(Options options)
         fprintf(stdout, "# Parsing of %ld events, %ld lines and %ld bytes form log file %s completed in %g seconds\n", eventLog->getNumParsedEvents(), fileReader->getNumReadLines(), fileReader->getNumReadBytes(), options.inputFileName, (double)(end - begin) / CLOCKS_PER_SEC);
 }
         
-void usage()
+void usage(char *message)
 {
+    if (message)
+        fprintf(stderr, "Error: %s\n\n", message);
+
     fprintf(stderr, ""
 "Usage:\n"
-"   eventlogtool <command> [options]* [input-file-name]\n"
+"   eventlogtool <command> [options]* <input-file-name>\n"
 "\n"
 "   Commands:\n"
 "      readlines  - reads the input lines one at a time and outputs nothing, options are ignored.\n"
@@ -195,8 +198,8 @@ void usage()
 
 int main(int argc, char **argv)
 {
-    if (argc < 2)
-        usage();
+    if (argc < 3)
+        usage("Not enough arguments specified");
     else {
         char *command = argv[1];
         Options options;
@@ -230,31 +233,35 @@ int main(int argc, char **argv)
             // TODO: some options still not handled
         }
 
-        if (options.outputFileName)
-            options.outputFile = fopen(options.outputFileName, "wb");
-        else
-            options.outputFile = stdout;
-
-        try {
-            if (!strcmp(command, "readlines"))
-                readLines(options);
-            else if (!strcmp(command, "loadevents"))
-                loadEvents(options);
-            else if (!strcmp(command, "offsets"))
-                printOffsets(options);
-            else if (!strcmp(command, "echo"))
-                echo(options);
-            else if (!strcmp(command, "filter"))
-                filter(options);
+        if (!options.outputFileName)
+            usage("No input file specified");
+        else {
+            if (options.outputFileName)
+                options.outputFile = fopen(options.outputFileName, "w");
             else
-                usage();
-        }
-        catch (Exception *e) {
-            fprintf(stderr, "Error: %s\n", e->message());
-        }
+                options.outputFile = stdout;
 
-        if (options.outputFileName)
-            fclose(options.outputFile);
+            try {
+                if (!strcmp(command, "readlines"))
+                    readLines(options);
+                else if (!strcmp(command, "loadevents"))
+                    loadEvents(options);
+                else if (!strcmp(command, "offsets"))
+                    printOffsets(options);
+                else if (!strcmp(command, "echo"))
+                    echo(options);
+                else if (!strcmp(command, "filter"))
+                    filter(options);
+                else
+                    usage("Unknown or invalid command");
+            }
+            catch (Exception *e) {
+                fprintf(stderr, "Error: %s\n", e->message());
+            }
+
+            if (options.outputFileName)
+                fclose(options.outputFile);
+        }
     }
 
     return 0;
