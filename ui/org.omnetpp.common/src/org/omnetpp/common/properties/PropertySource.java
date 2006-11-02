@@ -227,6 +227,7 @@ public abstract class PropertySource implements IPropertySource2 {
 		String category = property.category();
 		String description = property.description();
 		String[] filterFlags = property.filterFlags();
+		boolean optional = property.optional();
 		PropertyDescriptor descriptor;
 		if (descriptorFactory != null) {
 			descriptor = (PropertyDescriptor)descriptorFactory.invoke(this, id, displayName);
@@ -238,7 +239,7 @@ public abstract class PropertySource implements IPropertySource2 {
 				descriptorClass.getConstructor(Object.class, String.class);
 			descriptor = constructor.newInstance(id, displayName);
 			if (descriptor instanceof EnumPropertyDescriptor)
-				((EnumPropertyDescriptor)descriptor).setEnumType(propType);
+				((EnumPropertyDescriptor)descriptor).setEnumType(propType, optional);
 		}
 		if (category.length() > 0)
 			descriptor.setCategory(category);

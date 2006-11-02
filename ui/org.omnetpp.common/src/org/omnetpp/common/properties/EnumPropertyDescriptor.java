@@ -3,11 +3,10 @@ package org.omnetpp.common.properties;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
+import java.util.List;
 
 import org.eclipse.jface.viewers.CellEditor;
-import org.eclipse.jface.viewers.ComboBoxCellEditor;
 import org.eclipse.jface.viewers.LabelProvider;
-import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.views.properties.PropertyDescriptor;
 
@@ -32,19 +31,29 @@ public class EnumPropertyDescriptor extends PropertyDescriptor {
 		});
 	}
 	
-	public void setEnumType(Class enumType)
+	public void setEnumType(Class enumType) {
+		setEnumType(enumType, false);
+	}
+	
+	public void setEnumType(Class enumType, boolean optional)
 	{
+		List<Object> values = new ArrayList<Object>();
+		List<String> names = new ArrayList<String>();
+		
+		if (optional) {
+			values.add(null);
+			names.add("");
+		}
+		
 		if (enumType.isEnum()) { // Java 1.5 enum class
-			this.values = enumType.getEnumConstants();
-			this.names = new String[this.values.length];
-			for (int i = 0; i < this.names.length; ++i)
-				this.names[i] = ((Enum<?>)this.values[i]).name();
+			Object[] enumValues = enumType.getEnumConstants();
+			for (Object value : enumValues) {
+				values.add(value);
+				names.add(((Enum<?>)value).name());
+			}
 		}
 		else { // typesafe enum pattern class
 			Field[] fields = enumType.getDeclaredFields();
-			ArrayList<Object> values = new ArrayList<Object>();
-			ArrayList<String> names = new ArrayList<String>();
-		
 			for (Field field : fields)
 			{
 				int modifiers = field.getModifiers();
@@ -58,17 +67,16 @@ public class EnumPropertyDescriptor extends PropertyDescriptor {
 					} catch (IllegalAccessException e) {}
 				}
 			}
-			
-			this.values = values.toArray();
-			this.names = names.toArray(new String[names.size()]);
 		}
+		this.values = values.toArray();
+		this.names = names.toArray(new String[names.size()]);
 	}
 	
 	public String getName(Object value) {
-		if (value != null)
-			for (int i = 0; i < values.length; ++i)
-				if (value.equals(values[i]))
-					return names[i];
+		for (int i = 0; i < values.length; ++i)
+			if (value == null && values[i] == null ||
+				value != null && value.equals(values[i]))
+				return names[i];
 		return null;
 	}
 	
