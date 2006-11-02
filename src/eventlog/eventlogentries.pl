@@ -96,6 +96,7 @@ foreach $class (@classes)
 class $class->{NAME} : public EventLogTokenBasedEntry
 {
    public:
+      $class->{NAME}();
       $class->{NAME}(Event *event);
 
    public:";
@@ -137,7 +138,28 @@ foreach $class (@classes)
 {
    $className = $class->{NAME};
 
-   # constructor
+   # constructors
+   print ENTRIES_CC_FILE "
+$className\::$className()
+{
+   this->event = NULL;";
+   foreach $field (@{ $class->{FIELDS} })
+   {
+      if ($field->{TYPE} eq "string")
+      {
+      print ENTRIES_CC_FILE "
+   $field->{NAME} = NULL;"; 
+      }
+      else
+      {
+      print ENTRIES_CC_FILE "
+   $field->{NAME} = -1;"; 
+      }
+   }
+   print ENTRIES_CC_FILE "
+}
+";
+
    print ENTRIES_CC_FILE "
 $className\::$className(Event *event)
 {
@@ -195,11 +217,11 @@ void $className\::print(FILE *fout)
    if ($class->{NAME} eq "EventEntry")
    {
       print ENTRIES_CC_FILE "
-   ::fprintf(fout, \"\\n\");";
+   fprintf(fout, \"\\n\");";
    }
 
    print ENTRIES_CC_FILE "
-   ::fprintf(fout, \"$class->{SIGN}\");";
+   fprintf(fout, \"$class->{SIGN}\");";
 
    foreach $field (@{ $class->{FIELDS} })
    {
@@ -210,28 +232,28 @@ void $className\::print(FILE *fout)
    {";
          print ENTRIES_CC_FILE "
       if (strchr($field->{NAME}, ' '))
-         ::fprintf(fout, \" $field->{SIGN} \\\"$field->{PRINTFTYPE}\\\"\", $field->{NAME});
+         fprintf(fout, \" $field->{SIGN} \\\"$field->{PRINTFTYPE}\\\"\", $field->{NAME});
       else
-         ::fprintf(fout, \" $field->{SIGN} $field->{PRINTFTYPE}\", $field->{NAME});
+         fprintf(fout, \" $field->{SIGN} $field->{PRINTFTYPE}\", $field->{NAME});
    }";
       }
       elsif ($field->{TYPE} eq "simtime_t")
       {
          print ENTRIES_CC_FILE "
    if ($field->{NAME} != -1)
-      ::fprintf(fout, \" $field->{SIGN} $field->{PRINTFTYPE}\", 12, $field->{NAME});";
+      fprintf(fout, \" $field->{SIGN} $field->{PRINTFTYPE}\", 12, $field->{NAME});";
       }
       else
       {
          print ENTRIES_CC_FILE "
    if ($field->{NAME} != -1)
-      ::fprintf(fout, \" $field->{SIGN} $field->{PRINTFTYPE}\", $field->{NAME});";
+      fprintf(fout, \" $field->{SIGN} $field->{PRINTFTYPE}\", $field->{NAME});";
       }
    }
 
    print ENTRIES_CC_FILE "
-   ::fprintf(fout, \"\\n\");
-   ::fflush(fout);
+   fprintf(fout, \"\\n\");
+   fflush(fout);
 } 
 ";
 }

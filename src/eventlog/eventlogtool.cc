@@ -25,9 +25,11 @@ struct Options {
     FILE *outputFile;
     long fromEventNumber;
     long toEventNumber;
+    bool outputInitialization;
     bool traceBackward;
     bool traceForward;
     std::vector<long> *eventNumbers;
+    std::vector<long> *fileOffsets;
     bool verbose;
 
     Options() {
@@ -36,9 +38,11 @@ struct Options {
         outputFile = NULL;
         fromEventNumber = -1;
         toEventNumber = -1;
+        outputInitialization = true;
         traceBackward = true;
         traceForward = true;
         eventNumbers = NULL;
+        fileOffsets = NULL;
         verbose = false;
     }
 };
@@ -112,6 +116,31 @@ void printOffsets(Options options)
         fprintf(stdout, "# Printing offsets for %ld events while reading %ld lines and %ld bytes form log file %s completed in %g seconds\n", options.eventNumbers->size(), fileReader->getNumReadLines(), fileReader->getNumReadBytes(), options.inputFileName, (double)(end - begin) / CLOCKS_PER_SEC);
 }
 
+void printEvents(Options options)
+{
+    if (options.verbose)
+        fprintf(stdout, "# Printing events from log file %s\n", options.inputFileName);
+
+    FileReader *fileReader = new FileReader(options.inputFileName);
+    EventLog eventLog(fileReader);
+
+    long begin = clock();
+
+    for (std::vector<long>::iterator it = options.fileOffsets->begin(); it != options.fileOffsets->end(); it++) {
+        IEvent *event = eventLog.getEventForBeginOffset(*it);
+
+        if (options.verbose)
+            fprintf(stdout, "# Event #%ld found at file offset %ld (0x%lx)\n", event->getEventNumber(), *it, *it);
+
+        event->print(options.outputFile);
+    }
+
+    long end = clock();
+
+    if (options.verbose)
+        fprintf(stdout, "# Printing events for %ld offsets while reading %ld lines and %ld bytes form log file %s completed in %g seconds\n", options.fileOffsets->size(), fileReader->getNumReadLines(), fileReader->getNumReadBytes(), options.inputFileName, (double)(end - begin) / CLOCKS_PER_SEC);
+}
+
 void echo(Options options)
 {
     if (options.verbose)
@@ -121,7 +150,12 @@ void echo(Options options)
     EventLog eventLog(fileReader);
 
     long begin = clock();
-    eventLog.print(options.outputFile, options.fromEventNumber, options.toEventNumber);
+
+    if (options.outputInitialization)
+        eventLog.print(options.outputFile, options.fromEventNumber, options.toEventNumber);
+    else
+        eventLog.printEvents(options.outputFile, options.fromEventNumber, options.toEventNumber);
+
     long end = clock();
 
     if (options.verbose)
@@ -141,7 +175,12 @@ void filter(Options options)
     FilteredEventLog filteredEventLog(eventLog, NULL, tracedEventNumber, options.traceBackward, options.traceForward, options.fromEventNumber, options.toEventNumber);
 
     long begin = clock();
-    filteredEventLog.print(options.outputFile);
+    
+    if (options.outputInitialization)
+        filteredEventLog.print(options.outputFile);
+    else
+        filteredEventLog.printEvents(options.outputFile);
+    
     long end = clock();
 
     if (options.verbose)
@@ -161,6 +200,7 @@ void usage(char *message)
 "      readlines  - reads the input lines one at a time and outputs nothing, options are ignored.\n"
 "      loadevents - loads the whole input file at once into memory and outputs nothing, options are ignored.\n"
 "      offsets    - prints the file offsets for the given even numbers (-e) one per line, all other options are ignored\n"
+"      events     - prints the events for the given offsets (-f), all other options are ignored\n"
 "      echo       - echos the input to the output, range options are supported\n"
 "      filter     - filters the input according to the varios options, only one event number is traced, but\n"
 "                   it may be outside of the specified event number or simulation time region.\n"
@@ -179,8 +219,10 @@ void usage(char *message)
 "      -tt     --to-simulation-time      <number>\n"
 "         inclusive\n"
 "      -e      --event-numbers           <integer>+\n"
-"      -b      --omit-trace-backward\n"
-"      -f      --omit-trace-forward\n"
+"      -f      --file-offsets            <integer>+\n"
+"      -ob     --omit-trace-backward\n"
+"      -of     --omit-trace-forward\n"
+"      -oi     --omit-initialization\n"
 "      -mi     --module-ids              <integer>+\n"
 "         compound module ids are allowed\n"
 "      -mn     --module-names            <pattern>+\n"
@@ -223,17 +265,28 @@ int main(int argc, char **argv)
                 for (int j = 0; j < tokenizer.numTokens(); j++)
                     options.eventNumbers->push_back(atol(tokens[j]));
             }
-            else if (!strcmp(argv[i], "-b") || !strcmp(argv[i], "--trace-backward"))
-                options.traceBackward = true;
-            else if (!strcmp(argv[i], "-f") || !strcmp(argv[i], "--trace-forward"))
-                options.traceForward = true;
+            else if (!strcmp(argv[i], "-f") || !strcmp(argv[i], "--file-offsets")) {
+                i++;
+                tokenizer.tokenize(argv[i], strlen(argv[i]));
+                options.fileOffsets = new std::vector<long>();
+                char **tokens = tokenizer.tokens();
+
+                for (int j = 0; j < tokenizer.numTokens(); j++)
+                    options.fileOffsets->push_back(atol(tokens[j]));
+            }
+            else if (!strcmp(argv[i], "-ob") || !strcmp(argv[i], "--trace-backward"))
+                options.traceBackward = false;
+            else if (!strcmp(argv[i], "-of") || !strcmp(argv[i], "--trace-forward"))
+                options.traceForward = false;
+            else if (!strcmp(argv[i], "-oi") || !strcmp(argv[i], "--omit-initialization"))
+                options.outputInitialization = false;
             else if (i == argc - 1)
                 options.inputFileName = argv[i];
 
             // TODO: some options still not handled
         }
 
-        if (!options.outputFileName)
+        if (!options.inputFileName)
             usage("No input file specified");
         else {
             if (options.outputFileName)
@@ -248,6 +301,8 @@ int main(int argc, char **argv)
                     loadEvents(options);
                 else if (!strcmp(command, "offsets"))
                     printOffsets(options);
+                else if (!strcmp(command, "events"))
+                    printEvents(options);
                 else if (!strcmp(command, "echo"))
                     echo(options);
                 else if (!strcmp(command, "filter"))

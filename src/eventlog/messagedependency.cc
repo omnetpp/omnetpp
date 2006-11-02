@@ -94,7 +94,8 @@ long MessageDependency::getConsequenceEventNumber()
                 break;
             }
 
-            if (event->getCauseEventNumber() == getCauseEventNumber())
+            if (event->getCauseEventNumber() == getCauseEventNumber() &&
+                event->getMessageId() == getCauseMessageId())
             {
                 consequenceEventNumber = event->getEventNumber();
                 break;

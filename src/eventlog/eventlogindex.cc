@@ -204,13 +204,6 @@ template <typename T> long EventLogIndex::binarySearchForOffset(bool eventNumber
                 else
                     midKey = midSimulationTime;
 
-                // stopping condition
-                if (midKey == key || upperOffset-lowerOffset < 10)
-                {
-                    foundOffset = midKey == key ? midEventStartOffset : -1;
-                    break;
-                }
-
                 // store the mid position
                 addPosition(midEventNumber, midSimulationTime, midEventStartOffset);
 
@@ -218,10 +211,18 @@ template <typename T> long EventLogIndex::binarySearchForOffset(bool eventNumber
                 if (midKey < key)
                 {
                     lowerKey = midKey;
-                    lowerOffset = midEventStartOffset;
+                    lowerOffset = lowerOffset == midEventStartOffset ? midEventStartOffset + 1 : midEventStartOffset;
                 }
-                else
-                    upperOffset = midOffset;
+                else if (midKey > key)
+                {
+                    upperOffset = upperOffset == midOffset ? midOffset - 1 : midOffset;
+                }
+                // stopping condition
+                else if (midKey == key)
+                {
+                    foundOffset = midEventStartOffset;
+                    break;
+                }
             }
             else
             {
@@ -229,7 +230,13 @@ template <typename T> long EventLogIndex::binarySearchForOffset(bool eventNumber
                 
                 // no key found -- we must be at the very end of the file.
                 // try again finding an "E" line from a bit earlier point in the file.
-                upperOffset -= 10;
+                upperOffset = midOffset;
+            }
+
+            if (lowerOffset >= upperOffset)
+            {
+                foundOffset = -1;
+                break;
             }
         }
     }
@@ -287,10 +294,10 @@ template <typename T> long EventLogIndex::linearSearchForOffset(bool eventNumber
 
         if (!exactMatchFound) {
             if (matchKind == LAST && readKey > key)
-                return offset;
+                return lineStartOffset;
 
             if (matchKind == FIRST && readKey < key)
-                return offset;
+                return lineStartOffset;
         }
         else if (readKey != key)
             return previousOffset;
