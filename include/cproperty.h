@@ -35,6 +35,9 @@ class cProperties;
  */
 class SIM_API cProperty : public cPolymorphic
 {
+  public:
+    static const char *DEFAULTKEY;
+
   protected:
     // property names, keys and values are all stringpooled to reduce memory consumption
     static cStringPool stringPool;
@@ -78,7 +81,7 @@ class SIM_API cProperty : public cPolymorphic
     /**
      * Copy constructor.
      */
-    cProperty(const cProperty& other) {islocked=false; operator=(other);}
+    cProperty(const cProperty& other) {islocked=false; propname=propindex=propfullname=NULL; operator=(other);}
 
     /**
      * Destructor.

@@ -34,6 +34,7 @@
 #include "globals.h"
 #include "cdynamicmoduletype.h"
 #include "cdynamicchanneltype.h"
+#include "cdisplaystring.h"
 
 cNEDLoader *cNEDLoader::instance_;
 
@@ -384,12 +385,15 @@ void cNEDLoader::updateProperties(NEDElement *parent, cProperties *props)
     {
         if (!props)
             props = new cProperties();
-            PropertyNode *propNode = (PropertyNode *)child;
-            const char *propName = propNode->getName();
-            const char *propIndex = propNode->getIndex();
-            cProperty *prop = props->get(propName, propIndex);
-            if (!prop)
-                props->add(prop = new cProperty(propName, propIndex));
+        PropertyNode *propNode = (PropertyNode *)child;
+        const char *propName = propNode->getName();
+        const char *propIndex = propNode->getIndex();
+        cProperty *prop = props->get(propName, propIndex);
+        if (!prop)
+            props->add(prop = new cProperty(propName, propIndex));
+        if (!strcmp(propName, "display"))
+            updateDisplayProperty(propNode, prop);
+        else
             updateProperty(propNode, prop);
     }
 }
@@ -422,6 +426,42 @@ void cNEDLoader::updateProperty(PropertyNode *propNode, cProperty *prop)
     }
 }
 
+void cNEDLoader::updateDisplayProperty(PropertyNode *propNode, cProperty *prop)
+{
+    // @display() has to be merged in a special way.
+
+    // find new display string
+    PropertyKeyNode *propKeyNode = (PropertyKeyNode *)propNode->getFirstChildWithTag(NED_PROPERTY);
+    LiteralNode *literalNode = propKeyNode ? (LiteralNode *)propKeyNode->getFirstChildWithTag(NED_LITERAL) : NULL;
+    if (!literalNode)
+        return;
+    const char *newdisplaystring = literalNode->getValue();
+
+    // if old display string is empty, just set it
+    if (!prop->hasKey(cProperty::DEFAULTKEY))
+        prop->addKey(cProperty::DEFAULTKEY);
+    if (prop->numValues(cProperty::DEFAULTKEY)==0)
+    {
+        prop->setValue(cProperty::DEFAULTKEY, 0, newdisplaystring);
+        return;
+    }
+
+//FIXME introduce opp_isempty(s) function!!!!
+
+    // merge
+    const char *olddisplaystring = prop->value(cProperty::DEFAULTKEY, 0);
+    cDisplayString d(olddisplaystring);
+    cDisplayString dnew(newdisplaystring);
+    for (int t=0; t<dnew.getNumTags(); t++)
+    {
+        for (int i=0; i<dnew.getNumArgs(t); i++)
+        {
+            const char *arg = dnew.getTagArg(t,i);
+            if (*arg)
+                d.setTagArg(t,i,dnew.getTagArg(t,i));
+        }
+    }
+}
 
 void cNEDLoader::done()
 {

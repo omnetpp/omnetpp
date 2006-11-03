@@ -16,16 +16,17 @@
 #include "cproperties.h"
 
 
+const char *cProperty::DEFAULTKEY = "";
+
 cStringPool cProperty::stringPool;
+
 
 
 cProperty::cProperty(const char *name, const char *index)
 {
     isimplicit = islocked = false;
     ownerp = NULL;
-    propname = NULL;
-    propindex = NULL;
-    propfullname = NULL;
+    propname = propindex = propfullname = NULL;
     if (name)
         setName(name);
     if (index)
@@ -60,7 +61,7 @@ cProperty& cProperty::operator=(const cProperty& other)
         throw new cRuntimeError(this, eLOCKED);
 
     // note: do NOT copy islocked flag
-    setName(other.fullName());
+    setName(other.name());
     setIndex(other.index());
 
     isimplicit = other.isimplicit;
