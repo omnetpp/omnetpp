@@ -53,6 +53,8 @@ class Event : public IEvent
         MessageDependencyList *causes; // the arrival message sends of messages which we send in this event
         MessageDependencyList *consequences; // message sends in this event
 
+        Event *getReuserEvent(int &beginSendEntryNumber);
+
     public:
         Event(EventLog *eventLog);
         ~Event();
