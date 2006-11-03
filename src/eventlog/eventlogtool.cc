@@ -200,7 +200,7 @@ void consistency(Options options)
                 }
 
                 if (!foundCauseConsequence)
-                    fprintf(stderr, "Consistency check failed, could not find event %ld in the consequences of event %ld which is included in the causes of event %ld\n",
+                    fprintf(options.outputFile, "Consistency check failed, could not find event %ld in the consequences of event %ld which is included in the causes of event %ld\n",
                         event->getEventNumber(), causeEvent->getEventNumber(), event->getEventNumber());
             }
         }
@@ -224,7 +224,7 @@ void consistency(Options options)
                 }
 
                 if (!foundConsequenceCause)
-                    fprintf(stderr, "Consistency check failed, could not find event %ld in the causes of event %ld which is included in the consequences of event %ld\n",
+                    fprintf(options.outputFile, "Consistency check failed, could not find event %ld in the causes of event %ld which is included in the consequences of event %ld\n",
                         event->getEventNumber(), consequenceEvent->getEventNumber(), event->getEventNumber());
             }
         }
