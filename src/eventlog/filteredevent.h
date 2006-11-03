@@ -35,7 +35,7 @@ class FilteredEvent : public IEvent
 
         long eventNumber; // the corresponding event number
         long causeEventNumber; // the event number from which the message was sent that is being processed in this event
-        FilteredMessageDependency *cause; // the message send which is processed in this event
+        MessageDependency *cause; // the message send which is processed in this event
         MessageDependencyList *causes; // the arrival message sends of messages which we send in this even and are in the filtered set
         MessageDependencyList *consequences; // the message sends and arrivals from this event to another in the filtered set
 
@@ -68,7 +68,7 @@ class FilteredEvent : public IEvent
         virtual FilteredEvent *getNextEvent();
 
         virtual FilteredEvent *getCauseEvent();
-        virtual FilteredMessageDependency *getCause();
+        virtual MessageDependency *getCause();
         virtual MessageDependencyList *getCauses();
         virtual MessageDependencyList *getConsequences();
 

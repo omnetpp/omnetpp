@@ -178,9 +178,14 @@ void MessageDependency::printConsequence(FILE *file)
 
 /**************************************************/
 
-MessageReuse::MessageReuse(IEventLog *eventLog, long senderEventNumber, int BeginSendEntryNumber)
-    : MessageDependency(eventLog, EVENT_NOT_YET_CALCULATED, -1, senderEventNumber, BeginSendEntryNumber)
+MessageReuse::MessageReuse(IEventLog *eventLog, long senderEventNumber, int beginSendEnrtyNumber)
+    : MessageDependency(eventLog, EVENT_NOT_YET_CALCULATED, -1, senderEventNumber, beginSendEnrtyNumber)
 {
+}
+
+MessageReuse *MessageReuse::duplicate()
+{
+    return new MessageReuse(*this);
 }
 
 /**************************************************/
@@ -188,6 +193,11 @@ MessageReuse::MessageReuse(IEventLog *eventLog, long senderEventNumber, int Begi
 MessageSend::MessageSend(IEventLog *eventLog, long senderEventNumber, int BeginSendEntryNumber)
     : MessageDependency(eventLog, senderEventNumber, BeginSendEntryNumber, EVENT_NOT_YET_CALCULATED, -1)
 {
+}
+
+MessageSend* MessageSend::duplicate()
+{
+    return new MessageSend(*this);
 }
 
 /**************************************************/
@@ -199,6 +209,11 @@ FilteredMessageDependency::FilteredMessageDependency(IEventLog *eventLog,
 {
     this->middleEventNumber = middleEventNumber;
     this->middleBeginSendEntryNumber = middleBeginSendEntryNumber;
+}
+
+FilteredMessageDependency* FilteredMessageDependency::duplicate()
+{
+    return new FilteredMessageDependency(*this);
 }
 
 IEvent *FilteredMessageDependency::getMiddleEvent()

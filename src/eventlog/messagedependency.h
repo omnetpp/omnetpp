@@ -51,6 +51,7 @@ class MessageDependency
                           long causeEventNumber, int causeBeginSendEntryNumber,
                           long consequenceEventNumber, int consequenceBeginSendEntryNumber);
         virtual ~MessageDependency() {}
+        virtual MessageDependency *duplicate() = 0;
 
         long getCauseEventNumber();
         IEvent *getCauseEvent();
@@ -81,6 +82,7 @@ class MessageReuse : public MessageDependency
 {
     public:
         MessageReuse(IEventLog *eventLog, long senderEventNumber, int BeginSendEntryNumber);
+        virtual MessageReuse *duplicate();
 };
 
 /**
@@ -90,6 +92,7 @@ class MessageSend : public MessageDependency
 {
     public:
         MessageSend(IEventLog *eventLog, long senderEventNumber, int BeginSendEntryNumber);
+        virtual MessageSend *duplicate();
 
         long getSenderEventNumber() { return getCauseEventNumber(); }
         IEvent *getSenderEvent() { return getCauseEvent(); }
@@ -112,6 +115,7 @@ class FilteredMessageDependency : public MessageDependency
                                   long causeEventNumber, int causeBeginSendEntryNumber,
                                   long middleEventNumber, int middleBeginSendEntryNumber,
                                   long consequenceEventNumber, int consequenceBeginSendEntryNumber);
+        virtual FilteredMessageDependency *duplicate();
 
         long getMiddleEventNumber() { return middleEventNumber; }
         IEvent *getMiddleEvent();
