@@ -318,7 +318,7 @@ public class ScaveEditor extends AbstractEMFModelEditor {
 			index = addClosableScaveEditorPage(page); //XXX experimental
 		} 
 		else {
-			ChartPage page = new ChartPage(getContainer(), this, chart);
+			ChartPage2 page = new ChartPage2(getContainer(), this, chart);
 			index = addClosableScaveEditorPage(page);
 		}
 

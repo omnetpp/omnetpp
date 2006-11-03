@@ -1,7 +1,5 @@
 package org.omnetpp.scave2.editors.ui;
 
-import java.util.List;
-
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.swt.SWT;
@@ -11,24 +9,20 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
-import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.scave.model.Chart;
-import org.omnetpp.scave.model.Property;
 import org.omnetpp.scave.model.ScaveModelPackage;
+import org.omnetpp.scave2.charting.ChartCanvas;
 import org.omnetpp.scave2.charting.ChartFactory;
 import org.omnetpp.scave2.charting.ChartUpdater;
-import org.omnetpp.scave2.charting.VectorChart;
-import org.omnetpp.scave2.charting.plotter.IChartSymbol;
-import org.omnetpp.scave2.charting.plotter.IVectorPlotter;
 import org.omnetpp.scave2.editors.ScaveEditor;
 
 public class ChartPage2 extends ScaveEditorPage {
 
 	private Chart chart; // the underlying model
-	private VectorChart chartView;
+	private ChartCanvas chartView;
 	private ChartUpdater updater;
 
 	public ChartPage2(Composite parent, ScaveEditor editor, Chart chart) {
@@ -71,7 +65,7 @@ public class ChartPage2 extends ScaveEditorPage {
 
 		// set up contents
 		Composite parent = getBody();
-		chartView = (VectorChart) ChartFactory.createChart(parent, this.chart, scaveEditor.getResultFileManager());
+		chartView = (ChartCanvas) ChartFactory.createChart(parent, this.chart, scaveEditor.getResultFileManager());
 		chartView.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1));
 		configureChartView(chartView, chart);
 		
@@ -90,7 +84,7 @@ public class ChartPage2 extends ScaveEditorPage {
 	}
 
 	//XXX temporary code
-	private Composite createControlStrip(Composite parent, final VectorChart chart) {
+	private Composite createControlStrip(Composite parent, final ChartCanvas chart) {
 		Composite controlStrip = new Composite(parent, SWT.NONE);
 		controlStrip.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
 		controlStrip.setLayout(new RowLayout());

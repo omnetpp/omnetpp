@@ -1,3 +1,28 @@
+2006-11-03
+----------
+
+Additions
+
+   + New zoomable bar chart implementation.
+
+
+2006-11-02
+----------
+
+Additions
+
+   + Cross hair displayed on vector charts. Coordinates are displayed and snipped to
+     data points.
+
+   + Line properties can be edited on the property sheet.
+
+   + "Refresh" buttons are added to chart pages.
+
+Fixes
+
+   + Sorting works for all columns in the data tables.
+
+
 2006-10-27
 ----------
 

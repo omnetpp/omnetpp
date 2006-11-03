@@ -44,7 +44,7 @@ public class ChartFactory {
 	public static Control createChart(Composite parent, Chart chart, ResultFileManager manager) {
 		Dataset dataset = ScaveModelUtil.findEnclosingDataset(chart);
 		switch (dataset.getType().getValue()) {
-		case DatasetType.SCALAR: return createScalarChart(parent, chart, dataset, manager);
+		case DatasetType.SCALAR: return createScalarChart2(parent, chart, dataset, manager);
 		case DatasetType.VECTOR: return createVectorChart2(parent, chart, dataset, manager);
 		case DatasetType.HISTOGRAM: return createHistogramChart(parent, chart, dataset, manager);
 		}

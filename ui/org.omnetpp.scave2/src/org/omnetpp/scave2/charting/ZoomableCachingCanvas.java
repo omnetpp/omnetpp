@@ -82,39 +82,56 @@ public abstract class ZoomableCachingCanvas extends CachingCanvas {
 	}
 
 	public long toVirtualX(double xCoord) {
-		double x = (xCoord - minX)*zoomX + insets.left;
+		double x = (xCoord - minX)*zoomX;
 		return (long)x;
 	}
 
 	public long toVirtualY(double yCoord) {
-		double y = (maxY - yCoord)*zoomY + insets.top;
+		double y = (maxY - yCoord)*zoomY;
 		return (long)y;
 	}
 
 	public double fromVirtualX(long x) {
-		return (x - insets.left) / zoomX + minX;
+		return x / zoomX + minX;
 	}
 
 	public double fromVirtualY(long y) {
-		return maxY - (y - insets.top) / zoomY;
+		return maxY - y / zoomY;
+	}
+	
+	
+	
+	@Override
+	public org.eclipse.swt.graphics.Rectangle getViewportRectangle() {
+		Rectangle rect = new Rectangle(getClientArea()).crop(insets);
+		return new org.eclipse.swt.graphics.Rectangle(
+				rect.x, rect.y, rect.width, rect.height);
+	}
+
+	public int getViewportWidth() {
+		return getClientArea().width - insets.getWidth();
+	}
+	
+	public int getViewportHeight() {
+		return getClientArea().height - insets.getHeight();
 	}
 	
 	public double getViewportCenterCoordX() {
-		int middleX = getWidth() / 2;
-		return fromCanvasX(middleX);
+		int middleX = getViewportWidth() / 2;
+		return fromCanvasX(middleX + insets.left);
 	}
 
 	public double getViewportCenterCoordY() {
-		int middleY = getHeight() / 2;
-		return fromCanvasY(middleY);
+		int middleY = getViewportHeight() / 2;
+		return fromCanvasY(middleY + insets.top);
 	}
 	
 	public void centerXOn(double xCoord) {
-		scrollHorizontalTo(toVirtualX(xCoord) - getWidth()/2);
+		scrollHorizontalTo(toVirtualX(xCoord) - getViewportWidth()/2);
 	}
 
 	public void centerYOn(double yCoord) {
-		scrollVerticalTo(toVirtualY(yCoord) - getHeight()/2);
+		scrollVerticalTo(toVirtualY(yCoord) - getViewportHeight()/2);
 	}
 	
 	public void setZoomX(double zoom) {
@@ -173,8 +190,8 @@ public abstract class ZoomableCachingCanvas extends CachingCanvas {
 		double y = fromCanvasY(r.y);
 
 		// adjust zoom
-		zoomXBy((getWidth()-insets.getWidth()) / r.width);
-		zoomYBy((getHeight()-insets.getHeight()) / r.height);
+		zoomXBy((getViewportWidth()) / r.width);
+		zoomYBy((getViewportHeight()) / r.height);
 		
 		// position to original top-left corner
 		scrollHorizontalTo(toVirtualX(x));
@@ -192,7 +209,7 @@ public abstract class ZoomableCachingCanvas extends CachingCanvas {
 	protected void calculateVirtualSize() {
 		double w = (maxX - minX)*zoomX;
 		double h = (maxY - minY)*zoomY;
-		setVirtualSize((long)w + insets.getWidth(), (long)h + insets.getHeight());
+		setVirtualSize((long)w, (long)h);
 	}
 
 	public Insets getInsets() {
@@ -212,14 +229,14 @@ public abstract class ZoomableCachingCanvas extends CachingCanvas {
 	protected void beforePaint(GC gc) {
 		// validate zoom, so that one cannot zoom out too much (the content (getArea()) must cover full canvas)
 		double w = maxX - minX;
-		double minZoomX = (getWidth()-getInsets().getWidth()) / (w==0 ? 1.0 : w); 
+		double minZoomX = (getViewportWidth()) / (w==0 ? 1.0 : w); 
 		if (zoomX < minZoomX) {
 			zoomX = minZoomX;
 			calculateVirtualSize();
 		}
 
 		double h = maxY - minY;
-		double minZoomY = (getHeight()-getInsets().getHeight()) / (h==0 ? 1.0 : h); 
+		double minZoomY = (getViewportHeight()) / (h==0 ? 1.0 : h); 
 		if (zoomY < minZoomY){
 			zoomY = minZoomY;
 			calculateVirtualSize();
@@ -240,7 +257,7 @@ public abstract class ZoomableCachingCanvas extends CachingCanvas {
 						zoomBy(1.0 / 1.1);
 				}
 				else if ((event.stateMask & SWT.SHIFT)!=0) {
-					scrollHorizontalTo(getViewportLeft() - getWidth() * event.count / 20);
+					scrollHorizontalTo(getViewportLeft() - getViewportWidth() * event.count / 20);
 				}
 			}
 		});

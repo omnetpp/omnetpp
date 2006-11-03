@@ -326,7 +326,7 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 	 * Returns the simulation time of the canvas's center.
 	 */
 	public double getViewportCenterSimulationTime() {
-		int middleX = getWidth() / 2;
+		int middleX = getViewportWidth() / 2;
 		return getSimulationTimeForViewportPixel(middleX);
 	}
 	
@@ -341,7 +341,7 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 	 * Returns the simulation time of the canvas's right.
 	 */
 	public double getViewportRightSimulationTime() {
-		return getSimulationTimeForViewportPixel(getWidth());
+		return getSimulationTimeForViewportPixel(getViewportWidth());
 	}
 	
 	/**
@@ -352,7 +352,7 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 			double timelineUnitDelta = sequenceChartFacade.getTimelineCoordinateForSimulationTime(endSimulationTime) - sequenceChartFacade.getTimelineCoordinateForSimulationTime(startSimulationTime);
 			
 			if (timelineUnitDelta > 0)
-				setPixelsPerTimelineUnit(getWidth() / timelineUnitDelta);
+				setPixelsPerTimelineUnit(getViewportWidth() / timelineUnitDelta);
 		}
 
 		scrollHorizontalTo(getViewportLeft() + getViewportPixelForSimulationTime(startSimulationTime));
@@ -385,7 +385,7 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 	public void gotoSimulationTimeWithCenter(double time) {
 		double xDouble = sequenceChartFacade.getTimelineCoordinateForSimulationTime(time) * pixelsPerTimelineUnit;
 		long x = xDouble < 0 ? 0 : xDouble>Long.MAX_VALUE ? Long.MAX_VALUE : (long)xDouble;
-		scrollHorizontalTo(x - getWidth()/2);
+		scrollHorizontalTo(x - getViewportWidth()/2);
 		redraw();
 	}
 	
@@ -405,7 +405,7 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 	public void gotoAxisModule(ModuleTreeItem axisModule) {
 		for (int i = 0; i < axisModules.size(); i++)
 			if (axisModules.get(i) == axisModule)
-				scrollVerticalTo(axisModuleYs[i] - axisGraphs.get(i).getHeight() / 2 - getHeight() / 2);
+				scrollVerticalTo(axisModuleYs[i] - axisGraphs.get(i).getHeight() / 2 - getViewportHeight() / 2);
 	}
 	
 	/**
@@ -421,7 +421,7 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 					gotoSimulationTimeRange(
 						axisValueGraph.getSimulationTime(axisValueGraph.getIndex(simulationTime, true)),
 						axisValueGraph.getSimulationTime(axisValueGraph.getIndex(simulationTime, false)),
-						(int)(getWidth() * 0.1));
+						(int)(getViewportWidth() * 0.1));
 				}
 			}
 	}
@@ -480,7 +480,7 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 	public void zoomToRectangle(Rectangle r) {
 		double timelineCoordinate = getTimelineCoordinateForViewportPixel(r.x);
 		double timelineUnitDelta = getTimelineCoordinateForViewportPixel(r.right()) - timelineCoordinate;
-		setPixelsPerTimelineUnit(getWidth() / timelineUnitDelta);
+		setPixelsPerTimelineUnit(getViewportWidth() / timelineUnitDelta);
 		calculateVirtualSize();
 		calculateModuleYCoordinates();
 		clearCanvasCacheAndRedraw();
@@ -901,7 +901,7 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 		if (axisModules.size() == 0 || axisModules.size() == 1)
 			setAxisSpacing(0);
 		else
-			setAxisSpacing(Math.max(AXISLABEL_DISTANCE + 1, (getHeight() - axisOffset * 2 - dy) / (axisModules.size() - 1)));
+			setAxisSpacing(Math.max(AXISLABEL_DISTANCE + 1, (getViewportHeight() - axisOffset * 2 - dy) / (axisModules.size() - 1)));
 	}
 
 	/**
@@ -964,7 +964,7 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 			double eventsPerTimelineUnit = numEvents / (tEnd - tStart);
 
 			double minPixelsPerTimelineUnit = eventsPerTimelineUnit * 10;  // we want at least 10 pixel/event
-			double maxPixelsPerTimelineUnit = eventsPerTimelineUnit * (getWidth() / 10);  // we want at least 10 events on the chart
+			double maxPixelsPerTimelineUnit = eventsPerTimelineUnit * (getViewportWidth() / 10);  // we want at least 10 events on the chart
 
 			if (pixelsPerTimelineUnit < minPixelsPerTimelineUnit)
 				return minPixelsPerTimelineUnit;
@@ -982,7 +982,7 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 		int numEvents = eventLog.getApproximateNumberOfEvents();
 		if (pixelsPerTimelineUnit == -1 && numEvents > 50)
 			// initial value shows the first 50 events
-			pixelsPerTimelineUnit = getWidth() / sequenceChartFacade.getTimelineCoordinate(eventLog.getNeighbourEvent(eventLog.getFirstEvent(), 50));
+			pixelsPerTimelineUnit = getViewportWidth() / sequenceChartFacade.getTimelineCoordinate(eventLog.getNeighbourEvent(eventLog.getFirstEvent(), 50));
 		else
 			setPixelsPerTimelineUnit(suggestPixelsPerTimelineUnit());
 	}
@@ -1177,13 +1177,13 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 
 	private void paintGutters(Graphics graphics) {
 		graphics.setBackgroundColor(GUTTER_BACKGROUND_COLOR);
-		graphics.fillRectangle(0, 0, getWidth(), GUTTER_HEIGHT);
-		graphics.fillRectangle(0, getHeight() - GUTTER_HEIGHT - 1, getWidth(), GUTTER_HEIGHT);
+		graphics.fillRectangle(0, 0, getViewportWidth(), GUTTER_HEIGHT);
+		graphics.fillRectangle(0, getViewportHeight() - GUTTER_HEIGHT - 1, getViewportWidth(), GUTTER_HEIGHT);
 		paintTicks(graphics);
 		graphics.setBackgroundColor(GUTTER_BORDER_COLOR);
 		graphics.setLineStyle(SWT.LINE_SOLID);
-		graphics.drawRectangle(0, 0, getWidth(), GUTTER_HEIGHT);
-		graphics.drawRectangle(0, getHeight() - GUTTER_HEIGHT - 1, getWidth(), GUTTER_HEIGHT);
+		graphics.drawRectangle(0, 0, getViewportWidth(), GUTTER_HEIGHT);
+		graphics.drawRectangle(0, getViewportHeight() - GUTTER_HEIGHT - 1, getViewportWidth(), GUTTER_HEIGHT);
 	}
 
 	private void paintTicks(Graphics graphics) {
@@ -1194,8 +1194,8 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 	private void paintMouseTick(Graphics graphics) {
 		Point p = toControl(Display.getDefault().getCursorLocation());
 		
-		if (0 <= p.x && p.x < getWidth() &&
-			0 <= p.y && p.y < getHeight()) {
+		if (0 <= p.x && p.x < getViewportWidth() &&
+			0 <= p.y && p.y < getViewportHeight()) {
 			BigDecimal t = new BigDecimal(getSimulationTimeForViewportPixel(p.x));
 			paintTick(graphics, calculateTick(t, 1));
 		}
@@ -1205,12 +1205,12 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 		int x = getViewportPixelForSimulationTime(simulationTime.doubleValue());
 		graphics.setLineStyle(SWT.LINE_DOT);
 		graphics.setForegroundColor(TICK_LINE_COLOR);
-		graphics.drawLine(x, 0, x, getHeight());
+		graphics.drawLine(x, 0, x, getViewportHeight());
 		graphics.setForegroundColor(TICK_LABEL_COLOR);
 		String str = simulationTime.toPlainString() + "s";
 		graphics.setBackgroundColor(GUTTER_BACKGROUND_COLOR);
 		graphics.fillText(str, x + 3, 2);
-		graphics.fillText(str, x + 3, getHeight() - 16);
+		graphics.fillText(str, x + 3, getViewportHeight() - 16);
 	}
 	
 	private void paintEventSelectionMarks(Graphics graphics) {
@@ -1608,7 +1608,7 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 						zoomBy(1.0 / 1.1);
 				}
 				else if ((event.stateMask & SWT.SHIFT)!=0) {
-					scrollHorizontalTo(getViewportLeft() - getWidth() * event.count / 20);
+					scrollHorizontalTo(getViewportLeft() - getViewportWidth() * event.count / 20);
 				}
 			}
 		});

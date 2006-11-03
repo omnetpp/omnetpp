@@ -391,14 +391,15 @@ public class VectorChart extends ChartCanvas {
 		gc.setAntialias(antialias);
 
 		// draw insets border
+		Rectangle canvasRect = new Rectangle(getClientArea());
 		gc.setForeground(insetsBackgroundColor);
 		gc.setBackground(insetsBackgroundColor);
-		gc.fillRectangle(0, 0, getWidth(), insets.top); // top
-		gc.fillRectangle(0, getHeight()-insets.bottom, getWidth(), insets.bottom); // bottom
-		gc.fillRectangle(0, 0, insets.left, getHeight()); // left
-		gc.fillRectangle(getWidth()-insets.right, 0, insets.right, getHeight()); // right
+		gc.fillRectangle(0, 0, canvasRect.width, insets.top); // top
+		gc.fillRectangle(0, canvasRect.bottom()-insets.bottom, canvasRect.width, insets.bottom); // bottom
+		gc.fillRectangle(0, 0, insets.left, canvasRect.height); // left
+		gc.fillRectangle(canvasRect.right()-insets.right, 0, insets.right, canvasRect.height); // right
 		gc.setForeground(insetsLineColor);
-		gc.drawRectangle(insets.left-1, insets.top-1, getWidth()-insets.getWidth()+1, getHeight()-insets.getHeight()+1);
+		gc.drawRectangle(insets.left-1, insets.top-1, getViewportWidth()+1, getViewportHeight()+1);
 
 		title.draw(gc);
 		legend.draw(gc);

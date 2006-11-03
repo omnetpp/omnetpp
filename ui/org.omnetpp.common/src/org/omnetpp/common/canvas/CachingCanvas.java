@@ -60,14 +60,21 @@ public abstract class CachingCanvas extends LargeScrollableCanvas {
 		
 		if (!doCaching) {
 			// paint directly on the GC
+			gc.setClipping(gc.getClipping().intersection(getViewportRectangle()));
 			paintCachableLayer(gc);
+			gc.setClipping(getClientArea());
 			paintNoncachableLayer(gc);
 		}
 		else {
 			Rectangle clip = gc.getClipping();
-			LargeRect lclip = new LargeRect(clip.x+getViewportLeft(), clip.y+getViewportTop(), 
-											Math.min(clip.width, getVirtualWidth()), 
-											Math.min(clip.height, getVirtualHeight()));
+			Rectangle viewportRect = getViewportRectangle();
+			clip = clip.intersection(viewportRect);
+			gc.setClipping(clip);
+			LargeRect lclip = new LargeRect(
+					clip.x - viewportRect.x + getViewportLeft(),
+					clip.y - viewportRect.y + getViewportTop(), 
+					Math.min(clip.width, getVirtualWidth()), 
+					Math.min(clip.height, getVirtualHeight()));
 			
 			ArrayList<Tile> cachedTiles = new ArrayList<Tile>();
 			ArrayList<LargeRect> missingAreas = new ArrayList<LargeRect>();
@@ -77,13 +84,18 @@ public abstract class CachingCanvas extends LargeScrollableCanvas {
 
 			// display cached tiles
 			for (Tile tile : cachedTiles) {
-				gc.drawImage(tile.image, (int)(tile.rect.x-getViewportLeft()), (int)(tile.rect.y-getViewportTop()));
+				gc.drawImage(tile.image,
+						(int)(tile.rect.x - getViewportLeft() + viewportRect.x),
+						(int)(tile.rect.y - getViewportTop() + viewportRect.y));
 				debugDrawTile(gc, tile.rect, new Color(null,0,255,0));
 			}
 
 			// draw missing tiles
 			for (LargeRect lrect : missingAreas) {
-				Rectangle rect = new Rectangle((int)(lrect.x-getViewportLeft()), (int)(lrect.y-getViewportTop()), (int)lrect.width, (int)lrect.height);
+				Rectangle rect = new Rectangle(
+						(int)(lrect.x - getViewportLeft() + viewportRect.x),
+						(int)(lrect.y - getViewportTop() + viewportRect.y),
+						(int)lrect.width, (int)lrect.height);
 
 				if (!rect.isEmpty())
 				{
@@ -109,11 +121,8 @@ public abstract class CachingCanvas extends LargeScrollableCanvas {
 
 			// paint items that we don't want to cache
 			gc.setClipping(getClientArea());
-			Graphics graphics = new SWTGraphics(gc);
 			paintNoncachableLayer(gc);
-			graphics.dispose();
 		}
-		
 	}
 
 
@@ -122,14 +131,23 @@ public abstract class CachingCanvas extends LargeScrollableCanvas {
 	 */
 	private void debugDrawTile(GC gc, LargeRect rect, Color color) {
 		if (debug) {
+			Rectangle viewportRect = getViewportRectangle();
 			gc.setForeground(color);
 			gc.setLineStyle(SWT.LINE_DOT);
 			gc.drawRoundRectangle(
-					(int)(rect.x-getViewportLeft()), (int)(rect.y-getViewportTop()),
+					(int)(rect.x - getViewportLeft() + viewportRect.x),
+					(int)(rect.y - getViewportTop() + viewportRect.y),
 					(int)rect.width-1, (int)rect.height-1, 30, 30);
 		}
 	}
 
+	/**
+	 * Returns the position of the viewport relative to the canvas. 
+	 */
+	public Rectangle getViewportRectangle() {
+		return new Rectangle(0, 0, getViewportWidth(), getViewportHeight());
+	}
+	
 	/**
 	 * Called in every repaint request, before any call to paintCachables() and
 	 * paintNoncachables(). This is a good place for pre-paint calculations

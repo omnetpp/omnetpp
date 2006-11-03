@@ -289,7 +289,7 @@ public class ScalarChart2 extends ChartCanvas {
 	private static final double DEFAULT_BAR_BASELINE = 0.0;
 	private static final BarPlacement DEFAULT_BAR_PLACEMENT = BarPlacement.Aligned;
 	private static final Color DEFAULT_BAR_OUTLINE_COLOR = ColorFactory.asColor("grey80");
-	private static final Color DEFAULT_BACKGROUND_COLOR = ColorFactory.defaultBackground;
+	private static final Color DEFAULT_BACKGROUND_COLOR = ColorFactory.asColor("white");
 	private static final boolean DEFAULT_INVERT_XY = false;
 	
 	class BarPlot {
@@ -297,7 +297,7 @@ public class ScalarChart2 extends ChartCanvas {
 		private int widthBar = 10;
 		private int hgapMinor = 5;
 		private int hgapMajor = 20;
-
+		private int inset = 10;
 		
 		private double barBaseline = DEFAULT_BAR_BASELINE;
 		private BarPlacement barPlacement = DEFAULT_BAR_PLACEMENT;
@@ -345,8 +345,8 @@ public class ScalarChart2 extends ChartCanvas {
 		
 		protected int[] getRowColumnsInRectangle(org.eclipse.draw2d.geometry.Rectangle rect) {
 			int[] result = new int[2];
-				result[0] = getRowColumn(rect.x, true);
-				result[1] = getRowColumn(rect.x + rect.width, false);
+			result[0] = getRowColumn(rect.x, true);
+			result[1] = getRowColumn(rect.x + rect.width, false);
 			return result;
 		}
 		
@@ -380,7 +380,7 @@ public class ScalarChart2 extends ChartCanvas {
 					minY = Math.min(minY, plot.getBottomY(row, column));
 					maxY = Math.max(maxY, plot.getTopY(row, column));
 				}
-			return new PlotArea(minX, maxX, minY, maxY);
+			return new PlotArea(minX - inset, maxX + inset, minY, maxY + inset);
 		}
 		
 		
@@ -388,7 +388,7 @@ public class ScalarChart2 extends ChartCanvas {
 		protected double getLeftX(int row, int column) {
 			int cColumns = dataset.getColumnCount();
 			double rowWidth = cColumns * widthBar + (cColumns - 1) * hgapMinor;
-			return row * (rowWidth + hgapMajor) + column * (widthBar + hgapMinor); 
+			return inset + row * (rowWidth + hgapMajor) + column * (widthBar + hgapMinor); 
 		}
 		
 		protected double getRightX(int row, int column) {

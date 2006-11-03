@@ -1,5 +1,9 @@
 package org.omnetpp.common.canvas;
 
+import java.util.ArrayList;
+
+import org.eclipse.draw2d.Graphics;
+import org.eclipse.draw2d.SWTGraphics;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ControlAdapter;
 import org.eclipse.swt.events.ControlEvent;
@@ -7,12 +11,17 @@ import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
+import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.graphics.Transform;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.ScrollBar;
+import org.omnetpp.common.canvas.ITileCache.Tile;
 
 /**
  * A canvas that supports a scrollable area which can be very large,
@@ -26,7 +35,7 @@ public abstract class LargeScrollableCanvas extends Canvas {
 	private long virtualWidth, virtualHeight; // 64-bit size of the "virtual canvas"
 	private long viewX, viewY; // 64-bit coordinates of top-left corner of the viewport
 	private int hShift, vShift; // used for scrollbar mapping 
-	
+
 	public LargeScrollableCanvas(Composite parent, int style) {
 		super(parent, style | SWT.H_SCROLL | SWT.V_SCROLL);
 		init();
@@ -117,11 +126,11 @@ public abstract class LargeScrollableCanvas extends Canvas {
 	}
 	
 	private long clipX(long x) {
-		return clip(x, virtualWidth-getWidth());
+		return clip(x, virtualWidth-getViewportWidth());
 	}
 	
 	private long clipY(long y) {
-		return clip(y, virtualHeight-getHeight());
+		return clip(y, virtualHeight-getViewportHeight());
 	}
 
 	/**
@@ -138,14 +147,14 @@ public abstract class LargeScrollableCanvas extends Canvas {
 	/**
 	 * Returns the width of the client area (see {@link Canvas#getClientArea()}.
 	 */
-	public int getWidth() {
+	public int getViewportWidth() {
 		return getClientArea().width;
 	}
 
 	/**
 	 * Returns the height of the client area (see {@link Canvas#getClientArea()}.
 	 */
-	public int getHeight() {
+	public int getViewportHeight() {
 		return getClientArea().height;
 	}
 	
@@ -162,8 +171,8 @@ public abstract class LargeScrollableCanvas extends Canvas {
 	private void configureScrollbars() {
 		viewX = clipX(viewX);
 		viewY = clipY(viewY);
-		hShift = configureScrollbar(getHorizontalBar(), virtualWidth, viewX, getSize().x);
-		vShift = configureScrollbar(getVerticalBar(), virtualHeight, viewY, getSize().y);
+		hShift = configureScrollbar(getHorizontalBar(), virtualWidth, viewX, /*getSize().x*/getViewportWidth());
+		vShift = configureScrollbar(getVerticalBar(), virtualHeight, viewY, /*getSize().y*/getViewportHeight());
 	}
 
 	private int configureScrollbar(ScrollBar sb, long virtualSize, long virtualPos, int widgetSize) {
@@ -199,5 +208,4 @@ public abstract class LargeScrollableCanvas extends Canvas {
 		getHorizontalBar().setSelection((int)(viewX >> hShift));
 		getVerticalBar().setSelection((int)(viewY >> vShift));
 	}
-	
 }

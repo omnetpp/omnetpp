@@ -35,6 +35,7 @@ public abstract class ChartCanvas extends ZoomableCachingCanvas {
 	protected static final LegendAnchor DEFAULT_LEGEND_ANCHOR = LegendAnchor.North;
 	protected static final Font DEFAULT_LEGEND_FONT = new Font(null, "Arial", 8, SWT.NORMAL);
 	
+	protected int antialias = SWT.ON;
 	protected Title title = new Title(DEFAULT_TITLE, DEFAULT_TITLE_FONT);
 	protected Legend legend = new Legend(DEFAULT_DISPLAY_LEGEND, DEFAULT_LEGEND_BORDER, DEFAULT_LEGEND_FONT, DEFAULT_LEGEND_POSITION, DEFAULT_LEGEND_ANCHOR);
 	
@@ -70,6 +71,15 @@ public abstract class ChartCanvas extends ZoomableCachingCanvas {
 	
 	public Axis getVerticalAxis() {
 		return null;
+	}
+	
+	public int getAntialias() {
+		return antialias;
+	}
+
+	public void setAntialias(int antialias) {
+		this.antialias = antialias;
+		scheduleRedraw();
 	}
 	
 	public void setTitle(String value) {
@@ -203,12 +213,15 @@ public abstract class ChartCanvas extends ZoomableCachingCanvas {
 				Graphics graphics = new SWTGraphics(gc);
 				graphics.pushState();
 				
-				graphics.setForegroundColor(ColorFactory.asColor("red"));
-				graphics.drawRectangle(rect);
+				graphics.setClip(rect);
+				//graphics.setForegroundColor(ColorFactory.asColor("red"));
+				//graphics.drawRectangle(rect);
 				
 				Axis axis;
 				graphics.setForegroundColor(ColorFactory.asColor("black"));
 				graphics.setLineStyle(SWT.LINE_DOT);
+				graphics.setLineWidth(1);
+				
 				if ((axis = getHorizontalAxis()) != null) {
 					for (BigDecimal tick : axis.getTicks()) {
 						int x = toCanvasX(tick.doubleValue());
