@@ -255,7 +255,7 @@ cNEDDeclaration *cNEDLoader::buildNEDDeclaration(NEDElement *node)
         decl->setImplementationClassName(superDecl->implementationClassName());
 
         // take over properties
-        decl->setProperties(superDecl->properties());  //FIXME
+        decl->setProperties(superDecl->properties()->dup());
 
         // add inherited parameters
         for (int i=0; i<superDecl->numPars(); i++)
