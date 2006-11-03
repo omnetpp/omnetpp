@@ -145,7 +145,7 @@ std::string cProperty::info() const
         {
             if (i!=0)
                 os << ";";
-            if (!keyv.empty())
+            if (keyv[i] && *keyv[i])
                 os << keyv[i] << "=";
             for (int j=0; j<valuesv[i].size(); j++)
                 os << (j==0 ? "" : ",") << valuesv[i][j];  //FIXME value may need quoting

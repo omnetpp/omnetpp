@@ -194,9 +194,8 @@ void cNEDDeclaration::setProperties(cProperties *p)
         return;
     if (locked)
         throw new cRuntimeError(this, "setProperties(): too late, object already locked");
-    if (props)
-        throw new cRuntimeError(this, "setProperties(): properties already set");
-    p = props;
+    delete props;
+    props = p;
     props->setOwner(this);
     props->lock();
 }
