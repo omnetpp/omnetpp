@@ -11,7 +11,7 @@ import org.omnetpp.ned2.model.pojo.SimpleModuleNode;
 
 public class SimpleModuleNodeEx extends SimpleModuleNode 
 				implements IDisplayStringProvider, IParentable, 
-                           INamed, IDerived, ITopLevelElement, IParametrized  {
+                           INamed, IDerived, ITopLevelElement, IParametrized, IGateContainer  {
 	protected DisplayString displayString = null;
 	
 	SimpleModuleNodeEx() {
@@ -86,4 +86,12 @@ public class SimpleModuleNodeEx extends SimpleModuleNode
         return getContainerNEDTypeInfo().getParams();
     }
 
+    // gate support
+    public Map<String, NEDElement> getGateSizes() {
+        return getContainerNEDTypeInfo().getGateSizes();
+    }
+
+    public Map<String, NEDElement> getGates() {
+        return getContainerNEDTypeInfo().getGates();
+    }
 }

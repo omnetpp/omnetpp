@@ -1,5 +1,10 @@
 package org.omnetpp.ned2.model;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.omnetpp.common.displaymodel.ConnectionDisplayString;
 import org.omnetpp.common.displaymodel.DisplayString;
 import org.omnetpp.common.displaymodel.IDisplayString;
@@ -7,8 +12,10 @@ import org.omnetpp.common.displaymodel.IDisplayStringProvider;
 import org.omnetpp.common.displaymodel.IDisplayString.Prop;
 import org.omnetpp.ned2.model.pojo.ChannelSpecNode;
 import org.omnetpp.ned2.model.pojo.ConnectionNode;
+import org.omnetpp.ned2.model.pojo.ParametersNode;
 
-public class ConnectionNodeEx extends ConnectionNode implements IStringTyped, IDisplayStringProvider {
+public class ConnectionNodeEx extends ConnectionNode 
+    implements IStringTyped, IDisplayStringProvider, IParametrized {
 	private ConnectionDisplayString displayString = null;
 
 	ConnectionNodeEx() {
@@ -207,5 +214,48 @@ public class ConnectionNodeEx extends ConnectionNode implements IStringTyped, ID
     public NEDElement getTypeRef() {
         INEDTypeInfo it = getTypeNEDTypeInfo();
         return it == null ? null : it.getNEDElement();
+    }
+
+    
+    /**
+     * @return All parameters assigned in this module (inside the channel spec element)
+     */
+    public List<ParamNodeEx> getOwnParams() {
+        // FIXME does not include parameters in param groups !!!
+        List<ParamNodeEx> result = new ArrayList<ParamNodeEx>();
+        
+        ChannelSpecNode channelSpecNode = getFirstChannelSpecChild();;
+        if (channelSpecNode == null)
+            return result;
+
+        ParametersNode parametersNode = channelSpecNode.getFirstParametersChild();
+        if (parametersNode == null)
+            return result;
+        
+        for(NEDElement currChild : parametersNode)
+            if (currChild instanceof ParamNodeEx)
+                result.add((ParamNodeEx)currChild);
+
+        return result;
+    }
+    
+    // parameter query support
+    public Map<String, NEDElement> getParamValues() {
+        INEDTypeInfo info = getTypeNEDTypeInfo();
+        Map<String, NEDElement> result = 
+            (info == null) ? new HashMap<String, NEDElement>() : new HashMap<String, NEDElement>(info.getParamValues());
+        
+        // add our own assigned parameters
+        for (ParamNodeEx ownParam : getOwnParams()) 
+            result.put(ownParam.getName(), ownParam);
+        
+        return result;
+    }
+
+    public Map<String, NEDElement> getParams() {
+        INEDTypeInfo info = getTypeNEDTypeInfo();
+        if (info == null)
+            return new HashMap<String, NEDElement>();
+        return info.getParams();
     }
 }

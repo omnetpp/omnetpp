@@ -8,11 +8,13 @@ import java.util.Map;
 import org.omnetpp.common.displaymodel.DisplayString;
 import org.omnetpp.common.displaymodel.IDisplayString;
 import org.omnetpp.common.displaymodel.IDisplayString.Prop;
+import org.omnetpp.ned2.model.pojo.GatesNode;
 import org.omnetpp.ned2.model.pojo.ParametersNode;
 import org.omnetpp.ned2.model.pojo.SubmoduleNode;
 
 public class SubmoduleNodeEx extends SubmoduleNode
-                            implements INamedGraphNode, IIndexable, IStringTyped, IParametrized {
+                            implements INamedGraphNode, IIndexable, IStringTyped, 
+                                       IParametrized, IGateContainer {
 
     protected DisplayString displayString = null;
 
@@ -126,7 +128,7 @@ public class SubmoduleNodeEx extends SubmoduleNode
     public Map<String, NEDElement> getParamValues() {
         INEDTypeInfo info = getTypeNEDTypeInfo();
         Map<String, NEDElement> result = 
-            (info == null) ? new HashMap<String, NEDElement>() : info.getParamValues();
+            (info == null) ? new HashMap<String, NEDElement>() : new HashMap<String, NEDElement>(info.getParamValues());
         
         // add our own assigned parameters
         for (ParamNodeEx ownParam : getOwnParams()) 
@@ -140,5 +142,41 @@ public class SubmoduleNodeEx extends SubmoduleNode
         if (info == null)
             return new HashMap<String, NEDElement>();
         return info.getParams();
+    }
+
+    // gate support
+    /**
+     * @return All gates assigned in this submodule's body
+     */
+    public List<GateNodeEx> getOwnGates() {
+        // FIXME does not include parameters in param groups !!!
+        List<GateNodeEx> result = new ArrayList<GateNodeEx>();
+        GatesNode gatesNode = getFirstGatesChild();
+        if (gatesNode == null)
+            return result;
+        for(NEDElement currChild : gatesNode)
+            if (currChild instanceof GateNodeEx)
+                result.add((GateNodeEx)currChild);
+
+        return result;
+    }
+
+    public Map<String, NEDElement> getGateSizes() {
+        INEDTypeInfo info = getTypeNEDTypeInfo();
+        Map<String, NEDElement> result = 
+            (info == null) ? new HashMap<String, NEDElement>() : new HashMap<String, NEDElement>(info.getGateSizes());
+        
+        // add our own assigned parameters
+        for (GateNodeEx ownGate : getOwnGates()) 
+            result.put(ownGate.getName(), ownGate);
+        
+        return result;
+    }
+
+    public Map<String, NEDElement> getGates() {
+        INEDTypeInfo info = getTypeNEDTypeInfo();
+        if (info == null)
+            return new HashMap<String, NEDElement>();
+        return info.getGates();
     }
 }

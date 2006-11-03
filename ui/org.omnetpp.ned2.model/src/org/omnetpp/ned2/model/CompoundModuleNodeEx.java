@@ -15,7 +15,7 @@ import org.omnetpp.ned2.model.pojo.SubmodulesNode;
 
 public class CompoundModuleNodeEx extends CompoundModuleNode
 						implements INamedGraphNode, IDerived, 
-                                   ITopLevelElement, IParametrized {
+                                   ITopLevelElement, IParametrized, IGateContainer {
 
 	protected DisplayString displayString = null;
 
@@ -332,5 +332,14 @@ public class CompoundModuleNodeEx extends CompoundModuleNode
 
     public Map<String, NEDElement> getParams() {
         return getContainerNEDTypeInfo().getParams();
+    }
+
+    // gate support
+    public Map<String, NEDElement> getGateSizes() {
+        return getContainerNEDTypeInfo().getGateSizes();
+    }
+
+    public Map<String, NEDElement> getGates() {
+        return getContainerNEDTypeInfo().getGates();
     }
 }

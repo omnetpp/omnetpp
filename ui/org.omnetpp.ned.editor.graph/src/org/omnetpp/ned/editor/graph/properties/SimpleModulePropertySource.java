@@ -32,10 +32,13 @@ public class SimpleModulePropertySource extends MergedPropertySource {
         mergePropertySource(new NamePropertySource(nodeModel));
         // parameter list property
         mergePropertySource(new DelegatingPropertySource(
-                                        new ParameterListPropertySource(nodeModel),
-                                        "parameters",
-                                        "List of parameters and inherited parameters"));
-        
+                new ParameterListPropertySource(nodeModel),
+                ParameterListPropertySource.CATEGORY,
+                ParameterListPropertySource.DESCRIPTION));
+        mergePropertySource(new DelegatingPropertySource(
+                new GateListPropertySource(nodeModel),
+                GateListPropertySource.CATEGORY,
+                GateListPropertySource.DESCRIPTION));
         // create a nested displayPropertySource
         mergePropertySource(new SimpleModuleDisplayPropertySource(nodeModel));
         

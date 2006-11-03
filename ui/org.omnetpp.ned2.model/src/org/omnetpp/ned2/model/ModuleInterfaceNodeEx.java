@@ -11,7 +11,7 @@ import org.omnetpp.ned2.model.pojo.ModuleInterfaceNode;
 
 public class ModuleInterfaceNodeEx extends ModuleInterfaceNode 
 		implements IDisplayStringProvider, IParentable, 
-                   IDerived, INamed, ITopLevelElement, IParametrized {
+                   IDerived, INamed, ITopLevelElement, IParametrized, IGateContainer {
 
 	protected DisplayString displayString = null;
 
@@ -66,6 +66,13 @@ public class ModuleInterfaceNodeEx extends ModuleInterfaceNode
         return it == null ? null : it.getNEDElement();
     }
 
+    // notifiation support
+    public void propertyChanged(Prop changedProp) {
+        // syncronize it to the underlying model 
+        NEDElementUtilEx.setDisplayString(this, displayString.toString());
+        fireAttributeChangedToAncestors(IDisplayString.ATT_DISPLAYSTRING+"."+changedProp);
+    }
+    
     // parameter query support
     public Map<String, NEDElement> getParamValues() {
         return getContainerNEDTypeInfo().getParamValues();
@@ -75,11 +82,12 @@ public class ModuleInterfaceNodeEx extends ModuleInterfaceNode
         return getContainerNEDTypeInfo().getParams();
     }
 
-    // notifiation support
-	public void propertyChanged(Prop changedProp) {
-		// syncronize it to the underlying model 
-		NEDElementUtilEx.setDisplayString(this, displayString.toString());
-        fireAttributeChangedToAncestors(IDisplayString.ATT_DISPLAYSTRING+"."+changedProp);
-	}
+    // gate support
+    public Map<String, NEDElement> getGateSizes() {
+        return getContainerNEDTypeInfo().getGateSizes();
+    }
 
+    public Map<String, NEDElement> getGates() {
+        return getContainerNEDTypeInfo().getGates();
+    }
 }

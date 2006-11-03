@@ -17,7 +17,19 @@ public class GateNodeEx extends GateNode implements IIndexable, INamed, IParenta
     }
 
     public String getNameWithIndex() {
-        return null;
+        String result = getName();
+        if (getIsVector())
+            result += "["+ ((getVectorSize()==null) ? "" : getVectorSize())+"]";
+        return result;
     }
 
+    /**
+     * @return Which module  contains this gate definition
+     */
+    public NEDElement getContainingTopLevelElement() {
+        NEDElement parent = getParent(); 
+        while (parent != null && !(parent instanceof ITopLevelElement)) 
+            parent = parent.getParent();
+        return parent;
+    }
 }

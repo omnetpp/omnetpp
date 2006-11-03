@@ -106,20 +106,24 @@ public class CompoundModulePropertySource extends MergedPropertySource {
     }
 
     // constructor
-    public CompoundModulePropertySource(CompoundModuleNodeEx compModuleNodeModel) {
-        super(compModuleNodeModel);
+    public CompoundModulePropertySource(CompoundModuleNodeEx nodeModel) {
+        super(nodeModel);
         // create a nested displayPropertySource
-        mergePropertySource(new NamePropertySource(compModuleNodeModel));
-        mergePropertySource(new BasePropertySource(compModuleNodeModel));
+        mergePropertySource(new NamePropertySource(nodeModel));
+        mergePropertySource(new BasePropertySource(nodeModel));
         mergePropertySource(new DelegatingPropertySource(
-                new ParameterListPropertySource(compModuleNodeModel),
-                "parameters",
-                "List of parameters and inherited parameters"));
+                new ParameterListPropertySource(nodeModel),
+                ParameterListPropertySource.CATEGORY,
+                ParameterListPropertySource.DESCRIPTION));
         mergePropertySource(new DelegatingPropertySource(
-                new SubmoduleListPropertySource(compModuleNodeModel),
-                "submodules",
-                "List of direct and inherited submodules"));
-        mergePropertySource(new CompoundModuleDisplayPropertySource(compModuleNodeModel));
+                new GateListPropertySource(nodeModel),
+                GateListPropertySource.CATEGORY,
+                GateListPropertySource.DESCRIPTION));
+        mergePropertySource(new DelegatingPropertySource(
+                new SubmoduleListPropertySource(nodeModel),
+                SubmoduleListPropertySource.CATEGORY,
+                SubmoduleListPropertySource.DESCRIPTION));
+        mergePropertySource(new CompoundModuleDisplayPropertySource(nodeModel));
     }
 
 }

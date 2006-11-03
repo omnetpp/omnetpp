@@ -100,8 +100,12 @@ public class SubmodulePropertySource extends MergedPropertySource {
         mergePropertySource(new BasePropertySource(submoduleNodeModel));
         mergePropertySource(new DelegatingPropertySource(
                 new ParameterListPropertySource(submoduleNodeModel),
-                "parameters",
-                "List of parameters and inherited parameters"));
+                ParameterListPropertySource.CATEGORY,
+                ParameterListPropertySource.DESCRIPTION));
+        mergePropertySource(new DelegatingPropertySource(
+                new GateListPropertySource(submoduleNodeModel),
+                GateListPropertySource.CATEGORY,
+                GateListPropertySource.DESCRIPTION));
         mergePropertySource(new SubmoduleDisplayPropertySource(submoduleNodeModel));
         
     }

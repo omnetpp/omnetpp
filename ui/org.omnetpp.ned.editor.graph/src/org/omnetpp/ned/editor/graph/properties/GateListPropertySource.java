@@ -5,44 +5,44 @@ import java.util.Map;
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
 import org.eclipse.ui.views.properties.PropertyDescriptor;
 import org.omnetpp.ned2.model.INamed;
-import org.omnetpp.ned2.model.IParametrized;
+import org.omnetpp.ned2.model.IGateContainer;
 import org.omnetpp.ned2.model.NEDElement;
-import org.omnetpp.ned2.model.ParamNodeEx;
+import org.omnetpp.ned2.model.GateNodeEx;
 
 /**
  * @author rhornig
  * Property source to display all submodules for a given compound module
  */
-public class ParameterListPropertySource extends NotifiedPropertySource {
-    public final static String CATEGORY = "parameters";
-    public final static String DESCRIPTION = "List of parameters (direct and inherited)";
-    protected IParametrized model;
+public class GateListPropertySource extends NotifiedPropertySource {
+    public final static String CATEGORY = "gates";
+    public final static String DESCRIPTION = "List of gates (direct and inherited)";
+    protected IGateContainer model;
     protected PropertyDescriptor[] pdesc;
     protected int totalParamCount;
     protected int inheritedParamCount;
     
-    public ParameterListPropertySource(IParametrized model) {
+    public GateListPropertySource(IGateContainer model) {
         super((NEDElement)model);
         this.model = model;
     }
 
     @Override
     public IPropertyDescriptor[] getPropertyDescriptors() {
-        Map<String, NEDElement> params = model.getParams();
+        Map<String, NEDElement> gates = model.getGates();
         
-        pdesc = new PropertyDescriptor[params.size()];
+        pdesc = new PropertyDescriptor[gates.size()];
         totalParamCount = inheritedParamCount = 0;
-        for(NEDElement paramElement : params.values()) {
-            ParamNodeEx paramDefNode = (ParamNodeEx)paramElement;
-            String typeString = (paramDefNode.getIsVolatile() ? "volatile " : "") + paramDefNode.getAttribute(ParamNodeEx.ATT_TYPE);
+        for(NEDElement gateElement : gates.values()) {
+            GateNodeEx gateDefNode = (GateNodeEx)gateElement;
+            String typeString = gateDefNode.getAttribute(GateNodeEx.ATT_TYPE);
             String definedIn = "";
-            if (paramDefNode.getContainingTopLevelElement() != model) {
+            if (gateDefNode.getContainingTopLevelElement() != model) {
                 inheritedParamCount++;
-                definedIn= " (inherited from "+((INamed)paramDefNode.getContainingTopLevelElement()).getName()+")";
+                definedIn= " (inherited from "+((INamed)gateDefNode.getContainingTopLevelElement()).getName()+")";
             }
-            pdesc[totalParamCount] = new PropertyDescriptor(paramDefNode, typeString +" "+paramDefNode.getName());
-            pdesc[totalParamCount].setCategory("Parameters");
-            pdesc[totalParamCount].setDescription("Parameter "+paramDefNode.getName()+" with type "+typeString+definedIn+" - (read only)");
+            pdesc[totalParamCount] = new PropertyDescriptor(gateDefNode, typeString );
+            pdesc[totalParamCount].setCategory("Gates");
+            pdesc[totalParamCount].setDescription("Gate "+gateDefNode.getNameWithIndex()+" of type "+typeString+definedIn+" - (read only)");
             totalParamCount++;
         }
         
@@ -64,12 +64,12 @@ public class ParameterListPropertySource extends NotifiedPropertySource {
 
     @Override
     public Object getPropertyValue(Object id) {
-        if (!(id instanceof ParamNodeEx))
+        if (!(id instanceof GateNodeEx))
             return getEditableValue();
-        Map<String, NEDElement> paramValues = model.getParamValues();
-        ParamNodeEx paramDefNode = (ParamNodeEx)id;
-        ParamNodeEx paramValueNode = ((ParamNodeEx)paramValues.get(paramDefNode.getName()));
-        String valueString = paramValueNode== null ? "" :paramValueNode.getValue();
+        Map<String, NEDElement> gateSizes = model.getGateSizes();
+        GateNodeEx gateDefNode = (GateNodeEx)id;
+        GateNodeEx gateSizeNode = ((GateNodeEx)gateSizes.get(gateDefNode.getName()));
+        String valueString = gateSizeNode== null ? "" :gateSizeNode.getNameWithIndex();
         return valueString;
     }
 

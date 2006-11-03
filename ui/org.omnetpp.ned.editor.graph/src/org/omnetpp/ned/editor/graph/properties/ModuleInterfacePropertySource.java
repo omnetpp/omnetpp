@@ -36,8 +36,12 @@ public class ModuleInterfacePropertySource extends MergedPropertySource {
         mergePropertySource(new NamePropertySource(nodeModel));
         mergePropertySource(new DelegatingPropertySource(
                 new ParameterListPropertySource(nodeModel),
-                "parameters",
-                "List of parameters and inherited parameters"));
+                ParameterListPropertySource.CATEGORY,
+                ParameterListPropertySource.DESCRIPTION));
+        mergePropertySource(new DelegatingPropertySource(
+                new GateListPropertySource(nodeModel),
+                GateListPropertySource.CATEGORY,
+                GateListPropertySource.DESCRIPTION));
     }
 
 }

@@ -1,3 +1,11 @@
+- 061101
+  + new toplevel elements are named unique automatically
+  + submodules are displayed in compound module's property list (inherited ones too)
+  + parameters are displayed in all related toplevel components + submodules
+  x compound module scaling is working now correctly
+  o internally refactored ned model which do not keep creoss references between
+    ned element trees any more (ie. no more direct reference from connection
+    model to the end modules
 - 061009
   + Added all top level elements. It is possible to create Channels, simple modules, module and channel interfaces
   + Added property sheet support for all top level element. Created categories

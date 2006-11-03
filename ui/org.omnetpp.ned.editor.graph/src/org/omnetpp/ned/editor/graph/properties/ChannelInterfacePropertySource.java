@@ -10,8 +10,8 @@ public class ChannelInterfacePropertySource extends MergedPropertySource {
         mergePropertySource(new NamePropertySource(nodeModel));
         mergePropertySource(new DelegatingPropertySource(
                 new ParameterListPropertySource(nodeModel),
-                "parameters",
-                "List of parameters and inherited parameters"));
+                ParameterListPropertySource.CATEGORY,
+                ParameterListPropertySource.DESCRIPTION));
     }
 
 }

@@ -120,6 +120,10 @@ public class ConnectionPropertySource extends MergedPropertySource {
         // create a nested displayPropertySources
         mergePropertySource(new BasePropertySource(connectionNodeModel));	
         mergePropertySource(new ConnectionDisplayPropertySource(connectionNodeModel));
+        mergePropertySource(new DelegatingPropertySource(
+                new ParameterListPropertySource(connectionNodeModel),
+                ParameterListPropertySource.CATEGORY,
+                ParameterListPropertySource.DESCRIPTION));
         
     }
 }

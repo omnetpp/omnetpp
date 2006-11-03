@@ -9,14 +9,14 @@ import java.util.Map;
 public interface IParametrized {
     
     /**
-     * @return The name / parameter node association. You SHUOLD NOT modify the returned
+     * @return The name / parameter node association. You SHOULD NOT modify the returned
      * map.
      */
     public Map<String, NEDElement> getParams();
     
     /**
      * @return The name / parameter node association where the last parameter - value
-     * assignment was done. You SHUOLD NOT modify the returned map.
+     * assignment was done. You SHOULD NOT modify the returned map.
      */
     public Map<String, NEDElement> getParamValues();
 
