@@ -118,3 +118,8 @@ SH MessageSendHopEntry
    pd simtime_t propagationDelay
    td simtime_t transmissionDelay
 }
+
+DE DeleteMessage
+{
+   id int messageId
+}
