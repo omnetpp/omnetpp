@@ -291,6 +291,7 @@ long FileReader::getFileSize()
     if (fileSize == -1) {
         if (!f) openFile();
 
+        // TODO: use ftello, fseeko to support files bigger than 2GByte
         long tmp = ftell(f);
         fseek(f, 0, SEEK_END);
         fileSize = ftell(f);
