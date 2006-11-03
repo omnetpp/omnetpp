@@ -35,9 +35,9 @@ ENVIR_ILIB=
 #=====================================================================
 
 
-all: checkenv components reminder
+all: check-env components reminder
 
-components: libs progs jnilibs configsamples samples
+components: base jnilibs samples
 
 
 #=====================================================================
@@ -46,8 +46,7 @@ components: libs progs jnilibs configsamples samples
 #
 #=====================================================================
 
-LIBS=$(ENVIR_ILIB) common eventlog scave nedxml sim envir cmdenv tkenv
-PROGS=utils nedc
+BASE=$(ENVIR_ILIB) common eventlog scave nedxml sim envir cmdenv tkenv utils nedc
 SAMPLES=aloha cqn dyna fifo hcube hist neddemo p-to-p queueing routing queues tictoc tokenring sockets
 JNILIBS=org.omnetpp.ned2.model \
         org.omnetpp.scave.engine \
@@ -55,30 +54,23 @@ JNILIBS=org.omnetpp.ned2.model \
 #        org.omnetpp.experimental.simkernel   FIXME this does not build currently, to be added back
 
 #
-# Group targets. Note that utils has to be built BEFORE other libs and progs
-# because tcl2c might be needed to build tkenv or gned.
+# Group targets.
 #
-libs: ver_h utils $(LIBS)
-eventlog scave nedxml sim envir cmdenv : common
-progs: ver_h $(PROGS)
-samples: rundemo $(SAMPLES)
+base: $(BASE)
 jnilibs : $(JNILIBS)
+samples: rundemo configsamples $(SAMPLES)
+
+# dependencies (because of ver.h, tcl2c, opp_msgc, etc)
+common eventlog scave nedxml sim envir cmdenv tkenv nedc : ver_h utils
+eventlog scave nedxml sim envir cmdenv : common
+nedc : nedxml
+sim : nedc
+$(SAMPLES) : rundemo configsamples
 
 #
-# Libraries
+# Core libraries and programs
 #
-envir_ilib:
-	@echo ===== Compiling $@ ====
-	cd /d $(OMNETPP_SRC_DIR:/=\)\envir && $(MAKE) $(MOPTS) $(MAKEFILE) envir.ilib
-
-$(LIBS):
-	@echo ===== Compiling $@ ====
-	cd /d $(OMNETPP_SRC_DIR:/=\)\$@ && $(MAKE) $(MOPTS) $(MAKEFILE)
-
-#
-# Programs
-#
-$(PROGS):
+$(BASE):
 	@echo ===== Compiling $@ ====
 	cd /d $(OMNETPP_SRC_DIR:/=\)\$@ && $(MAKE) $(MOPTS) $(MAKEFILE)
 
@@ -112,7 +104,7 @@ docu:
 #
 # Tests
 #
-tests: checkenv libs progs
+tests: check-env base
 	@echo ===== Running tests ====
         @cd /d $(OMNETPP_TEST_DIR:/=\) && call runtest.cmd
 
@@ -122,8 +114,7 @@ tests: checkenv libs progs
 #
 #=====================================================================
 
-
-checkenv:
+check-env:
 	@echo ===== Checking environment =====
 	@if not .%OS%.==.Windows_NT. echo ERROR: This makefile can ONLY be used on NT4.0, Win2K or XP! && exit 1
 	@echo  Checking if $(CXX) works...
@@ -148,7 +139,7 @@ configsamples:
 	    $(REPLACE:/=\) -    %%i.dsp "@TK_LIBS@"          "$(TK_LIBS)"
 
 clean:
-	-for %%i in ( $(LIBS) $(PROGS) $(JNILIBS) ) do \
+	-for %%i in ( $(BASE) $(JNILIBS) ) do \
 	    cd /d $(OMNETPP_SRC_DIR:/=\)\%%i && $(MAKE) $(MOPTS) $(MAKEFILE) clean
 	-del /q $(OMNETPP_BIN_DIR:/=\)\*.
 	-del /q $(OMNETPP_BIN_DIR:/=\)\*.exe
@@ -163,7 +154,7 @@ clean:
 	    cd /d $(OMNETPP_SAMPLES_DIR:/=\)\%%i && $(MAKE) $(MOPTS) $(MAKEFILE) clean
 
 depend:
-	for %%i in ( $(LIBS) $(PROGS) ) do \
+	for %%i in ( $(BASE) ) do \
 	    cd /d $(OMNETPP_SRC_DIR:/=\)\%%i && $(MAKE) $(MOPTS) $(MAKEFILE) depend
 	for %%i in ( $(SAMPLES) ) do \
 	    cd /d $(OMNETPP_SAMPLES_DIR:/=\)\%%i && $(MAKE) $(MOPTS) $(MAKEFILE) depend
