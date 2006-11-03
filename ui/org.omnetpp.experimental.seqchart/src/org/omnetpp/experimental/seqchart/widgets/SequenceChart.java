@@ -41,11 +41,11 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.omnetpp.common.canvas.CachingCanvas;
 import org.omnetpp.eventlog.engine.BeginSendEntry;
-import org.omnetpp.eventlog.engine.EventLogFacade;
 import org.omnetpp.eventlog.engine.IEvent;
 import org.omnetpp.eventlog.engine.IEventLog;
 import org.omnetpp.eventlog.engine.IntSet;
 import org.omnetpp.eventlog.engine.IntVector;
+import org.omnetpp.eventlog.engine.LongVector;
 import org.omnetpp.eventlog.engine.MessageDependency;
 import org.omnetpp.eventlog.engine.MessageDependencyKind;
 import org.omnetpp.eventlog.engine.MessageSend;
@@ -115,7 +115,6 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 	private boolean showNonDeliveryMessages; // show or hide non-delivery message arrows
 	private boolean showEventNumbers;
 	private TimelineSortMode timelineSortMode = TimelineSortMode.MODULE_ID; // specifies the ordering mode of timelines
-	private double nonLinearFocus = 1; // parameter for non-linear timeline transformation
 	
 	private double viewportLeftSimulationTime; // used to restore the visible range of simulation time
 	private double viewportRightSimulationTime;
@@ -1072,7 +1071,7 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 		if (endEvent == null)
 			endEvent = eventLog.getLastEvent();
 
-		return new long[] {startEvent.getPtr(), endEvent.getPtr()};
+		return new long[] {startEvent.getCPtr(), endEvent.getCPtr()};
 	}
 
 	protected void paintFigure(Graphics graphics) {
@@ -1125,20 +1124,10 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 
 	private void paintMessageArrows(Graphics graphics, long startEventPtr, long endEventPtr) {
 		VLineBuffer vlineBuffer = new VLineBuffer();
+		LongVector messageDependencies = sequenceChartFacade.getIntersectingMessageDependencies(startEventPtr, endEventPtr);
 		
-		for (long eventPtr = startEventPtr;; eventPtr = sequenceChartFacade.Event_getNextEvent(eventPtr)) {
-			// TODO: mark dependencies which were drawns and draw only if not yet marked
-//			int numCauses = eventLogFacade.Event_getNumCauses(eventPtr);
-//			for (int i = 0; i < numCauses; i++)
-//				drawMessageArrow(graphics, eventLogFacade.Event_getCause(eventPtr, i), vlineBuffer);
-
-			int numConsequences = sequenceChartFacade.Event_getNumConsequences(eventPtr);
-			for (int i = 0; i < numConsequences; i++)
-				drawMessageArrow(graphics, sequenceChartFacade.Event_getConsequence(eventPtr, i), vlineBuffer);
-
-			if (eventPtr == endEventPtr)
-				break;
-		}
+		for (int i = 0; i < messageDependencies.size(); i++)
+			drawMessageArrow(graphics, messageDependencies.get(i), vlineBuffer);
 	}
 
 	private void paintEvents(Graphics graphics, long startEventPtr, long endEventPtr) {
@@ -1240,8 +1229,8 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 			for (IEvent selectedEvent : selectedEvents) {
 		    	if (startEventNumber <= selectedEvent.getEventNumber() && selectedEvent.getEventNumber() <= endEventNumber)
 		    	{
-		    		int x = getEventViewportXCoordinate(selectedEvent.getPtr());
-		    		int y = getEventViewportYCoordinate(selectedEvent.getPtr());
+		    		int x = getEventViewportXCoordinate(selectedEvent.getCPtr());
+		    		int y = getEventViewportYCoordinate(selectedEvent.getCPtr());
 		    		graphics.drawOval(x - EVENT_SEL_RADIUS, y - EVENT_SEL_RADIUS, EVENT_SEL_RADIUS * 2 + 1, EVENT_SEL_RADIUS * 2 + 1);
 		    	}
 			}
@@ -1759,7 +1748,7 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 		collectStuffUnderMouse(x, y, events, msgs);
 
 		// 1) if there are events under them mouse, show them in the tooltip
-		if (events.size()>0) {
+		if (events.size() > 0) {
 			String res = "";
 			int count = 0;
 			for (IEvent event : events) {
@@ -1774,7 +1763,7 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 		}
 			
 		// 2) no events: show message arrows info
-		if (msgs.size()>=1) {
+		if (msgs.size() >= 1) {
 			String res = "";
 			int count = 0;
 			for (MessageDependency msg : msgs) {
@@ -1792,14 +1781,13 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 
 		// 3) no events or message arrows: show axis info
 		ModuleTreeItem axisModule = findAxisAt(y);
-		if (axisModule!=null) {
+		if (axisModule != null) {
 			String res = getAxisText(axisModule)+"\n";
 			double t = getSimulationTimeForViewportPixel(x);
 			res += String.format("t = %gs", t);
-// TODO: resurrect
-//			IEvent event = eventLog.getLastEventBefore(t);
-//			if (event!=null)
-//				res += ", just after event #"+event.getEventNumber(); 
+			IEvent event = sequenceChartFacade.getLastEventNotAfterTimelineCoordinate(getTimelineCoordinateForViewportPixel(x));
+			if (event != null)
+				res += ", just after event #"+event.getEventNumber(); 
 			return res;
 		}
 
@@ -1818,10 +1806,30 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 	 * Returns a descriptive message for the MessageDependency to be presented to the user.
 	 */
 	public String getMessageText(MessageDependency msg) {
-		BeginSendEntry beginSendEntry = msg.getCauseBeginSendEntry();
-		String result = "message (" + beginSendEntry.getMessageClassName() + ") " + beginSendEntry.getMessageFullName()
-			+ "  (" + (msg instanceof MessageSend ? "sending" : "usage")  //TODO also: "selfmsg"
-			+ ", #" + msg.getCauseEventNumber() + " -> #" + msg.getConsequenceEventNumber() + ")";
+		String result = null;
+		BeginSendEntry beginSendEntry = null;
+		long messageDependencyPtr = msg.getCPtr();
+		
+		// TODO: text result could be more informative here
+		switch (sequenceChartFacade.MessageDependency_getKind(messageDependencyPtr)) {
+			case MessageDependencyKind.SEND:
+				beginSendEntry = msg.getCauseBeginSendEntry();
+				result = "sending message (" + beginSendEntry.getMessageClassName() + ") " + beginSendEntry.getMessageFullName()
+					+ "  (" + (msg instanceof MessageSend ? "sending" : "usage")  //TODO also: "selfmsg"
+					+ ", #" + msg.getCauseEventNumber() + " -> #" + msg.getConsequenceEventNumber() + ")";
+				break;
+			case MessageDependencyKind.REUSE:
+				beginSendEntry = msg.getConsequenceBeginSendEntry();
+				result = "reusing message (" + beginSendEntry.getMessageClassName() + ") " + beginSendEntry.getMessageFullName()
+					+ "  (" + (msg instanceof MessageSend ? "sending" : "usage")  //TODO also: "selfmsg"
+					+ ", #" + msg.getCauseEventNumber() + " -> #" + msg.getConsequenceEventNumber() + ")";
+				break;
+			case MessageDependencyKind.FILTERED:
+				result = sequenceChartFacade.MessageDependency_getCauseMessageName(messageDependencyPtr) +
+						 " -> " +
+						 sequenceChartFacade.FilteredMessageDependency_getMiddleMessageName(messageDependencyPtr);
+				break;
+		}
 			
 		return result;
 	}
@@ -1865,7 +1873,7 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 	 * If you're interested only in messages or only in events, pass null in the
 	 * events or msgs argument. This method does NOT clear the lists before filling them.
 	 */
-	public void collectStuffUnderMouse(int mouseX, int mouseY, List<IEvent> events, List<MessageDependency> msgs) {
+	public void collectStuffUnderMouse(final int mouseX, final int mouseY, List<IEvent> events, final List<MessageDependency> msgs) {
 		if (eventLog!=null) {
 			long startMillis = System.currentTimeMillis();
 		
@@ -1873,8 +1881,6 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 			long[] eventPtrRange = getFirstLastEventInPixelRange(0, getClientArea().width);
 			long startEventPtr = eventPtrRange[0];
 			long endEventPtr = eventPtrRange[1];
-			int startEventNumber = sequenceChartFacade.Event_getEventNumber(startEventPtr);
-			int endEventNumber = sequenceChartFacade.Event_getEventNumber(endEventPtr);
 
 			// check events
             if (events != null) {
@@ -1887,21 +1893,19 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 	   			}
             }
 
-/* TODO: resurrect
             // check message arrows
             if (msgs != null) {
-    			// collect msgs
-            	IntVector msgsIndices = eventLog.getMessagesIntersecting(startEventNumber, endEventNumber, moduleIds, showNonDeliveryMessages); 
-        		//System.out.printf("interval: #%d, #%d, %d msgs to check\n",startEventNumber, endEventNumber, msgsIndices.size());
-            	for (int i=0; i<msgsIndices.size(); i++) {
-            		int pos = msgsIndices.get(i);
-            		if (messageArrowContainsPoint(pos, mouseX, mouseY, MOUSE_TOLERANCE))
-            			msgs.add(eventLog.getMessage(pos));
-            	}
+        		LongVector messageDependencies = sequenceChartFacade.getIntersectingMessageDependencies(startEventPtr, endEventPtr);
+        		
+        		for (int i = 0; i < messageDependencies.size(); i++) {
+        			long messageDependencyPtr = messageDependencies.get(i);
+
+            		if (messageArrowContainsPoint(messageDependencyPtr, mouseX, mouseY, MOUSE_TOLERANCE))
+            			msgs.add(sequenceChartFacade.MessageDependency_getMessageDependency(messageDependencyPtr));
+        		}
             }
-            long millis = System.currentTimeMillis()-startMillis;
-            //System.out.println("collectStuffUnderMouse(): "+millis+"ms - "+(events==null ? "n/a" : events.size())+" events, "+(msgs==null ? "n/a" : msgs.size())+" msgs");
-*/
+            long millis = System.currentTimeMillis() - startMillis;
+            System.out.println("collectStuffUnderMouse(): "+millis+"ms - "+(events==null ? "n/a" : events.size())+" events, "+(msgs==null ? "n/a" : msgs.size())+" msgs");
 		}
 	}
 

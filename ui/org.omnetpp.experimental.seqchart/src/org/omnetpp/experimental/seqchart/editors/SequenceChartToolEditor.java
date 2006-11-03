@@ -388,7 +388,7 @@ public class SequenceChartToolEditor extends EditorPart implements INavigationLo
 	}
 
 	private void showFilteredEventLog(IEventLog eventLog, ArrayList<ModuleTreeItem> axisModules, int eventNumber) {
-		final IntSet moduleIds = new IntSet();
+		final IntSet moduleIds = new IntSet(false);
 
 		for (int i = 0; i < axisModules.size(); i++) {
 			ModuleTreeItem treeItem = axisModules.get(i);
