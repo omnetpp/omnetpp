@@ -428,11 +428,12 @@ void cNEDLoader::updateProperty(PropertyNode *propNode, cProperty *prop)
 
 void cNEDLoader::updateDisplayProperty(PropertyNode *propNode, cProperty *prop)
 {
-    // @display() has to be merged in a special way.
-
+    // @display() has to be treated specially
     // find new display string
-    PropertyKeyNode *propKeyNode = (PropertyKeyNode *)propNode->getFirstChildWithTag(NED_PROPERTY);
-    LiteralNode *literalNode = propKeyNode ? (LiteralNode *)propKeyNode->getFirstChildWithTag(NED_LITERAL) : NULL;
+    PropertyKeyNode *propKeyNode = (PropertyKeyNode *)propNode->getFirstChildWithTag(NED_PROPERTY_KEY);
+    if (!propKeyNode)
+        return;
+    LiteralNode *literalNode = (LiteralNode *)propKeyNode->getFirstChildWithTag(NED_LITERAL);
     if (!literalNode)
         return;
     const char *newdisplaystring = literalNode->getValue();
@@ -457,7 +458,7 @@ void cNEDLoader::updateDisplayProperty(PropertyNode *propNode, cProperty *prop)
         for (int i=0; i<dnew.getNumArgs(t); i++)
         {
             const char *arg = dnew.getTagArg(t,i);
-            if (*arg)
+            if (arg && *arg)
                 d.setTagArg(t,i,dnew.getTagArg(t,i));
         }
     }

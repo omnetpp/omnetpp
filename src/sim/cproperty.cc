@@ -284,7 +284,7 @@ void cProperty::erase(const char *key)
 
     // erase
     int k = findKey(key);
-    if (k==-1)
+    if (k!=-1)
     {
         stringPool.release(keyv[k]);
         releaseValues(valuesv[k]);
