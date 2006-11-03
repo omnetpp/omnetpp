@@ -114,6 +114,12 @@ namespace std {
         }
    %}
 
+   %typemap(javacode) set<int> %{
+       public IntSet(boolean cMemoryOwn) {
+           this(ScaveEngineJNI.new_IntSet__SWIG_0(), cMemoryOwn);
+       }
+   %}
+
    %extend set<string> {
        std::vector<std::string> keys() {
            std::vector<std::string> vec;
@@ -227,13 +233,13 @@ import java.lang.reflect.Constructor;
 %}
 
 %typemap(javacode) IEvent %{
-    public long getPtr() {
+    public long getCPtr() {
         return swigCPtr;
     }
 %}
 
 %typemap(javacode) MessageDependency %{
-    public long getPtr() {
+    public long getCPtr() {
         return swigCPtr;
     }
 %}
