@@ -152,6 +152,6 @@ testLoadEvents;
 testEcho1;
 testEcho2;
 testOffsets;
-#testEvents;
+testEvents;
 testConsistency;
 testFilter;
