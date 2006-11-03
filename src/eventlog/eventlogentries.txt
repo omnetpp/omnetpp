@@ -119,7 +119,7 @@ SH MessageSendHopEntry
    td simtime_t transmissionDelay
 }
 
-DE DeleteMessage
+DE DeleteMessageEntry
 {
    id int messageId
 }
