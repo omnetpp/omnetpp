@@ -254,6 +254,9 @@ cNEDDeclaration *cNEDLoader::buildNEDDeclaration(NEDElement *node)
         // propagate ultimate super class as C++ class name for simple modules and channels
         decl->setImplementationClassName(superDecl->implementationClassName());
 
+        // take over properties
+        decl->setProperties(superDecl->properties());  //FIXME
+
         // add inherited parameters
         for (int i=0; i<superDecl->numPars(); i++)
         {
@@ -275,10 +278,14 @@ cNEDDeclaration *cNEDLoader::buildNEDDeclaration(NEDElement *node)
         }
     }
 
-    // parse new parameters
+    // parse new properties & parameters
     NEDElement *parametersNode = node->getFirstChildWithTag(NED_PARAMETERS);
     if (parametersNode)
     {
+        // parse properties
+        updateProperties(parametersNode, decl->properties());
+
+        // parse parameters
         for (NEDElement *child=parametersNode->getFirstChildWithTag(NED_PARAM); child; child=child->getNextSiblingWithTag(NED_PARAM))
         {
             ParamNode *paramNode = (ParamNode *)child;
@@ -290,6 +297,9 @@ cNEDDeclaration *cNEDLoader::buildNEDDeclaration(NEDElement *node)
                 desc.declaredOn = name;
                 decl->addPar(desc);
             }
+
+            const cNEDDeclaration::ParamDescription& desc = decl->paramDescription(paramName);
+            updateProperties(paramNode, desc.properties);
 
             // assign parameter
             ExpressionNode *exprNode = paramNode->getFirstExpressionChild();
@@ -320,6 +330,9 @@ cNEDDeclaration *cNEDLoader::buildNEDDeclaration(NEDElement *node)
                 decl->addGate(desc);
             }
 
+            const cNEDDeclaration::GateDescription& desc = decl->gateDescription(gateName);
+            updateProperties(gateNode, desc.properties);
+
             // assign gatesize
             ExpressionNode *exprNode = gateNode->getFirstExpressionChild();
             if (exprNode)
@@ -329,7 +342,6 @@ cNEDDeclaration *cNEDLoader::buildNEDDeclaration(NEDElement *node)
             }
         }
     }
-
     return decl;
 }
 
@@ -350,7 +362,6 @@ cNEDDeclaration::ParamDescription cNEDLoader::extractParamDescription(ParamNode 
     ASSERT(type!=-1);
     desc.value = cPar::createWithType(type); // gets created with isSet()==false
     desc.value->setIsVolatile(paramNode->getIsVolatile());
-    desc.properties = extractProperties(paramNode);
     return desc;
 }
 
@@ -364,45 +375,51 @@ cNEDDeclaration::GateDescription cNEDLoader::extractGateDescription(GateNode *ga
                 t==NED_GATETYPE_INOUT ? cGate::INOUT :
                 (cGate::Type)-1;
     desc.isVector = gateNode->getIsVector();
-    desc.properties = extractProperties(gateNode);
     return desc;
 }
 
-cProperties *cNEDLoader::extractProperties(NEDElement *parent)
+void cNEDLoader::updateProperties(NEDElement *parent, cProperties *props)
 {
-    cProperties *props = NULL;
     for (NEDElement *child=parent->getFirstChildWithTag(NED_PROPERTY); child; child=child->getNextSiblingWithTag(NED_PROPERTY))
     {
         if (!props)
             props = new cProperties();
-        cProperty *prop = extractProperty((PropertyNode *)child);
-        props->add(prop);
-
+            PropertyNode *propNode = (PropertyNode *)child;
+            const char *propName = propNode->getName();
+            const char *propIndex = propNode->getIndex();
+            cProperty *prop = props->get(propName, propIndex);
+            if (!prop)
+                props->add(prop = new cProperty(propName, propIndex));
+            updateProperty(propNode, prop);
     }
-    return props;
 }
 
-cProperty *cNEDLoader::extractProperty(PropertyNode *propNode)
+void cNEDLoader::updateProperty(PropertyNode *propNode, cProperty *prop)
 {
-    cProperty *prop = new cProperty(propNode->getName());
     prop->setIsImplicit(propNode->getIsImplicit());
-    prop->setIndex(atoi(propNode->getIndex()));
 
     for (NEDElement *child=propNode->getFirstChildWithTag(NED_PROPERTY_KEY); child; child=child->getNextSiblingWithTag(NED_PROPERTY_KEY))
     {
         PropertyKeyNode *propKeyNode = (PropertyKeyNode *)child;
+        const char *key = propKeyNode->getName();
+        if (!prop->hasKey(key))
+            prop->addKey(key);
 
         // collect values
-        std::vector<const char *> valueVector;
-        for (NEDElement *child2=propKeyNode->getFirstChildWithTag(NED_LITERAL); child2; child2=child2->getNextSiblingWithTag(NED_LITERAL))
+        int k = 0;
+        for (NEDElement *child2=propKeyNode->getFirstChildWithTag(NED_LITERAL); child2; child2=child2->getNextSiblingWithTag(NED_LITERAL), k++)
         {
             LiteralNode *literalNode = (LiteralNode *)child2;
             const char *value = literalNode->getValue(); //XXX what about unitType()?
-            valueVector.push_back(value);
+            if (value && *value)
+            {
+                if (!strcmp(value, "-"))  // "anti-value"
+                    prop->setValue(key, k, "");
+                else
+                    prop->setValue(key, k, value);
+            }
         }
-        prop->setValues(propKeyNode->getName(), valueVector);
     }
-    return prop;
 }
 
 

@@ -19,19 +19,25 @@
 cStringPool cProperty::stringPool;
 
 
-cProperty::cProperty(const char *name)
+cProperty::cProperty(const char *name, const char *index)
 {
     isimplicit = islocked = false;
     ownerp = NULL;
-    propertyname = NULL;
+    propname = NULL;
+    propindex = NULL;
+    propfullname = NULL;
     if (name)
         setName(name);
+    if (index)
+        setIndex(index);
 }
 
 cProperty::~cProperty()
 {
     // release pooled strings
-    stringPool.release(propertyname);
+    stringPool.release(propname);
+    stringPool.release(propindex);
+    stringPool.release(propfullname);
     int n = keyv.size();
     for (int i=0; i<n; i++)
     {
@@ -55,9 +61,12 @@ cProperty& cProperty::operator=(const cProperty& other)
 
     // note: do NOT copy islocked flag
     setName(other.fullName());
+    setIndex(other.index());
+
+    isimplicit = other.isimplicit;
 
     // release old value
-    stringPool.release(propertyname);
+    stringPool.release(propname);
     int n = keyv.size();
     for (int i=0; i<n; i++)
     {
@@ -87,27 +96,63 @@ void cProperty::setName(const char *name)
 {
     if (islocked)
         throw new cRuntimeError(this, eLOCKED);
-    if (!name || name[0]!='@')
-        throw new cRuntimeError(this,"setName(): property name must begin with '@' character");
-    if (!propertyname)
-        stringPool.release(propertyname);
-    propertyname = stringPool.get(name);
+    if (!name)
+        name = "";
+    if (name[0]=='@')
+        throw new cRuntimeError(this,"setName(): property name must be specified without the '@' character");
+    if (propname)
+        stringPool.release(propname);
+    propname = stringPool.get(name);
+    updateFullName();
+}
+
+void cProperty::updateFullName()
+{
+    if (propfullname)
+		stringPool.release(propfullname);
+    if (!propindex)
+    {
+        propfullname = stringPool.get(propname);
+    }
+    else
+    {
+        std::stringstream os;
+        os << propname << "[" << propindex << "]";
+        std::string res = os.str();
+        propfullname = stringPool.get(os.str().c_str());
+    }
 }
 
 const char *cProperty::fullName() const
 {
-    return propertyname;
+    return propfullname;
 }
 
 std::string cProperty::fullPath() const
 {
-    // FIXME what to do if it's a shared property and owner is not set?
-    return ownerp ? ownerp->fullPath()+"."+fullName() : fullName(); //FIXME not good! plus use sstream
+    return ownerp ? ownerp->fullPath()+"."+fullName() : fullName();
 }
 
 std::string cProperty::info() const
 {
-    return "";  //TBD
+    std::stringstream os;
+    os << "@" << propname;
+    if (!keyv.empty())
+    {
+        os << "(";
+        int n = keyv.size();
+        for (int i=0; i<n; i++)
+        {
+            if (i!=0)
+                os << ";";
+            if (!keyv.empty())
+                os << keyv[i] << "=";
+            for (int j=0; j<valuesv[i].size(); j++)
+                os << (j==0 ? "" : ",") << valuesv[i][j];  //FIXME value may need quoting
+        }
+        os << ")";
+    }
+    return os.str();
 }
 
 void cProperty::netPack(cCommBuffer *buffer)
@@ -122,6 +167,21 @@ void cProperty::netUnpack(cCommBuffer *buffer)
     //TBD
 }
 
+void cProperty::setIndex(const char *index)
+{
+    if (islocked)
+        throw new cRuntimeError(this, eLOCKED);
+    if (propindex)
+        stringPool.release(propindex);
+    propindex = stringPool.get(index);
+    updateFullName();
+}
+
+const char *cProperty::index() const
+{
+    return propindex;
+}
+
 void cProperty::setIsImplicit(bool b)
 {
     if (islocked)
@@ -132,18 +192,6 @@ void cProperty::setIsImplicit(bool b)
 bool cProperty::isImplicit() const
 {
     return isimplicit;
-}
-
-void cProperty::setIndex(short index)
-{
-    if (islocked)
-        throw new cRuntimeError(this, eLOCKED);
-    index_ = index;
-}
-
-short cProperty::index() const
-{
-    return index_;
 }
 
 int cProperty::findKey(const char *key) const
@@ -164,32 +212,68 @@ bool cProperty::hasKey(const char *key) const
     return findKey(key)!=-1;
 }
 
-const std::vector<const char *>& cProperty::values(const char *key) const
+void cProperty::addKey(const char *key)
 {
-    int k = findKey(key);
-    if (k==-1)
-        throw cRuntimeError(this,"values(): property has no key named `%s'", key);
-    return valuesv[k];
-}
-
-void cProperty::setValues(const char *key, const std::vector<const char *>& v)
-{
-    if (islocked)
-        throw new cRuntimeError(this, eLOCKED);
-
     int k = findKey(key);
     if (k==-1)
     {
-        k = keyv.size();
         keyv.push_back(stringPool.get(key));
         valuesv.push_back(CharPtrVector());
     }
-    CharPtrVector& vals = valuesv[k];
-    releaseValues(vals);
-    int n = v.size();
-    vals.resize(n);
-    for (int i=0; i<n; i++)
-        vals[i] = stringPool.get(v[i]);
+}
+
+cProperty::CharPtrVector& cProperty::valuesVector(const char *key) const
+{
+    int k = findKey(key);
+    if (k==-1)
+        throw cRuntimeError(this, "property has no key named `%s'", key);
+    return const_cast<CharPtrVector&>(valuesv[k]);
+}
+
+int cProperty::numValues(const char *key) const
+{
+    CharPtrVector& v = valuesVector(key);
+    return v.size();
+}
+
+void cProperty::setNumValues(const char *key, int size)
+{
+    if (islocked)
+        throw new cRuntimeError(this, eLOCKED);
+    CharPtrVector& v = valuesVector(key);
+    int oldsize = v.size();
+
+    // if shrink, release extra elements
+    for (int i=size; i<oldsize; i++)
+        stringPool.release(v[i]);
+
+    // resize
+    v.resize(size);
+
+    // if grow, initialize extra elements
+    for (int i=oldsize; i<size; i++)
+        v[i] = stringPool.get("");
+}
+
+const char *cProperty::value(const char *key, int k) const
+{
+    CharPtrVector& v = valuesVector(key);
+    if (k<0 || k>=v.size())
+        return "";
+    return v[k];
+}
+
+void cProperty::setValue(const char *key, int k, const char *value)
+{
+    if (islocked)
+        throw new cRuntimeError(this, eLOCKED);
+    CharPtrVector& v = valuesVector(key);
+    if (k<0)
+        throw cRuntimeError(this,"negative property value index %d for key `%s'", k, key);
+    if (k>=v.size())
+        setNumValues(key, k+1);
+    stringPool.release(v[k]);
+    v[k] = stringPool.get(value);
 }
 
 void cProperty::erase(const char *key)

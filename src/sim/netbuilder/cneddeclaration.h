@@ -63,7 +63,7 @@ class SIM_API cNEDDeclaration : public cNoncopyableObject, public NEDComponent
     {
         std::string name;
         cPar *value;  // stores type, isVolatile, isSet flag as well -- never NULL
-        cProperties *properties;  //FIXME needed, or make it part of value??
+        cProperties *properties;  // never NULL
         std::string declaredOn;
 
         ParamDescription();
@@ -79,7 +79,7 @@ class SIM_API cNEDDeclaration : public cNoncopyableObject, public NEDComponent
         cGate::Type type; // input, output, inout
         bool isVector;
         cDynamicExpression *gatesize; // NULL if not vector or gatesize unspecified
-        cProperties *properties;
+        cProperties *properties;  // never NULL
         std::string declaredOn;
 
         GateDescription();
@@ -220,7 +220,7 @@ class SIM_API cNEDDeclaration : public cNoncopyableObject, public NEDComponent
      * Return the properties for this component. The properties are locked against
      * modification, use dup() to create a modifiable copy.
      */
-    virtual cProperties *properties();
+    virtual cProperties *properties() const;
     //@}
 
     /** @name Parameters */

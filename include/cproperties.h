@@ -107,17 +107,37 @@ class SIM_API cProperties : public cPolymorphic
     /** @name Properties */
     //@{
     /**
+     * Returns the number of properties.
+     */
+    virtual int numProperties() const  {return propv.size();}
+
+    /**
      * Returns the names of cProperty object stored in this object.
      * The strings in the returned array do not need to be deallocated and
      * must not be modified.
      */
-    virtual std::vector<const char *> getNames() const;
+    virtual const std::vector<const char *> getNames() const;
+
+    /**
+     * Returns kth property, where 0 <= k < numProperties().
+     */
+    virtual cProperty *get(int k) const;
 
     /**
      * Returns the given property, or NULL if it does not exist.
-     * FIXME provide API with (name,index) args for properties that can occur multiple times!
+     * Name and index correspond to the the NED syntax
+     * <tt>@propertyname[index](keys-and-values)</tt>, where "[index]"
+     * is optional.
      */
-    virtual cProperty *get(const char *name) const;
+    virtual cProperty *get(const char *name, const char *index=NULL) const;
+
+    /**
+     * Returns unique indices for a property. Name and index correspond to the
+     * NED syntax <tt>@propertyname[index](keys-and-values)</tt>.
+     * The strings in the returned array do not need to be deallocated and
+     * must not be modified.
+     */
+    virtual const std::vector<const char *> getIndicesFor(const char *name) const;
 
     /**
      * Adds the given property to this object.
@@ -127,7 +147,7 @@ class SIM_API cProperties : public cPolymorphic
     /**
      * Removes the given property from this object, and deletes it.
      */
-    virtual void remove(const char *name);
+    virtual void remove(int k);
     //@}
 };
 

@@ -156,7 +156,7 @@ void TOmnetTkApp::setup()
     // Case A: TCL code in separate .tcl files
     //
     Tcl_SetVar(interp, "OMNETPP_TKENV_DIR",  TCLCONST(tkenv_dir.c_str()), TCL_GLOBAL_ONLY);
-    if (Tcl_EvalFile(interp,fastconcat(tkenv_dir.c_str(),"/tkenv.tcl"))==TCL_ERROR)
+    if (Tcl_EvalFile(interp,opp_concat(tkenv_dir.c_str(),"/tkenv.tcl"))==TCL_ERROR)
     {
         fprintf(stderr, "\n<!> Error starting Tkenv: %s. "
                         "Is the OMNETPP_TKENV_DIR environment variable set correctly? "

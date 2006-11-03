@@ -88,6 +88,8 @@ class SIM_API cPolymorphic
     /** @name Empty virtual functions which can be redefined in subclasses */
     //@{
 
+//FIXME why is name() missing?
+
     /**
      * Can be redefined (as done in cObject) to return an object name.
      * This version just returns "".

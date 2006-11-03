@@ -12,6 +12,7 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
+#include <algorithm>
 #include "cproperties.h"
 #include "cproperty.h"
 
@@ -39,9 +40,13 @@ cProperties& cProperties::operator=(const cProperties& other)
         delete propv[i];
     propv.clear();
 
-    // copy stuff from other
+    // copy properties from other
     for (int i=0; i<other.propv.size(); i++)
-        propv.push_back(other.propv[i]->dup());
+    {
+        cProperty *p = other.propv[i]->dup();
+        propv.push_back(p);
+        p->setOwner(this);
+    }
     return *this;
 }
 
@@ -52,15 +57,17 @@ const char *cProperties::fullName() const
 
 std::string cProperties::fullPath() const
 {
-    return ""; // TBD!!!!
+    return ownerp ? ownerp->fullPath()+"."+fullName() : fullName();
 }
 
 std::string cProperties::info() const
 {
     if (propv.empty())
-        return std::string("empty");
+        return std::string("<empty>");
     std::stringstream out;
-    out << "size=" << propv.size();
+    //out << "size=" << propv.size();
+    for (int i=0; i<propv.size(); i++)
+        out << (i==0 ? "" : " ") << propv[i]->info();
     return out.str();
 }
 
@@ -76,10 +83,17 @@ void cProperties::netUnpack(cCommBuffer *buffer)
     // TBD
 }
 
-cProperty *cProperties::get(const char *name) const
+cProperty *cProperties::get(int k) const
+{
+    if (k<0 || k>=propv.size())
+        throw new cRuntimeError(this, "property index %d out of range", k);
+    return propv[k];
+}
+
+cProperty *cProperties::get(const char *name, const char *index) const
 {
     for (int i=0; i<propv.size(); i++)
-        if (!strcmp(propv[i]->fullName(),name))
+        if (!strcmp(propv[i]->name(), name) && !opp_strcmp(index, propv[i]->index()))
             return propv[i];
     return NULL;
 }
@@ -89,29 +103,45 @@ void cProperties::add(cProperty *p)
     if (islocked)
         throw new cRuntimeError(this, eLOCKED);
     propv.push_back(p);
+    p->setOwner(this);
 }
 
-void cProperties::remove(const char *name)
+void cProperties::remove(int k)
 {
     if (islocked)
         throw new cRuntimeError(this, eLOCKED);
 
-    int i;
-    for (i=0; i<propv.size(); i++)
-        if (!strcmp(propv[i]->fullName(),name))
-            break;
-    if (i!=propv.size())
-    {
-        delete propv[i];
-        propv.erase(propv.begin()+i);
-    }
+    if (k<0 || k>=propv.size())
+        throw new cRuntimeError(this, "property index %d out of range", k);
+
+    delete propv[k];
+    propv.erase(propv.begin()+k);
 }
 
-std::vector<const char *> cProperties::getNames() const
+const std::vector<const char *> cProperties::getNames() const
 {
     std::vector<const char *> v;
     for (int i=0; i<propv.size(); i++)
-        v.push_back(propv[i]->fullName());
+    {
+        const char *s = propv[i]->name();
+        if (std::find(v.begin(), v.end(), s) != v.end())
+            v.push_back(s);
+    }
+    return v;
+}
+
+const std::vector<const char *> cProperties::getIndicesFor(const char *name) const
+{
+    std::vector<const char *> v;
+    for (int i=0; i<propv.size(); i++)
+    {
+        if (!strcmp(propv[i]->name(), name))
+        {
+            const char *s = propv[i]->index();
+            if (std::find(v.begin(), v.end(), s) != v.end())
+                v.push_back(s);
+        }
+    }
     return v;
 }
 

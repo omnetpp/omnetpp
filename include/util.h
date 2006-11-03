@@ -30,19 +30,6 @@ class cComponent;
 // logically belongs to csimul.h but must be here because of declaration order
 enum {CTX_BUILD, CTX_INITIALIZE, CTX_EVENT, CTX_FINISH};
 
-//
-// #defines provided for backwards compatibility.
-// They may be removed in a future release!
-//
-#define myrandomize      opp_randomize
-#define genk_myrandomize genk_opp_randomize
-#define mystrdup         opp_strdup
-#define mystrcpy         opp_strcpy
-#define mystrcmp         opp_strcmp
-#define mystrmatch       opp_strmatch
-#define fastconcat       opp_concat
-#define indexedname      opp_mkindexedname
-
 // windows.h defines min() and max() as macros
 #undef min
 #undef max

@@ -1,5 +1,5 @@
 @echo off
-PATH=d:\home\omnetpp\bin;%PATH%
+PATH=C:\home\omnetpp\bin;%PATH%
 del *_n.ned
-d:\perl\bin\perl nedgentest.pl %*
+C:\perl\bin\perl nedgentest.pl %*
 

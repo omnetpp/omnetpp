@@ -407,7 +407,7 @@ class cProperty extends cPolymorphic
     fields:
         @omitGetVerb(true);
         bool isImplicit @group(general);
-        short index @group(general);
+        string index @group(general);
         //XXX const std::vector<const char *>& keys @group(general);
 }
 

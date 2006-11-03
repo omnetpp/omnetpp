@@ -26,10 +26,6 @@
 
 class cProperties;
 
-// XXX what about this:
-// - remove name from cObject (move it into a "cNamedObject : public cObject" instead);
-// - then cPar and cProperty could be cObject! (penalty would be only 4 bytes from "int index" in cObject)
-// - problem: setName() method would have to be removed from cObject, which affects existing code...
 
 /**
  * Stores a property with its value. The value consists of key-valuelist pairs;
@@ -40,14 +36,16 @@ class cProperties;
 class SIM_API cProperty : public cPolymorphic
 {
   protected:
-    // property names and property key names are stringpooled to reduce memory consumption
+    // property names, keys and values are all stringpooled to reduce memory consumption
     static cStringPool stringPool;
 
     bool islocked;
     bool isimplicit;
-    short index_;
     cProperties *ownerp;
-    const char *propertyname;  // stringpooled
+
+    const char *propname;
+    const char *propindex;
+    const char *propfullname;
 
     typedef std::vector<const char *> CharPtrVector;
     CharPtrVector keyv;
@@ -55,7 +53,9 @@ class SIM_API cProperty : public cPolymorphic
 
   protected:
     static void releaseValues(CharPtrVector& vals);
+    void updateFullName();
     int findKey(const char *key) const;
+    CharPtrVector& valuesVector(const char *key) const;
 
   public:
     // internal: locks the object and all contained properties against modifications.
@@ -71,9 +71,9 @@ class SIM_API cProperty : public cPolymorphic
     //@{
 
     /**
-     * Constructor. The name must begin with '@'.
+     * Constructor. The property name should be specified without the "@" mark.
      */
-    explicit cProperty(const char *name=NULL);
+    explicit cProperty(const char *name=NULL, const char *index=NULL);
 
     /**
      * Copy constructor.
@@ -94,7 +94,12 @@ class SIM_API cProperty : public cPolymorphic
     /** @name Redefined cPolymorphic functions */
     //@{
     /**
-     * Redefined to return the property name. Property names start with '@'.
+     * Returns the property name.
+     */
+    virtual const char *name() const {return propname;}
+
+    /**
+     * Redefined to return the property name plus optional index.
      */
     virtual const char *fullName() const;
 
@@ -133,6 +138,20 @@ class SIM_API cProperty : public cPolymorphic
     virtual void setName(const char *name);
 
     /**
+     * Sets the index of this property; see NED syntax
+     * <tt>@propname[index](keys-and-values)</tt>.
+     */
+    virtual void setIndex(const char *index);
+
+    /**
+     * Returns the index of this property; see NED syntax
+     * <tt>@propname[index](keys-and-values)</tt>.
+     * Returns NULL if the property has no index
+     * (<tt>@propname(keys-and-values)</tt>).
+     */
+    virtual const char *index() const;
+
+    /**
      * Returns the "implicit" flag of this property.
      */
     virtual void setIsImplicit(bool b);
@@ -143,17 +162,6 @@ class SIM_API cProperty : public cPolymorphic
      * automatically during the parsing process or later.
      */
     virtual bool isImplicit() const;
-
-    /**
-     * Sets the index of this property.
-     */
-    virtual void setIndex(short index);
-
-    /**
-     * Returns the index of this property. This is nonzero only with
-     * properties that have multiple instances on the same owner.
-     */
-    virtual short index() const;
 
     /**
      * Returns the list of keys if this property. The default key is
@@ -168,16 +176,38 @@ class SIM_API cProperty : public cPolymorphic
     virtual bool hasKey(const char *key) const;
 
     /**
-     * Returns the values for the given key in the property.
+     * Adds the given key to the property. Has no effect if the key already
+     * existed.
      */
-    virtual const std::vector<const char *>& values(const char *key) const;
+    virtual void addKey(const char *key);
 
     /**
-     * Replaces the value list for the given key in the property;
-     * specify "" for the default key. cProperty will create its
-     * own copy of the strings in the value list.
+     * Returns the number of values for the given key in the property.
+     * Specify "" for the default key.
      */
-    virtual void setValues(const char *key, const std::vector<const char *>& valueList);
+    virtual int numValues(const char *key) const;
+
+    /**
+     * Expands or thrims the list of values for the given key in the property,
+     * by discarding elements or adding "" elements. Specify "" for the default
+     * key. Note that simply setting an element above numValues(key) will also
+     * expand the list.
+     */
+    virtual void setNumValues(const char *key, int size);
+
+    /**
+     * Returns the kth value for the given key in the property.
+     * Specify "" for the default key. For k>numValues(key), it returns "".
+     */
+    virtual const char *value(const char *key, int k) const;
+
+    /**
+     * Replaces a value for the given key in the property. Specify "" for
+     * the default key. cProperty will create its own copy of the string passed.
+     * k may be greater than numValues(k), which will cause the values list,
+     * to expand, the new elements filled with "".
+     */
+    virtual void setValue(const char *key, int k, const char *value);
 
     /**
      * Erases the given key and all its values.

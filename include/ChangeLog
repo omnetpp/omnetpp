@@ -1,3 +1,13 @@
+my...() functions removed (they were #defines to opp_...() functions)
+	#define myrandomize      opp_randomize
+	#define genk_myrandomize genk_opp_randomize
+	#define mystrdup         opp_strdup
+	#define mystrcpy         opp_strcpy
+	#define mystrcmp         opp_strcmp
+	#define mystrmatch       opp_strmatch
+	#define fastconcat       opp_concat
+	#define indexedname      opp_mkindexedname
+
 2006-10-21  ------ omnetpp-3.3 released ------
 
 2006-09-13  Andras Varga

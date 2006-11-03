@@ -50,6 +50,7 @@ module ALOHAnet
                 slotTime = slotTime;
             display: "i=device/pc_s";
     connections nocheck:
+    display: "o=,white";
 endmodule
 
 network alohaNet : ALOHAnet

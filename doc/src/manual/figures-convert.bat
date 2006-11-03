@@ -1,5 +1,5 @@
 @echo off
-set IM6=D:\Program Files\ImageMagick-6.1.6-Q8
+set IM6=C:\Program Files\ImageMagick-6.1.6-Q8
 
 cd figures
 
@@ -7,8 +7,8 @@ cd figures
 : for %%I in (*.wmf) do echo %%I to %%~nI.gif && "%IM6%"\convert -density 300 -trim %%I %%~nI.gif
 
 : *** trim GIFs ***
-: IM6's -trim conversion sucks: geometry meta information gets screwed up. 
-: So we're forced to do it via BMP (which surely doesn't contain any meta tags 
+: IM6's -trim conversion sucks: geometry meta information gets screwed up.
+: So we're forced to do it via BMP (which surely doesn't contain any meta tags
 : at all) (use +repage option?)
 for %%I in (*.gif) do echo crop %%I && "%IM6%"\convert -trim %%I %%~nI.bmp
 for %%I in (*.bmp) do "%IM6%"\convert %%I %%~nI.gif

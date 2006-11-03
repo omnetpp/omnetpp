@@ -24,7 +24,7 @@
 cNEDDeclaration::ParamDescription::ParamDescription()
 {
     value = NULL;
-    properties = NULL;
+    properties = new cProperties();  //FIXME add destructor!!!
 }
 
 cNEDDeclaration::ParamDescription cNEDDeclaration::ParamDescription::deepCopy() const
@@ -42,7 +42,7 @@ cNEDDeclaration::GateDescription::GateDescription()
     type = cGate::INPUT;
     isVector = false;
     gatesize = NULL;
-    properties = NULL;
+    properties = new cProperties();  //FIXME add destructor!!!
 }
 
 cNEDDeclaration::GateDescription cNEDDeclaration::GateDescription::deepCopy() const
@@ -60,8 +60,8 @@ cNEDDeclaration::GateDescription cNEDDeclaration::GateDescription::deepCopy() co
 cNEDDeclaration::cNEDDeclaration(const char *name, NEDElement *tree) :
 cNoncopyableObject(name), NEDComponent(tree)
 {
-    props = NULL;
     locked = false;   //FIXME check if locking makes sense
+    props = new cProperties();
 }
 
 cNEDDeclaration::~cNEDDeclaration()
@@ -70,6 +70,7 @@ cNEDDeclaration::~cNEDDeclaration()
         dropAndDelete(params[i].value);
     for (int i=0; i<gates.size(); i++)
         delete gates[i].gatesize;
+    delete props;
 }
 
 std::string cNEDDeclaration::info() const
@@ -120,13 +121,17 @@ std::string cNEDDeclaration::detailedInfo() const
     if (!implClassName.empty())
         out << "C++ class: " << implClassName << "\n";
 
+    out << "Properties (incl. inherited ones):\n";
+    out << "  " << properties()->info() << "\n";
+
     out << "Parameters (incl. inherited ones):\n";
     if (params.size()==0) out << "  none\n";
     for (int i=0; i<params.size(); i++)
     {
         const ParamDescription& desc = paramDescription(i);
         out << "  param " << desc.name << " SET:" << (desc.value->isSet()?"true":"false");
-        out << " value=" << desc.value->info() << ", ISEXPR=" << (desc.value->isConstant()?0:1) << ", " << desc.value->toString() << "\n";
+        out << " value=" << desc.value->info() << ", ISEXPR=" << (desc.value->isConstant()?0:1) << ", " << desc.value->toString()
+            << " " << desc.properties->info() << "\n";
     }
 
     out << "Gates (incl. inherited ones):\n";
@@ -134,7 +139,8 @@ std::string cNEDDeclaration::detailedInfo() const
     for (int i=0; i<gates.size(); i++)
     {
         const GateDescription& desc = gateDescription(i);
-        out << "  gate " << desc.name << ": ...\n";
+        out << "  gate " << desc.name << ": ..."
+            << " " << desc.properties->info() << "\n";
     }
     out << "________________________________\n\n";
 
@@ -184,6 +190,8 @@ void cNEDDeclaration::addGate(const GateDescription& gateDesc)
 
 void cNEDDeclaration::setProperties(cProperties *p)
 {
+    if (p == props)
+        return;
     if (locked)
         throw new cRuntimeError(this, "setProperties(): too late, object already locked");
     if (props)
@@ -217,7 +225,7 @@ int cNEDDeclaration::numPars() const
     return params.size();
 }
 
-cProperties *cNEDDeclaration::properties()
+cProperties *cNEDDeclaration::properties() const
 {
     return props;
 }

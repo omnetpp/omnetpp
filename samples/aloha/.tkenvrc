@@ -42,8 +42,8 @@ config filtobjlist-order	{Class}
 inspector "alohaNet.server.channel utilization" "cOutVector" "2" "386x326+3+19"
 inspector "alohaNet.server.collision multiplicity" "cOutVector" "2" "386x326+396+380"
 inspector "alohaNet.server.collision length" "cOutVector" "2" "386x326+3+378"
-inspector "alohaNet" "alohaNet" "2" "725x591+72+93"
 inspector "alohaNet" "alohaNet" "1" "484x485+24+31"
-inspector "component types.alohaNet" "cDynamicModuleType" "1" "611x525+48+62"
+inspector "alohaNet" "alohaNet" "2" "725x591+72+93"
 inspector "alohaNet" "ALOHAnet" "2" "617x576+22+29"
+inspector "component types.alohaNet" "cDynamicModuleType" "1" "596x500+120+155"
 
