@@ -90,7 +90,7 @@ docu:
 #
 # Test
 #
-tests: base
+tests: check-env base
 	cd $(OMNETPP_TEST_DIR) && $(MAKE)
 
 #=====================================================================
