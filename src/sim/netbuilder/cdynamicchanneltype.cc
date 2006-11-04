@@ -29,36 +29,91 @@ cDynamicChannelType::cDynamicChannelType(const char *name) : cChannelType(name)
 {
 }
 
-std::string cDynamicChannelType::info() const
+cNEDDeclaration *cDynamicChannelType::getDecl() const
 {
     cNEDDeclaration *decl = cNEDLoader::instance()->lookup2(name());
-    ASSERT(decl!=NULL);
-    return decl->info();
+    if (!decl)
+        throw new cRuntimeError(this, "NED declaration object not found");
+    //FIXME assert that it's a channel decl
+    return decl;
+}
+
+std::string cDynamicChannelType::info() const
+{
+    return getDecl()->info();
 }
 
 std::string cDynamicChannelType::detailedInfo() const
 {
-    cNEDDeclaration *decl = cNEDLoader::instance()->lookup2(name());
-    ASSERT(decl!=NULL);
-    return decl->detailedInfo();
+    return getDecl()->detailedInfo();
 }
 
 cChannel *cDynamicChannelType::createChannelObject()
 {
-    cNEDDeclaration *decl = cNEDLoader::instance()->lookup2(name());
-    ASSERT(decl!=NULL);
-//FIXME assert that it's a channel
-    const char *classname = decl->implementationClassName();
-    ASSERT(classname!=NULL);
+    const char *classname = getDecl()->implementationClassName();
     return instantiateChannelClass(classname);
 }
 
 void cDynamicChannelType::addParametersTo(cChannel *channel)
 {
-    cNEDDeclaration *decl = cNEDLoader::instance()->lookup2(name());
-    ASSERT(decl!=NULL);
+    cNEDDeclaration *decl = getDecl();
     cNEDNetworkBuilder().addParameters(channel, decl);
 }
 
+std::string cDynamicChannelType::declaration() const
+{
+    return getDecl()->declaration();
+}
 
+const char *cDynamicChannelType::extendsName() const
+{
+    cNEDDeclaration *decl = getDecl();
+    ASSERT(decl->numExtendsNames()<=1);
+    return decl->numExtendsNames()==1 ? decl->extendsName(0) : "";
+}
+
+int cDynamicChannelType::numInterfaceNames() const
+{
+    return getDecl()->numInterfaceNames();
+}
+
+const char *cDynamicChannelType::interfaceName(int k) const
+{
+    return getDecl()->interfaceName(k);
+}
+
+const char *cDynamicChannelType::implementationClassName() const
+{
+    return getDecl()->implementationClassName();
+}
+
+cProperties *cDynamicChannelType::properties() const
+{
+    return getDecl()->properties();
+}
+
+int cDynamicChannelType::numPars() const
+{
+    return getDecl()->numPars();
+}
+
+const char *cDynamicChannelType::parName(int k) const
+{
+    return getDecl()->parName(k);
+}
+
+cPar::Type cDynamicChannelType::parType(int k) const
+{
+    return (cPar::Type)getDecl()->paramDescription(k).value->type();
+}
+
+cProperties *cDynamicChannelType::parProperties(int k) const
+{
+    return getDecl()->paramDescription(k).properties;
+}
+
+int cDynamicChannelType::findPar(const char *parname) const
+{
+    return getDecl()->findPar(parname);
+}
 

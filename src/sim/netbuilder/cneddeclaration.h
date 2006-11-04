@@ -141,6 +141,11 @@ class SIM_API cNEDDeclaration : public cNoncopyableObject, public NEDComponent
     virtual std::string detailedInfo() const;
     //@}
 
+    /**
+     * NED declaration
+     */
+    virtual std::string declaration() const;
+
     /** @name Setup */
     //@{
     /**
@@ -158,8 +163,7 @@ class SIM_API cNEDDeclaration : public cNoncopyableObject, public NEDComponent
     virtual void addGate(const GateDescription& gateDesc);
 
     /**
-     * Sets the properties in this declaration. The properties object cannot be
-     * modified afterwards.
+     * Sets the properties in this declaration.
      */
     virtual void setProperties(cProperties *props);
 
@@ -233,7 +237,7 @@ class SIM_API cNEDDeclaration : public cNoncopyableObject, public NEDComponent
     /**
      * Returns the name of the kth parameter.
      */
-    virtual const char *paramName(int k) const {return paramDescription(k).name.c_str();}
+    virtual const char *parName(int k) const {return paramDescription(k).name.c_str();}
 
     /**
      * Returns the description of the kth parameter.

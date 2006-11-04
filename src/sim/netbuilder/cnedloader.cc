@@ -261,7 +261,7 @@ cNEDDeclaration *cNEDLoader::buildNEDDeclaration(NEDElement *node)
         // add inherited parameters
         for (int i=0; i<superDecl->numPars(); i++)
         {
-            const char *paramName = superDecl->paramName(i);
+            const char *paramName = superDecl->parName(i);
             if (decl->hasPar(paramName))
                 throw new cRuntimeError("already exists"); //XXX improve msg
 

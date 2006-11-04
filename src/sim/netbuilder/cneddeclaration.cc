@@ -151,6 +151,14 @@ std::string cNEDDeclaration::detailedInfo() const
     return out.str();
 }
 
+std::string cNEDDeclaration::declaration() const
+{
+    std::stringstream out;
+    NEDErrorStore errors;
+    generateNED2(out, getTree(), &errors);
+    return out.str();
+}
+
 void cNEDDeclaration::addExtendsName(const char *name)
 {
     if (locked)

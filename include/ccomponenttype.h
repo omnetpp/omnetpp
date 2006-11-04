@@ -17,10 +17,14 @@
 
 #include <string>
 #include "cobject.h"
+#include "cpar.h"
+#include "cgate.h"
 
 
 class cModule;
 class cChannel;
+class cProperties;
+
 
 /**
  * Common base class for cModuleType and cChannelType
@@ -48,7 +52,7 @@ class SIM_API cComponentType : public cNoncopyableObject
     virtual std::string info() const;
     //@}
 
-    /** @name Description string */
+    /** @name Extra information */
     //@{
     /**
      * Sets a description string.
@@ -59,10 +63,83 @@ class SIM_API cComponentType : public cNoncopyableObject
      * Returns a description string.
      */
     const char *description() const  {return desc.c_str();}
+
+    /**
+     * Returns the NED declaration as text, if available.
+     */
+    virtual std::string declaration() const = 0;
+    //@}
+
+    /** @name Inheritance */
+    //@{
+    /**
+     * Returns the name of the component this one extends
+     */
+    virtual const char *extendsName() const = 0;
+
+    /**
+     * Returns the number of interfaces.
+     */
+    virtual int numInterfaceNames() const = 0;
+
+    /**
+     * Returns the name of the kth interface (k=0..numInterfaceNames()-1).
+     */
+    virtual const char *interfaceName(int k) const = 0;
+
+    /**
+     * For simple modules and channels, it returns the name of the C++ class that
+     * has to be instantiated; otherwise it returns NULL.
+     */
+    virtual const char *implementationClassName() const = 0;
+    //@}
+
+    /** @name Properties */
+    //@{
+    /**
+     * Return the properties for this component. The returned object should not
+     * be modified.
+     */
+    virtual cProperties *properties() const = 0;
+    //@}
+
+    /** @name Parameters */
+    //@{
+    /**
+     * Returns total number of the parameters.
+     */
+    virtual int numPars() const = 0;
+
+    /**
+     * Returns the name of the kth parameter.
+     */
+    virtual const char *parName(int k) const = 0;
+
+    /**
+     * Returns the type of the kth parameter.
+     */
+    virtual cPar::Type parType(int k) const = 0;
+
+    /**
+     * Return the properties for parameter k. The returned object should not
+     * be modified.
+     */
+    virtual cProperties *parProperties(int k) const = 0;
+
+    /**
+     * Returns index of the parameter specified with its name.
+     * Returns -1 if the object doesn't exist.
+     */
+    virtual int findPar(const char *parname) const = 0;
+
+    /**
+     * Check if a parameter exists.
+     */
+    bool hasPar(const char *s) const {return findPar(s)>=0;}
     //@}
 
     /**
-     *XXX
+     * Find a component type object by name.
      */
     static cComponentType *find(const char *name);
 };
@@ -159,8 +236,42 @@ class SIM_API cModuleType : public cComponentType
     virtual cModule *createScheduleInit(char *name, cModule *parentmod);
     //@}
 
+    /** @name Gates */
+    //@{
     /**
-     *XXX
+     * Returns the number of gates
+     */
+    virtual int numGates() const = 0;
+
+    /**
+     * Returns the name of the kth gate.
+     */
+    virtual const char *gateName(int k) const = 0;
+
+    /**
+     * Returns the type of the kth gate.
+     */
+    virtual cGate::Type gateType(int k) const = 0;
+
+    /**
+     * Return the properties for gate k. The returned object should not
+     * be modified.
+     */
+    virtual cProperties *gateProperties(int k) const = 0;
+
+    /**
+     * Returns index of the given gate (0..numGates()), or -1 if not found.
+     */
+    virtual int findGate(const char *name) const = 0;
+
+    /**
+     * Check if a gate exists.
+     */
+    bool hasGate(const char *s) const  {return findGate(s)>=0;}
+    //@}
+
+    /**
+     * Find a component type object by name.
      */
     static cModuleType *find(const char *name);
 };
@@ -213,7 +324,7 @@ class SIM_API cChannelType : public cComponentType
     //@}
 
     /**
-     *XXX
+     * Find a component type object by name.
      */
     static cChannelType *find(const char *name);
 };

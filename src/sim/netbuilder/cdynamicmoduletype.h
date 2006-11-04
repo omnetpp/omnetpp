@@ -38,6 +38,9 @@ class cDynamicModuleType : public cModuleType
     /** Redefined from cModuleType */
     virtual void buildInside(cModule *module);
 
+    // internal utility function
+    cNEDDeclaration *getDecl() const;
+
   public:
     /**
      * Constructor.
@@ -58,6 +61,30 @@ class cDynamicModuleType : public cModuleType
      * Returns true if the module type was declared with the "network" keyword.
      */
     virtual bool isNetwork() const;
+
+    /** @name cComponentType methods: delegated to cNEDDeclaration */
+    //@{
+    virtual std::string declaration() const;
+    virtual const char *extendsName() const;
+    virtual int numInterfaceNames() const;
+    virtual const char *interfaceName(int k) const;
+    virtual const char *implementationClassName() const;
+
+    virtual cProperties *properties() const;
+
+    virtual int numPars() const;
+    virtual const char *parName(int k) const;
+    virtual cPar::Type parType(int k) const;
+    virtual cProperties *parProperties(int k) const;
+    virtual int findPar(const char *parname) const;
+
+    virtual int numGates() const;
+    virtual const char *gateName(int k) const;
+    virtual cGate::Type gateType(int k) const;
+    virtual cProperties *gateProperties(int k) const;
+    virtual int findGate(const char *name) const;
+    //@}
+
 };
 
 #endif
