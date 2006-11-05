@@ -1,3 +1,9 @@
+- tree-style instpector
+- split animate.tcl and timeline.tcl from modinsp2.tcl 
+- concurrent animation ($config(concurrent-anim))
+
+----------------------
+
 2006-10-19  Andras Varga
 
 	* modinsp2.tcl: connection arrows with zero thickness ("o=,0") are 
