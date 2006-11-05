@@ -35,7 +35,6 @@ proc do_concurrent_animations {animjobs} {
 
     #XXX right now, we just lump everything together in a single group
     do_animate_group $animjobs
-    puts "----"
 }
 
 proc do_animate_group {animjobs} {
@@ -45,7 +44,6 @@ proc do_animate_group {animjobs} {
 
     foreach job $animjobs {
         set op [lindex $job 0]
-        puts "DOING: $job"
         switch $op {
             on_conn {
                 setvars {cmd win gateptr msgptr mode} $job
@@ -61,6 +59,11 @@ proc do_animate_group {animjobs} {
                     $c delete $msgptr;  # this also works if msg is not (yet) on canvas
                 } else {
                     setvars {x1 y1 x2 y2} $coords
+                    if {$mode=="beg"} {
+                        set endpos [graphmodwin_getmessageendpos $x1 $y1 $x2 $y2]
+                        setvars {x2 y2} $endpos
+                    }
+
                     lappend animlist [list $win $msgptr $x1 $y1 $x2 $y2]
 
                     if {$mode!="beg"} {

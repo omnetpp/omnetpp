@@ -40,11 +40,7 @@ proc graphmodwin_animate_on_conn {win gateptr msgptr mode} {
         return;
     }
 
-    set x1 [lindex $coords 0]
-    set y1 [lindex $coords 1]
-    set x2 [lindex $coords 2]
-    set y2 [lindex $coords 3]
-
+    setvars {x1 y1 x2 y2} $coords
     graphmodwin_do_animate $win $x1 $y1 $x2 $y2 $msgptr $mode
 
     if {$mode!="beg"} {
@@ -186,7 +182,6 @@ proc graphmodwin_do_animate_senddirect {win x1 y1 x2 y2 msgptr mode} {
 # Ultimate helper function which in fact performs the animation.
 #
 proc graphmodwin_do_animate {win x1 y1 x2 y2 msgptr {mode thru}} {
-
     global fonts clicksPerSec
     set c $win.c
 
@@ -201,20 +196,20 @@ proc graphmodwin_do_animate {win x1 y1 x2 y2 msgptr {mode thru}} {
     if {$steps>100} {set steps 100}
     if {$steps==0} {set steps 1}
 
+    if {$mode=="beg"} {
+        set endpos [graphmodwin_getmessageendpos $x1 $y1 $x2 $y2]
+        setvars {x2 y2} $endpos
+    }
+    if {$mode=="end"} {
+        set endpos [graphmodwin_getmessageendpos $x1 $y1 $x2 $y2]
+        setvars {x1 y1} $endpos
+        set steps 6
+    }
+
+    draw_message $c $msgptr $x1 $y1
+
     set dx [expr ($x2-$x1)/double($steps)]
     set dy [expr ($y2-$y1)/double($steps)]
-
-    switch $mode {
-       beg -
-       thru {
-          draw_message $c $msgptr $x1 $y1
-       }
-       end {}
-    }
-    switch $mode {
-       beg {set steps [expr $steps<6 ? 0 : $steps-6]}
-       end {set steps 6}
-    }
 
     # WM_DELETE_WINDOW stuff: if user wants to close window (during "update"), postpone it until updateInspectors()
     set old_close_handler [wm protocol $win WM_DELETE_WINDOW]

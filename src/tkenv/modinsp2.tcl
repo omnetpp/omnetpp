@@ -691,25 +691,28 @@ proc graphmodwin_draw_message_on_gate {c gateptr msgptr} {
     }
 
     set coords [$c coords $conn_id]
-
-    set x1 [lindex $coords 0]
-    set y1 [lindex $coords 1]
-    set x2 [lindex $coords 2]
-    set y2 [lindex $coords 3]
-    set len [expr sqrt(($x2-$x1)*($x2-$x1)+($y2-$y1)*($y2-$y1))]
-
-    set steps [expr int($len/2)]
-    if {$steps>100} {set steps 100}
-    if {$steps==0} {set steps 1}
-
-    set dx [expr ($x2-$x1)/$steps]
-    set dy [expr ($y2-$y1)/$steps]
-
-    set steps [expr $steps<6 ? 0 : $steps-6]
-    set xx [expr $x1+$dx*$steps]
-    set yy [expr $y1+$dy*$steps]
+    setvars {x1 y1 x2 y2} $coords
+    set endpos [graphmodwin_getmessageendpos $x1 $y1 $x2 $y2]
+    setvars {xx yy} $endpos
 
     draw_message $c $msgptr $xx $yy
+}
+
+#
+# Calculates the position where a sent message ball should rest until its event
+# comes and it gets processed by the module
+#
+proc graphmodwin_getmessageendpos {x1 y1 x2 y2} {
+    set len [expr sqrt(($x2-$x1)*($x2-$x1)+($y2-$y1)*($y2-$y1))]
+    if {$len==0} {set len 1}
+    set dx [expr ($x2-$x1)/$len]
+    set dy [expr ($y2-$y1)/$len]
+
+    set len2 [expr $len - 6]
+    if {$len2 < 1} {set len2 1}
+    set xx [expr $x1+$dx*$len2]
+    set yy [expr $y1+$dy*$len2]
+    return [list $xx $yy]
 }
 
 # graphmodwin_draw_message_on_module --
