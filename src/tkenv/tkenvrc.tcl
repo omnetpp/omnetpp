@@ -49,9 +49,9 @@ proc save_tkenvrc {{fname ".tkenvrc"}} {
             puts $fout "option $key\t{$value}"
         }
 
-        set config(mainwin-geom) [winfo geometry .]  ;# NOTE: "wm geometry" is bogus when window is maximized!
+        store_mainwin_geom
 
-        foreach key [array names config] {
+        foreach key [lsort [array names config]] {
             set value $config($key)
             puts $fout "config $key\t{$value}"
         }
@@ -66,6 +66,24 @@ proc save_tkenvrc {{fname ".tkenvrc"}} {
     }
 }
 
+proc store_mainwin_geom {} {
+    global config
+
+    set state [wm state .]
+    set geom [wm geometry .]
+    if {$state=="zoomed"} {
+        # Workaround: with zoomed (maximized) windows, wm geometry returns the
+        # the original (unzoomed) position but the zoomed size! We want to store
+        # unzoomed size+position so that the window can be restored (unzoomed)
+        # properly. Unfortunately the original size is lost forever, so we just
+        # put in the default size instead.
+        # Note: another command, "winfo geometry", would return the zoomed size
+        # and the zoomed position, but it's even less use to us here.
+        regsub {[0-9]+x[0-9]+(.*)} $geom {640x480\1} geom
+    }
+    set config(mainwin-state) $state
+    set config(mainwin-geom) $geom
+}
 
 # load_tkenvrc --
 #
@@ -119,6 +137,7 @@ proc load_tkenvrc {{fname ".tkenvrc"}} {
 proc reflectSettingsInGui {} {
    global config
 
+   catch {wm state . $config(mainwin-state)}
    catch {wm geometry . $config(mainwin-geom)}
 
    toggle_treeview
