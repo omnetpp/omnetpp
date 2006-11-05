@@ -727,4 +727,176 @@ proc graphmodwin_draw_message_on_module {c modptr msgptr} {
     draw_message $c $msgptr $x $y
 }
 
+# graphmodwin_draw_nexteventmarker --
+#
+# This function is invoked from the module inspector C++ code.
+#
+proc graphmodwin_draw_nexteventmarker {c modptr type} {
+    set src  [get_submod_coords $c $modptr]
+    set x1 [expr [lindex $src 0]-2]
+    set y1 [expr [lindex $src 1]-2]
+    set x2 [expr [lindex $src 2]+2]
+    set y2 [expr [lindex $src 3]+2]
+    # $type==1 compound module, $type==2 simple module
+    if {$type==1} {
+        #$c create rect $x1 $y1 $x2 $y2 -tags {nexteventmarker} -outline red -dash {.}
+        $c create rect $x1 $y1 $x2 $y2 -tags {nexteventmarker} -outline red -width 1
+    } else {
+        #$c create rect $x1 $y1 $x2 $y2 -tags {nexteventmarker} -outline red
+        $c create rect $x1 $y1 $x2 $y2 -tags {nexteventmarker} -outline red -width 2
+    }
+}
+
+# graphmodwin_update_submod --
+#
+# This function is invoked from the module inspector C++ code.
+#
+proc graphmodwin_update_submod {c modptr} {
+    # currently the only thing to be updated is the number of elements in queue
+    set win [winfo toplevel $c]
+    set dispstr [opp_getobjectfield $modptr displayString]
+    set qname [opp_displaystring $dispstr getTagArg "q" 0]
+    if {$qname!=""} {
+        #set qptr [opp_inspectorcommand $win getsubmodq $modptr $qname]
+        #set qlen [opp_getobjectfield $qptr length]
+        # TBD optimize -- maybe store and remember q pointer?
+        set qlen [opp_inspectorcommand $win getsubmodqlen $modptr $qname]
+        $c itemconfig "qlen-$modptr" -text "q:$qlen"
+    }
+}
+
+#
+# Helper proc.
+#
+proc graphmodwin_qlen_getqptr_current {c} {
+   set item [$c find withtag current]
+   set tags [$c gettags $item]
+
+   set modptr ""
+   if {[lsearch $tags "qlen-ptr*"] != -1} {
+       regexp "ptr.*" $tags modptr
+   }
+   if {$modptr==""} {return}
+
+   return [graphmodwin_qlen_getqptr $c $modptr]
+
+}
+
+proc graphmodwin_qlen_getqptr {c modptr} {
+   set win [winfo toplevel $c]
+   set dispstr [opp_getobjectfield $modptr displayString]
+   set qname [opp_displaystring $dispstr getTagArg "q" 0]
+   if {$qname!=""} {
+       set qptr [opp_inspectorcommand $win getsubmodq $modptr $qname]
+       return $qptr
+   }
+   return ""
+}
+
+proc graphmodwin_qlen_dblclick c {
+   set qptr [graphmodwin_qlen_getqptr_current $c]
+   if {$qptr!="" && $qptr!=[opp_null]} {
+       opp_inspect $qptr "(default)"
+   }
+}
+
+proc graphmodwin_qlen_rightclick {c X Y} {
+   set qptr [graphmodwin_qlen_getqptr_current $c]
+   if {$qptr!="" && $qptr!=[opp_null]} {
+       popup_insp_menu $qptr $X $Y
+   }
+}
+
+# graphmodwin_bubble --
+#
+# This function is invoked from the module inspector C++ code.
+#
+proc graphmodwin_bubble {c modptr txt} {
+    set r  [get_submod_coords $c $modptr]
+    set x [expr ([lindex $r 0]+[lindex $r 2])/2]
+    set y [expr [lindex $r 1]+4]
+
+    while {[string length $txt]<5} {set txt " $txt "}
+    set txtid  [$c create text $x $y -text " $txt " -anchor c -tags "bubble"]
+    set color #F8F8D8
+    set bb [$c bbox $txtid]
+
+    set x1 [lindex $bb 0]
+    set y1 [lindex $bb 1]
+    set x2 [lindex $bb 2]
+    set y2 [lindex $bb 3]
+
+    set x1o [expr $x1-2]
+    set y1o [expr $y1-2]
+    set x2o [expr $x2+2]
+    set y2o [expr $y2+2]
+
+    set xm [expr ($x1+$x2)/2]
+    set ym [expr ($y1+$y2)/2]
+    set xme [expr $xm-10]
+    set yme [expr $y2o+15]
+
+    set pp [list $x1o $y1  \
+                 $x1  $y1o \
+                 $xm  $y1o \
+                 $xm  $y1o \
+                 $x2  $y1o \
+                 $x2o $y1  \
+                 $x2o $ym  \
+                 $x2o $ym  \
+                 $x2o $y2  \
+                 $x2  $y2o \
+                 $xm  $y2o \
+                 $xm  $y2o \
+                 \
+                 $xme $yme \
+                 $xme $yme \
+                 $xme $y2o \
+                 $xme $y2o \
+                 \
+                 $x1  $y2o \
+                 $x1o $y2  \
+                 $x1o $ym  \
+                 $x1o $ym ]
+
+    set bubbleid [$c create polygon $pp -outline black -fill $color -width 1 -smooth 1 -tags "bubble"]
+    $c lower $bubbleid $txtid
+
+    set dx [expr $x-$xme]
+    set dy [expr $y-$yme]
+
+    $c move $bubbleid $dx $dy
+    $c move $txtid $dx $dy
+
+    set sp [opp_getsimoption animation_speed]
+    set ad [expr int(1000 / (0.1+$sp))]
+    after $ad [list catch [list $c delete $txtid $bubbleid]]
+}
+
+
+#
+# Called from Layouter::debugDraw()
+#
+proc layouter_debugDraw_finish {c msg} {
+    # create label
+    set bb [$c bbox all]
+    $c create text [expr ([lindex $bb 0]+[lindex $bb 2])/2] [lindex $bb 1] -anchor n -text $msg
+
+    # rescale to fit canvas
+    set w [expr [lindex $bb 2]-[lindex $bb 0]]
+    set h [expr [lindex $bb 3]-[lindex $bb 1]]
+    set cw [winfo width $c]
+    set ch [winfo height $c]
+    set fx [expr $cw/double($w)]
+    set fy [expr $ch/double($h)]
+    if {$fx>1} {set fx 1}
+    if {$fy>1} {set fy 1}
+    $c scale all 0 0 $fx $fy
+
+    $c config -scrollregion [$c bbox all]
+    $c xview moveto 0
+    $c yview moveto 0
+    update idletasks
+}
+
 
