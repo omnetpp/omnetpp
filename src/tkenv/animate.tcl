@@ -24,7 +24,7 @@ proc graphmodwin_animate_on_conn {win gateptr msgptr mode} {
     global config tkenv
     if {$config(concurrent-anim)} {
         # if concurrent-anim is ON, we just store the params here, and will execute inside perform_animations.
-        lappend tkenv(animjobs) [list graphmodwin_animate_on_conn $win $gateptr $msgptr $mode]
+        lappend tkenv(animjobs) [list on_conn $win $gateptr $msgptr $mode]
         return
     }
 
@@ -61,7 +61,7 @@ proc graphmodwin_animate_senddirect_horiz {win mod1ptr mod2ptr msgptr mode} {
     global config tkenv
     if {$config(concurrent-anim)} {
         # if concurrent-anim is ON, we just store the params here, and will execute inside perform_animations.
-        lappend tkenv(animjobs) [list graphmodwin_animate_senddirect_horiz $win $mod1ptr $mod2ptr $msgptr $mode]
+        lappend tkenv(animjobs) [list senddirect_horiz $win $mod1ptr $mod2ptr $msgptr $mode]
         return
     }
 
@@ -87,7 +87,7 @@ proc graphmodwin_animate_senddirect_ascent {win parentmodptr modptr msgptr mode}
     global config tkenv
     if {$config(concurrent-anim)} {
         # if concurrent-anim is ON, we just store the params here, and will execute inside perform_animations.
-        lappend tkenv(animjobs) [list graphmodwin_animate_senddirect_ascent $win $parentmodptr $modptr $msgptr $mode]
+        lappend tkenv(animjobs) [list senddirect_ascent $win $parentmodptr $modptr $msgptr $mode]
         return
     }
 
@@ -112,7 +112,7 @@ proc graphmodwin_animate_senddirect_descent {win parentmodptr modptr msgptr mode
     global config tkenv
     if {$config(concurrent-anim)} {
         # if concurrent-anim is ON, we just store the params here, and will execute inside perform_animations.
-        lappend tkenv(animjobs) [list graphmodwin_animate_senddirect_descent $win $parentmodptr $modptr $msgptr $mode]
+        lappend tkenv(animjobs) [list senddirect_descent $win $parentmodptr $modptr $msgptr $mode]
         return
     }
 
@@ -137,7 +137,7 @@ proc graphmodwin_animate_senddirect_delivery {win modptr msgptr} {
     global config tkenv
     if {$config(concurrent-anim)} {
         # if concurrent-anim is ON, we just store the params here, and will execute inside perform_animations.
-        lappend tkenv(animjobs) [list graphmodwin_animate_senddirect_delivery $win $modptr $msgptr]
+        lappend tkenv(animjobs) [list senddirect_delivery $win $modptr $msgptr]
         return
     }
 
@@ -257,7 +257,7 @@ proc graphmodwin_animate_senddirect_cleanup {win} {
     global config tkenv
     if {$config(concurrent-anim)} {
         # if concurrent-anim is ON, we just store the params here, and will execute inside perform_animations.
-        lappend tkenv(animjobs) [list graphmodwin_animate_senddirect_cleanup $win]
+        lappend tkenv(animjobs) [list senddirect_cleanup $win]
         return
     }
 
