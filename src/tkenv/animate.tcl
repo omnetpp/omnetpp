@@ -426,21 +426,15 @@ proc animate2:move {c ball dx dy i} {
     }
 }
 
+#
+# Called from C++ code
+#
 proc perform_animations {} {
     global config tkenv
     if {$config(concurrent-anim)} {
-        # default solution: just do everything as before...
-        set config(concurrent-anim) 0
-        foreach job $tkenv(animjobs) {
-            puts "DOING: $job"
-            eval $job
-        }
-        set config(concurrent-anim) 1
+        do_concurrent_animations $tkenv(animjobs)
+        set tkenv(animjobs) {}
     }
-
-    # clear the animations list
-    set tkenv(animjobs) {}
-    puts "----"
 }
 
 
