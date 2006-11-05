@@ -22,13 +22,14 @@ set tkenv(animjobs) {}
 #
 proc graphmodwin_animate_on_conn {win gateptr msgptr mode} {
     global config tkenv
-    if {$config(concurrent-anim)} {
+    # Note on $mode!="end" condition: "end" equals to delivery of msg to
+    # the module. It is called *before* processing the event, so it must be
+    # animated immediately, regardless of $config(concurrent-anim).
+    if {$mode!="end" && $config(concurrent-anim)} {
         # if concurrent-anim is ON, we just store the params here, and will execute inside perform_animations.
         lappend tkenv(animjobs) [list on_conn $win $gateptr $msgptr $mode]
         return
     }
-
-    #debug "send $mode $msgptr"
 
     set c $win.c
 
@@ -65,8 +66,6 @@ proc graphmodwin_animate_senddirect_horiz {win mod1ptr mod2ptr msgptr mode} {
         return
     }
 
-    #debug "senddirect horiz $mode $msgptr"
-
     set c $win.c
     set src  [get_submod_coords $c $mod1ptr]
     set dest [get_submod_coords $c $mod2ptr]
@@ -91,8 +90,6 @@ proc graphmodwin_animate_senddirect_ascent {win parentmodptr modptr msgptr mode}
         return
     }
 
-    #debug "senddirect ascent $mode $msgptr"
-
     set c $win.c
     set src  [get_submod_coords $c $modptr]
 
@@ -116,8 +113,6 @@ proc graphmodwin_animate_senddirect_descent {win parentmodptr modptr msgptr mode
         return
     }
 
-    #debug "senddirect descent $mode $msgptr"
-
     set c $win.c
     set dest [get_submod_coords $c $modptr]
 
@@ -131,17 +126,11 @@ proc graphmodwin_animate_senddirect_descent {win parentmodptr modptr msgptr mode
 
 
 #
-# Called from C++ code. $mode="beg"/"thru"/"end".
+# Called from C++ code.
 #
 proc graphmodwin_animate_senddirect_delivery {win modptr msgptr} {
-    global config tkenv
-    if {$config(concurrent-anim)} {
-        # if concurrent-anim is ON, we just store the params here, and will execute inside perform_animations.
-        lappend tkenv(animjobs) [list senddirect_delivery $win $modptr $msgptr]
-        return
-    }
-
-    #debug "senddirect deliv $msgptr"
+    # Note: delivery is called *before* processing the event, so it must be
+    # animated immediately, regardless of $config(concurrent-anim).
 
     set c $win.c
     set src  [get_submod_coords $c $modptr]
