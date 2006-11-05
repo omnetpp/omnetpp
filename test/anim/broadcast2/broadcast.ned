@@ -3,11 +3,11 @@
 //
 module BroadcastTest
     submodules:
-        txnode: TxNode;
-        sink: Sink[10];
+        tx: TxNode;
+        sink: SinkNode[10];
     connections:
         for i=0..9 do
-            txnode.out++ --> sink[i].in;
+            tx.out++ --> sink[i].in++;
         endfor
 endmodule
 
