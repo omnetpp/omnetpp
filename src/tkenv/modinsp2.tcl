@@ -17,12 +17,14 @@
 #  Graphical compound module window stuff
 #-----------------------------------------------------------------
 
+#XXX experimental stuff
+set config(concurrent-anim) 1
+set tkenv(animjobs) {}
 
 #
 # Note: tooltips on canvas come from the proc whose name is stored in
 # $help_tips(helptip_proc). This is currently get_help_tip.
 #
-
 
 # get_parsed_display_string --
 #
@@ -734,6 +736,12 @@ proc graphmodwin_draw_message_on_module {c modptr msgptr} {
 # Called from C++ code. $mode="beg"/"thru"/"end".
 #
 proc graphmodwin_animate_on_conn {win gateptr msgptr mode} {
+    global config tkenv
+    if {$config(concurrent-anim)} {
+        # if concurrent-anim is ON, we just store the params here, and will execute inside perform_animations.
+        lappend tkenv(animjobs) [list graphmodwin_animate_on_conn $win $gateptr $msgptr $mode]
+        return
+    }
 
     #debug "send $mode $msgptr"
 
@@ -765,6 +773,12 @@ proc graphmodwin_animate_on_conn {win gateptr msgptr mode} {
 # Called from C++ code. $mode="beg"/"thru"/"end".
 #
 proc graphmodwin_animate_senddirect_horiz {win mod1ptr mod2ptr msgptr mode} {
+    global config tkenv
+    if {$config(concurrent-anim)} {
+        # if concurrent-anim is ON, we just store the params here, and will execute inside perform_animations.
+        lappend tkenv(animjobs) [list graphmodwin_animate_senddirect_horiz $win $mod1ptr $mod2ptr $msgptr $mode]
+        return
+    }
 
     #debug "senddirect horiz $mode $msgptr"
 
@@ -785,6 +799,12 @@ proc graphmodwin_animate_senddirect_horiz {win mod1ptr mod2ptr msgptr mode} {
 # Called from C++ code. $mode="beg"/"thru"/"end".
 #
 proc graphmodwin_animate_senddirect_ascent {win parentmodptr modptr msgptr mode} {
+    global config tkenv
+    if {$config(concurrent-anim)} {
+        # if concurrent-anim is ON, we just store the params here, and will execute inside perform_animations.
+        lappend tkenv(animjobs) [list graphmodwin_animate_senddirect_ascent $win $parentmodptr $modptr $msgptr $mode]
+        return
+    }
 
     #debug "senddirect ascent $mode $msgptr"
 
@@ -804,6 +824,12 @@ proc graphmodwin_animate_senddirect_ascent {win parentmodptr modptr msgptr mode}
 # Called from C++ code. $mode="beg"/"thru"/"end".
 #
 proc graphmodwin_animate_senddirect_descent {win parentmodptr modptr msgptr mode} {
+    global config tkenv
+    if {$config(concurrent-anim)} {
+        # if concurrent-anim is ON, we just store the params here, and will execute inside perform_animations.
+        lappend tkenv(animjobs) [list graphmodwin_animate_senddirect_descent $win $parentmodptr $modptr $msgptr $mode]
+        return
+    }
 
     #debug "senddirect descent $mode $msgptr"
 
@@ -1384,4 +1410,21 @@ proc redraw_timeline {} {
     }
     $c lower "h"
 }
+
+proc perform_animations {} {
+    global config tkenv
+    if {$config(concurrent-anim)} {
+        # default solution: just do everything as before...
+        set config(concurrent-anim) 0
+        foreach job $tkenv(animjobs) {
+            puts "DOING: $job"
+            eval $job
+        }
+        set config(concurrent-anim) 1
+    }
+
+    # clear the animations list
+    set tkenv(animjobs) {}
+}
+
 

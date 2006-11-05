@@ -282,6 +282,7 @@ void TOmnetTkApp::doOneStep()
             if (opt_print_banners)
                printEventBanner(mod);
             simulation.doOneEvent(mod);
+            performAnimations();
         }
         updateSimtimeDisplay();
         updateNextModuleDisplay();
@@ -452,6 +453,7 @@ bool TOmnetTkApp::doRunSimulation()
             printEventBanner(mod);
 
         simulation.doOneEvent( mod );
+        performAnimations();
 
         // flush so that output from different modules don't get mixed
         ev.flushlastline();
@@ -1583,6 +1585,10 @@ void TOmnetTkApp::animateDeliveryDirect(cMessage *msg)
     }
 }
 
+void TOmnetTkApp::performAnimations()
+{
+    CHK(Tcl_VarEval(interp, "perform_animations", NULL));
+}
 
 void TOmnetTkApp::breakpointHit( const char *label, cSimpleModule *mod )
 {

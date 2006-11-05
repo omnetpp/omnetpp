@@ -204,6 +204,7 @@ class TOmnetTkApp : public TOmnetApp
       void animateSendDirect(cMessage *msg, cModule *frommodule, cGate *togate);
       void animateDelivery(cMessage *msg);
       void animateDeliveryDirect(cMessage *msg);
+      void performAnimations();
 
       void findDirectPath(cModule *frommodule, cModule *tomodule, PathVec& pathvec);
 
