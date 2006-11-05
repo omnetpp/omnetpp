@@ -190,6 +190,7 @@ proc do_animate_concurrent {animlist} {
     set movecommands {}
     foreach req $animlist {
         setvars {w msgptr x1 y1 x2 y2} $req
+        set windows($w) 1
         $w.c delete $msgptr
         draw_message $w.c $msgptr $x1 $y1
 
@@ -200,8 +201,13 @@ proc do_animate_concurrent {animlist} {
     }
 
     # WM_DELETE_WINDOW stuff: if user wants to close window (during "update"), postpone it until updateInspectors()
-    #FIXME ALL WINDOWS!!!!! set old_close_handler [wm protocol $win WM_DELETE_WINDOW]
-    #wm protocol $win WM_DELETE_WINDOW [list opp_markinspectorfordeletion $win]
+    foreach w [array names windows] {
+        # remember current Close handler and temporarily replace it
+        set windows($w) [wm protocol $w WM_DELETE_WINDOW]
+        wm protocol $w WM_DELETE_WINDOW [list opp_markinspectorfordeletion $w]
+    }
+
+    # now do the animation
     for {set i 0} {$i<$steps} {incr i} {
        set tbeg [clock clicks]
        update
@@ -209,7 +215,8 @@ proc do_animate_concurrent {animlist} {
            eval $movecommand
        }
 
-       # FIXME && ! someinspmarkedfordeletion
+       # note: we don't need to check whether the inspector is closing ("marked
+       # to be deleted"), because with concurrent animations there aren't long waits
        if {![opp_simulationisstopping]} {
            set sp [opp_getsimoption animation_speed]
            if {$sp>3} {set $sp 3}
@@ -220,6 +227,10 @@ proc do_animate_concurrent {animlist} {
            while {[expr abs([clock clicks]-$tbeg)] < $clicks} {}
        }
     }
-    #wm protocol $win WM_DELETE_WINDOW $old_close_handler
+
+    # restore old WM_DELETE_WINDOW handlers
+    foreach w [array names windows] {
+        wm protocol $w WM_DELETE_WINDOW $windows($w)
+    }
 }
 
