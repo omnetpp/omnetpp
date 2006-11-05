@@ -189,6 +189,7 @@ proc options_dialog {} {
     checkbutton $w.f.f3.anim -text {Animate messages} -variable opp(anim)
     label-scale $w.f.f3.speed {Animation speed:}
     $w.f.f3.speed.e config -length 200 -from 0 -to 3 -resolution 0.01 -variable opp(speed)
+    checkbutton $w.f.f3.concanim -text {Broadcast animation (animate "send" calls concurrently)} -variable opp(concanim)
     checkbutton $w.f.f3.nextev -text {Show next event markers} -variable opp(nextev)
     checkbutton $w.f.f3.sdarrows -text {Show arrows for sendDirect() animation} -variable opp(sdarrows)
     checkbutton $w.f.f3.animmeth -text {Animate method calls} -variable opp(animmeth)
@@ -208,6 +209,7 @@ proc options_dialog {} {
     checkbutton $w.f.f3.confirmexit -text {Confirm exit when simulation is in progress} -variable opp(confirmexit)
     pack $w.f.f3.anim -anchor w
     pack $w.f.f3.speed -anchor w -expand 0 -fill x
+    pack $w.f.f3.concanim -anchor w
     pack $w.f.f3.nextev -anchor w
     pack $w.f.f3.sdarrows -anchor w
     pack $w.f.f3.animmeth -anchor w
@@ -233,6 +235,7 @@ proc options_dialog {} {
     set opp(usemainwin) [opp_getsimoption use_mainwindow]
     set opp(banners)    [opp_getsimoption print_banners]
     set opp(anim)       [opp_getsimoption animation_enabled]
+    set opp(concanim)   $config(concurrent-anim)
     set opp(nextev)     [opp_getsimoption nexteventmarkers]
     set opp(sdarrows)   [opp_getsimoption senddirect_arrows]
     set opp(animmeth)   [opp_getsimoption anim_methodcalls]
@@ -257,6 +260,7 @@ proc options_dialog {} {
         opp_setsimoption use_mainwindow      $opp(usemainwin)
         opp_setsimoption print_banners       $opp(banners)
         opp_setsimoption animation_enabled   $opp(anim)
+        set config(concurrent-anim)          $opp(concanim)
         opp_setsimoption nexteventmarkers    $opp(nextev)
         opp_setsimoption senddirect_arrows   $opp(sdarrows)
         opp_setsimoption anim_methodcalls    $opp(animmeth)

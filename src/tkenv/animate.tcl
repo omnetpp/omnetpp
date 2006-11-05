@@ -13,8 +13,6 @@
 #  `license' for details on this and other legal matters.
 #----------------------------------------------------------------#
 
-#XXX experimental stuff
-set config(concurrent-anim) 1   ;#FIXME move to its place!!!
 set tkenv(animjobs) {}
 
 #
