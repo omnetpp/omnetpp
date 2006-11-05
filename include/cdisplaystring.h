@@ -152,6 +152,18 @@ class SIM_API cDisplayString
      * if there was an error parsing the string.
      */
     bool parse(const char *displaystr);
+
+    /**
+     * Update with the contents of another display string. Corresponding
+     * elements from the new display string will overwrite existing values.
+     */
+    void updateWith(const cDisplayString& ds);
+
+    /**
+     * Update with the contents of another display string. Corresponding
+     * elements from the new display string will overwrite existing values.
+     */
+    void updateWith(const char *s);
     //@}
 
     /** Manipulating tags by name. */

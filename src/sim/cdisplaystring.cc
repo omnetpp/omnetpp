@@ -103,6 +103,7 @@ bool cDisplayString::parse(const char *displaystr)
 
     // parse and store new string
     delete [] dispstr;
+    cleartags();
     dispstr = opp_strdup(displaystr);
     bool fullyOK = parse();
 
@@ -110,6 +111,30 @@ bool cDisplayString::parse(const char *displaystr)
     return fullyOK;
 }
 
+void cDisplayString::updateWith(const cDisplayString& ds)
+{
+    // elements in "ds" take precedence
+    int n = ds.getNumTags();
+    for (int i=0; i<n; i++)
+    {
+        int m = ds.getNumArgs(i);
+        for (int j=0; j<m; j++)
+        {
+            const char *arg = ds.getTagArg(i,j);
+            if (arg[0])
+                setTagArg(ds.getTagName(i), j, arg);
+        }
+    }
+
+    // optimize storage
+    parse(toString());
+}
+
+void cDisplayString::updateWith(const char *s)
+{
+    cDisplayString ds(s);
+    updateWith(ds);
+}
 
 bool cDisplayString::existsTag(const char *tagname) const
 {

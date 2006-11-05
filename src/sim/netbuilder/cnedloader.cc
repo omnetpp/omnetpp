@@ -447,21 +447,12 @@ void cNEDLoader::updateDisplayProperty(PropertyNode *propNode, cProperty *prop)
         return;
     }
 
-//FIXME introduce opp_isempty(s) function!!!!
-
     // merge
     const char *olddisplaystring = prop->value(cProperty::DEFAULTKEY, 0);
     cDisplayString d(olddisplaystring);
     cDisplayString dnew(newdisplaystring);
-    for (int t=0; t<dnew.getNumTags(); t++)
-    {
-        for (int i=0; i<dnew.getNumArgs(t); i++)
-        {
-            const char *arg = dnew.getTagArg(t,i);
-            if (arg && *arg)
-                d.setTagArg(t,i,dnew.getTagArg(t,i));
-        }
-    }
+    d.updateWith(dnew);
+    prop->setValue(cProperty::DEFAULTKEY, 0, d.toString());
 }
 
 void cNEDLoader::done()

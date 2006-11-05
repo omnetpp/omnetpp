@@ -21,7 +21,6 @@ const char *cProperty::DEFAULTKEY = "";
 cStringPool cProperty::stringPool;
 
 
-
 cProperty::cProperty(const char *name, const char *index)
 {
     isimplicit = islocked = false;
