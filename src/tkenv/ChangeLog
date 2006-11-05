@@ -1,6 +1,7 @@
 - tree-style instpector
 - split animate.tcl and timeline.tcl from modinsp2.tcl 
-- concurrent animation ($config(concurrent-anim))
+- broadcast animation feature: if multiple send()/sendDirect() calls occur
+  within a handleMessage(), messages are animated concurrently
 
 ----------------------
 
