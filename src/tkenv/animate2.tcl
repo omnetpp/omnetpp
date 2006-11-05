@@ -19,11 +19,24 @@
 #
 proc do_concurrent_animations {animjobs} {
     global config
+
     foreach job $animjobs {
         puts "DOING: $job"
-        set config(concurrent-anim) 0
-        eval $job
-        set config(concurrent-anim) 1
+        #set config(concurrent-anim) 0
+        #eval $job
+        #set config(concurrent-anim) 1
     }
+
+    # we should form groups -- anim requests within the group are performed
+    # concurrently. group1: first request of each sending; group2: second request
+    # of each sending, etc. One group may contain animations on several
+    # compound modules.
+
+    #XXX right now, we just lump everything together in a single group
+    do_animate_group $animjobs
+    puts "----"
+}
+
+proc do_animate_group {animjobs} {
 }
 
