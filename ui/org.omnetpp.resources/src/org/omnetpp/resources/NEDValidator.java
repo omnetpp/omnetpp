@@ -3,10 +3,10 @@ package org.omnetpp.resources;
 import java.util.HashMap;
 
 import org.eclipse.core.runtime.Assert;
-import org.omnetpp.ned2.model.INEDTypeInfo;
-import org.omnetpp.ned2.model.INEDTypeResolver;
 import org.omnetpp.ned2.model.NEDElement;
 import org.omnetpp.ned2.model.NEDElementUtil;
+import org.omnetpp.ned2.model.interfaces.INEDTypeInfo;
+import org.omnetpp.ned2.model.interfaces.INEDTypeResolver;
 import org.omnetpp.ned2.model.pojo.AbstractNEDValidator;
 import org.omnetpp.ned2.model.pojo.ChannelInterfaceNode;
 import org.omnetpp.ned2.model.pojo.ChannelNode;

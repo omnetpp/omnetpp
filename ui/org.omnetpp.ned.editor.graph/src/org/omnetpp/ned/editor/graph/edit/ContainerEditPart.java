@@ -2,9 +2,9 @@ package org.omnetpp.ned.editor.graph.edit;
 
 import org.eclipse.gef.editparts.AbstractGraphicalEditPart;
 import org.omnetpp.ned2.model.ConnectionNodeEx;
-import org.omnetpp.ned2.model.INEDChangeListener;
 import org.omnetpp.ned2.model.NEDElement;
 import org.omnetpp.ned2.model.SubmoduleNodeEx;
+import org.omnetpp.ned2.model.interfaces.INEDChangeListener;
 
 /**
  * Provides support for Container EditParts.

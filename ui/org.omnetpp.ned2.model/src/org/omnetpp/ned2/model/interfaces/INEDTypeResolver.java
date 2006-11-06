@@ -1,9 +1,10 @@
-package org.omnetpp.ned2.model;
+package org.omnetpp.ned2.model.interfaces;
 
 import java.util.Collection;
 import java.util.Set;
 
 import org.eclipse.core.resources.IFile;
+import org.omnetpp.ned2.model.NEDElement;
 
 public interface INEDTypeResolver {
 

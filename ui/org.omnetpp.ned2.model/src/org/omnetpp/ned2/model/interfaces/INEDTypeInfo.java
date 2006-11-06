@@ -1,9 +1,10 @@
-package org.omnetpp.ned2.model;
+package org.omnetpp.ned2.model.interfaces;
 
 import java.util.List;
 import java.util.Map;
 
 import org.eclipse.core.resources.IFile;
+import org.omnetpp.ned2.model.NEDElement;
 
 /**
  * Wraps a NED component: a ChannelNode, ChannelInterfaceNode, SimpleModuleNode, 

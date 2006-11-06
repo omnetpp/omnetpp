@@ -1,11 +1,19 @@
 package org.omnetpp.ned2.model;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import org.omnetpp.common.displaymodel.DisplayString;
 import org.omnetpp.common.displaymodel.IDisplayString;
 import org.omnetpp.common.displaymodel.IDisplayStringProvider;
 import org.omnetpp.common.displaymodel.IDisplayString.Prop;
+import org.omnetpp.ned2.model.interfaces.IDerived;
+import org.omnetpp.ned2.model.interfaces.INEDTypeInfo;
+import org.omnetpp.ned2.model.interfaces.INamed;
+import org.omnetpp.ned2.model.interfaces.IParametrized;
+import org.omnetpp.ned2.model.interfaces.IParentable;
+import org.omnetpp.ned2.model.interfaces.ITopLevelElement;
 import org.omnetpp.ned2.model.pojo.ChannelInterfaceNode;
 import org.omnetpp.ned2.model.pojo.ExtendsNode;
 
@@ -66,6 +74,15 @@ public class ChannelInterfaceNodeEx extends ChannelInterfaceNode
         return it == null ? null : it.getNEDElement();
     }
 
+    public List<ExtendsNode> getAllExtends() {
+        List<ExtendsNode> result = new ArrayList<ExtendsNode>();
+
+        for(NEDElement currChild : this)
+            if (currChild instanceof ExtendsNode)
+                result.add((ExtendsNode)currChild);
+        
+        return result;
+    }
     // notification support
     public void propertyChanged(Prop changedProp) {
 		// syncronize it to the underlying model 

@@ -1,11 +1,19 @@
 package org.omnetpp.ned2.model;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import org.omnetpp.common.displaymodel.DisplayString;
 import org.omnetpp.common.displaymodel.IDisplayString;
 import org.omnetpp.common.displaymodel.IDisplayStringProvider;
 import org.omnetpp.common.displaymodel.IDisplayString.Prop;
+import org.omnetpp.ned2.model.interfaces.IDerived;
+import org.omnetpp.ned2.model.interfaces.INEDTypeInfo;
+import org.omnetpp.ned2.model.interfaces.INamed;
+import org.omnetpp.ned2.model.interfaces.IParametrized;
+import org.omnetpp.ned2.model.interfaces.IParentable;
+import org.omnetpp.ned2.model.interfaces.ITopLevelElement;
 import org.omnetpp.ned2.model.pojo.ChannelNode;
 import org.omnetpp.ned2.model.pojo.ExtendsNode;
 
@@ -72,6 +80,18 @@ public class ChannelNodeEx extends ChannelNode
         return it == null ? null : it.getNEDElement();
     }
 
+    public List<ExtendsNode> getAllExtends() {
+        List<ExtendsNode> result = new ArrayList<ExtendsNode>();
+        ExtendsNode extendsNode = getFirstExtendsChild();
+        if (extendsNode == null)
+            return result;
+
+        for(NEDElement currChild : extendsNode)
+            if (currChild instanceof ExtendsNode)
+                result.add(extendsNode);
+        
+        return result;
+    }
     // parameter quiry support
     public Map<String, NEDElement> getParamValues() {
         return getContainerNEDTypeInfo().getParamValues();

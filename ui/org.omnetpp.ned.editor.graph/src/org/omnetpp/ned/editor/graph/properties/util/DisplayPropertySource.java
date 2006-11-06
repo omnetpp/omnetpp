@@ -1,4 +1,4 @@
-package org.omnetpp.ned.editor.graph.properties;
+package org.omnetpp.ned.editor.graph.properties.util;
 
 import java.util.EnumSet;
 

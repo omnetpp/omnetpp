@@ -1,13 +1,13 @@
-package org.omnetpp.ned.editor.graph.properties;
+package org.omnetpp.ned.editor.graph.properties.util;
 
 import java.util.Map;
 
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
 import org.eclipse.ui.views.properties.PropertyDescriptor;
-import org.omnetpp.ned2.model.INamed;
-import org.omnetpp.ned2.model.IGateContainer;
 import org.omnetpp.ned2.model.NEDElement;
 import org.omnetpp.ned2.model.GateNodeEx;
+import org.omnetpp.ned2.model.interfaces.IGateContainer;
+import org.omnetpp.ned2.model.interfaces.INamed;
 
 /**
  * @author rhornig

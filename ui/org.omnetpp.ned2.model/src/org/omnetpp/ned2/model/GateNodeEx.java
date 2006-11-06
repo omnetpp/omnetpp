@@ -1,5 +1,9 @@
 package org.omnetpp.ned2.model;
 
+import org.omnetpp.ned2.model.interfaces.IIndexable;
+import org.omnetpp.ned2.model.interfaces.INamed;
+import org.omnetpp.ned2.model.interfaces.IParentable;
+import org.omnetpp.ned2.model.interfaces.ITopLevelElement;
 import org.omnetpp.ned2.model.pojo.GateNode;
 
 /**

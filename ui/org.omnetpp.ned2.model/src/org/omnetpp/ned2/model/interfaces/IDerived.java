@@ -1,4 +1,9 @@
-package org.omnetpp.ned2.model;
+package org.omnetpp.ned2.model.interfaces;
+
+import java.util.List;
+
+import org.omnetpp.ned2.model.NEDElement;
+import org.omnetpp.ned2.model.pojo.ExtendsNode;
 
 /**
  * @author rhornig
@@ -32,4 +37,10 @@ public interface IDerived {
      *         (Special handling needed for these types)  
      */
     public NEDElement getFirstExtendsRef();
+    
+    /**
+     * @return All ned elements that used as base (usually only a single element,
+     *         but can be more than that)
+     */
+    public List<ExtendsNode> getAllExtends();
 }

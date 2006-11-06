@@ -10,6 +10,11 @@ import org.eclipse.ui.views.properties.IPropertySource2;
 import org.eclipse.ui.views.properties.PropertyDescriptor;
 import org.omnetpp.common.displaymodel.DisplayString;
 import org.omnetpp.common.properties.EditableComboBoxPropertyDescriptor;
+import org.omnetpp.ned.editor.graph.properties.util.DelegatingPropertySource;
+import org.omnetpp.ned.editor.graph.properties.util.DisplayPropertySource;
+import org.omnetpp.ned.editor.graph.properties.util.MergedPropertySource;
+import org.omnetpp.ned.editor.graph.properties.util.ParameterListPropertySource;
+import org.omnetpp.ned.editor.graph.properties.util.TypePropertySource;
 import org.omnetpp.ned2.model.ConnectionNodeEx;
 import org.omnetpp.resources.NEDResourcesPlugin;
 
@@ -43,19 +48,14 @@ public class ConnectionPropertySource extends MergedPropertySource {
 
     // Connection specific properties
     protected static class BasePropertySource implements IPropertySource2 {
-        public enum Prop { Channel, SrcGate, DestGate }
+        public enum Prop { SrcGate, DestGate }
         protected IPropertyDescriptor[] descriptors;
         protected ConnectionNodeEx model;
-        EditableComboBoxPropertyDescriptor channelProp;
 
         public BasePropertySource(ConnectionNodeEx connectionNodeModel) {
             model = connectionNodeModel;
             
             // set up property descriptors
-			channelProp = new EditableComboBoxPropertyDescriptor(Prop.Channel, "channel");
-            channelProp.setCategory("Base");
-            channelProp.setDescription("The channel type of the connection");
-            
             PropertyDescriptor srcGateProp = new PropertyDescriptor(Prop.SrcGate, "source-gate");
             srcGateProp.setCategory("Base");
             srcGateProp.setDescription("The source gate of the connection (read only)");
@@ -64,7 +64,7 @@ public class ConnectionPropertySource extends MergedPropertySource {
             destGateProp.setCategory("Base");
             destGateProp.setDescription("The destination gate of the connection (read only)");
 
-            descriptors = new IPropertyDescriptor[] { channelProp, srcGateProp, destGateProp };
+            descriptors = new IPropertyDescriptor[] { srcGateProp, destGateProp };
         }
 
         public Object getEditableValue() {
@@ -72,17 +72,10 @@ public class ConnectionPropertySource extends MergedPropertySource {
         }
 
         public IPropertyDescriptor[] getPropertyDescriptors() {
-        	//fill the connection combobox with channel types
-        	List<String> channelNames = new ArrayList<String>(NEDResourcesPlugin.getNEDResources().getChannelNames());
-        	Collections.sort(channelNames);
-  			channelProp.setItems(channelNames);
             return descriptors;
         }
 
         public Object getPropertyValue(Object propName) {
-            if (Prop.Channel.equals(propName))  
-                return model.getType(); 
-            
             if (Prop.SrcGate.equals(propName))  
                 return model.getSrcGateFullyQualified(); 
 
@@ -93,24 +86,17 @@ public class ConnectionPropertySource extends MergedPropertySource {
         }
 
         public void setPropertyValue(Object propName, Object value) {
-            if (Prop.Channel.equals(propName)) 
-                model.setType(value.toString());
         }
 
         public boolean isPropertySet(Object propName) {
-            if (Prop.Channel.equals(propName)) 
-            	return Prop.Channel.equals(propName) && !"".equals(model.getType()) && (model.getType() != null);
-
             return false;
         }
 
         public void resetPropertyValue(Object propName) {
-            if (Prop.Channel.equals(propName)) 
-            	model.setType(null);
         }
 
         public boolean isPropertyResettable(Object propName) {
-            return Prop.Channel.equals(propName);
+            return false;
         }
     }
 
@@ -119,6 +105,14 @@ public class ConnectionPropertySource extends MergedPropertySource {
         super(connectionNodeModel);
         // create a nested displayPropertySources
         mergePropertySource(new BasePropertySource(connectionNodeModel));	
+        mergePropertySource(new TypePropertySource(connectionNodeModel) {
+            @Override
+            protected List<String> getPossibleValues() {
+                List<String> channelNames = new ArrayList<String>(NEDResourcesPlugin.getNEDResources().getChannelNames());
+                Collections.sort(channelNames);
+              return channelNames;
+            }
+        });
         mergePropertySource(new ConnectionDisplayPropertySource(connectionNodeModel));
         mergePropertySource(new DelegatingPropertySource(
                 new ParameterListPropertySource(connectionNodeModel),

@@ -7,6 +7,12 @@ import java.util.Map;
 import org.omnetpp.common.displaymodel.DisplayString;
 import org.omnetpp.common.displaymodel.IDisplayString;
 import org.omnetpp.common.displaymodel.IDisplayString.Prop;
+import org.omnetpp.ned2.model.interfaces.IDerived;
+import org.omnetpp.ned2.model.interfaces.IGateContainer;
+import org.omnetpp.ned2.model.interfaces.INEDTypeInfo;
+import org.omnetpp.ned2.model.interfaces.INamedGraphNode;
+import org.omnetpp.ned2.model.interfaces.IParametrized;
+import org.omnetpp.ned2.model.interfaces.ITopLevelElement;
 import org.omnetpp.ned2.model.pojo.CompoundModuleNode;
 import org.omnetpp.ned2.model.pojo.ConnectionsNode;
 import org.omnetpp.ned2.model.pojo.ExtendsNode;
@@ -27,7 +33,6 @@ public class CompoundModuleNodeEx extends CompoundModuleNode
 		super(parent);
 		init();
 	}
-
 
     private void init() {
         setName("unnamed");
@@ -325,6 +330,18 @@ public class CompoundModuleNodeEx extends CompoundModuleNode
         return it == null ? null : it.getNEDElement();
     }
 
+    public List<ExtendsNode> getAllExtends() {
+        List<ExtendsNode> result = new ArrayList<ExtendsNode>();
+        ExtendsNode extendsNode = getFirstExtendsChild();
+        if (extendsNode == null)
+            return result;
+
+        for(NEDElement currChild : extendsNode)
+            if (currChild instanceof ExtendsNode)
+                result.add(extendsNode);
+        
+        return result;
+    }
     // parameter query support
     public Map<String, NEDElement> getParamValues() {
         return getContainerNEDTypeInfo().getParamValues();

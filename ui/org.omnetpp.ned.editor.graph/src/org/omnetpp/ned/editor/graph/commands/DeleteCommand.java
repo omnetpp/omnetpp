@@ -5,10 +5,10 @@ import java.util.List;
 
 import org.eclipse.gef.commands.Command;
 import org.omnetpp.ned2.model.ConnectionNodeEx;
-import org.omnetpp.ned2.model.IConnectable;
-import org.omnetpp.ned2.model.INamed;
 import org.omnetpp.ned2.model.NEDElement;
 import org.omnetpp.ned2.model.SubmoduleNodeEx;
+import org.omnetpp.ned2.model.interfaces.IConnectable;
+import org.omnetpp.ned2.model.interfaces.INamed;
 import org.omnetpp.ned2.model.pojo.ConnectionsNode;
 
 /**

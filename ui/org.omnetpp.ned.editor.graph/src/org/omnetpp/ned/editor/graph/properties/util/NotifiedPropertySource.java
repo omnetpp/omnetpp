@@ -1,9 +1,9 @@
-package org.omnetpp.ned.editor.graph.properties;
+package org.omnetpp.ned.editor.graph.properties.util;
 
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
 import org.eclipse.ui.views.properties.IPropertySource2;
-import org.omnetpp.ned2.model.INEDChangeListener;
 import org.omnetpp.ned2.model.NEDElement;
+import org.omnetpp.ned2.model.interfaces.INEDChangeListener;
 
 /**
  * @author rhornig

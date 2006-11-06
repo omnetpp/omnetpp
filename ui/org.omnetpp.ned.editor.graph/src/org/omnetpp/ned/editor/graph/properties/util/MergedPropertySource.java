@@ -1,4 +1,4 @@
-package org.omnetpp.ned.editor.graph.properties;
+package org.omnetpp.ned.editor.graph.properties.util;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -6,8 +6,8 @@ import java.util.List;
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
 import org.eclipse.ui.views.properties.IPropertySource;
 import org.eclipse.ui.views.properties.IPropertySource2;
-import org.omnetpp.ned2.model.INEDChangeListener;
 import org.omnetpp.ned2.model.NEDElement;
+import org.omnetpp.ned2.model.interfaces.INEDChangeListener;
 
 /**
  * @author rhornig
@@ -17,7 +17,7 @@ public class MergedPropertySource implements IPropertySource2, INEDChangeListene
 
 	List<IPropertySource> mergedList = new ArrayList<IPropertySource>(); 
 	
-	MergedPropertySource(NEDElement model) {
+	public MergedPropertySource(NEDElement model) {
         // register the propertysource as a listener for the model so it will be notified
         // once someone changes the underlying model
         model.addListener(this);

@@ -7,9 +7,9 @@ import org.omnetpp.common.displaymodel.DisplayString;
 import org.omnetpp.common.displaymodel.IDisplayStringProvider;
 import org.omnetpp.figures.TopLevelFigure;
 import org.omnetpp.ned.editor.graph.edit.policies.NedComponentEditPolicy;
-import org.omnetpp.ned2.model.INEDChangeListener;
-import org.omnetpp.ned2.model.INamed;
 import org.omnetpp.ned2.model.NEDElement;
+import org.omnetpp.ned2.model.interfaces.INEDChangeListener;
+import org.omnetpp.ned2.model.interfaces.INamed;
 
 /**
  * @author rhornig

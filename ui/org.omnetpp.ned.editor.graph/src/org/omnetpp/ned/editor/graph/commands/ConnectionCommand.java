@@ -4,9 +4,9 @@ import org.eclipse.gef.commands.Command;
 import org.omnetpp.ned.editor.graph.edit.ModuleEditPart;
 import org.omnetpp.ned2.model.CompoundModuleNodeEx;
 import org.omnetpp.ned2.model.ConnectionNodeEx;
-import org.omnetpp.ned2.model.IConnectable;
-import org.omnetpp.ned2.model.IParentable;
 import org.omnetpp.ned2.model.SubmoduleNodeEx;
+import org.omnetpp.ned2.model.interfaces.IConnectable;
+import org.omnetpp.ned2.model.interfaces.IParentable;
 import org.omnetpp.ned2.model.pojo.ConnectionNode;
 
 /**

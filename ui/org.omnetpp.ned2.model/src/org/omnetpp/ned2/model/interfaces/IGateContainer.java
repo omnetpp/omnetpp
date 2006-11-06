@@ -1,6 +1,8 @@
-package org.omnetpp.ned2.model;
+package org.omnetpp.ned2.model.interfaces;
 
 import java.util.Map;
+
+import org.omnetpp.ned2.model.NEDElement;
 
 /**
  * @author rhornig

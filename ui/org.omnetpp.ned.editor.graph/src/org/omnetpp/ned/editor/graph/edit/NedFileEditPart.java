@@ -29,9 +29,9 @@ import org.eclipse.gef.tools.MarqueeDragTracker;
 import org.eclipse.swt.SWT;
 import org.omnetpp.ned.editor.graph.edit.policies.NedFileLayoutEditPolicy;
 import org.omnetpp.ned2.model.CompoundModuleNodeEx;
-import org.omnetpp.ned2.model.ITopLevelElement;
 import org.omnetpp.ned2.model.NEDElement;
 import org.omnetpp.ned2.model.NedFileNodeEx;
+import org.omnetpp.ned2.model.interfaces.ITopLevelElement;
 import org.omnetpp.resources.NEDResourcesPlugin;
 
 /**

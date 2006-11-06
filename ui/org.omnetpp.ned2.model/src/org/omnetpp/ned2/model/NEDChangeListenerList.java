@@ -1,5 +1,7 @@
 package org.omnetpp.ned2.model;
 
+import org.omnetpp.ned2.model.interfaces.INEDChangeListener;
+
 /**
  * @author rhornig
  * Supports a listener list used for change and strunctural notification in a NEDElement tree

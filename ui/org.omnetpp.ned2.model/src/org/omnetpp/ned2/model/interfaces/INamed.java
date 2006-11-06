@@ -1,4 +1,4 @@
-package org.omnetpp.ned2.model;
+package org.omnetpp.ned2.model.interfaces;
 
 /**
  * @author rhornig

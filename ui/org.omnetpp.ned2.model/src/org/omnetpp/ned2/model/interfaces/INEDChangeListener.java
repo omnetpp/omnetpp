@@ -1,4 +1,7 @@
-package org.omnetpp.ned2.model;
+package org.omnetpp.ned2.model.interfaces;
+
+import org.omnetpp.ned2.model.NEDElement;
+
 /**
  * Implement this to get notified about changes in a NED tree.
  * @author andras

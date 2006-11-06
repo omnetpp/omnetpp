@@ -1,14 +1,24 @@
 package org.omnetpp.ned.editor.graph.properties;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.EnumSet;
+import java.util.List;
 
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
 import org.eclipse.ui.views.properties.IPropertySource2;
-import org.eclipse.ui.views.properties.PropertyDescriptor;
 import org.omnetpp.common.displaymodel.DisplayString;
 import org.omnetpp.common.properties.CheckboxPropertyDescriptor;
-import org.omnetpp.common.properties.PropertySource;
+import org.omnetpp.ned.editor.graph.properties.util.DelegatingPropertySource;
+import org.omnetpp.ned.editor.graph.properties.util.DisplayPropertySource;
+import org.omnetpp.ned.editor.graph.properties.util.ExtendsPropertySource;
+import org.omnetpp.ned.editor.graph.properties.util.GateListPropertySource;
+import org.omnetpp.ned.editor.graph.properties.util.MergedPropertySource;
+import org.omnetpp.ned.editor.graph.properties.util.NamePropertySource;
+import org.omnetpp.ned.editor.graph.properties.util.ParameterListPropertySource;
+import org.omnetpp.ned.editor.graph.properties.util.SubmoduleListPropertySource;
 import org.omnetpp.ned2.model.CompoundModuleNodeEx;
+import org.omnetpp.resources.NEDResourcesPlugin;
 
 public class CompoundModulePropertySource extends MergedPropertySource {
     // compound module display properties
@@ -37,32 +47,18 @@ public class CompoundModulePropertySource extends MergedPropertySource {
     // compound module specific properties
     protected static class BasePropertySource implements IPropertySource2 {
         public static final String BASE_CATEGORY = "Base";
-        public enum Prop { Network, Submodules, Parameters, Gates }
+        public enum Prop { Network }
         protected IPropertyDescriptor[] descriptors;
         protected CompoundModuleNodeEx model;
         CheckboxPropertyDescriptor networkProp;
-        SubmoduleListPropertySource submodlist;
-        ParameterListPropertySource paramlist;
 
         public BasePropertySource(CompoundModuleNodeEx connectionNodeModel) {
             model = connectionNodeModel;
             
-            // create a property source for the submodule list
-            submodlist = new SubmoduleListPropertySource(model);
-            // one ofr the parameters list
-            paramlist = new ParameterListPropertySource(model);
             // set up property descriptors
             networkProp = new CheckboxPropertyDescriptor(Prop.Network, "network");
             networkProp.setCategory(BASE_CATEGORY);
             networkProp.setDescription("Is this compound module used as a network instance?");
-
-            PropertyDescriptor submodProp = new PropertyDescriptor(Prop.Submodules,"submodules");
-            submodProp.setCategory(BASE_CATEGORY);
-            submodProp.setDescription("List of submodules and inherited submodules");
-            
-            PropertyDescriptor paramsProp = new PropertyDescriptor(Prop.Parameters,"parameters");
-            paramsProp.setCategory(BASE_CATEGORY);
-            paramsProp.setDescription("List of parameters and inherited parameters");
 
             descriptors = new IPropertyDescriptor[] { networkProp  };
         }
@@ -78,12 +74,6 @@ public class CompoundModulePropertySource extends MergedPropertySource {
         public Object getPropertyValue(Object propName) {
             if (Prop.Network.equals(propName))  
                 return model.getIsNetwork(); 
-
-            if (Prop.Submodules.equals(propName))  
-                return submodlist; 
-            
-            if (Prop.Parameters.equals(propName))  
-                return paramlist; 
 
             return null;
         }
@@ -111,18 +101,31 @@ public class CompoundModulePropertySource extends MergedPropertySource {
         // create a nested displayPropertySource
         mergePropertySource(new NamePropertySource(nodeModel));
         mergePropertySource(new BasePropertySource(nodeModel));
+        // extends
+        mergePropertySource(new ExtendsPropertySource(nodeModel) {
+            @Override
+            protected List<String> getPossibleValues() {
+              List<String> moduleNames = new ArrayList<String>(NEDResourcesPlugin.getNEDResources().getModuleNames());
+              Collections.sort(moduleNames);
+              return moduleNames;
+            }
+        });
+        // parameters
         mergePropertySource(new DelegatingPropertySource(
                 new ParameterListPropertySource(nodeModel),
                 ParameterListPropertySource.CATEGORY,
                 ParameterListPropertySource.DESCRIPTION));
+        // gates
         mergePropertySource(new DelegatingPropertySource(
                 new GateListPropertySource(nodeModel),
                 GateListPropertySource.CATEGORY,
                 GateListPropertySource.DESCRIPTION));
+        // submodules
         mergePropertySource(new DelegatingPropertySource(
                 new SubmoduleListPropertySource(nodeModel),
                 SubmoduleListPropertySource.CATEGORY,
                 SubmoduleListPropertySource.DESCRIPTION));
+        // display
         mergePropertySource(new CompoundModuleDisplayPropertySource(nodeModel));
     }
 

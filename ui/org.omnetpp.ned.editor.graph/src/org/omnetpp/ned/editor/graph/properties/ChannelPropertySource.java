@@ -1,9 +1,19 @@
 package org.omnetpp.ned.editor.graph.properties;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.EnumSet;
+import java.util.List;
 
 import org.omnetpp.common.displaymodel.DisplayString;
+import org.omnetpp.ned.editor.graph.properties.util.DelegatingPropertySource;
+import org.omnetpp.ned.editor.graph.properties.util.DisplayPropertySource;
+import org.omnetpp.ned.editor.graph.properties.util.ExtendsPropertySource;
+import org.omnetpp.ned.editor.graph.properties.util.MergedPropertySource;
+import org.omnetpp.ned.editor.graph.properties.util.NamePropertySource;
+import org.omnetpp.ned.editor.graph.properties.util.ParameterListPropertySource;
 import org.omnetpp.ned2.model.ChannelNodeEx;
+import org.omnetpp.resources.NEDResourcesPlugin;
 
 public class ChannelPropertySource extends MergedPropertySource {
 
@@ -37,6 +47,16 @@ public class ChannelPropertySource extends MergedPropertySource {
     public ChannelPropertySource(ChannelNodeEx nodeModel) {
     	super(nodeModel);
         mergePropertySource(new NamePropertySource(nodeModel));
+        // extends
+        mergePropertySource(new ExtendsPropertySource(nodeModel) {
+            @Override
+            protected List<String> getPossibleValues() {
+              List<String> names = new ArrayList<String>(NEDResourcesPlugin.getNEDResources().getChannelNames());
+              Collections.sort(names);
+              return names;
+            }
+        });
+        // parameters
         mergePropertySource(new DelegatingPropertySource(
                 new ParameterListPropertySource(nodeModel),
                 ParameterListPropertySource.CATEGORY,

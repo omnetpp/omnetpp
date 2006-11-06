@@ -3,7 +3,7 @@ package org.omnetpp.ned.editor.graph.commands;
 import org.eclipse.gef.commands.Command;
 import org.omnetpp.common.displaymodel.IDisplayString;
 import org.omnetpp.ned2.model.CompoundModuleNodeEx;
-import org.omnetpp.ned2.model.INamedGraphNode;
+import org.omnetpp.ned2.model.interfaces.INamedGraphNode;
 
 /**
  * Change the size and location of a compound module (location cannot be changed)

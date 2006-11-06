@@ -29,13 +29,13 @@ import org.omnetpp.ned2.model.ChannelInterfaceNodeEx;
 import org.omnetpp.ned2.model.ChannelNodeEx;
 import org.omnetpp.ned2.model.CompoundModuleNodeEx;
 import org.omnetpp.ned2.model.ConnectionNodeEx;
-import org.omnetpp.ned2.model.INEDTypeInfo;
-import org.omnetpp.ned2.model.INamed;
 import org.omnetpp.ned2.model.ModuleInterfaceNodeEx;
 import org.omnetpp.ned2.model.NEDElement;
 import org.omnetpp.ned2.model.NEDElementUtilEx;
 import org.omnetpp.ned2.model.SimpleModuleNodeEx;
 import org.omnetpp.ned2.model.SubmoduleNodeEx;
+import org.omnetpp.ned2.model.interfaces.INEDTypeInfo;
+import org.omnetpp.ned2.model.interfaces.INamed;
 import org.omnetpp.ned2.model.pojo.PropertyNode;
 import org.omnetpp.resources.NEDResourcesPlugin;
 

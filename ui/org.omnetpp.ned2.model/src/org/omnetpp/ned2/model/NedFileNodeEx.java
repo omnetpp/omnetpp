@@ -3,6 +3,7 @@ package org.omnetpp.ned2.model;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.omnetpp.ned2.model.interfaces.ITopLevelElement;
 import org.omnetpp.ned2.model.pojo.NedFileNode;
 
 public class NedFileNodeEx extends NedFileNode {

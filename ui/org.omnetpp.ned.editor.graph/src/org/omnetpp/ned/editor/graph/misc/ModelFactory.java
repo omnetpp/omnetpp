@@ -1,11 +1,11 @@
 package org.omnetpp.ned.editor.graph.misc;
 
 import org.eclipse.gef.requests.CreationFactory;
-import org.omnetpp.ned2.model.INamed;
-import org.omnetpp.ned2.model.IStringTyped;
 import org.omnetpp.ned2.model.NEDElement;
 import org.omnetpp.ned2.model.NEDElementFactoryEx;
 import org.omnetpp.ned2.model.SubmoduleNodeEx;
+import org.omnetpp.ned2.model.interfaces.INamed;
+import org.omnetpp.ned2.model.interfaces.IStringTyped;
 
 
 /**

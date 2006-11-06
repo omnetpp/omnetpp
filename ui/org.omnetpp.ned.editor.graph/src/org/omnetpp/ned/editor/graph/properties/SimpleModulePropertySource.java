@@ -1,9 +1,20 @@
 package org.omnetpp.ned.editor.graph.properties;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.EnumSet;
+import java.util.List;
 
 import org.omnetpp.common.displaymodel.DisplayString;
+import org.omnetpp.ned.editor.graph.properties.util.DelegatingPropertySource;
+import org.omnetpp.ned.editor.graph.properties.util.DisplayPropertySource;
+import org.omnetpp.ned.editor.graph.properties.util.ExtendsPropertySource;
+import org.omnetpp.ned.editor.graph.properties.util.GateListPropertySource;
+import org.omnetpp.ned.editor.graph.properties.util.MergedPropertySource;
+import org.omnetpp.ned.editor.graph.properties.util.NamePropertySource;
+import org.omnetpp.ned.editor.graph.properties.util.ParameterListPropertySource;
 import org.omnetpp.ned2.model.SimpleModuleNodeEx;
+import org.omnetpp.resources.NEDResourcesPlugin;
 
 public class SimpleModulePropertySource extends MergedPropertySource {
 
@@ -30,6 +41,15 @@ public class SimpleModulePropertySource extends MergedPropertySource {
         super(nodeModel);
         //create name
         mergePropertySource(new NamePropertySource(nodeModel));
+        // extends
+        mergePropertySource(new ExtendsPropertySource(nodeModel) {
+            @Override
+            protected List<String> getPossibleValues() {
+              List<String> moduleNames = new ArrayList<String>(NEDResourcesPlugin.getNEDResources().getModuleNames());
+              Collections.sort(moduleNames);
+              return moduleNames;
+            }
+        });
         // parameter list property
         mergePropertySource(new DelegatingPropertySource(
                 new ParameterListPropertySource(nodeModel),

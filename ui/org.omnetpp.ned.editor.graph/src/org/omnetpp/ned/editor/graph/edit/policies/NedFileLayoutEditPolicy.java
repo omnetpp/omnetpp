@@ -19,8 +19,8 @@ import org.omnetpp.ned.editor.graph.commands.CloneCommand;
 import org.omnetpp.ned.editor.graph.commands.CreateToplevelComponentCommand;
 import org.omnetpp.ned.editor.graph.commands.ReorderCommand;
 import org.omnetpp.ned.editor.graph.commands.SetCompoundModuleConstraintCommand;
-import org.omnetpp.ned2.model.INamedGraphNode;
 import org.omnetpp.ned2.model.NEDElement;
+import org.omnetpp.ned2.model.interfaces.INamedGraphNode;
 
 /**
  * Layout policy used in the top levele NedFile element allowing a vertical, toolbar like

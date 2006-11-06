@@ -5,10 +5,14 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
 
-import org.eclipse.ui.views.properties.IPropertyDescriptor;
-import org.eclipse.ui.views.properties.IPropertySource2;
 import org.omnetpp.common.displaymodel.DisplayString;
-import org.omnetpp.common.properties.EditableComboBoxPropertyDescriptor;
+import org.omnetpp.ned.editor.graph.properties.util.DelegatingPropertySource;
+import org.omnetpp.ned.editor.graph.properties.util.DisplayPropertySource;
+import org.omnetpp.ned.editor.graph.properties.util.GateListPropertySource;
+import org.omnetpp.ned.editor.graph.properties.util.MergedPropertySource;
+import org.omnetpp.ned.editor.graph.properties.util.NamePropertySource;
+import org.omnetpp.ned.editor.graph.properties.util.ParameterListPropertySource;
+import org.omnetpp.ned.editor.graph.properties.util.TypePropertySource;
 import org.omnetpp.ned2.model.SubmoduleNodeEx;
 import org.omnetpp.resources.NEDResourcesPlugin;
 
@@ -33,81 +37,32 @@ public class SubmodulePropertySource extends MergedPropertySource {
         }
     }
 
-    // Submodule specific properties
-    protected static class BasePropertySource implements IPropertySource2 {
-        public enum Prop { Type }
-        protected IPropertyDescriptor[] descriptors;
-        protected SubmoduleNodeEx model;
-        EditableComboBoxPropertyDescriptor typeProp;
-
-        public BasePropertySource(SubmoduleNodeEx connectionNodeModel) {
-            model = connectionNodeModel;
-            
-            // set up property descriptors
-			typeProp = new EditableComboBoxPropertyDescriptor(Prop.Type, "type");
-            typeProp.setCategory("Base");
-            typeProp.setDescription("The type of the submodule");
-            
-            descriptors = new IPropertyDescriptor[] { typeProp };
-        }
-
-        public Object getEditableValue() {
-            return model.getType();
-        }
-
-        public IPropertyDescriptor[] getPropertyDescriptors() {
-        	//fill the connection combobox with types
-            List<String> moduleNames = new ArrayList<String>(NEDResourcesPlugin.getNEDResources().getModuleNames());
-            Collections.sort(moduleNames);
-            typeProp.setItems(moduleNames);
-            return descriptors;
-        }
-
-        public Object getPropertyValue(Object propName) {
-            if (Prop.Type.equals(propName))  
-                return model.getType(); 
-            
-            return null;
-        }
-
-        public void setPropertyValue(Object propName, Object value) {
-            if (Prop.Type.equals(propName)) 
-                model.setType((String)value);
-        }
-
-        public boolean isPropertySet(Object propName) {
-            if (Prop.Type.equals(propName)) 
-            	return !"".equals(model.getType()) && (model.getType() != null);
-
-            return false;
-        }
-
-        public void resetPropertyValue(Object propName) {
-            if (Prop.Type.equals(propName)) 
-            	model.setType(null);
-        }
-
-        public boolean isPropertyResettable(Object propName) {
-            return true;
-        }
-    }
-
     public SubmodulePropertySource(SubmoduleNodeEx submoduleNodeModel) {
         super(submoduleNodeModel);
         // create a nested displayPropertySource
-
+        // name
         mergePropertySource(new NamePropertySource(submoduleNodeModel));
-        mergePropertySource(new BasePropertySource(submoduleNodeModel));
+        // type
+        mergePropertySource(new TypePropertySource(submoduleNodeModel) {
+            @Override
+            protected List<String> getPossibleValues() {
+              List<String> moduleNames = new ArrayList<String>(NEDResourcesPlugin.getNEDResources().getModuleNames());
+              Collections.sort(moduleNames);
+              return moduleNames;
+            }
+        });
+        // parameters
         mergePropertySource(new DelegatingPropertySource(
                 new ParameterListPropertySource(submoduleNodeModel),
                 ParameterListPropertySource.CATEGORY,
                 ParameterListPropertySource.DESCRIPTION));
+        // gates
         mergePropertySource(new DelegatingPropertySource(
                 new GateListPropertySource(submoduleNodeModel),
                 GateListPropertySource.CATEGORY,
                 GateListPropertySource.DESCRIPTION));
+        // display
         mergePropertySource(new SubmoduleDisplayPropertySource(submoduleNodeModel));
-        
     }
 
 }
