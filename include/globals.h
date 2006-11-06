@@ -40,6 +40,7 @@ SIM_API extern cSingleton<cArray> channeltypes;   ///< List of channel types.
 SIM_API extern cSingleton<cArray> functions;      ///< List of function types.
 SIM_API extern cSingleton<cArray> classes;        ///< List of cClassRegister objects.
 SIM_API extern cSingleton<cArray> enums;          ///< List of cEnum objects.
+SIM_API extern cSingleton<cArray> classDescriptors;///< List of cClassDescriptor objects.
 
 
 /**

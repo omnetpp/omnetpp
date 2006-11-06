@@ -90,6 +90,14 @@
   cPolymorphic *CLASSNAME##__create() {return new CLASSNAME;} \
   EXECUTE_ON_STARTUP(CLASSNAME##__class, classes.instance()->add(new cClassRegister(#CLASSNAME,CLASSNAME##__create));)
 
+/**
+ * Internal. Registers a class descriptor which provides reflection information.
+ *
+ * @hideinitializer
+ */
+#define Register_ClassDescriptor(DESCRIPTORCLASS) \
+  EXECUTE_ON_STARTUP(DESCRIPTORCLASS##__descr, classDescriptors.instance()->add(new DESCRIPTORCLASS());)
+
 //@}
 
 //=========================================================================

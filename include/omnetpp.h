@@ -59,7 +59,7 @@
 #include "protocol.h"
 #include "cenvir.h"
 #include "cenum.h"
-#include "cstruct.h"
+#include "cclassdescriptor.h"
 #include "onstartup.h"
 #include "cchannel.h"
 #include "cdispstr.h"
