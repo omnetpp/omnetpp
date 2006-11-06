@@ -606,7 +606,7 @@ proc startup_commands {} {
     set run [opp_getsimoption default-run]
     if {$run>0} {
         opp_newrun $run
-        if {[opp_object_systemmodule] != [opp_object_nullpointer]} {
+        if {[opp_object_systemmodule] != [opp_null]} {
             opp_inspect [opp_object_systemmodule] (default)
             notifyPlugins newNetwork
         }

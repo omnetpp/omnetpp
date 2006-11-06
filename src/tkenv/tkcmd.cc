@@ -29,6 +29,8 @@
 #include "cstruct.h"
 #include "cdispstr.h"
 #include "cdispstr.h"
+#include "cenum.h"
+
 #include "tkapp.h"
 #include "tklib.h"
 #include "inspector.h"
@@ -67,6 +69,7 @@ int getObjectFullName_cmd(ClientData, Tcl_Interp *, int, const char **);
 int getObjectFullPath_cmd(ClientData, Tcl_Interp *, int, const char **);
 int getObjectClassName_cmd(ClientData, Tcl_Interp *, int, const char **);
 int getObjectInfoString_cmd(ClientData, Tcl_Interp *, int, const char **);
+int getObjectOwner_cmd(ClientData, Tcl_Interp *, int, const char **);
 int getObjectField_cmd(ClientData, Tcl_Interp *, int, const char **);
 int getObjectBaseClass_cmd(ClientData, Tcl_Interp *, int, const char **);
 int getObjectId_cmd(ClientData, Tcl_Interp *, int, const char **);
@@ -104,7 +107,10 @@ int inspectorType_cmd(ClientData, Tcl_Interp *, int, const char **);
 int inspectorCommand_cmd(ClientData, Tcl_Interp *, int, const char **);
 int hasDescriptor_cmd(ClientData, Tcl_Interp *, int, const char **);
 
-int objectNullPointer_cmd(ClientData, Tcl_Interp *, int, const char **);
+int nullPointer_cmd(ClientData, Tcl_Interp *, int, const char **);
+int isNullPointer_cmd(ClientData, Tcl_Interp *, int, const char **);
+int isNotNullPointer_cmd(ClientData, Tcl_Interp *, int, const char **);
+int objectDefaultList_cmd(ClientData, Tcl_Interp *, int, const char **);
 int objectSimulation_cmd(ClientData, Tcl_Interp *, int, const char **);
 int objectSystemModule_cmd(ClientData, Tcl_Interp *, int, const char **);
 int objectMessageQueue_cmd(ClientData, Tcl_Interp *, int, const char **);
@@ -113,6 +119,7 @@ int objectModuleTypes_cmd(ClientData, Tcl_Interp *, int, const char **);
 int objectChannelTypes_cmd(ClientData, Tcl_Interp *, int, const char **);
 int objectFunctions_cmd(ClientData, Tcl_Interp *, int, const char **);
 int objectClasses_cmd(ClientData, Tcl_Interp *, int, const char **);
+int objectEnums_cmd(ClientData, Tcl_Interp *, int, const char **);
 
 int loadNEDFile_cmd(ClientData, Tcl_Interp *, int, const char **);
 
@@ -146,6 +153,7 @@ OmnetTclCommand tcl_commands[] = {
    { "opp_getobjectclassname",getObjectClassName_cmd  }, // args: <pointer>  ret: className()
    { "opp_getobjectbaseclass",getObjectBaseClass_cmd  }, // args: <pointer>  ret: a base class
    { "opp_getobjectid",      getObjectId_cmd          }, // args: <pointer>  ret: object ID (if object has one) or ""
+   { "opp_getobjectowner",   getObjectOwner_cmd       }, // args: <pointer>  ret: <ownerptr>
    { "opp_getobjectinfostring",getObjectInfoString_cmd}, // args: <pointer>  ret: info()
    { "opp_getobjectfield",   getObjectField_cmd       }, // args: <pointer> <field>  ret: value of object field (if supported)
    { "opp_getchildobjects",  getChildObjects_cmd      }, // args: <pointer> ret: list with its child object ptrs
@@ -183,15 +191,19 @@ OmnetTclCommand tcl_commands[] = {
    { "opp_inspectorcommand",  inspectorCommand_cmd  }, // args: <window> <args-to-be-passed-to-inspectorCommand>
    { "opp_hasdescriptor",     hasDescriptor_cmd     }, // args: <window>
    // Functions that return object pointers
-   { "opp_object_nullpointer",  objectNullPointer_cmd  },
+   { "opp_null",                nullPointer_cmd        },
+   { "opp_isnull",              isNullPointer_cmd      }, // args: <ptr>
+   { "opp_isnotnull",           isNotNullPointer_cmd   }, // args: <ptr>
+   { "opp_object_defaultlist",  objectDefaultList_cmd  },
    { "opp_object_simulation",   objectSimulation_cmd   },
    { "opp_object_systemmodule", objectSystemModule_cmd },
    { "opp_object_messagequeue", objectMessageQueue_cmd },
    { "opp_object_networks",     objectNetworks_cmd     },
    { "opp_object_moduletypes",  objectModuleTypes_cmd  },
    { "opp_object_channeltypes", objectChannelTypes_cmd },
-   { "opp_object_functions",    objectFunctions_cmd    },
    { "opp_object_classes",      objectClasses_cmd      },
+   { "opp_object_functions",    objectFunctions_cmd    },
+   { "opp_object_enums",        objectEnums_cmd        },
    // NEDXML
    { "opp_loadnedfile",         loadNEDFile_cmd        },   // args: <ptr> ret: <xml>
    // experimental
@@ -481,6 +493,16 @@ int getObjectClassName_cmd(ClientData, Tcl_Interp *interp, int argc, const char 
    cObject *object = (cObject *)strToPtr( argv[1] );
    if (!object) {Tcl_SetResult(interp, "null or malformed pointer", TCL_STATIC); return TCL_ERROR;}
    Tcl_SetResult(interp, TCLCONST(object->className()), TCL_VOLATILE);
+   return TCL_OK;
+}
+
+int getObjectOwner_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
+{
+   if (argc!=2) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
+   cObject *object = (cObject *)strToPtr( argv[1] );
+   if (!object) {Tcl_SetResult(interp, "null or malformed pointer", TCL_STATIC); return TCL_ERROR;}
+
+   Tcl_SetResult(interp, ptrToStr(object->owner()), TCL_VOLATILE);
    return TCL_OK;
 }
 
@@ -1379,10 +1401,33 @@ int hasDescriptor_cmd(ClientData, Tcl_Interp *interp, int argc, const char **arg
 }
 
 //--------------
-int objectNullPointer_cmd(ClientData, Tcl_Interp *interp, int argc, const char **)
+int nullPointer_cmd(ClientData, Tcl_Interp *interp, int argc, const char **)
 {
    if (argc!=1) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
    Tcl_SetResult(interp, ptrToStr( NULL ), TCL_VOLATILE);
+   return TCL_OK;
+}
+
+int isNullPointer_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
+{
+   if (argc!=2) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
+   const char *ptr = argv[1];
+   Tcl_SetResult(interp, TCLCONST(strcmp(ptr,ptrToStr(NULL))==0 ? "1" : "0"), TCL_STATIC);
+   return TCL_OK;
+}
+
+int isNotNullPointer_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
+{
+   if (argc!=2) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
+   const char *ptr = argv[1];
+   Tcl_SetResult(interp, TCLCONST(strcmp(ptr,ptrToStr(NULL))==0 ? "0" : "1"), TCL_STATIC);
+   return TCL_OK;
+}
+
+int objectDefaultList_cmd(ClientData, Tcl_Interp *interp, int argc, const char **)
+{
+   if (argc!=1) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
+   Tcl_SetResult(interp, ptrToStr( &defaultList ), TCL_VOLATILE);
    return TCL_OK;
 }
 
@@ -1439,6 +1484,13 @@ int objectClasses_cmd(ClientData, Tcl_Interp *interp, int argc, const char **)
 {
    if (argc!=1) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
    Tcl_SetResult(interp, ptrToStr( classes.instance() ), TCL_VOLATILE);
+   return TCL_OK;
+}
+
+int objectEnums_cmd(ClientData, Tcl_Interp *interp, int argc, const char **)
+{
+   if (argc!=1) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
+   Tcl_SetResult(interp, ptrToStr( enums.instance() ), TCL_VOLATILE);
    return TCL_OK;
 }
 

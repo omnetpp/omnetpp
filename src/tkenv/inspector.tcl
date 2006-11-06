@@ -312,7 +312,7 @@ proc extendContextMenu {rules} {
 proc popup_insp_menu {ptr X Y} {
     global contextmenurules
 
-    if {$ptr=="" || $ptr==[opp_object_nullpointer]} return
+    if {$ptr=="" || $ptr==[opp_null]} return
 
     # create popup menu
     catch {destroy .popup}
@@ -413,7 +413,7 @@ proc inspect_item_in {lb} {
     # inspect the current item in the listbox of an inspector listwindow
 
     set ptr [lindex [multicolumnlistbox_curselection $lb] 0]
-    if {$ptr != "" && $ptr != [opp_object_nullpointer]} {
+    if {$ptr != "" && $ptr != [opp_null]} {
         opp_inspect $ptr {(default)}
     }
 }
@@ -486,7 +486,7 @@ proc get_help_tip {w x y item} {
        }
        set ptr [lindex $ptr 0]
 
-       if {$ptr!="" && $ptr!=[opp_object_nullpointer]} {
+       if {$ptr!="" && $ptr!=[opp_null]} {
           set tip "([opp_getobjectclassname $ptr]) [opp_getobjectfullname $ptr] [opp_getobjectinfostring $ptr]"
           regsub {  +} $tip {  } tip
           set dispstr ""

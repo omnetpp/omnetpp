@@ -1,3 +1,12 @@
+- tree-style instpector
+- split animate.tcl and timeline.tcl from modinsp2.tcl 
+- broadcast animation feature: if multiple send()/sendDirect() calls occur
+  within a handleMessage(), messages are animated concurrently
+
+2006-11-06  Andras Varga
+
+	* internal refactoring (opp_object_nullpointer renamed to opp_null, etc)
+
 2006-10-21  ------ omnetpp-3.3 released ------
 
 2006-10-19  Andras Varga

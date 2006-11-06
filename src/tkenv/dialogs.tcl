@@ -718,7 +718,7 @@ proc filteredobjectlist_refresh {w} {
             tk_messageBox -title "Error" -icon error -type ok -parent $w -message "Error: $err."
             return
         }
-        if {$rootobject==[opp_object_nullpointer]} {
+        if {$rootobject==[opp_null]} {
             tk_messageBox -title "Error" -icon error -type ok -parent $w \
                 -message "Please enter a module name or 'simulation' in the 'Search inside' field -- '$rootobjectname' could not be resolved."
             return

@@ -872,7 +872,7 @@ proc multicolumnlistbox_adddummyline {w} {
     global HAVE_BLT icons
     if {$HAVE_BLT} {
         set icon $icons(16pixtransp)
-        $w insert end [opp_object_nullpointer] -icons [list $icon $icon] -activeicons [list $icon $icon]
+        $w insert end [opp_null] -icons [list $icon $icon] -activeicons [list $icon $icon]
     }
 }
 
