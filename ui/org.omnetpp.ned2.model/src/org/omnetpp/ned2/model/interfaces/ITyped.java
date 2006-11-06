@@ -6,11 +6,27 @@ import org.omnetpp.ned2.model.NEDElement;
  * @author rhornig
  * Elements that have type-like property
  */
-public interface IStringTyped {
+public interface ITyped {
     /**
      * @return The type of the object
      */
     public String getType();
+    
+    /**
+     * @return The type info after the like keyword
+     */
+    public String getLikeType();
+    
+    /**
+     * Setes the like parameter
+     * @param type
+     */
+    public void setLikeType(String type);
+    
+    /**
+     * @return The type or the likeType if type was not specified
+     */
+    public String getEffectiveType(); 
 
     /**
      * @param type

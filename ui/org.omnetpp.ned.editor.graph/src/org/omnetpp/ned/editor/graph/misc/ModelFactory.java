@@ -5,7 +5,7 @@ import org.omnetpp.ned2.model.NEDElement;
 import org.omnetpp.ned2.model.ex.NEDElementFactoryEx;
 import org.omnetpp.ned2.model.ex.SubmoduleNodeEx;
 import org.omnetpp.ned2.model.interfaces.INamed;
-import org.omnetpp.ned2.model.interfaces.IStringTyped;
+import org.omnetpp.ned2.model.interfaces.ITyped;
 
 
 /**
@@ -46,8 +46,8 @@ public class ModelFactory implements CreationFactory {
         if (element instanceof INamed)
             ((INamed)element).setName(name);
         
-        if (element instanceof IStringTyped)
-            ((IStringTyped)element).setType(name);
+        if (element instanceof ITyped)
+            ((ITyped)element).setType(name);
 
         return element;
 	}

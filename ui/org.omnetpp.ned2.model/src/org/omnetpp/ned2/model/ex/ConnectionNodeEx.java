@@ -14,13 +14,13 @@ import org.omnetpp.ned2.model.NEDElement;
 import org.omnetpp.ned2.model.interfaces.IConnectable;
 import org.omnetpp.ned2.model.interfaces.INEDTypeInfo;
 import org.omnetpp.ned2.model.interfaces.IParametrized;
-import org.omnetpp.ned2.model.interfaces.IStringTyped;
+import org.omnetpp.ned2.model.interfaces.ITyped;
 import org.omnetpp.ned2.model.pojo.ChannelSpecNode;
 import org.omnetpp.ned2.model.pojo.ConnectionNode;
 import org.omnetpp.ned2.model.pojo.ParametersNode;
 
 public class ConnectionNodeEx extends ConnectionNode 
-    implements IStringTyped, IDisplayStringProvider, IParametrized {
+    implements ITyped, IDisplayStringProvider, IParametrized {
 	private ConnectionDisplayString displayString = null;
 
 	ConnectionNodeEx() {
@@ -207,8 +207,34 @@ public class ConnectionNodeEx extends ConnectionNode
         channelSpecNode.setType(type);
     }
 
+    public String getLikeType() {
+        ChannelSpecNode channelSpecNode = (ChannelSpecNode)getFirstChildWithTag(NED_CHANNEL_SPEC);
+        if(channelSpecNode == null)
+            return null;
+
+        return channelSpecNode.getLikeType();
+    }
+
+    public void setLikeType(String type) {
+        ChannelSpecNode channelSpecNode = (ChannelSpecNode)getFirstChildWithTag(NED_CHANNEL_SPEC);
+        if (channelSpecNode == null) {
+            channelSpecNode = (ChannelSpecNode)NEDElementFactoryEx.getInstance().createNodeWithTag(NED_CHANNEL_SPEC);
+            appendChild(channelSpecNode);
+        }
+        channelSpecNode.setLikeType(type);
+    }
+
+    public String getEffectiveType() {
+        String type = getLikeType();
+        // if it's not specified use the likeType instead
+        if (type == null || "".equals(type))
+            type = getType();
+
+        return type;
+    }
+    
     public INEDTypeInfo getTypeNEDTypeInfo() {
-        String typeName = getType();
+        String typeName = getEffectiveType();
         INEDTypeInfo typeInfo = getContainerNEDTypeInfo(); 
         if ( typeName == null || "".equals(typeName) || typeInfo == null)
             return null;
@@ -263,4 +289,5 @@ public class ConnectionNodeEx extends ConnectionNode
             return new HashMap<String, NEDElement>();
         return info.getParams();
     }
+
 }

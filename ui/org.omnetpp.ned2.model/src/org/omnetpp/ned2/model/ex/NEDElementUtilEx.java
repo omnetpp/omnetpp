@@ -12,7 +12,7 @@ import org.omnetpp.ned2.model.NEDElementException;
 import org.omnetpp.ned2.model.NEDElementUtil;
 import org.omnetpp.ned2.model.interfaces.IDerived;
 import org.omnetpp.ned2.model.interfaces.INamed;
-import org.omnetpp.ned2.model.interfaces.IStringTyped;
+import org.omnetpp.ned2.model.interfaces.ITyped;
 import org.omnetpp.ned2.model.pojo.ChannelInterfaceNode;
 import org.omnetpp.ned2.model.pojo.ChannelNode;
 import org.omnetpp.ned2.model.pojo.ChannelSpecNode;
@@ -64,8 +64,8 @@ public class NEDElementUtilEx implements NEDElementTags, NEDElementUtil {
         DisplayString result = node.getDisplayString();
         NEDElement defaultNode = null;
         // if node supports typing use the type's diplay property
-        if (node instanceof IStringTyped)
-            defaultNode = ((IStringTyped)node).getTypeRef();
+        if (node instanceof ITyped)
+            defaultNode = ((ITyped)node).getTypeRef();
         else if (node instanceof IDerived)
             defaultNode = ((IDerived)node).getFirstExtendsRef();
         // if we do not have type or do not extend anybody we return the same displaystring

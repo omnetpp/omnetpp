@@ -12,30 +12,30 @@ import org.omnetpp.ned2.model.interfaces.ITyped;
  * A property source for displaying Type info (using an editable combobox). The content of the
  * dropdown combo should be provided by overriding the getPossibleValues mathod.
  */
-public abstract class TypePropertySource implements IPropertySource2 {
-        public enum Prop { Type }
+public abstract class LikePropertySource implements IPropertySource2 {
+        public enum Prop { Like }
         protected IPropertyDescriptor[] descriptors;
         protected ITyped model;
-        EditableComboBoxPropertyDescriptor typeProp;
+        EditableComboBoxPropertyDescriptor likeProp;
 
-        public TypePropertySource(ITyped nodeModel) {
+        public LikePropertySource(ITyped nodeModel) {
             model = nodeModel;
             
             // set up property descriptors
-            typeProp = new EditableComboBoxPropertyDescriptor(Prop.Type, "type");
-            typeProp.setCategory("Base");
-            typeProp.setDescription("The type of the component");
+            likeProp = new EditableComboBoxPropertyDescriptor(Prop.Like, "like");
+            likeProp.setCategory("Base");
+            likeProp.setDescription("The interface type of the component");
             
-            descriptors = new IPropertyDescriptor[] { typeProp };
+            descriptors = new IPropertyDescriptor[] { likeProp };
         }
 
         public Object getEditableValue() {
-            return model.getType();
+            return model.getLikeType();
         }
 
         public IPropertyDescriptor[] getPropertyDescriptors() {
             //fill the connection combobox with types
-            typeProp.setItems(getPossibleValues());
+            likeProp.setItems(getPossibleValues());
             return descriptors;
         }
 
@@ -45,27 +45,27 @@ public abstract class TypePropertySource implements IPropertySource2 {
         protected abstract List<String> getPossibleValues(); 
         
         public Object getPropertyValue(Object propName) {
-            if (Prop.Type.equals(propName))  
-                return model.getType(); 
+            if (Prop.Like.equals(propName))  
+                return model.getLikeType(); 
             
             return null;
         }
 
         public void setPropertyValue(Object propName, Object value) {
-            if (Prop.Type.equals(propName)) 
-                model.setType((String)value);
+            if (Prop.Like.equals(propName)) 
+                model.setLikeType((String)value);
         }
 
         public boolean isPropertySet(Object propName) {
-            if (Prop.Type.equals(propName)) 
-                return !"".equals(model.getType()) && (model.getType() != null);
+            if (Prop.Like.equals(propName)) 
+                return !"".equals(model.getLikeType()) && (model.getLikeType() != null);
 
             return false;
         }
 
         public void resetPropertyValue(Object propName) {
-            if (Prop.Type.equals(propName)) 
-                model.setType(null);
+            if (Prop.Like.equals(propName)) 
+                model.setLikeType(null);
         }
 
         public boolean isPropertyResettable(Object propName) {

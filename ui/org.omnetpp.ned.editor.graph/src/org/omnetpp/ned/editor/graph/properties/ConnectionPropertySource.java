@@ -9,9 +9,9 @@ import org.eclipse.ui.views.properties.IPropertyDescriptor;
 import org.eclipse.ui.views.properties.IPropertySource2;
 import org.eclipse.ui.views.properties.PropertyDescriptor;
 import org.omnetpp.common.displaymodel.DisplayString;
-import org.omnetpp.common.properties.EditableComboBoxPropertyDescriptor;
 import org.omnetpp.ned.editor.graph.properties.util.DelegatingPropertySource;
 import org.omnetpp.ned.editor.graph.properties.util.DisplayPropertySource;
+import org.omnetpp.ned.editor.graph.properties.util.LikePropertySource;
 import org.omnetpp.ned.editor.graph.properties.util.MergedPropertySource;
 import org.omnetpp.ned.editor.graph.properties.util.ParameterListPropertySource;
 import org.omnetpp.ned.editor.graph.properties.util.TypePropertySource;
@@ -104,8 +104,18 @@ public class ConnectionPropertySource extends MergedPropertySource {
     public ConnectionPropertySource(ConnectionNodeEx connectionNodeModel) {
         super(connectionNodeModel);
         // create a nested displayPropertySources
-        mergePropertySource(new BasePropertySource(connectionNodeModel));	
+        mergePropertySource(new BasePropertySource(connectionNodeModel));
+        // type
         mergePropertySource(new TypePropertySource(connectionNodeModel) {
+            @Override
+            protected List<String> getPossibleValues() {
+                List<String> channelNames = new ArrayList<String>(NEDResourcesPlugin.getNEDResources().getChannelNames());
+                Collections.sort(channelNames);
+              return channelNames;
+            }
+        });
+        // like
+        mergePropertySource(new LikePropertySource(connectionNodeModel) {
             @Override
             protected List<String> getPossibleValues() {
                 List<String> channelNames = new ArrayList<String>(NEDResourcesPlugin.getNEDResources().getChannelNames());

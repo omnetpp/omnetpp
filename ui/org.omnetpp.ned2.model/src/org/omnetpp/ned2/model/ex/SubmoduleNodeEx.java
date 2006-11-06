@@ -15,13 +15,13 @@ import org.omnetpp.ned2.model.interfaces.INEDTypeInfo;
 import org.omnetpp.ned2.model.interfaces.INamed;
 import org.omnetpp.ned2.model.interfaces.INamedGraphNode;
 import org.omnetpp.ned2.model.interfaces.IParametrized;
-import org.omnetpp.ned2.model.interfaces.IStringTyped;
+import org.omnetpp.ned2.model.interfaces.ITyped;
 import org.omnetpp.ned2.model.pojo.GatesNode;
 import org.omnetpp.ned2.model.pojo.ParametersNode;
 import org.omnetpp.ned2.model.pojo.SubmoduleNode;
 
 public class SubmoduleNodeEx extends SubmoduleNode
-                            implements INamedGraphNode, IIndexable, IStringTyped, 
+                            implements INamedGraphNode, IIndexable, ITyped, 
                                        IParametrized, IGateContainer {
 
     protected DisplayString displayString = null;
@@ -102,7 +102,7 @@ public class SubmoduleNodeEx extends SubmoduleNode
 
     // type support
     public INEDTypeInfo getTypeNEDTypeInfo() {
-        String typeName = getType();
+        String typeName = getEffectiveType();
         INEDTypeInfo typeInfo = getContainerNEDTypeInfo(); 
         if ( typeName == null || "".equals(typeName) || typeInfo == null)
             return null;
@@ -115,6 +115,14 @@ public class SubmoduleNodeEx extends SubmoduleNode
         return it == null ? null : it.getNEDElement();
     }
 
+    public String getEffectiveType() {
+        String type = getLikeType();
+        // if it's not specified use the likeType instead
+        if (type == null || "".equals(type))
+            type = getType();
+
+        return type;
+    }
     
     /**
      * @return All parameters assigned in this submodule's body
@@ -187,4 +195,5 @@ public class SubmoduleNodeEx extends SubmoduleNode
             return new HashMap<String, NEDElement>();
         return info.getGates();
     }
+
 }
