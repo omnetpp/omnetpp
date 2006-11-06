@@ -9,7 +9,7 @@ import org.omnetpp.ned2.model.interfaces.IStringTyped;
 
 /**
  * @author rhornig
- * A property source for displaying Type info (using an editable combobox). The contant of the
+ * A property source for displaying Type info (using an editable combobox). The content of the
  * dropdown combo should be provided by overriding the getPossibleValues mathod.
  */
 public abstract class TypePropertySource implements IPropertySource2 {

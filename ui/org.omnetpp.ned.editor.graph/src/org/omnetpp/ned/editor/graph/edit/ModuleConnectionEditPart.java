@@ -10,9 +10,9 @@ import org.omnetpp.common.displaymodel.IDisplayString.Prop;
 import org.omnetpp.figures.ConnectionFigure;
 import org.omnetpp.ned.editor.graph.edit.policies.NedConnectionEditPolicy;
 import org.omnetpp.ned.editor.graph.edit.policies.NedConnectionEndpointEditPolicy;
-import org.omnetpp.ned2.model.ConnectionNodeEx;
 import org.omnetpp.ned2.model.NEDElement;
 import org.omnetpp.ned2.model.NEDElementUtil;
+import org.omnetpp.ned2.model.ex.ConnectionNodeEx;
 import org.omnetpp.ned2.model.interfaces.INEDChangeListener;
 
 /**

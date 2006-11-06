@@ -5,7 +5,7 @@ import java.util.Map;
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
 import org.eclipse.ui.views.properties.PropertyDescriptor;
 import org.omnetpp.ned2.model.NEDElement;
-import org.omnetpp.ned2.model.GateNodeEx;
+import org.omnetpp.ned2.model.ex.GateNodeEx;
 import org.omnetpp.ned2.model.interfaces.IGateContainer;
 import org.omnetpp.ned2.model.interfaces.INamed;
 

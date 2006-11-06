@@ -9,7 +9,7 @@ import org.eclipse.ui.IWorkbenchPart;
 import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.ned.editor.graph.commands.ChangeLayoutSeedCommand;
 import org.omnetpp.ned.editor.graph.edit.CompoundModuleEditPart;
-import org.omnetpp.ned2.model.CompoundModuleNodeEx;
+import org.omnetpp.ned2.model.ex.CompoundModuleNodeEx;
 
 public class ReLayoutAction extends org.eclipse.gef.ui.actions.SelectionAction {
 

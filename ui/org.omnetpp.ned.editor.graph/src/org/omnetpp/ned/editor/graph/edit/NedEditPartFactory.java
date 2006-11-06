@@ -3,10 +3,10 @@ package org.omnetpp.ned.editor.graph.edit;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.gef.EditPart;
 import org.eclipse.gef.EditPartFactory;
-import org.omnetpp.ned2.model.CompoundModuleNodeEx;
-import org.omnetpp.ned2.model.ConnectionNodeEx;
-import org.omnetpp.ned2.model.NedFileNodeEx;
-import org.omnetpp.ned2.model.SubmoduleNodeEx;
+import org.omnetpp.ned2.model.ex.CompoundModuleNodeEx;
+import org.omnetpp.ned2.model.ex.ConnectionNodeEx;
+import org.omnetpp.ned2.model.ex.NedFileNodeEx;
+import org.omnetpp.ned2.model.ex.SubmoduleNodeEx;
 import org.omnetpp.ned2.model.interfaces.ITopLevelElement;
 
 /**

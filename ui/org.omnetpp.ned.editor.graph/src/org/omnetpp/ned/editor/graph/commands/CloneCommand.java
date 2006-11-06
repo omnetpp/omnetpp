@@ -6,7 +6,7 @@ import java.util.Set;
 
 import org.eclipse.gef.commands.Command;
 import org.omnetpp.ned2.model.NEDElement;
-import org.omnetpp.ned2.model.NEDElementUtilEx;
+import org.omnetpp.ned2.model.ex.NEDElementUtilEx;
 import org.omnetpp.ned2.model.interfaces.INamed;
 import org.omnetpp.ned2.model.interfaces.ITopLevelElement;
 import org.omnetpp.resources.NEDResourcesPlugin;

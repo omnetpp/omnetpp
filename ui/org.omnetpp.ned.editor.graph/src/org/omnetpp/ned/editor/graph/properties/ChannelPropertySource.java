@@ -9,10 +9,11 @@ import org.omnetpp.common.displaymodel.DisplayString;
 import org.omnetpp.ned.editor.graph.properties.util.DelegatingPropertySource;
 import org.omnetpp.ned.editor.graph.properties.util.DisplayPropertySource;
 import org.omnetpp.ned.editor.graph.properties.util.ExtendsPropertySource;
+import org.omnetpp.ned.editor.graph.properties.util.InterfacesListPropertySource;
 import org.omnetpp.ned.editor.graph.properties.util.MergedPropertySource;
 import org.omnetpp.ned.editor.graph.properties.util.NamePropertySource;
 import org.omnetpp.ned.editor.graph.properties.util.ParameterListPropertySource;
-import org.omnetpp.ned2.model.ChannelNodeEx;
+import org.omnetpp.ned2.model.ex.ChannelNodeEx;
 import org.omnetpp.resources.NEDResourcesPlugin;
 
 public class ChannelPropertySource extends MergedPropertySource {
@@ -56,6 +57,11 @@ public class ChannelPropertySource extends MergedPropertySource {
               return names;
             }
         });
+        // interfaces
+        mergePropertySource(new DelegatingPropertySource(
+                new InterfacesListPropertySource(nodeModel),
+                InterfacesListPropertySource.CATEGORY,
+                InterfacesListPropertySource.DESCRIPTION));
         // parameters
         mergePropertySource(new DelegatingPropertySource(
                 new ParameterListPropertySource(nodeModel),

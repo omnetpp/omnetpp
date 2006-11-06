@@ -15,7 +15,7 @@ import org.omnetpp.figures.ModuleFigure;
 import org.omnetpp.ned.editor.graph.commands.ConnectionCommand;
 import org.omnetpp.ned.editor.graph.edit.CompoundModuleEditPart;
 import org.omnetpp.ned.editor.graph.edit.ModuleEditPart;
-import org.omnetpp.ned2.model.ConnectionNodeEx;
+import org.omnetpp.ned2.model.ex.ConnectionNodeEx;
 import org.omnetpp.ned2.model.interfaces.INamedGraphNode;
 
 /**

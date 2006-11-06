@@ -10,7 +10,7 @@ import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.IWorkbenchPart;
 import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.ned.editor.graph.edit.SubmoduleEditPart;
-import org.omnetpp.ned2.model.SubmoduleNodeEx;
+import org.omnetpp.ned2.model.ex.SubmoduleNodeEx;
 
 public class UnpinAction extends org.eclipse.gef.ui.actions.SelectionAction {
 

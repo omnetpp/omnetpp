@@ -11,7 +11,7 @@ import org.omnetpp.ned2.model.interfaces.INEDChangeListener;
 
 /**
  * @author rhornig
- * Merges several IPropertySource into a single PropertySource
+ * Merges several IPropertySource into a single PropertySource (flattens structure)
  */
 public class MergedPropertySource implements IPropertySource2, INEDChangeListener {
 

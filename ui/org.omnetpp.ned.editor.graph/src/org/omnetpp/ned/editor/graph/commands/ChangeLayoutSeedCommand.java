@@ -2,7 +2,7 @@ package org.omnetpp.ned.editor.graph.commands;
 
 import org.eclipse.gef.commands.Command;
 import org.omnetpp.common.displaymodel.IDisplayString;
-import org.omnetpp.ned2.model.CompoundModuleNodeEx;
+import org.omnetpp.ned2.model.ex.CompoundModuleNodeEx;
 import org.omnetpp.ned2.model.interfaces.INamedGraphNode;
 
 /**

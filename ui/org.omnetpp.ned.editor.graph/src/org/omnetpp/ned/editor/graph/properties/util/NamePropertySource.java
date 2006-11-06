@@ -6,6 +6,10 @@ import org.eclipse.ui.views.properties.PropertyDescriptor;
 import org.eclipse.ui.views.properties.TextPropertyDescriptor;
 import org.omnetpp.ned2.model.interfaces.INamed;
 
+/**
+ * @author rhornig
+ * A property source for displaying names
+ */
 public class NamePropertySource implements IPropertySource2 {
 
     protected IPropertyDescriptor[] descriptors;

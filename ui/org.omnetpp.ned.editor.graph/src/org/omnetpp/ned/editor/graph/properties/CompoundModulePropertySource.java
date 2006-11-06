@@ -13,11 +13,12 @@ import org.omnetpp.ned.editor.graph.properties.util.DelegatingPropertySource;
 import org.omnetpp.ned.editor.graph.properties.util.DisplayPropertySource;
 import org.omnetpp.ned.editor.graph.properties.util.ExtendsPropertySource;
 import org.omnetpp.ned.editor.graph.properties.util.GateListPropertySource;
+import org.omnetpp.ned.editor.graph.properties.util.InterfacesListPropertySource;
 import org.omnetpp.ned.editor.graph.properties.util.MergedPropertySource;
 import org.omnetpp.ned.editor.graph.properties.util.NamePropertySource;
 import org.omnetpp.ned.editor.graph.properties.util.ParameterListPropertySource;
 import org.omnetpp.ned.editor.graph.properties.util.SubmoduleListPropertySource;
-import org.omnetpp.ned2.model.CompoundModuleNodeEx;
+import org.omnetpp.ned2.model.ex.CompoundModuleNodeEx;
 import org.omnetpp.resources.NEDResourcesPlugin;
 
 public class CompoundModulePropertySource extends MergedPropertySource {
@@ -110,6 +111,11 @@ public class CompoundModulePropertySource extends MergedPropertySource {
               return moduleNames;
             }
         });
+        // interfaces
+        mergePropertySource(new DelegatingPropertySource(
+                new InterfacesListPropertySource(nodeModel),
+                InterfacesListPropertySource.CATEGORY,
+                InterfacesListPropertySource.DESCRIPTION));
         // parameters
         mergePropertySource(new DelegatingPropertySource(
                 new ParameterListPropertySource(nodeModel),

@@ -1,9 +1,9 @@
 package org.omnetpp.ned.editor.graph.commands;
 
 import org.eclipse.draw2d.geometry.Rectangle;
-import org.omnetpp.ned2.model.CompoundModuleNodeEx;
-import org.omnetpp.ned2.model.NEDElementUtilEx;
-import org.omnetpp.ned2.model.SubmoduleNodeEx;
+import org.omnetpp.ned2.model.ex.CompoundModuleNodeEx;
+import org.omnetpp.ned2.model.ex.NEDElementUtilEx;
+import org.omnetpp.ned2.model.ex.SubmoduleNodeEx;
 
 /**
  * @author rhornig

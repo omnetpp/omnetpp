@@ -5,7 +5,7 @@ import org.eclipse.gef.editpolicies.ConnectionEditPolicy;
 import org.eclipse.gef.requests.GroupRequest;
 import org.omnetpp.ned.editor.graph.commands.ConnectionCommand;
 import org.omnetpp.ned.editor.graph.edit.CompoundModuleEditPart;
-import org.omnetpp.ned2.model.ConnectionNodeEx;
+import org.omnetpp.ned2.model.ex.ConnectionNodeEx;
 
 public class NedConnectionEditPolicy extends ConnectionEditPolicy {
 

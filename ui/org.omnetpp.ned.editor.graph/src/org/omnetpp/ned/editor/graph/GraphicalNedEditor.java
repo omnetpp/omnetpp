@@ -102,7 +102,7 @@ import org.omnetpp.ned.editor.graph.dnd.TextTransferDropTargetListener;
 import org.omnetpp.ned.editor.graph.edit.NedEditPartFactory;
 import org.omnetpp.ned.editor.graph.edit.outline.NedTreeEditPartFactory;
 import org.omnetpp.ned.editor.graph.misc.ModulePaletteCustomizer;
-import org.omnetpp.ned2.model.NedFileNodeEx;
+import org.omnetpp.ned2.model.ex.NedFileNodeEx;
 
 public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette {
     

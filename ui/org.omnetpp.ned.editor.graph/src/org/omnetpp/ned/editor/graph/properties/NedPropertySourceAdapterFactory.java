@@ -2,14 +2,14 @@ package org.omnetpp.ned.editor.graph.properties;
 
 import org.eclipse.core.runtime.IAdapterFactory;
 import org.eclipse.ui.views.properties.IPropertySource;
-import org.omnetpp.ned2.model.ChannelInterfaceNodeEx;
-import org.omnetpp.ned2.model.ChannelNodeEx;
-import org.omnetpp.ned2.model.CompoundModuleNodeEx;
-import org.omnetpp.ned2.model.ConnectionNodeEx;
-import org.omnetpp.ned2.model.ModuleInterfaceNodeEx;
 import org.omnetpp.ned2.model.NEDElement;
-import org.omnetpp.ned2.model.SimpleModuleNodeEx;
-import org.omnetpp.ned2.model.SubmoduleNodeEx;
+import org.omnetpp.ned2.model.ex.ChannelInterfaceNodeEx;
+import org.omnetpp.ned2.model.ex.ChannelNodeEx;
+import org.omnetpp.ned2.model.ex.CompoundModuleNodeEx;
+import org.omnetpp.ned2.model.ex.ConnectionNodeEx;
+import org.omnetpp.ned2.model.ex.ModuleInterfaceNodeEx;
+import org.omnetpp.ned2.model.ex.SimpleModuleNodeEx;
+import org.omnetpp.ned2.model.ex.SubmoduleNodeEx;
 
 /**
  * Creates a propertysource for a NEDElement. Each propertysource class must be registered here 

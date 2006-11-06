@@ -4,8 +4,8 @@ import java.util.List;
 
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
 import org.eclipse.ui.views.properties.PropertyDescriptor;
-import org.omnetpp.ned2.model.CompoundModuleNodeEx;
-import org.omnetpp.ned2.model.SubmoduleNodeEx;
+import org.omnetpp.ned2.model.ex.CompoundModuleNodeEx;
+import org.omnetpp.ned2.model.ex.SubmoduleNodeEx;
 
 /**
  * @author rhornig
