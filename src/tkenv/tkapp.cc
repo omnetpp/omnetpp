@@ -1368,8 +1368,8 @@ void TOmnetTkApp::animateSend(cMessage *msg, cGate *fromgate, cGate *togate)
             int lastgate = (g->toGate()==arrivalgate);
             CHK(Tcl_VarEval(interp, "graphmodwin_animate_on_conn ",
                                     insp->windowName(), " ",
-                                    ptrToStr(g)," ",
                                     msgptr, " ",
+                                    ptrToStr(g)," ",
                                     (lastgate?"beg":"thru"),
                                     NULL));
         }
@@ -1474,9 +1474,9 @@ void TOmnetTkApp::animateSendDirect(cMessage *msg, cModule *frommodule, cGate *t
                 strcpy(modptr,ptrToStr(mod));
                 CHK(Tcl_VarEval(interp, "graphmodwin_animate_senddirect_ascent ",
                                         insp->windowName(), " ",
+                                        msgptr, " ",
                                         parentptr," ",
                                         modptr," ",
-                                        msgptr, " ",
                                         "thru", // cannot be "beg" (msg ball cannot stay on encl.module rect)
                                         NULL));
             }
@@ -1494,9 +1494,9 @@ void TOmnetTkApp::animateSendDirect(cMessage *msg, cModule *frommodule, cGate *t
                 strcpy(modptr,ptrToStr(mod));
                 CHK(Tcl_VarEval(interp, "graphmodwin_animate_senddirect_descent ",
                                         insp->windowName(), " ",
+                                        msgptr, " ",
                                         parentptr," ",
                                         modptr," ",
-                                        msgptr, " ",
                                         (mod==arrivalmod?"beg":"thru"),
                                         NULL));
             }
@@ -1512,9 +1512,9 @@ void TOmnetTkApp::animateSendDirect(cMessage *msg, cModule *frommodule, cGate *t
                 strcpy(toptr,ptrToStr(i->to));
                 CHK(Tcl_VarEval(interp, "graphmodwin_animate_senddirect_horiz ",
                                         insp->windowName(), " ",
+                                        msgptr, " ",
                                         fromptr," ",
                                         toptr," ",
-                                        msgptr, " ",
                                         (i->to==arrivalmod?"beg":"thru"),
                                         NULL));
             }
@@ -1556,9 +1556,9 @@ void TOmnetTkApp::animateDelivery(cMessage *msg)
     {
         CHK(Tcl_VarEval(interp, "graphmodwin_animate_on_conn ",
                                 insp->windowName(), " ",
+                                msgptr, " ",
                                 ptrToStr(g)," ",
-                                msgptr,
-                                " end",
+                                "end",
                                 NULL));
     }
 }
@@ -1579,8 +1579,8 @@ void TOmnetTkApp::animateDeliveryDirect(cMessage *msg)
     {
         CHK(Tcl_VarEval(interp, "graphmodwin_animate_senddirect_delivery ",
                                 insp->windowName(), " ",
-                                ptrToStr(destmod)," ",
-                                msgptr,
+                                msgptr, " ",
+                                ptrToStr(destmod),
                                 NULL));
     }
 }

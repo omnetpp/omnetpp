@@ -46,7 +46,7 @@ proc do_animate_group {animjobs} {
         set op [lindex $job 0]
         switch $op {
             on_conn {
-                setvars {cmd win gateptr msgptr mode} $job
+                setvars {cmd win msgptr gateptr mode} $job
                 if {$mode=="end"} {error "internal error: mode cannot be 'end'"}
 
                 set c $win.c
@@ -73,7 +73,7 @@ proc do_animate_group {animjobs} {
             }
 
             senddirect_horiz {
-                setvars {cmd win mod1ptr mod2ptr msgptr mode} $job
+                setvars {cmd win msgptr mod1ptr mod2ptr mode} $job
                 if {$mode=="end"} {error "internal error: mode cannot be 'end'"}
 
                 set c $win.c
@@ -95,7 +95,7 @@ proc do_animate_group {animjobs} {
             }
 
             senddirect_ascent {
-                setvars {cmd win parentmodptr modptr msgptr mode} $job
+                setvars {cmd win msgptr parentmodptr modptr mode} $job
                 if {$mode=="end"} {error "internal error: mode cannot be 'end'"}
 
                 set c $win.c
@@ -116,7 +116,7 @@ proc do_animate_group {animjobs} {
             }
 
             senddirect_descent {
-                setvars {cmd win parentmodptr modptr msgptr mode} $job
+                setvars {cmd win msgptr parentmodptr modptr mode} $job
                 if {$mode=="end"} {error "internal error: mode cannot be 'end'"}
 
                 set c $win.c

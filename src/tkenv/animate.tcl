@@ -18,14 +18,14 @@ set tkenv(animjobs) {}
 #
 # Called from C++ code. $mode="beg"/"thru"/"end".
 #
-proc graphmodwin_animate_on_conn {win gateptr msgptr mode} {
+proc graphmodwin_animate_on_conn {win msgptr gateptr mode} {
     global config tkenv
     # Note on $mode!="end" condition: "end" equals to delivery of msg to
     # the module. It is called *before* processing the event, so it must be
     # animated immediately, regardless of $config(concurrent-anim).
     if {$mode!="end" && $config(concurrent-anim)} {
         # if concurrent-anim is ON, we just store the params here, and will execute inside perform_animations.
-        lappend tkenv(animjobs) [list on_conn $win $gateptr $msgptr $mode]
+        lappend tkenv(animjobs) [list on_conn $win $msgptr $gateptr $mode]
         return
     }
 
@@ -52,11 +52,11 @@ proc graphmodwin_animate_on_conn {win gateptr msgptr mode} {
 #
 # Called from C++ code. $mode="beg"/"thru"/"end".
 #
-proc graphmodwin_animate_senddirect_horiz {win mod1ptr mod2ptr msgptr mode} {
+proc graphmodwin_animate_senddirect_horiz {win msgptr mod1ptr mod2ptr mode} {
     global config tkenv
     if {$config(concurrent-anim)} {
         # if concurrent-anim is ON, we just store the params here, and will execute inside perform_animations.
-        lappend tkenv(animjobs) [list senddirect_horiz $win $mod1ptr $mod2ptr $msgptr $mode]
+        lappend tkenv(animjobs) [list senddirect_horiz $win $msgptr $mod1ptr $mod2ptr $mode]
         return
     }
 
@@ -76,11 +76,11 @@ proc graphmodwin_animate_senddirect_horiz {win mod1ptr mod2ptr msgptr mode} {
 #
 # Called from C++ code. $mode="beg"/"thru"/"end".
 #
-proc graphmodwin_animate_senddirect_ascent {win parentmodptr modptr msgptr mode} {
+proc graphmodwin_animate_senddirect_ascent {win msgptr parentmodptr modptr mode} {
     global config tkenv
     if {$config(concurrent-anim)} {
         # if concurrent-anim is ON, we just store the params here, and will execute inside perform_animations.
-        lappend tkenv(animjobs) [list senddirect_ascent $win $parentmodptr $modptr $msgptr $mode]
+        lappend tkenv(animjobs) [list senddirect_ascent $win $msgptr $parentmodptr $modptr $mode]
         return
     }
 
@@ -99,11 +99,11 @@ proc graphmodwin_animate_senddirect_ascent {win parentmodptr modptr msgptr mode}
 #
 # Called from C++ code. $mode="beg"/"thru"/"end".
 #
-proc graphmodwin_animate_senddirect_descent {win parentmodptr modptr msgptr mode} {
+proc graphmodwin_animate_senddirect_descent {win msgptr parentmodptr modptr mode} {
     global config tkenv
     if {$config(concurrent-anim)} {
         # if concurrent-anim is ON, we just store the params here, and will execute inside perform_animations.
-        lappend tkenv(animjobs) [list senddirect_descent $win $parentmodptr $modptr $msgptr $mode]
+        lappend tkenv(animjobs) [list senddirect_descent $win $msgptr $parentmodptr $modptr $mode]
         return
     }
 
@@ -122,7 +122,7 @@ proc graphmodwin_animate_senddirect_descent {win parentmodptr modptr msgptr mode
 #
 # Called from C++ code.
 #
-proc graphmodwin_animate_senddirect_delivery {win modptr msgptr} {
+proc graphmodwin_animate_senddirect_delivery {win msgptr modptr} {
     # Note: delivery is called *before* processing the event, so it must be
     # animated immediately, regardless of $config(concurrent-anim).
 
@@ -359,40 +359,6 @@ proc determine_clocks_per_sec {} {
     }
     set clicksPerSec [expr 5*($tend-$tbeg)]
     #puts "Ticks per second: $clicksPerSec"
-}
-
-# animate2 is not currently used
-proc animate2 {c tag} {
-    #
-    # Animate2 has the advantage that several animations
-    # can be started concurrently; one can synchronize on the
-    # end of an animation by vwaiting on the returned variable name:
-    #   set var [animate2 $c $arrow]; vwait $var
-    #
-    # The disadvantage is that the granularity of the after command
-    # is big on a PC, so the animation will be slow.
-    #
-    set coords [$c coords $tag]
-
-    set x1 [lindex $coords 0]
-    set y1 [lindex $coords 1]
-    set x2 [lindex $coords 2]
-    set y2 [lindex $coords 3]
-    set len [expr sqrt(($x2-$x1)*($x2-$x1)+($y2-$y1)*($y2-$y1))]
-
-    set steps [expr int($len/5)]
-    if {$steps==0} {set steps 1}
-
-    set dx [expr ($x2-$x1)/$steps]
-    set dy [expr ($y2-$y1)/$steps]
-
-    draw_message $c $msgptr $x1 $y1
-
-    global done$c$ball
-    update idletasks
-    after 10 "animate2:move $c $ball $dx $dy $steps"
-
-    return done$c$ball
 }
 
 proc animate2:move {c ball dx dy i} {

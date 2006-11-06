@@ -189,7 +189,8 @@ proc options_dialog {} {
     checkbutton $w.f.f3.anim -text {Animate messages} -variable opp(anim)
     label-scale $w.f.f3.speed {Animation speed:}
     $w.f.f3.speed.e config -length 200 -from 0 -to 3 -resolution 0.01 -variable opp(speed)
-    checkbutton $w.f.f3.concanim -text {Broadcast animation (animate "send" calls concurrently)} -variable opp(concanim)
+    checkbutton $w.f.f3.concanim -text {Broadcast animation} -variable opp(concanim)
+    commentlabel $w.f.f3.ca "Animates send/sendDirect calls concurrently, after processing\neach event (i.e. out of sequence)"
     checkbutton $w.f.f3.nextev -text {Show next event markers} -variable opp(nextev)
     checkbutton $w.f.f3.sdarrows -text {Show arrows for sendDirect() animation} -variable opp(sdarrows)
     checkbutton $w.f.f3.animmeth -text {Animate method calls} -variable opp(animmeth)
@@ -210,6 +211,7 @@ proc options_dialog {} {
     pack $w.f.f3.anim -anchor w
     pack $w.f.f3.speed -anchor w -expand 0 -fill x
     pack $w.f.f3.concanim -anchor w
+    pack $w.f.f3.ca -anchor w
     pack $w.f.f3.nextev -anchor w
     pack $w.f.f3.sdarrows -anchor w
     pack $w.f.f3.animmeth -anchor w
