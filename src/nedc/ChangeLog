@@ -1,3 +1,17 @@
+2006-11-06  Andras Varga
+
+	* alternative syntax for properties: @prop or @prop(value)
+
+	* class-level properties currently understood: 
+	  @customize, @omitGetVerb (or: @customize(true), @omitGetVerb(true))
+
+	* field properties currently understood:
+	  @enum(enumname); for arrays: @sizeGetter(methodname), @sizeSetter(methodname)
+
+2006-10-22  Andras Varga
+
+	* opp_msgc: added -Xnc, -Xnd, -Xns options
+
 2006-10-21  ------ omnetpp-3.3 released ------
 
 2006-10-14  Andras Varga
