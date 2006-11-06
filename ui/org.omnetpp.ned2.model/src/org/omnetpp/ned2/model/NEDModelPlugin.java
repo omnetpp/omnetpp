@@ -3,6 +3,7 @@ package org.omnetpp.ned2.model;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
+import org.omnetpp.ned2.model.ex.NEDElementFactoryEx;
 import org.osgi.framework.BundleContext;
 
 /**
