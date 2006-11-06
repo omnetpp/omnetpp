@@ -35,9 +35,9 @@ ENVIR_ILIB=
 #=====================================================================
 
 
-all: checkenv components reminder
+all: check-env components reminder
 
-components: libs progs configsamples samples
+components: base configsamples samples
 
 
 #=====================================================================
@@ -46,134 +46,39 @@ components: libs progs configsamples samples
 #
 #=====================================================================
 
-LIBS=$(ENVIR_ILIB) nedxml sim envir cmdenv tkenv
-PROGS=utils nedc gned scalars plove
+BASE=nedxml sim envir cmdenv tkenv utils nedc gned scalars plove
 SAMPLES=aloha cqn dyna fddi fifo hcube hist neddemo p-to-p queueing routing queues tictoc tokenring sockets
 
 #
-# Group targets. Note that utils has to be built BEFORE other libs and progs.
+# Group targets.
 #
-libs: ver_h utils $(LIBS)
-progs: ver_h $(PROGS)
-samples: rundemo $(SAMPLES)
+base: $(ENVIR_ILIB) $(BASE)
+samples: rundemo configsamples $(SAMPLES)
 
+# dependencies (because of ver.h, tcl2c, opp_msgc, etc)
+nedxml sim envir cmdenv tkenv nedc gned scalars plove: ver_h utils
+nedc : nedxml
+sim : nedc
+$(SAMPLES) : rundemo configsamples
 
 #
-# Libraries
+# Core libraries and programs
 #
-
 envir_ilib:
 	@echo ===== Compiling $@ ====
 	cd /d $(OMNETPP_SRC_DIR:/=\)\envir && $(MAKE) $(MOPTS) $(MAKEFILE) envir.ilib
 
-sim:
+$(BASE):
 	@echo ===== Compiling $@ ====
-	cd /d $(OMNETPP_SRC_DIR:/=\)\sim && $(MAKE) $(MOPTS) $(MAKEFILE)
-
-envir:
-	@echo ===== Compiling $@ ====
-	cd /d $(OMNETPP_SRC_DIR:/=\)\envir && $(MAKE) $(MOPTS) $(MAKEFILE)
-
-cmdenv:
-	@echo ===== Compiling $@ ====
-	cd /d $(OMNETPP_SRC_DIR:/=\)\cmdenv && $(MAKE) $(MOPTS) $(MAKEFILE)
-
-tkenv:
-	@echo ===== Compiling $@ ====
-	cd /d $(OMNETPP_SRC_DIR:/=\)\tkenv && $(MAKE) $(MOPTS) $(MAKEFILE)
-
-nedxml:
-	@echo ===== Compiling $@ ====
-	cd /d $(OMNETPP_SRC_DIR:/=\)\nedxml && $(MAKE) $(MOPTS) $(MAKEFILE)
-
-#
-# Programs
-#
-
-nedc:
-	@echo ===== Compiling $@ ====
-	cd /d $(OMNETPP_SRC_DIR:/=\)\nedc && $(MAKE) $(MOPTS) $(MAKEFILE)
-
-gned:
-	@echo ===== Compiling $@ ====
-	cd /d $(OMNETPP_SRC_DIR:/=\)\gned && $(MAKE) $(MOPTS) $(MAKEFILE)
-
-scalars:
-	@echo ===== Compiling $@ ====
-	cd /d $(OMNETPP_SRC_DIR:/=\)\scalars && $(MAKE) $(MOPTS) $(MAKEFILE)
-
-plove:
-	@echo ===== Compiling $@ ====
-	cd /d $(OMNETPP_SRC_DIR:/=\)\plove && $(MAKE) $(MOPTS) $(MAKEFILE)
-
-utils:
-	@echo ===== Compiling $@ ====
-	cd /d $(OMNETPP_SRC_DIR:/=\)\utils &&  $(MAKE) $(MOPTS) $(MAKEFILE)
+	cd /d $(OMNETPP_SRC_DIR:/=\)\$@ && $(MAKE) $(MOPTS) $(MAKEFILE)
 
 #
 # Sample programs
 #
-
 rundemo:
 	echo @$(WISH:/=\) -f "%~dpn0" ^%* > $(OMNETPP_SAMPLES_DIR:/=\)\rundemo.bat
 
-aloha:
-	@echo ===== Compiling $@ ====
-	cd /d $(OMNETPP_SAMPLES_DIR:/=\)\$@ && $(MAKE) $(MOPTS) $(MAKEFILE)
-
-cqn:
-	@echo ===== Compiling $@ ====
-	cd /d $(OMNETPP_SAMPLES_DIR:/=\)\$@ && $(MAKE) $(MOPTS) $(MAKEFILE)
-
-dyna:
-	@echo ===== Compiling $@ ====
-	cd /d $(OMNETPP_SAMPLES_DIR:/=\)\$@ && $(MAKE) $(MOPTS) $(MAKEFILE)
-
-fddi:
-	@echo ===== Compiling $@ ====
-	cd /d $(OMNETPP_SAMPLES_DIR:/=\)\$@ && $(MAKE) $(MOPTS) $(MAKEFILE)
-
-fifo:
-	@echo ===== Compiling $@ ====
-	cd /d $(OMNETPP_SAMPLES_DIR:/=\)\$@ && $(MAKE) $(MOPTS) $(MAKEFILE)
-
-hcube:
-	@echo ===== Compiling $@ ====
-	cd /d $(OMNETPP_SAMPLES_DIR:/=\)\$@ && $(MAKE) $(MOPTS) $(MAKEFILE)
-
-hist:
-	@echo ===== Compiling $@ ====
-	cd /d $(OMNETPP_SAMPLES_DIR:/=\)\$@ && $(MAKE) $(MOPTS) $(MAKEFILE)
-
-neddemo:
-	@echo ===== Compiling $@ ====
-	cd /d $(OMNETPP_SAMPLES_DIR:/=\)\$@ && $(MAKE) $(MOPTS) $(MAKEFILE)
-
-p-to-p:
-	@echo ===== Compiling $@ ====
-	cd /d $(OMNETPP_SAMPLES_DIR:/=\)\$@ && $(MAKE) $(MOPTS) $(MAKEFILE)
-
-queueing:
-	@echo ===== Compiling $@ ====
-	cd /d $(OMNETPP_SAMPLES_DIR:/=\)\$@ && $(MAKE) $(MOPTS) $(MAKEFILE)
-
-routing:
-	@echo ===== Compiling $@ ====
-	cd /d $(OMNETPP_SAMPLES_DIR:/=\)\$@ && $(MAKE) $(MOPTS) $(MAKEFILE)
-
-queues:
-	@echo ===== Compiling $@ ====
-	cd /d $(OMNETPP_SAMPLES_DIR:/=\)\$@ && $(MAKE) $(MOPTS) $(MAKEFILE)
-
-tictoc:
-	@echo ===== Compiling $@ ====
-	cd /d $(OMNETPP_SAMPLES_DIR:/=\)\$@ && $(MAKE) $(MOPTS) $(MAKEFILE)
-
-tokenring:
-	@echo ===== Compiling $@ ====
-	cd /d $(OMNETPP_SAMPLES_DIR:/=\)\$@ && $(MAKE) $(MOPTS) $(MAKEFILE)
-
-sockets:
+$(SAMPLES):
 	@echo ===== Compiling $@ ====
 	cd /d $(OMNETPP_SAMPLES_DIR:/=\)\$@ && $(MAKE) $(MOPTS) $(MAKEFILE)
 
@@ -189,7 +94,7 @@ docu:
 #
 # Tests
 #
-tests: checkenv libs progs
+tests: check-env base
 	@echo ===== Running tests ====
         @cd /d $(OMNETPP_TEST_DIR:/=\) && call runtest.cmd
 
@@ -199,10 +104,9 @@ tests: checkenv libs progs
 #
 #=====================================================================
 
-
-checkenv:
+check-env:
 	@echo ===== Checking environment =====
-	@if not .%OS%.==.Windows_NT. echo ERROR: This makefile can ONLY be used on NT4.0, Win2K or XP!
+	@if not .%OS%.==.Windows_NT. echo ERROR: This makefile can ONLY be used on NT4.0, Win2K or XP! && exit 1
 	@echo  Checking if $(CXX) works...
 	@$(CXX) /? /nologo <nul > nul || echo ERROR: Could not run $(CXX). Probably PATH does not contain its BIN or DLL directory. && exit 1
 	@echo Checking if OMNETPP_ROOT is correctly set...
@@ -225,7 +129,7 @@ configsamples:
 	    $(REPLACE:/=\) -    %%i.dsp "@TK_LIBS@"          "$(TK_LIBS)"
 
 clean:
-	-for %%i in ( $(LIBS) $(PROGS) ) do \
+	-for %%i in ( $(BASE) ) do \
 	    cd /d $(OMNETPP_SRC_DIR:/=\)\%%i && $(MAKE) $(MOPTS) $(MAKEFILE) clean
 	-del /q $(OMNETPP_BIN_DIR:/=\)\*.
 	-del /q $(OMNETPP_BIN_DIR:/=\)\*.exe
@@ -240,7 +144,7 @@ clean:
 	    cd /d $(OMNETPP_SAMPLES_DIR:/=\)\%%i && $(MAKE) $(MOPTS) $(MAKEFILE) clean
 
 depend:
-	for %%i in ( $(LIBS) $(PROGS) ) do \
+	for %%i in ( $(BASE) ) do \
 	    cd /d $(OMNETPP_SRC_DIR:/=\)\%%i && $(MAKE) $(MOPTS) $(MAKEFILE) depend
 	for %%i in ( $(SAMPLES) ) do \
 	    cd /d $(OMNETPP_SAMPLES_DIR:/=\)\%%i && $(MAKE) $(MOPTS) $(MAKEFILE) depend
