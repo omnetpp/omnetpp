@@ -80,7 +80,8 @@ clean:
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 scalars.obj: scalars.cc \
-  tklib.h
+  tklib.h \
+  ../utils/ver.h
 tkcmd.obj: tkcmd.cc \
   tklib.h \
   tkutil.h \

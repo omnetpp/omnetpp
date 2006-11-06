@@ -222,6 +222,7 @@ fsutils.obj: fsutils.cc \
 main.obj: main.cc \
   ../../include/cobject.h \
   ../../include/cenvir.h \
+  ../utils/ver.h \
   ../../include/defs.h \
   ../../include/util.h \
   ../../include/cpolymorphic.h \

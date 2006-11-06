@@ -20,6 +20,10 @@ Legend:
 (i)     information
 
 
+OMNeT++ 3.4 (Nov 2006)
+~~~~~~~~~~~~~~~~~~~~~~
+        none
+
 OMNeT++ 3.3 (Oct 2006)
 ~~~~~~~~~~~~~~~~~~~~~~
         none

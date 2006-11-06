@@ -91,6 +91,7 @@ ebnf.tab.obj: ebnf.tab.cc \
   parsened.h \
   nedfile.h
 gned.obj: gned.cc \
+  ../utils/ver.h \
   tklib.h \
   arrow.h
 lex.yy.obj: lex.yy.cc \
