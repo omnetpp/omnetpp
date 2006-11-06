@@ -23,7 +23,8 @@ proc setvars {vars vals} {
 }
 
 #
-# Perform concurrent animations
+# Perform concurrent animations. Each job in the $animjobs list should
+# look like this: <op> <window> <msg> <additional-args>...
 #
 proc do_concurrent_animations {animjobs} {
     global config
@@ -33,8 +34,20 @@ proc do_concurrent_animations {animjobs} {
     # of each sending, etc. One group may contain animations on several
     # compound modules.
 
-    #XXX right now, we just lump everything together in a single group
-    do_animate_group $animjobs
+    # sort jobs into jobgroups
+    foreach job $animjobs {
+        set msg [lindex $job 2]
+        if ![info exist msgcount($msg)] {set msgcount($msg) 0}
+        incr msgcount($msg)
+        set stage $msgcount($msg)
+        if ![info exist jobgroup($stage)] {set jobgroup($stage) {}}
+        lappend jobgroup($stage) $job
+    }
+
+    # then animate each group, one after another
+    foreach stage [lsort -integer [array names jobgroup]] {
+        do_animate_group $jobgroup($stage)
+    }
 }
 
 proc do_animate_group {animjobs} {
