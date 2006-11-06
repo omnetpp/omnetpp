@@ -118,7 +118,7 @@ inspector.obj: inspector.cc \
   ../../include/protocol.h \
   ../../include/cenvir.h \
   ../../include/cenum.h \
-  ../../include/cstruct.h \
+  ../../include/cclassdescriptor.h \
   ../../include/onstartup.h \
   ../../include/cchannel.h \
   ../../include/cdispstr.h \
@@ -180,7 +180,7 @@ inspfactory.obj: inspfactory.cc \
   ../../include/protocol.h \
   ../../include/cenvir.h \
   ../../include/cenum.h \
-  ../../include/cstruct.h \
+  ../../include/cclassdescriptor.h \
   ../../include/onstartup.h \
   ../../include/cchannel.h \
   ../../include/cdispstr.h \
@@ -280,7 +280,7 @@ objinsp.obj: objinsp.cc \
   ../../include/protocol.h \
   ../../include/cenvir.h \
   ../../include/cenum.h \
-  ../../include/cstruct.h \
+  ../../include/cclassdescriptor.h \
   ../../include/onstartup.h \
   ../../include/cchannel.h \
   ../../include/cdispstr.h \
@@ -334,13 +334,13 @@ statinsp.obj: statinsp.cc \
   ../../include/ctypes.h \
   tkutil.h
 structinsp.obj: structinsp.cc \
-  ../../include/cstruct.h \
+  ../../include/cenum.h \
+  ../../include/cclassdescriptor.h \
   tkapp.h \
   tklib.h \
   inspfactory.h \
   structinsp.h \
   ../../include/cobject.h \
-  ../../include/cenum.h \
   ../../include/cenvir.h \
   ../../include/defs.h \
   ../../include/util.h \
@@ -368,6 +368,7 @@ tkapp.obj: tkapp.cc \
   inspfactory.h \
   modinsp.h \
   ../../include/platdep/time.h \
+  ../utils/ver.h \
   ../../include/defs.h \
   ../../include/cmodule.h \
   ../../include/cobject.h \
@@ -400,8 +401,9 @@ tkcmd.obj: tkcmd.cc \
   ../../include/cstat.h \
   ../../include/cwatch.h \
   ../../include/ctypes.h \
-  ../../include/cstruct.h \
+  ../../include/cclassdescriptor.h \
   ../../include/cdispstr.h \
+  ../../include/cenum.h \
   tkapp.h \
   tklib.h \
   inspector.h \
@@ -425,7 +427,6 @@ tkcmd.obj: tkcmd.cc \
   ../../include/cgate.h \
   ../../include/cdefaultlist.h \
   ../../include/cpar.h \
-  ../../include/cenum.h \
   tkutil.h \
   ../../include/macros.h
 tklib.obj: tklib.cc \

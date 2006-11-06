@@ -1,6 +1,6 @@
-- tree-style instpector
-
 2006-11-06  Andras Varga
+
+	* enhancement: added tree-style inspectors
 
 	* enhancement: broadcast animation feature, which is thought to
 	significantly improve the animation of wireless simulations (MF!), and 

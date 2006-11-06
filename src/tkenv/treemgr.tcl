@@ -21,13 +21,14 @@
 proc initTreeManager {} {
     global widgets
 
-    Tree:init $widgets(manager).tree
+    Tree:init $widgets(manager).tree getNodeInfo
 
     #
     # bindings for the tree
     #
     bind $widgets(manager).tree <Button-1> {
         catch {destroy .popup}
+        focus %W
         #updateTreeManager
         set key [Tree:nodeat %W %x %y]
         if {$key!=""} {
@@ -36,6 +37,7 @@ proc initTreeManager {} {
     }
 
     bind $widgets(manager).tree <Double-1> {
+        focus %W
         #updateTreeManager
         set key [Tree:nodeat %W %x %y]
         if {$key!=""} {
@@ -45,6 +47,7 @@ proc initTreeManager {} {
     }
 
     bind $widgets(manager).tree <Button-3> {
+        focus %W
         #updateTreeManager
         set key [Tree:nodeat %W %x %y]
         if {$key!=""} {

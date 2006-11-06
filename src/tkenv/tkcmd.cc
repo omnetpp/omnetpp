@@ -26,7 +26,7 @@
 #include "cstat.h"
 #include "cwatch.h"
 #include "ctypes.h"
-#include "cstruct.h"
+#include "cclassdescriptor.h"
 #include "cdispstr.h"
 #include "cdispstr.h"
 #include "cenum.h"
@@ -105,7 +105,10 @@ int inspMarkedForDeletion_cmd(ClientData, Tcl_Interp *, int, const char **);
 int updateInspectors_cmd(ClientData, Tcl_Interp *, int, const char **);
 int inspectorType_cmd(ClientData, Tcl_Interp *, int, const char **);
 int inspectorCommand_cmd(ClientData, Tcl_Interp *, int, const char **);
-int hasDescriptor_cmd(ClientData, Tcl_Interp *, int, const char **);
+int getClassDescriptor_cmd(ClientData, Tcl_Interp *, int, const char **);
+int getClassDescriptorFor_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv);
+int classDescriptor_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv);
+int getNameForEnum_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv);
 
 int nullPointer_cmd(ClientData, Tcl_Interp *, int, const char **);
 int isNullPointer_cmd(ClientData, Tcl_Interp *, int, const char **);
@@ -189,7 +192,11 @@ OmnetTclCommand tcl_commands[] = {
    { "opp_updateinspectors",  updateInspectors_cmd  }, // args: -
    { "opp_inspectortype",     inspectorType_cmd     }, // translates inspector type code to namestr and v.v.
    { "opp_inspectorcommand",  inspectorCommand_cmd  }, // args: <window> <args-to-be-passed-to-inspectorCommand>
-   { "opp_hasdescriptor",     hasDescriptor_cmd     }, // args: <window>
+   { "opp_getclassdescriptor",getClassDescriptor_cmd}, // args: <window>
+   { "opp_getclassdescriptorfor", getClassDescriptorFor_cmd}, // args: <objptr>
+   { "opp_classdescriptor",   classDescriptor_cmd   }, // args: <descrptr> <objptr> ...
+   { "opp_getnameforenum",    getNameForEnum_cmd    }, // args: <enumname> <number>
+
    // Functions that return object pointers
    { "opp_null",                nullPointer_cmd        },
    { "opp_isnull",              isNullPointer_cmd      }, // args: <ptr>
@@ -1386,17 +1393,13 @@ int inspectorCommand_cmd(ClientData, Tcl_Interp *interp, int argc, const char **
    return insp->inspectorCommand(interp, argc-2, argv+2);
 }
 
-int hasDescriptor_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
+int getClassDescriptor_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
    if (argc!=2) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
 
-   cObject *object; int type;
-   splitInspectorName( argv[1], object, type);
-   if (!object) {Tcl_SetResult(interp, "wrong inspectorname string", TCL_STATIC); return TCL_ERROR;}
-
-   cStructDescriptor *sd = object->createDescriptor();
-   delete sd;
-   Tcl_SetResult(interp, TCLCONST(sd ? "1" : "0"), TCL_VOLATILE);
+   cObject *object = (cObject *)strToPtr(argv[1]);
+   cClassDescriptor *sd = object ? object->getDescriptor() : NULL;
+   Tcl_SetResult(interp, ptrToStr(sd), TCL_VOLATILE);
    return TCL_OK;
 }
 
@@ -1404,7 +1407,7 @@ int hasDescriptor_cmd(ClientData, Tcl_Interp *interp, int argc, const char **arg
 int nullPointer_cmd(ClientData, Tcl_Interp *interp, int argc, const char **)
 {
    if (argc!=1) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
-   Tcl_SetResult(interp, ptrToStr( NULL ), TCL_VOLATILE);
+   Tcl_SetResult(interp, ptrToStr(NULL), TCL_VOLATILE);
    return TCL_OK;
 }
 
@@ -1574,5 +1577,195 @@ int colorizeImage_cmd(ClientData, Tcl_Interp *interp, int argc, const char **arg
        }
    }
    return TCL_OK;
+}
+
+int getClassDescriptorFor_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
+{
+   if (argc<2) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
+   cPolymorphic *object = (cPolymorphic *) strToPtr(argv[1]);
+   cClassDescriptor *sd = object ? object->getDescriptor() : NULL;
+   Tcl_SetResult(interp, ptrToStr(sd), TCL_VOLATILE);
+   return TCL_OK;
+}
+
+int getNameForEnum_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
+{
+   if (argc<3) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
+   const char *enumName = argv[1];
+   int value = atoi(argv[2]);
+   cEnum *e = findEnum(enumName);
+   Tcl_SetResult(interp, TCLCONST(e ? e->stringFor(value) : ""), TCL_VOLATILE);
+   return TCL_OK;
+}
+
+static char tmpbuf[16384];  //XXX
+
+int classDescriptor_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
+{
+   E_TRY
+   if (argc<4) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
+   void *object = strToPtr(argv[1]);
+   cClassDescriptor *sd = (cClassDescriptor *)strToPtr(argv[2]);
+   if (!object) {Tcl_SetResult(interp, "object is null", TCL_STATIC); return TCL_ERROR;}
+   if (!sd) {Tcl_SetResult(interp, "classdescriptor is null", TCL_STATIC); return TCL_ERROR;}
+   const char *cmd = argv[3];
+
+   // 'opp_classdescriptor <object> <classdescr> name'
+   if (strcmp(cmd,"name")==0)
+   {
+      if (argc!=4) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
+      Tcl_SetResult(interp, TCLCONST(sd->name()), TCL_VOLATILE);
+      return TCL_OK;
+   }
+
+   // 'opp_classdescriptor <object> <classdescr> baseclassdesc'
+   if (strcmp(cmd,"baseclassdesc")==0)
+   {
+      if (argc!=4) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
+      Tcl_SetResult(interp, ptrToStr(sd->getBaseClassDescriptor()), TCL_VOLATILE);
+      return TCL_OK;
+   }
+
+   // 'opp_classdescriptor <object> <classdescr> property <propertyname>'
+   if (strcmp(cmd,"property")==0)
+   {
+      if (argc!=5) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
+      const char *propertyname = argv[4];
+
+      // "object" is unused, but what the hell
+      Tcl_SetResult(interp, TCLCONST(sd->getProperty(propertyname)), TCL_VOLATILE);
+      return TCL_OK;
+   }
+
+   if (strcmp(cmd,"fieldcount")==0)
+   {
+      if (argc!=4) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
+      char buf[20];
+      sprintf(buf, "%d", sd->getFieldCount(object));
+      Tcl_SetResult(interp, buf, TCL_VOLATILE);
+      return TCL_OK;
+   }
+
+   // 'opp_classdescriptor <object> <classdescr> fieldisarray <fieldindex>'
+   if (strcmp(cmd,"fieldisarray")==0)
+   {
+      if (argc!=5) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
+      int fld = atoi(argv[4]);
+      Tcl_SetResult(interp, TCLCONST(sd->getFieldIsArray(object, fld) ? "1" : "0"), TCL_STATIC);
+      return TCL_OK;
+   }
+
+   // 'opp_classdescriptor <object> <classdescr> fieldiscompound <fieldindex>'
+   if (strcmp(cmd,"fieldiscompound")==0)
+   {
+      if (argc!=5) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
+      int fld = atoi(argv[4]);
+      Tcl_SetResult(interp, TCLCONST(sd->getFieldIsCompound(object, fld) ? "1" : "0"), TCL_STATIC);
+      return TCL_OK;
+   }
+
+   // 'opp_classdescriptor <object> <classdescr> fieldispointer <fieldindex>'
+   if (strcmp(cmd,"fieldispointer")==0)
+   {
+      if (argc!=5) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
+      int fld = atoi(argv[4]);
+      Tcl_SetResult(interp, TCLCONST(sd->getFieldIsPointer(object, fld) ? "1" : "0"), TCL_STATIC);
+      return TCL_OK;
+   }
+
+   // 'opp_classdescriptor <object> <classdescr> fieldisobject <fieldindex>'
+   if (strcmp(cmd,"fieldisobject")==0)
+   {
+      if (argc!=5) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
+      int fld = atoi(argv[4]);
+      Tcl_SetResult(interp, TCLCONST(sd->getFieldIsObject(object, fld) ? "1" : "0"), TCL_STATIC);
+      return TCL_OK;
+   }
+
+   // 'opp_classdescriptor <object> <classdescr> fieldname <fieldindex>'
+   if (strcmp(cmd,"fieldname")==0)
+   {
+      if (argc!=5) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
+      int fld = atoi(argv[4]);
+      Tcl_SetResult(interp, TCLCONST(sd->getFieldName(object, fld)), TCL_VOLATILE);
+      return TCL_OK;
+   }
+
+   // 'opp_classdescriptor <object> <classdescr> fieldtypename <fieldindex>'
+   if (strcmp(cmd,"fieldtypename")==0)
+   {
+      if (argc!=5) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
+      int fld = atoi(argv[4]);
+      Tcl_SetResult(interp, TCLCONST(sd->getFieldTypeString(object, fld)), TCL_VOLATILE);
+      return TCL_OK;
+   }
+
+   // 'opp_classdescriptor <object> <classdescr> fieldarraysize <fieldindex>'
+   if (strcmp(cmd,"fieldarraysize")==0)
+   {
+      if (argc!=5) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
+      int fld = atoi(argv[4]);
+      char buf[20];
+      sprintf(buf, "%d", sd->getArraySize(object, fld));
+      Tcl_SetResult(interp, buf, TCL_VOLATILE);
+      return TCL_OK;
+   }
+
+   // 'opp_classdescriptor <object> <classdescr> fieldvalue <fieldindex> ?index?'
+   if (strcmp(cmd,"fieldvalue")==0)
+   {
+      if (argc!=5 && argc!=6) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
+      int fld = atoi(argv[4]);
+      int i = (argc==6) ? atoi(argv[5]) : 0;
+      if (!sd->getFieldAsString(object, fld, i, tmpbuf, sizeof(tmpbuf)-1))
+      {
+         Tcl_SetResult(interp, "error in getFieldAsString()", TCL_STATIC);
+         return TCL_ERROR;
+      }
+      Tcl_SetResult(interp, tmpbuf, TCL_VOLATILE);
+      return TCL_OK;
+   }
+
+   // 'opp_classdescriptor <object> <classdescr> fieldproperty <fieldindex> <propertyname>'
+   if (strcmp(cmd,"fieldproperty")==0)
+   {
+      if (argc!=6) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
+      int fld = atoi(argv[4]);
+      const char *propertyname = argv[5];
+
+      Tcl_SetResult(interp, TCLCONST(sd->getFieldProperty(object, fld, propertyname)), TCL_VOLATILE);
+      return TCL_OK;
+   }
+
+   // 'opp_classdescriptor <object> <classdescr> fieldstructname <fieldindex>'
+   if (strcmp(cmd,"fieldstructname")==0)
+   {
+      if (argc!=5) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
+      int fld = atoi(argv[4]);
+      Tcl_SetResult(interp, TCLCONST(sd->getFieldStructName(object, fld)), TCL_VOLATILE);
+      return TCL_OK;
+   }
+
+   // 'opp_classdescriptor <object> <classdescr> fieldstructdesc <fieldindex>'
+   if (strcmp(cmd,"fieldstructdesc")==0)
+   {
+      if (argc!=5) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
+      int fld = atoi(argv[4]);
+      const char *fieldStructName = sd->getFieldStructName(object, fld);
+      Tcl_SetResult(interp, ptrToStr(cClassDescriptor::getDescriptorFor(fieldStructName)), TCL_VOLATILE);
+      return TCL_OK;
+   }
+
+   // 'opp_classdescriptor <object> <classdescr> fieldstructpointer <fieldindex> ?index?'
+   if (strcmp(cmd,"fieldstructpointer")==0)
+   {
+      if (argc!=5 && argc!=6) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
+      int fld = atoi(argv[4]);
+      int i = (argc==6) ? atoi(argv[5]) : 0;
+      Tcl_SetResult(interp, ptrToStr(sd->getFieldStructPointer(object, fld, i)), TCL_VOLATILE);
+      return TCL_OK;
+   }
+   return TCL_ERROR;
+   E_CATCH;
 }
 

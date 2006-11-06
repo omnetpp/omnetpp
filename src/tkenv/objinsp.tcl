@@ -22,36 +22,25 @@ proc create_objinspector {name geom} {
     set w $name
     create_inspector_toplevel $w $geom
 
-    set nb $w.nb
-    notebook $nb
-    $nb config -width 460 -height 260
-    pack $nb -expand 1 -fill both
-
-    set fieldspage_needed [opp_hasdescriptor $w]
+    set nb [inspector_createnotebook $w]
 
     notebook_addpage $nb info {General}
-    if {$fieldspage_needed} {
-        notebook_addpage $nb fields {Fields}
-    }
+
+    # XXX experimental page
+    inspector_createfields2page $w
 
     # page 1: info
     label-sunkenlabel $nb.info.name {Name:}   ;# TBD make it editfield
     label-sunkenlabel $nb.info.fullpath {Full path:} ;# TBD make it disabled editfield, and next ones too
     label-sunkenlabel $nb.info.class {C++ class:}
     label-sunkenlabel $nb.info.info {Info:}
-    label-message $nb.info.details {Detailed info:} ;# TBD make it disabled text
+    label-text $nb.info.details {Detailed info:} 10
 
     pack $nb.info.name -fill x -side top
     pack $nb.info.fullpath -fill x -side top
     pack $nb.info.class -fill x -side top
     pack $nb.info.info -fill x -side top
     pack $nb.info.details -expand 1 -fill both -side top
-
-    # page 2: fields
-    if {$fieldspage_needed} {
-        create_structpanel $nb.fields
-        notebook_showpage $nb fields
-    }
 }
 
 proc create_containerinspector {name geom args} {
@@ -61,15 +50,13 @@ proc create_containerinspector {name geom args} {
     set typelist $args
     create_inspector_toplevel $w $geom
 
-    # Create buttons at the bottom of the dialog.
-    #frame $w.buttons
-    #pack $w.buttons -expand 0 -fill x -side bottom -padx 5 -pady 5
-    #button $w.buttons.inspect -text {Inspect} -command "inspect_item_in $w.main.list"
-    #button $w.buttons.inspectas -text {Inspect As...} -command "inspectas_item_in $w.main.list"
-    #pack $w.buttons.inspectas -side right -expand 0
-    #pack $w.buttons.inspect -side right -expand 0
+    set nb [inspector_createnotebook $w]
 
-    create_inspector_listbox $w
+    # XXX experimental page
+    inspector_createfields2page $w
+
+    notebook_addpage $nb contents  {Contents}
+    create_inspector_listbox $nb.contents
 }
 
 proc create_messageinspector {name geom} {
@@ -84,24 +71,19 @@ proc create_messageinspector {name geom} {
     set help_tips($w.toolbar.apply)   {Apply changes (Enter)}
     set help_tips($w.toolbar.revert)  {Revert}
 
-    set nb $w.nb
-    notebook $nb
-    $nb config -width 460 -height 260
-    pack $nb -expand 1 -fill both
+    set nb [inspector_createnotebook $w]
 
-    set fieldspage_needed [opp_hasdescriptor $w]
+    # XXX experimental page
+    inspector_createfields2page $w
 
-    notebook_addpage $nb info     {General}
-    notebook_addpage $nb send     {Sending/Arrival}
-    if {$fieldspage_needed} {
-        notebook_addpage $nb fields {Fields}
-    }
+    notebook_addpage $nb info        {General}
+    notebook_addpage $nb send        {Sending/Arrival}
     notebook_addpage $nb controlinfo {Control Info}
     notebook_addpage $nb params      {Params}
 
     notebook_showpage $nb info
 
-    # page 1: info
+    # page 2: info
     label-entry $nb.info.name Name:
     label-entry $nb.info.kind Kind:
     label-entry $nb.info.length {Length (bits):}
@@ -118,7 +100,7 @@ proc create_messageinspector {name geom} {
     pack $nb.info.error -fill x -side top
     pack $nb.info.encapmsg -fill x -side top
 
-    # page 2: send/deliv
+    # page 3: send/deliv
     label-sunkenlabel $nb.send.created Created:
     label-sunkenlabel $nb.send.sent Sent:
     label-sunkenlabel $nb.send.arrived Arrival:
@@ -134,11 +116,6 @@ proc create_messageinspector {name geom} {
     pack $nb.send.owner -fill x -side top
     pack $nb.send.src -fill x -side top
     pack $nb.send.dest -fill x -side top
-
-    # page 3: fields
-    if {$fieldspage_needed} {
-        create_structpanel $nb.fields
-    }
 
     # page 4: params
     create_inspector_listbox $nb.params

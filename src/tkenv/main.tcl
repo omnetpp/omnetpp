@@ -166,6 +166,7 @@ proc create_omnetpp_window {} {
     foreach i {
       {command -command inspect_systemmodule -label {Network} -underline 0}
       {command -command inspect_messagequeue -label {Scheduled events (FES)} -underline 0}
+      {command -command inspect_simulation   -label {Simulation} -underline 1}
       {separator}
       {cascade -label {Available components} -underline 10 -menu .menubar.inspectmenu$m.components}
       {separator}
@@ -180,10 +181,12 @@ proc create_omnetpp_window {} {
     # Inspect|Components menu
     menu .menubar.inspectmenu$m.components -tearoff 0
     foreach i {
-      {command -command inspect_networks -label {Available networks} -underline 10}
-      {command -command inspect_moduletypes -label {Module types} -underline 0}
+      {command -command inspect_networks        -label {Available networks} -underline 10}
+      {command -command inspect_moduletypes   -label {Module types} -underline 0}
       {command -command inspect_channeltypes -label {Channel types} -underline 0}
-      {command -command inspect_functions -label {Registered functions} -underline 11}
+      {command -command inspect_functions       -label {Registered NED functions} -underline 11}
+      {command -command inspect_classes        -label {Registered classes} -underline 0}
+      {command -command inspect_enums          -label {Registered Enums} -underline 11}
     } {
       eval .menubar.inspectmenu$m.components add $i
     }

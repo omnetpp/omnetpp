@@ -578,6 +578,11 @@ proc inspect_messagequeue {} {
     opp_inspect [opp_object_messagequeue] (default)
 }
 
+proc inspect_simulation {} {
+    # implements Inspect|Simulation...
+    opp_inspect [opp_object_simulation] (default)
+}
+
 proc inspect_networks {} {
     opp_inspect [opp_object_networks] {(default)}
 }
@@ -588,6 +593,14 @@ proc inspect_moduletypes {} {
 
 proc inspect_channeltypes {} {
     opp_inspect [opp_object_channeltypes] {(default)}
+}
+
+proc inspect_classes {} {
+    opp_inspect [opp_object_classes] {(default)}
+}
+
+proc inspect_enums {} {
+    opp_inspect [opp_object_enums] {(default)}
 }
 
 proc inspect_functions {} {

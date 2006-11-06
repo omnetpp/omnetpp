@@ -92,17 +92,12 @@ proc create_compoundmodinspector {name geom} {
     set help_tips($w.toolbar.apply)   {Apply changes (Enter)}
     set help_tips($w.toolbar.revert)  {Revert}
 
-    set nb $w.nb
-    notebook $nb
-    $nb config -width 460 -height 260
-    pack $nb -expand 1 -fill both
+    set nb [inspector_createnotebook $w]
 
     notebook_addpage $nb info    {Info}
-    notebook_addpage $nb submods {Submodules}
-    notebook_addpage $nb params  {Params}
-    notebook_addpage $nb gates   {Gates}
+    notebook_addpage $nb contents {Contents}
 
-    notebook_showpage $nb info
+    notebook_showpage $nb contents
 
     # page 1: info
     label-entry $nb.info.name {Module name:}
@@ -115,9 +110,10 @@ proc create_compoundmodinspector {name geom} {
     pack $nb.info.dispstrpt -anchor center -fill x -side top
 
     # other pages:
-    create_inspector_listbox $nb.submods
-    create_inspector_listbox $nb.params
-    create_inspector_listbox $nb.gates
+    create_inspector_listbox $nb.contents
+
+    # XXX experimental page
+    inspector_createfields2page $w
 }
 
 proc create_simplemodinspector {name geom} {
@@ -141,18 +137,12 @@ proc create_simplemodinspector {name geom} {
 
     bind $w <Control-F4> "runsimulation_local $w fast"
 
-    set nb $w.nb
-    notebook $nb
-    $nb config -width 460 -height 260
-    pack $nb -expand 1 -fill both
+    set nb [inspector_createnotebook $w]
 
     notebook_addpage $nb info    {Info}
-    notebook_addpage $nb params  {Params}
-    notebook_addpage $nb gates   {Gates}
-    notebook_addpage $nb vars    {Contents}
-    notebook_addpage $nb submods {Submodules}
+    notebook_addpage $nb contents {Contents}
 
-    notebook_showpage $nb info
+    notebook_showpage $nb contents
 
     # page 1: info
     label-entry $nb.info.name {Module name:}
@@ -173,10 +163,10 @@ proc create_simplemodinspector {name geom} {
     pack $nb.info.stackused -anchor center  -fill x -side top
 
     # other pages:
-    create_inspector_listbox $nb.params
-    create_inspector_listbox $nb.gates
-    create_inspector_listbox $nb.vars
-    create_inspector_listbox $nb.submods
+    create_inspector_listbox $nb.contents
+
+    # XXX experimental page
+    inspector_createfields2page $w
 }
 
 proc runsimulation_local {w mode} {

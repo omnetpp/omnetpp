@@ -54,7 +54,6 @@ Register_InspectorFactory(TObjInspectorFactory);
 TObjInspector::TObjInspector(cObject *obj,int typ,const char *geom,void *dat) :
     TInspector(obj,typ,geom,dat)
 {
-    fieldspage = NULL;
 }
 
 void TObjInspector::createWindow()
@@ -65,16 +64,6 @@ void TObjInspector::createWindow()
    // the object's pointer. Window name will be like ".ptr80003a9d-1"
    Tcl_Interp *interp = getTkApplication()->getInterp();
    CHK(Tcl_VarEval(interp, "create_objinspector ", windowname, " \"", geometry, "\"", NULL ));
-
-   // try if it has a descriptor
-   cStructDescriptor *sd = object->createDescriptor();
-   delete sd;
-   if (sd)
-   {
-       char fieldspagewidget[256];
-       sprintf(fieldspagewidget, "%s.nb.fields", windowname);
-       fieldspage = new TStructPanel(fieldspagewidget, object);
-   }
 }
 
 void TObjInspector::update()
@@ -86,30 +75,21 @@ void TObjInspector::update()
    setLabel(".nb.info.class.e",object->className());
 
    setLabel(".nb.info.info.e",object->info().c_str());
-   setLabel(".nb.info.details.e",object->detailedInfo().c_str());
-
-   if (fieldspage)
-       fieldspage->update();
+   setReadonlyText(".nb.info.details.t",object->detailedInfo().c_str());
 }
 
 void TObjInspector::writeBack()
 {
-   if (fieldspage)
-       fieldspage->writeBack();
-
    TInspector::writeBack();    // must be there after all changes
 }
 
 int TObjInspector::inspectorCommand(Tcl_Interp *interp, int argc, const char **argv)
 {
-   if (fieldspage)
-       return fieldspage->inspectorCommand(interp, argc, argv);
    return TCL_ERROR;
 }
 
 TObjInspector::~TObjInspector()
 {
-   delete fieldspage;
 }
 
 //=======================================================================
@@ -150,7 +130,7 @@ TContainerInspector::TContainerInspector(cObject *obj,int typ,const char *geom,v
 void TContainerInspector::createWindow()
 {
    TInspector::createWindow(); // create window name etc.
-   strcpy(listbox,windowname); strcat(listbox,".main.list");
+   strcpy(listbox,windowname); strcat(listbox,".nb.contents.main.list");
 
    // create inspector window by calling the specified proc with
    // the object's pointer. Window name will be like ".ptr80003a9d-1"
@@ -163,8 +143,8 @@ void TContainerInspector::update()
 {
    TInspector::update();
 
-   deleteInspectorListbox( "" );
-   fillInspectorListbox("", object, deep);
+   deleteInspectorListbox(".nb.contents");
+   fillInspectorListbox(".nb.contents", object, deep);
 }
 
 //=======================================================================
@@ -189,7 +169,6 @@ Register_InspectorFactory(TMessageInspectorFactory);
 TMessageInspector::TMessageInspector(cObject *obj,int typ,const char *geom,void *dat) :
     TInspector(obj,typ,geom,dat)
 {
-   fieldspage = NULL;
    controlinfopage = NULL;
 }
 
@@ -201,16 +180,6 @@ void TMessageInspector::createWindow()
    // the object's pointer. Window name will be like ".ptr80003a9d-1"
    Tcl_Interp *interp = getTkApplication()->getInterp();
    CHK(Tcl_VarEval(interp, "create_messageinspector ", windowname, " \"", geometry, "\"", NULL ));
-
-   // try if it has a descriptor
-   cStructDescriptor *sd = object->createDescriptor();
-   delete sd;
-   if (sd)
-   {
-       char fieldspagewidget[256];
-       sprintf(fieldspagewidget, "%s.nb.fields", windowname);
-       fieldspage = new TStructPanel(fieldspagewidget, object);
-   }
 
    char controlinfopagewidget[256];
    sprintf(controlinfopagewidget, "%s.nb.controlinfo", windowname);
@@ -240,13 +209,10 @@ void TMessageInspector::update()
    setInspectButton(".nb.send.src",simulation.module(msg->senderModuleId()), true, INSP_DEFAULT);
    setInspectButton(".nb.send.dest",simulation.module(msg->arrivalModuleId()), true, INSP_DEFAULT);
 
-   if (fieldspage)
-       fieldspage->update();
-
    controlinfopage->setObject(msg->controlInfo());
    controlinfopage->update();
 
-   deleteInspectorListbox( ".nb.params" );
+   deleteInspectorListbox(".nb.params");
    fillInspectorListbox(".nb.params", &msg->parList(), false);
 }
 
@@ -261,9 +227,6 @@ void TMessageInspector::writeBack()
    msg->setBitError( atol( getEntry(".nb.info.error.e"))!=0 );
    msg->setTimestamp( atof( getEntry(".nb.send.tstamp.e")) );
 
-   if (fieldspage)
-       fieldspage->writeBack();
-
    controlinfopage->writeBack();
 
    TInspector::writeBack();    // must be there after all changes
@@ -271,14 +234,11 @@ void TMessageInspector::writeBack()
 
 int TMessageInspector::inspectorCommand(Tcl_Interp *interp, int argc, const char **argv)
 {
-   if (fieldspage)
-       return fieldspage->inspectorCommand(interp, argc, argv);
    return TCL_ERROR;
 }
 
 TMessageInspector::~TMessageInspector()
 {
-   delete fieldspage;
    delete controlinfopage;
 }
 
@@ -291,8 +251,7 @@ class TWatchInspectorFactory : public cInspectorFactory
 
     bool supportsObject(cObject *obj) {
         // if it has a structdescriptor, we say we don't support it because we leave it to TObjInspector
-        cStructDescriptor *sd = obj->createDescriptor();
-        delete sd;
+        cClassDescriptor *sd = obj->getDescriptor();
         return !sd && dynamic_cast<cWatchBase *>(obj)!=NULL;
     }
     int inspectorType() {return INSP_OBJECT;}

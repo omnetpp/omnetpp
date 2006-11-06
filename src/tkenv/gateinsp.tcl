@@ -24,28 +24,32 @@ proc create_gateinspector {name geom} {
     set w $name
     create_inspector_toplevel $w $geom
 
-    frame $w.main
-    pack $w.main -anchor center -expand 1 -fill both -side top
+    set nb [inspector_createnotebook $w]
 
-    label-entry $w.main.name {Name:}
-    label-sunkenlabel $w.main.id {Id:}
-    label-button $w.main.from {From:}
-    label-button $w.main.to {To:}
-    label-entry $w.main.dispstr {Display string:}
-    label-entry $w.main.delay {Delay:}
-    label-entry $w.main.error {Error:}
-    label-entry $w.main.datarate {Data rate:}
-    label-sunkenlabel $w.main.trfinish {Tx finishes:}
+    notebook_addpage $nb info {General}
 
-    pack $w.main.name -fill x -side top
-    pack $w.main.id -fill x -side top
-    pack $w.main.from -fill x -side top
-    pack $w.main.to -fill x -side top
-    pack $w.main.dispstr -fill x -side top
-    pack $w.main.delay -fill x -side top
-    pack $w.main.error -fill x -side top
-    pack $w.main.datarate -fill x -side top
-    pack $w.main.trfinish -fill x -side top
+    # XXX experimental page
+    inspector_createfields2page $w
+
+    label-entry $nb.info.name {Name:}
+    label-sunkenlabel $nb.info.id {Id:}
+    label-button $nb.info.from {From:}
+    label-button $nb.info.to {To:}
+    label-entry $nb.info.dispstr {Display string:}
+    label-entry $nb.info.delay {Delay:}
+    label-entry $nb.info.error {Error:}
+    label-entry $nb.info.datarate {Data rate:}
+    label-sunkenlabel $nb.info.trfinish {Tx finishes:}
+
+    pack $nb.info.name -fill x -side top
+    pack $nb.info.id -fill x -side top
+    pack $nb.info.from -fill x -side top
+    pack $nb.info.to -fill x -side top
+    pack $nb.info.dispstr -fill x -side top
+    pack $nb.info.delay -fill x -side top
+    pack $nb.info.error -fill x -side top
+    pack $nb.info.datarate -fill x -side top
+    pack $nb.info.trfinish -fill x -side top
 }
 
 

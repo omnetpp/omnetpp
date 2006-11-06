@@ -20,7 +20,7 @@
 #include "inspector.h"
 #include "omnetapp.h"
 
-class cStructDescriptor;
+class cClassDescriptor;
 
 #define BUFSIZE     4096           /* buffer size */
 #define MAXWRITE    3072           /* one sprintf() shouldn't be more than MAXWRITE chars */
@@ -34,7 +34,7 @@ class TStructPanel : public TInspectorPanel
       char *writeptr;
 
       void flushIfNeeded(int limit);
-      void displayStruct(cStructDescriptor *sd, int level);
+      void displayStruct(void *object, cClassDescriptor *sd, int level);
 
    public:
       TStructPanel(const char *widgetname, cPolymorphic *obj);

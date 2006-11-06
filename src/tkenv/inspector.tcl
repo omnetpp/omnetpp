@@ -483,6 +483,11 @@ proc get_help_tip {w x y item} {
           set ptr [graphmodwin_qlen_getqptr $w $modptr]
        } elseif {[lsearch $tags "node-ptr*"] != -1} {
           regexp "ptr.*" $tags ptr
+       } elseif {[lsearch $tags "node-*"] != -1} {
+          set i [lsearch $tags "node-*"]
+          set tag [lindex $tags $i]
+          regexp "node-(.*)" $tag match node
+          return [Tree:gettooltip $w $node]
        }
        set ptr [lindex $ptr 0]
 
@@ -506,9 +511,15 @@ proc get_help_tip {w x y item} {
    return ""
 }
 
-#===================================================================
-#    STRUCT (FIELDS) PANEL
-#===================================================================
+
+proc inspector_createnotebook {w} {
+    set nb $w.nb
+    notebook $nb
+    $nb config -width 460 -height 260
+    pack $nb -expand 1 -fill both
+    return $nb
+}
+
 
 proc create_structpanel {w} {
     # TBD textarea is a temporary solution -- should be sth like a property sheet.
@@ -520,5 +531,4 @@ proc create_structpanel {w} {
     pack $w.sb -anchor center -expand 0 -fill y -side right
     pack $w.txt -anchor center -expand 1 -fill both -side left
 }
-
 

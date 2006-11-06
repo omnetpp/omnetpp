@@ -1489,7 +1489,7 @@ void TOmnetTkApp::animateSendDirect(cMessage *msg, cModule *frommodule, cGate *t
                                         parentptr," ",
                                         modptr," ",
                                         "thru", // cannot be "beg" (msg ball cannot stay on encl.module rect)
-                                          NULL));
+                                        NULL));
             }
         }
         else if (i->from==NULL)
