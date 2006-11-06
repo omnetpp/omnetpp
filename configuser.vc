@@ -13,7 +13,7 @@
 # Directory names with spaces may also cause problems, it's better to use
 # short file names (e.g. 'C:/PROGRA~1' instead of 'C:/Program files').
 #
-OMNETPP_ROOT=d:/home/omnetpp
+OMNETPP_ROOT=c:/home/omnetpp
 
 # Version. Should ideally come from the 'Version' file...
 OMNETPP_VERSION=omnetpp-3.3
@@ -24,7 +24,7 @@ OMNETPP_VERSION=omnetpp-3.3
 # Leave BLT_VER empty if you don't have BLT. BLT is expected to reside
 # in the same directory tree as Tcl/Tk.
 #
-TK_DIR=d:/home/tools/Tcl-8.4.11
+TK_DIR=c:/home/tools/Tcl-8.4.11
 TK_VER=8.4
 BLT_VER=2.4
 
@@ -33,7 +33,7 @@ BLT_VER=2.4
 # Leave empty if you don't have MPI.
 #
 MPI_DIR=
-#MPI_DIR=d:/home/tools/mpi
+#MPI_DIR=c:/home/tools/mpi
 
 #
 # Choice of XML parser. Possible choices: libxml, expat or none.
@@ -49,13 +49,13 @@ XMLPARSER=libxml
 #
 # Location of Expat (only used if XMLPARSER=expat, see above)
 #
-EXPAT_DIR=d:/home/tools/expat-1.95.8
+EXPAT_DIR=c:/home/tools/expat-1.95.8
 
 #
 # Location of LibXML2 and its supporting library ICONV (only used if XMLPARSER=libxml)
 #
-ICONV_DIR=d:/home/tools/iconv-1.9.1.win32
-LIBXML_DIR=d:/home/tools/libxml2-2.6.20.win32
+ICONV_DIR=c:/home/tools/iconv-1.9.1.win32
+LIBXML_DIR=c:/home/tools/libxml2-2.6.20.win32
 
 #
 # Directory of various tools
@@ -65,20 +65,20 @@ LIBXML_DIR=d:/home/tools/libxml2-2.6.20.win32
 PERL=perl.exe
 
 # flex/bison: only needed it you want to modify NEDC or GNED
-YACC=D:/home/tools/bison-2.1/bin/bison.exe
-LEX=D:/home/tools/UnxUtils/usr/local/wbin/flex.exe
+YACC=c:/home/tools/bison-2.1/bin/bison.exe
+LEX=c:/home/tools/UnxUtils/usr/local/wbin/flex.exe
 
 # Doxygen is needed for generating HTML documentation from C++
-DOXYGEN_DIR=d:/home/tools/doxygen
+DOXYGEN_DIR=c:/home/tools/doxygen
 
 # Following tools are needed by opp_neddoc for generating model documentation.
 # XSLTPROC is part of LibXSLT. DOT comes from the GraphViz package.
 # XSLTPROC is the only required one, GHOSTSCRIPT, GIFTRANS and DOT are optional
 # but of course affect documentation quality.
-XSLTPROC=d:/home/tools/libxslt-1.1.14p.win32/bin/xsltproc.exe
-GHOSTSCRIPT=d:/home/tools/gs/gs8.11/bin/gswin32c.exe
-GIFTRANS=d:/home/tools/misc/giftrans.exe
-DOT=d:/home/tools/Graphviz/bin/dot.exe
+XSLTPROC=c:/home/tools/libxslt-1.1.14p.win32/bin/xsltproc.exe
+GHOSTSCRIPT=c:/home/tools/gs/gs8.11/bin/gswin32c.exe
+GIFTRANS=c:/home/tools/misc/giftrans.exe
+DOT=c:/home/tools/Graphviz/bin/dot.exe
 
 #
 # If you don't want to build some of the components below, substitute
