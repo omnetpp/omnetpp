@@ -37,7 +37,7 @@ ENVIR_ILIB=
 
 all: check-env components reminder
 
-components: base configsamples samples
+components: base samples
 
 
 #=====================================================================
