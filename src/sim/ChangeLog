@@ -1,3 +1,9 @@
+2006-11-06  Andras Varga
+
+	* internal class cStructDescriptor refactored and renamed
+
+	* added reflection code for simulation library classes (sim_std.msg)
+
 2006-10-21  ------ omnetpp-3.3 released ------
 
 2006-10-19  Andras Varga

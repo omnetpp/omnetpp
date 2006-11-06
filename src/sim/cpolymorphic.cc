@@ -17,7 +17,7 @@
 
 #include "cpolymorphic.h"
 #include "cexception.h"
-#include "cstruct.h"
+#include "cclassdescriptor.h"
 #include "errmsg.h"
 
 const char *cPolymorphic::className() const
@@ -25,9 +25,9 @@ const char *cPolymorphic::className() const
     return opp_typename(typeid(*this));
 }
 
-cStructDescriptor *cPolymorphic::createDescriptor()
+cClassDescriptor *cPolymorphic::getDescriptor()
 {
-    return cStructDescriptor::createDescriptorFor(className(), (void *)this);
+    return cClassDescriptor::getDescriptorFor(this);
 }
 
 const char *cPolymorphic::fullName() const

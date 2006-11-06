@@ -28,6 +28,7 @@ cSingleton<cArray> channeltypes("channel-types");
 cSingleton<cArray> functions("functions");
 cSingleton<cArray> classes("classes");
 cSingleton<cArray> enums("enums");
+cSingleton<cArray> classDescriptors("class-descriptors");
 
 
 cNetworkType *findNetwork(const char *s)

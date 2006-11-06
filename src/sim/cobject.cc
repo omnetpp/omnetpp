@@ -31,7 +31,7 @@
 #include "cexception.h"
 #include "util.h"
 #include "cdefaultlist.h"
-#include "cstruct.h"
+#include "cclassdescriptor.h"
 
 #ifdef WITH_PARSIM
 #include "ccommbuffer.h"

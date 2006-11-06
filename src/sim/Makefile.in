@@ -38,8 +38,8 @@ CPPOBJS_STD = task.o ccoroutine.o ctypes.o carray.o cgate.o cpolymorphic.o \
          cstat.o chist.o cdensity.o cvarhist.o cpsquare.o cksplit.o \
          cmessage.o cdetect.o util.o cllist.o ctopo.o errmsg.o \
          cmsgheap.o coutvect.o cqueue.o globals.o cwatch.o cstlwatch.o \
-         cpacket.o cfsm.o cstruct.o cchannel.o cenum.o cexception.o cdispstr.o \
-         cdefaultlist.o cscheduler.o onstartup.o distrib.o \
+         cpacket.o cfsm.o cclassdescriptor.o cchannel.o cenum.o cexception.o cdispstr.o \
+         cdefaultlist.o cscheduler.o onstartup.o distrib.o sim_std_m.o \
          cxmlelement.o minixpath.o cmersennetwister.o clcg32.o cstrtokenizer.o
 CPPOBJS_NETBUILDER= netbuilder/cdynamicmodule.o netbuilder/cdynamicnetwork.o \
                     netbuilder/cdynamicchannel.o \
@@ -93,6 +93,9 @@ libsim_std$(A_LIB_SUFFIX) : $(CPPOBJS)
 libsim_std$(SO_LIB_SUFFIX) : $(CPPOBJS)
 	$(SHLIB_LD) -o libsim_std$(SO_LIB_SUFFIX) $(CPPOBJS)
 	../utils/install-lib libsim_std$(SO_LIB_SUFFIX).$(OMNETPP_VERSION) $(OMNETPP_LIB_DIR) libsim_std$(SO_LIB_SUFFIX)
+
+sim_std_m.cc sim_std_m.h : sim_std.msg
+	$(MSGC) -Xnc -Xns sim_std.msg
 
 depend:
 	$(MAKEDEPEND) -I../../include -- *.cc parsim/*.cc
@@ -505,7 +508,7 @@ cobject.o: cobject.cc \
   ../../include/cexception.h \
   ../../include/util.h \
   ../../include/cdefaultlist.h \
-  ../../include/cstruct.h \
+  ../../include/cclassdescriptor.h \
   ../../include/ccommbuffer.h \
   ../../include/defs.h \
   ../../include/errmsg.h \
@@ -752,8 +755,8 @@ cstat.o: cstat.cc \
   ../../include/cdefaultlist.h \
   ../../include/ctypes.h \
   ../../include/opp_string.h
-cstruct.o: cstruct.cc \
-  ../../include/cstruct.h \
+cclassdescriptor.o: cclassdescriptor.cc \
+  ../../include/cclassdescriptor.h \
   ../../include/carray.h \
   ../../include/cenum.h \
   ../../include/util.h \
