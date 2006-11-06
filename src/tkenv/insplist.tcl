@@ -103,7 +103,7 @@ proc inspectorlist_add {w} {
     set pil_name($key)   $objname
     set pil_class($key)  $classname
     set pil_type($key)   $type
-    set pil_geom($key)   [winfo geometry $w]
+    set pil_geom($key)   [winfo geometry $w]  ;# NOTE: "wm geometry" is bogus when window is maximized!
     #debug "$key added to insp list"
 }
 

@@ -31,12 +31,15 @@ if [info exist OMNETPP_TKENV_DIR] {
    source [file join $dir objinsp.tcl]
    source [file join $dir modinsp1.tcl]
    source [file join $dir modinsp2.tcl]
+   source [file join $dir animate.tcl]
+   source [file join $dir animate2.tcl]
    source [file join $dir gateinsp.tcl]
    source [file join $dir statinsp.tcl]
    source [file join $dir menuproc.tcl]
    source [file join $dir main.tcl]
    source [file join $dir tree.tcl]
    source [file join $dir treemgr.tcl]
+   source [file join $dir timeline.tcl]
    source [file join $dir tkenvrc.tcl]
 
 }

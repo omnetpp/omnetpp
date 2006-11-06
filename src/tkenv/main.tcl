@@ -41,7 +41,9 @@ set config(rununtil-event) ""
 set config(display-timeline) 1
 set config(timeline-maxnumevents) 1000
 set config(log-save-filename) "omnetpp.out"
+set config(mainwin-state) "normal"
 set config(mainwin-geom) ""
+set config(concurrent-anim) 1
 
 set pluginlist {}
 
