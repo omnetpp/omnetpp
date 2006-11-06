@@ -22,8 +22,6 @@
 #include <string>
 #include "cobject.h"
 
-class sFieldWrapper;
-
 
 /**
  * Abstract base class for structure description classes, used mainly
@@ -45,7 +43,6 @@ class sFieldWrapper;
  * be of no use in subclasses.
  *
  * @ingroup Internals
- * @see sFieldWrapper
  */
 class SIM_API cClassDescriptor : public cNoncopyableObject
 {
@@ -56,7 +53,7 @@ class SIM_API cClassDescriptor : public cNoncopyableObject
         FD_ISCOMPOUND = 0x02, ///< basic type (T) is struct or class: T a; T *a; T a[10]; T *a[]
         FD_ISPOINTER = 0x04,  ///< field is pointer or pointer array: T *a; T *a[]; T *a[10];
         FD_ISOBJECT = 0x08,   ///< if ISCOMPOUND: basic type (T) subclasses from cPolymorphic
-        FD_ZARRO = 0x0
+        FD_NONE = 0x0
     };
 
   private:

@@ -5,7 +5,7 @@ option stepdelay	{300 ms}
 option use_mainwindow	{1}
 option print_banners	{1}
 option animation_enabled	{1}
-option nexteventmarkers	{0}
+option nexteventmarkers	{1}
 option senddirect_arrows	{1}
 option anim_methodcalls	{1}
 option methodcalls_delay	{200}
@@ -13,37 +13,33 @@ option animation_msgnames	{1}
 option animation_msgclassnames	{1}
 option animation_msgcolors	{1}
 option penguin_mode	{0}
-option showlayouting	{1}
+option showlayouting	{0}
 option bubbles	{1}
-option animation_speed	{2.81}
+option animation_speed	{2.5}
 option bkpts_enabled	{1}
-option expressmode_autoupdate	{0}
-config mainwin-geom	{671x454+24+31}
-config rununtil-event	{}
-config last-nedfile	{}
-config filtobjlist-category	{amqpcsgvo}
-config display-timeline	{1}
-config filtobjlist-maxcount	{100000}
-config log-save-filename	{omnetpp.out}
-config editor-findstring	{}
-config rununtil-time	{}
-config dontshow	{}
-config editor-regexp	{0}
-config filtobjlist-class	{}
-config rununtil-mode	{Express (tracing off)}
-config filtobjlist-name	{}
+option expressmode_autoupdate	{1}
+config concurrent-anim	{1}
 config confirm-exit	{1}
-config editor-backwards	{1}
+config display-timeline	{1}
 config display-treeview	{1}
-config timeline-maxnumevents	{1000}
+config dontshow	{}
+config editor-backwards	{1}
 config editor-case-sensitive	{0}
+config editor-findstring	{}
+config editor-regexp	{0}
 config editor-whole-words	{0}
+config filtobjlist-category	{mqsgvo}
+config filtobjlist-class	{}
+config filtobjlist-maxcount	{100000}
+config filtobjlist-name	{}
 config filtobjlist-order	{Class}
-inspector "alohaNet.server.channel utilization" "cOutVector" "2" "386x326+3+19"
-inspector "alohaNet.server.collision multiplicity" "cOutVector" "2" "386x326+396+380"
-inspector "alohaNet.server.collision length" "cOutVector" "2" "386x326+3+378"
-inspector "alohaNet" "alohaNet" "1" "484x485+24+31"
-inspector "alohaNet" "alohaNet" "2" "725x591+72+93"
-inspector "alohaNet" "ALOHAnet" "2" "617x576+22+29"
-inspector "component types.alohaNet" "cDynamicModuleType" "1" "460x312+120+155"
+config last-nedfile	{}
+config log-save-filename	{omnetpp.out}
+config mainwin-geom	{640x480+-98+53}
+config mainwin-state	{normal}
+config rununtil-event	{}
+config rununtil-mode	{Express (tracing off)}
+config rununtil-time	{}
+config timeline-maxnumevents	{1000}
+inspector "alohaNet" "alohaNet" "2" "625x576+233+94"
 
