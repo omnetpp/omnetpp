@@ -19,7 +19,7 @@ void Tx::handleMessage(cMessage *msg)
     int n = parentModule()->size();
     for (int i=0; i<n; i++)
         if (i!=parentModule()->index())
-            sendDirect(new cMessage("msg"), 2.0, simulation.systemModule()->submodule("node", i)->gate("in"));
+            sendDirect(new cMessage("msg"), 0.5, simulation.systemModule()->submodule("node", i)->gate("in"));
 
     scheduleAt(simTime()+exponential(1.0), msg);
 }
