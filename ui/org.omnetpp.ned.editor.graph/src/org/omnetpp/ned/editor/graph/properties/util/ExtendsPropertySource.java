@@ -23,7 +23,7 @@ public abstract class ExtendsPropertySource implements IPropertySource2 {
             
             // set up property descriptors
             extendsProp = new EditableComboBoxPropertyDescriptor(Prop.Extends, "extends");
-            extendsProp.setCategory("Base");
+            extendsProp.setCategory(MergedPropertySource.BASE_CATEGORY);
             extendsProp.setDescription("Which component is extended by this component");
             
             descriptors = new IPropertyDescriptor[] { extendsProp };

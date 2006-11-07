@@ -23,13 +23,13 @@ public class NamePropertySource implements IPropertySource2 {
         // set up property descriptors
         PropertyDescriptor nameProp = new TextPropertyDescriptor(Prop.Name, "name");
         nameProp.setAlwaysIncompatible(true);
-        nameProp.setCategory("Base");
+        nameProp.setCategory(MergedPropertySource.BASE_CATEGORY);
         nameProp.setDescription("The name of the object");
         descriptors = new IPropertyDescriptor[] { nameProp };
     }
 
     public Object getEditableValue() {
-        // we don't need this if we don't want to embed this property source into an other propertysource
+        // we don't need this if we don't want to embedd this property source into an other propertysource
         return model.getName();
     }
 

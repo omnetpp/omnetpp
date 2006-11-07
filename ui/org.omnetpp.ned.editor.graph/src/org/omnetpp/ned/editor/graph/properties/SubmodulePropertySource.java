@@ -9,7 +9,6 @@ import org.omnetpp.common.displaymodel.DisplayString;
 import org.omnetpp.ned.editor.graph.properties.util.DelegatingPropertySource;
 import org.omnetpp.ned.editor.graph.properties.util.DisplayPropertySource;
 import org.omnetpp.ned.editor.graph.properties.util.GateListPropertySource;
-import org.omnetpp.ned.editor.graph.properties.util.LikePropertySource;
 import org.omnetpp.ned.editor.graph.properties.util.MergedPropertySource;
 import org.omnetpp.ned.editor.graph.properties.util.NamePropertySource;
 import org.omnetpp.ned.editor.graph.properties.util.ParameterListPropertySource;
@@ -45,15 +44,6 @@ public class SubmodulePropertySource extends MergedPropertySource {
         mergePropertySource(new NamePropertySource(submoduleNodeModel));
         // type
         mergePropertySource(new TypePropertySource(submoduleNodeModel) {
-            @Override
-            protected List<String> getPossibleValues() {
-              List<String> moduleNames = new ArrayList<String>(NEDResourcesPlugin.getNEDResources().getModuleNames());
-              Collections.sort(moduleNames);
-              return moduleNames;
-            }
-        });
-        // like
-        mergePropertySource(new LikePropertySource(submoduleNodeModel) {
             @Override
             protected List<String> getPossibleValues() {
               List<String> moduleNames = new ArrayList<String>(NEDResourcesPlugin.getNEDResources().getModuleNames());

@@ -14,6 +14,7 @@ import org.omnetpp.ned2.model.interfaces.INEDChangeListener;
  * Merges several IPropertySource into a single PropertySource (flattens structure)
  */
 public class MergedPropertySource implements IPropertySource2, INEDChangeListener {
+    public static final String BASE_CATEGORY = "Base";
 
 	List<IPropertySource> mergedList = new ArrayList<IPropertySource>(); 
 	

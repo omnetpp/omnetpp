@@ -41,7 +41,7 @@ public class GateListPropertySource extends NotifiedPropertySource {
                 definedIn= " (inherited from "+((INamed)gateDefNode.getContainingTopLevelElement()).getName()+")";
             }
             pdesc[totalParamCount] = new PropertyDescriptor(gateDefNode, typeString );
-            pdesc[totalParamCount].setCategory("Gates");
+            pdesc[totalParamCount].setCategory(CATEGORY);
             pdesc[totalParamCount].setDescription("Gate "+gateDefNode.getNameWithIndex()+" of type "+typeString+definedIn+" - (read only)");
             totalParamCount++;
         }

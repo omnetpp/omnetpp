@@ -18,11 +18,21 @@ public interface ITyped {
     public String getLikeType();
     
     /**
-     * Setes the like parameter
+     * Setes the like type
      * @param type
      */
     public void setLikeType(String type);
     
+    /**
+     * @return The like-param of the implemented if
+     */
+    public String getLikeParam();
+    
+    /**
+     * Sets the like parameter
+     * @param type
+     */
+    public void setLikeParam(String type);
     /**
      * @return The type or the likeType if type was not specified
      */

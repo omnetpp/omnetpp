@@ -31,7 +31,7 @@ public class ExtendsListPropertySource extends NotifiedPropertySource {
         int totalCount = 0;
         for(ExtendsNode extendsElement : extendsList) {
             pdesc[totalCount] = new PropertyDescriptor(extendsElement.getName(), extendsElement.getName());
-            pdesc[totalCount].setCategory("Extends");
+            pdesc[totalCount].setCategory(CATEGORY);
             pdesc[totalCount].setDescription("Component "+extendsElement.getName()+" - (read only)");
             totalCount++;
         }

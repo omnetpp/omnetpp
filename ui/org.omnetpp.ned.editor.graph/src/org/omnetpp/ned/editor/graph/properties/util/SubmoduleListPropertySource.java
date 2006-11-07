@@ -37,7 +37,7 @@ public class SubmoduleListPropertySource extends NotifiedPropertySource {
                 definedIn= " (inherited from "+smodule.getCompoundModule().getName()+")";
             }
             pdesc[totalSubmoduleCount] = new PropertyDescriptor(smodule.getNameWithIndex()+definedIn, smodule.getType());
-            pdesc[totalSubmoduleCount].setCategory("submodules");
+            pdesc[totalSubmoduleCount].setCategory(CATEGORY);
             pdesc[totalSubmoduleCount].setDescription("Submodule "+smodule.getNameWithIndex()+" with type "+smodule.getType()
                                                         +definedIn+" - (read only)");
             totalSubmoduleCount++;

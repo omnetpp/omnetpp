@@ -41,7 +41,7 @@ public class ParameterListPropertySource extends NotifiedPropertySource {
                 definedIn= " (inherited from "+((INamed)paramDefNode.getContainingTopLevelElement()).getName()+")";
             }
             pdesc[totalParamCount] = new PropertyDescriptor(paramDefNode, typeString +" "+paramDefNode.getName());
-            pdesc[totalParamCount].setCategory("Parameters");
+            pdesc[totalParamCount].setCategory(CATEGORY);
             pdesc[totalParamCount].setDescription("Parameter "+paramDefNode.getName()+" with type "+typeString+definedIn+" - (read only)");
             totalParamCount++;
         }

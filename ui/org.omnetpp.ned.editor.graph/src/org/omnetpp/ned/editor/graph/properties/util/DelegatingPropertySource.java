@@ -11,7 +11,6 @@ import org.eclipse.ui.views.properties.PropertyDescriptor;
  */
 public class DelegatingPropertySource implements IPropertySource2 {
         public enum Prop { ID };
-        public static final String BASE_CATEGORY = "Base";
         protected IPropertyDescriptor[] descriptors;
         protected IPropertySource2 delegateTo;
 
@@ -20,7 +19,7 @@ public class DelegatingPropertySource implements IPropertySource2 {
             
 
             PropertyDescriptor propDesc = new PropertyDescriptor(this, name);
-            propDesc.setCategory(BASE_CATEGORY);
+            propDesc.setCategory(MergedPropertySource.BASE_CATEGORY);
             propDesc.setDescription(descr);
 
             descriptors = new IPropertyDescriptor[] { propDesc };

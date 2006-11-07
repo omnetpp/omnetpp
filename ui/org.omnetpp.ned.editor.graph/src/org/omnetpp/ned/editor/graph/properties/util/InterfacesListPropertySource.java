@@ -32,7 +32,7 @@ public class InterfacesListPropertySource extends NotifiedPropertySource {
         int totalCount = 0;
         for(InterfaceNameNode interfaceElement : interfacesList) {
             pdesc[totalCount] = new PropertyDescriptor(interfaceElement.getName(), interfaceElement.getName());
-            pdesc[totalCount].setCategory("Like");
+            pdesc[totalCount].setCategory(CATEGORY);
             pdesc[totalCount].setDescription("Component "+interfaceElement.getName()+" - (read only)");
             totalCount++;
         }

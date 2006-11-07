@@ -217,11 +217,30 @@ public class ConnectionNodeEx extends ConnectionNode
 
     public void setLikeType(String type) {
         ChannelSpecNode channelSpecNode = (ChannelSpecNode)getFirstChildWithTag(NED_CHANNEL_SPEC);
+        
         if (channelSpecNode == null) {
             channelSpecNode = (ChannelSpecNode)NEDElementFactoryEx.getInstance().createNodeWithTag(NED_CHANNEL_SPEC);
             appendChild(channelSpecNode);
         }
         channelSpecNode.setLikeType(type);
+    }
+
+    public String getLikeParam() {
+        ChannelSpecNode channelSpecNode = (ChannelSpecNode)getFirstChildWithTag(NED_CHANNEL_SPEC);
+        if(channelSpecNode == null)
+            return null;
+
+        return channelSpecNode.getLikeParam();
+    }
+
+    public void setLikeParam(String param) {
+        ChannelSpecNode channelSpecNode = (ChannelSpecNode)getFirstChildWithTag(NED_CHANNEL_SPEC);
+        
+        if (channelSpecNode == null) {
+            channelSpecNode = (ChannelSpecNode)NEDElementFactoryEx.getInstance().createNodeWithTag(NED_CHANNEL_SPEC);
+            appendChild(channelSpecNode);
+        }
+        channelSpecNode.setLikeParam(param);
     }
 
     public String getEffectiveType() {
