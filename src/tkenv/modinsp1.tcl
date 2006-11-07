@@ -73,103 +73,103 @@ proc moduleinspector_setrunmode {w} {
 
 }
 
-proc create_compoundmodinspector {name geom} {
-    global icons help_tips
-
-    set w $name
-    create_inspector_toplevel $w $geom
-
-    pack_iconbutton $w.toolbar.graph   -image $icons(asgraphics) -command "inspect_this $w {As Graphics}"
-    pack_iconbutton $w.toolbar.win     -image $icons(asoutput) -command "inspect_this $w {Module output}"
-    pack_iconbutton $w.toolbar.sep1    -separator
-
-    moduleinspector_add_run_buttons $w
-
-    rpack_iconbutton $w.toolbar.apply  -image $icons(apply) -command "opp_writebackinspector $w; opp_updateinspectors"
-    rpack_iconbutton $w.toolbar.revert -image $icons(revert) -command "opp_updateinspectors"
-
-    set help_tips($w.toolbar.owner)   {Inspect parent module}
-    set help_tips($w.toolbar.graph)   {Inspect as network graphics}
-    set help_tips($w.toolbar.win)     {See module output}
-    set help_tips($w.toolbar.apply)   {Apply changes (Enter)}
-    set help_tips($w.toolbar.revert)  {Revert}
-
-    set nb [inspector_createnotebook $w]
-
-    notebook_addpage $nb info    {Info}
-    notebook_addpage $nb contents {Contents}
-
-    notebook_showpage $nb contents
-
-    # page 1: info
-    label-entry $nb.info.name {Module name:}
-    label-sunkenlabel $nb.info.id {Module ID:}
-    label-entry $nb.info.dispstr {Display string:}
-    label-entry $nb.info.dispstrpt {Background disp.str:}
-    pack $nb.info.name -anchor center -fill x -side top
-    pack $nb.info.id -anchor center -fill x -side top
-    pack $nb.info.dispstr -anchor center -fill x -side top
-    pack $nb.info.dispstrpt -anchor center -fill x -side top
-
-    # other pages:
-    create_inspector_listbox $nb.contents
-
-    # XXX experimental page
-    inspector_createfields2page $w
-}
-
-proc create_simplemodinspector {name geom} {
-    global icons help_tips
-
-    set w $name
-    create_inspector_toplevel $w $geom
-
-    pack_iconbutton $w.toolbar.win    -image $icons(asoutput) -command "inspect_this $w {Module output}"
-    pack_iconbutton $w.toolbar.sep1   -separator
-
-    moduleinspector_add_run_buttons $w
-
-    rpack_iconbutton $w.toolbar.apply  -image $icons(apply) -command "opp_writebackinspector $w; opp_updateinspectors"
-    rpack_iconbutton $w.toolbar.revert -image $icons(revert) -command "opp_updateinspectors"
-
-    set help_tips($w.toolbar.owner)   {Inspect parent module}
-    set help_tips($w.toolbar.win)     {See module output}
-    set help_tips($w.toolbar.apply)   {Apply changes (Enter)}
-    set help_tips($w.toolbar.revert)  {Revert}
-
-    bind $w <Control-F4> "runsimulation_local $w fast"
-
-    set nb [inspector_createnotebook $w]
-
-    notebook_addpage $nb info    {Info}
-    notebook_addpage $nb contents {Contents}
-
-    notebook_showpage $nb contents
-
-    # page 1: info
-    label-entry $nb.info.name {Module name:}
-    label-sunkenlabel $nb.info.id {Module ID:}
-    #label-sunkenlabel $nb.info.phase {Phase:}
-    label-entry $nb.info.dispstr {Display string:}
-    label-entry $nb.info.dispstrpt {Background disp.str:}
-    label-sunkenlabel $nb.info.state {State:}
-    label-sunkenlabel $nb.info.stacksize {Stack size:}
-    label-sunkenlabel $nb.info.stackused {Stack used:}
-    pack $nb.info.name -anchor center -fill x -side top
-    pack $nb.info.id -anchor center -fill x -side top
-    pack $nb.info.state -anchor center  -fill x -side top
-    pack $nb.info.dispstr -anchor center -fill x -side top
-    pack $nb.info.dispstrpt -anchor center -fill x -side top
-    #pack $nb.info.phase -anchor center  -fill x -side top
-    pack $nb.info.stacksize -anchor center  -fill x -side top
-    pack $nb.info.stackused -anchor center  -fill x -side top
-
-    # other pages:
-    create_inspector_listbox $nb.contents
-
-    # XXX experimental page
-    inspector_createfields2page $w
-}
+#proc create_compoundmodinspector {name geom} {
+#    global icons help_tips
+#
+#    set w $name
+#    create_inspector_toplevel $w $geom
+#
+#    pack_iconbutton $w.toolbar.graph   -image $icons(asgraphics) -command "inspect_this $w {As Graphics}"
+#    pack_iconbutton $w.toolbar.win     -image $icons(asoutput) -command "inspect_this $w {Module output}"
+#    pack_iconbutton $w.toolbar.sep1    -separator
+#
+#    moduleinspector_add_run_buttons $w
+#
+#    rpack_iconbutton $w.toolbar.apply  -image $icons(apply) -command "opp_writebackinspector $w; opp_updateinspectors"
+#    rpack_iconbutton $w.toolbar.revert -image $icons(revert) -command "opp_updateinspectors"
+#
+#    set help_tips($w.toolbar.owner)   {Inspect parent module}
+#    set help_tips($w.toolbar.graph)   {Inspect as network graphics}
+#    set help_tips($w.toolbar.win)     {See module output}
+#    set help_tips($w.toolbar.apply)   {Apply changes (Enter)}
+#    set help_tips($w.toolbar.revert)  {Revert}
+#
+#    set nb [inspector_createnotebook $w]
+#
+#    notebook_addpage $nb info    {Info}
+#    notebook_addpage $nb contents {Contents}
+#
+#    notebook_showpage $nb contents
+#
+#    # page 1: info
+#    label-entry $nb.info.name {Module name:}
+#    label-sunkenlabel $nb.info.id {Module ID:}
+#    label-entry $nb.info.dispstr {Display string:}
+#    label-entry $nb.info.dispstrpt {Background disp.str:}
+#    pack $nb.info.name -anchor center -fill x -side top
+#    pack $nb.info.id -anchor center -fill x -side top
+#    pack $nb.info.dispstr -anchor center -fill x -side top
+#    pack $nb.info.dispstrpt -anchor center -fill x -side top
+#
+#    # other pages:
+#    create_inspector_listbox $nb.contents
+#
+#    # XXX experimental page
+#    inspector_createfields2page $w
+#}
+#
+#proc create_simplemodinspector {name geom} {
+#    global icons help_tips
+#
+#    set w $name
+#    create_inspector_toplevel $w $geom
+#
+#    pack_iconbutton $w.toolbar.win    -image $icons(asoutput) -command "inspect_this $w {Module output}"
+#    pack_iconbutton $w.toolbar.sep1   -separator
+#
+#    moduleinspector_add_run_buttons $w
+#
+#    rpack_iconbutton $w.toolbar.apply  -image $icons(apply) -command "opp_writebackinspector $w; opp_updateinspectors"
+#    rpack_iconbutton $w.toolbar.revert -image $icons(revert) -command "opp_updateinspectors"
+#
+#    set help_tips($w.toolbar.owner)   {Inspect parent module}
+#    set help_tips($w.toolbar.win)     {See module output}
+#    set help_tips($w.toolbar.apply)   {Apply changes (Enter)}
+#    set help_tips($w.toolbar.revert)  {Revert}
+#
+#    bind $w <Control-F4> "runsimulation_local $w fast"
+#
+#    set nb [inspector_createnotebook $w]
+#
+#    notebook_addpage $nb info    {Info}
+#    notebook_addpage $nb contents {Contents}
+#
+#    notebook_showpage $nb contents
+#
+#    # page 1: info
+#    label-entry $nb.info.name {Module name:}
+#    label-sunkenlabel $nb.info.id {Module ID:}
+#    #label-sunkenlabel $nb.info.phase {Phase:}
+#    label-entry $nb.info.dispstr {Display string:}
+#    label-entry $nb.info.dispstrpt {Background disp.str:}
+#    label-sunkenlabel $nb.info.state {State:}
+#    label-sunkenlabel $nb.info.stacksize {Stack size:}
+#    label-sunkenlabel $nb.info.stackused {Stack used:}
+#    pack $nb.info.name -anchor center -fill x -side top
+#    pack $nb.info.id -anchor center -fill x -side top
+#    pack $nb.info.state -anchor center  -fill x -side top
+#    pack $nb.info.dispstr -anchor center -fill x -side top
+#    pack $nb.info.dispstrpt -anchor center -fill x -side top
+#    #pack $nb.info.phase -anchor center  -fill x -side top
+#    pack $nb.info.stacksize -anchor center  -fill x -side top
+#    pack $nb.info.stackused -anchor center  -fill x -side top
+#
+#    # other pages:
+#    create_inspector_listbox $nb.contents
+#
+#    # XXX experimental page
+#    inspector_createfields2page $w
+#}
 
 proc runsimulation_local {w mode} {
     # invoked from toolbar in module inspectors

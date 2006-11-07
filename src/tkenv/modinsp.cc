@@ -63,7 +63,7 @@ class TModuleWindowFactory : public cInspectorFactory
 
     bool supportsObject(cObject *obj) {return dynamic_cast<cModule *>(obj)!=NULL;}
     int inspectorType() {return INSP_MODULEOUTPUT;}
-    double qualityAsDefault(cObject *object) {return 2.9;}
+    double qualityAsDefault(cObject *object) {return 0.5;}
 
     TInspector *createInspectorFor(cObject *object,int type,const char *geom,void *data) {
         return new TModuleWindow(object, type, geom, data);
@@ -81,8 +81,6 @@ TModuleWindow::TModuleWindow(cObject *obj,int typ,const char *geom,void *dat) :
 void TModuleWindow::createWindow()
 {
    TInspector::createWindow(); // create window name etc.
-   //strcpy(modulename,windowname); strcat(modulename,".statusbar.name");
-   //strcpy(phase,windowname); strcat(phase,".statusbar.phase");
 
    // create inspector window by calling the specified proc with
    // the object's pointer. Window name will be like ".ptr80003a9d-1"
@@ -110,7 +108,9 @@ class TGraphicalModWindowFactory : public cInspectorFactory
 
     bool supportsObject(cObject *obj) {return dynamic_cast<cModule *>(obj)!=NULL;}
     int inspectorType() {return INSP_GRAPHICAL;}
-    double qualityAsDefault(cObject *object) {return 3.0;}
+    double qualityAsDefault(cObject *object) {
+        return dynamic_cast<cSimpleModule *>(object) ? 0.9 : 3.0;
+    }
 
     TInspector *createInspectorFor(cObject *object,int type,const char *geom,void *data) {
         return new TGraphicalModWindow(object, type, geom, data);
@@ -790,227 +790,235 @@ int TGraphicalModWindow::getSubmodQLen(Tcl_Interp *interp, int argc, const char 
 
 //=======================================================================
 
-class TCompoundModInspectorFactory : public cInspectorFactory
-{
-  public:
-    TCompoundModInspectorFactory(const char *name) : cInspectorFactory(name) {}
-
-    bool supportsObject(cObject *obj) {return dynamic_cast<cModule *>(obj)!=NULL;}
-    int inspectorType() {return INSP_OBJECT;}
-    double qualityAsDefault(cObject *object) {return 2.9;}
-
-    TInspector *createInspectorFor(cObject *object,int type,const char *geom,void *data) {
-        return new TCompoundModInspector(object, type, geom, data);
-    }
-};
-
-Register_InspectorFactory(TCompoundModInspectorFactory);
-
-
-TCompoundModInspector::TCompoundModInspector(cObject *obj,int typ,const char *geom,void *dat) :
-    TInspector(obj,typ,geom,dat)
-{
-}
-
-void TCompoundModInspector::createWindow()
-{
-   TInspector::createWindow(); // create window name etc.
-
-   // create inspector window by calling the specified proc with
-   // the object's pointer. Window name will be like ".ptr80003a9d-1"
-   Tcl_Interp *interp = getTkApplication()->getInterp();
-   CHK(Tcl_VarEval(interp, "create_compoundmodinspector ", windowname, " \"", geometry, "\"", NULL ));
-}
-
-void TCompoundModInspector::update()
-{
-   TInspector::update();
-
-   cCompoundModule *mod = static_cast<cCompoundModule *>(object);
-
-   //setToolbarInspectButton(".toolbar.parent", mod->parentModule(),INSP_DEFAULT);
-
-   setEntry(".nb.info.name.e", mod->name());
-   char id[16]; sprintf(id,"%ld", (long)mod->id());
-   setLabel(".nb.info.id.e", id);
-   setEntry(".nb.info.dispstr.e", mod->displayString());
-   setEntry(".nb.info.dispstrpt.e", mod->backgroundDisplayString());
-
-   deleteInspectorListbox(".nb.contents");
-   fillInspectorListbox(".nb.contents", mod, false);
-}
-
-void TCompoundModInspector::writeBack()
-{
-   cCompoundModule *mod = static_cast<cCompoundModule *>(object);
-   mod->setName(getEntry(".nb.info.name.e"));
-   mod->displayString().parse(getEntry(".nb.info.dispstr.e"));
-   mod->backgroundDisplayString().parse(getEntry(".nb.info.dispstrpt.e"));
-
-   TInspector::writeBack();    // must be there after all changes
-}
-
-//=======================================================================
-class TSimpleModInspectorFactory : public cInspectorFactory
-{
-  public:
-    TSimpleModInspectorFactory(const char *name) : cInspectorFactory(name) {}
-
-    bool supportsObject(cObject *obj) {return dynamic_cast<cSimpleModule *>(obj)!=NULL;}
-    int inspectorType() {return INSP_OBJECT;}
-    double qualityAsDefault(cObject *object) {return 4.0;}
-
-    TInspector *createInspectorFor(cObject *object,int type,const char *geom,void *data) {
-        return new TSimpleModInspector(object, type, geom, data);
-    }
-};
-
-Register_InspectorFactory(TSimpleModInspectorFactory);
-
-
-TSimpleModInspector::TSimpleModInspector(cObject *obj,int typ,const char *geom,void *dat) :
-    TInspector(obj,typ,geom,dat)
-{
-}
-
-void TSimpleModInspector::createWindow()
-{
-   TInspector::createWindow(); // create window name etc.
-
-   // create inspector window by calling the specified proc with
-   // the object's pointer. Window name will be like ".ptr80003a9d-1"
-   Tcl_Interp *interp = getTkApplication()->getInterp();
-   CHK(Tcl_VarEval(interp, "create_simplemodinspector ", windowname, " \"", geometry, "\"", NULL ));
-}
-
-void TSimpleModInspector::update()
-{
-   TInspector::update();
-
-   cSimpleModule *mod = static_cast<cSimpleModule *>(object);
-
-   char buf[40];
-   setEntry(".nb.info.name.e", mod->name());
-   sprintf(buf,"%ld", (long)mod->id());
-   setLabel(".nb.info.id.e", buf);
-   setEntry(".nb.info.dispstr.e", mod->displayString());
-   setEntry(".nb.info.dispstrpt.e", mod->backgroundDisplayString());
-   setLabel(".nb.info.state.e",  mod->isTerminated() ? "terminated" : "normal");
-   if (mod->usesActivity())
-   {
-      unsigned stk = mod->stackSize();
-      unsigned extra = ev.extraStackForEnvir();
-      unsigned used = mod->stackUsage();
-      sprintf(buf,"%u + %u = %u bytes", stk-extra, extra, stk);
-      setLabel(".nb.info.stacksize.e", buf );
-      sprintf(buf,"approx. %u bytes", used);
-      setLabel(".nb.info.stackused.e", buf );
-   }
-   else
-   {
-      setLabel(".nb.info.stacksize.e", "n/a" );
-      setLabel(".nb.info.stackused.e", "n/a" );
-   }
-
-   deleteInspectorListbox(".nb.contents");
-   fillInspectorListbox(".nb.contents", mod, false);
-}
-
-void TSimpleModInspector::writeBack()
-{
-   cSimpleModule *mod = static_cast<cSimpleModule *>(object);
-   mod->setName(getEntry(".nb.info.name.e"));
-   mod->displayString().parse(getEntry(".nb.info.dispstr.e"));
-   mod->backgroundDisplayString().parse(getEntry(".nb.info.dispstrpt.e"));
-
-   TInspector::writeBack();    // must be there after all changes
-}
+//
+// class TCompoundModInspectorFactory : public cInspectorFactory
+// {
+//   public:
+//     TCompoundModInspectorFactory(const char *name) : cInspectorFactory(name) {}
+//
+//     bool supportsObject(cObject *obj) {return dynamic_cast<cModule *>(obj)!=NULL;}
+//     int inspectorType() {return INSP_OBJECT;}
+//     double qualityAsDefault(cObject *object) {return 2.9;}
+//
+//     TInspector *createInspectorFor(cObject *object,int type,const char *geom,void *data) {
+//         return new TCompoundModInspector(object, type, geom, data);
+//     }
+// };
+//
+// Register_InspectorFactory(TCompoundModInspectorFactory);
+//
+//
+// TCompoundModInspector::TCompoundModInspector(cObject *obj,int typ,const char *geom,void *dat) :
+//     TInspector(obj,typ,geom,dat)
+// {
+// }
+//
+// void TCompoundModInspector::createWindow()
+// {
+//    TInspector::createWindow(); // create window name etc.
+//
+//    // create inspector window by calling the specified proc with
+//    // the object's pointer. Window name will be like ".ptr80003a9d-1"
+//    Tcl_Interp *interp = getTkApplication()->getInterp();
+//    CHK(Tcl_VarEval(interp, "create_compoundmodinspector ", windowname, " \"", geometry, "\"", NULL ));
+// }
+//
+// void TCompoundModInspector::update()
+// {
+//    TInspector::update();
+//
+//    cCompoundModule *mod = static_cast<cCompoundModule *>(object);
+//
+//    //setToolbarInspectButton(".toolbar.parent", mod->parentModule(),INSP_DEFAULT);
+//
+//    setEntry(".nb.info.name.e", mod->name());
+//    char id[16]; sprintf(id,"%ld", (long)mod->id());
+//    setLabel(".nb.info.id.e", id);
+//    setEntry(".nb.info.dispstr.e", mod->displayString());
+//    setEntry(".nb.info.dispstrpt.e", mod->backgroundDisplayString());
+//
+//    deleteInspectorListbox(".nb.contents");
+//    fillInspectorListbox(".nb.contents", mod, false);
+// }
+//
+// void TCompoundModInspector::writeBack()
+// {
+//    cCompoundModule *mod = static_cast<cCompoundModule *>(object);
+//    mod->setName(getEntry(".nb.info.name.e"));
+//    mod->displayString().parse(getEntry(".nb.info.dispstr.e"));
+//    mod->backgroundDisplayString().parse(getEntry(".nb.info.dispstrpt.e"));
+//
+//    TInspector::writeBack();    // must be there after all changes
+// }
+//
 
 //=======================================================================
-class TGateInspectorFactory : public cInspectorFactory
-{
-  public:
-    TGateInspectorFactory(const char *name) : cInspectorFactory(name) {}
 
-    bool supportsObject(cObject *obj) {return dynamic_cast<cGate *>(obj)!=NULL;}
-    int inspectorType() {return INSP_OBJECT;}
-    double qualityAsDefault(cObject *object) {return 2.9;}
+//
+// class TSimpleModInspectorFactory : public cInspectorFactory
+// {
+//   public:
+//     TSimpleModInspectorFactory(const char *name) : cInspectorFactory(name) {}
+//
+//     bool supportsObject(cObject *obj) {return dynamic_cast<cSimpleModule *>(obj)!=NULL;}
+//     int inspectorType() {return INSP_OBJECT;}
+//     double qualityAsDefault(cObject *object) {return 4.0;}
+//
+//     TInspector *createInspectorFor(cObject *object,int type,const char *geom,void *data) {
+//         return new TSimpleModInspector(object, type, geom, data);
+//     }
+// };
+//
+// Register_InspectorFactory(TSimpleModInspectorFactory);
+//
+//
+// TSimpleModInspector::TSimpleModInspector(cObject *obj,int typ,const char *geom,void *dat) :
+//     TInspector(obj,typ,geom,dat)
+// {
+// }
+//
+// void TSimpleModInspector::createWindow()
+// {
+//    TInspector::createWindow(); // create window name etc.
+//
+//    // create inspector window by calling the specified proc with
+//    // the object's pointer. Window name will be like ".ptr80003a9d-1"
+//    Tcl_Interp *interp = getTkApplication()->getInterp();
+//    CHK(Tcl_VarEval(interp, "create_simplemodinspector ", windowname, " \"", geometry, "\"", NULL ));
+// }
+//
+// void TSimpleModInspector::update()
+// {
+//    TInspector::update();
+//
+//    cSimpleModule *mod = static_cast<cSimpleModule *>(object);
+//
+//    char buf[40];
+//    setEntry(".nb.info.name.e", mod->name());
+//    sprintf(buf,"%ld", (long)mod->id());
+//    setLabel(".nb.info.id.e", buf);
+//    setEntry(".nb.info.dispstr.e", mod->displayString());
+//    setEntry(".nb.info.dispstrpt.e", mod->backgroundDisplayString());
+//    setLabel(".nb.info.state.e",  modstate[ mod->moduleState() ]  );
+//    if (mod->usesActivity())
+//    {
+//       unsigned stk = mod->stackSize();
+//       unsigned extra = ev.extraStackForEnvir();
+//       unsigned used = mod->stackUsage();
+//       sprintf(buf,"%u + %u = %u bytes", stk-extra, extra, stk);
+//       setLabel(".nb.info.stacksize.e", buf );
+//       sprintf(buf,"approx. %u bytes", used);
+//       setLabel(".nb.info.stackused.e", buf );
+//    }
+//    else
+//    {
+//       setLabel(".nb.info.stacksize.e", "n/a" );
+//       setLabel(".nb.info.stackused.e", "n/a" );
+//    }
+//
+//    deleteInspectorListbox(".nb.contents");
+//    fillInspectorListbox(".nb.contents", mod, false);
+// }
+//
+// void TSimpleModInspector::writeBack()
+// {
+//    cSimpleModule *mod = static_cast<cSimpleModule *>(object);
+//    mod->setName(getEntry(".nb.info.name.e"));
+//    mod->displayString().parse(getEntry(".nb.info.dispstr.e"));
+//    mod->backgroundDisplayString().parse(getEntry(".nb.info.dispstrpt.e"));
+//
+//    TInspector::writeBack();    // must be there after all changes
+// }
+//
 
-    TInspector *createInspectorFor(cObject *object,int type,const char *geom,void *data) {
-        return new TGateInspector(object, type, geom, data);
-    }
-};
+//=======================================================================
 
-Register_InspectorFactory(TGateInspectorFactory);
-
-TGateInspector::TGateInspector(cObject *obj,int typ,const char *geom,void *dat) :
-    TInspector(obj,typ,geom,dat)
-{
-}
-
-void TGateInspector::createWindow()
-{
-   TInspector::createWindow(); // create window name etc.
-
-   // create inspector window by calling the specified proc with
-   // the object's pointer. Window name will be like ".ptr80003a9d-1"
-   Tcl_Interp *interp = getTkApplication()->getInterp();
-   CHK(Tcl_VarEval(interp, "create_gateinspector ", windowname, " \"", geometry, "\"", NULL ));
-}
-
-void TGateInspector::update()
-{
-   TInspector::update();
-
-   cGate *g = static_cast<cGate *>(object);
-
-   setEntry(".nb.info.name.e", g->name());
-   char buf[64];
-   sprintf(buf,"#%d", g->id());
-   setLabel(".nb.info.id.e", buf);
-   setEntry(".nb.info.dispstr.e", g->displayString().toString());
-   cBasicChannel *ch = dynamic_cast<cBasicChannel*>(g->channel());
-   if (ch)
-   {
-       setEntry(".nb.info.delay.e", ch->delay());
-       setEntry(".nb.info.error.e", ch->error());
-       setEntry(".nb.info.datarate.e", ch->datarate());
-   }
-   else
-   {
-       setEntry(".nb.info.delay.e", 0.0);
-       setEntry(".nb.info.error.e", 0.0);
-       setEntry(".nb.info.datarate.e", 0.0);
-   }
-   setLabel(".nb.info.trfinish.e", g->transmissionFinishes());
-
-   setInspectButton(".nb.info.from", g->fromGate(), true, INSP_DEFAULT);
-   setInspectButton(".nb.info.to", g->toGate(), true, INSP_DEFAULT);
-}
-
-void TGateInspector::writeBack()
-{
-   cGate *g = static_cast<cGate *>(object);
-   g->setName(getEntry(".nb.info.name.e"));
-   g->displayString().parse(getEntry(".nb.info.dispstr.e"));
-   cBasicChannel *ch = dynamic_cast<cBasicChannel*>(g->channel());
-   double delay = atof(getEntry(".nb.info.delay.e"));
-   double error = atof(getEntry(".nb.info.error.e"));
-   double datarate = atof(getEntry(".nb.info.datarate.e"));
-   if (delay!=0 || error!=0 || datarate!=0 || ch!=NULL)
-   {
-       if (!ch)
-       {
-           ch = new cBasicChannel("channel");
-           g->setChannel(ch);
-       }
-       ch->setDelay(delay<0 ? 0 : delay);
-       ch->setError(error<0 ? 0 : error>1 ? 1 : error);
-       ch->setDatarate(datarate<0 ? 0 : datarate);
-   }
-
-   TInspector::writeBack();    // must be there after all changes
-}
+//
+// class TGateInspectorFactory : public cInspectorFactory
+// {
+//   public:
+//     TGateInspectorFactory(const char *name) : cInspectorFactory(name) {}
+//
+//     bool supportsObject(cObject *obj) {return dynamic_cast<cGate *>(obj)!=NULL;}
+//     int inspectorType() {return INSP_OBJECT;}
+//     double qualityAsDefault(cObject *object) {return 2.9;}
+//
+//     TInspector *createInspectorFor(cObject *object,int type,const char *geom,void *data) {
+//         return new TGateInspector(object, type, geom, data);
+//     }
+// };
+//
+// Register_InspectorFactory(TGateInspectorFactory);
+//
+// TGateInspector::TGateInspector(cObject *obj,int typ,const char *geom,void *dat) :
+//     TInspector(obj,typ,geom,dat)
+// {
+// }
+//
+// void TGateInspector::createWindow()
+// {
+//    TInspector::createWindow(); // create window name etc.
+//
+//    // create inspector window by calling the specified proc with
+//    // the object's pointer. Window name will be like ".ptr80003a9d-1"
+//    Tcl_Interp *interp = getTkApplication()->getInterp();
+//    CHK(Tcl_VarEval(interp, "create_gateinspector ", windowname, " \"", geometry, "\"", NULL ));
+// }
+//
+// void TGateInspector::update()
+// {
+//    TInspector::update();
+//
+//    cGate *g = static_cast<cGate *>(object);
+//
+//    setEntry(".nb.info.name.e", g->name());
+//    char buf[64];
+//    sprintf(buf,"#%d", g->id());
+//    setLabel(".nb.info.id.e", buf);
+//    setEntry(".nb.info.dispstr.e", g->displayString().getString());
+//    cBasicChannel *ch = dynamic_cast<cBasicChannel*>(g->channel());
+//    if (ch)
+//    {
+//        setEntry(".nb.info.delay.e", ch->delay());
+//        setEntry(".nb.info.error.e", ch->error());
+//        setEntry(".nb.info.datarate.e", ch->datarate());
+//    }
+//    else
+//    {
+//        setEntry(".nb.info.delay.e", 0.0);
+//        setEntry(".nb.info.error.e", 0.0);
+//        setEntry(".nb.info.datarate.e", 0.0);
+//    }
+//    setLabel(".nb.info.trfinish.e", g->transmissionFinishes());
+//
+//    setInspectButton(".nb.info.from", g->fromGate(), true, INSP_DEFAULT);
+//    setInspectButton(".nb.info.to", g->toGate(), true, INSP_DEFAULT);
+// }
+//
+// void TGateInspector::writeBack()
+// {
+//    cGate *g = static_cast<cGate *>(object);
+//    g->setName(getEntry(".nb.info.name.e"));
+//    g->displayString().parse(getEntry(".nb.info.dispstr.e"));
+//    cBasicChannel *ch = dynamic_cast<cBasicChannel*>(g->channel());
+//    double delay = atof(getEntry(".nb.info.delay.e"));
+//    double error = atof(getEntry(".nb.info.error.e"));
+//    double datarate = atof(getEntry(".nb.info.datarate.e"));
+//    if (delay!=0 || error!=0 || datarate!=0 || ch!=NULL)
+//    {
+//        if (!ch)
+//        {
+//            ch = new cBasicChannel("channel");
+//            g->setChannel(ch);
+//        }
+//        ch->setDelay(delay<0 ? 0 : delay);
+//        ch->setError(error<0 ? 0 : error>1 ? 1 : error);
+//        ch->setDatarate(datarate<0 ? 0 : datarate);
+//    }
+//
+//    TInspector::writeBack();    // must be there after all changes
+// }
+//
 
 //=======================================================================
 class TGraphicalGateWindowFactory : public cInspectorFactory
@@ -1157,7 +1165,7 @@ int TGraphicalGateWindow::inspectorCommand(Tcl_Interp *interp, int argc, const c
 
 void TGraphicalGateWindow::displayStringChanged(cGate *gate)
 {
-   // FIXME should defer redraw (via redraw_needed) to avoid "flickering"
+   //XXX should defer redraw (via redraw_needed) to avoid "flickering"
 }
 
 

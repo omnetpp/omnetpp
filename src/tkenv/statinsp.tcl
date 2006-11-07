@@ -225,32 +225,32 @@ proc create_outvectorwindow {name geom} {
     update idletasks
 }
 
-proc create_statisticinspector {name geom} {
-    global icons help_tips
+#proc create_statisticinspector {name geom} {
+#    global icons help_tips
+#
+#    set w $name
+#    create_inspector_toplevel $w $geom
+#
+#    set nb [inspector_createnotebook $w]
+#
+#    inspector_createfields2page $w
+#
+#    notebook_addpage $nb info  {Info}
+#
+#    pack_iconbutton $w.toolbar.graph -image $icons(asgraphics) -command "inspect_this $w {As Graphics}"
+#    set help_tips($w.toolbar.graph) {Inspect as histogram graphics}
+#
+#    label-sunkenlabel $nb.info.count Count:
+#    label-sunkenlabel $nb.info.mean Mean:
+#    label-sunkenlabel $nb.info.stddev Std.dev:
+#    label-sunkenlabel $nb.info.min Min:
+#    label-sunkenlabel $nb.info.max Max:
+#
+#    pack $nb.info.count -fill x -side top
+#    pack $nb.info.mean -fill x -side top
+#    pack $nb.info.stddev -fill x -side top
+#    pack $nb.info.min -fill x -side top
+#    pack $nb.info.max -fill x -side top
+#}
 
-    set w $name
-    create_inspector_toplevel $w $geom
-
-    set nb [inspector_createnotebook $w]
-
-    # XXX experimental page
-    inspector_createfields2page $w
-
-    notebook_addpage $nb info  {Info}
-
-    pack_iconbutton $w.toolbar.graph -image $icons(asgraphics) -command "inspect_this $w {As Graphics}"
-    set help_tips($w.toolbar.graph) {Inspect as histogram graphics}
-
-    label-sunkenlabel $nb.info.count Count:
-    label-sunkenlabel $nb.info.mean Mean:
-    label-sunkenlabel $nb.info.stddev Std.dev:
-    label-sunkenlabel $nb.info.min Min:
-    label-sunkenlabel $nb.info.max Max:
-
-    pack $nb.info.count -fill x -side top
-    pack $nb.info.mean -fill x -side top
-    pack $nb.info.stddev -fill x -side top
-    pack $nb.info.min -fill x -side top
-    pack $nb.info.max -fill x -side top
-}
 

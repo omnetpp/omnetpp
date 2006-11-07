@@ -89,13 +89,17 @@ class TOutVectorWindow : public TInspector
       void setConfig( bool autoscale, double timef, double miny, double maxy, const char *mode);
 };
 
-class TStatisticInspector: public TInspector
-{
-   public:
-      TStatisticInspector(cObject *obj,int typ,const char *geom,void *dat=NULL);
-      virtual void createWindow();
-      virtual void update();
-};
+//
+// *** Note: the following inspectors have been replaced with TGenericObjectInspector ***
+//
+// class TStatisticInspector: public TInspector
+// {
+//    public:
+//       TStatisticInspector(cObject *obj,int typ,const char *geom,void *dat=NULL);
+//       virtual void createWindow();
+//       virtual void update();
+// };
+//
 
 #endif
 

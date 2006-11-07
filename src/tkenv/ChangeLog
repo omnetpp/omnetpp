@@ -1,9 +1,26 @@
-- tree-style instpector
-- split animate.tcl and timeline.tcl from modinsp2.tcl 
-- broadcast animation feature: if multiple send()/sendDirect() calls occur
-  within a handleMessage(), messages are animated concurrently
+2006-11-06  Andras Varga
 
-----------------------
+	* enhancement: all non-graphical inspectors replaced with consistent
+	treeview-based inspectors
+
+	* enhancement: broadcast animation feature, which is thought to
+	significantly improve the animation of wireless simulations (MF!), and 
+	generally simulations where broadcast sends occur (e.g. Ethernet).
+	When the feature is turned on, then if multiple send() or sendDirect()
+	calls occur within a handleMessage(), they are animated	concurrently. 
+	This also means that send/sendDirect calls are NOT animated at the 
+	place of the call as previously, but together at the end of processing 
+	the event (that is, after handleMessage() has already returned). 
+	This is done because Tkenv first has to collect all message sendings
+	within the event in order to be able to animate them. This out-of-
+	sequence animation processing may cause occasional surprise. The 
+	broadcast animation feature can be turned off in the Simulation Options 
+	dialog.
+
+	* internal refactoring (opp_object_nullpointer renamed to opp_null;
+	split animate.tcl and timeline.tcl from modinsp2.tcl, etc)
+
+2006-10-21  ------ omnetpp-3.3 released ------
 
 2006-10-19  Andras Varga
 
