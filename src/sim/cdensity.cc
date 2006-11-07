@@ -273,23 +273,22 @@ void cDensityEstBase::plotline(ostream& os, char *pref, double xval,
     os << buf;
 }
 
-// write to stream
-void cDensityEstBase::writeContents(ostream& os)
+std::string cDensityEstBase::detailedInfo() const
 {
     if (!transformed())
     {
         // if the histogram is not transformed, we create a temporary copy,
-        // transform it and call its writeContents() function to do the job.
+        // transform it and call its detailedInfo() to do the job.
         cDensityEstBase *temp = (cDensityEstBase *)dup();
         temp->transform();
-        temp->writeContents( os );
+        std::string res = temp->detailedInfo();
         delete temp;
-        return;
+        return res;
     }
 
     // Now the histogram is surely transformed.
-
-    cStdDev::writeContents( os );         // write statistics
+    std::stringstream os;
+    os << cStdDev::detailedInfo();
 
     if (num_samples>1)
     {
@@ -309,6 +308,7 @@ void cDensityEstBase::writeContents(ostream& os)
         plotline(os,">=",basepoint(nc),0,a);
         os << "\n";
     }
+    return os.str();
 }
 
 void cDensityEstBase::saveToFile(FILE *f) const
@@ -348,5 +348,17 @@ void cDensityEstBase::loadFromFile(FILE *f)
         for (int i=0; i<num_firstvals; i++)
             freadvarsf(f," %g",firstvals+i);
     }
+}
+
+cDensityEstBase::Cell cDensityEstBase::cellInfo(int k) const
+{
+    if (k<0 || k>=cells())
+        return Cell();
+    Cell c;
+    c.lower = basepoint(k);
+    c.upper = basepoint(k+1);
+    c.value = cell(k);
+    c.relativeFreq = cellPDF(k);
+    return c;
 }
 

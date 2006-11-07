@@ -27,25 +27,29 @@ cplusplus
 //
 // Register enums from the sim. kernel
 //
-/*XXX
 EXECUTE_ON_STARTUP(cGate_Type,
     cEnum *e = new cEnum("cGate_Type");
     enums.instance()->add(e);
-    e->insert(cGate::INPUT,  "INPUT");
-    e->insert(cGate::OUTPUT, "OUTPUT");
-    e->insert(cGate::INOUT,  "INOUT");
+    e->insert('I', "INPUT");
+    e->insert('O', "OUTPUT");
 );
 
 EXECUTE_ON_STARTUP(cPar_Type,
     cEnum *e = new cEnum("cPar_Type");
     enums.instance()->add(e);
-    e->insert(cPar::BOOL,   "BOOL");
-    e->insert(cPar::DOUBLE, "DOUBLE");
-    e->insert(cPar::LONG,   "LONG");
-    e->insert(cPar::STRING, "STRING");
-    e->insert(cPar::XML,    "XML");
+    e->insert('S', "STRING");
+    e->insert('B', "BOOL");
+    e->insert('L', "LONG");
+    e->insert('D', "DOUBLE");
+    e->insert('F', "MATH FUNCTION");
+    e->insert('T', "DISTRIBUTION");
+    e->insert('C', "COMPILED EXPRESSION");
+    e->insert('X', "EXPRESSION");
+    e->insert('I', "INDIRECTION");
+    e->insert('P', "VOID* POINTER");
+    e->insert('O', "OBJECT POINTER");
+    e->insert('M', "XML");
 );
-*/
 
 //
 // Define operator<< for some classes
@@ -54,12 +58,10 @@ std::ostream& operator<<(std::ostream& os, const cDisplayString& d) {
     return os << "\"" << d.getString() << "\"";
 }
 
-/*XXX
 typedef cDensityEstBase::Cell cDensityEstBase_Cell;
 std::ostream& operator<<(std::ostream& os, const cDensityEstBase::Cell& cell) {
     return os << "[" << cell.lower << ", " << cell.upper << ")  ==>  " << cell.value << " (" << cell.relativeFreq << ")";
 }
-*/
 
 //
 // This function is to be referenced from sim. kernel classes, to force the
@@ -72,7 +74,7 @@ void std_sim_descriptor_dummy() {}
 enum cPar_Type;
 enum cGate_Type;
 
-//XXX struct cDensityEstBase_Cell;
+struct cDensityEstBase_Cell;
 
 
 class cObject
@@ -186,19 +188,19 @@ class cArray extends cObject
     fields:
         @omitGetVerb(true);
         bool takeOwnership @group(general);
-        cObject *get[] @sizeGetter(items) @label(contents) @group(general);
+        cObject *get[] @sizeGetter(items) @label(contents);
 }
 
 class cMessage extends cObject
 {
     fields:
         @omitGetVerb(true);
-        int kind @group(general);
-        int priority @group(general);
-        long length @group(general);
-        long byteLength @group(general);
-        bool hasBitError @group(general);
-        string displayString @group(general);
+        int kind @group(message);
+        int priority @group(message);
+        long length @group(message);
+        long byteLength @group(message);
+        bool hasBitError @group(message);
+        string displayString @group(message);
 
         bool isScheduled @group(sending);
         bool isSelfMessage @group(sending);
@@ -208,25 +210,26 @@ class cMessage extends cObject
         simtime_t timestamp @group(sending);
         int senderModuleId @group(sending);
         int senderGateId @group(sending);
-//XXX        cModule *senderModule @group(sending);
-//XXX        cGate *senderGate @group(sending);
+        cModule *senderModule @group(sending);
+        cGate *senderGate @group(sending);
         int arrivalModuleId @group(sending);
         int arrivalGateId @group(sending);
-//XXX        cModule *arrivalModule @group(sending);
-//XXX        cGate *arrivalGate @group(sending);
+        cModule *arrivalModule @group(sending);
+        cGate *arrivalGate @group(sending);
 
-        cMessage *encapsulatedMsg @group(general);
-        cPolymorphic *controlInfo @group(general);
+//XXX PARAMETERS???
+
+        cMessage *encapsulatedMsg;
+        cPolymorphic *controlInfo;
         //XXX void *contextPointer
-        //XXX various IDs
 }
 
 class cPacket extends cMessage
 {
     fields:
         @omitGetVerb(true);
-        short protocol @group(general);
-        short pdu @group(general);
+        short protocol @group(packet);
+        short pdu @group(packet);
 }
 
 //----
@@ -235,15 +238,15 @@ class cStatistic extends cObject
 {
     fields:
         @omitGetVerb(true);
-        long samples @group(general);
-        double weights @group(general);
-        double sum @group(general);
-        double sqrSum @group(general);
-        double min @group(general);
-        double max @group(general);
-        double mean @group(general);
-        double stddev @group(general);
-        double variance @group(general);
+        long samples;
+        double weights;
+        double sum;
+        double sqrSum;
+        double min;
+        double max;
+        double mean;
+        double stddev;
+        double variance;
 }
 
 class cStdDev extends cStatistic
@@ -262,7 +265,7 @@ class cDensityEstBase extends cStdDev
         unsigned long underflowCell @group(histogram);
         unsigned long overflowCell @group(histogram);
         int cells @group(histogram);
-        //XXX cDensityEstBase_Cell cellInfo[] @sizeGetter(cells) @group(histogram);
+        cDensityEstBase_Cell cellInfo[] @sizeGetter(cells) @group(histogram);
 }
 
 class cHistogramBase extends cDensityEstBase
@@ -315,33 +318,33 @@ class cFSM extends cObject
 {
     fields:
         @omitGetVerb(true);
-        int state @group(general);
-        string stateName @group(general);
+        int state;
+        string stateName;
 }
 
-//XXX class cMathFunction extends cObject
-//XXX {
-//XXX     fields:
-//XXX         @omitGetVerb(true);
-//XXX         int numArgs @group(general);
-//XXX }
+class cFunctionType extends cObject
+{
+    fields:
+        @omitGetVerb(true);
+        int argCount;
+}
 
 class cOutVector extends cObject
 {
     fields:
         @omitGetVerb(true);
-        bool isEnabled @group(general);
-        long valuesReceived @group(general);
-        long valuesStored @group(general);
+        bool isEnabled;
+        long valuesReceived;
+        long valuesStored;
 }
 
 class cPar extends cObject
 {
     fields:
         @omitGetVerb(true);
-        char type @group(general) @enum(cPar_Type);
-        bool isNumeric @group(general);
-        bool isInput @group(general);
+        char type @enum(cPar_Type);
+        bool isNumeric;
+        bool isInput;
 //XXX        bool isVolatile @group(general);
 //XXX        bool isConstant @group(general);
 //XXX        bool isSet @group(general);
@@ -353,22 +356,22 @@ class cLinkedList extends cObject
 {
     fields:
         @omitGetVerb(true);
-        int length @group(general);
+        int length;
 }
 
 class cMessageHeap extends cObject
 {
     fields:
         @omitGetVerb(true);
-        int length @group(general);
-        cMessage *peek[] @sizeGetter(length) @group(general) @label(messages);
+        int length;
+        cMessage *peek[] @sizeGetter(length) @label(messages);
 }
 
 class cQueue extends cObject
 {
     fields:
         @omitGetVerb(true);
-        int length @group(general);
+        int length;
         bool takeOwnership @group(general);
         //XXX elements?
 }
@@ -377,11 +380,10 @@ class cSimulation extends cObject
 {
     fields:
         @omitGetVerb(true);
-        int runNumber @group(general);
-        simtime_t simTime @group(general);
-        long eventNumber @group(general);
-        //int contextType @group(general);
-//XXX        cMessageHeap messageQueue @label(futureEvents) @group(general);
+        int runNumber;
+        simtime_t simTime;
+        long eventNumber;
+        cMessageHeap messageQueue @label(futureEvents);
         int lastModuleId @group(modules);
         cModule *systemModule @group(modules);
         cModule *module[] @sizeGetter(lastModuleId) @group(modules) @label(modules);
@@ -410,13 +412,13 @@ class cXMLElement
 {
     fields:
         @omitGetVerb(true);
-        string getTagName @group(general) @label(tagName);
-        string getNodeValue @group(general) @label(nodeValue);
-        string getSourceLocation @group(general) @label(sourceLocation);
-        bool hasAttributes @group(general);
-        bool hasChildren @group(general);
-        //XXX const cXMLAttributeMap& getAttributes @group(general);
-        //XXX cXMLElementList getChildren @group(general);
+        string getTagName @label(tagName);
+        string getNodeValue @label(nodeValue);
+        string getSourceLocation @label(sourceLocation);
+        bool hasAttributes;
+        bool hasChildren;
+        //XXX const cXMLAttributeMap& getAttributes;
+        //XXX cXMLElementList getChildren;
 }
 
 
