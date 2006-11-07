@@ -1,3 +1,7 @@
+2006-11-07  Andras Varga
+
+	* cDensityEstBase: added cellInfo() method
+
 2006-11-06  Andras Varga
 
 	* internal class cStructDescriptor refactored and renamed

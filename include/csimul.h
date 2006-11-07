@@ -95,6 +95,7 @@ class SIM_API cSimulation : public cObject
   public:
     // internal: FES
     cMessageHeap msgQueue;     // future messages (FES)
+    cMessageHeap& messageQueue() {return msgQueue;}  // accessor for sim_std.msg
 
     // internal: things that cannot be done from the constructor of global object
     void init();
