@@ -107,7 +107,10 @@ class cBasicChannel extends cChannel
 {
     fields:
         @omitGetVerb(true);
-        //XXX add delay etc
+        double delay;
+        double error;
+        double datarate;
+        bool disabled;
         bool isBusy @group(state);
         simtime_t transmissionFinishes @group(state);
 }
@@ -352,9 +355,9 @@ class cPar extends cObject
         char type @enum(cPar_Type) @settable;
         string prompt @settable;
         bool isNumeric @group(flags);
+        bool isConstant @group(flags);
         bool isInput @settable @group(flags);
         bool isRedirected @group(flags);
-        bool isConstant @group(flags);
 }
 
 class cLinkedList extends cObject
