@@ -19,9 +19,34 @@
 
 
 proc create_genericobjectinspector {name geom wantcontentspage focuscontentspage} {
+    global icons help_tips
 
     set w $name
     create_inspector_toplevel $w $geom
+
+    if {![regexp {\.(ptr.*)-([0-9]+)} $w match object type]} {
+        error "window name $w doesn't look like an inspector window"
+    }
+
+    set type [opp_getobjectbaseclass $object]
+
+    if {$type=="cSimpleModule" || $type=="cCompoundModule"} {
+        if {$type=="cCompoundModule"} {
+            pack_iconbutton $w.toolbar.graph  -image $icons(asgraphics) -command "inspect_this $w {As Graphics}"
+            set help_tips($w.toolbar.graph)  {Network graphics}
+        }
+        pack_iconbutton $w.toolbar.win    -image $icons(asoutput) -command "inspect_this $w {Module output}"
+        pack_iconbutton $w.toolbar.sep1   -separator
+        set help_tips($w.toolbar.owner)  {Inspect parent module}
+        set help_tips($w.toolbar.win)    {See module output}
+        moduleinspector_add_run_buttons $w
+    } else {
+        set insptypes [opp_supported_insp_types $object]
+        if {[lsearch -exact $insptypes "As Graphics"]!=-1} {
+            pack_iconbutton $w.toolbar.graph  -image $icons(asgraphics) -command "inspect_this $w {As Graphics}"
+            set help_tips($w.toolbar.graph)  {Inspect graphically}
+        }
+    }
 
     set nb [inspector_createnotebook $w]
 
