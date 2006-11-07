@@ -22,6 +22,7 @@
 #include <map>
 #include <vector>
 #include "defs.h"
+#include "cenvir.h"
 
 class cXMLElement;
 class cModule;
@@ -131,6 +132,9 @@ class SIM_API cXMLElement
 
     // internal: matches from root element
     static cXMLElement *getDocumentElementByPath(cXMLElement *documentnode, const char *pathexpr, ParamResolver *resolver=NULL);
+
+    // internal
+    std::string tostr(int level) const;
 
     /** @name Common properties */
     //@{
@@ -305,12 +309,17 @@ class SIM_API cXMLElement
     cXMLElement *getElementByPath(const char *pathexpression, cXMLElement *root=NULL, ParamResolver *resolver=NULL) const;
 
     /**
-     * Dumps tree content to ev in a XML-like format. This method is only
+     * Prints detailedInfo() on ev.
+     */
+    void debugDump() const {ev << detailedInfo();}
+
+    /**
+     * Returns tree contents in an XML-like format. This method is only
      * useful for debugging, because it does not perform necessary escaping
      * in text nodes and attribute values, so the output is not necessarily
      * well-formed XML.
      */
-    void debugDump(int depth=0) const;
+    virtual std::string detailedInfo() const;
     //@}
 };
 
