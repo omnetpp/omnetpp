@@ -18,6 +18,7 @@
 #include <ctype.h>
 #include <string.h>
 #include <iostream>
+#include <sstream>
 #include <string>
 #include "cxmlelement.h"
 #include "minixpath.h"
@@ -288,25 +289,32 @@ cXMLElement *cXMLElement::getElementByPath(const char *pathexpr, cXMLElement *ro
                                                    root ? root->getParentNode() : NULL);
 }
 
-void cXMLElement::debugDump(int depth) const
+std::string cXMLElement::tostr(int depth) const
 {
+    std::stringstream os;
     int i;
-    for (i=0; i<depth; i++) ev << "  ";
-    ev << "<" << getTagName();
+    for (i=0; i<depth; i++) os << "  ";
+    os << "<" << getTagName();
     cXMLAttributeMap map = getAttributes();
     for (cXMLAttributeMap::iterator it=map.begin(); it!=map.end(); it++)
-        ev << " " << it->first << "=\"" << it->second << "\"";
+        os << " " << it->first << "=\"" << it->second << "\"";
     if (!*getNodeValue() && !getFirstChild())
-        {ev << "/>\n"; return;}
-    ev << ">";
-    ev << getNodeValue();
+        {os << "/>\n"; return os.str();}
+    os << ">";
+    os << getNodeValue();
     if (!getFirstChild())
-        {ev << "</" << getTagName() << ">\n"; return;}
-    ev << "\n";
+        {os << "</" << getTagName() << ">\n"; return os.str();}
+    os << "\n";
     for (cXMLElement *child=getFirstChild(); child; child=child->getNextSibling())
-        child->debugDump(depth+1);
-    for (i=0; i<depth; i++) ev << "  ";
-    ev << "</" << getTagName() << ">\n";
+        child->tostr(depth+1);
+    for (i=0; i<depth; i++) os << "  ";
+    os << "</" << getTagName() << ">\n";
+    return os.str();
+}
+
+std::string cXMLElement::detailedInfo() const
+{
+    return tostr(0);
 }
 
 //---------------

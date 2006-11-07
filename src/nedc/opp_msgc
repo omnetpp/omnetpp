@@ -631,6 +631,10 @@ while ($msg =~ s/(message|class|struct)\s+(.+?)\s*{(.*?)};?//s)
                 if ($isarray) {
                     print STDERR "*** Error: cannot set array field of the base class in '$msgname'\n"; $ret=1;
                 }
+                if ($fieldenum ne '') {
+                    #FIXME double-check this!!!!
+                    print STDERR "*** Error: cannot specify enum for base class field in '$msgname'\n"; $ret=1;
+                }
                 if ($fieldvalue eq '') {
                     print STDERR "*** Error: missing field type in '$msgname'\n"; $ret=1;
                 }
