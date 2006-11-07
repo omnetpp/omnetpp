@@ -7,7 +7,6 @@ import java.util.EventObject;
 import java.util.List;
 
 import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IResourceChangeEvent;
 import org.eclipse.core.resources.IResourceChangeListener;
 import org.eclipse.core.resources.IResourceDelta;
@@ -106,6 +105,7 @@ import org.omnetpp.ned2.model.ex.NedFileNodeEx;
 
 public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette {
     
+    public final static String ID = "org.omnetpp.ide.gteditor"; 
     
     class OutlinePage extends ContentOutlinePage implements IAdaptable {
 

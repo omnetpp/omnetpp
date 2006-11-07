@@ -2,20 +2,26 @@ package org.omnetpp.ned.editor.graph.edit;
 
 import java.util.List;
 
+import org.eclipse.core.resources.IFile;
 import org.eclipse.draw2d.ConnectionAnchor;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.geometry.Point;
+import org.eclipse.gef.Request;
+import org.eclipse.gef.RequestConstants;
+import org.eclipse.ui.IFileEditorInput;
+import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.PartInitException;
+import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.part.FileEditorInput;
 import org.omnetpp.common.displaymodel.DisplayString;
 import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.figures.GateAnchor;
 import org.omnetpp.figures.SubmoduleFigure;
 import org.omnetpp.figures.layout.SubmoduleConstraint;
+import org.omnetpp.ned.editor.graph.GraphicalNedEditor;
 import org.omnetpp.ned2.model.NEDElement;
-import org.omnetpp.ned2.model.ex.ConnectionNodeEx;
 import org.omnetpp.ned2.model.ex.SubmoduleNodeEx;
-import org.omnetpp.ned2.model.interfaces.IConnectable;
-import org.omnetpp.ned2.model.interfaces.INamedGraphNode;
-import org.omnetpp.resources.NEDResourcesPlugin;
+import org.omnetpp.ned2.model.interfaces.INEDTypeInfo;
 
 
 // TODO implement UnpinRequest 
@@ -159,5 +165,25 @@ public class SubmoduleEditPart extends ModuleEditPart {
     public CompoundModuleEditPart getCompoundModulePart() {
         return (CompoundModuleEditPart)getParent();
     }
-    
+
+    @Override
+    public void performRequest(Request req) {
+        super.performRequest(req);
+        // lets open or activate a new editor if somone has double clicked the submodule
+        if (RequestConstants.REQ_OPEN.equals(req.getType())) {
+            INEDTypeInfo typeInfo = getSubmoduleModel().getTypeNEDTypeInfo();
+            if (typeInfo == null)
+                return;
+            IFile file = typeInfo.getNEDFile();
+            IFileEditorInput fileEditorInput = new FileEditorInput(file);
+            try {
+                PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage()
+                    .openEditor(fileEditorInput, GraphicalNedEditor.ID, true);
+            } catch (PartInitException e) {
+                // TODO check if this can really happen?
+                e.printStackTrace();
+            }
+        }
+
+    }
 }
