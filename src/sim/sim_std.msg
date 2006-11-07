@@ -20,7 +20,6 @@
 // Usage: opp_msgc -Xnc -Xns sim_std.ins
 //
 
-
 cplusplus
 {{
 
@@ -76,13 +75,13 @@ enum cGate_Type;
 
 struct cDensityEstBase_Cell;
 
-
 class cObject
 {
     fields:
         @omitGetVerb(true);
         string className @group(basic);
-        string fullName @group(basic) @label(name) @tooltip(name with index);
+        string name @group(basic) @settable @tooltip(base name);
+        string fullName @group(basic) @tooltip(name with index);
         string fullPath @group(basic);
         string info @group(basic);
         string detailedInfo @group(basic);
@@ -134,7 +133,6 @@ class cSimpleModule extends cModule
 {
     fields:
         @omitGetVerb(true);
-        //XXX bool isTerminated @group(state);
         bool usesActivity @group(activity);
         unsigned int stackSize @group(activity);
         unsigned int stackUsage @group(activity);
@@ -146,9 +144,19 @@ class cCompoundModule extends cModule
 
 //----
 
-//XXX class cComponentType extends cObject
-//XXX class cModuleType extends cComponentType
-//XXX class cChannelType extends cComponentType
+class cModuleInterface extends cObject
+{
+    fields:
+        @omitGetVerb(true);
+        int numParams @group(parameters);
+        string paramName[] @sizeGetter(numParams) @group(parameters);
+        string paramType[] @sizeGetter(numParams) @group(parameters);
+        bool isParamConst[] @sizeGetter(numParams) @group(parameters);
+        int numGates @group(gates);
+        string gateName[] @sizeGetter(numParams) @group(gates);
+        char gateType[] @sizeGetter(numParams) @group(gates);
+        bool isGateVector[] @sizeGetter(numParams) @group(gates);
+};
 
 //----
 
@@ -180,14 +188,14 @@ class cDisplayString
 {
     fields:
         @omitGetVerb(true);
-        string getString @label(string);
+        string getString @label(string) @settable;
 }
 
 class cArray extends cObject
 {
     fields:
         @omitGetVerb(true);
-        bool takeOwnership @group(general);
+        bool takeOwnership @group(general) @settable;
         cObject *get[] @sizeGetter(items) @label(contents);
 }
 
@@ -195,19 +203,23 @@ class cMessage extends cObject
 {
     fields:
         @omitGetVerb(true);
-        int kind @group(message);
-        int priority @group(message);
-        long length @group(message);
-        long byteLength @group(message);
-        bool hasBitError @group(message);
+        int kind @group(message) @settable;
+        int priority @group(message) @settable;
+        long length @group(message) @settable;
+        long byteLength @group(message) @settable;
+        bool hasBitError @group(message) @settable;
         string displayString @group(message);
+        cArray parList @group(obsolete);
+
+        cMessage *encapsulatedMsg;
+        cPolymorphic *controlInfo;
 
         bool isScheduled @group(sending);
         bool isSelfMessage @group(sending);
         simtime_t creationTime @group(sending);
         simtime_t sendingTime @group(sending);
         simtime_t arrivalTime @group(sending);
-        simtime_t timestamp @group(sending);
+        simtime_t timestamp @group(sending) @settable;
         int senderModuleId @group(sending);
         int senderGateId @group(sending);
         cModule *senderModule @group(sending);
@@ -216,20 +228,14 @@ class cMessage extends cObject
         int arrivalGateId @group(sending);
         cModule *arrivalModule @group(sending);
         cGate *arrivalGate @group(sending);
-
-//XXX PARAMETERS???
-
-        cMessage *encapsulatedMsg;
-        cPolymorphic *controlInfo;
-        //XXX void *contextPointer
 }
 
 class cPacket extends cMessage
 {
     fields:
         @omitGetVerb(true);
-        short protocol @group(packet);
-        short pdu @group(packet);
+        short protocol @group(packet) @settable;
+        short pdu @group(packet) @settable;
 }
 
 //----
@@ -333,7 +339,7 @@ class cOutVector extends cObject
 {
     fields:
         @omitGetVerb(true);
-        bool isEnabled;
+        bool isEnabled @settable;
         long valuesReceived;
         long valuesStored;
 }
@@ -342,14 +348,13 @@ class cPar extends cObject
 {
     fields:
         @omitGetVerb(true);
-        char type @enum(cPar_Type);
-        bool isNumeric;
-        bool isInput;
-//XXX        bool isVolatile @group(general);
-//XXX        bool isConstant @group(general);
-//XXX        bool isSet @group(general);
-//XXX        bool hasDefaultValue @group(general);
-//XXX        string toString @group(general);
+        string getAsText @label(asText);
+        char type @enum(cPar_Type) @settable;
+        string prompt @settable;
+        bool isNumeric @group(flags);
+        bool isInput @settable @group(flags);
+        bool isRedirected @group(flags);
+        bool isConstant @group(flags);
 }
 
 class cLinkedList extends cObject
@@ -373,7 +378,7 @@ class cQueue extends cObject
         @omitGetVerb(true);
         int length;
         bool takeOwnership @group(general);
-        //XXX elements?
+        //Note: elements are available under contents[]
 }
 
 class cSimulation extends cObject
@@ -417,8 +422,7 @@ class cXMLElement
         string getSourceLocation @label(sourceLocation);
         bool hasAttributes;
         bool hasChildren;
-        //XXX const cXMLAttributeMap& getAttributes;
-        //XXX cXMLElementList getChildren;
+        string detailedInfo @label(contents);
 }
 
 
