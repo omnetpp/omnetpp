@@ -20,7 +20,6 @@
 // Usage: opp_msgc -Xnc -Xns sim_std.ins
 //
 
-
 cplusplus
 {{
 
@@ -70,13 +69,13 @@ enum cGate_Type;
 
 struct cDensityEstBase_Cell;
 
-
 class cObject
 {
     fields:
         @omitGetVerb(true);
         string className @group(basic);
-        string fullName @group(basic) @label(name) @tooltip(name with index);
+        string name @group(basic) @settable @tooltip(base name);
+        string fullName @group(basic) @tooltip(name with index);
         string fullPath @group(basic);
         string info @group(basic);
         string detailedInfo @group(basic);
@@ -201,34 +200,38 @@ class cDisplayString
 {
     fields:
         @omitGetVerb(true);
-        string toString;
+        string toString @settable;
 }
 
 class cArray extends cObject
 {
     fields:
         @omitGetVerb(true);
-        bool takeOwnership @group(general);
-        cObject *get[] @sizeGetter(items) @label(contents) @group(general);
+        bool takeOwnership @group(general) @settable;
+        cObject *get[] @sizeGetter(items) @label(contents);
 }
 
 class cMessage extends cObject
 {
     fields:
         @omitGetVerb(true);
-        int kind @group(general);
-        int priority @group(general);
-        long length @group(general);
-        long byteLength @group(general);
-        bool hasBitError @group(general);
-        string displayString @group(general);
+        int kind @group(message) @settable;
+        int priority @group(message) @settable;
+        long length @group(message) @settable;
+        long byteLength @group(message) @settable;
+        bool hasBitError @group(message) @settable;
+        string displayString @group(message);
+        cArray parList @group(obsolete);
+
+        cMessage *encapsulatedMsg;
+        cPolymorphic *controlInfo;
 
         bool isScheduled @group(sending);
         bool isSelfMessage @group(sending);
         simtime_t creationTime @group(sending);
         simtime_t sendingTime @group(sending);
         simtime_t arrivalTime @group(sending);
-        simtime_t timestamp @group(sending);
+        simtime_t timestamp @group(sending) @settable;
         int senderModuleId @group(sending);
         int senderGateId @group(sending);
         cModule *senderModule @group(sending);
@@ -238,9 +241,6 @@ class cMessage extends cObject
         cModule *arrivalModule @group(sending);
         cGate *arrivalGate @group(sending);
 
-        cMessage *encapsulatedMsg @group(general);
-        cPolymorphic *controlInfo @group(general);
-        //XXX void *contextPointer
         //XXX various IDs
 }
 
@@ -248,19 +248,21 @@ class cMessagePar extends cObject
 {
     fields:
         @omitGetVerb(true);
-        bool takeOwnership @group(general);
-        char type @group(general);
-        bool isNumeric @group(general);
-        bool isConstant @group(general);
-        bool isInput @group(general);
+        string getAsText @label(asText);
+        char type @enum(cPar_Type) @settable;
+        string prompt @settable;
+        bool isNumeric @group(flags);
+        bool isConstant @group(flags);
+        bool isInput @settable @group(flags);
+        bool isRedirected @group(flags);
 }
 
 class cPacket extends cMessage
 {
     fields:
         @omitGetVerb(true);
-        short protocol @group(general);
-        short pdu @group(general);
+        short protocol @group(packet) @settable;
+        short pdu @group(packet) @settable;
 }
 
 //----
@@ -269,15 +271,15 @@ class cStatistic extends cObject
 {
     fields:
         @omitGetVerb(true);
-        long samples @group(general);
-        double weights @group(general);
-        double sum @group(general);
-        double sqrSum @group(general);
-        double min @group(general);
-        double max @group(general);
-        double mean @group(general);
-        double stddev @group(general);
-        double variance @group(general);
+        long samples;
+        double weights;
+        double sum;
+        double sqrSum;
+        double min;
+        double max;
+        double mean;
+        double stddev;
+        double variance;
 }
 
 class cStdDev extends cStatistic
@@ -356,46 +358,46 @@ class cFSM extends cObject
 {
     fields:
         @omitGetVerb(true);
-        int state @group(general);
-        string stateName @group(general);
+        int state;
+        string stateName;
 }
 
 class cMathFunction extends cNoncopyableObject
 {
     fields:
         @omitGetVerb(true);
-        int numArgs @group(general);
+        int numArgs;
 }
 
 class cNEDFunction extends cNoncopyableObject
 {
     fields:
         @omitGetVerb(true);
-        char returnType @group(general);
-        int numArgs @group(general);
-        string argTypes @group(general);
+        char returnType;
+        int numArgs;
+        string argTypes;
 }
 
 class cOutVector extends cNoncopyableObject
 {
     fields:
         @omitGetVerb(true);
-        bool isEnabled @group(general);
-        long valuesReceived @group(general);
-        long valuesStored @group(general);
+        bool isEnabled @settable;
+        long valuesReceived;
+        long valuesStored;
 }
 
 class cPar extends cObject
 {
     fields:
         @omitGetVerb(true);
-        char type @group(general) @enum(cPar_Type);
-        bool isNumeric @group(general);
-        bool isVolatile @group(general);
-        bool isConstant @group(general);
-        bool isSet @group(general);
-        bool hasDefaultValue @group(general);
-        string toString @group(general);
+        string toString;
+        char type @enum(cPar_Type);
+        bool isNumeric @group(flags);
+        bool isConstant @group(flags);
+        bool isVolatile @group(lags);
+        bool isSet @group(flags);
+        bool hasDefaultValue @group(flags);
 }
 
 class cProperties extends cPolymorphic
@@ -415,35 +417,34 @@ class cLinkedList extends cObject
 {
     fields:
         @omitGetVerb(true);
-        int length @group(general);
+        int length;
 }
 
 class cMessageHeap extends cObject
 {
     fields:
         @omitGetVerb(true);
-        int length @group(general);
-        cMessage *peek[] @sizeGetter(length) @group(general) @label(messages);
+        int length;
+        cMessage *peek[] @sizeGetter(length) @label(messages);
 }
 
 class cQueue extends cObject
 {
     fields:
         @omitGetVerb(true);
-        int length @group(general);
+        int length;
         bool takeOwnership @group(general);
-        //XXX elements?
+        //Note: elements are available under contents[]
 }
 
 class cSimulation extends cNoncopyableObject
 {
     fields:
         @omitGetVerb(true);
-        int runNumber @group(general);
-        simtime_t simTime @group(general);
-        long eventNumber @group(general);
-        //int contextType @group(general);
-        cMessageHeap messageQueue @label(futureEvents) @group(general);
+        int runNumber;
+        simtime_t simTime;
+        long eventNumber;
+        cMessageHeap messageQueue @label(futureEvents);
         int lastModuleId @group(modules);
         cModule *systemModule @group(modules);
         cModule *module[] @sizeGetter(lastModuleId) @group(modules) @label(modules);
@@ -472,13 +473,12 @@ class cXMLElement
 {
     fields:
         @omitGetVerb(true);
-        string getTagName @group(general) @label(tagName);
-        string getNodeValue @group(general) @label(nodeValue);
-        string getSourceLocation @group(general) @label(sourceLocation);
-        bool hasAttributes @group(general);
-        bool hasChildren @group(general);
-        //XXX const cXMLAttributeMap& getAttributes @group(general);
-        //XXX cXMLElementList getChildren @group(general);
+        string getTagName @label(tagName);
+        string getNodeValue @label(nodeValue);
+        string getSourceLocation @label(sourceLocation);
+        bool hasAttributes;
+        bool hasChildren;
+        string detailedInfo @label(contents);
 }
 
 
