@@ -171,9 +171,6 @@ void TInspector::update()
 
    // owner button on toolbar
    setToolbarInspectButton(".toolbar.owner",mod ? mod->parentModule() : object->owner(), INSP_DEFAULT);
-
-   // refresh "fields" page if one exists
-   CHK(Tcl_VarEval(interp, "refresh_fields2page ", windowname, NULL));
 }
 
 void TInspector::setEntry(const char *entry, const char *val)

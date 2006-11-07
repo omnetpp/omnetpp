@@ -60,9 +60,11 @@ proc inspector_createfields2page {w} {
         catch {destroy .popup}
         set key [Tree:getselection %W]
         getFieldNodeInfo_inspect %W $key
-   }
+    }
 
-    refresh_fields2page $w   ;#FIXME this should be done from C++
+    Tree:open $nb.fields2.tree "0-obj-$object"
+
+    #refresh_fields2page $w
 }
 
 proc refresh_fields2page {w} {
