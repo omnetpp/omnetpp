@@ -328,9 +328,10 @@ class TWatchInspectorFactory : public cInspectorFactory
     TWatchInspectorFactory(const char *name) : cInspectorFactory(name) {}
 
     bool supportsObject(cObject *obj) {
-        // if it has a structdescriptor, we say we don't support it because we leave it to TObjInspector
-        cClassDescriptor *sd = obj->getDescriptor();
-        return !sd && dynamic_cast<cWatchBase *>(obj)!=NULL;
+        // Return true if it's a watch for a simple type (int, double, string etc).
+        // For structures, we prefer the normal TGenericObjectInspector.
+        // Currently we're prepared for cStdVectorWatcherBase.
+        return dynamic_cast<cWatchBase *>(obj) && !dynamic_cast<cStdVectorWatcherBase *>(obj);
     }
     int inspectorType() {return INSP_OBJECT;}
     double qualityAsDefault(cObject *object) {return 2.0;}
