@@ -728,7 +728,7 @@ int TGraphicalModWindow::getDisplayStringPar(Tcl_Interp *interp, int argc, const
    if (argc!=4) {Tcl_SetResult(interp, "wrong number of args", TCL_STATIC); return TCL_ERROR;}
 
    bool searchparents = atoi(argv[3])!=0;
-   cModule *mod = (cModule *)strToPtr( argv[1] );
+   cModule *mod = dynamic_cast<cModule *>(strToPtr( argv[1] ));
    if (!mod) {Tcl_SetResult(interp, "null or malformed pointer", TCL_STATIC); return TCL_ERROR;}
 
    const char *parname = argv[2];
@@ -766,7 +766,7 @@ int TGraphicalModWindow::getSubmodQ(Tcl_Interp *interp, int argc, const char **a
    // args: <module ptr> <qname>
    if (argc!=3) {Tcl_SetResult(interp, "wrong number of args", TCL_STATIC); return TCL_ERROR;}
 
-   cModule *mod = (cModule *)strToPtr( argv[1] );
+   cModule *mod = dynamic_cast<cModule *>(strToPtr( argv[1] ));
    const char *qname = argv[2];
    cQueue *q = dynamic_cast<cQueue *>(mod->findObject(qname));
    char buf[21];
@@ -780,7 +780,7 @@ int TGraphicalModWindow::getSubmodQLen(Tcl_Interp *interp, int argc, const char 
    // args: <module ptr> <qname>
    if (argc!=3) {Tcl_SetResult(interp, "wrong number of args", TCL_STATIC); return TCL_ERROR;}
 
-   cModule *mod = (cModule *)strToPtr( argv[1] );
+   cModule *mod = dynamic_cast<cModule *>(strToPtr( argv[1] ));
    const char *qname = argv[2];
    cQueue *q = dynamic_cast<cQueue *>(mod->findObject(qname));
    if (!q) {Tcl_SetResult(interp, "", TCL_STATIC); return TCL_OK;}

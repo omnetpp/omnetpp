@@ -81,7 +81,7 @@ TclQuotedString::~TclQuotedString()
 
 //=======================================================================
 
-char *ptrToStr(void *ptr, char *buffer)
+char *voidPtrToStr(void *ptr, char *buffer)
 {
     static char staticbuf[20];
     if (buffer==NULL)
@@ -94,7 +94,7 @@ char *ptrToStr(void *ptr, char *buffer)
     return buffer;
 }
 
-void *strToPtr(const char *s)
+void *strToVoidPtr(const char *s)
 {
     if (s[0]!='p' || s[1]!='t' || s[2]!='r')
        return NULL;

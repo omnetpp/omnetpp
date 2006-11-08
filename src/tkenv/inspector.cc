@@ -73,7 +73,7 @@ void splitInspectorName(const char *namestr, cObject *&object, int& type)
    assert(*s=='-');  // there must be a '-' in the string
    *s = '\0';
 
-   object = (cObject *)strToPtr(namestr+1);
+   object = dynamic_cast<cObject *>(strToPtr(namestr+1));
    type = atoi(s+1);
    *s = '-';  // restore '-'
 }
