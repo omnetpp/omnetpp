@@ -70,7 +70,7 @@ int cStdVectorWatcherDescriptor::getFieldCount(void *)
 unsigned int cStdVectorWatcherDescriptor::getFieldTypeFlags(void *, int field)
 {
     switch (field) {
-        case 0: return FD_ISARRAY; // as far as we're concerned. We don't know about FD_ISCOMPOUND, FD_ISPOINTER, FD_ISOBJECT
+        case 0: return FD_ISARRAY; // as far as we're concerned. We don't know about FD_ISCOMPOUND, FD_ISPOINTER, FD_ISPOLYM / FD_ISCOBJECT
         default: return FD_NONE;
     }
 }
