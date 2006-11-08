@@ -191,14 +191,14 @@ class cDisplayString
 {
     fields:
         @omitGetVerb(true);
-        string getString @label(string) @editable;
+        string value @getter(getString) @setter(parse) @editable;
 }
 
 class cArray extends cObject
 {
     fields:
         @omitGetVerb(true);
-        bool takeOwnership @group(general) @editable;
+        bool takeOwnership @group(general) @setter(takeOwnership) @editable;
         cObject *get[] @sizeGetter(items) @label(contents);
 }
 
@@ -210,7 +210,7 @@ class cMessage extends cObject
         int priority @group(message) @editable;
         long length @group(message) @editable;
         long byteLength @group(message) @editable;
-        bool hasBitError @group(message) @editable;
+        bool hasBitError @group(message) @setter(setBitError) @editable;
         string displayString @group(message);
         cArray parList @group(obsolete);
 
@@ -342,7 +342,7 @@ class cOutVector extends cObject
 {
     fields:
         @omitGetVerb(true);
-        bool isEnabled @editable;
+        bool isEnabled @setter(setEnabled) @editable;
         long valuesReceived;
         long valuesStored;
 }
@@ -351,12 +351,12 @@ class cPar extends cObject
 {
     fields:
         @omitGetVerb(true);
-        string getAsText @label(asText);
-        char type @enum(cPar_Type) @editable;
+        string value @getter(getAsText) @setter(setFromText) @editable;
+        char type @enum(cPar_Type);
         string prompt @editable;
         bool isNumeric @group(flags);
         bool isConstant @group(flags);
-        bool isInput @editable @group(flags);
+        bool isInput @setter(setInput) @editable @group(flags);
         bool isRedirected @group(flags);
 }
 
@@ -380,7 +380,7 @@ class cQueue extends cObject
     fields:
         @omitGetVerb(true);
         int length;
-        bool takeOwnership @group(general);
+        bool takeOwnership @group(general) @setter(takeOwnership) @editable;
         //Note: elements are available under contents[]
 }
 

@@ -780,7 +780,7 @@ sub prepareForCodeGeneration
 
     # check earlier declarations and register this class
     if (grep(/^\Q$msgname\E$/,@classes)) {
-        if (0) { #FIXME what is the condition?
+        if (0) { # XXX add condition
             print STDERR "*** Error: attempt to redefine '$msgname'\n"; $ret=1;
         } elsif ($classtype{$msgname} ne $classtype) {
             print STDERR "*** Error: definition of '$msgname' inconsistent with earlier declaration(s)\n"; $ret=1;
@@ -859,6 +859,12 @@ sub prepareForCodeGeneration
             }
 
             # allow customization of names
+            if ($fprops{$fieldname}->{setter} ne '') {
+                $setter{$fieldname} = $fprops{$fieldname}->{setter};
+            }
+            if ($fprops{$fieldname}->{getter} ne '') {
+                $getter{$fieldname} = $fprops{$fieldname}->{getter};
+            }
             if ($fprops{$fieldname}->{sizeSetter} ne '') {
                 $alloc{$fieldname} = $fprops{$fieldname}->{sizeSetter};
             }
@@ -1768,41 +1774,35 @@ sub generateDescriptorClass
     print CC "            return basedesc->setFieldAsString(object,field,i,value);\n";
     print CC "        field -= basedesc->getFieldCount(object);\n";
     print CC "    }\n";
-    if ($generate_setters_in_descr) {
-        print CC "    $msgclass *pp = ($msgclass *)object;\n";
-        print CC "    switch (field) {\n";
-        for ($i=0; $i<$fieldcount; $i++)
-        {
-            if ($fkind{$fieldlist[$i]} eq 'basic') {
-                if ($classtype eq 'struct') {
-                    if ($fisarray{$fieldlist[$i]}) {
-                        if ($farraysize{$fieldlist[$i]} ne '') {
-                            print CC "        case $i: if (i>=$farraysize{$fieldlist[$i]}) return false;\n";
-                        } else {
-                            print CC "        case $i: if (i>=pp->$varsize{$fieldlist[$i]}) return false;\n";
-                        }
-                        print CC "                pp->$var{$fieldlist[$i]}\[i\] = $fromstring{$fieldlist[$i]}(value); return true;\n";
+    print CC "    $msgclass *pp = ($msgclass *)object;\n";
+    print CC "    switch (field) {\n";
+    for ($i=0; $i<$fieldcount; $i++)
+    {
+        $fieldname = $fieldlist[$i];
+        $editableprop = $fprops{$fieldname}->{editable};
+        if ($editableprop eq 'true' || $editableprop eq '1' || ($generate_setters_in_descr && $fkind{$fieldname} eq 'basic')) {
+            if ($classtype eq 'struct') {
+                if ($fisarray{$fieldname}) {
+                    if ($farraysize{$fieldname} ne '') {
+                        print CC "        case $i: if (i>=$farraysize{$fieldname}) return false;\n";
                     } else {
-                        print CC "        case $i: pp->$var{$fieldlist[$i]} = $fromstring{$fieldlist[$i]}(value); return true;\n";
+                        print CC "        case $i: if (i>=pp->$varsize{$fieldname}) return false;\n";
                     }
+                    print CC "                pp->$var{$fieldname}\[i\] = $fromstring{$fieldname}(value); return true;\n";
                 } else {
-                    if ($fisarray{$fieldlist[$i]}) {
-                        print CC "        case $i: pp->$setter{$fieldlist[$i]}(i,$fromstring{$fieldlist[$i]}(value)); return true;\n";
-                    } else {
-                        print CC "        case $i: pp->$setter{$fieldlist[$i]}($fromstring{$fieldlist[$i]}(value)); return true;\n";
-                    }
+                    print CC "        case $i: pp->$var{$fieldname} = $fromstring{$fieldname}(value); return true;\n";
                 }
-            } elsif ($fkind{$fieldlist[$i]} eq 'struct') {
-                print CC "        case $i: return false;\n";
             } else {
-                die 'internal error';
+                if ($fisarray{$fieldname}) {
+                    print CC "        case $i: pp->$setter{$fieldname}(i,$fromstring{$fieldname}(value)); return true;\n";
+                } else {
+                    print CC "        case $i: pp->$setter{$fieldname}($fromstring{$fieldname}(value)); return true;\n";
+                }
             }
         }
-        print CC "        default: return false;\n";
-        print CC "    }\n";
-    } else {
-        print CC "    return false;\n";
     }
+    print CC "        default: return false;\n";
+    print CC "    }\n";
     print CC "}\n";
     print CC "\n";
 
