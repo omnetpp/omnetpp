@@ -54,6 +54,7 @@ class SIM_API cClassDescriptor : public cNoncopyableObject
         FD_ISPOINTER = 0x04,  ///< field is pointer or pointer array: T *a; T *a[]; T *a[10];
         FD_ISCPOLYMORPHIC = 0x08, ///< if ISCOMPOUND: basic type (T) subclasses from cPolymorphic
         FD_ISCOBJECT = 0x10,  ///< if ISCOMPOUND: basic type (T) subclasses from cObject
+        FD_ISEDITABLE = 0x20, ///< whether field supports setFieldAsString()
         FD_NONE = 0x0
     };
 
@@ -169,6 +170,7 @@ class SIM_API cClassDescriptor : public cNoncopyableObject
     bool getFieldIsPointer(void *object, int field) {return getFieldTypeFlags(object, field) & FD_ISPOINTER;}
     bool getFieldIsCPolymorphic(void *object, int field) {return getFieldTypeFlags(object, field) & (FD_ISCPOLYMORPHIC|FD_ISCOBJECT);}
     bool getFieldIsCObject(void *object, int field) {return getFieldTypeFlags(object, field) & FD_ISCOBJECT;}
+    bool getFieldIsEditable(void *object, int field) {return getFieldTypeFlags(object, field) & FD_ISEDITABLE;}
     //@}
 
     /**
