@@ -483,7 +483,7 @@ int getFileName_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 int getObjectFullName_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
    if (argc!=2) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
-   cObject *object = (cObject *)strToPtr( argv[1] );
+   cPolymorphic *object = strToPtr(argv[1]);
    if (!object) {Tcl_SetResult(interp, "null or malformed pointer", TCL_STATIC); return TCL_ERROR;}
    Tcl_SetResult(interp, TCLCONST(object->fullName()), TCL_VOLATILE);
    return TCL_OK;
@@ -492,7 +492,7 @@ int getObjectFullName_cmd(ClientData, Tcl_Interp *interp, int argc, const char *
 int getObjectFullPath_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
    if (argc!=2) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
-   cObject *object = (cObject *)strToPtr( argv[1] );
+   cPolymorphic *object = strToPtr(argv[1]);
    if (!object) {Tcl_SetResult(interp, "null or malformed pointer", TCL_STATIC); return TCL_ERROR;}
    Tcl_SetResult(interp, TCLCONST(object->fullPath().c_str()), TCL_VOLATILE);
    return TCL_OK;
@@ -501,7 +501,7 @@ int getObjectFullPath_cmd(ClientData, Tcl_Interp *interp, int argc, const char *
 int getObjectClassName_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
    if (argc!=2) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
-   cObject *object = (cObject *)strToPtr( argv[1] );
+   cPolymorphic *object = strToPtr(argv[1]);
    if (!object) {Tcl_SetResult(interp, "null or malformed pointer", TCL_STATIC); return TCL_ERROR;}
    Tcl_SetResult(interp, TCLCONST(object->className()), TCL_VOLATILE);
    return TCL_OK;
@@ -510,7 +510,7 @@ int getObjectClassName_cmd(ClientData, Tcl_Interp *interp, int argc, const char 
 int getObjectOwner_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
    if (argc!=2) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
-   cObject *object = (cObject *)strToPtr( argv[1] );
+   cObject *object = dynamic_cast<cObject *>(strToPtr(argv[1]));
    if (!object) {Tcl_SetResult(interp, "null or malformed pointer", TCL_STATIC); return TCL_ERROR;}
 
    Tcl_SetResult(interp, ptrToStr(object->owner()), TCL_VOLATILE);
@@ -520,7 +520,7 @@ int getObjectOwner_cmd(ClientData, Tcl_Interp *interp, int argc, const char **ar
 int getObjectInfoString_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
    if (argc!=2) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
-   cObject *object = (cObject *)strToPtr( argv[1] );
+   cPolymorphic *object = strToPtr(argv[1]);
    if (!object) {Tcl_SetResult(interp, "null or malformed pointer", TCL_STATIC); return TCL_ERROR;}
 
    Tcl_SetResult(interp, TCLCONST(object->info().c_str()), TCL_VOLATILE);
@@ -530,7 +530,7 @@ int getObjectInfoString_cmd(ClientData, Tcl_Interp *interp, int argc, const char
 int getObjectField_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
    if (argc!=3) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
-   cObject *object = (cObject *)strToPtr( argv[1] );
+   cPolymorphic *object = strToPtr(argv[1]);
    if (!object) {Tcl_SetResult(interp, "null or malformed pointer", TCL_STATIC); return TCL_ERROR;}
    const char *field = argv[2];
 
@@ -595,7 +595,7 @@ int getObjectField_cmd(ClientData, Tcl_Interp *interp, int argc, const char **ar
 int getObjectBaseClass_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
    if (argc!=2) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
-   cObject *object = (cObject *)strToPtr( argv[1] );
+   cPolymorphic *object = strToPtr(argv[1]);
    if (!object) {Tcl_SetResult(interp, "null or malformed pointer", TCL_STATIC); return TCL_ERROR;}
 
    if (dynamic_cast<cSimpleModule *>(object))
@@ -630,7 +630,7 @@ int getObjectBaseClass_cmd(ClientData, Tcl_Interp *interp, int argc, const char 
 int getObjectId_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
    if (argc!=2) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
-   cObject *object = (cObject *)strToPtr( argv[1] );
+   cPolymorphic *object = strToPtr(argv[1]);
    if (!object) {Tcl_SetResult(interp, "null or malformed pointer", TCL_STATIC); return TCL_ERROR;}
 
    if (dynamic_cast<cModule *>(object))
@@ -649,7 +649,7 @@ int getObjectId_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 int getComponentTypeObject_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
    if (argc!=2) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
-   cObject *object = (cObject *)strToPtr( argv[1] );
+   cObject *object = dynamic_cast<cObject *>(strToPtr(argv[1]));
    if (!object) {Tcl_SetResult(interp, "null or malformed pointer", TCL_STATIC); return TCL_ERROR;}
    cComponent *component = dynamic_cast<cModule *>(object);
    if (!component) {Tcl_SetResult(interp, "object is not a module or channel", TCL_STATIC); return TCL_ERROR;}
@@ -661,7 +661,7 @@ int getComponentTypeObject_cmd(ClientData, Tcl_Interp *interp, int argc, const c
 int getChildObjects_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
    if (argc!=2) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
-   cObject *object = (cObject *)strToPtr( argv[1] );
+   cObject *object = dynamic_cast<cObject *>(strToPtr(argv[1]));
    if (!object) {Tcl_SetResult(interp, "null or malformed pointer", TCL_STATIC); return TCL_ERROR;}
 
    cCollectChildrenVisitor visitor(object);
@@ -674,7 +674,7 @@ int getChildObjects_cmd(ClientData, Tcl_Interp *interp, int argc, const char **a
 int getNumChildObjects_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
    if (argc!=2) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
-   cObject *object = (cObject *)strToPtr( argv[1] );
+   cObject *object = dynamic_cast<cObject *>(strToPtr(argv[1]));
    if (!object) {Tcl_SetResult(interp, "null or malformed pointer", TCL_STATIC); return TCL_ERROR;}
 
    cCountChildrenVisitor visitor(object);
@@ -690,7 +690,7 @@ int getNumChildObjects_cmd(ClientData, Tcl_Interp *interp, int argc, const char 
 int hasChildObjects_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
    if (argc!=2) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
-   cObject *object = (cObject *)strToPtr( argv[1] );
+   cObject *object = dynamic_cast<cObject *>(strToPtr(argv[1]));
    if (!object) {Tcl_SetResult(interp, "null or malformed pointer", TCL_STATIC); return TCL_ERROR;}
 
    // TBD may be optimized, by exiting foreach on 1st child
@@ -706,7 +706,7 @@ int getSubObjects_cmd(ClientData, Tcl_Interp *interp, int argc, const char **arg
 {
    // args: <ptr> <maxcount>
    if (argc!=3) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
-   cObject *object = (cObject *)strToPtr( argv[1] );
+   cObject *object = dynamic_cast<cObject *>(strToPtr(argv[1]));
    if (!object) {Tcl_SetResult(interp, "null or malformed pointer", TCL_STATIC); return TCL_ERROR;}
    int maxcount = atoi(argv[2]);
    if (!maxcount) {Tcl_SetResult(interp, "maxcount must be a nonzero integer", TCL_STATIC); return TCL_ERROR;}
@@ -726,7 +726,7 @@ int getSubObjectsFilt_cmd(ClientData, Tcl_Interp *interp, int argc, const char *
    //    <class> and <fullpath> may contain wildcards
    //    <order> is one of "Name", "Full Name", "Class" or empty string
    if (argc!=7) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
-   cObject *object = (cObject *)strToPtr( argv[1] );
+   cObject *object = dynamic_cast<cObject *>(strToPtr(argv[1]));
    if (!object) {Tcl_SetResult(interp, "null or malformed pointer", TCL_STATIC); return TCL_ERROR;}
 
    const char *catstr = argv[2];
@@ -957,7 +957,7 @@ int displayString_cmd(ClientData, Tcl_Interp *interp, int argc, const char **arg
    if (0==strcmp(argv[2], "ptrparse"))
    {
        if (argc!=4) {Tcl_SetResult(interp, "wrong argcount for ptrparse", TCL_STATIC); return TCL_ERROR;}
-       cDisplayString *dp = (cDisplayString *)strToPtr( argv[1] );
+       cDisplayString *dp = (cDisplayString *)strToVoidPtr(argv[1]);
        const char *array = argv[3];
        for (int k=0; k<dp->getNumTags(); k++)
        {
@@ -1111,7 +1111,7 @@ int hsbToRgb_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 int getModulePar_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
    if (argc!=3) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
-   cModule *mod = (cModule *)strToPtr( argv[1] );
+   cModule *mod = dynamic_cast<cModule *>(strToPtr(argv[1]));
    if (!mod) {Tcl_SetResult(interp, "null or malformed pointer", TCL_STATIC); return TCL_ERROR;}
 
    const char *parname = argv[2];
@@ -1126,7 +1126,7 @@ int getModulePar_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv
 int setModulePar_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
    if (argc!=4) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
-   cModule *mod = (cModule *)strToPtr( argv[1] );
+   cModule *mod = dynamic_cast<cModule *>(strToPtr(argv[1]));
    if (!mod) {Tcl_SetResult(interp, "null or malformed pointer", TCL_STATIC); return TCL_ERROR;}
    const char *parname = argv[2];
    const char *value = argv[3];
@@ -1183,7 +1183,7 @@ int sortFesAndGetRange_cmd(ClientData, Tcl_Interp *interp, int argc, const char 
 int msgArrTimeFromNow_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
    if (argc!=2) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
-   cMessage *msg = (cMessage *)strToPtr( argv[1] );
+   cMessage *msg = dynamic_cast<cMessage *>(strToPtr( argv[1] ));
    if (!msg) {Tcl_SetResult(interp, "null or malformed pointer", TCL_STATIC); return TCL_ERROR;}
    Tcl_SetObjResult(interp, Tcl_NewDoubleObj(msg->arrivalTime()-simulation.simTime()));
    return TCL_OK;
@@ -1207,7 +1207,7 @@ int inspect_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
    if (argc!=3 && argc!=4) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
    TOmnetTkApp *app = getTkApplication();
 
-   cObject *object = (cObject *)strToPtr( argv[1] );
+   cObject *object = dynamic_cast<cObject *>(strToPtr(argv[1]));
    if (!object) {Tcl_SetResult(interp, "null or malformed pointer", TCL_STATIC); return TCL_ERROR;}
 
    int type;
@@ -1226,7 +1226,7 @@ int supportedInspTypes_cmd(ClientData, Tcl_Interp *interp, int argc, const char 
 {
    // expected arg: pointer
    if (argc!=2) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
-   cObject *object = (cObject *)strToPtr( argv[1] );
+   cObject *object = dynamic_cast<cObject *>(strToPtr(argv[1]));
    if (!object) {Tcl_SetResult(interp, "null or malformed pointer", TCL_STATIC); return TCL_ERROR;}
 
    // collect supported inspector types
@@ -1427,7 +1427,7 @@ int getClassDescriptor_cmd(ClientData, Tcl_Interp *interp, int argc, const char 
 {
    if (argc!=2) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
 
-   cObject *object = (cObject *)strToPtr(argv[1]);
+   cObject *object = dynamic_cast<cObject *>(strToPtr(argv[1]));
    cClassDescriptor *sd = object ? object->getDescriptor() : NULL;
    Tcl_SetResult(interp, ptrToStr(sd), TCL_VOLATILE);
    return TCL_OK;
@@ -1598,7 +1598,7 @@ int colorizeImage_cmd(ClientData, Tcl_Interp *interp, int argc, const char **arg
 int getClassDescriptorFor_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
    if (argc<2) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
-   cPolymorphic *object = (cPolymorphic *) strToPtr(argv[1]);
+   cPolymorphic *object = strToPtr(argv[1]);
    cClassDescriptor *sd = object ? object->getDescriptor() : NULL;
    Tcl_SetResult(interp, ptrToStr(sd), TCL_VOLATILE);
    return TCL_OK;
@@ -1621,7 +1621,7 @@ int classDescriptor_cmd(ClientData, Tcl_Interp *interp, int argc, const char **a
    E_TRY
    if (argc<4) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
    void *object = strToPtr(argv[1]);
-   cClassDescriptor *sd = (cClassDescriptor *)strToPtr(argv[2]);
+   cClassDescriptor *sd = dynamic_cast<cClassDescriptor *>(strToPtr(argv[2]));
    if (!object) {Tcl_SetResult(interp, "object is null", TCL_STATIC); return TCL_ERROR;}
    if (!sd) {Tcl_SetResult(interp, "classdescriptor is null", TCL_STATIC); return TCL_ERROR;}
    const char *cmd = argv[3];
@@ -1689,12 +1689,21 @@ int classDescriptor_cmd(ClientData, Tcl_Interp *interp, int argc, const char **a
       return TCL_OK;
    }
 
-   // 'opp_classdescriptor <object> <classdescr> fieldisobject <fieldindex>'
-   if (strcmp(cmd,"fieldisobject")==0)
+   // 'opp_classdescriptor <object> <classdescr> fieldiscpolymorphic <fieldindex>'
+   if (strcmp(cmd,"fieldiscpolymorphic")==0)
    {
       if (argc!=5) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
       int fld = atoi(argv[4]);
-      Tcl_SetResult(interp, TCLCONST(sd->getFieldIsObject(object, fld) ? "1" : "0"), TCL_STATIC);
+      Tcl_SetResult(interp, TCLCONST(sd->getFieldIsCPolymorphic(object, fld) ? "1" : "0"), TCL_STATIC);
+      return TCL_OK;
+   }
+
+   // 'opp_classdescriptor <object> <classdescr> fieldiscobject <fieldindex>'
+   if (strcmp(cmd,"fieldiscobject")==0)
+   {
+      if (argc!=5) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
+      int fld = atoi(argv[4]);
+      Tcl_SetResult(interp, TCLCONST(sd->getFieldIsCObject(object, fld) ? "1" : "0"), TCL_STATIC);
       return TCL_OK;
    }
 
@@ -1778,7 +1787,7 @@ int classDescriptor_cmd(ClientData, Tcl_Interp *interp, int argc, const char **a
       if (argc!=5 && argc!=6) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
       int fld = atoi(argv[4]);
       int i = (argc==6) ? atoi(argv[5]) : 0;
-      Tcl_SetResult(interp, ptrToStr(sd->getFieldStructPointer(object, fld, i)), TCL_VOLATILE);
+      Tcl_SetResult(interp, voidPtrToStr(sd->getFieldStructPointer(object, fld, i)), TCL_VOLATILE);
       return TCL_OK;
    }
    return TCL_ERROR;

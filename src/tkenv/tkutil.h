@@ -20,6 +20,9 @@
 #define WIN32_LEAN_AND_MEAN
 #include <tk.h>
 
+#include "tkdefs.h"
+#include "cobject.h"
+
 //
 // In some installations Tcl headers files have 'char*' without 'const char*'
 // in arg lists -- we have to cast away 'const char*' from args in our Tcl calls.
@@ -82,14 +85,15 @@ class TclQuotedString
 //
 // Utility functions:
 //
-
-class cObject;
 class cCollectObjectsVisitor;
 
 typedef char *(*InfoFunc)(cObject *);
 
-char *ptrToStr(void *ptr, char *buffer=NULL);
-void *strToPtr(const char *s );
+char *voidPtrToStr(void *ptr, char *buffer=NULL);
+void *strToVoidPtr(const char *s);
+
+inline char *ptrToStr(cPolymorphic *ptr, char *buffer=NULL) {return voidPtrToStr((void *)ptr, buffer);}
+inline cPolymorphic *strToPtr(const char *s) {return (cPolymorphic *)strToVoidPtr(s);}
 
 void setObjectListResult(Tcl_Interp *interp, cCollectObjectsVisitor *visitor);
 
