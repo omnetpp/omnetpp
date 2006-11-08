@@ -63,7 +63,6 @@ class SIM_API cOutVector : public cObject
   public:
     /** @name Constructors, destructor, assignment */
     //@{
-
     /**
      * Constructor. Accepts the object name, and tuple which can be 1 or 2
      * (2 is discouraged).
@@ -102,7 +101,7 @@ class SIM_API cOutVector : public cObject
     virtual cPolymorphic *dup() const    {return new cOutVector(*this);}
 
     /**
-     * Produces a one-line description of object contents into the buffer passed as argument.
+     * Produces a one-line description of object contents.
      * See cObject for more details.
      */
     virtual std::string info() const;
@@ -187,21 +186,21 @@ class SIM_API cOutVector : public cObject
     /**
      * Returns true if recording the data is enabled, false otherwise.
      */
-    virtual bool isEnabled()  {return enabled;}
+    virtual bool isEnabled() const  {return enabled;}
 
     /**
      * Returns the total number of values passed to the record() method of
      * this output vector object. This includes the values passed while
      * the object was disabled (see disable()).
      */
-    long valuesReceived()  {return num_received;}
+    long valuesReceived() const  {return num_received;}
 
     /**
      * Returns the number of values actually stored by this output vector object.
      * The values passed while the object was disabled (via disable(),
      * environment configuration, filtering, etc.) do not count.
      */
-    long valuesStored()  {return num_stored;}
+    long valuesStored() const  {return num_stored;}
 
     /**
      * Returns the tuple parameter passed to the constructor.
