@@ -76,6 +76,12 @@ message BarPacket extends FooPacket
 };
 
 // class without base class (NOT derived from cObject!)
+class SomeClass
+{
+    fields:
+        int src;
+};
+
 class MyClass
 {
     properties:

@@ -229,8 +229,17 @@ if ($generate_classes)
 print CC "\n\n";
 
 # pre-register some OMNeT++ classes so that one doesn't need to announce them
+#
+# note: $classtype values:
+#  'cobject'      ==> subclasses from cObject
+#  'cpolymorphic' ==> subclasses from cPolymorphic but NOT from cObject
+#  'foreignclass' ==> non-cPolymorphic class (NOTE: currently only external
+#                     classes announced as "class noncobject" belong here, because
+#                     all classes *we* generate are cPolymorphic.)
+#  'struct'       ==> struct (i.e. no member functions)
+#
 @classes = ('cPolymorphic', 'cObject', 'cMessage', 'cPacket');
-$classtype{'cPolymorphic'} = 'noncobject';
+$classtype{'cPolymorphic'} = 'cpolymorphic';
 $classtype{'cObject'} = 'cobject';
 $classtype{'cMessage'} = 'cobject';
 $classtype{'cPacket'} = 'cobject';
@@ -241,7 +250,7 @@ $reservedwords = 'abstract|allowunconnected|ancestor|anytype|bool|channelinterfa
     . '|class|connections|const|cplusplus|datarate|default|delay|display|double|do|endchannel'
     . '|endfor|endmodule|endnetwork|endsimple|enum|error|extends|false|fields|for|function'
     . '|gatesizes|gates|if|import|index|inout|input|interface|int|like|long|message|module'
-    . '|network|nocheck|noncobject|numeric|on|output|package|parameters|properties|property'
+    . '|network|nocheck|noncobject|cpolymorphic|numeric|on|output|package|parameters|properties|property'
     . '|readonly|ref|short|simple|sizeof|string|struct|submodules|this|to|true|typename|types'
     . '|unsigned|where|withcppclass|xmldoc|xml';
 
@@ -266,7 +275,7 @@ while ($msg =~ s/import\s+(".*?");//s)
 }
 
 # parse type announcements in ned text
-while ($msg =~ s/(struct|cobject|noncobject|class|class\s+noncobject|message)\s+([A-Za-z_][A-Za-z0-9_]*)\s*;//s)
+while ($msg =~ s/(struct|cobject|noncobject|class|class\s+noncobject|class\s+cpolymorphic|message)\s+([A-Za-z_][A-Za-z0-9_]*)\s*;//s)
 {
     $class = $2;
     $type0 = $1;
@@ -278,11 +287,13 @@ while ($msg =~ s/(struct|cobject|noncobject|class|class\s+noncobject|message)\s+
         $type = 'cobject';
     } elsif ($type0 eq 'noncobject') {
         print STDERR "*** Warning: 'noncobject' is deprecated, write 'class noncobject' instead\n";
-        $type = 'noncobject';
+        $type = 'foreignclass';
     } elsif ($type0 eq 'class' or $type0 eq 'message') {
         $type = 'cobject';
     } elsif ($type0 =~ /class\s+noncobject/) {
-        $type = 'noncobject';
+        $type = 'foreignclass';
+    } elsif ($type0 =~ /class\s+cpolymorphic/) {
+        $type = 'cpolymorphic';
     } else {
         die 'invalid type';
     }
@@ -747,12 +758,19 @@ sub prepareForCodeGeneration
         if ($keyword eq 'message' || $msgname eq 'cObject') {
             $classtype = 'cobject';
         } elsif ($keyword eq 'class') {
-            $classtype = 'noncobject';
+            $classtype = 'cpolymorphic'; # Note: we never generate non-cPolymorphic classes
         } elsif ($keyword eq 'struct') {
             $classtype = 'struct';
         } else {
             die 'internal error';
         }
+        # if announced earlier as noncpolymorphic, accept that. XXX needs to be re-thought
+        if (grep(/^\Q$msgname\E$/,@classes)) {
+            if ($classtype{$msgname} eq 'foreignclass' && $classtype eq 'cpolymorphic') {
+                $classtype = 'foreignclass';
+            }
+        }
+
     } else {
         if (!grep(/^\Q$msgbase\E$/,@classes)) {
             print STDERR "*** Error: unknown base class '$msgbase'\n"; $ret=1;
@@ -790,7 +808,7 @@ sub prepareForCodeGeneration
         if ($keyword eq 'message') {
             $msgbaseclass = 'cMessage';
         } elsif ($keyword eq 'class') {
-            $msgbaseclass = 'cPolymorphic';
+            $msgbaseclass = 'cPolymorphic';  # note: all classes we generate subclass from cPolymorphic!
         } elsif ($keyword eq 'struct') {
             $msgbaseclass = '';
         } else {
@@ -814,7 +832,7 @@ sub prepareForCodeGeneration
         if ($fprops{$fieldname}->{"enum"} ne '' && !grep(/^\Q$fprops{$fieldname}->{"enum"}\E$/,@enums)) {
             print STDERR "*** Error: undeclared enum '$fprops{$fieldname}->{enum}' used in '$msgname'\n"; $ret=1;
         }
-        if ($classtype{$ftype{$fieldname}} eq 'cobject' && ($classtype eq 'noncobject' || $classtype eq 'struct')) {
+        if ($classtype{$ftype{$fieldname}} eq 'cobject' && ($classtype ne 'cobject')) {
             print STDERR "*** Error: cannot use cObject field '$ftype{$fieldname} $fieldname' in struct or non-cObject class '$msgname'\n"; $ret=1;
         }
 
@@ -1007,13 +1025,13 @@ sub generateClass
             print H " *     $realmsgclass(const $realmsgclass& other) : $msgclass() {operator=(other);}\n";
         }
         print H " *     $realmsgclass& operator=(const $realmsgclass& other) {$msgclass\:\:operator=(other); return *this;}\n";
-        if ($classtype eq "cobject") {
+        if ($classtype eq "cobject" || $classtype eq "cpolymorphic") {
             print H " *     virtual cPolymorphic *dup() const {return new $realmsgclass(*this);}\n";
         }
         print H " *     // ADD CODE HERE to redefine and implement pure virtual functions from $msgclass\n";
         print H " * };\n";
         print H " * </pre>\n";
-        if ($classtype eq "cobject") {
+        if ($classtype eq "cobject" || $classtype eq "cpolymorphic") {
             print H " *\n";
             print H " * The following should go into a .cc (.cpp) file:\n";
             print H " *\n";
@@ -1077,7 +1095,7 @@ sub generateClass
     }
     # unfortunately we don't know whether this class is cPolymorphic or not, so we can't add a dup() there...
     # TODO once we drop MSVC 6.0 support, we can use covariant return types here, and that'll solve the problem.
-    if ($classtype eq "cobject") {
+    if ($classtype eq "cobject" || $classtype eq "cpolymorphic") {
         if ($gap) {
             print H "    virtual cPolymorphic *dup() const {throw new cException(\"You forgot to manually add a dup() function to class $realmsgclass\");}\n";
         } else {
@@ -1117,12 +1135,8 @@ sub generateClass
     print H "};\n\n";
 
     if (!$gap) {
-        if ($classtype eq "cobject") {
+        if ($classtype eq "cobject" || $classtype eq "cpolymorphic") {
             print CC "Register_Class($msgclass);\n\n";
-        } elsif ($classtype eq "noncobject") {
-            # we don't know whether this class is cPolymorphic or not, so we can't register it
-            print CC "// if $msgclass descends from cPolymorphic, you may want to register it in one of your .cc files\n";
-            print CC "// Register_Class($msgclass);\n\n";
         }
         print H "inline void doPacking(cCommBuffer *b, $realmsgclass& obj) {obj.netPack(b);}\n";
         print H "inline void doUnpacking(cCommBuffer *b, $realmsgclass& obj) {obj.netUnpack(b);}\n\n";
@@ -1286,8 +1300,8 @@ sub generateClass
     print CC "void $msgclass\:\:netPack(cCommBuffer *b)\n";
     print CC "{\n";
     if ($msgbaseclass ne "") {
-        if ($classtype eq "cobject") {
-            print CC "    $msgbaseclass\:\:netPack(b);\n";
+        if ($classtype eq "cobject" || $classtype eq "cpolymorphic") {
+            print CC "    $msgbaseclass\:\:netPack(b);\n" unless ($msgbaseclass eq "cPolymorphic");
         } else {
             print CC "    doPacking(b,($msgbaseclass&)*this);\n"; # this would do for cObject too, but the other is nicer
         }
@@ -1312,8 +1326,8 @@ sub generateClass
     print CC "void $msgclass\:\:netUnpack(cCommBuffer *b)\n";
     print CC "{\n";
     if ($msgbaseclass ne "") {
-        if ($classtype eq "cobject") {
-            print CC "    $msgbaseclass\:\:netUnpack(b);\n";
+        if ($classtype eq "cobject" || $classtype eq "cpolymorphic") {
+            print CC "    $msgbaseclass\:\:netUnpack(b);\n" unless ($msgbaseclass eq "cPolymorphic");
         } else {
             print CC "    doUnpacking(b,($msgbaseclass&)*this);\n"; # this would do for cObject too, but the other is nicer
         }
@@ -1582,7 +1596,8 @@ sub generateDescriptorClass
         push(@flags, "FD_ISARRAY") if ($fisarray{$fieldlist[$i]});
         push(@flags, "FD_ISCOMPOUND") if ($fkind{$fieldlist[$i]} eq 'struct');
         push(@flags, "FD_ISPOINTER") if (0);  #FIXME
-        push(@flags, "FD_ISOBJECT") if ($classtype{$ftype{$fieldlist[$i]}} eq 'cobject');
+        push(@flags, "FD_ISCPOLYMORPHIC") if ($classtype{$ftype{$fieldlist[$i]}} eq 'cpolymorphic');
+        push(@flags, "FD_ISCPOLYMORPHIC | FD_ISCOBJECT") if ($classtype{$ftype{$fieldlist[$i]}} eq 'cobject');
         $flags = join(" | ", @flags);
         $flags = "0" if (@flags==());
         print CC "        case $i: return $flags;\n";
@@ -1837,8 +1852,9 @@ sub generateDescriptorClass
                     $value = "pp->$getter{$fieldname}()";
                 }
             }
+            $fieldclasstype = $classtype{$ftype{$fieldname}};
             $cast = "(void *)";
-            $cast .= "static_cast<cPolymorphic *>" if ($classtype{$ftype{$fieldname}} eq 'cobject');
+            $cast .= "static_cast<cPolymorphic *>" if ($fieldclasstype eq 'cpolymorphic' || $fieldclasstype eq 'cobject');
             if ($fispointer{$fieldname}) {
                 print CC "        case $i: return $cast($value); break;\n";
             } else {
