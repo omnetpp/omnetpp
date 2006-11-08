@@ -60,7 +60,7 @@ message FooPacket extends BasicPacket
         string host[];
         IPAddress src;
         IPAddress dest;
-        PayloadPacket twoPayloads[2] @sizeGetter(BUMM);
+        PayloadPacket twoPayloads[2];
         PayloadPacket payload[];
 };
 
@@ -76,6 +76,12 @@ message BarPacket extends FooPacket
 };
 
 // class without base class (NOT derived from cObject!)
+class SomeClass
+{
+    fields:
+        int src;
+};
+
 class MyClass
 {
     properties:
