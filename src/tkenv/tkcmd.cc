@@ -1707,6 +1707,15 @@ int classDescriptor_cmd(ClientData, Tcl_Interp *interp, int argc, const char **a
       return TCL_OK;
    }
 
+   // 'opp_classdescriptor <object> <classdescr> fieldiseditable <fieldindex>'
+   if (strcmp(cmd,"fieldiseditable")==0)
+   {
+      if (argc!=5) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
+      int fld = atoi(argv[4]);
+      Tcl_SetResult(interp, TCLCONST(sd->getFieldIsEditable(object, fld) ? "1" : "0"), TCL_STATIC);
+      return TCL_OK;
+   }
+
    // 'opp_classdescriptor <object> <classdescr> fieldname <fieldindex>'
    if (strcmp(cmd,"fieldname")==0)
    {

@@ -74,7 +74,7 @@ class cObject
     fields:
         @omitGetVerb(true);
         string className @group(basic);
-        string name @group(basic) @settable @tooltip(base name);
+        string name @group(basic) @editable @tooltip(base name);
         string fullName @group(basic) @tooltip(name with index);
         string fullPath @group(basic);
         string info @group(basic);
@@ -200,14 +200,14 @@ class cDisplayString
 {
     fields:
         @omitGetVerb(true);
-        string toString @settable;
+        string toString @editable;
 }
 
 class cArray extends cObject
 {
     fields:
         @omitGetVerb(true);
-        bool takeOwnership @group(general) @settable;
+        bool takeOwnership @group(general) @editable;
         cObject *get[] @sizeGetter(items) @label(contents);
 }
 
@@ -215,11 +215,11 @@ class cMessage extends cObject
 {
     fields:
         @omitGetVerb(true);
-        int kind @group(message) @settable;
-        int priority @group(message) @settable;
-        long length @group(message) @settable;
-        long byteLength @group(message) @settable;
-        bool hasBitError @group(message) @settable;
+        int kind @group(message) @editable;
+        int priority @group(message) @editable;
+        long length @group(message) @editable;
+        long byteLength @group(message) @editable;
+        bool hasBitError @group(message) @editable;
         string displayString @group(message);
         cArray parList @group(obsolete);
 
@@ -231,7 +231,7 @@ class cMessage extends cObject
         simtime_t creationTime @group(sending);
         simtime_t sendingTime @group(sending);
         simtime_t arrivalTime @group(sending);
-        simtime_t timestamp @group(sending) @settable;
+        simtime_t timestamp @group(sending) @editable;
         int senderModuleId @group(sending);
         int senderGateId @group(sending);
         cModule *senderModule @group(sending);
@@ -249,11 +249,11 @@ class cMessagePar extends cObject
     fields:
         @omitGetVerb(true);
         string getAsText @label(asText);
-        char type @enum(cPar_Type) @settable;
-        string prompt @settable;
+        char type @enum(cPar_Type) @editable;
+        string prompt @editable;
         bool isNumeric @group(flags);
         bool isConstant @group(flags);
-        bool isInput @settable @group(flags);
+        bool isInput @editable @group(flags);
         bool isRedirected @group(flags);
 }
 
@@ -261,8 +261,8 @@ class cPacket extends cMessage
 {
     fields:
         @omitGetVerb(true);
-        short protocol @group(packet) @settable;
-        short pdu @group(packet) @settable;
+        short protocol @group(packet) @editable;
+        short pdu @group(packet) @editable;
 }
 
 //----
@@ -382,7 +382,7 @@ class cOutVector extends cNoncopyableObject
 {
     fields:
         @omitGetVerb(true);
-        bool isEnabled @settable;
+        bool isEnabled @editable;
         long valuesReceived;
         long valuesStored;
 }
