@@ -52,7 +52,8 @@ class SIM_API cClassDescriptor : public cNoncopyableObject
         FD_ISARRAY = 0x01,    ///< field is an array: int a[]; int a[10];
         FD_ISCOMPOUND = 0x02, ///< basic type (T) is struct or class: T a; T *a; T a[10]; T *a[]
         FD_ISPOINTER = 0x04,  ///< field is pointer or pointer array: T *a; T *a[]; T *a[10];
-        FD_ISOBJECT = 0x08,   ///< if ISCOMPOUND: basic type (T) subclasses from cPolymorphic
+        FD_ISCPOLYMORPHIC = 0x08, ///< if ISCOMPOUND: basic type (T) subclasses from cPolymorphic
+        FD_ISCOBJECT = 0x10,  ///< if ISCOMPOUND: basic type (T) subclasses from cObject
         FD_NONE = 0x0
     };
 
@@ -156,7 +157,7 @@ class SIM_API cClassDescriptor : public cNoncopyableObject
     /**
      * Must be redefined in subclasses to return the type flags of a field
      * in the client object. Flags is a binary OR of the following:
-     * FD_ISARRAY, FD_ISCOMPOUND, FD_ISPOINTER, FD_ISOBJECT.
+     * FD_ISARRAY, FD_ISCOMPOUND, FD_ISPOINTER, FD_ISCOBJECT, FD_ISCPOLYMORPHIC.
      * The argument must be in the 0..getFieldCount()-1 range, inclusive.
      */
     virtual unsigned int getFieldTypeFlags(void *object, int field) = 0;
@@ -166,7 +167,8 @@ class SIM_API cClassDescriptor : public cNoncopyableObject
     bool getFieldIsArray(void *object, int field) {return getFieldTypeFlags(object, field) & FD_ISARRAY;}
     bool getFieldIsCompound(void *object, int field) {return getFieldTypeFlags(object, field) & FD_ISCOMPOUND;}
     bool getFieldIsPointer(void *object, int field) {return getFieldTypeFlags(object, field) & FD_ISPOINTER;}
-    bool getFieldIsObject(void *object, int field) {return getFieldTypeFlags(object, field) & FD_ISOBJECT;}
+    bool getFieldIsCPolymorphic(void *object, int field) {return getFieldTypeFlags(object, field) & (FD_ISCPOLYMORPHIC|FD_ISCOBJECT);}
+    bool getFieldIsCObject(void *object, int field) {return getFieldTypeFlags(object, field) & FD_ISCOBJECT;}
     //@}
 
     /**
