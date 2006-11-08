@@ -6,7 +6,14 @@
 	  @customize, @omitGetVerb (or: @customize(true), @omitGetVerb(true))
 
 	* field properties currently understood:
-	  @enum(enumname); for arrays: @sizeGetter(methodname), @sizeSetter(methodname)
+	  @enum(enumname); 
+	  @editable or @editable(true); 
+	  @getter(methodname), 
+	  @setter(methodname);
+	  @sizeGetter(methodname), 
+	  @sizeSetter(methodname); 
+	  @label(some-text); 
+	  @hint(some-text)
 
 2006-10-22  Andras Varga
 
