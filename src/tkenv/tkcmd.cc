@@ -1744,6 +1744,21 @@ int classDescriptor_cmd(ClientData, Tcl_Interp *interp, int argc, const char **a
       return TCL_OK;
    }
 
+   // 'opp_classdescriptor <object> <classdescr> fieldsetvalue <fieldindex> <index> <value>'
+   if (strcmp(cmd,"fieldsetvalue")==0)
+   {
+      if (argc!=7) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
+      int fld = atoi(argv[4]);
+      int i = atoi(argv[5]);  // 0 if unspec (empty string)
+      const char *value = argv[6];
+      if (!sd->setFieldAsString(object, fld, i, value))
+      {
+         Tcl_SetResult(interp, "Syntax error", TCL_STATIC);
+         return TCL_ERROR;
+      }
+      return TCL_OK;
+   }
+
    // 'opp_classdescriptor <object> <classdescr> fieldproperty <fieldindex> <propertyname>'
    if (strcmp(cmd,"fieldproperty")==0)
    {
@@ -1783,6 +1798,7 @@ int classDescriptor_cmd(ClientData, Tcl_Interp *interp, int argc, const char **a
       Tcl_SetResult(interp, voidPtrToStr(sd->getFieldStructPointer(object, fld, i)), TCL_VOLATILE);
       return TCL_OK;
    }
+   Tcl_SetResult(interp, "first arg is not a valid option", TCL_STATIC);
    return TCL_ERROR;
    E_CATCH;
 }

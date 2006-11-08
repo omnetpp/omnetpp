@@ -445,16 +445,64 @@ proc getFieldNodeInfo_resolveObject {keyargs} {
 
 #
 # Invoked on hitting Enter or double-clicking in the tree, it opens
-# an inspector for the given object. Or at least opens/closes that tree branch.
+# an inspector for the given object. Or starts editing. Or at least
+# opens/closes that tree branch.
 #
 proc getFieldNodeInfo_inspect {w key} {
     set keyargs [split $key "-"]
     set ptr [getFieldNodeInfo_resolveObject $keyargs]
     if [opp_isnotnull $ptr] {
         opp_inspect $ptr "(default)"
+    } elseif [getFieldNodeInfo_iseditable $w $key] {
+        getFieldNodeInfo_edit $w $key
     } else {
         Tree:toggle $w $key
     }
+}
+
+#
+# Returns true if a tree node is editable (it's a field and its descriptor says editable)
+#
+proc getFieldNodeInfo_iseditable {w key} {
+    set keyargs [split $key "-"]
+    set keytype [lindex $keyargs 1]
+    if {$keytype=="field" || $keytype=="findex"} {
+        set obj [lindex $keyargs 2]
+        set sd [lindex $keyargs 3]
+        set fieldid [lindex $keyargs 4]
+        return [opp_classdescriptor $obj $sd fieldiseditable $fieldid]
+    }
+    return 0
+}
+
+#
+# Initiates in-place editing of a tree field
+#
+proc getFieldNodeInfo_edit {w key} {
+    set id [lindex [$w find withtag "text-$key"] 1]
+    if {$id!=""} {
+        editCanvasLabel $w $id [list getFieldNodeInfo_setvalue $w $key]
+    }
+}
+
+#
+# Sets the value of a tree field after in-place editing
+#
+proc getFieldNodeInfo_setvalue {w key value} {
+    set keyargs [split $key "-"]
+    set keytype [lindex $keyargs 1]
+    if {$keytype=="field" || $keytype=="findex"} {
+        set obj [lindex $keyargs 2]
+        set sd [lindex $keyargs 3]
+        set fieldid [lindex $keyargs 4]
+        set index [lindex $keyargs 5]
+        if [catch {opp_classdescriptor $obj $sd fieldsetvalue $fieldid $index $value} e] {
+            Tree:build $w
+            tk_messageBox -parent [winfo toplevel $w] -title "Tkenv" -icon error -type ok -message "Cannot set field value -- syntax error?"
+            return
+        }
+    }
+    Tree:build $w
 }
 
 
