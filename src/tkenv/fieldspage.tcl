@@ -63,8 +63,6 @@ proc inspector_createfields2page {w} {
     }
 
     Tree:open $nb.fields2.tree "0-obj-$object"
-
-    #refresh_fields2page $w
 }
 
 proc refresh_fields2page {w} {
@@ -72,7 +70,6 @@ proc refresh_fields2page {w} {
     if ![winfo exist $tree] {return}
 
     Tree:build $tree
-    #$tree xview moveto 0
 }
 
 #
@@ -188,7 +185,7 @@ proc getFieldNodeInfo {w op {key ""}} {
                 struct -
                 field -
                 findex {
-                    # FIXME can be improved performance-wise (this actually collects all children!)
+                    # XXX this can be improved performance-wise (this actually collects all children!)
                     set children [getFieldNodeInfo $w children $key]
                     return [expr [llength $children]!=0]
                 }
@@ -225,10 +222,11 @@ proc getFieldNodeInfo {w op {key ""}} {
                     set iscompound [opp_classdescriptor $obj $sd fieldiscompound $fieldid]
                     if {$iscompound} {
                         # return children on this class/struct
-                        set isobject [opp_classdescriptor $obj $sd fieldisobject $fieldid]
+                        set isobject [opp_classdescriptor $obj $sd fieldiscobject $fieldid]
+                        set ispoly [opp_classdescriptor $obj $sd fieldiscpolymorphic $fieldid]
                         set fieldptr [opp_classdescriptor $obj $sd fieldstructpointer $fieldid]
                         if [opp_isnull $fieldptr] {return ""}
-                        if {$isobject} {
+                        if {$ispoly} {
                             return [getFieldNodeInfo $w children "$depth-obj-$fieldptr"]
                         } else {
                             set fielddesc [opp_classdescriptor $obj $sd fieldstructdesc $fieldid]
@@ -246,7 +244,7 @@ proc getFieldNodeInfo {w op {key ""}} {
                     set iscompound [opp_classdescriptor $obj $sd fieldiscompound $fieldid]
                     if {$iscompound} {
                         # return children on this class/struct
-                        set isobject [opp_classdescriptor $obj $sd fieldisobject $fieldid]
+                        set isobject [opp_classdescriptor $obj $sd fieldiscobject $fieldid]
                         set fieldptr [opp_classdescriptor $obj $sd fieldstructpointer $fieldid $index]
                         if [opp_isnull $fieldptr] {return ""}
                         if {$isobject} {
@@ -343,7 +341,8 @@ proc getFieldNodeInfo_getFieldText {obj sd fieldid index} {
     set typename [opp_classdescriptor $obj $sd fieldtypename $fieldid]
     set isarray [opp_classdescriptor $obj $sd fieldisarray $fieldid]
     set iscompound [opp_classdescriptor $obj $sd fieldiscompound $fieldid]
-    set isobject [opp_classdescriptor $obj $sd fieldisobject $fieldid]
+    set ispoly [opp_classdescriptor $obj $sd fieldiscpolymorphic $fieldid]
+    set isobject [opp_classdescriptor $obj $sd fieldiscobject $fieldid]
 
     # field name can be overridden with @label property
     set name [opp_classdescriptor $obj $sd fieldproperty $fieldid "label"]
@@ -373,7 +372,6 @@ proc getFieldNodeInfo_getFieldText {obj sd fieldid index} {
         if {$isobject} {
             set fieldobj [opp_classdescriptor $obj $sd fieldstructpointer $fieldid $index]
             if [opp_isnull $fieldobj] {return "$name = \bNULL\b$typenametext"}
-            #FIXME this is wrong!!! isobject means iscPolymorphic not iscObject!
             if {[opp_getobjectowner $fieldobj]==$obj} {
                 set fieldobjname [opp_getobjectfullname $fieldobj]
             } else {
@@ -388,6 +386,8 @@ proc getFieldNodeInfo_getFieldText {obj sd fieldid index} {
                 set fieldobjinfotext ""
             }
             return "$name = \b($fieldobjclassname) $fieldobjname$fieldobjinfotext\b$typenametext"
+        } elseif {$ispoly} {
+            return "ispolymorphic!!! FIXME"
         } else {
             # a value can be generated via operator<<
             set value [opp_classdescriptor $obj $sd fieldvalue $fieldid $index]
@@ -417,7 +417,7 @@ proc getFieldNodeInfo_getFieldText {obj sd fieldid index} {
 
 #
 # If the given key (in split form) identifies an object (cClassDescriptor
-# isObject), returns its pointer. Otherwise returns [opp_null].
+# isCObject), returns its pointer. Otherwise returns [opp_null].
 #
 #
 proc getFieldNodeInfo_resolveObject {keyargs} {
@@ -429,7 +429,7 @@ proc getFieldNodeInfo_resolveObject {keyargs} {
         set sd [lindex $keyargs 3]
         set fieldid [lindex $keyargs 4]
         set index [lindex $keyargs 5]
-        set isobject [opp_classdescriptor $obj $sd fieldisobject $fieldid]
+        set isobject [opp_classdescriptor $obj $sd fieldiscobject $fieldid]
         set isarray [opp_classdescriptor $obj $sd fieldisarray $fieldid]
 
         if {$isobject && (!$isarray || $index!="")} {
