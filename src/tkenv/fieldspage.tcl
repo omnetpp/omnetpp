@@ -342,6 +342,7 @@ proc getFieldNodeInfo_getFieldText {obj sd fieldid index} {
     set iscompound [opp_classdescriptor $obj $sd fieldiscompound $fieldid]
     set ispoly [opp_classdescriptor $obj $sd fieldiscpolymorphic $fieldid]
     set isobject [opp_classdescriptor $obj $sd fieldiscobject $fieldid]
+    set iseditable [opp_classdescriptor $obj $sd fieldiseditable $fieldid]
 
     # field name can be overridden with @label property
     set name [opp_classdescriptor $obj $sd fieldproperty $fieldid "label"]
@@ -364,6 +365,11 @@ proc getFieldNodeInfo_getFieldText {obj sd fieldid index} {
         set typenametext " ($typename)"
     } else {
         set typenametext ""
+    }
+
+    # "editable" flag
+    if {$iseditable} {
+        set typenametext " \[...\] $typenametext"
     }
 
     if {$iscompound} {

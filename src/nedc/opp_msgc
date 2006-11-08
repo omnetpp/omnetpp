@@ -1593,11 +1593,15 @@ sub generateDescriptorClass
     for ($i=0; $i<$fieldcount; $i++)
     {
         @flags = ();
-        push(@flags, "FD_ISARRAY") if ($fisarray{$fieldlist[$i]});
-        push(@flags, "FD_ISCOMPOUND") if ($fkind{$fieldlist[$i]} eq 'struct');
-        push(@flags, "FD_ISPOINTER") if (0);  #FIXME
-        push(@flags, "FD_ISCPOLYMORPHIC") if ($classtype{$ftype{$fieldlist[$i]}} eq 'cpolymorphic');
-        push(@flags, "FD_ISCPOLYMORPHIC | FD_ISCOBJECT") if ($classtype{$ftype{$fieldlist[$i]}} eq 'cobject');
+        $fieldname = $fieldlist[$i];
+        push(@flags, "FD_ISARRAY") if ($fisarray{$fieldname});
+        push(@flags, "FD_ISCOMPOUND") if ($fkind{$fieldname} eq 'struct');
+        push(@flags, "FD_ISPOINTER") if ($fispointer{$fieldname});
+        push(@flags, "FD_ISCPOLYMORPHIC") if ($classtype{$ftype{$fieldname}} eq 'cpolymorphic');
+        push(@flags, "FD_ISCPOLYMORPHIC | FD_ISCOBJECT") if ($classtype{$ftype{$fieldname}} eq 'cobject');
+        $editableprop = $fprops{$fieldname}->{editable};
+        push(@flags, "FD_ISEDITABLE") if (($editableprop eq 'true' || $editableprop eq '1') ||
+                                          ($generate_setters_in_descr && $fkind{$fieldname} eq 'basic'));
         $flags = join(" | ", @flags);
         $flags = "0" if (@flags==());
         print CC "        case $i: return $flags;\n";
