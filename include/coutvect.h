@@ -162,6 +162,12 @@ class SIM_API cOutVector : public cNoncopyableObject
     virtual void disable()  {enabled=false;}
 
     /**
+     * Enables/disables recording data via this object.
+     * @see enable(), disable()
+     */
+    virtual void setEnabled(bool b)  {enabled=b;}
+
+    /**
      * Returns true if recording the data is enabled, false otherwise.
      */
     virtual bool isEnabled() const  {return enabled;}
