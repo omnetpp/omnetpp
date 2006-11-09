@@ -94,11 +94,6 @@ public class MultiPageNedEditor extends MultiPageEditorPart implements
 			// switch from graphics to text:
 			// generate text representation from the model
 			NedFileNodeEx modelRoot = graphEditor.getModel();
-            IFile ifile = ((FileEditorInput)getEditorInput()).getFile();
-            
-            // put the actual model state back to the incremental builder
-            res.setNEDFileContents(ifile, modelRoot);
-            
             // generate the text representation
             String textEditorContent = NEDTreeUtil.generateNedSource(modelRoot, true);
             // put it into the text editor

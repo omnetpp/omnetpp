@@ -233,6 +233,19 @@ public class NEDTreeUtil {
 	}
     
     /**
+     * @param s1
+     * @param s2
+     * @return true if both param is null, or s1 equals s2
+     */
+    private static boolean nullsafeIsEqual(String s1, String s2) {
+        if (s1 == s2)
+            return true;
+        if (s1 != null)
+            return s1.equals(s2);
+        return false;
+    }
+    
+    /**
      * @param tree1
      * @param tree2
      * @return Whether the two trees are equal
@@ -242,7 +255,7 @@ public class NEDTreeUtil {
             return false;
         
         for (int i = 0; i < tree1.getNumAttributes(); ++i) {
-            if (!tree1.getAttribute(i).equals(tree2.getAttribute(i)))
+            if ( !nullsafeIsEqual(tree1.getAttribute(i), tree2.getAttribute(i)))
                 return false;
         }
         
