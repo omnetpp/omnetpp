@@ -220,6 +220,16 @@ std::string cPar::info() const
     return out.str();
 }
 
+std::string cPar::detailedInfo() const
+{
+    if (isRedirected())
+        return ind.par->detailedInfo();
+    if (typechar=='M')
+        return xmlp.node==NULL ? "NULL" : xmlp.node->detailedInfo();
+    else
+        return "";
+}
+
 void cPar::writeContents(ostream& os)
 {
     if (isRedirected())

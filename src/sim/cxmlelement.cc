@@ -311,7 +311,7 @@ std::string cXMLElement::tostr(int depth) const
         {os << "</" << getTagName() << ">\n"; return os.str();}
     os << "\n";
     for (cXMLElement *child=getFirstChild(); child; child=child->getNextSibling())
-        child->tostr(depth+1);
+        os << child->tostr(depth+1);
     for (i=0; i<depth; i++) os << "  ";
     os << "</" << getTagName() << ">\n";
     return os.str();
