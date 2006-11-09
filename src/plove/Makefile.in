@@ -79,7 +79,7 @@ OBJS = $(PLOVE_OBJS) $(ENGINE_OBJS)
 default: @PLOVE_IF_POSSIBLE@
 
 plove: $(OBJS)
-	$(CC) $(LDFLAGS) $(OBJS) $(BLT_LIBS) $(TK_LIBS) $(SYS_LIBS) -o plove
+	$(CXX) $(LDFLAGS) $(OBJS) $(BLT_LIBS) $(TK_LIBS) $(SYS_LIBS) -o plove
 	../utils/install-prog plove $(OMNETPP_BIN_DIR)
 
 plove.o : plove.cc
