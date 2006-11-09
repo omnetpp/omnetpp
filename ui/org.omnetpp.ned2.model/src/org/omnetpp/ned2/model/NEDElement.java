@@ -5,6 +5,7 @@ import java.util.Iterator;
 
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.PlatformObject;
+import org.omnetpp.ned2.model.ex.NEDElementFactoryEx;
 import org.omnetpp.ned2.model.interfaces.INEDChangeListener;
 import org.omnetpp.ned2.model.interfaces.INEDTypeInfo;
 import org.omnetpp.ned2.model.interfaces.ITopLevelElement;
@@ -672,13 +673,14 @@ public abstract class NEDElement extends PlatformObject implements Iterable<NEDE
     public NEDElement dup(NEDElement parent) {
         NEDElement cloned = null;
 
-        try {
-            cloned = this.getClass().newInstance();
-        } catch (InstantiationException e) {
-            throw new RuntimeException(e);
-        } catch (IllegalAccessException e) {
-            throw new RuntimeException(e);
-        }
+//        try {
+//            cloned = this.getClass().newInstance();
+            cloned = NEDElementFactoryEx.getInstance().createNodeWithTag(getTagCode());
+//        } catch (InstantiationException e) {
+//            throw new RuntimeException(e);
+//        } catch (IllegalAccessException e) {
+//            throw new RuntimeException(e);
+//        }
         
         if (parent != null) 
             parent.appendChild(cloned);

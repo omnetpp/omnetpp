@@ -258,11 +258,11 @@ foreach $element (@elements)
     }
     print JAVA "\n";
     print JAVA "    /** You should never create an instance directly, use factory class instead */\n";
-    print JAVA "    public $elementclass() {\n";
+    print JAVA "    protected $elementclass() {\n";
     print JAVA "        applyDefaults();\n";
     print JAVA "    }\n\n";
     print JAVA "    /** You should never create an instance directly, use factory class instead */\n";
-    print JAVA "    public $elementclass(NEDElement parent) {\n";
+    print JAVA "    protected $elementclass(NEDElement parent) {\n";
     print JAVA "        super(parent);\n";
     print JAVA "        applyDefaults();\n";
     print JAVA "    }\n\n";

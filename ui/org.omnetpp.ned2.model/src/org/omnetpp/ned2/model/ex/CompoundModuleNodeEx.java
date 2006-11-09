@@ -22,17 +22,17 @@ import org.omnetpp.ned2.model.pojo.InterfaceNameNode;
 import org.omnetpp.ned2.model.pojo.SubmoduleNode;
 import org.omnetpp.ned2.model.pojo.SubmodulesNode;
 
-public class CompoundModuleNodeEx extends CompoundModuleNode
+public final class CompoundModuleNodeEx extends CompoundModuleNode
 						implements INamedGraphNode, IDerived, IImplementor, 
                                    ITopLevelElement, IParametrized, IGateContainer {
 
 	protected DisplayString displayString = null;
 
-	CompoundModuleNodeEx() {
+    protected CompoundModuleNodeEx() {
 		init();
 	}
 
-	CompoundModuleNodeEx(NEDElement parent) {
+    protected CompoundModuleNodeEx(NEDElement parent) {
 		super(parent);
 		init();
 	}

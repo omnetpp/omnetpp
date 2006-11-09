@@ -7,7 +7,7 @@ import org.omnetpp.ned2.model.pojo.NEDElementFactory;
  * @author rhornig
  * Create model elements based on string or numeric id
  */
-public class NEDElementFactoryEx extends NEDElementFactory {
+public final class NEDElementFactoryEx extends NEDElementFactory {
 
 	public NEDElement createNodeWithTag(String tagname, NEDElement parent) {
         if (tagname.equals(NedFileNodeEx.getStaticTagName()))

@@ -11,13 +11,13 @@ import org.omnetpp.ned2.model.pojo.GateNode;
  * @author rhornig
  * Extended GateNode
  */
-public class GateNodeEx extends GateNode implements IIndexable, INamed, IParentable {
+public final class GateNodeEx extends GateNode implements IIndexable, INamed, IParentable {
 
-    GateNodeEx() {
+    protected GateNodeEx() {
         super();
     }
 
-    GateNodeEx(NEDElement parent) {
+    protected GateNodeEx(NEDElement parent) {
         super(parent);
     }
 

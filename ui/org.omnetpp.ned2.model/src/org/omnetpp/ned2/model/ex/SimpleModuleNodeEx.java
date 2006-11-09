@@ -21,17 +21,17 @@ import org.omnetpp.ned2.model.pojo.ExtendsNode;
 import org.omnetpp.ned2.model.pojo.InterfaceNameNode;
 import org.omnetpp.ned2.model.pojo.SimpleModuleNode;
 
-public class SimpleModuleNodeEx extends SimpleModuleNode 
+public final class SimpleModuleNodeEx extends SimpleModuleNode 
 				implements IDisplayStringProvider, IParentable, 
                            INamed, IDerived, IImplementor,
                            ITopLevelElement, IParametrized, IGateContainer  {
 	protected DisplayString displayString = null;
 	
-	SimpleModuleNodeEx() {
+    protected SimpleModuleNodeEx() {
         init();
 	}
 
-	SimpleModuleNodeEx(NEDElement parent) {
+    protected SimpleModuleNodeEx(NEDElement parent) {
 		super(parent);
         init();
 	}

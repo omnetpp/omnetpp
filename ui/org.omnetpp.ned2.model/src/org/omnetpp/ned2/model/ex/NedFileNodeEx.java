@@ -7,12 +7,12 @@ import org.omnetpp.ned2.model.NEDElement;
 import org.omnetpp.ned2.model.interfaces.ITopLevelElement;
 import org.omnetpp.ned2.model.pojo.NedFileNode;
 
-public class NedFileNodeEx extends NedFileNode {
+public final class NedFileNodeEx extends NedFileNode {
 	
-	NedFileNodeEx() {
+    protected NedFileNodeEx() {
 	}
 
-	NedFileNodeEx(NEDElement parent) {
+    protected NedFileNodeEx(NEDElement parent) {
 		super(parent);
 	}
 

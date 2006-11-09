@@ -19,15 +19,15 @@ import org.omnetpp.ned2.model.pojo.ChannelSpecNode;
 import org.omnetpp.ned2.model.pojo.ConnectionNode;
 import org.omnetpp.ned2.model.pojo.ParametersNode;
 
-public class ConnectionNodeEx extends ConnectionNode 
+public final class ConnectionNodeEx extends ConnectionNode 
     implements ITyped, IDisplayStringProvider, IParametrized {
 	private ConnectionDisplayString displayString = null;
 
-	ConnectionNodeEx() {
+    protected ConnectionNodeEx() {
 		setArrowDirection(ConnectionNodeEx.NED_ARROWDIR_L2R);
 	}
 
-	ConnectionNodeEx(NEDElement parent) {
+    protected ConnectionNodeEx(NEDElement parent) {
 		super(parent);
 		setArrowDirection(ConnectionNodeEx.NED_ARROWDIR_L2R);
 	}

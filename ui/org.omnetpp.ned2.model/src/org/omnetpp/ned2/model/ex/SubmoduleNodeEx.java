@@ -20,17 +20,17 @@ import org.omnetpp.ned2.model.pojo.GatesNode;
 import org.omnetpp.ned2.model.pojo.ParametersNode;
 import org.omnetpp.ned2.model.pojo.SubmoduleNode;
 
-public class SubmoduleNodeEx extends SubmoduleNode
+public final class SubmoduleNodeEx extends SubmoduleNode
                             implements INamedGraphNode, IIndexable, ITyped, 
                                        IParametrized, IGateContainer {
 
     protected DisplayString displayString = null;
 
-	SubmoduleNodeEx() {
+    protected SubmoduleNodeEx() {
         init();
 	}
 
-	SubmoduleNodeEx(NEDElement parent) {
+    protected SubmoduleNodeEx(NEDElement parent) {
 		super(parent);
         init();
 	}

@@ -10,13 +10,13 @@ import org.omnetpp.ned2.model.pojo.ParamNode;
  * @author rhornig
  * Extended parameter node
  */
-public class ParamNodeEx extends ParamNode implements INamed, IParentable {
+public final class ParamNodeEx extends ParamNode implements INamed, IParentable {
 
-    ParamNodeEx() {
+    protected ParamNodeEx() {
         super();
     }
 
-    ParamNodeEx(NEDElement parent) {
+    protected ParamNodeEx(NEDElement parent) {
         super(parent);
     }
 

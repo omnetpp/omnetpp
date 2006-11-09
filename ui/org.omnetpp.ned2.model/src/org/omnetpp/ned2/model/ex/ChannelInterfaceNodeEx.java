@@ -18,17 +18,17 @@ import org.omnetpp.ned2.model.interfaces.ITopLevelElement;
 import org.omnetpp.ned2.model.pojo.ChannelInterfaceNode;
 import org.omnetpp.ned2.model.pojo.ExtendsNode;
 
-public class ChannelInterfaceNodeEx extends ChannelInterfaceNode 
+public final class ChannelInterfaceNodeEx extends ChannelInterfaceNode 
 		implements IDisplayStringProvider, IDerived, IParentable, 
                    INamed, ITopLevelElement, IParametrized {
 
 	protected DisplayString displayString = null;
 
-	ChannelInterfaceNodeEx() {
+	protected ChannelInterfaceNodeEx() {
 		super();
 	}
 
-	ChannelInterfaceNodeEx(NEDElement parent) {
+    protected ChannelInterfaceNodeEx(NEDElement parent) {
 		super(parent);
 	}
 

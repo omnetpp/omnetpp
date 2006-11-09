@@ -19,18 +19,18 @@ import org.omnetpp.ned2.model.interfaces.ITopLevelElement;
 import org.omnetpp.ned2.model.pojo.ExtendsNode;
 import org.omnetpp.ned2.model.pojo.ModuleInterfaceNode;
 
-public class ModuleInterfaceNodeEx extends ModuleInterfaceNode 
+public final class ModuleInterfaceNodeEx extends ModuleInterfaceNode 
 		implements IDisplayStringProvider, IParentable, 
                    IDerived, INamed, ITopLevelElement, 
                    IParametrized, IGateContainer {
 
 	protected DisplayString displayString = null;
 
-	ModuleInterfaceNodeEx() {
+    protected ModuleInterfaceNodeEx() {
 		super();
 	}
 
-	ModuleInterfaceNodeEx(NEDElement parent) {
+    protected ModuleInterfaceNodeEx(NEDElement parent) {
 		super(parent);
 	}
 
