@@ -1,3 +1,13 @@
+- 061109
+  + all selectable elements displays the parameter, gate, submodule, 
+    extends, like, likeparam properties correctly
+  + the '<> like' syntax is correctly handled for submodules and connections
+  + double clicking on a submodule opens the definition and selects it (in 
+    a different file)
+  o optimized resource (re)parsing during file open, close (unnecessary reparsing 
+    has been removed)
+  o the file location (path) is always stored correctly in the 
+    model (no more 'buffer' strings)
 - 061101
   + new toplevel elements are named unique automatically
   + submodules are displayed in compound module's property list (inherited ones too)

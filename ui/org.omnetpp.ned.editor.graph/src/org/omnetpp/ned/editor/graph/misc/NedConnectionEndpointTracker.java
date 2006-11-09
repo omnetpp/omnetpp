@@ -51,9 +51,6 @@ public class NedConnectionEndpointTracker extends ConnectionEndpointTracker {
 	protected EditPartViewer.Conditional getTargetingConditional() {
 		return new EditPartViewer.Conditional() {
 			public boolean evaluate(EditPart editpart) {
-				ConnectionEditPart cep = getConnectionEditPart();
-
-//				System.out.println("srcpart: "+cep.getSource()+" targetpart: "+editpart.getTargetEditPart(getTargetRequest()));
 				// if the target is a compound module, allow attachment only at the borders
 				if (editpart instanceof CompoundModuleEditPart) {
 					CompoundModuleEditPart cmep = (CompoundModuleEditPart)editpart;

@@ -1,19 +1,28 @@
 package org.omnetpp.ned.editor.graph.edit;
 
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.draw2d.IFigure;
-import org.eclipse.draw2d.RoutingAnimator;
 import org.eclipse.gef.EditPart;
 import org.eclipse.gef.EditPolicy;
+import org.eclipse.gef.Request;
+import org.eclipse.gef.RequestConstants;
 import org.eclipse.gef.editparts.AbstractConnectionEditPart;
-import org.omnetpp.common.displaymodel.IDisplayStringChangeListener;
-import org.omnetpp.common.displaymodel.IDisplayString.Prop;
+import org.eclipse.ui.IEditorPart;
+import org.eclipse.ui.IFileEditorInput;
+import org.eclipse.ui.PartInitException;
+import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.part.FileEditorInput;
 import org.omnetpp.figures.ConnectionFigure;
+import org.omnetpp.ned.editor.graph.GraphicalNedEditor;
 import org.omnetpp.ned.editor.graph.edit.policies.NedConnectionEditPolicy;
 import org.omnetpp.ned.editor.graph.edit.policies.NedConnectionEndpointEditPolicy;
+import org.omnetpp.ned.editor.graph.misc.ISelectionSupport;
 import org.omnetpp.ned2.model.NEDElement;
 import org.omnetpp.ned2.model.NEDElementUtil;
 import org.omnetpp.ned2.model.ex.ConnectionNodeEx;
 import org.omnetpp.ned2.model.interfaces.INEDChangeListener;
+import org.omnetpp.ned2.model.interfaces.INEDTypeInfo;
 
 /**
  * Implements a Connection Editpart to represnt a Wire like connection.
@@ -55,17 +64,38 @@ public class ModuleConnectionEditPart extends AbstractConnectionEditPart impleme
     	getConnectionFigure().setTargetAnchor(null);
     }
 
-    /**
-     * @see org.eclipse.gef.ConnectionEditPart#getSource()
-     */
+    @Override
+    public void performRequest(Request req) {
+        super.performRequest(req);
+        // let's open or activate a new editor if somone has double clicked the submodule
+        if (RequestConstants.REQ_OPEN.equals(req.getType())) {
+            INEDTypeInfo typeInfo = getConnectionModel().getTypeNEDTypeInfo();
+            if (typeInfo == null)
+                return;
+            IFile file = typeInfo.getNEDFile();
+            IFileEditorInput fileEditorInput = new FileEditorInput(file);
+
+            try {
+                IEditorPart editor = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage()
+                    .openEditor(fileEditorInput, GraphicalNedEditor.ID, true);
+                
+                // select the component so it will be visible in the opened editor
+                if (editor instanceof ISelectionSupport)
+                    ((ISelectionSupport)editor).selectComponent(typeInfo.getName());
+                
+            } catch (PartInitException e) {
+                // should not happen
+                e.printStackTrace();
+                Assert.isTrue(false);
+            }
+        }
+    }
+
     @Override
     public EditPart getSource() {
     	return sourceEditPartEx;
     }
 
-    /**
-     * @see org.eclipse.gef.ConnectionEditPart#getTarget()
-     */
     @Override
     public EditPart getTarget() {
     	return targetEditPartEx;

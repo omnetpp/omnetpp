@@ -169,7 +169,7 @@ public class SubmoduleEditPart extends ModuleEditPart {
     @Override
     public void performRequest(Request req) {
         super.performRequest(req);
-        // lets open or activate a new editor if somone has double clicked the submodule
+        // let's open or activate a new editor if somone has double clicked the submodule
         if (RequestConstants.REQ_OPEN.equals(req.getType())) {
             INEDTypeInfo typeInfo = getSubmoduleModel().getTypeNEDTypeInfo();
             if (typeInfo == null)

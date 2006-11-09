@@ -4,10 +4,12 @@ import org.eclipse.gef.commands.Command;
 import org.omnetpp.ned.editor.graph.edit.ModuleEditPart;
 import org.omnetpp.ned2.model.ex.CompoundModuleNodeEx;
 import org.omnetpp.ned2.model.ex.ConnectionNodeEx;
+import org.omnetpp.ned2.model.ex.NEDElementFactoryEx;
 import org.omnetpp.ned2.model.ex.SubmoduleNodeEx;
 import org.omnetpp.ned2.model.interfaces.IConnectable;
 import org.omnetpp.ned2.model.interfaces.IParentable;
 import org.omnetpp.ned2.model.pojo.ConnectionNode;
+import org.omnetpp.ned2.model.pojo.NEDElementTags;
 
 /**
  * (Re)assigns a Connection to srcModule/destModule sub/compound module gates and also adds it to the
@@ -19,11 +21,11 @@ public class ConnectionCommand extends Command {
 
 	protected IConnectable oldSrcModule;
 	protected IConnectable oldDestModule;
-	protected ConnectionNode oldConn = new ConnectionNode();
+	protected ConnectionNode oldConn = (ConnectionNode)NEDElementFactoryEx.getInstance().createNodeWithTag(NEDElementTags.NED_CONNECTION);
     
     protected IConnectable srcModule;
     protected IConnectable destModule;
-	protected ConnectionNode newConn = new ConnectionNode();
+	protected ConnectionNode newConn =(ConnectionNode)NEDElementFactoryEx.getInstance().createNodeWithTag(NEDElementTags.NED_CONNECTION);
 	// connection model to be changed
     protected ConnectionNodeEx connModel;
     protected ConnectionNodeEx connNodeNextSibling = null;

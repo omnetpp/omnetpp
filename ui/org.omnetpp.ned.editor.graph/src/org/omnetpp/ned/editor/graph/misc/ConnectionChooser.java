@@ -8,11 +8,13 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.MenuItem;
 import org.omnetpp.ned2.model.NEDTreeUtil;
 import org.omnetpp.ned2.model.ex.CompoundModuleNodeEx;
+import org.omnetpp.ned2.model.ex.NEDElementFactoryEx;
 import org.omnetpp.ned2.model.ex.SubmoduleNodeEx;
 import org.omnetpp.ned2.model.interfaces.IConnectable;
 import org.omnetpp.ned2.model.interfaces.INEDTypeInfo;
 import org.omnetpp.ned2.model.pojo.ConnectionNode;
 import org.omnetpp.ned2.model.pojo.GateNode;
+import org.omnetpp.ned2.model.pojo.NEDElementTags;
 import org.omnetpp.resources.NEDResourcesPlugin;
 
 /**
@@ -72,7 +74,7 @@ public class ConnectionChooser {
 		if (gatePP && !srcGate.getIsVector() && !destGate.getIsVector())
 			return null;
 		
-		ConnectionNode conn = new ConnectionNode();
+		ConnectionNode conn = (ConnectionNode)NEDElementFactoryEx.getInstance().createNodeWithTag(NEDElementTags.NED_CONNECTION);
 		// set the source and dest module names.
 		// if compound module, name must be empty
 		// for Submodules name must be the submodulename

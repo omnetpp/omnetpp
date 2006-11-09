@@ -791,14 +791,15 @@ public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette
         }
         
         List toplevelParts = getGraphicalViewer().getContents().getChildren();
-        EditPart bookmarkedEditpart = null;
+        EditPart selectedEditpart = null;
         for (Object child : toplevelParts) {
             Object model = ((EditPart)child).getModel();
             if ((model instanceof INamed) && componentName.equals(((INamed)model).getName()))
-                    bookmarkedEditpart = (EditPart)child;
+                    selectedEditpart = (EditPart)child;
         }
             
-        getGraphicalViewer().select(bookmarkedEditpart);
+        getGraphicalViewer().reveal(selectedEditpart);
+        getGraphicalViewer().select(selectedEditpart);
     }
 
 }

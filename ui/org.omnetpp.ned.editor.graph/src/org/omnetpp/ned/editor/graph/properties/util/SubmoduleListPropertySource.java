@@ -5,6 +5,7 @@ import java.util.List;
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
 import org.eclipse.ui.views.properties.PropertyDescriptor;
 import org.omnetpp.ned2.model.ex.CompoundModuleNodeEx;
+import org.omnetpp.ned2.model.ex.ParamNodeEx;
 import org.omnetpp.ned2.model.ex.SubmoduleNodeEx;
 
 /**
@@ -36,9 +37,11 @@ public class SubmoduleListPropertySource extends NotifiedPropertySource {
                 inheritedSubmoduleCount++;
                 definedIn= " (inherited from "+smodule.getCompoundModule().getName()+")";
             }
-            pdesc[totalSubmoduleCount] = new PropertyDescriptor(smodule.getNameWithIndex()+definedIn, smodule.getType());
+            String typeString = "".equals(smodule.getLikeType()) || smodule.getLikeType() == null ? 
+                            smodule.getType() : "<"+smodule.getLikeParam()+"> like "+smodule.getLikeType();
+            pdesc[totalSubmoduleCount] = new PropertyDescriptor(smodule, typeString);
             pdesc[totalSubmoduleCount].setCategory(CATEGORY);
-            pdesc[totalSubmoduleCount].setDescription("Submodule "+smodule.getNameWithIndex()+" with type "+smodule.getType()
+            pdesc[totalSubmoduleCount].setDescription("Submodule "+smodule.getNameWithIndex()+" with type "+typeString
                                                         +definedIn+" - (read only)");
             totalSubmoduleCount++;
         }
@@ -61,7 +64,10 @@ public class SubmoduleListPropertySource extends NotifiedPropertySource {
 
     @Override
     public Object getPropertyValue(Object id) {
-        return id;
+        if (!(id instanceof SubmoduleNodeEx))
+            return getEditableValue();
+        
+        return ((SubmoduleNodeEx)id).getNameWithIndex();
     }
 
     @Override
