@@ -104,7 +104,10 @@ clean:
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 plove.o: plove.cc \
-  tklib.h
+  tklib.h \
+  ../utils/ver.h \
+  tclcode.cc
+tclcode.o: tclcode.cc
 tkcmd.o: tkcmd.cc \
   tklib.h \
   engine/node.h \
@@ -163,8 +166,19 @@ engine/dataflowmanager.o: engine/dataflowmanager.cc \
   engine/util.h \
   engine/node.h \
   engine/exception.h
+engine/diffquot.o: engine/diffquot.cc \
+  engine/channel.h \
+  engine/diffquot.h \
+  engine/util.h \
+  engine/node.h \
+  engine/exception.h \
+  engine/commonnodes.h \
+  engine/nodetype.h \
+  engine/dataflowmanager.h
 engine/exception.o: engine/exception.cc \
   engine/exception.h
+engine/filetokenizer.o: engine/filetokenizer.cc \
+  engine/filetokenizer.h
 engine/filewriter.o: engine/filewriter.cc \
   engine/channel.h \
   engine/filewriter.h \
@@ -185,6 +199,7 @@ engine/filternodes.o: engine/filternodes.cc \
   engine/dataflowmanager.h
 engine/getvectors.o: engine/getvectors.cc \
   engine/getvectors.h \
+  engine/filetokenizer.h \
   engine/util.h \
   engine/exception.h
 engine/mergernodes.o: engine/mergernodes.cc \
@@ -211,15 +226,27 @@ engine/nodetyperegistry.o: engine/nodetyperegistry.cc \
   engine/vectorfilewriter.h \
   engine/filewriter.h \
   engine/windowavg.h \
+  engine/slidingwinavg.h \
   engine/filternodes.h \
   engine/mergernodes.h \
   engine/xyplotnode.h \
+  engine/diffquot.h \
   engine/exception.h \
   engine/commonnodes.h \
   engine/node.h \
   engine/nodetype.h \
   engine/dataflowmanager.h \
-  engine/channel.h
+  engine/channel.h \
+  engine/filetokenizer.h
+engine/slidingwinavg.o: engine/slidingwinavg.cc \
+  engine/channel.h \
+  engine/slidingwinavg.h \
+  engine/util.h \
+  engine/node.h \
+  engine/exception.h \
+  engine/commonnodes.h \
+  engine/nodetype.h \
+  engine/dataflowmanager.h
 engine/test.o: engine/test.cc
 engine/vectorfilereader.o: engine/vectorfilereader.cc \
   engine/channel.h \
@@ -228,6 +255,7 @@ engine/vectorfilereader.o: engine/vectorfilereader.cc \
   engine/node.h \
   engine/exception.h \
   engine/nodetype.h \
+  engine/filetokenizer.h \
   engine/dataflowmanager.h
 engine/vectorfilewriter.o: engine/vectorfilewriter.cc \
   engine/channel.h \

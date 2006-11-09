@@ -306,6 +306,20 @@ then
          silly_ok="yes"
       fi
    fi
+   # 3rd try (dl*() functions in standard library (FreeBSD)
+   # XXX testing it here is probably messed up -- we need to test *independently* beforehand 
+   # whether -ldl is needed, and not mix it up with testing for the necessity of --export-dynamic.
+   # This testing should be part of testing for dlopen() -- which should btw be moved *above* this one.
+   # I'm really not in the mood for autoconf now. Maybe sometime later.
+   if test $silly_ok = "no" && \
+      $CXX -o conftest -Wl,--export-dynamic conftest_m.o >/dev/null 2>/dev/null; \
+   then
+      if ./conftest >/dev/null 2>/dev/null; then
+         AC_MSG_RESULT(both)
+         LDFLAGS="$LDFLAGS -Wl,--export-dynamic"
+         silly_ok="yes"
+      fi
+   fi
    # no solution found
    if test $silly_ok = "no"; then
       AC_MSG_RESULT(no solution found)

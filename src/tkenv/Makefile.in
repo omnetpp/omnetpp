@@ -108,6 +108,7 @@ inspector.o: inspector.cc \
   ../../include/cllist.h \
   ../../include/globals.h \
   ../../include/cwatch.h \
+  ../../include/cstlwatch.h \
   ../../include/cpar.h \
   ../../include/cgate.h \
   ../../include/cmessage.h \
@@ -128,13 +129,14 @@ inspector.o: inspector.cc \
   ../../include/protocol.h \
   ../../include/cenvir.h \
   ../../include/cenum.h \
-  ../../include/cstruct.h \
+  ../../include/cclassdescriptor.h \
   ../../include/onstartup.h \
   ../../include/cchannel.h \
   ../../include/cdispstr.h \
   ../../include/envirext.h \
   ../../include/cconfig.h \
   ../../include/cxmlelement.h \
+  ../../include/cstrtokenizer.h \
   ../../include/cscheduler.h \
   ../../include/compat.h \
   ../../include/cparsimcomm.h \
@@ -147,7 +149,8 @@ inspector.o: inspector.cc \
   ../envir/omnetapp.h \
   ../envir/args.h \
   ../envir/envdefs.h \
-  tkutil.h
+  tkutil.h \
+  tkdefs.h
 inspfactory.o: inspfactory.cc \
   ../../include/omnetpp.h \
   tkapp.h \
@@ -171,6 +174,7 @@ inspfactory.o: inspfactory.cc \
   ../../include/cllist.h \
   ../../include/globals.h \
   ../../include/cwatch.h \
+  ../../include/cstlwatch.h \
   ../../include/cpar.h \
   ../../include/cgate.h \
   ../../include/cmessage.h \
@@ -191,13 +195,14 @@ inspfactory.o: inspfactory.cc \
   ../../include/protocol.h \
   ../../include/cenvir.h \
   ../../include/cenum.h \
-  ../../include/cstruct.h \
+  ../../include/cclassdescriptor.h \
   ../../include/onstartup.h \
   ../../include/cchannel.h \
   ../../include/cdispstr.h \
   ../../include/envirext.h \
   ../../include/cconfig.h \
   ../../include/cxmlelement.h \
+  ../../include/cstrtokenizer.h \
   ../../include/cscheduler.h \
   ../../include/compat.h \
   ../../include/cparsimcomm.h \
@@ -210,9 +215,12 @@ inspfactory.o: inspfactory.cc \
   ../envir/omnetapp.h \
   ../envir/args.h \
   ../envir/envdefs.h \
-  tkutil.h
+  tkutil.h \
+  tkdefs.h
 modinsp.o: modinsp.cc \
   ../../include/csimplemodule.h \
+  ../../include/cchannel.h \
+  ../../include/cgate.h \
   ../../include/cmessage.h \
   ../../include/cpar.h \
   ../../include/carray.h \
@@ -232,7 +240,6 @@ modinsp.o: modinsp.cc \
   ../../include/ccoroutine.h \
   ../../include/globals.h \
   ../../include/cqueue.h \
-  ../../include/cgate.h \
   ../../include/csimul.h \
   ../../include/cdefaultlist.h \
   ../../include/cenvir.h \
@@ -247,6 +254,7 @@ modinsp.o: modinsp.cc \
   inspector.h \
   ../envir/omnetapp.h \
   tkutil.h \
+  tkdefs.h \
   ../envir/args.h \
   ../envir/envdefs.h \
   ../../include/envirext.h \
@@ -277,6 +285,7 @@ objinsp.o: objinsp.cc \
   ../../include/cllist.h \
   ../../include/globals.h \
   ../../include/cwatch.h \
+  ../../include/cstlwatch.h \
   ../../include/cpar.h \
   ../../include/cgate.h \
   ../../include/cmessage.h \
@@ -297,13 +306,14 @@ objinsp.o: objinsp.cc \
   ../../include/protocol.h \
   ../../include/cenvir.h \
   ../../include/cenum.h \
-  ../../include/cstruct.h \
+  ../../include/cclassdescriptor.h \
   ../../include/onstartup.h \
   ../../include/cchannel.h \
   ../../include/cdispstr.h \
   ../../include/envirext.h \
   ../../include/cconfig.h \
   ../../include/cxmlelement.h \
+  ../../include/cstrtokenizer.h \
   ../../include/cscheduler.h \
   ../../include/compat.h \
   ../../include/cparsimcomm.h \
@@ -318,6 +328,7 @@ objinsp.o: objinsp.cc \
   ../envir/envdefs.h \
   inspector.h \
   tkutil.h \
+  tkdefs.h \
   structinsp.h
 statinsp.o: statinsp.cc \
   ../../include/cmodule.h \
@@ -357,15 +368,16 @@ statinsp.o: statinsp.cc \
   ../../include/macros.h \
   inspector.h \
   ../../include/ctypes.h \
-  tkutil.h
+  tkutil.h \
+  tkdefs.h
 structinsp.o: structinsp.cc \
-  ../../include/cstruct.h \
+  ../../include/cenum.h \
+  ../../include/cclassdescriptor.h \
   tkapp.h \
   tklib.h \
   inspfactory.h \
   structinsp.h \
   ../../include/cobject.h \
-  ../../include/cenum.h \
   ../../include/cenvir.h \
   ../../include/defs.h \
   ../../include/util.h \
@@ -385,7 +397,9 @@ structinsp.o: structinsp.cc \
   ../../include/macros.h \
   inspector.h \
   ../../include/ctypes.h \
-  tkutil.h
+  tkutil.h \
+  tkdefs.h
+tclcode.o: tclcode.cc
 tkapp.o: tkapp.cc \
   ../envir/appreg.h \
   ../../include/cenvir.h \
@@ -393,6 +407,7 @@ tkapp.o: tkapp.cc \
   ../../include/cmessage.h \
   ../../include/ctypes.h \
   ../envir/speedmtr.h \
+  ../../include/cscheduler.h \
   tkdefs.h \
   tkapp.h \
   tklib.h \
@@ -400,6 +415,8 @@ tkapp.o: tkapp.cc \
   inspfactory.h \
   modinsp.h \
   ../../include/platdep/time.h \
+  ../utils/ver.h \
+  tclcode.cc \
   ../../include/globals.h \
   ../../include/onstartup.h \
   ../../include/cobject.h \
@@ -437,15 +454,16 @@ tkcmd.o: tkcmd.cc \
   ../../include/cstat.h \
   ../../include/cwatch.h \
   ../../include/ctypes.h \
-  ../../include/cstruct.h \
+  ../../include/cclassdescriptor.h \
   ../../include/cdispstr.h \
+  ../../include/cenum.h \
   tkapp.h \
   tklib.h \
   inspector.h \
   inspfactory.h \
   ../envir/patmatch.h \
   visitor.h \
-  ../../include/platdep/loadlib.h \
+  ../envir/fsutils.h \
   ../../include/defs.h \
   ../../include/cobject.h \
   ../../include/util.h \
@@ -464,7 +482,6 @@ tkcmd.o: tkcmd.cc \
   ../../include/cgate.h \
   ../../include/cdefaultlist.h \
   ../../include/cpar.h \
-  ../../include/cenum.h \
   ../envir/omnetapp.h \
   ../envir/args.h \
   ../envir/envdefs.h \
@@ -472,8 +489,8 @@ tkcmd.o: tkcmd.cc \
   ../../include/cconfig.h \
   ../../include/platdep/time.h \
   tkutil.h \
-  ../../include/macros.h \
-  ../../include/platdep/misc.h
+  tkdefs.h \
+  ../../include/macros.h
 tklib.o: tklib.cc \
   tklib.h \
   tkapp.h \
@@ -524,7 +541,8 @@ tkutil.o: tkutil.cc \
   ../envir/envdefs.h \
   ../../include/envirext.h \
   ../../include/cconfig.h \
-  ../../include/platdep/time.h
+  ../../include/platdep/time.h \
+  tkdefs.h
 visitor.o: visitor.cc \
   ../../include/cenvir.h \
   ../../include/cobject.h \

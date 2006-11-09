@@ -125,7 +125,8 @@ cenvir.o: cenvir.cc \
   omnetapp.h \
   appreg.h \
   ../../include/cmodule.h \
-  ../../include/platdep/loadlib.h \
+  fsutils.h \
+  cstrtokenizer2.h \
   speedmtr.h \
   filemgrs.h \
   akaroarng.h \
@@ -155,7 +156,6 @@ cenvir.o: cenvir.cc \
   ../../include/cqueue.h \
   ../../include/cgate.h \
   ../../include/cdefaultlist.h \
-  ../../include/platdep/misc.h \
   ../../include/macros.h
 cinifile.o: cinifile.cc \
   ../../include/cenvir.h \
@@ -163,11 +163,17 @@ cinifile.o: cinifile.cc \
   cinifile.h \
   patmatch.h \
   ../../include/cexception.h \
+  fsutils.h \
+  ../../include/platdep/fileutil.h \
+  ../../include/cstrtokenizer.h \
   ../../include/defs.h \
   envdefs.h \
   ../../include/cconfig.h \
   ../../include/opp_string.h \
   ../../include/cpolymorphic.h
+cstrtokenizer2.o: cstrtokenizer2.cc \
+  cstrtokenizer2.h \
+  ../../include/defs.h
 cxmldoccache.o: cxmldoccache.cc \
   ../../include/cpolymorphic.h \
   cxmldoccache.h \
@@ -177,9 +183,12 @@ cxmldoccache.o: cxmldoccache.cc \
   ../../include/defs.h \
   ../../include/util.h \
   envdefs.h \
+  ../../include/cenvir.h \
   ../../include/opp_string.h
 filemgrs.o: filemgrs.cc \
   ../../include/defs.h \
+  ../../include/platdep/time.h \
+  ../../include/platdep/misc.h \
   ../../include/cenvir.h \
   omnetapp.h \
   ../../include/csimul.h \
@@ -194,7 +203,6 @@ filemgrs.o: filemgrs.cc \
   envdefs.h \
   ../../include/envirext.h \
   ../../include/cconfig.h \
-  ../../include/platdep/time.h \
   ../../include/cobject.h \
   ../../include/util.h \
   ../../include/cpolymorphic.h \
@@ -210,8 +218,10 @@ filemgrs.o: filemgrs.cc \
   ../../include/cdefaultlist.h \
   ../../include/ctypes.h
 fsutils.o: fsutils.cc \
-  ../../include/platdep/misc.h \
   fsutils.h \
+  ../../include/platdep/misc.h \
+  ../../include/platdep/loadlib.h \
+  ../../include/onstartup.h \
   ../../include/cexception.h \
   ../../include/util.h \
   ../../include/opp_string.h \
@@ -219,6 +229,7 @@ fsutils.o: fsutils.cc \
 main.o: main.cc \
   ../../include/cobject.h \
   ../../include/cenvir.h \
+  ../utils/ver.h \
   ../../include/defs.h \
   ../../include/util.h \
   ../../include/cpolymorphic.h \
@@ -240,9 +251,11 @@ omnetapp.o: omnetapp.cc \
   ../../include/cmodule.h \
   ../../include/cxmlelement.h \
   cxmldoccache.h \
+  cstrtokenizer2.h \
   ../../include/cparsimcomm.h \
   ../../include/platdep/time.h \
   ../../include/platdep/misc.h \
+  ../../include/platdep/fileutil.h \
   ../../include/platdep/fileglobber.h \
   ../../include/platdep/fileglobber.c \
   envdefs.h \

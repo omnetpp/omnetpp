@@ -87,14 +87,16 @@ ebnf.tab.o: ebnf.tab.cc \
   parsened.h \
   nedfile.h
 gned.o: gned.cc \
+  ../utils/ver.h \
   tklib.h \
-  arrow.h
+  arrow.h \
+  tclcode.cc
 lex.yy.o: lex.yy.cc \
-  ./unistd.h \
   ebnf.h \
   ebnf.tab.h \
   ebnfcfg.h \
-  parsened.h
+  parsened.h \
+  ./unistd.h
 nedfile.o: nedfile.cc \
   nedfile.h \
   parsened.h \
@@ -104,6 +106,7 @@ parsened.o: parsened.cc \
   nedfile.h \
   tklib.h \
   ebnf.h
+tclcode.o: tclcode.cc
 tkcmd.o: tkcmd.cc \
   tklib.h \
   arrow.h \

@@ -44,4 +44,5 @@ clean:
 	rm -f *.o nedtool *_n.cc
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
-
+nedtool.o: nedtool.cc \
+  ../utils/ver.h
