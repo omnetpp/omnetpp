@@ -381,6 +381,11 @@ class SIM_API cPar : public cObject
     virtual std::string info() const;
 
     /**
+     * Returns a multi-line description of the object.
+     */
+    virtual std::string detailedInfo() const;
+
+    /**
      * Writes textual information about this object to the stream.
      * See cObject for more details.
      */
