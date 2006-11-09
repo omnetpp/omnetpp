@@ -312,7 +312,8 @@ public class NEDResources implements INEDTypeResolver {
 		// parse the NED text and put it into the hash table
 		NEDErrorStore errors = new NEDErrorStore();
 		errors.setPrintToStderr(false);
-		NEDElement tree = NEDTreeUtil.parseNedSource(text, errors);
+
+        NEDElement tree = NEDTreeUtil.parseNedSource(text, errors, file.getLocation().toOSString());
 		convertErrorsToMarkers(file, errors);
 
 		// store it even if there were errors (needed by content assist)
@@ -346,7 +347,7 @@ public class NEDResources implements INEDTypeResolver {
 			return;
 
 		// parse the NED file and put it into the hash table
-		String fileName = file.getLocation().toFile().getPath();
+		String fileName = file.getLocation().toOSString();
 		NEDErrorStore errors = new NEDErrorStore();
 		NEDElement tree = NEDTreeUtil.loadNedSource(fileName, errors);
 		convertErrorsToMarkers(file, errors);
@@ -393,15 +394,22 @@ public class NEDResources implements INEDTypeResolver {
 	}
 
 	public void forgetNEDFile(IFile file) {
-		nedFiles.remove(file);
-		needsRehash = true;
+        if (nedFiles.containsKey(file)) {
+            nedFiles.remove(file);
+            needsRehash = true;
+        }
 	}
 
 	private void storeNEDFileContents(IFile file, NEDElement tree) {
 		// store NED file contents
 		Assert.isTrue(tree!=null);
-		nedFiles.put(file, tree);
-		needsRehash = true;
+
+        NEDElement oldTree = nedFiles.get(file);
+        // if the new tree has changed, we have to rehash everything
+        if (oldTree == null || !NEDTreeUtil.isNEDTreeEqual(oldTree, tree)) {
+            needsRehash = true;
+            nedFiles.put(file, tree);
+        }
 	}
  
 	/**

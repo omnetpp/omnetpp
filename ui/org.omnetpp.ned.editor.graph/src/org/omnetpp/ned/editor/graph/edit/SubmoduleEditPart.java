@@ -8,8 +8,8 @@ import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.gef.Request;
 import org.eclipse.gef.RequestConstants;
+import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IFileEditorInput;
-import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.FileEditorInput;
@@ -19,12 +19,12 @@ import org.omnetpp.figures.GateAnchor;
 import org.omnetpp.figures.SubmoduleFigure;
 import org.omnetpp.figures.layout.SubmoduleConstraint;
 import org.omnetpp.ned.editor.graph.GraphicalNedEditor;
+import org.omnetpp.ned.editor.graph.misc.ISelectionSupport;
 import org.omnetpp.ned2.model.NEDElement;
 import org.omnetpp.ned2.model.ex.SubmoduleNodeEx;
 import org.omnetpp.ned2.model.interfaces.INEDTypeInfo;
 
 
-// TODO implement UnpinRequest 
 public class SubmoduleEditPart extends ModuleEditPart {
 
     /** 
@@ -176,14 +176,19 @@ public class SubmoduleEditPart extends ModuleEditPart {
                 return;
             IFile file = typeInfo.getNEDFile();
             IFileEditorInput fileEditorInput = new FileEditorInput(file);
+
             try {
-                PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage()
+                IEditorPart editor = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage()
                     .openEditor(fileEditorInput, GraphicalNedEditor.ID, true);
+                
+                // select the component so it will be visible in the opened editor
+                if (editor instanceof ISelectionSupport)
+                    ((ISelectionSupport)editor).selectComponent(typeInfo.getName());
+                
             } catch (PartInitException e) {
                 // TODO check if this can really happen?
                 e.printStackTrace();
             }
         }
-
     }
 }

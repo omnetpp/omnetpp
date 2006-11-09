@@ -27,6 +27,7 @@ import org.eclipse.draw2d.parts.ScrollableThumbnail;
 import org.eclipse.draw2d.parts.Thumbnail;
 import org.eclipse.gef.ContextMenuProvider;
 import org.eclipse.gef.DefaultEditDomain;
+import org.eclipse.gef.EditPart;
 import org.eclipse.gef.EditPartViewer;
 import org.eclipse.gef.KeyHandler;
 import org.eclipse.gef.KeyStroke;
@@ -100,29 +101,27 @@ import org.omnetpp.ned.editor.graph.actions.UnpinAction;
 import org.omnetpp.ned.editor.graph.dnd.TextTransferDropTargetListener;
 import org.omnetpp.ned.editor.graph.edit.NedEditPartFactory;
 import org.omnetpp.ned.editor.graph.edit.outline.NedTreeEditPartFactory;
+import org.omnetpp.ned.editor.graph.misc.ISelectionSupport;
 import org.omnetpp.ned.editor.graph.misc.ModulePaletteCustomizer;
 import org.omnetpp.ned2.model.ex.NedFileNodeEx;
+import org.omnetpp.ned2.model.interfaces.INamed;
 
-public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette {
+
+public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette 
+    implements ISelectionSupport {
     
-    public final static String ID = "org.omnetpp.ide.gteditor"; 
+    public final static String ID = "org.omnetpp.ide.gteditor";
+    
     
     class OutlinePage extends ContentOutlinePage implements IAdaptable {
 
         private PageBook pageBook;
-
         private Control outline;
-
         private Canvas overview;
-
         private IAction showOutlineAction, showOverviewAction;
-
         static final int ID_OUTLINE = 0;
-
         static final int ID_OVERVIEW = 1;
-
         private Thumbnail thumbnail;
-
         private DisposeListener disposeListener;
 
         public OutlinePage(EditPartViewer viewer) {
@@ -264,11 +263,8 @@ public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette {
     }
 
     private KeyHandler sharedKeyHandler;
-
     private PaletteRoot root;
-
     private OutlinePage outlinePage;
-
     private boolean editorSaving = false;
 
     // This class listens to changes to the file system in the workspace, and
@@ -370,17 +366,12 @@ public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette {
     };
 
     private NedFileNodeEx nedFileModel;
-
     private ResourceTracker resourceListener = new ResourceTracker();
-
     private MultiPageEditorPart embeddingEditor;
 
     protected static final String PALETTE_DOCK_LOCATION = "Dock location"; //$NON-NLS-1$
-
     protected static final String PALETTE_SIZE = "Palette Size"; //$NON-NLS-1$
-
     protected static final String PALETTE_STATE = "Palette state"; //$NON-NLS-1$
-
     protected static final int DEFAULT_PALETTE_SIZE = 130;
 
     public GraphicalNedEditor() {
@@ -567,7 +558,8 @@ public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette {
     protected void initializeGraphicalViewer() {
         super.initializeGraphicalViewer();
         getGraphicalViewer().setContents(getModel());
-
+        
+        // TODO do we need these?
         getGraphicalViewer().addDropTargetListener((TransferDropTargetListener)
     			new TemplateTransferDropTargetListener(getGraphicalViewer()));
         getGraphicalViewer().addDropTargetListener((TransferDropTargetListener)
@@ -790,6 +782,23 @@ public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette {
         if (this.equals(getSite().getPage().getActiveEditor()) ||
                 embeddingEditor.equals(getSite().getPage().getActiveEditor()))
             updateActions(getSelectionActions());
+    }
+    
+    public void selectComponent(String componentName) {
+        if (componentName == null || "".equals(componentName)) {
+            getGraphicalViewer().deselectAll();
+            return;
+        }
+        
+        List toplevelParts = getGraphicalViewer().getContents().getChildren();
+        EditPart bookmarkedEditpart = null;
+        for (Object child : toplevelParts) {
+            Object model = ((EditPart)child).getModel();
+            if ((model instanceof INamed) && componentName.equals(((INamed)model).getName()))
+                    bookmarkedEditpart = (EditPart)child;
+        }
+            
+        getGraphicalViewer().select(bookmarkedEditpart);
     }
 
 }

@@ -7,6 +7,7 @@ import org.omnetpp.ned2.model.swig.NED1Generator;
 import org.omnetpp.ned2.model.swig.NED2Generator;
 import org.omnetpp.ned2.model.swig.NEDDTDValidator;
 import org.omnetpp.ned2.model.swig.NEDElement;
+import org.omnetpp.ned2.model.swig.NEDElementCode;
 import org.omnetpp.ned2.model.swig.NEDErrorCategory;
 import org.omnetpp.ned2.model.swig.NEDErrorStore;
 import org.omnetpp.ned2.model.swig.NEDParser;
@@ -46,8 +47,8 @@ public class NEDTreeUtil {
 	 * a tree may be returned even if there were errors. Callers should check the 
 	 * NEDErrorStore.
 	 */
-	public static org.omnetpp.ned2.model.NEDElement parseNedSource(String source, NEDErrorStore errors) {
-        return parse(source, null, errors);
+	public static org.omnetpp.ned2.model.NEDElement parseNedSource(String source, NEDErrorStore errors, String fileName) {
+        return parse(source, fileName, errors);
 	}
 
 	/**
@@ -64,7 +65,7 @@ public class NEDTreeUtil {
 	 * of parse errors. However, returned tree is always guaranteed to conform to the DTD. 
 	 */
 	private static org.omnetpp.ned2.model.NEDElement parse(String source, String filename, NEDErrorStore errors) {
-		Assert.isTrue((source==null)!=(filename==null)); // exactly one of them is given
+		Assert.isTrue(filename != null); 
 		try {
 			// parse
 			NEDParser np = new NEDParser(errors);
@@ -72,6 +73,10 @@ public class NEDTreeUtil {
 			NEDElement swigTree = source!=null ? np.parseNEDText(source) : np.parseNEDFile(filename);
 			if (swigTree == null)
 				return null;
+			// set the file name property in the nedFileElement
+            if (NEDElementCode.swigToEnum(swigTree.getTagCode()) == NEDElementCode.NED_NED_FILE)
+                swigTree.setAttribute("filename", filename);
+            
 			if (!errors.empty()) {
 				// There were parse errors, and the tree built may not be entirely correct.
 				// Typical problems are "mandatory attribute missing" esp with connections,
@@ -227,4 +232,34 @@ public class NEDTreeUtil {
 		return result;
 	}
     
+    /**
+     * @param tree1
+     * @param tree2
+     * @return Whether the two trees are equal
+     */
+    public static boolean isNEDTreeEqual(org.omnetpp.ned2.model.NEDElement tree1, org.omnetpp.ned2.model.NEDElement tree2) {
+        if (tree1.getTagCode() != tree2.getTagCode())
+            return false;
+        
+        for (int i = 0; i < tree1.getNumAttributes(); ++i) {
+            if (!tree1.getAttribute(i).equals(tree2.getAttribute(i)))
+                return false;
+        }
+        
+        org.omnetpp.ned2.model.NEDElement child1 = tree1.getFirstChild();
+        org.omnetpp.ned2.model.NEDElement child2 = tree2.getFirstChild();
+        
+        while (child1 != null && child2!=null) {
+            // TODO comments node may be ignored here
+            if (!isNEDTreeEqual(child1, child2))
+                return false;
+            child1 = child1.getNextSibling();
+            child2 = child2.getNextSibling();
+        }
+        // both child list must be the same length
+        if (child1 != null || child2 != null )
+            return false;
+
+        return true;
+    }
 }

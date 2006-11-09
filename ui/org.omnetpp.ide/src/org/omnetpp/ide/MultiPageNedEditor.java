@@ -13,6 +13,7 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.part.FileEditorInput;
 import org.eclipse.ui.part.MultiPageEditorPart;
 import org.omnetpp.ned.editor.graph.GraphicalNedEditor;
+import org.omnetpp.ned.editor.graph.misc.ISelectionSupport;
 import org.omnetpp.ned.editor.text.TextualNedEditor;
 import org.omnetpp.ned2.model.NEDTreeUtil;
 import org.omnetpp.ned2.model.ex.NedFileNodeEx;
@@ -26,7 +27,7 @@ import org.omnetpp.resources.NEDResourcesPlugin;
  * FIXME File|Open in Eclipse won't work!!! it creates a JavaFileEditorInput which is NOT an IFileEditorInput!!! 
  */
 public class MultiPageNedEditor extends MultiPageEditorPart implements
-		IResourceChangeListener {
+		IResourceChangeListener, ISelectionSupport {
 
     private GraphicalNedEditor graphEditor;
 	private TextualNedEditor nedEditor;
@@ -191,5 +192,9 @@ public class MultiPageNedEditor extends MultiPageEditorPart implements
 		// TODO implement content ReGet from the incremental builder
         // or close the editor if the file was deleted
 	}
+
+    public void selectComponent(String componentName) {
+        graphEditor.selectComponent(componentName);
+    }
 
 }
