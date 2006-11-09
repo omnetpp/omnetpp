@@ -74,6 +74,11 @@ class SIM_API cXMLPar : public cPar
     virtual std::string info() const;
 
     /**
+     * Returns a multi-line description of the contained XML element.
+     */
+    virtual std::string detailedInfo() const;
+
+    /**
      * Serializes the object into a buffer.
      */
     virtual void netPack(cCommBuffer *buffer);
