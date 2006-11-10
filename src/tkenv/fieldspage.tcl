@@ -22,25 +22,26 @@ proc inspector_createfields2page {w} {
     set nb $w.nb
     notebook_addpage $nb fields2 {Fields}
 
-    if {![regexp {\.(ptr.*)-([0-9]+)} $w match object type]} {
-        error "window name $w doesn't look like an inspector window"
-    }
-    set treeroots($nb.fields2.tree) $object
-
     # create treeview with scrollbars
     scrollbar $nb.fields2.vsb -command "$nb.fields2.tree yview"
     scrollbar $nb.fields2.hsb -command "$nb.fields2.tree xview" -orient horiz
     canvas $nb.fields2.tree -bg white -relief sunken -bd 2
     $nb.fields2.tree config -yscrollcommand "$nb.fields2.vsb set" -xscrollcommand "$nb.fields2.hsb set"
 
-    Tree:init $nb.fields2.tree getFieldNodeInfo
-
     grid $nb.fields2.tree $nb.fields2.vsb -sticky news
     grid $nb.fields2.hsb  x               -sticky news
     grid rowconfig $nb.fields2 0 -weight 1
     grid columnconfig $nb.fields2 0 -weight 1
 
-    bind $nb.fields2.tree <Button-1> {
+    set tree $nb.fields2.tree
+    if {![regexp {\.(ptr.*)-([0-9]+)} $w match object type]} {
+        error "window name $w doesn't look like an inspector window"
+    }
+    set treeroots($tree) $object
+
+    Tree:init $tree getFieldNodeInfo
+
+    bind $tree <Button-1> {
         catch {destroy .popup}
         focus %W
         set key [Tree:nodeat %W %x %y]
@@ -49,20 +50,29 @@ proc inspector_createfields2page {w} {
         }
     }
 
-    bind $nb.fields2.tree <Double-1> {
+    bind $tree <Double-1> {
         catch {destroy .popup}
         focus %W
         set key [Tree:nodeat %W %x %y]
         getFieldNodeInfo_inspect %W $key
     }
 
-    bind $nb.fields2.tree <Return> {
+    bind $tree <Return> {
         catch {destroy .popup}
         set key [Tree:getselection %W]
         getFieldNodeInfo_inspect %W $key
     }
 
-    Tree:open $nb.fields2.tree "0-obj-$object"
+    bind $tree <Button-3> {
+        focus %W
+        set key [Tree:nodeat %W %x %y]
+        if {$key!=""} {
+            Tree:setselection %W $key
+            getFieldNodeInfo_popup %W $key %X %Y
+        }
+    }
+
+    Tree:open $tree "0-obj-$object"
 }
 
 proc refresh_fields2page {w} {
@@ -169,7 +179,7 @@ proc getFieldNodeInfo {w op {key ""}} {
                 field -
                 findex {
                     set fieldid [lindex $keyargs 4]
-                    set tooltip [opp_classdescriptor $obj $sd fieldproperty $fieldid "tooltip"]
+                    set tooltip [opp_classdescriptor $obj $sd fieldproperty $fieldid "hint"]
                     return $tooltip
                 }
             }
@@ -506,6 +516,43 @@ proc getFieldNodeInfo_setvalue {w key value} {
     Tree:build $w
 }
 
+proc getFieldNodeInfo_popup {w key x y} {
+    catch {destroy .popup}
+    menu .popup -tearoff 0
+
+    set keyargs [split $key "-"]
+    set ptr [getFieldNodeInfo_resolveObject $keyargs]
+    if [opp_isnotnull $ptr] {
+        foreach i [opp_supported_insp_types $ptr] {
+           .popup add command -label "Inspect $i" -command "opp_inspect $ptr \"$i\""
+        }
+    } else {
+        if [getFieldNodeInfo_iseditable $w $key] {
+            .popup add command -label "Edit..." -command [list getFieldNodeInfo_edit $w $key]
+        } else {
+            .popup add command -label "Edit..." -state disabled
+        }
+    }
+    .popup add separator
+
+    .popup add command -label "Copy" -command [list getFieldNodeInfo_copy $w $key]
+
+    if [getFieldNodeInfo $w haschildren $key] {
+        .popup add separator
+        .popup add command -label "Open/close tree branch" -command [list Tree:toggle $w $key]
+    }
+
+    .popup post $x $y
+}
+
+proc getFieldNodeInfo_copy {w key} {
+    set txt [getFieldNodeInfo $w text $key]
+    regsub -all "\b" $txt "" txt
+
+    # note: next two lines are from tk_textCopy Tk proc.
+    clipboard clear -displayof $w
+    clipboard append -displayof $w $txt
+}
 
 
 ##
