@@ -80,8 +80,8 @@ class cObject
     fields:
         @omitGetVerb(true);
         string className @group(basic);
-        string name @group(basic) @editable @tooltip(base name);
-        string fullName @group(basic) @tooltip(name with index);
+        string name @group(basic) @editable @hint(base name);
+        string fullName @group(basic) @hint(name with index);
         string fullPath @group(basic);
         string info @group(basic);
         string detailedInfo @group(basic);
@@ -176,8 +176,8 @@ class cGate extends cObject
         simtime_t transmissionFinishes @group(state);
         cGate *fromGate @group(connection);
         cGate *toGate @group(connection);
-        cGate *sourceGate @group(connection) @tooltip(end of 'toGate' chain);
-        cGate *destinationGate @group(connection) @tooltip(beginning of 'fromGate' chain);
+        cGate *sourceGate @group(connection) @hint(end of 'toGate' chain);
+        cGate *destinationGate @group(connection) @hint(beginning of 'fromGate' chain);
         bool isConnectedOutside @group(connection);
         bool isConnectedInside @group(connection);
         bool isConnected @group(connection);
