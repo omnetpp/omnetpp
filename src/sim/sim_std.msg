@@ -172,17 +172,19 @@ class cGate extends cObject
         bool isVector @group(general) @hint(whether this gate is part of a gate vector);
         int index @group(general) @hint(if vector: index of this gate within its gate vector);
         cDisplayString displayString @group(general) @hint(affects appearance of connection arrow on the "to" side);
+
+        cChannel *channel @group(connection) @hint(channel object associated with the connection);
         bool isBusy @group(state) @hint(only if the connection has a channel with nonzero datarate);
         simtime_t transmissionFinishes @group(state) @hint(only if the connection has a channel with nonzero datarate);
-        cGate *fromGate @group(connection);
-        cGate *toGate @group(connection);
-        cGate *sourceGate @group(connection) @hint(end of 'toGate' chain);
-        cGate *destinationGate @group(connection) @hint(beginning of 'fromGate' chain);
+
+        cGate *toGate @group(connection) @hint(the gate this one is connected to -- for output gates this points out of this module, and for input gates it points inside this module);
+        cGate *fromGate @group(connection) @hint(the gate whose "toGate" is this gate);
+        cGate *sourceGate @group(connection) @hint(the last gate in the "fromGate->fromGate->fromGate..." chain);
+        cGate *destinationGate @group(connection) @hint(the last gate in the "toGate->toGate->toGate..." chain);
         bool isConnectedOutside @group(connection);
         bool isConnectedInside @group(connection);
         bool isConnected @group(connection);
         bool isRouteOK @group(connection);
-        cChannel *channel @group(connection);
 }
 
 //----
