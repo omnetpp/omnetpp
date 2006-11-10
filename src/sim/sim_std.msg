@@ -91,7 +91,7 @@ class cDefaultList extends cNoncopyableObject
     properties:
         omitGetVerb = true;
     fields:
-        cObject *defaultListGet[] @sizeGetter(defaultListItems) @label(contents) @group(contents) @hints(list of objects directly held by this component);
+        cObject *contents[] @getter(defaultListGet) @sizeGetter(defaultListItems) @group(contents) @hint(list of objects directly held by this component);
 }
 
 class cPar;
@@ -102,7 +102,7 @@ class cComponent extends cDefaultList
 {
     fields:
         @omitGetVerb(true);
-        bool isModule @group(general) @hint(whether this is a module or a channel);
+        bool isModule @group(general) @hint(whether this component is a module or a channel);
         cComponentType *componentType @group(general) @hint(the object that represents the type declaration for this component);
         cPar par[] @sizeGetter(params) @label(parameters) @group(parameters, gates) @hint(parameters, declared in NED);
 }
