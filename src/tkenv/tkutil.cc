@@ -146,13 +146,13 @@ void feedCollectionIntoInspectorListbox(cCollectObjectsVisitor *visitor, Tcl_Int
 
     for (int i=0; i<n; i++)
     {
-        // a small hack: leave out "gates" and "params" arrays of modules
-        if (dynamic_cast<cArray *>(objs[i]) &&
-            dynamic_cast<cModule *>(objs[i]->owner()) &&
-            (objs[i]==&(dynamic_cast<cModule *>(objs[i]->owner())->gatev) ||
-             objs[i]==&(dynamic_cast<cModule *>(objs[i]->owner())->paramv))
-           )
-           continue;
+        //// a small hack: leave out "gates" and "params" arrays of modules
+        //if (dynamic_cast<cArray *>(objs[i]) &&
+        //    dynamic_cast<cModule *>(objs[i]->owner()) &&
+        //    (objs[i]==&(dynamic_cast<cModule *>(objs[i]->owner())->gatev) ||
+        //     objs[i]==&(dynamic_cast<cModule *>(objs[i]->owner())->paramv))
+        //   )
+        //   continue;
 
         // insert into listbox
         insertIntoInspectorListbox(interp, listbox, objs[i], fullpath);
