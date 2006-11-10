@@ -131,8 +131,8 @@ class cModule extends cComponent
         bool isVector @group(general) @hint(whether this module is part of a module vector);
         int index @group(general) @hint(if vector: index of this module in its module vector);
         int size @group(general) @hint(if vector: size of module vector this module belongs to);
-        cDisplayString displayString @group(general) @hint(controls appearance of this module on the GUI);
-        cDisplayString backgroundDisplayString @group(general) @hint(controls appearance of the background when this module gets opened on the GUI);
+        cDisplayString displayString @group(general) @hint(controls appearance of this module in the GUI);
+        cDisplayString backgroundDisplayString @group(general) @hint(controls appearance of the background when this module gets opened in the GUI);
         cGate *gate[] @sizeGetter(gates) @group(parameters, gates) @label(gates) @hint(module gates);
 }
 
@@ -141,9 +141,9 @@ class cSimpleModule extends cModule
     fields:
         @omitGetVerb(true);
         bool isTerminated @group(state) @hint(whether this module has terminated);
-        bool usesActivity @group(activity) @hint(whether this simple module was programmed using activity or handleMessage C++ method);
-        unsigned int stackSize @group(activity) @hint(with activity: stack size allocated for this module -- zero means info not available);
-        unsigned int stackUsage @group(activity) @hint(with activity: stack actually used by this module -- zero means info not available);
+        bool usesActivity @group(activity) @hint(whether this simple module was programmed using the "activity" or the "handleMessage" C++ method);
+        unsigned int stackSize @group(activity) @hint(if module uses "activity": stack size allocated for this module -- zero means info not available);
+        unsigned int stackUsage @group(activity) @hint(if module uses "activity": stack actually used by this module -- zero means info not available);
 }
 
 class cCompoundModule extends cModule
@@ -217,19 +217,19 @@ class cMessage extends cObject
         @omitGetVerb(true);
         int kind @group(message) @editable;
         int priority @group(message) @editable;
-        long length @group(message) @editable;
-        long byteLength @group(message) @editable;
-        bool hasBitError @group(message) @setter(setBitError) @editable;
-        string displayString @group(message);
-        cArray parList @group(obsolete);
+        long length @group(message) @editable @hint(simulated length of the message in bits, affects transmission time on a channel with data rate);
+        long byteLength @group(message) @editable @hint(length in bytes, i.e. length/8);
+        bool hasBitError @group(message) @setter(setBitError) @editable @hint(may be set when the message passes through a channel with nonzero bit error rate);
+        string displayString @group(message) @hint(controls appearance of the message in GUI);
+        cArray parList @group(obsolete) @hint(use of "parList" should be replaced with message subclassing in the few models it still occurs);
 
-        cMessage *encapsulatedMsg;
-        cPolymorphic *controlInfo;
+        cMessage *encapsulatedMsg @hint(used with protocol stacks: stores an encapsulated higher-layer packet);
+        cPolymorphic *controlInfo @hint(carries extra information when a packet is sent between layers of a protocol stack);
 
-        bool isScheduled @group(sending);
-        bool isSelfMessage @group(sending);
-        simtime_t creationTime @group(sending);
-        simtime_t sendingTime @group(sending);
+        bool isScheduled @group(sending) @hint(whether self-message is currently scheduled, or message currently is in transit);
+        bool isSelfMessage @group(sending) @hint(whether message is a self-message, scheduled to be delivered back to the same module at a later time);
+        simtime_t creationTime @group(sending) @hint(simulation time the message was created);
+        simtime_t sendingTime @group(sending) @hint(simulation time of the current/last sending or scheduling of the message);
         simtime_t arrivalTime @group(sending);
         simtime_t timestamp @group(sending) @editable;
         int senderModuleId @group(sending);
@@ -261,8 +261,8 @@ class cPacket extends cMessage
 {
     fields:
         @omitGetVerb(true);
-        short protocol @group(packet) @editable;
-        short pdu @group(packet) @editable;
+        short protocol @group(packet) @editable @hint(declared on cPacket, which is an obsolete class);
+        short pdu @group(packet) @editable @hint(declared on cPacket, which is an obsolete class);
 }
 
 //----
@@ -271,15 +271,15 @@ class cStatistic extends cObject
 {
     fields:
         @omitGetVerb(true);
-        long samples;
-        double weights;
-        double sum;
-        double sqrSum;
-        double min;
-        double max;
-        double mean;
-        double stddev;
-        double variance;
+        long samples @hint(number of observations);
+        double weights @hint(sum of weights, which equals the number of observations in the unweighted case);
+        double sum @hint(sum of observations);
+        double sqrSum @hint(sum of squares of the observations);
+        double min @hint(minimum of the observations);
+        double max @hint(maximum of the observations);
+        double mean @hint(mean of the observations);
+        double stddev @hint(standard deviation of the observations);
+        double variance @hint(variance of the observations);
 }
 
 class cStdDev extends cStatistic
@@ -295,10 +295,10 @@ class cDensityEstBase extends cStdDev
     fields:
         @omitGetVerb(true);
         bool transformed @group(histogram);
-        unsigned long underflowCell @group(histogram);
-        unsigned long overflowCell @group(histogram);
-        int cells @group(histogram);
-        cDensityEstBase_Cell cellInfo[] @sizeGetter(cells) @group(histogram);
+        unsigned long underflowCell @group(histogram) @hint(number of observations below the first histogram cell);
+        unsigned long overflowCell @group(histogram) @hint(number of observations above the last histogram cell);
+        int cells @group(histogram) @hint(number of cells in the histogram);
+        cDensityEstBase_Cell cellInfo[] @sizeGetter(cells) @group(histogram) @hint(histogram cell bounds, observation count in cell, and density estimate in the cell);
 }
 
 class cHistogramBase extends cDensityEstBase
@@ -358,33 +358,33 @@ class cFSM extends cObject
 {
     fields:
         @omitGetVerb(true);
-        int state;
-        string stateName;
+        int state @hint(numeric code of the state the FSM is currently in);
+        string stateName @hint(name of the current FSM state);
 }
 
 class cMathFunction extends cNoncopyableObject
 {
     fields:
         @omitGetVerb(true);
-        int numArgs;
+        int numArgs @hint(number of "double" parameters this function takes);;
 }
 
 class cNEDFunction extends cNoncopyableObject
 {
     fields:
         @omitGetVerb(true);
-        char returnType;
-        int numArgs;
-        string argTypes;
+        char returnType @hint(return type of this function);
+        int numArgs @hint(number of arguments this function takes);
+        string argTypes @hint(number and types of arguments this function takes);
 }
 
 class cOutVector extends cNoncopyableObject
 {
     fields:
         @omitGetVerb(true);
-        bool isEnabled @setter(setEnabled) @editable;
-        long valuesReceived;
-        long valuesStored;
+        bool isEnabled @setter(setEnabled) @editable @hint(if disabled, values passed to this object to record are simply discarded);
+        long valuesReceived @hint(number of values passed to this object to record);
+        long valuesStored @hint(number of values actually stored in the file);
 }
 
 class cPar extends cObject
@@ -528,11 +528,11 @@ class cXMLElement
 {
     fields:
         @omitGetVerb(true);
-        string getTagName @label(tagName);
-        string getNodeValue @label(nodeValue);
-        string getSourceLocation @label(sourceLocation);
-        bool hasAttributes;
-        bool hasChildren;
+        string getTagName @label(tagName) @hint(XML element tag);
+        string getNodeValue @label(nodeValue) @hint(contents of text node inside this XML element);
+        string getSourceLocation @label(sourceLocation) @hint(location this XML element was parsed from);
+        bool hasAttributes @hint(whether this XML element has attributes);
+        bool hasChildren @hint(whether this XML element has child elements);
         string detailedInfo @label(contents);
 }
 
