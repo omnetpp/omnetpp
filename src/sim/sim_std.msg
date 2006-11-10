@@ -73,13 +73,13 @@ class cObject
 {
     fields:
         @omitGetVerb(true);
-        string className @group(basic);
-        string name @group(basic) @editable @tooltip(base name);
-        string fullName @group(basic) @tooltip(name with index);
-        string fullPath @group(basic);
-        string info @group(basic);
-        string detailedInfo @group(basic);
-        cObject *owner @group(owner or parent);
+        string className @group(basic) @hint(C++ class name);
+        string name @group(basic) @editable @hint(base name);
+        string fullName @group(basic) @hint(name with index);
+        string fullPath @group(basic) @hint(hierarchical name, follows ownership relations);
+        string info @group(basic) @hint(text provided by the object's "info" method);
+        string detailedInfo @group(basic) @hint(text provided by the object's "detailedInfo" method);
+        cObject *owner @group(owner or parent) @hint(module or container where this object belongs);
 }
 
 class cNoncopyableObject extends cObject
@@ -91,7 +91,7 @@ class cDefaultList extends cNoncopyableObject
     properties:
         omitGetVerb = true;
     fields:
-        cObject *defaultListGet[] @sizeGetter(defaultListItems) @label(contents) @group(contents);
+        cObject *defaultListGet[] @sizeGetter(defaultListItems) @label(contents) @group(contents) @hints(list of objects directly held by this component);
 }
 
 class cPar;
@@ -102,9 +102,9 @@ class cComponent extends cDefaultList
 {
     fields:
         @omitGetVerb(true);
-        bool isModule @group(general);
-        cComponentType *componentType @group(general);
-        cPar par[] @sizeGetter(params) @label(parameters) @group(parameters, gates);
+        bool isModule @group(general) @hint(whether this is a module or a channel);
+        cComponentType *componentType @group(general) @hint(the object that represents the type declaration for this component);
+        cPar par[] @sizeGetter(params) @label(parameters) @group(parameters, gates) @hint(parameters, declared in NED);
 }
 
 class cChannel extends cComponent
@@ -116,8 +116,8 @@ class cBasicChannel extends cChannel
     fields:
         @omitGetVerb(true);
         // Note: no need to spell out delay etc, they come from cComponent parameters
-        bool isBusy @group(state);
-        simtime_t transmissionFinishes @group(state);
+        bool isBusy @group(state) @hint(if channel is currently transmitting);
+        simtime_t transmissionFinishes @group(state) @hint(if busy: when currently active transmissions will finish);
 }
 
 class cGate;
@@ -126,24 +126,24 @@ class cModule extends cComponent
 {
     fields:
         @omitGetVerb(true);
-        int id @group(general);
-        bool isSimple @group(general);
-        bool isVector @group(general);
-        int index @group(general);
-        int size @group(general);
-        cDisplayString displayString @group(general);
-        cDisplayString backgroundDisplayString @group(general);
-        cGate *gate[] @sizeGetter(gates) @group(parameters, gates) @label(gates);
+        int id @group(general) @hint(unique module ID -- IDs of deleted modules are not issued again);
+        bool isSimple @group(general) @hint(whether this is a simple module);
+        bool isVector @group(general) @hint(whether this module is part of a module vector);
+        int index @group(general) @hint(if vector: index of this module in its module vector);
+        int size @group(general) @hint(if vector: size of module vector this module belongs to);
+        cDisplayString displayString @group(general) @hint(controls appearance of this module on the GUI);
+        cDisplayString backgroundDisplayString @group(general) @hint(controls appearance of the background when this module gets opened on the GUI);
+        cGate *gate[] @sizeGetter(gates) @group(parameters, gates) @label(gates) @hint(module gates);
 }
 
 class cSimpleModule extends cModule
 {
     fields:
         @omitGetVerb(true);
-        bool isTerminated @group(state);
-        bool usesActivity @group(activity);
-        unsigned int stackSize @group(activity);
-        unsigned int stackUsage @group(activity);
+        bool isTerminated @group(state) @hint(whether this module has terminated);
+        bool usesActivity @group(activity) @hint(whether this simple module was programmed using activity or handleMessage C++ method);
+        unsigned int stackSize @group(activity) @hint(with activity: stack size allocated for this module -- zero means info not available);
+        unsigned int stackUsage @group(activity) @hint(with activity: stack actually used by this module -- zero means info not available);
 }
 
 class cCompoundModule extends cModule
@@ -163,7 +163,7 @@ class cModuleType extends cComponentType
 {
     fields:
         @omitGetVerb(true);
-        bool isNetwork @group(general);
+        bool isNetwork @group(general) @hint(whether this module type can be used as toplevel module);
 }
 
 class cChannelType extends cComponentType
@@ -176,17 +176,17 @@ class cGate extends cNoncopyableObject
 {
     fields:
         @omitGetVerb(true);
-        char type @group(general) @enum(cGate_Type);
-        int id @group(general);
-        bool isVector @group(general);
-        int index @group(general);
-        cDisplayString displayString @group(general);
-        bool isBusy @group(state);
-        simtime_t transmissionFinishes @group(state);
+        char type @group(general) @enum(cGate_Type) @hint(gate type);
+        int id @group(general) @hint(gate id, unique within this module);
+        bool isVector @group(general) @hint(whether this gate is part of a gate vector);
+        int index @group(general) @hint(if vector: index of this gate within its gate vector);
+        cDisplayString displayString @group(general) @hint(affects appearance of connection arrow on the "to" side);
+        bool isBusy @group(state) @hint(only if the connection has a channel with nonzero datarate);
+        simtime_t transmissionFinishes @group(state) @hint(only if the connection has a channel with nonzero datarate);
         cGate *fromGate @group(connection);
         cGate *toGate @group(connection);
-        cGate *sourceGate @group(connection) @tooltip(end of 'toGate' chain);
-        cGate *destinationGate @group(connection) @tooltip(beginning of 'fromGate' chain);
+        cGate *sourceGate @group(connection) @hint(end of 'toGate' chain);
+        cGate *destinationGate @group(connection) @hint(beginning of 'fromGate' chain);
         bool isConnectedOutside @group(connection);
         bool isConnectedInside @group(connection);
         bool isConnected @group(connection);
@@ -200,15 +200,15 @@ class cDisplayString
 {
     fields:
         @omitGetVerb(true);
-        string value @getter(toString) @setter(parse) @editable;
+        string value @getter(toString) @setter(parse) @editable @hint(the editable display string itself);
 }
 
 class cArray extends cObject
 {
     fields:
         @omitGetVerb(true);
-        bool takeOwnership @group(general) @setter(takeOwnership) @editable;
-        cObject *get[] @sizeGetter(items) @label(contents);
+        bool takeOwnership @group(general) @setter(takeOwnership) @editable @hint(whether the array should own the objects inserted into it);
+        cObject *contents[] @getter(get) @sizeGetter(items) @hint(objects contained in the array);
 }
 
 class cMessage extends cObject
@@ -417,37 +417,37 @@ class cLinkedList extends cObject
 {
     fields:
         @omitGetVerb(true);
-        int length;
+        int length @hint(number of items contained);
 }
 
 class cMessageHeap extends cObject
 {
     fields:
         @omitGetVerb(true);
-        int length;
-        cMessage *peek[] @sizeGetter(length) @label(messages);
+        int length @hint(number of items contained);
+        cMessage *messages[] @getter(peek) @sizeGetter(length) @hint(self-messages scheduled, and messages in transit);
 }
 
 class cQueue extends cObject
 {
     fields:
         @omitGetVerb(true);
-        int length;
-        bool takeOwnership @group(general) @setter(takeOwnership) @editable;
-        //Note: elements are available under contents[]
+        int length @hint(number of items in the queue);
+        bool takeOwnership @group(general) @setter(takeOwnership) @editable @hint(whether the queue should own the objects inserted into it);
+        //FIXME add getter for elements
 }
 
 class cSimulation extends cNoncopyableObject
 {
     fields:
         @omitGetVerb(true);
-        int runNumber;
-        simtime_t simTime;
-        long eventNumber;
-        cMessageHeap messageQueue @label(futureEvents);
-        int lastModuleId @group(modules);
-        cModule *systemModule @group(modules);
-        cModule *module[] @sizeGetter(lastModuleId) @group(modules) @label(modules);
+        int runNumber @hint(identifies the [Run X] section selected in omnetpp.ini);
+        simtime_t simTime @hint(the current simulation time in seconds);
+        long eventNumber @hint(the current event number -- counts from 0 up);
+        cMessageHeap messageQueue @label(futureEvents) @hint(self-messages scheduled, and messages in transit);
+        int lastModuleId @group(modules) @hint(the largest module ID issued so far);
+        cModule *systemModule @group(modules) @hint(the top-level module);
+        cModule *module[] @sizeGetter(lastModuleId) @group(modules) @label(modules) @hint(list of modules, indexed with module ID);
 }
 
 class cScheduler extends cPolymorphic
@@ -462,11 +462,66 @@ class cRealTimeScheduler extends cScheduler
 {
 }
 
+cplusplus {{
+typedef cTopology::Node cTopology_Node;
+typedef cTopology::Link cTopology_Link;
+typedef cTopology::LinkIn cTopology_LinkIn;
+typedef cTopology::LinkOut cTopology_LinkOut;
+}}
+
+class noncobject cTopology_Node;
+class noncobject cTopology_Link;
+class noncobject cTopology_LinkIn;
+class noncobject cTopology_LinkOut;
+
+class cTopology_Node
+{
+    fields:
+        @omitGetVerb(true);
+        int moduleId @hint(ID of the module this node corresponds to);
+        cModule *module @hint(the module this node corresponds to);
+        double weight @hint(node weight -- affects graph algorithms such as shortest path);
+        bool enabled @hint(node state -- affects graph algorithms such as shortest path);
+
+        cTopology_LinkIn *inLink[] @getter(in) @sizeGetter(inLinks) @hint(incoming links of this graph node);
+        cTopology_LinkIn *outLink[] @getter(out) @sizeGetter(outLinks) @hint(outgoing links of this graph node);
+
+        double distanceToTarget @group(shortest path) @hint(after running a shortest path algorithm: distance to the target node);
+        cTopology_LinkOut *path[] @getter(path) @sizeGetter(paths) @group(shortest path) @hint(the next link of the shortest path or paths towards the target node);
+}
+
+class cTopology_Link
+{
+    fields:
+        @omitGetVerb(true);
+        double weight @hint(link weight -- affects graph algorithms such as shortest path);
+        bool enabled @hint(link state -- affects graph algorithms such as shortest path);
+}
+
+class cTopology_LinkIn extends cTopology_Link
+{
+    fields:
+        @omitGetVerb(true);
+        cTopology_Node *remoteNode @hint(the node at the remote end of this connection);
+        cGate *remoteGate @hint(the gate at the remote end of this connection);
+        cGate *localGate @hint(the gate at the local end of this connection);
+}
+
+class cTopology_LinkOut extends cTopology_Link
+{
+    fields:
+        @omitGetVerb(true);
+        cTopology_Node *remoteNode @hint(the node at the remote end of this connection);
+        cGate *remoteGate @hint(the gate at the remote end of this connection);
+        cGate *localGate @hint(the gate at the local end of this connection);
+}
+
 class cTopology extends cObject
 {
     fields:
         @omitGetVerb(true);
-        int nodes @group(general);
+        int nodes @group(general) @hint(number of nodes in this topology object);
+        cTopology_Node *node[] @sizeGetter(nodes) @hint(list of nodes in this topology object);
 }
 
 class cXMLElement
