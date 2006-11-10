@@ -79,13 +79,13 @@ class cObject
 {
     fields:
         @omitGetVerb(true);
-        string className @group(basic);
+        string className @group(basic) @hint(C++ class name);
         string name @group(basic) @editable @hint(base name);
         string fullName @group(basic) @hint(name with index);
-        string fullPath @group(basic);
-        string info @group(basic);
-        string detailedInfo @group(basic);
-        cObject *owner @group(owner or parent);
+        string fullPath @group(basic) @hint(hierarchical name, follows ownership relations);
+        string info @group(basic) @hint(text provided by the object's "info" method);
+        string detailedInfo @group(basic) @hint(text provided by the object's "detailedInfo" method);
+        cObject *owner @group(owner or parent) @hint(module or container where this object belongs);
 }
 
 class cDefaultList extends cObject
@@ -93,7 +93,7 @@ class cDefaultList extends cObject
     properties:
         omitGetVerb = true;
     fields:
-        cObject *defaultListGet[] @sizeGetter(defaultListItems) @label(contents) @group(contents);
+        cObject *defaultListGet[] @sizeGetter(defaultListItems) @label(contents) @group(contents) @hints(list of objects directly held by this component);
 }
 
 class cPar;
@@ -107,12 +107,12 @@ class cBasicChannel extends cChannel
 {
     fields:
         @omitGetVerb(true);
-        double delay;
-        double error;
-        double datarate;
-        bool disabled;
-        bool isBusy @group(state);
-        simtime_t transmissionFinishes @group(state);
+        double delay @hint(transmission delay in seconds);
+        double error @hint(bit error rate);
+        double datarate @hint(datarate in bit/sec);
+        bool disabled @hint(channel state);
+        bool isBusy @group(state) @hint(if channel is currently transmitting);
+        simtime_t transmissionFinishes @group(state) @hint(if busy: when currently active transmissions will finish);
 }
 
 class cGate;
@@ -121,24 +121,24 @@ class cModule extends cDefaultList
 {
     fields:
         @omitGetVerb(true);
-        int id @group(general);
-        bool isSimple @group(general);
-        bool isVector @group(general);
-        int index @group(general);
-        int size @group(general);
-        cDisplayString displayString @group(general);
-        cDisplayString backgroundDisplayString @group(general);
-        cPar par[] @sizeGetter(params) @label(parameters) @group(parameters, gates);
-        cGate *gate[] @sizeGetter(gates) @group(parameters, gates) @label(gates);
+        int id @group(general) @hint(unique module ID -- IDs of deleted modules are not issued again);
+        bool isSimple @group(general) @hint(whether this is a simple module);
+        bool isVector @group(general) @hint(whether this module is part of a module vector);
+        int index @group(general) @hint(if vector: index of this module in its module vector);
+        int size @group(general) @hint(if vector: size of module vector this module belongs to);
+        cDisplayString displayString @group(general) @hint(controls appearance of this module on the GUI);
+        cDisplayString backgroundDisplayString @group(general) @hint(controls appearance of the background when this module gets opened on the GUI);
+        cPar par[] @sizeGetter(params) @label(parameters) @group(parameters, gates) @hint(module parameters, declared in NED);
+        cGate *gate[] @sizeGetter(gates) @group(parameters, gates) @label(gates) @hint(module gates);
 }
 
 class cSimpleModule extends cModule
 {
     fields:
         @omitGetVerb(true);
-        bool usesActivity @group(activity);
-        unsigned int stackSize @group(activity);
-        unsigned int stackUsage @group(activity);
+        bool usesActivity @group(activity) @hint(whether this simple module was programmed using activity or handleMessage C++ method);
+        unsigned int stackSize @group(activity) @hint(with activity: stack size allocated for this module -- zero means info not available);
+        unsigned int stackUsage @group(activity) @hint(with activity: stack actually used by this module -- zero means info not available);
 }
 
 class cCompoundModule extends cModule
@@ -151,14 +151,14 @@ class cModuleInterface extends cObject
 {
     fields:
         @omitGetVerb(true);
-        int numParams @group(parameters);
-        string paramName[] @sizeGetter(numParams) @group(parameters);
-        string paramType[] @sizeGetter(numParams) @group(parameters);
-        bool isParamConst[] @sizeGetter(numParams) @group(parameters);
-        int numGates @group(gates);
-        string gateName[] @sizeGetter(numParams) @group(gates);
-        char gateType[] @sizeGetter(numParams) @group(gates);
-        bool isGateVector[] @sizeGetter(numParams) @group(gates);
+        int numParams @group(parameters) @hint(number of parameters declared in NED);
+        string paramName[] @sizeGetter(numParams) @group(parameters) @hint(parameter names);
+        string paramType[] @sizeGetter(numParams) @group(parameters) @hint(parameter types);
+        bool isParamConst[] @sizeGetter(numParams) @group(parameters) @hint(whether parameter was declared const);
+        int numGates @group(gates) @hint(number of gates declared in NED);
+        string gateName[] @sizeGetter(numParams) @group(gates) @hint(gate names);
+        char gateType[] @sizeGetter(numParams) @group(gates) @hint(gate types);
+        bool isGateVector[] @sizeGetter(numParams) @group(gates) @hint(whether gate was declared vector);
 };
 
 //----
@@ -167,13 +167,13 @@ class cGate extends cObject
 {
     fields:
         @omitGetVerb(true);
-        char type @group(general) @enum(cGate_Type);
-        int id @group(general);
-        bool isVector @group(general);
-        int index @group(general);
-        cDisplayString displayString @group(general);
-        bool isBusy @group(state);
-        simtime_t transmissionFinishes @group(state);
+        char type @group(general) @enum(cGate_Type) @hint(gate type);
+        int id @group(general) @hint(gate id, unique within this module);
+        bool isVector @group(general) @hint(whether this gate is part of a gate vector);
+        int index @group(general) @hint(if vector: index of this gate within its gate vector);
+        cDisplayString displayString @group(general) @hint(affects appearance of connection arrow on the "to" side);
+        bool isBusy @group(state) @hint(only if the connection has a channel with nonzero datarate);
+        simtime_t transmissionFinishes @group(state) @hint(only if the connection has a channel with nonzero datarate);
         cGate *fromGate @group(connection);
         cGate *toGate @group(connection);
         cGate *sourceGate @group(connection) @hint(end of 'toGate' chain);
@@ -409,11 +409,66 @@ class cRealTimeScheduler extends cScheduler
 {
 }
 
+cplusplus {{
+typedef cTopology::Node cTopology_Node;
+typedef cTopology::Link cTopology_Link;
+typedef cTopology::LinkIn cTopology_LinkIn;
+typedef cTopology::LinkOut cTopology_LinkOut;
+}}
+
+class noncobject cTopology_Node;
+class noncobject cTopology_Link;
+class noncobject cTopology_LinkIn;
+class noncobject cTopology_LinkOut;
+
+class cTopology_Node
+{
+    fields:
+        @omitGetVerb(true);
+        int moduleId @hint(ID of the module this node corresponds to);
+        cModule *module @hint(the module this node corresponds to);
+        double weight @hint(node weight -- affects graph algorithms such as shortest path);
+        bool enabled @hint(node state -- affects graph algorithms such as shortest path);
+
+        cTopology_LinkIn *inLink[] @getter(in) @sizeGetter(inLinks) @hint(incoming links of this graph node);
+        cTopology_LinkIn *outLink[] @getter(out) @sizeGetter(outLinks) @hint(outgoing links of this graph node);
+
+        double distanceToTarget @group(shortest path) @hint(after running a shortest path algorithm: distance to the target node);
+        cTopology_LinkOut *path[] @getter(path) @sizeGetter(paths) @group(shortest path) @hint(the next link of the shortest path or paths towards the target node);
+}
+
+class cTopology_Link
+{
+    fields:
+        @omitGetVerb(true);
+        double weight @hint(link weight -- affects graph algorithms such as shortest path);
+        bool enabled @hint(link state -- affects graph algorithms such as shortest path);
+}
+
+class cTopology_LinkIn extends cTopology_Link
+{
+    fields:
+        @omitGetVerb(true);
+        cTopology_Node *remoteNode @hint(the node at the remote end of this connection);
+        cGate *remoteGate @hint(the gate at the remote end of this connection);
+        cGate *localGate @hint(the gate at the local end of this connection);
+}
+
+class cTopology_LinkOut extends cTopology_Link
+{
+    fields:
+        @omitGetVerb(true);
+        cTopology_Node *remoteNode @hint(the node at the remote end of this connection);
+        cGate *remoteGate @hint(the gate at the remote end of this connection);
+        cGate *localGate @hint(the gate at the local end of this connection);
+}
+
 class cTopology extends cObject
 {
     fields:
         @omitGetVerb(true);
-        int nodes @group(general);
+        int nodes @group(general) @hint(number of nodes in this topology object);
+        cTopology_Node *node[] @sizeGetter(nodes) @hint(list of nodes in this topology object);
 }
 
 class cXMLElement
