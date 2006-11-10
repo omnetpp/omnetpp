@@ -191,15 +191,15 @@ class cDisplayString
 {
     fields:
         @omitGetVerb(true);
-        string value @getter(getString) @setter(parse) @editable;
+        string value @getter(getString) @setter(parse) @editable @hint(the editable display string itself);
 }
 
 class cArray extends cObject
 {
     fields:
         @omitGetVerb(true);
-        bool takeOwnership @group(general) @setter(takeOwnership) @editable;
-        cObject *get[] @sizeGetter(items) @label(contents);
+        bool takeOwnership @group(general) @setter(takeOwnership) @editable @hint(whether the array should own the objects inserted into it);
+        cObject *contents[] @getter(get) @sizeGetter(items) @hint(objects contained in the array)
 }
 
 class cMessage extends cObject
@@ -364,37 +364,37 @@ class cLinkedList extends cObject
 {
     fields:
         @omitGetVerb(true);
-        int length;
+        int length @hint(number of items contained);
 }
 
 class cMessageHeap extends cObject
 {
     fields:
         @omitGetVerb(true);
-        int length;
-        cMessage *peek[] @sizeGetter(length) @label(messages);
+        int length @hint(number of items contained);
+        cMessage *messages[] @getter(peek) @sizeGetter(length) @hint(self-messages scheduled, and messages in transit);
 }
 
 class cQueue extends cObject
 {
     fields:
         @omitGetVerb(true);
-        int length;
-        bool takeOwnership @group(general) @setter(takeOwnership) @editable;
-        //Note: elements are available under contents[]
+        int length @hint(number of items in the queue);
+        bool takeOwnership @group(general) @setter(takeOwnership) @editable @hint(whether the queue should own the objects inserted into it);
+        //FIXME add getter for elements
 }
 
 class cSimulation extends cObject
 {
     fields:
         @omitGetVerb(true);
-        int runNumber;
-        simtime_t simTime;
-        long eventNumber;
-        cMessageHeap messageQueue @label(futureEvents);
-        int lastModuleId @group(modules);
-        cModule *systemModule @group(modules);
-        cModule *module[] @sizeGetter(lastModuleId) @group(modules) @label(modules);
+        int runNumber @hint(identifies the [Run X] section selected in omnetpp.ini);
+        simtime_t simTime @hint(the current simulation time in seconds);
+        long eventNumber @hint(the current event number -- counts from 0 up);
+        cMessageHeap messageQueue @label(futureEvents) @hint(self-messages scheduled, and messages in transit);
+        int lastModuleId @group(modules) @hint(the largest module ID issued so far);
+        cModule *systemModule @group(modules) @hint(the top-level module);
+        cModule *module[] @sizeGetter(lastModuleId) @group(modules) @label(modules) @hint(list of modules, indexed with module ID);
 }
 
 class cScheduler extends cPolymorphic
