@@ -537,11 +537,6 @@ proc getFieldNodeInfo_popup {w key x y} {
 
     .popup add command -label "Copy" -command [list getFieldNodeInfo_copy $w $key]
 
-    if [getFieldNodeInfo $w haschildren $key] {
-        .popup add separator
-        .popup add command -label "Open/close tree branch" -command [list Tree:toggle $w $key]
-    }
-
     .popup post $x $y
 }
 
