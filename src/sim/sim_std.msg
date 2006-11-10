@@ -79,13 +79,13 @@ class cObject
 {
     fields:
         @omitGetVerb(true);
-        string className @group(basic) @hint(C++ class name);
-        string name @group(basic) @editable @hint(base name);
-        string fullName @group(basic) @hint(name with index);
-        string fullPath @group(basic) @hint(hierarchical name, follows ownership relations);
-        string info @group(basic) @hint(text provided by the object's "info" method);
-        string detailedInfo @group(basic) @hint(text provided by the object's "detailedInfo" method);
-        cObject *owner @group(owner or parent) @hint(module or container where this object belongs);
+        string className @group(base) @hint(C++ class name);
+        string name @group(base) @editable @hint(an editable string attribute of the object);
+        string fullName @group(base) @hint(if object is part of a module/gate vector: name with index);
+        string fullPath @group(base) @hint(hierarchical name, composed of full names of this object and its owners/parents);
+        string info @group(base) @hint(text provided by the object's "info" method);
+        string detailedInfo @group(base) @hint(text provided by the object's "detailedInfo" method);
+        cObject *owner @group(owner or parent) @hint(module or container this object belongs to);
 }
 
 class cDefaultList extends cObject
@@ -128,7 +128,7 @@ class cModule extends cDefaultList
         int size @group(general) @hint(if vector: size of module vector this module belongs to);
         cDisplayString displayString @group(general) @hint(controls appearance of this module in the GUI);
         cDisplayString backgroundDisplayString @group(general) @hint(controls appearance of the background when this module gets opened in the GUI);
-        cPar par[] @sizeGetter(params) @label(parameters) @group(parameters, gates) @hint(module parameters, declared in NED);
+        cPar par[] @sizeGetter(params) @label(parameters) @group(parameters, gates) @hint(module parameters);
         cGate *gate[] @sizeGetter(gates) @group(parameters, gates) @label(gates) @hint(module gates);
 }
 
@@ -208,14 +208,14 @@ class cMessage extends cObject
         @omitGetVerb(true);
         int kind @group(message) @editable;
         int priority @group(message) @editable;
-        long length @group(message) @editable @hint(simulated length of the message in bits, affects transmission time on a channel with data rate);
-        long byteLength @group(message) @editable @hint(length in bytes, i.e. length/8);
-        bool hasBitError @group(message) @setter(setBitError) @editable @hint(may be set when the message passes through a channel with nonzero bit error rate);
+        long length @group(message) @editable @hint(simulated length of the message in bits, affects transmission time and probability of bit errors when sent through a channel);
+        long byteLength @group(message) @editable @hint(length in bytes, i.e. length in bits divided by eight);
+        bool hasBitError @group(message) @setter(setBitError) @editable @hint(signals that a bit error occurred when the message was sent through a channel with nonzero bit error rate);
         string displayString @group(message) @hint(controls appearance of the message in GUI);
-        cArray parList @group(obsolete) @hint(use of "parList" should be replaced with message subclassing in the few models it still occurs);
+        cArray parList @group(obsolete) @hint(use of "parList" should be replaced with message subclassing in the few models that still use it);
 
         cMessage *encapsulatedMsg @hint(used with protocol stacks: stores an encapsulated higher-layer packet);
-        cPolymorphic *controlInfo @hint(carries extra information when a packet is sent between layers of a protocol stack);
+        cPolymorphic *controlInfo @hint(used with protocol stacks: carries extra information when a packet is sent between protocol layers);
 
         bool isScheduled @group(sending) @hint(whether self-message is currently scheduled, or message currently is in transit);
         bool isSelfMessage @group(sending) @hint(whether message is a self-message, scheduled to be delivered back to the same module at a later time);
@@ -247,7 +247,7 @@ class cStatistic extends cObject
 {
     fields:
         @omitGetVerb(true);
-        long samples @hint(number of observations);
+        long samples @hint(number of observations collected so far);
         double weights @hint(sum of weights, which equals the number of observations in the unweighted case);
         double sum @hint(sum of observations);
         double sqrSum @hint(sum of squares of the observations);
@@ -270,11 +270,11 @@ class cDensityEstBase extends cStdDev
 {
     fields:
         @omitGetVerb(true);
-        bool transformed @group(histogram);
+        bool transformed @group(histogram) @hint(if false, the object is still collecting initial observations to be used for laying out histogram cells);
         unsigned long underflowCell @group(histogram) @hint(number of observations below the first histogram cell);
         unsigned long overflowCell @group(histogram) @hint(number of observations above the last histogram cell);
         int cells @group(histogram) @hint(number of cells in the histogram);
-        cDensityEstBase_Cell cellInfo[] @sizeGetter(cells) @group(histogram) @hint(histogram cell bounds, observation count in cell, and density estimate in the cell);
+        cDensityEstBase_Cell cellInfo[] @sizeGetter(cells) @group(histogram) @hint(histogram cell bounds, observation count in the cell, and density estimate in the cell);
 }
 
 class cHistogramBase extends cDensityEstBase
@@ -344,14 +344,14 @@ class cOutVector extends cObject
         @omitGetVerb(true);
         bool isEnabled @setter(setEnabled) @editable @hint(if disabled, values passed to this object to record are simply discarded);
         long valuesReceived @hint(number of values passed to this object to record);
-        long valuesStored @hint(number of values actually stored in the file);
+        long valuesStored @hint(number of values actually stored on the disk);
 }
 
 class cPar extends cObject
 {
     fields:
         @omitGetVerb(true);
-        string value @getter(getAsText) @setter(setFromText) @editable @hint(parameter type);
+        string value @getter(getAsText) @setter(setFromText) @editable @hint(parameter value);
         char type @enum(cPar_Type) @hint(parameter type);
         string prompt @editable @hint(displayed when an input parameter is to be entered by the user);
         bool isNumeric @group(flags) @hint(whether parameter is of numeric type);
@@ -372,7 +372,7 @@ class cMessageHeap extends cObject
     fields:
         @omitGetVerb(true);
         int length @hint(number of items contained);
-        cMessage *messages[] @getter(peek) @sizeGetter(length) @hint(self-messages scheduled, and messages in transit);
+        cMessage *messages[] @getter(peek) @sizeGetter(length) @hint(self-messages currently scheduled and messages currently in transit);
 }
 
 class cQueue extends cObject
