@@ -383,9 +383,9 @@ class cQueue extends cObject
 {
     fields:
         @omitGetVerb(true);
-        int length @hint(number of items in the queue);
         bool takeOwnership @group(general) @setter(takeOwnership) @editable @hint(whether the queue should own the objects inserted into it);
-        //FIXME add getter for elements
+        int length @hint(number of items in the queue);
+        cObject *contents[] @getter(get) @sizeGetter(length) @hint(queue contents, head to tail);
 }
 
 class cSimulation extends cObject
