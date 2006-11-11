@@ -200,10 +200,8 @@ proc options_dialog {} {
     $w.f.f3.methdelay.e config -length 200 -from 0 -to 3000 -resolution 1 -variable opp(methdelay)
     checkbutton $w.f.f3.msgnam -text {Display message names during animation} -variable opp(msgnam)
     checkbutton $w.f.f3.msgclass -text {Display message class during animation} -variable opp(msgclass)
-    checkbutton $w.f.f3.msgcol -text {Color coding by message kind} -variable opp(msgcol)
-    commentlabel $w.f.f3.c {Color code (message->kind() mod 8):
-     0=red 1=green 2=blue 3=white
-     4=yellow 5=cyan 6=magenta 7=black}
+    checkbutton $w.f.f3.msgcol -text {Color messages by message kind} -variable opp(msgcol)
+    commentlabel $w.f.f3.c {Color code (message->kind() mod 8): 0=red 1=green 2=blue 3=white 4=yellow 5=cyan 6=magenta 7=black}
     checkbutton $w.f.f3.penguin -text {Penguin mode} -variable opp(penguin)
     checkbutton $w.f.f3.layouting -text {Show layouting process} -variable opp(layouting)
     checkbutton $w.f.f3.bubbles -text {Show bubbles (bubble() calls)} -variable opp(bubbles)
@@ -225,9 +223,13 @@ proc options_dialog {} {
     pack $w.f.f3.bubbles -anchor w
     pack $w.f.f3.confirmexit -anchor w
 
-    pack $w.f.f2 -anchor center -expand 1 -fill both -ipadx 0 -ipady 0 -padx 10 -pady 10 -side top
-    pack $w.f.f3 -anchor center -expand 1 -fill both -ipadx 0 -ipady 0 -padx 10 -pady 10 -side top
-    pack $w.f.f1 -anchor center -expand 1 -fill both -ipadx 0 -ipady 0 -padx 10 -pady 10 -side top
+    pack $w.f.f2 -anchor center -expand 1 -fill both -ipadx 0 -ipady 0 -padx 10 -pady 5 -side top
+    pack $w.f.f3 -anchor center -expand 1 -fill both -ipadx 0 -ipady 0 -padx 10 -pady 5 -side top
+    pack $w.f.f1 -anchor center -expand 1 -fill both -ipadx 0 -ipady 0 -padx 10 -pady 5 -side top
+
+    #grid $w.f.f2  $w.f.f3 -sticky new
+    #grid $w.f.f1  ^       -sticky new
+    #grid rowconfigure $w.f 1 -weight 1
 
     # Configure dialog
     #$w.f.f3.methdelay.e insert 0 [opp_getsimoption methodcalls_delay]
