@@ -73,13 +73,13 @@ class cObject
 {
     fields:
         @omitGetVerb(true);
-        string className @group(basic) @hint(C++ class name);
-        string name @group(basic) @editable @hint(base name);
-        string fullName @group(basic) @hint(name with index);
-        string fullPath @group(basic) @hint(hierarchical name, follows ownership relations);
-        string info @group(basic) @hint(text provided by the object's "info" method);
-        string detailedInfo @group(basic) @hint(text provided by the object's "detailedInfo" method);
-        cObject *owner @group(owner or parent) @hint(module or container where this object belongs);
+        string className @group(base) @hint(C++ class name);
+        string name @group(base) @editable @hint(an editable string attribute of the object);
+        string fullName @group(base) @hint(if object is part of a module/gate vector: name with index);
+        string fullPath @group(base) @hint(hierarchical name, composed of full names of this object and its owners/parents);
+        string info @group(base) @hint(text provided by the object's "info" method);
+        string detailedInfo @group(base) @hint(text provided by the object's "detailedInfo" method);
+        cObject *owner @group(owner or parent) @hint(module or container this object belongs to);
 }
 
 class cNoncopyableObject extends cObject
@@ -104,7 +104,7 @@ class cComponent extends cDefaultList
         @omitGetVerb(true);
         bool isModule @group(general) @hint(whether this component is a module or a channel);
         cComponentType *componentType @group(general) @hint(the object that represents the type declaration for this component);
-        cPar par[] @sizeGetter(params) @label(parameters) @group(parameters, gates) @hint(parameters, declared in NED);
+        cPar par[] @sizeGetter(params) @label(parameters) @group(parameters, gates) @hint(parameters);
 }
 
 class cChannel extends cComponent
@@ -181,17 +181,19 @@ class cGate extends cNoncopyableObject
         bool isVector @group(general) @hint(whether this gate is part of a gate vector);
         int index @group(general) @hint(if vector: index of this gate within its gate vector);
         cDisplayString displayString @group(general) @hint(affects appearance of connection arrow on the "to" side);
+
+        cChannel *channel @group(connection) @hint(channel object associated with the connection);
         bool isBusy @group(state) @hint(only if the connection has a channel with nonzero datarate);
         simtime_t transmissionFinishes @group(state) @hint(only if the connection has a channel with nonzero datarate);
-        cGate *fromGate @group(connection);
-        cGate *toGate @group(connection);
-        cGate *sourceGate @group(connection) @hint(end of 'toGate' chain);
-        cGate *destinationGate @group(connection) @hint(beginning of 'fromGate' chain);
-        bool isConnectedOutside @group(connection);
-        bool isConnectedInside @group(connection);
-        bool isConnected @group(connection);
-        bool isRouteOK @group(connection);
-        cChannel *channel @group(connection);
+
+        cGate *toGate @group(connection) @hint(the gate this one is connected to -- for output gates this points out of this module, and for input gates it points inside);
+        cGate *fromGate @group(connection) @hint(the gate whose "toGate" is this gate -- note that "from" and "to" correspond to the direction of messages);
+        cGate *sourceGate @group(connection) @hint(the last gate in the "fromGate->fromGate->fromGate..." chain);
+        cGate *destinationGate @group(connection) @hint(the last gate in the "toGate->toGate->toGate..." chain);
+        bool isConnectedOutside @group(connection) @hint(for an output gate this checks toGate, and fromGate for an input gate);
+        bool isConnectedInside @group(connection) @hint(for an input gate this checks toGate, and fromGate for an output gate);
+        bool isConnected @group(connection) @hint(whether the gate is fully connected -- both inside and outside for a compound module gate, and outside for a simple module gate);
+        bool isRouteOK @group(connection) @hint(the chain of connections is OK if it starts and ends at simple modules);
 }
 
 //----
@@ -215,46 +217,35 @@ class cMessage extends cObject
 {
     fields:
         @omitGetVerb(true);
-        int kind @group(message) @editable;
-        int priority @group(message) @editable;
-        long length @group(message) @editable @hint(simulated length of the message in bits, affects transmission time on a channel with data rate);
-        long byteLength @group(message) @editable @hint(length in bytes, i.e. length/8);
-        bool hasBitError @group(message) @setter(setBitError) @editable @hint(may be set when the message passes through a channel with nonzero bit error rate);
+        int kind @group(message) @editable @hint(generic user-settable attribute, usually carries "type" or "role" of message);
+        int priority @group(message) @editable @hint(controls delivery order of messages with equal timestamps);
+        long length @group(message) @editable @hint(simulated length of the message in bits, affects transmission time and probability of bit errors when sent through a channel);
+        long byteLength @group(message) @editable @hint(length in bytes, i.e. length in bits divided by eight);
+        bool hasBitError @group(message) @setter(setBitError) @editable @hint(signals that a bit error occurred when the message was sent through a channel with nonzero bit error rate);
         string displayString @group(message) @hint(controls appearance of the message in GUI);
-        cArray parList @group(obsolete) @hint(use of "parList" should be replaced with message subclassing in the few models it still occurs);
+        cArray parList @group(obsolete) @hint(use of "parList" should be replaced with message subclassing in the few models that still use it);
 
         cMessage *encapsulatedMsg @hint(used with protocol stacks: stores an encapsulated higher-layer packet);
-        cPolymorphic *controlInfo @hint(carries extra information when a packet is sent between layers of a protocol stack);
+        cPolymorphic *controlInfo @hint(used with protocol stacks: carries extra information when a packet is sent between protocol layers);
 
         bool isScheduled @group(sending) @hint(whether self-message is currently scheduled, or message currently is in transit);
         bool isSelfMessage @group(sending) @hint(whether message is a self-message, scheduled to be delivered back to the same module at a later time);
         simtime_t creationTime @group(sending) @hint(simulation time the message was created);
-        simtime_t sendingTime @group(sending) @hint(simulation time of the current/last sending or scheduling of the message);
-        simtime_t arrivalTime @group(sending);
-        simtime_t timestamp @group(sending) @editable;
-        int senderModuleId @group(sending);
-        int senderGateId @group(sending);
-        cModule *senderModule @group(sending);
-        cGate *senderGate @group(sending);
-        int arrivalModuleId @group(sending);
-        int arrivalGateId @group(sending);
-        cModule *arrivalModule @group(sending);
-        cGate *arrivalGate @group(sending);
+        simtime_t sendingTime @group(sending) @hint(simulation time of the current or last sending/scheduling of the message);
+        simtime_t arrivalTime @group(sending) @hint(simulation time the message will be/was delivered to the destination module);
+        simtime_t timestamp @group(sending) @editable @hint(user-settable timestamp for generic use);
+
+        int senderModuleId @group(sending) @hint(ID of the module performing the current or last send/schedule operation);
+        int senderGateId @group(sending) @hint(module-local ID of the gate on which the message was sent out -- -1==none for self-messages and after "sendDirect");
+        cModule *senderModule @group(sending) @hint(ID of the module performing the current or last send/schedule operation);
+        cGate *senderGate @group(sending) @hint(the gate on which the message was sent out -- NULL for self-messages and after "sendDirect");
+
+        int arrivalModuleId @group(sending) @hint(ID of the arrival module of the current or last sending/scheduling);
+        int arrivalGateId @group(sending) @hint(module-local ID of arrival gate for current or last sending -- -1==none for self-messages);
+        cModule *arrivalModule @group(sending) @hint(arrival module for current or last sending/scheduling);
+        cGate *arrivalGate @group(sending) @hint(arrival gate for current or last sending -- NULL for self-messages);
 
         //XXX various IDs
-}
-
-class cMessagePar extends cObject
-{
-    fields:
-        @omitGetVerb(true);
-        string value @getter(getAsText) @setter(setFromText) @editable;
-        char type @enum(cPar_Type);
-        string prompt @editable;
-        bool isNumeric @group(flags);
-        bool isConstant @group(flags);
-        bool isInput @setter(setInput) @editable @group(flags);
-        bool isRedirected @group(flags);
 }
 
 class cPacket extends cMessage
@@ -271,7 +262,7 @@ class cStatistic extends cObject
 {
     fields:
         @omitGetVerb(true);
-        long samples @hint(number of observations);
+        long samples @hint(number of observations collected so far);
         double weights @hint(sum of weights, which equals the number of observations in the unweighted case);
         double sum @hint(sum of observations);
         double sqrSum @hint(sum of squares of the observations);
@@ -294,11 +285,11 @@ class cDensityEstBase extends cStdDev
 {
     fields:
         @omitGetVerb(true);
-        bool transformed @group(histogram);
+        bool transformed @group(histogram) @hint(if false, the object is still collecting initial observations to be used for laying out histogram cells);
         unsigned long underflowCell @group(histogram) @hint(number of observations below the first histogram cell);
         unsigned long overflowCell @group(histogram) @hint(number of observations above the last histogram cell);
         int cells @group(histogram) @hint(number of cells in the histogram);
-        cDensityEstBase_Cell cellInfo[] @sizeGetter(cells) @group(histogram) @hint(histogram cell bounds, observation count in cell, and density estimate in the cell);
+        cDensityEstBase_Cell cellInfo[] @sizeGetter(cells) @group(histogram) @hint(histogram cell bounds, observation count in the cell, and density estimate in the cell);
 }
 
 class cHistogramBase extends cDensityEstBase
@@ -366,7 +357,7 @@ class cMathFunction extends cNoncopyableObject
 {
     fields:
         @omitGetVerb(true);
-        int numArgs @hint(number of "double" parameters this function takes);;
+        int numArgs @hint(number of "double" parameters this function takes);
 }
 
 class cNEDFunction extends cNoncopyableObject
@@ -384,7 +375,7 @@ class cOutVector extends cNoncopyableObject
         @omitGetVerb(true);
         bool isEnabled @setter(setEnabled) @editable @hint(if disabled, values passed to this object to record are simply discarded);
         long valuesReceived @hint(number of values passed to this object to record);
-        long valuesStored @hint(number of values actually stored in the file);
+        long valuesStored @hint(number of values actually stored on the disk);
 }
 
 class cPar extends cObject
@@ -398,6 +389,19 @@ class cPar extends cObject
         bool isVolatile @group(lags);
         bool isSet @group(flags);
         bool hasDefaultValue @group(flags);
+}
+
+class cMessagePar extends cObject
+{
+    fields:
+        @omitGetVerb(true);
+        string value @getter(getAsText) @setter(setFromText) @editable @hint(parameter value);
+        char type @enum(cPar_Type) @hint(parameter type);
+        string prompt @editable @hint(displayed when an input parameter is to be entered by the user);
+        bool isNumeric @group(flags) @hint(whether parameter is of numeric type);
+        bool isConstant @group(flags) @hint(whether the parameter was declared const);
+        bool isInput @setter(setInput) @editable @group(flags) @hint(whether parameter value is to be read from the user);
+        bool isRedirected @group(flags) @hint(whether this parameter is a "link" to another cPar object);
 }
 
 class cProperties extends cPolymorphic
@@ -425,16 +429,16 @@ class cMessageHeap extends cObject
     fields:
         @omitGetVerb(true);
         int length @hint(number of items contained);
-        cMessage *messages[] @getter(peek) @sizeGetter(length) @hint(self-messages scheduled, and messages in transit);
+        cMessage *messages[] @getter(peek) @sizeGetter(length) @hint(self-messages currently scheduled and messages currently in transit);
 }
 
 class cQueue extends cObject
 {
     fields:
         @omitGetVerb(true);
-        int length @hint(number of items in the queue);
         bool takeOwnership @group(general) @setter(takeOwnership) @editable @hint(whether the queue should own the objects inserted into it);
-        //FIXME add getter for elements
+        int length @hint(number of items in the queue);
+        cObject *contents[] @getter(get) @sizeGetter(length) @hint(queue contents);
 }
 
 class cSimulation extends cNoncopyableObject
