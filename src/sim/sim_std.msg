@@ -177,14 +177,14 @@ class cGate extends cObject
         bool isBusy @group(state) @hint(only if the connection has a channel with nonzero datarate);
         simtime_t transmissionFinishes @group(state) @hint(only if the connection has a channel with nonzero datarate);
 
-        cGate *toGate @group(connection) @hint(the gate this one is connected to -- for output gates this points out of this module, and for input gates it points inside this module);
-        cGate *fromGate @group(connection) @hint(the gate whose "toGate" is this gate);
+        cGate *toGate @group(connection) @hint(the gate this one is connected to -- for output gates this points out of this module, and for input gates it points inside);
+        cGate *fromGate @group(connection) @hint(the gate whose "toGate" is this gate -- note that "from" and "to" correspond to the direction of messages);
         cGate *sourceGate @group(connection) @hint(the last gate in the "fromGate->fromGate->fromGate..." chain);
         cGate *destinationGate @group(connection) @hint(the last gate in the "toGate->toGate->toGate..." chain);
-        bool isConnectedOutside @group(connection);
-        bool isConnectedInside @group(connection);
-        bool isConnected @group(connection);
-        bool isRouteOK @group(connection);
+        bool isConnectedOutside @group(connection) @hint(for an output gate this checks toGate, and fromGate for an input gate);
+        bool isConnectedInside @group(connection) @hint(for an input gate this checks toGate, and fromGate for an output gate);
+        bool isConnected @group(connection) @hint(whether the gate is fully connected -- both inside and outside for a compound module gate, and outside for a simple module gate);
+        bool isRouteOK @group(connection) @hint(the chain of connections is OK if it starts and ends at simple modules);
 }
 
 //----
@@ -208,8 +208,8 @@ class cMessage extends cObject
 {
     fields:
         @omitGetVerb(true);
-        int kind @group(message) @editable;
-        int priority @group(message) @editable;
+        int kind @group(message) @editable @hint(generic user-settable attribute, usually carries "type" or "role" of message);
+        int priority @group(message) @editable @hint(controls delivery order of messages with equal timestamps);
         long length @group(message) @editable @hint(simulated length of the message in bits, affects transmission time and probability of bit errors when sent through a channel);
         long byteLength @group(message) @editable @hint(length in bytes, i.e. length in bits divided by eight);
         bool hasBitError @group(message) @setter(setBitError) @editable @hint(signals that a bit error occurred when the message was sent through a channel with nonzero bit error rate);
@@ -222,17 +222,19 @@ class cMessage extends cObject
         bool isScheduled @group(sending) @hint(whether self-message is currently scheduled, or message currently is in transit);
         bool isSelfMessage @group(sending) @hint(whether message is a self-message, scheduled to be delivered back to the same module at a later time);
         simtime_t creationTime @group(sending) @hint(simulation time the message was created);
-        simtime_t sendingTime @group(sending) @hint(simulation time of the current/last sending or scheduling of the message);
-        simtime_t arrivalTime @group(sending);
-        simtime_t timestamp @group(sending) @editable;
-        int senderModuleId @group(sending);
-        int senderGateId @group(sending);
-        cModule *senderModule @group(sending);
-        cGate *senderGate @group(sending);
-        int arrivalModuleId @group(sending);
-        int arrivalGateId @group(sending);
-        cModule *arrivalModule @group(sending);
-        cGate *arrivalGate @group(sending);
+        simtime_t sendingTime @group(sending) @hint(simulation time of the current or last sending/scheduling of the message);
+        simtime_t arrivalTime @group(sending) @hint(simulation time the message will be/was delivered to the destination module);
+        simtime_t timestamp @group(sending) @editable @hint(user-settable timestamp for generic use);
+
+        int senderModuleId @group(sending) @hint(ID of the module performing the current or last send/schedule operation);
+        int senderGateId @group(sending) @hint(module-local ID of the gate on which the message was sent out -- -1==none for self-messages and after "sendDirect");
+        cModule *senderModule @group(sending) @hint(ID of the module performing the current or last send/schedule operation);
+        cGate *senderGate @group(sending) @hint(the gate on which the message was sent out -- NULL for self-messages and after "sendDirect");
+
+        int arrivalModuleId @group(sending) @hint(ID of the arrival module of the current or last sending/scheduling);
+        int arrivalGateId @group(sending) @hint(module-local ID of arrival gate for current or last sending -- -1==none for self-messages);
+        cModule *arrivalModule @group(sending) @hint(arrival module for current or last sending/scheduling);
+        cGate *arrivalGate @group(sending) @hint(arrival gate for current or last sending -- NULL for self-messages);
 }
 
 class cPacket extends cMessage
