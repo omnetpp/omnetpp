@@ -173,16 +173,18 @@ class cGate extends cObject
         int index @group(general) @hint(if vector: index of this gate within its gate vector);
         cDisplayString displayString @group(general) @hint(affects appearance of connection arrow on the "to" side);
 
-        cChannel *channel @group(connection) @hint(channel object associated with the connection);
-        bool isBusy @group(state) @hint(only if the connection has a channel with nonzero datarate);
-        simtime_t transmissionFinishes @group(state) @hint(only if the connection has a channel with nonzero datarate);
+        bool isBusy @group(state) @hint(only if the connection has a channel with nonzero datarate: whether there is an ongoing transmission on the channel);
+        simtime_t transmissionFinishes @group(state) @hint(only if the connection has a channel with nonzero datarate: if busy: when currently active transmissions will finish);
 
-        cGate *toGate @group(connection) @hint(the gate this one is connected to -- for output gates this points out of this module, and for input gates it points inside);
-        cGate *fromGate @group(connection) @hint(the gate whose "toGate" is this gate -- note that "from" and "to" correspond to the direction of messages);
+        cChannel *channel @group(connection) @hint(channel object associated with the connection);
+
+        cGate *toGate @group(connection) @hint(the gate this one is connected to, following the arrow direction -- for input gates, if set, it points inwards into the compound module);
+        cGate *fromGate @group(connection) @hint(gate on the opposite side as "toGate" -- "fromGate" of an output gate, if set, usually points to a submodule of this module);
+        bool isConnectedOutside @group(connection) @hint(whether if this gate is connected to the parent module or a sibling module);
+        bool isConnectedInside @group(connection) @hint(true if this gate is connected to a submodule of this module, or belongs to a "thru" connection inside this compound module);
+
         cGate *sourceGate @group(connection) @hint(the last gate in the "fromGate->fromGate->fromGate..." chain);
         cGate *destinationGate @group(connection) @hint(the last gate in the "toGate->toGate->toGate..." chain);
-        bool isConnectedOutside @group(connection) @hint(for an output gate this checks toGate, and fromGate for an input gate);
-        bool isConnectedInside @group(connection) @hint(for an input gate this checks toGate, and fromGate for an output gate);
         bool isConnected @group(connection) @hint(whether the gate is fully connected -- both inside and outside for a compound module gate, and outside for a simple module gate);
         bool isRouteOK @group(connection) @hint(the chain of connections is OK if it starts and ends at simple modules);
 }
