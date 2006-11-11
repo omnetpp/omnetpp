@@ -267,6 +267,13 @@ class SIM_API cQueue : public cObject
     bool empty() const {return length()==0;}
 
     /**
+     * Returns the ith element in the queue, or NULL if i is out of range.
+     * i==0 corresponds to the head element. The cost of this method is linear
+     * to the length of the queue.
+     */
+    cObject *get(int i) const;
+
+    /**
      * Returns true if the queue contains the passed object.
      */
     virtual bool contains(cObject *obj) const;
