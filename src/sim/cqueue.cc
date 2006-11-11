@@ -324,9 +324,13 @@ bool cQueue::contains(cObject *obj) const
 
 cObject *cQueue::get(int i) const
 {
-    QElem *p = headp;
+    //XXX
+    // QElem *p = headp;
+    // while (p!=NULL && i>0)
+    //     p = p->next, i--;
+    QElem *p = tailp;
     while (p!=NULL && i>0)
-        p = p->next, i--;
+        p = p->prev, i--;
     return p ? p->obj : NULL;
 }
 

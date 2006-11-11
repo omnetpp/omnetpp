@@ -385,7 +385,7 @@ class cQueue extends cObject
         @omitGetVerb(true);
         bool takeOwnership @group(general) @setter(takeOwnership) @editable @hint(whether the queue should own the objects inserted into it);
         int length @hint(number of items in the queue);
-        cObject *contents[] @getter(get) @sizeGetter(length) @hint(queue contents, head to tail);
+        cObject *contents[] @getter(get) @sizeGetter(length) @hint(queue contents);
 }
 
 class cSimulation extends cObject
