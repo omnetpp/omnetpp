@@ -34,19 +34,35 @@ proc do_concurrent_animations {animjobs} {
     # of each sending, etc. One group may contain animations on several
     # compound modules.
 
-    # sort jobs into jobgroups
+    # sort jobs into jobgroups; meanwhile collect window list in $winlist()
     foreach job $animjobs {
-        set msg [lindex $job 2]
-        if ![info exist msgcount($msg)] {set msgcount($msg) 0}
-        incr msgcount($msg)
-        set stage $msgcount($msg)
-        if ![info exist jobgroup($stage)] {set jobgroup($stage) {}}
-        lappend jobgroup($stage) $job
+        set w [lindex $job 1]
+        if [winfo exist $w] {
+            set winlist($w) {}
+            set msg [lindex $job 2]
+            if ![info exist msgcount($msg)] {set msgcount($msg) 0}
+            incr msgcount($msg)
+            set stage $msgcount($msg)
+            if ![info exist jobgroup($stage)] {set jobgroup($stage) {}}
+            lappend jobgroup($stage) $job
+        }
+    }
+
+    # WM_DELETE_WINDOW stuff: if user wants to close window (during "update"), postpone it until updateInspectors()
+    foreach w [array names winlist] {
+        # remember current Close handler and temporarily replace it
+        set winlist($w) [wm protocol $w WM_DELETE_WINDOW]
+        wm protocol $w WM_DELETE_WINDOW [list opp_markinspectorfordeletion $w]
     }
 
     # then animate each group, one after another
     foreach stage [lsort -integer [array names jobgroup]] {
         do_animate_group $jobgroup($stage)
+    }
+
+    # restore old WM_DELETE_WINDOW handlers
+    foreach w [array names winlist] {
+        wm protocol $w WM_DELETE_WINDOW $winlist($w)
     }
 }
 
@@ -203,7 +219,6 @@ proc do_animate_concurrent {animlist} {
     set movecommands {}
     foreach req $animlist {
         setvars {w msgptr x1 y1 x2 y2} $req
-        set windows($w) 1
         $w.c delete $msgptr
         draw_message $w.c $msgptr $x1 $y1
 
@@ -211,13 +226,6 @@ proc do_animate_concurrent {animlist} {
         set dx [expr ($x2-$x1)/double($steps)]
         set dy [expr ($y2-$y1)/double($steps)]
         lappend movecommands [list $w.c move $msgptr $dx $dy]
-    }
-
-    # WM_DELETE_WINDOW stuff: if user wants to close window (during "update"), postpone it until updateInspectors()
-    foreach w [array names windows] {
-        # remember current Close handler and temporarily replace it
-        set windows($w) [wm protocol $w WM_DELETE_WINDOW]
-        wm protocol $w WM_DELETE_WINDOW [list opp_markinspectorfordeletion $w]
     }
 
     # now do the animation
@@ -239,11 +247,6 @@ proc do_animate_concurrent {animlist} {
            set clicks [expr $d*$clicksPerSec*0.04]
            while {[expr abs([clock clicks]-$tbeg)] < $clicks} {}
        }
-    }
-
-    # restore old WM_DELETE_WINDOW handlers
-    foreach w [array names windows] {
-        wm protocol $w WM_DELETE_WINDOW $windows($w)
     }
 }
 
