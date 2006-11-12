@@ -200,6 +200,26 @@ proc destroy_inspector_toplevel {w} {
 }
 
 #
+# gets called from C++
+#
+proc inspector_show {w} {
+    show_window $w
+}
+
+#
+# Brings the window to front, and gives it focus
+#
+proc show_window {w} {
+    # note: "wm withdraw" seems to be needed on Kubuntu Dapper (kwin 3.0, kde 3.5.2)
+    # to bring $w to front and give the focus to it. This is something new,
+    # it worked well before without it on all platforms (Windows too)...
+    wm withdraw $w
+    wm deiconify $w
+    raise $w
+    focus $w
+}
+
+#
 # invoked on right-clicking object name inspectors
 #
 proc inspectorNamePopup {ptr x y} {

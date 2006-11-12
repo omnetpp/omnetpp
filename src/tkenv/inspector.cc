@@ -124,9 +124,7 @@ bool TInspector::windowExists()
 void TInspector::showWindow()
 {
    Tcl_Interp *interp = getTkApplication()->getInterp();
-   CHK(Tcl_VarEval(interp, "wm deiconify ", windowname, NULL ));
-   CHK(Tcl_VarEval(interp, "raise ", windowname, NULL ));
-   CHK(Tcl_VarEval(interp, "focus ", windowname, NULL ));
+   CHK(Tcl_VarEval(interp, "inspector_show ", windowname, NULL ));
 }
 
 void TInspector::hostObjectDeleted()

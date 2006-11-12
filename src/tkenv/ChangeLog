@@ -1,3 +1,9 @@
+2006-11-12  Andras Varga
+
+	* fix: existing inspector windows didn't come to the front and didn't get
+	the focus. This was observed on Kubuntu with kwin 3.0, but maybe
+	affected other platforms as well.
+	
 2006-11-06  Andras Varga
 
 	* enhancement: all non-graphical inspectors replaced with consistent

@@ -521,7 +521,8 @@ proc filteredobjectlist_window {{ptr ""}} {
     if {[winfo exists $w]} {
         $w.f.filter.searchin.e delete 0 end
         $w.f.filter.searchin.e insert 0 [opp_getobjectfullpath $ptr]
-        wm deiconify $w; return
+        show_window $w  ;# black magic to raise the window
+        return
     }
 
     # otherwise create
