@@ -1,3 +1,7 @@
+2006-11-12  Andras Varga
+
+	* defs.h: added _MAYBEUNUSED and _DEPRECATED macros
+
 2006-11-07  Andras Varga
 
 	* cDensityEstBase: added cellInfo() method

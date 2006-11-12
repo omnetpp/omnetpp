@@ -72,6 +72,7 @@ double truncnormal(double m, double d, int rng)
  * internal, for alpha<1. THIS IMPLEMENTATION SEEMS TO BE BOGUS, we use
  * gamma_MarsagliaTransf() instead.
  */
+/*
 static double gamma_AhrensDieter74(double alpha, int rng)
 {
     ASSERT(alpha<1);
@@ -105,10 +106,12 @@ static double gamma_AhrensDieter74(double alpha, int rng)
     }
     return Y;
 }
+*/
 
 /*
- * internal, for alpha>1.
+ * internal, for alpha>1. Currently unused, we use gamma_Marsaglia2000() instead.
  */
+/*
 static double gamma_ChengFeast79(double alpha, int rng)
 {
     ASSERT(alpha>1);
@@ -144,6 +147,7 @@ static double gamma_ChengFeast79(double alpha, int rng)
     }
     return Y;
 }
+*/
 
 /*
  * internal, for alpha>1.
