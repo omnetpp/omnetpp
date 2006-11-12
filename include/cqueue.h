@@ -167,7 +167,7 @@ class SIM_API cQueue : public cObject
     virtual cPolymorphic *dup() const  {return new cQueue(*this);}
 
     /**
-     * Produces a one-line description of object contents into the buffer passed as argument.
+     * Produces a one-line description of object contents.
      * See cObject for more details.
      */
     virtual std::string info() const;
@@ -268,8 +268,7 @@ class SIM_API cQueue : public cObject
 
     /**
      * Returns the ith element in the queue, or NULL if i is out of range.
-     * i==0 corresponds to the head element. The cost of this method is linear
-     * to the length of the queue.
+     * The cost of this method is linear to the length of the queue.
      */
     cObject *get(int i) const;
 
