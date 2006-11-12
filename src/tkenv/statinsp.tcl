@@ -196,12 +196,17 @@ proc outvectorwindow_mouse {w x y on} {
 }
 
 proc create_outvectorwindow {name geom} {
+    global icons
+
     # create histogram inspector
     set w $name
     create_inspector_toplevel $w $geom
 
     # make the window respond to resize events
     bind $w <Configure> "opp_updateinspector $w"
+
+    pack_iconbutton $w.toolbar.obj -image $icons(asobject) -command "inspect_this $w {As Object}"
+    set help_tips($w.toolbar.obj) {Inspect as object}
 
     frame $w.main
     frame $w.bot
