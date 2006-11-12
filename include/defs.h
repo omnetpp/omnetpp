@@ -105,6 +105,14 @@
 #  endif
 #endif
 
+#ifdef __GNUC__
+#define _MAYBEUNUSED __attribute((__unused__))
+#define _DEPRECATED  __attribute((__deprecated__))
+#else
+#define _MAYBEUNUSED
+#define _DEPRECATED
+#endif
+
 #ifndef NDEBUG
 #define ASSERT(expr)  \
   ((void) ((expr) ? 0 : \

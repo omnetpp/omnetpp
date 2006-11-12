@@ -1,3 +1,6 @@
+import "sink";
+import "tx";
+
 module Node
     gates:
         in: in;

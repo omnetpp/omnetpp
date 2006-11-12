@@ -278,6 +278,11 @@ rm -f conftest.*
 #      int main() {return dlopen("libconftest_a.so",RTLD_NOW)==0;}
 # And we expect to be able to run the program successfully.
 #
+
+# first check if we need "-ldl" for dlopen() [Laura Marie Feeney suggests it's not needed for FreeBSD]
+OPP_CHECK_LIB(dlopen, dlfcn.h, dlopen("",0), , , ldl_not_needed, ldl="", ldl="-ldl")
+
+# then go ahead
 AC_MSG_CHECKING(if --export-dynamic linker option is supported/needed)
 echo 'void func_from_main();' >conftest_a.cc
 echo 'void some_func() {func_from_main();}' >>conftest_a.cc
@@ -291,7 +296,7 @@ if $CXX -c conftest_a.cc >/dev/null 2>/dev/null && \
 then
    silly_ok="no"
    # 1st try.
-   if $CXX -o conftest conftest_m.o -ldl >/dev/null 2>/dev/null; then
+   if $CXX -o conftest conftest_m.o $ldl >/dev/null 2>/dev/null; then
       if ./conftest >/dev/null 2>/dev/null; then
          AC_MSG_RESULT(not needed)
          silly_ok="yes"
@@ -299,7 +304,7 @@ then
    fi
    # 2nd try.
    if test $silly_ok = "no" && \
-      $CXX -o conftest -Wl,--export-dynamic conftest_m.o -ldl >/dev/null 2>/dev/null; \
+      $CXX -o conftest -Wl,--export-dynamic conftest_m.o $ldl >/dev/null 2>/dev/null; \
    then
       if ./conftest >/dev/null 2>/dev/null; then
          AC_MSG_RESULT(both)
@@ -814,6 +819,7 @@ AC_CONFIG_FILES(
   src/utils/Makefile
   src/utils/opp_makemake
   src/utils/opp_neddoc
+  test/core/runtest 
   samples/aloha/Makefile
   samples/cqn/Makefile
   samples/dyna/Makefile
