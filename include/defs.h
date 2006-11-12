@@ -106,11 +106,11 @@
 #endif
 
 #ifdef __GNUC__
-#define _MAYBEUNUSED __attribute((__unused__))
-#define _DEPRECATED  __attribute((__deprecated__))
+#define _MAYBEUNUSED   __attribute((__unused__))
+#define _OPPDEPRECATED __attribute((__deprecated__))
 #else
 #define _MAYBEUNUSED
-#define _DEPRECATED
+#define _OPPDEPRECATED
 #endif
 
 #ifndef NDEBUG
