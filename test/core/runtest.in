@@ -4,12 +4,11 @@
 # without args, runs all *.test files in the current directory   
 #
 
-MAKE=make
-
 # Use -N to test with dynamic NED loading
 #OPT=
 OPT="-N"
 
+MAKE=@MAKE@
 
 # --- nothing to change below this line ---
 
