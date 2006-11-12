@@ -1,3 +1,5 @@
+import "txnode", "sinknode", "sink";
+
 //
 // Model for testing animation of broadcasts
 //

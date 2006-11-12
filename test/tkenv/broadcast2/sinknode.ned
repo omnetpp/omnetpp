@@ -1,3 +1,5 @@
+import "sink";
+
 module SinkNode
     gates:
         in: in[];

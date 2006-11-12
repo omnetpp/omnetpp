@@ -1,3 +1,5 @@
+import "tx";
+
 module TxNode
     gates:
         out: out[];

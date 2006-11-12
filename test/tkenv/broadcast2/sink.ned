@@ -1,5 +1,5 @@
 simple Sink
     gates:
-      in: in;
+      in: in[];
 endsimple
 
