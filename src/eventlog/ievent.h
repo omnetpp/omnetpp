@@ -95,7 +95,7 @@ class IEvent
         /**
          * Print all entries of this event.
          */
-        virtual void print(FILE *file = stdout) = 0;
+        virtual void print(FILE *file = stdout, bool outputEventLogMessages = true) = 0;
 
         /**
          * Used to maintain the double linked list.

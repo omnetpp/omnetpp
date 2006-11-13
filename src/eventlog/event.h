@@ -92,7 +92,7 @@ class Event : public IEvent
         virtual MessageDependencyList *getCauses();
         virtual MessageDependencyList *getConsequences();
 
-        virtual void print(FILE *file = stdout);
+        virtual void print(FILE *file = stdout, bool outputEventLogMessages = true);
 };
 
 #endif

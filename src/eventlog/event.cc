@@ -101,12 +101,14 @@ long Event::parse(FileReader *reader, long offset)
     return endOffset = reader->getLastLineStartOffset();
 }
 
-void Event::print(FILE *file)
+void Event::print(FILE *file, bool outputEventLogMessages)
 {
     for (EventLogEntryList::iterator it = eventLogEntries.begin(); it != eventLogEntries.end(); it++)
     {
         EventLogEntry *eventLogEntry = *it;
-        eventLogEntry->print(file);
+
+        if (outputEventLogMessages || !dynamic_cast<EventLogMessage *>(eventLogEntry))
+            eventLogEntry->print(file);
     }
 }
 

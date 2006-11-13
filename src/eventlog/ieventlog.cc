@@ -20,21 +20,23 @@ IEventLog::IEventLog()
     lastNeighbourEvent = NULL;
 }
 
-void IEventLog::printEvents(FILE *file, long fromEventNumber, long toEventNumber)
+void IEventLog::printEvents(FILE *file, long fromEventNumber, long toEventNumber, bool outputEventLogMessages)
 {
     IEvent *event = fromEventNumber == -1 ? getFirstEvent() : getFirstEventNotBeforeEventNumber(fromEventNumber);
 
     while (event != NULL && (toEventNumber == -1 || event->getEventNumber() <= toEventNumber))
     {
-        event->print(file);
+        event->print(file, outputEventLogMessages);
         event = event->getNextEvent();
     }
 }
 
-void IEventLog::print(FILE *file, long fromEventNumber, long toEventNumber)
+void IEventLog::print(FILE *file, long fromEventNumber, long toEventNumber, bool outputInitializationEntries, bool outputEventLogMessages)
 {
-    printInitializationLogEntries(file);
-    printEvents(file, fromEventNumber, toEventNumber);
+    if (outputInitializationEntries)
+        printInitializationLogEntries(file);
+
+    printEvents(file, fromEventNumber, toEventNumber, outputEventLogMessages);
 }
 
 IEvent *IEventLog::getNeighbourEvent(IEvent *event, long distance)

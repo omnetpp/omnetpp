@@ -162,8 +162,10 @@ EventLogEntry *EventLogTableFacade::getApproximateEventLogEntryTableAt(double pe
  
         if (!event)
             return NULL;
-        else
+        else if (event->getNumEventLogMessages() != 0)
             return event->getEventLogMessage(event->getNumEventLogMessages() - 1);
+        else
+            return event->getEventEntry();
     }
     else
         return eventLog->getApproximateEventAt(percentage)->getEventEntry();

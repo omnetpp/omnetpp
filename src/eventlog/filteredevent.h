@@ -72,7 +72,7 @@ class FilteredEvent : public IEvent
         virtual MessageDependencyList *getCauses();
         virtual MessageDependencyList *getConsequences();
 
-        virtual void print(FILE *file = stdout) { getEvent()->print(file); }
+        virtual void print(FILE *file = stdout, bool outputEventLogMessages = true) { getEvent()->print(file, outputEventLogMessages); }
 
     protected:
         MessageDependencyList *getCauses(IEvent *event, int consequenceMessageSendEntryNumber, int level);

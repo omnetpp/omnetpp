@@ -59,7 +59,7 @@ class EventLogIndex
         bool readToEventLine(bool forward, long readStartOffset, long& eventNumber, simtime_t& simulationTime, long& lineStartOffset, long& lineEndOffset);
 
         void addPosition(long eventNumber, simtime_t simulationTime, long offset);
-        template<typename T> long binarySearchForOffset(bool eventNumberBased, std::map<T, long> *keyToOffsetMap, T key, MatchKind matchKind);
+        template <typename T> long binarySearchForOffset(bool eventNumberBased, std::map<T, long> *keyToOffsetMap, T key, MatchKind matchKind);
         template <typename T> long linearSearchForOffset(bool eventNumberBased, long offset, T key, MatchKind matchKind, bool exactMatchFound);
 
     public:

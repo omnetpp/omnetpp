@@ -19,33 +19,77 @@
 #include "eventlog.h"
 #include "filteredeventlog.h"
 
-struct Options {
-    char *inputFileName;
-    char *outputFileName;
-    FILE *outputFile;
-    long fromEventNumber;
-    long toEventNumber;
-    bool outputInitialization;
-    bool traceBackward;
-    bool traceForward;
-    std::vector<long> *eventNumbers;
-    std::vector<long> *fileOffsets;
-    bool verbose;
+class Options
+{
+    public:
+        char *inputFileName;
+        char *outputFileName;
+        FILE *outputFile;
 
-    Options() {
-        inputFileName = NULL;
-        outputFileName = NULL;
-        outputFile = NULL;
-        fromEventNumber = -1;
-        toEventNumber = -1;
-        outputInitialization = true;
-        traceBackward = true;
-        traceForward = true;
-        eventNumbers = NULL;
-        fileOffsets = NULL;
-        verbose = false;
-    }
+        long fromEventNumber;
+        long toEventNumber;
+
+        simtime_t fromSimulationTime;
+        simtime_t toSimulationTime;
+
+        bool outputInitialization;
+        bool outputLogLines;
+        bool traceBackward;
+        bool traceForward;
+
+        std::vector<long> *fileOffsets;
+        std::vector<long> *eventNumbers;
+
+        std::vector<int> *moduleIds;
+        std::vector<char *> *moduleNames;
+        std::vector<char *> *moduleTypes;
+
+        std::vector<long> *messageIds;
+        std::vector<char *> *messageNames;
+        std::vector<char *> *messageTypes;
+        std::vector<long> *messageTids;
+        std::vector<long> *messageEids;
+        std::vector<long> *messageEtids;
+
+        bool verbose;
+
+    public:
+        Options();
 };
+
+Options::Options()
+{
+    inputFileName = NULL;
+    outputFileName = NULL;
+    outputFile = NULL;
+
+    fromEventNumber = -1;
+    toEventNumber = -1;
+
+    fromSimulationTime = -1;
+    toSimulationTime = -1;
+
+    outputInitialization = true;
+    outputLogLines = true;
+    traceBackward = true;
+    traceForward = true;
+
+    eventNumbers = NULL;
+    fileOffsets = NULL;
+
+    moduleIds = NULL;
+    moduleNames = NULL;
+    moduleTypes = NULL;
+
+    messageIds = NULL;
+    messageNames = NULL;
+    messageTypes = NULL;
+    messageTids = NULL;
+    messageEids = NULL;
+    messageEtids = NULL;
+
+    verbose = false;
+}
 
 void readLines(Options options)
 {
@@ -184,12 +228,7 @@ void echo(Options options)
     EventLog eventLog(fileReader);
 
     long begin = clock();
-
-    if (options.outputInitialization)
-        eventLog.print(options.outputFile, options.fromEventNumber, options.toEventNumber);
-    else
-        eventLog.printEvents(options.outputFile, options.fromEventNumber, options.toEventNumber);
-
+    eventLog.print(options.outputFile, options.fromEventNumber, options.toEventNumber, options.outputInitialization, options.outputLogLines);
     long end = clock();
 
     if (options.verbose)
@@ -290,12 +329,7 @@ void filter(Options options)
     FilteredEventLog filteredEventLog(eventLog, NULL, tracedEventNumber, options.traceBackward, options.traceForward, options.fromEventNumber, options.toEventNumber);
 
     long begin = clock();
-    
-    if (options.outputInitialization)
-        filteredEventLog.print(options.outputFile);
-    else
-        filteredEventLog.printEvents(options.outputFile);
-    
+    filteredEventLog.print(options.outputFile, options.outputInitialization, options.outputLogLines);
     long end = clock();
 
     if (options.verbose)
@@ -355,6 +389,45 @@ void usage(char *message)
 "         prints performance information\n");
 }
 
+std::vector<int> *parseIntTokens(char *parameter)
+{
+    LineTokenizer tokenizer;
+    tokenizer.tokenize(parameter, strlen(parameter));
+    char **tokens = tokenizer.tokens();
+
+    std::vector<int> *result = new std::vector<int>();
+    for (int j = 0; j < tokenizer.numTokens(); j++)
+        result->push_back(atoi(tokens[j]));
+
+    return result;
+}
+
+std::vector<long> *parseLongTokens(char *parameter)
+{
+    LineTokenizer tokenizer;
+    tokenizer.tokenize(parameter, strlen(parameter));
+    char **tokens = tokenizer.tokens();
+
+    std::vector<long> *result = new std::vector<long>();
+    for (int j = 0; j < tokenizer.numTokens(); j++)
+        result->push_back(atol(tokens[j]));
+
+    return result;
+}
+
+std::vector<char *> *parseStringTokens(char *parameter)
+{
+    LineTokenizer tokenizer;
+    tokenizer.tokenize(parameter, strlen(parameter));
+    char **tokens = tokenizer.tokens();
+
+    std::vector<char *> *result = new std::vector<char *>();
+    for (int j = 0; j < tokenizer.numTokens(); j++)
+        result->push_back(tokens[j]);
+
+    return result;
+}
+
 int main(int argc, char **argv)
 {
     if (argc < 3)
@@ -362,7 +435,6 @@ int main(int argc, char **argv)
     else {
         char *command = argv[1];
         Options options;
-        LineTokenizer tokenizer;
 
         for (int i = 2; i < argc; i++) {
             if (!strcmp(argv[i], "-o") || !strcmp(argv[i], "--output"))
@@ -373,34 +445,38 @@ int main(int argc, char **argv)
                 options.fromEventNumber = atol(argv[++i]);
             else if (!strcmp(argv[i], "-te") || !strcmp(argv[i], "--to-event-number"))
                 options.toEventNumber = atol(argv[++i]);
-            else if (!strcmp(argv[i], "-e") || !strcmp(argv[i], "--event-numbers")) {
-                i++;
-                tokenizer.tokenize(argv[i], strlen(argv[i]));
-                options.eventNumbers = new std::vector<long>();
-                char **tokens = tokenizer.tokens();
-
-                for (int j = 0; j < tokenizer.numTokens(); j++)
-                    options.eventNumbers->push_back(atol(tokens[j]));
-            }
-            else if (!strcmp(argv[i], "-f") || !strcmp(argv[i], "--file-offsets")) {
-                i++;
-                tokenizer.tokenize(argv[i], strlen(argv[i]));
-                options.fileOffsets = new std::vector<long>();
-                char **tokens = tokenizer.tokens();
-
-                for (int j = 0; j < tokenizer.numTokens(); j++)
-                    options.fileOffsets->push_back(atol(tokens[j]));
-            }
+            else if (!strcmp(argv[i], "-ft") || !strcmp(argv[i], "--from-simulation-number"))
+                options.fromSimulationTime = atof(argv[++i]);
+            else if (!strcmp(argv[i], "-tt") || !strcmp(argv[i], "--to-simulation-number"))
+                options.toSimulationTime = atof(argv[++i]);
+            else if (!strcmp(argv[i], "-e") || !strcmp(argv[i], "--event-numbers"))
+                options.eventNumbers = parseLongTokens(argv[++i]);
+            else if (!strcmp(argv[i], "-f") || !strcmp(argv[i], "--file-offsets"))
+                options.fileOffsets = parseLongTokens(argv[++i]);
+            else if (!strcmp(argv[i], "-mi") || !strcmp(argv[i], "--module-ids"))
+                options.moduleIds = parseIntTokens(argv[++i]);
+            else if (!strcmp(argv[i], "-mi") || !strcmp(argv[i], "--module-names"))
+                options.moduleNames = parseStringTokens(argv[++i]);
+            else if (!strcmp(argv[i], "-mi") || !strcmp(argv[i], "--module-types"))
+                options.moduleTypes = parseStringTokens(argv[++i]);
+            else if (!strcmp(argv[i], "-mi") || !strcmp(argv[i], "--message-ids"))
+                options.messageIds = parseLongTokens(argv[++i]);
+            else if (!strcmp(argv[i], "-mi") || !strcmp(argv[i], "--message-tids"))
+                options.messageTids = parseLongTokens(argv[++i]);
+            else if (!strcmp(argv[i], "-mi") || !strcmp(argv[i], "--message-eids"))
+                options.messageEids = parseLongTokens(argv[++i]);
+            else if (!strcmp(argv[i], "-mi") || !strcmp(argv[i], "--message-etids"))
+                options.messageEtids = parseLongTokens(argv[++i]);
             else if (!strcmp(argv[i], "-ob") || !strcmp(argv[i], "--trace-backward"))
                 options.traceBackward = false;
             else if (!strcmp(argv[i], "-of") || !strcmp(argv[i], "--trace-forward"))
                 options.traceForward = false;
             else if (!strcmp(argv[i], "-oi") || !strcmp(argv[i], "--omit-initialization"))
                 options.outputInitialization = false;
+            else if (!strcmp(argv[i], "-ol") || !strcmp(argv[i], "--omit-log-lines"))
+                options.outputLogLines = false;
             else if (i == argc - 1)
                 options.inputFileName = argv[i];
-
-            // TODO: some options still not handled
         }
 
         if (!options.inputFileName)

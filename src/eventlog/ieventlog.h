@@ -97,12 +97,12 @@ class IEventLog
          * Prints all or only the events in the requested range from the log.
          * The given event numbers may not be included in the log.
          */
-        virtual void printEvents(FILE *file = stdout, long fromEventNumber = -1, long toEventNumber = -1);
+        virtual void printEvents(FILE *file = stdout, long fromEventNumber = -1, long toEventNumber = -1, bool outputEventLogMessages = true);
         /**
          * Prints initialization entries and calls printEvents.
          * The given event numbers may not be included in the log.
          */
-        virtual void print(FILE *file = stdout, long fromEventNumber = -1, long toEventNumber = -1);
+        virtual void print(FILE *file = stdout, long fromEventNumber = -1, long toEventNumber = -1, bool outputInitializationEntries = true, bool outputEventLogMessages = true);
 };
 
 #endif
