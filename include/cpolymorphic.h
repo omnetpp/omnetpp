@@ -107,7 +107,7 @@ class SIM_API cPolymorphic
      * DEPRECATED. Copies first MAX_OBJECTINFO characters of
      * <tt>info().c_str()</tt> into `buf'. Use info() instead.
      */
-    virtual void info(char *buf);
+    virtual void info(char *buf) _OPPDEPRECATED;
 
     /**
      * Can be redefined to produce a detailed, multi-line, arbitrarily long

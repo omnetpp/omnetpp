@@ -1098,25 +1098,7 @@ int TGraphicalGateWindow::redraw(Tcl_Interp *interp, int, const char **)
    // draw connections
    for (g = gate->sourceGate(); g->toGate()!=NULL; g=g->toGate())
    {
-        char chan[128] = "";
-        if (g->datarate() && g->datarate()->doubleValue()!=0)
-        {
-            strcat(chan,"datarate ");
-            strcat(chan, g->datarate()->getAsText().c_str());
-            strcat(chan,"bps  ");
-        }
-        if (g->delay() && g->delay()->doubleValue()!=0)
-        {
-            strcat(chan,"delay ");
-            strcat(chan, g->delay()->getAsText().c_str());
-            strcat(chan,"s  ");
-        }
-        if (g->error() && g->error()->doubleValue()!=0)
-        {
-            strcat(chan,"error ");
-            strcat(chan, g->error()->getAsText().c_str());
-            strcat(chan,"  ");
-        }
+        cChannel *channel = g->channel();
         char srcgateptr[32], destgateptr[32];
         ptrToStr(g,srcgateptr);
         ptrToStr(g->toGate(),destgateptr);
@@ -1125,7 +1107,7 @@ int TGraphicalGateWindow::redraw(Tcl_Interp *interp, int, const char **)
                       canvas, " ",
                       srcgateptr, " ",
                       destgateptr, " ",
-                      "{",chan,"} ",
+                      "{", (channel?channel->info().c_str():""), "} ",
                       "{", dispstr,"} ",
                       NULL ));
    }

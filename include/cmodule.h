@@ -68,7 +68,7 @@ class  cModuleType;
  */
 SIM_API void connect(cModule *frm, int frg,
                      cChannelType *linkp,
-                     cModule *tom, int tog);
+                     cModule *tom, int tog) _OPPDEPRECATED;
 
 /**
  * DEPRECATED: use cGate::connectTo() instead.
@@ -77,7 +77,7 @@ SIM_API void connect(cModule *frm, int frg,
  */
 SIM_API void connect(cModule *frm, int frg,
                      cPar *delayp, cPar *errorp, cPar *dataratep,
-                     cModule *tom, int tog);
+                     cModule *tom, int tog) _OPPDEPRECATED;
 //@}
 
 /**

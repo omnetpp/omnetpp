@@ -45,7 +45,7 @@ void cSimpleModule::activate(void *p)
             simulation.transferTo(after_cleanup_transfer_to);
         else
             simulation.transferToMain();
-        assert(("INTERNAL ERROR: switched to the fiber of an already deleted module",false));
+        assert(false /*INTERNAL ERROR: switched to the fiber of an already deleted module*/);
     }
 
     cSimpleModule *mod = (cSimpleModule *)p;
@@ -64,7 +64,7 @@ void cSimpleModule::activate(void *p)
         simulation.transferToMain(); // send back exception
         assert(!after_cleanup_transfer_to);
         simulation.transferToMain(); // for stack_cleanup_requested
-        assert(("INTERNAL ERROR: switched to the fiber of an already deleted module",false));
+        assert(false /*INTERNAL ERROR: switched to the fiber of an already deleted module*/);
     }
 
     // rename message
@@ -137,7 +137,7 @@ void cSimpleModule::activate(void *p)
         simulation.transferTo(after_cleanup_transfer_to);
     else
         simulation.transferToMain();
-    assert(("INTERNAL ERROR: switched to the fiber of an already deleted module",false));
+    assert(false /*INTERNAL ERROR: switched to the fiber of an already deleted module*/);
 }
 
 cSimpleModule::cSimpleModule(const cSimpleModule& mod)

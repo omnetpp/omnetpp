@@ -956,25 +956,12 @@ void TOmnetTkApp::clearPerformanceDisplay()
 void TOmnetTkApp::printEventBanner(cSimpleModule *module)
 {
     char banner[MAX_OBJECTFULLPATH+60];
-    if (module->phase()[0]==0)
-    {
-        sprintf(banner,"** Event #%ld.  T=%s.  Module #%u `%s'\n",
-                simulation.eventNumber(),
-                simtimeToStr(simulation.simTime()),
-                module->id(),
-                module->fullPath().c_str()
-              );
-    }
-    else
-    {
-        sprintf(banner,"** Event #%ld.  T=%s.  Module `%s' (id=%u). Phase `%s'.\n",
-                simulation.eventNumber(),
-                simtimeToStr(simulation.simTime()),
-                module->fullPath().c_str(),
-                module->id(),
-                module->phase()
-              );
-    }
+    sprintf(banner,"** Event #%ld.  T=%s.  Module #%u `%s'\n",
+            simulation.eventNumber(),
+            simtimeToStr(simulation.simTime()),
+            module->id(),
+            module->fullPath().c_str()
+          );
 
     // insert into main window
     if (opt_use_mainwindow)

@@ -134,28 +134,30 @@ class SIM_API cChannel : public cObject
     cChannelType *channelType() const {return channeltypep;}
     //@}
 
-    /** @name Parameter list. TBD needs remove, etc. operators too! */
+    /** @name Parameter list. */
     //@{
+    /**
+     *  Returns the total number of the channel's parameters.
+     */
+    virtual int params() const  {return const_cast<cChannel *>(this)->_parList().items();}
 
     /**
-     * Add a parameter to the channel's parameter list.
+     * Adds a parameter to the channel's parameter list.
      */
     virtual cPar& addPar(const char *s)  {cPar *p=new cPar(s);_parList().add(p);return *p;}
 
     /**
-     * Add a parameter to the channel's parameter list.
+     * Adds a parameter to the channel's parameter list.
      */
     virtual cPar& addPar(cPar *p)  {_parList().add(p); return *p;}
 
     /**
-     * Returns the nth object in the channel's parameter list,
-     * converting it to a cPar.
+     * Returns the nth channel parameter.
      */
     virtual cPar& par(int n);
 
     /**
-     * Returns the object with the given name in the channel's parameter list,
-     * converting it to a cPar.
+     * Returns the channel parameter with the given name.
      */
     virtual cPar& par(const char *s);
 
@@ -171,12 +173,10 @@ class SIM_API cChannel : public cObject
     virtual bool hasPar(const char *s) const {return findPar(s)>=0;}
 
     /**
-     * Returns the cArray member of the message which holds
-     * the parameters and other attached objects. Parameters can be inserted,
-     * retrieved, looked up or deleted through cArray's member
-     * functions.
+     * DEPRECATED. Manipulating a channel's parameters directly will not be 
+     * compatible with future OMNeT++ releases.
      */
-    virtual cArray& parList();
+    virtual cArray& parList() _OPPDEPRECATED;
     //@}
 
     /** @name Internally used methods. */
@@ -310,19 +310,19 @@ class SIM_API cBasicChannel : public cChannel
     virtual void setDisabled(bool d);
 
     /**
-     * DEPRECATED.
+     * DEPRECATED. Use setDelay(double) instead.
      */
-    virtual void setDelay(cPar *p);
+    virtual void setDelay(cPar *p) _OPPDEPRECATED;
 
     /**
-     * DEPRECATED.
+     * DEPRECATED. Use setError(double) instead.
      */
-    virtual void setError(cPar *p);
+    virtual void setError(cPar *p) _OPPDEPRECATED;
 
     /**
-     * DEPRECATED.
+     * DEPRECATED. Use setDatarate(double) instead.
      */
-    virtual void setDatarate(cPar *p);
+    virtual void setDatarate(cPar *p) _OPPDEPRECATED;
 
     /**
      * Returns the delay of the channel.

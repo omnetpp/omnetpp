@@ -366,7 +366,7 @@ class SIM_API cModuleType : public cObject
      * DEPRECATED. Use <tt>mod->buildInside()</tt> instead; that's what
      * this method does anyway.
      */
-    virtual void buildInside(cModule *mod);
+    virtual void buildInside(cModule *mod) _OPPDEPRECATED;
 
     /**
      * This is a convenience function to get a module up and running in one step.
@@ -448,7 +448,7 @@ class SIM_API cChannelType : public cObject
  *
  * @ingroup Internals
  */
-class SIM_API cLinkType : public cChannelType
+class SIM_API _OPPDEPRECATED cLinkType : public cChannelType
 {
   private:
     cPar *(*delayfunc)();     // delay

@@ -32,7 +32,7 @@
  *
  * @ingroup SimSupport
  */
-class SIM_API cPacket : public cMessage
+class SIM_API _OPPDEPRECATED cPacket : public cMessage
 {
   protected:
     short _protocol;

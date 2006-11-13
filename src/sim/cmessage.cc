@@ -471,6 +471,11 @@ int cMessage::findPar(const char *s) const
     return parlistp->find(s);
 }
 
+bool cMessage::hasPar(const char *s) const
+{
+    return parlistp ? parlistp->find(s)>=0 : false;
+}
+
 cGate *cMessage::senderGate() const
 {
     if (frommod<0 || fromgate<0)  return NULL;

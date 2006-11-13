@@ -310,11 +310,11 @@ void cStdDev::clearResult()
 
 double cStdDev::random() const
 {
-    switch( num_samples )
+    switch(num_samples)
     {
         case 0:  return 0.0;
         case 1:  return min_samples;
-        default: return genk_normal(genk, mean(), stddev());
+        default: return normal(mean(), stddev(), genk);
     }
 }
 
@@ -324,7 +324,7 @@ void cStdDev::saveToFile(FILE *f) const
     fprintf(f,"%ld\t #= num_samples\n",num_samples);
     fprintf(f,"%g %g\t #= min, max\n", min_samples, max_samples);
     fprintf(f,"%g\t #= sum\n", sum_samples);
-    fprintf(f,"%g\t #= square sum\n", sqrsum_samples );
+    fprintf(f,"%g\t #= square sum\n", sqrsum_samples);
 }
 
 void cStdDev::loadFromFile(FILE *f)

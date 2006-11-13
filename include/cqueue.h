@@ -81,7 +81,7 @@ class SIM_API cQueue : public cObject
         /**
          * DEPRECATED. Use operator () instead.
          */
-        cObject& operator[](int)  {return p ? *(p->obj) : *(cObject *)NULL;}
+        cObject& operator[](int) _OPPDEPRECATED  {return p ? *(p->obj) : *(cObject *)NULL;}
 
         /**
          * Returns the current object.

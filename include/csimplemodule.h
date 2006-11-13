@@ -208,13 +208,13 @@ class SIM_API cSimpleModule : public cModule
      * Sets the phase string which can be displayed as some kind of status.
      * The module creates its own copy of the string.
      */
-    void setPhase(const char *phase)  {phasestr=phase;}
+    void setPhase(const char *phase) _OPPDEPRECATED  {phasestr=phase;}
 
     /**
      * DEPRECATED.
      * Returns pointer to the current phase string.
      */
-    const char *phase() const  {return phasestr.c_str();}
+    const char *phase() const _OPPDEPRECATED  {return phasestr.c_str();}
 
     /**
      * To be called from module functions. Outputs textual information

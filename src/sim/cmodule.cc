@@ -25,6 +25,7 @@
 #include "cmodule.h"
 #include "csimplemodule.h"
 #include "cgate.h"
+#include "cchannel.h"
 #include "cmessage.h"
 #include "csimul.h"
 #include "carray.h"
@@ -121,9 +122,9 @@ cModule::~cModule()
     {
             cGate *g = gate(i);
             if (g && g->toGate() && g->toGate()->fromGate()==g)
-               g->toGate()->setFrom( NULL );
+               g->toGate()->_setFrom( NULL );
             if (g && g->fromGate() && g->fromGate()->toGate()==g)
-               g->fromGate()->setTo( NULL );
+               g->fromGate()->_setTo( NULL );
     }
 
     // deregister ourselves
@@ -131,9 +132,6 @@ cModule::~cModule()
         simulation.deregisterModule(this);
     if (parentModule())
         parentModule()->removeSubmodule(this);
-
-    //drop(&gatev);
-    //drop(&paramv);
 
     delete [] rngmap;
 
@@ -839,8 +837,12 @@ void connect(cModule *frm, int frg,
 {
     _connect( frm, frg, tom, tog);
 
-    cGate *srcgate = frm->gate(frg);
-    srcgate->setLink( linkp );
+    if (linkp)
+    {
+        cChannel *ch = linkp->create("channel");
+        cGate *srcgate = frm->gate(frg);
+        srcgate->setChannel(ch);
+    }
 }
 
 void connect(cModule *frm, int frg,
@@ -849,10 +851,18 @@ void connect(cModule *frm, int frg,
 {
     _connect( frm, frg, tom, tog);
 
-    cGate *srcgate = frm->gate(frg);
-    srcgate->setDelay( delayp );
-    srcgate->setError( errorp );
-    srcgate->setDataRate( dataratep );
+    if (delayp || errorp || dataratep)
+    {
+        cBasicChannel *ch = new cBasicChannel("channel");
+        if (delayp) 
+            ch->setDelay(delayp->doubleValue());
+        if (errorp)
+	    ch->setError(errorp->doubleValue());
+        if (dataratep)
+	    ch->setDatarate(dataratep->doubleValue());
+        cGate *srcgate = frm->gate(frg);
+        srcgate->setChannel(ch);
+    }
 }
 
 

@@ -39,7 +39,7 @@
  *
  * @ingroup Containers
  */
-class SIM_API cBag : public cObject
+class SIM_API _OPPDEPRECATED cBag : public cObject
 {
   private:
     char *vect;

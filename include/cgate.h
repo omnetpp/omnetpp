@@ -63,7 +63,11 @@ class SIM_API cGate : public cObject
     // internal: used from Tkenv: find out if cGate has a display string.
     // displayString() would create the object immediately which we want to avoid.
     bool hasDisplayString() {return dispstr!=NULL;}
-
+    // internal
+    void _setTo(cGate *g) {togatep = g;}
+    // internal
+    void _setFrom(cGate *g) {fromgatep = g;}
+    
   public:
     /** @name Constructors, destructor, assignment. */
     //@{
@@ -199,7 +203,7 @@ class SIM_API cGate : public cObject
      * Redirect gates. This method is mostly used internally during
      * network setup to create the connections.
      */
-    void setFrom(cGate *g);
+    void setFrom(cGate *g) _OPPDEPRECATED;
 
     /**
      * DEPRECATED - use connectTo() instead!
@@ -207,7 +211,7 @@ class SIM_API cGate : public cObject
      * Redirect gates. This method is mostly used internally during
      * network setup to create the connections.
      */
-    void setTo(cGate *g);
+    void setTo(cGate *g) _OPPDEPRECATED;
     //@}
 
     /** @name Accessing the channel object. */
@@ -275,7 +279,7 @@ class SIM_API cGate : public cObject
      *
      * Sets the parameters of the link to those specified by the link type.
      */
-    void setLink(cChannelType *l);
+    void setLink(cChannelType *l) _OPPDEPRECATED;
 
     /**
      * DEPRECATED! Use cBasicChannel and setChannel() instead.
@@ -284,7 +288,7 @@ class SIM_API cGate : public cObject
      * one, and calls setDelay() on it. If the gate already has a channel, it must
      * be of class cBasicChannel or one subclassed from it.
      */
-    void setDelay(cPar *p);
+    void setDelay(cPar *p) _OPPDEPRECATED;
 
     /**
      * DEPRECATED! Use cBasicChannel and setChannel() instead.
@@ -293,7 +297,7 @@ class SIM_API cGate : public cObject
      * one, and calls setError() on it. If the gate already has a channel, it must
      * be of class cBasicChannel or one subclassed from it.
      */
-    void setError(cPar *p);
+    void setError(cPar *p) _OPPDEPRECATED;
 
     /**
      * DEPRECATED! Use cBasicChannel and setChannel() instead.
@@ -302,7 +306,7 @@ class SIM_API cGate : public cObject
      * one, and calls setDataRate() on it. If the gate already has a channel, it must
      * be of class cBasicChannel or one subclassed from it.
      */
-    void setDataRate(cPar *p);
+    void setDataRate(cPar *p) _OPPDEPRECATED;
 
     /**
      * DEPRECATED! Use channel() and cBasicChannel::delay() instead.
@@ -311,7 +315,7 @@ class SIM_API cGate : public cObject
      * be of class cBasicChannel or one subclassed from it. If the gate
      * has no channel, the method returns NULL.
      */
-    cPar *delay() const;
+    cPar *delay() const _OPPDEPRECATED;
 
     /**
      * DEPRECATED! Use channel() and cBasicChannel::error() instead.
@@ -320,7 +324,7 @@ class SIM_API cGate : public cObject
      * be of class cBasicChannel or one subclassed from it. If the gate
      * has no channel, the method returns NULL.
      */
-    cPar *error() const;
+    cPar *error() const _OPPDEPRECATED;
 
     /**
      * DEPRECATED! Use channel() and cBasicChannel::datarate() instead.
@@ -329,7 +333,7 @@ class SIM_API cGate : public cObject
      * be of class cBasicChannel or one subclassed from it. If the gate
      * has no channel, the method returns NULL.
      */
-    cPar *datarate() const;
+    cPar *datarate() const _OPPDEPRECATED;
     //@}
 
     /** @name Transmission state. */

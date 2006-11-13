@@ -62,7 +62,7 @@ SIM_API cModuleInterface *findModuleInterface(const char *s);
 SIM_API cChannelType *findChannelType(const char *s);
 
 /** DEPRECATED. */
-SIM_API cLinkType *findLink(const char *s);
+SIM_API cLinkType *findLink(const char *s) _OPPDEPRECATED;
 
 /** Find a cFunctionType. */
 SIM_API cFunctionType *findFunction(const char *s,int argcount);

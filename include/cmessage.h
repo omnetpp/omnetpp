@@ -378,6 +378,9 @@ class SIM_API cMessage : public cObject
         {if (!parlistp) _createparlist(); return *parlistp;}
 
     /**
+     * DEPRECATED -- use message subclassing (.msg files) instead of dynamically
+     * added cPar objects.
+     *
      * Add a new, empty parameter (cPar object) with the given name
      * to the message's object list.
      *
@@ -387,9 +390,12 @@ class SIM_API cMessage : public cObject
      *
      * @see parList()
      */
-    cPar& addPar(const char *s)  {cPar *p=new cPar(s);parList().add(p);return *p;}
+    cPar& addPar(const char *s) _OPPDEPRECATED {cPar *p=new cPar(s);parList().add(p);return *p;}
 
     /**
+     * DEPRECATED -- use message subclassing (.msg files) instead of dynamically
+     * added cPar objects.
+     *
      * Add a parameter object to the message's object list.
      *
      * <i>NOTE: This is a convenience function: one may use parList() and
@@ -398,14 +404,17 @@ class SIM_API cMessage : public cObject
      *
      * @see parList()
      */
-    cPar& addPar(cPar *p)  {parList().add(p); return *p;}
+    cPar& addPar(cPar *p) _OPPDEPRECATED  {parList().add(p); return *p;}
 
     /**
      * DEPRECATED! Use addPar(cPar *p) instead.
      */
-    cPar& addPar(cPar& p)  {parList().add(&p); return p;}
+    cPar& addPar(cPar& p) _OPPDEPRECATED  {parList().add(&p); return p;}
 
     /**
+     * DEPRECATED -- use message subclassing (.msg files) instead of dynamically
+     * added cPar objects.
+     *
      * Returns the nth object in the message's object list, converting it to a cPar.
      * If the object doesn't exist or it cannot be cast to cPar (using dynamic_cast<>),
      * the method throws a cRuntimeError.
@@ -416,9 +425,12 @@ class SIM_API cMessage : public cObject
      *
      * @see parList()
      */
-    cPar& par(int n);
+    cPar& par(int n) _OPPDEPRECATED;
 
     /**
+     * DEPRECATED -- use message subclassing (.msg files) instead of dynamically
+     * added cPar objects.
+     *
      * Returns the object with the given name in the message's object list,
      * converting it to a cPar.
      * If the object doesn't exist or it cannot be cast to cPar (using dynamic_cast<>),
@@ -430,9 +442,12 @@ class SIM_API cMessage : public cObject
      *
      * @see parList()
      */
-    cPar& par(const char *s);
+    cPar& par(const char *s) _OPPDEPRECATED;
 
     /**
+     * DEPRECATED -- use message subclassing (.msg files) instead of dynamically
+     * added cPar objects.
+     *
      * Returns the index of the parameter with the given name in the message's
      * object list, or -1 if it could not be found.
      *
@@ -442,9 +457,12 @@ class SIM_API cMessage : public cObject
      *
      * @see parList()
      */
-    int findPar(const char *s) const;
+    int findPar(const char *s) const _OPPDEPRECATED;
 
     /**
+     * DEPRECATED -- use message subclassing (.msg files) instead of dynamically
+     * added cPar objects.
+     *
      * Check if a parameter with the given name exists in the message's
      * object list.
      *
@@ -454,7 +472,7 @@ class SIM_API cMessage : public cObject
      *
      * @see parList()
      */
-    bool hasPar(const char *s) const {return findPar(s)>=0;}
+    bool hasPar(const char *s) const _OPPDEPRECATED;
 
     /**
      * Add an object to the message's object list.

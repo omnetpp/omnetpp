@@ -1,7 +1,13 @@
 2006-11-12  Andras Varga
 
-	* defs.h: added _MAYBEUNUSED and _DEPRECATED macros
+	* several methods and classes already marked as DEPRECATED in their 
+	documentations and doc/API-Changes.txt are now marked as such with GCC's 
+	__attribute__((__deprecated__)) facility, which results in warnings 
+	during compilation of code that uses them. Those pieces of code need
+	to be changed in order to be compatible with future OMNeT++ versions.
 
+	* defs.h: added _MAYBEUNUSED and _OPPDEPRECATED macros
+	
 2006-11-07  Andras Varga
 
 	* cDensityEstBase: added cellInfo() method
