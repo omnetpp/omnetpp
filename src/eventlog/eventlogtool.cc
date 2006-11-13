@@ -145,6 +145,36 @@ void printEvents(Options options)
         fprintf(stdout, "# Printing events for %ld offsets while reading %ld lines and %ld bytes form log file %s completed in %g seconds\n", options.fileOffsets->size(), fileReader->getNumReadLines(), fileReader->getNumReadBytes(), options.inputFileName, (double)(end - begin) / CLOCKS_PER_SEC);
 }
 
+void printRanges(Options options)
+{
+    if (options.verbose)
+        fprintf(stdout, "# Printing ranges from log file %s\n", options.inputFileName);
+
+    FileReader *fileReader = new FileReader(options.inputFileName);
+    EventLog eventLog(fileReader);
+
+    long begin = clock();
+
+    IEvent *event = eventLog.getFirstEvent();
+    IEvent *rangeFirstEvent = event;
+
+    while (event) {
+        IEvent *nextEvent = event->getNextEvent();
+
+        if (!nextEvent || event->getEventNumber() != nextEvent->getEventNumber() - 1) {
+            fprintf(stdout, "%ld -> %ld\n", rangeFirstEvent->getEventNumber(), event->getEventNumber());
+            rangeFirstEvent = nextEvent;
+        }
+
+        event = nextEvent;
+    }
+
+    long end = clock();
+
+    if (options.verbose)
+        fprintf(stdout, "# Printing ranges for %ld offsets while reading %ld lines and %ld bytes form log file %s completed in %g seconds\n", options.fileOffsets->size(), fileReader->getNumReadLines(), fileReader->getNumReadBytes(), options.inputFileName, (double)(end - begin) / CLOCKS_PER_SEC);
+}
+
 void echo(Options options)
 {
     if (options.verbose)
@@ -286,6 +316,7 @@ void usage(char *message)
 "      loadevents  - loads the whole input file at once into memory and outputs nothing, options are ignored.\n"
 "      offsets     - prints the file offsets for the given even numbers (-e) one per line, all other options are ignored.\n"
 "      events      - prints the events for the given offsets (-f), all other options are ignored.\n"
+"      ranges      - prints the event number ranges found in the input, all other options are ignored.\n"
 "      echo        - echos the input to the output, range options are supported.\n"
 "      consistency - checks the consistency of the requested region in the input file.\n"
 "      filter      - filters the input according to the varios options and outputs the result, only one event number is traced,\n"
@@ -389,6 +420,8 @@ int main(int argc, char **argv)
                     printOffsets(options);
                 else if (!strcmp(command, "events"))
                     printEvents(options);
+                else if (!strcmp(command, "ranges"))
+                    printRanges(options);
                 else if (!strcmp(command, "echo"))
                     echo(options);
                 else if (!strcmp(command, "consistency"))
