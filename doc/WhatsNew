@@ -3,8 +3,39 @@ What's New
 
 OMNeT++ 3.4 (Nov 2006)
 ----------------------
+This release significantly improves Tkenv:
+  - until now, Tkenv has been using various form-style inspectors to display
+    the most important data members of objects. These inspectors have now been
+    replaced with more comprehensive and consistent treeview-based
+    inspectors.
 
-FIXME TODO
+  - broadcast animation has been implemented. When the feature is turned on,
+    multiple send() or sendDirect() calls occurring within a handleMessage()
+    call will be animated together, concurrently. This significantly improves
+    the animation of wireless simulations. Note: the new animation mode
+    implies that send/sendDirect calls are no longer animated at the
+    place of the call as previously, but together at the end of processing
+    the event (that is, after handleMessage() has already returned) -- that is,
+    out-of-sequence with writing the log, for example. The broadcast animation
+    feature can be turned off in the Simulation Options dialog.
+
+Simulation library:
+  - several methods and classes already marked as DEPRECATED in their
+    documentations and doc/API-Changes.txt are now marked as such, using
+    GCC's __attribute__((__deprecated__)) facility, which results in warnings
+    during compilation of code that uses them. Those pieces of code need to be
+    changed in order to be compatible with future OMNeT++ versions.
+
+  - opp_msgc was improved: as an experimental feature, class fields can now be
+    annotated with properties of the form @propertyname(value). The following
+    properties are accepted: field-level: @enum(enumname), @editable or
+    @editable(true), @getter(methodname), @setter(methodname),
+    @sizeGetter(methodname), @sizeSetter(methodname), @label(some-text),
+    @hint(some-text); class-level: @customize, @omitGetVerb (or:
+    @customize(true), @omitGetVerb(true)).
+
+Other:
+  - makefile improvements, from Laura Marie Feeney and Michael Tuexen.
 
 
 OMNeT++ 3.3 (Oct 2006)
