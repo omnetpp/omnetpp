@@ -8,6 +8,9 @@ import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.ListenerList;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.dnd.Clipboard;
+import org.eclipse.swt.dnd.TextTransfer;
+import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.widgets.Composite;
@@ -16,6 +19,7 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
+import org.omnetpp.common.util.CsvWriter;
 import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.engine.ResultItem;
 import org.omnetpp.scave.engine.ScalarResult;
@@ -333,6 +337,77 @@ public class DataTable extends Table {
 				// TODO
 			}
 		}
+	}
+	
+	protected void toCSV(CsvWriter writer, int lineNumber) {
+		ResultItem result = manager.getItem(idlist.get(lineNumber));
+		
+		for (int i = 0; i < columns.size(); ++i) {
+			Column column = columns.get(i);
+			if (!column.visible)
+				continue;
+			if (COL_DIRECTORY.equals(column))
+				writer.addField(result.getFileRun().getFile().getDirectory());
+			else if (COL_FILE_RUN.equals(column)) {
+				String fileName = result.getFileRun().getFile().getFileName();
+				int runNumber = result.getFileRun().getRun().getRunNumber();
+				writer.addField(runNumber == 0 ? fileName : fileName + "#" + runNumber);
+			}
+			else if (COL_RUN_ID.equals(column))
+				writer.addField(result.getFileRun().getRun().getRunName());
+			else if (COL_MODULE.equals(column))
+				writer.addField(result.getModuleName());
+			else if (COL_DATA.equals(column))
+				writer.addField(result.getName());
+			else if (COL_EXPERIMENT.equals(column)) {
+				String experiment = result.getFileRun().getRun().getAttribute(RunAttribute.EXPERIMENT);
+				writer.addField(experiment != null ? experiment : "n.a.");
+			}
+			else if (COL_MEASUREMENT.equals(column)) {
+				String measurement = result.getFileRun().getRun().getAttribute(RunAttribute.MEASUREMENT);
+				writer.addField(measurement != null ? measurement : "n.a.");
+			}
+			else if (COL_REPLICATION.equals(column)) {
+				String replication = result.getFileRun().getRun().getAttribute(RunAttribute.REPLICATION);
+				writer.addField(replication != null ? replication : "n.a.");
+			}
+			else if (type == TYPE_SCALAR) {
+				ScalarResult scalar = manager.getScalar(idlist.get(lineNumber));
+				if (COL_VALUE.equals(column))
+					writer.addField(String.valueOf(scalar.getValue()));
+			}
+			else if (type == TYPE_VECTOR) {
+				VectorResult vector = manager.getVector(idlist.get(lineNumber));
+				if (COL_COUNT.equals(column))
+					writer.addField("not counted");
+				else if (COL_MEAN.equals(column))
+					writer.addField("not yet");
+				else if (COL_STDDEV.equals(column))
+					writer.addField("not yet");
+			}
+			else if (type == TYPE_HISTOGRAM) {
+				// TODO
+			}
+		}
+		
+		writer.endRecord();
+	}
+	
+	public void copySelectionToClipboard() {
+		CsvWriter writer = new CsvWriter();
+		// add header
+		for (Column column : columns)
+			if (column.visible)
+				writer.addField(column.text);
+		writer.endRecord();
+		// add selected lines
+		int[] selection = getSelectionIndices();
+		for (int i = 0; i < selection.length; ++i)
+			toCSV(writer, selection[i]);
+		
+		Clipboard clipboard = new Clipboard(getDisplay());
+		clipboard.setContents(new Object[] {writer.toString()}, new Transfer[] {TextTransfer.getInstance()});
+		clipboard.dispose();
 	}
 	
 	public void addDataTableListener(IDataTableListener listener) {

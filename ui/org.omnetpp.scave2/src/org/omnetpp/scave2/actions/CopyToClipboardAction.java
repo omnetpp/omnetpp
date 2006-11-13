@@ -2,6 +2,7 @@ package org.omnetpp.scave2.actions;
 
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.omnetpp.scave2.editors.ScaveEditor;
+import org.omnetpp.scave2.editors.datatable.FilteredDataPanel;
 
 /**
  * ...
@@ -14,11 +15,13 @@ public class CopyToClipboardAction extends AbstractScaveAction {
 
 	@Override
 	protected void doRun(ScaveEditor editor, IStructuredSelection selection) {
-		//TODO
+		FilteredDataPanel activePanel = editor.getBrowseDataPage().getActivePanel();
+		if (activePanel != null)
+			activePanel.getTable().copySelectionToClipboard();
 	}
 
 	@Override
 	protected boolean isApplicable(ScaveEditor editor, IStructuredSelection selection) {
-		return true; //TODO
+		return editor.getBrowseDataPage().getActivePanel() != null;
 	}
 }
