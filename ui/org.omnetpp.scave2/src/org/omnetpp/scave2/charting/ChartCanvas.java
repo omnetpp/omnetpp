@@ -8,6 +8,12 @@ import static org.omnetpp.scave2.model.ChartProperties.PROP_LEGEND_BORDER;
 import static org.omnetpp.scave2.model.ChartProperties.PROP_LEGEND_FONT;
 import static org.omnetpp.scave2.model.ChartProperties.PROP_LEGEND_POSITION;
 
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.ClipboardOwner;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.Transferable;
+import java.awt.datatransfer.UnsupportedFlavorException;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Iterator;
@@ -15,12 +21,14 @@ import java.util.NoSuchElementException;
 
 import org.eclipse.draw2d.Graphics;
 import org.eclipse.draw2d.SWTGraphics;
+import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.GC;
-import org.eclipse.draw2d.geometry.Rectangle;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.omnetpp.common.color.ColorFactory;
+import org.omnetpp.common.image.ImageConverter;
 import org.omnetpp.common.util.Converter;
 import org.omnetpp.scave2.model.ChartProperties.LegendAnchor;
 import org.omnetpp.scave2.model.ChartProperties.LegendPosition;
@@ -143,6 +151,56 @@ public abstract class ChartCanvas extends ZoomableCachingCanvas {
 			getDisplay().asyncExec(scheduledRedraw);
 		}
 	}
+	
+	/**
+	 * Copies the image of the chart to the clipboard.
+	 * Uses AWT functionality, because SWT does not support ImageTransfer yet.
+	 * See: https://bugs.eclipse.org/bugs/show_bug.cgi?id=78856.
+	 */
+	public void copyToClipboard() {
+		Clipboard cp = java.awt.Toolkit.getDefaultToolkit().getSystemClipboard();
+		ClipboardOwner owner = new java.awt.datatransfer.ClipboardOwner() {
+			public void lostOwnership(Clipboard clipboard, Transferable contents) {
+			}
+		};
+		
+		class ImageTransferable implements Transferable {
+			public java.awt.Image image;
+
+			public ImageTransferable(java.awt.Image image) {
+				this.image = image;
+			}
+			
+			public Object getTransferData(DataFlavor flavor) throws UnsupportedFlavorException, IOException {
+				if (flavor == DataFlavor.imageFlavor)
+					return image;
+				else
+					throw new UnsupportedFlavorException(flavor);
+			}
+
+			public DataFlavor[] getTransferDataFlavors() {
+				return new DataFlavor[] {DataFlavor.imageFlavor};
+			}
+
+			public boolean isDataFlavorSupported(DataFlavor flavor) {
+				return flavor == DataFlavor.imageFlavor;
+			}
+		};
+		
+		cp.setContents(new ImageTransferable(ImageConverter.convertToAWT(getImage())), owner);
+	}
+	
+	/**
+	 * Returns the image of the chart.
+	 */
+	public Image getImage() {
+		Image image = new Image(getDisplay(), getClientArea().width, getClientArea().height);
+		GC gc = new GC(image);
+		paint(gc);
+		gc.dispose();
+		return image;
+	}
+	
 	
 	class Ticks implements Iterable<BigDecimal> {
 		

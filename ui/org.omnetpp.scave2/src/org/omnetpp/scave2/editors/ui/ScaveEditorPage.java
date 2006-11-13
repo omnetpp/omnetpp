@@ -14,6 +14,7 @@ import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.window.ApplicationWindow;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.BusyIndicator;
 import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.DropTarget;
 import org.eclipse.swt.dnd.DropTargetAdapter;
@@ -36,12 +37,11 @@ import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.ui.ISelectionListener;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.IWorkbenchWindow;
-import org.eclipse.ui.dialogs.CheckedTreeSelectionDialog;
-import org.eclipse.ui.dialogs.SelectionDialog;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave2.actions.EditAction;
 import org.omnetpp.scave2.actions.IScaveAction;
+import org.omnetpp.scave2.charting.ChartCanvas;
 import org.omnetpp.scave2.editors.ScaveEditor;
 import org.omnetpp.scave2.editors.datatable.DataTable;
 import org.omnetpp.scave2.editors.datatable.FilteredDataPanel;
@@ -266,6 +266,21 @@ public class ScaveEditorPage extends ScrolledForm {
 				editAction.run();
 			}
 		});
+		
+		// experimental
+		if (view instanceof ChartCanvas) {
+			item = new MenuItem(view.getMenu(), SWT.PUSH);
+			item.setText("Copy...");
+			item.addSelectionListener(new SelectionAdapter() {
+				public void widgetSelected(SelectionEvent e) {
+					BusyIndicator.showWhile(getDisplay(), new Runnable() {
+						public void run() {
+							((ChartCanvas)view).copyToClipboard();
+						}
+					});
+				}
+			});
+		}
 	}
 	
 	public void configureFilteredDataPanel(FilteredDataPanel panel) {
