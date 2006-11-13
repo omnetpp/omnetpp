@@ -38,16 +38,16 @@ class EventLogIndex
         LineTokenizer tokenizer;
         FileReader *reader;
 
-        typedef std::map<long, long> EventNumberToOffsetMap;
+        typedef std::map<long, file_offset_t> EventNumberToOffsetMap;
         EventNumberToOffsetMap eventNumberToOffsetMap;
 
-        typedef std::map<simtime_t, long> SimulationTimeToOffsetMap;
+        typedef std::map<simtime_t, file_offset_t> SimulationTimeToOffsetMap;
         SimulationTimeToOffsetMap simulationTimeToOffsetMap;
 
         long firstEventNumber;
         long lastEventNumber;
-        long firstEventOffset;
-        long lastEventOffset;
+        file_offset_t firstEventOffset;
+        file_offset_t lastEventOffset;
         simtime_t firstSimulationTime;
         simtime_t lastSimulationTime;
 
@@ -56,11 +56,11 @@ class EventLogIndex
         bool needsToBeStored(long eventNumber);
         // true if OK, false if no "E" line found till the end of file in the given direction
         // reads the first event line in the given direction starting from the given offset
-        bool readToEventLine(bool forward, long readStartOffset, long& eventNumber, simtime_t& simulationTime, long& lineStartOffset, long& lineEndOffset);
+        bool readToEventLine(bool forward, file_offset_t readStartOffset, long& eventNumber, simtime_t& simulationTime, file_offset_t& lineStartOffset, file_offset_t& lineEndOffset);
 
-        void addPosition(long eventNumber, simtime_t simulationTime, long offset);
-        template <typename T> long binarySearchForOffset(bool eventNumberBased, std::map<T, long> *keyToOffsetMap, T key, MatchKind matchKind);
-        template <typename T> long linearSearchForOffset(bool eventNumberBased, long offset, T key, MatchKind matchKind, bool exactMatchFound);
+        void addPosition(long eventNumber, simtime_t simulationTime, file_offset_t offset);
+        template <typename T> file_offset_t binarySearchForOffset(bool eventNumberBased, std::map<T, file_offset_t> *keyToOffsetMap, T key, MatchKind matchKind);
+        template <typename T> file_offset_t linearSearchForOffset(bool eventNumberBased, file_offset_t offset, T key, MatchKind matchKind, bool exactMatchFound);
 
     public:
         // reader will be deleted
@@ -69,13 +69,13 @@ class EventLogIndex
 
         long getFirstEventNumber();
         long getLastEventNumber();
-        long getFirstEventOffset();
-        long getLastEventOffset();
-        long getBeginOffsetForEndOffset(long endOffset);
-        long getEndOffsetForBeginOffset(long beginOffset);
-        long getOffsetForEventNumber(long eventNumber, MatchKind matchKind = EXACT);
+        file_offset_t getFirstEventOffset();
+        file_offset_t getLastEventOffset();
+        file_offset_t getBeginOffsetForEndOffset(file_offset_t endOffset);
+        file_offset_t getEndOffsetForBeginOffset(file_offset_t beginOffset);
+        file_offset_t getOffsetForEventNumber(long eventNumber, MatchKind matchKind = EXACT);
         bool positionToEventNumber(long eventNumber, MatchKind matchKind = EXACT);
-        long getOffsetForSimulationTime(simtime_t simulationTime, MatchKind matchKind = EXACT);
+        file_offset_t getOffsetForSimulationTime(simtime_t simulationTime, MatchKind matchKind = EXACT);
         bool positionToSimulationTime(simtime_t simulationTime, MatchKind matchKind = EXACT);
         void dumpTable();
 };

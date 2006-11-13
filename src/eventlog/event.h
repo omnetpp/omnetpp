@@ -36,8 +36,8 @@ class Event : public IEvent
 {
     protected:
         EventLog *eventLog; // the corresponding event log
-        long beginOffset; // file offset where the event starts
-        long endOffset; // file offset where the event ends (ie. begin of next event)
+        file_offset_t beginOffset; // file offset where the event starts
+        file_offset_t endOffset; // file offset where the event ends (ie. begin of next event)
         EventEntry *eventEntry; // the event log entry that corresponds to the actual event ("E" line)
 
         typedef std::vector<EventLogEntry *> EventLogEntryList;
@@ -62,13 +62,13 @@ class Event : public IEvent
         /**
          * Parse an event starting at the given offset.
          */
-        long parse(FileReader *reader, long offset);
+        file_offset_t parse(FileReader *reader, file_offset_t offset);
 
         // IEvent interface
         virtual IEventLog *getEventLog();
 
-        virtual long getBeginOffset() { return beginOffset; }
-        virtual long getEndOffset() { return endOffset; }
+        virtual file_offset_t getBeginOffset() { return beginOffset; }
+        virtual file_offset_t getEndOffset() { return endOffset; }
 
         virtual EventEntry *getEventEntry() { return eventEntry; }
         virtual int getNumEventLogEntries() { return eventLogEntries.size(); }

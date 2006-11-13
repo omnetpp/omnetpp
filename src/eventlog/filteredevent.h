@@ -48,8 +48,8 @@ class FilteredEvent : public IEvent
         // IEvent interface
         virtual IEventLog *getEventLog();
 
-        virtual long getBeginOffset() { return getEvent()->getBeginOffset(); }
-        virtual long getEndOffset() { return getEvent()->getEndOffset(); }
+        virtual file_offset_t getBeginOffset() { return getEvent()->getBeginOffset(); }
+        virtual file_offset_t getEndOffset() { return getEvent()->getEndOffset(); }
 
         virtual EventEntry *getEventEntry() { return getEvent()->getEventEntry(); }
         virtual int getNumEventLogEntries() { return getEvent()->getNumEventLogEntries(); }

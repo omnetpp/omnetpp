@@ -45,8 +45,8 @@ long EventLog::getApproximateNumberOfEvents()
             approximateNumberOfEvents = 0;
         else
         {
-            long beginOffset = firstEvent->getBeginOffset();
-            long endOffset = lastEvent->getEndOffset();
+            file_offset_t beginOffset = firstEvent->getBeginOffset();
+            file_offset_t endOffset = lastEvent->getEndOffset();
             long sum = 0;
             long count = 0;
             int eventCount = 100;
@@ -82,11 +82,12 @@ Event *EventLog::getApproximateEventAt(double percentage)
     if (firstEvent == NULL)
         return NULL;
     else {
-        long beginOffset = firstEvent->getBeginOffset();
-        long endOffset = lastEvent->getBeginOffset();
-        long offset = beginOffset + (endOffset - beginOffset) * percentage;
+        file_offset_t beginOffset = firstEvent->getBeginOffset();
+        file_offset_t endOffset = lastEvent->getBeginOffset();
+        file_offset_t offset = beginOffset + (endOffset - beginOffset) * percentage;
 
-        long eventNumber, lineStartOffset = -1, lineEndOffset;
+        long eventNumber;
+        file_offset_t lineStartOffset = -1, lineEndOffset;
         simtime_t simulationTime;
         readToEventLine(true, offset, eventNumber, simulationTime, lineStartOffset, lineEndOffset);
 
@@ -143,7 +144,7 @@ Event *EventLog::getEventForEventNumber(long eventNumber, MatchKind matchKind)
     }
 
     // TODO: cache result
-    long offset = getOffsetForEventNumber(eventNumber, matchKind);
+    file_offset_t offset = getOffsetForEventNumber(eventNumber, matchKind);
 
     if (offset == -1)
         return NULL;
@@ -161,7 +162,7 @@ Event *EventLog::getEventForSimulationTime(simtime_t simulationTime, MatchKind m
     // TODO: cache result
     EASSERT(simulationTime >= 0);
 
-    long offset = getOffsetForSimulationTime(simulationTime, matchKind);
+    file_offset_t offset = getOffsetForSimulationTime(simulationTime, matchKind);
 
     if (offset == -1)
         return NULL;
@@ -169,14 +170,15 @@ Event *EventLog::getEventForSimulationTime(simtime_t simulationTime, MatchKind m
         return getEventForBeginOffset(offset);
 }
 
-Event *EventLog::getEventForBeginOffset(long beginOffset)
+Event *EventLog::getEventForBeginOffset(file_offset_t beginOffset)
 {
     if (beginOffset < 0)
         throw new Exception("Offset number must be >= 0, %d", beginOffset);
 
     OffsetToEventMap::iterator it = offsetToEventMap.find(beginOffset);
 
-    long eventNumber, lineStartOffset, lineEndOffset;
+    long eventNumber;
+    file_offset_t lineStartOffset, lineEndOffset;
     simtime_t simulationTime;
 
     if (it != offsetToEventMap.end())
@@ -194,9 +196,9 @@ Event *EventLog::getEventForBeginOffset(long beginOffset)
     }
 }
 
-Event *EventLog::getEventForEndOffset(long endOffset)
+Event *EventLog::getEventForEndOffset(file_offset_t endOffset)
 {
-    long beginOffset = getBeginOffsetForEndOffset(endOffset);
+    file_offset_t beginOffset = getBeginOffsetForEndOffset(endOffset);
 
     if (beginOffset == -1)
         return NULL;

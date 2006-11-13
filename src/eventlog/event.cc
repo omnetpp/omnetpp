@@ -57,7 +57,7 @@ IEventLog *Event::getEventLog()
     return eventLog;
 }
 
-long Event::parse(FileReader *reader, long offset)
+file_offset_t Event::parse(FileReader *reader, file_offset_t offset)
 {
     EASSERT(offset >= 0);
     EASSERT(!eventEntry);

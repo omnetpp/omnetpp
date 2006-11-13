@@ -37,7 +37,7 @@ class Options
         bool traceBackward;
         bool traceForward;
 
-        std::vector<long> *fileOffsets;
+        std::vector<file_offset_t> *fileOffsets;
         std::vector<long> *eventNumbers;
 
         std::vector<int> *moduleIds;
@@ -108,7 +108,7 @@ void readLines(Options options)
     long end = clock();
 
     if (options.verbose)
-        fprintf(stdout, "# Reading of %ld lines and %ld bytes from log file %s completed in %g seconds\n", fileReader.getNumReadLines(), fileReader.getNumReadBytes(), options.inputFileName, (double)(end - begin) / CLOCKS_PER_SEC);
+        fprintf(stdout, "# Reading of %lld lines and %lld bytes from log file %s completed in %g seconds\n", fileReader.getNumReadLines(), fileReader.getNumReadBytes(), options.inputFileName, (double)(end - begin) / CLOCKS_PER_SEC);
 }
 
 void loadEvents(Options options)
@@ -127,10 +127,10 @@ void loadEvents(Options options)
     long end = clock();
 
     if (options.verbose)
-        fprintf(stdout, "# Loading of %ld events, %ld lines and %ld bytes form log file %s completed in %g seconds\n", eventLog.getNumParsedEvents(), fileReader->getNumReadLines(), fileReader->getNumReadBytes(), options.inputFileName, (double)(end - begin) / CLOCKS_PER_SEC);
+        fprintf(stdout, "# Loading of %ld events, %lld lines and %lld bytes form log file %s completed in %g seconds\n", eventLog.getNumParsedEvents(), fileReader->getNumReadLines(), fileReader->getNumReadBytes(), options.inputFileName, (double)(end - begin) / CLOCKS_PER_SEC);
 }
 
-void printOffsets(Options options)
+void offsets(Options options)
 {
     if (options.verbose)
         fprintf(stdout, "# Printing event offsets from log file %s\n", options.inputFileName);
@@ -142,27 +142,27 @@ void printOffsets(Options options)
 
     if (options.eventNumbers) {
         for (std::vector<long>::iterator it = options.eventNumbers->begin(); it != options.eventNumbers->end(); it++) {
-            long offset = eventLogIndex.getOffsetForEventNumber(*it);
+            file_offset_t offset = eventLogIndex.getOffsetForEventNumber(*it);
 
             if (options.verbose)
-                fprintf(stdout, "# Event #%ld --> file offset %ld (0x%lx)\n", *it, offset, offset);
-
-            fprintf(options.outputFile, "%ld\n", offset);
+                fprintf(stdout, "# Event #%ld --> file offset %lld (0x%llx)\n", *it, offset, offset);
 
             if (offset != -1 && options.verbose) {
                 fileReader->seekTo(offset);
-                fprintf(stdout, "#  - line at that offset: %.*s\n", fileReader->getLastLineLength(), fileReader->readNextLine());
+                fprintf(stdout, "#  - line at that offset: %.*s", fileReader->getLastLineLength(), fileReader->readNextLine());
             }
+
+            fprintf(options.outputFile, "%lld\n", offset);
         }
     }
 
     long end = clock();
 
     if (options.verbose)
-        fprintf(stdout, "# Printing offsets for %ld events while reading %ld lines and %ld bytes form log file %s completed in %g seconds\n", options.eventNumbers->size(), fileReader->getNumReadLines(), fileReader->getNumReadBytes(), options.inputFileName, (double)(end - begin) / CLOCKS_PER_SEC);
+        fprintf(stdout, "# Printing offsets for %ld events while reading %lld lines and %lld bytes form log file %s completed in %g seconds\n", options.eventNumbers->size(), fileReader->getNumReadLines(), fileReader->getNumReadBytes(), options.inputFileName, (double)(end - begin) / CLOCKS_PER_SEC);
 }
 
-void printEvents(Options options)
+void events(Options options)
 {
     if (options.verbose)
         fprintf(stdout, "# Printing events from log file %s\n", options.inputFileName);
@@ -173,11 +173,11 @@ void printEvents(Options options)
     long begin = clock();
 
     if (options.fileOffsets) {
-        for (std::vector<long>::iterator it = options.fileOffsets->begin(); it != options.fileOffsets->end(); it++) {
+        for (std::vector<file_offset_t>::iterator it = options.fileOffsets->begin(); it != options.fileOffsets->end(); it++) {
             IEvent *event = eventLog.getEventForBeginOffset(*it);
 
             if (options.verbose)
-                fprintf(stdout, "# Event #%ld found at file offset %ld (0x%lx)\n", event->getEventNumber(), *it, *it);
+                fprintf(stdout, "# Event #%ld found at file offset %lld (0x%llx)\n", event->getEventNumber(), *it, *it);
 
             event->print(options.outputFile);
         }
@@ -186,10 +186,10 @@ void printEvents(Options options)
     long end = clock();
 
     if (options.verbose)
-        fprintf(stdout, "# Printing events for %ld offsets while reading %ld lines and %ld bytes form log file %s completed in %g seconds\n", options.fileOffsets->size(), fileReader->getNumReadLines(), fileReader->getNumReadBytes(), options.inputFileName, (double)(end - begin) / CLOCKS_PER_SEC);
+        fprintf(stdout, "# Printing events for %ld offsets while reading %lld lines and %lld bytes form log file %s completed in %g seconds\n", options.fileOffsets->size(), fileReader->getNumReadLines(), fileReader->getNumReadBytes(), options.inputFileName, (double)(end - begin) / CLOCKS_PER_SEC);
 }
 
-void printRanges(Options options)
+void ranges(Options options)
 {
     if (options.verbose)
         fprintf(stdout, "# Printing ranges from log file %s\n", options.inputFileName);
@@ -216,7 +216,7 @@ void printRanges(Options options)
     long end = clock();
 
     if (options.verbose)
-        fprintf(stdout, "# Printing ranges for %ld offsets while reading %ld lines and %ld bytes form log file %s completed in %g seconds\n", options.fileOffsets->size(), fileReader->getNumReadLines(), fileReader->getNumReadBytes(), options.inputFileName, (double)(end - begin) / CLOCKS_PER_SEC);
+        fprintf(stdout, "# Printing ranges while reading %lld lines and %lld bytes form log file %s completed in %g seconds\n", options.fileOffsets->size(), fileReader->getNumReadLines(), fileReader->getNumReadBytes(), options.inputFileName, (double)(end - begin) / CLOCKS_PER_SEC);
 }
 
 void echo(Options options)
@@ -232,7 +232,7 @@ void echo(Options options)
     long end = clock();
 
     if (options.verbose)
-        fprintf(stdout, "# Parsing of %ld events, %ld lines and %ld bytes form log file %s completed in %g seconds\n", eventLog.getNumParsedEvents(), fileReader->getNumReadLines(), fileReader->getNumReadBytes(), options.inputFileName, (double)(end - begin) / CLOCKS_PER_SEC);
+        fprintf(stdout, "# Parsing of %ld events, %lld lines and %lld bytes form log file %s completed in %g seconds\n", eventLog.getNumParsedEvents(), fileReader->getNumReadLines(), fileReader->getNumReadBytes(), options.inputFileName, (double)(end - begin) / CLOCKS_PER_SEC);
 }
         
 void consistency(Options options)
@@ -311,7 +311,7 @@ void consistency(Options options)
     long end = clock();
 
     if (options.verbose)
-        fprintf(stdout, "# Checking consistency while loading of %ld events, %ld lines and %ld bytes form log file %s completed in %g seconds\n", eventLog->getNumParsedEvents(), fileReader->getNumReadLines(), fileReader->getNumReadBytes(), options.inputFileName, (double)(end - begin) / CLOCKS_PER_SEC);
+        fprintf(stdout, "# Checking consistency while loading of %ld events, %lld lines and %lld bytes form log file %s completed in %g seconds\n", eventLog->getNumParsedEvents(), fileReader->getNumReadLines(), fileReader->getNumReadBytes(), options.inputFileName, (double)(end - begin) / CLOCKS_PER_SEC);
 
     delete eventLog;
 }
@@ -333,7 +333,7 @@ void filter(Options options)
     long end = clock();
 
     if (options.verbose)
-        fprintf(stdout, "# Parsing of %ld events, %ld lines and %ld bytes form log file %s completed in %g seconds\n", eventLog->getNumParsedEvents(), fileReader->getNumReadLines(), fileReader->getNumReadBytes(), options.inputFileName, (double)(end - begin) / CLOCKS_PER_SEC);
+        fprintf(stdout, "# Parsing of %ld events, %lld lines and %lld bytes form log file %s completed in %g seconds\n", eventLog->getNumParsedEvents(), fileReader->getNumReadLines(), fileReader->getNumReadBytes(), options.inputFileName, (double)(end - begin) / CLOCKS_PER_SEC);
 }
         
 void usage(char *message)
@@ -415,6 +415,19 @@ std::vector<long> *parseLongTokens(char *parameter)
     return result;
 }
 
+std::vector<file_offset_t> *parseFileOffsetTokens(char *parameter)
+{
+    LineTokenizer tokenizer;
+    tokenizer.tokenize(parameter, strlen(parameter));
+    char **tokens = tokenizer.tokens();
+
+    std::vector<file_offset_t> *result = new std::vector<file_offset_t>();
+    for (int j = 0; j < tokenizer.numTokens(); j++)
+        result->push_back(atol(tokens[j]));
+
+    return result;
+}
+
 std::vector<char *> *parseStringTokens(char *parameter)
 {
     LineTokenizer tokenizer;
@@ -452,7 +465,7 @@ int main(int argc, char **argv)
             else if (!strcmp(argv[i], "-e") || !strcmp(argv[i], "--event-numbers"))
                 options.eventNumbers = parseLongTokens(argv[++i]);
             else if (!strcmp(argv[i], "-f") || !strcmp(argv[i], "--file-offsets"))
-                options.fileOffsets = parseLongTokens(argv[++i]);
+                options.fileOffsets = parseFileOffsetTokens(argv[++i]);
             else if (!strcmp(argv[i], "-mi") || !strcmp(argv[i], "--module-ids"))
                 options.moduleIds = parseIntTokens(argv[++i]);
             else if (!strcmp(argv[i], "-mi") || !strcmp(argv[i], "--module-names"))
@@ -493,11 +506,11 @@ int main(int argc, char **argv)
                 else if (!strcmp(command, "loadevents"))
                     loadEvents(options);
                 else if (!strcmp(command, "offsets"))
-                    printOffsets(options);
+                    offsets(options);
                 else if (!strcmp(command, "events"))
-                    printEvents(options);
+                    events(options);
                 else if (!strcmp(command, "ranges"))
-                    printRanges(options);
+                    ranges(options);
                 else if (!strcmp(command, "echo"))
                     echo(options);
                 else if (!strcmp(command, "consistency"))

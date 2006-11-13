@@ -61,11 +61,11 @@ class EventLog : public IEventLog, public EventLogIndex
         /**
          * Returns the event exactly starting at the given offset or NULL if there's no such event.
          */
-        Event *getEventForBeginOffset(long offset);
+        Event *getEventForBeginOffset(file_offset_t offset);
         /**
          * Returns the event exactly ending at the given offset or NULL if there's no such event.
          */
-        Event *getEventForEndOffset(long offset);
+        Event *getEventForEndOffset(file_offset_t offset);
 
         // IEventLog interface
         virtual long getNumParsedEvents() { return numParsedEvents; }

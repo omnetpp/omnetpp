@@ -34,7 +34,7 @@ long EventLogIndex::getFirstEventNumber()
 {
     if (firstEventNumber == EVENT_NOT_YET_CALCULATED)
     {
-        long lineEndOffset;
+        file_offset_t lineEndOffset;
         readToEventLine(true, 0, firstEventNumber, firstSimulationTime, firstEventOffset, lineEndOffset);
     }
 
@@ -45,21 +45,21 @@ long EventLogIndex::getLastEventNumber()
 {
     if (lastEventNumber == EVENT_NOT_YET_CALCULATED)
     {
-        long lineEndOffset;
+        file_offset_t lineEndOffset;
         readToEventLine(false, reader->getFileSize(), lastEventNumber, lastSimulationTime, lastEventOffset, lineEndOffset);
     }
 
     return lastEventNumber;
 }
 
-long EventLogIndex::getFirstEventOffset()
+file_offset_t EventLogIndex::getFirstEventOffset()
 {
     getFirstEventNumber();
 
     return firstEventOffset;
 }
 
-long EventLogIndex::getLastEventOffset()
+file_offset_t EventLogIndex::getLastEventOffset()
 {
     getLastEventNumber();
 
@@ -80,7 +80,7 @@ bool EventLogIndex::needsToBeStored(long eventNumber)
     return true;
 }
 
-void EventLogIndex::addPosition(long eventNumber, simtime_t simulationTime, long offset)
+void EventLogIndex::addPosition(long eventNumber, simtime_t simulationTime, file_offset_t offset)
 {
     if (needsToBeStored(eventNumber))
     {
@@ -89,9 +89,10 @@ void EventLogIndex::addPosition(long eventNumber, simtime_t simulationTime, long
     }
 }
 
-long EventLogIndex::getBeginOffsetForEndOffset(long endOffset)
+file_offset_t EventLogIndex::getBeginOffsetForEndOffset(file_offset_t endOffset)
 {
-    long eventNumber, lineStartOffset, lineEndOffset;
+    long eventNumber;
+    file_offset_t lineStartOffset, lineEndOffset;
     simtime_t simulationTime;
 
     if (readToEventLine(false, endOffset, eventNumber, simulationTime, lineStartOffset, lineEndOffset))
@@ -100,9 +101,10 @@ long EventLogIndex::getBeginOffsetForEndOffset(long endOffset)
         return -1;
 }
 
-long EventLogIndex::getEndOffsetForBeginOffset(long beginOffset)
+file_offset_t EventLogIndex::getEndOffsetForBeginOffset(file_offset_t beginOffset)
 {
-    long eventNumber, lineStartOffset, lineEndOffset;
+    long eventNumber;
+    file_offset_t lineStartOffset, lineEndOffset;
     simtime_t simulationTime;
 
     if (readToEventLine(true, beginOffset + 1, eventNumber, simulationTime, lineStartOffset, lineEndOffset))
@@ -113,7 +115,7 @@ long EventLogIndex::getEndOffsetForBeginOffset(long beginOffset)
 
 bool EventLogIndex::positionToEventNumber(long eventNumber, MatchKind matchKind)
 {
-    long offset = getOffsetForEventNumber(eventNumber, matchKind);
+    file_offset_t offset = getOffsetForEventNumber(eventNumber, matchKind);
 
     if (offset == -1)
         return false; // eventNumber not found
@@ -128,31 +130,31 @@ bool EventLogIndex::positionToSimulationTime(simtime_t simulationTime, MatchKind
     return true;
 }
 
-long EventLogIndex::getOffsetForEventNumber(long eventNumber, MatchKind matchKind)
+file_offset_t EventLogIndex::getOffsetForEventNumber(long eventNumber, MatchKind matchKind)
 {
-    long offset = binarySearchForOffset(true, &eventNumberToOffsetMap, eventNumber, matchKind);
+    file_offset_t offset = binarySearchForOffset(true, &eventNumberToOffsetMap, eventNumber, matchKind);
 
     if (PRINT_DEBUG_MESSAGES) printf("Found event number: %ld at offset: %ld\n", eventNumber, offset);
 
     return offset;
 }
 
-long EventLogIndex::getOffsetForSimulationTime(simtime_t simulationTime, MatchKind matchKind)
+file_offset_t EventLogIndex::getOffsetForSimulationTime(simtime_t simulationTime, MatchKind matchKind)
 {
-    long offset = binarySearchForOffset(false, &simulationTimeToOffsetMap, simulationTime, matchKind);
+    file_offset_t offset = binarySearchForOffset(false, &simulationTimeToOffsetMap, simulationTime, matchKind);
 
     if (PRINT_DEBUG_MESSAGES) printf("*** Found simulation time: %.*g at offset: %ld\n", 12, simulationTime, offset);
 
     return offset;
 }
 
-template <typename T> long EventLogIndex::binarySearchForOffset(bool eventNumberBased, std::map<T, long> *keyToOffsetMap, T key, MatchKind matchKind)
+template <typename T> file_offset_t EventLogIndex::binarySearchForOffset(bool eventNumberBased, std::map<T, file_offset_t> *keyToOffsetMap, T key, MatchKind matchKind)
 {
-    long foundOffset = -1;
-    long lowerOffset, upperOffset;
+    file_offset_t foundOffset = -1;
+    file_offset_t lowerOffset, upperOffset;
 
     // find key in map (lower_bound() finds equal or first greater key)
-    typename std::map<T, long>::iterator it = keyToOffsetMap->lower_bound(key);
+    typename std::map<T, file_offset_t>::iterator it = keyToOffsetMap->lower_bound(key);
 
     // exact match in cache?
     if (it != keyToOffsetMap->end() && it->first == key)
@@ -188,10 +190,11 @@ template <typename T> long EventLogIndex::binarySearchForOffset(bool eventNumber
         while (true)
         {
             stepCount++;
-            long midOffset = (upperOffset + lowerOffset) / 2;
+            file_offset_t midOffset = (upperOffset + lowerOffset) / 2;
             //printf("step %d: offsets: lo=%ld, up=%ld, mid=%ld \t\tkey#: lo=#%ld\n", 
             //       stepCount, lowerOffset, upperOffset, midOffset, lowerKey);
-            long midEventNumber, midEventStartOffset, midEventEndOffset;
+            long midEventNumber;
+            file_offset_t midEventStartOffset, midEventEndOffset;
             simtime_t midSimulationTime;
 
             if (readToEventLine(true, midOffset, midEventNumber, midSimulationTime, midEventStartOffset, midEventEndOffset))
@@ -247,8 +250,8 @@ template <typename T> long EventLogIndex::binarySearchForOffset(bool eventNumber
         return foundOffset;
     else if (matchKind == EXACT && !eventNumberBased)
     {
-        long firstOffset = linearSearchForOffset(eventNumberBased, foundOffset, key, FIRST, true);
-        long lastOffset = linearSearchForOffset(eventNumberBased, foundOffset, key, LAST, true);
+        file_offset_t firstOffset = linearSearchForOffset(eventNumberBased, foundOffset, key, FIRST, true);
+        file_offset_t lastOffset = linearSearchForOffset(eventNumberBased, foundOffset, key, LAST, true);
 
         if (foundOffset == lastOffset && foundOffset == firstOffset)
             return foundOffset;
@@ -259,19 +262,20 @@ template <typename T> long EventLogIndex::binarySearchForOffset(bool eventNumber
     {
         // non exact match requested
         bool exactMatchFound = foundOffset != -1;
-        long searchOffset = exactMatchFound ? foundOffset : (matchKind == FIRST ? lowerOffset : upperOffset);
+        file_offset_t searchOffset = exactMatchFound ? foundOffset : (matchKind == FIRST ? lowerOffset : upperOffset);
         return linearSearchForOffset(eventNumberBased, searchOffset, key, matchKind, exactMatchFound);
     }
 }
 
-template <typename T> long EventLogIndex::linearSearchForOffset(bool eventNumberBased, long offset, T key, MatchKind matchKind, bool exactMatchFound)
+template <typename T> file_offset_t EventLogIndex::linearSearchForOffset(bool eventNumberBased, file_offset_t offset, T key, MatchKind matchKind, bool exactMatchFound)
 {
     // this is a search either forward or backward based on matchKind
     if (matchKind == EXACT)
         throw new Exception("Invalid match kind");
 
-    long previousOffset = offset;
-    long eventNumber, lineStartOffset, lineEndOffset;
+    file_offset_t previousOffset = offset;
+    long eventNumber;
+    file_offset_t lineStartOffset, lineEndOffset;
     simtime_t simulationTime;
 
     while (offset != -1)
@@ -314,7 +318,7 @@ template <typename T> long EventLogIndex::linearSearchForOffset(bool eventNumber
     return -1;
 }
 
-bool EventLogIndex::readToEventLine(bool forward, long readStartOffset, long& eventNumber, simtime_t& simulationTime, long& lineStartOffset, long& lineEndOffset)
+bool EventLogIndex::readToEventLine(bool forward, file_offset_t readStartOffset, long& eventNumber, simtime_t& simulationTime, file_offset_t& lineStartOffset, file_offset_t& lineEndOffset)
 {
     eventNumber = -1;
     simulationTime = -1;
