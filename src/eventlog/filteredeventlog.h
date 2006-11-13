@@ -74,6 +74,7 @@ class FilteredEventLog : public IEventLog
         FilteredEvent *getMatchingEventInDirection(long startEventNumber, bool forward);
 
         // IEventLog interface
+        virtual long getNumParsedEvents() { return eventLog->getNumParsedEvents(); }
         virtual ModuleCreatedEntry *getModuleCreatedEntry(int index) { return eventLog->getModuleCreatedEntry(index); }
         virtual int getNumModuleCreatedEntries() { return eventLog->getNumModuleCreatedEntries(); }
 

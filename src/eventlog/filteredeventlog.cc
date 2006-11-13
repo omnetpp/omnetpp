@@ -138,8 +138,7 @@ bool FilteredEventLog::matchesFilter(IEvent *event)
 
     //printf("*** Matching filter to event: %ld\n", event->getEventNumber());
 
-    bool matches = matchesEvent(event);
-    matches &= matchesDependency(event);
+    bool matches = matchesEvent(event) & matchesDependency(event);
     eventNumberToFilterMatchesFlagMap[event->getEventNumber()] = matches;
     return matches;
 }
@@ -208,26 +207,32 @@ FilteredEvent* FilteredEventLog::getLastEvent()
 
 FilteredEvent *FilteredEventLog::getEventForEventNumber(long eventNumber, MatchKind matchKind)
 {
-    // TODO: use matchKind
-    EventNumberToFilteredEventMap::iterator it = eventNumberToFilteredEventMap.find(eventNumber);
+    EASSERT(eventNumber >= 0);
 
-    if (it != eventNumberToFilteredEventMap.end())
-        return it->second;
-    else
-    {
-        IEvent *event = eventLog->getEventForEventNumber(eventNumber);
+    if (matchKind == EXACT) {
+        EventNumberToFilteredEventMap::iterator it = eventNumberToFilteredEventMap.find(eventNumber);
 
-        if (event && matchesFilter(event))
-            return cacheFilteredEvent(eventNumber);
-        else
-            return NULL;
+        if (it != eventNumberToFilteredEventMap.end())
+            return it->second;
     }
+
+    IEvent *event = eventLog->getEventForEventNumber(eventNumber, matchKind);
+
+    if (event) {
+        if (matchKind == EXACT)
+            if (matchesFilter(event))
+                return cacheFilteredEvent(eventNumber);
+        else
+            getMatchingEventInDirection(event->getEventNumber(), matchKind == MatchKind::LAST);
+    }
+
+    return NULL;
 }
 
 FilteredEvent *FilteredEventLog::getEventForSimulationTime(simtime_t simulationTime, MatchKind matchKind)
 {
     // TODO:
-    return NULL;
+    throw new Exception("Not yet implemented");
 }
 
 FilteredEvent* FilteredEventLog::getMatchingEventInDirection(long eventNumber, bool forward)
@@ -237,8 +242,14 @@ FilteredEvent* FilteredEventLog::getMatchingEventInDirection(long eventNumber, b
 
     while (event)
     {
-        if (matchesFilter(event))
-            return getEventForEventNumber(eventNumber);
+        if (matchesFilter(event)) {
+            EventNumberToFilteredEventMap::iterator it = eventNumberToFilteredEventMap.find(eventNumber);
+
+            if (it != eventNumberToFilteredEventMap.end())
+                return it->second;
+            else
+                return cacheFilteredEvent(eventNumber);
+        }
 
         if (forward)
         {
@@ -268,6 +279,8 @@ bool FilteredEventLog::isCauseOfTracedEvent(IEvent *cause)
     if (it != eventNumberToTraceableEventFlagMap.end())
         return it->second;
 
+    //printf("Checking if %ld is cause of %ld\n", cause->getEventNumber(), tracedEventNumber);
+
     // returns true if "consequence" can be reached from "cause", using
     // the consequences chain. We use depth-first search.
     bool result = false;
@@ -291,6 +304,8 @@ bool FilteredEventLog::isCauseOfTracedEvent(IEvent *cause)
         }
     }
 
+    eventNumberToTraceableEventFlagMap[cause->getEventNumber()] = result;
+
     return result;
 }
 
@@ -301,6 +316,8 @@ bool FilteredEventLog::isConsequenceOfTracedEvent(IEvent *consequence)
     // check cache
     if (it != eventNumberToTraceableEventFlagMap.end())
         return it->second;
+
+    //printf("Checking if %ld is consequence of %ld\n", consequence->getEventNumber(), tracedEventNumber);
 
     // like consequenceEvent(), but searching from the opposite direction
     bool result = false;

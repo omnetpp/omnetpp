@@ -28,12 +28,14 @@ class IEventLog
         long lastNeighbourEventNumber;
         IEvent *lastNeighbourEvent;
 
-        long numParsedEvents;
-
     public:
         IEventLog();
         virtual ~IEventLog() {}
 	
+        /**
+         * Returns the number of events parsed so far.
+         */
+        virtual long getNumParsedEvents() = 0;
         /**
          * Returns the entry which describes the module with the given id.
          */
@@ -101,11 +103,6 @@ class IEventLog
          * The given event numbers may not be included in the log.
          */
         virtual void print(FILE *file = stdout, long fromEventNumber = -1, long toEventNumber = -1);
-
-        /**
-         * Returns the number of events parsed so far.
-         */
-        long getNumParsedEvents() { return numParsedEvents; }
 };
 
 #endif

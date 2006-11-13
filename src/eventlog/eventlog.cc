@@ -20,6 +20,7 @@ StringPool eventLogStringPool;
 
 EventLog::EventLog(FileReader *reader) : EventLogIndex(reader)
 {
+    numParsedEvents = 0;
     approximateNumberOfEvents = -1;
     parseInitializationLogEntries();
 }
@@ -134,7 +135,6 @@ Event *EventLog::getEventForEventNumber(long eventNumber, MatchKind matchKind)
 {
     EASSERT(eventNumber >= 0);
 
-    // TODO: use matchKind
     if (matchKind == EXACT) {
         EventNumberToEventMap::iterator it = eventNumberToEventMap.find(eventNumber);
 
@@ -142,6 +142,7 @@ Event *EventLog::getEventForEventNumber(long eventNumber, MatchKind matchKind)
             return it->second;
     }
 
+    // TODO: cache result
     long offset = getOffsetForEventNumber(eventNumber, matchKind);
 
     if (offset == -1)
@@ -157,7 +158,7 @@ Event *EventLog::getNeighbourEvent(IEvent *event, long distance)
 
 Event *EventLog::getEventForSimulationTime(simtime_t simulationTime, MatchKind matchKind)
 {
-    // TODO: use matchKind
+    // TODO: cache result
     EASSERT(simulationTime >= 0);
 
     long offset = getOffsetForSimulationTime(simulationTime, matchKind);

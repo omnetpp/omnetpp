@@ -183,9 +183,11 @@ MessageReuse::MessageReuse(IEventLog *eventLog, long senderEventNumber, int begi
 {
 }
 
-MessageReuse *MessageReuse::duplicate()
+MessageReuse *MessageReuse::duplicate(IEventLog *eventLog)
 {
-    return new MessageReuse(*this);
+    MessageReuse *messageReuse = new MessageReuse(*this);
+    messageReuse->eventLog = eventLog;
+    return messageReuse;
 }
 
 /**************************************************/
@@ -195,9 +197,11 @@ MessageSend::MessageSend(IEventLog *eventLog, long senderEventNumber, int BeginS
 {
 }
 
-MessageSend* MessageSend::duplicate()
+MessageSend* MessageSend::duplicate(IEventLog *eventLog)
 {
-    return new MessageSend(*this);
+    MessageSend *messageSend = new MessageSend(*this);
+    messageSend->eventLog = eventLog;
+    return messageSend;
 }
 
 /**************************************************/
@@ -211,9 +215,11 @@ FilteredMessageDependency::FilteredMessageDependency(IEventLog *eventLog,
     this->middleBeginSendEntryNumber = middleBeginSendEntryNumber;
 }
 
-FilteredMessageDependency* FilteredMessageDependency::duplicate()
+FilteredMessageDependency* FilteredMessageDependency::duplicate(IEventLog *eventLog)
 {
-    return new FilteredMessageDependency(*this);
+    FilteredMessageDependency *filteredMessageDependency = new FilteredMessageDependency(*this);
+    filteredMessageDependency->eventLog = eventLog;
+    return filteredMessageDependency;
 }
 
 IEvent *FilteredMessageDependency::getMiddleEvent()

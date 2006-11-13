@@ -172,15 +172,19 @@ void consistency(Options options)
         fprintf(stdout, "# Checking consistency of log file %s\n", options.inputFileName);
 
     FileReader *fileReader = new FileReader(options.inputFileName);
-    EventLog eventLog(fileReader);
-
-    // TODO: check for filter parameters and use filered event log if applicable
+    IEventLog *eventLog = new EventLog(fileReader);
+    
+    if (options.eventNumbers != NULL)
+        eventLog = new FilteredEventLog(eventLog, NULL, options.eventNumbers->at(0), options.traceBackward, options.traceForward, options.fromEventNumber, options.toEventNumber);
 
     long begin = clock();
 
-    IEvent *event = options.fromEventNumber == -1 ? eventLog.getFirstEvent() : eventLog.getEventForEventNumber(options.fromEventNumber);
+    IEvent *event = options.fromEventNumber == -1 ? eventLog->getFirstEvent() : eventLog->getEventForEventNumber(options.fromEventNumber);
 
     while (event) {
+        if (options.verbose)
+            fprintf(stdout, "# Checking consistency for event %ld\n", event->getEventNumber());
+
         // check causes
         MessageDependencyList *causes = event->getCauses();
 
@@ -238,7 +242,9 @@ void consistency(Options options)
     long end = clock();
 
     if (options.verbose)
-        fprintf(stdout, "# Checking consistency while loading of %ld events, %ld lines and %ld bytes form log file %s completed in %g seconds\n", eventLog.getNumParsedEvents(), fileReader->getNumReadLines(), fileReader->getNumReadBytes(), options.inputFileName, (double)(end - begin) / CLOCKS_PER_SEC);
+        fprintf(stdout, "# Checking consistency while loading of %ld events, %ld lines and %ld bytes form log file %s completed in %g seconds\n", eventLog->getNumParsedEvents(), fileReader->getNumReadLines(), fileReader->getNumReadBytes(), options.inputFileName, (double)(end - begin) / CLOCKS_PER_SEC);
+
+    delete eventLog;
 }
 
 void filter(Options options)
@@ -282,8 +288,8 @@ void usage(char *message)
 "      events      - prints the events for the given offsets (-f), all other options are ignored.\n"
 "      echo        - echos the input to the output, range options are supported.\n"
 "      consistency - checks the consistency of the requested region in the input file.\n"
-"      filter      - filters the input according to the varios options, only one event number is traced, but\n"
-"                    it may be outside of the specified event number or simulation time region.\n"
+"      filter      - filters the input according to the varios options and outputs the result, only one event number is traced,\n"
+"                    but it may be outside of the specified event number or simulation time region.\n"
 "\n"
 "   Options: Not all options may be used for all commands. Some options optionally accept a list of\n"
 "            space separated tokens as a single parameter. Name and type filters may include patterns.\n"

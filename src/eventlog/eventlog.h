@@ -37,6 +37,7 @@ class EventLogEntry;
 class EventLog : public IEventLog, public EventLogIndex
 {
     protected:
+        long numParsedEvents;
         long approximateNumberOfEvents;
 
         typedef std::vector<EventLogEntry *> EventLogEntryList;
@@ -67,6 +68,7 @@ class EventLog : public IEventLog, public EventLogIndex
         Event *getEventForEndOffset(long offset);
 
         // IEventLog interface
+        virtual long getNumParsedEvents() { return numParsedEvents; }
         virtual ModuleCreatedEntry *getModuleCreatedEntry(int moduleId) { return initializationModuleIdToModuleCreatedEntryMap[moduleId]; }
         virtual int getNumModuleCreatedEntries() { return initializationModuleIdToModuleCreatedEntryMap.size(); }
 
