@@ -36,6 +36,7 @@ Simulation library:
 
 Other:
   - makefile improvements, from Laura Marie Feeney and Michael Tuexen.
+  - the FDDI sample simulation has retired (it used lots of deprecated APIs.)
 
 
 OMNeT++ 3.3 (Oct 2006)
