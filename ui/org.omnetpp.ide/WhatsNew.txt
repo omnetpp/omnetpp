@@ -4,6 +4,9 @@
   + the '<> like' syntax is correctly handled for submodules and connections
   + double clicking on a submodule opens the definition and selects it (in 
     a different file)
+  + old style NED is serialized back in old format (display string is 
+    not written back correctly, content assist is not tourned off for
+    old style 
   o optimized resource (re)parsing during file open, close (unnecessary reparsing 
     has been removed)
   o the file location (path) is always stored correctly in the 

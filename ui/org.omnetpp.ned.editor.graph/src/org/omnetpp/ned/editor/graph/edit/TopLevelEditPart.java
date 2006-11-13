@@ -8,8 +8,9 @@ import org.omnetpp.common.displaymodel.IDisplayStringProvider;
 import org.omnetpp.figures.TopLevelFigure;
 import org.omnetpp.ned.editor.graph.edit.policies.NedComponentEditPolicy;
 import org.omnetpp.ned2.model.NEDElement;
-import org.omnetpp.ned2.model.interfaces.INEDChangeListener;
 import org.omnetpp.ned2.model.interfaces.INamed;
+import org.omnetpp.ned2.model.notification.INEDChangeListener;
+import org.omnetpp.ned2.model.notification.NEDModelEvent;
 
 /**
  * @author rhornig
@@ -58,21 +59,13 @@ public class TopLevelEditPart extends AbstractGraphicalEditPart
 
     @Override
 	protected IFigure createFigure() {
-		
 		return new TopLevelFigure();
 	}
 
-	public void attributeChanged(NEDElement node, String attr) {
-		System.out.println("attrChange for: "+this+" (node="+node+"attr="+attr+")");
-		if (node == getModel()) 
-			refreshVisuals();
-	}
-
-	public void childInserted(NEDElement node, NEDElement where, NEDElement child) {
-	}
-
-	public void childRemoved(NEDElement node, NEDElement child) {
-	}
+    public void modelChanged(NEDModelEvent event) {
+        System.out.println(this+" "+event);
+        refreshVisuals();
+    }
 
 	@Override
 	protected void refreshVisuals() {

@@ -9,6 +9,7 @@ Bundle-Localization: plugin
 Export-Package: org.omnetpp.ned2.model,
  org.omnetpp.ned2.model.ex,
  org.omnetpp.ned2.model.interfaces,
+ org.omnetpp.ned2.model.notification,
  org.omnetpp.ned2.model.pojo,
  org.omnetpp.ned2.model.swig
 Require-Bundle: org.eclipse.core.runtime,

@@ -54,8 +54,9 @@ public final class SimpleModuleNodeEx extends SimpleModuleNode
 
     public void propertyChanged(Prop changedProp) {
         // syncronize it to the underlying model 
-        NEDElementUtilEx.setDisplayString(this, displayString.toString());
-        fireAttributeChangedToAncestors(IDisplayString.ATT_DISPLAYSTRING+"."+changedProp);
+        String newDspString = displayString.toString(); 
+        NEDElementUtilEx.setDisplayString(this, newDspString);
+        fireAttributeChangedToAncestors(IDisplayString.ATT_DISPLAYSTRING+"."+changedProp, newDspString, null);
     }
 
     // EXTENDS SUPPORT 

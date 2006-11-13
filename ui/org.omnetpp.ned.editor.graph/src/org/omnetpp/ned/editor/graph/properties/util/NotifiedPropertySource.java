@@ -3,7 +3,8 @@ package org.omnetpp.ned.editor.graph.properties.util;
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
 import org.eclipse.ui.views.properties.IPropertySource2;
 import org.omnetpp.ned2.model.NEDElement;
-import org.omnetpp.ned2.model.interfaces.INEDChangeListener;
+import org.omnetpp.ned2.model.notification.INEDChangeListener;
+import org.omnetpp.ned2.model.notification.NEDModelEvent;
 
 /**
  * @author rhornig
@@ -23,19 +24,6 @@ abstract public class NotifiedPropertySource
         model.addListener(this);
     }
     
-    // the following methods notify the property source 
-    public void attributeChanged(NEDElement node, String attr) {
-        modelChanged();
-    }
-
-    public void childInserted(NEDElement node, NEDElement where, NEDElement child) {
-        modelChanged();
-    }
-
-    public void childRemoved(NEDElement node, NEDElement child) {
-        modelChanged();
-    }
-    
     abstract public boolean isPropertyResettable(Object id);
     
     abstract public boolean isPropertySet(Object id);
@@ -50,6 +38,6 @@ abstract public class NotifiedPropertySource
     
     abstract public void setPropertyValue(Object id, Object value);
     
-    public void modelChanged() {
-    }
+    public void modelChanged(NEDModelEvent event) {};
+
 }

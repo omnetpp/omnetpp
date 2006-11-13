@@ -12,6 +12,7 @@ import org.omnetpp.ned.editor.graph.properties.util.NamePropertySource;
 import org.omnetpp.ned.editor.graph.properties.util.ParameterListPropertySource;
 import org.omnetpp.ned2.model.ex.ChannelNodeEx;
 import org.omnetpp.ned2.model.ex.ModuleInterfaceNodeEx;
+import org.omnetpp.ned2.model.notification.NEDModelEvent;
 
 public class ModuleInterfacePropertySource extends MergedPropertySource {
 
@@ -31,7 +32,7 @@ public class ModuleInterfacePropertySource extends MergedPropertySource {
         }
 
         @Override
-        public void modelChanged() {
+        public void modelChanged(NEDModelEvent event) {
             if(model != null)
                 setDisplayString(model.getDisplayString());
         }

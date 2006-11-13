@@ -18,11 +18,11 @@ import org.omnetpp.ned.editor.graph.GraphicalNedEditor;
 import org.omnetpp.ned.editor.graph.edit.policies.NedConnectionEditPolicy;
 import org.omnetpp.ned.editor.graph.edit.policies.NedConnectionEndpointEditPolicy;
 import org.omnetpp.ned.editor.graph.misc.ISelectionSupport;
-import org.omnetpp.ned2.model.NEDElement;
 import org.omnetpp.ned2.model.NEDElementUtil;
 import org.omnetpp.ned2.model.ex.ConnectionNodeEx;
-import org.omnetpp.ned2.model.interfaces.INEDChangeListener;
 import org.omnetpp.ned2.model.interfaces.INEDTypeInfo;
+import org.omnetpp.ned2.model.notification.INEDChangeListener;
+import org.omnetpp.ned2.model.notification.NEDModelEvent;
 
 /**
  * Implements a Connection Editpart to represnt a Wire like connection.
@@ -191,17 +191,8 @@ public class ModuleConnectionEditPart extends AbstractConnectionEditPart impleme
         cfig.setArrowEnabled(getConnectionModel().getArrowDirection() != NEDElementUtil.NED_ARROWDIR_BIDIR);
     }
 
-	public void attributeChanged(NEDElement node, String attr) {
-		if (node == getModel()) 
-			refreshVisuals();
-	}
-
-	public void childInserted(NEDElement node, NEDElement where, NEDElement child) {
-		// DO nothing. we don't care about child addition removal in a connection subtree 
-	}
-
-	public void childRemoved(NEDElement node, NEDElement child) {
-		// DO nothing. we don't care about child addition removal in a connection subtree 
-	}
-
+    public void modelChanged(NEDModelEvent event) {
+        System.out.println(this+" "+event);
+        refreshVisuals();
+    }
 }

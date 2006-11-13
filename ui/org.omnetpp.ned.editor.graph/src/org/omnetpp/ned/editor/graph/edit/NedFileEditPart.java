@@ -3,35 +3,23 @@ package org.omnetpp.ned.editor.graph.edit;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.draw2d.Animation;
-import org.eclipse.draw2d.ConnectionLayer;
 import org.eclipse.draw2d.Figure;
-import org.eclipse.draw2d.FlowLayout;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.Layer;
 import org.eclipse.draw2d.MarginBorder;
 import org.eclipse.draw2d.ToolbarLayout;
-import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.gef.CompoundSnapToHelper;
-import org.eclipse.gef.DragTracker;
 import org.eclipse.gef.EditPolicy;
 import org.eclipse.gef.LayerConstants;
-import org.eclipse.gef.Request;
 import org.eclipse.gef.SnapToGeometry;
-import org.eclipse.gef.SnapToGrid;
-import org.eclipse.gef.SnapToGuides;
 import org.eclipse.gef.SnapToHelper;
 import org.eclipse.gef.editpolicies.RootComponentEditPolicy;
-import org.eclipse.gef.requests.SelectionRequest;
-import org.eclipse.gef.rulers.RulerProvider;
-import org.eclipse.gef.tools.DeselectAllTracker;
-import org.eclipse.gef.tools.MarqueeDragTracker;
-import org.eclipse.swt.SWT;
 import org.omnetpp.ned.editor.graph.edit.policies.NedFileLayoutEditPolicy;
-import org.omnetpp.ned2.model.NEDElement;
 import org.omnetpp.ned2.model.ex.CompoundModuleNodeEx;
 import org.omnetpp.ned2.model.ex.NedFileNodeEx;
 import org.omnetpp.ned2.model.interfaces.ITopLevelElement;
+import org.omnetpp.ned2.model.notification.NEDAttributeChangeEvent;
+import org.omnetpp.ned2.model.notification.NEDModelEvent;
 import org.omnetpp.resources.NEDResourcesPlugin;
 
 /**
@@ -106,32 +94,22 @@ public class NedFileEditPart extends ContainerEditPart implements LayerConstants
     	return ((NedFileNodeEx)getNEDModel()).getTopLevelElements();
     }
 
-    public void attributeChanged(NEDElement node, String attr) {
-        super.attributeChanged(node, attr);
-        if (node instanceof ITopLevelElement && CompoundModuleNodeEx.ATT_NAME.equals(attr)) {
-            // invalidate the resource cache so we will see the added element next time
-            NEDResourcesPlugin.getNEDResources().invalidate();
-            refreshChildren();
-        }
+    @Override
+    public void modelChanged(NEDModelEvent event) {
+        super.modelChanged(event);
+        if (!(event.getSource() instanceof ITopLevelElement))
+            return;
+
+        // if it's an attribute change, we don't care except it is a name change. in this case we must make
+        // a full rehash.
+        // FIXME we should check for changes in exteds and like nodes too
+        if (event instanceof NEDAttributeChangeEvent 
+                && !CompoundModuleNodeEx.ATT_NAME.equals(((NEDAttributeChangeEvent)event).getAttribute()))
+            return;
+
+        // invalidat the type info caceh and redraw the children
+        NEDResourcesPlugin.getNEDResources().invalidate();
+        refreshChildren();
     }
     
-    public void childInserted(NEDElement node, NEDElement where, NEDElement child) {
-        super.childInserted(node, where, child);
-        // TODO addChild would be better
-        if (child instanceof ITopLevelElement) {
-            // invalidate the resource cache so we will see the added element next time
-            NEDResourcesPlugin.getNEDResources().invalidate();
-            refreshChildren();
-        }
-    }
-
-    public void childRemoved(NEDElement node, NEDElement child) {
-        super.childRemoved(node, child);
-        // remove child would be better
-        if (child instanceof ITopLevelElement) {
-            // invalidate the resource cache so we will see the added element next time
-            NEDResourcesPlugin.getNEDResources().invalidate();
-            refreshChildren();
-        }
-    }
-}
+}    

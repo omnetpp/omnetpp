@@ -91,9 +91,10 @@ public final class ModuleInterfaceNodeEx extends ModuleInterfaceNode
     }
     // notifiation support
     public void propertyChanged(Prop changedProp) {
-        // syncronize it to the underlying model 
-        NEDElementUtilEx.setDisplayString(this, displayString.toString());
-        fireAttributeChangedToAncestors(IDisplayString.ATT_DISPLAYSTRING+"."+changedProp);
+        // syncronize it to the underlying model
+        String newDspString = displayString.toString(); 
+        NEDElementUtilEx.setDisplayString(this, newDspString);
+        fireAttributeChangedToAncestors(IDisplayString.ATT_DISPLAYSTRING+"."+changedProp, newDspString, null);
     }
     
     // parameter query support

@@ -7,7 +7,8 @@ import org.eclipse.ui.views.properties.IPropertyDescriptor;
 import org.eclipse.ui.views.properties.IPropertySource;
 import org.eclipse.ui.views.properties.IPropertySource2;
 import org.omnetpp.ned2.model.NEDElement;
-import org.omnetpp.ned2.model.interfaces.INEDChangeListener;
+import org.omnetpp.ned2.model.notification.INEDChangeListener;
+import org.omnetpp.ned2.model.notification.NEDModelEvent;
 
 /**
  * @author rhornig
@@ -90,19 +91,7 @@ public class MergedPropertySource implements IPropertySource2, INEDChangeListene
 			psrc.setPropertyValue(id, value);
 	}
 
-    // the following methods notify the property source 
-    public void attributeChanged(NEDElement node, String attr) {
-        modelChanged();
+    public void modelChanged(NEDModelEvent event) {
     }
 
-    public void childInserted(NEDElement node, NEDElement where, NEDElement child) {
-        modelChanged();
-    }
-
-    public void childRemoved(NEDElement node, NEDElement child) {
-        modelChanged();
-    }
-    
-    public void modelChanged() {
-    }
 }

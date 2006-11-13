@@ -354,13 +354,15 @@ foreach $element (@elements)
         if ($argtypes[$i] eq "int") {
             print JAVA "    public void set$ucvarnames[$i]($argtypes[$i] val) {\n";
             print JAVA "        validateEnum(val, $enumnames[$i]_vals, $enumnames[$i]_nums, $enumnames[$i]_n);\n";
+            print JAVA "        $argtypes[$i] oldVal = $varnames[$i];\n";
             print JAVA "        $varnames[$i] = val;\n";
-            print JAVA "        fireAttributeChangedToAncestors($attnameconsts[$i]);\n";
+            print JAVA "        fireAttributeChangedToAncestors($attnameconsts[$i], val, oldVal);\n";
             print JAVA "    }\n\n";
         } else {
             print JAVA "    public void set$ucvarnames[$i]($argtypes[$i] val) {\n";
+            print JAVA "        $argtypes[$i] oldVal = $varnames[$i];\n";
             print JAVA "        $varnames[$i] = val;\n";
-            print JAVA "        fireAttributeChangedToAncestors($attnameconsts[$i]);\n";
+            print JAVA "        fireAttributeChangedToAncestors($attnameconsts[$i], val, oldVal);\n";
             print JAVA "    }\n\n";
         }
 

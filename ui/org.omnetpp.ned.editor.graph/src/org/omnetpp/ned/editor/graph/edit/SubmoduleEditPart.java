@@ -20,9 +20,9 @@ import org.omnetpp.figures.SubmoduleFigure;
 import org.omnetpp.figures.layout.SubmoduleConstraint;
 import org.omnetpp.ned.editor.graph.GraphicalNedEditor;
 import org.omnetpp.ned.editor.graph.misc.ISelectionSupport;
-import org.omnetpp.ned2.model.NEDElement;
 import org.omnetpp.ned2.model.ex.SubmoduleNodeEx;
 import org.omnetpp.ned2.model.interfaces.INEDTypeInfo;
+import org.omnetpp.ned2.model.notification.NEDModelEvent;
 
 
 public class SubmoduleEditPart extends ModuleEditPart {
@@ -94,14 +94,11 @@ public class SubmoduleEditPart extends ModuleEditPart {
     }
 
     @Override
-    public void attributeChanged(NEDElement node, String attr) {
-        super.attributeChanged(node, attr);
-        // refresh only ourselves. Child changes do not change the apperaence
-        if (node == getModel()) 
-            refreshVisuals();
-
+    public void modelChanged(NEDModelEvent event) {
+        super.modelChanged(event);
+        refreshVisuals();
     }
-
+    
     /**
      * Updates the visual aspect of this.
      */

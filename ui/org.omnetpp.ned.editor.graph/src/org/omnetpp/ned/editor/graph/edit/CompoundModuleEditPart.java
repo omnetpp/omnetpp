@@ -23,11 +23,12 @@ import org.omnetpp.figures.CompoundModuleFigure;
 import org.omnetpp.figures.CompoundModuleGateAnchor;
 import org.omnetpp.figures.GateAnchor;
 import org.omnetpp.ned.editor.graph.edit.policies.CompoundModuleLayoutEditPolicy;
-import org.omnetpp.ned2.model.NEDElement;
 import org.omnetpp.ned2.model.ex.CompoundModuleNodeEx;
 import org.omnetpp.ned2.model.ex.ConnectionNodeEx;
 import org.omnetpp.ned2.model.ex.SubmoduleNodeEx;
-import org.omnetpp.ned2.model.interfaces.INamedGraphNode;
+import org.omnetpp.ned2.model.notification.NEDAttributeChangeEvent;
+import org.omnetpp.ned2.model.notification.NEDModelEvent;
+import org.omnetpp.ned2.model.notification.NEDStructuralChangeEvent;
 
 public class CompoundModuleEditPart extends ModuleEditPart {
 
@@ -119,50 +120,47 @@ public class CompoundModuleEditPart extends ModuleEditPart {
     }
 
     @Override
-    public void attributeChanged(NEDElement node, String attr) {
-    	super.attributeChanged(node, attr);
-    	// TODO NEEDED only if the scaling property has changed (check if node is CompoundNode and attr is displaystring)
-        if (node instanceof CompoundModuleNodeEx && attr.startsWith(IDisplayString.ATT_DISPLAYSTRING))
-            refreshChildrenVisuals();
-    	// refresh only ourselves. Child changes do not change the apperaence
-        if (node == getModel()) 
+    public void modelChanged(NEDModelEvent event) {
+        super.modelChanged(event);
+
+        // check for attribute changes
+        if (event instanceof NEDAttributeChangeEvent) {
+            NEDAttributeChangeEvent attrEvent = (NEDAttributeChangeEvent) event;
+            // FIXME could be optimized to refresh only if really necessary
             refreshVisuals();
-        // a connection was modified
-        if (node instanceof ConnectionNodeEx || SubmoduleNodeEx.ATT_NAME.equals(attr)) {
-            refreshSourceConnections();
-            refreshTargetConnections();
-            refreshChildrenConnections();
+            // TODO NEEDED only if the scaling property has changed (check if node is CompoundNode and attr is displaystring)
+            if (attrEvent.getSource() instanceof CompoundModuleNodeEx 
+                        && attrEvent.getAttribute().startsWith(IDisplayString.ATT_DISPLAYSTRING)) {
+                refreshChildrenVisuals();
+            }
+            // if any attribute changes in a connection or a name attribute changes anywhere 
+            // we should redraw the connections
+            if (attrEvent.getSource() instanceof ConnectionNodeEx 
+                    || SubmoduleNodeEx.ATT_NAME.equals(attrEvent.getAttribute())) {
+                refreshSourceConnections();
+                refreshTargetConnections();
+                refreshChildrenConnections();
+            }
         }
+
+        // check for structural changes
+        if (event instanceof NEDStructuralChangeEvent) {
+            NEDStructuralChangeEvent structEvent = (NEDStructuralChangeEvent) event;
+
+            // refresh children if a submodule was added/removed
+            if (structEvent.getChild() instanceof SubmoduleNodeEx)
+                refreshChildren();
+            
+            // refresh connections if a connection was inserted/deleted
+            if (structEvent.getChild() instanceof ConnectionNodeEx) {
+                refreshSourceConnections();
+                refreshTargetConnections();
+                refreshChildrenConnections();
+            }
+        }
+        
     }
     
-    @Override
-    public void childInserted(NEDElement node, NEDElement where, NEDElement child) {
-        super.childInserted(node, where, child);
-
-        if (child instanceof SubmoduleNodeEx)
-            refreshChildren();
-        
-        if (child instanceof ConnectionNodeEx) {
-            refreshSourceConnections();
-            refreshTargetConnections();
-            refreshChildrenConnections();
-        }
-    }
-
-    @Override
-    public void childRemoved(NEDElement node, NEDElement child) {
-        super.childRemoved(node, child);
-        
-        if (child instanceof SubmoduleNodeEx)
-            refreshChildren();
-
-        if (child instanceof ConnectionNodeEx) {
-            refreshSourceConnections();
-            refreshTargetConnections();
-            refreshChildrenConnections();
-        }
-    }
-
     /**
      * Updates the visual aspect of this compound module
      */

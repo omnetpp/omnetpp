@@ -10,13 +10,7 @@ import org.eclipse.gef.requests.DropRequest;
 import org.omnetpp.figures.GateAnchor;
 import org.omnetpp.ned.editor.graph.edit.policies.NedComponentEditPolicy;
 import org.omnetpp.ned.editor.graph.edit.policies.NedNodeEditPolicy;
-import org.omnetpp.ned2.model.NEDElement;
-import org.omnetpp.ned2.model.NEDElementUtil;
 import org.omnetpp.ned2.model.ex.ConnectionNodeEx;
-import org.omnetpp.ned2.model.ex.SubmoduleNodeEx;
-import org.omnetpp.ned2.model.interfaces.IConnectable;
-import org.omnetpp.ned2.model.interfaces.INamedGraphNode;
-import org.omnetpp.ned2.model.pojo.NEDElementTags;
 
 /**
  * Base abstract controller for NedModel and NedFigures. Provides support for 

@@ -19,7 +19,8 @@ import org.omnetpp.ned2.model.NEDElementUtil;
 import org.omnetpp.ned2.model.ex.CompoundModuleNodeEx;
 import org.omnetpp.ned2.model.ex.ConnectionNodeEx;
 import org.omnetpp.ned2.model.ex.SubmoduleNodeEx;
-import org.omnetpp.ned2.model.interfaces.INEDChangeListener;
+import org.omnetpp.ned2.model.notification.INEDChangeListener;
+import org.omnetpp.ned2.model.notification.NEDModelEvent;
 import org.omnetpp.ned2.model.pojo.ChannelInterfaceNode;
 import org.omnetpp.ned2.model.pojo.ChannelNode;
 import org.omnetpp.ned2.model.pojo.ChannelSpecNode;
@@ -253,16 +254,7 @@ public class NedTreeEditPart extends AbstractTreeEditPart implements
     	setWidgetText(label);
     }
 
-    
-	public void attributeChanged(NEDElement node, String attr) {
-        refreshVisuals();
-	}
-
-	public void childInserted(NEDElement node, NEDElement where, NEDElement child) {
+    public void modelChanged(NEDModelEvent event) {
         refreshChildren();
-	}
-
-	public void childRemoved(NEDElement node, NEDElement child) {
-        refreshChildren();
-	}
+    }
 }

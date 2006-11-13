@@ -13,7 +13,7 @@ import org.omnetpp.ned2.model.ex.SubmoduleNodeEx;
  * Property source to display all submodules for a given compound module
  */
 public class SubmoduleListPropertySource extends NotifiedPropertySource {
-    public final static String CATEGORY = "subodules";
+    public final static String CATEGORY = "submodules";
     public final static String DESCRIPTION = "List of submodules (direct and inherited)";
     protected CompoundModuleNodeEx model;
     protected PropertyDescriptor[] pdesc;

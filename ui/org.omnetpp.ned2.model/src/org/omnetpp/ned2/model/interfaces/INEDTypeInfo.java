@@ -5,6 +5,7 @@ import java.util.Map;
 
 import org.eclipse.core.resources.IFile;
 import org.omnetpp.ned2.model.NEDElement;
+import org.omnetpp.ned2.model.notification.INEDChangeListener;
 
 /**
  * Wraps a NED component: a ChannelNode, ChannelInterfaceNode, SimpleModuleNode, 
