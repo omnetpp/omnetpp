@@ -822,7 +822,6 @@ AC_CONFIG_FILES(
   samples/aloha/Makefile
   samples/cqn/Makefile
   samples/dyna/Makefile
-  samples/fddi/Makefile
   samples/fifo/Makefile
   samples/hcube/Makefile
   samples/hist/Makefile

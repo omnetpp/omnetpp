@@ -47,7 +47,7 @@ components: base samples
 #=====================================================================
 
 BASE=nedxml sim envir cmdenv tkenv utils nedc gned scalars plove
-SAMPLES=aloha cqn dyna fddi fifo hcube hist neddemo p-to-p queueing routing queues tictoc tokenring sockets
+SAMPLES=aloha cqn dyna fifo hcube hist neddemo p-to-p queueing routing queues tictoc tokenring sockets
 
 #
 # Group targets.
