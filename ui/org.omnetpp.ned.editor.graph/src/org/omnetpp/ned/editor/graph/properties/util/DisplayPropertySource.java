@@ -9,8 +9,10 @@ import org.eclipse.ui.views.properties.PropertyDescriptor;
 import org.eclipse.ui.views.properties.TextPropertyDescriptor;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.displaymodel.DisplayString;
+import org.omnetpp.common.displaymodel.IDisplayStringProvider;
 import org.omnetpp.common.properties.ImagePropertyDescriptor;
 import org.omnetpp.ned2.model.NEDElement;
+import org.omnetpp.ned2.model.notification.NEDModelEvent;
 
 //TODO Colors cannot be edited by hand. A derived ColorCellEditor is required
 //TODO Some property needs a combo box cell editor
@@ -26,13 +28,22 @@ abstract public class DisplayPropertySource extends NotifiedPropertySource {
     // by default supports all possible properties defined in DisplayString 
     protected EnumSet<DisplayString.Prop> supportedProperties 
                   = EnumSet.noneOf(DisplayString.Prop.class);
+    // the model that we are attached to
+    private IDisplayStringProvider model;
 
-    public DisplayPropertySource(NEDElement model) {
-        super(model);
+    public DisplayPropertySource(IDisplayStringProvider model) {
+        super((NEDElement)model);
+        this.model = model;
         // by default we provide only  the single line display property editor
         supportedProperties.add(DisplayString.Prop.DISPLAY);
     }
     
+//    @Override
+    public void modelChanged(NEDModelEvent event) {
+        if(model != null)
+            setDisplayString(model.getDisplayString());
+    }
+
     /**
      * @param prop The property we want a descriptor for
      * @return The property descriptor used for the property

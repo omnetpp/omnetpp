@@ -63,7 +63,11 @@ public class TopLevelEditPart extends AbstractGraphicalEditPart
 	}
 
     public void modelChanged(NEDModelEvent event) {
-        System.out.println(this+" "+event);
+        String nameString = getNEDModel().getAttribute("name");
+        if (nameString == null) 
+            nameString = "";
+        System.out.println("NOTIFY ON: "+getModel().getClass().getSimpleName()+" "+nameString+" "+event);
+
         refreshVisuals();
     }
 
@@ -82,13 +86,6 @@ public class TopLevelEditPart extends AbstractGraphicalEditPart
     	// for other visula properties
     	if (getModel() instanceof IDisplayStringProvider) {
     		DisplayString dps = ((IDisplayStringProvider)getModel()).getDisplayString();
-
-    		// TODO compute the inherited display string
-//    		if (node.getFirstExtendsChild() != null) {
-//    			DisplayString fallbackDps = NEDResourcesPlugin.getNEDResources()
-//    			.getEffectiveDisplayString(node.getFirstExtendsChild().getName());
-//    			dps.setDefaults(fallbackDps);
-//    		}
 
     		((TopLevelFigure)getFigure()).setDisplayString(dps);
     	}

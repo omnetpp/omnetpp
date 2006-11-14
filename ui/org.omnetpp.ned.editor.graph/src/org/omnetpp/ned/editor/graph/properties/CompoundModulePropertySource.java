@@ -19,7 +19,6 @@ import org.omnetpp.ned.editor.graph.properties.util.NamePropertySource;
 import org.omnetpp.ned.editor.graph.properties.util.ParameterListPropertySource;
 import org.omnetpp.ned.editor.graph.properties.util.SubmoduleListPropertySource;
 import org.omnetpp.ned2.model.ex.CompoundModuleNodeEx;
-import org.omnetpp.ned2.model.notification.NEDModelEvent;
 import org.omnetpp.resources.NEDResourcesPlugin;
 
 public class CompoundModulePropertySource extends MergedPropertySource {
@@ -39,11 +38,6 @@ public class CompoundModulePropertySource extends MergedPropertySource {
                	 									 DisplayString.Prop.MODULE_UNIT));
         }
 
-        @Override
-        public void modelChanged(NEDModelEvent event) {
-            if(model != null)
-                setDisplayString(model.getDisplayString());
-        }
     }
     
     // compound module specific properties

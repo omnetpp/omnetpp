@@ -192,7 +192,8 @@ public class ModuleConnectionEditPart extends AbstractConnectionEditPart impleme
     }
 
     public void modelChanged(NEDModelEvent event) {
-        System.out.println(this+" "+event);
+        System.out.println("NOTIFY ON: "+getModel().getClass().getSimpleName()+" "+event);
+
         refreshVisuals();
     }
 }

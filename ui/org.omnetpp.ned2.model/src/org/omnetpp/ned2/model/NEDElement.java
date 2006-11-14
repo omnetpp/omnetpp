@@ -682,10 +682,6 @@ public abstract class NEDElement extends PlatformObject
      * @param newValue the old value of the attribute
      */
     protected void fireAttributeChanged(String attr, Object newValue, Object oldValue) {
-        // optimization not to call the listener if not necessary
-        if(listeners == null || !getListeners().isEnabled())
-            return;
-
         NEDModelEvent event = new NEDAttributeChangeEvent(this, attr, newValue, oldValue);
         NEDElement node = this;
         while (node != null) {
@@ -701,10 +697,6 @@ public abstract class NEDElement extends PlatformObject
      * @param newValue the old value of the attribute
      */
     protected void fireChildInserted(NEDElement child, NEDElement where) {
-        // optimization not to call the listener if not necessary
-        if(listeners == null || !getListeners().isEnabled())
-            return;
-
         NEDModelEvent event = 
             new NEDStructuralChangeEvent(this, child, NEDStructuralChangeEvent.Type.INSERTION, where, null); 
         NEDElement node = this;
@@ -721,10 +713,6 @@ public abstract class NEDElement extends PlatformObject
      * @param newValue the old value of the attribute
      */
     protected void fireChildRemoved(NEDElement child) {
-        // optimization not to call the listener if not necessary
-        if(listeners == null || !getListeners().isEnabled())
-            return;
-
         NEDModelEvent event = 
             new NEDStructuralChangeEvent(this, child, NEDStructuralChangeEvent.Type.REMOVAL, null, child.getNextSibling()); 
         NEDElement node = this;

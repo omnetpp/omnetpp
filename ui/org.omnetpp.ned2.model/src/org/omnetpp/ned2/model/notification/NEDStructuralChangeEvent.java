@@ -67,6 +67,8 @@ public class NEDStructuralChangeEvent extends NEDModelEvent {
     
     @Override
     public String toString() {
-        return super.toString()+" "+type.name()+" of child: "+child.getTagName();
+        String nameString = child.getAttribute("name");
+        return super.toString()+" "+type.name()+" of child: "+child.getTagName() +
+                    ((nameString != null) ? " "+nameString : "");
     }
 }

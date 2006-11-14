@@ -43,6 +43,6 @@ public class NEDAttributeChangeEvent extends NEDModelEvent {
 
     @Override
     public String toString() {
-        return super.toString()+" attr: "+attribute+"=\""+newValue+"\" (old=\""+oldValue+"\")";
+        return super.toString()+" ATTR: "+attribute+"=\""+newValue+"\" (old=\""+oldValue+"\")";
     }
 }

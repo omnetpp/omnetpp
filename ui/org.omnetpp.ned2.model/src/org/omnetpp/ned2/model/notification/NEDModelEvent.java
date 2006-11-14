@@ -30,7 +30,7 @@ public abstract class NEDModelEvent {
     public String toString() {
         String sourceString = source.getAttribute("name");
         
-        return "Event from: "+source.getTagName() + 
-                sourceString != null ? " "+sourceString : "";
+        return "FROM: "+source.getTagName() + 
+                ((sourceString != null) ? " "+sourceString : "");
     }
 }

@@ -65,6 +65,9 @@ abstract public class ContainerEditPart
     }
 
     public void modelChanged(NEDModelEvent event) {
-        System.out.println(this+" "+event);
+        String nameString = getNEDModel().getAttribute("name");
+        if (nameString == null) 
+            nameString = "";
+        System.out.println("NOTIFY ON: "+getModel().getClass().getSimpleName()+" "+nameString+" "+event);
     }
 }
