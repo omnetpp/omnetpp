@@ -156,86 +156,103 @@ proc remove_stopdialog {} {
     }
 }
 
-proc options_dialog {} {
+proc options_dialog {{defaultpage "g"}} {
     global opp config
 
     set w .optionsdialog
 
     createOkCancelDialog $w {Simulation options}
 
-    frame $w.f.f1 -relief groove -borderwidth 2
-    label-entry $w.f.f1.stepdelay       {Delay for slow execution}
-    label-entry $w.f.f1.updfreq_fast    {Update freq. for Fast Run (events)}
-    label-entry $w.f.f1.updfreq_express {Update freq. for Express Run (events)}
-    $w.f.f1.stepdelay.l config -width 0
-    $w.f.f1.updfreq_fast.l config -width 0
-    $w.f.f1.updfreq_express.l config -width 0
-    $w.f.f1.stepdelay.e config -width 8
-    $w.f.f1.updfreq_fast.e config -width 8
-    $w.f.f1.updfreq_express.e config -width 8
-    pack $w.f.f1.stepdelay -anchor w -expand 0 -fill x
-    pack $w.f.f1.updfreq_fast -anchor w -expand 0 -fill x
-    pack $w.f.f1.updfreq_express -anchor w -expand 0 -fill x
+    notebook $w.f.nb bottom
+    set nb $w.f.nb
 
-    frame $w.f.f2 -relief groove -borderwidth 2
-    checkbutton $w.f.f2.usemainwin -text {Use main window for module output} -variable opp(usemainwin)
-    checkbutton $w.f.f2.banners -text {Print event banners} -variable opp(banners)
-    checkbutton $w.f.f2.bkpts -text {Stop on breakpoint() calls} -variable opp(bkpts)
-    pack $w.f.f2.usemainwin -anchor w
-    pack $w.f.f2.banners -anchor w
-    pack $w.f.f2.bkpts -anchor w
+    notebook_addpage $nb g General
+    notebook_addpage $nb a Animation
+    notebook_addpage $nb t Timeline
+    pack $nb -expand 1 -fill both
 
-    frame $w.f.f3 -relief groove -borderwidth 2
-    checkbutton $w.f.f3.anim -text {Animate messages} -variable opp(anim)
-    label-scale $w.f.f3.speed {Animation speed:}
-    $w.f.f3.speed.e config -length 200 -from 0 -to 3 -resolution 0.01 -variable opp(speed)
-    checkbutton $w.f.f3.concanim -text {Broadcast animation} -variable opp(concanim)
-    commentlabel $w.f.f3.ca "Animates send/sendDirect calls concurrently, after processing\neach event (i.e. out of sequence)"
-    checkbutton $w.f.f3.nextev -text {Show next event markers} -variable opp(nextev)
-    checkbutton $w.f.f3.sdarrows -text {Show arrows for sendDirect() animation} -variable opp(sdarrows)
-    checkbutton $w.f.f3.animmeth -text {Animate method calls} -variable opp(animmeth)
-    #label-entry $w.f.f3.methdelay  {Method call delay (ms)}
-    #$w.f.f3.methdelay.l config -width 0
-    label-scale $w.f.f3.methdelay {Method call delay (ms):}
-    $w.f.f3.methdelay.e config -length 200 -from 0 -to 3000 -resolution 1 -variable opp(methdelay)
-    checkbutton $w.f.f3.msgnam -text {Display message names during animation} -variable opp(msgnam)
-    checkbutton $w.f.f3.msgclass -text {Display message class during animation} -variable opp(msgclass)
-    checkbutton $w.f.f3.msgcol -text {Color messages by message kind} -variable opp(msgcol)
-    commentlabel $w.f.f3.c {Color code (message->kind() mod 8): 0=red 1=green 2=blue 3=white 4=yellow 5=cyan 6=magenta 7=black}
-    checkbutton $w.f.f3.penguin -text {Penguin mode} -variable opp(penguin)
-    checkbutton $w.f.f3.layouting -text {Show layouting process} -variable opp(layouting)
-    checkbutton $w.f.f3.bubbles -text {Show bubbles (bubble() calls)} -variable opp(bubbles)
-    checkbutton $w.f.f3.confirmexit -text {Confirm exit when simulation is in progress} -variable opp(confirmexit)
-    pack $w.f.f3.anim -anchor w
-    pack $w.f.f3.speed -anchor w -expand 0 -fill x
-    pack $w.f.f3.concanim -anchor w
-    pack $w.f.f3.ca -anchor w
-    pack $w.f.f3.nextev -anchor w
-    pack $w.f.f3.sdarrows -anchor w
-    pack $w.f.f3.animmeth -anchor w
-    pack $w.f.f3.methdelay -anchor w -expand 0 -fill x
-    pack $w.f.f3.msgnam -anchor w
-    pack $w.f.f3.msgclass -anchor w
-    pack $w.f.f3.msgcol -anchor w
-    pack $w.f.f3.c -anchor w
-    pack $w.f.f3.penguin -anchor w
-    pack $w.f.f3.layouting -anchor w
-    pack $w.f.f3.bubbles -anchor w
-    pack $w.f.f3.confirmexit -anchor w
+    notebook_showpage $nb $defaultpage
 
-    pack $w.f.f2 -anchor center -expand 1 -fill both -ipadx 0 -ipady 0 -padx 10 -pady 5 -side top
-    pack $w.f.f3 -anchor center -expand 1 -fill both -ipadx 0 -ipady 0 -padx 10 -pady 5 -side top
-    pack $w.f.f1 -anchor center -expand 1 -fill both -ipadx 0 -ipady 0 -padx 10 -pady 5 -side top
+    frame $nb.g.f1 -relief groove -borderwidth 2
+    label-entry $nb.g.f1.stepdelay       {Delay for slow execution}
+    label-entry $nb.g.f1.updfreq_fast    {Update freq. for Fast Run (events)}
+    label-entry $nb.g.f1.updfreq_express {Update freq. for Express Run (events)}
+    $nb.g.f1.stepdelay.l config -width 0
+    $nb.g.f1.updfreq_fast.l config -width 0
+    $nb.g.f1.updfreq_express.l config -width 0
+    $nb.g.f1.stepdelay.e config -width 8
+    $nb.g.f1.updfreq_fast.e config -width 8
+    $nb.g.f1.updfreq_express.e config -width 8
+    pack $nb.g.f1.stepdelay -anchor w -expand 0 -fill x
+    pack $nb.g.f1.updfreq_fast -anchor w -expand 0 -fill x
+    pack $nb.g.f1.updfreq_express -anchor w -expand 0 -fill x
 
-    #grid $w.f.f2  $w.f.f3 -sticky new
-    #grid $w.f.f1  ^       -sticky new
-    #grid rowconfigure $w.f 1 -weight 1
+    frame $nb.g.f2 -relief groove -borderwidth 2
+    checkbutton $nb.g.f2.usemainwin -text {Use main window for module output} -variable opp(usemainwin)
+    checkbutton $nb.g.f2.banners -text {Print event banners} -variable opp(banners)
+    checkbutton $nb.g.f2.bkpts -text {Stop on breakpoint() calls} -variable opp(bkpts)
+    checkbutton $nb.g.f2.layouting -text {Show layouting process} -variable opp(layouting)
+    checkbutton $nb.g.f2.confirmexit -text {Confirm exit when simulation is in progress} -variable opp(confirmexit)
+    pack $nb.g.f2.usemainwin -anchor w
+    pack $nb.g.f2.banners -anchor w
+    pack $nb.g.f2.bkpts -anchor w
+    pack $nb.g.f2.layouting -anchor w
+    pack $nb.g.f2.confirmexit -anchor w
+
+    #frame $nb.t -relief groove -borderwidth 2
+    checkbutton $nb.t.tlwantself -text {Display self-messages in the timeline} -variable opp(timeline-wantselfmsgs)
+    checkbutton $nb.t.tlwantnonself -text {Display non-self messages in the timeline} -variable opp(timeline-wantnonselfmsgs)
+    label-entry $nb.t.tlnamepattern {Message name pattern:}
+    label-entry $nb.t.tlclassnamepattern {Class name pattern:}
+    commentlabel $nb.t.c1 {In both patterns, wildcards (*,?) are accepted. Start pattern with hyphen (-) to exclude matched messages.}
+    $nb.t.tlnamepattern.l config -width 20
+    $nb.t.tlclassnamepattern.l config -width 20
+    pack $nb.t.tlwantself -anchor w
+    pack $nb.t.tlwantnonself -anchor w
+    pack $nb.t.tlnamepattern -anchor w -fill x
+    pack $nb.t.tlclassnamepattern -anchor w -fill x
+    pack $nb.t.c1 -anchor w
+
+    checkbutton $nb.a.anim -text {Animate messages} -variable opp(anim)
+    label-scale $nb.a.speed {Animation speed:}
+    $nb.a.speed.e config -length 200 -from 0 -to 3 -resolution 0.01 -variable opp(speed)
+    checkbutton $nb.a.concanim -text {Broadcast animation} -variable opp(concanim)
+    commentlabel $nb.a.ca "Animates send/sendDirect calls concurrently, after processing\neach event (i.e. out of sequence)"
+    checkbutton $nb.a.nextev -text {Show next event markers} -variable opp(nextev)
+    checkbutton $nb.a.sdarrows -text {Show arrows for sendDirect() animation} -variable opp(sdarrows)
+    checkbutton $nb.a.animmeth -text {Animate method calls} -variable opp(animmeth)
+    #label-entry $nb.a.methdelay  {Method call delay (ms)}
+    #$nb.a.methdelay.l config -width 0
+    label-scale $nb.a.methdelay {Method call delay (ms):}
+    $nb.a.methdelay.e config -length 200 -from 0 -to 3000 -resolution 1 -variable opp(methdelay)
+    checkbutton $nb.a.msgnam -text {Display message names during animation} -variable opp(msgnam)
+    checkbutton $nb.a.msgclass -text {Display message class during animation} -variable opp(msgclass)
+    checkbutton $nb.a.msgcol -text {Color messages by message kind} -variable opp(msgcol)
+    commentlabel $nb.a.c {Color code (message->kind() mod 8): 0=red 1=green 2=blue 3=white 4=yellow 5=cyan 6=magenta 7=black}
+    checkbutton $nb.a.penguin -text {Penguin mode} -variable opp(penguin)
+    checkbutton $nb.a.bubbles -text {Show bubbles (bubble() calls)} -variable opp(bubbles)
+    pack $nb.a.anim -anchor w
+    pack $nb.a.speed -anchor w -expand 0 -fill x
+    pack $nb.a.concanim -anchor w
+    pack $nb.a.ca -anchor w
+    pack $nb.a.nextev -anchor w
+    pack $nb.a.sdarrows -anchor w
+    pack $nb.a.animmeth -anchor w
+    pack $nb.a.methdelay -anchor w -expand 0 -fill x
+    pack $nb.a.msgnam -anchor w
+    pack $nb.a.msgclass -anchor w
+    pack $nb.a.msgcol -anchor w
+    pack $nb.a.c -anchor w
+    pack $nb.a.penguin -anchor w
+    pack $nb.a.bubbles -anchor w
+
+    pack $nb.g.f2 -anchor center -expand 0 -fill x -ipadx 0 -ipady 0 -padx 10 -pady 5 -side top
+    pack $nb.g.f1 -anchor center -expand 0 -fill x -ipadx 0 -ipady 0 -padx 10 -pady 5 -side top
 
     # Configure dialog
-    #$w.f.f3.methdelay.e insert 0 [opp_getsimoption methodcalls_delay]
-    $w.f.f1.updfreq_fast.e insert 0 [opp_getsimoption updatefreq_fast]
-    $w.f.f1.updfreq_express.e insert 0 [opp_getsimoption updatefreq_express]
-    $w.f.f1.stepdelay.e insert 0 [opp_getsimoption stepdelay]
+    $nb.g.f1.updfreq_fast.e insert 0 [opp_getsimoption updatefreq_fast]
+    $nb.g.f1.updfreq_express.e insert 0 [opp_getsimoption updatefreq_express]
+    $nb.g.f1.stepdelay.e insert 0 [opp_getsimoption stepdelay]
     set opp(usemainwin) [opp_getsimoption use_mainwindow]
     set opp(banners)    [opp_getsimoption print_banners]
     set opp(anim)       [opp_getsimoption animation_enabled]
@@ -253,14 +270,17 @@ proc options_dialog {} {
     set opp(speed)      [opp_getsimoption animation_speed]
     set opp(bkpts)      [opp_getsimoption bkpts_enabled]
     set opp(confirmexit) $config(confirm-exit)
+    $nb.t.tlnamepattern.e insert 0      $config(timeline-msgnamepattern)
+    $nb.t.tlclassnamepattern.e insert 0 $config(timeline-msgclassnamepattern)
+    set opp(timeline-wantselfmsgs)      $config(timeline-wantselfmsgs)
+    set opp(timeline-wantnonselfmsgs)   $config(timeline-wantnonselfmsgs)
 
-    focus $w.f.f2.usemainwin
+    focus $nb.g.f2.usemainwin
 
     if [execOkCancelDialog $w] {
-        #opp_setsimoption methodcalls_delay [$w.f.f3.methdelay.e get]
-        opp_setsimoption stepdelay [$w.f.f1.stepdelay.e get]
-        opp_setsimoption updatefreq_fast [$w.f.f1.updfreq_fast.e get]
-        opp_setsimoption updatefreq_express [$w.f.f1.updfreq_express.e get]
+        opp_setsimoption stepdelay           [$nb.g.f1.stepdelay.e get]
+        opp_setsimoption updatefreq_fast     [$nb.g.f1.updfreq_fast.e get]
+        opp_setsimoption updatefreq_express  [$nb.g.f1.updfreq_express.e get]
         opp_setsimoption use_mainwindow      $opp(usemainwin)
         opp_setsimoption print_banners       $opp(banners)
         opp_setsimoption animation_enabled   $opp(anim)
@@ -277,7 +297,14 @@ proc options_dialog {} {
         opp_setsimoption bubbles             $opp(bubbles)
         opp_setsimoption animation_speed     $opp(speed)
         opp_setsimoption bkpts_enabled       $opp(bkpts)
-        set config(confirm-exit) $opp(confirmexit)
+        set config(confirm-exit)             $opp(confirmexit)
+        set config(timeline-msgnamepattern)  [$nb.t.tlnamepattern.e get]
+        set timeline-msgclassnamepattern)    [$nb.t.tlclassnamepattern.e get]
+        set config(timeline-wantselfmsgs)    $opp(timeline-wantselfmsgs)
+        set config(timeline-wantnonselfmsgs) $opp(timeline-wantnonselfmsgs)
+
+        opp_updateinspectors
+        redraw_timeline
     }
     destroy $w
 }

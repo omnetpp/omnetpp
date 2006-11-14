@@ -79,7 +79,12 @@ proc redraw_timeline {} {
     set minlabelx -1000
     set minlabelx2 -1000
     set labelssuppressed 0
-    set msgs [opp_fesmsgs $config(timeline-maxnumevents)]
+    set msgs [opp_fesmsgs $config(timeline-maxnumevents) \
+                          $config(timeline-wantselfmsgs) \
+                          $config(timeline-wantnonselfmsgs) \
+                          $config(timeline-msgnamepattern) \
+                          $config(timeline-msgclassnamepattern)]
+
     foreach msgptr $msgs {
         # calculate position
         set dt [opp_msgarrtimefromnow $msgptr]
@@ -124,5 +129,13 @@ proc redraw_timeline {} {
         }
     }
     $c lower "h"
+}
+
+
+proc timeline_popup {x y} {
+    catch {destroy .popup}
+    menu .popup -tearoff 0
+    .popup add command -label "Options..." -command "options_dialog t"
+    .popup post $x $y
 }
 
