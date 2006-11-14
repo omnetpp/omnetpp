@@ -38,14 +38,14 @@ public class ModuleConnectionEditPart extends AbstractConnectionEditPart impleme
         if (isActive()) return;
         super.activate();
         // register as listener of the model object
-        getConnectionModel().addListener(this);
+        getConnectionModel().getListeners().add(this);
     }
 
     @Override
     public void deactivate() {
         if (!isActive()) return;
         // deregister as listener of the model object
-        getConnectionModel().removeListener(this);
+        getConnectionModel().getListeners().remove(this);
         super.deactivate();
     }
 

@@ -50,7 +50,7 @@ public final class ChannelNodeEx extends ChannelNode
 		// syncronize it to the underlying model 
         String newDspString = displayString.toString(); 
         NEDElementUtilEx.setDisplayString(this, newDspString);
-        fireAttributeChangedToAncestors(IDisplayString.ATT_DISPLAYSTRING+"."+changedProp, newDspString, null);
+        fireAttributeChanged(IDisplayString.ATT_DISPLAYSTRING+"."+changedProp, newDspString, null);
 	}
 
     // EXTENDS support

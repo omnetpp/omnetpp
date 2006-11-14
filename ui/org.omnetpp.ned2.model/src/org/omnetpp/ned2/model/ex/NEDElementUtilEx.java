@@ -145,8 +145,8 @@ public final class NEDElementUtilEx implements NEDElementTags, NEDElementUtil {
 			propertyKeyNode.appendChild(literalNode);
 		}
 		
-		boolean isNotifyEnabled = literalNode.isNotifyEnabled();
-		literalNode.setNotifyEnabled(false);
+		boolean isNotifyEnabled = literalNode.getListeners().isEnabled();
+		literalNode.getListeners().setEnabled(false);
 		// finally set the value of display string
 		literalNode.setType(NED_CONST_STRING);
 		literalNode.setValue(dspString);
@@ -154,7 +154,7 @@ public final class NEDElementUtilEx implements NEDElementTags, NEDElementUtil {
 		// be generated from VALUE not from the text attribute
 		literalNode.setText(null);
 		// set notification back to the original state
-		literalNode.setNotifyEnabled(isNotifyEnabled);
+		literalNode.getListeners().setEnabled(isNotifyEnabled);
 	}
 	
 	/**

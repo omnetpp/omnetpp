@@ -16,7 +16,7 @@ abstract public class ContainerEditPart
         if (isActive()) return;
         super.activate();
         // register as listener of the model object
-        getNEDModel().addListener(this);
+        getNEDModel().getListeners().add(this);
     }
 
     /**
@@ -27,7 +27,7 @@ abstract public class ContainerEditPart
     public void deactivate() {
         if (!isActive()) return;
         super.deactivate();
-        getNEDModel().removeListener(this);
+        getNEDModel().getListeners().remove(this);
     }
 
     /**

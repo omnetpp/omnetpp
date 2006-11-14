@@ -22,7 +22,7 @@ public class MergedPropertySource implements IPropertySource2, INEDChangeListene
 	public MergedPropertySource(NEDElement model) {
         // register the propertysource as a listener for the model so it will be notified
         // once someone changes the underlying model
-        model.addListener(this);
+        model.getListeners().add(this);
     }
 
     /**

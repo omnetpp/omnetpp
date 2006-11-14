@@ -168,7 +168,7 @@ public final class ConnectionNodeEx extends ConnectionNode
 		// syncronize it to the underlying model
         String newDspString = displayString.toString(); 
         NEDElementUtilEx.setDisplayString(this, newDspString);
-        fireAttributeChangedToAncestors(IDisplayString.ATT_DISPLAYSTRING+"."+changedProp, newDspString, null);
+        fireAttributeChanged(IDisplayString.ATT_DISPLAYSTRING+"."+changedProp, newDspString, null);
 	}
 
     /**

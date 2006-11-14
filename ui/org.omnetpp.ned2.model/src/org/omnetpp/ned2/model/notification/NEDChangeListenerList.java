@@ -7,7 +7,8 @@ package org.omnetpp.ned2.model.notification;
  */
 public class NEDChangeListenerList {
 
-	INEDChangeListener[] array = new INEDChangeListener[0];
+	protected INEDChangeListener[] array = new INEDChangeListener[0];
+    protected boolean enabled = true;
 
 	/**
 	 * @param listener Adds a new model change listener
@@ -36,15 +37,44 @@ public class NEDChangeListenerList {
 		return newArray;
 	}
 
+	/**
+	 * @return The lsitener list's copy so adding/removing listeners during
+     * notification is allowed. 
+	 */
 	public INEDChangeListener[] getListeners() {
 		// make a copy, just in case there are adds/removes during iteration
+        // Maybe a copy on/write implementation would be more efficient
 		INEDChangeListener[] newArray = new INEDChangeListener[array.length];
 		System.arraycopy(array, 0, newArray, 0, array.length);
 		return newArray;
 	}
 
+    /**
+     * Check whether change notification is enebled
+     * @return
+     */
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    /**
+     * Enable or disable change notification
+     * @param notifyEnabled The new state requested.
+     * @return The original notification state before the call.
+     */
+    public boolean setEnabled(boolean notifyEnabled) {
+        boolean oldState = this.enabled;
+        this.enabled = notifyEnabled;
+        return oldState;
+    }
+
+    /**
+     * Fires a model change event to all listeners if event sending is enebaled
+     * @param event 
+     */
     public void fireModelChanged(NEDModelEvent event) {
-        for (INEDChangeListener l : getListeners())
-            l.modelChanged(event);
+        if (enabled)
+            for (INEDChangeListener listener : getListeners())
+                listener.modelChanged(event);
     }
 }

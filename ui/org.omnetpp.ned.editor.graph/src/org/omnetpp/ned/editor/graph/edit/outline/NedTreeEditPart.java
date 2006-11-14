@@ -60,7 +60,7 @@ public class NedTreeEditPart extends AbstractTreeEditPart implements
     @Override
     public void activate() {
         super.activate();
-        ((NEDElement)getModel()).addListener(this);
+        ((NEDElement)getModel()).getListeners().add(this);
     }
 
     /**
@@ -88,7 +88,7 @@ public class NedTreeEditPart extends AbstractTreeEditPart implements
 
     @Override
     public void deactivate() {
-        ((NEDElement)getModel()).removeListener(this);
+        ((NEDElement)getModel()).getListeners().remove(this);
         super.deactivate();
     }
 

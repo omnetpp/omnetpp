@@ -26,7 +26,7 @@ public class TopLevelEditPart extends AbstractGraphicalEditPart
         if (isActive()) return;
         super.activate();
         // register as listener of the model object
-        getNEDModel().addListener(this);
+        getNEDModel().getListeners().add(this);
     }
 
     /**
@@ -37,7 +37,7 @@ public class TopLevelEditPart extends AbstractGraphicalEditPart
     public void deactivate() {
         if (!isActive()) return;
         super.deactivate();
-        getNEDModel().removeListener(this);
+        getNEDModel().getListeners().remove(this);
     }
 
     /**
