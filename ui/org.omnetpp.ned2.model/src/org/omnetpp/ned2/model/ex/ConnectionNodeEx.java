@@ -7,9 +7,7 @@ import java.util.Map;
 
 import org.omnetpp.common.displaymodel.ConnectionDisplayString;
 import org.omnetpp.common.displaymodel.DisplayString;
-import org.omnetpp.common.displaymodel.IDisplayString;
 import org.omnetpp.common.displaymodel.IDisplayStringProvider;
-import org.omnetpp.common.displaymodel.IDisplayString.Prop;
 import org.omnetpp.ned2.model.NEDElement;
 import org.omnetpp.ned2.model.interfaces.IConnectable;
 import org.omnetpp.ned2.model.interfaces.INEDTypeInfo;
@@ -163,13 +161,6 @@ public final class ConnectionNodeEx extends ConnectionNode
     public DisplayString getEffectiveDisplayString() {
         return NEDElementUtilEx.getEffectiveDisplayString(this);
     }
-
-    public void propertyChanged(Prop changedProp) {
-		// syncronize it to the underlying model
-        String newDspString = displayString.toString(); 
-        NEDElementUtilEx.setDisplayString(this, newDspString);
-        fireAttributeChanged(IDisplayString.ATT_DISPLAYSTRING+"."+changedProp, newDspString, null);
-	}
 
     /**
      * @return The compound module containing the definition of this connection

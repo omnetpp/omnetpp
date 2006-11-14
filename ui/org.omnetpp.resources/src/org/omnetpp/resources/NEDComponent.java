@@ -381,74 +381,12 @@ public class NEDComponent implements INEDTypeInfo, NEDElementTags {
         return allDerivedTypes;
     }
 
-//    public void attributeChanged(NEDElement node, String attr) {
-//        if (notifyInProgress)
-//            return;
-//        notifyInProgress = true;
-//        // if a name property has changed everything should be rebuilt because inheritence might be changed
-//        if ("name".equals(attr) && node instanceof ITopLevelElement) { 
-//            getResolver().invalidate();
-//            getResolver().rehashIfNeeded();
-//        }
-//        // TODO test if the name attribute has changed and pass it to NEDResources 
-//        // because in that case the whole model (All files) have to be rebuilt
-//        for(INEDTypeInfo derivedType: getAllDerivedTypes())
-//            derivedType.getNEDElement().fireAttributeChanged(node, attr);
-//        // refresh all ownMemebers
-//        refreshOwnMembers();
-//        // invalidate and recalculate / refresh all derived and instance lists
-//        invalidate();
-//        // notify derived types before change
-//        for(INEDTypeInfo derivedType: getAllDerivedTypes())
-//            derivedType.getNEDElement().fireAttributeChanged(node, attr);
-//        // TODO notify instances (ie. submodules)
-//        // send notifcations to all types using us as a type (ie. instances of ourselves)
-//        notifyInProgress = false;
-//    }
-//
-//    public void childInserted(NEDElement node, NEDElement where, NEDElement child) {
-//        if (notifyInProgress)
-//            return;
-//        notifyInProgress = true;
-//        
-//        for(INEDTypeInfo derivedType: getAllDerivedTypes())
-//            derivedType.getNEDElement().fireChildInserted(node, where, child);
-//        // refresh all ownMemebers
-//        refreshOwnMembers();
-//        // invalidate and recalculate / refresh all derived and instance lists
-//        invalidate();
-//        // notify derived types before change
-//        for(INEDTypeInfo derivedType: getAllDerivedTypes())
-//            derivedType.getNEDElement().fireChildInserted(node, where, child);
-//        // TODO notify instances (ie. submodules)
-//        // send notifcations to all types using us as a type (ie. instances of ourselves)
-//        notifyInProgress = false;
-//    }
-//
-//    public void childRemoved(NEDElement node, NEDElement child) {
-//        if (notifyInProgress)
-//            return;
-//        notifyInProgress = true;
-//
-//        for(INEDTypeInfo derivedType: getAllDerivedTypes())
-//            derivedType.getNEDElement().fireChildRemoved(node, child);
-//        // refresh all ownMemebers
-//        refreshOwnMembers();
-//        // invalidate and recalculate / refresh all derived and instance lists
-//        invalidate();
-//        // notify derived types before change
-//        for(INEDTypeInfo derivedType: getAllDerivedTypes())
-//            derivedType.getNEDElement().fireChildRemoved(node, child);
-//        // TODO notify instances (ie. submodules)
-//        // send notifcations to all types using us as a type (ie. instances of ourselves)
-//        notifyInProgress = false;
-//    }
-
     public void modelChanged(NEDModelEvent event) {
+        // stop notification chani if we are already in notifcation (prevents circles in the chain)
         if (notifyInProgress)
             return;
         notifyInProgress = true;
-        // if a name property has changed everything should be rebuilt because inheritence might be changed
+        // if a name property has changed everything should be rebuilt because inheritence might have changed
         if (event instanceof NEDAttributeChangeEvent) {
             NEDAttributeChangeEvent attrEvent = (NEDAttributeChangeEvent)event;
             if (SimpleModuleNode.ATT_NAME.equals(attrEvent.getAttribute()) 
@@ -469,7 +407,7 @@ public class NEDComponent implements INEDTypeInfo, NEDElementTags {
         // notify derived types before change
         for(INEDTypeInfo derivedType: getAllDerivedTypes())
             derivedType.getNEDElement().fireModelChanged(event);
-        // TODO notify instances (ie. submodules)
+        // TODO notify instances (ie. submodules and connections)
         // send notifcations to all types using us as a type (ie. instances of ourselves)
         notifyInProgress = false;
     }

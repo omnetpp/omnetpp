@@ -6,8 +6,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.omnetpp.common.displaymodel.DisplayString;
-import org.omnetpp.common.displaymodel.IDisplayString;
-import org.omnetpp.common.displaymodel.IDisplayString.Prop;
 import org.omnetpp.ned2.model.NEDElement;
 import org.omnetpp.ned2.model.interfaces.IGateContainer;
 import org.omnetpp.ned2.model.interfaces.IIndexable;
@@ -58,13 +56,6 @@ public final class SubmoduleNodeEx extends SubmoduleNode
     public DisplayString getEffectiveDisplayString() {
         return NEDElementUtilEx.getEffectiveDisplayString(this);
     }
-
-    public void propertyChanged(Prop changedProp) {
-		// syncronize it to the underlying model
-        String newDspString = displayString.toString(); 
-        NEDElementUtilEx.setDisplayString(this, newDspString);
-        fireAttributeChanged(IDisplayString.ATT_DISPLAYSTRING+"."+changedProp, newDspString, null);
-	}
 
 	/**
 	 * @return The compound module containing the definition of this connection

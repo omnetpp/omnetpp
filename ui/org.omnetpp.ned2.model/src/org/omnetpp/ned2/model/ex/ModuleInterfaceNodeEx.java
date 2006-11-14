@@ -5,9 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.omnetpp.common.displaymodel.DisplayString;
-import org.omnetpp.common.displaymodel.IDisplayString;
 import org.omnetpp.common.displaymodel.IDisplayStringProvider;
-import org.omnetpp.common.displaymodel.IDisplayString.Prop;
 import org.omnetpp.ned2.model.NEDElement;
 import org.omnetpp.ned2.model.interfaces.IDerived;
 import org.omnetpp.ned2.model.interfaces.IGateContainer;
@@ -89,14 +87,7 @@ public final class ModuleInterfaceNodeEx extends ModuleInterfaceNode
         
         return result;
     }
-    // notifiation support
-    public void propertyChanged(Prop changedProp) {
-        // syncronize it to the underlying model
-        String newDspString = displayString.toString(); 
-        NEDElementUtilEx.setDisplayString(this, newDspString);
-        fireAttributeChanged(IDisplayString.ATT_DISPLAYSTRING+"."+changedProp, newDspString, null);
-    }
-    
+
     // parameter query support
     public Map<String, NEDElement> getParamValues() {
         return getContainerNEDTypeInfo().getParamValues();

@@ -1,6 +1,5 @@
 package org.omnetpp.ned2.model.notification;
 
-
 /**
  * Implement this to get notified about changes in a NED tree.
  * @author andras
@@ -8,7 +7,7 @@ package org.omnetpp.ned2.model.notification;
 public interface INEDChangeListener {
 
     /**
-     * @param event Callback invoked when a change occured in the model
+     * @param event Callback invoked when a change occures in the model
      */
     public void modelChanged(NEDModelEvent event);
     

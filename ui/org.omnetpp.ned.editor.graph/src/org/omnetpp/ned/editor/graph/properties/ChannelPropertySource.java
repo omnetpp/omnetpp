@@ -17,6 +17,10 @@ import org.omnetpp.ned2.model.ex.ChannelNodeEx;
 import org.omnetpp.ned2.model.notification.NEDModelEvent;
 import org.omnetpp.resources.NEDResourcesPlugin;
 
+/**
+ * @author rhornig
+ * Property source for channels
+ */
 public class ChannelPropertySource extends MergedPropertySource {
 
     protected static class ChannelDisplayPropertySource extends DisplayPropertySource {

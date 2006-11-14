@@ -33,16 +33,11 @@ public class DisplayString implements IDisplayString {
     // use only a week reference so if the referenced fallback displaystring is deleted
     // along with the containing model element, it will not be held in the memory
     protected WeakReference<DisplayString> defaults = null;
-    // stores a reference to the container object's (ie. compound module) display string
-    // it is used to access values from there (example scale value)
-//    protected WeakReference<IDisplayStringProvider> containerDpsProvider = null;
     // whether notification is enabled or not
     protected boolean notifyEnabled = true;
     
     // the owner of the displaystring
     protected IDisplayStringProvider owner = null;
-    // listener for the display string changes (usually the controller)
-    protected IDisplayStringChangeListener changeListener = null;
     
     // map that stores the currently available tag instances 
     private Map<String, TagInstance> tagMap = new LinkedHashMap<String, TagInstance>();
@@ -186,24 +181,6 @@ public class DisplayString implements IDisplayString {
         this.defaults = new WeakReference<DisplayString>(defaults);
     }
 
-    /**
-     * @return The currently set container display string
-     */
-//    public IDisplayStringProvider getContainerDisplayString() {
-//    	if (containerDpsProvider != null)
-//    		return containerDpsProvider.get();
-//    	return null;
-//	}
-
-	/**
-	 * Sets the container objects (for accessing properties like scale factor)
-	 * requested property
-	 * @param containerDpsProv
-	 */
-//	public void setContainerDisplayString(IDisplayStringProvider containerDpsProv) {
-//		this.containerDpsProvider = new WeakReference<IDisplayStringProvider>(containerDpsProv);
-//	}
-
 	/**
      * Returns the value of the given tag on the given position
      * @param tag TagInstance to be checked
@@ -286,23 +263,23 @@ public class DisplayString implements IDisplayString {
         return tagMap.get(tag.name());
     }
     
-    // parse the display string into tags along ;
     /**
      * Set the displayString and parse it from the given string
-     * @param str Display string to be parsed
+     * @param newValue Display string to be parsed
      */
-    public void set(String str) {
+    public void set(String newValue) {
+        String oldValue = toString();
     	tagMap.clear();
-    	if (str != null) {
-    		// tokenize along ;
-    		Scanner scr = new Scanner(str);
+    	if (newValue != null) {
+    	    // parse the display string into tags along ;
+    		Scanner scr = new Scanner(newValue);
     		scr.useDelimiter(";");
     		while (scr.hasNext()) {
     			TagInstance parsedTag = new TagInstance(scr.next().trim());
     			tagMap.put(parsedTag.getName(), parsedTag);
     		}
     	}
-    	fireDisplayStringChanged(null);
+    	fireDisplayStringChanged(null, newValue, oldValue);
     }
 
     /**
@@ -402,16 +379,18 @@ public class DisplayString implements IDisplayString {
 	/**
      * Sets the specified property to the given value in the displaystring
      * @param property Property to be set
-     * @param value 
+     * @param newValue 
      */
-    public void set(Prop property, String value) {
-        setTagArg(property.getTag(), property.getPos(), value);
-        fireDisplayStringChanged(property);
+    public void set(Prop property, String newValue) {
+        String oldValue = getAsString(property);
+        setTagArg(property.getTag(), property.getPos(), newValue);
+        fireDisplayStringChanged(property, newValue, oldValue);
     }
 
-    public void set(Prop property, int value) {
-        setTagArg(property.getTag(), property.getPos(), String.valueOf(value));
-        fireDisplayStringChanged(property);
+    public void set(Prop property, int newValue) {
+        Integer oldValue = getAsInteger(property);
+        setTagArg(property.getTag(), property.getPos(), String.valueOf(newValue));
+        fireDisplayStringChanged(property, newValue, oldValue);
     }
     
     /* (non-Javadoc)
@@ -494,7 +473,7 @@ public class DisplayString implements IDisplayString {
     	// we have explicitly disabled the notification, so we have to send it now manually
     	// be aware that location change always generates an X pos change notification regardless
     	// which coordinate has changed
-    	fireDisplayStringChanged(Prop.X);
+    	fireDisplayStringChanged(Prop.X, null, null);
     }
 
     /* (non-Javadoc)
@@ -535,7 +514,7 @@ public class DisplayString implements IDisplayString {
     	// we have explicitly disabled the notification, so we have to send it now manually
     	// be aware that size change always generates an width change notification regardless
     	// which coordinate has changed
-    	fireDisplayStringChanged(Prop.HEIGHT);
+    	fireDisplayStringChanged(Prop.HEIGHT, null, null);
     }
     
     /**
@@ -576,7 +555,7 @@ public class DisplayString implements IDisplayString {
     	// we have explicitly disabled the notification, so we have to send it now manually
     	// be aware that size change always generates an width change notification regardless
     	// which coordinate has changed
-    	fireDisplayStringChanged(Prop.MODULE_WIDTH);
+    	fireDisplayStringChanged(Prop.MODULE_WIDTH, null, null);
     }
 
     /**
@@ -588,7 +567,6 @@ public class DisplayString implements IDisplayString {
     	// disable the notification so we will not send two notify for the two coordinate change
     	boolean tempNotifyState = notifyEnabled;
     	notifyEnabled = false;
-    	
     	setLocation(loc, scale);
     	setSize(size, scale);
     	
@@ -599,27 +577,22 @@ public class DisplayString implements IDisplayString {
     	// which coordinate has changed
     	
     	// if the layout constraint has changed we send out an X coordinate changed event
-    	fireDisplayStringChanged(Prop.X);
+    	fireDisplayStringChanged(Prop.X, null, null);
     }
     
     /**
      * Fire a property change notification 
      * @param changedProperty The changed property or NULL if it cannot be identified
      */
-    private void fireDisplayStringChanged(Prop changedProperty) {
+    /**
+     * @param changedProperty
+     * @param newValue
+     * @param oldValue
+     */
+    private void fireDisplayStringChanged(Prop changedProperty, Object newValue, Object oldValue) {
     	// notify the owner node (if set)
     	if (owner != null && notifyEnabled)
-    		owner.propertyChanged(changedProperty);
-    	// and notify the registered listener (if any)
-    	if (changeListener != null && notifyEnabled)
-    		changeListener.propertyChanged(changedProperty);
+    		owner.propertyChanged(this, changedProperty, newValue, oldValue);
     }
 
-	public IDisplayStringChangeListener getChangeListener() {
-		return changeListener;
-	}
-
-	public void setChangeListener(IDisplayStringChangeListener listener) {
-		this.changeListener = listener;
-	}
 }

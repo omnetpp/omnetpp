@@ -5,8 +5,8 @@ import org.omnetpp.ned2.model.NEDElement;
 
 /**
  * @author rhornig
- * Notifies about a structural change in the model. A modelelement was added or removed
- * t/from the model.
+ * Notifies about a structural change in the model. A model element was added or removed
+ * to/from the model.
  */
 public class NEDStructuralChangeEvent extends NEDModelEvent {
     public enum Type {INSERTION, REMOVAL, REORDER} ;
