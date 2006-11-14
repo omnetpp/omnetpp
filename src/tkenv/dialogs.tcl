@@ -202,8 +202,8 @@ proc options_dialog {{defaultpage "g"}} {
     #frame $nb.t -relief groove -borderwidth 2
     checkbutton $nb.t.tlwantself -text {Display self-messages in the timeline} -variable opp(timeline-wantselfmsgs)
     checkbutton $nb.t.tlwantnonself -text {Display non-self messages in the timeline} -variable opp(timeline-wantnonselfmsgs)
-    label-entry $nb.t.tlnamepattern {Message name pattern:}
-    label-entry $nb.t.tlclassnamepattern {Class name pattern:}
+    label-entry $nb.t.tlnamepattern {Message name filter:}
+    label-entry $nb.t.tlclassnamepattern {Class name filter:}
     commentlabel $nb.t.c1 {In both patterns, wildcards (*,?) are accepted. Start pattern with hyphen (-) to exclude matched messages.}
     $nb.t.tlnamepattern.l config -width 20
     $nb.t.tlclassnamepattern.l config -width 20
