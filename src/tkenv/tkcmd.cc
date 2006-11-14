@@ -175,7 +175,7 @@ OmnetTclCommand tcl_commands[] = {
    { "opp_modulebypath",     moduleByPath_cmd         }, // args: <fullpath> ret: modptr
    { "opp_getmodulepar",     getModulePar_cmd         }, // args: <modptr> <parname> ret: value
    { "opp_setmodulepar",     setModulePar_cmd         }, // args: <modptr> <parname> <value>
-   { "opp_fesmsgs",          fesMsgs_cmd              }, // args: <maxnum>
+   { "opp_fesmsgs",          fesMsgs_cmd              }, // args: <maxnum> <wantSelfMsgs> <wantNonSelfMsgs> <namePattern> <classNamePattern>
    { "opp_sortfesandgetrange",sortFesAndGetRange_cmd  }, // args: -  ret: {minDeltaT maxDeltaT}
    { "opp_msgarrtimefromnow",msgArrTimeFromNow_cmd    }, // args: <modptr>
    { "opp_patmatch",         patmatch_cmd             }, // args: <string> <pattern>
@@ -1118,11 +1118,37 @@ int moduleByPath_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv
 
 int fesMsgs_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
-   if (argc!=2) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
+   if (argc!=6) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
    int maxNum = atoi(argv[1]);
+   bool wantSelfMsgs = atoi(argv[2])!=0;
+   bool wantNonSelfMsgs = atoi(argv[3])!=0;
+   const char *namePattern = argv[4];
+   const char *classNamePattern = argv[5];
+
+   if (!*namePattern) namePattern = "*";
+   bool negativeNamePattern = namePattern[0]=='-';
+   if (negativeNamePattern) namePattern++;
+   cPatternMatcher nameMatcher;
+   nameMatcher.setPattern(namePattern, false, true, false);
+
+   if (!*classNamePattern) classNamePattern = "*";
+   bool negativeClassNamePattern = classNamePattern[0]=='-';
+   if (negativeClassNamePattern) classNamePattern++;
+   cPatternMatcher classNameMatcher;
+   classNameMatcher.setPattern(classNamePattern, false, true, false);
+
    Tcl_Obj *listobj = Tcl_NewListObj(0, NULL);
-   for (cMessageHeap::Iterator msg(simulation.msgQueue); maxNum>0 && !msg.end(); msg++, maxNum--)
-       Tcl_ListObjAppendElement(interp, listobj, Tcl_NewStringObj(ptrToStr(msg()), -1));
+   for (cMessageHeap::Iterator it(simulation.msgQueue); maxNum>0 && !it.end(); it++, maxNum--)
+   {
+       cMessage *msg = it();
+       if (msg->isSelfMessage() ? !wantSelfMsgs : !wantNonSelfMsgs)
+           continue;
+       if (nameMatcher.matches(msg->name()) == negativeNamePattern)
+           continue;
+       if (classNameMatcher.matches(msg->className()) == negativeClassNamePattern)
+           continue;
+       Tcl_ListObjAppendElement(interp, listobj, Tcl_NewStringObj(ptrToStr(msg), -1));
+   }
    Tcl_SetObjResult(interp, listobj);
    return TCL_OK;
 }
