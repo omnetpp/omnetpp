@@ -40,6 +40,8 @@ set config(rununtil-time) ""
 set config(rununtil-event) ""
 set config(display-timeline) 1
 set config(timeline-maxnumevents) 1000
+#set config(timeline-includemsgkinds) {*}
+#set config(timeline-excludemsgkinds) {}
 set config(timeline-wantselfmsgs) 1
 set config(timeline-wantnonselfmsgs) 1
 set config(timeline-msgnamepattern) "*"
@@ -48,6 +50,7 @@ set config(log-save-filename) "omnetpp.out"
 set config(mainwin-state) "normal"
 set config(mainwin-geom) ""
 set config(concurrent-anim) 1
+set config(logwindow-scrollbacklines) 100000
 
 set pluginlist {}
 
@@ -303,8 +306,7 @@ proc create_omnetpp_window {} {
     .timeline bind msgname <Double-1> "graphmodwin_dblclick .timeline"
     .timeline bind msg <3> "graphmodwin_rightclick .timeline %X %Y"
     .timeline bind msgname <3> "graphmodwin_rightclick .timeline %X %Y"
-    bind .timeline <Double-1> {options_dialog t}
-    bind .timeline <Button-3> {timeline_popup %X %Y}
+    bind .timeline <Button-3> {timeline_popup %x %y %X %Y}
 
     set widgets(timeline) .timeline
 

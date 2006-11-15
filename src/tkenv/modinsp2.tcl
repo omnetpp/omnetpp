@@ -660,7 +660,7 @@ proc graphmodwin_rightclick {c X Y} {
    set ptr [lindex $ptr 0]
 
    if {$ptr!=""} {
-      popup_insp_menu $ptr $X $Y
+      popup_insp_menu $ptr $X $Y 1
    }
 }
 

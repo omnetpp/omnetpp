@@ -95,8 +95,8 @@ void TModuleWindow::update()
 {
    TInspector::update();
 
-   //cModule *mod = static_cast<cModule *>(object);
-   //setToolbarInspectButton(".toolbar.parent", mod->parentModule(),INSP_DEFAULT);
+   Tcl_Interp *interp = getTkApplication()->getInterp();
+   CHK(Tcl_VarEval(interp, "modulewindow_trimlines ", windowname, NULL));
 }
 
 //=======================================================================

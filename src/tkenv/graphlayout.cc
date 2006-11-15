@@ -268,7 +268,7 @@ void BasicSpringEmbedderLayout::execute()
     doColoring();
 
     // now the real job -- stop if max moved distance is <0.05 at least 20 times in a row
-    clock_t beg = clock();
+    //clock_t beg = clock();
     int i, maxdcounter=0;
     for (i=1; i<maxIterations && maxdcounter<20; i++)
     {
@@ -281,7 +281,7 @@ void BasicSpringEmbedderLayout::execute()
         else
             maxdcounter=0;
     }
-    clock_t end = clock();
+    //clock_t end = clock();
     //printf("DBG: layout done in %g secs, %d iterations (%g sec/iter)\n",
     //       (end-beg)/(double)CLOCKS_PER_SEC, i, (end-beg)/(double)CLOCKS_PER_SEC/i);
 

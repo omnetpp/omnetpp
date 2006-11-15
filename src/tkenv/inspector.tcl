@@ -329,7 +329,7 @@ proc extendContextMenu {rules} {
     }
 }
 
-proc popup_insp_menu {ptr X Y} {
+proc popup_insp_menu {ptr X Y {wantanimoptions 0}} {
     global contextmenurules
 
     if {$ptr=="" || $ptr==[opp_null]} return
@@ -373,6 +373,12 @@ proc popup_insp_menu {ptr X Y} {
            .popup add command -label "$contextmenurules($key,label)..." -command "inspect_contextmenurules $ptr $key"
        }
     }
+
+    if {$wantanimoptions} {
+       .popup add separator
+       .popup add command -label "Animation options..." -command "options_dialog a"
+    }
+
     .popup post $X $Y
 }
 

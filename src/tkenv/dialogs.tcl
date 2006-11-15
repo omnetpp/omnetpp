@@ -174,27 +174,29 @@ proc options_dialog {{defaultpage "g"}} {
     notebook_showpage $nb $defaultpage
 
     frame $nb.g.f1 -relief groove -borderwidth 2
-    label-entry $nb.g.f1.stepdelay       {Delay for slow execution}
-    label-entry $nb.g.f1.updfreq_fast    {Update freq. for Fast Run (events)}
-    label-entry $nb.g.f1.updfreq_express {Update freq. for Express Run (events)}
-    $nb.g.f1.stepdelay.l config -width 0
+    label-entry $nb.g.f1.updfreq_fast    {Update freq. for Fast Run (events):}
+    label-entry $nb.g.f1.updfreq_express {Update freq. for Express Run (events):}
+    label-entry $nb.g.f1.stepdelay       {Per-event delay for slow execution:}
     $nb.g.f1.updfreq_fast.l config -width 0
     $nb.g.f1.updfreq_express.l config -width 0
-    $nb.g.f1.stepdelay.e config -width 8
-    $nb.g.f1.updfreq_fast.e config -width 8
-    $nb.g.f1.updfreq_express.e config -width 8
-    pack $nb.g.f1.stepdelay -anchor w -expand 0 -fill x
-    pack $nb.g.f1.updfreq_fast -anchor w -expand 0 -fill x
-    pack $nb.g.f1.updfreq_express -anchor w -expand 0 -fill x
+    $nb.g.f1.stepdelay.l config -width 0
+    pack $nb.g.f1.updfreq_fast -anchor w -fill x
+    pack $nb.g.f1.updfreq_express -anchor w -fill x
+    pack $nb.g.f1.stepdelay -anchor w -fill x
 
     frame $nb.g.f2 -relief groove -borderwidth 2
     checkbutton $nb.g.f2.usemainwin -text {Use main window for module output} -variable opp(usemainwin)
     checkbutton $nb.g.f2.banners -text {Print event banners} -variable opp(banners)
+    label-entry $nb.g.f2.numlines {Scrollback buffer (lines):}
+    commentlabel $nb.g.f2.c1 {Applies to main window and module log windows. Leave blank for unlimited. Minimum value is 500 lines.}
     checkbutton $nb.g.f2.bkpts -text {Stop on breakpoint() calls} -variable opp(bkpts)
     checkbutton $nb.g.f2.layouting -text {Show layouting process} -variable opp(layouting)
     checkbutton $nb.g.f2.confirmexit -text {Confirm exit when simulation is in progress} -variable opp(confirmexit)
+    $nb.g.f2.numlines.l config -width 0
     pack $nb.g.f2.usemainwin -anchor w
     pack $nb.g.f2.banners -anchor w
+    pack $nb.g.f2.numlines -anchor w -fill x
+    pack $nb.g.f2.c1 -anchor w
     pack $nb.g.f2.bkpts -anchor w
     pack $nb.g.f2.layouting -anchor w
     pack $nb.g.f2.confirmexit -anchor w
@@ -202,16 +204,28 @@ proc options_dialog {{defaultpage "g"}} {
     #frame $nb.t -relief groove -borderwidth 2
     checkbutton $nb.t.tlwantself -text {Display self-messages in the timeline} -variable opp(timeline-wantselfmsgs)
     checkbutton $nb.t.tlwantnonself -text {Display non-self messages in the timeline} -variable opp(timeline-wantnonselfmsgs)
-    label-entry $nb.t.tlnamepattern {Message name pattern:}
-    label-entry $nb.t.tlclassnamepattern {Class name pattern:}
+    label-entry $nb.t.tlnamepattern {Message name filter:}
+    label-entry $nb.t.tlclassnamepattern {Class name filter:}
     commentlabel $nb.t.c1 {In both patterns, wildcards (*,?) are accepted. Start pattern with hyphen (-) to exclude matched messages.}
+    #label-entry $nb.t.tlincludemk {Include message kinds:}
+    #label-entry $nb.t.tlexcludemk {Exclude message kinds:}
+    #commentlabel $nb.t.c2 {Enter message kind values separated by comma, or asterisk (*) for all.}
     $nb.t.tlnamepattern.l config -width 20
     $nb.t.tlclassnamepattern.l config -width 20
+    #$nb.t.tlincludemk.l config -width 20
+    #$nb.t.tlexcludemk.l config -width 20
+    $nb.t.tlnamepattern.e config -width 40
+    $nb.t.tlclassnamepattern.e config -width 40
+    #$nb.t.tlincludemk.e config -width 40
+    #$nb.t.tlexcludemk.e config -width 40
     pack $nb.t.tlwantself -anchor w
     pack $nb.t.tlwantnonself -anchor w
     pack $nb.t.tlnamepattern -anchor w -fill x
     pack $nb.t.tlclassnamepattern -anchor w -fill x
     pack $nb.t.c1 -anchor w
+    #pack $nb.t.tlincludemk -anchor w -fill x
+    #pack $nb.t.tlexcludemk -anchor w -fill x
+    #pack $nb.t.c2 -anchor w
 
     checkbutton $nb.a.anim -text {Animate messages} -variable opp(anim)
     label-scale $nb.a.speed {Animation speed:}
@@ -221,8 +235,6 @@ proc options_dialog {{defaultpage "g"}} {
     checkbutton $nb.a.nextev -text {Show next event markers} -variable opp(nextev)
     checkbutton $nb.a.sdarrows -text {Show arrows for sendDirect() animation} -variable opp(sdarrows)
     checkbutton $nb.a.animmeth -text {Animate method calls} -variable opp(animmeth)
-    #label-entry $nb.a.methdelay  {Method call delay (ms)}
-    #$nb.a.methdelay.l config -width 0
     label-scale $nb.a.methdelay {Method call delay (ms):}
     $nb.a.methdelay.e config -length 200 -from 0 -to 3000 -resolution 1 -variable opp(methdelay)
     checkbutton $nb.a.msgnam -text {Display message names during animation} -variable opp(msgnam)
@@ -253,6 +265,7 @@ proc options_dialog {{defaultpage "g"}} {
     $nb.g.f1.updfreq_fast.e insert 0 [opp_getsimoption updatefreq_fast]
     $nb.g.f1.updfreq_express.e insert 0 [opp_getsimoption updatefreq_express]
     $nb.g.f1.stepdelay.e insert 0 [opp_getsimoption stepdelay]
+    $nb.g.f2.numlines.e insert 0 $config(logwindow-scrollbacklines)
     set opp(usemainwin) [opp_getsimoption use_mainwindow]
     set opp(banners)    [opp_getsimoption print_banners]
     set opp(anim)       [opp_getsimoption animation_enabled]
@@ -272,6 +285,8 @@ proc options_dialog {{defaultpage "g"}} {
     set opp(confirmexit) $config(confirm-exit)
     $nb.t.tlnamepattern.e insert 0      $config(timeline-msgnamepattern)
     $nb.t.tlclassnamepattern.e insert 0 $config(timeline-msgclassnamepattern)
+    #$nb.t.tlincludemk.e insert 0        $config(timeline-includemsgkinds)
+    #$nb.t.tlexcludemk.e insert 0        $config(timeline-excludemsgkinds)
     set opp(timeline-wantselfmsgs)      $config(timeline-wantselfmsgs)
     set opp(timeline-wantnonselfmsgs)   $config(timeline-wantnonselfmsgs)
 
@@ -281,6 +296,11 @@ proc options_dialog {{defaultpage "g"}} {
         opp_setsimoption stepdelay           [$nb.g.f1.stepdelay.e get]
         opp_setsimoption updatefreq_fast     [$nb.g.f1.updfreq_fast.e get]
         opp_setsimoption updatefreq_express  [$nb.g.f1.updfreq_express.e get]
+        set n [$nb.g.f2.numlines.e get]
+        if {$n=="" || [string is integer $n]} {
+            if {$n!="" && $n<500} {set n 500}
+            set config(logwindow-scrollbacklines) $n
+        }
         opp_setsimoption use_mainwindow      $opp(usemainwin)
         opp_setsimoption print_banners       $opp(banners)
         opp_setsimoption animation_enabled   $opp(anim)
@@ -302,6 +322,8 @@ proc options_dialog {{defaultpage "g"}} {
         set timeline-msgclassnamepattern)    [$nb.t.tlclassnamepattern.e get]
         set config(timeline-wantselfmsgs)    $opp(timeline-wantselfmsgs)
         set config(timeline-wantnonselfmsgs) $opp(timeline-wantnonselfmsgs)
+        #set config(timeline-includemsgkinds) [$nb.t.tlincludemk.e get]
+        #set config(timeline-excludemsgkinds) [$nb.t.tlexcludemk.e get]
 
         opp_updateinspectors
         redraw_timeline

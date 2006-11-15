@@ -242,4 +242,21 @@ proc _create_modulewindow {name geom iscompound} {
     bind_findcommands_to_textwidget $w.main.text
 }
 
+proc mainlogwindow_trimlines {} {
+    global config
+    text_trimlines .main.text $config(logwindow-scrollbacklines)
+}
 
+proc modulewindow_trimlines {w} {
+    global config
+    text_trimlines $w.main.text $config(logwindow-scrollbacklines)
+}
+
+proc text_trimlines {t numlines} {
+    if {$numlines==""} {return}
+    set endline [$t index {end linestart}]
+    if {$endline > $numlines + 100} {  ;# for performance, we want to delete in at least 100-line chunks
+        set linestodelete [expr int($endline-$numlines)]
+        $t delete 1.0 $linestodelete.0
+    }
+}
