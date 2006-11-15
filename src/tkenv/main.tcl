@@ -305,8 +305,7 @@ proc create_omnetpp_window {} {
     .timeline bind msgname <Double-1> "graphmodwin_dblclick .timeline"
     .timeline bind msg <3> "graphmodwin_rightclick .timeline %X %Y"
     .timeline bind msgname <3> "graphmodwin_rightclick .timeline %X %Y"
-    bind .timeline <Double-1> {options_dialog t}
-    bind .timeline <Button-3> {timeline_popup %X %Y}
+    bind .timeline <Button-3> {timeline_popup %x %y %X %Y}
 
     set widgets(timeline) .timeline
 

@@ -132,10 +132,17 @@ proc redraw_timeline {} {
 }
 
 
-proc timeline_popup {x y} {
-    catch {destroy .popup}
-    menu .popup -tearoff 0
-    .popup add command -label "Options..." -command "options_dialog t"
-    .popup post $x $y
+proc timeline_popup {cx cy x y} {
+    global widgets
+    set c $widgets(timeline)
+    set ids [$c find overlapping $cx $cy $cx $cy]
+
+    # only display popup menu if right-click was on an empty area
+    if {$ids=={}} {
+        catch {destroy .popup}
+        menu .popup -tearoff 0
+        .popup add command -label "Timeline options..." -command "options_dialog t"
+        .popup post $x $y
+    }
 }
 
