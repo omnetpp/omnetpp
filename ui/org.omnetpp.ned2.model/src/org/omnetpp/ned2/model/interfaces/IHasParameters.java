@@ -8,7 +8,7 @@ import org.omnetpp.ned2.model.NEDElement;
  * @author rhornig
  * Interface for aquiring parameter lists for the object
  */
-public interface IParametrized {
+public interface IHasParameters {
     
     /**
      * @return The name / parameter node association. You SHOULD NOT modify the returned

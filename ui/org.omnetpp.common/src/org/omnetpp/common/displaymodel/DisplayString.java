@@ -37,7 +37,7 @@ public class DisplayString implements IDisplayString {
     protected boolean notifyEnabled = true;
     
     // the owner of the displaystring
-    protected IDisplayStringProvider owner = null;
+    protected IHasDisplayString owner = null;
     
     // map that stores the currently available tag instances 
     private Map<String, TagInstance> tagMap = new LinkedHashMap<String, TagInstance>();
@@ -150,7 +150,7 @@ public class DisplayString implements IDisplayString {
      * 		  will be notified about changes 
      * @param value The string to be parsed
      */
-    public DisplayString(IDisplayStringProvider owner, String value) {
+    public DisplayString(IHasDisplayString owner, String value) {
     	this(value);
     	this.owner = owner;
     }

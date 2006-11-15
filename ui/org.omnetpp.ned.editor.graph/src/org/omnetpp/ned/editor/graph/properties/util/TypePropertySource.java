@@ -7,7 +7,7 @@ import org.eclipse.ui.views.properties.IPropertySource2;
 import org.eclipse.ui.views.properties.PropertyDescriptor;
 import org.eclipse.ui.views.properties.TextPropertyDescriptor;
 import org.omnetpp.common.properties.EditableComboBoxPropertyDescriptor;
-import org.omnetpp.ned2.model.interfaces.ITyped;
+import org.omnetpp.ned2.model.interfaces.IHasType;
 
 /**
  * @author rhornig
@@ -18,11 +18,11 @@ import org.omnetpp.ned2.model.interfaces.ITyped;
 public abstract class TypePropertySource implements IPropertySource2 {
         public enum Prop { Type, Like, LikeParam }
         protected IPropertyDescriptor[] descriptors;
-        protected ITyped model;
+        protected IHasType model;
         EditableComboBoxPropertyDescriptor typeProp;
         EditableComboBoxPropertyDescriptor likeProp;
 
-        public TypePropertySource(ITyped nodeModel) {
+        public TypePropertySource(IHasType nodeModel) {
             model = nodeModel;
             
             // set up property descriptors

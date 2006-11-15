@@ -5,7 +5,7 @@ import java.util.List;
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
 import org.eclipse.ui.views.properties.PropertyDescriptor;
 import org.omnetpp.ned2.model.NEDElement;
-import org.omnetpp.ned2.model.interfaces.IImplementor;
+import org.omnetpp.ned2.model.interfaces.IHasInterfaces;
 import org.omnetpp.ned2.model.pojo.ExtendsNode;
 import org.omnetpp.ned2.model.pojo.InterfaceNameNode;
 
@@ -16,10 +16,10 @@ import org.omnetpp.ned2.model.pojo.InterfaceNameNode;
 public class InterfacesListPropertySource extends NotifiedPropertySource {
     public final static String CATEGORY = "like";
     public final static String DESCRIPTION = "List of componets this component implements - (read only)";
-    protected IImplementor model;
+    protected IHasInterfaces model;
     protected PropertyDescriptor[] pdesc;
     
-    public InterfacesListPropertySource(IImplementor model) {
+    public InterfacesListPropertySource(IHasInterfaces model) {
         super((NEDElement)model);
         this.model = model;
     }

@@ -9,7 +9,7 @@ import org.omnetpp.ned2.model.pojo.ExtendsNode;
  * @author rhornig
  * Objects that can extend other objects, ie they are derived objects.
  */
-public interface IDerived {
+public interface IHasAncestors {
     
     /**
      * 

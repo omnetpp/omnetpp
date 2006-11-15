@@ -5,7 +5,7 @@ import java.util.List;
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
 import org.eclipse.ui.views.properties.PropertyDescriptor;
 import org.omnetpp.ned2.model.NEDElement;
-import org.omnetpp.ned2.model.interfaces.IDerived;
+import org.omnetpp.ned2.model.interfaces.IHasAncestors;
 import org.omnetpp.ned2.model.pojo.ExtendsNode;
 
 /**
@@ -15,10 +15,10 @@ import org.omnetpp.ned2.model.pojo.ExtendsNode;
 public class ExtendsListPropertySource extends NotifiedPropertySource {
     public final static String CATEGORY = "extends";
     public final static String DESCRIPTION = "List of componets this component extends - (read only)";
-    protected IDerived model;
+    protected IHasAncestors model;
     protected PropertyDescriptor[] pdesc;
     
-    public ExtendsListPropertySource(IDerived model) {
+    public ExtendsListPropertySource(IHasAncestors model) {
         super((NEDElement)model);
         this.model = model;
     }

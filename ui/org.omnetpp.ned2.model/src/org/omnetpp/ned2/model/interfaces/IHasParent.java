@@ -6,7 +6,7 @@ import org.omnetpp.ned2.model.NEDElement;
  * @author rhornig
  * An object that can be added / removed to/from the model tree
  */
-public interface IParentable {
+public interface IHasParent {
 
 	/**
 	 * Removes this node from the parent

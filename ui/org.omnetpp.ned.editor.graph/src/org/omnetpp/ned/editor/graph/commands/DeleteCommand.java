@@ -7,8 +7,8 @@ import org.eclipse.gef.commands.Command;
 import org.omnetpp.ned2.model.NEDElement;
 import org.omnetpp.ned2.model.ex.ConnectionNodeEx;
 import org.omnetpp.ned2.model.ex.SubmoduleNodeEx;
-import org.omnetpp.ned2.model.interfaces.IConnectable;
-import org.omnetpp.ned2.model.interfaces.INamed;
+import org.omnetpp.ned2.model.interfaces.IHasConnections;
+import org.omnetpp.ned2.model.interfaces.IHasName;
 import org.omnetpp.ned2.model.pojo.ConnectionsNode;
 
 /**
@@ -23,8 +23,8 @@ public class DeleteCommand extends Command {
         public ConnectionNodeEx node;            // the NODE that was deleted
         public ConnectionsNode parent;           // the parent of the deletednode
         public ConnectionNodeEx nextSibling;     // the next sibling to be able to insert it back into the correct position
-        public IConnectable srcModule;             // the src module the connection was originally attached to
-        public IConnectable destModule;            // the dest module the connection was originally attached to
+        public IHasConnections srcModule;             // the src module the connection was originally attached to
+        public IHasConnections destModule;            // the dest module the connection was originally attached to
     }
     
     private static class ElementUndoItem {
@@ -47,8 +47,8 @@ public class DeleteCommand extends Command {
     public void execute() {
         // FIXME label is not used by this comand. Maybe a BUG???
     	String label = "Delete";
-    	if (elementUndoItem.node instanceof INamed)
-    		label += " "+((INamed)elementUndoItem.node).getName();
+    	if (elementUndoItem.node instanceof IHasName)
+    		label += " "+((IHasName)elementUndoItem.node).getName();
         setLabel(label);
      
         primExecute();

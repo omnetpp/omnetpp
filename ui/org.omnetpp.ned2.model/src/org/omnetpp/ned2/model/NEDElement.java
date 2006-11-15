@@ -7,7 +7,7 @@ import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.PlatformObject;
 import org.omnetpp.common.displaymodel.IDisplayString;
 import org.omnetpp.common.displaymodel.IDisplayStringChangeListener;
-import org.omnetpp.common.displaymodel.IDisplayStringProvider;
+import org.omnetpp.common.displaymodel.IHasDisplayString;
 import org.omnetpp.common.displaymodel.IDisplayString.Prop;
 import org.omnetpp.ned2.model.ex.NEDElementFactoryEx;
 import org.omnetpp.ned2.model.ex.NEDElementUtilEx;
@@ -564,11 +564,11 @@ public abstract class NEDElement extends PlatformObject
     /* (non-Javadoc)
      * @see org.omnetpp.common.displaymodel.IDisplayStringChangeListener#propertyChanged(org.omnetpp.common.displaymodel.IDisplayString, org.omnetpp.common.displaymodel.IDisplayString.Prop, java.lang.Object, java.lang.Object)
      * this method pass back the modified display string to the model, but it should be called only if the element
-     * really support the additional display string property (ie. IDisplayStringProvider)
+     * really support the additional display string property (ie. IHasDisplayString)
      * also fires a model attribute change event (converts the propertyChange event to attribute change) 
      */
     public void propertyChanged(IDisplayString source, Prop changedProp, Object newValue, Object oldValue) {
-        Assert.isTrue(this instanceof IDisplayStringProvider, "propertyChanged should be called only as a result of notificaton from an attached DisplayString");
+        Assert.isTrue(this instanceof IHasDisplayString, "propertyChanged should be called only as a result of notificaton from an attached DisplayString");
         // syncronize it to the underlying model
         NEDElementUtilEx.setDisplayString(this, source.toString());
         String propertyName = 

@@ -1,8 +1,8 @@
 package org.omnetpp.ned2.model.ex;
 
 import org.omnetpp.ned2.model.NEDElement;
-import org.omnetpp.ned2.model.interfaces.INamed;
-import org.omnetpp.ned2.model.interfaces.IParentable;
+import org.omnetpp.ned2.model.interfaces.IHasName;
+import org.omnetpp.ned2.model.interfaces.IHasParent;
 import org.omnetpp.ned2.model.interfaces.ITopLevelElement;
 import org.omnetpp.ned2.model.pojo.ParamNode;
 
@@ -10,7 +10,7 @@ import org.omnetpp.ned2.model.pojo.ParamNode;
  * @author rhornig
  * Extended parameter node
  */
-public final class ParamNodeEx extends ParamNode implements INamed, IParentable {
+public final class ParamNodeEx extends ParamNode implements IHasName, IHasParent {
 
     protected ParamNodeEx() {
         super();

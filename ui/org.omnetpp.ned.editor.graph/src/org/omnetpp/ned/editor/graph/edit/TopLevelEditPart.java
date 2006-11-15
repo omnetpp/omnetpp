@@ -4,11 +4,11 @@ import org.eclipse.draw2d.IFigure;
 import org.eclipse.gef.EditPolicy;
 import org.eclipse.gef.editparts.AbstractGraphicalEditPart;
 import org.omnetpp.common.displaymodel.DisplayString;
-import org.omnetpp.common.displaymodel.IDisplayStringProvider;
+import org.omnetpp.common.displaymodel.IHasDisplayString;
 import org.omnetpp.figures.TopLevelFigure;
 import org.omnetpp.ned.editor.graph.edit.policies.NedComponentEditPolicy;
 import org.omnetpp.ned2.model.NEDElement;
-import org.omnetpp.ned2.model.interfaces.INamed;
+import org.omnetpp.ned2.model.interfaces.IHasName;
 import org.omnetpp.ned2.model.notification.INEDChangeListener;
 import org.omnetpp.ned2.model.notification.NEDModelEvent;
 
@@ -76,16 +76,16 @@ public class TopLevelEditPart extends AbstractGraphicalEditPart
 		super.refreshVisuals();
         // define the properties that determine the visual appearence
     	
-    	if (getModel() instanceof INamed) {
+    	if (getModel() instanceof IHasName) {
     		// set module name and vector size
-    		String nameToDisplay = ((INamed)getModel()).getName();
+    		String nameToDisplay = ((IHasName)getModel()).getName();
     		((TopLevelFigure)getFigure()).setText(nameToDisplay);
     	}
 
     	// parse a dispaly string, so it's easier to get values from it.
     	// for other visula properties
-    	if (getModel() instanceof IDisplayStringProvider) {
-    		DisplayString dps = ((IDisplayStringProvider)getModel()).getDisplayString();
+    	if (getModel() instanceof IHasDisplayString) {
+    		DisplayString dps = ((IHasDisplayString)getModel()).getDisplayString();
 
     		((TopLevelFigure)getFigure()).setDisplayString(dps);
     	}

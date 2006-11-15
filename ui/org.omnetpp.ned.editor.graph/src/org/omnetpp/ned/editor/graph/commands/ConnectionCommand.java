@@ -6,8 +6,8 @@ import org.omnetpp.ned2.model.ex.CompoundModuleNodeEx;
 import org.omnetpp.ned2.model.ex.ConnectionNodeEx;
 import org.omnetpp.ned2.model.ex.NEDElementFactoryEx;
 import org.omnetpp.ned2.model.ex.SubmoduleNodeEx;
-import org.omnetpp.ned2.model.interfaces.IConnectable;
-import org.omnetpp.ned2.model.interfaces.IParentable;
+import org.omnetpp.ned2.model.interfaces.IHasConnections;
+import org.omnetpp.ned2.model.interfaces.IHasParent;
 import org.omnetpp.ned2.model.pojo.ConnectionNode;
 import org.omnetpp.ned2.model.pojo.NEDElementTags;
 
@@ -19,12 +19,12 @@ import org.omnetpp.ned2.model.pojo.NEDElementTags;
 // TODO handling of subgates $i and $o is missing
 public class ConnectionCommand extends Command {
 
-	protected IConnectable oldSrcModule;
-	protected IConnectable oldDestModule;
+	protected IHasConnections oldSrcModule;
+	protected IHasConnections oldDestModule;
 	protected ConnectionNode oldConn = (ConnectionNode)NEDElementFactoryEx.getInstance().createNodeWithTag(NEDElementTags.NED_CONNECTION);
     
-    protected IConnectable srcModule;
-    protected IConnectable destModule;
+    protected IHasConnections srcModule;
+    protected IHasConnections destModule;
 	protected ConnectionNode newConn =(ConnectionNode)NEDElementFactoryEx.getInstance().createNodeWithTag(NEDElementTags.NED_CONNECTION);
 	// connection model to be changed
     protected ConnectionNodeEx connModel;
@@ -68,11 +68,11 @@ public class ConnectionCommand extends Command {
     	if(srcModule == null && destModule == null)
     		return true;
     	// we can connect two submodules module ONLY if they are siblings (ie they have the same parent)
-    	IConnectable sMod = srcModule != null ? srcModule : connModel.getSrcModuleRef();
-    	IConnectable dMod = destModule != null ? destModule : connModel.getDestModuleRef();
+    	IHasConnections sMod = srcModule != null ? srcModule : connModel.getSrcModuleRef();
+    	IHasConnections dMod = destModule != null ? destModule : connModel.getDestModuleRef();
 
     	if(sMod instanceof SubmoduleNodeEx && dMod instanceof SubmoduleNodeEx &&
-    			((IParentable)sMod).getParent() == ((IParentable)dMod).getParent()) 
+    			((IHasParent)sMod).getParent() == ((IHasParent)dMod).getParent()) 
     		return true;
     	
     	// if one module is bubmodule and the other is compound, the compound module MUST contain the submodule
@@ -169,11 +169,11 @@ public class ConnectionCommand extends Command {
         to.setArrowDirection(from.getArrowDirection());
 	}
 
-    public void setSrcModule(IConnectable newSrcModule) {
+    public void setSrcModule(IHasConnections newSrcModule) {
         srcModule = newSrcModule;
     }
 
-    public void setDestModule(IConnectable newDestModule) {
+    public void setDestModule(IHasConnections newDestModule) {
         destModule = newDestModule;
     }
 
@@ -193,11 +193,11 @@ public class ConnectionCommand extends Command {
         newConn.setDestGate(newDestGate);
     }
 
-	public IConnectable getDestModule() {
+	public IHasConnections getDestModule() {
 		return destModule;
 	}
 
-	public IConnectable getSrcModule() {
+	public IHasConnections getSrcModule() {
 		return srcModule;
 	}
     

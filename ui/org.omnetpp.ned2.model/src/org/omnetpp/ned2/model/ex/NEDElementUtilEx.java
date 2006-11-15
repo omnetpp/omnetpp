@@ -6,13 +6,13 @@ import java.util.Set;
 
 import org.eclipse.core.runtime.Assert;
 import org.omnetpp.common.displaymodel.DisplayString;
-import org.omnetpp.common.displaymodel.IDisplayStringProvider;
+import org.omnetpp.common.displaymodel.IHasDisplayString;
 import org.omnetpp.ned2.model.NEDElement;
 import org.omnetpp.ned2.model.NEDElementException;
 import org.omnetpp.ned2.model.NEDElementUtil;
-import org.omnetpp.ned2.model.interfaces.IDerived;
-import org.omnetpp.ned2.model.interfaces.INamed;
-import org.omnetpp.ned2.model.interfaces.ITyped;
+import org.omnetpp.ned2.model.interfaces.IHasAncestors;
+import org.omnetpp.ned2.model.interfaces.IHasName;
+import org.omnetpp.ned2.model.interfaces.IHasType;
 import org.omnetpp.ned2.model.pojo.ChannelInterfaceNode;
 import org.omnetpp.ned2.model.pojo.ChannelNode;
 import org.omnetpp.ned2.model.pojo.ChannelSpecNode;
@@ -60,21 +60,21 @@ public final class NEDElementUtilEx implements NEDElementTags, NEDElementUtil {
      * @param node
      * @return The parsed displaystring (with defaults set to 
      */
-    public static DisplayString getEffectiveDisplayString(IDisplayStringProvider node) {
+    public static DisplayString getEffectiveDisplayString(IHasDisplayString node) {
         DisplayString result = node.getDisplayString();
         NEDElement defaultNode = null;
         // if node supports typing use the type's diplay property
-        if (node instanceof ITyped)
-            defaultNode = ((ITyped)node).getTypeRef();
-        else if (node instanceof IDerived)
-            defaultNode = ((IDerived)node).getFirstExtendsRef();
+        if (node instanceof IHasType)
+            defaultNode = ((IHasType)node).getTypeRef();
+        else if (node instanceof IHasAncestors)
+            defaultNode = ((IHasAncestors)node).getFirstExtendsRef();
         // if we do not have type or do not extend anybody we return the same displaystring
         if (defaultNode == null)
             return result;
 
-        Assert.isTrue(defaultNode instanceof IDisplayStringProvider);
+        Assert.isTrue(defaultNode instanceof IHasDisplayString);
         // otherwise set the default display string
-        result.setDefaults(((IDisplayStringProvider)defaultNode).getEffectiveDisplayString());
+        result.setDefaults(((IHasDisplayString)defaultNode).getEffectiveDisplayString());
         return result;
     }
 	
@@ -185,10 +185,10 @@ public final class NEDElementUtilEx implements NEDElementTags, NEDElementUtil {
     /**
      * Calculates a unique name for the provided model element 
      * @param namedElement
-     * @param contextCollection A collection of INamed elements wich proviedes a context in which the name should be unique
+     * @param contextCollection A collection of IHasName elements wich proviedes a context in which the name should be unique
      * @return The new unique name, or the original name if it was unique
      */
-    public static String getUniqueNameFor(INamed namedElement, Set<String> contextCollection) {
+    public static String getUniqueNameFor(IHasName namedElement, Set<String> contextCollection) {
 
         String currentName = namedElement.getName();
         // if there is no name in the context with the same name we don't have to change the name
@@ -211,10 +211,10 @@ public final class NEDElementUtilEx implements NEDElementTags, NEDElementUtil {
      * @param contextCollection A collection of strings wich proviedes a context in which the name should be unique
      * @return The new unique name, or the original name if it was unique
      */
-    public static String getUniqueNameFor(INamed namedElement, Collection<? extends INamed> contextCollection) {
+    public static String getUniqueNameFor(IHasName namedElement, Collection<? extends IHasName> contextCollection) {
         Set<String> nameSet = new HashSet<String>(contextCollection.size());
         // create a string set from the sibling submodules (except the node we want to make unique)
-        for(INamed sm : contextCollection)
+        for(IHasName sm : contextCollection)
             if (sm != namedElement)
                 nameSet.add(sm.getName());
         return getUniqueNameFor(namedElement, nameSet);

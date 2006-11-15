@@ -5,7 +5,7 @@ import java.util.List;
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
 import org.eclipse.ui.views.properties.IPropertySource2;
 import org.omnetpp.common.properties.EditableComboBoxPropertyDescriptor;
-import org.omnetpp.ned2.model.interfaces.IDerived;
+import org.omnetpp.ned2.model.interfaces.IHasAncestors;
 
 /**
  * @author rhornig
@@ -15,10 +15,10 @@ import org.omnetpp.ned2.model.interfaces.IDerived;
 public abstract class ExtendsPropertySource implements IPropertySource2 {
         public enum Prop { Extends }
         protected IPropertyDescriptor[] descriptors;
-        protected IDerived model;
+        protected IHasAncestors model;
         EditableComboBoxPropertyDescriptor extendsProp;
 
-        public ExtendsPropertySource(IDerived nodeModel) {
+        public ExtendsPropertySource(IHasAncestors nodeModel) {
             model = nodeModel;
             
             // set up property descriptors

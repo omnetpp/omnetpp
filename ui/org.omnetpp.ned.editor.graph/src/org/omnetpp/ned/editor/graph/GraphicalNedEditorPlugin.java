@@ -19,7 +19,7 @@ import org.eclipse.gef.tools.MarqueeSelectionTool;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.omnetpp.common.displaymodel.IDisplayString;
-import org.omnetpp.common.displaymodel.IDisplayStringProvider;
+import org.omnetpp.common.displaymodel.IHasDisplayString;
 import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.ned.editor.graph.misc.NedConnectionCreationTool;
 import org.omnetpp.ned.editor.graph.misc.NedSelectionTool;
@@ -35,7 +35,7 @@ import org.omnetpp.ned2.model.ex.NEDElementUtilEx;
 import org.omnetpp.ned2.model.ex.SimpleModuleNodeEx;
 import org.omnetpp.ned2.model.ex.SubmoduleNodeEx;
 import org.omnetpp.ned2.model.interfaces.INEDTypeInfo;
-import org.omnetpp.ned2.model.interfaces.INamed;
+import org.omnetpp.ned2.model.interfaces.IHasName;
 import org.omnetpp.ned2.model.pojo.PropertyNode;
 import org.omnetpp.resources.NEDResourcesPlugin;
 
@@ -105,7 +105,7 @@ public class GraphicalNedEditorPlugin extends AbstractUIPlugin {
         combined = new CombinedTemplateCreationEntry(
                 "Simple module",
                 "A simple module that can be used as a basic building block",
-                new ModelFactory(SimpleModuleNodeEx.getStaticTagName(), INamed.INITIAL_NAME), 
+                new ModelFactory(SimpleModuleNodeEx.getStaticTagName(), IHasName.INITIAL_NAME), 
                 ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_SIMPLE),
                 ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_SIMPLE,"l",null,24)
         );
@@ -114,7 +114,7 @@ public class GraphicalNedEditorPlugin extends AbstractUIPlugin {
         combined = new CombinedTemplateCreationEntry(
                 "Submodule",
                 "A submodule that can be placed in any compound module",
-                new ModelFactory(SubmoduleNodeEx.getStaticTagName(), INamed.INITIAL_NAME, INamed.INITIAL_NAME.toLowerCase()), 
+                new ModelFactory(SubmoduleNodeEx.getStaticTagName(), IHasName.INITIAL_NAME, IHasName.INITIAL_NAME.toLowerCase()), 
                 ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_SIMPLE),
                 ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_SIMPLE,"l",null,24)
         );
@@ -123,7 +123,7 @@ public class GraphicalNedEditorPlugin extends AbstractUIPlugin {
         combined = new CombinedTemplateCreationEntry(
                 "Module",
                 "A compound module that is built up from several other modules",
-                new ModelFactory(CompoundModuleNodeEx.getStaticTagName(), INamed.INITIAL_NAME), 
+                new ModelFactory(CompoundModuleNodeEx.getStaticTagName(), IHasName.INITIAL_NAME), 
                 ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_MODULE),
                 ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_MODULE,"l",null,24)
         );
@@ -132,7 +132,7 @@ public class GraphicalNedEditorPlugin extends AbstractUIPlugin {
         combined = new CombinedTemplateCreationEntry(
                 "Interface",
                 "A compound module interface ",
-                new ModelFactory(ModuleInterfaceNodeEx.getStaticTagName(), INamed.INITIAL_NAME), 
+                new ModelFactory(ModuleInterfaceNodeEx.getStaticTagName(), IHasName.INITIAL_NAME), 
                 ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_MODULE),
                 ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_MODULE,"l",null,24)
         );
@@ -141,7 +141,7 @@ public class GraphicalNedEditorPlugin extends AbstractUIPlugin {
         combined = new CombinedTemplateCreationEntry(
                 "Channel",
                 "A channel is a connection type",
-                new ModelFactory(ChannelNodeEx.getStaticTagName(), INamed.INITIAL_NAME, INamed.INITIAL_NAME.toLowerCase()), 
+                new ModelFactory(ChannelNodeEx.getStaticTagName(), IHasName.INITIAL_NAME, IHasName.INITIAL_NAME.toLowerCase()), 
                 ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_CONNECTION),
                 ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_CONNECTION,"l",null,24)
         );
@@ -150,7 +150,7 @@ public class GraphicalNedEditorPlugin extends AbstractUIPlugin {
         combined = new CombinedTemplateCreationEntry(
                 "Channel interface",
                 "A channel interface",
-                new ModelFactory(ChannelInterfaceNodeEx.getStaticTagName(), INamed.INITIAL_NAME), 
+                new ModelFactory(ChannelInterfaceNodeEx.getStaticTagName(), IHasName.INITIAL_NAME), 
                 ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_CONNECTION),
                 ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_CONNECTION,"l",null,24)
         );
@@ -185,8 +185,8 @@ public class GraphicalNedEditorPlugin extends AbstractUIPlugin {
         	// set the default images for the palette entry
         	ImageDescriptor imageDescNorm = ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_SIMPLE,null,null,0);
         	ImageDescriptor imageDescLarge = ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_SIMPLE,"l",null,0);
-        	if (nedElement instanceof IDisplayStringProvider) {
-                IDisplayString dps = ((IDisplayStringProvider)nedElement).getEffectiveDisplayString();
+        	if (nedElement instanceof IHasDisplayString) {
+                IDisplayString dps = ((IHasDisplayString)nedElement).getEffectiveDisplayString();
         		String iid = dps.getAsStringDef(IDisplayString.Prop.IMAGE);
         		if (iid != null && !"".equals(iid)) {
                 	imageDescNorm = ImageFactory.getDescriptor(iid,"vs",null,0);

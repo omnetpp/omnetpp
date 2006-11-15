@@ -7,20 +7,20 @@ import java.util.Map;
 
 import org.omnetpp.common.displaymodel.DisplayString;
 import org.omnetpp.ned2.model.NEDElement;
-import org.omnetpp.ned2.model.interfaces.IGateContainer;
-import org.omnetpp.ned2.model.interfaces.IIndexable;
+import org.omnetpp.ned2.model.interfaces.IHasGates;
+import org.omnetpp.ned2.model.interfaces.IHasIndex;
 import org.omnetpp.ned2.model.interfaces.INEDTypeInfo;
-import org.omnetpp.ned2.model.interfaces.INamed;
+import org.omnetpp.ned2.model.interfaces.IHasName;
 import org.omnetpp.ned2.model.interfaces.INamedGraphNode;
-import org.omnetpp.ned2.model.interfaces.IParametrized;
-import org.omnetpp.ned2.model.interfaces.ITyped;
+import org.omnetpp.ned2.model.interfaces.IHasParameters;
+import org.omnetpp.ned2.model.interfaces.IHasType;
 import org.omnetpp.ned2.model.pojo.GatesNode;
 import org.omnetpp.ned2.model.pojo.ParametersNode;
 import org.omnetpp.ned2.model.pojo.SubmoduleNode;
 
 public final class SubmoduleNodeEx extends SubmoduleNode
-                            implements INamedGraphNode, IIndexable, ITyped, 
-                                       IParametrized, IGateContainer {
+                            implements INamedGraphNode, IHasIndex, IHasType, 
+                                       IHasParameters, IHasGates {
 
     protected DisplayString displayString = null;
 
@@ -34,7 +34,7 @@ public final class SubmoduleNodeEx extends SubmoduleNode
 	}
 
     private void init() {
-        setName(INamed.INITIAL_NAME);
+        setName(IHasName.INITIAL_NAME);
         setType("node");
     }
 

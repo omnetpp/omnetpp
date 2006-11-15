@@ -7,18 +7,18 @@ import java.util.Map;
 
 import org.omnetpp.common.displaymodel.ConnectionDisplayString;
 import org.omnetpp.common.displaymodel.DisplayString;
-import org.omnetpp.common.displaymodel.IDisplayStringProvider;
+import org.omnetpp.common.displaymodel.IHasDisplayString;
 import org.omnetpp.ned2.model.NEDElement;
-import org.omnetpp.ned2.model.interfaces.IConnectable;
+import org.omnetpp.ned2.model.interfaces.IHasConnections;
 import org.omnetpp.ned2.model.interfaces.INEDTypeInfo;
-import org.omnetpp.ned2.model.interfaces.IParametrized;
-import org.omnetpp.ned2.model.interfaces.ITyped;
+import org.omnetpp.ned2.model.interfaces.IHasParameters;
+import org.omnetpp.ned2.model.interfaces.IHasType;
 import org.omnetpp.ned2.model.pojo.ChannelSpecNode;
 import org.omnetpp.ned2.model.pojo.ConnectionNode;
 import org.omnetpp.ned2.model.pojo.ParametersNode;
 
 public final class ConnectionNodeEx extends ConnectionNode 
-    implements ITyped, IDisplayStringProvider, IParametrized {
+    implements IHasType, IHasDisplayString, IHasParameters {
 	private ConnectionDisplayString displayString = null;
 
     protected ConnectionNodeEx() {
@@ -31,7 +31,7 @@ public final class ConnectionNodeEx extends ConnectionNode
 	}
     
     // helper functions to set the module names using references
-    public IConnectable getSrcModuleRef() {
+    public IHasConnections getSrcModuleRef() {
         if (getSrcModule() == null)
             return null;
         CompoundModuleNodeEx cm = getCompoundModule(); 
@@ -48,7 +48,7 @@ public final class ConnectionNodeEx extends ConnectionNode
      * Sets the source side module using reference instead of using name
      * @param srcModule 
      */
-    public void setSrcModuleRef(IConnectable srcModule) {
+    public void setSrcModuleRef(IHasConnections srcModule) {
         if (srcModule == null) {
             setSrcModule(null);
             return;
@@ -57,7 +57,7 @@ public final class ConnectionNodeEx extends ConnectionNode
         setSrcModule(newModule);
     }
 
-    public IConnectable getDestModuleRef() {
+    public IHasConnections getDestModuleRef() {
         if (getDestModule() == null)
             return null;
         CompoundModuleNodeEx cm = getCompoundModule(); 
@@ -73,7 +73,7 @@ public final class ConnectionNodeEx extends ConnectionNode
      * Sets the source side module using reference instead of using name
      * @param srcModule 
      */
-    public void setDestModuleRef(IConnectable destModule) {
+    public void setDestModuleRef(IHasConnections destModule) {
         if (destModule == null) {
             setDestModule(null);
             return;

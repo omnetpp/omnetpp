@@ -6,7 +6,7 @@ import org.eclipse.gef.commands.Command;
 import org.omnetpp.ned2.model.NEDElement;
 import org.omnetpp.ned2.model.ex.NEDElementUtilEx;
 import org.omnetpp.ned2.model.ex.NedFileNodeEx;
-import org.omnetpp.ned2.model.interfaces.INamed;
+import org.omnetpp.ned2.model.interfaces.IHasName;
 import org.omnetpp.ned2.model.interfaces.ITopLevelElement;
 import org.omnetpp.resources.NEDResourcesPlugin;
 
@@ -43,8 +43,8 @@ public class CreateToplevelComponentCommand extends Command {
     @Override
     public void redo() {
         
-        if ((child instanceof INamed) && (child instanceof ITopLevelElement)) {
-            INamed namedChild = (INamed)child;
+        if ((child instanceof IHasName) && (child instanceof ITopLevelElement)) {
+            IHasName namedChild = (IHasName)child;
             // if no name is present set to default
             if (namedChild.getName() == null || "".equals(namedChild.getName()))
                 namedChild.setName("unnamed");

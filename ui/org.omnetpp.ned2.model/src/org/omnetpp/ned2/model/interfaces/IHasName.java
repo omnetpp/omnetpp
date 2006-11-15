@@ -4,7 +4,7 @@ package org.omnetpp.ned2.model.interfaces;
  * @author rhornig
  * Objects that have a name property
  */
-public interface INamed {
+public interface IHasName {
 
 	static String INITIAL_NAME = "unnamed";
 	/**

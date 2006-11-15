@@ -3,8 +3,8 @@ package org.omnetpp.ned.editor.graph.misc;
 import org.eclipse.gef.requests.CreationFactory;
 import org.omnetpp.ned2.model.NEDElement;
 import org.omnetpp.ned2.model.ex.NEDElementFactoryEx;
-import org.omnetpp.ned2.model.interfaces.INamed;
-import org.omnetpp.ned2.model.interfaces.ITyped;
+import org.omnetpp.ned2.model.interfaces.IHasName;
+import org.omnetpp.ned2.model.interfaces.IHasType;
 
 
 /**
@@ -42,11 +42,11 @@ public class ModelFactory implements CreationFactory {
 	
 	public Object getNewObject() {
 		NEDElement element = NEDElementFactoryEx.getInstance().createNodeWithTag(objectType);
-        if (element instanceof INamed)
-            ((INamed)element).setName(name);
+        if (element instanceof IHasName)
+            ((IHasName)element).setName(name);
         
-        if (element instanceof ITyped)
-            ((ITyped)element).setType(name);
+        if (element instanceof IHasType)
+            ((IHasType)element).setType(name);
 
         return element;
 	}

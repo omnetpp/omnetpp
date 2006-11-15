@@ -1,11 +1,11 @@
 package org.omnetpp.ned2.model.interfaces;
 
-import org.omnetpp.common.displaymodel.IDisplayStringProvider;
+import org.omnetpp.common.displaymodel.IHasDisplayString;
 
 /**
  * Az element that has name, displaystring, can be connected (submodule and compound module)
  * @author rhornig
  */
-public interface INamedGraphNode extends IDisplayStringProvider, IConnectable, IParentable, INamed  {
+public interface INamedGraphNode extends IHasDisplayString, IHasConnections, IHasParent, IHasName  {
 
 }

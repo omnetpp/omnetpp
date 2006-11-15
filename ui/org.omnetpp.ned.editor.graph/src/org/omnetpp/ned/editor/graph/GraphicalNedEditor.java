@@ -104,7 +104,7 @@ import org.omnetpp.ned.editor.graph.edit.outline.NedTreeEditPartFactory;
 import org.omnetpp.ned.editor.graph.misc.ISelectionSupport;
 import org.omnetpp.ned.editor.graph.misc.ModulePaletteCustomizer;
 import org.omnetpp.ned2.model.ex.NedFileNodeEx;
-import org.omnetpp.ned2.model.interfaces.INamed;
+import org.omnetpp.ned2.model.interfaces.IHasName;
 
 
 public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette 
@@ -794,7 +794,7 @@ public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette
         EditPart selectedEditpart = null;
         for (Object child : toplevelParts) {
             Object model = ((EditPart)child).getModel();
-            if ((model instanceof INamed) && componentName.equals(((INamed)model).getName()))
+            if ((model instanceof IHasName) && componentName.equals(((IHasName)model).getName()))
                     selectedEditpart = (EditPart)child;
         }
             

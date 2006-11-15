@@ -8,7 +8,7 @@ import org.omnetpp.ned2.model.pojo.InterfaceNameNode;
  * @author rhornig
  * Objects that can implement other interfaces
  */
-public interface IImplementor {
+public interface IHasInterfaces {
 
     /**
      * @return All ned elements (interface nodes) that are implemented by this object

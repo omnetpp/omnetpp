@@ -6,8 +6,8 @@ import org.eclipse.ui.views.properties.IPropertyDescriptor;
 import org.eclipse.ui.views.properties.PropertyDescriptor;
 import org.omnetpp.ned2.model.NEDElement;
 import org.omnetpp.ned2.model.ex.ParamNodeEx;
-import org.omnetpp.ned2.model.interfaces.INamed;
-import org.omnetpp.ned2.model.interfaces.IParametrized;
+import org.omnetpp.ned2.model.interfaces.IHasName;
+import org.omnetpp.ned2.model.interfaces.IHasParameters;
 
 /**
  * @author rhornig
@@ -16,12 +16,12 @@ import org.omnetpp.ned2.model.interfaces.IParametrized;
 public class ParameterListPropertySource extends NotifiedPropertySource {
     public final static String CATEGORY = "parameters";
     public final static String DESCRIPTION = "List of parameters (direct and inherited)";
-    protected IParametrized model;
+    protected IHasParameters model;
     protected PropertyDescriptor[] pdesc;
     protected int totalParamCount;
     protected int inheritedParamCount;
     
-    public ParameterListPropertySource(IParametrized model) {
+    public ParameterListPropertySource(IHasParameters model) {
         super((NEDElement)model);
         this.model = model;
     }
@@ -38,7 +38,7 @@ public class ParameterListPropertySource extends NotifiedPropertySource {
             String definedIn = "";
             if (paramDefNode.getContainingTopLevelElement() != model) {
                 inheritedParamCount++;
-                definedIn= " (inherited from "+((INamed)paramDefNode.getContainingTopLevelElement()).getName()+")";
+                definedIn= " (inherited from "+((IHasName)paramDefNode.getContainingTopLevelElement()).getName()+")";
             }
             pdesc[totalParamCount] = new PropertyDescriptor(paramDefNode, typeString +" "+paramDefNode.getName());
             pdesc[totalParamCount].setCategory(CATEGORY);

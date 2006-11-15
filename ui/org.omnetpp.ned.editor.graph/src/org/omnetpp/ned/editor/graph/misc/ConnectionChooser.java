@@ -10,7 +10,7 @@ import org.omnetpp.ned2.model.NEDTreeUtil;
 import org.omnetpp.ned2.model.ex.CompoundModuleNodeEx;
 import org.omnetpp.ned2.model.ex.NEDElementFactoryEx;
 import org.omnetpp.ned2.model.ex.SubmoduleNodeEx;
-import org.omnetpp.ned2.model.interfaces.IConnectable;
+import org.omnetpp.ned2.model.interfaces.IHasConnections;
 import org.omnetpp.ned2.model.interfaces.INEDTypeInfo;
 import org.omnetpp.ned2.model.pojo.ConnectionNode;
 import org.omnetpp.ned2.model.pojo.GateNode;
@@ -24,7 +24,7 @@ import org.omnetpp.resources.NEDResourcesPlugin;
 public class ConnectionChooser {
     private static final String DEFAULT_INDEX = "0";
 
-	protected static List<GateNode> getModuleGates(IConnectable module, int gateType) {
+	protected static List<GateNode> getModuleGates(IHasConnections module, int gateType) {
 		List<GateNode> result = new ArrayList<GateNode>();
 		
 		// the type is the compound module's name
@@ -67,8 +67,8 @@ public class ConnectionChooser {
 	 * @return The template connection or <code>null</code> if connection cannot be created
 	 */
 	protected static ConnectionNode createTemplateConnection(
-						IConnectable srcMod, GateNode srcGate,
-						IConnectable destMod, GateNode destGate, boolean gatePP) {
+						IHasConnections srcMod, GateNode srcGate,
+						IHasConnections destMod, GateNode destGate, boolean gatePP) {
 
 		// check if at least one of the gates are vector if gatePP (gate++) syntax requested
 		if (gatePP && !srcGate.getIsVector() && !destGate.getIsVector())
@@ -141,7 +141,7 @@ public class ConnectionChooser {
 	 * @param askForSrcGate
 	 * @param askForDestGate
 	 */
-	public static ConnectionNode open(IConnectable srcModule, IConnectable destModule) {
+	public static ConnectionNode open(IHasConnections srcModule, IHasConnections destModule) {
 		// do not ask anything 
 		if (srcModule == null && destModule == null)
 			return null;

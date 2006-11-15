@@ -6,7 +6,7 @@ import org.omnetpp.ned2.model.NEDElement;
  * @author rhornig
  * Elements that have type-like property
  */
-public interface ITyped {
+public interface IHasType {
     /**
      * @return The type of the object
      */

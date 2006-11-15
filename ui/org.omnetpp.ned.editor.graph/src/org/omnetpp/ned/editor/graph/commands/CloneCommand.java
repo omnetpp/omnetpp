@@ -7,7 +7,7 @@ import java.util.Set;
 import org.eclipse.gef.commands.Command;
 import org.omnetpp.ned2.model.NEDElement;
 import org.omnetpp.ned2.model.ex.NEDElementUtilEx;
-import org.omnetpp.ned2.model.interfaces.INamed;
+import org.omnetpp.ned2.model.interfaces.IHasName;
 import org.omnetpp.ned2.model.interfaces.ITopLevelElement;
 import org.omnetpp.resources.NEDResourcesPlugin;
 
@@ -57,9 +57,9 @@ public class CloneCommand extends Command {
         // duplicate the subtree but do not add to the new parent yet
     	NEDElement newNode = oldNode.deepDup(null);
         // set a unique name is this is a named toplevel element
-        if ((newNode instanceof INamed) && (newNode instanceof ITopLevelElement)) {
+        if ((newNode instanceof IHasName) && (newNode instanceof ITopLevelElement)) {
             Set<String> context = NEDResourcesPlugin.getNEDResources().getReservedNames();
-            ((INamed)newNode).setName(NEDElementUtilEx.getUniqueNameFor((INamed)newNode, context));
+            ((IHasName)newNode).setName(NEDElementUtilEx.getUniqueNameFor((IHasName)newNode, context));
         }
 
     	// insert into the parent at the correct position

@@ -6,8 +6,8 @@ import org.eclipse.ui.views.properties.IPropertyDescriptor;
 import org.eclipse.ui.views.properties.PropertyDescriptor;
 import org.omnetpp.ned2.model.NEDElement;
 import org.omnetpp.ned2.model.ex.GateNodeEx;
-import org.omnetpp.ned2.model.interfaces.IGateContainer;
-import org.omnetpp.ned2.model.interfaces.INamed;
+import org.omnetpp.ned2.model.interfaces.IHasGates;
+import org.omnetpp.ned2.model.interfaces.IHasName;
 
 /**
  * @author rhornig
@@ -16,12 +16,12 @@ import org.omnetpp.ned2.model.interfaces.INamed;
 public class GateListPropertySource extends NotifiedPropertySource {
     public final static String CATEGORY = "gates";
     public final static String DESCRIPTION = "List of gates (direct and inherited)";
-    protected IGateContainer model;
+    protected IHasGates model;
     protected PropertyDescriptor[] pdesc;
     protected int totalParamCount;
     protected int inheritedParamCount;
     
-    public GateListPropertySource(IGateContainer model) {
+    public GateListPropertySource(IHasGates model) {
         super((NEDElement)model);
         this.model = model;
     }
@@ -38,7 +38,7 @@ public class GateListPropertySource extends NotifiedPropertySource {
             String definedIn = "";
             if (gateDefNode.getContainingTopLevelElement() != model) {
                 inheritedParamCount++;
-                definedIn= " (inherited from "+((INamed)gateDefNode.getContainingTopLevelElement()).getName()+")";
+                definedIn= " (inherited from "+((IHasName)gateDefNode.getContainingTopLevelElement()).getName()+")";
             }
             pdesc[totalParamCount] = new PropertyDescriptor(gateDefNode, typeString );
             pdesc[totalParamCount].setCategory(CATEGORY);

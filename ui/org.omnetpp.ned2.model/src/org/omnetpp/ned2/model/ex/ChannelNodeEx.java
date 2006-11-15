@@ -5,23 +5,23 @@ import java.util.List;
 import java.util.Map;
 
 import org.omnetpp.common.displaymodel.DisplayString;
-import org.omnetpp.common.displaymodel.IDisplayStringProvider;
+import org.omnetpp.common.displaymodel.IHasDisplayString;
 import org.omnetpp.ned2.model.NEDElement;
-import org.omnetpp.ned2.model.interfaces.IDerived;
-import org.omnetpp.ned2.model.interfaces.IImplementor;
+import org.omnetpp.ned2.model.interfaces.IHasAncestors;
+import org.omnetpp.ned2.model.interfaces.IHasInterfaces;
 import org.omnetpp.ned2.model.interfaces.INEDTypeInfo;
-import org.omnetpp.ned2.model.interfaces.INamed;
-import org.omnetpp.ned2.model.interfaces.IParametrized;
-import org.omnetpp.ned2.model.interfaces.IParentable;
+import org.omnetpp.ned2.model.interfaces.IHasName;
+import org.omnetpp.ned2.model.interfaces.IHasParameters;
+import org.omnetpp.ned2.model.interfaces.IHasParent;
 import org.omnetpp.ned2.model.interfaces.ITopLevelElement;
 import org.omnetpp.ned2.model.pojo.ChannelNode;
 import org.omnetpp.ned2.model.pojo.ExtendsNode;
 import org.omnetpp.ned2.model.pojo.InterfaceNameNode;
 
 public final class ChannelNodeEx extends ChannelNode 
-				implements IDisplayStringProvider, IParentable, 
-                           INamed, IDerived, IImplementor, 
-                           ITopLevelElement, IParametrized {
+				implements IHasDisplayString, IHasParent, 
+                           IHasName, IHasAncestors, IHasInterfaces, 
+                           ITopLevelElement, IHasParameters {
 
 	protected DisplayString displayString = null;
 

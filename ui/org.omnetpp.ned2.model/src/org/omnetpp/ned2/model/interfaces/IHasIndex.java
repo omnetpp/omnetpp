@@ -4,7 +4,7 @@ package org.omnetpp.ned2.model.interfaces;
  * @author rhornig
  * Objects that can have an optional index (ie. they can be vector or non vector)
  */
-public interface IIndexable extends INamed {
+public interface IHasIndex extends IHasName {
     
     public String getVectorSize();
     

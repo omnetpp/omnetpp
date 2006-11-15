@@ -4,7 +4,7 @@ import org.eclipse.ui.views.properties.IPropertyDescriptor;
 import org.eclipse.ui.views.properties.IPropertySource2;
 import org.eclipse.ui.views.properties.PropertyDescriptor;
 import org.eclipse.ui.views.properties.TextPropertyDescriptor;
-import org.omnetpp.ned2.model.interfaces.INamed;
+import org.omnetpp.ned2.model.interfaces.IHasName;
 
 /**
  * @author rhornig
@@ -13,11 +13,11 @@ import org.omnetpp.ned2.model.interfaces.INamed;
 public class NamePropertySource implements IPropertySource2 {
 
     protected IPropertyDescriptor[] descriptors;
-    protected INamed model;
+    protected IHasName model;
 
     public enum Prop { Name }
     
-    public NamePropertySource(INamed namedNodeModel) {
+    public NamePropertySource(IHasName namedNodeModel) {
         model = namedNodeModel;
         
         // set up property descriptors

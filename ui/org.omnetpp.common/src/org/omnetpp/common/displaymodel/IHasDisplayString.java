@@ -7,7 +7,7 @@ package org.omnetpp.common.displaymodel;
  * @author rhornig
  * Interface for model objects that provide a display string (ie has a visual appearence)
  */
-public interface IDisplayStringProvider extends IDisplayStringChangeListener {
+public interface IHasDisplayString extends IDisplayStringChangeListener {
 
     /**
      * Returns a display string object, which can be used to manipulate the properties
