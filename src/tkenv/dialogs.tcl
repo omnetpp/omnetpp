@@ -207,15 +207,25 @@ proc options_dialog {{defaultpage "g"}} {
     label-entry $nb.t.tlnamepattern {Message name filter:}
     label-entry $nb.t.tlclassnamepattern {Class name filter:}
     commentlabel $nb.t.c1 {In both patterns, wildcards (*,?) are accepted. Start pattern with hyphen (-) to exclude matched messages.}
+    #label-entry $nb.t.tlincludemk {Include message kinds:}
+    #label-entry $nb.t.tlexcludemk {Exclude message kinds:}
+    #commentlabel $nb.t.c2 {Enter message kind values separated by comma, or asterisk (*) for all.}
     $nb.t.tlnamepattern.l config -width 20
     $nb.t.tlclassnamepattern.l config -width 20
+    #$nb.t.tlincludemk.l config -width 20
+    #$nb.t.tlexcludemk.l config -width 20
     $nb.t.tlnamepattern.e config -width 40
     $nb.t.tlclassnamepattern.e config -width 40
+    #$nb.t.tlincludemk.e config -width 40
+    #$nb.t.tlexcludemk.e config -width 40
     pack $nb.t.tlwantself -anchor w
     pack $nb.t.tlwantnonself -anchor w
     pack $nb.t.tlnamepattern -anchor w -fill x
     pack $nb.t.tlclassnamepattern -anchor w -fill x
     pack $nb.t.c1 -anchor w
+    #pack $nb.t.tlincludemk -anchor w -fill x
+    #pack $nb.t.tlexcludemk -anchor w -fill x
+    #pack $nb.t.c2 -anchor w
 
     checkbutton $nb.a.anim -text {Animate messages} -variable opp(anim)
     label-scale $nb.a.speed {Animation speed:}
@@ -225,8 +235,6 @@ proc options_dialog {{defaultpage "g"}} {
     checkbutton $nb.a.nextev -text {Show next event markers} -variable opp(nextev)
     checkbutton $nb.a.sdarrows -text {Show arrows for sendDirect() animation} -variable opp(sdarrows)
     checkbutton $nb.a.animmeth -text {Animate method calls} -variable opp(animmeth)
-    #label-entry $nb.a.methdelay  {Method call delay (ms)}
-    #$nb.a.methdelay.l config -width 0
     label-scale $nb.a.methdelay {Method call delay (ms):}
     $nb.a.methdelay.e config -length 200 -from 0 -to 3000 -resolution 1 -variable opp(methdelay)
     checkbutton $nb.a.msgnam -text {Display message names during animation} -variable opp(msgnam)
@@ -277,6 +285,8 @@ proc options_dialog {{defaultpage "g"}} {
     set opp(confirmexit) $config(confirm-exit)
     $nb.t.tlnamepattern.e insert 0      $config(timeline-msgnamepattern)
     $nb.t.tlclassnamepattern.e insert 0 $config(timeline-msgclassnamepattern)
+    #$nb.t.tlincludemk.e insert 0        $config(timeline-includemsgkinds)
+    #$nb.t.tlexcludemk.e insert 0        $config(timeline-excludemsgkinds)
     set opp(timeline-wantselfmsgs)      $config(timeline-wantselfmsgs)
     set opp(timeline-wantnonselfmsgs)   $config(timeline-wantnonselfmsgs)
 
@@ -312,6 +322,8 @@ proc options_dialog {{defaultpage "g"}} {
         set timeline-msgclassnamepattern)    [$nb.t.tlclassnamepattern.e get]
         set config(timeline-wantselfmsgs)    $opp(timeline-wantselfmsgs)
         set config(timeline-wantnonselfmsgs) $opp(timeline-wantnonselfmsgs)
+        #set config(timeline-includemsgkinds) [$nb.t.tlincludemk.e get]
+        #set config(timeline-excludemsgkinds) [$nb.t.tlexcludemk.e get]
 
         opp_updateinspectors
         redraw_timeline
