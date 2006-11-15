@@ -48,6 +48,7 @@ set config(log-save-filename) "omnetpp.out"
 set config(mainwin-state) "normal"
 set config(mainwin-geom) ""
 set config(concurrent-anim) 1
+set config(logwindow-scrollbacklines) 100000
 
 set pluginlist {}
 

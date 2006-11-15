@@ -174,27 +174,29 @@ proc options_dialog {{defaultpage "g"}} {
     notebook_showpage $nb $defaultpage
 
     frame $nb.g.f1 -relief groove -borderwidth 2
-    label-entry $nb.g.f1.stepdelay       {Delay for slow execution}
-    label-entry $nb.g.f1.updfreq_fast    {Update freq. for Fast Run (events)}
-    label-entry $nb.g.f1.updfreq_express {Update freq. for Express Run (events)}
-    $nb.g.f1.stepdelay.l config -width 0
+    label-entry $nb.g.f1.updfreq_fast    {Update freq. for Fast Run (events):}
+    label-entry $nb.g.f1.updfreq_express {Update freq. for Express Run (events):}
+    label-entry $nb.g.f1.stepdelay       {Per-event delay for slow execution:}
     $nb.g.f1.updfreq_fast.l config -width 0
     $nb.g.f1.updfreq_express.l config -width 0
-    $nb.g.f1.stepdelay.e config -width 8
-    $nb.g.f1.updfreq_fast.e config -width 8
-    $nb.g.f1.updfreq_express.e config -width 8
-    pack $nb.g.f1.stepdelay -anchor w -expand 0 -fill x
-    pack $nb.g.f1.updfreq_fast -anchor w -expand 0 -fill x
-    pack $nb.g.f1.updfreq_express -anchor w -expand 0 -fill x
+    $nb.g.f1.stepdelay.l config -width 0
+    pack $nb.g.f1.updfreq_fast -anchor w -fill x
+    pack $nb.g.f1.updfreq_express -anchor w -fill x
+    pack $nb.g.f1.stepdelay -anchor w -fill x
 
     frame $nb.g.f2 -relief groove -borderwidth 2
     checkbutton $nb.g.f2.usemainwin -text {Use main window for module output} -variable opp(usemainwin)
     checkbutton $nb.g.f2.banners -text {Print event banners} -variable opp(banners)
+    label-entry $nb.g.f2.numlines {Scrollback buffer (lines):}
+    commentlabel $nb.g.f2.c1 {Applies to main window and module log windows. Leave blank for unlimited. Minimum value is 500 lines.}
     checkbutton $nb.g.f2.bkpts -text {Stop on breakpoint() calls} -variable opp(bkpts)
     checkbutton $nb.g.f2.layouting -text {Show layouting process} -variable opp(layouting)
     checkbutton $nb.g.f2.confirmexit -text {Confirm exit when simulation is in progress} -variable opp(confirmexit)
+    $nb.g.f2.numlines.l config -width 0
     pack $nb.g.f2.usemainwin -anchor w
     pack $nb.g.f2.banners -anchor w
+    pack $nb.g.f2.numlines -anchor w -fill x
+    pack $nb.g.f2.c1 -anchor w
     pack $nb.g.f2.bkpts -anchor w
     pack $nb.g.f2.layouting -anchor w
     pack $nb.g.f2.confirmexit -anchor w
@@ -207,6 +209,8 @@ proc options_dialog {{defaultpage "g"}} {
     commentlabel $nb.t.c1 {In both patterns, wildcards (*,?) are accepted. Start pattern with hyphen (-) to exclude matched messages.}
     $nb.t.tlnamepattern.l config -width 20
     $nb.t.tlclassnamepattern.l config -width 20
+    $nb.t.tlnamepattern.e config -width 40
+    $nb.t.tlclassnamepattern.e config -width 40
     pack $nb.t.tlwantself -anchor w
     pack $nb.t.tlwantnonself -anchor w
     pack $nb.t.tlnamepattern -anchor w -fill x
@@ -253,6 +257,7 @@ proc options_dialog {{defaultpage "g"}} {
     $nb.g.f1.updfreq_fast.e insert 0 [opp_getsimoption updatefreq_fast]
     $nb.g.f1.updfreq_express.e insert 0 [opp_getsimoption updatefreq_express]
     $nb.g.f1.stepdelay.e insert 0 [opp_getsimoption stepdelay]
+    $nb.g.f2.numlines.e insert 0 $config(logwindow-scrollbacklines)
     set opp(usemainwin) [opp_getsimoption use_mainwindow]
     set opp(banners)    [opp_getsimoption print_banners]
     set opp(anim)       [opp_getsimoption animation_enabled]
@@ -281,6 +286,11 @@ proc options_dialog {{defaultpage "g"}} {
         opp_setsimoption stepdelay           [$nb.g.f1.stepdelay.e get]
         opp_setsimoption updatefreq_fast     [$nb.g.f1.updfreq_fast.e get]
         opp_setsimoption updatefreq_express  [$nb.g.f1.updfreq_express.e get]
+        set n [$nb.g.f2.numlines.e get]
+        if {$n=="" || [string is integer $n]} {
+            if {$n!="" && $n<500} {set n 500}
+            set config(logwindow-scrollbacklines) $n
+        }
         opp_setsimoption use_mainwindow      $opp(usemainwin)
         opp_setsimoption print_banners       $opp(banners)
         opp_setsimoption animation_enabled   $opp(anim)

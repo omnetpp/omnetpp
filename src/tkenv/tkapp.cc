@@ -822,6 +822,9 @@ void TOmnetTkApp::updateInspectors()
     // update object tree
     CHK(Tcl_VarEval(interp, "updateTreeManager",NULL));
 
+    // trim log in main window
+    CHK(Tcl_VarEval(interp, "mainlogwindow_trimlines",NULL));
+
     // try opening "pending" inspectors
     CHK(Tcl_VarEval(interp, "inspectorupdate_callback",NULL));
 }

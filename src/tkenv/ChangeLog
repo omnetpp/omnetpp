@@ -2,6 +2,8 @@
 
 	* implemented filtering for the timeline
 
+	* implemented scrolback buffer limiting (default is 100,000 lines)
+
 2006-11-12  Andras Varga
 
 	* fix: existing inspector windows didn't come to the front and didn't get

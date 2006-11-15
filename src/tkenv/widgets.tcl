@@ -247,8 +247,8 @@ proc label-entry {w label {text {}}} {
     frame $w
     label $w.l -anchor w -width 16 -text $label
     entry $w.e -highlightthickness 0
-    pack $w.l -anchor center -expand 0 -fill none -padx 2 -pady 2 -side left
-    pack $w.e -anchor center -expand 1 -fill x -padx 2 -pady 2 -side right
+    pack $w.l -anchor center -expand 1 -fill x -padx 2 -pady 2 -side left
+    pack $w.e -anchor center -expand 0 -fill x -padx 2 -pady 2 -side right
     $w.e insert 0 $text
 }
 

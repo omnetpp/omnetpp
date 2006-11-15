@@ -17,40 +17,39 @@
 #-----------------------------------------------------------------
 #  gate inspector
 #-----------------------------------------------------------------
-
-proc create_gateinspector {name geom} {
-    global fonts icons help_tips
-
-    set w $name
-    create_inspector_toplevel $w $geom
-
-    set nb [inspector_createnotebook $w]
-
-    notebook_addpage $nb info {General}
-
-    # XXX experimental page
-    inspector_createfields2page $w
-
-    label-entry $nb.info.name {Name:}
-    label-sunkenlabel $nb.info.id {Id:}
-    label-button $nb.info.from {From:}
-    label-button $nb.info.to {To:}
-    label-entry $nb.info.dispstr {Display string:}
-    label-entry $nb.info.delay {Delay:}
-    label-entry $nb.info.error {Error:}
-    label-entry $nb.info.datarate {Data rate:}
-    label-sunkenlabel $nb.info.trfinish {Tx finishes:}
-
-    pack $nb.info.name -fill x -side top
-    pack $nb.info.id -fill x -side top
-    pack $nb.info.from -fill x -side top
-    pack $nb.info.to -fill x -side top
-    pack $nb.info.dispstr -fill x -side top
-    pack $nb.info.delay -fill x -side top
-    pack $nb.info.error -fill x -side top
-    pack $nb.info.datarate -fill x -side top
-    pack $nb.info.trfinish -fill x -side top
-}
+#
+#proc create_gateinspector {name geom} {
+#    global fonts icons help_tips
+#
+#    set w $name
+#    create_inspector_toplevel $w $geom
+#
+#    set nb [inspector_createnotebook $w]
+#
+#    notebook_addpage $nb info {General}
+#
+#    inspector_createfields2page $w
+#
+#    label-entry $nb.info.name {Name:}
+#    label-sunkenlabel $nb.info.id {Id:}
+#    label-button $nb.info.from {From:}
+#    label-button $nb.info.to {To:}
+#    label-entry $nb.info.dispstr {Display string:}
+#    label-entry $nb.info.delay {Delay:}
+#    label-entry $nb.info.error {Error:}
+#    label-entry $nb.info.datarate {Data rate:}
+#    label-sunkenlabel $nb.info.trfinish {Tx finishes:}
+#
+#    pack $nb.info.name -fill x -side top
+#    pack $nb.info.id -fill x -side top
+#    pack $nb.info.from -fill x -side top
+#    pack $nb.info.to -fill x -side top
+#    pack $nb.info.dispstr -fill x -side top
+#    pack $nb.info.delay -fill x -side top
+#    pack $nb.info.error -fill x -side top
+#    pack $nb.info.datarate -fill x -side top
+#    pack $nb.info.trfinish -fill x -side top
+#}
 
 
 #-----------------------------------------------------------------
