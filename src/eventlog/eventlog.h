@@ -49,7 +49,7 @@ class EventLog : public IEventLog, public EventLogIndex
         typedef std::map<long, Event *> EventNumberToEventMap;
         EventNumberToEventMap eventNumberToEventMap; // all parsed events so far
 
-        typedef std::map<long, Event *> OffsetToEventMap;
+        typedef std::map<file_offset_t, Event *> OffsetToEventMap;
         OffsetToEventMap offsetToEventMap; // all parsed events so far
 
     public:

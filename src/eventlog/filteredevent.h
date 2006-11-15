@@ -48,6 +48,8 @@ class FilteredEvent : public IEvent
         // IEvent interface
         virtual IEventLog *getEventLog();
 
+        virtual ModuleCreatedEntry *getModuleCreatedEntry() { return getEvent()->getModuleCreatedEntry(); }
+
         virtual file_offset_t getBeginOffset() { return getEvent()->getBeginOffset(); }
         virtual file_offset_t getEndOffset() { return getEvent()->getEndOffset(); }
 
@@ -69,6 +71,7 @@ class FilteredEvent : public IEvent
 
         virtual FilteredEvent *getCauseEvent();
         virtual MessageDependency *getCause();
+        virtual BeginSendEntry *getCauseBeginSendEntry();
         virtual MessageDependencyList *getCauses();
         virtual MessageDependencyList *getConsequences();
 

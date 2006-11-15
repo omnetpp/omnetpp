@@ -12,23 +12,18 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
+#include <algorithm>
 #include "filteredeventlog.h"
 
-FilteredEventLog::FilteredEventLog(IEventLog *eventLog,
-                                   std::set<int> *includeModuleIds,
-                                   long tracedEventNumber,
-                                   bool includeCauses,
-                                   bool includeConsequences,
-                                   long firstEventNumber,
-                                   long lastEventNumber)
+FilteredEventLog::FilteredEventLog(IEventLog *eventLog)
 {
     this->eventLog = eventLog;
-    this->includeModuleIds = includeModuleIds;
-    this->tracedEventNumber = tracedEventNumber;
-    this->includeCauses = includeCauses;
-    this->includeConsequences = includeConsequences;
-    this->firstEventNumber = firstEventNumber;
-    this->lastEventNumber = lastEventNumber;
+
+    tracedEventNumber = -1;
+    firstEventNumber = -1;
+    lastEventNumber = -1;
+    traceCauses = true;
+    traceConsequences = true;
 
     approximateNumberOfEvents = -1;
     approximateMatchingEventRatio = -1;
@@ -42,9 +37,16 @@ FilteredEventLog::~FilteredEventLog()
     for (EventNumberToFilteredEventMap::iterator it = eventNumberToFilteredEventMap.begin(); it != eventNumberToFilteredEventMap.end(); it++)
         delete it->second;
 
-    delete includeModuleIds;
-
     delete eventLog;
+}
+
+void FilteredEventLog::setPatternMatchers(std::vector<cPatternMatcher> &patternMatchers, std::vector<char *> &patterns)
+{
+    for (std::vector<char *>::iterator it = patterns.begin(); it != patterns.end(); it++) {
+        cPatternMatcher matcher;
+        matcher.setPattern(*it, true, true, true);
+        patternMatchers.push_back(matcher);
+    }
 }
 
 long FilteredEventLog::getApproximateNumberOfEvents()
@@ -65,8 +67,8 @@ long FilteredEventLog::getApproximateNumberOfEvents()
                 approximateNumberOfEvents = 0;
             else
             {
-                long beginOffset = firstEvent->getBeginOffset();
-                long endOffset = lastEvent->getEndOffset();
+                file_offset_t beginOffset = firstEvent->getBeginOffset();
+                file_offset_t endOffset = lastEvent->getEndOffset();
                 long sumMatching = 0;
                 long sumNotMatching = 0;
                 long count = 0;
@@ -149,10 +151,47 @@ bool FilteredEventLog::matchesEvent(IEvent *event)
     if (tracedEventNumber != -1 && event->getEventNumber() == tracedEventNumber)
         return true;
 
-    // event not in considered modules
-    if (includeModuleIds &&
-        includeModuleIds->find(event->getEventEntry()->moduleId) == includeModuleIds->end())
+    ModuleCreatedEntry *moduleCreatedEntry = event->getModuleCreatedEntry();
+
+    // event's module name
+    if (!matchesPatterns(moduleNames, moduleCreatedEntry->fullName))
         return false;
+
+    // event's module type
+    if (!matchesPatterns(moduleTypes, moduleCreatedEntry->moduleClassName))
+        return false;
+
+    // event's module id
+    if (!matchesList(moduleIds, event->getModuleId()))
+        return false;
+
+    BeginSendEntry *beginSendEntry = event->getCauseBeginSendEntry();
+
+    if (beginSendEntry) {
+        // event's message name
+        if (!matchesPatterns(messageNames, beginSendEntry->messageFullName))
+            return false;
+
+        // event's message type
+        if (!matchesPatterns(messageTypes, beginSendEntry->messageClassName))
+            return false;
+
+        // event's message id
+        if (!matchesList(messageIds, beginSendEntry->messageId))
+            return false;
+
+        // event's message tid
+        if (!matchesList(messageTids, beginSendEntry->messageTid))
+            return false;
+
+        // event's message eid
+        if (!matchesList(messageEids, beginSendEntry->messageEid))
+            return false;
+
+        // event's message etid
+        if (!matchesList(messageEtids, beginSendEntry->messageEtid))
+            return false;
+    }
 
     // event outside of considered range
     if ((firstEventNumber != -1 && event->getEventNumber() < firstEventNumber) ||
@@ -173,14 +212,34 @@ bool FilteredEventLog::matchesDependency(IEvent *event)
         return true;
 
     // event is cause of traced event
-    if (tracedEventNumber > event->getEventNumber() && includeCauses)
+    if (tracedEventNumber > event->getEventNumber() && traceCauses)
         return isCauseOfTracedEvent(event);
 
     // event is consequence of traced event
-    if (tracedEventNumber < event->getEventNumber() && includeConsequences)
+    if (tracedEventNumber < event->getEventNumber() && traceConsequences)
         return isConsequenceOfTracedEvent(event);
 
     return false;
+}
+
+bool FilteredEventLog::matchesPatterns(std::vector<cPatternMatcher> &patterns, const char *str)
+{
+    if (patterns.empty())
+        return true;
+
+    for (std::vector<cPatternMatcher>::iterator it = patterns.begin(); it != patterns.end(); it++)
+        if ((*it).matches(str))
+            return true;
+
+    return false;
+}
+
+template <typename T> bool FilteredEventLog::matchesList(std::vector<T> &elements, T element)
+{
+    if (elements.empty())
+        return true;
+    else
+        return std::find(elements.begin(), elements.end(), element) != elements.end();
 }
 
 FilteredEvent* FilteredEventLog::getFirstEvent()
@@ -219,11 +278,12 @@ FilteredEvent *FilteredEventLog::getEventForEventNumber(long eventNumber, MatchK
     IEvent *event = eventLog->getEventForEventNumber(eventNumber, matchKind);
 
     if (event) {
-        if (matchKind == EXACT)
+        if (matchKind == EXACT) {
             if (matchesFilter(event))
                 return cacheFilteredEvent(eventNumber);
+        }
         else
-            getMatchingEventInDirection(event->getEventNumber(), matchKind == MatchKind::LAST);
+            return getMatchingEventInDirection(event->getEventNumber(), matchKind == MatchKind::LAST);
     }
 
     return NULL;

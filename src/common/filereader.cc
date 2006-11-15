@@ -81,7 +81,7 @@ void FileReader::fillBuffer(bool forward)
     if (!f) openFile();
 
     char *dataPointer;
-    long dataLength;
+    int dataLength;
 
     if (!hasData()) {
         dataPointer = bufferBegin;
@@ -109,8 +109,8 @@ void FileReader::fillBuffer(bool forward)
     }
 
     if (dataLength > 0) {
-        long fileOffset = pointerToFileOffset(dataPointer);
-        fseek(f, fileOffset, SEEK_SET);
+        file_offset_t fileOffset = pointerToFileOffset(dataPointer);
+        fseek64(f, fileOffset, SEEK_SET);
         if (ferror(f))
             throw new Exception("Cannot seek in file `%s'", fileName.c_str());
 
@@ -142,7 +142,7 @@ void FileReader::fillBuffer(bool forward)
 }
 
 bool FileReader::isLineStart(char *&s) {
-    long fileOffset = pointerToFileOffset(s);
+    file_offset_t fileOffset = pointerToFileOffset(s);
 
     if (fileOffset == 0)
         return true;
@@ -173,7 +173,7 @@ char *FileReader::findNextLineStart(char *start, bool bufferFilled)
     // did we reach the end of the buffer? (slow path)
     if (s >= dataEnd)
     {
-        long fileOffset = pointerToFileOffset(start);
+        file_offset_t fileOffset = pointerToFileOffset(start);
 
         if (s != start && isLineStart(s)) // line just ends at the end of data buffer
             return s;
@@ -212,7 +212,7 @@ char *FileReader::findPreviousLineStart(char *start, bool bufferFilled)
     // did we reach the beginning of the buffer? (slow path)
     if (s < dataBegin)
     {
-        long fileOffset = pointerToFileOffset(start);
+        file_offset_t fileOffset = pointerToFileOffset(start);
 
         if (s != start && isLineStart(s)) // line starts at the beginning of the data buffer
             return s;
@@ -286,16 +286,15 @@ char *FileReader::readPreviousLine()
     }
 }
 
-long FileReader::getFileSize()
+int64 FileReader::getFileSize()
 {
     if (fileSize == -1) {
         if (!f) openFile();
 
-        // TODO: use ftello, fseeko to support files bigger than 2GByte
-        long tmp = ftell(f);
-        fseek(f, 0, SEEK_END);
-        fileSize = ftell(f);
-        fseek(f, tmp, SEEK_SET);
+        file_offset_t tmp = ftell64(f);
+        fseek64(f, 0, SEEK_END);
+        fileSize = ftell64(f);
+        fseek64(f, tmp, SEEK_SET);
 
         if (ferror(f))
             throw new Exception("Cannot seek in file `%s'", fileName.c_str());
@@ -304,7 +303,7 @@ long FileReader::getFileSize()
     return fileSize;
 }
 
-void FileReader::seekTo(long fileOffset, long ensureBufferSizeAround)
+void FileReader::seekTo(file_offset_t fileOffset, int ensureBufferSizeAround)
 {
     if (PRINT_DEBUG_MESSAGES) printf("Seeking to file offset: %ld\n", fileOffset);
 
@@ -320,25 +319,25 @@ void FileReader::seekTo(long fileOffset, long ensureBufferSizeAround)
         return;
     }
 
-    long newBufferFileOffset = std::min(std::max(0L, getFileSize() - (long)bufferSize), std::max(0L, fileOffset - (long)bufferSize / 2));
-    long fileOffsetDelta = newBufferFileOffset - bufferFileOffset;
+    file_offset_t newBufferFileOffset = std::min(std::max((int64)0L, getFileSize() - (int64)bufferSize), std::max((int64)0L, fileOffset - (int64)bufferSize / 2));
+    file_offset_t fileOffsetDelta = newBufferFileOffset - bufferFileOffset;
     currentDataPointer = bufferBegin + fileOffset - newBufferFileOffset;
 
     if (PRINT_DEBUG_MESSAGES) printf("Setting buffer file offset to: %ld\n", newBufferFileOffset);
 
     if (hasData()) {
-        long oldDataBeginFileOffset = getDataBeginFileOffset();
-        long oldDataEndFileOffset = getDataEndFileOffset();
+        file_offset_t oldDataBeginFileOffset = getDataBeginFileOffset();
+        file_offset_t oldDataEndFileOffset = getDataEndFileOffset();
 
         if (PRINT_DEBUG_MESSAGES) printf("Data before: from file offset: %ld to file offset: %ld\n", oldDataBeginFileOffset, oldDataEndFileOffset);
 
-        long newBufferBeginFileOffset = newBufferFileOffset;
-        long newBufferEndFileOffset = newBufferFileOffset + bufferSize;
-        long moveSrcBeginFileOffset = std::min(newBufferEndFileOffset, std::max(newBufferBeginFileOffset, oldDataBeginFileOffset));
-        long moveSrcEndFileOffset = std::min(newBufferEndFileOffset, std::max(newBufferBeginFileOffset, oldDataEndFileOffset));
+        file_offset_t newBufferBeginFileOffset = newBufferFileOffset;
+        file_offset_t newBufferEndFileOffset = newBufferFileOffset + bufferSize;
+        file_offset_t moveSrcBeginFileOffset = std::min(newBufferEndFileOffset, std::max(newBufferBeginFileOffset, oldDataBeginFileOffset));
+        file_offset_t moveSrcEndFileOffset = std::min(newBufferEndFileOffset, std::max(newBufferBeginFileOffset, oldDataEndFileOffset));
         char *moveSrc = fileOffsetToPointer(moveSrcBeginFileOffset);
         char *moveDest = moveSrcBeginFileOffset - newBufferBeginFileOffset + bufferBegin;
-        long moveSize = moveSrcEndFileOffset - moveSrcBeginFileOffset;
+        int moveSize = moveSrcEndFileOffset - moveSrcBeginFileOffset;
 
         if (moveSize > 0 && moveSrc != moveDest) {
             if (PRINT_DEBUG_MESSAGES) printf("Keeping data from file offset: %ld with length: %ld\n", pointerToFileOffset(moveSrc), moveSize);

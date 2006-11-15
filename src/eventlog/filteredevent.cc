@@ -101,6 +101,14 @@ FilteredEvent *FilteredEvent::getCauseEvent()
     return filteredEventLog->getEventForEventNumber(causeEventNumber);
 }
 
+BeginSendEntry *FilteredEvent::getCauseBeginSendEntry()
+{
+    if (getCause())
+        return getCause()->getCauseBeginSendEntry();
+    else
+        return NULL;
+}
+
 MessageDependency *FilteredEvent::getCause()
 {
     if (cause == NULL)

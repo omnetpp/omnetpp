@@ -173,7 +173,7 @@ Event *EventLog::getEventForSimulationTime(simtime_t simulationTime, MatchKind m
 Event *EventLog::getEventForBeginOffset(file_offset_t beginOffset)
 {
     if (beginOffset < 0)
-        throw new Exception("Offset number must be >= 0, %d", beginOffset);
+        throw new Exception("Offset number must be >= 0, %lld", beginOffset);
 
     OffsetToEventMap::iterator it = offsetToEventMap.find(beginOffset);
 

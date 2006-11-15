@@ -134,7 +134,7 @@ file_offset_t EventLogIndex::getOffsetForEventNumber(long eventNumber, MatchKind
 {
     file_offset_t offset = binarySearchForOffset(true, &eventNumberToOffsetMap, eventNumber, matchKind);
 
-    if (PRINT_DEBUG_MESSAGES) printf("Found event number: %ld at offset: %ld\n", eventNumber, offset);
+    if (PRINT_DEBUG_MESSAGES) printf("Found event number: %ld at offset: %lld\n", eventNumber, offset);
 
     return offset;
 }
@@ -143,7 +143,7 @@ file_offset_t EventLogIndex::getOffsetForSimulationTime(simtime_t simulationTime
 {
     file_offset_t offset = binarySearchForOffset(false, &simulationTimeToOffsetMap, simulationTime, matchKind);
 
-    if (PRINT_DEBUG_MESSAGES) printf("*** Found simulation time: %.*g at offset: %ld\n", 12, simulationTime, offset);
+    if (PRINT_DEBUG_MESSAGES) printf("*** Found simulation time: %.*g at offset: %lld\n", 12, simulationTime, offset);
 
     return offset;
 }
@@ -326,7 +326,7 @@ bool EventLogIndex::readToEventLine(bool forward, file_offset_t readStartOffset,
 
     char *line;
 
-    if (PRINT_DEBUG_MESSAGES) printf("Reading to first event line from offset: %ld in direction: %s\n", readStartOffset, forward ? "forward" : "backward");
+    if (PRINT_DEBUG_MESSAGES) printf("Reading to first event line from offset: %lld in direction: %s\n", readStartOffset, forward ? "forward" : "backward");
 
     // find first "E" line, return false if none found
     while (true)
@@ -369,5 +369,5 @@ void EventLogIndex::dumpTable()
     printf("Stored eventNumberToOffsetMap:\n");
 
     for (EventNumberToOffsetMap::iterator it = eventNumberToOffsetMap.begin(); it!=eventNumberToOffsetMap.end(); ++it)
-        printf("  #%ld --> offset %ld (0x%lx)\n", it->first, it->second, it->second);
+        printf("  #%ld --> offset %lld (0x%llx)\n", it->first, it->second, it->second);
 }

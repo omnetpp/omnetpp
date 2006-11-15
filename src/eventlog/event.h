@@ -67,6 +67,8 @@ class Event : public IEvent
         // IEvent interface
         virtual IEventLog *getEventLog();
 
+        virtual ModuleCreatedEntry *getModuleCreatedEntry();
+
         virtual file_offset_t getBeginOffset() { return beginOffset; }
         virtual file_offset_t getEndOffset() { return endOffset; }
 
@@ -88,6 +90,7 @@ class Event : public IEvent
         virtual Event *getNextEvent();
 
         virtual Event *getCauseEvent();
+        virtual BeginSendEntry *getCauseBeginSendEntry();
         virtual MessageSend *getCause();
         virtual MessageDependencyList *getCauses();
         virtual MessageDependencyList *getConsequences();

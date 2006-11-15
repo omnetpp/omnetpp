@@ -26,6 +26,9 @@ class Options
         char *outputFileName;
         FILE *outputFile;
 
+        long firstEventNumber;
+        long lastEventNumber;
+
         long fromEventNumber;
         long toEventNumber;
 
@@ -34,27 +37,31 @@ class Options
 
         bool outputInitialization;
         bool outputLogLines;
-        bool traceBackward;
-        bool traceForward;
+        bool traceCauses;
+        bool traceConsequences;
 
-        std::vector<file_offset_t> *fileOffsets;
-        std::vector<long> *eventNumbers;
+        std::vector<file_offset_t> fileOffsets;
+        std::vector<long> eventNumbers;
 
-        std::vector<int> *moduleIds;
-        std::vector<char *> *moduleNames;
-        std::vector<char *> *moduleTypes;
+        std::vector<char *> moduleNames;
+        std::vector<char *> moduleTypes;
+        std::vector<int> moduleIds;
 
-        std::vector<long> *messageIds;
-        std::vector<char *> *messageNames;
-        std::vector<char *> *messageTypes;
-        std::vector<long> *messageTids;
-        std::vector<long> *messageEids;
-        std::vector<long> *messageEtids;
+        std::vector<char *> messageNames;
+        std::vector<char *> messageTypes;
+        std::vector<long> messageIds;
+        std::vector<long> messageTids;
+        std::vector<long> messageEids;
+        std::vector<long> messageEtids;
 
         bool verbose;
 
     public:
         Options();
+
+        IEventLog *getEventLog(FileReader *fileReader);
+        long getFirstEventNumber();
+        long getLastEventNumber();
 };
 
 Options::Options()
@@ -62,6 +69,9 @@ Options::Options()
     inputFileName = NULL;
     outputFileName = NULL;
     outputFile = NULL;
+
+    firstEventNumber = -2;
+    lastEventNumber = -2;
 
     fromEventNumber = -1;
     toEventNumber = -1;
@@ -71,24 +81,88 @@ Options::Options()
 
     outputInitialization = true;
     outputLogLines = true;
-    traceBackward = true;
-    traceForward = true;
-
-    eventNumbers = NULL;
-    fileOffsets = NULL;
-
-    moduleIds = NULL;
-    moduleNames = NULL;
-    moduleTypes = NULL;
-
-    messageIds = NULL;
-    messageNames = NULL;
-    messageTypes = NULL;
-    messageTids = NULL;
-    messageEids = NULL;
-    messageEtids = NULL;
+    traceCauses = true;
+    traceConsequences = true;
 
     verbose = false;
+}
+
+IEventLog *Options::getEventLog(FileReader *fileReader)
+{
+    if (eventNumbers.empty() &&
+        moduleNames.empty() && moduleTypes.empty() && moduleIds.empty() &&
+        messageNames.empty() && messageTypes.empty() &&
+        messageIds.empty() && messageTids.empty() && messageEids.empty() && messageEtids.empty())
+    {
+        return new EventLog(fileReader);
+    }
+    else
+    {
+        FilteredEventLog *filteredEventLog = new FilteredEventLog(new EventLog(fileReader));
+
+        if (!eventNumbers.empty())
+            filteredEventLog->setTracedEventNumber(eventNumbers.at(0));
+
+        filteredEventLog->setModuleNames(moduleNames);
+        filteredEventLog->setModuleTypes(moduleTypes);
+        filteredEventLog->setModuleIds(moduleIds);
+
+        filteredEventLog->setMessageNames(messageNames);
+        filteredEventLog->setMessageTypes(messageTypes);
+        filteredEventLog->setMessageIds(messageIds);
+        filteredEventLog->setMessageTids(messageTids);
+        filteredEventLog->setMessageEids(messageEids);
+        filteredEventLog->setMessageEtids(messageEtids);
+
+        filteredEventLog->setTraceCauses(traceCauses);
+        filteredEventLog->setTraceConsequences(traceConsequences);
+        filteredEventLog->setFirstEventNumber(getFirstEventNumber());
+        filteredEventLog->setLastEventNumber(getLastEventNumber());
+
+        return filteredEventLog ;
+    }
+}
+
+long Options::getFirstEventNumber()
+{
+    if (firstEventNumber == -2) {
+        FileReader *fileReader = new FileReader(inputFileName);
+        EventLog eventLog(fileReader);
+
+        firstEventNumber = -1;
+
+        if (fromEventNumber != -1)
+            firstEventNumber = fromEventNumber;
+        else if (fromSimulationTime != -1) {
+            IEvent *event = eventLog.getEventForSimulationTime(fromSimulationTime, FIRST);
+
+            if (event)
+                firstEventNumber =event->getEventNumber();
+        }
+    }
+
+    return firstEventNumber;
+}
+
+long Options::getLastEventNumber()
+{
+    if (lastEventNumber == -2) {
+        FileReader *fileReader = new FileReader(inputFileName);
+        EventLog eventLog(fileReader);
+
+        lastEventNumber = -1;
+
+        if (toEventNumber != -1)
+            lastEventNumber = toEventNumber;
+        else if (toSimulationTime != -1) {
+            IEvent *event = eventLog.getEventForSimulationTime(toSimulationTime, LAST);
+
+            if (event)
+                lastEventNumber = event->getEventNumber();
+        }
+    }
+
+    return lastEventNumber;
 }
 
 void readLines(Options options)
@@ -140,8 +214,8 @@ void offsets(Options options)
 
     long begin = clock();
 
-    if (options.eventNumbers) {
-        for (std::vector<long>::iterator it = options.eventNumbers->begin(); it != options.eventNumbers->end(); it++) {
+    if (!options.eventNumbers.empty()) {
+        for (std::vector<long>::iterator it = options.eventNumbers.begin(); it != options.eventNumbers.end(); it++) {
             file_offset_t offset = eventLogIndex.getOffsetForEventNumber(*it);
 
             if (options.verbose)
@@ -159,7 +233,7 @@ void offsets(Options options)
     long end = clock();
 
     if (options.verbose)
-        fprintf(stdout, "# Printing offsets for %ld events while reading %lld lines and %lld bytes form log file %s completed in %g seconds\n", options.eventNumbers->size(), fileReader->getNumReadLines(), fileReader->getNumReadBytes(), options.inputFileName, (double)(end - begin) / CLOCKS_PER_SEC);
+        fprintf(stdout, "# Printing offsets for %ld events while reading %lld lines and %lld bytes form log file %s completed in %g seconds\n", options.eventNumbers.size(), fileReader->getNumReadLines(), fileReader->getNumReadBytes(), options.inputFileName, (double)(end - begin) / CLOCKS_PER_SEC);
 }
 
 void events(Options options)
@@ -172,8 +246,8 @@ void events(Options options)
 
     long begin = clock();
 
-    if (options.fileOffsets) {
-        for (std::vector<file_offset_t>::iterator it = options.fileOffsets->begin(); it != options.fileOffsets->end(); it++) {
+    if (!options.fileOffsets.empty()) {
+        for (std::vector<file_offset_t>::iterator it = options.fileOffsets.begin(); it != options.fileOffsets.end(); it++) {
             IEvent *event = eventLog.getEventForBeginOffset(*it);
 
             if (options.verbose)
@@ -186,7 +260,7 @@ void events(Options options)
     long end = clock();
 
     if (options.verbose)
-        fprintf(stdout, "# Printing events for %ld offsets while reading %lld lines and %lld bytes form log file %s completed in %g seconds\n", options.fileOffsets->size(), fileReader->getNumReadLines(), fileReader->getNumReadBytes(), options.inputFileName, (double)(end - begin) / CLOCKS_PER_SEC);
+        fprintf(stdout, "# Printing events for %ld offsets while reading %lld lines and %lld bytes form log file %s completed in %g seconds\n", options.fileOffsets.size(), fileReader->getNumReadLines(), fileReader->getNumReadBytes(), options.inputFileName, (double)(end - begin) / CLOCKS_PER_SEC);
 }
 
 void ranges(Options options)
@@ -216,39 +290,38 @@ void ranges(Options options)
     long end = clock();
 
     if (options.verbose)
-        fprintf(stdout, "# Printing ranges while reading %lld lines and %lld bytes form log file %s completed in %g seconds\n", options.fileOffsets->size(), fileReader->getNumReadLines(), fileReader->getNumReadBytes(), options.inputFileName, (double)(end - begin) / CLOCKS_PER_SEC);
+        fprintf(stdout, "# Printing ranges while reading %lld lines and %lld bytes form log file %s completed in %g seconds\n", options.fileOffsets.size(), fileReader->getNumReadLines(), fileReader->getNumReadBytes(), options.inputFileName, (double)(end - begin) / CLOCKS_PER_SEC);
 }
 
 void echo(Options options)
 {
     if (options.verbose)
-        fprintf(stdout, "# Echoing events from log file %s from event number %ld to %ld\n", options.inputFileName, options.fromEventNumber, options.toEventNumber);
+        fprintf(stdout, "# Echoing events from log file %s from event number %ld to event number %ld\n", options.inputFileName, options.getFirstEventNumber(), options.getLastEventNumber());
 
     FileReader *fileReader = new FileReader(options.inputFileName);
-    EventLog eventLog(fileReader);
+    IEventLog *eventLog = options.getEventLog(fileReader);
 
     long begin = clock();
-    eventLog.print(options.outputFile, options.fromEventNumber, options.toEventNumber, options.outputInitialization, options.outputLogLines);
+    eventLog->print(options.outputFile, options.getFirstEventNumber(), options.getLastEventNumber(), options.outputInitialization, options.outputLogLines);
     long end = clock();
 
     if (options.verbose)
-        fprintf(stdout, "# Parsing of %ld events, %lld lines and %lld bytes form log file %s completed in %g seconds\n", eventLog.getNumParsedEvents(), fileReader->getNumReadLines(), fileReader->getNumReadBytes(), options.inputFileName, (double)(end - begin) / CLOCKS_PER_SEC);
+        fprintf(stdout, "# Parsing of %ld events, %lld lines and %lld bytes form log file %s completed in %g seconds\n", eventLog->getNumParsedEvents(), fileReader->getNumReadLines(), fileReader->getNumReadBytes(), options.inputFileName, (double)(end - begin) / CLOCKS_PER_SEC);
+
+    delete eventLog;
 }
         
 void consistency(Options options)
 {
     if (options.verbose)
-        fprintf(stdout, "# Checking consistency of log file %s\n", options.inputFileName);
+        fprintf(stdout, "# Checking consistency of log file %s from event number %ld to event number %ld\n", options.inputFileName, options.getFirstEventNumber(), options.getLastEventNumber());
 
     FileReader *fileReader = new FileReader(options.inputFileName);
-    IEventLog *eventLog = new EventLog(fileReader);
-    
-    if (options.eventNumbers != NULL)
-        eventLog = new FilteredEventLog(eventLog, NULL, options.eventNumbers->at(0), options.traceBackward, options.traceForward, options.fromEventNumber, options.toEventNumber);
+    IEventLog *eventLog = options.getEventLog(fileReader);
 
     long begin = clock();
 
-    IEvent *event = options.fromEventNumber == -1 ? eventLog->getFirstEvent() : eventLog->getEventForEventNumber(options.fromEventNumber);
+    IEvent *event = options.getFirstEventNumber() == -1 ? eventLog->getFirstEvent() : eventLog->getEventForEventNumber(options.getFirstEventNumber());
 
     while (event) {
         if (options.verbose)
@@ -302,7 +375,7 @@ void consistency(Options options)
             }
         }
 
-        if (event->getEventNumber() == options.toEventNumber)
+        if (event->getEventNumber() == options.getLastEventNumber())
             break;
 
         event = event->getNextEvent();
@@ -318,22 +391,23 @@ void consistency(Options options)
 
 void filter(Options options)
 {
-    long tracedEventNumber = options.eventNumbers ? options.eventNumbers->at(0) : -1;
+    long tracedEventNumber = options.eventNumbers.empty() ? -1 : options.eventNumbers.at(0);
 
     if (options.verbose)
         fprintf(stdout, "# Filtering events from log file %s for traced event number %ld from event number %ld to event number %ld\n",
-            options.inputFileName, tracedEventNumber, options.fromEventNumber, options.toEventNumber);
+            options.inputFileName, tracedEventNumber, options.getFirstEventNumber(), options.getLastEventNumber());
 
     FileReader *fileReader = new FileReader(options.inputFileName);
-    EventLog *eventLog = new EventLog(fileReader);
-    FilteredEventLog filteredEventLog(eventLog, NULL, tracedEventNumber, options.traceBackward, options.traceForward, options.fromEventNumber, options.toEventNumber);
+    IEventLog *eventLog = options.getEventLog(fileReader);
 
     long begin = clock();
-    filteredEventLog.print(options.outputFile, options.outputInitialization, options.outputLogLines);
+    eventLog->print(options.outputFile, options.outputInitialization, options.outputLogLines);
     long end = clock();
 
     if (options.verbose)
         fprintf(stdout, "# Parsing of %ld events, %lld lines and %lld bytes form log file %s completed in %g seconds\n", eventLog->getNumParsedEvents(), fileReader->getNumReadLines(), fileReader->getNumReadBytes(), options.inputFileName, (double)(end - begin) / CLOCKS_PER_SEC);
+
+    delete eventLog;
 }
         
 void usage(char *message)
@@ -370,75 +444,64 @@ void usage(char *message)
 "      -tt     --to-simulation-time      <number>\n"
 "         inclusive\n"
 "      -e      --event-numbers           <integer>+\n"
+"         events must be present in the input file"
 "      -f      --file-offsets            <integer>+\n"
-"      -ob     --omit-trace-backward\n"
-"      -of     --omit-trace-forward\n"
-"      -oi     --omit-initialization\n"
-"      -mi     --module-ids              <integer>+\n"
-"         compound module ids are allowed\n"
 "      -mn     --module-names            <pattern>+\n"
 "      -mt     --module-types            <pattern>+\n"
-"      -sid    --message-ids             <integer>+\n"
-"      -stid   --message-tids            <integer>+\n"
-"      -seid   --message-eids            <integer>+\n"
-"      -setid  --message-etids           <integer>+\n"
+"      -mi     --module-ids              <integer>+\n"
+"         compound module ids are allowed\n"
 "      -sn     --message-names           <pattern>+\n"
 "      -st     --message-types           <pattern>+\n"
+"      -si     --message-ids             <integer>+\n"
+"      -sti    --message-tids            <integer>+\n"
+"      -sei    --message-eids            <integer>+\n"
+"      -seti   --message-etids           <integer>+\n"
+"      -ob     --omit-causes-trace\n"
+"      -of     --omit-consequences-trace\n"
+"      -oi     --omit-initialization\n"
 "      -ol     --omit-log-lines\n"
 "      -v      --verbose\n"
 "         prints performance information\n");
 }
 
-std::vector<int> *parseIntTokens(char *parameter)
+void parseIntTokens(std::vector<int> &parameter, char *str)
 {
     LineTokenizer tokenizer;
-    tokenizer.tokenize(parameter, strlen(parameter));
+    tokenizer.tokenize(str, strlen(str));
     char **tokens = tokenizer.tokens();
 
-    std::vector<int> *result = new std::vector<int>();
     for (int j = 0; j < tokenizer.numTokens(); j++)
-        result->push_back(atoi(tokens[j]));
-
-    return result;
+        parameter.push_back(atoi(tokens[j]));
 }
 
-std::vector<long> *parseLongTokens(char *parameter)
+void parseLongTokens(std::vector<long> &parameter, char *str)
 {
     LineTokenizer tokenizer;
-    tokenizer.tokenize(parameter, strlen(parameter));
+    tokenizer.tokenize(str, strlen(str));
     char **tokens = tokenizer.tokens();
 
-    std::vector<long> *result = new std::vector<long>();
     for (int j = 0; j < tokenizer.numTokens(); j++)
-        result->push_back(atol(tokens[j]));
-
-    return result;
+        parameter.push_back(atol(tokens[j]));
 }
 
-std::vector<file_offset_t> *parseFileOffsetTokens(char *parameter)
+void parseFileOffsetTokens(std::vector<file_offset_t> &parameter, char *str)
 {
     LineTokenizer tokenizer;
-    tokenizer.tokenize(parameter, strlen(parameter));
+    tokenizer.tokenize(str, strlen(str));
     char **tokens = tokenizer.tokens();
 
-    std::vector<file_offset_t> *result = new std::vector<file_offset_t>();
     for (int j = 0; j < tokenizer.numTokens(); j++)
-        result->push_back(atol(tokens[j]));
-
-    return result;
+        parameter.push_back(atol(tokens[j]));
 }
 
-std::vector<char *> *parseStringTokens(char *parameter)
+void parseStringTokens(std::vector<char *> &parameter, char *str)
 {
     LineTokenizer tokenizer;
-    tokenizer.tokenize(parameter, strlen(parameter));
+    tokenizer.tokenize(str, strlen(str));
     char **tokens = tokenizer.tokens();
 
-    std::vector<char *> *result = new std::vector<char *>();
     for (int j = 0; j < tokenizer.numTokens(); j++)
-        result->push_back(tokens[j]);
-
-    return result;
+        parameter.push_back((char *)eventLogStringPool.get(tokens[j]));
 }
 
 int main(int argc, char **argv)
@@ -458,32 +521,36 @@ int main(int argc, char **argv)
                 options.fromEventNumber = atol(argv[++i]);
             else if (!strcmp(argv[i], "-te") || !strcmp(argv[i], "--to-event-number"))
                 options.toEventNumber = atol(argv[++i]);
-            else if (!strcmp(argv[i], "-ft") || !strcmp(argv[i], "--from-simulation-number"))
+            else if (!strcmp(argv[i], "-ft") || !strcmp(argv[i], "--from-simulation-time"))
                 options.fromSimulationTime = atof(argv[++i]);
-            else if (!strcmp(argv[i], "-tt") || !strcmp(argv[i], "--to-simulation-number"))
+            else if (!strcmp(argv[i], "-tt") || !strcmp(argv[i], "--to-simulation-time"))
                 options.toSimulationTime = atof(argv[++i]);
             else if (!strcmp(argv[i], "-e") || !strcmp(argv[i], "--event-numbers"))
-                options.eventNumbers = parseLongTokens(argv[++i]);
+                parseLongTokens(options.eventNumbers, argv[++i]);
             else if (!strcmp(argv[i], "-f") || !strcmp(argv[i], "--file-offsets"))
-                options.fileOffsets = parseFileOffsetTokens(argv[++i]);
+                parseFileOffsetTokens(options.fileOffsets, argv[++i]);
+            else if (!strcmp(argv[i], "-mn") || !strcmp(argv[i], "--module-names"))
+                parseStringTokens(options.moduleNames, argv[++i]);
+            else if (!strcmp(argv[i], "-mt") || !strcmp(argv[i], "--module-types"))
+                parseStringTokens(options.moduleTypes, argv[++i]);
             else if (!strcmp(argv[i], "-mi") || !strcmp(argv[i], "--module-ids"))
-                options.moduleIds = parseIntTokens(argv[++i]);
-            else if (!strcmp(argv[i], "-mi") || !strcmp(argv[i], "--module-names"))
-                options.moduleNames = parseStringTokens(argv[++i]);
-            else if (!strcmp(argv[i], "-mi") || !strcmp(argv[i], "--module-types"))
-                options.moduleTypes = parseStringTokens(argv[++i]);
-            else if (!strcmp(argv[i], "-mi") || !strcmp(argv[i], "--message-ids"))
-                options.messageIds = parseLongTokens(argv[++i]);
-            else if (!strcmp(argv[i], "-mi") || !strcmp(argv[i], "--message-tids"))
-                options.messageTids = parseLongTokens(argv[++i]);
-            else if (!strcmp(argv[i], "-mi") || !strcmp(argv[i], "--message-eids"))
-                options.messageEids = parseLongTokens(argv[++i]);
-            else if (!strcmp(argv[i], "-mi") || !strcmp(argv[i], "--message-etids"))
-                options.messageEtids = parseLongTokens(argv[++i]);
-            else if (!strcmp(argv[i], "-ob") || !strcmp(argv[i], "--trace-backward"))
-                options.traceBackward = false;
-            else if (!strcmp(argv[i], "-of") || !strcmp(argv[i], "--trace-forward"))
-                options.traceForward = false;
+                parseIntTokens(options.moduleIds, argv[++i]);
+            else if (!strcmp(argv[i], "-sn") || !strcmp(argv[i], "--message-names"))
+                parseStringTokens(options.messageNames, argv[++i]);
+            else if (!strcmp(argv[i], "-st") || !strcmp(argv[i], "--message-types"))
+                parseStringTokens(options.messageTypes, argv[++i]);
+            else if (!strcmp(argv[i], "-si") || !strcmp(argv[i], "--message-ids"))
+                parseLongTokens(options.messageIds, argv[++i]);
+            else if (!strcmp(argv[i], "-sti") || !strcmp(argv[i], "--message-tids"))
+                parseLongTokens(options.messageTids, argv[++i]);
+            else if (!strcmp(argv[i], "-sei") || !strcmp(argv[i], "--message-eids"))
+                parseLongTokens(options.messageEids, argv[++i]);
+            else if (!strcmp(argv[i], "-seti") || !strcmp(argv[i], "--message-etids"))
+                parseLongTokens(options.messageEtids, argv[++i]);
+            else if (!strcmp(argv[i], "-ob") || !strcmp(argv[i], "--omit-causes-trace"))
+                options.traceCauses = false;
+            else if (!strcmp(argv[i], "-of") || !strcmp(argv[i], "--omit-consequences-trace"))
+                options.traceConsequences = false;
             else if (!strcmp(argv[i], "-oi") || !strcmp(argv[i], "--omit-initialization"))
                 options.outputInitialization = false;
             else if (!strcmp(argv[i], "-ol") || !strcmp(argv[i], "--omit-log-lines"))

@@ -19,7 +19,7 @@
 #include <assert.h>
 #include <string.h>
 #include "patmatch.h"
-#include "cexception.h"
+#include "exception.h"
 
 #ifdef _MSC_VER
 #define strncasecmp  strnicmp
@@ -119,7 +119,7 @@ void cPatternMatcher::parseSet(const char *&s, Elem& e)
         e.setchars += range;
     }
     if (!*s)
-        throw new cRuntimeError("unmatched '}' in expression");
+        throw new Exception("unmatched '}' in expression");
     s++; // skip "}"
 }
 
@@ -317,7 +317,7 @@ bool cPatternMatcher::matches(const char *line)
 const char *cPatternMatcher::patternPrefixMatches(const char *line, int suffixoffset)
 {
     if (!iscasesensitive)
-        throw new cRuntimeError("cPatternMatcher: patternPrefixMatches() doesn't support case-insensitive match");
+        throw new Exception("cPatternMatcher: patternPrefixMatches() doesn't support case-insensitive match");
 
     // pattern must end in a literal string...
     assert(pattern[pattern.size()-1].type==END);

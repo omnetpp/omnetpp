@@ -88,6 +88,7 @@ class IEvent
          * Returns the closest preceding event which caused this event by sending a message.
          */
         virtual IEvent *getCauseEvent() = 0; 
+        virtual BeginSendEntry *getCauseBeginSendEntry() = 0;
         virtual MessageDependency *getCause() = 0;
         virtual MessageDependencyList *getCauses() = 0;
         virtual MessageDependencyList *getConsequences() = 0;
@@ -96,6 +97,11 @@ class IEvent
          * Print all entries of this event.
          */
         virtual void print(FILE *file = stdout, bool outputEventLogMessages = true) = 0;
+
+        /**
+         * Returns the log entry which describes the event's module.
+         */
+        virtual ModuleCreatedEntry *getModuleCreatedEntry() = 0;
 
         /**
          * Used to maintain the double linked list.

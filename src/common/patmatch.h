@@ -20,10 +20,6 @@
 #include <string>
 #include <vector>
 
-#include "defs.h"
-#include "envdefs.h"
-
-
 /**
  * Glob-style pattern matching class, adopted to special OMNeT++ requirements.
  * One instance represents a pattern to match.
@@ -70,7 +66,7 @@
  *     matches any number). The specification must use exactly two dots.
  *     Caveat: "*{17..19}" will match "a17","117" and "963217" as well.
  */
-class ENVIR_API cPatternMatcher
+class cPatternMatcher
 {
   private:
     enum ElemType {

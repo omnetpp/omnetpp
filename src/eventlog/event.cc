@@ -57,6 +57,11 @@ IEventLog *Event::getEventLog()
     return eventLog;
 }
 
+ModuleCreatedEntry *Event::getModuleCreatedEntry()
+{
+    return eventLog->getModuleCreatedEntry(getModuleId());
+}
+
 file_offset_t Event::parse(FileReader *reader, file_offset_t offset)
 {
     EASSERT(offset >= 0);
@@ -65,7 +70,7 @@ file_offset_t Event::parse(FileReader *reader, file_offset_t offset)
     beginOffset = offset;
     reader->seekTo(offset);
 
-    if (PRINT_DEBUG_MESSAGES) printf("Parsing event at offset: %ld\n", offset);
+    if (PRINT_DEBUG_MESSAGES) printf("Parsing event at offset: %lld\n", offset);
 
     while (true)
     {
@@ -142,6 +147,14 @@ Event *Event::getCauseEvent()
 {
     if (getCauseEventNumber() != -1)
         return eventLog->getEventForEventNumber(getCauseEventNumber());
+    else
+        return NULL;
+}
+
+BeginSendEntry *Event::getCauseBeginSendEntry()
+{
+    if (getCause())
+        return getCause()->getCauseBeginSendEntry();
     else
         return NULL;
 }

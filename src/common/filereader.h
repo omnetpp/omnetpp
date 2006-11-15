@@ -18,6 +18,11 @@
 #include <vector>
 #include <string>
 
+#ifdef _MSC_VER
+typedef __int64 file_offset_t;
+typedef __int64 int64;
+#endif
+
 /**
  * Reads a file line by line. It has to be very efficient since
  * it may be used up to gigabyte-sized files (output vector files
@@ -39,8 +44,8 @@ class FileReader
     size_t bufferSize;
     char *bufferBegin;
     char *bufferEnd;  // = buffer + bufferSize
-    long bufferFileOffset;
-    long fileSize;
+    file_offset_t bufferFileOffset;
+    file_offset_t fileSize;
 
     // the currently used (filled with data) region in buffer
     size_t maxLineSize;
@@ -51,14 +56,14 @@ class FileReader
     char *currentDataPointer;
 
     // the pointer returned by readNextLine() or readPreviousLine()
-    long lastLineStartOffset;
-    long lastLineEndOffset;
+    file_offset_t lastLineStartOffset;
+    file_offset_t lastLineEndOffset;
 
     // total number of lines read in so far
-    long numReadLines;
+    int64 numReadLines;
 
     // total bytes read in so far
-    long numReadBytes;
+    int64 numReadBytes;
 
   private:
     /**
@@ -73,16 +78,19 @@ class FileReader
     // assert data structure consistence
     void checkConsistence();
 
-    long pointerToFileOffset(char *pointer) { return pointer - bufferBegin + bufferFileOffset; }
-    char* fileOffsetToPointer(long offset) { return offset - bufferFileOffset + bufferBegin; }
+    file_offset_t pointerToFileOffset(char *pointer) { return pointer - bufferBegin + bufferFileOffset; }
+    char* fileOffsetToPointer(file_offset_t offset) { return offset - bufferFileOffset + bufferBegin; }
 
-    long getDataBeginFileOffset() { return pointerToFileOffset(dataBegin); }
-    long getDataEndFileOffset() { return pointerToFileOffset(dataEnd); }
+    file_offset_t getDataBeginFileOffset() { return pointerToFileOffset(dataBegin); }
+    file_offset_t getDataEndFileOffset() { return pointerToFileOffset(dataEnd); }
     bool hasData() { return dataBegin != dataEnd; }
 
     bool isLineStart(char *&s);
     char *findNextLineStart(char *s, bool bufferFilled = false);
     char *findPreviousLineStart(char *s, bool bufferFilled = false);
+
+    file_offset_t ftell64(FILE *f) { return _ftelli64(f); }
+    void fseek64(FILE *f, file_offset_t offset, int kind) { _fseeki64(f, offset, kind); }
 
   public:
     /**
@@ -114,38 +122,38 @@ class FileReader
     /**
      * Returns the start offset of the line last parsed with readNextLine() or readPreviousLine().
      */
-    long getLastLineStartOffset() { return lastLineStartOffset; }
+    file_offset_t getLastLineStartOffset() { return lastLineStartOffset; }
 
     /**
      * Returns the end offset of the line last parsed with readNextLine() or readPreviousLine().
      * This points to the start offset of the next line, so it includes the CR/LF of the previous line.
      */
-    long getLastLineEndOffset() { return lastLineEndOffset; }
+    file_offset_t getLastLineEndOffset() { return lastLineEndOffset; }
 
     /**
      * Returns the length of the last line including CR/LF.
      */
-    long getLastLineLength() { return lastLineEndOffset - lastLineStartOffset; }
+    int getLastLineLength() { return lastLineEndOffset - lastLineStartOffset; }
 
     /**
      * Returns the size of the file.
      */
-    long getFileSize();
+    int64 getFileSize();
 
     /**
      * Moves the current position to the given offset.
      */
-    void seekTo(long offset, long ensureBufferSizeAround = 0);
+    void seekTo(file_offset_t offset, int ensureBufferSizeAround = 0);
 
     /**
      * Returns the total number of lines read in so far.
      */
-    long getNumReadLines() { return numReadLines; };
+    int64 getNumReadLines() { return numReadLines; };
 
     /**
      * Returns the total number of bytes read in so far.
      */
-    long getNumReadBytes() { return numReadBytes; }
+    int64 getNumReadBytes() { return numReadBytes; }
 };
 
 #endif

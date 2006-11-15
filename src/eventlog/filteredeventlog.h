@@ -16,6 +16,7 @@
 #define __FILTEREDEVENTLOG_H_
 
 #include <sstream>
+#include "patmatch.h"
 #include "eventlogdefs.h"
 #include "ieventlog.h"
 #include "eventlog.h"
@@ -36,9 +37,17 @@ class FilteredEventLog : public IEventLog
         long tracedEventNumber; // the event number from which causes and consequences are followed or -1
         long firstEventNumber; // the first event to be considered by the filter or -1
         long lastEventNumber; // the last event to be considered by the filter or -1
-        std::set<int> *includeModuleIds; // events outside these modules will be filtered out, NULL means include all
-        bool includeCauses; // only when tracedEventNumber is given, includes events which cause the traced event even if through a chain of filtered events
-        bool includeConsequences; // only when tracedEventNumber is given
+        std::vector<cPatternMatcher> moduleNames;
+        std::vector<cPatternMatcher> moduleTypes;
+        std::vector<int> moduleIds; // events outside these modules will be filtered out, NULL means include all
+        std::vector<cPatternMatcher> messageNames;
+        std::vector<cPatternMatcher> messageTypes;
+        std::vector<long> messageIds;
+        std::vector<long> messageTids;
+        std::vector<long> messageEids;
+        std::vector<long> messageEtids;
+        bool traceCauses; // only when tracedEventNumber is given, includes events which cause the traced event even if through a chain of filtered events
+        bool traceConsequences; // only when tracedEventNumber is given
         int maxCauseDepth; // maximum number of message dependencies considered when collecting causes
         int maxConsequenceDepth; // maximum number of message dependencies considered when collecting consequences
 
@@ -56,16 +65,25 @@ class FilteredEventLog : public IEventLog
         FilteredEvent *lastMatchingEvent;
 
     public:
-        FilteredEventLog(IEventLog *eventLog,
-                         std::set<int> *includeModuleIds,
-                         long tracedEventNumber = -1,
-                         bool includeCauses = false,
-                         bool includeConsequences = false,
-                         long firstEventNumber = -1,
-                         long lastEventNumber = -1);
+        FilteredEventLog(IEventLog *eventLog);
         ~FilteredEventLog();
 
     public:
+        void setModuleNames(std::vector<char *> &moduleNames) { setPatternMatchers(this->moduleNames, moduleNames); }
+        void setModuleTypes(std::vector<char *> &moduleTypes) { setPatternMatchers(this->moduleTypes, moduleTypes); }
+        void setModuleIds(std::vector<int> &moduleIds) { this->moduleIds = moduleIds; }
+        void setMessageNames(std::vector<char *> &messageNames) { setPatternMatchers(this->messageNames, messageNames); }
+        void setMessageTypes(std::vector<char *> &messageTypes) { setPatternMatchers(this->messageTypes, messageTypes); }
+        void setMessageIds(std::vector<long> &messageIds) { this->messageIds = messageIds; }
+        void setMessageTids(std::vector<long> &messageTids) { this->messageTids = messageTids; }
+        void setMessageEids(std::vector<long> &messageEids) { this->messageEids = messageEids; }
+        void setMessageEtids(std::vector<long> &messageEtids) { this->messageEtids = messageEtids; }
+        void setTracedEventNumber(long tracedEventNumber) { this->tracedEventNumber = tracedEventNumber; }
+        void setTraceCauses(bool traceCauses) { this->traceCauses = traceCauses; }
+        void setTraceConsequences(bool traceConsequences) { this->traceConsequences = traceConsequences; }
+        void setFirstEventNumber(long firstEventNumber) { this->firstEventNumber = firstEventNumber; }
+        void setLastEventNumber(long lastEventNumber) { this->lastEventNumber = lastEventNumber; }
+
         IEventLog *getEventLog() { return eventLog; }
         int getMaxCauseDepth() { return maxCauseDepth; }
         int getMaxConsequenceDepth() { return maxConsequenceDepth; }
@@ -95,9 +113,12 @@ class FilteredEventLog : public IEventLog
         FilteredEvent *cacheFilteredEvent(FilteredEvent *filteredEvent);
         bool matchesEvent(IEvent *event);
         bool matchesDependency(IEvent *event);
+        bool matchesPatterns(std::vector<cPatternMatcher> &patterns, const char *str);
+        template <typename T> bool matchesList(std::vector<T> &elements, T element);
         bool isCauseOfTracedEvent(IEvent *cause);
         bool isConsequenceOfTracedEvent(IEvent *consequence);
         double getApproximateMatchingEventRatio();
+        void setPatternMatchers(std::vector<cPatternMatcher> &patternMatchers, std::vector<char *> &patterns);
 };
 
 #endif

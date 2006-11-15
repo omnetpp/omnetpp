@@ -75,8 +75,8 @@ double IEventLog::getApproximatePercentageForEventNumber(long eventNumber)
     else if (event == NULL)
         return 0.5;
     else {
-        long beginOffset = firstEvent->getBeginOffset();
-        long endOffset = lastEvent->getEndOffset();
+        file_offset_t beginOffset = firstEvent->getBeginOffset();
+        file_offset_t endOffset = lastEvent->getEndOffset();
 
         double percentage = (double)event->getBeginOffset() / (endOffset - beginOffset);
 
