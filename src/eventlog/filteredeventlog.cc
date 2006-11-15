@@ -283,7 +283,7 @@ FilteredEvent *FilteredEventLog::getEventForEventNumber(long eventNumber, MatchK
                 return cacheFilteredEvent(eventNumber);
         }
         else
-            return getMatchingEventInDirection(event->getEventNumber(), matchKind == MatchKind::LAST);
+            return getMatchingEventInDirection(event->getEventNumber(), matchKind == LAST_OR_NEXT);
     }
 
     return NULL;

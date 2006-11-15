@@ -250,8 +250,8 @@ template <typename T> file_offset_t EventLogIndex::binarySearchForOffset(bool ev
         return foundOffset;
     else if (matchKind == EXACT && !eventNumberBased)
     {
-        file_offset_t firstOffset = linearSearchForOffset(eventNumberBased, foundOffset, key, FIRST, true);
-        file_offset_t lastOffset = linearSearchForOffset(eventNumberBased, foundOffset, key, LAST, true);
+        file_offset_t firstOffset = linearSearchForOffset(eventNumberBased, foundOffset, key, FIRST_OR_PREVIOUS, true);
+        file_offset_t lastOffset = linearSearchForOffset(eventNumberBased, foundOffset, key, LAST_OR_NEXT, true);
 
         if (foundOffset == lastOffset && foundOffset == firstOffset)
             return foundOffset;
@@ -262,8 +262,17 @@ template <typename T> file_offset_t EventLogIndex::binarySearchForOffset(bool ev
     {
         // non exact match requested
         bool exactMatchFound = foundOffset != -1;
-        file_offset_t searchOffset = exactMatchFound ? foundOffset : (matchKind == FIRST ? lowerOffset : upperOffset);
-        return linearSearchForOffset(eventNumberBased, searchOffset, key, matchKind, exactMatchFound);
+        file_offset_t searchOffset = exactMatchFound ? foundOffset : (matchKind == FIRST_OR_PREVIOUS ? lowerOffset : upperOffset);
+
+        MatchKind linearMatchKind;
+        if (matchKind == FIRST_OR_NEXT)
+            linearMatchKind = LAST_OR_NEXT;
+        else if (matchKind == LAST_OR_PREVIOUS)
+            linearMatchKind = FIRST_OR_PREVIOUS;
+        else
+            linearMatchKind = matchKind;
+
+        return linearSearchForOffset(eventNumberBased, searchOffset, key, linearMatchKind, exactMatchFound);
     }
 }
 
@@ -280,7 +289,7 @@ template <typename T> file_offset_t EventLogIndex::linearSearchForOffset(bool ev
 
     while (offset != -1)
     {
-        bool readEventLine = readToEventLine(matchKind == LAST, offset, eventNumber, simulationTime, lineStartOffset, lineEndOffset);
+        bool readEventLine = readToEventLine(matchKind == LAST_OR_NEXT, offset, eventNumber, simulationTime, lineStartOffset, lineEndOffset);
 
         if (!readEventLine) {
             if (exactMatchFound)
@@ -297,10 +306,10 @@ template <typename T> file_offset_t EventLogIndex::linearSearchForOffset(bool ev
             readKey = simulationTime;
 
         if (!exactMatchFound) {
-            if (matchKind == LAST && readKey > key)
+            if (matchKind == LAST_OR_NEXT && readKey > key)
                 return lineStartOffset;
 
-            if (matchKind == FIRST && readKey < key)
+            if (matchKind == FIRST_OR_PREVIOUS && readKey < key)
                 return lineStartOffset;
         }
         else if (readKey != key)
@@ -308,10 +317,10 @@ template <typename T> file_offset_t EventLogIndex::linearSearchForOffset(bool ev
 
         previousOffset = lineStartOffset;
 
-        if (matchKind == FIRST)
+        if (matchKind == FIRST_OR_PREVIOUS)
             offset = lineStartOffset;
 
-        if (matchKind == LAST)
+        if (matchKind == LAST_OR_NEXT)
             offset = lineEndOffset;
     }
 
@@ -346,7 +355,7 @@ bool EventLogIndex::readToEventLine(bool forward, file_offset_t readStartOffset,
     // find event number and simulation time in line ("# 12345 t 1.2345")
     tokenizer.tokenize(line, reader->getLastLineLength());
     lineStartOffset = reader->getLastLineStartOffset();
-    lineEndOffset = lineStartOffset + strlen(line);
+    lineEndOffset = reader->getLastLineEndOffset();
 
     for (int i = 1; i <tokenizer.numTokens() - 1; i += 2)
     {

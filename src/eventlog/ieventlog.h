@@ -86,10 +86,10 @@ class IEventLog
          * Returns true if the event with the given event number is included in the log.
          */
         virtual bool isIncludedInLog(long eventNumber) { return getEventForEventNumber(eventNumber) != NULL; }
-        virtual IEvent *getFirstEventNotBeforeEventNumber(long eventNumber) { return getEventForEventNumber(eventNumber, LAST); }
-        virtual IEvent *getLastEventNotAfterEventNumber(long eventNumber) { return getEventForEventNumber(eventNumber, FIRST); }
-        virtual IEvent *getFirstEventNotBeforeSimulationTime(simtime_t simulationTime) { return getEventForSimulationTime(simulationTime, LAST); }
-        virtual IEvent *getLastEventNotAfterSimulationTime(simtime_t simulationTime) { return getEventForSimulationTime(simulationTime, FIRST); }
+        virtual IEvent *getFirstEventNotBeforeEventNumber(long eventNumber) { return getEventForEventNumber(eventNumber, LAST_OR_NEXT); }
+        virtual IEvent *getLastEventNotAfterEventNumber(long eventNumber) { return getEventForEventNumber(eventNumber, FIRST_OR_PREVIOUS); }
+        virtual IEvent *getFirstEventNotBeforeSimulationTime(simtime_t simulationTime) { return getEventForSimulationTime(simulationTime, LAST_OR_NEXT); }
+        virtual IEvent *getLastEventNotAfterSimulationTime(simtime_t simulationTime) { return getEventForSimulationTime(simulationTime, FIRST_OR_PREVIOUS); }
 
         virtual double getApproximatePercentageForEventNumber(long eventNumber);
 

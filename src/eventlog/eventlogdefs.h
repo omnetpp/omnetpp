@@ -62,11 +62,13 @@ enum EventNumberKind
 
 enum MatchKind
 {
-    EXACT, // means only one key is allowed to match and returns the offset of that key
-    FIRST, // multiple matches allowed and returns the first one or the previous if there are not matches at all
-    LAST // as FIRST but just the opposite
+    EXACT, // returns not NULL if exactly one event was found
+    FIRST_OR_PREVIOUS, // if multiple matches were found it returns the first one or the previous if there are no matches at all
+    FIRST_OR_NEXT, // if multiple matches were found it returns the first one or the next if there are no matches at all
+    LAST_OR_NEXT, // as per FIRST_OR_PREVIOUS but the opposite
+    LAST_OR_PREVIOUS // as per FIRST_OR_NEXT but the opposite
 };
-    
+
 enum TimelineMode {
 	LINEAR,
 	STEP,

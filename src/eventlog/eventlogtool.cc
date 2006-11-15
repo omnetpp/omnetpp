@@ -134,10 +134,12 @@ long Options::getFirstEventNumber()
         if (fromEventNumber != -1)
             firstEventNumber = fromEventNumber;
         else if (fromSimulationTime != -1) {
-            IEvent *event = eventLog.getEventForSimulationTime(fromSimulationTime, FIRST);
+            IEvent *event = eventLog.getEventForSimulationTime(fromSimulationTime, FIRST_OR_NEXT);
 
             if (event)
-                firstEventNumber =event->getEventNumber();
+                firstEventNumber = event->getEventNumber();
+            else
+                firstEventNumber = LONG_MAX;
         }
     }
 
@@ -155,10 +157,12 @@ long Options::getLastEventNumber()
         if (toEventNumber != -1)
             lastEventNumber = toEventNumber;
         else if (toSimulationTime != -1) {
-            IEvent *event = eventLog.getEventForSimulationTime(toSimulationTime, LAST);
+            IEvent *event = eventLog.getEventForSimulationTime(toSimulationTime, LAST_OR_PREVIOUS);
 
             if (event)
                 lastEventNumber = event->getEventNumber();
+            else
+                lastEventNumber = -LONG_MAX;
         }
     }
 
@@ -401,7 +405,7 @@ void filter(Options options)
     IEventLog *eventLog = options.getEventLog(fileReader);
 
     long begin = clock();
-    eventLog->print(options.outputFile, options.outputInitialization, options.outputLogLines);
+    eventLog->print(options.outputFile, -1, -1, options.outputInitialization, options.outputLogLines);
     long end = clock();
 
     if (options.verbose)

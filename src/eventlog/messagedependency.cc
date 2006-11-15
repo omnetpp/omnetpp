@@ -83,7 +83,7 @@ long MessageDependency::getConsequenceEventNumber()
         // So here we have to look through all events at the arrival time,
         // and find the one "caused by" our message.
         simtime_t consequenceTime = getConsequenceTime();
-        IEvent *event = eventLog->getEventForSimulationTime(consequenceTime, FIRST);
+        IEvent *event = eventLog->getEventForSimulationTime(consequenceTime, FIRST_OR_PREVIOUS);
 
         while (event)
         {
