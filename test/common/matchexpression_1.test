@@ -34,6 +34,9 @@ casesensitive = true;
 match("a", "a", true);
 match("a", "b", false);
 
+match("\"a\"", "a", true);
+match("\"a\"", "b", false); // quotes get stripped
+
 match("not a", "a", false);
 match("not a", "b", true);
 
@@ -61,9 +64,6 @@ match("*one OR (*two AND twenty*)", "thirty-one", true);
 match("*one OR *two AND twenty*",   "thirty-one", true);  //AND binds stronger than OR
 
 %exitcode: 0
-
-%contains: stdout
-BUBU (remove this!)
 
 %not-contains: stdout
 FAIL
