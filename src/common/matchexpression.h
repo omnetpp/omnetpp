@@ -27,20 +27,22 @@ class PatternMatcher;
  * Matches various fields of an object. By default, a pattern must match
  * the "default field" of the object, which will usually be its name.
  * Other fields can be matched with the fieldname(pattern) syntax.
- * These elements can be combined with AND and OR operators, written as
- * "&" and "|". "&" has higher precedence than "|", but parentheses
- * can be used to change the evaluation order.
+ * These elements can be combined with the AND, OR, NOT operators, accepted in
+ * both lowercase and uppercase. AND has higher precedence than OR, but 
+ * parentheses can be used to change the evaluation order.
  *
  * Patterns are those accepted by PatternMatcher, that is, "*", "?",
- * character ranges as "{a-z}" and numeric ranges as "{0..999}" or
- * "[0..999]" are accepted.
+ * character ranges as "{a-z}", numeric ranges as "{0..999}", or bracketed
+ * numeric ranges as "[0..999]" (e.g. "*[90..100] matching "foo[95]") 
+ * are accepted.
  *
  * Pattern examples:
  *  - "node*"
- *  - "node*|host*"
- *  - "node*|host*|className(StandardHost*)"
- *  - "packet-* & className(PPPFrame)"
- *  - "className(TCPSegment) & kind(0) & SYN|data-*"
+ *  - "node* or host*"
+ *  - "node* or host* or className(StandardHost*)"
+ *  - "packet-* and className(PPPFrame)"
+ *  - "className(TCPSegment) and not kind({0..2}) and SYN or data-*"
+ *  - "className(TCPSegment) or byteLength({4096..})
  */
 class MatchExpression
 {
@@ -98,6 +100,11 @@ class MatchExpression
      * Constructor
      */
     MatchExpression();
+
+    /**
+     * Constructor, accepts the same args as setPattern().
+     */
+    MatchExpression(const char *pattern, bool dottedpath, bool fullstring, bool casesensitive);
 
     /**
      * Sets the pattern to be used by subsequent calls to matches(). See the

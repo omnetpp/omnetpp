@@ -43,6 +43,11 @@ MatchExpression::MatchExpression()
 {
 }
 
+MatchExpression::MatchExpression(const char *pattern, bool dottedpath, bool fullstring, bool casesensitive)
+{
+    setPattern(pattern, dottedpath, fullstring, casesensitive);
+}
+
 void MatchExpression::setPattern(const char *pattern, bool dottedpath, bool fullstring, bool casesensitive)
 {
     this->dottedpath = dottedpath;

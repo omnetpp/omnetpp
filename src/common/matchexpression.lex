@@ -25,7 +25,7 @@
 # include <unistd.h>  // isatty
 #endif
 
-#define YYSTYPE  const char *
+#define YYSTYPE  char *
 #define yylval  matchexpressionyylval
 extern YYSTYPE yylval;
 
@@ -43,10 +43,17 @@ static char *matchexpr_strdup(const char *s)
 %%
 "("                     { return '('; }
 ")"                     { return ')'; }
-"|"                     { return '|'; }
-"&"                     { return '&'; }
-\"[^\"]*\"              { yylval = matchexpr_strdup(yytext); return STRINGLITERAL; }
-[^ \t\n()|&]*           { yylval = matchexpr_strdup(yytext); return STRINGLITERAL; }
+
+"not"                   { return NOT_; }
+"and"                   { return AND_; }
+"or"                    { return OR_;  }
+
+"NOT"                   { return NOT_; }
+"AND"                   { return AND_; }
+"OR"                    { return OR_;  }
+
+[^ \t\n()]*             { yylval = matchexpr_strdup(yytext); return STRINGLITERAL; }
+\"[^\"]*\"              { yylval = matchexpr_strdup(yytext+1); yylval[strlen(yylval)-1] = '\0'; return STRINGLITERAL; }
 
 .                       { }
 

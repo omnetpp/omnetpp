@@ -18,8 +18,9 @@
 %token STRINGLITERAL
 
 /* Operator precedences (low to high) and associativity */
-%left '|'
-%left '&'
+%left OR_
+%left AND_
+%left NOT_
 
 %start expression
 
@@ -36,7 +37,7 @@
 #include <string.h>         /* YYVERBOSE needs it */
 #endif
 
-#define YYSTYPE  const char *
+#define YYSTYPE  char *
 
 #define yyin matchexpressionyyin
 #define yyout matchexpressionyyout
@@ -76,9 +77,10 @@ expression
 expr
         : fieldpattern
         | '(' expr ')'
-        | expr '&' expr
+        | NOT_ expr
+        | expr AND_ expr
                 { state.elemsp->push_back(MatchExpression::Elem(MatchExpression::Elem::AND)); }
-        | expr '|' expr
+        | expr OR_ expr
                 { state.elemsp->push_back(MatchExpression::Elem(MatchExpression::Elem::OR)); }
         ;
 
