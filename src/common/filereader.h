@@ -19,8 +19,22 @@
 #include <string>
 
 #ifdef _MSC_VER
-typedef __int64 file_offset_t;
 typedef __int64 int64;
+typedef __int64 file_offset_t;
+#else
+typedef long long int64;
+typedef off_t file_offset_t;
+#endif
+
+#if defined _MSC_VER && (_MSC_VER >= 1400)
+#define filereader_ftell _ftelli64
+#define filereader_fseek _fseeki64
+#elif defined _MSC_VER
+#define filereader_ftell ftell
+#define filereader_fseek fseek
+#else
+#define filereader_ftell ftello
+#define filereader_fseek fseeko
 #endif
 
 /**
@@ -88,9 +102,6 @@ class FileReader
     bool isLineStart(char *&s);
     char *findNextLineStart(char *s, bool bufferFilled = false);
     char *findPreviousLineStart(char *s, bool bufferFilled = false);
-
-    file_offset_t ftell64(FILE *f) { return _ftelli64(f); }
-    void fseek64(FILE *f, file_offset_t offset, int kind) { _fseeki64(f, offset, kind); }
 
   public:
     /**

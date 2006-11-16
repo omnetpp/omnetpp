@@ -110,7 +110,7 @@ void FileReader::fillBuffer(bool forward)
 
     if (dataLength > 0) {
         file_offset_t fileOffset = pointerToFileOffset(dataPointer);
-        fseek64(f, fileOffset, SEEK_SET);
+        filereader_fseek(f, fileOffset, SEEK_SET);
         if (ferror(f))
             throw new Exception("Cannot seek in file `%s'", fileName.c_str());
 
@@ -291,10 +291,10 @@ int64 FileReader::getFileSize()
     if (fileSize == -1) {
         if (!f) openFile();
 
-        file_offset_t tmp = ftell64(f);
-        fseek64(f, 0, SEEK_END);
-        fileSize = ftell64(f);
-        fseek64(f, tmp, SEEK_SET);
+        file_offset_t tmp = filereader_ftell(f);
+        filereader_fseek(f, 0, SEEK_END);
+        fileSize = filereader_ftell(f);
+        filereader_fseek(f, tmp, SEEK_SET);
 
         if (ferror(f))
             throw new Exception("Cannot seek in file `%s'", fileName.c_str());
