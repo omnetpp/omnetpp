@@ -12,11 +12,17 @@ static bool casesensitive;
 
 static void match(const char *pattern, const char *line, bool expectedresult)
 {
-    MatchExpression e;
-    e.setPattern(pattern, dottedpath, fullstring, casesensitive);
+    MatchExpression me;
+    me.setPattern(pattern, dottedpath, fullstring, casesensitive);
     MatchableString lineObject(line);
-    bool result = e.matches(&lineObject);
-    ev.printf("%s %s %s: %s\n", pattern, (expectedresult?"~":"!~"), line, (result==expectedresult?"ok":"FAIL"));
+    bool result;
+    try {
+        result = me.matches(&lineObject);
+    } catch (Exception *e) {
+        ev.printf("%s match %s : EXCEPTION: %s\n", pattern, line, e->message());
+        return;
+    }
+    ev.printf("%s match %s: %s %s\n", pattern, line, (result?"true":"false"), (result==expectedresult?"ok":"FAIL"));
 }
 
 
@@ -26,18 +32,26 @@ dottedpath = true;
 fullstring = true;
 casesensitive = true;
 
-//FIXME TODO add test cases to exercise expression matcher! AND, OR, parens, fields...
-
-//
-// string literals: basic
-//
 match("a", "a", true);
-match("alma", "alma", true);
 match("a", "b", false);
-match("a", "aa", false);
+
+match("a|b", "a", true);
+match("b|a", "a", true);
+match("a|b", "c", false);
+
+match("a | b", "a", true);
+match("b | a", "a", true);
+match("a | b", "c", false);
+
 
 %exitcode: 0
 
+%contains: stdout
+BUBU (remove this!)
+
 %not-contains: stdout
 FAIL
+
+%not-contains: stdout
+EXCEPTION
 
