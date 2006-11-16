@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.core.resources.IMarker;
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.draw2d.ColorConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -94,12 +93,13 @@ public class SequenceChartToolEditor extends EditorPart implements INavigationLo
 		String logFileName;
 		if (input instanceof IFileEditorInput) {
 			IFileEditorInput fileInput = (IFileEditorInput)input;
-			try {
-				IMarker marker = fileInput.getFile().createMarker(IMarker.BOOKMARK);
-				marker.setAttribute(IMarker.MESSAGE, "ALMA");
-			} catch (CoreException e) {
-				throw new RuntimeException(e);
-			}
+// TODO: this is how markers can be created
+//			try {
+//				IMarker marker = fileInput.getFile().createMarker(IMarker.BOOKMARK);
+//				marker.setAttribute(IMarker.MESSAGE, "ALMA");
+//			} catch (CoreException e) {
+//				throw new RuntimeException(e);
+//			}
 			logFileName = fileInput.getFile().getLocation().toFile().getAbsolutePath();
 		}
 		else if (input instanceof IPathEditorInput) {

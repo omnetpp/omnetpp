@@ -4,9 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.core.runtime.Assert;
+import org.omnetpp.common.virtualtable.IVirtualTableSelection;
 import org.omnetpp.eventlog.engine.IEvent;
 import org.omnetpp.eventlog.engine.IEventLog;
-import org.omnetpp.experimental.seqchart.widgets.IVirtualTableSelection;
 
 /**
  * Selection that is published by the sequence chart tool

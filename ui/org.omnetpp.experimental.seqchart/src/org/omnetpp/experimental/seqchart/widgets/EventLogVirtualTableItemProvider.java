@@ -3,6 +3,7 @@ package org.omnetpp.experimental.seqchart.widgets;
 import org.eclipse.draw2d.ColorConstants;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.widgets.TableItem;
+import org.omnetpp.common.virtualtable.IVirtualTableItemProvider;
 import org.omnetpp.eventlog.engine.BeginSendEntry;
 import org.omnetpp.eventlog.engine.Event;
 import org.omnetpp.eventlog.engine.EventEntry;

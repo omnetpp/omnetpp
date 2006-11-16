@@ -1,6 +1,7 @@
 package org.omnetpp.experimental.seqchart.widgets;
 
 import org.eclipse.jface.viewers.Viewer;
+import org.omnetpp.common.virtualtable.IVirtualTableContentProvider;
 import org.omnetpp.eventlog.engine.EventLogEntry;
 import org.omnetpp.eventlog.engine.EventLogTableFacade;
 import org.omnetpp.eventlog.engine.IEventLog;
