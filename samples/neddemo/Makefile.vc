@@ -40,7 +40,7 @@ CMDENV_LIBS=envir.lib cmdenv.lib
 TKENV_LIBS=envir.lib tkenv.lib $(TK_LIBS)
 
 # Simulation kernel
-KERNEL_LIBS=sim_std.lib
+KERNEL_LIBS=common.lib sim_std.lib
 
 !if "$(WITH_NETBUILDER)"=="yes"
 KERNEL_LIBS= $(KERNEL_LIBS) nedxml.lib $(XML_LIBS)
@@ -61,11 +61,11 @@ NEDCOPTS=$(CFLAGS) $(NEDCFLAGS) $(INCLUDE_PATH) -I$(OMNETPP_INCL_DIR)
 OBJS= node.obj
 
 # header files generated (from msg files)
-GENERATEDHEADERS= 
+GENERATEDHEADERS=
 
 # subdirectories to recurse into
-SUBDIRS= 
-SUBDIR_TARGETS= 
+SUBDIRS=
+SUBDIR_TARGETS=
 
 $(TARGET): $(OBJS) $(EXTRA_OBJS) $(EXT_DIR_TSTAMPS)  Makefile.vc
 	$(LINK) $(LDFLAGS) $(OBJS) $(EXTRA_OBJS) $(EXT_DIR_OBJS) $(LIBS) $(OMNETPP_LIBS) /out:$(TARGET)
@@ -104,7 +104,7 @@ depend:
 	if not "$(SUBDIRS)"=="" for %%i in ( $(SUBDIRS) ) do cd %%i && echo [depend in %%i] && nmake /nologo /f Makefile.vc depend && cd .. || exit /b 1
 
 makefiles:
-	opp_nmakemake -f  -N 
+	opp_nmakemake -f  -N
 	if not "$(SUBDIRS)"=="" for %%i in ( $(SUBDIRS) ) do cd %%i && echo [makemake in %%i] && nmake /nologo /f Makefile.vc makefiles && cd .. || exit /b 1
 
 # "re-makemake" is a deprecated, historic name of the above target

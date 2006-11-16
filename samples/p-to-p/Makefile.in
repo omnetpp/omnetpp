@@ -59,7 +59,7 @@ CMDENV_LIBS=-lenvir -lcmdenv
 TKENV_LIBS=-lenvir -ltkenv $(TK_LIBS)
 
 # Simulation kernel
-KERNEL_LIBS=-lsim_std
+KERNEL_LIBS=-lcommon -lsim_std
 
 ifeq ($(WITH_NETBUILDER),yes)
 KERNEL_LIBS += -lnedxml $(XML_LIBS)
@@ -78,13 +78,13 @@ NEDCOPTS=$(CFLAGS) $(NEDCFLAGS) $(INCLUDE_PATH) -I$(OMNETPP_INCL_DIR)
 #------------------------------------------------------------------------------
 
 # subdirectories to recurse into
-SUBDIRS= 
+SUBDIRS=
 
 # object files in this directory
 OBJS=  ppif.o ppsink.o ppsource.o
 
 # header files generated (from msg files)
-GENERATEDHEADERS= 
+GENERATEDHEADERS=
 
 #------------------------------------------------------------------------------
 
@@ -136,12 +136,12 @@ depend:
 
 makefiles:
 	# recreate Makefile
-	opp_makemake -f  -N 
+	opp_makemake -f  -N
 	for i in $(SUBDIRS); do (cd $$i && $(MAKE) makefiles) || exit 1; done
 
 makefile-ins:
 	# recreate Makefile.in
-	opp_makemake -f -m  -N 
+	opp_makemake -f -m  -N
 	for i in $(SUBDIRS); do (cd $$i && $(MAKE) makefile-ins) || exit 1; done
 
 # "re-makemake" and "re-makemake-m" are deprecated, historic names of the above two targets
