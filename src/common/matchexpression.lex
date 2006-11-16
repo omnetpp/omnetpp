@@ -25,10 +25,11 @@
 # include <unistd.h>  // isatty
 #endif
 
-#include "matchexpression.tab.h"
-
 #define YYSTYPE  const char *
+#define yylval  matchexpressionyylval
 extern YYSTYPE yylval;
+
+#include "matchexpression.tab.h"
 
 static char *matchexpr_strdup(const char *s)
 {
