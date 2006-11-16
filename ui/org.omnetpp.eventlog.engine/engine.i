@@ -43,7 +43,6 @@
 
 %include "eventlogdefs.h"
 
-%typemap(jni)    ID    "jlong";
 %typemap(jni)    int64 "jlong"
 %typemap(jtype)  int64 "long"
 %typemap(jstype) int64 "long"
@@ -166,9 +165,10 @@ namespace std {
    %template(IntIntMap) map<int,int>;
 
    %template(IntVector) vector<int>;
+   %template(LongVector) vector<long>;
 
    specialize_std_vector(int64);
-   %template(LongVector) vector<int64>;
+   %template(Int64Vector) vector<int64>;
 };
 
 /*
@@ -252,12 +252,16 @@ typedef double simtime_t;
 %ignore FILE;
 %ignore *::parse;
 %ignore *::print(FILE *);
+%ignore *::print(FILE *, bool);
 %ignore *::print(FILE *, long);
 %ignore *::print(FILE *, long, long);
+%ignore *::print(FILE *, long, long, bool);
+%ignore *::print(FILE *, long, long, bool, bool);
 %ignore *::printInitializationLogEntries(FILE *);
 %ignore *::printEvents(FILE *);
 %ignore *::printEvents(FILE *, long);
 %ignore *::printEvents(FILE *, long, long);
+%ignore *::printEvents(FILE *, long, long, bool);
 %ignore *::printCause(FILE *);
 %ignore *::printConsequence(FILE *);
 %ignore *::printMiddle(FILE *);
