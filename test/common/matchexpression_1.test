@@ -43,6 +43,18 @@ match("a | b", "a", true);
 match("b | a", "a", true);
 match("a | b", "c", false);
 
+match("{50..120} | bu*bu", "bu--bu", true);
+match("{50..120} | bu*bu", "73", true);
+match("{50..120} | bu*bu", "120", true);
+match("{50..120} | bu*bu", "50", true);
+match("{50..120} | bu*bu", "500", false);
+match("{50..120} | bu*bu", "bu", false);
+
+match("(one|two) | three", "one", true);
+match("(one|two) | three", "two", true);
+match("(one|two) | three", "three", true);
+match("(one|two) | three", "four", false);
+
 
 %exitcode: 0
 
