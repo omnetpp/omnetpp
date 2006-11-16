@@ -52,8 +52,8 @@ static char *matchexpr_strdup(const char *s)
 "AND"                   { return AND_; }
 "OR"                    { return OR_;  }
 
-[^ \t\n()]*             { yylval = matchexpr_strdup(yytext); return STRINGLITERAL; }
 \"[^\"]*\"              { yylval = matchexpr_strdup(yytext+1); yylval[strlen(yylval)-1] = '\0'; return STRINGLITERAL; }
+[^ \t\n()]*             { yylval = matchexpr_strdup(yytext); return STRINGLITERAL; }
 
 .                       { }
 
