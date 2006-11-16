@@ -15,7 +15,7 @@ OBJS= arraybuilder.obj channel.obj commonnodes.obj compoundfilter.obj \
       dataflowmanager.obj datasorter.obj diffquot.obj \
       filewriter.obj filternodes.obj stddev.obj \
       idlist.obj mergernodes.obj nodetype.obj nodetyperegistry.obj \
-      patmatch.obj resultfilemanager.obj slidingwinavg.obj \
+      resultfilemanager.obj slidingwinavg.obj \
       vectorfilereader.obj vectorfilewriter.obj windowavg.obj \
       xyplotnode.obj octaveexport.obj
 
@@ -107,7 +107,7 @@ datasorter.obj: datasorter.cc \
   idlist.h \
   ../common/exception.h \
   scavedefs.h \
-  patmatch.h
+  ../common/patternmatcher.h
 diffquot.obj: diffquot.cc \
   channel.h \
   diffquot.h \
@@ -191,10 +191,8 @@ octaveexport.obj: octaveexport.cc \
   scavedefs.h \
   xyarray.h \
   ../common/exception.h
-patmatch.obj: patmatch.cc \
-  patmatch.h
 resultfilemanager.obj: resultfilemanager.cc \
-  patmatch.h \
+  ../common/patternmatcher.h \
   resultfilemanager.h \
   ../common/filetokenizer.h \
   ../common/stringtokenizer.h \

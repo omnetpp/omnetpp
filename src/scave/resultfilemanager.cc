@@ -22,7 +22,7 @@
 #include <iostream>
 #include <memory>
 #include <algorithm>
-#include "patmatch.h"
+#include "patternmatcher.h"
 #include "resultfilemanager.h"
 #include "filetokenizer.h"
 #include "stringtokenizer.h"
@@ -327,7 +327,7 @@ RunList ResultFileManager::filterRunList(const RunList& runList,
     RunList out;
 
     // runName matcher
-    PatternMatcher runNamePattern(runNameFilter);
+    PatternMatcher runNamePattern(runNameFilter, false, true, true);
 
     // copy attributes to vectors for performance (std::map iterator is
     // infamously slow, and we need PatternMatchers as well)
@@ -336,7 +336,7 @@ RunList ResultFileManager::filterRunList(const RunList& runList,
     for (StringMap::const_iterator it = attrFilter.begin(); it!=attrFilter.end(); ++it)
     {
         attrNames.push_back(it->first);
-        attrValues.push_back(PatternMatcher(it->second.c_str()));
+        attrValues.push_back(PatternMatcher(it->second.c_str(), false, true, true));
     }
 
     // do it
@@ -345,12 +345,12 @@ RunList ResultFileManager::filterRunList(const RunList& runList,
         Run *run = runList[i];
         if (!runNamePattern.matches(run->runName.c_str()))
             continue;
-		bool matches = true;
+        bool matches = true;
         for (int j=0; j<attrNames.size() && matches; j++)
-			if (!attrValues[j].matches(run->getAttribute(attrNames[j].c_str())))
+            if (!attrValues[j].matches(run->getAttribute(attrNames[j].c_str())))
                 matches = false;
-		if (matches)
-			out.push_back(run);
+        if (matches)
+            out.push_back(run);
     }
     return out;
 }
@@ -361,7 +361,7 @@ ResultFileList ResultFileManager::filterFileList(const ResultFileList& fileList,
     ResultFileList out;
 
     // filePath matcher
-    PatternMatcher filePathPattern(filePathFilter);
+    PatternMatcher filePathPattern(filePathFilter, false, true, true);
 
     for (int i=0; i<fileList.size(); i++)
     {
@@ -398,23 +398,21 @@ IDList ResultFileManager::filterIDList(const IDList& idlist,
     if (!strcmp(nameFilter,"*")) nameFilter = "";
 
     // prepare for wildcard matches
-    bool patMatchModule = contains_wildcards(moduleFilter);
-    bool patMatchName = contains_wildcards(nameFilter);
+    bool patMatchModule = PatternMatcher::containsWildcards(moduleFilter);
+    bool patMatchName = PatternMatcher::containsWildcards(nameFilter);
 
-    short *modulePattern = NULL;
+    PatternMatcher *modulePattern = NULL;
     if (patMatchModule)
     {
-        modulePattern = new short[512]; // FIXME!
-        transform_pattern(moduleFilter, modulePattern);
+        modulePattern = new PatternMatcher(moduleFilter, false, true, true); // case-sensitive full-string match
     }
-    short *namePattern = NULL;
+    PatternMatcher *namePattern = NULL;
     if (patMatchName)
     {
-        namePattern = new short[512]; // FIXME!
-        transform_pattern(nameFilter, namePattern);
+        namePattern = new PatternMatcher(nameFilter, false, true, true); // case-sensitive full-string match
     }
 
-    // FIXME TODO: if there's no wildcard, find string pointers in the stringsets
+    // TODO: if there's no wildcard, find string pointers in the stringsets
     // in advance, then we don't have to do strcmp().
 
     // iterate over all values and add matching ones to "out".
@@ -441,13 +439,13 @@ IDList ResultFileManager::filterIDList(const IDList& idlist,
         }
 
         if (moduleFilter && moduleFilter[0] &&
-            (patMatchModule ? !stringmatch(modulePattern, d.moduleNameRef->c_str())
+            (patMatchModule ? !modulePattern->matches(d.moduleNameRef->c_str())
                             : strcmp(d.moduleNameRef->c_str(), moduleFilter))
            )
             continue; // no match
 
         if (nameFilter && nameFilter[0] &&
-            (patMatchName ? !stringmatch(namePattern, d.nameRef->c_str())
+            (patMatchName ? !namePattern->matches(d.nameRef->c_str())
                           : strcmp(d.nameRef->c_str(), nameFilter))
            )
             continue; // no match

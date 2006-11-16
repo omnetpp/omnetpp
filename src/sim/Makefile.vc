@@ -1465,29 +1465,6 @@ distrib.obj: distrib.cc \
 errmsg.obj: errmsg.cc \
   ../../include/errmsg.h \
   ../../include/defs.h
-expr.tab.obj: expr.tab.cc \
-  ../../include/expryydefs.h \
-  ../../include/cdynamicexpression.h \
-  ../../include/cpar.h \
-  ../../include/cxmlelement.h \
-  ../../include/cexception.h \
-  ../../include/globals.h \
-  ../../include/cfunction.h \
-  ../../include/cnedfunction.h \
-  ../../include/cexpression.h \
-  ../../include/cpolymorphic.h \
-  ../../include/defs.h \
-  ../../include/util.h \
-  ../../include/regmacros.h \
-  ../../include/errmsg.h \
-  ../../include/onstartup.h \
-  ../../include/cobject.h \
-  ../../include/cenvir.h \
-  ../../include/cvisitor.h \
-  ../../include/cstringpool.h \
-  ../../include/opp_string.h \
-  ../../include/carray.h \
-  ../../include/cclassfactory.h
 globals.obj: globals.cc \
   ../../include/globals.h \
   ../../include/carray.h \
@@ -1508,17 +1485,6 @@ globals.obj: globals.cc \
   ../../include/cpar.h \
   ../../include/cgate.h \
   ../../include/cexpression.h
-lex.expryy.obj: lex.expryy.cc \
-  ../../include/expryydefs.h \
-  expr.tab.h \
-  ../../include/util.h \
-  ../../include/cdynamicexpression.h \
-  ../../include/cexpression.h \
-  ../../include/cpolymorphic.h \
-  ../../include/defs.h \
-  ../../include/regmacros.h \
-  ../../include/onstartup.h \
-  ../../include/errmsg.h
 minixpath.obj: minixpath.cc \
   minixpath.h \
   ../../include/cexception.h \

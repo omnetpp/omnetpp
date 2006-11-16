@@ -26,7 +26,7 @@
 
 #include "args.h"
 #include "omnetapp.h"
-#include "patmatch.h"
+#include "patternmatcher.h"
 #include "fsutils.h"
 
 #include "ccoroutine.h"

@@ -19,7 +19,7 @@
 #include <omnetpp.h>
 #include <mysql.h>
 
-class cPatternMatcher;
+class PatternMatcher;
 
 
 /**
@@ -82,7 +82,7 @@ class cMySQLConfiguration : public cConfiguration
     struct sEntry {             // one entry contains:
         int section_id;         //  section it belongs to
         char *key;              //  key
-        cPatternMatcher *keypattern; // key as pattern
+        PatternMatcher *keypattern; // key as pattern
         char *value;            //  its value (without quotes)
         char *rawvalue;         //  original value with quotes, or NULL if it had no quotes
         int file_id;            //  file it was read from

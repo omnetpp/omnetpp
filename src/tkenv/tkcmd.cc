@@ -38,7 +38,7 @@
 #include "tklib.h"
 #include "inspector.h"
 #include "inspfactory.h"
-#include "patmatch.h"
+#include "patternmatcher.h"
 #include "visitor.h"
 #include "fsutils.h"
 
@@ -1158,13 +1158,13 @@ int fesMsgs_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
    if (!*namePattern) namePattern = "*";
    bool negativeNamePattern = namePattern[0]=='-';
    if (negativeNamePattern) namePattern++;
-   cPatternMatcher nameMatcher;
+   PatternMatcher nameMatcher;
    nameMatcher.setPattern(namePattern, false, true, false);
 
    if (!*classNamePattern) classNamePattern = "*";
    bool negativeClassNamePattern = classNamePattern[0]=='-';
    if (negativeClassNamePattern) classNamePattern++;
-   cPatternMatcher classNameMatcher;
+   PatternMatcher classNameMatcher;
    classNameMatcher.setPattern(classNamePattern, false, true, false);
 
    Tcl_Obj *listobj = Tcl_NewListObj(0, NULL);
@@ -1220,7 +1220,7 @@ int patmatch_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
    if (argc!=3) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
    const char *s = argv[1];
    const char *p = argv[2];
-   cPatternMatcher pat;
+   PatternMatcher pat;
    TRY(pat.setPattern(p, true, true, true));
    Tcl_SetResult(interp, TCLCONST(pat.matches(s) ? "1" : "0"), TCL_STATIC);
    return TCL_OK;

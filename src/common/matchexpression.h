@@ -19,7 +19,7 @@
 #include <string>
 #include <vector>
 
-class cPatternMatcher;
+class PatternMatcher;
 
 /**
  * Matches various fields of an object. By default, a pattern must match
@@ -29,7 +29,7 @@ class cPatternMatcher;
  * "&" and "|". "&" has higher precedence than "|", but parentheses
  * can be used to change the evaluation order.
  *
- * Patterns are those accepted by cPatternMatcher, that is, "*", "?",
+ * Patterns are those accepted by PatternMatcher, that is, "*", "?",
  * character ranges as "{a-z}" and numeric ranges as "{0..999}" or
  * "[0..999]" are accepted.
  *
@@ -64,13 +64,13 @@ class MatchExpression
       private:
         Type type;
         std::string fieldname;
-        cPatternMatcher *pattern;
+        PatternMatcher *pattern;
       public:
         /** Ctor for AND and OR */
         Elem(Type type=UNDEF)  {this->type = type;}
 
         /** The given field of the object must match pattern */
-        Elem(cPatternMatcher *pattern, const char *fieldname=NULL);
+        Elem(PatternMatcher *pattern, const char *fieldname=NULL);
 
         /** Copy ctor */
         Elem(const Elem& other)  {type=UNDEF; operator=(other);}

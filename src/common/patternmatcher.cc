@@ -18,7 +18,7 @@
 
 #include <assert.h>
 #include <string.h>
-#include "patmatch.h"
+#include "patternmatcher.h"
 #include "exception.h"
 
 #ifdef _MSC_VER
@@ -26,15 +26,20 @@
 #endif
 
 
-cPatternMatcher::cPatternMatcher()
+PatternMatcher::PatternMatcher()
 {
 }
 
-cPatternMatcher::~cPatternMatcher()
+PatternMatcher::PatternMatcher(const char *pattern, bool dottedpath, bool fullstring, bool casesensitive)
+{
+    setPattern(pattern, dottedpath, fullstring, casesensitive);
+}
+
+PatternMatcher::~PatternMatcher()
 {
 }
 
-void cPatternMatcher::setPattern(const char *patt, bool dottedpath, bool fullstring, bool casesensitive)
+void PatternMatcher::setPattern(const char *patt, bool dottedpath, bool fullstring, bool casesensitive)
 {
     pattern.clear();
     iscasesensitive = casesensitive;
@@ -82,7 +87,7 @@ void cPatternMatcher::setPattern(const char *patt, bool dottedpath, bool fullstr
     pattern.push_back(e);
 }
 
-void cPatternMatcher::parseSet(const char *&s, Elem& e)
+void PatternMatcher::parseSet(const char *&s, Elem& e)
 {
     s++; // skip "{"
     e.type = SET;
@@ -123,7 +128,7 @@ void cPatternMatcher::parseSet(const char *&s, Elem& e)
     s++; // skip "}"
 }
 
-void cPatternMatcher::parseLiteralString(const char *&s, Elem& e)
+void PatternMatcher::parseLiteralString(const char *&s, Elem& e)
 {
     e.type = LITERALSTRING;
     while (*s && *s!='?' && *s!='{' && *s!='*')
@@ -140,7 +145,7 @@ void cPatternMatcher::parseLiteralString(const char *&s, Elem& e)
     }
 }
 
-bool cPatternMatcher::parseNumRange(const char *&str, char closingchar, long& lo, long& up)
+bool PatternMatcher::parseNumRange(const char *&str, char closingchar, long& lo, long& up)
 {
     //
     // try to parse "[n..m]" or "{n..m}" and return true on success.
@@ -169,7 +174,7 @@ bool cPatternMatcher::parseNumRange(const char *&str, char closingchar, long& lo
     return true;
 }
 
-void cPatternMatcher::dump(int from)
+void PatternMatcher::dump(int from)
 {
     for (int k=from; k<(int)pattern.size(); k++)
     {
@@ -191,7 +196,7 @@ void cPatternMatcher::dump(int from)
     }
 }
 
-bool cPatternMatcher::isInSet(char c, const char *set)
+bool PatternMatcher::isInSet(char c, const char *set)
 {
     assert((strlen(set)&1)==0);
     if (!iscasesensitive)
@@ -205,7 +210,7 @@ bool cPatternMatcher::isInSet(char c, const char *set)
     return false;
 }
 
-bool cPatternMatcher::doMatch(const char *s, int k, int suffixlen)
+bool PatternMatcher::doMatch(const char *s, int k, int suffixlen)
 {
     while (true)
     {
@@ -286,7 +291,7 @@ bool cPatternMatcher::doMatch(const char *s, int k, int suffixlen)
     }
 }
 
-bool cPatternMatcher::matches(const char *line)
+bool PatternMatcher::matches(const char *line)
 {
     assert(pattern[pattern.size()-1].type==END);
 
@@ -314,10 +319,10 @@ bool cPatternMatcher::matches(const char *line)
     return doMatch(line, 0, 0);
 }
 
-const char *cPatternMatcher::patternPrefixMatches(const char *line, int suffixoffset)
+const char *PatternMatcher::patternPrefixMatches(const char *line, int suffixoffset)
 {
     if (!iscasesensitive)
-        throw new Exception("cPatternMatcher: patternPrefixMatches() doesn't support case-insensitive match");
+        throw new Exception("PatternMatcher: patternPrefixMatches() doesn't support case-insensitive match");
 
     // pattern must end in a literal string...
     assert(pattern[pattern.size()-1].type==END);
@@ -340,3 +345,8 @@ const char *cPatternMatcher::patternPrefixMatches(const char *line, int suffixof
     return doMatch(line, 0, pattsuffixlen) ? rest.c_str() : NULL;
 }
 
+bool PatternMatcher::containsWildcards(const char *pattern)
+{
+    return strchr(pattern,'?') || strchr(pattern,'*') ||
+           strchr(pattern,'\\') || strchr(pattern,'{');
+}

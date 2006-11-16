@@ -16,7 +16,7 @@
 #define __FILTEREDEVENTLOG_H_
 
 #include <sstream>
-#include "patmatch.h"
+#include "patternmatcher.h"
 #include "eventlogdefs.h"
 #include "ieventlog.h"
 #include "eventlog.h"
@@ -37,11 +37,11 @@ class FilteredEventLog : public IEventLog
         long tracedEventNumber; // the event number from which causes and consequences are followed or -1
         long firstEventNumber; // the first event to be considered by the filter or -1
         long lastEventNumber; // the last event to be considered by the filter or -1
-        std::vector<cPatternMatcher> moduleNames;
-        std::vector<cPatternMatcher> moduleTypes;
+        std::vector<PatternMatcher> moduleNames;
+        std::vector<PatternMatcher> moduleTypes;
         std::vector<int> moduleIds; // events outside these modules will be filtered out, NULL means include all
-        std::vector<cPatternMatcher> messageNames;
-        std::vector<cPatternMatcher> messageTypes;
+        std::vector<PatternMatcher> messageNames;
+        std::vector<PatternMatcher> messageTypes;
         std::vector<long> messageIds;
         std::vector<long> messageTids;
         std::vector<long> messageEids;
@@ -113,12 +113,12 @@ class FilteredEventLog : public IEventLog
         FilteredEvent *cacheFilteredEvent(FilteredEvent *filteredEvent);
         bool matchesEvent(IEvent *event);
         bool matchesDependency(IEvent *event);
-        bool matchesPatterns(std::vector<cPatternMatcher> &patterns, const char *str);
+        bool matchesPatterns(std::vector<PatternMatcher> &patterns, const char *str);
         template <typename T> bool matchesList(std::vector<T> &elements, T element);
         bool isCauseOfTracedEvent(IEvent *cause);
         bool isConsequenceOfTracedEvent(IEvent *consequence);
         double getApproximateMatchingEventRatio();
-        void setPatternMatchers(std::vector<cPatternMatcher> &patternMatchers, std::vector<const char *> &patterns);
+        void setPatternMatchers(std::vector<PatternMatcher> &patternMatchers, std::vector<const char *> &patterns);
 };
 
 #endif

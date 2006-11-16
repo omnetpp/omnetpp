@@ -37,7 +37,7 @@ OBJS= arraybuilder.o channel.o commonnodes.o compoundfilter.o \
       dataflowmanager.o datasorter.o diffquot.o \
       filewriter.o filternodes.o stddev.o \
       idlist.o mergernodes.o nodetype.o nodetyperegistry.o \
-      patmatch.o resultfilemanager.o slidingwinavg.o \
+      resultfilemanager.o slidingwinavg.o \
       vectorfilereader.o vectorfilewriter.o windowavg.o \
       xyplotnode.o octaveexport.o
 
@@ -137,7 +137,7 @@ datasorter.o: datasorter.cc \
   scavedefs.h \
   ../../include/defs.h \
   ../../include/errmsg.h \
-  patmatch.h
+  patternmatcher.h
 diffquot.o: diffquot.cc \
   channel.h \
   diffquot.h \
@@ -225,10 +225,10 @@ octaveexport.o: octaveexport.cc \
   octaveexport.h \
   scavedefs.h \
   xyarray.h
-patmatch.o: patmatch.cc \
-  patmatch.h
+patternmatcher.o: patternmatcher.cc \
+  patternmatcher.h
 resultfilemanager.o: resultfilemanager.cc \
-  patmatch.h \
+  patternmatcher.h \
   resultfilemanager.h \
   idlist.h \
   ../../include/util.h \

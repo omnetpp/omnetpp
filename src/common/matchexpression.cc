@@ -13,11 +13,11 @@
 *--------------------------------------------------------------*/
 
 #include "matchexpression.h"
-#include "patmatch.h"
+#include "patternmatcher.h"
 #include "exception.h"
 
 
-MatchExpression::Elem::Elem(cPatternMatcher *pattern, const char *fieldname)
+MatchExpression::Elem::Elem(PatternMatcher *pattern, const char *fieldname)
 {
     type = fieldname==NULL ? PATTERN : FIELDPATTERN;
     this->fieldname = fieldname==NULL ? "" : fieldname;
@@ -30,7 +30,7 @@ void MatchExpression::Elem::operator=(const Elem& other)
     if (type==PATTERN || type==FIELDPATTERN)
     {
         fieldname = other.fieldname;
-        pattern = new cPatternMatcher(*(other.pattern));
+        pattern = new PatternMatcher(*(other.pattern));
     }
 }
 

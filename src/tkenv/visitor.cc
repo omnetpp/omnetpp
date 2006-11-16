@@ -30,7 +30,7 @@
 #include "cchannel.h"
 #include "cgate.h"
 
-#include "patmatch.h"
+#include "patternmatcher.h"
 #include "visitor.h"
 
 
@@ -103,12 +103,12 @@ void cFilteredCollectObjectsVisitor::setFilterPars(unsigned int cat,
     category = cat;
     if (classnamepatt && classnamepatt[0])
     {
-        classnamepattern = new cPatternMatcher();
+        classnamepattern = new PatternMatcher();
         classnamepattern->setPattern(classnamepatt, false, true, false);
     }
     if (objfullpathpatt && objfullpathpatt[0])
     {
-        objfullpathpattern = new cPatternMatcher();
+        objfullpathpattern = new PatternMatcher();
         objfullpathpattern->setPattern(objfullpathpatt, false, true, false);
     }
 }

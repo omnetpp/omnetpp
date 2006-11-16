@@ -40,10 +40,10 @@ FilteredEventLog::~FilteredEventLog()
     delete eventLog;
 }
 
-void FilteredEventLog::setPatternMatchers(std::vector<cPatternMatcher> &patternMatchers, std::vector<const char *> &patterns)
+void FilteredEventLog::setPatternMatchers(std::vector<PatternMatcher> &patternMatchers, std::vector<const char *> &patterns)
 {
     for (std::vector<const char *>::iterator it = patterns.begin(); it != patterns.end(); it++) {
-        cPatternMatcher matcher;
+        PatternMatcher matcher;
         matcher.setPattern(*it, true, true, true);
         patternMatchers.push_back(matcher);
     }
@@ -82,7 +82,7 @@ long FilteredEventLog::getApproximateNumberOfEvents()
                         sumMatching += firstEvent->getEndOffset() - firstEvent->getBeginOffset();
                         count++;
                         firstEvent = firstEvent->getNextEvent();
-                        if (firstEvent) 
+                        if (firstEvent)
                             sumNotMatching += firstEvent->getBeginOffset() - previousEvent->getEndOffset();
                     }
 
@@ -222,12 +222,12 @@ bool FilteredEventLog::matchesDependency(IEvent *event)
     return false;
 }
 
-bool FilteredEventLog::matchesPatterns(std::vector<cPatternMatcher> &patterns, const char *str)
+bool FilteredEventLog::matchesPatterns(std::vector<PatternMatcher> &patterns, const char *str)
 {
     if (patterns.empty())
         return true;
 
-    for (std::vector<cPatternMatcher>::iterator it = patterns.begin(); it != patterns.end(); it++)
+    for (std::vector<PatternMatcher>::iterator it = patterns.begin(); it != patterns.end(); it++)
         if ((*it).matches(str))
             return true;
 

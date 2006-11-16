@@ -20,7 +20,7 @@
 #include "cobject.h"
 #include "cvisitor.h"
 #include "tkapp.h"
-#include "patmatch.h"
+#include "patternmatcher.h"
 
 
 
@@ -73,8 +73,8 @@ class cFilteredCollectObjectsVisitor : public cCollectObjectsVisitor
 {
   private:
     unsigned int category;
-    cPatternMatcher *classnamepattern;
-    cPatternMatcher *objfullpathpattern;
+    PatternMatcher *classnamepattern;
+    PatternMatcher *objfullpathpattern;
   protected:
     virtual void visit(cObject *obj);
   public:

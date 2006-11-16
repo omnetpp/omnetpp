@@ -26,7 +26,7 @@
 #include "defs.h"
 #include "envdefs.h"
 #include "cconfig.h"
-#include "patmatch.h"
+#include "patternmatcher.h"
 
 
 class cIniFile;
@@ -51,7 +51,7 @@ class ENVIR_API cIniFile : public cConfiguration
     struct sEntry {             // one entry contains:
         int section_id;         //  section it belongs to
         char *key;              //  key
-        cPatternMatcher *keypattern; // key as pattern
+        PatternMatcher *keypattern; // key as pattern
         char *value;            //  its value (without quotes)
         char *rawvalue;         //  original value with quotes, or NULL if it had no quotes
         int file_id;            //  file it was read from

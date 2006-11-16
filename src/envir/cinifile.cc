@@ -21,7 +21,7 @@
 #include "cenvir.h"
 #include "util.h"  //strToSimtime
 #include "cinifile.h"
-#include "patmatch.h"
+#include "patternmatcher.h"
 #include "cexception.h"
 #include "fsutils.h"
 #include "platdep/fileutil.h"  // directoryOf
@@ -209,7 +209,7 @@ void cIniFile::_readFile(const char *fname, int section_id)
               entry.value = opp_strdup(e);
            }
            entry.accessed = false;
-           entry.keypattern = new cPatternMatcher();
+           entry.keypattern = new PatternMatcher();
            entry.keypattern->setPattern(entry.key, !oldwildcardsmode, true, true);
            entry.file_id = file_id;
            entry.lineno = lineno;

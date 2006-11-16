@@ -14,7 +14,7 @@ COPTS=$(CFLAGS) -I. /Fd"common.pdb"
 
 OBJS= filetokenizer.obj filereader.obj linetokenizer.obj stringtokenizer.obj \
       matchexpression.obj lex.matchexpressionyy.obj matchexpression.tab.obj \
-      patmatch.obj util.obj exception.obj
+      patternmatcher.obj util.obj exception.obj
 
 
 #
@@ -65,11 +65,22 @@ filereader.obj: filereader.cc \
   exception.h
 filetokenizer.obj: filetokenizer.cc \
   filetokenizer.h
+lex.matchexpressionyy.obj: lex.matchexpressionyy.cc \
+  ./unistd.h \
+  matchexpression.tab.h
 linetokenizer.obj: linetokenizer.cc \
   exception.h \
   linetokenizer.h
-patmatch.obj: patmatch.cc \
-  patmatch.h \
+matchexpression.obj: matchexpression.cc \
+  matchexpression.h \
+  patternmatcher.h \
+  exception.h
+matchexpression.tab.obj: matchexpression.tab.cc \
+  matchexpression.h \
+  patternmatcher.h \
+  exception.h
+patternmatcher.obj: patternmatcher.cc \
+  patternmatcher.h \
   exception.h
 stringtokenizer.obj: stringtokenizer.cc \
   stringtokenizer.h

@@ -29,7 +29,7 @@
 #include <stdlib.h>
 //#include "expryydefs.h"
 #include "matchexpression.h"
-#include "patmatch.h"
+#include "patternmatcher.h"
 #include "exception.h"
 
 #define YYDEBUG 1           /* allow debugging */
@@ -84,13 +84,13 @@ expr
 fieldpattern
         : STRINGLITERAL
                 {
-                    cPatternMatcher *p = new cPatternMatcher();
+                    PatternMatcher *p = new PatternMatcher();
                     p->setPattern($1, state.dottedpath, state.fullstring, state.casesensitive);
                     state.elemsp->push_back(MatchExpression::Elem(p));
                 }
         | STRINGLITERAL '(' STRINGLITERAL ')'
                 {
-                    cPatternMatcher *p = new cPatternMatcher();
+                    PatternMatcher *p = new PatternMatcher();
                     p->setPattern($3, state.dottedpath, state.fullstring, state.casesensitive);
                     state.elemsp->push_back(MatchExpression::Elem(p, $1));
                 }

@@ -28,7 +28,7 @@
 #include <assert.h>
 #include "resultfilemanager.h"
 #include "util.h"
-#include "patmatch.h"
+#include "patternmatcher.h"
 
 
 typedef std::vector<ID> IDVector;

@@ -149,7 +149,7 @@ cenvir.o: cenvir.cc \
   ../../include/regmacros.h \
   ../../include/opp_string.h \
   ../../include/cconfig.h \
-  patmatch.h \
+  patternmatcher.h \
   ../../include/envirext.h \
   ../../include/platdep/time.h \
   ../../include/ccomponent.h \
@@ -161,7 +161,7 @@ cinifile.o: cinifile.cc \
   ../../include/cenvir.h \
   ../../include/util.h \
   cinifile.h \
-  patmatch.h \
+  patternmatcher.h \
   ../../include/cexception.h \
   fsutils.h \
   ../../include/platdep/fileutil.h \
@@ -252,7 +252,7 @@ main.o: main.cc \
 omnetapp.o: omnetapp.cc \
   args.h \
   omnetapp.h \
-  patmatch.h \
+  patternmatcher.h \
   fsutils.h \
   ../../include/ccoroutine.h \
   ../../include/csimulation.h \
@@ -293,8 +293,8 @@ omnetapp.o: omnetapp.cc \
   ../../include/ccomponent.h \
   ../../include/cgate.h \
   ../../include/cdefaultlist.h
-patmatch.o: patmatch.cc \
-  patmatch.h \
+patternmatcher.o: patternmatcher.cc \
+  patternmatcher.h \
   ../../include/cexception.h \
   ../../include/defs.h \
   envdefs.h \
