@@ -1,0 +1,41 @@
+%description:
+Tests MatchExpression class.
+
+%global:
+
+#include "../../../src/common/matchexpression.h"
+
+// global vars
+static bool dottedpath;
+static bool fullstring;
+static bool casesensitive;
+
+static void match(const char *pattern, const char *line, bool expectedresult)
+{
+    MatchExpression e;
+    e.setPattern(pattern, dottedpath, fullstring, casesensitive);
+    MatchableString lineObject(line);
+    bool result = e.matches(&lineObject);
+    ev.printf("%s %s %s: %s\n", pattern, (expectedresult?"~":"!~"), line, (result==expectedresult?"ok":"FAIL"));
+}
+
+
+%activity:
+
+dottedpath = true;
+fullstring = true;
+casesensitive = true;
+
+//
+// string literals: basic
+//
+match("a", "a", true);
+match("alma", "alma", true);
+match("a", "b", false);
+match("a", "aa", false);
+
+%exitcode: 0
+
+%not-contains: stdout
+FAIL
+
