@@ -12,17 +12,16 @@ static bool casesensitive;
 
 static void match(const char *pattern, const char *line, bool expectedresult)
 {
-    MatchExpression me;
-    me.setPattern(pattern, dottedpath, fullstring, casesensitive);
-    MatchableString lineObject(line);
     bool result;
     try {
+        MatchExpression me(pattern, dottedpath, fullstring, casesensitive);
+        MatchableString lineObject(line);
         result = me.matches(&lineObject);
     } catch (Exception *e) {
-        ev.printf("%s match %s : EXCEPTION: %s\n", pattern, line, e->message());
+        ev.printf("`%s' matches `%s' : EXCEPTION: %s\n", pattern, line, e->message());
         return;
     }
-    ev.printf("%s match %s: %s %s\n", pattern, line, (result?"true":"false"), (result==expectedresult?"ok":"FAIL"));
+    ev.printf("`%s' matches `%s' : %s %s\n", pattern, line, (result?"true":"false"), (result==expectedresult?"ok":"FAIL"));
 }
 
 
@@ -35,25 +34,21 @@ casesensitive = true;
 match("a", "a", true);
 match("a", "b", false);
 
-match("a|b", "a", true);
-match("b|a", "a", true);
-match("a|b", "c", false);
+match("a OR b", "a", true);
+match("b OR a", "a", true);
+match("a OR b", "c", false);
 
-match("a | b", "a", true);
-match("b | a", "a", true);
-match("a | b", "c", false);
+match("{50..120} OR bu*bu", "bu--bu", true);
+match("{50..120} OR bu*bu", "73", true);
+match("{50..120} OR bu*bu", "120", true);
+match("{50..120} OR bu*bu", "50", true);
+match("{50..120} OR bu*bu", "500", false);
+match("{50..120} OR bu*bu", "bu", false);
 
-match("{50..120} | bu*bu", "bu--bu", true);
-match("{50..120} | bu*bu", "73", true);
-match("{50..120} | bu*bu", "120", true);
-match("{50..120} | bu*bu", "50", true);
-match("{50..120} | bu*bu", "500", false);
-match("{50..120} | bu*bu", "bu", false);
-
-match("(one|two) | three", "one", true);
-match("(one|two) | three", "two", true);
-match("(one|two) | three", "three", true);
-match("(one|two) | three", "four", false);
+match("(one OR two) OR three", "one", true);
+match("(one OR two) OR three", "two", true);
+match("(one OR two) OR three", "three", true);
+match("(one OR two) OR three", "four", false);
 
 
 %exitcode: 0
