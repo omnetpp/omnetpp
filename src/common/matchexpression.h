@@ -18,8 +18,10 @@
 
 #include <string>
 #include <vector>
+#include "exception.h"
 
 class PatternMatcher;
+
 
 /**
  * Matches various fields of an object. By default, a pattern must match

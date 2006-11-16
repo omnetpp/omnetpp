@@ -14,7 +14,6 @@
 
 #include "matchexpression.h"
 #include "patternmatcher.h"
-#include "exception.h"
 
 
 MatchExpression::Elem::Elem(PatternMatcher *pattern, const char *fieldname)
@@ -75,13 +74,13 @@ bool MatchExpression::matches(const Matchable *object)
             stk[++tos] = e.pattern->matches(object->getAttribute(e.fieldname.c_str()));
             break;
           case Elem::OR:
-            if (tos<=2)
+            if (tos<1)
                 throw new Exception("MatchExpression underflow");
             stk[tos-1] = stk[tos-1] || stk[tos];
             tos--;
             break;
           case Elem::AND:
-            if (tos<=2)
+            if (tos<1)
                 throw new Exception("MatchExpression underflow");
             stk[tos-1] = stk[tos-1] && stk[tos];
             tos--;
