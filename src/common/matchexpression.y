@@ -78,6 +78,7 @@ expr
         : fieldpattern
         | '(' expr ')'
         | NOT_ expr
+                { state.elemsp->push_back(MatchExpression::Elem(MatchExpression::Elem::NOT)); }
         | expr AND_ expr
                 { state.elemsp->push_back(MatchExpression::Elem(MatchExpression::Elem::AND)); }
         | expr OR_ expr

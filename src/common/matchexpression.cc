@@ -90,6 +90,11 @@ bool MatchExpression::matches(const Matchable *object)
             stk[tos-1] = stk[tos-1] && stk[tos];
             tos--;
             break;
+          case Elem::NOT:
+            if (tos<0)
+                throw new Exception("MatchExpression underflow");
+            stk[tos] = !stk[tos];
+            break;
           default:
             throw new Exception("MatchExpression: unknown element type");
        }

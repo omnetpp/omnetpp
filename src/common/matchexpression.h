@@ -64,13 +64,13 @@ class MatchExpression
     {
       public:
         friend class MatchExpression;
-        enum Type {UNDEF, AND, OR, PATTERN, FIELDPATTERN};
+        enum Type {UNDEF, AND, OR, NOT, PATTERN, FIELDPATTERN};
       private:
         Type type;
         std::string fieldname;
         PatternMatcher *pattern;
       public:
-        /** Ctor for AND and OR */
+        /** Ctor for AND, OR, NOT */
         Elem(Type type=UNDEF)  {this->type = type;}
 
         /** The given field of the object must match pattern */
