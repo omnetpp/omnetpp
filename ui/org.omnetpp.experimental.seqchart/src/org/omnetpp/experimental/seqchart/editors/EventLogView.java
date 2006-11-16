@@ -22,7 +22,6 @@ import org.omnetpp.eventlog.engine.IEvent;
 import org.omnetpp.eventlog.engine.IEventLog;
 import org.omnetpp.experimental.seqchart.widgets.EventLogVirtualTableContentProvider;
 import org.omnetpp.experimental.seqchart.widgets.EventLogVirtualTableItemProvider;
-import org.omnetpp.experimental.seqchart.widgets.IVirtualTableSelection;
 import org.omnetpp.experimental.seqchart.widgets.LongVirtualTableContentProvider;
 import org.omnetpp.experimental.seqchart.widgets.LongVirtualTableItemProvider;
 import org.omnetpp.experimental.seqchart.widgets.VirtualTableSelection;
@@ -53,7 +52,7 @@ public class EventLogView extends ViewPart {
 	 */
 	@Override
 	public void createPartControl(Composite parent) {
-		Table table = new Table(parent, SWT.FULL_SELECTION | SWT.VIRTUAL);
+		Table table = new Table(parent, SWT.FULL_SELECTION | SWT.VIRTUAL | SWT.MULTI);
 		table.setHeaderVisible(true);
 		table.setLinesVisible(false);
 		TableColumn tableColumn = new TableColumn(table, SWT.NONE);
@@ -94,8 +93,22 @@ public class EventLogView extends ViewPart {
 	private void addPopupMenu() {
 		Menu popupMenu = new Menu(virtualTableViewer.getControl());
 
-		// center menu item
+		// find menu item
 		MenuItem subMenuItem = new MenuItem(popupMenu, SWT.PUSH);
+		subMenuItem.setText("Search text");
+		subMenuItem.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
+				InputDialog dialog = new InputDialog(null, "Search text", "Please enter the search text", null, null);
+				dialog.open();
+
+				String searchText = dialog.getValue();
+				IEventLog eventLog = (IEventLog)virtualTableViewer.getInput();
+				// TODO:
+			}
+		});
+
+		// goto event menu item
+		subMenuItem = new MenuItem(popupMenu, SWT.PUSH);
 		subMenuItem.setText("Goto event");
 		subMenuItem.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {

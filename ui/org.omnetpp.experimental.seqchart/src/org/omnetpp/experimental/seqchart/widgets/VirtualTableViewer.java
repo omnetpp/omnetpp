@@ -11,6 +11,8 @@ import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.events.PaintListener;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
@@ -43,8 +45,14 @@ public class VirtualTableViewer extends ContentViewer {
 	 */
 	protected int oldTopIndex;
 
+	/**
+	 * True means the table will jump to the selection and switch input automatically when it gets notified about a selection change
+	 * even if the input is different from the current one.
+	 */
 	protected boolean followSelection = true;
 	
+	protected List<Object> selectionElements;
+
 	public VirtualTableViewer(Table table) {
 		this.table = table;
 		
@@ -72,6 +80,15 @@ public class VirtualTableViewer extends ContentViewer {
 					VirtualTableViewer.this.table.setTopIndex(fixPointTableIndex);
 					redrawTable();
 				}
+			}
+		});
+		table.addSelectionListener(new SelectionListener() {
+			public void widgetDefaultSelected(SelectionEvent e) {
+			}
+
+			public void widgetSelected(SelectionEvent e) {
+				selectionElements = new ArrayList<Object>();
+				selectionElements.add(getElementAtIndex(VirtualTableViewer.this.table.getSelectionIndex()));
 			}
 		});
 	}
@@ -104,8 +121,8 @@ public class VirtualTableViewer extends ContentViewer {
 				if (virtualTableSelection.getInput() != getInput())
 					setInput(virtualTableSelection.getInput());
 	
-				//FIXME only notify if selection actually changed
 				setSelectionElements(virtualTableSelection.getElements());
+				gotoFirstSelectionElement();
 			}
 		}
 		else {
@@ -115,59 +132,51 @@ public class VirtualTableViewer extends ContentViewer {
 				IVirtualTableSelection virtualTableSelection = (IVirtualTableSelection)selection;
 				
 				if (virtualTableSelection.getInput() == getInput()) {
-					//FIXME only notify if selection actually changed
 					setSelectionElements(virtualTableSelection.getElements());
+					gotoFirstSelectionElement();
 				}
 			}
 		}
 	}
-	
+
 	@Override
 	public void setInput(Object input) {
 		super.setInput(input);
-		ensureFixPoint();
+		gotoBegin();
 	}
+
+// TODO: resurrect this to support markers
+//	private IFile getResource() {
+//		return ResourcesPlugin.getWorkspace().getRoot().getFileForLocation(getInput());
+//	}
 
 	/**
 	 * Returns the current selection.
 	 */
 	public Object getSelectionElement() {
-		return null;
-// FIXME: this might cost quite a bit if the selection is far away from the fixpoint		return getElementAt(table.getSelectionIndex());
+		if (selectionElements != null)
+			return selectionElements.get(0);
+		else
+			return null;
 	}
 
 	/**
 	 * Returns the current selection.
 	 */
 	public List getSelectionElements() {
-		int[] indices = table.getSelectionIndices();
-		ArrayList<Object> list = new ArrayList<Object>();
-		for (int index : indices)
-			; // FIXME: this might cost quite a bit list.add(getElementAt(index));
-		return list;
+		return selectionElements;
 	}
 
 	/**
 	 * Selects the given elements, and goes to the first one.
 	 */
-	public void setSelectionElements(List elements) {
-		if (elements.size() > 0)
-			gotoElement(elements.get(0));
-
-		/* TODO: we should delay index calculation
-		int visibleElementCount = getVisibleElementCount();
-		int[] indices = new int[elements.size()];
-
-		for (int i = 0; i < elements.size(); i++) {
-			// TODO: what if the element is far away?
-			int distance = (int)getVirtualTableContentProvider().getDistanceToElement(fixPointElement, elements.get(i), visibleElementCount);
-
-			if (distance < visibleElementCount)
-				indices[i] = fixPointTableIndex + distance;
-		}
-
-		table.setSelection(indices);
-		*/
+	public void setSelectionElements(List<Object> elements) {
+		selectionElements = elements;
+	}
+	
+	public void gotoFirstSelectionElement() {
+		if (selectionElements != null && selectionElements.size() != 0)
+			gotoElement(selectionElements.get(0));
 	}
 
 	/**
@@ -195,12 +204,14 @@ public class VirtualTableViewer extends ContentViewer {
 	public void gotoElement(Object element) {
 		if (element != null) {
 			int topIndex = getTopVisibleElementIndex();
-
 			changeTablePosition(topIndex, topIndex, element, topIndex);
-			table.setSelection(topIndex);
-
 			fixTablePosition();
 		}
+	}
+
+	protected void gotoBegin() {
+		setTableElementCount();
+		relocateFixPoint(getVirtualTableContentProvider().getFirstElement(), 0);
 	}
 
 	protected IVirtualTableContentProvider getVirtualTableContentProvider() {
@@ -211,13 +222,6 @@ public class VirtualTableViewer extends ContentViewer {
 		return (IVirtualTableItemProvider)getLabelProvider();
 	}
 	
-	protected void ensureFixPoint() {
-		if (fixPointElement == null) {
-			setTableElementCount();
-			relocateFixPoint(getVirtualTableContentProvider().getFirstElement(), 0);
-		}
-	}
-
 	protected void setTableElementCount() {
 		long elementCount = getVirtualTableContentProvider().getApproximateNumberOfElements();
 		System.out.println("Approximate virtual table size: " + elementCount);
@@ -331,6 +335,7 @@ public class VirtualTableViewer extends ContentViewer {
 			Assert.isTrue(virtualTableContentProvider.getDistanceToFirstElement(getTopVisibleElement(), reservedElementCount) <= getTopVisibleElementIndex(), "Not enough lines above top element in real table");
 			Assert.isTrue(virtualTableContentProvider.getDistanceToLastElement(getBottomVisibleElement(), reservedElementCount) <= tableElementCount - getBottomVisibleElementIndex(), "Not enough lines below bottom element in real table");
 	
+			table.setSelection(getSelectionIndices());
 			redrawTable();
 			System.out.println("Top element after fixTable: " + getTopVisibleElement() + " new top index: " + getTopVisibleElementIndex());
 		}
@@ -340,17 +345,36 @@ public class VirtualTableViewer extends ContentViewer {
 	}
 	
 	protected void changeTablePosition(int oldTopIndex, int newTopIndex, Object fixPointElement, int fixPointTableIndex) {		
-		int deltaTopIndex = newTopIndex - oldTopIndex;
+//		int deltaTopIndex = newTopIndex - oldTopIndex;
 		relocateFixPoint(fixPointElement, fixPointTableIndex);
 
 		if (oldTopIndex != newTopIndex) {
-			int selectedIndex = table.getSelectionIndex();
-
-			if (selectedIndex != -1)
-				table.setSelection(selectedIndex + deltaTopIndex);
-
+//			int selectedIndex = table.getSelectionIndex();
+//			if (selectedIndex != -1)
+//				table.setSelection(selectedIndex + deltaTopIndex);
 			table.setTopIndex(newTopIndex);
 		}
+	}
+
+	private int[] getSelectionIndices() {
+		Object topElement = getTopVisibleElement();
+		int visibleElementCount = getVisibleElementCount();
+		int topVisibleElementIndex = getTopVisibleElementIndex();
+		ArrayList<Integer> indices = new ArrayList<Integer>();
+
+		for (Object selectionElement : selectionElements) {
+			int distance = (int)getVirtualTableContentProvider().getDistanceToElement(topElement, selectionElement, visibleElementCount);
+			
+			if (distance < visibleElementCount)
+				indices.add(topVisibleElementIndex + distance);
+		}
+
+		int[] result = new int[indices.size()];
+
+		for (int i = 0; i < result.length; i++)
+			result[i] = indices.get(i);
+
+		return result;
 	}
 
 	protected void redrawTable() {
@@ -412,7 +436,7 @@ public class VirtualTableViewer extends ContentViewer {
 	protected int getVisibleElementCount() {
 		int itemHeight = table.getItemHeight();
 		int headerHeight = table.getHeaderHeight();
-		// height seems to be offset by approximately one item (itemHeight: 14, headerHeight: 20, height: 40 for a less than one visible row table)
+		// height seems to be offset by approximately one item (itemHeight: 14, headerHeight: 20, height: 40 for a table with less than one visible row)
 		int height = table.getSize().y - itemHeight;
 		
 		return Math.max(0, (int)Math.ceil((double)(height - headerHeight) / itemHeight));

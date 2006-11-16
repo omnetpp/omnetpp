@@ -3,6 +3,8 @@ package org.omnetpp.experimental.seqchart.editors;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.core.resources.IMarker;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.draw2d.ColorConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -26,9 +28,11 @@ import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.IMemento;
 import org.eclipse.ui.INavigationLocation;
 import org.eclipse.ui.INavigationLocationProvider;
+import org.eclipse.ui.IPathEditorInput;
 import org.eclipse.ui.ISelectionListener;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.PartInitException;
+import org.eclipse.ui.ide.IGotoMarker;
 import org.eclipse.ui.part.EditorPart;
 import org.omnetpp.common.canvas.RubberbandSupport;
 import org.omnetpp.eventlog.engine.EventLog;
@@ -36,7 +40,7 @@ import org.omnetpp.eventlog.engine.FileReader;
 import org.omnetpp.eventlog.engine.FilteredEventLog;
 import org.omnetpp.eventlog.engine.IEvent;
 import org.omnetpp.eventlog.engine.IEventLog;
-import org.omnetpp.eventlog.engine.IntSet;
+import org.omnetpp.eventlog.engine.IntVector;
 import org.omnetpp.eventlog.engine.ModuleCreatedEntry;
 import org.omnetpp.experimental.seqchart.SeqChartPlugin;
 import org.omnetpp.experimental.seqchart.moduletree.ModuleTreeBuilder;
@@ -60,7 +64,7 @@ import org.omnetpp.scave.engineext.ResultFileManagerEx;
  * @author andras
  */
 //FIXME unhook from listeners (there are "widget is disposed" errors in the log after the editor is closed)  
-public class SequenceChartToolEditor extends EditorPart implements INavigationLocationProvider {
+public class SequenceChartToolEditor extends EditorPart implements INavigationLocationProvider, IGotoMarker {
 
 	private SequenceChart sequenceChart;
 	private IEventLog eventLog;  // the log file loaded
@@ -77,13 +81,34 @@ public class SequenceChartToolEditor extends EditorPart implements INavigationLo
 		super();
 	}
 
+    public void gotoMarker(IMarker marker)
+    {
+// TODO: pass down marker
+    }
+	
 	@Override
 	public void init(IEditorSite site, IEditorInput input) throws PartInitException {
 		setSite(site);
 		setInput(input);
 		
-		IFileEditorInput fileInput = (IFileEditorInput)input;
-		String logFileName = fileInput.getFile().getLocation().toFile().getAbsolutePath();
+		String logFileName;
+		if (input instanceof IFileEditorInput) {
+			IFileEditorInput fileInput = (IFileEditorInput)input;
+			try {
+				IMarker marker = fileInput.getFile().createMarker(IMarker.BOOKMARK);
+				marker.setAttribute(IMarker.MESSAGE, "ALMA");
+			} catch (CoreException e) {
+				throw new RuntimeException(e);
+			}
+			logFileName = fileInput.getFile().getLocation().toFile().getAbsolutePath();
+		}
+		else if (input instanceof IPathEditorInput) {
+			IPathEditorInput pathFileInput = (IPathEditorInput)input;
+			logFileName = pathFileInput.getPath().toFile().getAbsolutePath();
+		}
+		else 
+			throw new PartInitException("Unsupported input type");
+
 		eventLog = new EventLog(new FileReader(logFileName, /* EventLog will delete it */false));
 
 		String vectorFileName = logFileName.replaceFirst("\\.log$", ".vec");
@@ -388,18 +413,20 @@ public class SequenceChartToolEditor extends EditorPart implements INavigationLo
 	}
 
 	private void showFilteredEventLog(IEventLog eventLog, ArrayList<ModuleTreeItem> axisModules, int eventNumber) {
-		final IntSet moduleIds = new IntSet(false);
+		final IntVector moduleIds = new IntVector();
 
 		for (int i = 0; i < axisModules.size(); i++) {
 			ModuleTreeItem treeItem = axisModules.get(i);
 			treeItem.visitLeaves(new ModuleTreeItem.IModuleTreeItemVisitor() {
 				public void visit(ModuleTreeItem treeItem) {
-					moduleIds.insert(treeItem.getModuleId());
+					moduleIds.add(treeItem.getModuleId());
 				}
 			});
 		}
-
-		showEventLog(new FilteredEventLog(eventLog, moduleIds, eventNumber, true, true), axisModules);
+		FilteredEventLog filteredEventLog = new FilteredEventLog(eventLog);
+		filteredEventLog.setModuleIds(moduleIds);
+		filteredEventLog.setTracedEventNumber(eventNumber);
+		showEventLog(filteredEventLog, axisModules);
 	}
 
 	private void showEventLog(IEventLog eventLog,  ArrayList<ModuleTreeItem> axisModules) {

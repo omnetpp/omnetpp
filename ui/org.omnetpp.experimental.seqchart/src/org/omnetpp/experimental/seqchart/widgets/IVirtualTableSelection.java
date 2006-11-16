@@ -7,5 +7,5 @@ import org.eclipse.jface.viewers.ISelection;
 public interface IVirtualTableSelection extends ISelection {
 	public Object getInput();
 
-	public List getElements();
+	public List<Object> getElements();
 }

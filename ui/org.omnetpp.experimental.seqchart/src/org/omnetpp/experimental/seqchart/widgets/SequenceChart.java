@@ -43,6 +43,7 @@ import org.omnetpp.common.canvas.CachingCanvas;
 import org.omnetpp.eventlog.engine.BeginSendEntry;
 import org.omnetpp.eventlog.engine.IEvent;
 import org.omnetpp.eventlog.engine.IEventLog;
+import org.omnetpp.eventlog.engine.Int64Vector;
 import org.omnetpp.eventlog.engine.IntSet;
 import org.omnetpp.eventlog.engine.IntVector;
 import org.omnetpp.eventlog.engine.LongVector;
@@ -1124,7 +1125,7 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 
 	private void paintMessageArrows(Graphics graphics, long startEventPtr, long endEventPtr) {
 		VLineBuffer vlineBuffer = new VLineBuffer();
-		LongVector messageDependencies = sequenceChartFacade.getIntersectingMessageDependencies(startEventPtr, endEventPtr);
+		Int64Vector messageDependencies = sequenceChartFacade.getIntersectingMessageDependencies(startEventPtr, endEventPtr);
 		
 		for (int i = 0; i < messageDependencies.size(); i++)
 			drawMessageArrow(graphics, messageDependencies.get(i), vlineBuffer);
@@ -1895,7 +1896,7 @@ public class SequenceChart extends CachingCanvas implements ISelectionProvider {
 
             // check message arrows
             if (msgs != null) {
-        		LongVector messageDependencies = sequenceChartFacade.getIntersectingMessageDependencies(startEventPtr, endEventPtr);
+            	Int64Vector messageDependencies = sequenceChartFacade.getIntersectingMessageDependencies(startEventPtr, endEventPtr);
         		
         		for (int i = 0; i < messageDependencies.size(); i++) {
         			long messageDependencyPtr = messageDependencies.get(i);

@@ -20,6 +20,6 @@ public class VirtualTableSelection implements IVirtualTableSelection {
 	}
 
 	public boolean isEmpty() {
-		return elements.size() != 0;
+		return elements == null || elements.size() == 0;
 	}
 }
