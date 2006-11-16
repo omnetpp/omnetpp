@@ -28,7 +28,9 @@ SO_LIB_SUFFIX=@SO_LIB_SUFFIX@
 #
 COPTS=$(CFLAGS)
 
-OBJS= patmatch.o filetokenizer.o filereader.o linetokenizer.o stringtokenizer.o util.o exception.o
+OBJS= filetokenizer.o filereader.o linetokenizer.o stringtokenizer.o \
+      matchexpression.o lex.matchexpressionyy.o matchexpression.tab.o \
+      patmatch.o util.o exception.o
 
 #
 # Automatic rules
@@ -51,6 +53,14 @@ libcommon$(A_LIB_SUFFIX) : $(OBJS)
 libcommon$(SO_LIB_SUFFIX) : $(OBJS)
 	$(SHLIB_LD) -o libcommon$(SO_LIB_SUFFIX) $(OBJS)
 	../utils/install-lib libcommon$(SO_LIB_SUFFIX).$(OMNETPP_VERSION) $(OMNETPP_LIB_DIR) libcommon$(SO_LIB_SUFFIX)
+
+matchexpression.tab.h matchexpression.tab.cc : matchexpression.y
+	$(YACC) -p matchexpressionyy -b matchexpression -d matchexpression.y
+	mv matchexpression.tab.c matchexpression.tab.cc
+
+lex.matchexpressionyy.cc: matchexpression.lex matchexpression.tab.h
+	$(LEX) -Pmatchexpressionyy matchexpression.lex
+	mv lex.matchexpressionyy.c lex.matchexpressionyy.cc
 
 depend:
 	$(MAKEDEPEND) -I.  -- *.cc

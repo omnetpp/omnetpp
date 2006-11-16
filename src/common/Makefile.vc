@@ -12,7 +12,9 @@ CFLAGS=$(CFLAGS) /DWIN32_DLL
 #
 COPTS=$(CFLAGS) -I. /Fd"common.pdb"
 
-OBJS= patmatch.obj filetokenizer.obj filereader.obj linetokenizer.obj stringtokenizer.obj util.obj exception.obj
+OBJS= filetokenizer.obj filereader.obj linetokenizer.obj stringtokenizer.obj \
+      matchexpression.obj lex.matchexpressionyy.obj matchexpression.tab.obj \
+      patmatch.obj util.obj exception.obj
 
 
 #
@@ -33,6 +35,16 @@ common.lib : $(OBJS)
 	$(AR) /out:common.lib $(OBJS)
 	copy common.lib $(OMNETPP_LIB_DIR:/=\)
 	- copy /b common.pdb $(OMNETPP_LIB_DIR:/=\) 2>nul
+
+matchexpression.tab.h matchexpression.tab.cc : matchexpression.y
+	$(YACC:/=\) -p matchexpressionyy -b matchexpression -d matchexpression.y
+	copy matchexpression.tab.c matchexpression.tab.cc
+	del matchexpression.tab.c
+
+lex.matchexpressionyy.cc: matchexpression.lex matchexpression.tab.h
+	$(LEX:/=\) -Pmatchexpressionyy matchexpression.lex
+	copy lex.matchexpressionyy.c lex.matchexpressionyy.cc
+	del lex.matchexpressionyy.c
 
 doc:
 	$(DOXYGEN:/=\) doxy.cfg
