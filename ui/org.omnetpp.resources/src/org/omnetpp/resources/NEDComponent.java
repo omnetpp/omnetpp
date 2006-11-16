@@ -2,18 +2,24 @@ package org.omnetpp.resources;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.Assert;
 import org.omnetpp.ned2.model.NEDElement;
 import org.omnetpp.ned2.model.NEDSourceRegion;
+import org.omnetpp.ned2.model.ex.CompoundModuleNodeEx;
+import org.omnetpp.ned2.model.ex.ConnectionNodeEx;
+import org.omnetpp.ned2.model.ex.SubmoduleNodeEx;
 import org.omnetpp.ned2.model.interfaces.INEDTypeInfo;
 import org.omnetpp.ned2.model.interfaces.INEDTypeResolver;
 import org.omnetpp.ned2.model.interfaces.ITopLevelElement;
 import org.omnetpp.ned2.model.notification.NEDAttributeChangeEvent;
 import org.omnetpp.ned2.model.notification.NEDModelEvent;
+import org.omnetpp.ned2.model.notification.NEDStructuralChangeEvent;
 import org.omnetpp.ned2.model.pojo.ChannelInterfaceNode;
 import org.omnetpp.ned2.model.pojo.ChannelNode;
 import org.omnetpp.ned2.model.pojo.CompoundModuleNode;
@@ -47,6 +53,7 @@ public class NEDComponent implements INEDTypeInfo, NEDElementTags {
     protected HashMap<String, NEDElement> ownGateSizes = new HashMap<String, NEDElement>();
 	protected HashMap<String, NEDElement> ownInnerTypes = new HashMap<String, NEDElement>();
 	protected HashMap<String, NEDElement> ownSubmodules = new HashMap<String, NEDElement>();
+    protected HashSet<String> ownUsedTypes = new HashSet<String>();
 
 	// sum of all "own" stuff
 	protected HashMap<String, NEDElement> ownMembers = new HashMap<String, NEDElement>();
@@ -66,6 +73,8 @@ public class NEDComponent implements INEDTypeInfo, NEDElementTags {
     
     // all types which extends this component
     protected List<INEDTypeInfo> allDerivedTypes = new ArrayList<INEDTypeInfo>();
+    // all types that contain instances (submodule, connection) of this type
+    protected List<INEDTypeInfo> allUsingTypes = new ArrayList<INEDTypeInfo>();
 
     private boolean notifyInProgress = false;
 
@@ -116,6 +125,36 @@ public class NEDComponent implements INEDTypeInfo, NEDElementTags {
 			}
 		}
 	}
+    
+    /**
+     * Collects all typenames that are used in this module (submodule and connection types)
+     * @param result sorage for the used types
+     */
+    protected void collectTypesInCompoundModule(Set<String> result) {
+        // this is only meaningful for CompoundModules so skip the others
+        if (!(componentNode instanceof CompoundModuleNodeEx))
+            return;
+        
+        // look for submodule types
+        NEDElement submodules = componentNode.getFirstChildWithTag(NED_SUBMODULES);
+        if (submodules != null) {
+            for (NEDElement node : submodules) {
+                if (node instanceof SubmoduleNodeEx) {
+                    result.add(((SubmoduleNodeEx)node).getEffectiveType());
+                }
+            }
+        }
+
+        // look for connection types
+        NEDElement connections = componentNode.getFirstChildWithTag(NED_CONNECTIONS);
+        if (connections != null) {
+            for (NEDElement node : connections) {
+                if (node instanceof ConnectionNodeEx) {
+                    result.add(((ConnectionNodeEx)node).getEffectiveType());
+                }
+            }
+        }
+    }
 
 	/**
 	 * Follow inheritance chain, and return the list of super classes 
@@ -158,6 +197,8 @@ public class NEDComponent implements INEDTypeInfo, NEDElementTags {
         ownSubmodules.clear();
         ownInnerTypes.clear();
         ownMembers.clear();
+        ownUsedTypes.clear();
+        
         // collect stuff from component declaration
         collect(ownProperties, NED_PROPERTY, NED_PARAMETERS, PropertyNode.ATT_NAME, null);
         collect(ownParams, NED_PARAM, NED_PARAMETERS, ParamNode.ATT_NAME, ParamNode.ATT_TYPE);
@@ -179,6 +220,9 @@ public class NEDComponent implements INEDTypeInfo, NEDElementTags {
         ownMembers.putAll(ownGates);
         ownMembers.putAll(ownSubmodules);
         ownMembers.putAll(ownInnerTypes);
+        
+        // collect the types that were used in this module (meaningfule only for compound modules)
+        collectTypesInCompoundModule(ownUsedTypes);
 
         needsOwnUpdate = false;
     }
@@ -202,7 +246,6 @@ public class NEDComponent implements INEDTypeInfo, NEDElementTags {
 		allInnerTypes.clear();
 		allSubmodules.clear();
 		allMembers.clear();
-        allDerivedTypes.clear();
 
         // collect all inherited members
 		List<INEDTypeInfo> extendsChain = resolveExtendsChain();
@@ -219,21 +262,31 @@ public class NEDComponent implements INEDTypeInfo, NEDElementTags {
 			allMembers.putAll(component.getOwnMembers());
 		}
         
+        // additional tables for derived types and types using this one (for notifications) 
+		allDerivedTypes.clear();
         // collect all types that are derived from this
         for(INEDTypeInfo currentComp : getResolver().getAllComponents()) {
+            // never send notification to ourselves
+            if (currentComp == this)
+                continue;
+            
+            // check for components the are extending us (directly or indirectly)
             NEDElement element = currentComp.getNEDElement();
             for(NEDElement child : element) {
                 if (child instanceof ExtendsNode) {
                     String extendsName = ((ExtendsNode)child).getName();
                     if (getName().equals(extendsName)) {
                         allDerivedTypes.add(currentComp);
-                        break;
                     }
                 }
             }
+            
+            // check for components that contain submodules, connections that use this type
+            if (currentComp.getOwnUsedTypes().contains(getName())) {
+                allUsingTypes.add(currentComp);
+            }
         }
-        
-		needsUpdate = false;
+        needsUpdate = false;
 	}
 
 	/**
@@ -327,6 +380,12 @@ public class NEDComponent implements INEDTypeInfo, NEDElementTags {
         return ownMembers;
     }
 
+    public Set<String> getOwnUsedTypes() {
+        if (needsOwnUpdate)
+            refreshOwnMembers();
+        return ownUsedTypes;
+    }
+
     public Map<String, NEDElement> getParams() {
         if (needsUpdate)
             refreshInheritedMembers();
@@ -375,41 +434,85 @@ public class NEDComponent implements INEDTypeInfo, NEDElementTags {
         return allMembers;
     }
 
+//    public Set<String> getUsedTypes() {
+//        if (needsUpdate)
+//            refreshInheritedMembers();
+//        return allUsedTypes;
+//    }
+
     public List<INEDTypeInfo> getAllDerivedTypes() {
         if (needsUpdate)
             refreshInheritedMembers();
         return allDerivedTypes;
     }
 
+    public List<INEDTypeInfo> getAllUsingTypes() {
+        if (needsUpdate)
+            refreshInheritedMembers();
+        return allUsingTypes;
+    }
+
     public void modelChanged(NEDModelEvent event) {
-        // stop notification chani if we are already in notifcation (prevents circles in the chain)
+        // stop notification chain if we are already in notifcation (prevents circles in the chain)
         if (notifyInProgress)
             return;
+        
         notifyInProgress = true;
+        // for debugging only
+        System.out.println("TYPEINFO NOTIFY ON: "+getNEDElement().getClass().getSimpleName()+" "+getName()+" "+event);
+        
         // if a name property has changed everything should be rebuilt because inheritence might have changed
-        if (event instanceof NEDAttributeChangeEvent) {
-            NEDAttributeChangeEvent attrEvent = (NEDAttributeChangeEvent)event;
-            if (SimpleModuleNode.ATT_NAME.equals(attrEvent.getAttribute()) 
-                    && attrEvent.getSource() instanceof ITopLevelElement) { 
+        // we may check only for toplevel component names and extends attributes
+        // FIXME what anout changing type, extends attributes? does the notificaton work correctly?
+        if ((event.getSource() instanceof ITopLevelElement 
+                && event instanceof NEDAttributeChangeEvent 
+                && SimpleModuleNode.ATT_NAME.equals(((NEDAttributeChangeEvent)event).getAttribute()))
+//            || (event.getSource() instanceof ExtendsNode)
+//            || (event instanceof NEDStructuralChangeEvent 
+//                    && ((NEDStructuralChangeEvent)event).getChild() instanceof ExtendsNode)
+           ) {
                 getResolver().invalidate();
                 getResolver().rehashIfNeeded();
-            }
         }
         
         // TODO test if the name attribute has changed and pass it to NEDResources 
         // because in that case the whole model (All files) have to be rebuilt
-        for(INEDTypeInfo derivedType: getAllDerivedTypes())
-            derivedType.getNEDElement().fireModelChanged(event);
+
+        // pre change notification
+        
+        // get all dependent types before hashing and invalidation (this is needed because name changes may
+        // change which modules are depending on us) we put everything in a set so each comonent will be notified only once 
+        
+        Set<INEDTypeInfo> dependentTypes = new HashSet<INEDTypeInfo>();
+        dependentTypes.addAll(getAllDerivedTypes());
+        dependentTypes.addAll(getAllUsingTypes());
+        
         // refresh all ownMemebers
         refreshOwnMembers();
         // invalidate and recalculate / refresh all derived and instance lists
         invalidate();
+        
+        // post change notification
         // notify derived types before change
-        for(INEDTypeInfo derivedType: getAllDerivedTypes())
+        // we send notification to types that became dependent on us after a name change 
+        dependentTypes.addAll(getAllDerivedTypes());
+        dependentTypes.addAll(getAllUsingTypes());
+        // forward notifications
+        for(INEDTypeInfo derivedType: dependentTypes)
             derivedType.getNEDElement().fireModelChanged(event);
+
         // TODO notify instances (ie. submodules and connections)
         // send notifcations to all types using us as a type (ie. instances of ourselves)
         notifyInProgress = false;
+    }
+    
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     * Displays debugging info
+     */
+    @Override
+    public String toString() {
+        return "NEDComponent for "+getNEDElement();
     }
 
 }

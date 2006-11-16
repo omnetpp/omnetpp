@@ -187,13 +187,13 @@ public class ModuleConnectionEditPart extends AbstractConnectionEditPart impleme
     @Override
     protected void refreshVisuals() {
         ConnectionFigure cfig = (ConnectionFigure)getConnectionFigure();  
-        cfig.setDisplayString(getConnectionModel().getDisplayString());
+        cfig.setDisplayString(getConnectionModel().getEffectiveDisplayString());
         cfig.setArrowEnabled(getConnectionModel().getArrowDirection() != NEDElementUtil.NED_ARROWDIR_BIDIR);
     }
 
     public void modelChanged(NEDModelEvent event) {
         System.out.println("NOTIFY ON: "+getModel().getClass().getSimpleName()+" "+event);
-
-        refreshVisuals();
+        // not needed because the containing compound module always refreshes all it's children and connections
+        // refreshVisuals();
     }
 }

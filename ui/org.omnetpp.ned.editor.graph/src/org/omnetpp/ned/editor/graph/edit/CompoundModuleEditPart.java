@@ -125,22 +125,13 @@ public class CompoundModuleEditPart extends ModuleEditPart {
 
         // check for attribute changes
         if (event instanceof NEDAttributeChangeEvent) {
-            NEDAttributeChangeEvent attrEvent = (NEDAttributeChangeEvent) event;
+//            NEDAttributeChangeEvent attrEvent = (NEDAttributeChangeEvent) event;
             // FIXME could be optimized to refresh only if really necessary
             refreshVisuals();
-            // TODO NEEDED only if the scaling property has changed (check if node is CompoundNode and attr is displaystring)
-            if (attrEvent.getSource() instanceof CompoundModuleNodeEx 
-                        && attrEvent.getAttribute().startsWith(IDisplayString.ATT_DISPLAYSTRING)) {
-                refreshChildrenVisuals();
-            }
-            // if any attribute changes in a connection or a name attribute changes anywhere 
-            // we should redraw the connections
-            if (attrEvent.getSource() instanceof ConnectionNodeEx 
-                    || SubmoduleNodeEx.ATT_NAME.equals(attrEvent.getAttribute())) {
-                refreshSourceConnections();
-                refreshTargetConnections();
-                refreshChildrenConnections();
-            }
+            // it's not really optimal to refresh always all children for any attribute change. should be optimized
+            refreshChildrenVisuals();
+            refreshChildrenConnections();
+
         }
 
         // check for structural changes

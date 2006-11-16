@@ -676,12 +676,16 @@ public abstract class NEDElement extends PlatformObject
 
     // ******************* notification helpers ************************************
     /**
-     * Walk upwards in  the tree and send the notification when a listener exists for that node 
+     * Walk upwards in  the tree and send the notification when a listener exists for that node.
+     * Fires notification only if the notification on the starting node's listener list is enebled 
      * @param attr the attribute under change
      * @param newValue the new value of the attribute
      * @param newValue the old value of the attribute
      */
     protected void fireAttributeChanged(String attr, Object newValue, Object oldValue) {
+        if(listeners != null && !getListeners().isEnabled())
+            return;
+
         NEDModelEvent event = new NEDAttributeChangeEvent(this, attr, newValue, oldValue);
         NEDElement node = this;
         while (node != null) {
@@ -697,6 +701,9 @@ public abstract class NEDElement extends PlatformObject
      * @param newValue the old value of the attribute
      */
     protected void fireChildInserted(NEDElement child, NEDElement where) {
+        if(listeners != null && !getListeners().isEnabled())
+            return;
+
         NEDModelEvent event = 
             new NEDStructuralChangeEvent(this, child, NEDStructuralChangeEvent.Type.INSERTION, where, null); 
         NEDElement node = this;
@@ -713,6 +720,9 @@ public abstract class NEDElement extends PlatformObject
      * @param newValue the old value of the attribute
      */
     protected void fireChildRemoved(NEDElement child) {
+        if(listeners != null && !getListeners().isEnabled())
+            return;
+
         NEDModelEvent event = 
             new NEDStructuralChangeEvent(this, child, NEDStructuralChangeEvent.Type.REMOVAL, null, child.getNextSibling()); 
         NEDElement node = this;
@@ -722,5 +732,13 @@ public abstract class NEDElement extends PlatformObject
         }
     }
     
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     * For debugging purposes
+     */
+    @Override
+    public String toString() {
+        return getClass().getSimpleName() + " " + getAttribute("name");
+    }
 };
 

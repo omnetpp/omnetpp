@@ -18,6 +18,7 @@ import org.omnetpp.ned2.model.pojo.ChannelNode;
 import org.omnetpp.ned2.model.pojo.ChannelSpecNode;
 import org.omnetpp.ned2.model.pojo.CompoundModuleNode;
 import org.omnetpp.ned2.model.pojo.ConnectionNode;
+import org.omnetpp.ned2.model.pojo.ExtendsNode;
 import org.omnetpp.ned2.model.pojo.LiteralNode;
 import org.omnetpp.ned2.model.pojo.ModuleInterfaceNode;
 import org.omnetpp.ned2.model.pojo.NEDElementTags;
@@ -157,6 +158,34 @@ public final class NEDElementUtilEx implements NEDElementTags, NEDElementUtil {
 		literalNode.getListeners().setEnabled(isNotifyEnabled);
 	}
 	
+    /**
+     * @return The name of the first extends nod (or null if none present)
+     */
+    public static String getFirstExtends(NEDElement node) {
+        ExtendsNode extendsNode = (ExtendsNode)node.getFirstChildWithTag(NED_EXTENDS);
+        if(extendsNode == null)
+            return null;
+
+        return extendsNode.getName();
+    }
+
+    /**
+     * Sets the name of object that is extendes by node. if we set it to null or "" the node will be removed
+     * @param node The node which extends the provided type
+     * @param ext The name of the type that is extended
+     */
+    public static void setFirstExtends(NEDElement node, String ext) {
+        ExtendsNode extendsNode = (ExtendsNode)node.getFirstChildWithTag(NED_EXTENDS);
+            if (extendsNode == null && ext != null && !"".equals(ext)) {
+                extendsNode = (ExtendsNode)NEDElementFactoryEx.getInstance().createNodeWithTag(NED_EXTENDS);
+                node.appendChild(extendsNode);
+            } else if (extendsNode != null && (ext == null || "".equals(ext))) {
+                // remove the node if we would set the name to null or emty string
+                node.removeChild(extendsNode);
+            }
+            if (extendsNode != null)
+                extendsNode.setName(ext);
+    }
 	/**
 	 * Returns the value of the property (assigned to the first key (default value))
 	 * @param prop

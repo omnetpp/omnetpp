@@ -96,7 +96,8 @@ public class SubmoduleEditPart extends ModuleEditPart {
     @Override
     public void modelChanged(NEDModelEvent event) {
         super.modelChanged(event);
-        refreshVisuals();
+        // currently not needed because the compound module always refreshes all it's children
+//        refreshVisuals();
     }
     
     /**

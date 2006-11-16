@@ -52,20 +52,11 @@ public final class SimpleModuleNodeEx extends SimpleModuleNode
 
     // EXTENDS SUPPORT 
     public String getFirstExtends() {
-        ExtendsNode extendsNode = getFirstExtendsChild();
-        if(extendsNode == null)
-            return null;
-
-        return extendsNode.getName();
+        return NEDElementUtilEx.getFirstExtends(this);
     }
 
     public void setFirstExtends(String ext) {
-        ExtendsNode extendsNode = getFirstExtendsChild();
-            if (extendsNode == null) {
-                extendsNode = (ExtendsNode)NEDElementFactoryEx.getInstance().createNodeWithTag(NED_EXTENDS);
-                appendChild(extendsNode);
-            }
-            extendsNode.setName(ext);
+        NEDElementUtilEx.setFirstExtends(this, ext);
     }
 
     public INEDTypeInfo getFirstExtendsNEDTypeInfo() {

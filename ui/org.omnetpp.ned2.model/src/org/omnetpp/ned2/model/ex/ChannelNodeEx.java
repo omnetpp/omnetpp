@@ -9,10 +9,10 @@ import org.omnetpp.common.displaymodel.IHasDisplayString;
 import org.omnetpp.ned2.model.NEDElement;
 import org.omnetpp.ned2.model.interfaces.IHasAncestors;
 import org.omnetpp.ned2.model.interfaces.IHasInterfaces;
-import org.omnetpp.ned2.model.interfaces.INEDTypeInfo;
 import org.omnetpp.ned2.model.interfaces.IHasName;
 import org.omnetpp.ned2.model.interfaces.IHasParameters;
 import org.omnetpp.ned2.model.interfaces.IHasParent;
+import org.omnetpp.ned2.model.interfaces.INEDTypeInfo;
 import org.omnetpp.ned2.model.interfaces.ITopLevelElement;
 import org.omnetpp.ned2.model.pojo.ChannelNode;
 import org.omnetpp.ned2.model.pojo.ExtendsNode;
@@ -46,20 +46,11 @@ public final class ChannelNodeEx extends ChannelNode
 	
     // EXTENDS support
     public String getFirstExtends() {
-        ExtendsNode extendsNode = getFirstExtendsChild();
-        if(extendsNode == null)
-            return null;
-
-        return extendsNode.getName();
+        return NEDElementUtilEx.getFirstExtends(this);
     }
 
     public void setFirstExtends(String ext) {
-        ExtendsNode extendsNode = getFirstExtendsChild();
-            if (extendsNode == null) {
-                extendsNode = (ExtendsNode)NEDElementFactoryEx.getInstance().createNodeWithTag(NED_EXTENDS);
-                appendChild(extendsNode);
-            }
-            extendsNode.setName(ext);
+        NEDElementUtilEx.setFirstExtends(this, ext);
     }
     
     public INEDTypeInfo getFirstExtendsNEDTypeInfo() {

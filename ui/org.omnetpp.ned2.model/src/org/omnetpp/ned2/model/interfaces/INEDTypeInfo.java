@@ -2,6 +2,7 @@ package org.omnetpp.ned2.model.interfaces;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.eclipse.core.resources.IFile;
 import org.omnetpp.ned2.model.NEDElement;
@@ -67,6 +68,7 @@ public interface INEDTypeInfo extends INEDChangeListener {
     public Map<String, NEDElement> getOwnGateSizes();
     public Map<String, NEDElement> getOwnInnerTypes();
     public Map<String, NEDElement> getOwnSubmods();
+    public Set<String> getOwnUsedTypes();
 
 	// same as above, for inherited members as well
     public Map<String, NEDElement> getMembers();
@@ -77,9 +79,15 @@ public interface INEDTypeInfo extends INEDChangeListener {
     public Map<String, NEDElement> getGateSizes();
     public Map<String, NEDElement> getInnerTypes();
     public Map<String, NEDElement> getSubmods();
+//    public Set<String> getUsedTypes();
     
     /**
      * @return All types derived from this type
      */
     public List<INEDTypeInfo> getAllDerivedTypes();
+    /**
+     * @return ALl types that are using internally this type (iw compound mosules that
+     * contain submodules or connections with this type)
+     */
+    public List<INEDTypeInfo> getAllUsingTypes();
 }

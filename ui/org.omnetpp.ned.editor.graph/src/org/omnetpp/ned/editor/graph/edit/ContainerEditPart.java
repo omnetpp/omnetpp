@@ -1,5 +1,7 @@
 package org.omnetpp.ned.editor.graph.edit;
 
+import java.util.List;
+
 import org.eclipse.gef.editparts.AbstractGraphicalEditPart;
 import org.omnetpp.ned2.model.NEDElement;
 import org.omnetpp.ned2.model.notification.INEDChangeListener;
@@ -47,22 +49,34 @@ abstract public class ContainerEditPart
     }
     
     /**
-     * Refreshes all visuals for ALL children
+     * Refreshes all visuals for ALL children (delegates to the children)
      */
     protected void refreshChildrenVisuals() {
     	for(Object child : getChildren())
     		((ContainerEditPart)child).refreshVisuals();
     }
-
-    /**
-     * Refreshes all connections (source and destination) attached to the submodule children
-     */
+    
+    
     protected void refreshChildrenConnections() {
         for(Object child : getChildren()) {
-            ((ContainerEditPart)child).refreshSourceConnections();
-            ((ContainerEditPart)child).refreshTargetConnections();
+            for(Object conn : ((ContainerEditPart)child).getSourceConnections())
+                ((ModuleConnectionEditPart)conn).refresh();
+            
+            for(Object conn : ((ContainerEditPart)child).getTargetConnections())
+                ((ModuleConnectionEditPart)conn).refresh();
         }
     }
+//    /**
+//     * Refreshes all connections (source and destination) attached to the submodule children
+//     */
+//    protected void refreshChildrenConnections() {
+//        for(Object child : getChildren()) {
+//            ((ContainerEditPart)child).refreshSourceConnections();
+//            ((ContainerEditPart)child).refreshTargetConnections();
+//        }
+//    }
+    
+
 
     public void modelChanged(NEDModelEvent event) {
         String nameString = getNEDModel().getAttribute("name");
