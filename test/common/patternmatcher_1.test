@@ -1,0 +1,29 @@
+%description:
+Tests PatternMatcher.
+
+%global:
+#include "../src/common/patternmatcher.h"
+
+%activity:
+
+#define P(p,f1,f2,f3)  pattern.setPattern(p,f1,f2,f3); ev << "Pattern " << p << " " << f1 << " "<< f2 << " " << f3 << "\n";
+#define T(s)           ev << " " << s << ": " << (pattern.matches(s) ? "yes" : "no") << "\n";
+
+PatternMatcher pattern;
+
+P("*",0,0,0);
+T("hello");
+
+/*
+for (int i=0; i<2; i++) {
+    for (int j=0; j<2; j++) {
+        for (int k=0; k<2; k++) {
+        }
+    }
+}
+*/
+
+
+%contains: stdout
+Pattern * 0 0 0
+ hello: yes
