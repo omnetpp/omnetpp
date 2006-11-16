@@ -26,6 +26,8 @@ dottedpath = true;
 fullstring = true;
 casesensitive = true;
 
+//FIXME TODO add test cases to exercise expression matcher! AND, OR, parens, fields...
+
 //
 // string literals: basic
 //
