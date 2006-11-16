@@ -34,6 +34,9 @@ casesensitive = true;
 match("a", "a", true);
 match("a", "b", false);
 
+match("not a", "a", false);
+match("not a", "b", true);
+
 match("a OR b", "a", true);
 match("b OR a", "a", true);
 match("a OR b", "c", false);
@@ -45,11 +48,17 @@ match("{50..120} OR bu*bu", "50", true);
 match("{50..120} OR bu*bu", "500", false);
 match("{50..120} OR bu*bu", "bu", false);
 
-match("(one OR two) OR three", "one", true);
-match("(one OR two) OR three", "two", true);
-match("(one OR two) OR three", "three", true);
-match("(one OR two) OR three", "four", false);
+match("(*one OR *two) AND twenty*", "twenty-one", true);
+match("(*one OR *two) AND twenty*", "twenty-two", true);
+match("(*one OR *two) AND twenty*", "twenty-three", false);
 
+match("(*one OR *two) AND twenty*", "twenty-one", true);
+match("(*one OR *two) AND twenty*", "thirty-one", false);
+
+match("*one OR (*two AND twenty*)", "twenty-two", true);
+match("*one OR (*two AND twenty*)", "thirty-one", true);
+
+match("*one OR *two AND twenty*",   "thirty-one", true);  //AND binds stronger than OR
 
 %exitcode: 0
 
