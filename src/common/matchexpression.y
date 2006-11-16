@@ -27,10 +27,6 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-//#include "expryydefs.h"
-#include "matchexpression.h"
-#include "patternmatcher.h"
-#include "exception.h"
 
 #define YYDEBUG 1           /* allow debugging */
 #define YYDEBUGGING_ON 0    /* turn on/off debugging */
@@ -42,11 +38,11 @@
 
 #define YYSTYPE  const char *
 
-#define yyin matchexpresssionyyin
-#define yyout matchexpresssionyyout
-#define yyrestart matchexpresssionyyrestart
-#define yy_scan_string matchexpresssionyy_scan_string
-#define yy_delete_buffer matchexpresssionyy_delete_buffer
+#define yyin matchexpressionyyin
+#define yyout matchexpressionyyout
+#define yyrestart matchexpressionyyrestart
+#define yy_scan_string matchexpressionyy_scan_string
+#define yy_delete_buffer matchexpressionyy_delete_buffer
 extern FILE *yyin;
 extern FILE *yyout;
 struct yy_buffer_state;
@@ -55,6 +51,11 @@ void yy_delete_buffer(struct yy_buffer_state *);
 void yyrestart(FILE *);
 int yylex();
 void yyerror (const char *s);
+
+//#include "expryydefs.h"
+#include "matchexpression.h"
+#include "patternmatcher.h"
+#include "exception.h"
 
 static struct MatchExpressionParserVars {
     std::vector<MatchExpression::Elem> *elemsp;

@@ -28,7 +28,6 @@
 #include "matchexpression.tab.h"
 
 #define YYSTYPE  const char *
-
 extern YYSTYPE yylval;
 
 static char *matchexpr_strdup(const char *s)
@@ -56,14 +55,3 @@ int yywrap(void)
 {
      return 1;
 }
-
-//XXX needed?
-#ifdef __cplusplus
-#define input  yyinput
-#endif
-
-//XXX needed?
-/* the following #define is needed for broken flex versions */
-#define yytext_ptr yytext
-
-

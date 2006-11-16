@@ -24,6 +24,12 @@ MatchExpression::Elem::Elem(PatternMatcher *pattern, const char *fieldname)
     this->pattern = pattern;
 }
 
+MatchExpression::Elem::~Elem()
+{
+    if (type==PATTERN || type==FIELDPATTERN)
+        delete pattern;
+}
+
 void MatchExpression::Elem::operator=(const Elem& other)
 {
     type = other.type;

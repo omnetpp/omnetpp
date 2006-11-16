@@ -111,6 +111,21 @@ class MatchExpression
     bool matches(const Matchable *object);
 };
 
+
+/**
+ * Wrapper to make a string matchable with MatchExpression.
+ */
+class MatchableString : public MatchExpression::Matchable
+{
+  private:
+    std::string str;
+  public:
+    MatchableString(const char *s) {str = s;}
+    virtual const char *getDefaultAttribute() const {return str.c_str();}
+    virtual const char *getAttribute(const char *name) const  {return NULL;}
+};
+
+
 //FIXME put away
 void doParseMatchExpression(std::vector<MatchExpression::Elem>& elems, const char *pattern,
                             bool dottedpath, bool fullstring, bool casesensitive);
