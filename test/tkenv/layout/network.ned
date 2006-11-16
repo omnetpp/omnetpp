@@ -567,3 +567,37 @@ endmodule
 
 network sixNodes : SixNodes
 endnetwork
+
+
+module QNet
+    submodules:
+        acp1: Node;
+        acp2: Node;
+        leave: Node;
+        src1: Node;
+        src2: Node;
+        src3: Node;
+        src4: Node;
+        src5: Node;
+        src6: Node;
+    connections:
+        src3.out++ --> acp2.in++;
+        src4.out++ --> acp1.in++;
+        src5.out++ --> acp1.in++;
+        src6.out++ --> acp1.in++;
+        src2.out++ --> acp2.in++;
+        src1.out++ --> acp2.in++;
+        acp2.out++ --> acp1.in++;
+        acp1.out++ --> acp2.in++;
+        leave.out++ --> src1.in++;
+        leave.out++ --> src2.in++;
+        leave.out++ --> src3.in++;
+        leave.out++ --> src4.in++;
+        leave.out++ --> src5.in++;
+        leave.out++ --> src6.in++;
+endmodule
+
+network qNet : QNet
+endnetwork
+
+
