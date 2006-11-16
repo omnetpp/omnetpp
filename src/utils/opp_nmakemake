@@ -492,7 +492,7 @@ CMDENV_LIBS=envir.lib cmdenv.lib
 TKENV_LIBS=envir.lib tkenv.lib \$(TK_LIBS)
 
 # Simulation kernel
-KERNEL_LIBS=sim_std.lib
+KERNEL_LIBS=common.lib sim_std.lib
 
 !if \"\$(WITH_NETBUILDER)\"==\"yes\"
 KERNEL_LIBS= \$(KERNEL_LIBS) nedxml.lib \$(XML_LIBS)

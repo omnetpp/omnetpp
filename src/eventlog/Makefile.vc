@@ -180,11 +180,11 @@ sequencechartfacade.obj: sequencechartfacade.cc \
   ievent.h \
   ieventlog.h \
   event.h \
+  messagedependency.h \
   sequencechartfacade.h \
   eventlogentry.h \
-  messagedependency.h \
-  eventlogentries.h \
   eventlogdefs.h \
+  eventlogentries.h \
   eventlogfacade.h
 stringpool.obj: stringpool.cc \
   stringpool.h \

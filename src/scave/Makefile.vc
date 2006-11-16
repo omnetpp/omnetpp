@@ -57,7 +57,9 @@ clean:
 arraybuilder.obj: arraybuilder.cc \
   channel.h \
   arraybuilder.h \
+  ../common/util.h \
   node.h \
+  ../common/exception.h \
   scavedefs.h \
   commonnodes.h \
   xyarray.h \
@@ -65,7 +67,9 @@ arraybuilder.obj: arraybuilder.cc \
   dataflowmanager.h
 channel.obj: channel.cc \
   channel.h \
+  ../common/util.h \
   node.h \
+  ../common/exception.h \
   scavedefs.h
 commonnodes.obj: commonnodes.cc \
   commonnodes.h \
@@ -73,11 +77,15 @@ commonnodes.obj: commonnodes.cc \
   node.h \
   nodetype.h \
   scavedefs.h \
+  ../common/util.h \
+  ../common/exception.h \
   dataflowmanager.h
 compoundfilter.obj: compoundfilter.cc \
+  ../common/util.h \
   compoundfilter.h \
   filternodes.h \
   nodetyperegistry.h \
+  ../common/exception.h \
   nodetype.h \
   commonnodes.h \
   dataflowmanager.h \
@@ -88,18 +96,24 @@ dataflowmanager.obj: dataflowmanager.cc \
   channel.h \
   nodetype.h \
   dataflowmanager.h \
+  ../common/util.h \
   node.h \
+  ../common/exception.h \
   scavedefs.h
 datasorter.obj: datasorter.cc \
   resultfilemanager.h \
+  ../common/util.h \
   datasorter.h \
   idlist.h \
+  ../common/exception.h \
   scavedefs.h \
   patmatch.h
 diffquot.obj: diffquot.cc \
   channel.h \
   diffquot.h \
+  ../common/util.h \
   node.h \
+  ../common/exception.h \
   scavedefs.h \
   commonnodes.h \
   nodetype.h \
@@ -107,7 +121,9 @@ diffquot.obj: diffquot.cc \
 filewriter.obj: filewriter.cc \
   channel.h \
   filewriter.h \
+  ../common/util.h \
   node.h \
+  ../common/exception.h \
   scavedefs.h \
   commonnodes.h \
   nodetype.h \
@@ -115,7 +131,9 @@ filewriter.obj: filewriter.cc \
 filternodes.obj: filternodes.cc \
   channel.h \
   filternodes.h \
+  ../common/util.h \
   node.h \
+  ../common/exception.h \
   scavedefs.h \
   commonnodes.h \
   nodetype.h \
@@ -123,23 +141,31 @@ filternodes.obj: filternodes.cc \
 idlist.obj: idlist.cc \
   idlist.h \
   resultfilemanager.h \
-  scavedefs.h
+  scavedefs.h \
+  ../common/exception.h \
+  ../common/util.h
 mergernodes.obj: mergernodes.cc \
   channel.h \
   mergernodes.h \
+  ../common/util.h \
   node.h \
+  ../common/exception.h \
   scavedefs.h \
   commonnodes.h \
   nodetype.h \
   dataflowmanager.h
 nodetype.obj: nodetype.cc \
+  ../common/util.h \
   nodetype.h \
+  ../common/exception.h \
   dataflowmanager.h \
   node.h \
   channel.h \
   scavedefs.h
 nodetyperegistry.obj: nodetyperegistry.cc \
+  ../common/util.h \
   nodetyperegistry.h \
+  ../common/stringtokenizer.h \
   arraybuilder.h \
   vectorfilereader.h \
   vectorfilewriter.h \
@@ -151,23 +177,30 @@ nodetyperegistry.obj: nodetyperegistry.cc \
   xyplotnode.h \
   diffquot.h \
   stddev.h \
+  ../common/exception.h \
   node.h \
   nodetype.h \
   scavedefs.h \
   dataflowmanager.h \
   channel.h \
   commonnodes.h \
-  xyarray.h
+  xyarray.h \
+  ../common/filetokenizer.h
 octaveexport.obj: octaveexport.cc \
   octaveexport.h \
   scavedefs.h \
-  xyarray.h
+  xyarray.h \
+  ../common/exception.h
 patmatch.obj: patmatch.cc \
   patmatch.h
 resultfilemanager.obj: resultfilemanager.cc \
   patmatch.h \
   resultfilemanager.h \
+  ../common/filetokenizer.h \
+  ../common/stringtokenizer.h \
   idlist.h \
+  ../common/exception.h \
+  ../common/util.h \
   scavedefs.h
 scavetool.obj: scavetool.cc \
   ../utils/ver.h \
@@ -182,15 +215,20 @@ scavetool.obj: scavetool.cc \
   arraybuilder.h \
   octaveexport.h \
   idlist.h \
+  ../common/exception.h \
+  ../common/util.h \
   scavedefs.h \
   node.h \
   channel.h \
+  ../common/filetokenizer.h \
   commonnodes.h \
   xyarray.h
 slidingwinavg.obj: slidingwinavg.cc \
   channel.h \
   slidingwinavg.h \
+  ../common/util.h \
   node.h \
+  ../common/exception.h \
   scavedefs.h \
   commonnodes.h \
   nodetype.h \
@@ -198,7 +236,9 @@ slidingwinavg.obj: slidingwinavg.cc \
 stddev.obj: stddev.cc \
   channel.h \
   stddev.h \
+  ../common/util.h \
   node.h \
+  ../common/exception.h \
   scavedefs.h \
   commonnodes.h \
   xyarray.h \
@@ -207,21 +247,28 @@ stddev.obj: stddev.cc \
 vectorfilereader.obj: vectorfilereader.cc \
   channel.h \
   vectorfilereader.h \
+  ../common/util.h \
   node.h \
+  ../common/exception.h \
   scavedefs.h \
   nodetype.h \
+  ../common/filetokenizer.h \
   dataflowmanager.h
 vectorfilewriter.obj: vectorfilewriter.cc \
   channel.h \
   vectorfilewriter.h \
+  ../common/util.h \
   node.h \
+  ../common/exception.h \
   scavedefs.h \
   nodetype.h \
   dataflowmanager.h
 windowavg.obj: windowavg.cc \
   channel.h \
   windowavg.h \
+  ../common/util.h \
   node.h \
+  ../common/exception.h \
   scavedefs.h \
   commonnodes.h \
   nodetype.h \
@@ -229,7 +276,9 @@ windowavg.obj: windowavg.cc \
 xyplotnode.obj: xyplotnode.cc \
   channel.h \
   xyplotnode.h \
+  ../common/util.h \
   node.h \
+  ../common/exception.h \
   scavedefs.h \
   commonnodes.h \
   nodetype.h \

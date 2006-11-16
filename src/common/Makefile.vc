@@ -10,7 +10,7 @@ CFLAGS=$(CFLAGS) /DWIN32_DLL
 #
 # Local definitions
 #
-COPTS=$(CFLAGS) $(XML_CFLAGS) -I. /Fd"common.pdb"
+COPTS=$(CFLAGS) -I. /Fd"common.pdb"
 
 OBJS= patmatch.obj filetokenizer.obj filereader.obj linetokenizer.obj stringtokenizer.obj util.obj exception.obj
 
@@ -56,6 +56,9 @@ filetokenizer.obj: filetokenizer.cc \
 linetokenizer.obj: linetokenizer.cc \
   exception.h \
   linetokenizer.h
+patmatch.obj: patmatch.cc \
+  patmatch.h \
+  exception.h
 stringtokenizer.obj: stringtokenizer.cc \
   stringtokenizer.h
 util.obj: util.cc \

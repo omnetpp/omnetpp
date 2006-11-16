@@ -14,11 +14,12 @@ CFLAGS=$(CFLAGS) /DWITH_NETBUILDER
 #
 # Local definitions
 #
-COPTS=$(CFLAGS) /I "$(OMNETPP_INCL_DIR)" /I "../sim" /DBUILDING_ENVIR /DHAVE_DLOPEN=$(HAVE_DLOPEN) /Fd"envir.pdb"
+COPTS=$(CFLAGS) /I "$(OMNETPP_INCL_DIR)" /I "../sim"  /I "../common" /DBUILDING_ENVIR /DHAVE_DLOPEN=$(HAVE_DLOPEN) /Fd"envir.pdb"
 
 OBJS=args.obj cenvir.obj cinifile.obj main.obj omnetapp.obj fsutils.obj \
-     patmatch.obj speedmtr.obj filemgrs.obj akoutvectormgr.obj \
+     speedmtr.obj filemgrs.obj akoutvectormgr.obj \
      akaroarng.obj cxmldoccache.obj cstrtokenizer2.obj
+
 LIBS=$(OMNETPP_SRC_DIR)/sim/sim_std.ilib
 
 #
@@ -143,7 +144,6 @@ cenvir.obj: cenvir.cc \
   ../../include/regmacros.h \
   ../../include/opp_string.h \
   ../../include/cconfig.h \
-  patmatch.h \
   ../../include/envirext.h \
   ../../include/platdep/time.h \
   ../../include/ccomponent.h \
@@ -155,7 +155,6 @@ cinifile.obj: cinifile.cc \
   ../../include/cenvir.h \
   ../../include/util.h \
   cinifile.h \
-  patmatch.h \
   ../../include/cexception.h \
   fsutils.h \
   ../../include/platdep/fileutil.h \
@@ -183,6 +182,7 @@ cxmldoccache.obj: cxmldoccache.cc \
   ../../include/errmsg.h \
   ../../include/onstartup.h \
   envdefs.h \
+  ../../include/cenvir.h \
   ../../include/opp_string.h
 filemgrs.obj: filemgrs.cc \
   ../../include/defs.h \
@@ -246,7 +246,6 @@ main.obj: main.cc \
 omnetapp.obj: omnetapp.cc \
   args.h \
   omnetapp.h \
-  patmatch.h \
   fsutils.h \
   ../../include/ccoroutine.h \
   ../../include/csimulation.h \
@@ -287,14 +286,6 @@ omnetapp.obj: omnetapp.cc \
   ../../include/ccomponent.h \
   ../../include/cgate.h \
   ../../include/cdefaultlist.h
-patmatch.obj: patmatch.cc \
-  patmatch.h \
-  ../../include/cexception.h \
-  ../../include/defs.h \
-  envdefs.h \
-  ../../include/errmsg.h \
-  ../../include/opp_string.h \
-  ../../include/util.h
 speedmtr.obj: speedmtr.cc \
   speedmtr.h \
   ../../include/defs.h \

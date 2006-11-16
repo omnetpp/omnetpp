@@ -19,7 +19,7 @@ CFLAGS=$(CFLAGS) /DWIN32_DLL
 #
 # Local definitions
 #
-COPTS=$(CFLAGS) /I "$(OMNETPP_INCL_DIR)" /I "../envir" $(TK_CFLAGS) /DBUILDING_TKENV /Fd"tkenv.pdb"
+COPTS=$(CFLAGS) /I "$(OMNETPP_INCL_DIR)" /I "../envir" /I "../common" $(TK_CFLAGS) /DBUILDING_TKENV /Fd"tkenv.pdb"
 
 OBJS = tkapp$(TKENV_EMBED_SUFFIX).obj tkcmd.obj tklib.obj inspector.obj \
        inspfactory.obj objinsp.obj modinsp.obj statinsp.obj structinsp.obj \
@@ -159,7 +159,8 @@ inspector.obj: inspector.cc \
   ../../include/nedsupport.h \
   ../../include/compat.h \
   ../../include/platdep/time.h \
-  tkutil.h
+  tkutil.h \
+  tkdefs.h
 inspfactory.obj: inspfactory.cc \
   ../../include/omnetpp.h \
   tkapp.h \
@@ -245,7 +246,8 @@ inspfactory.obj: inspfactory.cc \
   ../../include/nedsupport.h \
   ../../include/compat.h \
   ../../include/platdep/time.h \
-  tkutil.h
+  tkutil.h \
+  tkdefs.h
 modinsp.obj: modinsp.cc \
   ../../include/csimplemodule.h \
   ../../include/cchannel.h \
@@ -291,7 +293,8 @@ modinsp.obj: modinsp.cc \
   ../../include/cfunction.h \
   ../../include/cexpression.h \
   inspector.h \
-  tkutil.h
+  tkutil.h \
+  tkdefs.h
 objinsp.obj: objinsp.cc \
   ../../include/omnetpp.h \
   tkapp.h \
@@ -379,6 +382,7 @@ objinsp.obj: objinsp.cc \
   ../../include/platdep/time.h \
   inspector.h \
   tkutil.h \
+  tkdefs.h \
   structinsp.h
 statinsp.obj: statinsp.cc \
   ../../include/cmodule.h \
@@ -416,7 +420,8 @@ statinsp.obj: statinsp.cc \
   ../../include/cfunction.h \
   ../../include/cexpression.h \
   inspector.h \
-  tkutil.h
+  tkutil.h \
+  tkdefs.h
 structinsp.obj: structinsp.cc \
   ../../include/cenum.h \
   ../../include/cclassdescriptor.h \
@@ -437,7 +442,8 @@ structinsp.obj: structinsp.cc \
   ../../include/onstartup.h \
   ../../include/opp_string.h \
   inspector.h \
-  tkutil.h
+  tkutil.h \
+  tkdefs.h
 tkapp.obj: tkapp.cc \
   ../../include/cenvir.h \
   ../../include/csimplemodule.h \
@@ -494,6 +500,7 @@ tkcmd.obj: tkcmd.cc \
   ../../include/cdisplaystring.h \
   ../../include/cqueue.h \
   ../../include/coutvect.h \
+  ../../include/cenum.h \
   tkapp.h \
   tklib.h \
   inspector.h \
@@ -521,7 +528,8 @@ tkcmd.obj: tkcmd.cc \
   ../../include/cexpression.h \
   ../../include/cmessagepar.h \
   ../../include/cfunction.h \
-  tkutil.h
+  tkutil.h \
+  tkdefs.h
 tklib.obj: tklib.cc \
   tklib.h \
   tkapp.h
@@ -552,7 +560,8 @@ tkutil.obj: tkutil.cc \
   ../../include/carray.h \
   ../../include/cclassfactory.h \
   ../../include/cmsgheap.h \
-  ../../include/ccoroutine.h
+  ../../include/ccoroutine.h \
+  tkdefs.h
 visitor.obj: visitor.cc \
   ../../include/cenvir.h \
   ../../include/cobject.h \

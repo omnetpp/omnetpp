@@ -300,6 +300,7 @@ ccomponent.obj: ccomponent.cc \
   ../../include/regmacros.h \
   ../../include/onstartup.h \
   ../../include/opp_string.h \
+  ../../include/cgate.h \
   ../../include/globals.h \
   ../../include/carray.h \
   ../../include/cclassfactory.h \
@@ -314,6 +315,8 @@ ccomponenttype.obj: ccomponenttype.cc \
   ../../include/ccommbuffer.h \
   parsim/cplaceholdermod.h \
   ../../include/cobject.h \
+  ../../include/cpar.h \
+  ../../include/cgate.h \
   ../../include/defs.h \
   ../../include/util.h \
   ../../include/cpolymorphic.h \
@@ -322,12 +325,10 @@ ccomponenttype.obj: ccomponenttype.cc \
   ../../include/errmsg.h \
   ../../include/regmacros.h \
   ../../include/onstartup.h \
-  ../../include/ccomponent.h \
-  ../../include/cgate.h \
-  ../../include/csimulation.h \
-  ../../include/cpar.h \
-  ../../include/cdefaultlist.h \
   ../../include/cexpression.h \
+  ../../include/ccomponent.h \
+  ../../include/csimulation.h \
+  ../../include/cdefaultlist.h \
   ../../include/cmsgheap.h \
   ../../include/ccoroutine.h \
   ../../include/opp_string.h \
@@ -1503,7 +1504,10 @@ globals.obj: globals.cc \
   ../../include/cstringpool.h \
   ../../include/errmsg.h \
   ../../include/regmacros.h \
-  ../../include/opp_string.h
+  ../../include/opp_string.h \
+  ../../include/cpar.h \
+  ../../include/cgate.h \
+  ../../include/cexpression.h
 lex.expryy.obj: lex.expryy.cc \
   ../../include/expryydefs.h \
   expr.tab.h \
@@ -1520,6 +1524,7 @@ minixpath.obj: minixpath.cc \
   ../../include/cexception.h \
   ../../include/cxmlelement.h \
   ../../include/defs.h \
+  ../../include/cenvir.h \
   ../../include/errmsg.h \
   ../../include/opp_string.h \
   ../../include/util.h
@@ -1727,8 +1732,8 @@ netbuilder/cdynamicchanneltype.obj: netbuilder/cdynamicchanneltype.cc \
   ../../include/onstartup.h \
   ../../include/opp_string.h \
   ../../include/cexpression.h \
-  ../../include/globals.h \
   ../../include/cgate.h \
+  ../../include/globals.h \
   ../../include/carray.h \
   ../../include/cclassfactory.h
 netbuilder/cdynamicmoduletype.obj: netbuilder/cdynamicmoduletype.cc \
@@ -1821,6 +1826,7 @@ netbuilder/cnedloader.obj: netbuilder/cnedloader.cc \
   ../../include/globals.h \
   netbuilder/cdynamicmoduletype.h \
   netbuilder/cdynamicchanneltype.h \
+  ../../include/cdisplaystring.h \
   ../../include/defs.h \
   netbuilder/cneddeclaration.h \
   ../../include/cobject.h \
