@@ -43,12 +43,12 @@ class Options
         std::vector<file_offset_t> fileOffsets;
         std::vector<long> eventNumbers;
 
-        std::vector<char *> moduleNames;
-        std::vector<char *> moduleTypes;
+        std::vector<const char *> moduleNames;
+        std::vector<const char *> moduleTypes;
         std::vector<int> moduleIds;
 
-        std::vector<char *> messageNames;
-        std::vector<char *> messageTypes;
+        std::vector<const char *> messageNames;
+        std::vector<const char *> messageTypes;
         std::vector<long> messageIds;
         std::vector<long> messageTids;
         std::vector<long> messageEids;
@@ -498,7 +498,7 @@ void parseFileOffsetTokens(std::vector<file_offset_t> &parameter, char *str)
         parameter.push_back(atol(tokens[j]));
 }
 
-void parseStringTokens(std::vector<char *> &parameter, char *str)
+void parseStringTokens(std::vector<const char *> &parameter, char *str)
 {
     LineTokenizer tokenizer;
     tokenizer.tokenize(str, strlen(str));

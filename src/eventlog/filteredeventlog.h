@@ -69,11 +69,11 @@ class FilteredEventLog : public IEventLog
         ~FilteredEventLog();
 
     public:
-        void setModuleNames(std::vector<char *> &moduleNames) { setPatternMatchers(this->moduleNames, moduleNames); }
-        void setModuleTypes(std::vector<char *> &moduleTypes) { setPatternMatchers(this->moduleTypes, moduleTypes); }
+        void setModuleNames(std::vector<const char *> &moduleNames) { setPatternMatchers(this->moduleNames, moduleNames); }
+        void setModuleTypes(std::vector<const char *> &moduleTypes) { setPatternMatchers(this->moduleTypes, moduleTypes); }
         void setModuleIds(std::vector<int> &moduleIds) { this->moduleIds = moduleIds; }
-        void setMessageNames(std::vector<char *> &messageNames) { setPatternMatchers(this->messageNames, messageNames); }
-        void setMessageTypes(std::vector<char *> &messageTypes) { setPatternMatchers(this->messageTypes, messageTypes); }
+        void setMessageNames(std::vector<const char *> &messageNames) { setPatternMatchers(this->messageNames, messageNames); }
+        void setMessageTypes(std::vector<const char *> &messageTypes) { setPatternMatchers(this->messageTypes, messageTypes); }
         void setMessageIds(std::vector<long> &messageIds) { this->messageIds = messageIds; }
         void setMessageTids(std::vector<long> &messageTids) { this->messageTids = messageTids; }
         void setMessageEids(std::vector<long> &messageEids) { this->messageEids = messageEids; }
@@ -118,7 +118,7 @@ class FilteredEventLog : public IEventLog
         bool isCauseOfTracedEvent(IEvent *cause);
         bool isConsequenceOfTracedEvent(IEvent *consequence);
         double getApproximateMatchingEventRatio();
-        void setPatternMatchers(std::vector<cPatternMatcher> &patternMatchers, std::vector<char *> &patterns);
+        void setPatternMatchers(std::vector<cPatternMatcher> &patternMatchers, std::vector<const char *> &patterns);
 };
 
 #endif

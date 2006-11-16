@@ -40,9 +40,9 @@ FilteredEventLog::~FilteredEventLog()
     delete eventLog;
 }
 
-void FilteredEventLog::setPatternMatchers(std::vector<cPatternMatcher> &patternMatchers, std::vector<char *> &patterns)
+void FilteredEventLog::setPatternMatchers(std::vector<cPatternMatcher> &patternMatchers, std::vector<const char *> &patterns)
 {
-    for (std::vector<char *>::iterator it = patterns.begin(); it != patterns.end(); it++) {
+    for (std::vector<const char *>::iterator it = patterns.begin(); it != patterns.end(); it++) {
         cPatternMatcher matcher;
         matcher.setPattern(*it, true, true, true);
         patternMatchers.push_back(matcher);
