@@ -1,9 +1,9 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: OMNeT++/OMNEST Sequene Chart Tool Plug-in
-Bundle-SymbolicName: org.omnetpp.experimental.seqchart; singleton:=true
+Bundle-Name: OMNeT++/OMNEST Sequene Chart Plug-in
+Bundle-SymbolicName: org.omnetpp.sequencechart;singleton:=true
 Bundle-Version: 4.0.0
-Bundle-Activator: org.omnetpp.experimental.seqchart.SeqChartPlugin
+Bundle-Activator: org.omnetpp.sequencechart.SequenceChartPlugin
 Bundle-Localization: plugin
 Require-Bundle: org.eclipse.core.resources,
  org.eclipse.core.runtime,
