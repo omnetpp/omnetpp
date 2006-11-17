@@ -19,25 +19,31 @@
 #include "matchableobject.h"
 #include "cclassdescriptor.h"
 
-MatchableObject::MatchableObject(cObject *obj, DefaultAttribute attr)
+MatchableObjectAdapter::MatchableObjectAdapter(DefaultAttribute attr, cObject *obj)
 {
     this->attr = attr;
     this->obj = obj;
     desc = NULL;
 }
 
-const char *MatchableObject::getDefaultAttribute() const
+void MatchableObjectAdapter::setObject(cObject *obj)
+{
+    this->obj = obj;
+    desc = NULL;
+}
+
+const char *MatchableObjectAdapter::getDefaultAttribute() const
 {
     switch (attr)
     {
         case FULLPATH:  tmp = obj->fullPath(); return tmp.c_str();
         case FULLNAME:  return obj->fullName();
         case CLASSNAME: return obj->className();
-        default: throw new Exception("unknown setting for default attribute");
+        default: throw new cException("unknown setting for default attribute");
     }
 }
 
-void MatchableObject::splitIndex(char *fieldname, int& index)
+void MatchableObjectAdapter::splitIndex(char *fieldname, int& index)
 {
     index = 0;
     char *startbracket = strchr(fieldname, '[');
@@ -45,16 +51,16 @@ void MatchableObject::splitIndex(char *fieldname, int& index)
     {
         char *lastcharp = fieldname + strlen(fieldname) - 1;
         if (*lastcharp != ']')
-            throw new Exception("unmatched '['");
+            throw new cException("unmatched '['");
         *startbracket = '\0';
         char *end;
         index = strtol(startbracket+1, &end, 10);
         if (end!=lastcharp)
-            throw new Exception("brackets [] must contain numeric index");
+            throw new cException("brackets [] must contain numeric index");
     }
 }
 
-bool MatchableObject::findDescriptorField(cClassDescriptor *desc, cObject *obj, char *fieldname, int& fieldId, int& index)
+bool MatchableObjectAdapter::findDescriptorField(cClassDescriptor *desc, cObject *obj, char *fieldname, int& fieldId, int& index)
 {
     // chop off possible bracketed index from field name
     splitIndex(fieldname, index);
@@ -67,7 +73,7 @@ bool MatchableObject::findDescriptorField(cClassDescriptor *desc, cObject *obj, 
     return false;
 }
 
-const char *MatchableObject::getAttribute(const char *name) const
+const char *MatchableObjectAdapter::getAttribute(const char *name) const
 {
     if (!desc)
     {

@@ -29,7 +29,7 @@ class cClassDescriptor;
  * Wrapper around a cObject to make it matchable with MatchExpression.
  * The default attribute is either fullName() or fullPath().
  */
-class MatchableObject : public MatchExpression::Matchable
+class MatchableObjectAdapter : public MatchExpression::Matchable
 {
   public:
     enum DefaultAttribute {FULLNAME, FULLPATH, CLASSNAME};
@@ -42,8 +42,9 @@ class MatchableObject : public MatchExpression::Matchable
     static void splitIndex(char *fieldname, int& index);
     static bool findDescriptorField(cClassDescriptor *desc, cObject *obj, char *fieldname, int& fieldId, int& index);
   public:
-    MatchableObject(cObject *obj, DefaultAttribute attr);
-    void setObject(cObject *obj) {this->obj = obj; desc = NULL;}
+    MatchableObjectAdapter(DefaultAttribute attr=FULLPATH, cObject *obj=NULL);
+    void setObject(cObject *obj);
+    void setDefaultAttribute(DefaultAttribute attr) {this->attr = attr;}
     virtual const char *getDefaultAttribute() const;
     virtual const char *getAttribute(const char *name) const;
 };

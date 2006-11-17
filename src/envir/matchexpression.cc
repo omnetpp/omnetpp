@@ -71,39 +71,39 @@ bool MatchExpression::matches(const Matchable *object)
         {
           case Elem::PATTERN:
             if (tos>=stksize-1)
-                throw new cRuntimeError("MatchExpression overflow");
+                throw new cException("MatchExpression overflow");
             attr = object->getDefaultAttribute();
             stk[++tos] = attr==NULL ? false : e.pattern->matches(attr);
             break;
           case Elem::FIELDPATTERN:
             if (tos>=stksize-1)
-                throw new cRuntimeError("MatchExpression overflow");
+                throw new cException("MatchExpression overflow");
             attr = object->getAttribute(e.fieldname.c_str());
             stk[++tos] = attr==NULL ? false : e.pattern->matches(attr);
             break;
           case Elem::OR:
             if (tos<1)
-                throw new cRuntimeError("MatchExpression underflow");
+                throw new cException("MatchExpression underflow");
             stk[tos-1] = stk[tos-1] || stk[tos];
             tos--;
             break;
           case Elem::AND:
             if (tos<1)
-                throw new cRuntimeError("MatchExpression underflow");
+                throw new cException("MatchExpression underflow");
             stk[tos-1] = stk[tos-1] && stk[tos];
             tos--;
             break;
           case Elem::NOT:
             if (tos<0)
-                throw new cRuntimeError("MatchExpression underflow");
+                throw new cException("MatchExpression underflow");
             stk[tos] = !stk[tos];
             break;
           default:
-            throw new cRuntimeError("MatchExpression: unknown element type");
+            throw new cException("MatchExpression: unknown element type");
        }
     }
     if (tos!=0)
-        throw new cRuntimeError("MatchExpression: malformed expression");
+        throw new cException("MatchExpression: malformed expression");
     return stk[tos];
 }
 

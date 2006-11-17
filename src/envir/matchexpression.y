@@ -113,7 +113,7 @@ void MatchExpression::parsePattern(std::vector<MatchExpression::Elem>& elems, co
     // alloc buffer
     struct yy_buffer_state *handle = yy_scan_string(pattern);
     if (!handle)
-        throw new cRuntimeError("Error during match expression parsing: unable to allocate work memory");
+        throw new cException("Error during match expression parsing: unable to allocate work memory");
 
     // store options
     state.elemsp = &elems;
@@ -127,7 +127,7 @@ void MatchExpression::parsePattern(std::vector<MatchExpression::Elem>& elems, co
     {
         ret = yyparse();
     }
-    catch (cRuntimeError *e)
+    catch (cException *e)
     {
         yy_delete_buffer(handle);
         throw;
@@ -143,6 +143,6 @@ void yyerror(const char *s)
     if (buf[strlen(buf)-1] == '\n')
         buf[strlen(buf)-1] = '\0';
 
-    throw new cRuntimeError("Error parsing match expression: %s", buf);
+    throw new cException("Error parsing match expression: %s", buf);
 }
 

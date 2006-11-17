@@ -35,6 +35,8 @@
 #include "tklib.h"
 #include "inspector.h"
 #include "inspfactory.h"
+#include "matchexpression.h"
+#include "matchableobject.h"
 #include "patternmatcher.h"
 #include "visitor.h"
 #include "fsutils.h"
@@ -1126,16 +1128,10 @@ int fesMsgs_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
    const char *classNamePattern = argv[5];
 
    if (!*namePattern) namePattern = "*";
-   bool negativeNamePattern = namePattern[0]=='-';
-   if (negativeNamePattern) namePattern++;
-   PatternMatcher nameMatcher;
-   nameMatcher.setPattern(namePattern, false, true, false);
+   MatchExpression nameMatcher(namePattern, false, true, false);
 
    if (!*classNamePattern) classNamePattern = "*";
-   bool negativeClassNamePattern = classNamePattern[0]=='-';
-   if (negativeClassNamePattern) classNamePattern++;
-   PatternMatcher classNameMatcher;
-   classNameMatcher.setPattern(classNamePattern, false, true, false);
+   MatchExpression classNameMatcher(classNamePattern, false, true, false);
 
    Tcl_Obj *listobj = Tcl_NewListObj(0, NULL);
    for (cMessageHeap::Iterator it(simulation.msgQueue); maxNum>0 && !it.end(); it++, maxNum--)
@@ -1143,10 +1139,15 @@ int fesMsgs_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
        cMessage *msg = it();
        if (msg->isSelfMessage() ? !wantSelfMsgs : !wantNonSelfMsgs)
            continue;
-       if (nameMatcher.matches(msg->name()) == negativeNamePattern)
+
+       MatchableObjectAdapter msgAdapter(MatchableObjectAdapter::FULLNAME, msg);
+       if (namePattern[0] && !nameMatcher.matches(&msgAdapter))
            continue;
-       if (classNameMatcher.matches(msg->className()) == negativeClassNamePattern)
+
+       msgAdapter.setDefaultAttribute(MatchableObjectAdapter::CLASSNAME);
+       if (classNamePattern[0] && !classNameMatcher.matches(&msgAdapter))
            continue;
+
        Tcl_ListObjAppendElement(interp, listobj, Tcl_NewStringObj(ptrToStr(msg), -1));
    }
    Tcl_SetObjResult(interp, listobj);
