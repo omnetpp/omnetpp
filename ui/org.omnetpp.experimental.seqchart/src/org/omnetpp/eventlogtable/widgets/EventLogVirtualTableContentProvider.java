@@ -1,4 +1,4 @@
-package org.omnetpp.experimental.seqchart.widgets;
+package org.omnetpp.eventlogtable.widgets;
 
 import org.eclipse.jface.viewers.Viewer;
 import org.omnetpp.common.virtualtable.IVirtualTableContentProvider;

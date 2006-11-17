@@ -1,4 +1,4 @@
-package org.omnetpp.experimental.seqchart;
+package org.omnetpp.eventlogtable;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -9,18 +9,18 @@ import org.osgi.framework.BundleContext;
 /**
  * The activator class controls the plug-in life cycle
  */
-public class SeqChartPlugin extends AbstractUIPlugin {
+public class EventLogTablePlugin extends AbstractUIPlugin {
 
 	// The plug-in ID
 	public static final String PLUGIN_ID = "org.omnetpp.experimental.seqchart";
 
 	// The shared instance
-	private static SeqChartPlugin plugin;
+	private static EventLogTablePlugin plugin;
 	
 	/**
 	 * The constructor
 	 */
-	public SeqChartPlugin() {
+	public EventLogTablePlugin() {
 		plugin = this;
 	}
 
@@ -52,7 +52,7 @@ public class SeqChartPlugin extends AbstractUIPlugin {
 	 *
 	 * @return the shared instance
 	 */
-	public static SeqChartPlugin getDefault() {
+	public static EventLogTablePlugin getDefault() {
 		return plugin;
 	}
 

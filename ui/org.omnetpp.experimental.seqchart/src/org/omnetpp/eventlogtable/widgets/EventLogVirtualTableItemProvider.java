@@ -1,4 +1,4 @@
-package org.omnetpp.experimental.seqchart.widgets;
+package org.omnetpp.eventlogtable.widgets;
 
 import org.eclipse.draw2d.ColorConstants;
 import org.eclipse.jface.viewers.LabelProvider;
@@ -9,6 +9,7 @@ import org.omnetpp.eventlog.engine.Event;
 import org.omnetpp.eventlog.engine.EventEntry;
 import org.omnetpp.eventlog.engine.EventLogEntry;
 import org.omnetpp.eventlog.engine.EventLogMessage;
+import org.omnetpp.eventlog.engine.IEventLog;
 import org.omnetpp.eventlog.engine.MessageDependency;
 import org.omnetpp.eventlog.engine.ModuleCreatedEntry;
 
@@ -17,7 +18,8 @@ public class EventLogVirtualTableItemProvider extends LabelProvider implements I
 		EventLogEntry eventLogEntry = (EventLogEntry)element;
 		Event event = eventLogEntry.getEvent();
 		EventEntry eventEntry = eventLogEntry instanceof EventEntry ? (EventEntry)eventLogEntry : null;
-		ModuleCreatedEntry moduleCreatedEntry = event.getEventLog().getModuleCreatedEntry(event.getModuleId());
+		IEventLog eventLog = event.getEventLog();
+		ModuleCreatedEntry moduleCreatedEntry = eventLog.getModuleCreatedEntry(event.getModuleId());
 		MessageDependency cause = event.getCause();
 		BeginSendEntry beginSendEntry = cause != null ? cause.getCauseBeginSendEntry() : null;
 
