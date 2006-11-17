@@ -19,12 +19,15 @@
 #include "linetokenizer.h"
 
 
-LineTokenizer::LineTokenizer()
+LineTokenizer::LineTokenizer(int bufferSize, int maxTokenNum)
 {
-    vecsize = 16000;  // max 16,000 tokens per line (still vec<64K)
+    if (maxTokenNum < 0)
+        maxTokenNum = bufferSize/4;
+
+    vecsize = maxTokenNum;
     vec = new char *[vecsize];
 
-    lineBufferSize = 1000;
+    lineBufferSize = bufferSize;
     lineBuffer = new char[lineBufferSize];
 }
 

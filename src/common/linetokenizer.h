@@ -36,7 +36,7 @@ class LineTokenizer
     /**
      * Constructor.
      */
-    LineTokenizer();
+    LineTokenizer(int lineBufferSize = 1000, int maxTokenNum=-1 /*=lineBufferSize/4*/);
 
     /**
      * Destructor.
