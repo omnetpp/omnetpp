@@ -787,7 +787,19 @@ proc filteredobjectlist_refresh {w} {
     }
 
     set class $tmp(class)
+    if {$class==""} {set class "*"}
+    if [catch {opp_checkpattern $class} errmsg] {
+        tk_messageBox -parent $w -type ok -icon warning -title Tkenv -message "Class filter pattern \"$class\" has invalid syntax -- using \"*\" instead."
+        set class "*"
+    }
+
     set name $tmp(name)
+    if {$name==""} {set name "*"}
+    if [catch {opp_checkpattern $name} errmsg] {
+        tk_messageBox -parent $w -type ok -icon warning -title Tkenv -message "Name filter pattern \"$name\" has invalid syntax -- using \"*\" instead."
+        set name "*"
+    }
+
     if {!$HAVE_BLT} {
         set order $tmp(order)
     } else {
