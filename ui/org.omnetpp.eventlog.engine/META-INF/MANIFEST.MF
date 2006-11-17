@@ -5,9 +5,14 @@ Bundle-SymbolicName: org.omnetpp.eventlog.engine
 Bundle-Version: 4.0.0
 Bundle-Vendor: OpenSim Ltd.
 Bundle-Localization: plugin
-Require-Bundle: org.eclipse.core.runtime,
- org.omnetpp.common,
- org.eclipse.jface
+Require-Bundle: org.eclipse.core.resources,
+ org.eclipse.core.runtime,
+ org.eclipse.jface,
+ org.eclipse.ui,
+ org.eclipse.ui.ide,
+ org.eclipse.ui.editors,
+ org.omnetpp.common
 Eclipse-LazyStart: true
-Export-Package: org.omnetpp.eventlog.engine,
+Export-Package: org.omnetpp.eventlog.editors,
+ org.omnetpp.eventlog.engine,
  org.omnetpp.eventlog.selection
