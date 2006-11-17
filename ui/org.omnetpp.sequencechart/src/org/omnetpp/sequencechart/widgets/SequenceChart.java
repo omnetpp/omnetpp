@@ -46,15 +46,14 @@ import org.omnetpp.eventlog.engine.IEventLog;
 import org.omnetpp.eventlog.engine.Int64Vector;
 import org.omnetpp.eventlog.engine.IntSet;
 import org.omnetpp.eventlog.engine.IntVector;
-import org.omnetpp.eventlog.engine.LongVector;
 import org.omnetpp.eventlog.engine.MessageDependency;
 import org.omnetpp.eventlog.engine.MessageDependencyKind;
 import org.omnetpp.eventlog.engine.MessageSend;
 import org.omnetpp.eventlog.engine.ModuleCreatedEntry;
 import org.omnetpp.eventlog.engine.SequenceChartFacade;
+import org.omnetpp.eventlog.selection.EventLogSelection;
+import org.omnetpp.eventlog.selection.IEventLogSelection;
 import org.omnetpp.scave.engine.XYArray;
-import org.omnetpp.sequencechart.editors.EventLogSelection;
-import org.omnetpp.sequencechart.editors.IEventLogSelection;
 import org.omnetpp.sequencechart.moduletree.ModuleTreeItem;
 
 /**
