@@ -409,7 +409,7 @@ public class VirtualTable<T> extends ContentViewer {
 	/**
 	 * Returns the top visible element.
 	 */
-	protected T getTopVisibleElement() {
+	public T getTopVisibleElement() {
 		T element = getElementAtIndex(getTopVisibleElementIndex());
 		
 		if (element == null)
@@ -421,7 +421,7 @@ public class VirtualTable<T> extends ContentViewer {
 	/**
 	 * Returns the bottom visible element even if it is not totally visible.
 	 */
-	protected T getBottomVisibleElement() {
+	public T getBottomVisibleElement() {
 		T element = getElementAtIndex(getBottomVisibleElementIndex());
 		
 		if (element == null)
