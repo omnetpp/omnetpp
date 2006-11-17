@@ -19,23 +19,21 @@
 #include "matchableobject.h"
 #include "cclassdescriptor.h"
 
-MatchableObject::MatchableObject(cObject *obj, bool withfullpath)
+MatchableObject::MatchableObject(cObject *obj, DefaultAttribute attr)
 {
-    this->withfullpath = withfullpath;
+    this->attr = attr;
     this->obj = obj;
     desc = NULL;
 }
 
 const char *MatchableObject::getDefaultAttribute() const
 {
-    if (withfullpath)
+    switch (attr)
     {
-        tmp = obj->fullPath();
-        return tmp.c_str();
-    }
-    else
-    {
-        return obj->fullName();
+        case FULLPATH:  tmp = obj->fullPath(); return tmp.c_str();
+        case FULLNAME:  return obj->fullName();
+        case CLASSNAME: return obj->className();
+        default: throw new Exception("unknown setting for default attribute");
     }
 }
 
