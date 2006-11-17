@@ -3,8 +3,8 @@ Tests MatchExpression class.
 
 %global:
 
-#include "../../../src/common/matchexpression.h"
-#include "../../../src/envir/matchableobject.h"
+#include "matchexpression.h"
+#include "matchableobject.h"
 
 // global vars
 static bool dottedpath;

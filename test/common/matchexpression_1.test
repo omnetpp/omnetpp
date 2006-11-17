@@ -3,7 +3,7 @@ Tests MatchExpression class.
 
 %global:
 
-#include "../../../src/common/matchexpression.h"
+#include "matchexpression.h"
 
 // global vars
 static bool dottedpath;
