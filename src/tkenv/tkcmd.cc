@@ -1127,6 +1127,8 @@ int fesMsgs_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
    const char *namePattern = argv[4];
    const char *classNamePattern = argv[5];
 
+//FIXME FIXME make sure pattern can be parsed!!!!
+
    if (!*namePattern) namePattern = "*";
    MatchExpression nameMatcher(namePattern, false, true, false);
 
