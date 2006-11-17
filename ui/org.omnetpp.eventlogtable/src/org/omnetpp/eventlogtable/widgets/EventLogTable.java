@@ -40,6 +40,10 @@ public class EventLogTable extends VirtualTable<EventLogEntry> {
 		addPopupMenu();
 	}
 
+	public IEventLog getEventLog() {
+		return (IEventLog)getInput();
+	}
+
 	private void addPopupMenu() {
 		Menu popupMenu = new Menu(getControl());
 
@@ -97,9 +101,5 @@ public class EventLogTable extends VirtualTable<EventLogEntry> {
 		});
 
 		getControl().setMenu(popupMenu);
-	}
-
-	public IEventLog getEventLog() {
-		return (IEventLog)getInput();
 	}
 }

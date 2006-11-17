@@ -1,74 +1,24 @@
 package org.omnetpp.eventlogtable.editors;
 
 import org.eclipse.core.resources.IMarker;
-import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.ui.IEditorInput;
-import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.IMemento;
 import org.eclipse.ui.INavigationLocation;
 import org.eclipse.ui.INavigationLocationProvider;
-import org.eclipse.ui.IPathEditorInput;
-import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.ide.IGotoMarker;
-import org.eclipse.ui.part.EditorPart;
-import org.omnetpp.eventlog.engine.EventLog;
+import org.omnetpp.eventlog.editors.EventLogEditor;
 import org.omnetpp.eventlog.engine.EventLogEntry;
-import org.omnetpp.eventlog.engine.FileReader;
 import org.omnetpp.eventlog.engine.IEvent;
-import org.omnetpp.eventlog.engine.IEventLog;
 import org.omnetpp.eventlogtable.widgets.EventLogTable;
 
-public class EventLogTableEditor extends EditorPart implements INavigationLocationProvider, IGotoMarker {
-	private IEventLog eventLog;
-
-	private EventLogTable eventLogTable;
-	
-	@Override
-	public void init(IEditorSite site, IEditorInput input) throws PartInitException {
-		setSite(site);
-		setInput(input);
-		setPartName(input.getName());
-
-		String logFileName;
-		if (input instanceof IFileEditorInput) {
-			IFileEditorInput fileInput = (IFileEditorInput)input;
-			logFileName = fileInput.getFile().getLocation().toFile().getAbsolutePath();
-		}
-		else if (input instanceof IPathEditorInput) {
-			IPathEditorInput pathFileInput = (IPathEditorInput)input;
-			logFileName = pathFileInput.getPath().toFile().getAbsolutePath();
-		}
-		else 
-			throw new PartInitException("Unsupported input type");
-
-		eventLog = new EventLog(new FileReader(logFileName, /* EventLog will delete it */false));
-	}
+public class EventLogTableEditor extends EventLogEditor implements INavigationLocationProvider, IGotoMarker {
+	protected EventLogTable eventLogTable;
 
 	@Override
 	public void createPartControl(Composite parent) {
 		eventLogTable = new EventLogTable(parent);
-	}
-
-	@Override
-	public void doSave(IProgressMonitor monitor) {
-		// void
-	}
-
-	@Override
-	public void doSaveAs() {
-		// void
-	}
-
-	@Override
-	public boolean isDirty() {
-		return false;
-	}
-
-	@Override
-	public boolean isSaveAsAllowed() {
-		return false;
+		eventLogTable.setInput(eventLog);
 	}
 
 	@Override
@@ -129,13 +79,14 @@ public class EventLogTableEditor extends EditorPart implements INavigationLocati
 	}
 
 	public INavigationLocation createEmptyNavigationLocation() {
-		return null;
+		return new EventLogTableLocation(0);
 	}
 
 	public INavigationLocation createNavigationLocation() {
-		return null;
+		return new EventLogTableLocation(eventLogTable.getTopVisibleElement().getEvent().getEventNumber());
 	}
 
 	public void gotoMarker(IMarker marker) {
+		// TODO:
 	}
 }
