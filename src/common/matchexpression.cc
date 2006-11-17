@@ -66,17 +66,20 @@ bool MatchExpression::matches(const Matchable *object)
     for (int i = 0; i < elems.size(); i++)
     {
         Elem& e = elems[i];
+		const char *attr;
         switch (e.type)
         {
           case Elem::PATTERN:
             if (tos>=stksize-1)
                 throw new Exception("MatchExpression overflow");
-            stk[++tos] = e.pattern->matches(object->getDefaultAttribute());
+			attr = object->getDefaultAttribute();
+			stk[++tos] = attr==NULL ? false : e.pattern->matches(attr);
             break;
           case Elem::FIELDPATTERN:
             if (tos>=stksize-1)
                 throw new Exception("MatchExpression overflow");
-            stk[++tos] = e.pattern->matches(object->getAttribute(e.fieldname.c_str()));
+			attr = object->getAttribute(e.fieldname.c_str());
+			stk[++tos] = attr==NULL ? false : e.pattern->matches(attr);
             break;
           case Elem::OR:
             if (tos<1)
