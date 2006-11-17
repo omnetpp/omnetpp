@@ -237,7 +237,7 @@ class SIM_API cQueue : public cObject
     /**
      * DEPRECATED. This is an old name for pop().
      */
-    virtual cObject *getTail() _OPPDEPRECATED;
+    virtual cObject *getTail() _OPPDEPRECATED {return pop();}
 
     /**
      * As a result, the container will be empty. Contained objects that
