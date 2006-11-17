@@ -22,6 +22,9 @@
 #include "cobject.h"
 #include "matchexpression.h"
 
+class cClassDescriptor;
+
+
 /**
  * Wrapper around a cObject to make it matchable with MatchExpression.
  * The default attribute is either fullName() or fullPath().
@@ -41,4 +44,6 @@ class MatchableObject : public MatchExpression::Matchable
     virtual const char *getDefaultAttribute() const;
     virtual const char *getAttribute(const char *name) const;
 };
+
+#endif
 

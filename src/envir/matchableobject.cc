@@ -17,6 +17,7 @@
 *--------------------------------------------------------------*/
 
 #include "matchableobject.h"
+#include "cclassdescriptor.h"
 
 MatchableObject::MatchableObject(cObject *obj, bool withfullpath)
 {
