@@ -1,4 +1,3 @@
 @echo off
-call ..\..\setenv-vc71.bat
+call ..\..\setenv.bat
 nmake -f Makefile.vc %*
-
