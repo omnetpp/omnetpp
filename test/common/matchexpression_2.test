@@ -1,0 +1,160 @@
+%description:
+Tests MatchExpression class.
+
+%global:
+
+#include "../../../src/common/matchexpression.h"
+
+// global vars
+static bool dottedpath;
+static bool fullstring;
+static bool casesensitive;
+
+class MatchableObject : public MatchExpression::Matchable
+{
+  protected:
+    bool withfullpath;
+    cObject *obj;
+    mutable cClassDescriptor *desc;
+    mutable std::string tmp;
+  protected:
+    static void splitIndex(char *fieldname, int& index);
+    static bool findDescriptorField(cClassDescriptor *desc, cObject *obj, char *fieldname, int& fieldId, int& index);
+  public:
+    MatchableObject(cObject *obj, bool withfullpath);
+    virtual const char *getDefaultAttribute() const;
+    virtual const char *getAttribute(const char *name) const;
+};
+
+MatchableObject::MatchableObject(cObject *obj, bool withfullpath)
+{
+    this->withfullpath = withfullpath;
+    this->obj = obj;
+    desc = NULL;
+}
+
+const char *MatchableObject::getDefaultAttribute() const
+{
+    if (withfullpath)
+    {
+        tmp = obj->fullPath();
+        return tmp.c_str();
+    }
+    else
+    {
+        return obj->fullName();
+    }
+}
+
+void MatchableObject::splitIndex(char *fieldname, int& index)
+{
+    index = 0;
+    char *startbracket = strchr(fieldname, '[');
+    if (startbracket)
+    {
+        char *lastcharp = fieldname + strlen(fieldname) - 1;
+        if (*lastcharp != ']')
+            throw new Exception("unmatched '['");
+        *startbracket = '\0';
+        char *end;
+        index = strtol(startbracket+1, &end, 10);
+        if (end!=lastcharp)
+            throw new Exception("brackets [] must contain numeric index");
+    }
+}
+
+bool MatchableObject::findDescriptorField(cClassDescriptor *desc, cObject *obj, char *fieldname, int& fieldId, int& index)
+{
+    // chop off possible bracketed index from field name
+    splitIndex(fieldname, index);
+
+    // find field by name
+    int n = desc->getFieldCount(obj);
+    for (int i=0; i<n; i++)
+        if (!strcmp(fieldname, desc->getFieldName(obj, i)))
+            {fieldId = i; return true;}
+    return false;
+}
+
+const char *MatchableObject::getAttribute(const char *name) const
+{
+    if (!desc)
+    {
+        desc = obj->getDescriptor();
+        if (!desc)
+            return NULL;
+    }
+
+/*
+    // start tokenizing the path
+    cStringTokenizer tokenizer(name, ".");
+    const char *token;
+    void *currentObj = obj;
+    cClassDescriptor *currentDesc = desc;
+    int currentFieldId = id
+    while ((token = tokenizer.nextToken())!=NULL)
+    {
+        bool found = findDescriptorField(d, o, token, fid, index);
+        if (!found) return NULL;
+    }
+*/
+
+    int fieldId;
+    int index;
+    char *name2 = new char[strlen(name)+1];
+    strcpy(name2, name);
+    bool found = findDescriptorField(desc, obj, name2, fieldId, index);
+    if (!found) return NULL;
+
+    char buf[256];
+    desc->getFieldAsString(obj, fieldId, index, buf, 256);
+    tmp = buf;
+    return tmp.c_str();
+}
+
+static void match(const char *pattern, cObject *obj)
+{
+    ev << pattern << " | (" << obj->className() << ")" << obj->name() << " --> ";
+    try {
+        MatchExpression me(pattern, dottedpath, fullstring, casesensitive);
+        MatchableObject matchobj(obj, false);
+        bool result = me.matches(&matchobj);
+        ev << (result?"true":"false") << "\n";
+    } catch (Exception *e) {
+        ev << "ERROR\n";
+        delete e;
+    }
+}
+
+
+%activity:
+
+dottedpath = true;
+fullstring = true;
+casesensitive = true;
+
+cMessage *msg = new cMessage("hello");
+msg->setKind(42);
+msg->setLength(999);
+
+match("hello", msg);
+match("he* AND *lo", msg);
+match("bubu", msg);
+match("kind(42)", msg);
+match("kind(41)", msg);
+match("length({990..1000})", msg);
+match("length({980..990})", msg);
+
+ev << "done\n";
+
+%exitcode: 0
+
+%contains: stdout
+hello | (cMessage)hello --> true
+he* AND *lo | (cMessage)hello --> true
+bubu | (cMessage)hello --> false
+kind(42) | (cMessage)hello --> true
+kind(41) | (cMessage)hello --> false
+length({990..1000}) | (cMessage)hello --> true
+length({980..990}) | (cMessage)hello --> false
+done
