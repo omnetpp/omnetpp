@@ -43,6 +43,7 @@ class MatchableObject : public MatchExpression::Matchable
     static bool findDescriptorField(cClassDescriptor *desc, cObject *obj, char *fieldname, int& fieldId, int& index);
   public:
     MatchableObject(cObject *obj, DefaultAttribute attr);
+    void setObject(cObject *obj) {this->obj = obj; desc = NULL;}
     virtual const char *getDefaultAttribute() const;
     virtual const char *getAttribute(const char *name) const;
 };
