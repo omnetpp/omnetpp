@@ -28,12 +28,12 @@ class PatternMatcher;
  * the "default field" of the object, which will usually be its name.
  * Other fields can be matched with the fieldname(pattern) syntax.
  * These elements can be combined with the AND, OR, NOT operators, accepted in
- * both lowercase and uppercase. AND has higher precedence than OR, but 
+ * both lowercase and uppercase. AND has higher precedence than OR, but
  * parentheses can be used to change the evaluation order.
  *
  * Patterns are those accepted by PatternMatcher, that is, "*", "?",
  * character ranges as "{a-z}", numeric ranges as "{0..999}", or bracketed
- * numeric ranges as "[0..999]" (e.g. "*[90..100] matching "foo[95]") 
+ * numeric ranges as "[0..999]" (e.g. "*[90..100] matching "foo[95]")
  * are accepted.
  *
  * Pattern examples:
@@ -53,7 +53,20 @@ class MatchExpression
     class Matchable
     {
       public:
+        /**
+         * Return the default string to match. The returned pointer will not
+         * be cached by the caller, so it is OK to return a pointer to some
+         * internal buffer which gets overwritten by subsequent
+         * getDefaultAttribute() / getAttribute() calls.
+         */
         virtual const char *getDefaultAttribute() const = 0;
+
+        /**
+         * Return the default string to match. Should return NULL if attribute
+         * doesn't exist. The returned pointer will not be cached by the caller,
+         * so it is OK to return a pointer to some internal buffer which gets
+         * overwritten by subsequent getDefaultAttribute() / getAttribute() calls.
+         */
         virtual const char *getAttribute(const char *name) const = 0;
     };
 
@@ -131,7 +144,7 @@ class MatchableString : public MatchExpression::Matchable
   public:
     MatchableString(const char *s) {str = s;}
     virtual const char *getDefaultAttribute() const {return str.c_str();}
-    virtual const char *getAttribute(const char *name) const  {return NULL;}
+    virtual const char *getAttribute(const char *name) const {return NULL;}
 };
 
 
