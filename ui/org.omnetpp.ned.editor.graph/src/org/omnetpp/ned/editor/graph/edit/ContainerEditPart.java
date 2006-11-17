@@ -1,7 +1,5 @@
 package org.omnetpp.ned.editor.graph.edit;
 
-import java.util.List;
-
 import org.eclipse.gef.editparts.AbstractGraphicalEditPart;
 import org.omnetpp.ned2.model.NEDElement;
 import org.omnetpp.ned2.model.notification.INEDChangeListener;
@@ -13,6 +11,8 @@ import org.omnetpp.ned2.model.notification.NEDModelEvent;
 abstract public class ContainerEditPart 
    extends AbstractGraphicalEditPart implements INEDChangeListener {
 
+    private long lastEventSerial;
+    
     @Override
     public void activate() {
         if (isActive()) return;
@@ -66,19 +66,15 @@ abstract public class ContainerEditPart
                 ((ModuleConnectionEditPart)conn).refresh();
         }
     }
-//    /**
-//     * Refreshes all connections (source and destination) attached to the submodule children
-//     */
-//    protected void refreshChildrenConnections() {
-//        for(Object child : getChildren()) {
-//            ((ContainerEditPart)child).refreshSourceConnections();
-//            ((ContainerEditPart)child).refreshTargetConnections();
-//        }
-//    }
-    
-
 
     public void modelChanged(NEDModelEvent event) {
+        // skip the event processing if te last serial is greater or equal. only newer
+        // events should be processed. this prevent the processing of the same event multiple times
+        if (lastEventSerial >= event.getSerial())
+            return;
+        else // process the even and remeber this serial
+            lastEventSerial = event.getSerial();
+        
         String nameString = getNEDModel().getAttribute("name");
         if (nameString == null) 
             nameString = "";

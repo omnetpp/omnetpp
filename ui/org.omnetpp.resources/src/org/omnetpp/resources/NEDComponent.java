@@ -16,10 +16,7 @@ import org.omnetpp.ned2.model.ex.ConnectionNodeEx;
 import org.omnetpp.ned2.model.ex.SubmoduleNodeEx;
 import org.omnetpp.ned2.model.interfaces.INEDTypeInfo;
 import org.omnetpp.ned2.model.interfaces.INEDTypeResolver;
-import org.omnetpp.ned2.model.interfaces.ITopLevelElement;
-import org.omnetpp.ned2.model.notification.NEDAttributeChangeEvent;
 import org.omnetpp.ned2.model.notification.NEDModelEvent;
-import org.omnetpp.ned2.model.notification.NEDStructuralChangeEvent;
 import org.omnetpp.ned2.model.pojo.ChannelInterfaceNode;
 import org.omnetpp.ned2.model.pojo.ChannelNode;
 import org.omnetpp.ned2.model.pojo.CompoundModuleNode;
@@ -75,8 +72,6 @@ public class NEDComponent implements INEDTypeInfo, NEDElementTags {
     protected List<INEDTypeInfo> allDerivedTypes = new ArrayList<INEDTypeInfo>();
     // all types that contain instances (submodule, connection) of this type
     protected List<INEDTypeInfo> allUsingTypes = new ArrayList<INEDTypeInfo>();
-
-    private boolean notifyInProgress = false;
 
 	/**
 	 * Constructor
@@ -434,12 +429,6 @@ public class NEDComponent implements INEDTypeInfo, NEDElementTags {
         return allMembers;
     }
 
-//    public Set<String> getUsedTypes() {
-//        if (needsUpdate)
-//            refreshInheritedMembers();
-//        return allUsedTypes;
-//    }
-
     public List<INEDTypeInfo> getAllDerivedTypes() {
         if (needsUpdate)
             refreshInheritedMembers();
@@ -453,27 +442,18 @@ public class NEDComponent implements INEDTypeInfo, NEDElementTags {
     }
 
     public void modelChanged(NEDModelEvent event) {
-        // stop notification chain if we are already in notifcation (prevents circles in the chain)
-        if (notifyInProgress)
+        // skip the event processing if te last serial is greater or equal. only newer
+        // events should be processed. this prevent the processing of the same event multiple times
+        if (getLastEventSerial() >= event.getSerial())
             return;
+        else // process the even and remeber this serial
+            setLastEventSerial(event.getSerial());
+
+        // send the event to the builder for processing. 
+        resolver.modelChanged(event);
         
-        notifyInProgress = true;
         // for debugging only
         System.out.println("TYPEINFO NOTIFY ON: "+getNEDElement().getClass().getSimpleName()+" "+getName()+" "+event);
-        
-        // if a name property has changed everything should be rebuilt because inheritence might have changed
-        // we may check only for toplevel component names and extends attributes
-        // FIXME what anout changing type, extends attributes? does the notificaton work correctly?
-        if ((event.getSource() instanceof ITopLevelElement 
-                && event instanceof NEDAttributeChangeEvent 
-                && SimpleModuleNode.ATT_NAME.equals(((NEDAttributeChangeEvent)event).getAttribute()))
-//            || (event.getSource() instanceof ExtendsNode)
-//            || (event instanceof NEDStructuralChangeEvent 
-//                    && ((NEDStructuralChangeEvent)event).getChild() instanceof ExtendsNode)
-           ) {
-                getResolver().invalidate();
-                getResolver().rehashIfNeeded();
-        }
         
         // TODO test if the name attribute has changed and pass it to NEDResources 
         // because in that case the whole model (All files) have to be rebuilt
@@ -501,11 +481,21 @@ public class NEDComponent implements INEDTypeInfo, NEDElementTags {
         for(INEDTypeInfo derivedType: dependentTypes)
             derivedType.getNEDElement().fireModelChanged(event);
 
-        // TODO notify instances (ie. submodules and connections)
-        // send notifcations to all types using us as a type (ie. instances of ourselves)
-        notifyInProgress = false;
     }
     
+    // used to get,set the evenet serial number associated with ned components
+    private void setLastEventSerial(long serial) {
+        ((NEDResources)resolver).eventSerials.put(getName(), serial);
+    }
+
+    private long getLastEventSerial() {
+        Long serial = ((NEDResources)resolver).eventSerials.get(getName());
+        if (serial != null)
+            return serial;
+        // defautl value
+        return 0;
+    }
+
     /* (non-Javadoc)
      * @see java.lang.Object#toString()
      * Displays debugging info

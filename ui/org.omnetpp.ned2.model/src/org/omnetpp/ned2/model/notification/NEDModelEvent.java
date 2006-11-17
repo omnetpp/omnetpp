@@ -8,6 +8,8 @@ import org.omnetpp.ned2.model.NEDElement;
  * Defines a generic model change
  */
 public abstract class NEDModelEvent {
+    private static long staticSerial = 0;
+    protected long serial; 
     protected NEDElement source;
 
     /**
@@ -17,6 +19,7 @@ public abstract class NEDModelEvent {
         super();
         Assert.isNotNull(source);
         this.source = source;
+        serial = ++staticSerial;
     }
 
     /**
@@ -30,7 +33,15 @@ public abstract class NEDModelEvent {
     public String toString() {
         String sourceString = source.getAttribute("name");
         
-        return "FROM: "+source.getTagName() + 
+        return "EVENT: "+serial+" FROM: "+source.getTagName() + 
                 ((sourceString != null) ? " "+sourceString : "");
+    }
+
+    /**
+     * @return The serial number of the event. Each event has a unique serial number,which
+     *         increases as new events are created
+     */
+    public long getSerial() {
+        return serial;
     }
 }

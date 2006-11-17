@@ -47,6 +47,8 @@ import org.omnetpp.ned2.model.pojo.TypesNode;
 public class NedTreeEditPart extends AbstractTreeEditPart implements
         INEDChangeListener {
 
+    private long lastEventSerial;
+
     /**
      * Constructor initializes this with the given model.
      * 
@@ -255,6 +257,13 @@ public class NedTreeEditPart extends AbstractTreeEditPart implements
     }
 
     public void modelChanged(NEDModelEvent event) {
+        // skip the event processing if te last serial is greater or equal. only newer
+        // events should be processed. this prevent the processing of the same event multiple times
+        if (lastEventSerial >= event.getSerial())
+            return;
+        else // process the even and remeber this serial
+            lastEventSerial = event.getSerial();
+
         refreshChildren();
     }
 }

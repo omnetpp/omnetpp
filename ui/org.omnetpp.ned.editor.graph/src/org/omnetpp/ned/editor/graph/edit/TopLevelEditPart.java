@@ -21,6 +21,8 @@ import org.omnetpp.ned2.model.notification.NEDModelEvent;
 public class TopLevelEditPart extends AbstractGraphicalEditPart 
 								  implements INEDChangeListener {
 
+    private long lastEventSerial;
+
     @Override
     public void activate() {
         if (isActive()) return;
@@ -63,6 +65,13 @@ public class TopLevelEditPart extends AbstractGraphicalEditPart
 	}
 
     public void modelChanged(NEDModelEvent event) {
+        // skip the event processing if te last serial is greater or equal. only newer
+        // events should be processed. this prevent the processing of the same event multiple times
+        if (lastEventSerial >= event.getSerial())
+            return;
+        else // process the even and remeber this serial
+            lastEventSerial = event.getSerial();
+
         String nameString = getNEDModel().getAttribute("name");
         if (nameString == null) 
             nameString = "";

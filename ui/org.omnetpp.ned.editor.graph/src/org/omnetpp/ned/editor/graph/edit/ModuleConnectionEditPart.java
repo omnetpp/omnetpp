@@ -32,6 +32,7 @@ public class ModuleConnectionEditPart extends AbstractConnectionEditPart impleme
 
 	private EditPart sourceEditPartEx; 
 	private EditPart targetEditPartEx;
+    private long lastEventSerial;
 
 	@Override
     public void activate() {
@@ -192,6 +193,13 @@ public class ModuleConnectionEditPart extends AbstractConnectionEditPart impleme
     }
 
     public void modelChanged(NEDModelEvent event) {
+        // skip the event processing if te last serial is greater or equal. only newer
+        // events should be processed. this prevent the processing of the same event multiple times
+        if (lastEventSerial >= event.getSerial())
+            return;
+        else // process the even and remeber this serial
+            lastEventSerial = event.getSerial();
+
         System.out.println("NOTIFY ON: "+getModel().getClass().getSimpleName()+" "+event);
         // not needed because the containing compound module always refreshes all it's children and connections
         // refreshVisuals();

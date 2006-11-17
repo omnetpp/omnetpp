@@ -18,9 +18,14 @@ import org.omnetpp.ned2.model.NEDTreeUtil;
 import org.omnetpp.ned2.model.ex.NEDElementFactoryEx;
 import org.omnetpp.ned2.model.interfaces.INEDTypeInfo;
 import org.omnetpp.ned2.model.interfaces.INEDTypeResolver;
+import org.omnetpp.ned2.model.interfaces.ITopLevelElement;
+import org.omnetpp.ned2.model.notification.NEDAttributeChangeEvent;
+import org.omnetpp.ned2.model.notification.NEDModelEvent;
+import org.omnetpp.ned2.model.notification.NEDStructuralChangeEvent;
 import org.omnetpp.ned2.model.pojo.ChannelInterfaceNode;
 import org.omnetpp.ned2.model.pojo.ChannelNode;
 import org.omnetpp.ned2.model.pojo.CompoundModuleNode;
+import org.omnetpp.ned2.model.pojo.ExtendsNode;
 import org.omnetpp.ned2.model.pojo.GateNode;
 import org.omnetpp.ned2.model.pojo.GatesNode;
 import org.omnetpp.ned2.model.pojo.ModuleInterfaceNode;
@@ -64,6 +69,10 @@ public class NEDResources implements INEDTypeResolver {
     // reserved (used) names (contains all names including dupliates)
 	private Set<String> reservedNames = new HashSet<String>();
     
+    // last event serials processed by the components. used to be able to skip duplicated
+    // event notification in NEDComponent
+    HashMap<String, Long> eventSerials = new HashMap<String, Long>(); 
+    
 	// tables of toplevel components, classified (points into nedFiles trees)
     private boolean needsRehash = false;  // if tables below need to be rebuilt
 	private HashMap<String, INEDTypeInfo> modules = new HashMap<String, INEDTypeInfo>();
@@ -75,6 +84,8 @@ public class NEDResources implements INEDTypeResolver {
 	private INEDTypeInfo nullChannelType = null;
 	private INEDTypeInfo bidirChannelType = null;
 	private INEDTypeInfo unidirChannelType = null;
+
+    private long lastEventSerial;
 
 	/**
 	 * Constructor.
@@ -553,5 +564,29 @@ public class NEDResources implements INEDTypeResolver {
     public void invalidate() {
         System.out.println("NEDResources invalidated");
         needsRehash = true;
+    }
+
+    public void modelChanged(NEDModelEvent event) {
+        // skip the event processing if te last serial is greater or equal. only newer
+        // events should be processed. this prevent the processing of the same event multiple times
+        if (lastEventSerial >= event.getSerial())
+            return;
+        else // process the even and remeber this serial
+            lastEventSerial = event.getSerial();
+        
+        // if a name property has changed everything should be rebuilt because inheritence might have changed
+        // we may check only for toplevel component names and extends attributes
+        // FIXME what anout changing type, extends attributes? does the notificaton work correctly?
+        if ((event.getSource() instanceof ITopLevelElement 
+                && event instanceof NEDAttributeChangeEvent 
+                && SimpleModuleNode.ATT_NAME.equals(((NEDAttributeChangeEvent)event).getAttribute()))
+            || (event.getSource() instanceof ExtendsNode)
+            || (event instanceof NEDStructuralChangeEvent 
+                    && ((NEDStructuralChangeEvent)event).getChild() instanceof ExtendsNode)
+           ) {
+                System.out.println("Invalidating because of: "+event);
+                invalidate();
+                rehashIfNeeded();
+        }
     }
 }
