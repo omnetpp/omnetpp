@@ -108,6 +108,11 @@ class MatchExpression
     // stores the expression
     std::vector<Elem> elems;
 
+  protected:
+    // internal: access to the parser
+    static void parsePattern(std::vector<MatchExpression::Elem>& elems, const char *pattern,
+                             bool dottedpath, bool fullstring, bool casesensitive);
+
   public:
     /**
      * Constructor
@@ -146,11 +151,6 @@ class MatchableString : public MatchExpression::Matchable
     virtual const char *getDefaultAttribute() const {return str.c_str();}
     virtual const char *getAttribute(const char *name) const {return NULL;}
 };
-
-
-//FIXME put away
-void doParseMatchExpression(std::vector<MatchExpression::Elem>& elems, const char *pattern,
-                            bool dottedpath, bool fullstring, bool casesensitive);
 
 #endif
 

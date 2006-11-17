@@ -54,7 +54,7 @@ void MatchExpression::setPattern(const char *pattern, bool dottedpath, bool full
     this->fullstring = fullstring;
     this->casesensitive = casesensitive;
 
-    ::doParseMatchExpression(elems, pattern, dottedpath, fullstring, casesensitive);
+    parsePattern(elems, pattern, dottedpath, fullstring, casesensitive);
 }
 
 bool MatchExpression::matches(const Matchable *object)

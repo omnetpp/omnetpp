@@ -104,8 +104,8 @@ fieldpattern
 
 //----------------------------------------------------------------------
 
-void doParseMatchExpression(std::vector<MatchExpression::Elem>& elems, const char *pattern,
-                            bool dottedpath, bool fullstring, bool casesensitive)
+void MatchExpression::parsePattern(std::vector<MatchExpression::Elem>& elems, const char *pattern,
+                                   bool dottedpath, bool fullstring, bool casesensitive)
 {
     yyin = NULL;
     yyout = stderr; // not used anyway
