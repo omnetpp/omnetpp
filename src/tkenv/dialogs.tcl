@@ -306,8 +306,8 @@ proc options_dialog {{defaultpage "g"}} {
         opp_setsimoption animation_speed     $opp(speed)
         opp_setsimoption bkpts_enabled       $opp(bkpts)
         set config(confirm-exit)             $opp(confirmexit)
-        set config(timeline-msgnamepattern)  [$nb.t.tlnamepattern.e get]
-        set config(timeline-msgclassnamepattern) [$nb.t.tlclassnamepattern.e get]
+        setIfPatternIsValid config(timeline-msgnamepattern)  [$nb.t.tlnamepattern.e get]
+        setIfPatternIsValid config(timeline-msgclassnamepattern) [$nb.t.tlclassnamepattern.e get]
         set config(timeline-wantselfmsgs)    $opp(timeline-wantselfmsgs)
         set config(timeline-wantnonselfmsgs) $opp(timeline-wantnonselfmsgs)
 
@@ -315,6 +315,14 @@ proc options_dialog {{defaultpage "g"}} {
         redraw_timeline
     }
     destroy $w
+}
+
+proc setIfPatternIsValid {var pattern} {
+    if [catch {opp_checkpattern $pattern} errmsg] {
+        tk_messageBox -type ok -icon warning -title Tkenv -message "Filter pattern \"$pattern\" has invalid syntax -- setting unchanged."
+    } else {
+        uplevel [list set $var $pattern]
+    }
 }
 
 proc rununtil_dialog {time_var event_var mode_var} {
