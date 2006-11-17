@@ -1,6 +1,8 @@
 package org.omnetpp.scave2.editors.ui;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -10,9 +12,13 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
+import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.omnetpp.scave.engine.IDList;
+import org.omnetpp.scave.engine.IndexedVectorFileReader;
+import org.omnetpp.scave.engine.OutputVectorEntry;
 import org.omnetpp.scave.engine.ResultFileManager;
+import org.omnetpp.scave.engine.VectorResult;
 import org.omnetpp.scave.engineext.IResultFilesChangeListener;
 import org.omnetpp.scave.engineext.ResultFileManagerEx;
 import org.omnetpp.scave2.actions.AddToDatasetAction;
@@ -104,6 +110,17 @@ public class BrowseDataPage extends ScaveEditorPage {
 						vectorsPanel.setIDList(manager.getAllVectors());
 					}
 				});
+			}
+		});
+		
+		vectorsPanel.getTable().addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetDefaultSelected(SelectionEvent e) {
+				TableItem item = (TableItem)e.item;
+				Object data = item.getData(DataTable.ITEM_KEY);
+				if (data instanceof VectorResult) {
+					scaveEditor.openBrowseVectorDataPage((VectorResult)data);
+				}
 			}
 		});
 	}

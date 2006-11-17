@@ -49,11 +49,13 @@ public class DataTable extends Table {
 	public static final int TYPE_VECTOR = 1;
 	public static final int TYPE_HISTOGRAM = 2;
 	
+	/**
+	 * Keys used in getData(),setData()
+	 */
+	public static final String COLUMN_KEY = "DataTable.Column";
+	public static final String ITEM_KEY = "DataTable.Item";
+
 	static class Column {
-		/**
-		 * Key used in getData(),setData()
-		 */
-		public static final String KEY = "DataTable.Column";
 		
 		private String text;
 		private int weight;
@@ -231,11 +233,11 @@ public class DataTable extends Table {
 		TableColumn tableColumn = new TableColumn(this, SWT.NONE);
 		tableColumn.setText(newColumn.text);
 		tableColumn.setWidth(newColumn.visible ? newColumn.weight : 0);
-		tableColumn.setData(Column.KEY, newColumn);
+		tableColumn.setData(COLUMN_KEY, newColumn);
 		tableColumn.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				TableColumn tableColumn = (TableColumn)e.widget;
-				Column column = (Column)tableColumn.getData(Column.KEY);
+				Column column = (Column)tableColumn.getData(COLUMN_KEY);
 				int sortDirection = (getSortColumn() == tableColumn && getSortDirection() == SWT.DOWN ? SWT.UP : SWT.DOWN);
 				setSortColumn(tableColumn);
 				setSortDirection(sortDirection);
@@ -290,8 +292,12 @@ public class DataTable extends Table {
 	}
 	
 	protected void fillTableLine(TableItem item, int lineNumber) {
-		ResultItem result = manager.getItem(idlist.get(lineNumber));
-		
+		long id = idlist.get(lineNumber);
+		ResultItem result = type == TYPE_SCALAR ? manager.getScalar(id) :
+							type == TYPE_VECTOR ? manager.getVector(id) :
+								manager.getItem(id);
+		item.setData(ITEM_KEY, result);
+							
 		for (int i = 0; i < columns.size(); ++i) {
 			Column column = columns.get(i);
 			if (COL_DIRECTORY.equals(column))
@@ -320,12 +326,12 @@ public class DataTable extends Table {
 				item.setText(i, replication != null ? replication : "n.a.");
 			}
 			else if (type == TYPE_SCALAR) {
-				ScalarResult scalar = manager.getScalar(idlist.get(lineNumber));
+				ScalarResult scalar = (ScalarResult)result;
 				if (COL_VALUE.equals(column))
 					item.setText(i, String.valueOf(scalar.getValue()));
 			}
 			else if (type == TYPE_VECTOR) {
-				VectorResult vector = manager.getVector(idlist.get(lineNumber));
+				VectorResult vector = (VectorResult)result;
 				if (COL_COUNT.equals(column))
 					item.setText(i, "not counted");
 				else if (COL_MEAN.equals(column))

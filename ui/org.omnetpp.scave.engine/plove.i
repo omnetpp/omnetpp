@@ -5,6 +5,7 @@
 #include "nodetyperegistry.h"
 #include "arraybuilder.h"
 #include "xyarray.h"
+#include "ivectorfilereader.h"
 %}
 
 %include "std_common.i"
@@ -61,6 +62,27 @@ class Node
     }
 };
 
+struct OutputVectorEntry
+{
+    const long serial;
+    const double simtime;
+    const double value;
+
+    OutputVectorEntry(long serial, double simtime, double value);
+};
+
+
+class IndexedVectorFileReader
+{
+    public:
+        explicit IndexedVectorFileReader(const char* filename, int vectorId);
+        virtual ~IndexedVectorFileReader();
+
+	int getNumberOfEntries();
+        OutputVectorEntry *getEntryBySerial(long serial);
+};
+
+
 %ignore DataflowManager::addNode; // it's included in NodeType::create()
 
 %ignore XYArray::XYArray;
@@ -73,5 +95,6 @@ class Node
 %include "nodetyperegistry.h"
 %include "dataflowmanager.h"
 %include "xyarray.h"
+// %include "ivectorfilereader.h"
 
 

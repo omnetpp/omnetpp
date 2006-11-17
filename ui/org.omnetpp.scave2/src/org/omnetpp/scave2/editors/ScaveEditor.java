@@ -25,6 +25,7 @@ import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.internal.IChangeListener;
 import org.eclipse.ui.views.properties.IPropertySheetPage;
 import org.omnetpp.scave.engine.ResultFile;
+import org.omnetpp.scave.engine.VectorResult;
 import org.omnetpp.scave.engineext.ResultFileManagerEx;
 import org.omnetpp.scave.model.Analysis;
 import org.omnetpp.scave.model.Chart;
@@ -35,6 +36,7 @@ import org.omnetpp.scave.model.InputFile;
 import org.omnetpp.scave.model.Inputs;
 import org.omnetpp.scave.model.ScaveModelFactory;
 import org.omnetpp.scave2.editors.ui.BrowseDataPage;
+import org.omnetpp.scave2.editors.ui.BrowseVectorPage;
 import org.omnetpp.scave2.editors.ui.ChartPage;
 import org.omnetpp.scave2.editors.ui.ChartPage2;
 import org.omnetpp.scave2.editors.ui.ChartSheetPage;
@@ -262,6 +264,14 @@ public class ScaveEditor extends AbstractEMFModelEditor {
 		setActivePage(pageIndex);
 	}
 	
+	/**
+	 * 
+	 */
+	public void openBrowseVectorDataPage(VectorResult vector) {
+		int pageIndex = createBrowseVectorDataPage(vector);
+		setActivePage(pageIndex);
+	}
+	
 	public void showPage(ScaveEditorPage page) {
 		int pageIndex = findPage(page);
 		if (pageIndex >= 0)
@@ -322,6 +332,12 @@ public class ScaveEditor extends AbstractEMFModelEditor {
 			index = addClosableScaveEditorPage(page);
 		}
 
+		return index;
+	}
+	
+	private int createBrowseVectorDataPage(VectorResult vector) {
+		BrowseVectorPage page = new BrowseVectorPage(getContainer(), this, vector);
+		int index = addClosableScaveEditorPage(page);
 		return index;
 	}
 	
