@@ -180,7 +180,9 @@ public final class NEDElementUtilEx implements NEDElementTags, NEDElementUtil {
                 extendsNode = (ExtendsNode)NEDElementFactoryEx.getInstance().createNodeWithTag(NED_EXTENDS);
                 node.appendChild(extendsNode);
             } else if (extendsNode != null && (ext == null || "".equals(ext))) {
-                // remove the node if we would set the name to null or emty string
+                // first set the name to "" so we will generate an attribute change event
+                extendsNode.setName("");
+                // remove the node if we would set the name to null or empty string
                 node.removeChild(extendsNode);
             }
             if (extendsNode != null)

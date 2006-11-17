@@ -96,7 +96,14 @@ public class NedFileEditPart extends ContainerEditPart implements LayerConstants
 
     @Override
     public void modelChanged(NEDModelEvent event) {
+        if (lastEventSerial >= event.getSerial())
+            return;
+        else // process the even and remeber this serial
+            lastEventSerial = event.getSerial();
+
+        // logging etc.
         super.modelChanged(event);
+        
         if (!(event.getSource() instanceof ITopLevelElement))
             return;
 

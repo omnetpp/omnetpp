@@ -9,6 +9,7 @@ import org.omnetpp.figures.TopLevelFigure;
 import org.omnetpp.ned.editor.graph.edit.policies.NedComponentEditPolicy;
 import org.omnetpp.ned2.model.NEDElement;
 import org.omnetpp.ned2.model.interfaces.IHasName;
+import org.omnetpp.ned2.model.interfaces.INEDTypeInfo;
 import org.omnetpp.ned2.model.notification.INEDChangeListener;
 import org.omnetpp.ned2.model.notification.NEDModelEvent;
 
@@ -72,6 +73,11 @@ public class TopLevelEditPart extends AbstractGraphicalEditPart
         else // process the even and remeber this serial
             lastEventSerial = event.getSerial();
 
+        // forward the event to the type info component
+        INEDTypeInfo typeInfo = getNEDModel().getContainerNEDTypeInfo();
+        if (typeInfo != null)
+            typeInfo.modelChanged(event);
+        
         String nameString = getNEDModel().getAttribute("name");
         if (nameString == null) 
             nameString = "";

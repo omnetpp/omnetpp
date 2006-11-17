@@ -18,7 +18,6 @@ import org.eclipse.gef.editparts.ViewportAutoexposeHelper;
 import org.eclipse.gef.editparts.ViewportExposeHelper;
 import org.eclipse.gef.editparts.ViewportMouseWheelHelper;
 import org.eclipse.gef.editpolicies.SnapFeedbackPolicy;
-import org.omnetpp.common.displaymodel.IDisplayString;
 import org.omnetpp.figures.CompoundModuleFigure;
 import org.omnetpp.figures.CompoundModuleGateAnchor;
 import org.omnetpp.figures.GateAnchor;
@@ -26,6 +25,7 @@ import org.omnetpp.ned.editor.graph.edit.policies.CompoundModuleLayoutEditPolicy
 import org.omnetpp.ned2.model.ex.CompoundModuleNodeEx;
 import org.omnetpp.ned2.model.ex.ConnectionNodeEx;
 import org.omnetpp.ned2.model.ex.SubmoduleNodeEx;
+import org.omnetpp.ned2.model.interfaces.INEDTypeInfo;
 import org.omnetpp.ned2.model.notification.NEDAttributeChangeEvent;
 import org.omnetpp.ned2.model.notification.NEDModelEvent;
 import org.omnetpp.ned2.model.notification.NEDStructuralChangeEvent;
@@ -121,8 +121,19 @@ public class CompoundModuleEditPart extends ModuleEditPart {
 
     @Override
     public void modelChanged(NEDModelEvent event) {
-        super.modelChanged(event);
+        // skip the event processing if te last serial is greater or equal. only newer
+        // events should be processed. this prevent the processing of the same event multiple times
+        if (lastEventSerial >= event.getSerial())
+            return;
+        else // process the even and remeber this serial
+            lastEventSerial = event.getSerial();
 
+        // forward the event to the type info component
+        INEDTypeInfo typeInfo = getNEDModel().getContainerNEDTypeInfo();
+        if (typeInfo != null)
+            typeInfo.modelChanged(event);
+
+        super.modelChanged(event);
         // check for attribute changes
         if (event instanceof NEDAttributeChangeEvent) {
 //            NEDAttributeChangeEvent attrEvent = (NEDAttributeChangeEvent) event;

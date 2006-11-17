@@ -574,19 +574,35 @@ public class NEDResources implements INEDTypeResolver {
         else // process the even and remeber this serial
             lastEventSerial = event.getSerial();
         
+        boolean shouldInvalidate = false;
+        
         // if a name property has changed everything should be rebuilt because inheritence might have changed
         // we may check only for toplevel component names and extends attributes
         // FIXME what anout changing type, extends attributes? does the notificaton work correctly?
-        if ((event.getSource() instanceof ITopLevelElement 
+        
+        // if we have changed a toplevel element's name we should rehash 
+        if (event.getSource() instanceof ITopLevelElement 
                 && event instanceof NEDAttributeChangeEvent 
                 && SimpleModuleNode.ATT_NAME.equals(((NEDAttributeChangeEvent)event).getAttribute()))
-            || (event.getSource() instanceof ExtendsNode)
-            || (event instanceof NEDStructuralChangeEvent 
-                    && ((NEDStructuralChangeEvent)event).getChild() instanceof ExtendsNode)
-           ) {
-                System.out.println("Invalidating because of: "+event);
-                invalidate();
-                rehashIfNeeded();
+            shouldInvalidate = true;
+                
+        // check for extends name change  
+        if (event.getSource() instanceof ExtendsNode 
+                && event instanceof NEDAttributeChangeEvent 
+                && ExtendsNode.ATT_NAME.equals(((NEDAttributeChangeEvent)event).getAttribute()))
+            shouldInvalidate = true;
+
+        // invalidate if we have deleted an extends node
+        if (event instanceof NEDStructuralChangeEvent 
+                 && ((NEDStructuralChangeEvent)event).getChild() instanceof ExtendsNode
+                 && ((NEDStructuralChangeEvent)event).getType() == NEDStructuralChangeEvent.Type.REMOVAL)
+            shouldInvalidate = true;
+
+        if (shouldInvalidate)
+        {
+            System.out.println("Invalidating because of: "+event);
+            invalidate();
+            rehashIfNeeded();
         }
     }
 }
