@@ -18,7 +18,7 @@ import org.omnetpp.eventlogtable.widgets.EventLogTable;
  * View for displaying and navigating simulation events and associated log messages.
  */
 public class EventLogTableView extends ViewPart {
-	public static final String PART_ID = "org.omnetpp.experimental.seqchart.editors.EventLogView"; 
+	public static final String PART_ID = "org.omnetpp.eventlogtable.editors.EventLogTableView"; 
 
 	protected EventLogTable eventLogTable;
 

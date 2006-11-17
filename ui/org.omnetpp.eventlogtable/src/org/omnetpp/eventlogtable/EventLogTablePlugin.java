@@ -12,7 +12,7 @@ import org.osgi.framework.BundleContext;
 public class EventLogTablePlugin extends AbstractUIPlugin {
 
 	// The plug-in ID
-	public static final String PLUGIN_ID = "org.omnetpp.experimental.seqchart";
+	public static final String PLUGIN_ID = "org.omnetpp.eventlogtable";
 
 	// The shared instance
 	private static EventLogTablePlugin plugin;
