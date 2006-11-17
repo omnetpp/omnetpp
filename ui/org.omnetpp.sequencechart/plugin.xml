@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.2"?>
+<plugin>
+
+   <extension
+         point="org.eclipse.ui.editors">
+      <editor
+            name="OMNeT++/OMNEST Sequence Chart Tool"
+            extensions="log"
+            icon="icons/sample.gif"
+            contributorClass="org.eclipse.ui.texteditor.BasicTextEditorActionContributor"
+            class="org.omnetpp.sequencechart.editors.SequenceChartEditor"
+            id="org.omnetpp.sequencechart.editors.SequenceChartToolEditor">
+      </editor>
+   </extension>
+
+   <extension
+         point="org.eclipse.ui.views">
+      <category
+            name="OMNeT++/OMNEST"
+            id="org.omnetpp">
+      </category> <!-- FIXME does not show up for some reason -->
+      <view
+            name="Simulation Event Log"
+            icon="icons/sample.gif"
+            category="viewtest"
+            class="org.omnetpp.sequencechart.editors.SequenceChartView"
+            id="org.omnetpp.sequencechart.editors.SequenceChartView">
+      </view>
+   </extension>
+   
+   <extension
+         point="org.eclipse.ui.perspectiveExtensions">
+      <perspectiveExtension
+            targetID="org.eclipse.ui.resourcePerspective">
+         <view
+               relationship="bottom"
+               id="org.omnetpp.sequencechart.editors.SequenceChartView">
+         </view>
+      </perspectiveExtension>
+   </extension>
+
+</plugin>
