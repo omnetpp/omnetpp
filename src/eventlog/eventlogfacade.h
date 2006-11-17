@@ -32,10 +32,6 @@ class EventLogFacade
     protected:
         IEventLog *eventLog;
 
-        // SequenceChart state
-        long timelineCoordinateSystemVersion;
-        TimelineMode timelineMode;
-
     public:
         EventLogFacade(IEventLog *eventLog);
         virtual ~EventLogFacade() {}
