@@ -31,8 +31,10 @@ class cClassDescriptor;
  */
 class MatchableObject : public MatchExpression::Matchable
 {
+  public:
+    enum DefaultAttribute {FULLNAME, FULLPATH, CLASSNAME};
   protected:
-    bool withfullpath;
+    DefaultAttribute attr;
     cObject *obj;
     mutable cClassDescriptor *desc;
     mutable std::string tmp;
@@ -40,7 +42,7 @@ class MatchableObject : public MatchExpression::Matchable
     static void splitIndex(char *fieldname, int& index);
     static bool findDescriptorField(cClassDescriptor *desc, cObject *obj, char *fieldname, int& fieldId, int& index);
   public:
-    MatchableObject(cObject *obj, bool withfullpath);
+    MatchableObject(cObject *obj, DefaultAttribute attr);
     virtual const char *getDefaultAttribute() const;
     virtual const char *getAttribute(const char *name) const;
 };
