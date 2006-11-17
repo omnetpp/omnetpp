@@ -1,21 +1,18 @@
-/**
- * 
- */
 package org.omnetpp.common.virtualtable;
 
 import org.eclipse.jface.viewers.IContentProvider;
 
-public interface IVirtualTableContentProvider extends IContentProvider {
-	public Object getFirstElement();
-	public Object getLastElement();
+public interface IVirtualTableContentProvider<T> extends IContentProvider {
+	public T getFirstElement();
+	public T getLastElement();
 	
-	public long getDistanceToElement(Object sourceElement, Object targetElement, long limit);
-	public long getDistanceToFirstElement(Object element, long limit);
-	public long getDistanceToLastElement(Object element, long limit);
+	public long getDistanceToElement(T sourceElement, T targetElement, long limit);
+	public long getDistanceToFirstElement(T element, long limit);
+	public long getDistanceToLastElement(T element, long limit);
 
-	public Object getNeighbourElement(Object element, long distance);
+	public T getNeighbourElement(T element, long distance);
 
 	public long getApproximateNumberOfElements();
-	public Object getApproximateElementAt(double percentage);
-	public double getApproximatePercentageForElement(Object element);
+	public T getApproximateElementAt(double percentage);
+	public double getApproximatePercentageForElement(T element);
 }

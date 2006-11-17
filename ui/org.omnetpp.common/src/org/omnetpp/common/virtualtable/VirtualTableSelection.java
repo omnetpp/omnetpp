@@ -2,11 +2,11 @@ package org.omnetpp.common.virtualtable;
 
 import java.util.List;
 
-public class VirtualTableSelection implements IVirtualTableSelection {
+public class VirtualTableSelection<T> implements IVirtualTableSelection<T> {
 	protected Object input;
-	protected List<Object> elements;
+	protected List<T> elements;
 
-	public VirtualTableSelection(Object input, List<Object> elements) {
+	public VirtualTableSelection(Object input, List<T> elements) {
 		this.input = input;
 		this.elements = elements;
 	}
@@ -15,7 +15,7 @@ public class VirtualTableSelection implements IVirtualTableSelection {
 		return input;
 	}
 	
-	public List<Object> getElements() {
+	public List<T> getElements() {
 		return elements;
 	}
 
