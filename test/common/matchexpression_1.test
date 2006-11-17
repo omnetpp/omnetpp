@@ -10,18 +10,18 @@ static bool dottedpath;
 static bool fullstring;
 static bool casesensitive;
 
-static void match(const char *pattern, const char *line, bool expectedresult)
+static void match(const char *pattern, const char *line)
 {
-    bool result;
+    ev << pattern << " | " << line << " --> ";
     try {
         MatchExpression me(pattern, dottedpath, fullstring, casesensitive);
         MatchableString lineObject(line);
-        result = me.matches(&lineObject);
+        bool result = me.matches(&lineObject);
+        ev << (result?"true":"false") << "\n";
     } catch (Exception *e) {
-        ev.printf("`%s' matches `%s' : EXCEPTION: %s\n", pattern, line, e->message());
-        return;
+        ev << "ERROR\n";
+        delete e;
     }
-    ev.printf("`%s' matches `%s' : %s %s\n", pattern, line, (result?"true":"false"), (result==expectedresult?"ok":"FAIL"));
 }
 
 
@@ -35,69 +35,121 @@ casesensitive = true;
 // Basic stuff, AND, OR, NOT
 //
 
-match("a", "a", true);
-match("a", "b", false);
-
-match("not a", "a", false);
-match("not a", "b", true);
-
-match("a OR b", "a", true);
-match("b OR a", "a", true);
-match("a OR b", "c", false);
-
-match("{50..120} OR bu*bu", "bu--bu", true);
-match("{50..120} OR bu*bu", "73", true);
-match("{50..120} OR bu*bu", "120", true);
-match("{50..120} OR bu*bu", "50", true);
-match("{50..120} OR bu*bu", "500", false);
-match("{50..120} OR bu*bu", "bu", false);
+match("a",      "a");
+match("a",      "b");
+match("not a",  "a");
+match("not a",  "b");
+match("a OR b", "a");
+match("b OR a", "a");
+match("a OR b", "c");
+match("{50..120} OR bu*bu", "bu--bu");
+match("{50..120} OR bu*bu", "73");
+match("{50..120} OR bu*bu", "120");
+match("{50..120} OR bu*bu", "50");
+match("{50..120} OR bu*bu", "500");
+match("{50..120} OR bu*bu", "bu");
+ev << endl;
 
 //
 // Precedence: AND binds stronger than OR, NOT binds strongest
 //
-match("(*one OR *two) AND twenty*", "twenty-one", true);
-match("(*one OR *two) AND twenty*", "twenty-two", true);
-match("(*one OR *two) AND twenty*", "twenty-three", false);
+match("(*one OR *two) AND twenty*", "twenty-one");
+match("(*one OR *two) AND twenty*", "twenty-two");
+match("(*one OR *two) AND twenty*", "twenty-three");
 
-match("(*one OR *two) AND twenty*", "twenty-one", true);
-match("(*one OR *two) AND twenty*", "thirty-one", false);
+match("(*one OR *two) AND twenty*", "twenty-one");
+match("(*one OR *two) AND twenty*", "thirty-one");
 
-match("*one OR (*two AND twenty*)", "twenty-two", true);
-match("*one OR (*two AND twenty*)", "thirty-one", true);
+match("*one OR (*two AND twenty*)", "twenty-two");
+match("*one OR (*two AND twenty*)", "thirty-one");
 
-match("*one OR *two AND twenty*",   "thirty-one", true);
+match("*one OR *two AND twenty*",   "thirty-one");
+ev << endl;
 
 
 //
 // Quotes
 //
-match("\"a\"", "a", true);
-match("\"a\"", "b", false);
-match("\"*\"", "whatever", true); 
+match("\"a\"", "a");
+match("\"a\"", "b");
+match("\"*\"", "whatever");
+ev << endl;
 
 //
 // Parsing
 //
-match("*or*",  "whatever", false);
-match("*and*", "whatever", false);
-match("*not*", "whatever", false);
+match("*or*",  "whatever");
+match("*and*", "whatever");
+match("*not*", "whatever");
+match("*not*", "knotty");
 
-match("or*",  "whatever", false);
-match("and*", "whatever", false);
-match("not*", "whatever", false);
+match("or*",  "whatever");
+match("and*", "whatever");
+match("not*", "whatever");
 
-match("or",  "whatever", false);
-match("and", "whatever", false);
-match("not", "whatever", false);
+match("*or",  "whatever");
+match("*and", "whatever");
+match("*not", "whatever");
+
+match("or",  "whatever"); // parse error
+match("and", "whatever"); // parse error
+match("not", "whatever"); // parse error
+ev << endl;
+
+match("hi(there", "a");  // parse error
+match("\"hi(there\"", "hi(there");
+match("a or(b and c)", "a");
+ev << endl;
+
+ev << "done\n";
 
 %exitcode: 0
 
 %contains: stdout
-BUBU
+a | a --> true
+a | b --> false
+not a | a --> false
+not a | b --> true
+a OR b | a --> true
+b OR a | a --> true
+a OR b | c --> false
+{50..120} OR bu*bu | bu--bu --> true
+{50..120} OR bu*bu | 73 --> true
+{50..120} OR bu*bu | 120 --> true
+{50..120} OR bu*bu | 50 --> true
+{50..120} OR bu*bu | 500 --> false
+{50..120} OR bu*bu | bu --> false
 
-%not-contains: stdout
-FAIL
+(*one OR *two) AND twenty* | twenty-one --> true
+(*one OR *two) AND twenty* | twenty-two --> true
+(*one OR *two) AND twenty* | twenty-three --> false
+(*one OR *two) AND twenty* | twenty-one --> true
+(*one OR *two) AND twenty* | thirty-one --> false
+*one OR (*two AND twenty*) | twenty-two --> true
+*one OR (*two AND twenty*) | thirty-one --> true
+*one OR *two AND twenty* | thirty-one --> true
 
-%not-contains: stdout
-EXCEPTION
+"a" | a --> true
+"a" | b --> false
+"*" | whatever --> true
+
+*or* | whatever --> false
+*and* | whatever --> false
+*not* | whatever --> false
+*not* | knotty --> true
+or* | whatever --> false
+and* | whatever --> false
+not* | whatever --> false
+*or | whatever --> false
+*and | whatever --> false
+*not | whatever --> false
+or | whatever --> ERROR
+and | whatever --> ERROR
+not | whatever --> ERROR
+
+hi(there | a --> ERROR
+"hi(there" | hi(there --> true
+a or(b and c) | a --> true
+
+done
 
