@@ -57,18 +57,19 @@ struct Block {
 class IndexedVectorFileReader
 {
     char* fname;
-    int vectorId;
+    long vectorId;
     
     char* ifname;
     FileReader *reader;
     
     // data read from the index file
     int numOfEntries;
+    int blockSize;
     std::vector<Block> blocks;
     Block* currentBlock;    
 
     public:
-        explicit IndexedVectorFileReader(const char* filename, int vectorId);
+        explicit IndexedVectorFileReader(const char* filename, long vectorId);
         ~IndexedVectorFileReader();
     protected:
         void loadIndex();

@@ -5,7 +5,6 @@
 //
 //=========================================================================
 
-// TODO: setting correct buffer sizes
 // TODO: vectors with multiple values
 // TODO: code duplication with vectorfilereader.cc
 // TODO: minimize memory allocation
@@ -14,8 +13,8 @@
 #include "linetokenizer.h"
 #include "ivectorfilereader.h"
 
-IndexedVectorFileReader::IndexedVectorFileReader(const char *filename, int vectorId)
-    : reader(NULL), vectorId(vectorId), numOfEntries(0), currentBlock(NULL)
+IndexedVectorFileReader::IndexedVectorFileReader(const char *filename, long vectorId)
+    : reader(NULL), vectorId(vectorId), numOfEntries(0), blockSize(0), currentBlock(NULL)
 {
     int len = strlen(filename);
     fname=new char[len];
@@ -39,26 +38,39 @@ IndexedVectorFileReader::~IndexedVectorFileReader()
 }
 
 //=========================================================================
+
+// see filemgrs.h
+#define MIN_BUFFER_SIZE 512
+
 void IndexedVectorFileReader::loadIndex()
 {
     // read vector and blocks
     FileReader reader(ifname);
     int numTokens;
     char *line, **tokens;
-    LineTokenizer tokenizer(64*1024);
-    int id;
-    long offset, count;
+    LineTokenizer tokenizer(1024);
+    long id, offset, count;
 
     numOfEntries = 0;
     while ((line=reader.readNextLine())!=NULL)
     {
-        numTokens = tokenizer.tokenize(line, reader.getLastLineLength());
-        tokens = tokenizer.tokens();
-
-        if (numTokens >= 1)
+        if (sscanf(line, "vector %ld", &id)==1 && id==vectorId)
         {
-            if (sscanf(tokens[0], "%d",&id)==1 && id==vectorId)
+            int len=reader.getLastLineLength();
+            numTokens=tokenizer.tokenize(line, len);
+            tokens=tokenizer.tokens();
+
+            if (numTokens != 6 || sscanf(tokens[5], "%d", &blockSize)!=1 || blockSize<MIN_BUFFER_SIZE)
+                throw new Exception("Malformed vector header: %.*s", len, line);
+
+            while ((line=reader.readNextLine())!=NULL)
             {
+                numTokens = tokenizer.tokenize(line, reader.getLastLineLength());
+                tokens = tokenizer.tokens();
+
+                if (numTokens < 1 || sscanf(tokens[0], "%ld", &id)!=1 || id!=vectorId)
+                    break;
+
                 for (int i=1; i<numTokens; ++i)
                 {
                     if (sscanf(tokens[i], "%ld:%ld", &offset, &count)==2) 
@@ -67,8 +79,8 @@ void IndexedVectorFileReader::loadIndex()
                         numOfEntries+=count;
                     }
                 }
-                return;
             }
+            return;
         }
     }
 }
@@ -117,7 +129,7 @@ static bool parseDouble(char *s, double& dest)
 void IndexedVectorFileReader::loadBlock(Block &block)
 {
     if (reader==NULL)
-        reader=new FileReader(fname);
+        reader=new FileReader(fname, blockSize);
     
     long count=block.endSerial-block.startSerial;
     reader->seekTo(block.startOffset);
@@ -126,7 +138,7 @@ void IndexedVectorFileReader::loadBlock(Block &block)
     char *line, **tokens, *end;
     int numTokens;
     LineTokenizer tokenizer;
-    int id;
+    long id;
     double t, val;
 
     for (int i=0; i<count; ++i) 
@@ -141,7 +153,7 @@ void IndexedVectorFileReader::loadBlock(Block &block)
         if (numTokens < 3)
             throw new Exception("Line to short: %.*s", len, line);
 
-        id = (int)strtol(tokens[0], &end, 10);
+        id = strtol(tokens[0], &end, 10);
         if (*end || id!=vectorId)
             throw new Exception("Missing or unexpected vector id: %.*s", len, line);
 

@@ -20,6 +20,6 @@ public class IndexedVectorFileReaderEx extends IndexedVectorFileReader {
 	
 	public OutputVectorEntry getEntryBySerial(int serial) {
 		OutputVectorEntry entry = super.getEntryBySerial((int)serial);
-		return new OutputVectorEntry(entry.getSerial(), entry.getSimtime(), entry.getValue());
+		return entry != null ? new OutputVectorEntry(entry.getSerial(), entry.getSimtime(), entry.getValue()) : null;
 	}
 }
