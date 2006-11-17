@@ -31,11 +31,12 @@ dottedpath = true;
 fullstring = true;
 casesensitive = true;
 
+//
+// Basic stuff, AND, OR, NOT
+//
+
 match("a", "a", true);
 match("a", "b", false);
-
-match("\"a\"", "a", true);
-match("\"a\"", "b", false); // quotes get stripped
 
 match("not a", "a", false);
 match("not a", "b", true);
@@ -51,6 +52,9 @@ match("{50..120} OR bu*bu", "50", true);
 match("{50..120} OR bu*bu", "500", false);
 match("{50..120} OR bu*bu", "bu", false);
 
+//
+// Precedence: AND binds stronger than OR, NOT binds strongest
+//
 match("(*one OR *two) AND twenty*", "twenty-one", true);
 match("(*one OR *two) AND twenty*", "twenty-two", true);
 match("(*one OR *two) AND twenty*", "twenty-three", false);
@@ -61,9 +65,35 @@ match("(*one OR *two) AND twenty*", "thirty-one", false);
 match("*one OR (*two AND twenty*)", "twenty-two", true);
 match("*one OR (*two AND twenty*)", "thirty-one", true);
 
-match("*one OR *two AND twenty*",   "thirty-one", true);  //AND binds stronger than OR
+match("*one OR *two AND twenty*",   "thirty-one", true);
+
+
+//
+// Quotes
+//
+match("\"a\"", "a", true);
+match("\"a\"", "b", false);
+match("\"*\"", "whatever", true); 
+
+//
+// Parsing
+//
+match("*or*",  "whatever", false);
+match("*and*", "whatever", false);
+match("*not*", "whatever", false);
+
+match("or*",  "whatever", false);
+match("and*", "whatever", false);
+match("not*", "whatever", false);
+
+match("or",  "whatever", false);
+match("and", "whatever", false);
+match("not", "whatever", false);
 
 %exitcode: 0
+
+%contains: stdout
+BUBU
 
 %not-contains: stdout
 FAIL
