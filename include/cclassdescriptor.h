@@ -205,6 +205,7 @@ class SIM_API cClassDescriptor : public cNoncopyableObject
      * false otherwise. For compound fields, the message compiler generates
      * code which calls operator<<.
      */
+    //FIXME remove the limit!!!! return std::string or something...
     virtual bool getFieldAsString(void *object, int field, int i, char *buf, int bufsize) = 0;
 
     /**
