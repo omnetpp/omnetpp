@@ -369,12 +369,13 @@ public class VirtualTable<T> extends ContentViewer {
 		int topVisibleElementIndex = getTopVisibleElementIndex();
 		ArrayList<Integer> indices = new ArrayList<Integer>();
 
-		for (T selectionElement : selectionElements) {
-			int distance = (int)getVirtualTableContentProvider().getDistanceToElement(topElement, selectionElement, visibleElementCount);
-			
-			if (distance < visibleElementCount)
-				indices.add(topVisibleElementIndex + distance);
-		}
+		if (selectionElements != null)
+			for (T selectionElement : selectionElements) {
+				int distance = (int)getVirtualTableContentProvider().getDistanceToElement(topElement, selectionElement, visibleElementCount);
+				
+				if (distance < visibleElementCount)
+					indices.add(topVisibleElementIndex + distance);
+			}
 
 		int[] result = new int[indices.size()];
 
