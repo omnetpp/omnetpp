@@ -135,7 +135,8 @@ inspector.obj: inspector.cc \
   ../../include/cvisitor.h \
   ../../include/ccoroutine.h \
   ../../include/platdep/time.h \
-  tkutil.h
+  tkutil.h \
+  tkdefs.h
 inspfactory.obj: inspfactory.cc \
   ../../include/omnetpp.h \
   tkapp.h \
@@ -197,7 +198,8 @@ inspfactory.obj: inspfactory.cc \
   ../../include/cvisitor.h \
   ../../include/ccoroutine.h \
   ../../include/platdep/time.h \
-  tkutil.h
+  tkutil.h \
+  tkdefs.h
 modinsp.obj: modinsp.cc \
   ../../include/csimplemodule.h \
   ../../include/cchannel.h \
@@ -234,6 +236,7 @@ modinsp.obj: modinsp.cc \
   ../../include/cmsgheap.h \
   inspector.h \
   tkutil.h \
+  tkdefs.h \
   ../../include/macros.h \
   ../../include/ctypes.h
 objinsp.obj: objinsp.cc \
@@ -299,6 +302,7 @@ objinsp.obj: objinsp.cc \
   ../../include/platdep/time.h \
   inspector.h \
   tkutil.h \
+  tkdefs.h \
   structinsp.h
 statinsp.obj: statinsp.cc \
   ../../include/cmodule.h \
@@ -332,7 +336,8 @@ statinsp.obj: statinsp.cc \
   ../../include/macros.h \
   inspector.h \
   ../../include/ctypes.h \
-  tkutil.h
+  tkutil.h \
+  tkdefs.h
 structinsp.obj: structinsp.cc \
   ../../include/cenum.h \
   ../../include/cclassdescriptor.h \
@@ -354,7 +359,8 @@ structinsp.obj: structinsp.cc \
   ../../include/carray.h \
   ../../include/ctypes.h \
   ../../include/globals.h \
-  tkutil.h
+  tkutil.h \
+  tkdefs.h
 tkapp.obj: tkapp.cc \
   ../../include/cenvir.h \
   ../../include/csimplemodule.h \
@@ -428,6 +434,7 @@ tkcmd.obj: tkcmd.cc \
   ../../include/cdefaultlist.h \
   ../../include/cpar.h \
   tkutil.h \
+  tkdefs.h \
   ../../include/macros.h
 tklib.obj: tklib.cc \
   tklib.h \
@@ -455,7 +462,8 @@ tkutil.obj: tkutil.cc \
   ../../include/onstartup.h \
   ../../include/errmsg.h \
   ../../include/cmsgheap.h \
-  ../../include/coutvect.h
+  ../../include/coutvect.h \
+  tkdefs.h
 visitor.obj: visitor.cc \
   ../../include/cenvir.h \
   ../../include/cobject.h \

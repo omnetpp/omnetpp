@@ -20,10 +20,6 @@
 #include <string>
 #include <vector>
 
-#include "defs.h"
-#include "envdefs.h"
-
-
 /**
  * Glob-style pattern matching class, adopted to special OMNeT++ requirements.
  * One instance represents a pattern to match.
@@ -70,7 +66,7 @@
  *     matches any number). The specification must use exactly two dots.
  *     Caveat: "*{17..19}" will match "a17","117" and "963217" as well.
  */
-class ENVIR_API cPatternMatcher
+class PatternMatcher
 {
   private:
     enum ElemType {
@@ -111,12 +107,17 @@ class ENVIR_API cPatternMatcher
     /**
      * Constructor
      */
-    cPatternMatcher();
+    PatternMatcher();
+
+    /**
+     * Constructor
+     */
+    PatternMatcher(const char *pattern, bool dottedpath, bool fullstring, bool casesensitive);
 
     /**
      * Destructor
      */
-    ~cPatternMatcher();
+    ~PatternMatcher();
 
     /**
      * Sets the pattern to be used by subsequent calls to matches(). See the
@@ -158,6 +159,13 @@ class ENVIR_API cPatternMatcher
      * May be useful for debugging purposes.
      */
     void dump()  {dump(0);}
+
+    /**
+     * Utility function to determine whether a given string contains wildcards.
+     * If it does not, a simple strcmp() might be a faster option than using 
+     * PatternMatcher.
+     */
+    static bool containsWildcards(const char *pattern);
 
 };
 

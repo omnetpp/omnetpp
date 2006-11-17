@@ -23,15 +23,10 @@
 // This header needs to be included *last* in omnetpp.h.
 //
 
-// cObject:
-#define isA()          className()
-// cQueue:
-#define insertHead(a)  insert(a)
+// cQueue
 #define peekTail()     tail()
 #define peekHead()     head()
-#define getTail()      pop()
-// cSimulation
-#define lastModuleIndex() lastModuleId()
+
 // cModule
 #define displayStringAsParent()  backgroundDisplayString()
 #define setDisplayStringAsParent setBackgroundDisplayString

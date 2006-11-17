@@ -26,7 +26,7 @@
 #include "cmodule.h"
 #include "csimul.h"
 #include "tkapp.h"
-#include "patmatch.h"
+#include "patternmatcher.h"
 #include "visitor.h"
 #include "tkutil.h"
 

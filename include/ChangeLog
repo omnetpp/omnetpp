@@ -1,3 +1,7 @@
+2006-11-15  Andras Varga
+
+	* compat.h: removed some very old compatibility #defines
+
 2006-11-12  Andras Varga
 
 	* several methods and classes already marked as DEPRECATED in their 

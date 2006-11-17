@@ -17,7 +17,7 @@
 #include <ctype.h>
 #include "cmysqlconfiguration.h"
 #include "platdep/fileutil.h"  // directoryOf, tidyFilename
-#include "patmatch.h" // TODO eliminate dependency
+#include "patternmatcher.h" // TODO eliminate dependency
 #include "cinifile.h" // for dumpConfig(); TODO eliminate dependency
 #include "oppmysqlutils.h"
 
@@ -131,7 +131,7 @@ void cMySQLConfiguration::copyExistingConfig(cConfiguration *cfg)
         sEntry& e = entries.back();
         e.section_id = sectionold2new[secnum];
         e.key = opp_strdup(it.entry());
-        e.keypattern = new cPatternMatcher();
+        e.keypattern = new PatternMatcher();
         e.keypattern->setPattern(e.key, true, true, true);
         e.value = opp_strdup(it.value());
         e.rawvalue = NULL;
@@ -208,7 +208,7 @@ void cMySQLConfiguration::readDB(MYSQL *mysql, const char *configName)
         sEntry& e = entries.back();
         e.section_id = sectionId2index[dbSectionId];
         e.key = opp_strdup(entryName);
-        e.keypattern = new cPatternMatcher();
+        e.keypattern = new PatternMatcher();
         e.keypattern->setPattern(e.key, true, true, true);
         e.value = opp_strdup(value);
         e.rawvalue = NULL;

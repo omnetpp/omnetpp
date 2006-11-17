@@ -14,10 +14,11 @@ CFLAGS=$(CFLAGS) /DWITH_NETBUILDER
 #
 # Local definitions
 #
-COPTS=$(CFLAGS) /I "$(OMNETPP_INCL_DIR)" /I "../sim" /DBUILDING_ENVIR /DHAVE_DLOPEN=$(HAVE_DLOPEN) /Fd"envir.pdb"
+COPTS=$(CFLAGS) /I "$(OMNETPP_INCL_DIR)" /I . /I "../sim" /DBUILDING_ENVIR /DHAVE_DLOPEN=$(HAVE_DLOPEN) /Fd"envir.pdb"
 
 OBJS=args.obj cenvir.obj cinifile.obj main.obj omnetapp.obj fsutils.obj \
-     patmatch.obj speedmtr.obj filemgrs.obj akoutvectormgr.obj \
+     patternmatcher.obj speedmtr.obj filemgrs.obj akoutvectormgr.obj \
+     matchexpression.obj lex.matchexpressionyy.obj matchexpression.tab.obj \
      akaroarng.obj cxmldoccache.obj cstrtokenizer2.obj
 LIBS=$(OMNETPP_SRC_DIR)/sim/sim_std.ilib
 
@@ -48,6 +49,16 @@ envir.dll : $(OBJS) $(LIBS)
 	$(SHLIB_LD) /out:envir.dll /implib:envir.ilib /subsystem:console /def:envir.def $(OBJS) $(LIBS)
 	copy envir.dll $(OMNETPP_LIB_DIR:/=\)
 	copy envir.ilib $(OMNETPP_LIB_DIR:/=\)
+
+matchexpression.tab.h matchexpression.tab.cc : matchexpression.y
+	$(YACC:/=\) -p matchexpressionyy -b matchexpression -d matchexpression.y
+	copy matchexpression.tab.c matchexpression.tab.cc
+	del matchexpression.tab.c
+
+lex.matchexpressionyy.cc: matchexpression.lex matchexpression.tab.h
+	$(LEX:/=\) -Pmatchexpressionyy matchexpression.lex
+	copy lex.matchexpressionyy.c lex.matchexpressionyy.cc
+	del lex.matchexpressionyy.c
 
 depend:
 	$(MAKEDEPEND) -I../../include -fMakefile.vc -- *.cc
@@ -143,7 +154,7 @@ cenvir.obj: cenvir.cc \
   ../../include/ccoroutine.h \
   ../../include/coutvect.h \
   ../../include/cconfig.h \
-  patmatch.h \
+  patternmatcher.h \
   ../../include/carray.h \
   ../../include/envirext.h \
   ../../include/platdep/time.h \
@@ -155,7 +166,7 @@ cinifile.obj: cinifile.cc \
   ../../include/cenvir.h \
   ../../include/util.h \
   cinifile.h \
-  patmatch.h \
+  patternmatcher.h \
   ../../include/cexception.h \
   fsutils.h \
   ../../include/platdep/fileutil.h \
@@ -177,6 +188,7 @@ cxmldoccache.obj: cxmldoccache.cc \
   ../../include/defs.h \
   ../../include/util.h \
   envdefs.h \
+  ../../include/cenvir.h \
   ../../include/opp_string.h
 filemgrs.obj: filemgrs.cc \
   ../../include/defs.h \
@@ -219,6 +231,8 @@ fsutils.obj: fsutils.cc \
   ../../include/util.h \
   ../../include/opp_string.h \
   ../../include/defs.h
+lex.matchexpressionyy.obj: lex.matchexpressionyy.cc \
+  matchexpression.tab.h
 main.obj: main.cc \
   ../../include/cobject.h \
   ../../include/cenvir.h \
@@ -229,10 +243,36 @@ main.obj: main.cc \
   ../../include/cexception.h \
   ../../include/cvisitor.h \
   ../../include/opp_string.h
+matchableobject.obj: matchableobject.cc \
+  matchableobject.h \
+  ../../include/cclassdescriptor.h \
+  ../../include/cobject.h \
+  matchexpression.h \
+  ../../include/cenvir.h \
+  ../../include/defs.h \
+  ../../include/util.h \
+  ../../include/cpolymorphic.h \
+  ../../include/cexception.h \
+  ../../include/cvisitor.h \
+  ../../include/opp_string.h
+matchexpression.obj: matchexpression.cc \
+  matchexpression.h \
+  patternmatcher.h \
+  ../../include/cexception.h \
+  ../../include/defs.h \
+  ../../include/opp_string.h \
+  ../../include/util.h
+matchexpression.tab.obj: matchexpression.tab.cc \
+  matchexpression.h \
+  patternmatcher.h \
+  ../../include/cexception.h \
+  ../../include/defs.h \
+  ../../include/opp_string.h \
+  ../../include/util.h
 omnetapp.obj: omnetapp.cc \
   args.h \
   omnetapp.h \
-  patmatch.h \
+  patternmatcher.h \
   fsutils.h \
   ../../include/ctypes.h \
   ../../include/ccoroutine.h \
@@ -271,11 +311,10 @@ omnetapp.obj: omnetapp.cc \
   ../../include/cqueue.h \
   ../../include/cgate.h \
   ../../include/cdefaultlist.h
-patmatch.obj: patmatch.cc \
-  patmatch.h \
+patternmatcher.obj: patternmatcher.cc \
+  patternmatcher.h \
   ../../include/cexception.h \
   ../../include/defs.h \
-  envdefs.h \
   ../../include/opp_string.h \
   ../../include/util.h
 speedmtr.obj: speedmtr.cc \

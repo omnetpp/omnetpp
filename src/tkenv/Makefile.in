@@ -461,7 +461,7 @@ tkcmd.o: tkcmd.cc \
   tklib.h \
   inspector.h \
   inspfactory.h \
-  ../envir/patmatch.h \
+  ../envir/patternmatcher.h \
   visitor.h \
   ../envir/fsutils.h \
   ../../include/defs.h \
@@ -516,7 +516,7 @@ tkutil.o: tkutil.cc \
   ../../include/cmodule.h \
   ../../include/csimul.h \
   tkapp.h \
-  ../envir/patmatch.h \
+  ../envir/patternmatcher.h \
   visitor.h \
   tkutil.h \
   ../../include/cenvir.h \
@@ -556,7 +556,7 @@ visitor.o: visitor.cc \
   ../../include/cpar.h \
   ../../include/cchannel.h \
   ../../include/cgate.h \
-  ../envir/patmatch.h \
+  ../envir/patternmatcher.h \
   visitor.h \
   ../../include/defs.h \
   ../../include/util.h \

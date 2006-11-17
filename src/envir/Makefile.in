@@ -27,10 +27,11 @@ HAVE_DLOPEN=@HAVE_DLOPEN@
 #
 # Local definitions
 #
-COPTS=$(CFLAGS) $(AKAROA_CFLAGS) -I$(OMNETPP_INCL_DIR) -I../sim -DBUILDING_ENVIR -DHAVE_DLOPEN=$(HAVE_DLOPEN)
+COPTS=$(CFLAGS) $(AKAROA_CFLAGS) -I$(OMNETPP_INCL_DIR) -I. -I../sim -DBUILDING_ENVIR -DHAVE_DLOPEN=$(HAVE_DLOPEN)
 
 OBJS=args.o cenvir.o cinifile.o main.o omnetapp.o fsutils.o \
-     patmatch.o speedmtr.o filemgrs.o akoutvectormgr.o \
+     patternmatcher.o speedmtr.o filemgrs.o akoutvectormgr.o \
+     matchexpression.o lex.matchexpressionyy.o matchexpression.tab.o \
      akaroarng.o cxmldoccache.o cstrtokenizer2.o
 
 #
@@ -54,6 +55,14 @@ libenvir$(A_LIB_SUFFIX) : $(OBJS)
 libenvir$(SO_LIB_SUFFIX) : $(OBJS)
 	$(SHLIB_LD) -o libenvir$(SO_LIB_SUFFIX) $(OBJS)
 	../utils/install-lib libenvir$(SO_LIB_SUFFIX).$(OMNETPP_VERSION) $(OMNETPP_LIB_DIR) libenvir$(SO_LIB_SUFFIX)
+
+matchexpression.tab.h matchexpression.tab.cc : matchexpression.y
+	$(YACC) -p matchexpressionyy -b matchexpression -d matchexpression.y
+	mv matchexpression.tab.c matchexpression.tab.cc
+
+lex.matchexpressionyy.cc: matchexpression.lex matchexpression.tab.h
+	$(LEX) -Pmatchexpressionyy matchexpression.lex
+	mv lex.matchexpressionyy.c lex.matchexpressionyy.cc
 
 depend:
 	$(MAKEDEPEND) -I. -I../../include -- *.cc
@@ -149,7 +158,7 @@ cenvir.o: cenvir.cc \
   ../../include/ccoroutine.h \
   ../../include/coutvect.h \
   ../../include/cconfig.h \
-  patmatch.h \
+  patternmatcher.h \
   ../../include/carray.h \
   ../../include/envirext.h \
   ../../include/platdep/time.h \
@@ -161,7 +170,7 @@ cinifile.o: cinifile.cc \
   ../../include/cenvir.h \
   ../../include/util.h \
   cinifile.h \
-  patmatch.h \
+  patternmatcher.h \
   ../../include/cexception.h \
   fsutils.h \
   ../../include/platdep/fileutil.h \
@@ -239,7 +248,7 @@ main.o: main.cc \
 omnetapp.o: omnetapp.cc \
   args.h \
   omnetapp.h \
-  patmatch.h \
+  patternmatcher.h \
   fsutils.h \
   ../../include/ctypes.h \
   ../../include/ccoroutine.h \
@@ -279,7 +288,7 @@ omnetapp.o: omnetapp.cc \
   ../../include/cgate.h \
   ../../include/cdefaultlist.h
 patmatch.o: patmatch.cc \
-  patmatch.h \
+  patternmatcher.h \
   ../../include/cexception.h \
   ../../include/defs.h \
   envdefs.h \

@@ -458,6 +458,7 @@ cmodule.obj: cmodule.cc \
   ../../include/cmodule.h \
   ../../include/csimplemodule.h \
   ../../include/cgate.h \
+  ../../include/cchannel.h \
   ../../include/cmessage.h \
   ../../include/csimul.h \
   ../../include/carray.h \
@@ -959,6 +960,7 @@ minixpath.obj: minixpath.cc \
   ../../include/cexception.h \
   ../../include/cxmlelement.h \
   ../../include/defs.h \
+  ../../include/cenvir.h \
   ../../include/opp_string.h \
   ../../include/util.h
 onstartup.obj: onstartup.cc \
