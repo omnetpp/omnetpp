@@ -157,7 +157,7 @@ proc remove_stopdialog {} {
 }
 
 proc options_dialog {{defaultpage "g"}} {
-    global opp config
+    global opp config help_tips
 
     set w .optionsdialog
 
@@ -206,7 +206,8 @@ proc options_dialog {{defaultpage "g"}} {
     checkbutton $nb.t.tlwantnonself -text {Display non-self messages in the timeline} -variable opp(timeline-wantnonselfmsgs)
     label-entry $nb.t.tlnamepattern {Message name filter:}
     label-entry $nb.t.tlclassnamepattern {Class name filter:}
-    commentlabel $nb.t.c1 {In both patterns, wildcards (*,?) are accepted. Start pattern with hyphen (-) to exclude matched messages.}
+    commentlabel $nb.t.c1 {Wildcards, AND, OR, NOT, numeric ranges, field matchers like kind, length, etc. accepted. Read tooltip for more help.}
+    helplabel $nb.t.c2 {Learn more...} [getTimelineFilterHelpText]
     $nb.t.tlnamepattern.l config -width 20
     $nb.t.tlclassnamepattern.l config -width 20
     $nb.t.tlnamepattern.e config -width 40
@@ -216,6 +217,7 @@ proc options_dialog {{defaultpage "g"}} {
     pack $nb.t.tlnamepattern -anchor w -fill x
     pack $nb.t.tlclassnamepattern -anchor w -fill x
     pack $nb.t.c1 -anchor w
+    pack $nb.t.c2 -anchor w
 
     checkbutton $nb.a.anim -text {Animate messages} -variable opp(anim)
     label-scale $nb.a.speed {Animation speed:}
@@ -323,6 +325,38 @@ proc setIfPatternIsValid {var pattern} {
     } else {
         uplevel [list set $var $pattern]
     }
+}
+
+proc getTimelineFilterHelpText {} {
+   return {
+Wildcards ("?", "*") are allowed in both the Name and the Class Name filter patterns.
+"{a-exz}" matches any character in the range "a".."e", plus "x" and "z".
+You can match numbers: "job{128..191}" will match "job128", "job129", ..., "job191".
+"job{128..}" and "job{..191}" are also understood. You can combine patterns with
+AND, OR and NOT and parentheses (lowercase and, or, not are also OK). You can
+match against other object fields such as message length, message kind, etc.,
+with the syntax "fieldname(pattern)".
+
+Examples:
+ m*
+            matches any object whose name begins with "m"
+ m* AND *-{0..250}
+            matches any object whose name begins with "m" and ends with dash and a
+            number between 0 and 250
+ not *timer*
+            matches any object whose name doesn't contain the substring "timer"
+ not (*timer* or *timeout*)
+            matches any object whose name doesn't contain either "timer" or "timeout"
+ kind(3) or kind({7..9})
+            matches messages with message kind equal to 3, 7, 8 or 9
+ className(IP*) and data-*
+            matches objects whose class name begins with "IP" and name begins
+            with "data-"
+ not className(cMessage) and byteLength({1500..})
+            matches objects whose class is not cMessage, and byteLength is
+            at least 1500
+}
+
 }
 
 proc rununtil_dialog {time_var event_var mode_var} {

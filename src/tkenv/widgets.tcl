@@ -403,6 +403,31 @@ proc commentlabel {w text} {
     pack $w.e -anchor center -expand 0 -fill x -padx 2 -pady 2 -side left
 }
 
+proc helplabel {w text helptext} {
+    frame $w
+    label $w.e -justify left -text $text -fg "#0000a0"
+    pack $w.e -anchor center -expand 0 -fill x -padx 2 -pady 2 -side left
+    bind $w.e <Button-1> [list helplabel_showhelp $helptext %X %Y]
+}
+
+proc helplabel_showhelp {text x y}  
+    global help_tips
+    catch {destroy .helpwin}
+    toplevel .helpwin -relief flat
+    wm overrideredirect .helpwin true
+    wm positionfrom .helpwin program
+    wm geometry .helpwin "+[expr $x-20]+[expr $y-80]"
+    label .helpwin.tip -text $text -padx 4 -wraplength $help_tips(width) \
+                            -bg $help_tips(color) -border 1 -relief solid \
+                            -font $help_tips(font) -justify left
+    pack .helpwin.tip
+    focus .helpwin
+    bind .helpwin <Return> "catch { destroy .helpwin }"
+    bind .helpwin <Escape> "catch { destroy .helpwin }"
+    bind .helpwin <FocusOut> "catch { destroy .helpwin }"
+    bind .helpwin <Button-1> "catch { destroy .helpwin }"
+}
+
 
 # noteboook --
 #
