@@ -709,6 +709,7 @@ int getSubObjects_cmd(ClientData, Tcl_Interp *interp, int argc, const char **arg
 
 int getSubObjectsFilt_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
+   E_TRY
    // args: <ptr> <category> <class> <fullpath> <maxcount> <orderby>, where
    //    <category> consists of letters m,q,s,g,v,o;
    //    <class> and <fullpath> may contain wildcards
@@ -762,6 +763,7 @@ int getSubObjectsFilt_cmd(ClientData, Tcl_Interp *interp, int argc, const char *
    // return list
    setObjectListResult(interp, &visitor);
    return TCL_OK;
+   E_CATCH
 }
 
 int getSimulationState_cmd(ClientData, Tcl_Interp *interp, int argc, const char **)
