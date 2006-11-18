@@ -19,14 +19,20 @@
 #include "matchableobject.h"
 #include "cclassdescriptor.h"
 
-MatchableObject::MatchableObject(cObject *obj, DefaultAttribute attr)
+MatchableObjectAdapter::MatchableObjectAdapter(DefaultAttribute attr, cObject *obj)
 {
     this->attr = attr;
     this->obj = obj;
     desc = NULL;
 }
 
-const char *MatchableObject::getDefaultAttribute() const
+void MatchableObjectAdapter::setObject(cObject *obj)
+{
+    this->obj = obj;
+    desc = NULL;
+}
+
+const char *MatchableObjectAdapter::getDefaultAttribute() const
 {
     switch (attr)
     {
@@ -37,7 +43,7 @@ const char *MatchableObject::getDefaultAttribute() const
     }
 }
 
-void MatchableObject::splitIndex(char *fieldname, int& index)
+void MatchableObjectAdapter::splitIndex(char *fieldname, int& index)
 {
     index = 0;
     char *startbracket = strchr(fieldname, '[');
@@ -54,7 +60,7 @@ void MatchableObject::splitIndex(char *fieldname, int& index)
     }
 }
 
-bool MatchableObject::findDescriptorField(cClassDescriptor *desc, cObject *obj, char *fieldname, int& fieldId, int& index)
+bool MatchableObjectAdapter::findDescriptorField(cClassDescriptor *desc, cObject *obj, char *fieldname, int& fieldId, int& index)
 {
     // chop off possible bracketed index from field name
     splitIndex(fieldname, index);
@@ -67,7 +73,7 @@ bool MatchableObject::findDescriptorField(cClassDescriptor *desc, cObject *obj, 
     return false;
 }
 
-const char *MatchableObject::getAttribute(const char *name) const
+const char *MatchableObjectAdapter::getAttribute(const char *name) const
 {
     if (!desc)
     {

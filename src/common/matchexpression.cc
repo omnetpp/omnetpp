@@ -72,14 +72,14 @@ bool MatchExpression::matches(const Matchable *object)
           case Elem::PATTERN:
             if (tos>=stksize-1)
                 throw new Exception("MatchExpression overflow");
-			attr = object->getDefaultAttribute();
-			stk[++tos] = attr==NULL ? false : e.pattern->matches(attr);
+            attr = object->getDefaultAttribute();
+            stk[++tos] = attr==NULL ? false : e.pattern->matches(attr);
             break;
           case Elem::FIELDPATTERN:
             if (tos>=stksize-1)
                 throw new Exception("MatchExpression overflow");
-			attr = object->getAttribute(e.fieldname.c_str());
-			stk[++tos] = attr==NULL ? false : e.pattern->matches(attr);
+            attr = object->getAttribute(e.fieldname.c_str());
+            stk[++tos] = attr==NULL ? false : e.pattern->matches(attr);
             break;
           case Elem::OR:
             if (tos<1)

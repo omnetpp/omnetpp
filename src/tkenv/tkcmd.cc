@@ -94,6 +94,7 @@ int hsbToRgb_cmd(ClientData, Tcl_Interp *, int, const char **);
 int getModulePar_cmd(ClientData, Tcl_Interp *, int, const char **);
 int setModulePar_cmd(ClientData, Tcl_Interp *, int, const char **);
 int moduleByPath_cmd(ClientData, Tcl_Interp *, int, const char **);
+int checkPattern_cmd(ClientData, Tcl_Interp *, int, const char **);
 int fesMsgs_cmd(ClientData, Tcl_Interp *, int, const char **);
 int sortFesAndGetRange_cmd(ClientData, Tcl_Interp *, int, const char **);
 int msgArrTimeFromNow_cmd(ClientData, Tcl_Interp *, int, const char **);
@@ -181,6 +182,7 @@ OmnetTclCommand tcl_commands[] = {
    { "opp_modulebypath",     moduleByPath_cmd         }, // args: <fullpath> ret: modptr
    { "opp_getmodulepar",     getModulePar_cmd         }, // args: <modptr> <parname> ret: value
    { "opp_setmodulepar",     setModulePar_cmd         }, // args: <modptr> <parname> <value>
+   { "opp_checkpattern",     checkPattern_cmd         }, // args: <pattern>
    { "opp_fesmsgs",          fesMsgs_cmd              }, // args: <maxnum> <wantSelfMsgs> <wantNonSelfMsgs> <namePattern> <classNamePattern>
    { "opp_sortfesandgetrange",sortFesAndGetRange_cmd  }, // args: -  ret: {minDeltaT maxDeltaT}
    { "opp_msgarrtimefromnow",msgArrTimeFromNow_cmd    }, // args: <modptr>
@@ -1146,8 +1148,19 @@ int moduleByPath_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv
    return TCL_OK;
 }
 
+int checkPattern_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
+{
+   E_TRY
+   if (argc!=2) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
+   const char *pattern = argv[1];
+   MatchExpression matcher(pattern, false, true, true);
+   return TCL_OK;
+   E_CATCH
+}
+
 int fesMsgs_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
+   E_TRY
    if (argc!=6) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
    int maxNum = atoi(argv[1]);
    bool wantSelfMsgs = atoi(argv[2])!=0;
@@ -1156,16 +1169,10 @@ int fesMsgs_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
    const char *classNamePattern = argv[5];
 
    if (!*namePattern) namePattern = "*";
-   bool negativeNamePattern = namePattern[0]=='-';
-   if (negativeNamePattern) namePattern++;
-   PatternMatcher nameMatcher;
-   nameMatcher.setPattern(namePattern, false, true, false);
+   MatchExpression nameMatcher(namePattern, false, true, true);
 
    if (!*classNamePattern) classNamePattern = "*";
-   bool negativeClassNamePattern = classNamePattern[0]=='-';
-   if (negativeClassNamePattern) classNamePattern++;
-   PatternMatcher classNameMatcher;
-   classNameMatcher.setPattern(classNamePattern, false, true, false);
+   MatchExpression classNameMatcher(classNamePattern, false, true, true);
 
    Tcl_Obj *listobj = Tcl_NewListObj(0, NULL);
    for (cMessageHeap::Iterator it(simulation.msgQueue); maxNum>0 && !it.end(); it++, maxNum--)
@@ -1173,14 +1180,20 @@ int fesMsgs_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
        cMessage *msg = it();
        if (msg->isSelfMessage() ? !wantSelfMsgs : !wantNonSelfMsgs)
            continue;
-       if (nameMatcher.matches(msg->name()) == negativeNamePattern)
+
+       MatchableObjectAdapter msgAdapter(MatchableObjectAdapter::FULLNAME, msg);
+       if (namePattern[0] && !nameMatcher.matches(&msgAdapter))
            continue;
-       if (classNameMatcher.matches(msg->className()) == negativeClassNamePattern)
+
+       msgAdapter.setDefaultAttribute(MatchableObjectAdapter::CLASSNAME);
+       if (classNamePattern[0] && !classNameMatcher.matches(&msgAdapter))
            continue;
+
        Tcl_ListObjAppendElement(interp, listobj, Tcl_NewStringObj(ptrToStr(msg), -1));
    }
    Tcl_SetObjResult(interp, listobj);
    return TCL_OK;
+   E_CATCH
 }
 
 int sortFesAndGetRange_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)

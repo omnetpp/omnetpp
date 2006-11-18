@@ -102,15 +102,10 @@ void cFilteredCollectObjectsVisitor::setFilterPars(unsigned int cat,
     // Note: pattern matcher will throw exception on pattern syntax error
     category = cat;
     if (classnamepatt && classnamepatt[0])
-    {
-        classnamepattern = new PatternMatcher();
-        classnamepattern->setPattern(classnamepatt, false, true, false);
-    }
+        classnamepattern = new MatchExpression(classnamepatt, false, true, true);
+
     if (objfullpathpatt && objfullpathpatt[0])
-    {
-        objfullpathpattern = new PatternMatcher();
-        objfullpathpattern->setPattern(objfullpathpatt, false, true, false);
-    }
+        objfullpathpattern = new MatchExpression(objfullpathpatt, false, true, true);
 }
 
 void cFilteredCollectObjectsVisitor::visit(cObject *obj)
@@ -137,8 +132,13 @@ void cFilteredCollectObjectsVisitor::visit(cObject *obj)
                                         !dynamic_cast<cPar *>(obj) &&
                                         !dynamic_cast<cChannel *>(obj) &&
                                         !dynamic_cast<cGate *>(obj)));
-    ok = ok && (!objfullpathpattern || objfullpathpattern->matches(obj->fullPath().c_str()));
-    ok = ok && (!classnamepattern || classnamepattern->matches(obj->className()));
+    if (objfullpathpattern || classnamepattern)
+    {
+        MatchableObjectAdapter objAdapter(MatchableObjectAdapter::FULLPATH, obj);
+        ok = ok && (!objfullpathpattern || objfullpathpattern->matches(&objAdapter));
+        objAdapter.setDefaultAttribute(MatchableObjectAdapter::CLASSNAME);
+        ok = ok && (!classnamepattern || classnamepattern->matches(&objAdapter));
+    }
 
     if (ok)
     {

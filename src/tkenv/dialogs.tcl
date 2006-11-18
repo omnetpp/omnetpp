@@ -157,7 +157,7 @@ proc remove_stopdialog {} {
 }
 
 proc options_dialog {{defaultpage "g"}} {
-    global opp config
+    global opp config help_tips helptexts
 
     set w .optionsdialog
 
@@ -204,28 +204,18 @@ proc options_dialog {{defaultpage "g"}} {
     #frame $nb.t -relief groove -borderwidth 2
     checkbutton $nb.t.tlwantself -text {Display self-messages in the timeline} -variable opp(timeline-wantselfmsgs)
     checkbutton $nb.t.tlwantnonself -text {Display non-self messages in the timeline} -variable opp(timeline-wantnonselfmsgs)
-    label-entry $nb.t.tlnamepattern {Message name filter:}
-    label-entry $nb.t.tlclassnamepattern {Class name filter:}
-    commentlabel $nb.t.c1 {In both patterns, wildcards (*,?) are accepted. Start pattern with hyphen (-) to exclude matched messages.}
-    #label-entry $nb.t.tlincludemk {Include message kinds:}
-    #label-entry $nb.t.tlexcludemk {Exclude message kinds:}
-    #commentlabel $nb.t.c2 {Enter message kind values separated by comma, or asterisk (*) for all.}
+    label-entry-help $nb.t.tlnamepattern {Message name filter:} $helptexts(timeline-namepattern)
+    label-entry-help $nb.t.tlclassnamepattern {Class name filter:} $helptexts(timeline-classnamepattern)
+    commentlabel $nb.t.c1 {Wildcards, AND, OR, NOT, numeric ranges, field matchers like kind, length, etc. accepted. Click Help for more.}
     $nb.t.tlnamepattern.l config -width 20
     $nb.t.tlclassnamepattern.l config -width 20
-    #$nb.t.tlincludemk.l config -width 20
-    #$nb.t.tlexcludemk.l config -width 20
     $nb.t.tlnamepattern.e config -width 40
     $nb.t.tlclassnamepattern.e config -width 40
-    #$nb.t.tlincludemk.e config -width 40
-    #$nb.t.tlexcludemk.e config -width 40
     pack $nb.t.tlwantself -anchor w
     pack $nb.t.tlwantnonself -anchor w
     pack $nb.t.tlnamepattern -anchor w -fill x
     pack $nb.t.tlclassnamepattern -anchor w -fill x
     pack $nb.t.c1 -anchor w
-    #pack $nb.t.tlincludemk -anchor w -fill x
-    #pack $nb.t.tlexcludemk -anchor w -fill x
-    #pack $nb.t.c2 -anchor w
 
     checkbutton $nb.a.anim -text {Animate messages} -variable opp(anim)
     label-scale $nb.a.speed {Animation speed:}
@@ -285,8 +275,6 @@ proc options_dialog {{defaultpage "g"}} {
     set opp(confirmexit) $config(confirm-exit)
     $nb.t.tlnamepattern.e insert 0      $config(timeline-msgnamepattern)
     $nb.t.tlclassnamepattern.e insert 0 $config(timeline-msgclassnamepattern)
-    #$nb.t.tlincludemk.e insert 0        $config(timeline-includemsgkinds)
-    #$nb.t.tlexcludemk.e insert 0        $config(timeline-excludemsgkinds)
     set opp(timeline-wantselfmsgs)      $config(timeline-wantselfmsgs)
     set opp(timeline-wantnonselfmsgs)   $config(timeline-wantnonselfmsgs)
 
@@ -318,17 +306,23 @@ proc options_dialog {{defaultpage "g"}} {
         opp_setsimoption animation_speed     $opp(speed)
         opp_setsimoption bkpts_enabled       $opp(bkpts)
         set config(confirm-exit)             $opp(confirmexit)
-        set config(timeline-msgnamepattern)  [$nb.t.tlnamepattern.e get]
-        set timeline-msgclassnamepattern)    [$nb.t.tlclassnamepattern.e get]
+        setIfPatternIsValid config(timeline-msgnamepattern)  [$nb.t.tlnamepattern.e get]
+        setIfPatternIsValid config(timeline-msgclassnamepattern) [$nb.t.tlclassnamepattern.e get]
         set config(timeline-wantselfmsgs)    $opp(timeline-wantselfmsgs)
         set config(timeline-wantnonselfmsgs) $opp(timeline-wantnonselfmsgs)
-        #set config(timeline-includemsgkinds) [$nb.t.tlincludemk.e get]
-        #set config(timeline-excludemsgkinds) [$nb.t.tlexcludemk.e get]
 
         opp_updateinspectors
         redraw_timeline
     }
     destroy $w
+}
+
+proc setIfPatternIsValid {var pattern} {
+    if [catch {opp_checkpattern $pattern} errmsg] {
+        tk_messageBox -type ok -icon warning -title Tkenv -message "Filter pattern \"$pattern\" has invalid syntax -- setting unchanged."
+    } else {
+        uplevel [list set $var $pattern]
+    }
 }
 
 proc rununtil_dialog {time_var event_var mode_var} {
@@ -559,7 +553,7 @@ proc _doFind {w findstring case words regexp backwards} {
 # Implements the "Find/inspect objects" dialog.
 #
 proc filteredobjectlist_window {{ptr ""}} {
-    global config tmp icons help_tips
+    global config tmp icons help_tips helptexts
     global HAVE_BLT
 
     set w .objdlg
@@ -627,8 +621,8 @@ proc filteredobjectlist_window {{ptr ""}} {
     pack $w.f.filter.pars -anchor center -expand 0 -fill x -side top
     set fp $w.f.filter.pars
 
-    label $fp.classlabel -text "Class:" -justify left -anchor w
-    label $fp.namelabel -text "Object full path (e.g. '*foo*'):" -justify left -anchor w
+    labelwithhelp $fp.classlabel "Class filter expression:" $helptexts(filterdialog-classnamepattern)
+    labelwithhelp $fp.namelabel  "Object full path filter, e.g. \"*.queue\ AND not length(0)\":" $helptexts(filterdialog-namepattern)
 
     combo $fp.classentry [concat {{}} [getClassNames]]
     $fp.classentry.entry config -textvariable tmp(class)
@@ -637,14 +631,11 @@ proc filteredobjectlist_window {{ptr ""}} {
     set classhelptext "Wildcards accepted (*,?), try '*Packet'"
     set namehelptext "Use wildcards (*,?): '*.foo' for any object named foo; '*foo*' for any\n\
                      object whose full path contains foo; use '{a-z}' for character range"
-    label $fp.classhelp -text $classhelptext -justify left -anchor w
-    label $fp.namehelp -text $namehelptext -justify left -anchor w
 
     button $fp.refresh -text "Refresh" -width 10 -command "filteredobjectlist_refresh $w"
 
     grid $fp.classlabel $fp.namelabel x           -sticky nw   -padx 5
-    grid $fp.classentry $fp.nameentry $fp.refresh -sticky news -padx 5
-    grid $fp.classhelp $fp.namehelp   x           -sticky nw   -padx 5
+    grid $fp.classentry $fp.nameentry $fp.refresh -sticky news -padx 5 -pady 3
     grid columnconfig $fp 0 -weight 1
     grid columnconfig $fp 1 -weight 3
 
@@ -791,7 +782,19 @@ proc filteredobjectlist_refresh {w} {
     }
 
     set class $tmp(class)
+    if {$class==""} {set class "*"}
+    if [catch {opp_checkpattern $class} errmsg] {
+        tk_messageBox -parent $w -type ok -icon warning -title Tkenv -message "Class filter pattern \"$class\" has invalid syntax -- using \"*\" instead."
+        set class "*"
+    }
+
     set name $tmp(name)
+    if {$name==""} {set name "*"}
+    if [catch {opp_checkpattern $name} errmsg] {
+        tk_messageBox -parent $w -type ok -icon warning -title Tkenv -message "Name filter pattern \"$name\" has invalid syntax -- using \"*\" instead."
+        set name "*"
+    }
+
     if {!$HAVE_BLT} {
         set order $tmp(order)
     } else {
@@ -887,3 +890,110 @@ proc filteredobjectlist_inspect {lb} {
 
     inspect_item_in $lb
 }
+
+#----
+
+set helptexts(timeline-namepattern) {
+Generic filter expression which matches the object name by default.
+
+Wildcards ("?", "*") are allowed. "{a-exz}" matches any character in the
+range "a".."e", plus "x" and "z". You can match numbers: "job{128..191}"
+will match "job128", "job129", ..., "job191". "job{128..}" and "job{..191}"
+are also understood. You can combine patterns with AND, OR and NOT and
+parentheses (lowercase and, or, not are also OK). You can match against
+other object fields such as message length, message kind, etc., with the
+syntax "fieldname(pattern)".
+
+Examples:
+ m*
+            matches any object whose name begins with "m"
+ m* AND *-{0..250}
+            matches any object whose name begins with "m" and ends with dash
+            and a number between 0 and 250
+ not *timer*
+            matches any object whose name doesn't contain the substring "timer"
+ not (*timer* or *timeout*)
+            matches any object whose name doesn't contain either "timer" or
+            "timeout"
+ kind(3) or kind({7..9})
+            matches messages with message kind equal to 3, 7, 8 or 9
+ className(IP*) and data-*
+            matches objects whose class name begins with "IP" and name begins
+            with "data-"
+ not className(cMessage) and byteLength({1500..})
+            matches objects whose class is not cMessage, and byteLength is
+            at least 1500
+}
+
+set helptexts(timeline-classnamepattern) {
+Generic filter expression which matches the class name by default.
+
+Wildcards ("?", "*"), AND, OR, NOT and field matchers are accepted;
+see Name Filter help for a more complete list.
+
+Examples:
+  PPPFrame
+            matches objects whose class name is PPPFrame
+  Ethernet*Frame or PPPFrame
+            matches objects whose class name is PPPFrame or
+            Ethernet(something)Frame
+  not cMessage
+            matches objects whose class name is not cMessage (so PPPFrame
+            etc. are accepted)
+  cMessage and kind(3)
+            matches objects of class cMessage and message kind 3.
+}
+
+set helptexts(filterdialog-namepattern) {
+Generic filter expression which matches the object full path by default.
+
+Wildcards ("?", "*") are allowed. "{a-exz}" matches any character in the
+range "a".."e", plus "x" and "z". You can match numbers: "*.job{128..191}"
+will match objects named "job128", "job129", ..., "job191". "job{128..}"
+and "job{..191}" are also understood. You can combine patterns with AND, OR
+and NOT and parentheses (lowercase and, or, not are also OK). You can match
+against other object fields such as queue length, message kind, etc., with
+the syntax "fieldname(pattern)".
+
+HINT: You'll want to start the pattern with "*." in most cases, to match
+objects anywhere in the network!
+
+Examples:
+ *.destAddr
+            matches all objects whose name is "destAddr" (likely module
+            parameters)
+ *.subnet2.*.destAddr
+            matches objects named "destAddr" inside "subnet2"
+ *.node[8..10].*
+            matches anything inside module node[8], node[9] and node[10]
+ className(cQueue) and not length(0)
+            matches non-empty queue objects
+ className(cQueue) and length({10..})
+            matches queue objects with length>=10
+ kind(3) or kind({7..9})
+            matches messages with message kind equal to 3, 7, 8 or 9
+            (Only messages have a "kind" attribute.)
+ className(IP*) and *.data-*
+            matches objects whose class name begins with "IP" and
+            name begins with "data-"
+ not className(cMessage) and byteLength({1500..})
+            matches messages whose class is not cMessage, and byteLength is
+            at least 1500. (Only messages have a "byteLength" attribute.)
+}
+
+set helptexts(filterdialog-classnamepattern) {
+Generic filter expression which matches class name by default.
+
+Wildcards ("?", "*"), AND, OR, NOT and field matchers are accepted;
+see Object Filter help for a more complete list.
+
+Examples:
+  cQueue
+            matches cQueue objects
+  TCP* or (IP* and not IPDatagram)
+            matches objects whose class name begins with TCP or IP,
+            excluding IPDatagrams
+  cMessage and kind(3)
+            matches objects of class cMessage and message kind 3.
+}
+
