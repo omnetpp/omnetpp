@@ -1127,7 +1127,12 @@ int checkPattern_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv
    E_TRY
    if (argc!=2) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
    const char *pattern = argv[1];
+   // try parse pattern
    MatchExpression matcher(pattern, false, true, true);
+   // let's see if MatchableObjectAdapter can parse field names inside
+   // (unmatched "[", etc.), by trying to match some random object
+   MatchableObjectAdapter objectAdapter(MatchableObjectAdapter::FULLNAME, &simulation);
+   matcher.matches(&objectAdapter);
    return TCL_OK;
    E_CATCH
 }
