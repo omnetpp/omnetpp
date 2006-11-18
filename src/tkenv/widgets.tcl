@@ -247,8 +247,20 @@ proc label-entry {w label {text {}}} {
     frame $w
     label $w.l -anchor w -width 16 -text $label
     entry $w.e -highlightthickness 0
-    pack $w.l -anchor center -expand 1 -fill x -padx 2 -pady 2 -side left
-    pack $w.e -anchor center -expand 0 -fill x -padx 2 -pady 2 -side right
+    pack $w.l -anchor center -expand 0 -fill x -padx 2 -pady 2 -side left
+    pack $w.e -anchor center -expand 1 -fill x -padx 2 -pady 2 -side right
+    $w.e insert 0 $text
+}
+
+proc label-entry-help {w label helptext {text {}}} {
+    # utility function: create a frame with a label+entry
+    frame $w
+    label $w.l -anchor w -text $label
+    entry $w.e -highlightthickness 0
+    label $w.h -anchor w -text "(Help)" -fg "#0000a0"
+    grid $w.l $w.e $w.h -sticky news
+    grid columnconfigure $w 1 -weight 1
+    bind $w.h <Button-1> [list helplabel_showhelp $helptext %X %Y]
     $w.e insert 0 $text
 }
 
@@ -403,20 +415,21 @@ proc commentlabel {w text} {
     pack $w.e -anchor center -expand 0 -fill x -padx 2 -pady 2 -side left
 }
 
-proc helplabel {w text helptext} {
+proc labelwithhelp {w text helptext} {
     frame $w
-    label $w.e -justify left -text $text -fg "#0000a0"
-    pack $w.e -anchor center -expand 0 -fill x -padx 2 -pady 2 -side left
-    bind $w.e <Button-1> [list helplabel_showhelp $helptext %X %Y]
+    label $w.l -justify left -text $text
+    label $w.h -justify left -text "(Help)" -fg "#0000a0"
+    pack $w.l $w.h -expand 0 -side left -anchor center -fill none -padx 2 -pady 2
+    bind $w.h <Button-1> [list helplabel_showhelp $helptext %X %Y]
 }
 
-proc helplabel_showhelp {text x y}  
+proc helplabel_showhelp {text x y} {
     global help_tips
     catch {destroy .helpwin}
     toplevel .helpwin -relief flat
     wm overrideredirect .helpwin true
     wm positionfrom .helpwin program
-    wm geometry .helpwin "+[expr $x-20]+[expr $y-80]"
+    wm geometry .helpwin "+[expr $x-200]+[expr $y+5]"
     label .helpwin.tip -text $text -padx 4 -wraplength $help_tips(width) \
                             -bg $help_tips(color) -border 1 -relief solid \
                             -font $help_tips(font) -justify left
