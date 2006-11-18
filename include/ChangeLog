@@ -8,6 +8,10 @@ my...() functions removed (they were #defines to opp_...() functions)
 	#define fastconcat       opp_concat
 	#define indexedname      opp_mkindexedname
 
+cQueue changed: sorting removed; head()/tail() removed, back()/front() added
+(insert at back, pop from front!); because of head/tail change, iterator
+direction and meaning of insertBefore/insertAfter changed
+
 2006-10-21  ------ omnetpp-3.3 released ------
 
 2006-09-13  Andras Varga

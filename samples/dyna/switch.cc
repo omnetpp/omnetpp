@@ -54,7 +54,7 @@ void Switch::activity()
         // model finite queue size
         while (queue.length() > queueMaxLen)
         {
-            ev << "Buffer overflow, discarding " << queue.tail()->name() << endl;
+            ev << "Buffer overflow, discarding " << queue.front()->name() << endl;
             delete queue.pop();
         }
     }

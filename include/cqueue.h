@@ -6,7 +6,6 @@
 //
 //  Declaration of the following classes:
 //    cQueue        : (optionally) sorted queue of cObjects
-//    cQueueIterator: walks along a queue
 //
 //==========================================================================
 
@@ -24,23 +23,15 @@
 
 
 /**
- * Queue class. cQueue is a container class that can hold objects derived
- * from cObject. cQueue acts as a priority queue.
- * The user must provide a function that can compare two objects.
- * If no such function is given, cQueue implements a FIFO.
- * Order (ascending or descending) can be specified.
+ * Queue class for objects derived from cObject. The default behaviour of
+ * cQueue is a FIFO: you insert elements at the back using insert(), and
+ * remove them at the front using pop().
  *
  * By default, cQueue's destructor deletes all contained objects. This behaviour
  * can be changed by calling takeOwnership(false) before inserting objects.
  * More precisely, the behaviour can be controlled per-object: the
  * insertion-time state of the <i>takeOwnership</i> flag will determine
  * whether the inserted object will be deleted by the cQueue destructor or not.
- *
- * The sorting function should look like:
- * int CompareFunc(cObject* a, cObject* b);
- *
- * They must return a negative value if a&lt;b, 0 if a==b and a positive value
- * if a&gt;b.
  *
  * @see Iterator
  * @ingroup Containers
@@ -50,8 +41,9 @@ class SIM_API cQueue : public cObject
   private:
     struct QElem
     {
-        cObject *obj;
-        QElem *prev, *next;
+        cObject *obj; // contained object
+        QElem *prev;  // element towards the front of the queue
+        QElem *next;  // element towards the back of the queue
     };
 
   public:
@@ -66,22 +58,17 @@ class SIM_API cQueue : public cObject
       public:
         /**
          * Constructor. Iterator will walk on the queue passed as argument.
-         * The current object will be the first (if athead==true) or
-         * the last (athead==false) object in the queue.
+         * The iterator can be initialized for forward (front-to-back, using
+         * <tt>++</rr>) or reverse (back-to-front, using <tt>--</tt>) iteration.
          */
-        Iterator(const cQueue& q, bool athead=true)
-                {p=&q ? (athead ? q.headp : q.tailp) : NULL;}
+        Iterator(const cQueue& q, bool reverse=false)
+                {p=&q ? (reverse ? q.backp : q.frontp) : NULL;}
 
         /**
          * Reinitializes the iterator object.
          */
-        void init(const cQueue& q, bool athead=true)
-                {p=&q ? (athead ? q.headp : q.tailp) : NULL;}
-
-        /**
-         * DEPRECATED. Use operator () instead.
-         */
-        cObject& operator[](int)  {return p ? *(p->obj) : *(cObject *)NULL;}
+        void init(const cQueue& q, bool reverse=false)
+                {p=&q ? (reverse ? q.backp : q.frontp) : NULL;}
 
         /**
          * Returns the current object.
@@ -94,16 +81,18 @@ class SIM_API cQueue : public cObject
         bool end() const   {return (bool)(p==NULL);}
 
         /**
-         * Returns the current object, then moves the iterator to the next item.
-         * If the iterator has reached either end of the queue, nothing happens;
-         * you have to call init() again to restart iterating.
+         * Returns the current object, then moves the iterator to the next item
+         * (towards the back of the queue). If the iterator has previously
+         * reached either end of the queue, nothing happens, and one has to
+         * call init() to restart iterating.
          */
         cObject *operator++(int)  {if (!p) return NULL; cObject *r=p->obj; p=p->next; return r;}
 
         /**
-         * Returns the current object, then moves the iterator to the previous item.
-         * If the iterator has reached either end of the queue, nothing happens;
-         * you have to call init() again to restart iterating.
+         * Returns the current object, then moves the iterator to the previous item
+         * (towards the front of the queue). If the iterator has previously
+         * reached either end of the queue, nothing happens, and one has to
+         * call init() to restart iterating.
          */
         cObject *operator--(int)  {if (!p) return NULL; cObject *r=p->obj; p=p->prev; return r;}
     };
@@ -112,10 +101,8 @@ class SIM_API cQueue : public cObject
 
   private:
     bool tkownership;
-    QElem *headp, *tailp;           // inserting at head, removal at tail
-    int n;                          // number of items in queue
-    CompareFunc compare;            // compare function
-    bool asc;                       // order: true=ascending
+    QElem *frontp, *backp;  // inserting at back(), removal at front()
+    int n;  // number of items in the queue
 
   protected:
     // internal functions
@@ -127,6 +114,10 @@ class SIM_API cQueue : public cObject
   public:
     /** @name Constructors, destructor, assignment. */
     //@{
+    /**
+     * Constructor.
+     */
+    cQueue(const char *name = NULL);
 
     /**
      * Copy constructor. Contained objects that are owned by the queue
@@ -134,12 +125,6 @@ class SIM_API cQueue : public cObject
      * of them.
      */
     cQueue(const cQueue& queue);
-
-    /**
-     * Constructor. It accepts the object name, the address of the comparing
-     * function and the sorting order (ascending=true, descending=false).
-     */
-    explicit cQueue(const char *name=NULL, CompareFunc cmp=NULL, bool a=false);
 
     /**
      * Destructor. Deletes all contained objects that were owned by it.
@@ -195,16 +180,9 @@ class SIM_API cQueue : public cObject
 
     /** @name Setup, insertion and removal functions. */
     //@{
-
     /**
-     * Changes the sort function and the sorting order. Doesn't re-sort
-     * the contents of the queue!
-     */
-    virtual void setup(CompareFunc cmp, bool a=false);
-
-    /**
-     * Inserts the given object into the queue, maintaining the sorting
-     * order. Trying to insert a NULL pointer is an error (throws cRuntimeError).
+     * Adds an element to the back of the queue. Trying to insert a
+     * NULL pointer is an error (throws cRuntimeError).
      */
     virtual void insert(cObject *obj);
 
@@ -229,7 +207,7 @@ class SIM_API cQueue : public cObject
     virtual cObject *remove(cObject *obj);
 
     /**
-     * Unlinks and returns the last (tail) object in the queue. If the queue
+     * Unlinks and returns the front element in the queue. If the queue
      * was empty, cRuntimeError is thrown.
      */
     virtual cObject *pop();
@@ -243,18 +221,19 @@ class SIM_API cQueue : public cObject
 
     /** @name Query functions. */
     //@{
-
     /**
-     * Returns pointer to the object at the head of the queue.
+     * Returns pointer to the object at the front of the queue.
+     * This is the element to be return by pop().
      * Returns NULL if the queue is empty.
      */
-    virtual cObject *head() const;
+    virtual cObject *front() const;
 
     /**
-     * Returns pointer to the last (tail) object in the queue.
+     * Returns pointer to the last (back) element in the queue.
+     * This is the element most recently added by insert().
      * Returns NULL if the queue is empty.
      */
-    virtual cObject *tail() const;
+    virtual cObject *back() const;
 
     /**
      * Returns the number of objects contained in the queue.
@@ -268,8 +247,8 @@ class SIM_API cQueue : public cObject
 
     /**
      * Returns the ith element in the queue, or NULL if i is out of range.
-     * i==0 corresponds to the head element. The cost of this method is linear
-     * to the length of the queue.
+     * get(0) returns the front element. This method performs linear
+     * search.
      */
     cObject *get(int i) const;
 

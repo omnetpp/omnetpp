@@ -18,8 +18,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include <stdio.h>           // sprintf
-#include <string.h>          // memcmp, memcpy, memset
+#include <stdio.h>
+#include <string.h>
 #include "globals.h"
 #include "cqueue.h"
 #include "cexception.h"
@@ -36,18 +36,17 @@ Register_Class(cQueue);
 
 cQueue::cQueue(const cQueue& queue) : cObject()
 {
-    headp = tailp = NULL; n = 0;
+    frontp = backp = NULL;
+    n = 0;
     setName( queue.name() );
     operator=(queue);
 }
 
-cQueue::cQueue(const char *name, CompareFunc cmp, bool a) :
-cObject( name )
+cQueue::cQueue(const char *name) : cObject(name)
 {
     tkownership = true;
-    headp=tailp=NULL;
-    n=0;
-    setup( cmp, a );
+    frontp = backp = NULL;
+    n = 0;
 }
 
 cQueue::~cQueue()
@@ -66,8 +65,8 @@ std::string cQueue::info() const
 
 void cQueue::forEachChild(cVisitor *v)
 {
-    // loop through elements in reverse order
-    for (QElem *p=tailp; p!=NULL; p=p->prev)
+    // loop through elements
+    for (QElem *p=frontp; p!=NULL; p=p->next)
          v->visit(p->obj);
 }
 
@@ -79,10 +78,6 @@ void cQueue::netPack(cCommBuffer *buffer)
     cObject::netPack(buffer);
 
     buffer->pack(n);
-    buffer->pack(asc);
-
-    if (compare)
-        throw new cRuntimeError(this,"netPack(): cannot transmit compare function");
 
     for (cQueue::Iterator iter(*this, 0); !iter.end(); iter--)
     {
@@ -101,7 +96,6 @@ void cQueue::netUnpack(cCommBuffer *buffer)
     cObject::netUnpack(buffer);
 
     buffer->unpack(n);
-    buffer->unpack(asc);
 
     for (int i=0; i<n; i++)
     {
@@ -113,15 +107,15 @@ void cQueue::netUnpack(cCommBuffer *buffer)
 
 void cQueue::clear()
 {
-    while (headp)
+    while (frontp)
     {
-        QElem *tmp = headp->next;
-        if (headp->obj->owner()==this)
-            dropAndDelete(headp->obj);
-        delete headp;
-        headp=tmp;
+        QElem *tmp = frontp->next;
+        if (frontp->obj->owner()==this)
+            dropAndDelete(frontp->obj);
+        delete frontp;
+        frontp = tmp;
     }
-    tailp = NULL;
+    backp = NULL;
     n = 0;
 }
 
@@ -132,8 +126,6 @@ cQueue& cQueue::operator=(const cQueue& queue)
     clear();
 
     cObject::operator=(queue);
-    compare = queue.compare;
-    asc = queue.asc;
     tkownership = queue.tkownership;
 
     bool old_tk = takeOwnership();
@@ -144,26 +136,14 @@ cQueue& cQueue::operator=(const cQueue& queue)
         else
             {takeOwnership(false); insert( iter() );}
     }
-    takeOwnership( old_tk );
+    takeOwnership(old_tk);
     return *this;
 }
 
-void cQueue::setup(CompareFunc cmp, bool a)
-{
-    if (!empty())
-        throw new cRuntimeError(this, "setup() can only be called when queue is empty");
-
-    compare=cmp; asc=a;
-}
-
-//== STRUCTURE OF THE LIST:
-//==  'headp' and 'tailp' point to the ends of the list (NULL if it is empty).
-//==  The list is double-linked, but 'headp->prev' and 'tailp->next' are NULL.
-
 cQueue::QElem *cQueue::find_qelem(cObject *obj) const
 {
-    QElem *p = headp;
-    while( p && p->obj!=obj )
+    QElem *p = frontp;
+    while (p && p->obj!=obj)
         p = p->next;
     return p;
 }
@@ -179,7 +159,7 @@ void cQueue::insbefore_qelem(QElem *p, cObject *obj)
     if (e->prev)
         e->prev->next = e;
     else
-        headp = e;
+        frontp = e;
     n++;
 }
 
@@ -194,26 +174,26 @@ void cQueue::insafter_qelem(QElem *p, cObject *obj)
     if (e->next)
         e->next->prev = e;
     else
-        tailp = e;
+        backp = e;
     n++;
 }
 
 cObject *cQueue::remove_qelem(QElem *p)
 {
-    if( p->prev )
-        p->prev->next = p->next;
-    else
-        headp = p->next;
-    if( p->next )
+    if (p->next)
         p->next->prev = p->prev;
     else
-        tailp = p->prev;
+        backp = p->prev;
+    if (p->prev)
+        p->prev->next = p->next;
+    else
+        frontp = p->next;
 
     cObject *retobj = p->obj;
     delete p;
     n--;
     if (retobj->owner()==this)
-        drop( retobj );
+        drop(retobj);
     return retobj;
 }
 
@@ -221,41 +201,30 @@ cObject *cQueue::remove_qelem(QElem *p)
 void cQueue::insert(cObject *obj)
 {
     if (!obj)
-        throw new cRuntimeError(this,"cannot insert NULL pointer in queue");
+        throw new cRuntimeError(this, "cannot insert NULL pointer in queue");
 
     if (takeOwnership())
         take(obj);
 
-    QElem *p = headp;
-    if (compare)           // seek insertion place if necessary
+    if (backp)
     {
-        if (asc)
-            while ( p && (*compare)(obj,p->obj)>0 )
-                p = p->next;
-        else /* desc */
-            while ( p && (*compare)(obj,p->obj)<0 )
-                p = p->next;
+        insafter_qelem(backp, obj);
     }
-
-    if (p)
-        insbefore_qelem(p,obj);
-    else if (tailp)
-        insafter_qelem(tailp,obj);
     else
     {
         // insert as the only item
         QElem *e = new QElem;
         e->obj = obj;
-        headp = tailp = e;
-        e->prev = e->next = NULL;
-        n++;
+        e->next = e->prev = NULL;
+        frontp = backp = e;
+        n = 1;
     }
 }
 
 void cQueue::insertBefore(cObject *where, cObject *obj)
 {
     if (!obj)
-        throw new cRuntimeError(this,"cannot insert NULL pointer in queue");
+        throw new cRuntimeError(this, "cannot insert NULL pointer in queue");
 
     QElem *p = find_qelem(where);
     if (!p)
@@ -280,32 +249,33 @@ void cQueue::insertAfter(cObject *where, cObject *obj)
     insafter_qelem(p,obj);
 }
 
-cObject *cQueue::head() const
+cObject *cQueue::front() const
 {
-    return n!=0 ? headp->obj : NULL;
+    return frontp ? frontp->obj : NULL;
 }
 
-cObject *cQueue::tail() const
+cObject *cQueue::back() const
 {
-    return n!=0 ? tailp->obj : NULL;
+    return backp ? backp->obj : NULL;
 }
 
 cObject *cQueue::remove(cObject *obj)
 {
-    if(!obj) return NULL;
+    if (!obj)
+        return NULL;
 
     QElem *p = find_qelem(obj);
     if (!p)
         return NULL;
-    return remove_qelem( p );
+    return remove_qelem(p);
 }
 
 cObject *cQueue::pop()
 {
-    if(!tailp)
+    if (!frontp)
         throw new cRuntimeError(this,"pop(): queue empty");
 
-    return remove_qelem( tailp );
+    return remove_qelem(frontp);
 }
 
 int cQueue::length() const
@@ -320,13 +290,9 @@ bool cQueue::contains(cObject *obj) const
 
 cObject *cQueue::get(int i) const
 {
-    //XXX
-    // QElem *p = headp;
-    // while (p!=NULL && i>0)
-    //     p = p->next, i--;
-    QElem *p = tailp;
+    QElem *p = frontp;
     while (p!=NULL && i>0)
-        p = p->prev, i--;
+        p = p->next, i--;
     return p ? p->obj : NULL;
 }
 

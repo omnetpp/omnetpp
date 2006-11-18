@@ -82,7 +82,7 @@ const char *MatchableObjectAdapter::getAttribute(const char *name) const
             return NULL;
     }
 
-/*
+/*FIXME TBD
     // start tokenizing the path
     cStringTokenizer tokenizer(name, ".");
     const char *token;

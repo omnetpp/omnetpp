@@ -159,7 +159,7 @@ void TokenRingMAC::activity()
             while (!sendQueue.empty())
             {
                 // peek at next data packet and see if it can be sent within the tokenHoldingTime
-                TRApplicationData *data = (TRApplicationData *) sendQueue.tail();
+                TRApplicationData *data = (TRApplicationData *) sendQueue.front();
                 simtime_t transmission_time = (TR_HEADER_BITS+data->length())/(double)dataRate;
                 if (simTime()+transmission_time > tokenHoldingTime_expires)
                 {
