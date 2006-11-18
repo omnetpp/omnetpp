@@ -213,8 +213,8 @@ class SIM_API cQueue : public cObject
     virtual cObject *pop();
 
     /**
-     * As a result, the container will be empty. Contained objects that
-     * were owned by the queue will be deleted.
+     * Empties the container. Contained objects that were owned by the
+     * queue (see takeOwnership()) will be deleted.
      */
     virtual void clear();
     //@}
