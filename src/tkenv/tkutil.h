@@ -22,6 +22,7 @@
 
 #include "tkdefs.h"
 #include "cobject.h"
+#include "exception.h"
 
 //
 // In some installations Tcl headers files have 'char*' without 'const char*'
@@ -49,12 +50,20 @@
       Tcl_SetResult(interp, TCLCONST(e->message()), TCL_VOLATILE); \
       delete e; \
       return TCL_ERROR; \
+  } catch (Exception *e) { \
+      Tcl_SetResult(interp, TCLCONST(e->message()), TCL_VOLATILE); \
+      delete e; \
+      return TCL_ERROR; \
   }
 
 #define E_TRY   try {
 
 #define E_CATCH \
   } catch (cException *e) { \
+      Tcl_SetResult(interp, TCLCONST(e->message()), TCL_VOLATILE); \
+      delete e; \
+      return TCL_ERROR; \
+  } catch (Exception *e) { \
       Tcl_SetResult(interp, TCLCONST(e->message()), TCL_VOLATILE); \
       delete e; \
       return TCL_ERROR; \
