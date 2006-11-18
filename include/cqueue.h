@@ -24,23 +24,15 @@
 
 
 /**
- * Queue class. cQueue is a container class that can hold objects derived
- * from cObject. cQueue acts as a priority queue.
- * The user must provide a function that can compare two objects.
- * If no such function is given, cQueue implements a FIFO.
- * Order (ascending or descending) can be specified.
+ * Queue class for objects derived from cObject. The default behaviour of
+ * cQueue is a FIFO: you insert elements using insert(), and remove them
+ * using pop().
  *
  * By default, cQueue's destructor deletes all contained objects. This behaviour
  * can be changed by calling takeOwnership(false) before inserting objects.
  * More precisely, the behaviour can be controlled per-object: the
  * insertion-time state of the <i>takeOwnership</i> flag will determine
  * whether the inserted object will be deleted by the cQueue destructor or not.
- *
- * The sorting function should look like:
- * int CompareFunc(cObject* a, cObject* b);
- *
- * They must return a negative value if a&lt;b, 0 if a==b and a positive value
- * if a&gt;b.
  *
  * @see Iterator
  * @ingroup Containers
@@ -139,7 +131,12 @@ class SIM_API cQueue : public cObject
      * Constructor. It accepts the object name, the address of the comparing
      * function and the sorting order (ascending=true, descending=false).
      */
-    explicit cQueue(const char *name=NULL, CompareFunc cmp=NULL, bool a=false);
+    explicit cQueue(const char *name=NULL);
+
+    /**
+     * DEPRECATED. Sorting functionality will be removed in the next release.
+     */
+    explicit cQueue(const char *name, CompareFunc cmp, bool a=false) _OPPDEPRECATED;
 
     /**
      * Destructor. Deletes all contained objects that were owned by it.
@@ -197,10 +194,9 @@ class SIM_API cQueue : public cObject
     //@{
 
     /**
-     * Changes the sort function and the sorting order. Doesn't re-sort
-     * the contents of the queue!
+     * DEPRECATED. Sorting functionality will be removed in the next release.
      */
-    virtual void setup(CompareFunc cmp, bool a=false);
+    virtual void setup(CompareFunc cmp, bool a=false) _OPPDEPRECATED;
 
     /**
      * Inserts the given object into the queue, maintaining the sorting

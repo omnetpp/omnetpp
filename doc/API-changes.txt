@@ -22,7 +22,7 @@ Legend:
 
 OMNeT++ 3.4 (Nov 2006)
 ~~~~~~~~~~~~~~~~~~~~~~
-        none
+(-)     deprecated sorting functionality in cQueue
 
 OMNeT++ 3.3 (Oct 2006)
 ~~~~~~~~~~~~~~~~~~~~~~

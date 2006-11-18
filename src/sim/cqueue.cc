@@ -45,6 +45,14 @@ cQueue::cQueue(const cQueue& queue) : cObject()
     operator=(queue);
 }
 
+cQueue::cQueue(const char *name) : cObject(name)
+{
+    tkownership = true;
+    headp=tailp=NULL;
+    n=0;
+    setup(NULL, false);
+}
+
 cQueue::cQueue(const char *name, CompareFunc cmp, bool a) :
 cObject( name )
 {
