@@ -902,7 +902,8 @@ will match "job128", "job129", ..., "job191". "job{128..}" and "job{..191}"
 are also understood. You can combine patterns with AND, OR and NOT and
 parentheses (lowercase and, or, not are also OK). You can match against
 other object fields such as message length, message kind, etc., with the
-syntax "fieldname(pattern)".
+syntax "fieldname(pattern)". Put quotation marks around a pattern if it
+contains parentheses.
 
 Examples:
  m*
@@ -923,6 +924,10 @@ Examples:
  not className(cMessage) and byteLength({1500..})
             matches objects whose class is not cMessage, and byteLength is
             at least 1500
+ "or" or "and" or "not" or "*(*" or "msg(ACK)"
+            quotation marks needed when pattern is a reserved word or contains
+            parentheses. (Note: msg(ACK) without parens would be interpreted
+            as some object having a "msg" attribute with the value "ACK"!)
 }
 
 set helptexts(timeline-classnamepattern) {
@@ -953,7 +958,8 @@ will match objects named "job128", "job129", ..., "job191". "job{128..}"
 and "job{..191}" are also understood. You can combine patterns with AND, OR
 and NOT and parentheses (lowercase and, or, not are also OK). You can match
 against other object fields such as queue length, message kind, etc., with
-the syntax "fieldname(pattern)".
+the syntax "fieldname(pattern)". Put quotation marks around a pattern if it
+contains parentheses.
 
 HINT: You'll want to start the pattern with "*." in most cases, to match
 objects anywhere in the network!
@@ -979,6 +985,10 @@ Examples:
  not className(cMessage) and byteLength({1500..})
             matches messages whose class is not cMessage, and byteLength is
             at least 1500. (Only messages have a "byteLength" attribute.)
+ "*(*" or "*.msg(ACK)"
+            quotation marks needed when pattern is a reserved word or contains
+            parentheses. (Note: *.msg(ACK) without parens would be interpreted
+            as some object having a "*.msg" attribute with the value "ACK"!)
 }
 
 set helptexts(filterdialog-classnamepattern) {
