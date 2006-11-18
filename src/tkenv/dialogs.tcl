@@ -635,7 +635,7 @@ proc filteredobjectlist_window {{ptr ""}} {
     button $fp.refresh -text "Refresh" -width 10 -command "filteredobjectlist_refresh $w"
 
     grid $fp.classlabel $fp.namelabel x           -sticky nw   -padx 5
-    grid $fp.classentry $fp.nameentry $fp.refresh -sticky news -padx 5
+    grid $fp.classentry $fp.nameentry $fp.refresh -sticky news -padx 5 -pady 3
     grid columnconfig $fp 0 -weight 1
     grid columnconfig $fp 1 -weight 3
 
@@ -910,12 +910,13 @@ Examples:
  m*
             matches any object whose name begins with "m"
  m* AND *-{0..250}
-            matches any object whose name begins with "m" and ends with dash and a
-            number between 0 and 250
+            matches any object whose name begins with "m" and ends with dash
+            and a number between 0 and 250
  not *timer*
             matches any object whose name doesn't contain the substring "timer"
  not (*timer* or *timeout*)
-            matches any object whose name doesn't contain either "timer" or "timeout"
+            matches any object whose name doesn't contain either "timer" or
+            "timeout"
  kind(3) or kind({7..9})
             matches messages with message kind equal to 3, 7, 8 or 9
  className(IP*) and data-*
@@ -928,6 +929,7 @@ Examples:
 
 set helptexts(timeline-classnamepattern) {
 Generic filter expression which matches the class name by default.
+
 Wildcards ("?", "*"), AND, OR, NOT and field matchers are accepted;
 see Name Filter help for a more complete list.
 
@@ -959,23 +961,31 @@ HINT: You'll want to start the pattern with "*." in most cases, to match
 objects anywhere in the network!
 
 Examples:
- *.m*
-            matches any object whose name begins with "m"
- *.m* AND *-{0..250}
-            matches any object whose name begins with "m" and ends with dash and a
-            number between 0 and 250
+ *.destAddr
+            matches all objects whose name is "destAddr" (likely module
+            parameters)
+ *.subnet2.*.destAddr
+            matches objects named "destAddr" inside "subnet2"
+ *.node[8..10].*
+            matches anything inside module node[8], node[9] and node[10]
+ className(cQueue) and not length(0)
+            matches non-empty queue objects
+ className(cQueue) and length({10..})
+            matches queue objects with length>=10
  kind(3) or kind({7..9})
             matches messages with message kind equal to 3, 7, 8 or 9
+            (Only messages have a "kind" attribute.)
  className(IP*) and *.data-*
-            matches objects whose class name begins with "IP" and name begins
-            with "data-"
+            matches objects whose class name begins with "IP" and
+            name begins with "data-"
  not className(cMessage) and byteLength({1500..})
-            matches objects whose class is not cMessage, and byteLength is
-            at least 1500
+            matches messages whose class is not cMessage, and byteLength is
+            at least 1500. (Only messages have a "byteLength" attribute.)
 }
 
 set helptexts(filterdialog-classnamepattern) {
 Generic filter expression which matches class name by default.
+
 Wildcards ("?", "*"), AND, OR, NOT and field matchers are accepted;
 see Object Filter help for a more complete list.
 
