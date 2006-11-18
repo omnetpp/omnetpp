@@ -475,6 +475,7 @@ cmodule.o: cmodule.cc \
   ../../include/cmodule.h \
   ../../include/csimplemodule.h \
   ../../include/cgate.h \
+  ../../include/cchannel.h \
   ../../include/cmessage.h \
   ../../include/csimul.h \
   ../../include/carray.h \

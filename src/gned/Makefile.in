@@ -81,22 +81,10 @@ clean:
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 arrow.o: arrow.cc \
   arrow.h
-ebnf.tab.o: ebnf.tab.cc \
-  ebnf.h \
-  ebnfcfg.h \
-  parsened.h \
-  nedfile.h
 gned.o: gned.cc \
   ../utils/ver.h \
   tklib.h \
-  arrow.h \
-  tclcode.cc
-lex.yy.o: lex.yy.cc \
-  ebnf.h \
-  ebnf.tab.h \
-  ebnfcfg.h \
-  parsened.h \
-  ./unistd.h
+  arrow.h
 nedfile.o: nedfile.cc \
   nedfile.h \
   parsened.h \
@@ -106,7 +94,6 @@ parsened.o: parsened.cc \
   nedfile.h \
   tklib.h \
   ebnf.h
-tclcode.o: tclcode.cc
 tkcmd.o: tkcmd.cc \
   tklib.h \
   arrow.h \

@@ -84,9 +84,7 @@ clean:
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 scalars.o: scalars.cc \
   tklib.h \
-  ../utils/ver.h \
-  tclcode.cc
-tclcode.o: tclcode.cc
+  ../utils/ver.h
 tkcmd.o: tkcmd.cc \
   tklib.h \
   tkutil.h \

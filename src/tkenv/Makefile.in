@@ -461,6 +461,8 @@ tkcmd.o: tkcmd.cc \
   tklib.h \
   inspector.h \
   inspfactory.h \
+  ../envir/matchexpression.h \
+  ../envir/matchableobject.h \
   ../envir/patternmatcher.h \
   visitor.h \
   ../envir/fsutils.h \
@@ -516,7 +518,6 @@ tkutil.o: tkutil.cc \
   ../../include/cmodule.h \
   ../../include/csimul.h \
   tkapp.h \
-  ../envir/patternmatcher.h \
   visitor.h \
   tkutil.h \
   ../../include/cenvir.h \
@@ -542,6 +543,9 @@ tkutil.o: tkutil.cc \
   ../../include/envirext.h \
   ../../include/cconfig.h \
   ../../include/platdep/time.h \
+  ../envir/patternmatcher.h \
+  ../envir/matchexpression.h \
+  ../envir/matchableobject.h \
   tkdefs.h
 visitor.o: visitor.cc \
   ../../include/cenvir.h \
@@ -572,10 +576,12 @@ visitor.o: visitor.cc \
   ../../include/onstartup.h \
   ../../include/errmsg.h \
   ../../include/cmsgheap.h \
-  ../envir/envdefs.h \
   tkapp.h \
+  ../envir/matchexpression.h \
+  ../envir/matchableobject.h \
   ../envir/omnetapp.h \
   ../envir/args.h \
+  ../envir/envdefs.h \
   ../../include/envirext.h \
   ../../include/cconfig.h \
   ../../include/platdep/time.h

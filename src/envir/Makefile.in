@@ -235,6 +235,8 @@ fsutils.o: fsutils.cc \
   ../../include/util.h \
   ../../include/opp_string.h \
   ../../include/defs.h
+lex.matchexpressionyy.o: lex.matchexpressionyy.cc \
+  matchexpression.tab.h
 main.o: main.cc \
   ../../include/cobject.h \
   ../../include/cenvir.h \
@@ -245,6 +247,32 @@ main.o: main.cc \
   ../../include/cexception.h \
   ../../include/cvisitor.h \
   ../../include/opp_string.h
+matchableobject.o: matchableobject.cc \
+  matchableobject.h \
+  ../../include/cclassdescriptor.h \
+  ../../include/cobject.h \
+  matchexpression.h \
+  ../../include/cenvir.h \
+  ../../include/defs.h \
+  ../../include/util.h \
+  ../../include/cpolymorphic.h \
+  ../../include/cexception.h \
+  ../../include/cvisitor.h \
+  ../../include/opp_string.h
+matchexpression.o: matchexpression.cc \
+  matchexpression.h \
+  patternmatcher.h \
+  ../../include/cexception.h \
+  ../../include/defs.h \
+  ../../include/opp_string.h \
+  ../../include/util.h
+matchexpression.tab.o: matchexpression.tab.cc \
+  matchexpression.h \
+  patternmatcher.h \
+  ../../include/cexception.h \
+  ../../include/defs.h \
+  ../../include/opp_string.h \
+  ../../include/util.h
 omnetapp.o: omnetapp.cc \
   args.h \
   omnetapp.h \
@@ -287,11 +315,10 @@ omnetapp.o: omnetapp.cc \
   ../../include/cqueue.h \
   ../../include/cgate.h \
   ../../include/cdefaultlist.h
-patmatch.o: patmatch.cc \
+patternmatcher.o: patternmatcher.cc \
   patternmatcher.h \
   ../../include/cexception.h \
   ../../include/defs.h \
-  envdefs.h \
   ../../include/opp_string.h \
   ../../include/util.h
 speedmtr.o: speedmtr.cc \

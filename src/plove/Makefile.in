@@ -105,9 +105,7 @@ clean:
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 plove.o: plove.cc \
   tklib.h \
-  ../utils/ver.h \
-  tclcode.cc
-tclcode.o: tclcode.cc
+  ../utils/ver.h
 tkcmd.o: tkcmd.cc \
   tklib.h \
   engine/node.h \
