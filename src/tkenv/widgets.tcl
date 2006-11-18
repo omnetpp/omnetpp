@@ -260,7 +260,7 @@ proc label-entry-help {w label helptext {text {}}} {
     label $w.h -anchor w -text "(Help)" -fg "#0000a0"
     grid $w.l $w.e $w.h -sticky news
     grid columnconfigure $w 1 -weight 1
-    bind $w.h <Button-1> [list helplabel_showhelp $helptext %X %Y]
+    bind $w.h <Button-1> [list helplabel_showhelp $w $helptext %X %Y]
     $w.e insert 0 $text
 }
 
@@ -420,25 +420,29 @@ proc labelwithhelp {w text helptext} {
     label $w.l -justify left -text $text
     label $w.h -justify left -text "(Help)" -fg "#0000a0"
     pack $w.l $w.h -expand 0 -side left -anchor center -fill none -padx 2 -pady 2
-    bind $w.h <Button-1> [list helplabel_showhelp $helptext %X %Y]
+    bind $w.h <Button-1> [list helplabel_showhelp $w $helptext %X %Y]
 }
 
-proc helplabel_showhelp {text x y} {
+proc helplabel_showhelp {parentw text x y} {
     global help_tips
-    catch {destroy .helpwin}
-    toplevel .helpwin -relief flat
-    wm overrideredirect .helpwin true
-    wm positionfrom .helpwin program
-    wm geometry .helpwin "+[expr $x-200]+[expr $y+5]"
-    label .helpwin.tip -text $text -padx 4 -wraplength $help_tips(width) \
+
+    # note: must be child of the current dialog box, otherwise won't receive
+    # mouse events under Linux, due to the grab the dialog box holds...
+    set w $parentw.helpwin
+    catch {destroy $w}
+    toplevel $w -relief flat
+    wm overrideredirect $w true
+    wm positionfrom $w program
+    wm geometry $w "+[expr $x-200]+[expr $y+5]"
+    label $w.tip -text $text -padx 4 -wraplength $help_tips(width) \
                             -bg $help_tips(color) -border 1 -relief solid \
                             -font $help_tips(font) -justify left
-    pack .helpwin.tip
-    focus .helpwin
-    bind .helpwin <Return> "catch { destroy .helpwin }"
-    bind .helpwin <Escape> "catch { destroy .helpwin }"
-    bind .helpwin <FocusOut> "catch { destroy .helpwin }"
-    bind .helpwin <Button-1> "catch { destroy .helpwin }"
+    pack $w.tip
+    focus $w.tip
+
+    bind $w <KeyPress> "catch { destroy $w }"
+    bind $w <FocusOut> "catch { destroy $w }"
+    bind $w <Button-1> "catch { destroy $w }"
 }
 
 
