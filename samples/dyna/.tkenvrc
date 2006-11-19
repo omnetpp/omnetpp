@@ -18,28 +18,35 @@ option bubbles	{1}
 option animation_speed	{3}
 option bkpts_enabled	{1}
 option expressmode_autoupdate	{1}
-config rununtil-event	{}
-config last-nedfile	{}
-config filtobjlist-category	{mqsgvo}
-config display-timeline	{1}
-config filtobjlist-maxcount	{100000}
-config log-save-filename	{omnetpp.out}
-config editor-findstring	{}
-config rununtil-time	{}
-config dontshow	{}
-config editor-regexp	{0}
-config filtobjlist-class	{}
-config rununtil-mode	{Express (tracing off)}
-config filtobjlist-name	{}
+config concurrent-anim	{1}
 config confirm-exit	{1}
-config editor-backwards	{1}
+config display-timeline	{1}
 config display-treeview	{1}
-config timeline-maxnumevents	{1000}
+config dontshow	{}
+config editor-backwards	{1}
 config editor-case-sensitive	{0}
+config editor-findstring	{}
+config editor-regexp	{0}
 config editor-whole-words	{0}
+config filtobjlist-category	{mqsgvo}
+config filtobjlist-class	{}
+config filtobjlist-maxcount	{100000}
+config filtobjlist-name	{}
 config filtobjlist-order	{Class}
+config last-nedfile	{}
+config log-save-filename	{omnetpp.out}
+config logwindow-scrollbacklines	{100000}
+config mainwin-geom	{671x454+232+-8}
+config mainwin-state	{normal}
+config rununtil-event	{}
+config rununtil-mode	{Express (tracing off)}
+config rununtil-time	{}
+config timeline-maxnumevents	{1000}
+config timeline-msgclassnamepattern	{*}
+config timeline-msgnamepattern	{*}
+config timeline-wantnonselfmsgs	{1}
+config timeline-wantselfmsgs	{1}
 inspector "dyna.client[2]" "Client" "3" "504x162+13+362"
 inspector "dyna.server" "Server" "3" "502x125+14+556"
-inspector "dyna.server" "Server" "1" "460x776+812+0"
-inspector "dyna.server.serverproc69-clientaddr16" "ServerProcess" "1" "472x315+0+588"
+inspector "dyna" "ClientServer" "2" "405x417+70+60"
 
