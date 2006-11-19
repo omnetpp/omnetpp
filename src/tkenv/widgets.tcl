@@ -433,12 +433,14 @@ proc helplabel_showhelp {parentw text x y} {
     toplevel $w -relief flat
     wm overrideredirect $w true
     wm positionfrom $w program
-    wm geometry $w "+[expr $x-200]+[expr $y+5]"
+    wm geometry $w "+[expr $x-200]+[expr $y+12]"
     label $w.tip -text $text -padx 4 -wraplength $help_tips(width) \
                             -bg $help_tips(color) -border 1 -relief solid \
                             -font $help_tips(font) -justify left
     pack $w.tip
     focus $w.tip
+
+    movetoscreen $w
 
     bind $w <KeyPress> "catch { destroy $w }"
     bind $w <FocusOut> "catch { destroy $w }"
@@ -922,6 +924,41 @@ proc multicolumnlistbox_adddummyline {w} {
     }
 }
 
+# movetoscreen --
+#
+# utility function: moves a window so that it becomes fully visible
+#
+proc movetoscreen {w} {
+    global tcl_platform
+
+    # update all the geometry information. NOTE: with some X servers, "update idletasks"
+    # has no effect if window is withdrawn...
+    update idletasks
+
+    set screenwidth [winfo screenwidth $w]
+    set screenheight [winfo screenheight $w]
+    set width [winfo width $w]
+    set height [winfo height $w]
+    set x [winfo rootx $w]
+    set y [winfo rooty $w]
+
+    #puts "($x,$y) size($width,$height) screen($screenwidth,$screenheight)"
+
+    if {$x+$width > $screenwidth} {set x [expr $screenwidth - $width]}
+    if {$y+$height > $screenheight} {set y [expr $screenheight - $height]}
+    if {$x < 0} {set x 0}
+    if {$y < 0} {set y 0}
+
+    if {$tcl_platform(platform) != "windows"} {
+        # X servers need a sidekick ("withdraw"+"deiconify") to re-position the window
+        wm withdraw $w
+        wm geom $w +$x+$y
+        wm deiconify $w
+    } else {
+        # Windows is fine
+        wm geom $w +$x+$y
+    }
+}
 
 # center --
 #
