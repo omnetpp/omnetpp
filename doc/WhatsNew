@@ -19,6 +19,13 @@ This release significantly improves Tkenv:
     out-of-sequence with writing the log, for example. The broadcast animation
     feature can be turned off in the Simulation Options dialog.
 
+  - implemented message filtering for the timeline, and improved on object
+    filtering (Find/Inspect Objects dialog) by extending patterns with
+    AND, OR, NOT operations and object field matchers.
+
+  - implemented scrollback buffer limiting for event log windows (default is
+    100,000 lines)
+
 Simulation library:
   - several methods and classes already marked as DEPRECATED in their
     documentations and doc/API-Changes.txt are now marked as such, using
@@ -60,7 +67,7 @@ Tkenv:
 Bugfixes:
   - fix: gamma_d() was bogus for the alpha<1 case [reported by Patrick McDonnell]
 
-  - fix: worked around a fiber-related Visual C++ problem that caused certain 
+  - fix: worked around a fiber-related Visual C++ problem that caused certain
     activity()-based modules crash when the simulation was restarted.
 
   - fixed a bug which sometimes caused Tkenv to crash when inspecting an
