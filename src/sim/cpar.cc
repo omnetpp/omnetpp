@@ -146,10 +146,8 @@ void cPar::read()
     printf("       BEFORE: %s\n", info().c_str()); //XXX
 
     // obtain value if parameter is not set yet
-/*FIXME
-    if (!isSet())
+    if (true /*!isSet()*/) //FIXME check module declaration
         doReadValue();
-*/
 
     // convert non-volatile values to constant
     if (!isVolatile())
@@ -190,10 +188,7 @@ void cPar::doReadValue()
 
     // maybe we should use default value
     if (p->hasValue() && ev.getParameterUseDefault(simulation.runNumber(), fullPath().c_str()))
-    {
-        //XXX applyDefaultValue();
         return;
-    }
 
     // otherwise, we have to ask the user
     bool success = false;
@@ -217,7 +212,6 @@ void cPar::doReadValue()
             delete e;
         }
     }
-    //XXX applyDefaultValue();
 }
 
 
