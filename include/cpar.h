@@ -30,9 +30,10 @@ class cComponent;
 //FIXME we could this cPolymorphic, noncopyable (and cParValue cPolymorphic); maybe cGate too?
 // only problem: how to inspect them in Tkenv?
 // inspectors could be changed to cPolymorphic-based, but ev.objectDeleted() is still cObject!!!
-// if we put ev.objectDeleted() into cPolymorphic's dtor, there'll be too many notifications (???)
+// if we put ev.objectDeleted() into cPolymorphic's dtor, there'll be too many notifications (??? -- controlInfo objects are all cPolymorphic)
 // should we make a cNotifyingPolymorphic from which we subclass cPar and cGate???
 //               or name this ^^^ cLightweightObject ? (cPolym + ev.objectDeleted())
+// how fast is an std::map lookup? that's the cost of an ev.objectDeleted() call
 
 /**
  * FIXME
