@@ -76,6 +76,8 @@ class SIM_API cPar : public cNoncopyableObject
      */
     virtual ~cPar();
 
+//FIXME cPar needs operator=(cPar&) -- see INET\Network\Extras\FailureManager.cc!!
+
     /** @name Owner component, type, flags. */
     //@{
     /**
