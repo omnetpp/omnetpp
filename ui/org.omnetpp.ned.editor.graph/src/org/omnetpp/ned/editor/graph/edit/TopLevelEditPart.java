@@ -100,7 +100,7 @@ public class TopLevelEditPart extends AbstractGraphicalEditPart
     	// parse a dispaly string, so it's easier to get values from it.
     	// for other visula properties
     	if (getModel() instanceof IHasDisplayString) {
-    		DisplayString dps = ((IHasDisplayString)getModel()).getDisplayString();
+    		DisplayString dps = ((IHasDisplayString)getModel()).getEffectiveDisplayString();
 
     		((TopLevelFigure)getFigure()).setDisplayString(dps);
     	}

@@ -1,7 +1,6 @@
 package org.omnetpp.figures;
 
 import org.eclipse.draw2d.Label;
-import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 import org.omnetpp.common.color.ColorFactory;
@@ -46,8 +45,6 @@ public class TopLevelFigure extends Label {
         		ColorFactory.asColor(dps.getAsStringDef(IDisplayString.Prop.FILLCOL)),
         		ColorFactory.asColor(dps.getAsStringDef(IDisplayString.Prop.BORDERCOL)),
         		dps.getAsIntDef(IDisplayString.Prop.BORDERWIDTH, -1));
-
-
 
         invalidate();
 	}

@@ -52,5 +52,5 @@ public interface IHasType {
     /**
      * @return The model element that represents the type of this element
      */
-    public NEDElement getTypeRef();
+    public NEDElement getEffectiveTypeRef();
 }

@@ -50,6 +50,8 @@ public final class SubmoduleNodeEx extends SubmoduleNode
 		if (displayString == null) {
 			displayString = new DisplayString(this, NEDElementUtilEx.getDisplayString(this));
 		}
+        // by default we do not have a fallback display string
+//        displayString.setDefaults(null);
 		return displayString;
 	}
 
@@ -102,7 +104,7 @@ public final class SubmoduleNodeEx extends SubmoduleNode
         return typeInfo.getResolver().getComponent(typeName);
     }
 
-    public NEDElement getTypeRef() {
+    public NEDElement getEffectiveTypeRef() {
         INEDTypeInfo it = getTypeNEDTypeInfo();
         return it == null ? null : it.getNEDElement();
     }

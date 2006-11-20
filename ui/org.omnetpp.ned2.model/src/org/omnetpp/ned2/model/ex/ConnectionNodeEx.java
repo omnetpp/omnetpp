@@ -155,6 +155,8 @@ public final class ConnectionNodeEx extends ConnectionNode
 	public DisplayString getDisplayString() {
 		if (displayString == null)
 			displayString = new ConnectionDisplayString(this, NEDElementUtilEx.getDisplayString(this));
+        // by default we do not have a fallback display string
+//        displayString.setDefaults(null);
 		return displayString;
 	}
 
@@ -253,7 +255,7 @@ public final class ConnectionNodeEx extends ConnectionNode
         return typeInfo.getResolver().getComponent(typeName);
     }
 
-    public NEDElement getTypeRef() {
+    public NEDElement getEffectiveTypeRef() {
         INEDTypeInfo it = getTypeNEDTypeInfo();
         return it == null ? null : it.getNEDElement();
     }

@@ -83,7 +83,7 @@ public class ImageFactory {
     }
 
     public static Image getImage(String imageId, String imageSize, RGB shade, int weight) {
-        if (imageId == null) return null;
+        if (imageId == null || "".equals(imageId)) return null;
         // look for the image on filesystem/jar and return the full key to retrieve
         String key = getKeyFor(imageId, imageSize, shade, weight);
         // if image was found, get it from the registry
@@ -97,7 +97,7 @@ public class ImageFactory {
     }
 
     public static ImageDescriptor getDescriptor(String imageId, String imageSize, RGB shade, int weight) {
-        if (imageId == null) return null;
+        if (imageId == null || "".equals(imageId)) return null;
         // look for the image on filesystem/jar and return the full key to retrieve
         String key = getKeyFor(imageId, imageSize, shade, weight);
         // if image was found, get it from the registry

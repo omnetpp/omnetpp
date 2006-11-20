@@ -9,7 +9,7 @@ import org.omnetpp.ned2.model.NEDElement;
  * to/from the model.
  */
 public class NEDStructuralChangeEvent extends NEDModelEvent {
-    public enum Type {INSERTION, REMOVAL, REORDER} ;
+    public enum Type {INSERTION, REMOVAL} ;
     protected Type type;
     protected NEDElement child;
     protected NEDElement oldLocation;

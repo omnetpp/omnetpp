@@ -220,13 +220,14 @@ public class DisplayString implements IDisplayString {
         }
         // get the value
         String value = tag.getArg(pos);
-        if (variableDefaults !=null && value.startsWith("$"))
-            value = variableDefaults.getTagArg(tagName, pos);
         // if tag was present, but the argument was empty, look for default values
         if (TagInstance.EMPTY_VALUE.equals(value) && getDefaults() != null) 
-        	value = getDefaults().getTagArgUsingDefs(tagName, pos);
+            value = getDefaults().getTagArgUsingDefs(tagName, pos);
+        // look for variable defaults 
+        if (variableDefaults!=null && value!=null && value.startsWith("$"))
+            value = variableDefaults.getTagArg(tagName, pos);
         // if the value is still empty or null get the local default values  if any
-        if (emptyDefaults!=null && (value == null || TagInstance.EMPTY_VALUE.equals(value)))
+        if (emptyDefaults!=null && (value==null || TagInstance.EMPTY_VALUE.equals(value)))
             value = emptyDefaults.getTagArg(tagName, pos);
         // if no default was defined for this tag/argument return empty value
         if (value == null)

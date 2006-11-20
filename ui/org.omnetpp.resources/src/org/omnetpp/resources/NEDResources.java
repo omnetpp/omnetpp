@@ -16,6 +16,7 @@ import org.omnetpp.ned2.model.NEDElementUtil;
 import org.omnetpp.ned2.model.NEDSourceRegion;
 import org.omnetpp.ned2.model.NEDTreeUtil;
 import org.omnetpp.ned2.model.ex.NEDElementFactoryEx;
+import org.omnetpp.ned2.model.ex.NedFileNodeEx;
 import org.omnetpp.ned2.model.interfaces.INEDTypeInfo;
 import org.omnetpp.ned2.model.interfaces.INEDTypeResolver;
 import org.omnetpp.ned2.model.interfaces.ITopLevelElement;
@@ -574,35 +575,50 @@ public class NEDResources implements INEDTypeResolver {
         else // process the even and remeber this serial
             lastEventSerial = event.getSerial();
         
-        boolean shouldInvalidate = false;
-        
         // if a name property has changed everything should be rebuilt because inheritence might have changed
         // we may check only for toplevel component names and extends attributes
         // FIXME what anout changing type, extends attributes? does the notificaton work correctly?
         
-        // if we have changed a toplevel element's name we should rehash 
-        if (event.getSource() instanceof ITopLevelElement 
-                && event instanceof NEDAttributeChangeEvent 
-                && SimpleModuleNode.ATT_NAME.equals(((NEDAttributeChangeEvent)event).getAttribute()))
-            shouldInvalidate = true;
-                
-        // check for extends name change  
-        if (event.getSource() instanceof ExtendsNode 
-                && event instanceof NEDAttributeChangeEvent 
-                && ExtendsNode.ATT_NAME.equals(((NEDAttributeChangeEvent)event).getAttribute()))
-            shouldInvalidate = true;
 
-        // invalidate if we have deleted an extends node
-        if (event instanceof NEDStructuralChangeEvent 
-                 && ((NEDStructuralChangeEvent)event).getChild() instanceof ExtendsNode
-                 && ((NEDStructuralChangeEvent)event).getType() == NEDStructuralChangeEvent.Type.REMOVAL)
-            shouldInvalidate = true;
-
-        if (shouldInvalidate)
+        if (inheritanceMayHaveChanged(event))
         {
             System.out.println("Invalidating because of: "+event);
             invalidate();
             rehashIfNeeded();
         }
+    }
+
+    /**
+     * @param event
+     * @return Whether the inheritance chain has changed somewhere so the whole cahache should be
+     * invalidated
+     */
+    private static boolean inheritanceMayHaveChanged(NEDModelEvent event) {
+        // if we have changed a toplevel element's name we should rehash 
+        if (event.getSource() instanceof ITopLevelElement 
+                && event instanceof NEDAttributeChangeEvent 
+                && SimpleModuleNode.ATT_NAME.equals(((NEDAttributeChangeEvent)event).getAttribute()))
+            return true;
+        
+        // check for removal or insertion of top level nodes 
+        if (event.getSource() instanceof NedFileNodeEx 
+                && event instanceof NEDStructuralChangeEvent)
+            return true;
+                
+        // check for extends name change  
+        if (event.getSource() instanceof ExtendsNode 
+                && event instanceof NEDAttributeChangeEvent 
+                && ExtendsNode.ATT_NAME.equals(((NEDAttributeChangeEvent)event).getAttribute()))
+            return true;
+        // refresh if we have removed an extend node
+        if (event instanceof NEDStructuralChangeEvent &&
+                ((NEDStructuralChangeEvent)event).getChild() instanceof ExtendsNode &&
+                ((NEDStructuralChangeEvent)event).getType() == NEDStructuralChangeEvent.Type.REMOVAL)
+            return true;
+
+        // TODO missing the handling of type, like attribute change, interface node insert,remove, change
+        
+        // none of the above, so do not refresh
+        return false;
     }
 }

@@ -49,22 +49,40 @@ abstract public class ContainerEditPart
     }
     
     /**
-     * Refreshes all visuals for ALL children (delegates to the children)
+     * Refreshes all visuals and connection models for ALL children (delegates to the children)
      */
     protected void refreshChildrenVisuals() {
     	for(Object child : getChildren())
-    		((ContainerEditPart)child).refreshVisuals();
+    		((AbstractGraphicalEditPart)child).refresh();
     }
     
     
     protected void refreshChildrenConnections() {
         for(Object child : getChildren()) {
-            for(Object conn : ((ContainerEditPart)child).getSourceConnections())
-                ((ModuleConnectionEditPart)conn).refresh();
+            for(Object conn : ((AbstractGraphicalEditPart)child).getSourceConnections())
+                ((AbstractGraphicalEditPart)conn).refresh();
             
-            for(Object conn : ((ContainerEditPart)child).getTargetConnections())
-                ((ModuleConnectionEditPart)conn).refresh();
+            for(Object conn : ((AbstractGraphicalEditPart)child).getTargetConnections())
+                ((AbstractGraphicalEditPart)conn).refresh();
         }
+    }
+    
+    /**
+     * Refreshes everything in this controller. Visual appearence, children and connection list
+     * and children and connection appearence too.
+     */
+    protected void totalRefresh() {
+        // refresh ourselves
+        refresh();
+        // delegate to all children and refresh all their appearence
+        for(Object child : getChildren())
+            if (child instanceof ContainerEditPart)
+                ((ContainerEditPart)child).totalRefresh();
+            else
+                ((AbstractGraphicalEditPart)child).refresh();
+        
+        // refresh connections
+        refreshChildrenConnections();
     }
 
     public void modelChanged(NEDModelEvent event) {

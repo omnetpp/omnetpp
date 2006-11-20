@@ -58,6 +58,9 @@ public final class NEDElementUtilEx implements NEDElementTags, NEDElementUtil {
     /**
      * Gets the effective displaystring (parsed )belonging to a node. It uses 
      * the node's type or the base node (extends) as a fallback displaystring.
+     * BEWARE thet this method adjusts the display string's 'Default' property,
+     * ie. sets it to an other displayString object which represents the type
+     * or base type's display string. 
      * @param node
      * @return The parsed displaystring (with defaults set to 
      */
@@ -66,12 +69,16 @@ public final class NEDElementUtilEx implements NEDElementTags, NEDElementUtil {
         NEDElement defaultNode = null;
         // if node supports typing use the type's diplay property
         if (node instanceof IHasType)
-            defaultNode = ((IHasType)node).getTypeRef();
+            defaultNode = ((IHasType)node).getEffectiveTypeRef();
         else if (node instanceof IHasAncestors)
             defaultNode = ((IHasAncestors)node).getFirstExtendsRef();
         // if we do not have type or do not extend anybody we return the same displaystring
-        if (defaultNode == null)
+        if (defaultNode == null) {
+            // if no type info present or it has no ancestors, delete the display string default
+            // ie. no inheritance from other displaystring
+            result.setDefaults(null);
             return result;
+        }
 
         Assert.isTrue(defaultNode instanceof IHasDisplayString);
         // otherwise set the default display string

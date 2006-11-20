@@ -104,19 +104,20 @@ public class NedFileEditPart extends ContainerEditPart implements LayerConstants
         // logging etc.
         super.modelChanged(event);
         
-        if (!(event.getSource() instanceof ITopLevelElement))
-            return;
+        NEDResourcesPlugin.getNEDResources().modelChanged(event);
+
+//        if (!(event.getSource() instanceof NedFileNodeEx))
+//            return;
 
         // if it's an attribute change, we don't care except it is a name change. in this case we must make
         // a full rehash.
         // FIXME we should check for changes in exteds and like nodes too
-        if (event instanceof NEDAttributeChangeEvent 
-                && !CompoundModuleNodeEx.ATT_NAME.equals(((NEDAttributeChangeEvent)event).getAttribute()))
-            return;
+//        if (event instanceof NEDAttributeChangeEvent 
+//                && !CompoundModuleNodeEx.ATT_NAME.equals(((NEDAttributeChangeEvent)event).getAttribute()))
+//            return;
 
-        // invalidat the type info caceh and redraw the children
-        NEDResourcesPlugin.getNEDResources().invalidate();
-        refreshChildren();
+        // invalidate the type info cache and redraw the children
+        totalRefresh();
     }
     
 }    
