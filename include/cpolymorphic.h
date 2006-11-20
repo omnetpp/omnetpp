@@ -98,9 +98,11 @@ class SIM_API cPolymorphic
 
     /**
      * Can be redefined (as done in cObject) to return an object full path,
-     * which contains the object name (more precisely, fullName()) together
-     * with the object's location in the object hierarchy.
-     * This version just returns fullName() (which is by default "").
+     * or the object name if the path is not available. Although cPolymorphic
+     * does not contain an owner() member so cannot produce a path by default,
+     * subclasses may be able to do so. 
+     *
+     * This default implementation just returns fullName().
      */
     virtual std::string fullPath() const;
 
@@ -148,6 +150,8 @@ class SIM_API cPolymorphic
      */
     virtual void netUnpack(cCommBuffer *buffer);
     //@}
+
+//FIXME move forEach here!!!
 
     /** @name Helper functions. */
     //@{
