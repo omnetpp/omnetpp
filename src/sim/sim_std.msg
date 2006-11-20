@@ -387,8 +387,6 @@ class cPar extends cObject
         bool isNumeric @group(flags);
         bool isConstant @group(flags);
         bool isVolatile @group(lags);
-        bool isSet @group(flags);
-        bool hasDefaultValue @group(flags);
 }
 
 class cMessagePar extends cObject

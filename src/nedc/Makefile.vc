@@ -123,4 +123,5 @@ sim1_m.obj: sim1_m.cc \
   ../../include/util.h \
   ../../include/nedsupport.h \
   ../../include/compat.h \
+  ../../include/cparvalue.h \
   ../../include/platdep/time.h

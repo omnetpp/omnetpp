@@ -17,7 +17,7 @@
 #ifndef __CXMLPAR_H
 #define __CXMLPAR_H
 
-#include "cparimplbase.h"
+#include "cparvalue.h"
 
 /**
  * FIXME revise docu in the whole class!!!!!!

@@ -17,7 +17,7 @@
 #ifndef __CDOUBLEPAR_H
 #define __CDOUBLEPAR_H
 
-#include "cparimplbase.h"
+#include "cparvalue.h"
 
 /**
  * FIXME revise docu in the whole class!!!!!!

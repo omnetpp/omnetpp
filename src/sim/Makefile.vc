@@ -173,10 +173,11 @@ cboolpar.obj: cboolpar.cc \
   ../../include/cstrtokenizer.h \
   ../../include/cdynamicexpression.h \
   ../../include/ccomponent.h \
+  ../../include/cparvalue.h \
   ../../include/cpar.h \
-  ../../include/cobject.h \
   ../../include/cexpression.h \
   ../../include/cexception.h \
+  ../../include/cobject.h \
   ../../include/cenvir.h \
   ../../include/defs.h \
   ../../include/util.h \
@@ -458,10 +459,11 @@ cdoublepar.obj: cdoublepar.cc \
   ../../include/cstrtokenizer.h \
   ../../include/cdynamicexpression.h \
   ../../include/ccomponent.h \
+  ../../include/cparvalue.h \
   ../../include/cpar.h \
-  ../../include/cobject.h \
   ../../include/cexpression.h \
   ../../include/cexception.h \
+  ../../include/cobject.h \
   ../../include/cenvir.h \
   ../../include/defs.h \
   ../../include/util.h \
@@ -733,10 +735,11 @@ clongpar.obj: clongpar.cc \
   ../../include/cstrtokenizer.h \
   ../../include/cdynamicexpression.h \
   ../../include/ccomponent.h \
+  ../../include/cparvalue.h \
   ../../include/cpar.h \
-  ../../include/cobject.h \
   ../../include/cexpression.h \
   ../../include/cexception.h \
+  ../../include/cobject.h \
   ../../include/cenvir.h \
   ../../include/defs.h \
   ../../include/util.h \
@@ -977,15 +980,11 @@ cpacket.obj: cpacket.cc \
   ../../include/ccoroutine.h
 cpar.obj: cpar.cc \
   ../../include/cpar.h \
+  ../../include/cparvalue.h \
   ../../include/cproperties.h \
   ../../include/ccomponent.h \
   ../../include/csimulation.h \
   ../../include/ccommbuffer.h \
-  ../../include/cboolpar.h \
-  ../../include/clongpar.h \
-  ../../include/cdoublepar.h \
-  ../../include/cstringpar.h \
-  ../../include/cxmlpar.h \
   ../../include/cobject.h \
   ../../include/cexpression.h \
   ../../include/cexception.h \
@@ -1017,6 +1016,37 @@ cparsimcomm.obj: cparsimcomm.cc \
   ../../include/regmacros.h \
   ../../include/onstartup.h \
   ../../include/opp_string.h
+cparvalue.obj: cparvalue.cc \
+  ../../include/cparvalue.h \
+  ../../include/cproperties.h \
+  ../../include/ccomponent.h \
+  ../../include/csimulation.h \
+  ../../include/ccommbuffer.h \
+  ../../include/cboolpar.h \
+  ../../include/clongpar.h \
+  ../../include/cdoublepar.h \
+  ../../include/cstringpar.h \
+  ../../include/cxmlpar.h \
+  ../../include/cpar.h \
+  ../../include/cexpression.h \
+  ../../include/cexception.h \
+  ../../include/cobject.h \
+  ../../include/cenvir.h \
+  ../../include/defs.h \
+  ../../include/util.h \
+  ../../include/cpolymorphic.h \
+  ../../include/cvisitor.h \
+  ../../include/cstringpool.h \
+  ../../include/errmsg.h \
+  ../../include/regmacros.h \
+  ../../include/onstartup.h \
+  ../../include/opp_string.h \
+  ../../include/globals.h \
+  ../../include/carray.h \
+  ../../include/cclassfactory.h \
+  ../../include/cdefaultlist.h \
+  ../../include/cmsgheap.h \
+  ../../include/ccoroutine.h
 cpolymorphic.obj: cpolymorphic.cc \
   ../../include/cpolymorphic.h \
   ../../include/cexception.h \
@@ -1266,10 +1296,11 @@ cstringpar.obj: cstringpar.cc \
   ../../include/cstringpar.h \
   ../../include/cdynamicexpression.h \
   ../../include/ccomponent.h \
+  ../../include/cparvalue.h \
   ../../include/cpar.h \
-  ../../include/cobject.h \
   ../../include/cexpression.h \
   ../../include/cexception.h \
+  ../../include/cobject.h \
   ../../include/cenvir.h \
   ../../include/defs.h \
   ../../include/util.h \
@@ -1418,10 +1449,11 @@ cxmlpar.obj: cxmlpar.cc \
   ../../include/cstrtokenizer.h \
   ../../include/cdynamicexpression.h \
   ../../include/ccomponent.h \
+  ../../include/cparvalue.h \
   ../../include/cpar.h \
-  ../../include/cobject.h \
   ../../include/cexpression.h \
   ../../include/cexception.h \
+  ../../include/cobject.h \
   ../../include/cenvir.h \
   ../../include/defs.h \
   ../../include/util.h \
@@ -1465,6 +1497,29 @@ distrib.obj: distrib.cc \
 errmsg.obj: errmsg.cc \
   ../../include/errmsg.h \
   ../../include/defs.h
+expr.tab.obj: expr.tab.cc \
+  ../../include/expryydefs.h \
+  ../../include/cdynamicexpression.h \
+  ../../include/cpar.h \
+  ../../include/cxmlelement.h \
+  ../../include/cexception.h \
+  ../../include/globals.h \
+  ../../include/cfunction.h \
+  ../../include/cnedfunction.h \
+  ../../include/cexpression.h \
+  ../../include/cpolymorphic.h \
+  ../../include/defs.h \
+  ../../include/util.h \
+  ../../include/regmacros.h \
+  ../../include/errmsg.h \
+  ../../include/onstartup.h \
+  ../../include/cobject.h \
+  ../../include/cenvir.h \
+  ../../include/cvisitor.h \
+  ../../include/cstringpool.h \
+  ../../include/opp_string.h \
+  ../../include/carray.h \
+  ../../include/cclassfactory.h
 globals.obj: globals.cc \
   ../../include/globals.h \
   ../../include/carray.h \
@@ -1485,6 +1540,17 @@ globals.obj: globals.cc \
   ../../include/cpar.h \
   ../../include/cgate.h \
   ../../include/cexpression.h
+lex.expryy.obj: lex.expryy.cc \
+  ../../include/expryydefs.h \
+  expr.tab.h \
+  ../../include/util.h \
+  ../../include/cdynamicexpression.h \
+  ../../include/cexpression.h \
+  ../../include/cpolymorphic.h \
+  ../../include/defs.h \
+  ../../include/regmacros.h \
+  ../../include/onstartup.h \
+  ../../include/errmsg.h
 minixpath.obj: minixpath.cc \
   minixpath.h \
   ../../include/cexception.h \
@@ -1619,6 +1685,7 @@ sim_std_m.obj: sim_std_m.cc \
   ../../include/util.h \
   ../../include/nedsupport.h \
   ../../include/compat.h \
+  ../../include/cparvalue.h \
   ../../include/platdep/time.h
 task.obj: task.cc \
   task.h
@@ -1808,6 +1875,7 @@ netbuilder/cnedloader.obj: netbuilder/cnedloader.cc \
   ../../include/opp_string.h \
   ../../include/cdynamicexpression.h \
   ../../include/cexpression.h \
+  ../../include/cparvalue.h \
   ../../include/carray.h \
   ../../include/cclassfactory.h \
   ../../include/cmodule.h \

@@ -17,7 +17,7 @@
 #ifndef __CSTRINGPAR_H
 #define __CSTRINGPAR_H
 
-#include "cparimplbase.h"
+#include "cparvalue.h"
 
 /**
  * FIXME revise docu in the whole class!!!!!!

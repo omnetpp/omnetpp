@@ -144,6 +144,11 @@ idlist.obj: idlist.cc \
   scavedefs.h \
   ../common/exception.h \
   ../common/util.h
+ivectorfilereader.obj: ivectorfilereader.cc \
+  ../common/exception.h \
+  ../common/linetokenizer.h \
+  ivectorfilereader.h \
+  ../common/filereader.h
 mergernodes.obj: mergernodes.cc \
   channel.h \
   mergernodes.h \

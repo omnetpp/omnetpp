@@ -15,7 +15,7 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include "cparimplbase.h"
+#include "cparvalue.h"
 #include "cproperties.h"
 #include "ccomponent.h"
 #include "csimulation.h"

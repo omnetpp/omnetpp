@@ -16,7 +16,7 @@
 *--------------------------------------------------------------*/
 
 #include "cpar.h"
-#include "cparimplbase.h"
+#include "cparvalue.h"
 #include "cproperties.h"
 #include "ccomponent.h"
 #include "csimulation.h"
@@ -107,10 +107,10 @@ void cPar::read()
     printf("       BEFORE: %s\n", info().c_str()); //XXX
 
     // obtain value if parameter is not set yet
+/*FIXME
     if (!isSet())
         doReadValue();
-
-    ASSERT(isSet());
+*/
 
     // convert non-volatile values to constant
     if (!isVolatile())
@@ -148,11 +148,9 @@ void cPar::doReadValue()
         if (!success)
             throw new cRuntimeError("Wrong value `%s' for parameter `%s'", str.c_str(), fullPath().c_str());
     }
-    if (isSet())
-        return;
 
     // maybe we should use default value
-    if (hasDefaultValue() && ev.getParameterUseDefault(simulation.runNumber(), fullPath().c_str()))
+    if (p->hasValue() && ev.getParameterUseDefault(simulation.runNumber(), fullPath().c_str()))
     {
         //XXX applyDefaultValue();
         return;

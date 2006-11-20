@@ -243,6 +243,21 @@ main.obj: main.cc \
   ../../include/regmacros.h \
   ../../include/onstartup.h \
   ../../include/opp_string.h
+matchableobject.obj: matchableobject.cc \
+  matchableobject.h \
+  ../../include/cclassdescriptor.h \
+  ../../include/cobject.h \
+  ../../include/cenvir.h \
+  ../../include/defs.h \
+  ../../include/util.h \
+  ../../include/cpolymorphic.h \
+  ../../include/cexception.h \
+  ../../include/cvisitor.h \
+  ../../include/cstringpool.h \
+  ../../include/errmsg.h \
+  ../../include/regmacros.h \
+  ../../include/onstartup.h \
+  ../../include/opp_string.h
 omnetapp.obj: omnetapp.cc \
   args.h \
   omnetapp.h \

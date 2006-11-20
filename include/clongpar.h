@@ -17,7 +17,7 @@
 #ifndef __CLONGPAR_H
 #define __CLONGPAR_H
 
-#include "cparimplbase.h"
+#include "cparvalue.h"
 
 /**
  * FIXME revise docu in the whole class!!!!!!

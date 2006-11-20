@@ -17,7 +17,7 @@
 #ifndef __CBOOLPAR_H
 #define __CBOOLPAR_H
 
-#include "cparimplbase.h"
+#include "cparvalue.h"
 
 /**
  * FIXME revise docu in the whole class!!!!!!

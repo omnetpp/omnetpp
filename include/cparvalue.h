@@ -43,7 +43,7 @@ class SIM_API cParValue : public cObject
     // there is no collision with bits used by cObject.
     enum {
       FL_ISVOLATILE = 4,  // whether it was declared as "volatile" in NED
-      FL_HASDEFAULT = 16, // whether it has a default value
+      FL_HASVALUE = 16,   // whether it has a value
       FL_ISEXPR = 32,     // whether it stores a constant or an expression
       FL_HASCHANGED = 64  // whether it has changed since last asked
     };
@@ -129,7 +129,7 @@ class SIM_API cParValue : public cObject
     /**
      * Returns true if the parameter has a default value.
      */
-    virtual bool hasDefaultValue() const  {return flags & FL_HASDEFAULT;}
+    virtual bool hasValue() const  {return flags & FL_HASVALUE;}
 
     /**
      * Returns true if the value has changed since the last changed() call.

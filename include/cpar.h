@@ -101,17 +101,6 @@ class SIM_API cPar : public cNoncopyableObject  //FIXME make cPolymorphic, nonco
     bool isConstant() const;
 
     /**
-     * Returns true if the parameter is not set. (It may still have a default
-     * value though).
-     */
-    bool isSet() const;
-
-    /**
-     * Returns true if the parameter has a default value.
-     */
-    bool hasDefaultValue() const;
-
-    /**
      * Returns true if the value has changed since the last changed() call.
      * Side effect: clears the 'changed' flag, so a next call will return
      * false.
