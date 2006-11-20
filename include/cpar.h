@@ -105,7 +105,7 @@ class SIM_API cPar : public cNoncopyableObject  //FIXME make cPolymorphic, nonco
      * Side effect: clears the 'changed' flag, so a next call will return
      * false.
      */
-    bool changed();  //XXX
+    bool changed();  //XXX implement!!
 
     /**
      * Return the properties for this parameter. Properties are locked against
@@ -164,26 +164,22 @@ class SIM_API cPar : public cNoncopyableObject  //FIXME make cPolymorphic, nonco
     //@{
 
     /**
-     * Returns value as a boolean. The cPar type must be bool (B) or a numeric type.
+     * Returns value as a boolean. The cPar type must be BOOL.
      */
     bool boolValue() const;
 
     /**
-     * Returns value as long. The cPar type must be types long (L),
-     * double (D), Boolean (B), function (F), distribution (T),
-     * compiled expression (C) or expression (X).
+     * Returns value as long. The cPar type must be LONG or DOUBLE.
      */
     long longValue() const;
 
     /**
-     * Returns value as double. The cPar type must be types long (L),
-     * double (D), function (F), Boolean (B), distribution (T),
-     * compiled expression (C) or expression (X).
+     * Returns value as double. The cPar type must be LONG or DOUBLE.
      */
     double doubleValue() const;
 
     /**
-     * Returns value as const char *. Only for string (S) type.
+     * Returns value as const char *. The cPar type must be STRING.
      * This method may can only be invoked when the parameter's value is a
      * string constant and not the result of expression evaluation (otherwise
      * an error is thrown). This practically means this method cannot be used
@@ -193,12 +189,12 @@ class SIM_API cPar : public cNoncopyableObject  //FIXME make cPolymorphic, nonco
     const char *stringValue() const;
 
     /**
-     * Returns value as string. Only for string (S) type.
+     * Returns value as string. The cPar type must be STRING.
      */
     std::string stdstringValue() const;
 
     /**
-     * Returns value as pointer to cXMLElement. The cPar type must be XML (M).
+     * Returns value as pointer to cXMLElement. The cPar type must be XML.
      */
     cXMLElement *xmlValue() const;
 
