@@ -21,7 +21,7 @@ CPPOBJS_STD=\
     cksplit.obj clcg32.obj cllist.obj clongpar.obj cmersennetwister.obj \
     cmessage.obj cmessagepar.obj cmodule.obj cmsgheap.obj \
     cnedfunction.obj cobject.obj coutvect.obj \
-    cpacket.obj cpar.obj cparimplbase.obj cpolymorphic.obj cproperties.obj cproperty.obj \
+    cpacket.obj cpar.obj cparvalue.obj cpolymorphic.obj cproperties.obj cproperty.obj \
     cpsquare.obj cqueue.obj cscheduler.obj csimplemodule.obj \
     csimulation.obj cstat.obj cstlwatch.obj cstringpar.obj \
     cstringpool.obj cstrtokenizer.obj cclassdescriptor.obj ctopo.obj cvarhist.obj \

@@ -1,5 +1,5 @@
 //==========================================================================
-//   CPARIMPLBASE.H  - part of
+//   CPARVALUE.H  - part of
 //                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
 //
@@ -14,8 +14,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __CPARIMPLBASE_H
-#define __CPARIMPLBASE_H
+#ifndef __CPARVALUE_H
+#define __CPARVALUE_H
 
 #include "cpar.h"
 #include "cexpression.h"
