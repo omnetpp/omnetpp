@@ -30,12 +30,10 @@ cNEDDeclaration::ParamDescription::ParamDescription()
 cNEDDeclaration::ParamDescription cNEDDeclaration::ParamDescription::deepCopy() const
 {
     ParamDescription tmp = *this;
-/*FIXME
     if (tmp.value)
-        tmp.value = (cPar *) tmp.value->dup();
+        tmp.value = tmp.value->dup();
     if (tmp.properties)
         tmp.properties = tmp.properties->dup();
-*/
     return tmp;
 }
 
@@ -131,7 +129,7 @@ std::string cNEDDeclaration::detailedInfo() const
     for (int i=0; i<params.size(); i++)
     {
         const ParamDescription& desc = paramDescription(i);
-        out << "  param " << desc.name << " SET:" << (desc.value->isSet()?"true":"false");
+        out << "  param " << desc.value->name() << " INPUT:" << (desc.isInput?"true":"false");
         out << " value=" << desc.value->info() << ", ISEXPR=" << (desc.value->isConstant()?0:1) << ", " << desc.value->toString()
             << " " << desc.properties->info() << "\n";
     }
@@ -184,7 +182,7 @@ void cNEDDeclaration::addPar(const ParamDescription& paramDesc)
 {
     if (locked)
         throw new cRuntimeError(this, "addPar(): too late, object already locked");
-    paramNameMap[paramDesc.name] = params.size();
+    paramNameMap[paramDesc.value->name()] = params.size();
     params.push_back(paramDesc);
     if (paramDesc.value)
         take(paramDesc.value);

@@ -25,8 +25,6 @@
 #endif
 
 
-//FIXME longValue() etc methods in subclasses should check isInput() flag!
-
 cParValue::cParValue()
 {
 }

@@ -23,7 +23,7 @@
 #include "defs.h"
 #include "globals.h"
 #include "cobject.h"
-#include "cpar.h"
+#include "cparvalue.h"
 #include "cgate.h"
 
 #include "nedcomponent.h"
@@ -61,8 +61,8 @@ class SIM_API cNEDDeclaration : public cNoncopyableObject, public NEDComponent
      */
     struct ParamDescription
     {
-        std::string name;
-        cPar *value;  // stores type, isVolatile, isSet flag as well -- never NULL
+        bool isInput;  // whether it was assigned as default(...)
+        cParValue *value;  // stores name, type and isVolatile flag as well -- never NULL
         cProperties *properties;  // never NULL
         std::string declaredOn;
 
@@ -237,7 +237,7 @@ class SIM_API cNEDDeclaration : public cNoncopyableObject, public NEDComponent
     /**
      * Returns the name of the kth parameter.
      */
-    virtual const char *parName(int k) const {return paramDescription(k).name.c_str();}
+    virtual const char *parName(int k) const {return paramDescription(k).value->name();}
 
     /**
      * Returns the description of the kth parameter.

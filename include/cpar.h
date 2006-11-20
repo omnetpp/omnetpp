@@ -43,6 +43,7 @@ class cComponent;
  */
 class SIM_API cPar : public cNoncopyableObject  //FIXME make cPolymorphic, noncopyable
 {
+  friend class cComponent;
   private:
     cParValue *p;
   public:

@@ -351,7 +351,6 @@ cNEDDeclaration *cNEDLoader::buildNEDDeclaration(NEDElement *node)
 cNEDDeclaration::ParamDescription cNEDLoader::extractParamDescription(ParamNode *paramNode)
 {
     cNEDDeclaration::ParamDescription desc;
-    desc.name = paramNode->getName();
     int t = paramNode->getType();
     if (t==NED_PARTYPE_NONE)
         throw new cRuntimeError("undeclared parameter `%s'", paramNode->getName()); //XXX improve msg
@@ -363,10 +362,9 @@ cNEDDeclaration::ParamDescription cNEDLoader::extractParamDescription(ParamNode 
                       t==NED_PARTYPE_XML ? cPar::XML :
                       (cPar::Type)-1;
     ASSERT(type!=-1);
-/*FIXME
-    desc.value = cPar::createWithType(type); // gets created with isSet()==false
+    desc.value = cParValue::createWithType(type); // gets created with isSet()==false
+    desc.value->setName(paramNode->getName());
     desc.value->setIsVolatile(paramNode->getIsVolatile());
-*/
     return desc;
 }
 

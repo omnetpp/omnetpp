@@ -16,6 +16,7 @@
 #include "ccomponenttype.h"
 #include "cproperties.h"
 #include "cpar.h"
+#include "cparvalue.h"
 #include "crng.h"
 
 
@@ -79,21 +80,11 @@ cProperties *cComponent::properties()
     return props;
 }
 
-cProperties *cComponent::unlockProperties()
+void cComponent::addPar(cParValue *value)
 {
-    if (!props)  //FIXME it's always non-NULL!!!
-    {
-        props = properties()->dup();
-        props->setOwner(this);
-    }
-    return props;
-}
-
-void cComponent::addPar(const char *parname, cPar *par)
-{
-    if (findPar(parname)>=0)
-       throw new cRuntimeError(this, "addPar(): Parameter %s.%s already present", fullPath().c_str(), parname);
-    par->setName(parname);
+    if (findPar(value->name())>=0)
+       throw new cRuntimeError(this, "addPar(): Parameter %s.%s already present", fullPath().c_str(), value->name());
+    cPar *par = new cPar(value);
     take(par);
     paramv.push_back(par);
 }

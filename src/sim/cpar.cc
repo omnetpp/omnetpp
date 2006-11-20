@@ -27,7 +27,8 @@
 
 void cPar::copyIfShared()
 {
-    //FIXME if (p->
+    if (p->owner()!=owner())
+        take(p = p->dup());
 }
 
 cComponent *cPar::ownerComponent()
@@ -99,6 +100,8 @@ void cPar::afterChange()
             owner->handleParameterChange(fullName());
         }
     }
+
+    //XXX set "changed" flag
 }
 
 void cPar::read()

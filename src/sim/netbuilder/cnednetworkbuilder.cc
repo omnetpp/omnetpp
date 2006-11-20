@@ -63,9 +63,9 @@ void cNEDNetworkBuilder::addParameters(cComponent *component, cNEDDeclaration *d
     {
         const cNEDDeclaration::ParamDescription& desc = decl->paramDescription(i);
         ASSERT(desc.value);
-//FIXME        component->addPar(desc.name.c_str(), desc.value->dup());
-        cPar& par = component->par(desc.name.c_str());
-        printf("  added param %s, isSet=%d, isExpr=%d, info: %s\n", desc.name.c_str(), par.isSet(), !par.isConstant(), par.info().c_str()); //XXX
+        component->addPar(desc.value);
+        cPar& par = component->par(desc.value->name());
+        printf("  added param %s, isInput=%d, isExpr=%d, info: %s\n", desc.value->name(), desc.isInput, !par.isConstant(), par.info().c_str()); //XXX
     }
 }
 
@@ -282,10 +282,6 @@ void cNEDNetworkBuilder::assignComponentParams(cComponent *subcomponentp, NEDEle
             cPar *p = &(subcomponentp->par(parname));
             cDynamicExpression *e = cExpressionBuilder().process(exprNode, true);
             p->setExpression(e);
-/*FIXME
-            if (parnode->getIsDefault())
-                p->markAsUnset();
-*/
         }
     }
 }

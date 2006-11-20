@@ -43,7 +43,7 @@ class SIM_API cComponent : public cDefaultList // noncopyable
     int *rngmap;       // maps local RNG numbers (may be NULL if rngmapsize==0)
     bool ev_enabled;   // if output from ev<< is enabled   FIXME utilize cObject::flags
 
-    std::vector<cPar*> paramv;  // stores the parameters of this component
+    std::vector<cPar*> paramv;  // stores the parameters of this component -- FIXME this should be a NON-POINTER ARRAY! just vector<cPar>
 
   public:
     // internal: currently used by Cmdenv
@@ -57,9 +57,8 @@ class SIM_API cComponent : public cDefaultList // noncopyable
     // called as part of the creation process.
     virtual void setComponentType(cComponentType *componenttype);
 
-    // internal: adds a new parameter to the component; called as part of the
-    // creation process
-    virtual void addPar(const char *parname, cPar *par);
+    // internal: adds a new parameter to the component; called as part of the creation process
+    virtual void addPar(cParValue *value);
 
     // internal: invokes the read() method on all unset parameters
     virtual void readParams();
@@ -217,16 +216,10 @@ class SIM_API cComponent : public cDefaultList // noncopyable
     /** @name Properties. */
     //@{
     /**
-     * Return the properties for this component. See also unlockProperties().
+     * Return the properties for this component. Properties are locked
+     * against modifications, because properties() returns a shared copy.
      */
     virtual cProperties *properties();
-
-    /**
-     * Allows modification of component properties. By default, properties are
-     * locked against modifications, because properties() returns a shared copy.
-     * This method creates an own, modifiable copy for this component instance.
-     */
-    virtual cProperties *unlockProperties();
     //@}
 
     /** @name Parameters. */
