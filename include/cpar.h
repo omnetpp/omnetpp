@@ -27,9 +27,12 @@ class cXMLElement;
 class cProperties;
 class cComponent;
 
-//FIXME problem: all params are INPUT initially, and then read() is called on them.
-// if only the default gets set (typical), then make sure param DOES NOT GET COPIED!!!!
-// (Use 2 isinput flags in cParValue?)
+//FIXME we could this cPolymorphic, noncopyable (and cParValue cPolymorphic); maybe cGate too?
+// only problem: how to inspect them in Tkenv?
+// inspectors could be changed to cPolymorphic-based, but ev.objectDeleted() is still cObject!!!
+// if we put ev.objectDeleted() into cPolymorphic's dtor, there'll be too many notifications (???)
+// should we make a cNotifyingPolymorphic from which we subclass cPar and cGate???
+//               or name this ^^^ cLightweightObject ? (cPolym + ev.objectDeleted())
 
 /**
  * FIXME
@@ -41,7 +44,7 @@ class cComponent;
  *
  * @ingroup SimCore
  */
-class SIM_API cPar : public cNoncopyableObject  //FIXME make cPolymorphic, noncopyable
+class SIM_API cPar : public cNoncopyableObject
 {
   friend class cComponent;
   private:
