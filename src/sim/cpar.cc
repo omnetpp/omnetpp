@@ -16,6 +16,7 @@
 *--------------------------------------------------------------*/
 
 #include "cpar.h"
+#include "cparimplbase.h"
 #include "cproperties.h"
 #include "ccomponent.h"
 #include "csimulation.h"
@@ -24,41 +25,9 @@
 #include "ccommbuffer.h"
 #endif
 
-
-//FIXME longValue() etc methods in subclasses should check isInput() flag!
-
-cPar::cPar()
+void cPar::copyIfShared()
 {
-    props = NULL;
-}
-
-cPar::~cPar()
-{
-    // subclasses must call beforeChange() in their destructor!
-    // we cannot call *their* virtual function any more from here.
-    delete props;
-}
-
-cPar& cPar::operator=(const cPar& other)
-{
-    // Note: subclasses should call beforeChange()/afterChange()!
-    cObject::operator=(other);
-    return *this;
-}
-
-void cPar::netPack(cCommBuffer *buffer)
-{
-    //TBD
-}
-
-void cPar::netUnpack(cCommBuffer *buffer)
-{
-    //TBD
-}
-
-cPar *cPar::dup() const
-{
-    throw new cRuntimeError(this, eCANTDUP);  // cannot dup because this is an abstract class
+    //FIXME if (p->
 }
 
 cComponent *cPar::ownerComponent()
@@ -68,28 +37,59 @@ cComponent *cPar::ownerComponent()
 
 cProperties *cPar::properties() const
 {
-    // props may actually point into the declaration object
-    return props;
+    return NULL;  //FIXME return it from the type object
 }
 
-cProperties *cPar::unlockProperties()
+cPar& cPar::setBoolValue(bool b)
 {
-    if (!props) //FIXME
-    {
-        props = properties()->dup();
-        props->setOwner(this);
-    }
-    return props;
+    copyIfShared();
+    p->setBoolValue(b);
+    afterChange();
+    return *this;
 }
 
-void cPar::beforeChange()
+cPar& cPar::setLongValue(long l)
 {
+    copyIfShared();
+    p->setLongValue(l);
+    afterChange();
+    return *this;
+}
+
+cPar& cPar::setDoubleValue(double d)
+{
+    copyIfShared();
+    p->setDoubleValue(d);
+    afterChange();
+    return *this;
+}
+
+cPar& cPar::setStringValue(const char *s)
+{
+    copyIfShared();
+    p->setStringValue(s);
+    afterChange();
+    return *this;
+}
+
+cPar& cPar::setXMLValue(cXMLElement *node)
+{
+    copyIfShared();
+    p->setXMLValue(node);
+    afterChange();
+    return *this;
+}
+
+cPar& cPar::setExpression(cExpression *e)
+{
+    copyIfShared();
+    p->setExpression(e);
+    afterChange();
+    return *this;
 }
 
 void cPar::afterChange()
 {
-    flags |= FL_HASCHANGED;
-
     if (simulation.contextType()==CTX_EVENT) // don't call during build, initialize or finish
     {
         cComponent *owner = ownerComponent();
@@ -99,51 +99,6 @@ void cPar::afterChange()
             owner->handleParameterChange(fullName());
         }
     }
-}
-
-bool cPar::changed()
-{
-    bool ret = flags & FL_HASCHANGED;
-    flags &= ~FL_HASCHANGED;
-    return ret;
-}
-
-void cPar::markAsUnset()
-{
-    // if the value got set prior to this call, that will be the default value
-    if (flags & FL_ISSET)
-        flags |= FL_HASDEFAULT;
-    flags &= ~FL_ISSET;
-}
-
-void cPar::applyDefaultValue()
-{
-    // if it had a default value set, use that, otherwise the param will remain unset
-    if (flags & FL_HASDEFAULT)
-        flags |= FL_ISSET;
-}
-
-
-bool cPar::equals(cPar& other)
-{
-    if (!isSet() || !other.isSet() || type()!=other.type())
-        return false;
-
-    switch (type())
-    {
-        case 'B': return boolValue()==other.boolValue();
-        case 'L': return longValue()==other.longValue();
-        case 'D': return doubleValue()==other.doubleValue();
-        case 'S': return stringValue()==other.stringValue();
-        case 'X': return xmlValue()==other.xmlValue();
-        default: return false;
-    }
-}
-
-int cPar::cmpbyvalue(cPar *one, cPar *other)
-{
-    double x = one->doubleValue() - other->doubleValue();
-    return sgn(x);
 }
 
 void cPar::read()
@@ -168,9 +123,21 @@ void cPar::read()
 }
 
 
+void cPar::convertToConst()
+{
+    copyIfShared();
+    p->convertToConst();
+}
+
+bool cPar::parse(const char *text)
+{
+    copyIfShared();
+    return p->parse(text);
+}
+
+
 void cPar::doReadValue()
 {
-
 //FIXME shouldn't most of this go out into cEnvir???
 
     // get it from ini file
@@ -187,7 +154,7 @@ void cPar::doReadValue()
     // maybe we should use default value
     if (hasDefaultValue() && ev.getParameterUseDefault(simulation.runNumber(), fullPath().c_str()))
     {
-        applyDefaultValue();
+        //XXX applyDefaultValue();
         return;
     }
 
@@ -213,26 +180,6 @@ void cPar::doReadValue()
             delete e;
         }
     }
-    applyDefaultValue();
-}
-
-//----
-#include "cboolpar.h"
-#include "clongpar.h"
-#include "cdoublepar.h"
-#include "cstringpar.h"
-#include "cxmlpar.h"
-
-cPar *cPar::createWithType(Type type)
-{
-    switch (type)
-    {
-        case BOOL:    return new cBoolPar();
-        case DOUBLE:  return new cDoublePar();
-        case LONG:    return new cLongPar();
-        case STRING:  return new cStringPar();
-        case XML:     return new cXMLPar();
-        default:      throw new cRuntimeError("cPar::createWithType(): no such type: %d", type);
-    }
+    //XXX applyDefaultValue();
 }
 

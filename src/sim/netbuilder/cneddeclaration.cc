@@ -30,10 +30,12 @@ cNEDDeclaration::ParamDescription::ParamDescription()
 cNEDDeclaration::ParamDescription cNEDDeclaration::ParamDescription::deepCopy() const
 {
     ParamDescription tmp = *this;
+/*FIXME
     if (tmp.value)
         tmp.value = (cPar *) tmp.value->dup();
     if (tmp.properties)
         tmp.properties = tmp.properties->dup();
+*/
     return tmp;
 }
 

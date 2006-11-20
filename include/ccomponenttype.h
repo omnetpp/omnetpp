@@ -268,6 +268,9 @@ class SIM_API cModuleType : public cComponentType
      * Check if a gate exists.
      */
     bool hasGate(const char *s) const  {return findGate(s)>=0;}
+
+//FIXME plus: submodule properties by name, channel properties by name!
+
     //@}
 
     /**

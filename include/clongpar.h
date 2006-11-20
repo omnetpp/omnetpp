@@ -17,14 +17,14 @@
 #ifndef __CLONGPAR_H
 #define __CLONGPAR_H
 
-#include "cpar.h"
+#include "cparimplbase.h"
 
 /**
  * FIXME revise docu in the whole class!!!!!!
  *
  * @ingroup SimCore
  */
-class SIM_API cLongPar : public cPar
+class SIM_API cLongPar : public cParValue
 {
   protected:
     // selector: flags & FL_ISEXPR
@@ -59,7 +59,7 @@ class SIM_API cLongPar : public cPar
     /**
      * Assignment operator.
      */
-    cLongPar& operator=(const cLongPar& otherpar);
+    void operator=(const cLongPar& otherpar);
     //@}
 
     /** @name Redefined cPolymorphic functions */
@@ -86,42 +86,42 @@ class SIM_API cLongPar : public cPar
     virtual void netUnpack(cCommBuffer *buffer);
     //@}
 
-    /** @name Redefined cPar setter functions. */
+    /** @name Redefined cParValue setter functions. */
     //@{
 
     /**
      * Raises an error: cannot convert bool to long.
      */
-    virtual cLongPar& setBoolValue(bool b);
+    virtual void setBoolValue(bool b);
 
     /**
      * Sets the value to the given constant.
      */
-    virtual cLongPar& setLongValue(long l);
+    virtual void setLongValue(long l);
 
     /**
      * Converts from double.
      */
-    virtual cLongPar& setDoubleValue(double d);
+    virtual void setDoubleValue(double d);
 
     /**
      * Raises an error: cannot convert string to long.
      */
-    virtual cLongPar& setStringValue(const char *s);
+    virtual void setStringValue(const char *s);
 
     /**
      * Raises an error: cannot convert XML to long.
      */
-    virtual cLongPar& setXMLValue(cXMLElement *node);
+    virtual void setXMLValue(cXMLElement *node);
 
     /**
      * Sets the value to the given expression. This object will
      * assume the responsibility to delete the expression object.
      */
-    virtual cLongPar& setExpression(cExpression *e);
+    virtual void setExpression(cExpression *e);
     //@}
 
-    /** @name Redefined cPar getter functions. */
+    /** @name Redefined cParValue getter functions. */
     //@{
 
     /**
@@ -164,9 +164,9 @@ class SIM_API cLongPar : public cPar
     //@{
 
     /**
-     * Returns 'L' (for "long").
+     * Returns LONG.
      */
-    virtual char type() const;
+    virtual Type type() const;
 
     /**
      * Returns true.
@@ -174,7 +174,7 @@ class SIM_API cLongPar : public cPar
     virtual bool isNumeric() const;
     //@}
 
-    /** @name Redefined cPar misc functions. */
+    /** @name Redefined cParValue misc functions. */
     //@{
 
     /**

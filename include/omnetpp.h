@@ -56,6 +56,7 @@
 #include "coutvect.h"
 #include "cpacket.h"
 #include "cpar.h"
+#include "cparimplbase.h"
 #include "cparsimcomm.h"
 #include "cpolymorphic.h"
 #include "cproperties.h"

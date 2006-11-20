@@ -27,25 +27,20 @@ cBoolPar::cBoolPar()
 
 cBoolPar::~cBoolPar()
 {
-    beforeChange();
     deleteOld();
 }
 
-cBoolPar& cBoolPar::operator=(const cBoolPar& other)
+void cBoolPar::operator=(const cBoolPar& other)
 {
-    if (this==&other) return *this;
+    if (this==&other) return;
 
-    beforeChange();
     deleteOld();
 
-    cPar::operator=(other);
+    cParValue::operator=(other);
     if (flags & FL_ISEXPR)
         expr = (cExpression *) other.expr->dup();
     else
         val = other.val;
-
-    afterChange();
-    return *this;
 }
 
 std::string cBoolPar::info() const
@@ -63,44 +58,37 @@ void cBoolPar::netUnpack(cCommBuffer *buffer)
     //TBD
 }
 
-cBoolPar& cBoolPar::setBoolValue(bool b)
+void cBoolPar::setBoolValue(bool b)
 {
-    beforeChange();
     deleteOld();
     val = b;
-    flags |= FL_ISSET;
-    afterChange();
-    return *this;
 }
 
-cBoolPar& cBoolPar::setLongValue(long l)
+void cBoolPar::setLongValue(long l)
 {
     throw new cRuntimeError(this, eBADCAST, "int/long", "double");
 }
 
-cBoolPar& cBoolPar::setDoubleValue(double d)
+void cBoolPar::setDoubleValue(double d)
 {
     throw new cRuntimeError(this, eBADCAST, "double", "bool");
 }
 
-cBoolPar& cBoolPar::setStringValue(const char *s)
+void cBoolPar::setStringValue(const char *s)
 {
     throw new cRuntimeError(this, eBADCAST, "string", "bool");
 }
 
-cBoolPar& cBoolPar::setXMLValue(cXMLElement *node)
+void cBoolPar::setXMLValue(cXMLElement *node)
 {
     throw new cRuntimeError(this, eBADCAST, "XML", "bool");
 }
 
-cBoolPar& cBoolPar::setExpression(cExpression *e)
+void cBoolPar::setExpression(cExpression *e)
 {
-    beforeChange();
     deleteOld();
     expr = e;
-    flags |= FL_ISEXPR | FL_ISSET;
-    afterChange();
-    return *this;
+    flags |= FL_ISEXPR;
 }
 
 bool cBoolPar::boolValue() const
@@ -152,9 +140,9 @@ void cBoolPar::deleteOld()
     }
 }
 
-char cBoolPar::type() const
+cPar::Type cBoolPar::type() const
 {
-    return 'B';
+    return cPar::Type::BOOL;
 }
 
 bool cBoolPar::isNumeric() const

@@ -309,8 +309,10 @@ cNEDDeclaration *cNEDLoader::buildNEDDeclaration(NEDElement *node)
                 cNEDDeclaration::ParamDescription& desc = const_cast<cNEDDeclaration::ParamDescription&>(decl->paramDescription(paramName));
                 cDynamicExpression *dynamicExpr = cExpressionBuilder().process(exprNode, false);
                 desc.value->setExpression(dynamicExpr);
+/*FIXME
                 if (paramNode->getIsDefault())
                     desc.value->markAsUnset();
+*/
             }
         }
     }
@@ -361,8 +363,10 @@ cNEDDeclaration::ParamDescription cNEDLoader::extractParamDescription(ParamNode 
                       t==NED_PARTYPE_XML ? cPar::XML :
                       (cPar::Type)-1;
     ASSERT(type!=-1);
+/*FIXME
     desc.value = cPar::createWithType(type); // gets created with isSet()==false
     desc.value->setIsVolatile(paramNode->getIsVolatile());
+*/
     return desc;
 }
 

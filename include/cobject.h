@@ -397,7 +397,7 @@ class SIM_API cObject : public cPolymorphic
      * Reset counters used by totalObjectCount() and liveObjectCount().
      * (Note that liveObjectCount() may go negative after a reset call.)
      */
-    static void resetMessageCounters()  {total_objs=live_objs=0L;}
+    static void resetObjectCounters()  {total_objs=live_objs=0L;}
     //@}
 };
 

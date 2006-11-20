@@ -21,41 +21,31 @@
 #include "cexpression.h"
 #include "cexception.h"
 
+class cParValue;
 class cExpression;
 class cXMLElement;
 class cProperties;
 class cComponent;
 
+//FIXME problem: all params are INPUT initially, and then read() is called on them.
+// if only the default gets set (typical), then make sure param DOES NOT GET COPIED!!!!
+// (Use 2 isinput flags in cParValue?)
 
 /**
- * FIXME revise docu in the whole class!!!!!!
+ * FIXME
  *
- * cPar is an abstract base class for storing the values of module
- * (or channel) parameters. cPar supports several data types via subclasses:
- * cLongPar, cDoublePar, cBoolPar, cStringPar, cXMLPar.
+ * Delegates everything to cParValue.
  *
- * Data types are identified by type characters, returned by type():
- * <b>B</b> bool, <b>L</b> long, <b>D</b> double, <b>S</b> string, <b>X</b> XML. FIXME use enum!
+ * Not meant for subclassing. This is also the reason why none of the
+ * methods are virtual.
  *
  * @ingroup SimCore
  */
-class SIM_API cPar : public cObject
+class SIM_API cPar : public cNoncopyableObject  //FIXME make cPolymorphic, noncopyable
 {
-  protected:
-    cProperties *props;   // if NULL, use the one from the component declaration
-
-    // Flags are stored in cObject "flags" field. Values should be chosen so that
-    // there is no collision with bits used by cObject.
-    enum {
-      FL_ISVOLATILE = 4,  // whether it was declared as "volatile" in NED
-      FL_ISSET = 8,       // whether value is set (corresponds to old "input" flag)
-      FL_HASDEFAULT = 16, // whether it has a default value
-      FL_ISEXPR = 32,     // whether it stores a constant or an expression
-      FL_HASCHANGED = 64  // whether it has changed since last asked
-    };
-
+  private:
+    cParValue *p;
   public:
-    // parameter type
     enum Type {
         BOOL = 'B',
         DOUBLE = 'D',
@@ -64,142 +54,75 @@ class SIM_API cPar : public cObject
         XML = 'X'
     };
 
-  public:
-    // internal: sets the ISVOLATILE flag; NOTE: may be necessary to invoke convertToConst() as well!
-    virtual void setIsVolatile(bool f) {if (f) flags|=FL_ISVOLATILE; else flags&=~FL_ISVOLATILE;}
-
-    // internal: mark value as unset; the current value (if set) becomes the default value
-    virtual void markAsUnset();
-
-    // internal: if !ISSET and has a default value, set it to the default;
-    // do nothing if there's no default value
-    virtual void applyDefaultValue();
-
-    // internal: called as part of read(): gets the value from omnetpp.ini or from the user.
-    virtual void doReadValue();
-
-    // internal: sets owner component (module/channel) and index of this param in it
-    cComponent *ownerComponent();
-
-    // internal: create a parameter object representing the given type
-    static cPar *createWithType(Type type);
-
-  protected:
-    /** @name Event hooks */
-    //@{
-
-    /**
-     * Called each time before the value of this object changes.
-     * This method can be used for tracking parameter changes.
-     * This default implementation does nothing.
-     */
-    virtual void beforeChange();
-
-    /**
-     * Called each time after the value of this object changed. Changes in
-     * flags don't count, only the (long, double, etc) value.
-     * This method can be used for tracking parameter changes.
-     */
-    virtual void afterChange();
-    //@}
-
-  public:
-    /** @name Constructors, destructor, assignment. */
-    //@{
-
-    /**
-     * Constructor.
-     */
-    explicit cPar();
-
-    /**
-     * Copy constructor.
-     */
+  private:
+    cPar(cParValue *p);
     cPar(const cPar& other);
+    cPar& operator=(const cPar& otherpar);
+    virtual cPar *dup() const;
 
+    // internal utility function
+    void copyIfShared();
+    // internal: returns the component (module/channel) this parameter belongs to
+    cComponent *ownerComponent();
+    // internal: called each time after the value of this object changes.
+    void afterChange();
+    // internal: called as part of read(): gets the value from omnetpp.ini or from the user.
+    void doReadValue();
+
+  public:
     /**
      * Destructor.
      */
     virtual ~cPar();
 
-    /**
-     * Assignment operator.
-     */
-    cPar& operator=(const cPar& otherpar);
-    //@}
-
-    /** @name Redefined cObject functions */
-    //@{
-    /**
-     * Redefined change return type to cPar.
-     */
-    virtual cPar *dup() const;
-
-    /**
-     * Serializes the object into a buffer.
-     */
-    virtual void netPack(cCommBuffer *buffer);
-
-    /**
-     * Deserializes the object from a buffer.
-     */
-    virtual void netUnpack(cCommBuffer *buffer);
-    //@}
-
     /** @name Owner component, type, flags. */
     //@{
     /**
-     * Returns type character: 'B', 'D', 'L', 'S' or 'X'. // FIXME turn this into enum!!!!!
+     * Returns the parameter type
      */
-    virtual char type() const = 0;  //FIXME use cPar::Type enum
+    Type type() const;
 
     /**
      * Returns true if the stored value is of a numeric type.
      */
-    virtual bool isNumeric() const = 0;
+    bool isNumeric() const;
 
     /**
      * Returns true if this parameter is marked in the NED file as "function".
      * This flag affects the operation of setExpression().
      */
-    virtual bool isVolatile() const {return flags & FL_ISVOLATILE;}
+    bool isVolatile() const;
 
     /**
      * Returns true if the stored value is a constant, anf false if it is
      * an expression. (It is not examined whether the expression yields
      * a constant value or not.)
      */
-    virtual bool isConstant() const {return !(flags & FL_ISEXPR);}
+    bool isConstant() const;
 
     /**
      * Returns true if the parameter is not set. (It may still have a default
      * value though).
      */
-    virtual bool isSet() const  {return flags & FL_ISSET;}
+    bool isSet() const;
 
     /**
      * Returns true if the parameter has a default value.
      */
-    virtual bool hasDefaultValue() const  {return flags & FL_HASDEFAULT;}
+    bool hasDefaultValue() const;
 
     /**
      * Returns true if the value has changed since the last changed() call.
      * Side effect: clears the 'changed' flag, so a next call will return
      * false.
      */
-    virtual bool changed();
+    bool changed();  //XXX
 
     /**
-     * Return the properties for this parameter. See also unlockProperties().
+     * Return the properties for this parameter. Properties are locked against
+     * modifications.
      */
-    virtual cProperties *properties() const;
-
-    /**
-     * Allows modification of parameter properties. By default, properties are
-     * locked against modifications, because properties() returns a shared copy.
-     * This method creates an own, modifiable copy for this parameter instance.
-     */
-    virtual cProperties *unlockProperties();
+    cProperties *properties() const;
     //@}
 
     /** @name Setter functions. Note that overloaded assignment operators also exist. */
@@ -208,34 +131,34 @@ class SIM_API cPar : public cObject
     /**
      * Sets the value to the given bool value.
      */
-    virtual cPar& setBoolValue(bool b) = 0;
+    cPar& setBoolValue(bool b);
 
     /**
      * Sets the value to the given long value.
      */
-    virtual cPar& setLongValue(long l) = 0;
+    cPar& setLongValue(long l);
 
     /**
      * Sets the value to the given double value.
      */
-    virtual cPar& setDoubleValue(double d) = 0;
+    cPar& setDoubleValue(double d);
 
     /**
      * Sets the value to the given string value.
      * The cPar will make its own copy of the string. NULL is also accepted
      * and treated as an empty string.
      */
-    virtual cPar& setStringValue(const char *s) = 0;
+    cPar& setStringValue(const char *s);
 
     /**
      * Sets the value to the given string value.
      */
-    virtual cPar& setStringValue(const std::string& s)  {setStringValue(s.c_str()); return *this;}
+    cPar& setStringValue(const std::string& s)  {setStringValue(s.c_str()); return *this;}
 
     /**
      * Sets the value to the given cXMLElement.
      */
-    virtual cPar& setXMLValue(cXMLElement *node) = 0;
+    cPar& setXMLValue(cXMLElement *node);
 
     /**
      * Sets the value to the given expression. This object will assume
@@ -245,7 +168,7 @@ class SIM_API cPar : public cObject
      * one should not set an expression as value. This is not enforced
      * by cPar though.
      */
-    virtual cPar& setExpression(cExpression *e) = 0;
+    cPar& setExpression(cExpression *e);
     //@}
 
     /** @name Getter functions. Note that overloaded conversion operators also exist. */
@@ -254,21 +177,21 @@ class SIM_API cPar : public cObject
     /**
      * Returns value as a boolean. The cPar type must be bool (B) or a numeric type.
      */
-    virtual bool boolValue() const = 0;
+    bool boolValue() const;
 
     /**
      * Returns value as long. The cPar type must be types long (L),
      * double (D), Boolean (B), function (F), distribution (T),
      * compiled expression (C) or expression (X).
      */
-    virtual long longValue() const = 0;
+    long longValue() const;
 
     /**
      * Returns value as double. The cPar type must be types long (L),
      * double (D), function (F), Boolean (B), distribution (T),
      * compiled expression (C) or expression (X).
      */
-    virtual double doubleValue() const = 0;
+    double doubleValue() const;
 
     /**
      * Returns value as const char *. Only for string (S) type.
@@ -278,22 +201,22 @@ class SIM_API cPar : public cObject
      * on parameters declared as "volatile string" in NED; they can only be
      * accessed using stdstringValue().
      */
-    virtual const char *stringValue() const = 0;
+    const char *stringValue() const;
 
     /**
      * Returns value as string. Only for string (S) type.
      */
-    virtual std::string stdstringValue() const = 0;
+    std::string stdstringValue() const;
 
     /**
      * Returns value as pointer to cXMLElement. The cPar type must be XML (M).
      */
-    virtual cXMLElement *xmlValue() const = 0;
+    cXMLElement *xmlValue() const;
 
     /**
      * Returns pointer to the expression stored by the object, or NULL.
      */
-    virtual cExpression *expression() const = 0;
+    cExpression *expression() const;
     //@}
 
     /** @name Miscellaneous utility functions. */
@@ -312,24 +235,24 @@ class SIM_API cPar : public cObject
      * - if the parameter is volatile but contains "const" subexpressions,
      *   these parts are converted to a constant value.
      */
-    virtual void read();
+    void read();
 
     /**
      * Replaces for non-const values, replaces the stored expression with its
      * evaluation.
      */
-    virtual void convertToConst() = 0;
+    void convertToConst();
 
     /**
      * Returns the value in text form.
      */
-    virtual std::string toString() const = 0;
+    std::string toString() const;
 
     /**
      * Convert the value from string, and store the result.
      * Returns true on success, false otherwise. No error message is generated.
      */
-    virtual bool parse(const char *text) = 0;
+    bool parse(const char *text);
     //@}
 
     /** @name Overloaded assignment and conversion operators. */
@@ -485,17 +408,12 @@ class SIM_API cPar : public cObject
      * If either of the objects is not set (isSet()==false) or they are
      * of different type(), false is returned.
      */
-    virtual bool equals(cPar& other);
-
-    /**
-     * Compares two cPars by their value if they are numeric.
-     * This function can be used to sort cPar objects in a priority
-     * queue.
-     */
-    static int cmpbyvalue(cPar *one, cPar *other);
+    bool equals(cPar& other);
     //@}
 };
 
 #endif
+
+
 
 

@@ -27,25 +27,20 @@ cLongPar::cLongPar()
 
 cLongPar::~cLongPar()
 {
-    beforeChange();
     deleteOld();
 }
 
-cLongPar& cLongPar::operator=(const cLongPar& other)
+void cLongPar::operator=(const cLongPar& other)
 {
-    if (this==&other) return *this;
+    if (this==&other) return;
 
-    beforeChange();
     deleteOld();
 
-    cPar::operator=(other);
+    cParValue::operator=(other);
     if (flags & FL_ISEXPR)
         expr = (cExpression *) other.expr->dup();
     else
         val = other.val;
-
-    afterChange();
-    return *this;
 }
 
 std::string cLongPar::info() const
@@ -63,49 +58,38 @@ void cLongPar::netUnpack(cCommBuffer *buffer)
     //TBD
 }
 
-cLongPar& cLongPar::setBoolValue(bool b)
+void cLongPar::setBoolValue(bool b)
 {
     throw new cRuntimeError(this, eBADCAST, "bool", "int/long");
 }
 
-cLongPar& cLongPar::setLongValue(long l)
+void cLongPar::setLongValue(long l)
 {
-    beforeChange();
     deleteOld();
     val = l;
-    flags |= FL_ISSET;
-    afterChange();
-    return *this;
 }
 
-cLongPar& cLongPar::setDoubleValue(double d)
+void cLongPar::setDoubleValue(double d)
 {
-    beforeChange();
     deleteOld();
     val = double_to_long(d);
-    flags |= FL_ISSET;
-    afterChange();
-    return *this;
 }
 
-cLongPar& cLongPar::setStringValue(const char *s)
+void cLongPar::setStringValue(const char *s)
 {
     throw new cRuntimeError(this, eBADCAST, "string", "int/long");
 }
 
-cLongPar& cLongPar::setXMLValue(cXMLElement *node)
+void cLongPar::setXMLValue(cXMLElement *node)
 {
     throw new cRuntimeError(this, eBADCAST, "XML", "int/long");
 }
 
-cLongPar& cLongPar::setExpression(cExpression *e)
+void cLongPar::setExpression(cExpression *e)
 {
-    beforeChange();
     deleteOld();
     expr = e;
-    flags |= FL_ISEXPR | FL_ISSET;
-    afterChange();
-    return *this;
+    flags |= FL_ISEXPR;
 }
 
 bool cLongPar::boolValue() const
@@ -157,9 +141,9 @@ void cLongPar::deleteOld()
     }
 }
 
-char cLongPar::type() const
+cPar::Type cLongPar::type() const
 {
-    return 'L';
+    return cPar::LONG;
 }
 
 bool cLongPar::isNumeric() const

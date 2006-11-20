@@ -28,25 +28,20 @@ cXMLPar::cXMLPar()
 
 cXMLPar::~cXMLPar()
 {
-    beforeChange();
     deleteOld();
 }
 
-cXMLPar& cXMLPar::operator=(const cXMLPar& other)
+void cXMLPar::operator=(const cXMLPar& other)
 {
-    if (this==&other) return *this;
+    if (this==&other) return;
 
-    beforeChange();
     deleteOld();
 
-    cPar::operator=(other);
+    cParValue::operator=(other);
     if (flags & FL_ISEXPR)
         expr = (cExpression *) other.expr->dup();
     else
         val = other.val;
-
-    afterChange();
-    return *this;
 }
 
 std::string cXMLPar::info() const
@@ -69,44 +64,37 @@ void cXMLPar::netUnpack(cCommBuffer *buffer)
     //TBD
 }
 
-cXMLPar& cXMLPar::setBoolValue(bool b)
+void cXMLPar::setBoolValue(bool b)
 {
     throw new cRuntimeError(this, eBADCAST, "bool", "XML");
 }
 
-cXMLPar& cXMLPar::setLongValue(long l)
+void cXMLPar::setLongValue(long l)
 {
     throw new cRuntimeError(this, eBADCAST, "int/long", "XML");
 }
 
-cXMLPar& cXMLPar::setDoubleValue(double d)
+void cXMLPar::setDoubleValue(double d)
 {
     throw new cRuntimeError(this, eBADCAST, "double", "XML");
 }
 
-cXMLPar& cXMLPar::setStringValue(const char *s)
+void cXMLPar::setStringValue(const char *s)
 {
     throw new cRuntimeError(this, eBADCAST, "string", "XML");
 }
 
-cXMLPar& cXMLPar::setXMLValue(cXMLElement *node)
+void cXMLPar::setXMLValue(cXMLElement *node)
 {
-    beforeChange();
     deleteOld();
     val = node;
-    flags |= FL_ISSET;
-    afterChange();
-    return *this;
 }
 
-cXMLPar& cXMLPar::setExpression(cExpression *e)
+void cXMLPar::setExpression(cExpression *e)
 {
-    beforeChange();
     deleteOld();
     expr = e;
-    flags |= FL_ISEXPR | FL_ISSET;
-    afterChange();
-    return *this;
+    flags |= FL_ISEXPR;
 }
 
 bool cXMLPar::boolValue() const
@@ -158,9 +146,9 @@ void cXMLPar::deleteOld()
     }
 }
 
-char cXMLPar::type() const
+cPar::Type cXMLPar::type() const
 {
-    return 'X';
+    return cPar::XML;
 }
 
 bool cXMLPar::isNumeric() const

@@ -438,10 +438,12 @@ void TParInspector::writeBack()
       CHK(Tcl_VarEval(interp,"messagebox {Error} ", msg.get(), " error ok", NULL));
    }
 
+/*FIXME
    if (getEntry(".main.isset.e")[0]=='y')
        p->applyDefaultValue();
    else
        p->markAsUnset();
+*/
 
    TInspector::writeBack();    // must be there after all changes
 }

@@ -43,7 +43,7 @@ CPPOBJS_STD=\
     cksplit.o clcg32.o cllist.o clongpar.o cmersennetwister.o \
     cmessage.o cmessagepar.o cmodule.o cmsgheap.o \
     cnedfunction.o cobject.o coutvect.o \
-    cpacket.o cpar.o cpolymorphic.o cproperties.o cproperty.o \
+    cpacket.o cpar.o cparimplbase.o cpolymorphic.o cproperties.o cproperty.o \
     cpsquare.o cqueue.o cscheduler.o csimplemodule.o \
     csimulation.o cstat.o cstlwatch.o cstringpar.o \
     cstringpool.o cstrtokenizer.o cclassdescriptor.o ctopo.o cvarhist.o \

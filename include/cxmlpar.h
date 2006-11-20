@@ -17,14 +17,14 @@
 #ifndef __CXMLPAR_H
 #define __CXMLPAR_H
 
-#include "cpar.h"
+#include "cparimplbase.h"
 
 /**
  * FIXME revise docu in the whole class!!!!!!
  *
  * @ingroup SimCore
  */
-class SIM_API cXMLPar : public cPar
+class SIM_API cXMLPar : public cParValue
 {
   protected:
     // selector: flags & FL_ISEXPR
@@ -57,7 +57,7 @@ class SIM_API cXMLPar : public cPar
     /**
      * Assignment operator.
      */
-    cXMLPar& operator=(const cXMLPar& otherpar);
+    void operator=(const cXMLPar& otherpar);
     //@}
 
     /** @name Redefined cPolymorphic functions */
@@ -89,42 +89,42 @@ class SIM_API cXMLPar : public cPar
     virtual void netUnpack(cCommBuffer *buffer);
     //@}
 
-    /** @name Redefined cPar setter functions. */
+    /** @name Redefined cParValue setter functions. */
     //@{
 
     /**
      * Raises an error: cannot convert bool to XML.
      */
-    virtual cXMLPar& setBoolValue(bool b);
+    virtual void setBoolValue(bool b);
 
     /**
      * Raises an error: cannot convert long to XML.
      */
-    virtual cXMLPar& setLongValue(long l);
+    virtual void setLongValue(long l);
 
     /**
      * Raises an error: cannot convert double to XML.
      */
-    virtual cXMLPar& setDoubleValue(double d);
+    virtual void setDoubleValue(double d);
 
     /**
      * Raises an error: cannot convert string to XML.
      */
-    virtual cXMLPar& setStringValue(const char *s);
+    virtual void setStringValue(const char *s);
 
     /**
      * Sets the value to the given cXMLElement tree.
      */
-    virtual cXMLPar& setXMLValue(cXMLElement *node);
+    virtual void setXMLValue(cXMLElement *node);
 
     /**
      * Sets the value to the given expression. This object will
      * assume the responsibility to delete the expression object.
      */
-    virtual cXMLPar& setExpression(cExpression *e);
+    virtual void setExpression(cExpression *e);
     //@}
 
-    /** @name Redefined cPar getter functions. */
+    /** @name Redefined cParValue getter functions. */
     //@{
 
     /**
@@ -167,9 +167,9 @@ class SIM_API cXMLPar : public cPar
     //@{
 
     /**
-     * Returns 'X' (for "XML").
+     * Returns XML.
      */
-    virtual char type() const;
+    virtual Type type() const;
 
     /**
      * Returns false.
@@ -177,7 +177,7 @@ class SIM_API cXMLPar : public cPar
     virtual bool isNumeric() const;
     //@}
 
-    /** @name Redefined cPar misc functions. */
+    /** @name Redefined cParValue misc functions. */
     //@{
 
     /**

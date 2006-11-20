@@ -17,14 +17,14 @@
 #ifndef __CSTRINGPAR_H
 #define __CSTRINGPAR_H
 
-#include "cpar.h"
+#include "cparimplbase.h"
 
 /**
  * FIXME revise docu in the whole class!!!!!!
  *
  * @ingroup SimCore
  */
-class SIM_API cStringPar : public cPar
+class SIM_API cStringPar : public cParValue
 {
   protected:
     // only one of expr and val is active at a time; however, we cannot use
@@ -59,7 +59,7 @@ class SIM_API cStringPar : public cPar
     /**
      * Assignment operator.
      */
-    cStringPar& operator=(const cStringPar& otherpar);
+    void operator=(const cStringPar& otherpar);
     //@}
 
     /** @name Redefined cPolymorphic functions */
@@ -86,42 +86,42 @@ class SIM_API cStringPar : public cPar
     virtual void netUnpack(cCommBuffer *buffer);
     //@}
 
-    /** @name Redefined cPar setter functions. */
+    /** @name Redefined cParValue setter functions. */
     //@{
 
     /**
      * Raises an error: cannot convert bool to string.
      */
-    virtual cStringPar& setBoolValue(bool b);
+    virtual void setBoolValue(bool b);
 
     /**
      * Raises an error: cannot convert long to string.
      */
-    virtual cStringPar& setLongValue(long l);
+    virtual void setLongValue(long l);
 
     /**
      * Raises an error: cannot convert double to string.
      */
-    virtual cStringPar& setDoubleValue(double d);
+    virtual void setDoubleValue(double d);
 
     /**
      * Sets the value to the given string. NULL is accepted as "".
      */
-    virtual cStringPar& setStringValue(const char *s);
+    virtual void setStringValue(const char *s);
 
     /**
      * Raises an error: cannot convert XML to long.
      */
-    virtual cStringPar& setXMLValue(cXMLElement *node);
+    virtual void setXMLValue(cXMLElement *node);
 
     /**
      * Sets the value to the given expression. This object will
      * assume the responsibility to delete the expression object.
      */
-    virtual cStringPar& setExpression(cExpression *e);
+    virtual void setExpression(cExpression *e);
     //@}
 
-    /** @name Redefined cPar getter functions. */
+    /** @name Redefined cParValue getter functions. */
     //@{
 
     /**
@@ -164,9 +164,9 @@ class SIM_API cStringPar : public cPar
     //@{
 
     /**
-     * Returns 'S' (for "string").
+     * Returns STRING.
      */
-    virtual char type() const;
+    virtual Type type() const;
 
     /**
      * Returns false.
@@ -174,7 +174,7 @@ class SIM_API cStringPar : public cPar
     virtual bool isNumeric() const;
     //@}
 
-    /** @name Redefined cPar misc functions. */
+    /** @name Redefined cParValue misc functions. */
     //@{
 
     /**

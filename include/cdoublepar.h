@@ -17,14 +17,14 @@
 #ifndef __CDOUBLEPAR_H
 #define __CDOUBLEPAR_H
 
-#include "cpar.h"
+#include "cparimplbase.h"
 
 /**
  * FIXME revise docu in the whole class!!!!!!
  *
  * @ingroup SimCore
  */
-class SIM_API cDoublePar : public cPar
+class SIM_API cDoublePar : public cParValue
 {
   protected:
     // selector: flags & FL_ISEXPR
@@ -59,7 +59,7 @@ class SIM_API cDoublePar : public cPar
     /**
      * Assignment operator.
      */
-    cDoublePar& operator=(const cDoublePar& otherpar);
+    void operator=(const cDoublePar& otherpar);
     //@}
 
     /** @name Redefined cPolymorphic functions */
@@ -86,42 +86,42 @@ class SIM_API cDoublePar : public cPar
     virtual void netUnpack(cCommBuffer *buffer);
     //@}
 
-    /** @name Redefined cPar setter functions. */
+    /** @name Redefined cParValue setter functions. */
     //@{
 
     /**
      * Raises an error: cannot convert bool to double.
      */
-    virtual cDoublePar& setBoolValue(bool b);
+    virtual void setBoolValue(bool b);
 
     /**
      * Converts from long.
      */
-    virtual cDoublePar& setLongValue(long l);
+    virtual void setLongValue(long l);
 
     /**
      * Sets the value to the given constant.
      */
-    virtual cDoublePar& setDoubleValue(double d);
+    virtual void setDoubleValue(double d);
 
     /**
      * Raises an error: cannot convert string to double.
      */
-    virtual cDoublePar& setStringValue(const char *s);
+    virtual void setStringValue(const char *s);
 
     /**
      * Raises an error: cannot convert XML to double.
      */
-    virtual cDoublePar& setXMLValue(cXMLElement *node);
+    virtual void setXMLValue(cXMLElement *node);
 
     /**
      * Sets the value to the given expression. This object will
      * assume the responsibility to delete the expression object.
      */
-    virtual cDoublePar& setExpression(cExpression *e);
+    virtual void setExpression(cExpression *e);
     //@}
 
-    /** @name Redefined cPar getter functions. */
+    /** @name Redefined cParValue getter functions. */
     //@{
 
     /**
@@ -164,9 +164,9 @@ class SIM_API cDoublePar : public cPar
     //@{
 
     /**
-     * Returns 'D' (for "double").
+     * Returns DOUBLE.
      */
-    virtual char type() const;
+    virtual Type type() const;
 
     /**
      * Returns true.
@@ -174,7 +174,7 @@ class SIM_API cDoublePar : public cPar
     virtual bool isNumeric() const;
     //@}
 
-    /** @name Redefined cPar misc functions. */
+    /** @name Redefined cParValue misc functions. */
     //@{
 
     /**

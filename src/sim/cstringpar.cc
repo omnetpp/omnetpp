@@ -25,25 +25,20 @@ cStringPar::cStringPar()
 
 cStringPar::~cStringPar()
 {
-    beforeChange();
     deleteOld();
 }
 
-cStringPar& cStringPar::operator=(const cStringPar& other)
+void cStringPar::operator=(const cStringPar& other)
 {
-    if (this==&other) return *this;
+    if (this==&other) return;
 
-    beforeChange();
     deleteOld();
 
-    cPar::operator=(other);
+    cParValue::operator=(other);
     if (flags & FL_ISEXPR)
         expr = (cExpression *) other.expr->dup();
     else
         val = other.val;
-
-    afterChange();
-    return *this;
 }
 
 std::string cStringPar::info() const
@@ -61,44 +56,37 @@ void cStringPar::netUnpack(cCommBuffer *buffer)
     //TBD
 }
 
-cStringPar& cStringPar::setBoolValue(bool b)
+void cStringPar::setBoolValue(bool b)
 {
     throw new cRuntimeError(this, eBADCAST, "bool", "string");
 }
 
-cStringPar& cStringPar::setLongValue(long l)
+void cStringPar::setLongValue(long l)
 {
     throw new cRuntimeError(this, eBADCAST, "int/long", "string");
 }
 
-cStringPar& cStringPar::setDoubleValue(double d)
+void cStringPar::setDoubleValue(double d)
 {
     throw new cRuntimeError(this, eBADCAST, "double", "string");
 }
 
-cStringPar& cStringPar::setStringValue(const char *s)
+void cStringPar::setStringValue(const char *s)
 {
-    beforeChange();
     deleteOld();
     val = (s ? s : "");
-    flags |= FL_ISSET;
-    afterChange();
-    return *this;
 }
 
-cStringPar& cStringPar::setXMLValue(cXMLElement *node)
+void cStringPar::setXMLValue(cXMLElement *node)
 {
     throw new cRuntimeError(this, eBADCAST, "XML", "string");
 }
 
-cStringPar& cStringPar::setExpression(cExpression *e)
+void cStringPar::setExpression(cExpression *e)
 {
-    beforeChange();
     deleteOld();
     expr = e;
-    flags |= FL_ISEXPR | FL_ISSET;
-    afterChange();
-    return *this;
+    flags |= FL_ISEXPR;
 }
 
 bool cStringPar::boolValue() const
@@ -154,9 +142,9 @@ void cStringPar::deleteOld()
     }
 }
 
-char cStringPar::type() const
+cPar::Type cStringPar::type() const
 {
-    return 'S';
+    return cPar::STRING;
 }
 
 bool cStringPar::isNumeric() const

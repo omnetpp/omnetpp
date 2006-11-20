@@ -48,11 +48,11 @@ void cDynamicExpression::StkValue::operator=(const cPar& par)
 {
     switch (par.type())
     {
-      case 'B': *this = par.boolValue(); break;
-      case 'D': *this = par.doubleValue(); break;
-      case 'L': *this = par.doubleValue(); break;
-      case 'S': *this = par.stringValue(); break;
-      case 'X': *this = par.xmlValue(); break;
+      case cPar::BOOL: *this = par.boolValue(); break;
+      case cPar::DOUBLE: *this = par.doubleValue(); break;
+      case cPar::LONG: *this = par.doubleValue(); break;
+      case cPar::STRING: *this = par.stringValue(); break;
+      case cPar::XML: *this = par.xmlValue(); break;
       default: throw new cRuntimeError("internal error: bad cPar type: %s", par.fullPath().c_str());
     }
 }
