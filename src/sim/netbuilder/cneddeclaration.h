@@ -59,7 +59,7 @@ class SIM_API cNEDDeclaration : public cNoncopyableObject, public NEDComponent
     /**
      * Describes a parameter declaration with its value
      */
-    struct ParamDescription
+    struct ParamDescription //FIXME fully encapsulate, getter/setter!
     {
         bool isInput;  // whether it was assigned as default(...)
         cParValue *value;  // stores name, type and isVolatile flag as well -- never NULL
@@ -73,7 +73,7 @@ class SIM_API cNEDDeclaration : public cNoncopyableObject, public NEDComponent
     /**
      * Describes a gate declaration, with its size if vector
      */
-    struct GateDescription
+    struct GateDescription  //FIXME fully encapsulate, getter/setter!
     {
         std::string name;
         cGate::Type type; // input, output, inout

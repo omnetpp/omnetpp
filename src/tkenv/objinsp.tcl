@@ -203,10 +203,7 @@ proc create_parinspector {name geom} {
     pack $w.main -anchor center -expand 1 -fill both -side top
 
     label-entry $w.main.value "Value:"
-    label-entry $w.main.isset "Set?"
-
     pack $w.main.value -fill x -side top
-    pack $w.main.isset -fill x -side top
 }
 
 

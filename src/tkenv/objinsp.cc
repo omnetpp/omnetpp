@@ -419,7 +419,6 @@ void TParInspector::update()
 
    cPar *p = static_cast<cPar *>(object);
    setEntry(".main.value.e", p->toString().c_str());
-   setEntry(".main.isset.e", p->isSet() ? "yes" : "no");
 }
 
 void TParInspector::writeBack()
@@ -437,13 +436,6 @@ void TParInspector::writeBack()
       delete e;
       CHK(Tcl_VarEval(interp,"messagebox {Error} ", msg.get(), " error ok", NULL));
    }
-
-/*FIXME
-   if (getEntry(".main.isset.e")[0]=='y')
-       p->applyDefaultValue();
-   else
-       p->markAsUnset();
-*/
 
    TInspector::writeBack();    // must be there after all changes
 }

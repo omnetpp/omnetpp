@@ -237,21 +237,6 @@ class SIM_API cParValue : public cObject
     //@{
 
     /**
-     * This method does the final touches on the parameter. It is invoked
-     * at some point on all parameter objects before we start the simulation.
-     *
-     * - if the parameter is not set, gets the value from omnetpp.ini or
-     *   interactively from the user, or sets the default value.
-     *
-     * - if the parameter is non-volatile, (isVolatile()==false), converts
-     *   possible expression value to a constant (see convertToConst()).
-     *
-     * - if the parameter is volatile but contains "const" subexpressions,
-     *   these parts are converted to a constant value.
-     */
-    virtual void read();
-
-    /**
      * Replaces for non-const values, replaces the stored expression with its
      * evaluation.
      */

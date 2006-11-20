@@ -25,9 +25,21 @@
 #include "ccommbuffer.h"
 #endif
 
+cPar::cPar(cParValue *p)
+{
+    this->p = p;
+    setName(p->name());
+}
+
+cPar::~cPar()
+{
+    if (p->owner()==this)
+        dropAndDelete(p);
+}
+
 void cPar::copyIfShared()
 {
-    if (p->owner()!=owner())
+    if (p->owner()!=this)
         take(p = p->dup());
 }
 
@@ -40,6 +52,30 @@ cProperties *cPar::properties() const
 {
     return NULL;  //FIXME return it from the type object
 }
+
+cPar::Type cPar::type() const {return p->type();}
+
+bool cPar::isNumeric() const {return p->isNumeric();}
+
+bool cPar::isVolatile() const {return p->isVolatile();}
+
+bool cPar::isConstant() const {return p->isConstant();}
+
+bool cPar::boolValue() const  {return p->boolValue();}
+
+long cPar::longValue() const  {return p->longValue();}
+
+double cPar::doubleValue() const  {return p->doubleValue();}
+
+const char *cPar::stringValue() const  {return p->stringValue();}
+
+std::string cPar::stdstringValue() const  {return p->stdstringValue();}
+
+cXMLElement *cPar::xmlValue() const  {return p->xmlValue();}
+
+cExpression *cPar::expression() const  {return p->expression();}
+
+std::string cPar::toString() const {return p->toString();}
 
 cPar& cPar::setBoolValue(bool b)
 {
@@ -183,4 +219,5 @@ void cPar::doReadValue()
     }
     //XXX applyDefaultValue();
 }
+
 

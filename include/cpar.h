@@ -57,10 +57,6 @@ class SIM_API cPar : public cNoncopyableObject  //FIXME make cPolymorphic, nonco
 
   private:
     cPar(cParValue *p);
-    cPar(const cPar& other);
-    cPar& operator=(const cPar& otherpar);
-    virtual cPar *dup() const;
-
     // internal utility function
     void copyIfShared();
     // internal: returns the component (module/channel) this parameter belongs to
