@@ -755,8 +755,14 @@ sub prepareForCodeGeneration
 {
 
     # check base class and determine type of object
-    if ($msgbase eq '') {
-        if ($keyword eq 'message' || $msgname eq 'cOwnedObject') {
+    if ($msgname eq 'cObject') {
+        $classtype = 'cpolymorphic'; # hardcoded
+    }
+    elsif ($msgname eq 'cOwnedObject') {
+        $classtype = 'cobject'; # hardcoded
+    }
+    elsif ($msgbase eq '') {
+        if ($keyword eq 'message') {
             $classtype = 'cobject';
         } elsif ($keyword eq 'class') {
             $classtype = 'cpolymorphic'; # Note: we never generate non-cObject classes
@@ -771,8 +777,8 @@ sub prepareForCodeGeneration
                 $classtype = 'foreignclass';
             }
         }
-
-    } else {
+    }
+    else {
         if (!grep(/^\Q$msgbase\E$/,@classes)) {
             print STDERR "*** Error: unknown base class '$msgbase'\n"; $ret=1;
         }
