@@ -43,6 +43,23 @@ std::string cComponentType::info() const
     return desc;
 }
 
+cPar::Type cComponentType::parType(const char *parname) const
+{
+    int k = findPar(parname);
+    if (k<0)
+         throw new cRuntimeError(this, "no parameter called `%s'", parname);
+    return parType(k);
+}
+
+cProperties *cComponentType::parProperties(const char *parname) const
+{
+    int k = findPar(parname);
+    if (k<0)
+         throw new cRuntimeError(this, "no parameter called `%s'", parname);
+    return parProperties(k);
+}
+
+
 //----
 
 cModuleType::cModuleType(const char *name, const char *description) : cComponentType(name, description)

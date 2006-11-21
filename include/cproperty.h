@@ -202,7 +202,7 @@ class SIM_API cProperty : public cObject
      * Returns the kth value for the given key in the property.
      * Specify "" for the default key. For k>numValues(key), it returns "".
      */
-    virtual const char *value(const char *key, int k) const;
+    virtual const char *value(const char *key, int k=0) const;
 
     /**
      * Replaces a value for the given key in the property. Specify "" for

@@ -18,7 +18,9 @@
 #include "cpar.h"
 #include "cparvalue.h"
 #include "cproperties.h"
+#include "cproperty.h"
 #include "ccomponent.h"
+#include "ccomponenttype.h"
 #include "csimulation.h"
 
 #ifdef WITH_PARSIM
@@ -65,7 +67,8 @@ void cPar::operator=(const cPar& other)
 
 cProperties *cPar::properties() const
 {
-    return NULL;  //FIXME return it from the type object
+    cComponentType *type = ownercomponent->componentType();
+    return type->parProperties(name());
 }
 
 //FIXME make it inline...
@@ -151,8 +154,6 @@ void cPar::afterChange()
         cContextSwitcher tmp(ownercomponent);
         ownercomponent->handleParameterChange(fullName());
     }
-
-    //XXX set "changed" flag
 }
 
 void cPar::read()
@@ -187,7 +188,7 @@ bool cPar::parse(const char *text)
 
 void cPar::doReadValue()
 {
-//FIXME shouldn't most of this go out into cEnvir???
+    //FIXME shouldn't most of this go out into cEnvir???
 
     // get it from ini file
     std::string str = ev.getParameter(simulation.runNumber(), fullPath().c_str());
@@ -207,10 +208,11 @@ void cPar::doReadValue()
     bool success = false;
     while (!success)
     {
-        std::string promptstr; //FIXME fill this in from @prompt property
+        cProperties *props = properties();
+        std::string prompt = props->get("prompt")->value(cProperty::DEFAULTKEY); // @prompt property
         std::string reply;
-        if (!promptstr.empty())
-            reply = ev.gets(promptstr.c_str(), toString().c_str());
+        if (!prompt.empty())
+            reply = ev.gets(prompt.c_str(), toString().c_str());
         else
             reply = ev.gets((std::string("Enter parameter `")+fullPath()+"':").c_str(), toString().c_str());
 

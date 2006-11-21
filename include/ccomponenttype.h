@@ -121,10 +121,21 @@ class SIM_API cComponentType : public cNoncopyableOwnedObject
     virtual cPar::Type parType(int k) const = 0;
 
     /**
+     * Returns the type of the specified parameter.
+     */
+    virtual cPar::Type parType(const char *parname) const;
+
+    /**
      * Return the properties for parameter k. The returned object should not
      * be modified.
      */
     virtual cProperties *parProperties(int k) const = 0;
+
+    /**
+     * Return the properties for the specified parameter. The returned object
+     * should not be modified.
+     */
+    virtual cProperties *parProperties(const char *parname) const;
 
     /**
      * Returns index of the parameter specified with its name.
