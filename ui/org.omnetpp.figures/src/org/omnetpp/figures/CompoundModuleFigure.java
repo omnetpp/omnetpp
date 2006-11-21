@@ -283,7 +283,8 @@ public class CompoundModuleFigure extends ModuleFigure
 
 	public void setName(String name) {
 		getCompoundModuleBorder().setLabel(name);
-		invalidate();
+		figureName = name;
+        invalidate();
 	}
 
 	/**

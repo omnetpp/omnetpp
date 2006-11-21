@@ -48,4 +48,10 @@ public class TopLevelFigure extends Label {
 
         invalidate();
 	}
+	
+    @Override
+	public String toString() {
+	    return getClass().getSimpleName()+" "+getText();
+	}
 }
+

@@ -128,6 +128,7 @@ public class SubmoduleFigure extends ModuleFigure implements HandleBounds {
         if (nameFigure == null) return;
         nameFigure.setVisible(name != null && !"".equals(name));
         nameFigure.setText(name);
+        figureName = name;
     }
     
     protected void setRange(int radius, Color fillColor, Color borderColor, int borderWidth) {

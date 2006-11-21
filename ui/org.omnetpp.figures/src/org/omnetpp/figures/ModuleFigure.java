@@ -11,6 +11,7 @@ import org.omnetpp.common.displaymodel.IDisplayString;
  */
 abstract public class ModuleFigure extends Figure {
 	protected int antialias = SWT.ON;
+    protected String figureName = ""; 
 	protected IDisplayString lastDisplayString;
 	/**
 	 * Sets the module antialaiasing. can be SWT.DEFAULT, SWT.ON, SWT.OFF
@@ -55,4 +56,8 @@ abstract public class ModuleFigure extends Figure {
     	}
     }
 
+    @Override
+    public String toString() {
+        return getClass().getSimpleName()+" "+figureName;
+    }
 }

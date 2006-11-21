@@ -3,6 +3,7 @@ package org.omnetpp.figures;
 import org.eclipse.draw2d.Graphics;
 import org.eclipse.draw2d.PolygonDecoration;
 import org.eclipse.draw2d.PolylineConnection;
+import org.eclipse.draw2d.RotatableDecoration;
 import org.eclipse.swt.graphics.Color;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.displaymodel.DisplayString;
@@ -12,7 +13,6 @@ public class ConnectionFigure extends PolylineConnection {
 	protected int localLineStyle = Graphics.LINE_SOLID;
 	protected int localLineWidth = 1;
 	protected Color localLineColor = null;
-    protected PolygonDecoration arrow = null;
 	private IDisplayString lastDisplayString;
     
     public Color getLocalLineColor() {
@@ -30,14 +30,14 @@ public class ConnectionFigure extends PolylineConnection {
 	public void setArrowEnabled(boolean arrowEnabled) {
 
         if (arrowEnabled) {
-        	if (arrow == null) {
-        		arrow = new PolygonDecoration();
+        	if (getTargetDecoration() == null) {
+        		PolygonDecoration arrow = new PolygonDecoration();
         		arrow.setTemplate(PolygonDecoration.TRIANGLE_TIP);
         		setTargetDecoration(arrow);
         	}
         }
-		if (arrow != null)
-			arrow.setVisible(arrowEnabled);
+		if (getTargetDecoration() != null)
+			getTargetDecoration().setVisible(arrowEnabled);
 
     }
     
@@ -55,8 +55,8 @@ public class ConnectionFigure extends PolylineConnection {
     	setLineWidth(localLineWidth = width);
     	setForegroundColor(localLineColor = color);
     	// arrow scaling proportional with the line width
-		if (arrow != null) 
-			arrow.setScale(5+lineWidth, 2+lineWidth);
+		if (getTargetDecoration() != null) 
+			((PolygonDecoration)getTargetDecoration()).setScale(5+lineWidth, 2+lineWidth);
     }
 
 	/**

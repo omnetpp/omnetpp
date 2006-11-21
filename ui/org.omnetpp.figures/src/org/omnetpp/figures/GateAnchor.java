@@ -8,15 +8,15 @@ import org.eclipse.draw2d.IFigure;
  * Provides support for Ned Model specific behaviors ie: gatename
  */
 public class GateAnchor extends ChopboxAnchor {
-	protected String gateName;
+//	protected String gateName;
 	
     public GateAnchor(IFigure owner) {
     	super(owner);
     }
     
-	public String getGateName() {
-		return gateName;
-	}
+//	public String getGateName() {
+//		return gateName;
+//	}
     
     
 }
