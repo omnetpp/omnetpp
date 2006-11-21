@@ -1,5 +1,5 @@
 //=========================================================================
-//  COBJECT.CC - part of
+//  COWNEDOBJECT.CC - part of
 //
 //                  OMNeT++/OMNEST
 //           Discrete System Simulation in C++
@@ -17,7 +17,7 @@
 
 #include <stdio.h>           // sprintf
 #include <string.h>          // strcpy, strlen etc.
-#include "cobject.h"
+#include "cownedobject.h"
 #include "csimulation.h"
 #include "cenvir.h"
 #include "globals.h"

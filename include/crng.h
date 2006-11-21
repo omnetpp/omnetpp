@@ -19,7 +19,7 @@
 #define __CRNG_H
 
 #include "defs.h"
-#include "cpolymorphic.h"
+#include "cobject.h"
 
 class cConfiguration;
 

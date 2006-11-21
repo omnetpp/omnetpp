@@ -20,7 +20,7 @@
 #ifndef __CDEFAULTLIST_H
 #define __CDEFAULTLIST_H
 
-#include "cobject.h"
+#include "cownedobject.h"
 
 
 /**

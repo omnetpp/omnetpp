@@ -21,7 +21,7 @@
 #include <tk.h>
 
 #include "tkdefs.h"
-#include "cobject.h"
+#include "cownedobject.h"
 #include "exception.h"
 
 //

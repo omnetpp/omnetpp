@@ -21,7 +21,7 @@
 #ifndef __CPARSIMCOMM_H__
 #define __CPARSIMCOMM_H__
 
-#include "cpolymorphic.h"
+#include "cobject.h"
 
 // forward declaration:
 class cCommBuffer;

@@ -21,7 +21,7 @@
 
 #include <iostream>
 #include <sstream>
-#include "cobject.h"
+#include "cownedobject.h"
 
 
 /**

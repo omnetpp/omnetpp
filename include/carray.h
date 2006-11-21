@@ -19,7 +19,7 @@
 #ifndef __CARRAY_H
 #define __CARRAY_H
 
-#include "cobject.h"
+#include "cownedobject.h"
 
 
 /**

@@ -19,7 +19,7 @@
 #ifndef __CFSM_H
 #define __CFSM_H
 
-#include "cobject.h"
+#include "cownedobject.h"
 
 /**
  * @name FSM Macros

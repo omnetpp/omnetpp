@@ -1,5 +1,5 @@
 //==========================================================================
-//  COBJECT.H - part of
+//  COWNEDOBJECT.H - part of
 //                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
 //
@@ -14,15 +14,15 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __COBJECT_H
-#define __COBJECT_H
+#ifndef __COWNEDOBJECT_H
+#define __COWNEDOBJECT_H
 
 #include <typeinfo>
 #include <iostream>
 #include "cenvir.h"
 #include "defs.h"
 #include "util.h"
-#include "cpolymorphic.h"
+#include "cobject.h"
 #include "cexception.h"
 #include "cstringpool.h"
 

@@ -19,7 +19,7 @@
 *--------------------------------------------------------------*/
 
 #include "cvisitor.h"
-#include "cpolymorphic.h"
+#include "cobject.h"
 
 
 bool cVisitor::process(cObject *obj)

@@ -19,7 +19,7 @@
 #ifndef __CQUEUE_H
 #define __CQUEUE_H
 
-#include "cobject.h"
+#include "cownedobject.h"
 
 
 /**

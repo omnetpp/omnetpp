@@ -23,7 +23,7 @@
 
 #include "cfilecommbuffer.h"
 #include "util.h"  // opp_string
-#include "cobject.h"
+#include "cownedobject.h"
 #include "macros.h"
 
 Register_Class(cFileCommBuffer);

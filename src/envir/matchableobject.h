@@ -19,7 +19,7 @@
 #ifndef __MATCHABLEOBJECT_H
 #define __MATCHABLEOBJECT_H
 
-#include "cobject.h"
+#include "cownedobject.h"
 #include "matchexpression.h"
 
 class cClassDescriptor;

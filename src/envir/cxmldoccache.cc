@@ -22,7 +22,7 @@
 #endif
 
 
-#include "cpolymorphic.h"
+#include "cobject.h"
 #include "cxmldoccache.h"
 #include "cxmlelement.h"
 #include "cexception.h"

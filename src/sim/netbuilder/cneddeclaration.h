@@ -22,7 +22,7 @@
 #include <map>
 #include "defs.h"
 #include "globals.h"
-#include "cobject.h"
+#include "cownedobject.h"
 #include "cparvalue.h"
 #include "cgate.h"
 

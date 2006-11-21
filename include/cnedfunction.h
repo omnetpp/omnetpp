@@ -18,7 +18,7 @@
 #include <stdarg.h>
 #include "defs.h"
 #include "globals.h"
-#include "cobject.h"
+#include "cownedobject.h"
 #include "cdynamicexpression.h"
 
 

@@ -18,7 +18,7 @@ void f() {
         s += (*i);
 }
 
-#include "cpolymorphic.h"
+#include "cobject.h"
 
 class A : public cObject, public stdstringvector {
 

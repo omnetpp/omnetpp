@@ -25,7 +25,7 @@
 #include <string>
 #include <iostream>
 #include <sstream>
-#include "cobject.h"
+#include "cownedobject.h"
 #include "cwatch.h"
 
 

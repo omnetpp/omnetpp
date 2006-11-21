@@ -17,7 +17,7 @@
 
 #include <vector>
 #include "defs.h"
-#include "cobject.h"
+#include "cownedobject.h"
 #include "cpar.h"
 #include "cdefaultlist.h"
 

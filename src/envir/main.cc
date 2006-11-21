@@ -15,7 +15,7 @@
 *--------------------------------------------------------------*/
 
 #include <stdio.h>
-#include "cobject.h"
+#include "cownedobject.h"
 #include "cenvir.h"
 #include "../utils/ver.h"
 

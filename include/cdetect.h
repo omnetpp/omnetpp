@@ -26,7 +26,7 @@
 #ifndef __CDETECT_H
 #define __CDETECT_H
 
-#include "cobject.h"
+#include "cownedobject.h"
 #include "cstat.h"
 
 //=== classes declared here:

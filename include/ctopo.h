@@ -21,7 +21,7 @@
 
 #include <string>
 #include <vector>
-#include "cobject.h"
+#include "cownedobject.h"
 #include "csimulation.h"
 #include "cmodule.h"
 #include "cgate.h"

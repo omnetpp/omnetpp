@@ -23,7 +23,7 @@
 #include "defs.h"
 
 #include <stdio.h>
-#include "cobject.h"
+#include "cownedobject.h"
 
 class cTransientDetection;
 class cAccuracyDetection;

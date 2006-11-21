@@ -20,7 +20,7 @@
 #ifndef __CSCHEDULER_H
 #define __CSCHEDULER_H
 
-#include "cpolymorphic.h"
+#include "cobject.h"
 #include "platdep/time.h"  // for timeval
 
 // forward declarations

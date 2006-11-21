@@ -22,7 +22,7 @@
 #include <assert.h>
 #include <tk.h>
 
-#include "cobject.h"
+#include "cownedobject.h"
 #include "cmodule.h"
 #include "csimulation.h"
 

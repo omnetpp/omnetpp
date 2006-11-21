@@ -17,7 +17,7 @@
 #ifndef __CPAR_H
 #define __CPAR_H
 
-#include "cobject.h"
+#include "cownedobject.h"
 #include "cexpression.h"
 #include "cexception.h"
 

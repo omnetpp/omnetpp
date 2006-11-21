@@ -13,7 +13,7 @@
 *--------------------------------------------------------------*/
 
 #include "cstringpool.h"
-#include "cobject.h"
+#include "cownedobject.h"
 
 cStringPool::cStringPool()
 {

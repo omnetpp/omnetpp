@@ -21,7 +21,7 @@
 
 #include <iostream>
 #include "defs.h"
-#include "cpolymorphic.h"
+#include "cobject.h"
 
 
 class cModule;

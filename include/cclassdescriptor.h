@@ -20,7 +20,7 @@
 #define __CCLASSDESCRIPTOR_H
 
 #include <string>
-#include "cobject.h"
+#include "cownedobject.h"
 
 
 /**

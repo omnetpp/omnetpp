@@ -15,7 +15,7 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include "cpolymorphic.h"
+#include "cobject.h"
 #include "cexception.h"
 #include "cclassdescriptor.h"
 

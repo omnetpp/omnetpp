@@ -21,7 +21,7 @@
 #define __COUTVECT_H
 
 #include <stdio.h>
-#include "cobject.h"
+#include "cownedobject.h"
 
 
 /**

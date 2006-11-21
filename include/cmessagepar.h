@@ -15,7 +15,7 @@
 #ifndef __CMESSAGEPAR_H
 #define __CMESSAGEPAR_H
 
-#include "cobject.h"
+#include "cownedobject.h"
 #include "cfunction.h"
 
 #define SHORTSTR  27

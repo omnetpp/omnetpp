@@ -20,7 +20,7 @@
 #include <string.h>
 #include "cmemcommbuffer.h"
 #include "util.h"  // opp_string
-#include "cobject.h"
+#include "cownedobject.h"
 #include "macros.h"
 
 Register_Class(cMemCommBuffer);

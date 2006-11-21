@@ -16,7 +16,7 @@
 #define __CCOMPONENTTYPE_H
 
 #include <string>
-#include "cobject.h"
+#include "cownedobject.h"
 #include "cpar.h"
 #include "cgate.h"
 

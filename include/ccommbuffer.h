@@ -20,7 +20,7 @@
 #ifndef __CCOMMBUFFER_H__
 #define __CCOMMBUFFER_H__
 
-#include "cpolymorphic.h"
+#include "cobject.h"
 
 // forward declaration:
 class cCommBuffer;

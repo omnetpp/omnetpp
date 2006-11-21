@@ -64,12 +64,12 @@ cmdenv.obj: cmdenv.cc \
   ../../include/onstartup.h \
   ../../include/carray.h \
   ../../include/cclassfactory.h \
-  ../../include/cobject.h \
+  ../../include/cownedobject.h \
   ../../include/cenvir.h \
-  ../../include/cpolymorphic.h \
+  ../../include/cobject.h \
   ../../include/cexception.h \
-  ../../include/cvisitor.h \
   ../../include/cstringpool.h \
+  ../../include/cvisitor.h \
   ../../include/regmacros.h \
   ../../include/opp_string.h \
   ../../include/cmodule.h \

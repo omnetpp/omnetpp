@@ -17,7 +17,7 @@
 #ifndef __CEXPRESSION_H
 #define __CEXPRESSION_H
 
-#include "cpolymorphic.h"
+#include "cobject.h"
 
 class cXMLElement;
 

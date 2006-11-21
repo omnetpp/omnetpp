@@ -23,7 +23,7 @@
 #include <vector>
 #include "defs.h"
 #include "opp_string.h"
-#include "cpolymorphic.h"
+#include "cobject.h"
 
 
 /**

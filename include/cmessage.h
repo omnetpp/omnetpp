@@ -20,7 +20,7 @@
 #define __CMESSAGE_H
 
 #include <time.h>
-#include "cobject.h"
+#include "cownedobject.h"
 #include "carray.h"
 #include "cmessagepar.h"
 #include "csimulation.h"

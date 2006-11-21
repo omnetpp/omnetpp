@@ -19,7 +19,7 @@
 #ifndef __CMSGHEAP_H
 #define __CMSGHEAP_H
 
-#include "cobject.h"
+#include "cownedobject.h"
 
 class cMessage;
 

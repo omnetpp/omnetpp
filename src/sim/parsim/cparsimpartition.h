@@ -22,7 +22,7 @@
 #define __CPARSIMPARTITION_H__
 
 #include "defs.h"
-#include "cpolymorphic.h"
+#include "cobject.h"
 
 // forward declarations:
 class cSimulation;

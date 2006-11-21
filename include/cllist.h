@@ -20,7 +20,7 @@
 #ifndef __CLLIST_H
 #define __CLLIST_H
 
-#include "cobject.h"
+#include "cownedobject.h"
 
 
 /**

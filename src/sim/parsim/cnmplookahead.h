@@ -20,7 +20,7 @@
 #ifndef __CNMPLOOKAHEAD_H__
 #define __CNMPLOOKAHEAD_H__
 
-#include "cpolymorphic.h"
+#include "cobject.h"
 
 // forward declarations
 class cMessage;

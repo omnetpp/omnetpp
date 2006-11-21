@@ -19,7 +19,7 @@
 #ifndef __CGATE_H
 #define __CGATE_H
 
-#include "cobject.h"
+#include "cownedobject.h"
 
 class  cGate;
 class  cModule;

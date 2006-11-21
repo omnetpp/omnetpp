@@ -19,7 +19,7 @@
 #ifndef __CDISPLAYSTRING_H
 #define __CDISPLAYSTRING_H
 
-#include "cobject.h"
+#include "cownedobject.h"
 
 
 #define MAXARGS 16

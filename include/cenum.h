@@ -20,7 +20,7 @@
 #ifndef __CENUM_H
 #define __CENUM_H
 
-#include "cobject.h"
+#include "cownedobject.h"
 
 
 /**
