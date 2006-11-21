@@ -45,20 +45,20 @@ This chapter discusses the rest of the simulation library:
 \label{sec:ch-sim-lib:cobject}
 
 
-Classes in the {\opp} simulation library are derived from \cclass{cObject}.
-Functionality and conventions that come from \cclass{cObject}:
+Classes in the {\opp} simulation library are derived from \cclass{cOwnedObject}.
+Functionality and conventions that come from \cclass{cOwnedObject}:
 \begin{itemize}
   \item{name attribute}
   \item{\fname{className()} member and other member functions giving textual
     information about the object}
   \item{conventions for assignment, copying, duplicating the object}
-  \item{ownership\index{ownership} control for containers derived from \cclass{cObject}}
+  \item{ownership\index{ownership} control for containers derived from \cclass{cOwnedObject}}
   \item{support for traversing the object tree}
   \item{support for inspecting the object in graphical user interfaces (Tkenv)}
 \end{itemize}
 
 
-Classes inherit and redefine several \cclass{cObject} member functions;
+Classes inherit and redefine several \cclass{cOwnedObject} member functions;
 in the following we'll discuss some of the practically important
 ones.
 
@@ -174,7 +174,7 @@ The \fname{dup()} member function creates an exact copy of the
 object\index{object!copy}, duplicating\index{object!duplication}
 contained objects also if necessary. This is especially useful in the
 case of message objects. \fname{dup()} returns a pointer of type
-\cclass[cObject]{cObject*}, so it needs to be cast to the proper type:
+\cclass[cOwnedObject]{cOwnedObject*}, so it needs to be cast to the proper type:
 
 \begin{verbatim}
 cMessage *copyMsg = (cMessage *) msg->dup();
@@ -206,7 +206,7 @@ cQueue queue;
 //..
 for (cQueue::Iterator queueIter(queue); !queueIter.end(); queueIter++)
 {
-    cObject *containedObject = queueIter();
+    cOwnedObject *containedObject = queueIter();
 }
 \end{verbatim}
 
@@ -559,7 +559,7 @@ the statistical classes.
 
 
 \cclass{cQueue} is a container class that acts as a queue.
-\cclass{cQueue} can hold objects of type derived from \cclass{cObject}
+\cclass{cQueue} can hold objects of type derived from \cclass{cOwnedObject}
 (almost all classes from the {\opp} library), such as
 \cclass{cMessage}, \cclass{cPar}, etc. Internally, \cclass{cQueue}
 uses a double-linked list to store the elements.
@@ -627,13 +627,13 @@ queue.remove( msg );
 By default, \cclass{cQueue} implements a FIFO, but it can also act as
 a priority queue, that is, it can keep the inserted objects
 ordered\index{queue!order}.  If you want to use this feature, you have
-to provide a function that takes two \cclass{cObject} pointers,
+to provide a function that takes two \cclass{cOwnedObject} pointers,
 compares the two objects and returns -1, 0 or 1 as the result (see the
 reference for details).  An example of setting up an ordered
 \cclass{cQueue}:
 
 \begin{verbatim}
-cQueue sortedqueue("sortedqueue", cObject::cmpbyname, true );
+cQueue sortedqueue("sortedqueue", cOwnedObject::cmpbyname, true );
                         // sorted by object name, ascending
 \end{verbatim}
 
@@ -679,7 +679,7 @@ for( cQueue::Iterator iter(queue,1); !iter.end(), iter++)
 
 
 \cclass{cArray} is a container class that holds objects derived from
-\cclass{cObject}. \cclass{cArray} stores the pointers of the objects
+\cclass{cOwnedObject}. \cclass{cArray} stores the pointers of the objects
 inserted instead of making copies. \cclass{cArray} works as an array,
 but it grows automatically when it gets full. Internally,
 \cclass{cArray} is implemented with an array of pointers; when the array
@@ -764,7 +764,7 @@ for (int i=0; i<array.items(); i++)
 {
   if (array[i]) // is this position used?
   {
-    cObject *obj = array[i];
+    cOwnedObject *obj = array[i];
     ev << obj->name() << endl;
   }
 }
@@ -779,7 +779,7 @@ for (int i=0; i<array.items(); i++)
 % \cclass{cBag}.  The first one parallels with \cclass{cQueue}, the
 % second one with \cclass{cArray}. They can be useful if you have to
 % deal with C structs or objects that are not derived from
-% \cclass{cObject}.
+% \cclass{cOwnedObject}.
 %
 % See the class library reference for more info about them.
 %
@@ -821,7 +821,7 @@ cXMLElement *xmlValue();
 There are also overloaded type cast operators for C/C++ primitive types
 including \ttt{bool}, \ttt{int}, \ttt{long}, \ttt{double}, \ttt{const char *},
 and also for \ttt{cXMLElement *}.
-    \footnote{\cclass{cPar} also supports the \ttt{void *} and \ttt{cObject *} types,
+    \footnote{\cclass{cPar} also supports the \ttt{void *} and \ttt{cOwnedObject *} types,
     but these types were used primarily for message parameters before
     message definitions (section \ref{ch:messages:message-definitions})
     got supported, and you cannot create such module parameters from NED.}
@@ -899,7 +899,7 @@ Further \ttt{set..()} functions to assign other storage types,
 e.g. double function with constant args (MathFuncNoArgs, MathFunc1Args, etc),
 reverse Polish expression, compiled expressions based on
 \cclass{cDoubleExpression}, random distribution based on a
-\cclass{cStatistic}'s \fname{random()} method, pointer to \cclass{cObject},
+\cclass{cStatistic}'s \fname{random()} method, pointer to \cclass{cOwnedObject},
 etc. are listed in the next section; however, they are rarely useful
 for programming simulation models.
 
@@ -1034,17 +1034,17 @@ P & void* pointer &
 void *\fname{pointerValue()}; \linebreak
 op void *(); \linebreak
 op=(void *);} &
-pointer to a non-\cclass{cObject} item (C struct, non-\cclass{cObject} object
+pointer to a non-\cclass{cOwnedObject} item (C struct, non-\cclass{cOwnedObject} object
 etc.) Memory management can be controlled through the \fname{configPointer()}
 member function.\\\hline
 %% ROW 10
 O & object pointer &
-\ttt{setObjectValue(cObject*); \linebreak
-cObject *\fname{objectValue()}; \linebreak
-op cObject *(); \linebreak
-op=(cObject *);}
+\ttt{setObjectValue(cOwnedObject*); \linebreak
+cOwnedObject *\fname{objectValue()}; \linebreak
+op cOwnedObject *(); \linebreak
+op=(cOwnedObject *);}
 &
-{\raggedright pointer to an object derived from \cclass{cObject}.
+{\raggedright pointer to an object derived from \cclass{cOwnedObject}.
 Ownership management is done through \fname{takeOwnership()}.}\\\hline
 %% ROW 11
 I & indirect value &
@@ -2223,7 +2223,7 @@ which makes it possible to display the contents on field level.
 
 The \texttt{WATCH} macros to be used for this purpose are \fmac{WATCH\_OBJ()}
 and \fmac{WATCH\_PTR()}. Both expect the object to be subclassed from
-\cclass{cPolymorphic}; \fmac{WATCH\_OBJ()} expects a reference to such class,
+\cclass{cObject}; \fmac{WATCH\_OBJ()} expects a reference to such class,
 and \fmac{WATCH\_PTR()} expects a pointer variable.
 
 \begin{verbatim}
@@ -2285,7 +2285,7 @@ or selected objects of the simulation (including the objects created
 in module functions by the user) into the snapshot file\index{snapshot file}.
 
 \begin{verbatim}
-bool snapshot(cObject *obj = &simulation, const char *label = NULL);
+bool snapshot(cOwnedObject *obj = &simulation, const char *label = NULL);
 \end{verbatim}
 
 
@@ -2492,31 +2492,31 @@ effect with local variables.
 \section{Deriving new classes}
 \label{sec:ch-sim-lib:deriving-new-classes}
 
-\subsection{cObject or not?}
+\subsection{cOwnedObject or not?}
 
 If you plan to implement a completely new class (as opposed to
 subclassing something already present in {\opp}), you have
 to ask yourself whether you want the new class to be based
-on \cclass{cObject} or not.
+on \cclass{cOwnedObject} or not.
 Note that we are \textit{not} saying you should always
-subclass from \cclass{cObject}.
+subclass from \cclass{cOwnedObject}.
 Both solutions have advantages and disadvantages, which you
 have to consider individually for each class.
 
-\cclass{cObject} already carries (or provides a framework for)
+\cclass{cOwnedObject} already carries (or provides a framework for)
 significant functionality that is either relevant to
-your particular purpose or not. Subclassing \cclass{cObject}
+your particular purpose or not. Subclassing \cclass{cOwnedObject}
 generally means you have more code to write (as you \textit{have to}
 redefine certain virtual functions and adhere to conventions)
 and your class will be a bit more heavy-weight.
 However, if you need to store your objects in {\opp} objects like \cclass{cQueue},
 or you'll want to store {\opp} classes in your object,
-then you \textit{must} subclass from \cclass{cObject}.
+then you \textit{must} subclass from \cclass{cOwnedObject}.
   \footnote{For simplicity, in the these sections ``{\opp} object''
   should be understood as ``object of a class subclassed from
-  \cclass{cObject}''}
+  \cclass{cOwnedObject}''}
 
-The most significant features \cclass{cObject} has is
+The most significant features \cclass{cOwnedObject} has is
 the name string (which has to be stored somewhere, so it has
 its overhead) and ownership management (see section
 \ref{sec:ch-sim-lib:ownership-management}) which
@@ -2524,18 +2524,18 @@ also has the advantages but also some costs.
 
 As a general rule, small \ttt{struct}-like classes like \ttt{IPAddress},
 \ttt{MACAddress}, \ttt{RoutingTableEntry}, \ttt{TCPConnectionDescriptor}, etc.
-are better \textit{not} sublassed from \cclass{cObject}.
+are better \textit{not} sublassed from \cclass{cOwnedObject}.
 If your class has at least one virtual member function, consider
-subclassing from \cclass{cPolymorphic}, which does not impose any
+subclassing from \cclass{cObject}, which does not impose any
 extra cost because it doesn't have data members at all, only
 virtual functions.
 
 
-\subsection{cObject virtual methods}
+\subsection{cOwnedObject virtual methods}
 
 Most classes in the simulation class library are descendants of
-\cclass{cObject}. If you want to derive a new class from
-\cclass{cObject} or a \cclass{cObject} descendant, you must redefine
+\cclass{cOwnedObject}. If you want to derive a new class from
+\cclass{cOwnedObject} or a \cclass{cOwnedObject} descendant, you must redefine
 some member functions so that objects of the new type can fully
 co-operate with other parts of the simulation system. A more or less
 complete list of these functions is presented here. You do not need to
@@ -2558,7 +2558,7 @@ The following methods \textbf{must} be implemented:
         name (\fname{name()}) of the other object it receives, then call the
         assignment operator (see below).}
   \item{\textit{Destructor}.}
-  \item{\textit{Duplication function,} \fname{cPolymorphic *dup() const}.
+  \item{\textit{Duplication function,} \fname{cObject *dup() const}.
         It should create and return an exact duplicate of the object.
         It is usually a one-line function, implemented with the help
         of the \ttt{new} operator and the copy constructor.}
@@ -2568,7 +2568,7 @@ The following methods \textbf{must} be implemented:
         if the object contains pointers to other objects.}
 \end{itemize}
 
-If your class contains other objects subclassed from \cclass{cObject},
+If your class contains other objects subclassed from \cclass{cOwnedObject},
 either via pointers or as data member, the following function \textbf{should}
 be implemented:
 
@@ -2576,7 +2576,7 @@ be implemented:
   \item{\textit{Iteration function,} \ttt{void forEachChild(cVisitor * v)}.
         The implementation should call the function passed
         for each object it contains via pointer or as data member;
-        see the API Reference on \cclass{cObject} on how to implement
+        see the API Reference on \cclass{cOwnedObject} on how to implement
         \ttt{forEachChild()}. \fname{forEachChild()} makes it possible
         for Tkenv to display the object tree to you, to perform searches on it, etc.
         It is also used by \fname{snapshot()} and some other library functions.}
@@ -2634,11 +2634,11 @@ on the receiving side.
 \subsection{Details}
 
 We'll go through the details using an example. We create a new
-class \ttt{NewClass}, redefine all above mentioned \cclass{cObject}
+class \ttt{NewClass}, redefine all above mentioned \cclass{cOwnedObject}
 member functions, and explain the conventions, rules and tips
 associated with them.
 To demonstrate as much as possible, the class will contain
-an \ttt{int} data member, dynamically allocated non-\cclass{cObject} data
+an \ttt{int} data member, dynamically allocated non-\cclass{cOwnedObject} data
 (an array of \cclass{double}s),
 an {\opp} object as data member (a \ttt{cQueue}), and
 a dynamically allocated {\opp} object (a \ttt{cMessage}).
@@ -2652,7 +2652,7 @@ of all methods discussed in the previous section.
 //
 #include <omnetpp.h>
 
-class NewClass : public cObject
+class NewClass : public cOwnedObject
 {
   protected:
     int data;
@@ -2664,7 +2664,7 @@ class NewClass : public cObject
     NewClass(const char *name=NULL, int d=0);
     NewClass(const NewClass& other);
     virtual ~NewClass();
-    virtual cPolymorphic *dup() const;
+    virtual cObject *dup() const;
     NewClass& operator=(const NewClass& other);
 
     virtual void forEachChild(cVisitor *v);
@@ -2687,7 +2687,7 @@ Here's the top of the \ttt{.cc} file:
 Register_Class( NewClass );
 
 
-NewClass::NewClass(const char *name, int d) : cObject(name)
+NewClass::NewClass(const char *name, int d) : cOwnedObject(name)
 {
     data = d;
     array = new double[10];
@@ -2698,11 +2698,11 @@ NewClass::NewClass(const char *name, int d) : cObject(name)
 
 The constructor (above) calls the base class constructor with
 the name of the object, then initializes its own data members.
-You need to call \fname{take()} for \cclass{cObject}-based data members.
+You need to call \fname{take()} for \cclass{cOwnedObject}-based data members.
 
 
 \begin{verbatim}
-NewClass::NewClass(const NewClass& other) : cObject(other.name())
+NewClass::NewClass(const NewClass& other) : cOwnedObject(other.name())
 {
     array = new double[10];
     msg = NULL;
@@ -2721,7 +2721,7 @@ Note that pointer members have to be initialized (to \ttt{NULL} or to an
 allocated object/memory) before calling the assignment operator,
 to avoid crashes.
 
-You need to call \fname{take()} for \cclass{cObject}-based data members.
+You need to call \fname{take()} for \cclass{cOwnedObject}-based data members.
 
 \begin{verbatim}
 NewClass::~NewClass()
@@ -2733,12 +2733,12 @@ NewClass::~NewClass()
 \end{verbatim}
 
 The destructor should delete all data structures the object allocated.
-\cclass{cObject}-based objects should \textit{only} be deleted if they
+\cclass{cOwnedObject}-based objects should \textit{only} be deleted if they
 are owned by the object -- details will be covered in section
 \ref{sec:ch-sim-lib:ownership-management}.
 
 \begin{verbatim}
-cPolymorphic *NewClass::dup() const
+cObject *NewClass::dup() const
 {
     return new NewClass(*this);
 }
@@ -2751,7 +2751,7 @@ NewClass& NewClass::operator=(const NewClass& other)
 {
     if (&other==this)
         return *this;
-    cObject::operator=(other);
+    cOwnedObject::operator=(other);
 
     data = other.data;
 
@@ -2774,7 +2774,7 @@ NewClass& NewClass::operator=(const NewClass& other)
 Complexity associated with copying and duplicating the object
 is concentrated in the assignment operator, so it is usually
 the one that requires the most work from you of all methods
-required by \cclass{cObject}.
+required by \cclass{cOwnedObject}.
 
 If you do not want to implement object copying and duplication,
 you should implement the assigment operator to call
@@ -2832,7 +2832,7 @@ The \fname{info()} method should produce a concise, one-line string
 about the object. You should try not to exceed 40-80 characters, since the
 string will be shown in tooltips and listboxes.
 
-See the virtual functions of \cclass{cPolymorphic} and \cclass{cObject}
+See the virtual functions of \cclass{cObject} and \cclass{cOwnedObject}
 in the class library reference for more information. The sources of the
 Sim library (\ttt{include/}, \ttt{src/sim/}) can serve as further examples.
 
@@ -2849,7 +2849,7 @@ supporting Tkenv inspectors.
 
 Container classes like \cclass{cQueue} own the objects inserted
 into them. But this is not limited to objects inserted into a container:
-\textit{every \cclass{cObject}-based object has an owner all the time}.
+\textit{every \cclass{cOwnedObject}-based object has an owner all the time}.
 From the user's point of view, ownership is managed transparently.
 For example, when you create a new \cclass{cMessage},
 it will be owned by the simple module. When you send it, it will
@@ -2859,11 +2859,11 @@ the message in another one, the encapsulating message will become
 the owner. When you decapsulate it again, the currently active
 simple module becomes the owner.
 
-The \fname{owner()} method, defined in \cclass{cObject}, returns the
+The \fname{owner()} method, defined in \cclass{cOwnedObject}, returns the
 owner of the object:
 
 \begin{verbatim}
-cObject *o = msg->owner();
+cOwnedObject *o = msg->owner();
 ev << "Owner of " << msg->name() << " is: " <<
    << "(" << o->className() << ") " << o->fullPath() << endl;
 \end{verbatim}
@@ -2930,7 +2930,7 @@ has to be supported by the participating classes themselves.
 It will be useful to look inside \cclass{cQueue} and \cclass{cArray},
 because they might give you a hint what behavior you need
 to implement when you want to use non-{\opp} container classes
-to store messages or other \cclass{cObject}-based objects.
+to store messages or other \cclass{cOwnedObject}-based objects.
 
 
 \subsubsection{Insertion}
@@ -2956,7 +2956,7 @@ Here's what the \textit{insert} operation of \cclass{cQueue} (or \cclass{cArray}
 The corresponding source code:
 
 \begin{verbatim}
-void cQueue::insert(cObject *obj)
+void cQueue::insert(cOwnedObject *obj)
 {
     // insert into queue data structure
     ...
@@ -2990,8 +2990,8 @@ When you remove an object from a queue or array, the ownership
 is expected to be transferred to the simple module's local objects list.
 This is acomplished by the \fname{drop()} function, which transfers the
 ownership to the object's default owner.
-\fname{defaultOwner()} is a virtual method returning \ttt{cObject*}
-defined in \cclass{cObject}, and its implementation returns
+\fname{defaultOwner()} is a virtual method returning \ttt{cOwnedObject*}
+defined in \cclass{cOwnedObject}, and its implementation returns
 the currently executing simple module's local object list.
 
 As an example, the \fname{remove()} method of \cclass{cQueue} is
@@ -3000,7 +3000,7 @@ implemented like this:
   differently, but the meaning is the same.}
 
 \begin{verbatim}
-cObject *cQueue::remove(cObject *obj)
+cOwnedObject *cQueue::remove(cOwnedObject *obj)
 {
     // remove object from queue data structure
     ...

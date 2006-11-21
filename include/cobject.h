@@ -27,7 +27,7 @@
 #include "cstringpool.h"
 
 
-class cObject;
+class cOwnedObject;
 class cStaticFlag;
 
 class cArray;
@@ -43,7 +43,7 @@ class cDefaultList;
  *
  * @ingroup EnumsTypes
  */
-typedef int (*CompareFunc)(cObject *a, cObject *b);
+typedef int (*CompareFunc)(cOwnedObject *a, cOwnedObject *b);
 
 
 /**
@@ -52,12 +52,12 @@ typedef int (*CompareFunc)(cObject *a, cObject *b);
  * Base class for almost all classes in the \opp library.
  *
  * It is usually NOT a good idea to subclass your own classes
- * (esp. data storage classes) from cObject,
+ * (esp. data storage classes) from cOwnedObject,
  * because it is a relatively heavyweight class (about 24 bytes on a 32-bit
  * architecture) with many virtual functions that need to be redefined.
- * You may consider choosing cPolymorphic instead as a base class.
+ * You may consider choosing cObject instead as a base class.
  *
- * The main areas covered by cObject are:
+ * The main areas covered by cOwnedObject are:
  *    -# storage of a name string via name() and setName()
  *    -# providing a mechanism to recursively traverse all simulation objects
  *       (forEachChild() method and cVisitor class). This mechanism constitutes
@@ -65,7 +65,7 @@ typedef int (*CompareFunc)(cObject *a, cObject *b);
  *    -# ownership management, to safeguard against common programming errors.
  *       Owner pointer also enables navigating the object tree upwards.
  *
- * When subclassing cObject, some virtual member functions are expected to be
+ * When subclassing cOwnedObject, some virtual member functions are expected to be
  * redefined: dup() are mandatory to be redefined, and often
  * you'll want to redefine info() and detailedInfo() as well.
  *
@@ -73,7 +73,7 @@ typedef int (*CompareFunc)(cObject *a, cObject *b);
  * errors. As a definition, <i>ownership means the exclusive right and duty
  * to delete owned objects.</i>
  *
- * cObjects hold a pointer to their owner objects; the owner() method returns
+ * cOwnedObjects hold a pointer to their owner objects; the owner() method returns
  * this pointer. An example will help to understand how it is used:
  *
  *    - when you insert a cMessage into a cQueue, the cQueue will become
@@ -91,7 +91,7 @@ typedef int (*CompareFunc)(cObject *a, cObject *b);
  *
  *    - even if you try to delete the message while it's in the queue,
  *      you'll get an error message instead of just a crash. This is because
- *      cObject destructor asks for the owner's blessing -- but cQueue will
+ *      cOwnedObject destructor asks for the owner's blessing -- but cQueue will
  *      protest by throwing an exception.
  *
  *    - when you remove the message from the cQueue, the cQueue will "release"
@@ -110,8 +110,8 @@ typedef int (*CompareFunc)(cObject *a, cObject *b);
  *    - when the queue is deleted, it also deletes all objects it contains.
  *      (The cQueue always owns all objects inserted into it -- no exception).
  *
- * The above ownership mechanisms are at work when any cObject-subclass object
- * gets inserted into any cObject-subclass container (cQueue, cArray).
+ * The above ownership mechanisms are at work when any cOwnedObject-subclass object
+ * gets inserted into any cOwnedObject-subclass container (cQueue, cArray).
  *
  * Some more details, in case you're writing a class that acts as a container:
  *
@@ -119,13 +119,13 @@ typedef int (*CompareFunc)(cObject *a, cObject *b);
  *    - you should delete the owned objects in the destructor
  *    - the copy constructor of a container should dup() the owned objects
  *      and take() the copies
- *    - if you want to have a class which contains cObject-subclasses as
+ *    - if you want to have a class which contains cOwnedObject-subclasses as
  *      data members: your class (the enclosing object) should own them --
  *      call take() from the constructor and drop() from the destructor.
  *
  * @ingroup SimCore
  */
-class SIM_API cObject : public cPolymorphic
+class SIM_API cOwnedObject : public cObject
 {
     friend class cDefaultList;
     friend class cSimulation;
@@ -133,7 +133,7 @@ class SIM_API cObject : public cPolymorphic
 
   private:
     const char *namep;  // object name (stringpooled if flags & FL_NAMEPOOLING)
-    cObject *ownerp;    // owner pointer
+    cOwnedObject *ownerp;    // owner pointer
     unsigned int pos;   // used only if owner is a cDefaultList
 
   protected:
@@ -158,10 +158,10 @@ class SIM_API cObject : public cPolymorphic
 
   private:
     // internal
-    virtual void ownedObjectDeleted(cObject *obj);
+    virtual void ownedObjectDeleted(cOwnedObject *obj);
 
     // internal
-    virtual void yieldOwnership(cObject *obj, cObject *to);
+    virtual void yieldOwnership(cOwnedObject *obj, cOwnedObject *to);
 
   public:
     // internal
@@ -186,7 +186,7 @@ class SIM_API cObject : public cPolymorphic
      *
      * The obj pointer should not be NULL.
      */
-    virtual void take(cObject *obj);
+    virtual void take(cOwnedObject *obj);
 
     /**
      * Releases ownership of `object'. Actually it gives ownership of `object'
@@ -197,7 +197,7 @@ class SIM_API cObject : public cPolymorphic
      *
      * The obj pointer should not be NULL.
      */
-    virtual void drop(cObject *obj);
+    virtual void drop(cOwnedObject *obj);
 
     /**
      * This is a shortcut for the sequence
@@ -212,7 +212,7 @@ class SIM_API cObject : public cPolymorphic
      *
      * @see drop()
      */
-    void dropAndDelete(cObject *obj);
+    void dropAndDelete(cOwnedObject *obj);
     //@}
 
   public:
@@ -222,24 +222,24 @@ class SIM_API cObject : public cPolymorphic
      * Create object without a name. The object will be initially owned by
      * defaultOwer().
      */
-    cObject();
+    cOwnedObject();
 
     /**
      * Create object with given name. The object will be initially owned by
      * defaultOwer(). Name pooling is an optimization feature.
      */
-    explicit cObject(const char *name, bool namepooling=true);
+    explicit cOwnedObject(const char *name, bool namepooling=true);
 
     /**
      * Copy constructor. In derived classes, it is usually implemented
      * as <tt>{operator=(obj);</tt>
      */
-    cObject(const cObject& obj);
+    cOwnedObject(const cOwnedObject& obj);
 
     /**
      * Destructor.
      */
-    virtual ~cObject();
+    virtual ~cOwnedObject();
 
     /**
      * Duplicates this object.  Duplicates the object and returns
@@ -247,7 +247,7 @@ class SIM_API cObject : public cPolymorphic
      * In derived classes, it is usually implemented as
      * <tt>return new cClassName(*this)</tt>.
      */
-    virtual cObject *dup() const  {return new cObject(*this);}
+    virtual cOwnedObject *dup() const  {return new cOwnedObject(*this);}
 
     /**
      * The assignment operator. Derived classes should contain similar
@@ -259,7 +259,7 @@ class SIM_API cObject : public cPolymorphic
      *
      * Ownership of the object is not affected by assigments.
      */
-    cObject& operator=(const cObject& o);
+    cOwnedObject& operator=(const cOwnedObject& o);
 
     /**
      * Serializes the object into a buffer.
@@ -313,10 +313,10 @@ class SIM_API cObject : public cPolymorphic
     /**
      * Returns pointer to the owner of the object.
      */
-    cObject *owner() const {return ownerp;}
+    cOwnedObject *owner() const {return ownerp;}
 
     /**
-     * Returns false in cObject and in all derived classes except cDefaultList.
+     * Returns false in cOwnedObject and in all derived classes except cDefaultList.
      * An object A is a "soft owner" if it allows a B object take() an object A owns.
      * "Hard owners" will raise an error if some other object tries to take()
      * an object they own. The only soft owner class is cDefaultList.
@@ -335,7 +335,7 @@ class SIM_API cObject : public cPolymorphic
     //@{
     /**
      * Returns the total number of objects created since the start of the program
-     * (or since the last reset). The counter is incremented by cObject constructor.
+     * (or since the last reset). The counter is incremented by cOwnedObject constructor.
      * Counter is <tt>signed</tt> to make it easier to detect if it overflows
      * during very long simulation runs.
      * May be useful for profiling or debugging memory leaks.
@@ -344,7 +344,7 @@ class SIM_API cObject : public cPolymorphic
 
     /**
      * Returns the number of objects that currently exist in the program.
-     * The counter is incremented by cObject constructor and decremented by
+     * The counter is incremented by cOwnedObject constructor and decremented by
      * the destructor.
      * May be useful for profiling or debugging memory leaks.
      */
@@ -360,19 +360,19 @@ class SIM_API cObject : public cPolymorphic
 
 
 /**
- * Base class for cObject-based classes that do not wish to support
+ * Base class for cOwnedObject-based classes that do not wish to support
  * assignment and duplication.
  *
  * @ingroup SimCore
  */
-class SIM_API cNoncopyableObject : public cObject, noncopyable
+class SIM_API cNoncopyableObject : public cOwnedObject, noncopyable
 {
   public:
     /**
      * Constructor
      */
     explicit cNoncopyableObject(const char *name=NULL, bool namepooling=true) :
-        cObject(name, namepooling) {}
+        cOwnedObject(name, namepooling) {}
 
 //FIXME disable copy ctor as well
 
@@ -394,7 +394,7 @@ class SIM_API cNoncopyableObject : public cObject, noncopyable
 
 
 //
-// Internal helper class for cObject.
+// Internal helper class for cOwnedObject.
 //
 class cStaticFlag
 {
@@ -406,15 +406,15 @@ class cStaticFlag
     static bool isSet() {return staticflag;}
 };
 
-std::ostream& operator<< (std::ostream& os, const cObject *p);
-std::ostream& operator<< (std::ostream& os, const cObject& o);
+std::ostream& operator<< (std::ostream& os, const cOwnedObject *p);
+std::ostream& operator<< (std::ostream& os, const cOwnedObject& o);
 
-inline std::ostream& operator<< (std::ostream& os, cObject *p) {
-    return os << (const cObject *)p;
+inline std::ostream& operator<< (std::ostream& os, cOwnedObject *p) {
+    return os << (const cOwnedObject *)p;
 }
 
-inline std::ostream& operator<< (std::ostream& os, cObject& o) {
-    return os << (const cObject&)o;
+inline std::ostream& operator<< (std::ostream& os, cOwnedObject& o) {
+    return os << (const cOwnedObject&)o;
 }
 
 
@@ -436,7 +436,7 @@ inline std::ostream& operator<< (std::ostream& os, cObject& o) {
  */
 // Note: this function cannot be put into utils.h (circular dependencies)
 template<class T>
-T check_and_cast(cPolymorphic *p)
+T check_and_cast(cObject *p)
 {
     if (!p)
         throw new cRuntimeError("check_and_cast(): cannot cast NULL pointer to type '%s'",opp_typename(typeid(T)));
@@ -450,9 +450,9 @@ T check_and_cast(cPolymorphic *p)
  * The 'const' version of check_and_cast<>().
  */
 template<class T>
-const T check_and_cast(const cPolymorphic *p)
+const T check_and_cast(const cObject *p)
 {
-    return check_and_cast<T>(const_cast<cPolymorphic *>(p));
+    return check_and_cast<T>(const_cast<cObject *>(p));
 }
 
 #endif

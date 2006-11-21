@@ -24,7 +24,7 @@
 
 // forward declaration:
 class cCommBuffer;
-class cObject;
+class cOwnedObject;
 class opp_string;
 
 
@@ -36,12 +36,12 @@ class opp_string;
  * For example, the MPI implementation, cMPICommBuffer encapsulates
  * MPI_Pack() and MPI_Unpack().
  *
- * @see cObject::netPack(), cObject::netUnpack()
+ * @see cOwnedObject::netPack(), cOwnedObject::netUnpack()
  *
  * @ingroup ParsimBrief
  * @ingroup Parsim
  */
-class SIM_API cCommBuffer : public cPolymorphic
+class SIM_API cCommBuffer : public cObject
 {
   public:
     /**
@@ -337,12 +337,12 @@ class SIM_API cCommBuffer : public cPolymorphic
     /**
      * Packs an object.
      */
-    virtual void packObject(cObject *obj);
+    virtual void packObject(cOwnedObject *obj);
 
     /**
      * Unpacks and returns an object.
      */
-    virtual cObject *unpackObject();
+    virtual cOwnedObject *unpackObject();
     //@}
 };
 

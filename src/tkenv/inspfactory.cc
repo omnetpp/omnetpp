@@ -30,7 +30,7 @@
 cRegistrationList inspectorfactories("inspectorfactories");
 
 
-cInspectorFactory *findInspectorFactoryFor(cPolymorphic *obj, int type)
+cInspectorFactory *findInspectorFactoryFor(cObject *obj, int type)
 {
     cInspectorFactory *best=NULL;
     double bestweight=0;

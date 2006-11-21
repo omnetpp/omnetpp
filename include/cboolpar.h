@@ -62,7 +62,7 @@ class SIM_API cBoolPar : public cParValue
     void operator=(const cBoolPar& otherpar);
     //@}
 
-    /** @name Redefined cPolymorphic functions */
+    /** @name Redefined cObject functions */
     //@{
 
     /**

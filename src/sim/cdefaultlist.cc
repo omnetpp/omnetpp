@@ -5,7 +5,7 @@
 //           Discrete System Simulation in C++
 //
 //   Member functions of
-//    cDefaultList : stores a set of cObjects
+//    cDefaultList : stores a set of cOwnedObjects
 //
 //  Author: Andras Varga
 //
@@ -58,7 +58,7 @@ void cDefaultList::construct()
 {
     size = 2;
     count = 0;
-    vect = new cObject *[size];
+    vect = new cOwnedObject *[size];
     for (int i=0; i<size; i++)
         vect[i]=NULL;
 }
@@ -92,7 +92,7 @@ cDefaultList::~cDefaultList()
     }
 }
 
-void cDefaultList::doInsert(cObject *obj)
+void cDefaultList::doInsert(cOwnedObject *obj)
 {
     ASSERT(obj!=this || this==&defaultList);
 
@@ -107,8 +107,8 @@ void cDefaultList::doInsert(cObject *obj)
         {
             // must allocate bigger vector (grow 25% but at least 2)
             size += (size<8) ? 2 : (size>>2);
-            cObject **v = new cObject *[size];
-            memcpy(v, vect, sizeof(cObject*)*count);
+            cOwnedObject **v = new cOwnedObject *[size];
+            memcpy(v, vect, sizeof(cOwnedObject*)*count);
             delete [] vect;
             vect = v;
         }
@@ -118,7 +118,7 @@ void cDefaultList::doInsert(cObject *obj)
     vect[obj->pos = count++] = obj;
 }
 
-void cDefaultList::ownedObjectDeleted(cObject *obj)
+void cDefaultList::ownedObjectDeleted(cOwnedObject *obj)
 {
     ASSERT(obj && obj->ownerp==this);
 
@@ -127,7 +127,7 @@ void cDefaultList::ownedObjectDeleted(cObject *obj)
     (vect[pos] = vect[--count])->pos = pos;
 }
 
-void cDefaultList::yieldOwnership(cObject *obj, cObject *newowner)
+void cDefaultList::yieldOwnership(cOwnedObject *obj, cOwnedObject *newowner)
 {
     ASSERT(obj && obj->ownerp==this && count>0);
 
@@ -163,7 +163,7 @@ void cDefaultList::netPack(cCommBuffer *buffer)
 #ifndef WITH_PARSIM
     throw new cRuntimeError(this,eNOPARSIM);
 #else
-    cObject::netPack(buffer);
+    cOwnedObject::netPack(buffer);
 
     if (count>0)
         throw new cRuntimeError(this, "netPack() not supported (makes no sense)");
@@ -175,20 +175,20 @@ void cDefaultList::netUnpack(cCommBuffer *buffer)
 #ifndef WITH_PARSIM
     throw new cRuntimeError(this,eNOPARSIM);
 #else
-    cObject::netUnpack(buffer);
+    cOwnedObject::netUnpack(buffer);
     if (count>0)
         throw new cRuntimeError(this, "netUnpack(): can only unpack into empty object");
 #endif
 }
 
-void cDefaultList::take(cObject *obj)
+void cDefaultList::take(cOwnedObject *obj)
 {
     // ask current owner to release it -- if it's a cDefaultList, it will.
     obj->ownerp->yieldOwnership(obj, this);
     doInsert(obj);
 }
 
-void cDefaultList::drop(cObject *obj)
+void cDefaultList::drop(cOwnedObject *obj)
 {
     if (obj->ownerp!=this)
         throw new cRuntimeError(this,"drop(): not owner of object (%s)%s",
@@ -198,14 +198,14 @@ void cDefaultList::drop(cObject *obj)
     defaultowner->doInsert(obj);
 }
 
-cObject *cDefaultList::defaultListGet(int k)
+cOwnedObject *cDefaultList::defaultListGet(int k)
 {
     if (k<0 || k>=count)
         return NULL;
     return vect[k];
 }
 
-bool cDefaultList::defaultListContains(cObject *obj) const
+bool cDefaultList::defaultListContains(cOwnedObject *obj) const
 {
     return obj && obj->owner()==const_cast<cDefaultList *>(this);
 }

@@ -48,7 +48,7 @@ Register_Class(cWeightedStdDev);
 //----
 // cStatistic - almost all functions are inline
 
-cStatistic::cStatistic(const cStatistic& r) : cObject()
+cStatistic::cStatistic(const cStatistic& r) : cOwnedObject()
 {
     setName(r.name());
     td=NULL;
@@ -56,7 +56,7 @@ cStatistic::cStatistic(const cStatistic& r) : cObject()
     operator=(r);
 }
 
-cStatistic::cStatistic(const char *name) : cObject(name)
+cStatistic::cStatistic(const char *name) : cOwnedObject(name)
 {
     td=NULL;
     ra=NULL;
@@ -74,7 +74,7 @@ void cStatistic::netPack(cCommBuffer *buffer)
 #ifndef WITH_PARSIM
     throw new cRuntimeError(this,eNOPARSIM);
 #else
-    cObject::netPack(buffer);
+    cOwnedObject::netPack(buffer);
 
     buffer->pack(genk);
 
@@ -90,7 +90,7 @@ void cStatistic::netUnpack(cCommBuffer *buffer)
 #ifndef WITH_PARSIM
     throw new cRuntimeError(this,eNOPARSIM);
 #else
-    cObject::netUnpack(buffer);
+    cOwnedObject::netUnpack(buffer);
 
     buffer->unpack(genk);
 
@@ -105,7 +105,7 @@ cStatistic& cStatistic::operator=(const cStatistic& res)   //--VA
 {
     if (this==&res) return *this;
 
-    cObject::operator=(res);
+    cOwnedObject::operator=(res);
     genk = res.genk;
     dropAndDelete(td);
     dropAndDelete(ra);

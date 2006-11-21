@@ -31,7 +31,7 @@ class cMessage;
  * @see Iterator
  * @ingroup Internals
  */
-class SIM_API cMessageHeap : public cObject
+class SIM_API cMessageHeap : public cOwnedObject
 {
   public:
     /**
@@ -105,29 +105,29 @@ class SIM_API cMessageHeap : public cObject
 
     /**
      * Assignment operator. The name member doesn't get copied;
-     * see cObject's operator=() for more details.
+     * see cOwnedObject's operator=() for more details.
      */
     cMessageHeap& operator=(const cMessageHeap& msgqueue);
     //@}
 
-    /** @name Redefined cObject member functions. */
+    /** @name Redefined cOwnedObject member functions. */
     //@{
 
     /**
      * Creates and returns an exact copy of this object.
-     * See cObject for more details.
+     * See cOwnedObject for more details.
      */
     virtual cMessageHeap *dup() const  {return new cMessageHeap(*this);}
 
     /**
      * Produces a one-line description of object contents.
-     * See cObject for more details.
+     * See cOwnedObject for more details.
      */
     virtual std::string info() const;
 
     /**
      * Calls v->visit(this) for each contained object.
-     * See cObject for more details.
+     * See cOwnedObject for more details.
      */
     virtual void forEachChild(cVisitor *v);
 

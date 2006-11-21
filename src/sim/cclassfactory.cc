@@ -23,7 +23,7 @@
 #endif
 
 
-cClassFactory::cClassFactory(const char *name, cPolymorphic *(*f)(), const char *description)
+cClassFactory::cClassFactory(const char *name, cObject *(*f)(), const char *description)
   : cNoncopyableObject(name, false)
 {
     creatorfunc = f;
@@ -42,7 +42,7 @@ cClassFactory *cClassFactory::find(const char *classname)
     return dynamic_cast<cClassFactory *>(classes.instance()->get(classname));
 }
 
-cPolymorphic *cClassFactory::createOne(const char *classname)
+cObject *cClassFactory::createOne(const char *classname)
 {
     cClassFactory *p = find(classname);
     if (!p)
@@ -52,7 +52,7 @@ cPolymorphic *cClassFactory::createOne(const char *classname)
     return p->createOne();
 }
 
-cPolymorphic *cClassFactory::createOneIfClassIsKnown(const char *classname)
+cObject *cClassFactory::createOneIfClassIsKnown(const char *classname)
 {
     cClassFactory *p = find(classname);
     return p ? p->createOne() : NULL;

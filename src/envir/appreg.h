@@ -48,7 +48,7 @@ class cConfiguration;
 extern ENVIR_API cRegistrationList omnetapps;
 
 // registration class
-class ENVIR_API cOmnetAppRegistration : public cObject
+class ENVIR_API cOmnetAppRegistration : public cOwnedObject
 {
     typedef TOmnetApp *(*AppCreatorFunc)(ArgList *,cConfiguration *);
     AppCreatorFunc creatorfunc;
@@ -57,7 +57,7 @@ class ENVIR_API cOmnetAppRegistration : public cObject
   public:
     cOmnetAppRegistration(const char *name, int score,
                           const char *description, AppCreatorFunc f) :
-      cObject(name),
+      cOwnedObject(name),
       creatorfunc(f), desc(description), scor(score) {}
     virtual ~cOmnetAppRegistration()  {}
 

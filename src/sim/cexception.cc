@@ -57,7 +57,7 @@ cException::cException(const char *msgformat...)
     va_end(va);
 }
 
-cException::cException(const cPolymorphic *where, ErrorCode errorcode...)
+cException::cException(const cObject *where, ErrorCode errorcode...)
 {
     va_list va;
     va_start(va, errorcode);
@@ -65,7 +65,7 @@ cException::cException(const cPolymorphic *where, ErrorCode errorcode...)
     va_end(va);
 }
 
-cException::cException(const cPolymorphic *where, const char *msgformat...)
+cException::cException(const cObject *where, const char *msgformat...)
 {
     va_list va;
     va_start(va, msgformat);
@@ -96,7 +96,7 @@ void cException::exitIfStartupError()
     }
 }
 
-void cException::init(const cPolymorphic *where, ErrorCode errorcode, const char *fmt, va_list va)
+void cException::init(const cObject *where, ErrorCode errorcode, const char *fmt, va_list va)
 {
     // store error code
     errorcode = errorcode;
@@ -163,7 +163,7 @@ cRuntimeError::cRuntimeError(const char *msgformat...)
     breakIntoDebuggerIfRequested();
 }
 
-cRuntimeError::cRuntimeError(const cPolymorphic *where, ErrorCode errorcode...)
+cRuntimeError::cRuntimeError(const cObject *where, ErrorCode errorcode...)
 {
     va_list va;
     va_start(va, errorcode);
@@ -172,7 +172,7 @@ cRuntimeError::cRuntimeError(const cPolymorphic *where, ErrorCode errorcode...)
     breakIntoDebuggerIfRequested();
 }
 
-cRuntimeError::cRuntimeError(const cPolymorphic *where, const char *msgformat...)
+cRuntimeError::cRuntimeError(const cObject *where, const char *msgformat...)
 {
     va_list va;
     va_start(va, msgformat);

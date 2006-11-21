@@ -61,11 +61,11 @@ class TModuleWindowFactory : public cInspectorFactory
   public:
     TModuleWindowFactory(const char *name) : cInspectorFactory(name) {}
 
-    bool supportsObject(cPolymorphic *obj) {return dynamic_cast<cModule *>(obj)!=NULL;}
+    bool supportsObject(cObject *obj) {return dynamic_cast<cModule *>(obj)!=NULL;}
     int inspectorType() {return INSP_MODULEOUTPUT;}
-    double qualityAsDefault(cPolymorphic *object) {return 0.5;}
+    double qualityAsDefault(cObject *object) {return 0.5;}
 
-    TInspector *createInspectorFor(cPolymorphic *object,int type,const char *geom,void *data) {
+    TInspector *createInspectorFor(cObject *object,int type,const char *geom,void *data) {
         return new TModuleWindow(object, type, geom, data);
     }
 };
@@ -73,7 +73,7 @@ class TModuleWindowFactory : public cInspectorFactory
 Register_InspectorFactory(TModuleWindowFactory);
 
 
-TModuleWindow::TModuleWindow(cPolymorphic *obj,int typ,const char *geom,void *dat) :
+TModuleWindow::TModuleWindow(cObject *obj,int typ,const char *geom,void *dat) :
     TInspector(obj,typ,geom,dat)
 {
 }
@@ -106,13 +106,13 @@ class TGraphicalModWindowFactory : public cInspectorFactory
   public:
     TGraphicalModWindowFactory(const char *name) : cInspectorFactory(name) {}
 
-    bool supportsObject(cPolymorphic *obj) {return dynamic_cast<cModule *>(obj)!=NULL;}
+    bool supportsObject(cObject *obj) {return dynamic_cast<cModule *>(obj)!=NULL;}
     int inspectorType() {return INSP_GRAPHICAL;}
-    double qualityAsDefault(cPolymorphic *object) {
+    double qualityAsDefault(cObject *object) {
         return dynamic_cast<cSimpleModule *>(object) ? 0.9 : 3.0;
     }
 
-    TInspector *createInspectorFor(cPolymorphic *object,int type,const char *geom,void *data) {
+    TInspector *createInspectorFor(cObject *object,int type,const char *geom,void *data) {
         return new TGraphicalModWindow(object, type, geom, data);
     }
 };
@@ -120,7 +120,7 @@ class TGraphicalModWindowFactory : public cInspectorFactory
 Register_InspectorFactory(TGraphicalModWindowFactory);
 
 
-TGraphicalModWindow::TGraphicalModWindow(cPolymorphic *obj,int typ,const char *geom,void *dat) :
+TGraphicalModWindow::TGraphicalModWindow(cObject *obj,int typ,const char *geom,void *dat) :
     TInspector(obj,typ,geom,dat)
 {
    needs_redraw = false;
@@ -796,11 +796,11 @@ int TGraphicalModWindow::getSubmodQLen(Tcl_Interp *interp, int argc, const char 
 //   public:
 //     TCompoundModInspectorFactory(const char *name) : cInspectorFactory(name) {}
 //
-//     bool supportsObject(cPolymorphic *obj) {return dynamic_cast<cModule *>(obj)!=NULL;}
+//     bool supportsObject(cObject *obj) {return dynamic_cast<cModule *>(obj)!=NULL;}
 //     int inspectorType() {return INSP_OBJECT;}
-//     double qualityAsDefault(cPolymorphic *object) {return 2.9;}
+//     double qualityAsDefault(cObject *object) {return 2.9;}
 //
-//     TInspector *createInspectorFor(cPolymorphic *object,int type,const char *geom,void *data) {
+//     TInspector *createInspectorFor(cObject *object,int type,const char *geom,void *data) {
 //         return new TCompoundModInspector(object, type, geom, data);
 //     }
 // };
@@ -808,7 +808,7 @@ int TGraphicalModWindow::getSubmodQLen(Tcl_Interp *interp, int argc, const char 
 // Register_InspectorFactory(TCompoundModInspectorFactory);
 //
 //
-// TCompoundModInspector::TCompoundModInspector(cPolymorphic *obj,int typ,const char *geom,void *dat) :
+// TCompoundModInspector::TCompoundModInspector(cObject *obj,int typ,const char *geom,void *dat) :
 //     TInspector(obj,typ,geom,dat)
 // {
 // }
@@ -860,11 +860,11 @@ int TGraphicalModWindow::getSubmodQLen(Tcl_Interp *interp, int argc, const char 
 //   public:
 //     TSimpleModInspectorFactory(const char *name) : cInspectorFactory(name) {}
 //
-//     bool supportsObject(cPolymorphic *obj) {return dynamic_cast<cSimpleModule *>(obj)!=NULL;}
+//     bool supportsObject(cObject *obj) {return dynamic_cast<cSimpleModule *>(obj)!=NULL;}
 //     int inspectorType() {return INSP_OBJECT;}
-//     double qualityAsDefault(cPolymorphic *object) {return 4.0;}
+//     double qualityAsDefault(cObject *object) {return 4.0;}
 //
-//     TInspector *createInspectorFor(cPolymorphic *object,int type,const char *geom,void *data) {
+//     TInspector *createInspectorFor(cObject *object,int type,const char *geom,void *data) {
 //         return new TSimpleModInspector(object, type, geom, data);
 //     }
 // };
@@ -872,7 +872,7 @@ int TGraphicalModWindow::getSubmodQLen(Tcl_Interp *interp, int argc, const char 
 // Register_InspectorFactory(TSimpleModInspectorFactory);
 //
 //
-// TSimpleModInspector::TSimpleModInspector(cPolymorphic *obj,int typ,const char *geom,void *dat) :
+// TSimpleModInspector::TSimpleModInspector(cObject *obj,int typ,const char *geom,void *dat) :
 //     TInspector(obj,typ,geom,dat)
 // {
 // }
@@ -939,18 +939,18 @@ int TGraphicalModWindow::getSubmodQLen(Tcl_Interp *interp, int argc, const char 
 //   public:
 //     TGateInspectorFactory(const char *name) : cInspectorFactory(name) {}
 //
-//     bool supportsObject(cPolymorphic *obj) {return dynamic_cast<cGate *>(obj)!=NULL;}
+//     bool supportsObject(cObject *obj) {return dynamic_cast<cGate *>(obj)!=NULL;}
 //     int inspectorType() {return INSP_OBJECT;}
-//     double qualityAsDefault(cPolymorphic *object) {return 2.9;}
+//     double qualityAsDefault(cObject *object) {return 2.9;}
 //
-//     TInspector *createInspectorFor(cPolymorphic *object,int type,const char *geom,void *data) {
+//     TInspector *createInspectorFor(cObject *object,int type,const char *geom,void *data) {
 //         return new TGateInspector(object, type, geom, data);
 //     }
 // };
 //
 // Register_InspectorFactory(TGateInspectorFactory);
 //
-// TGateInspector::TGateInspector(cPolymorphic *obj,int typ,const char *geom,void *dat) :
+// TGateInspector::TGateInspector(cObject *obj,int typ,const char *geom,void *dat) :
 //     TInspector(obj,typ,geom,dat)
 // {
 // }
@@ -1026,11 +1026,11 @@ class TGraphicalGateWindowFactory : public cInspectorFactory
   public:
     TGraphicalGateWindowFactory(const char *name) : cInspectorFactory(name) {}
 
-    bool supportsObject(cPolymorphic *obj) {return dynamic_cast<cGate *>(obj)!=NULL;}
+    bool supportsObject(cObject *obj) {return dynamic_cast<cGate *>(obj)!=NULL;}
     int inspectorType() {return INSP_GRAPHICAL;}
-    double qualityAsDefault(cPolymorphic *object) {return 3.0;}
+    double qualityAsDefault(cObject *object) {return 3.0;}
 
-    TInspector *createInspectorFor(cPolymorphic *object,int type,const char *geom,void *data) {
+    TInspector *createInspectorFor(cObject *object,int type,const char *geom,void *data) {
         return new TGraphicalGateWindow(object, type, geom, data);
     }
 };
@@ -1038,7 +1038,7 @@ class TGraphicalGateWindowFactory : public cInspectorFactory
 Register_InspectorFactory(TGraphicalGateWindowFactory);
 
 
-TGraphicalGateWindow::TGraphicalGateWindow(cPolymorphic *obj,int typ,const char *geom,void *dat) :
+TGraphicalGateWindow::TGraphicalGateWindow(cObject *obj,int typ,const char *geom,void *dat) :
     TInspector(obj,typ,geom,dat)
 {
 }

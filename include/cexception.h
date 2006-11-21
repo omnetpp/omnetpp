@@ -23,7 +23,7 @@
 #include "errmsg.h"
 #include "opp_string.h"
 
-class cPolymorphic;
+class cObject;
 class cComponent;
 
 /**
@@ -46,7 +46,7 @@ class SIM_API cException
      * If the first arg is non-NULL, the message text will be prepended (if needed)
      * with the object type and name, like this: "(cArray)array: ..."
      */
-    void init(const cPolymorphic *obj, ErrorCode errorcode, const char *fmt, va_list va);
+    void init(const cObject *obj, ErrorCode errorcode, const char *fmt, va_list va);
 
     // helper for init()
     void storeCtx();
@@ -87,14 +87,14 @@ class SIM_API cException
      * The 1st arg is the object where the error occurred: its class and
      * object name will be prepended to the message like this: "(cArray)arr".
      */
-    cException(const cPolymorphic *where, ErrorCode errcode,...);
+    cException(const cObject *where, ErrorCode errcode,...);
 
     /**
      * To be called like printf(). The error code is set to eCUSTOM.
      * The 1st arg is the object where the error occurred: its class and
      * object name will be prepended to the message like this: "(cArray)arr".
      */
-    cException(const cPolymorphic *where, const char *msg,...);
+    cException(const cObject *where, const char *msg,...);
 
     /**
      * Destructor.
@@ -202,14 +202,14 @@ class SIM_API cRuntimeError : public cException
      * The 1st arg is the object where the error occurred: its class and
      * object name will be prepended to the message like this: "(cArray)arr".
      */
-    cRuntimeError(const cPolymorphic *where, ErrorCode errcode,...);
+    cRuntimeError(const cObject *where, ErrorCode errcode,...);
 
     /**
      * To be called like printf(). The error code is set to eCUSTOM.
      * The 1st arg is the object where the error occurred: its class and
      * object name will be prepended to the message like this: "(cArray)arr".
      */
-    cRuntimeError(const cPolymorphic *where, const char *msg,...);
+    cRuntimeError(const cObject *where, const char *msg,...);
 };
 
 /**

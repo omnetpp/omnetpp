@@ -49,11 +49,11 @@ class SIM_API cCompoundModule : public cModule // noncopyable
     virtual ~cCompoundModule();
     //@}
 
-    /** @name Redefined cObject functions. */
+    /** @name Redefined cOwnedObject functions. */
     //@{
     /**
      * Produces a one-line description of object contents.
-     * See cObject for more details.
+     * See cOwnedObject for more details.
      */
     virtual std::string info() const;
     //@}

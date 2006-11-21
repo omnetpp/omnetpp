@@ -56,7 +56,7 @@ cTDExpandingWindows& cTDExpandingWindows::operator=(const cTDExpandingWindows& r
 {
     if (this==&res) return *this;
 
-    cObject::operator=(res);
+    cOwnedObject::operator=(res);
 
     // setHostObject(res.hostObject());
     go=res.go;
@@ -234,7 +234,7 @@ cADByStddev& cADByStddev::operator=(const cADByStddev& res)
 {
    if (this==&res) return *this;
 
-   cObject::operator=(res);
+   cOwnedObject::operator=(res);
    // setHostObject(res.hostObject());
    go=res.go; resaccval=res.resaccval;
    accuracy=res.accuracy; sctr=res.sctr;

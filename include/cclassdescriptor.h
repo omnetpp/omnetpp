@@ -52,8 +52,8 @@ class SIM_API cClassDescriptor : public cNoncopyableObject
         FD_ISARRAY = 0x01,    ///< field is an array: int a[]; int a[10];
         FD_ISCOMPOUND = 0x02, ///< basic type (T) is struct or class: T a; T *a; T a[10]; T *a[]
         FD_ISPOINTER = 0x04,  ///< field is pointer or pointer array: T *a; T *a[]; T *a[10];
-        FD_ISCPOLYMORPHIC = 0x08, ///< if ISCOMPOUND: basic type (T) subclasses from cPolymorphic
-        FD_ISCOBJECT = 0x10,  ///< if ISCOMPOUND: basic type (T) subclasses from cObject
+        FD_ISCPOLYMORPHIC = 0x08, ///< if ISCOMPOUND: basic type (T) subclasses from cObject
+        FD_ISCOBJECT = 0x10,  ///< if ISCOMPOUND: basic type (T) subclasses from cOwnedObject
         FD_ISEDITABLE = 0x20, ///< whether field supports setFieldAsString()
         FD_NONE = 0x0
     };
@@ -110,7 +110,7 @@ class SIM_API cClassDescriptor : public cNoncopyableObject
      * descriptor for a base class, if there isn't an exact match.
      * The returned descriptor object is a singleton, and must not be deleted.
      */
-    static cClassDescriptor *getDescriptorFor(cPolymorphic *object);
+    static cClassDescriptor *getDescriptorFor(cObject *object);
     //@}
 
     /** @name Querying and setting fields of the client object. */
@@ -121,7 +121,7 @@ class SIM_API cClassDescriptor : public cNoncopyableObject
      * If obj can be cast (dynamic_cast) to the class the descriptor supports,
      * the method should return true.
      */
-    virtual bool doesSupport(cPolymorphic *obj) {return false;}
+    virtual bool doesSupport(cObject *obj) {return false;}
 
     /**
      * Returns the descriptor for the base class, if available.

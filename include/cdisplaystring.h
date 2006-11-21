@@ -74,7 +74,7 @@ class SIM_API cDisplayString
     mutable bool needsassemble; // if dispstr is up-to-date
 
     // needed to notify Envir
-    cObject *object;     // a cModule or cGate pointer
+    cOwnedObject *object;     // a cModule or cGate pointer
     enum {NONE, CONNECTION, MODULE, MODULEBACKGROUND} role; // what
 
   private:

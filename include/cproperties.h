@@ -30,11 +30,11 @@ class cProperty;
  *
  * @ingroup Internals
  */
-class SIM_API cProperties : public cPolymorphic
+class SIM_API cProperties : public cObject
 {
   protected:
     bool islocked;
-    cPolymorphic *ownerp;  // points to owner parameter or component
+    cObject *ownerp;  // points to owner parameter or component
     std::vector<cProperty *> propv;
 
   public:
@@ -44,7 +44,7 @@ class SIM_API cProperties : public cPolymorphic
     virtual void lock();
 
     // internal: set the containing parameter, gate or component
-    virtual void setOwner(cPolymorphic *p) {ownerp = p;}
+    virtual void setOwner(cObject *p) {ownerp = p;}
 
   public:
     /** @name Constructors, destructor, assignment. */
@@ -70,7 +70,7 @@ class SIM_API cProperties : public cPolymorphic
     cProperties& operator=(const cProperties& other);
     //@}
 
-    /** @name Redefined cPolymorphic functions */
+    /** @name Redefined cObject functions */
     //@{
     /**
      * Redefined to return the property name. Property names start with '@'.

@@ -43,11 +43,11 @@ class SIM_API cComponentType : public cNoncopyableObject
     cComponentType(const char *name=NULL, const char *description=NULL);
     //@}
 
-    /** @name Redefined cObject methods. */
+    /** @name Redefined cOwnedObject methods. */
     //@{
     /**
      * Produces a one-line description of object contents.
-     * See cObject for more details.
+     * See cOwnedObject for more details.
      */
     virtual std::string info() const;
     //@}

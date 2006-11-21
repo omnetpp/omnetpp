@@ -24,7 +24,7 @@ of the simulation programmer. A more-or-less complete list:
     which can be freely used by the simulation programmer. The message
     name appears in many places in Tkenv (for example, in animations),
     and it is generally very useful to choose a descriptive name.
-    This attribute is inherited from \cclass{cObject} (see section
+    This attribute is inherited from \cclass{cOwnedObject} (see section
     \ref{sec:ch-sim-lib:cobject}).}
   \item{The \textit{message kind} attribute is supposed to carry some message
     type information. Zero and positive values can be freely used
@@ -268,15 +268,15 @@ at least the source IP address.
 
 This additional information is represented by \textit{control info}
 objects in {\opp}. Control info objects have to be subclassed from
-\cclass{cPolymorphic} (a small footprint base class with
+\cclass{cObject} (a small footprint base class with
 no data members), and attached to the messages representing
 packets. \cclass{cMessage} has the following methods for this
 purpose:
 
 \begin{Verbatim}[commandchars=\\\{\}]
-void \fname{setControlInfo(cPolymorphic *controlInfo)};
-cPolymorphic *\fname{controlInfo()};
-cPolymorphic *\fname{removeControlInfo()};
+void \fname{setControlInfo(cObject *controlInfo)};
+cObject *\fname{controlInfo()};
+cObject *\fname{removeControlInfo()};
 \end{Verbatim}
 
 When a "command" is associated with the message sending (such as
@@ -433,7 +433,7 @@ way to do that is via message definitions, described in chapter
 
 The \cclass{cMessage} class has an internal \cclass{cArray} object which can
 carry objects\index{message!attaching objects}. Only objects
-that are derived from \cclass{cObject} (most {\opp} classes are so) can be attached.
+that are derived from \cclass{cOwnedObject} (most {\opp} classes are so) can be attached.
 The \fname{addObject()}, \fname{getObject()}, \fname{hasObject()},
 \fname{removeObject()} methods use the object name
 as the key to the array. An example:
@@ -458,7 +458,7 @@ If you do not attach anything to the message and do not call the
 will not be created.
 This saves both storage and execution time.
 
-You can attach non-object types (or non-\cclass{cObject} objects) to
+You can attach non-object types (or non-\cclass{cOwnedObject} objects) to
 the message\index{message!attaching non-object types} by using
 \cclass{cPar}'s \ttt{void*} pointer 'P') type (see later in the description
 of \cclass{cPar}). An example:
@@ -953,7 +953,7 @@ Until now we have used the \fname{message} keyword to define classes, which
 implies that the base class is \fname{cMessage}, either directly or indirectly.
 
 But as part of complex messages, you'll need structs and other classes
-(rooted or not rooted in \fname{cObject}) as building blocks.
+(rooted or not rooted in \fname{cOwnedObject}) as building blocks.
 Classes can be created with the \fname{class} class keyword;
 structs we'll cover in the next section.
 
@@ -961,15 +961,15 @@ The syntax for defining classes is almost the same as defining messages,
 only the \fname{class} keyword is used instead of \fname{message}.
 
 Slightly different code is generated for classes that are rooted in
-\fname{cObject} than for those which are not.
+\fname{cOwnedObject} than for those which are not.
 If there is no \ttt{extends}, the generated class will not be
-derived from \fname{cObject}, thus it will not have \fname{name()},
+derived from \fname{cOwnedObject}, thus it will not have \fname{name()},
 \fname{className()}, etc. methods.
 To create a class with those methods, you have to explicitly write
-\ttt{extends cObject}.
+\ttt{extends cOwnedObject}.
 
 \begin{Verbatim}[commandchars=\\\{\}]
-\tbf{class} MyClass \tbf{extends} cObject
+\tbf{class} MyClass \tbf{extends} cOwnedObject
 \{
     \tbf{fields}:
         ...
@@ -1120,7 +1120,7 @@ Classes can be announced using the \fname{class} keyword:
 \tbf{class} cSubQueue;
 \end{Verbatim}
 
-The above syntax assumes that the class is derived from \fname{cObject}
+The above syntax assumes that the class is derived from \fname{cOwnedObject}
 either directly or indirectly. If it is not, the \fname{noncobject}
 keyword should be used:
 
@@ -1128,12 +1128,12 @@ keyword should be used:
 \tbf{class} \tbf{noncobject} IPAddress;
 \end{Verbatim}
 
-The distinction between classes derived and not derived from \fname{cObject}
+The distinction between classes derived and not derived from \fname{cOwnedObject}
 is important because the generated code differs at places.
 The generated code is set up so that if you incidentally
 forget the \fname{noncobject} keyword (and thereby mislead the
 message compiler into thinking that your class is rooted in
-\fname{cObject} when in fact it is not), you'll get a C++ compiler
+\fname{cOwnedObject} when in fact it is not), you'll get a C++ compiler
 error in the generated header file.
 
 
@@ -1234,7 +1234,7 @@ class FooPacket : public FooPacket_Base
     FooPacket(const FooPacket& other) : FooPacket_Base(other) {}
     FooPacket& operator=(const FooPacket& other)
         {FooPacket_Base::operator=(other); return *this;}
-    virtual cPolymorphic *dup() {return new FooPacket(*this);}
+    virtual cObject *dup() {return new FooPacket(*this);}
 };
 
 Register_Class(FooPacket);
@@ -1365,7 +1365,7 @@ class STLMessage : public STLMessage_Base
         bar = other.bar;
         return *this;
     }
-    virtual cPolymorphic *dup() {return new STLMessage(*this);}
+    virtual cObject *dup() {return new STLMessage(*this);}
 
     // foo methods
     virtual void setFooArraySize(unsigned int size) {}
@@ -1417,9 +1417,9 @@ This section attempts to summarize the possibilities.
 You can generate:
 
 \begin{itemize}
-  \item  classes rooted in \cclass{cObject}
+  \item  classes rooted in \cclass{cOwnedObject}
   \item  messages (default base class is \cclass{cMessage})
-  \item  classes not rooted in \cclass{cObject}
+  \item  classes not rooted in \cclass{cOwnedObject}
   \item  plain C structs
 \end{itemize}
 
@@ -1431,7 +1431,7 @@ The following data types are supported for fields:
     \ttt{unsigned long}, \ttt{double}
   \item  \ttt{string}, a dynamically allocated string, presented as \ttt{const char *}
   \item  fixed-size arrays of the above types
-  \item  structs, classes (both rooted and not rooted in \cclass{cObject}),
+  \item  structs, classes (both rooted and not rooted in \cclass{cOwnedObject}),
     declared with the message syntax or externally in C++ code
   \item  variable-sized arrays of the above types (stored as a dynamically
     allocated array plus an integer for the array size)

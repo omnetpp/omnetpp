@@ -33,7 +33,7 @@ class cProperties;
  *
  * @ingroup Internals
  */
-class SIM_API cProperty : public cPolymorphic
+class SIM_API cProperty : public cObject
 {
   public:
     static const char *DEFAULTKEY;
@@ -94,7 +94,7 @@ class SIM_API cProperty : public cPolymorphic
     cProperty& operator=(const cProperty& other);
     //@}
 
-    /** @name Redefined cPolymorphic functions */
+    /** @name Redefined cObject functions */
     //@{
     /**
      * Returns the property name.

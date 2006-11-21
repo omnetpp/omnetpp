@@ -60,7 +60,7 @@ class SIM_API cXMLPar : public cParValue
     void operator=(const cXMLPar& otherpar);
     //@}
 
-    /** @name Redefined cPolymorphic functions */
+    /** @name Redefined cObject functions */
     //@{
 
     /**

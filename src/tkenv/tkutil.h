@@ -99,16 +99,16 @@ class cCollectObjectsVisitor;
 char *voidPtrToStr(void *ptr, char *buffer=NULL);
 void *strToVoidPtr(const char *s);
 
-inline char *ptrToStr(cPolymorphic *ptr, char *buffer=NULL) {return voidPtrToStr((void *)ptr, buffer);}
-inline cPolymorphic *strToPtr(const char *s) {return (cPolymorphic *)strToVoidPtr(s);}
+inline char *ptrToStr(cObject *ptr, char *buffer=NULL) {return voidPtrToStr((void *)ptr, buffer);}
+inline cObject *strToPtr(const char *s) {return (cObject *)strToVoidPtr(s);}
 
 void setObjectListResult(Tcl_Interp *interp, cCollectObjectsVisitor *visitor);
 
-void insertIntoInspectorListbox(Tcl_Interp *interp, const char *listbox, cPolymorphic *obj, bool fullpath);
+void insertIntoInspectorListbox(Tcl_Interp *interp, const char *listbox, cObject *obj, bool fullpath);
 
 void feedCollectionIntoInspectorListbox(cCollectObjectsVisitor *visitor, Tcl_Interp *interp, const char *listbox, bool fullpath);
 
-int fillListboxWithChildObjects(cPolymorphic *object, Tcl_Interp *interp, const char *listbox, bool deep);
+int fillListboxWithChildObjects(cObject *object, Tcl_Interp *interp, const char *listbox, bool deep);
 
 void inspectObjectByName(const char *fullpath, const char *classname, int insptype, const char *geometry);
 

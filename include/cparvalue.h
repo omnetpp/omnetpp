@@ -36,11 +36,11 @@ class cComponent;
  *
  * @ingroup SimCore
  */
-class SIM_API cParValue : public cObject
+class SIM_API cParValue : public cOwnedObject
 {
   protected:
-    // Flags are stored in cObject "flags" field. Values should be chosen so that
-    // there is no collision with bits used by cObject.
+    // Flags are stored in cOwnedObject "flags" field. Values should be chosen so that
+    // there is no collision with bits used by cOwnedObject.
     enum {
       FL_ISVOLATILE = 4,  // whether it was declared as "volatile" in NED
       FL_HASVALUE = 16,   // whether it has a value
@@ -83,7 +83,7 @@ class SIM_API cParValue : public cObject
     cParValue& operator=(const cParValue& otherpar);
     //@}
 
-    /** @name Redefined cObject functions */
+    /** @name Redefined cOwnedObject functions */
     //@{
     /**
      * Redefined change return type to cParValue.

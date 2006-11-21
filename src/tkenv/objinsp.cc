@@ -33,18 +33,18 @@
 
 void _dummy_for_objinsp() {}
 
-TGenericPolymorphicInspector::TGenericPolymorphicInspector(cPolymorphic *obj, int typ, const char *geom, void *dat) :
+TGenericObjectInspector::TGenericObjectInspector(cObject *obj, int typ, const char *geom, void *dat) :
 TInspector(obj,typ,geom,dat)
 {
     hascontentspage = false;
     focuscontentspage = false;
 }
 
-TGenericPolymorphicInspector::~TGenericPolymorphicInspector()
+TGenericObjectInspector::~TGenericObjectInspector()
 {
 }
 
-void TGenericPolymorphicInspector::createWindow()
+void TGenericObjectInspector::createWindow()
 {
    TInspector::createWindow(); // create window name etc.
 
@@ -55,7 +55,7 @@ void TGenericPolymorphicInspector::createWindow()
                    (hascontentspage ? "1" : "0"), " ",  (focuscontentspage ? "1" : "0"), " ", NULL));
 }
 
-void TGenericPolymorphicInspector::update()
+void TGenericObjectInspector::update()
 {
    TInspector::update();
 
@@ -71,27 +71,27 @@ void TGenericPolymorphicInspector::update()
    }
 }
 
-void TGenericPolymorphicInspector::writeBack()
+void TGenericObjectInspector::writeBack()
 {
    TInspector::writeBack();
 }
 
-int TGenericPolymorphicInspector::inspectorCommand(Tcl_Interp *interp, int argc, const char **argv)
+int TGenericObjectInspector::inspectorCommand(Tcl_Interp *interp, int argc, const char **argv)
 {
    return TCL_ERROR;
 }
 
-class TGenericPolymorphicInspectorFactory : public cInspectorFactory
+class TGenericObjectInspectorFactory : public cInspectorFactory
 {
   public:
-    TGenericPolymorphicInspectorFactory(const char *name) : cInspectorFactory(name) {}
+    TGenericObjectInspectorFactory(const char *name) : cInspectorFactory(name) {}
 
-    bool supportsObject(cPolymorphic *obj) {return true;}
+    bool supportsObject(cObject *obj) {return true;}
     int inspectorType() {return INSP_OBJECT;}
-    double qualityAsDefault(cPolymorphic *object) {return 1.0;}
+    double qualityAsDefault(cObject *object) {return 1.0;}
 
-    TInspector *createInspectorFor(cPolymorphic *object, int type, const char *geom, void *data) {
-        TGenericPolymorphicInspector *insp = new TGenericPolymorphicInspector(object, type, geom, data);
+    TInspector *createInspectorFor(cObject *object, int type, const char *geom, void *data) {
+        TGenericObjectInspector *insp = new TGenericObjectInspector(object, type, geom, data);
         bool showcontentspage =
             dynamic_cast<cArray *>(object) || dynamic_cast<cQueue *>(object) ||
             dynamic_cast<cMessageHeap *>(object) || dynamic_cast<cDefaultList *>(object) ||
@@ -104,7 +104,7 @@ class TGenericPolymorphicInspectorFactory : public cInspectorFactory
     }
 };
 
-Register_InspectorFactory(TGenericPolymorphicInspectorFactory);
+Register_InspectorFactory(TGenericObjectInspectorFactory);
 
 
 //=======================================================================
@@ -115,11 +115,11 @@ Register_InspectorFactory(TGenericPolymorphicInspectorFactory);
 //   public:
 //     TObjInspectorFactory(const char *name) : cInspectorFactory(name) {}
 //
-//     bool supportsObject(cPolymorphic *obj) {return true;}
+//     bool supportsObject(cObject *obj) {return true;}
 //     int inspectorType() {return INSP_OBJECT;}
-//     double qualityAsDefault(cPolymorphic *object) {return 1.0;}
+//     double qualityAsDefault(cObject *object) {return 1.0;}
 //
-//     TInspector *createInspectorFor(cPolymorphic *object,int type,const char *geom,void *data) {
+//     TInspector *createInspectorFor(cObject *object,int type,const char *geom,void *data) {
 //         return new TObjInspector(object, type, geom, data);
 //     }
 // };
@@ -127,7 +127,7 @@ Register_InspectorFactory(TGenericPolymorphicInspectorFactory);
 // Register_InspectorFactory(TObjInspectorFactory);
 //
 //
-// TObjInspector::TObjInspector(cPolymorphic *obj,int typ,const char *geom,void *dat) :
+// TObjInspector::TObjInspector(cObject *obj,int typ,const char *geom,void *dat) :
 //     TInspector(obj,typ,geom,dat)
 // {
 // }
@@ -176,10 +176,10 @@ Register_InspectorFactory(TGenericPolymorphicInspectorFactory);
 //   public:
 //     TContainerInspectorFactory(const char *name) : cInspectorFactory(name) {}
 //
-//     bool supportsObject(cPolymorphic *obj) {return true;}
+//     bool supportsObject(cObject *obj) {return true;}
 //     int inspectorType() {return INSP_OBJECT;}
 //
-//     double qualityAsDefault(cPolymorphic *object) {
+//     double qualityAsDefault(cObject *object) {
 //         if (dynamic_cast<cArray *>(object) || dynamic_cast<cQueue *>(object) ||
 //             dynamic_cast<cMessageHeap *>(object) || dynamic_cast<cDefaultList *>(object) ||
 //             dynamic_cast<cSimulation *>(object)
@@ -189,7 +189,7 @@ Register_InspectorFactory(TGenericPolymorphicInspectorFactory);
 //             return 0.9;
 //     }
 //
-//     TInspector *createInspectorFor(cPolymorphic *object,int type,const char *geom,void *data) {
+//     TInspector *createInspectorFor(cObject *object,int type,const char *geom,void *data) {
 //         return new TContainerInspector(object, type, geom, data);
 //     }
 // };
@@ -197,7 +197,7 @@ Register_InspectorFactory(TGenericPolymorphicInspectorFactory);
 // Register_InspectorFactory(TContainerInspectorFactory);
 //
 //
-// TContainerInspector::TContainerInspector(cPolymorphic *obj,int typ,const char *geom,void *dat) :
+// TContainerInspector::TContainerInspector(cObject *obj,int typ,const char *geom,void *dat) :
 //     TInspector(obj,typ,geom,dat)
 // {
 //    char *opt = (char *)dat;
@@ -232,11 +232,11 @@ Register_InspectorFactory(TGenericPolymorphicInspectorFactory);
 //   public:
 //     TMessageInspectorFactory(const char *name) : cInspectorFactory(name) {}
 //
-//     bool supportsObject(cPolymorphic *obj) {return dynamic_cast<cMessage *>(obj)!=NULL;}
+//     bool supportsObject(cObject *obj) {return dynamic_cast<cMessage *>(obj)!=NULL;}
 //     int inspectorType() {return INSP_OBJECT;}
-//     double qualityAsDefault(cPolymorphic *object) {return 2.0;}
+//     double qualityAsDefault(cObject *object) {return 2.0;}
 //
-//     TInspector *createInspectorFor(cPolymorphic *object,int type,const char *geom,void *data) {
+//     TInspector *createInspectorFor(cObject *object,int type,const char *geom,void *data) {
 //         return new TMessageInspector(object, type, geom, data);
 //     }
 // };
@@ -244,7 +244,7 @@ Register_InspectorFactory(TGenericPolymorphicInspectorFactory);
 // Register_InspectorFactory(TMessageInspectorFactory);
 //
 //
-// TMessageInspector::TMessageInspector(cPolymorphic *obj,int typ,const char *geom,void *dat) :
+// TMessageInspector::TMessageInspector(cObject *obj,int typ,const char *geom,void *dat) :
 //     TInspector(obj,typ,geom,dat)
 // {
 //    controlinfopage = NULL;
@@ -327,15 +327,15 @@ class TWatchInspectorFactory : public cInspectorFactory
   public:
     TWatchInspectorFactory(const char *name) : cInspectorFactory(name) {}
 
-    bool supportsObject(cPolymorphic *obj) {
+    bool supportsObject(cObject *obj) {
         // Return true if it's a watch for a simple type (int, double, string etc).
-        // For structures, we prefer the normal TGenericPolymorphicInspector.
+        // For structures, we prefer the normal TGenericObjectInspector.
         // Currently we're prepared for cStdVectorWatcherBase.
         return dynamic_cast<cWatchBase *>(obj) && !dynamic_cast<cStdVectorWatcherBase *>(obj);
     }
     int inspectorType() {return INSP_OBJECT;}
-    double qualityAsDefault(cPolymorphic *object) {return 2.0;}
-    TInspector *createInspectorFor(cPolymorphic *object,int type,const char *geom,void *data) {
+    double qualityAsDefault(cObject *object) {return 2.0;}
+    TInspector *createInspectorFor(cObject *object,int type,const char *geom,void *data) {
         return new TWatchInspector(object, type, geom, data);
     }
 };
@@ -343,7 +343,7 @@ class TWatchInspectorFactory : public cInspectorFactory
 Register_InspectorFactory(TWatchInspectorFactory);
 
 
-TWatchInspector::TWatchInspector(cPolymorphic *obj,int typ,const char *geom,void *dat) :
+TWatchInspector::TWatchInspector(cObject *obj,int typ,const char *geom,void *dat) :
     TInspector(obj,typ,geom,dat)
 {
 }
@@ -386,11 +386,11 @@ class TParInspectorFactory : public cInspectorFactory
   public:
     TParInspectorFactory(const char *name) : cInspectorFactory(name) {}
 
-    bool supportsObject(cPolymorphic *obj) {return dynamic_cast<cPar *>(obj)!=NULL;}
+    bool supportsObject(cObject *obj) {return dynamic_cast<cPar *>(obj)!=NULL;}
     int inspectorType() {return INSP_OBJECT;}
-    double qualityAsDefault(cPolymorphic *object) {return 2.0;}
+    double qualityAsDefault(cObject *object) {return 2.0;}
 
-    TInspector *createInspectorFor(cPolymorphic *object,int type,const char *geom,void *data) {
+    TInspector *createInspectorFor(cObject *object,int type,const char *geom,void *data) {
         return new TParInspector(object, type, geom, data);
     }
 };
@@ -398,7 +398,7 @@ class TParInspectorFactory : public cInspectorFactory
 Register_InspectorFactory(TParInspectorFactory);
 
 
-TParInspector::TParInspector(cPolymorphic *obj,int typ,const char *geom,void *dat) :
+TParInspector::TParInspector(cObject *obj,int typ,const char *geom,void *dat) :
     TInspector(obj,typ,geom,dat)
 {
 }

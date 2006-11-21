@@ -181,7 +181,7 @@
  * @ingroup SimSupport
  * @see FSM_Switch, FSM_Transient, FSM_Steady, FSM_Enter, FSM_Exit, FSM_Goto
  */
-class SIM_API cFSM : public cObject
+class SIM_API cFSM : public cOwnedObject
 {
   private:
     //
@@ -205,41 +205,41 @@ class SIM_API cFSM : public cObject
     /**
      * Copy constructor.
      */
-    cFSM(const cFSM& vs) : cObject() {setName(vs.name());operator=(vs);}
+    cFSM(const cFSM& vs) : cOwnedObject() {setName(vs.name());operator=(vs);}
 
     /**
      * Assignment operator. The name member doesn't get copied;
-     * see cObject's operator=() for more details.
+     * see cOwnedObject's operator=() for more details.
      */
     cFSM& operator=(const cFSM& vs);
     //@}
 
-    /** @name Redefined cObject member functions. */
+    /** @name Redefined cOwnedObject member functions. */
     //@{
 
     /**
      * Creates and returns an exact copy of this object.
-     * See cObject for more details.
+     * See cOwnedObject for more details.
      */
     virtual cFSM *dup() const  {return new cFSM(*this);}
 
     /**
      * Produces a one-line description of object contents.
-     * See cObject for more details.
+     * See cOwnedObject for more details.
      */
     virtual std::string info() const;
 
     /**
      * Serializes the object into a PVM or MPI send buffer.
      * Used by the simulation kernel for parallel execution.
-     * See cObject for more details.
+     * See cOwnedObject for more details.
      */
     virtual void netPack(cCommBuffer *buffer);
 
     /**
      * Deserializes the object from a PVM or MPI receive buffer
      * Used by the simulation kernel for parallel execution.
-     * See cObject for more details.
+     * See cOwnedObject for more details.
      */
     virtual void netUnpack(cCommBuffer *buffer);
     //@}

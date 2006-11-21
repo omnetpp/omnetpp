@@ -19,14 +19,14 @@
 #include "matchableobject.h"
 #include "cclassdescriptor.h"
 
-MatchableObjectAdapter::MatchableObjectAdapter(DefaultAttribute attr, cPolymorphic *obj)
+MatchableObjectAdapter::MatchableObjectAdapter(DefaultAttribute attr, cObject *obj)
 {
     this->attr = attr;
     this->obj = obj;
     desc = NULL;
 }
 
-void MatchableObjectAdapter::setObject(cPolymorphic *obj)
+void MatchableObjectAdapter::setObject(cObject *obj)
 {
     this->obj = obj;
     desc = NULL;
@@ -60,7 +60,7 @@ void MatchableObjectAdapter::splitIndex(char *fieldname, int& index)
     }
 }
 
-bool MatchableObjectAdapter::findDescriptorField(cClassDescriptor *desc, cPolymorphic *obj, char *fieldname, int& fieldId, int& index)
+bool MatchableObjectAdapter::findDescriptorField(cClassDescriptor *desc, cObject *obj, char *fieldname, int& fieldId, int& index)
 {
     // chop off possible bracketed index from field name
     splitIndex(fieldname, index);

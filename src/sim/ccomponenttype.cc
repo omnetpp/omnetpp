@@ -60,8 +60,8 @@ cModule *cModuleType::create(const char *modname, cModule *parentmod, int vector
 
     // Object members of the new module class are collected to tmplist.
     cDefaultList tmplist;
-    cDefaultList *oldlist = cObject::defaultOwner();
-    cObject::setDefaultOwner(&tmplist);
+    cDefaultList *oldlist = cOwnedObject::defaultOwner();
+    cOwnedObject::setDefaultOwner(&tmplist);
 
     // create the new module object
     cModule *mod;
@@ -90,7 +90,7 @@ cModule *cModuleType::create(const char *modname, cModule *parentmod, int vector
     mod->takeAllObjectsFrom(tmplist);
 
     // restore defaultowner
-    cObject::setDefaultOwner(oldlist);
+    cOwnedObject::setDefaultOwner(oldlist);
 
     // register with cSimulation
     int id = simulation.registerModule(mod);
@@ -111,7 +111,7 @@ cModule *cModuleType::create(const char *modname, cModule *parentmod, int vector
 
 cModule *cModuleType::instantiateModuleClass(const char *classname)
 {
-    cPolymorphic *obj = cClassFactory::createOne(classname); // this won't return NULL
+    cObject *obj = cClassFactory::createOne(classname); // this won't return NULL
     cModule *mod = dynamic_cast<cModule *>(obj);
     if (!mod)
         throw new cRuntimeError("class %s is not a module type", classname); //FIXME better msg
@@ -143,7 +143,7 @@ cChannelType::cChannelType(const char *name, const char *description) : cCompone
 
 cChannel *cChannelType::instantiateChannelClass(const char *classname)
 {
-    cPolymorphic *obj = cClassFactory::createOne(classname); // this won't return NULL
+    cObject *obj = cClassFactory::createOne(classname); // this won't return NULL
     cChannel *channel = dynamic_cast<cChannel *>(obj);
     if (!channel)
         throw new cRuntimeError("class %s is not a channel type", classname); //FIXME better msg
@@ -156,8 +156,8 @@ cChannel *cChannelType::create(const char *name, cModule *parentmod)
 
     // Object members of the new channel class are collected to tmplist.
     cDefaultList tmplist;
-    cDefaultList *oldlist = cObject::defaultOwner();
-    cObject::setDefaultOwner(&tmplist);
+    cDefaultList *oldlist = cOwnedObject::defaultOwner();
+    cOwnedObject::setDefaultOwner(&tmplist);
 
     // create channel object
     cChannel *channel = createChannelObject();
@@ -171,7 +171,7 @@ cChannel *cChannelType::create(const char *name, cModule *parentmod)
     channel->takeAllObjectsFrom(tmplist);
 
     // restore defaultowner
-    cObject::setDefaultOwner(oldlist);
+    cOwnedObject::setDefaultOwner(oldlist);
 
     // set up RNG mapping
     ev.getRNGMappingFor(channel);

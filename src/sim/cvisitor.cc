@@ -22,7 +22,7 @@
 #include "cpolymorphic.h"
 
 
-bool cVisitor::process(cPolymorphic *obj)
+bool cVisitor::process(cObject *obj)
 {
     try
     {
@@ -35,7 +35,7 @@ bool cVisitor::process(cPolymorphic *obj)
     return true;
 }
 
-bool cVisitor::processChildrenOf(cPolymorphic *obj)
+bool cVisitor::processChildrenOf(cObject *obj)
 {
     try
     {

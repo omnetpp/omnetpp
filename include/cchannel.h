@@ -55,17 +55,17 @@ class SIM_API cChannel : public cComponent //noncopyable
     virtual ~cChannel();
     //@}
 
-    /** @name Redefined cObject functions. */
+    /** @name Redefined cOwnedObject functions. */
     //@{
     /**
      * Produces a one-line description of object contents.
-     * See cObject for more details.
+     * See cOwnedObject for more details.
      */
     virtual std::string info() const;
 
     /**
      * Calls v->visit(this) for each contained object.
-     * See cObject for more details.
+     * See cOwnedObject for more details.
      */
     virtual void forEachChild(cVisitor *v);
 

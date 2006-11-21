@@ -18,7 +18,7 @@
 #include <assert.h>
 
 #include "cenvir.h"
-#include "cPolymorphic.h"
+#include "cObject.h"
 #include "cmodule.h"
 #include "cmessage.h"
 #include "cqueue.h"
@@ -39,7 +39,7 @@ cCollectObjectsVisitor::cCollectObjectsVisitor()
 {
     sizelimit = 0; // no limit by default
     size = 16;
-    arr = new cPolymorphic *[size];
+    arr = new cObject *[size];
     count = 0;
 }
 
@@ -53,7 +53,7 @@ void cCollectObjectsVisitor::setSizeLimit(int limit)
     sizelimit = limit;
 }
 
-void cCollectObjectsVisitor::addPointer(cPolymorphic *obj)
+void cCollectObjectsVisitor::addPointer(cObject *obj)
 {
     if (sizelimit && count==sizelimit)
         throw EndTraversalException();
@@ -61,7 +61,7 @@ void cCollectObjectsVisitor::addPointer(cPolymorphic *obj)
     // if array is full, reallocate
     if (count==size)
     {
-        cPolymorphic **arr2 = new cPolymorphic *[2*size];
+        cObject **arr2 = new cObject *[2*size];
         for (int i=0; i<count; i++) arr2[i] = arr[i];
         delete [] arr;
         arr = arr2;
@@ -72,7 +72,7 @@ void cCollectObjectsVisitor::addPointer(cPolymorphic *obj)
     arr[count++] = obj;
 }
 
-void cCollectObjectsVisitor::visit(cPolymorphic *obj)
+void cCollectObjectsVisitor::visit(cObject *obj)
 {
     addPointer(obj);
 
@@ -108,7 +108,7 @@ void cFilteredCollectObjectsVisitor::setFilterPars(unsigned int cat,
         objfullpathpattern = new MatchExpression(objfullpathpatt, false, true, true);
 }
 
-void cFilteredCollectObjectsVisitor::visit(cPolymorphic *obj)
+void cFilteredCollectObjectsVisitor::visit(cObject *obj)
 {
     bool ok = (category==~0U) ||
         ((category&CATEGORY_MODULES) && dynamic_cast<cModule *>(obj)) ||
@@ -151,7 +151,7 @@ void cFilteredCollectObjectsVisitor::visit(cPolymorphic *obj)
 
 //----------------------------------------------------------------
 
-void cCollectChildrenVisitor::visit(cPolymorphic *obj)
+void cCollectChildrenVisitor::visit(cObject *obj)
 {
     if (obj==parent)
         obj->forEachChild(this);
@@ -161,7 +161,7 @@ void cCollectChildrenVisitor::visit(cPolymorphic *obj)
 
 //----------------------------------------------------------------
 
-void cCountChildrenVisitor::visit(cPolymorphic *obj)
+void cCountChildrenVisitor::visit(cObject *obj)
 {
     if (obj==parent)
         obj->forEachChild(this);
@@ -172,7 +172,7 @@ void cCountChildrenVisitor::visit(cPolymorphic *obj)
 //----------------------------------------------------------------
 // utilities for sorting objects:
 
-#define OBJPTR(a) (*(cPolymorphic **)a)
+#define OBJPTR(a) (*(cObject **)a)
 static int qsort_cmp_byname(const void *a, const void *b)
 {
     return opp_strcmp(OBJPTR(a)->fullName(), OBJPTR(b)->fullName());
@@ -187,19 +187,19 @@ static int qsort_cmp_byclass(const void *a, const void *b)
 }
 #undef OBJPTR
 
-void sortObjectsByName(cPolymorphic **objs, int n)
+void sortObjectsByName(cObject **objs, int n)
 {
-    qsort(objs, n, sizeof(cPolymorphic*), qsort_cmp_byname);
+    qsort(objs, n, sizeof(cObject*), qsort_cmp_byname);
 }
 
-void sortObjectsByFullPath(cPolymorphic **objs, int n)
+void sortObjectsByFullPath(cObject **objs, int n)
 {
-    qsort(objs, n, sizeof(cPolymorphic*), qsort_cmp_byfullpath);
+    qsort(objs, n, sizeof(cObject*), qsort_cmp_byfullpath);
 }
 
-void sortObjectsByClassName(cPolymorphic **objs, int n)
+void sortObjectsByClassName(cObject **objs, int n)
 {
-    qsort(objs, n, sizeof(cPolymorphic*), qsort_cmp_byclass);
+    qsort(objs, n, sizeof(cObject*), qsort_cmp_byclass);
 }
 
 

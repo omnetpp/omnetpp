@@ -32,7 +32,7 @@ enum { INSP_DEFAULT,
 const char *insptypeNameFromCode( int code );
 int insptypeCodeFromName(const char *namestr);
 
-void splitInspectorName(const char *namestr, cPolymorphic *&object, int& type);
+void splitInspectorName(const char *namestr, cObject *&object, int& type);
 
 //=========================================================================
 
@@ -42,7 +42,7 @@ void splitInspectorName(const char *namestr, cPolymorphic *&object, int& type);
 class TInspector
 {
    protected:
-      cPolymorphic *object;        // the inspected object
+      cObject *object;        // the inspected object
       int type;               // INSP_OBJECT, etc.
       void *data;
       char windowname[24];    // Tk inspector window variable
@@ -50,10 +50,10 @@ class TInspector
       char geometry[64];      // X-window geometry string (window pos + size)
       bool toBeDeleted;       // "mark for deletion" flag (set if user wants to close inspector during animation)
    public:
-      TInspector(cPolymorphic *obj, int typ, const char *geom, void *dat=NULL);
+      TInspector(cObject *obj, int typ, const char *geom, void *dat=NULL);
       virtual ~TInspector();
 
-      virtual cPolymorphic *getObject() {return object;}
+      virtual cObject *getObject() {return object;}
       virtual int getType() {return type;}
       virtual const char *windowName() {return windowname;}
 
@@ -72,7 +72,7 @@ class TInspector
 
       virtual int inspectorCommand(Tcl_Interp *interp, int, const char **) {return TCL_ERROR;}
 
-      virtual void objectDeleted(cPolymorphic *) {}
+      virtual void objectDeleted(cObject *) {}
       //@}
 
       /** @name Utility functions */
@@ -86,11 +86,11 @@ class TInspector
       void setText(const char *entry, const char *val);
       void setReadonlyText(const char *entry, const char *val);
       const char *getEntry(const char *entry);
-      void setInspectButton(const char *button, cPolymorphic *object, bool displayfullpath, int inspectortype);
-      void setToolbarInspectButton(const char *button, cPolymorphic *object, int inspectortype);
+      void setInspectButton(const char *button, cObject *object, bool displayfullpath, int inspectortype);
+      void setToolbarInspectButton(const char *button, cObject *object, int inspectortype);
 
       void deleteInspectorListbox(const char *listbox);
-      void fillInspectorListbox(const char *listbox, cPolymorphic *object, bool deep);
+      void fillInspectorListbox(const char *listbox, cObject *object, bool deep);
       void fillListboxWithSubmodules(const char *listbox, cModule *parent);
       //@}
 };
@@ -100,11 +100,11 @@ class TInspectorPanel
 {
    protected:
       char widgetname[80];
-      cPolymorphic *object;
+      cObject *object;
    public:
-      TInspectorPanel(const char *widgetname, cPolymorphic *obj);
+      TInspectorPanel(const char *widgetname, cObject *obj);
       virtual ~TInspectorPanel() {}
-      virtual void setObject(cPolymorphic *obj);
+      virtual void setObject(cObject *obj);
       virtual void update() = 0;
       virtual void writeBack() = 0;
       virtual int inspectorCommand(Tcl_Interp *, int, const char **) = 0;

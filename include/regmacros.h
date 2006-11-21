@@ -89,13 +89,13 @@
 /**
  * Register class. This defines a factory object which makes it possible
  * to create an object by the passing class name to the createOne() function.
- * The class must be a subclass of cPolymorphic, otherwise a compile-time error
+ * The class must be a subclass of cObject, otherwise a compile-time error
  * will occur: <i>"cannot convert..."</i>
  *
  * @hideinitializer
  */
 #define Register_Class(CLASSNAME) \
-  cPolymorphic *CLASSNAME##__create() {return new CLASSNAME;} \
+  cObject *CLASSNAME##__create() {return new CLASSNAME;} \
   EXECUTE_ON_STARTUP(CLASSNAME##__class, classes.instance()->add(new cClassFactory(#CLASSNAME,CLASSNAME##__create));)
 //@}
 
@@ -114,7 +114,7 @@
  */
 // Implementation note: this is basically a Register_Class(), making sure the class subclasses from cModule.
 #define Define_Module(CLASSNAME) \
-  cPolymorphic *CLASSNAME##__create() {cModule *ret = new CLASSNAME; return ret; } \
+  cObject *CLASSNAME##__create() {cModule *ret = new CLASSNAME; return ret; } \
   EXECUTE_ON_STARTUP(CLASSNAME##__class, classes.instance()->add(new cClassFactory(#CLASSNAME,CLASSNAME##__create, "module"));)
 
 /**
@@ -130,7 +130,7 @@
  */
 // Implementation note: this is basically a Register_Class(), only we lie about the class name.
 #define Define_Module_Like(CLASSNAME,NEDNAME) \
-  cPolymorphic *NEDNAME##__create() {cModule *ret = new CLASSNAME; return ret; } \
+  cObject *NEDNAME##__create() {cModule *ret = new CLASSNAME; return ret; } \
   EXECUTE_ON_STARTUP(NEDNAME##__class, classes.instance()->add(new cClassFactory(#NEDNAME,NEDNAME##__create, \
                      (std::string("module, implemented by ")+#CLASSNAME).c_str()));)
 
@@ -142,7 +142,7 @@
  */
 // Implementation note: this is basically a Register_Class().
 #define Define_Channel(CLASSNAME) \
-  cPolymorphic *CLASSNAME##__create() {cChannel *ret = new CLASSNAME; return ret; } \
+  cObject *CLASSNAME##__create() {cChannel *ret = new CLASSNAME; return ret; } \
   EXECUTE_ON_STARTUP(CLASSNAME##__class, classes.instance()->add(new cClassFactory(#CLASSNAME,CLASSNAME##__create, "channel"));)
 
 /**
@@ -158,7 +158,7 @@
  */
 // Implementation note: this is basically a Register_Class(), only we lie about the class name.
 #define Define_Channel_Like(CLASSNAME,NEDNAME) \
-  cPolymorphic *NEDNAME##__create() {cChannel *ret = new CLASSNAME; return ret;} \
+  cObject *NEDNAME##__create() {cChannel *ret = new CLASSNAME; return ret;} \
   EXECUTE_ON_STARTUP(NEDNAME##__class, classes.instance()->add(new cClassFactory(#NEDNAME,NEDNAME##__create, \
                      (std::string("channel, implemented by ")+#CLASSNAME).c_str()));)
 

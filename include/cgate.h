@@ -52,7 +52,7 @@ class SIM_API cGate : public cNoncopyableObject
   protected:
     mutable char *fullname; // buffer to store full name of object   FIXME stringpool it!!
 
-    // gate type is stored in the "short unused" field of cObject
+    // gate type is stored in the "short unused" field of cOwnedObject
     char& gatetype() const  {return *(char*)&unused;}
 
     int  serno;         // index if gate vector, 0 otherwise
@@ -88,17 +88,17 @@ class SIM_API cGate : public cNoncopyableObject
     virtual ~cGate();
     //@}
 
-    /** @name Redefined cObject member functions */
+    /** @name Redefined cOwnedObject member functions */
     //@{
     /**
      * Calls v->visit(this) for each contained object.
-     * See cObject for more details.
+     * See cOwnedObject for more details.
      */
     virtual void forEachChild(cVisitor *v);
 
     /**
      * Produces a one-line description of object contents.
-     * See cObject for more details.
+     * See cOwnedObject for more details.
      */
     virtual std::string info() const;
 

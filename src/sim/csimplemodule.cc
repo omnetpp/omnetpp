@@ -669,7 +669,7 @@ void cSimpleModule::breakpoint(const char *label)
     ev.breakpointHit(label, this);
 }
 
-bool cSimpleModule::snapshot(cObject *object, const char *label)
+bool cSimpleModule::snapshot(cOwnedObject *object, const char *label)
 {
     return simulation.snapshot(object, label);
 }

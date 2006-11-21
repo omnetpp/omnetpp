@@ -20,6 +20,6 @@ void f() {
 
 #include "cpolymorphic.h"
 
-class A : public cPolymorphic, public stdstringvector {
+class A : public cObject, public stdstringvector {
 
 };

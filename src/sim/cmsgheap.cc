@@ -60,7 +60,7 @@ static int qsort_cmp_msgs(const void *p1, const void *p2)
 
 //----
 
-cMessageHeap::cMessageHeap(const char *name, int siz) : cObject(name, false)
+cMessageHeap::cMessageHeap(const char *name, int siz) : cOwnedObject(name, false)
 {
     insertcntr = 0L;
     n = 0;
@@ -68,7 +68,7 @@ cMessageHeap::cMessageHeap(const char *name, int siz) : cObject(name, false)
     h = new cMessage *[size+1];    // +1 is necessary because h[0] is not used
 }
 
-cMessageHeap::cMessageHeap(const cMessageHeap& heap) : cObject()
+cMessageHeap::cMessageHeap(const cMessageHeap& heap) : cOwnedObject()
 {
     h=NULL; n=0;
     setName( heap.name() );
@@ -112,7 +112,7 @@ cMessageHeap& cMessageHeap::operator=(const cMessageHeap& heap)
 
     clear();
 
-    cObject::operator=(heap);
+    cOwnedObject::operator=(heap);
 
     n = heap.n;
     size = heap.size;

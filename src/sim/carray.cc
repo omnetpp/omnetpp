@@ -5,7 +5,7 @@
 //           Discrete System Simulation in C++
 //
 //   Member functions of
-//    cArray : flexible array to store cObject objects
+//    cArray : flexible array to store cOwnedObject objects
 //
 //  Author: Andras Varga
 //
@@ -53,11 +53,11 @@ void cArray::Iterator::init(const cArray& a, bool athead)
     }
 }
 
-cObject *cArray::Iterator::operator++(int)
+cOwnedObject *cArray::Iterator::operator++(int)
 {
     if (k<0 || k>=array->items())
         return NULL;
-    cObject *obj = array->get(k);
+    cOwnedObject *obj = array->get(k);
 
     k++;
     while (!array->get(k) && k<array->items())
@@ -65,11 +65,11 @@ cObject *cArray::Iterator::operator++(int)
     return obj;
 }
 
-cObject *cArray::Iterator::operator--(int)
+cOwnedObject *cArray::Iterator::operator--(int)
 {
     if (k<0 || k>=array->items())
         return NULL;
-    cObject *obj = array->get(k);
+    cOwnedObject *obj = array->get(k);
     k--;
     while (!array->get(k) && k>=0)
         k--;
@@ -78,7 +78,7 @@ cObject *cArray::Iterator::operator--(int)
 
 //----
 
-cArray::cArray(const cArray& list) : cObject()
+cArray::cArray(const cArray& list) : cOwnedObject()
 {
     vect=NULL;
     last=-1;
@@ -87,14 +87,14 @@ cArray::cArray(const cArray& list) : cObject()
 }
 
 cArray::cArray(const char *name, int siz, int dt) :
-cObject( name )
+cOwnedObject( name )
 {
     tkownership = true;
     delta = Max(1,dt);
     size = Max(siz,0);
     firstfree = 0;
     last = -1;
-    vect = new cObject *[size];
+    vect = new cOwnedObject *[size];
     for (int i=0; i<size; i++) vect[i]=NULL;
 }
 
@@ -110,7 +110,7 @@ cArray& cArray::operator=(const cArray& list)
 
     clear();
 
-    cObject::operator=(list);
+    cOwnedObject::operator=(list);
 
     tkownership = list.tkownership;
     size = list.size;
@@ -118,12 +118,12 @@ cArray& cArray::operator=(const cArray& list)
     firstfree = list.firstfree;
     last = list.last;
     delete [] vect;
-    vect = new cObject *[size];
-    if (vect) memcpy( vect, list.vect, size * sizeof(cObject *) );
+    vect = new cOwnedObject *[size];
+    if (vect) memcpy( vect, list.vect, size * sizeof(cOwnedObject *) );
 
     for (int i=0; i<=last; i++)
         if (vect[i] && vect[i]->owner()==const_cast<cArray*>(&list))
-            take( vect[i] = (cObject *)vect[i]->dup() );
+            take( vect[i] = (cOwnedObject *)vect[i]->dup() );
     return *this;
 }
 
@@ -148,7 +148,7 @@ void cArray::netPack(cCommBuffer *buffer)
 #ifndef WITH_PARSIM
     throw new cRuntimeError(this,eNOPARSIM);
 #else
-    cObject::netPack(buffer);
+    cOwnedObject::netPack(buffer);
 
     buffer->pack(size);
     buffer->pack(delta);
@@ -172,7 +172,7 @@ void cArray::netUnpack(cCommBuffer *buffer)
 #ifndef WITH_PARSIM
     throw new cRuntimeError(this,eNOPARSIM);
 #else
-    cObject::netUnpack(buffer);
+    cOwnedObject::netUnpack(buffer);
 
     delete [] vect;
 
@@ -181,7 +181,7 @@ void cArray::netUnpack(cCommBuffer *buffer)
     buffer->unpack(firstfree);
     buffer->unpack(last);
 
-    vect = new cObject *[size];
+    vect = new cOwnedObject *[size];
     for (int i = 0; i <= last; i++)
     {
         if (!buffer->checkFlag())
@@ -204,7 +204,7 @@ void cArray::clear()
     last = -1;
 }
 
-int cArray::add(cObject *obj)
+int cArray::add(cOwnedObject *obj)
 {
     if (!obj)
         throw new cRuntimeError(this,"cannot insert NULL pointer");
@@ -222,9 +222,9 @@ int cArray::add(cObject *obj)
     }
     else // must allocate bigger vector
     {
-        cObject **v = new cObject *[size+delta];
-        memcpy(v, vect, sizeof(cObject*)*size );
-        memset(v+size, 0, sizeof(cObject*)*delta);
+        cOwnedObject **v = new cOwnedObject *[size+delta];
+        memcpy(v, vect, sizeof(cOwnedObject*)*size );
+        memset(v+size, 0, sizeof(cOwnedObject*)*delta);
         delete [] vect;
         vect = v;
         vect[size] = obj;
@@ -235,7 +235,7 @@ int cArray::add(cObject *obj)
     return retval;
 }
 
-int cArray::addAt(int m, cObject *obj)
+int cArray::addAt(int m, cOwnedObject *obj)
 {
     if (!obj)
         throw new cRuntimeError(this,"cannot insert NULL pointer");
@@ -256,9 +256,9 @@ int cArray::addAt(int m, cObject *obj)
     }
     else // must allocate bigger vector
     {
-        cObject **v = new cObject *[m+delta];
-        memcpy(v, vect, sizeof(cObject*)*size);
-        memset(v+size, 0, sizeof(cObject*)*(m+delta-size));
+        cOwnedObject **v = new cOwnedObject *[m+delta];
+        memcpy(v, vect, sizeof(cOwnedObject*)*size);
+        memset(v+size, 0, sizeof(cOwnedObject*)*(m+delta-size));
         delete [] vect;
         vect = v;
         vect[m] = obj;
@@ -271,7 +271,7 @@ int cArray::addAt(int m, cObject *obj)
     return m;
 }
 
-int cArray::set(cObject *obj)
+int cArray::set(cOwnedObject *obj)
 {
     if (!obj)
         throw new cRuntimeError(this,"cannot insert NULL pointer");
@@ -292,7 +292,7 @@ int cArray::set(cObject *obj)
     }
 }
 
-int cArray::find(cObject *obj) const
+int cArray::find(cOwnedObject *obj) const
 {
     int i;
     for (i=0; i<=last; i++)
@@ -316,7 +316,7 @@ int cArray::find(const char *objname) const
         return -1;
 }
 
-cObject *cArray::get(int m)
+cOwnedObject *cArray::get(int m)
 {
     if (m>=0 && m<=last && vect[m])
         return vect[m];
@@ -324,7 +324,7 @@ cObject *cArray::get(int m)
         return NULL;
 }
 
-const cObject *cArray::get(int m) const
+const cOwnedObject *cArray::get(int m) const
 {
     if (m>=0 && m<=last && vect[m])
         return vect[m];
@@ -332,7 +332,7 @@ const cObject *cArray::get(int m) const
         return NULL;
 }
 
-cObject *cArray::get(const char *objname)
+cOwnedObject *cArray::get(const char *objname)
 {
     int m = find( objname );
     if (m==-1)
@@ -340,7 +340,7 @@ cObject *cArray::get(const char *objname)
     return get(m);
 }
 
-const cObject *cArray::get(const char *objname) const
+const cOwnedObject *cArray::get(const char *objname) const
 {
     int m = find( objname );
     if (m==-1)
@@ -348,7 +348,7 @@ const cObject *cArray::get(const char *objname) const
     return get(m);
 }
 
-cObject *cArray::remove(const char *objname)
+cOwnedObject *cArray::remove(const char *objname)
 {
     int m = find( objname );
     if (m==-1)
@@ -356,7 +356,7 @@ cObject *cArray::remove(const char *objname)
     return remove(m);
 }
 
-cObject *cArray::remove(cObject *obj)
+cOwnedObject *cArray::remove(cOwnedObject *obj)
 {
     if (!obj) return NULL;
 
@@ -366,12 +366,12 @@ cObject *cArray::remove(cObject *obj)
     return remove(m);
 }
 
-cObject *cArray::remove(int m)
+cOwnedObject *cArray::remove(int m)
 {
     if (m<0 || m>last || vect[m]==NULL)
         return NULL;
 
-    cObject *obj = vect[m]; vect[m] = NULL;
+    cOwnedObject *obj = vect[m]; vect[m] = NULL;
     firstfree = Min(firstfree, m);
     if (m==last)
         do {

@@ -44,7 +44,7 @@ long cMessage::total_msgs = 0;
 long cMessage::live_msgs = 0;
 
 
-cMessage::cMessage(const cMessage& msg) : cObject(msg)
+cMessage::cMessage(const cMessage& msg) : cOwnedObject(msg)
 {
     sharecount = 0;
     parlistp = NULL;
@@ -56,7 +56,7 @@ cMessage::cMessage(const cMessage& msg) : cObject(msg)
     live_msgs++;
 }
 
-cMessage::cMessage(const char *name, int k, long ln, int pri, bool err) : cObject(name,false)
+cMessage::cMessage(const char *name, int k, long ln, int pri, bool err) : cOwnedObject(name,false)
 {
     // name pooling is off for messages by default, as unique names are quite common
     msgkind=k; len=ln; prior=pri; error=err;
@@ -88,8 +88,8 @@ cMessage::~cMessage()
         dropAndDelete(encapmsg);
 #endif
 
-    if (dynamic_cast<cObject *>(ctrlp))
-        dropAndDelete((cObject *)ctrlp);
+    if (dynamic_cast<cOwnedObject *>(ctrlp))
+        dropAndDelete((cOwnedObject *)ctrlp);
     else
         delete ctrlp;
     live_msgs--;
@@ -191,7 +191,7 @@ void cMessage::netPack(cCommBuffer *buffer)
 #ifndef WITH_PARSIM
     throw new cRuntimeError(this,eNOPARSIM);
 #else
-    cObject::netPack(buffer);
+    cOwnedObject::netPack(buffer);
 
     if (contextptr || ctrlp)
         throw new cRuntimeError(this,"netPack(): cannot pack object with contextPointer or controlInfo set");
@@ -225,7 +225,7 @@ void cMessage::netUnpack(cCommBuffer *buffer)
 #ifndef WITH_PARSIM
     throw new cRuntimeError(this,eNOPARSIM);
 #else
-    cObject::netUnpack(buffer);
+    cOwnedObject::netUnpack(buffer);
 
     ASSERT(sharecount==0);
     buffer->unpack(msgkind);
@@ -262,7 +262,7 @@ cMessage& cMessage::operator=(const cMessage& msg)
         throw new cRuntimeError(this,"operator=(): this message is refcounted (shared between "
                                      "several messages), it is forbidden to change it");
 
-    cObject::operator=(msg);
+    cOwnedObject::operator=(msg);
 
     msgkind = msg.msgkind;
     prior = msg.prior;
@@ -427,30 +427,30 @@ cMessage *cMessage::encapsulatedMsg() const
     return encapmsg;
 }
 
-void cMessage::setControlInfo(cPolymorphic *p)
+void cMessage::setControlInfo(cObject *p)
 {
     if (!p)
         throw new cRuntimeError(this,"setControlInfo(): pointer is NULL");
     if (ctrlp)
         throw new cRuntimeError(this,"setControlInfo(): message already has control info attached");
-    if (dynamic_cast<cObject *>(p))
-        take((cObject *)p);
+    if (dynamic_cast<cOwnedObject *>(p))
+        take((cOwnedObject *)p);
     ctrlp = p;
 }
 
-cPolymorphic *cMessage::removeControlInfo()
+cObject *cMessage::removeControlInfo()
 {
-    cPolymorphic *p = ctrlp;
+    cObject *p = ctrlp;
     ctrlp = NULL;
-    if (dynamic_cast<cObject *>(p))
-        drop((cObject *)p);
+    if (dynamic_cast<cOwnedObject *>(p))
+        drop((cOwnedObject *)p);
     return p;
 }
 
 cMessagePar& cMessage::par(int n)
 {
     cArray& parlist = parList();
-    cObject *p = parlist.get(n);
+    cOwnedObject *p = parlist.get(n);
     if (!p)
         throw new cRuntimeError(this,"par(int): has no parameter #%d",n);
     if (!dynamic_cast<cMessagePar *>(p))
@@ -461,7 +461,7 @@ cMessagePar& cMessage::par(int n)
 cMessagePar& cMessage::par(const char *s)
 {
     cArray& parlist = parList();
-    cObject *p = parlist.get(s);
+    cOwnedObject *p = parlist.get(s);
     if (!p)
         throw new cRuntimeError(this,"par(const char *): has no parameter called `%s'",s);
     if (!dynamic_cast<cMessagePar *>(p))
@@ -538,7 +538,7 @@ void cMessage::setArrivalTime(simtime_t t)
     delivd = t;
 }
 
-int cMessage::cmpbydelivtime(cObject *one, cObject *other)
+int cMessage::cmpbydelivtime(cOwnedObject *one, cOwnedObject *other)
 {
     // compare by delivery time and priority
     cMessage *msg1 = (cMessage*)one,
@@ -547,7 +547,7 @@ int cMessage::cmpbydelivtime(cObject *one, cObject *other)
     return (x!=0) ? (x>0 ? 1 : -1) : (msg1->prior - msg2->prior);
 }
 
-int cMessage::cmpbypriority(cObject *one, cObject *other)
+int cMessage::cmpbypriority(cOwnedObject *one, cOwnedObject *other)
 {
     int x = ((cMessage*)one)->prior - ((cMessage*)other)->prior;
     return sgn(x);

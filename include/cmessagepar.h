@@ -86,7 +86,7 @@ class SIM_API cDoubleExpression : public cMPExpression
  *     - <b>X</b> reverse Polish expression (array of ExprElem objects),
  *     - <b>C</b> compiled expression (subclassed from cDoubleExpression),
  *     - <b>T</b> distribution from a cStatistic,
- *     - <b>P</b> pointer to cObject,
+ *     - <b>P</b> pointer to cOwnedObject,
  *     - <b>I</b> indirection (refers to another cMessagePar)
  *     - <b>M</b> XML element (pointer to a cXMLElement)
  *
@@ -97,12 +97,12 @@ class SIM_API cDoubleExpression : public cMPExpression
  * name will be displayed as prompt text.
  *
  * NOTE: forEachChild() ignores objects stored here such as cMessagePars in ExprElem
- * structs (type X), cObject pointed to (type P), cStatistic (type T)
+ * structs (type X), cOwnedObject pointed to (type P), cStatistic (type T)
  *
  * @ingroup SimCore
  * @see ExprElem
  */
-class SIM_API cMessagePar : public cObject   // FIXME simplify and DEPRECATE this class!!!
+class SIM_API cMessagePar : public cOwnedObject   // FIXME simplify and DEPRECATE this class!!!
 {
   public:
     /**
@@ -278,7 +278,7 @@ class SIM_API cMessagePar : public cObject   // FIXME simplify and DEPRECATE thi
                 VoidDelFunc delfunc;
                 VoidDupFunc dupfunc;
                 size_t itemsize;                } ptr;  // P:void* pointer
-       struct { cObject *obj;                   } obj;  // O:object pointer
+       struct { cOwnedObject *obj;                   } obj;  // O:object pointer
        struct { cXMLElement *node;              } xmlp; // M:XML element pointer
     };
 
@@ -341,7 +341,7 @@ class SIM_API cMessagePar : public cObject   // FIXME simplify and DEPRECATE thi
     virtual ~cMessagePar();
 
     /**
-     * Assignment operator. The name member doesn't get copied; see cObject's
+     * Assignment operator. The name member doesn't get copied; see cOwnedObject's
      * operator=() for more details.
      *
      * The behavior with redirected cMessagePar objects is the following. This function
@@ -354,44 +354,44 @@ class SIM_API cMessagePar : public cObject   // FIXME simplify and DEPRECATE thi
     cMessagePar& operator=(const cMessagePar& otherpar);
     //@}
 
-    /** @name Redefined cObject member functions */
+    /** @name Redefined cOwnedObject member functions */
     //@{
 
     /**
      * Creates and returns an exact copy of this object.
-     * See cObject for more details.
+     * See cOwnedObject for more details.
      */
     virtual cMessagePar *dup() const  {return new cMessagePar(*this);}
 
     /**
      * Produces a one-line description of object contents.
-     * See cObject for more details.
+     * See cOwnedObject for more details.
      */
     virtual std::string info() const;
 
     /**
      * Produces a multi-line description of the object's contents.
-     * See cObject for more details.
+     * See cOwnedObject for more details.
      */
     virtual std::string detailedInfo() const;
 
     /**
      * Calls v->visit(this) for the contained object, if there's any.
-     * See cObject for more details.
+     * See cOwnedObject for more details.
      */
     virtual void forEachChild(cVisitor *v);
 
     /**
      * Serializes the object into a PVM or MPI send buffer.
      * Used by the simulation kernel for parallel execution.
-     * See cObject for more details.
+     * See cOwnedObject for more details.
      */
     virtual void netPack(cCommBuffer *buffer);
 
     /**
      * Deserializes the object from a PVM or MPI receive buffer
      * Used by the simulation kernel for parallel execution.
-     * See cObject for more details.
+     * See cOwnedObject for more details.
      */
     virtual void netUnpack(cCommBuffer *buffer);
     //@}
@@ -506,7 +506,7 @@ class SIM_API cMessagePar : public cObject   // FIXME simplify and DEPRECATE thi
      * Sets the value to the given object. Whether cMessagePar will take the
      * ownership of the object depends on the takeOwnership() flag.
      */
-    cMessagePar& setObjectValue(cObject *obj);
+    cMessagePar& setObjectValue(cOwnedObject *obj);
 
     /**
      * Sets the value to the given cXMLElement.
@@ -535,7 +535,7 @@ class SIM_API cMessagePar : public cObject   // FIXME simplify and DEPRECATE thi
     void configPointer( VoidDelFunc delfunc, VoidDupFunc dupfunc, size_t itemsize=0);
 
     /**
-     * Sets the flag that determines whether setObjectValue(cObject *) and
+     * Sets the flag that determines whether setObjectValue(cOwnedObject *) and
      * setDoubleValue(cStatistic *) should automatically take ownership of
      * the objects.
      */
@@ -580,9 +580,9 @@ class SIM_API cMessagePar : public cObject   // FIXME simplify and DEPRECATE thi
     void *pointerValue();
 
     /**
-     * Returns value as pointer to cObject. The cMessagePar type must be pointer (O).
+     * Returns value as pointer to cOwnedObject. The cMessagePar type must be pointer (O).
      */
-    cObject *objectValue();
+    cOwnedObject *objectValue();
 
     /**
      * Returns value as pointer to cXMLElement. The cMessagePar type must be XML (M).
@@ -783,7 +783,7 @@ class SIM_API cMessagePar : public cObject   // FIXME simplify and DEPRECATE thi
     /**
      * Equivalent to setObjectValue().
      */
-    cMessagePar& operator=(cObject *obj)    {return setObjectValue(obj);}
+    cMessagePar& operator=(cOwnedObject *obj)    {return setObjectValue(obj);}
 
     /**
      * Equivalent to setXMLValue().
@@ -858,7 +858,7 @@ class SIM_API cMessagePar : public cObject   // FIXME simplify and DEPRECATE thi
     /**
      * Equivalent to objectValue().
      */
-    operator cObject *()     {return objectValue();}
+    operator cOwnedObject *()     {return objectValue();}
 
     /**
      * Equivalent to xmlValue().
@@ -875,7 +875,7 @@ class SIM_API cMessagePar : public cObject   // FIXME simplify and DEPRECATE thi
      * This function can be used to sort cMessagePar objects in a priority
      * queue.
      */
-    static int cmpbyvalue(cObject *one, cObject *other);
+    static int cmpbyvalue(cOwnedObject *one, cOwnedObject *other);
     //@}
 };
 

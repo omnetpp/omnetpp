@@ -35,15 +35,15 @@ using std::ostream;
 
 bool cStaticFlag::staticflag;
 
-Register_Class(cObject);
+Register_Class(cOwnedObject);
 
 
 #ifdef DEVELOPER_DEBUG
 #include <set>
-std::set<cObject*> objectlist;
+std::set<cOwnedObject*> objectlist;
 void printAllObjects()
 {
-    for (std::set<cObject*>::iterator it = objectlist.begin(); it != objectlist.end(); ++it)
+    for (std::set<cOwnedObject*>::iterator it = objectlist.begin(); it != objectlist.end(); ++it)
     {
         printf(" %p (%s)%s\n", (*it), (*it)->className(), (*it)->name());
     }
@@ -52,17 +52,17 @@ void printAllObjects()
 
 
 // static class members
-char cObject::fullpathbuf[MAX_OBJECTFULLPATH];
-cStringPool cObject::stringPool;
-cDefaultList *cObject::defaultowner = &defaultList;
-long cObject::total_objs = 0;
-long cObject::live_objs = 0;
+char cOwnedObject::fullpathbuf[MAX_OBJECTFULLPATH];
+cStringPool cOwnedObject::stringPool;
+cDefaultList *cOwnedObject::defaultowner = &defaultList;
+long cOwnedObject::total_objs = 0;
+long cOwnedObject::live_objs = 0;
 
 
 cDefaultList defaultList;
 
 
-cObject::cObject()
+cOwnedObject::cOwnedObject()
 {
     namep = NULL;
     flags = FL_NAMEPOOLING;
@@ -76,7 +76,7 @@ cObject::cObject()
 #endif
 }
 
-cObject::cObject(const char *name, bool namepooling)
+cOwnedObject::cOwnedObject(const char *name, bool namepooling)
 {
     flags = namepooling ? FL_NAMEPOOLING : 0;
     if (!name)
@@ -95,7 +95,7 @@ cObject::cObject(const char *name, bool namepooling)
 #endif
 }
 
-cObject::cObject(const cObject& obj)
+cOwnedObject::cOwnedObject(const cOwnedObject& obj)
 {
     flags = obj.flags; // copy all flags, incl namepooling
     namep = NULL;
@@ -111,7 +111,7 @@ cObject::cObject(const cObject& obj)
 #endif
 }
 
-cObject::~cObject()
+cOwnedObject::~cOwnedObject()
 {
 #ifdef DEVELOPER_DEBUG
     objectlist.erase(this);
@@ -133,9 +133,9 @@ cObject::~cObject()
     live_objs--;
 }
 
-void cObject::ownedObjectDeleted(cObject *obj)
+void cOwnedObject::ownedObjectDeleted(cOwnedObject *obj)
 {
-    // Note: too late to call obj->className(), at this point it'll aways return "cObject"
+    // Note: too late to call obj->className(), at this point it'll aways return "cOwnedObject"
     throw new cRuntimeError("Object %s is currently in (%s)%s, it cannot be deleted. "
                             "If this error occurs inside %s, it needs to be changed "
                             "to call drop() before it can delete that object. "
@@ -147,7 +147,7 @@ void cObject::ownedObjectDeleted(cObject *obj)
                             className());
 }
 
-void cObject::yieldOwnership(cObject *obj, cObject *newowner)
+void cOwnedObject::yieldOwnership(cOwnedObject *obj, cOwnedObject *newowner)
 {
     throw new cRuntimeError("(%s)%s is currently in (%s)%s, it cannot be inserted into (%s)%s",
                             obj->className(), obj->fullName(),
@@ -155,20 +155,20 @@ void cObject::yieldOwnership(cObject *obj, cObject *newowner)
                             newowner->className(), newowner->fullPath().c_str());
 }
 
-void cObject::removeFromOwnershipTree()
+void cOwnedObject::removeFromOwnershipTree()
 {
     // set ownership of this object to null
     if (ownerp)
         ownerp->yieldOwnership(this, NULL);
 }
 
-void cObject::take(cObject *obj)
+void cOwnedObject::take(cOwnedObject *obj)
 {
     // ask current owner to release it -- if it's a cDefaultList, it will.
     obj->ownerp->yieldOwnership(obj, this);
 }
 
-void cObject::drop(cObject *obj)
+void cOwnedObject::drop(cOwnedObject *obj)
 {
     if (obj->ownerp!=this)
         throw new cRuntimeError(this,"drop(): not owner of object (%s)%s",
@@ -176,7 +176,7 @@ void cObject::drop(cObject *obj)
     defaultowner->doInsert(obj);
 }
 
-void cObject::dropAndDelete(cObject *obj)
+void cOwnedObject::dropAndDelete(cOwnedObject *obj)
 {
     if (!obj)
         return;
@@ -188,18 +188,18 @@ void cObject::dropAndDelete(cObject *obj)
 }
 
 
-void cObject::setDefaultOwner(cDefaultList *list)
+void cOwnedObject::setDefaultOwner(cDefaultList *list)
 {
     ASSERT(list!=NULL);
     defaultowner = list;
 }
 
-cDefaultList *cObject::defaultOwner()
+cDefaultList *cOwnedObject::defaultOwner()
 {
     return defaultowner;
 }
 
-cObject& cObject::operator=(const cObject& obj)
+cOwnedObject& cOwnedObject::operator=(const cOwnedObject& obj)
 {
     // Not too much to do:
     // - ownership not affected
@@ -210,7 +210,7 @@ cObject& cObject::operator=(const cObject& obj)
     return *this;
 }
 
-void cObject::setName(const char *s)
+void cOwnedObject::setName(const char *s)
 {
     // release name string
     if (namep)
@@ -230,7 +230,7 @@ void cObject::setName(const char *s)
         namep  = opp_strdup(s);
 }
 
-void cObject::setNamePooling(bool pooling)
+void cOwnedObject::setNamePooling(bool pooling)
 {
     if ((flags & FL_NAMEPOOLING) == pooling)
         return;
@@ -258,7 +258,7 @@ void cObject::setNamePooling(bool pooling)
     }
 }
 
-void cObject::netPack(cCommBuffer *buffer)
+void cOwnedObject::netPack(cCommBuffer *buffer)
 {
 #ifndef WITH_PARSIM
     throw new cRuntimeError(this,eNOPARSIM);
@@ -267,7 +267,7 @@ void cObject::netPack(cCommBuffer *buffer)
 #endif
 }
 
-void cObject::netUnpack(cCommBuffer *buffer)
+void cOwnedObject::netUnpack(cCommBuffer *buffer)
 {
 #ifndef WITH_PARSIM
     throw new cRuntimeError(this,eNOPARSIM);
@@ -278,12 +278,12 @@ void cObject::netUnpack(cCommBuffer *buffer)
 #endif
 }
 
-std::string cObject::fullPath() const
+std::string cOwnedObject::fullPath() const
 {
     return std::string(fullPath(fullpathbuf,MAX_OBJECTFULLPATH));
 }
 
-const char *cObject::fullPath(char *buffer, int bufsize) const
+const char *cOwnedObject::fullPath(char *buffer, int bufsize) const
 {
     // check we got a decent buffer
     if (!buffer || bufsize<4)
@@ -332,14 +332,14 @@ void cNoncopyableObject::netUnpack(cCommBuffer *buffer)
 
 //-----
 
-ostream& operator<< (ostream& os, const cObject *p)
+ostream& operator<< (ostream& os, const cOwnedObject *p)
 {
     if (!p)
         return os << "(NULL)";
     return os << "(" << p->className() << ")" << p->fullName();
 }
 
-ostream& operator<< (ostream& os, const cObject& o)
+ostream& operator<< (ostream& os, const cOwnedObject& o)
 {
     return os << "(" << o.className() << ")" << o.fullName();
 }

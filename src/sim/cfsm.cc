@@ -30,7 +30,7 @@ Register_Class(cFSM);
 
 
 cFSM::cFSM(const char *name) :
-  cObject(name)
+  cOwnedObject(name)
 {
   _state=0;
   _statename="INIT";
@@ -40,7 +40,7 @@ cFSM& cFSM::operator=(const cFSM& vs)
 {
     if (this==&vs) return *this;
 
-    cObject::operator=(vs);
+    cOwnedObject::operator=(vs);
     _statename=vs._statename;
     _state=vs._state;
     return *this;

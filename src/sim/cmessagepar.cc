@@ -78,14 +78,14 @@ static const char *typeName(char typechar)
 }
 
 // constructors
-cMessagePar::cMessagePar(const char *name) : cObject( name )
+cMessagePar::cMessagePar(const char *name) : cOwnedObject( name )
 {
     tkownership = false;
     changedflag = inputflag = false;
     typechar = 'L'; lng.val = 0L;
 }
 
-cMessagePar::cMessagePar(const cMessagePar& par) : cObject()
+cMessagePar::cMessagePar(const cMessagePar& par) : cOwnedObject()
 {
     tkownership = false;
     changedflag = inputflag = false;
@@ -95,7 +95,7 @@ cMessagePar::cMessagePar(const cMessagePar& par) : cObject()
     cMessagePar::operator=(par);
 }
 
-cMessagePar::cMessagePar(const char *name, cMessagePar& other) : cObject(name)
+cMessagePar::cMessagePar(const char *name, cMessagePar& other) : cOwnedObject(name)
 {
     tkownership = false;
     changedflag = inputflag = false;
@@ -154,7 +154,7 @@ void cMessagePar::deleteOld()
 }
 
 //----------------------------------------------------------------------
-// redefine virtual cObject funcs
+// redefine virtual cOwnedObject funcs
 
 std::string cMessagePar::info() const
 {
@@ -239,7 +239,7 @@ void cMessagePar::netPack(cCommBuffer *buffer)
 #ifndef WITH_PARSIM
     throw new cRuntimeError(this,eNOPARSIM);
 #else
-    cObject::netPack(buffer);
+    cOwnedObject::netPack(buffer);
 
     // For error checking & handling
     if (typechar != 'S' && typechar != 'C' && typechar != 'L' && typechar != 'D'
@@ -324,7 +324,7 @@ void cMessagePar::netUnpack(cCommBuffer *buffer)
     char *funcname;
     int argc;
 
-    cObject::netUnpack(buffer);
+    cOwnedObject::netUnpack(buffer);
 
     buffer->unpack(typechar);
     buffer->unpack(inputflag);
@@ -686,7 +686,7 @@ cMessagePar& cMessagePar::setPointerValue(void *_ptr)
     return *this;
 }
 
-cMessagePar& cMessagePar::setObjectValue(cObject *_obj)
+cMessagePar& cMessagePar::setObjectValue(cOwnedObject *_obj)
 {
     if (isRedirected())
         return ind.par->setObjectValue(_obj);
@@ -857,7 +857,7 @@ void *cMessagePar::pointerValue()
         throw new cRuntimeError(this,eBADCAST,typeName(typechar),typeName('P'));
 }
 
-cObject *cMessagePar::objectValue()
+cOwnedObject *cMessagePar::objectValue()
 {
     if (isRedirected())
         return ind.par->objectValue();
@@ -1412,7 +1412,7 @@ cMessagePar& cMessagePar::operator=(const cMessagePar& val)
     beforeChange();
     deleteOld();
 
-    cObject::operator=(val);
+    cOwnedObject::operator=(val);
     typechar = val.typechar;
     changedflag = val.changedflag;
     inputflag = val.inputflag;
@@ -1462,9 +1462,9 @@ cMessagePar& cMessagePar::operator=(const cMessagePar& val)
     }
     else if (typechar=='O')
     {
-         cObject *&p = obj.obj;
+         cOwnedObject *&p = obj.obj;
          if (p->owner()==const_cast<cMessagePar*>(&val))
-            take( p = (cObject *)p->dup() );
+            take( p = (cOwnedObject *)p->dup() );
     }
     // type 'I' does not use ownership so we can skip it.
 
@@ -1473,7 +1473,7 @@ cMessagePar& cMessagePar::operator=(const cMessagePar& val)
 }
 
 
-int cMessagePar::cmpbyvalue(cObject *one, cObject *other)
+int cMessagePar::cmpbyvalue(cOwnedObject *one, cOwnedObject *other)
 {
     double x = (double)(*(cMessagePar*)one)-(double)(*(cMessagePar*)other);
     return sgn(x);

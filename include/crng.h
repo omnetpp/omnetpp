@@ -45,7 +45,7 @@ class cConfiguration;
  * @ingroup RandomNumbers
  * @ingroup EnvirExtensions
  */
-class SIM_API cRNG : public cPolymorphic
+class SIM_API cRNG : public cObject
 {
   protected:
     unsigned long numDrawn;

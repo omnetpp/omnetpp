@@ -5,7 +5,7 @@
 //
 //
 //  Declaration of the following classes:
-//    cQueue        : (optionally) sorted queue of cObjects
+//    cQueue        : (optionally) sorted queue of cOwnedObjects
 //
 //==========================================================================
 
@@ -23,7 +23,7 @@
 
 
 /**
- * Queue class for objects derived from cObject. The default behaviour of
+ * Queue class for objects derived from cOwnedObject. The default behaviour of
  * cQueue is a FIFO: you insert elements at the back using insert(), and
  * remove them at the front using pop().
  *
@@ -36,12 +36,12 @@
  * @see Iterator
  * @ingroup Containers
  */
-class SIM_API cQueue : public cObject
+class SIM_API cQueue : public cOwnedObject
 {
   private:
     struct QElem
     {
-        cObject *obj; // contained object
+        cOwnedObject *obj; // contained object
         QElem *prev;  // element towards the front of the queue
         QElem *next;  // element towards the back of the queue
     };
@@ -73,7 +73,7 @@ class SIM_API cQueue : public cObject
         /**
          * Returns the current object.
          */
-        cObject *operator()()  {return p ? p->obj : NULL;}
+        cOwnedObject *operator()()  {return p ? p->obj : NULL;}
 
         /**
          * Returns true if the iterator has reached either end of the queue.
@@ -86,7 +86,7 @@ class SIM_API cQueue : public cObject
          * reached either end of the queue, nothing happens, and one has to
          * call init() to restart iterating.
          */
-        cObject *operator++(int)  {if (!p) return NULL; cObject *r=p->obj; p=p->next; return r;}
+        cOwnedObject *operator++(int)  {if (!p) return NULL; cOwnedObject *r=p->obj; p=p->next; return r;}
 
         /**
          * Returns the current object, then moves the iterator to the previous item
@@ -94,7 +94,7 @@ class SIM_API cQueue : public cObject
          * reached either end of the queue, nothing happens, and one has to
          * call init() to restart iterating.
          */
-        cObject *operator--(int)  {if (!p) return NULL; cObject *r=p->obj; p=p->prev; return r;}
+        cOwnedObject *operator--(int)  {if (!p) return NULL; cOwnedObject *r=p->obj; p=p->prev; return r;}
     };
 
     friend class Iterator;
@@ -106,10 +106,10 @@ class SIM_API cQueue : public cObject
 
   protected:
     // internal functions
-    QElem *find_qelem(cObject *obj) const;
-    void insbefore_qelem(QElem *p, cObject *obj);
-    void insafter_qelem(QElem *p, cObject *obj);
-    cObject *remove_qelem(QElem *p);
+    QElem *find_qelem(cOwnedObject *obj) const;
+    void insbefore_qelem(QElem *p, cOwnedObject *obj);
+    void insafter_qelem(QElem *p, cOwnedObject *obj);
+    cOwnedObject *remove_qelem(QElem *p);
 
   public:
     /** @name Constructors, destructor, assignment. */
@@ -136,12 +136,12 @@ class SIM_API cQueue : public cObject
      * Contained objects that are owned by the queue will be duplicated
      * so that the new queue will have its own copy of them.
      *
-     * The name member doesn't get copied; see cObject's operator=() for more details.
+     * The name member doesn't get copied; see cOwnedObject's operator=() for more details.
      */
     cQueue& operator=(const cQueue& queue);
     //@}
 
-    /** @name Redefined cObject member functions. */
+    /** @name Redefined cOwnedObject member functions. */
     //@{
 
     /**
@@ -153,27 +153,27 @@ class SIM_API cQueue : public cObject
 
     /**
      * Produces a one-line description of object contents.
-     * See cObject for more details.
+     * See cOwnedObject for more details.
      */
     virtual std::string info() const;
 
     /**
      * Calls v->visit(this) for each contained object.
-     * See cObject for more details.
+     * See cOwnedObject for more details.
      */
     virtual void forEachChild(cVisitor *v);
 
     /**
      * Serializes the object into a PVM or MPI send buffer.
      * Used by the simulation kernel for parallel execution.
-     * See cObject for more details.
+     * See cOwnedObject for more details.
      */
     virtual void netPack(cCommBuffer *buffer);
 
     /**
      * Deserializes the object from a PVM or MPI receive buffer
      * Used by the simulation kernel for parallel execution.
-     * See cObject for more details.
+     * See cOwnedObject for more details.
      */
     virtual void netUnpack(cCommBuffer *buffer);
     //@}
@@ -184,33 +184,33 @@ class SIM_API cQueue : public cObject
      * Adds an element to the back of the queue. Trying to insert a
      * NULL pointer is an error (throws cRuntimeError).
      */
-    virtual void insert(cObject *obj);
+    virtual void insert(cOwnedObject *obj);
 
     /**
      * Inserts exactly before the given object. If the given position
      * does not exist or if you try to insert a NULL pointer,
      * cRuntimeError is thrown.
      */
-    virtual void insertBefore(cObject *where, cObject *obj);
+    virtual void insertBefore(cOwnedObject *where, cOwnedObject *obj);
 
     /**
      * Inserts exactly after the given object. If the given position
      * does not exist or if you try to insert a NULL pointer,
      * cRuntimeError is thrown.
      */
-    virtual void insertAfter(cObject *where, cObject *obj);
+    virtual void insertAfter(cOwnedObject *where, cOwnedObject *obj);
 
     /**
      * Unlinks and returns the object given. If the object is not in the
      * queue, NULL pointer is returned.
      */
-    virtual cObject *remove(cObject *obj);
+    virtual cOwnedObject *remove(cOwnedObject *obj);
 
     /**
      * Unlinks and returns the front element in the queue. If the queue
      * was empty, cRuntimeError is thrown.
      */
-    virtual cObject *pop();
+    virtual cOwnedObject *pop();
 
     /**
      * Empties the container. Contained objects that were owned by the
@@ -226,14 +226,14 @@ class SIM_API cQueue : public cObject
      * This is the element to be return by pop().
      * Returns NULL if the queue is empty.
      */
-    virtual cObject *front() const;
+    virtual cOwnedObject *front() const;
 
     /**
      * Returns pointer to the last (back) element in the queue.
      * This is the element most recently added by insert().
      * Returns NULL if the queue is empty.
      */
-    virtual cObject *back() const;
+    virtual cOwnedObject *back() const;
 
     /**
      * Returns the number of objects contained in the queue.
@@ -250,12 +250,12 @@ class SIM_API cQueue : public cObject
      * get(0) returns the front element. This method performs linear
      * search.
      */
-    cObject *get(int i) const;
+    cOwnedObject *get(int i) const;
 
     /**
      * Returns true if the queue contains the passed object.
      */
-    virtual bool contains(cObject *obj) const;
+    virtual bool contains(cOwnedObject *obj) const;
     //@}
 
     /** @name Ownership control flag. */

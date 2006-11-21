@@ -175,7 +175,7 @@ cModule *cModule::parentModule() const
 
 void cModule::setName(const char *s)
 {
-    cObject::setName(s);
+    cOwnedObject::setName(s);
 
     // update fullname
     if (isVector())

@@ -27,7 +27,7 @@
  * Use of this class is DISCOURAGED, it is provided for backward compatibility
  * only. Use std::deque or std::list instead.
  *
- * A double-linked list of non-cObject items. cLinkedList has a cQueue-like
+ * A double-linked list of non-cOwnedObject items. cLinkedList has a cQueue-like
  * interface.
  *
  * Memory management of contained items is controlled by the configPointer()
@@ -37,7 +37,7 @@
  * @see Iterator
  * @ingroup Containers
  */
-class SIM_API cLinkedList : public cObject
+class SIM_API cLinkedList : public cOwnedObject
 {
     // a list elem
     struct Elem
@@ -145,7 +145,7 @@ class SIM_API cLinkedList : public cObject
     virtual ~cLinkedList();
 
     /**
-     * Assignment operator. The name member doesn't get copied; see cObject's
+     * Assignment operator. The name member doesn't get copied; see cOwnedObject's
      * operator=() for more details.
      * Duplication and assignment work all right with cLinkedList.
      * Contained items are treated as configured with configPointer().
@@ -154,7 +154,7 @@ class SIM_API cLinkedList : public cObject
     cLinkedList& operator=(const cLinkedList& queue);
     //@}
 
-    /** @name Redefined cObject member functions */
+    /** @name Redefined cOwnedObject member functions */
     //@{
 
     /**
@@ -166,21 +166,21 @@ class SIM_API cLinkedList : public cObject
 
     /**
      * Produces a one-line description of object contents.
-     * See cObject for more details.
+     * See cOwnedObject for more details.
      */
     virtual std::string info() const;
 
     /**
      * Serializes the object into a PVM or MPI send buffer.
      * Used by the simulation kernel for parallel execution.
-     * See cObject for more details.
+     * See cOwnedObject for more details.
      */
     virtual void netPack(cCommBuffer *buffer);
 
     /**
      * Deserializes the object from a PVM or MPI receive buffer
      * Used by the simulation kernel for parallel execution.
-     * See cObject for more details.
+     * See cOwnedObject for more details.
      */
     virtual void netUnpack(cCommBuffer *buffer);
     //@}

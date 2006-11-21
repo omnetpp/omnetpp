@@ -60,12 +60,12 @@ class SIM_API cHistogramBase : public cDensityEstBase
     virtual ~cHistogramBase();
 
     /**
-     * Assignment operator. The name member doesn't get copied; see cObject's operator=() for more details.
+     * Assignment operator. The name member doesn't get copied; see cOwnedObject's operator=() for more details.
      */
     cHistogramBase& operator=(const cHistogramBase& res);
     //@}
 
-    /** @name Redefined cObject member functions. */
+    /** @name Redefined cOwnedObject member functions. */
     //@{
 
     /* No dup() because this is an abstract class. */
@@ -73,14 +73,14 @@ class SIM_API cHistogramBase : public cDensityEstBase
     /**
      * Serializes the object into a PVM or MPI send buffer.
      * Used by the simulation kernel for parallel execution.
-     * See cObject for more details.
+     * See cOwnedObject for more details.
      */
     virtual void netPack(cCommBuffer *buffer);
 
     /**
      * Deserializes the object from a PVM or MPI receive buffer
      * Used by the simulation kernel for parallel execution.
-     * See cObject for more details.
+     * See cOwnedObject for more details.
      */
     virtual void netUnpack(cCommBuffer *buffer);
     //@}
@@ -154,12 +154,12 @@ class SIM_API cEqdHistogramBase : public cHistogramBase //--LG
     explicit cEqdHistogramBase(const char *name=NULL, int numcells=-1);
 
     /**
-     * Assignment operator. The name member doesn't get copied; see cObject's operator=() for more details.
+     * Assignment operator. The name member doesn't get copied; see cOwnedObject's operator=() for more details.
      */
     cEqdHistogramBase& operator=(const cEqdHistogramBase& res);
     //@}
 
-    /** @name Redefined cObject member functions. */
+    /** @name Redefined cOwnedObject member functions. */
     //@{
 
     /* No dup() because this is an abstract class. */
@@ -167,14 +167,14 @@ class SIM_API cEqdHistogramBase : public cHistogramBase //--LG
     /**
      * Serializes the object into a PVM or MPI send buffer.
      * Used by the simulation kernel for parallel execution.
-     * See cObject for more details.
+     * See cOwnedObject for more details.
      */
     virtual void netPack(cCommBuffer *buffer);
 
     /**
      * Deserializes the object from a PVM or MPI receive buffer
      * Used by the simulation kernel for parallel execution.
-     * See cObject for more details.
+     * See cOwnedObject for more details.
      */
     virtual void netUnpack(cCommBuffer *buffer);
     //@}
@@ -323,12 +323,12 @@ class SIM_API cLongHistogram : public cEqdHistogramBase
     cLongHistogram& operator=(const cLongHistogram&)  {copyNotSupported();return *this;}
     //@}
 
-    /** @name Redefined cObject member functions. */
+    /** @name Redefined cOwnedObject member functions. */
     //@{
 
     /**
      * Creates and returns an exact copy of this object.
-     * See cObject for more details.
+     * See cOwnedObject for more details.
      */
     virtual cLongHistogram *dup() const  {return new cLongHistogram(*this);}
     //@}
@@ -448,12 +448,12 @@ class SIM_API cDoubleHistogram : public cEqdHistogramBase
     cDoubleHistogram& operator=(const cDoubleHistogram&)  {copyNotSupported();return *this;}
     //@}
 
-    /** @name Redefined cObject member functions. */
+    /** @name Redefined cOwnedObject member functions. */
     //@{
 
     /**
      * Creates and returns an exact copy of this object.
-     * See cObject for more details.
+     * See cOwnedObject for more details.
      */
     virtual cDoubleHistogram *dup() const  {return new cDoubleHistogram(*this);}
     //@}

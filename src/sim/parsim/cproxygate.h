@@ -69,7 +69,7 @@ class cProxyGate : public cGate // noncopyable
     virtual ~cProxyGate()  {}
     //@}
 
-    /** @name Redefined cObject member functions */
+    /** @name Redefined cOwnedObject member functions */
     //@{
     /**
      * Redefined here to display remoteProcId, remoteModId and remoteGateId.

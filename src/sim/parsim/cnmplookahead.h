@@ -35,7 +35,7 @@ class cParsimPartition;
  *
  * @ingroup Parsim
  */
-class cNMPLookahead : public cPolymorphic
+class cNMPLookahead : public cObject
 {
   protected:
     cSimulation *sim;

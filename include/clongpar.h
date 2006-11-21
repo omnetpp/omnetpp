@@ -62,7 +62,7 @@ class SIM_API cLongPar : public cParValue
     void operator=(const cLongPar& otherpar);
     //@}
 
-    /** @name Redefined cPolymorphic functions */
+    /** @name Redefined cObject functions */
     //@{
 
     /**

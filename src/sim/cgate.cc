@@ -68,7 +68,7 @@ void cGate::forEachChild(cVisitor *v)
 
 void cGate::setName(const char *s)
 {
-    cObject::setName(s);
+    cOwnedObject::setName(s);
 
     // invalidate fullname (it'll be recreated on demand)
     if (fullname)

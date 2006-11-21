@@ -26,7 +26,7 @@ class THistogramWindow : public TInspector
    protected:
       char canvas[64];
    public:
-      THistogramWindow(cPolymorphic *obj,int typ,const char *geom,void *dat=NULL);
+      THistogramWindow(cObject *obj,int typ,const char *geom,void *dat=NULL);
       virtual void createWindow();
       virtual void update();
       virtual void writeBack() {}
@@ -74,7 +74,7 @@ class TOutVectorWindow : public TInspector
       double moving_tline;   // t position of moving axis
 
    public:
-      TOutVectorWindow(cPolymorphic *obj,int typ,const char *geom,void *dat=NULL, int size=100);
+      TOutVectorWindow(cObject *obj,int typ,const char *geom,void *dat=NULL, int size=100);
       ~TOutVectorWindow();
       virtual void createWindow();
       virtual void update();
@@ -90,12 +90,12 @@ class TOutVectorWindow : public TInspector
 };
 
 //
-// *** Note: the following inspectors have been replaced with TGenericPolymorphicInspector ***
+// *** Note: the following inspectors have been replaced with TGenericObjectInspector ***
 //
 // class TStatisticInspector: public TInspector
 // {
 //    public:
-//       TStatisticInspector(cPolymorphic *obj,int typ,const char *geom,void *dat=NULL);
+//       TStatisticInspector(cObject *obj,int typ,const char *geom,void *dat=NULL);
 //       virtual void createWindow();
 //       virtual void update();
 // };

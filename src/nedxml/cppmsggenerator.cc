@@ -558,7 +558,7 @@ void NEDCppGenerator::generateClass(NEDCppGenerator::ClassDesc& cld, NEDCppGener
     outh << "    " << cld.msgclass << "& operator=(const " << cld.msgclass << "& other);\n";
     if (cld.classtype == CLASSTYPE_COBJECT && !cld.usegap)
     {
-        outh << "    virtual cPolymorphic *dup() const {return new " << cld.msgclass << "(*this);}\n";
+        outh << "    virtual cObject *dup() const {return new " << cld.msgclass << "(*this);}\n";
     }
     outh << "\n";
 
@@ -605,7 +605,7 @@ void NEDCppGenerator::generateClass(NEDCppGenerator::ClassDesc& cld, NEDCppGener
         outh << "*     " << cld.realmsgclass << "(const " << cld.realmsgclass << "& other) : " << cld.msgclass << "(other) {}\n";
         outh << "*     " << cld.realmsgclass << "& operator=(const " << cld.realmsgclass << "& other) {" << cld.msgclass << "::operator=(other); return *this;}\n";
         if (cld.classtype == CLASSTYPE_COBJECT)
-            outh << "*     virtual cPolymorphic *dup() {return new " << cld.realmsgclass << "(*this);}\n";
+            outh << "*     virtual cObject *dup() {return new " << cld.realmsgclass << "(*this);}\n";
         outh << "* };\n";
         if (cld.classtype == CLASSTYPE_COBJECT)
             outh << "* Register_Class(" << cld.realmsgclass << ");\n";
@@ -877,7 +877,7 @@ void NEDCppGenerator::generateDescriptorClass(NEDCppGenerator::ClassDesc& cld, N
     out << "    virtual ~" << cld.msgdescclass << "();\n";
     out << "    virtual const char *className() const {return \"" << cld.msgdescclass << "\";}\n";
     out << "    " << cld.msgdescclass << "& operator=(const " << cld.msgdescclass << "& other);\n";
-    out << "    virtual cPolymorphic *dup() const {return new " << cld.msgdescclass << "(*this);}\n";
+    out << "    virtual cObject *dup() const {return new " << cld.msgdescclass << "(*this);}\n";
     out << "\n";
     out << "    virtual const char *getProperty(const char *propertyname);\n";
     out << "    virtual int getFieldCount(void *object);\n";

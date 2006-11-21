@@ -46,7 +46,7 @@ class cMessage;
  * @ingroup EnvirExtensions
  * @ingroup Internals
  */
-class SIM_API cScheduler : public cPolymorphic
+class SIM_API cScheduler : public cObject
 {
   protected:
     cSimulation *sim;

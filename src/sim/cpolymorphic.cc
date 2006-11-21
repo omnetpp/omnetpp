@@ -20,58 +20,58 @@
 #include "cclassdescriptor.h"
 
 
-    
-cPolymorphic::~cPolymorphic()
+
+cObject::~cObject()
 {
     // notify environment
     ev.objectDeleted(this);
 }
 
-const char *cPolymorphic::className() const
+const char *cObject::className() const
 {
     return opp_typename(typeid(*this));
 }
 
-cClassDescriptor *cPolymorphic::getDescriptor()
+cClassDescriptor *cObject::getDescriptor()
 {
     return cClassDescriptor::getDescriptorFor(this);
 }
 
-std::string cPolymorphic::fullPath() const
+std::string cObject::fullPath() const
 {
     return std::string(fullName());
 }
 
-std::string cPolymorphic::info() const
+std::string cObject::info() const
 {
     return std::string();
 }
 
-std::string cPolymorphic::detailedInfo() const
+std::string cObject::detailedInfo() const
 {
     return std::string();
 }
 
-cPolymorphic *cPolymorphic::dup() const
+cObject *cObject::dup() const
 {
-    throw new cRuntimeError("The dup() method, declared in cPolymorphic, is not "
+    throw new cRuntimeError("The dup() method, declared in cObject, is not "
                             "redefined in class %s", className());
 }
 
-void cPolymorphic::netPack(cCommBuffer *buffer)
+void cObject::netPack(cCommBuffer *buffer)
 {
 }
 
-void cPolymorphic::netUnpack(cCommBuffer *buffer)
+void cObject::netUnpack(cCommBuffer *buffer)
 {
 }
 
-void cPolymorphic::copyNotSupported() const
+void cObject::copyNotSupported() const
 {
     throw new cRuntimeError(this,eCANTCOPY);
 }
 
-void cPolymorphic::forEachChild(cVisitor *v)
+void cObject::forEachChild(cVisitor *v)
 {
 }
 
@@ -84,18 +84,18 @@ class cChildObjectFinderVisitor : public cVisitor
 {
   protected:
     const char *name;
-    cPolymorphic *result;
+    cObject *result;
   public:
     cChildObjectFinderVisitor(const char *objname) {
         name = objname; result = NULL;
     }
-    virtual void visit(cPolymorphic *obj) {
+    virtual void visit(cObject *obj) {
         if (obj->isName(name)) {
             result = obj;
             throw EndTraversalException();
         }
     }
-    cPolymorphic *getResult() {return result;}
+    cObject *getResult() {return result;}
 };
 
 /**
@@ -105,22 +105,22 @@ class cRecursiveObjectFinderVisitor : public cVisitor
 {
   protected:
     const char *name;
-    cPolymorphic *result;
+    cObject *result;
   public:
     cRecursiveObjectFinderVisitor(const char *objname) {
         name = objname; result = NULL;
     }
-    virtual void visit(cPolymorphic *obj) {
+    virtual void visit(cObject *obj) {
         if (obj->isName(name)) {
             result = obj;
             throw EndTraversalException();
         }
         obj->forEachChild(this);
     }
-    cPolymorphic *getResult() {return result;}
+    cObject *getResult() {return result;}
 };
 
-cPolymorphic *cPolymorphic::findObject(const char *objname, bool deep)
+cObject *cObject::findObject(const char *objname, bool deep)
 {
     if (deep)
     {

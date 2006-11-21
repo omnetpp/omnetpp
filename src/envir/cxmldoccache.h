@@ -27,7 +27,7 @@
 /**
  * Reads and caches XML config files.
  */
-class ENVIR_API cXMLDocCache : public cPolymorphic
+class ENVIR_API cXMLDocCache : public cObject
 {
   protected:
     typedef std::map<std::string,cXMLElement*> XMLDocMap;

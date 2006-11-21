@@ -132,12 +132,12 @@ class SIM_API cDensityEstBase : public cStdDev
     virtual ~cDensityEstBase();
 
     /**
-     * Assignment operator. The name member doesn't get copied; see cObject's operator=() for more details.
+     * Assignment operator. The name member doesn't get copied; see cOwnedObject's operator=() for more details.
      */
     cDensityEstBase& operator=(const cDensityEstBase& res);
     //@}
 
-    /** @name Redefined cObject member functions. */
+    /** @name Redefined cOwnedObject member functions. */
     //@{
 
     /* No dup() because this is an abstract class. */
@@ -150,14 +150,14 @@ class SIM_API cDensityEstBase : public cStdDev
     /**
      * Serializes the object into a PVM or MPI send buffer.
      * Used by the simulation kernel for parallel execution.
-     * See cObject for more details.
+     * See cOwnedObject for more details.
      */
     virtual void netPack(cCommBuffer *buffer);
 
     /**
      * Deserializes the object from a PVM or MPI receive buffer
      * Used by the simulation kernel for parallel execution.
-     * See cObject for more details.
+     * See cOwnedObject for more details.
      */
     virtual void netUnpack(cCommBuffer *buffer);
     //@}

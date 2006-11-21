@@ -41,7 +41,7 @@ class SIM_API cComponent : public cDefaultList // noncopyable
 
     short rngmapsize;  // size of rngmap array (RNGs>=rngmapsize are mapped one-to-one to physical RNGs)
     int *rngmap;       // maps local RNG numbers (may be NULL if rngmapsize==0)
-    bool ev_enabled;   // if output from ev<< is enabled   FIXME utilize cObject::flags
+    bool ev_enabled;   // if output from ev<< is enabled   FIXME utilize cOwnedObject::flags
 
     std::vector<cPar*> paramv;  // stores the parameters of this component -- FIXME this should be a NON-POINTER ARRAY! just vector<cPar>
 
@@ -151,7 +151,7 @@ class SIM_API cComponent : public cDefaultList // noncopyable
     virtual ~cComponent();
     //@}
 
-    /** @name Redefined cPolymorphic functions */
+    /** @name Redefined cObject functions */
     //@{
     /**
      * Lie about the class name: we return the NED type name instead of the

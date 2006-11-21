@@ -32,14 +32,14 @@
 Register_Class(cLinkedList);
 
 
-cLinkedList::cLinkedList(const cLinkedList& llist) : cObject()
+cLinkedList::cLinkedList(const cLinkedList& llist) : cOwnedObject()
 {
     headp = tailp = NULL; n = 0;
     setName( llist.name() );
     operator=(llist);
 }
 
-cLinkedList::cLinkedList(const char *name) : cObject(name)
+cLinkedList::cLinkedList(const char *name) : cOwnedObject(name)
 {
     headp=tailp=NULL;
     n=0;
@@ -106,7 +106,7 @@ cLinkedList& cLinkedList::operator=(const cLinkedList& llist)
 
     clear();
 
-    cObject::operator=(llist);
+    cOwnedObject::operator=(llist);
 
     for (cLinkedList::Iterator iter(llist, 0); !iter.end(); iter--)
     {

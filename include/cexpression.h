@@ -30,7 +30,7 @@ class cXMLElement;
  * @see cPar
  * @ingroup SimCore
  */
-class SIM_API cExpression : public cPolymorphic
+class SIM_API cExpression : public cObject
 {
   public:
     /** @name Constructors, destructor, assignment. */
@@ -57,7 +57,7 @@ class SIM_API cExpression : public cPolymorphic
     cExpression& operator=(const cExpression& other) {return *this;}
     //@}
 
-    /** @name Redefined cPolymorphic functions */
+    /** @name Redefined cObject functions */
     //@{
     /**
      * Duplication not supported, this method is redefined to throw an error.
@@ -66,7 +66,7 @@ class SIM_API cExpression : public cPolymorphic
 
     /**
      * Produces a one-line description of object contents.
-     * See cObject for more details.
+     * See cOwnedObject for more details.
      */
     virtual std::string info() const {return "";}
 

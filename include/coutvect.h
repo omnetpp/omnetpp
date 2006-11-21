@@ -75,7 +75,7 @@ class SIM_API cOutVector : public cNoncopyableObject
     virtual ~cOutVector();
     //@}
 
-    /** @name Redefined cObject member functions. */
+    /** @name Redefined cOwnedObject member functions. */
     //@{
 
     /**
@@ -86,7 +86,7 @@ class SIM_API cOutVector : public cNoncopyableObject
 
     /**
      * Produces a one-line description of object contents.
-     * See cObject for more details.
+     * See cOwnedObject for more details.
      */
     virtual std::string info() const;
 

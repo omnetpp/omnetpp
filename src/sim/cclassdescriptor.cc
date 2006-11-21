@@ -190,7 +190,7 @@ cClassDescriptor *cClassDescriptor::getDescriptorFor(const char *classname)
     return dynamic_cast<cClassDescriptor *>(classDescriptors.instance()->get(classname));
 }
 
-cClassDescriptor *cClassDescriptor::getDescriptorFor(cPolymorphic *object)
+cClassDescriptor *cClassDescriptor::getDescriptorFor(cObject *object)
 {
     // find descriptor by class name
     cClassDescriptor *desc = cClassDescriptor::getDescriptorFor(object->className());

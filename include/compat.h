@@ -23,7 +23,7 @@
 // This header needs to be included *last* in omnetpp.h.
 //
 
-// cObject:
+// cOwnedObject:
 #define isA()          className()
 // cQueue:
 #define insertHead(a)  insert(a)

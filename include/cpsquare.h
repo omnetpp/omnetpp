@@ -58,37 +58,37 @@ class SIM_API cPSquare : public cDensityEstBase
     virtual ~cPSquare();
 
     /**
-     * Assignment operator. The name member doesn't get copied; see cObject's operator=() for more details.
+     * Assignment operator. The name member doesn't get copied; see cOwnedObject's operator=() for more details.
      */
     cPSquare& operator=(const cPSquare& res);
     //@}
 
-    /** @name Redefined cObject member functions. */
+    /** @name Redefined cOwnedObject member functions. */
     //@{
 
     /**
      * Creates and returns an exact copy of this object.
-     * See cObject for more details.
+     * See cOwnedObject for more details.
      */
     virtual cPSquare *dup() const  {return new cPSquare(*this);}
 
     /**
      * Produces a multi-line description of the object's contents.
-     * See cObject for more details.
+     * See cOwnedObject for more details.
      */
     virtual std::string detailedInfo() const;
 
     /**
      * Serializes the object into a PVM or MPI send buffer.
      * Used by the simulation kernel for parallel execution.
-     * See cObject for more details.
+     * See cOwnedObject for more details.
      */
     virtual void netPack(cCommBuffer *buffer);
 
     /**
      * Deserializes the object from a PVM or MPI receive buffer
      * Used by the simulation kernel for parallel execution.
-     * See cObject for more details.
+     * See cOwnedObject for more details.
      */
     virtual void netUnpack(cCommBuffer *buffer);
     //@}

@@ -35,7 +35,7 @@ cParValue::~cParValue()
 
 cParValue& cParValue::operator=(const cParValue& other)
 {
-    cObject::operator=(other);
+    cOwnedObject::operator=(other);
     return *this;
 }
 

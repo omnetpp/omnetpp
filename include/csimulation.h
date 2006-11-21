@@ -111,11 +111,11 @@ class SIM_API cSimulation : public cNoncopyableObject
     virtual ~cSimulation();
     //@}
 
-    /** @name Redefined cObject member functions. */
+    /** @name Redefined cOwnedObject member functions. */
     //@{
     /**
      * Calls v->visit(this) for each contained object.
-     * See cObject for more details.
+     * See cOwnedObject for more details.
      */
     virtual void forEachChild(cVisitor *v);
 
@@ -368,7 +368,7 @@ class SIM_API cSimulation : public cNoncopyableObject
     /**
      * Sets global context. Used internally.
      */
-    void setGlobalContext()  {contextmodp=NULL; cObject::setDefaultOwner(&defaultList);}
+    void setGlobalContext()  {contextmodp=NULL; cOwnedObject::setDefaultOwner(&defaultList);}
 
     /**
      * Returns the module whose activity() method is currently active.
@@ -418,7 +418,7 @@ class SIM_API cSimulation : public cNoncopyableObject
      * textual snapshot file.
      * This method is called internally from cSimpleModule's snapshot().
      */
-    bool snapshot(cPolymorphic *obj, const char *label);
+    bool snapshot(cObject *obj, const char *label);
 
     //@}
 };

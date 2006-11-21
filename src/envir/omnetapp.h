@@ -198,7 +198,7 @@ class ENVIR_API TOmnetApp
      * For documentation see corresponding methods in cEnvir.
      */
     //@{
-    virtual void objectDeleted(cPolymorphic *object) {}
+    virtual void objectDeleted(cObject *object) {}
     virtual void messageSent(cMessage *msg, cGate *directToGate) {}
     virtual void messageDelivered(cMessage *msg) {}
     virtual void breakpointHit(const char *lbl, cSimpleModule *mod) {}
@@ -211,7 +211,7 @@ class ENVIR_API TOmnetApp
     virtual void displayStringChanged(cGate *gate) {}
     virtual void displayStringChanged(cModule *submodule) {}
     virtual void backgroundDisplayStringChanged(cModule *parentmodule) {}
-    virtual void undisposedObject(cObject *obj);
+    virtual void undisposedObject(cOwnedObject *obj);
     //@}
 
     /** @name Functions called by cEnvir's similar functions.

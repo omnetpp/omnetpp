@@ -6,7 +6,7 @@
 //
 //
 //  Declaration of the following classes:
-//    cDefaultList : holds a set of cObjects
+//    cDefaultList : holds a set of cOwnedObjects
 //
 //==========================================================================
 
@@ -25,7 +25,7 @@
 
 /**
  * Internal class, used as a base class for cModule. cDefaultList acts
- * as a "soft owner" (see object ownership discussion in cObject documentation).
+ * as a "soft owner" (see object ownership discussion in cOwnedObject documentation).
  * Do not subclass your own classes from cDefaultList.
  *
  * @ingroup Containers
@@ -33,8 +33,8 @@
 class SIM_API cDefaultList : public cNoncopyableObject
 {
   private:
-    friend class cObject;
-    cObject **vect;   // vector of objects
+    friend class cOwnedObject;
+    cOwnedObject **vect;   // vector of objects
     int size;         // size of vector FIXME these varnames are likely to collide with user-defined members of cSimpleModule -- use better ones!
     int count;        // number of elements stored
   public:
@@ -42,27 +42,27 @@ class SIM_API cDefaultList : public cNoncopyableObject
 
   private:
     void construct();
-    void doInsert(cObject *obj);
-    virtual void ownedObjectDeleted(cObject *obj);
-    virtual void yieldOwnership(cObject *obj, cObject *newOwner);
+    void doInsert(cOwnedObject *obj);
+    virtual void ownedObjectDeleted(cOwnedObject *obj);
+    virtual void yieldOwnership(cOwnedObject *obj, cOwnedObject *newOwner);
 
   public:
     // internal: called from module creation code in ctypes.cc
     void takeAllObjectsFrom(cDefaultList& other);
 
   protected:
-    /** @name Redefined cObject member functions */
+    /** @name Redefined cOwnedObject member functions */
     //@{
 
     /**
      * Redefined.
      */
-    void take(cObject *obj);
+    void take(cOwnedObject *obj);
 
     /**
      * Redefined.
      */
-    void drop(cObject *obj);
+    void drop(cOwnedObject *obj);
 
   public:
     /** @name Constructors, destructor, assignment. */
@@ -87,13 +87,13 @@ class SIM_API cDefaultList : public cNoncopyableObject
 
     /**
      * Produces a one-line description of object contents.
-     * See cObject for more details.
+     * See cOwnedObject for more details.
      */
     virtual std::string info() const;
 
     /**
      * Calls v->visit(this) for each contained object.
-     * See cObject for more details.
+     * See cOwnedObject for more details.
      */
     virtual void forEachChild(cVisitor *v);
 
@@ -125,13 +125,13 @@ class SIM_API cDefaultList : public cNoncopyableObject
      * of add() and remove() operations. If the index is out of bounds,
      * NULL is returned.
      */
-    cObject *defaultListGet(int k);
+    cOwnedObject *defaultListGet(int k);
 
     /**
      * Returns true if the set contains the given object, false otherwise.
      */
     // Note: we need a long name here because cModule subclasses from this
-    bool defaultListContains(cObject *obj) const;
+    bool defaultListContains(cOwnedObject *obj) const;
     //@}
 };
 

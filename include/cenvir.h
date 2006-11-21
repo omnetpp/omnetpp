@@ -24,8 +24,8 @@
 #include <iostream>
 #include "defs.h"
 
-class cPolymorphic;
 class cObject;
+class cOwnedObject;
 class cMessage;
 class cGate;
 class cComponent;
@@ -188,10 +188,10 @@ class ENVIR_API cEnvir : public std::ostream
     /**
      * Notifies the environment that the object no longer exists. The
      * user interface should close all inspector windows for the object
-     * and remove it from object lists currently displayed. cObject's
+     * and remove it from object lists currently displayed. cOwnedObject's
      * destructor automatically calls this function.
      */
-    void objectDeleted(cPolymorphic *object);
+    void objectDeleted(cObject *object);
 
     /**
      * Notifies the environment that a message was sent. Details can be
@@ -288,7 +288,7 @@ class ENVIR_API cEnvir : public std::ostream
      * Called from module destructors, to notify the environment about objects
      * that the user didn't delete in the module destructor.
      */
-    void undisposedObject(cObject *obj);
+    void undisposedObject(cOwnedObject *obj);
     //@}
 
     /** @name Methods called by the simulation kernel to access configuration settings. */

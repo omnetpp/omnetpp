@@ -24,17 +24,17 @@
 #include "cclassfactory.h"    // createOne()
 
 
-void cCommBuffer::packObject(cObject *obj)
+void cCommBuffer::packObject(cOwnedObject *obj)
 {
     pack(obj->className());
     obj->netPack(this);
 }
 
-cObject *cCommBuffer::unpackObject()
+cOwnedObject *cCommBuffer::unpackObject()
 {
     char *classname;
     unpack(classname);
-    cObject *obj = (cObject *) createOne(classname);
+    cOwnedObject *obj = (cOwnedObject *) createOne(classname);
     delete [] classname;
 
     obj->netUnpack(this);

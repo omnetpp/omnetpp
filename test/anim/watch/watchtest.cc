@@ -30,7 +30,7 @@ std::istream& operator>>(std::istream& is, Point& p)
     return is >> dummy >> p.x >> dummy >> p.y >> dummy;
 }
 
-class APolygon : public cPolymorphic
+class APolygon : public cObject
 {
   public:
     int n;
@@ -92,7 +92,7 @@ void WatchTest::activity()
     WATCH_RW(point_rw);
 
     //
-    // Structs/classes via cPolymorphic and info(); no structdesc.
+    // Structs/classes via cObject and info(); no structdesc.
     //
     APolygon poly_WATCH(5,100);
     WATCH(poly_WATCH);
@@ -105,7 +105,7 @@ void WatchTest::activity()
     //
 
     //GeneratedStruct gs;
-    //WATCH(gs), WATCH_OBJ(gs) -- don't work because no op<<, and not cPolymorphic
+    //WATCH(gs), WATCH_OBJ(gs) -- don't work because no op<<, and not cObject
 
     GeneratedClass gc;
     GeneratedMessage gm("gm-obj");

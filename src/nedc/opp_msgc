@@ -198,8 +198,8 @@ if ($generate_classes)
     print CC "    for (int i=0; i<n; i++)\n";
     print CC "        doUnpacking(b,t[i]);\n";
     print CC "}\n";
-    print CC "inline void doPacking(cCommBuffer *, cPolymorphic&) {}\n";
-    print CC "inline void doUnpacking(cCommBuffer *, cPolymorphic&) {}\n";
+    print CC "inline void doPacking(cCommBuffer *, cObject&) {}\n";
+    print CC "inline void doUnpacking(cCommBuffer *, cObject&) {}\n";
     print CC "\n";
     print CC "#define DOPACKING(T,R) \\\n";
     print CC "    inline void doPacking(cCommBuffer *b, T R a) {b->pack(a);}  \\\n";
@@ -231,16 +231,16 @@ print CC "\n\n";
 # pre-register some OMNeT++ classes so that one doesn't need to announce them
 #
 # note: $classtype values:
-#  'cobject'      ==> subclasses from cObject
-#  'cpolymorphic' ==> subclasses from cPolymorphic but NOT from cObject
-#  'foreignclass' ==> non-cPolymorphic class (NOTE: currently only external
+#  'cobject'      ==> subclasses from cOwnedObject
+#  'cpolymorphic' ==> subclasses from cObject but NOT from cOwnedObject
+#  'foreignclass' ==> non-cObject class (NOTE: currently only external
 #                     classes announced as "class noncobject" belong here, because
-#                     all classes *we* generate are cPolymorphic.)
+#                     all classes *we* generate are cObject.)
 #  'struct'       ==> struct (i.e. no member functions)
 #
-@classes = ('cPolymorphic', 'cObject', 'cMessage', 'cPacket');
-$classtype{'cPolymorphic'} = 'cpolymorphic';
-$classtype{'cObject'} = 'cobject';
+@classes = ('cObject', 'cOwnedObject', 'cMessage', 'cPacket');
+$classtype{'cObject'} = 'cpolymorphic';
+$classtype{'cOwnedObject'} = 'cobject';
 $classtype{'cMessage'} = 'cobject';
 $classtype{'cPacket'} = 'cobject';
 
@@ -756,10 +756,10 @@ sub prepareForCodeGeneration
 
     # check base class and determine type of object
     if ($msgbase eq '') {
-        if ($keyword eq 'message' || $msgname eq 'cObject') {
+        if ($keyword eq 'message' || $msgname eq 'cOwnedObject') {
             $classtype = 'cobject';
         } elsif ($keyword eq 'class') {
-            $classtype = 'cpolymorphic'; # Note: we never generate non-cPolymorphic classes
+            $classtype = 'cpolymorphic'; # Note: we never generate non-cObject classes
         } elsif ($keyword eq 'struct') {
             $classtype = 'struct';
         } else {
@@ -809,7 +809,7 @@ sub prepareForCodeGeneration
         if ($keyword eq 'message') {
             $msgbaseclass = 'cMessage';
         } elsif ($keyword eq 'class') {
-            $msgbaseclass = 'cPolymorphic';  # note: all classes we generate subclass from cPolymorphic!
+            $msgbaseclass = 'cObject';  # note: all classes we generate subclass from cObject!
         } elsif ($keyword eq 'struct') {
             $msgbaseclass = '';
         } else {
@@ -834,7 +834,7 @@ sub prepareForCodeGeneration
             print STDERR "*** Error: undeclared enum '$fprops{$fieldname}->{enum}' used in '$msgname'\n"; $ret=1;
         }
         if ($classtype{$ftype{$fieldname}} eq 'cobject' && ($classtype ne 'cobject')) {
-            print STDERR "*** Error: cannot use cObject field '$ftype{$fieldname} $fieldname' in struct or non-cObject class '$msgname'\n"; $ret=1;
+            print STDERR "*** Error: cannot use cOwnedObject field '$ftype{$fieldname} $fieldname' in struct or non-cOwnedObject class '$msgname'\n"; $ret=1;
         }
 
         # variable name
@@ -1296,17 +1296,17 @@ sub generateClass
     print CC "}\n\n";
 
     #
-    # Note: This class may not be derived from cObject, and then this netPack()/
-    # netUnpack() is NOT that of cObject. However it's still needed because a
+    # Note: This class may not be derived from cOwnedObject, and then this netPack()/
+    # netUnpack() is NOT that of cOwnedObject. However it's still needed because a
     # "friend" doPacking() function could not access protected members otherwise.
     #
     print CC "void $msgclass\:\:netPack(cCommBuffer *b)\n";
     print CC "{\n";
     if ($msgbaseclass ne "") {
         if ($classtype eq "cobject" || $classtype eq "cpolymorphic") {
-            print CC "    $msgbaseclass\:\:netPack(b);\n" unless ($msgbaseclass eq "cPolymorphic");
+            print CC "    $msgbaseclass\:\:netPack(b);\n" unless ($msgbaseclass eq "cObject");
         } else {
-            print CC "    doPacking(b,($msgbaseclass&)*this);\n"; # this would do for cObject too, but the other is nicer
+            print CC "    doPacking(b,($msgbaseclass&)*this);\n"; # this would do for cOwnedObject too, but the other is nicer
         }
     }
     foreach $fieldname (@fieldlist)
@@ -1330,9 +1330,9 @@ sub generateClass
     print CC "{\n";
     if ($msgbaseclass ne "") {
         if ($classtype eq "cobject" || $classtype eq "cpolymorphic") {
-            print CC "    $msgbaseclass\:\:netUnpack(b);\n" unless ($msgbaseclass eq "cPolymorphic");
+            print CC "    $msgbaseclass\:\:netUnpack(b);\n" unless ($msgbaseclass eq "cObject");
         } else {
-            print CC "    doUnpacking(b,($msgbaseclass&)*this);\n"; # this would do for cObject too, but the other is nicer
+            print CC "    doUnpacking(b,($msgbaseclass&)*this);\n"; # this would do for cOwnedObject too, but the other is nicer
         }
     }
     foreach $fieldname (@fieldlist)
@@ -1468,7 +1468,7 @@ sub generateStruct
     foreach $fieldname (@fieldlist)
     {
         die "abstract field not possible in struct" if ($fisabstract{$fieldname});
-        die "cObject field not possible in struct" if ($classtype{$ftype{$fieldname}} eq 'cobject');
+        die "cOwnedObject field not possible in struct" if ($classtype{$ftype{$fieldname}} eq 'cobject');
         die "dynamic array not possible in struct" if ($fisarray{$fieldname} && $farraysize{$fieldname} eq '');
         if ($fisarray{$fieldname} && $farraysize{$fieldname} ne '') {
             if ($fkind{$fieldname} eq 'basic') {
@@ -1525,7 +1525,7 @@ sub generateDescriptorClass
     print CC "    $msgdescclass();\n";
     print CC "    virtual ~$msgdescclass();\n";
     print CC "\n";
-    print CC "    virtual bool doesSupport(cPolymorphic *obj);\n";
+    print CC "    virtual bool doesSupport(cObject *obj);\n";
     print CC "    virtual const char *getProperty(const char *propertyname);\n";
     print CC "    virtual int getFieldCount(void *object);\n";
     print CC "    virtual const char *getFieldName(void *object, int field);\n";
@@ -1557,7 +1557,7 @@ sub generateDescriptorClass
     print CC "\n";
 
     # doesSupport()
-    print CC "bool $msgdescclass\:\:doesSupport(cPolymorphic *obj)\n";
+    print CC "bool $msgdescclass\:\:doesSupport(cObject *obj)\n";
     print CC "{\n";
     print CC "    return dynamic_cast<$msgclass *>(obj)!=NULL;\n";
     print CC "}\n";
@@ -1855,7 +1855,7 @@ sub generateDescriptorClass
             }
             $fieldclasstype = $classtype{$ftype{$fieldname}};
             $cast = "(void *)";
-            $cast .= "static_cast<cPolymorphic *>" if ($fieldclasstype eq 'cpolymorphic' || $fieldclasstype eq 'cobject');
+            $cast .= "static_cast<cObject *>" if ($fieldclasstype eq 'cpolymorphic' || $fieldclasstype eq 'cobject');
             if ($fispointer{$fieldname}) {
                 print CC "        case $i: return $cast($value); break;\n";
             } else {

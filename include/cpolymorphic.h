@@ -4,7 +4,7 @@
 //            Discrete System Simulation in C++
 //
 //  Declaration of the following classes:
-//    cPolymorphic : general base class
+//    cObject : general base class
 //
 //==========================================================================
 
@@ -31,35 +31,35 @@ class cCommBuffer;
 class cClassDescriptor;
 
 
-//FIXME cPolymorphic doesn't have name()!!!! why not declare it here...? and why not move isName() and foreach() here??
-//FIXME deprecate using cObject as base class for user classes!!! nobody can use ownership...
+//FIXME cObject doesn't have name()!!!! why not declare it here...? and why not move isName() and foreach() here??
+//FIXME deprecate using cOwnedObject as base class for user classes!!! nobody can use ownership...
 
 
 /**
- * Ultimate base class for cObject, and thus for nearly all
- * \opp classes. cPolymorphic is a <b>lightweight common base class</b>:
+ * Ultimate base class for cOwnedObject, and thus for nearly all
+ * \opp classes. cObject is a <b>lightweight common base class</b>:
  * it only contains virtual member functions but NO DATA MEMBERS at all.
  *
- * It is recommended to use cPolymorphic as a base class for any class
+ * It is recommended to use cObject as a base class for any class
  * that has at least one virtual member function. This makes the class more
  * interoperable with \opp, and causes no extra overhead at all.
- * sizeof(cPolymorphic) should yield 4 on a 32-bit architecture (4-byte
- * <i>vptr</i>), and using cPolymorphic as a base class doesn't add anything
+ * sizeof(cObject) should yield 4 on a 32-bit architecture (4-byte
+ * <i>vptr</i>), and using cObject as a base class doesn't add anything
  * to the size because a class with a virtual function already has a vptr.
  *
- * cPolymorphic allows the object to be displayed in graphical user
+ * cObject allows the object to be displayed in graphical user
  * interface (Tkenv) via the className(), info() and detailedInfo() methods
  * which you may choose to redefine in your own subclasses.
  *
- * Using cPolymorphic also strengthens type safety. <tt>cPolymorphic *</tt>
+ * Using cObject also strengthens type safety. <tt>cObject *</tt>
  * pointers should replace <tt>void *</tt> in most places where you need
- * pointers to "any data structure". Using cPolymorphic will allow safe
+ * pointers to "any data structure". Using cObject will allow safe
  * downcasts using <tt>dynamic_cast</tt> and also \opp's
  * <tt>check_and_cast</tt>.
  *
  * @ingroup SimCore
  */
-class SIM_API cPolymorphic
+class SIM_API cObject
 {
   public:
     // internal: returns a descriptor object for this object
@@ -70,14 +70,14 @@ class SIM_API cPolymorphic
      * Constructor. It has an empty body. (The class doesn't have data members
      * and there's nothing special to do at construction time.)
      */
-    cPolymorphic() {}
+    cObject() {}
 
     /**
      * Destructor. It has an empty body (the class doesn't have data members.)
      * It is declared here only to make the class polymorphic and make its
      * destructor virtual.
      */
-    virtual ~cPolymorphic();
+    virtual ~cObject();
 
     /**
      * Returns a pointer to the class name string. This method is implemented
@@ -110,8 +110,8 @@ class SIM_API cPolymorphic
     virtual const char *fullName() const  {return name();}
 
     /**
-     * Can be redefined (as done in cObject) to return an object full path,
-     * or the object name if the path is not available. Although cPolymorphic
+     * Can be redefined (as done in cOwnedObject) to return an object full path,
+     * or the object name if the path is not available. Although cObject
      * does not contain an owner() member so cannot produce a path by default,
      * subclasses may be able to do so.
      *
@@ -143,7 +143,7 @@ class SIM_API cPolymorphic
      * The default implementation just throws an error, to indicate that
      * the method was not redefined.
      */
-    virtual cPolymorphic *dup() const;
+    virtual cObject *dup() const;
     //@}
 
     /** @name Support for parallel execution.
@@ -188,7 +188,7 @@ class SIM_API cPolymorphic
      * Do not use it for finding submodules! Use cModule::moduleByRelativePath()
      * instead.
      */
-    cPolymorphic *findObject(const char *name, bool deep=true);
+    cObject *findObject(const char *name, bool deep=true);
     //@}
 
     /** @name Helper functions. */

@@ -57,7 +57,7 @@ typedef void (*PostADFunc)(cAccuracyDetection *, void *);
  *
  * @ingroup Statistics
  */
-class SIM_API cTransientDetection : public cObject, noncopyable  //FIXME should not be noncopyable
+class SIM_API cTransientDetection : public cOwnedObject, noncopyable  //FIXME should not be noncopyable
 {
   protected:
     cStatistic *back;    // ptr to cStatistic that uses this object
@@ -70,7 +70,7 @@ class SIM_API cTransientDetection : public cObject, noncopyable  //FIXME should 
     /**
      * Constructor.
      */
-    explicit cTransientDetection(const char *name=NULL) : cObject(name) {}
+    explicit cTransientDetection(const char *name=NULL) : cOwnedObject(name) {}
 
     /**
      * Destructor.
@@ -145,7 +145,7 @@ class SIM_API cTransientDetection : public cObject, noncopyable  //FIXME should 
  *
  * @ingroup Statistics
  */
-class SIM_API cAccuracyDetection : public cObject
+class SIM_API cAccuracyDetection : public cOwnedObject
 {
   protected:
     cStatistic *back;           // ptr to cStatistic that uses this object
@@ -158,7 +158,7 @@ class SIM_API cAccuracyDetection : public cObject
     /**
      * Constructor.
      */
-    explicit cAccuracyDetection(const char *name=NULL) : cObject(name)  {}
+    explicit cAccuracyDetection(const char *name=NULL) : cOwnedObject(name)  {}
 
     /**
      * Destructor.
@@ -171,7 +171,7 @@ class SIM_API cAccuracyDetection : public cObject
     virtual cAccuracyDetection *dup() const {copyNotSupported(); return NULL;}
     //@}
 
-    /** @name Redefined cObject member functions. */
+    /** @name Redefined cOwnedObject member functions. */
     //@{
 
     /* No dup() because this is an abstract class. */
@@ -279,13 +279,13 @@ class SIM_API cTDExpandingWindows : public cTransientDetection
     virtual ~cTDExpandingWindows();
 
     /**
-     * Assignment operator. The name member doesn't get copied; see cObject's
+     * Assignment operator. The name member doesn't get copied; see cOwnedObject's
      * operator=() for more details.
      */
     cTDExpandingWindows& operator=(const cTDExpandingWindows& res);
     //@}
 
-    /** @name Redefined cObject member functions. */
+    /** @name Redefined cOwnedObject member functions. */
     //@{
 
     /**
@@ -385,12 +385,12 @@ class SIM_API cADByStddev : public cAccuracyDetection
 
     /**
      * Assignment operator. The name member doesn't get copied;
-     * see cObject's operator=() for more details.
+     * see cOwnedObject's operator=() for more details.
      */
     cADByStddev& operator=(const cADByStddev& res);
     //@}
 
-    /** @name Redefined cObject member functions. */
+    /** @name Redefined cOwnedObject member functions. */
     //@{
 
     /**

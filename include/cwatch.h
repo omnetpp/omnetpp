@@ -25,7 +25,7 @@
 
 
 /**
- * Utility class to make primitive types and non-cObject objects
+ * Utility class to make primitive types and non-cOwnedObject objects
  * inspectable in Tkenv. To be used only via the WATCH, WATCH_PTR,
  * WATCH_OBJ, WATCH_VECTOR etc macros.
  *
@@ -211,15 +211,15 @@ class SIM_API cWatch_stdstring : public cWatchBase
 };
 
 /**
- * Watch class, specifically for objects subclassed from cPolymorphic.
+ * Watch class, specifically for objects subclassed from cObject.
  * @ingroup Internals
  */
-class SIM_API cWatch_cPolymorphic : public cWatchBase
+class SIM_API cWatch_cObject : public cWatchBase
 {
   private:
-    cPolymorphic& r;
+    cObject& r;
   public:
-    cWatch_cPolymorphic(const char *name, cPolymorphic& ref) : cWatchBase(name), r(ref) {}
+    cWatch_cObject(const char *name, cObject& ref) : cWatchBase(name), r(ref) {}
     virtual const char *className() const {return r.className();}
     virtual std::string info() const {return r.info();}
     virtual bool supportsAssignment() const {return false;}
@@ -227,15 +227,15 @@ class SIM_API cWatch_cPolymorphic : public cWatchBase
 };
 
 /**
- * Watch class, specifically for pointers to objects subclassed from cPolymorphic.
+ * Watch class, specifically for pointers to objects subclassed from cObject.
  * @ingroup Internals
  */
-class SIM_API cWatch_cPolymorphicPtr : public cWatchBase
+class SIM_API cWatch_cObjectPtr : public cWatchBase
 {
   private:
-    cPolymorphic *&rp;
+    cObject *&rp;
   public:
-    cWatch_cPolymorphicPtr(const char *name, cPolymorphic *&ptr) : cWatchBase(name), rp(ptr) {}
+    cWatch_cObjectPtr(const char *name, cObject *&ptr) : cWatchBase(name), rp(ptr) {}
     virtual const char *className() const {return rp? rp->className() : "n/a";}
     virtual std::string info() const {return rp ? rp->info() : "<null>";}
     virtual bool supportsAssignment() const {return false;}
@@ -308,20 +308,20 @@ inline cWatchBase *createWatch_genericAssignable(const char *varname, T& d) {
 }
 
 // for objects
-inline cWatchBase *createWatch_cPolymorphic(const char *varname, cPolymorphic& obj) {
-    return new cWatch_cPolymorphic(varname, obj);
+inline cWatchBase *createWatch_cObject(const char *varname, cObject& obj) {
+    return new cWatch_cObject(varname, obj);
 }
 
 // for pointers to objects.
-// NOTE: this is a bit tricky. C++ thinks that (cPolymorphic*&) and
+// NOTE: this is a bit tricky. C++ thinks that (cObject*&) and
 // (SomeDerivedType*&) are unrelated, so we have to force the cast
 // in the WATCH_PTR() macro. But to stay type-safe, we include a 3rd arg
-// of type cPolymorphic*: the compiler has to be able to cast that
+// of type cObject*: the compiler has to be able to cast that
 // implicitly from SomeDerivedType* -- this way we don't accept pointers
 // that are REALLY unrelated.
-inline cWatchBase *createWatch_cPolymorphicPtr(const char *varname, cPolymorphic *&refp, cPolymorphic *p) {
+inline cWatchBase *createWatch_cObjectPtr(const char *varname, cObject *&refp, cObject *p) {
     ASSERT(refp==p);
-    return new cWatch_cPolymorphicPtr(varname, refp);
+    return new cWatch_cObjectPtr(varname, refp);
 }
 
 
@@ -349,20 +349,20 @@ inline cWatchBase *createWatch_cPolymorphicPtr(const char *varname, cPolymorphic
 #define WATCH_RW(variable) createWatch_genericAssignable(#variable,(variable))
 
 /**
- * Makes classes derived from cPolymorphic inspectable in Tkenv.
+ * Makes classes derived from cObject inspectable in Tkenv.
  * See also WATCH_PTR().
  *
  * @hideinitializer
  */
-#define WATCH_OBJ(variable) createWatch_cPolymorphic(#variable,(variable))
+#define WATCH_OBJ(variable) createWatch_cObject(#variable,(variable))
 
 /**
- * Makes pointers to objects derived from cPolymorphic inspectable in Tkenv.
+ * Makes pointers to objects derived from cObject inspectable in Tkenv.
  * See also WATCH_OBJ().
  *
  * @hideinitializer
  */
-#define WATCH_PTR(variable) createWatch_cPolymorphicPtr(#variable,(cPolymorphic*&)(variable),(variable))
+#define WATCH_PTR(variable) createWatch_cObjectPtr(#variable,(cObject*&)(variable),(variable))
 //@}
 
 #endif

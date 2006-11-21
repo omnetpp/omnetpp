@@ -54,7 +54,7 @@ class cPar;
  * @ingroup SimSupport
  * @see cTopology::Node, cTopology::Link, cTopology::LinkIn, cTopology::LinkOut
  */
-class SIM_API cTopology : public cObject
+class SIM_API cTopology : public cOwnedObject
 {
   public:
     class Link;
@@ -333,37 +333,37 @@ class SIM_API cTopology : public cObject
     virtual ~cTopology();
 
     /**
-     * Assignment operator. The name member doesn't get copied; see cObject's operator=() for more details.
+     * Assignment operator. The name member doesn't get copied; see cOwnedObject's operator=() for more details.
      */
     cTopology& operator=(const cTopology& topo);
     //@}
 
-    /** @name Redefined cObject member functions. */
+    /** @name Redefined cOwnedObject member functions. */
     //@{
 
     /**
      * Creates and returns an exact copy of this object.
-     * See cObject for more details.
+     * See cOwnedObject for more details.
      */
     virtual cTopology *dup() const  {return new cTopology(*this);}
 
     /**
      * Produces a one-line description of object contents.
-     * See cObject for more details.
+     * See cOwnedObject for more details.
      */
     virtual std::string info() const;
 
     /**
      * Serializes the object into a PVM or MPI send buffer.
      * Used by the simulation kernel for parallel execution.
-     * See cObject for more details.
+     * See cOwnedObject for more details.
      */
     virtual void netPack(cCommBuffer *buffer);
 
     /**
      * Deserializes the object from a PVM or MPI receive buffer
      * Used by the simulation kernel for parallel execution.
-     * See cObject for more details.
+     * See cOwnedObject for more details.
      */
     virtual void netUnpack(cCommBuffer *buffer);
     //@}

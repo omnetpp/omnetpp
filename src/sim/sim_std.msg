@@ -69,7 +69,7 @@ enum cGate_Type;
 
 struct cDensityEstBase_Cell;
 
-class cObject
+class cOwnedObject
 {
     fields:
         @omitGetVerb(true);
@@ -79,10 +79,10 @@ class cObject
         string fullPath @group(base) @hint(hierarchical name, composed of full names of this object and its owners/parents);
         string info @group(base) @hint(text provided by the object's "info" method);
         string detailedInfo @group(base) @hint(text provided by the object's "detailedInfo" method);
-        cObject *owner @group(owner or parent) @hint(module or container this object belongs to);
+        cOwnedObject *owner @group(owner or parent) @hint(module or container this object belongs to);
 }
 
-class cNoncopyableObject extends cObject
+class cNoncopyableObject extends cOwnedObject
 {
 }
 
@@ -91,7 +91,7 @@ class cDefaultList extends cNoncopyableObject
     properties:
         omitGetVerb = true;
     fields:
-        cObject *contents[] @getter(defaultListGet) @sizeGetter(defaultListItems) @group(contents) @hint(list of objects directly held by this component);
+        cOwnedObject *contents[] @getter(defaultListGet) @sizeGetter(defaultListItems) @group(contents) @hint(list of objects directly held by this component);
 }
 
 class cPar;
@@ -205,15 +205,15 @@ class cDisplayString
         string value @getter(toString) @setter(parse) @editable @hint(the editable display string itself);
 }
 
-class cArray extends cObject
+class cArray extends cOwnedObject
 {
     fields:
         @omitGetVerb(true);
         bool takeOwnership @group(general) @setter(takeOwnership) @editable @hint(whether the array should own the objects inserted into it);
-        cObject *contents[] @getter(get) @sizeGetter(items) @hint(objects contained in the array);
+        cOwnedObject *contents[] @getter(get) @sizeGetter(items) @hint(objects contained in the array);
 }
 
-class cMessage extends cObject
+class cMessage extends cOwnedObject
 {
     fields:
         @omitGetVerb(true);
@@ -226,7 +226,7 @@ class cMessage extends cObject
         cArray parList @group(obsolete) @hint(use of "parList" should be replaced with message subclassing in the few models that still use it);
 
         cMessage *encapsulatedMsg @hint(used with protocol stacks: stores an encapsulated higher-layer packet);
-        cPolymorphic *controlInfo @hint(used with protocol stacks: carries extra information when a packet is sent between protocol layers);
+        cObject *controlInfo @hint(used with protocol stacks: carries extra information when a packet is sent between protocol layers);
 
         bool isScheduled @group(sending) @hint(whether self-message is currently scheduled, or message currently is in transit);
         bool isSelfMessage @group(sending) @hint(whether message is a self-message, scheduled to be delivered back to the same module at a later time);
@@ -258,7 +258,7 @@ class cPacket extends cMessage
 
 //----
 
-class cStatistic extends cObject
+class cStatistic extends cOwnedObject
 {
     fields:
         @omitGetVerb(true);
@@ -320,11 +320,11 @@ class cPSquare extends cDensityEstBase
 {
 }
 
-class cTransientDetection extends cObject
+class cTransientDetection extends cOwnedObject
 {
 }
 
-class cAccuracyDetection extends cObject
+class cAccuracyDetection extends cOwnedObject
 {
 }
 
@@ -338,14 +338,14 @@ class cADByStddev extends cAccuracyDetection
 
 //----
 
-class cExpression extends cPolymorphic
+class cExpression extends cObject
 {
     fields:
         @omitGetVerb(true);
         string toString;
 }
 
-class cFSM extends cObject
+class cFSM extends cOwnedObject
 {
     fields:
         @omitGetVerb(true);
@@ -378,7 +378,7 @@ class cOutVector extends cNoncopyableObject
         long valuesStored @hint(number of values actually stored on the disk);
 }
 
-class cPar extends cObject
+class cPar extends cOwnedObject
 {
     fields:
         @omitGetVerb(true);
@@ -389,7 +389,7 @@ class cPar extends cObject
         bool isVolatile @group(lags);
 }
 
-class cMessagePar extends cObject
+class cMessagePar extends cOwnedObject
 {
     fields:
         @omitGetVerb(true);
@@ -402,11 +402,11 @@ class cMessagePar extends cObject
         bool isRedirected @group(flags) @hint(whether this parameter is a "link" to another cPar object);
 }
 
-class cProperties extends cPolymorphic
+class cProperties extends cObject
 {
 }
 
-class cProperty extends cPolymorphic
+class cProperty extends cObject
 {
     fields:
         @omitGetVerb(true);
@@ -415,14 +415,14 @@ class cProperty extends cPolymorphic
         //XXX const std::vector<const char *>& keys @group(general);
 }
 
-class cLinkedList extends cObject
+class cLinkedList extends cOwnedObject
 {
     fields:
         @omitGetVerb(true);
         int length @hint(number of items contained);
 }
 
-class cMessageHeap extends cObject
+class cMessageHeap extends cOwnedObject
 {
     fields:
         @omitGetVerb(true);
@@ -430,13 +430,13 @@ class cMessageHeap extends cObject
         cMessage *messages[] @getter(peek) @sizeGetter(length) @hint(self-messages currently scheduled and messages currently in transit);
 }
 
-class cQueue extends cObject
+class cQueue extends cOwnedObject
 {
     fields:
         @omitGetVerb(true);
         bool takeOwnership @group(general) @setter(takeOwnership) @editable @hint(whether the queue should own the objects inserted into it);
         int length @hint(number of items in the queue);
-        cObject *contents[] @getter(get) @sizeGetter(length) @hint(queue contents);
+        cOwnedObject *contents[] @getter(get) @sizeGetter(length) @hint(queue contents);
 }
 
 class cSimulation extends cNoncopyableObject
@@ -452,7 +452,7 @@ class cSimulation extends cNoncopyableObject
         cModule *module[] @sizeGetter(lastModuleId) @group(modules) @label(modules) @hint(list of modules, indexed with module ID);
 }
 
-class cScheduler extends cPolymorphic
+class cScheduler extends cObject
 {
 }
 
@@ -518,7 +518,7 @@ class cTopology_LinkOut extends cTopology_Link
         cGate *localGate @hint(the gate at the local end of this connection);
 }
 
-class cTopology extends cObject
+class cTopology extends cOwnedObject
 {
     fields:
         @omitGetVerb(true);

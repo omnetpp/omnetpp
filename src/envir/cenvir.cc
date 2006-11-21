@@ -302,7 +302,7 @@ void cEnvir::methodCalled(cComponent *from, cComponent *to, const char *method)
     app->moduleMethodCalled((cModule *)from, (cModule *)to, method); // FIXME change OmnetApp method signature too
 }
 
-void cEnvir::objectDeleted(cPolymorphic *obj )
+void cEnvir::objectDeleted(cObject *obj )
 {
     if (app) app->objectDeleted( obj );
 }
@@ -352,7 +352,7 @@ void cEnvir::backgroundDisplayStringChanged(cModule *parentmodule)
     app->backgroundDisplayStringChanged(parentmodule);
 }
 
-void cEnvir::undisposedObject(cObject *obj)
+void cEnvir::undisposedObject(cOwnedObject *obj)
 {
     if (!app)
     {

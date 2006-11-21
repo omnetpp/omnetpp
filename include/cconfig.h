@@ -56,7 +56,7 @@
  *
  * @ingroup EnvirExtensions
  */
-class ENVIR_API cConfiguration : public cPolymorphic
+class ENVIR_API cConfiguration : public cObject
 {
   public:
     /**

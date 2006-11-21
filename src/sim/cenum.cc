@@ -28,7 +28,7 @@
 
 Register_Class(cEnum);
 
-cEnum::cEnum(const cEnum& list) : cObject()
+cEnum::cEnum(const cEnum& list) : cOwnedObject()
 {
      vect=NULL;
      size=0;
@@ -36,7 +36,7 @@ cEnum::cEnum(const cEnum& list) : cObject()
      operator=(list);
 }
 
-cEnum::cEnum(const char *name, int siz) : cObject(name)
+cEnum::cEnum(const char *name, int siz) : cOwnedObject(name)
 {
     size = Max(siz,0);
     items = 0;
@@ -59,7 +59,7 @@ cEnum& cEnum::operator=(const cEnum& list)
         delete [] vect[i].string;
     delete [] vect;
 
-    cObject::operator=(list);
+    cOwnedObject::operator=(list);
 
     size = list.size;
     items = list.items;

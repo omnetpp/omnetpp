@@ -51,7 +51,7 @@ class cInspectorFactory : public cNoncopyableObject
      * Returns true if this factory can create an inspector for this object.
      * Works with RTTI.
      */
-    virtual bool supportsObject(cPolymorphic *object) = 0;
+    virtual bool supportsObject(cObject *object) = 0;
 
     /**
      * Returns type of inspector created by this factory (INSP_* constants).
@@ -61,18 +61,18 @@ class cInspectorFactory : public cNoncopyableObject
 
     /**
      * Returns "how good" this inspector is as default inspector for this object.
-     * Expressed as distance in the hiearchy tree from cPolymorphic, i.e.
+     * Expressed as distance in the hiearchy tree from cObject, i.e.
      *  1.0 for TObjectInspector and TContainerInspector for common objects;
      *  2.0 for TMessageInspector, TWatchInspector, etc, and TContainerInspector for cArray&cQueue;
      *  3.0 for TPacketInspector; ...
      */
-    virtual double qualityAsDefault(cPolymorphic *object) = 0;
+    virtual double qualityAsDefault(cObject *object) = 0;
 
     /**
      * Creates an inspector for the object passed. The type and data
      * arguments influence the type of inspector created.
      */
-    virtual TInspector *createInspectorFor(cPolymorphic *object,int type,const char *geom,void *data) = 0;
+    virtual TInspector *createInspectorFor(cObject *object,int type,const char *geom,void *data) = 0;
     //@}
 };
 
@@ -82,7 +82,7 @@ extern cRegistrationList inspectorfactories;
 /**
  * Find a cInspectorFactory.
  */
-cInspectorFactory *findInspectorFactoryFor(cPolymorphic *obj, int type);
+cInspectorFactory *findInspectorFactoryFor(cObject *obj, int type);
 
 #endif
 

@@ -42,7 +42,7 @@ enum MoreProtocolTypes extends ProtocolTypes
 };
 
 // empty message object
-message BlankMsg { 
+message BlankMsg {
     // garbage
 };
 
@@ -75,7 +75,7 @@ message BarPacket extends FooPacket
         abstract int myvar;
 };
 
-// class without base class (NOT derived from cObject!)
+// class without base class (NOT derived from cOwnedObject!)
 class SomeClass
 {
     fields:
@@ -91,7 +91,7 @@ class MyClass
         abstract short version;
 };
 
-// class not derived from cObject
+// class not derived from cOwnedObject
 class MyDerivedClass extends MyClass
 {
     fields:
@@ -99,8 +99,8 @@ class MyDerivedClass extends MyClass
         short blabla=2;
 };
 
-// class derived from cObject
-class MyCObjectClass extends cObject
+// class derived from cOwnedObject
+class MyCObjectClass extends cOwnedObject
 {
     fields:
         char type='x';
@@ -122,7 +122,7 @@ struct MyDerivedStruct extends MyStruct
 {
     fields:
         unsigned char code;
-        short prot enum(ProtocolTypes); 
+        short prot enum(ProtocolTypes);
         MyStruct substruct;  // also as embedded data member
 };
 

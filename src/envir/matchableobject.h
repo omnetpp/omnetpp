@@ -26,7 +26,7 @@ class cClassDescriptor;
 
 
 /**
- * Wrapper around a cPolymorphic to make it matchable with MatchExpression.
+ * Wrapper around a cObject to make it matchable with MatchExpression.
  * The default attribute is either fullName() or fullPath().
  */
 class MatchableObjectAdapter : public MatchExpression::Matchable
@@ -35,15 +35,15 @@ class MatchableObjectAdapter : public MatchExpression::Matchable
     enum DefaultAttribute {FULLNAME, FULLPATH, CLASSNAME};
   protected:
     DefaultAttribute attr;
-    cPolymorphic *obj;
+    cObject *obj;
     mutable cClassDescriptor *desc;
     mutable std::string tmp;
   protected:
     static void splitIndex(char *fieldname, int& index);
-    static bool findDescriptorField(cClassDescriptor *desc, cPolymorphic *obj, char *fieldname, int& fieldId, int& index);
+    static bool findDescriptorField(cClassDescriptor *desc, cObject *obj, char *fieldname, int& fieldId, int& index);
   public:
-    MatchableObjectAdapter(DefaultAttribute attr=FULLPATH, cPolymorphic *obj=NULL);
-    void setObject(cPolymorphic *obj);
+    MatchableObjectAdapter(DefaultAttribute attr=FULLPATH, cObject *obj=NULL);
+    void setObject(cObject *obj);
     void setDefaultAttribute(DefaultAttribute attr) {this->attr = attr;}
     virtual const char *getDefaultAttribute() const;
     virtual const char *getAttribute(const char *name) const;

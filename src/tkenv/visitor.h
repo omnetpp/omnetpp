@@ -17,7 +17,7 @@
 #define __VISITOR_H
 
 #include "cenvir.h"
-#include "cPolymorphic.h"
+#include "cObject.h"
 #include "cvisitor.h"
 #include "tkapp.h"
 #include "patternmatcher.h"
@@ -32,26 +32,26 @@
  * Sample code:
  *   cCollectObjectsVisitor v;
  *   v.visit(object);
- *   cPolymorphic **objs = v.getArray();
+ *   cObject **objs = v.getArray();
  */
 class cCollectObjectsVisitor : public cVisitor
 {
   private:
     int sizelimit;
-    cPolymorphic **arr;
+    cObject **arr;
     int count;
     int size;
 
   protected:
     // Used during visiting process
-    virtual void visit(cPolymorphic *obj);
-    void addPointer(cPolymorphic *obj);
+    virtual void visit(cObject *obj);
+    void addPointer(cObject *obj);
 
   public:
     cCollectObjectsVisitor();
     virtual ~cCollectObjectsVisitor();
     void setSizeLimit(int limit);
-    cPolymorphic **getArray()  {return arr;}
+    cObject **getArray()  {return arr;}
     int getArraySize()  {return count;}
 };
 
@@ -78,7 +78,7 @@ class cFilteredCollectObjectsVisitor : public cCollectObjectsVisitor
     MatchExpression *classnamepattern;
     MatchExpression *objfullpathpattern;
   protected:
-    virtual void visit(cPolymorphic *obj);
+    virtual void visit(cObject *obj);
   public:
     cFilteredCollectObjectsVisitor();
     ~cFilteredCollectObjectsVisitor();
@@ -97,11 +97,11 @@ class cFilteredCollectObjectsVisitor : public cCollectObjectsVisitor
 class cCollectChildrenVisitor : public cCollectObjectsVisitor
 {
   private:
-    cPolymorphic *parent;
+    cObject *parent;
   protected:
-    virtual void visit(cPolymorphic *obj);
+    virtual void visit(cObject *obj);
   public:
-    cCollectChildrenVisitor(cPolymorphic *_parent) {parent = _parent;}
+    cCollectChildrenVisitor(cObject *_parent) {parent = _parent;}
 };
 
 /**
@@ -110,12 +110,12 @@ class cCollectChildrenVisitor : public cCollectObjectsVisitor
 class cCountChildrenVisitor : public cVisitor
 {
   private:
-    cPolymorphic *parent;
+    cObject *parent;
     int count;
   protected:
-    virtual void visit(cPolymorphic *obj);
+    virtual void visit(cObject *obj);
   public:
-    cCountChildrenVisitor(cPolymorphic *_parent) {parent = _parent; count=0;}
+    cCountChildrenVisitor(cObject *_parent) {parent = _parent; count=0;}
     int getCount() {return count;}
 };
 
@@ -123,9 +123,9 @@ class cCountChildrenVisitor : public cVisitor
 //----------------------------------------------------------------
 // utilities for sorting objects:
 
-void sortObjectsByName(cPolymorphic **objs, int n);
-void sortObjectsByFullPath(cPolymorphic **objs, int n);
-void sortObjectsByClassName(cPolymorphic **objs, int n);
+void sortObjectsByName(cObject **objs, int n);
+void sortObjectsByFullPath(cObject **objs, int n);
+void sortObjectsByClassName(cObject **objs, int n);
 
 #endif
 

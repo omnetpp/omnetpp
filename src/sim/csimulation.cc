@@ -45,7 +45,7 @@ using std::ostream;
 
 #ifdef DEVELOPER_DEBUG
 #include <set>
-extern std::set<cObject*> objectlist;
+extern std::set<cOwnedObject*> objectlist;
 void printAllObjects();
 #endif
 
@@ -175,7 +175,7 @@ class cSnapshotWriterVisitor : public cVisitor
     cSnapshotWriterVisitor(ostream& ostr) : os(ostr) {
         indentlevel = 0;
     }
-    virtual void visit(cPolymorphic *obj) {
+    virtual void visit(cObject *obj) {
         std::string indent(2*indentlevel, ' ');
         os << indent << "<object class=\"" << obj->className() << "\" fullpath=\"" << xmlquote(obj->fullPath()) << "\">\n";
         os << indent << "  <info>" << xmlquote(obj->info()) << "</info>\n";
@@ -191,7 +191,7 @@ class cSnapshotWriterVisitor : public cVisitor
     }
 };
 
-bool cSimulation::snapshot(cPolymorphic *object, const char *label)
+bool cSimulation::snapshot(cObject *object, const char *label)
 {
     if (!object)
         throw new cRuntimeError("snapshot(): object pointer is NULL");
@@ -343,7 +343,7 @@ cModule *cSimulation::moduleByPath(const char *path) const
 void cSimulation::setupNetwork(cModuleType *network, int run_num)
 {
 #ifdef DEVELOPER_DEBUG
-    printf("DEBUG: before setupNetwork: %d objects\n", cObject::liveObjectCount());
+    printf("DEBUG: before setupNetwork: %d objects\n", cOwnedObject::liveObjectCount());
     objectlist.clear();
 #endif
     if (!network)
@@ -455,7 +455,7 @@ void cSimulation::deleteNetwork()
     msgQueue.clear();
 
 #ifdef DEVELOPER_DEBUG
-    printf("DEBUG: after deleteNetwork: %d objects\n", cObject::liveObjectCount());
+    printf("DEBUG: after deleteNetwork: %d objects\n", cOwnedObject::liveObjectCount());
     printAllObjects();
 #endif
 
@@ -623,7 +623,7 @@ void cSimulation::transferToMain()
 void cSimulation::setContext(cComponent *p)
 {
     contextmodp = p;
-    cObject::setDefaultOwner(p);
+    cOwnedObject::setDefaultOwner(p);
 }
 
 cModule *cSimulation::contextModule() const

@@ -72,7 +72,7 @@ enum eMessageKind
  * time), cancelled, sent out on a gate, or sent directly to another module;
  * all via methods of cSimpleModule.
  *
- * cMessage can be assigned a name (a property inherited from cObject);
+ * cMessage can be assigned a name (a property inherited from cOwnedObject);
  * other attributes include message kind, length, priority,
  * error flag and time stamp. Arrival time and gate is also stored.
  * cMessage supports encapsulation, and messages may be cloned with the
@@ -100,7 +100,7 @@ enum eMessageKind
  *
  * @ingroup SimCore
  */
-class SIM_API cMessage : public cObject
+class SIM_API cMessage : public cOwnedObject
 {
     friend class cMessageHeap;
 
@@ -117,7 +117,7 @@ class SIM_API cMessage : public cObject
     short srcprocid;           // reserved for use by parallel execution: id of source partition
     cArray *parlistp;          // ptr to list of parameters
     cMessage *encapmsg;        // ptr to encapsulated msg
-    cPolymorphic *ctrlp;       // ptr to "control info"
+    cObject *ctrlp;       // ptr to "control info"
     void *contextptr;          // a stored pointer -- user-defined meaning, used with self-messages
 
     int frommod,fromgate;      // source module and gate IDs -- set internally
@@ -173,49 +173,49 @@ class SIM_API cMessage : public cObject
 
     /**
      * Assignment operator. Duplication and the assignment operator work all right with cMessage.
-     * The name member doesn't get copied; see cObject's operator=() for more details.
+     * The name member doesn't get copied; see cOwnedObject's operator=() for more details.
      */
     cMessage& operator=(const cMessage& msg);
     //@}
 
-    /** @name Redefined cObject functions. */
+    /** @name Redefined cOwnedObject functions. */
     //@{
 
     /**
      * Creates and returns an exact copy of this object.
-     * See cObject for more details.
+     * See cOwnedObject for more details.
      */
     virtual cMessage *dup() const  {return new cMessage(*this);}
 
     /**
      * Produces a one-line description of object contents.
-     * See cObject for more details.
+     * See cOwnedObject for more details.
      */
     virtual std::string info() const;
 
     /**
      * Produces a multi-line description of the object's contents.
-     * See cObject for more details.
+     * See cOwnedObject for more details.
      */
     virtual std::string detailedInfo() const;
 
     /**
      * Calls v->visit(this) for each contained object.
-     * See cObject for more details.
+     * See cOwnedObject for more details.
      */
     virtual void forEachChild(cVisitor *v);
 
     /**
      * Serializes the object into a PVM or MPI send buffer
      * Used by the simulation kernel for parallel execution.
-     * See cObject for more details.
+     * See cOwnedObject for more details.
      */
     virtual void netPack(cCommBuffer *buffer);
 
     /**
      * Deserializes the object from a PVM or MPI receive buffer
      * Used by the simulation kernel for parallel execution.
-     * See cObject for more details.
+     * See cOwnedObject for more details.
      */
     virtual void netUnpack(cCommBuffer *buffer);
     //@}
@@ -306,18 +306,18 @@ class SIM_API cMessage : public cObject
      * setControlInfo() call throws an error).
      *
      * When the message is duplicated or copied, copies will have their
-     * control info set to NULL because the cPolymorphic interface
+     * control info set to NULL because the cObject interface
      * doesn't define dup/copy operations.
      * The assignment operator doesn't change control info.
      */
-    void setControlInfo(cPolymorphic *p);
+    void setControlInfo(cObject *p);
 
     /**
      * Removes the "control info" structure (object) from the message
      * and returns its pointer. Returns NULL if there was no control info
      * in the message
      */
-    cPolymorphic *removeControlInfo();
+    cObject *removeControlInfo();
 
     /**
      * Returns message kind.
@@ -363,7 +363,7 @@ class SIM_API cMessage : public cObject
     /**
      * Returns pointer to the attached "control info".
      */
-    cPolymorphic *controlInfo() const {return ctrlp;}
+    cObject *controlInfo() const {return ctrlp;}
     //@}
 
     /** @name Dynamically attaching objects. */
@@ -473,7 +473,7 @@ class SIM_API cMessage : public cObject
      *
      * @see parList()
      */
-    cObject *addObject(cObject *p)  {parList().add(p); return p;}
+    cOwnedObject *addObject(cOwnedObject *p)  {parList().add(p); return p;}
 
     /**
      * Returns the object with the given name in the message's object list.
@@ -485,7 +485,7 @@ class SIM_API cMessage : public cObject
      *
      * @see parList()
      */
-    cObject *getObject(const char *s)  {return parList().get(s);}
+    cOwnedObject *getObject(const char *s)  {return parList().get(s);}
 
     /**
      * Check if an object with the given name exists in the message's object list.
@@ -508,7 +508,7 @@ class SIM_API cMessage : public cObject
      *
      * @see parList()
      */
-    cObject *removeObject(const char *s)  {return parList().remove(s);}
+    cOwnedObject *removeObject(const char *s)  {return parList().remove(s);}
 
     /**
      * Remove the object with the given name from the message's object list, and
@@ -520,7 +520,7 @@ class SIM_API cMessage : public cObject
      *
      * @see parList()
      */
-    cObject *removeObject(cObject *p)  {return parList().remove(p);}
+    cOwnedObject *removeObject(cOwnedObject *p)  {return parList().remove(p);}
     //@}
 
     /** @name Message encapsulation. */
@@ -715,14 +715,14 @@ class SIM_API cMessage : public cObject
      * Static function that compares two messages by their delivery times,
      * then by their priorities. Usable as cQeueue CompareFunc.
      */
-    static int cmpbydelivtime(cObject *one, cObject *other);
+    static int cmpbydelivtime(cOwnedObject *one, cOwnedObject *other);
 
     /**
      * Static function that compares two messages by their priorities.
      * It can be used to sort messages in a priority queue.
      * Usable as cQeueue CompareFunc.
      */
-    static int cmpbypriority(cObject *one, cObject *other);
+    static int cmpbypriority(cOwnedObject *one, cOwnedObject *other);
 
     /** @name Statistics. */
     //@{

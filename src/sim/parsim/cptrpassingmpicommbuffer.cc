@@ -27,7 +27,7 @@ cPtrPassingMPICommBuffer::cPtrPassingMPICommBuffer()
 {
 }
 
-void cPtrPassingMPICommBuffer::packObject(cObject *obj)
+void cPtrPassingMPICommBuffer::packObject(cOwnedObject *obj)
 {
     long d = (void *)obj;
     extendBufferFor(sizeof(long));
@@ -35,11 +35,11 @@ void cPtrPassingMPICommBuffer::packObject(cObject *obj)
         throw new cRuntimeError("cPtrPassingMPICommBuffer::packObject(): MPI_Pack() returned error");
 }
 
-cObject *cPtrPassingMPICommBuffer::unpackObject()
+cOwnedObject *cPtrPassingMPICommBuffer::unpackObject()
 {
     long d;
     if (MPI_Unpack(mBuffer, mMsgSize, &mPosition, &d, 1, MPI_LONG, MPI_COMM_WORLD))
         throw new cRuntimeError("cPtrPassingMPICommBuffer::unpackObject(): MPI_Unpack() returned error");
-    return (cObject *)(void *)d;
+    return (cOwnedObject *)(void *)d;
 }
 

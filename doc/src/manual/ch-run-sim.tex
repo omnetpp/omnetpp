@@ -1968,11 +1968,11 @@ the Tkenv menu, and reviewing the list in the dialog that pops up.
 (If the model is large, it may take a while for the dialog to appear.)
 
 If the number of messages is stable, it is still possible
-you're leaking other \cclass{cObject}-based objects. You can
+you're leaking other \cclass{cOwnedObject}-based objects. You can
 also find them using Tkenv's \textit{Inspect|From list of all objects...}
 function.
 
-If you're leaking non-\cclass{cObject}-based objects or just
+If you're leaking non-\cclass{cOwnedObject}-based objects or just
 memory blocks (\ttt{struct}s, \ttt{int}/\ttt{double}/\ttt{struct} arrays,
 etc, allocated by \ttt{new}), you cannot find them via Tkenv.
 You'll probably need a specialized memory debugging tool like

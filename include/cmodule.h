@@ -238,12 +238,12 @@ class SIM_API cModule : public cComponent //noncopyable
     virtual ~cModule();
     //@}
 
-    /** @name Redefined cObject functions. */
+    /** @name Redefined cOwnedObject functions. */
     //@{
 
     /**
      * Calls v->visit(this) for each contained object.
-     * See cObject for more details.
+     * See cOwnedObject for more details.
      */
     virtual void forEachChild(cVisitor *v);
 

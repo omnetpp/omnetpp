@@ -5,7 +5,7 @@
 //           Discrete System Simulation in C++
 //
 //   Member functions of
-//    cQueue : (priority) queue of cObject descendants
+//    cQueue : (priority) queue of cOwnedObject descendants
 //
 //  Author: Andras Varga
 //
@@ -34,7 +34,7 @@ using std::ostream;
 Register_Class(cQueue);
 
 
-cQueue::cQueue(const cQueue& queue) : cObject()
+cQueue::cQueue(const cQueue& queue) : cOwnedObject()
 {
     frontp = backp = NULL;
     n = 0;
@@ -42,7 +42,7 @@ cQueue::cQueue(const cQueue& queue) : cObject()
     operator=(queue);
 }
 
-cQueue::cQueue(const char *name) : cObject(name)
+cQueue::cQueue(const char *name) : cOwnedObject(name)
 {
     tkownership = true;
     frontp = backp = NULL;
@@ -75,7 +75,7 @@ void cQueue::netPack(cCommBuffer *buffer)
 #ifndef WITH_PARSIM
     throw new cRuntimeError(this,eNOPARSIM);
 #else
-    cObject::netPack(buffer);
+    cOwnedObject::netPack(buffer);
 
     buffer->pack(n);
 
@@ -93,13 +93,13 @@ void cQueue::netUnpack(cCommBuffer *buffer)
 #ifndef WITH_PARSIM
     throw new cRuntimeError(this,eNOPARSIM);
 #else
-    cObject::netUnpack(buffer);
+    cOwnedObject::netUnpack(buffer);
 
     buffer->unpack(n);
 
     for (int i=0; i<n; i++)
     {
-        cObject *obj = buffer->unpackObject();
+        cOwnedObject *obj = buffer->unpackObject();
         insert(obj);
     }
 #endif
@@ -125,14 +125,14 @@ cQueue& cQueue::operator=(const cQueue& queue)
 
     clear();
 
-    cObject::operator=(queue);
+    cOwnedObject::operator=(queue);
     tkownership = queue.tkownership;
 
     bool old_tk = takeOwnership();
     for (cQueue::Iterator iter(queue, 0); !iter.end(); iter--)
     {
         if (iter()->owner()==const_cast<cQueue*>(&queue))
-            {takeOwnership(true); insert( (cObject *)iter()->dup() );}
+            {takeOwnership(true); insert( (cOwnedObject *)iter()->dup() );}
         else
             {takeOwnership(false); insert( iter() );}
     }
@@ -140,7 +140,7 @@ cQueue& cQueue::operator=(const cQueue& queue)
     return *this;
 }
 
-cQueue::QElem *cQueue::find_qelem(cObject *obj) const
+cQueue::QElem *cQueue::find_qelem(cOwnedObject *obj) const
 {
     QElem *p = frontp;
     while (p && p->obj!=obj)
@@ -148,7 +148,7 @@ cQueue::QElem *cQueue::find_qelem(cObject *obj) const
     return p;
 }
 
-void cQueue::insbefore_qelem(QElem *p, cObject *obj)
+void cQueue::insbefore_qelem(QElem *p, cOwnedObject *obj)
 {
     QElem *e = new QElem;
     e->obj = obj;
@@ -163,7 +163,7 @@ void cQueue::insbefore_qelem(QElem *p, cObject *obj)
     n++;
 }
 
-void cQueue::insafter_qelem(QElem *p, cObject *obj)
+void cQueue::insafter_qelem(QElem *p, cOwnedObject *obj)
 {
     QElem *e = new QElem;
     e->obj = obj;
@@ -178,7 +178,7 @@ void cQueue::insafter_qelem(QElem *p, cObject *obj)
     n++;
 }
 
-cObject *cQueue::remove_qelem(QElem *p)
+cOwnedObject *cQueue::remove_qelem(QElem *p)
 {
     if (p->next)
         p->next->prev = p->prev;
@@ -189,7 +189,7 @@ cObject *cQueue::remove_qelem(QElem *p)
     else
         frontp = p->next;
 
-    cObject *retobj = p->obj;
+    cOwnedObject *retobj = p->obj;
     delete p;
     n--;
     if (retobj->owner()==this)
@@ -198,7 +198,7 @@ cObject *cQueue::remove_qelem(QElem *p)
 }
 
 
-void cQueue::insert(cObject *obj)
+void cQueue::insert(cOwnedObject *obj)
 {
     if (!obj)
         throw new cRuntimeError(this, "cannot insert NULL pointer in queue");
@@ -221,7 +221,7 @@ void cQueue::insert(cObject *obj)
     }
 }
 
-void cQueue::insertBefore(cObject *where, cObject *obj)
+void cQueue::insertBefore(cOwnedObject *where, cOwnedObject *obj)
 {
     if (!obj)
         throw new cRuntimeError(this, "cannot insert NULL pointer in queue");
@@ -235,7 +235,7 @@ void cQueue::insertBefore(cObject *where, cObject *obj)
     insbefore_qelem(p,obj);
 }
 
-void cQueue::insertAfter(cObject *where, cObject *obj)
+void cQueue::insertAfter(cOwnedObject *where, cOwnedObject *obj)
 {
     if (!obj)
         throw new cRuntimeError(this,"cannot insert NULL pointer in queue");
@@ -249,17 +249,17 @@ void cQueue::insertAfter(cObject *where, cObject *obj)
     insafter_qelem(p,obj);
 }
 
-cObject *cQueue::front() const
+cOwnedObject *cQueue::front() const
 {
     return frontp ? frontp->obj : NULL;
 }
 
-cObject *cQueue::back() const
+cOwnedObject *cQueue::back() const
 {
     return backp ? backp->obj : NULL;
 }
 
-cObject *cQueue::remove(cObject *obj)
+cOwnedObject *cQueue::remove(cOwnedObject *obj)
 {
     if (!obj)
         return NULL;
@@ -270,7 +270,7 @@ cObject *cQueue::remove(cObject *obj)
     return remove_qelem(p);
 }
 
-cObject *cQueue::pop()
+cOwnedObject *cQueue::pop()
 {
     if (!frontp)
         throw new cRuntimeError(this,"pop(): queue empty");
@@ -283,12 +283,12 @@ int cQueue::length() const
     return n;
 }
 
-bool cQueue::contains(cObject *obj) const
+bool cQueue::contains(cOwnedObject *obj) const
 {
     return find_qelem(obj)!=NULL;
 }
 
-cObject *cQueue::get(int i) const
+cOwnedObject *cQueue::get(int i) const
 {
     QElem *p = frontp;
     while (p!=NULL && i>0)

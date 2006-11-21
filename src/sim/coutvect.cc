@@ -63,7 +63,7 @@ void cOutVector::setName(const char *nam)
 {
     if (handle)
         throw new cRuntimeError(this,"setName(): changing name of an output vector after record() calls is not allowed");
-    cObject::setName(nam);
+    cOwnedObject::setName(nam);
 
     // register early (only needed for Akaroa...)
     if (nam)

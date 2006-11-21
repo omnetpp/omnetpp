@@ -203,7 +203,7 @@ class SIM_API cDynamicExpression : public cExpression
      * references, "index" and "sizeof" operators, and references to NED "for" loop
      * variables.
      */
-    class Functor : public cPolymorphic
+    class Functor : public cObject
     {
       public:
         int numArgs() {return strlen(argTypes());}
@@ -242,7 +242,7 @@ class SIM_API cDynamicExpression : public cExpression
     cDynamicExpression& operator=(const cDynamicExpression& other);
     //@}
 
-    /** @name Redefined cPolymorphic functions */
+    /** @name Redefined cObject functions */
     //@{
 
     /**
@@ -252,7 +252,7 @@ class SIM_API cDynamicExpression : public cExpression
 
     /**
      * Produces a one-line description of object contents.
-     * See cObject for more details.
+     * See cOwnedObject for more details.
      */
     virtual std::string info() const;
 

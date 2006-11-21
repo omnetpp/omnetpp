@@ -118,7 +118,7 @@ class SIM_API cMathFunction : public cNoncopyableObject
     virtual ~cMathFunction() {}
     //@}
 
-    /** @name Redefined cObject methods. */
+    /** @name Redefined cOwnedObject methods. */
     //@{
     /**
      * Produces a one-line description of object contents.

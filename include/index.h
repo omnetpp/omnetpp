@@ -54,7 +54,7 @@
  *
  * Simulation core classes:       <!-- blank line needed for autobrief=yes -->
  *
- *    - cObject is the base class for most \opp classes
+ *    - cOwnedObject is the base class for most \opp classes
  *    - cModule, cCompoundModule and cSimpleModule represent modules
  *      in the simulation. The user implements new models by subclassing
  *      cSimpleModule and overriding at least its activity() or
@@ -77,15 +77,15 @@
  *
  * Container classes:      <!-- blank line needed for autobrief=yes -->
  *
- *    - cQueue: a (priority) queue for objects derived from cObject
- *    - cArray: a dynamic array for storing objects derived from cObject
+ *    - cQueue: a (priority) queue for objects derived from cOwnedObject
+ *    - cArray: a dynamic array for storing objects derived from cOwnedObject
  *
  * You can also use other container classes (such as STL's vector or map),
- * especially for structs or classes not derived from cObject.
- * For cMessage (and other cObject-rooted classes) the disadvantage of
+ * especially for structs or classes not derived from cOwnedObject.
+ * For cMessage (and other cOwnedObject-rooted classes) the disadvantage of
  * STL is that those container objects will not appear and will not be
  * inspectable under graphical user interfaces like Tkenv. To make them
- * inspectable, you have to wrap them into a class derived from cObject.
+ * inspectable, you have to wrap them into a class derived from cOwnedObject.
  *
  * Some other classes, closely related to the above ones (for example their
  * iterators) are not listed here explicitly, but you can find them via

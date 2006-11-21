@@ -124,7 +124,7 @@ class TOmnetTkApp : public TOmnetApp
       virtual void shutdown();
       virtual void printUISpecificHelp();
 
-      virtual void objectDeleted(cPolymorphic *object); // notify environment
+      virtual void objectDeleted(cObject *object); // notify environment
       virtual void messageSent(cMessage *msg, cGate *directToGate);
       virtual void messageDelivered(cMessage *msg);
       virtual void breakpointHit(const char *lbl, cSimpleModule *mod);
@@ -180,8 +180,8 @@ class TOmnetTkApp : public TOmnetApp
       void stopAtBreakpoint(const char *label, cSimpleModule *mod);
 
       void updateInspectors();
-      TInspector *inspect(cPolymorphic *obj, int type, const char *geometry, void *dat);
-      TInspector *findInspector(cPolymorphic *obj, int type);
+      TInspector *inspect(cObject *obj, int type, const char *geometry, void *dat);
+      TInspector *findInspector(cObject *obj, int type);
       void deleteInspector(TInspector *insp);
 
       int getSimulationState() {return simstate;}

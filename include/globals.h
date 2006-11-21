@@ -27,7 +27,7 @@ class cModuleType;
 //
 
 //< Internal: list in which objects are accumulated if there's no simple module in context.
-//< @see cObject::setDefaultOwner() and cSimulation::setContextModule())
+//< @see cOwnedObject::setDefaultOwner() and cSimulation::setContextModule())
 SIM_API extern cDefaultList defaultList;
 
 SIM_API extern cRegistrationList componentTypes;  ///< List of all component types (cComponentType)

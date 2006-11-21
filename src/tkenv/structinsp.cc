@@ -32,7 +32,7 @@ void _dummy_for_structinsp() {}
 
 
 
-TStructPanel::TStructPanel(const char *widgetname, cPolymorphic *obj) :
+TStructPanel::TStructPanel(const char *widgetname, cObject *obj) :
     TInspectorPanel(widgetname,obj)
 {
 }

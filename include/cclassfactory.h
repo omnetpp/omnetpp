@@ -31,7 +31,7 @@
 class SIM_API cClassFactory : public cNoncopyableObject
 {
   private:
-    cPolymorphic *(*creatorfunc)();
+    cObject *(*creatorfunc)();
     std::string descr;
 
   public:
@@ -40,14 +40,14 @@ class SIM_API cClassFactory : public cNoncopyableObject
     /**
      * Constructor.
      */
-    cClassFactory(const char *name, cPolymorphic *(*f)(), const char *description=NULL);
+    cClassFactory(const char *name, cObject *(*f)(), const char *description=NULL);
     //@}
 
-    /** @name Redefined cObject methods. */
+    /** @name Redefined cOwnedObject methods. */
     //@{
     /**
      * Produces a one-line description of object contents.
-     * See cObject for more details.
+     * See cOwnedObject for more details.
      */
     virtual std::string info() const;
     //@}
@@ -59,7 +59,7 @@ class SIM_API cClassFactory : public cNoncopyableObject
      * function. The result has to be cast to the appropriate type
      * (preferably by dynamic_cast or check_and_cast).
      */
-    cPolymorphic *createOne() const  {return creatorfunc();}
+    cObject *createOne() const  {return creatorfunc();}
 
     /**
      * Returns a description string.
@@ -86,7 +86,7 @@ class SIM_API cClassFactory : public cNoncopyableObject
      *
      * Example:
      *
-     * <tt>cObject *param = createOne( "cMessagePar" );</tt>
+     * <tt>cOwnedObject *param = createOne( "cMessagePar" );</tt>
      *
      * createOne() is used e.g. in parallel simulation when an object is received
      * from another partition and it has to be demarshalled.
@@ -95,7 +95,7 @@ class SIM_API cClassFactory : public cNoncopyableObject
      * @see Register_Class() macro
      * @see cClassFactory class
      */
-    static cPolymorphic *createOne(const char *classname);
+    static cObject *createOne(const char *classname);
 
     /**
      * A variant of the createOne() function; this function doesn't throw an
@@ -104,7 +104,7 @@ class SIM_API cClassFactory : public cNoncopyableObject
      *
      * @see createOne()
      */
-    static cPolymorphic *createOneIfClassIsKnown(const char *classname);
+    static cObject *createOneIfClassIsKnown(const char *classname);
     //@}
 };
 
@@ -117,14 +117,14 @@ class SIM_API cClassFactory : public cNoncopyableObject
 /**
  * Shortcut to cClassFactory::createOne().
  */
-inline cPolymorphic *createOne(const char *classname) {
+inline cObject *createOne(const char *classname) {
     return cClassFactory::createOne(classname);
 }
 
 /**
  * Shortcut to cClassFactory::createOneIfClassIsKnown().
  */
-inline cPolymorphic *createOneIfClassIsKnown(const char *classname) {
+inline cObject *createOneIfClassIsKnown(const char *classname) {
     return cClassFactory::createOneIfClassIsKnown(classname);
 }
 //@}

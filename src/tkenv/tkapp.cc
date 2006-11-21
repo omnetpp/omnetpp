@@ -744,7 +744,7 @@ void TOmnetTkApp::stopAtBreakpoint(const char *label, cSimpleModule *mod)
     breakpointhit_flag = true;
 }
 
-TInspector *TOmnetTkApp::inspect(cPolymorphic *obj, int type, const char *geometry, void *dat)
+TInspector *TOmnetTkApp::inspect(cObject *obj, int type, const char *geometry, void *dat)
 {
     // create inspector object & window or display existing one
     TInspector *existing_insp = findInspector(obj, type);
@@ -790,7 +790,7 @@ TInspector *TOmnetTkApp::inspect(cPolymorphic *obj, int type, const char *geomet
     return insp;
 }
 
-TInspector *TOmnetTkApp::findInspector(cPolymorphic *obj, int type)
+TInspector *TOmnetTkApp::findInspector(cObject *obj, int type)
 {
     for (TInspectorList::iterator it = inspectors.begin(); it!=inspectors.end(); ++it)
     {
@@ -1055,7 +1055,7 @@ bool TOmnetTkApp::idle()
     return stop;
 }
 
-void TOmnetTkApp::objectDeleted(cPolymorphic *object)
+void TOmnetTkApp::objectDeleted(cObject *object)
 {
     for (TInspectorList::iterator it = inspectors.begin(); it!=inspectors.end(); )
     {

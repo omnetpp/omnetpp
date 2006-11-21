@@ -39,12 +39,12 @@ class cPtrPassingMPICommBuffer : public cMPICommBuffer
     /**
      * Packs an object.
      */
-    virtual void packObject(cObject *obj);
+    virtual void packObject(cOwnedObject *obj);
 
     /**
      * Unpacks and returns an object.
      */
-    virtual cObject *unpackObject();
+    virtual cOwnedObject *unpackObject();
 };
 
 #endif

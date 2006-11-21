@@ -33,7 +33,7 @@
  * @see sEnumBuilder
  */
 //FIXME use std::map<int,std::string> and std::map<std::string,int>
-class SIM_API cEnum : public cObject
+class SIM_API cEnum : public cOwnedObject
 {
   private:
      struct sEnum {
@@ -65,23 +65,23 @@ class SIM_API cEnum : public cObject
 
     /**
      * Assignment operator. The name member doesn't get copied;
-     * see cObject's operator=() for more details.
+     * see cOwnedObject's operator=() for more details.
      */
     cEnum& operator=(const cEnum& list);
     //@}
 
-    /** @name Redefined cObject member functions. */
+    /** @name Redefined cOwnedObject member functions. */
     //@{
 
     /**
      * Creates and returns an exact copy of this object.
-     * See cObject for more details.
+     * See cOwnedObject for more details.
      */
     virtual cEnum *dup() const  {return new cEnum(*this);}
 
     /**
      * Produces a one-line description of object contents.
-     * See cObject for more details.
+     * See cOwnedObject for more details.
      */
     virtual std::string info() const;
     //@}
