@@ -44,7 +44,7 @@ const char *cPar::name() const
 
 void cPar::copyIfShared()
 {
-    if (!p->isShared())
+    if (p->isShared())
     {
         p = p->dup();
         p->setIsShared(false);
