@@ -50,49 +50,6 @@ void printAllObjects()
 }
 #endif
 
-//----
-// Internally used visitors
-
-/**
- * Finds a child object by name.
- */
-class cChildObjectFinderVisitor : public cVisitor
-{
-  protected:
-    const char *name;
-    cObject *result;
-  public:
-    cChildObjectFinderVisitor(const char *objname) {name=objname; result=NULL;}
-    virtual void visit(cObject *obj) {
-        if (obj->isName(name)) {
-            result=obj;
-            throw EndTraversalException();
-        }
-    }
-    cObject *getResult() {return result;}
-};
-
-/**
- * Recursively finds an object by name.
- */
-class cRecursiveObjectFinderVisitor : public cVisitor
-{
-  protected:
-    const char *name;
-    cObject *result;
-  public:
-    cRecursiveObjectFinderVisitor(const char *objname) {name=objname; result=NULL;}
-    virtual void visit(cObject *obj) {
-        if (obj->isName(name)) {
-            result=obj;
-            throw EndTraversalException();
-        }
-        obj->forEachChild(this);
-    }
-    cObject *getResult() {return result;}
-};
-
-//----
 
 // static class members
 char cObject::fullpathbuf[MAX_OBJECTFULLPATH];
@@ -162,9 +119,6 @@ cObject::~cObject()
 
     if (ownerp)
         ownerp->ownedObjectDeleted(this);
-
-    // notify environment
-    ev.objectDeleted(this);
 
     // release name string
     if (namep)
@@ -355,32 +309,6 @@ const char *cObject::fullPath(char *buffer, int bufsize) const
     return buffer;
 }
 
-void cObject::forEachChild(cVisitor *v)
-{
-}
-
-cObject *cObject::findObject(const char *objname, bool deep)
-{
-    if (deep)
-    {
-        // recursively
-        cRecursiveObjectFinderVisitor v(objname);
-        v.processChildrenOf(this);
-        return v.getResult();
-    }
-    else
-    {
-        // among children
-        cChildObjectFinderVisitor v(objname);
-        v.processChildrenOf(this);
-        return v.getResult();
-    }
-}
-
-int cObject::cmpbyname(cObject *one, cObject *other)
-{
-    return opp_strcmp(one->name(), other->name());
-}
 
 //-----
 

@@ -377,7 +377,7 @@ int setRunUntilModule_cmd(ClientData, Tcl_Interp *interp, int argc, const char *
    }
    else
    {
-       cObject *object; int type;
+       cPolymorphic *object; int type;
        splitInspectorName( argv[1], object, type);
        if (!object) {Tcl_SetResult(interp, "wrong inspectorname string", TCL_STATIC); return TCL_ERROR;}
        cModule *mod = dynamic_cast<cModule *>(object);
@@ -393,7 +393,7 @@ int oneStepInModule_cmd(ClientData, Tcl_Interp *interp, int argc, const char **a
    if (argc!=2 && argc!=3) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
    TOmnetTkApp *app = getTkApplication();
 
-   cObject *object; int type;
+   cPolymorphic *object; int type;
    splitInspectorName(argv[1], object, type);
    if (!object) {Tcl_SetResult(interp, "wrong inspectorname string", TCL_STATIC); return TCL_ERROR;}
    cModule *mod = dynamic_cast<cModule *>(object);
@@ -512,10 +512,11 @@ int getObjectClassName_cmd(ClientData, Tcl_Interp *interp, int argc, const char 
 int getObjectOwner_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
    if (argc!=2) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
-   cObject *object = dynamic_cast<cObject *>(strToPtr(argv[1]));
+   cPolymorphic *object = strToPtr(argv[1]);
    if (!object) {Tcl_SetResult(interp, "null or malformed pointer", TCL_STATIC); return TCL_ERROR;}
 
-   Tcl_SetResult(interp, ptrToStr(object->owner()), TCL_VOLATILE);
+   cObject *oo = dynamic_cast<cObject *>(object);
+   Tcl_SetResult(interp, ptrToStr(oo ? oo->owner() : NULL), TCL_VOLATILE);
    return TCL_OK;
 }
 
@@ -651,7 +652,7 @@ int getObjectId_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 int getComponentTypeObject_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
    if (argc!=2) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
-   cObject *object = dynamic_cast<cObject *>(strToPtr(argv[1]));
+   cPolymorphic *object = strToPtr(argv[1]);
    if (!object) {Tcl_SetResult(interp, "null or malformed pointer", TCL_STATIC); return TCL_ERROR;}
    cComponent *component = dynamic_cast<cModule *>(object);
    if (!component) {Tcl_SetResult(interp, "object is not a module or channel", TCL_STATIC); return TCL_ERROR;}
@@ -663,7 +664,7 @@ int getComponentTypeObject_cmd(ClientData, Tcl_Interp *interp, int argc, const c
 int getChildObjects_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
    if (argc!=2) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
-   cObject *object = dynamic_cast<cObject *>(strToPtr(argv[1]));
+   cPolymorphic *object = strToPtr(argv[1]);
    if (!object) {Tcl_SetResult(interp, "null or malformed pointer", TCL_STATIC); return TCL_ERROR;}
 
    cCollectChildrenVisitor visitor(object);
@@ -676,7 +677,7 @@ int getChildObjects_cmd(ClientData, Tcl_Interp *interp, int argc, const char **a
 int getNumChildObjects_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
    if (argc!=2) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
-   cObject *object = dynamic_cast<cObject *>(strToPtr(argv[1]));
+   cPolymorphic *object = strToPtr(argv[1]);
    if (!object) {Tcl_SetResult(interp, "null or malformed pointer", TCL_STATIC); return TCL_ERROR;}
 
    cCountChildrenVisitor visitor(object);
@@ -692,7 +693,7 @@ int getNumChildObjects_cmd(ClientData, Tcl_Interp *interp, int argc, const char 
 int hasChildObjects_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
    if (argc!=2) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
-   cObject *object = dynamic_cast<cObject *>(strToPtr(argv[1]));
+   cPolymorphic *object = strToPtr(argv[1]);
    if (!object) {Tcl_SetResult(interp, "null or malformed pointer", TCL_STATIC); return TCL_ERROR;}
 
    // TBD may be optimized, by exiting foreach on 1st child
@@ -708,7 +709,7 @@ int getSubObjects_cmd(ClientData, Tcl_Interp *interp, int argc, const char **arg
 {
    // args: <ptr> <maxcount>
    if (argc!=3) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
-   cObject *object = dynamic_cast<cObject *>(strToPtr(argv[1]));
+   cPolymorphic *object = strToPtr(argv[1]);
    if (!object) {Tcl_SetResult(interp, "null or malformed pointer", TCL_STATIC); return TCL_ERROR;}
    int maxcount = atoi(argv[2]);
    if (!maxcount) {Tcl_SetResult(interp, "maxcount must be a nonzero integer", TCL_STATIC); return TCL_ERROR;}
@@ -729,7 +730,7 @@ int getSubObjectsFilt_cmd(ClientData, Tcl_Interp *interp, int argc, const char *
    //    <class> and <fullpath> may contain wildcards
    //    <order> is one of "Name", "Full Name", "Class" or empty string
    if (argc!=7) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
-   cObject *object = dynamic_cast<cObject *>(strToPtr(argv[1]));
+   cPolymorphic *object = strToPtr(argv[1]);
    if (!object) {Tcl_SetResult(interp, "null or malformed pointer", TCL_STATIC); return TCL_ERROR;}
 
    const char *catstr = argv[2];
@@ -1253,7 +1254,7 @@ int inspect_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
    if (argc!=3 && argc!=4) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
    TOmnetTkApp *app = getTkApplication();
 
-   cObject *object = dynamic_cast<cObject *>(strToPtr(argv[1]));
+   cPolymorphic *object = strToPtr(argv[1]);
    if (!object) {Tcl_SetResult(interp, "null or malformed pointer", TCL_STATIC); return TCL_ERROR;}
 
    int type;
@@ -1272,7 +1273,7 @@ int supportedInspTypes_cmd(ClientData, Tcl_Interp *interp, int argc, const char 
 {
    // expected arg: pointer
    if (argc!=2) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
-   cObject *object = dynamic_cast<cObject *>(strToPtr(argv[1]));
+   cPolymorphic *object = strToPtr(argv[1]);
    if (!object) {Tcl_SetResult(interp, "null or malformed pointer", TCL_STATIC); return TCL_ERROR;}
 
    // collect supported inspector types
@@ -1332,7 +1333,7 @@ int updateInspector_cmd(ClientData, Tcl_Interp *interp, int argc, const char **a
    if (argc!=2) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
    TOmnetTkApp *app = getTkApplication();
 
-   cObject *object; int type;
+   cPolymorphic *object; int type;
    splitInspectorName( argv[1], object, type);
    if (!object) {Tcl_SetResult(interp, "wrong inspectorname string", TCL_STATIC); return TCL_ERROR;}
 
@@ -1349,7 +1350,7 @@ int writeBackInspector_cmd(ClientData, Tcl_Interp *interp, int argc, const char 
    if (argc!=2) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
    TOmnetTkApp *app = getTkApplication();
 
-   cObject *object; int type;
+   cPolymorphic *object; int type;
    splitInspectorName( argv[1], object, type);
    if (!object) {Tcl_SetResult(interp, "wrong inspectorname string", TCL_STATIC); return TCL_ERROR;}
 
@@ -1367,7 +1368,7 @@ int deleteInspector_cmd(ClientData, Tcl_Interp *interp, int argc, const char **a
    if (argc!=2) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
    TOmnetTkApp *app = getTkApplication();
 
-   cObject *object; int type;
+   cPolymorphic *object; int type;
    splitInspectorName( argv[1], object, type);
    if (!object) {Tcl_SetResult(interp, "wrong inspectorname string", TCL_STATIC); return TCL_ERROR;}
 
@@ -1383,7 +1384,7 @@ int markInspectorForDeletion_cmd(ClientData, Tcl_Interp *interp, int argc, const
    if (argc!=2) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
    TOmnetTkApp *app = getTkApplication();
 
-   cObject *object; int type;
+   cPolymorphic *object; int type;
    splitInspectorName( argv[1], object, type);
    if (!object) {Tcl_SetResult(interp, "wrong inspectorname string", TCL_STATIC); return TCL_ERROR;}
 
@@ -1399,7 +1400,7 @@ int inspMarkedForDeletion_cmd(ClientData, Tcl_Interp *interp, int argc, const ch
    if (argc!=2) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
    TOmnetTkApp *app = getTkApplication();
 
-   cObject *object; int type;
+   cPolymorphic *object; int type;
    splitInspectorName( argv[1], object, type);
    if (!object) {Tcl_SetResult(interp, "wrong inspectorname string", TCL_STATIC); return TCL_ERROR;}
 
@@ -1459,7 +1460,7 @@ int inspectorCommand_cmd(ClientData, Tcl_Interp *interp, int argc, const char **
    if (argc<2) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
    TOmnetTkApp *app = getTkApplication();
 
-   cObject *object; int type;
+   cPolymorphic *object; int type;
    splitInspectorName( argv[1], object, type);
    if (!object) {Tcl_SetResult(interp, "wrong inspectorname string", TCL_STATIC); return TCL_ERROR;}
 
@@ -1473,7 +1474,7 @@ int getClassDescriptor_cmd(ClientData, Tcl_Interp *interp, int argc, const char 
 {
    if (argc!=2) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
 
-   cObject *object = dynamic_cast<cObject *>(strToPtr(argv[1]));
+   cPolymorphic *object = strToPtr(argv[1]);
    cClassDescriptor *sd = object ? object->getDescriptor() : NULL;
    Tcl_SetResult(interp, ptrToStr(sd), TCL_VOLATILE);
    return TCL_OK;

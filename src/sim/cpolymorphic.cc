@@ -19,6 +19,14 @@
 #include "cexception.h"
 #include "cclassdescriptor.h"
 
+
+    
+cPolymorphic::~cPolymorphic()
+{
+    // notify environment
+    ev.objectDeleted(this);
+}
+
 const char *cPolymorphic::className() const
 {
     return opp_typename(typeid(*this));
@@ -27,11 +35,6 @@ const char *cPolymorphic::className() const
 cClassDescriptor *cPolymorphic::getDescriptor()
 {
     return cClassDescriptor::getDescriptorFor(this);
-}
-
-const char *cPolymorphic::fullName() const
-{
-    return "";
 }
 
 std::string cPolymorphic::fullPath() const
@@ -66,6 +69,73 @@ void cPolymorphic::netUnpack(cCommBuffer *buffer)
 void cPolymorphic::copyNotSupported() const
 {
     throw new cRuntimeError(this,eCANTCOPY);
+}
+
+void cPolymorphic::forEachChild(cVisitor *v)
+{
+}
+
+// Internally used visitors
+
+/**
+ * Finds a child object by name.
+ */
+class cChildObjectFinderVisitor : public cVisitor
+{
+  protected:
+    const char *name;
+    cPolymorphic *result;
+  public:
+    cChildObjectFinderVisitor(const char *objname) {
+        name = objname; result = NULL;
+    }
+    virtual void visit(cPolymorphic *obj) {
+        if (obj->isName(name)) {
+            result = obj;
+            throw EndTraversalException();
+        }
+    }
+    cPolymorphic *getResult() {return result;}
+};
+
+/**
+ * Recursively finds an object by name.
+ */
+class cRecursiveObjectFinderVisitor : public cVisitor
+{
+  protected:
+    const char *name;
+    cPolymorphic *result;
+  public:
+    cRecursiveObjectFinderVisitor(const char *objname) {
+        name = objname; result = NULL;
+    }
+    virtual void visit(cPolymorphic *obj) {
+        if (obj->isName(name)) {
+            result = obj;
+            throw EndTraversalException();
+        }
+        obj->forEachChild(this);
+    }
+    cPolymorphic *getResult() {return result;}
+};
+
+cPolymorphic *cPolymorphic::findObject(const char *objname, bool deep)
+{
+    if (deep)
+    {
+        // recursively
+        cRecursiveObjectFinderVisitor v(objname);
+        v.processChildrenOf(this);
+        return v.getResult();
+    }
+    else
+    {
+        // among children
+        cChildObjectFinderVisitor v(objname);
+        v.processChildrenOf(this);
+        return v.getResult();
+    }
 }
 
 

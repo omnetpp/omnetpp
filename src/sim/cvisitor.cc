@@ -19,10 +19,10 @@
 *--------------------------------------------------------------*/
 
 #include "cvisitor.h"
-#include "cobject.h"
+#include "cpolymorphic.h"
 
 
-bool cVisitor::process(cObject *obj)
+bool cVisitor::process(cPolymorphic *obj)
 {
     try
     {
@@ -35,7 +35,7 @@ bool cVisitor::process(cObject *obj)
     return true;
 }
 
-bool cVisitor::processChildrenOf(cObject *obj)
+bool cVisitor::processChildrenOf(cPolymorphic *obj)
 {
     try
     {

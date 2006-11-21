@@ -21,6 +21,7 @@
 #include <string>
 #include "defs.h"
 #include "util.h"
+#include "cvisitor.h"
 
 // Note: we include regmacros.h here in order to prevent the compiler from
 // misunderstanding Register_Class() in other source files as a function declaration
@@ -76,7 +77,7 @@ class SIM_API cPolymorphic
      * It is declared here only to make the class polymorphic and make its
      * destructor virtual.
      */
-    virtual ~cPolymorphic() {}
+    virtual ~cPolymorphic();
 
     /**
      * Returns a pointer to the class name string. This method is implemented
@@ -87,20 +88,32 @@ class SIM_API cPolymorphic
 
     /** @name Empty virtual functions which can be redefined in subclasses */
     //@{
+    /**
+     * Returns pointer to the object's name. It should never return NULL.
+     * This default implementation just returns and empty string ("").
+     */
+    virtual const char *name() const  {return "";}
 
-//FIXME why is name() missing?
+     /**
+     * Returns true if the object's name is identical to the string passed.
+     */
+    bool isName(const char *s) const {return !opp_strcmp(name(),s);}
 
     /**
-     * Can be redefined (as done in cObject) to return an object name.
-     * This version just returns "".
+     * When this object is part of a vector (like a submodule can be part of
+     * a module vector, or a gate can be part of a gate vector), this method
+     * returns the object's name with the index in brackets; for example:
+     * "out[5]".
+     *
+     * This default implementation just returns name().
      */
-    virtual const char *fullName() const;
+    virtual const char *fullName() const  {return name();}
 
     /**
      * Can be redefined (as done in cObject) to return an object full path,
      * or the object name if the path is not available. Although cPolymorphic
      * does not contain an owner() member so cannot produce a path by default,
-     * subclasses may be able to do so. 
+     * subclasses may be able to do so.
      *
      * This default implementation just returns fullName().
      */
@@ -151,7 +164,32 @@ class SIM_API cPolymorphic
     virtual void netUnpack(cCommBuffer *buffer);
     //@}
 
-//FIXME move forEach here!!!
+    /** @name Miscellaneous functions. */
+    //@{
+    /**
+     * Enables traversing the object tree, performing some operation on
+     * each object. The operation is encapsulated in the particular subclass
+     * of cVisitor.
+     *
+     * This method should be redefined in every subclass to call v->visit(obj)
+     * for every obj object contained.
+     */
+    virtual void forEachChild(cVisitor *v);
+
+    /**
+     * Finds the object with the given name. This function is useful when called
+     * on subclasses that are containers. This method
+     * finds the object with the given name in a container object and
+     * returns a pointer to it or NULL if the object hasn't
+     * been found. If deep is false, only objects directly
+     * contained will be searched, otherwise the function searches the
+     * whole subtree for the object. It uses the forEachChild() mechanism.
+     *
+     * Do not use it for finding submodules! Use cModule::moduleByRelativePath()
+     * instead.
+     */
+    cPolymorphic *findObject(const char *name, bool deep=true);
+    //@}
 
     /** @name Helper functions. */
     //@{

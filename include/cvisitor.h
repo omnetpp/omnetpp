@@ -20,11 +20,11 @@
 
 #include "defs.h"
 
-class cObject;
+class cPolymorphic;
 
 
 /**
- * Enables traversing the tree of (cObject-rooted) simulation objects.
+ * Enables traversing the tree of (cPolymorphic-rooted) simulation objects.
  * Should be subclassed and the visit() method redefined according
  * to your needs.
  *
@@ -37,7 +37,7 @@ class cObject;
  * \code
  * cRecursiveObjectFinderVisitor v(objectName);
  * v.process(root);
- * cObject *result = v.getResult();
+ * cPolymorphic *result = v.getResult();
  * \endcode
  *
  * The above code will find the root object as well, if its name matches.
@@ -47,7 +47,7 @@ class cObject;
  * \code
  * cRecursiveObjectFinderVisitor v(objectName);
  * v.processChildrenOf(root);
- * cObject *result = v.getResult();
+ * cPolymorphic *result = v.getResult();
  * \endcode
  *
  * @ingroup SimCore
@@ -72,7 +72,7 @@ class SIM_API cVisitor
      * and catches EndTraversalException if one occurs. Return value is true if
      * traversal went through and false if EndTraversalException was caught.
      */
-    virtual bool process(cObject *obj);
+    virtual bool process(cPolymorphic *obj);
 
     /**
      * Similar to process(), except that it skips the object itself, i.e. it begins
@@ -80,11 +80,11 @@ class SIM_API cVisitor
      * and catches EndTraversalException if one occurs. Return value is true if
      * traversal went through and false if EndTraversalException was caught.
      */
-    virtual bool processChildrenOf(cObject *obj);
+    virtual bool processChildrenOf(cPolymorphic *obj);
 
     /**
      * Method called from the forEachChild() methods of every class derived
-     * from cObject, for each contained object. visit() should be
+     * from cPolymorphic, for each contained object. visit() should be
      * redefined by user to encapsulate the operation to be performed
      * on the object. If you want recursively traversal, call
      * obj->forEachChild(this) from here.
@@ -92,7 +92,7 @@ class SIM_API cVisitor
      * This method should NOT be called to to initiate the traversal -- use
      * process() or processChildrenOf() for that.
      */
-    virtual void visit(cObject *obj) = 0;
+    virtual void visit(cPolymorphic *obj) = 0;
 };
 
 #endif

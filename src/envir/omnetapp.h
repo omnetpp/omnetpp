@@ -198,7 +198,7 @@ class ENVIR_API TOmnetApp
      * For documentation see corresponding methods in cEnvir.
      */
     //@{
-    virtual void objectDeleted(cObject *object) {}
+    virtual void objectDeleted(cPolymorphic *object) {}
     virtual void messageSent(cMessage *msg, cGate *directToGate) {}
     virtual void messageDelivered(cMessage *msg) {}
     virtual void breakpointHit(const char *lbl, cSimpleModule *mod) {}

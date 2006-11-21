@@ -60,7 +60,7 @@ int insptypeCodeFromName(const char *namestr)
 //=================================================================
 // a utility function:
 
-void splitInspectorName(const char *namestr, cObject *&object, int& type)
+void splitInspectorName(const char *namestr, cPolymorphic *&object, int& type)
 {
    // namestr is the window path name, sth like ".ptr80005a31-2"
    // split it into pointer string ("ptr80005a31") and inspector type ("2")
@@ -73,7 +73,7 @@ void splitInspectorName(const char *namestr, cObject *&object, int& type)
    assert(*s=='-');  // there must be a '-' in the string
    *s = '\0';
 
-   object = dynamic_cast<cObject *>(strToPtr(namestr+1));
+   object = strToPtr(namestr+1);
    type = atoi(s+1);
    *s = '-';  // restore '-'
 }
@@ -82,7 +82,7 @@ void splitInspectorName(const char *namestr, cObject *&object, int& type)
 // TInspector: base class for all inspector types
 //             member functions
 
-TInspector::TInspector(cObject *obj, int typ, const char *geom, void *dat)
+TInspector::TInspector(cPolymorphic *obj, int typ, const char *geom, void *dat)
 {
    object = obj;
    type = typ;
@@ -142,7 +142,8 @@ void TInspector::update()
    char newtitle[128];
    const char *prefix = getTkApplication()->getWindowTitlePrefix();
    char fullpath[300];
-   object->fullPath(fullpath,300);
+   strncpy(fullpath, object->fullPath().c_str(), 300);
+   fullpath[299] = 0;
    int len = strlen(fullpath);
    if (len<=45)
        sprintf(newtitle, "%s(%.40s) %s", prefix, object->className(), fullpath);
@@ -168,7 +169,8 @@ void TInspector::update()
    CHK(Tcl_VarEval(interp, windowname,".infobar.name config -text {",newname,"}",NULL));
 
    // owner button on toolbar
-   setToolbarInspectButton(".toolbar.owner",mod ? mod->parentModule() : object->owner(), INSP_DEFAULT);
+   cObject *oo = dynamic_cast<cObject *>(object);
+   setToolbarInspectButton(".toolbar.owner", mod ? mod->parentModule() : oo ? oo->owner() : NULL, INSP_DEFAULT);
 }
 
 void TInspector::setEntry(const char *entry, const char *val)
@@ -243,7 +245,7 @@ const char *TInspector::getEntry( const char *entry )
    return Tcl_GetStringResult(interp);
 }
 
-void TInspector::setInspectButton(const char *button, cObject *object, bool displayfullpath, int inspectortype)
+void TInspector::setInspectButton(const char *button, cPolymorphic *object, bool displayfullpath, int inspectortype)
 {
    Tcl_Interp *interp = getTkApplication()->getInterp();
    if (object)
@@ -268,7 +270,7 @@ void TInspector::setInspectButton(const char *button, cObject *object, bool disp
    }
 }
 
-void TInspector::setToolbarInspectButton(const char *button, cObject *object, int type)
+void TInspector::setToolbarInspectButton(const char *button, cPolymorphic *object, int type)
 {
    Tcl_Interp *interp = getTkApplication()->getInterp();
    if (object)
@@ -290,7 +292,7 @@ void TInspector::deleteInspectorListbox(const char *listbox)
    CHK(Tcl_VarEval(interp, "multicolumnlistbox_deleteall ", windowname,listbox,".main.list",NULL));
 }
 
-void TInspector::fillInspectorListbox(const char *listbox, cObject *object, bool deep)
+void TInspector::fillInspectorListbox(const char *listbox, cPolymorphic *object, bool deep)
 {
    Tcl_Interp *interp = getTkApplication()->getInterp();
    char w[256], buf[256];

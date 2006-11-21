@@ -172,8 +172,10 @@ class cSnapshotWriterVisitor : public cVisitor
     ostream& os;
     int indentlevel;
   public:
-    cSnapshotWriterVisitor(ostream& ostr) : os(ostr) {indentlevel=0;}
-    virtual void visit(cObject *obj) {
+    cSnapshotWriterVisitor(ostream& ostr) : os(ostr) {
+        indentlevel = 0;
+    }
+    virtual void visit(cPolymorphic *obj) {
         std::string indent(2*indentlevel, ' ');
         os << indent << "<object class=\"" << obj->className() << "\" fullpath=\"" << xmlquote(obj->fullPath()) << "\">\n";
         os << indent << "  <info>" << xmlquote(obj->info()) << "</info>\n";
@@ -189,7 +191,7 @@ class cSnapshotWriterVisitor : public cVisitor
     }
 };
 
-bool cSimulation::snapshot(cObject *object, const char *label)
+bool cSimulation::snapshot(cPolymorphic *object, const char *label)
 {
     if (!object)
         throw new cRuntimeError("snapshot(): object pointer is NULL");
@@ -603,8 +605,8 @@ void cSimulation::doOneEvent(cSimpleModule *mod)
 
     // Note: simulation time (as read via simTime() from modules) is updated
     // in selectNextModule()) called right before the next doOneEvent().
-    // It must not be updated here, because it will interfere with parallel 
-    // simulation (cIdealSimulationProtocol, etc) that relies on simTime() 
+    // It must not be updated here, because it will interfere with parallel
+    // simulation (cIdealSimulationProtocol, etc) that relies on simTime()
     // returning the time of the last executed event. If Tkenv wants to display
     // the time of the next event, it should call guessNextSimtime().
 }

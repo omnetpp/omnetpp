@@ -24,6 +24,7 @@
 #include <iostream>
 #include "defs.h"
 
+class cPolymorphic;
 class cObject;
 class cMessage;
 class cGate;
@@ -190,7 +191,7 @@ class ENVIR_API cEnvir : public std::ostream
      * and remove it from object lists currently displayed. cObject's
      * destructor automatically calls this function.
      */
-    void objectDeleted(cObject *object);
+    void objectDeleted(cPolymorphic *object);
 
     /**
      * Notifies the environment that a message was sent. Details can be

@@ -41,11 +41,11 @@ void _dummy_for_statinsp() {}
 //   public:
 //     TStatisticInspectorFactory(const char *name) : cInspectorFactory(name) {}
 //
-//     bool supportsObject(cObject *obj) {return dynamic_cast<cStatistic *>(obj)!=NULL;}
+//     bool supportsObject(cPolymorphic *obj) {return dynamic_cast<cStatistic *>(obj)!=NULL;}
 //     int inspectorType() {return INSP_OBJECT;}
-//     double qualityAsDefault(cObject *object) {return 2.0;}
+//     double qualityAsDefault(cPolymorphic *object) {return 2.0;}
 //
-//     TInspector *createInspectorFor(cObject *object,int type,const char *geom,void *data) {
+//     TInspector *createInspectorFor(cPolymorphic *object,int type,const char *geom,void *data) {
 //         return new TStatisticInspector(object, type, geom, data);
 //     }
 // };
@@ -53,7 +53,7 @@ void _dummy_for_statinsp() {}
 // Register_InspectorFactory(TStatisticInspectorFactory);
 //
 //
-// TStatisticInspector::TStatisticInspector(cObject *obj,int typ,const char *geom,void *dat) :
+// TStatisticInspector::TStatisticInspector(cPolymorphic *obj,int typ,const char *geom,void *dat) :
 //     TInspector(obj,typ,geom,dat)
 // {
 // }
@@ -88,11 +88,11 @@ class THistogramWindowFactory : public cInspectorFactory
   public:
     THistogramWindowFactory(const char *name) : cInspectorFactory(name) {}
 
-    bool supportsObject(cObject *obj) {return dynamic_cast<cDensityEstBase *>(obj)!=NULL;}
+    bool supportsObject(cPolymorphic *obj) {return dynamic_cast<cDensityEstBase *>(obj)!=NULL;}
     int inspectorType() {return INSP_GRAPHICAL;}
-    double qualityAsDefault(cObject *object) {return 3.0;}
+    double qualityAsDefault(cPolymorphic *object) {return 3.0;}
 
-    TInspector *createInspectorFor(cObject *object,int type,const char *geom,void *data) {
+    TInspector *createInspectorFor(cPolymorphic *object,int type,const char *geom,void *data) {
         return new THistogramWindow(object, type, geom, data);
     }
 };
@@ -100,7 +100,7 @@ class THistogramWindowFactory : public cInspectorFactory
 Register_InspectorFactory(THistogramWindowFactory);
 
 
-THistogramWindow::THistogramWindow(cObject *obj,int typ,const char *geom,void *dat) :
+THistogramWindow::THistogramWindow(cPolymorphic *obj,int typ,const char *geom,void *dat) :
     TInspector(obj,typ,geom,dat)
 {
 }
@@ -240,11 +240,11 @@ class TOutVectorWindowFactory : public cInspectorFactory
   public:
     TOutVectorWindowFactory(const char *name) : cInspectorFactory(name) {}
 
-    bool supportsObject(cObject *obj) {return dynamic_cast<cOutVector *>(obj)!=NULL;}
+    bool supportsObject(cPolymorphic *obj) {return dynamic_cast<cOutVector *>(obj)!=NULL;}
     int inspectorType() {return INSP_GRAPHICAL;}
-    double qualityAsDefault(cObject *object) {return 3.0;}
+    double qualityAsDefault(cPolymorphic *object) {return 3.0;}
 
-    TInspector *createInspectorFor(cObject *object,int type,const char *geom,void *data) {
+    TInspector *createInspectorFor(cPolymorphic *object,int type,const char *geom,void *data) {
         return new TOutVectorWindow(object, type, geom, data);
     }
 };
@@ -281,7 +281,7 @@ static void record_in_insp(void *data, simtime_t t, double val1, double val2)
    insp->circbuf.add(t,val1,val2);
 }
 
-TOutVectorWindow::TOutVectorWindow(cObject *obj,int typ,const char *geom,void *dat,int size) :
+TOutVectorWindow::TOutVectorWindow(cPolymorphic *obj,int typ,const char *geom,void *dat,int size) :
     TInspector(obj,typ,geom,dat), circbuf(size)
 {
    // make inspected outvector to call us back when it gets data to write out

@@ -24,7 +24,6 @@
 #include "util.h"
 #include "cpolymorphic.h"
 #include "cexception.h"
-#include "cvisitor.h"
 #include "cstringpool.h"
 
 
@@ -48,6 +47,8 @@ typedef int (*CompareFunc)(cObject *a, cObject *b);
 
 
 /**
+ * FIXME revise this
+ *
  * Base class for almost all classes in the \opp library.
  *
  * It is usually NOT a good idea to subclass your own classes
@@ -282,21 +283,10 @@ class SIM_API cObject : public cPolymorphic
     virtual void setName(const char *s);
 
     /**
-     * Returns pointer to the object's name. The function never returns NULL.
+     * Returns pointer to the object's name, a string stored in the object.
+     * This function never returns NULL.
      */
-    const char *name() const  {return namep ? namep : "";}
-
-    /**
-     * Returns true if the object's name is identical to the
-     * string passed.
-     */
-    bool isName(const char *s) const {return !opp_strcmp(name(),s);}
-
-    /**
-     * Returns a name that includes the object 'index' (e.g. in a module vector),
-     * like "tx[5]". To be redefined in descendants. E.g., see cModule::fullName().
-     */
-    virtual const char *fullName() const  {return name();}
+    virtual const char *name() const  {return namep ? namep : "";}
 
     /**
      * Returns the full path of the object in the object hierarchy,
@@ -308,7 +298,7 @@ class SIM_API cObject : public cPolymorphic
      * Returns the full path of the object in the object hierarchy,
      * like "net.host[2].tcp.winsize". The result is placed into the buffer passed.
      */
-    virtual const char *fullPath(char *buffer, int buffersize) const;
+    virtual const char *fullPath(char *buffer, int buffersize) const;  //FIXME remove this one
 
     /**
      * Turn name pooling on/off. Name pooling is an optimization technique that saves
@@ -339,39 +329,6 @@ class SIM_API cObject : public cPolymorphic
      * the current event.
      */
     static cDefaultList *defaultOwner();
-    //@}
-
-    /** @name Miscellaneous functions. */
-    //@{
-
-    /**
-     * Enables traversing the object tree, performing some operation on
-     * each object. The operation is encapsulated in the particular subclass
-     * of cVisitor.
-     *
-     * This method should be redefined in every subclass to call v->visit(obj)
-     * for every obj object contained.
-     */
-    virtual void forEachChild(cVisitor *v);  // FIXME down to cPolymorphic?
-
-    /**
-     * Finds the object with the given name. This function is useful when called
-     * on cObject subclasses that are containers. This method
-     * finds the object with the given name in a container object and
-     * returns a pointer to it or NULL if the object hasn't
-     * been found. If deep is false, only objects directly
-     * contained will be searched, otherwise the function searches the
-     * whole subtree for the object. It uses the forEachChild() mechanism.
-     *
-     * Do not use it for finding submodules! See cModule::moduleByRelativePath().
-     */
-    cObject *findObject(const char *name, bool deep=true);
-
-    /**
-     * This function compares to objects by name. It can be used in a
-     * priority queue (class cQueue) as a sorting criterion.
-     */
-    static int cmpbyname(cObject *one, cObject *other);
     //@}
 
     /** @name Statistics. */

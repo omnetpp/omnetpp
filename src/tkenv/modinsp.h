@@ -30,7 +30,7 @@
 class TModuleWindow : public TInspector
 {
    public:
-      TModuleWindow(cObject *obj,int typ,const char *geom,void *dat=NULL);
+      TModuleWindow(cPolymorphic *obj,int typ,const char *geom,void *dat=NULL);
       virtual void createWindow();
       virtual void update();
 };
@@ -49,7 +49,7 @@ class TGraphicalModWindow : public TInspector
       PositionMap submodPosMap;  // recalculateLayout() fills this map
 
    public:
-      TGraphicalModWindow(cObject *obj,int typ,const char *geom,void *dat=NULL);
+      TGraphicalModWindow(cPolymorphic *obj,int typ,const char *geom,void *dat=NULL);
       ~TGraphicalModWindow();
       virtual void createWindow();
       virtual void update();
@@ -94,7 +94,7 @@ class TGraphicalModWindow : public TInspector
 };
 
 //
-// *** Note: te following inspectors have been replaced with TGenericObjectInspector ***
+// *** Note: te following inspectors have been replaced with TGenericPolymorphicInspector ***
 //
 // class TCompoundModInspector: public TInspector
 // {
@@ -102,7 +102,7 @@ class TGraphicalModWindow : public TInspector
 //       bool deep;
 //       bool simpleonly;
 //    public:
-//       TCompoundModInspector(cObject *obj,int typ,const char *geom,void *dat=NULL);
+//       TCompoundModInspector(cPolymorphic *obj,int typ,const char *geom,void *dat=NULL);
 //       virtual void createWindow();
 //       virtual void update();
 //       virtual void writeBack();
@@ -111,7 +111,7 @@ class TGraphicalModWindow : public TInspector
 // class TSimpleModInspector: public TInspector
 // {
 //    public:
-//       TSimpleModInspector(cObject *obj,int typ,const char *geom,void *dat=NULL);
+//       TSimpleModInspector(cPolymorphic *obj,int typ,const char *geom,void *dat=NULL);
 //       virtual void createWindow();
 //       virtual void update();
 //       virtual void writeBack();
@@ -120,7 +120,7 @@ class TGraphicalModWindow : public TInspector
 // class TGateInspector: public TInspector
 // {
 //    public:
-//       TGateInspector(cObject *obj,int typ,const char *geom,void *dat=NULL);
+//       TGateInspector(cPolymorphic *obj,int typ,const char *geom,void *dat=NULL);
 //       virtual void createWindow();
 //       virtual void update();
 //       virtual void writeBack();
@@ -132,7 +132,7 @@ class TGraphicalGateWindow : public TInspector
    protected:
       char canvas[128];
    public:
-      TGraphicalGateWindow(cObject *obj,int typ,const char *geom,void *dat=NULL);
+      TGraphicalGateWindow(cPolymorphic *obj,int typ,const char *geom,void *dat=NULL);
       virtual void createWindow();
       virtual void update();
       virtual int inspectorCommand(Tcl_Interp *interp, int argc, const char **argv);

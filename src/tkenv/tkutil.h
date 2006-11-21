@@ -96,8 +96,6 @@ class TclQuotedString
 //
 class cCollectObjectsVisitor;
 
-typedef char *(*InfoFunc)(cObject *);
-
 char *voidPtrToStr(void *ptr, char *buffer=NULL);
 void *strToVoidPtr(const char *s);
 
@@ -106,11 +104,11 @@ inline cPolymorphic *strToPtr(const char *s) {return (cPolymorphic *)strToVoidPt
 
 void setObjectListResult(Tcl_Interp *interp, cCollectObjectsVisitor *visitor);
 
-void insertIntoInspectorListbox(Tcl_Interp *interp, const char *listbox, cObject *obj, bool fullpath);
+void insertIntoInspectorListbox(Tcl_Interp *interp, const char *listbox, cPolymorphic *obj, bool fullpath);
 
 void feedCollectionIntoInspectorListbox(cCollectObjectsVisitor *visitor, Tcl_Interp *interp, const char *listbox, bool fullpath);
 
-int fillListboxWithChildObjects(cObject *object, Tcl_Interp *interp, const char *listbox, bool deep);
+int fillListboxWithChildObjects(cPolymorphic *object, Tcl_Interp *interp, const char *listbox, bool deep);
 
 void inspectObjectByName(const char *fullpath, const char *classname, int insptype, const char *geometry);
 

@@ -109,7 +109,7 @@ void *strToVoidPtr(const char *s)
 void setObjectListResult(Tcl_Interp *interp, cCollectObjectsVisitor *visitor)
 {
    int n = visitor->getArraySize();
-   cObject **objs = visitor->getArray();
+   cPolymorphic **objs = visitor->getArray();
    const int ptrsize = 21; // one ptr should be max 20 chars (good for even 64bit-ptrs)
    char *buf = Tcl_Alloc(ptrsize*n+1);
    char *s=buf;
@@ -127,7 +127,7 @@ void setObjectListResult(Tcl_Interp *interp, cCollectObjectsVisitor *visitor)
 
 //-----------------------------------------------------------------------
 
-void insertIntoInspectorListbox(Tcl_Interp *interp, const char *listbox, cObject *obj, bool fullpath)
+void insertIntoInspectorListbox(Tcl_Interp *interp, const char *listbox, cPolymorphic *obj, bool fullpath)
 {
     const char *ptr = ptrToStr(obj);
     CHK(Tcl_VarEval(interp, "multicolumnlistbox_insert ",listbox," ",ptr," {"
@@ -143,7 +143,7 @@ void insertIntoInspectorListbox(Tcl_Interp *interp, const char *listbox, cObject
 void feedCollectionIntoInspectorListbox(cCollectObjectsVisitor *visitor, Tcl_Interp *interp, const char *listbox, bool fullpath)
 {
     int n = visitor->getArraySize();
-    cObject **objs = visitor->getArray();
+    cPolymorphic **objs = visitor->getArray();
 
     for (int i=0; i<n; i++)
     {
@@ -152,7 +152,7 @@ void feedCollectionIntoInspectorListbox(cCollectObjectsVisitor *visitor, Tcl_Int
     }
 }
 
-int fillListboxWithChildObjects(cObject *object, Tcl_Interp *interp, const char *listbox, bool deep)
+int fillListboxWithChildObjects(cPolymorphic *object, Tcl_Interp *interp, const char *listbox, bool deep)
 {
     int n;
     if (deep)
@@ -194,7 +194,7 @@ class cInspectByNameVisitor : public cVisitor
         insptype = _insptype;
         geometry = _geometry;
     }
-    virtual void visit(cObject *obj) {
+    virtual void visit(cPolymorphic *obj) {
         // we have to do exhaustive search here... optimization, such as checking
         // if objpath matches beginning of fullpath to see if we're on the
         // right track is not usable, because some objects (simulation, modules'

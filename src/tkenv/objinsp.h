@@ -21,14 +21,14 @@
 #include "structinsp.h"
 #include "omnetapp.h"
 
-class TGenericObjectInspector : public TInspector
+class TGenericPolymorphicInspector : public TInspector
 {
    protected:
       bool hascontentspage;
       bool focuscontentspage;
    public:
-      TGenericObjectInspector(cObject *obj, int typ, const char *geom, void *dat=NULL);
-      ~TGenericObjectInspector();
+      TGenericPolymorphicInspector(cPolymorphic *obj, int typ, const char *geom, void *dat=NULL);
+      ~TGenericPolymorphicInspector();
       void setContentsPage(bool show, bool focus) {hascontentspage = show; focuscontentspage = focus;}
       virtual void createWindow();
       virtual void update();
@@ -37,12 +37,12 @@ class TGenericObjectInspector : public TInspector
 };
 
 //
-// *** Note: the following inspectors have been replaced with TGenericObjectInspector ***
+// *** Note: the following inspectors have been replaced with TGenericPolymorphicInspector ***
 //
 // class TObjInspector : public TInspector
 // {
 //    public:
-//       TObjInspector(cObject *obj,int typ,const char *geom,void *dat=NULL);
+//       TObjInspector(cPolymorphic *obj,int typ,const char *geom,void *dat=NULL);
 //       ~TObjInspector();
 //       virtual void createWindow();
 //       virtual void update();
@@ -56,7 +56,7 @@ class TGenericObjectInspector : public TInspector
 //       bool deep;
 //       char listbox[64];
 //    public:
-//       TContainerInspector(cObject *obj,int typ,const char *geom,void *dat=NULL);
+//       TContainerInspector(cPolymorphic *obj,int typ,const char *geom,void *dat=NULL);
 //       virtual void createWindow();
 //       virtual void update();
 // };
@@ -66,7 +66,7 @@ class TGenericObjectInspector : public TInspector
 //    protected:
 //       TStructPanel *controlinfopage;
 //    public:
-//       TMessageInspector(cObject *obj,int typ,const char *geom,void *dat=NULL);
+//       TMessageInspector(cPolymorphic *obj,int typ,const char *geom,void *dat=NULL);
 //       ~TMessageInspector();
 //       virtual void createWindow();
 //       virtual void update();
@@ -78,7 +78,7 @@ class TGenericObjectInspector : public TInspector
 class TWatchInspector: public TInspector
 {
    public:
-      TWatchInspector(cObject *obj,int typ,const char *geom,void *dat=NULL);
+      TWatchInspector(cPolymorphic *obj,int typ,const char *geom,void *dat=NULL);
       virtual void createWindow();
       virtual void update();
       virtual void writeBack();
@@ -87,7 +87,7 @@ class TWatchInspector: public TInspector
 class TParInspector: public TInspector
 {
    public:
-      TParInspector(cObject *obj,int typ,const char *geom,void *dat=NULL);
+      TParInspector(cPolymorphic *obj,int typ,const char *geom,void *dat=NULL);
       virtual void createWindow();
       virtual void update();
       virtual void writeBack();

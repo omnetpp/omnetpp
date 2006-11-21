@@ -418,7 +418,7 @@ class SIM_API cSimulation : public cNoncopyableObject
      * textual snapshot file.
      * This method is called internally from cSimpleModule's snapshot().
      */
-    bool snapshot(cObject *obj, const char *label);
+    bool snapshot(cPolymorphic *obj, const char *label);
 
     //@}
 };
