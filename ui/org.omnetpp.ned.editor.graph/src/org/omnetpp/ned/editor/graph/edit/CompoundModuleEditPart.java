@@ -1,7 +1,9 @@
 package org.omnetpp.ned.editor.graph.edit;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.draw2d.ConnectionAnchor;
 import org.eclipse.draw2d.IFigure;
@@ -9,6 +11,7 @@ import org.eclipse.draw2d.XYLayout;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.gef.AutoexposeHelper;
 import org.eclipse.gef.CompoundSnapToHelper;
+import org.eclipse.gef.ConnectionEditPart;
 import org.eclipse.gef.EditPolicy;
 import org.eclipse.gef.ExposeHelper;
 import org.eclipse.gef.MouseWheelHelper;
@@ -32,6 +35,11 @@ import org.omnetpp.ned2.model.notification.NEDStructuralChangeEvent;
 
 public class CompoundModuleEditPart extends ModuleEditPart {
 
+    // stores  the connection model - connection controller mapping for the compound module
+    private Map<Object, ConnectionEditPart> modelToConnectionParts = new HashMap<Object, ConnectionEditPart>();
+
+    protected CompoundModuleGateAnchor gateAnchor;
+
     @Override
     protected void createEditPolicies() {
         super.createEditPolicies();
@@ -46,7 +54,9 @@ public class CompoundModuleEditPart extends ModuleEditPart {
      */
     @Override
     protected IFigure createFigure() {
-        return new CompoundModuleFigure();
+        IFigure fig = new CompoundModuleFigure();
+        gateAnchor = new CompoundModuleGateAnchor(fig);
+        return fig;
     }
 
     /**
@@ -191,7 +201,8 @@ public class CompoundModuleEditPart extends ModuleEditPart {
 	 * @return The selected connection anchor
 	 */
 	public ConnectionAnchor getConnectionAnchorAt(Point p) {
-		return new CompoundModuleGateAnchor(getFigure());
+//		return new CompoundModuleGateAnchor(getFigure());
+        return gateAnchor;
 	}
 
 	/**
@@ -200,7 +211,8 @@ public class CompoundModuleEditPart extends ModuleEditPart {
 	 * @return
 	 */
 	public GateAnchor getConnectionAnchor(String gate) {
-		return new CompoundModuleGateAnchor(getFigure());
+//		return new CompoundModuleGateAnchor(getFigure());
+        return gateAnchor;
 	}
     
     /**
@@ -213,5 +225,12 @@ public class CompoundModuleEditPart extends ModuleEditPart {
     @Override
     public CompoundModuleEditPart getCompoundModulePart() {
         return this;
+    }
+
+    /**
+     * @return The MAP that contains the connection model - controller associations 
+     */
+    public Map<Object, ConnectionEditPart> getModelToConnectionParts() {
+        return modelToConnectionParts;
     }
 }

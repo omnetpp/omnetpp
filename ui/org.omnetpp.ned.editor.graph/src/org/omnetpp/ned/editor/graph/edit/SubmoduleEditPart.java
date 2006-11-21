@@ -26,6 +26,7 @@ import org.omnetpp.ned2.model.notification.NEDModelEvent;
 
 
 public class SubmoduleEditPart extends ModuleEditPart {
+    protected GateAnchor gateAnchor;
 
     /** 
      * Returns a newly created Figure of this.
@@ -34,7 +35,9 @@ public class SubmoduleEditPart extends ModuleEditPart {
      */
     @Override
     protected IFigure createFigure() {
-        return new SubmoduleFigure();
+        IFigure fig = new SubmoduleFigure();
+        gateAnchor = new GateAnchor(fig);
+        return fig;
     }
 
     /**
@@ -61,7 +64,8 @@ public class SubmoduleEditPart extends ModuleEditPart {
 	public ConnectionAnchor getConnectionAnchorAt(Point p) {
 		// TODO select the appropriate gate name automatically
 		// or return NULL if no output gate is available
-		return new GateAnchor(getFigure());
+//		return new GateAnchor(getFigure());
+        return gateAnchor;
 	}
 
 	/**
@@ -70,7 +74,8 @@ public class SubmoduleEditPart extends ModuleEditPart {
 	 * @return
 	 */
 	public GateAnchor getConnectionAnchor(String gate) {
-		return new GateAnchor(getFigure());
+//		return new GateAnchor(getFigure());
+        return gateAnchor;
 	}
 
     /**

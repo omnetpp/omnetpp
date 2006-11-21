@@ -18,7 +18,7 @@ import org.omnetpp.ned2.model.ex.ConnectionNodeEx;
  */
 abstract public class ModuleEditPart extends ContainerEditPart implements NodeEditPart {
 
-	@Override
+    @Override
 	protected void createEditPolicies() {
 		super.createEditPolicies();
 		installEditPolicy(EditPolicy.COMPONENT_ROLE, new NedComponentEditPolicy());
@@ -71,5 +71,27 @@ abstract public class ModuleEditPart extends ContainerEditPart implements NodeEd
      *  wich contains this conroller
      */
     public abstract CompoundModuleEditPart getCompoundModulePart();
+
+    /* (non-Javadoc)
+     * @see org.eclipse.gef.editparts.AbstractGraphicalEditPart#createOrFindConnection(java.lang.Object)
+     * We must override this method, because the original implementation has a global (per viewer) MAP
+     * to store MODEL - PART assosiations. This is a problem if we want to display a compound module which
+     * inherits som submodules and connections from an other one (that is also displayed in this viewer)
+     * In thos case the original implementation would not create a new PART for the connection in the
+     * derived module but would return the controller from the base module (which is of course wrong)
+     * and leads to very strange bugs.
+     */
+    @Override
+    protected ConnectionEditPart createOrFindConnection(Object model) {
+        // get the model - controller cache from the containing compound module
+        ConnectionEditPart conx = getCompoundModulePart().getModelToConnectionParts().get(model);
+        if (conx != null)
+            return conx;
+        conx = createConnection(model);
+        // store it for later use
+        getCompoundModulePart().getModelToConnectionParts().put(model,  conx);
+        // FIXME where do we remove these ??? maybe in remove connection ?
+        return conx;
+    }
 
 }
