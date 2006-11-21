@@ -33,10 +33,8 @@ cPar::cPar(cComponent *component, cParValue *p)
 
 cPar::~cPar()
 {
-/*FIXME
-    if (p->owner()==this)
-        dropAndDelete(p);
-*/
+    if (!p->isShared())
+        delete p;
 }
 
 const char *cPar::name() const
@@ -46,10 +44,11 @@ const char *cPar::name() const
 
 void cPar::copyIfShared()
 {
-/*FIXME
-    if (p->owner()!=this)
-        take(p = p->dup());
-*/
+    if (!p->isShared())
+    {
+        p = p->dup();
+        p->setIsShared(false);
+    }
 }
 
 cObject *cPar::owner() const
@@ -71,6 +70,8 @@ cProperties *cPar::properties() const
 
 //FIXME make it inline...
 cPar::Type cPar::type() const {return p->type();}
+
+bool cPar::isShared() const {return p->isShared();}
 
 bool cPar::isNumeric() const {return p->isNumeric();}
 

@@ -389,10 +389,11 @@ class cPar extends cOwnedObject
     fields:
         @omitGetVerb(true);
         string value @getter(toString) @setter(parse) @editable;
-        char type @enum(cPar_Type);
-        bool isNumeric @group(flags);
-        bool isConstant @group(flags);
-        bool isVolatile @group(lags);
+        char type @enum(cPar_Type) @hint(parameter type);
+        bool isNumeric @group(flags) @hint(whether parameter type is numeric, i.e. double or long);
+        bool isConstant @group(flags) @hint(whether parameter value is a constant or an expression);
+        bool isVolatile @group(flags) @hint(whether parameter was declared volatile in the NED file);
+        bool isShared @group(flags) @hint(whether storage could be optimized by several modules sharing the same parameter value object);
 }
 
 class cMessagePar extends cOwnedObject

@@ -362,7 +362,8 @@ cNEDDeclaration::ParamDescription cNEDLoader::extractParamDescription(ParamNode 
                       t==NED_PARTYPE_XML ? cPar::XML :
                       (cPar::Type)-1;
     ASSERT(type!=-1);
-    desc.value = cParValue::createWithType(type); // gets created with isSet()==false
+    desc.value = cParValue::createWithType(type);
+    desc.value->setIsShared(true);
     desc.value->setName(paramNode->getName());
     desc.value->setIsVolatile(paramNode->getIsVolatile());
     return desc;

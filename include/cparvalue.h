@@ -34,28 +34,22 @@ class cComponent;
  * (or channel) parameters. cParValue supports several data types via subclasses:
  * cLongPar, cDoublePar, cBoolPar, cStringPar, cXMLPar.
  *
- * @ingroup SimCore
+ * @ingroup Internals
  */
 class SIM_API cParValue : public cNamedObject
 {
   protected:
     // various flags, stored in cNamedObject::flags
     enum {
-      FL_ISVOLATILE = 4,  // whether it was declared as "volatile" in NED
+      FL_ISSHARED = 4,    // whether this object is shared among multiple cPars
+      FL_ISVOLATILE = 8,  // whether it was declared as "volatile" in NED
       FL_HASVALUE = 16,   // whether it has a value
       FL_ISEXPR = 32,     // whether it stores a constant or an expression
-      FL_HASCHANGED = 64  // whether it has changed since last asked
+      FL_HASCHANGED = 64, // whether it has changed since last asked
     };
 
   public:
     typedef cPar::Type Type;
-
-  public:
-    // internal: sets the ISVOLATILE flag; NOTE: may be necessary to invoke convertToConst(cComponent *context) as well!
-    virtual void setIsVolatile(bool f) {if (f) flags|=FL_ISVOLATILE; else flags&=~FL_ISVOLATILE;}
-
-    // internal: create a parameter object representing the given type
-    static cParValue *createWithType(Type type);
 
   public:
     /** @name Constructors, destructor, assignment. */
@@ -113,6 +107,11 @@ class SIM_API cParValue : public cNamedObject
     virtual bool isNumeric() const = 0;
 
     /**
+     * Returns true if this object is shared among multiple cPars.
+     */
+    virtual bool isShared() const {return flags & FL_ISSHARED;}
+
+    /**
      * Returns true if this parameter is marked in the NED file as "function".
      * This flag affects the operation of setExpression().
      */
@@ -136,6 +135,18 @@ class SIM_API cParValue : public cNamedObject
      * false.
      */
     virtual bool changed();
+
+    /**
+     * Sets the ISSHARED flag.
+     */
+    virtual void setIsShared(bool f) {if (f) flags|=FL_ISSHARED; else flags&=~FL_ISSHARED;}
+
+    /**
+     * Sets the ISVOLATILE flag. NOTE: It may be necessary to invoke
+     * convertToConst(cComponent *context) as well
+     */
+    virtual void setIsVolatile(bool f) {if (f) flags|=FL_ISVOLATILE; else flags&=~FL_ISVOLATILE;}
+
     //@}
 
     /** @name Setter functions. Note that overloaded assignment operators also exist. */
@@ -251,6 +262,11 @@ class SIM_API cParValue : public cNamedObject
      * Returns true on success, false otherwise. No error message is generated.
      */
     virtual bool parse(const char *text) = 0;
+
+    /**
+     * Factory method: creates a parameter object representing the given type.
+     */
+    static cParValue *createWithType(Type type);
     //@}
 
     /** @name Compare functions */

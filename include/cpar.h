@@ -117,6 +117,14 @@ class SIM_API cPar : public cObject  //turn into cObject; delegate name to p! ad
     bool isConstant() const;
 
     /**
+     * Returns true if the parameter value expression is shared among several
+     * modules to save memory. This flag is purely informational, and whether
+     * a parameter is shared or not does not affect anything at all
+     * (except memory footprint of the whole simulation).
+     */
+    bool isShared() const;
+
+    /**
      * Returns true if the value has changed since the last changed() call.
      * Side effect: clears the 'changed' flag, so a next call will return
      * false.

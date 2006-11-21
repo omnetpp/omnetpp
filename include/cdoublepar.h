@@ -22,7 +22,7 @@
 /**
  * FIXME revise docu in the whole class!!!!!!
  *
- * @ingroup SimCore
+ * @ingroup Internals
  */
 class SIM_API cDoublePar : public cParValue
 {
