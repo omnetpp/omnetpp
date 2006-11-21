@@ -309,10 +309,7 @@ cNEDDeclaration *cNEDLoader::buildNEDDeclaration(NEDElement *node)
                 cNEDDeclaration::ParamDescription& desc = const_cast<cNEDDeclaration::ParamDescription&>(decl->paramDescription(paramName));
                 cDynamicExpression *dynamicExpr = cExpressionBuilder().process(exprNode, false);
                 desc.value->setExpression(dynamicExpr);
-/*FIXME
-                if (paramNode->getIsDefault())
-                    desc.value->markAsUnset();
-*/
+                desc.value->setIsInput(paramNode->getIsDefault());
             }
         }
     }
@@ -364,6 +361,7 @@ cNEDDeclaration::ParamDescription cNEDLoader::extractParamDescription(ParamNode 
     ASSERT(type!=-1);
     desc.value = cParValue::createWithType(type);
     desc.value->setIsShared(true);
+    desc.value->setIsInput(true);
     desc.value->setName(paramNode->getName());
     desc.value->setIsVolatile(paramNode->getIsVolatile());
     return desc;

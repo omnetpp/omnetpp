@@ -81,6 +81,17 @@ class SIM_API cPar : public cObject  //turn into cObject; delegate name to p! ad
     virtual const char *name() const;
 
     /**
+     * Returns a one-line description of the object.
+     * @see detailedInfo()
+     */
+    virtual std::string info() const;
+
+    /**
+     * Returns a long description of the object.
+     */
+    virtual std::string detailedInfo() const;
+
+    /**
      * Returns the component (module/channel) this parameter belongs to.
      */
     virtual cObject *owner() const;

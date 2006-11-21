@@ -44,6 +44,16 @@ const char *cPar::name() const
     return p->name();
 }
 
+std::string cPar::info() const
+{
+    return p->info();
+}
+
+std::string cPar::detailedInfo() const
+{
+    return p->detailedInfo();
+}
+
 void cPar::copyIfShared()
 {
     if (p->isShared())

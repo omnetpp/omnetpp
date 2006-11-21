@@ -121,7 +121,7 @@ class SIM_API cObject
     virtual std::string fullPath() const;
 
     /**
-     * Can be redefined to produce a one-line description of object into `buf'.
+     * Can be redefined to produce a one-line description of object.
      * The string appears in the graphical user interface (Tkenv) e.g. when
      * the object is displayed in a listbox. The returned string should
      * possibly be at most 80-100 characters long, and must not contain
@@ -168,7 +168,7 @@ class SIM_API cObject
     /** @name Miscellaneous functions. */
     //@{
     /**
-     * May be redefined to return an owner or parent object. This default 
+     * May be redefined to return an owner or parent object. This default
      * implementation just returns NULL.
      */
     virtual cObject *owner() const {return NULL;}

@@ -101,9 +101,7 @@ cModule::~cModule()
 
 void cModule::forEachChild(cVisitor *v)
 {
-    // Note: everything including gatev and submodules are on the cDefaultList
-    for (int i=0; i<defaultListItems(); i++)
-         v->visit(defaultListGet(i));
+    cComponent::forEachChild(v);
 }
 
 void cModule::setId(int n)

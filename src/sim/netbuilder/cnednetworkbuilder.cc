@@ -57,7 +57,7 @@ static void dump(NEDElement *node)
 void cNEDNetworkBuilder::addParameters(cComponent *component, cNEDDeclaration *decl)
 {
     printf("adding params of %s to %s\n", decl->name(), component->fullPath().c_str()); //XXX
-    printf("DECL {\n%s\n}\n", decl->detailedInfo().c_str()); //XXX
+    //printf("DECL {\n%s\n}\n", decl->detailedInfo().c_str()); //XXX
     int n = decl->numPars();
     for (int i=0; i<n; i++)
     {
