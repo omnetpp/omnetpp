@@ -1,3 +1,6 @@
+- 061120
+  + display is refreshed correctly on model notifications. namechanges and
+    changes in extends attributes are handled correctly
 - 061109
   + all selectable elements displays the parameter, gate, submodule, 
     extends, like, likeparam properties correctly
