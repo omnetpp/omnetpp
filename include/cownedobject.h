@@ -22,9 +22,8 @@
 #include "cenvir.h"
 #include "defs.h"
 #include "util.h"
-#include "cobject.h"
+#include "cnamedobject.h"
 #include "cexception.h"
-#include "cstringpool.h"
 
 
 class cOwnedObject;
@@ -125,26 +124,17 @@ typedef int (*CompareFunc)(cOwnedObject *a, cOwnedObject *b);
  *
  * @ingroup SimCore
  */
-class SIM_API cOwnedObject : public cObject
+class SIM_API cOwnedObject : public cNamedObject
 {
     friend class cDefaultList;
     friend class cSimulation;
     friend class cMessage;  // because of refcounting business
 
   private:
-    const char *namep;  // object name (stringpooled if flags & FL_NAMEPOOLING)
-    cOwnedObject *ownerp;    // owner pointer
-    unsigned int pos;   // used only if owner is a cDefaultList
-
-  protected:
-    unsigned short flags;  // FL_NAMEPOOLING flag; other bits used by derived classes
-    unsigned short unused; // space lost to due to word aligment; FIXME make use of it in subclasses (cModule, cSimpleModule, cGate)
-    enum {FL_NAMEPOOLING = 0x1};
+    cOwnedObject *ownerp;  // owner pointer
+    unsigned int pos;      // used only if owner is a cDefaultList
 
   private:
-    // pool for shared storage of object names
-    static cStringPool stringPool;
-
     // list in which objects are accumulated if there's no simple module in context
     // (see also setDefaultOwner() and cSimulation::setContextModule())
     static cDefaultList *defaultowner;
@@ -152,9 +142,6 @@ class SIM_API cOwnedObject : public cObject
     // global variables for statistics
     static long total_objs;
     static long live_objs;
-
-  protected:
-    static char fullpathbuf[MAX_OBJECTFULLPATH]; // buffer for fullPath()
 
   private:
     // internal
@@ -274,37 +261,11 @@ class SIM_API cOwnedObject : public cObject
 
     /** @name Handling the name string. */
     //@{
-
-    /**
-     * Sets object's name. The object creates its own copy of the string.
-     * NULL pointer may also be passed, which will be interpreted as an
-     * empty string ("").
-     */
-    virtual void setName(const char *s);
-
-    /**
-     * Returns pointer to the object's name, a string stored in the object.
-     * This function never returns NULL.
-     */
-    virtual const char *name() const  {return namep ? namep : "";}
-
     /**
      * Returns the full path of the object in the object hierarchy,
      * like "net.host[2].tcp.winsize".
      */
     virtual std::string fullPath() const;
-
-    /**
-     * Returns the full path of the object in the object hierarchy,
-     * like "net.host[2].tcp.winsize". The result is placed into the buffer passed.
-     */
-    virtual const char *fullPath(char *buffer, int buffersize) const;  //FIXME remove this one
-
-    /**
-     * Turn name pooling on/off. Name pooling is an optimization technique that saves
-     * memory if several objects have identical names.
-     */
-    virtual void setNamePooling(bool b);
     //@}
 
     /** @name Object ownership */
