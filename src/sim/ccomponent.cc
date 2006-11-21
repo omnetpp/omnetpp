@@ -57,6 +57,8 @@ void cComponent::finish()
     // Should be redefined by user.
 }
 
+//FIXME TODO redefine forEachChild and traverse parameters too!!!!
+
 void cComponent::handleParameterChange(const char *)
 {
     // Called when a module parameter changes.

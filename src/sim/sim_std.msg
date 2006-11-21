@@ -69,7 +69,7 @@ enum cGate_Type;
 
 struct cDensityEstBase_Cell;
 
-class cOwnedObject
+class cObject
 {
     fields:
         @omitGetVerb(true);
@@ -79,6 +79,13 @@ class cOwnedObject
         string fullPath @group(base) @hint(hierarchical name, composed of full names of this object and its owners/parents);
         string info @group(base) @hint(text provided by the object's "info" method);
         string detailedInfo @group(base) @hint(text provided by the object's "detailedInfo" method);
+//XXX        cOwnedObject *owner @group(owner or parent) @hint(module or container this object belongs to);
+}
+
+class cOwnedObject extends cObject
+{
+    fields:
+        @omitGetVerb(true);
         cOwnedObject *owner @group(owner or parent) @hint(module or container this object belongs to);
 }
 
