@@ -206,15 +206,6 @@ void cOwnedObject::netUnpack(cCommBuffer *buffer)
 #endif
 }
 
-std::string cOwnedObject::fullPath() const
-{
-    if (owner()==NULL)
-        return fullName();
-    else
-        return owner()->fullPath() + "." + fullName();
-}
-
-
 //-----
 
 cNoncopyableObject *cNoncopyableObject::dup() const

@@ -754,7 +754,6 @@ exit $ret;
 
 sub prepareForCodeGeneration
 {
-
     # check base class and determine type of object
     if ($msgname eq 'cObject') {
         $classtype = 'cpolymorphic'; # hardcoded
@@ -813,7 +812,9 @@ sub prepareForCodeGeneration
         $msgdescclass = $msgclass."Descriptor";
     }
     if ($msgbase eq '') {
-        if ($keyword eq 'message') {
+        if ($msgname eq 'cObject') {
+            $msgbaseclass = '';
+        } elsif ($keyword eq 'message') {
             $msgbaseclass = 'cMessage';
         } elsif ($keyword eq 'class') {
             $msgbaseclass = 'cObject';  # note: all classes we generate subclass from cObject!

@@ -52,7 +52,7 @@ void cPar::copyIfShared()
 */
 }
 
-cComponent *cPar::ownerComponent()
+cObject *cPar::owner() const
 {
     return ownercomponent;
 }
@@ -146,12 +146,9 @@ void cPar::afterChange()
 {
     if (simulation.contextType()==CTX_EVENT) // don't call during build, initialize or finish
     {
-        cComponent *owner = ownerComponent();
-        if (owner)
-        {
-            cContextSwitcher tmp(owner);
-            owner->handleParameterChange(fullName());
-        }
+        ASSERT(ownercomponent);
+        cContextSwitcher tmp(ownercomponent);
+        ownercomponent->handleParameterChange(fullName());
     }
 
     //XXX set "changed" flag

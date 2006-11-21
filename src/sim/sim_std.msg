@@ -74,19 +74,18 @@ class cObject
     fields:
         @omitGetVerb(true);
         string className @group(base) @hint(C++ class name);
-        string name @group(base) @editable @hint(an editable string attribute of the object);
         string fullName @group(base) @hint(if object is part of a module/gate vector: name with index);
         string fullPath @group(base) @hint(hierarchical name, composed of full names of this object and its owners/parents);
         string info @group(base) @hint(text provided by the object's "info" method);
         string detailedInfo @group(base) @hint(text provided by the object's "detailedInfo" method);
-//XXX        cOwnedObject *owner @group(owner or parent) @hint(module or container this object belongs to);
+        cObject *owner @group(owner or parent) @hint(module or container this object belongs to);
 }
 
 class cOwnedObject extends cObject
 {
     fields:
         @omitGetVerb(true);
-        cOwnedObject *owner @group(owner or parent) @hint(module or container this object belongs to);
+        string name @group(base) @editable @hint(an editable string attribute of the object, also used for fullName and fullPath);
 }
 
 class cNoncopyableObject extends cOwnedObject

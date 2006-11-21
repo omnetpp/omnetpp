@@ -64,8 +64,6 @@ class SIM_API cPar : public cObject  //turn into cObject; delegate name to p! ad
     cPar(cComponent *component, cParValue *p);
     // internal utility function
     void copyIfShared();
-    // internal: returns the component (module/channel) this parameter belongs to
-    cComponent *ownerComponent();
     // internal: called each time after the value of this object changes.
     void afterChange();
     // internal: called as part of read(): gets the value from omnetpp.ini or from the user.
@@ -83,11 +81,17 @@ class SIM_API cPar : public cObject  //turn into cObject; delegate name to p! ad
     virtual const char *name() const;
 
     /**
+     * Returns the component (module/channel) this parameter belongs to.
+     */
+    virtual cObject *owner() const;
+
+    /**
      * Assignment
      */
     void operator=(const cPar& other);
+    //@}
 
-    /** @name Owner component, type, flags. */
+    /** @name Type, flags. */
     //@{
     /**
      * Returns the parameter type

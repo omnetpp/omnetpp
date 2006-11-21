@@ -97,7 +97,7 @@ void cNamedObject::setName(const char *s)
     else if (flags & FL_NAMEPOOLING)
         namep = stringPool.get(s);
     else
-        namep  = opp_strdup(s);
+        namep = opp_strdup(s);
 }
 
 void cNamedObject::setNamePooling(bool pooling)
@@ -122,7 +122,7 @@ void cNamedObject::setNamePooling(bool pooling)
         if (namep)
         {
             const char *oldname = namep;
-            namep  = opp_strdup(oldname);
+            namep = opp_strdup(oldname);
             stringPool.release(oldname);
         }
     }

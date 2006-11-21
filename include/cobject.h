@@ -112,12 +112,11 @@ class SIM_API cObject
     virtual const char *fullName() const  {return name();}
 
     /**
-     * Can be redefined (as done in cOwnedObject) to return an object full path,
-     * or the object name if the path is not available. Although cObject
-     * does not contain an owner() member so cannot produce a path by default,
-     * subclasses may be able to do so.
-     *
-     * This default implementation just returns fullName().
+     * Returns the full path of the object in the object hierarchy,
+     * like "net.host[2].tcp.winsize". This method relies on owner():
+     * if there is an owner object, this method returns the owner's fullPath
+     * plus this object's fullName, separated by a dot; otherwise it simply
+     * returns fullName.
      */
     virtual std::string fullPath() const;
 
@@ -168,6 +167,12 @@ class SIM_API cObject
 
     /** @name Miscellaneous functions. */
     //@{
+    /**
+     * May be redefined to return an owner or parent object. This default 
+     * implementation just returns NULL.
+     */
+    virtual cObject *owner() const {return NULL;}
+
     /**
      * Enables traversing the object tree, performing some operation on
      * each object. The operation is encapsulated in the particular subclass

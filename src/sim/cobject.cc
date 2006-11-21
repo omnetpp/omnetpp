@@ -39,7 +39,10 @@ cClassDescriptor *cObject::getDescriptor()
 
 std::string cObject::fullPath() const
 {
-    return std::string(fullName());
+    if (owner()==NULL)
+        return fullName();
+    else
+        return owner()->fullPath() + "." + fullName();
 }
 
 std::string cObject::info() const

@@ -259,22 +259,12 @@ class SIM_API cOwnedObject : public cNamedObject
     virtual void netUnpack(cCommBuffer *buffer);
     //@}
 
-    /** @name Handling the name string. */
-    //@{
-    /**
-     * Returns the full path of the object in the object hierarchy,
-     * like "net.host[2].tcp.winsize".
-     */
-    virtual std::string fullPath() const;
-    //@}
-
     /** @name Object ownership */
     //@{
-
     /**
      * Returns pointer to the owner of the object.
      */
-    cOwnedObject *owner() const {return ownerp;}
+    virtual cOwnedObject *owner() const {return ownerp;}
 
     /**
      * Returns false in cOwnedObject and in all derived classes except cDefaultList.

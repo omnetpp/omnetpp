@@ -515,8 +515,7 @@ int getObjectOwner_cmd(ClientData, Tcl_Interp *interp, int argc, const char **ar
    cObject *object = strToPtr(argv[1]);
    if (!object) {Tcl_SetResult(interp, "null or malformed pointer", TCL_STATIC); return TCL_ERROR;}
 
-   cOwnedObject *oo = dynamic_cast<cOwnedObject *>(object);
-   Tcl_SetResult(interp, ptrToStr(oo ? oo->owner() : NULL), TCL_VOLATILE);
+   Tcl_SetResult(interp, ptrToStr(object->owner()), TCL_VOLATILE);
    return TCL_OK;
 }
 
