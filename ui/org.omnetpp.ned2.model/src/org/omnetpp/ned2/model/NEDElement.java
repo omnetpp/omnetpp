@@ -736,7 +736,7 @@ public abstract class NEDElement extends PlatformObject
      */
     @Override
     public String toString() {
-        return getClass().getSimpleName() + " " + getAttribute("name");
+        return getClass().getSimpleName() + " " + (getAttribute("name") != null ? getAttribute("name") : "");
     }
 };
 

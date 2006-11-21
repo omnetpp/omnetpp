@@ -47,17 +47,16 @@ public final class SubmoduleNodeEx extends SubmoduleNode
     
     @Override
     public void setName(String val) {
-        // if a submodule name hsa chenged we must change all the connections in the same compound module
+        if (getCompoundModule() != null) {
+        // if a submodule name has changed we must change all the connections in the same compound module
         // that is attached to this module (so the model will remain consistent)
-        List<ConnectionNodeEx> srcConns = getCompoundModule().getSrcConnectionsFor(this);
-        List<ConnectionNodeEx> destConns = getCompoundModule().getDestConnectionsFor(this);
+            for(ConnectionNodeEx conn : getCompoundModule().getSrcConnectionsFor(this))
+                conn.setSrcModule(val);
+            for(ConnectionNodeEx conn : getCompoundModule().getDestConnectionsFor(this))
+                conn.setDestModule(val);
+        }
         // now we can change the name
         super.setName(val);
-        // and then set the connections modulename to the new name
-        for(ConnectionNodeEx conn : srcConns)
-            conn.setSrcModule(val);
-        for(ConnectionNodeEx conn : destConns)
-            conn.setDestModule(val);
     }
 
 
