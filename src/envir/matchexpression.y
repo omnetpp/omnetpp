@@ -52,6 +52,7 @@ void yy_delete_buffer(struct yy_buffer_state *);
 void yyrestart(FILE *);
 int yylex();
 void yyerror (const char *s);
+int yyparse();
 
 //#include "expryydefs.h"
 #include "matchexpression.h"
