@@ -58,7 +58,7 @@ cNEDDeclaration::GateDescription cNEDDeclaration::GateDescription::deepCopy() co
 //-----
 
 cNEDDeclaration::cNEDDeclaration(const char *name, NEDElement *tree) :
-cNoncopyableObject(name), NEDComponent(tree)
+cNoncopyableOwnedObject(name), NEDComponent(tree)
 {
     locked = false;   //FIXME check if locking makes sense
     props = new cProperties();

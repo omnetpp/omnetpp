@@ -44,7 +44,7 @@
  *
  * @ingroup Internals
  */
-class SIM_API cClassDescriptor : public cNoncopyableObject
+class SIM_API cClassDescriptor : public cNoncopyableOwnedObject
 {
   public:
     /// Field types.

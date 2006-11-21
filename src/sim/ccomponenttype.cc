@@ -28,7 +28,7 @@
 
 //FIXME add separate nedSource() property, so that it can be inspected!!!!
 
-cComponentType::cComponentType(const char *name, const char *description) : cNoncopyableObject(name,false)
+cComponentType::cComponentType(const char *name, const char *description) : cNoncopyableOwnedObject(name,false)
 {
     setDescription(description);
 }

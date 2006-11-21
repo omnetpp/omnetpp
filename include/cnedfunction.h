@@ -40,7 +40,7 @@ typedef cDynamicExpression::StkValue (*NEDFunction)(cComponent *context,
  *
  * @ingroup Internals
  */
-class SIM_API cNEDFunction : public cNoncopyableObject
+class SIM_API cNEDFunction : public cNoncopyableOwnedObject
 {
   private:
     NEDFunction f;             // function ptr

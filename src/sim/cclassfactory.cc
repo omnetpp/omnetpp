@@ -24,7 +24,7 @@
 
 
 cClassFactory::cClassFactory(const char *name, cObject *(*f)(), const char *description)
-  : cNoncopyableObject(name, false)
+  : cNoncopyableOwnedObject(name, false)
 {
     creatorfunc = f;
     descr = description ? description : "";

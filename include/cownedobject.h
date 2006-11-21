@@ -316,13 +316,13 @@ class SIM_API cOwnedObject : public cNamedObject
  *
  * @ingroup SimCore
  */
-class SIM_API cNoncopyableObject : public cOwnedObject, noncopyable
+class SIM_API cNoncopyableOwnedObject : public cOwnedObject, noncopyable
 {
   public:
     /**
      * Constructor
      */
-    explicit cNoncopyableObject(const char *name=NULL, bool namepooling=true) :
+    explicit cNoncopyableOwnedObject(const char *name=NULL, bool namepooling=true) :
         cOwnedObject(name, namepooling) {}
 
 //FIXME disable copy ctor as well
@@ -330,7 +330,7 @@ class SIM_API cNoncopyableObject : public cOwnedObject, noncopyable
     /**
      * Duplication not supported, this method is redefined to throw an error.
      */
-    virtual cNoncopyableObject *dup() const;
+    virtual cNoncopyableOwnedObject *dup() const;
 
     /**
      * Redefined to throw an error.

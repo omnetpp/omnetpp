@@ -61,7 +61,7 @@ SIM_API extern cSimulation simulation;
  * @ingroup SimCore
  * @ingroup Internals
  */
-class SIM_API cSimulation : public cNoncopyableObject
+class SIM_API cSimulation : public cNoncopyableOwnedObject
 {
     friend class cSimpleModule;
 

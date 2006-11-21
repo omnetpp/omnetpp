@@ -31,7 +31,7 @@
  *
  * @ingroup Internals
  */
-class SIM_API cWatchBase : public cNoncopyableObject
+class SIM_API cWatchBase : public cNoncopyableOwnedObject
 {
   public:
     /** @name Constructors, destructor, assignment */
@@ -39,7 +39,7 @@ class SIM_API cWatchBase : public cNoncopyableObject
     /**
      * Initialize the shell to hold the given variable.
      */
-    cWatchBase(const char *name)  : cNoncopyableObject(name) {}
+    cWatchBase(const char *name)  : cNoncopyableOwnedObject(name) {}
     //@}
 
     /** @name New methods */

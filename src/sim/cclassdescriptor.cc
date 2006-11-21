@@ -149,7 +149,7 @@ void cClassDescriptor::string2oppstring(const char *s, std::string& str)
 //-----------------------------------------------------------
 
 cClassDescriptor::cClassDescriptor(const char *classname, const char *_baseclassname) :
-cNoncopyableObject(classname, false)
+cNoncopyableOwnedObject(classname, false)
 {
     baseclassname = _baseclassname ? _baseclassname : "";
     baseclassdesc = NULL;

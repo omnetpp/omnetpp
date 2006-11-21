@@ -42,7 +42,7 @@ class TOutVectorWindow;
  *
  * @ingroup Statistics
  */
-class SIM_API cOutVector : public cNoncopyableObject
+class SIM_API cOutVector : public cNoncopyableOwnedObject
 {
   protected:
     bool enabled;        // if false, record() method will do nothing

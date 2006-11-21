@@ -68,7 +68,7 @@ ostream& operator<<(ostream& os, struct tm d)
 }
 
 
-cSimulation::cSimulation(const char *name) : cNoncopyableObject(name, false)
+cSimulation::cSimulation(const char *name) : cNoncopyableOwnedObject(name, false)
 {
     ASSERT(this==&simulation);
 

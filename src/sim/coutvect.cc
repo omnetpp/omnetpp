@@ -32,7 +32,7 @@
 
 Register_Class(cOutVector);
 
-cOutVector::cOutVector(const char *name, int tuple) : cNoncopyableObject(name)
+cOutVector::cOutVector(const char *name, int tuple) : cNoncopyableOwnedObject(name)
 {
     enabled = true;
     handle = NULL;

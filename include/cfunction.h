@@ -78,7 +78,7 @@ typedef double (*MathFunc4Args)(double,double,double,double);
  *
  * @ingroup Internals
  */
-class SIM_API cMathFunction : public cNoncopyableObject
+class SIM_API cMathFunction : public cNoncopyableOwnedObject
 {
   private:
     MathFunc f;

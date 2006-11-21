@@ -88,11 +88,11 @@ class cOwnedObject extends cObject
         string name @group(base) @editable @hint(an editable string attribute of the object, also used for fullName and fullPath);
 }
 
-class cNoncopyableObject extends cOwnedObject
+class cNoncopyableOwnedObject extends cOwnedObject
 {
 }
 
-class cDefaultList extends cNoncopyableObject
+class cDefaultList extends cNoncopyableOwnedObject
 {
     properties:
         omitGetVerb = true;
@@ -158,7 +158,7 @@ class cCompoundModule extends cModule
 
 //----
 
-class cComponentType extends cNoncopyableObject
+class cComponentType extends cNoncopyableOwnedObject
 {
     fields:
         @omitGetVerb(true);
@@ -178,7 +178,7 @@ class cChannelType extends cComponentType
 
 //----
 
-class cGate extends cNoncopyableObject
+class cGate extends cNoncopyableOwnedObject
 {
     fields:
         @omitGetVerb(true);
@@ -359,14 +359,14 @@ class cFSM extends cOwnedObject
         string stateName @hint(name of the current FSM state);
 }
 
-class cMathFunction extends cNoncopyableObject
+class cMathFunction extends cNoncopyableOwnedObject
 {
     fields:
         @omitGetVerb(true);
         int numArgs @hint(number of "double" parameters this function takes);
 }
 
-class cNEDFunction extends cNoncopyableObject
+class cNEDFunction extends cNoncopyableOwnedObject
 {
     fields:
         @omitGetVerb(true);
@@ -375,7 +375,7 @@ class cNEDFunction extends cNoncopyableObject
         string argTypes @hint(number and types of arguments this function takes);
 }
 
-class cOutVector extends cNoncopyableObject
+class cOutVector extends cNoncopyableOwnedObject
 {
     fields:
         @omitGetVerb(true);
@@ -445,7 +445,7 @@ class cQueue extends cOwnedObject
         cOwnedObject *contents[] @getter(get) @sizeGetter(length) @hint(queue contents);
 }
 
-class cSimulation extends cNoncopyableObject
+class cSimulation extends cNoncopyableOwnedObject
 {
     fields:
         @omitGetVerb(true);

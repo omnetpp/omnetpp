@@ -28,7 +28,7 @@
 /**
  * Serves as a base class for inspector factories of specific classes.
  */
-class cInspectorFactory : public cNoncopyableObject
+class cInspectorFactory : public cNoncopyableOwnedObject
 {
   public:
     /** @name Constructors, destructor, assignment. */
@@ -36,7 +36,7 @@ class cInspectorFactory : public cNoncopyableObject
     /**
      * Constructor.
      */
-    cInspectorFactory(const char *name) : cNoncopyableObject(name,false) {}
+    cInspectorFactory(const char *name) : cNoncopyableOwnedObject(name,false) {}
 
     /**
      * Destructor.

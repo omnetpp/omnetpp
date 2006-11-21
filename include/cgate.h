@@ -37,7 +37,7 @@ class  cDisplayString;
  *
  * @ingroup SimCore
  */
-class SIM_API cGate : public cNoncopyableObject
+class SIM_API cGate : public cNoncopyableOwnedObject
 {
     friend class cModule;
 

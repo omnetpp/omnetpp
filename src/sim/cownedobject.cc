@@ -208,21 +208,21 @@ void cOwnedObject::netUnpack(cCommBuffer *buffer)
 
 //-----
 
-cNoncopyableObject *cNoncopyableObject::dup() const
+cNoncopyableOwnedObject *cNoncopyableOwnedObject::dup() const
 {
-    throw new cRuntimeError(this, "dup(): %s subclasses from cNoncopyableObject, "
+    throw new cRuntimeError(this, "dup(): %s subclasses from cNoncopyableOwnedObject, "
                                   "and does not support dup()", className());
 }
 
-void cNoncopyableObject::netPack(cCommBuffer *buffer)
+void cNoncopyableOwnedObject::netPack(cCommBuffer *buffer)
 {
-    throw new cRuntimeError(this, "netPack(): %s subclasses from cNoncopyableObject, and "
+    throw new cRuntimeError(this, "netPack(): %s subclasses from cNoncopyableOwnedObject, and "
                                   "does not support pack/unpack operations", className());
 }
 
-void cNoncopyableObject::netUnpack(cCommBuffer *buffer)
+void cNoncopyableOwnedObject::netUnpack(cCommBuffer *buffer)
 {
-    throw new cRuntimeError(this, "netUnpack(): %s subclasses from cNoncopyableObject, and "
+    throw new cRuntimeError(this, "netUnpack(): %s subclasses from cNoncopyableOwnedObject, and "
                                   "does not support pack/unpack operations", className());
 }
 

@@ -28,7 +28,7 @@
  * @see Register_Class(), Define_Module() macros
  * @ingroup Internals
  */
-class SIM_API cClassFactory : public cNoncopyableObject
+class SIM_API cClassFactory : public cNoncopyableOwnedObject
 {
   private:
     cObject *(*creatorfunc)();

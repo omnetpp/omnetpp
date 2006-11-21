@@ -53,7 +53,7 @@ class cDynamicExpression;
  *
  * @ingroup Internals
  */
-class SIM_API cNEDDeclaration : public cNoncopyableObject, public NEDComponent
+class SIM_API cNEDDeclaration : public cNoncopyableOwnedObject, public NEDComponent
 {
   public:
     /**

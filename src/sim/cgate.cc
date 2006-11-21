@@ -37,7 +37,7 @@
 using std::ostream;
 
 
-cGate::cGate(const char *s, char tp) : cNoncopyableObject(s)
+cGate::cGate(const char *s, char tp) : cNoncopyableOwnedObject(s)
 {
     fullname = NULL;
 

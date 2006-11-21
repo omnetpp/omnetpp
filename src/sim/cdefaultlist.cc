@@ -38,7 +38,7 @@ Register_Class(cDefaultList);
 bool cDefaultList::doGC;
 
 
-cDefaultList::cDefaultList(const char *name) : cNoncopyableObject(name)
+cDefaultList::cDefaultList(const char *name) : cNoncopyableOwnedObject(name)
 {
     // careful: if we are a global variable (ctor called before main()),
     // then insert() may get called before constructor and it invoked

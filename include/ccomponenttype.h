@@ -29,7 +29,7 @@ class cProperties;
 /**
  * Common base class for cModuleType and cChannelType
  */
-class SIM_API cComponentType : public cNoncopyableObject
+class SIM_API cComponentType : public cNoncopyableOwnedObject
 {
   protected:
     std::string desc;

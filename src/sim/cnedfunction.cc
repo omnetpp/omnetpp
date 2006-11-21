@@ -20,7 +20,7 @@
 #include "cexception.h"
 
 
-cNEDFunction::cNEDFunction(const char *name, NEDFunction f, const char *argtypes, const char *rettype) : cNoncopyableObject(name,false)
+cNEDFunction::cNEDFunction(const char *name, NEDFunction f, const char *argtypes, const char *rettype) : cNoncopyableOwnedObject(name,false)
 {
     this->f = f;
 

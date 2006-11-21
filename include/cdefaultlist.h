@@ -30,7 +30,7 @@
  *
  * @ingroup Containers
  */
-class SIM_API cDefaultList : public cNoncopyableObject
+class SIM_API cDefaultList : public cNoncopyableOwnedObject
 {
   private:
     friend class cOwnedObject;
