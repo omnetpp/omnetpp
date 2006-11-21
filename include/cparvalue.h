@@ -36,11 +36,10 @@ class cComponent;
  *
  * @ingroup SimCore
  */
-class SIM_API cParValue : public cOwnedObject
+class SIM_API cParValue : public cNamedObject
 {
   protected:
-    // Flags are stored in cOwnedObject "flags" field. Values should be chosen so that
-    // there is no collision with bits used by cOwnedObject.
+    // various flags, stored in cNamedObject::flags
     enum {
       FL_ISVOLATILE = 4,  // whether it was declared as "volatile" in NED
       FL_HASVALUE = 16,   // whether it has a value
@@ -52,7 +51,7 @@ class SIM_API cParValue : public cOwnedObject
     typedef cPar::Type Type;
 
   public:
-    // internal: sets the ISVOLATILE flag; NOTE: may be necessary to invoke convertToConst() as well!
+    // internal: sets the ISVOLATILE flag; NOTE: may be necessary to invoke convertToConst(cComponent *context) as well!
     virtual void setIsVolatile(bool f) {if (f) flags|=FL_ISVOLATILE; else flags&=~FL_ISVOLATILE;}
 
     // internal: create a parameter object representing the given type
@@ -191,21 +190,21 @@ class SIM_API cParValue : public cOwnedObject
     /**
      * Returns value as a boolean. The cParValue type must be bool (B) or a numeric type.
      */
-    virtual bool boolValue() const = 0;
+    virtual bool boolValue(cComponent *context) const = 0;
 
     /**
      * Returns value as long. The cParValue type must be types long (L),
      * double (D), Boolean (B), function (F), distribution (T),
      * compiled expression (C) or expression (X).
      */
-    virtual long longValue() const = 0;
+    virtual long longValue(cComponent *context) const = 0;
 
     /**
      * Returns value as double. The cParValue type must be types long (L),
      * double (D), function (F), Boolean (B), distribution (T),
      * compiled expression (C) or expression (X).
      */
-    virtual double doubleValue() const = 0;
+    virtual double doubleValue(cComponent *context) const = 0;
 
     /**
      * Returns value as const char *. Only for string (S) type.
@@ -215,17 +214,17 @@ class SIM_API cParValue : public cOwnedObject
      * on parameters declared as "volatile string" in NED; they can only be
      * accessed using stdstringValue().
      */
-    virtual const char *stringValue() const = 0;
+    virtual const char *stringValue(cComponent *context) const = 0;
 
     /**
      * Returns value as string. Only for string (S) type.
      */
-    virtual std::string stdstringValue() const = 0;
+    virtual std::string stdstringValue(cComponent *context) const = 0;
 
     /**
      * Returns value as pointer to cXMLElement. The cParValue type must be XML (M).
      */
-    virtual cXMLElement *xmlValue() const = 0;
+    virtual cXMLElement *xmlValue(cComponent *context) const = 0;
 
     /**
      * Returns pointer to the expression stored by the object, or NULL.
@@ -240,7 +239,7 @@ class SIM_API cParValue : public cOwnedObject
      * Replaces for non-const values, replaces the stored expression with its
      * evaluation.
      */
-    virtual void convertToConst() = 0;
+    virtual void convertToConst(cComponent *context) = 0;
 
     /**
      * Returns the value in text form.
@@ -259,10 +258,10 @@ class SIM_API cParValue : public cOwnedObject
 
     /**
      * Evaluates both expressions and compares the resulting values.
-     * If either of the objects is not set (isSet()==false) or they are
-     * of different type(), false is returned.
+     * If they are of different types (type()), false is returned
+     * without attempting to compare the values.
      */
-    virtual bool equals(cParValue& other);
+    virtual bool equals(cParValue& other, cComponent *thiscontext, cComponent *othercontext);
     //@}
 };
 

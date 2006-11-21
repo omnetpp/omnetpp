@@ -23,7 +23,6 @@
 cComponent::cComponent(const char *name) : cDefaultList(name)
 {
     componenttype = NULL;
-    props = NULL;
     rngmapsize = 0;
     rngmap = 0;
     ev_enabled = true;
@@ -31,10 +30,7 @@ cComponent::cComponent(const char *name) : cDefaultList(name)
 
 cComponent::~cComponent()
 {
-    delete props; //XXX really?
     delete [] rngmap;
-    for (int i=0; i<params(); i++)
-        delete paramv[i];
 }
 
 const char *cComponent::className() const
@@ -77,23 +73,21 @@ void cComponent::callInitialize()
 
 cProperties *cComponent::properties()
 {
-    return props;
+    return componenttype->properties();
 }
 
 void cComponent::addPar(cParValue *value)
 {
     if (findPar(value->name())>=0)
        throw new cRuntimeError(this, "addPar(): Parameter %s.%s already present", fullPath().c_str(), value->name());
-    cPar *par = new cPar(value);
-    take(par);
-    paramv.push_back(par);
+    paramv.push_back(cPar(this, value));
 }
 
 cPar& cComponent::par(int k)
 {
     if (k<0 || k>=(int)paramv.size())
         throw new cRuntimeError(this, "parameter index %d out of range", k);
-    return *paramv[k];
+    return paramv[k];
 }
 
 cPar& cComponent::par(const char *parname)
@@ -101,14 +95,14 @@ cPar& cComponent::par(const char *parname)
     int k = findPar(parname);
     if (k<0)
         throw new cRuntimeError(this, "has no parameter called `%s'", parname);
-    return *paramv[k];
+    return paramv[k];
 }
 
 int cComponent::findPar(const char *parname) const
 {
     int n = params();
     for (int i=0; i<n; i++)
-        if (paramv[i]->isName(parname))
+        if (paramv[i].isName(parname))
             return i;
     return -1;
 }

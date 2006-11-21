@@ -45,10 +45,11 @@ class cComponent;
  *
  * @ingroup SimCore
  */
-class SIM_API cPar : public cNoncopyableObject
+class SIM_API cPar : public cObject  //turn into cObject; delegate name to p! add ownercomponent!
 {
   friend class cComponent;
   private:
+    cComponent *ownercomponent;
     cParValue *p;
   public:
     enum Type {
@@ -60,7 +61,7 @@ class SIM_API cPar : public cNoncopyableObject
     };
 
   private:
-    cPar(cParValue *p);
+    cPar(cComponent *component, cParValue *p);
     // internal utility function
     void copyIfShared();
     // internal: returns the component (module/channel) this parameter belongs to
@@ -76,7 +77,15 @@ class SIM_API cPar : public cNoncopyableObject
      */
     virtual ~cPar();
 
-//FIXME cPar needs operator=(cPar&) -- see INET\Network\Extras\FailureManager.cc!!
+    /**
+     * Returns the parameter name.
+     */
+    virtual const char *name() const;
+
+    /**
+     * Assignment
+     */
+    void operator=(const cPar& other);
 
     /** @name Owner component, type, flags. */
     //@{

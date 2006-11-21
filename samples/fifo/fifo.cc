@@ -39,7 +39,7 @@ void FFAbstractFifo::handleMessage(cMessage *msg)
         }
         else
         {
-            msgServiced = (cMessage *) queue.getTail();
+            msgServiced = (cMessage *) queue.pop();
             simtime_t serviceTime = startService( msgServiced );
             scheduleAt( simTime()+serviceTime, endServiceMsg );
         }

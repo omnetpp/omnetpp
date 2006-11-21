@@ -123,11 +123,6 @@ class SIM_API cSimulation : public cNoncopyableObject
      * Redefined. (Reason: a C++ rule that overloaded virtual methods must be redefined together.)
      */
     virtual std::string fullPath() const;
-
-    /**
-     * Returns the name of the simulation object, "simulation".
-     */
-    virtual const char *fullPath(char *buffer, int bufsize) const;
     //@}
 
     /** @name Accessing modules. */

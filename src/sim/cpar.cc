@@ -25,27 +25,43 @@
 #include "ccommbuffer.h"
 #endif
 
-cPar::cPar(cParValue *p)
+cPar::cPar(cComponent *component, cParValue *p)
 {
+    this->ownercomponent = component;
     this->p = p;
-    setName(p->name());
 }
 
 cPar::~cPar()
 {
+/*FIXME
     if (p->owner()==this)
         dropAndDelete(p);
+*/
+}
+
+const char *cPar::name() const
+{
+    return p->name();
 }
 
 void cPar::copyIfShared()
 {
+/*FIXME
     if (p->owner()!=this)
         take(p = p->dup());
+*/
 }
 
 cComponent *cPar::ownerComponent()
 {
-    return dynamic_cast<cComponent *>(owner());
+    return ownercomponent;
+}
+
+void cPar::operator=(const cPar& other)
+{
+    printf("CPAR OP= UNIMPLEMENTED!!!\n");
+    //FIXME todo
+    // some models need to be able to copy parameters
 }
 
 cProperties *cPar::properties() const
@@ -53,6 +69,7 @@ cProperties *cPar::properties() const
     return NULL;  //FIXME return it from the type object
 }
 
+//FIXME make it inline...
 cPar::Type cPar::type() const {return p->type();}
 
 bool cPar::isNumeric() const {return p->isNumeric();}
@@ -61,17 +78,17 @@ bool cPar::isVolatile() const {return p->isVolatile();}
 
 bool cPar::isConstant() const {return p->isConstant();}
 
-bool cPar::boolValue() const  {return p->boolValue();}
+bool cPar::boolValue() const  {return p->boolValue(ownercomponent);}
 
-long cPar::longValue() const  {return p->longValue();}
+long cPar::longValue() const  {return p->longValue(ownercomponent);}
 
-double cPar::doubleValue() const  {return p->doubleValue();}
+double cPar::doubleValue() const  {return p->doubleValue(ownercomponent);}
 
-const char *cPar::stringValue() const  {return p->stringValue();}
+const char *cPar::stringValue() const  {return p->stringValue(ownercomponent);}
 
-std::string cPar::stdstringValue() const  {return p->stdstringValue();}
+std::string cPar::stdstringValue() const  {return p->stdstringValue(ownercomponent);}
 
-cXMLElement *cPar::xmlValue() const  {return p->xmlValue();}
+cXMLElement *cPar::xmlValue() const  {return p->xmlValue(ownercomponent);}
 
 cExpression *cPar::expression() const  {return p->expression();}
 
@@ -163,7 +180,7 @@ void cPar::read()
 void cPar::convertToConst()
 {
     copyIfShared();
-    p->convertToConst();
+    p->convertToConst(ownercomponent);
 }
 
 bool cPar::parse(const char *text)
@@ -184,6 +201,7 @@ void cPar::doReadValue()
         bool success = parse(str.c_str());
         if (!success)
             throw new cRuntimeError("Wrong value `%s' for parameter `%s'", str.c_str(), fullPath().c_str());
+        return;
     }
 
     // maybe we should use default value

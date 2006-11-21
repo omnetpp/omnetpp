@@ -92,32 +92,32 @@ void cDoublePar::setExpression(cExpression *e)
     flags |= FL_ISEXPR;
 }
 
-bool cDoublePar::boolValue() const
+bool cDoublePar::boolValue(cComponent *) const
 {
     throw new cRuntimeError(this, eBADCAST, "double", "bool");
 }
 
-long cDoublePar::longValue() const
+long cDoublePar::longValue(cComponent *context) const
 {
-    return double_to_long(evaluate());
+    return double_to_long(evaluate(context));
 }
 
-double cDoublePar::doubleValue() const
+double cDoublePar::doubleValue(cComponent *context) const
 {
-    return evaluate();
+    return evaluate(context);
 }
 
-const char *cDoublePar::stringValue() const
-{
-    throw new cRuntimeError(this, eBADCAST, "double", "string");
-}
-
-std::string cDoublePar::stdstringValue() const
+const char *cDoublePar::stringValue(cComponent *) const
 {
     throw new cRuntimeError(this, eBADCAST, "double", "string");
 }
 
-cXMLElement *cDoublePar::xmlValue() const
+std::string cDoublePar::stdstringValue(cComponent *) const
+{
+    throw new cRuntimeError(this, eBADCAST, "double", "string");
+}
+
+cXMLElement *cDoublePar::xmlValue(cComponent *) const
 {
     throw new cRuntimeError(this, eBADCAST, "double", "XML");
 }
@@ -127,9 +127,9 @@ cExpression *cDoublePar::expression() const
     return (flags | FL_ISEXPR) ? expr : NULL;
 }
 
-double cDoublePar::evaluate() const
+double cDoublePar::evaluate(cComponent *context) const
 {
-    return (flags & FL_ISEXPR) ? expr->doubleValue(dynamic_cast<cComponent*>(owner())) : val;
+    return (flags & FL_ISEXPR) ? expr->doubleValue(context) : val;
 }
 
 void cDoublePar::deleteOld()
@@ -151,9 +151,9 @@ bool cDoublePar::isNumeric() const
     return true;
 }
 
-void cDoublePar::convertToConst()
+void cDoublePar::convertToConst(cComponent *context)
 {
-    setDoubleValue(doubleValue());
+    setDoubleValue(doubleValue(context));
 }
 
 std::string cDoublePar::toString() const

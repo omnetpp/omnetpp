@@ -260,16 +260,11 @@ class SIM_API cModule : public cComponent //noncopyable
     virtual const char *fullName() const;
 
     /**
-     * Redefined. (Reason: a C++ rule that overloaded virtual methods must be redefined together.)
+     * Returns the full path name of the module. Example: <tt>"net.node[12].gen"</tt>.
+     * The original fullPath() was redefined in order to hide the global cSimulation
+     * instance from the path name.
      */
     virtual std::string fullPath() const;
-
-    /**
-     * Returns the full path name of the module. Example: <tt>"mynet.node[12].gen"</tt>.
-     * The original fullPath() was redefined in order to hide the global cSimulation
-     * instance in the path name (it would add "simulation." to the beginning of the full path).
-     */
-    virtual const char *fullPath(char *buffer, int bufsize) const;
     //@}
 
     /** @name Setting up the module. */

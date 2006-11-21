@@ -91,7 +91,7 @@ void PointToPointIF::handleMessage(cMessage *msg)
         if (ev.isGUI()) displayStatus(false);
         if (!queue.empty())
         {
-            msg = (cMessage *) queue.getTail();
+            msg = (cMessage *) queue.pop();
             startTransmitting(msg);
         }
     }

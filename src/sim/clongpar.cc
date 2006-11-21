@@ -92,32 +92,32 @@ void cLongPar::setExpression(cExpression *e)
     flags |= FL_ISEXPR;
 }
 
-bool cLongPar::boolValue() const
+bool cLongPar::boolValue(cComponent *) const
 {
     throw new cRuntimeError(this, eBADCAST, "int/long", "bool");
 }
 
-long cLongPar::longValue() const
+long cLongPar::longValue(cComponent *context) const
 {
-    return evaluate();
+    return evaluate(context);
 }
 
-double cLongPar::doubleValue() const
+double cLongPar::doubleValue(cComponent *context) const
 {
-    return evaluate();
+    return evaluate(context);
 }
 
-const char *cLongPar::stringValue() const
-{
-    throw new cRuntimeError(this, eBADCAST, "int/long", "string");
-}
-
-std::string cLongPar::stdstringValue() const
+const char *cLongPar::stringValue(cComponent *) const
 {
     throw new cRuntimeError(this, eBADCAST, "int/long", "string");
 }
 
-cXMLElement *cLongPar::xmlValue() const
+std::string cLongPar::stdstringValue(cComponent *) const
+{
+    throw new cRuntimeError(this, eBADCAST, "int/long", "string");
+}
+
+cXMLElement *cLongPar::xmlValue(cComponent *) const
 {
     throw new cRuntimeError(this, eBADCAST, "int/long", "XML");
 }
@@ -127,9 +127,9 @@ cExpression *cLongPar::expression() const
     return (flags | FL_ISEXPR) ? expr : NULL;
 }
 
-long cLongPar::evaluate() const
+long cLongPar::evaluate(cComponent *context) const
 {
-    return (flags & FL_ISEXPR) ? expr->longValue(dynamic_cast<cComponent*>(owner())) : val;
+    return (flags & FL_ISEXPR) ? expr->longValue(context) : val;
 }
 
 void cLongPar::deleteOld()
@@ -151,9 +151,9 @@ bool cLongPar::isNumeric() const
     return true;
 }
 
-void cLongPar::convertToConst()
+void cLongPar::convertToConst(cComponent *context)
 {
-    setLongValue(longValue());
+    setLongValue(longValue(context));
 }
 
 std::string cLongPar::toString() const

@@ -34,7 +34,7 @@ class SIM_API cLongPar : public cParValue
     };
 
   protected:
-    long evaluate() const;
+    long evaluate(cComponent *context) const;
     void deleteOld();
 
   public:
@@ -127,32 +127,32 @@ class SIM_API cLongPar : public cParValue
     /**
      * Raises an error: cannot convert long to bool.
      */
-    virtual bool boolValue() const;
+    virtual bool boolValue(cComponent *context) const;
 
     /**
      * Returns the value of the parameter.
      */
-    virtual long longValue() const;
+    virtual long longValue(cComponent *context) const;
 
     /**
      * Converts the value to double.
      */
-    virtual double doubleValue() const;
+    virtual double doubleValue(cComponent *context) const;
 
     /**
      * Raises an error: cannot convert long to string.
      */
-    virtual const char *stringValue() const;
+    virtual const char *stringValue(cComponent *context) const;
 
     /**
      * Raises an error: cannot convert long to string.
      */
-    virtual std::string stdstringValue() const;
+    virtual std::string stdstringValue(cComponent *context) const;
 
     /**
      * Raises an error: cannot convert long to XML.
      */
-    virtual cXMLElement *xmlValue() const;
+    virtual cXMLElement *xmlValue(cComponent *context) const;
 
     /**
      * Returns pointer to the expression stored by the object, or NULL.
@@ -181,7 +181,7 @@ class SIM_API cLongPar : public cParValue
      * Replaces for non-const values, replaces the stored expression with its
      * evaluation.
      */
-    virtual void convertToConst();
+    virtual void convertToConst(cComponent *context);
 
     /**
      * Returns the value in text form.

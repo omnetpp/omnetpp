@@ -196,37 +196,15 @@ std::string cModule::fullPath() const
 {
     if (lastmodulefullpathmod!=this)
     {
-        // cache the result
-        lastmodulefullpath = fullPath(fullpathbuf,MAX_OBJECTFULLPATH);
+        // stop at the toplevel module (don't go up to cSimulation);
+        // plus, cache the result, expecting more hits from this module
+        if (parentModule()==NULL)
+            lastmodulefullpath = fullName();
+        else
+            lastmodulefullpath = parentModule()->fullPath() + "." + fullName();
         lastmodulefullpathmod = this;
     }
     return lastmodulefullpath;
-}
-
-const char *cModule::fullPath(char *buffer, int bufsize) const
-{
-    // check we got a decent buffer
-    if (!buffer || bufsize<4)
-    {
-        if (buffer) buffer[0]='\0';
-        return "(fullPath(): no buffer or buffer too small)";
-    }
-
-    // append parent path + "."
-    char *buf = buffer;
-    if (parentModule())
-    {
-        parentModule()->fullPath(buf,bufsize);
-        int len = strlen(buf);
-        buf+=len;
-        bufsize-=len;
-        *buf++ = '.';
-        bufsize--;
-    }
-
-    // append our own name
-    opp_strprettytrunc(buf, fullName(), bufsize-1);
-    return buffer;
 }
 
 bool cModule::isSimple() const

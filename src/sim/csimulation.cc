@@ -130,21 +130,7 @@ void cSimulation::forEachChild(cVisitor *v)
 
 std::string cSimulation::fullPath() const
 {
-    return std::string(fullPath(fullpathbuf,MAX_OBJECTFULLPATH));
-}
-
-const char *cSimulation::fullPath(char *buffer, int bufsize) const
-{
-    // check we got a decent buffer
-    if (!buffer || bufsize<4)
-    {
-        if (buffer) buffer[0]='\0';
-        return "(fullPath(): no buffer or buffer too small)";
-    }
-
-    // add our own name
-    opp_strprettytrunc(buffer, fullName(), bufsize-1);
-    return buffer;
+    return fullName();
 }
 
 static std::string xmlquote(const std::string& str)

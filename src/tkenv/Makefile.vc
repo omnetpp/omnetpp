@@ -116,6 +116,7 @@ inspector.obj: inspector.cc \
   ../../include/cmsgheap.h \
   ../../include/cnedfunction.h \
   ../../include/cobject.h \
+  ../../include/cnamedobject.h \
   ../../include/cownedobject.h \
   ../../include/coutvect.h \
   ../../include/cpacket.h \
@@ -204,6 +205,7 @@ inspfactory.obj: inspfactory.cc \
   ../../include/cmsgheap.h \
   ../../include/cnedfunction.h \
   ../../include/cobject.h \
+  ../../include/cnamedobject.h \
   ../../include/cownedobject.h \
   ../../include/coutvect.h \
   ../../include/cpacket.h \
@@ -279,10 +281,11 @@ modinsp.obj: modinsp.cc \
   ../../include/cdefaultlist.h \
   ../../include/cenvir.h \
   ../../include/util.h \
-  ../../include/cobject.h \
+  ../../include/cnamedobject.h \
   ../../include/cexception.h \
-  ../../include/cstringpool.h \
   ../../include/errmsg.h \
+  ../../include/cobject.h \
+  ../../include/cstringpool.h \
   ../../include/cvisitor.h \
   ../../include/regmacros.h \
   ../../include/onstartup.h \
@@ -339,6 +342,7 @@ objinsp.obj: objinsp.cc \
   ../../include/cmsgheap.h \
   ../../include/cnedfunction.h \
   ../../include/cobject.h \
+  ../../include/cnamedobject.h \
   ../../include/cownedobject.h \
   ../../include/coutvect.h \
   ../../include/cpacket.h \
@@ -408,10 +412,11 @@ statinsp.obj: statinsp.cc \
   ../../include/cdefaultlist.h \
   ../../include/cenvir.h \
   ../../include/util.h \
-  ../../include/cobject.h \
+  ../../include/cnamedobject.h \
   ../../include/cexception.h \
-  ../../include/cstringpool.h \
   ../../include/errmsg.h \
+  ../../include/cobject.h \
+  ../../include/cstringpool.h \
   ../../include/cvisitor.h \
   ../../include/regmacros.h \
   ../../include/onstartup.h \
@@ -436,10 +441,11 @@ structinsp.obj: structinsp.cc \
   ../../include/cenvir.h \
   ../../include/defs.h \
   ../../include/util.h \
-  ../../include/cobject.h \
+  ../../include/cnamedobject.h \
   ../../include/cexception.h \
-  ../../include/cstringpool.h \
   ../../include/errmsg.h \
+  ../../include/cobject.h \
+  ../../include/cstringpool.h \
   ../../include/cvisitor.h \
   ../../include/regmacros.h \
   ../../include/onstartup.h \
@@ -471,10 +477,11 @@ tkapp.obj: tkapp.cc \
   ../../include/cpar.h \
   ../../include/cdefaultlist.h \
   ../../include/util.h \
-  ../../include/cobject.h \
+  ../../include/cnamedobject.h \
   ../../include/cexception.h \
-  ../../include/cstringpool.h \
   ../../include/errmsg.h \
+  ../../include/cobject.h \
+  ../../include/cstringpool.h \
   ../../include/cvisitor.h \
   ../../include/regmacros.h \
   ../../include/onstartup.h \
@@ -512,10 +519,11 @@ tkcmd.obj: tkcmd.cc \
   ../../include/defs.h \
   ../../include/cownedobject.h \
   ../../include/util.h \
-  ../../include/cobject.h \
+  ../../include/cnamedobject.h \
   ../../include/cexception.h \
-  ../../include/cstringpool.h \
   ../../include/errmsg.h \
+  ../../include/cobject.h \
+  ../../include/cstringpool.h \
   ../../include/cvisitor.h \
   ../../include/regmacros.h \
   ../../include/onstartup.h \
@@ -547,10 +555,11 @@ tkutil.obj: tkutil.cc \
   ../../include/cenvir.h \
   ../../include/defs.h \
   ../../include/util.h \
-  ../../include/cobject.h \
+  ../../include/cnamedobject.h \
   ../../include/cexception.h \
-  ../../include/cstringpool.h \
   ../../include/errmsg.h \
+  ../../include/cobject.h \
+  ../../include/cstringpool.h \
   ../../include/cvisitor.h \
   ../../include/regmacros.h \
   ../../include/onstartup.h \
@@ -592,8 +601,9 @@ visitor.obj: visitor.cc \
   ../../include/csimulation.h \
   ../../include/cownedobject.h \
   ../../include/cdefaultlist.h \
-  ../../include/cobject.h \
+  ../../include/cnamedobject.h \
   ../../include/cexception.h \
+  ../../include/cobject.h \
   ../../include/cstringpool.h \
   ../../include/opp_string.h \
   ../../include/carray.h \

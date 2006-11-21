@@ -37,13 +37,12 @@ class SIM_API cComponent : public cDefaultList // noncopyable
     friend class cPar; // needs to call handleParameterChange()
   protected:
     cComponentType *componenttype;  // component type object
-    cProperties *props;    // if NULL, use the one from the component type
 
     short rngmapsize;  // size of rngmap array (RNGs>=rngmapsize are mapped one-to-one to physical RNGs)
     int *rngmap;       // maps local RNG numbers (may be NULL if rngmapsize==0)
     bool ev_enabled;   // if output from ev<< is enabled   FIXME utilize cOwnedObject::flags
 
-    std::vector<cPar*> paramv;  // stores the parameters of this component -- FIXME this should be a NON-POINTER ARRAY! just vector<cPar>
+    std::vector<cPar> paramv;  // stores the parameters of this component
 
   public:
     // internal: currently used by Cmdenv

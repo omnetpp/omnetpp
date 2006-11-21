@@ -67,7 +67,7 @@ cNoncopyableObject(name), NEDComponent(tree)
 cNEDDeclaration::~cNEDDeclaration()
 {
     for (int i=0; i<params.size(); i++)
-        dropAndDelete(params[i].value);
+        delete params[i].value;
     for (int i=0; i<gates.size(); i++)
         delete gates[i].gatesize;
     delete props;
@@ -184,8 +184,6 @@ void cNEDDeclaration::addPar(const ParamDescription& paramDesc)
         throw new cRuntimeError(this, "addPar(): too late, object already locked");
     paramNameMap[paramDesc.value->name()] = params.size();
     params.push_back(paramDesc);
-    if (paramDesc.value)
-        take(paramDesc.value);
 }
 
 void cNEDDeclaration::addGate(const GateDescription& gateDesc)

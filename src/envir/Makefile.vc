@@ -89,9 +89,10 @@ akoutvectormgr.obj: akoutvectormgr.cc \
   ../../include/platdep/time.h \
   ../../include/cownedobject.h \
   ../../include/util.h \
+  ../../include/cnamedobject.h \
+  ../../include/errmsg.h \
   ../../include/cobject.h \
   ../../include/cstringpool.h \
-  ../../include/errmsg.h \
   ../../include/cvisitor.h \
   ../../include/regmacros.h \
   ../../include/onstartup.h \
@@ -138,8 +139,9 @@ cenvir.obj: cenvir.cc \
   ../../include/carray.h \
   ../../include/cclassfactory.h \
   ../../include/cownedobject.h \
-  ../../include/cobject.h \
+  ../../include/cnamedobject.h \
   ../../include/cexception.h \
+  ../../include/cobject.h \
   ../../include/cstringpool.h \
   ../../include/cvisitor.h \
   ../../include/regmacros.h \
@@ -207,9 +209,10 @@ filemgrs.obj: filemgrs.cc \
   ../../include/cconfig.h \
   ../../include/cownedobject.h \
   ../../include/util.h \
+  ../../include/cnamedobject.h \
+  ../../include/errmsg.h \
   ../../include/cobject.h \
   ../../include/cstringpool.h \
-  ../../include/errmsg.h \
   ../../include/cvisitor.h \
   ../../include/regmacros.h \
   ../../include/onstartup.h \
@@ -238,10 +241,11 @@ main.obj: main.cc \
   ../utils/ver.h \
   ../../include/defs.h \
   ../../include/util.h \
-  ../../include/cobject.h \
+  ../../include/cnamedobject.h \
   ../../include/cexception.h \
-  ../../include/cstringpool.h \
   ../../include/errmsg.h \
+  ../../include/cobject.h \
+  ../../include/cstringpool.h \
   ../../include/cvisitor.h \
   ../../include/regmacros.h \
   ../../include/onstartup.h \
@@ -253,10 +257,11 @@ matchableobject.obj: matchableobject.cc \
   ../../include/cenvir.h \
   ../../include/defs.h \
   ../../include/util.h \
-  ../../include/cobject.h \
+  ../../include/cnamedobject.h \
   ../../include/cexception.h \
-  ../../include/cstringpool.h \
   ../../include/errmsg.h \
+  ../../include/cobject.h \
+  ../../include/cstringpool.h \
   ../../include/cvisitor.h \
   ../../include/regmacros.h \
   ../../include/onstartup.h \
@@ -291,9 +296,10 @@ omnetapp.obj: omnetapp.cc \
   ../../include/cconfig.h \
   ../../include/cownedobject.h \
   ../../include/util.h \
+  ../../include/cnamedobject.h \
+  ../../include/errmsg.h \
   ../../include/cobject.h \
   ../../include/cstringpool.h \
-  ../../include/errmsg.h \
   ../../include/cvisitor.h \
   ../../include/regmacros.h \
   ../../include/onstartup.h \

@@ -89,22 +89,22 @@ void cStringPar::setExpression(cExpression *e)
     flags |= FL_ISEXPR;
 }
 
-bool cStringPar::boolValue() const
+bool cStringPar::boolValue(cComponent *context) const
 {
     throw new cRuntimeError(this, eBADCAST, "string", "bool");
 }
 
-long cStringPar::longValue() const
+long cStringPar::longValue(cComponent *) const
 {
     throw new cRuntimeError(this, eBADCAST, "string", "int/long");
 }
 
-double cStringPar::doubleValue() const
+double cStringPar::doubleValue(cComponent *) const
 {
     throw new cRuntimeError(this, eBADCAST, "string", "double");
 }
 
-const char *cStringPar::stringValue() const
+const char *cStringPar::stringValue(cComponent *context) const
 {
     if (flags & FL_ISEXPR)
         throw new cRuntimeError(this, "stringValue() and conversion to `const char *' cannot be invoked "
@@ -113,12 +113,12 @@ const char *cStringPar::stringValue() const
     return val.c_str();
 }
 
-std::string cStringPar::stdstringValue() const
+std::string cStringPar::stdstringValue(cComponent *context) const
 {
-    return evaluate();
+    return evaluate(context);
 }
 
-cXMLElement *cStringPar::xmlValue() const
+cXMLElement *cStringPar::xmlValue(cComponent *) const
 {
     throw new cRuntimeError(this, eBADCAST, "string", "XML");
 }
@@ -128,9 +128,9 @@ cExpression *cStringPar::expression() const
     return (flags | FL_ISEXPR) ? expr : NULL;
 }
 
-std::string cStringPar::evaluate() const
+std::string cStringPar::evaluate(cComponent *context) const
 {
-    return (flags & FL_ISEXPR) ? expr->stringValue(dynamic_cast<cComponent*>(owner())) : val;
+    return (flags & FL_ISEXPR) ? expr->stringValue(context) : val;
 }
 
 void cStringPar::deleteOld()
@@ -152,9 +152,9 @@ bool cStringPar::isNumeric() const
     return false;
 }
 
-void cStringPar::convertToConst()
+void cStringPar::convertToConst(cComponent *context)
 {
-    setStringValue(stdstringValue().c_str());
+    setStringValue(stdstringValue(context).c_str());
 }
 
 std::string cStringPar::toString() const

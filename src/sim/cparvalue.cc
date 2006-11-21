@@ -35,7 +35,7 @@ cParValue::~cParValue()
 
 cParValue& cParValue::operator=(const cParValue& other)
 {
-    cOwnedObject::operator=(other);
+    cNamedObject::operator=(other);
     return *this;
 }
 
@@ -61,18 +61,18 @@ bool cParValue::changed()
     return ret;
 }
 
-bool cParValue::equals(cParValue& other)
+bool cParValue::equals(cParValue& other, cComponent *thiscontext, cComponent *othercontext)
 {
     if (type()!=other.type())
         return false;
 
     switch (type())
     {
-        case cPar::BOOL:   return boolValue()==other.boolValue();
-        case cPar::LONG:   return longValue()==other.longValue();
-        case cPar::DOUBLE: return doubleValue()==other.doubleValue();
-        case cPar::STRING: return stringValue()==other.stringValue();
-        case cPar::XML:    return xmlValue()==other.xmlValue();
+        case cPar::BOOL:   return boolValue(thiscontext)==other.boolValue(othercontext);
+        case cPar::LONG:   return longValue(thiscontext)==other.longValue(othercontext);
+        case cPar::DOUBLE: return doubleValue(thiscontext)==other.doubleValue(othercontext);
+        case cPar::STRING: return stringValue(thiscontext)==other.stringValue(othercontext);
+        case cPar::XML:    return xmlValue(thiscontext)==other.xmlValue(othercontext);
         default: return false;
     }
 }
