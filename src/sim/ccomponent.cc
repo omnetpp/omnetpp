@@ -36,8 +36,16 @@ cComponent::~cComponent()
 const char *cComponent::className() const
 {
     // lie about the class name: return the NED type name instead of the real one,
-    // that is, "MobileHost" instead of "cCompoundModule" for example.
+    // that is, return "MobileHost" instead of "cCompoundModule" for example.
     return componenttype ? componenttype->name() : cDefaultList::className();
+}
+
+void cComponent::forEachChild(cVisitor *v)
+{
+    for (int i=0; i<paramv.size(); i++)
+        v->visit(&paramv[i]);
+
+    cDefaultList::forEachChild(v);
 }
 
 void cComponent::setComponentType(cComponentType *componenttype)

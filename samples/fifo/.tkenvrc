@@ -36,7 +36,7 @@ config filtobjlist-order	{Class}
 config last-nedfile	{}
 config log-save-filename	{omnetpp.out}
 config logwindow-scrollbacklines	{100000}
-config mainwin-geom	{640x249+58+45}
+config mainwin-geom	{640x374+58+45}
 config mainwin-state	{normal}
 config rununtil-event	{}
 config rununtil-mode	{Express (tracing off)}
@@ -47,6 +47,6 @@ config timeline-msgnamepattern	{*}
 config timeline-wantnonselfmsgs	{1}
 config timeline-wantselfmsgs	{1}
 inspector "fifonet" "fifonet" "2" "367x304+613+11"
-inspector "fifonet.gen" "FFGenerator" "1" "460x462+70+174"
+inspector "fifonet.gen" "FFGenerator" "1" "460x462+319+183"
 inspector "component types.fifonet" "cDynamicModuleType" "1" "717x624+24+31"
 
