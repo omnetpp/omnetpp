@@ -20,7 +20,7 @@ CPPOBJS_STD=\
     cenum.obj cexception.obj cfsm.obj cfunction.obj cgate.obj chist.obj \
     cksplit.obj clcg32.obj cllist.obj clongpar.obj cmersennetwister.obj \
     cmessage.obj cmessagepar.obj cmodule.obj cmsgheap.obj \
-    cnedfunction.obj cobject.obj coutvect.obj \
+    cnedfunction.obj cobject.obj coutvect.obj cnamedobject.obj \
     cpacket.obj cpar.obj cparvalue.obj cownedobject.obj cproperties.obj cproperty.obj \
     cpsquare.obj cqueue.obj cscheduler.obj csimplemodule.obj \
     csimulation.obj cstat.obj cstlwatch.obj cstringpar.obj \

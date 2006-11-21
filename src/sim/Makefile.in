@@ -42,7 +42,7 @@ CPPOBJS_STD=\
     cenum.o cexception.o cfsm.o cfunction.o cgate.o chist.o \
     cksplit.o clcg32.o cllist.o clongpar.o cmersennetwister.o \
     cmessage.o cmessagepar.o cmodule.o cmsgheap.o \
-    cnedfunction.o cobject.o coutvect.o \
+    cnedfunction.o cobject.o coutvect.o cnamedobject.o \
     cpacket.o cpar.o cparvalue.o cownedobject.o cproperties.o cproperty.o \
     cpsquare.o cqueue.o cscheduler.o csimplemodule.o \
     csimulation.o cstat.o cstlwatch.o cstringpar.o \

@@ -1,5 +1,5 @@
 //=========================================================================
-//  COWNEDOBJECT.CC - part of
+//  CNAMEDOBJECT.CC - part of
 //
 //                  OMNeT++/OMNEST
 //           Discrete System Simulation in C++
@@ -52,8 +52,6 @@ void printAllObjects()
 
 
 // static class members
-char cOwnedObject::fullpathbuf[MAX_OBJECTFULLPATH];
-cStringPool cOwnedObject::stringPool;
 cDefaultList *cOwnedObject::defaultowner = &defaultList;
 long cOwnedObject::total_objs = 0;
 long cOwnedObject::live_objs = 0;
@@ -64,8 +62,6 @@ cDefaultList defaultList;
 
 cOwnedObject::cOwnedObject()
 {
-    namep = NULL;
-    flags = FL_NAMEPOOLING;
     defaultowner->doInsert(this);
 
     // statistics
@@ -76,15 +72,8 @@ cOwnedObject::cOwnedObject()
 #endif
 }
 
-cOwnedObject::cOwnedObject(const char *name, bool namepooling)
+cOwnedObject::cOwnedObject(const char *name, bool namepooling) : cNamedObject(name, namepooling)
 {
-    flags = namepooling ? FL_NAMEPOOLING : 0;
-    if (!name)
-        namep = NULL;
-    else if (namepooling)
-        namep = stringPool.get(name);
-    else
-        namep  = opp_strdup(name);
     defaultowner->doInsert(this);
 
     // statistics
@@ -97,8 +86,6 @@ cOwnedObject::cOwnedObject(const char *name, bool namepooling)
 
 cOwnedObject::cOwnedObject(const cOwnedObject& obj)
 {
-    flags = obj.flags; // copy all flags, incl namepooling
-    namep = NULL;
     setName(obj.name());
     defaultowner->doInsert(this);
     operator=(obj);
@@ -119,15 +106,6 @@ cOwnedObject::~cOwnedObject()
 
     if (ownerp)
         ownerp->ownedObjectDeleted(this);
-
-    // release name string
-    if (namep)
-    {
-        if (flags & FL_NAMEPOOLING)
-            stringPool.release(namep);
-        else
-            delete [] namep;
-    }
 
     // statistics
     live_objs--;
@@ -210,60 +188,12 @@ cOwnedObject& cOwnedObject::operator=(const cOwnedObject& obj)
     return *this;
 }
 
-void cOwnedObject::setName(const char *s)
-{
-    // release name string
-    if (namep)
-    {
-        if (flags & FL_NAMEPOOLING)
-            stringPool.release(namep);
-        else
-            delete [] namep;
-    }
-
-    // set new string
-    if (!s)
-        namep = NULL;
-    else if (flags & FL_NAMEPOOLING)
-        namep = stringPool.get(s);
-    else
-        namep  = opp_strdup(s);
-}
-
-void cOwnedObject::setNamePooling(bool pooling)
-{
-    if ((flags & FL_NAMEPOOLING) == pooling)
-        return;
-    if (pooling)
-    {
-        // turn on
-        flags |= FL_NAMEPOOLING;
-        if (namep)
-        {
-            const char *oldname = namep;
-            namep = stringPool.get(oldname);
-            delete [] oldname;
-        }
-    }
-    else
-    {
-        // turn off
-        flags &= ~FL_NAMEPOOLING;
-        if (namep)
-        {
-            const char *oldname = namep;
-            namep  = opp_strdup(oldname);
-            stringPool.release(oldname);
-        }
-    }
-}
-
 void cOwnedObject::netPack(cCommBuffer *buffer)
 {
 #ifndef WITH_PARSIM
     throw new cRuntimeError(this,eNOPARSIM);
 #else
-    buffer->pack(name());
+    cNamedObject::netPack(buffer);
 #endif
 }
 
@@ -272,41 +202,16 @@ void cOwnedObject::netUnpack(cCommBuffer *buffer)
 #ifndef WITH_PARSIM
     throw new cRuntimeError(this,eNOPARSIM);
 #else
-    opp_string tmp;
-    buffer->unpack(tmp);
-    setName(tmp.buffer());
+    cNamedObject::netUnpack(buffer);
 #endif
 }
 
 std::string cOwnedObject::fullPath() const
 {
-    return std::string(fullPath(fullpathbuf,MAX_OBJECTFULLPATH));
-}
-
-const char *cOwnedObject::fullPath(char *buffer, int bufsize) const
-{
-    // check we got a decent buffer
-    if (!buffer || bufsize<4)
-    {
-        if (buffer) buffer[0]='\0';
-        return "(fullPath(): no buffer or buffer too small)";
-    }
-
-    // append parent path + "."
-    char *buf = buffer;
-    if (owner()!=NULL)
-    {
-       owner()->fullPath(buf,bufsize);
-       int len = strlen(buf);
-       buf+=len;
-       bufsize-=len;
-       *buf++ = '.';
-       bufsize--;
-    }
-
-    // append our own name
-    opp_strprettytrunc(buf, fullName(), bufsize-1);
-    return buffer;
+    if (owner()==NULL)
+        return fullName();
+    else
+        return owner()->fullPath() + "." + fullName();
 }
 
 
