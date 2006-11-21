@@ -54,13 +54,6 @@ cParValue *cParValue::dup() const
     throw new cRuntimeError(this, eCANTDUP);  // cannot dup because this is an abstract class
 }
 
-bool cParValue::changed()
-{
-    bool ret = flags & FL_HASCHANGED;
-    flags &= ~FL_HASCHANGED;
-    return ret;
-}
-
 bool cParValue::equals(cParValue& other, cComponent *thiscontext, cComponent *othercontext)
 {
     if (type()!=other.type())

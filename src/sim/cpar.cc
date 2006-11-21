@@ -157,9 +157,6 @@ void cPar::afterChange()
 
 void cPar::read()
 {
-    printf("    read() of %s\n", fullPath().c_str()); //XXX
-    printf("       BEFORE: %s\n", info().c_str()); //XXX
-
     // obtain value if parameter is not set yet
     if (p->isInput())
         doReadValue();
@@ -171,7 +168,7 @@ void cPar::read()
     // convert "const" subexpressions to constant
     //FIXME TODO -- or better delegate to cExpression
 
-    printf("       AFTER:  %s\n", info().c_str()); //XXX
+    printf("    %s read() --> %s\n", fullPath().c_str(), info().c_str()); //XXX
 }
 
 

@@ -44,9 +44,8 @@ class SIM_API cParValue : public cNamedObject
       FL_ISVOLATILE = 4,  // whether it was declared as "volatile" in NED
       FL_HASVALUE = 8,    // whether it has a value
       FL_ISEXPR = 16,     // whether it stores a constant or an expression
-      FL_HASCHANGED = 32, // whether it has changed since last asked
-      FL_ISSHARED = 64,   // used by cPar only: whether this object is shared among multiple cPars
-      FL_ISINPUT = 128    // used by cPar only: whether this is just a default value and real value will have to be asked from user or read from omnetpp.ini
+      FL_ISSHARED = 32,   // used by cPar only: whether this object is shared among multiple cPars
+      FL_ISINPUT = 64     // used by cPar only: whether this is just a default value and real value will have to be asked from user or read from omnetpp.ini
     };
 
   public:
@@ -135,13 +134,6 @@ class SIM_API cParValue : public cNamedObject
      * will have to be asked from user or read from omnetpp.ini
      */
     virtual bool isInput() const {return flags & FL_ISINPUT;}
-
-    /**
-     * Returns true if the value has changed since the last changed() call.
-     * Side effect: clears the 'changed' flag, so a next call will return
-     * false.
-     */
-    virtual bool changed();
 
     /**
      * Sets the isVolatile flag. NOTE: It may be necessary to invoke

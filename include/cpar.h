@@ -125,13 +125,6 @@ class SIM_API cPar : public cObject  //turn into cObject; delegate name to p! ad
     bool isShared() const;
 
     /**
-     * Returns true if the value has changed since the last changed() call.
-     * Side effect: clears the 'changed' flag, so a next call will return
-     * false.
-     */
-    bool changed();  //XXX implement!!
-
-    /**
      * Return the properties for this parameter. Properties are locked against
      * modifications.
      */
