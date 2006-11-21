@@ -231,6 +231,7 @@ print CC "\n\n";
 # pre-register some OMNeT++ classes so that one doesn't need to announce them
 #
 # note: $classtype values:
+#FIXME FIXME FIXME update these names! cobject, cownedobject, etc!!!
 #  'cobject'      ==> subclasses from cOwnedObject
 #  'cpolymorphic' ==> subclasses from cObject but NOT from cOwnedObject
 #  'foreignclass' ==> non-cObject class (NOTE: currently only external
