@@ -129,7 +129,7 @@ std::string cNEDDeclaration::detailedInfo() const
     for (int i=0; i<params.size(); i++)
     {
         const ParamDescription& desc = paramDescription(i);
-        out << "  param " << desc.value->name() << " INPUT:" << (desc.isInput?"true":"false");
+        out << "  param " << desc.value->name() << " INPUT:" << (desc.value->isInput()?"true":"false");
         out << " value=" << desc.value->info() << ", ISEXPR=" << (desc.value->isConstant()?0:1) << ", " << desc.value->toString()
             << " " << desc.properties->info() << "\n";
     }

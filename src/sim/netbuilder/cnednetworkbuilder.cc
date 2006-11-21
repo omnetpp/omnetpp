@@ -65,7 +65,7 @@ void cNEDNetworkBuilder::addParameters(cComponent *component, cNEDDeclaration *d
         ASSERT(desc.value);
         component->addPar(desc.value);
         cPar& par = component->par(desc.value->name());
-        printf("  added param %s, isInput=%d, isExpr=%d, info: %s\n", desc.value->name(), desc.isInput, !par.isConstant(), par.info().c_str()); //XXX
+        printf("  added param %s, isInput=%d, isExpr=%d, info: %s\n", desc.value->name(), desc.value->isInput(), !par.isConstant(), par.info().c_str()); //XXX
     }
 }
 

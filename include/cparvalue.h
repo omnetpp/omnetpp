@@ -41,11 +41,12 @@ class SIM_API cParValue : public cNamedObject
   protected:
     // various flags, stored in cNamedObject::flags
     enum {
-      FL_ISSHARED = 4,    // whether this object is shared among multiple cPars
-      FL_ISVOLATILE = 8,  // whether it was declared as "volatile" in NED
-      FL_HASVALUE = 16,   // whether it has a value
-      FL_ISEXPR = 32,     // whether it stores a constant or an expression
-      FL_HASCHANGED = 64, // whether it has changed since last asked
+      FL_ISVOLATILE = 4,  // whether it was declared as "volatile" in NED
+      FL_HASVALUE = 8,    // whether it has a value
+      FL_ISEXPR = 16,     // whether it stores a constant or an expression
+      FL_HASCHANGED = 32, // whether it has changed since last asked
+      FL_ISSHARED = 64,   // used by cPar only: whether this object is shared among multiple cPars
+      FL_ISINPUT = 128    // used by cPar only: whether this is just a default value and real value will have to be asked from user or read from omnetpp.ini
     };
 
   public:
@@ -107,11 +108,6 @@ class SIM_API cParValue : public cNamedObject
     virtual bool isNumeric() const = 0;
 
     /**
-     * Returns true if this object is shared among multiple cPars.
-     */
-    virtual bool isShared() const {return flags & FL_ISSHARED;}
-
-    /**
      * Returns true if this parameter is marked in the NED file as "function".
      * This flag affects the operation of setExpression().
      */
@@ -130,6 +126,17 @@ class SIM_API cParValue : public cNamedObject
     virtual bool hasValue() const  {return flags & FL_HASVALUE;}
 
     /**
+     * Used by cPar only: Returns true if this object is shared among multiple cPars.
+     */
+    virtual bool isShared() const {return flags & FL_ISSHARED;}
+
+    /**
+     * Used by cPar only: whether this is just a default value and real value
+     * will have to be asked from user or read from omnetpp.ini
+     */
+    virtual bool isInput() const {return flags & FL_ISINPUT;}
+
+    /**
      * Returns true if the value has changed since the last changed() call.
      * Side effect: clears the 'changed' flag, so a next call will return
      * false.
@@ -137,16 +144,20 @@ class SIM_API cParValue : public cNamedObject
     virtual bool changed();
 
     /**
-     * Sets the ISSHARED flag.
+     * Sets the isVolatile flag. NOTE: It may be necessary to invoke
+     * convertToConst(cComponent *context) as well.
+     */
+    virtual void setIsVolatile(bool f) {if (f) flags|=FL_ISVOLATILE; else flags&=~FL_ISVOLATILE;}
+
+    /**
+     * Sets the isShared flag.
      */
     virtual void setIsShared(bool f) {if (f) flags|=FL_ISSHARED; else flags&=~FL_ISSHARED;}
 
     /**
-     * Sets the ISVOLATILE flag. NOTE: It may be necessary to invoke
-     * convertToConst(cComponent *context) as well
+     * Sets the isInput flag.
      */
-    virtual void setIsVolatile(bool f) {if (f) flags|=FL_ISVOLATILE; else flags&=~FL_ISVOLATILE;}
-
+    virtual void setIsInput(bool f) {if (f) flags|=FL_ISINPUT; else flags&=~FL_ISINPUT;}
     //@}
 
     /** @name Setter functions. Note that overloaded assignment operators also exist. */

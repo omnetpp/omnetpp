@@ -161,7 +161,7 @@ void cPar::read()
     printf("       BEFORE: %s\n", info().c_str()); //XXX
 
     // obtain value if parameter is not set yet
-    if (true /*!isSet()*/) //FIXME check module declaration
+    if (p->isInput())
         doReadValue();
 
     // convert non-volatile values to constant

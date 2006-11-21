@@ -61,8 +61,7 @@ class SIM_API cNEDDeclaration : public cNoncopyableOwnedObject, public NEDCompon
      */
     struct ParamDescription //FIXME fully encapsulate, getter/setter!
     {
-        bool isInput;  // whether it was assigned as default(...)
-        cParValue *value;  // stores name, type and isVolatile flag as well -- never NULL
+        cParValue *value;  // stores name, type, isInput and isVolatile flags as well -- never NULL
         cProperties *properties;  // never NULL
         std::string declaredOn;
 
