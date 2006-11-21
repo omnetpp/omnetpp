@@ -38,7 +38,6 @@ typedef cKSplit::Iterator      cKSplitIterator;
 typedef cKSplit::Grid          sGrid;
 typedef cQueue::Iterator       cQueueIterator;
 typedef cLinkedList::Iterator  cLinkedListIterator;
-typedef cPar::ExprElem         sXElem;
 typedef cMessageHeap::Iterator cMessageHeapIterator;
 typedef cTopology::Link        sTopoLink;
 typedef cTopology::LinkIn      sTopoLinkIn;

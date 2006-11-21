@@ -53,6 +53,7 @@
 #include "cmsgheap.h"
 #include "cnedfunction.h"
 #include "cobject.h"
+#include "cnamedobject.h"
 #include "cownedobject.h"
 #include "coutvect.h"
 #include "cpacket.h"
