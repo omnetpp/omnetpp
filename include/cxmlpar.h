@@ -47,7 +47,7 @@ class SIM_API cXMLPar : public cParValue
     /**
      * Copy constructor.
      */
-    cXMLPar(const cXMLPar& other) {operator=(other);}
+    cXMLPar(const cXMLPar& other) {setName(other.name()); operator=(other);}
 
     /**
      * Destructor.

@@ -49,7 +49,7 @@ class SIM_API cBoolPar : public cParValue
     /**
      * Copy constructor.
      */
-    cBoolPar(const cBoolPar& other) {operator=(other);}
+    cBoolPar(const cBoolPar& other) {setName(other.name()); operator=(other);}
 
     /**
      * Destructor.

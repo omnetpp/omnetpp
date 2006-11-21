@@ -49,7 +49,7 @@ class SIM_API cStringPar : public cParValue
     /**
      * Copy constructor.
      */
-    cStringPar(const cStringPar& other) {operator=(other);}
+    cStringPar(const cStringPar& other) {setName(other.name()); operator=(other);}
 
     /**
      * Destructor.
