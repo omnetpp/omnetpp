@@ -577,8 +577,6 @@ public class NEDResources implements INEDTypeResolver {
         
         // if a name property has changed everything should be rebuilt because inheritence might have changed
         // we may check only for toplevel component names and extends attributes
-        // FIXME what anout changing type, extends attributes? does the notificaton work correctly?
-        
 
         if (inheritanceMayHaveChanged(event))
         {
