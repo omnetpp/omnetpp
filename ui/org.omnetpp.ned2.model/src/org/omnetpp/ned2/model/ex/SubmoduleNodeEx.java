@@ -50,8 +50,6 @@ public final class SubmoduleNodeEx extends SubmoduleNode
 		if (displayString == null) {
 			displayString = new DisplayString(this, NEDElementUtilEx.getDisplayString(this));
 		}
-        // by default we do not have a fallback display string
-//        displayString.setDefaults(null);
 		return displayString;
 	}
 

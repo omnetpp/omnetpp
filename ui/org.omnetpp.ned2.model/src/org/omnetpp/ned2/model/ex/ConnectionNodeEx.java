@@ -155,8 +155,6 @@ public final class ConnectionNodeEx extends ConnectionNode
 	public DisplayString getDisplayString() {
 		if (displayString == null)
 			displayString = new ConnectionDisplayString(this, NEDElementUtilEx.getDisplayString(this));
-        // by default we do not have a fallback display string
-//        displayString.setDefaults(null);
 		return displayString;
 	}
 
