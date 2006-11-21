@@ -23,25 +23,22 @@
 // This header needs to be included *last* in omnetpp.h.
 //
 
-// cOwnedObject:
-#define isA()          className()
-// cQueue:
-#define insertHead(a)  insert(a)
+// cQueue
 #define peekTail()     tail()
 #define peekHead()     head()
-#define getTail()      pop()
-// cSimulation
-#define lastModuleIndex() lastModuleId()
+
 // cModule
 #define displayStringAsParent()  backgroundDisplayString()
 #define setDisplayStringAsParent setBackgroundDisplayString
+
+//XXX can typedefs be deprecated?
 
 // following ones became inner classes:
 typedef cKSplit::Iterator      cKSplitIterator;
 typedef cKSplit::Grid          sGrid;
 typedef cQueue::Iterator       cQueueIterator;
 typedef cLinkedList::Iterator  cLinkedListIterator;
-typedef cMessagePar::ExprElem         sXElem;
+typedef cPar::ExprElem         sXElem;
 typedef cMessageHeap::Iterator cMessageHeapIterator;
 typedef cTopology::Link        sTopoLink;
 typedef cTopology::LinkIn      sTopoLinkIn;
@@ -51,6 +48,6 @@ typedef cTopology::Node        sTopoNode;
 // renamed classes:
 typedef cDisplayString cDisplayStringParser;
 typedef cBasicChannel  cSimpleChannel;
-
+typedef cObject        cPolymorphic;
 #endif
 
