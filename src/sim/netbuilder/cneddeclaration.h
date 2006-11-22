@@ -66,6 +66,7 @@ class SIM_API cNEDDeclaration : public cNoncopyableOwnedObject, public NEDCompon
         std::string declaredOn;
 
         ParamDescription();
+        ~ParamDescription();
         ParamDescription deepCopy() const;
     };
 
@@ -82,6 +83,7 @@ class SIM_API cNEDDeclaration : public cNoncopyableOwnedObject, public NEDCompon
         std::string declaredOn;
 
         GateDescription();
+        ~GateDescription();
         GateDescription deepCopy() const;
     };
 

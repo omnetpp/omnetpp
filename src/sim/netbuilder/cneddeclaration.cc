@@ -24,7 +24,13 @@
 cNEDDeclaration::ParamDescription::ParamDescription()
 {
     value = NULL;
-    properties = new cProperties();  //FIXME add destructor!!!
+    properties = new cProperties();
+}
+
+cNEDDeclaration::ParamDescription::ParamDescription()
+{
+    delete properties;
+    delete value; //XXX khmm -- what if some cPar still points to it?
 }
 
 cNEDDeclaration::ParamDescription cNEDDeclaration::ParamDescription::deepCopy() const
@@ -42,7 +48,7 @@ cNEDDeclaration::GateDescription::GateDescription()
     type = cGate::INPUT;
     isVector = false;
     gatesize = NULL;
-    properties = new cProperties();  //FIXME add destructor!!!
+    properties = new cProperties();
 }
 
 cNEDDeclaration::GateDescription cNEDDeclaration::GateDescription::deepCopy() const
@@ -53,6 +59,12 @@ cNEDDeclaration::GateDescription cNEDDeclaration::GateDescription::deepCopy() co
     if (tmp.properties)
         tmp.properties = tmp.properties->dup();
     return tmp;
+}
+
+cNEDDeclaration::GateDescription::~GateDescription()
+{
+    delete gatesize;
+    delete properties;
 }
 
 //-----
@@ -138,7 +150,7 @@ std::string cNEDDeclaration::detailedInfo() const
     {
         const GateDescription& desc = gateDescription(i);
         out << "  gate " << desc.name << ": ..."
-            << " " << desc.properties->info() << "\n";
+            << " " << desc.properties->info() << "\n"; //XXX refine
     }
 
     return out.str();

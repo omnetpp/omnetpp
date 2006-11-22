@@ -819,11 +819,10 @@ AC_CONFIG_FILES(
   src/utils/Makefile
   src/utils/opp_makemake
   src/utils/opp_neddoc
-  test/core/runtest 
+  test/core/runtest
   samples/aloha/Makefile
   samples/cqn/Makefile
   samples/dyna/Makefile
-  samples/fddi/Makefile
   samples/fifo/Makefile
   samples/hcube/Makefile
   samples/hist/Makefile
