@@ -40,7 +40,6 @@ import org.omnetpp.ned2.model.ex.CompoundModuleNodeEx;
 import org.omnetpp.ned2.model.ex.ConnectionNodeEx;
 import org.omnetpp.ned2.model.ex.SubmoduleNodeEx;
 import org.omnetpp.ned2.model.interfaces.IHasAncestors;
-import org.omnetpp.ned2.model.interfaces.IHasName;
 import org.omnetpp.ned2.model.interfaces.INEDTypeInfo;
 import org.omnetpp.ned2.model.notification.NEDAttributeChangeEvent;
 import org.omnetpp.ned2.model.notification.NEDModelEvent;
@@ -49,7 +48,7 @@ import org.omnetpp.ned2.model.notification.NEDStructuralChangeEvent;
 public class CompoundModuleEditPart extends ModuleEditPart {
 
     // stores  the connection model - connection controller mapping for the compound module
-    private Map<Object, ConnectionEditPart> modelToConnectionParts = new HashMap<Object, ConnectionEditPart>();
+    private Map<Object, ConnectionEditPart> modelToConnectionPartsRegistry = new HashMap<Object, ConnectionEditPart>();
 
     protected CompoundModuleGateAnchor gateAnchor;
 
@@ -243,8 +242,8 @@ public class CompoundModuleEditPart extends ModuleEditPart {
     /**
      * @return The MAP that contains the connection model - controller associations 
      */
-    public Map<Object, ConnectionEditPart> getModelToConnectionParts() {
-        return modelToConnectionParts;
+    public Map<Object, ConnectionEditPart> getModelToConnectionPartsRegistry() {
+        return modelToConnectionPartsRegistry;
     }
 
     /* (non-Javadoc)
@@ -257,9 +256,8 @@ public class CompoundModuleEditPart extends ModuleEditPart {
         // let's open or activate a new editor if somone has double clicked the component
         if (RequestConstants.REQ_OPEN.equals(req.getType()) 
                 && getModel() instanceof IHasAncestors) {
-            IHasName firstExtendsRef = (IHasName)((IHasAncestors)getModel()).getFirstExtendsRef();
-            String extendsName = firstExtendsRef !=null ? firstExtendsRef.getName() : null;
-            
+
+            String extendsName = ((IHasAncestors)getModel()).getFirstExtends();
             INEDTypeInfo typeInfo = getNEDModel().getContainerNEDTypeInfo()
                                             .getResolver().getComponent(extendsName);
             if (typeInfo == null) return;

@@ -129,9 +129,8 @@ public class TopLevelEditPart extends AbstractGraphicalEditPart
         // let's open or activate a new editor if somone has double clicked the component
         if (RequestConstants.REQ_OPEN.equals(req.getType()) 
                 && getModel() instanceof IHasAncestors) {
-            IHasName firstExtendsRef = (IHasName)((IHasAncestors)getModel()).getFirstExtendsRef();
-            String extendsName = firstExtendsRef !=null ? firstExtendsRef.getName() : null;
-            
+
+            String extendsName = ((IHasAncestors)getModel()).getFirstExtends();
             INEDTypeInfo typeInfo = getNEDModel().getContainerNEDTypeInfo()
                                             .getResolver().getComponent(extendsName);
             if (typeInfo == null) return;

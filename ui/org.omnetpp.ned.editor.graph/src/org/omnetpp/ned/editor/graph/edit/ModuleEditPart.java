@@ -16,7 +16,7 @@ import org.omnetpp.ned2.model.ex.ConnectionNodeEx;
  * Base abstract controller for NedModel and NedFigures. Provides support for 
  * connection handling and common display attributes.
  */
-abstract public class ModuleEditPart extends NotifiedEditPart implements NodeEditPart {
+abstract public class ModuleEditPart extends BaseEditPart implements NodeEditPart {
 
     @Override
 	protected void createEditPolicies() {
@@ -84,14 +84,10 @@ abstract public class ModuleEditPart extends NotifiedEditPart implements NodeEdi
     @Override
     protected ConnectionEditPart createOrFindConnection(Object model) {
         // get the model - controller cache from the containing compound module
-        ConnectionEditPart conx = getCompoundModulePart().getModelToConnectionParts().get(model);
+        ConnectionEditPart conx = getCompoundModulePart().getModelToConnectionPartsRegistry().get(model);
         if (conx != null)
             return conx;
-        conx = createConnection(model);
-        // store it for later use
-        getCompoundModulePart().getModelToConnectionParts().put(model,  conx);
-        // FIXME where do we remove these ??? maybe in remove connection ?
-        return conx;
+        return createConnection(model);
     }
 
 }

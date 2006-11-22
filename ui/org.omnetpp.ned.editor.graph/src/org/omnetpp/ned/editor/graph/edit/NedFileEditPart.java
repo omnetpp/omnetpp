@@ -24,7 +24,7 @@ import org.omnetpp.resources.NEDResourcesPlugin;
  * LogicEditorPart, to hold the entire model. It is sort of a blank board where
  * all other EditParts get added.
  */
-public class NedFileEditPart extends NotifiedEditPart implements LayerConstants {
+public class NedFileEditPart extends BaseEditPart implements LayerConstants {
 
     /**
      * Installs EditPolicies specific to this.

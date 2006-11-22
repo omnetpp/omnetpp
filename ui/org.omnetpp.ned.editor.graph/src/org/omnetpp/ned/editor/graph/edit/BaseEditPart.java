@@ -8,7 +8,7 @@ import org.omnetpp.ned2.model.notification.NEDModelEvent;
 /**
  * Provides support for Container EditParts.
  */
-abstract public class NotifiedEditPart 
+abstract public class BaseEditPart 
    extends AbstractGraphicalEditPart implements INEDChangeListener, IReadOnlySupport {
 
     protected long lastEventSerial;
@@ -77,8 +77,8 @@ abstract public class NotifiedEditPart
         refresh();
         // delegate to all children and refresh all their appearence
         for(Object child : getChildren())
-            if (child instanceof NotifiedEditPart)
-                ((NotifiedEditPart)child).totalRefresh();
+            if (child instanceof BaseEditPart)
+                ((BaseEditPart)child).totalRefresh();
             else
                 ((AbstractGraphicalEditPart)child).refresh();
         

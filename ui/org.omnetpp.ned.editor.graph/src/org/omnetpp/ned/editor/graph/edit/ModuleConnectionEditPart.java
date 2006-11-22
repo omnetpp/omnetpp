@@ -1,5 +1,7 @@
 package org.omnetpp.ned.editor.graph.edit;
 
+import java.util.Map;
+
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.draw2d.IFigure;
@@ -214,5 +216,36 @@ public class ModuleConnectionEditPart extends AbstractConnectionEditPart impleme
      */
     private boolean isEditable() {
         return getParent().getModel() == ((ConnectionNodeEx)getModel()).getCompoundModule();
+    }
+    
+    /**
+     * @return The compound module part this connection part belongs to
+     */
+    public CompoundModuleEditPart getCompoundModulePart() {
+        return (CompoundModuleEditPart)getParent();
+    }
+    
+    /* (non-Javadoc)
+     * @see org.eclipse.gef.editparts.AbstractEditPart#registerModel()
+     * Override the default behavior because each compound module has it's own registry for connection model
+     * connection part mapping (instead of the default impl. one map for the whole viewer)
+     * The connection part creation is looking also in this registry
+     * @see org.omnetpp.ned.editor.graph.edit.ModuleEditPart#createOrFindConnection(java.lang.Object) 
+     */
+    protected void registerModel() {
+        getCompoundModulePart().getModelToConnectionPartsRegistry().put(getModel(), this);
+    }
+
+    /* (non-Javadoc)
+     * @see org.eclipse.gef.editparts.AbstractEditPart#unregisterModel()
+     * Override the default behavior because each compound module has it's own registry for connection model
+     * connection part mapping (instead of the default impl. one map for the whole viewer)
+     * The connection part creation is looking also in this registry
+     * @see org.omnetpp.ned.editor.graph.edit.ModuleEditPart#createOrFindConnection(java.lang.Object) 
+     */
+    protected void unregisterModel() {
+        Map registry = getCompoundModulePart().getModelToConnectionPartsRegistry();
+        if (registry.get(getModel()) == this)
+            registry.remove(getModel());
     }
 }
