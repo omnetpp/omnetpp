@@ -1063,6 +1063,10 @@ void NED2Generator::doMsgproperty(MsgpropertyNode *node, const char *indent, boo
     OUT << getRightComment(node);
 }
 
+void NED2Generator::doComment(CommentNode *node, const char *indent, bool islast, const char *)
+{
+    // ignore here: comments are taken care of individually where they occur
+}
 
 //---------------------------------------------------------------------------
 
@@ -1169,6 +1173,8 @@ void NED2Generator::generateNedItem(NEDElement *node, const char *indent, bool i
             doProperties((PropertiesNode *)node, indent, islast, arg); break;
         case NED_MSGPROPERTY:
             doMsgproperty((MsgpropertyNode *)node, indent, islast, arg); break;
+        case NED_COMMENT:
+            doComment((CommentNode *)node, indent, islast, arg); break;
         default:
             INTERNAL_ERROR1(node, "generateNedItem(): unknown tag '%s'", node->getTagName());
     }

@@ -163,6 +163,7 @@ class NED2Generator
     void doField(FieldNode *node, const char *indent, bool islast, const char *);
     void doProperties(PropertiesNode *node, const char *indent, bool islast, const char *);
     void doMsgproperty(MsgpropertyNode *node, const char *indent, bool islast, const char *);
+    void doComment(CommentNode *node, const char *indent, bool islast, const char *);
     //@}
 };
 
