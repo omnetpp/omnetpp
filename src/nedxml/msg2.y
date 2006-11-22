@@ -112,6 +112,8 @@ static void resetParserState()
     ps = cleanps;
 }
 
+//FIXME add @-syntax properties to the grammar!
+
 %}
 
 %%

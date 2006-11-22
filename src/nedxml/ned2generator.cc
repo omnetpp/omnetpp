@@ -262,12 +262,12 @@ std::string NED2Generator::getTrailingComment(NEDElement *node)
 
 //---------------------------------------------------------------------------
 
-void NED2Generator::doNedfiles(FilesNode *node, const char *indent, bool, const char *)
+void NED2Generator::doFiles(FilesNode *node, const char *indent, bool, const char *)
 {
     generateChildren(node, indent);
 }
 
-void NED2Generator::doNedfile(NedFileNode *node, const char *indent, bool, const char *)
+void NED2Generator::doNedFile(NedFileNode *node, const char *indent, bool, const char *)
 {
     OUT << getBannerComment(node, indent);
     generateChildren(node, indent);
@@ -909,6 +909,12 @@ void NED2Generator::doLiteral(LiteralNode *node, const char *indent, bool islast
         OUT << (sep ? sep : "");
 }
 
+void NED2Generator::doMsgFile(MsgFileNode *node, const char *indent, bool, const char *)
+{
+    OUT << getBannerComment(node, indent);
+    generateChildren(node, indent);
+}
+
 void NED2Generator::doCplusplus(CplusplusNode *node, const char *indent, bool islast, const char *)
 {
     OUT << getBannerComment(node, indent);
@@ -1067,9 +1073,9 @@ void NED2Generator::generateNedItem(NEDElement *node, const char *indent, bool i
     switch (tagcode)
     {
         case NED_FILES:
-            doNedfiles((FilesNode *)node, indent, islast, arg); break;
+            doFiles((FilesNode *)node, indent, islast, arg); break;
         case NED_NED_FILE:
-            doNedfile((NedFileNode *)node, indent, islast, arg); break;
+            doNedFile((NedFileNode *)node, indent, islast, arg); break;
         case NED_IMPORT:
             doImport((ImportNode *)node, indent, islast, arg); break;
         case NED_PROPERTY_DECL:
@@ -1130,6 +1136,9 @@ void NED2Generator::generateNedItem(NEDElement *node, const char *indent, bool i
             doIdent((IdentNode *)node, indent, islast, arg); break;
         case NED_LITERAL:
             doLiteral((LiteralNode *)node, indent, islast, arg); break;
+
+        case NED_MSG_FILE:
+            doMsgFile((MsgFileNode *)node, indent, islast, arg); break;
         case NED_CPLUSPLUS:
             doCplusplus((CplusplusNode *)node, indent, islast, arg); break;
         case NED_STRUCT_DECL:
@@ -1161,7 +1170,7 @@ void NED2Generator::generateNedItem(NEDElement *node, const char *indent, bool i
         case NED_MSGPROPERTY:
             doMsgproperty((MsgpropertyNode *)node, indent, islast, arg); break;
         default:
-            ;//XXX: add back this line: INTERNAL_ERROR1(node, "generateNedItem(): unknown tag '%s'", node->getTagName());
+            INTERNAL_ERROR1(node, "generateNedItem(): unknown tag '%s'", node->getTagName());
     }
 }
 

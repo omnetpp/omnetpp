@@ -76,6 +76,8 @@ static char textbuf[TEXTBUF_LEN];
 "extends"               { count(); return EXTENDS; }
 "abstract"              { count(); return ABSTRACT; }
 "readonly"              { count(); return READONLY; }
+"properties"            { count(); return PROPERTIES; }
+"fields"                { count(); return FIELDS; }
 
 "bool"                  { count(); return BOOLTYPE; }
 "char"                  { count(); return CHARTYPE; }

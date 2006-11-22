@@ -51,15 +51,15 @@ using std::ios;
 enum {XML_FILE, NED_FILE, MSG_FILE, CPP_FILE, UNKNOWN_FILE};
 
 // option variables
-bool opt_gencpp = false;           // -c
 bool opt_genxml = false;           // -x
 bool opt_genned = false;           // -n
-bool opt_genmsg = false;           // -g
+bool opt_genmsg = false;           // -g  FIXME merge opt_genned and opt_genmsg as "opt_gensrc" ?
 bool opt_validateonly = false;     // -v
 int opt_nextfiletype = UNKNOWN_FILE; // -X
 bool opt_oldsyntax = false;        // -Q
 const char *opt_suffix = NULL;     // -s
 const char *opt_hdrsuffix = NULL;  // -S
+bool opt_inplace = false;          // -k
 bool opt_unparsedexpr = false;     // -e
 bool opt_storesrc = false;         // -t
 bool opt_novalidation = false;     // -y
@@ -101,6 +101,7 @@ void printUsage()
        "  -Q: with -n: use old (3.x) NED syntax\n"
        "  -s <suffix>: suffix for generated files\n"
        "  -S <suffix>: when generating C++, suffix for generated header files\n"
+       "  -k: with -n: replace original file and create backup (.bak)\n"
        "  -e: do not parse expressions in NED input; expect unparsed expressions in XML\n"
        "  -y: skip semantic validation (implies -z, skip processing imports)\n"
        "  -z: skip processing imports\n"
@@ -197,13 +198,11 @@ try{
     delete tree;
     return false;
 }
-/*
     if (!errors->empty())
     {
         delete tree;
         return false;
     }
-*/
 
 /*FIXME FIXME FIXME validation temporarily commented out FIXME FIXME
     NEDBasicValidator basicvalidator(!opt_unparsedexpr, errors);
@@ -234,42 +233,66 @@ try{
 //XXX            validator.validate(tree);
         }
     }
-/*
     if (!errors->empty())
     {
         delete tree;
         return false;
     }
-*/
+
     if (opt_mergeoutput)
     {
         outputtree->appendChild(tree);
     }
     else if (!opt_validateonly)
     {
-        // generate output file name
-        const char *suffix = opt_suffix;
-        const char *hdrsuffix = opt_hdrsuffix;
-        if (!suffix)
-        {
-            if (opt_genxml)
-                suffix = (ftype==MSG_FILE) ? "_m.xml" : "_n.xml";
-            else if (opt_genned)
-                suffix = "_n.ned";
-            else if (opt_genmsg)
-                suffix = "_m.msg";
-            else
-                suffix = (ftype==MSG_FILE) ? "_m.cc" : "_n.cc";
-        }
-        if (!hdrsuffix)
-        {
-            hdrsuffix = "_m.h";
-        }
-
         char outfname[1024];
         char outhdrfname[1024];
-        createFileNameWithSuffix(outfname, fname, suffix);
-        createFileNameWithSuffix(outhdrfname, fname, hdrsuffix);
+
+        if (opt_inplace)
+        {
+            // user wants to replace existing file: remove old ".bak" file,
+            // rename original file to ".bak", and write new contents under the
+            // original file name
+            char bakfname[1024];
+            createFileNameWithSuffix(bakfname, fname, ".bak");
+
+            if (unlink(bakfname)!=0 && errno!=ENOENT)
+            {
+                fprintf(stderr,"nedtool: cannot remove old backup file %s, leaving file %s unchanged\n", bakfname, fname);
+                return false;
+            }
+            if (rename(fname, bakfname)!=0)
+            {
+                fprintf(stderr,"nedtool: cannot rename original %s to %s, leaving file unchanged\n", fname, bakfname);
+                return false;
+            }
+
+            strcpy(outfname, fname);
+            strcpy(outhdrfname, "");  // unused
+        }
+        else
+        {
+            // generate output file name
+            const char *suffix = opt_suffix;
+            const char *hdrsuffix = opt_hdrsuffix;
+            if (!suffix)
+            {
+                if (opt_genxml)
+                    suffix = (ftype==MSG_FILE) ? "_m.xml" : "_n.xml";
+                else if (opt_genned)
+                    suffix = "_n.ned";
+                else if (opt_genmsg)
+                    suffix = "_m.msg";
+                else
+                    suffix = (ftype==MSG_FILE) ? "_m.cc" : "_n.cc";
+            }
+            if (!hdrsuffix)
+            {
+                hdrsuffix = "_m.h";
+            }
+            createFileNameWithSuffix(outfname, fname, suffix);
+            createFileNameWithSuffix(outhdrfname, fname, hdrsuffix);
+        }
 
         // TBD check output file for errors
         if (opt_genxml)
@@ -398,11 +421,7 @@ int main(int argc, char **argv)
     // process options
     for (int i=1; i<argc; i++)
     {
-        if (!strcmp(argv[i],"-c"))
-        {
-            opt_gencpp = true;
-        }
-        else if (!strcmp(argv[i],"-x"))
+        if (!strcmp(argv[i],"-x"))
         {
             opt_genxml = true;
         }
@@ -473,6 +492,10 @@ int main(int argc, char **argv)
             }
             opt_hdrsuffix = argv[i];
         }
+        else if (!strcmp(argv[i],"-k"))
+        {
+            opt_inplace = true;
+        }
         else if (!strcmp(argv[i],"-e"))
         {
             opt_unparsedexpr = true;
@@ -529,11 +552,22 @@ int main(int argc, char **argv)
         }
         else
         {
+            if (opt_mergeoutput && opt_inplace)
+            {
+                fprintf(stderr,"nedtool: conflicting options -m (merge files) and -k (replace original file)\n");
+                return 1;
+            }
+            if (opt_inplace && !opt_genxml && !opt_genned && !opt_genmsg)
+            {
+                fprintf(stderr,"nedtool: conflicting options: -k (replace original file) needs -n, -g or -x\n");
+                return 1;
+            }
             if (opt_mergeoutput && !opt_genxml && !opt_genned && !opt_genmsg)
             {
                 fprintf(stderr,"nedtool: option -m not supported with C++ output\n");
                 return 1;
             }
+
 #ifdef SHELL_DOES_NOT_EXPAND_WILDCARDS
             const char *fname = findFirstFile(argv[i]);
             if (!fname) {

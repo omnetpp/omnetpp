@@ -106,8 +106,8 @@ class NED2Generator
 
     /** @name Generate NED code from the given element */
     //@{
-    void doNedfiles(FilesNode *node, const char *indent, bool islast, const char *);
-    void doNedfile(NedFileNode *node, const char *indent, bool islast, const char *);
+    void doFiles(FilesNode *node, const char *indent, bool islast, const char *);
+    void doNedFile(NedFileNode *node, const char *indent, bool islast, const char *);
     void doImport(ImportNode *node, const char *indent, bool islast, const char *);
     void doPropertyDecl(PropertyDeclNode *node, const char *indent, bool islast, const char *);
     void doExtends(ExtendsNode *node, const char *indent, bool islast, const char *);
@@ -147,6 +147,7 @@ class NED2Generator
     void doLiteral(LiteralNode *node, const char *indent, bool islast, const char *);
 
     // msg stuff
+    void doMsgFile(MsgFileNode *node, const char *indent, bool islast, const char *);
     void doCplusplus(CplusplusNode *node, const char *indent, bool islast, const char *);
     void doStructDecl(StructDeclNode *node, const char *indent, bool islast, const char *);
     void doClassDecl(ClassDeclNode *node, const char *indent, bool islast, const char *);
