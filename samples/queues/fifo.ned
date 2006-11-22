@@ -14,9 +14,9 @@
 simple Fifo
 {
     parameters:
-        volatile double service_time;
-        int num_cells;
-        int num_init_jobs;
+        volatile double serviceTime;
+        int numCells;
+        int numInitJobs;
     gates:
         input in;
         output out;

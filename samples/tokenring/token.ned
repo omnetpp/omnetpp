@@ -23,8 +23,8 @@ simple TokenRingMAC
         int address; // MAC address of this station, modeled with an integer.
         int queueMaxLen; // max queue size in packets.
     gates:
-        input phy_in;
-        input from_hl;
-        output phy_out;
-        output to_hl;
+        input phyIn;
+        output phyOut;
+        input fromHL;
+        output toHL;
 }

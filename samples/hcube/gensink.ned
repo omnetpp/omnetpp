@@ -14,9 +14,9 @@
 simple HCGenerator
 {
     parameters:
-        int num_stations;
+        int numStations;
         int address;
-        volatile double ia_time;
+        volatile double iaTime;
     gates:
         output out;
 }

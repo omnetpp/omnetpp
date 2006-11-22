@@ -18,20 +18,20 @@ import "sink";
 module FifoNet
 {
     parameters:
-        int num_cells;
-        int num_buffers;
+        int numCells;
+        int numBuffers;
     submodules:
         gen: Generator {
             parameters:
-                num_messages;
-                ia_time;
+                numMessages;
+                iaTime;
                 @display("p=35,152;i=block/source");
         };
-        fifo[num_buffers]: Fifo {
+        fifo[numBuffers]: Fifo {
             parameters:
-                num_cells = num_cells;
-                service_time;
-                num_init_jobs;
+                numCells = numCells;
+                serviceTime;
+                numInitJobs;
                 @display("p=125,152,m;i=block/queue;q=queue");
         };
         sink: Sink {
@@ -40,15 +40,15 @@ module FifoNet
         };
     connections:
         gen.out --> fifo[0].in;
-        for i=0..num_buffers-2 {
+        for i=0..numBuffers-2 {
             fifo[i].out --> fifo[i+1].in;
         };
-        fifo[num_buffers-1].out --> sink.in;
+        fifo[numBuffers-1].out --> sink.in;
 }
 
 network fifonet extends FifoNet
 {
     parameters:
-        num_cells = default(20) @prompt("Number of cells: ");
+        numCells = default(20) @prompt("Number of cells: ");
 }
 

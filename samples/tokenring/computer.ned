@@ -50,8 +50,8 @@ module Computer
                 @display("p=196,60;i=block/sink");
         };
     connections:
-        in --> mac.phy_in;
-        mac.phy_out --> out;
-        mac.to_hl --> sink.in;
-        gen.out --> mac.from_hl;
+        in --> mac.phyIn;
+        mac.phyOut --> out;
+        mac.toHL --> sink.in;
+        gen.out --> mac.fromHL;
 }

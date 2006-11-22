@@ -18,9 +18,9 @@ simple HCRouter
         int dim;
     gates:
         input in[];
-        input from_gen;
+        input fromGen;
         output out[];
-        output to_sink;
+        output toSink;
 }
 
 

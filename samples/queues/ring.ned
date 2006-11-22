@@ -16,26 +16,26 @@ import "fifo";
 module Ring
 {
     parameters:
-        int num_cells;
-        int num_buffers;
+        int numCells;
+        int numBuffers;
     submodules:
-        fifo[num_buffers]: Fifo {
+        fifo[numBuffers]: Fifo {
             parameters:
-                num_cells = num_cells;
-                service_time;
-                num_init_jobs;
+                numCells = numCells;
+                serviceTime;
+                numInitJobs;
                 @display("i=block/queue;q=queue");
         };
     connections:
-        for i=0..num_buffers-2 {
+        for i=0..numBuffers-2 {
             fifo[i].out --> fifo[i+1].in;
         };
-        fifo[num_buffers-1].out --> fifo[0].in;
+        fifo[numBuffers-1].out --> fifo[0].in;
 }
 
 network ring extends Ring
 {
     parameters:
-        num_cells = default(20) @prompt("Number of cells: ");
+        numCells = default(20) @prompt("Number of cells: ");
 }
 

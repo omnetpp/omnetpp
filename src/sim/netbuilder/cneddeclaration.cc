@@ -27,7 +27,7 @@ cNEDDeclaration::ParamDescription::ParamDescription()
     properties = new cProperties();
 }
 
-cNEDDeclaration::ParamDescription::ParamDescription()
+cNEDDeclaration::ParamDescription::~ParamDescription()
 {
     delete properties;
     delete value; //XXX khmm -- what if some cPar still points to it?

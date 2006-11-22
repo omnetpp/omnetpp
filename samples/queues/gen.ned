@@ -14,8 +14,8 @@
 simple Generator
 {
     parameters:
-        int num_messages;
-        volatile double ia_time;
+        int numMessages;
+        volatile double iaTime;
     gates:
         output out;
 }

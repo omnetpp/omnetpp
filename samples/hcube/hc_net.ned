@@ -28,9 +28,9 @@ module HypercubeNode
     submodules:
         gen: HCGenerator {
             parameters:
-                num_stations = 2^dim;
+                numStations = 2^dim;
                 address = address;
-                ia_time = default(exponential(1));
+                iaTime = default(exponential(1));
                 @display("p=82,82;i=block/source");
         };
         sink: HCSink {
@@ -48,8 +48,8 @@ module HypercubeNode
                 out[dim];
         };
     connections:
-        gen.out --> rte.from_gen;
-        sink.in <-- rte.to_sink;
+        gen.out --> rte.fromGen;
+        sink.in <-- rte.toSink;
         for i=0..dim-1 {
             in[i] --> rte.in[i];
             out[i] <-- rte.out[i];
