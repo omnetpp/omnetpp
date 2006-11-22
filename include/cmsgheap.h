@@ -110,7 +110,7 @@ class SIM_API cMessageHeap : public cOwnedObject
     cMessageHeap& operator=(const cMessageHeap& msgqueue);
     //@}
 
-    /** @name Redefined cOwnedObject member functions. */
+    /** @name Redefined cObject member functions. */
     //@{
 
     /**

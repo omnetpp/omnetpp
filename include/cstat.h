@@ -78,7 +78,7 @@ class SIM_API cStatistic : public cOwnedObject
     cStatistic& operator=(const cStatistic& res);
     //@}
 
-    /** @name Redefined cOwnedObject member functions. */
+    /** @name Redefined cObject member functions. */
     //@{
 
     /* Note: No dup() because this is an abstract class! */
@@ -293,7 +293,7 @@ class SIM_API cStdDev : public cStatistic
     cStdDev& operator=(const cStdDev& res);
     //@}
 
-    /** @name Redefined cOwnedObject member functions. */
+    /** @name Redefined cObject member functions. */
     //@{
 
     /**
@@ -444,7 +444,7 @@ class SIM_API cWeightedStdDev : public cStdDev
     cWeightedStdDev& operator=(const cWeightedStdDev& res);
     //@}
 
-    /** @name Redefined cOwnedObject member functions. */
+    /** @name Redefined cObject member functions. */
     //@{
 
     /**

@@ -43,7 +43,7 @@ class SIM_API cComponentType : public cNoncopyableOwnedObject
     cComponentType(const char *name=NULL, const char *description=NULL);
     //@}
 
-    /** @name Redefined cOwnedObject methods. */
+    /** @name Redefined cObject member functions. */
     //@{
     /**
      * Produces a one-line description of object contents.

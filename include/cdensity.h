@@ -137,7 +137,7 @@ class SIM_API cDensityEstBase : public cStdDev
     cDensityEstBase& operator=(const cDensityEstBase& res);
     //@}
 
-    /** @name Redefined cOwnedObject member functions. */
+    /** @name Redefined cObject member functions. */
     //@{
 
     /* No dup() because this is an abstract class. */

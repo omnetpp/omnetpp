@@ -134,7 +134,7 @@ class SIM_API cSimpleModule : public cModule //noncopyable
     virtual ~cSimpleModule();
     //@}
 
-    /** @name Redefined cOwnedObject functions. */
+    /** @name Redefined cObject member functions. */
     //@{
     /**
      * Produces a one-line description of object contents.

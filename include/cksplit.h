@@ -200,7 +200,7 @@ class SIM_API cKSplit : public cDensityEstBase
     cKSplit& operator=(const cKSplit& res);
     //@}
 
-    /** @name Redefined cOwnedObject member functions. */
+    /** @name Redefined cObject member functions. */
     //@{
 
     /**

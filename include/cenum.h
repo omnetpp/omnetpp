@@ -70,7 +70,7 @@ class SIM_API cEnum : public cOwnedObject
     cEnum& operator=(const cEnum& list);
     //@}
 
-    /** @name Redefined cOwnedObject member functions. */
+    /** @name Redefined cObject member functions. */
     //@{
 
     /**

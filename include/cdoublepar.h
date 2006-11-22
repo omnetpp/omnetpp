@@ -62,18 +62,13 @@ class SIM_API cDoublePar : public cParValue
     void operator=(const cDoublePar& otherpar);
     //@}
 
-    /** @name Redefined cObject functions */
+    /** @name Redefined cObject member functions */
     //@{
 
     /**
      * Creates and returns an exact copy of this object.
      */
     virtual cDoublePar *dup() const  {return new cDoublePar(*this);}
-
-    /**
-     * Produces a one-line description of object contents.
-     */
-    virtual std::string info() const;
 
     /**
      * Serializes the object into a buffer.

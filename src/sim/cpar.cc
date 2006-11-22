@@ -51,7 +51,7 @@ std::string cPar::info() const
 
 std::string cPar::detailedInfo() const
 {
-    return p->detailedInfo();
+    return p->detailedInfo() + properties()->info();
 }
 
 void cPar::copyIfShared()
@@ -80,6 +80,20 @@ cProperties *cPar::properties() const
     cComponentType *type = ownercomponent->componentType();
     return type->parProperties(name());
 }
+
+const char *cPar::typeName(Type t)
+{
+    switch (t)
+    {
+        case BOOL:   return "bool";
+        case DOUBLE: return "double";
+        case LONG:   return "long";
+        case STRING: return "string";
+        case XML:    return "xml";
+        defult:      return "???";
+    }
+}
+
 
 //FIXME make it inline...
 cPar::Type cPar::type() const {return p->type();}
@@ -170,7 +184,10 @@ void cPar::read()
 {
     // obtain value if parameter is not set yet
     if (p->isInput())
+    {
         doReadValue();
+        p->setIsInput(false); // clear flag to avoid further confusion
+    }
 
     // convert non-volatile values to constant
     if (!isVolatile())

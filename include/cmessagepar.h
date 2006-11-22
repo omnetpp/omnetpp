@@ -354,7 +354,7 @@ class SIM_API cMessagePar : public cOwnedObject   // FIXME simplify and DEPRECAT
     cMessagePar& operator=(const cMessagePar& otherpar);
     //@}
 
-    /** @name Redefined cOwnedObject member functions */
+    /** @name Redefined cObject member functions */
     //@{
 
     /**

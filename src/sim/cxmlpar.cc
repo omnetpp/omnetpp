@@ -44,11 +44,6 @@ void cXMLPar::operator=(const cXMLPar& other)
         val = other.val;
 }
 
-std::string cXMLPar::info() const
-{
-    return toString();
-}
-
 std::string cXMLPar::detailedInfo() const
 {
     return (flags & FL_ISEXPR) ? "<expression>" : val==NULL ? "NULL" : val->detailedInfo();

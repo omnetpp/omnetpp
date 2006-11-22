@@ -49,6 +49,30 @@ void cParValue::netUnpack(cCommBuffer *buffer)
     //TBD
 }
 
+std::string cParValue::info() const
+{
+    return toString();
+}
+
+std::string cParValue::detailedInfo() const
+{
+    std::stringstream out;
+    out << cPar::typeName(type()) << " " << name();
+    if (hasValue())
+    {
+        if (isInput())
+            out << " = default(" << toString() << ")";
+        else
+            out << " = " << toString();
+        out << " isExpression=" << (isConstant()?"false":"true");
+    }
+    else
+    {
+        out << " (unassigned)";
+    }
+    return out.str();
+}
+
 cParValue *cParValue::dup() const
 {
     throw new cRuntimeError(this, eCANTDUP);  // cannot dup because this is an abstract class

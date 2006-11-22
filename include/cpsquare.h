@@ -63,7 +63,7 @@ class SIM_API cPSquare : public cDensityEstBase
     cPSquare& operator=(const cPSquare& res);
     //@}
 
-    /** @name Redefined cOwnedObject member functions. */
+    /** @name Redefined cObject member functions. */
     //@{
 
     /**

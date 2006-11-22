@@ -55,7 +55,7 @@ class SIM_API cChannel : public cComponent //noncopyable
     virtual ~cChannel();
     //@}
 
-    /** @name Redefined cOwnedObject functions. */
+    /** @name Redefined cObject member functions. */
     //@{
     /**
      * Produces a one-line description of object contents.

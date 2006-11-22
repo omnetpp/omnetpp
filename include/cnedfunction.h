@@ -62,7 +62,7 @@ class SIM_API cNEDFunction : public cNoncopyableOwnedObject
     virtual ~cNEDFunction() {}
     //@}
 
-    /** @name Redefined cOwnedObject methods. */
+    /** @name Redefined cObject member functions. */
     //@{
     /**
      * Produces a one-line description of object contents.

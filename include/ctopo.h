@@ -338,7 +338,7 @@ class SIM_API cTopology : public cOwnedObject
     cTopology& operator=(const cTopology& topo);
     //@}
 
-    /** @name Redefined cOwnedObject member functions. */
+    /** @name Redefined cObject member functions. */
     //@{
 
     /**

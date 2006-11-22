@@ -49,7 +49,7 @@ class SIM_API cCompoundModule : public cModule // noncopyable
     virtual ~cCompoundModule();
     //@}
 
-    /** @name Redefined cOwnedObject functions. */
+    /** @name Redefined cObject member functions. */
     //@{
     /**
      * Produces a one-line description of object contents.

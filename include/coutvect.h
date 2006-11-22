@@ -75,7 +75,7 @@ class SIM_API cOutVector : public cNoncopyableOwnedObject
     virtual ~cOutVector();
     //@}
 
-    /** @name Redefined cOwnedObject member functions. */
+    /** @name Redefined cObject member functions. */
     //@{
 
     /**

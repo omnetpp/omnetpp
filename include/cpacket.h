@@ -60,7 +60,7 @@ class SIM_API cPacket : public cMessage
     cPacket& operator=(const cPacket& m);
     //@}
 
-    /** @name Redefined cOwnedObject member functions. */
+    /** @name Redefined cObject member functions. */
     //@{
 
     /**

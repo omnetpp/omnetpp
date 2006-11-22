@@ -63,7 +63,7 @@ std::string cProperties::fullPath() const
 std::string cProperties::info() const
 {
     if (propv.empty())
-        return std::string("<empty>");
+        return "";
     std::stringstream out;
     //out << "size=" << propv.size();
     for (int i=0; i<propv.size(); i++)

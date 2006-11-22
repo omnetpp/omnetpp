@@ -238,7 +238,7 @@ class SIM_API cModule : public cComponent //noncopyable
     virtual ~cModule();
     //@}
 
-    /** @name Redefined cOwnedObject functions. */
+    /** @name Redefined cObject member functions. */
     //@{
 
     /**

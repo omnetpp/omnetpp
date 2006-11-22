@@ -162,7 +162,11 @@ class cComponentType extends cNoncopyableOwnedObject
 {
     fields:
         @omitGetVerb(true);
-        string description @group(general);
+        string description @group(general); //XXX what's this
+        string declaration @hint(the NED declaration of the component, if available);
+        string extendsName @getter(extendsName) @hint(the component it extends);
+        string interfaceNames[] @getter(interfaceName) @sizeGetter(numInterfaceNames) @hint(the interfaces it implements using the 'like' keyword);
+        string implementationClass @getter(implementationClassName) @hint(the underlying C++ class that provides active behaviour);
 }
 
 class cModuleType extends cComponentType

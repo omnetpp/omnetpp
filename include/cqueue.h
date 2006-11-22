@@ -141,7 +141,7 @@ class SIM_API cQueue : public cOwnedObject
     cQueue& operator=(const cQueue& queue);
     //@}
 
-    /** @name Redefined cOwnedObject member functions. */
+    /** @name Redefined cObject member functions. */
     //@{
 
     /**

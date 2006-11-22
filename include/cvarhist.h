@@ -125,7 +125,7 @@ class SIM_API cVarHistogram : public cHistogramBase //--LG
     cVarHistogram& operator=(const cVarHistogram& res);
     //@}
 
-    /** @name Redefined cOwnedObject member functions. */
+    /** @name Redefined cObject member functions. */
     //@{
 
     /**

@@ -76,8 +76,19 @@ class SIM_API cParValue : public cNamedObject
     cParValue& operator=(const cParValue& otherpar);
     //@}
 
-    /** @name Redefined cOwnedObject functions */
+    /** @name Redefined cObject member functions */
     //@{
+    /**
+     * Returns a one-line description of the object.
+     * @see detailedInfo()
+     */
+    virtual std::string info() const;
+
+    /**
+     * Returns a long description of the object.
+     */
+    virtual std::string detailedInfo() const;
+
     /**
      * Redefined change return type to cParValue.
      */

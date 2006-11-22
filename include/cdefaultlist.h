@@ -51,7 +51,7 @@ class SIM_API cDefaultList : public cNoncopyableOwnedObject
     void takeAllObjectsFrom(cDefaultList& other);
 
   protected:
-    /** @name Redefined cOwnedObject member functions */
+    /** @name Redefined cObject member functions */
     //@{
 
     /**

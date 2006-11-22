@@ -74,7 +74,7 @@ class SIM_API cBasicChannel : public cChannel // noncopyable
     virtual ~cBasicChannel();
     //@}
 
-    /** @name Redefined cOwnedObject functions. */
+    /** @name Redefined cObject member functions. */
     //@{
     /**
      * Produces a one-line description of object contents.

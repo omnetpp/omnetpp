@@ -111,7 +111,7 @@ class SIM_API cSimulation : public cNoncopyableOwnedObject
     virtual ~cSimulation();
     //@}
 
-    /** @name Redefined cOwnedObject member functions. */
+    /** @name Redefined cObject member functions. */
     //@{
     /**
      * Calls v->visit(this) for each contained object.

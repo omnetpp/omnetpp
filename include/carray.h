@@ -135,7 +135,7 @@ class SIM_API cArray : public cOwnedObject
     cArray& operator=(const cArray& list);
     //@}
 
-    /** @name Redefined cOwnedObject member functions */
+    /** @name Redefined cObject member functions */
     //@{
 
     /**

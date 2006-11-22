@@ -62,18 +62,13 @@ class SIM_API cLongPar : public cParValue
     void operator=(const cLongPar& otherpar);
     //@}
 
-    /** @name Redefined cObject functions */
+    /** @name Redefined cObject member functions */
     //@{
 
     /**
      * Creates and returns an exact copy of this object.
      */
     virtual cLongPar *dup() const  {return new cLongPar(*this);}
-
-    /**
-     * Produces a one-line description of object contents.
-     */
-    virtual std::string info() const;
 
     /**
      * Serializes the object into a buffer.

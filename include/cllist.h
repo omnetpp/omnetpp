@@ -154,7 +154,7 @@ class SIM_API cLinkedList : public cOwnedObject
     cLinkedList& operator=(const cLinkedList& queue);
     //@}
 
-    /** @name Redefined cOwnedObject member functions */
+    /** @name Redefined cObject member functions */
     //@{
 
     /**

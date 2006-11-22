@@ -43,7 +43,7 @@ class SIM_API cClassFactory : public cNoncopyableOwnedObject
     cClassFactory(const char *name, cObject *(*f)(), const char *description=NULL);
     //@}
 
-    /** @name Redefined cOwnedObject methods. */
+    /** @name Redefined cObject member functions. */
     //@{
     /**
      * Produces a one-line description of object contents.

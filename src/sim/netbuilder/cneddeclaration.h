@@ -127,7 +127,7 @@ class SIM_API cNEDDeclaration : public cNoncopyableOwnedObject, public NEDCompon
     virtual ~cNEDDeclaration();
     //@}
 
-    /** @name Redefined cOwnedObject methods */
+    /** @name Redefined cObject member functions */
     //@{
     /**
      * Produces a one-line description of object contents.

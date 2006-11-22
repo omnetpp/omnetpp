@@ -171,7 +171,7 @@ class SIM_API cAccuracyDetection : public cOwnedObject
     virtual cAccuracyDetection *dup() const {copyNotSupported(); return NULL;}
     //@}
 
-    /** @name Redefined cOwnedObject member functions. */
+    /** @name Redefined cObject member functions. */
     //@{
 
     /* No dup() because this is an abstract class. */
@@ -285,7 +285,7 @@ class SIM_API cTDExpandingWindows : public cTransientDetection
     cTDExpandingWindows& operator=(const cTDExpandingWindows& res);
     //@}
 
-    /** @name Redefined cOwnedObject member functions. */
+    /** @name Redefined cObject member functions. */
     //@{
 
     /**
@@ -390,7 +390,7 @@ class SIM_API cADByStddev : public cAccuracyDetection
     cADByStddev& operator=(const cADByStddev& res);
     //@}
 
-    /** @name Redefined cOwnedObject member functions. */
+    /** @name Redefined cObject member functions. */
     //@{
 
     /**

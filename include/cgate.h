@@ -37,7 +37,7 @@ class  cDisplayString;
  *
  * @ingroup SimCore
  */
-class SIM_API cGate : public cNoncopyableOwnedObject
+class SIM_API cGate : public cNoncopyableOwnedObject  //FIXME make it cNamedObject
 {
     friend class cModule;
 
@@ -88,7 +88,7 @@ class SIM_API cGate : public cNoncopyableOwnedObject
     virtual ~cGate();
     //@}
 
-    /** @name Redefined cOwnedObject member functions */
+    /** @name Redefined cObject member functions */
     //@{
     /**
      * Calls v->visit(this) for each contained object.

@@ -178,7 +178,7 @@ class SIM_API cMessage : public cOwnedObject
     cMessage& operator=(const cMessage& msg);
     //@}
 
-    /** @name Redefined cOwnedObject functions. */
+    /** @name Redefined cObject member functions. */
     //@{
 
     /**

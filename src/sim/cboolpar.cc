@@ -43,11 +43,6 @@ void cBoolPar::operator=(const cBoolPar& other)
         val = other.val;
 }
 
-std::string cBoolPar::info() const
-{
-    return toString();
-}
-
 void cBoolPar::netPack(cCommBuffer *buffer)
 {
     //TBD

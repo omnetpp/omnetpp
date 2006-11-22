@@ -65,7 +65,7 @@ class SIM_API cHistogramBase : public cDensityEstBase
     cHistogramBase& operator=(const cHistogramBase& res);
     //@}
 
-    /** @name Redefined cOwnedObject member functions. */
+    /** @name Redefined cObject member functions. */
     //@{
 
     /* No dup() because this is an abstract class. */
@@ -159,7 +159,7 @@ class SIM_API cEqdHistogramBase : public cHistogramBase //--LG
     cEqdHistogramBase& operator=(const cEqdHistogramBase& res);
     //@}
 
-    /** @name Redefined cOwnedObject member functions. */
+    /** @name Redefined cObject member functions. */
     //@{
 
     /* No dup() because this is an abstract class. */
@@ -323,7 +323,7 @@ class SIM_API cLongHistogram : public cEqdHistogramBase
     cLongHistogram& operator=(const cLongHistogram&)  {copyNotSupported();return *this;}
     //@}
 
-    /** @name Redefined cOwnedObject member functions. */
+    /** @name Redefined cObject member functions. */
     //@{
 
     /**
@@ -448,7 +448,7 @@ class SIM_API cDoubleHistogram : public cEqdHistogramBase
     cDoubleHistogram& operator=(const cDoubleHistogram&)  {copyNotSupported();return *this;}
     //@}
 
-    /** @name Redefined cOwnedObject member functions. */
+    /** @name Redefined cObject member functions. */
     //@{
 
     /**

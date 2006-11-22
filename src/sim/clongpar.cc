@@ -43,11 +43,6 @@ void cLongPar::operator=(const cLongPar& other)
         val = other.val;
 }
 
-std::string cLongPar::info() const
-{
-    return toString();
-}
-
 void cLongPar::netPack(cCommBuffer *buffer)
 {
     //TBD

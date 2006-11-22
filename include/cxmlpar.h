@@ -60,18 +60,13 @@ class SIM_API cXMLPar : public cParValue
     void operator=(const cXMLPar& otherpar);
     //@}
 
-    /** @name Redefined cObject functions */
+    /** @name Redefined cObject member functions */
     //@{
 
     /**
      * Creates and returns an exact copy of this object.
      */
     virtual cXMLPar *dup() const  {return new cXMLPar(*this);}
-
-    /**
-     * Produces a one-line description of object contents.
-     */
-    virtual std::string info() const;
 
     /**
      * Returns a multi-line description of the contained XML element.

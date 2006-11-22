@@ -214,7 +214,7 @@ class SIM_API cFSM : public cOwnedObject
     cFSM& operator=(const cFSM& vs);
     //@}
 
-    /** @name Redefined cOwnedObject member functions. */
+    /** @name Redefined cObject member functions. */
     //@{
 
     /**

@@ -62,18 +62,13 @@ class SIM_API cBoolPar : public cParValue
     void operator=(const cBoolPar& otherpar);
     //@}
 
-    /** @name Redefined cObject functions */
+    /** @name Redefined cObject member functions */
     //@{
 
     /**
      * Creates and returns an exact copy of this object.
      */
     virtual cBoolPar *dup() const  {return new cBoolPar(*this);}
-
-    /**
-     * Produces a one-line description of object contents.
-     */
-    virtual std::string info() const;
 
     /**
      * Serializes the object into a buffer.

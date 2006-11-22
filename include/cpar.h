@@ -110,6 +110,11 @@ class SIM_API cPar : public cObject  //turn into cObject; delegate name to p! ad
     Type type() const;
 
     /**
+     * Returns the given type as a string.
+     */
+    static const char *typeName(Type t);
+
+    /**
      * Returns true if the stored value is of a numeric type.
      */
     bool isNumeric() const;

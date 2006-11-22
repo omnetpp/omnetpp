@@ -129,9 +129,7 @@ std::string cNEDDeclaration::detailedInfo() const
     for (int i=0; i<params.size(); i++)
     {
         const ParamDescription& desc = paramDescription(i);
-        out << "  param " << desc.value->name() << " INPUT:" << (desc.value->isInput()?"true":"false");
-        out << " value=" << desc.value->info() << ", ISEXPR=" << (desc.value->isConstant()?0:1) << ", " << desc.value->toString()
-            << " " << desc.properties->info() << "\n";
+        out << "  " << desc.value->detailedInfo() << "\n";
     }
 
     out << "Gates (incl. inherited ones):\n";
@@ -142,11 +140,6 @@ std::string cNEDDeclaration::detailedInfo() const
         out << "  gate " << desc.name << ": ..."
             << " " << desc.properties->info() << "\n";
     }
-    out << "________________________________\n\n";
-
-    // NED
-    NEDErrorStore errors;
-    generateNED2(out, getTree(), &errors);
 
     return out.str();
 }
