@@ -8,42 +8,47 @@
 //
 
 
-import
-    "gen",
-    "fifo",
-    "sink";
+import "gen";
+import "fifo";
+import "sink";
 
 //
 // Generator + FIFO + sink
 //
 module FifoNet
+{
     parameters:
-        num_cells : numeric,
-        num_buffers : numeric;
+        double num_cells;
+        double num_buffers;
     submodules:
-        gen: Generator;
+        gen: Generator {
             parameters:
-                num_messages = input,
-                ia_time = input;
-            display: "p=35,152;i=block/source";
-        fifo: Fifo[num_buffers];
+                num_messages;
+                ia_time;
+                @display("p=35,152;i=block/source");
+        };
+        fifo[num_buffers]: Fifo {
             parameters:
-                num_cells = num_cells,
-                service_time = input,
-                num_init_jobs = input;
-            display: "p=125,152,m;i=block/queue;q=queue";
-        sink: Sink;
-            display: "p=;i=block/sink";
+                num_cells = num_cells;
+                service_time;
+                num_init_jobs;
+                @display("p=125,152,m;i=block/queue;q=queue");
+        };
+        sink: Sink {
+            parameters:
+                @display("p=;i=block/sink");
+        };
     connections:
         gen.out --> fifo[0].in;
-        for i=0..num_buffers-2 do
+        for i=0..num_buffers-2 {
             fifo[i].out --> fifo[i+1].in;
-        endfor;
+        };
         fifo[num_buffers-1].out --> sink.in;
-endmodule
+}
 
-network fifonet : FifoNet
+network fifonet extends FifoNet
+{
     parameters:
-        num_cells = input( 20, "Number of cells: ");
-endnetwork
+        num_cells = default(20) @prompt("Number of cells: ");
+}
 

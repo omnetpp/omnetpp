@@ -12,7 +12,8 @@
 // Destroys the packets and collects statistics
 //
 simple Sink
+{
     gates:
-      in: in;
-endsimple
+        input in;
+}
 

@@ -12,10 +12,11 @@
 // Delay modeling is very simple: constant delay.
 //
 simple Cloud
+{
     parameters:
-        propDelay: numeric const;
+        double propDelay;
     gates:
-        in: in[];
-        out: out[];
-endsimple
+        input in[];
+        output out[];
+}
 

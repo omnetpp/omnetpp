@@ -12,23 +12,25 @@
 // Single-server queue, same service rate for each packet
 //
 simple FFPacketFifo
+{
     parameters:
-        serviceTime : numeric;
+        volatile double serviceTime;
     gates:
-        in: in;
-        out: out;
-endsimple
+        input in;
+        output out;
+}
 
 
 //
 // Single-server queue, service rate based on message length
 //
 simple FFBitFifo
+{
     parameters:
-        bitsPerSec : numeric;
+        volatile double bitsPerSec;
     gates:
-        in: in;
-        out: out;
-endsimple
+        input in;
+        output out;
+}
 
 

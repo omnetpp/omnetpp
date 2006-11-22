@@ -12,11 +12,12 @@
 // Delays messages
 //
 simple QDelay
+{
     parameters:
-        delayBy : numeric;
+        volatile double delayBy;
     gates:
-        out: out;
-        in: in;
-endsimple
+        output out;
+        input in;
+}
 
 

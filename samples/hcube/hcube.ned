@@ -13,13 +13,14 @@
 // see comment at the Hypercube module.
 //
 simple HCNode
+{
     parameters:
-        address : numeric,
-        dim : numeric;
+        double address;
+        double dim;
     gates:
-        out: out[];
-        in: in[];
-endsimple
+        output out[];
+        input in[];
+}
 
 
 //
@@ -34,22 +35,24 @@ endsimple
 // See hc_net.ned
 //
 module Hypercube
+{
     parameters:
-        dim : numeric const,
-        nodetype : string;
+        double dim;
+        string nodetype;
     submodules:
-        node: nodetype[2^dim] like HCNode;
+        node[2^dim]: <nodetype> like HCNode {
             parameters:
-                address = index, // module's position in (2^dim)-size vector
+                address = index; // module's position in (2^dim)-size vector
                 dim = dim;
-            gatesizes:
-                out[dim],
+                @display("i=misc/node2_vs");
+            gates:
+                out[dim];
                 in[dim];
-        display: "i=misc/node2_vs";
+        };
     connections:
-        for i=0..2^dim-1, j=0..dim-1 do
-            node[i].out[j] --> node[i # (1<<j)].in[j]; // # is bitwise xor
-        endfor;
-endmodule
+        for i=0..2^dim-1, for j=0..dim-1 {
+            node[i].out[j] --> node[i#1<<j].in[j]; // # is bitwise xor
+        };
+}
 
 

@@ -8,29 +8,36 @@
 //
 
 
-import
-    "gen",
-    "fifo",
-    "sink";
+import "gen";
+import "fifo";
+import "sink";
 
 
 //
 // Simple queueing network: generator + FIFO + sink.
 //
 module FifoNet
+{
     submodules:
-        gen: FFGenerator;
-            display: "p=89,100;i=block/source";
-        fifo: FFBitFifo;
-            display: "p=209,100;i=block/queue;q=queue";
-        sink: FFSink;
-            display: "p=329,100;i=block/sink";
+        gen: FFGenerator {
+            parameters:
+                @display("p=89,100;i=block/source");
+        };
+        fifo: FFBitFifo {
+            parameters:
+                @display("p=209,100;i=block/queue;q=queue");
+        };
+        sink: FFSink {
+            parameters:
+                @display("p=329,100;i=block/sink");
+        };
     connections:
         gen.out --> fifo.in;
         fifo.out --> sink.in;
-endmodule
+}
 
 
-network fifonet : FifoNet
-endnetwork
+network fifonet extends FifoNet
+{
+}
 

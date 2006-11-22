@@ -15,28 +15,31 @@ import "tandemqueue.ned";
 // Closed Queueing Network, variant "B".
 //
 module ClosedQueueingNetB
+{
     parameters:
-        numTandems : numeric const,
-        sDelay: numeric;
+        double numTandems;
+        double sDelay;
     submodules:
-        tandemQueue: TandemQueue[numTandems];
+        tandemQueue[numTandems]: TandemQueue {
             parameters:
-                sDelay = sDelay,
+                sDelay = sDelay;
                 ownIndex = index;
-            gatesizes:
-                in[numTandems],
+                @display("i=misc/cloud2_l");
+            gates:
+                in[numTandems];
                 out[numTandems];
-            display: "i=misc/cloud2_l";
-    connections nocheck:
-        for i=0..numTandems-1, j=0..numTandems-1 do
-            tandemQueue[i].out[j] --> delay sDelay --> tandemQueue[j].in[i] if i!=j;
-        endfor;
-endmodule
+        };
+    connections allowunconnected:
+        for i=0..numTandems-1, for j=0..numTandems-1 {
+            tandemQueue[i].out[j] --> {  delay = sDelay; } --> tandemQueue[j].in[i] if i!=j;
+        };
+}
 
 
 //
 // Instantiates ClosedQueueingNetB.
 //
-network cqnB: ClosedQueueingNetB
-endnetwork
+network cqnB extends ClosedQueueingNetB
+{
+}
 

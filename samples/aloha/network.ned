@@ -12,47 +12,53 @@
 // A computer in the ALOHAnet network.
 //
 simple AHost
+{
     parameters:
-        txRate: numeric const,  // transmission rate
-        radioDelay: numeric const,  // propagation delay of radio link
-        pkLenBits: numeric,  // packet length in bits
-        iaTime: numeric,  // packet interarrival time
-        slotTime: numeric const;  // zero means no slots (pure Aloha)
-endsimple
+        double txRate;  // transmission rate
+        double radioDelay;  // propagation delay of radio link
+        volatile double pkLenBits;  // packet length in bits
+        volatile double iaTime;  // packet interarrival time
+        double slotTime;  // zero means no slots (pure Aloha)
+}
 
 //
 // The central computer in the ALOHAnet network.
 //
 simple AServer
+{
     parameters:
-        txRate: numeric const; // transmission rate (needed to calculate lengths of packet receptions)
+        double txRate; // transmission rate (needed to calculate lengths of packet receptions)
     gates:
-        in: in;
-endsimple
+        input in;
+}
 
 //
 // ALOHAnet consists of hosts which talk to the central "server" via
 // Aloha or Slotted Aloha protocol
 //
 module ALOHAnet
+{
     parameters:
-        numHosts: numeric,  // number of hosts
-        txRate: numeric,  // transmission rate
-        slotTime: numeric const;  // zero means no slots (pure Aloha)
+        double numHosts;  // number of hosts
+        double txRate;  // transmission rate
+        double slotTime;  // zero means no slots (pure Aloha)
+        @display("o=,white");
     submodules:
-        server: AServer;
+        server: AServer {
             parameters:
                 txRate = txRate;
-            display: "i=device/antennatower_l";
-        host: AHost[numHosts];
+                @display("i=device/antennatower_l");
+        };
+        host[numHosts]: AHost {
             parameters:
-                txRate = txRate,
+                txRate = txRate;
                 slotTime = slotTime;
-            display: "i=device/pc_s";
-    connections nocheck:
-    display: "o=,white";
-endmodule
+                @display("i=device/pc_s");
+        };
+    connections allowunconnected:
+}
 
-network alohaNet : ALOHAnet
-endnetwork
+network alohaNet extends ALOHAnet
+{
+}
 

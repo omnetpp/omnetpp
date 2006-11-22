@@ -8,32 +8,34 @@
 //
 
 
-import
-    "fifo";
+import "fifo";
 
 //
 // This is a closed ring network.
 //
 module Ring
+{
     parameters:
-        num_cells : numeric,
-        num_buffers : numeric;
+        double num_cells;
+        double num_buffers;
     submodules:
-        fifo: Fifo[num_buffers];
+        fifo[num_buffers]: Fifo {
             parameters:
-                num_cells = num_cells,
-                service_time = input,
-                num_init_jobs = input;
-            display: "i=block/queue;q=queue";
+                num_cells = num_cells;
+                service_time;
+                num_init_jobs;
+                @display("i=block/queue;q=queue");
+        };
     connections:
-        for i=0..num_buffers-2 do
+        for i=0..num_buffers-2 {
             fifo[i].out --> fifo[i+1].in;
-        endfor;
+        };
         fifo[num_buffers-1].out --> fifo[0].in;
-endmodule
+}
 
-network ring : Ring
+network ring extends Ring
+{
     parameters:
-        num_cells = input( 20, "Number of cells: ");
-endnetwork
+        num_cells = default(20) @prompt("Number of cells: ");
+}
 

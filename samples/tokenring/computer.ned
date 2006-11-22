@@ -21,32 +21,37 @@ import "token";
 // A node in a Token Ring LAN. Each instance will be connected to its right neighbour.
 //
 module Computer
+{
     parameters:
-        address : numeric const, // MAC Address of this station.
-        dataRate : numeric const, // Token Ring data rate in bps.
-        THT : numeric const, // Token Holding Time, as defined in the protocol.
-        numStations : numeric const; // Number of stations. MAC addresses are
+        double address; // MAC Address of this station.
+        double dataRate; // Token Ring data rate in bps.
+        double THT; // Token Holding Time, as defined in the protocol.
+        double numStations; // Number of stations. MAC addresses are
                                      // [0,numStatons-1] integers.
     gates:
-        in: in;
-        out: out;
+        input in;
+        output out;
     submodules:
-        mac: TokenRingMAC;
+        mac: TokenRingMAC {
             parameters:
-                address = address,
-                dataRate = dataRate,
-                THT = THT;
-            display: "p=137,166;i=block/queue;q=sendQueue";
-        gen: Generator;
-            parameters:
-                numStations = numStations,
                 address = address;
-            display: "p=79,60;i=block/source";
-        sink: Sink;
-            display: "p=196,60;i=block/sink";
+                dataRate = dataRate;
+                THT = THT;
+                @display("p=137,166;i=block/queue;q=sendQueue");
+        };
+        gen: Generator {
+            parameters:
+                numStations = numStations;
+                address = address;
+                @display("p=79,60;i=block/source");
+        };
+        sink: Sink {
+            parameters:
+                @display("p=196,60;i=block/sink");
+        };
     connections:
         in --> mac.phy_in;
         mac.phy_out --> out;
         mac.to_hl --> sink.in;
         gen.out --> mac.from_hl;
-endmodule
+}

@@ -8,38 +8,49 @@
 //
 
 
-import
-    "ppsource",
-    "ppsink",
-    "ppif";
+import "ppsource";
+import "ppsink";
+import "ppif";
 
 
-channel C 
-    datarate 1000000 
-    delay 0.01
-endchannel 
+channel C extends cBasicChannel
+{
+    parameters:
+        datarate = 1000000;
+        delay = 0.01;
+}
 
 //
 // Transmission of packets on a line with finite bandwidth. Uses a pair of
 // point-to-point interfaces. The line is driven by bursty traffic.
 //
 module PointToPointNet
+{
     submodules:
-        burstySrc: PPSource;
-            display: "p=82,92;i=block/source";
-        ppIF1: PointToPointIF;
-            display: "p=170,92;i=block/queue;q=queue";
-        ppIF2: PointToPointIF;
-            display: "p=336,92;i=block/queue;q=queue";
-        sink: PPSink;
-            display: "p=430,92;i=block/sink";
-    connections nocheck:
+        burstySrc: PPSource {
+            parameters:
+                @display("p=82,92;i=block/source");
+        };
+        ppIF1: PointToPointIF {
+            parameters:
+                @display("p=170,92;i=block/queue;q=queue");
+        };
+        ppIF2: PointToPointIF {
+            parameters:
+                @display("p=336,92;i=block/queue;q=queue");
+        };
+        sink: PPSink {
+            parameters:
+                @display("p=430,92;i=block/sink");
+        };
+    connections allowunconnected:
         burstySrc.out --> ppIF1.in;
-        ppIF1.lineOut --> C --> ppIF2.lineIn display "o=,3";
-        ppIF1.lineIn <-- C <-- ppIF2.lineOut display "o=,3";
+        ppIF1.lineOut --> C { @display("o=,3"); } --> ppIF2.lineIn;
+        ppIF1.lineIn <-- C { @display("o=,3"); } <-- ppIF2.lineOut;
         ppIF2.out --> sink.in;
-endmodule
+}
 
-network pointToPointNet : PointToPointNet
-endnetwork
+network pointToPointNet extends PointToPointNet
+{
+}
 

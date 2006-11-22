@@ -10,27 +10,32 @@
 
 
 simple ChainNode
+{
     gates:
-        in: left;
-        out: right;
-endsimple
+        input left;
+        output right;
+}
 
 
 module Chain
+{
     parameters:
-        n : numeric const;
+        double n;
     submodules:
-        node: ChainNode[n];
-            display: "i=misc/node_s";
-    connections nocheck:
-        for i=0..n-2 do
+        node[n]: ChainNode {
+            parameters:
+                @display("i=misc/node_s");
+        };
+    connections allowunconnected:
+        for i=0..n-2 {
             node[i].right --> node[i+1].left;
-        endfor;
-endmodule
+        };
+}
 
 
-network chain : Chain
+network chain extends Chain
+{
     parameters:
-        n = input(5,"Number of modules");
-endnetwork
+        n = default(5) @prompt("Number of modules");
+}
 

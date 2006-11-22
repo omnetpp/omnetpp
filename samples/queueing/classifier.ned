@@ -14,10 +14,11 @@
 // on gate "other".
 //
 simple QClassifier
+{
     gates:
-        in: in;
-        out: out[];
-        out: other;
-endsimple
+        input in;
+        output out[];
+        output other;
+}
 
 

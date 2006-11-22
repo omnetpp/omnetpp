@@ -12,13 +12,14 @@
 // A real-time interface
 //
 simple ExtTelnetClient
+{
     parameters:
-        addr: numeric const,
-        srvAddr: numeric const;
+        double addr;
+        double srvAddr;
     gates:
-        in: in;
-        out: out;
-endsimple
+        input in;
+        output out;
+}
 
 
 

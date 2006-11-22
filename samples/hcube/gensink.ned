@@ -12,23 +12,25 @@
 // Generates data packets
 //
 simple HCGenerator
+{
     parameters:
-        num_stations : numeric,
-        address : numeric,
-        ia_time : numeric;
+        double num_stations;
+        double address;
+        volatile double ia_time;
     gates:
-        out: out;
-endsimple
+        output out;
+}
 
 
 //
 // Destroys packets and creates statistics
 //
 simple HCSink
+{
     parameters:
-        address : numeric;
+        double address;
     gates:
-        in: in;
-endsimple
+        input in;
+}
 
 

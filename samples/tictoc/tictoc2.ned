@@ -10,10 +10,11 @@
 
 
 simple Txc2
+{
     gates:
-        in: in;
-        out: out;
-endsimple
+        input in;
+        output out;
+}
 
 //
 // Here we make the model look a bit prettier in the GUI. We assign
@@ -21,16 +22,22 @@ endsimple
 // and yellow for `toc'.
 //
 module Tictoc2
+{
     submodules:
-        tic: Txc2;
-            display: "i=block/process,cyan"; // Note "i=<icon>,<color>"
-        toc: Txc2;
-            display: "i=block/process,gold"; // Here too
+        tic: Txc2 {
+            parameters:
+                @display("i=block/process,cyan"); // Note "i=<icon>,<color>"
+        };
+        toc: Txc2 {
+            parameters:
+                @display("i=block/process,gold"); // Here too
+        };
     connections:
-        tic.out --> delay 100ms --> toc.in;
-        tic.in <-- delay 100ms <-- toc.out;
-endmodule
+        tic.out --> {  delay = 100ms; } --> toc.in;
+        tic.in <-- {  delay = 100ms; } <-- toc.out;
+}
 
-network tictoc2 : Tictoc2
-endnetwork
+network tictoc2 extends Tictoc2
+{
+}
 

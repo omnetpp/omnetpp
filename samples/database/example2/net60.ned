@@ -14,20 +14,23 @@ import "cmysqlnetbuilder";
 // replace it with something useful as well.
 //
 module Node
+{
     gates:
-        in: in[];
-        out: out[];
-    connections nocheck:
-endmodule
+        input in[];
+        output out[];
+    connections allowunconnected:
+}
 
 //
 // The network will by dynamically constructed by the "builder" submodule,
 // based on the topology in the MySQL database.
 //
 module Net60
+{
     submodules:
-        builder: cMySQLNetBuilder;
-endmodule
+        builder: cMySQLNetBuilder {};
+}
 
-network net60 : Net60
-endnetwork
+network net60 extends Net60
+{
+}

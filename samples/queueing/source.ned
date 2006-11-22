@@ -12,10 +12,11 @@
 // Message source
 //
 simple QSource
+{
     parameters:
-        sendIATime : numeric;
+        volatile double sendIATime;
     gates:
-        out: out;
-endsimple
+        output out;
+}
 
 

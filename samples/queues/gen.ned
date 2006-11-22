@@ -12,9 +12,11 @@
 // Generates messages (jobs,packets etc.)
 //
 simple Generator
+{
     parameters:
-        num_messages, ia_time;
+        double num_messages;
+        volatile double ia_time;
     gates:
-        out: out;
-endsimple
+        output out;
+}
 

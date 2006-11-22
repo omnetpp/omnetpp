@@ -8,55 +8,63 @@
 //
 
 
-import
-    "httpclient",
-    "exthttpclient",
-    "httpserver",
-    "cloud";
+import "httpclient";
+import "exthttpclient";
+import "httpserver";
+import "cloud";
 
 
 //
 // Model of the network, consisting of several clients, a server and a cloud
 //
 module HTTPNet
+{
     parameters:
-        numClients: numeric const;
+        double numClients;
     submodules:
-        server: HTTPServer;
-            display: "i=device/server;p=426,178";
-        cloud: Cloud;
-            gatesizes:
-                in[numClients+2],
+        server: HTTPServer {
+            parameters:
+                @display("i=device/server;p=426,178");
+        };
+        cloud: Cloud {
+            parameters:
+                @display("i=misc/cloud;p=274,182");
+            gates:
+                in[numClients+2];
                 out[numClients+2];
-            display: "i=misc/cloud;p=274,182";
-        extClient: ExtHTTPClient;
+        };
+        extClient: ExtHTTPClient {
             parameters:
-                addr = 1,
+                addr = 1;
                 srvAddr = 0;
-            display: "i=device/pc2,gold;p=102,92;t=Run the simulation\, then\nenter into your browser:\nhttp://localhost:4242";
-        client: HTTPClient[numClients];
+                //localhost:4242";
+                @display("i=device/pc2,gold;p=102,92;t=Run the simulation\, then\nenter into your browser:\nhttp://localhost:4242");
+        };
+        client[numClients]: HTTPClient {
             parameters:
-                addr = 2+index,
+                addr = 2+index;
                 srvAddr = 0;
-            display: "i=device/pc2;p=102,162,col";
+                @display("i=device/pc2;p=102,162,col");
+        };
     connections:
         server.out --> cloud.in[0];
         server.in <-- cloud.out[0];
         extClient.out --> cloud.in[1];
         extClient.in <-- cloud.out[1];
-        for i=0..numClients-1 do
+        for i=0..numClients-1 {
             client[i].out --> cloud.in[i+2];
             client[i].in <-- cloud.out[i+2];
-        endfor;
-endmodule
+        };
+}
 
 
 //
 // Instantiates HTTPNet
 //
-network httpNet : HTTPNet
+network httpNet extends HTTPNet
+{
     parameters:
-        numClients = input(3,"Number of clients:");
-endnetwork
+        numClients = default(3) @prompt("Number of clients:");
+}
 
 

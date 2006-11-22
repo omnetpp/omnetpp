@@ -9,24 +9,31 @@
 
 
 simple Txc6
+{
     parameters:
-        delayTime: numeric;   // delay before sending back message
+        volatile double delayTime;   // delay before sending back message
     gates:
-        in: in;
-        out: out;
-endsimple
+        input in;
+        output out;
+}
 
 module Tictoc6
+{
     submodules:
-        tic: Txc6;
-            display: "i=block/process,cyan";
-        toc: Txc6;
-            display: "i=block/process,gold";
+        tic: Txc6 {
+            parameters:
+                @display("i=block/process,cyan");
+        };
+        toc: Txc6 {
+            parameters:
+                @display("i=block/process,gold");
+        };
     connections:
-        tic.out --> delay 100ms --> toc.in;
-        tic.in <-- delay 100ms <-- toc.out;
-endmodule
+        tic.out --> {  delay = 100ms; } --> toc.in;
+        tic.in <-- {  delay = 100ms; } <-- toc.out;
+}
 
-network tictoc6 : Tictoc6
-endnetwork
+network tictoc6 extends Tictoc6
+{
+}
 

@@ -12,9 +12,10 @@
 // Passive queue. Messages have to be requested via direct method call.
 //
 simple QPassiveQueue
+{
     gates:
-        in: in;
-        out: out[];
-endsimple
+        input in;
+        output out[];
+}
 
 

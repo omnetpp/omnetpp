@@ -12,7 +12,8 @@
 // Destroys the packets.
 //
 simple PPSink
+{
     gates:
-      in: in;
-endsimple
+        input in;
+}
 

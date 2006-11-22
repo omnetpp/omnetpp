@@ -9,25 +9,32 @@
 
 
 simple Txc3
+{
     gates:
-        in: in;
-        out: out;
-endsimple
+        input in;
+        output out;
+}
 
 //
 // Same as Tictoc2.
 //
 module Tictoc3
+{
     submodules:
-        tic: Txc3;
-            display: "i=block/process,cyan";
-        toc: Txc3;
-            display: "i=block/process,gold";
+        tic: Txc3 {
+            parameters:
+                @display("i=block/process,cyan");
+        };
+        toc: Txc3 {
+            parameters:
+                @display("i=block/process,gold");
+        };
     connections:
-        tic.out --> delay 100ms --> toc.in;
-        tic.in <-- delay 100ms <-- toc.out;
-endmodule
+        tic.out --> {  delay = 100ms; } --> toc.in;
+        tic.in <-- {  delay = 100ms; } <-- toc.out;
+}
 
-network tictoc3 : Tictoc3
-endnetwork
+network tictoc3 extends Tictoc3
+{
+}
 

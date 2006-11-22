@@ -14,12 +14,13 @@
 // are initially created and inserted into the queue.
 //
 simple Queue
+{
     parameters:
-        serviceTime : numeric,
-        numInitialJobs: numeric const;
+        volatile double serviceTime;
+        double numInitialJobs;
     gates:
-        in: in[];
-        out: out;
-endsimple
+        input in[];
+        output out;
+}
 
 

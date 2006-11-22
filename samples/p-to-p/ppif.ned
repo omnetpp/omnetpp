@@ -16,11 +16,14 @@
 // parameters; excess frames are simply discarded and recorded as statistics.
 //
 simple PointToPointIF
+{
     parameters:
-        frameCapacity: numeric const; // max number of frames; 0 means no limit
+        double frameCapacity; // max number of frames; 0 means no limit
     gates:
-        in: in, lineIn;
-        out: out, lineOut;
-endsimple
+        input in;
+        input lineIn;
+        output out;
+        output lineOut;
+}
 
 

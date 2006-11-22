@@ -18,26 +18,28 @@
 // algorithms (cPSquare, cKSplit).
 //
 simple HistogramDemo
+{
     parameters:
-        num_obs : numeric,
-        num_cells : numeric,
-        fixed_range : numeric,
-        num_first : numeric,
-        range_ext : numeric;
-endsimple
+        double num_obs;
+        double num_cells;
+        double fixed_range;
+        double num_first;
+        double range_ext;
+}
 
 
 //
 // Instantiates HistogramDemo as network consisting of just one single-module.
 //
-network Histograms : HistogramDemo
+network Histograms extends HistogramDemo
+{
     parameters:
-        num_obs = input(10000, "Number of observations: "),
-        num_cells = input( 20, "Number of histogram cells: "),
-        fixed_range = input( 0, "Auto (0) or fixed (1) histogram range? "),
-        num_first = input( 50, "Number of observations used for range estimation: "),
-        range_ext = input( 1.3, "Range extension factor (usually 1.0 .. 2): ");
-endnetwork
+        num_obs = default(10000) @prompt("Number of observations: ");
+        num_cells = default(20) @prompt("Number of histogram cells: ");
+        fixed_range = default(0) @prompt("Auto (0) or fixed (1) histogram range? ");
+        num_first = default(50) @prompt("Number of observations used for range estimation: ");
+        range_ext = default(1.3) @prompt("Range extension factor (usually 1.0 .. 2): ");
+}
 
 
 

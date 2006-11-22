@@ -12,14 +12,15 @@
 // Implements deflection routing in a Hypercube network
 //
 simple HCRouter
+{
     parameters:
-        address : numeric,
-        dim : numeric;
+        double address;
+        double dim;
     gates:
-        in: in[];
-        in: from_gen;
-        out: out[];
-        out: to_sink;
-endsimple
+        input in[];
+        input from_gen;
+        output out[];
+        output to_sink;
+}
 
 

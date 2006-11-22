@@ -13,24 +13,26 @@
 // Application model to generate traffic for the network.
 //
 simple App
+{
     parameters:
-        destAddresses : string;
+        string destAddresses;
     gates:
-        in: in;
-        out: out;
-endsimple
+        input in;
+        output out;
+}
 
 
 //
 // Models a router.
 //
 simple Routing
+{
     gates:
-        in: in[];
-        out: out[];
-        in: localIn;
-        out: localOut;
-endsimple
+        input in[];
+        output out[];
+        input localIn;
+        output localOut;
+}
 
 
 //
@@ -38,26 +40,31 @@ endsimple
 // aggregate traffic of the subnets connected to that router.
 //
 module Node
+{
     parameters:
-        address : numeric;
+        double address;
     gates:
-        in: in[];
-        out: out[];
+        input in[];
+        output out[];
     submodules:
-        app: App;
-            display: "p=90,56;i=block/browser";
-        routing: Routing;
-            gatesizes:
-                in[sizeof(in)],
+        app: App {
+            parameters:
+                @display("p=90,56;i=block/browser");
+        };
+        routing: Routing {
+            parameters:
+                @display("p=90,132;i=block/switch");
+            gates:
+                in[sizeof(in)];
                 out[sizeof(out)];
-            display: "p=90,132;i=block/switch";
+        };
     connections:
         routing.localOut --> app.in;
         routing.localIn <-- app.out;
-        for i=0..sizeof(in)-1 do
+        for i=0..sizeof(in)-1 {
             routing.out[i] --> out[i];
             routing.in[i] <-- in[i];
-        endfor;
-endmodule
+        };
+}
 
 

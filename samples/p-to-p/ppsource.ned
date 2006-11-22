@@ -12,13 +12,14 @@
 // Bursty message source.
 //
 simple PPSource
+{
     parameters:
-        sleepTime : numeric, // sleep time between bursts
-        burstTime : numeric, // duration of a burst
-        sendIaTime : numeric, // time between generating packets during a burst
-        msgLength : numeric; // length of a message, in bits
+        volatile double sleepTime; // sleep time between bursts
+        volatile double burstTime; // duration of a burst
+        volatile double sendIaTime; // time between generating packets during a burst
+        volatile double msgLength; // length of a message, in bits
     gates:
-        out: out;
-endsimple
+        output out;
+}
 
 

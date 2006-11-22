@@ -9,22 +9,29 @@
 
 
 simple Txc5
+{
     gates:
-        in: in;
-        out: out;
-endsimple
+        input in;
+        output out;
+}
 
 module Tictoc5
+{
     submodules:
-        tic: Txc5;
-            display: "i=block/process,cyan";
-        toc: Txc5;
-            display: "i=block/process,gold";
+        tic: Txc5 {
+            parameters:
+                @display("i=block/process,cyan");
+        };
+        toc: Txc5 {
+            parameters:
+                @display("i=block/process,gold");
+        };
     connections:
-        tic.out --> delay 100ms --> toc.in;
-        tic.in <-- delay 100ms <-- toc.out;
-endmodule
+        tic.out --> {  delay = 100ms; } --> toc.in;
+        tic.in <-- {  delay = 100ms; } <-- toc.out;
+}
 
-network tictoc5 : Tictoc5
-endnetwork
+network tictoc5 extends Tictoc5
+{
+}
 

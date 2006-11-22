@@ -12,8 +12,9 @@
 // Dynamically sets up a network, with the topology coming from a MySQL database.
 //
 simple cMySQLNetBuilder
+{
     parameters:
-        connectPrefix: string,
-        networkName: string,
-        parentModule: string;
-endsimple
+        string connectPrefix;
+        string networkName;
+        string parentModule;
+}

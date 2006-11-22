@@ -16,44 +16,50 @@ import "switch.ned";
 // Closed Queueing Network, variant "A".
 //
 module ClosedQueueingNetA
+{
     parameters:
-        numTandems : numeric const, // number of switches (and also of tandem queues)
-        numQueuesPerTandem : numeric const, // number of queues in a tandem queue
-        sDelay : numeric,  // delay between switch and queues
-        qDelay : numeric;  // delay between queues
+        double numTandems; // number of switches (and also of tandem queues)
+        double numQueuesPerTandem; // number of queues in a tandem queue
+        double sDelay;  // delay between switch and queues
+        double qDelay;  // delay between queues
     submodules:
         // switches
-        switch: Switch[numTandems];
-            gatesizes:
+        switch[numTandems]: Switch {
+            parameters:
+                @display("p=60,60,m,1;i=block/switch");
+            gates:
                 out[numTandems];
-            display: "p=60,60,m,1;i=block/switch";
+        };
         // queues
-        queue: Queue[numTandems*numQueuesPerTandem];
-            gatesizes:
-               in[(index % numQueuesPerTandem)==0 ? numTandems : 1];
-            display: "p=150,90,m,$numQueuesPerTandem;i=block/queue";
+        queue[numTandems*numQueuesPerTandem]: Queue {
+            parameters:
+                @display("p=150,90,m,$numQueuesPerTandem;i=block/queue");
+            gates:
+                in[(index%numQueuesPerTandem==0 ? index%numQueuesPerTandem==0 : index%numQueuesPerTandem==0)];
+        };
     connections:
         // connect switches to 1st queues
-        for s=0..numTandems-1, q=0..numTandems-1 do
-            switch[s].out[q] --> delay sDelay --> queue[q*numQueuesPerTandem].in[s];
-        endfor;
+        for s=0..numTandems-1, for q=0..numTandems-1 {
+            switch[s].out[q] --> {  delay = sDelay; } --> queue[q*numQueuesPerTandem].in[s];
+        };
 
         // connect queues to each other
-        for s=0..numTandems-1, q=0..numQueuesPerTandem-2 do
-            queue[s*numQueuesPerTandem+q].out --> delay qDelay --> queue[s*numQueuesPerTandem+q+1].in[0];
-        endfor;
+        for s=0..numTandems-1, for q=0..numQueuesPerTandem-2 {
+            queue[s*numQueuesPerTandem+q].out --> {  delay = qDelay; } --> queue[(s*numQueuesPerTandem+q)+1].in[0];
+        };
 
         // connect last queues back to switch
-        for s=0..numTandems-1 do
-            queue[(s+1)*numQueuesPerTandem-1].out --> delay qDelay --> switch[s].in;
-        endfor;
-endmodule
+        for s=0..numTandems-1 {
+            queue[(s+1)*numQueuesPerTandem-1].out --> {  delay = qDelay; } --> switch[s].in;
+        };
+}
 
 
 //
 // Instantiates ClosedQueueingNetA.
 //
-network cqnA : ClosedQueueingNetA
-endnetwork
+network cqnA extends ClosedQueueingNetA
+{
+}
 
 

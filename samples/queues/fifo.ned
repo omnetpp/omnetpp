@@ -12,11 +12,12 @@
 // Single-server queue, same service rate for each packet
 //
 simple Fifo
+{
     parameters:
-        service_time : numeric,
-        num_cells : numeric,
-        num_init_jobs: numeric;
+        volatile double service_time;
+        double num_cells;
+        double num_init_jobs;
     gates:
-        in: in;
-        out: out;
-endsimple
+        input in;
+        output out;
+}

@@ -13,11 +13,12 @@
 // as priority queue.
 //
 simple QServer
+{
     parameters:
-        serviceTime: numeric;
+        volatile double serviceTime;
     gates:
-        in: in[];
-        out: out;
-endsimple
+        input in[];
+        output out;
+}
 
 

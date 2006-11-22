@@ -16,19 +16,15 @@
 // Generates data packets for MAC.
 //
 simple Generator
+{
     parameters:
-        // Number of stations. Destination MAC address will be a random
-        // [0,numStatons-1] integer, omitting our own address.
-        numStations : numeric const,
-        // MAC Address of this station.
-        address : numeric const,
-        // Number of messages to generate.
-        numMessages : numeric const,
-        // Message length in bytes. It can be a random variate.
-        messageLength : numeric,
-        // Time between two messages. It can be a random variate.
-        interArrivalTime : numeric;
+        double numStations; // number of stations. Destination MAC address will be a random
+                            // [0,numStatons-1] integer, omitting our own address.
+        double address; // MAC address of this station.
+        double numMessages; // number of messages to generate.
+        volatile double messageLength; // message length in bytes
+        volatile double interArrivalTime; // time between two messages
     gates:
-        out: out;
-endsimple
+        output out;
+}
 

@@ -13,15 +13,16 @@
 // server for data exchange.
 //
 simple Client
+{
     parameters:
-        timeout : numeric const,
-        connIaTime : numeric,
-        queryIaTime : numeric,
-        numQuery : numeric;
+        double timeout;
+        volatile double connIaTime;
+        volatile double queryIaTime;
+        volatile double numQuery;
     gates:
-        out: out;
-        in: in;
-endsimple
+        output out;
+        input in;
+}
 
 
 //
@@ -31,13 +32,14 @@ endsimple
 // size (overflow packets are dropped).
 //
 simple Switch
+{
     parameters:
-        pkRate : numeric const,
-        queueMaxLen: numeric const;
+        double pkRate;
+        double queueMaxLen;
     gates:
-        out: out[];
-        in: in[];
-endsimple
+        output out[];
+        input in[];
+}
 
 
 //
@@ -46,68 +48,75 @@ endsimple
 // by a ServerProcess module created on demand.
 //
 simple Server
+{
     parameters:
-        processingTime : numeric const;
+        double processingTime;
     gates:
-        out: out;
-        in: in;
-endsimple
+        output out;
+        input in;
+}
 
 
 //
 // Handles one connection in the server.
 //
 simple ServerProcess
+{
     gates:
-        in: in;
-endsimple
+        input in;
+}
 
 
 //
 // Model of the network, consisting of serveral clients, a server and a switch
 //
 module ClientServer
+{
     parameters:
-        numClients : numeric const;
+        double numClients;
     submodules:
-        server: Server;
+        server: Server {
             parameters:
-                processingTime = input(0.2s,"Query processing time:");
-            display: "i=device/server;p=210,70";
-        switch: Switch;
+                processingTime = default(0.2s) @prompt("Query processing time:");
+                @display("i=device/server;p=210,70");
+        };
+        switch: Switch {
             parameters:
                 // switchPkRate should be >= numClients, otherwise switch will
                 // become the bottleneck
-                pkRate = 1.5*numClients,
+                pkRate = 1.5*numClients;
                 // buffer max 20 packets
                 queueMaxLen = 20;
-            gatesizes:
-                in[numClients+1],
+                @display("i=device/switch;q=queue;p=210,170");
+            gates:
+                in[numClients+1];
                 out[numClients+1];
-            display: "i=device/switch;q=queue;p=210,170";
-        client: Client[numClients];
+        };
+        client[numClients]: Client {
             parameters:
-                timeout = 5s,
-                connIaTime = input(10s,"Connection interarrival time:"),
-                queryIaTime = input(2s,"Query interarrival time:"),
-                numQuery = input(5,"Number of queries per conn:");
-            display: "i=device/pc2;p=70,270,m,10,80";
+                timeout = 5s;
+                connIaTime = default(10s) @prompt("Connection interarrival time:");
+                queryIaTime = default(2s) @prompt("Query interarrival time:");
+                numQuery = default(5) @prompt("Number of queries per conn:");
+                @display("i=device/pc2;p=70,270,m,10,80");
+        };
     connections:
-        for i=0..numClients-1 do
-            client[i].out --> delay 10ms --> switch.in[i];
-            client[i].in <-- delay 10ms <-- switch.out[i];
-        endfor;
-        server.out --> delay 10ms --> switch.in[numClients];
-        server.in <-- delay 10ms <-- switch.out[numClients];
-endmodule
+        for i=0..numClients-1 {
+            client[i].out --> {  delay = 10ms; } --> switch.in[i];
+            client[i].in <-- {  delay = 10ms; } <-- switch.out[i];
+        };
+        server.out --> {  delay = 10ms; } --> switch.in[numClients];
+        server.in <-- {  delay = 10ms; } <-- switch.out[numClients];
+}
 
 
 //
 // Instantiates a ClientServer network.
 //
-network dyna : ClientServer
+network dyna extends ClientServer
+{
     parameters:
-        numClients = input(4,"Number of clients:");
-endnetwork
+        numClients = default(4) @prompt("Number of clients:");
+}
 
 

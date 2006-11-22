@@ -9,30 +9,37 @@
 
 
 simple MeshNode
+{
     gates:
-        in: up, left;
-        out: down, right;
-endsimple
+        input up;
+        input left;
+        output down;
+        output right;
+}
 
 
 module Mesh
+{
     parameters:
-        height : numeric const,
-        width : numeric const;
+        double height;
+        double width;
     submodules:
-        node: MeshNode[height*width];
-            display: "p=,,m,$width;i=misc/node_s";
-    connections nocheck:
-        for i=0..height-1, j=0..width-1 do
+        node[height*width]: MeshNode {
+            parameters:
+                @display("p=,,m,$width;i=misc/node_s");
+        };
+    connections allowunconnected:
+        for i=0..height-1, for j=0..width-1 {
             node[i*width+j].down --> node[(i+1)*width+j].up if i!=height-1;
-            node[i*width+j].right --> node[i*width+j+1].left if j!=width-1;
-        endfor;
-endmodule
+            node[i*width+j].right --> node[(i*width+j)+1].left if j!=width-1;
+        };
+}
 
 
-network mesh : Mesh
+network mesh extends Mesh
+{
     parameters:
-        height = input(4,"Number of rows"),
-        width = input(6,"Number of columns");
-endnetwork
+        height = default(4) @prompt("Number of rows");
+        width = default(6) @prompt("Number of columns");
+}
 

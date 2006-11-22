@@ -16,18 +16,19 @@
 // Implements the Token Ring protocol.
 //
 simple TokenRingMAC
+{
     parameters:
         // Token Ring data rate in bps. Standard values are 4 or 16 Mbps.
-        dataRate : numeric const,
+        double dataRate;
         // Token Holding Time, as defined in the protocol.
-        THT : numeric const,
+        double THT;
         // MAC address of this station, modeled with an integer.
-        address : numeric const,
+        double address;
         // Max queue size in packets.
-        queueMaxLen : numeric const;
+        double queueMaxLen;
     gates:
-        in: phy_in;
-        in: from_hl;
-        out: phy_out;
-        out: to_hl;
-endsimple
+        input phy_in;
+        input from_hl;
+        output phy_out;
+        output to_hl;
+}

@@ -12,7 +12,8 @@
 // Destroys the packets and creates statistics
 //
 simple QSink
+{
     gates:
-      in: in;
-endsimple
+        input in;
+}
 

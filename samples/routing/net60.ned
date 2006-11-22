@@ -14,12 +14,14 @@ import "node";
 // A network topology commonly known as the "NTT backbone".
 //
 module Net60
+{
     submodules:
-        rte: Node[57];
+        rte[57]: Node {
             parameters:
                 address = index;
-            display: "i=misc/node_vs,gold";
-    connections nocheck:
+                @display("i=misc/node_vs,gold");
+        };
+    connections allowunconnected:
         rte[0].out++ --> rte[1].in++;
         rte[0].in++ <-- rte[1].out++;
 
@@ -262,8 +264,9 @@ module Net60
 
         rte[55].out++ --> rte[56].in++;
         rte[55].in++ <-- rte[56].out++;
-endmodule
+}
 
-network net60 : Net60
-endnetwork
+network net60 extends Net60
+{
+}
 

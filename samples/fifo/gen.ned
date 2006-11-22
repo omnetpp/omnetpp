@@ -13,11 +13,12 @@
 // Both can be random variates, returning different values for each job.
 //
 simple FFGenerator
+{
     parameters:
-        sendIaTime : numeric,
-        msgLength : numeric;
+        volatile double sendIaTime;
+        volatile double msgLength;
     gates:
-        out: out;
-endsimple
+        output out;
+}
 
 

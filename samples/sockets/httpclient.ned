@@ -12,14 +12,15 @@
 // A real-time interface
 //
 simple HTTPClient
+{
     parameters:
-        sendIaTime : numeric,
-        addr: numeric const,
-        srvAddr: numeric const;
+        volatile double sendIaTime;
+        double addr;
+        double srvAddr;
     gates:
-        in: in;
-        out: out;
-endsimple
+        input in;
+        output out;
+}
 
 
 

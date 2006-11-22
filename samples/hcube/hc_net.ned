@@ -8,10 +8,9 @@
 //
 
 
-import
-    "hc_rte.ned",
-    "gensink.ned",
-    "hcube.ned";
+import "hc_rte.ned";
+import "gensink.ned";
+import "hcube.ned";
 
 
 //
@@ -19,49 +18,54 @@ import
 // this module conforms to the HCNode interface defined in hcube.ned.
 //
 module HypercubeNode
+{
     parameters:
-        address : numeric,
-        dim : numeric;
+        double address;
+        double dim;
     gates:
-        in: in[];
-        out: out[];
+        input in[];
+        output out[];
     submodules:
-        gen: HCGenerator;
+        gen: HCGenerator {
             parameters:
-                num_stations = 2^dim,
-                address = address,
-                ia_time = input(exponential(1));
-            display: "p=82,82;i=block/source";
-        sink: HCSink;
+                num_stations = 2^dim;
+                address = address;
+                ia_time = default(exponential(1));
+                @display("p=82,82;i=block/source");
+        };
+        sink: HCSink {
             parameters:
                 address = address;
-            display: "p=176,82;i=block/sink";
-        rte: HCRouter;
+                @display("p=176,82;i=block/sink");
+        };
+        rte: HCRouter {
             parameters:
-                address = address,
+                address = address;
                 dim = dim;
-            gatesizes:
-                in[dim],
+                @display("p=125,171;i=block/switch");
+            gates:
+                in[dim];
                 out[dim];
-            display: "p=125,171;i=block/switch";
+        };
     connections:
         gen.out --> rte.from_gen;
         sink.in <-- rte.to_sink;
-        for i=0..dim-1 do
+        for i=0..dim-1 {
             in[i] --> rte.in[i];
             out[i] <-- rte.out[i];
-        endfor;
-endmodule
+        };
+}
 
 
 //
 // The actual hypercube network, instantiated as from the Hypercube
 // topology template, substituting HypercubeNode for HCNode.
 //
-network hypercube : Hypercube
+network hypercube extends Hypercube
+{
     parameters:
-        dim = input(2,"Dimension (1,2,3,4,...)"),
+        dim = default(2) @prompt("Dimension (1,2,3,4,...)");
         nodetype = "HypercubeNode";
-endnetwork
+}
 
 

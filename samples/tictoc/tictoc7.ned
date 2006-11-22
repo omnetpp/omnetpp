@@ -9,28 +9,36 @@
 
 
 simple Tic7
+{
     gates:
-        in: in;
-        out: out;
-endsimple
+        input in;
+        output out;
+}
 
 simple Toc7
+{
     gates:
-        in: in;
-        out: out;
-endsimple
+        input in;
+        output out;
+}
 
 module Tictoc7
+{
     submodules:
-        tic: Tic7;
-            display: "i=block/process,cyan";
-        toc: Toc7;
-            display: "i=block/process,gold";
+        tic: Tic7 {
+            parameters:
+                @display("i=block/process,cyan");
+        };
+        toc: Toc7 {
+            parameters:
+                @display("i=block/process,gold");
+        };
     connections:
-        tic.out --> delay 100ms --> toc.in;
-        tic.in <-- delay 100ms <-- toc.out;
-endmodule
+        tic.out --> {  delay = 100ms; } --> toc.in;
+        tic.in <-- {  delay = 100ms; } <-- toc.out;
+}
 
-network tictoc7 : Tictoc7
-endnetwork
+network tictoc7 extends Tictoc7
+{
+}
 

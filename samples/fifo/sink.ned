@@ -12,7 +12,8 @@
 // Destroys the packets and creates statistics
 //
 simple FFSink
+{
     gates:
-      in: in;
-endsimple
+        input in;
+}
 

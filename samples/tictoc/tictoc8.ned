@@ -9,32 +9,40 @@
 
 
 simple Tic8
+{
     gates:
-        in: in;
-        out: out;
-endsimple
+        input in;
+        output out;
+}
 
 simple Toc8
+{
     gates:
-        in: in;
-        out: out;
-endsimple
+        input in;
+        output out;
+}
 
 //
 // Same as Tictoc7.
 //
 module Tictoc8
+{
     submodules:
-        tic: Tic8;
-            display: "i=block/process,cyan";
-        toc: Toc8;
-            display: "i=block/process,gold";
+        tic: Tic8 {
+            parameters:
+                @display("i=block/process,cyan");
+        };
+        toc: Toc8 {
+            parameters:
+                @display("i=block/process,gold");
+        };
     connections:
-        tic.out --> delay 100ms --> toc.in;
-        tic.in <-- delay 100ms <-- toc.out;
-endmodule
+        tic.out --> {  delay = 100ms; } --> toc.in;
+        tic.in <-- {  delay = 100ms; } <-- toc.out;
+}
 
-network tictoc8 : Tictoc8
-endnetwork
+network tictoc8 extends Tictoc8
+{
+}
 
 
