@@ -28,9 +28,10 @@
 #include "neddtdvalidator.h"
 #include "nedbasicvalidator.h"
 #include "nedsemanticvalidator.h"
-#include "ned1generator.h"
 #include "ned2generator.h"
+#include "ned1generator.h"
 #include "xmlgenerator.h"
+#include "nedtools.h"
 #include "cppgenerator.h"
 #include "nedcompiler.h"
 #include "platdep/misc.h"
@@ -41,6 +42,9 @@
 using std::ofstream;
 using std::ifstream;
 using std::ios;
+
+//FIXME print warnings as warnings not errors! (and don't stop on them)
+//TODO: "preserve format" flag (genererate ned2 as ned2, and ned1 as ned1)
 
 
 // file types
@@ -53,7 +57,7 @@ bool opt_genned = false;           // -n
 bool opt_genmsg = false;           // -g
 bool opt_validateonly = false;     // -v
 int opt_nextfiletype = UNKNOWN_FILE; // -X
-bool opt_newsyntax = false;        // -N
+bool opt_oldsyntax = false;        // -Q
 const char *opt_suffix = NULL;     // -s
 const char *opt_hdrsuffix = NULL;  // -S
 bool opt_unparsedexpr = false;     // -e
@@ -70,7 +74,7 @@ bool opt_here = false;             // -h
 NEDFileCache filecache;
 NEDClassicImportResolver importresolver;
 
-NedFilesNode *outputtree;
+FilesNode *outputtree;
 
 
 void printUsage()
@@ -94,7 +98,7 @@ void printUsage()
        "  -h  place output file into current directory\n"
        "  -I <dir>: add directory to NED include path\n"
        "  -X xml/ned/msg/off: following files are XML, NED or MSG up to '-X off'\n"
-       "  -N: with -n: use new NED syntax (experimental)\n"
+       "  -Q: with -n: use old (3.x) NED syntax\n"
        "  -s <suffix>: suffix for generated files\n"
        "  -S <suffix>: when generating C++, suffix for generated header files\n"
        "  -e: do not parse expressions in NED input; expect unparsed expressions in XML\n"
@@ -109,9 +113,7 @@ void printUsage()
        "  @@listfile: like @listfile, but contents is interpreted as relative to\n"
        "      the current working directory. @@ listfiles can be put anywhere,\n"
        "      including /tmp -- effect only depends on the working directory.\n"
-       "NOTE: C++ code generation from .msg files and the new NED-2 syntax are still\n"
-       "experimental and should not be used in production environment. Message (.msg)\n"
-       "files should be processed with opp_msgc.\n"
+       "Message (.msg) files should be processed with opp_msgc.\n"
     );
 }
 
@@ -137,7 +139,15 @@ void createFileNameWithSuffix(char *outfname, const char *infname, const char *s
     strcpy(s,suffix);
 }
 
-bool processFile(const char *fname)
+void generateNED(std::ostream& out, NEDElement *node, NEDErrorStore *e, bool oldsyntax)
+{
+    if (oldsyntax)
+        generateNED1(out, node, e);
+    else
+        generateNED2(out, node, e);
+}
+
+bool processFile(const char *fname, NEDErrorStore *errors)
 {
     if (opt_verbose) fprintf(stdout,"processing '%s'...\n",fname);
 
@@ -157,37 +167,36 @@ bool processFile(const char *fname)
 
     // process input tree
     NEDElement *tree = 0;
-    clearErrors();
+    errors->clear();
     if (ftype==XML_FILE)
     {
-        tree = parseXML(fname);
+        tree = parseXML(fname, errors);
     }
     else if (ftype==NED_FILE || ftype==MSG_FILE)
     {
-        NEDParser parser;
+        NEDParser parser(errors);
         parser.setParseExpressions(!opt_unparsedexpr);
         parser.setStoreSource(opt_storesrc);
-        parser.parseFile(fname);
-        tree = parser.getTree();
+        tree = (ftype==NED_FILE) ? parser.parseNEDFile(fname) : parser.parseMSGFile(fname);
     }
-    if (errorsOccurred())
+    if (!errors->empty())
     {
         delete tree;
         return false;
     }
 
     // DTD validation and additional basic validation
-    NEDDTDValidator dtdvalidator;
+    NEDDTDValidator dtdvalidator(errors);
     dtdvalidator.validate(tree);
-    if (errorsOccurred())
+    if (!errors->empty())
     {
         delete tree;
         return false;
     }
 
-    NEDBasicValidator basicvalidator(!opt_unparsedexpr);
+    NEDBasicValidator basicvalidator(!opt_unparsedexpr, errors);
     basicvalidator.validate(tree);
-    if (errorsOccurred())
+    if (!errors->empty())
     {
         delete tree;
         return false;
@@ -202,17 +211,17 @@ bool processFile(const char *fname)
         if (!opt_noimports)
         {
             // invoke NEDCompiler (will process imports and do semantic validation)
-            NEDCompiler nedc(&filecache, &symboltable, &importresolver);
+            NEDCompiler nedc(&filecache, &symboltable, &importresolver, errors);
             nedc.validate(tree);
         }
         else
         {
             // simple semantic validation (without imports)
-            NEDSemanticValidator validator(!opt_unparsedexpr,&symboltable);
+            NEDSemanticValidator validator(!opt_unparsedexpr,&symboltable, errors);
             validator.validate(tree);
         }
     }
-    if (errorsOccurred())
+    if (!errors->empty())
     {
         delete tree;
         return false;
@@ -258,7 +267,7 @@ bool processFile(const char *fname)
         else if (opt_genned || opt_genmsg)
         {
             ofstream out(outfname);
-            generateNed(out, tree, opt_newsyntax);
+            generateNED(out, tree, errors, opt_oldsyntax);
             out.close();
         }
         else
@@ -273,14 +282,14 @@ bool processFile(const char *fname)
 
         delete tree;
 
-        if (errorsOccurred())
+        if (!errors->empty())
             return false;
     }
     return true;
 }
 
 
-bool processListFile(const char *listfilename, bool istemplistfile)
+bool processListFile(const char *listfilename, bool istemplistfile, NEDErrorStore *errors)
 {
     const int maxline=1024;
     char line[maxline];
@@ -323,7 +332,7 @@ bool processListFile(const char *listfilename, bool istemplistfile)
         if (fname[0]=='@')
         {
             bool istmp = (fname[1]=='@');
-            if (!processListFile(fname+(istmp?2:1), istmp))
+            if (!processListFile(fname+(istmp?2:1), istmp, errors))
             {
                 in.close();
                 return false;
@@ -331,7 +340,7 @@ bool processListFile(const char *listfilename, bool istemplistfile)
         }
         else if (fname[0] && fname[0]!='#')
         {
-            if (!processFile(fname))
+            if (!processFile(fname, errors))
             {
                 in.close();
                 return false;
@@ -367,6 +376,10 @@ int main(int argc, char **argv)
         printUsage();
         return 0;
     }
+
+    NEDErrorStore errorstore;
+    NEDErrorStore *errors = &errorstore;
+    errors->setPrintToStderr(true);
 
     // process options
     for (int i=1; i<argc; i++)
@@ -424,9 +437,9 @@ int main(int argc, char **argv)
                 return 1;
             }
         }
-        else if (!strcmp(argv[i],"-N"))
+        else if (!strcmp(argv[i],"-Q"))
         {
-            opt_newsyntax = true;
+            opt_oldsyntax = true;
         }
         else if (!strcmp(argv[i],"-s"))
         {
@@ -497,7 +510,7 @@ int main(int argc, char **argv)
         {
             // treat @listfile and @@listfile differently
             bool istmp = (argv[i][1]=='@');
-            if (!processListFile(argv[i]+(istmp?2:1), istmp))
+            if (!processListFile(argv[i]+(istmp?2:1), istmp, errors))
                 return 1;
         }
         else
@@ -515,7 +528,7 @@ int main(int argc, char **argv)
             }
             while (fname)
             {
-                if (!processFile(fname)) return 1;
+                if (!processFile(fname, errors)) return 1;
                 fname = findNextFile();
             }
             findCleanup();
@@ -527,7 +540,7 @@ int main(int argc, char **argv)
 
     if (opt_mergeoutput)
     {
-        if (errorsOccurred())
+        if (!errors->empty())
         {
             delete outputtree;
             return 1;
@@ -549,7 +562,7 @@ int main(int argc, char **argv)
         if (opt_genxml)
             generateXML(out, outputtree, opt_srcloc);
         else if (opt_genned)
-            generateNed(out, outputtree, opt_newsyntax);
+            generateNED(out, outputtree, errors, opt_oldsyntax);
         else
             return 1; // mergeoutput with C++ output not supported
             // generateCpp(out, cout, outputtree);
@@ -557,7 +570,7 @@ int main(int argc, char **argv)
 
         delete outputtree;
 
-        if (errorsOccurred())
+        if (!errors->empty())
             return 1;
     }
 
