@@ -29,8 +29,9 @@ cNEDDeclaration::ParamDescription::ParamDescription()
 
 cNEDDeclaration::ParamDescription::~ParamDescription()
 {
-    delete properties;
-    delete value; //XXX khmm -- what if some cPar still points to it?
+//XXX the following cause crash -- investigate
+//    delete properties;
+//    delete value; //XXX khmm -- what if some cPar still points to it?
 }
 
 cNEDDeclaration::ParamDescription cNEDDeclaration::ParamDescription::deepCopy() const
@@ -63,8 +64,8 @@ cNEDDeclaration::GateDescription cNEDDeclaration::GateDescription::deepCopy() co
 
 cNEDDeclaration::GateDescription::~GateDescription()
 {
-    delete gatesize;
-    delete properties;
+//XXX    delete gatesize;
+//XXX    delete properties;
 }
 
 //-----

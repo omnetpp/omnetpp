@@ -236,7 +236,8 @@ void cPar::doReadValue()
     while (!success)
     {
         cProperties *props = properties();
-        std::string prompt = props->get("prompt")->value(cProperty::DEFAULTKEY); // @prompt property
+        cProperty *prop = props->get("prompt");
+		std::string prompt = prop ? prop->value(cProperty::DEFAULTKEY) : "";
         std::string reply;
         if (!prompt.empty())
             reply = ev.gets(prompt.c_str(), toString().c_str());
