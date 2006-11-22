@@ -379,64 +379,64 @@ void TWatchInspector::writeBack()
    TInspector::writeBack();    // must be there after all changes
 }
 
-//=======================================================================
-
-class TParInspectorFactory : public cInspectorFactory
-{
-  public:
-    TParInspectorFactory(const char *name) : cInspectorFactory(name) {}
-
-    bool supportsObject(cObject *obj) {return dynamic_cast<cPar *>(obj)!=NULL;}
-    int inspectorType() {return INSP_OBJECT;}
-    double qualityAsDefault(cObject *object) {return 2.0;}
-
-    TInspector *createInspectorFor(cObject *object,int type,const char *geom,void *data) {
-        return new TParInspector(object, type, geom, data);
-    }
-};
-
-Register_InspectorFactory(TParInspectorFactory);
-
-
-TParInspector::TParInspector(cObject *obj,int typ,const char *geom,void *dat) :
-    TInspector(obj,typ,geom,dat)
-{
-}
-
-void TParInspector::createWindow()
-{
-   TInspector::createWindow(); // create window name etc.
-
-   // create inspector window by calling the specified proc with
-   // the object's pointer. Window name will be like ".ptr80003a9d-1"
-   Tcl_Interp *interp = getTkApplication()->getInterp();
-   CHK(Tcl_VarEval(interp, "create_parinspector ", windowname, " \"", geometry, "\"", NULL ));
-}
-
-void TParInspector::update()
-{
-   TInspector::update();
-
-   cPar *p = static_cast<cPar *>(object);
-   setEntry(".main.value.e", p->toString().c_str());
-}
-
-void TParInspector::writeBack()
-{
-   Tcl_Interp *interp = getTkApplication()->getInterp();
-   cPar *p = static_cast<cPar *>(object);
-
-   bool ok = false;
-   try {
-      ok = p->parse(getEntry(".main.value.e"));
-      if (!ok)
-         throw new cException("Syntax error, value not changed.");
-   } catch (cException *e) {
-      TclQuotedString msg(e->message());
-      delete e;
-      CHK(Tcl_VarEval(interp,"messagebox {Error} ", msg.get(), " error ok", NULL));
-   }
-
-   TInspector::writeBack();    // must be there after all changes
-}
+// //=======================================================================
+//
+// class TParInspectorFactory : public cInspectorFactory
+// {
+//   public:
+//     TParInspectorFactory(const char *name) : cInspectorFactory(name) {}
+//
+//     bool supportsObject(cObject *obj) {return dynamic_cast<cPar *>(obj)!=NULL;}
+//     int inspectorType() {return INSP_OBJECT;}
+//     double qualityAsDefault(cObject *object) {return 2.0;}
+//
+//     TInspector *createInspectorFor(cObject *object,int type,const char *geom,void *data) {
+//         return new TParInspector(object, type, geom, data);
+//     }
+// };
+//
+// Register_InspectorFactory(TParInspectorFactory);
+//
+//
+// TParInspector::TParInspector(cObject *obj,int typ,const char *geom,void *dat) :
+//     TInspector(obj,typ,geom,dat)
+// {
+// }
+//
+// void TParInspector::createWindow()
+// {
+//    TInspector::createWindow(); // create window name etc.
+//
+//    // create inspector window by calling the specified proc with
+//    // the object's pointer. Window name will be like ".ptr80003a9d-1"
+//    Tcl_Interp *interp = getTkApplication()->getInterp();
+//    CHK(Tcl_VarEval(interp, "create_parinspector ", windowname, " \"", geometry, "\"", NULL ));
+// }
+//
+// void TParInspector::update()
+// {
+//    TInspector::update();
+//
+//    cPar *p = static_cast<cPar *>(object);
+//    setEntry(".main.value.e", p->toString().c_str());
+// }
+//
+// void TParInspector::writeBack()
+// {
+//    Tcl_Interp *interp = getTkApplication()->getInterp();
+//    cPar *p = static_cast<cPar *>(object);
+//
+//    bool ok = false;
+//    try {
+//       ok = p->parse(getEntry(".main.value.e"));
+//       if (!ok)
+//          throw new cException("Syntax error, value not changed.");
+//    } catch (cException *e) {
+//       TclQuotedString msg(e->message());
+//       delete e;
+//       CHK(Tcl_VarEval(interp,"messagebox {Error} ", msg.get(), " error ok", NULL));
+//    }
+//
+//    TInspector::writeBack();    // must be there after all changes
+// }
 

@@ -553,15 +553,3 @@ proc inspector_createnotebook {w} {
     return $nb
 }
 
-
-proc create_structpanel {w} {
-    # TBD textarea is a temporary solution -- should be sth like a property sheet.
-    scrollbar $w.sb -borderwidth 1 -command "$w.txt yview"
-    text $w.txt  -height 12 -width 40 -yscrollcommand "$w.sb set"
-    $w.txt configure -wrap word -spacing3 2
-    $w.txt tag configure field -lmargin2 90
-
-    pack $w.sb -anchor center -expand 0 -fill y -side right
-    pack $w.txt -anchor center -expand 1 -fill both -side left
-}
-

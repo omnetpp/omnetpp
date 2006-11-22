@@ -18,7 +18,6 @@
 
 #include <tk.h>
 #include "inspector.h"
-#include "structinsp.h"
 #include "omnetapp.h"
 
 class TGenericObjectInspector : public TInspector
@@ -84,14 +83,14 @@ class TWatchInspector: public TInspector
       virtual void writeBack();
 };
 
-class TParInspector: public TInspector
-{
-   public:
-      TParInspector(cObject *obj,int typ,const char *geom,void *dat=NULL);
-      virtual void createWindow();
-      virtual void update();
-      virtual void writeBack();
-};
+// class TParInspector: public TInspector
+// {
+//    public:
+//       TParInspector(cObject *obj,int typ,const char *geom,void *dat=NULL);
+//       virtual void createWindow();
+//       virtual void update();
+//       virtual void writeBack();
+// };
 
 #endif
 

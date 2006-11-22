@@ -131,7 +131,7 @@ class SIM_API cParValue : public cNamedObject
     virtual bool isConstant() const {return !(flags & FL_ISEXPR);}
 
     /**
-     * Returns true if the parameter has a default value.
+     * Returns true if the parameter has a value set.
      */
     virtual bool hasValue() const  {return flags & FL_HASVALUE;}
 

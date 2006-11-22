@@ -187,26 +187,25 @@ proc create_watchinspector {name geom} {
     pack $w.main.name -fill x -side top
 }
 
-proc create_parinspector {name geom} {
-    global fonts icons help_tips
-
-    set w $name
-    create_inspector_toplevel $w $geom
-
-    pack_iconbutton $w.toolbar.apply  -image $icons(apply) -command "opp_writebackinspector $w; opp_updateinspectors"
-    pack_iconbutton $w.toolbar.revert -image $icons(revert) -command "opp_updateinspectors"
-
-    set help_tips($w.toolbar.apply)   {Apply changes (Enter)}
-    set help_tips($w.toolbar.revert)  {Revert}
-
-    frame $w.main
-    pack $w.main -anchor center -expand 1 -fill both -side top
-
-    label-entry $w.main.value "Value:"
-    pack $w.main.value -fill x -side top
-}
-
-
+#proc create_parinspector {name geom} {
+#    global fonts icons help_tips
+#
+#    set w $name
+#    create_inspector_toplevel $w $geom
+#
+#    pack_iconbutton $w.toolbar.apply  -image $icons(apply) -command "opp_writebackinspector $w; opp_updateinspectors"
+#    pack_iconbutton $w.toolbar.revert -image $icons(revert) -command "opp_updateinspectors"
+#
+#    set help_tips($w.toolbar.apply)   {Apply changes (Enter)}
+#    set help_tips($w.toolbar.revert)  {Revert}
+#
+#    frame $w.main
+#    pack $w.main -anchor center -expand 1 -fill both -side top
+#
+#    label-entry $w.main.value "Value:"
+#    pack $w.main.value -fill x -side top
+#}
+#
 #proc create_packetinspector {name geom} {
 #    create_messageinspector $name $geom
 #

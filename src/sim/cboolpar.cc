@@ -57,6 +57,7 @@ void cBoolPar::setBoolValue(bool b)
 {
     deleteOld();
     val = b;
+    flags |= FL_HASVALUE;
 }
 
 void cBoolPar::setLongValue(long l)
@@ -83,7 +84,7 @@ void cBoolPar::setExpression(cExpression *e)
 {
     deleteOld();
     expr = e;
-    flags |= FL_ISEXPR;
+    flags |= FL_ISEXPR | FL_HASVALUE;
 }
 
 bool cBoolPar::boolValue(cComponent *context) const

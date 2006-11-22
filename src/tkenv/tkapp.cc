@@ -1722,13 +1722,11 @@ unsigned TOmnetTkApp::extraStackForEnvir()
 void _dummy_for_objinsp();
 void _dummy_for_modinsp();
 void _dummy_for_statinsp();
-void _dummy_for_structinsp();
 
 void _dummy_func() {
   _dummy_for_objinsp();
   _dummy_for_modinsp();
   _dummy_for_statinsp();
-  _dummy_for_structinsp();
 }
 
 

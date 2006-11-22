@@ -62,12 +62,14 @@ void cDoublePar::setLongValue(long l)
 {
     deleteOld();
     val = l;
+    flags |= FL_HASVALUE;
 }
 
 void cDoublePar::setDoubleValue(double d)
 {
     deleteOld();
     val = d;
+    flags |= FL_HASVALUE;
 }
 
 void cDoublePar::setStringValue(const char *s)
@@ -84,7 +86,7 @@ void cDoublePar::setExpression(cExpression *e)
 {
     deleteOld();
     expr = e;
-    flags |= FL_ISEXPR;
+    flags |= FL_ISEXPR | FL_HASVALUE;
 }
 
 bool cDoublePar::boolValue(cComponent *) const

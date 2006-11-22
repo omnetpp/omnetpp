@@ -22,7 +22,7 @@ CFLAGS=$(CFLAGS) /DWIN32_DLL
 COPTS=$(CFLAGS) /I "$(OMNETPP_INCL_DIR)" /I "../envir" /I "../common" $(TK_CFLAGS) /DBUILDING_TKENV /Fd"tkenv.pdb"
 
 OBJS = tkapp$(TKENV_EMBED_SUFFIX).obj tkcmd.obj tklib.obj inspector.obj \
-       inspfactory.obj objinsp.obj modinsp.obj statinsp.obj structinsp.obj \
+       inspfactory.obj objinsp.obj modinsp.obj statinsp.obj \
        arrow.obj visitor.obj tkutil.obj graphlayout.obj
 LIBS = $(OMNETPP_SRC_DIR)/sim/sim_std.ilib $(OMNETPP_SRC_DIR)/envir/envir.ilib $(TK_LIB_DIR)/tcl82.lib $(TK_LIB_DIR)/tk82.lib
 
@@ -389,8 +389,7 @@ objinsp.obj: objinsp.cc \
   ../../include/platdep/time.h \
   inspector.h \
   tkutil.h \
-  tkdefs.h \
-  structinsp.h
+  tkdefs.h
 statinsp.obj: statinsp.cc \
   ../../include/cmodule.h \
   ../../include/cmessage.h \
@@ -427,29 +426,6 @@ statinsp.obj: statinsp.cc \
   ../../include/cmessagepar.h \
   ../../include/cfunction.h \
   ../../include/cexpression.h \
-  inspector.h \
-  tkutil.h \
-  tkdefs.h
-structinsp.obj: structinsp.cc \
-  ../../include/cenum.h \
-  ../../include/cclassdescriptor.h \
-  tkapp.h \
-  tklib.h \
-  inspfactory.h \
-  structinsp.h \
-  ../../include/cownedobject.h \
-  ../../include/cenvir.h \
-  ../../include/defs.h \
-  ../../include/util.h \
-  ../../include/cnamedobject.h \
-  ../../include/cexception.h \
-  ../../include/errmsg.h \
-  ../../include/cobject.h \
-  ../../include/cstringpool.h \
-  ../../include/cvisitor.h \
-  ../../include/regmacros.h \
-  ../../include/onstartup.h \
-  ../../include/opp_string.h \
   inspector.h \
   tkutil.h \
   tkdefs.h

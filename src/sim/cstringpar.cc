@@ -70,6 +70,7 @@ void cStringPar::setStringValue(const char *s)
 {
     deleteOld();
     val = (s ? s : "");
+    flags |= FL_HASVALUE;
 }
 
 void cStringPar::setXMLValue(cXMLElement *node)
@@ -81,7 +82,7 @@ void cStringPar::setExpression(cExpression *e)
 {
     deleteOld();
     expr = e;
-    flags |= FL_ISEXPR;
+    flags |= FL_ISEXPR | FL_HASVALUE;
 }
 
 bool cStringPar::boolValue(cComponent *context) const
