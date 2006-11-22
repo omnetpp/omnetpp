@@ -8,10 +8,11 @@ import org.omnetpp.ned2.model.notification.NEDModelEvent;
 /**
  * Provides support for Container EditParts.
  */
-abstract public class ContainerEditPart 
-   extends AbstractGraphicalEditPart implements INEDChangeListener {
+abstract public class NotifiedEditPart 
+   extends AbstractGraphicalEditPart implements INEDChangeListener, IReadOnlySupport {
 
     protected long lastEventSerial;
+    private boolean editable = true;
     
     @Override
     public void activate() {
@@ -76,13 +77,27 @@ abstract public class ContainerEditPart
         refresh();
         // delegate to all children and refresh all their appearence
         for(Object child : getChildren())
-            if (child instanceof ContainerEditPart)
-                ((ContainerEditPart)child).totalRefresh();
+            if (child instanceof NotifiedEditPart)
+                ((NotifiedEditPart)child).totalRefresh();
             else
                 ((AbstractGraphicalEditPart)child).refresh();
         
         // refresh connections
         refreshChildrenConnections();
+    }
+
+    public void setEditable(boolean editable) {
+        this.editable = editable;
+    }
+    
+    public boolean isEditable() {
+        if (!editable)
+            return false;
+        // otherwise check what about the parent. if parent is read only we should return its state 
+        if (getParent() instanceof IReadOnlySupport)
+            return ((IReadOnlySupport)getParent()).isEditable();
+        // otherwise edit is possible 
+        return true;
     }
 
     public void modelChanged(NEDModelEvent event) {

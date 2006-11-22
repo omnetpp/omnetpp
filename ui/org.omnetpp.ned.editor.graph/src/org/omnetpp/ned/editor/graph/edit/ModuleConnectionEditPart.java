@@ -65,6 +65,10 @@ public class ModuleConnectionEditPart extends AbstractConnectionEditPart impleme
     	getConnectionFigure().setTargetAnchor(null);
     }
 
+    /* (non-Javadoc)
+     * @see org.eclipse.gef.editparts.AbstractEditPart#performRequest(org.eclipse.gef.Request)
+     * Overeide to handle open request so we can open the definition of a module
+     */
     @Override
     public void performRequest(Request req) {
         super.performRequest(req);
@@ -108,7 +112,6 @@ public class ModuleConnectionEditPart extends AbstractConnectionEditPart impleme
      *
      * @param editPart  EditPart which is the source.
      */
-    // FIXME we should (re)set the figure's anchor to point to the correct module figure
     @Override
     public void setSource(EditPart editPart) {
     	if (sourceEditPartEx == editPart)
@@ -132,7 +135,6 @@ public class ModuleConnectionEditPart extends AbstractConnectionEditPart impleme
      * to add the connection as the child of a compound module
      * @param editPart  EditPart which is the target.
      */
-    // FIXME we should (re)set the figure's anchor to point to the correct module figure
     @Override
     public void setTarget(EditPart editPart) {
     	if (targetEditPartEx == editPart)
@@ -157,7 +159,9 @@ public class ModuleConnectionEditPart extends AbstractConnectionEditPart impleme
     protected void createEditPolicies() {
         installEditPolicy(EditPolicy.CONNECTION_ENDPOINTS_ROLE, new NedConnectionEndpointEditPolicy());
         // Note that the Connection is already added to the diagram and knows router
-        installEditPolicy(EditPolicy.CONNECTION_ROLE, new NedConnectionEditPolicy());
+        if (isEditable()) {
+            installEditPolicy(EditPolicy.CONNECTION_ROLE, new NedConnectionEditPolicy());
+        }
     }
 
     /**
@@ -203,5 +207,12 @@ public class ModuleConnectionEditPart extends AbstractConnectionEditPart impleme
         System.out.println("NOTIFY ON: "+getModel().getClass().getSimpleName()+" "+event);
         // not needed because the containing compound module always refreshes all it's children and connections
         // refreshVisuals();
+    }
+
+    /**
+     * @return Whether this connection is hosted in the current compound module (or it is inherited FALSE) 
+     */
+    private boolean isEditable() {
+        return getParent().getModel() == ((ConnectionNodeEx)getModel()).getCompoundModule();
     }
 }

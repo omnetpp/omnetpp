@@ -15,10 +15,7 @@ import org.eclipse.gef.SnapToGeometry;
 import org.eclipse.gef.SnapToHelper;
 import org.eclipse.gef.editpolicies.RootComponentEditPolicy;
 import org.omnetpp.ned.editor.graph.edit.policies.NedFileLayoutEditPolicy;
-import org.omnetpp.ned2.model.ex.CompoundModuleNodeEx;
 import org.omnetpp.ned2.model.ex.NedFileNodeEx;
-import org.omnetpp.ned2.model.interfaces.ITopLevelElement;
-import org.omnetpp.ned2.model.notification.NEDAttributeChangeEvent;
 import org.omnetpp.ned2.model.notification.NEDModelEvent;
 import org.omnetpp.resources.NEDResourcesPlugin;
 
@@ -27,7 +24,7 @@ import org.omnetpp.resources.NEDResourcesPlugin;
  * LogicEditorPart, to hold the entire model. It is sort of a blank board where
  * all other EditParts get added.
  */
-public class NedFileEditPart extends ContainerEditPart implements LayerConstants {
+public class NedFileEditPart extends NotifiedEditPart implements LayerConstants {
 
     /**
      * Installs EditPolicies specific to this.

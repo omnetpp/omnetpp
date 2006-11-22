@@ -4,13 +4,11 @@ import java.util.List;
 
 import org.eclipse.gef.EditPart;
 import org.eclipse.gef.commands.Command;
-import org.eclipse.gef.commands.CompoundCommand;
 import org.eclipse.gef.requests.GroupRequest;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.IWorkbenchPart;
 import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.ned.editor.graph.edit.SubmoduleEditPart;
-import org.omnetpp.ned2.model.ex.SubmoduleNodeEx;
 
 public class UnpinAction extends org.eclipse.gef.ui.actions.SelectionAction {
 
@@ -38,21 +36,25 @@ public class UnpinAction extends org.eclipse.gef.ui.actions.SelectionAction {
 	 * @return
 	 */
 	protected boolean calculateEnabled() {
-		boolean endresult = false;
-		if (getSelectedObjects().isEmpty())
-			return false;
-		List parts = getSelectedObjects();
-		for (int i = 0; i < parts.size(); i++) {
-			Object o = parts.get(i);
-			// if one of the selected editparts is not submodule, the action is not allowed 
-			if (!(o instanceof SubmoduleEditPart))
-				return false;
-			// at least one submodule must have a location
-			SubmoduleNodeEx smod = (SubmoduleNodeEx)((SubmoduleEditPart)o).getModel(); 
-			if (smod.getDisplayString().getLocation(null) != null) 
-				endresult = true;
-		}
-		return endresult;
+//		boolean endresult = false;
+//		if (getSelectedObjects().isEmpty())
+//			return false;
+//		List parts = getSelectedObjects();
+//		for (int i = 0; i < parts.size(); i++) {
+//			Object o = parts.get(i);
+//			// if one of the selected editparts is not submodule, the action is not allowed 
+//			if (!(o instanceof SubmoduleEditPart))
+//				return false;
+//			// at least one submodule must have a location
+//			SubmoduleNodeEx smod = (SubmoduleNodeEx)((SubmoduleEditPart)o).getModel(); 
+//			if (smod.getDisplayString().getLocation(null) != null) 
+//				endresult = true;
+//		}
+//		return endresult;
+        Command cmd = getCommand();
+        if (cmd == null)
+            return false;
+        return cmd.canExecute();
 	}
 
 	/**

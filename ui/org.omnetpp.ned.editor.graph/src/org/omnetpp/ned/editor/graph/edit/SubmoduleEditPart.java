@@ -55,6 +55,7 @@ public class SubmoduleEditPart extends ModuleEditPart {
     public SubmoduleNodeEx getSubmoduleModel() {
         return (SubmoduleNodeEx)getModel();
     }
+    
 	/**
 	 * Compute the source connection anchor to be assigned based on the current mouse 
 	 * location and available gates. 
@@ -62,9 +63,6 @@ public class SubmoduleEditPart extends ModuleEditPart {
 	 * @return The selected connection anchor
 	 */
 	public ConnectionAnchor getConnectionAnchorAt(Point p) {
-		// TODO select the appropriate gate name automatically
-		// or return NULL if no output gate is available
-//		return new GateAnchor(getFigure());
         return gateAnchor;
 	}
 
@@ -74,7 +72,6 @@ public class SubmoduleEditPart extends ModuleEditPart {
 	 * @return
 	 */
 	public GateAnchor getConnectionAnchor(String gate) {
-//		return new GateAnchor(getFigure());
         return gateAnchor;
 	}
 
@@ -152,6 +149,14 @@ public class SubmoduleEditPart extends ModuleEditPart {
         return ((CompoundModuleEditPart)getParent()).getScale();
     }
     
+    public boolean isEditable() {
+        // editable only if the parent controllers model is the same as the model's parent
+        // ie the submodule is defined in this compound module (not inherited)
+        return super.isEditable() && 
+                (getParent().getModel() == ((SubmoduleNodeEx)getModel()).getCompoundModule());
+    }
+
+    @Override
     public boolean isSelectable() {
         // TODO this is not a correct solution because we cannot connect these modules via connections
         // however this feature is required
@@ -160,7 +165,8 @@ public class SubmoduleEditPart extends ModuleEditPart {
         // if we inherited the submodule, we should not allow selection (and editing in this module)
         // we own the submodule if the submodule is declared in the current compound module
         // ie. our parent controllers model is the same object as our model's parent
-//        return getParent().getModel() == ((SubmoduleNodeEx)getModel()).getCompoundModule();
+
+//        return isEditable();
         return true;
     }
 
@@ -194,4 +200,5 @@ public class SubmoduleEditPart extends ModuleEditPart {
             }
         }
     }
+
 }

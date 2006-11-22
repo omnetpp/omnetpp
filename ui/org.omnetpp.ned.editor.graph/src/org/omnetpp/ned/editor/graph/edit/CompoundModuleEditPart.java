@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.draw2d.ConnectionAnchor;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.XYLayout;
@@ -15,19 +17,30 @@ import org.eclipse.gef.ConnectionEditPart;
 import org.eclipse.gef.EditPolicy;
 import org.eclipse.gef.ExposeHelper;
 import org.eclipse.gef.MouseWheelHelper;
+import org.eclipse.gef.Request;
+import org.eclipse.gef.RequestConstants;
 import org.eclipse.gef.SnapToGeometry;
 import org.eclipse.gef.SnapToHelper;
 import org.eclipse.gef.editparts.ViewportAutoexposeHelper;
 import org.eclipse.gef.editparts.ViewportExposeHelper;
 import org.eclipse.gef.editparts.ViewportMouseWheelHelper;
 import org.eclipse.gef.editpolicies.SnapFeedbackPolicy;
+import org.eclipse.ui.IEditorPart;
+import org.eclipse.ui.IFileEditorInput;
+import org.eclipse.ui.PartInitException;
+import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.part.FileEditorInput;
 import org.omnetpp.figures.CompoundModuleFigure;
 import org.omnetpp.figures.CompoundModuleGateAnchor;
 import org.omnetpp.figures.GateAnchor;
+import org.omnetpp.ned.editor.graph.GraphicalNedEditor;
 import org.omnetpp.ned.editor.graph.edit.policies.CompoundModuleLayoutEditPolicy;
+import org.omnetpp.ned.editor.graph.misc.ISelectionSupport;
 import org.omnetpp.ned2.model.ex.CompoundModuleNodeEx;
 import org.omnetpp.ned2.model.ex.ConnectionNodeEx;
 import org.omnetpp.ned2.model.ex.SubmoduleNodeEx;
+import org.omnetpp.ned2.model.interfaces.IHasAncestors;
+import org.omnetpp.ned2.model.interfaces.IHasName;
 import org.omnetpp.ned2.model.interfaces.INEDTypeInfo;
 import org.omnetpp.ned2.model.notification.NEDAttributeChangeEvent;
 import org.omnetpp.ned2.model.notification.NEDModelEvent;
@@ -232,5 +245,41 @@ public class CompoundModuleEditPart extends ModuleEditPart {
      */
     public Map<Object, ConnectionEditPart> getModelToConnectionParts() {
         return modelToConnectionParts;
+    }
+
+    /* (non-Javadoc)
+     * @see org.eclipse.gef.editparts.AbstractEditPart#performRequest(org.eclipse.gef.Request)
+     * Open the base type after double clicking (if any)
+     */
+    @Override
+    public void performRequest(Request req) {
+        super.performRequest(req);
+        // let's open or activate a new editor if somone has double clicked the component
+        if (RequestConstants.REQ_OPEN.equals(req.getType()) 
+                && getModel() instanceof IHasAncestors) {
+            IHasName firstExtendsRef = (IHasName)((IHasAncestors)getModel()).getFirstExtendsRef();
+            String extendsName = firstExtendsRef !=null ? firstExtendsRef.getName() : null;
+            
+            INEDTypeInfo typeInfo = getNEDModel().getContainerNEDTypeInfo()
+                                            .getResolver().getComponent(extendsName);
+            if (typeInfo == null) return;
+            
+            IFile file = typeInfo.getNEDFile();
+            IFileEditorInput fileEditorInput = new FileEditorInput(file);
+
+            try {
+                IEditorPart editor = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage()
+                    .openEditor(fileEditorInput, GraphicalNedEditor.ID, true);
+                
+                // select the component so it will be visible in the opened editor
+                if (editor instanceof ISelectionSupport)
+                    ((ISelectionSupport)editor).selectComponent(typeInfo.getName());
+                
+            } catch (PartInitException e) {
+                // should not happen
+                e.printStackTrace();
+                Assert.isTrue(false);
+            }
+        }
     }
 }

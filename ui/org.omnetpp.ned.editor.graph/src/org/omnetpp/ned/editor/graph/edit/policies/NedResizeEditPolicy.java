@@ -1,6 +1,7 @@
 package org.omnetpp.ned.editor.graph.edit.policies;
 
 import java.util.Iterator;
+import java.util.List;
 
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.RectangleFigure;
@@ -8,13 +9,15 @@ import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.gef.GraphicalEditPart;
 import org.eclipse.gef.LayerConstants;
 import org.eclipse.gef.editpolicies.ResizableEditPolicy;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Color;
 import org.omnetpp.common.color.ColorFactory;
 
 /**
- * Handles feedback figures during move and resize.
- * 
+ * Handles feedback figures during move and resize and enables / disables 
+ * drag and resize.
  */
-public class ResizeFeedbackEditPolicy extends ResizableEditPolicy {
+public class NedResizeEditPolicy extends ResizableEditPolicy {
 
     /**
      * Creates the figure used for feedback.
@@ -54,13 +57,12 @@ public class ResizeFeedbackEditPolicy extends ResizableEditPolicy {
         return child;
     }
 
-    protected IFigure getCustomFeedbackFigure(GraphicalEditPart part, Object modelPart) {
-        IFigure figure;
+    protected IFigure getCustomFeedbackFigure(GraphicalEditPart part, Object model) {
+        RectangleFigure figure;
 
         figure = new RectangleFigure();
-        ((RectangleFigure) figure).setFill(false);
-        figure.setForegroundColor(ColorFactory.highlight);
-
+        figure.setFill(false);
+        figure.setLineStyle(SWT.LINE_DOT);
         return figure;
     }
 
@@ -82,10 +84,19 @@ public class ResizeFeedbackEditPolicy extends ResizableEditPolicy {
         return getHostFigure().getBounds();
     }
 
+    /* (non-Javadoc)
+     * @see org.eclipse.gef.editpolicies.ResizableEditPolicy#createSelectionHandles()
+     * change the color of all selection handles
+     */
     @Override
-    protected void addSelectionHandles() {
-        super.addSelectionHandles();
-        getLayer(LayerConstants.HANDLE_LAYER).setForegroundColor(ColorFactory.highlight);
+    protected List createSelectionHandles() {
+        List handles = super.createSelectionHandles();
+        Color color = isDragAllowed() ? ColorFactory.highlight : ColorFactory.lowlight;
+        // set the color for all handles
+        for(Object handle : handles) 
+            ((IFigure)handle).setForegroundColor(color);
+        
+        return handles;
     }
-
+    
 }

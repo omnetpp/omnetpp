@@ -3,6 +3,7 @@ package org.omnetpp.ned.editor.graph.edit.policies;
 import java.util.List;
 
 import org.eclipse.draw2d.IFigure;
+import org.eclipse.draw2d.PositionConstants;
 import org.eclipse.draw2d.RectangleFigure;
 import org.eclipse.draw2d.XYLayout;
 import org.eclipse.draw2d.geometry.Rectangle;
@@ -23,6 +24,7 @@ import org.omnetpp.ned.editor.graph.actions.UnpinAction;
 import org.omnetpp.ned.editor.graph.commands.CloneSubmoduleCommand;
 import org.omnetpp.ned.editor.graph.commands.CreateSubmoduleCommand;
 import org.omnetpp.ned.editor.graph.commands.SetConstraintCommand;
+import org.omnetpp.ned.editor.graph.edit.IReadOnlySupport;
 import org.omnetpp.ned.editor.graph.edit.ModuleEditPart;
 import org.omnetpp.ned2.model.ex.CompoundModuleNodeEx;
 import org.omnetpp.ned2.model.ex.SubmoduleNodeEx;
@@ -46,6 +48,7 @@ public class CompoundModuleLayoutEditPolicy extends DesktopLayoutEditPolicy {
      */
     @Override
     public Command getCommand(Request request) {
+        // check if the edit part is editable
     	if (UnpinAction.REQ_UNPIN.equals(request.getType()))
     		return getUnpinChildrenCommand((GroupRequest)request);
     	return super.getCommand(request);
@@ -144,6 +147,11 @@ public class CompoundModuleLayoutEditPolicy extends DesktopLayoutEditPolicy {
      * @return
      */
     protected Command createUnpinCommand(Request request, EditPart child) {
+        // check if the editpart is editable and do not create a commend if it's not
+        if (child instanceof IReadOnlySupport 
+                && !((IReadOnlySupport)child).isEditable())
+            return null;
+        
         // create the constraint change command 
         INamedGraphNode module = (INamedGraphNode) child.getModel();
         // do not create a command for submodules that do not have a location
@@ -168,7 +176,14 @@ public class CompoundModuleLayoutEditPolicy extends DesktopLayoutEditPolicy {
      */
     @Override
     protected EditPolicy createChildEditPolicy(EditPart child) {
-        ResizableEditPolicy policy = new ResizeFeedbackEditPolicy();
+        ResizableEditPolicy policy = new NedResizeEditPolicy();
+        // check if the editpart is editable and do not allow resize or drag operations
+        if (child instanceof IReadOnlySupport 
+                && !((IReadOnlySupport)child).isEditable()) {
+            policy.setResizeDirections(PositionConstants.NONE);
+            policy.setDragAllowed(false);
+        }
+
         return policy;
     }
 
