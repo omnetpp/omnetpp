@@ -9,6 +9,7 @@ import org.eclipse.swt.graphics.RGB;
 // TODO HSL support should be added (@HHSSLL format)
 public class ColorFactory {
     public final static Color highlight = new Color(null, 255, 0, 0);
+    public final static Color lowlight = new Color(null, 128, 0, 0);
     public final static Color defaultBackground = new Color(null, 192, 192, 192);
     public final static Color defaultBorder = new Color(null, 0, 0, 0);
 
