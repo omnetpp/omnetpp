@@ -52,8 +52,7 @@ enum {XML_FILE, NED_FILE, MSG_FILE, CPP_FILE, UNKNOWN_FILE};
 
 // option variables
 bool opt_genxml = false;           // -x
-bool opt_genned = false;           // -n
-bool opt_genmsg = false;           // -g  FIXME merge opt_genned and opt_genmsg as "opt_gensrc" ?
+bool opt_gensrc = false;           // -n
 bool opt_validateonly = false;     // -v
 int opt_nextfiletype = UNKNOWN_FILE; // -X
 bool opt_oldsyntax = false;        // -Q
@@ -85,13 +84,12 @@ void printUsage()
        "\n"
        "Usage: nedtool [options] <file1> <file2> ...\n"
        "Files may be given in a listfile as well, with the @listfile or @@listfile\n"
-       "syntax (check the difference below.)\n"
-       "  -c: generate C++ (default)\n"
+       "syntax (check the difference below.) By default, if neither -n nor -x is\n"
+       "specified, nedtool generates C++ source.\n"
        "  -x: generate XML (you may need -y, -e and -p as well)\n"
-       "  -n: generate NED file (you may need -y and -e as well)\n"
-       "      HINT: NED-to-NED conversion performs pretty-printing.\n"
-       "  -g: generate MSG file (you may need -y and -e as well)\n"
-       "      HINT: MSG-to-MSG conversion performs pretty-printing.\n"
+       "  -n: generate source (NED or MSG; you may need -y and -e as well)\n"
+       "  -P: pretty-print and/or convert 3.x NED files to the current syntax;\n"
+       "      this is a shortcut for -n -k -y\n"
        "  -v: no output (only validate input)\n"
        "  -m: output is a single file (out_n.* by default)\n"
        "  -o <filename>: with -m: output file name\n"
@@ -279,10 +277,8 @@ try{
             {
                 if (opt_genxml)
                     suffix = (ftype==MSG_FILE) ? "_m.xml" : "_n.xml";
-                else if (opt_genned)
-                    suffix = "_n.ned";
-                else if (opt_genmsg)
-                    suffix = "_m.msg";
+                else if (opt_gensrc)
+                    suffix = (ftype==MSG_FILE) ? "_n.ned" : "_m.msg";
                 else
                     suffix = (ftype==MSG_FILE) ? "_m.cc" : "_n.cc";
             }
@@ -301,7 +297,7 @@ try{
             generateXML(out, tree, opt_srcloc);
             out.close();
         }
-        else if (opt_genned || opt_genmsg)
+        else if (opt_gensrc)
         {
             ofstream out(outfname);
             generateNED(out, tree, errors, opt_oldsyntax);
@@ -427,11 +423,13 @@ int main(int argc, char **argv)
         }
         else if (!strcmp(argv[i],"-n"))
         {
-            opt_genned = true;
+            opt_gensrc = true;
         }
-        else if (!strcmp(argv[i],"-g"))
+        else if (!strcmp(argv[i],"-P"))
         {
-            opt_genmsg = true;
+            opt_gensrc = true;
+            opt_inplace = true;
+            opt_novalidation = true;
         }
         else if (!strcmp(argv[i],"-v"))
         {
@@ -557,12 +555,12 @@ int main(int argc, char **argv)
                 fprintf(stderr,"nedtool: conflicting options -m (merge files) and -k (replace original file)\n");
                 return 1;
             }
-            if (opt_inplace && !opt_genxml && !opt_genned && !opt_genmsg)
+            if (opt_inplace && !opt_genxml && !opt_gensrc)
             {
-                fprintf(stderr,"nedtool: conflicting options: -k (replace original file) needs -n, -g or -x\n");
+                fprintf(stderr,"nedtool: conflicting options: -k (replace original file) needs -n (generate source) or -x (generate XML)\n");
                 return 1;
             }
-            if (opt_mergeoutput && !opt_genxml && !opt_genned && !opt_genmsg)
+            if (opt_mergeoutput && !opt_genxml && !opt_gensrc)
             {
                 fprintf(stderr,"nedtool: option -m not supported with C++ output\n");
                 return 1;
@@ -600,7 +598,7 @@ int main(int argc, char **argv)
             outfname = opt_outputfile;
         else if (opt_genxml)
             outfname = "out_n.xml";
-        else if (opt_genned)
+        else if (opt_gensrc)
             outfname = "out_n.ned";
         else
             outfname = "out_n.cc";
@@ -609,7 +607,7 @@ int main(int argc, char **argv)
 
         if (opt_genxml)
             generateXML(out, outputtree, opt_srcloc);
-        else if (opt_genned)
+        else if (opt_gensrc)
             generateNED(out, outputtree, errors, opt_oldsyntax);
         else
             return 1; // mergeoutput with C++ output not supported
