@@ -13,7 +13,6 @@ import org.eclipse.gef.EditPolicy;
 import org.eclipse.gef.LayerConstants;
 import org.eclipse.gef.SnapToGeometry;
 import org.eclipse.gef.SnapToHelper;
-import org.eclipse.gef.editpolicies.RootComponentEditPolicy;
 import org.omnetpp.ned.editor.graph.edit.policies.NedFileLayoutEditPolicy;
 import org.omnetpp.ned2.model.ex.NedFileNodeEx;
 import org.omnetpp.ned2.model.notification.NEDModelEvent;
@@ -40,11 +39,10 @@ public class NedFileEditPart extends BaseEditPart implements LayerConstants {
         // nedfile cannot be selected
         installEditPolicy(EditPolicy.SELECTION_FEEDBACK_ROLE, null);
         // this is a root edit part, so it cannot be deleted
-        installEditPolicy(EditPolicy.COMPONENT_ROLE, new RootComponentEditPolicy());
+        installEditPolicy(EditPolicy.COMPONENT_ROLE, null);
+//        installEditPolicy(EditPolicy.COMPONENT_ROLE, new RootComponentEditPolicy());
         // install a layout edit policy, this one provides also the creation commands
         installEditPolicy(EditPolicy.LAYOUT_ROLE, new NedFileLayoutEditPolicy());
-        // have some snap feedback once it enabled
-        // installEditPolicy("Snap Feedback", new SnapFeedbackPolicy()); //$NON-NLS-1$
     }
 
     /**
@@ -117,4 +115,12 @@ public class NedFileEditPart extends BaseEditPart implements LayerConstants {
         totalRefresh();
     }
     
+    /* (non-Javadoc)
+     * @see org.omnetpp.ned.editor.graph.edit.BaseEditPart#getTypeNameForDblClickOpen()
+     * do not open anything on double click 
+     */
+    @Override
+    protected String getTypeNameForDblClickOpen() {
+        return null;
+    }
 }    

@@ -25,7 +25,9 @@ import org.omnetpp.ned2.model.ex.ConnectionNodeEx;
 import org.omnetpp.ned2.model.interfaces.INEDTypeInfo;
 import org.omnetpp.ned2.model.notification.INEDChangeListener;
 import org.omnetpp.ned2.model.notification.NEDModelEvent;
-
+// TODO implement IReadOnlySupport
+// TODO factor out the open request processing
+// TODO handle isEditable correctly in installed editpolicies
 /**
  * Implements a Connection Editpart to represnt a Wire like connection.
  * 
@@ -249,3 +251,5 @@ public class ModuleConnectionEditPart extends AbstractConnectionEditPart impleme
             registry.remove(getModel());
     }
 }
+
+

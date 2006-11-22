@@ -2,26 +2,15 @@ package org.omnetpp.ned.editor.graph.edit;
 
 import java.util.List;
 
-import org.eclipse.core.resources.IFile;
 import org.eclipse.draw2d.ConnectionAnchor;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.geometry.Point;
-import org.eclipse.gef.Request;
-import org.eclipse.gef.RequestConstants;
-import org.eclipse.ui.IEditorPart;
-import org.eclipse.ui.IFileEditorInput;
-import org.eclipse.ui.PartInitException;
-import org.eclipse.ui.PlatformUI;
-import org.eclipse.ui.part.FileEditorInput;
 import org.omnetpp.common.displaymodel.DisplayString;
 import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.figures.GateAnchor;
 import org.omnetpp.figures.SubmoduleFigure;
 import org.omnetpp.figures.layout.SubmoduleConstraint;
-import org.omnetpp.ned.editor.graph.GraphicalNedEditor;
-import org.omnetpp.ned.editor.graph.misc.ISelectionSupport;
 import org.omnetpp.ned2.model.ex.SubmoduleNodeEx;
-import org.omnetpp.ned2.model.interfaces.INEDTypeInfo;
 import org.omnetpp.ned2.model.notification.NEDModelEvent;
 
 
@@ -157,48 +146,16 @@ public class SubmoduleEditPart extends ModuleEditPart {
     }
 
     @Override
-    public boolean isSelectable() {
-        // TODO this is not a correct solution because we cannot connect these modules via connections
-        // however this feature is required
-
-        // selection should be allowed ONLY if the submodule is defined in the current compound module
-        // if we inherited the submodule, we should not allow selection (and editing in this module)
-        // we own the submodule if the submodule is declared in the current compound module
-        // ie. our parent controllers model is the same object as our model's parent
-
-//        return isEditable();
-        return true;
-    }
-
-    @Override
     public CompoundModuleEditPart getCompoundModulePart() {
         return (CompoundModuleEditPart)getParent();
     }
 
+    /* (non-Javadoc)
+     * @see org.omnetpp.ned.editor.graph.edit.BaseEditPart#getTypeNameForDblClickOpen()
+     * open the type of component for double click
+     */
     @Override
-    public void performRequest(Request req) {
-        super.performRequest(req);
-        // let's open or activate a new editor if somone has double clicked the submodule
-        if (RequestConstants.REQ_OPEN.equals(req.getType())) {
-            INEDTypeInfo typeInfo = getSubmoduleModel().getTypeNEDTypeInfo();
-            if (typeInfo == null)
-                return;
-            IFile file = typeInfo.getNEDFile();
-            IFileEditorInput fileEditorInput = new FileEditorInput(file);
-
-            try {
-                IEditorPart editor = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage()
-                    .openEditor(fileEditorInput, GraphicalNedEditor.ID, true);
-                
-                // select the component so it will be visible in the opened editor
-                if (editor instanceof ISelectionSupport)
-                    ((ISelectionSupport)editor).selectComponent(typeInfo.getName());
-                
-            } catch (PartInitException e) {
-                // TODO check if this can really happen?
-                e.printStackTrace();
-            }
-        }
+    protected String getTypeNameForDblClickOpen() {
+        return getSubmoduleModel().getEffectiveType();
     }
-
 }

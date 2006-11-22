@@ -1,7 +1,21 @@
 package org.omnetpp.ned.editor.graph.edit;
 
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.runtime.Assert;
+import org.eclipse.gef.EditPolicy;
+import org.eclipse.gef.Request;
+import org.eclipse.gef.RequestConstants;
 import org.eclipse.gef.editparts.AbstractGraphicalEditPart;
+import org.eclipse.ui.IEditorPart;
+import org.eclipse.ui.IFileEditorInput;
+import org.eclipse.ui.PartInitException;
+import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.part.FileEditorInput;
+import org.omnetpp.ned.editor.graph.GraphicalNedEditor;
+import org.omnetpp.ned.editor.graph.edit.policies.NedComponentEditPolicy;
+import org.omnetpp.ned.editor.graph.misc.ISelectionSupport;
 import org.omnetpp.ned2.model.NEDElement;
+import org.omnetpp.ned2.model.interfaces.INEDTypeInfo;
 import org.omnetpp.ned2.model.notification.INEDChangeListener;
 import org.omnetpp.ned2.model.notification.NEDModelEvent;
 
@@ -38,6 +52,7 @@ abstract public class BaseEditPart
      */
     @Override
     protected void createEditPolicies() {
+        installEditPolicy(EditPolicy.COMPONENT_ROLE, new NedComponentEditPolicy());
     }
 
     /**
@@ -106,4 +121,42 @@ abstract public class BaseEditPart
             nameString = "";
         System.out.println("NOTIFY ON: "+getModel().getClass().getSimpleName()+" "+nameString+" "+event);
     }
+
+    /* (non-Javadoc)
+     * @see org.eclipse.gef.editparts.AbstractEditPart#performRequest(org.eclipse.gef.Request)
+     * Open the base type after double clicking (if any)
+     */
+    @Override
+    public void performRequest(Request req) {
+        super.performRequest(req);
+        // let's open or activate a new editor if somone has double clicked the component
+        if (RequestConstants.REQ_OPEN.equals(req.getType())) {
+            String name = getTypeNameForDblClickOpen();
+            INEDTypeInfo typeInfo = getNEDModel().getContainerNEDTypeInfo()
+                                            .getResolver().getComponent(name);
+            if (typeInfo != null) {
+                IFile file = typeInfo.getNEDFile();
+                IFileEditorInput fileEditorInput = new FileEditorInput(file);
+
+                try {
+                    IEditorPart editor = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage()
+                            .openEditor(fileEditorInput, GraphicalNedEditor.ID, true);
+
+                    // select the component so it will be visible in the opened editor
+                    if (editor instanceof ISelectionSupport)
+                        ((ISelectionSupport)editor).selectComponent(typeInfo.getName());
+
+                } catch (PartInitException e) {
+                    // should not happen
+                    e.printStackTrace();
+                    Assert.isTrue(false);
+                }
+            }
+        }
+    }
+    
+    /**
+     * @return Should return the type name that must be opened if the user double clicks the module
+     */
+    protected abstract String getTypeNameForDblClickOpen();
 }

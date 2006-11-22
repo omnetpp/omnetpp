@@ -8,7 +8,6 @@ import org.eclipse.gef.NodeEditPart;
 import org.eclipse.gef.Request;
 import org.eclipse.gef.requests.DropRequest;
 import org.omnetpp.figures.GateAnchor;
-import org.omnetpp.ned.editor.graph.edit.policies.NedComponentEditPolicy;
 import org.omnetpp.ned.editor.graph.edit.policies.NedNodeEditPolicy;
 import org.omnetpp.ned2.model.ex.ConnectionNodeEx;
 
@@ -21,7 +20,6 @@ abstract public class ModuleEditPart extends BaseEditPart implements NodeEditPar
     @Override
 	protected void createEditPolicies() {
 		super.createEditPolicies();
-		installEditPolicy(EditPolicy.COMPONENT_ROLE, new NedComponentEditPolicy());
 		installEditPolicy(EditPolicy.GRAPHICAL_NODE_ROLE, new NedNodeEditPolicy());
 	}
 

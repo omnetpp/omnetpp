@@ -1,24 +1,9 @@
 package org.omnetpp.ned.editor.graph.edit;
 
-import org.eclipse.core.resources.IFile;
-import org.eclipse.core.runtime.Assert;
 import org.eclipse.draw2d.IFigure;
-import org.eclipse.gef.EditPolicy;
-import org.eclipse.gef.Request;
-import org.eclipse.gef.RequestConstants;
-import org.eclipse.gef.editparts.AbstractGraphicalEditPart;
-import org.eclipse.ui.IEditorPart;
-import org.eclipse.ui.IFileEditorInput;
-import org.eclipse.ui.PartInitException;
-import org.eclipse.ui.PlatformUI;
-import org.eclipse.ui.part.FileEditorInput;
 import org.omnetpp.common.displaymodel.DisplayString;
 import org.omnetpp.common.displaymodel.IHasDisplayString;
 import org.omnetpp.figures.TopLevelFigure;
-import org.omnetpp.ned.editor.graph.GraphicalNedEditor;
-import org.omnetpp.ned.editor.graph.edit.policies.NedComponentEditPolicy;
-import org.omnetpp.ned.editor.graph.misc.ISelectionSupport;
-import org.omnetpp.ned2.model.NEDElement;
 import org.omnetpp.ned2.model.interfaces.IHasAncestors;
 import org.omnetpp.ned2.model.interfaces.IHasName;
 import org.omnetpp.ned2.model.interfaces.INEDTypeInfo;
@@ -31,47 +16,21 @@ import org.omnetpp.ned2.model.notification.NEDModelEvent;
  * SimpleModule, Channel, CHannelInterface and interface.
  * (NOTE: compound module has it's own controller)
  */
-public class TopLevelEditPart extends AbstractGraphicalEditPart 
+public class TopLevelEditPart extends BaseEditPart 
 								  implements INEDChangeListener {
-
-    private long lastEventSerial;
-
-    @Override
-    public void activate() {
-        if (isActive()) return;
-        super.activate();
-        // register as listener of the model object
-        getNEDModel().getListeners().add(this);
-    }
-
-    /**
-     * Makes the EditPart insensible to changes in the model by removing itself
-     * from the model's list of listeners.
-     */
-    @Override
-    public void deactivate() {
-        if (!isActive()) return;
-        super.deactivate();
-        getNEDModel().getListeners().remove(this);
-    }
-
     /**
      * Installs the desired EditPolicies for this.
      */
-    @Override
-    protected void createEditPolicies() {
-		installEditPolicy(EditPolicy.COMPONENT_ROLE, new NedComponentEditPolicy());
-    }
+//    @Override
+//    protected void createEditPolicies() {
+//		installEditPolicy(EditPolicy.COMPONENT_ROLE, new NedComponentEditPolicy());
+//    }
 
     /**
      * Returns the model associated with this as a NEDElement.
      * 
      * @return The model of this as a NedElement.
      */
-    protected NEDElement getNEDModel() {
-        return (NEDElement) getModel();
-    }
-
     @Override
 	protected IFigure createFigure() {
 		return new TopLevelFigure();
@@ -90,19 +49,14 @@ public class TopLevelEditPart extends AbstractGraphicalEditPart
         if (typeInfo != null)
             typeInfo.modelChanged(event);
         
-        String nameString = getNEDModel().getAttribute("name");
-        if (nameString == null) 
-            nameString = "";
-        System.out.println("NOTIFY ON: "+getModel().getClass().getSimpleName()+" "+nameString+" "+event);
-
         refreshVisuals();
+        super.modelChanged(event);
     }
 
 	@Override
 	protected void refreshVisuals() {
-		super.refreshVisuals();
+        super.refreshVisuals();
         // define the properties that determine the visual appearence
-    	
     	if (getModel() instanceof IHasName) {
     		// set module name and vector size
     		String nameToDisplay = ((IHasName)getModel()).getName();
@@ -120,38 +74,14 @@ public class TopLevelEditPart extends AbstractGraphicalEditPart
 	}
     
     /* (non-Javadoc)
-     * @see org.eclipse.gef.editparts.AbstractEditPart#performRequest(org.eclipse.gef.Request)
-     * Open the base type after double clicking (if any)
+     * @see org.omnetpp.ned.editor.graph.edit.BaseEditPart#getTypeNameForDblClickOpen()
+     * open the first base component for double click
      */
     @Override
-    public void performRequest(Request req) {
-        super.performRequest(req);
-        // let's open or activate a new editor if somone has double clicked the component
-        if (RequestConstants.REQ_OPEN.equals(req.getType()) 
-                && getModel() instanceof IHasAncestors) {
-
-            String extendsName = ((IHasAncestors)getModel()).getFirstExtends();
-            INEDTypeInfo typeInfo = getNEDModel().getContainerNEDTypeInfo()
-                                            .getResolver().getComponent(extendsName);
-            if (typeInfo == null) return;
-            
-            IFile file = typeInfo.getNEDFile();
-            IFileEditorInput fileEditorInput = new FileEditorInput(file);
-
-            try {
-                IEditorPart editor = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage()
-                    .openEditor(fileEditorInput, GraphicalNedEditor.ID, true);
-                
-                // select the component so it will be visible in the opened editor
-                if (editor instanceof ISelectionSupport)
-                    ((ISelectionSupport)editor).selectComponent(typeInfo.getName());
-                
-            } catch (PartInitException e) {
-                // should not happen
-                e.printStackTrace();
-                Assert.isTrue(false);
-            }
-        }
+    protected String getTypeNameForDblClickOpen() {
+        if (getModel() instanceof IHasAncestors)
+            return ((IHasAncestors)getNEDModel()).getFirstExtends();
+        
+        return null;
     }
-    
 }
