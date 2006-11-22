@@ -25,7 +25,7 @@ simple HubNode
 module Star
 {
     parameters:
-        double n;
+        int n;
     submodules:
         node[n]: StarNode {
             parameters:

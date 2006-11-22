@@ -18,7 +18,7 @@
 simple PointToPointIF
 {
     parameters:
-        double frameCapacity; // max number of frames; 0 means no limit
+        int frameCapacity; // max number of frames; 0 means no limit
     gates:
         input in;
         input lineIn;

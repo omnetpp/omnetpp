@@ -18,11 +18,11 @@
 simple Generator
 {
     parameters:
-        double numStations; // number of stations. Destination MAC address will be a random
-                            // [0,numStatons-1] integer, omitting our own address.
-        double address; // MAC address of this station.
-        double numMessages; // number of messages to generate.
-        volatile double messageLength; // message length in bytes
+        int numStations; // number of stations. Destination MAC address will be a random
+                         // [0,numStatons-1] integer, omitting our own address.
+        int address; // MAC address of this station.
+        int numMessages; // number of messages to generate.
+        volatile int messageLength; // message length in bytes
         volatile double interArrivalTime; // time between two messages
     gates:
         output out;

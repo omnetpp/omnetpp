@@ -23,8 +23,8 @@ simple HexGridNode
 module HexGrid
 {
     parameters:
-        double rows;
-        double cols;
+        int rows;
+        int cols;
     submodules:
         node[rows*cols]: HexGridNode {
             parameters:

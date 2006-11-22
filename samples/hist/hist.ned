@@ -20,10 +20,10 @@
 simple HistogramDemo
 {
     parameters:
-        double num_obs;
-        double num_cells;
-        double fixed_range;
-        double num_first;
+        int num_obs;
+        int num_cells;
+        bool fixed_range;
+        int num_first;
         double range_ext;
 }
 
@@ -36,7 +36,7 @@ network Histograms extends HistogramDemo
     parameters:
         num_obs = default(10000) @prompt("Number of observations: ");
         num_cells = default(20) @prompt("Number of histogram cells: ");
-        fixed_range = default(0) @prompt("Auto (0) or fixed (1) histogram range? ");
+        fixed_range = default(false) @prompt("Auto (false) or fixed (true) histogram range? ");
         num_first = default(50) @prompt("Number of observations used for range estimation: ");
         range_ext = default(1.3) @prompt("Range extension factor (usually 1.0 .. 2): ");
 }

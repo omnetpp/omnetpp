@@ -18,8 +18,8 @@ import "sink";
 module FifoNet
 {
     parameters:
-        double num_cells;
-        double num_buffers;
+        int num_cells;
+        int num_buffers;
     submodules:
         gen: Generator {
             parameters:

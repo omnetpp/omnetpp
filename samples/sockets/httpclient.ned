@@ -14,9 +14,9 @@
 simple HTTPClient
 {
     parameters:
+        int addr;
+        int srvAddr;
         volatile double sendIaTime;
-        double addr;
-        double srvAddr;
     gates:
         input in;
         output out;

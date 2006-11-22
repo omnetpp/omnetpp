@@ -20,7 +20,7 @@ simple ChainNode
 module Chain
 {
     parameters:
-        double n;
+        int n;
     submodules:
         node[n]: ChainNode {
             parameters:

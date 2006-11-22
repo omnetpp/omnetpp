@@ -16,8 +16,8 @@ import "fifo";
 module Ring
 {
     parameters:
-        double num_cells;
-        double num_buffers;
+        int num_cells;
+        int num_buffers;
     submodules:
         fifo[num_buffers]: Fifo {
             parameters:

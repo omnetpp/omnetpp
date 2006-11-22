@@ -18,7 +18,7 @@ simple Client
         double timeout;
         volatile double connIaTime;
         volatile double queryIaTime;
-        volatile double numQuery;
+        volatile int numQuery;
     gates:
         output out;
         input in;
@@ -35,7 +35,7 @@ simple Switch
 {
     parameters:
         double pkRate;
-        double queueMaxLen;
+        int queueMaxLen;
     gates:
         output out[];
         input in[];
@@ -73,7 +73,7 @@ simple ServerProcess
 module ClientServer
 {
     parameters:
-        double numClients;
+        int numClients;
     submodules:
         server: Server {
             parameters:

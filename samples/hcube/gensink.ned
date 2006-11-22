@@ -14,8 +14,8 @@
 simple HCGenerator
 {
     parameters:
-        double num_stations;
-        double address;
+        int num_stations;
+        int address;
         volatile double ia_time;
     gates:
         output out;
@@ -28,7 +28,7 @@ simple HCGenerator
 simple HCSink
 {
     parameters:
-        double address;
+        int address;
     gates:
         input in;
 }

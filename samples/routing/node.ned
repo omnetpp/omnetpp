@@ -42,7 +42,7 @@ simple Routing
 module Node
 {
     parameters:
-        double address;
+        int address;
     gates:
         input in[];
         output out[];

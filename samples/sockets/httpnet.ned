@@ -20,7 +20,7 @@ import "cloud";
 module HTTPNet
 {
     parameters:
-        double numClients;
+        int numClients;
     submodules:
         server: HTTPServer {
             parameters:

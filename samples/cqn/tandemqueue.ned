@@ -18,8 +18,8 @@ import "switch.ned";
 module TandemQueue
 {
     parameters:
-        double numQueues;
-        double ownIndex;
+        int numQueues;
+        int ownIndex;
         double sDelay;
         double qDelay;
     gates:

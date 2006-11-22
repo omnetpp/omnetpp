@@ -18,8 +18,8 @@ import "switch.ned";
 module ClosedQueueingNetA
 {
     parameters:
-        double numTandems; // number of switches (and also of tandem queues)
-        double numQueuesPerTandem; // number of queues in a tandem queue
+        int numTandems; // number of switches (and also of tandem queues)
+        int numQueuesPerTandem; // number of queues in a tandem queue
         double sDelay;  // delay between switch and queues
         double qDelay;  // delay between queues
     submodules:

@@ -14,8 +14,8 @@
 simple HCRouter
 {
     parameters:
-        double address;
-        double dim;
+        int address;
+        int dim;
     gates:
         input in[];
         input from_gen;

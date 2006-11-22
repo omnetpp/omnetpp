@@ -19,7 +19,7 @@ simple FullGraphNode
 module FullGraph
 {
     parameters:
-        double n;
+        int n;
     submodules:
         node[n]: FullGraphNode {
             parameters:

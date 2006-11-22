@@ -11,7 +11,7 @@
 simple Txc4
 {
     parameters:
-        double limit;  // declare the new parameter
+        int limit;  // declare the new parameter
     gates:
         input in;
         output out;

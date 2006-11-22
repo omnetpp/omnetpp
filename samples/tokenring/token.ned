@@ -18,14 +18,10 @@
 simple TokenRingMAC
 {
     parameters:
-        // Token Ring data rate in bps. Standard values are 4 or 16 Mbps.
-        double dataRate;
-        // Token Holding Time, as defined in the protocol.
-        double THT;
-        // MAC address of this station, modeled with an integer.
-        double address;
-        // Max queue size in packets.
-        double queueMaxLen;
+        double dataRate; // data rate in bps. Standard values are 4 or 16 Mbps.
+        double THT; // Token Holding Time, as defined in the protocol.
+        int address; // MAC address of this station, modeled with an integer.
+        int queueMaxLen; // max queue size in packets.
     gates:
         input phy_in;
         input from_hl;

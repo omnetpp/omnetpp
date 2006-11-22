@@ -20,8 +20,8 @@ import "hcube.ned";
 module HypercubeNode
 {
     parameters:
-        double address;
-        double dim;
+        int address;
+        int dim;
     gates:
         input in[];
         output out[];

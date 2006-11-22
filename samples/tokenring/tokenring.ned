@@ -21,7 +21,7 @@ import "computer";
 module TokenRing
 {
     parameters:
-        double numStations; // Number of stations in the ring.
+        int numStations; // Number of stations in the ring.
         double THT; // Token Holding Time, as defined in the protocol
         double dataRate; // Token Ring data rate in bps
         double cableDelay; // Delay of the cable connecting adjacent stations

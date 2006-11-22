@@ -20,7 +20,7 @@ import "cloud";
 module TelnetNet
 {
     parameters:
-        double numClients;
+        int numClients;
     submodules:
         server: TelnetServer {
             parameters:

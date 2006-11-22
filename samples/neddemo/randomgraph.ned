@@ -20,7 +20,7 @@ simple RndNode
 module RandomGraph
 {
     parameters:
-        double n;
+        int n;
         volatile double connectedness; // 0.0<x<1.0
     submodules:
         node[n]: RndNode {

@@ -17,7 +17,7 @@ simple Queue
 {
     parameters:
         volatile double serviceTime;
-        double numInitialJobs;
+        int numInitialJobs;
     gates:
         input in[];
         output out;

@@ -21,8 +21,8 @@ simple MeshNode
 module Mesh
 {
     parameters:
-        double height;
-        double width;
+        int height;
+        int width;
     submodules:
         node[height*width]: MeshNode {
             parameters:

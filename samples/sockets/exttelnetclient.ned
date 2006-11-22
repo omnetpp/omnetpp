@@ -14,8 +14,8 @@
 simple ExtTelnetClient
 {
     parameters:
-        double addr;
-        double srvAddr;
+        int addr;
+        int srvAddr;
     gates:
         input in;
         output out;

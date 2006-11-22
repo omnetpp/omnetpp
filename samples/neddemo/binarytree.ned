@@ -20,7 +20,7 @@ simple BinaryTreeNode
 module BinaryTree1
 {
     parameters:
-        double height;
+        int height;
     submodules:
         node[2^height-1]: BinaryTreeNode {
             parameters:
@@ -37,7 +37,7 @@ module BinaryTree1
 module BinaryTree2
 {
     parameters:
-        double height;
+        int height;
     submodules:
         node[2^height-1]: BinaryTreeNode {
             parameters:

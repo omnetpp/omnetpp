@@ -16,7 +16,7 @@ simple FFGenerator
 {
     parameters:
         volatile double sendIaTime;
-        volatile double msgLength;
+        volatile int msgLength;
     gates:
         output out;
 }

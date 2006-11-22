@@ -23,10 +23,10 @@ import "token";
 module Computer
 {
     parameters:
-        double address; // MAC Address of this station.
+        int address; // MAC Address of this station.
         double dataRate; // Token Ring data rate in bps.
         double THT; // Token Holding Time, as defined in the protocol.
-        double numStations; // Number of stations. MAC addresses are
+        int numStations; // Number of stations. MAC addresses are
                                      // [0,numStatons-1] integers.
     gates:
         input in;
