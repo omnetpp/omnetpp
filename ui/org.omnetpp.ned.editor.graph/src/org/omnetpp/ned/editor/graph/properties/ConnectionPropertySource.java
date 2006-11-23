@@ -51,11 +51,11 @@ public class ConnectionPropertySource extends MergedPropertySource {
             // set up property descriptors
             PropertyDescriptor srcGateProp = new PropertyDescriptor(Prop.SrcGate, "source-gate");
             srcGateProp.setCategory("Base");
-            srcGateProp.setDescription("The source gate of the connection (read only)");
+            srcGateProp.setDescription("The source gate of the connection - (read only)");
 
             PropertyDescriptor destGateProp = new PropertyDescriptor(Prop.DestGate, "dest-gate");
             destGateProp.setCategory("Base");
-            destGateProp.setDescription("The destination gate of the connection (read only)");
+            destGateProp.setDescription("The destination gate of the connection - (read only)");
 
             descriptors = new IPropertyDescriptor[] { srcGateProp, destGateProp };
         }

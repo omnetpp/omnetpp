@@ -3,6 +3,8 @@ package org.omnetpp.ned.editor.graph.properties;
 import org.eclipse.core.runtime.IAdapterFactory;
 import org.eclipse.gef.EditPart;
 import org.eclipse.ui.views.properties.IPropertySource;
+import org.omnetpp.ned.editor.graph.edit.IReadOnlySupport;
+import org.omnetpp.ned.editor.graph.properties.util.MergedPropertySource;
 import org.omnetpp.ned2.model.NEDElement;
 import org.omnetpp.ned2.model.ex.ChannelInterfaceNodeEx;
 import org.omnetpp.ned2.model.ex.ChannelNodeEx;
@@ -13,7 +15,8 @@ import org.omnetpp.ned2.model.ex.SimpleModuleNodeEx;
 import org.omnetpp.ned2.model.ex.SubmoduleNodeEx;
 
 /**
- * Creates a propertysource for a NEDElement. Each propertysource class must be registered here 
+ * Creates a propertysource for a controller part. Each propertysource class must be 
+ * registered here 
  * @author rhornig
  *
  */
@@ -50,6 +53,11 @@ public  class NedPropertySourceAdapterFactory implements IAdapterFactory {
             if (nedModel instanceof ChannelInterfaceNodeEx) 
                 propSource = new ChannelInterfacePropertySource((ChannelInterfaceNodeEx)nedModel);
 
+            // set the read only flag on the property source
+            if ((part instanceof IReadOnlySupport) && (propSource instanceof MergedPropertySource))
+                ((MergedPropertySource)propSource).setReadOnly(
+                        !((IReadOnlySupport)part).isEditable());
+            
             // store the created adapter into the controller so we can reuse it later
             if(propSource != null) 
                 ((IPropertySourceSupport)part).setPropertySource(propSource);

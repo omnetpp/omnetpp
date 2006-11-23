@@ -6,23 +6,24 @@ import java.util.List;
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
 import org.eclipse.ui.views.properties.IPropertySource;
 import org.eclipse.ui.views.properties.IPropertySource2;
+import org.eclipse.ui.views.properties.PropertyDescriptor;
 import org.omnetpp.ned2.model.NEDElement;
-import org.omnetpp.ned2.model.notification.INEDChangeListener;
-import org.omnetpp.ned2.model.notification.NEDModelEvent;
 
 /**
  * @author rhornig
  * Merges several IPropertySource into a single PropertySource (flattens structure)
  */
-public class MergedPropertySource implements IPropertySource2, INEDChangeListener {
+public class MergedPropertySource implements IPropertySource2 {
     public static final String BASE_CATEGORY = "Base";
 
-	List<IPropertySource> mergedList = new ArrayList<IPropertySource>(); 
+	List<IPropertySource> mergedList = new ArrayList<IPropertySource>();
+
+    private boolean readOnly = false; 
 	
 	public MergedPropertySource(NEDElement model) {
         // register the propertysource as a listener for the model so it will be notified
         // once someone changes the underlying model
-        model.getListeners().add(this);
+//        model.getListeners().add(this);
     }
 
     /**
@@ -63,8 +64,17 @@ public class MergedPropertySource implements IPropertySource2, INEDChangeListene
 		List<IPropertyDescriptor> mergedPDList = new ArrayList<IPropertyDescriptor>();
 		// walk trhough all property source and merge its descriptors into a single list
 		for(IPropertySource psrc : mergedList) 
-			for(IPropertyDescriptor pdesc : psrc.getPropertyDescriptors())
-				mergedPDList.add(pdesc);
+			for(IPropertyDescriptor pdesc : psrc.getPropertyDescriptors()) {
+                if (readOnly && (pdesc.getClass()!=PropertyDescriptor.class)) {  
+                    // if we are read only, replace the property descriptor with a readonly one
+                    PropertyDescriptor readOnlyPDesc = 
+                        new PropertyDescriptor(pdesc.getId(), pdesc.getDisplayName());
+                    readOnlyPDesc.setCategory(pdesc.getCategory());
+                    readOnlyPDesc.setDescription(pdesc.getDescription()+" - (read only)");
+                    mergedPDList.add(readOnlyPDesc);
+                } else
+                    mergedPDList.add(pdesc);
+            }
 		
 		return mergedPDList.toArray(new IPropertyDescriptor[mergedPDList.size()]);
 	}
@@ -91,7 +101,14 @@ public class MergedPropertySource implements IPropertySource2, INEDChangeListene
 			psrc.setPropertyValue(id, value);
 	}
 
-    public void modelChanged(NEDModelEvent event) {
-    }
+//    public void modelChanged(NEDModelEvent event) {
+//    }
 
+    /**
+     * @param readOnly Sets the property source read only state
+     */
+    public void setReadOnly(boolean readOnly) {
+        this.readOnly = readOnly;
+    }
+    
 }
