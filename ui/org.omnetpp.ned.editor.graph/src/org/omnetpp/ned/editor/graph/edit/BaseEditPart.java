@@ -131,26 +131,32 @@ abstract public class BaseEditPart
         super.performRequest(req);
         // let's open or activate a new editor if somone has double clicked the component
         if (RequestConstants.REQ_OPEN.equals(req.getType())) {
-            String name = getTypeNameForDblClickOpen();
-            INEDTypeInfo typeInfo = getNEDModel().getContainerNEDTypeInfo()
-                                            .getResolver().getComponent(name);
-            if (typeInfo != null) {
-                IFile file = typeInfo.getNEDFile();
-                IFileEditorInput fileEditorInput = new FileEditorInput(file);
+            openEditor(getNEDModel(), getTypeNameForDblClickOpen());
+        }
+    }
 
-                try {
-                    IEditorPart editor = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage()
-                            .openEditor(fileEditorInput, GraphicalNedEditor.ID, true);
+    /**
+     * @param name
+     */
+    public static void openEditor(NEDElement srcNode, String name) {
+        INEDTypeInfo typeInfo = srcNode.getContainerNEDTypeInfo()
+                                        .getResolver().getComponent(name);
+        if (typeInfo != null) {
+            IFile file = typeInfo.getNEDFile();
+            IFileEditorInput fileEditorInput = new FileEditorInput(file);
 
-                    // select the component so it will be visible in the opened editor
-                    if (editor instanceof ISelectionSupport)
-                        ((ISelectionSupport)editor).selectComponent(typeInfo.getName());
+            try {
+                IEditorPart editor = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage()
+                        .openEditor(fileEditorInput, GraphicalNedEditor.ID, true);
 
-                } catch (PartInitException e) {
-                    // should not happen
-                    e.printStackTrace();
-                    Assert.isTrue(false);
-                }
+                // select the component so it will be visible in the opened editor
+                if (editor instanceof ISelectionSupport)
+                    ((ISelectionSupport)editor).selectComponent(typeInfo.getName());
+
+            } catch (PartInitException e) {
+                // should not happen
+                e.printStackTrace();
+                Assert.isTrue(false);
             }
         }
     }

@@ -11,9 +11,7 @@ import org.eclipse.gef.requests.CreateConnectionRequest;
 import org.eclipse.gef.requests.ReconnectRequest;
 import org.omnetpp.figures.ConnectionFigure;
 import org.omnetpp.figures.GateAnchor;
-import org.omnetpp.figures.ModuleFigure;
 import org.omnetpp.ned.editor.graph.commands.ConnectionCommand;
-import org.omnetpp.ned.editor.graph.edit.CompoundModuleEditPart;
 import org.omnetpp.ned.editor.graph.edit.ModuleEditPart;
 import org.omnetpp.ned2.model.ex.ConnectionNodeEx;
 import org.omnetpp.ned2.model.interfaces.INamedGraphNode;
@@ -37,7 +35,7 @@ public class NedNodeEditPolicy extends GraphicalNodeEditPolicy {
 	@Override
     protected Command getConnectionCreateCommand(CreateConnectionRequest request) {
         ConnectionNodeEx conn = (ConnectionNodeEx)request.getNewObject();
-        ConnectionCommand command = new ConnectionCommand(conn, (ModuleEditPart)getHost());
+        ConnectionCommand command = new ConnectionCommand(conn, getModuleEditPart());
         command.setSrcModule(getGraphNodeModel());
         GateAnchor anchor = (GateAnchor)getModuleEditPart().getSourceConnectionAnchor(request);
         if (anchor == null) 
@@ -62,7 +60,7 @@ public class NedNodeEditPolicy extends GraphicalNodeEditPolicy {
     @Override
     protected Command getReconnectTargetCommand(ReconnectRequest request) {
     	ConnectionNodeEx conn = (ConnectionNodeEx) request.getConnectionEditPart().getModel();
-        ConnectionCommand cmd = new ConnectionCommand(conn, (ModuleEditPart)getHost());
+        ConnectionCommand cmd = new ConnectionCommand(conn, getModuleEditPart());
 
         GateAnchor anchor = (GateAnchor)getModuleEditPart().getTargetConnectionAnchor(request);
         if (anchor == null) 
@@ -76,7 +74,7 @@ public class NedNodeEditPolicy extends GraphicalNodeEditPolicy {
     @Override
     protected Command getReconnectSourceCommand(ReconnectRequest request) {
     	ConnectionNodeEx conn = (ConnectionNodeEx) request.getConnectionEditPart().getModel();
-        ConnectionCommand cmd = new ConnectionCommand(conn, (ModuleEditPart)getHost());
+        ConnectionCommand cmd = new ConnectionCommand(conn, getModuleEditPart());
 
         GateAnchor anchor = (GateAnchor)getModuleEditPart().getSourceConnectionAnchor(request);
         if (anchor == null) 
@@ -103,10 +101,6 @@ public class NedNodeEditPolicy extends GraphicalNodeEditPolicy {
 
     protected INamedGraphNode getGraphNodeModel() {
         return (INamedGraphNode) getHost().getModel();
-    }
-
-    protected ModuleFigure getModuleFigure() {
-        return (ModuleFigure)getHostFigure();
     }
 
 }

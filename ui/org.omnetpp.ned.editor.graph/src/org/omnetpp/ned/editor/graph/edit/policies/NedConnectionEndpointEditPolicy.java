@@ -4,10 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.gef.ConnectionEditPart;
-import org.eclipse.gef.GraphicalEditPart;
 import org.eclipse.gef.editpolicies.ConnectionEndpointEditPolicy;
+import org.eclipse.swt.graphics.Color;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.figures.ConnectionFigure;
+import org.omnetpp.ned.editor.graph.edit.IReadOnlySupport;
 import org.omnetpp.ned.editor.graph.misc.NedConnectionEndHandle;
 import org.omnetpp.ned.editor.graph.misc.NedConnectionStartHandle;
 
@@ -26,7 +27,8 @@ public class NedConnectionEndpointEditPolicy extends ConnectionEndpointEditPolic
         super.addSelectionHandles();
 
         getConnectionFigure().setLineWidth(getConnectionFigure().getLocalLineWidth() + 1);
-        getConnectionFigure().setForegroundColor(ColorFactory.highlight);
+        Color color = isHostEditable() ? ColorFactory.highlight : ColorFactory.lowlight;
+        getConnectionFigure().setForegroundColor(color);
     }
 
     /* (non-Javadoc)
@@ -55,7 +57,17 @@ public class NedConnectionEndpointEditPolicy extends ConnectionEndpointEditPolic
     }
 
     protected ConnectionFigure getConnectionFigure() {
-        return (ConnectionFigure) ((GraphicalEditPart) getHost()).getFigure();
+        return (ConnectionFigure) getConnection();
+    }
+
+    /**
+     * @return Whether the host part of this policy is editable or not
+     */
+    public boolean isHostEditable() {
+        if (getHost() instanceof IReadOnlySupport) 
+            return ((IReadOnlySupport)getHost()).isEditable();
+        // by default it's editable
+        return true;
     }
 
 }

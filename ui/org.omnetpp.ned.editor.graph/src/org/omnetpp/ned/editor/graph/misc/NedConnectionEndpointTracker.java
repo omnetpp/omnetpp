@@ -6,6 +6,7 @@ import org.eclipse.gef.EditPartViewer;
 import org.eclipse.gef.tools.ConnectionEndpointTracker;
 import org.omnetpp.ned.editor.graph.commands.ConnectionCommand;
 import org.omnetpp.ned.editor.graph.edit.CompoundModuleEditPart;
+import org.omnetpp.ned.editor.graph.edit.ModuleConnectionEditPart;
 import org.omnetpp.ned2.model.pojo.ConnectionNode;
 
 /**
@@ -62,5 +63,12 @@ public class NedConnectionEndpointTracker extends ConnectionEndpointTracker {
 		};
 	}
 
-
+    @Override
+    protected boolean handleDragInProgress() {
+        // allow dragging ONLY if the connection is editable
+        if (((ModuleConnectionEditPart)getConnectionEditPart()).isEditable())
+            return super.handleDragInProgress();
+        
+        return false;
+    }
 }
