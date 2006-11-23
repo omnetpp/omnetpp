@@ -1,6 +1,7 @@
 package org.omnetpp.ned.editor.graph.properties;
 
 import org.eclipse.core.runtime.IAdapterFactory;
+import org.eclipse.gef.EditPart;
 import org.eclipse.ui.views.properties.IPropertySource;
 import org.omnetpp.ned2.model.NEDElement;
 import org.omnetpp.ned2.model.ex.ChannelInterfaceNodeEx;
@@ -17,40 +18,43 @@ import org.omnetpp.ned2.model.ex.SubmoduleNodeEx;
  *
  */
 public  class NedPropertySourceAdapterFactory implements IAdapterFactory {
-        private static String IPROPERTY_SOURCE_ADAPTER = "IPROPERTY_SOURCE_ADAPTER";
-        public Object getAdapter(Object model, Class adapterType) {
+        public Object getAdapter(Object part, Class adapterType) {
+            if (!(part instanceof EditPart))
+                return null;
             // try to get the adapter from the model (if it was previously created)
-            NEDElement nedModel = (NEDElement)model;
-            IPropertySource adapter = (IPropertySource)nedModel.getUserData(IPROPERTY_SOURCE_ADAPTER);
-            if (adapter != null) 
-                return adapter;
+            NEDElement nedModel = (NEDElement)((EditPart)part).getModel();
+            // try to get the property source from the object directly 
+            IPropertySource propSource = ((IPropertySourceSupport)part).getPropertySource(); 
+            if (propSource != null) 
+                return propSource;
             
             // if no adapter exists for this model object, create one
             if (nedModel instanceof SubmoduleNodeEx) 
-                adapter = new SubmodulePropertySource((SubmoduleNodeEx)nedModel);
+                propSource = new SubmodulePropertySource((SubmoduleNodeEx)nedModel);
             
             if (nedModel instanceof CompoundModuleNodeEx) 
-                adapter = new CompoundModulePropertySource((CompoundModuleNodeEx)nedModel);
+                propSource = new CompoundModulePropertySource((CompoundModuleNodeEx)nedModel);
 
             if (nedModel instanceof SimpleModuleNodeEx) 
-                adapter = new SimpleModulePropertySource((SimpleModuleNodeEx)nedModel);
+                propSource = new SimpleModulePropertySource((SimpleModuleNodeEx)nedModel);
 
             if (nedModel instanceof ConnectionNodeEx) 
-                adapter = new ConnectionPropertySource((ConnectionNodeEx)nedModel);
+                propSource = new ConnectionPropertySource((ConnectionNodeEx)nedModel);
 
             if (nedModel instanceof ChannelNodeEx) 
-                adapter = new ChannelPropertySource((ChannelNodeEx)nedModel);
+                propSource = new ChannelPropertySource((ChannelNodeEx)nedModel);
 
             if (nedModel instanceof ModuleInterfaceNodeEx) 
-                adapter = new ModuleInterfacePropertySource((ModuleInterfaceNodeEx)nedModel);
+                propSource = new ModuleInterfacePropertySource((ModuleInterfaceNodeEx)nedModel);
 
             if (nedModel instanceof ChannelInterfaceNodeEx) 
-                adapter = new ChannelInterfacePropertySource((ChannelInterfaceNodeEx)nedModel);
+                propSource = new ChannelInterfacePropertySource((ChannelInterfaceNodeEx)nedModel);
 
-            // store the created adapter into the model so we can reuse it later
-            if(adapter != null) 
-                nedModel.setUserData(IPROPERTY_SOURCE_ADAPTER, adapter);
-            return adapter;
+            // store the created adapter into the controller so we can reuse it later
+            if(propSource != null) 
+                ((IPropertySourceSupport)part).setPropertySource(propSource);
+
+            return propSource;
         }
 
         public Class[] getAdapterList() {

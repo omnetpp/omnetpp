@@ -11,9 +11,11 @@ import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.FileEditorInput;
+import org.eclipse.ui.views.properties.IPropertySource;
 import org.omnetpp.ned.editor.graph.GraphicalNedEditor;
 import org.omnetpp.ned.editor.graph.edit.policies.NedComponentEditPolicy;
 import org.omnetpp.ned.editor.graph.misc.ISelectionSupport;
+import org.omnetpp.ned.editor.graph.properties.IPropertySourceSupport;
 import org.omnetpp.ned2.model.NEDElement;
 import org.omnetpp.ned2.model.interfaces.INEDTypeInfo;
 import org.omnetpp.ned2.model.notification.INEDChangeListener;
@@ -23,10 +25,13 @@ import org.omnetpp.ned2.model.notification.NEDModelEvent;
  * Provides support for Container EditParts.
  */
 abstract public class BaseEditPart 
-   extends AbstractGraphicalEditPart implements INEDChangeListener, IReadOnlySupport {
+                           extends AbstractGraphicalEditPart 
+                           implements INEDChangeListener, IReadOnlySupport, 
+                                      IPropertySourceSupport {
 
     protected long lastEventSerial;
     private boolean editable = true;
+    private IPropertySource propertySource;
     
     @Override
     public void activate() {
@@ -161,6 +166,13 @@ abstract public class BaseEditPart
         }
     }
     
+    public IPropertySource getPropertySource() {
+        return propertySource;
+    }
+
+    public void setPropertySource(IPropertySource propertySource) {
+        this.propertySource = propertySource;
+    }
     /**
      * @return Should return the type name that must be opened if the user double clicks the module
      */

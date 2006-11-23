@@ -21,9 +21,10 @@ import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.omnetpp.common.displaymodel.IDisplayString;
 import org.omnetpp.common.displaymodel.IHasDisplayString;
 import org.omnetpp.common.image.ImageFactory;
+import org.omnetpp.ned.editor.graph.misc.ModelFactory;
 import org.omnetpp.ned.editor.graph.misc.NedConnectionCreationTool;
 import org.omnetpp.ned.editor.graph.misc.NedSelectionTool;
-import org.omnetpp.ned.editor.graph.misc.ModelFactory;
+import org.omnetpp.ned.editor.graph.properties.IPropertySourceSupport;
 import org.omnetpp.ned.editor.graph.properties.NedPropertySourceAdapterFactory;
 import org.omnetpp.ned2.model.NEDElement;
 import org.omnetpp.ned2.model.ex.ChannelInterfaceNodeEx;
@@ -34,8 +35,8 @@ import org.omnetpp.ned2.model.ex.ModuleInterfaceNodeEx;
 import org.omnetpp.ned2.model.ex.NEDElementUtilEx;
 import org.omnetpp.ned2.model.ex.SimpleModuleNodeEx;
 import org.omnetpp.ned2.model.ex.SubmoduleNodeEx;
-import org.omnetpp.ned2.model.interfaces.INEDTypeInfo;
 import org.omnetpp.ned2.model.interfaces.IHasName;
+import org.omnetpp.ned2.model.interfaces.INEDTypeInfo;
 import org.omnetpp.ned2.model.pojo.PropertyNode;
 import org.omnetpp.resources.NEDResourcesPlugin;
 
@@ -51,9 +52,9 @@ public class GraphicalNedEditorPlugin extends AbstractUIPlugin {
             singleton = this;
         }
         
-        // initialize the model's property srcModule factory
+        // initialize the property source factory
         Platform.getAdapterManager().registerAdapters(new NedPropertySourceAdapterFactory(), 
-                                                      NEDElement.class);
+                IPropertySourceSupport.class);
     }
 
     public static GraphicalNedEditorPlugin getDefault() {

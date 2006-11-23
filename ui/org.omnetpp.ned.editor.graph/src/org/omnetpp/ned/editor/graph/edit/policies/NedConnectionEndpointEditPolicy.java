@@ -8,7 +8,6 @@ import org.eclipse.gef.editpolicies.ConnectionEndpointEditPolicy;
 import org.eclipse.swt.graphics.Color;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.figures.ConnectionFigure;
-import org.omnetpp.ned.editor.graph.edit.IReadOnlySupport;
 import org.omnetpp.ned.editor.graph.misc.NedConnectionEndHandle;
 import org.omnetpp.ned.editor.graph.misc.NedConnectionStartHandle;
 
@@ -27,7 +26,8 @@ public class NedConnectionEndpointEditPolicy extends ConnectionEndpointEditPolic
         super.addSelectionHandles();
 
         getConnectionFigure().setLineWidth(getConnectionFigure().getLocalLineWidth() + 1);
-        Color color = isHostEditable() ? ColorFactory.highlight : ColorFactory.lowlight;
+        Color color = PolicyUtil.isEditable(getHost()) ? 
+                            ColorFactory.highlight : ColorFactory.lowlight;
         getConnectionFigure().setForegroundColor(color);
     }
 
@@ -58,16 +58,6 @@ public class NedConnectionEndpointEditPolicy extends ConnectionEndpointEditPolic
 
     protected ConnectionFigure getConnectionFigure() {
         return (ConnectionFigure) getConnection();
-    }
-
-    /**
-     * @return Whether the host part of this policy is editable or not
-     */
-    public boolean isHostEditable() {
-        if (getHost() instanceof IReadOnlySupport) 
-            return ((IReadOnlySupport)getHost()).isEditable();
-        // by default it's editable
-        return true;
     }
 
 }

@@ -24,12 +24,10 @@ import org.omnetpp.ned.editor.graph.actions.UnpinAction;
 import org.omnetpp.ned.editor.graph.commands.CloneSubmoduleCommand;
 import org.omnetpp.ned.editor.graph.commands.CreateSubmoduleCommand;
 import org.omnetpp.ned.editor.graph.commands.SetConstraintCommand;
-import org.omnetpp.ned.editor.graph.edit.IReadOnlySupport;
 import org.omnetpp.ned.editor.graph.edit.ModuleEditPart;
 import org.omnetpp.ned2.model.ex.CompoundModuleNodeEx;
 import org.omnetpp.ned2.model.ex.SubmoduleNodeEx;
 import org.omnetpp.ned2.model.interfaces.INamedGraphNode;
-
 
 /**
  * Layout policy used in compound modules. Handles cloning, creation, resizing of submodules
@@ -48,8 +46,10 @@ public class CompoundModuleLayoutEditPolicy extends DesktopLayoutEditPolicy {
      */
     @Override
     public Command getCommand(Request request) {
-        // check if the edit part is editable
-    	if (UnpinAction.REQ_UNPIN.equals(request.getType()))
+        // filter out all read only editparts
+//        PolicyUtil.filterOutReadOnlyParts(request);
+
+        if (UnpinAction.REQ_UNPIN.equals(request.getType()))
     		return getUnpinChildrenCommand((GroupRequest)request);
     	return super.getCommand(request);
     }
@@ -94,6 +94,9 @@ public class CompoundModuleLayoutEditPolicy extends DesktopLayoutEditPolicy {
 
     
     protected Command createChangeConstraintCommand(EditPart child, Object constraint) {
+        // do not allow delete if we are read only components
+        if (!PolicyUtil.isEditable(child))
+            return null;
         // HACK for fixing issue when the model returns unspecified size (-1,-1)
         // we have to calculate the center point in that direction manually using the size info
         // from the figure directly (which knows it's size) This is the inverse transformation of
@@ -147,11 +150,6 @@ public class CompoundModuleLayoutEditPolicy extends DesktopLayoutEditPolicy {
      * @return
      */
     protected Command createUnpinCommand(Request request, EditPart child) {
-        // check if the editpart is editable and do not create a commend if it's not
-        if (child instanceof IReadOnlySupport 
-                && !((IReadOnlySupport)child).isEditable())
-            return null;
-        
         // create the constraint change command 
         INamedGraphNode module = (INamedGraphNode) child.getModel();
         // do not create a command for submodules that do not have a location
@@ -178,8 +176,7 @@ public class CompoundModuleLayoutEditPolicy extends DesktopLayoutEditPolicy {
     protected EditPolicy createChildEditPolicy(EditPart child) {
         ResizableEditPolicy policy = new NedResizeEditPolicy();
         // check if the editpart is editable and do not allow resize or drag operations
-        if (child instanceof IReadOnlySupport 
-                && !((IReadOnlySupport)child).isEditable()) {
+        if (!PolicyUtil.isEditable(child)) {
             policy.setResizeDirections(PositionConstants.NONE);
             policy.setDragAllowed(false);
         }
@@ -215,4 +212,5 @@ public class CompoundModuleLayoutEditPolicy extends DesktopLayoutEditPolicy {
     protected IFigure getFeedbackLayer() {
         return getLayer(LayerConstants.SCALED_FEEDBACK_LAYER);
     }
+    
 }

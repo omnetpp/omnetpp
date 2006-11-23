@@ -10,10 +10,12 @@ import org.eclipse.gef.editpolicies.RootComponentEditPolicy;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
+import org.eclipse.ui.views.properties.IPropertySource;
 import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.ned.editor.graph.edit.policies.NedComponentEditPolicy;
 import org.omnetpp.ned.editor.graph.edit.policies.NedTreeContainerEditPolicy;
 import org.omnetpp.ned.editor.graph.edit.policies.NedTreeEditPolicy;
+import org.omnetpp.ned.editor.graph.properties.IPropertySourceSupport;
 import org.omnetpp.ned2.model.NEDElement;
 import org.omnetpp.ned2.model.NEDElementUtil;
 import org.omnetpp.ned2.model.ex.CompoundModuleNodeEx;
@@ -45,9 +47,10 @@ import org.omnetpp.ned2.model.pojo.TypesNode;
  * EditPart for Logic components in the Tree.
  */
 public class NedTreeEditPart extends AbstractTreeEditPart implements
-        INEDChangeListener {
+        INEDChangeListener, IPropertySourceSupport {
 
     private long lastEventSerial;
+    private IPropertySource propertySource;
 
     /**
      * Constructor initializes this with the given model.
@@ -265,5 +268,13 @@ public class NedTreeEditPart extends AbstractTreeEditPart implements
             lastEventSerial = event.getSerial();
 
         refreshChildren();
+    }
+
+    public IPropertySource getPropertySource() {
+        return propertySource;
+    }
+
+    public void setPropertySource(IPropertySource propertySource) {
+        this.propertySource = propertySource;
     }
 }

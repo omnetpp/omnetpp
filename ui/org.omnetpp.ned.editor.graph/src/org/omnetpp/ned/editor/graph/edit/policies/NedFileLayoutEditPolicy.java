@@ -20,7 +20,6 @@ import org.omnetpp.ned.editor.graph.commands.CreateToplevelComponentCommand;
 import org.omnetpp.ned.editor.graph.commands.ReorderCommand;
 import org.omnetpp.ned.editor.graph.commands.SetCompoundModuleConstraintCommand;
 import org.omnetpp.ned.editor.graph.edit.CompoundModuleEditPart;
-import org.omnetpp.ned.editor.graph.edit.IReadOnlySupport;
 import org.omnetpp.ned2.model.NEDElement;
 import org.omnetpp.ned2.model.interfaces.INamedGraphNode;
 
@@ -45,7 +44,7 @@ public class NedFileLayoutEditPolicy extends FlowLayoutEditPolicy {
         else  // and no resize for other types
             policy.setResizeDirections(PositionConstants.NONE);
             
-        if (child instanceof IReadOnlySupport && !((IReadOnlySupport)child).isEditable()) {
+        if (!PolicyUtil.isEditable(child)) {
             policy.setResizeDirections(PositionConstants.NONE);
             policy.setDragAllowed(false);
         }

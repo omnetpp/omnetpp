@@ -88,7 +88,8 @@ public class NedResizeEditPolicy extends ResizableEditPolicy {
     @Override
     protected List createSelectionHandles() {
         List handles = super.createSelectionHandles();
-        Color color = isDragAllowed() ? ColorFactory.highlight : ColorFactory.lowlight;
+        Color color = PolicyUtil.isEditable(getHost()) ? 
+                            ColorFactory.highlight : ColorFactory.lowlight;
         // set the color for all handles
         for(Object handle : handles) 
             ((IFigure)handle).setForegroundColor(color);
