@@ -229,14 +229,6 @@ class SIM_API cOwnedObject : public cNamedObject
     virtual ~cOwnedObject();
 
     /**
-     * Duplicates this object.  Duplicates the object and returns
-     * a pointer to the new one. Must be redefined in derived classes!
-     * In derived classes, it is usually implemented as
-     * <tt>return new cClassName(*this)</tt>.
-     */
-    virtual cOwnedObject *dup() const  {return new cOwnedObject(*this);}
-
-    /**
      * The assignment operator. Derived classes should contain similar
      * methods (<tt>cClassName& cClassName::operator=(cClassName&)</tt>).
      *
@@ -247,6 +239,9 @@ class SIM_API cOwnedObject : public cNamedObject
      * Ownership of the object is not affected by assigments.
      */
     cOwnedObject& operator=(const cOwnedObject& o);
+
+    // Note: dup() is still the original cObject one, which throws an error
+    // to indicate that dup() has to be redefined in each subclass.
 
     /**
      * Serializes the object into a buffer.

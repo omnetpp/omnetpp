@@ -145,14 +145,6 @@ class SIM_API cNamedObject : public cObject
     virtual ~cNamedObject();
 
     /**
-     * Duplicates this object.  Duplicates the object and returns
-     * a pointer to the new one. Must be redefined in derived classes!
-     * In derived classes, it is usually implemented as
-     * <tt>return new cClassName(*this)</tt>.
-     */
-    virtual cNamedObject *dup() const  {return new cNamedObject(*this);}
-
-    /**
      * The assignment operator. Derived classes should contain similar
      * methods (<tt>cClassName& cClassName::operator=(cClassName&)</tt>).
      *
@@ -161,6 +153,9 @@ class SIM_API cNamedObject : public cObject
      * <tt>setName(o.name()</tt>).
      */
     cNamedObject& operator=(const cNamedObject& o);
+
+    // Note: dup() is still the original cObject one, which throws an error
+    // to indicate that dup() has to be redefined in each subclass.
 
     /**
      * Serializes the object into a buffer.
