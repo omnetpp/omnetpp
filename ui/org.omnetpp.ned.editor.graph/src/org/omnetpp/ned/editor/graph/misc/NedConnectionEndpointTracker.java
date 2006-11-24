@@ -3,6 +3,7 @@ package org.omnetpp.ned.editor.graph.misc;
 import org.eclipse.gef.ConnectionEditPart;
 import org.eclipse.gef.EditPart;
 import org.eclipse.gef.EditPartViewer;
+import org.eclipse.gef.RequestConstants;
 import org.eclipse.gef.tools.ConnectionEndpointTracker;
 import org.omnetpp.ned.editor.graph.commands.ConnectionCommand;
 import org.omnetpp.ned.editor.graph.edit.CompoundModuleEditPart;
@@ -25,9 +26,19 @@ public class NedConnectionEndpointTracker extends ConnectionEndpointTracker {
 		if (stateTransition(STATE_DRAG_IN_PROGRESS, STATE_TERMINAL)) {
 			ConnectionCommand connCommand = (ConnectionCommand)getCommand();
 	    	
+            // set the gate filters
+            String srcGateFilter = connCommand.getSrcGate();
+            String destGateFilter = connCommand.getDestGate();
+            // depending on which side we are reconnecting, we offer a full gate list on that side
+            if (getCommandName() == RequestConstants.REQ_RECONNECT_TARGET)
+                destGateFilter = null;
+            if (getCommandName() == RequestConstants.REQ_RECONNECT_SOURCE)
+                srcGateFilter = null;
+            
 	    	// ask the user about which gates should be connected
 			ConnectionNode selectedConn 
-				= ConnectionChooser.open(connCommand.getSrcModule(), connCommand.getDestModule());
+				= ConnectionChooser.open(connCommand.getSrcModule(), srcGateFilter, 
+                                         connCommand.getDestModule(), destGateFilter);
 			
 			eraseSourceFeedback();
 			eraseTargetFeedback();

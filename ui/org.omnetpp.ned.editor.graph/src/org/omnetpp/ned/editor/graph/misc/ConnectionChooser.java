@@ -3,9 +3,11 @@ package org.omnetpp.ned.editor.graph.misc;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.MenuItem;
+import org.omnetpp.ned2.model.NEDElement;
 import org.omnetpp.ned2.model.NEDTreeUtil;
 import org.omnetpp.ned2.model.ex.CompoundModuleNodeEx;
 import org.omnetpp.ned2.model.ex.NEDElementFactoryEx;
@@ -15,7 +17,6 @@ import org.omnetpp.ned2.model.interfaces.INEDTypeInfo;
 import org.omnetpp.ned2.model.pojo.ConnectionNode;
 import org.omnetpp.ned2.model.pojo.GateNode;
 import org.omnetpp.ned2.model.pojo.NEDElementTags;
-import org.omnetpp.resources.NEDResourcesPlugin;
 
 /**
  * @author rhornig
@@ -24,30 +25,41 @@ import org.omnetpp.resources.NEDResourcesPlugin;
 public class ConnectionChooser {
     private static final String DEFAULT_INDEX = "0";
 
-	protected static List<GateNode> getModuleGates(IHasConnections module, int gateType) {
+	/**
+	 * @param module The queried module
+	 * @param gateType The type of the gate we are lookin for
+	 * @param nameFilter name filter, or NULL if no filtering is needed
+	 * @return All gates from the module matching the type and name
+	 */
+	protected static List<GateNode> getModuleGates(IHasConnections module, int gateType, String nameFilter) {
 		List<GateNode> result = new ArrayList<GateNode>();
 		
-		// the type is the compound module's name
-		// the gate type depends 
-		String moduleType = "";
-		if (module instanceof CompoundModuleNodeEx) {
-			moduleType = ((CompoundModuleNodeEx)module).getName();
-			// if we connect a compound module swap the gate type (in<>out) submodule.out -> out
-			gateType = (gateType == GateNode.NED_GATETYPE_INPUT) ? GateNode.NED_GATETYPE_OUTPUT : 
-				(gateType == GateNode.NED_GATETYPE_OUTPUT ? GateNode.NED_GATETYPE_INPUT : GateNode.NED_GATETYPE_INOUT);
+        INEDTypeInfo comp = null;
+
+        if (module instanceof CompoundModuleNodeEx) {
+            comp = ((CompoundModuleNodeEx)module).getContainerNEDTypeInfo();
+
+            // if we connect a compound module swap the gate type (in<>out) submodule.out -> out
+            if (gateType == GateNode.NED_GATETYPE_INPUT)
+                gateType = GateNode.NED_GATETYPE_OUTPUT;
+            else if (gateType == GateNode.NED_GATETYPE_OUTPUT)
+                gateType = GateNode.NED_GATETYPE_INPUT;
+            else 
+                gateType = GateNode.NED_GATETYPE_INOUT;
 		}
-		if (module instanceof SubmoduleNodeEx) {
-			moduleType = ((SubmoduleNodeEx)module).getType();
+
+        if (module instanceof SubmoduleNodeEx) {
+            comp = ((SubmoduleNodeEx)module).getTypeNEDTypeInfo();
 		}
 		
-		INEDTypeInfo comp = NEDResourcesPlugin.getNEDResources().getComponent(moduleType);
 		if (comp == null)
 			return result;
 		
-		for(String s : comp.getGates().keySet()) {
-			GateNode currGate = (GateNode)comp.getMembers().get(s);
+		for(NEDElement elem: comp.getGates().values()) {
+			GateNode currGate = (GateNode)elem;
 			if (currGate.getType() == gateType)
-				result.add(currGate);
+				if (nameFilter == null || nameFilter.equals(currGate.getName()))
+                        result.add(currGate);
 		}
 
 		return result;
@@ -134,23 +146,25 @@ public class ConnectionChooser {
 	
 	// TODO implement popupmenu if only one of the srcModule or destModule is present 
 	// only one side of the connection should be selected
-	// TODO if on,ly one selection is poccible do not offer a menu, but select that connection immediately
+	// TODO if on,ly one selection is possible do not offer a menu, but select that connection immediately
 	// TODO show which gates are already connected (do not offer those gates)
 	/**
 	 * This method ask the user which gates should be connected on the source and destination module
-	 * @param askForSrcGate
-	 * @param askForDestGate
+	 * @param srcModule the source module we are connecting to, should not be NULL
+	 * @param srcGate which dest module gate should be offered. if NULL, all module gates wil be enumerated 
+	 * @param destModule the destination module we are connecting to, should not be NULL
+	 * @param destGate which dest module gate should be offered. if NULL, all module gates wil be enumerated
+	 * @return
 	 */
-	public static ConnectionNode open(IHasConnections srcModule, IHasConnections destModule) {
-		// do not ask anything 
-		if (srcModule == null && destModule == null)
-			return null;
+	public static ConnectionNode open(IHasConnections srcModule, String srcGate, IHasConnections destModule, String destGate) {
+        Assert.isNotNull(srcModule);
+        Assert.isNotNull(destModule);
 		
-		List<GateNode> srcOutModuleGates = getModuleGates(srcModule, GateNode.NED_GATETYPE_OUTPUT);
-		List<GateNode> srcInOutModuleGates = getModuleGates(srcModule, GateNode.NED_GATETYPE_INOUT);
-		List<GateNode> destInModuleGates = getModuleGates(destModule, GateNode.NED_GATETYPE_INPUT);
-		List<GateNode> destInOutModuleGates = getModuleGates(srcModule, GateNode.NED_GATETYPE_INOUT);
-
+        List<GateNode> srcOutModuleGates = getModuleGates(srcModule, GateNode.NED_GATETYPE_OUTPUT, srcGate);
+        List<GateNode> srcInOutModuleGates = getModuleGates(srcModule, GateNode.NED_GATETYPE_INOUT, srcGate);
+        List<GateNode> destInModuleGates = getModuleGates(destModule, GateNode.NED_GATETYPE_INPUT, destGate);
+        List<GateNode> destInOutModuleGates = getModuleGates(destModule, GateNode.NED_GATETYPE_INOUT, destGate);
+        
 		BlockingMenu menu = new BlockingMenu(Display.getCurrent().getActiveShell(), SWT.NONE);
 		
 		for (GateNode srcOut : srcOutModuleGates)

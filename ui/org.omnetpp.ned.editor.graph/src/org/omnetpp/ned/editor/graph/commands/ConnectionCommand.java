@@ -152,14 +152,12 @@ public class ConnectionCommand extends Command {
 	 * @param to
 	 */
 	public static void copyConn(ConnectionNode from, ConnectionNode to) {
-//        to.setSrcModule(from.getSrcModule());
 		to.setSrcModuleIndex(from.getSrcModuleIndex());
         to.setSrcGate(from.getSrcGate());
         to.setSrcGateIndex(from.getSrcGateIndex());
         to.setSrcGatePlusplus(from.getSrcGatePlusplus());
         to.setSrcGateSubg(from.getSrcGateSubg());
         
-//        to.setDestModule(from.getDestModule());
         to.setDestModuleIndex(from.getDestModuleIndex());
         to.setDestGate(from.getDestGate());
         to.setDestGateIndex(from.getDestGateIndex());

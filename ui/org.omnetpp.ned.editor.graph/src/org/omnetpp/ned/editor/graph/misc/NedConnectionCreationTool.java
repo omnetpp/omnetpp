@@ -46,9 +46,9 @@ public class NedConnectionCreationTool extends ConnectionCreationTool {
 		ConnectionCommand endCommand = (ConnectionCommand)getCommand();
     	setCurrentCommand(endCommand);
     	
-    	// ask the user about which gates should be connected
+    	// ask the user about which gates should be connected, ask for both source and destination gates
 		ConnectionNode selectedConn 
-			= ConnectionChooser.open(endCommand.getSrcModule(), endCommand.getDestModule());
+			= ConnectionChooser.open(endCommand.getSrcModule(), null, endCommand.getDestModule(), null);
 		
     	eraseSourceFeedback();
 
