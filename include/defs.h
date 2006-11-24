@@ -80,9 +80,9 @@
 #endif
 #endif
 
-// disable VC8.0 warnings on Unix syscalls
 #ifdef _MSC_VER
-#pragma warning(disable:4996)
+#pragma warning(disable:4800)  // disable "forcing int to bool"
+#pragma warning(disable:4996)  // disable VC8.0 warnings on Unix syscalls
 #endif
 
 //=== other common defines
