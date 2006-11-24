@@ -274,6 +274,8 @@ class SIM_API cModule : public cComponent //noncopyable
      * Adds a gate. The type character tp can be <tt>'I'</tt> or <tt>'O'</tt> for input
      * and output, respectively.
      */
+//FIXME MUST BE ENFORCED THAT NAME IS UNIQUE!!!!! NOT THE SAME AS ANY SUBMODULE,PARAMETER OR GATE!!! OTHERWISE properties() WILL MESS UP!!!!!!!
+//FIXME THE SAME MUST BE ENFORCED WITH SUBMODULE CREATION!!!!
     cGate *addGate(const char *s, char tp, bool isvector=false);
 
     /**

@@ -26,8 +26,6 @@
 #include "parsim/cplaceholdermod.h"
 #endif
 
-//FIXME add separate nedSource() property, so that it can be inspected!!!!
-
 cComponentType::cComponentType(const char *name, const char *description) : cNoncopyableOwnedObject(name,false)
 {
     setDescription(description);
@@ -43,22 +41,34 @@ std::string cComponentType::info() const
     return desc;
 }
 
-cPar::Type cComponentType::parType(const char *parname) const
+cProperties *cComponentType::getPropertiesFor(const cComponent *component)
 {
-    int k = findPar(parname);
-    if (k<0)
-         throw new cRuntimeError(this, "no parameter called `%s'", parname);
-    return parType(k);
+    cModule *parent = component->parentModule();
+    cProperties *props = parent->componentType()->declaration()->subcomponentProperties(component->fullName());
+    if (!props)
+        props = component->componentType()->declaration()->properties();
+    return props;
 }
 
-cProperties *cComponentType::parProperties(const char *parname) const
+cProperties *cComponentType::getPropertiesFor(const cPar *par)
 {
-    int k = findPar(parname);
-    if (k<0)
-         throw new cRuntimeError(this, "no parameter called `%s'", parname);
-    return parProperties(k);
+    cComponent *component = check_and_cast<cComponent *>(par->owner());
+    cModule *parent = component->parentModule();
+    cProperties *props = parent->componentType()->declaration()->subcomponentParamProperties(component->fullName(), par->fullName());
+    if (!props)
+        props = component->componentType()->declaration()->paramProperties(par->fullName());
+    return props;
 }
 
+cProperties *cComponentType::getPropertiesFor(const cGate *gate)
+{
+    cComponent *component = check_and_cast<cComponent *>(gate->owner());
+    cModule *parent = component->parentModule();
+    cProperties *props = parent->componentType()->declaration()->subcomponentGateProperties(component->fullName(), gate->fullName());
+    if (!props)
+        props = component->componentType()->declaration()->gateProperties(gate->fullName());
+    return props;
+}
 
 //----
 

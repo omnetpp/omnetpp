@@ -19,6 +19,7 @@
 #include "cmodule.h"
 #include "ccompoundmodule.h"
 #include "ccomponenttype.h"
+#include "cneddeclaration.h"
 
 #include "cnednetworkbuilder.h"
 
@@ -62,28 +63,17 @@ class cDynamicModuleType : public cModuleType
      */
     virtual bool isNetwork() const;
 
-    /** @name cComponentType methods: delegated to cNEDDeclaration */
-    //@{
-    virtual std::string declaration() const;
-    virtual const char *extendsName() const;
-    virtual int numInterfaceNames() const;
-    virtual const char *interfaceName(int k) const;
-    virtual const char *implementationClassName() const;
+    /**
+     * Returns the NED declaration
+     */
+    virtual cNEDDeclarationBase *declaration() const {return getDecl();}  //XXX merge the two funcs
 
     virtual cProperties *properties() const;
-
-    virtual int numPars() const;
-    virtual const char *parName(int k) const;
-    virtual cPar::Type parType(int k) const;
-    virtual cProperties *parProperties(int k) const;
-    virtual int findPar(const char *parname) const;
-
-    virtual int numGates() const;
-    virtual const char *gateName(int k) const;
-    virtual cGate::Type gateType(int k) const;
-    virtual cProperties *gateProperties(int k) const;
-    virtual int findGate(const char *name) const;
-    //@}
+    virtual cProperties *paramProperties(const char *paramname) const;
+    virtual cProperties *gateProperties(const char *gatename) const;
+    virtual cProperties *subcomponentProperties(const char *subcomponentname) const;
+    virtual cProperties *subcomponentParamProperties(const char *subcomponentname, const char *paramname) const;
+    virtual cProperties *subcomponentGateProperties(const char *subcomponentname, const char *gatename) const;
 
 };
 

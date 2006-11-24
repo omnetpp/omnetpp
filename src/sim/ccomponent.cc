@@ -83,7 +83,7 @@ void cComponent::callInitialize()
 
 cProperties *cComponent::properties()
 {
-    return componenttype->properties();
+    return cComponentType::getPropertiesFor(this);
 }
 
 void cComponent::addPar(cParValue *value)

@@ -143,6 +143,11 @@ void cGate::setIndex(int sn, int vs)
     }
 }
 
+cProperties *cGate::properties() const
+{
+    return cComponentType::getPropertiesFor(this);
+}
+
 void cGate::connectTo(cGate *g, cChannel *chan)
 {
     if (vectsize==0)

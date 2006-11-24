@@ -81,11 +81,15 @@ class cObject
         cObject *owner @group(owner or parent) @hint(module or container this object belongs to);
 }
 
-class cOwnedObject extends cObject
+class cNamedObject extends cObject
 {
     fields:
         @omitGetVerb(true);
         string name @group(base) @editable @hint(an editable string attribute of the object, also used for fullName and fullPath);
+}
+
+class cOwnedObject extends cNamedObject
+{
 }
 
 class cNoncopyableOwnedObject extends cOwnedObject
@@ -158,15 +162,23 @@ class cCompoundModule extends cModule
 
 //----
 
+class cNEDDeclarationBase extends cNamedObject
+{
+    fields:
+        @omitGetVerb(true);
+//XXX        string extendsName @getter(extendsName) @hint(the component it extends);
+        string interfaceNames[] @getter(interfaceName) @sizeGetter(numInterfaceNames) @hint(the interfaces it implements using the 'like' keyword);
+        string implementationClass @getter(implementationClassName) @hint(the underlying C++ class that provides active behaviour);
+        //XXX and more...
+}
+
+
 class cComponentType extends cNoncopyableOwnedObject
 {
     fields:
         @omitGetVerb(true);
         string description @group(general); //XXX what's this
-        string declaration @hint(the NED declaration of the component, if available);
-        string extendsName @getter(extendsName) @hint(the component it extends);
-        string interfaceNames[] @getter(interfaceName) @sizeGetter(numInterfaceNames) @hint(the interfaces it implements using the 'like' keyword);
-        string implementationClass @getter(implementationClassName) @hint(the underlying C++ class that provides active behaviour);
+        cNEDDeclarationBase *declaration @hint(the NED declaration of the component);
 }
 
 class cModuleType extends cComponentType

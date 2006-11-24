@@ -73,8 +73,6 @@ class SIM_API cGate : public cNoncopyableOwnedObject  //FIXME make it cNamedObje
     bool hasDisplayString() {return dispstr!=NULL;}
 
   public:
-//FIXME add properties
-
     /** @name Constructors, destructor, assignment. */
     //@{
     /**
@@ -98,7 +96,7 @@ class SIM_API cGate : public cNoncopyableOwnedObject  //FIXME make it cNamedObje
 
     /**
      * Produces a one-line description of object contents.
-     * See cOwnedObject for more details.
+     * See cObject for more details.
      */
     virtual std::string info() const;
 
@@ -110,7 +108,7 @@ class SIM_API cGate : public cNoncopyableOwnedObject  //FIXME make it cNamedObje
     virtual const char *fullName() const;
 
     /**
-     * Sets object's name. Redefined to update the stored fullName string.
+     * Sets object's name. Redefined to update the cached fullName string.
      */
     virtual void setName(const char *s);
     //@}
@@ -186,6 +184,11 @@ class SIM_API cGate : public cNoncopyableOwnedObject  //FIXME make it cNamedObje
 
     /** @name Information about the gate. */
     //@{
+    /**
+     * Return the properties for this gate. Properties cannot be changed
+     * at runtime.
+     */
+    cProperties *properties() const;
 
     /**
      * Returns the gate's type, one of cGate::INPUT, cGate::OUTPUT and cGate::INOUT.

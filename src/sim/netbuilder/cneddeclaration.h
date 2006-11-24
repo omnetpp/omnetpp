@@ -25,11 +25,9 @@
 #include "cownedobject.h"
 #include "cparvalue.h"
 #include "cgate.h"
+#include "cneddeclarationbase.h"
 
 #include "nedcomponent.h"
-
-class cProperties;
-class cDynamicExpression;
 
 
 /**
@@ -53,40 +51,8 @@ class cDynamicExpression;
  *
  * @ingroup Internals
  */
-class SIM_API cNEDDeclaration : public cNoncopyableOwnedObject, public NEDComponent
+class SIM_API cNEDDeclaration : public cNEDDeclarationBase, public NEDComponent // noncopyable
 {
-  public:
-    /**
-     * Describes a parameter declaration with its value
-     */
-    struct ParamDescription //FIXME fully encapsulate, getter/setter!
-    {
-        cParValue *value;  // stores name, type, isInput and isVolatile flags as well -- never NULL
-        cProperties *properties;  // never NULL
-        std::string declaredOn;
-
-        ParamDescription();
-        ~ParamDescription();
-        ParamDescription deepCopy() const;
-    };
-
-    /**
-     * Describes a gate declaration, with its size if vector
-     */
-    struct GateDescription  //FIXME fully encapsulate, getter/setter!
-    {
-        std::string name;
-        cGate::Type type; // input, output, inout
-        bool isVector;
-        cDynamicExpression *gatesize; // NULL if not vector or gatesize unspecified
-        cProperties *properties;  // never NULL
-        std::string declaredOn;
-
-        GateDescription();
-        ~GateDescription();
-        GateDescription deepCopy() const;
-    };
-
   protected:
     typedef std::vector<std::string> StringVector;
     typedef std::map<std::string,int> StringToIntMap;
@@ -98,26 +64,39 @@ class SIM_API cNEDDeclaration : public cNoncopyableOwnedObject, public NEDCompon
     // simple module/channel C++ class to instantiate
     std::string implClassName;
 
-    // properties
-    cProperties *props;
-
     // parameters
     typedef std::vector<ParamDescription> ParamDescriptions;
     ParamDescriptions params;
     StringToIntMap paramNameMap;
 
+    typedef std::map<std::string, cParValue *> ParamValueMap;
+    ParamValueMap subcomponentParamMap;
+
     // gates
     typedef std::vector<GateDescription> GateDescriptions;
     GateDescriptions gates;
     StringToIntMap gateNameMap;
+    ParamValueMap subcomponentGatesizeMap;
 
     // locking
     bool locked;
 
+    // properties
+    typedef std::map<std::string, cProperties *> PropertiesMap;
+    cProperties *props;
+    PropertiesMap paramPropsMap;
+    PropertiesMap gatePropsMap;
+    PropertiesMap subcomponentPropsMap;
+    PropertiesMap subcomponentParamPropsMap;
+    PropertiesMap subcomponentGatePropsMap;
+
+  protected:
+    void putIntoPropsMap(PropertiesMap& propsMap, const std::string& name, cProperties *props);
+    cProperties *getFromPropsMap(const PropertiesMap& propsMap, const std::string& name) const;
+
   public:
     /** @name Constructors, destructor, assignment */
     //@{
-
     /**
      * Constructor.
      */
@@ -145,28 +124,34 @@ class SIM_API cNEDDeclaration : public cNoncopyableOwnedObject, public NEDCompon
     /**
      * NED declaration
      */
-    virtual std::string declaration() const;
+    virtual std::string nedSource() const;
 
     /** @name Setup */
     //@{
     /**
-     * Adds a parameter to the declaration. The contained cPar and cProperties
-     * objects in the struct will be taken over by cNEDDeclaration (and not
-     * duplicated/copied).
+     * Adds a parameter to the declaration.
      */
     virtual void addPar(const ParamDescription& paramDesc);
 
     /**
-     * Adds a gate to the declaration. The contained cPar and cProperties
-     * objects in the struct will be taken over by cNEDDeclaration (and not
-     * duplicated/copied).
+     * Sets the parameter of a submodule.
+     */
+    virtual void setSubcomponentParamValue(const char *subcomponentname, const char *paramName, cParValue *value);
+
+    /**
+     * Adds a gate to the declaration.
      */
     virtual void addGate(const GateDescription& gateDesc);
 
     /**
-     * Sets the properties in this declaration.
+     * Sets the gate vector size.
      */
-    virtual void setProperties(cProperties *props);
+    virtual void setGateSize(const char *gateName, cParValue *gatesize);
+
+    /**
+     * Sets the gate vector size of a submodule.
+     */
+    virtual void setSubcomponentGateSize(const char *subcomponentname, const char *gateName, cParValue *gatesize);
 
     /**
      * Add an "extends" name (super component) to this declaration.
@@ -185,47 +170,68 @@ class SIM_API cNEDDeclaration : public cNoncopyableOwnedObject, public NEDCompon
     virtual void setImplementationClassName(const char *name);
 
     /**
+     * Sets the properties in this declaration.
+     */
+    virtual void setProperties(cProperties *props);
+
+    /**
+     * Sets the properties of parameter
+     */
+    virtual void setParamProperties(const char *paramName, cProperties *props);
+
+    /**
+     * Sets the properties of gate
+     */
+    virtual void setGateProperties(const char *gateName, cProperties *props);
+
+    /**
+     * Sets the properties of a submodule or a contained channel
+     */
+    virtual void setSubcomponentProperties(const char *subcomponentName, cProperties *props);
+
+    /**
+     * Sets the properties of a parameter of a submodule or a contained channel
+     */
+    virtual void setSubcomponentParamProperties(const char *subcomponentName, const char *paramName, cProperties *props);
+
+    /**
+     * Sets the properties of a submodule gate
+     */
+    virtual void setSubcomponentGateProperties(const char *subcomponentName, const char *gateName, cProperties *props);
+
+    /**
      * Call lock() after setup is done.
      */
     void lock() {locked = true;}
     //@}
 
-    /** @name Inheritance */
+    /** @name Methods that implement cNEDDeclarationBase */
     //@{
     /**
      * Returns the number of "extends" names.
      */
-    int numExtendsNames() const  {return extendsnames.size();}
+    virtual int numExtendsNames() const  {return extendsnames.size();}
 
     /**
      * Returns the name of the kth "extends" name (k=0..numExtendsNames()-1).
      */
-    const char *extendsName(int k) const;
+    virtual const char *extendsName(int k) const;
 
     /**
      * Returns the number of interfaces.
      */
-    int numInterfaceNames() const  {return interfacenames.size();}
+    virtual int numInterfaceNames() const  {return interfacenames.size();}
 
     /**
      * Returns the name of the kth interface (k=0..numInterfaceNames()-1).
      */
-    const char *interfaceName(int k) const;
+    virtual const char *interfaceName(int k) const;
 
     /**
      * For simple modules and channels, it returns the name of the C++ class that
      * has to be instantiated; otherwise it returns NULL.
      */
-    const char *implementationClassName() const;
-    //@}
-
-    /** @name Properties */
-    //@{
-    /**
-     * Return the properties for this component. The properties are locked against
-     * modification, use dup() to create a modifiable copy.
-     */
-    virtual cProperties *properties() const;
+    virtual const char *implementationClassName() const;
     //@}
 
     /** @name Parameters */
@@ -250,22 +256,16 @@ class SIM_API cNEDDeclaration : public cNoncopyableOwnedObject, public NEDCompon
      * Returns the description of the ith parameter.
      * Throws an error if the parameter does not exist.
      */
+//XXX needed?
     virtual const ParamDescription& paramDescription(const char *name) const;
 
     /**
      * Returns index of the parameter specified with its name.
      * Returns -1 if the object doesn't exist.
      */
+//XXX needed?
     virtual int findPar(const char *parname) const;
 
-    /**
-     * Check if a parameter exists.
-     */
-    bool hasPar(const char *s) const {return findPar(s)>=0;}
-    //@}
-
-    /** @name Gates */
-    //@{
     /**
      * Returns the number of gates
      */
@@ -286,22 +286,44 @@ class SIM_API cNEDDeclaration : public cNoncopyableOwnedObject, public NEDCompon
      * Returns the description of the ith gate.
      * Throws an error if the gate does not exist.
      */
+//XXX needed?
     virtual const GateDescription& gateDescription(const char *name) const;
 
     /**
      * Returns index of the given gate (0..numGates()), or -1 if not found
      */
+//XXX needed?
     virtual int findGate(const char *name) const;
 
     /**
-     * Check if a gate exists.
+     * Returns the properties for this component.
      */
-    bool hasGate(const char *s) const  {return findGate(s)>=0;}
+    virtual cProperties *properties() const;
 
     /**
-     * Sets the gate vector size.
+     * Returns the properties of parameter
      */
-    virtual void setGateSize(const char *gateName, cDynamicExpression *gatesize);
+    virtual cProperties *paramProperties(const char *paramName) const;
+
+    /**
+     * Returns the properties of gate
+     */
+    virtual cProperties *gateProperties(const char *gateName) const;
+
+    /**
+     * Returns the properties of a submodule or a contained channel
+     */
+    virtual cProperties *subcomponentProperties(const char *subcomponentName) const;
+
+    /**
+     * Returns the properties of a parameter of a submodule or a contained channel
+     */
+    virtual cProperties *subcomponentParamProperties(const char *subcomponentName, const char *paramName) const;
+
+    /**
+     * Returns the properties of a submodule gate
+     */
+    virtual cProperties *subcomponentGateProperties(const char *subcomponentName, const char *gateName) const;
     //@}
 
     /** @name Help for the dynamic builder */

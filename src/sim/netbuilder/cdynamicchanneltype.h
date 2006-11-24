@@ -54,22 +54,30 @@ class cDynamicChannelType : public cChannelType
     virtual std::string detailedInfo() const;
     //@}
 
-    /** @name cComponentType methods: delegated to cNEDDeclaration */
-    //@{
-    virtual std::string declaration() const;
-    virtual const char *extendsName() const;
-    virtual int numInterfaceNames() const;
-    virtual const char *interfaceName(int k) const;
-    virtual const char *implementationClassName() const;
+    /**
+     * Returns the NED text, if available.
+     */
+    virtual cNEDDeclarationBase *declaration() const {return getDecl();} //XXX
+
+//    /** @name cComponentType methods: delegated to cNEDDeclaration */
+//    //@{
+//    virtual const char *extendsName() const;
+//    virtual int numInterfaceNames() const;
+//    virtual const char *interfaceName(int k) const;
+//    virtual const char *implementationClassName() const;
+//
+//    virtual cProperties *properties() const;
+//
+//    virtual int numPars() const;
+//    virtual const char *parName(int k) const;
+//    virtual cPar::Type parType(int k) const;
+//    virtual cProperties *parProperties(int k) const;
+//    virtual int findPar(const char *parname) const;
+//    //@}
 
     virtual cProperties *properties() const;
+    virtual cProperties *paramProperties(const char *paramname) const;
 
-    virtual int numPars() const;
-    virtual const char *parName(int k) const;
-    virtual cPar::Type parType(int k) const;
-    virtual cProperties *parProperties(int k) const;
-    virtual int findPar(const char *parname) const;
-    //@}
 };
 
 

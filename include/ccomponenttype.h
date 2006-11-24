@@ -19,15 +19,19 @@
 #include "cownedobject.h"
 #include "cpar.h"
 #include "cgate.h"
+#include "cneddeclarationbase.h"
 
 
 class cModule;
 class cChannel;
 class cProperties;
 
+//FIXME is it necessary at all to have separate cModuleType and cChannelType classes???
 
 /**
  * Common base class for cModuleType and cChannelType
+ *
+ * @ingroup FIXME
  */
 class SIM_API cComponentType : public cNoncopyableOwnedObject
 {
@@ -56,98 +60,26 @@ class SIM_API cComponentType : public cNoncopyableOwnedObject
     //@{
     /**
      * Sets a description string.
+     * FIXME why not delegate this too?
      */
     void setDescription(const char *s)  {desc = s?s:"";}
 
     /**
      * Returns a description string.
+     * FIXME the comment from the NED file or what?
      */
     const char *description() const  {return desc.c_str();}
 
     /**
      * Returns the NED declaration as text, if available.
      */
-    virtual std::string declaration() const = 0;
+    virtual cNEDDeclarationBase *declaration() const = 0;
     //@}
 
-    /** @name Inheritance */
-    //@{
-    /**
-     * Returns the name of the component this one extends
-     */
-    virtual const char *extendsName() const = 0;
-
-    /**
-     * Returns the number of interfaces.
-     */
-    virtual int numInterfaceNames() const = 0;
-
-    /**
-     * Returns the name of the kth interface (k=0..numInterfaceNames()-1).
-     */
-    virtual const char *interfaceName(int k) const = 0;
-
-    /**
-     * For simple modules and channels, it returns the name of the C++ class that
-     * has to be instantiated; otherwise it returns NULL.
-     */
-    virtual const char *implementationClassName() const = 0;
-    //@}
-
-    /** @name Properties */
-    //@{
-    /**
-     * Return the properties for this component. The returned object should not
-     * be modified.
-     */
-    virtual cProperties *properties() const = 0;
-    //@}
-
-    /** @name Parameters */
-    //@{
-    /**
-     * Returns total number of the parameters.
-     */
-    virtual int numPars() const = 0;
-
-    /**
-     * Returns the name of the kth parameter.
-     */
-    virtual const char *parName(int k) const = 0;
-
-    /**
-     * Returns the type of the kth parameter.
-     */
-    virtual cPar::Type parType(int k) const = 0;
-
-    /**
-     * Returns the type of the specified parameter.
-     */
-    virtual cPar::Type parType(const char *parname) const;
-
-    /**
-     * Return the properties for parameter k. The returned object should not
-     * be modified.
-     */
-    virtual cProperties *parProperties(int k) const = 0;
-
-    /**
-     * Return the properties for the specified parameter. The returned object
-     * should not be modified.
-     */
-    virtual cProperties *parProperties(const char *parname) const;
-
-    /**
-     * Returns index of the parameter specified with its name.
-     * Returns -1 if the object doesn't exist.
-     */
-    virtual int findPar(const char *parname) const = 0;
-
-    /**
-     * Check if a parameter exists.
-     */
-    bool hasPar(const char *s) const {return findPar(s)>=0;}
-    //@}
+    //FIXME comment
+    static cProperties *getPropertiesFor(const cComponent *component);
+    static cProperties *getPropertiesFor(const cPar *par);
+    static cProperties *getPropertiesFor(const cGate *gate);
 
     /**
      * Find a component type object by name.
@@ -162,7 +94,7 @@ class SIM_API cComponentType : public cNoncopyableOwnedObject
  * A cModuleType object exist for each module type (simple or compound).
  * FIXME document
  *
- * @ingroup Internals
+ * @ingroup FIXME
  */
 class SIM_API cModuleType : public cComponentType
 {
@@ -247,43 +179,6 @@ class SIM_API cModuleType : public cComponentType
     virtual cModule *createScheduleInit(char *name, cModule *parentmod);
     //@}
 
-    /** @name Gates */
-    //@{
-    /**
-     * Returns the number of gates
-     */
-    virtual int numGates() const = 0;
-
-    /**
-     * Returns the name of the kth gate.
-     */
-    virtual const char *gateName(int k) const = 0;
-
-    /**
-     * Returns the type of the kth gate.
-     */
-    virtual cGate::Type gateType(int k) const = 0;
-
-    /**
-     * Return the properties for gate k. The returned object should not
-     * be modified.
-     */
-    virtual cProperties *gateProperties(int k) const = 0;
-
-    /**
-     * Returns index of the given gate (0..numGates()), or -1 if not found.
-     */
-    virtual int findGate(const char *name) const = 0;
-
-    /**
-     * Check if a gate exists.
-     */
-    bool hasGate(const char *s) const  {return findGate(s)>=0;}
-
-//FIXME plus: submodule properties by name, channel properties by name!
-
-    //@}
-
     /**
      * Find a component type object by name.
      */
@@ -294,7 +189,7 @@ class SIM_API cModuleType : public cComponentType
 /**
  * Abstract base class for creating a channel of a given type.
  *
- * @ingroup Internals
+ * @ingroup FIXME
  */
 class SIM_API cChannelType : public cComponentType
 {

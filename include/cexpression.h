@@ -21,7 +21,6 @@
 
 class cXMLElement;
 
-
 /**
  * Abstract base class for expression evaluators.
  *

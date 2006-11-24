@@ -35,11 +35,15 @@ config filtobjlist-name	{}
 config filtobjlist-order	{Class}
 config last-nedfile	{}
 config log-save-filename	{omnetpp.out}
-config mainwin-geom	{640x480+-98+53}
+config logwindow-scrollbacklines	{100000}
+config mainwin-geom	{640x480+230+37}
 config mainwin-state	{normal}
 config rununtil-event	{}
 config rununtil-mode	{Express (tracing off)}
 config rununtil-time	{}
 config timeline-maxnumevents	{1000}
-inspector "alohaNet" "alohaNet" "2" "625x576+233+94"
+config timeline-msgclassnamepattern	{*}
+config timeline-msgnamepattern	{*}
+config timeline-wantnonselfmsgs	{1}
+config timeline-wantselfmsgs	{1}
 

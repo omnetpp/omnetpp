@@ -19,7 +19,7 @@
 
 #include "defs.h"
 #include "nedresourcecache.h"
-#include "cneddeclaration.h"
+//#include "cneddeclaration.h"
 
 class cProperties;
 class cProperty;
@@ -28,6 +28,7 @@ class NEDElement;
 class ParamNode;
 class GateNode;
 class PropertyNode;
+class cNEDDeclaration;
 
 /**
  * Stores dynamically loaded NED files, and one can look up NED declarations
@@ -58,8 +59,8 @@ class SIM_API cNEDLoader : public NEDResourceCache
     bool areDependenciesResolved(NEDElement *node);
     void tryResolvePendingDeclarations();
     cNEDDeclaration *buildNEDDeclaration(NEDElement *node);
-    cNEDDeclaration::ParamDescription extractParamDescription(ParamNode *paramNode);
-    cNEDDeclaration::GateDescription extractGateDescription(GateNode *gateNode);
+//    cNEDDeclaration::ParamDescription extractParamDescription(ParamNode *paramNode);
+//    cNEDDeclaration::GateDescription extractGateDescription(GateNode *gateNode);
     void updateProperties(NEDElement *parent, cProperties *props);
     void updateProperty(PropertyNode *propNode, cProperty *prop);
     void updateDisplayProperty(PropertyNode *propNode, cProperty *prop);

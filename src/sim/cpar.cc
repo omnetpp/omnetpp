@@ -77,8 +77,7 @@ void cPar::operator=(const cPar& other)
 
 cProperties *cPar::properties() const
 {
-    cComponentType *type = ownercomponent->componentType();
-    return type->parProperties(name());
+    return cComponentType::getPropertiesFor(this);
 }
 
 const char *cPar::typeName(Type t)
@@ -90,7 +89,7 @@ const char *cPar::typeName(Type t)
         case LONG:   return "long";
         case STRING: return "string";
         case XML:    return "xml";
-        defult:      return "???";
+        default:     return "???";
     }
 }
 

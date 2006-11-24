@@ -141,8 +141,8 @@ class SIM_API cPar : public cObject  //turn into cObject; delegate name to p! ad
     bool isShared() const;
 
     /**
-     * Return the properties for this parameter. Properties are locked against
-     * modifications.
+     * Return the properties for this parameter. Properties cannot be changed
+     * at runtime.
      */
     cProperties *properties() const;
     //@}

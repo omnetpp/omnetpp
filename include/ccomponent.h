@@ -56,6 +56,7 @@ class SIM_API cComponent : public cDefaultList // noncopyable
     virtual void setComponentType(cComponentType *componenttype);
 
     // internal: adds a new parameter to the component; called as part of the creation process
+//FIXME ADDING NEW PARAMETERS AT RUNTIME HAS TO BE PROHIBITED!!!!
     virtual void addPar(cParValue *value);
 
     // internal: invokes the read() method on all unset parameters
@@ -165,6 +166,12 @@ class SIM_API cComponent : public cDefaultList // noncopyable
 
     /** @name Misc. */
     //@{
+    /**
+     * Return the properties for this component. Properties cannot be changed
+     * at runtime.
+     */
+    cProperties *properties() const;
+
     /**
      * Returns the associated component type.
      */

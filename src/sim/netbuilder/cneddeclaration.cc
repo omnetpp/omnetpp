@@ -24,13 +24,10 @@
 cNEDDeclaration::ParamDescription::ParamDescription()
 {
     value = NULL;
-    properties = new cProperties();
 }
 
 cNEDDeclaration::ParamDescription::~ParamDescription()
 {
-//XXX the following cause crash -- investigate
-//    delete properties;
 //    delete value; //XXX khmm -- what if some cPar still points to it?
 }
 
@@ -39,8 +36,6 @@ cNEDDeclaration::ParamDescription cNEDDeclaration::ParamDescription::deepCopy() 
     ParamDescription tmp = *this;
     if (tmp.value)
         tmp.value = tmp.value->dup();
-    if (tmp.properties)
-        tmp.properties = tmp.properties->dup();
     return tmp;
 }
 
@@ -49,7 +44,6 @@ cNEDDeclaration::GateDescription::GateDescription()
     type = cGate::INPUT;
     isVector = false;
     gatesize = NULL;
-    properties = new cProperties();
 }
 
 cNEDDeclaration::GateDescription cNEDDeclaration::GateDescription::deepCopy() const
@@ -57,21 +51,18 @@ cNEDDeclaration::GateDescription cNEDDeclaration::GateDescription::deepCopy() co
     GateDescription tmp = *this;
     if (tmp.gatesize)
         tmp.gatesize = tmp.gatesize->dup();
-    if (tmp.properties)
-        tmp.properties = tmp.properties->dup();
     return tmp;
 }
 
 cNEDDeclaration::GateDescription::~GateDescription()
 {
 //XXX    delete gatesize;
-//XXX    delete properties;
 }
 
 //-----
 
 cNEDDeclaration::cNEDDeclaration(const char *name, NEDElement *tree) :
-cNoncopyableOwnedObject(name), NEDComponent(tree)
+cNEDDeclarationBase(name), NEDComponent(tree)
 {
     locked = false;   //FIXME check if locking makes sense
     props = new cProperties();
@@ -150,14 +141,13 @@ std::string cNEDDeclaration::detailedInfo() const
     for (int i=0; i<gates.size(); i++)
     {
         const GateDescription& desc = gateDescription(i);
-        out << "  gate " << desc.name << ": ..."
-            << " " << desc.properties->info() << "\n"; //XXX refine
+        out << "  gate " << desc.name << ": ..." << "\n"; //XXX refine, e.g print props too
     }
 
     return out.str();
 }
 
-std::string cNEDDeclaration::declaration() const
+std::string cNEDDeclaration::nedSource() const
 {
     std::stringstream out;
     NEDErrorStore errors;
@@ -192,12 +182,22 @@ void cNEDDeclaration::addPar(const ParamDescription& paramDesc)
     params.push_back(paramDesc);
 }
 
+void cNEDDeclaration::setSubcomponentParamValue(const char *subcomponentname, const char *paramName, cParValue *value)
+{
+    //FIXME todo put in the map
+}
+
 void cNEDDeclaration::addGate(const GateDescription& gateDesc)
 {
     if (locked)
         throw new cRuntimeError(this, "addGate(): too late, object already locked");
     gateNameMap[gateDesc.name] = gates.size();
     gates.push_back(gateDesc);
+}
+
+void cNEDDeclaration::setSubcomponentGateSize(const char *subcomponentname, const char *gateName, cParValue *gatesize)
+{
+    //FIXME todo put in the map
 }
 
 void cNEDDeclaration::setProperties(cProperties *p)
@@ -210,6 +210,31 @@ void cNEDDeclaration::setProperties(cProperties *p)
     props = p;
     props->setOwner(this);
     props->lock();
+}
+
+void cNEDDeclaration::setParamProperties(const char *paramName, cProperties *props)
+{
+    putIntoPropsMap(paramPropsMap, paramName, props);
+}
+
+void cNEDDeclaration::setGateProperties(const char *gateName, cProperties *props)
+{
+    putIntoPropsMap(gatePropsMap, gateName, props);
+}
+
+void cNEDDeclaration::setSubcomponentProperties(const char *subcomponentName, cProperties *props)
+{
+    putIntoPropsMap(subcomponentPropsMap, subcomponentName, props);
+}
+
+void cNEDDeclaration::setSubcomponentParamProperties(const char *subcomponentName, const char *paramName, cProperties *props)
+{
+    putIntoPropsMap(subcomponentParamPropsMap, std::string(subcomponentName)+"."+paramName, props);
+}
+
+void cNEDDeclaration::setSubcomponentGateProperties(const char *subcomponentName, const char *gateName, cProperties *props)
+{
+    putIntoPropsMap(subcomponentGatePropsMap, std::string(subcomponentName)+"."+gateName, props);
 }
 
 const char *cNEDDeclaration::interfaceName(int k) const
@@ -234,11 +259,6 @@ const char *cNEDDeclaration::implementationClassName() const
 int cNEDDeclaration::numPars() const
 {
     return params.size();
-}
-
-cProperties *cNEDDeclaration::properties() const
-{
-    return props;
 }
 
 const cNEDDeclaration::ParamDescription& cNEDDeclaration::paramDescription(int k) const
@@ -292,7 +312,7 @@ int cNEDDeclaration::findGate(const char *name) const
     return i->second;
 }
 
-void cNEDDeclaration::setGateSize(const char *name, cDynamicExpression *gatesize)
+void cNEDDeclaration::setGateSize(const char *name, cParValue *gatesize)
 {
     if (locked)
         throw new cRuntimeError(this, "setGateSize(): too late, object already locked");
@@ -303,6 +323,46 @@ void cNEDDeclaration::setGateSize(const char *name, cDynamicExpression *gatesize
     GateDescription& desc = gates[k];
     delete desc.gatesize;
     desc.gatesize = gatesize;
+}
+
+void cNEDDeclaration::putIntoPropsMap(PropertiesMap& propsMap, const std::string& name, cProperties *props)
+{
+//FIXME
+}
+
+cProperties *cNEDDeclaration::getFromPropsMap(const PropertiesMap& propsMap, const std::string& name) const
+{
+return NULL;//FIXME
+}
+
+cProperties *cNEDDeclaration::properties() const
+{
+    return props;
+}
+
+cProperties *cNEDDeclaration::paramProperties(const char *paramName) const
+{
+    return getFromPropsMap(paramPropsMap, paramName);
+}
+
+cProperties *cNEDDeclaration::gateProperties(const char *gateName) const
+{
+    return getFromPropsMap(gatePropsMap, gateName);
+}
+
+cProperties *cNEDDeclaration::subcomponentProperties(const char *subcomponentName) const
+{
+    return getFromPropsMap(subcomponentPropsMap, subcomponentName);
+}
+
+cProperties *cNEDDeclaration::subcomponentParamProperties(const char *subcomponentName, const char *paramName) const
+{
+    return getFromPropsMap(subcomponentParamPropsMap, std::string(subcomponentName)+"."+paramName);
+}
+
+cProperties *cNEDDeclaration::subcomponentGateProperties(const char *subcomponentName, const char *gateName) const
+{
+    return getFromPropsMap(subcomponentGatePropsMap, std::string(subcomponentName)+"."+gateName);
 }
 
 SubmodulesNode *cNEDDeclaration::getSubmodules()

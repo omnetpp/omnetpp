@@ -282,6 +282,7 @@ void cNEDNetworkBuilder::assignComponentParams(cComponent *subcomponentp, NEDEle
             cPar *p = &(subcomponentp->par(parname));
             cDynamicExpression *e = cExpressionBuilder().process(exprNode, true);
             p->setExpression(e);
+//FIXME FIXME            p->setIsInput(paramNode->getIsDefault());
         }
     }
 }
