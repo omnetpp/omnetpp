@@ -18,8 +18,8 @@
 #ifndef __DEFS_H
 #define __DEFS_H
 
-#include <stddef.h>   // size_t
-#include <math.h>     // HUGE_VAL
+#include <stddef.h>     // size_t
+#include <math.h>       // HUGE_VAL
 
 // OMNeT++ version -- must match NEDC_VERSION in nedxml source, and opp_msgc version!
 #define OMNETPP_VERSION 0x0304
@@ -59,7 +59,7 @@
 #endif
 
 
-//=== NULL
+// NULL
 #ifndef NULL
 #define NULL ((void*)0)
 #endif
@@ -94,7 +94,7 @@
 // gcc 2.9x.x had broken exception handling
 #ifdef __GNUC__
 #  if  __GNUC__<3
-#    error gcc 3.x required -- please upgrade
+#    error gcc 3.x or later required -- please upgrade
 #  endif
 #endif
 
