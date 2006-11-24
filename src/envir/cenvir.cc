@@ -32,10 +32,12 @@
 #include "fsutils.h"
 #include "cstrtokenizer2.h"
 
-#include "speedmtr.h"       // env_dummy_function()
-#include "filemgrs.h"       // env_dummy_function()
-#include "akaroarng.h"      // env_dummy_function()
-#include "akoutvectormgr.h" // env_dummy_function()
+#include "speedmtr.h"        // env_dummy_function()
+#include "filemgrs.h"        // env_dummy_function()
+#include "akaroarng.h"       // env_dummy_function()
+#include "akoutvectormgr.h"  // env_dummy_function()
+#include "matchableobject.h" // env_dummy_function()
+#include "matchexpression.h" // env_dummy_function()
 
 using std::ostream;
 
@@ -579,7 +581,9 @@ void env_dummy_function() {
     exponential(1.0);
     Speedometer a;
     cFileOutputVectorManager o;
-    (void)a; (void)o; // eliminate 'unused var' warning
+    MatchExpression m;
+    MatchableObjectAdapter d;
+    (void)a; (void)o; (void)m; (void)d; // eliminate 'unused var' warning
 #ifdef WITH_AKAROA
     cAkOutputVectorManager ao;
     cAkaroaRNG ar;
