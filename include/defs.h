@@ -98,7 +98,7 @@
 #  endif
 #endif
 
-#ifdef __GNUC__
+#if defined __GNUC__ && __GNUC__>=4
 #define _MAYBEUNUSED   __attribute((__unused__))
 #define _OPPDEPRECATED __attribute((__deprecated__))
 #else
