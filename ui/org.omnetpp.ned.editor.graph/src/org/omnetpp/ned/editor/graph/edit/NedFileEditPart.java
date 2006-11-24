@@ -16,6 +16,7 @@ import org.eclipse.gef.SnapToHelper;
 import org.omnetpp.ned.editor.graph.edit.policies.NedFileLayoutEditPolicy;
 import org.omnetpp.ned2.model.ex.NedFileNodeEx;
 import org.omnetpp.ned2.model.notification.NEDModelEvent;
+import org.omnetpp.resources.NEDResources;
 import org.omnetpp.resources.NEDResourcesPlugin;
 
 /**
@@ -101,18 +102,9 @@ public class NedFileEditPart extends BaseEditPart implements LayerConstants {
         
         NEDResourcesPlugin.getNEDResources().modelChanged(event);
 
-//        if (!(event.getSource() instanceof NedFileNodeEx))
-//            return;
-
-        // if it's an attribute change, we don't care except it is a name change. in this case we must make
-        // a full rehash.
-        // FIXME we should check for changes in exteds and like nodes too
-//        if (event instanceof NEDAttributeChangeEvent 
-//                && !CompoundModuleNodeEx.ATT_NAME.equals(((NEDAttributeChangeEvent)event).getAttribute()))
-//            return;
-
         // invalidate the type info cache and redraw the children
-        totalRefresh();
+        if (NEDResources.inheritanceMayHaveChanged(event))
+            totalRefresh();
     }
     
     /* (non-Javadoc)

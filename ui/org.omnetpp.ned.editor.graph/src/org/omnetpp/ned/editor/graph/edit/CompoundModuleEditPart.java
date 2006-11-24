@@ -146,13 +146,7 @@ public class CompoundModuleEditPart extends ModuleEditPart {
         super.modelChanged(event);
         // check for attribute changes
         if (event instanceof NEDAttributeChangeEvent) {
-//            NEDAttributeChangeEvent attrEvent = (NEDAttributeChangeEvent) event;
-            // FIXME could be optimized to refresh only if really necessary
-            refreshVisuals();
-            // it's not really optimal to refresh always all children for any attribute change. should be optimized
-            refreshChildrenVisuals();
-            refreshChildrenConnections();
-
+            totalRefresh();
         }
 
         // check for structural changes
@@ -165,9 +159,7 @@ public class CompoundModuleEditPart extends ModuleEditPart {
             
             // refresh connections if a connection was inserted/deleted
             if (structEvent.getChild() instanceof ConnectionNodeEx) {
-                refreshSourceConnections();
-                refreshTargetConnections();
-                refreshChildrenConnections();
+                totalRefresh();
             }
         }
         

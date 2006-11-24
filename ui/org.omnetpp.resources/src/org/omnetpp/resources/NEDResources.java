@@ -588,10 +588,10 @@ public class NEDResources implements INEDTypeResolver {
 
     /**
      * @param event
-     * @return Whether the inheritance chain has changed somewhere so the whole cahache should be
+     * @return Whether the inheritance chain has changed somewhere so the whole cache should be
      * invalidated
      */
-    private static boolean inheritanceMayHaveChanged(NEDModelEvent event) {
+    public static boolean inheritanceMayHaveChanged(NEDModelEvent event) {
         // if we have changed a toplevel element's name we should rehash 
         if (event.getSource() instanceof ITopLevelElement 
                 && event instanceof NEDAttributeChangeEvent 

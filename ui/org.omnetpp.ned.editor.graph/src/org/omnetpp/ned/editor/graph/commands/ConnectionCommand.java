@@ -85,7 +85,8 @@ public class ConnectionCommand extends Command {
     		return true;
     	
     	// do not allow command in any other cases
-        return false;
+        // XXX for the moment we eneble everything
+        return true;
     }
 
     @Override
@@ -104,17 +105,13 @@ public class ConnectionCommand extends Command {
             // store the parent too so we now where to put it back during undo
             // FIXME this does not work if connections are placed in connection groups
             parent = (CompoundModuleNodeEx)connModel.getParent().getParent();
-            // now detach from both src and dest modules
-            connModel.setSrcModuleRef(null);
-            connModel.setDestModuleRef(null);
             // and remove from the parent too
             connModel.removeFromParent();
+            // now detach from both src and dest modules
+//            connModel.setSrcModuleRef(null);
+//            connModel.setDestModuleRef(null);
             return;
         }
-
-        // if the connection is not yet added to the compound module, add it, so later change notification will be handled correctly
-        if(connModel.getParent() == null) 
-            editPart.getCompoundModulePart().getCompoundModuleModel().addConnection(connModel);
 
         if (srcModule != null && oldSrcModule != srcModule) 
             connModel.setSrcModuleRef(srcModule);
@@ -130,6 +127,9 @@ public class ConnectionCommand extends Command {
         // copy the rest of the connection data (notification will be generated)
         copyConn(newConn, connModel);
         
+        // if the connection is not yet added to the compound module, add it, so later change notification will be handled correctly
+        if(connModel.getParent() == null) 
+            editPart.getCompoundModulePart().getCompoundModuleModel().addConnection(connModel);
     }
 
     @Override

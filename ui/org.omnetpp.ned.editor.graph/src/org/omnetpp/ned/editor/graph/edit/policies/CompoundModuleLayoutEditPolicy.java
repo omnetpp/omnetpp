@@ -46,9 +46,6 @@ public class CompoundModuleLayoutEditPolicy extends DesktopLayoutEditPolicy {
      */
     @Override
     public Command getCommand(Request request) {
-        // filter out all read only editparts
-//        PolicyUtil.filterOutReadOnlyParts(request);
-
         if (UnpinAction.REQ_UNPIN.equals(request.getType()))
     		return getUnpinChildrenCommand((GroupRequest)request);
     	return super.getCommand(request);
@@ -150,6 +147,8 @@ public class CompoundModuleLayoutEditPolicy extends DesktopLayoutEditPolicy {
      * @return
      */
     protected Command createUnpinCommand(Request request, EditPart child) {
+        if (!PolicyUtil.isEditable(child))
+            return null;
         // create the constraint change command 
         INamedGraphNode module = (INamedGraphNode) child.getModel();
         // do not create a command for submodules that do not have a location
