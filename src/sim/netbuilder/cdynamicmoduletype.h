@@ -17,10 +17,8 @@
 #define __CDYNAMICMODULETYPE_H
 
 #include "cmodule.h"
-#include "ccompoundmodule.h"
 #include "ccomponenttype.h"
 #include "cneddeclaration.h"
-
 #include "cnednetworkbuilder.h"
 
 
@@ -67,13 +65,6 @@ class cDynamicModuleType : public cModuleType
      * Returns the NED declaration
      */
     virtual cNEDDeclarationBase *declaration() const {return getDecl();}  //XXX merge the two funcs
-
-    virtual cProperties *properties() const;
-    virtual cProperties *paramProperties(const char *paramname) const;
-    virtual cProperties *gateProperties(const char *gatename) const;
-    virtual cProperties *subcomponentProperties(const char *subcomponentname) const;
-    virtual cProperties *subcomponentParamProperties(const char *subcomponentname, const char *paramname) const;
-    virtual cProperties *subcomponentGateProperties(const char *subcomponentname, const char *gatename) const;
 
 };
 

@@ -119,9 +119,7 @@ void cNEDLoader::addComponent(const char *name, NEDElement *node)
 
     // if module or channel, register corresponding object which can be used to instantiate it
     cComponentType *type = NULL;
-    if (node->getTagCode()==NED_SIMPLE_MODULE)
-        type = new cDynamicModuleType(name);
-    else if (node->getTagCode()==NED_COMPOUND_MODULE)
+    if (node->getTagCode()==NED_SIMPLE_MODULE || node->getTagCode()==NED_COMPOUND_MODULE)
         type = new cDynamicModuleType(name);
     else if (node->getTagCode()==NED_CHANNEL)
         type = new cDynamicChannelType(name);
@@ -252,31 +250,7 @@ cNEDDeclaration *cNEDLoader::buildNEDDeclaration(NEDElement *node)
         cNEDDeclaration *superDecl = lookup2(superName);
         ASSERT(superDecl!=NULL); // because areDependenciesResolved() got passed
 
-        // propagate ultimate super class as C++ class name for simple modules and channels
-        decl->setImplementationClassName(superDecl->implementationClassName());
-
-        // take over properties
-        decl->setProperties(superDecl->properties()->dup());
-
-        // add inherited parameters
-        for (int i=0; i<superDecl->numPars(); i++)
-        {
-            const char *paramName = superDecl->parName(i);
-            if (decl->hasPar(paramName))
-                throw new cRuntimeError("already exists"); //XXX improve msg
-
-            decl->addPar(superDecl->paramDescription(i).deepCopy());
-        }
-
-        // add inherited gates
-        for (int i=0; i<superDecl->numGates(); i++)
-        {
-            const char *gateName = superDecl->gateName(i);
-            if (decl->hasGate(gateName))
-                throw new cRuntimeError("already exists"); //XXX improve msg
-
-            decl->addGate(superDecl->gateDescription(i).deepCopy());
-        }
+        decl->appendFrom(superDecl);
     }
 
     // parse new properties & parameters
@@ -300,7 +274,7 @@ cNEDDeclaration *cNEDLoader::buildNEDDeclaration(NEDElement *node)
             }
 
             const cNEDDeclaration::ParamDescription& desc = decl->paramDescription(paramName);
-            updateProperties(paramNode, desc.properties);
+            //FIXME updateProperties(paramNode, desc.properties);
 
             // assign parameter
             ExpressionNode *exprNode = paramNode->getFirstExpressionChild();
@@ -331,13 +305,15 @@ cNEDDeclaration *cNEDLoader::buildNEDDeclaration(NEDElement *node)
             }
 
             const cNEDDeclaration::GateDescription& desc = decl->gateDescription(gateName);
-            updateProperties(gateNode, desc.properties);
+            //FIXME updateProperties(gateNode, desc.properties);
 
             // assign gatesize
             ExpressionNode *exprNode = gateNode->getFirstExpressionChild();
             if (exprNode)
             {
-                cDynamicExpression *gatesize = cExpressionBuilder().process(exprNode, false);
+                cDynamicExpression *gatesizeExpr = cExpressionBuilder().process(exprNode, false);
+                cParValue *gatesize = new cLongPar();
+                cExpressionBuilder::assign(gatesize, gatesizeExpr);
                 decl->setGateSize(gateName, gatesize);
             }
         }

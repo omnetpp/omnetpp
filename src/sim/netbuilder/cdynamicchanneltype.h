@@ -18,8 +18,8 @@
 
 #include "cchannel.h"
 #include "ccomponenttype.h"
-
 #include "cnednetworkbuilder.h"
+#include "cneddeclaration.h"
 
 
 /**Declaration();

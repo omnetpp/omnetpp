@@ -90,9 +90,15 @@ class SIM_API cNEDDeclaration : public cNEDDeclarationBase, public NEDComponent 
     PropertiesMap subcomponentParamPropsMap;
     PropertiesMap subcomponentGatePropsMap;
 
+    // cached expressions: NED expressions (ExpressionNode) compiled into
+    // cParValue get cached here, indexed by exprNode->id().
+    typedef std::map<long, cParValue *> ExpressionMap;
+    ExpressionMap expressionMap;
+
   protected:
     void putIntoPropsMap(PropertiesMap& propsMap, const std::string& name, cProperties *props);
     cProperties *getFromPropsMap(const PropertiesMap& propsMap, const std::string& name) const;
+    void appendPropsMap(PropertiesMap& toPropsMap, const PropertiesMap& fromPropsMap);
 
   public:
     /** @name Constructors, destructor, assignment */
@@ -128,6 +134,12 @@ class SIM_API cNEDDeclaration : public cNEDDeclarationBase, public NEDComponent 
 
     /** @name Setup */
     //@{
+    /**
+     * Adds everything from the "other" declaration. Use: initializing a type
+     * from a super type.
+     */
+    virtual void appendFrom(const cNEDDeclaration *superDecl);
+
     /**
      * Adds a parameter to the declaration.
      */
@@ -324,6 +336,12 @@ class SIM_API cNEDDeclaration : public cNEDDeclarationBase, public NEDComponent 
      * Returns the properties of a submodule gate
      */
     virtual cProperties *subcomponentGateProperties(const char *subcomponentName, const char *gateName) const;
+    //@}
+
+    /** @name Expression caching */
+    //@{
+    virtual cParValue *getCachedExpression(ExpressionNode *expr);
+    virtual void putCachedExpression(ExpressionNode *expr, cParValue *value);
     //@}
 
     /** @name Help for the dynamic builder */

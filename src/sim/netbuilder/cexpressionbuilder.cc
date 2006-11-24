@@ -24,7 +24,7 @@
 #include "cexpressionbuilder.h"
 #include "cfunction.h"
 #include "cnedfunction.h"
-#include "cpar.h"
+#include "cparvalue.h"
 #include "xmlgenerator.h"
 #include "nedsupport.h"
 
@@ -290,7 +290,7 @@ std::cout << "    nedelement to expr returning: " << ret->toString() << "\n"; //
     return ret;
 }
 
-void cExpressionBuilder::assign(cPar *par, cDynamicExpression *expr)
+void cExpressionBuilder::assign(cParValue *par, cDynamicExpression *expr)
 {
     //FIXME todo optimize: if it's a single constant, single XML value etc!
 

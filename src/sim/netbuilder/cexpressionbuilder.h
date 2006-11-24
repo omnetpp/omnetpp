@@ -23,7 +23,7 @@
 #include "cdynamicexpression.h"
 #include "cexception.h"
 
-
+class cParValue;
 
 /**
  * Utility classes for dynamic NED loading.
@@ -62,7 +62,7 @@ class cExpressionBuilder
      * expressions (i.e. it is just a constant number), it does so and deletes
      * the expression.
      */
-    void assign(cPar *par, cDynamicExpression *expr);
+    static void assign(cParValue *par, cDynamicExpression *expr);
 };
 
 #endif

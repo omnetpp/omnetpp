@@ -147,6 +147,41 @@ std::string cNEDDeclaration::detailedInfo() const
     return out.str();
 }
 
+void cNEDDeclaration::appendFrom(const cNEDDeclaration *superDecl)
+{
+    // propagate ultimate super class as C++ class name for simple modules and channels
+    setImplementationClassName(superDecl->implementationClassName());
+
+    // add inherited parameters
+    for (int i=0; i<superDecl->numPars(); i++)
+    {
+        const char *paramName = superDecl->parName(i);
+        if (hasPar(paramName))
+            throw new cRuntimeError("already exists"); //XXX improve msg
+
+        addPar(superDecl->paramDescription(i).deepCopy());
+    }
+
+    // add inherited gates
+    for (int i=0; i<superDecl->numGates(); i++)
+    {
+        const char *gateName = superDecl->gateName(i);
+        if (hasGate(gateName))
+            throw new cRuntimeError("already exists"); //XXX improve msg
+
+        addGate(superDecl->gateDescription(i).deepCopy());
+    }
+
+    // take over properties
+    setProperties(superDecl->properties()->dup());
+    appendPropsMap(paramPropsMap, superDecl->paramPropsMap);
+    appendPropsMap(gatePropsMap, superDecl->gatePropsMap);
+    appendPropsMap(subcomponentPropsMap, superDecl->subcomponentPropsMap);
+    appendPropsMap(subcomponentParamPropsMap, superDecl->subcomponentParamPropsMap);
+    appendPropsMap(subcomponentGatePropsMap, superDecl->subcomponentGatePropsMap);
+
+}
+
 std::string cNEDDeclaration::nedSource() const
 {
     std::stringstream out;
@@ -327,12 +362,17 @@ void cNEDDeclaration::setGateSize(const char *name, cParValue *gatesize)
 
 void cNEDDeclaration::putIntoPropsMap(PropertiesMap& propsMap, const std::string& name, cProperties *props)
 {
-//FIXME
+    //FIXME
 }
 
 cProperties *cNEDDeclaration::getFromPropsMap(const PropertiesMap& propsMap, const std::string& name) const
 {
-return NULL;//FIXME
+    return NULL;//FIXME
+}
+
+void cNEDDeclaration::appendPropsMap(PropertiesMap& toPropsMap, const PropertiesMap& fromPropsMap)
+{
+    //FIXME
 }
 
 cProperties *cNEDDeclaration::properties() const
@@ -375,6 +415,15 @@ ConnectionsNode *cNEDDeclaration::getConnections()
     return (ConnectionsNode *)getTree()->getFirstChildWithTag(NED_CONNECTIONS);
 }
 
+cParValue *cNEDDeclaration::getCachedExpression(ExpressionNode *expr)
+{
+    return NULL;//FIXME
+}
+
+void cNEDDeclaration::putCachedExpression(ExpressionNode *expr, cParValue *value)
+{
+    //FIXME
+}
 
 //-------------------
 
