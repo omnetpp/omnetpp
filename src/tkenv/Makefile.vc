@@ -114,6 +114,7 @@ inspector.obj: inspector.cc \
   ../../include/cmessagepar.h \
   ../../include/cmodule.h \
   ../../include/cmsgheap.h \
+  ../../include/cneddeclarationbase.h \
   ../../include/cnedfunction.h \
   ../../include/cobject.h \
   ../../include/cnamedobject.h \
@@ -203,6 +204,7 @@ inspfactory.obj: inspfactory.cc \
   ../../include/cmessagepar.h \
   ../../include/cmodule.h \
   ../../include/cmsgheap.h \
+  ../../include/cneddeclarationbase.h \
   ../../include/cnedfunction.h \
   ../../include/cobject.h \
   ../../include/cnamedobject.h \
@@ -294,9 +296,11 @@ modinsp.obj: modinsp.cc \
   ../../include/cmsgheap.h \
   ../../include/ccoroutine.h \
   ../../include/ccomponenttype.h \
+  ../../include/cneddeclarationbase.h \
+  ../../include/cparvalue.h \
+  ../../include/cexpression.h \
   ../../include/cmessagepar.h \
   ../../include/cfunction.h \
-  ../../include/cexpression.h \
   inspector.h \
   tkutil.h \
   tkdefs.h
@@ -340,6 +344,7 @@ objinsp.obj: objinsp.cc \
   ../../include/cmessagepar.h \
   ../../include/cmodule.h \
   ../../include/cmsgheap.h \
+  ../../include/cneddeclarationbase.h \
   ../../include/cnedfunction.h \
   ../../include/cobject.h \
   ../../include/cnamedobject.h \
@@ -467,6 +472,8 @@ tkapp.obj: tkapp.cc \
   ../../include/cclassfactory.h \
   ../../include/cmessagepar.h \
   ../../include/cfunction.h \
+  ../../include/cneddeclarationbase.h \
+  ../../include/cparvalue.h \
   ../../include/cmsgheap.h \
   ../../include/ccoroutine.h \
   tkutil.h
@@ -512,6 +519,8 @@ tkcmd.obj: tkcmd.cc \
   ../../include/ccomponent.h \
   ../../include/cgate.h \
   ../../include/cdefaultlist.h \
+  ../../include/cneddeclarationbase.h \
+  ../../include/cparvalue.h \
   ../../include/cexpression.h \
   ../../include/cmessagepar.h \
   ../../include/cfunction.h \
@@ -590,4 +599,6 @@ visitor.obj: visitor.cc \
   ../../include/cfunction.h \
   ../../include/cexpression.h \
   ../../include/ccomponenttype.h \
+  ../../include/cneddeclarationbase.h \
+  ../../include/cparvalue.h \
   tkapp.h

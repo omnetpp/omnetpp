@@ -79,6 +79,8 @@ cmdenv.obj: cmdenv.cc \
   ../../include/cpar.h \
   ../../include/cdefaultlist.h \
   ../../include/cexpression.h \
+  ../../include/cneddeclarationbase.h \
+  ../../include/cparvalue.h \
   ../../include/cmessagepar.h \
   ../../include/cfunction.h
 enumstr.obj: enumstr.cc \

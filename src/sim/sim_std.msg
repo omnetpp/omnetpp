@@ -78,7 +78,6 @@ class cObject
         string fullPath @group(base) @hint(hierarchical name, composed of full names of this object and its owners/parents);
         string info @group(base) @hint(text provided by the object's "info" method);
         string detailedInfo @group(base) @hint(text provided by the object's "detailedInfo" method);
-        cObject *owner @group(owner or parent) @hint(module or container this object belongs to);
 }
 
 class cNamedObject extends cObject
@@ -90,6 +89,9 @@ class cNamedObject extends cObject
 
 class cOwnedObject extends cNamedObject
 {
+    fields:
+        @omitGetVerb(true);
+        cObject *owner @group(owner or parent) @hint(module or container this object belongs to);
 }
 
 class cNoncopyableOwnedObject extends cOwnedObject

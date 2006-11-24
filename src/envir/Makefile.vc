@@ -224,7 +224,9 @@ filemgrs.obj: filemgrs.cc \
   ../../include/cgate.h \
   ../../include/cpar.h \
   ../../include/cdefaultlist.h \
-  ../../include/cexpression.h
+  ../../include/cexpression.h \
+  ../../include/cneddeclarationbase.h \
+  ../../include/cparvalue.h
 fsutils.obj: fsutils.cc \
   fsutils.h \
   ../../include/platdep/misc.h \

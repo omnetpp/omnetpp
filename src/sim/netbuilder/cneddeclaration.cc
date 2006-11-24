@@ -362,17 +362,22 @@ void cNEDDeclaration::setGateSize(const char *name, cParValue *gatesize)
 
 void cNEDDeclaration::putIntoPropsMap(PropertiesMap& propsMap, const std::string& name, cProperties *props)
 {
-    //FIXME
+    PropertiesMap::const_iterator it = propsMap.find(name);
+    ASSERT(it==propsMap.end()); //XXX or?
+    if (it==propsMap.end())
+        propsMap[name] = props;
 }
 
 cProperties *cNEDDeclaration::getFromPropsMap(const PropertiesMap& propsMap, const std::string& name) const
 {
-    return NULL;//FIXME
+    PropertiesMap::const_iterator it = propsMap.find(name);
+    return it==propsMap.end() ? NULL : it->second;
 }
 
 void cNEDDeclaration::appendPropsMap(PropertiesMap& toPropsMap, const PropertiesMap& fromPropsMap)
 {
-    //FIXME
+    for (PropertiesMap::const_iterator it=fromPropsMap.begin(); it!=fromPropsMap.end(); it++)
+        toPropsMap[it->first] = it->second->dup(); //XXX what if key already exists? error?
 }
 
 cProperties *cNEDDeclaration::properties() const
@@ -417,12 +422,16 @@ ConnectionsNode *cNEDDeclaration::getConnections()
 
 cParValue *cNEDDeclaration::getCachedExpression(ExpressionNode *expr)
 {
-    return NULL;//FIXME
+    ExpressionMap::const_iterator it = expressionMap.find(expr->getId());
+    return it==expressionMap.end() ? NULL : it->second;
 }
 
 void cNEDDeclaration::putCachedExpression(ExpressionNode *expr, cParValue *value)
 {
-    //FIXME
+    ExpressionMap::const_iterator it = expressionMap.find(expr->getId());
+    ASSERT(it==expressionMap.end()); //XXX or?
+    if (it==expressionMap.end())
+        expressionMap[expr->getId()] = value;
 }
 
 //-------------------
