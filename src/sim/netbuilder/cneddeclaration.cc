@@ -21,60 +21,26 @@
 #include "nederror.h"
 
 
-cNEDDeclaration::ParamDescription::ParamDescription()
-{
-    value = NULL;
-}
-
-cNEDDeclaration::ParamDescription::~ParamDescription()
-{
-//    delete value; //XXX khmm -- what if some cPar still points to it?
-}
-
-cNEDDeclaration::ParamDescription cNEDDeclaration::ParamDescription::deepCopy() const
-{
-    ParamDescription tmp = *this;
-    if (tmp.value)
-        tmp.value = tmp.value->dup();
-    return tmp;
-}
-
-cNEDDeclaration::GateDescription::GateDescription()
-{
-    type = cGate::INPUT;
-    isVector = false;
-    gatesize = NULL;
-}
-
-cNEDDeclaration::GateDescription cNEDDeclaration::GateDescription::deepCopy() const
-{
-    GateDescription tmp = *this;
-    if (tmp.gatesize)
-        tmp.gatesize = tmp.gatesize->dup();
-    return tmp;
-}
-
-cNEDDeclaration::GateDescription::~GateDescription()
-{
-//XXX    delete gatesize;
-}
-
-//-----
-
 cNEDDeclaration::cNEDDeclaration(const char *name, NEDElement *tree) :
 cNEDDeclarationBase(name), NEDComponent(tree)
 {
-    locked = false;   //FIXME check if locking makes sense
-    props = new cProperties();
+    // add "extends" and "like" names
+    for (NEDElement *child=tree->getFirstChild(); child; child=child->getNextSibling())
+    {
+        if (child->getTagCode()==NED_EXTENDS)
+            extendsnames.push_back(((ExtendsNode *)child)->getName());
+        if (child->getTagCode()==NED_INTERFACE_NAME)
+            interfacenames.push_back(((InterfaceNameNode *)child)->getName());
+    }
+
+    //FIXME copy from parent?
+    if (tree->getTagCode()==NED_SIMPLE_MODULE || tree->getTagCode()==NED_CHANNEL)
+        implClassName = name;
 }
 
 cNEDDeclaration::~cNEDDeclaration()
 {
-    for (int i=0; i<params.size(); i++)
-        delete params[i].value;
-    for (int i=0; i<gates.size(); i++)
-        delete gates[i].gatesize;
-    delete props;
+//FIXME TODO
 }
 
 std::string cNEDDeclaration::info() const
@@ -105,81 +71,25 @@ std::string cNEDDeclaration::info() const
 std::string cNEDDeclaration::detailedInfo() const
 {
     std::stringstream out;
-    out << "Name: " << name() << "\n";
+    out << "Name: " << name();
     if (numExtendsNames()>0)
     {
-        out << "Extends: ";
+        out << "extends ";
         for (int i=0; i<numExtendsNames(); i++)
             out << (i?", ":"") << extendsName(i);
-        out << "\n";
+        out << "  ";
     }
 
     if (numInterfaceNames()>0)
     {
-        out << "Like: ";
+        out << "like ";
         for (int i=0; i<numInterfaceNames(); i++)
             out << (i?", ":"") << interfaceName(i);
-        out << "\n";
+        out << "  ";
     }
-
     if (!implClassName.empty())
-        out << "C++ class: " << implClassName << "\n";
-
-    out << "Properties (incl. inherited ones):\n";
-    out << "  " << properties()->info() << "\n";
-
-    out << "Parameters (incl. inherited ones):\n";
-    if (params.size()==0) out << "  none\n";
-    for (int i=0; i<params.size(); i++)
-    {
-        const ParamDescription& desc = paramDescription(i);
-        out << "  " << desc.value->detailedInfo() << "\n";
-    }
-
-    out << "Gates (incl. inherited ones):\n";
-    if (gates.size()==0) out << "  none\n";
-    for (int i=0; i<gates.size(); i++)
-    {
-        const GateDescription& desc = gateDescription(i);
-        out << "  gate " << desc.name << ": ..." << "\n"; //XXX refine, e.g print props too
-    }
-
+        out << "\nC++ class: " << implClassName << "\n";
     return out.str();
-}
-
-void cNEDDeclaration::appendFrom(const cNEDDeclaration *superDecl)
-{
-    // propagate ultimate super class as C++ class name for simple modules and channels
-    setImplementationClassName(superDecl->implementationClassName());
-
-    // add inherited parameters
-    for (int i=0; i<superDecl->numPars(); i++)
-    {
-        const char *paramName = superDecl->parName(i);
-        if (hasPar(paramName))
-            throw new cRuntimeError("already exists"); //XXX improve msg
-
-        addPar(superDecl->paramDescription(i).deepCopy());
-    }
-
-    // add inherited gates
-    for (int i=0; i<superDecl->numGates(); i++)
-    {
-        const char *gateName = superDecl->gateName(i);
-        if (hasGate(gateName))
-            throw new cRuntimeError("already exists"); //XXX improve msg
-
-        addGate(superDecl->gateDescription(i).deepCopy());
-    }
-
-    // take over properties
-    setProperties(superDecl->properties()->dup());
-    appendPropsMap(paramPropsMap, superDecl->paramPropsMap);
-    appendPropsMap(gatePropsMap, superDecl->gatePropsMap);
-    appendPropsMap(subcomponentPropsMap, superDecl->subcomponentPropsMap);
-    appendPropsMap(subcomponentParamPropsMap, superDecl->subcomponentParamPropsMap);
-    appendPropsMap(subcomponentGatePropsMap, superDecl->subcomponentGatePropsMap);
-
 }
 
 std::string cNEDDeclaration::nedSource() const
@@ -188,88 +98,6 @@ std::string cNEDDeclaration::nedSource() const
     NEDErrorStore errors;
     generateNED2(out, getTree(), &errors);
     return out.str();
-}
-
-void cNEDDeclaration::addExtendsName(const char *name)
-{
-    if (locked)
-        throw new cRuntimeError(this, "addExtendsName(): too late, object already locked");
-    extendsnames.push_back(name);
-}
-
-void cNEDDeclaration::addInterfaceName(const char *name)
-{
-    if (locked)
-        throw new cRuntimeError(this, "addInterfaceName(): too late, object already locked");
-    interfacenames.push_back(name);
-}
-
-void cNEDDeclaration::setImplementationClassName(const char *name)
-{
-    implClassName = name ? name : "";
-}
-
-void cNEDDeclaration::addPar(const ParamDescription& paramDesc)
-{
-    if (locked)
-        throw new cRuntimeError(this, "addPar(): too late, object already locked");
-    paramNameMap[paramDesc.value->name()] = params.size();
-    params.push_back(paramDesc);
-}
-
-void cNEDDeclaration::setSubcomponentParamValue(const char *subcomponentname, const char *paramName, cParValue *value)
-{
-    //FIXME todo put in the map
-}
-
-void cNEDDeclaration::addGate(const GateDescription& gateDesc)
-{
-    if (locked)
-        throw new cRuntimeError(this, "addGate(): too late, object already locked");
-    gateNameMap[gateDesc.name] = gates.size();
-    gates.push_back(gateDesc);
-}
-
-void cNEDDeclaration::setSubcomponentGateSize(const char *subcomponentname, const char *gateName, cParValue *gatesize)
-{
-    //FIXME todo put in the map
-}
-
-void cNEDDeclaration::setProperties(cProperties *p)
-{
-    if (p == props)
-        return;
-    if (locked)
-        throw new cRuntimeError(this, "setProperties(): too late, object already locked");
-    delete props;
-    props = p;
-    props->setOwner(this);
-    props->lock();
-}
-
-void cNEDDeclaration::setParamProperties(const char *paramName, cProperties *props)
-{
-    putIntoPropsMap(paramPropsMap, paramName, props);
-}
-
-void cNEDDeclaration::setGateProperties(const char *gateName, cProperties *props)
-{
-    putIntoPropsMap(gatePropsMap, gateName, props);
-}
-
-void cNEDDeclaration::setSubcomponentProperties(const char *subcomponentName, cProperties *props)
-{
-    putIntoPropsMap(subcomponentPropsMap, subcomponentName, props);
-}
-
-void cNEDDeclaration::setSubcomponentParamProperties(const char *subcomponentName, const char *paramName, cProperties *props)
-{
-    putIntoPropsMap(subcomponentParamPropsMap, std::string(subcomponentName)+"."+paramName, props);
-}
-
-void cNEDDeclaration::setSubcomponentGateProperties(const char *subcomponentName, const char *gateName, cProperties *props)
-{
-    putIntoPropsMap(subcomponentGatePropsMap, std::string(subcomponentName)+"."+gateName, props);
 }
 
 const char *cNEDDeclaration::interfaceName(int k) const
@@ -291,75 +119,6 @@ const char *cNEDDeclaration::implementationClassName() const
     return implClassName.empty() ? NULL : implClassName.c_str();
 }
 
-int cNEDDeclaration::numPars() const
-{
-    return params.size();
-}
-
-const cNEDDeclaration::ParamDescription& cNEDDeclaration::paramDescription(int k) const
-{
-    if (k<0 || k>=params.size())
-        throw new cRuntimeError(this, "parameter index %d out of range 0..%d", k, params.size()-1);
-    return params[k];
-}
-
-const cNEDDeclaration::ParamDescription& cNEDDeclaration::paramDescription(const char *name) const
-{
-    int k = findPar(name);
-    if (k==-1)
-        throw new cRuntimeError(this, "no such parameter: %s", name);
-    return params[k];
-}
-
-const cNEDDeclaration::GateDescription& cNEDDeclaration::gateDescription(int k) const
-{
-    if (k<0 || k>=gates.size())
-        throw new cRuntimeError(this, "gate index %d out of range 0..%d", k, gates.size()-1);
-    return gates[k];
-}
-
-const cNEDDeclaration::GateDescription& cNEDDeclaration::gateDescription(const char *name) const
-{
-    int k = findGate(name);
-    if (k==-1)
-        throw new cRuntimeError(this, "no such gate: %s", name);
-    return gates[k];
-}
-
-int cNEDDeclaration::findPar(const char *parname) const
-{
-    StringToIntMap::const_iterator i = paramNameMap.find(parname);
-    if (i==paramNameMap.end())
-        return -1;
-    return i->second;
-}
-
-int cNEDDeclaration::numGates() const
-{
-    return gates.size();
-}
-
-int cNEDDeclaration::findGate(const char *name) const
-{
-    StringToIntMap::const_iterator i = gateNameMap.find(name);
-    if (i==gateNameMap.end())
-        return -1;
-    return i->second;
-}
-
-void cNEDDeclaration::setGateSize(const char *name, cParValue *gatesize)
-{
-    if (locked)
-        throw new cRuntimeError(this, "setGateSize(): too late, object already locked");
-    int k = findGate(name);
-    if (k==-1)
-        throw new cRuntimeError(this, "no such gate: %s", name);
-
-    GateDescription& desc = gates[k];
-    delete desc.gatesize;
-    desc.gatesize = gatesize;
-}
-
 void cNEDDeclaration::putIntoPropsMap(PropertiesMap& propsMap, const std::string& name, cProperties *props)
 {
     PropertiesMap::const_iterator it = propsMap.find(name);
@@ -372,12 +131,6 @@ cProperties *cNEDDeclaration::getFromPropsMap(const PropertiesMap& propsMap, con
 {
     PropertiesMap::const_iterator it = propsMap.find(name);
     return it==propsMap.end() ? NULL : it->second;
-}
-
-void cNEDDeclaration::appendPropsMap(PropertiesMap& toPropsMap, const PropertiesMap& fromPropsMap)
-{
-    for (PropertiesMap::const_iterator it=fromPropsMap.begin(); it!=fromPropsMap.end(); it++)
-        toPropsMap[it->first] = it->second->dup(); //XXX what if key already exists? error?
 }
 
 cProperties *cNEDDeclaration::properties() const
@@ -410,12 +163,22 @@ cProperties *cNEDDeclaration::subcomponentGateProperties(const char *subcomponen
     return getFromPropsMap(subcomponentGatePropsMap, std::string(subcomponentName)+"."+gateName);
 }
 
-SubmodulesNode *cNEDDeclaration::getSubmodules()
+ParametersNode *cNEDDeclaration::getParametersNode()
+{
+    return (ParametersNode *)getTree()->getFirstChildWithTag(NED_PARAMETERS);
+}
+
+GatesNode *cNEDDeclaration::getGatesNode()
+{
+    return (GatesNode *)getTree()->getFirstChildWithTag(NED_GATES);
+}
+
+SubmodulesNode *cNEDDeclaration::getSubmodulesNode()
 {
     return (SubmodulesNode *)getTree()->getFirstChildWithTag(NED_SUBMODULES);
 }
 
-ConnectionsNode *cNEDDeclaration::getConnections()
+ConnectionsNode *cNEDDeclaration::getConnectionsNode()
 {
     return (ConnectionsNode *)getTree()->getFirstChildWithTag(NED_CONNECTIONS);
 }

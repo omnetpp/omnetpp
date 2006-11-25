@@ -67,7 +67,7 @@ cModule *cDynamicModuleType::createModuleObject()
 void cDynamicModuleType::addParametersGatesTo(cModule *module)
 {
     cNEDDeclaration *decl = getDecl();
-    cNEDNetworkBuilder().addParameters(module, decl);
+    cNEDNetworkBuilder().addParams(module, decl);
     cNEDNetworkBuilder().addGates(module, decl);
 }
 

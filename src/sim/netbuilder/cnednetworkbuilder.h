@@ -57,8 +57,12 @@ class cNEDNetworkBuilder
     void setDisplayString(cModule *submodp, SubmoduleNode *submod);
     void setConnDisplayString(cGate *srcgatep, ConnectionNode *conn);
     void setBackgroundDisplayString(cModule *modp, CompoundModuleNode *mod);
-    void assignComponentParams(cComponent *subcomponentp, NEDElement *subcomponent);
-    void setupGateVectors(cModule *submodp, NEDElement *submod);
+    static cPar::Type translateParamType(int t);
+    static cGate::Type translateGateType(int t);
+    void doParams(cComponent *component, ParametersNode *paramsNode, bool isSubcomponent);
+    void doGates(cModule *component, GatesNode *gatesNode, bool isSubcomponent);
+    void assignComponentParams(cComponent *subcomponent, NEDElement *subcomponentNode);
+    void setupGateVectors(cModule *submodule, NEDElement *submoduleNode);
     cGate *getFirstUnusedParentModGate(cModule *mod, const char *gatename);
     cGate *getFirstUnusedSubmodGate(cModule *mod, const char *gatename);
 
@@ -83,7 +87,7 @@ class cNEDNetworkBuilder
     /**
      * Adds parameters from the given NED declaration. Invoked from cDynamicModule.
      */
-    void addParameters(cComponent *component, cNEDDeclaration *decl);
+    void addParams(cComponent *component, cNEDDeclaration *decl);
 
     /**
      * Adds gates to the module from the given NED declaration.

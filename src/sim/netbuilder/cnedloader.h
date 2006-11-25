@@ -58,11 +58,6 @@ class SIM_API cNEDLoader : public NEDResourceCache
     bool areDependenciesResolved(NEDElement *node);
     void tryResolvePendingDeclarations();
     cNEDDeclaration *buildNEDDeclaration(NEDElement *node);
-    cNEDDeclaration::ParamDescription extractParamDescription(ParamNode *paramNode);
-    cNEDDeclaration::GateDescription extractGateDescription(GateNode *gateNode);
-    void updateProperties(NEDElement *parent, cProperties *props);
-    void updateProperty(PropertyNode *propNode, cProperty *prop);
-    void updateDisplayProperty(PropertyNode *propNode, cProperty *prop);
 
     // constructor is protected, because we want only one instance
     cNEDLoader();
