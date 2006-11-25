@@ -38,6 +38,10 @@ class cNEDDeclaration;
 class cNEDNetworkBuilder
 {
   protected:
+    // the current NED declaration we're working with. Stored here to
+    // avoid having to pass it around as a parameter.
+    cNEDDeclaration *decl;
+
     // stack of loop variables
     struct {const char *varname; int value;} loopVarStack[MAX_LOOP_NESTING];
     int loopVarSP;
@@ -50,7 +54,7 @@ class cNEDNetworkBuilder
 
   protected:
     cModule *_submodule(cModule *parentmodp, const char *submodname, int idx=-1);
-    void addSubmodulesAndConnections(cModule *modp, cNEDDeclaration *decl);
+    void addSubmodulesAndConnections(cModule *modp);
     void buildRecursively(cModule *modp, cNEDDeclaration *decl);
     cModuleType *findAndCheckModuleType(const char *modtypename, cModule *modp, const char *submodname);
     void addSubmodule(cModule *modp, SubmoduleNode *submod);

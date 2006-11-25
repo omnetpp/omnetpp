@@ -25,6 +25,7 @@
 #include "cchannel.h"
 #include "cbasicchannel.h"
 #include "ccomponenttype.h"
+#include "clongpar.h"
 
 #include "nedelements.h"
 #include "nederror.h"
@@ -70,7 +71,10 @@ void cNEDNetworkBuilder::addParams(cComponent *component, cNEDDeclaration *decl)
     // add this decl parameters / assignments
     ParametersNode *paramsNode = decl->getParametersNode();
     if (paramsNode)
+    {
+        this->decl = decl; // switch "context"
         doParams(component, paramsNode, false);
+    }
 }
 
 void cNEDNetworkBuilder::addGates(cModule *module, cNEDDeclaration *decl)
@@ -87,7 +91,10 @@ void cNEDNetworkBuilder::addGates(cModule *module, cNEDDeclaration *decl)
     // add this decl gates / gatesizes
     GatesNode *gatesNode = decl->getGatesNode();
     if (gatesNode)
+    {
+        this->decl = decl; // switch "context"
         doGates(module, gatesNode, false);
+    }
 }
 
 cPar::Type cNEDNetworkBuilder::translateParamType(int t)
@@ -143,13 +150,20 @@ void cNEDNetworkBuilder::doParams(cComponent *component, ParametersNode *paramsN
         else
         {
             // add it now
+            if (!value)
+            {
+                value = cParValue::createWithType(translateParamType(paramNode->getType()));
+                value->setName(paramName);
+                value->setIsShared(false); //XXX cannot cache: there'no ExpressionNode to piggyback on!!!
+                value->setIsInput(true);
+            }
             component->addPar(value);
         }
 
     }
 }
 
-void cNEDNetworkBuilder::doGates(cModule *component, GatesNode *gatesNode, bool isSubcomponent)
+void cNEDNetworkBuilder::doGates(cModule *module, GatesNode *gatesNode, bool isSubcomponent)
 {
     ASSERT(gatesNode!=NULL);
     for (NEDElement *child=gatesNode->getFirstChildWithTag(NED_GATE); child; child=child->getNextSiblingWithTag(NED_GATE))
@@ -162,15 +176,16 @@ void cNEDNetworkBuilder::doGates(cModule *component, GatesNode *gatesNode, bool 
         int gatesize = -1;
         if (gateNode->getIsVector() && exprNode)
         {
-            value = decl->getCachedExpression(exprNode);
+            cParValue *value = decl->getCachedExpression(exprNode);
             if (!value)
             {
                 cDynamicExpression *dynamicExpr = cExpressionBuilder().process(exprNode, isSubcomponent);
-                value = new cLongPar("gatesize-expression");
+                value = new cLongPar();
+                value->setName("gatesize-expression");
                 cExpressionBuilder::assign(value, dynamicExpr);
                 decl->putCachedExpression(exprNode, value);
             }
-            gatesize = value->longValue(component);
+            gatesize = value->longValue(module);
         }
 
         // add gate if it's declared here
@@ -209,6 +224,7 @@ void cNEDNetworkBuilder::buildInside(cModule *modp, cNEDDeclaration *decl)
     buildRecursively(modp, decl);
 
     // recursively build the submodules too (top-down)
+    this->decl = decl;
     for (cSubModIterator submod(*modp); !submod.end(); submod++)
     {
        cModule *m = submod();
@@ -228,10 +244,11 @@ void cNEDNetworkBuilder::buildRecursively(cModule *modp, cNEDDeclaration *decl)
         buildRecursively(modp, superDecl);
     }
 
-    addSubmodulesAndConnections(modp, decl);
+    this->decl = decl; // switch "context"
+    addSubmodulesAndConnections(modp);
 }
 
-void cNEDNetworkBuilder::addSubmodulesAndConnections(cModule *modp, cNEDDeclaration *decl)
+void cNEDNetworkBuilder::addSubmodulesAndConnections(cModule *modp)
 {
     printf("  adding submodules and connections of decl %s to %s\n", decl->name(), modp->fullPath().c_str()); //XXX
     //dump(decl->getTree()); XXX
