@@ -26,6 +26,9 @@ cComponent::cComponent(const char *name) : cDefaultList(name)
     rngmapsize = 0;
     rngmap = 0;
     ev_enabled = true;
+
+
+    paramv.reserve(20); //FIXME temporary solution -- should use plain cPar[] and manage reallocs ourselves
 }
 
 cComponent::~cComponent()

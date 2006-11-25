@@ -70,6 +70,10 @@ class SIM_API cPar : public cObject  //turn into cObject; delegate name to p! ad
     void doReadValue();
 
   public:
+    // internal, for netbuilder
+    void reassign(cParValue *p);
+
+  public:
     /**
      * Destructor.
      */

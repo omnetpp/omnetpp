@@ -186,11 +186,13 @@ ConnectionsNode *cNEDDeclaration::getConnectionsNode()
 cParValue *cNEDDeclaration::getCachedExpression(ExpressionNode *expr)
 {
     ExpressionMap::const_iterator it = expressionMap.find(expr->getId());
+printf("      getExpr: %ld -> %p\n", expr->getId(), it==expressionMap.end() ? NULL : it->second);
     return it==expressionMap.end() ? NULL : it->second;
 }
 
 void cNEDDeclaration::putCachedExpression(ExpressionNode *expr, cParValue *value)
 {
+printf("      putExpr: %ld -> %p\n", expr->getId(), value);
     ExpressionMap::const_iterator it = expressionMap.find(expr->getId());
     ASSERT(it==expressionMap.end()); //XXX or?
     if (it==expressionMap.end())

@@ -31,12 +31,16 @@ cPar::cPar(cComponent *component, cParValue *p)
 {
     this->ownercomponent = component;
     this->p = p;
+printf("   cPar ctor, '%s' . %p  '%s'\n", component->fullPath().c_str(), p, p ? p->name() : "null");
 }
 
 cPar::~cPar()
 {
+printf("   cPar dtor DEFUNCT, '%s' . %p '%s'\n", ownercomponent->fullPath().c_str(), p, p ? p->name() : "null");
+/*FIXME add back later
     if (!p->isShared())
         delete p;
+*/
 }
 
 const char *cPar::name() const
@@ -61,6 +65,14 @@ void cPar::copyIfShared()
         p = p->dup();
         p->setIsShared(false);
     }
+}
+
+void cPar::reassign(cParValue *newp)
+{
+printf("   cPar reassign, '%s' . %p '%s', new='%s'\n", ownercomponent->fullPath().c_str(), p, p ? p->name() : "null", newp ? newp->name() : "null");
+    if (!p->isShared())
+        delete p;
+    p = newp;
 }
 
 cObject *cPar::owner() const
@@ -224,7 +236,7 @@ void cPar::doReadValue()
         if (!success)
             throw new cRuntimeError("Wrong value `%s' for parameter `%s'", str.c_str(), fullPath().c_str());
         return;
-    }
+    } //FIXME try to make a "shared" cParValue out of this, otherwise we won't gain anything...
 
     // maybe we should use default value
     if (p->hasValue() && ev.getParameterUseDefault(simulation.runNumber(), fullPath().c_str()))

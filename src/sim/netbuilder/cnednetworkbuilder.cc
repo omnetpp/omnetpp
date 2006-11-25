@@ -128,6 +128,7 @@ void cNEDNetworkBuilder::doParams(cComponent *component, ParametersNode *paramsN
         if (exprNode)
         {
             value = decl->getCachedExpression(exprNode);
+            ASSERT(!value || value->isName(paramName));
             if (!value)
             {
                 cDynamicExpression *dynamicExpr = cExpressionBuilder().process(exprNode, isSubcomponent);
@@ -141,7 +142,7 @@ void cNEDNetworkBuilder::doParams(cComponent *component, ParametersNode *paramsN
         }
 
         // find or add parameter
-        if (paramNode->getType()==NED_PARTYPE_NONE)
+        if (isSubcomponent || paramNode->getType()==NED_PARTYPE_NONE)
         {
             // must exist already
             cPar &par = component->par(paramName);
@@ -157,6 +158,7 @@ void cNEDNetworkBuilder::doParams(cComponent *component, ParametersNode *paramsN
                 value->setIsShared(false); //XXX cannot cache: there'no ExpressionNode to piggyback on!!!
                 value->setIsInput(true);
             }
+            printf("   +++ adding param %s\n", paramName);
             component->addPar(value);
         }
 
@@ -189,7 +191,7 @@ void cNEDNetworkBuilder::doGates(cModule *module, GatesNode *gatesNode, bool isS
         }
 
         // add gate if it's declared here
-        if (gateNode->getType()!=NED_GATETYPE_NONE)
+        if (!isSubcomponent && gateNode->getType()!=NED_GATETYPE_NONE)
             module->addGate(gateName, translateGateType(gateNode->getType()), gateNode->getIsVector());
 
         // set gate vector size
