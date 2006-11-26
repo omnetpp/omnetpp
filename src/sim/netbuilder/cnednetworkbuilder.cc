@@ -131,8 +131,11 @@ void cNEDNetworkBuilder::doParams(cComponent *component, ParametersNode *paramsN
             ASSERT(!value || value->isName(paramName));
             if (!value)
             {
+				cPar::Type parType = paramNode->getType()==NED_PARTYPE_NONE 
+					? component->par(paramName).type()
+				    : translateParamType(paramNode->getType());
                 cDynamicExpression *dynamicExpr = cExpressionBuilder().process(exprNode, isSubcomponent);
-                value = cParValue::createWithType(translateParamType(paramNode->getType()));
+                value = cParValue::createWithType(parType);
                 cExpressionBuilder::assign(value, dynamicExpr);
                 value->setName(paramName);
                 value->setIsShared(true);
@@ -161,7 +164,6 @@ void cNEDNetworkBuilder::doParams(cComponent *component, ParametersNode *paramsN
             printf("   +++ adding param %s\n", paramName);
             component->addPar(value);
         }
-
     }
 }
 
