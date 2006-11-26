@@ -30,16 +30,14 @@ module TandemQueue
         switch: Switch {
             parameters:
                 @display("p=60,80;i=block/switch");
-
             gates:
                 out[sizeof(in)];
         };
         queue[numQueues]: Queue {
             parameters:
                 @display("p=60,160,row,80;i=block/queue;q=queue");
-
             gates:
-                in[(index==0 ? index==0 : index==0)];
+                in[index==0 ? sizeof(in) : 1];
         };
     connections allowunconnected:
         // connect switch outputs outside

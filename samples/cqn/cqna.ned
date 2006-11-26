@@ -35,7 +35,7 @@ module ClosedQueueingNetA
             parameters:
                 @display("p=150,90,m,$numQueuesPerTandem;i=block/queue");
             gates:
-                in[(index%numQueuesPerTandem==0 ? index%numQueuesPerTandem==0 : index%numQueuesPerTandem==0)];
+                in[index%numQueuesPerTandem==0 ? numTandems : 1];
         };
     connections:
         // connect switches to 1st queues
