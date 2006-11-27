@@ -1,0 +1,36 @@
+%description:
+Tests cProperty keys and values
+
+%global:
+#include <string.h>
+#define PRINT    ev << prop->info() << "\n";
+%activity:
+cProperty *prop;
+prop = new cProperty("foo"); PRINT;
+prop->addKey(""); PRINT;
+prop->setValue("", 2, "zwei"); PRINT;
+prop->setValue("", 4, "vier"); PRINT;
+prop->addKey("fookey"); PRINT;
+prop->setValue("fookey", 1, "eins"); PRINT;
+prop->setValue("fookey", 0, "zero"); PRINT;
+prop->setValue("fookey", 2, NULL); PRINT;
+prop->addKey("barkey"); PRINT;
+prop->addKey("bazkey"); PRINT;
+prop->setNumValues("fookey", 10); PRINT;
+prop->setNumValues("fookey", 2); PRINT;
+prop->setValue("fookey", 9, "neun"); PRINT;
+
+delete prop;
+
+ev << "." << endl;
+
+%contains: stdout
+name='' index='NULL' fullName='' fullPath=''
+name='foo' index='NULL' fullName='foo' fullPath='foo'
+name='foo' index='i' fullName='foo[i]' fullPath='foo[i]'
+name='' index='i' fullName='[i]' fullPath='[i]'
+name='bar' index='i' fullName='bar[i]' fullPath='bar[i]'
+name='bar' index='jk' fullName='bar[jk]' fullPath='bar[jk]'
+name='bar' index='NULL' fullName='bar' fullPath='bar'
+name='bar' index='lm' fullName='bar[lm]' fullPath='bar[lm]'
+.
