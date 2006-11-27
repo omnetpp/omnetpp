@@ -1,0 +1,29 @@
+%description:
+Tests cProperty dup() and info().
+
+%global:
+#include <string.h>
+
+%activity:
+cProperty *prop = new cProperty("foo", "iii");
+prop->addKey("");
+prop->setValue("", 2, "zwei");
+prop->setValue("", 4, "vier");
+prop->addKey("fookey");
+prop->setValue("fookey", 1, "eins");
+prop->setValue("fookey", 0, "zero");
+prop->setValue("fookey", 2, NULL);
+prop->addKey("barkey");
+prop->addKey("bazkey");
+
+cProperty *prop2 = prop->dup();
+ev << prop->info() << " --> " << prop2->info() << "\n";
+
+delete prop;
+delete prop2;
+
+ev << "." << endl;
+
+%contains: stdout
+@foo[iii](,,zwei,,vier;fookey=zero,eins,;barkey=;bazkey=) --> @foo[iii](,,zwei,,vier;fookey=zero,eins,;barkey=;bazkey=)
+.
