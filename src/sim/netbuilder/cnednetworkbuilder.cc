@@ -129,9 +129,6 @@ void cNEDNetworkBuilder::doParams(cComponent *component, ParametersNode *paramsN
             ASSERT(!value || value->isName(paramName));
             if (!value)
             {
-if (!strcmp(paramName, "sendIATime"))
-  __asm int 3;
-                //FIXME merge these two into an "if"
                 cPar::Type parType = paramNode->getType()==NED_PARTYPE_NONE
                     ? component->par(paramName).type()
                     : translateParamType(paramNode->getType());
