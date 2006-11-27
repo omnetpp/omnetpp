@@ -37,8 +37,9 @@ cNEDDeclarationBase(name), NEDComponent(tree)
             interfacenames.push_back(((InterfaceNameNode *)child)->getName());
     }
 
-    //FIXME copy from parent?
-    if (tree->getTagCode()==NED_SIMPLE_MODULE || tree->getTagCode()==NED_CHANNEL)
+    if (numExtendsNames()!=0)
+        implClassName = getSuperDecl()->implementationClassName();
+    else if (tree->getTagCode()==NED_SIMPLE_MODULE || tree->getTagCode()==NED_CHANNEL)
         implClassName = name;
 }
 
