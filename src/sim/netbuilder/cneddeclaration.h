@@ -26,6 +26,8 @@
 #include "cparvalue.h"
 #include "cgate.h"
 #include "cneddeclarationbase.h"
+#include "cproperties.h"
+#include "cproperty.h"
 
 #include "nedcomponent.h"
 
@@ -66,12 +68,12 @@ class SIM_API cNEDDeclaration : public cNEDDeclarationBase, public NEDComponent 
 
     // properties
     typedef std::map<std::string, cProperties *> PropertiesMap;
-    cProperties *props;
-    PropertiesMap paramPropsMap;
-    PropertiesMap gatePropsMap;
-    PropertiesMap subcomponentPropsMap;
-    PropertiesMap subcomponentParamPropsMap;
-    PropertiesMap subcomponentGatePropsMap;
+    mutable cProperties *props;
+    mutable PropertiesMap paramPropsMap;
+    mutable PropertiesMap gatePropsMap;
+    mutable PropertiesMap subcomponentPropsMap;
+    mutable PropertiesMap subcomponentParamPropsMap;
+    mutable PropertiesMap subcomponentGatePropsMap;
 
     // cached expressions: NED expressions (ExpressionNode) compiled into
     // cParValue get cached here, indexed by exprNode->id().
@@ -79,9 +81,15 @@ class SIM_API cNEDDeclaration : public cNEDDeclarationBase, public NEDComponent 
     ExpressionMap expressionMap;
 
   protected:
-    void putIntoPropsMap(PropertiesMap& propsMap, const std::string& name, cProperties *props);
+    void putIntoPropsMap(PropertiesMap& propsMap, const std::string& name, cProperties *props) const;
     cProperties *getFromPropsMap(const PropertiesMap& propsMap, const std::string& name) const;
     void appendPropsMap(PropertiesMap& toPropsMap, const PropertiesMap& fromPropsMap);
+    cNEDDeclaration *getSuperDecl() const;
+    NEDElement *getSubcomponentNode(const char *subcomponentName) const;
+
+    static cProperties *mergeProperties(const cProperties *baseprops, NEDElement *parent);
+    static void updateProperty(PropertyNode *propNode, cProperty *prop);
+    static void updateDisplayProperty(PropertyNode *propNode, cProperty *prop);
 
   public:
     /** @name Constructors, destructor, assignment */
@@ -159,17 +167,17 @@ class SIM_API cNEDDeclaration : public cNEDDeclarationBase, public NEDComponent 
     /**
      * Returns the properties of a submodule or a contained channel
      */
-    virtual cProperties *subcomponentProperties(const char *subcomponentName) const;
+    virtual cProperties *subcomponentProperties(const char *subcomponentName, const char *subcomponentType) const;
 
     /**
      * Returns the properties of a parameter of a submodule or a contained channel
      */
-    virtual cProperties *subcomponentParamProperties(const char *subcomponentName, const char *paramName) const;
+    virtual cProperties *subcomponentParamProperties(const char *subcomponentName, const char *subcomponentType, const char *paramName) const;
 
     /**
      * Returns the properties of a submodule gate
      */
-    virtual cProperties *subcomponentGateProperties(const char *subcomponentName, const char *gateName) const;
+    virtual cProperties *subcomponentGateProperties(const char *subcomponentName, const char *subcomponentType, const char *gateName) const;
     //@}
 
     /** @name Expression caching */
@@ -180,23 +188,23 @@ class SIM_API cNEDDeclaration : public cNEDDeclarationBase, public NEDComponent 
 
     /** @name Help for the dynamic builder */
     //@{
-    ParametersNode *getParametersNode();         //XXX
+    ParametersNode *getParametersNode() const;         //XXX
 
-    GatesNode *getGatesNode();
+    GatesNode *getGatesNode() const;
 
     /**
      * Returns the <submodules> element from the NEDElement tree of this
      * NED component declaration.
      * Returns NULL if this declaration doesn't contain submodules.
      */
-    virtual SubmodulesNode *getSubmodulesNode();
+    virtual SubmodulesNode *getSubmodulesNode() const;
 
     /**
      * Returns the <connections> element from the NEDElement tree of this
      * NED component declaration.
      * Returns NULL if this declaration doesn't contain connections.
      */
-    virtual ConnectionsNode *getConnectionsNode();
+    virtual ConnectionsNode *getConnectionsNode() const;
     //@}
 };
 

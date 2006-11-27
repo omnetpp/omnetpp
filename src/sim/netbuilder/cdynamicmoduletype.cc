@@ -42,9 +42,7 @@ std::string cDynamicModuleType::detailedInfo() const
 
 cNEDDeclaration *cDynamicModuleType::getDecl() const
 {
-    cNEDDeclaration *decl = cNEDLoader::instance()->lookup2(name());
-    if (!decl)
-        throw new cRuntimeError(this, "NED declaration object not found");
+    cNEDDeclaration *decl = cNEDLoader::instance()->getDecl(name());
     //FIXME assert that it's a module decl
     return decl;
 }

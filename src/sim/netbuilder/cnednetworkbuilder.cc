@@ -63,8 +63,7 @@ void cNEDNetworkBuilder::addParams(cComponent *component, cNEDDeclaration *decl)
     if (decl->numExtendsNames() > 0)
     {
         const char *superName = decl->extendsName(0);
-        cNEDDeclaration *superDecl = cNEDLoader::instance()->lookup2(superName);
-        ASSERT(superDecl!=NULL);
+        cNEDDeclaration *superDecl = cNEDLoader::instance()->getDecl(superName);
         addParams(component, superDecl);
     }
 
@@ -83,8 +82,7 @@ void cNEDNetworkBuilder::addGates(cModule *module, cNEDDeclaration *decl)
     if (decl->numExtendsNames() > 0)
     {
         const char *superName = decl->extendsName(0);
-        cNEDDeclaration *superDecl = cNEDLoader::instance()->lookup2(superName);
-        ASSERT(superDecl!=NULL);
+        cNEDDeclaration *superDecl = cNEDLoader::instance()->getDecl(superName);
         addGates(module, superDecl);
     }
 
@@ -131,9 +129,9 @@ void cNEDNetworkBuilder::doParams(cComponent *component, ParametersNode *paramsN
             ASSERT(!value || value->isName(paramName));
             if (!value)
             {
-				cPar::Type parType = paramNode->getType()==NED_PARTYPE_NONE 
-					? component->par(paramName).type()
-				    : translateParamType(paramNode->getType());
+                cPar::Type parType = paramNode->getType()==NED_PARTYPE_NONE
+                    ? component->par(paramName).type()
+                    : translateParamType(paramNode->getType());
                 cDynamicExpression *dynamicExpr = cExpressionBuilder().process(exprNode, isSubcomponent);
                 value = cParValue::createWithType(parType);
                 cExpressionBuilder::assign(value, dynamicExpr);
@@ -243,8 +241,7 @@ void cNEDNetworkBuilder::buildRecursively(cModule *modp, cNEDDeclaration *decl)
     if (decl->numExtendsNames() > 0)
     {
         const char *superName = decl->extendsName(0);
-        cNEDDeclaration *superDecl = cNEDLoader::instance()->lookup2(superName);
-        ASSERT(superDecl!=NULL);
+        cNEDDeclaration *superDecl = cNEDLoader::instance()->getDecl(superName);
         buildRecursively(modp, superDecl);
     }
 

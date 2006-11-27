@@ -18,6 +18,10 @@
 #include "cproperties.h"
 #include "cdynamicexpression.h"
 #include "ned2generator.h"
+#include "cgate.h"
+#include "cmodule.h"
+#include "cdisplaystring.h"
+#include "cnedloader.h"
 #include "nederror.h"
 
 
@@ -119,12 +123,12 @@ const char *cNEDDeclaration::implementationClassName() const
     return implClassName.empty() ? NULL : implClassName.c_str();
 }
 
-void cNEDDeclaration::putIntoPropsMap(PropertiesMap& propsMap, const std::string& name, cProperties *props)
+void cNEDDeclaration::putIntoPropsMap(PropertiesMap& propsMap, const std::string& name, cProperties *props) const
 {
     PropertiesMap::const_iterator it = propsMap.find(name);
     ASSERT(it==propsMap.end()); //XXX or?
-    if (it==propsMap.end())
-        propsMap[name] = props;
+    propsMap[name] = props;
+    props->addRef();
 }
 
 cProperties *cNEDDeclaration::getFromPropsMap(const PropertiesMap& propsMap, const std::string& name) const
@@ -133,52 +137,267 @@ cProperties *cNEDDeclaration::getFromPropsMap(const PropertiesMap& propsMap, con
     return it==propsMap.end() ? NULL : it->second;
 }
 
+cNEDDeclaration *cNEDDeclaration::getSuperDecl() const
+{
+    const char *superName = extendsName(0);
+    return cNEDLoader::instance()->getDecl(superName);
+}
+
+NEDElement *cNEDDeclaration::getSubcomponentNode(const char *subcomponentName) const
+{
+    // try as submodule
+    SubmodulesNode *submodulesNode = getSubmodulesNode();
+    if (submodulesNode)
+    {
+        NEDElement *submoduleNode = submodulesNode->getFirstChildWithAttribute(NED_SUBMODULE, "name", subcomponentName);
+        if (submoduleNode)
+            return submoduleNode;
+    }
+
+    // try as connection
+    ConnectionsNode *connectionsNode = getConnectionsNode();
+    if (connectionsNode)
+    {
+        //FIXME try to find a channel named subcomponentName here...
+    }
+    return NULL;
+}
+
 cProperties *cNEDDeclaration::properties() const
 {
+    if (props)
+        return props; // already computed
+
+    // get inherited properties
+    if (numExtendsNames()!=0)
+        props = getSuperDecl()->properties();
+
+    // update with local properties
+    props = mergeProperties(props, getParametersNode());
+    props->addRef();
     return props;
 }
 
 cProperties *cNEDDeclaration::paramProperties(const char *paramName) const
 {
-    return getFromPropsMap(paramPropsMap, paramName);
+    cProperties *props = getFromPropsMap(paramPropsMap, paramName);
+    if (props)
+        return props; // already computed
+
+    // get inherited properties
+    if (numExtendsNames()!=0)
+        props = getSuperDecl()->paramProperties(paramName);
+
+    // update with local properties
+    ParametersNode *paramsNode = getParametersNode();
+    NEDElement *paramNode = paramsNode ? paramsNode->getFirstChildWithAttribute(NED_PARAM, "name", paramName) : NULL;
+    if (!paramNode && !props)
+        return NULL;  // error: parameter not found anywhere
+    props = mergeProperties(props, paramNode);
+    putIntoPropsMap(paramPropsMap, paramName, props);
+    return props;
 }
 
 cProperties *cNEDDeclaration::gateProperties(const char *gateName) const
 {
-    return getFromPropsMap(gatePropsMap, gateName);
+    cProperties *props = getFromPropsMap(gatePropsMap, gateName);
+    if (props)
+        return props; // already computed
+
+    // get inherited properties
+    if (numExtendsNames()!=0)
+        props = getSuperDecl()->gateProperties(gateName);
+
+    // update with local properties
+    GatesNode *gatesNode = getGatesNode();
+    NEDElement *gateNode = gatesNode ? gatesNode->getFirstChildWithAttribute(NED_GATE, "name", gateName) : NULL;
+    if (!gateNode && !props)
+        return NULL;  // error: gate not found anywhere
+    props = mergeProperties(props, gateNode);
+    putIntoPropsMap(gatePropsMap, gateName, props);
+    return props;
 }
 
-cProperties *cNEDDeclaration::subcomponentProperties(const char *subcomponentName) const
+cProperties *cNEDDeclaration::subcomponentProperties(const char *subcomponentName, const char *subcomponentType) const
 {
-    return getFromPropsMap(subcomponentPropsMap, subcomponentName);
+    std::string key = std::string(subcomponentName) + ":" + subcomponentType;
+    cProperties *props = getFromPropsMap(subcomponentPropsMap, key.c_str());
+    if (props)
+        return props; // already computed
+
+    // get inherited properties: either from base type (if this is an inherited submodule),
+    // or from its type decl.
+    if (numExtendsNames()!=0)
+        props = getSuperDecl()->subcomponentProperties(subcomponentName, subcomponentType);
+    if (!props)
+        props = cNEDLoader::instance()->getDecl(subcomponentType)->properties();
+
+    // update with local properties
+    NEDElement *subcomponentNode = getSubcomponentNode(subcomponentName);
+    if (!subcomponentNode && !props)
+        return NULL; // error: no such submodule or channel
+    props = mergeProperties(props, subcomponentNode);
+    putIntoPropsMap(subcomponentPropsMap, key.c_str(), props);
+    return props;
 }
 
-cProperties *cNEDDeclaration::subcomponentParamProperties(const char *subcomponentName, const char *paramName) const
+cProperties *cNEDDeclaration::subcomponentParamProperties(const char *subcomponentName, const char *subcomponentType, const char *paramName) const
 {
-    return getFromPropsMap(subcomponentParamPropsMap, std::string(subcomponentName)+"."+paramName);
+    std::string key = std::string(subcomponentName)+":"+subcomponentType+"."+paramName;
+    cProperties *props = getFromPropsMap(subcomponentParamPropsMap, key.c_str());
+    if (props)
+        return props; // already computed
+
+    // get inherited properties: either from base type (if this is an inherited submodule),
+    // or from its type decl.
+    if (numExtendsNames()!=0)
+        props = getSuperDecl()->subcomponentParamProperties(subcomponentName, subcomponentType, paramName);
+    if (!props)
+        props = cNEDLoader::instance()->getDecl(subcomponentType)->paramProperties(paramName);
+
+    // update with local properties
+    NEDElement *subcomponentNode = getSubcomponentNode(subcomponentName);
+    if (!subcomponentNode && !props)
+        return NULL; // error: no such submodule or channel
+    NEDElement *paramsNode = subcomponentNode->getFirstChildWithTag(NED_PARAMETERS);
+    NEDElement *paramNode = paramsNode ? paramsNode->getFirstChildWithAttribute(NED_PARAM, "name", paramName) : NULL;
+    if (!paramNode && !props)
+        return NULL;  // error: parameter not found anywhere
+    props = mergeProperties(props, paramNode);
+    putIntoPropsMap(subcomponentParamPropsMap, key.c_str(), props);
+    return props;
 }
 
-cProperties *cNEDDeclaration::subcomponentGateProperties(const char *subcomponentName, const char *gateName) const
+cProperties *cNEDDeclaration::subcomponentGateProperties(const char *subcomponentName, const char *subcomponentType, const char *gateName) const
 {
-    return getFromPropsMap(subcomponentGatePropsMap, std::string(subcomponentName)+"."+gateName);
+    std::string key = std::string(subcomponentName)+":"+subcomponentType+"."+gateName;
+    cProperties *props = getFromPropsMap(subcomponentGatePropsMap, key.c_str());
+    if (props)
+        return props; // already computed
+
+    // get inherited properties: either from base type (if this is an inherited submodule),
+    // or from its type decl.
+    if (numExtendsNames()!=0)
+        props = getSuperDecl()->subcomponentGateProperties(subcomponentName, subcomponentType, gateName);
+    if (!props)
+        props = cNEDLoader::instance()->getDecl(subcomponentType)->gateProperties(gateName);
+
+    // update with local properties
+    NEDElement *subcomponentNode = getSubcomponentNode(subcomponentName);
+    if (!subcomponentNode && !props)
+        return NULL; // error: no such submodule or channel
+    NEDElement *gatesNode = subcomponentNode->getFirstChildWithTag(NED_GATES);
+    NEDElement *gateNode = gatesNode ? gatesNode->getFirstChildWithAttribute(NED_GATE, "name", gateName) : NULL;
+    if (!gateNode && !props)
+        return NULL;  // error: parameter not found anywhere
+    props = mergeProperties(props, gateNode);
+    putIntoPropsMap(subcomponentGatePropsMap, key.c_str(), props);
+    return props;
 }
 
-ParametersNode *cNEDDeclaration::getParametersNode()
+cProperties *cNEDDeclaration::mergeProperties(const cProperties *baseprops, NEDElement *parent)
+{
+    // returns parent's properties merged with props; both can be NULL.
+    // retval is never NULL but can be an empty cProperties.
+    // the props object doesn't get modified -- if it would have to be modified,
+    // it gets dupped first.
+    cProperties *props = const_cast<cProperties *>(baseprops);
+    if (!parent)
+        return props ? props : new cProperties();
+    NEDElement *firstPropertyChild = parent->getFirstChildWithTag(NED_PROPERTY);
+    if (!firstPropertyChild)
+        return props ? props : new cProperties();
+
+    props = props ? props->dup() : new cProperties();
+    for (NEDElement *child=firstPropertyChild; child; child=child->getNextSiblingWithTag(NED_PROPERTY))
+    {
+        PropertyNode *propNode = (PropertyNode *)child;
+        const char *propName = propNode->getName();
+        const char *propIndex = propNode->getIndex();
+        cProperty *prop = props->get(propName, propIndex);
+        if (!prop)
+            props->add(prop = new cProperty(propName, propIndex));
+        if (!strcmp(propName, "display"))
+            updateDisplayProperty(propNode, prop);
+        else
+            updateProperty(propNode, prop);
+    }
+    return props;
+}
+
+void cNEDDeclaration::updateProperty(PropertyNode *propNode, cProperty *prop)
+{
+    prop->setIsImplicit(propNode->getIsImplicit());
+
+    for (NEDElement *child=propNode->getFirstChildWithTag(NED_PROPERTY_KEY); child; child=child->getNextSiblingWithTag(NED_PROPERTY_KEY))
+    {
+        PropertyKeyNode *propKeyNode = (PropertyKeyNode *)child;
+        const char *key = propKeyNode->getName();
+        if (!prop->hasKey(key))
+            prop->addKey(key);
+
+        // collect values
+        int k = 0;
+        for (NEDElement *child2=propKeyNode->getFirstChildWithTag(NED_LITERAL); child2; child2=child2->getNextSiblingWithTag(NED_LITERAL), k++)
+        {
+            LiteralNode *literalNode = (LiteralNode *)child2;
+            const char *value = literalNode->getValue(); //XXX what about unitType()?
+            if (value && *value)
+            {
+                if (!strcmp(value, "-"))  // "anti-value"
+                    prop->setValue(key, k, "");
+                else
+                    prop->setValue(key, k, value);
+            }
+        }
+    }
+}
+
+void cNEDDeclaration::updateDisplayProperty(PropertyNode *propNode, cProperty *prop)
+{
+    // @display() has to be treated specially
+    // find new display string
+    PropertyKeyNode *propKeyNode = (PropertyKeyNode *)propNode->getFirstChildWithTag(NED_PROPERTY_KEY);
+    if (!propKeyNode)
+        return;
+    LiteralNode *literalNode = (LiteralNode *)propKeyNode->getFirstChildWithTag(NED_LITERAL);
+    if (!literalNode)
+        return;
+    const char *newdisplaystring = literalNode->getValue();
+
+    // if old display string is empty, just set it
+    if (!prop->hasKey(cProperty::DEFAULTKEY))
+        prop->addKey(cProperty::DEFAULTKEY);
+    if (prop->numValues(cProperty::DEFAULTKEY)==0)
+    {
+        prop->setValue(cProperty::DEFAULTKEY, 0, newdisplaystring);
+        return;
+    }
+
+    // merge
+    const char *olddisplaystring = prop->value(cProperty::DEFAULTKEY, 0);
+    cDisplayString d(olddisplaystring);
+    cDisplayString dnew(newdisplaystring);
+    d.updateWith(dnew);
+    prop->setValue(cProperty::DEFAULTKEY, 0, d.toString());
+}
+
+ParametersNode *cNEDDeclaration::getParametersNode() const
 {
     return (ParametersNode *)getTree()->getFirstChildWithTag(NED_PARAMETERS);
 }
 
-GatesNode *cNEDDeclaration::getGatesNode()
+GatesNode *cNEDDeclaration::getGatesNode() const
 {
     return (GatesNode *)getTree()->getFirstChildWithTag(NED_GATES);
 }
 
-SubmodulesNode *cNEDDeclaration::getSubmodulesNode()
+SubmodulesNode *cNEDDeclaration::getSubmodulesNode() const
 {
     return (SubmodulesNode *)getTree()->getFirstChildWithTag(NED_SUBMODULES);
 }
 
-ConnectionsNode *cNEDDeclaration::getConnectionsNode()
+ConnectionsNode *cNEDDeclaration::getConnectionsNode() const
 {
     return (ConnectionsNode *)getTree()->getFirstChildWithTag(NED_CONNECTIONS);
 }

@@ -30,9 +30,7 @@ cDynamicChannelType::cDynamicChannelType(const char *name) : cChannelType(name)
 
 cNEDDeclaration *cDynamicChannelType::getDecl() const
 {
-    cNEDDeclaration *decl = cNEDLoader::instance()->lookup2(name());
-    if (!decl)
-        throw new cRuntimeError(this, "NED declaration object not found");
+    cNEDDeclaration *decl = cNEDLoader::instance()->getDecl(name());
     //FIXME assert that it's a channel decl
     return decl;
 }

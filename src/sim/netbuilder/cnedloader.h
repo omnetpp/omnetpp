@@ -77,6 +77,12 @@ class SIM_API cNEDLoader : public NEDResourceCache
     virtual cNEDDeclaration *lookup2(const char *name) const;
 
     /**
+     * Like lookup2(), but throws an error if the declaration is not found,
+     * so it never returns NULL.
+     */
+    virtual cNEDDeclaration *getDecl(const char *name) const;
+
+    /**
      * Parses the given NED file, and converts modules/channels/interfaces to
      * cNEDDeclaration. Components that depend on other components
      * (e.g. contain "extends") may be temporarily put off until all

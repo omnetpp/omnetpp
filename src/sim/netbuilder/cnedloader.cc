@@ -132,6 +132,14 @@ cNEDDeclaration *cNEDLoader::lookup2(const char *name) const
     return dynamic_cast<cNEDDeclaration *>(NEDResourceCache::lookup(name));
 }
 
+cNEDDeclaration *cNEDLoader::getDecl(const char *name) const
+{
+    cNEDDeclaration *decl = cNEDLoader::instance()->lookup2(name);
+    if (!decl)
+        throw new cRuntimeError("NED declaration '%s' not found", name);
+    return decl;
+}
+
 NEDElement *cNEDLoader::parseAndValidateNedFile(const char *fname, bool isXML)
 {
     // load file
