@@ -168,10 +168,10 @@ class cNEDDeclarationBase extends cNamedObject
 {
     fields:
         @omitGetVerb(true);
-//XXX        string extendsName @getter(extendsName) @hint(the component it extends);
-//        string interfaceNames[] @getter(interfaceName) @sizeGetter(numInterfaceNames) @hint(the interfaces it implements using the 'like' keyword);
-//        string implementationClass @getter(implementationClassName) @hint(the underlying C++ class that provides active behaviour);
-        //XXX and more...
+        //XXX string extendsName @getter(extendsName) @hint(the component it extends);
+        //XXX string interfaceNames[] @getter(interfaceName) @sizeGetter(numInterfaceNames) @hint(the interfaces it implements using the 'like' keyword);
+        string implementationClass @getter(implementationClassName) @hint(the underlying C++ class that provides active behaviour);
+        string nedSource @hint(the NED source code, if available);
 }
 
 
