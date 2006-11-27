@@ -44,7 +44,24 @@ cNEDDeclarationBase(name), NEDComponent(tree)
 
 cNEDDeclaration::~cNEDDeclaration()
 {
-//FIXME TODO
+/*FIXME put back
+    if (props->removeRef()==0)
+        delete props;
+    clearPropsMap(paramPropsMap);
+    clearPropsMap(gatePropsMap);
+    clearPropsMap(subcomponentPropsMap);
+    clearPropsMap(subcomponentParamPropsMap);
+    clearPropsMap(subcomponentGatePropsMap);
+*/
+}
+
+void cNEDDeclaration::clearPropsMap(PropertiesMap& propsMap)
+{
+    // decrement refs in the props maps, and delete object if refcount reaches zero
+    for (PropertiesMap::iterator it = propsMap.begin(); it!=propsMap.end(); ++it)
+        if (it->second->removeRef()==0)
+            delete it->second;
+    propsMap.clear();
 }
 
 std::string cNEDDeclaration::info() const

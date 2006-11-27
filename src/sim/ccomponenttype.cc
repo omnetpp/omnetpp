@@ -46,7 +46,8 @@ cProperties *cComponentType::getPropertiesFor(const cComponent *component)
     cModule *parent = component->parentModule();
     cProperties *props;
     if (parent)
-        props = parent->componentType()->declaration()->subcomponentProperties(component->fullName());
+        props = parent->componentType()->declaration()->subcomponentProperties(
+            component->fullName(), component->componentType()->name());
     else
         props = component->componentType()->declaration()->properties();
     return props;
@@ -54,11 +55,13 @@ cProperties *cComponentType::getPropertiesFor(const cComponent *component)
 
 cProperties *cComponentType::getPropertiesFor(const cPar *par)
 {
+__asm int 3;
     cComponent *component = check_and_cast<cComponent *>(par->owner());
     cModule *parent = component->parentModule();
     cProperties *props;
     if (parent)
-        props = parent->componentType()->declaration()->subcomponentParamProperties(component->fullName(), par->fullName());
+        props = parent->componentType()->declaration()->subcomponentParamProperties(
+            component->fullName(), component->componentType()->name(), par->fullName());
     else
         props = component->componentType()->declaration()->paramProperties(par->fullName());
     return props;
@@ -70,7 +73,8 @@ cProperties *cComponentType::getPropertiesFor(const cGate *gate)
     cModule *parent = component->parentModule();
     cProperties *props;
     if (parent)
-        props = parent->componentType()->declaration()->subcomponentGateProperties(component->fullName(), gate->fullName());
+        props = parent->componentType()->declaration()->subcomponentGateProperties(
+            component->fullName(), component->componentType()->name(), gate->fullName());
     else
         props = component->componentType()->declaration()->gateProperties(gate->fullName());
     return props;

@@ -20,6 +20,7 @@
 cProperties::cProperties()
 {
     islocked = false;
+    refcount = 0;
 }
 
 cProperties::~cProperties()
@@ -45,19 +46,8 @@ cProperties& cProperties::operator=(const cProperties& other)
     {
         cProperty *p = other.propv[i]->dup();
         propv.push_back(p);
-        p->setOwner(this);
     }
     return *this;
-}
-
-const char *cProperties::fullName() const
-{
-    return "properties";
-}
-
-std::string cProperties::fullPath() const
-{
-    return ownerp ? ownerp->fullPath()+"."+fullName() : fullName();
 }
 
 std::string cProperties::info() const
