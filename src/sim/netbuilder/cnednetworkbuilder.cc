@@ -145,9 +145,12 @@ void cNEDNetworkBuilder::doParams(cComponent *component, ParametersNode *paramsN
         // find or add parameter
         if (isSubcomponent || paramNode->getType()==NED_PARTYPE_NONE)
         {
-            // must exist already
-            cPar &par = component->par(paramName);
-            par.reassign(value);
+            if (value)
+            {
+                // parameter must exist already
+                cPar &par = component->par(paramName);
+                par.reassign(value);
+            }
         }
         else
         {
@@ -319,7 +322,7 @@ void cNEDNetworkBuilder::addSubmodule(cModule *modp, SubmoduleNode *submod)
 
         cContextSwitcher __ctx(submodp); // params need to be evaluated in the module's context
         setDisplayString(submodp, submod);
-        assignComponentParams(submodp, submod);
+        assignSubcomponentParams(submodp, submod);
         submodp->readParams();
         setupGateVectors(submodp, submod);
     }
@@ -337,7 +340,7 @@ void cNEDNetworkBuilder::addSubmodule(cModule *modp, SubmoduleNode *submod)
 
             cContextSwitcher __ctx(submodp); // params need to be evaluated in the module's context
             setDisplayString(submodp, submod);
-            assignComponentParams(submodp, submod);
+            assignSubcomponentParams(submodp, submod);
             submodp->readParams();
             setupGateVectors(submodp, submod);
         }
@@ -384,7 +387,7 @@ void cNEDNetworkBuilder::setBackgroundDisplayString(cModule *modp, CompoundModul
 */
 }
 
-void cNEDNetworkBuilder::assignComponentParams(cComponent *subcomponent, NEDElement *subcomponentNode)
+void cNEDNetworkBuilder::assignSubcomponentParams(cComponent *subcomponent, NEDElement *subcomponentNode)
 {
     ParametersNode *paramsNode = (ParametersNode *) subcomponentNode->getFirstChildWithTag(NED_PARAMETERS);
     if (paramsNode)
@@ -544,7 +547,7 @@ void cNEDNetworkBuilder::doAddConnection(cModule *modp, ConnectionNode *conn)
     {
         cChannel *channel = createChannel(channelspec, modp);
         srcg->connectTo(destg, channel);
-        assignComponentParams(channel, channelspec);
+        assignSubcomponentParams(channel, channelspec);
         channel->readParams();
 
         //XXX display string

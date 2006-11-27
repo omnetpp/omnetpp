@@ -70,6 +70,7 @@ void cPar::copyIfShared()
 void cPar::reassign(cParValue *newp)
 {
 printf("   cPar reassign, '%s' . %p '%s', new='%s'\n", ownercomponent->fullPath().c_str(), p, p ? p->name() : "null", newp ? newp->name() : "null");
+    ASSERT(newp);
     if (!p->isShared())
         delete p;
     p = newp;

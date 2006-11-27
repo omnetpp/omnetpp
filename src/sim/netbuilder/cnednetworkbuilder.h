@@ -65,7 +65,7 @@ class cNEDNetworkBuilder
     static cGate::Type translateGateType(int t);
     void doParams(cComponent *component, ParametersNode *paramsNode, bool isSubcomponent);
     void doGates(cModule *component, GatesNode *gatesNode, bool isSubcomponent);
-    void assignComponentParams(cComponent *subcomponent, NEDElement *subcomponentNode);
+    void assignSubcomponentParams(cComponent *subcomponent, NEDElement *subcomponentNode);
     void setupGateVectors(cModule *submodule, NEDElement *submoduleNode);
     cGate *getFirstUnusedParentModGate(cModule *mod, const char *gatename);
     cGate *getFirstUnusedSubmodGate(cModule *mod, const char *gatename);

@@ -276,7 +276,7 @@ cProperties *cNEDDeclaration::subcomponentParamProperties(const char *subcompone
     NEDElement *subcomponentNode = getSubcomponentNode(subcomponentName);
     if (!subcomponentNode && !props)
         return NULL; // error: no such submodule or channel
-    NEDElement *paramsNode = subcomponentNode->getFirstChildWithTag(NED_PARAMETERS);
+    NEDElement *paramsNode = subcomponentNode ? subcomponentNode->getFirstChildWithTag(NED_PARAMETERS) : NULL;
     NEDElement *paramNode = paramsNode ? paramsNode->getFirstChildWithAttribute(NED_PARAM, "name", paramName) : NULL;
     if (!paramNode && !props)
         return NULL;  // error: parameter not found anywhere
@@ -303,7 +303,7 @@ cProperties *cNEDDeclaration::subcomponentGateProperties(const char *subcomponen
     NEDElement *subcomponentNode = getSubcomponentNode(subcomponentName);
     if (!subcomponentNode && !props)
         return NULL; // error: no such submodule or channel
-    NEDElement *gatesNode = subcomponentNode->getFirstChildWithTag(NED_GATES);
+    NEDElement *gatesNode = subcomponentNode ? subcomponentNode->getFirstChildWithTag(NED_GATES) : NULL;
     NEDElement *gateNode = gatesNode ? gatesNode->getFirstChildWithAttribute(NED_GATE, "name", gateName) : NULL;
     if (!gateNode && !props)
         return NULL;  // error: parameter not found anywhere
