@@ -26,10 +26,8 @@ cProperty::cProperty(const char *name, const char *index)
     isimplicit = islocked = false;
     ownerp = NULL;
     propname = propindex = propfullname = NULL;
-    if (name)
-        setName(name);
-    if (index)
-        setIndex(index);
+    setName(name);
+    setIndex(index);
 }
 
 cProperty::~cProperty()
