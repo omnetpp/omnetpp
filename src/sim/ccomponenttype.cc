@@ -55,7 +55,6 @@ cProperties *cComponentType::getPropertiesFor(const cComponent *component)
 
 cProperties *cComponentType::getPropertiesFor(const cPar *par)
 {
-__asm int 3;
     cComponent *component = check_and_cast<cComponent *>(par->owner());
     cModule *parent = component->parentModule();
     cProperties *props;

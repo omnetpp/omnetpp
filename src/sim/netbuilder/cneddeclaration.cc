@@ -331,6 +331,7 @@ cProperties *cNEDDeclaration::mergeProperties(const cProperties *baseprops, NEDE
         PropertyNode *propNode = (PropertyNode *)child;
         const char *propName = propNode->getName();
         const char *propIndex = propNode->getIndex();
+        if (!propIndex[0]) propIndex = NULL;  // no index is NULL not ""
         cProperty *prop = props->get(propName, propIndex);
         if (!prop)
             props->add(prop = new cProperty(propName, propIndex));

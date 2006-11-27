@@ -55,7 +55,7 @@ std::string cPar::info() const
 
 std::string cPar::detailedInfo() const
 {
-    return p->detailedInfo() + properties()->info();
+    return p->detailedInfo() + " " + properties()->info();
 }
 
 void cPar::copyIfShared()
