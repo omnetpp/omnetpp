@@ -523,10 +523,11 @@ void cSimulation::transferTo(cSimpleModule *modp)
 
     // if exception occurred in activity(), re-throw it. This allows us to handle
     // handleMessage() and activity() in an uniform way in the upper layer.
-    cException *e = simulation.exception;
-    simulation.exception = NULL;
     if (simulation.exception)
     {
+        cException *e = simulation.exception;
+        simulation.exception = NULL;
+
         // unfortunately, if we just further throw e, type info gets lost and
         // the exception can only be caught as cException* and not e.g. as
         // cRuntimeException. So we have to do the following magic to allow
