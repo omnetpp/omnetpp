@@ -129,15 +129,24 @@ void cNEDNetworkBuilder::doParams(cComponent *component, ParametersNode *paramsN
             ASSERT(!value || value->isName(paramName));
             if (!value)
             {
+if (!strcmp(paramName, "sendIATime"))
+  __asm int 3;
+                //FIXME merge these two into an "if"
                 cPar::Type parType = paramNode->getType()==NED_PARTYPE_NONE
                     ? component->par(paramName).type()
                     : translateParamType(paramNode->getType());
+
+                bool isVolatile = paramNode->getType()==NED_PARTYPE_NONE
+                    ? component->par(paramName).isVolatile()
+                    : paramNode->getIsVolatile();
+
                 cDynamicExpression *dynamicExpr = cExpressionBuilder().process(exprNode, isSubcomponent);
                 value = cParValue::createWithType(parType);
                 cExpressionBuilder::assign(value, dynamicExpr);
                 value->setName(paramName);
                 value->setIsShared(true);
                 value->setIsInput(paramNode->getIsDefault());
+                value->setIsVolatile(isVolatile);
                 decl->putCachedExpression(exprNode, value);
             }
         }
@@ -161,6 +170,7 @@ void cNEDNetworkBuilder::doParams(cComponent *component, ParametersNode *paramsN
                 value->setName(paramName);
                 value->setIsShared(false); //XXX cannot cache: there'no ExpressionNode to piggyback on!!!
                 value->setIsInput(true);
+                value->setIsVolatile(paramNode->getIsVolatile());
             }
             printf("   +++ adding param %s\n", paramName);
             component->addPar(value);
