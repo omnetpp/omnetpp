@@ -21,19 +21,17 @@ const char *cProperty::DEFAULTKEY = "";
 cStringPool cProperty::stringPool;
 
 
-cProperty::cProperty(const char *name, const char *index)
+cProperty::cProperty(const char *name, const char *index) : cNamedObject(name, true)
 {
     isimplicit = islocked = false;
     ownerp = NULL;
-    propname = propindex = propfullname = NULL;
-    setName(name);
+    propindex = propfullname = NULL;
     setIndex(index);
 }
 
 cProperty::~cProperty()
 {
     // release pooled strings
-    stringPool.release(propname);
     stringPool.release(propindex);
     stringPool.release(propfullname);
     int n = keyv.size();
@@ -64,7 +62,6 @@ cProperty& cProperty::operator=(const cProperty& other)
     isimplicit = other.isimplicit;
 
     // release old value
-    stringPool.release(propname);
     int n = keyv.size();
     for (int i=0; i<n; i++)
     {
@@ -94,28 +91,24 @@ void cProperty::setName(const char *name)
 {
     if (islocked)
         throw new cRuntimeError(this, eLOCKED);
-    if (!name)
-        name = "";
-    if (name[0]=='@')
+    if (name && name[0]=='@')
         throw new cRuntimeError(this,"setName(): property name must be specified without the '@' character");
-    if (propname)
-        stringPool.release(propname);
-    propname = stringPool.get(name);
+    cNamedObject::setName(name);
     updateFullName();
 }
 
-void cProperty::updateFullName()
+void cProperty::updateFullName() const
 {
     if (propfullname)
-		stringPool.release(propfullname);
+        stringPool.release(propfullname);
     if (!propindex)
     {
-        propfullname = stringPool.get(propname);
+        propfullname = stringPool.get(name());
     }
     else
     {
         std::stringstream os;
-        os << propname << "[" << propindex << "]";
+        os << name() << "[" << propindex << "]";
         std::string res = os.str();
         propfullname = stringPool.get(os.str().c_str());
     }
@@ -123,18 +116,15 @@ void cProperty::updateFullName()
 
 const char *cProperty::fullName() const
 {
+    if (!propfullname)
+        updateFullName();
     return propfullname;
-}
-
-std::string cProperty::fullPath() const
-{
-    return ownerp ? ownerp->fullPath()+"."+fullName() : fullName();
 }
 
 std::string cProperty::info() const
 {
     std::stringstream os;
-    os << "@" << propname;
+    os << "@" << fullName();
     if (!keyv.empty())
     {
         os << "(";
@@ -171,7 +161,7 @@ void cProperty::setIndex(const char *index)
         throw new cRuntimeError(this, eLOCKED);
     if (propindex)
         stringPool.release(propindex);
-    propindex = stringPool.get(index);
+    propindex = index ? stringPool.get(index) : NULL;
     updateFullName();
 }
 
@@ -265,6 +255,8 @@ void cProperty::setValue(const char *key, int k, const char *value)
 {
     if (islocked)
         throw new cRuntimeError(this, eLOCKED);
+    if (!value)
+        value = "";
     CharPtrVector& v = valuesVector(key);
     if (k<0)
         throw cRuntimeError(this,"negative property value index %d for key `%s'", k, key);
