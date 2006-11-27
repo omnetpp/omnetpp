@@ -29,7 +29,7 @@ void HistogramDemo::activity()
 {
     int numobs = par("num_obs");
     int numcells = par("num_cells");
-    int fixed_range = par("fixed_range");
+    bool fixed_range = par("fixed_range");
     int numfirst = par("num_first");
     double range_ext = par("range_ext");
 

@@ -19,7 +19,7 @@
 #ifndef __CDISPLAYSTRING_H
 #define __CDISPLAYSTRING_H
 
-#include "cownedobject.h"
+#include "cobject.h"
 
 
 #define MAXARGS 16
@@ -74,7 +74,7 @@ class SIM_API cDisplayString
     mutable bool needsassemble; // if dispstr is up-to-date
 
     // needed to notify Envir
-    cOwnedObject *object;     // a cModule or cGate pointer
+    cObject *object;     // a cModule or cGate pointer
     enum {NONE, CONNECTION, MODULE, MODULEBACKGROUND} role; // what
 
   private:

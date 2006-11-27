@@ -19,7 +19,6 @@
 #include "globals.h"
 #include "cobject.h"
 #include "cstringpool.h"
-#include "cstringpool.h"
 #include <vector>
 
 class cProperty;
@@ -34,7 +33,7 @@ class SIM_API cProperties : public cObject
 {
   protected:
     bool islocked;
-    cObject *ownerp;  // points to owner parameter or component
+    int refcount;
     std::vector<cProperty *> propv;
 
   public:
@@ -43,8 +42,9 @@ class SIM_API cProperties : public cObject
     // object, or call dup() (new objects are created in unlocked state).
     virtual void lock();
 
-    // internal: set the containing parameter, gate or component
-    virtual void setOwner(cObject *p) {ownerp = p;}
+    // internal: increment/decrement reference count
+    int addRef()  {return ++refcount;}
+    int removeRef()  {return --refcount;}
 
   public:
     /** @name Constructors, destructor, assignment. */
@@ -73,20 +73,14 @@ class SIM_API cProperties : public cObject
     /** @name Redefined cObject functions */
     //@{
     /**
-     * Redefined to return the property name. Property names start with '@'.
-     */
-    virtual const char *fullName() const;
-
-    /**
-     * Redefined to return the property's full path, that is, the
-     * owner object's fullPath() plus "." plus the property name.
-     */
-    virtual std::string fullPath() const;
-
-    /**
      * Creates and returns an exact copy of this object.
      */
-    virtual cProperties *dup() const   {return new cProperties(*this);}
+    virtual cProperties *dup() const  {return new cProperties(*this);}
+
+    /**
+     * Returns object name.
+     */
+    virtual const char *name() const  {return "properties";}
 
     /**
      * Produces a one-line description of object contents.

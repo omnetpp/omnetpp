@@ -33,7 +33,7 @@ class cStringPool
         bool operator()(const char *s1, const char *s2) const {
             int d0 = *s1 - *s2;
             if (d0<0) return true; else if (d0>0) return false;
-            return strcmp(s1+1,s2+1)<0;
+            return strcmp(s1,s2) < 0;  // note: (s1+1,s2+1) not good because either strings may be empty
         }
     };
     typedef std::map<char *,int,strless> StringIntMap;  // map<string,refcount>

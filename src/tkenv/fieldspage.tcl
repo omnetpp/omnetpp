@@ -520,6 +520,10 @@ proc getFieldNodeInfo_popup {w key x y} {
     catch {destroy .popup}
     menu .popup -tearoff 0
 
+    .popup add command -label "Copy" -command [list getFieldNodeInfo_copy $w $key]
+
+    .popup add separator
+
     set keyargs [split $key "-"]
     set ptr [getFieldNodeInfo_resolveObject $keyargs]
     if [opp_isnotnull $ptr] {
@@ -533,9 +537,6 @@ proc getFieldNodeInfo_popup {w key x y} {
             .popup add command -label "Edit..." -state disabled
         }
     }
-    .popup add separator
-
-    .popup add command -label "Copy" -command [list getFieldNodeInfo_copy $w $key]
 
     .popup post $x $y
 }

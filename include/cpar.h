@@ -61,7 +61,7 @@ class SIM_API cPar : public cObject  //turn into cObject; delegate name to p! ad
     };
 
   private:
-    cPar(cComponent *component, cParValue *p);
+    explicit cPar(cComponent *component, cParValue *p);
     // internal utility function
     void copyIfShared();
     // internal: called each time after the value of this object changes.
