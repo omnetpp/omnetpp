@@ -44,15 +44,15 @@ cNEDDeclarationBase(name), NEDComponent(tree)
 
 cNEDDeclaration::~cNEDDeclaration()
 {
-/*FIXME put back
-    if (props->removeRef()==0)
+/*FIXME this crashes
+    if (props && props->removeRef()==0)
         delete props;
+*/
     clearPropsMap(paramPropsMap);
     clearPropsMap(gatePropsMap);
     clearPropsMap(subcomponentPropsMap);
     clearPropsMap(subcomponentParamPropsMap);
     clearPropsMap(subcomponentGatePropsMap);
-*/
 }
 
 void cNEDDeclaration::clearPropsMap(PropertiesMap& propsMap)
@@ -253,7 +253,8 @@ cProperties *cNEDDeclaration::subcomponentProperties(const char *subcomponentNam
     NEDElement *subcomponentNode = getSubcomponentNode(subcomponentName);
     if (!subcomponentNode && !props)
         return NULL; // error: no such submodule or channel
-    props = mergeProperties(props, subcomponentNode);
+    NEDElement *paramsNode = subcomponentNode ? subcomponentNode->getFirstChildWithTag(NED_PARAMETERS) : NULL;
+    props = mergeProperties(props, paramsNode);
     putIntoPropsMap(subcomponentPropsMap, key.c_str(), props);
     return props;
 }

@@ -227,7 +227,7 @@ void cNEDNetworkBuilder::buildInside(cModule *modp, cNEDDeclaration *decl)
 {
     printf("started buildinside of %s\n", modp->fullPath().c_str()); //XXX
     // set display string
-//FIXME    setBackgroundDisplayString(modp, modulenode);
+//FIXME    setBackgroundDisplayString(modp);
 
     // add submodules and connections. Submodules and connections are inherited:
     // we need to start start with the the base classes, and do this compound
@@ -328,7 +328,7 @@ void cNEDNetworkBuilder::addSubmodule(cModule *modp, SubmoduleNode *submod)
         v.push_back(submodp);
 
         cContextSwitcher __ctx(submodp); // params need to be evaluated in the module's context
-        setDisplayString(submodp, submod);
+        setDisplayString(submodp);
         assignSubcomponentParams(submodp, submod);
         submodp->readParams();
         setupGateVectors(submodp, submod);
@@ -346,7 +346,7 @@ void cNEDNetworkBuilder::addSubmodule(cModule *modp, SubmoduleNode *submod)
             v.push_back(submodp);
 
             cContextSwitcher __ctx(submodp); // params need to be evaluated in the module's context
-            setDisplayString(submodp, submod);
+            setDisplayString(submodp);
             assignSubcomponentParams(submodp, submod);
             submodp->readParams();
             setupGateVectors(submodp, submod);
@@ -358,19 +358,18 @@ void cNEDNetworkBuilder::addSubmodule(cModule *modp, SubmoduleNode *submod)
 }
 
 
-void cNEDNetworkBuilder::setDisplayString(cModule *submodp, SubmoduleNode *submod)
+void cNEDNetworkBuilder::setDisplayString(cModule *submodp)
 {
-/*XXX
-    DisplayStringNode *dispstrnode = submod->getFirstDisplayStringChild();
-    if (dispstrnode)
+    cProperties *props = submodp->properties();
+    cProperty *prop = props->get("display");
+    const char *propValue = prop ? prop->value(cProperty::DEFAULTKEY) : NULL;
+    if (propValue)
     {
-        const char *dispstr = dispstrnode->getValue();
-        submodp->setDisplayString(dispstr);
+        submodp->setDisplayString(propValue);  //FIXME convert to new format, etc
     }
-*/
 }
 
-void cNEDNetworkBuilder::setConnDisplayString(cGate *srcgatep, ConnectionNode *conn)
+void cNEDNetworkBuilder::setConnDisplayString(cGate *srcgatep)
 {
 /*XXX
     DisplayStringNode *dispstrnode = conn->getFirstDisplayStringChild();
@@ -382,7 +381,7 @@ void cNEDNetworkBuilder::setConnDisplayString(cGate *srcgatep, ConnectionNode *c
 */
 }
 
-void cNEDNetworkBuilder::setBackgroundDisplayString(cModule *modp, CompoundModuleNode *mod)
+void cNEDNetworkBuilder::setBackgroundDisplayString(cModule *modp)
 {
 /*XXX
     DisplayStringNode *dispstrnode = mod->getFirstDisplayStringChild();
