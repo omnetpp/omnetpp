@@ -33,7 +33,7 @@ class cProperties;
  *
  * @ingroup Internals
  */
-class SIM_API cProperty : public cObject
+class SIM_API cProperty : public cNamedObject
 {
   public:
     static const char *DEFAULTKEY;
@@ -42,13 +42,12 @@ class SIM_API cProperty : public cObject
     // property names, keys and values are all stringpooled to reduce memory consumption
     static cStringPool stringPool;
 
-    bool islocked;
+    bool islocked;  //FIXME turn into cNamedObject flags
     bool isimplicit;
     cProperties *ownerp;
 
-    const char *propname;
     const char *propindex;
-    const char *propfullname;
+    mutable const char *propfullname;
 
     typedef std::vector<const char *> CharPtrVector;
     CharPtrVector keyv;
@@ -56,7 +55,7 @@ class SIM_API cProperty : public cObject
 
   protected:
     static void releaseValues(CharPtrVector& vals);
-    void updateFullName();
+    void updateFullName() const;
     int findKey(const char *key) const;
     CharPtrVector& valuesVector(const char *key) const;
 
@@ -81,7 +80,7 @@ class SIM_API cProperty : public cObject
     /**
      * Copy constructor.
      */
-    cProperty(const cProperty& other) {islocked=false; propname=propindex=propfullname=NULL; operator=(other);}
+    cProperty(const cProperty& other) {islocked=false; propindex=propfullname=NULL; operator=(other);}
 
     /**
      * Destructor.
@@ -97,20 +96,15 @@ class SIM_API cProperty : public cObject
     /** @name Redefined cObject functions */
     //@{
     /**
-     * Returns the property name.
+     * Redefined.
+     * @see setIndex()
      */
-    virtual const char *name() const {return propname;}
+    virtual void setName(const char *name);
 
     /**
      * Redefined to return the property name plus optional index.
      */
     virtual const char *fullName() const;
-
-    /**
-     * Redefined to return the property's full path, that is, the
-     * owner object's fullPath() plus the property name.
-     */
-    virtual std::string fullPath() const;
 
     /**
      * Creates and returns an exact copy of this object.
@@ -135,11 +129,6 @@ class SIM_API cProperty : public cObject
 
     /** @name Property getter/setter methods */
     //@{
-    /**
-     * Sets the property name. The string must begin with '@'.
-     */
-    virtual void setName(const char *name);
-
     /**
      * Sets the index of this property; see NED syntax
      * <tt>@propname[index](keys-and-values)</tt>.

@@ -28,6 +28,9 @@
 cNEDDeclaration::cNEDDeclaration(const char *name, NEDElement *tree) :
 cNEDDeclarationBase(name), NEDComponent(tree)
 {
+    ASSERT(name && name[0]);
+    ASSERT(tree);
+    
     // add "extends" and "like" names
     for (NEDElement *child=tree->getFirstChild(); child; child=child->getNextSibling())
     {
@@ -38,7 +41,7 @@ cNEDDeclarationBase(name), NEDComponent(tree)
     }
 
     if (numExtendsNames()!=0)
-        implClassName = getSuperDecl()->implementationClassName();
+        implClassName = opp_nulltoempty(getSuperDecl()->implementationClassName());
     else if (tree->getTagCode()==NED_SIMPLE_MODULE || tree->getTagCode()==NED_CHANNEL)
         implClassName = name;
 }

@@ -430,7 +430,7 @@ void TCmdenvApp::putmsg(const char *s)
 
 void TCmdenvApp::sputn(const char *s, int n)
 {
-    cModule *ctxmod = simulation.contextModule();
+    cModule *ctxmod = simulation.contextModule();  //FIXME shouldn't this be "component" ?
     if (!ctxmod || (opt_modulemsgs && ctxmod->isEvEnabled()) || simulation.contextType()==CTX_FINISH)
     {
         ::fwrite(s,1,n,fout);

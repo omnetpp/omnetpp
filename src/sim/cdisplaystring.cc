@@ -201,7 +201,7 @@ const char *cDisplayString::getTagArg(int tagindex, int index) const
 {
     if (tagindex<0 || tagindex>=numtags) return "";
     if (index<0 || index>=tags[tagindex].numargs) return "";
-    return correct(tags[tagindex].args[index]);
+    return opp_nulltoempty(tags[tagindex].args[index]);
 }
 
 

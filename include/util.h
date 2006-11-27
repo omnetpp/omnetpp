@@ -161,7 +161,7 @@ SIM_API char *opp_strprettytrunc(char *dest, const char *src, unsigned maxlen);
  * Returns the pointer passed as argument unchanged, except that if it was NULL,
  * it returns a pointer to a null string ("").
  */
-inline const char *correct(const char *);
+inline const char *opp_nulltoempty(const char *);
 //@}
 
 /**
@@ -354,7 +354,7 @@ inline bool equal(double a, double b, double epsilon)
    return (d>=0.0 ? d : -d) < epsilon;
 }
 
-inline const char *correct(const char *s)
+inline const char *opp_nulltoempty(const char *s)
 {
    return s ? s : "";
 }
