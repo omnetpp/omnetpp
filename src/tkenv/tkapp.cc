@@ -217,8 +217,8 @@ int TOmnetTkApp::run()
 
 void TOmnetTkApp::shutdown()
 {
-    if (!initialized)
-        return;
+    //XXXif (!initialized)   --FIXME wonder what purpose this served... affected objects are initialized in TOmnetTkApp already!
+    //XXX    return;
 
     // close all inspectors before exiting
     for(;;)
