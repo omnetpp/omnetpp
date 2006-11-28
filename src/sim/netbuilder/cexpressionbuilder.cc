@@ -200,25 +200,11 @@ void cExpressionBuilder::doFunction(FunctionNode *node)
         cMathFunction *functype = cMathFunction::find(funcname,argcount);
         cNEDFunction *nedfunctype = cNEDFunction::find(funcname,argcount);
         if (functype)
-        {
-            switch (argcount)
-            {
-                case 0: elems[pos++] = functype->mathFuncNoArg(); break;
-                case 1: elems[pos++] = functype->mathFunc1Arg(); break;
-                case 2: elems[pos++] = functype->mathFunc2Args(); break;
-                case 3: elems[pos++] = functype->mathFunc3Args(); break;
-                case 4: elems[pos++] = functype->mathFunc4Args(); break;
-                default: throw new cRuntimeError("dynamic module builder: internal error: function with %d args???", funcname, argcount);
-            }
-        }
+            elems[pos++] = functype;
         else if (nedfunctype)
-        {
             elems[pos++] = nedfunctype;
-        }
         else
-        {
             throw new cRuntimeError("dynamic module builder: function %s with %d args not found", funcname, argcount);
-        }
     }
 }
 
