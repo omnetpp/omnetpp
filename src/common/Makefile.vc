@@ -48,7 +48,7 @@ lex.matchexpressionyy.cc: matchexpression.lex matchexpression.tab.h
 
 $(OBJS) : unistd.h
 unistd.h:
-	echo // Dummy header file -- Bisons skeleton code insists on including it even on Windows > unistd.h
+	echo // Dummy header file -- Flex skeleton code insists on including it even on Windows > unistd.h
 
 doc:
 	$(DOXYGEN:/=\) doxy.cfg
