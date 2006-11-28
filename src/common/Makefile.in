@@ -78,7 +78,6 @@ filereader.o: filereader.cc \
 filetokenizer.o: filetokenizer.cc \
   filetokenizer.h
 lex.matchexpressionyy.o: lex.matchexpressionyy.cc \
-  ./unistd.h \
   matchexpression.tab.h
 linetokenizer.o: linetokenizer.cc \
   exception.h \

@@ -1607,6 +1607,30 @@ distrib.o: distrib.cc \
 errmsg.o: errmsg.cc \
   ../../include/errmsg.h \
   ../../include/defs.h
+expr.tab.o: expr.tab.cc \
+  ../../include/expryydefs.h \
+  ../../include/cdynamicexpression.h \
+  ../../include/cpar.h \
+  ../../include/cxmlelement.h \
+  ../../include/cexception.h \
+  ../../include/globals.h \
+  ../../include/cfunction.h \
+  ../../include/cnedfunction.h \
+  ../../include/cexpression.h \
+  ../../include/cobject.h \
+  ../../include/defs.h \
+  ../../include/util.h \
+  ../../include/cvisitor.h \
+  ../../include/regmacros.h \
+  ../../include/errmsg.h \
+  ../../include/onstartup.h \
+  ../../include/cownedobject.h \
+  ../../include/cenvir.h \
+  ../../include/cnamedobject.h \
+  ../../include/cstringpool.h \
+  ../../include/opp_string.h \
+  ../../include/carray.h \
+  ../../include/cclassfactory.h
 globals.o: globals.cc \
   ../../include/globals.h \
   ../../include/carray.h \
@@ -1630,6 +1654,18 @@ globals.o: globals.cc \
   ../../include/cneddeclarationbase.h \
   ../../include/cexpression.h \
   ../../include/cparvalue.h
+lex.expryy.o: lex.expryy.cc \
+  ../../include/expryydefs.h \
+  expr.tab.h \
+  ../../include/util.h \
+  ../../include/cdynamicexpression.h \
+  ../../include/cexpression.h \
+  ../../include/cobject.h \
+  ../../include/defs.h \
+  ../../include/cvisitor.h \
+  ../../include/regmacros.h \
+  ../../include/onstartup.h \
+  ../../include/errmsg.h
 minixpath.o: minixpath.cc \
   minixpath.h \
   ../../include/cexception.h \

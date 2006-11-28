@@ -18,7 +18,7 @@
 #include <assert.h>
 
 #include "cenvir.h"
-#include "cObject.h"
+#include "cobject.h"
 #include "cmodule.h"
 #include "cmessage.h"
 #include "cqueue.h"

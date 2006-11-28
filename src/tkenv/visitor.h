@@ -17,7 +17,7 @@
 #define __VISITOR_H
 
 #include "cenvir.h"
-#include "cObject.h"
+#include "cobject.h"
 #include "cvisitor.h"
 #include "tkapp.h"
 #include "patternmatcher.h"
