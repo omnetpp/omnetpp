@@ -4,7 +4,7 @@ Tests cProperty keys and values
 %global:
 #include <string.h>
 #define PRINTINFO     ev << prop->info() << "\n";
-#define PRINTKEY(k)   ev << "key(" << k << "): has=" << (prop->hasKey(k)?"1":"0") << " len=" << prop->numValues(k) << "\n";
+#define PRINTKEY(k)   ev << "key(" << k << "): has=" << (prop->hasKey(k)?"yes":"no") << " len=" << (prop->hasKey(k) ? prop->numValues(k) : -1) << "\n";
 
 %activity:
 //__asm int 3;
@@ -43,6 +43,7 @@ PRINTKEY("fookey");
 PRINTKEY("bazkey");
 PRINTKEY("nope");
 
+prop->addKey("fookey"); PRINTINFO;
 prop->setValue("fookey", 3, "drei"); PRINTINFO;
 
 PRINTKEY("fookey");
@@ -54,8 +55,10 @@ ev << "." << endl;
 %contains: stdout
 @foo
 @foo()
+key(): has=yes len=0
 @foo(,,zwei)
 @foo(,,zwei,,vier)
+key(): has=yes len=5
 @foo(,,zwei,,vier;fookey=)
 @foo(,,zwei,,vier;fookey=,eins)
 @foo(,,zwei,,vier;fookey=zero,eins)
@@ -65,4 +68,20 @@ ev << "." << endl;
 @foo(,,zwei,,vier;fookey=zero,eins,,,,,,,,;barkey=;bazkey=)
 @foo(,,zwei,,vier;fookey=zero,eins;barkey=;bazkey=)
 @foo(,,zwei,,vier;fookey=zero,eins,,,,,,,,neun;barkey=;bazkey=)
+key(): has=yes len=5
+key(fookey): has=yes len=10
+key(bazkey): has=yes len=0
+key(nope): has=no len=-1
+key(0): has=yes len=5
+@foo(,,zwei,,vier;fookey=zero,eins,,,,,,,,neun;bazkey=)
+@foo(,,zwei,,vier;bazkey=)
+@foo(bazkey=)
+key(): has=no len=-1
+key(fookey): has=no len=-1
+key(bazkey): has=yes len=0
+key(nope): has=no len=-1
+@foo(bazkey=;fookey=)
+@foo(bazkey=;fookey=,,,drei)
+key(fookey): has=yes len=4
 .
+
