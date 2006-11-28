@@ -25,9 +25,9 @@ class  cXMLElement;
 
 
 /**
- * Abstract base class for expressions, to be used with cMessagePar.
+ * Abstract base class for expressions, to be used with cMsgPar.
  *
- * @see cMessagePar
+ * @see cMsgPar
  */
 class SIM_API cMPExpression  // FIXME do we still need this????
 {
@@ -41,7 +41,7 @@ class SIM_API cMPExpression  // FIXME do we still need this????
 /**
  * Abstract base class for double-valued expressions. Currently
  * used by nedtool-generated C++ code, which contains
- * cDoubleExpression-based compiled expressions (used via cMessagePar)
+ * cDoubleExpression-based compiled expressions (used via cMsgPar)
  * for e.g. submodule parameters.
  *
  * The actual expression should be supplied by creating a subclass
@@ -54,14 +54,14 @@ class SIM_API cMPExpression  // FIXME do we still need this????
  *   class Expr12 : public cDoubleExpression {
  *       private:
  *           long p1;
- *           cMessagePar& p2;
+ *           cMsgPar& p2;
  *       public:
- *           Expr12(long ap1, cMessagePar& ap2) : p1(ap1), p2(ap2) {}
+ *           Expr12(long ap1, cMsgPar& ap2) : p1(ap1), p2(ap2) {}
  *           virtual double evaluate() {return 3*p1+p2;}
  *   };
  *   </pre>
  *
- * @see cMessagePar
+ * @see cMsgPar
  */
 class SIM_API cDoubleExpression : public cMPExpression
 {
@@ -76,9 +76,9 @@ class SIM_API cDoubleExpression : public cMPExpression
 /**
  * FIXME revise doc!!!
  *
- * cMessagePar instances can be attached to cMessage objects.
+ * cMsgPar instances can be attached to cMessage objects.
  *
- * cMessagePar supports several data types. Data types are identified by type
+ * cMsgPar supports several data types. Data types are identified by type
  * characters. The current data type is returned by type().
  *
  *     - basic types: <b>S</b> string, <b>B</b> bool, <b>L</b> long, <b>D</b> double
@@ -87,41 +87,41 @@ class SIM_API cDoubleExpression : public cMPExpression
  *     - <b>C</b> compiled expression (subclassed from cDoubleExpression),
  *     - <b>T</b> distribution from a cStatistic,
  *     - <b>P</b> pointer to cOwnedObject,
- *     - <b>I</b> indirection (refers to another cMessagePar)
+ *     - <b>I</b> indirection (refers to another cMsgPar)
  *     - <b>M</b> XML element (pointer to a cXMLElement)
  *
  * For all types, an input flag can be set. In this case,
  * the user will be asked to enter the value when the object's value
  * is first used. The prompt string can also be specified
- * for cMessagePar. If no prompt string is given, the object's
+ * for cMsgPar. If no prompt string is given, the object's
  * name will be displayed as prompt text.
  *
- * NOTE: forEachChild() ignores objects stored here such as cMessagePars in ExprElem
+ * NOTE: forEachChild() ignores objects stored here such as cMsgPars in ExprElem
  * structs (type X), cOwnedObject pointed to (type P), cStatistic (type T)
  *
  * @ingroup SimCore
  * @see ExprElem
  */
-class SIM_API cMessagePar : public cOwnedObject   // FIXME simplify and DEPRECATE this class!!!
+class SIM_API cMsgPar : public cOwnedObject   // FIXME simplify and DEPRECATE this class!!!
 {
   public:
     /**
-     * One component in a (reversed Polish) expression in a cMessagePar;
-     * see cMessagePar::setDoubleValue(ExprElem *,int).
+     * One component in a (reversed Polish) expression in a cMsgPar;
+     * see cMsgPar::setDoubleValue(ExprElem *,int).
      */
     struct ExprElem
     {
         // Type chars:
         //   D  double constant
-        //   P  pointer to "external" cMessagePar (owned by someone else)
-        //   R  "reference": the cMessagePar will be dup()'ped and the copy kept
+        //   P  pointer to "external" cMsgPar (owned by someone else)
+        //   R  "reference": the cMsgPar will be dup()'ped and the copy kept
         //   0/1/2/3  function with 0/1/2/3 arguments
-        //   @  math operator (+-*%/^=!<{>}?); see cMessagePar::evaluate()
+        //   @  math operator (+-*%/^=!<{>}?); see cMsgPar::evaluate()
         //
         char type;    // D/P/R/0/1/2/3/@ (see above)
         union {
             double d;           // D
-            cMessagePar *p;     // P/R
+            cMsgPar *p;     // P/R
             MathFuncNoArg f0;   // 0
             MathFunc1Arg  f1;   // 1
             MathFunc2Args f2;   // 2
@@ -157,20 +157,20 @@ class SIM_API cMessagePar : public cOwnedObject   // FIXME simplify and DEPRECAT
 
         /**
          * Effect during evaluation of the expression: takes the value of
-         * the cMessagePar object  (a double) and pushes the value
-         * on the evaluation stack. The cMessagePar is an "external"
+         * the cMsgPar object  (a double) and pushes the value
+         * on the evaluation stack. The cMsgPar is an "external"
          * one: its ownership does not change. This is how NED-language REF
          * parameters in expressions are handled.
          */
-        void operator=(cMessagePar *_p)          {type='P'; p=_p;  }
+        void operator=(cMsgPar *_p)          {type='P'; p=_p;  }
 
         /**
          * Effect during evaluation of the expression: takes the value of
-         * the cMessagePar object  (a double) and pushes the value
-         * on the evaluation stack. The cMessagePar which evaluates this
-         * expression will copy the cMessagePar for itself.
+         * the cMsgPar object  (a double) and pushes the value
+         * on the evaluation stack. The cMsgPar which evaluates this
+         * expression will copy the cMsgPar for itself.
          */
-        void operator=(cMessagePar& _r);         //{type='R'; p=(cMessagePar *)_r.dup();} See after cMessagePar!
+        void operator=(cMsgPar& _r);         //{type='R'; p=(cMsgPar *)_r.dup();} See after cMsgPar!
 
         /**
          * The argument can be a pointer to a function that takes no arguments
@@ -273,7 +273,7 @@ class SIM_API cMessagePar : public cOwnedObject   // FIXME simplify and DEPRECAT
        struct { cStatistic *res;                } dtr;  // T:distribution
        struct { cDoubleExpression *expr;        } cexpr;// C:compiled expression
        struct { ExprElem *xelem; int n;         } expr; // X:expression
-       struct { cMessagePar *par;               } ind;  // I:indirection
+       struct { cMsgPar *par;               } ind;  // I:indirection
        struct { void *ptr;
                 VoidDelFunc delfunc;
                 VoidDupFunc dupfunc;
@@ -321,37 +321,37 @@ class SIM_API cMessagePar : public cOwnedObject   // FIXME simplify and DEPRECAT
     /**
      * Copy constructor, creates an exact copy of the argument.
      */
-    cMessagePar(const cMessagePar& other);
+    cMsgPar(const cMsgPar& other);
 
     /**
-     * Constructor, creates a cMessagePar with the given name and long
+     * Constructor, creates a cMsgPar with the given name and long
      * ('L') as default type.
      */
-    explicit cMessagePar(const char *name=NULL);
+    explicit cMsgPar(const char *name=NULL);
 
     /**
      * Constructor, creates a copy of the second argument with another
      * name.
      */
-    explicit cMessagePar(const char *name, cMessagePar& other);
+    explicit cMsgPar(const char *name, cMsgPar& other);
 
     /**
      * Destructor.
      */
-    virtual ~cMessagePar();
+    virtual ~cMsgPar();
 
     /**
      * Assignment operator. The name member doesn't get copied; see cOwnedObject's
      * operator=() for more details.
      *
-     * The behavior with redirected cMessagePar objects is the following. This function
+     * The behavior with redirected cMsgPar objects is the following. This function
      * copies the contents of the other object (whether it is redirected or not)
      * into this object, <b>or,</b> if this object is redirected, into the object
      * this object refers to. This means that if you want to overwrite this
      * very object (and not the one it points to), you have to use
      * cancelRedirection() first.
      */
-    cMessagePar& operator=(const cMessagePar& otherpar);
+    cMsgPar& operator=(const cMsgPar& otherpar);
     //@}
 
     /** @name Redefined cObject member functions */
@@ -361,7 +361,7 @@ class SIM_API cMessagePar : public cOwnedObject   // FIXME simplify and DEPRECAT
      * Creates and returns an exact copy of this object.
      * See cOwnedObject for more details.
      */
-    virtual cMessagePar *dup() const  {return new cMessagePar(*this);}
+    virtual cMsgPar *dup() const  {return new cMsgPar(*this);}
 
     /**
      * Produces a one-line description of object contents.
@@ -402,36 +402,36 @@ class SIM_API cMessagePar : public cOwnedObject   // FIXME simplify and DEPRECAT
     /**
      * Sets the value to the given bool value.
      */
-    cMessagePar& setBoolValue(bool b);
+    cMsgPar& setBoolValue(bool b);
 
     /**
      * Sets the value to the given long value.
      */
-    cMessagePar& setLongValue(long l);
+    cMsgPar& setLongValue(long l);
 
     /**
      * Sets the value to the given string value.
-     * The cMessagePar will make its own copy of the string. NULL is also accepted
+     * The cMsgPar will make its own copy of the string. NULL is also accepted
      * and treated as an empty string.
      */
-    cMessagePar& setStringValue(const char *s);
+    cMsgPar& setStringValue(const char *s);
 
     /**
      * Sets the value to the given double value.
      */
-    cMessagePar& setDoubleValue(double d);
+    cMsgPar& setDoubleValue(double d);
 
     /**
      * Sets the value to the given distribution.
-     * Every time the cMessagePar's value is asked a random number produced
+     * Every time the cMsgPar's value is asked a random number produced
      * by res.random() will be returned.
      */
-    cMessagePar& setDoubleValue(cStatistic *res);
+    cMsgPar& setDoubleValue(cStatistic *res);
 
     /**
      * Sets the value to the given Reverse Polish expression, specified as
      * an array of ExprElem structs.
-     * Every time the cMessagePar's value is asked the expression will be
+     * Every time the cMsgPar's value is asked the expression will be
      * evaluated using a stack machine. The stack machine calculates
      * in doubles.
      *
@@ -439,7 +439,7 @@ class SIM_API cMessagePar : public cOwnedObject   // FIXME simplify and DEPRECAT
      * in the following way:
      *
      * \code
-     * cMessagePar::ExprElem *expression = new cMessagePar::ExprElem[5];
+     * cMsgPar::ExprElem *expression = new cMsgPar::ExprElem[5];
      * expression[0] = &(mod->par("count")); // ptr to module parameter
      * expression[1] = 1;
      * expression[2] = '+';
@@ -448,51 +448,51 @@ class SIM_API cMessagePar : public cOwnedObject   // FIXME simplify and DEPRECAT
      * param.setDoubleValue(expression,5);
      * \endcode
      */
-    cMessagePar& setDoubleValue(ExprElem *x, int n);
+    cMsgPar& setDoubleValue(ExprElem *x, int n);
 
     /**
      * Sets the value to the given compiled expression, subclassed from
      * cDoubleExpression.
-     * Every time the cMessagePar's value is asked, the evaluate() function of
+     * Every time the cMsgPar's value is asked, the evaluate() function of
      * cDoubleExpression will be called. The passed object will be
-     * deallocated (using operator delete) from the cMessagePar destructor, and
-     * also when the cMessagePar object is assigned another value.
+     * deallocated (using operator delete) from the cMsgPar destructor, and
+     * also when the cMsgPar object is assigned another value.
      */
-    cMessagePar& setDoubleValue(cDoubleExpression *expr);
+    cMsgPar& setDoubleValue(cDoubleExpression *expr);
 
     /**
      * Sets the value to the given math function with no arguments.
-     * Every time the cMessagePar's value is asked the function will be called.
+     * Every time the cMsgPar's value is asked the function will be called.
      */
-    cMessagePar& setDoubleValue(MathFuncNoArg f);
+    cMsgPar& setDoubleValue(MathFuncNoArg f);
 
     /**
      * Sets the value to the given math function with one argument.
-     * Every time the cMessagePar's value is asked the function will be called
+     * Every time the cMsgPar's value is asked the function will be called
      * with p1 as an argument.
      */
-    cMessagePar& setDoubleValue(MathFunc1Arg  f, double p1);
+    cMsgPar& setDoubleValue(MathFunc1Arg  f, double p1);
 
     /**
      * Sets the value to the given math function with two arguments.
-     * Every time the cMessagePar's value is asked the function will be called
+     * Every time the cMsgPar's value is asked the function will be called
      * with p1 and p2 as an arguments.
      */
-    cMessagePar& setDoubleValue(MathFunc2Args f, double p1, double p2);
+    cMsgPar& setDoubleValue(MathFunc2Args f, double p1, double p2);
 
     /**
      * Sets the value to the given math function with three arguments.
-     * Every time the cMessagePar's value is asked the function will be called
+     * Every time the cMsgPar's value is asked the function will be called
      * with p1, p2 and p3 as an arguments.
      */
-    cMessagePar& setDoubleValue(MathFunc3Args f, double p1, double p2, double p3);
+    cMsgPar& setDoubleValue(MathFunc3Args f, double p1, double p2, double p3);
 
     /**
      * Sets the value to the given math function with four arguments.
-     * Every time the cMessagePar's value is asked the function will be called
+     * Every time the cMsgPar's value is asked the function will be called
      * with p1, p2, p3 and p4 as an arguments.
      */
-    cMessagePar& setDoubleValue(MathFunc4Args f, double p1, double p2, double p3, double p4);
+    cMsgPar& setDoubleValue(MathFunc4Args f, double p1, double p2, double p3, double p4);
 
     /**
      * Sets the value to the given pointer. The ownership of the block
@@ -500,18 +500,18 @@ class SIM_API cMessagePar : public cOwnedObject   // FIXME simplify and DEPRECAT
      *
      * @see configPointer
      */
-    cMessagePar& setPointerValue(void *ptr);
+    cMsgPar& setPointerValue(void *ptr);
 
     /**
-     * Sets the value to the given object. Whether cMessagePar will take the
+     * Sets the value to the given object. Whether cMsgPar will take the
      * ownership of the object depends on the takeOwnership() flag.
      */
-    cMessagePar& setObjectValue(cOwnedObject *obj);
+    cMsgPar& setObjectValue(cOwnedObject *obj);
 
     /**
      * Sets the value to the given cXMLElement.
      */
-    cMessagePar& setXMLValue(cXMLElement *node);
+    cMsgPar& setXMLValue(cXMLElement *node);
 
     /**
      * Configures memory management for the void* pointer ('P') type.
@@ -551,12 +551,12 @@ class SIM_API cMessagePar : public cOwnedObject   // FIXME simplify and DEPRECAT
     //@{
 
     /**
-     * Returns value as a boolean. The cMessagePar type must be bool (B) or a numeric type.
+     * Returns value as a boolean. The cMsgPar type must be bool (B) or a numeric type.
      */
     bool boolValue();
 
     /**
-     * Returns value as long. The cMessagePar type must be types long (L),
+     * Returns value as long. The cMsgPar type must be types long (L),
      * double (D), Boolean (B), function (F), distribution (T),
      * compiled expression (C) or expression (X).
      */
@@ -568,24 +568,24 @@ class SIM_API cMessagePar : public cOwnedObject   // FIXME simplify and DEPRECAT
     const char *stringValue();
 
     /**
-     * Returns value as double. The cMessagePar type must be types long (L),
+     * Returns value as double. The cMsgPar type must be types long (L),
      * double (D), function (F), Boolean (B), distribution (T),
      * compiled expression (C) or expression (X).
      */
     double doubleValue();
 
     /**
-     * Returns value as a void * pointer. The cMessagePar type must be pointer (P).
+     * Returns value as a void * pointer. The cMsgPar type must be pointer (P).
      */
     void *pointerValue();
 
     /**
-     * Returns value as pointer to cOwnedObject. The cMessagePar type must be pointer (O).
+     * Returns value as pointer to cOwnedObject. The cMsgPar type must be pointer (O).
      */
     cOwnedObject *objectValue();
 
     /**
-     * Returns value as pointer to cXMLElement. The cMessagePar type must be XML (M).
+     * Returns value as pointer to cXMLElement. The cMsgPar type must be XML (M).
      */
     cXMLElement *xmlValue();
     //@}
@@ -594,27 +594,27 @@ class SIM_API cMessagePar : public cOwnedObject   // FIXME simplify and DEPRECAT
     //@{
 
     /**
-     * Creates a redirection to another cMessagePar. A cMessagePar object can be set
-     * to stand for a value actually stored in another cMessagePar object.
+     * Creates a redirection to another cMsgPar. A cMsgPar object can be set
+     * to stand for a value actually stored in another cMsgPar object.
      * This is called indirect or redirected value. When using redirection,
      * every operation on the value (i.e. reading or changing it)
-     * will be actually done to the other cMessagePar object.
+     * will be actually done to the other cMsgPar object.
      */
-    cMessagePar& setRedirection(cMessagePar *par);
+    cMsgPar& setRedirection(cMsgPar *par);
 
     /**
-     * Returns true if this object is redirected to another cMessagePar.
+     * Returns true if this object is redirected to another cMsgPar.
      */
     bool isRedirected() const {return typechar=='I';}
 
     /**
-     * Returns NULL if the cMessagePar's value is not redirected to another cMessagePar;
-     * otherwise it returns the pointer of that cMessagePar.
+     * Returns NULL if the cMsgPar's value is not redirected to another cMsgPar;
+     * otherwise it returns the pointer of that cMsgPar.
      * This function and isRedirected() are the only ways to determine
      * if an object is redirected or not (type() returns the type of
-     * the other cMessagePar: 'D', 'L' etc).
+     * the other cMsgPar: 'D', 'L' etc).
      */
-    cMessagePar *redirection();
+    cMsgPar *redirection();
 
     /**
      * Break the redirection. The new type will be long ('L').
@@ -679,7 +679,7 @@ class SIM_API cMessagePar : public cOwnedObject   // FIXME simplify and DEPRECAT
     /**
      * Reads the object value from the ini file or from the user.
      */
-    cMessagePar& read();
+    cMsgPar& read();
 
     /**
      * Replaces the object value with its evaluation (a double).
@@ -691,7 +691,7 @@ class SIM_API cMessagePar : public cOwnedObject   // FIXME simplify and DEPRECAT
      * Compares the stored values. The two objects must have the same type character
      * and the same value to be equal.
      */
-    bool equalsTo(cMessagePar *par);
+    bool equalsTo(cMsgPar *par);
     //@}
 
     /** @name Convert to/from text representation. */
@@ -706,7 +706,7 @@ class SIM_API cMessagePar : public cOwnedObject   // FIXME simplify and DEPRECAT
      * This function tries to interpret the argument text as a type
      * typed value (L=long, S=string, etc). type=='?' (the default)
      * means that the type is to be auto-selected. On success,
-     * cMessagePar is updated with the new value and true is returned,
+     * cMsgPar is updated with the new value and true is returned,
      * otherwise the function returns false. No error message is generated.
      */
     virtual bool setFromText(const char *text, char type='?');  // FIXME remove this... no one uses it
@@ -718,77 +718,77 @@ class SIM_API cMessagePar : public cOwnedObject   // FIXME simplify and DEPRECAT
     /**
      * Equivalent to setBoolValue().
      */
-    cMessagePar& operator=(bool b)          {return setBoolValue(b);}
+    cMsgPar& operator=(bool b)          {return setBoolValue(b);}
 
     /**
      * Equivalent to setStringValue().
      */
-    cMessagePar& operator=(const char *s)   {return setStringValue(s);}
+    cMsgPar& operator=(const char *s)   {return setStringValue(s);}
 
     /**
      * Converts the argument to long, and calls setLongValue().
      */
-    cMessagePar& operator=(char c)          {return setLongValue((long)c);}
+    cMsgPar& operator=(char c)          {return setLongValue((long)c);}
 
     /**
      * Converts the argument to long, and calls setLongValue().
      */
-    cMessagePar& operator=(unsigned char c) {return setLongValue((long)c);}
+    cMsgPar& operator=(unsigned char c) {return setLongValue((long)c);}
 
     /**
      * Converts the argument to long, and calls setLongValue().
      */
-    cMessagePar& operator=(int i)           {return setLongValue((long)i);}
+    cMsgPar& operator=(int i)           {return setLongValue((long)i);}
 
     /**
      * Converts the argument to long, and calls setLongValue().
      */
-    cMessagePar& operator=(unsigned int i)  {return setLongValue((long)i);}
+    cMsgPar& operator=(unsigned int i)  {return setLongValue((long)i);}
 
     /**
      * Converts the argument to long, and calls setLongValue().
      */
-    cMessagePar& operator=(short i)  {return setLongValue((long)i);}
+    cMsgPar& operator=(short i)  {return setLongValue((long)i);}
 
     /**
      * Converts the argument to long, and calls setLongValue().
      */
-    cMessagePar& operator=(unsigned short i)  {return setLongValue((long)i);}
+    cMsgPar& operator=(unsigned short i)  {return setLongValue((long)i);}
 
     /**
      * Equivalent to setLongValue().
      */
-    cMessagePar& operator=(long l)          {return setLongValue(l);}
+    cMsgPar& operator=(long l)          {return setLongValue(l);}
 
     /**
      * Converts the argument to long, and calls setLongValue().
      */
-    cMessagePar& operator=(unsigned long l) {return setLongValue((long)l);}
+    cMsgPar& operator=(unsigned long l) {return setLongValue((long)l);}
 
     /**
      * Equivalent to setDoubleValue().
      */
-    cMessagePar& operator=(double d)        {return setDoubleValue(d);}
+    cMsgPar& operator=(double d)        {return setDoubleValue(d);}
 
     /**
      * Converts the argument to double, and calls setDoubleValue().
      */
-    cMessagePar& operator=(long double d)   {return setDoubleValue((double)d);}
+    cMsgPar& operator=(long double d)   {return setDoubleValue((double)d);}
 
     /**
      * Equivalent to setPointerValue().
      */
-    cMessagePar& operator=(void *ptr)       {return setPointerValue(ptr);}
+    cMsgPar& operator=(void *ptr)       {return setPointerValue(ptr);}
 
     /**
      * Equivalent to setObjectValue().
      */
-    cMessagePar& operator=(cOwnedObject *obj)    {return setObjectValue(obj);}
+    cMsgPar& operator=(cOwnedObject *obj)    {return setObjectValue(obj);}
 
     /**
      * Equivalent to setXMLValue().
      */
-    cMessagePar& operator=(cXMLElement *node) {return setXMLValue(node);}
+    cMsgPar& operator=(cXMLElement *node) {return setXMLValue(node);}
 
     /**
      * Equivalent to boolValue().
@@ -871,8 +871,8 @@ class SIM_API cMessagePar : public cOwnedObject   // FIXME simplify and DEPRECAT
     //@{
 
     /**
-     * Compares two cMessagePars by their value if they are numeric.
-     * This function can be used to sort cMessagePar objects in a priority
+     * Compares two cMsgPars by their value if they are numeric.
+     * This function can be used to sort cMsgPar objects in a priority
      * queue.
      */
     static int cmpbyvalue(cOwnedObject *one, cOwnedObject *other);
@@ -880,15 +880,15 @@ class SIM_API cMessagePar : public cOwnedObject   // FIXME simplify and DEPRECAT
 };
 
 // this function cannot be defined within ExprElem because of declaration order
-inline void cMessagePar::ExprElem::operator=(cMessagePar& _r)  {
-    type='R'; p=(cMessagePar *)_r.dup();
+inline void cMsgPar::ExprElem::operator=(cMsgPar& _r)  {
+    type='R'; p=(cMsgPar *)_r.dup();
 }
 
-inline std::ostream& operator<< (std::ostream& os, const cMessagePar& o) {
+inline std::ostream& operator<< (std::ostream& os, const cMsgPar& o) {
     return os << o.getAsText();
 }
 
-inline std::ostream& operator<< (std::ostream& os, cMessagePar& o) {
+inline std::ostream& operator<< (std::ostream& os, cMsgPar& o) {
     return os << o.getAsText();
 }
 

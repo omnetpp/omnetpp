@@ -40,7 +40,7 @@ typedef std::map<std::string,std::string> cXMLAttributeMap;
 
 /**
  * Represents an XML element in an XML configuration file. XML-typed
- * NED parameters are accessible as cXMLElement via the cMessagePar::xmlValue() const FIXME fox comment
+ * NED parameters are accessible as cXMLElement via the cPar::xmlValue() const
  * method.
  *
  * cXMLElement provides read only access to the XML, with functionality that

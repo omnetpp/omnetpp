@@ -38,9 +38,9 @@
 using std::ostream;
 using std::string;
 
-//FIXME strip down cMessagePar class!!! remove expression support, etc
+//FIXME strip down cMsgPar class!!! remove expression support, etc
 
-Register_Class(cMessagePar);
+Register_Class(cMsgPar);
 
 string cDoubleExpression::getAsText()
 {
@@ -56,7 +56,7 @@ bool cDoubleExpression::parseText(const char *text)
 
 //----
 
-char *cMessagePar::possibletypes = "SBLDFIXCTP";
+char *cMsgPar::possibletypes = "SBLDFIXCTP";
 
 static const char *typeName(char typechar)
 {
@@ -78,24 +78,24 @@ static const char *typeName(char typechar)
 }
 
 // constructors
-cMessagePar::cMessagePar(const char *name) : cOwnedObject( name )
+cMsgPar::cMsgPar(const char *name) : cOwnedObject( name )
 {
     tkownership = false;
     changedflag = inputflag = false;
     typechar = 'L'; lng.val = 0L;
 }
 
-cMessagePar::cMessagePar(const cMessagePar& par) : cOwnedObject()
+cMsgPar::cMsgPar(const cMsgPar& par) : cOwnedObject()
 {
     tkownership = false;
     changedflag = inputflag = false;
     typechar = 'L'; lng.val = 0L;
 
     setName( par.name() );
-    cMessagePar::operator=(par);
+    cMsgPar::operator=(par);
 }
 
-cMessagePar::cMessagePar(const char *name, cMessagePar& other) : cOwnedObject(name)
+cMsgPar::cMsgPar(const char *name, cMsgPar& other) : cOwnedObject(name)
 {
     tkownership = false;
     changedflag = inputflag = false;
@@ -105,7 +105,7 @@ cMessagePar::cMessagePar(const char *name, cMessagePar& other) : cOwnedObject(na
     operator=(other);
 }
 
-cMessagePar::~cMessagePar()
+cMsgPar::~cMsgPar()
 {
     beforeChange();
     if (isRedirected())
@@ -113,7 +113,7 @@ cMessagePar::~cMessagePar()
     deleteOld();
 }
 
-void cMessagePar::deleteOld()
+void cMsgPar::deleteOld()
 {
     if (typechar=='S' && !ls.sht)
     {
@@ -156,7 +156,7 @@ void cMessagePar::deleteOld()
 //----------------------------------------------------------------------
 // redefine virtual cOwnedObject funcs
 
-std::string cMessagePar::info() const
+std::string cMsgPar::info() const
 {
     std::stringstream out;
 
@@ -205,7 +205,7 @@ std::string cMessagePar::info() const
     return out.str();
 }
 
-std::string cMessagePar::detailedInfo() const
+std::string cMsgPar::detailedInfo() const
 {
     std::stringstream os;
     if (isRedirected())
@@ -221,7 +221,7 @@ std::string cMessagePar::detailedInfo() const
     return os.str();
 }
 
-void cMessagePar::forEachChild(cVisitor *v)
+void cMsgPar::forEachChild(cVisitor *v)
 {
     if (typechar=='T')
     {
@@ -234,7 +234,7 @@ void cMessagePar::forEachChild(cVisitor *v)
     }
 }
 
-void cMessagePar::netPack(cCommBuffer *buffer)
+void cMsgPar::netPack(cCommBuffer *buffer)
 {
 #ifndef WITH_PARSIM
     throw new cRuntimeError(this,eNOPARSIM);
@@ -316,7 +316,7 @@ void cMessagePar::netPack(cCommBuffer *buffer)
 #endif
 }
 
-void cMessagePar::netUnpack(cCommBuffer *buffer)
+void cMsgPar::netUnpack(cCommBuffer *buffer)
 {
 #ifndef WITH_PARSIM
     throw new cRuntimeError(this,eNOPARSIM);
@@ -396,28 +396,28 @@ void cMessagePar::netUnpack(cCommBuffer *buffer)
 //-------------------------------------------------------------------------
 // set/get flags
 
-char cMessagePar::type() const
+char cMsgPar::type() const
 {
      if (isRedirected())
          return ind.par->type();
      return typechar;
 }
 
-const char *cMessagePar::prompt()
+const char *cMsgPar::prompt()
 {
      if (isRedirected())
          return ind.par->prompt();
      return promptstr.c_str();
 }
 
-bool cMessagePar::isInput() const
+bool cMsgPar::isInput() const
 {
      if (isRedirected())
          return ind.par->isInput();
      return inputflag;
 }
 
-bool cMessagePar::changed()
+bool cMsgPar::changed()
 {
      if (isRedirected())
          return ind.par->changed();
@@ -426,14 +426,14 @@ bool cMessagePar::changed()
      return ch;
 }
 
-void cMessagePar::setPrompt(const char *s)
+void cMsgPar::setPrompt(const char *s)
 {
      if (isRedirected())
          {ind.par->setPrompt(s);return;}
      promptstr = s;     // string's operator=() does delete+opp_strdup()
 }
 
-void cMessagePar::setInput(bool ip)
+void cMsgPar::setInput(bool ip)
 {
      if (isRedirected())
          {ind.par->setInput(ip);return;}
@@ -443,7 +443,7 @@ void cMessagePar::setInput(bool ip)
 //-----------------------------------------------------------------------
 // setXxxValue() funcs
 
-cMessagePar& cMessagePar::setStringValue(const char *s)
+cMsgPar& cMsgPar::setStringValue(const char *s)
 {
      if (isRedirected())
          return ind.par->setStringValue(s);
@@ -462,7 +462,7 @@ cMessagePar& cMessagePar::setStringValue(const char *s)
      return *this;
 }
 
-cMessagePar& cMessagePar::setBoolValue(bool b)
+cMsgPar& cMsgPar::setBoolValue(bool b)
 {
     if (isRedirected())
         return ind.par->setBoolValue(b);
@@ -476,7 +476,7 @@ cMessagePar& cMessagePar::setBoolValue(bool b)
     return *this;
 }
 
-cMessagePar& cMessagePar::setLongValue(long l)
+cMsgPar& cMsgPar::setLongValue(long l)
 {
     if (isRedirected())
         return ind.par->setLongValue(l);
@@ -490,7 +490,7 @@ cMessagePar& cMessagePar::setLongValue(long l)
     return *this;
 }
 
-cMessagePar& cMessagePar::setDoubleValue(double d)
+cMsgPar& cMsgPar::setDoubleValue(double d)
 {
     if (isRedirected())
         return ind.par->setDoubleValue(d);
@@ -504,7 +504,7 @@ cMessagePar& cMessagePar::setDoubleValue(double d)
     return *this;
 }
 
-cMessagePar& cMessagePar::setDoubleValue(MathFuncNoArg f)
+cMsgPar& cMsgPar::setDoubleValue(MathFuncNoArg f)
 {
     if (isRedirected())
         return ind.par->setDoubleValue(f);
@@ -519,7 +519,7 @@ cMessagePar& cMessagePar::setDoubleValue(MathFuncNoArg f)
     return *this;
 }
 
-cMessagePar& cMessagePar::setDoubleValue(MathFunc1Arg f, double p1)
+cMsgPar& cMsgPar::setDoubleValue(MathFunc1Arg f, double p1)
 {
     if (isRedirected())
         return ind.par->setDoubleValue(f,p1);
@@ -535,7 +535,7 @@ cMessagePar& cMessagePar::setDoubleValue(MathFunc1Arg f, double p1)
     return *this;
 }
 
-cMessagePar& cMessagePar::setDoubleValue(MathFunc2Args f, double p1, double p2)
+cMsgPar& cMsgPar::setDoubleValue(MathFunc2Args f, double p1, double p2)
 {
     if (isRedirected())
         return ind.par->setDoubleValue(f,p1,p2);
@@ -552,7 +552,7 @@ cMessagePar& cMessagePar::setDoubleValue(MathFunc2Args f, double p1, double p2)
     return *this;
 }
 
-cMessagePar& cMessagePar::setDoubleValue(MathFunc3Args f, double p1, double p2, double p3)
+cMsgPar& cMsgPar::setDoubleValue(MathFunc3Args f, double p1, double p2, double p3)
 {
     if (isRedirected())
         return ind.par->setDoubleValue(f,p1,p2,p3);
@@ -570,7 +570,7 @@ cMessagePar& cMessagePar::setDoubleValue(MathFunc3Args f, double p1, double p2, 
     return *this;
 }
 
-cMessagePar& cMessagePar::setDoubleValue(MathFunc4Args f, double p1, double p2, double p3, double p4)
+cMsgPar& cMsgPar::setDoubleValue(MathFunc4Args f, double p1, double p2, double p3, double p4)
 {
     if (isRedirected())
         return ind.par->setDoubleValue(f,p1,p2,p3,p4);
@@ -589,7 +589,7 @@ cMessagePar& cMessagePar::setDoubleValue(MathFunc4Args f, double p1, double p2, 
     return *this;
 }
 
-cMessagePar& cMessagePar::setDoubleValue(ExprElem *x, int n)
+cMsgPar& cMsgPar::setDoubleValue(ExprElem *x, int n)
 {
     if (isRedirected())
         return ind.par->setDoubleValue(x,n);
@@ -609,10 +609,10 @@ cMessagePar& cMessagePar::setDoubleValue(ExprElem *x, int n)
     {
        if (expr.xelem[i].type=='R')
        {
-           //  ExprElem::op= has already dupped the pointed cMessagePar for us
-           cMessagePar *p = expr.xelem[i].p;
+           //  ExprElem::op= has already dupped the pointed cMsgPar for us
+           cMsgPar *p = expr.xelem[i].p;
 
-           // if the pointed cMessagePar is not indirect and it is a constant,
+           // if the pointed cMsgPar is not indirect and it is a constant,
            // there's really no need to keep the object
            if (!p->isRedirected() && (p->type()=='D' || p->type()=='L'))
            {
@@ -629,7 +629,7 @@ cMessagePar& cMessagePar::setDoubleValue(ExprElem *x, int n)
     return *this;
 }
 
-cMessagePar& cMessagePar::setDoubleValue(cDoubleExpression *p)
+cMsgPar& cMsgPar::setDoubleValue(cDoubleExpression *p)
 {
     if (isRedirected())
         return ind.par->setDoubleValue(p);
@@ -646,7 +646,7 @@ cMessagePar& cMessagePar::setDoubleValue(cDoubleExpression *p)
     return *this;
 }
 
-cMessagePar& cMessagePar::setDoubleValue(cStatistic *res)
+cMsgPar& cMsgPar::setDoubleValue(cStatistic *res)
 {
     if (isRedirected())
         return ind.par->setDoubleValue(res);
@@ -665,7 +665,7 @@ cMessagePar& cMessagePar::setDoubleValue(cStatistic *res)
     return *this;
 }
 
-cMessagePar& cMessagePar::setPointerValue(void *_ptr)
+cMsgPar& cMsgPar::setPointerValue(void *_ptr)
 {
     if (isRedirected())
         return ind.par->setPointerValue(_ptr);
@@ -686,7 +686,7 @@ cMessagePar& cMessagePar::setPointerValue(void *_ptr)
     return *this;
 }
 
-cMessagePar& cMessagePar::setObjectValue(cOwnedObject *_obj)
+cMsgPar& cMsgPar::setObjectValue(cOwnedObject *_obj)
 {
     if (isRedirected())
         return ind.par->setObjectValue(_obj);
@@ -702,7 +702,7 @@ cMessagePar& cMessagePar::setObjectValue(cOwnedObject *_obj)
     return *this;
 }
 
-cMessagePar& cMessagePar::setXMLValue(cXMLElement *node)
+cMsgPar& cMsgPar::setXMLValue(cXMLElement *node)
 {
     if (isRedirected())
         return ind.par->setXMLValue(node);
@@ -716,7 +716,7 @@ cMessagePar& cMessagePar::setXMLValue(cXMLElement *node)
     return *this;
 }
 
-cMessagePar& cMessagePar::setRedirection(cMessagePar *par)
+cMsgPar& cMsgPar::setRedirection(cMsgPar *par)
 {
     if (isRedirected())
         return ind.par->setRedirection(par);
@@ -725,7 +725,7 @@ cMessagePar& cMessagePar::setRedirection(cMessagePar *par)
         throw new cRuntimeError(this,eBADINIT,typeName('I'));
 
     // check for circular references
-    cMessagePar *p = par;
+    cMsgPar *p = par;
     while (p)
     {
         if (p==this)
@@ -736,14 +736,14 @@ cMessagePar& cMessagePar::setRedirection(cMessagePar *par)
     // set redirection
     beforeChange();
     deleteOld();
-    ind.par = par; // do NOT take ownership of passed cMessagePar object
+    ind.par = par; // do NOT take ownership of passed cMsgPar object
     typechar = 'I';
     inputflag=false;
     afterChange();
     return *this;
 }
 
-void cMessagePar::configPointer( VoidDelFunc delfunc, VoidDupFunc dupfunc,
+void cMsgPar::configPointer( VoidDelFunc delfunc, VoidDupFunc dupfunc,
                       size_t itemsize)
 {
     if (typechar!='P')
@@ -756,7 +756,7 @@ void cMessagePar::configPointer( VoidDelFunc delfunc, VoidDupFunc dupfunc,
 //------------------------------------------------------------------------
 // functions returning the stored value
 
-const char *cMessagePar::stringValue()
+const char *cMsgPar::stringValue()
 {
     if (isRedirected())
         return ind.par->stringValue();
@@ -776,11 +776,11 @@ const char *cMessagePar::stringValue()
 // typed nature of C++; you can do narrowing conversions [double->bool]
 // without a warning, etc.), but it is necessary because of the way parameter
 // assignments in NED are handled. For example, bool and long expressions
-// (e.g. "i==0 || i==n") are compiled into cMessagePar X expressions which will _need_
+// (e.g. "i==0 || i==n") are compiled into cMsgPar X expressions which will _need_
 // to be converted to bool and long after evaluation.
 //
 
-bool cMessagePar::boolValue()
+bool cMsgPar::boolValue()
 {
     if (isRedirected())
         return ind.par->boolValue();
@@ -805,7 +805,7 @@ inline long _double_to_long(double d)
     return d<0 ? l : ul;
 }
 
-long cMessagePar::longValue()
+long cMsgPar::longValue()
 {
     if (isRedirected())
         return ind.par->longValue();
@@ -819,7 +819,7 @@ long cMessagePar::longValue()
         throw new cRuntimeError(this,eBADCAST,typeName(typechar),typeName('L'));
 }
 
-double cMessagePar::doubleValue()
+double cMsgPar::doubleValue()
 {
     if (isRedirected())
         return ind.par->doubleValue();
@@ -845,7 +845,7 @@ double cMessagePar::doubleValue()
         throw new cRuntimeError(this,eBADCAST,typeName(typechar),typeName('D'));
 }
 
-void *cMessagePar::pointerValue()
+void *cMsgPar::pointerValue()
 {
     if (isRedirected())
         return ind.par->pointerValue();
@@ -857,7 +857,7 @@ void *cMessagePar::pointerValue()
         throw new cRuntimeError(this,eBADCAST,typeName(typechar),typeName('P'));
 }
 
-cOwnedObject *cMessagePar::objectValue()
+cOwnedObject *cMsgPar::objectValue()
 {
     if (isRedirected())
         return ind.par->objectValue();
@@ -869,7 +869,7 @@ cOwnedObject *cMessagePar::objectValue()
         throw new cRuntimeError(this,eBADCAST,typeName(typechar),typeName('O'));
 }
 
-cXMLElement *cMessagePar::xmlValue()
+cXMLElement *cMsgPar::xmlValue()
 {
     if (isRedirected())
         return ind.par->xmlValue();
@@ -881,7 +881,7 @@ cXMLElement *cMessagePar::xmlValue()
         throw new cRuntimeError(this,eBADCAST,typeName(typechar),typeName('M'));
 }
 
-bool cMessagePar::isNumeric() const
+bool cMsgPar::isNumeric() const
 {
     // returns true if it is safe to call doubleValue()/longValue()/boolValue()
     if (isRedirected())
@@ -896,7 +896,7 @@ bool cMessagePar::isNumeric() const
            typechar=='F';
 }
 
-bool cMessagePar::isConstant() const
+bool cMsgPar::isConstant() const
 {
     return typechar=='S' ||
            typechar=='B' ||
@@ -904,7 +904,7 @@ bool cMessagePar::isConstant() const
            typechar=='D';
 }
 
-bool cMessagePar::equalsTo(cMessagePar *par)
+bool cMsgPar::equalsTo(cMsgPar *par)
 {
     if (typechar != par->typechar)
         return false;
@@ -935,16 +935,16 @@ bool cMessagePar::equalsTo(cMessagePar *par)
 //------------------------------------------------------------------------
 // misc funcs
 
-void cMessagePar::beforeChange()
+void cMsgPar::beforeChange()
 {
 }
 
-void cMessagePar::afterChange()
+void cMsgPar::afterChange()
 {
     changedflag=true;
 }
 
-cMessagePar *cMessagePar::redirection()
+cMsgPar *cMsgPar::redirection()
 {
     if (isRedirected())
         return ind.par;
@@ -952,7 +952,7 @@ cMessagePar *cMessagePar::redirection()
         return NULL;
 }
 
-void cMessagePar::cancelRedirection()
+void cMsgPar::cancelRedirection()
 {
     if (isRedirected())
     {
@@ -961,7 +961,7 @@ void cMessagePar::cancelRedirection()
     }
 }
 
-string cMessagePar::getAsText() const
+string cMsgPar::getAsText() const
 {
     if (isRedirected())
         return ind.par->getAsText();
@@ -1009,7 +1009,7 @@ string cMessagePar::getAsText() const
 /*-------------------------------
  parse() - (for internal use only) Tries to interpret text as
  a 'tp' typed value. tp=='?' means that even type is to be determined.
- On success, cMessagePar is updated and true is returned, otherwise
+ On success, cMsgPar is updated and true is returned, otherwise
  it returns false. No error message is ever generated.
 ----------------------------*/
 
@@ -1026,7 +1026,7 @@ static bool parseQuotedString(string& str, const char *&s)
     return true;
 }
 
-bool cMessagePar::setFromText(const char *text, char tp)
+bool cMsgPar::setFromText(const char *text, char tp)
 {
     tp = (char) toupper(tp);
 
@@ -1142,7 +1142,7 @@ bool cMessagePar::setFromText(const char *text, char tp)
     return false;
 }
 
-bool cMessagePar::setfunction(char *text)
+bool cMsgPar::setfunction(char *text)
 {
     // Note: this function *will* alter its input string
 
@@ -1223,7 +1223,7 @@ bool cMessagePar::setfunction(char *text)
 }
 
 
-cMessagePar& cMessagePar::read()
+cMsgPar& cMsgPar::read()
 {
     // get it from ini file
     std::string str = ev.getParameter(simulation.runNumber(), fullPath().c_str());
@@ -1266,7 +1266,7 @@ cMessagePar& cMessagePar::read()
 }
 
 
-double cMessagePar::evaluate()
+double cMsgPar::evaluate()
 {
     const int stksize = 20;
 
@@ -1386,7 +1386,7 @@ double cMessagePar::evaluate()
     return stk[tos];
 }
 
-double cMessagePar::fromstat()
+double cMsgPar::fromstat()
 {
     if (typechar!='T')
         throw new cRuntimeError(this,eBADCAST,typeName(typechar),typeName('T'));
@@ -1394,7 +1394,7 @@ double cMessagePar::fromstat()
 }
 
 
-cMessagePar& cMessagePar::operator=(const cMessagePar& val)
+cMsgPar& cMsgPar::operator=(const cMsgPar& val)
 {
     //
     // NOTE (duplicate of Doxygen comment in cpar.h):
@@ -1441,15 +1441,15 @@ cMessagePar& cMessagePar::operator=(const cMessagePar& val)
              if (expr.xelem[i].type=='R')
              {
                 // create a copy for ourselves
-                cMessagePar *&p = expr.xelem[i].p;
-                take( p=(cMessagePar *)p->dup() );
+                cMsgPar *&p = expr.xelem[i].p;
+                take( p=(cMsgPar *)p->dup() );
              }
          }
     }
     else if (typechar=='T')
     {
          cStatistic *&p = dtr.res;
-         if (p->owner()==const_cast<cMessagePar*>(&val))
+         if (p->owner()==const_cast<cMsgPar*>(&val))
             take( p=(cStatistic *)p->dup() );
     }
     else if (typechar=='P')
@@ -1463,7 +1463,7 @@ cMessagePar& cMessagePar::operator=(const cMessagePar& val)
     else if (typechar=='O')
     {
          cOwnedObject *&p = obj.obj;
-         if (p->owner()==const_cast<cMessagePar*>(&val))
+         if (p->owner()==const_cast<cMsgPar*>(&val))
             take( p = (cOwnedObject *)p->dup() );
     }
     // type 'I' does not use ownership so we can skip it.
@@ -1473,13 +1473,13 @@ cMessagePar& cMessagePar::operator=(const cMessagePar& val)
 }
 
 
-int cMessagePar::cmpbyvalue(cOwnedObject *one, cOwnedObject *other)
+int cMsgPar::cmpbyvalue(cOwnedObject *one, cOwnedObject *other)
 {
-    double x = (double)(*(cMessagePar*)one)-(double)(*(cMessagePar*)other);
+    double x = (double)(*(cMsgPar*)one)-(double)(*(cMsgPar*)other);
     return sgn(x);
 }
 
-void cMessagePar::convertToConst ()
+void cMsgPar::convertToConst ()
 {
     if (isRedirected())
        cancelRedirection();

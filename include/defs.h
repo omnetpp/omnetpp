@@ -132,14 +132,14 @@ typedef double       simtime_t;
 
 
 /**
- * Prototype for functions that are called by some objects (cMessagePar, cLinkedList)
+ * Prototype for functions that are called by some objects (cMsgPar, cLinkedList)
  * to free up user-defined data structures.
  * @ingroup EnumsTypes
  */
 typedef void (*VoidDelFunc)(void *);
 
 /**
- * Prototype for functions that are called by some objects (cMessagePar, cLinkedList)
+ * Prototype for functions that are called by some objects (cMsgPar, cLinkedList)
  * to duplicate user-defined data structures.
  * @ingroup EnumsTypes
  */

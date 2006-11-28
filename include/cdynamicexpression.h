@@ -134,8 +134,8 @@ class SIM_API cDynamicExpression : public cExpression
 
         /**
          * Effect during evaluation of the expression: takes the value of
-         * the cMessagePar object and pushes the value to the evaluation stack.
-         * The cMessagePar is an "external" one: its ownership does not change.
+         * the cPar object and pushes the value to the evaluation stack.
+         * The cPar is an "external" one: its ownership does not change.
          * This is how NED-language parameter references in expressions
          * are handled.
          */

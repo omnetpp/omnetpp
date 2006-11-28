@@ -1,22 +1,22 @@
 %description:
-Subclassing cObject: *must* take ownership of members subclassed from cObject,
+Subclassing cOwnedObject: *must* take ownership of members subclassed from cOwnedObject,
 and destructor must call drop().
 
 %global:
 
-class {Noisy} : public cObject
+class {Noisy} : public cOwnedObject
 {
   public:
-    {Noisy}(const char *name=NULL) : cObject(name) {ev << "noisy born\n";}
+    {Noisy}(const char *name=NULL) : cOwnedObject(name) {ev << "noisy born\n";}
     ~{Noisy}() {ev << "noisy died\n";}
 };
 
-class X2 : public cObject
+class X2 : public cOwnedObject
 {
   public:
     {Noisy} y;
 
-    X2() : cObject() {take(&y);}
+    X2() : cOwnedObject() {take(&y);}
     ~X2() {drop(&y);}
 };
 

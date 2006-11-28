@@ -26,7 +26,7 @@
 #include "csimulation.h"
 
 //=== classes mentioned:
-class cMessagePar;
+class cMsgPar;
 class cGate;
 class cChannel;
 class cModule;
@@ -371,12 +371,12 @@ class SIM_API cMessage : public cOwnedObject
 
     /**
      * Returns reference to the 'object list' of the message: a cArray
-     * which is used to store parameter (cMessagePar) objects and other objects
+     * which is used to store parameter (cMsgPar) objects and other objects
      * attached to the message.
      *
      * One can use either parList() combined with cArray methods,
      * or several convenience methods (addPar(), addObject(), par(), etc.)
-     * to add, retrieve or remove cMessagePars and other objects.
+     * to add, retrieve or remove cMsgPars and other objects.
      *
      * <i>NOTE: using the object list has alternatives which may better
      * suit your needs. For more information, see class description for discussion
@@ -386,7 +386,7 @@ class SIM_API cMessage : public cOwnedObject
         {if (!parlistp) _createparlist(); return *parlistp;}
 
     /**
-     * Add a new, empty parameter (cMessagePar object) with the given name
+     * Add a new, empty parameter (cMsgPar object) with the given name
      * to the message's object list.
      *
      * <i>NOTE: This is a convenience function: one may use parList() and
@@ -395,7 +395,7 @@ class SIM_API cMessage : public cOwnedObject
      *
      * @see parList()
      */
-    cMessagePar& addPar(const char *s)  {cMessagePar *p=new cMessagePar(s);parList().add(p);return *p;}
+    cMsgPar& addPar(const char *s)  {cMsgPar *p=new cMsgPar(s);parList().add(p);return *p;}
 
     /**
      * Add a parameter object to the message's object list.
@@ -406,16 +406,16 @@ class SIM_API cMessage : public cOwnedObject
      *
      * @see parList()
      */
-    cMessagePar& addPar(cMessagePar *p)  {parList().add(p); return *p;}
+    cMsgPar& addPar(cMsgPar *p)  {parList().add(p); return *p;}
 
     /**
-     * DEPRECATED! Use addPar(cMessagePar *p) instead.
+     * DEPRECATED! Use addPar(cMsgPar *p) instead.
      */
-    cMessagePar& addPar(cMessagePar& p)  {parList().add(&p); return p;}
+    cMsgPar& addPar(cMsgPar& p)  {parList().add(&p); return p;}
 
     /**
-     * Returns the nth object in the message's object list, converting it to a cMessagePar.
-     * If the object doesn't exist or it cannot be cast to cMessagePar (using dynamic_cast<>),
+     * Returns the nth object in the message's object list, converting it to a cMsgPar.
+     * If the object doesn't exist or it cannot be cast to cMsgPar (using dynamic_cast<>),
      * the method throws a cRuntimeError.
      *
      * <i>NOTE: This is a convenience function: one may use parList() and
@@ -424,12 +424,12 @@ class SIM_API cMessage : public cOwnedObject
      *
      * @see parList()
      */
-    cMessagePar& par(int n);
+    cMsgPar& par(int n);
 
     /**
      * Returns the object with the given name in the message's object list,
-     * converting it to a cMessagePar.
-     * If the object doesn't exist or it cannot be cast to cMessagePar (using dynamic_cast<>),
+     * converting it to a cMsgPar.
+     * If the object doesn't exist or it cannot be cast to cMsgPar (using dynamic_cast<>),
      * the method throws a cRuntimeError.
      *
      * <i>NOTE: This is a convenience function: one may use parList() and
@@ -438,7 +438,7 @@ class SIM_API cMessage : public cOwnedObject
      *
      * @see parList()
      */
-    cMessagePar& par(const char *s);
+    cMsgPar& par(const char *s);
 
     /**
      * Returns the index of the parameter with the given name in the message's

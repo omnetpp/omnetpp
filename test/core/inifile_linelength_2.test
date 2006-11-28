@@ -25,7 +25,7 @@ Define_Module({Simple});
 
 void {Simple}::activity()
 {
-    ev << par("verylongstring") << endl;
+    ev << (const char *)par("verylongstring") << endl;
     ev << "." << endl;
 }
 

@@ -12,6 +12,10 @@ cQueue changed: sorting removed; head()/tail() removed, back()/front() added
 (insert at back, pop from front!); because of head/tail change, iterator
 direction and meaning of insertBefore/insertAfter changed
 
+cSimpleModule.end() removed
+
+
+
 2006-10-21  ------ omnetpp-3.3 released ------
 
 2006-09-13  Andras Varga

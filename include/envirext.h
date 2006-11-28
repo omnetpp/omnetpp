@@ -26,7 +26,6 @@
 
 class cModule;
 class cStatistic;
-class cMessagePar;
 
 /**
  * Abstract base class for output vector managers for cEnvir.

@@ -5,15 +5,13 @@ The following classes cannot be tested because they're abstract (instantiation
 not possible) or internally used classes:
 
 cDensityEstBase, cTransientDetection, cAccuracyDetection, cGate, cHistogramBase,
-cEqdHistogramBase, cModule, cSimpleModule, cCompoundModule, cNetMod, cSimulation,
-cStatistic, cModuleInterface, cModuleType, cLinkType, cNetworkType, cFunctionType,
-cClassRegister, cInspectorFactory, cWatch
+cEqdHistogramBase, cModule, cSimpleModule, cCompoundModule, cSimulation,
+cStatistic, cModuleType, cChannelType, cWatch, cPar, etc...
 
 %activity:
 
 #define PRINT_CLASSNAME(T) {T a##T; ev << #T ": " << a##T.className() << endl;}
 
-PRINT_CLASSNAME( cBag )
 PRINT_CLASSNAME( cArray )
 PRINT_CLASSNAME( cTDExpandingWindows )
 PRINT_CLASSNAME( cADByStddev )
@@ -26,9 +24,6 @@ PRINT_CLASSNAME( cMessage )
 PRINT_CLASSNAME( cMessageHeap )
 PRINT_CLASSNAME( cObject )
 PRINT_CLASSNAME( cOutVector )
-PRINT_CLASSNAME( cPacket )
-PRINT_CLASSNAME( cPar )
-PRINT_CLASSNAME( cModulePar )
 PRINT_CLASSNAME( cPSquare )
 PRINT_CLASSNAME( cQueue )
 PRINT_CLASSNAME( cStdDev )
@@ -37,7 +32,6 @@ PRINT_CLASSNAME( cTopology )
 PRINT_CLASSNAME( cVarHistogram )
 
 %contains: stdout
-cBag: cBag
 cArray: cArray
 cTDExpandingWindows: cTDExpandingWindows
 cADByStddev: cADByStddev
@@ -50,9 +44,6 @@ cMessage: cMessage
 cMessageHeap: cMessageHeap
 cObject: cObject
 cOutVector: cOutVector
-cPacket: cPacket
-cPar: cPar
-cModulePar: cModulePar
 cPSquare: cPSquare
 cQueue: cQueue
 cStdDev: cStdDev

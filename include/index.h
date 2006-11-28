@@ -61,7 +61,7 @@
  *      handleMessage() member function.
  *    - cMessage represents events, and also messages sent among modules
  *    - cGate represents module gates
- *    - cMessagePar represents module and message parameters
+ *    - cPar represents parameters of modules and channels
  *    - cSimulation stores all modules of the network and the
  *      data structure for scheduled events (the <i>future event set</i>)
  *      Most methods are used internally, but some are useful for model

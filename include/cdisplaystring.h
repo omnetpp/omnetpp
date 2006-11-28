@@ -148,6 +148,12 @@ class SIM_API cDisplayString
     const char *toString() const;
 
     /**
+     * DEPRECATED. This method was renamed for consistence across the class library.
+     * Please use its new name toString().
+     */
+    const char *getString() const _OPPDEPRECATED {return toString();}
+
+    /**
      * Sets the display string to the given value. The return value is false
      * if there was an error parsing the string.
      */

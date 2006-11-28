@@ -447,26 +447,26 @@ cObject *cMessage::removeControlInfo()
     return p;
 }
 
-cMessagePar& cMessage::par(int n)
+cMsgPar& cMessage::par(int n)
 {
     cArray& parlist = parList();
     cOwnedObject *p = parlist.get(n);
     if (!p)
         throw new cRuntimeError(this,"par(int): has no parameter #%d",n);
-    if (!dynamic_cast<cMessagePar *>(p))
-        throw new cRuntimeError(this,"par(int): parameter #%d is of type %s, not cMessagePar",n, p->className());
-    return *(cMessagePar *)p;
+    if (!dynamic_cast<cMsgPar *>(p))
+        throw new cRuntimeError(this,"par(int): parameter #%d is of type %s, not cMsgPar",n, p->className());
+    return *(cMsgPar *)p;
 }
 
-cMessagePar& cMessage::par(const char *s)
+cMsgPar& cMessage::par(const char *s)
 {
     cArray& parlist = parList();
     cOwnedObject *p = parlist.get(s);
     if (!p)
         throw new cRuntimeError(this,"par(const char *): has no parameter called `%s'",s);
-    if (!dynamic_cast<cMessagePar *>(p))
-        throw new cRuntimeError(this,"par(const char *): parameter `%s' is of type %s, not cMessagePar",s, p->className());
-    return *(cMessagePar *)p;
+    if (!dynamic_cast<cMsgPar *>(p))
+        throw new cRuntimeError(this,"par(const char *): parameter `%s' is of type %s, not cMsgPar",s, p->className());
+    return *(cMsgPar *)p;
 }
 
 int cMessage::findPar(const char *s) const

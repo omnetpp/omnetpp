@@ -1,21 +1,21 @@
 %description:
-Subclassing cObject: *must* take ownership of members subclassed from cObject,
+Subclassing cOwnedObject: *must* take ownership of members subclassed from cOwnedObject,
 and destructor must call drop().
 
 %global:
 
-class X : public cObject
+class X : public cOwnedObject
 {
   public:
-    cPar y;
+    cQueue q;
 
-    X() : cObject() {take(&y);}
-    ~X() {drop(&y);}
+    X() : cOwnedObject() {take(&q);}
+    ~X() {drop(&q);}
 };
 
 %activity:
 
 X *x = new X();
-x->y.setName("yname");
+x->q.setName("qname");
 
 %exitcode: 0

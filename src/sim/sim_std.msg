@@ -414,7 +414,7 @@ class cPar extends cOwnedObject
         bool isShared @group(flags) @hint(whether storage could be optimized by several modules sharing the same parameter value object);
 }
 
-class cMessagePar extends cOwnedObject
+class cMsgPar extends cOwnedObject
 {
     fields:
         @omitGetVerb(true);

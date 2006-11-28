@@ -86,7 +86,7 @@ class SIM_API cClassFactory : public cNoncopyableOwnedObject
      *
      * Example:
      *
-     * <tt>cOwnedObject *param = createOne( "cMessagePar" );</tt>
+     * <tt>cObject *param = createOne("cMessage");</tt>
      *
      * createOne() is used e.g. in parallel simulation when an object is received
      * from another partition and it has to be demarshalled.
