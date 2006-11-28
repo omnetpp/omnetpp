@@ -186,6 +186,8 @@ bool cProperty::isImplicit() const
 
 int cProperty::findKey(const char *key) const
 {
+    if (!key) 
+        key = "";
     for (int i=0; i<keyv.size(); i++)
         if (!strcmp(key,keyv[i]))
             return i;
@@ -204,6 +206,8 @@ bool cProperty::hasKey(const char *key) const
 
 void cProperty::addKey(const char *key)
 {
+    if (!key) 
+        key = "";
     int k = findKey(key);
     if (k==-1)
     {
@@ -214,6 +218,8 @@ void cProperty::addKey(const char *key)
 
 cProperty::CharPtrVector& cProperty::valuesVector(const char *key) const
 {
+    if (!key) 
+        key = "";
     int k = findKey(key);
     if (k==-1)
         throw new cRuntimeError(this, "property has no key named `%s'", key);
