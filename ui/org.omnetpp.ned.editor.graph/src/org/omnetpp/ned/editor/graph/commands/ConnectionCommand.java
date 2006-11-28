@@ -1,13 +1,12 @@
 package org.omnetpp.ned.editor.graph.commands;
 
 import org.eclipse.gef.commands.Command;
+import org.omnetpp.ned.editor.graph.edit.CompoundModuleEditPart;
 import org.omnetpp.ned.editor.graph.edit.ModuleEditPart;
 import org.omnetpp.ned2.model.ex.CompoundModuleNodeEx;
 import org.omnetpp.ned2.model.ex.ConnectionNodeEx;
 import org.omnetpp.ned2.model.ex.NEDElementFactoryEx;
-import org.omnetpp.ned2.model.ex.SubmoduleNodeEx;
 import org.omnetpp.ned2.model.interfaces.IHasConnections;
-import org.omnetpp.ned2.model.interfaces.IHasParent;
 import org.omnetpp.ned2.model.pojo.ConnectionNode;
 import org.omnetpp.ned2.model.pojo.NEDElementTags;
 
@@ -28,9 +27,11 @@ public class ConnectionCommand extends Command {
 	protected ConnectionNode newConn =(ConnectionNode)NEDElementFactoryEx.getInstance().createNodeWithTag(NEDElementTags.NED_CONNECTION);
 	// connection model to be changed
     protected ConnectionNodeEx connModel;
-    protected ConnectionNodeEx connNodeNextSibling = null;
-    protected CompoundModuleNodeEx parent = null;
-    private ModuleEditPart editPart;
+    protected ConnectionNodeEx connNodeNextSibling;
+    protected CompoundModuleNodeEx parent;
+    private CompoundModuleEditPart parentEditPart;
+    private ModuleEditPart srcEditPart;
+    private ModuleEditPart destEditPart;
 
     @Override
     public String getLabel() {
@@ -48,13 +49,16 @@ public class ConnectionCommand extends Command {
      * @param conn Conection Model 
      * @param compoundEditPart Connection's container's (compound module) controller object
      */
-    public ConnectionCommand(ConnectionNodeEx conn, ModuleEditPart compoundEditPart) {
-        connModel = conn;
-        editPart = compoundEditPart;
-        oldSrcModule = connModel.getSrcModuleRef();
-        oldDestModule = connModel.getDestModuleRef();
-        oldConn = (ConnectionNode)connModel.dup(null);
-        newConn = (ConnectionNode)connModel.dup(null);
+    public ConnectionCommand(ConnectionNodeEx conn, CompoundModuleEditPart compoundEditPart,
+                                ModuleEditPart sourceEditPart, ModuleEditPart targetEditPart) {
+        this.connModel = conn;
+        this.parentEditPart = compoundEditPart;
+        this.srcEditPart = sourceEditPart;
+        this.destEditPart = targetEditPart;
+        this.oldSrcModule = connModel.getSrcModuleRef();
+        this.oldDestModule = connModel.getDestModuleRef();
+        this.oldConn = (ConnectionNode)connModel.dup(null);
+        this.newConn = (ConnectionNode)connModel.dup(null);
     }
     
     
@@ -63,30 +67,8 @@ public class ConnectionCommand extends Command {
      */
     @Override
     public boolean canExecute() {
-        
-        // allow deletion (both module is null)
-    	if(srcModule == null && destModule == null)
-    		return true;
-    	// we can connect two submodules module ONLY if they are siblings (ie they have the same parent)
-    	IHasConnections sMod = srcModule != null ? srcModule : connModel.getSrcModuleRef();
-    	IHasConnections dMod = destModule != null ? destModule : connModel.getDestModuleRef();
-
-    	if(sMod instanceof SubmoduleNodeEx && dMod instanceof SubmoduleNodeEx &&
-    			((IHasParent)sMod).getParent() == ((IHasParent)dMod).getParent()) 
-    		return true;
-    	
-    	// if one module is bubmodule and the other is compound, the compound module MUST contain the submodule
-    	if (sMod instanceof CompoundModuleNodeEx && dMod instanceof SubmoduleNodeEx &&
-    			((SubmoduleNodeEx)dMod).getCompoundModule() == sMod)
-    		return true;
-    	
-    	if (dMod instanceof CompoundModuleNodeEx && sMod instanceof SubmoduleNodeEx &&
-    			((SubmoduleNodeEx)sMod).getCompoundModule() == dMod)
-    		return true;
-    	
-    	// do not allow command in any other cases
-        // XXX for the moment we eneble everything
-        return true;
+        return srcEditPart!=null && destEditPart!=null && 
+           (srcEditPart.getCompoundModulePart() == destEditPart.getCompoundModulePart());
     }
 
     @Override
@@ -107,9 +89,6 @@ public class ConnectionCommand extends Command {
             parent = (CompoundModuleNodeEx)connModel.getParent().getParent();
             // and remove from the parent too
             connModel.removeFromParent();
-            // now detach from both src and dest modules
-//            connModel.setSrcModuleRef(null);
-//            connModel.setDestModuleRef(null);
             return;
         }
 
@@ -129,7 +108,7 @@ public class ConnectionCommand extends Command {
         
         // if the connection is not yet added to the compound module, add it, so later change notification will be handled correctly
         if(connModel.getParent() == null) 
-            editPart.getCompoundModulePart().getCompoundModuleModel().addConnection(connModel);
+            parentEditPart.getCompoundModulePart().getCompoundModuleModel().addConnection(connModel);
     }
 
     @Override
@@ -205,6 +184,29 @@ public class ConnectionCommand extends Command {
      */
     public ConnectionNode getConnectionTemplate() {
     	return newConn;
+    }
+
+    /**
+     * @return The parent editPart of this connection
+     */
+    public CompoundModuleEditPart getParentEditPart() {
+        return parentEditPart;
+    }
+
+    public ModuleEditPart getDestEditPart() {
+        return destEditPart;
+    }
+
+    public void setDestEditPart(ModuleEditPart destEditPart) {
+        this.destEditPart = destEditPart;
+    }
+
+    public ModuleEditPart getSrcEditPart() {
+        return srcEditPart;
+    }
+
+    public void setSrcEditPart(ModuleEditPart srcEditPart) {
+        this.srcEditPart = srcEditPart;
     }
  
 	

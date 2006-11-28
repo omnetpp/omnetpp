@@ -26,19 +26,15 @@ public class NedConnectionEndpointTracker extends ConnectionEndpointTracker {
 		if (stateTransition(STATE_DRAG_IN_PROGRESS, STATE_TERMINAL)) {
 			ConnectionCommand connCommand = (ConnectionCommand)getCommand();
 	    	
-            // set the gate filters
-            String srcGateFilter = connCommand.getSrcGate();
-            String destGateFilter = connCommand.getDestGate();
             // depending on which side we are reconnecting, we offer a full gate list on that side
             if (getCommandName() == RequestConstants.REQ_RECONNECT_TARGET)
-                destGateFilter = null;
+                connCommand.setDestGate(null);
             if (getCommandName() == RequestConstants.REQ_RECONNECT_SOURCE)
-                srcGateFilter = null;
+                connCommand.setSrcGate(null);
             
 	    	// ask the user about which gates should be connected
 			ConnectionNode selectedConn 
-				= ConnectionChooser.open(connCommand.getSrcModule(), srcGateFilter, 
-                                         connCommand.getDestModule(), destGateFilter);
+				= ConnectionChooser.open(connCommand);
 			
 			eraseSourceFeedback();
 			eraseTargetFeedback();

@@ -40,7 +40,8 @@ public class SpringEmbedderLayout extends XYLayout {
 	 */
 	@SuppressWarnings("unchecked")
 	protected AbstractGraphLayoutAlgorithm createAutoLayouter(IFigure nodeParent, IFigure edgeParent) {
-		BasicSpringEmbedderLayoutAlgorithm autoLayouter = new BasicSpringEmbedderLayoutAlgorithm();
+		System.out.println("Creating Layouter Algorithm");
+        BasicSpringEmbedderLayoutAlgorithm autoLayouter = new BasicSpringEmbedderLayoutAlgorithm();
 		autoLayouter.setDefaultEdgeLength(100);
 		autoLayouter.setRepulsiveForce(500.0);
 		autoLayouter.setMaxIterations(500);
@@ -96,16 +97,18 @@ public class SpringEmbedderLayout extends XYLayout {
 
 	@Override
 	public void invalidate() {
+        System.out.println("Invalidating the Layout");
 		super.invalidate();
 		alg = null;
 	}
 
 	public void initLayout() {
+        System.out.println("Initializing Layout");
     	alg = createAutoLayouter(nodeParent, edgeParent);
 		alg.setSeed(algSeed);
     	// execute the algorithm
+        System.out.println("Executing Layout Algorithm");
     	alg.execute();
-//    	System.out.println("Layouting figure :"+nodeParent+" seed: "+algSeed);
 	}
 
 	/**
@@ -118,7 +121,7 @@ public class SpringEmbedderLayout extends XYLayout {
      */
     @Override
     public void layout(IFigure parent) {
-
+        System.out.println("Layouting Started.");
     	if (alg == null)
     		initLayout();
 
@@ -155,6 +158,7 @@ public class SpringEmbedderLayout extends XYLayout {
             bounds.translate(-bounds.width / 2, -bounds.height / 2);
             f.setBounds(bounds);
         }
+        System.out.println("Layouting finished.");
     }
 
     /**

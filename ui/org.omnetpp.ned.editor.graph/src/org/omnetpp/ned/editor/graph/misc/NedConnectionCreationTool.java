@@ -6,6 +6,7 @@ import org.eclipse.gef.requests.CreateConnectionRequest;
 import org.eclipse.gef.tools.ConnectionCreationTool;
 import org.omnetpp.ned.editor.graph.commands.ConnectionCommand;
 import org.omnetpp.ned.editor.graph.edit.CompoundModuleEditPart;
+import org.omnetpp.ned.editor.graph.edit.ModuleEditPart;
 import org.omnetpp.ned.editor.graph.edit.SubmoduleEditPart;
 import org.omnetpp.ned2.model.pojo.ConnectionNode;
 
@@ -46,9 +47,10 @@ public class NedConnectionCreationTool extends ConnectionCreationTool {
 		ConnectionCommand endCommand = (ConnectionCommand)getCommand();
     	setCurrentCommand(endCommand);
     	
+        endCommand.setDestGate(null);
+        endCommand.setSrcGate(null);
     	// ask the user about which gates should be connected, ask for both source and destination gates
-		ConnectionNode selectedConn 
-			= ConnectionChooser.open(endCommand.getSrcModule(), null, endCommand.getDestModule(), null);
+		ConnectionNode selectedConn = ConnectionChooser.open(endCommand);
 		
     	eraseSourceFeedback();
 
@@ -79,27 +81,13 @@ public class NedConnectionCreationTool extends ConnectionCreationTool {
 				if (isInState(STATE_CONNECTION_STARTED)) {
 					EditPart srcEditPart = ((CreateConnectionRequest)getTargetRequest()).getSourceEditPart();
 					EditPart destEditPart = editpart;
+                    
+                    if (srcEditPart == null || destEditPart == null || 
+                            !(srcEditPart instanceof ModuleEditPart) || !(destEditPart instanceof ModuleEditPart))
+                        return false;
 
-					// if both editpart is Submodule, they must share the same parent (ie. compound module)
-					if (srcEditPart instanceof SubmoduleEditPart 
-							&& destEditPart instanceof SubmoduleEditPart
-							&& srcEditPart.getParent() != destEditPart.getParent()) 
-						return false;
-					// if one of them is Submodule and the other is compound module then the
-					// submodule's parent must be the compound module (ie. submodule can be connected ony to it's parent)
-					if (srcEditPart instanceof SubmoduleEditPart 
-							&& destEditPart instanceof CompoundModuleEditPart
-							&& srcEditPart.getParent() != destEditPart) 
-						return false;
-					if (srcEditPart instanceof CompoundModuleEditPart 
-							&& destEditPart instanceof SubmoduleEditPart
-							&& srcEditPart != destEditPart.getParent()) 
-						return false;
-					// do not allow connetction between compound modules at all
-					if (srcEditPart instanceof CompoundModuleEditPart 
-							&& destEditPart instanceof CompoundModuleEditPart) {
-						return false;
-					}
+                    if (((ModuleEditPart)srcEditPart).getCompoundModulePart() != ((ModuleEditPart)destEditPart).getCompoundModulePart())
+                        return false;
 				}
 				// if the selection target is a CompoundModule, allow selection ONLY using it's borders
 				if (editpart instanceof CompoundModuleEditPart) {
