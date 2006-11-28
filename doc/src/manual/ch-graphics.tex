@@ -456,40 +456,40 @@ Colorization works with both submodule and message icons.
 \section{The icons}
 \label{sec:ch-graphics:icon-library}
 
-\subsection{The bitmap path}
+\subsection{The image path}
 
 In the current {\opp} version, module icons are GIF files. The icons shipped
-with {\opp} are in the \ttt{bitmaps/} subdirectory. Both the GNED editor
+with {\opp} are in the \ttt{images/} subdirectory. Both the GNED editor
 and Tkenv need the exact location of this directory to load the icons.
 
-Icons are loaded from all directories in the \textit{bitmap path},
+Icons are loaded from all directories in the \textit{image path},
 a semicolon-separated list of directories.
-The default bitmap path is compiled into GNED and Tkenv with the value
-\ttt{"\textit{omnetpp-dir}/bitmaps;./bitmaps"} -- which will work fine
+The default image path is compiled into GNED and Tkenv with the value
+\ttt{"\textit{omnetpp-dir}/images;./images;./bitmaps"} -- which will work fine
 as long as you don't move the directory, and you'll also be able to
-load more icons from the \ttt{bitmaps/} subdirectory of the current
+load more icons from the \ttt{images/} subdirectory of the current
 directory. As people usually run simulation models from the model's
 directory, this practically means that custom icons placed in the
-\ttt{bitmaps/} subdirectory of the model's directory are automatically
+\ttt{images/} subdirectory of the model's directory are automatically
 loaded.
 
-The compiled-in bitmap path can be overridden with the \ttt{OMNETPP\_BITMAP\_PATH}
+The compiled-in image path can be overridden with the \ttt{OMNETPP\_IMAGE\_PATH}
 environment variable. The way of setting environment variables is system
 specific: in Unix, if you're using the bash shell, adding a line
 
 \begin{verbatim}
-export OMNETPP_BITMAP_PATH="/home/you/bitmaps;./bitmaps"
+export OMNETPP_IMAGE_PATH="/home/you/images;./images"
 \end{verbatim}
 
 to \ttt{~/.bashrc} or \ttt{~/.bash\_profile} will do; on Windows, environment variables
 can be set via the \textit{My Computer --> Properties} dialog.
 
-You can also add to the bitmap path from \ttt{omnetpp.ini}, with
-the \ttt{bitmap-path} setting:
+You can also add to the image path from \ttt{omnetpp.ini}, with
+the \ttt{image-path} setting:
 
 \begin{verbatim}
 [Tkenv]
-bitmap-path = "/home/you/model-framework/bitmaps;/home/you/extra-bitmaps"
+image-path = "/home/you/model-framework/images;/home/you/extra-images"
 \end{verbatim}
 
 The value should be quoted, otherwise the first semicolon separator will be
@@ -513,7 +513,7 @@ by folders. These categories include:
 Old (pre-3.0) icons are in the \ttt{old/} folder.
 
 Tkenv and GNED now load icons from subdirectories of all directories
-of the bitmap path, and these icons can be referenced from display strings
+of the image path, and these icons can be referenced from display strings
 by naming the subdirectory (subdirectories) as well:
 \ttt{"subdir/icon"}, \ttt{"subdir/subdir2/icon"}, etc.
 

@@ -42,7 +42,7 @@
 
 
 // default plugin path -- allow overriding it via compiler option (-D)
-// (default bitmap path comes from makefile)
+// (default image path comes from makefile)
 #ifndef OMNETPP_PLUGIN_PATH
 #define OMNETPP_PLUGIN_PATH "./plugins"
 #endif
@@ -119,11 +119,14 @@ void TOmnetTkApp::setup()
         tkenv_dir = OMNETPP_TKENV_DIR;
 #endif
 
+    //FIXME warn if obsolete OMNETPP_BITMAP_PATH is set
+    //FIXME warn if obsolete omnetpp.ini setting Tkenv/bitmap-path is set
+
     // path for icon directories
-    const char *bitmap_path_env = getenv("OMNETPP_BITMAP_PATH");
-    std::string bitmap_path = bitmap_path_env ? bitmap_path_env : OMNETPP_BITMAP_PATH;
-    if (!opt_bitmap_path.empty())
-        bitmap_path = std::string(opt_bitmap_path.c_str()) + ";" + bitmap_path;
+    const char *image_path_env = getenv("OMNETPP_IMAGE_PATH");
+    std::string image_path = image_path_env ? image_path_env : OMNETPP_IMAGE_PATH;
+    if (!opt_image_path.empty())
+        image_path = std::string(opt_image_path.c_str()) + ";" + image_path;
 
     // path for plugins
     const char *plugin_path_env = getenv("OMNETPP_PLUGIN_PATH");
@@ -142,7 +145,7 @@ void TOmnetTkApp::setup()
     // add OMNeT++'s commands to Tcl
     createTkCommands( interp, tcl_commands );
 
-    Tcl_SetVar(interp, "OMNETPP_BITMAP_PATH", TCLCONST(bitmap_path.c_str()), TCL_GLOBAL_ONLY);
+    Tcl_SetVar(interp, "OMNETPP_IMAGE_PATH", TCLCONST(image_path.c_str()), TCL_GLOBAL_ONLY);
     Tcl_SetVar(interp, "OMNETPP_PLUGIN_PATH", TCLCONST(plugin_path.c_str()), TCL_GLOBAL_ONLY);
 
     Tcl_SetVar(interp, "OMNETPP_RELEASE", OMNETPP_RELEASE, TCL_GLOBAL_ONLY);
@@ -1034,8 +1037,8 @@ void TOmnetTkApp::readOptions()
     opt_print_banners = cfg->getAsBool( "Tkenv", "print-banners", true );
     opt_use_mainwindow = cfg->getAsBool( "Tkenv", "use-mainwindow", true );
     opt_expressmode_autoupdate = cfg->getAsBool( "Tkenv", "expressmode-autoupdate", true );
-//FIXME    opt_bitmap_path = cfg->getAsFilename( "Tkenv", "bitmap-path", "").c_str();
-//FIXME    opt_plugin_path = cfg->getAsFilename( "Tkenv", "plugin-path", "").c_str();
+    opt_image_path = cfg->getAsFilename( "Tkenv", "image-path", "").c_str();
+    opt_plugin_path = cfg->getAsFilename( "Tkenv", "plugin-path", "").c_str();
 }
 
 void TOmnetTkApp::readPerRunOptions(int run_nr)

@@ -474,14 +474,14 @@ proc load_bitmaps {path} {
 
    foreach dir [split $path $sep] {
        if {$dir!=""} {
-           puts -nonewline "Loading bitmaps from $dir: "
+           puts -nonewline "Loading images from $dir: "
            do_load_bitmaps $dir ""
            puts ""
        }
    }
 
    if {$bitmap_ctr==0} {
-       puts "*** no bitmaps (gif) in $path"
+       puts "*** no images (gif) in $path"
    }
 
    puts ""

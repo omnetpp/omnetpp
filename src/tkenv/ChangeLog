@@ -1,3 +1,6 @@
+OMNETPP_BITMAP_PATH now called OMNETPP_IMAGE_PATH
+Tkenv/bitmap-path renamed to image-path
+
 2006-11-14  Andras Varga
 
 	* implemented filtering for the timeline

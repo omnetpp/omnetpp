@@ -97,7 +97,7 @@ WITH_PARSIM=no
 #
 # If commented out, the configure script will try to autodetect it
 #
-# If you don't have Tcl/Tk installed, adding 
+# If you don't have Tcl/Tk installed, adding
 #  NO_TCL=true
 # below lets you build just the non-GUI components.
 #
@@ -177,6 +177,6 @@ NEDC="$OMNETPP_BIN_DIR/nedtool"
 #
 # Override the following setting if you have additional icons somewhere else.
 #
-#OMNETPP_BITMAP_PATH="./bitmaps;$OMNETPP_ROOT/bitmaps"
+#OMNETPP_IMAGE_PATH="./images;./bitmaps;$OMNETPP_ROOT/images"
 
 

@@ -169,21 +169,25 @@ class SIM_API cProperty : public cNamedObject
 
     /**
      * Adds the given key to the property. Has no effect if the key already
-     * existed.
+     * exists.
      */
     virtual void addKey(const char *key);
 
     /**
      * Returns the number of values for the given key in the property.
      * Specify "" for the default key.
+     *
+     * Throws an error of the given key does not exist.
      */
     virtual int numValues(const char *key) const;
 
     /**
-     * Expands or thrims the list of values for the given key in the property,
+     * Expands or trims the list of values for the given key in the property,
      * by discarding elements or adding "" elements. Specify "" for the default
      * key. Note that simply setting an element above numValues(key) will also
      * expand the list.
+     *
+     * Throws an error of the given key does not exist.
      */
     virtual void setNumValues(const char *key, int size);
 

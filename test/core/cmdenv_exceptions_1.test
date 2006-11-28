@@ -15,7 +15,7 @@ Define_Module({Module});
 
 void {Module}::activity()
 {
-    throw new cException("test exception");
+    throw new cRuntimeError("test exception");
 }
 
 void {Module}::finish()

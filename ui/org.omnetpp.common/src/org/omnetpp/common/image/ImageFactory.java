@@ -21,12 +21,12 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.RGB;
 
 public class ImageFactory {
-    private final static String IMAGE_DIR = "/images/"; 
-    private final static String INTERNAL_DIR = "_internal/"; 
-    private final static String LEGACY_DIR = "old/"; 
+    private final static String IMAGE_DIR = "/images/";
+    private final static String INTERNAL_DIR = "_internal/";
+    private final static String LEGACY_DIR = "old/";
     private final static String TOOL_IMAGE_DIR = INTERNAL_DIR + "toolbar/";
     private final static String MODEL_IMAGE_DIR = INTERNAL_DIR + "model/";
-    
+
     public final static String TOOLBAR_IMAGE_WIZARDBANNER = TOOL_IMAGE_DIR + "module";
     public final static String TOOLBAR_IMAGE_UNPIN = TOOL_IMAGE_DIR + "unpin";
     public final static String TOOLBAR_IMAGE_LAYOUT = TOOL_IMAGE_DIR + "layout";
@@ -39,7 +39,7 @@ public class ImageFactory {
     public final static String TOOLBAR_IMAGE_MODULE = TOOL_IMAGE_DIR + "module";
     public final static String TOOLBAR_IMAGE_SIMPLE = TOOL_IMAGE_DIR + "simple";
     public final static String TOOLBAR_IMAGE_LABEL = TOOL_IMAGE_DIR + "label";
-    
+
     public final static String MODEL_IMAGE_CHANNEL = MODEL_IMAGE_DIR + "Channel";
     public final static String MODEL_IMAGE_COMPOUNDMODULE = MODEL_IMAGE_DIR + "CompoundModule";
     public final static String MODEL_IMAGE_CONNECTION = MODEL_IMAGE_DIR + "Connection";
@@ -51,28 +51,28 @@ public class ImageFactory {
     public final static String MODEL_IMAGE_SIMPLEMODULE = MODEL_IMAGE_DIR + "SimpleModule";
     public final static String MODEL_IMAGE_SUBMODULE = MODEL_IMAGE_DIR + "Submodule";
 
-    public final static String DEFAULT_NAME = IMAGE_DIR + INTERNAL_DIR + "default.png";  
-    public final static String DEFAULT_PIN = INTERNAL_DIR + "pin";  
-    public final static String DEFAULT_KEY = "__default__";  
+    public final static String DEFAULT_NAME = IMAGE_DIR + INTERNAL_DIR + "default.png";
+    public final static String DEFAULT_PIN = INTERNAL_DIR + "pin";
+    public final static String DEFAULT_KEY = "__default__";
 
     private static ImageRegistry imageRegistry = new ImageRegistry();
     private static String[] imageDirs;
-    
+
     static {
         imageDirs = new String[0];
-        String omnetppBitmapPath = System.getenv("OMNETPP_BITMAP_PATH");
-        if (omnetppBitmapPath != null) 
+        String omnetppBitmapPath = System.getenv("OMNETPP_IMAGE_PATH");
+        if (omnetppBitmapPath != null)
             imageDirs = omnetppBitmapPath.split(";");
-        // create and register a default / notfound image 
-        imageRegistry.put(DEFAULT_KEY, 
+        // create and register a default / notfound image
+        imageRegistry.put(DEFAULT_KEY,
                 new ColorizableImageDescriptor(ImageFactory.class, DEFAULT_NAME));
-        
+
     }
-    
+
     /**
      * Returns the requested image seraching on the bitmap path and in the resources
      * @param imageId the rquested image's id
-     * @return Image with a given ID 
+     * @return Image with a given ID
      */
     public static Image getImage(String imageId) {
         return getImage(imageId, null, null, -1);
@@ -109,13 +109,13 @@ public class ImageFactory {
         // if key was null (ie not found) return the default image descriptor
         return imageRegistry.getDescriptor(DEFAULT_KEY);
     }
-    
+
     /**
-     * Returns an image key with a given id, with preferred size. The method also 
+     * Returns an image key with a given id, with preferred size. The method also
      * caches the image for future reuse
      * @param imageId The requested image name
      * @param imageSize preferred size if possible either vs,s,l,vl or a number as size in pixel
-     * @param shade icon shading color 
+     * @param shade icon shading color
      * @param weight weitght (0-100) of the colorization effect
      * @return the requested image or <code>null</code> if imageId was also <code>null</code>
      */
@@ -143,14 +143,14 @@ public class ImageFactory {
 
          return getKeyFor(sizedId, pixelSize, shade, weight);
     }
- 
+
     /**
-     * Returns an image key with a given id, with preferred size and color. The method also 
+     * Returns an image key with a given id, with preferred size and color. The method also
      * caches the image for future reuse, so a get() with the returned key is guaranteed
      * to return an image.
      * @param baseId The requested image name
      * @param imageSize preferred size if possible
-     * @param shade icon shading color 
+     * @param shade icon shading color
      * @param weight weitght (0-100) of the colorization effect
      * @return the requested image key or <code>null</code> if baseId was also <code>null</code>
      */
@@ -169,13 +169,13 @@ public class ImageFactory {
 
         // try to get it from the registry (maybe we've already created it)
         ImageDescriptor result = imageRegistry.getDescriptor(decoratedImageId);
-        if (result != null) 
+        if (result != null)
             return decoratedImageId;
-    
+
         // if the colorized image is not in the registry create a non colorized one
         result = createDescriptor(baseId);
         // return null if image not found
-        if (result == null ) 
+        if (result == null )
             return null;
 
         // adjust the colorization and size parameteres for the descriptor
@@ -184,42 +184,42 @@ public class ImageFactory {
             ((ColorizableImageDescriptor)result).setColorizationWeight(weight);
             ((ColorizableImageDescriptor)result).setPreferredWidth(imageSize);
         }
-        
+
         // add it to the image registry, so later we can reuse it. The key provides the
         // name, horizontal size, and colorization data too
         imageRegistry.put(decoratedImageId, result);
         return decoratedImageId;
     }
-    
+
 
     /**
-     * Looks for image files with the given name in the image search path. First looks for 
-     * svg, then png and then gif 
+     * Looks for image files with the given name in the image search path. First looks for
+     * svg, then png and then gif
      * @param baseName basic name of the figure
      * @return The file object describing for the given name
      */
     private static ColorizableImageDescriptor createDescriptor(String baseName) {
         ColorizableImageDescriptor result;
         // TODO svg support missing
-        for(String currPath : imageDirs) 
-            if ((result = createDescriptor(null, currPath, baseName, "png")) != null) 
+        for(String currPath : imageDirs)
+            if ((result = createDescriptor(null, currPath, baseName, "png")) != null)
                 return result;
         // if not found in the filesystem, look for it in the JAR file
-        if ((result = createDescriptor(ImageFactory.class, IMAGE_DIR, baseName, "png")) != null) 
+        if ((result = createDescriptor(ImageFactory.class, IMAGE_DIR, baseName, "png")) != null)
             return result;
         // serach for gifs if no PNG found
-        for(String currPath : imageDirs) 
-            if ((result = createDescriptor(null, currPath, baseName, "gif")) != null) 
+        for(String currPath : imageDirs)
+            if ((result = createDescriptor(null, currPath, baseName, "gif")) != null)
                 return result;
-        if ((result = createDescriptor(ImageFactory.class, IMAGE_DIR, baseName, "gif")) != null) 
+        if ((result = createDescriptor(ImageFactory.class, IMAGE_DIR, baseName, "gif")) != null)
             return result;
-        
+
         return null;
     }
-    
+
     /**
      * @param refClass Reference class, if <code>null</code> file is loaded from the filesystem
-     *                 otehrwise from the same resource where this class is located 
+     *                 otehrwise from the same resource where this class is located
      * @param dir Base path for file
      * @param fileName The name of the file
      * @param ext extension to be used
@@ -230,11 +230,11 @@ public class ImageFactory {
         ColorizableImageDescriptor iDesc = new ColorizableImageDescriptor(refClass, name);
         // check if the resource exists
         if(iDesc.canCreate()) return iDesc;
-        
+
         return null;
     }
 
-    
+
     /**
      * @return All image ID-s in the bitmap path (files with .gif .png .svg extension)
      */
@@ -244,16 +244,16 @@ public class ImageFactory {
 			try {
 				IFileStore baseStore = EFS.getStore(URIUtil.toURI(basedir).normalize());
 	    		result.addAll(getNameList(baseStore, baseStore.toURI().toString().length()));
-			} catch (CoreException e) {	}  
+			} catch (CoreException e) {	}
     	}
 
-    	// TODO add also the current and dependent project's own bitmap folder 
-    	
+    	// TODO add also the current and dependent project's own bitmap folder
+
     	// scan the resource directory for images
     	URL imagesResourceUrl= ImageFactory.class.getResource(IMAGE_DIR);
 		try {
 			// TODO beware that the toFileURL creates a copy of ALL icons if they are stored in a JAR file
-			// this is sub optimal. It would be better if we could create a filesystem supporting 
+			// this is sub optimal. It would be better if we could create a filesystem supporting
 			// the bundleresource: protocol directly (ie we could read directy from the bundle)
 			IFileStore resourceStore = EFS.getStore(FileLocator.toFileURL(imagesResourceUrl).toURI());
 			result.addAll(getNameList(resourceStore, resourceStore.toURI().toString().length()));
@@ -269,12 +269,12 @@ public class ImageFactory {
 
     /**
      * Get the image ID for a file or image IDs if it is a directory (recursively(
-     * @param fileStore A file or directory 
+     * @param fileStore A file or directory
      * @param stripBeginning (how much should be stripped at the beginning of the absolute path)
      * @return
      */
     private static Set<String> getNameList(IFileStore fileStore, int stripBeginning) {
-    	Set<String> result = new HashSet<String>(1); 
+    	Set<String> result = new HashSet<String>(1);
     	// check if this is a real file
     	if (fileStore.fetchInfo().exists() && !fileStore.fetchInfo().isDirectory()) {
     		String toAdd;
@@ -287,21 +287,21 @@ public class ImageFactory {
 			// check if this is an image file, otherwise return with empty result
 			if (!toAdd.endsWith(".gif") && !toAdd.endsWith(".png") && !toAdd.endsWith(".svg"))
 				return result;
-			
+
 			// strip the extension
 			toAdd = toAdd.substring(0, toAdd.length()-4);
-			
+
 			// look for size extensions and remove them
 			if(toAdd.endsWith("_s") || toAdd.endsWith("_l"))
 				toAdd = toAdd.substring(0, toAdd.length()-2);
 			if(toAdd.endsWith("_vs") || toAdd.endsWith("_vl"))
 				toAdd = toAdd.substring(0, toAdd.length()-3);
-			
+
     		result.add(toAdd);
     	}
-    	
+
     	// if this is a directory (but not the internal dir)iterate through all contained files
-    	if (fileStore.fetchInfo().isDirectory() 
+    	if (fileStore.fetchInfo().isDirectory()
     			&& !fileStore.fetchInfo().getName().startsWith("_internal"))
 			try {
 				for(IFileStore childToAdd : fileStore.childStores(EFS.NONE, null)) {
@@ -309,8 +309,8 @@ public class ImageFactory {
 				}
 			} catch (CoreException e) { // do nothing if error occured
 			}
-    	
+
     	return result;
     }
-    
+
 }

@@ -88,7 +88,7 @@ class TOmnetTkApp : public TOmnetApp
       int  opt_updatefreq_express; // RunExpress updates display every N events
       unsigned opt_extrastack_kb;  // per-module extra stack for activity() modules
       bool opt_expressmode_autoupdate;// update inspectors at every display refresh in EXPRESS mode or not
-      opp_string opt_bitmap_path;  // directory of module icon files
+      opp_string opt_image_path;   // directory of module icon files
       opp_string opt_plugin_path;  // path for loading Tcl and binary plugins
 
       // state variables

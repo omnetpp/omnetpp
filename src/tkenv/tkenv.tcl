@@ -50,7 +50,7 @@ if [info exist OMNETPP_TKENV_DIR] {
 # Execute startup code
 #
 proc start_tkenv {} {
-  global OMNETPP_BITMAP_PATH
+  global OMNETPP_IMAGE_PATH
   global OMNETPP_PLUGIN_PATH
   global HAVE_BLT
 
@@ -61,7 +61,7 @@ proc start_tkenv {} {
   init_balloons
   create_omnetpp_window
   puts ""
-  load_bitmaps $OMNETPP_BITMAP_PATH
+  load_bitmaps $OMNETPP_IMAGE_PATH
   load_plugins $OMNETPP_PLUGIN_PATH
   load_tkenvrc
   determine_clocks_per_sec
