@@ -30,6 +30,8 @@ cNEDDeclarationBase(name), NEDComponent(tree)
 {
     ASSERT(name && name[0]);
     ASSERT(tree);
+
+    props = NULL;
     
     // add "extends" and "like" names
     for (NEDElement *child=tree->getFirstChild(); child; child=child->getNextSibling())
@@ -48,10 +50,8 @@ cNEDDeclarationBase(name), NEDComponent(tree)
 
 cNEDDeclaration::~cNEDDeclaration()
 {
-/*FIXME this crashes
     if (props && props->removeRef()==0)
         delete props;
-*/
     clearPropsMap(paramPropsMap);
     clearPropsMap(gatePropsMap);
     clearPropsMap(subcomponentPropsMap);
