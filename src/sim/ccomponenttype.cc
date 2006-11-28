@@ -47,7 +47,7 @@ cProperties *cComponentType::getPropertiesFor(const cComponent *component)
     cProperties *props;
     if (parent)
         props = parent->componentType()->declaration()->subcomponentProperties(
-            component->fullName(), component->componentType()->name());
+            component->name(), component->componentType()->name());
     else
         props = component->componentType()->declaration()->properties();
     return props;
@@ -60,9 +60,9 @@ cProperties *cComponentType::getPropertiesFor(const cPar *par)
     cProperties *props;
     if (parent)
         props = parent->componentType()->declaration()->subcomponentParamProperties(
-            component->fullName(), component->componentType()->name(), par->fullName());
+            component->name(), component->componentType()->name(), par->name());
     else
-        props = component->componentType()->declaration()->paramProperties(par->fullName());
+        props = component->componentType()->declaration()->paramProperties(par->name());
     return props;
 }
 
@@ -73,9 +73,9 @@ cProperties *cComponentType::getPropertiesFor(const cGate *gate)
     cProperties *props;
     if (parent)
         props = parent->componentType()->declaration()->subcomponentGateProperties(
-            component->fullName(), component->componentType()->name(), gate->fullName());
+            component->name(), component->componentType()->name(), gate->name());
     else
-        props = component->componentType()->declaration()->gateProperties(gate->fullName());
+        props = component->componentType()->declaration()->gateProperties(gate->name());
     return props;
 }
 

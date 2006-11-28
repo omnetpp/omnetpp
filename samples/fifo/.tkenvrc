@@ -46,6 +46,8 @@ config timeline-msgclassnamepattern	{*}
 config timeline-msgnamepattern	{*}
 config timeline-wantnonselfmsgs	{1}
 config timeline-wantselfmsgs	{1}
-inspector "fifonet.gen" "FFGenerator" "1" "460x312+199+235"
+inspector "fifonet" "fifonet" "2" "443x277+96+124"
+inspector "fifonet.fifo.queue" "cQueue" "1" "460x312+424+334"
+inspector "fifonet.fifo.queue.job" "cMessage" "1" "460x312+24+31"
 inspector "component types.fifonet" "cDynamicModuleType" "1" "717x624+24+31"
 

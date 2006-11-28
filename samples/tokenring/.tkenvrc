@@ -46,5 +46,6 @@ config timeline-msgclassnamepattern	{*}
 config timeline-msgnamepattern	{*}
 config timeline-wantnonselfmsgs	{1}
 config timeline-wantselfmsgs	{1}
-inspector "token" "token" "2" "367x347+87+243"
+inspector "token" "token" "2" "367x416+87+174"
+inspector "token.comp[4]" "Computer" "2" "367x303+503+147"
 
