@@ -125,13 +125,16 @@ inspector.o: inspector.cc \
   ../../include/cmessagepar.h \
   ../../include/cmodule.h \
   ../../include/cmsgheap.h \
+  ../../include/cneddeclarationbase.h \
   ../../include/cnedfunction.h \
   ../../include/cobject.h \
+  ../../include/cnamedobject.h \
+  ../../include/cownedobject.h \
   ../../include/coutvect.h \
   ../../include/cpacket.h \
   ../../include/cpar.h \
+  ../../include/cparvalue.h \
   ../../include/cparsimcomm.h \
-  ../../include/cpolymorphic.h \
   ../../include/cproperties.h \
   ../../include/cproperty.h \
   ../../include/cpsquare.h \
@@ -173,7 +176,8 @@ inspector.o: inspector.cc \
   ../envir/omnetapp.h \
   ../envir/args.h \
   ../envir/envdefs.h \
-  tkutil.h
+  tkutil.h \
+  tkdefs.h
 inspfactory.o: inspfactory.cc \
   ../../include/omnetpp.h \
   tkapp.h \
@@ -214,13 +218,16 @@ inspfactory.o: inspfactory.cc \
   ../../include/cmessagepar.h \
   ../../include/cmodule.h \
   ../../include/cmsgheap.h \
+  ../../include/cneddeclarationbase.h \
   ../../include/cnedfunction.h \
   ../../include/cobject.h \
+  ../../include/cnamedobject.h \
+  ../../include/cownedobject.h \
   ../../include/coutvect.h \
   ../../include/cpacket.h \
   ../../include/cpar.h \
+  ../../include/cparvalue.h \
   ../../include/cparsimcomm.h \
-  ../../include/cpolymorphic.h \
   ../../include/cproperties.h \
   ../../include/cproperty.h \
   ../../include/cpsquare.h \
@@ -262,7 +269,8 @@ inspfactory.o: inspfactory.cc \
   ../envir/omnetapp.h \
   ../envir/args.h \
   ../envir/envdefs.h \
-  tkutil.h
+  tkutil.h \
+  tkdefs.h
 modinsp.o: modinsp.cc \
   ../../include/csimplemodule.h \
   ../../include/cchannel.h \
@@ -288,15 +296,16 @@ modinsp.o: modinsp.cc \
   ../../include/globals.h \
   ../../include/csimulation.h \
   ../../include/defs.h \
-  ../../include/cobject.h \
+  ../../include/cownedobject.h \
   ../../include/cdefaultlist.h \
   ../../include/cenvir.h \
   ../../include/util.h \
-  ../../include/cpolymorphic.h \
+  ../../include/cnamedobject.h \
   ../../include/cexception.h \
-  ../../include/cvisitor.h \
-  ../../include/cstringpool.h \
   ../../include/errmsg.h \
+  ../../include/cobject.h \
+  ../../include/cstringpool.h \
+  ../../include/cvisitor.h \
   ../../include/regmacros.h \
   ../../include/onstartup.h \
   ../../include/opp_string.h \
@@ -304,12 +313,15 @@ modinsp.o: modinsp.cc \
   ../../include/cmsgheap.h \
   ../../include/ccoroutine.h \
   ../../include/ccomponenttype.h \
+  ../../include/cneddeclarationbase.h \
+  ../../include/cparvalue.h \
+  ../../include/cexpression.h \
   ../../include/cmessagepar.h \
   ../../include/cfunction.h \
-  ../../include/cexpression.h \
   inspector.h \
   ../envir/omnetapp.h \
   tkutil.h \
+  tkdefs.h \
   ../envir/args.h \
   ../envir/envdefs.h \
   ../../include/envirext.h \
@@ -355,13 +367,16 @@ objinsp.o: objinsp.cc \
   ../../include/cmessagepar.h \
   ../../include/cmodule.h \
   ../../include/cmsgheap.h \
+  ../../include/cneddeclarationbase.h \
   ../../include/cnedfunction.h \
   ../../include/cobject.h \
+  ../../include/cnamedobject.h \
+  ../../include/cownedobject.h \
   ../../include/coutvect.h \
   ../../include/cpacket.h \
   ../../include/cpar.h \
+  ../../include/cparvalue.h \
   ../../include/cparsimcomm.h \
-  ../../include/cpolymorphic.h \
   ../../include/cproperties.h \
   ../../include/cproperty.h \
   ../../include/cpsquare.h \
@@ -405,7 +420,7 @@ objinsp.o: objinsp.cc \
   ../envir/envdefs.h \
   inspector.h \
   tkutil.h \
-  structinsp.h
+  tkdefs.h
 statinsp.o: statinsp.cc \
   ../../include/cmodule.h \
   ../../include/cmessage.h \
@@ -423,15 +438,16 @@ statinsp.o: statinsp.cc \
   ../../include/cgate.h \
   ../../include/csimulation.h \
   ../../include/defs.h \
-  ../../include/cobject.h \
+  ../../include/cownedobject.h \
   ../../include/cdefaultlist.h \
   ../../include/cenvir.h \
   ../../include/util.h \
-  ../../include/cpolymorphic.h \
+  ../../include/cnamedobject.h \
   ../../include/cexception.h \
-  ../../include/cvisitor.h \
-  ../../include/cstringpool.h \
   ../../include/errmsg.h \
+  ../../include/cobject.h \
+  ../../include/cstringpool.h \
+  ../../include/cvisitor.h \
   ../../include/regmacros.h \
   ../../include/onstartup.h \
   ../../include/opp_string.h \
@@ -448,37 +464,8 @@ statinsp.o: statinsp.cc \
   ../../include/cconfig.h \
   ../../include/platdep/time.h \
   inspector.h \
-  tkutil.h
-structinsp.o: structinsp.cc \
-  ../../include/cenum.h \
-  ../../include/cclassdescriptor.h \
-  tkapp.h \
-  tklib.h \
-  inspfactory.h \
-  structinsp.h \
-  ../../include/cobject.h \
-  ../../include/cenvir.h \
-  ../../include/defs.h \
-  ../../include/util.h \
-  ../../include/cpolymorphic.h \
-  ../../include/cexception.h \
-  ../../include/cvisitor.h \
-  ../../include/cstringpool.h \
-  ../../include/errmsg.h \
-  ../../include/regmacros.h \
-  ../../include/onstartup.h \
-  ../../include/opp_string.h \
-  ../envir/omnetapp.h \
-  ../../include/carray.h \
-  ../../include/globals.h \
-  ../envir/args.h \
-  ../envir/envdefs.h \
-  ../../include/envirext.h \
-  ../../include/cconfig.h \
-  ../../include/platdep/time.h \
-  ../../include/cclassfactory.h \
-  inspector.h \
-  tkutil.h
+  tkutil.h \
+  tkdefs.h
 tkapp.o: tkapp.cc \
   ../envir/appreg.h \
   ../../include/cenvir.h \
@@ -500,14 +487,15 @@ tkapp.o: tkapp.cc \
   ../../include/onstartup.h \
   ../../include/carray.h \
   ../../include/cclassfactory.h \
-  ../../include/cobject.h \
+  ../../include/cownedobject.h \
   ../../include/defs.h \
   ../../include/util.h \
-  ../../include/cpolymorphic.h \
+  ../../include/cnamedobject.h \
   ../../include/cexception.h \
-  ../../include/cvisitor.h \
-  ../../include/cstringpool.h \
   ../../include/errmsg.h \
+  ../../include/cobject.h \
+  ../../include/cstringpool.h \
+  ../../include/cvisitor.h \
   ../../include/regmacros.h \
   ../../include/opp_string.h \
   ../../include/cmodule.h \
@@ -519,6 +507,8 @@ tkapp.o: tkapp.cc \
   ../../include/cmessagepar.h \
   ../../include/cfunction.h \
   ../envir/envdefs.h \
+  ../../include/cneddeclarationbase.h \
+  ../../include/cparvalue.h \
   ../../include/cmsgheap.h \
   ../../include/ccoroutine.h \
   ../envir/omnetapp.h \
@@ -547,17 +537,17 @@ tkcmd.o: tkcmd.cc \
   tklib.h \
   inspector.h \
   inspfactory.h \
-  ../envir/patmatch.h \
   visitor.h \
   ../envir/fsutils.h \
   ../../include/defs.h \
-  ../../include/cobject.h \
+  ../../include/cownedobject.h \
   ../../include/util.h \
-  ../../include/cpolymorphic.h \
+  ../../include/cnamedobject.h \
   ../../include/cexception.h \
-  ../../include/cvisitor.h \
-  ../../include/cstringpool.h \
   ../../include/errmsg.h \
+  ../../include/cobject.h \
+  ../../include/cstringpool.h \
+  ../../include/cvisitor.h \
   ../../include/regmacros.h \
   ../../include/onstartup.h \
   ../../include/opp_string.h \
@@ -569,6 +559,8 @@ tkcmd.o: tkcmd.cc \
   ../../include/ccomponent.h \
   ../../include/cgate.h \
   ../../include/cdefaultlist.h \
+  ../../include/cneddeclarationbase.h \
+  ../../include/cparvalue.h \
   ../../include/cexpression.h \
   ../../include/cmessagepar.h \
   ../../include/cfunction.h \
@@ -578,7 +570,9 @@ tkcmd.o: tkcmd.cc \
   ../../include/envirext.h \
   ../../include/cconfig.h \
   ../../include/platdep/time.h \
-  tkutil.h
+  tkutil.h \
+  tkdefs.h \
+  ../envir/matchableobject.h
 tklib.o: tklib.cc \
   tklib.h \
   tkapp.h \
@@ -592,33 +586,34 @@ tklib.o: tklib.cc \
   ../../include/envirext.h \
   ../../include/cconfig.h \
   ../../include/platdep/time.h \
-  ../../include/cobject.h \
+  ../../include/cownedobject.h \
   ../../include/defs.h \
   ../../include/util.h \
-  ../../include/cpolymorphic.h \
-  ../../include/cvisitor.h \
-  ../../include/cstringpool.h \
+  ../../include/cnamedobject.h \
   ../../include/errmsg.h \
+  ../../include/cobject.h \
+  ../../include/cstringpool.h \
+  ../../include/cvisitor.h \
   ../../include/regmacros.h \
   ../../include/onstartup.h \
   ../../include/cclassfactory.h \
   ../../include/opp_string.h
 tkutil.o: tkutil.cc \
-  ../../include/cobject.h \
+  ../../include/cownedobject.h \
   ../../include/cmodule.h \
   ../../include/csimulation.h \
   tkapp.h \
-  ../envir/patmatch.h \
   visitor.h \
   tkutil.h \
   ../../include/cenvir.h \
   ../../include/defs.h \
   ../../include/util.h \
-  ../../include/cpolymorphic.h \
+  ../../include/cnamedobject.h \
   ../../include/cexception.h \
-  ../../include/cvisitor.h \
-  ../../include/cstringpool.h \
   ../../include/errmsg.h \
+  ../../include/cobject.h \
+  ../../include/cstringpool.h \
+  ../../include/cvisitor.h \
   ../../include/regmacros.h \
   ../../include/onstartup.h \
   ../../include/opp_string.h \
@@ -637,10 +632,11 @@ tkutil.o: tkutil.cc \
   ../envir/envdefs.h \
   ../../include/envirext.h \
   ../../include/cconfig.h \
-  ../../include/platdep/time.h
+  ../../include/platdep/time.h \
+  ../envir/matchableobject.h \
+  tkdefs.h
 visitor.o: visitor.cc \
   ../../include/cenvir.h \
-  ../../include/cobject.h \
   ../../include/cmodule.h \
   ../../include/cmessage.h \
   ../../include/cqueue.h \
@@ -651,22 +647,23 @@ visitor.o: visitor.cc \
   ../../include/cpar.h \
   ../../include/cchannel.h \
   ../../include/cgate.h \
-  ../envir/patmatch.h \
   visitor.h \
   ../../include/defs.h \
-  ../../include/util.h \
-  ../../include/cpolymorphic.h \
-  ../../include/cexception.h \
-  ../../include/cvisitor.h \
-  ../../include/cstringpool.h \
-  ../../include/errmsg.h \
-  ../../include/regmacros.h \
-  ../../include/onstartup.h \
-  ../../include/opp_string.h \
   ../../include/ccomponent.h \
   ../../include/globals.h \
   ../../include/csimulation.h \
+  ../../include/cownedobject.h \
   ../../include/cdefaultlist.h \
+  ../../include/util.h \
+  ../../include/cnamedobject.h \
+  ../../include/cexception.h \
+  ../../include/errmsg.h \
+  ../../include/cobject.h \
+  ../../include/cstringpool.h \
+  ../../include/cvisitor.h \
+  ../../include/regmacros.h \
+  ../../include/onstartup.h \
+  ../../include/opp_string.h \
   ../../include/carray.h \
   ../../include/cclassfactory.h \
   ../../include/cmsgheap.h \
@@ -675,10 +672,13 @@ visitor.o: visitor.cc \
   ../../include/cfunction.h \
   ../../include/cexpression.h \
   ../../include/ccomponenttype.h \
-  ../envir/envdefs.h \
+  ../../include/cneddeclarationbase.h \
+  ../../include/cparvalue.h \
   tkapp.h \
+  ../envir/matchableobject.h \
   ../envir/omnetapp.h \
   ../envir/args.h \
+  ../envir/envdefs.h \
   ../../include/envirext.h \
   ../../include/cconfig.h \
   ../../include/platdep/time.h

@@ -138,7 +138,7 @@ void cBoolPar::deleteOld()
 
 cPar::Type cBoolPar::type() const
 {
-    return cPar::Type::BOOL;
+    return cPar::BOOL;
 }
 
 bool cBoolPar::isNumeric() const

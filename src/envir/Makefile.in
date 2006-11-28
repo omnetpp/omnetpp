@@ -73,7 +73,8 @@ akaroarng.o: akaroarng.cc \
   ../../include/opp_string.h \
   ../../include/crng.h \
   ../../include/cconfig.h \
-  ../../include/cpolymorphic.h \
+  ../../include/cobject.h \
+  ../../include/cvisitor.h \
   ../../include/regmacros.h \
   ../../include/onstartup.h
 akoutvectormgr.o: akoutvectormgr.cc \
@@ -91,12 +92,13 @@ akoutvectormgr.o: akoutvectormgr.cc \
   ../../include/envirext.h \
   ../../include/cconfig.h \
   ../../include/platdep/time.h \
-  ../../include/cobject.h \
+  ../../include/cownedobject.h \
   ../../include/util.h \
-  ../../include/cpolymorphic.h \
-  ../../include/cvisitor.h \
-  ../../include/cstringpool.h \
+  ../../include/cnamedobject.h \
   ../../include/errmsg.h \
+  ../../include/cobject.h \
+  ../../include/cstringpool.h \
+  ../../include/cvisitor.h \
   ../../include/regmacros.h \
   ../../include/onstartup.h \
   ../../include/cclassfactory.h \
@@ -141,15 +143,15 @@ cenvir.o: cenvir.cc \
   ../../include/onstartup.h \
   ../../include/carray.h \
   ../../include/cclassfactory.h \
-  ../../include/cobject.h \
-  ../../include/cpolymorphic.h \
+  ../../include/cownedobject.h \
+  ../../include/cnamedobject.h \
   ../../include/cexception.h \
-  ../../include/cvisitor.h \
+  ../../include/cobject.h \
   ../../include/cstringpool.h \
+  ../../include/cvisitor.h \
   ../../include/regmacros.h \
   ../../include/opp_string.h \
   ../../include/cconfig.h \
-  patternmatcher.h \
   ../../include/envirext.h \
   ../../include/platdep/time.h \
   ../../include/ccomponent.h \
@@ -161,7 +163,6 @@ cinifile.o: cinifile.cc \
   ../../include/cenvir.h \
   ../../include/util.h \
   cinifile.h \
-  patternmatcher.h \
   ../../include/cexception.h \
   fsutils.h \
   ../../include/platdep/fileutil.h \
@@ -171,24 +172,27 @@ cinifile.o: cinifile.cc \
   envdefs.h \
   ../../include/cconfig.h \
   ../../include/opp_string.h \
-  ../../include/cpolymorphic.h \
+  ../../include/cobject.h \
+  ../../include/cvisitor.h \
   ../../include/regmacros.h \
   ../../include/onstartup.h
 cstrtokenizer2.o: cstrtokenizer2.cc \
   cstrtokenizer2.h \
   ../../include/defs.h
 cxmldoccache.o: cxmldoccache.cc \
-  ../../include/cpolymorphic.h \
+  ../../include/cobject.h \
   cxmldoccache.h \
   ../../include/cxmlelement.h \
   ../../include/cexception.h \
   ../nedxml/saxparser.h \
   ../../include/defs.h \
   ../../include/util.h \
+  ../../include/cvisitor.h \
   ../../include/regmacros.h \
   ../../include/errmsg.h \
   ../../include/onstartup.h \
   envdefs.h \
+  ../../include/cenvir.h \
   ../../include/opp_string.h
 filemgrs.o: filemgrs.cc \
   ../../include/defs.h \
@@ -208,12 +212,13 @@ filemgrs.o: filemgrs.cc \
   envdefs.h \
   ../../include/envirext.h \
   ../../include/cconfig.h \
-  ../../include/cobject.h \
+  ../../include/cownedobject.h \
   ../../include/util.h \
-  ../../include/cpolymorphic.h \
-  ../../include/cvisitor.h \
-  ../../include/cstringpool.h \
+  ../../include/cnamedobject.h \
   ../../include/errmsg.h \
+  ../../include/cobject.h \
+  ../../include/cstringpool.h \
+  ../../include/cvisitor.h \
   ../../include/regmacros.h \
   ../../include/onstartup.h \
   ../../include/cclassfactory.h \
@@ -224,7 +229,9 @@ filemgrs.o: filemgrs.cc \
   ../../include/cgate.h \
   ../../include/cpar.h \
   ../../include/cdefaultlist.h \
-  ../../include/cexpression.h
+  ../../include/cexpression.h \
+  ../../include/cneddeclarationbase.h \
+  ../../include/cparvalue.h
 fsutils.o: fsutils.cc \
   fsutils.h \
   ../../include/platdep/misc.h \
@@ -236,23 +243,39 @@ fsutils.o: fsutils.cc \
   ../../include/defs.h \
   ../../include/errmsg.h
 main.o: main.cc \
-  ../../include/cobject.h \
+  ../../include/cownedobject.h \
   ../../include/cenvir.h \
   ../utils/ver.h \
   ../../include/defs.h \
   ../../include/util.h \
-  ../../include/cpolymorphic.h \
+  ../../include/cnamedobject.h \
   ../../include/cexception.h \
-  ../../include/cvisitor.h \
-  ../../include/cstringpool.h \
   ../../include/errmsg.h \
+  ../../include/cobject.h \
+  ../../include/cstringpool.h \
+  ../../include/cvisitor.h \
   ../../include/regmacros.h \
   ../../include/onstartup.h \
+  ../../include/opp_string.h
+matchableobject.o: matchableobject.cc \
+  matchableobject.h \
+  ../../include/cclassdescriptor.h \
+  ../../include/cobject.h \
+  ../../include/defs.h \
+  ../../include/util.h \
+  ../../include/cvisitor.h \
+  ../../include/regmacros.h \
+  ../../include/errmsg.h \
+  ../../include/onstartup.h \
+  ../../include/cownedobject.h \
+  ../../include/cenvir.h \
+  ../../include/cnamedobject.h \
+  ../../include/cexception.h \
+  ../../include/cstringpool.h \
   ../../include/opp_string.h
 omnetapp.o: omnetapp.cc \
   args.h \
   omnetapp.h \
-  patternmatcher.h \
   fsutils.h \
   ../../include/ccoroutine.h \
   ../../include/csimulation.h \
@@ -278,12 +301,13 @@ omnetapp.o: omnetapp.cc \
   ../../include/cexception.h \
   ../../include/envirext.h \
   ../../include/cconfig.h \
-  ../../include/cobject.h \
+  ../../include/cownedobject.h \
   ../../include/util.h \
-  ../../include/cpolymorphic.h \
-  ../../include/cvisitor.h \
-  ../../include/cstringpool.h \
+  ../../include/cnamedobject.h \
   ../../include/errmsg.h \
+  ../../include/cobject.h \
+  ../../include/cstringpool.h \
+  ../../include/cvisitor.h \
   ../../include/regmacros.h \
   ../../include/onstartup.h \
   ../../include/cclassfactory.h \
@@ -293,14 +317,6 @@ omnetapp.o: omnetapp.cc \
   ../../include/ccomponent.h \
   ../../include/cgate.h \
   ../../include/cdefaultlist.h
-patternmatcher.o: patternmatcher.cc \
-  patternmatcher.h \
-  ../../include/cexception.h \
-  ../../include/defs.h \
-  envdefs.h \
-  ../../include/errmsg.h \
-  ../../include/opp_string.h \
-  ../../include/util.h
 speedmtr.o: speedmtr.cc \
   speedmtr.h \
   ../../include/defs.h \

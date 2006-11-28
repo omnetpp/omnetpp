@@ -68,6 +68,11 @@ class MatchExpression
          * overwritten by subsequent getDefaultAttribute() / getAttribute() calls.
          */
         virtual const char *getAttribute(const char *name) const = 0;
+
+        /**
+         * Virtual destructor, for good manners...
+         */
+	virtual ~Matchable() {}
     };
 
     /**

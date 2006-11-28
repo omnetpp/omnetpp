@@ -138,14 +138,15 @@ carray.o: carray.cc \
   ../../include/globals.h \
   ../../include/cexception.h \
   ../../include/ccommbuffer.h \
-  ../../include/cobject.h \
+  ../../include/cownedobject.h \
   ../../include/cenvir.h \
   ../../include/defs.h \
   ../../include/util.h \
-  ../../include/cpolymorphic.h \
-  ../../include/cvisitor.h \
-  ../../include/cstringpool.h \
+  ../../include/cnamedobject.h \
   ../../include/errmsg.h \
+  ../../include/cobject.h \
+  ../../include/cstringpool.h \
+  ../../include/cvisitor.h \
   ../../include/regmacros.h \
   ../../include/onstartup.h \
   ../../include/cclassfactory.h \
@@ -167,15 +168,18 @@ cbasicchannel.o: cbasicchannel.cc \
   ../../include/ccomponent.h \
   ../../include/ccomponenttype.h \
   ../../include/defs.h \
-  ../../include/cobject.h \
+  ../../include/cownedobject.h \
   ../../include/cdefaultlist.h \
   ../../include/util.h \
-  ../../include/cpolymorphic.h \
-  ../../include/cvisitor.h \
-  ../../include/cstringpool.h \
+  ../../include/cnamedobject.h \
   ../../include/errmsg.h \
+  ../../include/cobject.h \
+  ../../include/cstringpool.h \
+  ../../include/cvisitor.h \
   ../../include/regmacros.h \
   ../../include/onstartup.h \
+  ../../include/cneddeclarationbase.h \
+  ../../include/cparvalue.h \
   ../../include/cexpression.h \
   ../../include/carray.h \
   ../../include/cmessagepar.h \
@@ -190,17 +194,19 @@ cboolpar.o: cboolpar.cc \
   ../../include/cstrtokenizer.h \
   ../../include/cdynamicexpression.h \
   ../../include/ccomponent.h \
+  ../../include/cparvalue.h \
   ../../include/cpar.h \
-  ../../include/cobject.h \
   ../../include/cexpression.h \
   ../../include/cexception.h \
+  ../../include/cownedobject.h \
   ../../include/cenvir.h \
   ../../include/defs.h \
   ../../include/util.h \
-  ../../include/cpolymorphic.h \
-  ../../include/cvisitor.h \
-  ../../include/cstringpool.h \
+  ../../include/cnamedobject.h \
   ../../include/errmsg.h \
+  ../../include/cobject.h \
+  ../../include/cstringpool.h \
+  ../../include/cvisitor.h \
   ../../include/regmacros.h \
   ../../include/onstartup.h \
   ../../include/opp_string.h \
@@ -219,15 +225,18 @@ cchannel.o: cchannel.cc \
   ../../include/ccomponent.h \
   ../../include/ccomponenttype.h \
   ../../include/defs.h \
-  ../../include/cobject.h \
+  ../../include/cownedobject.h \
   ../../include/cdefaultlist.h \
   ../../include/util.h \
-  ../../include/cpolymorphic.h \
-  ../../include/cvisitor.h \
-  ../../include/cstringpool.h \
+  ../../include/cnamedobject.h \
   ../../include/errmsg.h \
+  ../../include/cobject.h \
+  ../../include/cstringpool.h \
+  ../../include/cvisitor.h \
   ../../include/regmacros.h \
   ../../include/onstartup.h \
+  ../../include/cneddeclarationbase.h \
+  ../../include/cparvalue.h \
   ../../include/cexpression.h \
   ../../include/carray.h \
   ../../include/cmessagepar.h \
@@ -242,13 +251,14 @@ cclassdescriptor.o: cclassdescriptor.cc \
   ../../include/cenum.h \
   ../../include/util.h \
   ../../include/cclassfactory.h \
-  ../../include/cobject.h \
+  ../../include/cownedobject.h \
   ../../include/cenvir.h \
   ../../include/defs.h \
-  ../../include/cpolymorphic.h \
+  ../../include/cnamedobject.h \
   ../../include/cexception.h \
-  ../../include/cvisitor.h \
+  ../../include/cobject.h \
   ../../include/cstringpool.h \
+  ../../include/cvisitor.h \
   ../../include/regmacros.h \
   ../../include/onstartup.h \
   ../../include/errmsg.h \
@@ -261,15 +271,16 @@ cclassfactory.o: cclassfactory.cc \
   parsim/cplaceholdermod.h \
   ../../include/defs.h \
   ../../include/globals.h \
-  ../../include/cobject.h \
+  ../../include/cownedobject.h \
   ../../include/onstartup.h \
   ../../include/carray.h \
   ../../include/cenvir.h \
   ../../include/util.h \
-  ../../include/cpolymorphic.h \
-  ../../include/cvisitor.h \
-  ../../include/cstringpool.h \
+  ../../include/cnamedobject.h \
   ../../include/errmsg.h \
+  ../../include/cobject.h \
+  ../../include/cstringpool.h \
+  ../../include/cvisitor.h \
   ../../include/regmacros.h \
   ../../include/opp_string.h \
   ../../include/cmodule.h \
@@ -284,16 +295,17 @@ cclassfactory.o: cclassfactory.cc \
 ccommbuffer.o: ccommbuffer.cc \
   ../../include/ccommbuffer.h \
   ../../include/util.h \
-  ../../include/cobject.h \
+  ../../include/cownedobject.h \
   ../../include/cclassfactory.h \
-  ../../include/cpolymorphic.h \
+  ../../include/cobject.h \
   ../../include/defs.h \
+  ../../include/cvisitor.h \
   ../../include/regmacros.h \
   ../../include/onstartup.h \
   ../../include/errmsg.h \
   ../../include/cenvir.h \
+  ../../include/cnamedobject.h \
   ../../include/cexception.h \
-  ../../include/cvisitor.h \
   ../../include/cstringpool.h \
   ../../include/opp_string.h \
   ../../include/globals.h \
@@ -303,20 +315,24 @@ ccomponent.o: ccomponent.cc \
   ../../include/ccomponenttype.h \
   ../../include/cproperties.h \
   ../../include/cpar.h \
+  ../../include/cparvalue.h \
   ../../include/crng.h \
   ../../include/defs.h \
-  ../../include/cobject.h \
+  ../../include/cownedobject.h \
   ../../include/cdefaultlist.h \
   ../../include/cenvir.h \
   ../../include/util.h \
-  ../../include/cpolymorphic.h \
+  ../../include/cnamedobject.h \
   ../../include/cexception.h \
-  ../../include/cvisitor.h \
-  ../../include/cstringpool.h \
   ../../include/errmsg.h \
+  ../../include/cobject.h \
+  ../../include/cstringpool.h \
+  ../../include/cvisitor.h \
   ../../include/regmacros.h \
   ../../include/onstartup.h \
   ../../include/opp_string.h \
+  ../../include/cgate.h \
+  ../../include/cneddeclarationbase.h \
   ../../include/globals.h \
   ../../include/carray.h \
   ../../include/cclassfactory.h \
@@ -330,21 +346,24 @@ ccomponenttype.o: ccomponenttype.cc \
   ../../include/globals.h \
   ../../include/ccommbuffer.h \
   parsim/cplaceholdermod.h \
-  ../../include/cobject.h \
+  ../../include/cownedobject.h \
+  ../../include/cpar.h \
+  ../../include/cgate.h \
+  ../../include/cneddeclarationbase.h \
   ../../include/defs.h \
   ../../include/util.h \
-  ../../include/cpolymorphic.h \
-  ../../include/cvisitor.h \
-  ../../include/cstringpool.h \
+  ../../include/cnamedobject.h \
   ../../include/errmsg.h \
+  ../../include/cobject.h \
+  ../../include/cstringpool.h \
+  ../../include/cvisitor.h \
   ../../include/regmacros.h \
   ../../include/onstartup.h \
-  ../../include/ccomponent.h \
-  ../../include/cgate.h \
-  ../../include/csimulation.h \
-  ../../include/cpar.h \
-  ../../include/cdefaultlist.h \
   ../../include/cexpression.h \
+  ../../include/cparvalue.h \
+  ../../include/ccomponent.h \
+  ../../include/csimulation.h \
+  ../../include/cdefaultlist.h \
   ../../include/cmsgheap.h \
   ../../include/ccoroutine.h \
   ../../include/opp_string.h \
@@ -360,16 +379,17 @@ ccompoundmodule.o: ccompoundmodule.cc \
   ../../include/cgate.h \
   ../../include/csimulation.h \
   ../../include/defs.h \
-  ../../include/cobject.h \
+  ../../include/cownedobject.h \
   ../../include/cpar.h \
   ../../include/cdefaultlist.h \
   ../../include/cenvir.h \
   ../../include/util.h \
-  ../../include/cpolymorphic.h \
+  ../../include/cnamedobject.h \
   ../../include/cexception.h \
-  ../../include/cvisitor.h \
-  ../../include/cstringpool.h \
   ../../include/errmsg.h \
+  ../../include/cobject.h \
+  ../../include/cstringpool.h \
+  ../../include/cvisitor.h \
   ../../include/regmacros.h \
   ../../include/onstartup.h \
   ../../include/opp_string.h \
@@ -378,6 +398,8 @@ ccompoundmodule.o: ccompoundmodule.cc \
   ../../include/cclassfactory.h \
   ../../include/cmsgheap.h \
   ../../include/ccoroutine.h \
+  ../../include/cneddeclarationbase.h \
+  ../../include/cparvalue.h \
   ../../include/cmessagepar.h \
   ../../include/cfunction.h
 ccoroutine.o: ccoroutine.cc \
@@ -394,13 +416,14 @@ cdefaultlist.o: cdefaultlist.cc \
   ../../include/onstartup.h \
   ../../include/cclassfactory.h \
   ../../include/defs.h \
-  ../../include/cobject.h \
+  ../../include/cownedobject.h \
   ../../include/cenvir.h \
   ../../include/util.h \
-  ../../include/cpolymorphic.h \
-  ../../include/cvisitor.h \
-  ../../include/cstringpool.h \
+  ../../include/cnamedobject.h \
   ../../include/errmsg.h \
+  ../../include/cobject.h \
+  ../../include/cstringpool.h \
+  ../../include/cvisitor.h \
   ../../include/regmacros.h \
   ../../include/opp_string.h
 cdensity.o: cdensity.cc \
@@ -412,13 +435,14 @@ cdensity.o: cdensity.cc \
   ../../include/carray.h \
   ../../include/cclassfactory.h \
   ../../include/defs.h \
-  ../../include/cobject.h \
+  ../../include/cownedobject.h \
   ../../include/cenvir.h \
   ../../include/util.h \
-  ../../include/cpolymorphic.h \
-  ../../include/cvisitor.h \
-  ../../include/cstringpool.h \
+  ../../include/cnamedobject.h \
   ../../include/errmsg.h \
+  ../../include/cobject.h \
+  ../../include/cstringpool.h \
+  ../../include/cvisitor.h \
   ../../include/regmacros.h \
   ../../include/cstat.h \
   ../../include/opp_string.h
@@ -434,12 +458,13 @@ cdetect.o: cdetect.cc \
   ../../include/onstartup.h \
   ../../include/carray.h \
   ../../include/cclassfactory.h \
-  ../../include/cobject.h \
+  ../../include/cownedobject.h \
   ../../include/cenvir.h \
-  ../../include/cpolymorphic.h \
+  ../../include/cnamedobject.h \
   ../../include/cexception.h \
-  ../../include/cvisitor.h \
+  ../../include/cobject.h \
   ../../include/cstringpool.h \
+  ../../include/cvisitor.h \
   ../../include/regmacros.h \
   ../../include/opp_string.h \
   ../../include/cstat.h
@@ -452,15 +477,16 @@ cdisplaystring.o: cdisplaystring.cc \
   ../../include/ccomponent.h \
   ../../include/globals.h \
   ../../include/csimulation.h \
-  ../../include/cobject.h \
+  ../../include/cownedobject.h \
   ../../include/cpar.h \
   ../../include/cdefaultlist.h \
   ../../include/util.h \
-  ../../include/cpolymorphic.h \
+  ../../include/cnamedobject.h \
   ../../include/cexception.h \
-  ../../include/cvisitor.h \
-  ../../include/cstringpool.h \
   ../../include/errmsg.h \
+  ../../include/cobject.h \
+  ../../include/cstringpool.h \
+  ../../include/cvisitor.h \
   ../../include/regmacros.h \
   ../../include/onstartup.h \
   ../../include/opp_string.h \
@@ -474,17 +500,19 @@ cdoublepar.o: cdoublepar.cc \
   ../../include/cstrtokenizer.h \
   ../../include/cdynamicexpression.h \
   ../../include/ccomponent.h \
+  ../../include/cparvalue.h \
   ../../include/cpar.h \
-  ../../include/cobject.h \
   ../../include/cexpression.h \
   ../../include/cexception.h \
+  ../../include/cownedobject.h \
   ../../include/cenvir.h \
   ../../include/defs.h \
   ../../include/util.h \
-  ../../include/cpolymorphic.h \
-  ../../include/cvisitor.h \
-  ../../include/cstringpool.h \
+  ../../include/cnamedobject.h \
   ../../include/errmsg.h \
+  ../../include/cobject.h \
+  ../../include/cstringpool.h \
+  ../../include/cvisitor.h \
   ../../include/regmacros.h \
   ../../include/onstartup.h \
   ../../include/opp_string.h \
@@ -500,17 +528,18 @@ cdynamicexpression.o: cdynamicexpression.cc \
   ../../include/cenvir.h \
   ../../include/cmodule.h \
   ../../include/cexpression.h \
-  ../../include/cpolymorphic.h \
+  ../../include/cobject.h \
   ../../include/defs.h \
   ../../include/util.h \
+  ../../include/cvisitor.h \
   ../../include/regmacros.h \
   ../../include/errmsg.h \
   ../../include/onstartup.h \
   ../../include/globals.h \
-  ../../include/cobject.h \
+  ../../include/cownedobject.h \
   ../../include/carray.h \
   ../../include/cclassfactory.h \
-  ../../include/cvisitor.h \
+  ../../include/cnamedobject.h \
   ../../include/cstringpool.h \
   ../../include/opp_string.h \
   ../../include/ccomponent.h \
@@ -528,13 +557,14 @@ cenum.o: cenum.cc \
   ../../include/carray.h \
   ../../include/cclassfactory.h \
   ../../include/defs.h \
-  ../../include/cobject.h \
+  ../../include/cownedobject.h \
   ../../include/cenvir.h \
   ../../include/util.h \
-  ../../include/cpolymorphic.h \
-  ../../include/cvisitor.h \
-  ../../include/cstringpool.h \
+  ../../include/cnamedobject.h \
   ../../include/errmsg.h \
+  ../../include/cobject.h \
+  ../../include/cstringpool.h \
+  ../../include/cvisitor.h \
   ../../include/regmacros.h \
   ../../include/cmsgheap.h \
   ../../include/ccoroutine.h \
@@ -556,10 +586,11 @@ cexception.o: cexception.cc \
   ../../include/onstartup.h \
   ../../include/carray.h \
   ../../include/cclassfactory.h \
+  ../../include/cownedobject.h \
+  ../../include/cnamedobject.h \
   ../../include/cobject.h \
-  ../../include/cpolymorphic.h \
-  ../../include/cvisitor.h \
   ../../include/cstringpool.h \
+  ../../include/cvisitor.h \
   ../../include/regmacros.h \
   ../../include/cpar.h \
   ../../include/cdefaultlist.h \
@@ -572,14 +603,15 @@ cfsm.o: cfsm.cc \
   ../../include/carray.h \
   ../../include/cclassfactory.h \
   ../../include/defs.h \
-  ../../include/cobject.h \
+  ../../include/cownedobject.h \
   ../../include/cenvir.h \
   ../../include/util.h \
-  ../../include/cpolymorphic.h \
+  ../../include/cnamedobject.h \
   ../../include/cexception.h \
-  ../../include/cvisitor.h \
-  ../../include/cstringpool.h \
   ../../include/errmsg.h \
+  ../../include/cobject.h \
+  ../../include/cstringpool.h \
+  ../../include/cvisitor.h \
   ../../include/regmacros.h \
   ../../include/opp_string.h
 cfunction.o: cfunction.cc \
@@ -592,12 +624,13 @@ cfunction.o: cfunction.cc \
   ../../include/ccommbuffer.h \
   parsim/cplaceholdermod.h \
   ../../include/defs.h \
-  ../../include/cobject.h \
+  ../../include/cownedobject.h \
   ../../include/util.h \
-  ../../include/cpolymorphic.h \
-  ../../include/cvisitor.h \
-  ../../include/cstringpool.h \
+  ../../include/cnamedobject.h \
   ../../include/errmsg.h \
+  ../../include/cobject.h \
+  ../../include/cstringpool.h \
+  ../../include/cvisitor.h \
   ../../include/regmacros.h \
   ../../include/cclassfactory.h \
   ../../include/opp_string.h \
@@ -623,13 +656,14 @@ cgate.o: cgate.cc \
   ../../include/cdisplaystring.h \
   ../../include/util.h \
   ../../include/ccomponenttype.h \
-  ../../include/cobject.h \
+  ../../include/cownedobject.h \
   ../../include/cmessagepar.h \
   ../../include/defs.h \
-  ../../include/cpolymorphic.h \
+  ../../include/cnamedobject.h \
   ../../include/cexception.h \
-  ../../include/cvisitor.h \
+  ../../include/cobject.h \
   ../../include/cstringpool.h \
+  ../../include/cvisitor.h \
   ../../include/regmacros.h \
   ../../include/onstartup.h \
   ../../include/errmsg.h \
@@ -641,7 +675,9 @@ cgate.o: cgate.cc \
   ../../include/cexpression.h \
   ../../include/cmsgheap.h \
   ../../include/ccoroutine.h \
-  ../../include/cclassfactory.h
+  ../../include/cclassfactory.h \
+  ../../include/cneddeclarationbase.h \
+  ../../include/cparvalue.h
 chist.o: chist.cc \
   ../../include/random.h \
   ../../include/distrib.h \
@@ -658,11 +694,12 @@ chist.o: chist.cc \
   ../../include/cmsgheap.h \
   ../../include/ccoroutine.h \
   ../../include/errmsg.h \
-  ../../include/cobject.h \
+  ../../include/cownedobject.h \
   ../../include/cenvir.h \
-  ../../include/cpolymorphic.h \
-  ../../include/cvisitor.h \
+  ../../include/cnamedobject.h \
+  ../../include/cobject.h \
   ../../include/cstringpool.h \
+  ../../include/cvisitor.h \
   ../../include/regmacros.h \
   ../../include/onstartup.h \
   ../../include/ccomponent.h \
@@ -687,12 +724,13 @@ cksplit.o: cksplit.cc \
   ../../include/carray.h \
   ../../include/cclassfactory.h \
   ../../include/defs.h \
-  ../../include/cobject.h \
+  ../../include/cownedobject.h \
   ../../include/util.h \
-  ../../include/cpolymorphic.h \
-  ../../include/cvisitor.h \
-  ../../include/cstringpool.h \
+  ../../include/cnamedobject.h \
   ../../include/errmsg.h \
+  ../../include/cobject.h \
+  ../../include/cstringpool.h \
+  ../../include/cvisitor.h \
   ../../include/regmacros.h \
   ../../include/cdensity.h \
   ../../include/cstat.h \
@@ -719,10 +757,11 @@ clcg32.o: clcg32.cc \
   ../../include/onstartup.h \
   ../../include/carray.h \
   ../../include/cclassfactory.h \
+  ../../include/cownedobject.h \
+  ../../include/cnamedobject.h \
   ../../include/cobject.h \
-  ../../include/cpolymorphic.h \
-  ../../include/cvisitor.h \
   ../../include/cstringpool.h \
+  ../../include/cvisitor.h \
   ../../include/regmacros.h \
   ../../include/opp_string.h \
   ../../include/errmsg.h
@@ -735,13 +774,14 @@ cllist.o: cllist.cc \
   ../../include/carray.h \
   ../../include/cclassfactory.h \
   ../../include/defs.h \
-  ../../include/cobject.h \
+  ../../include/cownedobject.h \
   ../../include/cenvir.h \
   ../../include/util.h \
-  ../../include/cpolymorphic.h \
-  ../../include/cvisitor.h \
-  ../../include/cstringpool.h \
+  ../../include/cnamedobject.h \
   ../../include/errmsg.h \
+  ../../include/cobject.h \
+  ../../include/cstringpool.h \
+  ../../include/cvisitor.h \
   ../../include/regmacros.h \
   ../../include/opp_string.h
 clongpar.o: clongpar.cc \
@@ -749,17 +789,19 @@ clongpar.o: clongpar.cc \
   ../../include/cstrtokenizer.h \
   ../../include/cdynamicexpression.h \
   ../../include/ccomponent.h \
+  ../../include/cparvalue.h \
   ../../include/cpar.h \
-  ../../include/cobject.h \
   ../../include/cexpression.h \
   ../../include/cexception.h \
+  ../../include/cownedobject.h \
   ../../include/cenvir.h \
   ../../include/defs.h \
   ../../include/util.h \
-  ../../include/cpolymorphic.h \
-  ../../include/cvisitor.h \
-  ../../include/cstringpool.h \
+  ../../include/cnamedobject.h \
   ../../include/errmsg.h \
+  ../../include/cobject.h \
+  ../../include/cstringpool.h \
+  ../../include/cvisitor.h \
   ../../include/regmacros.h \
   ../../include/onstartup.h \
   ../../include/opp_string.h \
@@ -780,10 +822,11 @@ cmersennetwister.o: cmersennetwister.cc \
   ../../include/onstartup.h \
   ../../include/carray.h \
   ../../include/cclassfactory.h \
+  ../../include/cownedobject.h \
+  ../../include/cnamedobject.h \
   ../../include/cobject.h \
-  ../../include/cpolymorphic.h \
-  ../../include/cvisitor.h \
   ../../include/cstringpool.h \
+  ../../include/cvisitor.h \
   ../../include/regmacros.h \
   ../../include/cmessagepar.h \
   ../../include/csimulation.h \
@@ -801,13 +844,14 @@ cmessage.o: cmessage.cc \
   ../../include/carray.h \
   ../../include/cclassfactory.h \
   ../../include/defs.h \
-  ../../include/cobject.h \
+  ../../include/cownedobject.h \
   ../../include/cenvir.h \
   ../../include/util.h \
-  ../../include/cpolymorphic.h \
-  ../../include/cvisitor.h \
-  ../../include/cstringpool.h \
+  ../../include/cnamedobject.h \
   ../../include/errmsg.h \
+  ../../include/cobject.h \
+  ../../include/cstringpool.h \
+  ../../include/cvisitor.h \
   ../../include/regmacros.h \
   ../../include/ccomponent.h \
   ../../include/cgate.h \
@@ -831,13 +875,14 @@ cmessagepar.o: cmessagepar.cc \
   ../../include/cexception.h \
   ../../include/csimulation.h \
   ../../include/ccommbuffer.h \
-  ../../include/cobject.h \
+  ../../include/cownedobject.h \
   ../../include/defs.h \
   ../../include/util.h \
-  ../../include/cpolymorphic.h \
-  ../../include/cvisitor.h \
-  ../../include/cstringpool.h \
+  ../../include/cnamedobject.h \
   ../../include/errmsg.h \
+  ../../include/cobject.h \
+  ../../include/cstringpool.h \
+  ../../include/cvisitor.h \
   ../../include/regmacros.h \
   ../../include/onstartup.h \
   ../../include/carray.h \
@@ -861,12 +906,13 @@ cmodule.o: cmodule.cc \
   ../../include/ccomponent.h \
   ../../include/globals.h \
   ../../include/defs.h \
-  ../../include/cobject.h \
+  ../../include/cownedobject.h \
   ../../include/cpar.h \
   ../../include/cdefaultlist.h \
-  ../../include/cpolymorphic.h \
-  ../../include/cvisitor.h \
+  ../../include/cnamedobject.h \
+  ../../include/cobject.h \
   ../../include/cstringpool.h \
+  ../../include/cvisitor.h \
   ../../include/regmacros.h \
   ../../include/onstartup.h \
   ../../include/cexpression.h \
@@ -875,6 +921,8 @@ cmodule.o: cmodule.cc \
   ../../include/cfunction.h \
   ../../include/cmsgheap.h \
   ../../include/ccoroutine.h \
+  ../../include/cneddeclarationbase.h \
+  ../../include/cparvalue.h \
   ../../include/errmsg.h \
   ../../include/opp_string.h
 cmsgheap.o: cmsgheap.cc \
@@ -885,33 +933,53 @@ cmsgheap.o: cmsgheap.cc \
   ../../include/carray.h \
   ../../include/cclassfactory.h \
   ../../include/defs.h \
-  ../../include/cobject.h \
+  ../../include/cownedobject.h \
   ../../include/cenvir.h \
   ../../include/util.h \
-  ../../include/cpolymorphic.h \
+  ../../include/cnamedobject.h \
   ../../include/cexception.h \
-  ../../include/cvisitor.h \
-  ../../include/cstringpool.h \
   ../../include/errmsg.h \
+  ../../include/cobject.h \
+  ../../include/cstringpool.h \
+  ../../include/cvisitor.h \
   ../../include/regmacros.h \
   ../../include/opp_string.h \
   ../../include/cmessagepar.h \
   ../../include/csimulation.h \
   ../../include/cfunction.h \
   ../../include/ccoroutine.h
+cnamedobject.o: cnamedobject.cc \
+  ../../include/cnamedobject.h \
+  ../../include/cownedobject.h \
+  ../../include/globals.h \
+  ../../include/ccommbuffer.h \
+  ../../include/cenvir.h \
+  ../../include/defs.h \
+  ../../include/util.h \
+  ../../include/cobject.h \
+  ../../include/cexception.h \
+  ../../include/cstringpool.h \
+  ../../include/errmsg.h \
+  ../../include/cvisitor.h \
+  ../../include/regmacros.h \
+  ../../include/onstartup.h \
+  ../../include/opp_string.h \
+  ../../include/carray.h \
+  ../../include/cclassfactory.h
 cnedfunction.o: cnedfunction.cc \
   ../../include/cnedfunction.h \
   ../../include/globals.h \
   ../../include/cexception.h \
   ../../include/defs.h \
-  ../../include/cobject.h \
+  ../../include/cownedobject.h \
   ../../include/cdynamicexpression.h \
   ../../include/cenvir.h \
   ../../include/util.h \
-  ../../include/cpolymorphic.h \
-  ../../include/cvisitor.h \
-  ../../include/cstringpool.h \
+  ../../include/cnamedobject.h \
   ../../include/errmsg.h \
+  ../../include/cobject.h \
+  ../../include/cstringpool.h \
+  ../../include/cvisitor.h \
   ../../include/regmacros.h \
   ../../include/onstartup.h \
   ../../include/cexpression.h \
@@ -920,26 +988,19 @@ cnedfunction.o: cnedfunction.cc \
   ../../include/opp_string.h
 cobject.o: cobject.cc \
   ../../include/cobject.h \
-  ../../include/csimulation.h \
-  ../../include/cenvir.h \
-  ../../include/globals.h \
   ../../include/cexception.h \
-  ../../include/util.h \
-  ../../include/cdefaultlist.h \
   ../../include/cclassdescriptor.h \
-  ../../include/ccommbuffer.h \
   ../../include/defs.h \
-  ../../include/cpolymorphic.h \
+  ../../include/util.h \
   ../../include/cvisitor.h \
-  ../../include/cstringpool.h \
   ../../include/regmacros.h \
-  ../../include/onstartup.h \
-  ../../include/cmsgheap.h \
-  ../../include/ccoroutine.h \
-  ../../include/carray.h \
-  ../../include/cclassfactory.h \
   ../../include/errmsg.h \
-  ../../include/opp_string.h
+  ../../include/onstartup.h \
+  ../../include/opp_string.h \
+  ../../include/cownedobject.h \
+  ../../include/cenvir.h \
+  ../../include/cnamedobject.h \
+  ../../include/cstringpool.h
 coutvect.o: coutvect.cc \
   ../../include/globals.h \
   ../../include/coutvect.h \
@@ -952,12 +1013,13 @@ coutvect.o: coutvect.cc \
   ../../include/carray.h \
   ../../include/cclassfactory.h \
   ../../include/defs.h \
-  ../../include/cobject.h \
+  ../../include/cownedobject.h \
   ../../include/util.h \
-  ../../include/cpolymorphic.h \
-  ../../include/cvisitor.h \
-  ../../include/cstringpool.h \
+  ../../include/cnamedobject.h \
   ../../include/errmsg.h \
+  ../../include/cobject.h \
+  ../../include/cstringpool.h \
+  ../../include/cvisitor.h \
   ../../include/regmacros.h \
   ../../include/ccomponent.h \
   ../../include/cgate.h \
@@ -967,6 +1029,29 @@ coutvect.o: coutvect.cc \
   ../../include/cmsgheap.h \
   ../../include/ccoroutine.h \
   ../../include/opp_string.h
+cownedobject.o: cownedobject.cc \
+  ../../include/cownedobject.h \
+  ../../include/csimulation.h \
+  ../../include/cenvir.h \
+  ../../include/globals.h \
+  ../../include/cexception.h \
+  ../../include/util.h \
+  ../../include/cdefaultlist.h \
+  ../../include/cclassdescriptor.h \
+  ../../include/ccommbuffer.h \
+  ../../include/defs.h \
+  ../../include/cnamedobject.h \
+  ../../include/cobject.h \
+  ../../include/cstringpool.h \
+  ../../include/cvisitor.h \
+  ../../include/regmacros.h \
+  ../../include/onstartup.h \
+  ../../include/cmsgheap.h \
+  ../../include/ccoroutine.h \
+  ../../include/carray.h \
+  ../../include/cclassfactory.h \
+  ../../include/errmsg.h \
+  ../../include/opp_string.h
 cpacket.o: cpacket.cc \
   ../../include/globals.h \
   ../../include/cpacket.h \
@@ -975,14 +1060,15 @@ cpacket.o: cpacket.cc \
   ../../include/carray.h \
   ../../include/cclassfactory.h \
   ../../include/defs.h \
-  ../../include/cobject.h \
+  ../../include/cownedobject.h \
   ../../include/cenvir.h \
   ../../include/util.h \
-  ../../include/cpolymorphic.h \
+  ../../include/cnamedobject.h \
   ../../include/cexception.h \
-  ../../include/cvisitor.h \
-  ../../include/cstringpool.h \
   ../../include/errmsg.h \
+  ../../include/cobject.h \
+  ../../include/cstringpool.h \
+  ../../include/cvisitor.h \
   ../../include/regmacros.h \
   ../../include/opp_string.h \
   ../../include/cmessage.h \
@@ -993,32 +1079,34 @@ cpacket.o: cpacket.cc \
   ../../include/ccoroutine.h
 cpar.o: cpar.cc \
   ../../include/cpar.h \
+  ../../include/cparvalue.h \
   ../../include/cproperties.h \
+  ../../include/cproperty.h \
   ../../include/ccomponent.h \
+  ../../include/ccomponenttype.h \
   ../../include/csimulation.h \
   ../../include/ccommbuffer.h \
-  ../../include/cboolpar.h \
-  ../../include/clongpar.h \
-  ../../include/cdoublepar.h \
-  ../../include/cstringpar.h \
-  ../../include/cxmlpar.h \
-  ../../include/cobject.h \
+  ../../include/cownedobject.h \
   ../../include/cexpression.h \
   ../../include/cexception.h \
   ../../include/cenvir.h \
   ../../include/defs.h \
   ../../include/util.h \
-  ../../include/cpolymorphic.h \
-  ../../include/cvisitor.h \
-  ../../include/cstringpool.h \
+  ../../include/cnamedobject.h \
   ../../include/errmsg.h \
+  ../../include/cobject.h \
+  ../../include/cstringpool.h \
+  ../../include/cvisitor.h \
   ../../include/regmacros.h \
   ../../include/onstartup.h \
   ../../include/opp_string.h \
   ../../include/globals.h \
   ../../include/carray.h \
   ../../include/cclassfactory.h \
+  ../../include/stlwrap.h \
   ../../include/cdefaultlist.h \
+  ../../include/cgate.h \
+  ../../include/cneddeclarationbase.h \
   ../../include/cmsgheap.h \
   ../../include/ccoroutine.h
 cparsimcomm.o: cparsimcomm.cc \
@@ -1028,42 +1116,62 @@ cparsimcomm.o: cparsimcomm.cc \
   ../../include/cenvir.h \
   ../../include/cexception.h \
   ../../include/defs.h \
-  ../../include/cpolymorphic.h \
+  ../../include/cobject.h \
   ../../include/util.h \
+  ../../include/cvisitor.h \
   ../../include/regmacros.h \
   ../../include/onstartup.h \
   ../../include/opp_string.h
-cpolymorphic.o: cpolymorphic.cc \
-  ../../include/cpolymorphic.h \
+cparvalue.o: cparvalue.cc \
+  ../../include/cparvalue.h \
+  ../../include/cproperties.h \
+  ../../include/ccomponent.h \
+  ../../include/csimulation.h \
+  ../../include/ccommbuffer.h \
+  ../../include/cboolpar.h \
+  ../../include/clongpar.h \
+  ../../include/cdoublepar.h \
+  ../../include/cstringpar.h \
+  ../../include/cxmlpar.h \
+  ../../include/cpar.h \
+  ../../include/cexpression.h \
   ../../include/cexception.h \
-  ../../include/cclassdescriptor.h \
+  ../../include/cownedobject.h \
+  ../../include/cenvir.h \
   ../../include/defs.h \
   ../../include/util.h \
-  ../../include/regmacros.h \
+  ../../include/cnamedobject.h \
   ../../include/errmsg.h \
+  ../../include/cobject.h \
+  ../../include/cstringpool.h \
+  ../../include/cvisitor.h \
+  ../../include/regmacros.h \
   ../../include/onstartup.h \
   ../../include/opp_string.h \
-  ../../include/cobject.h \
-  ../../include/cenvir.h \
-  ../../include/cvisitor.h \
-  ../../include/cstringpool.h
+  ../../include/globals.h \
+  ../../include/carray.h \
+  ../../include/cclassfactory.h \
+  ../../include/cdefaultlist.h \
+  ../../include/cmsgheap.h \
+  ../../include/ccoroutine.h
 cproperties.o: cproperties.cc \
   ../../include/cproperties.h \
   ../../include/cproperty.h \
   ../../include/defs.h \
   ../../include/globals.h \
-  ../../include/cpolymorphic.h \
+  ../../include/cobject.h \
   ../../include/cstringpool.h \
   ../../include/onstartup.h \
   ../../include/carray.h \
   ../../include/cclassfactory.h \
-  ../../include/cobject.h \
+  ../../include/cownedobject.h \
   ../../include/cenvir.h \
   ../../include/util.h \
+  ../../include/cnamedobject.h \
   ../../include/cexception.h \
-  ../../include/cvisitor.h \
   ../../include/errmsg.h \
   ../../include/opp_string.h \
+  ../../include/cvisitor.h \
   ../../include/regmacros.h \
   ../../include/stlwrap.h
 cproperty.o: cproperty.cc \
@@ -1071,19 +1179,20 @@ cproperty.o: cproperty.cc \
   ../../include/cproperties.h \
   ../../include/defs.h \
   ../../include/globals.h \
-  ../../include/cpolymorphic.h \
+  ../../include/cobject.h \
   ../../include/cstringpool.h \
   ../../include/stlwrap.h \
   ../../include/onstartup.h \
   ../../include/carray.h \
   ../../include/cclassfactory.h \
-  ../../include/cobject.h \
+  ../../include/cownedobject.h \
   ../../include/cenvir.h \
   ../../include/util.h \
+  ../../include/cnamedobject.h \
   ../../include/cexception.h \
-  ../../include/cvisitor.h \
   ../../include/errmsg.h \
   ../../include/opp_string.h \
+  ../../include/cvisitor.h \
   ../../include/regmacros.h
 cpsquare.o: cpsquare.cc \
   ../../include/globals.h \
@@ -1096,13 +1205,14 @@ cpsquare.o: cpsquare.cc \
   ../../include/carray.h \
   ../../include/cclassfactory.h \
   ../../include/defs.h \
-  ../../include/cobject.h \
+  ../../include/cownedobject.h \
   ../../include/cenvir.h \
   ../../include/util.h \
-  ../../include/cpolymorphic.h \
-  ../../include/cvisitor.h \
-  ../../include/cstringpool.h \
+  ../../include/cnamedobject.h \
   ../../include/errmsg.h \
+  ../../include/cobject.h \
+  ../../include/cstringpool.h \
+  ../../include/cvisitor.h \
   ../../include/regmacros.h \
   ../../include/cdensity.h \
   ../../include/cstat.h \
@@ -1126,13 +1236,14 @@ cqueue.o: cqueue.cc \
   ../../include/carray.h \
   ../../include/cclassfactory.h \
   ../../include/defs.h \
-  ../../include/cobject.h \
+  ../../include/cownedobject.h \
   ../../include/cenvir.h \
   ../../include/util.h \
-  ../../include/cpolymorphic.h \
-  ../../include/cvisitor.h \
-  ../../include/cstringpool.h \
+  ../../include/cnamedobject.h \
   ../../include/errmsg.h \
+  ../../include/cobject.h \
+  ../../include/cstringpool.h \
+  ../../include/cvisitor.h \
   ../../include/regmacros.h \
   ../../include/opp_string.h
 cscheduler.o: cscheduler.cc \
@@ -1144,18 +1255,19 @@ cscheduler.o: cscheduler.cc \
   ../../include/cenvir.h \
   ../../include/cconfig.h \
   ../../include/platdep/misc.h \
-  ../../include/cpolymorphic.h \
+  ../../include/cobject.h \
   ../../include/platdep/time.h \
   ../../include/defs.h \
   ../../include/util.h \
+  ../../include/cvisitor.h \
   ../../include/regmacros.h \
   ../../include/errmsg.h \
   ../../include/onstartup.h \
-  ../../include/cobject.h \
+  ../../include/cownedobject.h \
   ../../include/carray.h \
   ../../include/cmessagepar.h \
+  ../../include/cnamedobject.h \
   ../../include/cexception.h \
-  ../../include/cvisitor.h \
   ../../include/cstringpool.h \
   ../../include/opp_string.h \
   ../../include/cfunction.h \
@@ -1175,14 +1287,15 @@ csimplemodule.o: csimplemodule.cc \
   ../../include/ccomponent.h \
   ../../include/globals.h \
   ../../include/defs.h \
-  ../../include/cobject.h \
+  ../../include/cownedobject.h \
   ../../include/cpar.h \
   ../../include/cdefaultlist.h \
   ../../include/util.h \
-  ../../include/cpolymorphic.h \
-  ../../include/cvisitor.h \
-  ../../include/cstringpool.h \
+  ../../include/cnamedobject.h \
   ../../include/errmsg.h \
+  ../../include/cobject.h \
+  ../../include/cstringpool.h \
+  ../../include/cvisitor.h \
   ../../include/regmacros.h \
   ../../include/onstartup.h \
   ../../include/cexpression.h \
@@ -1207,14 +1320,15 @@ csimulation.o: csimulation.cc \
   ../../include/globals.h \
   ../../include/cgate.h \
   ../../include/defs.h \
-  ../../include/cobject.h \
+  ../../include/cownedobject.h \
   ../../include/cpar.h \
   ../../include/cdefaultlist.h \
   ../../include/util.h \
-  ../../include/cpolymorphic.h \
-  ../../include/cvisitor.h \
-  ../../include/cstringpool.h \
+  ../../include/cnamedobject.h \
   ../../include/errmsg.h \
+  ../../include/cobject.h \
+  ../../include/cstringpool.h \
+  ../../include/cvisitor.h \
   ../../include/regmacros.h \
   ../../include/onstartup.h \
   ../../include/cexpression.h \
@@ -1225,8 +1339,13 @@ csimulation.o: csimulation.cc \
   ../../include/cmsgheap.h \
   ../../include/ccoroutine.h \
   ../../include/platdep/time.h \
+  ../../include/cneddeclarationbase.h \
+  ../../include/cparvalue.h \
   ../../include/opp_string.h \
-  netbuilder/cneddeclaration.h
+  netbuilder/cneddeclaration.h \
+  ../../include/cproperties.h \
+  ../../include/cproperty.h \
+  ../../include/stlwrap.h
 cstat.o: cstat.cc \
   ../../include/cstat.h \
   ../../include/random.h \
@@ -1238,12 +1357,13 @@ cstat.o: cstat.cc \
   ../../include/cenvir.h \
   ../../include/ccommbuffer.h \
   ../../include/defs.h \
-  ../../include/cobject.h \
+  ../../include/cownedobject.h \
   ../../include/util.h \
-  ../../include/cpolymorphic.h \
-  ../../include/cvisitor.h \
-  ../../include/cstringpool.h \
+  ../../include/cnamedobject.h \
   ../../include/errmsg.h \
+  ../../include/cobject.h \
+  ../../include/cstringpool.h \
+  ../../include/cvisitor.h \
   ../../include/regmacros.h \
   ../../include/onstartup.h \
   ../../include/csimulation.h \
@@ -1263,16 +1383,17 @@ cstlwatch.o: cstlwatch.cc \
   ../../include/cstlwatch.h \
   ../../include/cclassdescriptor.h \
   ../../include/globals.h \
-  ../../include/cobject.h \
+  ../../include/cownedobject.h \
   ../../include/cwatch.h \
   ../../include/cenvir.h \
   ../../include/defs.h \
   ../../include/util.h \
-  ../../include/cpolymorphic.h \
+  ../../include/cnamedobject.h \
   ../../include/cexception.h \
-  ../../include/cvisitor.h \
-  ../../include/cstringpool.h \
   ../../include/errmsg.h \
+  ../../include/cobject.h \
+  ../../include/cstringpool.h \
+  ../../include/cvisitor.h \
   ../../include/regmacros.h \
   ../../include/onstartup.h \
   ../../include/opp_string.h \
@@ -1282,30 +1403,33 @@ cstringpar.o: cstringpar.cc \
   ../../include/cstringpar.h \
   ../../include/cdynamicexpression.h \
   ../../include/ccomponent.h \
+  ../../include/cparvalue.h \
   ../../include/cpar.h \
-  ../../include/cobject.h \
   ../../include/cexpression.h \
   ../../include/cexception.h \
+  ../../include/cownedobject.h \
   ../../include/cenvir.h \
   ../../include/defs.h \
   ../../include/util.h \
-  ../../include/cpolymorphic.h \
-  ../../include/cvisitor.h \
-  ../../include/cstringpool.h \
+  ../../include/cnamedobject.h \
   ../../include/errmsg.h \
+  ../../include/cobject.h \
+  ../../include/cstringpool.h \
+  ../../include/cvisitor.h \
   ../../include/regmacros.h \
   ../../include/onstartup.h \
   ../../include/opp_string.h \
   ../../include/cdefaultlist.h
 cstringpool.o: cstringpool.cc \
   ../../include/cstringpool.h \
-  ../../include/cobject.h \
+  ../../include/cownedobject.h \
   ../../include/defs.h \
   ../../include/util.h \
   ../../include/errmsg.h \
   ../../include/cenvir.h \
-  ../../include/cpolymorphic.h \
+  ../../include/cnamedobject.h \
   ../../include/cexception.h \
+  ../../include/cobject.h \
   ../../include/cvisitor.h \
   ../../include/regmacros.h \
   ../../include/onstartup.h \
@@ -1320,17 +1444,18 @@ ctopo.o: ctopo.cc \
   ../../include/cllist.h \
   ../../include/cexception.h \
   ../../include/ccommbuffer.h \
-  ../../include/cobject.h \
+  ../../include/cownedobject.h \
   ../../include/csimulation.h \
   ../../include/cmodule.h \
   ../../include/cgate.h \
   ../../include/cenvir.h \
   ../../include/defs.h \
   ../../include/util.h \
-  ../../include/cpolymorphic.h \
-  ../../include/cvisitor.h \
-  ../../include/cstringpool.h \
+  ../../include/cnamedobject.h \
   ../../include/errmsg.h \
+  ../../include/cobject.h \
+  ../../include/cstringpool.h \
+  ../../include/cvisitor.h \
   ../../include/regmacros.h \
   ../../include/onstartup.h \
   ../../include/cmsgheap.h \
@@ -1352,13 +1477,14 @@ cvarhist.o: cvarhist.cc \
   ../../include/carray.h \
   ../../include/cclassfactory.h \
   ../../include/defs.h \
-  ../../include/cobject.h \
+  ../../include/cownedobject.h \
   ../../include/cenvir.h \
   ../../include/util.h \
-  ../../include/cpolymorphic.h \
-  ../../include/cvisitor.h \
-  ../../include/cstringpool.h \
+  ../../include/cnamedobject.h \
   ../../include/errmsg.h \
+  ../../include/cobject.h \
+  ../../include/cstringpool.h \
+  ../../include/cvisitor.h \
   ../../include/regmacros.h \
   ../../include/csimulation.h \
   ../../include/cmodule.h \
@@ -1378,26 +1504,22 @@ cvisitor.o: cvisitor.cc \
   ../../include/cvisitor.h \
   ../../include/cobject.h \
   ../../include/defs.h \
-  ../../include/cenvir.h \
   ../../include/util.h \
-  ../../include/cpolymorphic.h \
-  ../../include/cexception.h \
-  ../../include/cstringpool.h \
-  ../../include/errmsg.h \
   ../../include/regmacros.h \
-  ../../include/onstartup.h \
-  ../../include/opp_string.h
+  ../../include/errmsg.h \
+  ../../include/onstartup.h
 cwatch.o: cwatch.cc \
   ../../include/cwatch.h \
-  ../../include/cobject.h \
+  ../../include/cownedobject.h \
   ../../include/cenvir.h \
   ../../include/defs.h \
   ../../include/util.h \
-  ../../include/cpolymorphic.h \
+  ../../include/cnamedobject.h \
   ../../include/cexception.h \
-  ../../include/cvisitor.h \
-  ../../include/cstringpool.h \
   ../../include/errmsg.h \
+  ../../include/cobject.h \
+  ../../include/cstringpool.h \
+  ../../include/cvisitor.h \
   ../../include/regmacros.h \
   ../../include/onstartup.h \
   ../../include/opp_string.h
@@ -1415,12 +1537,13 @@ cxmlelement.o: cxmlelement.cc \
   ../../include/globals.h \
   ../../include/cgate.h \
   ../../include/csimulation.h \
-  ../../include/cobject.h \
+  ../../include/cownedobject.h \
   ../../include/cpar.h \
   ../../include/cdefaultlist.h \
-  ../../include/cpolymorphic.h \
-  ../../include/cvisitor.h \
+  ../../include/cnamedobject.h \
+  ../../include/cobject.h \
   ../../include/cstringpool.h \
+  ../../include/cvisitor.h \
   ../../include/regmacros.h \
   ../../include/onstartup.h \
   ../../include/cexpression.h \
@@ -1434,17 +1557,19 @@ cxmlpar.o: cxmlpar.cc \
   ../../include/cstrtokenizer.h \
   ../../include/cdynamicexpression.h \
   ../../include/ccomponent.h \
+  ../../include/cparvalue.h \
   ../../include/cpar.h \
-  ../../include/cobject.h \
   ../../include/cexpression.h \
   ../../include/cexception.h \
+  ../../include/cownedobject.h \
   ../../include/cenvir.h \
   ../../include/defs.h \
   ../../include/util.h \
-  ../../include/cpolymorphic.h \
-  ../../include/cvisitor.h \
-  ../../include/cstringpool.h \
+  ../../include/cnamedobject.h \
   ../../include/errmsg.h \
+  ../../include/cobject.h \
+  ../../include/cstringpool.h \
+  ../../include/cvisitor.h \
   ../../include/regmacros.h \
   ../../include/onstartup.h \
   ../../include/opp_string.h \
@@ -1463,11 +1588,12 @@ distrib.o: distrib.cc \
   ../../include/cmsgheap.h \
   ../../include/ccoroutine.h \
   ../../include/errmsg.h \
-  ../../include/cobject.h \
+  ../../include/cownedobject.h \
   ../../include/cenvir.h \
-  ../../include/cpolymorphic.h \
-  ../../include/cvisitor.h \
+  ../../include/cnamedobject.h \
+  ../../include/cobject.h \
   ../../include/cstringpool.h \
+  ../../include/cvisitor.h \
   ../../include/regmacros.h \
   ../../include/onstartup.h \
   ../../include/ccomponent.h \
@@ -1481,29 +1607,6 @@ distrib.o: distrib.cc \
 errmsg.o: errmsg.cc \
   ../../include/errmsg.h \
   ../../include/defs.h
-expr.tab.o: expr.tab.cc \
-  ../../include/expryydefs.h \
-  ../../include/cdynamicexpression.h \
-  ../../include/cpar.h \
-  ../../include/cxmlelement.h \
-  ../../include/cexception.h \
-  ../../include/globals.h \
-  ../../include/cfunction.h \
-  ../../include/cnedfunction.h \
-  ../../include/cexpression.h \
-  ../../include/cpolymorphic.h \
-  ../../include/defs.h \
-  ../../include/util.h \
-  ../../include/regmacros.h \
-  ../../include/errmsg.h \
-  ../../include/onstartup.h \
-  ../../include/cobject.h \
-  ../../include/cenvir.h \
-  ../../include/cvisitor.h \
-  ../../include/cstringpool.h \
-  ../../include/opp_string.h \
-  ../../include/carray.h \
-  ../../include/cclassfactory.h
 globals.o: globals.cc \
   ../../include/globals.h \
   ../../include/carray.h \
@@ -1511,32 +1614,28 @@ globals.o: globals.cc \
   ../../include/ccomponenttype.h \
   ../../include/cclassfactory.h \
   ../../include/defs.h \
-  ../../include/cobject.h \
+  ../../include/cownedobject.h \
   ../../include/cenvir.h \
   ../../include/util.h \
-  ../../include/cpolymorphic.h \
+  ../../include/cnamedobject.h \
   ../../include/cexception.h \
-  ../../include/cvisitor.h \
-  ../../include/cstringpool.h \
   ../../include/errmsg.h \
+  ../../include/cobject.h \
+  ../../include/cstringpool.h \
+  ../../include/cvisitor.h \
   ../../include/regmacros.h \
-  ../../include/opp_string.h
-lex.expryy.o: lex.expryy.cc \
-  ../../include/expryydefs.h \
-  expr.tab.h \
-  ../../include/util.h \
-  ../../include/cdynamicexpression.h \
+  ../../include/opp_string.h \
+  ../../include/cpar.h \
+  ../../include/cgate.h \
+  ../../include/cneddeclarationbase.h \
   ../../include/cexpression.h \
-  ../../include/cpolymorphic.h \
-  ../../include/defs.h \
-  ../../include/regmacros.h \
-  ../../include/onstartup.h \
-  ../../include/errmsg.h
+  ../../include/cparvalue.h
 minixpath.o: minixpath.cc \
   minixpath.h \
   ../../include/cexception.h \
   ../../include/cxmlelement.h \
   ../../include/defs.h \
+  ../../include/cenvir.h \
   ../../include/errmsg.h \
   ../../include/opp_string.h \
   ../../include/util.h
@@ -1550,17 +1649,18 @@ nedsupport.o: nedsupport.cc \
   ../../include/cmodule.h \
   ../../include/nedsupport.h \
   ../../include/cexpression.h \
-  ../../include/cpolymorphic.h \
+  ../../include/cobject.h \
   ../../include/defs.h \
   ../../include/util.h \
+  ../../include/cvisitor.h \
   ../../include/regmacros.h \
   ../../include/errmsg.h \
   ../../include/onstartup.h \
   ../../include/globals.h \
-  ../../include/cobject.h \
+  ../../include/cownedobject.h \
   ../../include/carray.h \
   ../../include/cclassfactory.h \
-  ../../include/cvisitor.h \
+  ../../include/cnamedobject.h \
   ../../include/cstringpool.h \
   ../../include/opp_string.h \
   ../../include/ccomponent.h \
@@ -1578,12 +1678,98 @@ onstartup.o: onstartup.cc \
   ../../include/errmsg.h \
   ../../include/opp_string.h \
   ../../include/util.h \
-  ../../include/cobject.h \
+  ../../include/cownedobject.h \
   ../../include/cenvir.h \
-  ../../include/cpolymorphic.h \
-  ../../include/cvisitor.h \
+  ../../include/cnamedobject.h \
+  ../../include/cobject.h \
   ../../include/cstringpool.h \
+  ../../include/cvisitor.h \
   ../../include/regmacros.h
+sim_std_m.o: sim_std_m.cc \
+  sim_std_m.h \
+  ../../include/omnetpp.h \
+  ../../include/carray.h \
+  ../../include/cbasicchannel.h \
+  ../../include/cboolpar.h \
+  ../../include/cchannel.h \
+  ../../include/cclassfactory.h \
+  ../../include/ccommbuffer.h \
+  ../../include/ccomponent.h \
+  ../../include/ccomponenttype.h \
+  ../../include/ccompoundmodule.h \
+  ../../include/cconfig.h \
+  ../../include/ccoroutine.h \
+  ../../include/cdefaultlist.h \
+  ../../include/cdensity.h \
+  ../../include/cdetect.h \
+  ../../include/cdisplaystring.h \
+  ../../include/cdoublepar.h \
+  ../../include/cdynamicexpression.h \
+  ../../include/cenum.h \
+  ../../include/cenvir.h \
+  ../../include/cexception.h \
+  ../../include/cexpression.h \
+  ../../include/cfsm.h \
+  ../../include/cfunction.h \
+  ../../include/cgate.h \
+  ../../include/chist.h \
+  ../../include/cksplit.h \
+  ../../include/clcg32.h \
+  ../../include/cllist.h \
+  ../../include/clongpar.h \
+  ../../include/cmersennetwister.h \
+  ../../include/cmessage.h \
+  ../../include/cmessagepar.h \
+  ../../include/cmodule.h \
+  ../../include/cmsgheap.h \
+  ../../include/cneddeclarationbase.h \
+  ../../include/cnedfunction.h \
+  ../../include/cobject.h \
+  ../../include/cnamedobject.h \
+  ../../include/cownedobject.h \
+  ../../include/coutvect.h \
+  ../../include/cpacket.h \
+  ../../include/cpar.h \
+  ../../include/cparvalue.h \
+  ../../include/cparsimcomm.h \
+  ../../include/cproperties.h \
+  ../../include/cproperty.h \
+  ../../include/cpsquare.h \
+  ../../include/cqueue.h \
+  ../../include/crng.h \
+  ../../include/cscheduler.h \
+  ../../include/csimplemodule.h \
+  ../../include/csimulation.h \
+  ../../include/cstat.h \
+  ../../include/cstlwatch.h \
+  ../../include/cstringpar.h \
+  ../../include/cstringpool.h \
+  ../../include/cstrtokenizer.h \
+  ../../include/cclassdescriptor.h \
+  ../../include/ctopo.h \
+  ../../include/cvarhist.h \
+  ../../include/cvisitor.h \
+  ../../include/cwatch.h \
+  ../../include/cxmlelement.h \
+  ../../include/cxmlpar.h \
+  ../../include/defs.h \
+  ../../include/distrib.h \
+  ../../include/envirext.h \
+  ../../include/errmsg.h \
+  ../../include/expryydefs.h \
+  ../../include/globals.h \
+  ../../include/index.h \
+  ../../include/mersennetwister.h \
+  ../../include/onstartup.h \
+  ../../include/opp_string.h \
+  ../../include/protocol.h \
+  ../../include/random.h \
+  ../../include/regmacros.h \
+  ../../include/stlwrap.h \
+  ../../include/util.h \
+  ../../include/nedsupport.h \
+  ../../include/compat.h \
+  ../../include/platdep/time.h
 task.o: task.cc \
   task.h
 util.o: util.cc \
@@ -1607,10 +1793,11 @@ util.o: util.cc \
   ../../include/errmsg.h \
   ../../include/cmsgheap.h \
   ../../include/ccoroutine.h \
+  ../../include/cownedobject.h \
+  ../../include/cnamedobject.h \
   ../../include/cobject.h \
-  ../../include/cpolymorphic.h \
-  ../../include/cvisitor.h \
   ../../include/cstringpool.h \
+  ../../include/cvisitor.h \
   ../../include/regmacros.h \
   ../../include/onstartup.h \
   ../../include/carray.h \
@@ -1633,62 +1820,70 @@ util.o: util.cc \
   ../../include/cstat.h
 xxx.o: xxx.cc \
   ../../include/stlwrap.h \
-  ../../include/cpolymorphic.h \
+  ../../include/cobject.h \
   ../../include/defs.h \
   ../../include/util.h \
+  ../../include/cvisitor.h \
   ../../include/regmacros.h \
   ../../include/errmsg.h \
   ../../include/onstartup.h
 netbuilder/cdynamicchanneltype.o: netbuilder/cdynamicchanneltype.cc \
   netbuilder/cdynamicchanneltype.h \
-  netbuilder/cneddeclaration.h \
   netbuilder/cnedloader.h \
   netbuilder/cnednetworkbuilder.h \
   ../../include/cchannel.h \
   ../../include/ccomponenttype.h \
+  netbuilder/cneddeclaration.h \
   ../../include/ccomponent.h \
   ../../include/defs.h \
-  ../../include/cobject.h \
+  ../../include/cownedobject.h \
   ../../include/cpar.h \
   ../../include/cdefaultlist.h \
   ../../include/cenvir.h \
   ../../include/util.h \
-  ../../include/cpolymorphic.h \
+  ../../include/cnamedobject.h \
   ../../include/cexception.h \
-  ../../include/cvisitor.h \
-  ../../include/cstringpool.h \
   ../../include/errmsg.h \
+  ../../include/cobject.h \
+  ../../include/cstringpool.h \
+  ../../include/cvisitor.h \
   ../../include/regmacros.h \
   ../../include/onstartup.h \
   ../../include/opp_string.h \
   ../../include/cexpression.h \
-  ../../include/globals.h \
   ../../include/cgate.h \
+  ../../include/cneddeclarationbase.h \
+  ../../include/globals.h \
+  ../../include/cparvalue.h \
   ../../include/carray.h \
-  ../../include/cclassfactory.h
+  ../../include/cclassfactory.h \
+  ../../include/cproperties.h \
+  ../../include/cproperty.h \
+  ../../include/stlwrap.h
 netbuilder/cdynamicmoduletype.o: netbuilder/cdynamicmoduletype.cc \
   netbuilder/cdynamicmoduletype.h \
   netbuilder/cneddeclaration.h \
   netbuilder/cnedloader.h \
   netbuilder/cnednetworkbuilder.h \
-  ../../include/cmodule.h \
   ../../include/ccompoundmodule.h \
+  ../../include/cmodule.h \
   ../../include/ccomponenttype.h \
   ../../include/ccomponent.h \
   ../../include/globals.h \
   ../../include/cgate.h \
   ../../include/csimulation.h \
   ../../include/defs.h \
-  ../../include/cobject.h \
+  ../../include/cownedobject.h \
   ../../include/cpar.h \
   ../../include/cdefaultlist.h \
   ../../include/cenvir.h \
   ../../include/util.h \
-  ../../include/cpolymorphic.h \
+  ../../include/cnamedobject.h \
   ../../include/cexception.h \
-  ../../include/cvisitor.h \
-  ../../include/cstringpool.h \
   ../../include/errmsg.h \
+  ../../include/cobject.h \
+  ../../include/cstringpool.h \
+  ../../include/cvisitor.h \
   ../../include/regmacros.h \
   ../../include/onstartup.h \
   ../../include/opp_string.h \
@@ -1696,52 +1891,72 @@ netbuilder/cdynamicmoduletype.o: netbuilder/cdynamicmoduletype.cc \
   ../../include/carray.h \
   ../../include/cclassfactory.h \
   ../../include/cmsgheap.h \
-  ../../include/ccoroutine.h
+  ../../include/ccoroutine.h \
+  ../../include/cneddeclarationbase.h \
+  ../../include/cparvalue.h \
+  ../../include/cproperties.h \
+  ../../include/cproperty.h \
+  ../../include/stlwrap.h
 netbuilder/cexpressionbuilder.o: netbuilder/cexpressionbuilder.cc \
   netbuilder/cexpressionbuilder.h \
   ../../include/cfunction.h \
   ../../include/cnedfunction.h \
-  ../../include/cpar.h \
+  ../../include/cparvalue.h \
   ../../include/nedsupport.h \
   ../../include/cdynamicexpression.h \
   ../../include/cexception.h \
   ../../include/cexpression.h \
-  ../../include/cpolymorphic.h \
+  ../../include/cobject.h \
   ../../include/defs.h \
   ../../include/util.h \
+  ../../include/cvisitor.h \
   ../../include/regmacros.h \
   ../../include/errmsg.h \
   ../../include/onstartup.h \
   ../../include/opp_string.h \
   ../../include/globals.h \
-  ../../include/cobject.h \
+  ../../include/cownedobject.h \
   ../../include/carray.h \
   ../../include/cclassfactory.h \
   ../../include/cenvir.h \
-  ../../include/cvisitor.h \
-  ../../include/cstringpool.h
+  ../../include/cnamedobject.h \
+  ../../include/cstringpool.h \
+  ../../include/cpar.h
 netbuilder/cneddeclaration.o: netbuilder/cneddeclaration.cc \
   netbuilder/cneddeclaration.h \
   ../../include/cexception.h \
   ../../include/cproperties.h \
   ../../include/cdynamicexpression.h \
+  ../../include/cgate.h \
+  ../../include/cmodule.h \
+  ../../include/cdisplaystring.h \
+  netbuilder/cnedloader.h \
   ../../include/defs.h \
   ../../include/globals.h \
-  ../../include/cobject.h \
-  ../../include/cpar.h \
-  ../../include/cgate.h \
+  ../../include/cownedobject.h \
+  ../../include/cparvalue.h \
+  ../../include/cneddeclarationbase.h \
+  ../../include/cproperty.h \
   ../../include/onstartup.h \
   ../../include/carray.h \
   ../../include/cclassfactory.h \
   ../../include/cenvir.h \
   ../../include/util.h \
-  ../../include/cpolymorphic.h \
-  ../../include/cvisitor.h \
-  ../../include/cstringpool.h \
+  ../../include/cnamedobject.h \
   ../../include/errmsg.h \
+  ../../include/cobject.h \
+  ../../include/cstringpool.h \
+  ../../include/cvisitor.h \
   ../../include/regmacros.h \
+  ../../include/cpar.h \
   ../../include/cexpression.h \
-  ../../include/opp_string.h
+  ../../include/stlwrap.h \
+  ../../include/opp_string.h \
+  ../../include/ccomponent.h \
+  ../../include/csimulation.h \
+  ../../include/cdefaultlist.h \
+  ../../include/cmsgheap.h \
+  ../../include/ccoroutine.h
 netbuilder/cnedloader.o: netbuilder/cnedloader.cc \
   netbuilder/cnedloader.h \
   ../../include/cproperty.h \
@@ -1756,25 +1971,28 @@ netbuilder/cnedloader.o: netbuilder/cnedloader.cc \
   ../../include/globals.h \
   netbuilder/cdynamicmoduletype.h \
   netbuilder/cdynamicchanneltype.h \
+  ../../include/cdisplaystring.h \
   ../../include/defs.h \
   netbuilder/cneddeclaration.h \
-  ../../include/cobject.h \
+  ../../include/cownedobject.h \
+  ../../include/cparvalue.h \
   ../../include/cgate.h \
+  ../../include/cneddeclarationbase.h \
   ../../include/util.h \
-  ../../include/cpolymorphic.h \
-  ../../include/cvisitor.h \
-  ../../include/cstringpool.h \
+  ../../include/cnamedobject.h \
   ../../include/errmsg.h \
+  ../../include/cobject.h \
+  ../../include/cstringpool.h \
+  ../../include/cvisitor.h \
   ../../include/regmacros.h \
   ../../include/onstartup.h \
+  ../../include/cexpression.h \
   ../../include/stlwrap.h \
   ../../include/opp_string.h \
   ../../include/cdynamicexpression.h \
-  ../../include/cexpression.h \
   ../../include/carray.h \
   ../../include/cclassfactory.h \
   ../../include/cmodule.h \
-  ../../include/ccompoundmodule.h \
   netbuilder/cnednetworkbuilder.h \
   ../../include/ccomponent.h \
   ../../include/csimulation.h \
@@ -1788,6 +2006,7 @@ netbuilder/cnednetworkbuilder.o: netbuilder/cnednetworkbuilder.cc \
   ../../include/cchannel.h \
   ../../include/cbasicchannel.h \
   ../../include/ccomponenttype.h \
+  ../../include/clongpar.h \
   netbuilder/cneddeclaration.h \
   netbuilder/cnednetworkbuilder.h \
   netbuilder/cnedloader.h \
@@ -1797,16 +2016,17 @@ netbuilder/cnednetworkbuilder.o: netbuilder/cnednetworkbuilder.cc \
   ../../include/globals.h \
   ../../include/csimulation.h \
   ../../include/defs.h \
-  ../../include/cobject.h \
+  ../../include/cownedobject.h \
   ../../include/cpar.h \
   ../../include/cdefaultlist.h \
   ../../include/cenvir.h \
   ../../include/util.h \
-  ../../include/cpolymorphic.h \
+  ../../include/cnamedobject.h \
   ../../include/cexception.h \
-  ../../include/cvisitor.h \
-  ../../include/cstringpool.h \
   ../../include/errmsg.h \
+  ../../include/cobject.h \
+  ../../include/cstringpool.h \
+  ../../include/cvisitor.h \
   ../../include/regmacros.h \
   ../../include/onstartup.h \
   ../../include/opp_string.h \
@@ -1815,6 +2035,11 @@ netbuilder/cnednetworkbuilder.o: netbuilder/cnednetworkbuilder.cc \
   ../../include/cclassfactory.h \
   ../../include/cmsgheap.h \
   ../../include/ccoroutine.h \
+  ../../include/cneddeclarationbase.h \
+  ../../include/cparvalue.h \
+  ../../include/cproperties.h \
+  ../../include/cproperty.h \
+  ../../include/stlwrap.h \
   ../../include/cdynamicexpression.h
 parsim/cadvlinkdelaylookahead.o: parsim/cadvlinkdelaylookahead.cc \
   parsim/cadvlinkdelaylookahead.h \
@@ -1827,18 +2052,19 @@ parsim/cadvlinkdelaylookahead.o: parsim/cadvlinkdelaylookahead.cc \
   parsim/cproxygate.h \
   ../../include/cchannel.h \
   parsim/cnmplookahead.h \
-  ../../include/cpolymorphic.h \
+  ../../include/cobject.h \
   ../../include/defs.h \
   ../../include/util.h \
+  ../../include/cvisitor.h \
   ../../include/regmacros.h \
   ../../include/errmsg.h \
   ../../include/onstartup.h \
-  ../../include/cobject.h \
+  ../../include/cownedobject.h \
   ../../include/carray.h \
   ../../include/cmessagepar.h \
   ../../include/csimulation.h \
+  ../../include/cnamedobject.h \
   ../../include/cexception.h \
-  ../../include/cvisitor.h \
   ../../include/cstringpool.h \
   ../../include/opp_string.h \
   ../../include/cfunction.h \
@@ -1856,14 +2082,17 @@ parsim/cadvlinkdelaylookahead.o: parsim/cadvlinkdelaylookahead.cc \
   ../../include/cpar.h \
   ../../include/cdefaultlist.h \
   ../../include/cexpression.h \
-  ../../include/ccomponenttype.h
+  ../../include/ccomponenttype.h \
+  ../../include/cneddeclarationbase.h \
+  ../../include/cparvalue.h
 parsim/ccommbufferbase.o: parsim/ccommbufferbase.cc \
   parsim/ccommbufferbase.h \
   ../../include/cexception.h \
   ../../include/ccommbuffer.h \
-  ../../include/cpolymorphic.h \
+  ../../include/cobject.h \
   ../../include/defs.h \
   ../../include/util.h \
+  ../../include/cvisitor.h \
   ../../include/regmacros.h \
   ../../include/errmsg.h \
   ../../include/onstartup.h \
@@ -1871,17 +2100,18 @@ parsim/ccommbufferbase.o: parsim/ccommbufferbase.cc \
 parsim/cfilecommbuffer.o: parsim/cfilecommbuffer.cc \
   parsim/cfilecommbuffer.h \
   ../../include/util.h \
-  ../../include/cobject.h \
+  ../../include/cownedobject.h \
   parsim/ccommbufferbase.h \
   ../../include/ccommbuffer.h \
-  ../../include/cpolymorphic.h \
+  ../../include/cobject.h \
   ../../include/defs.h \
+  ../../include/cvisitor.h \
   ../../include/regmacros.h \
   ../../include/onstartup.h \
   ../../include/errmsg.h \
   ../../include/cenvir.h \
+  ../../include/cnamedobject.h \
   ../../include/cexception.h \
-  ../../include/cvisitor.h \
   ../../include/cstringpool.h \
   ../../include/opp_string.h
 parsim/cfilecomm.o: parsim/cfilecomm.cc \
@@ -1897,7 +2127,8 @@ parsim/cfilecomm.o: parsim/cfilecomm.cc \
   ../../include/opp_string.h \
   ../../include/util.h \
   ../../include/cparsimcomm.h \
-  ../../include/cpolymorphic.h \
+  ../../include/cobject.h \
+  ../../include/cvisitor.h \
   ../../include/regmacros.h \
   ../../include/onstartup.h \
   parsim/ccommbufferbase.h \
@@ -1914,17 +2145,18 @@ parsim/cidealsimulationprot.o: parsim/cidealsimulationprot.cc \
   ../../include/cparsimcomm.h \
   ../../include/ccommbuffer.h \
   parsim/messagetags.h \
-  ../../include/cobject.h \
+  ../../include/cownedobject.h \
   ../../include/carray.h \
   ../../include/cmessagepar.h \
   ../../include/csimulation.h \
   ../../include/defs.h \
   ../../include/util.h \
-  ../../include/cpolymorphic.h \
+  ../../include/cnamedobject.h \
   ../../include/cexception.h \
-  ../../include/cvisitor.h \
-  ../../include/cstringpool.h \
   ../../include/errmsg.h \
+  ../../include/cobject.h \
+  ../../include/cstringpool.h \
+  ../../include/cvisitor.h \
   ../../include/regmacros.h \
   ../../include/onstartup.h \
   ../../include/opp_string.h \
@@ -1952,20 +2184,21 @@ parsim/cispeventlogger.o: parsim/cispeventlogger.cc \
   ../../include/cmessage.h \
   parsim/cparsimsynchr.h \
   ../../include/cscheduler.h \
-  ../../include/cpolymorphic.h \
+  ../../include/cobject.h \
   ../../include/platdep/time.h \
   ../../include/defs.h \
   ../../include/util.h \
+  ../../include/cvisitor.h \
   ../../include/regmacros.h \
   ../../include/errmsg.h \
   ../../include/onstartup.h \
-  ../../include/cobject.h \
+  ../../include/cownedobject.h \
   ../../include/carray.h \
   ../../include/cmessagepar.h \
   ../../include/csimulation.h \
   ../../include/cenvir.h \
+  ../../include/cnamedobject.h \
   ../../include/cexception.h \
-  ../../include/cvisitor.h \
   ../../include/cstringpool.h \
   ../../include/opp_string.h \
   ../../include/cfunction.h \
@@ -1989,18 +2222,19 @@ parsim/clinkdelaylookahead.o: parsim/clinkdelaylookahead.cc \
   parsim/cproxygate.h \
   ../../include/cchannel.h \
   parsim/cnmplookahead.h \
-  ../../include/cpolymorphic.h \
+  ../../include/cobject.h \
   ../../include/defs.h \
   ../../include/util.h \
+  ../../include/cvisitor.h \
   ../../include/regmacros.h \
   ../../include/errmsg.h \
   ../../include/onstartup.h \
-  ../../include/cobject.h \
+  ../../include/cownedobject.h \
   ../../include/carray.h \
   ../../include/cmessagepar.h \
   ../../include/csimulation.h \
+  ../../include/cnamedobject.h \
   ../../include/cexception.h \
-  ../../include/cvisitor.h \
   ../../include/cstringpool.h \
   ../../include/opp_string.h \
   ../../include/cfunction.h \
@@ -2018,30 +2252,34 @@ parsim/clinkdelaylookahead.o: parsim/clinkdelaylookahead.cc \
   ../../include/cpar.h \
   ../../include/cdefaultlist.h \
   ../../include/cexpression.h \
-  ../../include/ccomponenttype.h
+  ../../include/ccomponenttype.h \
+  ../../include/cneddeclarationbase.h \
+  ../../include/cparvalue.h
 parsim/cmemcommbuffer.o: parsim/cmemcommbuffer.cc \
   parsim/cmemcommbuffer.h \
   ../../include/util.h \
-  ../../include/cobject.h \
+  ../../include/cownedobject.h \
   parsim/ccommbufferbase.h \
   ../../include/ccommbuffer.h \
-  ../../include/cpolymorphic.h \
+  ../../include/cobject.h \
   ../../include/defs.h \
+  ../../include/cvisitor.h \
   ../../include/regmacros.h \
   ../../include/onstartup.h \
   ../../include/errmsg.h \
   ../../include/cenvir.h \
+  ../../include/cnamedobject.h \
   ../../include/cexception.h \
-  ../../include/cvisitor.h \
   ../../include/cstringpool.h \
   ../../include/opp_string.h
 parsim/cmpicommbuffer.o: parsim/cmpicommbuffer.cc \
   parsim/cmpicommbuffer.h \
   parsim/ccommbufferbase.h \
   ../../include/ccommbuffer.h \
-  ../../include/cpolymorphic.h \
+  ../../include/cobject.h \
   ../../include/defs.h \
   ../../include/util.h \
+  ../../include/cvisitor.h \
   ../../include/regmacros.h \
   ../../include/errmsg.h \
   ../../include/onstartup.h
@@ -2052,9 +2290,10 @@ parsim/cmpicomm.o: parsim/cmpicomm.cc \
   ../../include/cconfig.h \
   ../../include/platdep/misc.h \
   ../../include/cparsimcomm.h \
-  ../../include/cpolymorphic.h \
+  ../../include/cobject.h \
   ../../include/defs.h \
   ../../include/util.h \
+  ../../include/cvisitor.h \
   ../../include/regmacros.h \
   ../../include/errmsg.h \
   ../../include/onstartup.h \
@@ -2073,7 +2312,8 @@ parsim/cnamedpipecomm.o: parsim/cnamedpipecomm.cc \
   ../../include/cparsimcomm.h \
   ../../include/defs.h \
   ../../include/errmsg.h \
-  ../../include/cpolymorphic.h \
+  ../../include/cobject.h \
+  ../../include/cvisitor.h \
   ../../include/regmacros.h \
   ../../include/onstartup.h \
   parsim/ccommbufferbase.h \
@@ -2090,7 +2330,8 @@ parsim/cnamedpipecomm-win.o: parsim/cnamedpipecomm-win.cc \
   ../../include/cparsimcomm.h \
   ../../include/defs.h \
   ../../include/errmsg.h \
-  ../../include/cpolymorphic.h \
+  ../../include/cobject.h \
+  ../../include/cvisitor.h \
   ../../include/regmacros.h \
   ../../include/onstartup.h \
   parsim/ccommbufferbase.h \
@@ -2105,17 +2346,18 @@ parsim/cnosynchronization.o: parsim/cnosynchronization.cc \
   ../../include/cparsimcomm.h \
   ../../include/ccommbuffer.h \
   parsim/messagetags.h \
-  ../../include/cobject.h \
+  ../../include/cownedobject.h \
   ../../include/carray.h \
   ../../include/cmessagepar.h \
   ../../include/csimulation.h \
   ../../include/defs.h \
   ../../include/util.h \
-  ../../include/cpolymorphic.h \
+  ../../include/cnamedobject.h \
   ../../include/cexception.h \
-  ../../include/cvisitor.h \
-  ../../include/cstringpool.h \
   ../../include/errmsg.h \
+  ../../include/cobject.h \
+  ../../include/cstringpool.h \
+  ../../include/cvisitor.h \
   ../../include/regmacros.h \
   ../../include/onstartup.h \
   ../../include/opp_string.h \
@@ -2147,17 +2389,18 @@ parsim/cnullmessageprot.o: parsim/cnullmessageprot.cc \
   parsim/cplaceholdermod.h \
   parsim/cproxygate.h \
   ../../include/cchannel.h \
-  ../../include/cobject.h \
+  ../../include/cownedobject.h \
   ../../include/carray.h \
   ../../include/cmessagepar.h \
   ../../include/csimulation.h \
   ../../include/defs.h \
   ../../include/util.h \
-  ../../include/cpolymorphic.h \
+  ../../include/cnamedobject.h \
   ../../include/cexception.h \
-  ../../include/cvisitor.h \
-  ../../include/cstringpool.h \
   ../../include/errmsg.h \
+  ../../include/cobject.h \
+  ../../include/cstringpool.h \
+  ../../include/cvisitor.h \
   ../../include/regmacros.h \
   ../../include/onstartup.h \
   ../../include/opp_string.h \
@@ -2175,7 +2418,9 @@ parsim/cnullmessageprot.o: parsim/cnullmessageprot.cc \
   ../../include/cscheduler.h \
   ../../include/platdep/time.h \
   parsim/cnmplookahead.h \
-  ../../include/ccomponenttype.h
+  ../../include/ccomponenttype.h \
+  ../../include/cneddeclarationbase.h \
+  ../../include/cparvalue.h
 parsim/cparsimpartition.o: parsim/cparsimpartition.cc \
   ../../include/cmessage.h \
   ../../include/errmsg.h \
@@ -2189,16 +2434,17 @@ parsim/cparsimpartition.o: parsim/cparsimpartition.cc \
   parsim/messagetags.h \
   ../../include/cenvir.h \
   ../../include/cconfig.h \
-  ../../include/cobject.h \
+  ../../include/cownedobject.h \
   ../../include/carray.h \
   ../../include/cmessagepar.h \
   ../../include/csimulation.h \
   ../../include/defs.h \
   ../../include/util.h \
-  ../../include/cpolymorphic.h \
+  ../../include/cnamedobject.h \
   ../../include/cexception.h \
-  ../../include/cvisitor.h \
+  ../../include/cobject.h \
   ../../include/cstringpool.h \
+  ../../include/cvisitor.h \
   ../../include/regmacros.h \
   ../../include/onstartup.h \
   ../../include/opp_string.h \
@@ -2225,17 +2471,18 @@ parsim/cparsimprotocolbase.o: parsim/cparsimprotocolbase.cc \
   ../../include/ccommbuffer.h \
   parsim/messagetags.h \
   parsim/cparsimprotocolbase.h \
-  ../../include/cobject.h \
+  ../../include/cownedobject.h \
   ../../include/carray.h \
   ../../include/cmessagepar.h \
   ../../include/csimulation.h \
   ../../include/defs.h \
   ../../include/util.h \
-  ../../include/cpolymorphic.h \
+  ../../include/cnamedobject.h \
   ../../include/cexception.h \
-  ../../include/cvisitor.h \
-  ../../include/cstringpool.h \
   ../../include/errmsg.h \
+  ../../include/cobject.h \
+  ../../include/cstringpool.h \
+  ../../include/cvisitor.h \
   ../../include/regmacros.h \
   ../../include/onstartup.h \
   ../../include/opp_string.h \
@@ -2267,16 +2514,17 @@ parsim/cplaceholdermod.o: parsim/cplaceholdermod.cc \
   ../../include/cgate.h \
   ../../include/csimulation.h \
   ../../include/defs.h \
-  ../../include/cobject.h \
+  ../../include/cownedobject.h \
   ../../include/cpar.h \
   ../../include/cdefaultlist.h \
   ../../include/cenvir.h \
   ../../include/util.h \
-  ../../include/cpolymorphic.h \
+  ../../include/cnamedobject.h \
   ../../include/cexception.h \
-  ../../include/cvisitor.h \
-  ../../include/cstringpool.h \
   ../../include/errmsg.h \
+  ../../include/cobject.h \
+  ../../include/cstringpool.h \
+  ../../include/cvisitor.h \
   ../../include/regmacros.h \
   ../../include/onstartup.h \
   ../../include/opp_string.h \
@@ -2300,15 +2548,16 @@ parsim/cproxygate.o: parsim/cproxygate.cc \
   ../../include/cmodule.h \
   ../../include/cmessage.h \
   ../../include/cgate.h \
-  ../../include/cobject.h \
+  ../../include/cownedobject.h \
   ../../include/cenvir.h \
   ../../include/defs.h \
   ../../include/util.h \
-  ../../include/cpolymorphic.h \
+  ../../include/cnamedobject.h \
   ../../include/cexception.h \
-  ../../include/cvisitor.h \
-  ../../include/cstringpool.h \
   ../../include/errmsg.h \
+  ../../include/cobject.h \
+  ../../include/cstringpool.h \
+  ../../include/cvisitor.h \
   ../../include/regmacros.h \
   ../../include/onstartup.h \
   ../../include/opp_string.h \
@@ -2328,9 +2577,10 @@ parsim/cptrpassingmpicommbuffer.o: parsim/cptrpassingmpicommbuffer.cc \
   parsim/cmpicommbuffer.h \
   parsim/ccommbufferbase.h \
   ../../include/ccommbuffer.h \
-  ../../include/cpolymorphic.h \
+  ../../include/cobject.h \
   ../../include/defs.h \
   ../../include/util.h \
+  ../../include/cvisitor.h \
   ../../include/regmacros.h \
   ../../include/errmsg.h \
   ../../include/onstartup.h
@@ -2338,9 +2588,10 @@ parsim/cptrpassingmpicomm.o: parsim/cptrpassingmpicomm.cc \
   parsim/cptrpassingmpicomm.h \
   parsim/cptrpassingmpicommbuffer.h \
   ../../include/cparsimcomm.h \
-  ../../include/cpolymorphic.h \
+  ../../include/cobject.h \
   ../../include/defs.h \
   ../../include/util.h \
+  ../../include/cvisitor.h \
   ../../include/regmacros.h \
   ../../include/errmsg.h \
   ../../include/onstartup.h \

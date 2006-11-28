@@ -159,12 +159,12 @@ eventlogtablefacade.o: eventlogtablefacade.cc \
   eventlogfacade.h
 eventlogtool.o: eventlogtool.cc \
   ../common/filereader.h \
+  ../common/linetokenizer.h \
   eventlogindex.h \
   eventlog.h \
   filteredeventlog.h \
   ../common/exception.h \
   eventlogdefs.h \
-  ../common/linetokenizer.h \
   stringpool.h \
   event.h \
   ieventlog.h \
@@ -172,6 +172,7 @@ eventlogtool.o: eventlogtool.cc \
   eventlogentry.h \
   eventlogentries.h \
   messagedependency.h \
+  ../common/patternmatcher.h \
   filteredevent.h
 filteredevent.o: filteredevent.cc \
   event.h \
@@ -185,12 +186,14 @@ filteredevent.o: filteredevent.cc \
   ../common/linetokenizer.h \
   eventlogdefs.h \
   ../common/exception.h \
+  ../common/patternmatcher.h \
   ieventlog.h \
   eventlog.h \
   stringpool.h \
   eventlogindex.h
 filteredeventlog.o: filteredeventlog.cc \
   filteredeventlog.h \
+  ../common/patternmatcher.h \
   eventlogdefs.h \
   ieventlog.h \
   eventlog.h \

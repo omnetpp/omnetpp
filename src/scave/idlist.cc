@@ -370,7 +370,7 @@ class RunAttributeLess : CmpBase {
 		bool operator()(ID a, ID b) {
 			const char* aValue = mgr->uncheckedGetItem(a).fileRunRef->runRef->getAttribute(attrName);
 			const char* bValue = mgr->uncheckedGetItem(b).fileRunRef->runRef->getAttribute(attrName);
-			return ((aValue && bValue) ? less(aValue, bValue) : aValue);
+			return ((aValue && bValue) ? less(aValue, bValue) : aValue!=NULL);
 		}
 };
 
@@ -383,7 +383,7 @@ class RunAttributeMore : CmpBase {
 		bool operator()(ID a, ID b) {
 			const char* aValue = mgr->uncheckedGetItem(a).fileRunRef->runRef->getAttribute(attrName);
 			const char* bValue = mgr->uncheckedGetItem(b).fileRunRef->runRef->getAttribute(attrName);
-			return ((bValue && aValue) ? less(bValue, aValue) : bValue);
+			return ((bValue && aValue) ? less(bValue, aValue) : bValue!=NULL);
 		}
 };
 
