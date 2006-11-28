@@ -22,6 +22,7 @@
 #include "arraybuilder.h"
 #include "vectorfilereader.h"
 #include "vectorfilewriter.h"
+#include "ivectorfilewriter.h"
 #include "filewriter.h"
 #include "windowavg.h"
 #include "slidingwinavg.h"
@@ -59,6 +60,7 @@ NodeTypeRegistry::NodeTypeRegistry()
     add(new StddevNodeType());
     add(new VectorFileReaderNodeType());
     add(new VectorFileWriterNodeType());
+    add(new IndexedVectorFileWriterNodeType());
     add(new FileWriterNodeType());
     add(new MergerNodeType());
     add(new XYPlotNodeType());
