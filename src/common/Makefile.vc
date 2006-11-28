@@ -46,6 +46,10 @@ lex.matchexpressionyy.cc: matchexpression.lex matchexpression.tab.h
 	copy lex.matchexpressionyy.c lex.matchexpressionyy.cc
 	del lex.matchexpressionyy.c
 
+$(OBJS) : unistd.h
+unistd.h:
+	echo // Dummy header file -- Bisons skeleton code insists on including it even on Windows > unistd.h
+
 doc:
 	$(DOXYGEN:/=\) doxy.cfg
 
@@ -56,7 +60,6 @@ clean:
 	- del *.obj 2> nul
 	- del *.ilk *.idb *.pdb 2> nul
 
-
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 exception.obj: exception.cc \
   exception.h
@@ -66,7 +69,6 @@ filereader.obj: filereader.cc \
 filetokenizer.obj: filetokenizer.cc \
   filetokenizer.h
 lex.matchexpressionyy.obj: lex.matchexpressionyy.cc \
-  ./unistd.h \
   matchexpression.tab.h
 linetokenizer.obj: linetokenizer.cc \
   exception.h \
