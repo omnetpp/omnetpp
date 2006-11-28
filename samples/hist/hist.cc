@@ -27,11 +27,11 @@ Define_Module( HistogramDemo );
 
 void HistogramDemo::activity()
 {
-    int numobs = par("num_obs");
-    int numcells = par("num_cells");
-    bool fixed_range = par("fixed_range");
-    int numfirst = par("num_first");
-    double range_ext = par("range_ext");
+    int numObs = par("numObservations");
+    int numCells = par("numCells");
+    bool useFixedRange = par("useFixedRange");
+    int numFirstVals = par("numFirstVals");
+    double rangeExtFactor = par("rangeExtFactor");
 
     int i=0;
     WATCH(i);
@@ -39,24 +39,22 @@ void HistogramDemo::activity()
     ev << "Creating 5 distribution approximation objects, of types:\n";
     ev << "cDoubleHistogram, cLongHistogram, cVarHistogram, cPSquare, cKSplit.\n";
     ev << "Parameters:\n";
-    ev << " number of cells: " << numcells << endl;
-    ev << (fixed_range ? " range: [0,100)" : "automatic range estimation") << endl;
-    if (!fixed_range)
+    ev << " number of cells: " << numCells << endl;
+    ev << (useFixedRange ? " range: [0,100)" : "automatic range estimation") << endl;
+    if (!useFixedRange)
     {
-        ev << " observations used for range estimation: " << numfirst << endl;
-        ev << " range will be extended by " << range_ext << " times" << endl;
+        ev << " observations used for range estimation: " << numFirstVals << endl;
+        ev << " range will be extended by " << rangeExtFactor << " times" << endl;
     }
     ev << endl;
 
-    cDoubleHistogram dblhist("DoubleHistogram", numcells);
-    cLongHistogram longhist("LongHistogram", numcells);
-    cVarHistogram varhist("VarHistogram", numcells,HIST_TR_AUTO_EPC_DBL);
-    cPSquare psquare("PSquare", numcells);
+    cDoubleHistogram dblhist("DoubleHistogram", numCells);
+    cLongHistogram longhist("LongHistogram", numCells);
+    cVarHistogram varhist("VarHistogram", numCells,HIST_TR_AUTO_EPC_DBL);
+    cPSquare psquare("PSquare", numCells);
     cKSplit ksplit("K-Split");
 
-    FILE *f;
-
-    if (fixed_range)
+    if (useFixedRange)
     {
         dblhist.setRange(0,100);
         longhist.setRange(0,100);
@@ -65,13 +63,13 @@ void HistogramDemo::activity()
     else
     {
         // 0.0 is lower limit
-        dblhist.setRangeAutoUpper(0.0, numfirst, range_ext);
-        longhist.setRangeAutoUpper(0.0, numfirst, range_ext);
-        ksplit.setRangeAutoUpper(0.0, numfirst, range_ext);
+        dblhist.setRangeAutoUpper(0.0, numFirstVals, rangeExtFactor);
+        longhist.setRangeAutoUpper(0.0, numFirstVals, rangeExtFactor);
+        ksplit.setRangeAutoUpper(0.0, numFirstVals, rangeExtFactor);
     }
-    varhist.setNumFirstVals(numfirst);
+    varhist.setNumFirstVals(numFirstVals);
 
-    f=fopen("hist.dat","r");
+    FILE *f = fopen("hist.dat","r");
     if (f && ev.askYesNo("HIST: Saved histogram file `hist.dat' found,"
                          " load it and continue collecting from there?"))
     {
@@ -83,18 +81,18 @@ void HistogramDemo::activity()
         fclose(f);
     }
 
-    ev << "If Tkenv is used (it is the default), you may click the Objects/Watches tab\n"
-          "in the module inspector window and double-click the items to open graphical\n"
-          "inspector windows for the distributions.\n\n";
+    ev << "If Tkenv is used (it is the default), you may click the Contents tab\n"
+          "of the module inspector window, and double-click the items to open\n"
+          "graphical inspector for the distributions.\n\n";
     ev << "An alternative is to load 'inspect.lst' by selecting Options|Load inspector list\n"
           "from the menu; this will also open the inspector windows.\n";
 
     ev << endl;
     wait(0);
 
-    ev << "Filling objects with " << numobs << " random observations...\n";
+    ev << "Filling objects with " << numObs << " random observations...\n";
     ev << "(exponential(30) with P=0.5 and normal(80, 10) with P=0.5)\n";
-    for (i=0; i<numobs; i++)
+    for (i=0; i<numObs; i++)
     {
         double d = (intrand(2)==0) ? exponential(30) : normal(80, 10);
         ev << " adding " << d << endl;
@@ -123,7 +121,7 @@ void HistogramDemo::activity()
     snapshot(this);
 
     ev << "Saving all four objects to `hist.dat'...\n";
-    f=fopen("hist.dat","w");
+    f = fopen("hist.dat","w");
     longhist.saveToFile(f);
     dblhist.saveToFile(f);
     psquare.saveToFile(f);
