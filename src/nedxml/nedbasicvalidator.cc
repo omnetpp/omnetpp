@@ -275,9 +275,9 @@ void NEDBasicValidator::validateElement(SubmodulesNode *node)
 void NEDBasicValidator::validateElement(SubmoduleNode *node)
 {
     //FIXME revise
-    const char *expr[] = {"vector-size"};
-    bool opt[] = {true};
-    checkExpressionAttributes(node, expr, opt, 1);
+    const char *expr[] = {"like-param", "vector-size"};
+    bool opt[] = {true, true};
+    checkExpressionAttributes(node, expr, opt, 2);
 
     // if there's a "like", name should be an existing module parameter name
     if (strnotnull(node->getLikeParam()))

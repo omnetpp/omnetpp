@@ -48,7 +48,7 @@ const char *cStringPool::get(const char *s)
 
 void cStringPool::release(const char *s)
 {
-    if (!cStaticFlag::isSet())
+    if (!cStaticFlag::isSet())  //XXX alternatively: just ignore release() calls after shutdown
         throw new cRuntimeError("cStringPool: release(\"%s\"): strings must be released before shutdown! "
                                 "(Hint: some object with that name being deleted too late?)", s);
 
