@@ -236,36 +236,36 @@ class SIM_API cComponent : public cDefaultList // noncopyable
     //@{
 
     /**
-     * Returns total number of the module's parameters.
+     * Returns total number of the component's parameters.
      */
     virtual int params() const  {return paramv.size();} //XXX rename to numParams
 
     /**
-     * Returns reference to the module parameter identified with its
+     * Returns reference to the parameter identified with its
      * index k. Throws an error if the parameter does not exist.
      */
     virtual cPar& par(int k);
 
     /**
-     * Returns reference to the module parameter identified with its
+     * Returns reference to the parameter identified with its
      * index k. Throws an error if the parameter does not exist.
      */
     const cPar& par(int k) const  {return const_cast<cComponent *>(this)->par(k);}
 
     /**
-     * Returns reference to the module parameter specified with its name.
+     * Returns reference to the parameter specified with its name.
      * Throws an error if the parameter does not exist.
      */
     virtual cPar& par(const char *parname);
 
     /**
-     * Returns reference to the module parameter specified with its name.
+     * Returns reference to the parameter specified with its name.
      * Throws an error if the parameter does not exist.
      */
     const cPar& par(const char *parname) const  {return const_cast<cComponent *>(this)->par(parname);}
 
     /**
-     * Returns index of the module parameter specified with its name.
+     * Returns index of the parameter specified with its name.
      * Returns -1 if the object doesn't exist.
      */
     virtual int findPar(const char *parname) const;

@@ -2776,6 +2776,72 @@ rm -f conftest.*
 #      int main() {return dlopen("libconftest_a.so",RTLD_NOW)==0;}
 # And we expect to be able to run the program successfully.
 #
+
+# first check if we need "-ldl" for dlopen() [Laura Marie Feeney suggests it's not needed for FreeBSD]
+
+
+   save_CXXFLAGS=$CXXFLAGS
+   save_LIBS=$LIBS
+
+   CXXFLAGS=""
+   LIBS=""
+
+   echo "$as_me:$LINENO: checking for dlopen with CFLAGS=\"\" LIBS=\"\"" >&5
+echo $ECHO_N "checking for dlopen with CFLAGS=\"\" LIBS=\"\"... $ECHO_C" >&6
+
+   cat >conftest.$ac_ext <<_ACEOF
+/* confdefs.h.  */
+_ACEOF
+cat confdefs.h >>conftest.$ac_ext
+cat >>conftest.$ac_ext <<_ACEOF
+/* end confdefs.h.  */
+#include <dlfcn.h>
+int
+main ()
+{
+dlopen("",0);
+  ;
+  return 0;
+}
+_ACEOF
+rm -f conftest.$ac_objext conftest$ac_exeext
+if { (eval echo "$as_me:$LINENO: \"$ac_link\"") >&5
+  (eval $ac_link) 2>conftest.er1
+  ac_status=$?
+  grep -v '^ *+' conftest.er1 >conftest.err
+  rm -f conftest.er1
+  cat conftest.err >&5
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } &&
+	 { ac_try='test -z "$ac_cxx_werror_flag"			 || test ! -s conftest.err'
+  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }; } &&
+	 { ac_try='test -s conftest$ac_exeext'
+  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }; }; then
+  echo "$as_me:$LINENO: result: yes" >&5
+echo "${ECHO_T}yes" >&6; ldl_not_needed=yes; ldl=""
+else
+  echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
+
+echo "$as_me:$LINENO: result: no" >&5
+echo "${ECHO_T}no" >&6; ldl_not_needed=no; ldl="-ldl"
+fi
+rm -f conftest.err conftest.$ac_objext \
+      conftest$ac_exeext conftest.$ac_ext
+
+   CXXFLAGS=$save_CXXFLAGS
+   LIBS=$save_LIBS
+
+
+# then go ahead
 echo "$as_me:$LINENO: checking if --export-dynamic linker option is supported/needed" >&5
 echo $ECHO_N "checking if --export-dynamic linker option is supported/needed... $ECHO_C" >&6
 echo 'void func_from_main();' >conftest_a.cc
@@ -2790,7 +2856,7 @@ if $CXX -c conftest_a.cc >/dev/null 2>/dev/null && \
 then
    silly_ok="no"
    # 1st try.
-   if $CXX -o conftest conftest_m.o -ldl >/dev/null 2>/dev/null; then
+   if $CXX -o conftest conftest_m.o $ldl >/dev/null 2>/dev/null; then
       if ./conftest >/dev/null 2>/dev/null; then
          echo "$as_me:$LINENO: result: not needed" >&5
 echo "${ECHO_T}not needed" >&6
@@ -2799,7 +2865,7 @@ echo "${ECHO_T}not needed" >&6
    fi
    # 2nd try.
    if test $silly_ok = "no" && \
-      $CXX -o conftest -Wl,--export-dynamic conftest_m.o -ldl >/dev/null 2>/dev/null; \
+      $CXX -o conftest -Wl,--export-dynamic conftest_m.o $ldl >/dev/null 2>/dev/null; \
    then
       if ./conftest >/dev/null 2>/dev/null; then
          echo "$as_me:$LINENO: result: both" >&5
@@ -2984,7 +3050,6 @@ if test "$YACC" = "yacc"; then
 echo "$as_me: error: Bison not found, needed to build OMNeT++/OMNEST -- please install it!" >&2;}
    { (exit 1); exit 1; }; }
 fi
-
 for ac_prog in flex lex
 do
   # Extract the first word of "$ac_prog", so it can be a program name with args.
@@ -6252,7 +6317,7 @@ fi
 #----------------------
 # Files to be generated
 #----------------------
-                                                                                                                                                                                                                                                                                                  ac_config_files="$ac_config_files Makefile src/sim/Makefile src/envir/Makefile src/tkenv/Makefile src/cmdenv/Makefile src/nedc/Makefile src/nedxml/Makefile src/common/Makefile src/scave/Makefile src/eventlog/Makefile src/utils/Makefile src/utils/opp_makemake src/utils/opp_neddoc samples/aloha/Makefile samples/cqn/Makefile samples/dyna/Makefile samples/fddi/Makefile samples/fifo/Makefile samples/hcube/Makefile samples/hist/Makefile samples/neddemo/Makefile samples/p-to-p/Makefile samples/queueing/Makefile samples/routing/Makefile samples/queues/Makefile samples/tictoc/Makefile samples/tokenring/Makefile samples/sockets/Makefile test/Makefile"
+                                                                                                                                                                                                                                                                                                  ac_config_files="$ac_config_files Makefile src/sim/Makefile src/envir/Makefile src/tkenv/Makefile src/cmdenv/Makefile src/nedc/Makefile src/nedxml/Makefile src/common/Makefile src/scave/Makefile src/eventlog/Makefile src/utils/Makefile src/utils/opp_makemake src/utils/opp_neddoc test/core/runtest samples/aloha/Makefile samples/cqn/Makefile samples/dyna/Makefile samples/fifo/Makefile samples/hcube/Makefile samples/hist/Makefile samples/neddemo/Makefile samples/p-to-p/Makefile samples/queueing/Makefile samples/routing/Makefile samples/queues/Makefile samples/tictoc/Makefile samples/tokenring/Makefile samples/sockets/Makefile test/Makefile"
 
 #FIXME todo add these:
 #  src/scave/Makefile
@@ -6916,10 +6981,10 @@ do
   "src/utils/Makefile" ) CONFIG_FILES="$CONFIG_FILES src/utils/Makefile" ;;
   "src/utils/opp_makemake" ) CONFIG_FILES="$CONFIG_FILES src/utils/opp_makemake" ;;
   "src/utils/opp_neddoc" ) CONFIG_FILES="$CONFIG_FILES src/utils/opp_neddoc" ;;
+  "test/core/runtest" ) CONFIG_FILES="$CONFIG_FILES test/core/runtest" ;;
   "samples/aloha/Makefile" ) CONFIG_FILES="$CONFIG_FILES samples/aloha/Makefile" ;;
   "samples/cqn/Makefile" ) CONFIG_FILES="$CONFIG_FILES samples/cqn/Makefile" ;;
   "samples/dyna/Makefile" ) CONFIG_FILES="$CONFIG_FILES samples/dyna/Makefile" ;;
-  "samples/fddi/Makefile" ) CONFIG_FILES="$CONFIG_FILES samples/fddi/Makefile" ;;
   "samples/fifo/Makefile" ) CONFIG_FILES="$CONFIG_FILES samples/fifo/Makefile" ;;
   "samples/hcube/Makefile" ) CONFIG_FILES="$CONFIG_FILES samples/hcube/Makefile" ;;
   "samples/hist/Makefile" ) CONFIG_FILES="$CONFIG_FILES samples/hist/Makefile" ;;
