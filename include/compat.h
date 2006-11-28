@@ -36,7 +36,7 @@
 // following ones became inner classes:
 typedef cKSplit::Iterator      cKSplitIterator;
 typedef cKSplit::Grid          sGrid;
-typedef cQueue::Iterator       cQueueIterator;
+//XXX remove, as not compatible anyway: typedef cQueue::Iterator       cQueueIterator;
 typedef cLinkedList::Iterator  cLinkedListIterator;
 typedef cMessageHeap::Iterator cMessageHeapIterator;
 typedef cTopology::Link        sTopoLink;
