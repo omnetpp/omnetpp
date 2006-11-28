@@ -39,10 +39,10 @@ void {Queues}::activity()
 
     fillQueue(initial);
     copy = initial;
+    cQueue *dupped = initial.dup();
+
     output(initial, "");
     output(copy, "");
-
-    cQueue *dupped = initial.dup();
     output(*dupped, "dupped ");
 
     initial.clear();
