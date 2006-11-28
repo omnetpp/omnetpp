@@ -216,7 +216,7 @@ cProperty::CharPtrVector& cProperty::valuesVector(const char *key) const
 {
     int k = findKey(key);
     if (k==-1)
-        throw cRuntimeError(this, "property has no key named `%s'", key);
+        throw new cRuntimeError(this, "property has no key named `%s'", key);
     return const_cast<CharPtrVector&>(valuesv[k]);
 }
 
@@ -261,7 +261,7 @@ void cProperty::setValue(const char *key, int k, const char *value)
         value = "";
     CharPtrVector& v = valuesVector(key);
     if (k<0)
-        throw cRuntimeError(this,"negative property value index %d for key `%s'", k, key);
+        throw new cRuntimeError(this,"negative property value index %d for key `%s'", k, key);
     if (k>=v.size())
         setNumValues(key, k+1);
     stringPool.release(v[k]);
