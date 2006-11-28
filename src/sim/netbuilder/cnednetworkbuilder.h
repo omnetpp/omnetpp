@@ -83,6 +83,7 @@ class cNEDNetworkBuilder
     ExpressionNode *findExpression(NEDElement *node, const char *exprname);
     long evaluateAsLong(ExpressionNode *exprNode, cComponent *context, bool inSubcomponentScope);
     bool evaluateAsBool(ExpressionNode *exprNode, cComponent *context, bool inSubcomponentScope);
+    std::string evaluateAsString(ExpressionNode *exprNode, cComponent *context, bool inSubcomponentScope);
 
   public:
     /** Constructor */

@@ -308,14 +308,14 @@ void cNEDNetworkBuilder::addSubmodule(cModule *modp, SubmoduleNode *submod)
     // create submodule
     const char *submodname = submod->getName();
     std::string submodtypename;
-    if (strnull(submod->getLikeParam()))
+    if (strnull(submod->getLikeType()))
     {
         submodtypename = submod->getType();
     }
     else
     {
-        const char *parname = submod->getLikeParam();
-        submodtypename = modp->par(parname).stringValue();
+        ExpressionNode *likeParamExpr = findExpression(submod, "like-param");
+        submodtypename = evaluateAsString(likeParamExpr, modp, false); //XXX store it as expression, don't evaluate it now, as it might be random etc!!!
     }
 
     ExpressionNode *vectorsizeexpr = findExpression(submod, "vector-size");
@@ -323,6 +323,7 @@ void cNEDNetworkBuilder::addSubmodule(cModule *modp, SubmoduleNode *submod)
     if (!vectorsizeexpr)
     {
         cModuleType *submodtype = findAndCheckModuleType(submodtypename.c_str(), modp, submodname);
+        //FIXME: check submodtype contains likeType as interfaceName!
         cModule *submodp = submodtype->create(submodname, modp);
         ModulePtrVector& v = submodMap[submodname];
         v.push_back(submodp);
@@ -619,15 +620,15 @@ cChannel *cNEDNetworkBuilder::createChannel(ChannelSpecNode *channelspec, cModul
     // create channel object
     cChannel *channelp = NULL;
     std::string channeltypename;
-    if (strnull(channelspec->getLikeParam()))
+    if (strnull(channelspec->getLikeType()))
     {
         channeltypename = strnull(channelspec->getType()) ? "cBasicChannel" : channelspec->getType();
     }
     else
     {
-        // "like"
-        const char *parname = channelspec->getLikeParam();
-        channeltypename = parentmodp->par(parname).stringValue();
+        ExpressionNode *likeParamExpr = findExpression(channelspec, "like-param");
+        channeltypename = evaluateAsString(likeParamExpr, parentmodp, false);
+        //XXX check actual type fulfills likeType
     }
 
     cChannelType *channeltype = findAndCheckChannelType(channeltypename.c_str());
@@ -671,5 +672,12 @@ bool cNEDNetworkBuilder::evaluateAsBool(ExpressionNode *exprNode, cComponent *co
     //FIXME this can be speeded up by caching cDynamicExpressions, and not recreating them every time. eg. use a NEDElement.id()-to-Expression map!
     cDynamicExpression *e = cExpressionBuilder().process(exprNode, inSubcomponentScope);
     return e->boolValue(context);
+}
+
+std::string cNEDNetworkBuilder::evaluateAsString(ExpressionNode *exprNode, cComponent *context, bool inSubcomponentScope)
+{
+    //FIXME this can be speeded up by caching cDynamicExpressions, and not recreating them every time. eg. use a NEDElement.id()-to-Expression map!
+    cDynamicExpression *e = cExpressionBuilder().process(exprNode, inSubcomponentScope);
+    return e->stringValue(context);
 }
 
