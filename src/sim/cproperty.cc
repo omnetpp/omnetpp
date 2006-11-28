@@ -32,8 +32,10 @@ cProperty::cProperty(const char *name, const char *index) : cNamedObject(name, t
 cProperty::~cProperty()
 {
     // release pooled strings
-    stringPool.release(propindex);
-    stringPool.release(propfullname);
+    if (propindex)
+        stringPool.release(propindex);
+    if (propfullname)
+        stringPool.release(propfullname);
     int n = keyv.size();
     for (int i=0; i<n; i++)
     {
