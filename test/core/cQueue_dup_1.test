@@ -1,5 +1,5 @@
 %description:
-check that cQueue::operator=() preserves order
+check cQueue::operator=
 
 %module: {Queues}
 
@@ -8,45 +8,52 @@ class {Queues} : public cSimpleModule
     Module_Class_Members({Queues}, cSimpleModule, 16384);
     virtual void activity();
     void fillQueue(cQueue& q);
-    void output(cQueue& q, char *prefix);
+    void output(cQueue& q, const char *label);
 };
 
 Define_Module({Queues});
 
 void {Queues}::fillQueue(cQueue& q)
 {
-  cMsgPar *parm = NULL;
-  parm = new cMsgPar("1");
-  q.insert(parm);
-  parm = new cMsgPar("3");
-  q.insert(parm);
-  parm = new cMsgPar("2");
-  q.insert(parm);
+    cMsgPar *parm = NULL;
+    parm = new cMsgPar("1");
+    q.insert(parm);
+    parm = new cMsgPar("3");
+    q.insert(parm);
+    parm = new cMsgPar("2");
+    q.insert(parm);
 }
 
-void {Queues}::output(cQueue& q, char* prefix)
+void {Queues}::output(cQueue& q, const char *label)
 {
-  ev << prefix << " " << q.name() << ":";
-  while (!q.empty())
-    ev << " " << q.pop()->name();
-  ev << endl;
+    ev << label << q.name() << ": len=" << q.length() << ", contents:";
+    while (!q.empty())
+        ev << " " << q.pop()->name();
+    ev << endl;
 }
 
 void {Queues}::activity()
 {
-  cQueue initial("Initial");
-  cQueue duplicate("Duplicate");
+    cQueue initial("initial");
+    cQueue copy("copy");
 
-  fillQueue(initial);
-  duplicate = initial;
-  output(initial, "Unsorted");
-  output(duplicate, "Unsorted");
+    fillQueue(initial);
+    copy = initial;
+    output(initial, "");
+    output(copy, "");
 
-  initial.clear();
-  duplicate.clear();
+    cQueue *dupped = initial.dup();
+    output(*dupped, "dupped ");
+
+    initial.clear();
+    copy.clear();
+    delete dupped;
+
+    ev << ".\n";
 }
 
 %contains: stdout
-Unsorted Initial: 1 3 2
-Unsorted Duplicate: 1 3 2
-
+initial: len=3, contents: 1 3 2
+copy: len=3, contents: 1 3 2
+dupped initial: len=3, contents: 1 3 2
+.
