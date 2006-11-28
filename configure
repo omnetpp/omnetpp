@@ -6319,11 +6319,6 @@ fi
 #----------------------
                                                                                                                                                                                                                                                                                                   ac_config_files="$ac_config_files Makefile src/sim/Makefile src/envir/Makefile src/tkenv/Makefile src/cmdenv/Makefile src/nedc/Makefile src/nedxml/Makefile src/common/Makefile src/scave/Makefile src/eventlog/Makefile src/utils/Makefile src/utils/opp_makemake src/utils/opp_neddoc test/core/runtest samples/aloha/Makefile samples/cqn/Makefile samples/dyna/Makefile samples/fifo/Makefile samples/hcube/Makefile samples/hist/Makefile samples/neddemo/Makefile samples/p-to-p/Makefile samples/queueing/Makefile samples/routing/Makefile samples/queues/Makefile samples/tictoc/Makefile samples/tokenring/Makefile samples/sockets/Makefile test/Makefile"
 
-#FIXME todo add these:
-#  src/scave/Makefile
-#  src/eventlog/Makefile
-#  src/common/Makefile
-
 
 #----------------------
 # Substitutions.
@@ -7442,6 +7437,7 @@ chmod +x src/utils/opp_makemake
 chmod +x src/utils/opp_test
 chmod +x src/utils/opp_makedep
 chmod +x src/utils/opp_neddoc
+chmod +x test/core/runtest
 
 (
 cd src/utils && cp ver.h.base ver.h && \

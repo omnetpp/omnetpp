@@ -836,11 +836,6 @@ AC_CONFIG_FILES(
   samples/sockets/Makefile
   test/Makefile
 )
-#FIXME todo add these:
-#  src/scave/Makefile
-#  src/eventlog/Makefile
-#  src/common/Makefile
-
 
 #----------------------
 # Substitutions.
@@ -941,6 +936,7 @@ chmod +x src/utils/opp_makemake
 chmod +x src/utils/opp_test
 chmod +x src/utils/opp_makedep
 chmod +x src/utils/opp_neddoc
+chmod +x test/core/runtest
 
 (
 cd src/utils && cp ver.h.base ver.h && \

@@ -7,7 +7,7 @@ Tests cProperty keys and values
 #define PRINTKEY(k)   ev << "key(" << k << "): has=" << (prop->hasKey(k)?"1":"0") << " len=" << prop->numValues(k) << "\n";
 
 %activity:
-__asm int 3;
+//__asm int 3;
 cProperty *prop;
 prop = new cProperty("foo"); PRINTINFO;
 
