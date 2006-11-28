@@ -17,7 +17,7 @@ import "hcube.ned";
 // Building block of the delection routing hypercube. The interface of
 // this module conforms to the HCNode interface defined in hcube.ned.
 //
-module HypercubeNode
+module HypercubeNode like HCNode
 {
     parameters:
         int address;
