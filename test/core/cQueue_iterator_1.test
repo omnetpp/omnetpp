@@ -18,17 +18,17 @@ for (i=0; i<5; i++)
     q.insert(msgs[i]);
 }
 
-i=4;
+i=0;
 ev << "forward:\n";
-for (cQueueIterator iter(q); !iter.end(); iter++, i--)
+for (cQueue::Iterator iter(q); !iter.end(); iter++, i++)
 {
     ev << " msg[" << i << "]=" << msgs[i]->name() << ", iter()=" << iter()->name() << endl;
     CHECK(iter()==msgs[i]);
 }
 
-i=0;
+i=4;
 ev << "backward:\n";
-for (cQueueIterator iter2(q,false); !iter2.end(); iter2--, i++)
+for (cQueue::Iterator iter2(q,true); !iter2.end(); iter2--, i--)
 {
     ev << " msg[" << i << "]=" << msgs[i]->name() << ", iter()=" << iter2()->name() << endl;
     CHECK(iter2()==msgs[i]);
