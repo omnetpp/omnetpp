@@ -107,7 +107,7 @@ class SIM_API cMessage : public cOwnedObject
   private:
     int msgkind;               // message kind -- <0 reserved, 0>= user-defined meaning  FIXME make short!!!
     int prior;                 // priority -- used for scheduling msgs with equal times  FIXME make short!!!
-    long len;                  // length of message -- used for bit errors and transm.delay
+    long len;                  // length of message -- used for bit errors and transm.delay -- FIXME change to long long?
     bool error : 1;            // bit error occurred during transmission                 //FIXME into flags!!
     unsigned char sharecount : 7; // num of msgs MINUS ONE that have this one encapsulated.
                                // 0: not shared (not encapsulated or encapsulated in one message);
@@ -117,7 +117,7 @@ class SIM_API cMessage : public cOwnedObject
     short srcprocid;           // reserved for use by parallel execution: id of source partition
     cArray *parlistp;          // ptr to list of parameters
     cMessage *encapmsg;        // ptr to encapsulated msg
-    cObject *ctrlp;       // ptr to "control info"
+    cObject *ctrlp;            // ptr to "control info"
     void *contextptr;          // a stored pointer -- user-defined meaning, used with self-messages
 
     int frommod,fromgate;      // source module and gate IDs -- set internally
@@ -485,7 +485,7 @@ class SIM_API cMessage : public cOwnedObject
      *
      * @see parList()
      */
-    cOwnedObject *getObject(const char *s)  {return parList().get(s);}
+    cObject *getObject(const char *s)  {return parList().get(s);}
 
     /**
      * Check if an object with the given name exists in the message's object list.
@@ -508,7 +508,7 @@ class SIM_API cMessage : public cOwnedObject
      *
      * @see parList()
      */
-    cOwnedObject *removeObject(const char *s)  {return parList().remove(s);}
+    cObject *removeObject(const char *s)  {return parList().remove(s);}
 
     /**
      * Remove the object with the given name from the message's object list, and
@@ -520,7 +520,7 @@ class SIM_API cMessage : public cOwnedObject
      *
      * @see parList()
      */
-    cOwnedObject *removeObject(cOwnedObject *p)  {return parList().remove(p);}
+    cObject *removeObject(cOwnedObject *p)  {return parList().remove(p);}
     //@}
 
     /** @name Message encapsulation. */

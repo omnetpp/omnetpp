@@ -5,7 +5,7 @@
 //
 //
 //  Declaration of the following classes:
-//    cArray : flexible array to store cOwnedObject objects
+//    cArray : flexible array to store cObject objects
 //
 //==========================================================================
 
@@ -23,7 +23,7 @@
 
 
 /**
- * Container object that holds objects derived from cOwnedObject.
+ * Container object that holds objects derived from cObject.
  * cArray stores the pointers of the objects inserted instead of making copies.
  * cArray works as an array, but if it gets full, it grows automatically by
  * a specified delta.
@@ -65,7 +65,7 @@ class SIM_API cArray : public cOwnedObject
          * Returns the current object, or NULL if the iterator is not
          * at a valid position.
          */
-        cOwnedObject *operator()()  {return array->get(k);}
+        cObject *operator()()  {return array->get(k);}
 
         /**
          * Returns true if the iterator has reached either end of the array.
@@ -80,7 +80,7 @@ class SIM_API cArray : public cOwnedObject
          * If elements are added or removed during interation, the behaviour
          * is undefined.
          */
-        cOwnedObject *operator++(int);
+        cObject *operator++(int);
 
         /**
          * Returns the current object, then moves the iterator to the previous item.
@@ -90,12 +90,12 @@ class SIM_API cArray : public cOwnedObject
          * If elements are added or removed during interation, the behaviour
          * is undefined.
          */
-        cOwnedObject *operator--(int);
+        cObject *operator--(int);
     };
 
   private:
     bool tkownership; //FIXME utilize cOwnedObject::flags
-    cOwnedObject **vect;   // vector of objects
+    cObject **vect;   // vector of objects
     int size;         // size of vector
     int delta;        // if needed, grows by delta
     int firstfree;    // first free position in vect[]
@@ -127,7 +127,7 @@ class SIM_API cArray : public cOwnedObject
 
     /**
      * Assignment operator. The name member doesn't get copied;
-     * see cOwnedObject's operator=() for more details.
+     * see cNamedObject's operator=() for more details.
      * Duplication and assignment work all right with cArray.
      * Contained objects that are owned by cArray will be duplicated
      * so that the new cArray will have its own copy of them.
@@ -193,14 +193,14 @@ class SIM_API cArray : public cOwnedObject
      * will be stored. The return value is the object's index in the
      * array.
      */
-    int add(cOwnedObject *obj);
+    int add(cObject *obj);
 
     /**
      * Inserts the object into the array at the given position. If
      * the position is occupied, the function throws a cRuntimeError.
      * The return value is the object's index in the array.
      */
-    int addAt(int m,cOwnedObject *obj);
+    int addAt(int m, cObject *obj);
 
     /**
      * Inserts the object into the array. If the array already contains
@@ -209,18 +209,18 @@ class SIM_API cArray : public cOwnedObject
      * is deleted using discard().
      * The return value is the object's index in the array.
      */
-    int set(cOwnedObject *obj);
+    int set(cObject *obj);
 
     /**
      * Searches the array for the pointer of the object passed and returns
      * the index of the first match. If the object was not found, -1 is
      * returned.
      */
-    int find(cOwnedObject *obj) const;
+    int find(cObject *obj) const;
 
     /**
      * Returns the index of the first item in the array that has the
-     * name pointed to by s (cOwnedObject::isName() is used.)
+     * name pointed to by s (cObject::isName() is used.)
      * If no such item was found, -1 is returned.
      */
     int find(const char *objname) const;
@@ -229,80 +229,74 @@ class SIM_API cArray : public cOwnedObject
      * Returns reference to the mth object in the array. Returns NULL
      * if the mth position is not used.
      */
-    cOwnedObject *get(int m);
+    cObject *get(int m);
 
     /**
      * Returns reference to the first object in the array with name s.
      * Returns NULL if no object with the given name was found.
      */
-    cOwnedObject *get(const char *objname);
+    cObject *get(const char *objname);
 
     /**
      * Returns reference to the mth object in the array. Returns NULL
      * if the mth position is not used.
      */
-    const cOwnedObject *get(int m) const;
+    const cObject *get(int m) const;
 
     /**
      * Returns reference to the first object in the array with name s.
      * Returns NULL if no object with the given name was found.
      */
-    const cOwnedObject *get(const char *objname) const;
+    const cObject *get(const char *objname) const;
 
     /**
      * The same as get(int). With the indexing operator,
      * cArray can be used as a vector.
      */
-    cOwnedObject *operator[](int m)
-      {return get(m);}
+    cObject *operator[](int m)  {return get(m);}
 
     /**
      * The same as get(const char *). With the indexing operator,
      * cArray can be used as a vector.
      */
-    cOwnedObject *operator[](const char *objname)
-      {return get(objname);}
+    cObject *operator[](const char *objname)  {return get(objname);}
 
     /**
      * The same as get(int). With the indexing operator,
      * cArray can be used as a vector.
      */
-    const cOwnedObject *operator[](int m) const
-      {return get(m);}
+    const cObject *operator[](int m) const  {return get(m);}
 
     /**
      * The same as get(const char *). With the indexing operator,
      * cArray can be used as a vector.
      */
-    const cOwnedObject *operator[](const char *objname) const
-      {return get(objname);}
+    const cObject *operator[](const char *objname) const  {return get(objname);}
 
     /**
      * Returns true if position m is used in the array, otherwise false.
      */
-    bool exist(int m) const
-      {return m>=0 && m<=last && vect[m]!=NULL;}
+    bool exist(int m) const  {return m>=0 && m<=last && vect[m]!=NULL;}
 
     /**
      * Returns true if the array contains an object with the given name,
      * otherwise false.
      */
-    bool exist(const char *objname) const
-      {return find(objname)!=-1;}
+    bool exist(const char *objname) const  {return find(objname)!=-1;}
 
     /**
      * Removes the object given with its index/name/pointer from the
      * container. (If the object was owned by the container, drop()
      * is called.)
      */
-    cOwnedObject *remove(int m);
+    cObject *remove(int m);
 
     /**
      * Removes the object given with its index/name/pointer from the
      * container. (If the object was owned by the container, drop()
      * is called.)
      */
-    cOwnedObject *remove(const char *objname);
+    cObject *remove(const char *objname);
 
     /**
      * Removes the object given with its index/name/pointer from the
@@ -310,7 +304,7 @@ class SIM_API cArray : public cOwnedObject
      * found, NULL is returned. (If the object was owned by the container, drop()
      * is called.)
      */
-    cOwnedObject *remove(cOwnedObject *obj);
+    cObject *remove(cObject *obj);
     //@}
 
     /** @name Ownership control flag.

@@ -174,6 +174,15 @@ class SIM_API cObject
     virtual cObject *owner() const {return NULL;}
 
     /**
+     * Returns true if this class is a subclass of cOwnedObject.
+     * This is a performance optimization, to avoid frequent calls to
+     * dynamic_cast<>. In cObject this method returns false, in
+     * cOwnedObject it returns true, and it MUST NOT be defined on
+     * any other class.
+     */
+    virtual bool isOwnedObject() const {return false;}
+
+    /**
      * Enables traversing the object tree, performing some operation on
      * each object. The operation is encapsulated in the particular subclass
      * of cVisitor.

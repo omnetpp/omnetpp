@@ -176,8 +176,7 @@ class SIM_API cOwnedObject : public cNamedObject
     virtual void take(cOwnedObject *obj);
 
     /**
-     * Releases ownership of `object'. Actually it gives ownership of `object'
-     * back to its default owner.
+     * Releases ownership of `object', giving it back to its default owner.
      * The function called by the container object when obj is removed
      * from the container -- releases the ownership of the object and
      * hands it over to its default owner.
@@ -260,6 +259,11 @@ class SIM_API cOwnedObject : public cNamedObject
      * Returns pointer to the owner of the object.
      */
     virtual cOwnedObject *owner() const {return ownerp;}
+
+    /**
+     * Returns true.
+     */
+    virtual bool isOwnedObject() const {return true;}
 
     /**
      * Returns false in cOwnedObject and in all derived classes except cDefaultList.

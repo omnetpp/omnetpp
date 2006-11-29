@@ -1,20 +1,4 @@
-my...() functions removed (they were #defines to opp_...() functions)
-	#define myrandomize      opp_randomize
-	#define genk_myrandomize genk_opp_randomize
-	#define mystrdup         opp_strdup
-	#define mystrcpy         opp_strcpy
-	#define mystrcmp         opp_strcmp
-	#define mystrmatch       opp_strmatch
-	#define fastconcat       opp_concat
-	#define indexedname      opp_mkindexedname
-
-cQueue changed: sorting removed; head()/tail() removed, back()/front() added
-(insert at back, pop from front!); because of head/tail change, iterator
-direction and meaning of insertBefore/insertAfter changed
-
-cSimpleModule.end() removed
-
-
+temp collecting place for changelog: src/sim/ChangeLog
 
 2006-10-21  ------ omnetpp-3.3 released ------
 

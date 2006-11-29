@@ -450,7 +450,7 @@ cObject *cMessage::removeControlInfo()
 cMsgPar& cMessage::par(int n)
 {
     cArray& parlist = parList();
-    cOwnedObject *p = parlist.get(n);
+    cObject *p = parlist.get(n);
     if (!p)
         throw new cRuntimeError(this,"par(int): has no parameter #%d",n);
     if (!dynamic_cast<cMsgPar *>(p))
@@ -461,7 +461,7 @@ cMsgPar& cMessage::par(int n)
 cMsgPar& cMessage::par(const char *s)
 {
     cArray& parlist = parList();
-    cOwnedObject *p = parlist.get(s);
+    cObject *p = parlist.get(s);
     if (!p)
         throw new cRuntimeError(this,"par(const char *): has no parameter called `%s'",s);
     if (!dynamic_cast<cMsgPar *>(p))
@@ -538,7 +538,7 @@ void cMessage::setArrivalTime(simtime_t t)
     delivd = t;
 }
 
-int cMessage::cmpbydelivtime(cOwnedObject *one, cOwnedObject *other)
+int cMessage::cmpbydelivtime(cOwnedObject *one, cOwnedObject *other) //XXX needed anywhere?
 {
     // compare by delivery time and priority
     cMessage *msg1 = (cMessage*)one,
@@ -547,7 +547,7 @@ int cMessage::cmpbydelivtime(cOwnedObject *one, cOwnedObject *other)
     return (x!=0) ? (x>0 ? 1 : -1) : (msg1->prior - msg2->prior);
 }
 
-int cMessage::cmpbypriority(cOwnedObject *one, cOwnedObject *other)
+int cMessage::cmpbypriority(cOwnedObject *one, cOwnedObject *other) //XXX needed anywhere?
 {
     int x = ((cMessage*)one)->prior - ((cMessage*)other)->prior;
     return sgn(x);

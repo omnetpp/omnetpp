@@ -5,7 +5,7 @@
 //           Discrete System Simulation in C++
 //
 //   Member functions of
-//    cArray : flexible array to store cOwnedObject objects
+//    cArray : flexible array to store cObject objects
 //
 //  Author: Andras Varga
 //
@@ -31,6 +31,12 @@
 Register_Class(cArray);
 
 
+//XXX this needs to be tested (test suite!) with:
+// 1) non-cOwnedObject objects, where owner() returns NULL
+// 2) non-cOwnedObject objects, where owner()!=NULL (and possible the array)
+// 3) cOwnedObject objects with takeownership==false
+// 4) cOwnedObject objects with takeownership==true
+
 void cArray::Iterator::init(const cArray& a, bool athead)
 {
     array = const_cast<cArray *>(&a); // we don't want a separate Const_Iterator class
@@ -53,11 +59,11 @@ void cArray::Iterator::init(const cArray& a, bool athead)
     }
 }
 
-cOwnedObject *cArray::Iterator::operator++(int)
+cObject *cArray::Iterator::operator++(int)
 {
     if (k<0 || k>=array->items())
         return NULL;
-    cOwnedObject *obj = array->get(k);
+    cObject *obj = array->get(k);
 
     k++;
     while (!array->get(k) && k<array->items())
@@ -65,11 +71,11 @@ cOwnedObject *cArray::Iterator::operator++(int)
     return obj;
 }
 
-cOwnedObject *cArray::Iterator::operator--(int)
+cObject *cArray::Iterator::operator--(int)
 {
     if (k<0 || k>=array->items())
         return NULL;
-    cOwnedObject *obj = array->get(k);
+    cObject *obj = array->get(k);
     k--;
     while (!array->get(k) && k>=0)
         k--;
@@ -94,7 +100,7 @@ cOwnedObject( name )
     size = Max(siz,0);
     firstfree = 0;
     last = -1;
-    vect = new cOwnedObject *[size];
+    vect = new cObject *[size];
     for (int i=0; i<size; i++) vect[i]=NULL;
 }
 
@@ -118,12 +124,12 @@ cArray& cArray::operator=(const cArray& list)
     firstfree = list.firstfree;
     last = list.last;
     delete [] vect;
-    vect = new cOwnedObject *[size];
-    if (vect) memcpy( vect, list.vect, size * sizeof(cOwnedObject *) );
+    vect = new cObject *[size];
+    if (vect) memcpy( vect, list.vect, size * sizeof(cObject *) );
 
     for (int i=0; i<=last; i++)
-        if (vect[i] && vect[i]->owner()==const_cast<cArray*>(&list))
-            take( vect[i] = (cOwnedObject *)vect[i]->dup() );
+        if (vect[i] && vect[i]->isOwnedObject() && vect[i]->owner()==const_cast<cArray*>(&list))
+            take((cOwnedObject *)(vect[i] = vect[i]->dup()));
     return *this;
 }
 
@@ -181,7 +187,7 @@ void cArray::netUnpack(cCommBuffer *buffer)
     buffer->unpack(firstfree);
     buffer->unpack(last);
 
-    vect = new cOwnedObject *[size];
+    vect = new cObject *[size];
     for (int i = 0; i <= last; i++)
     {
         if (!buffer->checkFlag())
@@ -196,21 +202,22 @@ void cArray::clear()
 {
     for (int i=0; i<=last; i++)
     {
-        if (vect[i] && vect[i]->owner()==this)
-            dropAndDelete(vect[i]);
+        if (vect[i] && vect[i]->isOwnedObject() && vect[i]->owner()==this)
+            dropAndDelete((cOwnedObject *)vect[i]);
         vect[i] = NULL;  // this is not strictly necessary
     }
     firstfree = 0;
     last = -1;
 }
 
-int cArray::add(cOwnedObject *obj)
+int cArray::add(cObject *obj)
 {
     if (!obj)
         throw new cRuntimeError(this,"cannot insert NULL pointer");
 
     int retval;
-    if (takeOwnership()) take( obj );
+    if (obj->isOwnedObject() && takeOwnership())
+        take((cOwnedObject *)obj);
     if (firstfree < size)  // fits in current vector
     {
         vect[firstfree] = obj;
@@ -222,9 +229,9 @@ int cArray::add(cOwnedObject *obj)
     }
     else // must allocate bigger vector
     {
-        cOwnedObject **v = new cOwnedObject *[size+delta];
-        memcpy(v, vect, sizeof(cOwnedObject*)*size );
-        memset(v+size, 0, sizeof(cOwnedObject*)*delta);
+        cObject **v = new cObject *[size+delta];
+        memcpy(v, vect, sizeof(cObject*)*size );
+        memset(v+size, 0, sizeof(cObject*)*delta);
         delete [] vect;
         vect = v;
         vect[size] = obj;
@@ -235,7 +242,7 @@ int cArray::add(cOwnedObject *obj)
     return retval;
 }
 
-int cArray::addAt(int m, cOwnedObject *obj)
+int cArray::addAt(int m, cObject *obj)
 {
     if (!obj)
         throw new cRuntimeError(this,"cannot insert NULL pointer");
@@ -247,7 +254,8 @@ int cArray::addAt(int m, cOwnedObject *obj)
         if (vect[m]!=NULL)
             throw new cRuntimeError(this,"addAt(): position %d already used",m);
         vect[m] = obj;
-        if (takeOwnership()) take(obj);
+        if (obj->isOwnedObject() && takeOwnership())
+            take((cOwnedObject *)obj);
         last = Max(m,last);
         if (firstfree==m)
             do {
@@ -256,13 +264,14 @@ int cArray::addAt(int m, cOwnedObject *obj)
     }
     else // must allocate bigger vector
     {
-        cOwnedObject **v = new cOwnedObject *[m+delta];
-        memcpy(v, vect, sizeof(cOwnedObject*)*size);
-        memset(v+size, 0, sizeof(cOwnedObject*)*(m+delta-size));
+        cObject **v = new cObject *[m+delta];
+        memcpy(v, vect, sizeof(cObject*)*size);
+        memset(v+size, 0, sizeof(cObject*)*(m+delta-size));
         delete [] vect;
         vect = v;
         vect[m] = obj;
-        if (takeOwnership()) take(obj);
+        if (obj->isOwnedObject() && takeOwnership())
+            take((cOwnedObject *)obj);
         size = m+delta;
         last = m;
         if (firstfree==m)
@@ -271,7 +280,7 @@ int cArray::addAt(int m, cOwnedObject *obj)
     return m;
 }
 
-int cArray::set(cOwnedObject *obj)
+int cArray::set(cObject *obj)
 {
     if (!obj)
         throw new cRuntimeError(this,"cannot insert NULL pointer");
@@ -283,16 +292,16 @@ int cArray::set(cOwnedObject *obj)
     }
     else
     {
-        if (vect[i]->owner()==this)
-            dropAndDelete(vect[i]);
+        if (vect[i]->isOwnedObject() && vect[i]->owner()==this)
+            dropAndDelete((cOwnedObject *)vect[i]);
         vect[i] = obj;
-        if (takeOwnership())
-            take(obj);
+        if (obj->isOwnedObject() && takeOwnership())
+            take((cOwnedObject *)obj);
         return i;
     }
 }
 
-int cArray::find(cOwnedObject *obj) const
+int cArray::find(cObject *obj) const
 {
     int i;
     for (i=0; i<=last; i++)
@@ -316,7 +325,7 @@ int cArray::find(const char *objname) const
         return -1;
 }
 
-cOwnedObject *cArray::get(int m)
+cObject *cArray::get(int m)
 {
     if (m>=0 && m<=last && vect[m])
         return vect[m];
@@ -324,7 +333,7 @@ cOwnedObject *cArray::get(int m)
         return NULL;
 }
 
-const cOwnedObject *cArray::get(int m) const
+const cObject *cArray::get(int m) const
 {
     if (m>=0 && m<=last && vect[m])
         return vect[m];
@@ -332,7 +341,7 @@ const cOwnedObject *cArray::get(int m) const
         return NULL;
 }
 
-cOwnedObject *cArray::get(const char *objname)
+cObject *cArray::get(const char *objname)
 {
     int m = find( objname );
     if (m==-1)
@@ -340,7 +349,7 @@ cOwnedObject *cArray::get(const char *objname)
     return get(m);
 }
 
-const cOwnedObject *cArray::get(const char *objname) const
+const cObject *cArray::get(const char *objname) const
 {
     int m = find( objname );
     if (m==-1)
@@ -348,7 +357,7 @@ const cOwnedObject *cArray::get(const char *objname) const
     return get(m);
 }
 
-cOwnedObject *cArray::remove(const char *objname)
+cObject *cArray::remove(const char *objname)
 {
     int m = find( objname );
     if (m==-1)
@@ -356,7 +365,7 @@ cOwnedObject *cArray::remove(const char *objname)
     return remove(m);
 }
 
-cOwnedObject *cArray::remove(cOwnedObject *obj)
+cObject *cArray::remove(cObject *obj)
 {
     if (!obj) return NULL;
 
@@ -366,18 +375,19 @@ cOwnedObject *cArray::remove(cOwnedObject *obj)
     return remove(m);
 }
 
-cOwnedObject *cArray::remove(int m)
+cObject *cArray::remove(int m)
 {
     if (m<0 || m>last || vect[m]==NULL)
         return NULL;
 
-    cOwnedObject *obj = vect[m]; vect[m] = NULL;
+    cObject *obj = vect[m]; vect[m] = NULL;
     firstfree = Min(firstfree, m);
     if (m==last)
         do {
             last--;
         } while (last>=0 && vect[last]==NULL);
-    if (obj->owner()==this)  drop( obj );
+    if (obj->isOwnedObject() && obj->owner()==this)
+        drop((cOwnedObject *)obj);
     return obj;
 }
 
