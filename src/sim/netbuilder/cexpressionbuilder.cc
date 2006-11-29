@@ -192,6 +192,10 @@ void cExpressionBuilder::doFunction(FunctionNode *node)
     }
     else if (!strcmp(funcname,"xmldoc"))
     {
+        // push args first
+        for (NEDElement *child=node->getFirstChild(); child; child=child->getNextSibling())
+            doNode(child);
+
         // syntax is xmldoc(file) or xmldoc(file, xpath); both args are string expressions
         ASSERT(argcount==1 || argcount==2);
         elems[pos++] = new NEDSupport::XMLDoc(argcount==2);
