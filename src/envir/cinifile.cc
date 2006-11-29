@@ -62,7 +62,7 @@ void cIniFile::_readFile(const char *fname, int section_id)
     // add this file to the 'files' vector
     files.push_back(sFile());
     int file_id = files.size()-1;
-    files[file_id].fname = opp_strdup(tidyFilename(absolutePath(fname).c_str()).c_str());
+    files[file_id].fname = opp_strdup(tidyFilename(absolutePath(fname).c_str(),true).c_str());
     files[file_id].directory = opp_strdup(directoryOf(files[file_id].fname).c_str());
 
     // then open and read this file
@@ -437,7 +437,7 @@ std::string cIniFile::getAsFilename(const char *sect, const char *key, const cha
        return "";
 
     const char *baseDir = files[entry->file_id].directory;
-    return tidyFilename(concatDirAndFile(baseDir, entry->value).c_str());
+    return tidyFilename(concatDirAndFile(baseDir, entry->value).c_str(),true);
 }
 
 std::string cIniFile::getAsFilenames(const char *sect, const char *key, const char *defaultval)
@@ -469,15 +469,15 @@ std::string cIniFile::getAsFilenames(const char *sect, const char *key, const ch
     {
         if (token[0]=='@' && token[1]=='@')
         {
-            result += quot + "@@" + tidyFilename(concatDirAndFile(baseDir, token+2).c_str()) + quot + " ";
+            result += quot + "@@" + tidyFilename(concatDirAndFile(baseDir, token+2).c_str(),true) + quot + " ";
         }
         else if (token[0]=='@')
         {
-            result += quot + "@" + tidyFilename(concatDirAndFile(baseDir, token+1).c_str()) + quot + " ";
+            result += quot + "@" + tidyFilename(concatDirAndFile(baseDir, token+1).c_str(),true) + quot + " ";
         }
         else
         {
-            result += quot + tidyFilename(concatDirAndFile(baseDir, token).c_str()) + quot + " ";
+            result += quot + tidyFilename(concatDirAndFile(baseDir, token).c_str(),true) + quot + " ";
         }
     }
     if (result.size()>0)

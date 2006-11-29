@@ -8,3 +8,4 @@ Test 1: Run nedtool @foo/list1.lst -- this should complete without error,
 Test 2: When running the executable, there should be no error. (The model 
         itself does nothing.)
 
+FIXME test the @@ feature as well

@@ -356,7 +356,7 @@ std::string TOmnetApp::getParameter(int run_no, const char *parname)
             return std::string(str);
         std::string fname(begQuote+1, endQuote-begQuote-1);
         const char *baseDir = getConfig()->getBaseDirectoryFor(getRunSectionName(run_no),"Parameters",parname);
-        fname = tidyFilename(concatDirAndFile(baseDir, fname.c_str()).c_str());
+        fname = tidyFilename(concatDirAndFile(baseDir, fname.c_str()).c_str(),true);
         std::string ret = std::string(str, begQuote-str+1) + fname + endQuote;
         return ret;
     }
