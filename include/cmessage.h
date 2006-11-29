@@ -22,7 +22,7 @@
 #include <time.h>
 #include "cownedobject.h"
 #include "carray.h"
-#include "cmessagepar.h"
+#include "cmsgpar.h"
 #include "csimulation.h"
 
 //=== classes mentioned:

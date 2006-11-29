@@ -76,7 +76,7 @@ sim_std_m.obj: sim_std_m.cc \
   ../../include/clongpar.h \
   ../../include/cmersennetwister.h \
   ../../include/cmessage.h \
-  ../../include/cmessagepar.h \
+  ../../include/cmsgpar.h \
   ../../include/cmodule.h \
   ../../include/cmsgheap.h \
   ../../include/cneddeclarationbase.h \
@@ -85,7 +85,6 @@ sim_std_m.obj: sim_std_m.cc \
   ../../include/cnamedobject.h \
   ../../include/cownedobject.h \
   ../../include/coutvect.h \
-  ../../include/cpacket.h \
   ../../include/cpar.h \
   ../../include/cparvalue.h \
   ../../include/cparsimcomm.h \

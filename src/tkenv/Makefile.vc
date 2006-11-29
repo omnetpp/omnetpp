@@ -111,7 +111,7 @@ inspector.obj: inspector.cc \
   ../../include/clongpar.h \
   ../../include/cmersennetwister.h \
   ../../include/cmessage.h \
-  ../../include/cmessagepar.h \
+  ../../include/cmsgpar.h \
   ../../include/cmodule.h \
   ../../include/cmsgheap.h \
   ../../include/cneddeclarationbase.h \
@@ -120,7 +120,6 @@ inspector.obj: inspector.cc \
   ../../include/cnamedobject.h \
   ../../include/cownedobject.h \
   ../../include/coutvect.h \
-  ../../include/cpacket.h \
   ../../include/cpar.h \
   ../../include/cparvalue.h \
   ../../include/cparsimcomm.h \
@@ -201,7 +200,7 @@ inspfactory.obj: inspfactory.cc \
   ../../include/clongpar.h \
   ../../include/cmersennetwister.h \
   ../../include/cmessage.h \
-  ../../include/cmessagepar.h \
+  ../../include/cmsgpar.h \
   ../../include/cmodule.h \
   ../../include/cmsgheap.h \
   ../../include/cneddeclarationbase.h \
@@ -210,7 +209,6 @@ inspfactory.obj: inspfactory.cc \
   ../../include/cnamedobject.h \
   ../../include/cownedobject.h \
   ../../include/coutvect.h \
-  ../../include/cpacket.h \
   ../../include/cpar.h \
   ../../include/cparvalue.h \
   ../../include/cparsimcomm.h \
@@ -299,7 +297,7 @@ modinsp.obj: modinsp.cc \
   ../../include/cneddeclarationbase.h \
   ../../include/cparvalue.h \
   ../../include/cexpression.h \
-  ../../include/cmessagepar.h \
+  ../../include/cmsgpar.h \
   ../../include/cfunction.h \
   inspector.h \
   tkutil.h \
@@ -341,7 +339,7 @@ objinsp.obj: objinsp.cc \
   ../../include/clongpar.h \
   ../../include/cmersennetwister.h \
   ../../include/cmessage.h \
-  ../../include/cmessagepar.h \
+  ../../include/cmsgpar.h \
   ../../include/cmodule.h \
   ../../include/cmsgheap.h \
   ../../include/cneddeclarationbase.h \
@@ -350,7 +348,6 @@ objinsp.obj: objinsp.cc \
   ../../include/cnamedobject.h \
   ../../include/cownedobject.h \
   ../../include/coutvect.h \
-  ../../include/cpacket.h \
   ../../include/cpar.h \
   ../../include/cparvalue.h \
   ../../include/cparsimcomm.h \
@@ -428,7 +425,7 @@ statinsp.obj: statinsp.cc \
   ../../include/cclassfactory.h \
   ../../include/cmsgheap.h \
   ../../include/ccoroutine.h \
-  ../../include/cmessagepar.h \
+  ../../include/cmsgpar.h \
   ../../include/cfunction.h \
   ../../include/cexpression.h \
   inspector.h \
@@ -470,7 +467,7 @@ tkapp.obj: tkapp.cc \
   ../../include/cexpression.h \
   ../../include/carray.h \
   ../../include/cclassfactory.h \
-  ../../include/cmessagepar.h \
+  ../../include/cmsgpar.h \
   ../../include/cfunction.h \
   ../../include/cneddeclarationbase.h \
   ../../include/cparvalue.h \
@@ -522,11 +519,10 @@ tkcmd.obj: tkcmd.cc \
   ../../include/cneddeclarationbase.h \
   ../../include/cparvalue.h \
   ../../include/cexpression.h \
-  ../../include/cmessagepar.h \
+  ../../include/cmsgpar.h \
   ../../include/cfunction.h \
   tkutil.h \
-  tkdefs.h \
-  ../../include/cObject.h
+  tkdefs.h
 tklib.obj: tklib.cc \
   tklib.h \
   tkapp.h
@@ -559,11 +555,10 @@ tkutil.obj: tkutil.cc \
   ../../include/cclassfactory.h \
   ../../include/cmsgheap.h \
   ../../include/ccoroutine.h \
-  ../../include/cObject.h \
   tkdefs.h
 visitor.obj: visitor.cc \
   ../../include/cenvir.h \
-  ../../include/cObject.h \
+  ../../include/cobject.h \
   ../../include/cmodule.h \
   ../../include/cmessage.h \
   ../../include/cqueue.h \
@@ -588,14 +583,13 @@ visitor.obj: visitor.cc \
   ../../include/cdefaultlist.h \
   ../../include/cnamedobject.h \
   ../../include/cexception.h \
-  ../../include/cobject.h \
   ../../include/cstringpool.h \
   ../../include/opp_string.h \
   ../../include/carray.h \
   ../../include/cclassfactory.h \
   ../../include/cmsgheap.h \
   ../../include/ccoroutine.h \
-  ../../include/cmessagepar.h \
+  ../../include/cmsgpar.h \
   ../../include/cfunction.h \
   ../../include/cexpression.h \
   ../../include/ccomponenttype.h \

@@ -19,9 +19,9 @@ CPPOBJS_STD=\
     cdetect.obj cdisplaystring.obj cdoublepar.obj cdynamicexpression.obj \
     cenum.obj cexception.obj cfsm.obj cfunction.obj cgate.obj chist.obj \
     cksplit.obj clcg32.obj cllist.obj clongpar.obj cmersennetwister.obj \
-    cmessage.obj cmessagepar.obj cmodule.obj cmsgheap.obj \
+    cmessage.obj cmsgpar.obj cmodule.obj cmsgheap.obj \
     cnedfunction.obj cobject.obj coutvect.obj cnamedobject.obj \
-    cpacket.obj cpar.obj cparvalue.obj cownedobject.obj cproperties.obj cproperty.obj \
+    cpar.obj cparvalue.obj cownedobject.obj cproperties.obj cproperty.obj \
     cpsquare.obj cqueue.obj cscheduler.obj csimplemodule.obj \
     csimulation.obj cstat.obj cstlwatch.obj cstringpar.obj \
     cstringpool.obj cstrtokenizer.obj cclassdescriptor.obj ctopo.obj cvarhist.obj \
@@ -165,7 +165,7 @@ cbasicchannel.obj: cbasicchannel.cc \
   ../../include/cparvalue.h \
   ../../include/cexpression.h \
   ../../include/carray.h \
-  ../../include/cmessagepar.h \
+  ../../include/cmsgpar.h \
   ../../include/cfunction.h \
   ../../include/crng.h \
   ../../include/cmsgheap.h \
@@ -222,7 +222,7 @@ cchannel.obj: cchannel.cc \
   ../../include/cparvalue.h \
   ../../include/cexpression.h \
   ../../include/carray.h \
-  ../../include/cmessagepar.h \
+  ../../include/cmsgpar.h \
   ../../include/cfunction.h \
   ../../include/cmsgheap.h \
   ../../include/ccoroutine.h \
@@ -383,7 +383,7 @@ ccompoundmodule.obj: ccompoundmodule.cc \
   ../../include/ccoroutine.h \
   ../../include/cneddeclarationbase.h \
   ../../include/cparvalue.h \
-  ../../include/cmessagepar.h \
+  ../../include/cmsgpar.h \
   ../../include/cfunction.h
 ccoroutine.obj: ccoroutine.cc \
   ../../include/ccoroutine.h \
@@ -640,7 +640,7 @@ cgate.obj: cgate.cc \
   ../../include/util.h \
   ../../include/ccomponenttype.h \
   ../../include/cownedobject.h \
-  ../../include/cmessagepar.h \
+  ../../include/cmsgpar.h \
   ../../include/defs.h \
   ../../include/cnamedobject.h \
   ../../include/cexception.h \
@@ -811,7 +811,7 @@ cmersennetwister.obj: cmersennetwister.cc \
   ../../include/cstringpool.h \
   ../../include/cvisitor.h \
   ../../include/regmacros.h \
-  ../../include/cmessagepar.h \
+  ../../include/cmsgpar.h \
   ../../include/csimulation.h \
   ../../include/cfunction.h \
   ../../include/cmsgheap.h \
@@ -844,35 +844,9 @@ cmessage.obj: cmessage.cc \
   ../../include/cexpression.h \
   ../../include/cmsgheap.h \
   ../../include/ccoroutine.h \
-  ../../include/cmessagepar.h \
+  ../../include/cmsgpar.h \
   ../../include/cfunction.h \
   ../../include/opp_string.h
-cmessagepar.obj: cmessagepar.cc \
-  ../../include/cmessagepar.h \
-  ../../include/cstat.h \
-  ../../include/globals.h \
-  ../../include/cfunction.h \
-  ../../include/cxmlelement.h \
-  ../../include/cconfig.h \
-  ../../include/cenvir.h \
-  ../../include/cexception.h \
-  ../../include/csimulation.h \
-  ../../include/ccommbuffer.h \
-  ../../include/cownedobject.h \
-  ../../include/defs.h \
-  ../../include/util.h \
-  ../../include/cnamedobject.h \
-  ../../include/errmsg.h \
-  ../../include/cobject.h \
-  ../../include/cstringpool.h \
-  ../../include/cvisitor.h \
-  ../../include/regmacros.h \
-  ../../include/onstartup.h \
-  ../../include/carray.h \
-  ../../include/cclassfactory.h \
-  ../../include/opp_string.h \
-  ../../include/cmsgheap.h \
-  ../../include/ccoroutine.h
 cmodule.obj: cmodule.cc \
   ../../include/cmodule.h \
   ../../include/csimplemodule.h \
@@ -900,7 +874,7 @@ cmodule.obj: cmodule.cc \
   ../../include/onstartup.h \
   ../../include/cexpression.h \
   ../../include/cclassfactory.h \
-  ../../include/cmessagepar.h \
+  ../../include/cmsgpar.h \
   ../../include/cfunction.h \
   ../../include/cmsgheap.h \
   ../../include/ccoroutine.h \
@@ -927,9 +901,35 @@ cmsgheap.obj: cmsgheap.cc \
   ../../include/cvisitor.h \
   ../../include/regmacros.h \
   ../../include/opp_string.h \
-  ../../include/cmessagepar.h \
+  ../../include/cmsgpar.h \
   ../../include/csimulation.h \
   ../../include/cfunction.h \
+  ../../include/ccoroutine.h
+cmsgpar.obj: cmsgpar.cc \
+  ../../include/cmsgpar.h \
+  ../../include/cstat.h \
+  ../../include/globals.h \
+  ../../include/cfunction.h \
+  ../../include/cxmlelement.h \
+  ../../include/cconfig.h \
+  ../../include/cenvir.h \
+  ../../include/cexception.h \
+  ../../include/csimulation.h \
+  ../../include/ccommbuffer.h \
+  ../../include/cownedobject.h \
+  ../../include/defs.h \
+  ../../include/util.h \
+  ../../include/cnamedobject.h \
+  ../../include/errmsg.h \
+  ../../include/cobject.h \
+  ../../include/cstringpool.h \
+  ../../include/cvisitor.h \
+  ../../include/regmacros.h \
+  ../../include/onstartup.h \
+  ../../include/carray.h \
+  ../../include/cclassfactory.h \
+  ../../include/opp_string.h \
+  ../../include/cmsgheap.h \
   ../../include/ccoroutine.h
 cnamedobject.obj: cnamedobject.cc \
   ../../include/cnamedobject.h \
@@ -1035,31 +1035,6 @@ cownedobject.obj: cownedobject.cc \
   ../../include/cclassfactory.h \
   ../../include/errmsg.h \
   ../../include/opp_string.h
-cpacket.obj: cpacket.cc \
-  ../../include/globals.h \
-  ../../include/cpacket.h \
-  ../../include/ccommbuffer.h \
-  ../../include/onstartup.h \
-  ../../include/carray.h \
-  ../../include/cclassfactory.h \
-  ../../include/defs.h \
-  ../../include/cownedobject.h \
-  ../../include/cenvir.h \
-  ../../include/util.h \
-  ../../include/cnamedobject.h \
-  ../../include/cexception.h \
-  ../../include/errmsg.h \
-  ../../include/cobject.h \
-  ../../include/cstringpool.h \
-  ../../include/cvisitor.h \
-  ../../include/regmacros.h \
-  ../../include/opp_string.h \
-  ../../include/cmessage.h \
-  ../../include/cmessagepar.h \
-  ../../include/csimulation.h \
-  ../../include/cfunction.h \
-  ../../include/cmsgheap.h \
-  ../../include/ccoroutine.h
 cpar.obj: cpar.cc \
   ../../include/cpar.h \
   ../../include/cparvalue.h \
@@ -1249,7 +1224,7 @@ cscheduler.obj: cscheduler.cc \
   ../../include/onstartup.h \
   ../../include/cownedobject.h \
   ../../include/carray.h \
-  ../../include/cmessagepar.h \
+  ../../include/cmsgpar.h \
   ../../include/cnamedobject.h \
   ../../include/cexception.h \
   ../../include/cstringpool.h \
@@ -1263,7 +1238,7 @@ csimplemodule.obj: csimplemodule.cc \
   ../../include/cmessage.h \
   ../../include/csimulation.h \
   ../../include/carray.h \
-  ../../include/cmessagepar.h \
+  ../../include/cmsgpar.h \
   ../../include/cqueue.h \
   ../../include/cenvir.h \
   ../../include/cexception.h \
@@ -1318,7 +1293,7 @@ csimulation.obj: csimulation.cc \
   ../../include/cexpression.h \
   ../../include/carray.h \
   ../../include/cclassfactory.h \
-  ../../include/cmessagepar.h \
+  ../../include/cmsgpar.h \
   ../../include/cfunction.h \
   ../../include/cmsgheap.h \
   ../../include/ccoroutine.h \
@@ -1326,7 +1301,10 @@ csimulation.obj: csimulation.cc \
   ../../include/cneddeclarationbase.h \
   ../../include/cparvalue.h \
   ../../include/opp_string.h \
-  netbuilder/cneddeclaration.h
+  netbuilder/cneddeclaration.h \
+  ../../include/cproperties.h \
+  ../../include/cproperty.h \
+  ../../include/stlwrap.h
 cstat.obj: cstat.cc \
   ../../include/cstat.h \
   ../../include/random.h \
@@ -1736,7 +1714,7 @@ sim_std_m.obj: sim_std_m.cc \
   ../../include/clongpar.h \
   ../../include/cmersennetwister.h \
   ../../include/cmessage.h \
-  ../../include/cmessagepar.h \
+  ../../include/cmsgpar.h \
   ../../include/cmodule.h \
   ../../include/cmsgheap.h \
   ../../include/cneddeclarationbase.h \
@@ -1745,7 +1723,6 @@ sim_std_m.obj: sim_std_m.cc \
   ../../include/cnamedobject.h \
   ../../include/cownedobject.h \
   ../../include/coutvect.h \
-  ../../include/cpacket.h \
   ../../include/cpar.h \
   ../../include/cparvalue.h \
   ../../include/cparsimcomm.h \
@@ -1800,7 +1777,6 @@ util.obj: util.cc \
   ../../include/distrib.h \
   ../../include/cwatch.h \
   ../../include/cstlwatch.h \
-  ../../include/cpacket.h \
   ../../include/clcg32.h \
   ../../include/cmersennetwister.h \
   ../../include/cksplit.h \
@@ -1829,8 +1805,6 @@ util.obj: util.cc \
   ../../include/cpar.h \
   ../../include/cdefaultlist.h \
   ../../include/cexpression.h \
-  ../../include/cmessage.h \
-  ../../include/cmessagepar.h \
   ../../include/cconfig.h \
   ../../include/mersennetwister.h \
   ../../include/cdensity.h \
@@ -1873,7 +1847,10 @@ netbuilder/cdynamicchanneltype.obj: netbuilder/cdynamicchanneltype.cc \
   ../../include/globals.h \
   ../../include/cparvalue.h \
   ../../include/carray.h \
-  ../../include/cclassfactory.h
+  ../../include/cclassfactory.h \
+  ../../include/cproperties.h \
+  ../../include/cproperty.h \
+  ../../include/stlwrap.h
 netbuilder/cdynamicmoduletype.obj: netbuilder/cdynamicmoduletype.cc \
   netbuilder/cdynamicmoduletype.h \
   netbuilder/cneddeclaration.h \
@@ -1907,7 +1884,10 @@ netbuilder/cdynamicmoduletype.obj: netbuilder/cdynamicmoduletype.cc \
   ../../include/cmsgheap.h \
   ../../include/ccoroutine.h \
   ../../include/cneddeclarationbase.h \
-  ../../include/cparvalue.h
+  ../../include/cparvalue.h \
+  ../../include/cproperties.h \
+  ../../include/cproperty.h \
+  ../../include/stlwrap.h
 netbuilder/cexpressionbuilder.obj: netbuilder/cexpressionbuilder.cc \
   netbuilder/cexpressionbuilder.h \
   ../../include/cfunction.h \
@@ -1938,12 +1918,16 @@ netbuilder/cneddeclaration.obj: netbuilder/cneddeclaration.cc \
   ../../include/cexception.h \
   ../../include/cproperties.h \
   ../../include/cdynamicexpression.h \
+  ../../include/cgate.h \
+  ../../include/cmodule.h \
+  ../../include/cdisplaystring.h \
+  netbuilder/cnedloader.h \
   ../../include/defs.h \
   ../../include/globals.h \
   ../../include/cownedobject.h \
   ../../include/cparvalue.h \
-  ../../include/cgate.h \
   ../../include/cneddeclarationbase.h \
+  ../../include/cproperty.h \
   ../../include/onstartup.h \
   ../../include/carray.h \
   ../../include/cclassfactory.h \
@@ -1957,7 +1941,13 @@ netbuilder/cneddeclaration.obj: netbuilder/cneddeclaration.cc \
   ../../include/regmacros.h \
   ../../include/cpar.h \
   ../../include/cexpression.h \
-  ../../include/opp_string.h
+  ../../include/stlwrap.h \
+  ../../include/opp_string.h \
+  ../../include/ccomponent.h \
+  ../../include/csimulation.h \
+  ../../include/cdefaultlist.h \
+  ../../include/cmsgheap.h \
+  ../../include/ccoroutine.h
 netbuilder/cnedloader.obj: netbuilder/cnedloader.cc \
   netbuilder/cnedloader.h \
   ../../include/cproperty.h \
@@ -2007,6 +1997,7 @@ netbuilder/cnednetworkbuilder.obj: netbuilder/cnednetworkbuilder.cc \
   ../../include/cchannel.h \
   ../../include/cbasicchannel.h \
   ../../include/ccomponenttype.h \
+  ../../include/clongpar.h \
   netbuilder/cneddeclaration.h \
   netbuilder/cnednetworkbuilder.h \
   netbuilder/cnedloader.h \
@@ -2037,6 +2028,9 @@ netbuilder/cnednetworkbuilder.obj: netbuilder/cnednetworkbuilder.cc \
   ../../include/ccoroutine.h \
   ../../include/cneddeclarationbase.h \
   ../../include/cparvalue.h \
+  ../../include/cproperties.h \
+  ../../include/cproperty.h \
+  ../../include/stlwrap.h \
   ../../include/cdynamicexpression.h
 parsim/cadvlinkdelaylookahead.obj: parsim/cadvlinkdelaylookahead.cc \
   parsim/cadvlinkdelaylookahead.h \
@@ -2058,7 +2052,7 @@ parsim/cadvlinkdelaylookahead.obj: parsim/cadvlinkdelaylookahead.cc \
   ../../include/onstartup.h \
   ../../include/cownedobject.h \
   ../../include/carray.h \
-  ../../include/cmessagepar.h \
+  ../../include/cmsgpar.h \
   ../../include/csimulation.h \
   ../../include/cnamedobject.h \
   ../../include/cexception.h \
@@ -2144,7 +2138,7 @@ parsim/cidealsimulationprot.obj: parsim/cidealsimulationprot.cc \
   parsim/messagetags.h \
   ../../include/cownedobject.h \
   ../../include/carray.h \
-  ../../include/cmessagepar.h \
+  ../../include/cmsgpar.h \
   ../../include/csimulation.h \
   ../../include/defs.h \
   ../../include/util.h \
@@ -2191,7 +2185,7 @@ parsim/cispeventlogger.obj: parsim/cispeventlogger.cc \
   ../../include/onstartup.h \
   ../../include/cownedobject.h \
   ../../include/carray.h \
-  ../../include/cmessagepar.h \
+  ../../include/cmsgpar.h \
   ../../include/csimulation.h \
   ../../include/cenvir.h \
   ../../include/cnamedobject.h \
@@ -2228,7 +2222,7 @@ parsim/clinkdelaylookahead.obj: parsim/clinkdelaylookahead.cc \
   ../../include/onstartup.h \
   ../../include/cownedobject.h \
   ../../include/carray.h \
-  ../../include/cmessagepar.h \
+  ../../include/cmsgpar.h \
   ../../include/csimulation.h \
   ../../include/cnamedobject.h \
   ../../include/cexception.h \
@@ -2345,7 +2339,7 @@ parsim/cnosynchronization.obj: parsim/cnosynchronization.cc \
   parsim/messagetags.h \
   ../../include/cownedobject.h \
   ../../include/carray.h \
-  ../../include/cmessagepar.h \
+  ../../include/cmsgpar.h \
   ../../include/csimulation.h \
   ../../include/defs.h \
   ../../include/util.h \
@@ -2388,7 +2382,7 @@ parsim/cnullmessageprot.obj: parsim/cnullmessageprot.cc \
   ../../include/cchannel.h \
   ../../include/cownedobject.h \
   ../../include/carray.h \
-  ../../include/cmessagepar.h \
+  ../../include/cmsgpar.h \
   ../../include/csimulation.h \
   ../../include/defs.h \
   ../../include/util.h \
@@ -2433,7 +2427,7 @@ parsim/cparsimpartition.obj: parsim/cparsimpartition.cc \
   ../../include/cconfig.h \
   ../../include/cownedobject.h \
   ../../include/carray.h \
-  ../../include/cmessagepar.h \
+  ../../include/cmsgpar.h \
   ../../include/csimulation.h \
   ../../include/defs.h \
   ../../include/util.h \
@@ -2470,7 +2464,7 @@ parsim/cparsimprotocolbase.obj: parsim/cparsimprotocolbase.cc \
   parsim/cparsimprotocolbase.h \
   ../../include/cownedobject.h \
   ../../include/carray.h \
-  ../../include/cmessagepar.h \
+  ../../include/cmsgpar.h \
   ../../include/csimulation.h \
   ../../include/defs.h \
   ../../include/util.h \
@@ -2536,7 +2530,7 @@ parsim/cplaceholdermod.obj: parsim/cplaceholdermod.cc \
   ../../include/cscheduler.h \
   ../../include/platdep/time.h \
   ../../include/cmessage.h \
-  ../../include/cmessagepar.h \
+  ../../include/cmsgpar.h \
   ../../include/cfunction.h \
   parsim/cnmplookahead.h
 parsim/cproxygate.obj: parsim/cproxygate.cc \
@@ -2568,7 +2562,7 @@ parsim/cproxygate.obj: parsim/cproxygate.cc \
   ../../include/cclassfactory.h \
   ../../include/cmsgheap.h \
   ../../include/ccoroutine.h \
-  ../../include/cmessagepar.h \
+  ../../include/cmsgpar.h \
   ../../include/cfunction.h
 parsim/cptrpassingmpicomm.obj: parsim/cptrpassingmpicomm.cc \
   parsim/cptrpassingmpicomm.h \

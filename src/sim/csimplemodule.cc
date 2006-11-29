@@ -27,7 +27,7 @@
 #include "cmessage.h"
 #include "csimulation.h"
 #include "carray.h"
-#include "cmessagepar.h"
+#include "cmsgpar.h"
 #include "cqueue.h"
 #include "cenvir.h"
 #include "cexception.h"

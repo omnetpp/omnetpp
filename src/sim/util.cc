@@ -557,7 +557,6 @@ cContextTypeSwitcher::~cContextTypeSwitcher()
 
 #include "cwatch.h"
 #include "cstlwatch.h"
-#include "cpacket.h"
 #include "clcg32.h"
 #include "cmersennetwister.h"
 #include "cksplit.h"
@@ -567,10 +566,8 @@ cContextTypeSwitcher::~cContextTypeSwitcher()
 void std_sim_descriptor_dummy();
 void _sim_dummy_func()
 {
-      cPacket x;
-      cPacket y(x);
-      x.info();
-      cWatch_bool w(NULL,*(bool*)&x);
+      bool bb;
+      cWatch_bool w(NULL,bb);
       std::vector<int> v;
       WATCH_VECTOR(v);
       w.supportsAssignment();

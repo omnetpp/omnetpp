@@ -81,7 +81,7 @@ cmdenv.obj: cmdenv.cc \
   ../../include/cexpression.h \
   ../../include/cneddeclarationbase.h \
   ../../include/cparvalue.h \
-  ../../include/cmessagepar.h \
+  ../../include/cmsgpar.h \
   ../../include/cfunction.h
 enumstr.obj: enumstr.cc \
   enumstr.h

@@ -150,6 +150,15 @@ ivectorfilereader.obj: ivectorfilereader.cc \
   ../common/linetokenizer.h \
   ivectorfilereader.h \
   ../common/filereader.h
+ivectorfilewriter.obj: ivectorfilewriter.cc \
+  channel.h \
+  ivectorfilewriter.h \
+  ../common/util.h \
+  node.h \
+  ../common/exception.h \
+  scavedefs.h \
+  nodetype.h \
+  dataflowmanager.h
 mergernodes.obj: mergernodes.cc \
   channel.h \
   mergernodes.h \
@@ -175,6 +184,7 @@ nodetyperegistry.obj: nodetyperegistry.cc \
   arraybuilder.h \
   vectorfilereader.h \
   vectorfilewriter.h \
+  ivectorfilewriter.h \
   filewriter.h \
   windowavg.h \
   slidingwinavg.h \
@@ -214,6 +224,7 @@ scavetool.obj: scavetool.cc \
   dataflowmanager.h \
   vectorfilereader.h \
   vectorfilewriter.h \
+  ivectorfilewriter.h \
   filternodes.h \
   filewriter.h \
   arraybuilder.h \

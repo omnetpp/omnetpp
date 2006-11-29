@@ -21,7 +21,7 @@
 #include <ctype.h>
 #include <stdlib.h>
 #include <string>
-#include "cmessagepar.h"
+#include "cmsgpar.h"
 #include "cstat.h"
 #include "globals.h"
 #include "cfunction.h"

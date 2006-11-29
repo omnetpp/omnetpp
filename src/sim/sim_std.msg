@@ -272,14 +272,6 @@ class cMessage extends cOwnedObject
         //XXX various IDs
 }
 
-class cPacket extends cMessage
-{
-    fields:
-        @omitGetVerb(true);
-        short protocol @group(packet) @editable @hint(declared on cPacket, which is an obsolete class);
-        short pdu @group(packet) @editable @hint(declared on cPacket, which is an obsolete class);
-}
-
 //----
 
 class cStatistic extends cOwnedObject

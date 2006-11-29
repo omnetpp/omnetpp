@@ -255,18 +255,18 @@ main.obj: main.cc \
 matchableobject.obj: matchableobject.cc \
   matchableobject.h \
   ../../include/cclassdescriptor.h \
-  ../../include/cownedobject.h \
-  ../../include/cenvir.h \
+  ../../include/cobject.h \
   ../../include/defs.h \
   ../../include/util.h \
-  ../../include/cnamedobject.h \
-  ../../include/cexception.h \
-  ../../include/errmsg.h \
-  ../../include/cobject.h \
-  ../../include/cstringpool.h \
   ../../include/cvisitor.h \
   ../../include/regmacros.h \
+  ../../include/errmsg.h \
   ../../include/onstartup.h \
+  ../../include/cownedobject.h \
+  ../../include/cenvir.h \
+  ../../include/cnamedobject.h \
+  ../../include/cexception.h \
+  ../../include/cstringpool.h \
   ../../include/opp_string.h
 omnetapp.obj: omnetapp.cc \
   args.h \
