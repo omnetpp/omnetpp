@@ -75,13 +75,13 @@ class SIM_API cEnum : public cOwnedObject
 
     /**
      * Creates and returns an exact copy of this object.
-     * See cOwnedObject for more details.
+     * See cObject for more details.
      */
     virtual cEnum *dup() const  {return new cEnum(*this);}
 
     /**
      * Produces a one-line description of object contents.
-     * See cOwnedObject for more details.
+     * See cObject for more details.
      */
     virtual std::string info() const;
     //@}

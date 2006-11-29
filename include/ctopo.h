@@ -333,7 +333,7 @@ class SIM_API cTopology : public cOwnedObject
     virtual ~cTopology();
 
     /**
-     * Assignment operator. The name member doesn't get copied; see cOwnedObject's operator=() for more details.
+     * Assignment operator. The name member doesn't get copied; see cNamedObject's operator=() for more details.
      */
     cTopology& operator=(const cTopology& topo);
     //@}
@@ -343,27 +343,27 @@ class SIM_API cTopology : public cOwnedObject
 
     /**
      * Creates and returns an exact copy of this object.
-     * See cOwnedObject for more details.
+     * See cObject for more details.
      */
     virtual cTopology *dup() const  {return new cTopology(*this);}
 
     /**
      * Produces a one-line description of object contents.
-     * See cOwnedObject for more details.
+     * See cObject for more details.
      */
     virtual std::string info() const;
 
     /**
-     * Serializes the object into a PVM or MPI send buffer.
+     * Serializes the object into an MPI send buffer.
      * Used by the simulation kernel for parallel execution.
-     * See cOwnedObject for more details.
+     * See cObject for more details.
      */
     virtual void netPack(cCommBuffer *buffer);
 
     /**
-     * Deserializes the object from a PVM or MPI receive buffer
+     * Deserializes the object from an MPI receive buffer
      * Used by the simulation kernel for parallel execution.
-     * See cOwnedObject for more details.
+     * See cObject for more details.
      */
     virtual void netUnpack(cCommBuffer *buffer);
     //@}

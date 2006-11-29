@@ -54,7 +54,7 @@
  *
  * Simulation core classes:       <!-- blank line needed for autobrief=yes -->
  *
- *    - cOwnedObject is the base class for most \opp classes
+ *    - cObject and cOwnedObject are the base classes for most \opp classes
  *    - cModule, cCompoundModule and cSimpleModule represent modules
  *      in the simulation. The user implements new models by subclassing
  *      cSimpleModule and overriding at least its activity() or

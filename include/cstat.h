@@ -73,7 +73,7 @@ class SIM_API cStatistic : public cOwnedObject
 
     /**
      * Assignment operator. It is present since descendants may refer to it.
-     * The name member doesn't get copied; see cOwnedObject's operator=() for more details.
+     * The name member doesn't get copied; see cNamedObject's operator=() for more details.
      */
     cStatistic& operator=(const cStatistic& res);
     //@}
@@ -84,16 +84,16 @@ class SIM_API cStatistic : public cOwnedObject
     /* Note: No dup() because this is an abstract class! */
 
     /**
-     * Serializes the object into a PVM or MPI send buffer.
+     * Serializes the object into an MPI send buffer.
      * Used by the simulation kernel for parallel execution.
-     * See cOwnedObject for more details.
+     * See cObject for more details.
      */
     virtual void netPack(cCommBuffer *buffer);
 
     /**
-     * Deserializes the object from a PVM or MPI receive buffer
+     * Deserializes the object from an MPI receive buffer
      * Used by the simulation kernel for parallel execution.
-     * See cOwnedObject for more details.
+     * See cObject for more details.
      */
     virtual void netUnpack(cCommBuffer *buffer);
     //@}
@@ -288,7 +288,7 @@ class SIM_API cStdDev : public cStatistic
     virtual ~cStdDev() {}
 
     /**
-     * Assignment operator. The name member doesn't get copied; see cOwnedObject's operator=() for more details.
+     * Assignment operator. The name member doesn't get copied; see cNamedObject's operator=() for more details.
      */
     cStdDev& operator=(const cStdDev& res);
     //@}
@@ -298,33 +298,33 @@ class SIM_API cStdDev : public cStatistic
 
     /**
      * Creates and returns an exact copy of this object.
-     * See cOwnedObject for more details.
+     * See cObject for more details.
      */
     virtual cStdDev *dup() const  {return new cStdDev(*this);}
 
     /**
      * Produces a one-line description of object contents.
-     * See cOwnedObject for more details.
+     * See cObject for more details.
      */
     virtual std::string info() const;
 
     /**
      * Produces a multi-line description of the object.
-     * See cOwnedObject for more details.
+     * See cObject for more details.
      */
     virtual std::string detailedInfo() const;
 
     /**
-     * Serializes the object into a PVM or MPI send buffer.
+     * Serializes the object into an MPI send buffer.
      * Used by the simulation kernel for parallel execution.
-     * See cOwnedObject for more details.
+     * See cObject for more details.
      */
     virtual void netPack(cCommBuffer *buffer);
 
     /**
-     * Deserializes the object from a PVM or MPI receive buffer
+     * Deserializes the object from an MPI receive buffer
      * Used by the simulation kernel for parallel execution.
-     * See cOwnedObject for more details.
+     * See cObject for more details.
      */
     virtual void netUnpack(cCommBuffer *buffer);
     //@}
@@ -439,7 +439,7 @@ class SIM_API cWeightedStdDev : public cStdDev
     virtual ~cWeightedStdDev() {}
 
     /**
-     * Assignment operator. The name member doesn't get copied; see cOwnedObject's operator=() for more details.
+     * Assignment operator. The name member doesn't get copied; see cNamedObject's operator=() for more details.
      */
     cWeightedStdDev& operator=(const cWeightedStdDev& res);
     //@}
@@ -449,21 +449,21 @@ class SIM_API cWeightedStdDev : public cStdDev
 
     /**
      * Creates and returns an exact copy of this object.
-     * See cOwnedObject for more details.
+     * See cObject for more details.
      */
     virtual cWeightedStdDev *dup() const  {return new cWeightedStdDev(*this);}
 
     /**
-     * Serializes the object into a PVM or MPI send buffer.
+     * Serializes the object into an MPI send buffer.
      * Used by the simulation kernel for parallel execution.
-     * See cOwnedObject for more details.
+     * See cObject for more details.
      */
     virtual void netPack(cCommBuffer *buffer);
 
     /**
-     * Deserializes the object from a PVM or MPI receive buffer
+     * Deserializes the object from an MPI receive buffer
      * Used by the simulation kernel for parallel execution.
-     * See cOwnedObject for more details.
+     * See cObject for more details.
      */
     virtual void netUnpack(cCommBuffer *buffer);
     //@}

@@ -90,7 +90,7 @@ class SIM_API cGate : public cNoncopyableOwnedObject  //FIXME make it cNamedObje
     //@{
     /**
      * Calls v->visit(this) for each contained object.
-     * See cOwnedObject for more details.
+     * See cObject for more details.
      */
     virtual void forEachChild(cVisitor *v);
 

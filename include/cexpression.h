@@ -65,7 +65,7 @@ class SIM_API cExpression : public cObject
 
     /**
      * Produces a one-line description of object contents.
-     * See cOwnedObject for more details.
+     * See cObject for more details.
      */
     virtual std::string info() const {return "";}
 

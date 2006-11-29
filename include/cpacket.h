@@ -65,27 +65,27 @@ class SIM_API cPacket : public cMessage
 
     /**
      * Creates and returns an exact copy of this object.
-     * See cOwnedObject for more details.
+     * See cObject for more details.
      */
     virtual cPacket *dup() const  {return new cPacket(*this);}
 
     /**
      * Produces a one-line description of object contents.
-     * See cOwnedObject for more details.
+     * See cObject for more details.
      */
     virtual std::string info() const;
 
     /**
-     * Serializes the object into a PVM or MPI send buffer.
+     * Serializes the object into an MPI send buffer.
      * Used by the simulation kernel for parallel execution.
-     * See cOwnedObject for more details.
+     * See cObject for more details.
      */
     virtual void netPack(cCommBuffer *buffer);
 
     /**
-     * Deserializes the object from a PVM or MPI receive buffer
+     * Deserializes the object from an MPI receive buffer
      * Used by the simulation kernel for parallel execution.
-     * See cOwnedObject for more details.
+     * See cObject for more details.
      */
     virtual void netUnpack(cCommBuffer *buffer);
     //@}

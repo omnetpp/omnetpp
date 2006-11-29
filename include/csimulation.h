@@ -115,7 +115,7 @@ class SIM_API cSimulation : public cNoncopyableOwnedObject
     //@{
     /**
      * Calls v->visit(this) for each contained object.
-     * See cOwnedObject for more details.
+     * See cObject for more details.
      */
     virtual void forEachChild(cVisitor *v);
 

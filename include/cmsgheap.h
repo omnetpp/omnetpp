@@ -115,19 +115,19 @@ class SIM_API cMessageHeap : public cOwnedObject
 
     /**
      * Creates and returns an exact copy of this object.
-     * See cOwnedObject for more details.
+     * See cObject for more details.
      */
     virtual cMessageHeap *dup() const  {return new cMessageHeap(*this);}
 
     /**
      * Produces a one-line description of object contents.
-     * See cOwnedObject for more details.
+     * See cObject for more details.
      */
     virtual std::string info() const;
 
     /**
      * Calls v->visit(this) for each contained object.
-     * See cOwnedObject for more details.
+     * See cObject for more details.
      */
     virtual void forEachChild(cVisitor *v);
 

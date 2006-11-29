@@ -136,7 +136,7 @@ class SIM_API cQueue : public cOwnedObject
      * Contained objects that are owned by the queue will be duplicated
      * so that the new queue will have its own copy of them.
      *
-     * The name member doesn't get copied; see cOwnedObject's operator=() for more details.
+     * The name member doesn't get copied; see cNamedObject's operator=() for more details.
      */
     cQueue& operator=(const cQueue& queue);
     //@}
@@ -153,27 +153,27 @@ class SIM_API cQueue : public cOwnedObject
 
     /**
      * Produces a one-line description of object contents.
-     * See cOwnedObject for more details.
+     * See cObject for more details.
      */
     virtual std::string info() const;
 
     /**
      * Calls v->visit(this) for each contained object.
-     * See cOwnedObject for more details.
+     * See cObject for more details.
      */
     virtual void forEachChild(cVisitor *v);
 
     /**
-     * Serializes the object into a PVM or MPI send buffer.
+     * Serializes the object into an MPI send buffer.
      * Used by the simulation kernel for parallel execution.
-     * See cOwnedObject for more details.
+     * See cObject for more details.
      */
     virtual void netPack(cCommBuffer *buffer);
 
     /**
-     * Deserializes the object from a PVM or MPI receive buffer
+     * Deserializes the object from an MPI receive buffer
      * Used by the simulation kernel for parallel execution.
-     * See cOwnedObject for more details.
+     * See cObject for more details.
      */
     virtual void netUnpack(cCommBuffer *buffer);
     //@}

@@ -252,7 +252,7 @@ class SIM_API cDynamicExpression : public cExpression
 
     /**
      * Produces a one-line description of object contents.
-     * See cOwnedObject for more details.
+     * See cObject for more details.
      */
     virtual std::string info() const;
 

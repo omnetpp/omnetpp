@@ -47,7 +47,7 @@ class SIM_API cClassFactory : public cNoncopyableOwnedObject
     //@{
     /**
      * Produces a one-line description of object contents.
-     * See cOwnedObject for more details.
+     * See cObject for more details.
      */
     virtual std::string info() const;
     //@}
