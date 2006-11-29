@@ -1,13 +1,13 @@
 %description:
-Test that a cObject-subclass controlInfo()'s ownership is properly managed,
+Test that a cOwnedObject-subclass controlInfo()'s ownership is properly managed,
 and it gets deleted when message gets deleted
 
 %global:
 
-class {Ctrl} : public cObject
+class {Ctrl} : public cOwnedObject
 {
   public:
-    {Ctrl}() : cObject() { }
+    {Ctrl}() : cOwnedObject() { }
     ~{Ctrl}() {ev << "control info deleted\n";}
 };
 
