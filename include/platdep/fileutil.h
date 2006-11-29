@@ -62,11 +62,11 @@ inline std::string directoryOf(const char *pathname)
     return dir;
 }
 
-inline std::string tidyFilename(const char *pathname)
+inline std::string tidyFilename(const char *pathname, bool slashes=false)
 {
     char *buf = new char[strlen(pathname)+1];
 #ifdef _WIN32
-    const char DELIM='\\';
+    const char DELIM= slashes ? '/' : '\\';
 #else
     const char DELIM='/';
 #endif
