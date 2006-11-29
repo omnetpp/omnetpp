@@ -34,6 +34,10 @@
  * insertion-time state of the <i>takeOwnership</i> flag will determine
  * whether the inserted object will be deleted by the cArray destructor or not.
  *
+//FIXME even more complicated: non-cOwnedObject ones are NOT deleted, ever;
+// even if their owner() returns the array
+//cOwnedObjects are only deleted if their owner is the array
+ *
  * @ingroup Containers
  */
 class SIM_API cArray : public cOwnedObject
