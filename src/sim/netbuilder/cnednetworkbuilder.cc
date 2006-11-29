@@ -314,8 +314,20 @@ void cNEDNetworkBuilder::addSubmodule(cModule *modp, SubmoduleNode *submod)
     }
     else
     {
-        ExpressionNode *likeParamExpr = findExpression(submod, "like-param");
-        submodtypename = evaluateAsString(likeParamExpr, modp, false); //XXX store it as expression, don't evaluate it now, as it might be random etc!!!
+        // type may be given either in ExpressionNode child or "like-param" attribute
+        if (!strnull(submod->getLikeParam()))
+        {
+            submodtypename = modp->par(submod->getLikeParam()).stringValue();
+        }
+        else
+        {
+            ExpressionNode *likeParamExpr = findExpression(submod, "like-param");
+            ASSERT(likeParamExpr); // either attr or expr must be there
+            //FIXME if module vector: store it as expression, don't evaluate it now,
+            //      because it might be random etc!!!
+            submodtypename = evaluateAsString(likeParamExpr, modp, false);
+        }
+
     }
 
     ExpressionNode *vectorsizeexpr = findExpression(submod, "vector-size");
@@ -626,8 +638,17 @@ cChannel *cNEDNetworkBuilder::createChannel(ChannelSpecNode *channelspec, cModul
     }
     else
     {
-        ExpressionNode *likeParamExpr = findExpression(channelspec, "like-param");
-        channeltypename = evaluateAsString(likeParamExpr, parentmodp, false);
+        // type may be given either in ExpressionNode child or "like-param" attribute
+        if (!strnull(channelspec->getLikeParam()))
+        {
+            channeltypename = parentmodp->par(channelspec->getLikeParam()).stringValue();
+        }
+        else
+        {
+            ExpressionNode *likeParamExpr = findExpression(channelspec, "like-param");
+            ASSERT(likeParamExpr); // either attr or expr must be there
+            channeltypename = evaluateAsString(likeParamExpr, parentmodp, false);
+        }
         //XXX check actual type fulfills likeType
     }
 

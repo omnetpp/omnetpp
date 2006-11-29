@@ -268,6 +268,7 @@ cDynamicExpression *cExpressionBuilder::process(ExpressionNode *node,
     pos = 0;
     limit = 990;
 
+    ASSERT(node!=NULL);
     doNode(node->getFirstChild());
 
     int n = pos;
