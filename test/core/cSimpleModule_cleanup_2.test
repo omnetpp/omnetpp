@@ -1,10 +1,10 @@
 %description:
 Test perform-gc=true (it is OFF by default since 3.2!):
-Test that dynamically allocated, cObject-based objects are properly cleaned up
+Test that dynamically allocated, cOwnedObject-based objects are properly cleaned up
 at the end of the simulation.
 
 %global:
-class {Noisy} : public cObject
+class {Noisy} : public cOwnedObject
 {
   public:
     {Noisy}() {ev << "Noisy ctor!\n";}
