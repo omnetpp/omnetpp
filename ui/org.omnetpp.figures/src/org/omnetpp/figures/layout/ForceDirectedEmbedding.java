@@ -6,93 +6,146 @@ import org.eclipse.core.runtime.Assert;
 
 public class ForceDirectedEmbedding extends GraphEmbedding
 {
-	private static boolean debug = true;
+	protected static boolean debug = true;
 
-	// Algorithm parameters
-	// Magnetism between vertexs having connections.
+	protected Random random;
+
+	/**
+	 * Position change listener gets notification during the simulation.
+	 */
+	protected IForceDirectedEmbeddingListener listener;
+
+	/**
+	 * Spring between vertices having connections.
+	 */
 	public double connectionSpringCoefficient = 0.1;
 
-	// Magnetism and repeal between two connections' endings.
+	/**
+	 * Spring between two vertexs.
+	 */
+	public double vertexSpringCoefficient = 0;// 0.001;
+
+	/**
+	 * Maximum spring force.
+	 */
+	public double maxSpringForce = 1000;
+
+	/**
+	 * Magnetism and repeal between two connections' endings.
+	 */
 	public double connectionMagneticFieldCoefficient = 0;// 1000;
 	public Pt connectionHomogenousMagneticFieldPower = new Pt(0, 0.5);
 	public double connectionMagneticDipolPower = 10;
 
-	// Repeal between two vertexs.
-	public double vertexElectricRepealCoefficient = 10000;
-
-	// Magnetism between two vertexs.
-	public double vertexSpringCoefficient = 0;// 0.001;
-
-	// Friction reduces energy.
-	public double frictionCoefficient = 0.1;
-
-	// Simulation default time step.
-	public double timeStep = 1;
-
-	// maximum time spend on the calculation
-	public double calculationTimeLimit = 10000;
-
-	// Limit of acceleration difference (between bs in RK-4).
-	public double accelerationErrorLimit = 1;
-
-	// Acceleration limit during relaxing.
-	public double accelerationRelaxLimit = 1;
-
-	// Velocity limit during relaxing.
-	public double velocityRelaxLimit = 1;
-
-	// Maximim velocity;
-	public double maxVelocity = 100;
-
-	// Maximum spring force.
-	public double maxSpringForce = 1000;
-
-	// Maximum electric repeal force.
-	public double maxElectricForce = 1000;
-
-	// Maximum magnetic force.
+	/**
+	 * Maximum magnetic force.
+	 */
 	public double maxMagneticForce = 1000;
 
-	// Minimum number of cycles of relaxing.
-	public int minCycle = 0;
+	/**
+	 * Repeal between two vertexs.
+	 */
+	public double vertexElectricRepealCoefficient = 10000;
 
-	// Maximum number of cycles of relaxing.
-	public int maxCycle = 10000;
+	/**
+	 * Maximum electric repeal force.
+	 */
+	public double maxElectricForce = 1000;
 
-	// Maximum number of cycles of relaxing.
-	public int maxProbCycle = 10;
+	/**
+	 * Friction reduces the energy of the system. The friction force points in the opposite direction of the current velocity.
+	 * Friction is automatically updated during the simulation. The current kinetic energy is compared against the average kinetic
+	 * energy reduced by the time spent on the calculation and the friction coefficient is updated so that towards the end of the
+	 * calculation the kinetic energy of the system converges to zero.
+	 */
+	public double frictionCoefficient = 0.1;
+	
+	/**
+	 * Lower limit for friction coefficient.
+	 */
+	public double minFrictionCoefficient = 0.01;
+	
+	/**
+	 * Higher limit for friction coefficient update.
+	 */
+	public double maxFrictionCoefficient = 10;
+	
+	/**
+	 * Multiplier used to update the friction coefficient.
+	 */
+	public double frictionCoefficientMultiplier = 1.1;
 
-	// Implementation fields
-	private Random random;
+	/**
+	 * The default time step when simulation starts.
+	 * Time step is automatically updated during the simulation. It will always have the highest value so that the acceleration error
+	 * is less than the acceleration error limit. The time step is either multiplied or divided by the time step multiplier according to
+	 * the current acceleration error.
+	 */
+	public double timeStep = 1;
 
-	// position change listener
-	IForceDirectedEmbeddingListener listener;
+	/**
+	 * Lower limit for time step update.
+	 */
+	public double minTimeStep = 0.001;
 
-	// Constructors
+	/**
+	 * Lower limit for time step update.
+	 */
+	public double maxTimeStep = 1000;
+
+	/**
+	 * Multiplier used to update the time step.
+	 */
+	public double timeStepMultiplier = 2;
+
+	/**
+	 * Maximum time spend on the calculation in milliseconds.
+	 * The algorithm will always return after this time has elapsed.
+	 */
+	public double calculationTimeLimit = 1000;
+
+	/**
+	 * Limit of acceleration approximation difference (between a1, a2, a3 and a4 in RK-4).
+	 */
+	public double accelerationErrorLimit = 10;
+
+	/**
+	 * Acceleration limit during the simulation.
+	 * When all vertices has lower acceleration than this limit then the algorithm may be stopped.
+	 */
+	public double accelerationRelaxLimit = 1;
+
+	/**
+	 * Velocity limit during the simulation.
+	 * When all vertices has lower velocity than this limit then the algorithm may be stopped.
+	 */
+	public double velocityRelaxLimit = 1;
+
+	/**
+	 * Maximim velocity;
+	 */
+	public double maxVelocity = 100;
+
 	public ForceDirectedEmbedding(GraphComponent graphComponent) {
 		this(graphComponent, null);
 	}
 
-	// Constructors
 	public ForceDirectedEmbedding(GraphComponent graphComponent, IForceDirectedEmbeddingListener listener) {
 		super(graphComponent);
 		this.listener = listener;
 	}
 
-	public GraphComponent getGraphComponent() {
-		return graphComponent;
-	}
-
-	// Find the solution for the differential equation using the
-	// Runge-Kutta-4 velocity dependent forces algorithm.
-	//
-	// a1 = b[pn, vn]
-	// a2 = b[vn + h / 2 * vn + h * h / 8 * a1, vn + h / 2 * a1]
-	// a3 = b[vn + h / 2 * vn + h * h / 8 * a1, vn + h / 2 * a2]
-	// a4 = b[vn + h * vn + h * h / 2 * a3, vn + h * a3]
-	//
-	// vn+1 = vn + h * vn + h * h / 6 * [a1 + a2 + a3]
-	// vn+1 = vn + h / 6 * (a1 + 2 * a2 + 2 * a3 + a4)
+	/** Find the solution for the differential equation using the
+     * Runge-Kutta-4 velocity dependent forces algorithm.
+     *
+     * a1 = a[pn, vn]
+     * a2 = a[pn + h / 2 * vn + h * h / 8 * a1, vn + h / 2 * a1]
+     * a3 = a[pn + h / 2 * vn + h * h / 8 * a1, vn + h / 2 * a2]
+     * a4 = a[pn + h * vn + h * h / 2 * a3, vn + h * a3]
+     *
+     * pn+1 = pn + h * vn + h * h / 6 * [a1 + a2 + a3]
+     * vn+1 = vn + h / 6 * (a1 + 2 * a2 + 2 * a3 + a4)
+     */
 	public void embed() {
 		long begin = System.currentTimeMillis();
 		int cycle = 0;
@@ -100,28 +153,31 @@ public class ForceDirectedEmbedding extends GraphEmbedding
 		boolean relaxed = false;
 		// h (Low and High for log h search)
 		double h = timeStep;
+		double htime = 0;
+		double energySum = 0;
+		double energy;
 		// vn : positions
-		Pt[] ps = createPtArray();
+		Pt[] pn = createPtArray();
 		// accelerations
-		Pt[] acs = createPtArray();
+		Pt[] an = createPtArray();
 		// vn : velocities
-		Pt[] vs = createPtArray();
-		// bs
+		Pt[] vn = createPtArray();
+		// as : accelerations
 		Pt[] a1 = createPtArray();
 		Pt[] a2 = createPtArray();
 		Pt[] a3 = createPtArray();
 		Pt[] a4 = createPtArray();
 		// velocity deltas
-		Pt[] dvs = createPtArray();
-		Pt[] tvs = createPtArray();
+		Pt[] dvn = createPtArray();
+		Pt[] tvn = createPtArray();
 		// position deltas
-		Pt[] dps = createPtArray();
-		Pt[] tps = createPtArray();
+		Pt[] dpn = createPtArray();
+		Pt[] tpn = createPtArray();
 		// initialize random for no distance repealing
 		// make it stable and always use the same seed
 		random = new Random(0);
 
-		setInitialPositions(ps);
+		setInitialPositions(pn);
 
 		// Runge Kutta 4th order
 		while (!relaxed) {
@@ -133,106 +189,128 @@ public class ForceDirectedEmbedding extends GraphEmbedding
 
 			while (true) {
 				probCycle++;
-				
-				time = System.currentTimeMillis();
-				if (time > begin + calculationTimeLimit)
+
+				// update acceleration error limit
+				time = System.currentTimeMillis() - begin;
+				if (time > calculationTimeLimit)
 					break;
 				else
-					accelerationErrorLimit = (time - begin) / calculationTimeLimit * this.accelerationErrorLimit;
+					accelerationErrorLimit = (calculationTimeLimit - time) / calculationTimeLimit * this.accelerationErrorLimit;
+				if (debug)
+					System.out.println("Prob cycle at time: " + time + " htime: " + htime + " h: " + h + " friction: " + frictionCoefficient + " acceleration error limit: " + accelerationErrorLimit + " acceleration error: " + accelerationError + " cycle: " + cycle + " prob cycle: " + probCycle);
 
-				// a1 = b[vn, vn]
-				a(a1, ps, vs);
+				// a1 = a[pn, vn]
+				a(a1, pn, vn);
 
-				// a2 = b[vn + h / 2 * vn + h * h / 8 * a1, vn + h / 2 * a1]
-				addMul(tps, ps, h / 2, vs);
-				incMul(tps, h * h / 8, a1);
-				addMul(tvs, vs, h / 2, a1);
-				a(a2, tps, tvs);
+				// a2 = a[pn + h / 2 * vn + h * h / 8 * a1, vn + h / 2 * a1]
+				addMultiplied(tpn, pn, h / 2, vn);
+				incrementWithMultiplied(tpn, h * h / 8, a1);
+				addMultiplied(tvn, vn, h / 2, a1);
+				a(a2, tpn, tvn);
 
-				// a3 = b[vn + h / 2 * vn + h * h / 8 * a1, vn + h / 2 * a2]
-				addMul(tps, ps, h / 2, vs);
-				incMul(tps, h * h / 8, a1);
-				addMul(tvs, vs, h / 2, a2);
-				a(a3, tps, tvs);
+				// a3 = a[pn + h / 2 * vn + h * h / 8 * a1, vn + h / 2 * a2]
+				addMultiplied(tpn, pn, h / 2, vn);
+				incrementWithMultiplied(tpn, h * h / 8, a1);
+				addMultiplied(tvn, vn, h / 2, a2);
+				a(a3, tpn, tvn);
 
-				// a4 = b[vn + h * vn + h * h / 2 * a3, vn + h * a3]
-				addMul(tps, ps, h, vs);
-				incMul(tps, h * h / 2, a3);
-				addMul(tvs, vs, h, a3);
-				a(a4, tps, tvs);
+				// a4 = a[pn + h * vn + h * h / 2 * a3, vn + h * a3]
+				addMultiplied(tpn, pn, h, vn);
+				incrementWithMultiplied(tpn, h * h / 2, a3);
+				addMultiplied(tvn, vn, h, a3);
+				a(a4, tpn, tvn);
 
 				// Adjust time step (h)
 				accelerationError = diff(a1, a2, a3, a4);
-				if (debug)
-					System.out.println("Cycle at time: " + (time - begin) + " acceleration error limit: " + accelerationErrorLimit + " acceleration error: " + accelerationError + " cycle: " + cycle + " prob cycle: " + probCycle);
-
+				
 				if (accelerationError < accelerationErrorLimit) {
 					if (hMultiplier == 0)
-						hMultiplier = 2;
+						hMultiplier = timeStepMultiplier;
 					else
 						break;
 				}
 				else {
 					if (hMultiplier == 0)
-						hMultiplier = 2;
-					else if (hMultiplier == 2)
-						hMultiplier = 0.5;
+						hMultiplier = timeStepMultiplier;
+					else if (hMultiplier == timeStepMultiplier)
+						hMultiplier = 1.0 / timeStepMultiplier;
 				}
+				
+				double hNext = h * hMultiplier;
+
+				if (hNext < minTimeStep || hNext > maxTimeStep)
+					break;
 				
 				h *= hMultiplier;
 			}
 
-			time = System.currentTimeMillis();
-			if (debug)
-				System.out.println("Cycle at time: " + (time - begin) + " acceleration error limit: " + accelerationErrorLimit + " acceleration error: " + accelerationError + " cycle: " + cycle + " prob cycle: " + probCycle);
-
-			// vn+1 = vn + h * vn + h * h / 6 * [a1 + a2 + a3]
-			add(dps, a1, a2);
-			inc(dps, a3);
-			mul(dps, h * h / 6);
-			incMul(dps, h, vs);
-			inc(ps, dps);
+			// pn+1 = pn + h * vn + h * h / 6 * [a1 + a2 + a3]
+			add(dpn, a1, a2);
+			increment(dpn, a3);
+			multiply(dpn, h * h / 6);
+			incrementWithMultiplied(dpn, h, vn);
+			increment(pn, dpn);
 
 			// vn+1 = vn + h / 6 * (a1 + 2 * a2 + 2 * a3 + a4)
-			addMul(dvs, a1, 2, a2);
-			incMul(dvs, 2, a3);
-			inc(dvs, a4);
-			mul(dvs, h / 6);
-			inc(vs, dvs);
+			addMultiplied(dvn, a1, 2, a2);
+			incrementWithMultiplied(dvn, 2, a3);
+			increment(dvn, a4);
+			multiply(dvn, h / 6);
+			increment(vn, dvn);
 
 			// Maximize velocity
-			for (int i = 0; i < vs.length; i++) {
-				if (vs[i].getLength() > maxVelocity) {
-					vs[i].Normalize();
-					vs[i].multiply(maxVelocity);
+			for (int i = 0; i < vn.length; i++) {
+				if (vn[i].getLength() > maxVelocity) {
+					vn[i].Normalize();
+					vn[i].multiply(maxVelocity);
 				}
 			}
 
 			// move vertices
-			addToVertexPositions(dps);
+			setVertexPositions(pn);
+
+			// check time limit
+			time = System.currentTimeMillis() - begin;
+			if (time > calculationTimeLimit)
+				break;
+			if (debug)
+				System.out.println("Cycle at time: " + time + " htime: " + htime + " h: " + h + " friction: " + frictionCoefficient + " acceleration error limit: " + accelerationErrorLimit + " acceleration error: " + accelerationError + " cycle: " + cycle + " prob cycle: " + probCycle);
+
+			// update friction
+			htime += h;
+			energy = 0;
+			for (int i = 0; i < vn.length; i++) {
+				double velocity = vn[i].getLength();
+				energy +=  1.0 / 2.0 * graphComponent.getVertex(i).mass * velocity * velocity;
+			}
+			energySum += energy * h;
+			double energyAvg = (energySum / htime);
+			double energyExpected = energyAvg * (calculationTimeLimit - time) / calculationTimeLimit;
+			System.out.println("Energy: " + energy + " energy expected: " + energyExpected);
+			if (energy <  energyExpected && frictionCoefficient / frictionCoefficientMultiplier > minFrictionCoefficient)
+				frictionCoefficient /= frictionCoefficientMultiplier;
+			else if (energy > energyExpected && frictionCoefficient * frictionCoefficientMultiplier < maxFrictionCoefficient)
+				frictionCoefficient *= frictionCoefficientMultiplier;
 
 			// Check if relaxed
 			relaxed = true;
-			for (int i = 0; i < vs.length; i++) {
-				acs[i].assign(a1[i]).add(a2[i]).add(a3[i]).add(a4[i]).divide(4);
+			for (int i = 0; i < vn.length; i++) {
+				an[i].assign(a1[i]).add(a2[i]).add(a3[i]).add(a4[i]).divide(4);
 
-				if (vs[i].getLength() > velocityRelaxLimit) {
+				if (vn[i].getLength() > velocityRelaxLimit) {
 					if (debug)
-						System.out.println("Not relax due to velocity: " + vs[i].getLength());
+						System.out.println("Not relax due to velocity: " + vn[i].getLength());
 					relaxed = false;
 					break;
 				}
 
-				if (acs[i].getLength() > accelerationRelaxLimit) {
+				if (an[i].getLength() > accelerationRelaxLimit) {
 					if (debug)
-						System.out.println("Not relax due to acceleration: " + acs[i].getLength());
+						System.out.println("Not relax due to acceleration: " + an[i].getLength());
 					relaxed = false;
 					break;
 				}
 			}
-
-			if (listener != null)
-				listener.positionsChanged();
 		}
 
 		for (Vertex vertex : graphComponent.getVertices())
@@ -284,18 +362,33 @@ public class ForceDirectedEmbedding extends GraphEmbedding
 		return max;
 	}
 
-	private void addToVertexPositions(Pt[] dps)
+	private void setVertexPositions(Pt[] ps)
 	{
-		Assert.isTrue(dps.length == graphComponent.getVertexCount());
+		Assert.isTrue(ps.length == graphComponent.getVertexCount());
 
 		for (int i = 0; i < graphComponent.getVertexCount(); i++)
-			graphComponent.getVertex(i).pt.add(dps[i]);
+			graphComponent.getVertex(i).pt.assign(ps[i]);
+
+
+		if (listener != null)
+			listener.positionsChanged();
+	}
+
+	// pts = a
+	private void assign(Pt[] pts, Pt[] a)
+	{
+		Assert.isTrue(a.length == a.length);
+		Assert.isTrue(pts != a);
+
+		for (int i = 0; i < pts.length; i++)
+			pts[i].assign(a[i]);
 	}
 
 	// pts = a + b * c
-	private void addMul(Pt[] pts, Pt[] a, double b, Pt[] c)
+	private void addMultiplied(Pt[] pts, Pt[] a, double b, Pt[] c)
 	{
 		Assert.isTrue(a.length == c.length);
+		Assert.isTrue(pts.length == c.length);
 		Assert.isTrue(pts != a);
 		Assert.isTrue(pts != c);
 
@@ -304,7 +397,7 @@ public class ForceDirectedEmbedding extends GraphEmbedding
 	}
 
 	// pts += a * b
-	private void incMul(Pt[] pts, double a, Pt[] b)
+	private void incrementWithMultiplied(Pt[] pts, double a, Pt[] b)
 	{
 		Assert.isTrue(pts.length == b.length);
 		Assert.isTrue(pts != b);
@@ -330,7 +423,7 @@ public class ForceDirectedEmbedding extends GraphEmbedding
 	}
 
 	// pts += a
-	private void inc(Pt[] pts, Pt[] a)
+	private void increment(Pt[] pts, Pt[] a)
 	{
 		Assert.isTrue(pts.length == a.length);
 		Assert.isTrue(pts != a);
@@ -340,7 +433,7 @@ public class ForceDirectedEmbedding extends GraphEmbedding
 	}
 
 	// pts *= a
-	private void mul(Pt[] pts, double a)
+	private void multiply(Pt[] pts, double a)
 	{
 		for (int i = 0; i < pts.length; i++)
 			pts[i].multiply(a);
