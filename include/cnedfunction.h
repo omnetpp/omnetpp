@@ -43,7 +43,7 @@ typedef cDynamicExpression::StkValue (*NEDFunction)(cComponent *context,
 class SIM_API cNEDFunction : public cNoncopyableOwnedObject
 {
   private:
-    NEDFunction f;             // function ptr
+    NEDFunction f;         // function ptr
     char rettype;          // one of B,L,D,S,X,*  FIXME document that "*" is for any/unknown
     std::string argtypes;  // sequence of type characters B,L,D,S,X,*
     int numargs;           // cached strlen(argtypes)

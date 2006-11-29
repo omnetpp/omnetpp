@@ -233,12 +233,14 @@ void cPar::doReadValue()
     std::string str = ev.getParameter(simulation.runNumber(), fullPath().c_str());
     if (!str.empty())
     {
+        //FIXME try to make a "shared" cParValue out of this, otherwise we won't gain anything!
+        // hash key: "str"!!! because expr representation does not depend on the context
         bool success = parse(str.c_str());
         if (!success)
             throw new cRuntimeError("Wrong value `%s' for parameter `%s'", str.c_str(), fullPath().c_str());
         return;
-    } //FIXME try to make a "shared" cParValue out of this, otherwise we won't gain anything...
-
+    } 
+    
     // maybe we should use default value
     if (p->hasValue() && ev.getParameterUseDefault(simulation.runNumber(), fullPath().c_str()))
         return;

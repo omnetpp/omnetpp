@@ -118,10 +118,10 @@ expression
         ;
 
 xmldocvalue
-        : XMLDOC_ '(' stringliteral ',' stringliteral ')'
-                { *e++ = 1; /*FIXME TBD*/ }
-        | XMLDOC_ '(' stringliteral ')'
-                { *e++ = 1; /*FIXME TBD*/ }
+        : XMLDOC_ '(' expr ',' expr ')'
+                { addFunction("xmldoc XXX", 2); /*FIXME; TODO do the same in nedxml too*/ }
+        | XMLDOC_ '(' expr ')'
+                { addFunction("xmldoc XXX", 1); /*FIXME*/ }
         ;
 
 expr
