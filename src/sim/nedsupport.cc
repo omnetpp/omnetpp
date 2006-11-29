@@ -184,7 +184,35 @@ std::string Sizeof::toString(std::string args[], int numargs)
     return std::string(printThis ? "sizeof(this." : "sizeof(") + ident + ")";
 }
 
+//---
 
+StkValue XMLDoc::evaluate(cComponent *context, StkValue args[], int numargs)
+{
+    ASSERT((numargs==1 || numargs==2) && args[0].type==StkValue::STR && (numargs==1 || args[1].type==StkValue::STR));
+    cXMLElement *node;
+    if (numargs==1)
+    {
+        node = ev.getXMLDocument(args[0].str.c_str(), NULL);
+        if (!node)
+            throw new cRuntimeError("xmldoc(\"%s\"): element not found", args[0].str.c_str());
+    }
+    else
+    {
+        node = ev.getXMLDocument(args[0].str.c_str(), args[1].str.c_str());
+        if (!node)
+            throw new cRuntimeError("xmldoc(\"%s\", \"%s\"): element not found", args[0].str.c_str(), args[1].str.c_str());
+    }
+    return node;
+}
+
+std::string XMLDoc::toString(std::string args[], int numargs)
+{
+    ASSERT(numargs==1 || numargs==2);
+    if (numargs==1)
+        return std::string("xmldoc(")+args[0]+")";
+    else
+        return std::string("xmldoc(")+args[0]+", "+args[1]+")";
+}
 
 };
 

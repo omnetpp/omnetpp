@@ -75,6 +75,7 @@ void yyerror (const char *s);
 #include "globals.h"
 #include "cfunction.h"
 #include "cnedfunction.h"
+#include "nedsupport.h"
 
 static cDynamicExpression::Elem *e;
 
@@ -118,10 +119,10 @@ expression
         ;
 
 xmldocvalue
-        : XMLDOC_ '(' expr ',' expr ')'
-                { addFunction("xmldoc XXX", 2); /*FIXME; TODO do the same in nedxml too*/ }
-        | XMLDOC_ '(' expr ')'
-                { addFunction("xmldoc XXX", 1); /*FIXME*/ }
+        : XMLDOC_ '(' expr ')'
+                { *e++ = new NEDSupport::XMLDoc(false); }
+        | XMLDOC_ '(' expr ',' expr ')'
+                { *e++ = new NEDSupport::XMLDoc(true); }
         ;
 
 expr

@@ -190,6 +190,12 @@ void cExpressionBuilder::doFunction(FunctionNode *node)
             //XXX elems[pos++] = new NEDSupport::Sizeof(modulename, ident, inSubcomponentScope, hasChild);
             throw new cRuntimeError("dynamic module builder: sizeof(module.ident): not yet");
     }
+    else if (!strcmp(funcname,"xmldoc"))
+    {
+        // syntax is xmldoc(file) or xmldoc(file, xpath); both args are string expressions
+        ASSERT(argcount==1 || argcount==2);
+        elems[pos++] = new NEDSupport::XMLDoc(argcount==2);
+    }
     else // normal function
     {
         // push args first

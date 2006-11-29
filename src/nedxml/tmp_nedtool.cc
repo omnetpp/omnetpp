@@ -517,7 +517,7 @@ int main(int argc, char **argv)
         else if (!strcmp(argv[i],"-m"))
         {
             opt_mergeoutput = true;
-//XXX            outputtree = new NedFilesNode;
+            outputtree = new FilesNode;
         }
         else if (!strcmp(argv[i],"-o"))
         {
