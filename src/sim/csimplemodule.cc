@@ -295,7 +295,7 @@ void cSimpleModule::scheduleStart(simtime_t t)
 
 void cSimpleModule::deleteModule()
 {
-    if (simulation.activityModule()==this)
+    if (simulation.contextModule()==this) //XXX revise. it was activityModule(), but it was no good with handleMessage()
     {
         // this module is committing suicide: gotta get outta here, and leave
         // doing simulation.deleteModule(id()) to whoever catches the exception
