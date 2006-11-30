@@ -18,7 +18,7 @@ OBJS= arraybuilder.obj channel.obj commonnodes.obj compoundfilter.obj \
       resultfilemanager.obj slidingwinavg.obj \
       vectorfilereader.obj vectorfilewriter.obj windowavg.obj \
       xyplotnode.obj octaveexport.obj ivectorfilereader.obj \
-      ivectorfilewriter.obj
+      ivectorfilewriter.obj vectorfileindexer.obj
 
 #
 # Automatic rules

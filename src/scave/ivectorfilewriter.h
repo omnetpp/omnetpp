@@ -59,19 +59,18 @@ class IndexedVectorFileWriterNode : public Node
         std::string fileHeader;
         std::string fileName;
         std::string indexFileName;
-        std::string tmpFileName;
-        std::string tmpIndexFileName;
         int blockSize;
         FILE *f;
         FILE *fi;
         int prec;
 
     public:
-        IndexedVectorFileWriterNode(const char *filename, int blockSize, const char *fileHeader=NULL);
+        IndexedVectorFileWriterNode(const char *fileName, const char* indexFileName, int blockSize, const char *fileHeader=NULL);
         virtual ~IndexedVectorFileWriterNode();
 
         Port *addVector(int vectorId, std::string moduleName, std::string name);
         void setPrecision(int prec) {this->prec = prec;}
+        std::string filename() const {return fileName;}
 
         virtual bool isReady() const;
         virtual void process();

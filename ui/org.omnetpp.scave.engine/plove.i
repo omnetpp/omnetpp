@@ -6,6 +6,7 @@
 #include "arraybuilder.h"
 #include "xyarray.h"
 #include "ivectorfilereader.h"
+#include "vectorfileindexer.h"
 %}
 
 %include "std_common.i"
@@ -95,6 +96,7 @@ class IndexedVectorFileReader
 %include "nodetyperegistry.h"
 %include "dataflowmanager.h"
 %include "xyarray.h"
+%include "vectorfileindexer.h"
 // %include "ivectorfilereader.h"
 
 

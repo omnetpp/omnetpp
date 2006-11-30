@@ -2,6 +2,7 @@ package org.omnetpp.scave2;
 
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
+import org.omnetpp.scave2.jobs.VectorFileIndexerJob;
 import org.osgi.framework.BundleContext;
 
 /**
@@ -28,6 +29,7 @@ public class Activator extends AbstractUIPlugin {
 	 */
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
+		VectorFileIndexerJob.activate();
 	}
 
 	/*
@@ -35,6 +37,7 @@ public class Activator extends AbstractUIPlugin {
 	 * @see org.eclipse.ui.plugin.AbstractUIPlugin#stop(org.osgi.framework.BundleContext)
 	 */
 	public void stop(BundleContext context) throws Exception {
+		VectorFileIndexerJob.deactivate();
 		plugin = null;
 		super.stop(context);
 	}

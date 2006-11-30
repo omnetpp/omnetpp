@@ -16,78 +16,27 @@
 #pragma warning(disable:4786)
 #endif
 
-#include <sys/stat.h>
 #include "channel.h"
 #include "ivectorfilewriter.h"
 
-#define CHECK(printf,filename) if (printf<0) throw new Exception("Cannot write file '%s'", filename.c_str());
-
-static std::string createIndexFileName(const std::string fileName)
-{
-    std::string indexFileName = fileName;
-    std::string::size_type index = indexFileName.rfind('.');
-    if (index != std::string::npos)
-        indexFileName.replace(index, std::string::npos, ".vci");
-    else
-        indexFileName.append(".vci");
-    return indexFileName;
-}
-
-static inline bool existsFile(const std::string fileName)
-{
-    struct stat s;
-    return stat(fileName.c_str(), &s)==0;
-}
-
-static FILE *openTempFile(const std::string baseFileName, std::string &tmpFileName/*out*/)
-{
-    std::string prefix = baseFileName;
-    prefix.append(".temp");
-    tmpFileName = prefix;
-    int serial = 0;
-    char buffer[11];
-    while (existsFile(tmpFileName)) 
-        tmpFileName = prefix+itoa(serial++, buffer, 10);
-    
-    FILE *f = fopen(tmpFileName.c_str(), "w");
-    if (!f)
-        throw new Exception("Cannot open '%s' for writing.", tmpFileName.c_str());
-
-    return f;
-}
+#define CHECK(printf) if (printf<0) throw new Exception("Cannot write vector file '%s'", fileName.c_str());
 
 static FILE *openFile(const std::string fileName)
 {
-    FILE *f = fopen(fileName.c_str(),"a");
+    FILE *f = fopen(fileName.c_str(),"w");
     if (f==NULL)
         throw new Exception("Cannot open index file `%s'", fileName.c_str());
     return f;
 }
 
-static void renameFile(const std::string oldName, const std::string newName, const char *desc)
-{
-    int rc = rename(oldName.c_str(), newName.c_str());
-    if (rc)
-        throw new Exception("Cannot rename %s from '%s' to '%s': %s", desc, oldName.c_str(), newName.c_str(), strerror(errno));
-}
-
-static void removeFile(const std::string fileName, const char *descr)
-{
-    if (unlink(fileName.c_str())!=0 && errno!=ENOENT)
-        throw new Exception("Cannot remove %s `%s': %s", descr, fileName.c_str(), strerror(errno));
-}
-
-
-IndexedVectorFileWriterNode::IndexedVectorFileWriterNode(const char *fileName, int blockSize, const char *fileHeader)
+IndexedVectorFileWriterNode::IndexedVectorFileWriterNode(const char *fileName, const char *indexFileName, int blockSize, const char *fileHeader)
 {
     f = NULL;
     fi = NULL;
     this->prec = DEFAULT_PRECISION;
     this->fileHeader = (fileHeader ? fileHeader : "");
     this->fileName = fileName;
-    this->indexFileName = createIndexFileName(fileName);
-    this->tmpFileName = tmpnam(NULL);
-    this->tmpIndexFileName = tmpnam(NULL);
+    this->indexFileName = indexFileName;
     this->blockSize = blockSize;
 }
 
@@ -100,11 +49,6 @@ IndexedVectorFileWriterNode::~IndexedVectorFileWriterNode()
         fclose(f);
     if (fi != NULL)
         fclose(fi);
-
-    removeFile(fileName, "old input file");
-    renameFile(tmpFileName, fileName, "output file");
-    removeFile(indexFileName, "old index file");
-    renameFile(tmpIndexFileName, indexFileName, "index file");
 }
 
 Port *IndexedVectorFileWriterNode::addVector(int vectorId, std::string moduleName, std::string name)
@@ -130,12 +74,12 @@ void IndexedVectorFileWriterNode::process()
     // open file if needed
     if (!f)
     {
-        f = openTempFile(fileName, tmpFileName);
+        f = openFile(fileName);
         // print file header and vector declarations
-        CHECK(fprintf(f,"%s\n\n", fileHeader.c_str()), tmpFileName);
+        CHECK(fprintf(f,"%s\n\n", fileHeader.c_str()));
         for (PortVector::iterator it=ports.begin(); it!=ports.end(); it++) {
             VectorInputPort *port=*it;
-            CHECK(fprintf(f,"vector %ld  \"%s\"  \"%s\"  %d\n", port->id, port->moduleName.c_str(), port->name.c_str(), 1), tmpFileName);
+            CHECK(fprintf(f,"vector %ld  \"%s\"  \"%s\"  %d\n", port->id, port->moduleName.c_str(), port->name.c_str(), 1));
         }
     }
 
@@ -189,32 +133,34 @@ void IndexedVectorFileWriterNode::writeBufferToFile(VectorInputPort *port)
 {
     assert(f!=NULL);
     long offset = ftell(f);
-    CHECK(fputs(port->buffer, f), tmpFileName);
+    CHECK(fputs(port->buffer, f));
     port->blocks.push_back(Block(offset, port->numOfRecords));
     port->clearBuffer();
 }
+
+#define CHECK_I(printf) if (printf<0) throw new Exception("Cannot write index file '%s'", indexFileName.c_str());
 
 void IndexedVectorFileWriterNode::writeIndex(VectorInputPort *port)
 {
     if (!fi)
     {
-        fi = openTempFile(indexFileName, tmpIndexFileName);
+        fi = openFile(indexFileName);
     }
 
     int nBlocks = port->blocks.size();
     if (nBlocks > 0)
     {
-        CHECK(fprintf(fi,"vector %ld  \"%s\"  \"%s\"  %d  %d\n",
-                      port->id, port->moduleName.c_str(), port->name.c_str(), 1/*tuple*/, port->bufferSize), tmpIndexFileName);
+        CHECK_I(fprintf(fi,"vector %ld  \"%s\"  \"%s\"  %d  %d\n",
+                      port->id, port->moduleName.c_str(), port->name.c_str(), 1/*tuple*/, port->bufferSize));
         for (int i=0; i<nBlocks; i+=10)
         {
-            CHECK(fprintf(fi, "%ld\t", port->id), tmpIndexFileName);
+            CHECK_I(fprintf(fi, "%ld\t", port->id));
             for (int j = 0; j<10 && i+j < nBlocks; ++j)
             {
                 Block &block=port->blocks[i+j];
-                CHECK(fprintf(fi, "%ld:%ld ", block.offset, block.numOfRecords), tmpIndexFileName);
+                CHECK_I(fprintf(fi, "%ld:%ld ", block.offset, block.numOfRecords));
             }
-            CHECK(fprintf(fi, "\n"), tmpIndexFileName);
+            CHECK_I(fprintf(fi, "\n"));
         }
         port->blocks.clear();
     }
@@ -231,6 +177,7 @@ const char *IndexedVectorFileWriterNodeType::description() const
 void IndexedVectorFileWriterNodeType::getAttributes(StringMap& attrs) const
 {
     attrs["filename"] = "name of the output vector file (.vec)";
+    attrs["indexfilename"] = "name of the output index file (.vci)";
     attrs["blocksize"] = "size of the blocks of each vector";
     attrs["fileheader"] = "header written into the output vector file";
 }
@@ -240,9 +187,10 @@ Node *IndexedVectorFileWriterNodeType::create(DataflowManager *mgr, StringMap& a
     checkAttrNames(attrs);
 
     const char *fileName = attrs["filename"].c_str();
+    const char *indexFileName = attrs["indexfilename"].c_str();
     int blockSize = atoi(attrs["blocksize"].c_str());
 
-    Node *node = new IndexedVectorFileWriterNode(fileName, blockSize);
+    Node *node = new IndexedVectorFileWriterNode(fileName, indexFileName, blockSize);
     node->setNodeType(this);
     mgr->addNode(node);
     return node;
