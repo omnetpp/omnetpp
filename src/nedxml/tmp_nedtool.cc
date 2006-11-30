@@ -304,7 +304,7 @@ try{
             generateXML(out, tree, opt_srcloc);
             out.close();
         }
-        else if (opt_gensrc && tree->getTagCode()==NED_FILES)
+        else if (opt_inplace && opt_gensrc && tree->getTagCode()==NED_FILES)
         {
             for (NEDElement *child=tree->getFirstChild(); child; child=child->getNextSibling())
             {
