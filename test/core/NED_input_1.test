@@ -8,7 +8,7 @@ endmodule
 
 simple {Simple}
    parameters:
-      p0, p1, p2, p3, p4, p5, p6, p7, p8, p9;
+      p1, p2, p3, p4, p5, p6, p7, p8, p9;
 endsimple
 
 module {Compound}
@@ -21,7 +21,6 @@ module {Compound}
 
         sub : {Simple}[3];
             parameters:
-                p0 = input,
                 p1 = input(1),
                 p2 = input(1, "Enter param"),
                 p3 = input(a),
@@ -75,7 +74,6 @@ network={network}
 
 
 %contains: stdout
-sub[0].p0=0
 sub[0].p1=1
 sub[0].p2=1
 sub[0].p3=100
@@ -87,7 +85,6 @@ sub[0].p8=108
 sub[0].p9=105
 
 %contains: stdout
-sub[1].p0=0
 sub[1].p1=1
 sub[1].p2=1
 sub[1].p3=100
@@ -99,7 +96,6 @@ sub[1].p8=108
 sub[1].p9=105
 
 %contains: stdout
-sub[2].p0=0
 sub[2].p1=1
 sub[2].p2=1
 sub[2].p3=100
