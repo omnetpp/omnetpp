@@ -541,7 +541,7 @@ const char *NED1Generator::getPromptTextOf(ParamNode *param)
     PropertyNode *promptProp = (PropertyNode *)param->getFirstChildWithAttribute(NED_PROPERTY, "name", "prompt");
     if (!promptProp)
         return NULL;
-    PropertyKeyNode *propKey = (PropertyKeyNode *)promptProp->getFirstChildWithAttribute(NED_PROPERTY_KEY, "key", "");
+    PropertyKeyNode *propKey = (PropertyKeyNode *)promptProp->getFirstChildWithAttribute(NED_PROPERTY_KEY, "name", "");
     if (!propKey)
         return NULL;
     LiteralNode *literal = (LiteralNode *)propKey->getFirstChildWithTag(NED_LITERAL);
@@ -761,7 +761,7 @@ const char *NED1Generator::getDisplayStringOf(NEDElement *node, PropertyNode *&o
     PropertyNode *displayProp = (PropertyNode *)parameters->getFirstChildWithAttribute(NED_PROPERTY, "name", "display");
     if (!displayProp)
         return NULL;
-    PropertyKeyNode *propKey = (PropertyKeyNode *)displayProp->getFirstChildWithAttribute(NED_PROPERTY_KEY, "key", "");
+    PropertyKeyNode *propKey = (PropertyKeyNode *)displayProp->getFirstChildWithAttribute(NED_PROPERTY_KEY, "name", "");
     if (!propKey)
         return NULL;
     LiteralNode *literal = (LiteralNode *)propKey->getFirstChildWithTag(NED_LITERAL);
