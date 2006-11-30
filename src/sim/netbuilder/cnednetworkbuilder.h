@@ -55,6 +55,7 @@ class cNEDNetworkBuilder
   protected:
     cModule *_submodule(cModule *parentmodp, const char *submodname, int idx=-1);
     void addSubmodulesAndConnections(cModule *modp);
+    bool superTypeAllowsUnconnected() const;
     void buildRecursively(cModule *modp, cNEDDeclaration *decl);
     cModuleType *findAndCheckModuleType(const char *modtypename, cModule *modp, const char *submodname);
     void addSubmodule(cModule *modp, SubmoduleNode *submod);

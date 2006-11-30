@@ -284,13 +284,16 @@ void cNEDNetworkBuilder::addSubmodulesAndConnections(cModule *modp)
         }
     }
 
-
-    // check if there are unconnected gates left
-    //FIXME not quite like this, BUT: if allowUnconnected=false, must check gates of submodules ADDED HERE (not all!)
-//XXX    if (!conns || !conns->getAllowUnconnected())
-//XXX        modp->checkInternalConnections();
+    // check if there are unconnected gates left -- unless unconnected gates were already permitted in the super type
+    if ((!conns || !conns->getAllowUnconnected()) && !superTypeAllowsUnconnected())
+        modp->checkInternalConnections();
 
     printf("  done adding submodules and connections of decl %s to %s\n", decl->name(), modp->fullPath().c_str()); //XXX
+}
+
+bool cNEDNetworkBuilder::superTypeAllowsUnconnected() const
+{
+    return false; //FIXME TODO
 }
 
 cModuleType *cNEDNetworkBuilder::findAndCheckModuleType(const char *modtypename, cModule *modp, const char *submodname)
