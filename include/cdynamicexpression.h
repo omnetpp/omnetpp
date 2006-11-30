@@ -176,7 +176,7 @@ class SIM_API cDynamicExpression : public cExpression
         // Note: char codes need to be present and be consistent with cNEDFunction::argTypes()
         enum {UNDEF=0, BOOL='B', DBL='D', STR='S', XML='X'} type;
         bool bl;
-        double dbl;
+        double dbl;  //FIXME better names! this is part of the public interface!!!!
         std::string str;
         cXMLElement *xml;
 

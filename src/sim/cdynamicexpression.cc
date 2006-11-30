@@ -111,7 +111,7 @@ void cDynamicExpression::setExpression(Elem e[], int n)
 
 cDynamicExpression::StkValue cDynamicExpression::evaluate(cComponent *context) const
 {
-printf("    evaluating: %s\n", toString().c_str()); //XXX
+    //XXX printf("    evaluating: %s\n", toString().c_str());
     const int stksize = 20;
     StkValue stk[stksize];
 
@@ -396,7 +396,7 @@ printf("    evaluating: %s\n", toString().c_str()); //XXX
     if (tos!=0)
         throw new cRuntimeError(this,eBADEXP);
 
-printf("        ==> returning %s\n", stk[tos].toString().c_str()); //XXX
+    //XXX printf("        ==> returning %s\n", stk[tos].toString().c_str());
 
     return stk[tos];
 }
@@ -536,7 +536,7 @@ std::string cDynamicExpression::toString() const
                      strstk[tos] = std::string(op) + strstk[tos]; // pri=0: never needs parens
                      pristk[tos] = 0;
                  }
-                 if (e.op==IIF)  // conditional (tertiary)
+                 else if (e.op==IIF)  // conditional (tertiary)
                  {
                      if (tos<2)
                          throw new cRuntimeError(this,eESTKUFLOW);
