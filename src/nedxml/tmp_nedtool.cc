@@ -46,8 +46,6 @@ using std::ios;
 //FIXME print warnings as warnings not errors! (and don't stop on them)
 //TODO: "preserve format" flag (genererate ned2 as ned2, and ned1 as ned1)
 
-//FIXME error: nedtool -x a.ned && nedtool -n a_n.xml ==> creates msg file!!!! (a_n_m.msg)
-
 // file types
 enum {XML_FILE, NED_FILE, MSG_FILE, CPP_FILE, UNKNOWN_FILE};
 
@@ -92,8 +90,8 @@ void printUsage()
        "  -P: pretty-print and/or convert 3.x NED files to the current syntax;\n"
        "      this is a shortcut for -n -k -y\n"
        "  -v: no output (only validate input)\n"
-       "  -m: output is a single file (out_n.* by default)\n"
-       "  -o <filename>: with -m: output file name\n"
+       "  -m: output is a single file (out_n.* by default, see also -o)\n"
+       "  -o <filename>: output file name (don't use when processing multiple files)\n"
        "  -h  place output file into current directory\n"
        "  -I <dir>: add directory to NED include path\n"
        "  -X xml/ned/msg/off: following files are XML, NED or MSG up to '-X off'\n"
@@ -273,6 +271,11 @@ try{
             strcpy(outfname, fname);
             strcpy(outhdrfname, "");  // unused
         }
+        else if (opt_outputfile && (opt_genxml || opt_gensrc))
+        {
+            strcpy(outfname, opt_outputfile);
+            strcpy(outhdrfname, "");  // unused
+        }
         else
         {
             // generate output file name
@@ -283,7 +286,7 @@ try{
                 if (opt_genxml)
                     suffix = (ftype==MSG_FILE) ? "_m.xml" : "_n.xml";
                 else if (opt_gensrc)
-                    suffix = (ftype==MSG_FILE) ? "_n.ned" : "_m.msg";
+                    suffix = (ftype==MSG_FILE) ? "_m.msg" : "_n.ned";
                 else
                     suffix = (ftype==MSG_FILE) ? "_m.cc" : "_n.cc";
             }
