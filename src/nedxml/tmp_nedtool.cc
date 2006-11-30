@@ -46,6 +46,7 @@ using std::ios;
 //FIXME print warnings as warnings not errors! (and don't stop on them)
 //TODO: "preserve format" flag (genererate ned2 as ned2, and ned1 as ned1)
 
+//FIXME error: nedtool -x a.ned && nedtool -n a_n.xml ==> creates msg file!!!! (a_n_m.msg)
 
 // file types
 enum {XML_FILE, NED_FILE, MSG_FILE, CPP_FILE, UNKNOWN_FILE};
@@ -99,7 +100,8 @@ void printUsage()
        "  -Q: with -n: use old (3.x) NED syntax\n"
        "  -s <suffix>: suffix for generated files\n"
        "  -S <suffix>: when generating C++, suffix for generated header files\n"
-       "  -k: with -n: replace original file and create backup (.bak)\n"
+       "  -k: with -n: replace original file and create backup (.bak);\n"
+       "      if input is single XML file created by nedtool -m: replace original files\n"
        "  -e: do not parse expressions in NED input; expect unparsed expressions in XML\n"
        "  -y: skip semantic validation (implies -z, skip processing imports)\n"
        "  -z: skip processing imports\n"
@@ -136,6 +138,25 @@ void createFileNameWithSuffix(char *outfname, const char *infname, const char *s
     while (s>outfname && *s!='/' && *s!='\\' && *s!='.') s--;
     if (*s!='.') s=outfname+strlen(outfname);
     strcpy(s,suffix);
+}
+
+bool renameFileToBAK(const char *fname)
+{
+    // returns false on failure, true if successfully renamed or no such file
+    char bakfname[1024];
+    createFileNameWithSuffix(bakfname, fname, ".bak");
+
+    if (unlink(bakfname)!=0 && errno!=ENOENT)
+    {
+        fprintf(stderr,"nedtool: cannot remove old backup file %s, leaving file %s unchanged\n", bakfname, fname);
+        return false;
+    }
+    if (rename(fname, bakfname)!=0 && errno!=ENOENT)
+    {
+        fprintf(stderr,"nedtool: cannot rename original %s to %s, leaving file unchanged\n", fname, bakfname);
+        return false;
+    }
+    return true;
 }
 
 void generateNED(std::ostream& out, NEDElement *node, NEDErrorStore *e, bool oldsyntax)
@@ -248,23 +269,7 @@ try{
 
         if (opt_inplace)
         {
-            // user wants to replace existing file: remove old ".bak" file,
-            // rename original file to ".bak", and write new contents under the
-            // original file name
-            char bakfname[1024];
-            createFileNameWithSuffix(bakfname, fname, ".bak");
-
-            if (unlink(bakfname)!=0 && errno!=ENOENT)
-            {
-                fprintf(stderr,"nedtool: cannot remove old backup file %s, leaving file %s unchanged\n", bakfname, fname);
-                return false;
-            }
-            if (rename(fname, bakfname)!=0)
-            {
-                fprintf(stderr,"nedtool: cannot rename original %s to %s, leaving file unchanged\n", fname, bakfname);
-                return false;
-            }
-
+            // won't be used if we're to split a single XML to several NED files
             strcpy(outfname, fname);
             strcpy(outhdrfname, "");  // unused
         }
@@ -290,21 +295,47 @@ try{
             createFileNameWithSuffix(outhdrfname, fname, hdrsuffix);
         }
 
-        // TBD check output file for errors
+        // TBD check output file for write errors!
         if (opt_genxml)
         {
+            if (opt_inplace && !renameFileToBAK(outfname))
+                return false;
             ofstream out(outfname);
             generateXML(out, tree, opt_srcloc);
             out.close();
         }
+        else if (opt_gensrc && tree->getTagCode()==NED_FILES)
+        {
+            for (NEDElement *child=tree->getFirstChild(); child; child=child->getNextSibling())
+            {
+                // extract file name
+                if (child->getTagCode()==NED_NED_FILE)
+                    strcpy(outfname, ((NedFileNode *)child)->getFilename());
+                else if (child->getTagCode()==NED_MSG_FILE)
+                    strcpy(outfname, ((MsgFileNode *)child)->getFilename());
+                else
+                    continue; // if there's anything else, ignore it
+
+                // generate the file
+                if (opt_inplace && !renameFileToBAK(outfname))
+                    return false;
+                ofstream out(outfname);
+                generateNED(out, child, errors, opt_oldsyntax);
+                out.close();
+            }
+        }
         else if (opt_gensrc)
         {
+            if (opt_inplace && !renameFileToBAK(outfname))
+                return false;
             ofstream out(outfname);
             generateNED(out, tree, errors, opt_oldsyntax);
             out.close();
         }
         else
         {
+            if (!renameFileToBAK(outfname))
+                return false;
             ofstream out(outfname);
             //ofstream outh(outhdrfname);
             ofstream outh; // TBD open if we process msg files (not yet supported)
