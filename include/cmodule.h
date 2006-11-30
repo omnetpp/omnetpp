@@ -456,8 +456,8 @@ class SIM_API cModule : public cComponent //noncopyable
     /**
      * For compound modules, it checks if all gates are connected inside
      * the module (it returns <tt>true</tt> if they are OK); for simple
-     * modules, it returns <tt>true</tt>. This function is usually called from
-     * from NEDC-generated code.
+     * modules, it returns <tt>true</tt>. This function is called during
+     * network setup.
      */
     bool checkInternalConnections() const;
     //@}

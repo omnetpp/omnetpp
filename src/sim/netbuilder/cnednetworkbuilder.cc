@@ -293,7 +293,18 @@ void cNEDNetworkBuilder::addSubmodulesAndConnections(cModule *modp)
 
 bool cNEDNetworkBuilder::superTypeAllowsUnconnected() const
 {
-    return false; //FIXME TODO
+    // follow through the inheritance chain, and return true if we find an "allowunconnected" anywhere
+    cNEDDeclaration *decl = this->decl;
+    while (decl->numExtendsNames() > 0)
+    {
+        const char *superName = decl->extendsName(0);
+        cNEDDeclaration *decl = cNEDLoader::instance()->getDecl(superName);
+        ASSERT(decl); // all super classes must be loaded before we start building
+        ConnectionsNode *conns = decl->getConnectionsNode();
+        if (conns && conns->getAllowUnconnected())
+            return true;
+    }
+    return false;
 }
 
 cModuleType *cNEDNetworkBuilder::findAndCheckModuleType(const char *modtypename, cModule *modp, const char *submodname)
