@@ -17,8 +17,8 @@ network {network}: {Simple}
       p00 = -3,      // unary minus or negative constant
       p01 = -(4+1),  // unary minus
 
-      p02 = bool2int(!true),  // negation
-      p03 = bool2int(!false), // negation
+      p02 = {bool2int}(!true),  // negation
+      p03 = {bool2int}(!false), // negation
 
       p06 = ~3,      // bitwise complement (yields positive number)
       p07 = 12 ^ 3,  // power of
@@ -35,42 +35,42 @@ network {network}: {Simple}
       p16 = 10 | 3,  // bitwise or
       p17 = 10 # 3,  // bitwise xor
 
-      p18 = bool2int(8 == 3), // equal
-      p19 = bool2int(8 == 8), // equal
+      p18 = {bool2int}(8 == 3), // equal
+      p19 = {bool2int}(8 == 8), // equal
 
-      p20 = bool2int(8 != 3), // not equal
-      p21 = bool2int(8 != 8), // not equal
+      p20 = {bool2int}(8 != 3), // not equal
+      p21 = {bool2int}(8 != 8), // not equal
 
-      p22 = bool2int(8 > 3),  // greater
-      p23 = bool2int(3 > 8),  // greater
-      p24 = bool2int(8 > 8),  // greater
+      p22 = {bool2int}(8 > 3),  // greater
+      p23 = {bool2int}(3 > 8),  // greater
+      p24 = {bool2int}(8 > 8),  // greater
 
-      p25 = bool2int(8 >= 3), // greater or equal
-      p26 = bool2int(3 >= 8), // greater or equal
-      p27 = bool2int(8 >= 8), // greater or equal
+      p25 = {bool2int}(8 >= 3), // greater or equal
+      p26 = {bool2int}(3 >= 8), // greater or equal
+      p27 = {bool2int}(8 >= 8), // greater or equal
 
-      p28 = bool2int(8 < 3),  // less
-      p29 = bool2int(3 < 8),  // less
-      p30 = bool2int(8 < 8),  // less
+      p28 = {bool2int}(8 < 3),  // less
+      p29 = {bool2int}(3 < 8),  // less
+      p30 = {bool2int}(8 < 8),  // less
 
-      p31 = bool2int(8 <= 3), // less or equal
-      p32 = bool2int(3 <= 8), // less or equal
-      p33 = bool2int(8 <= 8), // less or equal
+      p31 = {bool2int}(8 <= 3), // less or equal
+      p32 = {bool2int}(3 <= 8), // less or equal
+      p33 = {bool2int}(8 <= 8), // less or equal
 
-      p34 = bool2int(true && true),   // logical and
-      p35 = bool2int(true && false),  // logical and
-      p36 = bool2int(false && true),  // logical and
-      p37 = bool2int(false && false), // logical and
+      p34 = {bool2int}(true && true),   // logical and
+      p35 = {bool2int}(true && false),  // logical and
+      p36 = {bool2int}(false && true),  // logical and
+      p37 = {bool2int}(false && false), // logical and
 
-      p38 = bool2int(true || true),   // logical or
-      p39 = bool2int(true || false),  // logical or
-      p40 = bool2int(false || true),  // logical or
-      p41 = bool2int(false || false), // logical or
+      p38 = {bool2int}(true || true),   // logical or
+      p39 = {bool2int}(true || false),  // logical or
+      p40 = {bool2int}(false || true),  // logical or
+      p41 = {bool2int}(false || false), // logical or
 
-      p42 = bool2int(true ## true),   // logical xor
-      p43 = bool2int(true ## false),  // logical xor
-      p44 = bool2int(false ## true),  // logical xor
-      p45 = bool2int(false ## false), // logical xor
+      p42 = {bool2int}(true ## true),   // logical xor
+      p43 = {bool2int}(true ## false),  // logical xor
+      p44 = {bool2int}(false ## true),  // logical xor
+      p45 = {bool2int}(false ## false), // logical xor
 
       p46 = true ? 5 : 2,  // the C/C++ ``inline if''
       p47 = false ? 5 : 2; // the C/C++ ``inline if''
@@ -83,10 +83,10 @@ endnetwork
 
 typedef cDynamicExpression::StkValue Value;
 
-Value bool2int(cComponent *context, Value args[], int numargs) {
+Value {bool2int}(cComponent *context, Value args[], int numargs) {
     return args[0].bl ? 1L : 0L;
 }
-Define_NED_Function(bool2int, "B", "L");
+Define_NED_Function({bool2int}, "B", "L");
 
 
 class {Simple} : public cSimpleModule
