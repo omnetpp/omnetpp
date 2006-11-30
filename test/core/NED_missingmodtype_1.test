@@ -20,12 +20,12 @@ endnetwork
 
 %file: {}.cc
 
-void dummy() 
+void dummy()
 {
 }
 
 %exitcode: 1
 
 %contains-regex: stdout
-[Mm]odule type definition .*NotImplemented.* not found
+{NotImplemented}.* not found
 
