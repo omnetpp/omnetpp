@@ -197,40 +197,38 @@ bool processFile(const char *fname, NEDErrorStore *errors)
         parser.setStoreSource(opt_storesrc);
         tree = (ftype==NED_FILE) ? parser.parseNEDFile(fname) : parser.parseMSGFile(fname);
     }
-//    if (!errors->empty())
-//    {
-//        delete tree;
-//        return false;
-//    }
+    if (errors->containsError())
+    {
+        delete tree;
+        return false;
+    }
 
 //NEDTools::repairNEDElementTree(tree);
 
     // DTD validation and additional basic validation
     NEDDTDValidator dtdvalidator(errors);
-try{
-    dtdvalidator.validate(tree);
-}catch(NEDException*e){
-    // FIXME embed exception handling in validate()!
-    fprintf(stderr,"nedtool: NEDException: %s\n",e->errorMessage());
-    delete tree;
-    return false;
-}
-    if (!errors->empty())
+    try {
+        dtdvalidator.validate(tree);
+    } catch(NEDException *e) {
+        // FIXME embed exception handling in validate()!
+        fprintf(stderr,"nedtool: NEDException: %s\n",e->errorMessage());
+        delete tree;
+        return false;
+    }
+    if (errors->containsError())
     {
         delete tree;
         return false;
     }
 
-/*FIXME FIXME FIXME validation temporarily commented out FIXME FIXME
     NEDBasicValidator basicvalidator(!opt_unparsedexpr, errors);
     basicvalidator.validate(tree);
-    if (!errors->empty())
+    if (errors->containsError())
     {
         delete tree;
         return false;
     }
 
-*/
     // symbol table is needed for further validation and C++ code generation
 //XXX    NEDSymbolTable symboltable;
 
@@ -250,7 +248,7 @@ try{
 //XXX            validator.validate(tree);
         }
     }
-    if (!errors->empty())
+    if (errors->containsError())
     {
         delete tree;
         return false;
@@ -349,7 +347,7 @@ try{
 
         delete tree;
 
-        if (!errors->empty())
+        if (errors->containsError())
             return false;
     }
     return true;
@@ -620,7 +618,7 @@ int main(int argc, char **argv)
 
     if (opt_mergeoutput)
     {
-        if (!errors->empty())
+        if (errors->containsError())
         {
             delete outputtree;
             return 1;
@@ -650,7 +648,7 @@ int main(int argc, char **argv)
 
         delete outputtree;
 
-        if (!errors->empty())
+        if (errors->containsError())
             return 1;
     }
 

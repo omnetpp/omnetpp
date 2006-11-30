@@ -76,6 +76,22 @@ void NEDErrorStore::add(int category, const char *location, const char *message,
     doAdd(NULL, location, category, messagebuf);
 }
 
+bool NEDErrorStore::containsError() const
+{
+    for (int i=0; i<entries.size(); i++)
+        if (entries[i].category == ERRCAT_ERROR || entries[i].category == ERRCAT_FATAL)
+            return true;
+    return false;
+}
+
+bool NEDErrorStore::containsFatal() const
+{
+    for (int i=0; i<entries.size(); i++)
+        if (entries[i].category == ERRCAT_FATAL)
+            return true;
+    return false;
+}
+
 const char *NEDErrorStore::errorCategory(int i) const
 {
     if (i<0 || i>=entries.size()) return NULL;

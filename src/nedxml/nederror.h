@@ -74,16 +74,26 @@ class NEDErrorStore
         bool empty() const {return entries.empty();}
 
         /**
-         * Number of messages stored.
+         * Total number of fatal, error, warning and info messages.
          */
-        int numErrors() const {return entries.size();}
+        int numMessages() const {return entries.size();}
+
+        /**
+         * Returns true if there's an error or fatal error stored.
+         */
+        bool containsError() const;
+
+        /**
+         * Returns true if there's a fatal error stored.
+         */
+        bool containsFatal() const;
 
         /**
          * Discard all messages stored.
          */
         void clear() {entries.clear();}
 
-        /** @name Returns properties of the ith message stored (i=0..numErrors-1) */
+        /** @name Returns properties of the ith message stored (i=0..numMessages-1) */
         //@{
         const char *errorCategory(int i) const;
         int errorCategoryCode(int i) const;

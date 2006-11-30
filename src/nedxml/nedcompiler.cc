@@ -119,11 +119,12 @@ void NEDCompiler::doValidate(NEDElement *tree)
     // DTD validation and additional basic validation
     NEDDTDValidator dtdvalidator(errors);
     dtdvalidator.validate(tree);
-    if (!errors->empty()) return;
+    if (errors->containsError())
+        return;
 
     NEDBasicValidator basicvalidator(true, errors);
     basicvalidator.validate(tree);
-    if (!errors->empty()) return;
+    if (errors->containsError()) return;
 
     // import what's necessary and do semantic checks meanwhile
     for (NEDElement *node=tree->getFirstChild(); node; node=node->getNextSibling())

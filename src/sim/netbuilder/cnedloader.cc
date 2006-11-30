@@ -157,7 +157,7 @@ NEDElement *cNEDLoader::parseAndValidateNedFile(const char *fname, bool isXML)
         parser.setStoreSource(false);
         tree = parser.parseNEDFile(fname);
     }
-    if (errors.numErrors() > 0) // FIXME print errors; ignore warnings
+    if (errors.containsError())
     {
         delete tree;
         throw new cRuntimeError("errors while loading or parsing file `%s'", fname);
@@ -166,7 +166,7 @@ NEDElement *cNEDLoader::parseAndValidateNedFile(const char *fname, bool isXML)
     // DTD validation and additional basic validation
     NEDDTDValidator dtdvalidator(&errors);
     dtdvalidator.validate(tree);
-    if (errors.numErrors() > 0) // FIXME print errors; ignore warnings
+    if (errors.containsError())
     {
         delete tree;
         throw new cRuntimeError("errors during DTD validation of file `%s'", fname);
@@ -174,7 +174,7 @@ NEDElement *cNEDLoader::parseAndValidateNedFile(const char *fname, bool isXML)
 
     NEDBasicValidator basicvalidator(true, &errors);
     basicvalidator.validate(tree);
-    if (errors.numErrors() > 0) // FIXME print errors; ignore warnings
+    if (errors.containsError())
     {
         delete tree;
         throw new cRuntimeError("errors during validation of file `%s'", fname);
