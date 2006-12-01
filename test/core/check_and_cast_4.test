@@ -4,10 +4,10 @@ Test the const version of the check_and_cast<T>() function.
 %activity:
 
 // create a cPacket as cMessage
-const cMessage *msg = new cPacket("packet");
+const cOwnedObject *msg = new cMessage();
 
 // this should succeed
-const cPacket *p1 = check_and_cast<const cPacket *>(msg);
+const cMessage *p1 = check_and_cast<const cMessage *>(msg);
 ev << "p1:" << (p1!=NULL) << endl;
 
 // and this one not

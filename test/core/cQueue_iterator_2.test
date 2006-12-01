@@ -1,5 +1,5 @@
 %description:
-test cQueueIterator with empty queue
+test cQueue::Iterator with empty queue
 test iter++, iter-- and iter() behaves good after reaching end()
 
 %activity:
@@ -8,7 +8,7 @@ test iter++, iter-- and iter() behaves good after reaching end()
 
 cQueue q("queue");
 
-cQueueIterator iter(q);
+cQueue::Iterator iter(q);
 CHECK(iter.end());
 CHECK(iter()==NULL);
 
@@ -28,8 +28,8 @@ iter--;
 CHECK(iter.end());
 CHECK(iter()==NULL);
 
-// now with athead==false
-cQueueIterator iter2(q,false);
+// now with reverse==true
+cQueue::Iterator iter2(q,true);
 CHECK(iter2.end());
 CHECK(iter2()==NULL);
 

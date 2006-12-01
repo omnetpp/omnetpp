@@ -4,11 +4,11 @@ Test the check_and_cast<T>() function.
 %activity:
 
 // create a cPacket as cMessage
-cMessage *msg = new cPacket("packet");
+cOwnedObject *msg = new cMessage();
 
 // following ones should work
-cPacket *p1 = check_and_cast<cPacket *>(msg);
-cMessage *p2 = check_and_cast<cMessage *>(msg);
+cMessage *p1 = check_and_cast<cMessage *>(msg);
+cOwnedObject *p2 = check_and_cast<cOwnedObject *>(msg);
 cObject *p3 = check_and_cast<cObject *>(msg);
 ev << (p1!=NULL) << endl;
 ev << (p2!=NULL) << endl;
