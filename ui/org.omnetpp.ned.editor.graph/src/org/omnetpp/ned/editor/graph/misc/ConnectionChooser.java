@@ -21,20 +21,57 @@ import org.omnetpp.ned2.model.pojo.NEDElementTags;
 
 /**
  * @author rhornig
- * Helper class that allows to choose a connection for a mosule pair (src , dest)
+ * Helper class that allows to choose a connection for a module pair (src , dest)
  */
 public class ConnectionChooser {
     private static final String DEFAULT_INDEX = "0";
 
-	/**
-	 * @param module The queried module
-	 * @param gateType The type of the gate we are lookin for
-	 * @param nameFilter name filter, or NULL if no filtering is needed
-	 * @return All gates from the module matching the type and name
-	 */
-	private static List<GateNode> getModuleGates(IHasConnections module, int gateType, String nameFilter) {
-		List<GateNode> result = new ArrayList<GateNode>();
-		
+    // TODO implement popupmenu if only one of the srcModule or destModule is present 
+    // only one side of the connection should be selected
+    // TODO show which gates are already connected (do not offer those gates)
+    /**
+     * This method ask the user which gates should be connected on the source and destination module
+     * @param srcModule the source module we are connecting to, should not be NULL
+     * @param srcGate which dest module gate should be offered. if NULL, all module gates wil be enumerated 
+     * @param destModule the destination module we are connecting to, should not be NULL
+     * @param destGate which dest module gate should be offered. if NULL, all module gates wil be enumerated
+     * @return
+     */
+    public static ConnectionNode open(ConnectionCommand connCommand) {
+        Assert.isNotNull(connCommand.getSrcModule());
+        Assert.isNotNull(connCommand.getDestModule());
+        
+        List<GateNode> srcOutModuleGates = getModuleGates(connCommand.getSrcModule(), GateNode.NED_GATETYPE_OUTPUT, connCommand.getSrcGate());
+        List<GateNode> srcInOutModuleGates = getModuleGates(connCommand.getSrcModule(), GateNode.NED_GATETYPE_INOUT, connCommand.getSrcGate());
+        List<GateNode> destInModuleGates = getModuleGates(connCommand.getDestModule(), GateNode.NED_GATETYPE_INPUT, connCommand.getDestGate());
+        List<GateNode> destInOutModuleGates = getModuleGates(connCommand.getDestModule(), GateNode.NED_GATETYPE_INOUT, connCommand.getDestGate());
+        
+        BlockingMenu menu = new BlockingMenu(Display.getCurrent().getActiveShell(), SWT.NONE);
+        
+        for (GateNode srcOut : srcOutModuleGates)
+            for (GateNode destIn : destInModuleGates) 
+                addConnectionPairsToMenu(connCommand, menu, srcOut, destIn);
+            
+        for (GateNode srcInOut : srcInOutModuleGates)
+            for(GateNode destInOut : destInOutModuleGates) 
+                addConnectionPairsToMenu(connCommand, menu, srcInOut, destInOut);
+
+        MenuItem selection = menu.open();
+        if (selection == null)
+            return null;
+
+        return (ConnectionNode)selection.getData();
+    }
+
+    /**
+     * @param module The queried module
+     * @param gateType The type of the gate we are lookin for
+     * @param nameFilter name filter, or NULL if no filtering is needed
+     * @return All gates from the module matching the type and name
+     */
+    private static List<GateNode> getModuleGates(IHasConnections module, int gateType, String nameFilter) {
+        List<GateNode> result = new ArrayList<GateNode>();
+        
         INEDTypeInfo comp = null;
 
         if (module instanceof CompoundModuleNodeEx) {
@@ -47,24 +84,51 @@ public class ConnectionChooser {
                 gateType = GateNode.NED_GATETYPE_INPUT;
             else 
                 gateType = GateNode.NED_GATETYPE_INOUT;
-		}
+        }
 
         if (module instanceof SubmoduleNodeEx) {
             comp = ((SubmoduleNodeEx)module).getTypeNEDTypeInfo();
-		}
-		
-		if (comp == null)
-			return result;
-		
-		for(NEDElement elem: comp.getGates().values()) {
-			GateNode currGate = (GateNode)elem;
-			if (currGate.getType() == gateType)
-				if (nameFilter == null || nameFilter.equals(currGate.getName()))
+        }
+        
+        if (comp == null)
+            return result;
+        
+        for(NEDElement elem: comp.getGates().values()) {
+            GateNode currGate = (GateNode)elem;
+            if (currGate.getType() == gateType)
+                if (nameFilter == null || nameFilter.equals(currGate.getName()))
                         result.add(currGate);
-		}
+        }
 
-		return result;
-	}
+        return result;
+    }
+
+    /**
+     * @param connCommand The commend used to specify which module and gates are to be used 
+     * @param menu The popup menu where the connection menuitems should be added
+     * @param srcGate The source gate used to create the connections
+     * @param destGate The source gate used to create the connections
+     */
+    private static void addConnectionPairsToMenu(ConnectionCommand connCommand, BlockingMenu menu, GateNode srcGate, GateNode destGate) {
+        int srcGatePPStart, srcGatePPEnd, destGatePPStart, destGatePPEnd;
+        srcGatePPStart = destGatePPStart = 0;
+        srcGatePPEnd = destGatePPEnd = 1;
+        // check if we have specified the src or dest gate. in this case we don't have to offer ++ and [] indexted versions
+        // we just have to use what is currently set on that gate
+        if (connCommand.getSrcGate() != null)
+            srcGatePPStart = srcGatePPEnd = (connCommand.getConnectionTemplate().getSrcGatePlusplus() ? 1 : 0);
+        if (connCommand.getDestGate() != null)
+            destGatePPStart = destGatePPEnd = (connCommand.getConnectionTemplate().getDestGatePlusplus() ? 1 : 0);
+        
+        // add the gate names to the menu item as additional widget data
+        ConnectionNode conn; 
+        for (int srcGatePP = srcGatePPStart; srcGatePP<=srcGatePPEnd; srcGatePP++)
+            for (int destGatePP = destGatePPStart; destGatePP<=destGatePPEnd; destGatePP++) {
+                conn =  createTemplateConnection(connCommand.getSrcModule(), srcGate, srcGatePP==1, 
+                                                 connCommand.getDestModule(), destGate, destGatePP==1);
+                if (conn != null) addConnectionToMenu(connCommand, menu, conn, srcGate, destGate);
+            }
+    }
 
     /**
 	 * Creates a template connection object from the provided gates and modules. 
@@ -135,81 +199,62 @@ public class ConnectionChooser {
 		return conn;
 	}
 	
-	
-	// TODO implement popupmenu if only one of the srcModule or destModule is present 
-	// only one side of the connection should be selected
-	// TODO show which gates are already connected (do not offer those gates)
-	/**
-	 * This method ask the user which gates should be connected on the source and destination module
-	 * @param srcModule the source module we are connecting to, should not be NULL
-	 * @param srcGate which dest module gate should be offered. if NULL, all module gates wil be enumerated 
-	 * @param destModule the destination module we are connecting to, should not be NULL
-	 * @param destGate which dest module gate should be offered. if NULL, all module gates wil be enumerated
-	 * @return
-	 */
-	public static ConnectionNode open(ConnectionCommand connCommand) {
-        Assert.isNotNull(connCommand.getSrcModule());
-        Assert.isNotNull(connCommand.getDestModule());
-		
-        List<GateNode> srcOutModuleGates = getModuleGates(connCommand.getSrcModule(), GateNode.NED_GATETYPE_OUTPUT, connCommand.getSrcGate());
-        List<GateNode> srcInOutModuleGates = getModuleGates(connCommand.getSrcModule(), GateNode.NED_GATETYPE_INOUT, connCommand.getSrcGate());
-        List<GateNode> destInModuleGates = getModuleGates(connCommand.getDestModule(), GateNode.NED_GATETYPE_INPUT, connCommand.getDestGate());
-        List<GateNode> destInOutModuleGates = getModuleGates(connCommand.getDestModule(), GateNode.NED_GATETYPE_INOUT, connCommand.getDestGate());
-        
-		BlockingMenu menu = new BlockingMenu(Display.getCurrent().getActiveShell(), SWT.NONE);
-		
-        for (GateNode srcOut : srcOutModuleGates)
-			for (GateNode destIn : destInModuleGates) 
-                addConnectionPairsToMenu(connCommand, menu, srcOut, destIn);
-			
-		for (GateNode srcInOut : srcInOutModuleGates)
-			for(GateNode destInOut : destInOutModuleGates) 
-                addConnectionPairsToMenu(connCommand, menu, srcInOut, destInOut);
-
-		MenuItem selection = menu.open();
-		if (selection == null)
-			return null;
-
-		return (ConnectionNode)selection.getData();
-	}
-
-    /**
-     * @param connCommand The commend used to specify which module and gates are to be used 
-     * @param menu The popup menu where the connection menuitems should be added
-     * @param srcGate The source gate used to create the connections
-     * @param destGate The source gate used to create the connections
-     */
-    private static void addConnectionPairsToMenu(ConnectionCommand connCommand, BlockingMenu menu, GateNode srcGate, GateNode destGate) {
-        int srcGatePPStart, srcGatePPEnd, destGatePPStart, destGatePPEnd;
-        srcGatePPStart = destGatePPStart = 0;
-        srcGatePPEnd = destGatePPEnd = 1;
-        // check if we have specified the src or gest gate. in this case we don't have to offer ++ and [] indexted versions
-        // we just have to use what is currently set on that gate
-        if (connCommand.getSrcGate() != null)
-            srcGatePPStart = srcGatePPEnd = (connCommand.getConnectionTemplate().getSrcGatePlusplus() ? 1 : 0);
-        if (connCommand.getDestGate() != null)
-            destGatePPStart = destGatePPEnd = (connCommand.getConnectionTemplate().getDestGatePlusplus() ? 1 : 0);
-        
-        // add the gate names to the menu item as additional widget data
-        ConnectionNode conn; 
-        for (int srcGatePP = srcGatePPStart; srcGatePP<=srcGatePPEnd; srcGatePP++)
-            for (int destGatePP = destGatePPStart; destGatePP<=destGatePPEnd; destGatePP++) {
-                conn =  createTemplateConnection(connCommand.getSrcModule(), srcGate, srcGatePP==1, 
-                                                 connCommand.getDestModule(), destGate, destGatePP==1);
-                if (conn != null) addConnectionToMenu(menu, conn);
-            }
-    }
-
     /**
      * Add the provided TemplateConnection to the menu,
+     * @param connCommand The original connection command we want to specify 
      * @param menu
      * @param conn A single connection that should be added to the menu
+     * @param srcGate The source gate we are connecting/connected to
+     * @param destGate The dest gate we are connecting/connected to 
      */
-    private static void addConnectionToMenu(BlockingMenu menu, ConnectionNode conn) {
+    private static void addConnectionToMenu(ConnectionCommand connCommand, BlockingMenu menu, ConnectionNode conn, GateNode srcGate, GateNode destGate) {
         MenuItem mi = menu.addMenuItem(SWT.PUSH);
+        // store the connection template in the widget's extra data
         mi.setData(conn);
         String label = NEDTreeUtil.generateNedSource(conn, false).trim(); 
         mi.setText(label);
+        // enable the menuitem only if the used gates are unconnected;
+        mi.setEnabled(isConnectionValid(connCommand, conn, srcGate, destGate));
+    }
+    
+    /**
+     * @param connCommand
+     * @param conn
+     * @param srcGate 
+     * @param destGate 
+     * @return Whether the connection is valid (ie those gates we want to connect are unconneted currently)
+     */
+    private static boolean isConnectionValid(ConnectionCommand connCommand, ConnectionNode conn, GateNode srcGate, GateNode destGate) {
+        CompoundModuleNodeEx compModule = connCommand.getParentEditPart().getCompoundModuleModel();
+        // note that vector gates or any gate on a submodule vector should be treated always unconnected
+        // because the user can connect the connection to different instances/indexes of the gate/submodule
+        boolean isSrcSideAVector = srcGate.getIsVector() || 
+            (srcGate.getParent().getParent() instanceof SubmoduleNodeEx &&
+                    !"".equals(((SubmoduleNodeEx)srcGate.getParent().getParent()).getVectorSize()));
+        boolean isDestSideAVector = destGate.getIsVector() || 
+        (destGate.getParent().getParent() instanceof SubmoduleNodeEx &&
+                !"".equals(((SubmoduleNodeEx)destGate.getParent().getParent()).getVectorSize()));
+        
+        // if we are inserting a new connection
+        if (connCommand.isCreating()) {
+            // if there are any connections with the same source or dest gate name, we should return invalid
+            if (!compModule.getConnections(conn.getSrcModule(), conn.getSrcGate(), null, null).isEmpty()
+                    && !isSrcSideAVector)
+                return false;
+            if (!compModule.getConnections(null, null, conn.getDestModule(), conn.getDestGate()).isEmpty()
+                    && !isDestSideAVector)
+                return false;
+        }
+        // if we are moving the source side connection we should filter only for that side 
+        if (!isSrcSideAVector && connCommand.isSrcMoving() &&
+                !compModule.getConnections(conn.getSrcModule(), conn.getSrcGate(), null, null).isEmpty()) 
+            return false;
+        // if we are moving the dest side connection we should filter only for that side 
+        if (!isDestSideAVector && connCommand.isDestMoving() &&
+                !compModule.getConnections(null, null, conn.getDestModule(), conn.getDestGate()).isEmpty()) 
+            return false;
+        // the connection can be attached to the gate
+        return true;
     }
     
 }

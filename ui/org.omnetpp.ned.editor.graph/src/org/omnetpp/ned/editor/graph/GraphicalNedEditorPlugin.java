@@ -115,7 +115,7 @@ public class GraphicalNedEditorPlugin extends AbstractUIPlugin {
         combined = new CombinedTemplateCreationEntry(
                 "Submodule",
                 "A submodule that can be placed in any compound module",
-                new ModelFactory(SubmoduleNodeEx.getStaticTagName(), IHasName.INITIAL_NAME, IHasName.INITIAL_NAME.toLowerCase()), 
+                new ModelFactory(SubmoduleNodeEx.getStaticTagName(), IHasName.INITIAL_NAME, IHasName.INITIAL_NAME), 
                 ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_SIMPLE),
                 ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_SIMPLE,"l",null,24)
         );
@@ -213,7 +213,7 @@ public class GraphicalNedEditorPlugin extends AbstractUIPlugin {
         	// create the tool entry
         	CombinedTemplateCreationEntry combined = new CombinedTemplateCreationEntry(
                     name, "A submodule with type "+name,
-                    new ModelFactory(SubmoduleNodeEx.getStaticTagName(),name, name), 
+                    new ModelFactory(SubmoduleNodeEx.getStaticTagName(),name.toLowerCase(), name), 
                     imageDescNorm, imageDescLarge );
         	// add to the selected drawer
             currentDrawer.add(combined);

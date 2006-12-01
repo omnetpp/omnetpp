@@ -33,21 +33,16 @@ public class ConnectionCommand extends Command {
     private ModuleEditPart srcEditPart;
     private ModuleEditPart destEditPart;
 
-    @Override
-    public String getLabel() {
-        if (connModel != null && srcModule == null && destModule == null)
-            return "Delete connection";
-        
-        if (connModel != null && srcModule != null && destModule != null)
-            return "Create connection";
-
-        return "Move connection";
-    }
-
     /**
-     * Create delet a connection element and insert it into the compoundParent as container
      * @param conn Conection Model 
      * @param compoundEditPart Connection's container's (compound module) controller object
+     */
+    /**
+     * Create, delete, or modify  a connection element 
+     * @param conn
+     * @param compoundEditPart
+     * @param sourceEditPart
+     * @param targetEditPart
      */
     public ConnectionCommand(ConnectionNodeEx conn, CompoundModuleEditPart compoundEditPart,
                                 ModuleEditPart sourceEditPart, ModuleEditPart targetEditPart) {
@@ -61,7 +56,47 @@ public class ConnectionCommand extends Command {
         this.newConn = (ConnectionNode)connModel.dup(null);
     }
     
+    /**
+     * @return True if we are currently creating a new connection 
+     */
+    public boolean isCreating() {
+        // new connections are not inserted into the model
+        return connModel.getParent() == null;
+    }
     
+    /**
+     * @return True if we are deleting the given connection
+     */
+    public boolean isDeleting() {
+        // deleting if both src and dest module is null
+        return destModule == null && srcModule == null; 
+    }
+    
+    /**
+     * @return If we are reconnecting the source end
+     */
+    public boolean isSrcMoving() {
+        return !isCreating() && !isDeleting() && srcModule != oldSrcModule;
+    }
+    
+    /**
+     * @return If we are reconnecting the source end
+     */
+    public boolean isDestMoving() {
+        return !isCreating() && !isDeleting() && destModule != oldDestModule;
+    }
+    
+    @Override
+    public String getLabel() {
+        if (connModel != null && isDeleting())
+            return "Delete connection";
+        
+        if (connModel != null && isCreating())
+            return "Create connection";
+
+        return "Reconnect";
+    }
+
     /**
      * Handles which module can be connected to which
      */
@@ -73,7 +108,6 @@ public class ConnectionCommand extends Command {
 
     @Override
     public void execute() {
-   		// do the changes
     	redo();
     }
 

@@ -72,7 +72,7 @@ public class SubmoduleEditPart extends ModuleEditPart {
     @Override
     protected List getModelSourceConnections() {
         // get the connections from out controller parent's model
-        return getCompoundModulePart().getCompoundModuleModel().getSrcConnectionsFor(getSubmoduleModel());
+        return getCompoundModulePart().getCompoundModuleModel().getSrcConnectionsFor(getSubmoduleModel().getName());
     }
 
     /**
@@ -83,7 +83,7 @@ public class SubmoduleEditPart extends ModuleEditPart {
     @Override
     protected List getModelTargetConnections() {
         // get the connections from out controller parent's model
-        return getCompoundModulePart().getCompoundModuleModel().getDestConnectionsFor(getSubmoduleModel());
+        return getCompoundModulePart().getCompoundModuleModel().getDestConnectionsFor(getSubmoduleModel().getName());
     }
 
     @Override

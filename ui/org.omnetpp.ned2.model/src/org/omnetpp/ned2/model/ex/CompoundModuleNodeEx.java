@@ -14,6 +14,7 @@ import org.omnetpp.ned2.model.interfaces.INamedGraphNode;
 import org.omnetpp.ned2.model.interfaces.IHasParameters;
 import org.omnetpp.ned2.model.interfaces.ITopLevelElement;
 import org.omnetpp.ned2.model.pojo.CompoundModuleNode;
+import org.omnetpp.ned2.model.pojo.ConnectionGroupNode;
 import org.omnetpp.ned2.model.pojo.ConnectionsNode;
 import org.omnetpp.ned2.model.pojo.ExtendsNode;
 import org.omnetpp.ned2.model.pojo.InterfaceNameNode;
@@ -105,7 +106,7 @@ public final class CompoundModuleNodeEx extends CompoundModuleNode
         if (submoduleNode != null)
             return submoduleNode;
         // then look in ancestors
-        // FIXME beware this can lead to an infite recursion if we have a circle in the extend chanin
+        // FIXME beware this can lead to an infinite recursion if we have a circle in the extend chanin
         NEDElement extendsElem = getFirstExtendsRef();
         if (extendsElem != null && extendsElem instanceof CompoundModuleNodeEx) 
             return ((CompoundModuleNodeEx)extendsElem).getSubmoduleByName(submoduleName);
@@ -174,47 +175,68 @@ public final class CompoundModuleNodeEx extends CompoundModuleNode
     /**
      * 
      * @param srcName srcModule to filter for ("" for compound module and NULL if not filtering is required)
+     * @param srcGate source gate name to filter or NULL if no filtering needed
      * @param destName destModule to filter for ("" for compound module and NULL if not filtering is required)
+     * @param destGate destination gate name to filter or NULL if no filtering needed
      * @return ALL VALID!!! connections contained in this module with matching src and dest module name
      */
-    private List<ConnectionNodeEx> getOwnConnections(String srcName, String destName) {
+    private List<ConnectionNodeEx> getOwnConnections(String srcName, String srcGate, String destName, String destGate) {
         List<ConnectionNodeEx> result = new ArrayList<ConnectionNodeEx>();
-        ConnectionsNode connectionsNode = getFirstConnectionsChild();
-        if (connectionsNode == null)
-            return result;
-        for(NEDElement currChild : connectionsNode)
-            // FIXME this skips connection groups. we should include the contenet of conection groups too
+        NEDElement connectionsNode = getFirstConnectionsChild();
+        if (connectionsNode != null)
+            gatherConnections(connectionsNode, srcName, srcGate, destName, destGate, result);
+        return result;
+    }
+
+    /**
+     * @return 
+     */
+    private void gatherConnections(NEDElement parent, String srcName, String srcGate, String destName, String destGate, List<ConnectionNodeEx> result) {
+        for(NEDElement currChild : parent) {
             if (currChild instanceof ConnectionNodeEx) {
                 ConnectionNodeEx connChild = (ConnectionNodeEx)currChild;
                 // by default add the connection
                 if (srcName != null && !srcName.equals(connChild.getSrcModule()))
                     continue;
                 
+                if (srcGate != null && !srcGate.equals(connChild.getSrcGate()))
+                    continue;
+
                 if (destName != null && !destName.equals(connChild.getDestModule()))
                     continue;
                 
-                // skip invlaid connections (those that has onknow modules at either side)
+                if (destGate != null && !destGate.equals(connChild.getDestGate()))
+                    continue;
+
+                // skip invalid connections (those that has unknown modules at either side)
                 if (!connChild.isValid())
                     continue;
 
                 // if all was ok, add it to the list
                 result.add(connChild);
+            } else if (currChild instanceof ConnectionGroupNode) {
+                // FIXME remove the comment is the layouter works without infite loops
+//                gatherConnections(currChild, srcName, srcGate, destName, destGate, result);
             }
-
-        return result;
+        }
     }
     
+    
+    
     /**
-     * Returns ALL VALID!!! connections contained in / and inherited by this module
-     * @return
+     * @param srcName srcModule to filter for ("" for compound module and NULL if not filtering is required)
+     * @param srcGate source gate name to filter or NULL if no filtering needed
+     * @param destName destModule to filter for ("" for compound module and NULL if not filtering is required)
+     * @param destGate destination gate name to filter or NULL if no filtering needed
+     * @return ALL VALID!!! connections contained in / and inherited by this module
      */
-    private List<ConnectionNodeEx> getConnections(String srcName, String destName) {
-        List<ConnectionNodeEx> result = getOwnConnections(srcName, destName);
+    public List<ConnectionNodeEx> getConnections(String srcName, String srcGate, String destName, String destGate) {
+        List<ConnectionNodeEx> result = getOwnConnections(srcName, srcGate, destName, destGate);
         
         // FIXME beware this can lead to an infite recursion if we have a circle in the extend chanin
         NEDElement extendsElem = getFirstExtendsRef();
         if (extendsElem != null && extendsElem instanceof CompoundModuleNodeEx)  
-            result.addAll(((CompoundModuleNodeEx)extendsElem).getConnections(srcName, destName));
+            result.addAll(((CompoundModuleNodeEx)extendsElem).getConnections(srcName, srcGate, destName, destGate));
         
         return result;
     }
@@ -224,7 +246,7 @@ public final class CompoundModuleNodeEx extends CompoundModuleNode
      * @return
      */
     public List<ConnectionNodeEx> getSrcConnections() {
-        return getConnections("", null);
+        return getConnections("", null, null, null);
     }
 
     /**
@@ -232,7 +254,7 @@ public final class CompoundModuleNodeEx extends CompoundModuleNode
      * @return
      */
     public List<ConnectionNodeEx> getDestConnections() {
-        return getConnections(null, "");
+        return getConnections(null, null, "", null);
     }
 
     /**
@@ -240,8 +262,8 @@ public final class CompoundModuleNodeEx extends CompoundModuleNode
      * where this module is the source
      * @return
      */
-    public List<ConnectionNodeEx> getSrcConnectionsFor(SubmoduleNodeEx submoduleNodeModel) {
-        return getConnections(submoduleNodeModel.getName(), null);
+    public List<ConnectionNodeEx> getSrcConnectionsFor(String submoduleName) {
+        return getConnections(submoduleName,null, null, null);
     }
 
     /**
@@ -249,8 +271,8 @@ public final class CompoundModuleNodeEx extends CompoundModuleNode
      * where this module is the destinaion
      * @return
      */
-    public List<ConnectionNodeEx> getDestConnectionsFor(SubmoduleNodeEx submoduleNodeModel) {
-        return getConnections(null, submoduleNodeModel.getName());
+    public List<ConnectionNodeEx> getDestConnectionsFor(String submoduleName) {
+        return getConnections(null, null, submoduleName, null);
     }
 
     /**

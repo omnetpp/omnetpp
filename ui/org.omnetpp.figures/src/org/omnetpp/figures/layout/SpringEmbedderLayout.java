@@ -131,20 +131,12 @@ public class SpringEmbedderLayout extends XYLayout {
         IFigure f;
         while (children.hasNext()) {
             f = (IFigure)children.next();
-            Rectangle bounds = null;
-//            bounds = (Rectangle)getConstraint(f);
-            // if there is no constraint
-            if (bounds == null) {
-            	bounds = new Rectangle();
-            	Point loc = alg.getNodePosition(f);
-            	if (loc != null) {
-            		bounds.setLocation(loc);
-            		bounds.setSize(f.getPreferredSize());
-            	} else
-            	// not found in the algorithm result so do not layout this child
-            		Assert.isTrue(false);
-            }
-
+            Rectangle bounds = new Rectangle();
+            Point loc = alg.getNodePosition(f);
+            Assert.isNotNull(loc);
+            bounds.setLocation(loc);
+            bounds.setSize(f.getPreferredSize());
+                 
             if (bounds.width == -1 || bounds.height == -1) {
                 Dimension preferredSize = f.getPreferredSize(bounds.width, bounds.height);
                 bounds = bounds.getCopy();

@@ -5,6 +5,7 @@ import org.omnetpp.ned2.model.pojo.NEDElementFactory;
 import org.omnetpp.ned2.model.pojo.NedFileNode;
 import org.omnetpp.ned2.model.swig.NED1Generator;
 import org.omnetpp.ned2.model.swig.NED2Generator;
+import org.omnetpp.ned2.model.swig.NEDBasicValidator;
 import org.omnetpp.ned2.model.swig.NEDDTDValidator;
 import org.omnetpp.ned2.model.swig.NEDElement;
 import org.omnetpp.ned2.model.swig.NEDElementCode;
@@ -88,15 +89,23 @@ public class NEDTreeUtil {
 
 			// run DTD validation (once again)
 			NEDDTDValidator dtdvalidator = new NEDDTDValidator(errors);
-			int errs = errors.numErrors();
+			int errs = errors.numMessages();
 			dtdvalidator.validate(swigTree);
-			if (errors.numErrors()!=errs) {
+            // drop the tree if the validator added ANY new messages
+            // FIXME we should check only for new error messages
+            // currently validator do not add warning or info messageses
+			if (errors.numMessages()!=errs) {
 				// DTD validation produced additional errors -- give up
 				swigTree.delete();
 				return null;
 			}
-			//NEDBasicValidator basicvalidator = new NEDBasicValidator(errors);
-			//basicvalidator.validate(swigTree);
+			NEDBasicValidator basicvalidator = new NEDBasicValidator(false, errors);
+			basicvalidator.validate(swigTree);
+            if (errors.numMessages()!=errs) {
+                // BASIC validation produced additional errors -- give up
+                swigTree.delete();
+                return null;
+            }
 
 			// convert tree to pure Java objects
 			org.omnetpp.ned2.model.NEDElement pojoTree = swig2pojo(swigTree, null, errors);

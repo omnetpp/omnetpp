@@ -288,15 +288,11 @@ public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette
 
             if (delta.getKind() == IResourceDelta.REMOVED) {
                 Display display = getSite().getShell().getDisplay();
-                if ((IResourceDelta.MOVED_TO & delta.getFlags()) == 0) { // if
-                    // the
-                    // file
-                    // was
-                    // deleted
+                if ((IResourceDelta.MOVED_TO & delta.getFlags()) == 0) {
+                    // if the file was deleted
                     // NOTE: The case where an open, unsaved file is deleted is
-                    // being handled by the
-                    // PartListener added to the Workbench in the initialize()
-                    // method.
+                    // being handled by the PartListener added to the Workbench 
+                    // in the initialize() method
                     display.asyncExec(new Runnable() {
                         public void run() {
                             if (!isDirty()) closeEditor(false);
@@ -314,8 +310,7 @@ public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette
             } else if (delta.getKind() == IResourceDelta.CHANGED) {
                 if (!editorSaving) {
                     // the file was overwritten somehow (could have been
-                    // replaced by another
-                    // version in the respository)
+                    // replaced by another version in the respository)
                     final IFile newFile = ResourcesPlugin.getWorkspace().getRoot().getFile(
                             delta.getFullPath());
                     Display display = getSite().getShell().getDisplay();
@@ -379,6 +374,9 @@ public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette
         setEditDomain(new DefaultEditDomain(this));
     }
     
+    /**
+     * @param parent Setes the parent editor embedding this one (ie, parent may be a multipage editor)
+     */
     public void setEmbeddingEditor(MultiPageEditorPart parent) {
         embeddingEditor = parent; 
     }
@@ -420,8 +418,7 @@ public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette
         viewer.setEditPartFactory(new NedEditPartFactory());
         ContextMenuProvider provider = new GNEDContextMenuProvider(viewer, getActionRegistry());
         viewer.setContextMenu(provider);
-        getSite().registerContextMenu("org.omnetpp.ned.editor.graph.contextmenu",
-                provider, viewer);
+        getSite().registerContextMenu("org.omnetpp.ned.editor.graph.contextmenu", provider, viewer);
         viewer.setKeyHandler(new GraphicalViewerKeyHandler(viewer).setParent(getCommonKeyHandler()));
 
         loadProperties();
@@ -743,12 +740,9 @@ public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette
     }
 
     protected void superSetInput(IEditorInput input) {
-        // The workspace never changes for an editor. So, removing and re-adding
-        // the
-        // resourceListener is not necessary. But it is being done here for the
-        // sake
-        // of proper implementation. Plus, the resourceListener needs to be
-        // added
+        // The workspace never changes for an editor. So, removing and re-adding the
+        // resourceListener is not necessary. But it is being done here for the sake
+        // of proper implementation. Plus, the resourceListener needs to be added
         // to the workspace the first time around.
         if (getEditorInput() != null) {
             IFile file = ((IFileEditorInput) getEditorInput()).getFile();

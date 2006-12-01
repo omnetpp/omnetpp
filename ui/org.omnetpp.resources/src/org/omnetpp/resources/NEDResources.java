@@ -35,6 +35,7 @@ import org.omnetpp.ned2.model.pojo.NedFileNode;
 import org.omnetpp.ned2.model.pojo.ParamNode;
 import org.omnetpp.ned2.model.pojo.ParametersNode;
 import org.omnetpp.ned2.model.pojo.SimpleModuleNode;
+import org.omnetpp.ned2.model.swig.NEDErrorCategory;
 import org.omnetpp.ned2.model.swig.NEDErrorStore;
 
 /**
@@ -374,14 +375,32 @@ public class NEDResources implements INEDTypeResolver {
 	private void convertErrorsToMarkers(IFile file, NEDErrorStore errors) {
 		try {
 			file.deleteMarkers(NEDPROBLEM_MARKERID, true, IResource.DEPTH_ZERO);
-			for (int i=0; i<errors.numErrors(); i++) {
+			for (int i=0; i<errors.numMessages(); i++) {
                 // XXX hack: parse out line number from string. NEDErrorStore should rather store line number as int...
 				String loc = errors.errorLocation(i);
 				int line = parseLineNumber(loc);
-				addMarker(file, NEDPROBLEM_MARKERID, IMarker.SEVERITY_ERROR, errors.errorText(i), line);
+				int markerSeverity = IMarker.SEVERITY_INFO;
+                NEDErrorCategory category = NEDErrorCategory.swigToEnum(errors.errorCategoryCode(i));
+                switch (category) {
+                case ERRCAT_FATAL:
+                    markerSeverity = IMarker.SEVERITY_ERROR;
+                    break;
+                case ERRCAT_ERROR:
+                    markerSeverity = IMarker.SEVERITY_ERROR;
+                    break;
+
+                case ERRCAT_WARNING:
+                    markerSeverity = IMarker.SEVERITY_WARNING;
+                    break;
+                case ERRCAT_INFO:
+                    markerSeverity = IMarker.SEVERITY_INFO;
+                    break;
+                default:
+                    markerSeverity = IMarker.SEVERITY_ERROR;
+                    break;
+                }
+                addMarker(file, NEDPROBLEM_MARKERID, markerSeverity, errors.errorText(i), line);
 			}
-			//if (errors.numErrors()==0)
-			//	addMarker(file, NEDPROBLEM_MARKERID, IMarker.SEVERITY_INFO, "parsed OK", 1); //XXX remove
 		} catch (CoreException e) {
 		}
 	}
