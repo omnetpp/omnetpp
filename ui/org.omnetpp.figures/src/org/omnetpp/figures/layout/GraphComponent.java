@@ -2,9 +2,10 @@ package org.omnetpp.figures.layout;
 
 import java.util.ArrayList;
 
+/**
+ * This is a special graph implementation for the force directed layout algorithm.
+ */
 class GraphComponent {
-	public Rc rc;
-	
 	public Vertex spanningTreeRoot;
 
 	private ArrayList<Vertex> vertices = new ArrayList<Vertex>();
@@ -12,10 +13,6 @@ class GraphComponent {
 	private ArrayList<Edge> edges = new ArrayList<Edge>();
 	
 	public GraphComponent() {
-	}
-
-	public GraphComponent(Rc rc) {
-		this.rc = rc;
 	}
 	
 	public boolean isEmpty() {
@@ -80,11 +77,35 @@ class GraphComponent {
 			vertex.spanningTreeChildren = null;
 			vertex.spanningTreeParent = null;
 		}
-		
+
+		addToSpanningTreeParent(null, rootVertex);
 		calculateSpanningTreeRecursive(null, rootVertex);
 	}
 
 	protected void calculateSpanningTreeRecursive(Vertex parentVertex, Vertex vertex) {
+		for (Vertex neighbour : getNeighbours(vertex))
+			if (neighbour.spanningTreeChildren == null)
+				addToSpanningTreeParent(vertex, neighbour);
+
+		for (Vertex child : vertex.spanningTreeChildren)
+			calculateSpanningTreeRecursive(vertex, child);
+	}
+
+	private ArrayList<Vertex> getNeighbours(Vertex vertex) {
+		ArrayList<Vertex> neighbours = new ArrayList<Vertex>();
+
+		for (Edge edge : edges) {
+			if (edge.source == vertex)
+				neighbours.add(edge.target);
+
+			if (edge.target == vertex)
+				neighbours.add(edge.source);
+		}
+		
+		return neighbours;
+	}
+
+	private void addToSpanningTreeParent(Vertex parentVertex, Vertex vertex) {
 		vertex.spanningTreeParent = parentVertex;
 		
 		if (vertex.spanningTreeChildren == null)
@@ -92,14 +113,20 @@ class GraphComponent {
 		
 		if (parentVertex != null)
 			parentVertex.spanningTreeChildren.add(vertex);
-		
-		for (Edge edge : edges) {
-			if (edge.source == vertex && edge.target.spanningTreeChildren == null)
-				calculateSpanningTreeRecursive(vertex, edge.target);
+	}
 
-			if (edge.target == vertex && edge.source.spanningTreeChildren == null)
-				calculateSpanningTreeRecursive(vertex, edge.source);
+	public Rc getRc() {
+		double x1 = Double.POSITIVE_INFINITY, y1 = Double.POSITIVE_INFINITY;
+		double x2 = Double.NEGATIVE_INFINITY, y2 = Double.NEGATIVE_INFINITY;
+
+		for (Vertex vertex : vertices) {
+			x1 = Math.min(x1, vertex.pt.x);
+			y1 = Math.min(y1, vertex.pt.y);
+			x2 = Math.max(x2, vertex.pt.x + vertex.rs.width);
+			y2 = Math.max(y2, vertex.pt.y + vertex.rs.height);
 		}
+			
+		return new Rc(x1, y1, x2 - x1, y2 - y1);
 	}
 }
 
@@ -122,27 +149,35 @@ class Vertex {
 	
 	public ArrayList<Vertex> spanningTreeChildren;
 
-	// level in spanning tree
+	/**
+	 * Level in spanning tree.
+	 */
 	public int rank;
 
-	// center coordinate relative to parent
+	/**
+	 * Center coordinate relative to parent.
+	 */
 	public Pt starTreeCenter;
 	
-	// subtree enclosing circle center
+	/**
+	 * Subtree enclosing circle center.
+	 */
 	public Pt starTreeCircleCenter;
 	
-	// subtree enclosing circle radius
+	/**
+	 * Subtree enclosing circle radius.
+	 */
 	double starTreeRadius;
 
-	// subtree width in strip layout
+	/**
+	 * Subtree width in strip layout.
+	 */
 	public double subTreeWidth;
 
-	public Vertex() {
-	}
-
-	public boolean isFixed() {
-		return positionConstraint instanceof FixPositionConstraint;
-	}
+	/**
+	 * Anchor vertex to which the position of this vertex is relative.
+	 */
+	public Vertex anchor;
 
 	public Vertex(Pt pt, Rs rc, double mass, double charge) {
 		this(pt, rc, mass, charge, null, null);
@@ -161,6 +196,10 @@ class Vertex {
 		this.identity = identity;
 	}
 
+	public boolean isFixed() {
+		return positionConstraint instanceof PointPositionConstraint;
+	}
+
 	public Pt getCenter() {
 		return new Pt(pt.x + rs.width / 2, pt.y + rs.height / 2);
 	}
@@ -171,19 +210,19 @@ class Edge {
 
 	public Vertex target;
 	
+	public double springCoefficient;
+	
 	public Object identity;
 
-	public Edge() {
-	}
-
 	public Edge(Vertex source, Vertex target) {
-		this(source, target, null);
+		this(source, target, null, 1);
 	}
 
-	public Edge(Vertex source, Vertex target, Object identity) {
+	public Edge(Vertex source, Vertex target, Object identity, double springCoefficient) {
 		this.source = source;
 		this.target = target;
 		this.identity = identity;
+		this.springCoefficient = springCoefficient;
 	}
 }
 
@@ -193,10 +232,10 @@ interface IVertexPositionConstraint {
 	Pt getFinalPosition(Pt pt);
 }
 
-class FixPositionConstraint implements IVertexPositionConstraint {
+class PointPositionConstraint implements IVertexPositionConstraint {
 	public Pt pt;
 
-	public FixPositionConstraint(Pt pt) {
+	public PointPositionConstraint(Pt pt) {
 		this.pt = pt;
 	}
 

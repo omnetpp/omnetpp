@@ -49,6 +49,15 @@ class Pt {
 		return Math.sqrt(x * x + y * y);
 	}
 
+	public double getNaNLength() {
+		if (Double.isNaN(x))
+			return y;
+		else if (Double.isNaN(y))
+			return x;
+		else
+			return getLength();
+	}
+
 	public double getDistance(Pt other) {
 		double dx = x - other.x;
 		double dy = y - other.y;
@@ -71,7 +80,7 @@ class Pt {
 		}
 	}
 
-	public Pt Normalize() {
+	public Pt normalize() {
 		double length = getLength();
 		x /= length;
 		y /= length;
@@ -107,6 +116,13 @@ class Pt {
 		return this;
 	}
 
+	public Pt reverse() {
+		x *= -1;
+		y *= -1;
+
+		return this;
+	}
+
 	public Pt divide(double d) {
 		x /= d;
 		y /= d;
@@ -121,13 +137,32 @@ class Pt {
 	public Pt transpose() {
 		return new Pt(y, -x);
 	}
+	
+	public void setNaNToZero() {
+		if (Double.isNaN(x))
+			x = 0;
+		if (Double.isNaN(y))
+			y = 0;
+	}
 
-	public static Pt getNil() {
+	public boolean isZero() {
+		return x == 0 && y == 0;
+	}
+
+	public static Pt newNil() {
 		return new Pt(Double.NaN, Double.NaN);
+	}
+
+	public static Pt newZero() {
+		return new Pt(0, 0);
 	}
 
 	public boolean isNil() {
 		return Double.isNaN(x) && Double.isNaN(y);
+	}
+
+	public boolean isFullySpecified() {
+		return !Double.isNaN(x) && !Double.isNaN(y);
 	}
 
 	@Override
@@ -169,8 +204,11 @@ class Ln {
 
 	public Pt end;
 
+	public Ln(double x1, double y1, double x2, double y2) {
+		this(new Pt(x1, y1), new Pt(x2, y2));
+	}
+	
 	public Ln(Pt begin, Pt end) {
-		super();
 		this.begin = begin;
 		this.end = end;
 	}
@@ -183,7 +221,7 @@ class Ln {
 
 	public Pt getDirectionVector() {
 		Pt v = end.copy().subtract(begin);
-		v.Normalize();
+		v.normalize();
 
 		return v;
 	}
@@ -252,7 +290,7 @@ class Rs {
 		this.height = height;
 	}
 
-	public static Rs getNil() {
+	public static Rs newNil() {
 		return new Rs(Double.NaN, Double.NaN);
 	}
 
@@ -325,13 +363,32 @@ class Rc {
 	}
 
 	public boolean intersects(Rc rc2) {
-		return rc2.contains(getTopLeft()) || rc2.contains(getTopRight()) || rc2.contains(getBottomLeft()) || rc2.contains(getBottomRight());
+		return
+			rc2.contains(getTopLeft()) ||
+			rc2.contains(getTopRight()) ||
+			rc2.contains(getBottomLeft()) ||
+			rc2.contains(getBottomRight());
 	}
 
 	public boolean contains(Pt p) {
 		return pt.x <= p.x && p.x <= pt.x + rs.width && pt.y <= p.y && p.y <= pt.y + rs.height;
 	}
+	
+	public double getLeft() {
+		return pt.x;
+	}
 
+	public double getRight() {
+		return pt.x + rs.width;
+	}
+	
+	public double getTop() {
+		return pt.y;
+	}
+
+	public double getBottom() {
+		return pt.y + rs.height;
+	}
 	public Pt getTopLeft() {
 		return new Pt(pt.x, pt.y);
 	}
@@ -349,7 +406,7 @@ class Rc {
 	}
 
 	public static Rc getNil() {
-		return new Rc(Pt.getNil(), Rs.getNil());
+		return new Rc(Pt.newNil(), Rs.newNil());
 	}
 
 	public boolean isNil() {
@@ -393,6 +450,10 @@ class Cc {
 
 	public double radius;
 	
+	public Cc(double x, double y, double radius) {
+		this(new Pt(x, y), radius);
+	}
+
 	public Cc(Pt origin, double radius) {
 		this.origin = origin;
 		this.radius = radius;
@@ -408,7 +469,15 @@ class Cc {
 		double d = origin.getDistance(other.origin);
 		double d2 = d * d;
 		double a = (d2 - r2 + R2);
+		
+		if (d2 == 0)
+			return new ArrayList<Pt>();
+
 		double y2 = (4 * d2 * R2 - a * a) / (4 * d2);
+		
+		if (y2 < 0)
+			return new ArrayList<Pt>();
+		
 		double y = Math.sqrt(y2);
 		double x = (d2 - r2 + R2) / (2 * d);
 		Pt pt1 = new Pt(x, y);
@@ -436,29 +505,29 @@ class Cc {
 	}
 	
 	public Cc getEnclosingCircle(Cc other) {
-		double x1 = Math.min(origin.x - radius, other.origin.x - other.radius);
-		double x2 = Math.max(origin.x + radius, other.origin.x + other.radius);
-		Pt pt = new Pt((x2 + x1) / 2, 0);
+		double distance = origin.getDistance(other.origin);
+		double d = distance + Math.max(radius, other.radius - distance) + Math.max(other.radius, radius - distance);
+		Pt pt = new Pt(d / 2 - Math.max(radius, other.radius - distance), 0);
 		double angle = other.origin.copy().subtract(origin).getAngle();
 		pt.rotate(angle);
 		pt.add(origin);
 
-		return new Cc(pt, x2 - x1 / 2);
+		return new Cc(pt, d / 2);
 	}
 
-	public Pt getBottomCenter() {
-		return new Pt(origin.x, origin.y + radius);
-	}
-
-	public Pt getTopCenter() {
+	public Pt getCenterTop() {
 		return new Pt(origin.x, origin.y - radius);
 	}
 
-	public Pt getCenterRight() {
-		return new Pt(origin.x + radius, origin.y);
+	public Pt getCenterBottom() {
+		return new Pt(origin.x, origin.y + radius);
 	}
 
-	public Pt getCenterLeft() {
+	public Pt getLeftCenter() {
 		return new Pt(origin.x - radius, origin.y);
+	}
+
+	public Pt getRightCenter() {
+		return new Pt(origin.x + radius, origin.y);
 	}
 }

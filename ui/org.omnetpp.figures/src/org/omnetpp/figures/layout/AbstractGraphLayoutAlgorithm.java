@@ -44,12 +44,17 @@ public abstract class AbstractGraphLayoutAlgorithm
     /**
      * Add node that can be moved.
      */
-    public abstract void addMovableNode(Object mod, int width, int height);
+    public abstract void addMovableNode(Object mod, int x, int y, int width, int height);
 
     /**
      * Add fixed node
      */
     public abstract void addFixedNode(Object mod, int x, int y, int width, int height);
+
+    /**
+     * May be called after addAnchoredNode.
+     */
+    public abstract void setAnchorPosition(String anchor, int x, int y);
 
     /**
      * Add node that is anchored to a freely movable anchor point. Nodes anchored
@@ -114,5 +119,7 @@ public abstract class AbstractGraphLayoutAlgorithm
      * Extract the results after layouting
      */
     public abstract Point getNodePosition(Object mod);
+    
+    public abstract Point getAnchorPosition(String anchor);
 }
 

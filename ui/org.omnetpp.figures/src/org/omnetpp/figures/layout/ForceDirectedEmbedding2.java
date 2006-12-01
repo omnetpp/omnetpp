@@ -1,56 +1,31 @@
 package org.omnetpp.figures.layout;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 import org.eclipse.core.runtime.Assert;
 
-public class ForceDirectedEmbedding extends GraphEmbedding
+public class ForceDirectedEmbedding2
 {
 	protected static boolean debug = false;
 
 	protected Random random;
 
 	/**
+	 * Spring force coefficient.
+	 */
+	public double springCoefficient = 0.1;
+
+	/**
+	 * Electric repeal force coefficient.
+	 */
+	public double electricRepealCoefficient = 100000;
+
+	/**
 	 * Position change listener gets notification during the solution.
 	 */
 	protected IForceDirectedEmbeddingListener listener;
-
-	/**
-	 * Spring between vertices having connections.
-	 */
-	public double connectionSpringCoefficient = 0.1;
-
-	/**
-	 * Spring between two vertexs.
-	 */
-	public double vertexSpringCoefficient = 0.001;
-
-	/**
-	 * Maximum spring force.
-	 */
-	public double maxSpringForce = 1000;
-
-	/**
-	 * Magnetism and repeal between two connections' endings.
-	 */
-	public double connectionMagneticFieldCoefficient = 0;// 1000;
-	public Pt connectionHomogenousMagneticFieldPower = new Pt(0, 0.5);
-	public double connectionMagneticDipolPower = 10;
-
-	/**
-	 * Maximum magnetic force.
-	 */
-	public double maxMagneticForce = 1000;
-
-	/**
-	 * Repeal between two vertexs.
-	 */
-	public double vertexElectricRepealCoefficient = 10000;
-
-	/**
-	 * Maximum electric repeal force.
-	 */
-	public double maxElectricForce = 1000;
 
 	/**
 	 * Friction reduces the energy of the system. The friction force points in the opposite direction of the current velocity.
@@ -63,7 +38,7 @@ public class ForceDirectedEmbedding extends GraphEmbedding
 	/**
 	 * This gets updated.
 	 */
-	private double updatedFrictionCoefficient;
+	protected double updatedFrictionCoefficient;
 	
 	/**
 	 * Lower limit for friction coefficient.
@@ -91,7 +66,7 @@ public class ForceDirectedEmbedding extends GraphEmbedding
 	/**
 	 * This gets updated.
 	 */
-	private double updatedTimeStep;
+	protected double updatedTimeStep;
 
 	/**
 	 * Lower limit for time step update.
@@ -112,7 +87,7 @@ public class ForceDirectedEmbedding extends GraphEmbedding
 	 * Maximum time spend on the calculation in milliseconds.
 	 * The algorithm will always return after this time has elapsed.
 	 */
-	public double calculationTimeLimit = 10000;
+	public double calculationTimeLimit = 100000;
 
 	/**
 	 * Limit of acceleration approximation difference (between a1, a2, a3 and a4 in RK-4).
@@ -124,7 +99,7 @@ public class ForceDirectedEmbedding extends GraphEmbedding
 	/**
 	 * This gets updated.
 	 */
-	private double updatedAccelerationErrorLimit;
+	protected double updatedAccelerationErrorLimit;
 
 	/**
 	 * Acceleration limit during the solution.
@@ -142,14 +117,45 @@ public class ForceDirectedEmbedding extends GraphEmbedding
 	 * Maximim velocity;
 	 */
 	public double maxVelocity = 100;
-
-	public ForceDirectedEmbedding(GraphComponent graphComponent) {
-		this(graphComponent, null);
+	
+	private List<Variable> variables = new ArrayList<Variable>();
+	
+	private List<IForceProvider> forceProviders = new ArrayList<IForceProvider>();
+	
+	private List<IBody> bodies = new ArrayList<IBody>();
+	
+	public ForceDirectedEmbedding2() {
+	}
+	
+	public ForceDirectedEmbedding2(IForceDirectedEmbeddingListener listener) {
+		this.listener = listener;
 	}
 
-	public ForceDirectedEmbedding(GraphComponent graphComponent, IForceDirectedEmbeddingListener listener) {
-		super(graphComponent);
-		this.listener = listener;
+	public List<Variable> getVariables() {
+		return variables;
+	}
+
+	public List<IForceProvider> getForceProviders() {
+		return forceProviders;
+	}
+
+	public void addForceProvider(IForceProvider forceProvider) {
+		forceProviders.add(forceProvider);
+	}
+
+	public void removeForceProvider(IForceProvider forceProvider) {
+		forceProviders.remove(forceProvider);
+	}
+
+	public List<IBody> getBodies() {
+		return bodies;
+	}
+	
+	public void addBody(IBody body) {
+		bodies.add(body);
+		
+		if (variables.indexOf(body.getVariable()) == -1)
+			variables.add(body.getVariable());
 	}
 
 	/**
@@ -195,8 +201,14 @@ public class ForceDirectedEmbedding extends GraphEmbedding
 		// make it stable and always use the same seed
 		random = new Random(0);
 
+		// set positions and velocities
+		for (int i = 0; i < variables.size(); i++) {
+			Variable variable = variables.get(i);
+			pn[i].assign(variable.getPosition());
+			vn[i].assign(variable.getVelocity());
+		}
+
 		// initial values
-		getInitialPositions(pn);
 		updatedTimeStep = timeStep;
 		updatedAccelerationErrorLimit = accelerationErrorLimit;
 		updatedFrictionCoefficient = frictionCoefficient;
@@ -242,7 +254,7 @@ public class ForceDirectedEmbedding extends GraphEmbedding
 				a(a4, tpn, tvn);
 
 				// Adjust time step (h)
-				accelerationError = diff(a1, a2, a3, a4);
+				accelerationError = maximumDifference(a1, a2, a3, a4);
 				
 				if (accelerationError < updatedAccelerationErrorLimit) {
 					if (hMultiplier == 0)
@@ -286,9 +298,6 @@ public class ForceDirectedEmbedding extends GraphEmbedding
 				}
 			}
 
-			// move vertices
-			setVertexPositions(pn);
-
 			// check time limit
 			time = System.currentTimeMillis() - begin;
 			if (time > calculationTimeLimit)
@@ -299,9 +308,9 @@ public class ForceDirectedEmbedding extends GraphEmbedding
 			// update friction
 			timeStepSum += updatedTimeStep;
 			energy = 0;
-			for (int i = 0; i < vn.length; i++) {
-				double velocity = vn[i].getLength();
-				energy +=  1.0 / 2.0 * graphComponent.getVertex(i).mass * velocity * velocity;
+			for (Variable variable : variables) {
+				double velocity = variable.velocity.getLength();
+				energy +=  1.0 / 2.0 * variable.getMass() * velocity * velocity;
 			}
 			energySum += energy * updatedTimeStep;
 			double energyAvg = (energySum / timeStepSum);
@@ -312,6 +321,9 @@ public class ForceDirectedEmbedding extends GraphEmbedding
 				updatedFrictionCoefficient /= frictionCoefficientMultiplier;
 			else if (energy > energyExpected && updatedFrictionCoefficient * frictionCoefficientMultiplier < maxFrictionCoefficient)
 				updatedFrictionCoefficient *= frictionCoefficientMultiplier;
+			
+			if (listener != null)
+				listener.variablesChanged();
 
 			// Check if relaxed
 			relaxed = true;
@@ -333,34 +345,27 @@ public class ForceDirectedEmbedding extends GraphEmbedding
 				}
 			}
 		}
-
-		setFinalVertexPositions(pn);
+		
+		if (listener != null)
+			listener.variablesChanged();
 
 		long end = System.currentTimeMillis();
 		System.out.println("Runge-Kutta-4 ended, at real time: " + (end - begin) + " cycle: " + cycle + " prob cycle: " + probCycle);
 	}
 
-	private void getInitialPositions(Pt[] pn) {
-		for (int i = 0; i < graphComponent.getVertexCount(); i++)
-			pn[i] = graphComponent.getVertex(i).getCenter();
-	}
-
 	private Pt[] createPtArray() {
-		Pt[] pts = new Pt[graphComponent.getVertexCount()];
+		Pt[] pts = new Pt[variables.size()];
 
 		for (int i = 0; i < pts.length; i++)
-			pts[i] = new Pt(0, 0);
+			pts[i] = Pt.newZero();
 
 		return pts;
 	}
 
-	// Calculation
-	private double diff(Pt[] a1, Pt[] a2, Pt[] a3, Pt[] a4)
+	private double maximumDifference(Pt[] a1, Pt[] a2, Pt[] a3, Pt[] a4)
 	{
 		double max = 0;
-		Assert.isTrue((a1.length == a2.length));
-		Assert.isTrue(a2.length == a3.length);
-		Assert.isTrue(a3.length == a4.length);
+		Assert.isTrue(a1.length == a2.length && a2.length == a3.length && a3.length == a4.length);
 
 		for (int i = 0; i < a1.length; i++) {
 			max = Math.max(max, a1[i].getDistance(a2[i]));
@@ -371,47 +376,9 @@ public class ForceDirectedEmbedding extends GraphEmbedding
 		return max;
 	}
 
-	private void setVertexPositions(Pt[] pn)
-	{
-		Assert.isTrue(pn.length == graphComponent.getVertexCount());
-
-		for (int i = 0; i < graphComponent.getVertexCount(); i++) {
-			Vertex vertex = graphComponent.getVertex(i);
-
-			if (vertex.anchor == null) {
-				vertex.pt.x = pn[i].x - vertex.rs.width / 2;
-				vertex.pt.y = pn[i].y - vertex.rs.height / 2;
-			}
-		}
-
-		if (listener != null)
-			listener.positionsChanged();
-	}
-
-	private void setFinalVertexPositions(Pt[] pn)
-	{
-		for (int i = 0; i < graphComponent.getVertexCount(); i++) {
-			Vertex vertex = graphComponent.getVertex(i);
-			
-			if (vertex.positionConstraint != null)
-				vertex.pt = vertex.positionConstraint.getFinalPosition(vertex.pt);
-		}
-
-		if (listener != null)
-			listener.positionsChanged();
-	}
-
-	// pts = a
-	private void assign(Pt[] pts, Pt[] a)
-	{
-		Assert.isTrue(a.length == a.length);
-		Assert.isTrue(pts != a);
-
-		for (int i = 0; i < pts.length; i++)
-			pts[i].assign(a[i]);
-	}
-
-	// pts = a + b * c
+	/**
+	 * pts = a + b * c
+	 */
 	private void addMultiplied(Pt[] pts, Pt[] a, double b, Pt[] c)
 	{
 		Assert.isTrue(a.length == c.length);
@@ -423,7 +390,9 @@ public class ForceDirectedEmbedding extends GraphEmbedding
 			pts[i].assign(c[i]).multiply(b).add(a[i]);
 	}
 
-	// pts += a * b
+	/**
+	 * pts += a * b
+	 */
 	private void incrementWithMultiplied(Pt[] pts, double a, Pt[] b)
 	{
 		Assert.isTrue(pts.length == b.length);
@@ -438,7 +407,9 @@ public class ForceDirectedEmbedding extends GraphEmbedding
 		}
 	}
 
-	// pts = a + b
+	/**
+	 * pts = a + b
+	 */
 	private void add(Pt[] pts, Pt[] a, Pt[] b)
 	{
 		Assert.isTrue(a.length == b.length);
@@ -449,7 +420,9 @@ public class ForceDirectedEmbedding extends GraphEmbedding
 			pts[i].assign(a[i]).add(b[i]);
 	}
 
-	// pts += a
+	/**
+	 * pts += a
+	 */
 	private void increment(Pt[] pts, Pt[] a)
 	{
 		Assert.isTrue(pts.length == a.length);
@@ -459,225 +432,43 @@ public class ForceDirectedEmbedding extends GraphEmbedding
 			pts[i].add(a[i]);
 	}
 
-	// pts *= a
+	/**
+	 * pts *= a
+	 */
 	private void multiply(Pt[] pts, double a)
 	{
 		for (int i = 0; i < pts.length; i++)
 			pts[i].multiply(a);
 	}
 
-	// an = a[pn, vn]
+	/**
+	 * an = b[pn, vn]
+	 */
 	private void a(Pt[] an, Pt[] pn, Pt[] vn)
 	{
-		Pt ptDistance = new Pt(0, 0);
-		Rc rc1 = new Rc(0, 0, 0, 0);
-		Rc rc2 = new Rc(0, 0, 0, 0);
-		
-		// Reset an
-		for (int i = 0; i < an.length; i++) {
-			an[i].setZero();
+		// set positions and velocities and reset forces
+		for (int i = 0; i < variables.size(); i++) {
+			Variable variable = variables.get(i);
+			variable.assignPosition(pn[i]);
+			variable.assignVelocity(vn[i]);
+			variable.resetForces();
 		}
 
-		// Reset per vertex forces
-		if (listener != null)
-			for (Vertex vertex : graphComponent.getVertices())
-				vertex.fs.clear();
-		
-		// Apply connection spring force
-		if (connectionSpringCoefficient != 0)
-			for (int i = 0; i < graphComponent.getEdgeCount(); i++) {
-				Edge edge = graphComponent.getEdge(i);
-				Vertex vertex1 = edge.source;
-				Vertex vertex2 = edge.target;
+		// calculate forces
+		for (IForceProvider forceProvider : forceProviders)
+			forceProvider.applyForces(this);
 
-				if (vertex1 != null && vertex2 != null && vertex1 != vertex2) {
-					int i1 = graphComponent.IndexOfVertex(edge.source);
-					int i2 = graphComponent.IndexOfVertex(edge.target);
-
-					ptDistance.assign(pn[i2]).subtract(pn[i1]);
-					ptDistance.setNaNToZero();
-					double distance = ptDistance.getLength();
-
-					if (distance != 0) {
-						double springForce = connectionSpringCoefficient * edge.springCoefficient * distance;
-
-						if (springForce > maxSpringForce)
-							springForce = maxSpringForce;
-
-						addForcePair(vertex1, vertex2, an[i1], an[i2], springForce, ptDistance, distance);
-					}
-				}
-			}
-
-		// Apply magnetic force
-		if (connectionMagneticFieldCoefficient != 0)
-			for (int i = 0; i < graphComponent.getEdgeCount(); i++) {
-				Edge edge1 = graphComponent.getEdge(i);
-				int iSource = graphComponent.IndexOfVertex(edge1.source);
-				int iTarget = graphComponent.IndexOfVertex(edge1.target);
-				Pt pSource1 = pn[iSource];
-				Pt pTarget1 = pn[iTarget];
-				Pt connectionCenter1 = new Pt(pSource1).add(pTarget1).divide(2);
-				Pt magneticFieldPower = connectionHomogenousMagneticFieldPower;
-				Pt m1 = new Pt(pSource1).subtract(pTarget1);
-				double connectionLength = m1.getLength();
-
-				if (connectionLength != 0) {
-					m1.normalize();
-					m1.multiply(connectionMagneticDipolPower);
-
-					for (int j = i + 1; j < graphComponent.getEdgeCount(); j++) {
-						Edge edge2 = graphComponent.getEdge(j);
-						Pt pSource2 = pn[graphComponent.IndexOfVertex(edge2.source)];
-						Pt pTarget2 = pn[graphComponent.IndexOfVertex(edge2.target)];
-						Pt connectionCenter2 = new Pt(pSource2).add(pTarget2).divide(2);
-						Pt m2 = new Pt(pTarget2).subtract(pSource2);
-						m2.normalize();
-						m2.multiply(connectionMagneticDipolPower);
-
-						// magnetic dipol field power
-						// B = (3(m*r)r - mr^2) / r^5
-						Pt r = new Pt(connectionCenter1).subtract(connectionCenter2);
-						double rLength = r.getLength();
-						Pt dipolFieldPower = (r.copy().multiply(3 * m2.crossProduct(r)).subtract(m2.copy().multiply(Math.pow(rLength, 2)))).divide(Math.pow(rLength, 5)).multiply(connectionMagneticDipolPower);
-
-						magneticFieldPower.add(dipolFieldPower);
-					}
-
-					double magneticFieldMoment = magneticFieldPower.x * m1.y - magneticFieldPower.y * m1.x;
-					double magneticFieldForce = connectionMagneticFieldCoefficient * magneticFieldMoment / (connectionLength / 2);
-
-					if (Math.abs(magneticFieldForce) > maxMagneticForce)
-						magneticFieldForce = Math.signum(magneticFieldForce) * maxMagneticForce;
-					else if (Double.isNaN(magneticFieldForce))
-						magneticFieldForce = maxMagneticForce;
-
-					an[iSource].x -= magneticFieldForce * m1.y / connectionLength;
-					an[iSource].y += magneticFieldForce * m1.x / connectionLength;
-					an[iTarget].x += magneticFieldForce * m1.y / connectionLength;
-					an[iTarget].y -= magneticFieldForce * m1.x / connectionLength;
-				}
-			}
-
-		// Apply electric force
-		if (vertexElectricRepealCoefficient != 0)
-			for (int i = 0; i < graphComponent.getVertexCount(); i++) {
-				Vertex vertex1 = graphComponent.getVertex(i);
-				rc1.assign(pn[i], vertex1.rs);
-
-				for (int j = i + 1; j < graphComponent.getVertexCount(); j++) {
-					Vertex vertex2 = graphComponent.getVertex(j);
-					rc2.assign(pn[j], vertex2.rs);
-
-// TODO:
-//					if (!rc1.intersects(rc2)) {
-						ptDistance.assign(pn[i]).subtract(pn[j]);
-						if (!ptDistance.isNil()) {
-							ptDistance.setNaNToZero();
-							double distance = ptDistance.getLength();
-							// TODO: find intersection with box
-//							double modifiedDistance = distance - vertex1.rs.getDiagonalLength() / 2 - vertex2.rs.getDiagonalLength() / 2;
-							double modifiedDistance = distance;
-							double electricForce = vertexElectricRepealCoefficient * vertex1.charge * vertex2.charge / modifiedDistance / modifiedDistance;
-	
-							if (modifiedDistance <= 0 || electricForce > maxElectricForce)
-								electricForce = maxElectricForce * vertex1.charge * vertex2.charge;
-	
-							addForcePair(vertex1, vertex2, an[i], an[j], electricForce, ptDistance, distance);
-						}
-//					}
-				}
-			}
-		
-		// Apply vertex spring force
-		if (vertexSpringCoefficient != 0)
-			for (int i = 0; i < graphComponent.getVertexCount(); i++) {
-				Vertex vertex1 = graphComponent.getVertex(i);
-
-				for (int j = i + 1; j < graphComponent.getVertexCount(); j++) {
-					Vertex vertex2 = graphComponent.getVertex(j);
-					ptDistance.assign(pn[j]).subtract(pn[i]);
-					ptDistance.setNaNToZero();
-					double distance = ptDistance.getLength();
-
-					if (distance != 0) {
-						double springForce = vertexSpringCoefficient * distance;
-
-						if (springForce > maxSpringForce)
-							springForce = maxSpringForce;
-
-						addForcePair(vertex1, vertex2, an[i], an[j], springForce, ptDistance, distance);
-					}
-				}
-			}
-
-		// Apply vertex position constraint
-		for (int i = 0; i < graphComponent.getVertexCount(); i++) {
-			Vertex vertex = graphComponent.getVertex(i);
-
-			if (vertex.positionConstraint != null) {
-				Pt force = vertex.positionConstraint.getForce(pn[i]);
-				addForce(vertex, an[i], force);
-			}
+		// return accelerations
+		for (int i = 0; i < variables.size(); i++) {
+			Variable variable = variables.get(i);
+			an[i].assign(variable.getAcceleration());
 		}
-
-		// Apply friction force
-		if (updatedFrictionCoefficient != 0)
-			for (int i = 0; i <  graphComponent.getVertexCount(); i++) {
-				double vlen = vn[i].getLength();
-				// TODO: is it really quadratic?
-				an[i].x -= updatedFrictionCoefficient * vlen * vn[i].x;
-				an[i].y -= updatedFrictionCoefficient * vlen * vn[i].y;
-			}
-
-		// Convert forces to acceleration
-		for (int i = 0; i < graphComponent.getVertexCount(); i++)
-			an[i].divide(graphComponent.getVertex(i).mass);
 	}
 
-	private void addForcePair(Vertex vertex1, Vertex vertex2, Pt f1, Pt f2, double force, Pt d, double distance)
-	{
-		double forceX;
-		double forceY;
-
-		if (distance != 0) {
-			forceX = force * d.x / distance;
-			forceY = force * d.y / distance;
-		}
-		else {
-			forceX = random.nextDouble() - 0.5;
-			forceY = random.nextDouble() - 0.5;
-		}
-
-		Assert.isTrue(!Double.isNaN(forceX));
-		Assert.isTrue(!Double.isNaN(forceY));
-
-		if (f1 != null) {
-			f1.x += forceX;
-			f1.y += forceY;
-		}
-
-		if (f2 != null) {
-			f2.x -= forceX;
-			f2.y -= forceY;
-		}
-
-		if (listener != null && vertex1 != null)
-			vertex1.fs.add(new Pt(forceX, forceY));
-
-		if (listener != null && vertex2 != null)
-			vertex2.fs.add(new Pt(-forceX, -forceY));
-	}
-
-	private void addForce(Vertex vertex, Pt f, Pt force) {
-		if (f != null)
-			f.add(force);
-
-		if (vertex != null)
-			vertex.fs.add(force);
-	}
-
+	/**
+	 * Notification interface.
+	 */
 	public interface IForceDirectedEmbeddingListener {
-		public void positionsChanged();
+		public void variablesChanged();
 	}
 }
