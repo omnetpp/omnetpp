@@ -1,11 +1,11 @@
 %description:
-Tests cPar's conversions to basic types (operator long(), operator double(), etc).
+Tests cMsgPar's conversions to basic types (operator long(), operator double(), etc).
 
 %global:
 #include <string.h>
 
 %activity:
-cPar p;
+cMsgPar p;
 
 #define PRINT(X)  ev << p.type() << ":" << p.isNumeric() << ":" << X << endl
 

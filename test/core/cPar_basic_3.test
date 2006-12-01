@@ -1,11 +1,11 @@
 %description:
-Tests cPar's operator=() methods for basic data types (string,bool,long,double).
+Tests cMsgPar's operator=() methods for basic data types (string,bool,long,double).
 
 %global:
 #include <string.h>
 
 %activity:
-cPar p;
+cMsgPar p;
 
 #define PRINT(X)  ev << p.type() << ":" << p.isNumeric() << ":" << X << endl
 

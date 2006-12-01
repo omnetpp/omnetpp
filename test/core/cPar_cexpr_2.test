@@ -1,5 +1,5 @@
 %description:
-Test that cPar properly deallocates cDoubleExpression objects.
+Test that cMsgPar properly deallocates cDoubleExpression objects.
 
 %module: {Test}
 
@@ -18,13 +18,13 @@ class {TestExpr} : public cDoubleExpression
   public:
     {TestExpr}(int a0) {a = a0; ev << "ctor" << a << "\n";}
     virtual ~{TestExpr}() {ev << "dtor" << a << "\n";}
-    cExpression *dup() {ev << "dup" << a << "\n"; return new {TestExpr}(a);}
+    cDoubleExpression *dup() {ev << "dup" << a << "\n"; return new {TestExpr}(a);}
     virtual double evaluate() {return 3*a;}
 };
 
 void {Test}::activity()
 {
-    cPar p,q;
+    cMsgPar p,q;
 
     #define PRINT(X)  ev << p.type() << ":" << p.isNumeric() << ":" << X << endl
 
