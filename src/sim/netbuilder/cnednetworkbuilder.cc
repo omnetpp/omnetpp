@@ -298,7 +298,7 @@ bool cNEDNetworkBuilder::superTypeAllowsUnconnected() const
     while (decl->numExtendsNames() > 0)
     {
         const char *superName = decl->extendsName(0);
-        cNEDDeclaration *decl = cNEDLoader::instance()->getDecl(superName);
+        decl = cNEDLoader::instance()->getDecl(superName);
         ASSERT(decl); // all super classes must be loaded before we start building
         ConnectionsNode *conns = decl->getConnectionsNode();
         if (conns && conns->getAllowUnconnected())
