@@ -26,14 +26,14 @@ PRINT(nan<=nan);
 PRINT(nan>=nan);
 ev << ".\n";
 
-%contains-regex: stdout
+%contains: stdout
 nan:-1.#IND
 nan*2:-1.#IND
 -nan:1.#QNAN
 _isnan(nan):1
 _isnan(3.14):0
 _isnan(1/zero):0
-_isnan(-1/zero):
+_isnan(-1/zero):0
 nan==nan:0
 nan!=nan:1
 nan<nan:0
