@@ -1,0 +1,40 @@
+%description:
+cArray: if you remove items at the end of the container, items() decreases accordingly.
+
+%activity:
+
+#define REMOVE(i)  a.remove(i); ev << "removed " << i << ", size=" << a.items() << "\n";
+cArray a;
+
+int i;
+for (i=0; i<10; i++)
+    a.add(new cMessage());
+
+REMOVE(0);
+REMOVE(5);
+REMOVE(6);
+REMOVE(7);
+
+REMOVE(9);
+REMOVE(8);
+
+REMOVE(4);
+REMOVE(3);
+REMOVE(2);
+REMOVE(1);
+
+ev << ".";
+
+%contains: stdout
+removed 0, size=10
+removed 5, size=10
+removed 6, size=10
+removed 7, size=10
+removed 9, size=9
+removed 8, size=5
+removed 4, size=4
+removed 3, size=3
+removed 2, size=2
+removed 1, size=0
+.
+
