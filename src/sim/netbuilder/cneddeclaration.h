@@ -84,7 +84,8 @@ class SIM_API cNEDDeclaration : public cNEDDeclarationBase, public NEDComponent 
     void putIntoPropsMap(PropertiesMap& propsMap, const std::string& name, cProperties *props) const;
     cProperties *getFromPropsMap(const PropertiesMap& propsMap, const std::string& name) const;
     void appendPropsMap(PropertiesMap& toPropsMap, const PropertiesMap& fromPropsMap);
-    void clearPropsMap(PropertiesMap& propsMap);
+    static void clearPropsMap(PropertiesMap& propsMap);
+    static void clearExpressionMap(ExpressionMap& exprMap);
     cNEDDeclaration *getSuperDecl() const;
     NEDElement *getSubcomponentNode(const char *subcomponentName) const;
 

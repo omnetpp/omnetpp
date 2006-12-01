@@ -1575,6 +1575,7 @@ expr.tab.obj: expr.tab.cc \
   ../../include/globals.h \
   ../../include/cfunction.h \
   ../../include/cnedfunction.h \
+  ../../include/nedsupport.h \
   ../../include/cexpression.h \
   ../../include/cobject.h \
   ../../include/defs.h \
@@ -1998,6 +1999,8 @@ netbuilder/cnednetworkbuilder.obj: netbuilder/cnednetworkbuilder.cc \
   ../../include/cbasicchannel.h \
   ../../include/ccomponenttype.h \
   ../../include/clongpar.h \
+  ../../include/cboolpar.h \
+  ../../include/cstringpar.h \
   netbuilder/cneddeclaration.h \
   netbuilder/cnednetworkbuilder.h \
   netbuilder/cnedloader.h \

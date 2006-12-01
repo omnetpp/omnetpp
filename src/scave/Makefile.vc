@@ -212,6 +212,7 @@ resultfilemanager.obj: resultfilemanager.cc \
   resultfilemanager.h \
   ../common/filetokenizer.h \
   ../common/stringtokenizer.h \
+  ../common/filereader.h \
   idlist.h \
   ../common/exception.h \
   ../common/util.h \
@@ -224,7 +225,7 @@ scavetool.obj: scavetool.cc \
   dataflowmanager.h \
   vectorfilereader.h \
   vectorfilewriter.h \
-  ivectorfilewriter.h \
+  vectorfileindexer.h \
   filternodes.h \
   filewriter.h \
   arraybuilder.h \
@@ -259,6 +260,21 @@ stddev.obj: stddev.cc \
   xyarray.h \
   nodetype.h \
   dataflowmanager.h
+vectorfileindexer.obj: vectorfileindexer.cc \
+  resultfilemanager.h \
+  nodetype.h \
+  nodetyperegistry.h \
+  dataflowmanager.h \
+  vectorfilereader.h \
+  ivectorfilewriter.h \
+  vectorfileindexer.h \
+  idlist.h \
+  ../common/exception.h \
+  ../common/util.h \
+  scavedefs.h \
+  node.h \
+  channel.h \
+  ../common/filetokenizer.h
 vectorfilereader.obj: vectorfilereader.cc \
   channel.h \
   vectorfilereader.h \

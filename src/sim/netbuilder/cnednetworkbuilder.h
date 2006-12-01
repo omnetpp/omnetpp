@@ -19,12 +19,12 @@
 #include <string>
 #include <map>
 #include <vector>
+#include "cpar.h"
 #include "nedelements.h"
 
 class cModule;
 class cGate;
 class cChannel;
-class cPar;
 class cNEDDeclaration;
 
 #define MAX_LOOP_NESTING 32
@@ -82,6 +82,7 @@ class cNEDNetworkBuilder
     cChannel *createChannel(ChannelSpecNode *channelspec, cModule *parentmodp);
     cChannelType *findAndCheckChannelType(const char *channeltypename);
     ExpressionNode *findExpression(NEDElement *node, const char *exprname);
+    cParValue *getOrCreateExpression(ExpressionNode *exprNode, cPar::Type type, bool inSubcomponentScope);
     long evaluateAsLong(ExpressionNode *exprNode, cComponent *context, bool inSubcomponentScope);
     bool evaluateAsBool(ExpressionNode *exprNode, cComponent *context, bool inSubcomponentScope);
     std::string evaluateAsString(ExpressionNode *exprNode, cComponent *context, bool inSubcomponentScope);

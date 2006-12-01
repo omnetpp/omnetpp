@@ -32,7 +32,7 @@ cNEDDeclarationBase(name), NEDComponent(tree)
     ASSERT(tree);
 
     props = NULL;
-    
+
     // add "extends" and "like" names
     for (NEDElement *child=tree->getFirstChild(); child; child=child->getNextSibling())
     {
@@ -57,6 +57,8 @@ cNEDDeclaration::~cNEDDeclaration()
     clearPropsMap(subcomponentPropsMap);
     clearPropsMap(subcomponentParamPropsMap);
     clearPropsMap(subcomponentGatePropsMap);
+    printf("%s: %d cached expressions\n", name(), expressionMap.size());
+    clearExpressionMap(expressionMap);
 }
 
 void cNEDDeclaration::clearPropsMap(PropertiesMap& propsMap)
@@ -66,6 +68,14 @@ void cNEDDeclaration::clearPropsMap(PropertiesMap& propsMap)
         if (it->second->removeRef()==0)
             delete it->second;
     propsMap.clear();
+}
+
+void cNEDDeclaration::clearExpressionMap(ExpressionMap& exprMap)
+{
+    // decrement refs in the props maps, and delete object if refcount reaches zero
+    for (ExpressionMap::iterator it = exprMap.begin(); it!=exprMap.end(); ++it)
+        delete it->second;
+    exprMap.clear();
 }
 
 std::string cNEDDeclaration::info() const

@@ -26,6 +26,8 @@
 #include "cbasicchannel.h"
 #include "ccomponenttype.h"
 #include "clongpar.h"
+#include "cboolpar.h"
+#include "cstringpar.h"
 
 #include "nedelements.h"
 #include "nederror.h"
@@ -695,24 +697,34 @@ ExpressionNode *cNEDNetworkBuilder::findExpression(NEDElement *node, const char 
     return NULL;
 }
 
+cParValue *cNEDNetworkBuilder::getOrCreateExpression(ExpressionNode *exprNode, cPar::Type type, bool inSubcomponentScope)
+{
+    cParValue *p = currentDecl->getCachedExpression(exprNode);
+    if (!p)
+    {
+        cDynamicExpression *e = cExpressionBuilder().process(exprNode, inSubcomponentScope);
+        p = cParValue::createWithType(type);
+        cExpressionBuilder::assign(p, e);
+        currentDecl->putCachedExpression(exprNode, p);
+    }
+    return p;
+}
+
 long cNEDNetworkBuilder::evaluateAsLong(ExpressionNode *exprNode, cComponent *context, bool inSubcomponentScope)
 {
-    //FIXME this can be speeded up by caching cDynamicExpressions, and not recreating them every time. eg. use a NEDElement.id()-to-Expression map!
-    cDynamicExpression *e = cExpressionBuilder().process(exprNode, inSubcomponentScope);
-    return e->longValue(context);
+    cParValue *p = getOrCreateExpression(exprNode, cPar::LONG, inSubcomponentScope);
+    return p->longValue(context);
 }
 
 bool cNEDNetworkBuilder::evaluateAsBool(ExpressionNode *exprNode, cComponent *context, bool inSubcomponentScope)
 {
-    //FIXME this can be speeded up by caching cDynamicExpressions, and not recreating them every time. eg. use a NEDElement.id()-to-Expression map!
-    cDynamicExpression *e = cExpressionBuilder().process(exprNode, inSubcomponentScope);
-    return e->boolValue(context);
+    cParValue *p = getOrCreateExpression(exprNode, cPar::BOOL, inSubcomponentScope);
+    return p->boolValue(context);
 }
 
 std::string cNEDNetworkBuilder::evaluateAsString(ExpressionNode *exprNode, cComponent *context, bool inSubcomponentScope)
 {
-    //FIXME this can be speeded up by caching cDynamicExpressions, and not recreating them every time. eg. use a NEDElement.id()-to-Expression map!
-    cDynamicExpression *e = cExpressionBuilder().process(exprNode, inSubcomponentScope);
-    return e->stringValue(context);
+    cParValue *p = getOrCreateExpression(exprNode, cPar::STRING, inSubcomponentScope);
+    return p->stringValue(context);
 }
 
