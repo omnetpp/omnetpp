@@ -40,7 +40,7 @@ class cNEDNetworkBuilder
   protected:
     // the current NED declaration we're working with. Stored here to
     // avoid having to pass it around as a parameter.
-    cNEDDeclaration *decl;
+    cNEDDeclaration *currentDecl;
 
     // stack of loop variables
     struct {const char *varname; int value;} loopVarStack[MAX_LOOP_NESTING];

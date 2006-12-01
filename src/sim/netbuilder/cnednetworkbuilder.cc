@@ -71,7 +71,7 @@ void cNEDNetworkBuilder::addParams(cComponent *component, cNEDDeclaration *decl)
     ParametersNode *paramsNode = decl->getParametersNode();
     if (paramsNode)
     {
-        this->decl = decl; // switch "context"
+        currentDecl = decl; // switch "context"
         doParams(component, paramsNode, false);
     }
 }
@@ -90,7 +90,7 @@ void cNEDNetworkBuilder::addGates(cModule *module, cNEDDeclaration *decl)
     GatesNode *gatesNode = decl->getGatesNode();
     if (gatesNode)
     {
-        this->decl = decl; // switch "context"
+        currentDecl = decl; // switch "context"
         doGates(module, gatesNode, false);
     }
 }
@@ -125,7 +125,7 @@ void cNEDNetworkBuilder::doParams(cComponent *component, ParametersNode *paramsN
         cParValue *value = NULL;
         if (exprNode)
         {
-            value = decl->getCachedExpression(exprNode);
+            value = currentDecl->getCachedExpression(exprNode);
             ASSERT(!value || value->isName(paramName));
             if (!value)
             {
@@ -144,7 +144,7 @@ void cNEDNetworkBuilder::doParams(cComponent *component, ParametersNode *paramsN
                 value->setIsShared(true);
                 value->setIsInput(paramNode->getIsDefault());
                 value->setIsVolatile(isVolatile);
-                decl->putCachedExpression(exprNode, value);
+                currentDecl->putCachedExpression(exprNode, value);
             }
         }
 
@@ -188,14 +188,14 @@ void cNEDNetworkBuilder::doGates(cModule *module, GatesNode *gatesNode, bool isS
         int gatesize = -1;
         if (gateNode->getIsVector() && exprNode)
         {
-            cParValue *value = decl->getCachedExpression(exprNode);
+            cParValue *value = currentDecl->getCachedExpression(exprNode);
             if (!value)
             {
                 cDynamicExpression *dynamicExpr = cExpressionBuilder().process(exprNode, isSubcomponent);
                 value = new cLongPar();
                 value->setName("gatesize-expression");
                 cExpressionBuilder::assign(value, dynamicExpr);
-                decl->putCachedExpression(exprNode, value);
+                currentDecl->putCachedExpression(exprNode, value);
             }
             gatesize = value->longValue(module);
         }
@@ -236,7 +236,7 @@ void cNEDNetworkBuilder::buildInside(cModule *modp, cNEDDeclaration *decl)
     buildRecursively(modp, decl);
 
     // recursively build the submodules too (top-down)
-    this->decl = decl;
+    currentDecl = decl;
     for (cSubModIterator submod(*modp); !submod.end(); submod++)
     {
        cModule *m = submod();
@@ -255,16 +255,16 @@ void cNEDNetworkBuilder::buildRecursively(cModule *modp, cNEDDeclaration *decl)
         buildRecursively(modp, superDecl);
     }
 
-    this->decl = decl; // switch "context"
+    currentDecl = decl; // switch "context"
     addSubmodulesAndConnections(modp);
 }
 
 void cNEDNetworkBuilder::addSubmodulesAndConnections(cModule *modp)
 {
-    printf("  adding submodules and connections of decl %s to %s\n", decl->name(), modp->fullPath().c_str()); //XXX
-    //dump(decl->getTree()); XXX
+    printf("  adding submodules and connections of decl %s to %s\n", currentDecl->name(), modp->fullPath().c_str()); //XXX
+    //dump(currentDecl->getTree()); XXX
 
-    SubmodulesNode *submods = decl->getSubmodulesNode();
+    SubmodulesNode *submods = currentDecl->getSubmodulesNode();
     if (submods)
     {
         for (SubmoduleNode *submod=submods->getFirstSubmoduleChild(); submod; submod=submod->getNextSubmoduleNodeSibling())
@@ -274,7 +274,7 @@ void cNEDNetworkBuilder::addSubmodulesAndConnections(cModule *modp)
     }
 
     // loop through connections and add them
-    ConnectionsNode *conns = decl->getConnectionsNode();
+    ConnectionsNode *conns = currentDecl->getConnectionsNode();
     if (conns)
     {
         for (NEDElement *child=conns->getFirstChild(); child; child=child->getNextSibling())
@@ -288,13 +288,13 @@ void cNEDNetworkBuilder::addSubmodulesAndConnections(cModule *modp)
     if ((!conns || !conns->getAllowUnconnected()) && !superTypeAllowsUnconnected())
         modp->checkInternalConnections();
 
-    printf("  done adding submodules and connections of decl %s to %s\n", decl->name(), modp->fullPath().c_str()); //XXX
+    printf("  done adding submodules and connections of decl %s to %s\n", currentDecl->name(), modp->fullPath().c_str()); //XXX
 }
 
 bool cNEDNetworkBuilder::superTypeAllowsUnconnected() const
 {
     // follow through the inheritance chain, and return true if we find an "allowunconnected" anywhere
-    cNEDDeclaration *decl = this->decl;
+    cNEDDeclaration *decl = currentDecl;
     while (decl->numExtendsNames() > 0)
     {
         const char *superName = decl->extendsName(0);
