@@ -3,7 +3,7 @@ Copying and assignment for classes
 
 %file: {}.msg
 
-class {Base} extends cObject
+class {Base} extends cOwnedObject
 {
     fields:
         int a = 7;

@@ -1,5 +1,5 @@
 %description:
-Copying and assignment for non-cObject rooted classes
+Copying and assignment for non-cOwnedObject rooted classes
 
 %file: {}.msg
 

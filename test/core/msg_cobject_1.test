@@ -1,9 +1,9 @@
 %description:
-Check primitive scalar field types in cObject-rooted classes
+Check primitive scalar field types in cOwnedObject-rooted classes
 
 %file: {}.msg
 
-class {MyClass} extends cObject
+class {MyClass} extends cOwnedObject
 {
     fields:
         bool b;
@@ -26,9 +26,9 @@ class {MyClass} extends cObject
 
 {MyClass} x("myclass");
 
-// test it's really subclassed from cObject
-(void)(cObject *)&x;
-ev << (dynamic_cast<cObject *>(&x)!=0 ? "cObject" : "generic") << endl;
+// test it's really subclassed from cOwnedObject
+(void)(cOwnedObject *)&x;
+ev << (dynamic_cast<cOwnedObject *>(&x)!=0 ? "cOwnedObject" : "generic") << endl;
 ev << x.className() << ":" << x.name() << endl;
 
 // fields must initialize to zero
@@ -67,7 +67,7 @@ x.setUl(-10);  PRINT((x.getUl()>0));
 x.setD(3.1415); PRINT(x.getD());
 
 %contains: stdout
-cObject
+cOwnedObject
 {MyClass}:myclass
 x.getB():0
 (int)x.getC():0

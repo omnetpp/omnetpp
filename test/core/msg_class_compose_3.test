@@ -1,5 +1,5 @@
 %description:
-Check external non-cObject class as member in non-cObject class
+Check external non-cOwnedObject class as member in non-cOwnedObject class
 
 %file: {}.msg
 
@@ -17,7 +17,7 @@ cplusplus {{
 
 class noncobject {A};
 
-class {MyClass} extends cObject
+class {MyClass} extends cOwnedObject
 {
     fields:
         {A} b;

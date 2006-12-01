@@ -1,5 +1,5 @@
 %description:
-Check string fields in non-cObject-rooted classes
+Check string fields in non-cOwnedObject-rooted classes
 
 %file: {}.msg
 

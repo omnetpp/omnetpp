@@ -1,5 +1,5 @@
 %description:
-Check external non-cObject class as message member
+Check external non-cOwnedObject class as message member
 
 %file: {}.msg
 

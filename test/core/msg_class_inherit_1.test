@@ -1,5 +1,5 @@
 %description:
-Check inheriting from a non-cObject-rooted class
+Check inheriting from a non-cOwnedObject-rooted class
 
 %file: {}.msg
 
@@ -23,7 +23,7 @@ class {MyClass} extends {Base}
 #define PRINT(X) ev << #X << ":" << X << endl
 
 {MyClass} x;
-ev << (dynamic_cast<cObject *>(&x)!=0 ? "cObject" : "generic") << endl;
+ev << (dynamic_cast<cOwnedObject *>(&x)!=0 ? "cOwnedObject" : "generic") << endl;
 x.setB(11); PRINT(x.getB());
 x.setC('x'); PRINT(x.getC());
 

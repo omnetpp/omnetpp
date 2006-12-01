@@ -1,5 +1,5 @@
 %description:
-Check dynamic array of cObject-based class as message member
+Check dynamic array of cOwnedObject-based class as message member
 
 %file: {}.msg
 

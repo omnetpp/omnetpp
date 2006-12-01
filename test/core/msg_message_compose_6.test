@@ -1,5 +1,5 @@
 %description:
-Check cObject-based class as message member
+Check cOwnedObject-based class as message member
 
 %file: {}.msg
 

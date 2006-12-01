@@ -1,5 +1,5 @@
 %description:
-Customize non-cObject-rooted class, abstract fields
+Customize non-cOwnedObject-rooted class, abstract fields
 
 %file: {}.msg
 

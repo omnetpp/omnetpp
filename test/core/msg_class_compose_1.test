@@ -1,5 +1,5 @@
 %description:
-Check struct as class member in non-cObject rooted classes
+Check struct as class member in non-cOwnedObject rooted classes
 
 %file: {}.msg
 

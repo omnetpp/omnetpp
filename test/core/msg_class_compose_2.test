@@ -1,5 +1,5 @@
 %description:
-Check non-cObject-class as member in non-cObject class
+Check non-cOwnedObject-class as member in non-cOwnedObject class
 
 %file: {}.msg
 
@@ -10,7 +10,7 @@ class {Class1}
 }
 
 
-class {MyClass} extends cObject
+class {MyClass} extends cOwnedObject
 {
     fields:
         {Class1} b;
