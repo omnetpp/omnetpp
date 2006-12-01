@@ -26,6 +26,10 @@ public class EventLogTableEditor extends EventLogEditor implements INavigationLo
 		eventLogTable.getControl().setFocus();
 	}
 
+	public void markLocation() {
+		getSite().getPage().getNavigationHistory().markLocation(EventLogTableEditor.this);
+	}
+	
 	public class EventLogTableLocation implements INavigationLocation {
 		private int eventNumber;
 		

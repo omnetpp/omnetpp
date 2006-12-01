@@ -26,12 +26,14 @@ public class EventLogTable extends VirtualTable<EventLogEntry> {
 		TableColumn tableColumn = new TableColumn(table, SWT.NONE);
 		tableColumn.setWidth(60);
 		tableColumn.setText("Event#");
-		TableColumn tableColumn1 = new TableColumn(table, SWT.NONE);
-		tableColumn1.setWidth(140);
-		tableColumn1.setText("Time");
-		TableColumn tableColumn4 = new TableColumn(table, SWT.NONE);
-		tableColumn4.setWidth(800);
-		tableColumn4.setText("Details / log message");
+
+		tableColumn = new TableColumn(table, SWT.NONE);
+		tableColumn.setWidth(140);
+		tableColumn.setText("Time");
+
+		tableColumn = new TableColumn(table, SWT.NONE);
+		tableColumn.setWidth(800);
+		tableColumn.setText("Details / log message");
 
 		setContentProvider(new EventLogVirtualTableContentProvider());
 		setInput(null);
@@ -52,12 +54,7 @@ public class EventLogTable extends VirtualTable<EventLogEntry> {
 		subMenuItem.setText("Search text");
 		subMenuItem.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
-				InputDialog dialog = new InputDialog(null, "Search text", "Please enter the search text", null, null);
-				dialog.open();
-
-				// TODO:
-				//String searchText = dialog.getValue();
-				//IEventLog eventLog = getEventLog();
+				activateSearchText();
 			}
 		});
 
@@ -66,40 +63,53 @@ public class EventLogTable extends VirtualTable<EventLogEntry> {
 		subMenuItem.setText("Goto event");
 		subMenuItem.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
-				InputDialog dialog = new InputDialog(null, "Goto event", "Please enter the event number to go to", null, new IInputValidator() {
-					public String isValid(String newText) {
-						try {
-							int eventNumber = Integer.parseInt(newText);
-							
-							if (eventNumber >= 0)
-								return null;
-							else
-								return "Negative event number";
-						}
-						catch (Exception e) {
-							return "Not a number";
-						}
-					}
-				});
-
-				dialog.open();
-
-				try {
-					int eventNumber = Integer.parseInt(dialog.getValue());
-					IEventLog eventLog = getEventLog();
-					IEvent event = eventLog.getEventForEventNumber(eventNumber);
-
-					if (event != null)
-						gotoElement(event.getEventEntry());
-					else
-						MessageDialog.openError(null, "Goto event" , "No such event: " + eventNumber);
-				}
-				catch (Exception x) {
-					// void
-				}
+				activateGotoEvent();
 			}
 		});
 
 		getControl().setMenu(popupMenu);
+	}
+
+	private void activateSearchText() {
+		InputDialog dialog = new InputDialog(null, "Search text", "Please enter the search text", null, null);
+		dialog.open();
+
+		// TODO:
+		//String searchText = dialog.getValue();
+		//IEventLog eventLog = getEventLog();
+	}
+
+	private void activateGotoEvent() {
+		InputDialog dialog = new InputDialog(null, "Goto event", "Please enter the event number to go to", null, new IInputValidator() {
+			public String isValid(String newText) {
+				try {
+					int eventNumber = Integer.parseInt(newText);
+					
+					if (eventNumber >= 0)
+						return null;
+					else
+						return "Negative event number";
+				}
+				catch (Exception e) {
+					return "Not a number";
+				}
+			}
+		});
+
+		dialog.open();
+
+		try {
+			int eventNumber = Integer.parseInt(dialog.getValue());
+			IEventLog eventLog = getEventLog();
+			IEvent event = eventLog.getEventForEventNumber(eventNumber);
+
+			if (event != null)
+				gotoElement(event.getEventEntry());
+			else
+				MessageDialog.openError(null, "Goto event" , "No such event: " + eventNumber);
+		}
+		catch (Exception x) {
+			// void
+		}
 	}
 }
