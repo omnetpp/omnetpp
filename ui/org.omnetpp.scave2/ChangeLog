@@ -1,3 +1,20 @@
+2006-12-01
+----------
+
+Additions
+
+   + Implementing an indexed vector file writer node.
+
+   + Scavetool now has an 'index' command. It generates an index file for the specified files.
+
+   + Scave editor automatically indexes the vector files in the background. Indexing starts
+     when the plugin is loaded, and when changes happened in the workspace. (Turning on/off
+     indexing from the Preferences dialog is not yet implemented.) 
+
+   + 'Browse data' page shows 'Count', 'Min', 'Max', 'Mean' and 'Stddev' of vectors having an 
+     index file.
+   
+
 2006-11-17
 ----------
 

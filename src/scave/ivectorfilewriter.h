@@ -15,6 +15,7 @@
 #ifndef _IVECTORFILEWRITER_H_
 #define _IVECTORFILEWRITER_H_
 
+#include <float.h>
 #include <vector>
 #include "node.h"
 #include "nodetype.h"
@@ -40,15 +41,22 @@ class IndexedVectorFileWriterNode : public Node
             char *buffer;     // buffer holding recorded data
             int bufferSize;  // size of the allocated buffer
             char *bufferPtr; // pointer to the current position in the buffer
+            int bufferNumOfRecords; //
             int numOfRecords; // number of records written into the buffer
+            double min;
+            double max;
+            double sum;
+            double sumSqr;
             std::vector<Block> blocks; // attributes of the blocks written into the file
 
-            VectorInputPort(int id, std::string moduleName, std::string name, int bufferSize, Node *owner) : Port(owner)
-                { this->id = id; this->moduleName = moduleName; this->name = name; allocateBuffer(bufferSize); }
+            VectorInputPort(int id, std::string moduleName, std::string name, int bufferSize, Node *owner)
+                : id(id), moduleName(moduleName), name(name), numOfRecords(0), min(DBL_MAX), max(DBL_MIN),
+                  sum(0.0), sumSqr(0.0), Port(owner)
+                { this->allocateBuffer(bufferSize); }
             ~VectorInputPort() { if (buffer) delete[] buffer; }
 
             void allocateBuffer(int size) { buffer=new char[size]; bufferSize=size; clearBuffer(); }
-            void clearBuffer() { bufferPtr = buffer; numOfRecords=0; if (buffer) buffer[0] = '\0'; }
+            void clearBuffer() { bufferPtr = buffer; bufferNumOfRecords=0; if (buffer) buffer[0] = '\0'; }
             bool hasBufferedData() const { return bufferPtr!=buffer; }
         };
 

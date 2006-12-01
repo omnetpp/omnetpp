@@ -21,6 +21,11 @@
 
 #define CHECK(printf) if (printf<0) throw new Exception("Cannot write vector file '%s'", fileName.c_str());
 
+#ifndef min
+#define min(a,b)     ( (a)<(b) ? (a) : (b) )
+#define max(a,b)     ( (a)>(b) ? (a) : (b) )
+#endif
+
 static FILE *openFile(const std::string fileName)
 {
     FILE *f = fopen(fileName.c_str(),"w");
@@ -122,7 +127,12 @@ void IndexedVectorFileWriterNode::writeRecordsToBuffer(VectorInputPort *port)
         if (count > 0)
         {
             port->bufferPtr+=count;
-            ++port->numOfRecords;
+            port->bufferNumOfRecords++;
+            port->numOfRecords++;
+            port->min = min(port->min, a.y);
+            port->max = max(port->max, a.y);
+            port->sum += a.y;
+            port->sumSqr += a.y*a.y;
         }
         else
             throw new Exception("Cannot write data to output buffer.");
@@ -134,7 +144,7 @@ void IndexedVectorFileWriterNode::writeBufferToFile(VectorInputPort *port)
     assert(f!=NULL);
     long offset = ftell(f);
     CHECK(fputs(port->buffer, f));
-    port->blocks.push_back(Block(offset, port->numOfRecords));
+    port->blocks.push_back(Block(offset, port->bufferNumOfRecords));
     port->clearBuffer();
 }
 
@@ -150,8 +160,9 @@ void IndexedVectorFileWriterNode::writeIndex(VectorInputPort *port)
     int nBlocks = port->blocks.size();
     if (nBlocks > 0)
     {
-        CHECK_I(fprintf(fi,"vector %ld  \"%s\"  \"%s\"  %d  %d\n",
-                      port->id, port->moduleName.c_str(), port->name.c_str(), 1/*tuple*/, port->bufferSize));
+        CHECK_I(fprintf(fi,"vector %ld  \"%s\"  \"%s\"  %d  %d  %d  %.*g  %.*g  %.*g  %.*g\n",
+                      port->id, port->moduleName.c_str(), port->name.c_str(), 1/*tuple*/, port->bufferSize,
+                      port->numOfRecords, prec, port->min, prec, port->max, prec, port->sum, prec, port->sumSqr));
         for (int i=0; i<nBlocks; i+=10)
         {
             CHECK_I(fprintf(fi, "%ld\t", port->id));

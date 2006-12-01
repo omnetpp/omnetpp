@@ -28,6 +28,11 @@
             id="org.omnetpp.scave.content-type.vector"
             name="Vector result file"
             priority="normal"/>
+      <content-type
+            file-extensions="vci"
+            id="org.omnetpp.scave.content-type.index"
+            name="Vector index file"
+            priority="normal"/>
    </extension>
 
   <extension

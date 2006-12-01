@@ -60,7 +60,7 @@ void IndexedVectorFileReader::loadIndex()
             numTokens=tokenizer.tokenize(line, len);
             tokens=tokenizer.tokens();
 
-            if (numTokens != 6 || sscanf(tokens[5], "%d", &blockSize)!=1 || blockSize<MIN_BUFFER_SIZE)
+            if (numTokens < 6 || sscanf(tokens[5], "%d", &blockSize)!=1 || blockSize<MIN_BUFFER_SIZE)
                 throw new Exception("Malformed vector header: %.*s", len, line);
 
             while ((line=reader.readNextLine())!=NULL)

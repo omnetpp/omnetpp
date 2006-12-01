@@ -19,7 +19,10 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.content.IContentDescription;
+import org.eclipse.core.runtime.content.IContentType;
 import org.omnetpp.scave.engine.VectorFileIndexer;
+import org.omnetpp.scave2.ContentTypes;
 
 /**
  * This job generates index files for vector files in the workspace.
@@ -127,7 +130,7 @@ public class VectorFileIndexerJob extends WorkspaceJob {
 									filesToBeIndexed.offer(file.getLocation().toFile());
 								break;
 							case IResourceDelta.REMOVED:
-								if (isIndexFile(file))
+								if (hasContentType(file, ContentTypes.INDEX))
 									filesToBeIndexed.offer(getVectorFile(file).getLocation().toFile());
 							}
 						}
@@ -161,7 +164,7 @@ public class VectorFileIndexerJob extends WorkspaceJob {
 	}
 	
 	private boolean toBeIndexed(IFile file) {
-		if (isVectorFile(file)) {
+		if (hasContentType(file, ContentTypes.VECTOR)) {
 			File osFile = file.getLocation().toFile();
 			File osIndexFile = getIndexFile(file).getLocation().toFile(); // might not be added to the workspace, use java.io.File methods
 			return !osIndexFile.exists() || osFile.lastModified() > osIndexFile.lastModified();
@@ -170,23 +173,28 @@ public class VectorFileIndexerJob extends WorkspaceJob {
 			return false;
 	}
 	
-	private static boolean isVectorFile(IFile file) {
-		return "vec".equals(file.getFileExtension());
-	}
-	
-	private static boolean isIndexFile(IFile file) {
-		return "vci".equals(file.getFileExtension());
+	private static boolean hasContentType(IFile file, String contentType) {
+		try
+		{
+			IContentDescription description = file.getContentDescription();
+			if (description != null) {
+				return contentType.equals(description.getContentType().getId());
+			}
+		} catch (CoreException e) {
+			e.printStackTrace();
+		}
+		return false;
 	}
 	
 	private static IFile getIndexFile(IFile vectorFile) {
-		Assert.isLegal(isVectorFile(vectorFile));
+		Assert.isLegal(hasContentType(vectorFile, ContentTypes.VECTOR));
 		IPath indexFilePath = vectorFile.getFullPath().removeFileExtension().addFileExtension("vci");
 		IFile indexFile = ResourcesPlugin.getWorkspace().getRoot().getFile(indexFilePath);
 		return  indexFile;
 	}
 
 	private static IFile getVectorFile(IFile indexFile) {
-		Assert.isLegal(isIndexFile(indexFile));
+		Assert.isLegal(hasContentType(indexFile, ContentTypes.INDEX));
 		IPath vectorFilePath = indexFile.getFullPath().removeFileExtension().addFileExtension("vec");
 		IFile vectorFile = ResourcesPlugin.getWorkspace().getRoot().getFile(vectorFilePath);
 		return  vectorFile;

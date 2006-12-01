@@ -89,6 +89,8 @@ public class DataTable extends Table {
 	private static final Column COL_COUNT = new Column("Count", 50, true);
 	private static final Column COL_MEAN = new Column("Mean", 60, true);
 	private static final Column COL_STDDEV = new Column("Stddev", 60, true);
+	private static final Column COL_MIN = new Column("Min", 60, false);
+	private static final Column COL_MAX = new Column("Max", 60, false);
 	private static final Column COL_EXPERIMENT = new Column("Experiment", 60, false);
 	private static final Column COL_MEASUREMENT = new Column("Measurement", 60, false);
 	private static final Column COL_REPLICATION = new Column("Replication", 60, false);
@@ -214,6 +216,8 @@ public class DataTable extends Table {
 			addColumn(COL_COUNT);
 			addColumn(COL_MEAN);
 			addColumn(COL_STDDEV);
+			addColumn(COL_MIN);
+			addColumn(COL_MAX);
 			break;
 		case TYPE_HISTOGRAM:
 			// TODO
@@ -272,6 +276,7 @@ public class DataTable extends Table {
 			idlist.sortByRunAttribute(manager, RunAttribute.MEASUREMENT, ascending);
 		else if (COL_REPLICATION.equals(column))
 			idlist.sortByRunAttribute(manager, RunAttribute.REPLICATION, ascending);
+		// TODO: min,max,mean,count,stddev
 		setIDList(idlist);
 	}
 	
@@ -333,11 +338,15 @@ public class DataTable extends Table {
 			else if (type == TYPE_VECTOR) {
 				VectorResult vector = (VectorResult)result;
 				if (COL_COUNT.equals(column))
-					item.setText(i, "not counted");
+					item.setText(i, String.valueOf(vector.getCount()));
 				else if (COL_MEAN.equals(column))
-					item.setText(i, "not yet");
+					item.setText(i, String.valueOf(vector.mean()));
 				else if (COL_STDDEV.equals(column))
-					item.setText(i, "not yet");
+					item.setText(i, String.valueOf(vector.stddev()));
+				else if (COL_MIN.equals(column))
+					item.setText(i, String.valueOf(vector.getMin()));
+				else if (COL_MAX.equals(column))
+					item.setText(i, String.valueOf(vector.getMax()));
 			}
 			else if (type == TYPE_HISTOGRAM) {
 				// TODO
@@ -385,11 +394,15 @@ public class DataTable extends Table {
 			else if (type == TYPE_VECTOR) {
 				VectorResult vector = manager.getVector(idlist.get(lineNumber));
 				if (COL_COUNT.equals(column))
-					writer.addField("not counted");
+					writer.addField(String.valueOf(vector.getCount()));
 				else if (COL_MEAN.equals(column))
-					writer.addField("not yet");
+					writer.addField(String.valueOf(vector.mean()));
 				else if (COL_STDDEV.equals(column))
-					writer.addField("not yet");
+					writer.addField(String.valueOf(vector.stddev()));
+				else if (COL_MIN.equals(column))
+					writer.addField(String.valueOf(vector.getMin()));
+				else if (COL_MAX.equals(column))
+					writer.addField(String.valueOf(vector.getMax()));
 			}
 			else if (type == TYPE_HISTOGRAM) {
 				// TODO

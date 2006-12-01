@@ -22,10 +22,39 @@
 #include <iostream>
 #include <memory>
 #include <algorithm>
+#include <sys/stat.h>
 #include "patternmatcher.h"
 #include "resultfilemanager.h"
 #include "filetokenizer.h"
 #include "stringtokenizer.h"
+#include "filereader.h"
+
+static double zero = 0.0;
+static double NaN = zero / zero;
+
+double VectorResult::mean()
+{
+    return count>0 ? sum/count : NaN;
+}
+
+double VectorResult::variance()
+{
+    if (count<=1)
+        return NaN;
+    else
+    {
+        double var = (sumSqr - sum*sum/count)/(count-1);
+        if (var<=0)
+            return 0.0;
+        else
+            return var;
+    }
+}
+
+double VectorResult::stddev()
+{
+    return sqrt( variance() ); 
+}
 
 
 ResultFileManager::ResultFileManager()
@@ -560,8 +589,6 @@ static void parseString(char *&s, std::string& dest, int lineNum)
     }
 }
 
-static double zero =0;
-
 static bool parseDouble(char *s, double& dest)
 {
     char *e;
@@ -737,12 +764,28 @@ void ResultFileManager::processLine(char **vec, int numTokens, FileRun *&fileRun
         vecdata.vectorId = (int) strtol(vec[1],&e,10);
         if (*e)
             throw new Exception("invalid vector file syntax: invalid vector id in vector definition, line %d", lineNum);
-
         // module name, vector name
         const char *moduleName = vec[2];
         const char *vectorName = vec[3];
         vecdata.moduleNameRef = stringSetFindOrInsert(moduleNames, std::string(moduleName));
         vecdata.nameRef = stringSetFindOrInsert(names, std::string(vectorName));
+        // count, min, max, sum, sumSqr
+        if (numTokens>=11) // read from index
+        {
+            vecdata.count = strtol(vec[6],&e,10);
+            vecdata.min = strtod(vec[7],&e);
+            vecdata.max = strtod(vec[8],&e);
+            vecdata.sum = strtod(vec[9],&e);
+            vecdata.sumSqr = strtod(vec[10],&e);
+        }
+        else
+        {
+            vecdata.count = 0;
+            vecdata.min = NaN;
+            vecdata.max = NaN;
+            vecdata.sum = NaN;
+            vecdata.sumSqr = NaN;
+        }
 
         fileRef->vectorResults.push_back(vecdata);
     }
@@ -757,6 +800,62 @@ void ResultFileManager::processLine(char **vec, int numTokens, FileRun *&fileRun
     }
 }
 
+/**
+ * Determines if the given file is a vector file.
+ * If it finds a line starting with "vector" in the first
+ * 300 lines it is a vector file.
+ */
+static bool isVectorFile(const char *fileName)
+{
+    FileReader reader = FileReader(fileName);
+    char *line;
+    for (int i=0; i<1000; i++)
+    {
+        line=reader.readNextLine();
+        if (line == NULL)
+            return false;
+        if (line[0]=='v' && strncmp(line, "vector", 6)==0)
+            return true;
+        else if (line[0]=='s' && strncmp(line, "scalar", 6)==0)
+            return false;
+    }
+    return false;
+}
+
+static char *getIndexFileName(const char *fileName)
+{
+    // change file extension to "vci"
+    int len = strlen(fileName);
+    char *indexFileName = new char[len+4];
+    strcpy(indexFileName, fileName);
+    char *ext = strrchr(indexFileName, '.');
+    if (ext == NULL)
+        ext = indexFileName + len;
+    strcpy(ext, ".vci");
+    return indexFileName;
+}
+
+static bool isFileReadable(const char *fileName)
+{
+    FILE *f = fopen(fileName, "r");
+    if (f!=NULL)
+    {
+        fclose(f);
+        return true;
+    }
+    else
+        return false;
+}
+
+static bool isFileNewer(const char *newer, const char *older)
+{
+    struct stat s;
+    stat(newer, &s);
+    time_t newerTime = s.st_mtime;
+    stat(older, &s);
+    time_t olderTime = s.st_mtime;
+    return newerTime >= olderTime;
+}
 
 ResultFile *ResultFileManager::loadFile(const char *fileName, const char *fileSystemFileName)
 {
@@ -771,10 +870,8 @@ ResultFile *ResultFileManager::loadFile(const char *fileName, const char *fileSy
     // try if file can be opened, before we add it to our database
     if (fileSystemFileName==NULL)
         fileSystemFileName = fileName;
-    FILE *f = fopen(fileSystemFileName, "r");
-    if (!f)
+    if (!isFileReadable(fileSystemFileName))
         throw new Exception("cannot open `%s' for read", fileSystemFileName);
-    fclose(f);
 
     // add to fileList
     ResultFile *fileRef = addFile();
@@ -783,6 +880,14 @@ ResultFile *ResultFileManager::loadFile(const char *fileName, const char *fileSy
     fileRef->fileSystemFilePath = fileSystemFileName;
 
     FileRun *fileRunRef = NULL;
+
+    // if vector file and has index, load data from the index file
+    if (isVectorFile(fileSystemFileName))
+    {
+        char *indexFileName = getIndexFileName(fileSystemFileName);
+        if (indexFileName!=NULL && isFileReadable(indexFileName) && isFileNewer(indexFileName, fileSystemFileName))
+            fileSystemFileName = indexFileName;
+    }
 
     FileTokenizer ftok(fileSystemFileName);
     while (ftok.readLine())

@@ -16,6 +16,7 @@
 #define _RESULTFILEMANAGER_H_
 
 #include <assert.h>
+#include <math.h>
 #include <string>
 #include <vector>
 #include <set>
@@ -25,7 +26,6 @@
 #include "idlist.h"
 #include "exception.h"
 #include "util.h"
-
 
 class Run;
 class ResultFile;
@@ -58,6 +58,15 @@ struct ScalarResult : public ResultItem
 struct VectorResult : public ResultItem
 {
     int vectorId;
+    long count;
+    double min;
+    double max;
+    double sum;
+    double sumSqr;
+
+    double mean();
+    double variance();
+    double stddev();
 };
 
 typedef std::vector<ScalarResult> ScalarResults;
