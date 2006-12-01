@@ -27,7 +27,7 @@ class {MyClass}
 {MyClass} x;
 
 // test it's really not subclassed from cObject
-ev << (dynamic_cast<cObject *>(&x)!=0 ? "cOwnedObject" : "generic") << endl;
+ev << (dynamic_cast<cOwnedObject *>(&x)!=0 ? "cOwnedObject" : "generic") << endl;
 
 // scalar fields
 x.setB(true); PRINT(x.getB());
