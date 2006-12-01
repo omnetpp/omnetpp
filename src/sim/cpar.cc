@@ -106,33 +106,73 @@ const char *cPar::typeName(Type t)
     }
 }
 
+// note: the following one-liners should really be inline functions, but
+// they can't be put into cpar.h because of declaration order.
 
-//FIXME make it inline...
-cPar::Type cPar::type() const {return p->type();}
+std::string cPar::toString() const
+{
+    return p->toString();
+}
 
-bool cPar::isShared() const {return p->isShared();}
+cPar::Type cPar::type() const
+{
+    return p->type();
+}
 
-bool cPar::isNumeric() const {return p->isNumeric();}
+bool cPar::isShared() const
+{
+    return p->isShared();
+}
 
-bool cPar::isVolatile() const {return p->isVolatile();}
+bool cPar::isNumeric() const
+{
+    return p->isNumeric();
+}
 
-bool cPar::isConstant() const {return p->isConstant();}
+bool cPar::isVolatile() const
+{
+    return p->isVolatile();
+}
 
-bool cPar::boolValue() const  {return p->boolValue(ownercomponent);}
+bool cPar::isConstant() const
+{
+    return p->isConstant();
+}
 
-long cPar::longValue() const  {return p->longValue(ownercomponent);}
+bool cPar::boolValue() const
+{
+    return p->boolValue(ownercomponent);
+}
 
-double cPar::doubleValue() const  {return p->doubleValue(ownercomponent);}
+long cPar::longValue() const
+{
+    return p->longValue(ownercomponent);
+}
 
-const char *cPar::stringValue() const  {return p->stringValue(ownercomponent);}
+double cPar::doubleValue() const
+{
+    return p->doubleValue(ownercomponent);
+}
 
-std::string cPar::stdstringValue() const  {return p->stdstringValue(ownercomponent);}
+const char *cPar::stringValue() const
+{
+    return p->stringValue(ownercomponent);
+}
 
-cXMLElement *cPar::xmlValue() const  {return p->xmlValue(ownercomponent);}
+std::string cPar::stdstringValue() const
+{
+    return p->stdstringValue(ownercomponent);
+}
 
-cExpression *cPar::expression() const  {return p->expression();}
+cXMLElement *cPar::xmlValue() const
+{
+    return p->xmlValue(ownercomponent);
+}
 
-std::string cPar::toString() const {return p->toString();}
+cExpression *cPar::expression() const
+{
+    return p->expression();
+}
 
 cPar& cPar::setBoolValue(bool b)
 {
@@ -218,12 +258,45 @@ void cPar::convertToConst()
     p->convertToConst(ownercomponent);
 }
 
+// FIXME put these into some class!!!
+typedef std::map<std::string, cParValue *> StringToParMap;
+StringToParMap parMap; // for sharing params coming from ini files
+
 bool cPar::parse(const char *text)
 {
-    copyIfShared();
-    return p->parse(text);
+    // try to share cParValue objects for values coming from the configuration.
+    // we use a map, indexed with "moduletypename:paramname:textualvalue".
+    // this is possible because because expr representation does not depend on the context
+    cComponentType *componentType = ownercomponent->componentType();
+    std::string key = std::string(componentType->name()) + ":" + name() + ":" + text;
+    StringToParMap::iterator it = parMap.find(key);
+    if (it!=parMap.end())
+    {
+        // an identical value found in the map -- use it
+        //XXX printf("       *** reusing %s ==> %s, cached %s\n", key.c_str(), text, it->second->toString().c_str());
+        reassign(it->second);
+        return true;
+    }
+    else
+    {
+        // not found: parse text
+        cParValue *tmp = p->dup(); // get object with same type, name etc as original
+        if (tmp->parse(text))
+        {
+            // successfully parsed: install it
+            tmp->setIsShared(true);
+            parMap[key] = tmp;
+            reassign(tmp);
+            return true;
+        }
+        else
+        {
+            // parse error
+            delete tmp;
+            return false;
+        }
+    }
 }
-
 
 void cPar::doReadValue()
 {
@@ -233,14 +306,12 @@ void cPar::doReadValue()
     std::string str = ev.getParameter(simulation.runNumber(), fullPath().c_str());
     if (!str.empty())
     {
-        //FIXME try to make a "shared" cParValue out of this, otherwise we won't gain anything!
-        // hash key: "str"!!! because expr representation does not depend on the context
         bool success = parse(str.c_str());
         if (!success)
             throw new cRuntimeError("Wrong value `%s' for parameter `%s'", str.c_str(), fullPath().c_str());
         return;
-    } 
-    
+    }
+
     // maybe we should use default value
     if (p->hasValue() && ev.getParameterUseDefault(simulation.runNumber(), fullPath().c_str()))
         return;
