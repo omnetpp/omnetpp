@@ -66,7 +66,7 @@ class NEDErrorStore
         /**
          * Add an error message.
          */
-        void add(int category, const char *location, const char *message, ...);
+        void add(const char *location, int category, const char *message, ...);
 
         /**
          * Return true if there're no messages stored.

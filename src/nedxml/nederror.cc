@@ -65,7 +65,7 @@ void NEDErrorStore::add(NEDElement *context, int category, const char *message, 
     doAdd(context, NULL, category, messagebuf);
 }
 
-void NEDErrorStore::add(int category, const char *location, const char *message, ...)
+void NEDErrorStore::add(const char *location, int category, const char *message, ...)
 {
     va_list va;
     va_start(va, message);
