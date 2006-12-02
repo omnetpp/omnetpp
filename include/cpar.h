@@ -136,6 +136,13 @@ class SIM_API cPar : public cObject  //turn into cObject; delegate name to p! ad
     bool isShared() const;
 
     /**
+     * Returns false if the parameter does not have any value assigned yet.
+     * This methods should return true any time during simulation or initialization,
+     * because all module parameters get assigned during network setup.
+     */
+    bool hasValue() const;
+
+    /**
      * Return the properties for this parameter. Properties cannot be changed
      * at runtime.
      */

@@ -1225,25 +1225,7 @@ bool cMsgPar::setfunction(char *text)
 
 cMsgPar& cMsgPar::read()
 {
-    // get it from ini file
-    std::string str = ev.getParameter(simulation.runNumber(), fullPath().c_str());
-    if (!str.empty())
-    {
-        bool success = setFromText(str.c_str(),'?');
-        if (!success)
-            throw new cRuntimeError("Wrong value `%s' for parameter `%s'", str.c_str(), fullPath().c_str());
-        return *this;
-    }
-
-    // maybe we should use default value
-    bool useDefault = ev.getParameterUseDefault(simulation.runNumber(), fullPath().c_str());
-    if (useDefault)
-    {
-        setInput(false);
-        return *this;
-    }
-
-    // otherwise, we have to ask the user
+    // ask the user
     bool success;
     do {
         string reply;

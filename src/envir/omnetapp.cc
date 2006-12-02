@@ -33,6 +33,8 @@
 #include "csimulation.h"
 #include "cscheduler.h"
 #include "cpar.h"
+#include "cproperties.h"
+#include "cproperty.h"
 #include "random.h"
 #include "crng.h"
 #include "cmodule.h"
@@ -371,6 +373,49 @@ bool TOmnetApp::getParameterUseDefault(int run_no, const char *parname)
     std::string entry = parname;
     entry += ".use-default";
     return getConfig()->getAsBool2(getRunSectionName(run_no), "Parameters", entry.c_str(), false);
+}
+
+void TOmnetApp::readParameter(cPar *par)
+{
+    // get it from ini file
+    std::string parfullpath = par->fullPath();
+    std::string str = getParameter(simulation.runNumber(), parfullpath.c_str());
+    if (!str.empty())
+    {
+        bool success = par->parse(str.c_str());
+        if (!success)
+            throw new cRuntimeError("Wrong value `%s' for parameter `%s'", str.c_str(), parfullpath.c_str());
+        return;
+    }
+
+    // maybe we should use default value
+    if (par->hasValue() && getParameterUseDefault(simulation.runNumber(), parfullpath.c_str()))
+        return;
+
+    // otherwise, we have to ask the user
+    bool success = false;
+    while (!success)
+    {
+        cProperties *props = par->properties();
+        cProperty *prop = props->get("prompt");
+        std::string prompt = prop ? prop->value(cProperty::DEFAULTKEY) : "";
+        std::string reply;
+        if (!prompt.empty())
+            reply = ev.gets(prompt.c_str(), par->toString().c_str());
+        else
+            reply = ev.gets((std::string("Enter parameter `")+parfullpath+"':").c_str(), par->toString().c_str());
+
+        try {
+            success = false;
+            success = par->parse(reply.c_str());
+            if (!success)
+                throw new cRuntimeError("Syntax error, please try again.");
+        }
+        catch (cException *e) {
+            ev.printfmsg("%s", e->message());
+            delete e;
+        }
+    }
 }
 
 bool TOmnetApp::isModuleLocal(cModule *parentmod, const char *modname, int index)

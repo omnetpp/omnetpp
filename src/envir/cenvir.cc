@@ -252,6 +252,7 @@ void cEnvir::shutdown()
 
 //-----------------------------------------------------------------
 
+/*XXX remove
 std::string cEnvir::getParameter(int run_no, const char *parname)
 {
     return app->getParameter(run_no, parname);
@@ -260,6 +261,12 @@ std::string cEnvir::getParameter(int run_no, const char *parname)
 bool cEnvir::getParameterUseDefault(int run_no, const char *parname)
 {
     return app->getParameterUseDefault(run_no, parname);
+}
+*/
+
+void cEnvir::readParameter(cPar *parameter)
+{
+    app->readParameter(parameter);
 }
 
 bool cEnvir::isModuleLocal(cModule *parentmod, const char *modname, int index)

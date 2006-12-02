@@ -124,6 +124,11 @@ bool cPar::isShared() const
     return p->isShared();
 }
 
+bool cPar::hasValue() const
+{
+    return p->hasValue();
+}
+
 bool cPar::isNumeric() const
 {
     return p->isNumeric();
@@ -237,18 +242,15 @@ void cPar::read()
     // obtain value if parameter is not set yet
     if (p->isInput())
     {
-        doReadValue();
-        p->setIsInput(false); // clear flag to avoid further confusion
+        ev.readParameter(this);
+        p->setIsInput(false); // clear flag to avoid accidental rereads
     }
 
     // convert non-volatile values to constant
     if (!isVolatile())
         convertToConst();
 
-    // convert "const" subexpressions to constant
-    //FIXME TODO -- or better delegate to cExpression
-
-    printf("    %s read() --> %s\n", fullPath().c_str(), info().c_str()); //XXX
+    //XXX printf("    %s read() --> %s\n", fullPath().c_str(), info().c_str());
 }
 
 
@@ -294,6 +296,7 @@ bool cPar::parse(const char *text)
     }
 }
 
+/*XXX remove
 //FIXME shouldn't this function go out into cEnvir??? it only calls public cPar methods!!!
 void cPar::doReadValue()
 {
@@ -336,6 +339,7 @@ void cPar::doReadValue()
         }
     }
 }
+*/
 
 //---
 

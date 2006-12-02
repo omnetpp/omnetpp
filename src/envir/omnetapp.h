@@ -107,6 +107,10 @@ class ENVIR_API TOmnetApp
   protected:
     // internal
     const char *getRunSectionName(int runnumber);
+    // internal
+    std::string getParameter(int run_nr, const char *parname);
+    // internal
+    bool getParameterUseDefault(int run_no, const char *parname);
 
   public:
     /**
@@ -129,11 +133,11 @@ class ENVIR_API TOmnetApp
     virtual void startRun();
     virtual void endRun();
 
-    /**
-     * Called by cPar::read() to get param value from the ini file
-     */
+/*XXX remove
     virtual std::string getParameter(int run_nr, const char *parname);
     virtual bool getParameterUseDefault(int run_no, const char *parname);
+*/
+    virtual void readParameter(cPar *parameter);
 
     virtual bool isModuleLocal(cModule *parentmod, const char *modname, int index);
 

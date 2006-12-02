@@ -27,6 +27,7 @@
 class cObject;
 class cOwnedObject;
 class cMessage;
+class cPar;
 class cGate;
 class cComponent;
 class cModule;
@@ -294,18 +295,26 @@ class ENVIR_API cEnvir : public std::ostream
     /** @name Methods called by the simulation kernel to access configuration settings. */
     //@{
 
-    /**
+/*XXX replaced by readParameter() -- remove!!!
+    / **
      * Called by the simulation kernel (cPar) to obtain value for an input
      * module parameter. Returns empty string if the configuration doesn't specify
      * a value for this parameter.
-     */
+     * /
     std::string getParameter(int run_no, const char *parname);
 
-    /**
+    / **
      * Called by the simulation kernel (cPar) to learn whether it should
      * use the default value for a parameter if getParameter() fails.
-     */
+     * /
     bool getParameterUseDefault(int run_no, const char *parname);
+*/
+
+    /**
+     * Assigns the module or channel parameter from the configuration, or
+     * by asking the user.
+     */
+    void readParameter(cPar *parameter);
 
     /**
      * Used for parallel distributed simulation. Returns true if a
