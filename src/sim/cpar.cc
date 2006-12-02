@@ -256,8 +256,6 @@ void cPar::read()
         copyIfShared();
         p->evaluateConstSubexpressions(ownercomponent);
     }
-
-    //XXX printf("    %s read() --> %s\n", fullPath().c_str(), info().c_str());
 }
 
 
