@@ -69,7 +69,7 @@ void cPar::copyIfShared()
 
 void cPar::reassign(cParValue *newp)
 {
-printf("   cPar reassign, '%s' . %p '%s', new='%s'\n", ownercomponent->fullPath().c_str(), p, p ? p->name() : "null", newp ? newp->name() : "null");
+    printf("   cPar reassign, '%s' . %p '%s', new='%s'\n", ownercomponent->fullPath().c_str(), p, p ? p->name() : "null", newp ? newp->name() : "null"); //XXX
     ASSERT(newp);
     if (!p->isShared())
         delete p;
@@ -250,7 +250,12 @@ void cPar::read()
     if (!isVolatile())
         convertToConst();
 
-    //XXX TODO: convert CONST subexpressions into constants!!!
+    // convert CONST subexpressions into constants
+    if (p->containsConstSubexpressions())
+    {
+        copyIfShared();
+        p->evaluateConstSubexpressions(ownercomponent);
+    }
 
     //XXX printf("    %s read() --> %s\n", fullPath().c_str(), info().c_str());
 }

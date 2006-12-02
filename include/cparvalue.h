@@ -267,6 +267,17 @@ class SIM_API cParValue : public cNamedObject
     virtual void convertToConst(cComponent *context) = 0;
 
     /**
+     * Returns true if this expression contains const subexpressions.
+     */
+    virtual bool containsConstSubexpressions() const {return false;} //FIXME TBD
+
+    /**
+     * Evaluates const subexpressions, and replaces them with their values.
+     * See cDynamicExpression::Elem::CONSTSUBEXPR.
+     */
+    virtual void evaluateConstSubexpressions(cComponent *context) {} //FIXME TBD
+
+    /**
      * Returns the value in text form.
      */
     virtual std::string toString() const = 0;

@@ -34,6 +34,8 @@ void cDynamicExpression::Elem::operator=(const Elem& other)
         s = opp_strdup(s);
     else if (type==FUNCTOR)
         fu = (Functor *) fu->dup();
+    else if (type==CONSTSUBEXPR)
+        constexpr = (cExpression *) constexpr->dup();
 }
 
 cDynamicExpression::Elem::~Elem()
@@ -42,6 +44,8 @@ cDynamicExpression::Elem::~Elem()
         delete [] s;
     else if (type==FUNCTOR)
         delete fu;
+    else if (type==CONSTSUBEXPR)
+        delete constexpr;
 }
 
 void cDynamicExpression::StkValue::operator=(const cPar& par)
@@ -222,6 +226,10 @@ cDynamicExpression::StkValue cDynamicExpression::evaluate(cComponent *context) c
              tos = argpos;
              break;
              }
+
+           case Elem::CONSTSUBEXPR:
+             // this should not occur
+             throw new cRuntimeError("evaluate: constant subexpressions should have already been evaluated");
 
            case Elem::OP:
              if (e.op==NEG || e.op==NOT || e.op==BIN_NOT)
@@ -520,6 +528,9 @@ std::string cDynamicExpression::toString() const
                  tos = argpos;
                  break;
                  }
+               case Elem::CONSTSUBEXPR:
+                 strstk[++tos] = std::string("const(")+e.constexpr->toString()+")";
+                 break;
                case Elem::OP:
                  if (e.op==NEG || e.op==NOT || e.op==BIN_NOT)
                  {

@@ -67,7 +67,7 @@ class SIM_API cDynamicExpression : public cExpression
         //  - cNEDFunction: function taking/returning StkValue (NEDFunction)
         //  - math operator (+-*/%^...)
         //
-        enum {UNDEF, BOOL, DBL, STR, XML, CPAR, MATHFUNC, NEDFUNC, FUNCTOR, OP} type;
+        enum {UNDEF, BOOL, DBL, STR, XML, CPAR, MATHFUNC, NEDFUNC, FUNCTOR, OP, CONSTSUBEXPR} type;
         union {
             bool b;
             double d;
@@ -78,6 +78,7 @@ class SIM_API cDynamicExpression : public cExpression
             cNEDFunction *af;
             Functor *fu;
             OpType op;
+            cExpression *constexpr;
         };
 
       public:
@@ -163,6 +164,11 @@ class SIM_API cDynamicExpression : public cExpression
          * Unary, binary or tertiary (?: only) operations.
          */
         void operator=(OpType _op)  {type=OP; op=_op;}
+
+        /**
+         * Unary, binary or tertiary (?: only) operations.
+         */
+        void operator=(cExpression *_expr)  {type=CONSTSUBEXPR; constexpr=_expr;}
     };
 
     /**
