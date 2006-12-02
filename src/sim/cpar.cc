@@ -250,6 +250,8 @@ void cPar::read()
     if (!isVolatile())
         convertToConst();
 
+    //XXX TODO: convert CONST subexpressions into constants!!!
+
     //XXX printf("    %s read() --> %s\n", fullPath().c_str(), info().c_str());
 }
 
