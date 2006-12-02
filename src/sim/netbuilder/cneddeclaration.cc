@@ -72,7 +72,6 @@ void cNEDDeclaration::clearPropsMap(PropertiesMap& propsMap)
 
 void cNEDDeclaration::clearExpressionMap(ExpressionMap& exprMap)
 {
-    // decrement refs in the props maps, and delete object if refcount reaches zero
     for (ExpressionMap::iterator it = exprMap.begin(); it!=exprMap.end(); ++it)
         delete it->second;
     exprMap.clear();

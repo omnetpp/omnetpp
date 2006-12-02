@@ -258,9 +258,6 @@ void cPar::convertToConst()
     p->convertToConst(ownercomponent);
 }
 
-// FIXME put these into some class!!!
-typedef std::map<std::string, cParValue *> StringToParMap;
-StringToParMap parMap; // for sharing params coming from ini files
 
 bool cPar::parse(const char *text)
 {
@@ -269,12 +266,12 @@ bool cPar::parse(const char *text)
     // this is possible because because expr representation does not depend on the context
     cComponentType *componentType = ownercomponent->componentType();
     std::string key = std::string(componentType->name()) + ":" + name() + ":" + text;
-    StringToParMap::iterator it = parMap.find(key);
-    if (it!=parMap.end())
+    cParValue *cachedValue = componentType->parValueCache()->get(key.c_str());
+    if (cachedValue)
     {
         // an identical value found in the map -- use it
         //XXX printf("       *** reusing %s ==> %s, cached %s\n", key.c_str(), text, it->second->toString().c_str());
-        reassign(it->second);
+        reassign(cachedValue);
         return true;
     }
     else
@@ -284,8 +281,7 @@ bool cPar::parse(const char *text)
         if (tmp->parse(text))
         {
             // successfully parsed: install it
-            tmp->setIsShared(true);
-            parMap[key] = tmp;
+            componentType->parValueCache()->put(key.c_str(), tmp);
             reassign(tmp);
             return true;
         }
@@ -298,10 +294,9 @@ bool cPar::parse(const char *text)
     }
 }
 
+//FIXME shouldn't this function go out into cEnvir??? it only calls public cPar methods!!!
 void cPar::doReadValue()
 {
-    //FIXME shouldn't most of this go out into cEnvir???
-
     // get it from ini file
     std::string str = ev.getParameter(simulation.runNumber(), fullPath().c_str());
     if (!str.empty())
@@ -340,6 +335,28 @@ void cPar::doReadValue()
             delete e;
         }
     }
+}
+
+//---
+
+cParValueCache::~cParValueCache()
+{
+    for (StringToParMap::iterator it = parMap.begin(); it!=parMap.end(); ++it)
+        delete it->second;
+    parMap.clear();
+}
+
+cParValue *cParValueCache::get(const char *key) const
+{
+    StringToParMap::const_iterator it = parMap.find(key);
+    return it==parMap.end() ? NULL : it->second;
+}
+
+void cParValueCache::put(const char *key, cParValue *value)
+{
+    ASSERT(parMap.find(key)==parMap.end()); // not yet in there
+    value->setIsShared(true);
+    parMap[key] = value;
 }
 
 

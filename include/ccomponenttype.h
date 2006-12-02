@@ -37,6 +37,10 @@ class SIM_API cComponentType : public cNoncopyableOwnedObject
 {
   protected:
     std::string desc;
+    cParValueCache parvaluecache;
+  public:
+    // internal use
+    cParValueCache *parValueCache() {return &parvaluecache;}
 
   public:
     /** @name Constructors, destructor, assignment */

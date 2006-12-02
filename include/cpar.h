@@ -116,7 +116,7 @@ class SIM_API cPar : public cObject  //turn into cObject; delegate name to p! ad
     bool isNumeric() const;
 
     /**
-     * Returns true if this parameter is marked in the NED file as "function".
+     * Returns true if this parameter is marked in the NED file as "volatile".
      * This flag affects the operation of setExpression().
      */
     bool isVolatile() const;
@@ -131,8 +131,7 @@ class SIM_API cPar : public cObject  //turn into cObject; delegate name to p! ad
     /**
      * Returns true if the parameter value expression is shared among several
      * modules to save memory. This flag is purely informational, and whether
-     * a parameter is shared or not does not affect anything at all
-     * (except memory footprint of the whole simulation).
+     * a parameter is shared or not does not affect operation at all.
      */
     bool isShared() const;
 
@@ -184,7 +183,7 @@ class SIM_API cPar : public cObject  //turn into cObject; delegate name to p! ad
      *
      * Note: if the parameter is marked as non-volatile (isVolatile()==false),
      * one should not set an expression as value. This is not enforced
-     * by cPar though.
+     * by cPar though.  XXX
      */
     cPar& setExpression(cExpression *e);
     //@}
@@ -424,6 +423,19 @@ class SIM_API cPar : public cObject  //turn into cObject; delegate name to p! ad
      */
     bool equals(cPar& other);
     //@}
+};
+
+// internal class for sharing parameter values coming from ini files
+class cParValueCache
+{
+  private:
+    typedef std::map<std::string, cParValue *> StringToParMap;
+    StringToParMap parMap;
+  public:
+    cParValueCache() {}
+    ~cParValueCache();
+    cParValue *get(const char *key) const;
+    void put(const char *key, cParValue *value);
 };
 
 #endif
