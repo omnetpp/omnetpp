@@ -38,25 +38,10 @@
 using std::ostream;
 using std::string;
 
-//FIXME strip down cMsgPar class!!! remove expression support, etc
 
 Register_Class(cMsgPar);
 
-string cDoubleExpression::getAsText()
-{
-    char buf[40];
-    sprintf(buf, "%g", evaluate());
-    return string(buf);
-}
-
-bool cDoubleExpression::parseText(const char *text)
-{
-    throw new cRuntimeError("cDoubleExpression: parseText() does not work with compiled expressions");
-}
-
-//----
-
-char *cMsgPar::possibletypes = "SBLDFIXCTP";
+char *cMsgPar::possibletypes = "SBLDFITP";
 
 static const char *typeName(char typechar)
 {
@@ -68,8 +53,6 @@ static const char *typeName(char typechar)
         case 'D': return "double (D)";
         case 'F': return "function with constant args (F)";
         case 'I': return "indirect (I)";
-        case 'X': return "reverse Polish expression (X)";
-        case 'C': return "compiled expression (C)";
         case 'T': return "random number from distribution (T)";
         case 'P': return "pointer (P)";
         case 'M': return "XML element (M)";
@@ -124,10 +107,6 @@ void cMsgPar::deleteOld()
         if (dtr.res->owner()==this)
             dropAndDelete(dtr.res);
     }
-    else if (typechar=='C')
-    {
-        delete cexpr.expr;
-    }
     else if (typechar=='P')
     {
         if (ptr.dupfunc || ptr.itemsize>0) // we're expected to do memory mgmt
@@ -142,13 +121,6 @@ void cMsgPar::deleteOld()
     {
         if (obj.obj->owner()==this)
             dropAndDelete(obj.obj);
-    }
-    else if (typechar=='X')
-    {
-        for (int i=0; i<expr.n; i++)
-            if (expr.xelem[i].type=='R')  // should be ours
-                dropAndDelete(expr.xelem[i].p);
-        delete [] expr.xelem;
     }
     typechar = 'L';
 }
@@ -177,8 +149,6 @@ std::string cMsgPar::info() const
                   break;
         case 'L': out << lng.val << " (L)"; break;
         case 'D': out << dbl.val << " (D)"; break;
-        case 'C': out << "compiled expression"; break;
-        case 'X': out << "reverse Polish expression"; break;
         case 'T': out << (dtr.res ? dtr.res->fullPath().c_str():"null") << " (T)"; break;
         case 'P': out << ptr.ptr << " (P)"; break;
         case 'O': out << (obj.obj ? obj.obj->fullPath().c_str():"null") << " (O)"; break;
@@ -242,8 +212,8 @@ void cMsgPar::netPack(cCommBuffer *buffer)
     cOwnedObject::netPack(buffer);
 
     // For error checking & handling
-    if (typechar != 'S' && typechar != 'C' && typechar != 'L' && typechar != 'D'
-        && typechar != 'F' && typechar != 'T' && typechar != 'I' && typechar != 'X'
+    if (typechar != 'S' && typechar != 'L' && typechar != 'D'
+        && typechar != 'F' && typechar != 'T' && typechar != 'I'
         && typechar != 'P' && typechar != 'O' && typechar != 'M')
     {
         throw new cRuntimeError(this,"netPack: unsupported type '%c'",typechar);
@@ -295,10 +265,6 @@ void cMsgPar::netPack(cCommBuffer *buffer)
 
     case 'I':
         throw new cRuntimeError(this,"netPack(): transmitting indirect values (type 'I') not supported");
-
-    case 'X':
-        // not implemented, because there are functions and pointers in it.
-        throw new cRuntimeError(this,"netPack(): transmitting expressions (type 'X') not supported");
 
     case 'P':
         throw new cRuntimeError(this,"netPack(): cannot transmit pointer to unknown data structure (type 'P')");
@@ -378,10 +344,9 @@ void cMsgPar::netUnpack(cCommBuffer *buffer)
         break;
 
     case 'I':
-    case 'X':
     case 'P':
     case 'M':
-        throw new cRuntimeError(this,"netUnpack(): unpacking types I, P, X, M not implemented");
+        throw new cRuntimeError(this,"netUnpack(): unpacking types I, P, M not implemented");
 
     case 'O':
         if (!buffer->checkFlag())
@@ -589,63 +554,6 @@ cMsgPar& cMsgPar::setDoubleValue(MathFunc4Args f, double p1, double p2, double p
     return *this;
 }
 
-cMsgPar& cMsgPar::setDoubleValue(ExprElem *x, int n)
-{
-    if (isRedirected())
-        return ind.par->setDoubleValue(x,n);
-
-    if (!x)
-        throw new cRuntimeError(this,eBADINIT,typeName('X'));
-
-    beforeChange();
-    deleteOld();
-    expr.n = n;
-    expr.xelem = x;
-    typechar = 'X';
-    inputflag=false;
-
-    // ownership game: take objects given to us in the x[] array
-    for(int i=0; i<expr.n; i++)
-    {
-       if (expr.xelem[i].type=='R')
-       {
-           //  ExprElem::op= has already dupped the pointed cMsgPar for us
-           cMsgPar *p = expr.xelem[i].p;
-
-           // if the pointed cMsgPar is not indirect and it is a constant,
-           // there's really no need to keep the object
-           if (!p->isRedirected() && (p->type()=='D' || p->type()=='L'))
-           {
-               expr.xelem[i] = (double)(*p);
-               delete p;
-           }
-           else // otherwise, we'll become the owner
-           {
-               take(p);
-           }
-       }
-    }
-    afterChange();
-    return *this;
-}
-
-cMsgPar& cMsgPar::setDoubleValue(cDoubleExpression *p)
-{
-    if (isRedirected())
-        return ind.par->setDoubleValue(p);
-
-    if (!p)
-        throw new cRuntimeError(this,eBADINIT,typeName('P'));
-
-    beforeChange();
-    deleteOld();
-    cexpr.expr = p;
-    typechar = 'C';
-    inputflag=false;
-    afterChange();
-    return *this;
-}
-
 cMsgPar& cMsgPar::setDoubleValue(cStatistic *res)
 {
     if (isRedirected())
@@ -771,13 +679,7 @@ const char *cMsgPar::stringValue()
 //
 // Note:
 // boolValue(), longValue() and doubleValue() are rather liberal: they all
-// allow conversion from all of B,L and the double types D,T,X,F.
-// Aesthetically, this is nasty a feature (because it is against the strongly
-// typed nature of C++; you can do narrowing conversions [double->bool]
-// without a warning, etc.), but it is necessary because of the way parameter
-// assignments in NED are handled. For example, bool and long expressions
-// (e.g. "i==0 || i==n") are compiled into cMsgPar X expressions which will _need_
-// to be converted to bool and long after evaluation.
+// allow conversion from all of B,L and the double types D,T,F.
 //
 
 bool cMsgPar::boolValue()
@@ -831,10 +733,6 @@ double cMsgPar::doubleValue()
         return dbl.val;
     else if (typechar=='T')
         return fromstat();
-    else if (typechar=='X')
-        return evaluate();
-    else if (typechar=='C')
-        return cexpr.expr->evaluate();
     else if (typechar=='F')
         return func.argc==0 ? ((MathFuncNoArg)func.f)() :
                func.argc==1 ? ((MathFunc1Arg) func.f)(func.p1) :
@@ -891,8 +789,6 @@ bool cMsgPar::isNumeric() const
            typechar=='L' ||
            typechar=='D' ||
            typechar=='T' ||
-           typechar=='X' ||
-           typechar=='C' ||
            typechar=='F';
 }
 
@@ -926,8 +822,6 @@ bool cMsgPar::equalsTo(cMsgPar *par)
         case 'P': return ptr.ptr == par->ptr.ptr;
         case 'O': return obj.obj == par->obj.obj;
         case 'M': return xmlp.node == par->xmlp.node;
-        case 'X': throw new cRuntimeError(this, "equalsTo() with X type not implemented");
-        case 'C': throw new cRuntimeError(this, "equalsTo() with C type not implemented");
         default: return 0;
     }
 }
@@ -995,8 +889,6 @@ string cMsgPar::getAsText() const
        case 'T': return string("distribution ")+(dtr.res?dtr.res->fullPath().c_str():"NULL");
        case 'P': sprintf(bb,"pointer %p", ptr.ptr); return string(bb);
        case 'O': return string("object ")+(obj.obj?obj.obj->fullPath().c_str():"NULL");
-       case 'C': return string("compiled expression ")+cexpr.expr->getAsText();
-       case 'X': return string("reverse Polish expression");
        case 'M': if (xmlp.node)
                      return string("<")+xmlp.node->getTagName()+"> from "+xmlp.node->getSourceLocation();
                  else
@@ -1247,127 +1139,6 @@ cMsgPar& cMsgPar::read()
     return *this;
 }
 
-
-double cMsgPar::evaluate()
-{
-    const int stksize = 20;
-
-      /*---------------------------------
-         Type X (expression) - interprets the expression given
-            in the ExprElem vector as a reversed Polish one and
-            evaluates it.
-         --------------------------*/
-    if (typechar!='X')
-         return 0.0;
-
-    double stk[stksize];
-
-    int tos = -1;
-
-    for(int i=0; i<expr.n; i++) {
-       ExprElem& e = expr.xelem[i];
-       switch( toupper(e.type) ) {
-           case 'D':
-             if(tos>=stksize - 1) throw new cRuntimeError(this,eBADEXP);
-             stk[++tos] = e.d;
-             break;
-           case 'P':
-           case 'R':
-             if(!e.p || tos>=stksize - 1) throw new cRuntimeError(this,eBADEXP);
-             stk[++tos] = (double)(*e.p);
-             break;
-           case '0':
-             if(!e.f0) throw new cRuntimeError(this,eBADEXP);
-             stk[++tos] = e.f0();
-             break;
-           case '1':
-             if(!e.f1 || tos<0) throw new cRuntimeError(this,eBADEXP);
-             stk[tos] = e.f1( stk[tos] );
-             break;
-           case '2':
-             if(!e.f2 || tos<1) throw new cRuntimeError(this,eBADEXP);
-             stk[tos-1] = e.f2( stk[tos-1], stk[tos] );
-             tos--;
-             break;
-           case '3':
-             if(!e.f3 || tos<2) throw new cRuntimeError(this,eBADEXP);
-             stk[tos-2] = e.f3( stk[tos-2], stk[tos-1], stk[tos] );
-             tos-=2;
-             break;
-           case '4':
-             if(!e.f4 || tos<3) throw new cRuntimeError(this,eBADEXP);
-             stk[tos-3] = e.f4( stk[tos-3], stk[tos-2], stk[tos-1], stk[tos] );
-             tos-=3;
-             break;
-           case '@':
-             if(tos<1) throw new cRuntimeError(this,eBADEXP);
-             switch(e.op) {
-                case '+':
-                   stk[tos-1] = stk[tos-1] + stk[tos];
-                   tos--;
-                   break;
-                case '-':
-                   stk[tos-1] = stk[tos-1] - stk[tos];
-                   tos--;
-                   break;
-                case '*':
-                   stk[tos-1] = stk[tos-1] * stk[tos];
-                   tos--;
-                   break;
-                case '/':
-                   stk[tos-1] = stk[tos-1] / stk[tos];
-                   tos--;
-                   break;
-                case '%':
-                   stk[tos-1] = (long)stk[tos-1] % (long)stk[tos];
-                   tos--;
-                   break;
-                case '^':
-                   stk[tos-1] = pow( stk[tos-1], stk[tos] );
-                   tos--;
-                   break;
-                case '=':
-                   stk[tos-1] = stk[tos-1] == stk[tos];
-                   tos--;
-                   break;
-                case '!':
-                   stk[tos-1] = stk[tos-1] != stk[tos];
-                   tos--;
-                   break;
-                case '<':
-                   stk[tos-1] = stk[tos-1] < stk[tos];
-                   tos--;
-                   break;
-                case '{':
-                   stk[tos-1] = stk[tos-1] <= stk[tos];
-                   tos--;
-                   break;
-                case '>':
-                   stk[tos-1] = stk[tos-1] > stk[tos];
-                   tos--;
-                   break;
-                case '}':
-                   stk[tos-1] = stk[tos-1] >= stk[tos];
-                   tos--;
-                   break;
-                case '?':
-                   stk[tos-2] = stk[tos-2]!=0.0 ? stk[tos-1] : stk[tos];
-                   tos-=2;
-                   break;
-                default:
-                   throw new cRuntimeError(this,eBADEXP);
-                   return 0.0;
-             }
-             break;
-           default:
-             throw new cRuntimeError(this,eBADEXP);
-       }
-    }
-    if (tos!=0)
-        throw new cRuntimeError(this,eBADEXP);
-    return stk[tos];
-}
-
 double cMsgPar::fromstat()
 {
     if (typechar!='T')
@@ -1408,26 +1179,6 @@ cMsgPar& cMsgPar::operator=(const cMsgPar& val)
          // make our copy of the string
          ls.str = opp_strdup(ls.str);
     }
-    else if (typechar=='C')
-    {
-         // make our copy of expression
-         cexpr.expr = (cDoubleExpression *) cexpr.expr->dup();
-    }
-    else if (typechar=='X')
-    {
-         // play with ownership stuff
-         memcpy( expr.xelem = new ExprElem[expr.n], val.expr.xelem,
-                 expr.n*sizeof(ExprElem) );
-         for(int i=0; i<expr.n; i++)
-         {
-             if (expr.xelem[i].type=='R')
-             {
-                // create a copy for ourselves
-                cMsgPar *&p = expr.xelem[i].p;
-                take( p=(cMsgPar *)p->dup() );
-             }
-         }
-    }
     else if (typechar=='T')
     {
          cStatistic *&p = dtr.res;
@@ -1466,7 +1217,7 @@ void cMsgPar::convertToConst ()
     if (isRedirected())
        cancelRedirection();
 
-    if (strchr("FXTIC", typechar)) // if type is any or F,X,T,I,C...
+    if (strchr("FTI", typechar)) // if type is any or F,T,I...
     {
        double d = doubleValue();
        setDoubleValue(d);

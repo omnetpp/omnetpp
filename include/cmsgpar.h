@@ -25,55 +25,6 @@ class  cXMLElement;
 
 
 /**
- * Abstract base class for expressions, to be used with cMsgPar.
- *
- * @see cMsgPar
- */
-class SIM_API cMPExpression  // FIXME do we still need this????
-{
-  public:
-    virtual ~cMPExpression() {}
-    virtual std::string getAsText() = 0;
-    virtual bool parseText(const char *text) = 0;
-    virtual cMPExpression *dup() = 0;
-};
-
-/**
- * Abstract base class for double-valued expressions. Currently
- * used by nedtool-generated C++ code, which contains
- * cDoubleExpression-based compiled expressions (used via cMsgPar)
- * for e.g. submodule parameters.
- *
- * The actual expression should be supplied by creating a subclass
- * and overriding evaluate().  The expression may use parameters
- * stored in data members of the class; parameters can be initialized
- * e.g. in the constructor.
- *
- * Example:
- *   <pre>
- *   class Expr12 : public cDoubleExpression {
- *       private:
- *           long p1;
- *           cMsgPar& p2;
- *       public:
- *           Expr12(long ap1, cMsgPar& ap2) : p1(ap1), p2(ap2) {}
- *           virtual double evaluate() {return 3*p1+p2;}
- *   };
- *   </pre>
- *
- * @see cMsgPar
- */
-class SIM_API cDoubleExpression : public cMPExpression
-{
-  public:
-    virtual std::string getAsText();
-    virtual bool parseText(const char *text);
-    virtual double evaluate() = 0;
-};
-
-
-
-/**
  * FIXME revise doc!!!
  *
  * cMsgPar instances can be attached to cMessage objects.
@@ -83,8 +34,6 @@ class SIM_API cDoubleExpression : public cMPExpression
  *
  *     - basic types: <b>S</b> string, <b>B</b> bool, <b>L</b> long, <b>D</b> double
  *     - <b>F</b> math function (MathFuncNoArgs,MathFunc1Args,etc),
- *     - <b>X</b> reverse Polish expression (array of ExprElem objects),
- *     - <b>C</b> compiled expression (subclassed from cDoubleExpression),
  *     - <b>T</b> distribution from a cStatistic,
  *     - <b>P</b> pointer to cOwnedObject,
  *     - <b>I</b> indirection (refers to another cMsgPar)
@@ -96,164 +45,10 @@ class SIM_API cDoubleExpression : public cMPExpression
  * for cMsgPar. If no prompt string is given, the object's
  * name will be displayed as prompt text.
  *
- * NOTE: forEachChild() ignores objects stored here such as cMsgPars in ExprElem
- * structs (type X), cOwnedObject pointed to (type P), cStatistic (type T)
- *
  * @ingroup SimCore
- * @see ExprElem
  */
 class SIM_API cMsgPar : public cOwnedObject   // FIXME simplify and DEPRECATE this class!!!
 {
-  public:
-    /**
-     * One component in a (reversed Polish) expression in a cMsgPar;
-     * see cMsgPar::setDoubleValue(ExprElem *,int).
-     */
-    struct ExprElem
-    {
-        // Type chars:
-        //   D  double constant
-        //   P  pointer to "external" cMsgPar (owned by someone else)
-        //   R  "reference": the cMsgPar will be dup()'ped and the copy kept
-        //   0/1/2/3  function with 0/1/2/3 arguments
-        //   @  math operator (+-*%/^=!<{>}?); see cMsgPar::evaluate()
-        //
-        char type;    // D/P/R/0/1/2/3/@ (see above)
-        union {
-            double d;           // D
-            cMsgPar *p;     // P/R
-            MathFuncNoArg f0;   // 0
-            MathFunc1Arg  f1;   // 1
-            MathFunc2Args f2;   // 2
-            MathFunc3Args f3;   // 3
-            MathFunc4Args f4;   // 4
-            char op;            // @, op = +-*/%^=!<{>}?
-        };
-
-        /**
-         * Effect during evaluation of the expression: pushes the given number
-         * (which is converted to double) on the evaluation stack.
-         */
-        void operator=(int _i)            {type='D'; d=_i;  }
-
-
-        /**
-         * Effect during evaluation of the expression: pushes the given number
-         * (which is converted to double) on the evaluation stack.
-         */
-        void operator=(short _i)            {type='D'; d=_i;  }
-
-        /**
-         * Effect during evaluation of the expression: pushes the given number
-         * (which is converted to double) on the evaluation stack.
-         */
-        void operator=(long _l)           {type='D'; d=_l;  }
-
-        /**
-         * Effect during evaluation of the expression: pushes the given number
-         * (which is converted to double) on the evaluation stack.
-         */
-        void operator=(double _d)         {type='D'; d=_d;  }
-
-        /**
-         * Effect during evaluation of the expression: takes the value of
-         * the cMsgPar object  (a double) and pushes the value
-         * on the evaluation stack. The cMsgPar is an "external"
-         * one: its ownership does not change. This is how NED-language REF
-         * parameters in expressions are handled.
-         */
-        void operator=(cMsgPar *_p)          {type='P'; p=_p;  }
-
-        /**
-         * Effect during evaluation of the expression: takes the value of
-         * the cMsgPar object  (a double) and pushes the value
-         * on the evaluation stack. The cMsgPar which evaluates this
-         * expression will copy the cMsgPar for itself.
-         */
-        void operator=(cMsgPar& _r);         //{type='R'; p=(cMsgPar *)_r.dup();} See after cMsgPar!
-
-        /**
-         * The argument can be a pointer to a function that takes no arguments
-         * and returns a double. Effect during evaluation of the expression:
-         * the return value is pushed on the stack. See also the cMathFunction
-         * class and the Define_Function() macro.
-         *
-         * The OMNeT++ functions generating random variables of different
-         * distributions can also be used in ExprElem expressions.
-         */
-        void operator=(MathFuncNoArg _f)  {type='0'; f0=_f;}
-
-        /**
-         * The argument can be a pointer to a function that takes 1
-         * double argument and returns a double (e.g. sqrt()).
-         * Effect during evaluation of the expression: 1 double is popped from the
-         * stack, the given function is called with them as arguments, and the return
-         * value is pushed back on the stack. See also the cMathFunction
-         * class and the Define_Function() macro.
-         *
-         * The OMNeT++ functions generating random variables of different
-         * distributions can also be used in ExprElem expressions.
-         */
-        void operator=(MathFunc1Arg  _f)  {type='1'; f1=_f;}
-
-        /**
-         * The argument can be a pointer to a function that takes 2
-         * double arguments and returns a double.
-         * Effect during evaluation of the expression:
-         * 2 doubles are popped from the stack,
-         * the given function is called with them as arguments, and the return
-         * value is pushed back on the stack. See also the cMathFunction
-         * class and the Define_Function() macro.
-         *
-         * The OMNeT++ functions generating random variables of different
-         * distributions can also be used in ExprElem expressions.
-         */
-        void operator=(MathFunc2Args _f)  {type='2'; f2=_f;}
-
-        /**
-         * The argument can be a pointer to a function that takes 3
-         * double arguments and returns a double.
-         * Effect during evaluation of the expression:
-         * 3 doubles are popped from the stack,
-         * the given function is called with them as arguments, and the return
-         * value is pushed back on the stack. See also the cMathFunction
-         * class and the Define_Function() macro.
-         *
-         * The OMNeT++ functions generating random variables of different
-         * distributions can also be used in ExprElem expressions.
-         */
-        void operator=(MathFunc3Args _f)  {type='3'; f3=_f;}
-
-        /**
-         * The argument can be a pointer to a function that takes 4
-         * double arguments and returns a double.
-         * Effect during evaluation of the expression:
-         * 4 doubles are popped from the stack,
-         * the given function is called with them as arguments, and the return
-         * value is pushed back on the stack. See also the cMathFunction
-         * class and the Define_Function() macro.
-         *
-         * The OMNeT++ functions generating random variables of different
-         * distributions can also be used in ExprElem expressions.
-         */
-        void operator=(MathFunc4Args _f)  {type='4'; f4=_f;}
-
-        /**
-         * Operation. During evaluation of the expression, two items (or three,
-         * with '?') are popped out of the stack, the given operator
-         * is applied to them and the result is pushed back on the stack.
-         *
-         * The operation can be:
-         *     - + - * / add, subtract, multiply, divide
-         *     - \% ^  modulo, power of
-         *     - = !  equal, not equal
-         *     - > }  greater, greater or equal
-         *     - < {  less, less or equal
-         *     - ?  inline if (the C/C++ ?: operator)
-         */
-        void operator=(char _op)          {type='@'; op=_op;}
-    };
-
   protected:
     static char *possibletypes;
   private:
@@ -271,8 +66,6 @@ class SIM_API cMsgPar : public cOwnedObject   // FIXME simplify and DEPRECATE th
        struct { MathFunc f; int argc;
                 double p1,p2,p3,p4;             } func; // F:math function
        struct { cStatistic *res;                } dtr;  // T:distribution
-       struct { cDoubleExpression *expr;        } cexpr;// C:compiled expression
-       struct { ExprElem *xelem; int n;         } expr; // X:expression
        struct { cMsgPar *par;               } ind;  // I:indirection
        struct { void *ptr;
                 VoidDelFunc delfunc;
@@ -285,9 +78,6 @@ class SIM_API cMsgPar : public cOwnedObject   // FIXME simplify and DEPRECATE th
   private:
     // helper func: destruct old value
     void deleteOld();
-
-    // helper func: evaluates expression (X)
-    double evaluate();
 
     // helper func: rand.num with given distr.(T)
     double fromstat();
@@ -429,38 +219,6 @@ class SIM_API cMsgPar : public cOwnedObject   // FIXME simplify and DEPRECATE th
     cMsgPar& setDoubleValue(cStatistic *res);
 
     /**
-     * Sets the value to the given Reverse Polish expression, specified as
-     * an array of ExprElem structs.
-     * Every time the cMsgPar's value is asked the expression will be
-     * evaluated using a stack machine. The stack machine calculates
-     * in doubles.
-     *
-     * Example: the NED expression <i>(count+1)/2</i> would be represented
-     * in the following way:
-     *
-     * \code
-     * cMsgPar::ExprElem *expression = new cMsgPar::ExprElem[5];
-     * expression[0] = &(mod->par("count")); // ptr to module parameter
-     * expression[1] = 1;
-     * expression[2] = '+';
-     * expression[3] = 2;
-     * expression[4] = '/';
-     * param.setDoubleValue(expression,5);
-     * \endcode
-     */
-    cMsgPar& setDoubleValue(ExprElem *x, int n);
-
-    /**
-     * Sets the value to the given compiled expression, subclassed from
-     * cDoubleExpression.
-     * Every time the cMsgPar's value is asked, the evaluate() function of
-     * cDoubleExpression will be called. The passed object will be
-     * deallocated (using operator delete) from the cMsgPar destructor, and
-     * also when the cMsgPar object is assigned another value.
-     */
-    cMsgPar& setDoubleValue(cDoubleExpression *expr);
-
-    /**
      * Sets the value to the given math function with no arguments.
      * Every time the cMsgPar's value is asked the function will be called.
      */
@@ -557,8 +315,7 @@ class SIM_API cMsgPar : public cOwnedObject   // FIXME simplify and DEPRECATE th
 
     /**
      * Returns value as long. The cMsgPar type must be types long (L),
-     * double (D), Boolean (B), function (F), distribution (T),
-     * compiled expression (C) or expression (X).
+     * double (D), Boolean (B), function (F), distribution (T).
      */
     long longValue();
 
@@ -569,8 +326,7 @@ class SIM_API cMsgPar : public cOwnedObject   // FIXME simplify and DEPRECATE th
 
     /**
      * Returns value as double. The cMsgPar type must be types long (L),
-     * double (D), function (F), Boolean (B), distribution (T),
-     * compiled expression (C) or expression (X).
+     * double (D), function (F), Boolean (B), distribution (T).
      */
     double doubleValue();
 
@@ -878,19 +634,6 @@ class SIM_API cMsgPar : public cOwnedObject   // FIXME simplify and DEPRECATE th
     static int cmpbyvalue(cOwnedObject *one, cOwnedObject *other);
     //@}
 };
-
-// this function cannot be defined within ExprElem because of declaration order
-inline void cMsgPar::ExprElem::operator=(cMsgPar& _r)  {
-    type='R'; p=(cMsgPar *)_r.dup();
-}
-
-inline std::ostream& operator<< (std::ostream& os, const cMsgPar& o) {
-    return os << o.getAsText();
-}
-
-inline std::ostream& operator<< (std::ostream& os, cMsgPar& o) {
-    return os << o.getAsText();
-}
 
 #endif
 
