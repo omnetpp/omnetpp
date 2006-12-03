@@ -69,7 +69,7 @@ std::string cParValue::detailedInfo() const
             out << " = default(" << toString() << ")";
         else
             out << " = " << toString();
-        out << " isExpression=" << (isConstant()?"false":"true");
+        out << " isExpression=" << (isExpression()?"true":"false");
     }
     else
     {

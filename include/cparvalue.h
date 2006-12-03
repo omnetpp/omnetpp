@@ -126,11 +126,11 @@ class SIM_API cParValue : public cNamedObject
     virtual bool isVolatile() const {return flags & FL_ISVOLATILE;}
 
     /**
-     * Returns true if the stored value is a constant, and false if it is
-     * an expression. (It is not examined whether the expression actually
-     * yields a constant value.)
+     * Returns false if the stored value is a constant, and true if it is
+     * an expression. (It is not examined whether the expression yields
+     * a constant value.)
      */
-    virtual bool isConstant() const {return !(flags & FL_ISEXPR);}
+    virtual bool isExpression() const {return flags & FL_ISEXPR;}
 
     /**
      * Returns true if the parameter has a value set.

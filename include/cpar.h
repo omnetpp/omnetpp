@@ -126,11 +126,11 @@ class SIM_API cPar : public cObject
     bool isVolatile() const;
 
     /**
-     * Returns true if the stored value is a constant, anf false if it is
-     * an expression. (It is not examined whether the expression actually
-     * yields a constant value.)
+     * Returns false if the stored value is a constant, and true if it is
+     * an expression. (It is not examined whether the expression yields
+     * a constant value.)
      */
-    bool isConstant() const;
+    bool isExpression() const;
 
     /**
      * Returns true if the parameter value expression is shared among several

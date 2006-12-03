@@ -144,9 +144,9 @@ bool cPar::isVolatile() const
     return p->isVolatile();
 }
 
-bool cPar::isConstant() const
+bool cPar::isExpression() const
 {
-    return p->isConstant();
+    return p->isExpression();
 }
 
 bool cPar::boolValue() const
@@ -252,11 +252,11 @@ void cPar::read()
     }
 
     // convert non-volatile expressions to constant
-    if (!p->isConstant() && !p->isVolatile())
+    if (p->isExpression() && !p->isVolatile())
         convertToConst();
 
     // convert CONST subexpressions into constants
-    if (p->containsConstSubexpressions())
+    if (p->isExpression() && p->containsConstSubexpressions())
     {
         copyIfShared();
         p->evaluateConstSubexpressions(ownercomponent);

@@ -401,8 +401,8 @@ class cPar extends cOwnedObject
         string value @getter(toString) @setter(parse) @editable;
         char type @enum(cPar_Type) @hint(parameter type);
         bool isNumeric @group(flags) @hint(whether parameter type is numeric, i.e. double or long);
-        bool isConstant @group(flags) @hint(whether parameter value is a constant or an expression);
         bool isVolatile @group(flags) @hint(whether parameter was declared volatile in the NED file);
+        bool isExpression@group(flags) @hint(whether parameter value is a constant or an expression);
         bool isShared @group(flags) @hint(whether storage could be optimized by several modules sharing the same parameter value object);
 }
 
@@ -413,7 +413,7 @@ class cMsgPar extends cOwnedObject
         string value @getter(getAsText) @setter(setFromText) @editable @hint(parameter value);
         char type @enum(cPar_Type) @hint(parameter type);
         bool isNumeric @group(flags) @hint(whether parameter is of numeric type);
-        bool isConstant @group(flags) @hint(whether the parameter was declared const);
+        bool isConstant @group(flags) @hint(whether the parameter has a constant value);
 }
 
 class cProperties extends cObject
