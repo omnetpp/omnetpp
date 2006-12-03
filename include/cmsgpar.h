@@ -36,7 +36,6 @@ class  cXMLElement;
  *     - <b>F</b> math function (MathFuncNoArgs,MathFunc1Args,etc),
  *     - <b>T</b> distribution from a cStatistic,
  *     - <b>P</b> pointer to cOwnedObject,
- *     - <b>I</b> indirection (refers to another cMsgPar)
  *     - <b>M</b> XML element (pointer to a cXMLElement)
  *
  * For all types, an input flag can be set. In this case,
@@ -66,7 +65,6 @@ class SIM_API cMsgPar : public cOwnedObject   // FIXME simplify and DEPRECATE th
        struct { MathFunc f; int argc;
                 double p1,p2,p3,p4;             } func; // F:math function
        struct { cStatistic *res;                } dtr;  // T:distribution
-       struct { cMsgPar *par;               } ind;  // I:indirection
        struct { void *ptr;
                 VoidDelFunc delfunc;
                 VoidDupFunc dupfunc;
@@ -346,45 +344,11 @@ class SIM_API cMsgPar : public cOwnedObject   // FIXME simplify and DEPRECATE th
     cXMLElement *xmlValue();
     //@}
 
-    /** @name Redirection */
-    //@{
-
-    /**
-     * Creates a redirection to another cMsgPar. A cMsgPar object can be set
-     * to stand for a value actually stored in another cMsgPar object.
-     * This is called indirect or redirected value. When using redirection,
-     * every operation on the value (i.e. reading or changing it)
-     * will be actually done to the other cMsgPar object.
-     */
-    cMsgPar& setRedirection(cMsgPar *par);
-
-    /**
-     * Returns true if this object is redirected to another cMsgPar.
-     */
-    bool isRedirected() const {return typechar=='I';}
-
-    /**
-     * Returns NULL if the cMsgPar's value is not redirected to another cMsgPar;
-     * otherwise it returns the pointer of that cMsgPar.
-     * This function and isRedirected() are the only ways to determine
-     * if an object is redirected or not (type() returns the type of
-     * the other cMsgPar: 'D', 'L' etc).
-     */
-    cMsgPar *redirection();
-
-    /**
-     * Break the redirection. The new type will be long ('L').
-     */
-    void cancelRedirection();
-    //@}
-
     /** @name Type, prompt text, input flag, change flag. */
     //@{
 
     /**
-     * Returns type character. If the "real" type is 'I',
-     * it returns the type of the object it is redirected to (for example,
-     * 'D', 'L', etc.)
+     * Returns type character.
      */
     char type() const;
 
