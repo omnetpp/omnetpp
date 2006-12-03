@@ -62,7 +62,7 @@ void cBasicChannel::checkInitialized() const
 
 void cBasicChannel::rereadPars()
 {
-printf("CHANNEL %s PARAMS REREAD\n", fullPath().c_str());//XXX
+    //XXX printf("CHANNEL %s PARAMS REREAD\n", fullPath().c_str());//XXX
     delay_ = par("delay");
     error_ = par("error");
     datarate_ = par("datarate");

@@ -282,7 +282,7 @@ cDynamicExpression *cExpressionBuilder::process(ExpressionNode *node,
     delete [] elems;
     elems = NULL;
 
-std::cout << "    nedelement to expr returning: " << ret->toString() << "\n"; //XXX
+    //XXX printf("    nedelement to expr returning: %s\n", ret->toString().c_str());
 
     return ret;
 }

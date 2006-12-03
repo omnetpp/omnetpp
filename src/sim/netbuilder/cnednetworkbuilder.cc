@@ -59,7 +59,7 @@ static void dump(NEDElement *node)
 
 void cNEDNetworkBuilder::addParams(cComponent *component, cNEDDeclaration *decl)
 {
-    printf("adding params of %s to %s\n", decl->name(), component->fullPath().c_str()); //XXX
+    //XXX printf("adding params of %s to %s\n", decl->name(), component->fullPath().c_str()); //XXX
 
     // recursively add and assign super types' parameters
     if (decl->numExtendsNames() > 0)
@@ -171,7 +171,7 @@ void cNEDNetworkBuilder::doParams(cComponent *component, ParametersNode *paramsN
                 value->setIsInput(true);
                 value->setIsVolatile(paramNode->getIsVolatile());
             }
-            printf("   +++ adding param %s\n", paramName);
+            //XXX printf("   +++ adding param %s\n", paramName);
             component->addPar(value);
         }
     }
@@ -227,7 +227,7 @@ cModule *cNEDNetworkBuilder::_submodule(cModule *, const char *submodname, int i
 
 void cNEDNetworkBuilder::buildInside(cModule *modp, cNEDDeclaration *decl)
 {
-    printf("started buildinside of %s\n", modp->fullPath().c_str()); //XXX
+    //XXX printf("started buildinside of %s\n", modp->fullPath().c_str()); //XXX
     // set display string
 //FIXME    setBackgroundDisplayString(modp);
 
@@ -244,7 +244,7 @@ void cNEDNetworkBuilder::buildInside(cModule *modp, cNEDDeclaration *decl)
        cModule *m = submod();
        m->buildInside();
     }
-    printf("done buildinside of %s\n", modp->fullPath().c_str()); //XXX
+    //XXX printf("done buildinside of %s\n", modp->fullPath().c_str()); //XXX
 }
 
 void cNEDNetworkBuilder::buildRecursively(cModule *modp, cNEDDeclaration *decl)
@@ -263,7 +263,7 @@ void cNEDNetworkBuilder::buildRecursively(cModule *modp, cNEDDeclaration *decl)
 
 void cNEDNetworkBuilder::addSubmodulesAndConnections(cModule *modp)
 {
-    printf("  adding submodules and connections of decl %s to %s\n", currentDecl->name(), modp->fullPath().c_str()); //XXX
+    //XXX printf("  adding submodules and connections of decl %s to %s\n", currentDecl->name(), modp->fullPath().c_str()); //XXX
     //dump(currentDecl->getTree()); XXX
 
     SubmodulesNode *submods = currentDecl->getSubmodulesNode();
@@ -290,7 +290,7 @@ void cNEDNetworkBuilder::addSubmodulesAndConnections(cModule *modp)
     if ((!conns || !conns->getAllowUnconnected()) && !superTypeAllowsUnconnected())
         modp->checkInternalConnections();
 
-    printf("  done adding submodules and connections of decl %s to %s\n", currentDecl->name(), modp->fullPath().c_str()); //XXX
+    //XXX printf("  done adding submodules and connections of decl %s to %s\n", currentDecl->name(), modp->fullPath().c_str()); //XXX
 }
 
 bool cNEDNetworkBuilder::superTypeAllowsUnconnected() const
@@ -499,11 +499,11 @@ void cNEDNetworkBuilder::doLoopOrCondition(cModule *modp, NEDElement *loopOrCond
         {
             // do the body of the "if": either further "for"'s and "if"'s, or
             // the connection(group) itself that we are children of.
-            printf("---if: true, doing body\n"); //XXX
+            //XXX printf("---if: true, doing body\n"); //XXX
             doConnOrConnGroupBody(modp, loopOrCondition->getParent(), loopOrCondition->getNextSibling());
-            printf("---endif\n"); //XXX
+            //XXX printf("---endif\n"); //XXX
         }
-        else printf("---if: FALSE\n"); //XXX
+        //XXX else printf("---if: FALSE\n"); //XXX
     }
     else if (loopOrCondition->getTagCode()==NED_LOOP)
     {
@@ -512,7 +512,7 @@ void cNEDNetworkBuilder::doLoopOrCondition(cModule *modp, NEDElement *loopOrCond
         long end = evaluateAsLong(findExpression(loop, "to-value"), modp, false);
 
         // do loop
-        printf("---for %s=%ld..%ld\n", loop->getParamName(), start, end); //XXX
+        //XXX printf("---for %s=%ld..%ld\n", loop->getParamName(), start, end); //XXX
         long& i = NEDSupport::LoopVar::pushVar(loop->getParamName());
         for (i=start; i<=end; i++)
         {
@@ -520,7 +520,7 @@ void cNEDNetworkBuilder::doLoopOrCondition(cModule *modp, NEDElement *loopOrCond
             // the connection(group) itself that we are children of.
             doConnOrConnGroupBody(modp, loopOrCondition->getParent(), loopOrCondition->getNextSibling());
         }
-        printf("---endfor %s\n", loop->getParamName()); //XXX
+        //XXX printf("---endfor %s\n", loop->getParamName()); //XXX
         NEDSupport::LoopVar::popVar();
     }
     else
@@ -559,7 +559,7 @@ void cNEDNetworkBuilder::doAddConnection(cModule *modp, ConnectionNode *conn)
                                      conn->getDestGate(), findExpression(conn, "dest-gate-index"),
                                      conn->getDestGatePlusplus());
 
-    printf("    creating connection: %s --> %s\n", srcg->fullPath().c_str(), destg->fullPath().c_str());
+    //XXX printf("    creating connection: %s --> %s\n", srcg->fullPath().c_str(), destg->fullPath().c_str());
 
     // check directions
     cGate *errg = NULL;

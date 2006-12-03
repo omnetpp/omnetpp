@@ -137,7 +137,7 @@ int cComponent::findPar(const char *parname) const
 
 void cComponent::readParams()
 {
-    printf("  readParams of %s:\n", fullPath().c_str());//XXX
+    //XXX printf("  readParams of %s:\n", fullPath().c_str());//XXX
     int n = params();
     for (int i=0; i<n; i++)
         par(i).read();
