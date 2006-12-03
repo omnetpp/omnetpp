@@ -41,7 +41,7 @@ using std::string;
 
 Register_Class(cMsgPar);
 
-char *cMsgPar::possibletypes = "SBLDFITP";
+char *cMsgPar::possibletypes = "SBLDFTP";
 
 static const char *typeName(char typechar)
 {
@@ -59,19 +59,20 @@ static const char *typeName(char typechar)
     }
 }
 
-// constructors
-cMsgPar::cMsgPar(const char *name) : cOwnedObject( name )
+cMsgPar::cMsgPar(const char *name) : cOwnedObject(name)
 {
     tkownership = false;
     changedflag = false;
-    typechar = 'L'; lng.val = 0L;
+    typechar = 'L';
+    lng.val = 0L;
 }
 
 cMsgPar::cMsgPar(const cMsgPar& par) : cOwnedObject()
 {
     tkownership = false;
     changedflag = false;
-    typechar = 'L'; lng.val = 0L;
+    typechar = 'L';
+    lng.val = 0L;
 
     setName( par.name() );
     cMsgPar::operator=(par);
@@ -81,7 +82,8 @@ cMsgPar::cMsgPar(const char *name, cMsgPar& other) : cOwnedObject(name)
 {
     tkownership = false;
     changedflag = false;
-    typechar = 'L'; lng.val = 0L;
+    typechar = 'L';
+    lng.val = 0L;
 
     setName(name);
     operator=(other);
@@ -111,7 +113,7 @@ void cMsgPar::deleteOld()
             if (ptr.delfunc)
                 ptr.delfunc(ptr.ptr);
             else
-                delete [] (char *)ptr.ptr;  // delete void* is no longer legal :-(
+                delete [] (char *)ptr.ptr;  // cast because delete void* is not legal
         }
     }
     else if (typechar=='O')
@@ -195,8 +197,8 @@ void cMsgPar::netPack(cCommBuffer *buffer)
 
     // For error checking & handling
     if (typechar != 'S' && typechar != 'L' && typechar != 'D'
-        && typechar != 'F' && typechar != 'T'
-        && typechar != 'P' && typechar != 'O' && typechar != 'M')
+        && typechar != 'F' && typechar != 'T' && typechar != 'P'
+        && typechar != 'O' && typechar != 'M')
     {
         throw new cRuntimeError(this,"netPack: unsupported type '%c'",typechar);
     }
@@ -332,8 +334,7 @@ void cMsgPar::netUnpack(cCommBuffer *buffer)
 #endif
 }
 
-//-------------------------------------------------------------------------
-// set/get flags
+//----
 
 char cMsgPar::type() const
 {
@@ -347,8 +348,7 @@ bool cMsgPar::changed()
      return ch;
 }
 
-//-----------------------------------------------------------------------
-// setXxxValue() funcs
+//----
 
 cMsgPar& cMsgPar::setStringValue(const char *s)
 {
@@ -524,8 +524,7 @@ void cMsgPar::configPointer( VoidDelFunc delfunc, VoidDupFunc dupfunc,
     ptr.itemsize = itemsize;
 }
 
-//------------------------------------------------------------------------
-// functions returning the stored value
+//----
 
 const char *cMsgPar::stringValue()
 {
@@ -655,8 +654,7 @@ bool cMsgPar::equalsTo(cMsgPar *par)
     }
 }
 
-//------------------------------------------------------------------------
-// misc funcs
+//----
 
 void cMsgPar::beforeChange()
 {
@@ -706,13 +704,6 @@ string cMsgPar::getAsText() const
        default : return string("???");
     }
 }
-
-/*-------------------------------
- parse() - (for internal use only) Tries to interpret text as
- a 'tp' typed value. tp=='?' means that even type is to be determined.
- On success, cMsgPar is updated and true is returned, otherwise
- it returns false. No error message is ever generated.
-----------------------------*/
 
 static bool parseQuotedString(string& str, const char *&s)
 {
@@ -934,12 +925,6 @@ double cMsgPar::fromstat()
 
 cMsgPar& cMsgPar::operator=(const cMsgPar& val)
 {
-    //
-    // NOTE (duplicate of Doxygen comment in cpar.h):
-    //
-    // This function copies the 'val' object into this object
-    //
-
     if (this==&val) return *this;
 
     beforeChange();
@@ -991,7 +976,7 @@ int cMsgPar::cmpbyvalue(cOwnedObject *one, cOwnedObject *other)
 
 void cMsgPar::convertToConst ()
 {
-    if (strchr("FT", typechar)) // if type is any or F,T,I...
+    if (strchr("FT", typechar))
     {
        double d = doubleValue();
        setDoubleValue(d);

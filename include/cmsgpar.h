@@ -40,16 +40,16 @@ class  cXMLElement;
  *
  * @ingroup SimCore
  */
-class SIM_API cMsgPar : public cOwnedObject   // FIXME simplify and DEPRECATE this class!!!
+class SIM_API cMsgPar : public cOwnedObject
 {
   protected:
     static char *possibletypes;
   private:
-    char typechar;     // S/B/L/D/F/T/X/C/P/O
+    char typechar;     // S/B/L/D/F/T/P/O
     bool changedflag;
     bool tkownership;
 
-    union {    // Take care of 'operator=()' when changing this!!!
+    union {
        struct { bool sht; char *str;            } ls;   // S:long string
        struct { bool sht; char str[SHORTSTR+1]; } ss;   // S:short str
        struct { long val;                       } lng;  // L:long,B:bool
@@ -400,7 +400,7 @@ class SIM_API cMsgPar : public cOwnedObject   // FIXME simplify and DEPRECATE th
      * cMsgPar is updated with the new value and true is returned,
      * otherwise the function returns false. No error message is generated.
      */
-    virtual bool setFromText(const char *text, char type='?');  // FIXME remove this... no one uses it
+    virtual bool setFromText(const char *text, char type='?');
     //@}
 
     /** @name Overloaded assignment and conversion operators. */
@@ -555,16 +555,12 @@ class SIM_API cMsgPar : public cOwnedObject   // FIXME simplify and DEPRECATE th
      * Equivalent to xmlValue().
      */
     operator cXMLElement *() {return xmlValue();}
-
     //@}
 
     /** @name Compare function */
     //@{
-
     /**
      * Compares two cMsgPars by their value if they are numeric.
-     * This function can be used to sort cMsgPar objects in a priority
-     * queue.
      */
     static int cmpbyvalue(cOwnedObject *one, cOwnedObject *other);
     //@}
