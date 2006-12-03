@@ -326,10 +326,10 @@ class SIM_API cDynamicExpression : public cExpression
     virtual bool parse(const char *text);
 
     /**
-     * Returns true if the expression always yields the same value
-     * independent of component context, random number generators, etc.
+     * Returns true if the expression is just a literal (or equivalent to one,
+     * like "2+2").
      */
-    virtual bool isConstant() const;
+    virtual bool isAConstant() const;
     //@}
 };
 

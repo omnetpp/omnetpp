@@ -290,7 +290,7 @@ cDynamicExpression *cExpressionBuilder::process(ExpressionNode *node,
 void cExpressionBuilder::assign(cParValue *par, cDynamicExpression *expr)
 {
     par->setExpression(expr);
-    if (expr->isConstant())
+    if (expr->isAConstant())
         par->convertToConst(NULL); // optimization: store as a constant value instead of an expression
 }
 

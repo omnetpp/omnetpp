@@ -647,24 +647,20 @@ bool cDynamicExpression::parse(const char *text)
     return true;
 }
 
-bool cDynamicExpression::isConstant() const
+bool cDynamicExpression::isAConstant() const
 {
     for (int i=0; i<nelems; i++)
     {
         switch(elems[i].type)
         {
-            case Elem::CPAR:
-            case Elem::MATHFUNC:
-            case Elem::NEDFUNC:
-            case Elem::FUNCTOR:
-            case Elem::CONSTSUBEXPR:
-                return false;
             case Elem::BOOL:
             case Elem::DBL:
             case Elem::STR:
             case Elem::XML:
             case Elem::OP:
-                ; // nop
+                continue; //OK
+            default:
+                return false;
         }
     }
     return true;

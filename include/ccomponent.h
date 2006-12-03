@@ -43,7 +43,7 @@ class SIM_API cComponent : public cDefaultList // noncopyable
 
     short paramvsize;
     short numparams;
-    cPar *paramv;  // array of cPar objects
+    cPar *paramv;  // array of cPar objects   FIXME preallocate with the right size!!!
 
   public:
     // internal: currently used by Cmdenv
