@@ -41,7 +41,9 @@ class SIM_API cComponent : public cDefaultList // noncopyable
     int *rngmap;       // maps local RNG numbers (may be NULL if rngmapsize==0)
     bool ev_enabled;   // if output from ev<< is enabled   FIXME utilize cOwnedObject::flags
 
-    std::vector<cPar> paramv;  // stores the parameters of this component
+    short paramvsize;
+    short numparams;
+    cPar *paramv;  // array of cPar objects
 
   public:
     // internal: currently used by Cmdenv
@@ -56,11 +58,14 @@ class SIM_API cComponent : public cDefaultList // noncopyable
     virtual void setComponentType(cComponentType *componenttype);
 
     // internal: adds a new parameter to the component; called as part of the creation process
-//FIXME ADDING NEW PARAMETERS AT RUNTIME HAS TO BE PROHIBITED!!!!
+    //XXX consider locking against addPar() during runtime
     virtual void addPar(cParValue *value);
 
     // internal: invokes the read() method on all unset parameters
     virtual void readParams();
+
+    // internal: reallocates paramv (size must be >= numparams)
+    void reallocParamv(int size);
 
   protected:
     /** @name Initialization, finish and parameter change hooks.
@@ -238,7 +243,7 @@ class SIM_API cComponent : public cDefaultList // noncopyable
     /**
      * Returns total number of the component's parameters.
      */
-    virtual int params() const  {return paramv.size();} //XXX rename to numParams
+    virtual int params() const  {return numparams;} //XXX rename to numParams
 
     /**
      * Returns reference to the parameter identified with its

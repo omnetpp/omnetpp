@@ -37,9 +37,9 @@ class cComponent;
  *
  * @ingroup SimCore
  */
-class SIM_API cPar : public cObject  //turn into cObject; delegate name to p! add ownercomponent!
+class SIM_API cPar : public cObject
 {
-  friend class cComponent;
+    friend class cComponent;
   private:
     cComponent *ownercomponent;
     cParValue *p;
@@ -53,7 +53,12 @@ class SIM_API cPar : public cObject  //turn into cObject; delegate name to p! ad
     };
 
   private:
-    explicit cPar(cComponent *component, cParValue *p);
+    cPar() {ownercomponent = NULL; p = NULL;}
+    // internal, called from cComponent
+    void assign(cComponent *ownercomponent, cParValue *p);
+    // internal
+    void moveto(cPar& other);
+
     // internal utility function
     void copyIfShared();
     // internal: called each time after the value of this object changes.
@@ -62,7 +67,7 @@ class SIM_API cPar : public cObject  //turn into cObject; delegate name to p! ad
     void doReadValue();
 
   public:
-    // internal, for netbuilder
+    // internal, called from network building code
     void reassign(cParValue *p);
 
   public:

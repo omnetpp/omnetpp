@@ -27,20 +27,41 @@
 #include "ccommbuffer.h"
 #endif
 
-cPar::cPar(cComponent *component, cParValue *p)
-{
-    this->ownercomponent = component;
-    this->p = p;
-printf("   cPar ctor, '%s' . %p  '%s'\n", component->fullPath().c_str(), p, p ? p->name() : "null");
-}
+#define PRINT(msg)  printf("   cPar '%s' . %p '%s' : %s\n", ownercomponent ? ownercomponent->fullPath().c_str() : "NULL", this->p, this->p ? this->p->name() : "NULL", msg);
 
 cPar::~cPar()
 {
-printf("   cPar dtor DEFUNCT, '%s' . %p '%s'\n", ownercomponent->fullPath().c_str(), p, p ? p->name() : "null");
-/*FIXME add back later
-    if (!p->isShared())
+    PRINT("dtor");
+    if (p && !p->isShared())
         delete p;
-*/
+}
+
+void cPar::assign(cComponent *component, cParValue *p)
+{
+    PRINT("assign");
+    ASSERT(!this->p);
+    this->ownercomponent = component;
+    this->p = p;
+    PRINT("assigned");
+}
+
+void cPar::reassign(cParValue *p)
+{
+    PRINT("reassign");
+    ASSERT(this->p && p);
+    if (!this->p->isShared())
+        delete this->p;
+    this->p = p;
+    PRINT("reassigned");
+}
+
+void cPar::moveto(cPar& other)
+{
+    PRINT("moveto");
+    other.ownercomponent = ownercomponent;
+    other.p = p;
+    p = NULL;
+    PRINT("moveto done");
 }
 
 const char *cPar::name() const
@@ -65,15 +86,6 @@ void cPar::copyIfShared()
         p = p->dup();
         p->setIsShared(false);
     }
-}
-
-void cPar::reassign(cParValue *newp)
-{
-    printf("   cPar reassign, '%s' . %p '%s', new='%s'\n", ownercomponent->fullPath().c_str(), p, p ? p->name() : "null", newp ? newp->name() : "null"); //XXX
-    ASSERT(newp);
-    if (!p->isShared())
-        delete p;
-    p = newp;
 }
 
 cObject *cPar::owner() const
@@ -302,7 +314,6 @@ bool cPar::parse(const char *text)
 }
 
 /*XXX remove
-//FIXME shouldn't this function go out into cEnvir??? it only calls public cPar methods!!!
 void cPar::doReadValue()
 {
     // get it from ini file

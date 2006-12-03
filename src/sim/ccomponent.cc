@@ -27,13 +27,14 @@ cComponent::cComponent(const char *name) : cDefaultList(name)
     rngmap = 0;
     ev_enabled = true;
 
-
-    paramv.reserve(20); //FIXME temporary solution -- should use plain cPar[] and manage reallocs ourselves
+    paramvsize = numparams = 0;
+    paramv = NULL;
 }
 
 cComponent::~cComponent()
 {
     delete [] rngmap;
+    delete [] paramv;
 }
 
 const char *cComponent::className() const
@@ -45,7 +46,7 @@ const char *cComponent::className() const
 
 void cComponent::forEachChild(cVisitor *v)
 {
-    for (int i=0; i<paramv.size(); i++)
+    for (int i=0; i<numparams; i++)
         v->visit(&paramv[i]);
 
     cDefaultList::forEachChild(v);
@@ -73,7 +74,7 @@ void cComponent::finish()
 void cComponent::handleParameterChange(const char *)
 {
     // Called when a module parameter changes.
-    // Can be redefined by user.
+    // Can be redefined by the user.
 }
 
 void cComponent::callInitialize()
@@ -83,22 +84,36 @@ void cComponent::callInitialize()
         ++stage;
 }
 
-
 cProperties *cComponent::properties()
 {
     return cComponentType::getPropertiesFor(this);
 }
 
+void cComponent::reallocParamv(int size)
+{
+    ASSERT(size>=numparams);
+    if (size!=(short)size)
+        throw new cRuntimeError(this, "reallocParamv(%d): at most %d parameters allowed", size, 0x7fff);
+    cPar *newparamv = new cPar[size];
+    for (int i=0; i<numparams; i++)
+        paramv[i].moveto(newparamv[i]);
+    delete [] paramv;
+    paramv = newparamv;
+    paramvsize = (short)size;
+}
+
 void cComponent::addPar(cParValue *value)
 {
     if (findPar(value->name())>=0)
-       throw new cRuntimeError(this, "addPar(): Parameter %s.%s already present", fullPath().c_str(), value->name());
-    paramv.push_back(cPar(this, value));
+        throw new cRuntimeError(this, "addPar(): Parameter %s.%s already present", fullPath().c_str(), value->name());
+    if (numparams==paramvsize)
+        reallocParamv(paramvsize+1);
+    paramv[numparams++].assign(this, value);
 }
 
 cPar& cComponent::par(int k)
 {
-    if (k<0 || k>=(int)paramv.size())
+    if (k<0 || k>=numparams)
         throw new cRuntimeError(this, "parameter index %d out of range", k);
     return paramv[k];
 }
