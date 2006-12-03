@@ -27,41 +27,33 @@
 #include "ccommbuffer.h"
 #endif
 
-#define PRINT(msg)  printf("   cPar '%s' . %p '%s' : %s\n", ownercomponent ? ownercomponent->fullPath().c_str() : "NULL", this->p, this->p ? this->p->name() : "NULL", msg);
 
 cPar::~cPar()
 {
-    PRINT("dtor");
     if (p && !p->isShared())
         delete p;
 }
 
-void cPar::assign(cComponent *component, cParValue *p)
+void cPar::assign(cComponent *component, cParValue *newp)
 {
-    PRINT("assign");
-    ASSERT(!this->p);
-    this->ownercomponent = component;
-    this->p = p;
-    PRINT("assigned");
+    ASSERT(!p && newp);
+    ownercomponent = component;
+    p = newp;
 }
 
-void cPar::reassign(cParValue *p)
+void cPar::reassign(cParValue *newp)
 {
-    PRINT("reassign");
-    ASSERT(this->p && p);
-    if (!this->p->isShared())
-        delete this->p;
-    this->p = p;
-    PRINT("reassigned");
+    ASSERT(p && newp);
+    if (!p->isShared())
+        delete p;
+    p = newp;
 }
 
 void cPar::moveto(cPar& other)
 {
-    PRINT("moveto");
     other.ownercomponent = ownercomponent;
     other.p = p;
     p = NULL;
-    PRINT("moveto done");
 }
 
 const char *cPar::name() const
@@ -312,50 +304,6 @@ bool cPar::parse(const char *text)
         }
     }
 }
-
-/*XXX remove
-void cPar::doReadValue()
-{
-    // get it from ini file
-    std::string str = ev.getParameter(simulation.runNumber(), fullPath().c_str());
-    if (!str.empty())
-    {
-        bool success = parse(str.c_str());
-        if (!success)
-            throw new cRuntimeError("Wrong value `%s' for parameter `%s'", str.c_str(), fullPath().c_str());
-        return;
-    }
-
-    // maybe we should use default value
-    if (p->hasValue() && ev.getParameterUseDefault(simulation.runNumber(), fullPath().c_str()))
-        return;
-
-    // otherwise, we have to ask the user
-    bool success = false;
-    while (!success)
-    {
-        cProperties *props = properties();
-        cProperty *prop = props->get("prompt");
-        std::string prompt = prop ? prop->value(cProperty::DEFAULTKEY) : "";
-        std::string reply;
-        if (!prompt.empty())
-            reply = ev.gets(prompt.c_str(), toString().c_str());
-        else
-            reply = ev.gets((std::string("Enter parameter `")+fullPath()+"':").c_str(), toString().c_str());
-
-        try {
-            success = false;
-            success = parse(reply.c_str());
-            if (!success)
-                throw new cRuntimeError("Syntax error, please try again.");
-        }
-        catch (cException *e) {
-            ev.printfmsg("%s", e->message());
-            delete e;
-        }
-    }
-}
-*/
 
 //---
 
