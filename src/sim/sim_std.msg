@@ -412,11 +412,8 @@ class cMsgPar extends cOwnedObject
         @omitGetVerb(true);
         string value @getter(getAsText) @setter(setFromText) @editable @hint(parameter value);
         char type @enum(cPar_Type) @hint(parameter type);
-        string prompt @editable @hint(displayed when an input parameter is to be entered by the user);
         bool isNumeric @group(flags) @hint(whether parameter is of numeric type);
         bool isConstant @group(flags) @hint(whether the parameter was declared const);
-        bool isInput @setter(setInput) @editable @group(flags) @hint(whether parameter value is to be read from the user);
-        bool isRedirected @group(flags) @hint(whether this parameter is a "link" to another cPar object);
 }
 
 class cProperties extends cObject

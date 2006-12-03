@@ -1,5 +1,5 @@
 //=========================================================================
-//  CMESSAGEPAR.CC - part of
+//  CMSGPAR.CC - part of
 //
 //                  OMNeT++/OMNEST
 //           Discrete System Simulation in C++
@@ -63,14 +63,14 @@ static const char *typeName(char typechar)
 cMsgPar::cMsgPar(const char *name) : cOwnedObject( name )
 {
     tkownership = false;
-    changedflag = inputflag = false;
+    changedflag = false;
     typechar = 'L'; lng.val = 0L;
 }
 
 cMsgPar::cMsgPar(const cMsgPar& par) : cOwnedObject()
 {
     tkownership = false;
-    changedflag = inputflag = false;
+    changedflag = false;
     typechar = 'L'; lng.val = 0L;
 
     setName( par.name() );
@@ -80,7 +80,7 @@ cMsgPar::cMsgPar(const cMsgPar& par) : cOwnedObject()
 cMsgPar::cMsgPar(const char *name, cMsgPar& other) : cOwnedObject(name)
 {
     tkownership = false;
-    changedflag = inputflag = false;
+    changedflag = false;
     typechar = 'L'; lng.val = 0L;
 
     setName(name);
@@ -90,8 +90,6 @@ cMsgPar::cMsgPar(const char *name, cMsgPar& other) : cOwnedObject(name)
 cMsgPar::~cMsgPar()
 {
     beforeChange();
-    if (isRedirected())
-        cancelRedirection();
     deleteOld();
 }
 
@@ -204,9 +202,7 @@ void cMsgPar::netPack(cCommBuffer *buffer)
     }
 
     buffer->pack(typechar);
-    buffer->pack(inputflag);
     buffer->pack(changedflag);
-    buffer->pack(promptstr.buffer());
 
     cMathFunction *ff;
     switch (typechar)
@@ -274,9 +270,7 @@ void cMsgPar::netUnpack(cCommBuffer *buffer)
     cOwnedObject::netUnpack(buffer);
 
     buffer->unpack(typechar);
-    buffer->unpack(inputflag);
     buffer->unpack(changedflag);
-    buffer->unpack(promptstr);
 
     cMathFunction *ff;
     switch (typechar)
@@ -346,31 +340,11 @@ char cMsgPar::type() const
      return typechar;
 }
 
-const char *cMsgPar::prompt()
-{
-     return promptstr.c_str();
-}
-
-bool cMsgPar::isInput() const
-{
-     return inputflag;
-}
-
 bool cMsgPar::changed()
 {
      bool ch = changedflag;
      changedflag=false;
      return ch;
-}
-
-void cMsgPar::setPrompt(const char *s)
-{
-     promptstr = s;     // string's operator=() does delete+opp_strdup()
-}
-
-void cMsgPar::setInput(bool ip)
-{
-     inputflag = ip;
 }
 
 //-----------------------------------------------------------------------
@@ -381,7 +355,6 @@ cMsgPar& cMsgPar::setStringValue(const char *s)
      beforeChange();
      deleteOld();
      typechar = 'S';
-     inputflag=false;
      if (!s)
          {ls.sht=true; *ss.str='\0';}
      else if ((ls.sht=(strlen(s)<=SHORTSTR))!=0)
@@ -398,7 +371,6 @@ cMsgPar& cMsgPar::setBoolValue(bool b)
     deleteOld();
     lng.val = b;
     typechar = 'B';
-    inputflag=false;
     afterChange();
     return *this;
 }
@@ -409,7 +381,6 @@ cMsgPar& cMsgPar::setLongValue(long l)
     deleteOld();
     lng.val = l;
     typechar = 'L';
-    inputflag=false;
     afterChange();
     return *this;
 }
@@ -420,7 +391,6 @@ cMsgPar& cMsgPar::setDoubleValue(double d)
     deleteOld();
     dbl.val = d;
     typechar = 'D';
-    inputflag=false;
     afterChange();
     return *this;
 }
@@ -432,7 +402,6 @@ cMsgPar& cMsgPar::setDoubleValue(MathFuncNoArg f)
     func.f = (MathFunc)f;
     func.argc=0;
     typechar = 'F';
-    inputflag=false;
     afterChange();
     return *this;
 }
@@ -445,7 +414,6 @@ cMsgPar& cMsgPar::setDoubleValue(MathFunc1Arg f, double p1)
     func.argc=1;
     func.p1 = p1;
     typechar = 'F';
-    inputflag=false;
     afterChange();
     return *this;
 }
@@ -459,7 +427,6 @@ cMsgPar& cMsgPar::setDoubleValue(MathFunc2Args f, double p1, double p2)
     func.p1 = p1;
     func.p2 = p2;
     typechar = 'F';
-    inputflag=false;
     afterChange();
     return *this;
 }
@@ -474,7 +441,6 @@ cMsgPar& cMsgPar::setDoubleValue(MathFunc3Args f, double p1, double p2, double p
     func.p2 = p2;
     func.p3 = p3;
     typechar = 'F';
-    inputflag=false;
     afterChange();
     return *this;
 }
@@ -490,7 +456,6 @@ cMsgPar& cMsgPar::setDoubleValue(MathFunc4Args f, double p1, double p2, double p
     func.p3 = p3;
     func.p4 = p4;
     typechar = 'F';
-    inputflag=false;
     afterChange();
     return *this;
 }
@@ -506,7 +471,6 @@ cMsgPar& cMsgPar::setDoubleValue(cStatistic *res)
     if (takeOwnership())
        take(res);
     typechar = 'T';
-    inputflag=false;
     afterChange();
     return *this;
 }
@@ -524,7 +488,6 @@ cMsgPar& cMsgPar::setPointerValue(void *_ptr)
         typechar = 'P';
     }
     ptr.ptr = _ptr;
-    inputflag=false;
     afterChange();
     return *this;
 }
@@ -537,7 +500,6 @@ cMsgPar& cMsgPar::setObjectValue(cOwnedObject *_obj)
     if (takeOwnership())
         take( _obj );
     typechar = 'O';
-    inputflag=false;
     afterChange();
     return *this;
 }
@@ -548,7 +510,6 @@ cMsgPar& cMsgPar::setXMLValue(cXMLElement *node)
     deleteOld();
     xmlp.node = node;
     typechar = 'M';
-    inputflag=false;
     afterChange();
     return *this;
 }
@@ -568,8 +529,6 @@ void cMsgPar::configPointer( VoidDelFunc delfunc, VoidDupFunc dupfunc,
 
 const char *cMsgPar::stringValue()
 {
-    if (isInput())
-        read();
     if (typechar!='S')
         throw new cRuntimeError(this,eBADCAST,typeName(typechar),typeName('S'));
     return ss.sht ? ss.str : ls.str;
@@ -583,8 +542,6 @@ const char *cMsgPar::stringValue()
 
 bool cMsgPar::boolValue()
 {
-    if (isInput()) read();
-
     if (typechar=='B' || typechar=='L')
         return lng.val!=0;
     else if (isNumeric())
@@ -605,7 +562,6 @@ inline long _double_to_long(double d)
 
 long cMsgPar::longValue()
 {
-    if (isInput()) read();
     if (typechar=='L' || typechar=='B')
         return lng.val;
     else if (isNumeric())
@@ -616,7 +572,6 @@ long cMsgPar::longValue()
 
 double cMsgPar::doubleValue()
 {
-    if (isInput()) read();
     if (typechar=='B' || typechar=='L')
         return (double)lng.val;
     else if (typechar=='D')
@@ -635,7 +590,6 @@ double cMsgPar::doubleValue()
 
 void *cMsgPar::pointerValue()
 {
-    if (isInput()) read();
     if (typechar=='P')
         return ptr.ptr;
     else
@@ -644,7 +598,6 @@ void *cMsgPar::pointerValue()
 
 cOwnedObject *cMsgPar::objectValue()
 {
-    if (isInput()) read();
     if (typechar=='O')
         return obj.obj;
     else
@@ -653,7 +606,6 @@ cOwnedObject *cMsgPar::objectValue()
 
 cXMLElement *cMsgPar::xmlValue()
 {
-    if (isInput()) read();
     if (typechar=='M')
         return xmlp.node;
     else
@@ -972,30 +924,6 @@ bool cMsgPar::setfunction(char *text)
 }
 
 
-cMsgPar& cMsgPar::read()
-{
-    // ask the user
-    bool success;
-    do {
-        string reply;
-        if (!promptstr.empty())
-            reply = ev.gets(promptstr.c_str(), getAsText().c_str());
-        else
-            reply = ev.gets((string("Enter parameter `")+fullPath()+"':").c_str(), getAsText().c_str());
-
-        try {
-            success = false;
-            success = setFromText(reply.c_str(),'?');
-            if (!success)
-                throw new cRuntimeError("Syntax error, please try again.");
-        } catch (cException *e) {
-            ev.printfmsg("%s", e->message());
-            delete e;
-        }
-    } while (!success);
-    return *this;
-}
-
 double cMsgPar::fromstat()
 {
     if (typechar!='T')
@@ -1020,8 +948,6 @@ cMsgPar& cMsgPar::operator=(const cMsgPar& val)
     cOwnedObject::operator=(val);
     typechar = val.typechar;
     changedflag = val.changedflag;
-    inputflag = val.inputflag;
-    promptstr = val.promptstr;
 
     // this line is supposed to copy the whole data area.
     memcpy( &ss, &val.ss, Max(sizeof(ss), sizeof(func)) );

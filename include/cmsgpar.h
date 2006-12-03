@@ -1,5 +1,5 @@
 //==========================================================================
-//   CMESSAGEPAR.H  - part of
+//   CMSGPAR.H  - part of
 //                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
 //
@@ -12,8 +12,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __CMESSAGEPAR_H
-#define __CMESSAGEPAR_H
+#ifndef __CMSGPAR_H
+#define __CMSGPAR_H
 
 #include "cownedobject.h"
 #include "cfunction.h"
@@ -38,12 +38,6 @@ class  cXMLElement;
  *     - <b>P</b> pointer to cOwnedObject,
  *     - <b>M</b> XML element (pointer to a cXMLElement)
  *
- * For all types, an input flag can be set. In this case,
- * the user will be asked to enter the value when the object's value
- * is first used. The prompt string can also be specified
- * for cMsgPar. If no prompt string is given, the object's
- * name will be displayed as prompt text.
- *
  * @ingroup SimCore
  */
 class SIM_API cMsgPar : public cOwnedObject   // FIXME simplify and DEPRECATE this class!!!
@@ -51,11 +45,9 @@ class SIM_API cMsgPar : public cOwnedObject   // FIXME simplify and DEPRECATE th
   protected:
     static char *possibletypes;
   private:
-    char typechar;     // S/B/L/D/F/T/X/C/P/O/I
-    bool inputflag;
+    char typechar;     // S/B/L/D/F/T/X/C/P/O
     bool changedflag;
     bool tkownership;
-    opp_string promptstr; // prompt text used when the value is being input
 
     union {    // Take care of 'operator=()' when changing this!!!
        struct { bool sht; char *str;            } ls;   // S:long string
@@ -69,7 +61,7 @@ class SIM_API cMsgPar : public cOwnedObject   // FIXME simplify and DEPRECATE th
                 VoidDelFunc delfunc;
                 VoidDupFunc dupfunc;
                 size_t itemsize;                } ptr;  // P:void* pointer
-       struct { cOwnedObject *obj;                   } obj;  // O:object pointer
+       struct { cOwnedObject *obj;              } obj;  // O:object pointer
        struct { cXMLElement *node;              } xmlp; // M:XML element pointer
     };
 
@@ -344,7 +336,7 @@ class SIM_API cMsgPar : public cOwnedObject   // FIXME simplify and DEPRECATE th
     cXMLElement *xmlValue();
     //@}
 
-    /** @name Type, prompt text, input flag, change flag. */
+    /** @name Type, change flag. */
     //@{
 
     /**
@@ -363,27 +355,6 @@ class SIM_API cMsgPar : public cOwnedObject   // FIXME simplify and DEPRECATE th
      * a long, double, boolean or string constant.
      */
     bool isConstant() const;
-
-    /**
-     * Returns the prompt text or NULL.
-     */
-    const char *prompt() ;
-
-    /**
-     * Sets the prompt text.
-     */
-    void setPrompt(const char *s);
-
-    /**
-     * Sets (ip=true) or clears (ip=false) the input flag.
-     */
-    void setInput(bool ip);
-
-    /**
-     * Returns true if the parameter is of input type (the input
-     * flag is set).
-     */
-    bool isInput() const;
 
     /**
      * Returns true if the value has changed since the last changed() call.
