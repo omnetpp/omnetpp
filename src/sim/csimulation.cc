@@ -32,6 +32,7 @@
 #include "ccomponenttype.h"
 #include "cstat.h"
 #include "cexception.h"
+#include "cparvalue.h"
 
 #ifdef WITH_PARSIM
 #include "ccommbuffer.h"
@@ -113,8 +114,10 @@ void cSimulation::shutdown()
 {
     // deleteNetwork() is better called before the dtor (which runs after main())
     deleteNetwork();
-    // let go of msgQueue (removeFromOwnershipTree() cannot be called)
+    // let go of msgQueue (removeFromOwnershipTree() cannot be called here)
     msgQueue.ownerp = NULL;
+
+    printf("cParValues created: total %ld\n", cParValue::totalParValueObjectCount()); //XXX
 
 #ifdef WITH_NETBUILDER
     cNEDLoader::clear();

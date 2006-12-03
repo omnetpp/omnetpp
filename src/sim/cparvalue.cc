@@ -24,13 +24,18 @@
 #include "ccommbuffer.h"
 #endif
 
+long cParValue::total_parvalue_objs;
+long cParValue::live_parvalue_objs;
 
 cParValue::cParValue()
 {
+    total_parvalue_objs++;
+    live_parvalue_objs++;
 }
 
 cParValue::~cParValue()
 {
+    live_parvalue_objs--;
 }
 
 cParValue& cParValue::operator=(const cParValue& other)

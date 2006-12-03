@@ -67,7 +67,7 @@ class SIM_API cDynamicExpression : public cExpression
         //  - cNEDFunction: function taking/returning StkValue (NEDFunction)
         //  - math operator (+-*/%^...)
         //
-        enum {UNDEF, BOOL, DBL, STR, XML, CPAR, MATHFUNC, NEDFUNC, FUNCTOR, OP, CONSTSUBEXPR} type;
+        enum Type {UNDEF, BOOL, DBL, STR, XML, CPAR, MATHFUNC, NEDFUNC, FUNCTOR, OP, CONSTSUBEXPR} type;
         union {
             bool b;
             double d;
@@ -324,6 +324,12 @@ class SIM_API cDynamicExpression : public cExpression
      * This may not be possible with all subclasses.
      */
     virtual bool parse(const char *text);
+
+    /**
+     * Returns true if the expression always yields the same value
+     * independent of component context, random number generators, etc.
+     */
+    virtual bool isConstant() const;
     //@}
 };
 

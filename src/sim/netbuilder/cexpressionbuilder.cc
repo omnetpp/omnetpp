@@ -289,8 +289,8 @@ cDynamicExpression *cExpressionBuilder::process(ExpressionNode *node,
 
 void cExpressionBuilder::assign(cParValue *par, cDynamicExpression *expr)
 {
-    //FIXME todo optimize: if it's a single constant, single XML value etc!
-
     par->setExpression(expr);
+    if (expr->isConstant())
+        par->convertToConst(NULL); // optimization: store as a constant value instead of an expression
 }
 

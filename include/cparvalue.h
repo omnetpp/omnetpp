@@ -28,8 +28,6 @@ class cComponent;
 
 
 /**
- * FIXME revise docu in the whole class!!!!!!
- *
  * cParValue is an abstract base class for storing the values of module
  * (or channel) parameters. cParValue supports several data types via subclasses:
  * cLongPar, cDoublePar, cBoolPar, cStringPar, cXMLPar.
@@ -47,6 +45,11 @@ class SIM_API cParValue : public cNamedObject
       FL_ISSHARED = 32,   // used by cPar only: whether this object is shared among multiple cPars
       FL_ISINPUT = 64     // used by cPar only: whether this is just a default value and real value will have to be asked from user or read from omnetpp.ini
     };
+
+  private:
+    // global variables for statistics
+    static long total_parvalue_objs;
+    static long live_parvalue_objs;
 
   public:
     typedef cPar::Type Type;
@@ -118,15 +121,14 @@ class SIM_API cParValue : public cNamedObject
     virtual bool isNumeric() const = 0;
 
     /**
-     * Returns true if this parameter is marked in the NED file as "function".
-     * This flag affects the operation of setExpression().
+     * Returns true if this parameter is marked in the NED file as "volatile".
      */
     virtual bool isVolatile() const {return flags & FL_ISVOLATILE;}
 
     /**
-     * Returns true if the stored value is a constant, anf false if it is
-     * an expression. (It is not examined whether the expression yields
-     * a constant value or not.)
+     * Returns true if the stored value is a constant, and false if it is
+     * an expression. (It is not examined whether the expression actually
+     * yields a constant value.)
      */
     virtual bool isConstant() const {return !(flags & FL_ISEXPR);}
 
@@ -209,30 +211,26 @@ class SIM_API cParValue : public cNamedObject
     virtual void setExpression(cExpression *e) = 0;
     //@}
 
-    /** @name Getter functions. Note that overloaded conversion operators also exist. */
+    /** @name Getter functions. */
     //@{
 
     /**
-     * Returns value as a boolean. The cParValue type must be bool (B) or a numeric type.
+     * Returns value as a boolean. The cParValue type must be BOOL.
      */
     virtual bool boolValue(cComponent *context) const = 0;
 
     /**
-     * Returns value as long. The cParValue type must be types long (L),
-     * double (D), Boolean (B), function (F), distribution (T),
-     * compiled expression (C) or expression (X).
+     * Returns value as long. The cParValue type must be LONG or DOUBLE.
      */
     virtual long longValue(cComponent *context) const = 0;
 
     /**
-     * Returns value as double. The cParValue type must be types long (L),
-     * double (D), function (F), Boolean (B), distribution (T),
-     * compiled expression (C) or expression (X).
+     * Returns value as long. The cParValue type must be LONG or DOUBLE.
      */
     virtual double doubleValue(cComponent *context) const = 0;
 
     /**
-     * Returns value as const char *. Only for string (S) type.
+     * Returns value as const char *. Only for STRING type.
      * This method may can only be invoked when the parameter's value is a
      * string constant and not the result of expression evaluation (otherwise
      * an error is thrown). This practically means this method cannot be used
@@ -247,7 +245,7 @@ class SIM_API cParValue : public cNamedObject
     virtual std::string stdstringValue(cComponent *context) const = 0;
 
     /**
-     * Returns value as pointer to cXMLElement. The cParValue type must be XML (M).
+     * Returns value as pointer to cXMLElement. The cParValue type must be XML.
      */
     virtual cXMLElement *xmlValue(cComponent *context) const = 0;
 
@@ -303,6 +301,32 @@ class SIM_API cParValue : public cNamedObject
      * without attempting to compare the values.
      */
     virtual bool equals(cParValue& other, cComponent *thiscontext, cComponent *othercontext);
+    //@}
+
+    /** @name Statistics. */
+    //@{
+    /**
+     * Returns the total number of objects created since the start of the program
+     * (or since the last reset). The counter is incremented by cOwnedObject constructor.
+     * Counter is <tt>signed</tt> to make it easier to detect if it overflows
+     * during very long simulation runs.
+     * May be useful for profiling or debugging memory leaks.
+     */
+    static long totalParValueObjectCount() {return total_parvalue_objs;}
+
+    /**
+     * Returns the number of objects that currently exist in the program.
+     * The counter is incremented by cOwnedObject constructor and decremented by
+     * the destructor.
+     * May be useful for profiling or debugging memory leaks.
+     */
+    static long liveParValueObjectCount() {return live_parvalue_objs;}
+
+    /**
+     * Reset counters used by totalObjectCount() and liveObjectCount().
+     * (Note that liveObjectCount() may go negative after a reset call.)
+     */
+    static void resetParValueObjectCounters()  {total_parvalue_objs=live_parvalue_objs=0L;}
     //@}
 };
 

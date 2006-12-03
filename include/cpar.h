@@ -58,7 +58,6 @@ class SIM_API cPar : public cObject
     void assign(cComponent *ownercomponent, cParValue *p);
     // internal
     void moveto(cPar& other);
-
     // internal utility function
     void copyIfShared();
     // internal: called each time after the value of this object changes.
@@ -128,8 +127,8 @@ class SIM_API cPar : public cObject
 
     /**
      * Returns true if the stored value is a constant, anf false if it is
-     * an expression. (It is not examined whether the expression yields
-     * a constant value or not.)
+     * an expression. (It is not examined whether the expression actually
+     * yields a constant value.)
      */
     bool isConstant() const;
 
@@ -274,8 +273,8 @@ class SIM_API cPar : public cObject
     std::string toString() const;
 
     /**
-     * Convert the value from string, and store the result.
-     * Returns true on success, false otherwise. No error message is generated.
+     * Converts the value from string, and stores the result.
+     * Returns true on success, false otherwise. No error is thrown.
      */
     bool parse(const char *text);
     //@}

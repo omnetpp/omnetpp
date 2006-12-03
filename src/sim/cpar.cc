@@ -75,6 +75,7 @@ void cPar::copyIfShared()
 {
     if (p->isShared())
     {
+        printf("%s DUP! ", fullPath().c_str()); //XXX
         p = p->dup();
         p->setIsShared(false);
     }
@@ -250,8 +251,8 @@ void cPar::read()
         p->setIsInput(false); // clear flag to avoid accidental rereads
     }
 
-    // convert non-volatile values to constant
-    if (!isVolatile())
+    // convert non-volatile expressions to constant
+    if (!p->isConstant() && !p->isVolatile())
         convertToConst();
 
     // convert CONST subexpressions into constants
