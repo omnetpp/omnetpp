@@ -272,23 +272,29 @@ void cPar::convertToConst()
 
 bool cPar::parse(const char *text)
 {
-    // try to share cParValue objects for values coming from the configuration.
-    // we use a map, indexed with "moduletypename:paramname:textualvalue".
-    // this is possible because because expr representation does not depend on the context
+    // Implementation note: we are trying to share cParValue objects for
+    // values coming from the configuration. This is possible because an
+    // expression's representation does not contain pointers to concrete
+    // modules or other parameters. The context is always passed in separately
+    // when the expression gets evaluated.
+    //    For sharing parameter values, we use a map stored in cComponentType,
+    // which we index with "parametername:textualvalue" as key. Per-componentType
+    // storage ensures that parameters of identical name but different types
+    // don't cause trouble.
+    //
     cComponentType *componentType = ownercomponent->componentType();
     std::string key = std::string(componentType->name()) + ":" + name() + ":" + text;
     cParValue *cachedValue = componentType->parValueCache()->get(key.c_str());
     if (cachedValue)
     {
         // an identical value found in the map -- use it
-        //XXX printf("       *** reusing %s ==> %s, cached %s\n", key.c_str(), text, it->second->toString().c_str());
         reassign(cachedValue);
         return true;
     }
     else
     {
-        // not found: parse text
-        cParValue *tmp = p->dup(); // get object with same type, name etc as original
+        // not found: clone existing parameter, then parse text into it
+        cParValue *tmp = p->dup();
         if (tmp->parse(text))
         {
             // successfully parsed: install it
