@@ -20,6 +20,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include "defs.h"
+#include "cobject.h"
 #include "cexception.h"
 
 typedef __int64 int64;
@@ -34,7 +35,7 @@ typedef unsigned int uint32;   //FIXME into defs.h or something???
  * 64-bit, so we always convert them to 64 bits. We don't try to convert
  * endianness, it would be too costly.
  */
-class SIM_API cHasher
+class SIM_API cHasher : noncopyable
 {
   private:
     uint32 value;
@@ -55,11 +56,6 @@ class SIM_API cHasher
      * Constructor.
      */
     cHasher() {ASSERT(sizeof(uint32)==4); ASSERT(sizeof(double)==8); value = 0;}
-
-    /**
-     * Destructor.
-     */
-    ~cHasher() {}
 
     /** @name Updating the hash */
     //@{
