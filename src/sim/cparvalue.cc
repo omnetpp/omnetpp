@@ -104,8 +104,12 @@ int cParValue::compare(const cParValue *other) const
     int res = strcmp(name(), other->name());
     if (res!=0)
         return res;
-    if (flags!=other->flags)
-        return flags < other->flags ? -1 : 1;
+
+    unsigned short flags2 = flags & ~FL_ISSHARED; // ignore "isShared" flag
+    unsigned short otherflags2 = other->flags & ~FL_ISSHARED;
+    if (flags2!=otherflags2)
+        return flags2 < otherflags2;
+
     if (type()!=other->type())
         return type() < other->type() ? -1 : 1;
     return 0;

@@ -33,9 +33,8 @@
  * std::vector<int> numbers;  // array to hold result
  *
  * cStringTokenizer tokenizer(str);
- * const char *token;
- * while ((token = tokenizer.nextToken())!=NULL)
- *     numbers.push_back(atoi(token));
+ * while (tokenizer.hasMoreTokens())
+ *     out.push_back(atoi(tokenizer.nextToken()));
  * </pre>
  *
  * @ingroup SimSupport

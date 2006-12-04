@@ -117,8 +117,6 @@ void cSimulation::shutdown()
     // let go of msgQueue (removeFromOwnershipTree() cannot be called here)
     msgQueue.ownerp = NULL;
 
-    printf("cParValues created: total %ld\n", cParValue::totalParValueObjectCount()); //XXX
-
 #ifdef WITH_NETBUILDER
     cNEDLoader::clear();
 #endif
@@ -377,6 +375,8 @@ void cSimulation::setupNetwork(cModuleType *network, int run_num)
     //    deleteNetwork();
     //    throw new cRuntimeError("unknown exception occurred");
     //}
+
+    printf("setupNetwork finished, cParValue objects in use: %ld\n", cParValue::liveParValueObjectCount()); //XXX
 }
 
 void cSimulation::startRun()

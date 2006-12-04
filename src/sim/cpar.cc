@@ -358,7 +358,6 @@ cParValueCache2::~cParValueCache2()
 cParValue *cParValueCache2::get(cParValue *value) const
 {
     ParValueSet::const_iterator it = parSet.find(value);
-    printf("%s %s! ", value->fullPath().c_str(), (it==parSet.end() ? "NO HIT" : "hit")); //XXX
     return it==parSet.end() ? NULL : *it;
 }
 
