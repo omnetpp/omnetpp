@@ -18,6 +18,7 @@
 
 #include <stdlib.h>
 #include "cstrtokenizer.h"
+#include "cexception.h"
 
 
 cStringTokenizer::cStringTokenizer(const char *s, const char *delim)
@@ -63,6 +64,40 @@ std::vector<std::string> cStringTokenizer::asVector()
     std::vector<std::string> v;
     while ((s=nextToken())!=NULL)
         v.push_back(std::string(s));
+    return v;
+}
+
+std::vector<int> cStringTokenizer::asIntVector()
+{
+    const char *s;
+    std::vector<int> v;
+    while ((s=nextToken())!=NULL)
+    {
+        char *e;
+        long d = strtol(s, &e, 10);
+        if (*e)
+            throw new cRuntimeError("Converting string to integer vector: error at token '%d'", s);
+        if (errno==ERANGE || (int)d != d)
+            throw new cRuntimeError("Converting string to integer vector: '%d' is too big/too small for an int", s);
+        v.push_back((int)d);
+    }
+    return v;
+}
+
+std::vector<double> cStringTokenizer::asDoubleVector()
+{
+    const char *s;
+    std::vector<double> v;
+    while ((s=nextToken())!=NULL)
+    {
+        char *e;
+        double d = strtod(s, &e);
+        if (*e)
+            throw new cRuntimeError("Converting string to double vector: error at token '%d'", s);
+        if (errno==ERANGE)
+            throw new cRuntimeError("Converting string to double vector: '%d' is too big/too small for double", s);
+        v.push_back(d);
+    }
     return v;
 }
 

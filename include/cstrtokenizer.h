@@ -66,7 +66,7 @@ class SIM_API cStringTokenizer
     void setDelimiter(const char *s);
 
     /**
-     * Returns true if there're more tokens (i.e. the next nextToken() 
+     * Returns true if there're more tokens (i.e. the next nextToken()
      * call won't return NULL).
      */
     bool hasMoreTokens()  {return rest!=NULL;}
@@ -83,6 +83,18 @@ class SIM_API cStringTokenizer
      * returns the tokens in a string vector.
      */
     std::vector<std::string> asVector();
+
+    /**
+     * Utility function: converts all tokens to int, and returns them
+     * in a vector.
+     */
+    std::vector<int> asIntVector();
+
+    /**
+     * Utility function: converts all tokens to double, and returns them
+     * in a vector.
+     */
+    std::vector<double> asDoubleVector();
 };
 
 #endif
