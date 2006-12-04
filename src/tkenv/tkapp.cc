@@ -590,6 +590,8 @@ void TOmnetTkApp::finishSimulation()
     {
         simulation.callFinish();
         ev.flushlastline();
+
+        checkFingerprint();
     }
     catch (cException *e)
     {

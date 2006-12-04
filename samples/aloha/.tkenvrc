@@ -46,5 +46,5 @@ config timeline-msgclassnamepattern	{*}
 config timeline-msgnamepattern	{*}
 config timeline-wantnonselfmsgs	{1}
 config timeline-wantselfmsgs	{1}
-inspector "alohaNet" "alohaNet" "2" "625x576+46+42"
+inspector "alohaNet" "alohaNet" "2" "625x576+168+197"
 

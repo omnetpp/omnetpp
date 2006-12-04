@@ -927,7 +927,7 @@ void TOmnetApp::checkFingerprint()
     if (simulation.hasher()->equals(opt_fingerprint.c_str()))
         putmsg("Fingerprint successfully verified.");
     else
-        putmsg((std::string("Fingerprint mismatch! expected:")+opt_fingerprint.c_str()+
-               ", actual:"+simulation.hasher()->toString()).c_str());
+        putmsg((std::string("Fingerprint mismatch! expected: ")+opt_fingerprint.c_str()+
+               ", actual: "+simulation.hasher()->toString()).c_str());
 }
 

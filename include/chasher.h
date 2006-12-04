@@ -27,7 +27,7 @@ typedef unsigned __int64 uint64;
 typedef unsigned int uint32;   //FIXME into defs.h or something???
 
 /**
- * Utility class to calculate "fingerprint" of a simulation.
+ * Utility class to calculate the "fingerprint" of a simulation.
  *
  * We're trying to achieve that the same simulation gives the same fingerprint
  * on a 32-bit machine and on a 64-bit machine. Longs can be either 32-bit or
@@ -51,11 +51,13 @@ class SIM_API cHasher
     }
 
   public:
+    //FIXME add comments!!
     cHasher() {ASSERT(sizeof(uint32)==4); ASSERT(sizeof(double)==8); value = 0;}
     ~cHasher() {}
 
     void reset() {value = 0;}
     uint32 getHash() const {return value;}
+    uint32 parse(const char *fingerprint) const;
     bool equals(const char *fingerprint) const;
     std::string toString() const;
 
