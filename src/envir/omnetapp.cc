@@ -41,6 +41,7 @@
 #include "cxmlelement.h"
 #include "cxmldoccache.h"
 #include "cstrtokenizer2.h"
+#include "chasher.h"
 
 #ifdef WITH_PARSIM
 #include "cparsimcomm.h"
@@ -603,14 +604,17 @@ void TOmnetApp::readPerRunOptions(int run_no)
 
     // get options from ini file
     opt_network_name = cfg->getAsString2(section, "General", "network", "default");
-    opt_pause_in_sendmsg = cfg->getAsBool2(section, "General", "pause-in-sendmsg", false);
     opt_warnings = cfg->getAsBool2(section, "General", "warnings", true);
     opt_simtimelimit = cfg->getAsTime2(section, "General", "sim-time-limit", 0.0);
     opt_cputimelimit = (long)cfg->getAsTime2(section, "General", "cpu-time-limit", 0.0);
     opt_netifcheckfreq = cfg->getAsInt2(section, "General", "netif-check-freq", 1);
+    opt_fingerprint = cfg->getAsString2(section, "General", "fingerprint", "");
 
-//FIXME this option to be removed from OmnetApp
-//    cModule::pause_in_sendmsg = opt_pause_in_sendmsg;
+    // install hasher object
+    if (!opt_fingerprint.empty())
+        simulation.setHasher(new cHasher());
+    else
+        simulation.setHasher(NULL);
 
     // run RNG self-test
     cRNG *testrng;

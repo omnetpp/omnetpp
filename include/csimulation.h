@@ -423,6 +423,11 @@ class SIM_API cSimulation : public cNoncopyableOwnedObject
      * if no fingerprint is being calculated during this simulation run.
      */
     cHasher *hasher() {return hasherp;}
+
+    /**
+     * Installs a new hasher object, used for fingerprint calculation.
+     */
+    void setHasher(cHasher *hasher);
     //@}
 };
 

@@ -73,7 +73,6 @@ class ENVIR_API TOmnetApp
     opp_string opt_snapshotmanager_class;
     bool opt_fname_append_host;
 
-    bool opt_pause_in_sendmsg;
     bool opt_warnings;
     bool opt_print_undisposed;
 
@@ -81,6 +80,8 @@ class ENVIR_API TOmnetApp
     long opt_cputimelimit;
 
     int opt_netifcheckfreq;
+
+    opp_string opt_fingerprint;
 
 // WITH_PARSIM (note: no #ifdef to preserve class layout!)
     cParsimCommunications *parsimcomm;

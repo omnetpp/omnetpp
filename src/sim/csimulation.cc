@@ -92,6 +92,8 @@ cSimulation::cSimulation(const char *name) : cNoncopyableOwnedObject(name, false
     networktype = NULL;
     run_number = 0;
 
+    hasherp = NULL;
+
     // see init()
 }
 
@@ -117,6 +119,8 @@ void cSimulation::shutdown()
     deleteNetwork();
     // let go of msgQueue (removeFromOwnershipTree() cannot be called here)
     msgQueue.ownerp = NULL;
+
+    delete hasherp;
 
 #ifdef WITH_NETBUILDER
     cNEDLoader::clear();
@@ -645,3 +649,12 @@ unsigned long cSimulation::getUniqueNumber()
 {
     return ev.getUniqueNumber();
 }
+
+void cSimulation::setHasher(cHasher *hasher)
+{
+    if (hasherp)
+        delete hasherp;
+    hasherp = hasher;
+}
+
+
