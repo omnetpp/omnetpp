@@ -66,6 +66,7 @@ sim_std_m.obj: sim_std_m.cc \
   ../../include/cenvir.h \
   ../../include/cexception.h \
   ../../include/cexpression.h \
+  ../../include/chasher.h \
   ../../include/cfsm.h \
   ../../include/cfunction.h \
   ../../include/cgate.h \

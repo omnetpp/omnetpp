@@ -20,8 +20,8 @@ option bkpts_enabled	{1}
 option expressmode_autoupdate	{1}
 config concurrent-anim	{1}
 config confirm-exit	{1}
-config display-timeline	{1}
-config display-treeview	{1}
+config display-timeline	{0}
+config display-treeview	{0}
 config dontshow	{}
 config editor-backwards	{1}
 config editor-case-sensitive	{0}
@@ -34,9 +34,9 @@ config filtobjlist-maxcount	{100000}
 config filtobjlist-name	{}
 config filtobjlist-order	{Class}
 config last-nedfile	{}
-config log-save-filename	{omnetpp.out}
+config log-save-filename	{C:/home/omnetpp40/omnetpp/samples/aloha/omnetpp.out}
 config logwindow-scrollbacklines	{100000}
-config mainwin-geom	{640x480+230+37}
+config mainwin-geom	{640x629+230+37}
 config mainwin-state	{normal}
 config rununtil-event	{}
 config rununtil-mode	{Express (tracing off)}
@@ -46,5 +46,6 @@ config timeline-msgclassnamepattern	{*}
 config timeline-msgnamepattern	{*}
 config timeline-wantnonselfmsgs	{1}
 config timeline-wantselfmsgs	{1}
-inspector "alohaNet" "alohaNet" "2" "625x576+168+197"
+inspector "alohaNet" "alohaNet" "2" "617x576+120+155"
+inspector "simulation" "cSimulation" "1" "460x312+24+31"
 

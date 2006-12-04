@@ -101,6 +101,7 @@ inspector.obj: inspector.cc \
   ../../include/cenvir.h \
   ../../include/cexception.h \
   ../../include/cexpression.h \
+  ../../include/chasher.h \
   ../../include/cfsm.h \
   ../../include/cfunction.h \
   ../../include/cgate.h \
@@ -190,6 +191,7 @@ inspfactory.obj: inspfactory.cc \
   ../../include/cenvir.h \
   ../../include/cexception.h \
   ../../include/cexpression.h \
+  ../../include/chasher.h \
   ../../include/cfsm.h \
   ../../include/cfunction.h \
   ../../include/cgate.h \
@@ -329,6 +331,7 @@ objinsp.obj: objinsp.cc \
   ../../include/cenvir.h \
   ../../include/cexception.h \
   ../../include/cexpression.h \
+  ../../include/chasher.h \
   ../../include/cfsm.h \
   ../../include/cfunction.h \
   ../../include/cgate.h \

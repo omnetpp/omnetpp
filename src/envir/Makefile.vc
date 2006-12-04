@@ -276,12 +276,15 @@ omnetapp.obj: omnetapp.cc \
   ../../include/csimulation.h \
   ../../include/cscheduler.h \
   ../../include/cpar.h \
+  ../../include/cproperties.h \
+  ../../include/cproperty.h \
   ../../include/random.h \
   ../../include/crng.h \
   ../../include/cmodule.h \
   ../../include/cxmlelement.h \
   cxmldoccache.h \
   cstrtokenizer2.h \
+  ../../include/chasher.h \
   ../../include/cparsimcomm.h \
   ../../include/platdep/time.h \
   ../../include/platdep/misc.h \
@@ -309,6 +312,7 @@ omnetapp.obj: omnetapp.cc \
   ../../include/opp_string.h \
   ../../include/cmsgheap.h \
   ../../include/cexpression.h \
+  ../../include/stlwrap.h \
   ../../include/ccomponent.h \
   ../../include/cgate.h \
   ../../include/cdefaultlist.h

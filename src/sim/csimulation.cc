@@ -559,7 +559,7 @@ void cSimulation::doOneEvent(cSimpleModule *mod)
 
     if (hasher())
     {
-        hasher()->add(eventNumber()); //XXX probably no value in adding this...
+        // note: there's probably no value in adding eventNumber()
         hasher()->add(simTime());
         hasher()->add(mod->id());
         //XXX msg id too?
