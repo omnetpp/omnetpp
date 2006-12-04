@@ -115,7 +115,7 @@ void cNEDLoader::addComponent(const char *name, NEDElement *node)
     cNEDDeclaration *decl = buildNEDDeclaration(node);
     components[name] = decl;
 
-    printf("DBG: registered %s\n",name);//XXX remove
+    //XXX printf("DBG: registered %s\n",name);
 
     // if module or channel, register corresponding object which can be used to instantiate it
     cComponentType *type = NULL;

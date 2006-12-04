@@ -370,13 +370,71 @@ LiteralNode *createLiteral(int type, YYLTYPE valuepos, YYLTYPE textpos)
     return c;
 }
 
+
+/*
+    time = 10d 4h 34mi 23s 123ms 675us 999ns; // minutes is "mi" not "m"!!!! change strToSimtime()!!!!
+    datarate = 10Tbps 10Gbps 234Mbps 123Kbps 23bps;
+    filelengthBytes = 10TB 10GB 100MB 654KB 34B;
+    distance = 100km 33m 230mm;
+ */
+double parseQuantity(const char *text)
+{
+    printf("FIXME implement parseQuantity!!!!\n"); //FIXME
+    return 0.0;
+}
+
+/*
+simtime_t strToSimtime(const char *str)
+{
+    while (*str==' ' || *str=='\t') str++;
+    if (*str=='\0') return -1; // empty string not accepted
+    simtime_t d = strToSimtime0( str );
+    return (*str=='\0') ? d : -1; // OK if whole string could be interpreted
+}
+
+simtime_t strToSimtime0(const char *&str)
+{
+    double simtime = 0;
+
+    while (*str!='\0')
+    {
+          // read number into num and skip it
+          double num;
+          int len;
+          while (*str==' ' || *str=='\t') str++;
+          if (0==sscanf(str, "%lf%n", &num, &len)) break; // break if error
+          str+=len;
+
+          // process time unit: d,h,m,s,ms,us,ns
+          while (*str==' ' || *str=='\t') str++;
+          if (str[0]=='n' && str[1]=='s')
+                          {simtime += 1e-9*num; str+=2;}
+          else if (str[0]=='u' && str[1]=='s')
+                          {simtime += 1e-6*num; str+=2;}
+          else if (str[0]=='m' && str[1]=='s')
+                          {simtime += 1e-3*num; str+=2;}
+          else if (str[0]=='s')
+                          {simtime += num; str++;}
+          else if (str[0]=='m')
+                          {simtime += 60*num; str++;}
+          else if (str[0]=='h')
+                          {simtime += 3600*num; str++;}
+          else if (str[0]=='d')
+                          {simtime += 24*3600*num; str++;}
+          else
+                          {simtime += num; break;} // nothing can come after 'pure' number
+    }
+    return (simtime_t)simtime;
+}
+*/
+
 LiteralNode *createQuantity(const char *text)
 {
     LiteralNode *c = (LiteralNode *)createNodeWithTag(NED_LITERAL);
     c->setType(NED_CONST_UNIT);
     if (text) c->setText(text);
 
-    double t = 0; //NEDStrToSimtime(text);  // FIXME...
+    double t = parseQuantity(text);
     if (t<0)
     {
         char msg[130];
@@ -392,7 +450,7 @@ LiteralNode *createQuantity(const char *text)
 
 NEDElement *unaryMinus(NEDElement *node)
 {
-    // if not a constant, must appy unary minus operator
+    // if not a constant, must apply unary minus operator
     if (node->getTagCode()!=NED_LITERAL)
         return createOperator("-", node);
 

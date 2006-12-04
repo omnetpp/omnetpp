@@ -34,9 +34,9 @@ config filtobjlist-maxcount	{100000}
 config filtobjlist-name	{}
 config filtobjlist-order	{Class}
 config last-nedfile	{}
-config log-save-filename	{omnetpp.out}
+config log-save-filename	{C:/home/omnetpp40/omnetpp/samples/dyna/omnetpp.out}
 config logwindow-scrollbacklines	{100000}
-config mainwin-geom	{673x454+260+0}
+config mainwin-geom	{673x454+222+67}
 config mainwin-state	{normal}
 config rununtil-event	{}
 config rununtil-mode	{Express (tracing off)}
@@ -46,9 +46,9 @@ config timeline-msgclassnamepattern	{*}
 config timeline-msgnamepattern	{*}
 config timeline-wantnonselfmsgs	{1}
 config timeline-wantselfmsgs	{1}
-inspector "dyna.client[2]" "Client" "3" "504x162+13+362"
-inspector "dyna" "dyna" "2" "466x368+48+62"
-inspector "dyna.server" "Server" "3" "502x125+14+556"
-inspector "dyna.client[2]" "Client" "1" "460x312+356+306"
+inspector "dyna.client[1].out" "cGate" "1" "477x434+24+31"
+inspector "dyna.client[1].out" "cGate" "2" "213x181+120+155"
+inspector "dyna.client[1]" "Client" "1" "690x395+96+124"
+inspector "dyna" "dyna" "2" "405x418+-10+32"
 inspector "dyna" "ClientServer" "2" "405x417+70+60"
 
