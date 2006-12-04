@@ -28,9 +28,12 @@ class cComponent;
 
 
 /**
- * cParValue is an abstract base class for storing the values of module
- * (or channel) parameters. cParValue supports several data types via subclasses:
- * cLongPar, cDoublePar, cBoolPar, cStringPar, cXMLPar.
+ * Internal class that stores parameter values. cPar delegates almost all
+ * methods to cParValue. Delegation was introduced to save memory by using
+ * shared storage for module parameters of the same values.
+ *
+ * cParValue is an abstract base class, which supports several data types via
+ * subclasses: cLongPar, cDoublePar, cBoolPar, cStringPar, cXMLPar.
  *
  * @ingroup Internals
  */
@@ -300,7 +303,14 @@ class SIM_API cParValue : public cNamedObject
      * If they are of different types (type()), false is returned
      * without attempting to compare the values.
      */
+    //XXX remove? doesn't seem too useful nor actually used...
     virtual bool equals(cParValue& other, cComponent *thiscontext, cComponent *othercontext);
+
+    /**
+     * Compares two cParValues, including name, type, flags, stored value or expression.
+     * Makes it possible to use cParValue as a key in std::map or std::set.
+     */
+    virtual int compare(cParValue& other) const;
     //@}
 
     /** @name Statistics. */

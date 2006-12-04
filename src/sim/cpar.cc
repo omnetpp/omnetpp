@@ -266,10 +266,10 @@ void cPar::read()
 
 void cPar::convertToConst()
 {
+    //FIXME TODO: use shared paramvalues!!!
     copyIfShared();
     p->convertToConst(ownercomponent);
 }
-
 
 bool cPar::parse(const char *text)
 {
@@ -332,6 +332,34 @@ void cParValueCache::put(const char *key, cParValue *value)
     ASSERT(parMap.find(key)==parMap.end()); // not yet in there
     value->setIsShared(true);
     parMap[key] = value;
+}
+
+//---
+
+// cannot go inline due to declaration order
+bool cParValueCache2::Less::operator()(cParValue *a, cParValue *b) const
+{
+    return a->compare(*b) < 0;
+}
+
+cParValueCache2::~cParValueCache2()
+{
+    for (ParValueSet::iterator it = parSet.begin(); it!=parSet.end(); ++it)
+        delete *it;
+    parSet.clear();
+}
+
+cParValue *cParValueCache2::get(cParValue *value) const
+{
+    ParValueSet::const_iterator it = parSet.find(value);
+    return it==parSet.end() ? NULL : *it;
+}
+
+void cParValueCache2::put(cParValue *value)
+{
+    ASSERT(parSet.find(value)==parSet.end()); // not yet in there
+    value->setIsShared(true);
+    parSet.insert(value);
 }
 
 

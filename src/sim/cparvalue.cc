@@ -99,6 +99,18 @@ bool cParValue::equals(cParValue& other, cComponent *thiscontext, cComponent *ot
     }
 }
 
+int cParValue::compare(cParValue& other) const
+{
+    int res = strcmp(name(), other.name());
+    if (res!=0)
+        return res;
+    if (flags!=other.flags)
+        return flags < other.flags ? -1 : 1;
+    if (type()!=other.type())
+        return type() < other.type() ? -1 : 1;
+    return 0;
+}
+
 //----
 #include "cboolpar.h"
 #include "clongpar.h"

@@ -17,6 +17,8 @@
 #ifndef __CPAR_H
 #define __CPAR_H
 
+#include <map>
+#include <set>
 #include "cownedobject.h"
 #include "cexpression.h"
 #include "cexception.h"
@@ -432,11 +434,13 @@ class SIM_API cPar : public cObject
      * If either of the objects is not set (isSet()==false) or they are
      * of different type(), false is returned.
      */
-    bool equals(cPar& other);
+    bool equals(cPar& other);  //XXX remove? doesn't seem too useful nor actually used...
     //@}
 };
 
+//
 // internal class for sharing parameter values coming from ini files
+//
 class cParValueCache
 {
   private:
@@ -447,6 +451,24 @@ class cParValueCache
     ~cParValueCache();
     cParValue *get(const char *key) const;
     void put(const char *key, cParValue *value);
+};
+
+//
+// internal class for sharing parameters converted to constants
+//
+class cParValueCache2
+{
+  private:
+    struct Less {
+      bool operator()(cParValue *a, cParValue *b) const;
+    };
+    typedef std::set<cParValue *, Less> ParValueSet;
+    ParValueSet parSet;
+  public:
+    cParValueCache2() {}
+    ~cParValueCache2();
+    cParValue *get(cParValue *p) const;
+    void put(cParValue *p);
 };
 
 #endif
