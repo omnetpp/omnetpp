@@ -241,6 +241,8 @@ int TCmdenvApp::run()
             ::fflush(fout);
             simulation.callFinish();
             ev.flushlastline();
+
+            checkFingerprint();
         }
         catch (cException *e)
         {
@@ -265,7 +267,7 @@ int TCmdenvApp::run()
             }
         }
 
-        // delete network (this also forces slaves to exit)
+        // delete network
         if (setupnetwork_done)
         {
             try

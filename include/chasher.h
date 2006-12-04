@@ -55,7 +55,9 @@ class SIM_API cHasher
     ~cHasher() {}
 
     void reset() {value = 0;}
-    uint32 getHash() {return value;}
+    uint32 getHash() const {return value;}
+    bool equals(const char *fingerprint) const;
+    std::string toString() const;
 
     void add(const char *p, size_t length);
 

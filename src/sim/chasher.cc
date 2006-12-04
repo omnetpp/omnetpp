@@ -36,6 +36,24 @@ void cHasher::add(const char *p, size_t length)
     }
 }
 
+bool cHasher::equals(const char *s) const
+{
+    char *e;
+    unsigned long d = strtoul(s, &e, 16);
+    uint32 fingerprint = (uint32)d;
+    if (*e || fingerprint!=d)
+        throw new cRuntimeError("Error verifying fingerprint: invalid fingerprint text \"%s\"", s);
+    return getHash()==fingerprint;
+}
+
+std::string cHasher::toString() const
+{
+    char buf[32];
+    sprintf(buf, "%x", getHash());
+    return buf;
+}
+
+
 /* XXX to test case
 
 int main(int argc, char **argv)

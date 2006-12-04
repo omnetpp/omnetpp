@@ -918,3 +918,16 @@ void TOmnetApp::stoppedWithException(cException *e)
         parsimpartition->broadcastException(e);
 #endif
 }
+
+void TOmnetApp::checkFingerprint()
+{
+    if (opt_fingerprint.empty() || !simulation.hasher())
+        return;
+
+    if (simulation.hasher()->equals(opt_fingerprint.c_str()))
+        putmsg("Fingerprint successfully verified.");
+    else
+        putmsg((std::string("Fingerprint mismatch! expected:")+opt_fingerprint.c_str()+
+               ", actual:"+simulation.hasher()->toString()).c_str());
+}
+
