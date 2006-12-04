@@ -1,5 +1,5 @@
 # Tkenv configuration
-option updatefreq_fast	{50}
+option updatefreq_fast	{500}
 option updatefreq_express	{10000}
 option stepdelay	{300 ms}
 option use_mainwindow	{1}
@@ -20,8 +20,8 @@ option bkpts_enabled	{1}
 option expressmode_autoupdate	{1}
 config concurrent-anim	{1}
 config confirm-exit	{1}
-config display-timeline	{0}
-config display-treeview	{0}
+config display-timeline	{1}
+config display-treeview	{1}
 config dontshow	{}
 config editor-backwards	{1}
 config editor-case-sensitive	{0}
@@ -35,17 +35,16 @@ config filtobjlist-name	{}
 config filtobjlist-order	{Class}
 config last-nedfile	{}
 config log-save-filename	{C:/home/omnetpp40/omnetpp/samples/aloha/omnetpp.out}
-config logwindow-scrollbacklines	{100000}
-config mainwin-geom	{640x629+230+37}
+config logwindow-scrollbacklines	{}
+config mainwin-geom	{664x374+292+34}
 config mainwin-state	{normal}
 config rununtil-event	{}
-config rununtil-mode	{Express (tracing off)}
-config rununtil-time	{}
+config rununtil-mode	{Fast (rare updates)}
+config rununtil-time	{1000}
 config timeline-maxnumevents	{1000}
 config timeline-msgclassnamepattern	{*}
 config timeline-msgnamepattern	{*}
 config timeline-wantnonselfmsgs	{1}
 config timeline-wantselfmsgs	{1}
-inspector "alohaNet" "alohaNet" "2" "617x576+120+155"
-inspector "simulation" "cSimulation" "1" "460x312+24+31"
+inspector "alohaNet" "alohaNet" "2" "617x576+48+62"
 
