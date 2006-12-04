@@ -453,7 +453,7 @@ class cQueue extends cOwnedObject
         cOwnedObject *contents[] @getter(get) @sizeGetter(length) @hint(queue contents);
 }
 
-class noncobject cHasher;
+class noncobject cHasher; //FIXME should be nonpoymorphic or what???
 
 class cHasher
 {
