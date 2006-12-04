@@ -1,5 +1,5 @@
 //=========================================================================
-//  CPAR.CC - part of
+//  CPARVALUE.CC - part of
 //
 //                  OMNeT++/OMNEST
 //           Discrete System Simulation in C++
@@ -99,15 +99,15 @@ bool cParValue::equals(cParValue& other, cComponent *thiscontext, cComponent *ot
     }
 }
 
-int cParValue::compare(cParValue& other) const
+int cParValue::compare(const cParValue *other) const
 {
-    int res = strcmp(name(), other.name());
+    int res = strcmp(name(), other->name());
     if (res!=0)
         return res;
-    if (flags!=other.flags)
-        return flags < other.flags ? -1 : 1;
-    if (type()!=other.type())
-        return type() < other.type() ? -1 : 1;
+    if (flags!=other->flags)
+        return flags < other->flags ? -1 : 1;
+    if (type()!=other->type())
+        return type() < other->type() ? -1 : 1;
     return 0;
 }
 

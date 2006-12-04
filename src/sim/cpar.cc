@@ -75,7 +75,6 @@ void cPar::copyIfShared()
 {
     if (p->isShared())
     {
-        printf("%s DUP! ", fullPath().c_str()); //XXX
         p = p->dup();
         p->setIsShared(false);
     }
@@ -259,16 +258,23 @@ void cPar::read()
     if (p->isExpression() && p->containsConstSubexpressions())
     {
         copyIfShared();
-        p->evaluateConstSubexpressions(ownercomponent);
+        p->evaluateConstSubexpressions(ownercomponent); //XXX sharing?
     }
 }
 
 
 void cPar::convertToConst()
 {
-    //FIXME TODO: use shared paramvalues!!!
     copyIfShared();
     p->convertToConst(ownercomponent);
+
+    // maybe replace it with a shared copy
+    cComponentType *componentType = ownercomponent->componentType();
+    cParValue *cachedValue = componentType->parValueCache2()->get(p);
+    if (cachedValue)
+        reassign(cachedValue);
+    else
+        componentType->parValueCache2()->put(p);
 }
 
 bool cPar::parse(const char *text)
@@ -339,7 +345,7 @@ void cParValueCache::put(const char *key, cParValue *value)
 // cannot go inline due to declaration order
 bool cParValueCache2::Less::operator()(cParValue *a, cParValue *b) const
 {
-    return a->compare(*b) < 0;
+    return a->compare(b) < 0;
 }
 
 cParValueCache2::~cParValueCache2()
@@ -352,6 +358,7 @@ cParValueCache2::~cParValueCache2()
 cParValue *cParValueCache2::get(cParValue *value) const
 {
     ParValueSet::const_iterator it = parSet.find(value);
+    printf("%s %s! ", value->fullPath().c_str(), (it==parSet.end() ? "NO HIT" : "hit")); //XXX
     return it==parSet.end() ? NULL : *it;
 }
 

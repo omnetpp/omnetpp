@@ -310,7 +310,7 @@ class SIM_API cParValue : public cNamedObject
      * Compares two cParValues, including name, type, flags, stored value or expression.
      * Makes it possible to use cParValue as a key in std::map or std::set.
      */
-    virtual int compare(cParValue& other) const;
+    virtual int compare(const cParValue *other) const;
     //@}
 
     /** @name Statistics. */

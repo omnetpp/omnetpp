@@ -188,3 +188,16 @@ bool cStringPar::parse(const char *text)
     return false;
 }
 
+int cStringPar::compare(const cParValue *other) const
+{
+    int ret = cParValue::compare(other);
+    if (ret!=0)
+        return ret;
+
+    const cStringPar *other2 = dynamic_cast<const cStringPar *>(other);
+    if (flags & FL_ISEXPR)
+        throw new cRuntimeError(this, "cannot compare expressions yet"); //FIXME
+    else
+        return (val == other2->val) ? 0 : (val < other2->val) ? -1 : 1;
+}
+
