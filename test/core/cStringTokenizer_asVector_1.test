@@ -1,0 +1,15 @@
+%description:
+tests cStringTokenizer::asVector()
+
+%activity:
+
+const char *str = " 34 42 13 46 72 41 ";
+std::vector<std::string> v = cStringTokenizer(str).asVector();
+
+for (int i=0; i<v.size(); i++)
+    ev << (i?" ":"") << v[i];
+ev << "\n.\n";
+
+%contains: stdout
+34 42 13 46 72 41
+.
