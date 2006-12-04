@@ -1,0 +1,11 @@
+%description:
+tests cStringTokenizer::asIntVector()
+
+%activity:
+
+const char *str = " 34 42 13 46bubu 72 41 ";
+std::vector<int> v = cStringTokenizer(str).asIntVector();
+
+%exitcode: 1
+%contains: stdout
+Converting string to integer vector: error at token '46bubu'

@@ -1,0 +1,11 @@
+%description:
+tests cStringTokenizer::asDoubleVector()
+
+%activity:
+
+const char *str = " 34.13 -0.11 3.1415 1E900";
+std::vector<double> v = cStringTokenizer(str).asDoubleVector();
+
+%exitcode: 1
+%contains: stdout
+Converting string to double vector: overflow or underflow while converting '1E900' to double

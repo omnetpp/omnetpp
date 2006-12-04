@@ -1,0 +1,12 @@
+%description:
+tests cStringTokenizer::asDoubleVector()
+
+%activity:
+
+const char *str = " 34.13 -0.11bubu 3.1415 ";
+std::vector<double> v = cStringTokenizer(str).asDoubleVector();
+
+%exitcode: 1
+%contains: stdout
+Converting string to double vector: error at token '-0.11bubu'
+
