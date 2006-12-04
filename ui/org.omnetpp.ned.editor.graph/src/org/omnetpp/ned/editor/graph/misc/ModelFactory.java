@@ -46,7 +46,7 @@ public class ModelFactory implements CreationFactory {
             ((IHasName)element).setName(name);
         
         if (element instanceof IHasType)
-            ((IHasType)element).setType(name);
+            ((IHasType)element).setType(type);
 
         return element;
 	}

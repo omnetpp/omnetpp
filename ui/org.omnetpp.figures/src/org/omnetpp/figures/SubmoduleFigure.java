@@ -27,7 +27,6 @@ public class SubmoduleFigure extends ModuleFigure implements HandleBounds {
 
     protected Layer foregroundLayer;
     protected Layer backgroundLayer;
-    protected Layer calloutLayer;
     
     protected Shape currShape;
     protected RectangleFigure rectShapeFigure = new RectangleFigure();
@@ -43,9 +42,8 @@ public class SubmoduleFigure extends ModuleFigure implements HandleBounds {
     protected Label textFigure = new Label();
     protected Label queueFigure = new Label();
     protected String queueName = "";
-    protected TooltipFigure tooltipFigure = new TooltipFigure();
+    protected TooltipFigure tooltipFigure;
     protected Shape rangeFigure = new Ellipse();
-    protected CalloutFigure calloutFigure = new CalloutFigure();
     protected float scale = 1.0f;
 
     public SubmoduleFigure() {
@@ -61,17 +59,23 @@ public class SubmoduleFigure extends ModuleFigure implements HandleBounds {
     }
 
     /**
-     * Returns a layer from the first ancestor that supports multiple layers for decorations
+     * Returns the requested layer from the first ancestor that supports multiple layers for decorations
+     * and contains the a layer with the given id
      * @param id Layer id
-     * @return The layer with teh given id from any ancestor that implements the LayerSupport IF
+     * @return The layer with teh given id from the first ancestor that implements the LayerSupport IF
      */
     protected Layer getAncestorLayer(LayerID id) {
-    	IFigure figureIter = getParent();
-    	// look for a parent who is an instance of LayerSupport and get the layer from it
-    	while (!(figureIter == null || (figureIter instanceof LayerSupport)))
-    		figureIter = figureIter.getParent();
-    	if(figureIter instanceof LayerSupport) return ((LayerSupport)figureIter).getLayer(id); 
-    	return null;
+        IFigure figureIter = getParent();
+        // look for a parent who is an instance of LayerSupport and get the layer from it
+        while (figureIter != null) {
+            if(figureIter instanceof LayerSupport) {
+                Layer layer = ((LayerSupport)figureIter).getLayer(id);
+                if (layer != null)
+                    return layer;
+            }
+            figureIter = figureIter.getParent();
+        }
+        return null;
     }
     
     @Override
@@ -82,10 +86,9 @@ public class SubmoduleFigure extends ModuleFigure implements HandleBounds {
         // look for decorator layers among the ancestor (compound module figure)
         foregroundLayer = getAncestorLayer(LayerSupport.LayerID.FRONT_DECORATION);
         backgroundLayer = getAncestorLayer(LayerSupport.LayerID.BACKGROUND_DECORATION);
-        calloutLayer = getAncestorLayer(LayerSupport.LayerID.CALLOUT);
         
         // add main figures
-        // TODO figures should be added only ON DEMAND
+        // TODO figures should be added and created only ON DEMAND!!!
         add(rectShapeFigure);
         add(rrectShapeFigure);
         add(ovalShapeFigure);
@@ -114,13 +117,6 @@ public class SubmoduleFigure extends ModuleFigure implements HandleBounds {
                     queueFigure, PositionConstants.SOUTH_WEST, 2, 0));
         }
         
-        if(calloutLayer != null) {
-        	// callout (above the text)
-        	calloutLayer.add(new AttachedLayer(this, PositionConstants.NORTH, 
-        			calloutFigure, PositionConstants.SOUTH_WEST));
-        }
-        calloutFigure.clearCallout();
-
         super.addNotify();
     }
 
@@ -129,6 +125,7 @@ public class SubmoduleFigure extends ModuleFigure implements HandleBounds {
         nameFigure.setVisible(name != null && !"".equals(name));
         nameFigure.setText(name);
         figureName = name;
+        invalidate();
     }
     
     protected void setRange(int radius, Color fillColor, Color borderColor, int borderWidth) {
@@ -151,14 +148,19 @@ public class SubmoduleFigure extends ModuleFigure implements HandleBounds {
         // TODO: revision by Rudi (this was null when creating with default constructor and setting display string)
         if (rangeAttachLayer != null)
         	rangeAttachLayer.revalidate();
+
+        invalidate();
     }
     
     protected void setTooltipText(String tttext) {
         if(tttext == null || "".equals(tttext)) {
             setToolTip(null);
+            tooltipFigure = null;
         } else {
+            tooltipFigure = new TooltipFigure(); 
             setToolTip(tooltipFigure);
             tooltipFigure.setText(tttext);
+            invalidate();
         }
     }
     
@@ -166,6 +168,7 @@ public class SubmoduleFigure extends ModuleFigure implements HandleBounds {
         if (queueFigure == null) return;
         queueFigure.setVisible(qtext != null && !"".equals(qtext));
         queueFigure.setText(qtext);
+        invalidate();
     }
     
     protected void setInfoText(String text, String alignment, Color color) {
@@ -189,14 +192,7 @@ public class SubmoduleFigure extends ModuleFigure implements HandleBounds {
             textAttachLayer.setDeltaXY(2, 0);
         }
       if(textFigure.getParent() != null) textFigure.getParent().revalidate();
-    }
-    
-    public void addCallout(String text) {
-        calloutFigure.addCallout(new Label(text));
-    }
-    
-    public void clearCallout() {
-        calloutFigure.clearCallout();
+      invalidate();
     }
     
     protected void setShape(Image img, 
@@ -276,6 +272,7 @@ public class SubmoduleFigure extends ModuleFigure implements HandleBounds {
         if(imageFigure.isVisible())
             actualSize.union(imageFigure.getPreferredSize());
         setPreferredSize(actualSize);
+        invalidate();
     }
     
     /**
@@ -287,6 +284,7 @@ public class SubmoduleFigure extends ModuleFigure implements HandleBounds {
             decoratorImageFigure.setImage(img);
         
         decoratorImageFigure.setVisible(img != null);
+        invalidate();
     }
 
     public Rectangle getHandleBounds() {
@@ -349,12 +347,6 @@ public class SubmoduleFigure extends ModuleFigure implements HandleBounds {
         				ColorFactory.asRGB(dps.getAsStringDef(IDisplayString.Prop.OVIMAGECOLOR)),
         				dps.getAsIntDef(IDisplayString.Prop.OVIMAGECOLORPCT,0)));
 
-
-        // XXX callout bubble. just for testing
-
-//        if (dps.getLocation() != null && dps.getLocation().x >-1) clearCallout();
-//        	else addCallout("Yes Sir, my position is: "+dps.getLocation() );
-
         invalidate();
 	}
 
@@ -372,6 +364,7 @@ public class SubmoduleFigure extends ModuleFigure implements HandleBounds {
      */
     public void setScale(float scale) {
         this.scale = scale;
+        invalidate();
     }
 
 }

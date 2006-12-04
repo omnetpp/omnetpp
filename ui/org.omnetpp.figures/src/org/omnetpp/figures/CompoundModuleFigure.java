@@ -128,6 +128,7 @@ public class CompoundModuleFigure extends ModuleFigure
 	        // restore the graphics state
         	graphics.popState();
 		}
+
     }
     
     public CompoundModuleFigure() {
@@ -141,20 +142,19 @@ public class CompoundModuleFigure extends ModuleFigure
         // add the maint layer to the scroller pane
         // create the main and the decoration layers that will be added into the viewportPane
         pane = new FreeformLayer();
-        messageLayer = new FreeformLayer();
-        connectionLayer = new ConnectionLayer();
+        messageLayer = new NonExtendableFreeformLayer();
+        connectionLayer = new NEDConnectionLayer();
         
 
         layeredPane = new FreeformLayeredPane();
         layeredPane.setLayoutManager(new StackLayout());
 
         layeredPane.addLayerAfter(new BackgroundLayer(), LayerID.BACKGROUND, null);
-        layeredPane.addLayerAfter(new FreeformLayer(), LayerID.BACKGROUND_DECORATION, LayerID.BACKGROUND);
+        layeredPane.addLayerAfter(new NonExtendableFreeformLayer(), LayerID.BACKGROUND_DECORATION, LayerID.BACKGROUND);
         layeredPane.addLayerAfter(pane, LayerID.DEFAULT, LayerID.BACKGROUND_DECORATION);
         layeredPane.addLayerAfter(new FreeformLayer(), LayerID.FRONT_DECORATION, LayerID.DEFAULT);
         layeredPane.addLayerAfter(connectionLayer, LayerID.CONNECTION, LayerID.FRONT_DECORATION);
         layeredPane.addLayerAfter(messageLayer, LayerID.MESSAGE, LayerID.CONNECTION);
-        layeredPane.addLayerAfter(new FreeformLayer(), LayerID.CALLOUT, LayerID.MESSAGE);
         
         scrollpane.setViewport(new FreeformViewport());
         scrollpane.setContents(layeredPane);
@@ -166,12 +166,12 @@ public class CompoundModuleFigure extends ModuleFigure
         // -- ScrollPane (+FreeformViewport)
         // -- viewportPane
         // ---- FreeformLayeredPane (viewportContent)
-        // ------ backgroundLayer
-        // ------ backgroundDecorationLayer
-        // ------ pane
-        // ------ foregroundDecorationLayer
-        // ------ connection
-        // ------ Callout layer
+        // ------ backgroundLayer (compound module backgound. images, colors, grid etc)
+        // ------ backgroundDecorationLayer (submodule bnackground decoration (range indicator etc). non extendable
+        // ------ pane (pain layer used to display submodules - size is automatically calaculated from child size and positions)
+        // ------ foregroundDecorationLayer (text messages, decorator icons etc)
+        // ------ connection (connections inside a compound module)
+        // ------ message layer (used to display message animation effects)
 
         // set the connection routing
         FanRouter fr = new FanRouter();
@@ -427,4 +427,5 @@ public class CompoundModuleFigure extends ModuleFigure
 	public void removeMessageFigure(IFigure messageFigure) {
 		messageLayer.remove(messageFigure);
 	}
+    
 }

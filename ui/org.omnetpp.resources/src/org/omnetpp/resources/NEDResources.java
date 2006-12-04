@@ -388,7 +388,6 @@ public class NEDResources implements INEDTypeResolver {
                 case ERRCAT_ERROR:
                     markerSeverity = IMarker.SEVERITY_ERROR;
                     break;
-
                 case ERRCAT_WARNING:
                     markerSeverity = IMarker.SEVERITY_WARNING;
                     break;

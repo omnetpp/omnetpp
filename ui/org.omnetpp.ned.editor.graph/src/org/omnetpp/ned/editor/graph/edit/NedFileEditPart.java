@@ -10,9 +10,9 @@ import org.eclipse.draw2d.MarginBorder;
 import org.eclipse.draw2d.ToolbarLayout;
 import org.eclipse.gef.CompoundSnapToHelper;
 import org.eclipse.gef.EditPolicy;
-import org.eclipse.gef.LayerConstants;
 import org.eclipse.gef.SnapToGeometry;
 import org.eclipse.gef.SnapToHelper;
+import org.omnetpp.figures.NedFileFigure;
 import org.omnetpp.ned.editor.graph.edit.policies.NedFileLayoutEditPolicy;
 import org.omnetpp.ned2.model.ex.NedFileNodeEx;
 import org.omnetpp.ned2.model.notification.NEDModelEvent;
@@ -24,7 +24,7 @@ import org.omnetpp.resources.NEDResourcesPlugin;
  * LogicEditorPart, to hold the entire model. It is sort of a blank board where
  * all other EditParts get added.
  */
-public class NedFileEditPart extends BaseEditPart implements LayerConstants {
+public class NedFileEditPart extends BaseEditPart  {
 
     /**
      * Installs EditPolicies specific to this.
@@ -53,14 +53,7 @@ public class NedFileEditPart extends BaseEditPart implements LayerConstants {
      */
     @Override
     protected IFigure createFigure() {
-    	Figure f = new Layer();
-    	ToolbarLayout fl = new ToolbarLayout();
-    	fl.setStretchMinorAxis(false);
-    	fl.setSpacing(20);
-    	f.setLayoutManager(fl);
-    	
-        f.setBorder(new MarginBorder(5));
-        return f;
+        return new NedFileFigure();
     }
 
     /**

@@ -22,6 +22,7 @@ public class SpringEmbedderLayout extends XYLayout {
 	protected IFigure nodeParent;
 	protected AbstractGraphLayoutAlgorithm alg;
 	protected long algSeed = 1971;
+    private boolean layoutingInProgress;
 	/**
 	 *
 	 * @param nodeParent The parent figure of the nodes
@@ -97,6 +98,10 @@ public class SpringEmbedderLayout extends XYLayout {
 
 	@Override
 	public void invalidate() {
+        if (layoutingInProgress) {
+            System.out.println("Invalidate called during layout process. Ignored.");
+            return;
+        }
         System.out.println("Invalidating the Layout");
 		super.invalidate();
 		alg = null;
@@ -121,7 +126,8 @@ public class SpringEmbedderLayout extends XYLayout {
      */
     @Override
     public void layout(IFigure parent) {
-        System.out.println("Layouting Started.");
+        layoutingInProgress = true;
+        System.out.println("Layouting Started on: "+parent);
     	if (alg == null)
     		initLayout();
 
@@ -136,7 +142,7 @@ public class SpringEmbedderLayout extends XYLayout {
             Assert.isNotNull(loc);
             bounds.setLocation(loc);
             bounds.setSize(f.getPreferredSize());
-                 
+
             if (bounds.width == -1 || bounds.height == -1) {
                 Dimension preferredSize = f.getPreferredSize(bounds.width, bounds.height);
                 bounds = bounds.getCopy();
@@ -151,6 +157,7 @@ public class SpringEmbedderLayout extends XYLayout {
             f.setBounds(bounds);
         }
         System.out.println("Layouting finished.");
+        layoutingInProgress = false;
     }
 
     /**

@@ -8,7 +8,7 @@ import org.eclipse.draw2d.Layer;
  * @author rhornig
  */
 public interface LayerSupport {
-	enum LayerID { BACKGROUND, BACKGROUND_DECORATION, DEFAULT, FRONT_DECORATION, CONNECTION, MESSAGE, CALLOUT } 
+	enum LayerID { BACKGROUND, BACKGROUND_DECORATION, DEFAULT, FRONT_DECORATION, CONNECTION, MESSAGE } 
 
     /**
      * @param layerId

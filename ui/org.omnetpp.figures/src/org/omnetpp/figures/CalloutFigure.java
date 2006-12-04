@@ -7,6 +7,10 @@ import org.eclipse.draw2d.geometry.Rectangle;
  * @author rhornig
  * A figure that resembles a cartoon style callout box. Can show/hide itself using a timer
  */
+// you may attach the figure to an other figure at specific anchor points, for example:
+// parent.add(new AttachedLayer(attachToFigure, PositionConstants.NORTH, 
+//                              calloutFigure, PositionConstants.SOUTH_WEST));
+
 // TODO implement background timeout and hiding the expired entries
 public class CalloutFigure extends Layer {
     private Layer bubbleLayer = new Layer();

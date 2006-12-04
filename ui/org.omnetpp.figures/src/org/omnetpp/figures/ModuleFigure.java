@@ -10,10 +10,11 @@ import org.omnetpp.common.displaymodel.IDisplayString;
  * @author rhornig
  */
 abstract public class ModuleFigure extends Figure {
-	protected int antialias = SWT.ON;
+	protected int antialias = SWT.DEFAULT;
     protected String figureName = ""; 
 	protected IDisplayString lastDisplayString;
-	/**
+
+    /**
 	 * Sets the module antialaiasing. can be SWT.DEFAULT, SWT.ON, SWT.OFF
 	 * @param antialias
 	 */
