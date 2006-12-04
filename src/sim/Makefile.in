@@ -41,7 +41,7 @@ CPPOBJS_STD=\
     cdetect.o cdisplaystring.o cdoublepar.o cdynamicexpression.o \
     cenum.o cexception.o cfsm.o cfunction.o cgate.o chist.o \
     cksplit.o clcg32.o cllist.o clongpar.o cmersennetwister.o \
-    cmessage.o cmsgpar.o cmodule.o cmsgheap.o \
+    cmessage.o cmsgpar.o cmodule.o cmsgheap.o cfingerprint.o \
     cnedfunction.o cobject.o coutvect.o cnamedobject.o \
     cpar.o cparvalue.o cownedobject.o cproperties.o cproperty.o \
     cpsquare.o cqueue.o cscheduler.o csimplemodule.o \
