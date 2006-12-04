@@ -1,5 +1,5 @@
 //==========================================================================
-//   CFINGERPRINT.CC  - part of
+//   CHASHER.CC  - part of
 //                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
 //
@@ -17,7 +17,7 @@
 #include "cfingerprint.h"
 
 
-void cFingerprint::add(const char *p, size_t length)
+void cHasher::add(const char *p, size_t length)
 {
     // add the bulk in 4-byte chunks
     size_t lengthmod4 = length&~3U;
@@ -41,7 +41,7 @@ void cFingerprint::add(const char *p, size_t length)
 int main(int argc, char **argv)
 {
 #define PRINT printf("%x\n", h.getHash())
-    cFingerprint h;
+    cHasher h;
     h.add(1); PRINT;
     h.add(4); PRINT;
     h.add(1); PRINT;

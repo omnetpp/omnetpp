@@ -33,6 +33,7 @@
 #include "cstat.h"
 #include "cexception.h"
 #include "cparvalue.h"
+#include "cfingerprint.h"
 
 #ifdef WITH_PARSIM
 #include "ccommbuffer.h"
@@ -551,6 +552,14 @@ void cSimulation::doOneEvent(cSimpleModule *mod)
     // switch to the module's context
     setContext(mod);
     setContextType(CTX_EVENT);
+
+    if (hasher())
+    {
+        hasher()->add(eventNumber()); //XXX probably no value in adding this...
+        hasher()->add(simTime());
+        hasher()->add(mod->id());
+        //XXX msg id too?
+    }
 
     try
     {

@@ -36,6 +36,7 @@ class  cException;
 class  cScheduler;
 class  cParsimPartition;
 class  cNEDFileLoader;
+class  cHasher;
 
 
 /**
@@ -83,8 +84,10 @@ class SIM_API cSimulation : public cNoncopyableOwnedObject
     simtime_t sim_time;       // simulation time (time of current event)
     long event_num;           // sequence number of current event
 
-    int run_number;            // which simulation run
-    cException *exception;     // helper variable to get exceptions back from activity()
+    int run_number;           // which simulation run
+    cException *exception;    // helper variable to get exceptions back from activity()
+
+    cHasher *hasherp;         // used for fingerprint calculation
 
   public:
     // internal: FES
@@ -415,6 +418,11 @@ class SIM_API cSimulation : public cNoncopyableOwnedObject
      */
     bool snapshot(cObject *obj, const char *label);
 
+    /**
+     * Returns the object used for fingerprint calculation. It returns NULL
+     * if no fingerprint is being calculated during this simulation run.
+     */
+    cHasher *hasher() {return hasherp;}
     //@}
 };
 

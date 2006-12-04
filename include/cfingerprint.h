@@ -1,5 +1,5 @@
 //==========================================================================
-//   CFINGERPRINT.H  - part of
+//   CHASHER.H  - part of
 //                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
 //
@@ -14,8 +14,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __CFINGERPRINT_H
-#define __CFINGERPRINT_H
+#ifndef __CHASHER_H
+#define __CHASHER_H
 
 #include <string.h>
 #include <stdlib.h>
@@ -34,7 +34,7 @@ typedef unsigned int uint32;   //FIXME into defs.h or something???
  * 64-bit, so we always convert them to 64 bits. We don't try to convert
  * endianness, it would be too costly.
  */
-class SIM_API cFingerprint
+class SIM_API cHasher
 {
   private:
     uint32 value;
@@ -51,8 +51,8 @@ class SIM_API cFingerprint
     }
 
   public:
-    cFingerprint() {ASSERT(sizeof(uint32)==4); ASSERT(sizeof(double)==8); value = 0;}
-    ~cFingerprint() {}
+    cHasher() {ASSERT(sizeof(uint32)==4); ASSERT(sizeof(double)==8); value = 0;}
+    ~cHasher() {}
 
     void reset() {value = 0;}
     uint32 getHash() {return value;}
