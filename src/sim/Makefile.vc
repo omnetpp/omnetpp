@@ -314,6 +314,16 @@ cgate.obj: cgate.cc \
   ../../include/cmsgheap.h \
   ../../include/coutvect.h \
   ../../include/ctypes.h
+chasher.obj: chasher.cc \
+  ../../include/chasher.h \
+  ../../include/defs.h \
+  ../../include/cobject.h \
+  ../../include/cexception.h \
+  ../../include/cenvir.h \
+  ../../include/util.h \
+  ../../include/cpolymorphic.h \
+  ../../include/cvisitor.h \
+  ../../include/opp_string.h
 chist.obj: chist.cc \
   ../../include/random.h \
   ../../include/distrib.h \
@@ -718,6 +728,7 @@ csimul.obj: csimul.cc \
   ../../include/cpar.h \
   ../../include/cstat.h \
   ../../include/cexception.h \
+  ../../include/chasher.h \
   ../../include/ccommbuffer.h \
   netbuilder/loadnedfile.h \
   ../../include/defs.h \
@@ -1007,6 +1018,7 @@ sim_std_m.obj: sim_std_m.cc \
   ../../include/cdetect.h \
   ../../include/ctopo.h \
   ../../include/cfsm.h \
+  ../../include/chasher.h \
   ../../include/protocol.h \
   ../../include/cenvir.h \
   ../../include/cenum.h \

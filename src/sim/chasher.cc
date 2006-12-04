@@ -62,7 +62,7 @@ bool cHasher::equals(const char *fingerprint) const
 std::string cHasher::toString() const
 {
     char buf[32];
-    sprintf(buf, "%04x", getHash());
+    sprintf(buf, "%08x", getHash());
     std::string str = buf;
     str.insert(str.length()-4, "-");
     return str;

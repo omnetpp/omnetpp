@@ -136,6 +136,8 @@ cenvir.obj: cenvir.cc \
   filemgrs.h \
   akaroarng.h \
   akoutvectormgr.h \
+  matchableobject.h \
+  matchexpression.h \
   ../../include/defs.h \
   ../../include/globals.h \
   ../../include/cobject.h \
@@ -285,6 +287,7 @@ omnetapp.obj: omnetapp.cc \
   ../../include/cxmlelement.h \
   cxmldoccache.h \
   cstrtokenizer2.h \
+  ../../include/chasher.h \
   ../../include/cparsimcomm.h \
   ../../include/platdep/time.h \
   ../../include/platdep/misc.h \

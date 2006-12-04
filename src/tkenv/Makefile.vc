@@ -115,6 +115,7 @@ inspector.obj: inspector.cc \
   ../../include/cdetect.h \
   ../../include/ctopo.h \
   ../../include/cfsm.h \
+  ../../include/chasher.h \
   ../../include/protocol.h \
   ../../include/cenvir.h \
   ../../include/cenum.h \
@@ -178,6 +179,7 @@ inspfactory.obj: inspfactory.cc \
   ../../include/cdetect.h \
   ../../include/ctopo.h \
   ../../include/cfsm.h \
+  ../../include/chasher.h \
   ../../include/protocol.h \
   ../../include/cenvir.h \
   ../../include/cenum.h \
@@ -280,6 +282,7 @@ objinsp.obj: objinsp.cc \
   ../../include/cdetect.h \
   ../../include/ctopo.h \
   ../../include/cfsm.h \
+  ../../include/chasher.h \
   ../../include/protocol.h \
   ../../include/cenvir.h \
   ../../include/cenum.h \

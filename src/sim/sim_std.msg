@@ -390,6 +390,14 @@ class cQueue extends cObject
         cObject *contents[] @getter(get) @sizeGetter(length) @hint(queue contents);
 }
 
+class noncobject cHasher;
+
+class cHasher
+{
+    fields:
+       string hash @getter(toString) @hint(the current hash value);
+}
+
 class cSimulation extends cObject
 {
     fields:
@@ -401,6 +409,7 @@ class cSimulation extends cObject
         int lastModuleId @group(modules) @hint(the largest module ID issued so far);
         cModule *systemModule @group(modules) @hint(the top-level module);
         cModule *module[] @sizeGetter(lastModuleId) @group(modules) @label(modules) @hint(list of modules, indexed with module ID);
+        cHasher *hasher @hint(used for fingerprint calculation);
 }
 
 class cScheduler extends cPolymorphic
