@@ -19,7 +19,7 @@ CPPOBJS_STD=\
     cdetect.obj cdisplaystring.obj cdoublepar.obj cdynamicexpression.obj \
     cenum.obj cexception.obj cfsm.obj cfunction.obj cgate.obj chist.obj \
     cksplit.obj clcg32.obj cllist.obj clongpar.obj cmersennetwister.obj \
-    cmessage.obj cmsgpar.obj cmodule.obj cmsgheap.obj cfingerprint.obj \
+    cmessage.obj cmsgpar.obj cmodule.obj cmsgheap.obj chasher.obj \
     cnedfunction.obj cobject.obj coutvect.obj cnamedobject.obj \
     cpar.obj cparvalue.obj cownedobject.obj cproperties.obj cproperty.obj \
     cpsquare.obj cqueue.obj cscheduler.obj csimplemodule.obj \

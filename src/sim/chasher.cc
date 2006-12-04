@@ -14,7 +14,7 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include "cfingerprint.h"
+#include "chasher.h"
 
 
 void cHasher::add(const char *p, size_t length)

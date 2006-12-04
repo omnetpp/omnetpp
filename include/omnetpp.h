@@ -38,7 +38,7 @@
 #include "cenvir.h"
 #include "cexception.h"
 #include "cexpression.h"
-#include "cfingerprint.h"
+#include "chasher.h"
 #include "cfsm.h"
 #include "cfunction.h"
 #include "cgate.h"

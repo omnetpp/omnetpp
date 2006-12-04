@@ -33,7 +33,7 @@
 #include "cstat.h"
 #include "cexception.h"
 #include "cparvalue.h"
-#include "cfingerprint.h"
+#include "chasher.h"
 
 #ifdef WITH_PARSIM
 #include "ccommbuffer.h"
