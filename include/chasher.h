@@ -51,18 +51,20 @@ class SIM_API cHasher
     }
 
   public:
-    //FIXME add comments!!
+    /**
+     * Constructor.
+     */
     cHasher() {ASSERT(sizeof(uint32)==4); ASSERT(sizeof(double)==8); value = 0;}
+
+    /**
+     * Destructor.
+     */
     ~cHasher() {}
 
+    /** @name Updating the hash */
+    //@{
     void reset() {value = 0;}
-    uint32 getHash() const {return value;}
-    uint32 parse(const char *fingerprint) const;
-    bool equals(const char *fingerprint) const;
-    std::string toString() const;
-
     void add(const char *p, size_t length);
-
     void add(int d)   {merge((uint32)d);}
     void add(short d) {merge((uint32)d);}
     void add(char d)  {merge((uint32)d);}
@@ -73,6 +75,32 @@ class SIM_API cHasher
     void add(unsigned long d)  {merge((uint64)(int64)d);} // sign! TODO regression test! as this is tricky
     void add(double d)  {merge(*(uint64 *)&d);}
     void add(const char *s)  {if (s) add(s, strlen(s)+1); else add(0);}
+    //@}
+
+    /** @name Obtaining the result */
+    //@{
+    /**
+     * Returns the hash value.
+     */
+    uint32 getHash() const {return value;}
+
+    /**
+     * Converts the given string to a numeric fingerprint value. The object is
+     * not changed. Throws an error if the string does not contain a valid
+     * fingerprint.
+     */
+    uint32 parse(const char *fingerprint) const;
+
+    /**
+     * Parses the given fingerprint string, and compares it to the stored hash.
+     */
+    bool equals(const char *fingerprint) const;
+
+    /**
+     * Returns the textual representation (hex string) of the stored hash.
+     */
+    std::string toString() const;
+    //@}
 };
 
 #endif
