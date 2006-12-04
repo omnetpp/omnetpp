@@ -35,7 +35,7 @@ typedef unsigned int uint32;   //FIXME into defs.h or something???
  * 64-bit, so we always convert them to 64 bits. We don't try to convert
  * endianness, it would be too costly.
  */
-class SIM_API cHasher : noncopyable
+class SIM_API cHasher
 {
   private:
     uint32 value;
