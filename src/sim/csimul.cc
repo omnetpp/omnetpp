@@ -34,6 +34,7 @@
 #include "cpar.h"
 #include "cstat.h"
 #include "cexception.h"
+#include "chasher.h"
 
 #ifdef WITH_PARSIM
 #include "ccommbuffer.h"
@@ -115,6 +116,8 @@ cSimulation::cSimulation(const char *name) :
     networktype = NULL;
     run_number = 0;
 
+    hasherp = NULL;
+
     // see init()
 }
 
@@ -140,6 +143,8 @@ void cSimulation::shutdown()
     deleteNetwork();
     // let go of msgQueue (removeFromOwnershipTree() cannot be called)
     msgQueue.ownerp = NULL;
+
+    delete hasherp;
 }
 
 void cSimulation::forEachChild(cVisitor *v)
@@ -558,6 +563,13 @@ void cSimulation::doOneEvent(cSimpleModule *mod)
     setContextModule(mod);
     setContextType(CTX_EVENT);
 
+    if (hasher())
+    {
+        // note: there's probably no value in adding eventNumber()
+        hasher()->add(simTime());
+        hasher()->add(mod->id());
+    }
+
     try
     {
         if (mod->usesActivity())
@@ -604,8 +616,8 @@ void cSimulation::doOneEvent(cSimpleModule *mod)
 
     // Note: simulation time (as read via simTime() from modules) is updated
     // in selectNextModule()) called right before the next doOneEvent().
-    // It must not be updated here, because it will interfere with parallel 
-    // simulation (cIdealSimulationProtocol, etc) that relies on simTime() 
+    // It must not be updated here, because it will interfere with parallel
+    // simulation (cIdealSimulationProtocol, etc) that relies on simTime()
     // returning the time of the last executed event. If Tkenv wants to display
     // the time of the next event, it should call guessNextSimtime().
 }
@@ -637,3 +649,12 @@ unsigned long cSimulation::getUniqueNumber()
 {
     return ev.getUniqueNumber();
 }
+
+void cSimulation::setHasher(cHasher *hasher)
+{
+    if (hasherp)
+        delete hasherp;
+    hasherp = hasher;
+}
+
+

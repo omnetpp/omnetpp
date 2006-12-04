@@ -40,6 +40,7 @@ class  cNetworkType;
 class  cException;
 class  cScheduler;
 class  cParsimPartition;
+class  cHasher;
 
 
 /**
@@ -91,6 +92,8 @@ class SIM_API cSimulation : public cObject
     cSimpleModule *backtomod;  // used in cSimpleModule::wait/sendmsg
     cException *exception;     // helper variable to get exceptions back from activity()
     int exception_type;        // helper variable, also for getting exceptions back from activity()
+
+    cHasher *hasherp;         // used for fingerprint calculation
 
   public:
     // internal: FES
@@ -428,6 +431,16 @@ class SIM_API cSimulation : public cObject
      */
     bool snapshot(cObject *obj, const char *label);
 
+    /**
+     * Returns the object used for fingerprint calculation. It returns NULL
+     * if no fingerprint is being calculated during this simulation run.
+     */
+    cHasher *hasher() {return hasherp;}
+
+    /**
+     * Installs a new hasher object, used for fingerprint calculation.
+     */
+    void setHasher(cHasher *hasher);
     //@}
 };
 

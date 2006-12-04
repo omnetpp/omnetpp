@@ -82,6 +82,8 @@ class ENVIR_API TOmnetApp
 
     int opt_netifcheckfreq;
 
+    opp_string opt_fingerprint;
+
 // WITH_PARSIM (note: no #ifdef to preserve class layout!)
     cParsimCommunications *parsimcomm;
     cParsimPartition *parsimpartition;
@@ -181,6 +183,9 @@ class ENVIR_API TOmnetApp
 
     // Utility function: NED file loading and list file handling
     virtual void processListFile(const char *listfilename, bool istemplistfile);
+
+    // Utility function: checks simulation fingerprint and displays a message accordingly
+    void checkFingerprint();
 
     /**
      * Partition Id when parallel simulation is active.

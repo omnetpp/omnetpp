@@ -1,3 +1,10 @@
+2006-12-04  Andras Varga
+
+	* added hasher.h, for cHasher to calculate simulation fingerprints
+
+	* csimul.h: added method hasher() to provide access to fingerprint 
+	calculation for simulation models.
+
 2006-11-15  Andras Varga
 
 	* compat.h: removed some very old compatibility #defines

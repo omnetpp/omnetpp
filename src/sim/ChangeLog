@@ -1,3 +1,11 @@
+2006-12-04  Andras Varga
+
+	* added hasher.cc, implementation of cHasher
+
+	* csimul.cc: implemented fingerprint calculation: modified 
+	doOneEvent() to add simulation time and module ID of each event into 
+	the hash.
+
 2006-11-07  Andras Varga
 
 	* implemented cDensityEstBase::cellInfo(int k); refined sim_std.msg

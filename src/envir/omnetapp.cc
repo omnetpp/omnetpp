@@ -40,6 +40,7 @@
 #include "cxmlelement.h"
 #include "cxmldoccache.h"
 #include "cstrtokenizer2.h"
+#include "chasher.h"
 
 #ifdef WITH_PARSIM
 #include "cparsimcomm.h"
@@ -582,6 +583,13 @@ void TOmnetApp::readPerRunOptions(int run_no)
     opt_simtimelimit = cfg->getAsTime2(section, "General", "sim-time-limit", 0.0);
     opt_cputimelimit = (long)cfg->getAsTime2(section, "General", "cpu-time-limit", 0.0);
     opt_netifcheckfreq = cfg->getAsInt2(section, "General", "netif-check-freq", 1);
+    opt_fingerprint = cfg->getAsString2(section, "General", "fingerprint", "");
+
+    // install hasher object
+    if (!opt_fingerprint.empty())
+        simulation.setHasher(new cHasher());
+    else
+        simulation.setHasher(NULL);
 
     cModule::pause_in_sendmsg = opt_pause_in_sendmsg;
 
@@ -887,3 +895,16 @@ void TOmnetApp::stoppedWithException(cException *e)
         parsimpartition->broadcastException(e);
 #endif
 }
+
+void TOmnetApp::checkFingerprint()
+{
+    if (opt_fingerprint.empty() || !simulation.hasher())
+        return;
+
+    if (simulation.hasher()->equals(opt_fingerprint.c_str()))
+        putmsg("Fingerprint successfully verified.");
+    else
+        putmsg((std::string("Fingerprint mismatch! expected: ")+opt_fingerprint.c_str()+
+               ", actual: "+simulation.hasher()->toString()).c_str());
+}
+

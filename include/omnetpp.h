@@ -56,6 +56,7 @@
 #include "cdetect.h"
 #include "ctopo.h"
 #include "cfsm.h"
+#include "chasher.h"
 #include "protocol.h"
 #include "cenvir.h"
 #include "cenum.h"
