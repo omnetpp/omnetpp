@@ -56,7 +56,6 @@ UnitConversion::UnitDesc *UnitConversion::lookupUnit(const char *unit)
 
 double UnitConversion::parseQuantity(const char *str, const char *expectedUnit)
 {
-__asm int 3;
     double result = 0;
     const char *unit = NULL;
     const char *s = str;
@@ -64,17 +63,18 @@ __asm int 3;
     UnitDesc *expectedUnitDesc = expectedUnit ? lookupUnit(expectedUnit) : NULL;
     bool expectedUnitIsBaseUnit = expectedUnitDesc ? expectedUnitDesc->mult==1 : false;
 
-    while (*s!='\0')
+    while (*s)
     {
         // read number into num and skip it
         double num;
         int len;
         while (isspace(*s)) s++;
-        if (0==sscanf(s, "%lf%n", &num, &len))
+        if (sscanf(s, "%lf%n", &num, &len) <= 0)
             break; // syntax error -- number expected
         s+=len;
 
         // number must be followed by a unit
+        while (isspace(*s)) s++;
         if (!isalpha(*s))
         {
             // if we came across a unit name earlier in this string, require one afterwards too
@@ -124,8 +124,9 @@ __asm int 3;
 
             // meters given but seconds expected
             if (expectedUnit && strcmp(unit, expectedUnit)!=0)
-                throw new Exception("error in quantity '%s': appears to be given in '%s' but '%s' is expected here",
-                                    str, unit, expectedUnit);
+                throw new Exception("error in quantity '%s': supplied unit '%s' does not match expected unit '%s' "
+                                    "(note that conversion is only performed into base units: s, m, Hz, B, bps, W)",
+                                    str, tmpUnit, expectedUnit);
         }
         else if (strcmp(tmpUnitDesc->baseUnit, unit)!=0)
         {
