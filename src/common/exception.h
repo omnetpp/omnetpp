@@ -20,7 +20,7 @@
 /**
  * Exceptions of this type are thrown on errors during processing.
  */
-class Exception
+class Exception //FIXME use some more specific name...
 {
   protected:
     std::string errormsg;

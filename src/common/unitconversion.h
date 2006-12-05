@@ -23,7 +23,7 @@
 class UnitConversion
 {
   public:
-    struct UnitDesc { const char *unit; double mult; const char *baseunit; const char *longname; };
+    struct UnitDesc { const char *unit; double mult; const char *baseUnit; const char *longName; };
   protected:
     UnitDesc unitTable[];
 
@@ -48,12 +48,12 @@ class UnitConversion
      * - if string contains a single unit (e.g. "5.1
      * Operation:
      */
-    double parseQuantity(const char *str, const char *requiredUnit=NULL);
+    double parseQuantity(const char *str, const char *expectedUnit=NULL);
 
     /**
      *
      */
-    std::string formatQuantity(double d, const char *requiredUnit=NULL);
+    std::string formatQuantity(double d, const char *unit=NULL);
 };
 
 #endif
