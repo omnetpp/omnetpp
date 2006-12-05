@@ -63,12 +63,12 @@ void cNEDLoader::registerBuiltinDeclarations()
         "channel withcppclass cBasicChannel\n"
         "{\n"
         "    bool disabled = false;\n"
-        "    double delay @unit(s) = 0;\n"
+        "    double delay = 0 @unit(s);\n"
         "    double error = 0;\n"
-        "    double datarate @unit(bps) = 0;\n"
+        "    double datarate = 0 @unit(bps);\n"
         "}\n"
 
-        "channel withcppclass cNullChannel\n";
+        "channel withcppclass cNullChannel\n"
         "{\n"
         "}\n"
 
@@ -90,6 +90,11 @@ void cNEDLoader::registerBuiltinDeclarations()
     NEDErrorStore errors;
     NEDParser parser(&errors);
     NEDElement *tree = parser.parseNEDText(nedcode);
+    if (errors.containsError())
+    {
+        delete tree;
+        throw new cRuntimeError("error during parsing of internal NED declarations");
+    }
     //FIXME check errors; run validation perhaps, etc!
 
     try
