@@ -664,10 +664,14 @@ cgate.obj: cgate.cc \
 chasher.obj: chasher.cc \
   ../../include/chasher.h \
   ../../include/defs.h \
+  ../../include/cobject.h \
   ../../include/cexception.h \
+  ../../include/util.h \
+  ../../include/cvisitor.h \
+  ../../include/regmacros.h \
   ../../include/errmsg.h \
-  ../../include/opp_string.h \
-  ../../include/util.h
+  ../../include/onstartup.h \
+  ../../include/opp_string.h
 chist.obj: chist.cc \
   ../../include/random.h \
   ../../include/distrib.h \

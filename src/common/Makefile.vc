@@ -87,6 +87,9 @@ patternmatcher.obj: patternmatcher.cc \
   exception.h
 stringtokenizer.obj: stringtokenizer.cc \
   stringtokenizer.h
+unitconversion.obj: unitconversion.cc \
+  unitconversion.h \
+  exception.h
 util.obj: util.cc \
   util.h \
   exception.h
