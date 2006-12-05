@@ -63,9 +63,9 @@ void cNEDLoader::registerBuiltinDeclarations()
         "channel withcppclass cBasicChannel\n"
         "{\n"
         "    bool disabled = false;\n"
-        "    double delay = 0;\n"
+        "    double delay @unit(s) = 0;\n"
         "    double error = 0;\n"
-        "    double datarate = 0;\n"
+        "    double datarate @unit(bps) = 0;\n"
         "}\n"
 
         "channel withcppclass cNullChannel\n";
