@@ -379,10 +379,11 @@ LiteralNode *createQuantity(const char *text)
     if (text) c->setText(text);
 
     double d = 0;
+    std::string unit;
 
     try {
         // evaluate quantities like "5s 230ms"
-        d = UnitConversion().parseQuantity(text);
+        d = UnitConversion().parseQuantity(text, unit);
     }
     catch (Exception *e) {
         np->error(e->message(), pos.li);
@@ -394,6 +395,8 @@ LiteralNode *createQuantity(const char *text)
     sprintf(buf,"%g",d);
     c->setValue(buf);
 
+    if (!unit.empty())
+        c->setUnit(unit.c_str());
     return c;
 }
 

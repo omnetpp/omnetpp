@@ -77,6 +77,18 @@ bool UnitConversion::readUnit(const char *&s, std::string& unit)
 
 double UnitConversion::parseQuantity(const char *str, const char *expectedUnit)
 {
+    std::string dummy;
+    return doParseQuantity(str, expectedUnit, dummy);
+}
+
+double UnitConversion::parseQuantity(const char *str, std::string& outActualUnit)
+{
+    return doParseQuantity(str, NULL, outActualUnit);
+}
+
+double UnitConversion::doParseQuantity(const char *str, const char *expectedUnit, std::string& unit)
+{
+    unit = "";
     const char *s = str;
 
     // read first number
@@ -109,7 +121,7 @@ double UnitConversion::parseQuantity(const char *str, const char *expectedUnit)
     if (performConversion && expectedUnit && (!tmpUnitDesc || std::string(tmpUnitDesc->baseUnit)!=expectedUnit))
         throw new Exception("error in quantity '%s': supplied unit '%s' does not match expected unit '%s'",
                             str, tmpUnit.c_str(), expectedUnit);
-    std::string unit = performConversion ? tmpUnitDesc->baseUnit : tmpUnit;
+    unit = performConversion ? tmpUnitDesc->baseUnit : tmpUnit;
 
     double result = performConversion ? tmpUnitDesc->mult * num : num;
 

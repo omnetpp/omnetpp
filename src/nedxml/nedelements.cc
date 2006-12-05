@@ -2501,7 +2501,7 @@ const char *LiteralNode::getAttributeName(int k) const
 {
     switch (k) {
         case 0: return "type";
-        case 1: return "unit-type";
+        case 1: return "unit";
         case 2: return "text";
         case 3: return "value";
         default: return 0;
@@ -2512,7 +2512,7 @@ const char *LiteralNode::getAttribute(int k) const
 {
     switch (k) {
         case 0: return enumToString(type, littype_vals, littype_nums, littype_n);
-        case 1: return unitType.c_str();
+        case 1: return unit.c_str();
         case 2: return text.c_str();
         case 3: return value.c_str();
         default: return 0;
@@ -2523,7 +2523,7 @@ void LiteralNode::setAttribute(int k, const char *val)
 {
     switch (k) {
         case 0: type = stringToEnum(val, littype_vals, littype_nums, littype_n); break;
-        case 1: unitType = val; break;
+        case 1: unit = val; break;
         case 2: text = val; break;
         case 3: value = val; break;
         default: ;

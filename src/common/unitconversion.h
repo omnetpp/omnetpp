@@ -27,10 +27,10 @@ class UnitConversion
     static UnitDesc unitTable[];
 
   protected:
+    UnitDesc *lookupUnit(const char *unit);
     static bool readNumber(const char *&s, double& number);
     static bool readUnit(const char *&s, std::string& unit);
-
-    UnitDesc *lookupUnit(const char *unit);
+    double doParseQuantity(const char *str, const char *expectedUnit, std::string& actualUnit);
 
   public:
     UnitConversion() {}
@@ -48,9 +48,25 @@ class UnitConversion
      * - if string does not contain a unit (just a number), return the number
      *   without conversion.
      * - if string contains a single unit (e.g. "5.1
-     * Operation:
+     * ....
+     * XXX todo
+     * ....
+     * - if the expected unit is a recognized but non-base unit (like ms, Kbps),
+     *   the quantity must be given in exactly the same unit (ms, Kbps).
+     *   No conversion takes place. The reason is (1) to encourage models to
+     *   standardise on expecting parameter values to be in the base units (s, bps);
+     *   and (2) to prevent silently changing actual values of parameters if
+     *   @unit is accidentally removed from the parameter's NED declaration.
      */
     double parseQuantity(const char *str, const char *expectedUnit=NULL);
+
+    /**
+     * XXX. todo docu. like the one above, but expectedUnit==NULL assumed,
+     * and returns actual unit too (if there was one). The expectedUnit param
+     * is left out, because if given, it outActualUnit would be exactly the
+     * same (else exception!), so the two don't make sense together.
+     */
+    double parseQuantity(const char *str, std::string& outActualUnit);
 
     /**
      *

@@ -1781,7 +1781,7 @@ class IdentNode : public NEDElement
  * <!ELEMENT literal (comment*)>
  * <!ATTLIST literal
  *      type  (double|int|string|bool|unit|spec)  #REQUIRED
- *      unit-type           CDATA     #IMPLIED
+ *      unit                CDATA     #IMPLIED
  *      text                CDATA     #IMPLIED
  *      value               CDATA     #IMPLIED>
  * </pre>
@@ -1792,7 +1792,7 @@ class LiteralNode : public NEDElement
 {
   private:
     int type;
-    std::string unitType;
+    std::string unit;
     std::string text;
     std::string value;
   public:
@@ -1818,8 +1818,8 @@ class LiteralNode : public NEDElement
     //@{
     int getType() const  {return type;}
     void setType(int val);
-    const char * getUnitType() const  {return unitType.c_str();}
-    void setUnitType(const char * val)  {unitType = val;}
+    const char * getUnit() const  {return unit.c_str();}
+    void setUnit(const char * val)  {unit = val;}
     const char * getText() const  {return text.c_str();}
     void setText(const char * val)  {text = val;}
     const char * getValue() const  {return value.c_str();}
