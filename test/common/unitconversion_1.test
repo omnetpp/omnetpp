@@ -22,7 +22,7 @@ static void parseAndPrint(const char *text, const char *expectedUnit=NULL)
 
 %activity:
 
-const char *expectedUnits[] = {NULL, "ms", "s", "W", "bogomips"};
+const char *expectedUnits[] = {NULL, "s", "ms", "W", "bogomips"};
 
 #define P(x) parseAndPrint(x, expectedUnits[i])
 

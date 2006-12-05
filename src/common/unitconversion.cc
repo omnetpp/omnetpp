@@ -100,7 +100,7 @@ double UnitConversion::parseQuantity(const char *str, const char *expectedUnit)
 
         // look up and apply unit
         UnitDesc *tmpUnitDesc = lookupUnit(tmpUnit);
-        if (!tmpUnitDesc || expectedUnitIsBaseUnit)
+        if (!tmpUnitDesc || !expectedUnitIsBaseUnit)
         {
             // Case A: no conversion. Either because unit is unknown, or the
             // expected unit is not a base unit (we won't convert to "ms" only "s"!)
@@ -117,12 +117,15 @@ double UnitConversion::parseQuantity(const char *str, const char *expectedUnit)
             break;
         }
 
+        // Case B: possible conversion.
+
         // known unit -- it must match expectedUnit and previous units in this string
         if (!unit)
         {
+            // no unit seen yet, remember this one
             unit = tmpUnitDesc->baseUnit;
 
-            // meters given but seconds expected
+            // check it matches expected unit ("meters given but seconds expected")
             if (expectedUnit && strcmp(unit, expectedUnit)!=0)
                 throw new Exception("error in quantity '%s': supplied unit '%s' does not match expected unit '%s' "
                                     "(note that conversion is only performed into base units: s, m, Hz, B, bps, W)",
@@ -130,7 +133,7 @@ double UnitConversion::parseQuantity(const char *str, const char *expectedUnit)
         }
         else if (strcmp(tmpUnitDesc->baseUnit, unit)!=0)
         {
-            // seconds and meters cannot be mixed within one string
+            // cannot mix distance with time etc in the input string
             throw new Exception("error in quantity '%s': mismatch of units '%s' and '%s'",
                                 str, unit, tmpUnit);
         }
