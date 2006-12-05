@@ -9,6 +9,7 @@ JDK="$(TOOLS_DIR)\jdk1.5.0"
 SWIG="$(TOOLS_DIR)\SWIG-1.3.25\swig.exe"
 
 NEDXML=$(OMNETPP_ROOT)\src\nedxml
+COMMON=$(OMNETPP_ROOT)\src\common
 
 
 #
@@ -50,7 +51,7 @@ runswig:
 	$(SWIG) -c++ -java -package $(SWIGPKG) -I$(NEDXML) -outdir $(SWIGDIR) nedxml.i
 
 nedxml_engine.dll : $(OBJS)
-	$(LINK) /dll /out:"nedxml_engine.dll" $(OBJS) $(NEDXML)/nedxml.lib $(LDFLAGS)
+	$(LINK) /dll /out:"nedxml_engine.dll" $(OBJS) $(NEDXML)/nedxml.lib $(COMMON)/common.lib $(LDFLAGS)
 
 depend:
 	$(MAKEDEPEND) -I../../include -fMakefile.vc -- *.cc
