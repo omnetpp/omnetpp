@@ -7,7 +7,7 @@ Tests the UnitConversion class
 
 static void parseAndPrint(const char *text, const char *expectedUnit=NULL)
 {
-    ev << text;
+    ev << "'" << text << "'";
     if (expectedUnit) ev << " (as " << expectedUnit << ")";
     ev << " ==> ";
     try {
@@ -22,7 +22,7 @@ static void parseAndPrint(const char *text, const char *expectedUnit=NULL)
 
 %activity:
 
-const char *expectedUnits[] = {NULL, "ms", "s", "W", "foo"};
+const char *expectedUnits[] = {NULL, "ms", "s", "W", "bogomips"};
 
 #define P(x) parseAndPrint(x, expectedUnits[i])
 
@@ -30,25 +30,43 @@ for (int i=0; i<5; i++)
 {
     ev << "\n";
 
+    // bad syntax
+    P(""); //E
+    P("  "); //E
+    P("2 33"); //E
+    P("2 33 "); //E
+    P("2 33s "); //E
+    P("1.5s 33"); //E
+    P("1s 99 Kbps"); //E
+    P("1s 1mi 99 Kbps"); //E
+    P("1s 99 bogomips"); //E
+    P("3 bogomips 99"); //E
+    P("3 bogomips 3 gallons"); //E
+
     // plain number
     P("3.14");
     P("6e23");
-    P("  3.14  ");
-    P("2 33"); //E
-    P("2 33  "); //E
+    P(" 3.14 ");
 
     P("1.5s");
-    P("  1.5s  ");
-    P("  1.5  s  ");
-    P("1.5s 33"); //E
+    P(" 1.5s ");
+    P(" 1.5 s ");
 
     P("1500ms");
 
     P("64 Kbps");
     P("64000 bps");
 
-    P("99 foo");
-    P("99 foo");
+    P(" 200mW");
+    P(" 1W 100mW");
+
+    P("99 bogomips");
+
+    P("1h 0.1s");
+    P("2mi 1.5s");
+    P("1s 550ms 12us");
+    P(" 1s 550ms 12us ");
+    P(" 1s 550ms 12us ");
 }
 ev << ".\n";
 
