@@ -1,5 +1,5 @@
 //=========================================================================
-//  UNITCONVERSION.H - part of
+//  UNITCONVERSION.CC - part of
 //                  OMNeT++/OMNEST
 //           Discrete System Simulation in C++
 //
@@ -12,56 +12,48 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef _UNITCONVERSION_H_
-#define _UNITCONVERSION_H_
+#include "unitconversion.h"
 
-#include "exception.h"
-
-/**
- * XXX
- */
-class UnitConversion
-{
-  public:
-    enum Unit {UNIT_UNKNOWN, TIME_SECONDS, DATARATE_BPS, DATA_BYTES, DISTANCE_METERS, UNIT_OTHER };
-    struct UnitDesc { const char *name; double mult; Unit type; };
-
-  protected:
-    UnitDesc unitTable[];
-    double parseQuantity(const char *str);  //XXX error handling? return unit type?
-
-};
-
-#endif
-
-//XXX find correct place for this stuff
 UnitConversion::UnitDesc unitTable[] = {
-    { "d",   86400, UnitConversion::TIME_SECONDS },
-    { "h",    3600, UnitConversion::TIME_SECONDS },
-    { "mi",     60, UnitConversion::TIME_SECONDS },
-    { "s",       1, UnitConversion::TIME_SECONDS },
-    { "ms",   1e-3, UnitConversion::TIME_SECONDS },
-    { "us",   1e-9, UnitConversion::TIME_SECONDS },
-    { "ns",  1e-12, UnitConversion::TIME_SECONDS },
-    { "Tbps", 1e12, UnitConversion::DATARATE_BPS },
-    { "Gbps",  1e9, UnitConversion::DATARATE_BPS },
-    { "Mbps",  1e6, UnitConversion::DATARATE_BPS },
-    { "Kbps",  1e3, UnitConversion::DATARATE_BPS },
-    { "bps",     1, UnitConversion::DATARATE_BPS },
-    { "TB",   1e12, UnitConversion::DATA_BYTES },
-    { "GB",    1e9, UnitConversion::DATA_BYTES },
-    { "MB",    1e6, UnitConversion::DATA_BYTES },
-    { "KB",    1e3, UnitConversion::DATA_BYTES },
-    { "B",       1, UnitConversion::DATA_BYTES },
-    { "km",    1e3, UnitConversion::DISTANCE_METERS },
-    { "m",       1, UnitConversion::DISTANCE_METERS },
-    { "cm",   1e-2, UnitConversion::DISTANCE_METERS },
-    { "mm",   1e-3, UnitConversion::DISTANCE_METERS },
-    //XXX stop here? or we have to do watts, Hz, m/s, bauds, 1/s, dB, ...
-    { NULL,      0, UnitConversion::UNIT_UNKNOWN }
+    { "d",   86400, "s",    "day" },
+    { "h",    3600, "s",    "hour" },
+    { "mi",     60, "s",    "minute" },
+    { "s",       1, "s",    "second" },
+    { "ms",   1e-3, "s",    "millisecond" },
+    { "us",   1e-9, "s",    "microsecond" },
+    { "ns",  1e-12, "s",    "nanosecond" },
+    { "Tbps", 1e12, "bps",  "terabit/s" },
+    { "Gbps",  1e9, "bps",  "gigabit/s" },
+    { "Mbps",  1e6, "bps",  "megabit/s" },
+    { "Kbps",  1e3, "bps",  "kilobit/s" },
+    { "bps",     1, "bps",  "bit/s" },
+    { "TB",   1e12, "B",    "terabyte" },
+    { "GB",    1e9, "B",    "gigabyte" },
+    { "MB",    1e6, "B",    "megabyte" },
+    { "KB",    1e3, "B",    "kilobyte" },
+    { "B",       1, "B",    "byte" },
+    { "km",    1e3, "m",    "kilometer" },
+    { "m",       1, "m",    "meter" },
+    { "cm",   1e-2, "m",    "centimeter" },
+    { "mm",   1e-3, "m",    "millimeter" },
+    { "mW",   1e-3, "W",    "milliwatt" },
+    { "W",       1, "W",    "watt" },
+    { "GHz",   1e9, "Hz",   "gigaherz" },
+    { "MHz",   1e6, "Hz",   "megaherz" },
+    { "kHz",   1e3, "Hz",   "kiloherz" },
+    { "Hz",      1, "Hz",   "herz" },
+    { NULL,      0, NULL,   NULL }
 };
 
-double UnitConversion::parseQuantity(const char *str)  //XXX error handling? return unit type?
+UnitConversion::UnitDesc *UnitConversion::lookupUnit(const char *unit)
+{
+    for (int i=0; unitTable[i].unit; i++)
+        if (!strcmp(unitTable[i].unit, unit))
+            return unitTable+i;
+    return NULL;
+}
+
+double UnitConversion::parseQuantity(const char *str, const char *unit)  //XXX error handling? return unit type?
 {
     double d = 0;
     Unit type = UNIT_UNKNOWN;
