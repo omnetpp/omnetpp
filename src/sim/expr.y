@@ -277,7 +277,7 @@ numliteral
         | REALCONSTANT
                 { *e++ = strtod($1,NULL); delete [] $1; }
         | quantity
-                { *e++ = parseQuantity($1); delete [] $1; }
+                { *e++ = parseQuantity($1); delete [] $1; /*TODO find out how we can bring @unit() here... */ }
         ;
 
 quantity
