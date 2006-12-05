@@ -370,17 +370,79 @@ LiteralNode *createLiteral(int type, YYLTYPE valuepos, YYLTYPE textpos)
     return c;
 }
 
+//XXX find correct place for this stuff
+enum UnitType {UNIT_NONE, TIME_SECONDS, DATARATE_BPS, DATA_BYTES, DISTANCE_METERS };
+struct Unit { const char *name; double mult; UnitType type; };
+Unit unitTable[] = {
+    { "d",   86400, TIME_SECONDS },
+    { "h",    3600, TIME_SECONDS },
+    { "mi",     60, TIME_SECONDS },
+    { "s",       1, TIME_SECONDS },
+    { "ms",   1e-3, TIME_SECONDS },
+    { "us",   1e-9, TIME_SECONDS },
+    { "ns",  1e-12, TIME_SECONDS },
+    { "Tbps", 1e12, DATARATE_BPS },
+    { "Gbps",  1e9, DATARATE_BPS },
+    { "Mbps",  1e6, DATARATE_BPS },
+    { "Kbps",  1e3, DATARATE_BPS },
+    { "bps",     1, DATARATE_BPS },
+    { "TB",   1e12, DATA_BYTES },
+    { "GB",    1e9, DATA_BYTES },
+    { "MB",    1e6, DATA_BYTES },
+    { "KB",    1e3, DATA_BYTES },
+    { "B",       1, DATA_BYTES },
+    { "km",    1e3, DISTANCE_METERS },
+    { "m",       1, DISTANCE_METERS },
+    { "cm",   1e-2, DISTANCE_METERS },
+    { "mm",   1e-3, DISTANCE_METERS },
+    //XXX stop here? or we have to do watts, Hz, m/s, bauds, 1/s, dB, ...
+    { NULL,      0, UNIT_NONE }
+};
 
-/*
-    time = 10d 4h 34mi 23s 123ms 675us 999ns; // minutes is "mi" not "m"!!!! change strToSimtime()!!!!
-    datarate = 10Tbps 10Gbps 234Mbps 123Kbps 23bps;
-    filelengthBytes = 10TB 10GB 100MB 654KB 34B;
-    distance = 100km 33m 230mm;
- */
-double parseQuantity(const char *text)
+double parseQuantity(const char *str)  //XXX error handling? return unit type?
 {
-    printf("FIXME implement parseQuantity!!!!\n"); //FIXME
-    return 0.0;
+    double d = 0;
+    UnitType type = UNIT_NONE;
+    while (*str!='\0')
+    {
+        // read number into num and skip it
+        double num;
+        int len;
+        while (isspace(*str)) str++;
+        if (0==sscanf(str, "%lf%n", &num, &len))
+            break; // break if error
+        str+=len;
+
+        // is there a unit coming?
+        while (isspace(*str)) str++;
+        if (!isalpha(*str))
+        {
+            d += num;
+            break; // nothing can come after a plain number  XXX revise
+        }
+
+        // extract unit
+        char unit[16];
+        int i;
+        for (i=0; i<15 && isalpha(str[i]); i++)
+            unit[i] = str[i];
+        if (i==16)
+            break; // error: unit name too long XXX revise
+        unit[i] = '\0';
+
+        // look up and apply unit
+        for (i=0; unitTable[i].name; i++)
+            if (!strcmp(unitTable[i].name, unit))
+                break;
+        if (!unitTable[i].name)
+            break; // error: unit not in table  XXX revise
+        if (type!=UNIT_NONE && unitTable[i].type!=type)
+            break; // error: unit mismatch   XXX revise
+        type = unitTable[i].type;
+
+        d += unitTable[i].mult * num;
+    }
+    return d;
 }
 
 /*
@@ -434,15 +496,15 @@ LiteralNode *createQuantity(const char *text)
     c->setType(NED_CONST_UNIT);
     if (text) c->setText(text);
 
-    double t = parseQuantity(text);
-    if (t<0)
+    double d = parseQuantity(text);
+    if (d<0)
     {
         char msg[130];
         sprintf(msg,"invalid constant '%.100s'",text);
         np->error(msg, pos.li);
     }
     char buf[32];
-    sprintf(buf,"%g",t);
+    sprintf(buf,"%g",d);
     c->setValue(buf);
 
     return c;
