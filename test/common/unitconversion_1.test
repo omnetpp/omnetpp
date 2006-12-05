@@ -1,0 +1,132 @@
+%description:
+Tests the UnitConversion class
+
+%global:
+
+#include "unitconversion.h"
+
+static void parseAndPrint(const char *text, const char *expectedUnit=NULL)
+{
+    ev << text;
+    if (expectedUnit) ev << " (as " << expectedUnit << ")";
+    ev << " ==> ";
+    try {
+        double d = UnitConversion().parseQuantity(text, expectedUnit);
+        ev << d << "\n";
+    }
+    catch (Exception *e) {
+        ev << "ERROR: " << e->message() << "\n";
+        delete e;
+    }
+}
+
+%activity:
+
+const char *expectedUnits[] = {NULL, "ms", "s", "W", "foo"};
+
+#define P(x) parseAndPrint(x, expectedUnits[i])
+
+for (int i=0; i<5; i++)
+{
+    ev << "\n";
+
+    // plain number
+    P("3.14");
+    P("6e23");
+    P("  3.14  ");
+    P("2 33"); //E
+    P("2 33  "); //E
+
+    P("1.5s");
+    P("  1.5s  ");
+    P("  1.5  s  ");
+    P("1.5s 33"); //E
+
+    P("1500ms");
+
+    P("64 Kbps");
+    P("64000 bps");
+
+    P("99 foo");
+    P("99 foo");
+}
+ev << ".\n";
+
+
+%contains: stdout
+3.14 ==> 3.14
+6e23 ==> 6e+023
+  3.14   ==> 3.14
+2 33 ==> ERROR: syntax error parsing quantity '2 33'
+2 33   ==> ERROR: syntax error parsing quantity '2 33  '
+1.5s ==> 1.5
+  1.5s   ==> ERROR: syntax error parsing quantity '  1.5s  ': missing unit
+  1.5  s   ==> ERROR: syntax error parsing quantity '  1.5  s  '
+1.5s 33 ==> ERROR: syntax error parsing quantity '1.5s 33': missing unit
+1500ms ==> 1.5
+64 Kbps ==> ERROR: syntax error parsing quantity '64 Kbps'
+64000 bps ==> ERROR: syntax error parsing quantity '64000 bps'
+99 foo ==> ERROR: syntax error parsing quantity '99 foo'
+99 foo ==> ERROR: syntax error parsing quantity '99 foo'
+
+3.14 (as ms) ==> 3.14
+6e23 (as ms) ==> 6e+023
+  3.14   (as ms) ==> 3.14
+2 33 (as ms) ==> ERROR: syntax error parsing quantity '2 33'
+2 33   (as ms) ==> ERROR: syntax error parsing quantity '2 33  '
+1.5s (as ms) ==> ERROR: error in quantity '1.5s': appears to be given in 's' but 'ms' is expected here
+  1.5s   (as ms) ==> ERROR: error in quantity '  1.5s  ': appears to be given in 's' but 'ms' is expected here
+  1.5  s   (as ms) ==> ERROR: syntax error parsing quantity '  1.5  s  '
+1.5s 33 (as ms) ==> ERROR: error in quantity '1.5s 33': appears to be given in 's' but 'ms' is expected here
+1500ms (as ms) ==> ERROR: error in quantity '1500ms': appears to be given in 's' but 'ms' is expected here
+64 Kbps (as ms) ==> ERROR: syntax error parsing quantity '64 Kbps'
+64000 bps (as ms) ==> ERROR: syntax error parsing quantity '64000 bps'
+99 foo (as ms) ==> ERROR: syntax error parsing quantity '99 foo'
+99 foo (as ms) ==> ERROR: syntax error parsing quantity '99 foo'
+
+3.14 (as s) ==> 3.14
+6e23 (as s) ==> 6e+023
+  3.14   (as s) ==> 3.14
+2 33 (as s) ==> ERROR: syntax error parsing quantity '2 33'
+2 33   (as s) ==> ERROR: syntax error parsing quantity '2 33  '
+1.5s (as s) ==> 1.5
+  1.5s   (as s) ==> 1.5
+  1.5  s   (as s) ==> ERROR: syntax error parsing quantity '  1.5  s  '
+1.5s 33 (as s) ==> ERROR: syntax error parsing quantity '1.5s 33'
+1500ms (as s) ==> ERROR: error in quantity '1500ms': supplied unit 'ms' does not match expected unit 's' (note that conversion is only performed into base units: s, m, Hz, B, bps, W)
+64 Kbps (as s) ==> ERROR: syntax error parsing quantity '64 Kbps'
+64000 bps (as s) ==> ERROR: syntax error parsing quantity '64000 bps'
+99 foo (as s) ==> ERROR: syntax error parsing quantity '99 foo'
+99 foo (as s) ==> ERROR: syntax error parsing quantity '99 foo'
+
+3.14 (as W) ==> 3.14
+6e23 (as W) ==> 6e+023
+  3.14   (as W) ==> 3.14
+2 33 (as W) ==> ERROR: syntax error parsing quantity '2 33'
+2 33   (as W) ==> ERROR: syntax error parsing quantity '2 33  '
+1.5s (as W) ==> ERROR: error in quantity '1.5s': supplied unit 's' does not match expected unit 'W' (note that conversion is only performed into base units: s, m, Hz, B, bps, W)
+  1.5s   (as W) ==> ERROR: error in quantity '  1.5s  ': supplied unit 's' does not match expected unit 'W' (note that conversion is only performed into base units: s, m, Hz, B, bps, W)
+  1.5  s   (as W) ==> ERROR: syntax error parsing quantity '  1.5  s  '
+1.5s 33 (as W) ==> ERROR: error in quantity '1.5s 33': supplied unit 's' does not match expected unit 'W' (note that conversion is only performed into base units: s, m, Hz, B, bps, W)
+1500ms (as W) ==> ERROR: error in quantity '1500ms': supplied unit 'ms' does not match expected unit 'W' (note that conversion is only performed into base units: s, m, Hz, B, bps, W)
+64 Kbps (as W) ==> ERROR: syntax error parsing quantity '64 Kbps'
+64000 bps (as W) ==> ERROR: syntax error parsing quantity '64000 bps'
+99 foo (as W) ==> ERROR: syntax error parsing quantity '99 foo'
+99 foo (as W) ==> ERROR: syntax error parsing quantity '99 foo'
+
+3.14 (as foo) ==> 3.14
+6e23 (as foo) ==> 6e+023
+  3.14   (as foo) ==> 3.14
+2 33 (as foo) ==> ERROR: syntax error parsing quantity '2 33'
+2 33   (as foo) ==> ERROR: syntax error parsing quantity '2 33  '
+1.5s (as foo) ==> ERROR: error in quantity '1.5s': appears to be given in 's' but 'foo' is expected here
+  1.5s   (as foo) ==> ERROR: error in quantity '  1.5s  ': appears to be given in 's' but 'foo' is expected here
+  1.5  s   (as foo) ==> ERROR: syntax error parsing quantity '  1.5  s  '
+1.5s 33 (as foo) ==> ERROR: error in quantity '1.5s 33': appears to be given in 's' but 'foo' is expected here
+1500ms (as foo) ==> ERROR: error in quantity '1500ms': appears to be given in 's' but 'foo' is expected here
+64 Kbps (as foo) ==> ERROR: syntax error parsing quantity '64 Kbps'
+64000 bps (as foo) ==> ERROR: syntax error parsing quantity '64000 bps'
+99 foo (as foo) ==> ERROR: syntax error parsing quantity '99 foo'
+99 foo (as foo) ==> ERROR: syntax error parsing quantity '99 foo'
+.
+
