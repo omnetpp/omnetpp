@@ -27,6 +27,9 @@ class UnitConversion
     static UnitDesc unitTable[];
 
   protected:
+    static bool readNumber(const char *&s, double& number);
+    static bool readUnit(const char *&s, std::string& unit);
+
     UnitDesc *lookupUnit(const char *unit);
 
   public:

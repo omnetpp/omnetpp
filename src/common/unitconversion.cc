@@ -21,8 +21,8 @@ UnitConversion::UnitDesc UnitConversion::unitTable[] = {
     { "mi",     60, "s",    "minute" },
     { "s",       1, "s",    "second" },
     { "ms",   1e-3, "s",    "millisecond" },
-    { "us",   1e-9, "s",    "microsecond" },
-    { "ns",  1e-12, "s",    "nanosecond" },
+    { "us",   1e-6, "s",    "microsecond" },
+    { "ns",   1e-9, "s",    "nanosecond" },
     { "Tbps", 1e12, "bps",  "terabit/s" },
     { "Gbps",  1e9, "bps",  "gigabit/s" },
     { "Mbps",  1e6, "bps",  "megabit/s" },
@@ -54,96 +54,88 @@ UnitConversion::UnitDesc *UnitConversion::lookupUnit(const char *unit)
     return NULL;
 }
 
+bool UnitConversion::readNumber(const char *&s, double& number)
+{
+    while (isspace(*s)) s++;
+    int len;
+    if (sscanf(s, "%lf%n", &number, &len) <= 0)
+        return false; // no number read
+    s+=len;
+    while (isspace(*s)) s++;
+    return true; // OK
+}
+
+bool UnitConversion::readUnit(const char *&s, std::string& unit)
+{
+    unit = "";
+    while (isspace(*s)) s++;
+    while (isalpha(*s))
+        unit.append(1, *s++);
+    while (isspace(*s)) s++;
+    return !unit.empty();
+}
+
 double UnitConversion::parseQuantity(const char *str, const char *expectedUnit)
 {
-    double result = 0;
-    const char *unit = NULL;
     const char *s = str;
 
-    UnitDesc *expectedUnitDesc = expectedUnit ? lookupUnit(expectedUnit) : NULL;
-    bool expectedUnitIsBaseUnit = expectedUnitDesc ? expectedUnitDesc->mult==1 : false;
+    // read first number
+    double num;
+    if (!readNumber(s, num))
+        throw new Exception("syntax error parsing quantity '%s': must begin with a number", str);
 
+    // first, deal with special case: just a plain number without unit
+    std::string tmpUnit;
+    if (!readUnit(s, tmpUnit))
+    {
+        if (*s)
+            throw new Exception("syntax error parsing quantity '%s': garbage after first number", str);
+        return num;
+    }
+
+    // check first unit against expected unit
+    UnitDesc *tmpUnitDesc = lookupUnit(tmpUnit.c_str());
+
+    // we'll only want to perform conversion if expected unit is a base unit (s, m, bps, B, W, etc)
+    UnitDesc *expectedUnitDesc = expectedUnit ? lookupUnit(expectedUnit) : NULL;
+    bool performConversion = !expectedUnit ? tmpUnitDesc!=NULL : expectedUnitDesc ? expectedUnitDesc->mult==1 : false;
+
+    // check it matches expected unit ("meters given but seconds expected")
+    if (!performConversion && expectedUnit && tmpUnit!=expectedUnit)
+        throw new Exception("error in quantity '%s': supplied unit '%s' does not match expected unit '%s' "
+                            "(note that conversion is only performed into base units: s, m, Hz, B, bps, W)",
+                            str, tmpUnit.c_str(), expectedUnit);
+
+    if (performConversion && expectedUnit && (!tmpUnitDesc || std::string(tmpUnitDesc->baseUnit)!=expectedUnit))
+        throw new Exception("error in quantity '%s': supplied unit '%s' does not match expected unit '%s'",
+                            str, tmpUnit.c_str(), expectedUnit);
+    std::string unit = performConversion ? tmpUnitDesc->baseUnit : tmpUnit;
+
+    double result = performConversion ? tmpUnitDesc->mult * num : num;
+
+    // now process the rest: [<number> <unit>]*
     while (*s)
     {
-        // read number into num and skip it
+        // read number
         double num;
-        int len;
-        while (isspace(*s)) s++;
-        if (sscanf(s, "%lf%n", &num, &len) <= 0)
-            break; // syntax error -- number expected
-        s+=len;
-
-        // number must be followed by a unit
-        while (isspace(*s)) s++;
-        if (!isalpha(*s))
-        {
-            // if we came across a unit name earlier in this string, require one afterwards too
-            if (unit)
-                throw new Exception("syntax error parsing quantity '%s': missing unit", str);
-
-            // if no unit follows, string must end after the number
-            assert(result==0);
-            result = num;
+        if (!readNumber(s, num))
             break;
-        }
 
-        // extract unit
-        const int MAXLEN=15;
-        char tmpUnit[MAXLEN+1];
-        int i;
-        for (i=0; i<MAXLEN && isalpha(s[i]); i++)
-            tmpUnit[i] = s[i];
-        if (i==MAXLEN)
-            throw new Exception("syntax error parsing quantity '%s': unit name too long", str);
-        tmpUnit[i] = '\0';
-        s += i;
+        // read unit
+        if (!readUnit(s, tmpUnit))
+            throw new Exception("syntax error parsing quantity '%s': missing unit", str);
 
-        // look up and apply unit
-        UnitDesc *tmpUnitDesc = lookupUnit(tmpUnit);
-        if (!tmpUnitDesc || !expectedUnitIsBaseUnit)
-        {
-            // Case A: no conversion. Either because unit is unknown, or the
-            // expected unit is not a base unit (we won't convert to "ms" only "s"!)
-
-            // unit must match expectedUnit
-            if (expectedUnit && strcmp(expectedUnit, tmpUnit)!=0)
-                throw new Exception("error in quantity '%s': supplied unit '%s' does not match expected unit '%s' "
-                                    "(note that conversion is only performed into base units: s, m, Hz, B, bps, W)",
-                                    str, tmpUnit, expectedUnit);
-
-            // string must end here
-            assert(result==0);
-            result = num;
-            break;
-        }
-
-        // Case B: possible conversion.
-
-        // known unit -- it must match expectedUnit and previous units in this string
-        if (!unit)
-        {
-            // no unit seen yet, remember this one
-            unit = tmpUnitDesc->baseUnit;
-
-            // check it matches expected unit ("meters given but seconds expected")
-            if (expectedUnit && strcmp(unit, expectedUnit)!=0)
-                throw new Exception("error in quantity '%s': supplied unit '%s' does not match expected unit '%s' "
-                                    "(note that conversion is only performed into base units: s, m, Hz, B, bps, W)",
-                                    str, tmpUnit, expectedUnit);
-        }
-        else if (strcmp(tmpUnitDesc->baseUnit, unit)!=0)
-        {
-            // cannot mix distance with time etc in the input string
-            throw new Exception("error in quantity '%s': mismatch of units '%s' and '%s'",
-                                str, unit, tmpUnit);
-        }
+        // check unit
+        UnitDesc *tmpUnitDesc = lookupUnit(tmpUnit.c_str());
+        if (performConversion ? (!tmpUnitDesc || unit!=tmpUnitDesc->baseUnit) : unit!=tmpUnit)
+            throw new Exception("error in quantity '%s': unit '%s' does not match '%s'",
+                                str, tmpUnit.c_str(), unit.c_str());
 
         // convert kilometers to meters, etc
-        result += tmpUnitDesc->mult * num;
+        result += performConversion ? tmpUnitDesc->mult * num : num;
     }
 
     // must be at the end of the input string
-    while (isspace(*s)) s++;
     if (*s)
         throw new Exception("syntax error parsing quantity '%s'", str);
 
