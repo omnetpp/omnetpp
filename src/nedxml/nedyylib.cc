@@ -18,6 +18,8 @@
 #include "nedyylib.h"
 #include "nedfilebuffer.h"
 #include "nedyydefs.h"
+#include "unitconversion.h"
+
 
 // this global var is shared by all lexers
 LineColumn pos, prevpos;
@@ -370,139 +372,24 @@ LiteralNode *createLiteral(int type, YYLTYPE valuepos, YYLTYPE textpos)
     return c;
 }
 
-//XXX find correct place for this stuff
-enum UnitType {UNIT_NONE, TIME_SECONDS, DATARATE_BPS, DATA_BYTES, DISTANCE_METERS };
-struct Unit { const char *name; double mult; UnitType type; };
-Unit unitTable[] = {
-    { "d",   86400, TIME_SECONDS },
-    { "h",    3600, TIME_SECONDS },
-    { "mi",     60, TIME_SECONDS },
-    { "s",       1, TIME_SECONDS },
-    { "ms",   1e-3, TIME_SECONDS },
-    { "us",   1e-9, TIME_SECONDS },
-    { "ns",  1e-12, TIME_SECONDS },
-    { "Tbps", 1e12, DATARATE_BPS },
-    { "Gbps",  1e9, DATARATE_BPS },
-    { "Mbps",  1e6, DATARATE_BPS },
-    { "Kbps",  1e3, DATARATE_BPS },
-    { "bps",     1, DATARATE_BPS },
-    { "TB",   1e12, DATA_BYTES },
-    { "GB",    1e9, DATA_BYTES },
-    { "MB",    1e6, DATA_BYTES },
-    { "KB",    1e3, DATA_BYTES },
-    { "B",       1, DATA_BYTES },
-    { "km",    1e3, DISTANCE_METERS },
-    { "m",       1, DISTANCE_METERS },
-    { "cm",   1e-2, DISTANCE_METERS },
-    { "mm",   1e-3, DISTANCE_METERS },
-    //XXX stop here? or we have to do watts, Hz, m/s, bauds, 1/s, dB, ...
-    { NULL,      0, UNIT_NONE }
-};
-
-double parseQuantity(const char *str)  //XXX error handling? return unit type?
-{
-    double d = 0;
-    UnitType type = UNIT_NONE;
-    while (*str!='\0')
-    {
-        // read number into num and skip it
-        double num;
-        int len;
-        while (isspace(*str)) str++;
-        if (0==sscanf(str, "%lf%n", &num, &len))
-            break; // break if error
-        str+=len;
-
-        // is there a unit coming?
-        while (isspace(*str)) str++;
-        if (!isalpha(*str))
-        {
-            d += num;
-            break; // nothing can come after a plain number  XXX revise
-        }
-
-        // extract unit
-        char unit[16];
-        int i;
-        for (i=0; i<15 && isalpha(str[i]); i++)
-            unit[i] = str[i];
-        if (i==16)
-            break; // error: unit name too long XXX revise
-        unit[i] = '\0';
-
-        // look up and apply unit
-        for (i=0; unitTable[i].name; i++)
-            if (!strcmp(unitTable[i].name, unit))
-                break;
-        if (!unitTable[i].name)
-            break; // error: unit not in table  XXX revise
-        if (type!=UNIT_NONE && unitTable[i].type!=type)
-            break; // error: unit mismatch   XXX revise
-        type = unitTable[i].type;
-
-        d += unitTable[i].mult * num;
-    }
-    return d;
-}
-
-/*
-simtime_t strToSimtime(const char *str)
-{
-    while (*str==' ' || *str=='\t') str++;
-    if (*str=='\0') return -1; // empty string not accepted
-    simtime_t d = strToSimtime0( str );
-    return (*str=='\0') ? d : -1; // OK if whole string could be interpreted
-}
-
-simtime_t strToSimtime0(const char *&str)
-{
-    double simtime = 0;
-
-    while (*str!='\0')
-    {
-          // read number into num and skip it
-          double num;
-          int len;
-          while (*str==' ' || *str=='\t') str++;
-          if (0==sscanf(str, "%lf%n", &num, &len)) break; // break if error
-          str+=len;
-
-          // process time unit: d,h,m,s,ms,us,ns
-          while (*str==' ' || *str=='\t') str++;
-          if (str[0]=='n' && str[1]=='s')
-                          {simtime += 1e-9*num; str+=2;}
-          else if (str[0]=='u' && str[1]=='s')
-                          {simtime += 1e-6*num; str+=2;}
-          else if (str[0]=='m' && str[1]=='s')
-                          {simtime += 1e-3*num; str+=2;}
-          else if (str[0]=='s')
-                          {simtime += num; str++;}
-          else if (str[0]=='m')
-                          {simtime += 60*num; str++;}
-          else if (str[0]=='h')
-                          {simtime += 3600*num; str++;}
-          else if (str[0]=='d')
-                          {simtime += 24*3600*num; str++;}
-          else
-                          {simtime += num; break;} // nothing can come after 'pure' number
-    }
-    return (simtime_t)simtime;
-}
-*/
-
 LiteralNode *createQuantity(const char *text)
 {
     LiteralNode *c = (LiteralNode *)createNodeWithTag(NED_LITERAL);
     c->setType(NED_CONST_UNIT);
     if (text) c->setText(text);
 
-    double d = parseQuantity(text);
-    if (d<0)
-    {
-        char msg[130];
-        sprintf(msg,"invalid constant '%.100s'",text);
-        np->error(msg, pos.li);
+    double d = 0;
+
+    try {
+        // evaluate quantities like "5s 230ms"
+        d = UnitConversion().parseQuantity(text);
     }
+    catch (Exception *e) {
+        np->error(e->message(), pos.li);
+        delete e;
+    }
+
+    // convert value back to string
     char buf[32];
     sprintf(buf,"%g",d);
     c->setValue(buf);

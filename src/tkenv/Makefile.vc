@@ -13,13 +13,13 @@ TKENV_EMBED_SUFFIX=
 !endif
 
 !if "$(LIB_SUFFIX)"==".dll"
-CFLAGS=$(CFLAGS) /DWIN32_DLL
+CFLAGS=$(CFLAGS) -DWIN32_DLL
 !endif
 
 #
 # Local definitions
 #
-COPTS=$(CFLAGS) /I "$(OMNETPP_INCL_DIR)" /I "../envir" /I "../common" $(TK_CFLAGS) /DBUILDING_TKENV /Fd"tkenv.pdb"
+COPTS=$(CFLAGS) -I"$(OMNETPP_INCL_DIR)" -I../envir -I../common $(TK_CFLAGS) -DBUILDING_TKENV /Fd"tkenv.pdb"
 
 OBJS = tkapp$(TKENV_EMBED_SUFFIX).obj tkcmd.obj tklib.obj inspector.obj \
        inspfactory.obj objinsp.obj modinsp.obj statinsp.obj \
@@ -52,10 +52,10 @@ tkenv.dll : $(OBJS) $(LIBS)
 	copy tkenv.ilib $(OMNETPP_LIB_DIR:/=\)
 
 tkapp.obj : tkapp.cc
-	$(CXX) /DOMNETPP_TKENV_DIR="\"$(OMNETPP_TKENV_DIR)\"" /DOMNETPP_IMAGE_PATH="\"$(OMNETPP_IMAGE_PATH)\"" $(COPTS) /c /Tp tkapp.cc
+	$(CXX) -DOMNETPP_TKENV_DIR="\"$(OMNETPP_TKENV_DIR)\"" -DOMNETPP_IMAGE_PATH="\"$(OMNETPP_IMAGE_PATH)\"" $(COPTS) /c /Tp tkapp.cc
 
 tkapp-e.obj : tkapp.cc  tclcode.cc
-	$(CXX) /Fo"tkapp-e.obj" /DOMNETPP_IMAGE_PATH="\"$(OMNETPP_IMAGE_PATH)\"" $(COPTS) /c /Tp tkapp.cc
+	$(CXX) /Fo"tkapp-e.obj" -DOMNETPP_IMAGE_PATH="\"$(OMNETPP_IMAGE_PATH)\"" $(COPTS) /c /Tp tkapp.cc
 
 tclcode.cc : *.tcl
 	..\utils\tcl2c tclcode.cc *.tcl

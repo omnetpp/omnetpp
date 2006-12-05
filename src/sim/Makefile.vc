@@ -4,13 +4,13 @@
 !include ..\..\configuser.vc
 
 !if "$(LIB_SUFFIX)"==".dll"
-CFLAGS=$(CFLAGS) /DWIN32_DLL
+CFLAGS=$(CFLAGS) -DWIN32_DLL
 !endif
 
 #
 # Local definitions
 #
-COPTS=$(CFLAGS) /I "$(OMNETPP_INCL_DIR)" /I. /DBUILDING_SIM /Fd"sim_std.pdb"
+COPTS=$(CFLAGS) -I"$(OMNETPP_INCL_DIR)" -I. -DBUILDING_SIM /Fd"sim_std.pdb"
 
 CPPOBJS_STD=\
     carray.obj cbasicchannel.obj cboolpar.obj cchannel.obj \
@@ -55,7 +55,7 @@ CPPOBJS= $(CPPOBJS_STD)
 
 !if "$(WITH_NETBUILDER)"=="yes"
 CPPOBJS= $(CPPOBJS) $(CPPOBJS_NETBUILDER)
-COPTS= $(COPTS) /I ../nedxml
+COPTS= $(COPTS) -I../nedxml
 !endif
 
 !if "$(WITH_PARSIM)"=="yes"

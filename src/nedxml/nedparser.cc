@@ -175,6 +175,6 @@ void NEDParser::error(const char *msg, int line)
 {
     std::stringstream os;
     os << filename << ":" << line;
-    errors->add(NULL, os.str().c_str(), "%s", msg);
+    errors->add(os.str().c_str(), ERRCAT_ERROR, "%s", msg);
 }
 

@@ -15,7 +15,7 @@
 #include <assert.h>
 #include "unitconversion.h"
 
-UnitConversion::UnitDesc unitTable[] = {
+UnitConversion::UnitDesc UnitConversion::unitTable[] = {
     { "d",   86400, "s",    "day" },
     { "h",    3600, "s",    "hour" },
     { "mi",     60, "s",    "minute" },
@@ -56,6 +56,7 @@ UnitConversion::UnitDesc *UnitConversion::lookupUnit(const char *unit)
 
 double UnitConversion::parseQuantity(const char *str, const char *expectedUnit)
 {
+__asm int 3;
     double result = 0;
     const char *unit = NULL;
     const char *s = str;
@@ -139,7 +140,7 @@ double UnitConversion::parseQuantity(const char *str, const char *expectedUnit)
 
     // must be at the end of the input string
     while (isspace(*s)) s++;
-    if (!*s)
+    if (*s)
         throw new Exception("syntax error parsing quantity '%s'", str);
 
     // success

@@ -4,13 +4,13 @@
 !include ..\..\configuser.vc
 
 !if "$(LIB_SUFFIX)"==".dll"
-CFLAGS=$(CFLAGS) /DWIN32_DLL
+CFLAGS=$(CFLAGS) -DWIN32_DLL
 !endif
 
 #
 # Local definitions
 #
-COPTS=$(CFLAGS) $(XML_CFLAGS) /I. /Fd"nedxml.pdb"
+COPTS=$(CFLAGS) $(XML_CFLAGS) -I. -I../common /Fd"nedxml.pdb"
 
 #OBJS= nedelements.obj nedelement.obj nederror.obj \
 #      nedvalidator.obj neddtdvalidator.obj neddtdvalidatorbase.obj \
@@ -39,9 +39,9 @@ OBJS= nedelements.obj nedelement.obj nederror.obj \
 
 # FIXME begin temporary rules
 nedtool.exe : nedxml.lib tmp_nedtool.obj
-	$(LINK) $(LDFLAGS) /nologo /out:tmp_nedtool.exe tmp_nedtool.obj $(LIBS) nedxml.lib $(XML_LIBS)
+	$(LINK) $(LDFLAGS) /nologo /out:tmp_nedtool.exe tmp_nedtool.obj $(LIBS) nedxml.lib ../common/common.lib $(XML_LIBS)
 tmp_nedtool.obj : tmp_nedtool.cc
-	$(CXX) $(COPTS) /I "$(OMNETPP_INCL_DIR)" /I. /c /Tp tmp_nedtool.cc
+	$(CXX) $(COPTS) -I"$(OMNETPP_INCL_DIR)" -I. /c /Tp tmp_nedtool.cc
 # FIXME end temporary rules
 
 #

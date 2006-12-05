@@ -4,13 +4,13 @@
 !include ..\..\configuser.vc
 
 !if "$(LIB_SUFFIX)"==".dll"
-CFLAGS=$(CFLAGS) /DWIN32_DLL
+CFLAGS=$(CFLAGS) -DWIN32_DLL
 !endif
 
 #
 # Local definitions
 #
-COPTS=$(CFLAGS) /I "$(OMNETPP_INCL_DIR)" /I "../envir" /DBUILDING_CMDENV /Fd"cmdenv.pdb"
+COPTS=$(CFLAGS) -I"$(OMNETPP_INCL_DIR)" -I../envir -DBUILDING_CMDENV /Fd"cmdenv.pdb"
 OBJS = cmdenv.obj enumstr.obj heap.obj
 LIBS = $(OMNETPP_SRC_DIR)/sim/sim_std.ilib $(OMNETPP_SRC_DIR)/envir/envir.ilib
 

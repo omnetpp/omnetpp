@@ -22,10 +22,9 @@
  */
 class UnitConversion
 {
-  public:
-    struct UnitDesc { const char *unit; double mult; const char *baseUnit; const char *longName; };
   protected:
-    UnitDesc unitTable[];
+    struct UnitDesc { const char *unit; double mult; const char *baseUnit; const char *longName; };
+    static UnitDesc unitTable[];
 
   protected:
     UnitDesc *lookupUnit(const char *unit);
