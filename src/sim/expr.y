@@ -76,6 +76,7 @@ void yyerror (const char *s);
 #include "cfunction.h"
 #include "cnedfunction.h"
 #include "nedsupport.h"
+#include "unitconversion.h"
 
 static cDynamicExpression::Elem *e;
 
@@ -105,6 +106,19 @@ static void addFunction(const char *funcname, int numargs)
         return;
     }
     yyerror((std::string("function `")+funcname+"' not found (Define_Function() missing from C++ code?)").c_str());
+}
+
+static double parseQuantity(const char *text)
+{
+    try {
+        // evaluate quantities like "5s 230ms"
+        return UnitConversion().parseQuantity(text);
+    }
+    catch (Exception *e) {
+        yyerror(e->message());
+        delete e;
+        return 0;
+    }
 }
 
 %}
@@ -209,22 +223,28 @@ simple_expr
 
 identifier
         : NAME
-                { *e++ = 0; /*FIXME simulation.contextModule()->par($1)*/; delete [] $1; }
+                { *e++ = new NEDSupport::ParameterRef($1, true, false); delete [] $1; }
         | THIS_ '.' NAME
-                { *e++ = 0; /*FIXME simulation.contextModule()->par($1)*/; delete [] $3; }
+                { *e++ = new NEDSupport::ParameterRef($3, false, true); delete [] $3; }
         | NAME '.' NAME
-                { *e++ = 0; /*FIXME simulation.contextModule()->parentModule()->submodule($1)->par($1)*/; delete [] $1; delete [] $3; /*FIXME check for NULLs!!! */ }
+                { *e++ = new NEDSupport::SiblingModuleParameterRef($1, $3, true, false); delete [] $1; delete [] $3; }
         | NAME '[' expression ']' '.' NAME
-                { delete [] $1; delete [] $6; yyerror("submodule[index] notation not supported here"); }
+                { *e++ = new NEDSupport::SiblingModuleParameterRef($1, $6, true, true); delete [] $1; delete [] $6; }
         ;
 
 special_expr
         : INDEX_
-                { *e++ = 0; /*FIXME simulation.contextModule()->index()*/ }
+                { *e++ = new NEDSupport::ModuleIndex(); }
         | INDEX_ '(' ')'
-                { *e++ = 0; /*FIXME simulation.contextModule()->index()*/ }
-        | SIZEOF_ '(' identifier ')'
-                { *e++ = 0; /*FIXME simulation.contextModule()->size()*/ }
+                { *e++ = new NEDSupport::ModuleIndex(); }
+        | SIZEOF_ '(' NAME ')'
+                { *e++ = new NEDSupport::Sizeof($3, true, false); delete [] $3; }
+        | SIZEOF_ '(' THIS_ '.' NAME ')'
+                { *e++ = new NEDSupport::Sizeof($5, false, false); delete [] $5; }
+        | SIZEOF_ '(' NAME '.' NAME ')'
+                { delete [] $3; delete [] $5; yyerror("sizeof(submodule.gate) notation not supported here"); }
+        | SIZEOF_ '(' NAME '[' expression ']' '.' NAME ')'
+                { delete [] $3; delete [] $8; yyerror("sizeof(submodule[index].gate) notation not supported here"); }
         ;
 
 literal
@@ -257,7 +277,7 @@ numliteral
         | REALCONSTANT
                 { *e++ = strtod($1,NULL); delete [] $1; }
         | quantity
-                { *e++ = strToSimtime($1); delete [] $1; }
+                { *e++ = parseQuantity($1); delete [] $1; }
         ;
 
 quantity
