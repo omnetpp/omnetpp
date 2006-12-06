@@ -1,8 +1,10 @@
-- xxxxxx
+- 061201
   + double clicking on a top level element opens its base component
   + inherited submodules cannot be deleted, moved, resized and they are selected
     with brown rectangles instead of red ones
-  + 
+  + only free gates are offered during connection create/move, the rest is grayed out
+  x fixed a layouting bug causing infinite loops if a connection was connected to the right or
+    bottom part of the compound module
 - 061120
   + display is refreshed correctly on model notifications. namechanges and
     changes in extends attributes are handled correctly

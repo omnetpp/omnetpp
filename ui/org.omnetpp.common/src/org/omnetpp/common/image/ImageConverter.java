@@ -1,23 +1,5 @@
 package org.omnetpp.common.image;
 
-/*******************************************************************************
- * Copyright (c) 2000, 2004 IBM Corporation and others.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
- *
- * Contributors:
- *     IBM Corporation - initial API and implementation
- *******************************************************************************/
-//package org.eclipse.swt.snippets;
-
-/*
- * example snippet: convert between SWT Image and AWT BufferedImage
- *
- * For a list of all SWT example snippets see
- * http://www.eclipse.org/swt/snippets/
- */
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
 import java.awt.image.DirectColorModel;

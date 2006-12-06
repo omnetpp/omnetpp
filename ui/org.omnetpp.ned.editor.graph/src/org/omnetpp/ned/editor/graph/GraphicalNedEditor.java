@@ -42,7 +42,6 @@ import org.eclipse.gef.editparts.ZoomManager;
 import org.eclipse.gef.palette.PaletteRoot;
 import org.eclipse.gef.ui.actions.ActionRegistry;
 import org.eclipse.gef.ui.actions.AlignmentAction;
-import org.eclipse.gef.ui.actions.CopyTemplateAction;
 import org.eclipse.gef.ui.actions.DirectEditAction;
 import org.eclipse.gef.ui.actions.GEFActionConstants;
 import org.eclipse.gef.ui.actions.MatchHeightAction;
@@ -59,8 +58,6 @@ import org.eclipse.gef.ui.parts.ScrollingGraphicalViewer;
 import org.eclipse.gef.ui.parts.TreeViewer;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IAction;
-import org.eclipse.jface.action.IMenuListener;
-import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
@@ -75,8 +72,6 @@ import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.IEditorInput;
@@ -95,7 +90,6 @@ import org.eclipse.ui.part.PageBook;
 import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
 import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.ned.editor.graph.actions.GNEDContextMenuProvider;
-import org.omnetpp.ned.editor.graph.actions.ModulePasteTemplateAction;
 import org.omnetpp.ned.editor.graph.actions.ReLayoutAction;
 import org.omnetpp.ned.editor.graph.actions.UnpinAction;
 import org.omnetpp.ned.editor.graph.dnd.TextTransferDropTargetListener;
@@ -110,8 +104,7 @@ import org.omnetpp.ned2.model.interfaces.IHasName;
 public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette 
     implements ISelectionSupport {
     
-    public final static String ID = "org.omnetpp.ide.gteditor";
-    
+    public final static String MULTIPAGE_GNEDEDITOR_ID = "org.omnetpp.ide.gteditor";
     
     class OutlinePage extends ContentOutlinePage implements IAdaptable {
 
@@ -428,51 +421,36 @@ public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette
         IAction snapAction = new ToggleSnapToGeometryAction(getGraphicalViewer());
         getActionRegistry().registerAction(snapAction);
         
-        Listener listener = new Listener() {
-            public void handleEvent(Event event) {
-                handleActivationChanged(event);
-            }
-        };
-        getGraphicalControl().addListener(SWT.Activate, listener);
-        getGraphicalControl().addListener(SWT.Deactivate, listener);
+//        Listener listener = new Listener() {
+//            public void handleEvent(Event event) {
+//                handleActivationChanged(event);
+//            }
+//        };
+//        getGraphicalControl().addListener(SWT.Activate, listener);
+//        getGraphicalControl().addListener(SWT.Deactivate, listener);
     }
 
-    @Override
-    protected CustomPalettePage createPalettePage() {
-        return new CustomPalettePage(getPaletteViewerProvider()) {
-            @Override
-            public void init(IPageSite pageSite) {
-                super.init(pageSite);
-                IAction copy = getActionRegistry().getAction(ActionFactory.COPY.getId());
-                pageSite.getActionBars().setGlobalActionHandler(ActionFactory.COPY.getId(), copy);
-            }
-        };
-    }
+//    @Override
+//    protected CustomPalettePage createPalettePage() {
+//        return new CustomPalettePage(getPaletteViewerProvider()) {
+//            @Override
+//            public void init(IPageSite pageSite) {
+//                super.init(pageSite);
+//                IAction copy = getActionRegistry().getAction(ActionFactory.COPY.getId());
+//                pageSite.getActionBars().setGlobalActionHandler(ActionFactory.COPY.getId(), copy);
+//            }
+//        };
+//    }
 
     @Override
     protected PaletteViewerProvider createPaletteViewerProvider() {
         return new PaletteViewerProvider(getEditDomain()) {
-            private IMenuListener menuListener;
 
             @Override
             protected void configurePaletteViewer(PaletteViewer viewer) {
                 super.configurePaletteViewer(viewer);
                 viewer.setCustomizer(new ModulePaletteCustomizer());
                 viewer.addDragSourceListener(new TemplateTransferDragSourceListener(viewer));
-            }
-
-            @Override
-            protected void hookPaletteViewer(PaletteViewer viewer) {
-                super.hookPaletteViewer(viewer);
-                final CopyTemplateAction copy = (CopyTemplateAction) getActionRegistry().getAction(
-                        ActionFactory.COPY.getId());
-                viewer.addSelectionChangedListener(copy);
-                if (menuListener == null) menuListener = new IMenuListener() {
-                    public void menuAboutToShow(IMenuManager manager) {
-                        manager.appendToGroup(GEFActionConstants.GROUP_COPY, copy);
-                    }
-                };
-                viewer.getContextMenu().addMenuListener(menuListener);
             }
         };
     }
@@ -542,14 +520,14 @@ public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette
         return root;
     }
 
-    protected void handleActivationChanged(Event event) {
-        IAction copy = null;
-        if (event.type == SWT.Deactivate) copy = getActionRegistry().getAction(ActionFactory.COPY.getId());
-        if (getEditorSite().getActionBars().getGlobalActionHandler(ActionFactory.COPY.getId()) != copy) {
-            getEditorSite().getActionBars().setGlobalActionHandler(ActionFactory.COPY.getId(), copy);
-            getEditorSite().getActionBars().updateActionBars();
-        }
-    }
+//    protected void handleActivationChanged(Event event) {
+//        IAction copy = null;
+//        if (event.type == SWT.Deactivate) copy = getActionRegistry().getAction(ActionFactory.COPY.getId());
+//        if (getEditorSite().getActionBars().getGlobalActionHandler(ActionFactory.COPY.getId()) != copy) {
+//            getEditorSite().getActionBars().setGlobalActionHandler(ActionFactory.COPY.getId(), copy);
+//            getEditorSite().getActionBars().updateActionBars();
+//        }
+//    }
 
     @Override
     protected void initializeGraphicalViewer() {
@@ -574,9 +552,6 @@ public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette
         ActionRegistry registry = getActionRegistry();
         IAction action;
 
-        action = new CopyTemplateAction(this);
-        registry.registerAction(action);
-
         action = new MatchWidthAction(this);
         registry.registerAction(action);
         getSelectionActions().add(action.getId());
@@ -585,9 +560,9 @@ public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette
         registry.registerAction(action);
         getSelectionActions().add(action.getId());
 
-        action = new ModulePasteTemplateAction(this);
-        registry.registerAction(action);
-        getSelectionActions().add(action.getId());
+//        action = new ModulePasteTemplateAction(this);
+//        registry.registerAction(action);
+//        getSelectionActions().add(action.getId());
 
         action = new DirectEditAction((IWorkbenchPart) this);
         registry.registerAction(action);
@@ -708,17 +683,6 @@ public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette
     @Override
     protected void setInput(IEditorInput input) {
         superSetInput(input);
-//        IFile file = ((IFileEditorInput) input).getFile();
-//        try {
-//            InputStream is = file.getContents(false);
-//            ObjectInputStream ois = new ObjectInputStream(is);
-//            setModel((NedFile) ois.readObject());
-//            ois.close();
-//        } catch (Exception e) {
-//            // This is just an example. All exceptions caught here.
-//            e.printStackTrace();
-//        }
-
     }
 
     public NedFileNodeEx getModel() {

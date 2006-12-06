@@ -45,13 +45,13 @@ public class MultiPageNedEditorActionContributor extends MultiPageEditorActionBa
             return;
 
         activeEditorPart = part;
-        
+
         if(part instanceof GraphicalNedEditor) {
             textContrib.setActiveEditor(activeEditorPart);
             graphContrib.setActiveEditor(activeEditorPart);
         } else if (part instanceof TextualNedEditor) {
             // FIXME disable graphical editor actions
-//            graphContrib.setActiveEditor(activeEditorPart);
+            // graphContrib.setActiveEditor(activeEditorPart);
             textContrib.setActiveEditor(activeEditorPart);
         }
 

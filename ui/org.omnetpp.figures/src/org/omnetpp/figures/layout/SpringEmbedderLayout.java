@@ -62,7 +62,7 @@ public class SpringEmbedderLayout extends XYLayout {
             Rectangle constr = (Rectangle)getConstraint(node);
 
             if (constr == null || (constr.x == Integer.MIN_VALUE && constr.y == Integer.MIN_VALUE))
-            	autoLayouter.addMovableNode(node, node.getPreferredSize().width, node.getPreferredSize().height);
+            	autoLayouter.addMovableNode(node, node.getBounds().x, node.getBounds().y, node.getPreferredSize().width, node.getPreferredSize().height);
             else
             	// add as fixed node
             	autoLayouter.addFixedNode(node,

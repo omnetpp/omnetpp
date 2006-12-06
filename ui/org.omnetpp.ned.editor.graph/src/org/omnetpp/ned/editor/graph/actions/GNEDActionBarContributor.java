@@ -3,6 +3,7 @@ package org.omnetpp.ned.editor.graph.actions;
 import org.eclipse.draw2d.PositionConstants;
 import org.eclipse.gef.editparts.ZoomManager;
 import org.eclipse.gef.ui.actions.ActionBarContributor;
+import org.eclipse.gef.ui.actions.ActionRegistry;
 import org.eclipse.gef.ui.actions.AlignmentRetargetAction;
 import org.eclipse.gef.ui.actions.GEFActionConstants;
 import org.eclipse.gef.ui.actions.MatchHeightRetargetAction;
@@ -17,6 +18,8 @@ import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
+import org.eclipse.ui.IActionBars;
+import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IWorkbenchActionConstants;
 import org.eclipse.ui.actions.ActionFactory;
 import org.eclipse.ui.actions.RetargetAction;
@@ -63,7 +66,6 @@ public class GNEDActionBarContributor extends ActionBarContributor {
     protected void declareGlobalActionKeys() {
         addGlobalActionKey(ActionFactory.PRINT.getId());
         addGlobalActionKey(ActionFactory.SELECT_ALL.getId());
-        addGlobalActionKey(ActionFactory.PASTE.getId());
         addGlobalActionKey(ActionFactory.DELETE.getId());
     }
 
@@ -103,7 +105,6 @@ public class GNEDActionBarContributor extends ActionBarContributor {
      */
     @Override
     public void contributeToMenu(IMenuManager menubar) {
-        super.contributeToMenu(menubar);
         MenuManager viewMenu = new MenuManager("View");
         viewMenu.add(getAction(GEFActionConstants.ZOOM_IN));
         viewMenu.add(getAction(GEFActionConstants.ZOOM_OUT));
@@ -125,4 +126,7 @@ public class GNEDActionBarContributor extends ActionBarContributor {
         menubar.insertAfter(IWorkbenchActionConstants.M_EDIT, viewMenu);
     }
 
+    public void setActiveEditor(IEditorPart editor) {
+        super.setActiveEditor(editor);
+    }
 }

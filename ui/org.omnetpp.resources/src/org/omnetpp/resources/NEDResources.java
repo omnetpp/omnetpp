@@ -183,7 +183,7 @@ public class NEDResources implements INEDTypeResolver {
 	 * True if the file has any marker of the given marker type id (or subclass) 
 	 * with severity ERROR; or if an error occurred while checking the markers. 
 	 */
-	private boolean hasErrorMarker(IFile file, String markerType) {
+	private static boolean hasErrorMarker(IFile file, String markerType) {
 		try {
         	IMarker[] markers = file.findMarkers(markerType, true, IFile.DEPTH_ZERO);
         	for (IMarker marker : markers) 

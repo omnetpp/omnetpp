@@ -118,7 +118,7 @@ public class BasicSpringEmbedderLayoutAlgorithm extends AbstractGraphLayoutAlgor
     }
 
 	@Override
-	public void addMovableNode(Object mod, int width, int height) {
+	public void addMovableNode(Object mod, int x, int y, int width, int height) {
 	    Assert.isTrue(findNode(mod)==null);
 
 	    allNodesAreFixed = false;
@@ -649,5 +649,16 @@ public class BasicSpringEmbedderLayoutAlgorithm extends AbstractGraphLayoutAlgor
 		//        if (box.y2 <= y2) box.y2 = y2;
 		//    #endif
         return maxd;
+    }
+
+    @Override
+    public Point getAnchorPosition(String anchor) {
+        // TODO NOT YET IMPLEMENTED
+        return null;
+    }
+
+    @Override
+    public void setAnchorPosition(String anchor, int x, int y) {
+        // TODO NOT YET IMPLEMENTD
     }
 }

@@ -6,7 +6,6 @@
          point="org.eclipse.ui.newWizards">
       <wizard
             name="NED file"
-            icon="icons/sample.gif"
             category="org.omnetpp.wizards"
             class="org.omnetpp.ned.editor.graph.wizards.NewNEDFileWizard"
             id="org.omnetpp.ned.editor.graph.wizard.new.file">

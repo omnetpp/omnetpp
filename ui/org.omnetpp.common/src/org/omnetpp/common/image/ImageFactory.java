@@ -26,6 +26,7 @@ public class ImageFactory {
     private final static String LEGACY_DIR = "old/";
     private final static String TOOL_IMAGE_DIR = INTERNAL_DIR + "toolbar/";
     private final static String MODEL_IMAGE_DIR = INTERNAL_DIR + "model/";
+    private final static String DECORATORS_IMAGE_DIR = INTERNAL_DIR + "decorators/";
 
     public final static String TOOLBAR_IMAGE_WIZARDBANNER = TOOL_IMAGE_DIR + "module";
     public final static String TOOLBAR_IMAGE_UNPIN = TOOL_IMAGE_DIR + "unpin";
@@ -50,6 +51,9 @@ public class ImageFactory {
     public final static String MODEL_IMAGE_PROPERTY = MODEL_IMAGE_DIR + "Property";
     public final static String MODEL_IMAGE_SIMPLEMODULE = MODEL_IMAGE_DIR + "SimpleModule";
     public final static String MODEL_IMAGE_SUBMODULE = MODEL_IMAGE_DIR + "Submodule";
+
+    public final static String DECORATOR_IMAGE_ERROR = DECORATORS_IMAGE_DIR + "error";
+    public final static String DECORATOR_IMAGE_WARNING = DECORATORS_IMAGE_DIR + "warning";
 
     public final static String DEFAULT_NAME = IMAGE_DIR + INTERNAL_DIR + "default.png";
     public final static String DEFAULT_PIN = INTERNAL_DIR + "pin";

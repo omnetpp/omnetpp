@@ -29,14 +29,25 @@
          id="nedconsistencyproblem"
          name="NED consistency problem"
          point="org.eclipse.core.resources.markers">
-      <persistent value="true"/> 
+      <persistent value="false"/> 
       <super type="org.eclipse.core.resources.problemmarker"/> 
    </extension>
    <extension
          id="nedproblem"
          name="NED Problem"
          point="org.eclipse.core.resources.markers">
-      <persistent value="true"/> 
+      <persistent value="false"/> 
       <super type="org.eclipse.core.resources.problemmarker"/> 
+   </extension>
+   <extension
+         point="org.eclipse.ui.decorators">
+      <decorator
+            adaptable="true"
+            class="org.omnetpp.resources.decorators.ProblemDecorator"
+            id="org.omnetpp.resources.decorators.ProblemDecorator"
+            label="NED Problem Decorator"
+            lightweight="true"
+            state="true">
+      </decorator>
    </extension>
 </plugin>

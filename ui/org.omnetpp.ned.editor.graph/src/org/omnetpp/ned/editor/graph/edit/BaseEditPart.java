@@ -152,7 +152,7 @@ abstract public class BaseEditPart
 
             try {
                 IEditorPart editor = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage()
-                        .openEditor(fileEditorInput, GraphicalNedEditor.ID, true);
+                        .openEditor(fileEditorInput, GraphicalNedEditor.MULTIPAGE_GNEDEDITOR_ID, true);
 
                 // select the component so it will be visible in the opened editor
                 if (editor instanceof ISelectionSupport)

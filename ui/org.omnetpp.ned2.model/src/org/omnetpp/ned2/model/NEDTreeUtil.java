@@ -117,7 +117,7 @@ public class NEDTreeUtil {
 			return pojoTree;
 		} 
 		catch (RuntimeException e) {
-			errors.add(NEDErrorCategory.ERRCAT_ERROR.ordinal(), "", "internal error: "+e);
+			errors.add("", NEDErrorCategory.ERRCAT_ERROR.ordinal(), "internal error: "+e);
             NEDModelPlugin.log(e);
 			return null;
 		}
