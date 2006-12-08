@@ -88,6 +88,8 @@ double UnitConversion::parseQuantity(const char *str, std::string& outActualUnit
 
 double UnitConversion::doParseQuantity(const char *str, const char *expectedUnit, std::string& unit)
 {
+    //FIXME warn if unit only differs from a "known" unit in uppercase/lowercase!!!!
+    
     unit = "";
     const char *s = str;
 
