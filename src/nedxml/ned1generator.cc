@@ -353,8 +353,8 @@ void NED1Generator::doCompoundModule(CompoundModuleNode *node, const char *inden
     generateChildrenWithType(node, NED_CONNECTIONS, increaseIndent(indent));
 
     PropertyNode *displayProp;
-    const char *dispstr = getDisplayStringOf(node, displayProp);
-    if (dispstr)
+    std::string dispstr = getDisplayStringOf(node, displayProp);
+    if (!dispstr.empty())
     {
         OUT << getBannerComment(displayProp, increaseIndent(indent));
         OUT << increaseIndent(indent) << "display: " << dispstr << ";" << getRightComment(displayProp);
@@ -547,7 +547,7 @@ const char *NED1Generator::getPromptTextOf(ParamNode *param)
     LiteralNode *literal = (LiteralNode *)propKey->getFirstChildWithTag(NED_LITERAL);
     if (!literal)
         return NULL;
-    return literal->getText();
+    return literal->getText(); //FIXME use value if text is not present!!!! (see doLiteral())
 }
 
 void NED1Generator::doSubstParam(ParamNode *node, const char *indent, bool islast, const char *)
@@ -743,32 +743,32 @@ void NED1Generator::doSubmodule(SubmoduleNode *node, const char *indent, bool is
     generateChildrenWithType(node, NED_GATES, increaseIndent(indent));
 
     PropertyNode *displayProp;
-    const char *dispstr = getDisplayStringOf(node, displayProp);
-    if (dispstr)
+    std::string dispstr = getDisplayStringOf(node, displayProp);
+    if (!dispstr.empty())
     {
         OUT << getBannerComment(displayProp, increaseIndent(indent));
         OUT << increaseIndent(indent) << "display: " << dispstr << ";" << getRightComment(displayProp);
     }
 }
 
-const char *NED1Generator::getDisplayStringOf(NEDElement *node, PropertyNode *&outDisplayProp)
+std::string NED1Generator::getDisplayStringOf(NEDElement *node, PropertyNode *&outDisplayProp)
 {
     // node must be a module, submodule or a connection-spec
     outDisplayProp = NULL;
     ParametersNode *parameters = (ParametersNode *)node->getFirstChildWithTag(NED_PARAMETERS);
     if (!parameters)
-        return NULL;
+        return "";
     PropertyNode *displayProp = (PropertyNode *)parameters->getFirstChildWithAttribute(NED_PROPERTY, "name", "display");
     if (!displayProp)
-        return NULL;
+        return "";
     PropertyKeyNode *propKey = (PropertyKeyNode *)displayProp->getFirstChildWithAttribute(NED_PROPERTY_KEY, "name", "");
     if (!propKey)
-        return NULL;
+        return "";
     LiteralNode *literal = (LiteralNode *)propKey->getFirstChildWithTag(NED_LITERAL);
     if (!literal)
-        return NULL;
+        return "";
     outDisplayProp = displayProp;
-    return literal->getText();
+    return strnotnull(literal->getText()) ? literal->getText() : (std::string("\"")+literal->getValue()+"\""); //FIXME value needs quoting!!! see doLiteral()
 }
 
 void NED1Generator::doConnections(ConnectionsNode *node, const char *indent, bool islast, const char *)
@@ -835,8 +835,8 @@ void NED1Generator::doConnection(ConnectionNode *node, const char *indent, bool 
     if (chanSpecNode)
     {
         PropertyNode *dummy;
-        const char *dispstr = getDisplayStringOf(chanSpecNode, dummy);
-        if (dispstr)
+        std::string dispstr = getDisplayStringOf(chanSpecNode, dummy);
+        if (!dispstr.empty())
             OUT << " display " << dispstr;
     }
 
@@ -1097,7 +1097,7 @@ void NED1Generator::doLiteral(LiteralNode *node, const char *indent, bool islast
         // fallback: when original text is not present, use value
         bool isstring = (node->getType()==NED_CONST_STRING);
         if (isstring) OUT << "\"";
-        OUT << node->getValue();
+        OUT << node->getValue();  //FIXME maybe value needs quoting??
         if (isstring) OUT << "\"";
     }
 }
