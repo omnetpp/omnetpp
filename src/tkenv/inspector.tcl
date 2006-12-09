@@ -366,7 +366,8 @@ proc popup_insp_menu {ptr X Y {wantanimoptions 0}} {
            continue
        }
        # check we have such object
-       set objlist [opp_getsubobjectsfilt $ptr $allcategories $contextmenurules($key,class) "$name.$contextmenurules($key,name)" 1 ""]
+       # Note: we have to quote the pattern for the object matcher, because $name might contain spaces
+       set objlist [opp_getsubobjectsfilt $ptr $allcategories $contextmenurules($key,class) "\"$name.$contextmenurules($key,name)\"" 1 ""]
        if {$objlist!={}} {
            if {$first} {
                set first 0
