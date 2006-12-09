@@ -87,9 +87,24 @@ cObject *cPar::owner() const
 
 void cPar::operator=(const cPar& other)
 {
-    printf("CPAR OP= UNIMPLEMENTED!!!\n");
-    //FIXME todo
-    // some models need to be able to copy parameters
+    // this method is not used by the sim kernel, only (rarely) by some
+    // simulation models to copy parameters
+    if (other.isExpression())
+    {
+        setExpression(other.expression()->dup());
+    }
+    else
+    {
+        switch (type())
+        {
+            case BOOL:   setBoolValue(other.boolValue()); break;
+            case DOUBLE: setDoubleValue(other.doubleValue()); break;
+            case LONG:   setLongValue(other.longValue()); break;
+            case STRING: setStringValue(other.stdstringValue().c_str()); break;
+            case XML:    setXMLValue(other.xmlValue()); break;
+            default:     ASSERT(false);
+        }
+    }
 }
 
 cProperties *cPar::properties() const
