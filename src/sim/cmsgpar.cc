@@ -171,7 +171,7 @@ std::string cMsgPar::detailedInfo() const
 {
     std::stringstream os;
     os << "  Type:  " << typechar << '\n';
-    os << "  Value: " << getAsText().c_str() << '\n';
+    os << "  Value: " << toString().c_str() << '\n';
     return os.str();
 }
 
@@ -665,7 +665,7 @@ void cMsgPar::afterChange()
     changedflag=true;
 }
 
-string cMsgPar::getAsText() const
+string cMsgPar::toString() const
 {
     char bb[128];
     bb[0] = 0;
@@ -718,7 +718,7 @@ static bool parseQuotedString(string& str, const char *&s)
     return true;
 }
 
-bool cMsgPar::setFromText(const char *text, char tp)
+bool cMsgPar::parse(const char *text, char tp)
 {
     tp = (char) toupper(tp);
 

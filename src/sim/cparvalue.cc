@@ -83,22 +83,6 @@ cParValue *cParValue::dup() const
     throw new cRuntimeError(this, eCANTDUP);  // cannot dup because this is an abstract class
 }
 
-bool cParValue::equals(cParValue& other, cComponent *thiscontext, cComponent *othercontext)
-{
-    if (type()!=other.type())
-        return false;
-
-    switch (type())
-    {
-        case cPar::BOOL:   return boolValue(thiscontext)==other.boolValue(othercontext);
-        case cPar::LONG:   return longValue(thiscontext)==other.longValue(othercontext);
-        case cPar::DOUBLE: return doubleValue(thiscontext)==other.doubleValue(othercontext);
-        case cPar::STRING: return stringValue(thiscontext)==other.stringValue(othercontext);
-        case cPar::XML:    return xmlValue(thiscontext)==other.xmlValue(othercontext);
-        default: return false;
-    }
-}
-
 int cParValue::compare(const cParValue *other) const
 {
     int res = strcmp(name(), other->name());

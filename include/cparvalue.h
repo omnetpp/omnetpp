@@ -299,14 +299,6 @@ class SIM_API cParValue : public cNamedObject
     //@{
 
     /**
-     * Evaluates both expressions and compares the resulting values.
-     * If they are of different types (type()), false is returned
-     * without attempting to compare the values.
-     */
-    //XXX remove? doesn't seem too useful nor actually used...
-    virtual bool equals(cParValue& other, cComponent *thiscontext, cComponent *othercontext);
-
-    /**
      * Compares two cParValues, including name, type, flags, stored value or expression.
      * Makes it possible to use cParValue as a key in std::map or std::set.
      */

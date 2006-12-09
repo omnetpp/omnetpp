@@ -538,6 +538,7 @@ void cModule::callInitialize()
 bool cModule::callInitialize(int stage)
 {
     // This is the interface for calling initialize().
+    ev << "Initializing " << fullPath() << ", stage " << stage << "\n";
 
     // first call it for this module...
     int numStages = numInitStages();

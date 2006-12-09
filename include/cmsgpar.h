@@ -387,11 +387,15 @@ class SIM_API cMsgPar : public cOwnedObject
 
     /** @name Convert to/from text representation. */
     //@{
-
     /**
      * Returns the value in text form.
      */
-    virtual std::string getAsText() const;
+    virtual std::string toString() const;
+
+    /**
+     * DEPRECATED. Same as toString().
+     */
+    std::string getAsText() const   {return toString();}
 
     /**
      * This function tries to interpret the argument text as a type
@@ -400,7 +404,12 @@ class SIM_API cMsgPar : public cOwnedObject
      * cMsgPar is updated with the new value and true is returned,
      * otherwise the function returns false. No error message is generated.
      */
-    virtual bool setFromText(const char *text, char type='?');
+    virtual bool parse(const char *text, char type='?');
+
+    /**
+     * DEPRECATED. Same as parse().
+     */
+    bool setFromText(const char *text, char type='?')   {return parse(text, '?');}
     //@}
 
     /** @name Overloaded assignment and conversion operators. */

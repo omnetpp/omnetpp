@@ -115,6 +115,8 @@ bool cBasicChannel::isBusy() const
 
 bool cBasicChannel::deliver(cMessage *msg, simtime_t t)
 {
+    checkInitialized(); //XXX remove
+
     // if channel is disabled, signal that message should be deleted
     if (flags & FL_ISDISABLED)
         return false;
