@@ -115,15 +115,17 @@ double UnitConversion::doParseQuantity(const char *str, const char *expectedUnit
     UnitDesc *expectedUnitDesc = expectedUnit ? lookupUnit(expectedUnit) : NULL;
     bool performConversion = !expectedUnit ? tmpUnitDesc!=NULL : expectedUnitDesc ? expectedUnitDesc->mult==1 : false;
 
+#define DESC(u) UnitConversion::unitDescription(u).c_str()
+
     // check it matches expected unit ("meters given but seconds expected")
     if (!performConversion && expectedUnit && tmpUnit!=expectedUnit)
-        throw new Exception("error in quantity '%s': supplied unit '%s' does not match expected unit '%s' "
+        throw new Exception("error in quantity '%s': supplied unit %s does not match expected unit %s "
                             "(note that conversion is only performed into base units: s, m, Hz, B, bps, W)",
-                            str, tmpUnit.c_str(), expectedUnit);
+                            str, DESC(tmpUnit.c_str()), DESC(expectedUnit));
 
     if (performConversion && expectedUnit && (!tmpUnitDesc || std::string(tmpUnitDesc->baseUnit)!=expectedUnit))
-        throw new Exception("error in quantity '%s': supplied unit '%s' does not match expected unit '%s'",
-                            str, tmpUnit.c_str(), expectedUnit);
+        throw new Exception("error in quantity '%s': supplied unit %s does not match expected unit %s",
+                            str, DESC(tmpUnit.c_str()), DESC(expectedUnit));
     unit = performConversion ? tmpUnitDesc->baseUnit : tmpUnit;
 
     double result = performConversion ? tmpUnitDesc->mult * num : num;
@@ -143,8 +145,8 @@ double UnitConversion::doParseQuantity(const char *str, const char *expectedUnit
         // check unit
         UnitDesc *tmpUnitDesc = lookupUnit(tmpUnit.c_str());
         if (performConversion ? (!tmpUnitDesc || unit!=tmpUnitDesc->baseUnit) : unit!=tmpUnit)
-            throw new Exception("error in quantity '%s': unit '%s' does not match '%s'",
-                                str, tmpUnit.c_str(), unit.c_str());
+            throw new Exception("error in quantity '%s': unit %s does not match %s",
+                                str, DESC(tmpUnit.c_str()), DESC(unit.c_str()));
 
         // convert kilometers to meters, etc
         result += performConversion ? tmpUnitDesc->mult * num : num;
