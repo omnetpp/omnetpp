@@ -75,7 +75,7 @@ class SIM_API cDisplayString
 
     // needed to notify Envir
     cObject *object;     // a cModule or cGate pointer
-    enum {NONE, CONNECTION, MODULE, MODULEBACKGROUND} role; // what
+    enum {NONE, CONNECTION, MODULE} role; // what
 
   private:
     // helper functions
@@ -94,7 +94,6 @@ class SIM_API cDisplayString
     // internal:
     void setRoleToConnection(cGate *gate) {object=gate; role=CONNECTION;}
     void setRoleToModule(cModule *submodule) {object=submodule; role=MODULE;}
-    void setRoleToModuleBackground(cModule *module) {object=module; role=MODULEBACKGROUND;}
 
   public:
     /** Constructors, destructor. */

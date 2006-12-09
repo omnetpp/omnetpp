@@ -27,16 +27,11 @@
 #define peekTail()     tail()
 #define peekHead()     head()
 
-// cModule
-#define displayStringAsParent()  backgroundDisplayString()
-#define setDisplayStringAsParent setBackgroundDisplayString
-
 //XXX can typedefs be deprecated?
 
 // following ones became inner classes:
 typedef cKSplit::Iterator      cKSplitIterator;
 typedef cKSplit::Grid          sGrid;
-//XXX remove, as not compatible anyway: typedef cQueue::Iterator       cQueueIterator;
 typedef cLinkedList::Iterator  cLinkedListIterator;
 typedef cMessageHeap::Iterator cMessageHeapIterator;
 typedef cTopology::Link        sTopoLink;
@@ -48,5 +43,6 @@ typedef cTopology::Node        sTopoNode;
 typedef cDisplayString cDisplayStringParser;
 typedef cBasicChannel  cSimpleChannel;
 typedef cObject        cPolymorphic;
+
 #endif
 

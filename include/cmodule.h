@@ -180,7 +180,6 @@ class SIM_API cModule : public cComponent //noncopyable
     // internal: used from Tkenv: find out if cGate has a display string.
     // displayString() would create the object immediately which we want to avoid.
     bool hasDisplayString() {return dispstr!=NULL;}
-    bool hasBackgroundDisplayString() {return bgdispstr!=NULL;}
 
   protected:
     // internal: called when a message arrives at a gate which is no further
@@ -545,20 +544,9 @@ class SIM_API cModule : public cComponent //noncopyable
     cDisplayString& displayString();
 
     /**
-     * Returns the display string which is used when this module is a compound module
-     * whose internals are being displayed in a window.
-     */
-    cDisplayString& backgroundDisplayString();
-
-    /**
      * DEPRECATED. Use displayString() and cDisplayString methods instead.
      */
     void setDisplayString(const char *dispstr, bool immediate=true);
-
-    /**
-     * DEPRECATED. Use backgroundDisplayString() and cDisplayString methods instead.
-     */
-    void setBackgroundDisplayString(const char *dispstr, bool immediate=true);
 
     /**
      * When the models is running under Tkenv, it displays the given text

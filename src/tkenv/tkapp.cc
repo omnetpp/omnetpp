@@ -1338,23 +1338,27 @@ void TOmnetTkApp::displayStringChanged(cGate *gate)
     }
 }
 
-void TOmnetTkApp::displayStringChanged(cModule *submodule)
+void TOmnetTkApp::displayStringChanged(cModule *module)
 {
-    cModule *mod = submodule->parentModule();
-    TInspector *insp = findInspector(mod,INSP_GRAPHICAL);
-    if (!insp) return;
-    TGraphicalModWindow *modinsp = dynamic_cast<TGraphicalModWindow *>(insp);
-    assert(modinsp);
-    modinsp->displayStringChanged(submodule);
-}
-
-void TOmnetTkApp::backgroundDisplayStringChanged(cModule *parentmodule)
-{
+    // refresh inspector where this module is a submodule
+    cModule *parentmodule = module->parentModule();
     TInspector *insp = findInspector(parentmodule,INSP_GRAPHICAL);
-    if (!insp) return;
-    TGraphicalModWindow *modinsp = dynamic_cast<TGraphicalModWindow *>(insp);
-    assert(modinsp);
-    modinsp->backgroundDisplayStringChanged();
+    if (insp)
+    {
+        TGraphicalModWindow *parentmodinsp = dynamic_cast<TGraphicalModWindow *>(insp);
+        assert(parentmodinsp);
+        parentmodinsp->displayStringChanged(module);
+    }
+
+    // refresh inspector where this module is the parent (i.e. this is a
+    // background display string change)
+    insp = findInspector(module,INSP_GRAPHICAL);
+    if (insp)
+    {
+        TGraphicalModWindow *modinsp = dynamic_cast<TGraphicalModWindow *>(insp);
+        assert(modinsp);
+        modinsp->backgroundDisplayStringChanged();
+    }
 }
 
 void TOmnetTkApp::animateSend(cMessage *msg, cGate *fromgate, cGate *togate)

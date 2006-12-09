@@ -590,26 +590,10 @@ cDisplayString& cModule::displayString()
     return *dispstr;
 }
 
-cDisplayString& cModule::backgroundDisplayString()
-{
-    if (!bgdispstr)
-    {
-        bgdispstr = new cDisplayString();
-        bgdispstr->setRoleToModuleBackground(this);
-    }
-    return *bgdispstr;
-}
-
 // DEPRECATED
 void cModule::setDisplayString(const char *s, bool)
 {
     displayString().parse(s);
-}
-
-// DEPRECATED
-void cModule::setBackgroundDisplayString(const char *s, bool)
-{
-    backgroundDisplayString().parse(s);
 }
 
 void cModule::bubble(const char *text)

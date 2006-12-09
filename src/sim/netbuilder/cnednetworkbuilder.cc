@@ -227,9 +227,7 @@ cModule *cNEDNetworkBuilder::_submodule(cModule *, const char *submodname, int i
 
 void cNEDNetworkBuilder::buildInside(cModule *modp, cNEDDeclaration *decl)
 {
-    //XXX printf("started buildinside of %s\n", modp->fullPath().c_str()); //XXX
-    // set display string
-//FIXME    setBackgroundDisplayString(modp);
+    //XXX printf("started buildinside of %s\n", modp->fullPath().c_str());
 
     // add submodules and connections. Submodules and connections are inherited:
     // we need to start start with the the base classes, and do this compound
@@ -406,18 +404,6 @@ void cNEDNetworkBuilder::setConnDisplayString(cGate *srcgatep)
     {
         const char *dispstr = dispstrnode->getValue();
         srcgatep->setDisplayString(dispstr);
-    }
-*/
-}
-
-void cNEDNetworkBuilder::setBackgroundDisplayString(cModule *modp)
-{
-/*XXX
-    DisplayStringNode *dispstrnode = mod->getFirstDisplayStringChild();
-    if (dispstrnode)
-    {
-        const char *dispstr = dispstrnode->getValue();
-        modp->setBackgroundDisplayString(dispstr);
     }
 */
 }

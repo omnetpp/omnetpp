@@ -144,7 +144,6 @@ class cModule extends cComponent
         int index @group(general) @hint(if vector: index of this module in its module vector);
         int size @group(general) @hint(if vector: size of module vector this module belongs to);
         cDisplayString displayString @group(general) @hint(controls appearance of this module in the GUI);
-        cDisplayString backgroundDisplayString @group(general) @hint(controls appearance of the background when this module gets opened in the GUI);
         cGate *gate[] @sizeGetter(gates) @group(parameters, gates) @label(gates) @hint(module gates);
 }
 

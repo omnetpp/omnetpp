@@ -16,6 +16,7 @@
 #include "unitconversion.h"
 
 UnitConversion::UnitDesc UnitConversion::unitTable[] = {
+//FIXME accept longer names too ("byte", "bytes", "sec", "second", "seconds"...)
     { "d",   86400, "s",    "day" },
     { "h",    3600, "s",    "hour" },
     { "mi",     60, "s",    "minute" },
@@ -33,6 +34,7 @@ UnitConversion::UnitDesc UnitConversion::unitTable[] = {
     { "MB",    1e6, "B",    "megabyte" },
     { "KB",    1e3, "B",    "kilobyte" },
     { "B",       1, "B",    "byte" },
+    { "b",       1, "b",    "bit" },
     { "km",    1e3, "m",    "kilometer" },
     { "m",       1, "m",    "meter" },
     { "cm",   1e-2, "m",    "centimeter" },

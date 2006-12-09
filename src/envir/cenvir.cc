@@ -349,14 +349,9 @@ void cEnvir::displayStringChanged(cGate *gate)
     app->displayStringChanged(gate);
 }
 
-void cEnvir::displayStringChanged(cModule *submodule)
+void cEnvir::displayStringChanged(cModule *module)
 {
-    app->displayStringChanged(submodule);
-}
-
-void cEnvir::backgroundDisplayStringChanged(cModule *parentmodule)
-{
-    app->backgroundDisplayStringChanged(parentmodule);
+    app->displayStringChanged(module);
 }
 
 void cEnvir::undisposedObject(cOwnedObject *obj)
