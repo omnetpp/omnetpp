@@ -306,16 +306,16 @@ proc draw_enclosingmod {c ptr name dispstr} {
        get_parsed_display_string $dispstr tags [winfo toplevel $c] $ptr 0
 
        # determine top-left origin
-       if {![info exists tags(p)]} {set tags(p) {}}
-       set bx [lindex $tags(p) 0]
-       set by [lindex $tags(p) 1]
+       if {![info exists tags(bgp)]} {set tags(bgp) {}}
+       set bx [lindex $tags(bgp) 0]
+       set by [lindex $tags(bgp) 1]
        if {$bx==""} {set bx 10}
        if {$by==""} {set by 10}
 
-       if {![info exists tags(b)]} {set tags(b) {{} {} {}}}
+       if {![info exists tags(bgb)]} {set tags(bgb) {{} {} {}}}
 
-       set sx [lindex $tags(b) 0]
-       set sy [lindex $tags(b) 1]
+       set sx [lindex $tags(bgb) 0]
+       set sy [lindex $tags(bgb) 1]
        if {$sx=="" || $sy==""} {
            set bb [$c bbox submod]
            if {$bb==""} {set bb "$bx $by 300 200"}
@@ -325,22 +325,18 @@ proc draw_enclosingmod {c ptr name dispstr} {
            if {$sy==""} {set sy [expr [lindex $bb 3]+[lindex $bb 1]-2*$by]}
        }
 
-       set sh [lindex $tags(b) 2]
-       if {$sh == ""} {set sh rect}
-
-       if {![info exists tags(o)]} {set tags(o) {}}
-       set fill [lindex $tags(o) 0]
+       set fill [lindex $tags(bgb) 2]
        if {$fill == ""} {set fill #d0d0d0}
        if {$fill == "-"} {set fill ""}
        if {[string index $fill 0]== "@"} {set fill [opp_hsb_to_rgb $fill]}
-       set outline [lindex $tags(o) 1]
+       set outline [lindex $tags(bgb) 3]
        if {$outline == ""} {set outline black}
        if {$outline == "-"} {set outline ""}
        if {[string index $outline 0]== "@"} {set outline [opp_hsb_to_rgb $outline]}
-       set width [lindex $tags(o) 2]
+       set width [lindex $tags(bgb) 4]
        if {$width == ""} {set width 2}
 
-       $c create $sh $bx $by [expr $bx+$sx] [expr $by+$sy] \
+       $c create rect $bx $by [expr $bx+$sx] [expr $by+$sy] \
            -fill $fill -width $width -outline $outline \
            -tags "dx mod $ptr"
        $c create text [expr $bx+3] [expr $by+3] -text $name -anchor nw -tags "dx tooltip modname $ptr"

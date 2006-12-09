@@ -530,14 +530,16 @@ proc get_help_tip {w x y item} {
        if {$ptr!="" && $ptr!=[opp_null]} {
           set tip "([opp_getobjectclassname $ptr]) [opp_getobjectfullname $ptr] [opp_getobjectinfostring $ptr]"
           regsub {  +} $tip {  } tip
-          set dispstr ""
           if {[lsearch $tags "modname"] == -1} {
+             set dispstr ""
              catch { set dispstr [opp_getobjectfield $ptr displayString] }
+             set tt_tag [opp_displaystring $dispstr getTagArg "bgtt" 0]
           } else {
              # if it has tag "modname", it is the enclosing module
-             catch { set dispstr [opp_getobjectfield $ptr backgroundDisplayString] }
+             set dispstr ""
+             catch { set dispstr [opp_getobjectfield $ptr displayString] }
+             set tt_tag [opp_displaystring $dispstr getTagArg "bgtt" 0]
           }
-          set tt_tag [opp_displaystring $dispstr getTagArg "tt" 0]
           if {$tt_tag!=""} {
              append tip "\n$tt_tag"
           }

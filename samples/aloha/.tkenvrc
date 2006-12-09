@@ -46,7 +46,7 @@ config timeline-msgclassnamepattern	{*}
 config timeline-msgnamepattern	{*}
 config timeline-wantnonselfmsgs	{1}
 config timeline-wantselfmsgs	{1}
-inspector "alohaNet.txRate" "cPar" "1" "460x312+24+31"
 inspector "alohaNet" "alohaNet" "1" "460x312+96+124"
+inspector "alohaNet.txRate" "cPar" "1" "460x312+24+31"
 inspector "alohaNet" "alohaNet" "2" "617x576+72+93"
 

@@ -370,27 +370,27 @@ void TGraphicalModWindow::refreshLayout()
     if (submodPosMap.empty() && getTkApplication()->opt_showlayouting)
         layouter.setCanvas(getTkApplication()->getInterp(), canvas);
 
-    // Note trick avoid calling backgroundDisplayString() directly because it'd cause
+    // Note trick avoid calling displayString() directly because it'd cause
     // the display string object inside cModule to spring into existence
     const cDisplayString blank;
-    const cDisplayString& ds = parentmodule->hasBackgroundDisplayString() ? parentmodule->backgroundDisplayString() : blank;
-    int sx = resolveNumericDispStrArg(ds.getTagArg("b",0), parentmodule, 740);
-    int sy = resolveNumericDispStrArg(ds.getTagArg("b",1), parentmodule, 500);
-    layouter.setScaleToArea(sx,sy,50); // FIXME enclosing module's p= is ignored here...
+    const cDisplayString& ds = parentmodule->hasDisplayString() ? parentmodule->displayString() : blank;
+    int sx = resolveNumericDispStrArg(ds.getTagArg("bgb",0), parentmodule, 740);
+    int sy = resolveNumericDispStrArg(ds.getTagArg("bgb",1), parentmodule, 500);
+    layouter.setScaleToArea(sx,sy,50); // FIXME position "bgp" is ignored here...
 
-    int repf = resolveNumericDispStrArg(ds.getTagArg("l",0), parentmodule, -1);
+    int repf = resolveNumericDispStrArg(ds.getTagArg("bgl",0), parentmodule, -1);
     if (repf>0) layouter.setRepulsiveForce(repf);
 
-    int attf = resolveNumericDispStrArg(ds.getTagArg("l",1), parentmodule, -1);
+    int attf = resolveNumericDispStrArg(ds.getTagArg("bgl",1), parentmodule, -1);
     if (attf>0) layouter.setAttractionForce(attf);
 
-    int edgelen = resolveNumericDispStrArg(ds.getTagArg("l",2), parentmodule, -1);
+    int edgelen = resolveNumericDispStrArg(ds.getTagArg("bgl",2), parentmodule, -1);
     if (edgelen>0) layouter.setDefaultEdgeLength(edgelen); // this should come before adding edges
 
-    int maxiter = resolveNumericDispStrArg(ds.getTagArg("l",3), parentmodule, -1);
+    int maxiter = resolveNumericDispStrArg(ds.getTagArg("bgl",3), parentmodule, -1);
     if (maxiter>0) layouter.setMaxIterations(maxiter);
 
-    int seed = resolveNumericDispStrArg(ds.getTagArg("l",4), parentmodule, -1);
+    int seed = resolveNumericDispStrArg(ds.getTagArg("bgl",4), parentmodule, -1);
     if (seed>0) layouter.setSeed(seed);
 
 #ifdef USE_CONTRACTING_BOX
@@ -509,7 +509,7 @@ void TGraphicalModWindow::redrawModules()
     }
 
     // draw enclosing module
-    const char *dispstr = parentmodule->hasBackgroundDisplayString() ? parentmodule->backgroundDisplayString().toString() : "";
+    const char *dispstr = parentmodule->hasDisplayString() ? parentmodule->displayString().toString() : "";
     CHK(Tcl_VarEval(interp, "draw_enclosingmod ",
                        canvas, " ",
                        ptrToStr(parentmodule), " ",
@@ -667,9 +667,9 @@ void TGraphicalModWindow::displayStringChanged(cModule *)
    needs_redraw = true;
 }
 
-void TGraphicalModWindow::backgroundDisplayStringChanged()
+void TGraphicalModWindow::displayStringChanged()
 {
-   needs_redraw = true;
+   needs_redraw = true; //FIXME TODO check, probably only non-background tags have changed...
 }
 
 void TGraphicalModWindow::displayStringChanged(cGate *)

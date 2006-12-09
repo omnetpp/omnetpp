@@ -563,14 +563,6 @@ void NEDCppGenerator::doNetwork(NetworkNode *node, const char *indent, int mode,
     // force all parameters to pick up a value before doing buildInside()
     out << indent << "_readModuleParameters(" << submodule_var.c_str() << ");\n";
 
-    // add display string
-    DisplayStringNode *dispstr = (DisplayStringNode *)node->getFirstChildWithTag(NED_DISPLAY_STRING);
-    if (dispstr)
-    {
-        out << indent << submodule_var.c_str() << "->setBackgroundDisplayString(\""
-            << dispstr->getValue() << "\");\n\n";
-    }
-
     // build function call
     out << indent << "// build submodules recursively (if it has any):\n";
     out << indent << submodule_var.c_str() << "->buildInside();\n";
@@ -641,13 +633,6 @@ void NEDCppGenerator::doModule(CompoundModuleNode *node, const char *indent, int
     indent = increaseIndent(indent);
     out << indent << "cModule *mod = this;\n\n";
     printTemporaryVariables(indent);
-
-    // add display string
-    DisplayStringNode *dispstr = (DisplayStringNode *)node->getFirstChildWithTag(NED_DISPLAY_STRING);
-    if (dispstr)
-    {
-        out << indent << "mod->setBackgroundDisplayString(\"" << dispstr->getValue() << "\");\n\n";
-    }
 
     // generate submodules
     generateChildrenWithTags(node, "submodules", indent);

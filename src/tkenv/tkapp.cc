@@ -1357,7 +1357,7 @@ void TOmnetTkApp::displayStringChanged(cModule *module)
     {
         TGraphicalModWindow *modinsp = dynamic_cast<TGraphicalModWindow *>(insp);
         assert(modinsp);
-        modinsp->backgroundDisplayStringChanged();
+        modinsp->displayStringChanged();
     }
 }
 

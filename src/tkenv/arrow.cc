@@ -15,10 +15,6 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-//
-// NOTE: This file is shared between GNED and TKENV. The two copies need to be
-//       kept in sync.
-//
 
 #include <stdio.h>
 #include <string.h>
