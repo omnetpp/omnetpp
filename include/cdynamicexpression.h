@@ -18,6 +18,7 @@
 #define __CDYNAMICEXPRESSION_H
 
 #include "cexpression.h"
+#include "cstringpool.h"
 
 class cXMLElement;
 class cPar;
@@ -68,9 +69,10 @@ class SIM_API cDynamicExpression : public cExpression
         //  - math operator (+-*/%^...)
         //
         enum Type {UNDEF, BOOL, DBL, STR, XML, CPAR, MATHFUNC, NEDFUNC, FUNCTOR, OP, CONSTSUBEXPR} type;
+        static cStringPool stringPool;
         union {
             bool b;
-            double d;
+            struct {double d; const char *unit;} d;
             const char *s;
             cXMLElement *x;
             cPar *p;
@@ -80,6 +82,9 @@ class SIM_API cDynamicExpression : public cExpression
             OpType op;
             cExpression *constexpr;
         };
+
+      private:
+        void deleteOld();
 
       public:
         Elem()  {type=UNDEF;}
@@ -101,31 +106,37 @@ class SIM_API cDynamicExpression : public cExpression
          * Effect during evaluation of the expression: pushes the given number
          * (which is converted to double) to the evaluation stack.
          */
-        void operator=(int _i)  {type=DBL; d=_i;}
+        void operator=(int _i)  {type=DBL; d.d=_i; d.unit=NULL;}
 
         /**
          * Effect during evaluation of the expression: pushes the given number
          * (which is converted to double) to the evaluation stack.
          */
-        void operator=(short _i)  {type=DBL; d=_i;}
+        void operator=(short _i)  {type=DBL; d.d=_i; d.unit=NULL;}
 
         /**
          * Effect during evaluation of the expression: pushes the given number
          * (which is converted to double) to the evaluation stack.
          */
-        void operator=(long _l)  {type=DBL; d=_l;}
+        void operator=(long _l)  {type=DBL; d.d=_l; d.unit=NULL;}
 
         /**
          * Effect during evaluation of the expression: pushes the given number
-         * (which is converted to double) to the evaluation stack.
+         * to the evaluation stack.
          */
-        void operator=(double _d)  {type=DBL; d=_d;}
+        void operator=(double _d)  {type=DBL; d.d=_d; d.unit=NULL;}
+
+        /**
+         * Effect during evaluation of the expression: pushes the given number
+         * to the evaluation stack.
+         */
+        void set(double _d, const char *u)  {type=DBL; d.d=_d; d.unit = stringPool.get(u);}
 
         /**
          * Effect during evaluation of the expression: pushes the given string
          * to the evaluation stack.
          */
-        void operator=(const char *_s)  {type=STR; s=opp_strdup(_s);}
+        void operator=(const char *_s)  {type=STR; s = stringPool.get(_s);}
 
         /**
          * Effect during evaluation of the expression: pushes the given

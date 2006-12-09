@@ -19,6 +19,7 @@
 
 #include "cpar.h"
 #include "cexpression.h"
+#include "cstringpool.h"
 #include "cexception.h"
 
 class cExpression;
@@ -50,9 +51,13 @@ class SIM_API cParValue : public cNamedObject
     };
 
   private:
+    // unit (s, mW, GHz, baud, etc); optional
+    const char *unitp; // stringpooled
+
     // global variables for statistics
     static long total_parvalue_objs;
     static long live_parvalue_objs;
+    static cStringPool unitStringPool;
 
   public:
     typedef cPar::Type Type;
@@ -166,6 +171,18 @@ class SIM_API cParValue : public cNamedObject
      * Sets the isInput flag.
      */
     virtual void setIsInput(bool f) {if (f) flags|=FL_ISINPUT; else flags&=~FL_ISINPUT;}
+
+    /**
+     * Returns the parameter value's unit ("s", "mW", "Hz", "bps", etc).
+     * This normally comes from the assignment ("64kbps") and must match
+     * the @unit property of the parameter, declared in NED.
+     */
+    virtual const char *unit() const;
+
+    /**
+     * Sets the parameter value's unit ("s", "mW", "Hz", "bps", etc).
+     */
+    virtual void setUnit(const char *s);
     //@}
 
     /** @name Setter functions. Note that overloaded assignment operators also exist. */

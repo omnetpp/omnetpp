@@ -18,7 +18,6 @@
 #include "defs.h"
 #include "globals.h"
 #include "cobject.h"
-#include "cstringpool.h"
 #include <vector>
 
 class cProperty;

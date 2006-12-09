@@ -275,6 +275,18 @@ void cPar::read()
         copyIfShared();
         p->evaluateConstSubexpressions(ownercomponent); //XXX sharing?
     }
+
+    // make sure unit matches
+    const char *actualUnit = p->unit();
+    if (actualUnit)
+    {
+        cProperties *props = properties();
+        cProperty *unitProp = props->get("unit");
+        const char *declUnit = unitProp ? unitProp->value(cProperty::DEFAULTKEY) : NULL;
+        if (declUnit && strcmp(actualUnit, declUnit)!=0)
+            throw new cRuntimeError(this, "parameter value's unit '%s' does not match required unit '%s'",
+                                    actualUnit, declUnit);
+    }
 }
 
 

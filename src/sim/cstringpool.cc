@@ -28,7 +28,9 @@ cStringPool::~cStringPool()
 const char *cStringPool::get(const char *s)
 {
     ASSERT(cStaticFlag::isSet()); // don't use stringpool on global objects
-    ASSERT(s!=NULL);
+    if (!s)
+        return NULL;
+
     StringIntMap::iterator it = pool.find(const_cast<char *>(s));
     if (it==pool.end())
     {
@@ -48,11 +50,12 @@ const char *cStringPool::get(const char *s)
 
 void cStringPool::release(const char *s)
 {
+    if (!s)
+        return;
     if (!cStaticFlag::isSet())  //XXX alternatively: just ignore release() calls after shutdown
         throw new cRuntimeError("cStringPool: release(\"%s\"): strings must be released before shutdown! "
                                 "(Hint: some object with that name being deleted too late?)", s);
 
-    ASSERT(s!=NULL); // must not be called with NULL
     StringIntMap::iterator it = pool.find(const_cast<char *>(s));
     if (it==pool.end()) printf("      XXX stringPool::release: string '%s' %p not found\n", s, s);
     if (it->first!=s) printf("      XXX stringPool::release: stringpool has another copy of string '%s' %p\n", s, s);

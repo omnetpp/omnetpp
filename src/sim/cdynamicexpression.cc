@@ -24,14 +24,18 @@
 #include "cenvir.h"
 #include "cmodule.h"
 
+cStringPool cDynamicExpression::Elem::stringPool;
 
 void cDynamicExpression::Elem::operator=(const Elem& other)
 {
-    if (type==STR)
-        delete [] s;
+    deleteOld();
+
     memcpy(this, &other, sizeof(Elem));
+
     if (type==STR)
-        s = opp_strdup(s);
+        s = stringPool.get(s);
+    else if (type==DBL)
+        d.unit = stringPool.get(d.unit);
     else if (type==FUNCTOR)
         fu = (Functor *) fu->dup();
     else if (type==CONSTSUBEXPR)
@@ -40,8 +44,15 @@ void cDynamicExpression::Elem::operator=(const Elem& other)
 
 cDynamicExpression::Elem::~Elem()
 {
+    deleteOld();
+}
+
+void cDynamicExpression::Elem::deleteOld()
+{
     if (type==STR)
-        delete [] s;
+        stringPool.release(s);
+    else if (type==DBL)
+        stringPool.release(d.unit);
     else if (type==FUNCTOR)
         delete fu;
     else if (type==CONSTSUBEXPR)
@@ -134,7 +145,7 @@ cDynamicExpression::StkValue cDynamicExpression::evaluate(cComponent *context) c
            case Elem::DBL:
              if (tos>=stksize-1)
                  throw new cRuntimeError(this,eESTKOFLOW);
-             stk[++tos] = e.d;
+             stk[++tos] = e.d.d;
              break;
 
            case Elem::STR:

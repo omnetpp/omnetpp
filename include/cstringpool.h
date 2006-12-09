@@ -42,7 +42,19 @@ class cStringPool
   public:
     cStringPool();
     ~cStringPool();
+
+    /**
+     * Returns pointer to the pooled copy of the given string, and increments
+     * its reference count. get() and release() must occur in pairs.
+     * Passing NULL is OK.
+     */
     const char *get(const char *s);
+
+    /**
+     * The parameter must a pointer returned by get(). It decrements the
+     * reference count and frees the pooled string if it reaches zero.
+     * Passing NULL is OK.
+     */
     void release(const char *s);
 };
 

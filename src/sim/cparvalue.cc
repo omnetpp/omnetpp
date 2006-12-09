@@ -26,21 +26,26 @@
 
 long cParValue::total_parvalue_objs;
 long cParValue::live_parvalue_objs;
+cStringPool cParValue::unitStringPool;
+
 
 cParValue::cParValue()
 {
+    unitp = NULL;
     total_parvalue_objs++;
     live_parvalue_objs++;
 }
 
 cParValue::~cParValue()
 {
+    unitStringPool.release(unitp);
     live_parvalue_objs--;
 }
 
 cParValue& cParValue::operator=(const cParValue& other)
 {
     cNamedObject::operator=(other);
+    setUnit(other.unit());
     return *this;
 }
 
@@ -81,6 +86,17 @@ std::string cParValue::detailedInfo() const
 cParValue *cParValue::dup() const
 {
     throw new cRuntimeError(this, eCANTDUP);  // cannot dup because this is an abstract class
+}
+
+const char *cParValue::unit() const
+{
+    return unitp;
+}
+
+void cParValue::setUnit(const char *s)
+{
+    unitStringPool.release(unitp);
+    unitp = unitStringPool.get(s);
 }
 
 int cParValue::compare(const cParValue *other) const

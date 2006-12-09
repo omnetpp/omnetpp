@@ -32,10 +32,8 @@ cProperty::cProperty(const char *name, const char *index) : cNamedObject(name, t
 cProperty::~cProperty()
 {
     // release pooled strings
-    if (propindex)
-        stringPool.release(propindex);
-    if (propfullname)
-        stringPool.release(propfullname);
+    stringPool.release(propindex);
+    stringPool.release(propfullname);
     int n = keyv.size();
     for (int i=0; i<n; i++)
     {
@@ -101,8 +99,7 @@ void cProperty::setName(const char *name)
 
 void cProperty::updateFullName() const
 {
-    if (propfullname)
-        stringPool.release(propfullname);
+    stringPool.release(propfullname);
     if (!propindex)
     {
         propfullname = stringPool.get(name());
@@ -161,9 +158,8 @@ void cProperty::setIndex(const char *index)
 {
     if (islocked)
         throw new cRuntimeError(this, eLOCKED);
-    if (propindex)
-        stringPool.release(propindex);
-    propindex = index ? stringPool.get(index) : NULL;
+    stringPool.release(propindex);
+    propindex = stringPool.get(index);
     updateFullName();
 }
 
@@ -186,7 +182,7 @@ bool cProperty::isImplicit() const
 
 int cProperty::findKey(const char *key) const
 {
-    if (!key) 
+    if (!key)
         key = "";
     for (int i=0; i<keyv.size(); i++)
         if (!strcmp(key,keyv[i]))
@@ -206,7 +202,7 @@ bool cProperty::hasKey(const char *key) const
 
 void cProperty::addKey(const char *key)
 {
-    if (!key) 
+    if (!key)
         key = "";
     int k = findKey(key);
     if (k==-1)
@@ -218,7 +214,7 @@ void cProperty::addKey(const char *key)
 
 cProperty::CharPtrVector& cProperty::valuesVector(const char *key) const
 {
-    if (!key) 
+    if (!key)
         key = "";
     int k = findKey(key);
     if (k==-1)
