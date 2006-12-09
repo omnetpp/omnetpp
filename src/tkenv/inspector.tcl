@@ -210,11 +210,13 @@ proc inspector_show {w} {
 # Brings the window to front, and gives it focus
 #
 proc show_window {w} {
-    # note: "wm withdraw" seems to be needed on Kubuntu Dapper (kwin 3.0, kde 3.5.2)
-    # to bring $w to front and give the focus to it. This is something new,
-    # it worked well before without it on all platforms (Windows too)...
-    wm withdraw $w
-    wm deiconify $w
+    global tcl_platform
+    if {$tcl_platform(platform) != "windows"} {
+        # looks like some X servers ignore the "raise" command unless we
+        # kick them by "wm withdraw" plus "wm deiconify"...
+        wm withdraw $w
+        wm deiconify $w
+    }
     raise $w
     focus $w
 }
@@ -364,7 +366,8 @@ proc popup_insp_menu {ptr X Y {wantanimoptions 0}} {
            continue
        }
        # check we have such object
-       set objlist [opp_getsubobjectsfilt $ptr $allcategories $contextmenurules($key,class) "$name.$contextmenurules($key,name)" 1 ""]
+       # Note: we have to quote the pattern for the object matcher, because $name might contain spaces
+       set objlist [opp_getsubobjectsfilt $ptr $allcategories $contextmenurules($key,class) "\"$name.$contextmenurules($key,name)\"" 1 ""]
        if {$objlist!={}} {
            if {$first} {
                set first 0
