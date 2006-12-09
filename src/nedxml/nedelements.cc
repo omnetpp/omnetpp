@@ -33,9 +33,9 @@ static const char *partype_vals[] = {"", "double", "int", "string", "bool", "xml
 static int partype_nums[] = {NED_PARTYPE_NONE, NED_PARTYPE_DOUBLE, NED_PARTYPE_INT, NED_PARTYPE_STRING, NED_PARTYPE_BOOL, NED_PARTYPE_XML};
 static const int partype_n = 6;
 
-static const char *littype_vals[] = {"double", "int", "string", "bool", "unit", "spec"};
-static int littype_nums[] = {NED_CONST_DOUBLE, NED_CONST_INT, NED_CONST_STRING, NED_CONST_BOOL, NED_CONST_UNIT, NED_CONST_SPEC};
-static const int littype_n = 6;
+static const char *littype_vals[] = {"double", "int", "string", "bool", "spec"};
+static int littype_nums[] = {NED_CONST_DOUBLE, NED_CONST_INT, NED_CONST_STRING, NED_CONST_BOOL, NED_CONST_SPEC};
+static const int littype_n = 5;
 
 static const char *subgate_vals[] = {"", "i", "o"};
 static int subgate_nums[] = {NED_SUBGATE_NONE, NED_SUBGATE_I, NED_SUBGATE_O};

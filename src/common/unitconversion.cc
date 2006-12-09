@@ -23,11 +23,11 @@ UnitConversion::UnitDesc UnitConversion::unitTable[] = {
     { "ms",   1e-3, "s",    "millisecond" },
     { "us",   1e-6, "s",    "microsecond" },
     { "ns",   1e-9, "s",    "nanosecond" },
-    { "Tbps", 1e12, "bps",  "terabit/s" },
-    { "Gbps",  1e9, "bps",  "gigabit/s" },
-    { "Mbps",  1e6, "bps",  "megabit/s" },
-    { "Kbps",  1e3, "bps",  "kilobit/s" },
-    { "bps",     1, "bps",  "bit/s" },
+    { "Tbps", 1e12, "bps",  "terabit/sec" },
+    { "Gbps",  1e9, "bps",  "gigabit/sec" },
+    { "Mbps",  1e6, "bps",  "megabit/sec" },
+    { "Kbps",  1e3, "bps",  "kilobit/sec" },
+    { "bps",     1, "bps",  "bit/sec" },
     { "TB",   1e12, "B",    "terabyte" },
     { "GB",    1e9, "B",    "gigabyte" },
     { "MB",    1e6, "B",    "megabyte" },
@@ -89,7 +89,8 @@ double UnitConversion::parseQuantity(const char *str, std::string& outActualUnit
 double UnitConversion::doParseQuantity(const char *str, const char *expectedUnit, std::string& unit)
 {
     //FIXME warn if unit only differs from a "known" unit in uppercase/lowercase!!!!
-    
+    //FIXME handle "dimensionless" units too (expectedUnit=="-")
+
     unit = "";
     const char *s = str;
 
@@ -162,4 +163,14 @@ std::string UnitConversion::formatQuantity(double d, const char *unit)
     printf("FIXME formatQuantity() to be implemented\n");
     return "FIXME";
 }
+
+std::string UnitConversion::unitDescription(const char *unit)
+{
+    UnitDesc *desc = lookupUnit(unit);
+    std::string result = std::string("'")+unit+"'";
+    if (desc)
+        result += std::string(" (") + desc->longName + ")";
+    return result;
+}
+
 

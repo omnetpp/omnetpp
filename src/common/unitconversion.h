@@ -27,7 +27,7 @@ class UnitConversion
     static UnitDesc unitTable[];
 
   protected:
-    UnitDesc *lookupUnit(const char *unit);
+    static UnitDesc *lookupUnit(const char *unit);
     static bool readNumber(const char *&s, double& number);
     static bool readUnit(const char *&s, std::string& unit);
     double doParseQuantity(const char *str, const char *expectedUnit, std::string& actualUnit);
@@ -72,6 +72,12 @@ class UnitConversion
      *
      */
     std::string formatQuantity(double d, const char *unit=NULL);
+
+    /**
+     * Returns a descriptive name of the given unit; in the worst case
+     * it returns the input string itself in quotes.
+     */
+    static std::string unitDescription(const char *unit);
 };
 
 #endif

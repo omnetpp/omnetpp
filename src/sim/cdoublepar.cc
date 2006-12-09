@@ -87,6 +87,7 @@ void cDoublePar::setExpression(cExpression *e)
     deleteOld();
     expr = e;
     flags |= FL_ISEXPR | FL_HASVALUE;
+    setUnit(e->unit());
 }
 
 bool cDoublePar::boolValue(cComponent *) const
@@ -181,9 +182,11 @@ bool cDoublePar::parse(const char *text)
 
     // try parsing it as an expression
     cDynamicExpression *dynexpr = new cDynamicExpression();
-    if (dynexpr->parse(text))
+    if (dynexpr->parse(text))   //FIXME catch exceptions!!!!! in all partypes!!!!!
     {
         setExpression(dynexpr);
+        if (dynexpr->isAConstant()) //FIXME add this trick to all param types???
+            convertToConst(NULL); // optimization: store as a constant value instead of an expression
         return true;
     }
 

@@ -174,8 +174,10 @@ class SIM_API cParValue : public cNamedObject
 
     /**
      * Returns the parameter value's unit ("s", "mW", "Hz", "bps", etc).
-     * This normally comes from the assignment ("64kbps") and must match
-     * the @unit property of the parameter, declared in NED.
+     * This normally comes from the assignment, possibly after performing
+     * conversion ("64kbps" get stored as d=64000, unit="bps") and must match
+     * the @unit property of the parameter, declared in NED. Unit is only
+     * meaningful with numeric parameters.
      */
     virtual const char *unit() const;
 

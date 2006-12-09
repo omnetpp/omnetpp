@@ -87,6 +87,7 @@ void cLongPar::setExpression(cExpression *e)
     deleteOld();
     expr = e;
     flags |= FL_ISEXPR | FL_HASVALUE;
+    setUnit(e->unit());
 }
 
 bool cLongPar::boolValue(cComponent *) const
@@ -165,7 +166,7 @@ std::string cLongPar::toString() const
 
 bool cLongPar::parse(const char *text)
 {
-    // maybe it's just a number
+    // maybe it's just a number  FIXME do we need this code? it'll work via cDynamicExpression too!
     cStringTokenizer tok(text);
     const char *word = tok.nextToken();
     if (word!=NULL && !tok.hasMoreTokens())
@@ -184,6 +185,8 @@ bool cLongPar::parse(const char *text)
     if (dynexpr->parse(text))
     {
         setExpression(dynexpr);
+        if (dynexpr->isAConstant()) //FIXME add this trick to all param types???
+            convertToConst(NULL); // optimization: store as a constant value instead of an expression
         return true;
     }
 

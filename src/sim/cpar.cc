@@ -22,6 +22,7 @@
 #include "ccomponent.h"
 #include "ccomponenttype.h"
 #include "csimulation.h"
+#include "unitconversion.h"
 
 #ifdef WITH_PARSIM
 #include "ccommbuffer.h"
@@ -284,8 +285,9 @@ void cPar::read()
         cProperty *unitProp = props->get("unit");
         const char *declUnit = unitProp ? unitProp->value(cProperty::DEFAULTKEY) : NULL;
         if (declUnit && strcmp(actualUnit, declUnit)!=0)
-            throw new cRuntimeError(this, "parameter value's unit '%s' does not match required unit '%s'",
-                                    actualUnit, declUnit);
+            throw new cRuntimeError(this, "value is given in wrong units: should be %s instead of %s",
+                                    UnitConversion::unitDescription(declUnit).c_str(),
+                                    UnitConversion::unitDescription(actualUnit).c_str());
     }
 }
 

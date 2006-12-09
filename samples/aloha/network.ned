@@ -14,7 +14,7 @@
 simple AHost
 {
     parameters:
-        double txRate;  // transmission rate
+        double txRate @unit(bps);  // transmission rate
         double radioDelay;  // propagation delay of radio link
         volatile int pkLenBits;  // packet length in bits
         volatile double iaTime;  // packet interarrival time
@@ -27,7 +27,7 @@ simple AHost
 simple AServer
 {
     parameters:
-        double txRate; // transmission rate (needed to calculate lengths of packet receptions)
+        double txRate @unit(bps); // transmission rate (needed to calculate lengths of packet receptions)
     gates:
         input in;
 }
@@ -40,7 +40,7 @@ module ALOHAnet
 {
     parameters:
         int numHosts;  // number of hosts
-        double txRate;  // transmission rate
+        double txRate @unit(bps);  // transmission rate
         double slotTime;  // zero means no slots (pure Aloha)
         @display("o=,white");
     submodules:

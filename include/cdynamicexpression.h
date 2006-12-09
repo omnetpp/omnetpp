@@ -127,10 +127,10 @@ class SIM_API cDynamicExpression : public cExpression
         void operator=(double _d)  {type=DBL; d.d=_d; d.unit=NULL;}
 
         /**
-         * Effect during evaluation of the expression: pushes the given number
-         * to the evaluation stack.
+         * Sets the unit of an Elem previously set to a double value.
+         * The type must already be DBL, or an error gets thrown.
          */
-        void set(double _d, const char *u)  {type=DBL; d.d=_d; d.unit = stringPool.get(u);}
+        void setUnit(const char *s)  {ASSERT(type==DBL); d.unit = stringPool.get(s);}
 
         /**
          * Effect during evaluation of the expression: pushes the given string
@@ -341,6 +341,11 @@ class SIM_API cDynamicExpression : public cExpression
      * like "2+2").
      */
     virtual bool isAConstant() const;
+
+    /**
+     * Returns the unit of the expression if it can be determined, or NULL.
+     */
+    virtual const char *unit() const;
     //@}
 };
 

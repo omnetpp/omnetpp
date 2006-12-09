@@ -108,11 +108,11 @@ static void addFunction(const char *funcname, int numargs)
     yyerror((std::string("function `")+funcname+"' not found (Define_Function() missing from C++ code?)").c_str());
 }
 
-static double parseQuantity(const char *text)
+static double parseQuantity(const char *text, std::string& unit)
 {
     try {
         // evaluate quantities like "5s 230ms"
-        return UnitConversion().parseQuantity(text);
+        return UnitConversion().parseQuantity(text, unit);
     }
     catch (Exception *e) {
         yyerror(e->message());
@@ -277,7 +277,13 @@ numliteral
         | REALCONSTANT
                 { *e++ = strtod($1,NULL); delete [] $1; }
         | quantity
-                { *e++ = parseQuantity($1); delete [] $1; /*TODO find out how we can bring @unit() here... */ }
+                {
+                  std::string unit;
+                  *e++ = parseQuantity($1, unit);
+                  if (!unit.empty())
+                      (e-1)->setUnit(unit.c_str());
+                  delete [] $1;
+                }
         ;
 
 quantity

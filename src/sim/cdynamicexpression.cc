@@ -647,7 +647,7 @@ bool cDynamicExpression::parse(const char *text)
     // try parse it
     Elem *tmpelems;
     int tmpnelems;
-    ::doParseExpression(text, tmpelems, tmpnelems);
+    ::doParseExpression(text, tmpelems, tmpnelems);  //FIXME exceptions??????
     if (!tmpelems)
         return false;
 
@@ -675,5 +675,13 @@ bool cDynamicExpression::isAConstant() const
         }
     }
     return true;
+}
+
+const char *cDynamicExpression::unit() const
+{
+    // this can be made more sophisticated, like unit of (3*5s) is still "s"
+    if (nelems==1 && elems[0].type==Elem::DBL)
+        return elems[0].d.unit;
+    return NULL;
 }
 

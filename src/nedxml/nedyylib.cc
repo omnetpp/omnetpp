@@ -375,7 +375,7 @@ LiteralNode *createLiteral(int type, YYLTYPE valuepos, YYLTYPE textpos)
 LiteralNode *createQuantity(const char *text)
 {
     LiteralNode *c = (LiteralNode *)createNodeWithTag(NED_LITERAL);
-    c->setType(NED_CONST_UNIT);
+    c->setType(NED_CONST_DOUBLE);
     if (text) c->setText(text);
 
     double d = 0;

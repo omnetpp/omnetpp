@@ -589,6 +589,8 @@ void NEDBasicValidator::validateElement(LiteralNode *node)
         // check bool
         if (strcmp(value,"true") && strcmp(value,"false"))
             errors->add(node, "bool constant should be 'true' or 'false'");
+        if (!strnull(node->getUnit()))
+            errors->add(node, "bool constant cannot have a unit");
         // TBD check that if text is present, it's the same as value
     }
     else if (type==NED_CONST_INT)
@@ -598,6 +600,8 @@ void NEDBasicValidator::validateElement(LiteralNode *node)
         strtol(value, &s, 0);
         if (s && *s)
             errors->add(node, "invalid integer constant '%s'", value);
+        if (!strnull(node->getUnit()))
+            errors->add(node, "integer constant cannot have a unit");
         // TBD check that if text is present, it's the same as value
     }
     else if (type==NED_CONST_DOUBLE)
@@ -607,20 +611,14 @@ void NEDBasicValidator::validateElement(LiteralNode *node)
         strtod(value, &s);
         if (s && *s)
             errors->add(node, "invalid real constant '%s'", value);
-        // TBD check that if text is present, it's the same as value
+        // TBD check that if text and/or unit is present, they're consistent
     }
     else if (type==NED_CONST_STRING)
     {
-        // string: no restriction
+        // string: no restriction on value
+        if (!strnull(node->getUnit()))
+            errors->add(node, "string constant cannot have a unit");
         // TBD check that if text is present, it's the same as value
-    }
-    else if (type==NED_CONST_UNIT)
-    {
-        // value of a time/bandwidth/etc constant is a real number; text is the original form
-        char *s;
-        strtod(value, &s);
-        if (s && *s)
-            errors->add(node, "invalid value for unit constant '%s' (expected as real number)", value);
     }
 }
 

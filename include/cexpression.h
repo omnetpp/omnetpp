@@ -127,6 +127,11 @@ class SIM_API cExpression : public cObject
      * This may not be possible with all subclasses.
      */
     virtual bool parse(const char *text) = 0;
+
+    /**
+     * Returns the unit of the expression if it can be determined, or NULL.
+     */
+    virtual const char *unit() const {return NULL;}
     //@}
 };
 
