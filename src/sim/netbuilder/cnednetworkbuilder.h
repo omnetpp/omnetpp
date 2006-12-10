@@ -59,7 +59,7 @@ class cNEDNetworkBuilder
     void buildRecursively(cModule *modp, cNEDDeclaration *decl);
     cModuleType *findAndCheckModuleType(const char *modtypename, cModule *modp, const char *submodname);
     void addSubmodule(cModule *modp, SubmoduleNode *submod);
-    void setDisplayString(cModule *submodp);
+    void setDisplayString(cModule *module);
     void setConnDisplayString(cGate *srcgatep);
     static cPar::Type translateParamType(int t);
     static cGate::Type translateGateType(int t);

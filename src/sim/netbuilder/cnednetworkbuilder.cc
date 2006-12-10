@@ -45,6 +45,19 @@
 #include "cexpressionbuilder.h"
 #include "nedsupport.h"
 
+/*
+  FIXME FIXME FIXME
+
+  a toplevel modulra nem hivodnak meg a kovetkezok:
+
+        setDisplayString(submodp);
+        assignSubcomponentParams(submodp, submod);
+        submodp->readParams();
+
+  mivel ezek az addSubmodule()-ban vannak!
+
+  atrakni a buildInside()-ba???
+*/
 
 inline bool strnull(const char *s)
 {
@@ -385,14 +398,14 @@ void cNEDNetworkBuilder::addSubmodule(cModule *modp, SubmoduleNode *submod)
 }
 
 
-void cNEDNetworkBuilder::setDisplayString(cModule *submodp)
+void cNEDNetworkBuilder::setDisplayString(cModule *module)
 {
-    cProperties *props = submodp->properties();
+    cProperties *props = module->properties();
     cProperty *prop = props->get("display");
     const char *propValue = prop ? prop->value(cProperty::DEFAULTKEY) : NULL;
     if (propValue)
     {
-        submodp->setDisplayString(propValue);  //FIXME convert to new format, etc
+        module->setDisplayString(propValue);
     }
 }
 
