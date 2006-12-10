@@ -162,17 +162,18 @@ msg2.tab.obj: msg2.tab.cc \
   nedelement.h
 ned1.tab.obj: ned1.tab.cc \
   nedyydefs.h \
+  nedutil.h \
   nederror.h \
   nedparser.h \
   nedfilebuffer.h \
   nedelements.h \
-  nedutil.h \
   nedyylib.h \
   nedelement.h
 ned1generator.obj: ned1generator.cc \
   ned1generator.h \
-  nederror.h \
+  nedutil.h \
   nedelements.h \
+  nederror.h \
   nedelement.h
 ned2.tab.obj: ned2.tab.cc \
   nedyydefs.h \

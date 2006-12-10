@@ -18,7 +18,7 @@
 #include <string>
 #include <sstream>
 #include "ned1generator.h"
-#include "nederror.h"
+#include "nedutil.h"
 
 using std::ostream;
 
@@ -354,11 +354,11 @@ void NED1Generator::doCompoundModule(CompoundModuleNode *node, const char *inden
 
     PropertyNode *displayProp;
     std::string dispstr = getDisplayStringOf(node, displayProp);
-    std::string ned1backgrounddispstr = extractNED1BackgroundDisplayString(dispstr.c_str());
     if (!dispstr.empty())
     {
+        std::string dispstr = DisplayStringUtil::toOldBackgroundDisplayString(dispstr.c_str());
         OUT << getBannerComment(displayProp, increaseIndent(indent));
-        OUT << increaseIndent(indent) << "display: " << ned1backgrounddispstr << ";" << getRightComment(displayProp);
+        OUT << increaseIndent(indent) << "display: " << dispstr << ";" << getRightComment(displayProp);
     }
 
     OUT << indent << (node->getIsNetwork() ? "endnetwork" : "endmodule") << getTrailingComment(node);
@@ -747,6 +747,7 @@ void NED1Generator::doSubmodule(SubmoduleNode *node, const char *indent, bool is
     std::string dispstr = getDisplayStringOf(node, displayProp);
     if (!dispstr.empty())
     {
+        std::string dispstr = DisplayStringUtil::toOldSubmoduleDisplayString(dispstr.c_str());
         OUT << getBannerComment(displayProp, increaseIndent(indent));
         OUT << increaseIndent(indent) << "display: " << dispstr << ";" << getRightComment(displayProp);
     }
@@ -771,8 +772,6 @@ std::string NED1Generator::getDisplayStringOf(NEDElement *node, PropertyNode *&o
     outDisplayProp = displayProp;
     return strnotnull(literal->getText()) ? literal->getText() : (std::string("\"")+literal->getValue()+"\""); //FIXME value needs quoting!!! see doLiteral()
 }
-
-std::string extractNED1BackgroundDisplayString///XXX ---TO SEPARATE CLASS
 
 void NED1Generator::doConnections(ConnectionsNode *node, const char *indent, bool islast, const char *)
 {
@@ -840,7 +839,10 @@ void NED1Generator::doConnection(ConnectionNode *node, const char *indent, bool 
         PropertyNode *dummy;
         std::string dispstr = getDisplayStringOf(chanSpecNode, dummy);
         if (!dispstr.empty())
+        {
+            std::string dispstr = DisplayStringUtil::toOldConnectionDisplayString(dispstr.c_str());
             OUT << " display " << dispstr;
+        }
     }
 
     OUT << ";" << getRightComment(node);

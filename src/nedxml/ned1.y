@@ -85,6 +85,7 @@
 #include <stdlib.h>
 #include <assert.h>
 #include "nedyydefs.h"
+#include "nedutil.h"
 #include "nederror.h"
 
 #define YYDEBUG 1           /* allow debugging */
@@ -343,7 +344,7 @@ displayblock
                   ps.property = addComponentProperty(ps.module, "display");
                   ps.params = (ParametersNode *)ps.module->getFirstChildWithTag(NED_PARAMETERS); // previous line doesn't set it
                   ps.propkey = (PropertyKeyNode *)createNodeWithTag(NED_PROPERTY_KEY, ps.property);
-                  std::string displaystring = convertBackgroundDisplayString(toString(trimQuotes(@3)));
+                  std::string displaystring = DisplayStringUtil::upgradeBackgroundDisplayString(toString(trimQuotes(@3)));
                   LiteralNode *literal = (LiteralNode *)createNodeWithTag(NED_LITERAL);
                   literal->setType(NED_CONST_STRING);
                   literal->setValue(displaystring.c_str());
@@ -758,7 +759,11 @@ opt_submod_displayblock
                   ps.property = addComponentProperty(ps.submod, "display");
                   ps.substparams = (ParametersNode *)ps.submod->getFirstChildWithTag(NED_PARAMETERS); // previous line doesn't set it
                   ps.propkey = (PropertyKeyNode *)createNodeWithTag(NED_PROPERTY_KEY, ps.property);
-                  LiteralNode *literal = createLiteral(NED_CONST_STRING, trimQuotes(@3), @3);
+                  std::string displaystring = DisplayStringUtil::upgradeSubmoduleDisplayString(toString(trimQuotes(@3)));
+                  LiteralNode *literal = (LiteralNode *)createNodeWithTag(NED_LITERAL);
+                  literal->setType(NED_CONST_STRING);
+                  literal->setValue(displaystring.c_str());
+                  // literal->setText(toString(@3)); -- wrong: this would cause the OLD form to be exported into NED2 too
                   ps.propkey->appendChild(literal);
                   storePos(ps.propkey, @$);
                   storePos(literal, @3);
