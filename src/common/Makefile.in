@@ -30,7 +30,7 @@ COPTS=$(CFLAGS)
 
 OBJS= filetokenizer.o filereader.o linetokenizer.o stringtokenizer.o \
       matchexpression.o lex.matchexpressionyy.o matchexpression.tab.o \
-      patternmatcher.o unitconversion.o util.o exception.o
+      patternmatcher.o unitconversion.o displaystring.o util.o exception.o
 
 #
 # Automatic rules
