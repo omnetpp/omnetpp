@@ -70,8 +70,9 @@ std::string DisplayStringUtil::upgradeConnectionDisplayString(const char *s)
     return ds.toString();
 }
 
-std::string DisplayStringUtil::toOldBackgroundDisplayString(const char *s)
+std::string DisplayStringUtil::toOldBackgroundDisplayStringQ(const char *s)
 {
+    //FIXME remove/add quotes!
     DisplayString ds;
     ds.parse(s);
     for (int i=0; i<ds.getNumTags(); i++)
@@ -95,8 +96,9 @@ std::string DisplayStringUtil::toOldBackgroundDisplayString(const char *s)
     return ds.toString();
 }
 
-std::string DisplayStringUtil::toOldSubmoduleDisplayString(const char *s)
+std::string DisplayStringUtil::toOldSubmoduleDisplayStringQ(const char *s)
 {
+    //FIXME remove/add quotes!
     DisplayString ds;
     ds.parse(s);
     if (ds.getNumArgs("b")>3)
@@ -111,8 +113,9 @@ std::string DisplayStringUtil::toOldSubmoduleDisplayString(const char *s)
     return ds.toString();
 }
 
-std::string DisplayStringUtil::toOldConnectionDisplayString(const char *s)
+std::string DisplayStringUtil::toOldConnectionDisplayStringQ(const char *s)
 {
+    //FIXME remove/add quotes!
     DisplayString ds;
     ds.parse(s);
     renameTag(ds, "ls", "o");

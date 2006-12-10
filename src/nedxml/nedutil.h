@@ -32,9 +32,9 @@ class DisplayStringUtil
     static std::string upgradeBackgroundDisplayString(const char *s);
     static std::string upgradeSubmoduleDisplayString(const char *s);
     static std::string upgradeConnectionDisplayString(const char *s);
-    static std::string toOldBackgroundDisplayString(const char *s);
-    static std::string toOldSubmoduleDisplayString(const char *s);
-    static std::string toOldConnectionDisplayString(const char *s);
+    static std::string toOldBackgroundDisplayStringQ(const char *s);
+    static std::string toOldSubmoduleDisplayStringQ(const char *s);
+    static std::string toOldConnectionDisplayStringQ(const char *s);
 };
 
 #endif
