@@ -19,7 +19,7 @@
 
 //FIXME migrate (part of) sim/utils.cc here, and use these functions from there?
 
-char *opp_strdup(const char *s)
+static char *opp_strdup(const char *s)
 {
     if (!s || !s[0]) return NULL;
     char *p = new char[ strlen(s)+1 ];
@@ -27,7 +27,7 @@ char *opp_strdup(const char *s)
     return p;
 }
 
-int opp_strcmp(const char *s1, const char *s2)
+static int opp_strcmp(const char *s1, const char *s2)
 {
     // case-sensitive comparison
     if (s1 && s2)       return strcmp(s1,s2);
@@ -36,7 +36,7 @@ int opp_strcmp(const char *s1, const char *s2)
     else                return 0;
 }
 
-int opp_strlen(const char *s)
+static int opp_strlen(const char *s)
 {
     if (!s) return 0;
     return strlen(s);
@@ -214,13 +214,14 @@ bool DisplayString::setTagArg(int tagindex, int index, const char *value)
     // check indices
     if (tagindex<0 || tagindex>=numtags) return false;
     if (index<0 || index>=MAXARGS) return false;
+    Tag& tag = tags[tagindex];
 
     // adjust numargs if necessary
-    if (index>=tags[tagindex].numargs)
-        tags[tagindex].numargs = index+1;
+    if (index>=tag.numargs)
+        tag.numargs = index+1;
 
     // if it's the same, nothing to do
-    char *&slot = tags[tagindex].args[index];
+    char *&slot = tag.args[index];
     if (!opp_strcmp(slot,value))
         return true;
 
@@ -228,6 +229,10 @@ bool DisplayString::setTagArg(int tagindex, int index, const char *value)
     if (slot && !isinbuffer(slot))
         delete [] slot;
     slot = opp_strdup(value);
+
+    // get rid of possible empty trailing args
+    while (tag.numargs>0 && tag.args[tag.numargs-1]==NULL)
+        tag.numargs--;
 
     return true;
 }

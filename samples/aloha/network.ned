@@ -42,7 +42,7 @@ module ALOHAnet
         int numHosts;  // number of hosts
         double txRate @unit(bps);  // transmission rate
         double slotTime;  // zero means no slots (pure Aloha)
-        @display("o=,white");
+        @display("bgb=,,white");
     submodules:
         server: AServer {
             parameters:

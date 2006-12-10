@@ -209,13 +209,14 @@ bool cDisplayString::setTagArg(int tagindex, int index, const char *value)
     // check indices
     if (tagindex<0 || tagindex>=numtags) return false;
     if (index<0 || index>=MAXARGS) return false;
+    Tag& tag = tags[tagindex];
 
     // adjust numargs if necessary
-    if (index>=tags[tagindex].numargs)
-        tags[tagindex].numargs = index+1;
+    if (index>=tag.numargs)
+        tag.numargs = index+1;
 
     // if it's the same, nothing to do
-    char *&slot = tags[tagindex].args[index];
+    char *&slot = tag.args[index];
     if (!opp_strcmp(slot,value))
         return true;
 
@@ -223,8 +224,12 @@ bool cDisplayString::setTagArg(int tagindex, int index, const char *value)
     if (slot && !isinbuffer(slot))
         delete [] slot;
     slot = opp_strdup(value);
-    notify();
 
+    // get rid of possible empty trailing args
+    while (tag.numargs>0 && tag.args[tag.numargs-1]==NULL)
+        tag.numargs--;
+
+    notify();
     return true;
 }
 
