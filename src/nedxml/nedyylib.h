@@ -71,6 +71,7 @@ void addVector(NEDElement *elem, const char *attrname, YYLTYPE exprpos, NEDEleme
 void addLikeParam(NEDElement *elem, const char *attrname, YYLTYPE exprpos, NEDElement *expr);
 void addExpression(NEDElement *elem, const char *attrname, YYLTYPE exprpos, NEDElement *expr);
 
+std::string convertBackgroundDisplayString(const char *old);
 
 inline bool isEmpty(YYLTYPE pos) {
     return pos.first_line > pos.last_line ||

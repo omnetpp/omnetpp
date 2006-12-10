@@ -354,10 +354,11 @@ void NED1Generator::doCompoundModule(CompoundModuleNode *node, const char *inden
 
     PropertyNode *displayProp;
     std::string dispstr = getDisplayStringOf(node, displayProp);
+    std::string ned1backgrounddispstr = extractNED1BackgroundDisplayString(dispstr.c_str());
     if (!dispstr.empty())
     {
         OUT << getBannerComment(displayProp, increaseIndent(indent));
-        OUT << increaseIndent(indent) << "display: " << dispstr << ";" << getRightComment(displayProp);
+        OUT << increaseIndent(indent) << "display: " << ned1backgrounddispstr << ";" << getRightComment(displayProp);
     }
 
     OUT << indent << (node->getIsNetwork() ? "endnetwork" : "endmodule") << getTrailingComment(node);
@@ -770,6 +771,8 @@ std::string NED1Generator::getDisplayStringOf(NEDElement *node, PropertyNode *&o
     outDisplayProp = displayProp;
     return strnotnull(literal->getText()) ? literal->getText() : (std::string("\"")+literal->getValue()+"\""); //FIXME value needs quoting!!! see doLiteral()
 }
+
+std::string extractNED1BackgroundDisplayString///XXX ---TO SEPARATE CLASS
 
 void NED1Generator::doConnections(ConnectionsNode *node, const char *indent, bool islast, const char *)
 {

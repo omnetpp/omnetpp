@@ -428,4 +428,11 @@ NEDElement *unaryMinus(NEDElement *node)
     return node;
 }
 
+std::string convertBackgroundDisplayString(const char *old)
+{
+    std::string ret = old;
+    ret += ";FIXME=conversion,TBD";  //XXX
+    return ret;
+}
+
 
