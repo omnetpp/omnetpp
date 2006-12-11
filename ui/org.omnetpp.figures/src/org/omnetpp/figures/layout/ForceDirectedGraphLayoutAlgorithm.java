@@ -1,7 +1,7 @@
 package org.omnetpp.figures.layout;
 
 public class ForceDirectedGraphLayoutAlgorithm extends AbstractGraphLayoutAlgorithm {
-	private ForceDirectedEmbedding embedding;
+	private ForceDirectedEmbedding2 embedding;
 
 	private GraphComponent graphComponent = new GraphComponent();
 
@@ -39,7 +39,7 @@ public class ForceDirectedGraphLayoutAlgorithm extends AbstractGraphLayoutAlgori
 				new StarTreeEmbedding(graphComponent, 40).embed();
 			}
 
-			embedding = new ForceDirectedEmbedding(graphComponent, null);
+			embedding = new ForceDirectedEmbedding2();
 
 			//new TestFrame(embedding, width, height);
 
