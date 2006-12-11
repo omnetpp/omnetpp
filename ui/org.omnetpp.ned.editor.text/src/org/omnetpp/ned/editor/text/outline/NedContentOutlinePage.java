@@ -23,8 +23,8 @@ import org.eclipse.ui.texteditor.IDocumentProvider;
 import org.eclipse.ui.texteditor.ITextEditor;
 import org.eclipse.ui.views.contentoutline.ContentOutlinePage;
 import org.omnetpp.common.image.ImageFactory;
-import org.omnetpp.ned2.model.NEDElement;
-import org.omnetpp.ned2.model.NEDSourceRegion;
+import org.omnetpp.ned.model.NEDElement;
+import org.omnetpp.ned.model.NEDSourceRegion;
 import org.omnetpp.resources.NEDResourcesPlugin;
 
 /**

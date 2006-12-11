@@ -4,9 +4,9 @@ import java.util.List;
 
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
 import org.eclipse.ui.views.properties.PropertyDescriptor;
-import org.omnetpp.ned2.model.NEDElement;
-import org.omnetpp.ned2.model.interfaces.IHasAncestors;
-import org.omnetpp.ned2.model.pojo.ExtendsNode;
+import org.omnetpp.ned.model.NEDElement;
+import org.omnetpp.ned.model.interfaces.IHasAncestors;
+import org.omnetpp.ned.model.pojo.ExtendsNode;
 
 /**
  * @author rhornig

@@ -5,10 +5,10 @@ import java.util.List;
 import java.util.Set;
 
 import org.eclipse.gef.commands.Command;
-import org.omnetpp.ned2.model.NEDElement;
-import org.omnetpp.ned2.model.ex.NEDElementUtilEx;
-import org.omnetpp.ned2.model.interfaces.IHasName;
-import org.omnetpp.ned2.model.interfaces.ITopLevelElement;
+import org.omnetpp.ned.model.NEDElement;
+import org.omnetpp.ned.model.ex.NEDElementUtilEx;
+import org.omnetpp.ned.model.interfaces.IHasName;
+import org.omnetpp.ned.model.interfaces.ITopLevelElement;
 import org.omnetpp.resources.NEDResourcesPlugin;
 
 /**

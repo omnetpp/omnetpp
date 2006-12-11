@@ -5,7 +5,7 @@ import java.util.List;
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
 import org.eclipse.ui.views.properties.IPropertySource2;
 import org.omnetpp.common.properties.EditableComboBoxPropertyDescriptor;
-import org.omnetpp.ned2.model.interfaces.IHasAncestors;
+import org.omnetpp.ned.model.interfaces.IHasAncestors;
 
 /**
  * @author rhornig

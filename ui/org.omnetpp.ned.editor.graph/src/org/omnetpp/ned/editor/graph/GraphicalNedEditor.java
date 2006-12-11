@@ -97,8 +97,8 @@ import org.omnetpp.ned.editor.graph.edit.NedEditPartFactory;
 import org.omnetpp.ned.editor.graph.edit.outline.NedTreeEditPartFactory;
 import org.omnetpp.ned.editor.graph.misc.ISelectionSupport;
 import org.omnetpp.ned.editor.graph.misc.ModulePaletteCustomizer;
-import org.omnetpp.ned2.model.ex.NedFileNodeEx;
-import org.omnetpp.ned2.model.interfaces.IHasName;
+import org.omnetpp.ned.model.ex.NedFileNodeEx;
+import org.omnetpp.ned.model.interfaces.IHasName;
 
 
 public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette 

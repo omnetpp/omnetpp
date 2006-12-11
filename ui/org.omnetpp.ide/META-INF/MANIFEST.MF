@@ -13,10 +13,10 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.ui.editors,
  org.eclipse.ui.workbench.texteditor,
  org.eclipse.gef,
+ org.eclipse.jface.text,
  org.omnetpp.ned.editor.graph,
  org.omnetpp.ned.editor.text,
- org.omnetpp.ned2.model,
- org.eclipse.jface.text,
+ org.omnetpp.ned.model,
  org.omnetpp.resources,
  org.omnetpp.common
 Eclipse-LazyStart: false

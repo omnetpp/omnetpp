@@ -8,16 +8,16 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.MenuItem;
 import org.omnetpp.ned.editor.graph.commands.ConnectionCommand;
-import org.omnetpp.ned2.model.NEDElement;
-import org.omnetpp.ned2.model.NEDTreeUtil;
-import org.omnetpp.ned2.model.ex.CompoundModuleNodeEx;
-import org.omnetpp.ned2.model.ex.NEDElementFactoryEx;
-import org.omnetpp.ned2.model.ex.SubmoduleNodeEx;
-import org.omnetpp.ned2.model.interfaces.IHasConnections;
-import org.omnetpp.ned2.model.interfaces.INEDTypeInfo;
-import org.omnetpp.ned2.model.pojo.ConnectionNode;
-import org.omnetpp.ned2.model.pojo.GateNode;
-import org.omnetpp.ned2.model.pojo.NEDElementTags;
+import org.omnetpp.ned.model.NEDElement;
+import org.omnetpp.ned.model.NEDTreeUtil;
+import org.omnetpp.ned.model.ex.CompoundModuleNodeEx;
+import org.omnetpp.ned.model.ex.NEDElementFactoryEx;
+import org.omnetpp.ned.model.ex.SubmoduleNodeEx;
+import org.omnetpp.ned.model.interfaces.IHasConnections;
+import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
+import org.omnetpp.ned.model.pojo.ConnectionNode;
+import org.omnetpp.ned.model.pojo.GateNode;
+import org.omnetpp.ned.model.pojo.NEDElementTags;
 
 /**
  * @author rhornig

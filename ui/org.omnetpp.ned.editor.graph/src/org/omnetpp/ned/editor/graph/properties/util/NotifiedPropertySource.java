@@ -2,9 +2,9 @@ package org.omnetpp.ned.editor.graph.properties.util;
 
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
 import org.eclipse.ui.views.properties.IPropertySource2;
-import org.omnetpp.ned2.model.NEDElement;
-import org.omnetpp.ned2.model.notification.INEDChangeListener;
-import org.omnetpp.ned2.model.notification.NEDModelEvent;
+import org.omnetpp.ned.model.NEDElement;
+import org.omnetpp.ned.model.notification.INEDChangeListener;
+import org.omnetpp.ned.model.notification.NEDModelEvent;
 
 /**
  * @author rhornig

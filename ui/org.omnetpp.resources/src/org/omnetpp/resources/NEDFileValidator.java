@@ -1,25 +1,25 @@
 package org.omnetpp.resources;
 
 import org.eclipse.core.runtime.Assert;
-import org.omnetpp.ned2.model.NEDElement;
-import org.omnetpp.ned2.model.NEDElementUtil;
-import org.omnetpp.ned2.model.interfaces.INEDTypeResolver;
-import org.omnetpp.ned2.model.pojo.ChannelInterfaceNode;
-import org.omnetpp.ned2.model.pojo.ChannelNode;
-import org.omnetpp.ned2.model.pojo.CompoundModuleNode;
-import org.omnetpp.ned2.model.pojo.ModuleInterfaceNode;
-import org.omnetpp.ned2.model.pojo.NEDElementTags;
-import org.omnetpp.ned2.model.pojo.NedFileNode;
-import org.omnetpp.ned2.model.pojo.PropertyDeclNode;
-import org.omnetpp.ned2.model.pojo.PropertyNode;
-import org.omnetpp.ned2.model.pojo.SimpleModuleNode;
+import org.omnetpp.ned.model.NEDElement;
+import org.omnetpp.ned.model.NEDElementUtil;
+import org.omnetpp.ned.model.interfaces.INEDTypeResolver;
+import org.omnetpp.ned.model.pojo.ChannelInterfaceNode;
+import org.omnetpp.ned.model.pojo.ChannelNode;
+import org.omnetpp.ned.model.pojo.CompoundModuleNode;
+import org.omnetpp.ned.model.pojo.ModuleInterfaceNode;
+import org.omnetpp.ned.model.pojo.NEDElementTags;
+import org.omnetpp.ned.model.pojo.NedFileNode;
+import org.omnetpp.ned.model.pojo.PropertyDeclNode;
+import org.omnetpp.ned.model.pojo.PropertyNode;
+import org.omnetpp.ned.model.pojo.SimpleModuleNode;
 
 /**
  * Validates consistency of NED files.
  * 
  * @author andras
  */
-//XXX move to org.omnetpp.ned2.model plugin? then INEDComponent,
+//XXX move to org.omnetpp.ned.model plugin? then INEDComponent,
 //INEDTypeResolver etc would have to be moved as well, and that plugin
 //would have to depend on org.eclipse.resources because of IFile!!!
 

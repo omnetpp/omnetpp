@@ -16,10 +16,10 @@ import org.omnetpp.ned.editor.graph.GraphicalNedEditor;
 import org.omnetpp.ned.editor.graph.edit.policies.NedComponentEditPolicy;
 import org.omnetpp.ned.editor.graph.misc.ISelectionSupport;
 import org.omnetpp.ned.editor.graph.properties.IPropertySourceSupport;
-import org.omnetpp.ned2.model.NEDElement;
-import org.omnetpp.ned2.model.interfaces.INEDTypeInfo;
-import org.omnetpp.ned2.model.notification.INEDChangeListener;
-import org.omnetpp.ned2.model.notification.NEDModelEvent;
+import org.omnetpp.ned.model.NEDElement;
+import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
+import org.omnetpp.ned.model.notification.INEDChangeListener;
+import org.omnetpp.ned.model.notification.NEDModelEvent;
 
 /**
  * Provides support for Container EditParts.

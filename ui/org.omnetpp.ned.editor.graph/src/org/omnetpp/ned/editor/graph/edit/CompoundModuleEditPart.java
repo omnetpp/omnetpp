@@ -25,13 +25,13 @@ import org.omnetpp.figures.CompoundModuleFigure;
 import org.omnetpp.figures.CompoundModuleGateAnchor;
 import org.omnetpp.figures.GateAnchor;
 import org.omnetpp.ned.editor.graph.edit.policies.CompoundModuleLayoutEditPolicy;
-import org.omnetpp.ned2.model.ex.CompoundModuleNodeEx;
-import org.omnetpp.ned2.model.ex.ConnectionNodeEx;
-import org.omnetpp.ned2.model.ex.SubmoduleNodeEx;
-import org.omnetpp.ned2.model.interfaces.INEDTypeInfo;
-import org.omnetpp.ned2.model.notification.NEDAttributeChangeEvent;
-import org.omnetpp.ned2.model.notification.NEDModelEvent;
-import org.omnetpp.ned2.model.notification.NEDStructuralChangeEvent;
+import org.omnetpp.ned.model.ex.CompoundModuleNodeEx;
+import org.omnetpp.ned.model.ex.ConnectionNodeEx;
+import org.omnetpp.ned.model.ex.SubmoduleNodeEx;
+import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
+import org.omnetpp.ned.model.notification.NEDAttributeChangeEvent;
+import org.omnetpp.ned.model.notification.NEDModelEvent;
+import org.omnetpp.ned.model.notification.NEDStructuralChangeEvent;
 
 public class CompoundModuleEditPart extends ModuleEditPart {
 

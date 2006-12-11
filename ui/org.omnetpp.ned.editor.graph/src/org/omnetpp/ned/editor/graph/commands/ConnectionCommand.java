@@ -3,12 +3,12 @@ package org.omnetpp.ned.editor.graph.commands;
 import org.eclipse.gef.commands.Command;
 import org.omnetpp.ned.editor.graph.edit.CompoundModuleEditPart;
 import org.omnetpp.ned.editor.graph.edit.ModuleEditPart;
-import org.omnetpp.ned2.model.ex.CompoundModuleNodeEx;
-import org.omnetpp.ned2.model.ex.ConnectionNodeEx;
-import org.omnetpp.ned2.model.ex.NEDElementFactoryEx;
-import org.omnetpp.ned2.model.interfaces.IHasConnections;
-import org.omnetpp.ned2.model.pojo.ConnectionNode;
-import org.omnetpp.ned2.model.pojo.NEDElementTags;
+import org.omnetpp.ned.model.ex.CompoundModuleNodeEx;
+import org.omnetpp.ned.model.ex.ConnectionNodeEx;
+import org.omnetpp.ned.model.ex.NEDElementFactoryEx;
+import org.omnetpp.ned.model.interfaces.IHasConnections;
+import org.omnetpp.ned.model.pojo.ConnectionNode;
+import org.omnetpp.ned.model.pojo.NEDElementTags;
 
 /**
  * (Re)assigns a Connection to srcModule/destModule sub/compound module gates and also adds it to the

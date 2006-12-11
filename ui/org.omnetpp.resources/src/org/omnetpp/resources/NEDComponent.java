@@ -9,25 +9,25 @@ import java.util.Set;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.Assert;
-import org.omnetpp.ned2.model.NEDElement;
-import org.omnetpp.ned2.model.NEDSourceRegion;
-import org.omnetpp.ned2.model.ex.CompoundModuleNodeEx;
-import org.omnetpp.ned2.model.ex.ConnectionNodeEx;
-import org.omnetpp.ned2.model.ex.SubmoduleNodeEx;
-import org.omnetpp.ned2.model.interfaces.INEDTypeInfo;
-import org.omnetpp.ned2.model.interfaces.INEDTypeResolver;
-import org.omnetpp.ned2.model.notification.NEDModelEvent;
-import org.omnetpp.ned2.model.pojo.ChannelInterfaceNode;
-import org.omnetpp.ned2.model.pojo.ChannelNode;
-import org.omnetpp.ned2.model.pojo.CompoundModuleNode;
-import org.omnetpp.ned2.model.pojo.ExtendsNode;
-import org.omnetpp.ned2.model.pojo.GateNode;
-import org.omnetpp.ned2.model.pojo.ModuleInterfaceNode;
-import org.omnetpp.ned2.model.pojo.NEDElementTags;
-import org.omnetpp.ned2.model.pojo.ParamNode;
-import org.omnetpp.ned2.model.pojo.PropertyNode;
-import org.omnetpp.ned2.model.pojo.SimpleModuleNode;
-import org.omnetpp.ned2.model.pojo.SubmoduleNode;
+import org.omnetpp.ned.model.NEDElement;
+import org.omnetpp.ned.model.NEDSourceRegion;
+import org.omnetpp.ned.model.ex.CompoundModuleNodeEx;
+import org.omnetpp.ned.model.ex.ConnectionNodeEx;
+import org.omnetpp.ned.model.ex.SubmoduleNodeEx;
+import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
+import org.omnetpp.ned.model.interfaces.INEDTypeResolver;
+import org.omnetpp.ned.model.notification.NEDModelEvent;
+import org.omnetpp.ned.model.pojo.ChannelInterfaceNode;
+import org.omnetpp.ned.model.pojo.ChannelNode;
+import org.omnetpp.ned.model.pojo.CompoundModuleNode;
+import org.omnetpp.ned.model.pojo.ExtendsNode;
+import org.omnetpp.ned.model.pojo.GateNode;
+import org.omnetpp.ned.model.pojo.ModuleInterfaceNode;
+import org.omnetpp.ned.model.pojo.NEDElementTags;
+import org.omnetpp.ned.model.pojo.ParamNode;
+import org.omnetpp.ned.model.pojo.PropertyNode;
+import org.omnetpp.ned.model.pojo.SimpleModuleNode;
+import org.omnetpp.ned.model.pojo.SubmoduleNode;
 
 /**
  * Default implementation of INEDComponent.

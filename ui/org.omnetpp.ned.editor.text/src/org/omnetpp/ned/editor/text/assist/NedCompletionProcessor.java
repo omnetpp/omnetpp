@@ -18,9 +18,9 @@ import org.eclipse.jface.text.contentassist.IContextInformationPresenter;
 import org.eclipse.jface.text.contentassist.IContextInformationValidator;
 import org.eclipse.jface.text.templates.Template;
 import org.omnetpp.ned.editor.text.NedHelper;
-import org.omnetpp.ned2.model.NEDElement;
-import org.omnetpp.ned2.model.interfaces.INEDTypeInfo;
-import org.omnetpp.ned2.model.pojo.SubmoduleNode;
+import org.omnetpp.ned.model.NEDElement;
+import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
+import org.omnetpp.ned.model.pojo.SubmoduleNode;
 import org.omnetpp.resources.NEDResources;
 import org.omnetpp.resources.NEDResourcesPlugin;
 

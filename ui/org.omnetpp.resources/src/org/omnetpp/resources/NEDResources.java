@@ -11,32 +11,32 @@ import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
-import org.omnetpp.ned2.model.NEDElement;
-import org.omnetpp.ned2.model.NEDElementUtil;
-import org.omnetpp.ned2.model.NEDSourceRegion;
-import org.omnetpp.ned2.model.NEDTreeUtil;
-import org.omnetpp.ned2.model.ex.NEDElementFactoryEx;
-import org.omnetpp.ned2.model.ex.NedFileNodeEx;
-import org.omnetpp.ned2.model.interfaces.INEDTypeInfo;
-import org.omnetpp.ned2.model.interfaces.INEDTypeResolver;
-import org.omnetpp.ned2.model.interfaces.ITopLevelElement;
-import org.omnetpp.ned2.model.notification.NEDAttributeChangeEvent;
-import org.omnetpp.ned2.model.notification.NEDModelEvent;
-import org.omnetpp.ned2.model.notification.NEDStructuralChangeEvent;
-import org.omnetpp.ned2.model.pojo.ChannelInterfaceNode;
-import org.omnetpp.ned2.model.pojo.ChannelNode;
-import org.omnetpp.ned2.model.pojo.CompoundModuleNode;
-import org.omnetpp.ned2.model.pojo.ExtendsNode;
-import org.omnetpp.ned2.model.pojo.GateNode;
-import org.omnetpp.ned2.model.pojo.GatesNode;
-import org.omnetpp.ned2.model.pojo.ModuleInterfaceNode;
-import org.omnetpp.ned2.model.pojo.NEDElementTags;
-import org.omnetpp.ned2.model.pojo.NedFileNode;
-import org.omnetpp.ned2.model.pojo.ParamNode;
-import org.omnetpp.ned2.model.pojo.ParametersNode;
-import org.omnetpp.ned2.model.pojo.SimpleModuleNode;
-import org.omnetpp.ned2.model.swig.NEDErrorCategory;
-import org.omnetpp.ned2.model.swig.NEDErrorStore;
+import org.omnetpp.ned.model.NEDElement;
+import org.omnetpp.ned.model.NEDElementUtil;
+import org.omnetpp.ned.model.NEDSourceRegion;
+import org.omnetpp.ned.model.NEDTreeUtil;
+import org.omnetpp.ned.model.ex.NEDElementFactoryEx;
+import org.omnetpp.ned.model.ex.NedFileNodeEx;
+import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
+import org.omnetpp.ned.model.interfaces.INEDTypeResolver;
+import org.omnetpp.ned.model.interfaces.ITopLevelElement;
+import org.omnetpp.ned.model.notification.NEDAttributeChangeEvent;
+import org.omnetpp.ned.model.notification.NEDModelEvent;
+import org.omnetpp.ned.model.notification.NEDStructuralChangeEvent;
+import org.omnetpp.ned.model.pojo.ChannelInterfaceNode;
+import org.omnetpp.ned.model.pojo.ChannelNode;
+import org.omnetpp.ned.model.pojo.CompoundModuleNode;
+import org.omnetpp.ned.model.pojo.ExtendsNode;
+import org.omnetpp.ned.model.pojo.GateNode;
+import org.omnetpp.ned.model.pojo.GatesNode;
+import org.omnetpp.ned.model.pojo.ModuleInterfaceNode;
+import org.omnetpp.ned.model.pojo.NEDElementTags;
+import org.omnetpp.ned.model.pojo.NedFileNode;
+import org.omnetpp.ned.model.pojo.ParamNode;
+import org.omnetpp.ned.model.pojo.ParametersNode;
+import org.omnetpp.ned.model.pojo.SimpleModuleNode;
+import org.omnetpp.ned.model.swig.NEDErrorCategory;
+import org.omnetpp.ned.model.swig.NEDErrorStore;
 
 /**
  * Parses all NED files in the workspace and makes them available
@@ -577,7 +577,7 @@ public class NEDResources implements INEDTypeResolver {
 
 		//long dt = System.currentTimeMillis() - startMillis;
 		//System.out.println("rehash() took "+dt+"ms");
-		//System.out.println("memleak check: native NEDElements: "+org.omnetpp.ned2.model.swig.NEDElement.getNumExisting()+" / "+org.omnetpp.ned2.model.swig.NEDElement.getNumCreated());
+		//System.out.println("memleak check: native NEDElements: "+org.omnetpp.ned.model.swig.NEDElement.getNumExisting()+" / "+org.omnetpp.ned.model.swig.NEDElement.getNumCreated());
 	}
 
     public void invalidate() {

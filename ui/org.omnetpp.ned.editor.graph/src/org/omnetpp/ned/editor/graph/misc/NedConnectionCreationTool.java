@@ -8,7 +8,7 @@ import org.omnetpp.ned.editor.graph.commands.ConnectionCommand;
 import org.omnetpp.ned.editor.graph.edit.CompoundModuleEditPart;
 import org.omnetpp.ned.editor.graph.edit.ModuleEditPart;
 import org.omnetpp.ned.editor.graph.edit.SubmoduleEditPart;
-import org.omnetpp.ned2.model.pojo.ConnectionNode;
+import org.omnetpp.ned.model.pojo.ConnectionNode;
 
 /**
  * @author rhornig

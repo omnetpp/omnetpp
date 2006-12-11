@@ -4,11 +4,11 @@ import org.eclipse.draw2d.IFigure;
 import org.omnetpp.common.displaymodel.DisplayString;
 import org.omnetpp.common.displaymodel.IHasDisplayString;
 import org.omnetpp.figures.TopLevelFigure;
-import org.omnetpp.ned2.model.interfaces.IHasAncestors;
-import org.omnetpp.ned2.model.interfaces.IHasName;
-import org.omnetpp.ned2.model.interfaces.INEDTypeInfo;
-import org.omnetpp.ned2.model.notification.INEDChangeListener;
-import org.omnetpp.ned2.model.notification.NEDModelEvent;
+import org.omnetpp.ned.model.interfaces.IHasAncestors;
+import org.omnetpp.ned.model.interfaces.IHasName;
+import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
+import org.omnetpp.ned.model.notification.INEDChangeListener;
+import org.omnetpp.ned.model.notification.NEDModelEvent;
 
 /**
  * @author rhornig

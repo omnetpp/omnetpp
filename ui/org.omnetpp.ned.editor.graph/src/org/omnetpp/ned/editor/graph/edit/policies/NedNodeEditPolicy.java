@@ -14,8 +14,8 @@ import org.omnetpp.figures.GateAnchor;
 import org.omnetpp.ned.editor.graph.commands.ConnectionCommand;
 import org.omnetpp.ned.editor.graph.edit.ModuleEditPart;
 import org.omnetpp.ned.editor.graph.edit.ModuleEditPart;
-import org.omnetpp.ned2.model.ex.ConnectionNodeEx;
-import org.omnetpp.ned2.model.interfaces.INamedGraphNode;
+import org.omnetpp.ned.model.ex.ConnectionNodeEx;
+import org.omnetpp.ned.model.interfaces.INamedGraphNode;
 
 /**
  * Handle all connection related requests for graphically represented nodes (compound and submodules) 

@@ -2,8 +2,8 @@ package org.omnetpp.ned.editor.graph.commands;
 
 import org.eclipse.gef.commands.Command;
 import org.omnetpp.common.displaymodel.IDisplayString;
-import org.omnetpp.ned2.model.ex.CompoundModuleNodeEx;
-import org.omnetpp.ned2.model.interfaces.INamedGraphNode;
+import org.omnetpp.ned.model.ex.CompoundModuleNodeEx;
+import org.omnetpp.ned.model.interfaces.INamedGraphNode;
 
 /**
  * Change the size and location of a compound module (location cannot be changed)

@@ -5,7 +5,7 @@ import org.omnetpp.ned.editor.graph.properties.util.ExtendsListPropertySource;
 import org.omnetpp.ned.editor.graph.properties.util.MergedPropertySource;
 import org.omnetpp.ned.editor.graph.properties.util.NamePropertySource;
 import org.omnetpp.ned.editor.graph.properties.util.ParameterListPropertySource;
-import org.omnetpp.ned2.model.ex.ChannelInterfaceNodeEx;
+import org.omnetpp.ned.model.ex.ChannelInterfaceNodeEx;
 
 /**
  * @author rhornig

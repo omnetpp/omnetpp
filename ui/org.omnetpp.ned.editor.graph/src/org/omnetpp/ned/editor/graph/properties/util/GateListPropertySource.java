@@ -4,10 +4,10 @@ import java.util.Map;
 
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
 import org.eclipse.ui.views.properties.PropertyDescriptor;
-import org.omnetpp.ned2.model.NEDElement;
-import org.omnetpp.ned2.model.ex.GateNodeEx;
-import org.omnetpp.ned2.model.interfaces.IHasGates;
-import org.omnetpp.ned2.model.interfaces.IHasName;
+import org.omnetpp.ned.model.NEDElement;
+import org.omnetpp.ned.model.ex.GateNodeEx;
+import org.omnetpp.ned.model.interfaces.IHasGates;
+import org.omnetpp.ned.model.interfaces.IHasName;
 
 /**
  * @author rhornig

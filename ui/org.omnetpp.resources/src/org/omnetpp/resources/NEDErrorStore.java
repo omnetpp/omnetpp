@@ -1,6 +1,6 @@
 package org.omnetpp.resources;
 
-import org.omnetpp.ned2.model.NEDElement;
+import org.omnetpp.ned.model.NEDElement;
 
 public class NEDErrorStore implements INEDErrorStore {
 

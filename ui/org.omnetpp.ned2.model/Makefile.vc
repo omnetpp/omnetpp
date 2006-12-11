@@ -19,7 +19,7 @@ COPTS=$(CFLAGS) -I$(JDK)\include -I$(JDK)\include\win32 -I$(NEDXML)
 
 OBJS = nedxml_wrap.obj
 HEADERS = $(NEDXML)\*.h
-BASEPKG = org.omnetpp.ned2.model
+BASEPKG = org.omnetpp.ned.model
 SWIGPKG = $(BASEPKG).swig
 SWIGDIR = src\$(SWIGPKG:.=\)
 JMODELPKG = $(BASEPKG).pojo

@@ -3,68 +3,68 @@ package org.omnetpp.resources;
 import java.util.HashMap;
 
 import org.eclipse.core.runtime.Assert;
-import org.omnetpp.ned2.model.NEDElement;
-import org.omnetpp.ned2.model.NEDElementUtil;
-import org.omnetpp.ned2.model.interfaces.INEDTypeInfo;
-import org.omnetpp.ned2.model.interfaces.INEDTypeResolver;
-import org.omnetpp.ned2.model.pojo.AbstractNEDValidator;
-import org.omnetpp.ned2.model.pojo.ChannelInterfaceNode;
-import org.omnetpp.ned2.model.pojo.ChannelNode;
-import org.omnetpp.ned2.model.pojo.ChannelSpecNode;
-import org.omnetpp.ned2.model.pojo.ClassDeclNode;
-import org.omnetpp.ned2.model.pojo.ClassNode;
-import org.omnetpp.ned2.model.pojo.CommentNode;
-import org.omnetpp.ned2.model.pojo.CompoundModuleNode;
-import org.omnetpp.ned2.model.pojo.ConditionNode;
-import org.omnetpp.ned2.model.pojo.ConnectionGroupNode;
-import org.omnetpp.ned2.model.pojo.ConnectionNode;
-import org.omnetpp.ned2.model.pojo.ConnectionsNode;
-import org.omnetpp.ned2.model.pojo.CplusplusNode;
-import org.omnetpp.ned2.model.pojo.EnumDeclNode;
-import org.omnetpp.ned2.model.pojo.EnumFieldNode;
-import org.omnetpp.ned2.model.pojo.EnumFieldsNode;
-import org.omnetpp.ned2.model.pojo.EnumNode;
-import org.omnetpp.ned2.model.pojo.ExpressionNode;
-import org.omnetpp.ned2.model.pojo.ExtendsNode;
-import org.omnetpp.ned2.model.pojo.FieldNode;
-import org.omnetpp.ned2.model.pojo.FieldsNode;
-import org.omnetpp.ned2.model.pojo.FilesNode;
-import org.omnetpp.ned2.model.pojo.FunctionNode;
-import org.omnetpp.ned2.model.pojo.GateNode;
-import org.omnetpp.ned2.model.pojo.GatesNode;
-import org.omnetpp.ned2.model.pojo.IdentNode;
-import org.omnetpp.ned2.model.pojo.ImportNode;
-import org.omnetpp.ned2.model.pojo.InterfaceNameNode;
-import org.omnetpp.ned2.model.pojo.LiteralNode;
-import org.omnetpp.ned2.model.pojo.LoopNode;
-import org.omnetpp.ned2.model.pojo.MessageDeclNode;
-import org.omnetpp.ned2.model.pojo.MessageNode;
-import org.omnetpp.ned2.model.pojo.ModuleInterfaceNode;
-import org.omnetpp.ned2.model.pojo.MsgFileNode;
-import org.omnetpp.ned2.model.pojo.MsgpropertyNode;
-import org.omnetpp.ned2.model.pojo.NedFileNode;
-import org.omnetpp.ned2.model.pojo.OperatorNode;
-import org.omnetpp.ned2.model.pojo.ParamNode;
-import org.omnetpp.ned2.model.pojo.ParametersNode;
-import org.omnetpp.ned2.model.pojo.PatternNode;
-import org.omnetpp.ned2.model.pojo.PropertiesNode;
-import org.omnetpp.ned2.model.pojo.PropertyDeclNode;
-import org.omnetpp.ned2.model.pojo.PropertyKeyNode;
-import org.omnetpp.ned2.model.pojo.PropertyNode;
-import org.omnetpp.ned2.model.pojo.SimpleModuleNode;
-import org.omnetpp.ned2.model.pojo.StructDeclNode;
-import org.omnetpp.ned2.model.pojo.StructNode;
-import org.omnetpp.ned2.model.pojo.SubmoduleNode;
-import org.omnetpp.ned2.model.pojo.SubmodulesNode;
-import org.omnetpp.ned2.model.pojo.TypesNode;
-import org.omnetpp.ned2.model.pojo.UnknownNode;
+import org.omnetpp.ned.model.NEDElement;
+import org.omnetpp.ned.model.NEDElementUtil;
+import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
+import org.omnetpp.ned.model.interfaces.INEDTypeResolver;
+import org.omnetpp.ned.model.pojo.AbstractNEDValidator;
+import org.omnetpp.ned.model.pojo.ChannelInterfaceNode;
+import org.omnetpp.ned.model.pojo.ChannelNode;
+import org.omnetpp.ned.model.pojo.ChannelSpecNode;
+import org.omnetpp.ned.model.pojo.ClassDeclNode;
+import org.omnetpp.ned.model.pojo.ClassNode;
+import org.omnetpp.ned.model.pojo.CommentNode;
+import org.omnetpp.ned.model.pojo.CompoundModuleNode;
+import org.omnetpp.ned.model.pojo.ConditionNode;
+import org.omnetpp.ned.model.pojo.ConnectionGroupNode;
+import org.omnetpp.ned.model.pojo.ConnectionNode;
+import org.omnetpp.ned.model.pojo.ConnectionsNode;
+import org.omnetpp.ned.model.pojo.CplusplusNode;
+import org.omnetpp.ned.model.pojo.EnumDeclNode;
+import org.omnetpp.ned.model.pojo.EnumFieldNode;
+import org.omnetpp.ned.model.pojo.EnumFieldsNode;
+import org.omnetpp.ned.model.pojo.EnumNode;
+import org.omnetpp.ned.model.pojo.ExpressionNode;
+import org.omnetpp.ned.model.pojo.ExtendsNode;
+import org.omnetpp.ned.model.pojo.FieldNode;
+import org.omnetpp.ned.model.pojo.FieldsNode;
+import org.omnetpp.ned.model.pojo.FilesNode;
+import org.omnetpp.ned.model.pojo.FunctionNode;
+import org.omnetpp.ned.model.pojo.GateNode;
+import org.omnetpp.ned.model.pojo.GatesNode;
+import org.omnetpp.ned.model.pojo.IdentNode;
+import org.omnetpp.ned.model.pojo.ImportNode;
+import org.omnetpp.ned.model.pojo.InterfaceNameNode;
+import org.omnetpp.ned.model.pojo.LiteralNode;
+import org.omnetpp.ned.model.pojo.LoopNode;
+import org.omnetpp.ned.model.pojo.MessageDeclNode;
+import org.omnetpp.ned.model.pojo.MessageNode;
+import org.omnetpp.ned.model.pojo.ModuleInterfaceNode;
+import org.omnetpp.ned.model.pojo.MsgFileNode;
+import org.omnetpp.ned.model.pojo.MsgpropertyNode;
+import org.omnetpp.ned.model.pojo.NedFileNode;
+import org.omnetpp.ned.model.pojo.OperatorNode;
+import org.omnetpp.ned.model.pojo.ParamNode;
+import org.omnetpp.ned.model.pojo.ParametersNode;
+import org.omnetpp.ned.model.pojo.PatternNode;
+import org.omnetpp.ned.model.pojo.PropertiesNode;
+import org.omnetpp.ned.model.pojo.PropertyDeclNode;
+import org.omnetpp.ned.model.pojo.PropertyKeyNode;
+import org.omnetpp.ned.model.pojo.PropertyNode;
+import org.omnetpp.ned.model.pojo.SimpleModuleNode;
+import org.omnetpp.ned.model.pojo.StructDeclNode;
+import org.omnetpp.ned.model.pojo.StructNode;
+import org.omnetpp.ned.model.pojo.SubmoduleNode;
+import org.omnetpp.ned.model.pojo.SubmodulesNode;
+import org.omnetpp.ned.model.pojo.TypesNode;
+import org.omnetpp.ned.model.pojo.UnknownNode;
 
 /**
  * Validates consistency of NED files.
  * 
  * @author andras
  */
-// XXX move to org.omnetpp.ned2.model plugin? then INEDComponent,
+// XXX move to org.omnetpp.ned.model plugin? then INEDComponent,
 // INEDTypeResolver etc would have to be moved as well, and that plugin
 // would have to depend on org.eclipse.resources because of IFile!!!
 //

@@ -2,7 +2,7 @@ package org.omnetpp.ned.editor.graph.edit.outline;
 
 import org.eclipse.gef.EditPart;
 import org.eclipse.gef.EditPartFactory;
-import org.omnetpp.ned2.model.ex.NedFileNodeEx;
+import org.omnetpp.ned.model.ex.NedFileNodeEx;
 
 public class NedTreeEditPartFactory implements EditPartFactory {
 

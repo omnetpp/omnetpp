@@ -13,10 +13,10 @@ import org.omnetpp.figures.ConnectionFigure;
 import org.omnetpp.ned.editor.graph.edit.policies.NedConnectionEditPolicy;
 import org.omnetpp.ned.editor.graph.edit.policies.NedConnectionEndpointEditPolicy;
 import org.omnetpp.ned.editor.graph.properties.IPropertySourceSupport;
-import org.omnetpp.ned2.model.NEDElementUtil;
-import org.omnetpp.ned2.model.ex.ConnectionNodeEx;
-import org.omnetpp.ned2.model.notification.INEDChangeListener;
-import org.omnetpp.ned2.model.notification.NEDModelEvent;
+import org.omnetpp.ned.model.NEDElementUtil;
+import org.omnetpp.ned.model.ex.ConnectionNodeEx;
+import org.omnetpp.ned.model.notification.INEDChangeListener;
+import org.omnetpp.ned.model.notification.NEDModelEvent;
 // TODO handle isEditable correctly in installed editpolicies
 /**
  * Implements a Connection Editpart to represnt a Wire like connection.

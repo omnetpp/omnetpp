@@ -14,22 +14,5 @@
             name="NED Editor">
       </editor>
    </extension>
-   <extension
-         id="omnetppide"
-         point="org.eclipse.core.runtime.products">
-      <product
-            application="org.eclipse.ui.ide.workbench"
-            name="OMNeT++ IDE">
-         <property
-               name="aboutText"
-               value="%aboutText"/>
-         <property
-               name="windowImages"
-               value="icons/sample2.gif"/>
-         <property
-               name="aboutImage"
-               value="product_lg.gif"/>
-      </product>
-   </extension>
 
 </plugin>

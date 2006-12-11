@@ -7,7 +7,7 @@ import org.eclipse.ui.views.properties.IPropertyDescriptor;
 import org.eclipse.ui.views.properties.IPropertySource;
 import org.eclipse.ui.views.properties.IPropertySource2;
 import org.eclipse.ui.views.properties.PropertyDescriptor;
-import org.omnetpp.ned2.model.NEDElement;
+import org.omnetpp.ned.model.NEDElement;
 
 /**
  * @author rhornig

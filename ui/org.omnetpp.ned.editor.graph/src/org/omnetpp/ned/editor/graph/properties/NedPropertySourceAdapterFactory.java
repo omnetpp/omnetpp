@@ -5,14 +5,14 @@ import org.eclipse.gef.EditPart;
 import org.eclipse.ui.views.properties.IPropertySource;
 import org.omnetpp.ned.editor.graph.edit.IReadOnlySupport;
 import org.omnetpp.ned.editor.graph.properties.util.MergedPropertySource;
-import org.omnetpp.ned2.model.NEDElement;
-import org.omnetpp.ned2.model.ex.ChannelInterfaceNodeEx;
-import org.omnetpp.ned2.model.ex.ChannelNodeEx;
-import org.omnetpp.ned2.model.ex.CompoundModuleNodeEx;
-import org.omnetpp.ned2.model.ex.ConnectionNodeEx;
-import org.omnetpp.ned2.model.ex.ModuleInterfaceNodeEx;
-import org.omnetpp.ned2.model.ex.SimpleModuleNodeEx;
-import org.omnetpp.ned2.model.ex.SubmoduleNodeEx;
+import org.omnetpp.ned.model.NEDElement;
+import org.omnetpp.ned.model.ex.ChannelInterfaceNodeEx;
+import org.omnetpp.ned.model.ex.ChannelNodeEx;
+import org.omnetpp.ned.model.ex.CompoundModuleNodeEx;
+import org.omnetpp.ned.model.ex.ConnectionNodeEx;
+import org.omnetpp.ned.model.ex.ModuleInterfaceNodeEx;
+import org.omnetpp.ned.model.ex.SimpleModuleNodeEx;
+import org.omnetpp.ned.model.ex.SubmoduleNodeEx;
 
 /**
  * Creates a propertysource for a controller part. Each propertysource class must be 

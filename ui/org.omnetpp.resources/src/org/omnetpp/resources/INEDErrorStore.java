@@ -1,6 +1,6 @@
 package org.omnetpp.resources;
 
-import org.omnetpp.ned2.model.NEDElement;
+import org.omnetpp.ned.model.NEDElement;
 
 /**
  * Interface for issuing NED error messages

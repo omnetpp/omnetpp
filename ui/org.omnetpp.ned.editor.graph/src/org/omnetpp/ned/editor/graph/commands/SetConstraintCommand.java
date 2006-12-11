@@ -4,7 +4,7 @@ import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.gef.commands.Command;
-import org.omnetpp.ned2.model.interfaces.INamedGraphNode;
+import org.omnetpp.ned.model.interfaces.INamedGraphNode;
 
 /**
  * Change the size and location of the submodule

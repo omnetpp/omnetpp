@@ -11,8 +11,8 @@ import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.displaymodel.DisplayString;
 import org.omnetpp.common.displaymodel.IHasDisplayString;
 import org.omnetpp.common.properties.ImagePropertyDescriptor;
-import org.omnetpp.ned2.model.NEDElement;
-import org.omnetpp.ned2.model.notification.NEDModelEvent;
+import org.omnetpp.ned.model.NEDElement;
+import org.omnetpp.ned.model.notification.NEDModelEvent;
 
 //TODO Colors cannot be edited by hand. A derived ColorCellEditor is required
 //TODO Some property needs a combo box cell editor

@@ -4,12 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.gef.commands.Command;
-import org.omnetpp.ned2.model.NEDElement;
-import org.omnetpp.ned2.model.ex.ConnectionNodeEx;
-import org.omnetpp.ned2.model.ex.SubmoduleNodeEx;
-import org.omnetpp.ned2.model.interfaces.IHasConnections;
-import org.omnetpp.ned2.model.interfaces.IHasName;
-import org.omnetpp.ned2.model.pojo.ConnectionsNode;
+import org.omnetpp.ned.model.NEDElement;
+import org.omnetpp.ned.model.ex.ConnectionNodeEx;
+import org.omnetpp.ned.model.ex.SubmoduleNodeEx;
+import org.omnetpp.ned.model.interfaces.IHasConnections;
+import org.omnetpp.ned.model.interfaces.IHasName;
+import org.omnetpp.ned.model.pojo.ConnectionsNode;
 
 /**
  * Deletes an object from the model and as a sepcial case also removes all 

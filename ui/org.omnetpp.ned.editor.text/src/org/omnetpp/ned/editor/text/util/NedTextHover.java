@@ -14,10 +14,10 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IFileEditorInput;
 import org.omnetpp.ned.editor.text.NedHelper;
-import org.omnetpp.ned2.model.NEDTreeUtil;
-import org.omnetpp.ned2.model.NEDElement;
-import org.omnetpp.ned2.model.NEDSourceRegion;
-import org.omnetpp.ned2.model.interfaces.INEDTypeInfo;
+import org.omnetpp.ned.model.NEDElement;
+import org.omnetpp.ned.model.NEDSourceRegion;
+import org.omnetpp.ned.model.NEDTreeUtil;
+import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
 import org.omnetpp.resources.NEDResources;
 import org.omnetpp.resources.NEDResourcesPlugin;
 

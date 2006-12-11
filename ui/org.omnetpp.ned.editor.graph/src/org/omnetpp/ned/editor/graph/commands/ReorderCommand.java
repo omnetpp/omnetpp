@@ -1,7 +1,7 @@
 package org.omnetpp.ned.editor.graph.commands;
 
 import org.eclipse.gef.commands.Command;
-import org.omnetpp.ned2.model.NEDElement;
+import org.omnetpp.ned.model.NEDElement;
 
 /**
  * Move a child to a different position in the parent's list

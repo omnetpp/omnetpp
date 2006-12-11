@@ -10,8 +10,8 @@ import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.figures.GateAnchor;
 import org.omnetpp.figures.SubmoduleFigure;
 import org.omnetpp.figures.layout.SubmoduleConstraint;
-import org.omnetpp.ned2.model.ex.SubmoduleNodeEx;
-import org.omnetpp.ned2.model.notification.NEDModelEvent;
+import org.omnetpp.ned.model.ex.SubmoduleNodeEx;
+import org.omnetpp.ned.model.notification.NEDModelEvent;
 
 
 public class SubmoduleEditPart extends ModuleEditPart {
