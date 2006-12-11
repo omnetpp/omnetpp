@@ -17,6 +17,9 @@
       <runtime>
          <run
                class="org.omnetpp.ide.OmnetppNature">
+            <parameter
+                  name="installBuilder"
+                  value="true"/>
          </run>
       </runtime>
       <builder

@@ -1,0 +1,22 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: OMNeT++ IDE
+Bundle-SymbolicName: org.omnetpp.ned.editor;singleton:=true
+Bundle-Version: 4.0.0
+Bundle-Vendor: OpenSim Ltd.
+Bundle-Localization: plugin
+Require-Bundle: org.eclipse.ui,
+ org.eclipse.ui.ide,
+ org.eclipse.core.runtime,
+ org.eclipse.core.resources,
+ org.eclipse.ui.views,
+ org.eclipse.ui.editors,
+ org.eclipse.ui.workbench.texteditor,
+ org.eclipse.gef,
+ org.eclipse.jface.text,
+ org.omnetpp.ned.editor.graph,
+ org.omnetpp.ned.editor.text,
+ org.omnetpp.ned.model,
+ org.omnetpp.resources,
+ org.omnetpp.common
+Eclipse-LazyStart: false
