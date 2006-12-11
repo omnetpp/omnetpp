@@ -1,0 +1,16 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: EventLog Engine Plug-in
+Bundle-SymbolicName: org.omnetpp.common.engine
+Bundle-Version: 4.0.0
+Bundle-Vendor: OpenSim Ltd.
+Bundle-Localization: plugin
+Require-Bundle: org.eclipse.core.resources,
+ org.eclipse.core.runtime,
+ org.eclipse.jface,
+ org.eclipse.ui,
+ org.eclipse.ui.ide,
+ org.eclipse.ui.editors,
+ org.omnetpp.common
+Eclipse-LazyStart: true
+Export-Package: 
