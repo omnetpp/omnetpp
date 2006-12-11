@@ -1,0 +1,53 @@
+#
+# Global definitions
+#
+!include ..\..\configuser.vc
+
+!if "$(LIB_SUFFIX)"==".dll"
+CFLAGS=$(CFLAGS) /DWIN32_DLL
+!endif
+
+#
+# Local definitions
+#
+COPTS=$(CFLAGS) -I. -I../common -I$(OMNETPP_INCL_DIR) /Fd"layout.pdb"
+
+OBJS= geometry.obj forcedirectedembedding.obj forcedirectedparameters.obj
+LIBS= layout.lib ../common/common.lib
+
+#
+# Automatic rules
+#
+.SUFFIXES : .cc
+
+.cc.obj:
+	$(CXX) /Fo"$@" $(COPTS) /c /Tp $<
+
+#
+# Targets (TBD: build dll)
+#
+all : layout.lib
+
+layout.lib : $(OBJS)
+	$(AR) /out:layout.lib $(OBJS)
+	copy layout.lib $(OMNETPP_LIB_DIR:/=\)
+	- copy /b layout.pdb $(OMNETPP_LIB_DIR:/=\) 2>nul
+
+depend:
+	$(MAKEDEPEND) -I. -fMakefile.vc -- *.cc
+
+clean:
+	- del *.obj 2> nul
+	- del *.ilk *.idb *.pdb *.lib *.exe 2> nul
+
+
+# DO NOT DELETE THIS LINE -- make depend depends on it.
+forcedirectedembedding.obj: forcedirectedembedding.cc \
+  forcedirectedembedding.h \
+  geometry.h \
+  forcedirectedparameters.h
+forcedirectedparameters.obj: forcedirectedparameters.cc \
+  forcedirectedparameters.h \
+  geometry.h
+geometry.obj: geometry.cc \
+  geometry.h
