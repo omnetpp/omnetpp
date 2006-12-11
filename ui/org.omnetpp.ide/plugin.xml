@@ -25,6 +25,7 @@
       <builder
             id="org.omnetpp.resources.nedbuilder">
       </builder>
+      <builder id="org.omnetpp.scave.builder.vectorfileindexer"/>
    </extension>
 
 </plugin>

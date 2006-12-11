@@ -1,0 +1,13 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: OMNEST/OMNet++ Scave Builder Plug-in
+Bundle-SymbolicName: org.omnetpp.scave.builder;singleton:=true
+Bundle-Version: 4.0.0
+Bundle-Activator: org.omnetpp.scave.builder.Activator
+Bundle-Vendor: OpenSim Ltd.
+Bundle-Localization: plugin
+Require-Bundle: org.eclipse.core.runtime,
+ org.eclipse.core.resources,
+ org.omnetpp.scave.engine
+Eclipse-LazyStart: true
+Export-Package: org.omnetpp.scave.builder

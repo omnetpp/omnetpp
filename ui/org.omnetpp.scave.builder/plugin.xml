@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.2"?>
+<plugin>
+   <extension
+         id="vectorfileindexer"
+         name="OMNet++ Scave Builders"
+         point="org.eclipse.core.resources.builders">
+      <builder hasNature="true">
+         <run class="org.omnetpp.scave.builder.VectorFileIndexer"/>
+      </builder>
+   </extension>
+
+</plugin>
