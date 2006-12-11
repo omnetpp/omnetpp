@@ -424,6 +424,14 @@ public class ScaveEditor extends AbstractEMFModelEditor {
 			}
 		}
 	}
+
+	@Override
+	protected void pageChange(int newPageIndex) {
+		super.pageChange(newPageIndex);
+		Control page = getControl(newPageIndex);
+		if (page instanceof ScaveEditorPage)
+			((ScaveEditorPage)page).pageSelected();
+	}
 }
 
 

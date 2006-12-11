@@ -70,7 +70,16 @@ public class BrowseDataPage extends ScaveEditorPage {
 		else
 			return null;
 	}
-
+	
+	public void setActivePanel(FilteredDataPanel panel) {
+		TabItem[] items = tabfolder.getItems();
+		for (int i = 0; i < items.length; ++i)
+			if (items[i].getControl() == panel) {
+				tabfolder.setSelection(i);
+				return;
+			}
+	}
+	
 	private void initialize() {
 		// set up UI
 		setPageTitle("Browse data");
@@ -171,5 +180,18 @@ public class BrowseDataPage extends ScaveEditorPage {
 		createChartButton.setText("Create chart...");
 		copyToClipboardButton = new Button(buttonPanel, SWT.NONE);
 		copyToClipboardButton.setText("Copy...");
+	}
+
+	@Override
+	public void pageSelected() {
+		FilteredDataPanel panelToActivate = null;
+		if (vectorsPanel.getTable().getItemCount() > 0)
+			panelToActivate = vectorsPanel;
+		else if (scalarsPanel.getTable().getItemCount() > 0)
+			panelToActivate = scalarsPanel;
+		else if (histogramsPanel.getTable().getItemCount() > 0)
+			panelToActivate = histogramsPanel;
+		if (panelToActivate != null)
+			this.setActivePanel(panelToActivate);
 	}
 }

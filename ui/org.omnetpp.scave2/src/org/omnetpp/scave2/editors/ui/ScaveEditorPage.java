@@ -324,4 +324,11 @@ public class ScaveEditorPage extends ScrolledForm {
 		if (window instanceof ApplicationWindow)
 			((ApplicationWindow)window).setStatus(message);
 	}
+	
+	/**
+	 * Notification about the selection of the page of the
+	 * multipage editor.
+	 */
+	public void pageSelected() {
+	}
 }
