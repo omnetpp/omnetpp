@@ -13,19 +13,6 @@
       </builder>
    </extension>
    <extension
-         id="nednature"
-         name="OMNeT++ NED Nature"
-         point="org.eclipse.core.resources.natures">
-      <runtime>
-         <run
-               class="org.omnetpp.resources.builder.NEDNature">
-         </run>
-      </runtime>
-      <builder
-            id="org.omnetpp.resources.nedbuilder">
-      </builder>
-   </extension>
-   <extension
          id="nedconsistencyproblem"
          name="NED consistency problem"
          point="org.eclipse.core.resources.markers">

@@ -1,17 +1,18 @@
-package org.omnetpp.resources.builder;
+package org.omnetpp.ide;
 
 import org.eclipse.core.resources.ICommand;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
 import org.eclipse.core.resources.IProjectNature;
 import org.eclipse.core.runtime.CoreException;
+import org.omnetpp.resources.builder.NEDBuilder;
 
-public class NEDNature implements IProjectNature {
+public class OmnetppNature implements IProjectNature {
 
 	/**
 	 * ID of this project nature
 	 */
-	public static final String NATURE_ID = "org.omnetpp.resources.nednature";
+	public static final String NATURE_ID = "org.omnetpp.ide.omnetppnature";
 
 	private IProject project;
 

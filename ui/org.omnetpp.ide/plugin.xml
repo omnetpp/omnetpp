@@ -10,5 +10,18 @@
             name="OMNeT++ IDE">
       </product>
    </extension>
+   <extension
+         id="omnetppnature"
+         name="OMNeT++ Nature"
+         point="org.eclipse.core.resources.natures">
+      <runtime>
+         <run
+               class="org.omnetpp.ide.OmnetppNature">
+         </run>
+      </runtime>
+      <builder
+            id="org.omnetpp.resources.nedbuilder">
+      </builder>
+   </extension>
 
 </plugin>
