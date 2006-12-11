@@ -104,7 +104,7 @@ import org.omnetpp.ned2.model.interfaces.IHasName;
 public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette 
     implements ISelectionSupport {
     
-    public final static String MULTIPAGE_GNEDEDITOR_ID = "org.omnetpp.ide.gteditor";
+    public final static String MULTIPAGE_NEDEDITOR_ID = "org.omnetpp.ned.editor";
     
     class OutlinePage extends ContentOutlinePage implements IAdaptable {
 

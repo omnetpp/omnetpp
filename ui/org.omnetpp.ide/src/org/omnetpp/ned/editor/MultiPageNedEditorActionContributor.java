@@ -1,4 +1,4 @@
-package org.omnetpp.ned.editor.actions;
+package org.omnetpp.ned.editor;
 
 import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.IEditorPart;

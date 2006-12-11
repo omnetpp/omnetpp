@@ -3,7 +3,6 @@ Bundle-ManifestVersion: 2
 Bundle-Name: OMNeT++ IDE
 Bundle-SymbolicName: org.omnetpp.ned.editor;singleton:=true
 Bundle-Version: 4.0.0
-Bundle-Activator: org.omnetpp.ned.editor.OmnetIdePlugin
 Bundle-Vendor: OpenSim Ltd.
 Bundle-Localization: plugin
 Require-Bundle: org.eclipse.ui,
@@ -20,4 +19,4 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.jface.text,
  org.omnetpp.resources,
  org.omnetpp.common
-Eclipse-LazyStart: true
+Eclipse-LazyStart: false

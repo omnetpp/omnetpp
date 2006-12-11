@@ -6,30 +6,13 @@
          point="org.eclipse.ui.editors">
       <editor
             class="org.omnetpp.ned.editor.MultiPageNedEditor"
-            contributorClass="org.omnetpp.ned.editor.actions.MultiPageNedEditorActionContributor"
-            default="false"
+            contributorClass="org.omnetpp.ned.editor.MultiPageNedEditorActionContributor"
+            default="true"
             extensions="ned"
             icon="icons/gned.gif"
-            id="org.omnetpp.ide.gteditor"
+            id="org.omnetpp.ned.editor"
             name="NED Editor">
       </editor>
-   </extension>
-   <extension
-         id="gned2"
-         point="org.eclipse.core.runtime.applications">
-      <application>
-         <run
-               class="org.omnetpp.ned.editor.OmnetIdeApplication">
-         </run>
-      </application>
-   </extension>
-   <extension
-         point="org.eclipse.ui.perspectives">
-      <perspective
-            name="NED Editing"
-            class="org.omnetpp.ned.editor.misc.Perspective"
-            id="org.omnetpp.ide.perspective">
-      </perspective>
    </extension>
    <extension
          id="omnetppide"

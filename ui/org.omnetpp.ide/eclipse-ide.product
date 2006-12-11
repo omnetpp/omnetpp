@@ -79,7 +79,7 @@
       <plugin id="org.eclipse.update.ui"/>
       <plugin id="org.omnetpp.common"/>
       <plugin id="org.omnetpp.figures"/>
-      <plugin id="org.omnetpp.ide"/>
+      <plugin id="org.omnetpp.ned.editor"/>
       <plugin id="org.omnetpp.ned.editor.graph"/>
       <plugin id="org.omnetpp.ned.editor.text"/>
       <plugin id="org.omnetpp.ned2.model"/>
