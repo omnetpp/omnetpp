@@ -82,7 +82,7 @@ class Variable implements IPositioned {
 }
 
 interface IForceProvider {
-	public void applyForces(ForceDirectedEmbedding2 embedding);
+	public void applyForces(ForceDirectedEmbedding embedding);
 }
 
 interface ILimitedForceProvider extends IForceProvider {
@@ -240,7 +240,7 @@ abstract class AbstractElectricRepeal extends LimitedForceProvider implements IE
 	
 	public abstract Pt getVector();
 
-	public void applyForces(ForceDirectedEmbedding2 embedding) {
+	public void applyForces(ForceDirectedEmbedding embedding) {
 		Pt vector = getVector();
 		double distance = vector.getLength();
 		// TODO: find intersection with boxes and use the distance between the boxes
@@ -345,7 +345,7 @@ abstract class AbstractSpring extends LimitedForceProvider implements ISpring {
 	
 	public abstract Pt getVector();
 	
-	public void applyForces(ForceDirectedEmbedding2 embedding) {
+	public void applyForces(ForceDirectedEmbedding embedding) {
 		Pt vector = getVector();
 		double distance = vector.getLength() - reposeLength;
 
@@ -412,7 +412,7 @@ class HorizonalSpring extends AbstractSpring {
 class Friction implements IForceProvider {
 	private Pt vector = Pt.newNil();
 
-	public void applyForces(ForceDirectedEmbedding2 embedding) {
+	public void applyForces(ForceDirectedEmbedding embedding) {
 		for (Variable variable : embedding.getVariables()) {
 			vector.assign(variable.getVelocity()).reverse();
 			double vlen = variable.getVelocity().getLength();
@@ -448,7 +448,7 @@ class PointConstraint extends BodyConstraint {
 		this.constraint = constraint;
 	}
 
-	public void applyForces(ForceDirectedEmbedding2 embedding) {
+	public void applyForces(ForceDirectedEmbedding embedding) {
 		vector.assign(constraint).subtract(body.getPosition());
 		body.getVariable().addForce(vector, coefficient * vector.getLength());
 	}
@@ -467,7 +467,7 @@ class LineConstraint extends BodyConstraint {
 		this.constraint = constraint;
 	}
 
-	public void applyForces(ForceDirectedEmbedding2 embedding) {
+	public void applyForces(ForceDirectedEmbedding embedding) {
 		Pt position = body.getPosition();
 		vector.assign(constraint.getClosestPoint(position)).subtract(position);
 		body.getVariable().addForce(vector, coefficient * vector.getLength());
@@ -487,7 +487,7 @@ class CircleConstraint extends BodyConstraint {
 		this.constraint = constraint;
 	}
 
-	public void applyForces(ForceDirectedEmbedding2 embedding) {
+	public void applyForces(ForceDirectedEmbedding embedding) {
 		Pt position = body.getPosition();
 		vector.assign(constraint.origin).subtract(position);
 		double power = coefficient * (constraint.origin.getDistance(position) - constraint.radius);

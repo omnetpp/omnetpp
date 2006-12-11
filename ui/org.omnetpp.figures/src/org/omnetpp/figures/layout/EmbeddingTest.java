@@ -14,18 +14,14 @@ import java.awt.event.MouseMotionListener;
 import java.util.List;
 import java.util.Random;
 
-public class EmbeddingTest2
+public class EmbeddingTest
 {
-	private double mass = 10;
-	private double charge = 1;
-	private GraphComponent graphComponent = new GraphComponent();
-
 	public static void main(String[] args) {
-		new EmbeddingTest2().run();
+		new EmbeddingTest().run();
 	}
 
 
-	private void addTree(ForceDirectedEmbedding2 embedding) {
+	private void addTree(ForceDirectedEmbedding embedding) {
 		IBody body1 = new Body(new Variable(Pt.newNil()));
 		IBody body2 = new Body(new Variable(Pt.newNil()));
 		IBody body3 = new Body(new Variable(Pt.newNil()));
@@ -66,7 +62,7 @@ public class EmbeddingTest2
 		embedding.addForceProvider(new Spring(body4, body13));
 	}
 
-	private void addCube(ForceDirectedEmbedding2 embedding) {
+	private void addCube(ForceDirectedEmbedding embedding) {
 		IBody body1 = new Body(new Variable(Pt.newNil()));
 		IBody body2 = new Body(new Variable(Pt.newNil()));
 		IBody body3 = new Body(new Variable(Pt.newNil()));
@@ -97,12 +93,12 @@ public class EmbeddingTest2
 		embedding.addForceProvider(new Spring(body7, body8));
 	}
 	
-	private void addWireless(ForceDirectedEmbedding2 embedding, int count) {
+	private void addWireless(ForceDirectedEmbedding embedding, int count) {
 		for (int i = 0; i < count; i++)
 			embedding.addBody(new Body(new Variable(Pt.newNil())));
 	}
 	
-	private void addLine(ForceDirectedEmbedding2 embedding, int count) {
+	private void addLine(ForceDirectedEmbedding embedding, int count) {
 		IBody previous = null;
 
 		for (int i = 0; i < count; i++) {
@@ -116,7 +112,7 @@ public class EmbeddingTest2
 		}
 	}
 	
-	private void addAnchoredLine(ForceDirectedEmbedding2 embedding, int count) {
+	private void addAnchoredLine(ForceDirectedEmbedding embedding, int count) {
 		Variable anchor = new Variable(new Pt(50, 50));
 
 		for (int i = 0; i < count; i++) {
@@ -125,7 +121,7 @@ public class EmbeddingTest2
 		}
 	}
 	
-	private void addCircle(ForceDirectedEmbedding2 embedding, int count) {
+	private void addCircle(ForceDirectedEmbedding embedding, int count) {
 		IBody first = null;
 		IBody previous = null;
 
@@ -146,7 +142,7 @@ public class EmbeddingTest2
 		embedding.addForceProvider(new Spring(previous, first));
 	}
 	
-	private void addAnchoredCircle(ForceDirectedEmbedding2 embedding, int count) {
+	private void addAnchoredCircle(ForceDirectedEmbedding embedding, int count) {
 		Pt origin = new Pt(150, 150);
 		Variable anchor = new Variable(origin);
 
@@ -156,7 +152,7 @@ public class EmbeddingTest2
 		}
 	}
 	
-	private void addBorder(ForceDirectedEmbedding2 embedding) {
+	private void addBorder(ForceDirectedEmbedding embedding) {
 		IBody top = new BorderBody(true, 0);
 		IBody bottom = new BorderBody(true, 300);
 		IBody left = new BorderBody(false, 0);
@@ -177,7 +173,7 @@ public class EmbeddingTest2
 		embedding.addForceProvider(new HorizonalSpring(left, right));
 	}
 	
-	private void addElectricRepeals(ForceDirectedEmbedding2 embedding) {
+	private void addElectricRepeals(ForceDirectedEmbedding embedding) {
 		List<IBody> bodies = embedding.getBodies();
 
 		for (int i = 0; i < bodies.size(); i++)
@@ -192,7 +188,7 @@ public class EmbeddingTest2
 			}
 	}
 
-	private void addRandomPositions(ForceDirectedEmbedding2 embedding) {
+	private void addRandomPositions(ForceDirectedEmbedding embedding) {
 		Random random = new Random();
 
 		for (Variable variable : embedding.getVariables())
@@ -200,7 +196,7 @@ public class EmbeddingTest2
 				variable.assignPosition(new Pt(random.nextDouble() * 300, random.nextDouble() * 300));
 	}
 
-	private void addStrange(ForceDirectedEmbedding2 embedding) {
+	private void addStrange(ForceDirectedEmbedding embedding) {
 		Variable v1 = new Variable(new Pt(150, 100));
 		IBody b1 = new RelativelyPositionedBody(v1, new Pt(-50, 0));
 		IBody b2 = new Body(new Variable(new Pt(100, 200)));
@@ -216,7 +212,7 @@ public class EmbeddingTest2
 	}
 
 	private void run() {
-		ForceDirectedEmbedding2 embedding = new ForceDirectedEmbedding2();
+		ForceDirectedEmbedding embedding = new ForceDirectedEmbedding();
 
 	 	//addNode60();
 	 	//addWireless(60);
@@ -255,7 +251,7 @@ public class EmbeddingTest2
 	}
 }
 
-class TestCanvas2 extends Canvas implements ForceDirectedEmbedding2.IForceDirectedEmbeddingListener {
+class TestCanvas2 extends Canvas implements ForceDirectedEmbedding.IForceDirectedEmbeddingListener {
 	private static final long serialVersionUID = 1L;
 
 	private boolean animateLayout = true;
@@ -264,7 +260,7 @@ class TestCanvas2 extends Canvas implements ForceDirectedEmbedding2.IForceDirect
 
 	private boolean showCircles = true;
 
-	private ForceDirectedEmbedding2 embedding;
+	private ForceDirectedEmbedding embedding;
 
 	private IBody dragBody;
 
@@ -276,7 +272,7 @@ class TestCanvas2 extends Canvas implements ForceDirectedEmbedding2.IForceDirect
 
 	private double centerY = 0;
 	
-	public TestCanvas2(ForceDirectedEmbedding2 e) {
+	public TestCanvas2(ForceDirectedEmbedding e) {
 		embedding = e;
 		embedding.listener = this;
 
@@ -476,7 +472,7 @@ class TestFrame2 extends Frame {
 
 	private TestCanvas2 testCanvas;
 
-	public TestFrame2(ForceDirectedEmbedding2 embedding, int width, int height) {
+	public TestFrame2(ForceDirectedEmbedding embedding, int width, int height) {
 		testCanvas = new TestCanvas2(embedding);
 		testCanvas.setSize(width, height);
 		setSize(width, height);

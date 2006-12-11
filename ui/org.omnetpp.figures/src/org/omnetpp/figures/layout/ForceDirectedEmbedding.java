@@ -6,7 +6,7 @@ import java.util.Random;
 
 import org.eclipse.core.runtime.Assert;
 
-public class ForceDirectedEmbedding2
+public class ForceDirectedEmbedding
 {
 	protected static boolean debug = false;
 
@@ -124,10 +124,10 @@ public class ForceDirectedEmbedding2
 	
 	private List<IBody> bodies = new ArrayList<IBody>();
 	
-	public ForceDirectedEmbedding2() {
+	public ForceDirectedEmbedding() {
 	}
 	
-	public ForceDirectedEmbedding2(IForceDirectedEmbeddingListener listener) {
+	public ForceDirectedEmbedding(IForceDirectedEmbeddingListener listener) {
 		this.listener = listener;
 	}
 
