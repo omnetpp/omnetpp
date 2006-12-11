@@ -1,4 +1,4 @@
-package org.omnetpp.ide;
+package org.omnetpp.ned.editor;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResourceChangeEvent;

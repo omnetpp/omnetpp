@@ -1,9 +1,9 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: OMNeT++ IDE
-Bundle-SymbolicName: org.omnetpp.ide; singleton:=true
+Bundle-SymbolicName: org.omnetpp.ned.editor;singleton:=true
 Bundle-Version: 4.0.0
-Bundle-Activator: org.omnetpp.ide.OmnetIdePlugin
+Bundle-Activator: org.omnetpp.ned.editor.OmnetIdePlugin
 Bundle-Vendor: OpenSim Ltd.
 Bundle-Localization: plugin
 Require-Bundle: org.eclipse.ui,

@@ -5,8 +5,8 @@
      <extension
          point="org.eclipse.ui.editors">
       <editor
-            class="org.omnetpp.ide.MultiPageNedEditor"
-            contributorClass="org.omnetpp.ide.actions.MultiPageNedEditorActionContributor"
+            class="org.omnetpp.ned.editor.MultiPageNedEditor"
+            contributorClass="org.omnetpp.ned.editor.actions.MultiPageNedEditorActionContributor"
             default="false"
             extensions="ned"
             icon="icons/gned.gif"
@@ -19,7 +19,7 @@
          point="org.eclipse.core.runtime.applications">
       <application>
          <run
-               class="org.omnetpp.ide.OmnetIdeApplication">
+               class="org.omnetpp.ned.editor.OmnetIdeApplication">
          </run>
       </application>
    </extension>
@@ -27,7 +27,7 @@
          point="org.eclipse.ui.perspectives">
       <perspective
             name="NED Editing"
-            class="org.omnetpp.ide.misc.Perspective"
+            class="org.omnetpp.ned.editor.misc.Perspective"
             id="org.omnetpp.ide.perspective">
       </perspective>
    </extension>

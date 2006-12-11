@@ -1,4 +1,4 @@
-package org.omnetpp.ide;
+package org.omnetpp.ned.editor;
 
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
@@ -51,6 +51,6 @@ public class OmnetIdePlugin extends AbstractUIPlugin {
 	 * @return the image descriptor
 	 */
 	public static ImageDescriptor getImageDescriptor(String path) {
-		return AbstractUIPlugin.imageDescriptorFromPlugin("org.omnetpp.ide", path);
+		return AbstractUIPlugin.imageDescriptorFromPlugin("org.omnetpp.ned.editor", path);
 	}
 }
