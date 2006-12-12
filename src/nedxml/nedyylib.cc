@@ -174,6 +174,7 @@ void storeTrailingComment(NEDElement *node, YYLTYPE tokenpos)
 
 void storeBannerAndRightComments(NEDElement *node, YYLTYPE pos)
 {
+    np->getSource()->trimSpaceAndComments(pos);
     storeBannerComment(node, pos);
     storeRightComment(node, pos);
     storeInnerComments(node, pos);
@@ -185,6 +186,7 @@ void storeBannerAndRightComments(NEDElement *node, YYLTYPE firstpos, YYLTYPE las
     pos.last_line = lastpos.last_line;
     pos.last_column = lastpos.last_column;
 
+    np->getSource()->trimSpaceAndComments(pos);
     storeBannerComment(node, pos);
     storeRightComment(node, pos);
 }

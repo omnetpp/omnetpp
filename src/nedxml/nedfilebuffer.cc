@@ -256,6 +256,7 @@ const char *NEDFileBuffer::getBannerComment(YYLTYPE pos)
 
 YYLTYPE NEDFileBuffer::getBannerCommentPos(YYLTYPE pos)
 {
+    trimSpaceAndComments(pos);
     if (end) {*end = savedChar; end=NULL;}
 
     // there must be nothing before it on the same line
@@ -284,6 +285,7 @@ const char *NEDFileBuffer::getTrailingComment(YYLTYPE pos)
 
 YYLTYPE NEDFileBuffer::getTrailingCommentPos(YYLTYPE pos)
 {
+    trimSpaceAndComments(pos);
     if (end) {*end = savedChar; end=NULL;}
 
     // there must be no code after it on the same line
@@ -409,5 +411,41 @@ char *NEDFileBuffer::stripComment(const char *comment)
     }
     *d = '\0';
     return commentBuf;
+}
+
+void NEDFileBuffer::trimSpaceAndComments(YYLTYPE& pos)
+{
+    if (end) {*end = savedChar; end=NULL;}
+
+    // skip space and comments with the beginning of the region
+    const char *s = getPosition(pos.first_line, pos.first_column);
+    while (isspace(*s) || (*s=='/' && *(s+1)=='/'))
+    {
+        if (*s=='\n' || *s=='/')
+        {
+            // newline or comment: skip to next line
+            pos.first_line++;
+            pos.first_column = 0;
+            if (pos.first_line > numLines)
+                break;
+            s = getPosition(pos.first_line, pos.first_column);
+        }
+        else
+        {
+            // skip space or tab
+            pos.first_column++;
+            s++;
+        }
+    }
+
+    // just make sure "start" doesn't overtake "end"
+    if (pos.first_line>pos.last_line)
+        pos.first_line = pos.last_line;
+    if (pos.first_line==pos.last_line && pos.first_column>pos.last_column)
+        pos.first_column = pos.last_column;
+
+    // TBD decrement last_line/last_column while they point into space/comment;
+    // this is currently not needed though, as bison grammar doesn't produce
+    // YYLTYPEs with trailing spaces/comments.
 }
 

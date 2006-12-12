@@ -122,6 +122,12 @@ class NEDFileBuffer
      * Returns pointer to the full source code. Uses get()!
      */
     const char *getFullText();
+
+    /**
+     * Shrinks the given region to exclude any leading/trailing whitespace
+     * and comments.
+     */
+    void trimSpaceAndComments(YYLTYPE& pos);
 };
 
 #endif
