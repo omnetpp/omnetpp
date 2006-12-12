@@ -332,6 +332,9 @@ static const char *findCommentOnLine(const char *s)
 
 const char *NEDFileBuffer::getNextInnerComment(YYLTYPE& pos)
 {
+    // FIXME unfortunately, this will collect comments even from
+    // inside single-line or multi-line string literals
+    // (like "Hello //World")
     while (!isEmpty(pos))
     {
         const char *s = getPosition(pos.first_line, pos.first_column);
