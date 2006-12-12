@@ -124,7 +124,7 @@ PropertyNode *storeSourceCode(NEDElement *node, YYLTYPE tokenpos)
     PropertyNode *prop = addProperty(node, "sourcecode");
     prop->setIsImplicit(true);
     PropertyKeyNode *propkey = (PropertyKeyNode *)createNodeWithTag(NED_PROPERTY_KEY, prop);
-    propkey->appendChild(createLiteral(NED_CONST_STRING, tokenpos, tokenpos));  // FIXME don't store it twice
+    propkey->appendChild(createLiteral(NED_CONST_STRING, tokenpos, makeEmptyYYLTYPE()));  // don't store it twice
     return prop;
 }
 
@@ -133,7 +133,7 @@ PropertyNode *storeComponentSourceCode(NEDElement *node, YYLTYPE tokenpos)
     PropertyNode *prop = addComponentProperty(node, "sourcecode");
     prop->setIsImplicit(true);
     PropertyKeyNode *propkey = (PropertyKeyNode *)createNodeWithTag(NED_PROPERTY_KEY, prop);
-    propkey->appendChild(createLiteral(NED_CONST_STRING, tokenpos, tokenpos));  // FIXME don't store it twice
+    propkey->appendChild(createLiteral(NED_CONST_STRING, tokenpos, makeEmptyYYLTYPE()));  // don't store it twice
     return prop;
 }
 

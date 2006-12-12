@@ -263,7 +263,7 @@ YYLTYPE NEDFileBuffer::getBannerCommentPos(YYLTYPE pos)
     char *beg = getPosition(pos.first_line, pos.first_column);
     for (char *s=getPosition(pos.first_line, 0); s<beg; s++)
         if (*s!=' ' && *s!='\t')
-            return createYYLTYPE(1,0,1,0); // empty pos, will be returned as ""
+            return makeYYLTYPE(1,0,1,0); // empty pos, will be returned as ""
 
     // return comment block
     YYLTYPE commentPos;
@@ -291,7 +291,7 @@ YYLTYPE NEDFileBuffer::getTrailingCommentPos(YYLTYPE pos)
     // there must be no code after it on the same line
     char *endp = getPosition(pos.last_line, pos.last_column);
     if (lineContainsCode(endp))
-        return createYYLTYPE(1,0,1,0); // empty pos, will be returned as ""
+        return makeYYLTYPE(1,0,1,0); // empty pos, will be returned as ""
 
     // seek 1st line after comment (lineAfter)
     int lineAfter;

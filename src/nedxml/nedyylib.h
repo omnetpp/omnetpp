@@ -78,13 +78,17 @@ inline bool isEmpty(YYLTYPE pos) {
            (pos.first_line == pos.last_line && pos.first_column >= pos.last_column);
 }
 
-inline YYLTYPE createYYLTYPE(int fl, int fc, int ll, int lc) {
+inline YYLTYPE makeYYLTYPE(int fl, int fc, int ll, int lc) {
     YYLTYPE pos;
     pos.first_line = fl;
     pos.first_column = fc;
     pos.last_line = ll;
     pos.last_column = lc;
     return pos;
+}
+
+inline YYLTYPE makeEmptyYYLTYPE() {
+    return makeYYLTYPE(1,0,1,0);
 }
 
 #endif
