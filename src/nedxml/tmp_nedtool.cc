@@ -21,6 +21,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <fstream>
+#include <errno.h>
 
 #include "nedparser.h"
 #include "nederror.h"
@@ -37,7 +38,6 @@
 #include "platdep/misc.h"
 #include "platdep/fileutil.h"  // splitFileName
 #include "../utils/ver.h"
-
 
 using std::ofstream;
 using std::ifstream;
