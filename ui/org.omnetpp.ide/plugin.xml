@@ -27,5 +27,17 @@
       </builder>
       <builder id="org.omnetpp.scave.builder.vectorfileindexer"/>
    </extension>
+   <extension
+         point="org.eclipse.ui.newWizards">
+      <category
+            id="org.omnetpp.ide.wizards"
+            name="OMNeT++"/>
+      <wizard
+            category="org.omnetpp.ide.wizards"
+            class="org.omnetpp.ide.wizard.NewOmnetppProjectWizard"
+            id="org.omnetpp.ide.wizard.newProjectWizard"
+            name="New OMNeT++ Project"
+            project="true"/>
+   </extension>
 
 </plugin>
