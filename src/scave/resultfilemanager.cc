@@ -32,12 +32,12 @@
 static double zero = 0.0;
 static double NaN = zero / zero;
 
-double VectorResult::mean()
+double VectorResult::mean() const
 {
     return count>0 ? sum/count : NaN;
 }
 
-double VectorResult::variance()
+double VectorResult::variance() const
 {
     if (count<=1)
         return NaN;
@@ -51,7 +51,7 @@ double VectorResult::variance()
     }
 }
 
-double VectorResult::stddev()
+double VectorResult::stddev() const
 {
     return sqrt( variance() ); 
 }
@@ -376,8 +376,17 @@ RunList ResultFileManager::filterRunList(const RunList& runList,
             continue;
         bool matches = true;
         for (int j=0; j<attrNames.size() && matches; j++)
-            if (!attrValues[j].matches(run->getAttribute(attrNames[j].c_str())))
+        {
+            const char *attrValue = run->getAttribute(attrNames[j].c_str());
+            if (attrValue == NULL)
+                attrValue = "";
+
+            if (!attrValues[j].matches(attrValue))
+            {
                 matches = false;
+                break;
+            }
+        }
         if (matches)
             out.push_back(run);
     }

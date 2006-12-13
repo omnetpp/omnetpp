@@ -64,9 +64,9 @@ struct VectorResult : public ResultItem
     double sum;
     double sumSqr;
 
-    double mean();
-    double variance();
-    double stddev();
+    double mean() const;
+    double variance() const;
+    double stddev() const;
 };
 
 typedef std::vector<ScalarResult> ScalarResults;
