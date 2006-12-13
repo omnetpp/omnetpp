@@ -94,9 +94,11 @@ public class ResultFilesTracker implements INotifyChangedListener, IResourceChan
 					unloadFile(file);
 					break;
 			case IResourceDelta.CHANGED:
-					unloadFile(file);
-					if (isResultFile(file) && inputsMatches(file))
-						loadFile(file);
+					if ((delta.getFlags() & ~IResourceDelta.MARKERS) != 0) {
+						unloadFile(file);
+						if (isResultFile(file) && inputsMatches(file))
+							loadFile(file);
+					}
 					break;
 			}
 			return false;
