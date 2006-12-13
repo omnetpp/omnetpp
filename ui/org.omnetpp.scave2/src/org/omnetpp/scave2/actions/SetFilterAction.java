@@ -84,7 +84,7 @@ public class SetFilterAction extends AbstractScaveAction {
 				else if (MEASUREMENT.equals(name))
 					filter.setMeasurementNamePattern(value);
 				else if (REPLICATION.equals(name))
-					filter.setReplicationNamePattern(name);
+					filter.setReplicationNamePattern(value);
 				return true;
 			}
 		}
