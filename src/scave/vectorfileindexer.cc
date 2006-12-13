@@ -13,6 +13,7 @@
 *--------------------------------------------------------------*/
 
 #include <sys/stat.h>
+#include <errno.h>
 #include "resultfilemanager.h"
 #include "nodetype.h"
 #include "nodetyperegistry.h"
