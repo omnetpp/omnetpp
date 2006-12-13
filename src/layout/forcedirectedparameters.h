@@ -318,6 +318,8 @@ class BodyConstraint : public IForceProvider {
             this->body = body;
         }
 
+        virtual void applyForces(const ForceDirectedEmbedding& embedding) = 0;
+
         virtual IBody *getBody() {
             return body;
         }
