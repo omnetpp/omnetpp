@@ -8,8 +8,8 @@
             name="OMNeT++ Analysis"
             extensions="scave"
             icon="icons/sample.gif"
-            contributorClass="org.omnetpp.scave2.editors.ScaveEditorContributor"
-            class="org.omnetpp.scave2.editors.ScaveEditor"
+            contributorClass="org.omnetpp.scave.editors.ScaveEditorContributor"
+            class="org.omnetpp.scave.editors.ScaveEditor"
             id="org.omnetpp.scave2.editors.ScaveEditor">
       </editor>
    </extension>
@@ -39,7 +39,7 @@
         point="org.eclipse.ui.newWizards">
      <wizard
            category="org.omnetpp.wizards"
-           class="org.omnetpp.scave2.wizard.ScaveModelWizard"
+           class="org.omnetpp.scave.wizard.ScaveModelWizard"
            icon="icons/sample.gif"
            id="org.omnetpp.scave2.wizard.ScaveModelModelWizardID"
            name="Analysis">
@@ -53,7 +53,7 @@
         point="org.eclipse.ui.views">
      <view
            category="org.omnetpp.views"
-           class="org.omnetpp.scave2.views.VectorBrowserView"
+           class="org.omnetpp.scave.views.VectorBrowserView"
            id="org.omnetpp.scave.vectorBrowserView"
            name="Vector Browser"/>
   </extension>

@@ -1,0 +1,110 @@
+package org.omnetpp.scave.editors.datatable;
+
+import org.eclipse.jface.viewers.Viewer;
+import org.omnetpp.common.virtualtable.IVirtualTableContentProvider;
+import org.omnetpp.scave.engine.OutputVectorEntry;
+import org.omnetpp.scave.engine.VectorResult;
+import org.omnetpp.scave.engineext.IndexedVectorFileReaderEx;
+
+/**
+ * Implementation of the IVirtualTableContentProvider interface for 
+ * the table of vector data.
+ *
+ * @author tomi
+ */
+public class VectorResultContentProvider implements IVirtualTableContentProvider<OutputVectorEntry> {
+
+	private IndexedVectorFileReaderEx reader;
+	
+	public OutputVectorEntry getApproximateElementAt(double percentage) {
+		if (reader != null)
+			return reader.getEntryBySerial((int)(percentage * reader.getNumberOfEntries()));
+		else
+			return null;
+	}
+
+	public long getApproximateNumberOfElements() {
+		if (reader != null)
+			return reader.getNumberOfEntries();
+		else
+			return 0;
+	}
+
+	public double getApproximatePercentageForElement(OutputVectorEntry element) {
+		if (reader != null)
+			return ((double)element.getSerial()) / reader.getNumberOfEntries();
+		else
+			return 0.0;
+	}
+
+	public long getDistanceToElement(OutputVectorEntry sourceElement, OutputVectorEntry targetElement, long limit) {
+		if (reader != null)
+			return Math.min(Math.abs(sourceElement.getSerial() - targetElement.getSerial()), limit);
+		else 
+			return 0;
+	}
+
+	public long getDistanceToFirstElement(OutputVectorEntry element, long limit) {
+		if (reader != null)
+			return Math.min(element.getSerial(), limit);
+		else
+			return 0;
+	}
+
+	public long getDistanceToLastElement(OutputVectorEntry element, long limit) {
+		if (reader != null) {
+			int lastSerial = reader.getNumberOfEntries() - 1;
+			return Math.min(lastSerial - element.getSerial(), limit);
+		}
+		else
+			return 0;
+	}
+
+	public OutputVectorEntry getFirstElement() {
+		if (reader != null)
+			return reader.getEntryBySerial(0);
+		else
+			return null;
+	}
+
+	public OutputVectorEntry getLastElement() {
+		if (reader != null)
+			return reader.getEntryBySerial(reader.getNumberOfEntries() - 1);
+		else
+			return null;
+	}
+
+	public OutputVectorEntry getNeighbourElement(OutputVectorEntry element, long distance) {
+		if (reader != null)
+			return reader.getEntryBySerial((int)(element.getSerial() + distance));
+		else
+			return null;
+	}
+
+	public void dispose() {
+		if (reader != null) {
+			reader.delete();
+			reader = null;
+		}
+	}
+
+	public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
+		if (newInput instanceof VectorResult) {
+			if (reader != null) {
+				reader.delete();
+				reader = null;
+			}
+			
+			VectorResult vector = (VectorResult)newInput;
+			String filename = vector.getFileRun().getFile().getFileSystemFilePath();
+			int vectorId = vector.getVectorId();
+			try {
+				reader = new IndexedVectorFileReaderEx(filename, vectorId);
+			}
+			catch (Exception e) {
+				// cannot open index file
+				e.printStackTrace();
+			}
+		}
+	}
+}
