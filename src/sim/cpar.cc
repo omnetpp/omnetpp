@@ -279,12 +279,12 @@ void cPar::read()
 
     // make sure unit matches
     const char *actualUnit = p->unit();
-    if (actualUnit)
+    if (actualUnit && actualUnit[0])
     {
         cProperties *props = properties();
         cProperty *unitProp = props->get("unit");
         const char *declUnit = unitProp ? unitProp->value(cProperty::DEFAULTKEY) : NULL;
-        if (declUnit && strcmp(actualUnit, declUnit)!=0)
+        if (declUnit && declUnit[0] && strcmp(actualUnit, declUnit)!=0)
             throw new cRuntimeError(this, "value is given in wrong units: should be %s instead of %s",
                                     UnitConversion::unitDescription(declUnit).c_str(),
                                     UnitConversion::unitDescription(actualUnit).c_str());
