@@ -66,6 +66,7 @@ for (int i=0; i<5; i++)
     P("1h 2mi 2s 520ms");
     P("1s 550ms 700us ");
     P(" 1s 550ms 700us ");
+    P("17s 71ggg");
 }
 ev << ".\n";
 
