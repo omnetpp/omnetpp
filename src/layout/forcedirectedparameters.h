@@ -30,6 +30,16 @@ class Body : public IBody {
     
         Rs size;
 
+    private:
+        void constructor(Variable *variable, double mass, double charge, Rs& size) {
+            this->variable = variable;
+            this->mass = mass;
+            this->charge = charge;
+            this->size = size;
+
+            variable->addMass(mass);
+        }
+
     public:
         Body(Variable *variable) {
             constructor(variable, 10, 1, Rs(10, 10));
@@ -39,13 +49,8 @@ class Body : public IBody {
             constructor(variable, mass, charge, size);
         }
 
-        void constructor(Variable *variable, double mass, double charge, Rs& size) {
-            this->variable = variable;
-            this->mass = mass;
-            this->charge = charge;
-            this->size = size;
-
-            variable->addMass(mass);
+        virtual const char *getClassName() {
+            return "Body";
         }
 
         virtual Pt getPosition() {
@@ -75,6 +80,12 @@ class RelativelyPositionedBody : public Body {
 
         IPositioned *anchor;
 
+    private:
+        void constructor(IPositioned *anchor, Pt& relativePosition) {
+            this->anchor = anchor;
+            this->relativePosition = relativePosition;
+        }
+
     public:
         RelativelyPositionedBody(Variable *variable, Pt& relativePosition) : Body(variable) {
             constructor(variable, relativePosition);
@@ -84,9 +95,8 @@ class RelativelyPositionedBody : public Body {
             constructor(anchor, relativePosition);
         }
 
-        void constructor(IPositioned *anchor, Pt& relativePosition) {
-            this->anchor = anchor;
-            this->relativePosition = relativePosition;
+        virtual const char *getClassName() {
+            return "RelativelyPositionedBody";
         }
 
         virtual Pt getPosition() {
@@ -105,6 +115,10 @@ class BorderBody : public Body {
 
         ~BorderBody() {
             delete variable;
+        }
+
+        virtual const char *getClassName() {
+            return "BorderBody";
         }
 };
 
@@ -163,6 +177,10 @@ class ElectricRepeal : public AbstractElectricRepeal {
         virtual Pt getVector() {
             return Pt(charge1->getPosition()).subtract(charge2->getPosition());
         }
+
+        virtual const char *getClassName() {
+            return "ElectricRepeal";
+        }
 };
 
 class VerticalElectricRepeal : public AbstractElectricRepeal {
@@ -173,6 +191,10 @@ class VerticalElectricRepeal : public AbstractElectricRepeal {
         virtual Pt getVector() {
             return Pt(0, charge1->getPosition().y - charge2->getPosition().y);
         }
+
+        virtual const char *getClassName() {
+            return "VerticalElectricRepeal";
+        }
 };
 
 class HorizontalElectricRepeal : public AbstractElectricRepeal {
@@ -182,6 +204,10 @@ class HorizontalElectricRepeal : public AbstractElectricRepeal {
 
         virtual Pt getVector() {
             return Pt(charge1->getPosition().x - charge2->getPosition().x, 0);
+        }
+
+        virtual const char *getClassName() {
+            return "HorizontalElectricRepeal";
         }
 };
 
@@ -206,6 +232,14 @@ class AbstractSpring : public ISpring {
 
         double reposeLength;
 
+    private:
+        void constructor(IBody *body1, IBody *body2, double springCoefficient, double reposeLength) {
+            this->body1 = body1;
+            this->body2 = body2;
+            this->springCoefficient = springCoefficient;
+            this->reposeLength = reposeLength;
+        }
+
     public:
         AbstractSpring(IBody *body1, IBody *body2) {
             constructor(body1, body2, 1, 0);
@@ -213,13 +247,6 @@ class AbstractSpring : public ISpring {
         
         AbstractSpring(IBody *body1, IBody *body2, double springCoefficient, double reposeLength) {
             constructor(body1, body2, springCoefficient, reposeLength);
-        }
-
-        void constructor(IBody *body1, IBody *body2, double springCoefficient, double reposeLength) {
-            this->body1 = body1;
-            this->body2 = body2;
-            this->springCoefficient = springCoefficient;
-            this->reposeLength = reposeLength;
         }
 
         double getSpringCoefficient() {
@@ -264,6 +291,10 @@ class Spring : public AbstractSpring {
         virtual Pt getVector() {
             return Pt(body1->getPosition()).subtract(body2->getPosition());
         }
+
+        virtual const char *getClassName() {
+            return "Spring";
+        }
 };
 
 class VerticalSpring : public AbstractSpring {
@@ -277,6 +308,10 @@ class VerticalSpring : public AbstractSpring {
         virtual Pt getVector() {
             return Pt(0, body1->getPosition().y - body2->getPosition().y);
         }
+
+        virtual const char *getClassName() {
+            return "VerticalSpring";
+        }
 };
 
 class HorizonalSpring : public AbstractSpring {
@@ -289,6 +324,10 @@ class HorizonalSpring : public AbstractSpring {
 
         virtual Pt getVector() {
             return Pt(body1->getPosition().x - body2->getPosition().x, 0);
+        }
+
+        virtual const char *getClassName() {
+            return "HorizonalSpring";
         }
 };
 
@@ -307,6 +346,10 @@ class Friction : public IForceProvider {
                     variable->addForce(vector, embedding.updatedFrictionCoefficient * vlen, embedding.inspected);
             }
         }    
+
+        virtual const char *getClassName() {
+            return "Friction";
+        }
 };
 
 class BodyConstraint : public IForceProvider {
@@ -318,11 +361,11 @@ class BodyConstraint : public IForceProvider {
             this->body = body;
         }
 
-        virtual void applyForces(const ForceDirectedEmbedding& embedding) = 0;
-
         virtual IBody *getBody() {
             return body;
         }
+
+        virtual void applyForces(const ForceDirectedEmbedding& embedding) = 0;
 };
 
 class PointConstraint : public BodyConstraint {
@@ -341,6 +384,10 @@ class PointConstraint : public BodyConstraint {
             Pt vector(constraint);
             vector.subtract(body->getPosition());
             body->getVariable()->addForce(vector, coefficient * vector.getLength(), embedding.inspected);
+        }
+
+        virtual const char *getClassName() {
+            return "PointConstraint";
         }
 };
 
@@ -361,6 +408,10 @@ class LineConstraint : public BodyConstraint {
             Pt vector(constraint.getClosestPoint(position));
             vector.subtract(position);
             body->getVariable()->addForce(vector, coefficient * vector.getLength(), embedding.inspected);
+        }
+
+        virtual const char *getClassName() {
+            return "LineConstraint";
         }
 };
 
@@ -384,6 +435,10 @@ class CircleConstraint : public BodyConstraint {
             double power = coefficient * (constraint.origin.getDistance(position) - constraint.radius);
 
             body->getVariable()->addForce(vector, power, embedding.inspected);
+        }
+
+        virtual const char *getClassName() {
+            return "CircleConstraint";
         }
 };
 

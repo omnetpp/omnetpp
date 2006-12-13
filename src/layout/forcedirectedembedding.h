@@ -26,31 +26,48 @@ class ForceDirectedEmbedding
     protected:
         /**
          * True means internal state for the layout has been initialized.
+         * Initialization is not done during construction time, but it is done not later than
+         * the first call to embed.
          */
         bool initialized;
 
         /**
-         * True indicates that the embedding is complete.
+         * True indicates that the embedding is complete, this state may be reset by calling reinitialize.
          */
         bool finished;
-   
-        long begin;
 
+        /**
+         * The total number of ticks spent on calculation since the last reinitialize call.
+         */
+        long ticks;
+
+        /**
+         * Total number of cycles since the last reinitialize call.
+         */
         int cycle;
 
+        /**
+         * Total number of probe cycles since the last reinitialize call.
+         */
         int probCycle;
 
+        /**
+         * Total virtual calculation time since the last reinitialize call.
+         */
         double timeStepSum;
 
-        double energySum;
+        /**
+         * Total kinetic energy seen in all cycles since the last reinitialize call.
+         */
+        double kineticEnergySum;
 
-        // vn : positions
+        // positions
         std::vector<Pt> pn;
         // accelerations
         std::vector<Pt> an;
-        // vn : velocities
+        // velocities
         std::vector<Pt> vn;
-        // as : accelerations
+        // acceleration approximations
         std::vector<Pt> a1;
         std::vector<Pt> a2;
         std::vector<Pt> a3;
@@ -62,10 +79,22 @@ class ForceDirectedEmbedding
         std::vector<Pt> dpn;
         std::vector<Pt> tpn;
 
+        /**
+         * The calculation will find a solution for these variables.
+         * Not destructed.
+         */
         std::vector<Variable *> variables;
         
+        /**
+         * Used to generate forces in each cycle of the calculation.
+         * Not destructed.
+         */
         std::vector<IForceProvider *> forceProviders;
         
+        /**
+         * The various bodies which are part of the calculation.
+         * Not destructed.
+         */
         std::vector<IBody *> bodies;
 
     public:
@@ -258,8 +287,8 @@ class ForceDirectedEmbedding
             cycle = 0;
             probCycle = 0;
             timeStepSum = 0;
-            energySum = 0;
-            begin = clock();
+            kineticEnergySum = 0;
+            ticks = 0;
 
             pn = createPtArray();
             an = createPtArray();
@@ -288,7 +317,7 @@ class ForceDirectedEmbedding
 
         /**
          * Find the solution for the differential equation using a
-         * modified Runge-Kutta-4 algorithm.
+         * modified Runge-Kutta 4th order algorithm.
          *
          * a1 = a[pn, vn]
          * a2 = a[pn + h / 2 * vn + h * h / 8 * a1, vn + h / 2 * a1]
@@ -307,7 +336,9 @@ class ForceDirectedEmbedding
             if (!initialized)
                 reinitialize();
 
-            // Runge Kutta 4th order
+            long begin = clock();
+
+            // modified Runge Kutta 4th order
             do {
                 long time;
                 double hMultiplier = 0;
@@ -318,7 +349,7 @@ class ForceDirectedEmbedding
                     probCycle++;
 
                     // update acceleration error limit
-                    time = ticksToMilliseconds(clock() - begin);
+                    time = ticksToMilliseconds(ticks + clock() - begin);
                     if (time > calculationTimeLimit && cycle > minCycle)
                         break;
                     else
@@ -394,26 +425,26 @@ class ForceDirectedEmbedding
                     }
                 }
 
-                time = ticksToMilliseconds(clock() - begin);
+                time = ticksToMilliseconds(ticks + clock() - begin);
                 if (debug)
                     std::cout << "Cycle at real time: " << time << " time: " << timeStepSum << " h: " << updatedTimeStep << " friction: " << updatedFrictionCoefficient << " acceleration error limit: " << updatedAccelerationErrorLimit << " acceleration error: " << accelerationError << " cycle: " << cycle << " prob cycle: " << probCycle << "\n";
 
                 // update friction
                 timeStepSum += updatedTimeStep;
-                double energy = 0;
+                double kineticEnergy = 0;
                 for (int i = 0; i < variables.size(); i++) {
                     Variable *variable = variables[i];
                     double velocity = variable->getVelocity().getLength();
-                    energy +=  1.0 / 2.0 * variable->getMass() * velocity * velocity;
+                    kineticEnergy +=  1.0 / 2.0 * variable->getMass() * velocity * velocity;
                 }
-                energySum += energy * updatedTimeStep;
-                double energyAvg = (energySum / timeStepSum);
-                double energyExpected = energyAvg * (calculationTimeLimit - time) / calculationTimeLimit;
+                kineticEnergySum += kineticEnergy * updatedTimeStep;
+                double kineticEnergyAvg = (kineticEnergySum / timeStepSum);
+                double kineticEnergyExpected = kineticEnergyAvg * (calculationTimeLimit - time) / calculationTimeLimit;
                 if (debug)
-                    std::cout << "Energy: " << energy << " energy expected: " << energyExpected << "\n";
-                if (energy <  energyExpected && updatedFrictionCoefficient / frictionCoefficientMultiplier > minFrictionCoefficient)
+                    std::cout << "Current kinetic energy: " << kineticEnergy << " expected: " << kineticEnergyExpected << "\n";
+                if (kineticEnergy <  kineticEnergyExpected && updatedFrictionCoefficient / frictionCoefficientMultiplier > minFrictionCoefficient)
                     updatedFrictionCoefficient /= frictionCoefficientMultiplier;
-                else if (energy > energyExpected && updatedFrictionCoefficient * frictionCoefficientMultiplier < maxFrictionCoefficient)
+                else if (kineticEnergy > kineticEnergyExpected && updatedFrictionCoefficient * frictionCoefficientMultiplier < maxFrictionCoefficient)
                     updatedFrictionCoefficient *= frictionCoefficientMultiplier;
                 
                 // Check if relaxed
@@ -441,9 +472,11 @@ class ForceDirectedEmbedding
             }
             while (!inspected && !finished);
 
+            ticks += clock() - begin;
+
             if (debug) {
                 if (finished)
-                    std::cout << "Runge-Kutta-4 ended, at real time: " << ticksToMilliseconds(clock() - begin) << " time: " << timeStepSum << " cycle: " << cycle << " prob cycle: " << probCycle << "\n";
+                    std::cout << "Runge-Kutta-4 ended, at real time: " << ticksToMilliseconds(ticks) << " time: " << timeStepSum << " cycle: " << cycle << " prob cycle: " << probCycle << "\n";
 
                 std::cout.flush();
             }
@@ -537,11 +570,20 @@ class ForceDirectedEmbedding
          */
         void a(std::vector<Pt>& an, const std::vector<Pt>& pn, const std::vector<Pt>& vn)
         {
+            if (debug) {
+                std::cout << "Calling a() with:\n";
+                for (int i = 0; i < pn.size(); i++) {
+                    std::cout << "p[" << i << "] = " << pn[i].x << ", " << pn[i].y << " ";
+                    std::cout << "v[" << i << "] = " << vn[i].x << ", " << vn[i].y << "\n";
+                }
+            }
+
             // set positions and velocities and reset forces
             for (int i = 0; i < variables.size(); i++) {
                 Variable *variable = variables[i];
                 variable->assignPosition(pn[i]);
                 variable->assignVelocity(vn[i]);
+                variable->resetForce();
 
                 if (inspected)
                     variable->resetForces();
@@ -555,6 +597,12 @@ class ForceDirectedEmbedding
             for (int i = 0; i < variables.size(); i++) {
                 Variable *variable = variables[i];
                 an[i].assign(variable->getAcceleration());
+            }
+
+            if (debug) {
+                std::cout << "Returning from a() with:\n";
+                for (int i = 0; i < pn.size(); i++)
+                    std::cout << "a[" << i << "] = " << an[i].x << ", " << an[i].y << "\n";
             }
         }
 

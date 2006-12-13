@@ -39,6 +39,15 @@ class Variable : public IPositioned {
 	    std::vector<Pt> forces;
 	
 	    double mass;
+
+    private:
+        void constructor(const Pt& position, const Pt& velocity) {
+		    this->position = position;
+		    this->velocity = velocity;
+
+            mass = 0;
+            force = Pt::getZero();
+        }
 	
     public:
 	    Variable(const Pt& position) {
@@ -48,14 +57,6 @@ class Variable : public IPositioned {
 	    Variable(const Pt& position, const Pt& velocity) {
             constructor(position, velocity);
 	    }
-
-        void constructor(const Pt& position, const Pt& velocity) {
-		    this->position = position;
-		    this->velocity = velocity;
-
-            mass = 0;
-            force = Pt::getZero();
-        }
 
 	    virtual Pt getPosition() {
 		    return position;
@@ -74,8 +75,11 @@ class Variable : public IPositioned {
 	    }
 
 	    Pt& getAcceleration() {
-		    acceleration.assign(force).divide(mass);
-		    return acceleration;
+		    return acceleration.assign(force).divide(mass);
+	    }
+
+	    void resetForce() {
+            force = Pt::getZero();
 	    }
 
 	    double getMass() {
@@ -86,7 +90,7 @@ class Variable : public IPositioned {
 		    this->mass += mass;
 	    }
 
-	    void addForce(const Pt& vector, double power, bool addToForces = false) {
+	    void addForce(const Pt& vector, double power, bool inspected = false) {
 		    Pt f(vector);
             f.normalize().multiply(power);
 
@@ -94,12 +98,11 @@ class Variable : public IPositioned {
 
 		    force.add(f);
 
-            if (addToForces)
+            if (inspected)
     		    forces.push_back(f);
 	    }
 
 	    void resetForces() {
-		    force.setZero();
 		    forces.clear();
 	    }
     	
@@ -133,11 +136,15 @@ class IForceProvider {
                 return getValidForce(fabs(force));
 	    }
 
+        virtual const char *getClassName() = 0;
+
         virtual void applyForces(const ForceDirectedEmbedding& embedding) = 0;
 };
 
 class IBody : public IPositioned {
     public:
+        virtual const char *getClassName() = 0;
+
         virtual Rs& getSize() = 0;
 
         virtual double getMass() = 0;
