@@ -724,6 +724,6 @@ bool cNEDNetworkBuilder::evaluateAsBool(ExpressionNode *exprNode, cComponent *co
 std::string cNEDNetworkBuilder::evaluateAsString(ExpressionNode *exprNode, cComponent *context, bool inSubcomponentScope)
 {
     cParValue *p = getOrCreateExpression(exprNode, cPar::STRING, inSubcomponentScope);
-    return p->stringValue(context);
+    return p->stdstringValue(context);
 }
 
