@@ -34,13 +34,14 @@ components: base jnilibs samples
 #
 #=====================================================================
 
-BASE=common eventlog scave nedxml sim envir cmdenv tkenv utils nedc
+BASE=common layout eventlog scave nedxml sim envir cmdenv tkenv utils nedc
 SAMPLES=aloha cqn dyna fifo hcube hist neddemo p-to-p queueing routing queues tictoc tokenring sockets
 JNILIBS=
-#JNILIBS=org.omnetpp.ned2.model \
+#JNILIBS=org.omnetpp.ned.model \
 #        org.omnetpp.scave.engine \
 #        org.omnetpp.experimental.simkernel \
-#        org.omnetpp.eventlog.engine
+#        org.omnetpp.eventlog.engine \
+#        org.omnetpp.common.engine
 
 #
 # Group targets.

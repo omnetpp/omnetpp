@@ -46,11 +46,12 @@ components: base jnilibs samples
 #
 #=====================================================================
 
-BASE=$(ENVIR_ILIB) common eventlog scave nedxml sim envir cmdenv tkenv utils nedc
+BASE=$(ENVIR_ILIB) common layout eventlog scave nedxml sim envir cmdenv tkenv utils nedc
 SAMPLES=aloha cqn dyna fifo hcube hist neddemo p-to-p queueing routing queues tictoc tokenring sockets
-JNILIBS=org.omnetpp.ned2.model \
+JNILIBS=org.omnetpp.ned.model \
         org.omnetpp.scave.engine \
-        org.omnetpp.eventlog.engine
+        org.omnetpp.eventlog.engine \
+	org.omnetpp.common.engine
 #        org.omnetpp.experimental.simkernel   FIXME this does not build currently, to be added back
 
 #
@@ -61,8 +62,8 @@ jnilibs : $(JNILIBS)
 samples: rundemo configsamples $(SAMPLES)
 
 # dependencies (because of ver.h, tcl2c, opp_msgc, etc)
-common eventlog scave nedxml sim envir cmdenv tkenv nedc : ver_h utils
-eventlog scave nedxml sim envir cmdenv : common
+common layout eventlog scave nedxml sim envir cmdenv tkenv nedc : ver_h utils
+layout eventlog scave nedxml sim envir cmdenv : common
 nedc : nedxml
 sim : nedc
 $(SAMPLES) : rundemo configsamples
