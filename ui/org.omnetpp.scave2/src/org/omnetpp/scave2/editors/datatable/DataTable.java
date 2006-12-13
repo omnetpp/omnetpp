@@ -242,7 +242,7 @@ public class DataTable extends Table {
 			public void widgetSelected(SelectionEvent e) {
 				TableColumn tableColumn = (TableColumn)e.widget;
 				Column column = (Column)tableColumn.getData(COLUMN_KEY);
-				int sortDirection = (getSortColumn() == tableColumn && getSortDirection() == SWT.DOWN ? SWT.UP : SWT.DOWN);
+				int sortDirection = (getSortColumn() == tableColumn && getSortDirection() == SWT.UP ? SWT.DOWN : SWT.UP);
 				setSortColumn(tableColumn);
 				setSortDirection(sortDirection);
 				sortBy(column, sortDirection);
@@ -251,7 +251,7 @@ public class DataTable extends Table {
 	}
 	
 	public void sortBy(Column column, int direction) {
-		boolean ascending = direction == SWT.DOWN;
+		boolean ascending = direction == SWT.UP;
 		if (COL_DIRECTORY.equals(column))
 			idlist.sortByDirectory(manager, ascending);
 		else if (COL_FILE_RUN.equals(column))
@@ -270,6 +270,10 @@ public class DataTable extends Table {
 			idlist.sortVectorsByMean(manager, ascending);
 		else if (COL_STDDEV.equals(column))
 			idlist.sortVectorsByStdDev(manager, ascending);
+		else if (COL_MIN.equals(column))
+			idlist.sortVectorsByMin(manager, ascending);
+		else if (COL_MAX.equals(column))
+			idlist.sortVectorsByMax(manager, ascending);
 		else if (COL_EXPERIMENT.equals(column))
 			idlist.sortByRunAttribute(manager, RunAttribute.EXPERIMENT, ascending);
 		else if (COL_MEASUREMENT.equals(column))

@@ -83,6 +83,8 @@ class IDList
         void sortVectorsByLength(ResultFileManager *mgr, bool ascending);
         void sortVectorsByMean(ResultFileManager *mgr, bool ascending);
         void sortVectorsByStdDev(ResultFileManager *mgr, bool ascending);
+        void sortVectorsByMin(ResultFileManager *mgr, bool ascending);
+        void sortVectorsByMax(ResultFileManager *mgr, bool ascending);
 		void sortByRunAttribute(ResultFileManager *mgr, const char* runAttr, bool ascending);
         void reverse();
         void toByteArray(char *array, int n) const;

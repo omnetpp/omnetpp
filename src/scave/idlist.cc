@@ -272,8 +272,18 @@ CMP(ModuleLess, less(*(mgr->uncheckedGetItem(a).moduleNameRef), *(mgr->unchecked
 CMP(ModuleMore, less(*(mgr->uncheckedGetItem(b).moduleNameRef), *(mgr->uncheckedGetItem(a).moduleNameRef)))
 CMP(NameLess, less(*(mgr->uncheckedGetItem(a).nameRef), *(mgr->uncheckedGetItem(b).nameRef)))
 CMP(NameMore, less(*(mgr->uncheckedGetItem(b).nameRef), *(mgr->uncheckedGetItem(a).nameRef)))
-CMP(ValueMore, mgr->uncheckedGetScalar(a).value < mgr->uncheckedGetScalar(b).value)
-CMP(ValueLess, mgr->uncheckedGetScalar(b).value < mgr->uncheckedGetScalar(a).value)
+CMP(ValueLess, mgr->uncheckedGetScalar(a).value < mgr->uncheckedGetScalar(b).value)
+CMP(ValueMore, mgr->uncheckedGetScalar(b).value < mgr->uncheckedGetScalar(a).value)
+CMP(CountLess, mgr->uncheckedGetVector(a).count < mgr->uncheckedGetVector(b).count)
+CMP(CountMore, mgr->uncheckedGetVector(b).count < mgr->uncheckedGetVector(a).count)
+CMP(MeanLess, mgr->uncheckedGetVector(a).mean() < mgr->uncheckedGetVector(b).mean())
+CMP(MeanMore, mgr->uncheckedGetVector(b).mean() < mgr->uncheckedGetVector(a).mean())
+CMP(StddevLess, mgr->uncheckedGetVector(a).stddev() < mgr->uncheckedGetVector(b).stddev())
+CMP(StddevMore, mgr->uncheckedGetVector(b).stddev() < mgr->uncheckedGetVector(a).stddev())
+CMP(MinLess, mgr->uncheckedGetVector(a).min < mgr->uncheckedGetVector(b).min)
+CMP(MinMore, mgr->uncheckedGetVector(b).min < mgr->uncheckedGetVector(a).min)
+CMP(MaxLess, mgr->uncheckedGetVector(a).max < mgr->uncheckedGetVector(b).max)
+CMP(MaxMore, mgr->uncheckedGetVector(b).max < mgr->uncheckedGetVector(a).max)
 
 void IDList::sortByDirectory(ResultFileManager *mgr, bool ascending)
 {
@@ -345,21 +355,57 @@ void IDList::sortScalarsByValue(ResultFileManager *mgr, bool ascending)
 void IDList::sortVectorsByLength(ResultFileManager *mgr, bool ascending)
 {
     checkIntegrityAllVectors(mgr);
-    // TODO
+    if (v->size()>=2 && CountLess(mgr)(v->at(0), v->at(v->size()-1))!=ascending)
+       reverse();
+    if (ascending)
+        std::sort(v->begin(), v->end(), CountLess(mgr));
+    else
+        std::sort(v->begin(), v->end(), CountMore(mgr));
 }
 
 void IDList::sortVectorsByMean(ResultFileManager *mgr, bool ascending)
 {
     checkIntegrityAllVectors(mgr);
-    // TODO
+    if (v->size()>=2 && MeanLess(mgr)(v->at(0), v->at(v->size()-1))!=ascending)
+       reverse();
+    if (ascending)
+        std::sort(v->begin(), v->end(), MeanLess(mgr));
+    else
+        std::sort(v->begin(), v->end(), MeanMore(mgr));
 }
 
 void IDList::sortVectorsByStdDev(ResultFileManager *mgr, bool ascending)
 {
     checkIntegrityAllVectors(mgr);
-    // TODO
+    if (v->size()>=2 && StddevLess(mgr)(v->at(0), v->at(v->size()-1))!=ascending)
+       reverse();
+    if (ascending)
+        std::sort(v->begin(), v->end(), StddevLess(mgr));
+    else
+        std::sort(v->begin(), v->end(), StddevMore(mgr));
 }
 
+void IDList::sortVectorsByMin(ResultFileManager *mgr, bool ascending)
+{
+    checkIntegrityAllVectors(mgr);
+    if (v->size()>=2 && MinLess(mgr)(v->at(0), v->at(v->size()-1))!=ascending)
+       reverse();
+    if (ascending)
+        std::sort(v->begin(), v->end(), MinLess(mgr));
+    else
+        std::sort(v->begin(), v->end(), MinMore(mgr));
+}
+
+void IDList::sortVectorsByMax(ResultFileManager *mgr, bool ascending)
+{
+    checkIntegrityAllVectors(mgr);
+    if (v->size()>=2 && MaxLess(mgr)(v->at(0), v->at(v->size()-1))!=ascending)
+       reverse();
+    if (ascending)
+        std::sort(v->begin(), v->end(), MaxLess(mgr));
+    else
+        std::sort(v->begin(), v->end(), MaxMore(mgr));
+}
 
 class RunAttributeLess : CmpBase {
 	private:
