@@ -1,4 +1,4 @@
-%module ScaveEngine
+%module CommonEngine
 
 %include "enumtypeunsafe.swg"
 %javaconst(1);
@@ -6,7 +6,8 @@
 %pragma(java) jniclasscode=%{
   static {
     try {
-      System.loadLibrary("common_engine");
+      System.load("C:\\Workspace\\Repository\\trunk\\omnetpp\\ui\\org.omnetpp.common.engine\\common_engine.dll");
+      //System.loadLibrary("common_engine");
     } catch (UnsatisfiedLinkError e) {
       System.err.println("Native code library failed to load. \n" + e);
       System.exit(1);
@@ -16,6 +17,7 @@
 
 %{
 #include "geometry.h"
+#include "forcedirectedparametersbase.h"
 #include "forcedirectedparameters.h"
 #include "forcedirectedembedding.h"
 %}
@@ -56,10 +58,42 @@ namespace std {
    %template(VariableList) vector<Variable *>;
 };
 
+%typemap(javacode) Variable %{
+    public boolean equals(Object obj) {
+        return (obj instanceof Variable) && getCPtr(this)==getCPtr((Variable)obj);
+    }
+    public int hashCode() {
+        return (int)getCPtr(this);
+    }
+%}
+
+%typemap(javacode) ForceDirectedEmbedding %{
+    private java.util.ArrayList<Object> members = new java.util.ArrayList<Object>();
+
+	public void addForceProvider(IForceProvider forceProvider) {
+	    members.add(forceProvider);
+		addForceProvider0(forceProvider);
+	}
+
+	public void addBody(IBody body) {
+	    members.add(body);
+	    members.add(body.getVariable());
+		addBody0(body);
+    }
+%}
+
+%typemap(javacode) Body %{
+    private Variable variable;
+%}
+
+%rename ForceDirectedEmbedding::addBody addBody0;
+%rename ForceDirectedEmbedding::addForceProvider addForceProvider0;
+
 %ignore zero;
 %ignore NaN;
 %ignore isNaN;
 
 %include "geometry.h"
+%include "forcedirectedparametersbase.h"
 %include "forcedirectedparameters.h"
 %include "forcedirectedembedding.h"
