@@ -18,7 +18,7 @@ LAYOUT=$(OMNETPP_ROOT)\src\layout
 COPTS=$(CFLAGS) -I$(JDK)\include -I$(JDK)\include\win32 -I$(COMMON) -I$(LAYOUT) -I$(OMNETPP_INCL_DIR)
 
 OBJS = engine_wrap.obj
-HEADERS = $(COMMON)\*.h
+HEADERS = $(COMMON)\*.h  $(LAYOUT)\*.h
 JAVAPKG = org.omnetpp.common.engine
 JAVADIR = src\$(JAVAPKG:.=\)
 
