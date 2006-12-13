@@ -11,9 +11,9 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.engineext.ResultFileManagerEx;
-import org.omnetpp.scave2.model.FilterHints;
-import org.omnetpp.scave2.model.FilterParams;
-import org.omnetpp.scave2.model.ScaveModelUtil;
+import org.omnetpp.scave2.model2.FilterHints;
+import org.omnetpp.scave2.model2.FilterParams;
+import org.omnetpp.scave2.model2.ScaveModelUtil;
 
 /**
  * Displays a data table of vectors/scalars/histograms with filter

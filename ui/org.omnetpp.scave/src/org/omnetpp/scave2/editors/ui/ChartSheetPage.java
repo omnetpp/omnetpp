@@ -27,7 +27,7 @@ import org.omnetpp.scave2.charting.ChartUpdater;
 import org.omnetpp.scave2.charting.ScalarChart;
 import org.omnetpp.scave2.charting.VectorChart;
 import org.omnetpp.scave2.editors.ScaveEditor;
-import org.omnetpp.scave2.model.ChartProperties;
+import org.omnetpp.scave2.model2.ChartProperties;
 
 public class ChartSheetPage extends ScaveEditorPage {
 

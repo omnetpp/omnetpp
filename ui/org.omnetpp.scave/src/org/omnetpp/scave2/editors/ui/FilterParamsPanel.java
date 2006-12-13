@@ -6,8 +6,8 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
-import org.omnetpp.scave2.model.FilterHints;
-import org.omnetpp.scave2.model.FilterParams;
+import org.omnetpp.scave2.model2.FilterHints;
+import org.omnetpp.scave2.model2.FilterParams;
 
 /**
  * A composite for displaying and editing the filter parameters.

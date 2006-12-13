@@ -8,7 +8,7 @@ import org.omnetpp.scave.model.ScaveModelPackage;
 import org.omnetpp.scave2.editors.ScaveEditor;
 import org.omnetpp.scave2.editors.datatable.FilteredDataPanel;
 import org.omnetpp.scave2.editors.ui.CreateDatasetDialog;
-import org.omnetpp.scave2.model.ScaveModelUtil;
+import org.omnetpp.scave2.model2.ScaveModelUtil;
 
 public class CreateDatasetAction extends AbstractScaveAction {
 	public CreateDatasetAction() {

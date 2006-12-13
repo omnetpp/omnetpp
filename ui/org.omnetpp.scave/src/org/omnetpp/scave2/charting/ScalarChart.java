@@ -1,24 +1,24 @@
 package org.omnetpp.scave2.charting;
 
-import static org.omnetpp.scave2.model.ChartProperties.PROP_AXIS_TITLE_FONT;
-import static org.omnetpp.scave2.model.ChartProperties.PROP_BAR_BASELINE;
-import static org.omnetpp.scave2.model.ChartProperties.PROP_BAR_PLACEMENT;
-import static org.omnetpp.scave2.model.ChartProperties.PROP_DISPLAY_LEGEND;
-import static org.omnetpp.scave2.model.ChartProperties.PROP_GRAPH_TITLE;
-import static org.omnetpp.scave2.model.ChartProperties.PROP_GRAPH_TITLE_FONT;
-import static org.omnetpp.scave2.model.ChartProperties.PROP_LABEL_FONT;
-import static org.omnetpp.scave2.model.ChartProperties.PROP_LEGEND_ANCHORING;
-import static org.omnetpp.scave2.model.ChartProperties.PROP_LEGEND_BORDER;
-import static org.omnetpp.scave2.model.ChartProperties.PROP_LEGEND_FONT;
-import static org.omnetpp.scave2.model.ChartProperties.PROP_LEGEND_POSITION;
-import static org.omnetpp.scave2.model.ChartProperties.PROP_XY_GRID;
-import static org.omnetpp.scave2.model.ChartProperties.PROP_XY_INVERT;
-import static org.omnetpp.scave2.model.ChartProperties.PROP_X_AXIS_TITLE;
-import static org.omnetpp.scave2.model.ChartProperties.PROP_X_LABELS_ROTATE_BY;
-import static org.omnetpp.scave2.model.ChartProperties.PROP_Y_AXIS_LOGARITHMIC;
-import static org.omnetpp.scave2.model.ChartProperties.PROP_Y_AXIS_MAX;
-import static org.omnetpp.scave2.model.ChartProperties.PROP_Y_AXIS_MIN;
-import static org.omnetpp.scave2.model.ChartProperties.PROP_Y_AXIS_TITLE;
+import static org.omnetpp.scave2.model2.ChartProperties.PROP_AXIS_TITLE_FONT;
+import static org.omnetpp.scave2.model2.ChartProperties.PROP_BAR_BASELINE;
+import static org.omnetpp.scave2.model2.ChartProperties.PROP_BAR_PLACEMENT;
+import static org.omnetpp.scave2.model2.ChartProperties.PROP_DISPLAY_LEGEND;
+import static org.omnetpp.scave2.model2.ChartProperties.PROP_GRAPH_TITLE;
+import static org.omnetpp.scave2.model2.ChartProperties.PROP_GRAPH_TITLE_FONT;
+import static org.omnetpp.scave2.model2.ChartProperties.PROP_LABEL_FONT;
+import static org.omnetpp.scave2.model2.ChartProperties.PROP_LEGEND_ANCHORING;
+import static org.omnetpp.scave2.model2.ChartProperties.PROP_LEGEND_BORDER;
+import static org.omnetpp.scave2.model2.ChartProperties.PROP_LEGEND_FONT;
+import static org.omnetpp.scave2.model2.ChartProperties.PROP_LEGEND_POSITION;
+import static org.omnetpp.scave2.model2.ChartProperties.PROP_XY_GRID;
+import static org.omnetpp.scave2.model2.ChartProperties.PROP_XY_INVERT;
+import static org.omnetpp.scave2.model2.ChartProperties.PROP_X_AXIS_TITLE;
+import static org.omnetpp.scave2.model2.ChartProperties.PROP_X_LABELS_ROTATE_BY;
+import static org.omnetpp.scave2.model2.ChartProperties.PROP_Y_AXIS_LOGARITHMIC;
+import static org.omnetpp.scave2.model2.ChartProperties.PROP_Y_AXIS_MAX;
+import static org.omnetpp.scave2.model2.ChartProperties.PROP_Y_AXIS_MIN;
+import static org.omnetpp.scave2.model2.ChartProperties.PROP_Y_AXIS_TITLE;
 
 import java.awt.Font;
 
@@ -39,9 +39,9 @@ import org.jfree.data.category.CategoryDataset;
 import org.jfree.data.general.Dataset;
 import org.jfree.ui.RectangleEdge;
 import org.omnetpp.common.util.Converter;
-import org.omnetpp.scave2.model.ChartProperties.BarPlacement;
-import org.omnetpp.scave2.model.ChartProperties.LegendAnchor;
-import org.omnetpp.scave2.model.ChartProperties.LegendPosition;
+import org.omnetpp.scave2.model2.ChartProperties.BarPlacement;
+import org.omnetpp.scave2.model2.ChartProperties.LegendAnchor;
+import org.omnetpp.scave2.model2.ChartProperties.LegendPosition;
 
 public class ScalarChart extends InteractiveChart {
 

@@ -8,7 +8,7 @@ import org.omnetpp.common.properties.PropertySource;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave2.charting.ChartSWTWrapper;
-import org.omnetpp.scave2.model.ChartProperties;
+import org.omnetpp.scave2.model2.ChartProperties;
 
 /**
  * Provides properties of scave model objects and charts.

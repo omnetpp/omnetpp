@@ -9,7 +9,7 @@ import org.omnetpp.scave.model.ScaveModelPackage;
 import org.omnetpp.scave2.editors.ScaveEditor;
 import org.omnetpp.scave2.editors.datatable.FilteredDataPanel;
 import org.omnetpp.scave2.editors.ui.CreateDatasetDialog;
-import org.omnetpp.scave2.model.ScaveModelUtil;
+import org.omnetpp.scave2.model2.ScaveModelUtil;
 
 /**
  * Creates a dataset from the filter setting on the BrowseDataPage and 

@@ -11,8 +11,8 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.omnetpp.scave2.editors.ui.FilterParamsPanel;
-import org.omnetpp.scave2.model.FilterHints;
-import org.omnetpp.scave2.model.FilterParams;
+import org.omnetpp.scave2.model2.FilterHints;
+import org.omnetpp.scave2.model2.FilterParams;
 
 /**
  * A composite with UI elements to filter a data table.

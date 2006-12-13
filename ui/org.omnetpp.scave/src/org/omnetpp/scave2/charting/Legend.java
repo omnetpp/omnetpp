@@ -11,8 +11,8 @@ import org.eclipse.draw2d.Graphics;
 import org.eclipse.draw2d.SWTGraphics;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.omnetpp.common.color.ColorFactory;
-import org.omnetpp.scave2.model.ChartProperties.LegendAnchor;
-import org.omnetpp.scave2.model.ChartProperties.LegendPosition;
+import org.omnetpp.scave2.model2.ChartProperties.LegendAnchor;
+import org.omnetpp.scave2.model2.ChartProperties.LegendPosition;
 
 /**
  * This class layouts and draws the legend on a vector chart.

@@ -13,8 +13,8 @@ import org.omnetpp.scave.model.Dataset;
 import org.omnetpp.scave.model.DatasetType;
 import org.omnetpp.scave.model.Property;
 import org.omnetpp.scave.model.ScaveModelPackage;
-import org.omnetpp.scave2.model.DatasetManager;
-import org.omnetpp.scave2.model.ScaveModelUtil;
+import org.omnetpp.scave2.model2.DatasetManager;
+import org.omnetpp.scave2.model2.ScaveModelUtil;
 
 public class ChartUpdater {
 	private Chart chart;

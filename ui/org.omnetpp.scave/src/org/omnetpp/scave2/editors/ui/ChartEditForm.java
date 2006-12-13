@@ -1,21 +1,6 @@
 package org.omnetpp.scave2.editors.ui;
 
-import static org.omnetpp.scave2.model.ChartProperties.PROP_AXIS_TITLE_FONT;
-import static org.omnetpp.scave2.model.ChartProperties.PROP_GRAPH_TITLE;
-import static org.omnetpp.scave2.model.ChartProperties.PROP_GRAPH_TITLE_FONT;
-import static org.omnetpp.scave2.model.ChartProperties.PROP_LABEL_FONT;
-import static org.omnetpp.scave2.model.ChartProperties.PROP_XY_GRID;
-import static org.omnetpp.scave2.model.ChartProperties.PROP_XY_INVERT;
-import static org.omnetpp.scave2.model.ChartProperties.PROP_X_AXIS_LOGARITHMIC;
-import static org.omnetpp.scave2.model.ChartProperties.PROP_X_AXIS_MAX;
-import static org.omnetpp.scave2.model.ChartProperties.PROP_X_AXIS_MIN;
-import static org.omnetpp.scave2.model.ChartProperties.PROP_X_AXIS_TITLE;
-import static org.omnetpp.scave2.model.ChartProperties.PROP_X_LABELS_ROTATE_BY;
-import static org.omnetpp.scave2.model.ChartProperties.PROP_Y_AXIS_LOGARITHMIC;
-import static org.omnetpp.scave2.model.ChartProperties.PROP_Y_AXIS_MAX;
-import static org.omnetpp.scave2.model.ChartProperties.PROP_Y_AXIS_MIN;
-import static org.omnetpp.scave2.model.ChartProperties.PROP_Y_AXIS_TITLE;
-import static org.omnetpp.scave2.model.ChartProperties.*;
+import static org.omnetpp.scave2.model2.ChartProperties.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,13 +26,13 @@ import org.omnetpp.scave.model.Dataset;
 import org.omnetpp.scave.model.DatasetType;
 import org.omnetpp.scave.model.Property;
 import org.omnetpp.scave.model.ScaveModelPackage;
-import org.omnetpp.scave2.model.ChartProperties;
-import org.omnetpp.scave2.model.DatasetManager;
-import org.omnetpp.scave2.model.ScaveModelUtil;
-import org.omnetpp.scave2.model.ChartProperties.LegendAnchor;
-import org.omnetpp.scave2.model.ChartProperties.LegendPosition;
-import org.omnetpp.scave2.model.ChartProperties.LineStyle;
-import org.omnetpp.scave2.model.ChartProperties.VectorChartProperties.LineProperties;
+import org.omnetpp.scave2.model2.ChartProperties;
+import org.omnetpp.scave2.model2.DatasetManager;
+import org.omnetpp.scave2.model2.ScaveModelUtil;
+import org.omnetpp.scave2.model2.ChartProperties.LegendAnchor;
+import org.omnetpp.scave2.model2.ChartProperties.LegendPosition;
+import org.omnetpp.scave2.model2.ChartProperties.LineStyle;
+import org.omnetpp.scave2.model2.ChartProperties.VectorChartProperties.LineProperties;
 
 /**
  * Edit form of charts.

@@ -10,9 +10,9 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
-import org.omnetpp.scave2.model.FilterHints;
-import org.omnetpp.scave2.model.FilterParams;
-import org.omnetpp.scave2.model.ScaveModelUtil.RunIdKind;
+import org.omnetpp.scave2.model2.FilterHints;
+import org.omnetpp.scave2.model2.FilterParams;
+import org.omnetpp.scave2.model2.ScaveModelUtil.RunIdKind;
 
 /**
  * This panel displayed in the DatasetDialog.

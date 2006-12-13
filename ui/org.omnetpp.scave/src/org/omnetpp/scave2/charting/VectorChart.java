@@ -1,21 +1,21 @@
 package org.omnetpp.scave2.charting;
 
-import static org.omnetpp.scave2.model.ChartProperties.PROP_AXIS_TITLE_FONT;
-import static org.omnetpp.scave2.model.ChartProperties.PROP_LABEL_FONT;
-import static org.omnetpp.scave2.model.ChartProperties.PROP_LINE_TYPE;
-import static org.omnetpp.scave2.model.ChartProperties.PROP_SYMBOL_SIZE;
-import static org.omnetpp.scave2.model.ChartProperties.PROP_SYMBOL_TYPE;
-import static org.omnetpp.scave2.model.ChartProperties.PROP_XY_GRID;
-import static org.omnetpp.scave2.model.ChartProperties.PROP_XY_INVERT;
-import static org.omnetpp.scave2.model.ChartProperties.PROP_X_AXIS_LOGARITHMIC;
-import static org.omnetpp.scave2.model.ChartProperties.PROP_X_AXIS_MAX;
-import static org.omnetpp.scave2.model.ChartProperties.PROP_X_AXIS_MIN;
-import static org.omnetpp.scave2.model.ChartProperties.PROP_X_AXIS_TITLE;
-import static org.omnetpp.scave2.model.ChartProperties.PROP_X_LABELS_ROTATE_BY;
-import static org.omnetpp.scave2.model.ChartProperties.PROP_Y_AXIS_LOGARITHMIC;
-import static org.omnetpp.scave2.model.ChartProperties.PROP_Y_AXIS_MAX;
-import static org.omnetpp.scave2.model.ChartProperties.PROP_Y_AXIS_MIN;
-import static org.omnetpp.scave2.model.ChartProperties.PROP_Y_AXIS_TITLE;
+import static org.omnetpp.scave2.model2.ChartProperties.PROP_AXIS_TITLE_FONT;
+import static org.omnetpp.scave2.model2.ChartProperties.PROP_LABEL_FONT;
+import static org.omnetpp.scave2.model2.ChartProperties.PROP_LINE_TYPE;
+import static org.omnetpp.scave2.model2.ChartProperties.PROP_SYMBOL_SIZE;
+import static org.omnetpp.scave2.model2.ChartProperties.PROP_SYMBOL_TYPE;
+import static org.omnetpp.scave2.model2.ChartProperties.PROP_XY_GRID;
+import static org.omnetpp.scave2.model2.ChartProperties.PROP_XY_INVERT;
+import static org.omnetpp.scave2.model2.ChartProperties.PROP_X_AXIS_LOGARITHMIC;
+import static org.omnetpp.scave2.model2.ChartProperties.PROP_X_AXIS_MAX;
+import static org.omnetpp.scave2.model2.ChartProperties.PROP_X_AXIS_MIN;
+import static org.omnetpp.scave2.model2.ChartProperties.PROP_X_AXIS_TITLE;
+import static org.omnetpp.scave2.model2.ChartProperties.PROP_X_LABELS_ROTATE_BY;
+import static org.omnetpp.scave2.model2.ChartProperties.PROP_Y_AXIS_LOGARITHMIC;
+import static org.omnetpp.scave2.model2.ChartProperties.PROP_Y_AXIS_MAX;
+import static org.omnetpp.scave2.model2.ChartProperties.PROP_Y_AXIS_MIN;
+import static org.omnetpp.scave2.model2.ChartProperties.PROP_Y_AXIS_TITLE;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -56,8 +56,8 @@ import org.omnetpp.scave2.charting.plotter.SampleHoldVectorPlotter;
 import org.omnetpp.scave2.charting.plotter.SquareSymbol;
 import org.omnetpp.scave2.charting.plotter.TriangleSymbol;
 import org.omnetpp.scave2.charting.plotter.VectorPlotter;
-import org.omnetpp.scave2.model.ChartProperties.LineStyle;
-import org.omnetpp.scave2.model.ChartProperties.SymbolType;
+import org.omnetpp.scave2.model2.ChartProperties.LineStyle;
+import org.omnetpp.scave2.model2.ChartProperties.SymbolType;
 
 //XXX strange effects when resized and vertical scrollbar pulled...
 public class VectorChart extends ChartCanvas {

@@ -1,4 +1,4 @@
-package org.omnetpp.scave2.model.provider;
+package org.omnetpp.scave2.model2.provider;
 
 import org.eclipse.emf.common.command.Command;
 import org.eclipse.emf.common.command.UnexecutableCommand;

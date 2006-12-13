@@ -1,4 +1,4 @@
-package org.omnetpp.scave2.model.provider;
+package org.omnetpp.scave2.model2.provider;
 
 import java.util.Collection;
 
@@ -12,7 +12,7 @@ import org.eclipse.emf.edit.domain.EditingDomain;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.ChartSheet;
 import org.omnetpp.scave.model.ScaveModelPackage;
-import org.omnetpp.scave2.model.ScaveModelUtil;
+import org.omnetpp.scave2.model2.ScaveModelUtil;
 
 public class DatasetItemProvider extends org.omnetpp.scave.model.provider.DatasetItemProvider {
 

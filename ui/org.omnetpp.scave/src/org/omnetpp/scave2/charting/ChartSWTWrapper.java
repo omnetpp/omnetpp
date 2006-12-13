@@ -35,7 +35,7 @@ import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.title.TextTitle;
 import org.omnetpp.common.util.Converter;
 
-import static org.omnetpp.scave2.model.ChartProperties.*;
+import static org.omnetpp.scave2.model2.ChartProperties.*;
 
 /**
  * Allows a JFreeChart chart to be displayed in SWT.

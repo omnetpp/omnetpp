@@ -5,9 +5,9 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Shell;
-import org.omnetpp.scave2.model.FilterHints;
-import org.omnetpp.scave2.model.FilterParams;
-import org.omnetpp.scave2.model.ScaveModelUtil.RunIdKind;
+import org.omnetpp.scave2.model2.FilterHints;
+import org.omnetpp.scave2.model2.FilterParams;
+import org.omnetpp.scave2.model2.ScaveModelUtil.RunIdKind;
 
 /**
  * Common base class for CreateDatasetDialog and AddToDatasetDialog.

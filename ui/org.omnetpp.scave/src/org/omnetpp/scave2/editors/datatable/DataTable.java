@@ -27,7 +27,7 @@ import org.omnetpp.scave.engine.VectorResult;
 import org.omnetpp.scave.engineext.ResultFileManagerEx;
 import org.omnetpp.scave.model.DatasetType;
 import org.omnetpp.scave2.Activator;
-import org.omnetpp.scave2.model.RunAttribute;
+import org.omnetpp.scave2.model2.RunAttribute;
 
 /**
  * This is a preconfigured VIRTUAL table, which displays a list of

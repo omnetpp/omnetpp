@@ -105,7 +105,7 @@ import org.eclipse.ui.views.properties.IPropertySheetPage;
 import org.eclipse.ui.views.properties.PropertySheet;
 import org.eclipse.ui.views.properties.PropertySheetPage;
 import org.omnetpp.scave.model.provider.ScaveEditPlugin;
-import org.omnetpp.scave2.model.provider.ScaveModelItemProviderAdapterFactory;
+import org.omnetpp.scave2.model2.provider.ScaveModelItemProviderAdapterFactory;
 import org.omnetpp.scave2.editors.treeproviders.ScaveModelLabelProvider;
 
 

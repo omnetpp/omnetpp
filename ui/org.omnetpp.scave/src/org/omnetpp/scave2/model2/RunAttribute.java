@@ -1,4 +1,4 @@
-package org.omnetpp.scave2.model;
+package org.omnetpp.scave2.model2;
 
 import org.omnetpp.scave.engine.Run;
 

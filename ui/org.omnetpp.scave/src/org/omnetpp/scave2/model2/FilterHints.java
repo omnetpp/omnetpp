@@ -1,8 +1,8 @@
-package org.omnetpp.scave2.model;
+package org.omnetpp.scave2.model2;
 
-import static org.omnetpp.scave2.model.RunAttribute.EXPERIMENT;
-import static org.omnetpp.scave2.model.RunAttribute.MEASUREMENT;
-import static org.omnetpp.scave2.model.RunAttribute.REPLICATION;
+import static org.omnetpp.scave2.model2.RunAttribute.EXPERIMENT;
+import static org.omnetpp.scave2.model2.RunAttribute.MEASUREMENT;
+import static org.omnetpp.scave2.model2.RunAttribute.REPLICATION;
 
 import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.engine.ResultFileList;

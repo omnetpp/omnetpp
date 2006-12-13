@@ -14,8 +14,8 @@ import org.omnetpp.scave.model.Dataset;
 import org.omnetpp.scave.model.ScaveModelPackage;
 import org.omnetpp.scave.model.SetOperation;
 import org.omnetpp.scave2.editors.ScaveEditor;
-import org.omnetpp.scave2.model.FilterHints;
-import org.omnetpp.scave2.model.ScaveModelUtil;
+import org.omnetpp.scave2.model2.FilterHints;
+import org.omnetpp.scave2.model2.ScaveModelUtil;
 
 /**
  * Base class for edit forms of set operations.

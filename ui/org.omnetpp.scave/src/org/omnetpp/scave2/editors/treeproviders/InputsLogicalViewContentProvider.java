@@ -1,9 +1,10 @@
 package org.omnetpp.scave2.editors.treeproviders;
 
-import static org.omnetpp.scave2.model.RunAttribute.EXPERIMENT;
-import static org.omnetpp.scave2.model.RunAttribute.MEASUREMENT;
-import static org.omnetpp.scave2.model.RunAttribute.REPLICATION;
-import static org.omnetpp.scave2.model.RunAttribute.getRunAttribute;
+import static org.omnetpp.scave2.model2.RunAttribute.EXPERIMENT;
+import static org.omnetpp.scave2.model2.RunAttribute.MEASUREMENT;
+import static org.omnetpp.scave2.model2.RunAttribute.REPLICATION;
+import static org.omnetpp.scave2.model2.RunAttribute.getRunAttribute;
+
 import org.omnetpp.scave.engine.ResultFile;
 import org.omnetpp.scave.engine.Run;
 import org.omnetpp.scave.engine.RunList;

@@ -1,4 +1,4 @@
-package org.omnetpp.scave2.model.provider;
+package org.omnetpp.scave2.model2.provider;
 
 import java.util.Collection;
 
@@ -12,19 +12,18 @@ import org.eclipse.emf.edit.domain.EditingDomain;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.ChartSheet;
 import org.omnetpp.scave.model.ScaveModelPackage;
-import org.omnetpp.scave2.model.ScaveModelUtil;
+import org.omnetpp.scave2.model2.ScaveModelUtil;
 
-public class GroupItemProvider extends
-		org.omnetpp.scave.model.provider.GroupItemProvider {
+public class DatasetsItemProvider extends
+		org.omnetpp.scave.model.provider.DatasetsItemProvider {
 
-	
-	public GroupItemProvider(AdapterFactory adapterFactory) {
+	public DatasetsItemProvider(AdapterFactory adapterFactory) {
 		super(adapterFactory);
 	}
 
 	/**
-	 * When a chart added to the group, which does not have chart sheet,
-	 * add the chart to the default chart sheet.
+	 * When the new dataset contains charts which does not have chart sheet,
+	 * add the charts to the default chart sheet.
 	 * The default chart sheet is created if it did not exist.
 	 */
 	@Override

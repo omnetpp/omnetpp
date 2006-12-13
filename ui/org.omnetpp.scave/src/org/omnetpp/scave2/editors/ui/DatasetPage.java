@@ -34,8 +34,8 @@ import org.omnetpp.scave2.actions.UngroupAction;
 import org.omnetpp.scave2.editors.ScaveEditor;
 import org.omnetpp.scave2.editors.datatable.DataTable;
 import org.omnetpp.scave2.editors.datatable.FilteredDataPanel;
-import org.omnetpp.scave2.model.DatasetManager;
-import org.omnetpp.scave2.model.ScaveModelUtil;
+import org.omnetpp.scave2.model2.DatasetManager;
+import org.omnetpp.scave2.model2.ScaveModelUtil;
 
 //FIXME close this page when dataset gets deleted
 public class DatasetPage extends ScaveEditorPage {

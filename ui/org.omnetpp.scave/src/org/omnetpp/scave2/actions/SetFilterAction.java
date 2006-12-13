@@ -1,8 +1,8 @@
 package org.omnetpp.scave2.actions;
 
-import static org.omnetpp.scave2.model.RunAttribute.EXPERIMENT;
-import static org.omnetpp.scave2.model.RunAttribute.MEASUREMENT;
-import static org.omnetpp.scave2.model.RunAttribute.REPLICATION;
+import static org.omnetpp.scave2.model2.RunAttribute.EXPERIMENT;
+import static org.omnetpp.scave2.model2.RunAttribute.MEASUREMENT;
+import static org.omnetpp.scave2.model2.RunAttribute.REPLICATION;
 
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.omnetpp.scave.engine.ResultFile;
@@ -11,8 +11,8 @@ import org.omnetpp.scave.model.InputFile;
 import org.omnetpp.scave2.editors.ScaveEditor;
 import org.omnetpp.scave2.editors.treeproviders.GenericTreeNode;
 import org.omnetpp.scave2.editors.ui.BrowseDataPage;
-import org.omnetpp.scave2.model.FilterParams;
-import org.omnetpp.scave2.model.RunAttribute;
+import org.omnetpp.scave2.model2.FilterParams;
+import org.omnetpp.scave2.model2.RunAttribute;
 
 /**
  * Sets the filters on the "Browse data" page with the attributes of the 

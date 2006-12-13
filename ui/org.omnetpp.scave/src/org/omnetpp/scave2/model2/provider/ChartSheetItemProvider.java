@@ -1,4 +1,4 @@
-package org.omnetpp.scave2.model.provider;
+package org.omnetpp.scave2.model2.provider;
 
 import org.eclipse.emf.common.notify.AdapterFactory;
 import org.eclipse.emf.common.notify.Notification;
