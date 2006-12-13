@@ -1,5 +1,6 @@
 package org.omnetpp.scave2.editors.ui;
 
+import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -123,12 +124,21 @@ public class BrowseDataPage extends ScaveEditorPage {
 		});
 		
 		vectorsPanel.getTable().addSelectionListener(new SelectionAdapter() {
+//			@Override
+//			public void widgetDefaultSelected(SelectionEvent e) {
+//				TableItem item = (TableItem)e.item;
+//				Object data = item.getData(DataTable.ITEM_KEY);
+//				if (data instanceof VectorResult) {
+//					scaveEditor.openBrowseVectorDataPage((VectorResult)data);
+//				}
+//			}
+
 			@Override
-			public void widgetDefaultSelected(SelectionEvent e) {
+			public void widgetSelected(SelectionEvent e) {
 				TableItem item = (TableItem)e.item;
 				Object data = item.getData(DataTable.ITEM_KEY);
 				if (data instanceof VectorResult) {
-					scaveEditor.openBrowseVectorDataPage((VectorResult)data);
+					scaveEditor.setSelection(new StructuredSelection(data));
 				}
 			}
 		});

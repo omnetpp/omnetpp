@@ -39,5 +39,11 @@
             name="New OMNeT++ Project"
             project="true"/>
    </extension>
+   <extension
+         point="org.eclipse.ui.views">
+      <category
+            id="org.omnetpp.views"
+            name="OMNet++"/>
+   </extension>
 
 </plugin>

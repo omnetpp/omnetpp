@@ -49,5 +49,13 @@
         <selection class="org.eclipse.core.resources.IResource"/>
      </wizard>
   </extension>
+  <extension
+        point="org.eclipse.ui.views">
+     <view
+           category="org.omnetpp.views"
+           class="org.omnetpp.scave2.views.VectorBrowserView"
+           id="org.omnetpp.scave.vectorBrowserView"
+           name="Vector Browser"/>
+  </extension>
 
 </plugin>

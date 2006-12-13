@@ -59,7 +59,7 @@ public class VirtualTable<T> extends ContentViewer {
 		table.addListener(SWT.SetData, new Listener() {
 			public void handleEvent(Event e) {
 				int indexDelta = e.index - fixPointTableIndex;
-				if (Math.abs(indexDelta) <= getMaximumLinearMove()) {
+				if (Math.abs(indexDelta) <= getMaximumLinearMove()) { // TODO: shouldn't be this an assert?, why maximum linear move, anyway? (tomi)
 					T element = getVirtualTableContentProvider().getNeighbourElement(fixPointElement, e.index - fixPointTableIndex);
 					getVirtualTableItemProvider().fillTableItem((TableItem)e.item, element);
 				}
@@ -146,10 +146,13 @@ public class VirtualTable<T> extends ContentViewer {
 	}
 
 	@Override
-	public void setInput(Object input) {
-		super.setInput(input);
+	protected void inputChanged(Object input, Object oldInput) {
+		super.inputChanged(input, oldInput);
 		gotoBegin();
+		redrawTable();
 	}
+
+	
 
 // TODO: resurrect this to support markers
 //	private IFile getResource() {
@@ -218,6 +221,7 @@ public class VirtualTable<T> extends ContentViewer {
 	protected void gotoBegin() {
 		setTableElementCount();
 		relocateFixPoint(getVirtualTableContentProvider().getFirstElement(), 0);
+		table.setTopIndex(0);
 	}
 
 	@SuppressWarnings("unchecked")

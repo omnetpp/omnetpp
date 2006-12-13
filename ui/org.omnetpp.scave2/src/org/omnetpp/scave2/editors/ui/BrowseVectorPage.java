@@ -56,7 +56,7 @@ public class BrowseVectorPage extends ScaveEditorPage {
 	
 	private void createTable() {
 		// create pages
-		table = new Table(getBody(), SWT.VIRTUAL);
+		table = new Table(getBody(), SWT.VIRTUAL | SWT.MULTI | SWT.FULL_SELECTION);
 		table.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		table.setHeaderVisible(true);
 		table.setLinesVisible(true);
