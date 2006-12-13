@@ -17,525 +17,372 @@
 
 #include <math.h>
 #include "geometry.h"
+#include "forcedirectedparametersbase.h"
+#include "forcedirectedembedding.h"
 
-class ForceDirectedEmbedding;
-
-class IPositioned {
-    public:
-        virtual Pt& getPosition() = 0;
-};
-
-class Variable : public IPositioned {
+class Body : public IBody {
     protected:
-	    Pt position;
+        Variable *variable;
 
-	    Pt velocity;
+        double mass;
+    
+        double charge;
+    
+        Rs size;
 
-        Pt acceleration;
-
-        Pt force;
-
-	    std::vector<Pt> forces;
-	
-	    double mass;
-	
-    private:
-	    Pt tempForce;
-	
     public:
-	    Variable(const Pt& position) {
-            constructor(position, Pt::getZero());
-	    }
-
-	    Variable(const Pt& position, const Pt& velocity) {
-            constructor(position, velocity);
-	    }
-
-        void constructor(const Pt& position, const Pt& velocity) {
-		    this->position = position;
-		    this->velocity = velocity;
-            mass = 0;
-            force = Pt::getZero();
+        Body(Variable *variable) {
+            constructor(variable, 10, 1, Rs(10, 10));
         }
 
-	    Pt& getPosition() {
-		    return position;
-	    }
-
-	    void assignPosition(const Pt& position) {
-		    this->position.assign(position);
-	    }
-
-	    Pt& getVelocity() {
-		    return velocity;
-	    }
-
-	    void assignVelocity(const Pt& velocity) {
-		    this->velocity.assign(velocity);
-	    }
-
-	    Pt& getAcceleration() {
-		    acceleration.assign(force).divide(mass);
-		    return acceleration;
-	    }
-
-	    double getMass() {
-		    return mass;
-	    }
-    	
-	    void addMass(double mass) {
-		    this->mass += mass;
-	    }
-
-	    void addForce(const Pt& vector, double power) {
-		    tempForce.assign(vector).normalize().multiply(power);
-
-		    ASSERT(tempForce.isFullySpecified());
-
-		    force.add(tempForce);
-		    forces.push_back(tempForce.copy());
-	    }
-
-	    void resetForces() {
-		    force.setZero();
-		    forces.clear();
-	    }
-    	
-	    const std::vector<Pt>& getForces() {
-		    return forces;
-	    }
-};
-
-class IForceProvider {
-    public:
-    	virtual void applyForces(const ForceDirectedEmbedding& embedding) = 0;
-};
-
-class ILimitedForceProvider : public IForceProvider {
-    protected:
-	    virtual double getMaxForce() = 0;
-    	
-	    virtual double getValidForce(double force) = 0;
-    	
-	    virtual double getValidSignedForce(double force) = 0;
-};
-
-class LimitedForceProvider : public ILimitedForceProvider {
-    protected:
-        double maxForce;
-	
-    public:
-        LimitedForceProvider() {
-            maxForce = 1000;
+        Body(Variable *variable, double mass, double charge, Rs& size) {
+            constructor(variable, mass, charge, size);
         }
 
-    protected:
-	    double getMaxForce() {
-		    return maxForce;
-	    }
-    	
-	    double getValidForce(double force) {
-		    ASSERT(force >= 0);
-            return std::min(maxForce, force);
-	    }
-    	
-	    double getValidSignedForce(double force) {
-            if (force < 0)
-                return -getValidForce(fabs(force));
-            else
-                return getValidForce(fabs(force));
-	    }
-};
+        void constructor(Variable *variable, double mass, double charge, Rs& size) {
+            this->variable = variable;
+            this->mass = mass;
+            this->charge = charge;
+            this->size = size;
 
-class IApplied {
-    public:
-    	virtual Variable *getVariable() = 0;
-};
+            variable->addMass(mass);
+        }
 
-class IPositionedApplied : public IPositioned, public IApplied {
-};
+        virtual Pt getPosition() {
+            return variable->getPosition();
+        }
 
-class ICharge : public virtual IPositionedApplied {
-    public:
-    	virtual double getCharge() = 0;
-};
+        virtual Variable *getVariable() {
+            return variable;
+        }
 
-class IMass : public virtual IPositionedApplied {
-    public:
-	    virtual double getMass() = 0;
-};
+        virtual double getMass() {
+            return mass;
+        }
+        
+        virtual double getCharge() {
+            return charge;
+        }
 
-class IBody : public IMass, public ICharge {
-    public:
-        virtual Rs& getSize() = 0;
-};
-/*
-abstract class AbstractBody implements IBody {
-	protected double mass;
-	
-	protected double charge;
-	
-	protected Rs size = new Rs(10, 10);
-
-	public AbstractBody() {
-		this(10, 1);
-	}
-
-	public AbstractBody(double mass, double charge) {
-		this->mass = mass;
-		this->charge = charge;
-	}
-
-	public double getCharge() {
-		return charge;
-	}
-
-	public double getMass() {
-		return mass;
-	}
-	
-	public Rs getSize() {
-		return size;
-	}
+        virtual Rs& getSize() {
+            return size;
+        }
 };
 
 class RelativelyPositionedBody : public Body {
-	protected Pt relativePosition;
+    protected:
+        Pt relativePosition;
 
-	protected IPositioned anchor;
+        IPositioned *anchor;
 
-	private Pt position;
+    public:
+        RelativelyPositionedBody(Variable *variable, Pt& relativePosition) : Body(variable) {
+            constructor(variable, relativePosition);
+        }
 
-	public RelativelyPositionedBody(Variable variable, Pt relativePosition) {
-		this(variable, variable, relativePosition);
-	}
+        RelativelyPositionedBody(Variable *variable, IPositioned *anchor, Pt& relativePosition) : Body(variable) {
+            constructor(anchor, relativePosition);
+        }
 
-	public RelativelyPositionedBody(Variable variable, IPositioned anchor, Pt relativePosition) {
-		super(variable);
-		this->anchor = anchor;
-		this->relativePosition = relativePosition;
-		this->position = Pt.newNil();
-	}
+        void constructor(IPositioned *anchor, Pt& relativePosition) {
+            this->anchor = anchor;
+            this->relativePosition = relativePosition;
+        }
 
-	public Pt getPosition() {
-		position.assign(anchor.getPosition()).add(relativePosition);
-		return position;
-	}
-};
-
-class Body : public AbstractBody {
-	protected Variable variable;
-
-	public Body(Variable variable) {
-		this->variable = variable;
-		variable.addMass(mass);
-	}
-
-	public Pt getPosition() {
-		return variable.position;
-	}
-
-	public Variable getVariable() {
-		return variable;
-	}
+        virtual Pt getPosition() {
+            return Pt(anchor->getPosition()).add(relativePosition);
+        }
 };
 
 class BorderBody : public Body {
-	public BorderBody(Variable variable) {
-		super(variable);
-	}
-	
-	public BorderBody(boolean horizontal, double position) {
-		this(new Variable(new Pt(horizontal ? Double.NaN : position, horizontal ? position : Double.NaN)));
-		
-		if (horizontal)
-			size = new Rs(Double.POSITIVE_INFINITY, 0);
-		else
-			size = new Rs(0, Double.POSITIVE_INFINITY);
-	}
+    public:
+        BorderBody(bool horizontal, double position) : Body(new Variable(Pt(horizontal ? NaN : position, horizontal ? position : NaN))) {
+            if (horizontal)
+                size = Rs(POSITIVE_INFINITY, 0);
+            else
+                size = Rs(0, POSITIVE_INFINITY);
+        }
+
+        ~BorderBody() {
+            delete variable;
+        }
 };
 
 class IElectricRepeal : public IForceProvider {
-	public ICharge getCharge1();
-	
-	public ICharge getCharge2();
+    public:
+        virtual IBody *getCharge1() = 0;
+    
+        virtual IBody *getCharge2() = 0;
 };
 
-abstract class AbstractElectricRepeal : public LimitedForceProvider implements IElectricRepeal {
-	protected ICharge charge1;
-	
-	protected ICharge charge2;
+class AbstractElectricRepeal : public IElectricRepeal {
+    protected:
+        IBody *charge1;
+    
+        IBody *charge2;
 
-	public AbstractElectricRepeal(ICharge charge1, ICharge charge2) {
-		this->charge1 = charge1;
-		this->charge2 = charge2;
-	}
+    public:
+        AbstractElectricRepeal(IBody *charge1, IBody *charge2) {
+            this->charge1 = charge1;
+            this->charge2 = charge2;
+        }
 
-	public ICharge getCharge1() {
-		return charge1;
-	}
-	
-	public ICharge getCharge2() {
-		return charge2;
-	}
-	
-	public abstract Pt getVector();
+        virtual IBody *getCharge1() {
+            return charge1;
+        }
+        
+        virtual IBody *getCharge2() {
+            return charge2;
+        }
+        
+        virtual Pt getVector() = 0;
 
-	public void applyForces(ForceDirectedEmbedding embedding) {
-		Pt vector = getVector();
-		double distance = vector.getLength();
-		// TODO: find intersection with boxes and use the distance between the boxes
-//			double modifiedDistance = distance - vertex1.rs.getDiagonalLength() / 2 - vertex2.rs.getDiagonalLength() / 2;
-		double modifiedDistance = distance;
-		double force;
-		
-		if (modifiedDistance <= 0)
-			force = maxForce;
-		else
-			force = getValidForce(embedding.electricRepealCoefficient * charge1.getCharge() * charge2.getCharge() / modifiedDistance / modifiedDistance);
-		
-		getCharge1().getVariable().addForce(vector, +force);
-		getCharge2().getVariable().addForce(vector, -force);
-	}
+        virtual void applyForces(const ForceDirectedEmbedding& embedding) {
+            Pt vector = getVector();
+            double distance = vector.getLength();
+            // TODO: find intersection with boxes and use the distance between the boxes
+    //            double modifiedDistance = distance - vertex1.rs.getDiagonalLength() / 2 - vertex2.rs.getDiagonalLength() / 2;
+            double modifiedDistance = distance;
+            double force;
+            
+            if (modifiedDistance <= 0)
+                force = maxForce;
+            else
+                force = getValidForce(embedding.electricRepealCoefficient * charge1->getCharge() * charge2->getCharge() / modifiedDistance / modifiedDistance);
+            
+            charge1->getVariable()->addForce(vector, +force, embedding.inspected);
+            charge2->getVariable()->addForce(vector, -force, embedding.inspected);
+        }
 };
 
 class ElectricRepeal : public AbstractElectricRepeal {
-	private Pt vector = Pt.newNil();
+    public:
+        ElectricRepeal(IBody *charge1, IBody *charge2) : AbstractElectricRepeal(charge1, charge2) {
+        }
 
-	public ElectricRepeal(ICharge charge1, ICharge charge2) {
-		super(charge1, charge2);
-	}
-
-	public Pt getVector() {
-		vector.assign(charge1.getPosition()).subtract(charge2.getPosition());
-		return vector;
-	}
+        virtual Pt getVector() {
+            return Pt(charge1->getPosition()).subtract(charge2->getPosition());
+        }
 };
 
 class VerticalElectricRepeal : public AbstractElectricRepeal {
-	private Pt vector = Pt.newNil();
+    public:
+        VerticalElectricRepeal(IBody *charge1, IBody *charge2) : AbstractElectricRepeal(charge1, charge2) {
+        }
 
-	public VerticalElectricRepeal(ICharge charge1, ICharge charge2) {
-		super(charge1, charge2);
-	}
-
-	public Pt getVector() {
-		vector.assign(0, charge1.getPosition().y - charge2.getPosition().y);
-		return vector;
-	}
+        virtual Pt getVector() {
+            return Pt(0, charge1->getPosition().y - charge2->getPosition().y);
+        }
 };
 
 class HorizontalElectricRepeal : public AbstractElectricRepeal {
-	private Pt vector = Pt.newNil();
+    public:
+        HorizontalElectricRepeal(IBody *charge1, IBody *charge2) : AbstractElectricRepeal(charge1, charge2) {
+        }
 
-	public HorizontalElectricRepeal(ICharge charge1, ICharge charge2) {
-		super(charge1, charge2);
-	}
-
-	public Pt getVector() {
-		vector.assign(charge1.getPosition().x - charge2.getPosition().x, 0);
-		return vector;
-	}
+        virtual Pt getVector() {
+            return Pt(charge1->getPosition().x - charge2->getPosition().x, 0);
+        }
 };
 
 class ISpring : public IForceProvider {
-	public double getSpringCoefficient();
-	
-	public double getReposeLength();
-	
-	public IPositionedApplied getBody1();
-	
-	public IPositionedApplied getBody2();
+    public:
+        virtual double getSpringCoefficient() = 0;
+        
+        virtual double getReposeLength() = 0;
+        
+        virtual IBody *getBody1() = 0;
+        
+        virtual IBody *getBody2() = 0;
 };
 
-abstract class AbstractSpring : public LimitedForceProvider implements ISpring {
-	protected IPositionedApplied body1;
-	
-	protected IPositionedApplied body2;
+class AbstractSpring : public ISpring {
+    protected:
+        IBody *body1;
+        
+        IBody *body2;
 
-	protected double springCoefficient;
+        double springCoefficient;
 
-	protected double reposeLength;
+        double reposeLength;
 
-	public AbstractSpring(IPositionedApplied body1, IPositionedApplied body2) {
-		this(body1, body2, 1, 0);
-	}
-	
-	public AbstractSpring(IPositionedApplied body1, IPositionedApplied body2, double springCoefficient, double reposeLength) {
-		this->body1 = body1;
-		this->body2 = body2;
-		this->springCoefficient = springCoefficient;
-		this->reposeLength = reposeLength;
-	}
+    public:
+        AbstractSpring(IBody *body1, IBody *body2) {
+            constructor(body1, body2, 1, 0);
+        }
+        
+        AbstractSpring(IBody *body1, IBody *body2, double springCoefficient, double reposeLength) {
+            constructor(body1, body2, springCoefficient, reposeLength);
+        }
 
-	public double getSpringCoefficient() {
-		return springCoefficient;
-	}
+        void constructor(IBody *body1, IBody *body2, double springCoefficient, double reposeLength) {
+            this->body1 = body1;
+            this->body2 = body2;
+            this->springCoefficient = springCoefficient;
+            this->reposeLength = reposeLength;
+        }
 
-	public double getReposeLength() {
-		return reposeLength;
-	}
+        double getSpringCoefficient() {
+            return springCoefficient;
+        }
 
-	public IPositionedApplied getBody1() {
-		return body1;
-	}
+        double getReposeLength() {
+            return reposeLength;
+        }
 
-	public IPositionedApplied getBody2() {
-		return body2;
-	}
-	
-	public abstract Pt getVector();
-	
-	public void applyForces(ForceDirectedEmbedding embedding) {
-		Pt vector = getVector();
-		double distance = vector.getLength() - reposeLength;
+        virtual IBody *getBody1() {
+            return body1;
+        }
 
-		if (distance != 0) {
-			double force = getValidSignedForce(embedding.springCoefficient * springCoefficient * distance);
-			
-			getBody1().getVariable().addForce(vector, -force);
-			getBody2().getVariable().addForce(vector, +force);
-		}
-	}
+        virtual IBody *getBody2() {
+            return body2;
+        }
+        
+        virtual Pt getVector() = 0;
+        
+        virtual void applyForces(const ForceDirectedEmbedding& embedding) {
+            Pt vector = getVector();
+            double distance = vector.getLength() - reposeLength;
+
+            if (distance != 0) {
+                double force = getValidSignedForce(embedding.springCoefficient * springCoefficient * distance);
+                
+                body1->getVariable()->addForce(vector, -force, embedding.inspected);
+                body2->getVariable()->addForce(vector, +force, embedding.inspected);
+            }
+        }
 };
 
 class Spring : public AbstractSpring {
-	private Pt vector = Pt.newNil();
+    public:
+        Spring(IBody *body1, IBody *body2) : AbstractSpring(body1, body2) {
+        }
+        
+        Spring(IBody *body1, IBody *body2, double springCoefficient, double reposeLength) : AbstractSpring(body1, body2, springCoefficient, reposeLength) {
+        }
 
-	public Spring(IPositionedApplied body1, IPositionedApplied body2) {
-		super(body1, body2);
-	}
-	
-	public Spring(IPositionedApplied body1, IPositionedApplied body2, double springCoefficient, double reposeLength) {
-		super(body1, body2, springCoefficient, reposeLength);
-	}
-
-	public Pt getVector() {
-		vector.assign(body1.getPosition()).subtract(body2.getPosition());
-		return vector;
-	}
+        virtual Pt getVector() {
+            return Pt(body1->getPosition()).subtract(body2->getPosition());
+        }
 };
 
 class VerticalSpring : public AbstractSpring {
-	private Pt vector = Pt.newNil();
+    public:
+        VerticalSpring(IBody *body1, IBody *body2) : AbstractSpring(body1, body2) {
+        }
+        
+        VerticalSpring(IBody *body1, IBody *body2, double springCoefficient, double reposeLength) : AbstractSpring(body1, body2, springCoefficient, reposeLength){
+        }
 
-	public VerticalSpring(IPositionedApplied body1, IPositionedApplied body2) {
-		super(body1, body2);
-	}
-	
-	public VerticalSpring(IPositionedApplied body1, IPositionedApplied body2, double springCoefficient, double reposeLength) {
-		super(body1, body2, springCoefficient, reposeLength);
-	}
-
-	public Pt getVector() {
-		vector.assign(0, body1.getPosition().y - body2.getPosition().y);
-		return vector;
-	}
+        virtual Pt getVector() {
+            return Pt(0, body1->getPosition().y - body2->getPosition().y);
+        }
 };
 
 class HorizonalSpring : public AbstractSpring {
-	private Pt vector = Pt.newNil();
+    public:
+        HorizonalSpring(IBody *body1, IBody *body2) : AbstractSpring(body1, body2) {
+        }
+        
+        HorizonalSpring(IBody *body1, IBody *body2, double springCoefficient, double reposeLength) : AbstractSpring(body1, body2, springCoefficient, reposeLength) {
+        }
 
-	public HorizonalSpring(IPositionedApplied body1, IPositionedApplied body2) {
-		super(body1, body2);
-	}
-	
-	public HorizonalSpring(IPositionedApplied body1, IPositionedApplied body2, double springCoefficient, double reposeLength) {
-		super(body1, body2, springCoefficient, reposeLength);
-	}
-
-	public Pt getVector() {
-		vector.assign(body1.getPosition().x - body2.getPosition().x, 0);
-		return vector;
-	}
+        virtual Pt getVector() {
+            return Pt(body1->getPosition().x - body2->getPosition().x, 0);
+        }
 };
 
-class Friction implements IForceProvider {
-	private Pt vector = Pt.newNil();
+class Friction : public IForceProvider {
+    public:
+        virtual void applyForces(const ForceDirectedEmbedding& embedding) {
+            const std::vector<Variable *>& variables = embedding.getVariables();
 
-	public void applyForces(ForceDirectedEmbedding embedding) {
-		for (Variable variable : embedding.getVariables()) {
-			vector.assign(variable.getVelocity()).reverse();
-			double vlen = variable.getVelocity().getLength();
+            for (std::vector<Variable *>::const_iterator it = variables.begin(); it != variables.end(); it++) {
+                Variable *variable = *it;
+                Pt vector(variable->getVelocity());
+                vector.reverse();
+                double vlen = variable->getVelocity().getLength();
 
-			if (vlen != 0)
-				variable.addForce(vector, embedding.updatedFrictionCoefficient * vlen);
-		}
-	}	
+                if (vlen != 0)
+                    variable->addForce(vector, embedding.updatedFrictionCoefficient * vlen, embedding.inspected);
+            }
+        }    
 };
 
-abstract class BodyConstraint : public LimitedForceProvider {
-	protected IBody body;
-	
-	public BodyConstraint(IBody body) {
-		this->body = body;
-	}
+class BodyConstraint : public IForceProvider {
+    protected:
+        IBody *body;
 
-	public IBody getBody() {
-		return body;
-	}
+    public:
+        BodyConstraint(IBody *body) {
+            this->body = body;
+        }
+
+        virtual IBody *getBody() {
+            return body;
+        }
 };
 
 class PointConstraint : public BodyConstraint {
-	protected Pt constraint;
-	
-	protected double coefficient;
-	
-	private Pt vector = Pt.newNil();
+    protected:
+        Pt constraint;
+    
+        double coefficient;
+    
+    public:
+        PointConstraint(IBody *body, double coefficient, Pt constraint) : BodyConstraint(body) {
+            this->coefficient = coefficient;
+            this->constraint = constraint;
+        }
 
-	public PointConstraint(IBody body, double coefficient, Pt constraint) {
-		super(body);
-		this->coefficient = coefficient;
-		this->constraint = constraint;
-	}
-
-	public void applyForces(ForceDirectedEmbedding embedding) {
-		vector.assign(constraint).subtract(body.getPosition());
-		body.getVariable().addForce(vector, coefficient * vector.getLength());
-	}
+        virtual void applyForces(const ForceDirectedEmbedding& embedding) {
+            Pt vector(constraint);
+            vector.subtract(body->getPosition());
+            body->getVariable()->addForce(vector, coefficient * vector.getLength(), embedding.inspected);
+        }
 };
 
 class LineConstraint : public BodyConstraint {
-	protected Ln constraint;
-	
-	protected double coefficient;
-	
-	private Pt vector = Pt.newNil();
+    protected:
+        Ln constraint;
+    
+        double coefficient;
 
-	public LineConstraint(IBody body, double coefficient, Ln constraint) {
-		super(body);
-		this->coefficient = coefficient;
-		this->constraint = constraint;
-	}
+    public:
+        LineConstraint(IBody *body, double coefficient, Ln constraint) : BodyConstraint(body) {
+            this->coefficient = coefficient;
+            this->constraint = constraint;
+        }
 
-	public void applyForces(ForceDirectedEmbedding embedding) {
-		Pt position = body.getPosition();
-		vector.assign(constraint.getClosestPoint(position)).subtract(position);
-		body.getVariable().addForce(vector, coefficient * vector.getLength());
-	}
+        virtual void applyForces(const ForceDirectedEmbedding& embedding) {
+            Pt position = body->getPosition();
+            Pt vector(constraint.getClosestPoint(position));
+            vector.subtract(position);
+            body->getVariable()->addForce(vector, coefficient * vector.getLength(), embedding.inspected);
+        }
 };
 
 class CircleConstraint : public BodyConstraint {
-	protected Cc constraint;
-	
-	protected double coefficient;
-	
-	private Pt vector = Pt.newNil();
+    protected:
+        Cc constraint;
+    
+    protected:
+        double coefficient;
+    
+    public:
+        CircleConstraint(IBody *body, double coefficient, Cc constraint) : BodyConstraint(body) {
+            this->coefficient = coefficient;
+            this->constraint = constraint;
+        }
 
-	public CircleConstraint(IBody body, double coefficient, Cc constraint) {
-		super(body);
-		this->coefficient = coefficient;
-		this->constraint = constraint;
-	}
+        virtual void applyForces(const ForceDirectedEmbedding& embedding) {
+            Pt position = body->getPosition();
+            Pt vector(constraint.origin);
+            vector.subtract(position);
+            double power = coefficient * (constraint.origin.getDistance(position) - constraint.radius);
 
-	public void applyForces(ForceDirectedEmbedding embedding) {
-		Pt position = body.getPosition();
-		vector.assign(constraint.origin).subtract(position);
-		double power = coefficient * (constraint.origin.getDistance(position) - constraint.radius);
-
-		body.getVariable().addForce(vector, power);
-	}
+            body->getVariable()->addForce(vector, power, embedding.inspected);
+        }
 };
-*/
 
 #endif

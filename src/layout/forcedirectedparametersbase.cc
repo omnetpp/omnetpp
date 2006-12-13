@@ -1,5 +1,5 @@
 //=========================================================================
-//  GEOMETRY.CC - part of
+//  FORCEDIRECTEDPARAMETERSBASE.H - part of
 //                  OMNeT++/OMNEST
 //           Discrete System Simulation in C++
 //
@@ -12,10 +12,4 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include "geometry.h"
-
-static double zero = 0;
-
-double NaN = zero / zero;
-
-double POSITIVE_INFINITY = 1 / zero;
+#include "forcedirectedparametersbase.h"

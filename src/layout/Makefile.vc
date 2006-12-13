@@ -12,7 +12,7 @@ CFLAGS=$(CFLAGS) /DWIN32_DLL
 #
 COPTS=$(CFLAGS) -I. -I../common -I$(OMNETPP_INCL_DIR) /Fd"layout.pdb"
 
-OBJS= geometry.obj forcedirectedembedding.obj forcedirectedparameters.obj
+OBJS= geometry.obj forcedirectedembedding.obj forcedirectedparametersbase.obj forcedirectedparameters.obj
 LIBS= layout.lib ../common/common.lib
 
 #
@@ -26,12 +26,16 @@ LIBS= layout.lib ../common/common.lib
 #
 # Targets (TBD: build dll)
 #
-all : layout.lib
+all : layout.lib layouttool.exe
 
 layout.lib : $(OBJS)
 	$(AR) /out:layout.lib $(OBJS)
 	copy layout.lib $(OMNETPP_LIB_DIR:/=\)
 	- copy /b layout.pdb $(OMNETPP_LIB_DIR:/=\) 2>nul
+
+layouttool.exe : layouttool.obj $(LIBS)
+	$(LINK) $(LDFLAGS) /nologo /out:layouttool.exe layouttool.obj $(LIBS)
+	copy layouttool.exe $(OMNETPP_BIN_DIR:/=\)
 
 depend:
 	$(MAKEDEPEND) -I. -fMakefile.vc -- *.cc
@@ -45,9 +49,19 @@ clean:
 forcedirectedembedding.obj: forcedirectedembedding.cc \
   forcedirectedembedding.h \
   geometry.h \
-  forcedirectedparameters.h
+  forcedirectedparametersbase.h
 forcedirectedparameters.obj: forcedirectedparameters.cc \
   forcedirectedparameters.h \
+  geometry.h \
+  forcedirectedparametersbase.h \
+  forcedirectedembedding.h
+forcedirectedparametersbase.obj: forcedirectedparametersbase.cc \
+  forcedirectedparametersbase.h \
   geometry.h
 geometry.obj: geometry.cc \
   geometry.h
+layouttool.obj: layouttool.cc \
+  forcedirectedparameters.h \
+  forcedirectedembedding.h \
+  geometry.h \
+  forcedirectedparametersbase.h
