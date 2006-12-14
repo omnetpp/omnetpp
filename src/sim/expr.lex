@@ -35,6 +35,7 @@ E  [Ee][+-]?{D}+
 S  [ \t\v\n\r\f]
 
 %x cplusplusbody
+%x stringliteral
 
 /* the following option keeps isatty() out */
 %option never-interactive
@@ -42,6 +43,7 @@ S  [ \t\v\n\r\f]
 %{
 #include <string.h>
 #include "expryydefs.h"
+#include "cexception.h"
 #include "expr.tab.h"
 
 #define yylval expryylval
@@ -80,13 +82,25 @@ static char textbuf[TEXTBUF_LEN];
 "index"                  { count(); return INDEX_; }
 "xmldoc"                 { count(); return XMLDOC_; }
 
-{L}({L}|{D})*           { count(); yylval = opp_strdup(yytext); return NAME; }
-{D}+                    { count(); yylval = opp_strdup(yytext); return INTCONSTANT; }
-0[xX]{X}+               { count(); yylval = opp_strdup(yytext); return INTCONSTANT; }
-{D}+{E}                 { count(); yylval = opp_strdup(yytext); return REALCONSTANT; }
-{D}*"."{D}+({E})?       { count(); yylval = opp_strdup(yytext); return REALCONSTANT; }
+{L}({L}|{D})*            { count(); yylval = opp_strdup(yytext); return NAME; }
+{D}+                     { count(); yylval = opp_strdup(yytext); return INTCONSTANT; }
+0[xX]{X}+                { count(); yylval = opp_strdup(yytext); return INTCONSTANT; }
+{D}+{E}                  { count(); yylval = opp_strdup(yytext); return REALCONSTANT; }
+{D}*"."{D}+({E})?        { count(); yylval = opp_strdup(yytext); return REALCONSTANT; }
 
-\"[^\"]*\"              { count(); yylval = opp_strdup(yytext); return STRINGCONSTANT; }
+\"                       { count(); BEGIN(stringliteral);/*
+                            FIXME FIXME FIXME FIXME!!!!!!
+                               (1) extendCount() should append to yytext not overwrite it!
+                               (2) shouldn't we process escape sequences right here? (probably NOT though)
+                         */ }
+<stringliteral>{
+      \n                 { throw new cRuntimeError("Error parsing expression: unterminated string literal (append backslash to line for multi-line strings)"); }
+      \\\n               { extendCount(); /* line continuation */ }
+      \\\"               { extendCount(); /* qouted quote */ }
+      \\[^\n\"]          { extendCount(); /* qouted char */ }
+      [^\\\n\"]+         { extendCount(); /* character inside string literal */ }
+      \"                 { extendCount(); yylval = opp_strdup(yytext); BEGIN(INITIAL); return STRINGCONSTANT; /* closing quote */ }
+}
 
 ","                     { count(); return (','); }
 ":"                     { count(); return (':'); }
