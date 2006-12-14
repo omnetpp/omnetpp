@@ -1,3 +1,20 @@
+/*==================================================
+ * File: ned1.lex
+ *
+ *  Lexical analyser for OMNeT++ NED-1.
+ *
+ *  Author: Andras Varga
+ *
+ ==================================================*/
+
+/*--------------------------------------------------------------*
+  Copyright (C) 1992,2005 Andras Varga
+
+  This file is distributed WITHOUT ANY WARRANTY. See the file
+  `license' for details on this and other legal matters.
+*--------------------------------------------------------------*/
+
+
 D  [0-9]
 L  [a-zA-Z_]
 X  [0-9a-fA-F]
@@ -5,32 +22,15 @@ E  [Ee][+-]?{D}+
 S  [ \t\v\n\r\f]
 
 %x cplusplusbody
+%x stringliteral
 
 /* the following option keeps isatty() out */
 %option never-interactive
 
 %{
-/*==================================================
- * File: ned.lex
- *
- *  Lexical analyser for OMNeT++ NED.
- *
- *  Author: Andras Varga
- *
- *  Based on code from nedc.
- *
- ==================================================*/
-
-/*--------------------------------------------------------------*
-  Copyright (C) 1992,2002 Andras Varga
-
-  This file is distributed WITHOUT ANY WARRANTY. See the file
-  `license' for details on this and other legal matters.
-*--------------------------------------------------------------*/
-
-
 #include <string.h>
 #include "nedyydefs.h"
+#include "nederror.h"
 #include "ned1.tab.h"
 
 #define yylloc ned1yylloc
@@ -128,9 +128,17 @@ static char textbuf[TEXTBUF_LEN];
 0[xX]{X}+               { count(); return INTCONSTANT; }
 {D}+{E}                 { count(); return REALCONSTANT; }
 {D}*"."{D}+({E})?       { count(); return REALCONSTANT; }
-
-\"[^\"]*\"              { count(); return STRINGCONSTANT; }
 \'[^\']\'               { count(); return CHARCONSTANT; }
+
+\"                      { count(); BEGIN(stringliteral); }
+<stringliteral>{
+      \n                { throw new NEDException("unterminated string literal (append backslash to line for multi-line strings)"); }
+      \\\n              { extendCount(); /* line continuation */ }
+      \\\"              { extendCount(); /* qouted quote */ }
+      \\[^\n\"]         { extendCount(); /* qouted char */ }
+      [^\\\n\"]+        { extendCount(); /* character inside string literal */ }
+      \"                { extendCount(); BEGIN(INITIAL); return STRINGCONSTANT; /* closing quote */ }
+}
 
 "{{"                    { count(); BEGIN(cplusplusbody); }
 <cplusplusbody>"}}"     { extendCount(); BEGIN(INITIAL); return CPLUSPLUSBODY; }
@@ -139,18 +147,18 @@ static char textbuf[TEXTBUF_LEN];
 
 "++"                    { count(); return PLUSPLUS; }
 
-";"                     { count(); return (';'); }
-","                     { count(); return (','); }
-":"                     { count(); return (':'); }
-"="                     { count(); return ('='); }
-"("                     { count(); return ('('); }
-")"                     { count(); return (')'); }
-"["                     { count(); return ('['); }
-"]"                     { count(); return (']'); }
-"{"                     { count(); return ('{'); }
-"}"                     { count(); return ('}'); }
-"."                     { count(); return ('.'); }
-"?"                     { count(); return ('?'); }
+";"                     { count(); return ';'; }
+","                     { count(); return ','; }
+":"                     { count(); return ':'; }
+"="                     { count(); return '='; }
+"("                     { count(); return '('; }
+")"                     { count(); return ')'; }
+"["                     { count(); return '['; }
+"]"                     { count(); return ']'; }
+"{"                     { count(); return '{'; }
+"}"                     { count(); return '}'; }
+"."                     { count(); return '.'; }
+"?"                     { count(); return '?'; }
 
 "||"                    { count(); return OR; }
 "&&"                    { count(); return AND; }
