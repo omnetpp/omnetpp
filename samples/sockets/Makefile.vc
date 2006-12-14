@@ -27,7 +27,7 @@ EXT_DIR_OBJS=
 # time stamps of other directories (used as dependency)
 EXT_DIR_TSTAMPS=
 
-# Additional libraries (-L option -l option)
+# Additional libraries (-L, -l, -t options)
 LIBS=
 
 #------------------------------------------------------------------------------
@@ -53,8 +53,9 @@ KERNEL_LIBS= $(KERNEL_LIBS) $(MPI_LIBS)
 # Simulation kernel and user interface libraries
 OMNETPP_LIBS=/libpath:$(OMNETPP_LIB_DIR) $(USERIF_LIBS) $(KERNEL_LIBS) $(SYS_LIBS)
 
-COPTS=$(CFLAGS) $(INCLUDE_PATH) -I$(OMNETPP_INCL_DIR)
-NEDCOPTS=$(CFLAGS) $(NEDCFLAGS) $(INCLUDE_PATH) -I$(OMNETPP_INCL_DIR)
+COPTS=$(CFLAGS)  $(INCLUDE_PATH) -I$(OMNETPP_INCL_DIR)
+NEDCOPTS=$(COPTS) $(NEDCFLAGS)
+MSGCOPTS= $(INCLUDE_PATH)
 
 #------------------------------------------------------------------------------
 # object files in this directory
@@ -64,8 +65,8 @@ OBJS= httpmsg_m.obj netpkt_m.obj telnetpkt_m.obj cloud.obj csocketrtscheduler.ob
 GENERATEDHEADERS= httpmsg_m.h netpkt_m.h telnetpkt_m.h
 
 # subdirectories to recurse into
-SUBDIRS=
-SUBDIR_TARGETS=
+SUBDIRS= 
+SUBDIR_TARGETS= 
 
 $(TARGET): $(OBJS) $(EXTRA_OBJS) $(EXT_DIR_TSTAMPS)  Makefile.vc
 	$(LINK) $(LDFLAGS) $(OBJS) $(EXTRA_OBJS) $(EXT_DIR_OBJS) $(LIBS) $(OMNETPP_LIBS) /out:$(TARGET)
@@ -78,50 +79,50 @@ $(OBJS) : $(GENERATEDHEADERS)
 
 subdirs: $(SUBDIR_TARGETS)
 
-httpmsg_m.obj: httpmsg_m.cpp
-	$(CXX) -c $(NEDCOPTS) /Tp httpmsg_m.cpp
+httpmsg_m.obj: httpmsg_m.cc
+	$(CXX) -c $(NEDCOPTS) /Tp httpmsg_m.cc
 
-httpmsg_m.cpp httpmsg_m.h: httpmsg.msg
-	$(MSGC:/=\) -s _m.cpp $(INCLUDE_PATH) httpmsg.msg
+httpmsg_m.cc httpmsg_m.h: httpmsg.msg
+	$(MSGC:/=\) -s _m.cc $(MSGCOPTS) httpmsg.msg
 
-netpkt_m.obj: netpkt_m.cpp
-	$(CXX) -c $(NEDCOPTS) /Tp netpkt_m.cpp
+netpkt_m.obj: netpkt_m.cc
+	$(CXX) -c $(NEDCOPTS) /Tp netpkt_m.cc
 
-netpkt_m.cpp netpkt_m.h: netpkt.msg
-	$(MSGC:/=\) -s _m.cpp $(INCLUDE_PATH) netpkt.msg
+netpkt_m.cc netpkt_m.h: netpkt.msg
+	$(MSGC:/=\) -s _m.cc $(MSGCOPTS) netpkt.msg
 
-telnetpkt_m.obj: telnetpkt_m.cpp
-	$(CXX) -c $(NEDCOPTS) /Tp telnetpkt_m.cpp
+telnetpkt_m.obj: telnetpkt_m.cc
+	$(CXX) -c $(NEDCOPTS) /Tp telnetpkt_m.cc
 
-telnetpkt_m.cpp telnetpkt_m.h: telnetpkt.msg
-	$(MSGC:/=\) -s _m.cpp $(INCLUDE_PATH) telnetpkt.msg
+telnetpkt_m.cc telnetpkt_m.h: telnetpkt.msg
+	$(MSGC:/=\) -s _m.cc $(MSGCOPTS) telnetpkt.msg
 
-cloud.obj: cloud.cpp
-	$(CXX) -c $(COPTS) /Tp cloud.cpp
+cloud.obj: cloud.cc
+	$(CXX) -c $(COPTS) /Tp cloud.cc
 
-csocketrtscheduler.obj: csocketrtscheduler.cpp
-	$(CXX) -c $(COPTS) /Tp csocketrtscheduler.cpp
+csocketrtscheduler.obj: csocketrtscheduler.cc
+	$(CXX) -c $(COPTS) /Tp csocketrtscheduler.cc
 
-exthttpclient.obj: exthttpclient.cpp
-	$(CXX) -c $(COPTS) /Tp exthttpclient.cpp
+exthttpclient.obj: exthttpclient.cc
+	$(CXX) -c $(COPTS) /Tp exthttpclient.cc
 
-exttelnetclient.obj: exttelnetclient.cpp
-	$(CXX) -c $(COPTS) /Tp exttelnetclient.cpp
+exttelnetclient.obj: exttelnetclient.cc
+	$(CXX) -c $(COPTS) /Tp exttelnetclient.cc
 
-httpclient.obj: httpclient.cpp
-	$(CXX) -c $(COPTS) /Tp httpclient.cpp
+httpclient.obj: httpclient.cc
+	$(CXX) -c $(COPTS) /Tp httpclient.cc
 
-httpserver.obj: httpserver.cpp
-	$(CXX) -c $(COPTS) /Tp httpserver.cpp
+httpserver.obj: httpserver.cc
+	$(CXX) -c $(COPTS) /Tp httpserver.cc
 
-queuebase.obj: queuebase.cpp
-	$(CXX) -c $(COPTS) /Tp queuebase.cpp
+queuebase.obj: queuebase.cc
+	$(CXX) -c $(COPTS) /Tp queuebase.cc
 
-telnetclient.obj: telnetclient.cpp
-	$(CXX) -c $(COPTS) /Tp telnetclient.cpp
+telnetclient.obj: telnetclient.cc
+	$(CXX) -c $(COPTS) /Tp telnetclient.cc
 
-telnetserver.obj: telnetserver.cpp
-	$(CXX) -c $(COPTS) /Tp telnetserver.cpp
+telnetserver.obj: telnetserver.cc
+	$(CXX) -c $(COPTS) /Tp telnetserver.cc
 
 
 #doc: neddoc doxy
@@ -137,36 +138,36 @@ generateheaders: $(GENERATEDHEADERS)
 
 clean:
 	-del *.obj .tstamp *.idb *.pdb *.ilk *.exp $(TARGET) $(TARGET:.exe=.lib) $(TARGET:.dll=.lib) 2>NUL
-	-del *_n.cpp *_n.h *_m.cpp *_m.h 2>NUL
+	-del *_n.cc *_n.h *_m.cc *_m.h 2>NUL
 	-del *.vec *.sca 2>NUL
 	-for %%i in ( $(SUBDIRS) ) do cd %%i && echo [clean in %%i] && nmake /nologo /f Makefile.vc clean && cd .. || exit /b 1
 
 depend:
-	$(MAKEDEPEND) $(INCLUDE_PATH) -f Makefile.vc -- *.cpp
+	$(MAKEDEPEND) $(INCLUDE_PATH) -f Makefile.vc -- *.cc
 	if not "$(SUBDIRS)"=="" for %%i in ( $(SUBDIRS) ) do cd %%i && echo [depend in %%i] && nmake /nologo /f Makefile.vc depend && cd .. || exit /b 1
 
 makefiles:
-	opp_nmakemake -f  -N
+	opp_nmakemake -f  -N 
 	if not "$(SUBDIRS)"=="" for %%i in ( $(SUBDIRS) ) do cd %%i && echo [makemake in %%i] && nmake /nologo /f Makefile.vc makefiles && cd .. || exit /b 1
 
 # "re-makemake" is a deprecated, historic name of the above target
 re-makemake: makefiles
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
-cloud.obj: cloud.cpp
-csocketrtscheduler.obj: csocketrtscheduler.cpp \
+cloud.obj: cloud.cc
+csocketrtscheduler.obj: csocketrtscheduler.cc \
   csocketrtscheduler.h
-exthttpclient.obj: exthttpclient.cpp \
+exthttpclient.obj: exthttpclient.cc \
   csocketrtscheduler.h
-exttelnetclient.obj: exttelnetclient.cpp \
+exttelnetclient.obj: exttelnetclient.cc \
   csocketrtscheduler.h
-httpclient.obj: httpclient.cpp
-httpserver.obj: httpserver.cpp \
+httpclient.obj: httpclient.cc
+httpserver.obj: httpserver.cc \
   httpserver.h \
   queuebase.h
-queuebase.obj: queuebase.cpp \
+queuebase.obj: queuebase.cc \
   queuebase.h
-telnetclient.obj: telnetclient.cpp
-telnetserver.obj: telnetserver.cpp \
+telnetclient.obj: telnetclient.cc
+telnetserver.obj: telnetserver.cc \
   telnetserver.h \
   queuebase.h

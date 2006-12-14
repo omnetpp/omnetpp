@@ -2,8 +2,8 @@
 #
 # Toplevel makefile for OMNeT++ libraries and programs
 #
-# platform: Windows NT, Windows 2000, XP
-# compiler: MSVC 6.0/7.x
+# platform: Windows (9x versions not supported)
+# compiler: Microsoft Visual C++ 7.0 or later
 #
 #=====================================================================
 
@@ -17,7 +17,7 @@ MAKEFILE=/F Makefile.vc
 
 # Win9x, ME not supported (shell is crippled)
 !if "$(OS)"!="Windows_NT"
-!error This makefile only works on NT kernel (NT4.0, Win2K, XP)
+!error This makefile only works on NT kernel (NT4.0, Win2K, XP, Vista)
 !endif
 
 # envir_ilib only needed if dlls are to be built
@@ -66,7 +66,7 @@ common layout eventlog scave nedxml sim envir cmdenv tkenv nedc : ver_h utils
 layout eventlog scave nedxml sim envir cmdenv : common
 nedc : nedxml
 sim : nedc
-$(SAMPLES) : rundemo configsamples
+$(SAMPLES) : rundemo
 
 #
 # Core libraries and programs
@@ -128,17 +128,6 @@ check-env:
 ver_h:
 	@cd /d $(OMNETPP_SRC_DIR:/=\)\utils && copy ver.h.base ver.h && echo #define OMNETPP_RELEASE "$(OMNETPP_VERSION)" >>ver.h && echo #define OMNETPP_EDITION "$(OMNETPP_EDITION)" >>ver.h
 
-configsamples:
-	@echo ===== Configuring .dsp files for samples =====
-	cd /d $(OMNETPP_SAMPLES_DIR:/=\) && cc2cpp.bat
-	for %%i in ( $(SAMPLES) ) do \
-	    cd /d $(OMNETPP_SAMPLES_DIR:/=\)\%%i && \
-	    $(REPLACE:/=\) %%i.dsp.in - "@OMNETPP_INCL_DIR@" "$(OMNETPP_INCL_DIR)" | \
-	    $(REPLACE:/=\) -          - "@OMNETPP_LIB_DIR@"  "$(OMNETPP_LIB_DIR)"  | \
-	    $(REPLACE:/=\) -          - "@OMNETPP_BIN_DIR@"  "$(OMNETPP_BIN_DIR:/=\)"  | \
-	    $(REPLACE:/=\) -          - "@XML_LIBS@"         "$(XML_LIBS)" | \
-	    $(REPLACE:/=\) -    %%i.dsp "@TK_LIBS@"          "$(TK_LIBS)"
-
 clean:
 	-for %%i in ( $(BASE) $(JNILIBS) ) do \
 	    cd /d $(OMNETPP_SRC_DIR:/=\)\%%i && $(MAKE) $(MOPTS) $(MAKEFILE) clean
@@ -161,9 +150,8 @@ depend:
 	    cd /d $(OMNETPP_SAMPLES_DIR:/=\)\%%i && $(MAKE) $(MOPTS) $(MAKEFILE) depend
 
 makefiles:
-	cd /d $(OMNETPP_SAMPLES_DIR:/=\) && cc2cpp.bat
 	for %%i in ( $(SAMPLES) ) do \
-	    cd /d $(OMNETPP_SAMPLES_DIR:/=\)\%%i && call opp_nmakemake -f
+	    cd /d $(OMNETPP_SAMPLES_DIR:/=\)\%%i && call opp_nmakemake -f -N && nmake -f Makefile.vc depend
 
 reminder:
 !IF "$(TCL_LIBRARY)" == ""

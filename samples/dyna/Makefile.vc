@@ -27,7 +27,7 @@ EXT_DIR_OBJS=
 # time stamps of other directories (used as dependency)
 EXT_DIR_TSTAMPS=
 
-# Additional libraries (-L option -l option)
+# Additional libraries (-L, -l, -t options)
 LIBS=
 
 #------------------------------------------------------------------------------
@@ -53,8 +53,9 @@ KERNEL_LIBS= $(KERNEL_LIBS) $(MPI_LIBS)
 # Simulation kernel and user interface libraries
 OMNETPP_LIBS=/libpath:$(OMNETPP_LIB_DIR) $(USERIF_LIBS) $(KERNEL_LIBS) $(SYS_LIBS)
 
-COPTS=$(CFLAGS) $(INCLUDE_PATH) -I$(OMNETPP_INCL_DIR)
-NEDCOPTS=$(CFLAGS) $(NEDCFLAGS) $(INCLUDE_PATH) -I$(OMNETPP_INCL_DIR)
+COPTS=$(CFLAGS)  $(INCLUDE_PATH) -I$(OMNETPP_INCL_DIR)
+NEDCOPTS=$(COPTS) $(NEDCFLAGS)
+MSGCOPTS= $(INCLUDE_PATH)
 
 #------------------------------------------------------------------------------
 # object files in this directory
@@ -64,8 +65,8 @@ OBJS= dynapacket_m.obj client.obj server.obj servproc.obj switch.obj
 GENERATEDHEADERS= dynapacket_m.h
 
 # subdirectories to recurse into
-SUBDIRS=
-SUBDIR_TARGETS=
+SUBDIRS= 
+SUBDIR_TARGETS= 
 
 $(TARGET): $(OBJS) $(EXTRA_OBJS) $(EXT_DIR_TSTAMPS)  Makefile.vc
 	$(LINK) $(LDFLAGS) $(OBJS) $(EXTRA_OBJS) $(EXT_DIR_OBJS) $(LIBS) $(OMNETPP_LIBS) /out:$(TARGET)
@@ -78,23 +79,23 @@ $(OBJS) : $(GENERATEDHEADERS)
 
 subdirs: $(SUBDIR_TARGETS)
 
-dynapacket_m.obj: dynapacket_m.cpp
-	$(CXX) -c $(NEDCOPTS) /Tp dynapacket_m.cpp
+dynapacket_m.obj: dynapacket_m.cc
+	$(CXX) -c $(NEDCOPTS) /Tp dynapacket_m.cc
 
-dynapacket_m.cpp dynapacket_m.h: dynapacket.msg
-	$(MSGC:/=\) -s _m.cpp $(INCLUDE_PATH) dynapacket.msg
+dynapacket_m.cc dynapacket_m.h: dynapacket.msg
+	$(MSGC:/=\) -s _m.cc $(MSGCOPTS) dynapacket.msg
 
-client.obj: client.cpp
-	$(CXX) -c $(COPTS) /Tp client.cpp
+client.obj: client.cc
+	$(CXX) -c $(COPTS) /Tp client.cc
 
-server.obj: server.cpp
-	$(CXX) -c $(COPTS) /Tp server.cpp
+server.obj: server.cc
+	$(CXX) -c $(COPTS) /Tp server.cc
 
-servproc.obj: servproc.cpp
-	$(CXX) -c $(COPTS) /Tp servproc.cpp
+servproc.obj: servproc.cc
+	$(CXX) -c $(COPTS) /Tp servproc.cc
 
-switch.obj: switch.cpp
-	$(CXX) -c $(COPTS) /Tp switch.cpp
+switch.obj: switch.cc
+	$(CXX) -c $(COPTS) /Tp switch.cc
 
 
 #doc: neddoc doxy
@@ -110,23 +111,23 @@ generateheaders: $(GENERATEDHEADERS)
 
 clean:
 	-del *.obj .tstamp *.idb *.pdb *.ilk *.exp $(TARGET) $(TARGET:.exe=.lib) $(TARGET:.dll=.lib) 2>NUL
-	-del *_n.cpp *_n.h *_m.cpp *_m.h 2>NUL
+	-del *_n.cc *_n.h *_m.cc *_m.h 2>NUL
 	-del *.vec *.sca 2>NUL
 	-for %%i in ( $(SUBDIRS) ) do cd %%i && echo [clean in %%i] && nmake /nologo /f Makefile.vc clean && cd .. || exit /b 1
 
 depend:
-	$(MAKEDEPEND) $(INCLUDE_PATH) -f Makefile.vc -- *.cpp
+	$(MAKEDEPEND) $(INCLUDE_PATH) -f Makefile.vc -- *.cc
 	if not "$(SUBDIRS)"=="" for %%i in ( $(SUBDIRS) ) do cd %%i && echo [depend in %%i] && nmake /nologo /f Makefile.vc depend && cd .. || exit /b 1
 
 makefiles:
-	opp_nmakemake -f  -N
+	opp_nmakemake -f  -N 
 	if not "$(SUBDIRS)"=="" for %%i in ( $(SUBDIRS) ) do cd %%i && echo [makemake in %%i] && nmake /nologo /f Makefile.vc makefiles && cd .. || exit /b 1
 
 # "re-makemake" is a deprecated, historic name of the above target
 re-makemake: makefiles
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
-client.obj: client.cpp
-server.obj: server.cpp
-servproc.obj: servproc.cpp
-switch.obj: switch.cpp
+client.obj: client.cc
+server.obj: server.cc
+servproc.obj: servproc.cc
+switch.obj: switch.cc
