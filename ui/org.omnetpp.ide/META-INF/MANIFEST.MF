@@ -1,6 +1,6 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: Ide Plug-in
+Bundle-Name: OMNEST/OMNeT++ Integrated Development Environment
 Bundle-SymbolicName: org.omnetpp.ide;singleton:=true
 Bundle-Version: 4.0.0
 Bundle-Activator: org.omnetpp.ide.Activator

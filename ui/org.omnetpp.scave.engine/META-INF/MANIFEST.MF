@@ -1,6 +1,6 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: Scave Processing Engine
+Bundle-Name: OMNEST/OMNeT++ Scalar / Vector File - Native Index Builder
 Bundle-SymbolicName: org.omnetpp.scave.engine
 Bundle-Version: 4.0.0
 Bundle-Localization: plugin

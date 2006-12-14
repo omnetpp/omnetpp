@@ -9,7 +9,7 @@
 -->
 
 <plugin
-    name = "OMNeT++/OMNEST Scave Model Plugin"
+    name = "OMNEST/OMNeT++ Scalar / Vector Chart Data Model"
     id = "org.omnetpp.scave.model"
     version = "4.0.0"
     provider-name = "OpenSim Ltd."
