@@ -62,6 +62,8 @@ clean:
 	- del *.ilk *.idb *.pdb 2> nul
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
+displaystring.obj: displaystring.cc \
+  displaystring.h
 exception.obj: exception.cc \
   exception.h
 filereader.obj: filereader.cc \

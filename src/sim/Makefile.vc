@@ -181,6 +181,7 @@ cboolpar.obj: cboolpar.cc \
   ../../include/cparvalue.h \
   ../../include/cpar.h \
   ../../include/cexpression.h \
+  ../../include/cstringpool.h \
   ../../include/cexception.h \
   ../../include/cownedobject.h \
   ../../include/cenvir.h \
@@ -189,7 +190,6 @@ cboolpar.obj: cboolpar.cc \
   ../../include/cnamedobject.h \
   ../../include/errmsg.h \
   ../../include/cobject.h \
-  ../../include/cstringpool.h \
   ../../include/cvisitor.h \
   ../../include/regmacros.h \
   ../../include/onstartup.h \
@@ -487,6 +487,7 @@ cdoublepar.obj: cdoublepar.cc \
   ../../include/cparvalue.h \
   ../../include/cpar.h \
   ../../include/cexpression.h \
+  ../../include/cstringpool.h \
   ../../include/cexception.h \
   ../../include/cownedobject.h \
   ../../include/cenvir.h \
@@ -495,7 +496,6 @@ cdoublepar.obj: cdoublepar.cc \
   ../../include/cnamedobject.h \
   ../../include/errmsg.h \
   ../../include/cobject.h \
-  ../../include/cstringpool.h \
   ../../include/cvisitor.h \
   ../../include/regmacros.h \
   ../../include/onstartup.h \
@@ -512,6 +512,7 @@ cdynamicexpression.obj: cdynamicexpression.cc \
   ../../include/cenvir.h \
   ../../include/cmodule.h \
   ../../include/cexpression.h \
+  ../../include/cstringpool.h \
   ../../include/cobject.h \
   ../../include/defs.h \
   ../../include/util.h \
@@ -524,7 +525,6 @@ cdynamicexpression.obj: cdynamicexpression.cc \
   ../../include/carray.h \
   ../../include/cclassfactory.h \
   ../../include/cnamedobject.h \
-  ../../include/cstringpool.h \
   ../../include/opp_string.h \
   ../../include/ccomponent.h \
   ../../include/cgate.h \
@@ -787,6 +787,7 @@ clongpar.obj: clongpar.cc \
   ../../include/cparvalue.h \
   ../../include/cpar.h \
   ../../include/cexpression.h \
+  ../../include/cstringpool.h \
   ../../include/cexception.h \
   ../../include/cownedobject.h \
   ../../include/cenvir.h \
@@ -795,7 +796,6 @@ clongpar.obj: clongpar.cc \
   ../../include/cnamedobject.h \
   ../../include/errmsg.h \
   ../../include/cobject.h \
-  ../../include/cstringpool.h \
   ../../include/cvisitor.h \
   ../../include/regmacros.h \
   ../../include/onstartup.h \
@@ -1105,6 +1105,7 @@ cparvalue.obj: cparvalue.cc \
   ../../include/cxmlpar.h \
   ../../include/cpar.h \
   ../../include/cexpression.h \
+  ../../include/cstringpool.h \
   ../../include/cexception.h \
   ../../include/cownedobject.h \
   ../../include/cenvir.h \
@@ -1113,7 +1114,6 @@ cparvalue.obj: cparvalue.cc \
   ../../include/cnamedobject.h \
   ../../include/errmsg.h \
   ../../include/cobject.h \
-  ../../include/cstringpool.h \
   ../../include/cvisitor.h \
   ../../include/regmacros.h \
   ../../include/onstartup.h \
@@ -1131,7 +1131,6 @@ cproperties.obj: cproperties.cc \
   ../../include/defs.h \
   ../../include/globals.h \
   ../../include/cobject.h \
-  ../../include/cstringpool.h \
   ../../include/onstartup.h \
   ../../include/carray.h \
   ../../include/cclassfactory.h \
@@ -1141,6 +1140,7 @@ cproperties.obj: cproperties.cc \
   ../../include/cnamedobject.h \
   ../../include/cexception.h \
   ../../include/errmsg.h \
+  ../../include/cstringpool.h \
   ../../include/opp_string.h \
   ../../include/cvisitor.h \
   ../../include/regmacros.h \
@@ -1378,6 +1378,7 @@ cstringpar.obj: cstringpar.cc \
   ../../include/cparvalue.h \
   ../../include/cpar.h \
   ../../include/cexpression.h \
+  ../../include/cstringpool.h \
   ../../include/cexception.h \
   ../../include/cownedobject.h \
   ../../include/cenvir.h \
@@ -1386,7 +1387,6 @@ cstringpar.obj: cstringpar.cc \
   ../../include/cnamedobject.h \
   ../../include/errmsg.h \
   ../../include/cobject.h \
-  ../../include/cstringpool.h \
   ../../include/cvisitor.h \
   ../../include/regmacros.h \
   ../../include/onstartup.h \
@@ -1536,6 +1536,7 @@ cxmlpar.obj: cxmlpar.cc \
   ../../include/cparvalue.h \
   ../../include/cpar.h \
   ../../include/cexpression.h \
+  ../../include/cstringpool.h \
   ../../include/cexception.h \
   ../../include/cownedobject.h \
   ../../include/cenvir.h \
@@ -1544,7 +1545,6 @@ cxmlpar.obj: cxmlpar.cc \
   ../../include/cnamedobject.h \
   ../../include/errmsg.h \
   ../../include/cobject.h \
-  ../../include/cstringpool.h \
   ../../include/cvisitor.h \
   ../../include/regmacros.h \
   ../../include/onstartup.h \
@@ -1594,6 +1594,7 @@ expr.tab.obj: expr.tab.cc \
   ../../include/cnedfunction.h \
   ../../include/nedsupport.h \
   ../../include/cexpression.h \
+  ../../include/cstringpool.h \
   ../../include/cobject.h \
   ../../include/defs.h \
   ../../include/util.h \
@@ -1604,7 +1605,6 @@ expr.tab.obj: expr.tab.cc \
   ../../include/cownedobject.h \
   ../../include/cenvir.h \
   ../../include/cnamedobject.h \
-  ../../include/cstringpool.h \
   ../../include/opp_string.h \
   ../../include/carray.h \
   ../../include/cclassfactory.h
@@ -1637,6 +1637,7 @@ lex.expryy.obj: lex.expryy.cc \
   ../../include/util.h \
   ../../include/cdynamicexpression.h \
   ../../include/cexpression.h \
+  ../../include/cstringpool.h \
   ../../include/cobject.h \
   ../../include/defs.h \
   ../../include/cvisitor.h \
@@ -1662,6 +1663,7 @@ nedsupport.obj: nedsupport.cc \
   ../../include/cmodule.h \
   ../../include/nedsupport.h \
   ../../include/cexpression.h \
+  ../../include/cstringpool.h \
   ../../include/cobject.h \
   ../../include/defs.h \
   ../../include/util.h \
@@ -1674,7 +1676,6 @@ nedsupport.obj: nedsupport.cc \
   ../../include/carray.h \
   ../../include/cclassfactory.h \
   ../../include/cnamedobject.h \
-  ../../include/cstringpool.h \
   ../../include/opp_string.h \
   ../../include/ccomponent.h \
   ../../include/cgate.h \
@@ -1916,6 +1917,7 @@ netbuilder/cexpressionbuilder.obj: netbuilder/cexpressionbuilder.cc \
   ../../include/cdynamicexpression.h \
   ../../include/cexception.h \
   ../../include/cexpression.h \
+  ../../include/cstringpool.h \
   ../../include/cobject.h \
   ../../include/defs.h \
   ../../include/util.h \
@@ -1930,7 +1932,6 @@ netbuilder/cexpressionbuilder.obj: netbuilder/cexpressionbuilder.cc \
   ../../include/cclassfactory.h \
   ../../include/cenvir.h \
   ../../include/cnamedobject.h \
-  ../../include/cstringpool.h \
   ../../include/cpar.h
 netbuilder/cneddeclaration.obj: netbuilder/cneddeclaration.cc \
   netbuilder/cneddeclaration.h \

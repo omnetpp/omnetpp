@@ -31,6 +31,7 @@ E  [Ee][+-]?{D}+
 S  [ \t\v\n\r\f]
 
 %x cplusplusbody
+%x stringliteral
 
 /* the following option keeps isatty() out */
 %option never-interactive
@@ -38,6 +39,7 @@ S  [ \t\v\n\r\f]
 %{
 #include <string.h>
 #include "nedyydefs.h"
+#include "nederror.h"
 #include "msg2.tab.h"
 
 #define yylloc msg2yylloc
@@ -87,27 +89,35 @@ static char textbuf[TEXTBUF_LEN];
 0[xX]{X}+               { count(); return INTCONSTANT; }
 {D}+{E}                 { count(); return REALCONSTANT; }
 {D}*"."{D}+({E})?       { count(); return REALCONSTANT; }
-
-\"[^\"]*\"              { count(); return STRINGCONSTANT; }
 \'[^\']\'               { count(); return CHARCONSTANT; }
+
+\"                      { count(); BEGIN(stringliteral); }
+<stringliteral>{
+      \n                { throw new NEDException("unterminated string literal (append backslash to line for multi-line strings)"); }
+      \\\n              { extendCount(); /* line continuation */ }
+      \\\"              { extendCount(); /* qouted quote */ }
+      \\[^\n\"]         { extendCount(); /* qouted char */ }
+      [^\\\n\"]+        { extendCount(); /* character inside string literal */ }
+      \"                { extendCount(); BEGIN(INITIAL); return STRINGCONSTANT; /* closing quote */ }
+}
 
 "{{"                    { count(); BEGIN(cplusplusbody); }
 <cplusplusbody>"}}"     { extendCount(); BEGIN(INITIAL); return CPLUSPLUSBODY; }
 <cplusplusbody>{S}      { extendCount(); }
 <cplusplusbody>.        { extendCount(); }
 
-";"                     { count(); return (';'); }
-","                     { count(); return (','); }
-":"                     { count(); return (':'); }
-"="                     { count(); return ('='); }
-"("                     { count(); return ('('); }
-")"                     { count(); return (')'); }
-"["                     { count(); return ('['); }
-"]"                     { count(); return (']'); }
-"{"                     { count(); return ('{'); }
-"}"                     { count(); return ('}'); }
-"."                     { count(); return ('.'); }
-"?"                     { count(); return ('?'); }
+";"                     { count(); return ';'; }
+","                     { count(); return ','; }
+":"                     { count(); return ':'; }
+"="                     { count(); return '='; }
+"("                     { count(); return '('; }
+")"                     { count(); return ')'; }
+"["                     { count(); return '['; }
+"]"                     { count(); return ']'; }
+"{"                     { count(); return '{'; }
+"}"                     { count(); return '}'; }
+"."                     { count(); return '.'; }
+"?"                     { count(); return '?'; }
 
    /* FIXME are the next ones really needed? */
 
