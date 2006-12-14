@@ -98,8 +98,8 @@ void printUsage()
        "  -Q: with -n: use old (3.x) NED syntax\n"
        "  -s <suffix>: suffix for generated files\n"
        "  -S <suffix>: when generating C++, suffix for generated header files\n"
-       "  -k: with -n: replace original file and create backup (.bak);\n"
-       "      if input is single XML file created by nedtool -m: replace original files\n"
+       "  -k: with -n: replace original file and create backup (.bak). If input is a\n"
+       "      single XML file created by `nedtool -m -x': replace original NED files\n"
        "  -e: do not parse expressions in NED input; expect unparsed expressions in XML\n"
        "  -y: skip semantic validation (implies -z, skip processing imports)\n"
        "  -z: skip processing imports\n"
@@ -203,7 +203,7 @@ bool processFile(const char *fname, NEDErrorStore *errors)
         return false;
     }
 
-//NEDTools::repairNEDElementTree(tree);
+    //XXX NEDTools::repairNEDElementTree(tree);
 
     // DTD validation and additional basic validation
     NEDDTDValidator dtdvalidator(errors);
@@ -582,6 +582,16 @@ int main(int argc, char **argv)
         }
         else
         {
+            if (!opt_genxml && !opt_gensrc)
+            {
+                fprintf(stderr,"nedtool: generating C++ source not currently supported\n"); //XXX
+                return 1;
+            }
+            if (opt_genxml && opt_gensrc)
+            {
+                fprintf(stderr,"nedtool: conflicting options -n (generate source) and -x (generate XML)\n");
+                return 1;
+            }
             if (opt_mergeoutput && opt_inplace)
             {
                 fprintf(stderr,"nedtool: conflicting options -m (merge files) and -k (replace original file)\n");
