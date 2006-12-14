@@ -31,6 +31,10 @@ class Body : public IBody {
         Rs size;
 
     private:
+        void constructor(Variable *variable, Rs& size) {
+            constructor(variable, 10, 1, size);
+        }
+
         void constructor(Variable *variable, double mass, double charge, Rs& size) {
             this->variable = variable;
             this->mass = mass;
@@ -42,7 +46,11 @@ class Body : public IBody {
 
     public:
         Body(Variable *variable) {
-            constructor(variable, 10, 1, Rs(10, 10));
+            constructor(variable, Rs(10, 10));
+        }
+
+        Body(Variable *variable, Rs& size) {
+            constructor(variable, size);
         }
 
         Body(Variable *variable, double mass, double charge, Rs& size) {
@@ -91,6 +99,10 @@ class RelativelyPositionedBody : public Body {
             constructor(variable, relativePosition);
         }
 
+        RelativelyPositionedBody(Variable *variable, Pt& relativePosition, Rs& size) : Body(variable) {
+            constructor(variable, relativePosition);
+        }
+
         RelativelyPositionedBody(Variable *variable, IPositioned *anchor, Pt& relativePosition) : Body(variable) {
             constructor(anchor, relativePosition);
         }
@@ -104,6 +116,7 @@ class RelativelyPositionedBody : public Body {
         }
 };
 
+// TODO: rename this to something like splitter or rather wall?
 class BorderBody : public Body {
     public:
         BorderBody(bool horizontal, double position) : Body(new Variable(Pt(horizontal ? NaN : position, horizontal ? position : NaN))) {
@@ -155,17 +168,17 @@ class AbstractElectricRepeal : public IElectricRepeal {
             Pt vector = getVector();
             double distance = vector.getLength();
             // TODO: find intersection with boxes and use the distance between the boxes
-    //            double modifiedDistance = distance - vertex1.rs.getDiagonalLength() / 2 - vertex2.rs.getDiagonalLength() / 2;
-            double modifiedDistance = distance;
-            double force;
+            double modifiedDistance = distance - charge1->getSize().getDiagonalLength() / 2 - charge2->getSize().getDiagonalLength() / 2;
+            //double modifiedDistance = distance;
+            double power;
             
             if (modifiedDistance <= 0)
-                force = maxForce;
+                power = maxForce;
             else
-                force = getValidForce(embedding.electricRepealCoefficient * charge1->getCharge() * charge2->getCharge() / modifiedDistance / modifiedDistance);
+                power = getValidForce(embedding.electricRepealCoefficient * charge1->getCharge() * charge2->getCharge() / modifiedDistance / modifiedDistance);
             
-            charge1->getVariable()->addForce(vector, +force, embedding.inspected);
-            charge2->getVariable()->addForce(vector, -force, embedding.inspected);
+            charge1->getVariable()->addForce(vector, +power, embedding.inspected);
+            charge2->getVariable()->addForce(vector, -power, embedding.inspected);
         }
 };
 
@@ -272,10 +285,10 @@ class AbstractSpring : public ISpring {
             double distance = vector.getLength() - reposeLength;
 
             if (distance != 0) {
-                double force = getValidSignedForce(embedding.springCoefficient * springCoefficient * distance);
+                double power = getValidSignedForce(embedding.springCoefficient * springCoefficient * distance);
                 
-                body1->getVariable()->addForce(vector, -force, embedding.inspected);
-                body2->getVariable()->addForce(vector, +force, embedding.inspected);
+                body1->getVariable()->addForce(vector, -power, embedding.inspected);
+                body2->getVariable()->addForce(vector, +power, embedding.inspected);
             }
         }
 };
@@ -331,8 +344,10 @@ class HorizonalSpring : public AbstractSpring {
         }
 };
 
-class Friction : public IForceProvider {
+class AbstractVelocityBasedForceProvider : public IForceProvider {
     public:
+        virtual double getPower(const ForceDirectedEmbedding& embedding, Variable *variable, double vlen) = 0;
+
         virtual void applyForces(const ForceDirectedEmbedding& embedding) {
             const std::vector<Variable *>& variables = embedding.getVariables();
 
@@ -340,18 +355,40 @@ class Friction : public IForceProvider {
                 Variable *variable = *it;
                 Pt vector(variable->getVelocity());
                 vector.reverse();
-                double vlen = variable->getVelocity().getLength();
+                double vlen = vector.getLength();
 
-                if (vlen != 0)
-                    variable->addForce(vector, embedding.updatedFrictionCoefficient * vlen, embedding.inspected);
+                if (!vector.isZero()) {
+                    double power = getPower(embedding, variable, vlen);
+
+                    variable->addForce(vector, power, embedding.inspected);
+                }
             }
-        }    
+        }
+};
+
+class Friction : public AbstractVelocityBasedForceProvider {
+    public:
+        virtual double getPower(const ForceDirectedEmbedding& embedding, Variable *variable, double vlen) {
+            return std::max(embedding.updatedFrictionCoefficient, vlen / embedding.updatedTimeStep) * variable->getMass();
+        }
 
         virtual const char *getClassName() {
             return "Friction";
         }
 };
 
+class Drag : public AbstractVelocityBasedForceProvider {
+    public:
+        virtual double getPower(const ForceDirectedEmbedding& embedding, Variable *variable, double vlen) {
+            return embedding.updatedFrictionCoefficient * vlen * vlen;
+        }
+
+        virtual const char *getClassName() {
+            return "Drag";
+        }
+};
+
+// TODO: why is it not variable constraint?
 class BodyConstraint : public IForceProvider {
     protected:
         IBody *body;
@@ -383,7 +420,9 @@ class PointConstraint : public BodyConstraint {
         virtual void applyForces(const ForceDirectedEmbedding& embedding) {
             Pt vector(constraint);
             vector.subtract(body->getPosition());
-            body->getVariable()->addForce(vector, coefficient * vector.getLength(), embedding.inspected);
+            double power = coefficient * vector.getLength();
+
+            body->getVariable()->addForce(vector, power, embedding.inspected);
         }
 
         virtual const char *getClassName() {
@@ -407,7 +446,9 @@ class LineConstraint : public BodyConstraint {
             Pt position = body->getPosition();
             Pt vector(constraint.getClosestPoint(position));
             vector.subtract(position);
-            body->getVariable()->addForce(vector, coefficient * vector.getLength(), embedding.inspected);
+            double power = coefficient * vector.getLength();
+
+            body->getVariable()->addForce(vector, power, embedding.inspected);
         }
 
         virtual const char *getClassName() {

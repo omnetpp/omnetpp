@@ -81,19 +81,19 @@ class ForceDirectedEmbedding
 
         /**
          * The calculation will find a solution for these variables.
-         * Not destructed.
+         * Members are destructed.
          */
         std::vector<Variable *> variables;
         
         /**
          * Used to generate forces in each cycle of the calculation.
-         * Not destructed.
+         * Members are destructed.
          */
         std::vector<IForceProvider *> forceProviders;
         
         /**
          * The various bodies which are part of the calculation.
-         * Not destructed.
+         * Members are destructed.
          */
         std::vector<IBody *> bodies;
 
@@ -178,19 +178,24 @@ class ForceDirectedEmbedding
          * Maximum time spend on the calculation in milliseconds.
          * The algorithm will always return after this time has elapsed.
          */
-        double calculationTimeLimit;
+        double maxCalculationTime;
 
         /**
-         * Limit of acceleration approximation difference (between a1, a2, a3 and a4 in RK-4).
+         * Upper limit of acceleration approximation difference (between a1, a2, a3 and a4 in RK-4).
          * Acceleration error limit is updated automatically during the solution. It decreases towards zero proportional to the
          * time spent on the calculation.
          */
-        double accelerationErrorLimit;
+        double maxAccelerationError;
+
+        /**
+         *
+         */
+        double minAccelerationError;
         
         /**
          * This gets updated.
          */
-        double updatedAccelerationErrorLimit;
+        double updatedMaxAccelerationError;
 
         /**
          * Acceleration limit during the solution.
@@ -237,13 +242,24 @@ class ForceDirectedEmbedding
             minTimeStep = 0.001;
             maxTimeStep = 1000;
             timeStepMultiplier = 2;
-            calculationTimeLimit = 1000;
-            accelerationErrorLimit = 1;
+            maxCalculationTime = 1000;
+            maxAccelerationError = 1;
             accelerationRelaxLimit = 1;
             velocityRelaxLimit = 0.1;
             maxVelocity = 100;
             minCycle = 0;
             maxCycle = INT_MAX;
+        }
+
+        ~ForceDirectedEmbedding() {
+            for(std::vector<Variable *>::iterator it = variables.begin(); it != variables.end(); it++)
+                delete *it;
+
+            for(std::vector<IForceProvider *>::iterator it = forceProviders.begin(); it != forceProviders.end(); it++)
+                delete *it;
+
+            for(std::vector<IBody *>::iterator it = bodies.begin(); it != bodies.end(); it++)
+                delete *it;
         }
 
         const std::vector<Variable *>& getVariables() const {
@@ -311,7 +327,7 @@ class ForceDirectedEmbedding
 
             // initial values
             updatedTimeStep = timeStep;
-            updatedAccelerationErrorLimit = accelerationErrorLimit;
+            updatedMaxAccelerationError = maxAccelerationError;
             updatedFrictionCoefficient = frictionCoefficient;
         }
 
@@ -350,10 +366,10 @@ class ForceDirectedEmbedding
 
                     // update acceleration error limit
                     time = ticksToMilliseconds(ticks + clock() - begin);
-                    if (time > calculationTimeLimit && cycle > minCycle)
+                    if (time > maxCalculationTime && cycle > minCycle)
                         break;
                     else
-                        updatedAccelerationErrorLimit = (calculationTimeLimit - time) / calculationTimeLimit * this->accelerationErrorLimit;
+                        updatedMaxAccelerationError = (maxCalculationTime - time) / maxCalculationTime * this->maxAccelerationError;
 
                     // a1 = a[pn, vn]
                     a(a1, pn, vn);
@@ -380,18 +396,16 @@ class ForceDirectedEmbedding
                     accelerationError = maximumDifference(a1, a2, a3, a4);
 
                     if (debug)
-                        std::cout << "Prob cycle at real time: " << time << " time: " << timeStepSum << " h: " << updatedTimeStep << " friction: " << updatedFrictionCoefficient << " acceleration error limit: " << updatedAccelerationErrorLimit << " acceleration error: " << accelerationError << " cycle: " << cycle << " prob cycle: " << probCycle << "\n";
+                        std::cout << "Prob cycle at real time: " << time << " time: " << timeStepSum << " h: " << updatedTimeStep << " friction: " << updatedFrictionCoefficient << " acceleration error limit: " << updatedMaxAccelerationError << " acceleration error: " << accelerationError << " cycle: " << cycle << " prob cycle: " << probCycle << "\n";
 
-                    if (accelerationError < updatedAccelerationErrorLimit) {
+                    if (accelerationError < updatedMaxAccelerationError) {
                         if (hMultiplier == 0)
                             hMultiplier = timeStepMultiplier;
                         else
                             break;
                     }
                     else {
-                        if (hMultiplier == 0)
-                            hMultiplier = timeStepMultiplier;
-                        else if (hMultiplier == timeStepMultiplier)
+                        if (hMultiplier == 0 || hMultiplier == timeStepMultiplier)
                             hMultiplier = 1.0 / timeStepMultiplier;
                     }
                     
@@ -427,7 +441,7 @@ class ForceDirectedEmbedding
 
                 time = ticksToMilliseconds(ticks + clock() - begin);
                 if (debug)
-                    std::cout << "Cycle at real time: " << time << " time: " << timeStepSum << " h: " << updatedTimeStep << " friction: " << updatedFrictionCoefficient << " acceleration error limit: " << updatedAccelerationErrorLimit << " acceleration error: " << accelerationError << " cycle: " << cycle << " prob cycle: " << probCycle << "\n";
+                    std::cout << "Cycle at real time: " << time << " time: " << timeStepSum << " h: " << updatedTimeStep << " friction: " << updatedFrictionCoefficient << " acceleration error limit: " << updatedMaxAccelerationError << " acceleration error: " << accelerationError << " cycle: " << cycle << " prob cycle: " << probCycle << "\n";
 
                 // update friction
                 timeStepSum += updatedTimeStep;
@@ -439,7 +453,7 @@ class ForceDirectedEmbedding
                 }
                 kineticEnergySum += kineticEnergy * updatedTimeStep;
                 double kineticEnergyAvg = (kineticEnergySum / timeStepSum);
-                double kineticEnergyExpected = kineticEnergyAvg * (calculationTimeLimit - time) / calculationTimeLimit;
+                double kineticEnergyExpected = kineticEnergyAvg * (maxCalculationTime - time) / maxCalculationTime;
                 if (debug)
                     std::cout << "Current kinetic energy: " << kineticEnergy << " expected: " << kineticEnergyExpected << "\n";
                 if (kineticEnergy <  kineticEnergyExpected && updatedFrictionCoefficient / frictionCoefficientMultiplier > minFrictionCoefficient)
@@ -467,7 +481,7 @@ class ForceDirectedEmbedding
                     }
                 }
 
-                if ((cycle == maxCycle) || (time > calculationTimeLimit && cycle > minCycle))
+                if ((cycle == maxCycle) || (time > maxCalculationTime && cycle > minCycle))
                     finished = true;
             }
             while (!inspected && !finished);
