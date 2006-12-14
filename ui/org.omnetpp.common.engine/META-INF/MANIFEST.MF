@@ -1,6 +1,6 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: EventLog Engine Plug-in
+Bundle-Name: OMNEST/OMNeT++ Layouting Engine
 Bundle-SymbolicName: org.omnetpp.common.engine
 Bundle-Version: 4.0.0
 Bundle-Vendor: OpenSim Ltd.

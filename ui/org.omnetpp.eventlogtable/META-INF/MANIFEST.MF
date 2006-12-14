@@ -1,6 +1,6 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: OMNeT++/OMNEST Event Log Table Plug-in
+Bundle-Name: OMNEST/OMNeT++ Event Log Table
 Bundle-SymbolicName: org.omnetpp.eventlogtable;singleton:=true
 Bundle-Version: 4.0.0
 Bundle-Activator: org.omnetpp.eventlogtable.EventLogTablePlugin
