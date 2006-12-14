@@ -1,6 +1,6 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: NED Model Plugin
+Bundle-Name: OMNEST/OMNeT++ NED File Data Model
 Bundle-SymbolicName: org.omnetpp.ned.model;singleton:=true
 Bundle-Version: 4.0.0
 Bundle-ClassPath: .
