@@ -43,6 +43,7 @@ matchexpression.tab.h matchexpression.tab.cc : matchexpression.y
 
 lex.matchexpressionyy.cc: matchexpression.lex matchexpression.tab.h
 	$(LEX:/=\) -Pmatchexpressionyy matchexpression.lex
+	$(FIXFLEX) lex.matchexpressionyy.c
 	copy lex.matchexpressionyy.c lex.matchexpressionyy.cc
 	del lex.matchexpressionyy.c
 

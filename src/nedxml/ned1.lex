@@ -6,6 +6,8 @@ S  [ \t\v\n\r\f]
 
 %x cplusplusbody
 
+/* the following option keeps isatty() out */
+%option never-interactive
 
 %{
 /*==================================================
@@ -28,16 +30,6 @@ S  [ \t\v\n\r\f]
 
 
 #include <string.h>
-
-#if defined(_MSC_VER)
-# include <io.h>
-# define isatty _isatty
-# pragma warning(disable:4996) /* disable VC8.0 warnings on fileno(), etc */
-#else
-//extern "C" { int isatty(int); }
-# include <unistd.h>
-#endif
-
 #include "nedyydefs.h"
 #include "ned1.tab.h"
 

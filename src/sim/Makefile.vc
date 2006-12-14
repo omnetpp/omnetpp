@@ -100,6 +100,7 @@ expr.tab.h expr.tab.cc : expr.y
 
 lex.expryy.cc: expr.lex expr.tab.h
 	$(LEX:/=\) -Pexpryy expr.lex
+	$(FIXFLEX) lex.expryy.c
 	copy lex.expryy.c lex.expryy.cc
 	del lex.expryy.c
 

@@ -32,17 +32,11 @@ S  [ \t\v\n\r\f]
 
 %x cplusplusbody
 
+/* the following option keeps isatty() out */
+%option never-interactive
 
 %{
 #include <string.h>
-
-#if defined(_MSC_VER)
-# include <io.h>
-# define isatty _isatty
-#else
-# include <unistd.h>  // isatty
-#endif
-
 #include "nedyydefs.h"
 #include "msg2.tab.h"
 

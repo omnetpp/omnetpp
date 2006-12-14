@@ -221,6 +221,9 @@ REPLACE=$(OMNETPP_SRC_DIR)/utils/opp_replace
 WISH=$(TK_DIR)/bin/wish$(TK_VER:.=).exe
 DOXYGEN=$(DOXYGEN_DIR)/bin/doxygen
 
+# flex puts an "#include <unistd.h>" line into the generated code, which we have to throw out
+FIXFLEX=$(PERL:/=\) -i.bak -pe "s/^.include .unistd.h.*//g"
+
 #
 # Configuration
 #

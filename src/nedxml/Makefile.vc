@@ -73,6 +73,7 @@ ned1.tab.h ned1.tab.cc : ned1.y
 
 lex.ned1yy.cc: ned1.lex
 	$(LEX:/=\) -Pned1yy ned1.lex
+	$(FIXFLEX) lex.ned1yy.c
 	copy lex.ned1yy.c lex.ned1yy.cc
 	del lex.ned1yy.c
 
@@ -83,6 +84,7 @@ ned2.tab.h ned2.tab.cc : ned2.y
 
 lex.ned2yy.cc: ned2.lex
 	$(LEX:/=\) -Pned2yy ned2.lex
+	$(FIXFLEX) lex.ned2yy.c
 	copy lex.ned2yy.c lex.ned2yy.cc
 	del lex.ned2yy.c
 
@@ -93,6 +95,7 @@ msg2.tab.h msg2.tab.cc : msg2.y
 
 lex.msg2yy.cc: msg2.lex
 	$(LEX:/=\) -Pmsg2yy msg2.lex
+	$(FIXFLEX) lex.msg2yy.c
 	copy lex.msg2yy.c lex.msg2yy.cc
 	del lex.msg2yy.c
 
@@ -140,18 +143,6 @@ cppmsggenerator.obj: cppmsggenerator.cc \
   nedcompiler.h \
   nedresourcecache.h \
   nedcomponent.h
-lex.msg2yy.obj: lex.msg2yy.cc \
-  ./unistd.h \
-  nedyydefs.h \
-  msg2.tab.h
-lex.ned1yy.obj: lex.ned1yy.cc \
-  ./unistd.h \
-  nedyydefs.h \
-  ned1.tab.h
-lex.ned2yy.obj: lex.ned2yy.cc \
-  ./unistd.h \
-  nedyydefs.h \
-  ned2.tab.h
 msg2.tab.obj: msg2.tab.cc \
   nedyydefs.h \
   nederror.h \
