@@ -74,6 +74,11 @@ class Variable : public IPositioned {
 		    this->velocity.assign(velocity);
 	    }
 
+        double getKineticEnergy() {
+            double vlen = velocity.getLength();
+            return 0.5 * mass * vlen * vlen;
+        }
+
 	    Pt& getAcceleration() {
 		    return acceleration.assign(force).divide(mass);
 	    }
@@ -139,6 +144,8 @@ class IForceProvider {
         virtual const char *getClassName() = 0;
 
         virtual void applyForces(const ForceDirectedEmbedding& embedding) = 0;
+
+        virtual double getPotentialEnergy(const ForceDirectedEmbedding& embedding) = 0;
 };
 
 class IBody : public IPositioned {
