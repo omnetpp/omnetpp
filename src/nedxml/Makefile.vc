@@ -37,13 +37,6 @@ OBJS= nedelements.obj nedelement.obj nederror.obj \
       nedcompiler.obj
 # FIXME end temporary def
 
-# FIXME begin temporary rules
-nedtool.exe : nedxml.lib tmp_nedtool.obj
-	$(LINK) $(LDFLAGS) /nologo /out:tmp_nedtool.exe tmp_nedtool.obj $(LIBS) nedxml.lib ../common/common.lib $(XML_LIBS)
-tmp_nedtool.obj : tmp_nedtool.cc
-	$(CXX) $(COPTS) -I"$(OMNETPP_INCL_DIR)" -I. /c /Tp tmp_nedtool.cc
-# FIXME end temporary rules
-
 #
 # Automatic rules
 #
@@ -52,11 +45,17 @@ tmp_nedtool.obj : tmp_nedtool.cc
 .cc.obj:
 	$(CXX) /Fo"$@" $(COPTS) /c /Tp $<
 
-
 #
 # Targets (TBD: build dll)
 #
-all : nedxml.lib
+all : nedtool.exe nedxml.lib
+
+nedtool.exe : nedxml.lib nedtool.obj
+	$(LINK) $(LDFLAGS) /nologo /out:nedtool.exe nedtool.obj $(LIBS) nedxml.lib ../common/common.lib $(XML_LIBS)
+	copy nedtool.exe $(OMNETPP_BIN_DIR:/=\)
+
+nedtool.obj : nedtool.cc
+	$(CXX) $(COPTS) -I"$(OMNETPP_INCL_DIR)" -I. /c /Tp nedtool.cc
 
 nedxml.lib : unistd.h $(OBJS)
 	$(AR) /out:nedxml.lib $(OBJS)
@@ -108,8 +107,9 @@ depend:
 clean:
 	- del unistd.h
 	- del *.obj *.lib 2> nul
-	- del *.ilk *.idb *.pdb *suo 2> nul
-	- del *.tab.* lex.*yy.*
+	- del *.ilk *.idb *.pdb *.suo 2> nul
+	- del *.tab.* lex.*yy.* 2> nul
+	- del nedtool.exe 2> nul
 
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
@@ -272,6 +272,23 @@ nedsemanticvalidator.obj: nedsemanticvalidator.cc \
   nedvalidator.h \
   nedelements.h \
   nedcomponent.h
+nedtool.obj: nedtool.cc \
+  nedparser.h \
+  nederror.h \
+  nedxmlparser.h \
+  neddtdvalidator.h \
+  nedbasicvalidator.h \
+  nedsemanticvalidator.h \
+  ned2generator.h \
+  ned1generator.h \
+  xmlgenerator.h \
+  nedtools.h \
+  ../utils/ver.h \
+  nedelement.h \
+  nedyydefs.h \
+  nedelements.h \
+  neddtdvalidatorbase.h \
+  nedvalidator.h
 nedtools.obj: nedtools.cc \
   nedtools.h \
   nederror.h \
@@ -310,23 +327,6 @@ saxparser_none.obj: saxparser_none.cc \
   nederror.h \
   saxparser.h \
   nedelement.h
-tmp_nedtool.obj: tmp_nedtool.cc \
-  nedparser.h \
-  nederror.h \
-  nedxmlparser.h \
-  neddtdvalidator.h \
-  nedbasicvalidator.h \
-  nedsemanticvalidator.h \
-  ned2generator.h \
-  ned1generator.h \
-  xmlgenerator.h \
-  nedtools.h \
-  ../utils/ver.h \
-  nedelement.h \
-  nedyydefs.h \
-  nedelements.h \
-  neddtdvalidatorbase.h \
-  nedvalidator.h
 xmlgenerator.obj: xmlgenerator.cc \
   nedelements.h \
   xmlgenerator.h \

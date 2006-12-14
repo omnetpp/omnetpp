@@ -58,7 +58,6 @@ OBJS= nedelements.o nedelement.o nederror.o \
       nedcompiler.o
 # FIXME end temporary def
 
-
 #
 # Automatic rules
 #
@@ -70,7 +69,14 @@ OBJS= nedelements.o nedelement.o nederror.o \
 #
 # Targets
 #
-default : nedxmllib
+all : nedtool nedxmllib
+
+nedtool: nedtool.o
+	$(CXX) $(LDFLAGS) -o nedtool nedtool.o -L$(OMNETPP_LIB_DIR) -lnedxml $(XML_LIBS)
+	../utils/install-prog nedtool $(OMNETPP_BIN_DIR)
+
+nedtool.o: nedtool.cc
+	$(CXX) -c $(COPTS) nedtool.cc
 
 nedxmllib : libnedxml$(LIB_SUFFIX)
 
@@ -320,7 +326,7 @@ saxparser_none.o: saxparser_none.cc \
   nederror.h \
   saxparser.h \
   nedelement.h
-tmp_nedtool.o: tmp_nedtool.cc \
+nedtool.o: nedtool.cc \
   nedparser.h \
   nederror.h \
   nedxmlparser.h \
