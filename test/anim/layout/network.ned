@@ -494,6 +494,7 @@ module NetworkLayersWrapper
               physIn[numPorts],
               physOut[numPorts];
            display: "i=cloud_l";
+    connections nocheck:
 endmodule
 
 network networkLayers : NetworkLayersWrapper
