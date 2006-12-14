@@ -143,6 +143,17 @@ cppmsggenerator.obj: cppmsggenerator.cc \
   nedcompiler.h \
   nedresourcecache.h \
   nedcomponent.h
+lex.msg2yy.obj: lex.msg2yy.cc \
+  nedyydefs.h \
+  msg2.tab.h
+lex.ned1yy.obj: lex.ned1yy.cc \
+  nedyydefs.h \
+  ned1.tab.h
+lex.ned2yy.obj: lex.ned2yy.cc \
+  nedyydefs.h \
+  nederror.h \
+  ned2.tab.h \
+  nedelement.h
 msg2.tab.obj: msg2.tab.cc \
   nedyydefs.h \
   nederror.h \

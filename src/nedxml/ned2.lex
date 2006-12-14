@@ -35,6 +35,7 @@ E  [Ee][+-]?{D}+
 S  [ \t\v\n\r\f]
 
 %x cplusplusbody
+%x stringliteral
 
 /* the following option keeps isatty() out */
 %option never-interactive
@@ -42,6 +43,7 @@ S  [ \t\v\n\r\f]
 %{
 #include <string.h>
 #include "nedyydefs.h"
+#include "nederror.h"
 #include "ned2.tab.h"
 
 #define yylloc ned2yylloc
@@ -63,6 +65,7 @@ static char textbuf[TEXTBUF_LEN];
 %}
 
 %%
+
 "//"                     { comment(); }
 
 "import"                 { count(); return IMPORT; }
@@ -116,60 +119,68 @@ static char textbuf[TEXTBUF_LEN];
 "index"                  { count(); return INDEX_; }
 "xmldoc"                 { count(); return XMLDOC; }
 
-{L}({L}|{D})*           { count(); return NAME; }
-{D}+                    { count(); return INTCONSTANT; }
-0[xX]{X}+               { count(); return INTCONSTANT; }
-{D}+{E}                 { count(); return REALCONSTANT; }
-{D}*"."{D}+({E})?       { count(); return REALCONSTANT; }
+{L}({L}|{D})*            { count(); return NAME; }
+{D}+                     { count(); return INTCONSTANT; }
+0[xX]{X}+                { count(); return INTCONSTANT; }
+{D}+{E}                  { count(); return REALCONSTANT; }
+{D}*"."{D}+({E})?        { count(); return REALCONSTANT; }
 
-\"[^\"]*\"              { count(); return STRINGCONSTANT; }
+\"                       { count(); BEGIN(stringliteral); }
+<stringliteral>{
+      \n                 { throw new NEDException("unterminated string literal (append backslash to line for multi-line strings)"); }
+      \\\n               { extendCount(); /* line continuation */ }
+      \\\"               { extendCount(); /* qouted quote */ }
+      \\[^\n\"]          { extendCount(); /* qouted char */ }
+      [^\\\n\"]+         { extendCount(); /* character inside string literal */ }
+      \"                 { extendCount(); BEGIN(INITIAL); return STRINGCONSTANT; /* closing quote */ }
+}
 
-"**"                    { count(); return DOUBLEASTERISK; }
-"++"                    { count(); return PLUSPLUS; }
+"**"                     { count(); return DOUBLEASTERISK; }
+"++"                     { count(); return PLUSPLUS; }
 
-"$"                     { count(); return '$'; }
-"@"                     { count(); return '@'; }
-";"                     { count(); return (';'); }
-","                     { count(); return (','); }
-":"                     { count(); return (':'); }
-"="                     { count(); return ('='); }
-"("                     { count(); return ('('); }
-")"                     { count(); return (')'); }
-"["                     { count(); return ('['); }
-"]"                     { count(); return (']'); }
-"{"                     { count(); return ('{'); }
-"}"                     { count(); return ('}'); }
-"."                     { count(); return ('.'); }
-"?"                     { count(); return ('?'); }
+"$"                      { count(); return '$'; }
+"@"                      { count(); return '@'; }
+";"                      { count(); return ';'; }
+","                      { count(); return ','; }
+":"                      { count(); return ':'; }
+"="                      { count(); return '='; }
+"("                      { count(); return '('; }
+")"                      { count(); return ')'; }
+"["                      { count(); return '['; }
+"]"                      { count(); return ']'; }
+"{"                      { count(); return '{'; }
+"}"                      { count(); return '}'; }
+"."                      { count(); return '.'; }
+"?"                      { count(); return '?'; }
 
-"||"                    { count(); return OR; }
-"&&"                    { count(); return AND; }
-"##"                    { count(); return XOR; }
-"!"                     { count(); return NOT; }
+"||"                     { count(); return OR; }
+"&&"                     { count(); return AND; }
+"##"                     { count(); return XOR; }
+"!"                      { count(); return NOT; }
 
-"|"                     { count(); return BIN_OR; }
-"&"                     { count(); return BIN_AND; }
-"#"                     { count(); return BIN_XOR; }
-"~"                     { count(); return BIN_COMPL; }
-"<<"                    { count(); return SHIFT_LEFT; }
-">>"                    { count(); return SHIFT_RIGHT; }
+"|"                      { count(); return BIN_OR; }
+"&"                      { count(); return BIN_AND; }
+"#"                      { count(); return BIN_XOR; }
+"~"                      { count(); return BIN_COMPL; }
+"<<"                     { count(); return SHIFT_LEFT; }
+">>"                     { count(); return SHIFT_RIGHT; }
 
-"^"                     { count(); return '^'; }
-"+"                     { count(); return '+'; }
-"-"                     { count(); return '-'; }
-"*"                     { count(); return '*'; }
-"/"                     { count(); return '/'; }
-"%"                     { count(); return '%'; }
-"<"                     { count(); return '<'; }
-">"                     { count(); return '>'; }
+"^"                      { count(); return '^'; }
+"+"                      { count(); return '+'; }
+"-"                      { count(); return '-'; }
+"*"                      { count(); return '*'; }
+"/"                      { count(); return '/'; }
+"%"                      { count(); return '%'; }
+"<"                      { count(); return '<'; }
+">"                      { count(); return '>'; }
 
-"=="                    { count(); return EQ; }
-"!="                    { count(); return NE; }
-"<="                    { count(); return LE; }
-">="                    { count(); return GE; }
+"=="                     { count(); return EQ; }
+"!="                     { count(); return NE; }
+"<="                     { count(); return LE; }
+">="                     { count(); return GE; }
 
-{S}                     { count(); }
-.                       { count(); return INVALID_CHAR; }
+{S}                      { count(); }
+.                        { count(); return INVALID_CHAR; }
 
 %%
 
