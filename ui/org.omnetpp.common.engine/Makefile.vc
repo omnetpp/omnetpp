@@ -42,7 +42,6 @@ default: common_engine.dll
 engine_wrap.cxx: engine.i $(HEADERS)
 	-del $(JAVADIR)\*.java >nul
 	$(SWIG) -c++ -java -package $(JAVAPKG) -I$(COMMON) -I$(LAYOUT) -outdir $(JAVADIR) engine.i
-	perl fixBody.pl $(JAVADIR)\Body.java
 
 common_engine.dll : $(OBJS) $(COMMON)/common.lib $(LAYOUT)/layout.lib
 	$(LINK) /dll /out:"common_engine.dll" $(OBJS) $(COMMON)/common.lib $(LAYOUT)/layout.lib $(LDFLAGS)
