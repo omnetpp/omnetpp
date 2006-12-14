@@ -207,7 +207,7 @@ public class DatasetManager {
 		Arrays.fill(same, true);
 		for (int i = 1; i < nameFragments.length; ++i) {
 			for (int j = 0; j < 8; ++j)
-				if (same[j] && !nameFragments[0][j].equals(nameFragments[i][j]))
+				if (same[j] && !equals(nameFragments[0][j], nameFragments[i][j]))
 					same[j] = false;
 		}
 		
@@ -224,6 +224,11 @@ public class DatasetManager {
 			result[i] = id.toString();
 		}
 		return result;
+	}
+	
+	private static boolean equals(Object first, Object second) {
+		return first == null && second == null ||
+				first != null && first.equals(second);
 	}
 	
 	public static IDList select(IDList source, List<SelectDeselectOp> filters, ResultFileManager manager, DatasetType type) {
