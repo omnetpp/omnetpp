@@ -1,4 +1,4 @@
-package org.omnetpp.resources.decorators;
+package org.omnetpp.ned.resources.decorators;
 
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IResource;
@@ -7,8 +7,8 @@ import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.IDecoration;
 import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.jface.viewers.ILightweightLabelDecorator;
-import org.omnetpp.resources.NEDResources;
-import org.omnetpp.resources.NEDResourcesPlugin;
+import org.omnetpp.ned.resources.NEDResources;
+import org.omnetpp.ned.resources.NEDResourcesPlugin;
 
 /**
  * @author rhornig

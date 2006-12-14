@@ -8,7 +8,7 @@ import org.eclipse.jface.text.reconciler.DirtyRegion;
 import org.eclipse.jface.text.reconciler.IReconcilingStrategy;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IFileEditorInput;
-import org.omnetpp.resources.NEDResourcesPlugin;
+import org.omnetpp.ned.resources.NEDResourcesPlugin;
 
 /**
  * This class has one instance per NED editor, and performs 

@@ -16,8 +16,8 @@ import org.omnetpp.figures.NedFileFigure;
 import org.omnetpp.ned.editor.graph.edit.policies.NedFileLayoutEditPolicy;
 import org.omnetpp.ned.model.ex.NedFileNodeEx;
 import org.omnetpp.ned.model.notification.NEDModelEvent;
-import org.omnetpp.resources.NEDResources;
-import org.omnetpp.resources.NEDResourcesPlugin;
+import org.omnetpp.ned.resources.NEDResources;
+import org.omnetpp.ned.resources.NEDResourcesPlugin;
 
 /**
  * Holds all other NedEditParts under this. It is activated by

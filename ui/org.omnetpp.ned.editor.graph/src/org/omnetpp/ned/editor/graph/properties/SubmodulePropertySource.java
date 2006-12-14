@@ -14,7 +14,7 @@ import org.omnetpp.ned.editor.graph.properties.util.NamePropertySource;
 import org.omnetpp.ned.editor.graph.properties.util.ParameterListPropertySource;
 import org.omnetpp.ned.editor.graph.properties.util.TypePropertySource;
 import org.omnetpp.ned.model.ex.SubmoduleNodeEx;
-import org.omnetpp.resources.NEDResourcesPlugin;
+import org.omnetpp.ned.resources.NEDResourcesPlugin;
 
 public class SubmodulePropertySource extends MergedPropertySource {
 

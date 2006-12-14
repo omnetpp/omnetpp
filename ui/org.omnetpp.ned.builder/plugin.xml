@@ -8,7 +8,7 @@
       <builder
             hasNature="true">
          <run
-               class="org.omnetpp.resources.builder.NEDBuilder">
+               class="org.omnetpp.ned.resources.builder.NEDBuilder">
          </run>
       </builder>
    </extension>
@@ -30,7 +30,7 @@
          point="org.eclipse.ui.decorators">
       <decorator
             adaptable="true"
-            class="org.omnetpp.resources.decorators.ProblemDecorator"
+            class="org.omnetpp.ned.resources.decorators.ProblemDecorator"
             id="org.omnetpp.resources.decorators.ProblemDecorator"
             label="NED Problem Decorator"
             lightweight="true"

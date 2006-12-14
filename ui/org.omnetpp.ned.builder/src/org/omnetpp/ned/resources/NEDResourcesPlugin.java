@@ -1,8 +1,8 @@
-package org.omnetpp.resources;
+package org.omnetpp.ned.resources;
 
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
-import org.omnetpp.resources.builder.NEDBuilder;
+import org.omnetpp.ned.resources.builder.NEDBuilder;
 import org.osgi.framework.BundleContext;
 
 /**
@@ -73,6 +73,6 @@ public class NEDResourcesPlugin extends AbstractUIPlugin {
 	 * @return the image descriptor
 	 */
 	public static ImageDescriptor getImageDescriptor(String path) {
-		return AbstractUIPlugin.imageDescriptorFromPlugin("org.omnetpp.resources", path);
+		return AbstractUIPlugin.imageDescriptorFromPlugin("org.omnetpp.ned.resources", path);
 	}
 }

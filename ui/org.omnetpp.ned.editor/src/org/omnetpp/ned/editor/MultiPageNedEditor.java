@@ -17,8 +17,8 @@ import org.omnetpp.ned.editor.graph.misc.ISelectionSupport;
 import org.omnetpp.ned.editor.text.TextualNedEditor;
 import org.omnetpp.ned.model.NEDTreeUtil;
 import org.omnetpp.ned.model.ex.NedFileNodeEx;
-import org.omnetpp.resources.NEDResources;
-import org.omnetpp.resources.NEDResourcesPlugin;
+import org.omnetpp.ned.resources.NEDResources;
+import org.omnetpp.ned.resources.NEDResourcesPlugin;
 
 /**
  * Multi-page NED editor.

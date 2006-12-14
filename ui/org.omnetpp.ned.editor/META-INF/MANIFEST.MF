@@ -14,9 +14,9 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.ui.workbench.texteditor,
  org.eclipse.gef,
  org.eclipse.jface.text,
- org.omnetpp.ned.editor.graph,
- org.omnetpp.ned.editor.text,
+ org.omnetpp.common,
  org.omnetpp.ned.model,
- org.omnetpp.resources,
- org.omnetpp.common
+ org.omnetpp.ned.builder,
+ org.omnetpp.ned.editor.graph,
+ org.omnetpp.ned.editor.text
 Eclipse-LazyStart: false

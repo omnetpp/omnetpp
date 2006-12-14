@@ -25,7 +25,7 @@ import org.eclipse.ui.views.contentoutline.ContentOutlinePage;
 import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.ned.model.NEDElement;
 import org.omnetpp.ned.model.NEDSourceRegion;
-import org.omnetpp.resources.NEDResourcesPlugin;
+import org.omnetpp.ned.resources.NEDResourcesPlugin;
 
 /**
  * XXX notify after every run of the reconciler

@@ -18,8 +18,8 @@ import org.omnetpp.ned.model.NEDElement;
 import org.omnetpp.ned.model.NEDSourceRegion;
 import org.omnetpp.ned.model.NEDTreeUtil;
 import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
-import org.omnetpp.resources.NEDResources;
-import org.omnetpp.resources.NEDResourcesPlugin;
+import org.omnetpp.ned.resources.NEDResources;
+import org.omnetpp.ned.resources.NEDResourcesPlugin;
 
 /**
  * Example implementation for an <code>ITextHover</code> which hovers over NED code.

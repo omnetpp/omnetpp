@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feature
+      id="org.omnetpp.ide"
+      label="OMNeT++ Integrated Development Environment Feature"
+      version="4.0.0"
+      provider-name="OpenSim Ltd."
+      os="win32"
+      ws="win32">
+
+   <description url="http://www.omnetpp.org/">
+      This is an Integrated Development Environment for the OMNeT++/OMNEST
+Discrete Event Simulation Framework.
+OMNeT++/OMNEST is a C++-based object-oriented discrete event
+simulation framework, primarily targeted at the simulation of
+communication
+networks and other parallel/distributed systems. OMNeT++/OMNEST
+includes
+a graphical network editor, a network topology description language,
+a simulation
+class library, multiple execution environments (both GUI and
+command
+line), a result plotting tool, documentation, many sample simulations
+and much more.
+OMNeT++ is freely available for academic and non-profit purposes;
+the commercial version is licensed under the name OMNEST, but
+otherwise
+they are identical.
+You&apos;re invited to visit the OMNeT++ community site at www.omnetpp.org
+any time!
+We hope you&apos;ll enjoy working with OMNeT++/OMNEST.
+   </description>
+
+   <copyright url="http://www.example.com/copyright">
+      [Enter Copyright Description here.]
+   </copyright>
+
+   <license url="http://www.example.com/license">
+      [Enter License Description here.]
+   </license>
+
+   <requires>
+      <import plugin="org.eclipse.core.runtime"/>
+      <import plugin="org.eclipse.core.filesystem"/>
+      <import plugin="org.eclipse.ui"/>
+      <import plugin="org.eclipse.ui.views"/>
+      <import plugin="org.eclipse.jface"/>
+      <import plugin="org.eclipse.draw2d"/>
+      <import plugin="org.eclipse.ui.ide"/>
+      <import plugin="org.eclipse.gef"/>
+      <import plugin="org.eclipse.core.resources"/>
+      <import plugin="org.eclipse.jface.text"/>
+      <import plugin="org.eclipse.ui.editors"/>
+      <import plugin="org.eclipse.ui.workbench.texteditor"/>
+      <import plugin="org.eclipse.ui.workbench"/>
+      <import plugin="org.eclipse.ui.forms"/>
+      <import plugin="org.eclipse.emf.ecore"/>
+      <import plugin="org.junit"/>
+      <import plugin="org.eclipse.emf.edit"/>
+      <import plugin="org.eclipse.emf.ecore.xmi"/>
+      <import plugin="org.eclipse.emf.edit.ui"/>
+   </requires>
+
+   <plugin
+         id="org.omnetpp.common"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.omnetpp.figures"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.omnetpp.inifile.editor"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.omnetpp.ned.editor"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.omnetpp.ned.editor.graph"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.omnetpp.ned.editor.text"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.omnetpp.ned.model"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.omnetpp.scave.builder"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.omnetpp.scave.engine"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.omnetpp.common.engine"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.omnetpp.eventlog.engine"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.omnetpp.eventlogtable"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.omnetpp.sequencechart"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.omnetpp.scave"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.omnetpp.scave.model"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.omnetpp.main"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.omnetpp.ned.builder"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+</feature>

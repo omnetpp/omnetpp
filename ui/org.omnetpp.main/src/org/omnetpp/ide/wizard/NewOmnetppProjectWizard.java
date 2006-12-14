@@ -26,7 +26,7 @@ import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.actions.WorkspaceModifyOperation;
 import org.omnetpp.ide.Activator;
 import org.omnetpp.ide.OmnetppNature;
-import org.omnetpp.resources.builder.NEDBuilder;
+import org.omnetpp.ned.resources.builder.NEDBuilder;
 import org.omnetpp.scave.builder.VectorFileIndexer;
 
 public class NewOmnetppProjectWizard extends Wizard implements INewWizard {

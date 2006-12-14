@@ -38,7 +38,7 @@ import org.omnetpp.ned.model.ex.SubmoduleNodeEx;
 import org.omnetpp.ned.model.interfaces.IHasName;
 import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
 import org.omnetpp.ned.model.pojo.PropertyNode;
-import org.omnetpp.resources.NEDResourcesPlugin;
+import org.omnetpp.ned.resources.NEDResourcesPlugin;
 
 public class GraphicalNedEditorPlugin extends AbstractUIPlugin {
 

@@ -1,4 +1,4 @@
-package org.omnetpp.resources;
+package org.omnetpp.ned.resources;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -55,10 +55,10 @@ import org.omnetpp.ned.model.swig.NEDErrorStore;
 public class NEDResources implements INEDTypeResolver {
 
 	// markers created during parsing
-	public static final String NEDPROBLEM_MARKERID = "org.omnetpp.resources.nedproblem";
+	public static final String NEDPROBLEM_MARKERID = "org.omnetpp.ned.resources.nedproblem";
 
 	// markers created in rehash()
-	public static final String NEDCONSISTENCYPROBLEM_MARKERID = "org.omnetpp.resources.nedconsistencyproblem";
+	public static final String NEDCONSISTENCYPROBLEM_MARKERID = "org.omnetpp.ned.resources.nedconsistencyproblem";
 	
 	// stores parsed contents of NED files
 	private HashMap<IFile, NEDElement> nedFiles = new HashMap<IFile, NEDElement>();

@@ -1,4 +1,4 @@
-package org.omnetpp.resources.builder;
+package org.omnetpp.ned.resources.builder;
 
 import java.util.Map;
 
@@ -12,8 +12,8 @@ import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.omnetpp.resources.NEDResources;
-import org.omnetpp.resources.NEDResourcesPlugin;
+import org.omnetpp.ned.resources.NEDResources;
+import org.omnetpp.ned.resources.NEDResourcesPlugin;
 
 /**
  * Parses NED files in the background.
@@ -25,7 +25,7 @@ import org.omnetpp.resources.NEDResourcesPlugin;
  */
 public class NEDBuilder extends IncrementalProjectBuilder {
 
-	public static final String BUILDER_ID = "org.omnetpp.resources.nedbuilder";
+	public static final String BUILDER_ID = "org.omnetpp.ned.resources.nedbuilder";
 
 	class NEDDeltaVisitor implements IResourceDeltaVisitor {
 		/*

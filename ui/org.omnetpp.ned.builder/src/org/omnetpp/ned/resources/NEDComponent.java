@@ -1,4 +1,4 @@
-package org.omnetpp.resources;
+package org.omnetpp.ned.resources;
 
 import java.util.ArrayList;
 import java.util.HashMap;

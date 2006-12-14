@@ -41,7 +41,6 @@ public class SpringEmbedderLayout extends XYLayout {
 	 */
 	@SuppressWarnings("unchecked")
 	protected AbstractGraphLayoutAlgorithm createAutoLayouter(IFigure nodeParent, IFigure edgeParent) {
-		System.out.println("Creating Layouter Algorithm");
         BasicSpringEmbedderLayoutAlgorithm autoLayouter = new BasicSpringEmbedderLayoutAlgorithm();
 		autoLayouter.setDefaultEdgeLength(100);
 		autoLayouter.setRepulsiveForce(500.0);
@@ -99,20 +98,16 @@ public class SpringEmbedderLayout extends XYLayout {
 	@Override
 	public void invalidate() {
         if (layoutingInProgress) {
-            System.out.println("Invalidate called during layout process. Ignored.");
             return;
         }
-        System.out.println("Invalidating the Layout");
 		super.invalidate();
 		alg = null;
 	}
 
 	public void initLayout() {
-        System.out.println("Initializing Layout");
     	alg = createAutoLayouter(nodeParent, edgeParent);
 		alg.setSeed(algSeed);
     	// execute the algorithm
-        System.out.println("Executing Layout Algorithm");
     	alg.execute();
 	}
 
@@ -127,7 +122,6 @@ public class SpringEmbedderLayout extends XYLayout {
     @Override
     public void layout(IFigure parent) {
         layoutingInProgress = true;
-        System.out.println("Layouting Started on: "+parent);
     	if (alg == null)
     		initLayout();
 
@@ -156,7 +150,6 @@ public class SpringEmbedderLayout extends XYLayout {
             bounds.translate(-bounds.width / 2, -bounds.height / 2);
             f.setBounds(bounds);
         }
-        System.out.println("Layouting finished.");
         layoutingInProgress = false;
     }
 
