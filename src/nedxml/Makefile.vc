@@ -49,6 +49,7 @@ OBJS= nedelements.obj nedelement.obj nederror.obj \
 # Targets (TBD: build dll)
 #
 all : nedtool.exe nedxml.lib
+	copy nedc.bat $(OMNETPP_BIN_DIR:/=\)
 
 nedtool.exe : nedxml.lib nedtool.obj
 	$(LINK) $(LDFLAGS) /nologo /out:nedtool.exe nedtool.obj $(LIBS) nedxml.lib ../common/common.lib $(XML_LIBS)

@@ -1,3 +1,7 @@
+2006-12-14  Andras Varga
+
+	* nedtool.cc moved to nedxml/
+
 2006-11-06  Andras Varga
 
 	* alternative syntax for properties: @prop or @prop(value)

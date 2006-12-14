@@ -17,25 +17,14 @@ OMNETPP_VERSION=@OMNETPP_VERSION@
 OMNETPP_EDITION=@OMNETPP_EDITION@
 
 #
-# Local definitions (OMNETPP_INCL_DIR is used for platdep/*)
-#
-COPTS=$(CFLAGS) -I$(OMNETPP_INCL_DIR)
-
-#
 # Targets
 #
 all: 
-	chmod +x opp_msgc nedc
+	chmod +x opp_msgc
 	cp opp_msgc $(OMNETPP_BIN_DIR)
-	cp nedc $(OMNETPP_BIN_DIR)
 
 depend:
-	$(MAKEDEPEND) -I. -- *.cc
-	$(MAKEDEPEND) -I. -fMakefile.in -- *.cc
 
 clean:
-	rm -f *.o nedtool *_n.cc
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
-nedtool.o: nedtool.cc \
-  ../utils/ver.h

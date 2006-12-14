@@ -70,6 +70,8 @@ OBJS= nedelements.o nedelement.o nederror.o \
 # Targets
 #
 all : nedtool nedxmllib
+	chmod +x nedc
+	cp nedc $(OMNETPP_BIN_DIR)
 
 nedtool: nedtool.o
 	$(CXX) $(LDFLAGS) -o nedtool nedtool.o -L$(OMNETPP_LIB_DIR) -lnedxml $(XML_LIBS)
