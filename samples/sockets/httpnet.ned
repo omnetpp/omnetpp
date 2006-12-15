@@ -37,7 +37,7 @@ module HTTPNet
             parameters:
                 addr = 1;
                 srvAddr = 0;
-                @display("i=,gold;p=102,92;t=Run the simulation\, then\nenter into your browser:\nhttp://localhost:4242");
+                @display("p=102,92;t=Run the simulation\, then\nenter into your browser:\nhttp://localhost:4242");
         };
         client[numClients]: HTTPClient {
             parameters:

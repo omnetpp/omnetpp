@@ -20,7 +20,6 @@ module Net60a
         rte[57]: Node {
             parameters:
                 address = index;
-                @display("i=,gold");
             gates:
                 in[6];
                 out[6];

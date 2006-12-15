@@ -11,8 +11,6 @@
 
 simple Txc2
 {
-    parameters:
-        @display("i=block/process");
     gates:
         input in;
         output out;
@@ -28,11 +26,11 @@ module Tictoc2
     submodules:
         tic: Txc2 {
             parameters:
-                @display("i=,cyan"); // Note "i=<icon>,<color>"
+                @display("i=block/process,cyan"); // specify an icon and colorize it
         };
         toc: Txc2 {
             parameters:
-                @display("i=,gold"); // Here too
+                @display("i=block/process,gold"); // here too
         };
     connections:
         tic.out --> {  delay = 100ms; } --> toc.in;

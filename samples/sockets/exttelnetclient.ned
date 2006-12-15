@@ -16,7 +16,7 @@ simple ExtTelnetClient
     parameters:
         int addr;
         int srvAddr;
-        @display("i=device/pc2");
+        @display("i=device/pc2,gold");
     gates:
         input in;
         output out;

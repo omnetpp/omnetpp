@@ -46,7 +46,7 @@ module Node
 {
     parameters:
         int address;
-        @display("i=misc/node_vs");
+        @display("i=misc/node_vs,gold");
     gates:
         input in[];
         output out[];

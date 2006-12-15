@@ -20,7 +20,7 @@ import "cloud";
 module TelnetNet
 {
     parameters:
-        int numClients;
+        int numClients = default(3) @prompt("Number of clients:");
     submodules:
         server: TelnetServer {
             parameters:
@@ -37,7 +37,7 @@ module TelnetNet
             parameters:
                 addr = 1;
                 srvAddr = 0;
-                @display("i=,gold;p=102,92;t=Run the simulation\, then start:\ntelnet localhost 4242\nThen if on Unix\, type:\nCtrl+] ``mode character''");
+                @display("p=102,92;t=Run the simulation\, then start:\ntelnet localhost 4242\nThen if on Unix\, type:\nCtrl+] ``mode character''");
         };
         client[numClients]: TelnetClient {
             parameters:
