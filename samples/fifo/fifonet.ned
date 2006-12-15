@@ -25,7 +25,7 @@ module FifoNet
         };
         fifo: FFBitFifo {
             parameters:
-                @display("p=209,100;q=queue");
+                @display("p=209,100");
         };
         sink: FFSink {
             parameters:

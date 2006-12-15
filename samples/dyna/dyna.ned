@@ -37,7 +37,7 @@ simple Switch
     parameters:
         double pkRate;
         int queueMaxLen;
-        @display("i=block/switch");
+        @display("i=block/switch;q=queue");
     gates:
         output out[];
         input in[];
@@ -76,7 +76,7 @@ simple ServerProcess
 module ClientServer
 {
     parameters:
-        int numClients;
+        int numClients = default(4) @prompt("Number of clients:");
     submodules:
         server: Server {
             parameters:
@@ -90,7 +90,7 @@ module ClientServer
                 pkRate = 1.5*numClients;
                 // buffer max 20 packets
                 queueMaxLen = 20;
-                @display("q=queue;p=210,170");
+                @display("p=210,170");
             gates:
                 in[numClients+1];
                 out[numClients+1];
@@ -118,8 +118,6 @@ module ClientServer
 //
 network dyna extends ClientServer
 {
-    parameters:
-        numClients = default(4) @prompt("Number of clients:");
 }
 
 

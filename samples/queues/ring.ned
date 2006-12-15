@@ -22,7 +22,6 @@ module Ring
         fifo[numBuffers]: Fifo {
             parameters:
                 numCells = numCells;
-                @display("q=queue");
         };
     connections:
         for i=0..numBuffers-2 {

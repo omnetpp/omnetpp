@@ -28,7 +28,7 @@ module FifoNet
         fifo[numBuffers]: Fifo {
             parameters:
                 numCells = numCells;
-                @display("p=125,152,m;q=queue");
+                @display("p=125,152,m");
         };
         sink: Sink {
             parameters:

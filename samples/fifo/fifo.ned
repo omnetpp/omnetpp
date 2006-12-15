@@ -15,6 +15,7 @@ simple FFPacketFifo
 {
     parameters:
         volatile double serviceTime;
+        @display("i=block/queue;q=queue");
     gates:
         input in;
         output out;
@@ -28,7 +29,7 @@ simple FFBitFifo
 {
     parameters:
         volatile double bitsPerSec;
-        @display("i=block/queue");
+        @display("i=block/queue;q=queue");
     gates:
         input in;
         output out;

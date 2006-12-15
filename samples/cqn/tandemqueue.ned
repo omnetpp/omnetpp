@@ -36,7 +36,7 @@ module TandemQueue
         };
         queue[numQueues]: Queue {
             parameters:
-                @display("p=60,160,row,80;q=queue");
+                @display("p=60,160,row,80");
             gates:
                 in[(index==0 ? sizeof(in) : 1)];
         };

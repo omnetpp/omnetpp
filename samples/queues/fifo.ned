@@ -14,10 +14,10 @@
 simple Fifo
 {
     parameters:
-        volatile double serviceTime;
         int numCells;
         int numInitJobs;
-        @display("i=block/queue");
+        volatile double serviceTime;
+        @display("i=block/queue;q=queue");
     gates:
         input in;
         output out;

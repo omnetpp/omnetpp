@@ -14,7 +14,7 @@
 simple QPassiveQueue
 {
     parameters:
-        @display("i=block/passiveq");
+        @display("i=block/passiveq;q=queue");
     gates:
         input in;
         output out[];

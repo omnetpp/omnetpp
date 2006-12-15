@@ -26,9 +26,8 @@ module Computer
         int address; // MAC Address of this station.
         double dataRate; // Token Ring data rate in bps.
         double THT; // Token Holding Time, as defined in the protocol.
-        int numStations; // Number of stations. MAC addresses are
-                                     // [0,numStatons-1] integers.
-        @display("i=device/pc4");
+        int numStations; // Number of stations. MAC addresses are 0..numStations-1 integers
+        @display("i=device/pc4;q=sendQueue");
     gates:
         input in;
         output out;
@@ -38,7 +37,7 @@ module Computer
                 address = address;
                 dataRate = dataRate;
                 THT = THT;
-                @display("p=137,166;q=sendQueue");
+                @display("p=137,166");
         };
         gen: Generator {
             parameters:

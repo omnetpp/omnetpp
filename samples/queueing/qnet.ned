@@ -33,7 +33,7 @@ module QNet
         };
         passiveq[3]: QPassiveQueue {
             parameters:
-                @display("p=349,70,column;q=queue");
+                @display("p=349,70,column");
             gates:
                 out[1];
         };

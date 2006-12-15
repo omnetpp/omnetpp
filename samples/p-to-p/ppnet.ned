@@ -33,11 +33,11 @@ module PointToPointNet
         };
         ppIF1: PointToPointIF {
             parameters:
-                @display("p=170,92;q=queue");
+                @display("p=170,92");
         };
         ppIF2: PointToPointIF {
             parameters:
-                @display("p=336,92;q=queue");
+                @display("p=336,92");
         };
         sink: PPSink {
             parameters:
