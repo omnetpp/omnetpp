@@ -54,6 +54,7 @@
      <view
            category="org.omnetpp.views"
            class="org.omnetpp.scave.views.VectorBrowserView"
+           icon="icons/sample.gif"
            id="org.omnetpp.scave.vectorBrowserView"
            name="Vector Browser"/>
   </extension>

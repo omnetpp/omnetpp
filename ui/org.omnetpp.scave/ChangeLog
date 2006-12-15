@@ -1,3 +1,31 @@
+2006-12-15
+----------
+
+Additions
+
+   + Vector file indexer are implemented as a builder. The builder is configured for projects
+     having "omnetppnature".
+
+   + A new wizard added for creating OMNeT++ projects. These projects get the "omnetppnature"
+     when created.
+
+   + A new view was added for displaying the content of a vector file. Open the view and
+     select a vector in the "Browse Data" page to try it out.
+
+   + The filter panel gets reorganized. There is an advanced filter, where the user can 
+     enter a match expression and a simple filter, where the patterns for fields can be
+     selected from combos. The two filter are synchronized. The advanced filter has a content
+     assist (Ctrl+Space), but it not yet finished.
+
+Fixes:
+
+   + Sorting works for newly added columns ('Min','Max', etc) in the data tables.
+
+   + Setting the filter by double-clicking on the Inputs page does not show empty tables.
+     It activates the tab that is not empty after applying the filter.
+
+   + Filtering by run attributes crashed, when some run did not have value for the attribute.
+
 2006-12-01
 ----------
 

@@ -11,7 +11,7 @@ import org.omnetpp.scave.editors.ui.BrowseDataPage;
 import org.omnetpp.scave.engine.ResultFile;
 import org.omnetpp.scave.engine.Run;
 import org.omnetpp.scave.model.InputFile;
-import org.omnetpp.scave.model2.FilterParams;
+import org.omnetpp.scave.model2.Filter;
 import org.omnetpp.scave.model2.RunAttribute;
 
 /**
@@ -30,7 +30,7 @@ public class SetFilterAction extends AbstractScaveAction {
 	@Override
 	protected void doRun(ScaveEditor scaveEditor, IStructuredSelection selection) {
 		Object selected = selection.getFirstElement();
-		FilterParams filter = new FilterParams();
+		Filter filter = new Filter();
 
 		if (getFilterParams(filter, selected)) {
 			BrowseDataPage page = scaveEditor.getBrowseDataPage();
@@ -51,11 +51,11 @@ public class SetFilterAction extends AbstractScaveAction {
 	 * Fills the given filter object with the attributes of the selected object and their ancestors.
 	 * Returns true if the filter is to be applied on the "Browse data" page.
 	 */
-	protected boolean getFilterParams(FilterParams filter, Object object) {
+	protected boolean getFilterParams(Filter filter, Object object) {
 		
 		if (object instanceof InputFile) {
 			InputFile inputFile = (InputFile)object;
-			filter.setFileNamePattern(inputFile.getName());
+			filter.setField(Filter.FIELD_FILENAME, inputFile.getName());
 			return true;
 		}
 		else if (object instanceof GenericTreeNode) {
@@ -67,12 +67,12 @@ public class SetFilterAction extends AbstractScaveAction {
 			
 			if (payload instanceof ResultFile) {
 				ResultFile resultFile = (ResultFile)payload;
-				filter.setFileNamePattern(resultFile.getFilePath());
+				filter.setField(Filter.FIELD_FILENAME, resultFile.getFilePath());
 				return true;
 			}
 			else if (payload instanceof Run) {
 				Run run = (Run)payload;
-				filter.setRunNamePattern(run.getRunName());
+				filter.setField(Filter.FIELD_RUNNAME, run.getRunName());
 				return true;
 			}
 			else if (payload instanceof RunAttribute) {
@@ -80,11 +80,11 @@ public class SetFilterAction extends AbstractScaveAction {
 				String name = attr.getName();
 				String value = attr.getValue();
 				if (EXPERIMENT.equals(name))
-					filter.setExperimentNamePattern(value);
+					filter.setField(Filter.FIELD_EXPERIMENT, value);
 				else if (MEASUREMENT.equals(name))
-					filter.setMeasurementNamePattern(value);
+					filter.setField(Filter.FIELD_MEASUREMENT, value);
 				else if (REPLICATION.equals(name))
-					filter.setReplicationNamePattern(value);
+					filter.setField(Filter.FIELD_REPLICATION, value);
 				return true;
 			}
 		}

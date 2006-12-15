@@ -6,7 +6,7 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Shell;
 import org.omnetpp.scave.model2.FilterHints;
-import org.omnetpp.scave.model2.FilterParams;
+import org.omnetpp.scave.model2.Filter;
 import org.omnetpp.scave.model2.ScaveModelUtil.RunIdKind;
 
 /**
@@ -20,7 +20,7 @@ public abstract class DatasetDialog extends Dialog {
 	private DataItemsPanel panel;
 	
 	private boolean useFilter;
-	private FilterParams filterParams;
+	private Filter filterParams;
 	private FilterHints filterHints;
 	private RunIdKind runIdKind;
 
@@ -29,7 +29,7 @@ public abstract class DatasetDialog extends Dialog {
 		this.dialogTitle = dialogTitle;
 	}
 	
-	public void setFilterParams(FilterParams params) {
+	public void setFilterParams(Filter params) {
 		filterParams = params;
 	}
 	
@@ -45,7 +45,7 @@ public abstract class DatasetDialog extends Dialog {
 		useFilter = flag;
 	}
 	
-	public FilterParams getFilterParams() {
+	public Filter getFilterParams() {
 		return filterParams;
 	}
 	

@@ -14,6 +14,7 @@ import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.model.Dataset;
 import org.omnetpp.scave.model.ScaveModelPackage;
 import org.omnetpp.scave.model.SetOperation;
+import org.omnetpp.scave.model2.Filter;
 import org.omnetpp.scave.model2.FilterHints;
 import org.omnetpp.scave.model2.ScaveModelUtil;
 
@@ -177,13 +178,13 @@ public class SetOperationEditForm implements IScaveObjectEditForm {
 		replicationNameCombo.setVisibleItemCount(VISIBLE_ITEM_COUNT);
 	
 		// set filter hints
-		nameCombo.setItems(filterHints.getDataNameHints());
-		moduleNameCombo.setItems(filterHints.getModuleNameHints());
-		fileNameCombo.setItems(filterHints.getFileNameHints());
-		runNameCombo.setItems(filterHints.getRunNameHints());
-		experimentNameCombo.setItems(filterHints.getExperimentNameHints());
-		measurementNameCombo.setItems(filterHints.getExperimentNameHints());
-		replicationNameCombo.setItems(filterHints.getReplicationNameHints());
+		nameCombo.setItems(filterHints.getHints(Filter.FIELD_DATANAME));
+		moduleNameCombo.setItems(filterHints.getHints(Filter.FIELD_MODULENAME));
+		fileNameCombo.setItems(filterHints.getHints(Filter.FIELD_FILENAME));
+		runNameCombo.setItems(filterHints.getHints(Filter.FIELD_RUNNAME));
+		experimentNameCombo.setItems(filterHints.getHints(Filter.FIELD_EXPERIMENT));
+		measurementNameCombo.setItems(filterHints.getHints(Filter.FIELD_MEASUREMENT));
+		replicationNameCombo.setItems(filterHints.getHints(Filter.FIELD_REPLICATION));
 	}
 	
 	public Object getValue(EStructuralFeature feature) {

@@ -1,18 +1,26 @@
 package org.omnetpp.scave.editors.datatable;
 
+import org.eclipse.jface.bindings.keys.KeyStroke;
+import org.eclipse.jface.bindings.keys.ParseException;
+import org.eclipse.jface.fieldassist.ContentProposalAdapter;
+import org.eclipse.jface.fieldassist.IContentProposal;
+import org.eclipse.jface.fieldassist.IContentProposalProvider;
+import org.eclipse.jface.fieldassist.SimpleContentProposalProvider;
+import org.eclipse.jface.fieldassist.TextContentAdapter;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Text;
 import org.omnetpp.scave.editors.ui.FilterParamsPanel;
 import org.omnetpp.scave.model2.FilterHints;
-import org.omnetpp.scave.model2.FilterParams;
+import org.omnetpp.scave.model2.Filter;
 
 /**
  * A composite with UI elements to filter a data table.
@@ -20,13 +28,12 @@ import org.omnetpp.scave.model2.FilterParams;
  * to do anything useful.
  * @author andras
  */
-// XXX layout of "Filter" label
 public class FilteringPanel extends Composite {
 	
-	private Label filterLabel;
-	private Button showHideButton;
-	private FilterParamsPanel upperPanel;
-	private FilterParamsPanel lowerPanel;
+	private Button toggleFilterTypeButton;
+	private Text advancedFilterText;
+	private FilterParamsPanel simpleFilterPanel;
+	private FilterContentProposalProvider proposalProvider = new FilterContentProposalProvider();
 
 	private Button filterButton;
 
@@ -35,63 +42,62 @@ public class FilteringPanel extends Composite {
 		initialize();
 	}
 	
+	public Text getFilterText() {
+		return advancedFilterText;
+	}
+	
 	public CCombo getModuleNameCombo() {
-		return upperPanel.getModuleCombo();
+		return simpleFilterPanel.getModuleCombo();
 	}
 
 	public CCombo getNameCombo() {
-		return upperPanel.getDataCombo();
+		return simpleFilterPanel.getDataCombo();
 	}
 
 	public CCombo getFileNameCombo() {
-		return lowerPanel.getFileCombo();
+		return simpleFilterPanel.getFileCombo();
 	}
 	
 	public CCombo getRunNameCombo() {
-		return lowerPanel.getRunCombo();
+		return simpleFilterPanel.getRunCombo();
 	}
 
 	public CCombo getExperimentNameCombo() {
-		return lowerPanel.getExperimentCombo();
+		return simpleFilterPanel.getExperimentCombo();
 	}
 	
 	public CCombo getMeasurementNameCombo() {
-		return lowerPanel.getMeasurementCombo();
+		return simpleFilterPanel.getMeasurementCombo();
 	}
 
 	public CCombo getReplicationNameCombo() {
-		return lowerPanel.getReplicationCombo();
+		return simpleFilterPanel.getReplicationCombo();
 	}
 
 	public Button getFilterButton() {
 		return filterButton;
 	}
 	
-	public void setFilterText(String text) {
-		filterLabel.setText("Filter: " + text);
+	public Filter getFilterParams() {
+		return new Filter(advancedFilterText.getText());
+		//return simpleFilterPanel.getFilterParams();
 	}
 	
-	public FilterParams getFilterParams() {
-		FilterParams upperParams = upperPanel.getFilterParams();
-		FilterParams lowerParams = lowerPanel.getFilterParams();
-		return new FilterParams(
-			lowerParams.getFileNamePattern(),
-			lowerParams.getRunNamePattern(),
-			lowerParams.getExperimentNamePattern(),
-			lowerParams.getMeasurementNamePattern(),
-			lowerParams.getReplicationNamePattern(),
-			upperParams.getModuleNamePattern(),
-			upperParams.getDataNamePattern());
-	}
-	
-	public void setFilterParams(FilterParams params) {
-		upperPanel.setFilterParams(params);
-		lowerPanel.setFilterParams(params);
+	public void setFilterParams(Filter params) {
+		simpleFilterPanel.setFilterParams(params);
 	}
 	
 	public void setFilterHints(FilterHints hints) {
-		upperPanel.setFilterHints(hints);
-		lowerPanel.setFilterHints(hints);
+		simpleFilterPanel.setFilterHints(hints);
+		proposalProvider.setFilterHints(hints);
+	}
+	
+	public String getFilterPattern() {
+		return advancedFilterText.getText();
+	}
+	
+	public void setFilterText(String filterText) {
+		advancedFilterText.setText(filterText);
 	}
 
 	private void initialize() {
@@ -101,53 +107,71 @@ public class FilteringPanel extends Composite {
 		gridLayout.marginHeight = 0;
 		this.setLayout(gridLayout);
 		
-		Composite firstRow = new Composite(this, SWT.NONE);
-		firstRow.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
-		gridLayout = new GridLayout(4, false);
+		Composite filterContainer = new Composite(this, SWT.NONE);
+		filterContainer.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+		gridLayout = new GridLayout(3, false);
 		gridLayout.marginHeight = 0;
-		firstRow.setLayout(gridLayout);
+		filterContainer.setLayout(gridLayout);
 		
-		filterLabel = new Label(firstRow, SWT.WRAP);
-		filterLabel.setText("Filter: ");
-		filterLabel.setLayoutData(new GridData(200, SWT.DEFAULT));
+		final Composite advancedFilterPanel = new Composite(filterContainer, SWT.NONE);
+		advancedFilterPanel.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+		advancedFilterPanel.setLayout(new GridLayout(2, false));
+
+		Label filterLabel = new Label(advancedFilterPanel, SWT.NONE);
+		filterLabel.setText("Filter:");
+		filterLabel.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false, false));
 		
-		upperPanel = new FilterParamsPanel(firstRow, SWT.NONE, FilterParamsPanel.MODULE_NAME_ROW);
-		upperPanel.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+		advancedFilterText = new Text(advancedFilterPanel, SWT.SINGLE | SWT.BORDER);
+		advancedFilterText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 		
-		filterButton = new Button(firstRow, SWT.NONE);
+		new ContentProposalAdapter(
+				advancedFilterText, new TextContentAdapter(), 
+				proposalProvider,
+				getProposalKeyStroke(), null);
+
+		simpleFilterPanel = new FilterParamsPanel(filterContainer, SWT.NONE);
+		simpleFilterPanel.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+		setVisible(simpleFilterPanel, false);
+		
+		filterButton = new Button(filterContainer, SWT.NONE);
 		filterButton.setText("Filter");
-		filterButton.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false, false));
+		filterButton.setLayoutData(new GridData(SWT.CENTER, SWT.TOP, false, false));
 	
-		showHideButton = new Button(firstRow, SWT.PUSH);
-		showHideButton.setText("More");
-		showHideButton.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false, false));
+		toggleFilterTypeButton = new Button(filterContainer, SWT.PUSH);
+		toggleFilterTypeButton.setText("Simple");
+		toggleFilterTypeButton.setLayoutData(new GridData(SWT.CENTER, SWT.TOP, false, false));
 		
-		final Composite showHidePanel = new Composite(this, SWT.NONE);
-		GridData gridData = new GridData(SWT.FILL, SWT.BEGINNING, true, false);
-		gridData.exclude = true;
-		showHidePanel.setVisible(false);
-		showHidePanel.setLayoutData(gridData);
-		showHidePanel.setLayout(new GridLayout(2, false));
-		
-		lowerPanel = new FilterParamsPanel(showHidePanel, SWT.NONE,
-				FilterParamsPanel.FILE_RUN_ROW | FilterParamsPanel.EXPERIMENT_MEASUREMENT_REPLICATION_ROW);
-		lowerPanel.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false));
-		
-		showHideButton.addSelectionListener(new SelectionAdapter() {
+		toggleFilterTypeButton.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
-				if (showHidePanel.isVisible()) {
-					showHidePanel.setVisible(false);
-					((GridData)showHidePanel.getLayoutData()).exclude = true;
-					showHideButton.setText("More");
+				if (advancedFilterPanel.isVisible()) {
+					simpleFilterPanel.setFilterParams(new Filter(getFilterPattern()));
+					setVisible(advancedFilterPanel, false);
+					setVisible(simpleFilterPanel, true);
+					toggleFilterTypeButton.setText("Advanced");
 				}
 				else {
-					showHidePanel.setVisible(true);
-					((GridData)showHidePanel.getLayoutData()).exclude = false;
-					showHideButton.setText("Hide");
+					advancedFilterText.setText(simpleFilterPanel.getFilterParams().getFilterPattern());
+					setVisible(simpleFilterPanel, false);
+					setVisible(advancedFilterPanel, true);
+					toggleFilterTypeButton.setText("Simple");
 				}
 				
-				showHidePanel.getParent().getParent().layout(true, true);
+				getParent().layout(true, true);
 			}
 		});
 	}
+	
+	private static void setVisible(Control control, boolean visible) {
+		control.setVisible(visible);
+		((GridData)control.getLayoutData()).exclude = !visible;
+	}
+	
+	private static KeyStroke getProposalKeyStroke() {
+		try {
+			return KeyStroke.getInstance("Ctrl+Space");
+		} catch (ParseException e) {
+			return null;
+		}
+	}
+	
 }

@@ -4,6 +4,9 @@ import static org.omnetpp.scave.model2.RunAttribute.EXPERIMENT;
 import static org.omnetpp.scave.model2.RunAttribute.MEASUREMENT;
 import static org.omnetpp.scave.model2.RunAttribute.REPLICATION;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.engine.ResultFileList;
 import org.omnetpp.scave.engine.ResultFileManager;
@@ -14,14 +17,8 @@ import org.omnetpp.scave.model.DatasetType;
 public class FilterHints {
 	private static final String[] EMPTY = new String[0];
 	
-	private String[] fileNameHints;
-	private String[] runNameHints;
-	private String[] experimentNameHints;
-	private String[] measurementNameHints;
-	private String[] replicationNameHints;
-	private String[] moduleNameHints;
-	private String[] dataNameHints;
-	
+	private Map<String,String[]> hints = new HashMap<String, String[]>();
+
 	public FilterHints() {
 	}
 	
@@ -33,13 +30,24 @@ public class FilterHints {
 		ResultFileList fileList = manager.getUniqueFiles(idlist);
 		RunList runList = manager.getUniqueRuns(idlist);
 		
-		setFileNameHints(getFileNameFilterHints(fileList));
-		setRunNameHints(getRunNameFilterHints(runList));
-		setModuleNameHints(manager.getModuleFilterHints(idlist).toArray());
-		setDataNameHints(manager.getNameFilterHints(idlist).toArray());
-		setExperimentNameHints(getFilterHintsForRunAttribute(manager, runList, EXPERIMENT));
-		setMeasurementNameHints(getFilterHintsForRunAttribute(manager, runList, MEASUREMENT));
-		setReplicationNameHints(getFilterHintsForRunAttribute(manager, runList, REPLICATION));
+		setHints(Filter.FIELD_FILENAME, getFileNameFilterHints(fileList));
+		setHints(Filter.FIELD_RUNNAME, getRunNameFilterHints(runList));
+		setHints(Filter.FIELD_MODULENAME, manager.getModuleFilterHints(idlist).toArray());
+		setHints(Filter.FIELD_DATANAME, manager.getNameFilterHints(idlist).toArray());
+		setHints(Filter.FIELD_EXPERIMENT, getFilterHintsForRunAttribute(manager, runList, EXPERIMENT));
+		setHints(Filter.FIELD_REPLICATION, getFilterHintsForRunAttribute(manager, runList, MEASUREMENT));
+		setHints(Filter.FIELD_MEASUREMENT, getFilterHintsForRunAttribute(manager, runList, REPLICATION));
+	}
+	
+	public String[] getHints(String fieldName) {
+		if (hints.containsKey(fieldName))
+			return hints.get(fieldName);
+		else
+			return EMPTY;
+	}
+	
+	public void setHints(String fieldName, String[] value) {
+		this.hints.put(fieldName, value);
 	}
 	
 	private static String[] getFileNameFilterHints(ResultFileList fileList) {
@@ -68,50 +76,5 @@ public class FilterHints {
 		for (int i = 0; i < values.size(); ++i)
 			filterHints[i+1] = values.get(i);
 		return filterHints;
-	}
-	
-
-	public String[] getFileNameHints() {
-		return fileNameHints != null ? fileNameHints : EMPTY;
-	}
-	public String[] getRunNameHints() {
-		return runNameHints != null ? runNameHints : EMPTY;
-	}
-	public String[] getExperimentNameHints() {
-		return experimentNameHints != null ? experimentNameHints : EMPTY;
-	}
-	public String[] getMeasurementNameHints() {
-		return measurementNameHints != null ? measurementNameHints : EMPTY;
-	}
-	public String[] getReplicationNameHints() {
-		return replicationNameHints != null ? replicationNameHints : EMPTY;
-	}
-	public String[] getModuleNameHints() {
-		return moduleNameHints != null ? moduleNameHints : EMPTY;
-	}
-	public String[] getDataNameHints() {
-		return dataNameHints != null ? dataNameHints : EMPTY;
-	}
-	
-	public void setDataNameHints(String[] dataNameHints) {
-		this.dataNameHints = dataNameHints;
-	}
-	public void setExperimentNameHints(String[] experimentNameHints) {
-		this.experimentNameHints = experimentNameHints;
-	}
-	public void setFileNameHints(String[] fileNameHints) {
-		this.fileNameHints = fileNameHints;
-	}
-	public void setMeasurementNameHints(String[] measurementNameHints) {
-		this.measurementNameHints = measurementNameHints;
-	}
-	public void setModuleNameHints(String[] moduleNameHints) {
-		this.moduleNameHints = moduleNameHints;
-	}
-	public void setReplicationNameHints(String[] replicationNameHints) {
-		this.replicationNameHints = replicationNameHints;
-	}
-	public void setRunNameHints(String[] runNameHints) {
-		this.runNameHints = runNameHints;
 	}
 }

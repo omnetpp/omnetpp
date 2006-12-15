@@ -63,11 +63,11 @@ public class ScaveModelUtil {
 		return chartsheet;
 	}
 	
-	public static Dataset createDataset(String name, DatasetType type, FilterParams params) {
+	public static Dataset createDataset(String name, DatasetType type, Filter filter) {
 		Dataset dataset = factory.createDataset();
 		dataset.setName(name);
 		dataset.setType(type);
-		dataset.getItems().add(createAdd(params));
+		dataset.getItems().add(createAdd(filter));
 		return dataset;
 	}
 	
@@ -85,15 +85,15 @@ public class ScaveModelUtil {
 		return chart;
 	}
 	
-	public static Add createAdd(FilterParams params) {
+	public static Add createAdd(Filter filter) {
 		Add add = factory.createAdd();
-		add.setFilenamePattern(params.getFileNamePattern());
-		add.setRunNamePattern(params.getRunNamePattern());
-		add.setExperimentNamePattern(params.getExperimentNamePattern());
-		add.setMeasurementNamePattern(params.getMeasurementNamePattern());
-		add.setReplicationNamePattern(params.getReplicationNamePattern());
-		add.setModuleNamePattern(params.getModuleNamePattern());
-		add.setNamePattern(params.getDataNamePattern());
+		add.setFilenamePattern(filter.getField(Filter.FIELD_FILENAME));
+		add.setRunNamePattern(filter.getField(Filter.FIELD_RUNNAME));
+		add.setExperimentNamePattern(filter.getField(Filter.FIELD_EXPERIMENT));
+		add.setMeasurementNamePattern(filter.getField(Filter.FIELD_MEASUREMENT));
+		add.setReplicationNamePattern(filter.getField(Filter.FIELD_REPLICATION));
+		add.setModuleNamePattern(filter.getField(Filter.FIELD_MODULENAME));
+		add.setNamePattern(filter.getField(Filter.FIELD_DATANAME));
 		return add;
 	}
 	
@@ -310,20 +310,27 @@ public class ScaveModelUtil {
 		return null;
 	}
 	
-	public static IDList filterIDList(IDList idlist, FilterParams params, ResultFileManager manager) {
-		ResultFileList fileList = params.getFileNamePattern().length() > 0 ?
-				manager.filterFileList(manager.getFiles(), params.getFileNamePattern()) : null;
-		StringMap attrs = new StringMap();
-		addAttribute(attrs, EXPERIMENT, params.getExperimentNamePattern());
-		addAttribute(attrs, MEASUREMENT, params.getMeasurementNamePattern());
-		addAttribute(attrs, REPLICATION, params.getReplicationNamePattern());
-		String runNamePattern = params.getRunNamePattern().length() > 0 ? params.getRunNamePattern() : "*";
-		RunList runList = params.getRunNamePattern().length() > 0 || attrs.size() > 0 ?
-				manager.filterRunList(manager.getRuns(), runNamePattern, attrs) : null;
-		FileRunList fileRunFilter = manager.getFileRuns(fileList, runList);
-		IDList filteredIDList = manager.filterIDList(idlist,
-				fileRunFilter, params.getModuleNamePattern(), params.getDataNamePattern());
-		return filteredIDList;
+	public static IDList filterIDList(IDList idlist, Filter params, ResultFileManager manager) {
+		if (params.getFilterPattern() != null) {
+			return manager.filterIDList(idlist, params.getFilterPattern());
+		}
+		else {
+			String fileNamePattern = params.getField(Filter.FIELD_FILENAME);
+			ResultFileList fileList = fileNamePattern.length() > 0 ?
+					manager.filterFileList(manager.getFiles(), fileNamePattern) : null;
+			StringMap attrs = new StringMap();
+			addAttribute(attrs, EXPERIMENT, params.getField(Filter.FIELD_EXPERIMENT));
+			addAttribute(attrs, MEASUREMENT, params.getField(Filter.FIELD_MEASUREMENT));
+			addAttribute(attrs, REPLICATION, params.getField(Filter.FIELD_REPLICATION));
+			String runNamePattern = params.getField(Filter.FIELD_RUNNAME);
+			RunList runList = runNamePattern.length() > 0 || attrs.size() > 0 ?
+					manager.filterRunList(manager.getRuns(), (runNamePattern.length() > 0 ? runNamePattern : "*"), attrs) :
+					null;
+			FileRunList fileRunFilter = manager.getFileRuns(fileList, runList);
+			IDList filteredIDList = manager.filterIDList(idlist,
+					fileRunFilter, params.getField(Filter.FIELD_MODULENAME), params.getField(Filter.FIELD_DATANAME));
+			return filteredIDList;
+		}
 	}
 	
 	private static void addAttribute(StringMap attrs, String name, String value) {

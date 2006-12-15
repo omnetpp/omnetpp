@@ -247,6 +247,8 @@ class ResultFileManager
                         const char *moduleFilter,
                         const char *nameFilter);
 
+    IDList filterIDList(const IDList &idlist, const char *pattern) const;
+
     // loading files. fileName is the file path in the Eclipse workspace; the file is actually read from fileSystemFileName
     ResultFile *loadFile(const char *fileName, const char *fileSystemFileName=NULL);
     void unloadFile(ResultFile *file);

@@ -23,6 +23,7 @@
 #include <memory>
 #include <algorithm>
 #include <sys/stat.h>
+#include "matchexpression.h"
 #include "patternmatcher.h"
 #include "resultfilemanager.h"
 #include "filetokenizer.h"
@@ -492,6 +493,60 @@ IDList ResultFileManager::filterIDList(const IDList& idlist,
         // (note: uncheckedAdd() is fine: if input IDList didn't contain duplicates,
         // the result won't either)
         out.uncheckedAdd(id);
+    }
+    return out;
+}
+
+class MatchableResultItem : public MatchExpression::Matchable
+{
+    const ResultItem &item;
+
+    public:
+        MatchableResultItem(const ResultItem &item) : item(item) {}
+        virtual const char *getDefaultAttribute() const;
+        virtual const char *getAttribute(const char *name) const;
+    private:
+        const char *getName() const { return item.nameRef->c_str(); }
+        const char *getModuleName() const { return item.moduleNameRef->c_str(); }
+        const char *getFileName() const { return item.fileRunRef->fileRef->fileName.c_str(); }
+        const char *getRunName() const { return item.fileRunRef->runRef->runName.c_str(); }
+        const char *getRunAttribute(const char *attrName) const { return item.fileRunRef->runRef->getAttribute(attrName); }
+};
+
+const char *MatchableResultItem::getDefaultAttribute() const
+{
+    return getName();
+}
+
+const char *MatchableResultItem::getAttribute(const char *name) const
+{
+    if (stricmp("name", name) == 0)
+        return getName();
+    else if (stricmp("module", name) == 0)
+        return getModuleName();
+    else if (stricmp("file", name) == 0)
+        return getFileName();
+    else if (stricmp("run", name) == 0)
+        return getRunName();
+    else
+        return getRunAttribute(name);
+}
+
+IDList ResultFileManager::filterIDList(const IDList &idlist, const char *pattern) const
+{
+    if (pattern == NULL || pattern[0] == '\0') // no filter
+        pattern = "*";
+
+    MatchExpression matchExpr(pattern, true /*dottedpath*/, true /*fullstring*/, true /*casesensitive*/);
+    IDList out;
+    int sz = idlist.size();
+    for (int i=0; i<sz; ++i)
+    {
+        ID id = idlist.get(i);
+        const ResultItem &item = getItem(id);
+        MatchableResultItem matchable(item);
+        if (matchExpr.matches(&matchable))
+            out.uncheckedAdd(id);
     }
     return out;
 }

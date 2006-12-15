@@ -11,7 +11,7 @@ import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.omnetpp.scave.model2.FilterHints;
-import org.omnetpp.scave.model2.FilterParams;
+import org.omnetpp.scave.model2.Filter;
 import org.omnetpp.scave.model2.ScaveModelUtil.RunIdKind;
 
 /**
@@ -52,11 +52,11 @@ public class DataItemsPanel extends Composite {
 				RunIdKind.FILE_RUN : RunIdKind.EXPERIMENT_MEASUREMENT_REPLICATION;
 	}
 	
-	public FilterParams getFilterParams() {
+	public Filter getFilterParams() {
 		return filterParamsPanel.getFilterParams();
 	}
 	
-	public void setFilterParams(FilterParams params) {
+	public void setFilterParams(Filter params) {
 		filterParamsPanel.setFilterParams(params);
 	}
 	

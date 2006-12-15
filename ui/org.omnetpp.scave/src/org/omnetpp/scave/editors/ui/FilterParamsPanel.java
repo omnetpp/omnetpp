@@ -7,7 +7,7 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.omnetpp.scave.model2.FilterHints;
-import org.omnetpp.scave.model2.FilterParams;
+import org.omnetpp.scave.model2.Filter;
 
 /**
  * A composite for displaying and editing the filter parameters.
@@ -55,7 +55,7 @@ public class FilterParamsPanel extends Composite {
 		this(parent, style, ALL_ROWS);
 	}
 	
-	public FilterParamsPanel(Composite parent, int style, int rows) {
+	private FilterParamsPanel(Composite parent, int style, int rows) { // TODO
 		super(parent, style);
 		this.rows = rows;
 		initialize();
@@ -89,8 +89,8 @@ public class FilterParamsPanel extends Composite {
 		return runCombo;
 	}
 
-	public FilterParams getFilterParams() {
-		return new FilterParams(
+	public Filter getFilterParams() {
+		return new Filter(
 				fileCombo != null ? fileCombo.getText() : null,
 				runCombo != null ? runCombo.getText() : null,
 				experimentCombo != null ? experimentCombo.getText() : null,
@@ -100,24 +100,24 @@ public class FilterParamsPanel extends Composite {
 				dataCombo != null ? dataCombo.getText() : null);
 	}
 	
-	public void setFilterParams(FilterParams params) {
-		if (fileCombo != null) fileCombo.setText(params.getFileNamePattern());
-		if (runCombo != null) runCombo.setText(params.getRunNamePattern());
-		if (experimentCombo != null) experimentCombo.setText(params.getExperimentNamePattern());
-		if (measurementCombo != null) measurementCombo.setText(params.getMeasurementNamePattern());
-		if (replicationCombo != null) replicationCombo.setText(params.getReplicationNamePattern());
-		if (moduleCombo != null) moduleCombo.setText(params.getModuleNamePattern());
-		if (dataCombo != null) dataCombo.setText(params.getDataNamePattern());
+	public void setFilterParams(Filter params) {
+		if (fileCombo != null) fileCombo.setText(params.getField(Filter.FIELD_FILENAME));
+		if (runCombo != null) runCombo.setText(params.getField(Filter.FIELD_RUNNAME));
+		if (experimentCombo != null) experimentCombo.setText(params.getField(Filter.FIELD_EXPERIMENT));
+		if (measurementCombo != null) measurementCombo.setText(params.getField(Filter.FIELD_MEASUREMENT));
+		if (replicationCombo != null) replicationCombo.setText(params.getField(Filter.FIELD_REPLICATION));
+		if (moduleCombo != null) moduleCombo.setText(params.getField(Filter.FIELD_MODULENAME));
+		if (dataCombo != null) dataCombo.setText(params.getField(Filter.FIELD_DATANAME));
 	}
 	
 	public void setFilterHints(FilterHints hints) {
-		if (fileCombo != null) fileCombo.setItems(hints.getFileNameHints());
-		if (runCombo != null) runCombo.setItems(hints.getRunNameHints());
-		if (experimentCombo != null) experimentCombo.setItems(hints.getExperimentNameHints());
-		if (measurementCombo != null) measurementCombo.setItems(hints.getMeasurementNameHints());
-		if (replicationCombo != null) replicationCombo.setItems(hints.getReplicationNameHints());
-		if (moduleCombo != null) moduleCombo.setItems(hints.getModuleNameHints());
-		if (dataCombo != null) dataCombo.setItems(hints.getDataNameHints());
+		if (fileCombo != null) fileCombo.setItems(hints.getHints(Filter.FIELD_FILENAME));
+		if (runCombo != null) runCombo.setItems(hints.getHints(Filter.FIELD_RUNNAME));
+		if (experimentCombo != null) experimentCombo.setItems(hints.getHints(Filter.FIELD_EXPERIMENT));
+		if (measurementCombo != null) measurementCombo.setItems(hints.getHints(Filter.FIELD_MEASUREMENT));
+		if (replicationCombo != null) replicationCombo.setItems(hints.getHints(Filter.FIELD_REPLICATION));
+		if (moduleCombo != null) moduleCombo.setItems(hints.getHints(Filter.FIELD_MODULENAME));
+		if (dataCombo != null) dataCombo.setItems(hints.getHints(Filter.FIELD_DATANAME));
 	}
 
 	private void initialize() {

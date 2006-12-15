@@ -12,7 +12,7 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.engineext.ResultFileManagerEx;
 import org.omnetpp.scave.model2.FilterHints;
-import org.omnetpp.scave.model2.FilterParams;
+import org.omnetpp.scave.model2.Filter;
 import org.omnetpp.scave.model2.ScaveModelUtil;
 
 /**
@@ -92,6 +92,7 @@ public class FilteredDataPanel extends Composite {
 			
 		// when the filter button gets pressed, update the table
 		filterPanel.getFilterButton().addSelectionListener(selectionListener);
+		filterPanel.getFilterText().addSelectionListener(selectionListener);
 		filterPanel.getFileNameCombo().addSelectionListener(selectionListener);
 		filterPanel.getRunNameCombo().addSelectionListener(selectionListener);
 		filterPanel.getExperimentNameCombo().addSelectionListener(selectionListener);
@@ -112,18 +113,17 @@ public class FilteredDataPanel extends Composite {
 	protected void runFilter() {
 		// run the filter on the unfiltered IDList, and set the result to the table
 		if (idlist != null) {
-			FilterParams params = getFilterParams();
+			Filter params = getFilterParams();
 			IDList filteredIDList = ScaveModelUtil.filterIDList(idlist, params, table.getResultFileManager());
 			table.setIDList(filteredIDList);
-			filterPanel.setFilterText(params.toString());
 		}
 	}
 	
-	public FilterParams getFilterParams() {
+	public Filter getFilterParams() {
 		return filterPanel.getFilterParams();
 	}
 	
-	public void setFilterParams(FilterParams params) {
+	public void setFilterParams(Filter params) {
 		filterPanel.setFilterParams(params);
 		runFilter();
 	}

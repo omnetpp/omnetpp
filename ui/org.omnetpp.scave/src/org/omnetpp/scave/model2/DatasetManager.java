@@ -270,6 +270,6 @@ public class DatasetManager {
 							  sourceDataset == null ? ScaveModelUtil.getAllIDs(manager, type) :
 							  DatasetManager.getIDListFromDataset(manager, sourceDataset, null);
 								
-		return ScaveModelUtil.filterIDList(sourceIDList, new FilterParams(op), manager);
+		return ScaveModelUtil.filterIDList(sourceIDList, new Filter(op), manager);
 	}
 }
