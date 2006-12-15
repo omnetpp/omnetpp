@@ -4,8 +4,10 @@
       label="OMNeT++ Integrated Development Environment Feature"
       version="4.0.0"
       provider-name="OpenSim Ltd."
-      os="win32"
-      ws="win32">
+      plugin="org.omnetpp.main"
+      os="linux,macosx,win32"
+      ws="carbon,gtk,win32"
+      arch="x86">
 
    <description url="http://www.omnetpp.org/">
       This is an Integrated Development Environment for the OMNeT++/OMNEST
@@ -38,6 +40,10 @@ We hope you&apos;ll enjoy working with OMNeT++/OMNEST.
       [Enter License Description here.]
    </license>
 
+   <url>
+      <update label="OMNEST/OMNeT++ IDE Update Site" url="http://www.omnetpp.org/update/omnetppide"/>
+   </url>
+
    <requires>
       <import plugin="org.eclipse.core.runtime"/>
       <import plugin="org.eclipse.core.filesystem"/>
@@ -47,15 +53,12 @@ We hope you&apos;ll enjoy working with OMNeT++/OMNEST.
       <import plugin="org.eclipse.draw2d"/>
       <import plugin="org.eclipse.ui.ide"/>
       <import plugin="org.eclipse.gef"/>
-      <import plugin="org.eclipse.core.resources"/>
       <import plugin="org.eclipse.jface.text"/>
+      <import plugin="org.eclipse.core.resources"/>
       <import plugin="org.eclipse.ui.editors"/>
       <import plugin="org.eclipse.ui.workbench.texteditor"/>
       <import plugin="org.eclipse.ui.workbench"/>
       <import plugin="org.eclipse.ui.forms"/>
-      <import plugin="org.eclipse.emf.ecore"/>
-      <import plugin="org.junit"/>
-      <import plugin="org.eclipse.emf.edit"/>
       <import plugin="org.eclipse.emf.ecore.xmi"/>
       <import plugin="org.eclipse.emf.edit.ui"/>
    </requires>

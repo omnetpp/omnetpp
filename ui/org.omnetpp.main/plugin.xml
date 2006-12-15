@@ -2,14 +2,41 @@
 <?eclipse version="3.2"?>
 <plugin>
 
-   <extension
-         id="product"
-         point="org.eclipse.core.runtime.products">
-      <product
-            application="org.eclipse.ui.ide.workbench"
-            name="OMNeT++ IDE">
-      </product>
-   </extension>
+     <extension id="ide" 
+         name="OMNeT++ Integrated Development Environment"
+	 point="org.eclipse.core.runtime.products"> 
+      <product name="OMNeT++ IDE" application="org.eclipse.ui.ide.workbench" description="%productBlurb"> 
+          <property name="appName" value="OMNeT++ Integrated Development Environment"/> 
+          <property name="preferenceCustomization" value="plugin_customization.ini"/> 
+         <property
+          		name="introTitle"
+          		value="Intro title"/>
+          <property
+          		name="introBrandingImage"
+          		value="product:intro-eclipse.png"/>
+          <property
+          		name="introBrandingImageText"
+          		value="%productIntroBrandingText"/>
+		  <property
+				name="introDescription-overview"
+				value="%introDescription-overview"/>
+		  <property
+				name="introDescription-tutorials"
+				value="%introDescription-tutorials"/>
+		  <property
+				name="introDescription-samples"
+				value="%introDescription-samples"/>
+    <property
+          name="startupForegroundColor"
+          value="000000"/>
+    <property
+          name="startupMessageRect"
+          value="0,0,0,0"/>
+    <property
+          name="startupProgressRect"
+          value="0,0,0,0"/>                
+      </product> 
+   </extension> 
    <extension
          id="omnetppnature"
          name="OMNeT++ Nature"
@@ -43,7 +70,7 @@
          point="org.eclipse.ui.views">
       <category
             id="org.omnetpp.views"
-            name="OMNet++"/>
+            name="OMNeT++"/>
    </extension>
 
 </plugin>
