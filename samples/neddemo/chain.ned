@@ -11,6 +11,8 @@
 
 simple ChainNode
 {
+    parameters:
+        @display("i=misc/node_s");
     gates:
         input left;
         output right;
@@ -22,10 +24,7 @@ module Chain
     parameters:
         int n;
     submodules:
-        node[n]: ChainNode {
-            parameters:
-                @display("i=misc/node_s");
-        };
+        node[n]: ChainNode;
     connections allowunconnected:
         for i=0..n-2 {
             node[i].right --> node[i+1].left;

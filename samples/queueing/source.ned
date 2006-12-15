@@ -15,6 +15,7 @@ simple QSource
 {
     parameters:
         volatile double sendIATime;
+        @display("i=block/source");
     gates:
         output out;
 }

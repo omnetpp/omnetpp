@@ -15,6 +15,8 @@
 //
 simple QClassifier
 {
+    parameters:
+        @display("i=block/fork");
     gates:
         input in;
         output out[];

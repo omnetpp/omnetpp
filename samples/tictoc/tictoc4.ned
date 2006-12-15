@@ -12,6 +12,7 @@ simple Txc4
 {
     parameters:
         int limit;  // declare the new parameter
+        @display("i=block/process");
     gates:
         input in;
         output out;
@@ -26,12 +27,12 @@ module Tictoc4
         tic: Txc4 {
             parameters:
                 limit = 8;  // tic's limit is 8
-                @display("i=block/process,cyan");
+                @display("i=,cyan");
         };
         toc: Txc4 {
             parameters:
                 // note that we leave toc's limit unbound here
-                @display("i=block/process,gold");
+                @display("i=,gold");
         };
     connections:
         tic.out --> {  delay = 100ms; } --> toc.in;

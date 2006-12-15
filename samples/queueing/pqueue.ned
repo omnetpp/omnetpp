@@ -13,6 +13,8 @@
 //
 simple QPassiveQueue
 {
+    parameters:
+        @display("i=block/passiveq");
     gates:
         input in;
         output out[];

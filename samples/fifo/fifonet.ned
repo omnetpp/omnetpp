@@ -21,15 +21,15 @@ module FifoNet
     submodules:
         gen: FFGenerator {
             parameters:
-                @display("p=89,100;i=block/source");
+                @display("p=89,100");
         };
         fifo: FFBitFifo {
             parameters:
-                @display("p=209,100;i=block/queue;q=queue");
+                @display("p=209,100;q=queue");
         };
         sink: FFSink {
             parameters:
-                @display("p=329,100;i=block/sink");
+                @display("p=329,100");
         };
     connections:
         gen.out --> fifo.in;

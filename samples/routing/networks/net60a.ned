@@ -15,15 +15,17 @@ import "../node";
 // a simplex link from node[55] to node[0]. (See end of NED code.)
 //
 module Net60a
+{
     submodules:
-        rte: Node[57];
+        rte[57]: Node {
             parameters:
                 address = index;
-            gatesizes:
-                in[6],
+                @display("i=,gold");
+            gates:
+                in[6];
                 out[6];
-            display: "i=misc/node_vs,gold";
-    connections nocheck:
+        };
+    connections allowunconnected:
         rte[0].out[0] --> rte[1].in[0];
         rte[0].in[0] <-- rte[1].out[0];
 
@@ -269,8 +271,9 @@ module Net60a
 
         // the "extra" connection, compared to net60
         rte[55].out[2] --> rte[0].in[1];
-endmodule
+}
 
-network net60a : Net60a
-endnetwork
+network net60a extends Net60a
+{
+}
 

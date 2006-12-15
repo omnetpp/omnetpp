@@ -13,6 +13,8 @@
 //
 simple PPSink
 {
+    parameters:
+        @display("i=block/sink");
     gates:
         input in;
 }

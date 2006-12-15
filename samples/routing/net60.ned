@@ -19,7 +19,7 @@ module Net60
         rte[57]: Node {
             parameters:
                 address = index;
-                @display("i=misc/node_vs,gold");
+                @display("i=,gold");
         };
     connections allowunconnected:
         rte[0].out++ --> rte[1].in++;

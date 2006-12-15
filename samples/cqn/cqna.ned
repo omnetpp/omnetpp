@@ -26,16 +26,16 @@ module ClosedQueueingNetA
         // switches
         switch[numTandems]: Switch {
             parameters:
-                @display("p=60,60,m,1;i=block/switch");
+                @display("p=60,60,m,1");
             gates:
                 out[numTandems];
         };
         // queues
         queue[numTandems*numQueuesPerTandem]: Queue {
             parameters:
-                @display("p=150,90,m,$numQueuesPerTandem;i=block/queue");
+                @display("p=150,90,m,$numQueuesPerTandem");
             gates:
-                in[index%numQueuesPerTandem==0 ? numTandems : 1];
+                in[(index%numQueuesPerTandem==0 ? numTandems : 1)];
         };
     connections:
         // connect switches to 1st queues

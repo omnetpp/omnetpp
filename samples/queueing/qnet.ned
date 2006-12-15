@@ -19,37 +19,37 @@ module QNet
     submodules:
         enter: QSource {
             parameters:
-                @display("p=63,130;i=block/source");
+                @display("p=63,130");
         };
         classifier: QClassifier {
             parameters:
-                @display("p=160,130;i=block/fork");
+                @display("p=160,130");
             gates:
                 out[3];
         };
         delay_[3]: QDelay {
             parameters:
-                @display("p=263,70,column;i=block/delay");
+                @display("p=263,70,column");
         };
         passiveq[3]: QPassiveQueue {
             parameters:
-                @display("p=349,70,column;i=block/passiveq;q=queue");
+                @display("p=349,70,column;q=queue");
             gates:
                 out[1];
         };
         qserver: QServer {
             parameters:
-                @display("p=443,130;i=block/server");
+                @display("p=443,130");
             gates:
                 in[3];
         };
         leave2: QSink {
             parameters:
-                @display("p=546,130;i=block/sink");
+                @display("p=546,130");
         };
         leave1: QSink {
             parameters:
-                @display("p=160,200;i=block/sink");
+                @display("p=160,200");
         };
     connections:
         enter.out --> classifier.in;

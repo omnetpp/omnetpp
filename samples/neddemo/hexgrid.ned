@@ -10,6 +10,8 @@
 
 simple HexGridNode
 {
+    parameters:
+        @display("i=misc/node_vs");
     gates:
         input n;
         input nw;
@@ -26,10 +28,7 @@ module HexGrid
         int rows;
         int cols;
     submodules:
-        node[rows*cols]: HexGridNode {
-            parameters:
-                @display("i=misc/node_vs");
-        };
+        node[rows*cols]: HexGridNode;
     connections allowunconnected:
         for i=0..rows*cols-1 {
             node[i].n <-- node[i-2*cols].s if i+1>2*cols;

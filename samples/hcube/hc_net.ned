@@ -31,18 +31,18 @@ module HypercubeNode like HCNode
                 numStations = 2^dim;
                 address = address;
                 iaTime = default(exponential(1));
-                @display("p=82,82;i=block/source");
+                @display("p=82,82");
         };
         sink: HCSink {
             parameters:
                 address = address;
-                @display("p=176,82;i=block/sink");
+                @display("p=176,82");
         };
         rte: HCRouter {
             parameters:
                 address = address;
                 dim = dim;
-                @display("p=125,171;i=block/switch");
+                @display("p=125,171");
             gates:
                 in[dim];
                 out[dim];

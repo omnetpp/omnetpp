@@ -18,6 +18,7 @@ simple Queue
     parameters:
         volatile double serviceTime;
         int numInitialJobs;
+        @display("i=block/queue");
     gates:
         input in[];
         output out;

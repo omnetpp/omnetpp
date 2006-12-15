@@ -28,6 +28,7 @@ simple FFBitFifo
 {
     parameters:
         volatile double bitsPerSec;
+        @display("i=block/queue");
     gates:
         input in;
         output out;

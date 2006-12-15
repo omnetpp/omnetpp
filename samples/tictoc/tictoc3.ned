@@ -10,6 +10,8 @@
 
 simple Txc3
 {
+    parameters:
+        @display("i=block/process");
     gates:
         input in;
         output out;
@@ -23,11 +25,11 @@ module Tictoc3
     submodules:
         tic: Txc3 {
             parameters:
-                @display("i=block/process,cyan");
+                @display("i=,cyan");
         };
         toc: Txc3 {
             parameters:
-                @display("i=block/process,gold");
+                @display("i=,gold");
         };
     connections:
         tic.out --> {  delay = 100ms; } --> toc.in;

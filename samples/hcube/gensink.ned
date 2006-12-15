@@ -17,6 +17,7 @@ simple HCGenerator
         int numStations;
         int address;
         volatile double iaTime;
+        @display("i=block/source");
     gates:
         output out;
 }
@@ -29,6 +30,7 @@ simple HCSink
 {
     parameters:
         int address;
+        @display("i=block/sink");
     gates:
         input in;
 }

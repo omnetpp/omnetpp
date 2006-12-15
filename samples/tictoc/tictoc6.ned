@@ -12,6 +12,7 @@ simple Txc6
 {
     parameters:
         volatile double delayTime;   // delay before sending back message
+        @display("i=block/process");
     gates:
         input in;
         output out;
@@ -22,11 +23,11 @@ module Tictoc6
     submodules:
         tic: Txc6 {
             parameters:
-                @display("i=block/process,cyan");
+                @display("i=,cyan");
         };
         toc: Txc6 {
             parameters:
-                @display("i=block/process,gold");
+                @display("i=,gold");
         };
     connections:
         tic.out --> {  delay = 100ms; } --> toc.in;

@@ -24,7 +24,6 @@ module ClosedQueueingNetB
             parameters:
                 sDelay = sDelay;
                 ownIndex = index;
-                @display("i=misc/cloud2_l");
             gates:
                 in[numTandems];
                 out[numTandems];

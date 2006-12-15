@@ -16,6 +16,7 @@ simple ExtHTTPClient
     parameters:
         int addr;
         int srvAddr;
+        @display("i=device/pc2");
     gates:
         input in;
         output out;

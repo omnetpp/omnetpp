@@ -10,25 +10,28 @@
 import "../node";
 
 module FullGraph
+{
     parameters:
-        n : numeric const;
+        double n;
     submodules:
-        node: Node[n];
+        node[n]: Node {
             parameters:
                 address = index;
-            gatesizes:
-                in[n],
+                @display("p=,,ring");
+            gates:
+                in[n];
                 out[n];
-            display: "i=misc/node_vs;p=,,ring";
-    connections nocheck:
-        for i=0..n-1, j=0..n-1 do
+        };
+    connections allowunconnected:
+        for i=0..n-1, for j=0..n-1 {
             node[i].out[j] --> node[j].in[i] if i!=j;
-        endfor;
-endmodule
+        };
+}
 
 
-network fullGraph : FullGraph
+network fullGraph extends FullGraph
+{
     parameters:
-        n = input(15,"Number of nodes");
-endnetwork
+        n = default(15) @prompt("Number of nodes");
+}
 

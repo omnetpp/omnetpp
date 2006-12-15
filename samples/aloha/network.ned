@@ -19,6 +19,7 @@ simple AHost
         volatile int pkLenBits;  // packet length in bits
         volatile double iaTime;  // packet interarrival time
         double slotTime;  // zero means no slots (pure Aloha)
+        @display("i=device/pc_s");
 }
 
 //
@@ -28,6 +29,7 @@ simple AServer
 {
     parameters:
         double txRate @unit(bps); // transmission rate (needed to calculate lengths of packet receptions)
+        @display("i=device/antennatower_l");
     gates:
         input in;
 }
@@ -47,13 +49,11 @@ module ALOHAnet
         server: AServer {
             parameters:
                 txRate = txRate;
-                @display("i=device/antennatower_l");
         };
         host[numHosts]: AHost {
             parameters:
                 txRate = txRate;
                 slotTime = slotTime;
-                @display("i=device/pc_s");
         };
     connections allowunconnected:
 }

@@ -10,6 +10,8 @@
 
 simple Tic8
 {
+    parameters:
+        @display("i=block/process");
     gates:
         input in;
         output out;
@@ -17,6 +19,8 @@ simple Tic8
 
 simple Toc8
 {
+    parameters:
+        @display("i=block/process");
     gates:
         input in;
         output out;
@@ -30,11 +34,11 @@ module Tictoc8
     submodules:
         tic: Tic8 {
             parameters:
-                @display("i=block/process,cyan");
+                @display("i=,cyan");
         };
         toc: Toc8 {
             parameters:
-                @display("i=block/process,gold");
+                @display("i=,gold");
         };
     connections:
         tic.out --> {  delay = 100ms; } --> toc.in;

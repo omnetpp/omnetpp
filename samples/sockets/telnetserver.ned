@@ -15,6 +15,7 @@ simple TelnetServer
 {
     parameters:
         volatile double serviceTime;
+        @display("i=device/server");
     gates:
         input in;
         output out;

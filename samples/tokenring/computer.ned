@@ -28,6 +28,7 @@ module Computer
         double THT; // Token Holding Time, as defined in the protocol.
         int numStations; // Number of stations. MAC addresses are
                                      // [0,numStatons-1] integers.
+        @display("i=device/pc4");
     gates:
         input in;
         output out;
@@ -37,17 +38,17 @@ module Computer
                 address = address;
                 dataRate = dataRate;
                 THT = THT;
-                @display("p=137,166;i=block/queue;q=sendQueue");
+                @display("p=137,166;q=sendQueue");
         };
         gen: Generator {
             parameters:
                 numStations = numStations;
                 address = address;
-                @display("p=79,60;i=block/source");
+                @display("p=79,60");
         };
         sink: Sink {
             parameters:
-                @display("p=196,60;i=block/sink");
+                @display("p=196,60");
         };
     connections:
         in --> mac.phyIn;

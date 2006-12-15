@@ -10,6 +10,8 @@
 
 simple Txc5
 {
+    parameters:
+        @display("i=block/process");
     gates:
         input in;
         output out;
@@ -20,11 +22,11 @@ module Tictoc5
     submodules:
         tic: Txc5 {
             parameters:
-                @display("i=block/process,cyan");
+                @display("i=,cyan");
         };
         toc: Txc5 {
             parameters:
-                @display("i=block/process,gold");
+                @display("i=,gold");
         };
     connections:
         tic.out --> {  delay = 100ms; } --> toc.in;

@@ -22,6 +22,7 @@ module TandemQueue
         int ownIndex;
         double sDelay;
         double qDelay;
+        @display("i=misc/cloud2_l");
     gates:
         input in[];
         output out[]; // in[] and out[] sizes must match
@@ -29,15 +30,15 @@ module TandemQueue
     submodules:
         switch: Switch {
             parameters:
-                @display("p=60,80;i=block/switch");
+                @display("p=60,80");
             gates:
                 out[sizeof(in)];
         };
         queue[numQueues]: Queue {
             parameters:
-                @display("p=60,160,row,80;i=block/queue;q=queue");
+                @display("p=60,160,row,80;q=queue");
             gates:
-                in[index==0 ? sizeof(in) : 1];
+                in[(index==0 ? sizeof(in) : 1)];
         };
     connections allowunconnected:
         // connect switch outputs outside

@@ -15,6 +15,8 @@ import "cmysqlnetbuilder";
 //
 module Node
 {
+    parameters:
+        @display("i=misc/node_vs");
     gates:
         input in[];
         output out[];

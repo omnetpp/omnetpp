@@ -16,6 +16,7 @@ simple Generator
     parameters:
         int numMessages;
         volatile double iaTime;
+        @display("i=block/source");
     gates:
         output out;
 }

@@ -16,6 +16,7 @@ simple App
 {
     parameters:
         string destAddresses;
+        @display("i=block/browser");
     gates:
         input in;
         output out;
@@ -27,6 +28,8 @@ simple App
 //
 simple Routing
 {
+    parameters:
+        @display("i=block/switch");
     gates:
         input in[];
         output out[];
@@ -43,17 +46,18 @@ module Node
 {
     parameters:
         int address;
+        @display("i=misc/node_vs");
     gates:
         input in[];
         output out[];
     submodules:
         app: App {
             parameters:
-                @display("p=90,56;i=block/browser");
+                @display("p=90,56");
         };
         routing: Routing {
             parameters:
-                @display("p=90,132;i=block/switch");
+                @display("p=90,132");
             gates:
                 in[sizeof(in)];
                 out[sizeof(out)];

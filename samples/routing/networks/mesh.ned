@@ -9,30 +9,33 @@
 
 
 module Mesh
+{
     parameters:
-        height : numeric const,
-        width : numeric const;
+        double height;
+        double width;
     submodules:
-        node: Node[height*width];
+        node[height*width]: Node {
             parameters:
                 address = index;
-            gatesizes:
-                in[4],
+                @display("p=,,m,$width,40,40");
+            gates:
+                in[4];
                 out[4];
-            display: "p=,,m,$width,40,40;i=misc/node_vs";
-    connections nocheck:
-        for i=0..height-1, j=0..width-1 do
+        };
+    connections allowunconnected:
+        for i=0..height-1, for j=0..width-1 {
             node[i*width+j].out[0] --> node[(i+1)*width+j].in[1] if i!=height-1;
             node[i*width+j].in[0] <-- node[(i+1)*width+j].out[1] if i!=height-1;
-            node[i*width+j].out[2] --> node[i*width+j+1].in[3] if j!=width-1;
-            node[i*width+j].in[2] <-- node[i*width+j+1].out[3] if j!=width-1;
-        endfor;
-endmodule
+            node[i*width+j].out[2] --> node[(i*width+j)+1].in[3] if j!=width-1;
+            node[i*width+j].in[2] <-- node[(i*width+j)+1].out[3] if j!=width-1;
+        };
+}
 
 
-network mesh : Mesh
+network mesh extends Mesh
+{
     parameters:
-        height = input(9,"Number of rows"),
-        width = input(7,"Number of columns");
-endnetwork
+        height = default(9) @prompt("Number of rows");
+        width = default(7) @prompt("Number of columns");
+}
 

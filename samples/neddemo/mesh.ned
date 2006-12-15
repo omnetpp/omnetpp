@@ -10,6 +10,8 @@
 
 simple MeshNode
 {
+    parameters:
+        @display("i=misc/node_s");
     gates:
         input up;
         input left;
@@ -26,7 +28,7 @@ module Mesh
     submodules:
         node[height*width]: MeshNode {
             parameters:
-                @display("p=,,m,$width;i=misc/node_s");
+                @display("p=,,m,$width");
         };
     connections allowunconnected:
         for i=0..height-1, for j=0..width-1 {

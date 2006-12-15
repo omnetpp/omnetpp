@@ -18,6 +18,7 @@ simple PPSource
         volatile double burstTime; // duration of a burst
         volatile double sendIaTime; // time between generating packets during a burst
         volatile double msgLength; // length of a message, in bits
+        @display("i=block/source");
     gates:
         output out;
 }

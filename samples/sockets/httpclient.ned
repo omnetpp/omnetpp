@@ -17,6 +17,7 @@ simple HTTPClient
         int addr;
         int srvAddr;
         volatile double sendIaTime;
+        @display("i=device/pc2");
     gates:
         input in;
         output out;

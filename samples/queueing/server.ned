@@ -16,6 +16,7 @@ simple QServer
 {
     parameters:
         volatile double serviceTime;
+        @display("i=block/server");
     gates:
         input in[];
         output out;

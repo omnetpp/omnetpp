@@ -10,6 +10,8 @@
 
 simple Txc12
 {
+    parameters:
+        @display("i=block/process");
     gates:
         input in[];
         output out[];
@@ -21,10 +23,7 @@ simple Txc12
 module Tictoc12
 {
     submodules:
-        tic[6]: Txc12 {   // we'll have 6 Txc modules
-            parameters:
-                @display("i=block/process");
-        };
+        tic[6]: Txc12;  // we'll have 6 Txc modules
     connections:
         tic[0].out++ --> {  delay = 100ms; } --> tic[1].in++;
         tic[0].in++ <-- {  delay = 100ms; } <-- tic[1].out++;

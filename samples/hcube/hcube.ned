@@ -44,7 +44,6 @@ module Hypercube
             parameters:
                 address = index; // module's position in (2^dim)-size vector
                 dim = dim;
-                @display("i=misc/node2_vs");
             gates:
                 out[dim];
                 in[dim];

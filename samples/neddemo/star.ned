@@ -10,6 +10,8 @@
 
 simple StarNode
 {
+    parameters:
+        @display("i=device/pc2_s");
     gates:
         input in;
 }
@@ -17,6 +19,8 @@ simple StarNode
 
 simple HubNode
 {
+    parameters:
+        @display("i=device/switch");
     gates:
         output out[];
 }
@@ -29,11 +33,11 @@ module Star
     submodules:
         node[n]: StarNode {
             parameters:
-                @display("p=50,50,ring,150,150;i=device/pc2_s");
+                @display("p=50,50,ring,150,150");
         };
         hub: HubNode {
             parameters:
-                @display("p=200,200;i=device/switch");
+                @display("p=200,200");
             gates:
                 out[n];
         };

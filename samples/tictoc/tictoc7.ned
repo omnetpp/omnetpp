@@ -10,6 +10,8 @@
 
 simple Tic7
 {
+    parameters:
+        @display("i=block/process");
     gates:
         input in;
         output out;
@@ -17,6 +19,8 @@ simple Tic7
 
 simple Toc7
 {
+    parameters:
+        @display("i=block/process");
     gates:
         input in;
         output out;
@@ -27,11 +31,11 @@ module Tictoc7
     submodules:
         tic: Tic7 {
             parameters:
-                @display("i=block/process,cyan");
+                @display("i=,cyan");
         };
         toc: Toc7 {
             parameters:
-                @display("i=block/process,gold");
+                @display("i=,gold");
         };
     connections:
         tic.out --> {  delay = 100ms; } --> toc.in;

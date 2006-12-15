@@ -23,20 +23,16 @@ module FifoNet
     submodules:
         gen: Generator {
             parameters:
-                numMessages;
-                iaTime;
-                @display("p=35,152;i=block/source");
+                @display("p=35,152");
         };
         fifo[numBuffers]: Fifo {
             parameters:
                 numCells = numCells;
-                serviceTime;
-                numInitJobs;
-                @display("p=125,152,m;i=block/queue;q=queue");
+                @display("p=125,152,m;q=queue");
         };
         sink: Sink {
             parameters:
-                @display("p=;i=block/sink");
+                @display("p=");
         };
     connections:
         gen.out --> fifo[0].in;

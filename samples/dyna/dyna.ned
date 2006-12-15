@@ -19,6 +19,7 @@ simple Client
         volatile double connIaTime;
         volatile double queryIaTime;
         volatile int numQuery;
+        @display("i=device/pc2");
     gates:
         output out;
         input in;
@@ -36,6 +37,7 @@ simple Switch
     parameters:
         double pkRate;
         int queueMaxLen;
+        @display("i=block/switch");
     gates:
         output out[];
         input in[];
@@ -51,6 +53,7 @@ simple Server
 {
     parameters:
         double processingTime;
+        @display("i=device/server");
     gates:
         output out;
         input in;
@@ -78,7 +81,7 @@ module ClientServer
         server: Server {
             parameters:
                 processingTime = default(0.2s) @prompt("Query processing time:");
-                @display("i=device/server;p=210,70");
+                @display("p=210,70");
         };
         switch: Switch {
             parameters:
@@ -87,7 +90,7 @@ module ClientServer
                 pkRate = 1.5*numClients;
                 // buffer max 20 packets
                 queueMaxLen = 20;
-                @display("i=device/switch;q=queue;p=210,170");
+                @display("q=queue;p=210,170");
             gates:
                 in[numClients+1];
                 out[numClients+1];
@@ -98,7 +101,7 @@ module ClientServer
                 connIaTime = default(10s) @prompt("Connection interarrival time:");
                 queryIaTime = default(2s) @prompt("Query interarrival time:");
                 numQuery = default(5) @prompt("Number of queries per conn:");
-                @display("i=device/pc2;p=70,270,m,10,80");
+                @display("p=70,270,m,10,80");
         };
     connections:
         for i=0..numClients-1 {

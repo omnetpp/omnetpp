@@ -10,6 +10,8 @@
 
 simple FullGraphNode
 {
+    parameters:
+        @display("i=misc/node_vs");
     gates:
         input in[];
         output out[];
@@ -23,7 +25,7 @@ module FullGraph
     submodules:
         node[n]: FullGraphNode {
             parameters:
-                @display("i=misc/node_vs;p=,,ring");
+                @display("p=,,ring");
             gates:
                 in[n];
                 out[n];

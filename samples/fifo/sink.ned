@@ -13,6 +13,8 @@
 //
 simple FFSink
 {
+    parameters:
+        @display("i=block/sink");
     gates:
         input in;
 }

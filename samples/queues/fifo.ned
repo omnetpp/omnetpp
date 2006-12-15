@@ -17,6 +17,7 @@ simple Fifo
         volatile double serviceTime;
         int numCells;
         int numInitJobs;
+        @display("i=block/queue");
     gates:
         input in;
         output out;

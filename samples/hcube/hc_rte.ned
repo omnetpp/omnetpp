@@ -16,6 +16,7 @@ simple HCRouter
     parameters:
         int address;
         int dim;
+        @display("i=block/switch");
     gates:
         input in[];
         input fromGen;

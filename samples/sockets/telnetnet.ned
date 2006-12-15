@@ -24,11 +24,11 @@ module TelnetNet
     submodules:
         server: TelnetServer {
             parameters:
-                @display("i=device/server;p=426,178");
+                @display("p=426,178");
         };
         cloud: Cloud {
             parameters:
-                @display("i=misc/cloud;p=274,182");
+                @display("p=274,182");
             gates:
                 in[numClients+2];
                 out[numClients+2];
@@ -37,13 +37,13 @@ module TelnetNet
             parameters:
                 addr = 1;
                 srvAddr = 0;
-                @display("i=device/pc2,gold;p=102,92;t=Run the simulation\, then start:\ntelnet localhost 4242\nThen if on Unix\, type:\nCtrl+] ``mode character''");
+                @display("i=,gold;p=102,92;t=Run the simulation\, then start:\ntelnet localhost 4242\nThen if on Unix\, type:\nCtrl+] ``mode character''");
         };
         client[numClients]: TelnetClient {
             parameters:
                 addr = 2+index;
                 srvAddr = 0;
-                @display("i=device/pc2;p=102,162,col");
+                @display("p=102,162,col");
         };
     connections:
         server.out --> cloud.in[0];

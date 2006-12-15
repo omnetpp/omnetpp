@@ -15,6 +15,7 @@ simple QDelay
 {
     parameters:
         volatile double delayBy;
+        @display("i=block/delay");
     gates:
         output out;
         input in;

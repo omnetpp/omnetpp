@@ -22,6 +22,7 @@ simple TokenRingMAC
         double THT; // Token Holding Time, as defined in the protocol.
         int address; // MAC address of this station, modeled with an integer.
         int queueMaxLen; // max queue size in packets.
+        @display("i=block/queue");
     gates:
         input phyIn;
         output phyOut;

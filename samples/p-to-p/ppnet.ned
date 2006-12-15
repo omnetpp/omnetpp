@@ -29,19 +29,19 @@ module PointToPointNet
     submodules:
         burstySrc: PPSource {
             parameters:
-                @display("p=82,92;i=block/source");
+                @display("p=82,92");
         };
         ppIF1: PointToPointIF {
             parameters:
-                @display("p=170,92;i=block/queue;q=queue");
+                @display("p=170,92;q=queue");
         };
         ppIF2: PointToPointIF {
             parameters:
-                @display("p=336,92;i=block/queue;q=queue");
+                @display("p=336,92;q=queue");
         };
         sink: PPSink {
             parameters:
-                @display("p=430,92;i=block/sink");
+                @display("p=430,92");
         };
     connections allowunconnected:
         burstySrc.out --> ppIF1.in;

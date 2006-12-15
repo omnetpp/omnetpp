@@ -10,6 +10,8 @@
 
 simple BinaryTreeNode
 {
+    parameters:
+        @display("i=misc/node_vs");
     gates:
         input fromupper;
         output downleft;
@@ -22,10 +24,7 @@ module BinaryTree1
     parameters:
         int height;
     submodules:
-        node[2^height-1]: BinaryTreeNode {
-            parameters:
-                @display("i=misc/node_vs");
-        };
+        node[2^height-1]: BinaryTreeNode;
     connections allowunconnected:
         for i=0..2^height-2, for j=0..2^height-2 {
             node[i].downleft --> node[j].fromupper if j==2*i+1;
@@ -39,10 +38,7 @@ module BinaryTree2
     parameters:
         int height;
     submodules:
-        node[2^height-1]: BinaryTreeNode {
-            parameters:
-                @display("i=misc/node_vs");
-        };
+        node[2^height-1]: BinaryTreeNode;
     connections allowunconnected:
         for i=0..2^(height-1)-2 {
             node[i].downleft --> node[2*i+1].fromupper;
