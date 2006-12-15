@@ -300,8 +300,8 @@ nedtools.obj: nedtools.cc \
   nedtools.h \
   nederror.h \
   neddtdvalidator.h \
-  nedelement.h \
   nedelements.h \
+  nedelement.h \
   neddtdvalidatorbase.h \
   nedvalidator.h
 nedutil.obj: nedutil.cc \

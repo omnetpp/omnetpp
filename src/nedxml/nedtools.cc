@@ -16,6 +16,7 @@
 #include "nedtools.h"
 #include "nederror.h"
 #include "neddtdvalidator.h"
+//XXX #include "platdep/fileutil.h"
 
 
 void NEDTools::repairNEDElementTree(NEDElement *tree)
@@ -40,5 +41,35 @@ void NEDTools::repairNEDElementTree(NEDElement *tree)
     }
 }
 
+void NEDTools::splitToFiles(FilesNode *tree)
+{
+    for (NEDElement *child=tree->getFirstChild(); child; child = child->getNextSibling())
+    {
+        if (child->getTagCode()!=NED_NED_FILE)
+            continue;
+
+        NedFileNode *fileNode = (NedFileNode *)child;
+
+        std::string directory;
+        std::string filename;
+//XXX        splitFileName(fileNode->getFilename(), directory, filename);
+
+        CommentNode *fileComment = (CommentNode *)fileNode->getFirstChildWithAttribute(NED_COMMENT, "locid", "banner");
+
+        for (NEDElement *child=fileNode->getFirstChild(); child; child = child->getNextSibling())
+        {
+            int type = child->getTagCode();
+            if (type==NED_SIMPLE_MODULE && type==NED_COMPOUND_MODULE &&
+                type==NED_CHANNEL && type==NED_MODULE_INTERFACE &&
+                type==NED_CHANNEL_INTERFACE)
+            {
+                //NED_IMPORTs
+                fileNode->removeChild(child);
+//XXX
+            }
+        }
+    }
+
+}
 
 

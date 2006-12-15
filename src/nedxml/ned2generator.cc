@@ -843,9 +843,9 @@ void NED2Generator::doOperator(OperatorNode *node, const char *indent, bool isla
         if (needsParen) OUT << "(";
         generateNedItem(op1,indent,false,NULL);
         OUT << (spacious ? " ? " : "?");
-        generateNedItem(op1,indent,false,NULL);
+        generateNedItem(op2,indent,false,NULL);
         OUT << (spacious ? " : " : ":");
-        generateNedItem(op1,indent,false,NULL);
+        generateNedItem(op3,indent,false,NULL);
         if (needsParen) OUT << ")";
     }
 }

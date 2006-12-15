@@ -17,7 +17,7 @@
 #ifndef __NEDTOOLS_H
 #define __NEDTOOLS_H
 
-#include "nedelement.h"
+#include "nedelements.h"
 
 /**
  * Misc NED utilities
@@ -32,6 +32,12 @@ class NEDTools
      * discarding elements that fail DTD validation. Success is not guaranteed.
      */
     static void repairNEDElementTree(NEDElement *tree);
+
+    /**
+     * Splits each NEDFile under FilesNode to several files, to place
+     * every module or interface into its own file.
+     */
+    static void splitToFiles(FilesNode *tree);
 };
 
 #endif

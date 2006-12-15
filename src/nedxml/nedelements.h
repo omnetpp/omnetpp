@@ -170,6 +170,7 @@ class FilesNode : public NEDElement
     virtual const char *getAttribute(int k) const;
     virtual void setAttribute(int k, const char *val);
     virtual const char *getAttributeDefault(int k) const;
+    virtual FilesNode *dup() const;
     //@}
 
     /** @name Typed access to attributes, children and siblings */
@@ -218,6 +219,7 @@ class NedFileNode : public NEDElement
     virtual const char *getAttribute(int k) const;
     virtual void setAttribute(int k, const char *val);
     virtual const char *getAttributeDefault(int k) const;
+    virtual NedFileNode *dup() const;
     //@}
 
     /** @name Typed access to attributes, children and siblings */
@@ -276,6 +278,7 @@ class CommentNode : public NEDElement
     virtual const char *getAttribute(int k) const;
     virtual void setAttribute(int k, const char *val);
     virtual const char *getAttributeDefault(int k) const;
+    virtual CommentNode *dup() const;
     //@}
 
     /** @name Typed access to attributes, children and siblings */
@@ -321,6 +324,7 @@ class ImportNode : public NEDElement
     virtual const char *getAttribute(int k) const;
     virtual void setAttribute(int k, const char *val);
     virtual const char *getAttributeDefault(int k) const;
+    virtual ImportNode *dup() const;
     //@}
 
     /** @name Typed access to attributes, children and siblings */
@@ -367,6 +371,7 @@ class PropertyDeclNode : public NEDElement
     virtual const char *getAttribute(int k) const;
     virtual void setAttribute(int k, const char *val);
     virtual const char *getAttributeDefault(int k) const;
+    virtual PropertyDeclNode *dup() const;
     //@}
 
     /** @name Typed access to attributes, children and siblings */
@@ -415,6 +420,7 @@ class ExtendsNode : public NEDElement
     virtual const char *getAttribute(int k) const;
     virtual void setAttribute(int k, const char *val);
     virtual const char *getAttributeDefault(int k) const;
+    virtual ExtendsNode *dup() const;
     //@}
 
     /** @name Typed access to attributes, children and siblings */
@@ -459,6 +465,7 @@ class InterfaceNameNode : public NEDElement
     virtual const char *getAttribute(int k) const;
     virtual void setAttribute(int k, const char *val);
     virtual const char *getAttributeDefault(int k) const;
+    virtual InterfaceNameNode *dup() const;
     //@}
 
     /** @name Typed access to attributes, children and siblings */
@@ -505,6 +512,7 @@ class SimpleModuleNode : public NEDElement
     virtual const char *getAttribute(int k) const;
     virtual void setAttribute(int k, const char *val);
     virtual const char *getAttributeDefault(int k) const;
+    virtual SimpleModuleNode *dup() const;
     //@}
 
     /** @name Typed access to attributes, children and siblings */
@@ -555,6 +563,7 @@ class ModuleInterfaceNode : public NEDElement
     virtual const char *getAttribute(int k) const;
     virtual void setAttribute(int k, const char *val);
     virtual const char *getAttributeDefault(int k) const;
+    virtual ModuleInterfaceNode *dup() const;
     //@}
 
     /** @name Typed access to attributes, children and siblings */
@@ -605,6 +614,7 @@ class CompoundModuleNode : public NEDElement
     virtual const char *getAttribute(int k) const;
     virtual void setAttribute(int k, const char *val);
     virtual const char *getAttributeDefault(int k) const;
+    virtual CompoundModuleNode *dup() const;
     //@}
 
     /** @name Typed access to attributes, children and siblings */
@@ -658,6 +668,7 @@ class ChannelInterfaceNode : public NEDElement
     virtual const char *getAttribute(int k) const;
     virtual void setAttribute(int k, const char *val);
     virtual const char *getAttributeDefault(int k) const;
+    virtual ChannelInterfaceNode *dup() const;
     //@}
 
     /** @name Typed access to attributes, children and siblings */
@@ -706,6 +717,7 @@ class ChannelNode : public NEDElement
     virtual const char *getAttribute(int k) const;
     virtual void setAttribute(int k, const char *val);
     virtual const char *getAttributeDefault(int k) const;
+    virtual ChannelNode *dup() const;
     //@}
 
     /** @name Typed access to attributes, children and siblings */
@@ -755,6 +767,7 @@ class ParametersNode : public NEDElement
     virtual const char *getAttribute(int k) const;
     virtual void setAttribute(int k, const char *val);
     virtual const char *getAttributeDefault(int k) const;
+    virtual ParametersNode *dup() const;
     //@}
 
     /** @name Typed access to attributes, children and siblings */
@@ -810,6 +823,7 @@ class ParamNode : public NEDElement
     virtual const char *getAttribute(int k) const;
     virtual void setAttribute(int k, const char *val);
     virtual const char *getAttributeDefault(int k) const;
+    virtual ParamNode *dup() const;
     //@}
 
     /** @name Typed access to attributes, children and siblings */
@@ -868,6 +882,7 @@ class PatternNode : public NEDElement
     virtual const char *getAttribute(int k) const;
     virtual void setAttribute(int k, const char *val);
     virtual const char *getAttributeDefault(int k) const;
+    virtual PatternNode *dup() const;
     //@}
 
     /** @name Typed access to attributes, children and siblings */
@@ -922,6 +937,7 @@ class PropertyNode : public NEDElement
     virtual const char *getAttribute(int k) const;
     virtual void setAttribute(int k, const char *val);
     virtual const char *getAttributeDefault(int k) const;
+    virtual PropertyNode *dup() const;
     //@}
 
     /** @name Typed access to attributes, children and siblings */
@@ -971,6 +987,7 @@ class PropertyKeyNode : public NEDElement
     virtual const char *getAttribute(int k) const;
     virtual void setAttribute(int k, const char *val);
     virtual const char *getAttributeDefault(int k) const;
+    virtual PropertyKeyNode *dup() const;
     //@}
 
     /** @name Typed access to attributes, children and siblings */
@@ -1014,6 +1031,7 @@ class GatesNode : public NEDElement
     virtual const char *getAttribute(int k) const;
     virtual void setAttribute(int k, const char *val);
     virtual const char *getAttributeDefault(int k) const;
+    virtual GatesNode *dup() const;
     //@}
 
     /** @name Typed access to attributes, children and siblings */
@@ -1063,6 +1081,7 @@ class GateNode : public NEDElement
     virtual const char *getAttribute(int k) const;
     virtual void setAttribute(int k, const char *val);
     virtual const char *getAttributeDefault(int k) const;
+    virtual GateNode *dup() const;
     //@}
 
     /** @name Typed access to attributes, children and siblings */
@@ -1114,6 +1133,7 @@ class TypesNode : public NEDElement
     virtual const char *getAttribute(int k) const;
     virtual void setAttribute(int k, const char *val);
     virtual const char *getAttributeDefault(int k) const;
+    virtual TypesNode *dup() const;
     //@}
 
     /** @name Typed access to attributes, children and siblings */
@@ -1159,6 +1179,7 @@ class SubmodulesNode : public NEDElement
     virtual const char *getAttribute(int k) const;
     virtual void setAttribute(int k, const char *val);
     virtual const char *getAttributeDefault(int k) const;
+    virtual SubmodulesNode *dup() const;
     //@}
 
     /** @name Typed access to attributes, children and siblings */
@@ -1212,6 +1233,7 @@ class SubmoduleNode : public NEDElement
     virtual const char *getAttribute(int k) const;
     virtual void setAttribute(int k, const char *val);
     virtual const char *getAttributeDefault(int k) const;
+    virtual SubmoduleNode *dup() const;
     //@}
 
     /** @name Typed access to attributes, children and siblings */
@@ -1269,6 +1291,7 @@ class ConnectionsNode : public NEDElement
     virtual const char *getAttribute(int k) const;
     virtual void setAttribute(int k, const char *val);
     virtual const char *getAttributeDefault(int k) const;
+    virtual ConnectionsNode *dup() const;
     //@}
 
     /** @name Typed access to attributes, children and siblings */
@@ -1339,6 +1362,7 @@ class ConnectionNode : public NEDElement
     virtual const char *getAttribute(int k) const;
     virtual void setAttribute(int k, const char *val);
     virtual const char *getAttributeDefault(int k) const;
+    virtual ConnectionNode *dup() const;
     //@}
 
     /** @name Typed access to attributes, children and siblings */
@@ -1417,6 +1441,7 @@ class ChannelSpecNode : public NEDElement
     virtual const char *getAttribute(int k) const;
     virtual void setAttribute(int k, const char *val);
     virtual const char *getAttributeDefault(int k) const;
+    virtual ChannelSpecNode *dup() const;
     //@}
 
     /** @name Typed access to attributes, children and siblings */
@@ -1467,6 +1492,7 @@ class ConnectionGroupNode : public NEDElement
     virtual const char *getAttribute(int k) const;
     virtual void setAttribute(int k, const char *val);
     virtual const char *getAttributeDefault(int k) const;
+    virtual ConnectionGroupNode *dup() const;
     //@}
 
     /** @name Typed access to attributes, children and siblings */
@@ -1516,6 +1542,7 @@ class LoopNode : public NEDElement
     virtual const char *getAttribute(int k) const;
     virtual void setAttribute(int k, const char *val);
     virtual const char *getAttributeDefault(int k) const;
+    virtual LoopNode *dup() const;
     //@}
 
     /** @name Typed access to attributes, children and siblings */
@@ -1565,6 +1592,7 @@ class ConditionNode : public NEDElement
     virtual const char *getAttribute(int k) const;
     virtual void setAttribute(int k, const char *val);
     virtual const char *getAttributeDefault(int k) const;
+    virtual ConditionNode *dup() const;
     //@}
 
     /** @name Typed access to attributes, children and siblings */
@@ -1610,6 +1638,7 @@ class ExpressionNode : public NEDElement
     virtual const char *getAttribute(int k) const;
     virtual void setAttribute(int k, const char *val);
     virtual const char *getAttributeDefault(int k) const;
+    virtual ExpressionNode *dup() const;
     //@}
 
     /** @name Typed access to attributes, children and siblings */
@@ -1658,6 +1687,7 @@ class OperatorNode : public NEDElement
     virtual const char *getAttribute(int k) const;
     virtual void setAttribute(int k, const char *val);
     virtual const char *getAttributeDefault(int k) const;
+    virtual OperatorNode *dup() const;
     //@}
 
     /** @name Typed access to attributes, children and siblings */
@@ -1706,6 +1736,7 @@ class FunctionNode : public NEDElement
     virtual const char *getAttribute(int k) const;
     virtual void setAttribute(int k, const char *val);
     virtual const char *getAttributeDefault(int k) const;
+    virtual FunctionNode *dup() const;
     //@}
 
     /** @name Typed access to attributes, children and siblings */
@@ -1756,6 +1787,7 @@ class IdentNode : public NEDElement
     virtual const char *getAttribute(int k) const;
     virtual void setAttribute(int k, const char *val);
     virtual const char *getAttributeDefault(int k) const;
+    virtual IdentNode *dup() const;
     //@}
 
     /** @name Typed access to attributes, children and siblings */
@@ -1812,6 +1844,7 @@ class LiteralNode : public NEDElement
     virtual const char *getAttribute(int k) const;
     virtual void setAttribute(int k, const char *val);
     virtual const char *getAttributeDefault(int k) const;
+    virtual LiteralNode *dup() const;
     //@}
 
     /** @name Typed access to attributes, children and siblings */
@@ -1865,6 +1898,7 @@ class MsgFileNode : public NEDElement
     virtual const char *getAttribute(int k) const;
     virtual void setAttribute(int k, const char *val);
     virtual const char *getAttributeDefault(int k) const;
+    virtual MsgFileNode *dup() const;
     //@}
 
     /** @name Typed access to attributes, children and siblings */
@@ -1926,6 +1960,7 @@ class CplusplusNode : public NEDElement
     virtual const char *getAttribute(int k) const;
     virtual void setAttribute(int k, const char *val);
     virtual const char *getAttributeDefault(int k) const;
+    virtual CplusplusNode *dup() const;
     //@}
 
     /** @name Typed access to attributes, children and siblings */
@@ -1982,6 +2017,7 @@ class StructDeclNode : public NEDElement
     virtual const char *getAttribute(int k) const;
     virtual void setAttribute(int k, const char *val);
     virtual const char *getAttributeDefault(int k) const;
+    virtual StructDeclNode *dup() const;
     //@}
 
     /** @name Typed access to attributes, children and siblings */
@@ -2040,6 +2076,7 @@ class ClassDeclNode : public NEDElement
     virtual const char *getAttribute(int k) const;
     virtual void setAttribute(int k, const char *val);
     virtual const char *getAttributeDefault(int k) const;
+    virtual ClassDeclNode *dup() const;
     //@}
 
     /** @name Typed access to attributes, children and siblings */
@@ -2098,6 +2135,7 @@ class MessageDeclNode : public NEDElement
     virtual const char *getAttribute(int k) const;
     virtual void setAttribute(int k, const char *val);
     virtual const char *getAttributeDefault(int k) const;
+    virtual MessageDeclNode *dup() const;
     //@}
 
     /** @name Typed access to attributes, children and siblings */
@@ -2154,6 +2192,7 @@ class EnumDeclNode : public NEDElement
     virtual const char *getAttribute(int k) const;
     virtual void setAttribute(int k, const char *val);
     virtual const char *getAttributeDefault(int k) const;
+    virtual EnumDeclNode *dup() const;
     //@}
 
     /** @name Typed access to attributes, children and siblings */
@@ -2214,6 +2253,7 @@ class EnumNode : public NEDElement
     virtual const char *getAttribute(int k) const;
     virtual void setAttribute(int k, const char *val);
     virtual const char *getAttributeDefault(int k) const;
+    virtual EnumNode *dup() const;
     //@}
 
     /** @name Typed access to attributes, children and siblings */
@@ -2271,6 +2311,7 @@ class EnumFieldsNode : public NEDElement
     virtual const char *getAttribute(int k) const;
     virtual void setAttribute(int k, const char *val);
     virtual const char *getAttributeDefault(int k) const;
+    virtual EnumFieldsNode *dup() const;
     //@}
 
     /** @name Typed access to attributes, children and siblings */
@@ -2324,6 +2365,7 @@ class EnumFieldNode : public NEDElement
     virtual const char *getAttribute(int k) const;
     virtual void setAttribute(int k, const char *val);
     virtual const char *getAttributeDefault(int k) const;
+    virtual EnumFieldNode *dup() const;
     //@}
 
     /** @name Typed access to attributes, children and siblings */
@@ -2384,6 +2426,7 @@ class MessageNode : public NEDElement
     virtual const char *getAttribute(int k) const;
     virtual void setAttribute(int k, const char *val);
     virtual const char *getAttributeDefault(int k) const;
+    virtual MessageNode *dup() const;
     //@}
 
     /** @name Typed access to attributes, children and siblings */
@@ -2450,6 +2493,7 @@ class ClassNode : public NEDElement
     virtual const char *getAttribute(int k) const;
     virtual void setAttribute(int k, const char *val);
     virtual const char *getAttributeDefault(int k) const;
+    virtual ClassNode *dup() const;
     //@}
 
     /** @name Typed access to attributes, children and siblings */
@@ -2516,6 +2560,7 @@ class StructNode : public NEDElement
     virtual const char *getAttribute(int k) const;
     virtual void setAttribute(int k, const char *val);
     virtual const char *getAttributeDefault(int k) const;
+    virtual StructNode *dup() const;
     //@}
 
     /** @name Typed access to attributes, children and siblings */
@@ -2574,6 +2619,7 @@ class FieldsNode : public NEDElement
     virtual const char *getAttribute(int k) const;
     virtual void setAttribute(int k, const char *val);
     virtual const char *getAttributeDefault(int k) const;
+    virtual FieldsNode *dup() const;
     //@}
 
     /** @name Typed access to attributes, children and siblings */
@@ -2639,6 +2685,7 @@ class FieldNode : public NEDElement
     virtual const char *getAttribute(int k) const;
     virtual void setAttribute(int k, const char *val);
     virtual const char *getAttributeDefault(int k) const;
+    virtual FieldNode *dup() const;
     //@}
 
     /** @name Typed access to attributes, children and siblings */
@@ -2703,6 +2750,7 @@ class PropertiesNode : public NEDElement
     virtual const char *getAttribute(int k) const;
     virtual void setAttribute(int k, const char *val);
     virtual const char *getAttributeDefault(int k) const;
+    virtual PropertiesNode *dup() const;
     //@}
 
     /** @name Typed access to attributes, children and siblings */
@@ -2756,6 +2804,7 @@ class MsgpropertyNode : public NEDElement
     virtual const char *getAttribute(int k) const;
     virtual void setAttribute(int k, const char *val);
     virtual const char *getAttributeDefault(int k) const;
+    virtual MsgpropertyNode *dup() const;
     //@}
 
     /** @name Typed access to attributes, children and siblings */
@@ -2806,6 +2855,7 @@ class UnknownNode : public NEDElement
     virtual const char *getAttribute(int k) const;
     virtual void setAttribute(int k, const char *val);
     virtual const char *getAttributeDefault(int k) const;
+    virtual UnknownNode *dup() const;
     //@}
 
     /** @name Typed access to attributes, children and siblings */

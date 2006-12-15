@@ -84,6 +84,12 @@ const char *FilesNode::getAttributeDefault(int k) const
     }
 }
 
+FilesNode *FilesNode::dup() const
+{
+    FilesNode *newNode = new FilesNode();
+    return newNode;
+}
+
 FilesNode *FilesNode::getNextFilesNodeSibling() const
 {
     return (FilesNode *)getNextSiblingWithTag(NED_FILES);
@@ -152,6 +158,15 @@ const char *NedFileNode::getAttributeDefault(int k) const
         case 2: return "";
         default: return 0;
     }
+}
+
+NedFileNode *NedFileNode::dup() const
+{
+    NedFileNode *newNode = new NedFileNode();
+    newNode->filename = this->filename;
+    newNode->version = this->version;
+    newNode->package = this->package;
+    return newNode;
 }
 
 NedFileNode *NedFileNode::getNextNedFileNodeSibling() const
@@ -255,6 +270,14 @@ const char *CommentNode::getAttributeDefault(int k) const
     }
 }
 
+CommentNode *CommentNode::dup() const
+{
+    CommentNode *newNode = new CommentNode();
+    newNode->locid = this->locid;
+    newNode->content = this->content;
+    return newNode;
+}
+
 CommentNode *CommentNode::getNextCommentNodeSibling() const
 {
     return (CommentNode *)getNextSiblingWithTag(NED_COMMENT);
@@ -305,6 +328,13 @@ const char *ImportNode::getAttributeDefault(int k) const
         case 0: return NULL;
         default: return 0;
     }
+}
+
+ImportNode *ImportNode::dup() const
+{
+    ImportNode *newNode = new ImportNode();
+    newNode->filename = this->filename;
+    return newNode;
 }
 
 ImportNode *ImportNode::getNextImportNodeSibling() const
@@ -368,6 +398,14 @@ const char *PropertyDeclNode::getAttributeDefault(int k) const
         case 1: return "false";
         default: return 0;
     }
+}
+
+PropertyDeclNode *PropertyDeclNode::dup() const
+{
+    PropertyDeclNode *newNode = new PropertyDeclNode();
+    newNode->name = this->name;
+    newNode->isArray = this->isArray;
+    return newNode;
 }
 
 PropertyDeclNode *PropertyDeclNode::getNextPropertyDeclNodeSibling() const
@@ -437,6 +475,13 @@ const char *ExtendsNode::getAttributeDefault(int k) const
     }
 }
 
+ExtendsNode *ExtendsNode::dup() const
+{
+    ExtendsNode *newNode = new ExtendsNode();
+    newNode->name = this->name;
+    return newNode;
+}
+
 ExtendsNode *ExtendsNode::getNextExtendsNodeSibling() const
 {
     return (ExtendsNode *)getNextSiblingWithTag(NED_EXTENDS);
@@ -492,6 +537,13 @@ const char *InterfaceNameNode::getAttributeDefault(int k) const
         case 0: return NULL;
         default: return 0;
     }
+}
+
+InterfaceNameNode *InterfaceNameNode::dup() const
+{
+    InterfaceNameNode *newNode = new InterfaceNameNode();
+    newNode->name = this->name;
+    return newNode;
 }
 
 InterfaceNameNode *InterfaceNameNode::getNextInterfaceNameNodeSibling() const
@@ -555,6 +607,14 @@ const char *SimpleModuleNode::getAttributeDefault(int k) const
         case 1: return "false";
         default: return 0;
     }
+}
+
+SimpleModuleNode *SimpleModuleNode::dup() const
+{
+    SimpleModuleNode *newNode = new SimpleModuleNode();
+    newNode->name = this->name;
+    newNode->isNetwork = this->isNetwork;
+    return newNode;
 }
 
 SimpleModuleNode *SimpleModuleNode::getNextSimpleModuleNodeSibling() const
@@ -634,6 +694,13 @@ const char *ModuleInterfaceNode::getAttributeDefault(int k) const
     }
 }
 
+ModuleInterfaceNode *ModuleInterfaceNode::dup() const
+{
+    ModuleInterfaceNode *newNode = new ModuleInterfaceNode();
+    newNode->name = this->name;
+    return newNode;
+}
+
 ModuleInterfaceNode *ModuleInterfaceNode::getNextModuleInterfaceNodeSibling() const
 {
     return (ModuleInterfaceNode *)getNextSiblingWithTag(NED_MODULE_INTERFACE);
@@ -710,6 +777,14 @@ const char *CompoundModuleNode::getAttributeDefault(int k) const
         case 1: return "false";
         default: return 0;
     }
+}
+
+CompoundModuleNode *CompoundModuleNode::dup() const
+{
+    CompoundModuleNode *newNode = new CompoundModuleNode();
+    newNode->name = this->name;
+    newNode->isNetwork = this->isNetwork;
+    return newNode;
 }
 
 CompoundModuleNode *CompoundModuleNode::getNextCompoundModuleNodeSibling() const
@@ -804,6 +879,13 @@ const char *ChannelInterfaceNode::getAttributeDefault(int k) const
     }
 }
 
+ChannelInterfaceNode *ChannelInterfaceNode::dup() const
+{
+    ChannelInterfaceNode *newNode = new ChannelInterfaceNode();
+    newNode->name = this->name;
+    return newNode;
+}
+
 ChannelInterfaceNode *ChannelInterfaceNode::getNextChannelInterfaceNodeSibling() const
 {
     return (ChannelInterfaceNode *)getNextSiblingWithTag(NED_CHANNEL_INTERFACE);
@@ -875,6 +957,14 @@ const char *ChannelNode::getAttributeDefault(int k) const
         case 1: return NULL;
         default: return 0;
     }
+}
+
+ChannelNode *ChannelNode::dup() const
+{
+    ChannelNode *newNode = new ChannelNode();
+    newNode->isWithcppclass = this->isWithcppclass;
+    newNode->name = this->name;
+    return newNode;
 }
 
 ChannelNode *ChannelNode::getNextChannelNodeSibling() const
@@ -949,6 +1039,13 @@ const char *ParametersNode::getAttributeDefault(int k) const
         case 0: return "false";
         default: return 0;
     }
+}
+
+ParametersNode *ParametersNode::dup() const
+{
+    ParametersNode *newNode = new ParametersNode();
+    newNode->isImplicit = this->isImplicit;
+    return newNode;
 }
 
 ParametersNode *ParametersNode::getNextParametersNodeSibling() const
@@ -1051,6 +1148,17 @@ const char *ParamNode::getAttributeDefault(int k) const
     }
 }
 
+ParamNode *ParamNode::dup() const
+{
+    ParamNode *newNode = new ParamNode();
+    newNode->type = this->type;
+    newNode->isVolatile = this->isVolatile;
+    newNode->name = this->name;
+    newNode->value = this->value;
+    newNode->isDefault = this->isDefault;
+    return newNode;
+}
+
 ParamNode *ParamNode::getNextParamNodeSibling() const
 {
     return (ParamNode *)getNextSiblingWithTag(NED_PARAM);
@@ -1126,6 +1234,15 @@ const char *PatternNode::getAttributeDefault(int k) const
         case 2: return "false";
         default: return 0;
     }
+}
+
+PatternNode *PatternNode::dup() const
+{
+    PatternNode *newNode = new PatternNode();
+    newNode->pattern = this->pattern;
+    newNode->value = this->value;
+    newNode->isDefault = this->isDefault;
+    return newNode;
 }
 
 PatternNode *PatternNode::getNextPatternNodeSibling() const
@@ -1205,6 +1322,15 @@ const char *PropertyNode::getAttributeDefault(int k) const
     }
 }
 
+PropertyNode *PropertyNode::dup() const
+{
+    PropertyNode *newNode = new PropertyNode();
+    newNode->isImplicit = this->isImplicit;
+    newNode->name = this->name;
+    newNode->index = this->index;
+    return newNode;
+}
+
 PropertyNode *PropertyNode::getNextPropertyNodeSibling() const
 {
     return (PropertyNode *)getNextSiblingWithTag(NED_PROPERTY);
@@ -1267,6 +1393,13 @@ const char *PropertyKeyNode::getAttributeDefault(int k) const
     }
 }
 
+PropertyKeyNode *PropertyKeyNode::dup() const
+{
+    PropertyKeyNode *newNode = new PropertyKeyNode();
+    newNode->name = this->name;
+    return newNode;
+}
+
 PropertyKeyNode *PropertyKeyNode::getNextPropertyKeyNodeSibling() const
 {
     return (PropertyKeyNode *)getNextSiblingWithTag(NED_PROPERTY_KEY);
@@ -1323,6 +1456,12 @@ const char *GatesNode::getAttributeDefault(int k) const
     switch (k) {
         default: return 0;
     }
+}
+
+GatesNode *GatesNode::dup() const
+{
+    GatesNode *newNode = new GatesNode();
+    return newNode;
 }
 
 GatesNode *GatesNode::getNextGatesNodeSibling() const
@@ -1409,6 +1548,16 @@ const char *GateNode::getAttributeDefault(int k) const
     }
 }
 
+GateNode *GateNode::dup() const
+{
+    GateNode *newNode = new GateNode();
+    newNode->name = this->name;
+    newNode->type = this->type;
+    newNode->isVector = this->isVector;
+    newNode->vectorSize = this->vectorSize;
+    return newNode;
+}
+
 GateNode *GateNode::getNextGateNodeSibling() const
 {
     return (GateNode *)getNextSiblingWithTag(NED_GATE);
@@ -1470,6 +1619,12 @@ const char *TypesNode::getAttributeDefault(int k) const
     switch (k) {
         default: return 0;
     }
+}
+
+TypesNode *TypesNode::dup() const
+{
+    TypesNode *newNode = new TypesNode();
+    return newNode;
 }
 
 TypesNode *TypesNode::getNextTypesNodeSibling() const
@@ -1548,6 +1703,12 @@ const char *SubmodulesNode::getAttributeDefault(int k) const
     switch (k) {
         default: return 0;
     }
+}
+
+SubmodulesNode *SubmodulesNode::dup() const
+{
+    SubmodulesNode *newNode = new SubmodulesNode();
+    return newNode;
 }
 
 SubmodulesNode *SubmodulesNode::getNextSubmodulesNodeSibling() const
@@ -1634,6 +1795,18 @@ const char *SubmoduleNode::getAttributeDefault(int k) const
     }
 }
 
+SubmoduleNode *SubmoduleNode::dup() const
+{
+    SubmoduleNode *newNode = new SubmoduleNode();
+    newNode->name = this->name;
+    newNode->type = this->type;
+    newNode->likeType = this->likeType;
+    newNode->likeAny = this->likeAny;
+    newNode->likeParam = this->likeParam;
+    newNode->vectorSize = this->vectorSize;
+    return newNode;
+}
+
 SubmoduleNode *SubmoduleNode::getNextSubmoduleNodeSibling() const
 {
     return (SubmoduleNode *)getNextSiblingWithTag(NED_SUBMODULE);
@@ -1706,6 +1879,13 @@ const char *ConnectionsNode::getAttributeDefault(int k) const
         case 0: return "false";
         default: return 0;
     }
+}
+
+ConnectionsNode *ConnectionsNode::dup() const
+{
+    ConnectionsNode *newNode = new ConnectionsNode();
+    newNode->allowUnconnected = this->allowUnconnected;
+    return newNode;
 }
 
 ConnectionsNode *ConnectionsNode::getNextConnectionsNodeSibling() const
@@ -1851,6 +2031,25 @@ const char *ConnectionNode::getAttributeDefault(int k) const
     }
 }
 
+ConnectionNode *ConnectionNode::dup() const
+{
+    ConnectionNode *newNode = new ConnectionNode();
+    newNode->srcModule = this->srcModule;
+    newNode->srcModuleIndex = this->srcModuleIndex;
+    newNode->srcGate = this->srcGate;
+    newNode->srcGatePlusplus = this->srcGatePlusplus;
+    newNode->srcGateIndex = this->srcGateIndex;
+    newNode->srcGateSubg = this->srcGateSubg;
+    newNode->destModule = this->destModule;
+    newNode->destModuleIndex = this->destModuleIndex;
+    newNode->destGate = this->destGate;
+    newNode->destGatePlusplus = this->destGatePlusplus;
+    newNode->destGateIndex = this->destGateIndex;
+    newNode->destGateSubg = this->destGateSubg;
+    newNode->arrowDirection = this->arrowDirection;
+    return newNode;
+}
+
 ConnectionNode *ConnectionNode::getNextConnectionNodeSibling() const
 {
     return (ConnectionNode *)getNextSiblingWithTag(NED_CONNECTION);
@@ -1942,6 +2141,16 @@ const char *ChannelSpecNode::getAttributeDefault(int k) const
     }
 }
 
+ChannelSpecNode *ChannelSpecNode::dup() const
+{
+    ChannelSpecNode *newNode = new ChannelSpecNode();
+    newNode->type = this->type;
+    newNode->likeType = this->likeType;
+    newNode->likeAny = this->likeAny;
+    newNode->likeParam = this->likeParam;
+    return newNode;
+}
+
 ChannelSpecNode *ChannelSpecNode::getNextChannelSpecNodeSibling() const
 {
     return (ChannelSpecNode *)getNextSiblingWithTag(NED_CHANNEL_SPEC);
@@ -2003,6 +2212,12 @@ const char *ConnectionGroupNode::getAttributeDefault(int k) const
     switch (k) {
         default: return 0;
     }
+}
+
+ConnectionGroupNode *ConnectionGroupNode::dup() const
+{
+    ConnectionGroupNode *newNode = new ConnectionGroupNode();
+    return newNode;
 }
 
 ConnectionGroupNode *ConnectionGroupNode::getNextConnectionGroupNodeSibling() const
@@ -2085,6 +2300,15 @@ const char *LoopNode::getAttributeDefault(int k) const
     }
 }
 
+LoopNode *LoopNode::dup() const
+{
+    LoopNode *newNode = new LoopNode();
+    newNode->paramName = this->paramName;
+    newNode->fromValue = this->fromValue;
+    newNode->toValue = this->toValue;
+    return newNode;
+}
+
 LoopNode *LoopNode::getNextLoopNodeSibling() const
 {
     return (LoopNode *)getNextSiblingWithTag(NED_LOOP);
@@ -2147,6 +2371,13 @@ const char *ConditionNode::getAttributeDefault(int k) const
     }
 }
 
+ConditionNode *ConditionNode::dup() const
+{
+    ConditionNode *newNode = new ConditionNode();
+    newNode->condition = this->condition;
+    return newNode;
+}
+
 ConditionNode *ConditionNode::getNextConditionNodeSibling() const
 {
     return (ConditionNode *)getNextSiblingWithTag(NED_CONDITION);
@@ -2207,6 +2438,13 @@ const char *ExpressionNode::getAttributeDefault(int k) const
         case 0: return "";
         default: return 0;
     }
+}
+
+ExpressionNode *ExpressionNode::dup() const
+{
+    ExpressionNode *newNode = new ExpressionNode();
+    newNode->target = this->target;
+    return newNode;
 }
 
 ExpressionNode *ExpressionNode::getNextExpressionNodeSibling() const
@@ -2286,6 +2524,13 @@ const char *OperatorNode::getAttributeDefault(int k) const
     }
 }
 
+OperatorNode *OperatorNode::dup() const
+{
+    OperatorNode *newNode = new OperatorNode();
+    newNode->name = this->name;
+    return newNode;
+}
+
 OperatorNode *OperatorNode::getNextOperatorNodeSibling() const
 {
     return (OperatorNode *)getNextSiblingWithTag(NED_OPERATOR);
@@ -2361,6 +2606,13 @@ const char *FunctionNode::getAttributeDefault(int k) const
         case 0: return NULL;
         default: return 0;
     }
+}
+
+FunctionNode *FunctionNode::dup() const
+{
+    FunctionNode *newNode = new FunctionNode();
+    newNode->name = this->name;
+    return newNode;
 }
 
 FunctionNode *FunctionNode::getNextFunctionNodeSibling() const
@@ -2442,6 +2694,14 @@ const char *IdentNode::getAttributeDefault(int k) const
         case 1: return NULL;
         default: return 0;
     }
+}
+
+IdentNode *IdentNode::dup() const
+{
+    IdentNode *newNode = new IdentNode();
+    newNode->module = this->module;
+    newNode->name = this->name;
+    return newNode;
 }
 
 IdentNode *IdentNode::getNextIdentNodeSibling() const
@@ -2541,6 +2801,16 @@ const char *LiteralNode::getAttributeDefault(int k) const
     }
 }
 
+LiteralNode *LiteralNode::dup() const
+{
+    LiteralNode *newNode = new LiteralNode();
+    newNode->type = this->type;
+    newNode->unit = this->unit;
+    newNode->text = this->text;
+    newNode->value = this->value;
+    return newNode;
+}
+
 LiteralNode *LiteralNode::getNextLiteralNodeSibling() const
 {
     return (LiteralNode *)getNextSiblingWithTag(NED_LITERAL);
@@ -2600,6 +2870,14 @@ const char *MsgFileNode::getAttributeDefault(int k) const
         case 1: return "";
         default: return 0;
     }
+}
+
+MsgFileNode *MsgFileNode::dup() const
+{
+    MsgFileNode *newNode = new MsgFileNode();
+    newNode->filename = this->filename;
+    newNode->package = this->package;
+    return newNode;
 }
 
 MsgFileNode *MsgFileNode::getNextMsgFileNodeSibling() const
@@ -2716,6 +2994,16 @@ const char *CplusplusNode::getAttributeDefault(int k) const
     }
 }
 
+CplusplusNode *CplusplusNode::dup() const
+{
+    CplusplusNode *newNode = new CplusplusNode();
+    newNode->body = this->body;
+    newNode->bannerComment = this->bannerComment;
+    newNode->rightComment = this->rightComment;
+    newNode->trailingComment = this->trailingComment;
+    return newNode;
+}
+
 CplusplusNode *CplusplusNode::getNextCplusplusNodeSibling() const
 {
     return (CplusplusNode *)getNextSiblingWithTag(NED_CPLUSPLUS);
@@ -2783,6 +3071,16 @@ const char *StructDeclNode::getAttributeDefault(int k) const
         case 3: return "\n";
         default: return 0;
     }
+}
+
+StructDeclNode *StructDeclNode::dup() const
+{
+    StructDeclNode *newNode = new StructDeclNode();
+    newNode->name = this->name;
+    newNode->bannerComment = this->bannerComment;
+    newNode->rightComment = this->rightComment;
+    newNode->trailingComment = this->trailingComment;
+    return newNode;
 }
 
 StructDeclNode *StructDeclNode::getNextStructDeclNodeSibling() const
@@ -2860,6 +3158,17 @@ const char *ClassDeclNode::getAttributeDefault(int k) const
     }
 }
 
+ClassDeclNode *ClassDeclNode::dup() const
+{
+    ClassDeclNode *newNode = new ClassDeclNode();
+    newNode->name = this->name;
+    newNode->isCobject = this->isCobject;
+    newNode->bannerComment = this->bannerComment;
+    newNode->rightComment = this->rightComment;
+    newNode->trailingComment = this->trailingComment;
+    return newNode;
+}
+
 ClassDeclNode *ClassDeclNode::getNextClassDeclNodeSibling() const
 {
     return (ClassDeclNode *)getNextSiblingWithTag(NED_CLASS_DECL);
@@ -2929,6 +3238,16 @@ const char *MessageDeclNode::getAttributeDefault(int k) const
     }
 }
 
+MessageDeclNode *MessageDeclNode::dup() const
+{
+    MessageDeclNode *newNode = new MessageDeclNode();
+    newNode->name = this->name;
+    newNode->bannerComment = this->bannerComment;
+    newNode->rightComment = this->rightComment;
+    newNode->trailingComment = this->trailingComment;
+    return newNode;
+}
+
 MessageDeclNode *MessageDeclNode::getNextMessageDeclNodeSibling() const
 {
     return (MessageDeclNode *)getNextSiblingWithTag(NED_MESSAGE_DECL);
@@ -2996,6 +3315,16 @@ const char *EnumDeclNode::getAttributeDefault(int k) const
         case 3: return "\n";
         default: return 0;
     }
+}
+
+EnumDeclNode *EnumDeclNode::dup() const
+{
+    EnumDeclNode *newNode = new EnumDeclNode();
+    newNode->name = this->name;
+    newNode->bannerComment = this->bannerComment;
+    newNode->rightComment = this->rightComment;
+    newNode->trailingComment = this->trailingComment;
+    return newNode;
 }
 
 EnumDeclNode *EnumDeclNode::getNextEnumDeclNodeSibling() const
@@ -3075,6 +3404,18 @@ const char *EnumNode::getAttributeDefault(int k) const
     }
 }
 
+EnumNode *EnumNode::dup() const
+{
+    EnumNode *newNode = new EnumNode();
+    newNode->name = this->name;
+    newNode->extendsName = this->extendsName;
+    newNode->sourceCode = this->sourceCode;
+    newNode->bannerComment = this->bannerComment;
+    newNode->rightComment = this->rightComment;
+    newNode->trailingComment = this->trailingComment;
+    return newNode;
+}
+
 EnumNode *EnumNode::getNextEnumNodeSibling() const
 {
     return (EnumNode *)getNextSiblingWithTag(NED_ENUM);
@@ -3139,6 +3480,14 @@ const char *EnumFieldsNode::getAttributeDefault(int k) const
         case 1: return "\n";
         default: return 0;
     }
+}
+
+EnumFieldsNode *EnumFieldsNode::dup() const
+{
+    EnumFieldsNode *newNode = new EnumFieldsNode();
+    newNode->bannerComment = this->bannerComment;
+    newNode->rightComment = this->rightComment;
+    return newNode;
 }
 
 EnumFieldsNode *EnumFieldsNode::getNextEnumFieldsNodeSibling() const
@@ -3213,6 +3562,16 @@ const char *EnumFieldNode::getAttributeDefault(int k) const
         case 3: return "\n";
         default: return 0;
     }
+}
+
+EnumFieldNode *EnumFieldNode::dup() const
+{
+    EnumFieldNode *newNode = new EnumFieldNode();
+    newNode->name = this->name;
+    newNode->value = this->value;
+    newNode->bannerComment = this->bannerComment;
+    newNode->rightComment = this->rightComment;
+    return newNode;
 }
 
 EnumFieldNode *EnumFieldNode::getNextEnumFieldNodeSibling() const
@@ -3290,6 +3649,18 @@ const char *MessageNode::getAttributeDefault(int k) const
         case 5: return "\n";
         default: return 0;
     }
+}
+
+MessageNode *MessageNode::dup() const
+{
+    MessageNode *newNode = new MessageNode();
+    newNode->name = this->name;
+    newNode->extendsName = this->extendsName;
+    newNode->sourceCode = this->sourceCode;
+    newNode->bannerComment = this->bannerComment;
+    newNode->rightComment = this->rightComment;
+    newNode->trailingComment = this->trailingComment;
+    return newNode;
 }
 
 MessageNode *MessageNode::getNextMessageNodeSibling() const
@@ -3379,6 +3750,18 @@ const char *ClassNode::getAttributeDefault(int k) const
     }
 }
 
+ClassNode *ClassNode::dup() const
+{
+    ClassNode *newNode = new ClassNode();
+    newNode->name = this->name;
+    newNode->extendsName = this->extendsName;
+    newNode->sourceCode = this->sourceCode;
+    newNode->bannerComment = this->bannerComment;
+    newNode->rightComment = this->rightComment;
+    newNode->trailingComment = this->trailingComment;
+    return newNode;
+}
+
 ClassNode *ClassNode::getNextClassNodeSibling() const
 {
     return (ClassNode *)getNextSiblingWithTag(NED_CLASS);
@@ -3466,6 +3849,18 @@ const char *StructNode::getAttributeDefault(int k) const
     }
 }
 
+StructNode *StructNode::dup() const
+{
+    StructNode *newNode = new StructNode();
+    newNode->name = this->name;
+    newNode->extendsName = this->extendsName;
+    newNode->sourceCode = this->sourceCode;
+    newNode->bannerComment = this->bannerComment;
+    newNode->rightComment = this->rightComment;
+    newNode->trailingComment = this->trailingComment;
+    return newNode;
+}
+
 StructNode *StructNode::getNextStructNodeSibling() const
 {
     return (StructNode *)getNextSiblingWithTag(NED_STRUCT);
@@ -3535,6 +3930,14 @@ const char *FieldsNode::getAttributeDefault(int k) const
         case 1: return "\n";
         default: return 0;
     }
+}
+
+FieldsNode *FieldsNode::dup() const
+{
+    FieldsNode *newNode = new FieldsNode();
+    newNode->bannerComment = this->bannerComment;
+    newNode->rightComment = this->rightComment;
+    return newNode;
 }
 
 FieldsNode *FieldsNode::getNextFieldsNodeSibling() const
@@ -3641,6 +4044,22 @@ const char *FieldNode::getAttributeDefault(int k) const
     }
 }
 
+FieldNode *FieldNode::dup() const
+{
+    FieldNode *newNode = new FieldNode();
+    newNode->name = this->name;
+    newNode->dataType = this->dataType;
+    newNode->isAbstract = this->isAbstract;
+    newNode->isReadonly = this->isReadonly;
+    newNode->isVector = this->isVector;
+    newNode->vectorSize = this->vectorSize;
+    newNode->enumName = this->enumName;
+    newNode->defaultValue = this->defaultValue;
+    newNode->bannerComment = this->bannerComment;
+    newNode->rightComment = this->rightComment;
+    return newNode;
+}
+
 FieldNode *FieldNode::getNextFieldNodeSibling() const
 {
     return (FieldNode *)getNextSiblingWithTag(NED_FIELD);
@@ -3700,6 +4119,14 @@ const char *PropertiesNode::getAttributeDefault(int k) const
         case 1: return "\n";
         default: return 0;
     }
+}
+
+PropertiesNode *PropertiesNode::dup() const
+{
+    PropertiesNode *newNode = new PropertiesNode();
+    newNode->bannerComment = this->bannerComment;
+    newNode->rightComment = this->rightComment;
+    return newNode;
 }
 
 PropertiesNode *PropertiesNode::getNextPropertiesNodeSibling() const
@@ -3776,6 +4203,16 @@ const char *MsgpropertyNode::getAttributeDefault(int k) const
     }
 }
 
+MsgpropertyNode *MsgpropertyNode::dup() const
+{
+    MsgpropertyNode *newNode = new MsgpropertyNode();
+    newNode->name = this->name;
+    newNode->value = this->value;
+    newNode->bannerComment = this->bannerComment;
+    newNode->rightComment = this->rightComment;
+    return newNode;
+}
+
 MsgpropertyNode *MsgpropertyNode::getNextMsgpropertyNodeSibling() const
 {
     return (MsgpropertyNode *)getNextSiblingWithTag(NED_MSGPROPERTY);
@@ -3831,6 +4268,13 @@ const char *UnknownNode::getAttributeDefault(int k) const
         case 0: return NULL;
         default: return 0;
     }
+}
+
+UnknownNode *UnknownNode::dup() const
+{
+    UnknownNode *newNode = new UnknownNode();
+    newNode->element = this->element;
+    return newNode;
 }
 
 UnknownNode *UnknownNode::getNextUnknownNodeSibling() const
