@@ -31,7 +31,7 @@
 // include <winsock.h> or <winsock2.h> (mutually exclusive) if neither has been included yet
 #if !defined(_WINSOCKAPI_) && !defined(_WINSOCK2API_)
 # ifndef WANT_WINSOCK2
-#include <winsock.h>
+#  include <winsock.h>
 # else
 #  include <winsock2.h>
 # endif
