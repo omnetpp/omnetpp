@@ -10,7 +10,6 @@
 
 enum TRTypes
 {
-    TR_ZARRO = 0;
     TR_TOKEN = 1;
     TR_FRAME = 2;
 };
@@ -27,31 +26,11 @@ message TRApplicationData
 };
 
 
-struct Point {  //XXX remove
-    fields:
-        int x;
-        int y;
-}
-
-struct EPoint extends Point {  //XXX remove
-    fields:
-        int z;
-        string comment = "clever, huh?";
-}
-
 //
 // The token.
 //
 message TRToken
 {
-    fields:
-      //XXX fields just for testing Tkenv:
-      int type enum(TRTypes);  
-      int array[5];  
-      Point p;
-      Point q;
-      EPoint r;
-      EPoint parray[3];
 };
 
 
