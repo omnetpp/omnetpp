@@ -61,6 +61,9 @@ void extendCount(void);
 #define TEXTBUF_LEN 1024
 static char textbuf[TEXTBUF_LEN];
 
+// buffer to collect characters during extendCount()
+std::string extendbuf;
+
 #include "util.h"  // opp_strdup()
 %}
 
@@ -88,58 +91,54 @@ static char textbuf[TEXTBUF_LEN];
 {D}+{E}                  { count(); yylval = opp_strdup(yytext); return REALCONSTANT; }
 {D}*"."{D}+({E})?        { count(); yylval = opp_strdup(yytext); return REALCONSTANT; }
 
-\"                       { count(); BEGIN(stringliteral);/*
-                            FIXME FIXME FIXME FIXME!!!!!!
-                               (1) extendCount() should append to yytext not overwrite it!
-                               (2) shouldn't we process escape sequences right here? (probably NOT though)
-                         */ }
+\"                       { count(); BEGIN(stringliteral); }
 <stringliteral>{
       \n                 { throw new cRuntimeError("Error parsing expression: unterminated string literal (append backslash to line for multi-line strings)"); }
       \\\n               { extendCount(); /* line continuation */ }
       \\\"               { extendCount(); /* qouted quote */ }
       \\[^\n\"]          { extendCount(); /* qouted char */ }
       [^\\\n\"]+         { extendCount(); /* character inside string literal */ }
-      \"                 { extendCount(); yylval = opp_strdup(yytext); BEGIN(INITIAL); return STRINGCONSTANT; /* closing quote */ }
+      \"                 { extendCount(); yylval = opp_strdup(extendbuf.c_str()); BEGIN(INITIAL); return STRINGCONSTANT; /* closing quote */ }
 }
 
-","                     { count(); return (','); }
-":"                     { count(); return (':'); }
-"="                     { count(); return ('='); }
-"("                     { count(); return ('('); }
-")"                     { count(); return (')'); }
-"["                     { count(); return ('['); }
-"]"                     { count(); return (']'); }
-"."                     { count(); return ('.'); }
-"?"                     { count(); return ('?'); }
+","                      { count(); return ','; }
+":"                      { count(); return ':'; }
+"="                      { count(); return '='; }
+"("                      { count(); return '('; }
+")"                      { count(); return ')'; }
+"["                      { count(); return '['; }
+"]"                      { count(); return ']'; }
+"."                      { count(); return '.'; }
+"?"                      { count(); return '?'; }
 
-"||"                    { count(); return OR_; }
-"&&"                    { count(); return AND_; }
-"##"                    { count(); return XOR_; }
-"!"                     { count(); return NOT_; }
+"||"                     { count(); return OR_; }
+"&&"                     { count(); return AND_; }
+"##"                     { count(); return XOR_; }
+"!"                      { count(); return NOT_; }
 
-"|"                     { count(); return BINOR_; }
-"&"                     { count(); return BINAND_; }
-"#"                     { count(); return BINXOR_; }
-"~"                     { count(); return BINCOMPL_; }
-"<<"                    { count(); return SHIFTLEFT_; }
-">>"                    { count(); return SHIFTRIGHT_; }
+"|"                      { count(); return BINOR_; }
+"&"                      { count(); return BINAND_; }
+"#"                      { count(); return BINXOR_; }
+"~"                      { count(); return BINCOMPL_; }
+"<<"                     { count(); return SHIFTLEFT_; }
+">>"                     { count(); return SHIFTRIGHT_; }
 
-"^"                     { count(); return '^'; }
-"+"                     { count(); return '+'; }
-"-"                     { count(); return '-'; }
-"*"                     { count(); return '*'; }
-"/"                     { count(); return '/'; }
-"%"                     { count(); return '%'; }
-"<"                     { count(); return '<'; }
-">"                     { count(); return '>'; }
+"^"                      { count(); return '^'; }
+"+"                      { count(); return '+'; }
+"-"                      { count(); return '-'; }
+"*"                      { count(); return '*'; }
+"/"                      { count(); return '/'; }
+"%"                      { count(); return '%'; }
+"<"                      { count(); return '<'; }
+">"                      { count(); return '>'; }
 
-"=="                    { count(); return EQ_; }
-"!="                    { count(); return NE_; }
-"<="                    { count(); return LE_; }
-">="                    { count(); return GE_; }
+"=="                     { count(); return EQ_; }
+"!="                     { count(); return NE_; }
+"<="                     { count(); return LE_; }
+">="                     { count(); return GE_; }
 
-{S}                     { count(); }
-.                       { count(); return INVALID_CHAR; }
+{S}                      { count(); }
+.                        { count(); return INVALID_CHAR; }
 
 %%
 
@@ -189,7 +188,10 @@ static void _count(int updateprevpos)
     }
 
     if (updateprevpos) {
+        extendbuf = "";
         prevpos = pos;
+    } else {
+        extendbuf += yytext;
     }
     for (i = 0; yytext[i] != '\0'; i++) {
         if (yytext[i] == '\n') {

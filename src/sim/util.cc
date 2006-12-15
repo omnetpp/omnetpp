@@ -459,11 +459,11 @@ char *opp_quotestr(const char *txt)
     {
         switch (*s)
         {
-            case '\n': *d++ = '\\'; *d++ = 'n'; break;
-            case '\r': *d++ = '\\'; *d++ = 'r'; break;
-            case '\t': *d++ = '\\'; *d++ = 't'; break;
-            case '"': *d++ = '\\'; *d++ = '"'; break;
-            case '\\': *d++ = '\\'; *d++ = '\\'; break;
+            case '\n': *d++ = '\\'; *d++ = 'n'; s++; break;
+            case '\r': *d++ = '\\'; *d++ = 'r'; s++; break;
+            case '\t': *d++ = '\\'; *d++ = 't'; s++; break;
+            case '"': *d++ = '\\'; *d++ = '"'; s++; break;
+            case '\\': *d++ = '\\'; *d++ = '\\'; s++; break;
             default: *d++ = *s++;
         }
     }
