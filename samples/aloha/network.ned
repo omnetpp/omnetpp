@@ -38,7 +38,7 @@ simple AServer
 // ALOHAnet consists of hosts which talk to the central "server" via
 // Aloha or Slotted Aloha protocol
 //
-module ALOHAnet
+network ALOHAnet
 {
     parameters:
         int numHosts;  // number of hosts
@@ -56,9 +56,5 @@ module ALOHAnet
                 slotTime = slotTime;
         };
     connections allowunconnected:
-}
-
-network alohaNet extends ALOHAnet
-{
 }
 

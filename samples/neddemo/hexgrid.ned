@@ -22,13 +22,13 @@ simple HexGridNode
 }
 
 
-module HexGrid
+network HexGrid
 {
     parameters:
         int rows = default(7) @prompt("Number of rows");
         int cols = default(3) @prompt("Number of columns");
     submodules:
-        node[rows*cols]: HexGridNode;
+        node[rows*cols]: HexGridNode {};
     connections allowunconnected:
         for i=0..rows*cols-1 {
             node[i].n <-- node[i-2*cols].s if i+1>2*cols;
@@ -37,8 +37,4 @@ module HexGrid
         };
 }
 
-
-network hexGrid extends HexGrid
-{
-}
 

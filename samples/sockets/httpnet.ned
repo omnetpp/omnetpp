@@ -17,7 +17,7 @@ import "cloud";
 //
 // Model of the network, consisting of several clients, a server and a cloud
 //
-module HTTPNet
+network HTTPNet
 {
     parameters:
         int numClients = default(3) @prompt("Number of clients:");
@@ -37,6 +37,7 @@ module HTTPNet
             parameters:
                 addr = 1;
                 srvAddr = 0;
+                //localhost:4242");
                 @display("p=102,92;t=Run the simulation\, then\nenter into your browser:\nhttp://localhost:4242");
         };
         client[numClients]: HTTPClient {
@@ -54,14 +55,6 @@ module HTTPNet
             client[i].out --> cloud.in[i+2];
             client[i].in <-- cloud.out[i+2];
         };
-}
-
-
-//
-// Instantiates HTTPNet
-//
-network httpNet extends HTTPNet
-{
 }
 
 

@@ -19,24 +19,17 @@ simple RndNode
 }
 
 
-module RandomGraph
+network RandomGraph
 {
     parameters:
         int n;
         volatile double connectedness; // 0.0<x<1.0
     submodules:
-        node[n]: RndNode;
+        node[n]: RndNode {};
     connections allowunconnected:
         for i=0..n-1, for j=0..n-1 {
             node[i].out++ --> node[j].in++ if i!=j && uniform(0, 1)<connectedness;
         };
 }
 
-
-network randomGraph extends RandomGraph
-{
-    parameters:
-        n = 10;
-        connectedness = 0.3;
-}
 

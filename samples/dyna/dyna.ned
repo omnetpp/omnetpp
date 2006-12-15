@@ -73,7 +73,7 @@ simple ServerProcess
 //
 // Model of the network, consisting of serveral clients, a server and a switch
 //
-module ClientServer
+network ClientServer
 {
     parameters:
         int numClients = default(4) @prompt("Number of clients");
@@ -110,14 +110,6 @@ module ClientServer
         };
         server.out --> {  delay = 10ms; } --> switch.in[numClients];
         server.in <-- {  delay = 10ms; } <-- switch.out[numClients];
-}
-
-
-//
-// Instantiates a ClientServer network.
-//
-network dyna extends ClientServer
-{
 }
 
 

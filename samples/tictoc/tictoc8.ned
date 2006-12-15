@@ -29,7 +29,7 @@ simple Toc8
 //
 // Same as Tictoc7.
 //
-module Tictoc8
+network Tictoc8
 {
     submodules:
         tic: Tic8 {
@@ -44,9 +44,4 @@ module Tictoc8
         tic.out --> {  delay = 100ms; } --> toc.in;
         tic.in <-- {  delay = 100ms; } <-- toc.out;
 }
-
-network tictoc8 extends Tictoc8
-{
-}
-
 

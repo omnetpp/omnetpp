@@ -26,7 +26,7 @@ simple HubNode
 }
 
 
-module Star
+network Star
 {
     parameters:
         int n = default(11) @prompt("Number of stations");
@@ -47,8 +47,4 @@ module Star
         };
 }
 
-
-network star extends Star
-{
-}
 

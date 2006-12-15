@@ -26,7 +26,7 @@ simple Toc7
         output out;
 }
 
-module Tictoc7
+network Tictoc7
 {
     submodules:
         tic: Tic7 {
@@ -40,9 +40,5 @@ module Tictoc7
     connections:
         tic.out --> {  delay = 100ms; } --> toc.in;
         tic.in <-- {  delay = 100ms; } <-- toc.out;
-}
-
-network tictoc7 extends Tictoc7
-{
 }
 

@@ -13,7 +13,7 @@ import "fifo";
 //
 // This is a closed ring network.
 //
-module Ring
+network Ring
 {
     parameters:
         int numCells = default(20) @prompt("Number of cells");
@@ -28,9 +28,5 @@ module Ring
             fifo[i].out --> fifo[i+1].in;
         };
         fifo[numBuffers-1].out --> fifo[0].in;
-}
-
-network ring extends Ring
-{
 }
 

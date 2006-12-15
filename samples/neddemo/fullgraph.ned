@@ -18,7 +18,7 @@ simple FullGraphNode
 }
 
 
-module FullGraph
+network FullGraph
 {
     parameters:
         int n = default(10) @prompt("Number of nodes");
@@ -36,8 +36,4 @@ module FullGraph
         };
 }
 
-
-network fullGraph extends FullGraph
-{
-}
 

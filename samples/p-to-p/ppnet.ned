@@ -24,7 +24,7 @@ channel C extends cBasicChannel
 // Transmission of packets on a line with finite bandwidth. Uses a pair of
 // point-to-point interfaces. The line is driven by bursty traffic.
 //
-module PointToPointNet
+network PointToPointNet
 {
     submodules:
         burstySrc: PPSource {
@@ -48,9 +48,5 @@ module PointToPointNet
         ppIF1.lineOut --> C { @display("o=,3"); } --> ppIF2.lineIn;
         ppIF1.lineIn <-- C { @display("o=,3"); } <-- ppIF2.lineOut;
         ppIF2.out --> sink.in;
-}
-
-network pointToPointNet extends PointToPointNet
-{
 }
 

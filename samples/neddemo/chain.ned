@@ -19,20 +19,16 @@ simple ChainNode
 }
 
 
-module Chain
+network Chain
 {
     parameters:
         int n = default(5) @prompt("Number of modules");
     submodules:
-        node[n]: ChainNode;
+        node[n]: ChainNode {};
     connections allowunconnected:
         for i=0..n-2 {
             node[i].right --> node[i+1].left;
         };
 }
 
-
-network chain extends Chain
-{
-}
 

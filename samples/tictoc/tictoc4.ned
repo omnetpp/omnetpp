@@ -21,7 +21,7 @@ simple Txc4
 //
 // Adding module parameters.
 //
-module Tictoc4
+network Tictoc4
 {
     submodules:
         tic: Txc4 {
@@ -37,9 +37,5 @@ module Tictoc4
     connections:
         tic.out --> {  delay = 100ms; } --> toc.in;
         tic.in <-- {  delay = 100ms; } <-- toc.out;
-}
-
-network tictoc4 extends Tictoc4
-{
 }
 

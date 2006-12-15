@@ -28,12 +28,3 @@ simple HistogramDemo
 }
 
 
-//
-// Instantiates HistogramDemo as network consisting of just one single-module.
-//
-network Histograms extends HistogramDemo
-{
-}
-
-
-

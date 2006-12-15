@@ -27,12 +27,9 @@ module Node
 // The network will by dynamically constructed by the "builder" submodule,
 // based on the topology in the MySQL database.
 //
-module Net60
+network Net60
 {
     submodules:
         builder: cMySQLNetBuilder {};
 }
 
-network net60 extends Net60
-{
-}

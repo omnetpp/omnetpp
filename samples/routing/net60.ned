@@ -13,7 +13,7 @@ import "node";
 //
 // A network topology commonly known as the "NTT backbone".
 //
-module Net60
+network Net60
 {
     submodules:
         rte[57]: Node {
@@ -263,9 +263,5 @@ module Net60
 
         rte[55].out++ --> rte[56].in++;
         rte[55].in++ <-- rte[56].out++;
-}
-
-network net60 extends Net60
-{
 }
 

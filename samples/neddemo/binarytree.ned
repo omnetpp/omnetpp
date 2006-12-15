@@ -19,12 +19,12 @@ simple BinaryTreeNode
 }
 
 
-module BinaryTree1
+network BinaryTree1
 {
     parameters:
         int height = default(5) @prompt("Height of the tree");
     submodules:
-        node[2^height-1]: BinaryTreeNode;
+        node[2^height-1]: BinaryTreeNode {};
     connections allowunconnected:
         for i=0..2^height-2, for j=0..2^height-2 {
             node[i].downleft --> node[j].fromupper if j==2*i+1;
@@ -33,12 +33,12 @@ module BinaryTree1
 }
 
 
-module BinaryTree2
+network BinaryTree2
 {
     parameters:
         int height = default(5) @prompt("Height of the tree");
     submodules:
-        node[2^height-1]: BinaryTreeNode;
+        node[2^height-1]: BinaryTreeNode {};
     connections allowunconnected:
         for i=0..2^(height-1)-2 {
             node[i].downleft --> node[2*i+1].fromupper;
@@ -46,13 +46,4 @@ module BinaryTree2
         };
 }
 
-
-network binaryTree1 extends BinaryTree1
-{
-}
-
-
-network binaryTree2 extends BinaryTree2
-{
-}
 

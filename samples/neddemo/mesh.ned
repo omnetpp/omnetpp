@@ -20,7 +20,7 @@ simple MeshNode
 }
 
 
-module Mesh
+network Mesh
 {
     parameters:
         int height = default(4) @prompt("Number of rows");
@@ -37,8 +37,4 @@ module Mesh
         };
 }
 
-
-network mesh extends Mesh
-{
-}
 

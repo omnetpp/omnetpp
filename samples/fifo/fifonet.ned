@@ -16,7 +16,7 @@ import "sink";
 //
 // Simple queueing network: generator + FIFO + sink.
 //
-module FifoNet
+network FifoNet
 {
     submodules:
         gen: FFGenerator {
@@ -36,8 +36,4 @@ module FifoNet
         fifo.out --> sink.in;
 }
 
-
-network fifonet extends FifoNet
-{
-}
 

@@ -14,7 +14,7 @@ import "tandemqueue.ned";
 //
 // Closed Queueing Network, variant "B".
 //
-module ClosedQueueingNetB
+network ClosedQueueingNetB
 {
     parameters:
         int numTandems;
@@ -34,11 +34,4 @@ module ClosedQueueingNetB
         };
 }
 
-
-//
-// Instantiates ClosedQueueingNetB.
-//
-network cqnB extends ClosedQueueingNetB
-{
-}
 

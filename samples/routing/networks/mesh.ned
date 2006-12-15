@@ -8,7 +8,7 @@
 //
 
 
-module Mesh
+network Mesh
 {
     parameters:
         double height = default(9) @prompt("Number of rows");
@@ -31,8 +31,4 @@ module Mesh
         };
 }
 
-
-network mesh extends Mesh
-{
-}
 

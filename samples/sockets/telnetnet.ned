@@ -17,7 +17,7 @@ import "cloud";
 //
 // Model of the network, consisting of several clients, a server and a cloud
 //
-module TelnetNet
+network TelnetNet
 {
     parameters:
         int numClients = default(3) @prompt("Number of clients");
@@ -54,14 +54,6 @@ module TelnetNet
             client[i].out --> cloud.in[i+2];
             client[i].in <-- cloud.out[i+2];
         };
-}
-
-
-//
-// Instantiates TelnetNet
-//
-network telnetNet extends TelnetNet
-{
 }
 
 

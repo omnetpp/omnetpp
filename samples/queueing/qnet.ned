@@ -14,7 +14,7 @@ import "pqueue.ned";
 import "server.ned";
 import "sink.ned";
 
-module QNet
+network QNet
 {
     submodules:
         enter: QSource {
@@ -62,6 +62,3 @@ module QNet
         classifier.other --> leave1.in;
 }
 
-network qnet extends QNet
-{
-}

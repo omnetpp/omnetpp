@@ -20,7 +20,7 @@ simple Txc3
 //
 // Same as Tictoc2.
 //
-module Tictoc3
+network Tictoc3
 {
     submodules:
         tic: Txc3 {
@@ -34,9 +34,5 @@ module Tictoc3
     connections:
         tic.out --> {  delay = 100ms; } --> toc.in;
         tic.in <-- {  delay = 100ms; } <-- toc.out;
-}
-
-network tictoc3 extends Tictoc3
-{
 }
 

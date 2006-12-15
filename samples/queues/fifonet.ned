@@ -15,7 +15,7 @@ import "sink";
 //
 // Generator + FIFO + sink
 //
-module FifoNet
+network FifoNet
 {
     parameters:
         int numCells = default(20) @prompt("Number of cells");
@@ -40,9 +40,5 @@ module FifoNet
             fifo[i].out --> fifo[i+1].in;
         };
         fifo[numBuffers-1].out --> sink.in;
-}
-
-network fifonet extends FifoNet
-{
 }
 

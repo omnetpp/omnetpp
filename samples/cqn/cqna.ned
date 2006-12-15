@@ -15,7 +15,7 @@ import "switch.ned";
 //
 // Closed Queueing Network, variant "A".
 //
-module ClosedQueueingNetA
+network ClosedQueueingNetA
 {
     parameters:
         int numTandems; // number of switches (and also of tandem queues)
@@ -52,14 +52,6 @@ module ClosedQueueingNetA
         for s=0..numTandems-1 {
             queue[(s+1)*numQueuesPerTandem-1].out --> {  delay = qDelay; } --> switch[s].in;
         };
-}
-
-
-//
-// Instantiates ClosedQueueingNetA.
-//
-network cqnA extends ClosedQueueingNetA
-{
 }
 
 

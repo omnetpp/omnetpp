@@ -9,7 +9,7 @@
 
 import "../node";
 
-module FullGraph
+network FullGraph
 {
     parameters:
         double n = default(15) @prompt("Number of nodes");
@@ -28,8 +28,4 @@ module FullGraph
         };
 }
 
-
-network fullGraph extends FullGraph
-{
-}
 

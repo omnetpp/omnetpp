@@ -20,7 +20,7 @@ simple Txc1
 // Two instances (tic and toc) of Txc1 connected both ways.
 // Tic and toc will pass messages to one another.
 //
-module Tictoc1
+network Tictoc1
 {
     submodules:
         tic: Txc1 {};
@@ -28,9 +28,5 @@ module Tictoc1
     connections:
         tic.out --> {  delay = 100ms; } --> toc.in;
         tic.in <-- {  delay = 100ms; } <-- toc.out;
-}
-
-network tictoc1 extends Tictoc1
-{
 }
 

@@ -14,7 +14,7 @@ import "../node";
 // This network adds one extra connection to the net60 model (net60.ned):
 // a simplex link from node[55] to node[0]. (See end of NED code.)
 //
-module Net60a
+network Net60a
 {
     submodules:
         rte[57]: Node {
@@ -270,9 +270,5 @@ module Net60a
 
         // the "extra" connection, compared to net60
         rte[55].out[2] --> rte[0].in[1];
-}
-
-network net60a extends Net60a
-{
 }
 

@@ -18,7 +18,7 @@ import "computer";
 //
 // Ring with a configurable number of Computers
 //
-module TokenRing
+network TokenRing
 {
     parameters:
         int numStations = default(5) @prompt("Number of stations in the ring");
@@ -40,14 +40,6 @@ module TokenRing
         for i=0..numStations-2 {
             comp[i].out --> {  delay = cableDelay; } --> comp[i+1].in;
         };
-}
-
-
-//
-// Instance of the Token Ring
-//
-network token extends TokenRing
-{
 }
 
 

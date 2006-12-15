@@ -20,10 +20,10 @@ simple Txc11
 //
 // Same as Tictoc10.
 //
-module Tictoc11
+network Tictoc11
 {
     submodules:
-        tic[6]: Txc11;  // we'll have 6 Txc modules
+        tic[6]: Txc11 {};
     connections:
         tic[0].out++ --> {  delay = 100ms; } --> tic[1].in++;
         tic[0].in++ <-- {  delay = 100ms; } <-- tic[1].out++;
@@ -39,9 +39,5 @@ module Tictoc11
 
         tic[4].out++ --> {  delay = 100ms; } --> tic[5].in++;
         tic[4].in++ <-- {  delay = 100ms; } <-- tic[5].out++;
-}
-
-network tictoc11 extends Tictoc11
-{
 }
 

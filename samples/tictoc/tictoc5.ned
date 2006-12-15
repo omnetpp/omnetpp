@@ -17,7 +17,7 @@ simple Txc5
         output out;
 }
 
-module Tictoc5
+network Tictoc5
 {
     submodules:
         tic: Txc5 {
@@ -31,9 +31,5 @@ module Tictoc5
     connections:
         tic.out --> {  delay = 100ms; } --> toc.in;
         tic.in <-- {  delay = 100ms; } <-- toc.out;
-}
-
-network tictoc5 extends Tictoc5
-{
 }
 

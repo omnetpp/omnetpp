@@ -21,7 +21,7 @@ simple Txc2
 // the "proc1" icon (bitmaps/proc1.gif), and paint it cyan for `tic'
 // and yellow for `toc'.
 //
-module Tictoc2
+network Tictoc2
 {
     submodules:
         tic: Txc2 {
@@ -35,9 +35,5 @@ module Tictoc2
     connections:
         tic.out --> {  delay = 100ms; } --> toc.in;
         tic.in <-- {  delay = 100ms; } <-- toc.out;
-}
-
-network tictoc2 extends Tictoc2
-{
 }
 

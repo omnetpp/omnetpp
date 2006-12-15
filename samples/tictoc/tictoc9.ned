@@ -17,11 +17,10 @@ simple Txc9
         output out[];
 }
 
-module Tictoc9
+network Tictoc9
 {
     submodules:
-        tic[6]: Txc9;   // we'll have 6 Txc modules
-
+        tic[6]: Txc9 {};
     connections:
         tic[0].out++ --> {  delay = 100ms; } --> tic[1].in++;
         tic[0].in++ <-- {  delay = 100ms; } <-- tic[1].out++;
@@ -37,9 +36,5 @@ module Tictoc9
 
         tic[4].out++ --> {  delay = 100ms; } --> tic[5].in++;
         tic[4].in++ <-- {  delay = 100ms; } <-- tic[5].out++;
-}
-
-network tictoc9 extends Tictoc9
-{
 }
 
