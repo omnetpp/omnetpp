@@ -18,9 +18,6 @@
   <requires>
     <import plugin="org.eclipse.core.runtime" />
     <import plugin="org.eclipse.core.resources" export="true"/>
-    <import plugin="org.eclipse.emf.ecore" export="true"/>
-    <import plugin="org.junit" export="true"/>
-    <import plugin="org.eclipse.emf.edit" export="true"/>
     <import plugin="org.eclipse.emf.ecore.xmi" export="true"/>
     <import plugin="org.eclipse.emf.edit.ui" export="true"/>
     <import plugin="org.eclipse.ui.ide" export="true"/>
