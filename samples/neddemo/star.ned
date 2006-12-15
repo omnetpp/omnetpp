@@ -29,7 +29,7 @@ simple HubNode
 module Star
 {
     parameters:
-        int n;
+        int n = default(11) @prompt("Number of stations");
     submodules:
         node[n]: StarNode {
             parameters:
@@ -50,7 +50,5 @@ module Star
 
 network star extends Star
 {
-    parameters:
-        n = default(11) @prompt("Number of stations");
 }
 

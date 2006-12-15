@@ -22,7 +22,7 @@ simple BinaryTreeNode
 module BinaryTree1
 {
     parameters:
-        int height;
+        int height = default(5) @prompt("Height of the tree");
     submodules:
         node[2^height-1]: BinaryTreeNode;
     connections allowunconnected:
@@ -36,7 +36,7 @@ module BinaryTree1
 module BinaryTree2
 {
     parameters:
-        int height;
+        int height = default(5) @prompt("Height of the tree");
     submodules:
         node[2^height-1]: BinaryTreeNode;
     connections allowunconnected:
@@ -49,14 +49,10 @@ module BinaryTree2
 
 network binaryTree1 extends BinaryTree1
 {
-    parameters:
-        height = default(5) @prompt("Height of the tree");
 }
 
 
 network binaryTree2 extends BinaryTree2
 {
-    parameters:
-        height = default(5) @prompt("Height of the tree");
 }
 

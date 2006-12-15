@@ -20,11 +20,11 @@
 simple HistogramDemo
 {
     parameters:
-        int numObservations;
-        int numCells;
-        bool useFixedRange;
-        int numFirstVals;
-        double rangeExtFactor;
+        int numObservations = default(10000) @prompt("Number of observations");
+        int numCells = default(20) @prompt("Number of histogram cells");
+        bool useFixedRange = default(false) @prompt("Auto (false) or fixed (true) histogram range? ");
+        int numFirstVals = default(50) @prompt("Number of observations used for range estimation");
+        double rangeExtFactor = default(1.3) @prompt("Range extension factor (usually 1.0 .. 2)");
 }
 
 
@@ -33,12 +33,6 @@ simple HistogramDemo
 //
 network Histograms extends HistogramDemo
 {
-    parameters:
-        numObservations = default(10000) @prompt("Number of observations: ");
-        numCells = default(20) @prompt("Number of histogram cells: ");
-        useFixedRange = default(false) @prompt("Auto (false) or fixed (true) histogram range? ");
-        numFirstVals = default(50) @prompt("Number of observations used for range estimation: ");
-        rangeExtFactor = default(1.3) @prompt("Range extension factor (usually 1.0 .. 2): ");
 }
 
 

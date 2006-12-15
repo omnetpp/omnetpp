@@ -23,8 +23,8 @@ simple MeshNode
 module Mesh
 {
     parameters:
-        int height;
-        int width;
+        int height = default(4) @prompt("Number of rows");
+        int width = default(6) @prompt("Number of columns");
     submodules:
         node[height*width]: MeshNode {
             parameters:
@@ -40,8 +40,5 @@ module Mesh
 
 network mesh extends Mesh
 {
-    parameters:
-        height = default(4) @prompt("Number of rows");
-        width = default(6) @prompt("Number of columns");
 }
 

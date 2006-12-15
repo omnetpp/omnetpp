@@ -20,7 +20,7 @@ import "cloud";
 module TelnetNet
 {
     parameters:
-        int numClients = default(3) @prompt("Number of clients:");
+        int numClients = default(3) @prompt("Number of clients");
     submodules:
         server: TelnetServer {
             parameters:
@@ -62,8 +62,6 @@ module TelnetNet
 //
 network telnetNet extends TelnetNet
 {
-    parameters:
-        numClients = default(3) @prompt("Number of clients:");
 }
 
 

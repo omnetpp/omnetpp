@@ -76,11 +76,11 @@ simple ServerProcess
 module ClientServer
 {
     parameters:
-        int numClients = default(4) @prompt("Number of clients:");
+        int numClients = default(4) @prompt("Number of clients");
     submodules:
         server: Server {
             parameters:
-                processingTime = default(0.2s) @prompt("Query processing time:");
+                processingTime = default(0.2s) @prompt("Time to process a query");
                 @display("p=210,70");
         };
         switch: Switch {
@@ -98,9 +98,9 @@ module ClientServer
         client[numClients]: Client {
             parameters:
                 timeout = 5s;
-                connIaTime = default(10s) @prompt("Connection interarrival time:");
-                queryIaTime = default(2s) @prompt("Query interarrival time:");
-                numQuery = default(5) @prompt("Number of queries per conn:");
+                connIaTime = default(10s) @prompt("Connection interarrival time");
+                queryIaTime = default(2s) @prompt("Query interarrival time");
+                numQuery = default(5) @prompt("Number of queries per connection");
                 @display("p=70,270,m,10,80");
         };
     connections:

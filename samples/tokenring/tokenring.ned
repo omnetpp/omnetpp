@@ -21,10 +21,10 @@ import "computer";
 module TokenRing
 {
     parameters:
-        int numStations; // Number of stations in the ring.
-        double THT; // Token Holding Time, as defined in the protocol
-        double dataRate; // Token Ring data rate in bps
-        double cableDelay; // Delay of the cable connecting adjacent stations
+        int numStations = default(5) @prompt("Number of stations in the ring");
+        double THT = default(20ms) @prompt("Token Holding Time (s)");
+        double dataRate = 4 Mbps; // Token Ring data rate
+        double cableDelay = 1us; // Delay of the cable connecting adjacent stations
     submodules:
         comp[numStations]: Computer {
             parameters:
@@ -48,11 +48,6 @@ module TokenRing
 //
 network token extends TokenRing
 {
-    parameters:
-        numStations = default(5) @prompt("Number of stations in the ring:");
-        THT = default(20ms) @prompt("Token Holding Time (s):");
-        dataRate = 4000000; // 4 Mbit/s
-        cableDelay = 1us;
 }
 
 

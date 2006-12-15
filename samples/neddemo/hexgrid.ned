@@ -25,8 +25,8 @@ simple HexGridNode
 module HexGrid
 {
     parameters:
-        int rows;
-        int cols;
+        int rows = default(7) @prompt("Number of rows");
+        int cols = default(3) @prompt("Number of columns");
     submodules:
         node[rows*cols]: HexGridNode;
     connections allowunconnected:
@@ -40,8 +40,5 @@ module HexGrid
 
 network hexGrid extends HexGrid
 {
-    parameters:
-        rows = default(7) @prompt("Number of rows");
-        cols = default(3) @prompt("Number of columns");
 }
 

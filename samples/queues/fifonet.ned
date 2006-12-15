@@ -18,8 +18,8 @@ import "sink";
 module FifoNet
 {
     parameters:
-        int numCells;
-        int numBuffers;
+        int numCells = default(20) @prompt("Number of cells");
+        int numBuffers = default(20) @prompt("Number of buffers");
     submodules:
         gen: Generator {
             parameters:
@@ -44,7 +44,5 @@ module FifoNet
 
 network fifonet extends FifoNet
 {
-    parameters:
-        numCells = default(20) @prompt("Number of cells: ");
 }
 

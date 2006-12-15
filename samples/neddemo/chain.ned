@@ -22,7 +22,7 @@ simple ChainNode
 module Chain
 {
     parameters:
-        int n;
+        int n = default(5) @prompt("Number of modules");
     submodules:
         node[n]: ChainNode;
     connections allowunconnected:
@@ -34,7 +34,5 @@ module Chain
 
 network chain extends Chain
 {
-    parameters:
-        n = default(5) @prompt("Number of modules");
 }
 

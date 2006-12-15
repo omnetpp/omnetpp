@@ -12,7 +12,7 @@ import "../node";
 module FullGraph
 {
     parameters:
-        double n;
+        double n = default(15) @prompt("Number of nodes");
     submodules:
         node[n]: Node {
             parameters:
@@ -31,7 +31,5 @@ module FullGraph
 
 network fullGraph extends FullGraph
 {
-    parameters:
-        n = default(15) @prompt("Number of nodes");
 }
 

@@ -20,7 +20,7 @@ import "cloud";
 module HTTPNet
 {
     parameters:
-        int numClients;
+        int numClients = default(3) @prompt("Number of clients:");
     submodules:
         server: HTTPServer {
             parameters:
@@ -62,8 +62,6 @@ module HTTPNet
 //
 network httpNet extends HTTPNet
 {
-    parameters:
-        numClients = default(3) @prompt("Number of clients:");
 }
 
 

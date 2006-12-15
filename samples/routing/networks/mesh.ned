@@ -11,8 +11,8 @@
 module Mesh
 {
     parameters:
-        double height;
-        double width;
+        double height = default(9) @prompt("Number of rows");
+        double width = default(7) @prompt("Number of columns");
     submodules:
         node[height*width]: Node {
             parameters:
@@ -34,8 +34,5 @@ module Mesh
 
 network mesh extends Mesh
 {
-    parameters:
-        height = default(9) @prompt("Number of rows");
-        width = default(7) @prompt("Number of columns");
 }
 

@@ -16,8 +16,8 @@ import "fifo";
 module Ring
 {
     parameters:
-        int numCells;
-        int numBuffers;
+        int numCells = default(20) @prompt("Number of cells");
+        int numBuffers = default(20) @prompt("Number of buffers");
     submodules:
         fifo[numBuffers]: Fifo {
             parameters:
@@ -32,7 +32,5 @@ module Ring
 
 network ring extends Ring
 {
-    parameters:
-        numCells = default(20) @prompt("Number of cells: ");
 }
 
