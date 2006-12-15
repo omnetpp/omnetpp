@@ -342,6 +342,7 @@ foreach $element (@elements)
     print H "    virtual const char *getAttribute(int k) const;\n";
     print H "    virtual void setAttribute(int k, const char *val);\n";
     print H "    virtual const char *getAttributeDefault(int k) const;\n";
+    print H "    virtual $elementclass *dup() const;\n";
     print H "    //\@}\n";
 
     print H "\n";
@@ -467,6 +468,16 @@ foreach $element (@elements)
     }
     print CC "        default: return 0;\n";
     print CC "    }\n";
+    print CC "}\n\n";
+
+    print CC "$elementclass *$elementclass\:\:dup() const\n";
+    print CC "{\n";
+    print CC "    $elementclass *newNode = new $elementclass();\n";
+    for ($i=0; $i<$attcount; $i++)
+    {
+        print CC "    newNode->$varnames[$i] = this->$varnames[$i];\n"
+    }
+    print CC "    return newNode;\n";
     print CC "}\n\n";
 
     print CC "$elementclass *$elementclass\:\:getNext${elementclass}Sibling() const\n";

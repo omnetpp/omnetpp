@@ -118,6 +118,14 @@ NEDElement::~NEDElement()
     numexisting--;
 }
 
+NEDElement *NEDElement::dupTree() const
+{
+    NEDElement *newNode = dup();
+    for (NEDElement *child = getFirstChild(); child; child = child->getNextSibling())
+        newNode->appendChild(child->dupTree());
+    return newNode;
+}
+
 void NEDElement::applyDefaults()
 {
     int n = getNumAttributes();
@@ -234,7 +242,7 @@ void NEDElement::insertChildBefore(NEDElement *where, NEDElement *node)
 {
     if (node->parent)
         node->parent->removeChild(node);
-    if (!where) 
+    if (!where)
     {
         appendChild(node);
         return;

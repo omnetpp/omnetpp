@@ -108,6 +108,17 @@ class NEDElement
      * Destructor. Destroys children too.
      */
     virtual ~NEDElement();
+
+    /**
+     * Creates and returns a duplicate of the element. Child elements
+     * are not copied.
+     */
+    virtual NEDElement *dup() const = 0;
+
+    /**
+     * Recursive version of dup(): duplicates the whole subtree.
+     */
+    virtual NEDElement *dupTree() const;
     //@}
 
     /** @name Common properties */
@@ -299,7 +310,7 @@ class NEDElement
 
     /**
      * Inserts the given element just before the specified child element
-     * in the child element list, or at the end of the child list if 
+     * in the child element list, or at the end of the child list if
      * NULL is specified as the insert position.
      *
      * The where element must be a child of this element, or NULL.
