@@ -50,12 +50,11 @@
 #include "parsim/creceivedexception.h"
 #endif
 
-#include "platdep/time.h"
-#include "platdep/misc.h"
-#include "platdep/fileutil.h"  // splitFileName
-#include "platdep/fileglobber.h"
+#include "fileglobber.h"
 
-#include "platdep/fileglobber.c" // pull in implementation
+#include "platdep/time.h"
+#include "platdep/platmisc.h"
+#include "platdep/fileutil.h"  // splitFileName
 
 
 #ifdef USE_PORTABLE_COROUTINES /* coroutine stacks reside in main stack area */

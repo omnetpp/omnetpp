@@ -24,7 +24,7 @@
 #include "macros.h"
 #include "cenvir.h"
 #include "cconfig.h"
-#include "platdep/misc.h"
+#include "platdep/platmisc.h"
 
 Register_Class(cMPICommunications);
 

@@ -30,7 +30,7 @@
 #include "cenvir.h"
 #include "cconfig.h"
 #include "parsimutil.h"
-#include "platdep/misc.h"
+#include "platdep/platmisc.h"
 
 
 Register_Class(cFileCommunications);

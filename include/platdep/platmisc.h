@@ -1,5 +1,5 @@
 //==========================================================================
-//  PLATDEP/MISC.H - part of
+//  PLATMISC.H - part of
 //                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
 //
@@ -13,8 +13,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __PLATDEP_MISC_H
-#define __PLATDEP_MISC_H
+#ifndef __PLATMISC_H
+#define __PLATMISC_H
 
 //
 // Common Unix functionality

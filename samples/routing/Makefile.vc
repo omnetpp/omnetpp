@@ -121,5 +121,9 @@ makefiles:
 re-makemake: makefiles
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
-app.obj: app.cc
-routing.obj: routing.cc
+app.obj: app.cc \
+  packet_m.h
+packet_m.obj: packet_m.cc \
+  packet_m.h
+routing.obj: routing.cc \
+  packet_m.h

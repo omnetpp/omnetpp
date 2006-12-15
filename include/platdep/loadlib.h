@@ -29,7 +29,7 @@
 #ifndef _MSC_VER
 #include <stdexcept>   // std::runtime_exception (with MSVC, it's in <exception>)
 #endif
-#include "platdep/misc.h"  // opp_getWindowsError()
+#include "platdep/platmisc.h"  // opp_getWindowsError()
 
 
 //

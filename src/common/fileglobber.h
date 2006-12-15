@@ -1,5 +1,5 @@
 //==========================================================================
-//  PLATDEP/FILEGLOBBER.H - part of
+//  FILEGLOBBER.H - part of
 //                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
 //
@@ -13,8 +13,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __PLATDEP_FILEGLOBBER_H
-#define __PLATDEP_FILEGLOBBER_H
+#ifndef __FILEGLOBBER_H
+#define __FILEGLOBBER_H
 
 #ifdef _WIN32
 #include <io.h>

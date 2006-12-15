@@ -24,7 +24,7 @@
 #include "globals.h"
 #include "cenvir.h"
 #include "cconfig.h"
-#include "platdep/misc.h" // usleep
+#include "platdep/platmisc.h" // usleep
 
 
 cScheduler::cScheduler()

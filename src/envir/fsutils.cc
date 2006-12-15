@@ -18,7 +18,7 @@
 #include <assert.h>
 
 #include "fsutils.h"
-#include "platdep/misc.h"
+#include "platdep/platmisc.h"
 #include "platdep/loadlib.h"
 #include "onstartup.h"
 #include "cexception.h"

@@ -26,11 +26,12 @@ SO_LIB_SUFFIX=@SO_LIB_SUFFIX@
 #
 # Local definitions
 #
-COPTS=$(CFLAGS)
+COPTS=$(CFLAGS) -I. -I$(OMNETPP_INCL_DIR)/platdep
 
 OBJS= filetokenizer.o filereader.o linetokenizer.o stringtokenizer.o \
       matchexpression.o lex.matchexpressionyy.o matchexpression.tab.o \
-      patternmatcher.o unitconversion.o displaystring.o util.o exception.o
+      patternmatcher.o unitconversion.o displaystring.o fileglobber.o \
+      util.o exception.o
 
 #
 # Automatic rules

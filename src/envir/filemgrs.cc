@@ -24,7 +24,7 @@
 #include <fstream>
 #include <errno.h> // SGI
 #include "platdep/time.h"
-#include "platdep/misc.h"
+#include "platdep/platmisc.h"
 #include "cenvir.h"
 #include "omnetapp.h"
 #include "csimulation.h"

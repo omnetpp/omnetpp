@@ -1225,7 +1225,7 @@ cscheduler.obj: cscheduler.cc \
   ../../include/globals.h \
   ../../include/cenvir.h \
   ../../include/cconfig.h \
-  ../../include/platdep/misc.h \
+  ../../include/platdep/platmisc.h \
   ../../include/cobject.h \
   ../../include/platdep/time.h \
   ../../include/defs.h \
@@ -1633,6 +1633,7 @@ globals.obj: globals.cc \
   ../../include/cparvalue.h
 lex.expryy.obj: lex.expryy.cc \
   ../../include/expryydefs.h \
+  ../../include/cexception.h \
   expr.tab.h \
   ../../include/util.h \
   ../../include/cdynamicexpression.h \
@@ -1643,7 +1644,8 @@ lex.expryy.obj: lex.expryy.cc \
   ../../include/cvisitor.h \
   ../../include/regmacros.h \
   ../../include/onstartup.h \
-  ../../include/errmsg.h
+  ../../include/errmsg.h \
+  ../../include/opp_string.h
 minixpath.obj: minixpath.cc \
   minixpath.h \
   ../../include/cexception.h \
@@ -2117,7 +2119,7 @@ parsim/cfilecomm.obj: parsim/cfilecomm.cc \
   ../../include/cenvir.h \
   ../../include/cconfig.h \
   parsim/parsimutil.h \
-  ../../include/platdep/misc.h \
+  ../../include/platdep/platmisc.h \
   ../../include/defs.h \
   ../../include/errmsg.h \
   ../../include/opp_string.h \
@@ -2290,7 +2292,7 @@ parsim/cmpicomm.obj: parsim/cmpicomm.cc \
   parsim/cmpicommbuffer.h \
   ../../include/cenvir.h \
   ../../include/cconfig.h \
-  ../../include/platdep/misc.h \
+  ../../include/platdep/platmisc.h \
   ../../include/cparsimcomm.h \
   ../../include/cobject.h \
   ../../include/defs.h \

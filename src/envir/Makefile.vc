@@ -192,7 +192,7 @@ cxmldoccache.obj: cxmldoccache.cc \
 filemgrs.obj: filemgrs.cc \
   ../../include/defs.h \
   ../../include/platdep/time.h \
-  ../../include/platdep/misc.h \
+  ../../include/platdep/platmisc.h \
   ../../include/cenvir.h \
   omnetapp.h \
   ../../include/csimulation.h \
@@ -229,7 +229,7 @@ filemgrs.obj: filemgrs.cc \
   ../../include/cparvalue.h
 fsutils.obj: fsutils.cc \
   fsutils.h \
-  ../../include/platdep/misc.h \
+  ../../include/platdep/platmisc.h \
   ../../include/platdep/loadlib.h \
   ../../include/onstartup.h \
   ../../include/cexception.h \
@@ -287,10 +287,8 @@ omnetapp.obj: omnetapp.cc \
   ../../include/chasher.h \
   ../../include/cparsimcomm.h \
   ../../include/platdep/time.h \
-  ../../include/platdep/misc.h \
+  ../../include/platdep/platmisc.h \
   ../../include/platdep/fileutil.h \
-  ../../include/platdep/fileglobber.h \
-  ../../include/platdep/fileglobber.c \
   envdefs.h \
   ../../include/defs.h \
   ../../include/carray.h \
