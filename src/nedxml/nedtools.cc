@@ -52,24 +52,38 @@ void NEDTools::splitToFiles(FilesNode *tree)
 
         std::string directory;
         std::string filename;
-//XXX        splitFileName(fileNode->getFilename(), directory, filename);
-
-        CommentNode *fileComment = (CommentNode *)fileNode->getFirstChildWithAttribute(NED_COMMENT, "locid", "banner");
+        //XXX splitFileName(fileNode->getFilename(), directory, filename);
+        directory = fileNode->getFilename();
 
         for (NEDElement *child=fileNode->getFirstChild(); child; child = child->getNextSibling())
         {
             int type = child->getTagCode();
-            if (type==NED_SIMPLE_MODULE && type==NED_COMPOUND_MODULE &&
-                type==NED_CHANNEL && type==NED_MODULE_INTERFACE &&
+            if (type==NED_SIMPLE_MODULE || type==NED_COMPOUND_MODULE ||
+                type==NED_CHANNEL || type==NED_MODULE_INTERFACE ||
                 type==NED_CHANNEL_INTERFACE)
             {
-                //NED_IMPORTs
-                fileNode->removeChild(child);
-//XXX
+                NEDElement *componentNode = child;
+                const char *componentName = componentNode->getAttribute("name");
+
+                // create new file
+                NedFileNode *newFileNode = fileNode->dup();
+                std::string newFileName = directory + componentName + ".ned";
+                newFileNode->setFilename(newFileName.c_str());
+
+                // copy comments and imports from old file
+                for (NEDElement *child=fileNode->getFirstChild(); child; child = child->getNextSibling())
+                    if (child->getTagCode()==NED_COMMENT || child->getTagCode()==NED_IMPORT)
+                        newFileNode->appendChild(child->dupTree());
+
+                // move NED component
+                fileNode->removeChild(componentNode);
+                newFileNode->appendChild(componentNode);
             }
         }
-    }
 
+        // rename original file
+        fileNode->setFilename((std::string(fileNode->getFilename())+"-STRIPPED").c_str());
+    }
 }
 
 
