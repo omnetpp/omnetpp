@@ -58,7 +58,7 @@ nedtool.exe : nedxml.lib nedtool.obj
 nedtool.obj : nedtool.cc
 	$(CXX) $(COPTS) -I"$(OMNETPP_INCL_DIR)" -I. /c /Tp nedtool.cc
 
-nedxml.lib : unistd.h $(OBJS)
+nedxml.lib : $(OBJS)
 	$(AR) /out:nedxml.lib $(OBJS)
 	copy nedxml.lib $(OMNETPP_LIB_DIR:/=\)
 	- copy /b nedxml.pdb $(OMNETPP_LIB_DIR:/=\) 2>nul
@@ -99,9 +99,6 @@ lex.msg2yy.cc: msg2.lex
 	copy lex.msg2yy.c lex.msg2yy.cc
 	del lex.msg2yy.c
 
-unistd.h:
-	echo. > unistd.h
-
 doc:
 	$(DOXYGEN:/=\) doxy.cfg
 
@@ -109,7 +106,6 @@ depend:
 	$(MAKEDEPEND) -I. -fMakefile.vc -- *.cc
 
 clean:
-	- del unistd.h
 	- del *.obj *.lib 2> nul
 	- del *.ilk *.idb *.pdb *.suo 2> nul
 	- del *.tab.* lex.*yy.* 2> nul

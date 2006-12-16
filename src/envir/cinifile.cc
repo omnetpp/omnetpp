@@ -24,7 +24,7 @@
 #include "patternmatcher.h"
 #include "cexception.h"
 #include "fsutils.h"
-#include "platdep/fileutil.h"  // directoryOf
+#include "fileutil.h"  // directoryOf
 #include "cstrtokenizer.h"
 
 

@@ -23,7 +23,7 @@
 #include <string.h>
 #include <fstream>
 #include <errno.h> // SGI
-#include "platdep/time.h"
+#include "platdep/timeutil.h"
 #include "platdep/platmisc.h"
 #include "cenvir.h"
 #include "omnetapp.h"

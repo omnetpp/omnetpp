@@ -48,10 +48,6 @@ lex.matchexpressionyy.cc: matchexpression.lex matchexpression.tab.h
 	copy lex.matchexpressionyy.c lex.matchexpressionyy.cc
 	del lex.matchexpressionyy.c
 
-$(OBJS) : unistd.h
-unistd.h:
-	echo // Dummy header file -- Flex skeleton code insists on including it even on Windows > unistd.h
-
 doc:
 	$(DOXYGEN:/=\) doxy.cfg
 

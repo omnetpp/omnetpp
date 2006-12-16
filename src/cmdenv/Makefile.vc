@@ -53,7 +53,7 @@ cmdenv.obj: cmdenv.cc \
   ../../include/csimplemodule.h \
   ../../include/ccomponenttype.h \
   ../../include/cmessage.h \
-  ../../include/platdep/time.h \
+  ../../include/platdep/timeutil.h \
   ../../include/defs.h \
   ../../include/csimulation.h \
   ../../include/util.h \

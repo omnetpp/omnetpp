@@ -1,5 +1,5 @@
 //==========================================================================
-//  PLATDEP/FILEUTIL.H - part of
+//  FILEUTIL.H - part of
 //                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
 //
@@ -13,8 +13,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __PLATDEP_FILEUTIL_H
-#define __PLATDEP_FILEUTIL_H
+#ifndef __FILEUTIL_H
+#define __FILEUTIL_H
 
 #ifdef _WIN32
 #include <direct.h>

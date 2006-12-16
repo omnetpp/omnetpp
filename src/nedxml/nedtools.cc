@@ -16,7 +16,7 @@
 #include "nedtools.h"
 #include "nederror.h"
 #include "neddtdvalidator.h"
-//XXX #include "platdep/fileutil.h"
+#include "fileutil.h"
 
 
 void NEDTools::repairNEDElementTree(NEDElement *tree)

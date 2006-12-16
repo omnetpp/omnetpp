@@ -161,7 +161,7 @@ inspector.obj: inspector.cc \
   ../../include/util.h \
   ../../include/nedsupport.h \
   ../../include/compat.h \
-  ../../include/platdep/time.h \
+  ../../include/platdep/timeutil.h \
   tkutil.h \
   tkdefs.h
 inspfactory.obj: inspfactory.cc \
@@ -251,7 +251,7 @@ inspfactory.obj: inspfactory.cc \
   ../../include/util.h \
   ../../include/nedsupport.h \
   ../../include/compat.h \
-  ../../include/platdep/time.h \
+  ../../include/platdep/timeutil.h \
   tkutil.h \
   tkdefs.h
 modinsp.obj: modinsp.cc \
@@ -391,7 +391,7 @@ objinsp.obj: objinsp.cc \
   ../../include/util.h \
   ../../include/nedsupport.h \
   ../../include/compat.h \
-  ../../include/platdep/time.h \
+  ../../include/platdep/timeutil.h \
   inspector.h \
   tkutil.h \
   tkdefs.h
@@ -447,7 +447,7 @@ tkapp.obj: tkapp.cc \
   inspector.h \
   inspfactory.h \
   modinsp.h \
-  ../../include/platdep/time.h \
+  ../../include/platdep/timeutil.h \
   ../utils/ver.h \
   ../../include/defs.h \
   ../../include/cmodule.h \

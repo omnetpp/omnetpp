@@ -16,7 +16,7 @@
 #include <string.h>
 #include <ctype.h>
 #include "cmysqlconfiguration.h"
-#include "platdep/fileutil.h"  // directoryOf, tidyFilename
+#include "fileutil.h"  // directoryOf, tidyFilename
 #include "patternmatcher.h" // TODO eliminate dependency
 #include "cinifile.h" // for dumpConfig(); TODO eliminate dependency
 #include "oppmysqlutils.h"

@@ -19,7 +19,6 @@
 
 #include "fsutils.h"
 #include "platdep/platmisc.h"
-#include "platdep/loadlib.h"
 #include "onstartup.h"
 #include "cexception.h"
 

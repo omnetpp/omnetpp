@@ -37,7 +37,7 @@
 #include "inspector.h"
 #include "inspfactory.h"
 #include "modinsp.h"
-#include "platdep/time.h"
+#include "platdep/timeutil.h"
 #include "../utils/ver.h"
 
 

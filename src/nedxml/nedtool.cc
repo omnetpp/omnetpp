@@ -36,7 +36,7 @@
 //XXX #include "cppgenerator.h"
 //XXX #include "nedcompiler.h"
 #include "platdep/platmisc.h"
-#include "platdep/fileutil.h"  // splitFileName
+#include "fileutil.h"  // splitFileName
 #include "../utils/ver.h"
 
 using std::ofstream;

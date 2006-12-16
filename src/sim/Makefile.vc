@@ -1227,7 +1227,7 @@ cscheduler.obj: cscheduler.cc \
   ../../include/cconfig.h \
   ../../include/platdep/platmisc.h \
   ../../include/cobject.h \
-  ../../include/platdep/time.h \
+  ../../include/platdep/timeutil.h \
   ../../include/defs.h \
   ../../include/util.h \
   ../../include/cvisitor.h \
@@ -1311,7 +1311,7 @@ csimulation.obj: csimulation.cc \
   ../../include/cfunction.h \
   ../../include/cmsgheap.h \
   ../../include/ccoroutine.h \
-  ../../include/platdep/time.h \
+  ../../include/platdep/timeutil.h \
   ../../include/cneddeclarationbase.h \
   ../../include/opp_string.h \
   netbuilder/cneddeclaration.h \
@@ -1785,7 +1785,7 @@ sim_std_m.obj: sim_std_m.cc \
   ../../include/util.h \
   ../../include/nedsupport.h \
   ../../include/compat.h \
-  ../../include/platdep/time.h
+  ../../include/platdep/timeutil.h
 task.obj: task.cc \
   task.h
 util.obj: util.cc \
@@ -1818,7 +1818,7 @@ util.obj: util.cc \
   ../../include/carray.h \
   ../../include/cclassfactory.h \
   ../../include/opp_string.h \
-  ../../include/platdep/time.h \
+  ../../include/platdep/timeutil.h \
   ../../include/random.h \
   ../../include/cmodule.h \
   ../../include/crng.h \
@@ -2090,7 +2090,7 @@ parsim/cadvlinkdelaylookahead.obj: parsim/cadvlinkdelaylookahead.cc \
   parsim/cparsimprotocolbase.h \
   parsim/cparsimsynchr.h \
   ../../include/cscheduler.h \
-  ../../include/platdep/time.h \
+  ../../include/platdep/timeutil.h \
   ../../include/cmodule.h \
   ../../include/ccomponent.h \
   ../../include/cgate.h \
@@ -2187,7 +2187,7 @@ parsim/cidealsimulationprot.obj: parsim/cidealsimulationprot.cc \
   parsim/cparsimprotocolbase.h \
   parsim/cparsimsynchr.h \
   ../../include/cscheduler.h \
-  ../../include/platdep/time.h
+  ../../include/platdep/timeutil.h
 parsim/cispeventlogger.obj: parsim/cispeventlogger.cc \
   parsim/cispeventlogger.h \
   parsim/cidealsimulationprot.h \
@@ -2200,7 +2200,7 @@ parsim/cispeventlogger.obj: parsim/cispeventlogger.cc \
   parsim/cparsimsynchr.h \
   ../../include/cscheduler.h \
   ../../include/cobject.h \
-  ../../include/platdep/time.h \
+  ../../include/platdep/timeutil.h \
   ../../include/defs.h \
   ../../include/util.h \
   ../../include/cvisitor.h \
@@ -2260,7 +2260,7 @@ parsim/clinkdelaylookahead.obj: parsim/clinkdelaylookahead.cc \
   parsim/cparsimprotocolbase.h \
   parsim/cparsimsynchr.h \
   ../../include/cscheduler.h \
-  ../../include/platdep/time.h \
+  ../../include/platdep/timeutil.h \
   ../../include/cmodule.h \
   ../../include/ccomponent.h \
   ../../include/cgate.h \
@@ -2388,7 +2388,7 @@ parsim/cnosynchronization.obj: parsim/cnosynchronization.cc \
   parsim/cparsimprotocolbase.h \
   parsim/cparsimsynchr.h \
   ../../include/cscheduler.h \
-  ../../include/platdep/time.h
+  ../../include/platdep/timeutil.h
 parsim/cnullmessageprot.obj: parsim/cnullmessageprot.cc \
   ../../include/cmessage.h \
   ../../include/cmodule.h \
@@ -2431,7 +2431,7 @@ parsim/cnullmessageprot.obj: parsim/cnullmessageprot.cc \
   parsim/cparsimprotocolbase.h \
   parsim/cparsimsynchr.h \
   ../../include/cscheduler.h \
-  ../../include/platdep/time.h \
+  ../../include/platdep/timeutil.h \
   parsim/cnmplookahead.h \
   ../../include/ccomponenttype.h \
   ../../include/cneddeclarationbase.h \
@@ -2475,7 +2475,7 @@ parsim/cparsimpartition.obj: parsim/cparsimpartition.cc \
   ../../include/cdefaultlist.h \
   ../../include/cexpression.h \
   ../../include/cscheduler.h \
-  ../../include/platdep/time.h
+  ../../include/platdep/timeutil.h
 parsim/cparsimprotocolbase.obj: parsim/cparsimprotocolbase.cc \
   ../../include/cmessage.h \
   ../../include/cmodule.h \
@@ -2512,7 +2512,7 @@ parsim/cparsimprotocolbase.obj: parsim/cparsimprotocolbase.cc \
   ../../include/cexpression.h \
   parsim/cparsimsynchr.h \
   ../../include/cscheduler.h \
-  ../../include/platdep/time.h
+  ../../include/platdep/timeutil.h
 parsim/cplaceholdermod.obj: parsim/cplaceholdermod.cc \
   parsim/cplaceholdermod.h \
   parsim/cproxygate.h \
@@ -2552,7 +2552,7 @@ parsim/cplaceholdermod.obj: parsim/cplaceholdermod.cc \
   parsim/cparsimprotocolbase.h \
   parsim/cparsimsynchr.h \
   ../../include/cscheduler.h \
-  ../../include/platdep/time.h \
+  ../../include/platdep/timeutil.h \
   ../../include/cmessage.h \
   ../../include/cmsgpar.h \
   ../../include/cfunction.h \

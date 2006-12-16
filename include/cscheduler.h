@@ -21,7 +21,7 @@
 #define __CSCHEDULER_H
 
 #include "cobject.h"
-#include "platdep/time.h"  // for timeval
+#include "platdep/timeutil.h"  // for timeval
 
 // forward declarations
 class cSimulation;

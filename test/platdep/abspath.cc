@@ -1,5 +1,5 @@
 #include <iostream>
-#include <platdep/fileutil.h>
+#include "fileutil.h"
 
 int main(int argc, char **argv)
 {

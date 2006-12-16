@@ -21,7 +21,7 @@
 
 #include "defs.h"
 #include "envdefs.h"
-#include "platdep/time.h"
+#include "platdep/timeutil.h"
 
 
 //

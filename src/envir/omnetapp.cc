@@ -52,9 +52,9 @@
 
 #include "fileglobber.h"
 
-#include "platdep/time.h"
+#include "platdep/timeutil.h"
 #include "platdep/platmisc.h"
-#include "platdep/fileutil.h"  // splitFileName
+#include "fileutil.h"  // splitFileName
 
 
 #ifdef USE_PORTABLE_COROUTINES /* coroutine stacks reside in main stack area */

@@ -86,7 +86,7 @@ akoutvectormgr.obj: akoutvectormgr.cc \
   envdefs.h \
   ../../include/envirext.h \
   ../../include/cconfig.h \
-  ../../include/platdep/time.h \
+  ../../include/platdep/timeutil.h \
   ../../include/cownedobject.h \
   ../../include/util.h \
   ../../include/cnamedobject.h \
@@ -148,7 +148,7 @@ cenvir.obj: cenvir.cc \
   ../../include/opp_string.h \
   ../../include/cconfig.h \
   ../../include/envirext.h \
-  ../../include/platdep/time.h \
+  ../../include/platdep/timeutil.h \
   ../../include/ccomponent.h \
   ../../include/cgate.h \
   ../../include/cpar.h \
@@ -160,7 +160,6 @@ cinifile.obj: cinifile.cc \
   cinifile.h \
   ../../include/cexception.h \
   fsutils.h \
-  ../../include/platdep/fileutil.h \
   ../../include/cstrtokenizer.h \
   ../../include/defs.h \
   ../../include/errmsg.h \
@@ -191,7 +190,7 @@ cxmldoccache.obj: cxmldoccache.cc \
   ../../include/opp_string.h
 filemgrs.obj: filemgrs.cc \
   ../../include/defs.h \
-  ../../include/platdep/time.h \
+  ../../include/platdep/timeutil.h \
   ../../include/platdep/platmisc.h \
   ../../include/cenvir.h \
   omnetapp.h \
@@ -230,7 +229,6 @@ filemgrs.obj: filemgrs.cc \
 fsutils.obj: fsutils.cc \
   fsutils.h \
   ../../include/platdep/platmisc.h \
-  ../../include/platdep/loadlib.h \
   ../../include/onstartup.h \
   ../../include/cexception.h \
   ../../include/util.h \
@@ -286,9 +284,8 @@ omnetapp.obj: omnetapp.cc \
   cstrtokenizer2.h \
   ../../include/chasher.h \
   ../../include/cparsimcomm.h \
-  ../../include/platdep/time.h \
+  ../../include/platdep/timeutil.h \
   ../../include/platdep/platmisc.h \
-  ../../include/platdep/fileutil.h \
   envdefs.h \
   ../../include/defs.h \
   ../../include/carray.h \
@@ -318,4 +315,4 @@ speedmtr.obj: speedmtr.cc \
   speedmtr.h \
   ../../include/defs.h \
   envdefs.h \
-  ../../include/platdep/time.h
+  ../../include/platdep/timeutil.h
