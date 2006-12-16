@@ -23,18 +23,22 @@
 #include <string>
 #include "nedelement.h"
 
+class DisplayString;
+
 /**
  * Display string conversions.
  */
 class DisplayStringUtil
 {
+  private:
+    static void parseQuotedDisplayString(const char *s, DisplayString& ds);
   public:
     static std::string upgradeBackgroundDisplayString(const char *s);
     static std::string upgradeSubmoduleDisplayString(const char *s);
     static std::string upgradeConnectionDisplayString(const char *s);
-    static std::string toOldBackgroundDisplayStringQ(const char *s);
-    static std::string toOldSubmoduleDisplayStringQ(const char *s);
-    static std::string toOldConnectionDisplayStringQ(const char *s);
+    static std::string toOldBackgroundDisplayStringQuoted(const char *s);
+    static std::string toOldSubmoduleDisplayStringQuoted(const char *s);
+    static std::string toOldConnectionDisplayStringQuoted(const char *s);
 };
 
 #endif

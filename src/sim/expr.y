@@ -258,7 +258,7 @@ stringliteral
         : STRINGCONSTANT
                 {
                   const char *dummy;
-                  char *s = opp_parsequotedstr($1,dummy);
+                  char *s = opp_parsequotedstr($1,dummy); //FIXME assert(s!=NULL && !*dummy)
                   *e++ = s;
                   delete [] s;
                   delete [] $1;

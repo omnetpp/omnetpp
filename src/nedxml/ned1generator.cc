@@ -357,7 +357,7 @@ void NED1Generator::doCompoundModule(CompoundModuleNode *node, const char *inden
     std::string dispstr = getDisplayStringOf(node, displayProp);
     if (!dispstr.empty())
     {
-        dispstr = DisplayStringUtil::toOldBackgroundDisplayStringQ(dispstr.c_str());
+        dispstr = DisplayStringUtil::toOldBackgroundDisplayStringQuoted(dispstr.c_str());
         OUT << getBannerComment(displayProp, increaseIndent(indent));
         OUT << increaseIndent(indent) << "display: " << dispstr << ";" << getRightComment(displayProp);
     }
@@ -748,7 +748,7 @@ void NED1Generator::doSubmodule(SubmoduleNode *node, const char *indent, bool is
     std::string dispstr = getDisplayStringOf(node, displayProp);
     if (!dispstr.empty())
     {
-        dispstr = DisplayStringUtil::toOldSubmoduleDisplayStringQ(dispstr.c_str());
+        dispstr = DisplayStringUtil::toOldSubmoduleDisplayStringQuoted(dispstr.c_str());
         OUT << getBannerComment(displayProp, increaseIndent(indent));
         OUT << increaseIndent(indent) << "display: " << dispstr << ";" << getRightComment(displayProp);
     }
@@ -771,7 +771,7 @@ std::string NED1Generator::getDisplayStringOf(NEDElement *node, PropertyNode *&o
     if (!literal)
         return "";
     outDisplayProp = displayProp;
-    return strnotnull(literal->getText()) ? literal->getText() : (std::string("\"")+literal->getValue()+"\""); //FIXME value needs quoting!!! see doLiteral()
+    return strnotnull(literal->getText()) ? literal->getText() : opp_quotestr(literal->getValue());
 }
 
 void NED1Generator::doConnections(ConnectionsNode *node, const char *indent, bool islast, const char *)
@@ -841,7 +841,7 @@ void NED1Generator::doConnection(ConnectionNode *node, const char *indent, bool 
         std::string dispstr = getDisplayStringOf(chanSpecNode, dummy);
         if (!dispstr.empty())
         {
-            dispstr = DisplayStringUtil::toOldConnectionDisplayStringQ(dispstr.c_str());
+            dispstr = DisplayStringUtil::toOldConnectionDisplayStringQuoted(dispstr.c_str());
             OUT << " display " << dispstr;
         }
     }
