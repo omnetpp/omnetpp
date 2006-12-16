@@ -98,8 +98,8 @@ void cFileOutputVectorManager::initVector(sVectorData *vp)
         if (!f) return;
     }
 
-    CHECK(fprintf(f,"vector %ld  \"%s\"  \"%s\"  %d\n",  //FIXME possibly use opp_quotestr_ifneeded()?
-                  vp->id, vp->modulename.c_str(), vp->vectorname.c_str(), vp->tuple));
+    CHECK(fprintf(f,"vector %ld  %s  %s  %d\n",
+                  vp->id, QUOTE(vp->modulename.c_str()), QUOTE(vp->vectorname.c_str()), vp->tuple));
     vp->initialised = true;
 }
 
@@ -249,7 +249,8 @@ void cFileOutputScalarManager::init()
     if (!initialized)
     {
         initialized = true;
-        fprintf(f,"run %d \"%s\"\n", simulation.runNumber(), simulation.networkType()->name());
+        const char *networkname = simulation.networkType()->name();
+        fprintf(f,"run %d  %s\n", simulation.runNumber(), QUOTE(networkname));
     }
 }
 
@@ -260,8 +261,9 @@ void cFileOutputScalarManager::recordScalar(cModule *module, const char *name, d
 
     if (!f) return;
 
-    CHECK(fprintf(f,"scalar \"%s\" \t\"%s\" \t%.*g\n", module->fullPath().c_str(), //FIXME possibly use opp_quotestr_ifneeded()?
-                    name ? name : "(null)", prec, value));
+    CHECK(fprintf(f, "scalar %s \t%s \t%.*g\n",
+                     QUOTE(module->fullPath().c_str()), name ? QUOTE(name) : "(null)",
+                     prec, value));
 }
 
 const char *cFileOutputScalarManager::fileName() const

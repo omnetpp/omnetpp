@@ -45,11 +45,14 @@ bool opp_needsquotes(const char *txt);
  */
 inline std::string opp_quotestr_ifneeded(const char *txt)
 {
-    if (opp_needsquotes(txt))
-        return opp_quotestr(txt);
-    else
-        return txt;
+    return opp_needsquotes(txt) ? opp_quotestr(txt) : std::string(txt);
 }
+
+/**
+ * A macro version of opp_quotestr_ifneeded(). This is more efficient,
+ * because it avoids conversion to std::string when no quoting is needed.
+ */
+#define QUOTE(txt)   (opp_needsquotes(txt) ? opp_quotestr(txt).c_str() : (txt))
 
 /**
  * Dictionary-compare two strings, the main difference from stricmp()

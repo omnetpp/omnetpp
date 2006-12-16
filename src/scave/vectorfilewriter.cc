@@ -63,7 +63,9 @@ void VectorFileWriterNode::process()
         // print file header and vector declarations
         CHECK(fprintf(f,"%s\n\n", fileHeader.c_str()));
         for (PortVector::iterator it=ports.begin(); it!=ports.end(); it++)
-            CHECK(fprintf(f,"vector %ld  \"%s\"  \"%s\"  %d\n", it->id, it->moduleName.c_str(), it->name.c_str(), 1)); //FIXME use opp_quotestr_ifneeded() here
+            CHECK(fprintf(f, "vector %ld  %s  %s  %d\n", it->id,
+                             QUOTE(it->moduleName.c_str()),
+                             QUOTE(it->name.c_str()), 1));
     }
 
     for (PortVector::iterator it=ports.begin(); it!=ports.end(); it++)

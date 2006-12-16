@@ -82,10 +82,12 @@ void IndexedVectorFileWriterNode::process()
         f = openFile(fileName);
         // print file header and vector declarations
         CHECK(fprintf(f,"%s\n\n", fileHeader.c_str()));
-        for (PortVector::iterator it=ports.begin(); it!=ports.end(); it++) {
-            VectorInputPort *port=*it;
-            //FIXME use opp_quotestr_ifneeded() here
-            CHECK(fprintf(f,"vector %ld  \"%s\"  \"%s\"  %d\n", port->id, port->moduleName.c_str(), port->name.c_str(), 1));
+        for (PortVector::iterator it=ports.begin(); it!=ports.end(); it++)
+        {
+            VectorInputPort *port = *it;
+            CHECK(fprintf(f, "vector %ld  %s  %s  %d\n", port->id,
+                             QUOTE(port->moduleName.c_str()),
+                             QUOTE(port->name.c_str()), 1));
         }
     }
 
@@ -154,17 +156,15 @@ void IndexedVectorFileWriterNode::writeBufferToFile(VectorInputPort *port)
 void IndexedVectorFileWriterNode::writeIndex(VectorInputPort *port)
 {
     if (!fi)
-    {
         fi = openFile(indexFileName);
-    }
 
     int nBlocks = port->blocks.size();
     if (nBlocks > 0)
     {
-        //FIXME possibly use opp_quotestr()
-        CHECK_I(fprintf(fi,"vector %ld  \"%s\"  \"%s\"  %d  %d  %d  %.*g  %.*g  %.*g  %.*g\n",
-                      port->id, port->moduleName.c_str(), port->name.c_str(), 1/*tuple*/, port->bufferSize,
-                      port->numOfRecords, prec, port->min, prec, port->max, prec, port->sum, prec, port->sumSqr));
+        CHECK_I(fprintf(fi, "vector %ld  %s  %s  %d  %d  %d  %.*g  %.*g  %.*g  %.*g\n",
+                        port->id, QUOTE(port->moduleName.c_str()), QUOTE(port->name.c_str()), 1/*tuple*/,
+                        port->bufferSize, port->numOfRecords, prec, port->min, prec, port->max,
+                        prec, port->sum, prec, port->sumSqr));
         for (int i=0; i<nBlocks; i+=10)
         {
             CHECK_I(fprintf(fi, "%ld\t", port->id));
