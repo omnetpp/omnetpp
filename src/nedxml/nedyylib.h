@@ -64,7 +64,8 @@ FunctionNode *createFunction(const char *funcname, NEDElement *arg1=NULL, NEDEle
 IdentNode *createIdent(YYLTYPE parampos);
 IdentNode *createIdent(YYLTYPE parampos, YYLTYPE modulepos, NEDElement *moduleindexoperand=NULL);
 LiteralNode *createLiteral(int type, YYLTYPE valuepos, YYLTYPE textpos);
-LiteralNode *createQuantity(const char *text);
+LiteralNode *createStringLiteral(YYLTYPE textpos);
+LiteralNode *createQuantityLiteral(YYLTYPE textpos);
 NEDElement *unaryMinus(NEDElement *node);
 
 void addVector(NEDElement *elem, const char *attrname, YYLTYPE exprpos, NEDElement *expr);

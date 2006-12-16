@@ -823,11 +823,11 @@ property_values
 
 property_value
         : NAME
-                { $$ = createLiteral(NED_CONST_STRING, @1, @1); }
+                { $$ = createLiteral(NED_CONST_STRING, @1, @1); /* not a quoted string */ }
         | '$' NAME
-                { $$ = createLiteral(NED_CONST_STRING, @$, @$); }
+                { $$ = createLiteral(NED_CONST_STRING, @$, @$); /* not a quoted string */ }
         | STRINGCONSTANT
-                { $$ = createLiteral(NED_CONST_STRING, trimQuotes(@1), @1); }
+                { $$ = createStringLiteral(@1); }
         | TRUE_
                 { $$ = createLiteral(NED_CONST_BOOL, @1, @1); }
         | FALSE_
@@ -837,7 +837,7 @@ property_value
         | REALCONSTANT
                 { $$ = createLiteral(NED_CONST_DOUBLE, @1, @1); }
         | quantity
-                { $$ = createQuantity(toString(@1)); }
+                { $$ = createQuantityLiteral(@1); }
         | '-'  /* antivalue ("remove existing value from this position") */
                 { $$ = createLiteral(NED_CONST_SPEC, @1, @1); }
         |  /* nothing (no value) */
@@ -1572,7 +1572,7 @@ literal
 
 stringliteral
         : STRINGCONSTANT
-                { if (np->getParseExpressionsFlag()) $$ = createLiteral(NED_CONST_STRING, trimQuotes(@1), @1); }
+                { if (np->getParseExpressionsFlag()) $$ = createStringLiteral(@1); }
         ;
 
 boolliteral
@@ -1588,7 +1588,7 @@ numliteral
         | REALCONSTANT
                 { if (np->getParseExpressionsFlag()) $$ = createLiteral(NED_CONST_DOUBLE, @1, @1); }
         | quantity
-                { if (np->getParseExpressionsFlag()) $$ = createQuantity(toString(@1)); }
+                { if (np->getParseExpressionsFlag()) $$ = createQuantityLiteral(@1); }
         ;
 
 quantity

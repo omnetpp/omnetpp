@@ -687,7 +687,7 @@ inputvalue
 
                   PropertyNode *prop = addProperty(ps.substparam, "prompt");
                   PropertyKeyNode *propkey = (PropertyKeyNode *)createNodeWithTag(NED_PROPERTY_KEY, prop);
-                  propkey->appendChild(createLiteral(NED_CONST_STRING, trimQuotes(@4), @4));
+                  propkey->appendChild(createStringLiteral(@4));
                 }
         | '(' expression ')'
                 {
@@ -869,7 +869,7 @@ opt_conn_displaystr
                       ps.chanspec = createChannelSpec(ps.conn);
                   ps.property = addComponentProperty(ps.chanspec, "display");
                   ps.propkey = (PropertyKeyNode *)createNodeWithTag(NED_PROPERTY_KEY, ps.property);
-                  LiteralNode *literal = createLiteral(NED_CONST_STRING, trimQuotes(@2), @2);
+                  LiteralNode *literal = createStringLiteral(@2);
                   ps.propkey->appendChild(literal);
                   storePos(ps.propkey, @$);
                   storePos(literal, @2);
@@ -1254,7 +1254,7 @@ literal
 
 stringliteral
         : STRINGCONSTANT
-                { if (np->getParseExpressionsFlag()) $$ = createLiteral(NED_CONST_STRING, trimQuotes(@1), @1); }
+                { if (np->getParseExpressionsFlag()) $$ = createStringLiteral(@1); }
         ;
 
 boolliteral
@@ -1270,7 +1270,7 @@ numliteral
         | REALCONSTANT
                 { if (np->getParseExpressionsFlag()) $$ = createLiteral(NED_CONST_DOUBLE, @1, @1); }
         | quantity
-                { if (np->getParseExpressionsFlag()) $$ = createQuantity(toString(@1)); }
+                { if (np->getParseExpressionsFlag()) $$ = createQuantityLiteral(@1); }
         ;
 
 quantity

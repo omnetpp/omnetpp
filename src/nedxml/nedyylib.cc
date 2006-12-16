@@ -18,6 +18,7 @@
 #include "nedyylib.h"
 #include "nedfilebuffer.h"
 #include "nedyydefs.h"
+#include "stringutil.h"
 #include "unitconversion.h"
 
 
@@ -374,11 +375,35 @@ LiteralNode *createLiteral(int type, YYLTYPE valuepos, YYLTYPE textpos)
     return c;
 }
 
-LiteralNode *createQuantity(const char *text)
+LiteralNode *createStringLiteral(YYLTYPE textpos)
+{
+    LiteralNode *c = (LiteralNode *)createNodeWithTag(NED_LITERAL);
+    c->setType(NED_CONST_STRING);
+
+    const char *text = toString(textpos);
+    c->setText(text);
+
+    char *endp;
+    char *value = opp_parsequotedstr(text, endp);
+    if (value==NULL || *endp)
+    {
+        np->error("invalid string literal", pos.li);
+        delete [] value;
+        return c;
+    }
+
+    c->setValue(value);
+    delete [] value;
+    return c;
+}
+
+LiteralNode *createQuantityLiteral(YYLTYPE textpos)
 {
     LiteralNode *c = (LiteralNode *)createNodeWithTag(NED_LITERAL);
     c->setType(NED_CONST_DOUBLE);
-    if (text) c->setText(text);
+
+    const char *text = toString(textpos);
+    c->setText(text);
 
     double d = 0;
     std::string unit;
