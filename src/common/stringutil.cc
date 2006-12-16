@@ -52,15 +52,17 @@ char *opp_parsequotedstr(const char *txt, const char *&endp)
     while (*s && *s!='"')
     {
         if (*s++!='\\')
-            *d++ = *--s;
+            *d++ = *--s; // typical: no backslash
         else if (*s=='n')
             *d++ = '\n';
         else if (*s=='r')
             *d++ = '\r';
         else if (*s=='t')
             *d++ = '\t';
+        else if (*s=='\n')
+            ; // ignore line continuation (backslash followed by newline)
         else
-            *d++ = *s;
+            *d++ = *s; // unrecognized backslashed char -- just ignore the backslash
         s++;
     }
     *d = '\0';
