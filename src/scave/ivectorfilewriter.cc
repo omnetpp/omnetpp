@@ -84,7 +84,7 @@ void IndexedVectorFileWriterNode::process()
         CHECK(fprintf(f,"%s\n\n", fileHeader.c_str()));
         for (PortVector::iterator it=ports.begin(); it!=ports.end(); it++) {
             VectorInputPort *port=*it;
-            //FIXME use opp_quotestr() here
+            //FIXME use opp_quotestr_ifneeded() here
             CHECK(fprintf(f,"vector %ld  \"%s\"  \"%s\"  %d\n", port->id, port->moduleName.c_str(), port->name.c_str(), 1));
         }
     }

@@ -20,6 +20,14 @@
 
 
 /**
+ * Reverse of opp_quotestr(): remove quotes and resolve backslashed escapes.
+ *
+ * Returns a new string allocated via new char[], which has to be deallocated
+ * by the caller.
+ */
+char *opp_parsequotedstr(const char *txt, const char *&endp);
+
+/**
  * Surround the given string with "quotes", also escape with backslash
  * where needed.
  */
@@ -33,12 +41,15 @@ std::string opp_quotestr(const char *txt);
 bool opp_needsquotes(const char *txt);
 
 /**
- * Reverse of opp_quotestr(): remove quotes and resolve backslashed escapes.
- *
- * Returns a new string allocated via new char[], which has to be deallocated
- * by the caller.
+ * Combines opp_needsquotes() and opp_quotestr().
  */
-char *opp_parsequotedstr(const char *txt, const char *&endp);
+inline std::string opp_quotestr_ifneeded(const char *txt)
+{
+    if (opp_needsquotes(txt))
+        return opp_quotestr(txt);
+    else
+        return txt;
+}
 
 /**
  * Dictionary-compare two strings, the main difference from stricmp()
