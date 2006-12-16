@@ -75,7 +75,7 @@ void NEDTools::splitToFiles(FilesNode *tree)
 
             // create new file for it
             NedFileNode *newFileNode = fileNode->dup();
-            std::string newFileName = directory + componentName + ".ned";
+            std::string newFileName = directory + "/" + componentName + ".ned";
             newFileNode->setFilename(newFileName.c_str());
             tmpTree->appendChild(newFileNode);
 
