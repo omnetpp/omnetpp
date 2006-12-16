@@ -39,6 +39,11 @@
 
 #endif
 
+#include <exception>
+#ifndef _MSC_VER
+#include <stdexcept>   // std::runtime_exception (with MSVC, it's in <exception>)
+#endif
+
 
 //
 // Getting Windows error strings
@@ -70,6 +75,29 @@ inline std::string opp_getWindowsError(DWORD errorCode)
      return ret;
 }
 #endif
+
+
+//
+// Loading a dll or so file dynamically
+//
+inline bool opp_loadlibrary(const char *libname)
+{
+#if HAVE_DLOPEN
+     std::string libfname(libname);
+     libfname += ".so";
+     if (!dlopen(libfname.c_str(),RTLD_NOW))
+         throw std::runtime_error(std::string("Cannot load library '")+libfname+"': "+dlerror());
+     return true;
+#elif defined(_WIN32)
+     std::string libfname(libname);
+     libfname += ".dll";
+     if (!LoadLibrary(libfname.c_str()))
+         throw std::runtime_error(std::string("Cannot load library '")+libfname+"': "+opp_getWindowsError(GetLastError()));
+     return true;
+#else
+     throw std::runtime_error(std::string("Cannot load library '")+libname+"': dlopen() syscall not available");
+#endif
+}
 
 
 //
