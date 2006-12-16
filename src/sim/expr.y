@@ -76,6 +76,7 @@ void yyerror (const char *s);
 #include "cfunction.h"
 #include "cnedfunction.h"
 #include "nedsupport.h"
+#include "stringutil.h"
 #include "unitconversion.h"
 
 static cDynamicExpression::Elem *e;

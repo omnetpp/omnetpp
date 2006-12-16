@@ -17,6 +17,7 @@
 #include "cstringpar.h"
 #include "cdynamicexpression.h"
 #include "ccomponent.h"
+#include "stringutil.h"
 
 
 cStringPar::cStringPar()

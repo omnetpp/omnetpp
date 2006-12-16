@@ -17,6 +17,62 @@
 #include "stringutil.h"
 
 
+char *opp_quotestr(const char *txt)
+{
+    char *buf = new char[2*strlen(txt)+3];  // a conservative guess
+    char *d = buf;
+    *d++ = '"';
+    const char *s = txt;
+    while (*s)
+    {
+        switch (*s)
+        {
+            case '\n': *d++ = '\\'; *d++ = 'n'; s++; break;
+            case '\r': *d++ = '\\'; *d++ = 'r'; s++; break;
+            case '\t': *d++ = '\\'; *d++ = 't'; s++; break;
+            case '"': *d++ = '\\'; *d++ = '"'; s++; break;
+            case '\\': *d++ = '\\'; *d++ = '\\'; s++; break;
+            default: *d++ = *s++;
+        }
+    }
+    *d++ = '"';
+    *d = '\0';
+    return buf;
+}
+
+char *opp_parsequotedstr(const char *txt, const char *&endp)
+{
+    const char *s = txt;
+    while (*s==' ' || *s=='\t')
+        s++;
+    if (*s++!='"')
+        return NULL;  // no opening quote
+    char *buf = new char [strlen(txt)+1];
+    char *d = buf;
+    while (*s && *s!='"')
+    {
+        if (*s++!='\\')
+            *d++ = *--s;
+        else if (*s=='n')
+            *d++ = '\n';
+        else if (*s=='r')
+            *d++ = '\r';
+        else if (*s=='t')
+            *d++ = '\t';
+        else
+            *d++ = *s;
+        s++;
+    }
+    *d = '\0';
+    if (*s++!='"')
+        {delete [] buf;return NULL;}  // no closing quote
+    while (*s==' ' || *s=='\t')
+        s++;
+    endp = s;  // if (*s!='\0'), something comes after the string
+    return buf;
+}
+
+
 int strdictcmp(const char *s1, const char *s2)
 {
     int casediff = 0;

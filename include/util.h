@@ -246,14 +246,6 @@ SIM_API void opp_terminate(const char *msg,...);
 // INTERNAL: return name of a C++ type -- correcting quirks of various compilers.
 const char *opp_typename(const std::type_info& t);
 
-// INTERNAL: surround the given string with "quotes", also escape with backslash where needed.
-// returns a new string allocated via new char[]
-char *opp_quotestr(const char *txt);
-
-// INTERNAL: reverse of opp_quotestr(): remove quotes and resolve backslashed escapes;
-// returns a new string allocated via new char[]
-char *opp_parsequotedstr(const char *txt, const char *&endp);
-
 //==========================================================================
 
 #define MAX_METHODCALL 1024

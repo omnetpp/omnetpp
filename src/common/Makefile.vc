@@ -70,6 +70,8 @@ filereader.obj: filereader.cc \
   exception.h
 filetokenizer.obj: filetokenizer.cc \
   filetokenizer.h
+fileutil.obj: fileutil.cc \
+  fileutil.h
 lex.matchexpressionyy.obj: lex.matchexpressionyy.cc \
   matchexpression.tab.h
 linetokenizer.obj: linetokenizer.cc \
@@ -88,6 +90,10 @@ patternmatcher.obj: patternmatcher.cc \
   exception.h
 stringtokenizer.obj: stringtokenizer.cc \
   stringtokenizer.h
+stringutil.obj: stringutil.cc \
+  stringutil.h \
+  util.h \
+  exception.h
 unitconversion.obj: unitconversion.cc \
   unitconversion.h \
   exception.h

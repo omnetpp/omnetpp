@@ -15,7 +15,7 @@
 #include "idlist.h"
 #include "resultfilemanager.h"
 #include "datasorter.h"
-#include "util.h"   // strdictcmp
+#include "stringutil.h"   // strdictcmp
 %}
 
 %exception {

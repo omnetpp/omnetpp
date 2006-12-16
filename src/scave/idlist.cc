@@ -16,6 +16,8 @@
 #include <algorithm>
 #include "idlist.h"
 #include "resultfilemanager.h"
+#include "stringutil.h"
+
 
 IDList::IDList(const IDList& ids)
 {

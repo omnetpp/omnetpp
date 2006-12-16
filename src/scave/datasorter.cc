@@ -25,6 +25,7 @@
 #include "resultfilemanager.h"
 #include "util.h"
 #include "datasorter.h"
+#include "stringutil.h"
 
 
 ResultFileManager *ScalarDataSorter::tmpScalarMgr;
