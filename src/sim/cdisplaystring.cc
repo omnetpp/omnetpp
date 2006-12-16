@@ -317,6 +317,7 @@ void cDisplayString::cleartags()
     // must be done after deleting tags[] because of isinbuffer()
     delete [] buffer;
     buffer = bufferend = NULL;
+    notify();
 }
 
 inline int h2d(char c)

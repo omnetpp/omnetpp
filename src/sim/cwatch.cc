@@ -20,5 +20,18 @@
 *--------------------------------------------------------------*/
 
 #include "cwatch.h"
+#include "stringutil.h"
 
-//TBD: move impl. of functions here from cwatch.h
+std::string cWatch_stdstring::info() const
+{
+    return opp_quotestr(r.c_str());
+}
+
+void cWatch_stdstring::assign(const char *s)
+{
+    if (s[0]=='"' && s[strlen(s)-1]=='"')
+        r.assign(s+1, strlen(s)-2);  //FIXME possibly use opp_parsequotedstr()?
+    else
+        r = s;
+}
+

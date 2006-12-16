@@ -159,10 +159,7 @@ std::string cStringPar::toString() const
     if (flags & FL_ISEXPR)
         return expr->toString();
 
-    char *d = opp_quotestr(val.c_str());
-    std::string ret = d;
-    delete [] d;
-    return ret;
+    return opp_quotestr(val.c_str());
 }
 
 bool cStringPar::parse(const char *text)

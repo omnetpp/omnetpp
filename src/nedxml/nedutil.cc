@@ -21,6 +21,7 @@
 #include <math.h>
 #include "nederror.h"
 #include "nedutil.h"
+#include "stringutil.h"
 #include "displaystring.h"
 
 static void renameTag(DisplayString& ds, const char *from, const char *to)

@@ -22,7 +22,6 @@
 #include <iostream>
 #include <sstream>
 #include "cownedobject.h"
-#include "stringutil.h"
 
 
 /**
@@ -196,17 +195,8 @@ class SIM_API cWatch_stdstring : public cWatchBase
     cWatch_stdstring(const char *name, std::string& x) : cWatchBase(name), r(x) {}
     virtual const char *className() const {return "std::string";}
     virtual bool supportsAssignment() const {return true;}
-    virtual std::string info() const
-    {
-        return opp_quotestr(r.c_str());
-    }
-    virtual void assign(const char *s)
-    {
-        if (s[0]=='"' && s[strlen(s)-1]=='"')
-            r.assign(s+1, strlen(s)-2);  //FIXME possibly use opp_parsequotedstr()?
-        else
-            r = s;
-    }
+    virtual std::string info() const;
+    virtual void assign(const char *s);
 };
 
 /**

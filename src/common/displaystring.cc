@@ -234,6 +234,7 @@ bool DisplayString::setTagArg(int tagindex, int index, const char *value)
     while (tag.numargs>0 && tag.args[tag.numargs-1]==NULL)
         tag.numargs--;
 
+    needsassemble = true;
     return true;
 }
 
@@ -266,6 +267,7 @@ int DisplayString::insertTag(const char *tagname, int atindex)
     for (int i=0; i<MAXARGS; i++) tags[atindex].args[i] = NULL;
 
     // success
+    needsassemble = true;
     return atindex;
 }
 
@@ -287,6 +289,7 @@ bool DisplayString::removeTag(int tagindex)
     numtags--;
 
     // success
+    needsassemble = true;
     return true;
 }
 
@@ -319,6 +322,7 @@ void DisplayString::cleartags()
     // must be done after deleting tags[] because of isinbuffer()
     delete [] buffer;
     buffer = bufferend = NULL;
+    needsassemble = true;
 }
 
 inline int h2d(char c)
