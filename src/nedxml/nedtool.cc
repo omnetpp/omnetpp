@@ -43,7 +43,6 @@ using std::ofstream;
 using std::ifstream;
 using std::ios;
 
-//FIXME print warnings as warnings not errors! (and don't stop on them)
 //TODO: "preserve format" flag (genererate ned2 as ned2, and ned1 as ned1)
 
 // file types
@@ -67,6 +66,7 @@ bool opt_mergeoutput = false;      // -m
 bool opt_verbose = false;          // -V
 const char *opt_outputfile = NULL; // -o
 bool opt_here = false;             // -h
+bool opt_splitnedfiles = false;    // -u
 
 // global variables
 //XXX NEDFileCache filecache;
@@ -100,6 +100,7 @@ void printUsage()
        "  -S <suffix>: when generating C++, suffix for generated header files\n"
        "  -k: with -n: replace original file and create backup (.bak). If input is a\n"
        "      single XML file created by `nedtool -m -x': replace original NED files\n"
+       "  -u: with -m or -k: split NED files to one NED component per file\n" //XXX refine help text
        "  -e: do not parse expressions in NED input; expect unparsed expressions in XML\n"
        "  -y: skip semantic validation (implies -z, skip processing imports)\n"
        "  -z: skip processing imports\n"
@@ -307,6 +308,9 @@ bool processFile(const char *fname, NEDErrorStore *errors)
         }
         else if (opt_inplace && opt_gensrc && tree->getTagCode()==NED_FILES)
         {
+            if (opt_splitnedfiles)
+                NEDTools::splitToFiles(tree);
+
             for (NEDElement *child=tree->getFirstChild(); child; child=child->getNextSibling())
             {
                 // extract file name
@@ -526,6 +530,10 @@ int main(int argc, char **argv)
         {
             opt_inplace = true;
         }
+        else if (!strcmp(argv[i],"-u"))
+        {
+            opt_splitnedfiles = true;
+        }
         else if (!strcmp(argv[i],"-e"))
         {
             opt_unparsedexpr = true;
@@ -582,6 +590,8 @@ int main(int argc, char **argv)
         }
         else
         {
+            // process individual files on the command line
+            //FIXME these checks get bypassed with list files!!!
             if (!opt_genxml && !opt_gensrc)
             {
                 fprintf(stderr,"nedtool: generating C++ source not currently supported\n"); //XXX
@@ -633,6 +643,9 @@ int main(int argc, char **argv)
             delete outputtree;
             return 1;
         }
+
+        if (opt_splitnedfiles)
+            NEDTools::splitToFiles(outputtree);
 
         const char *outfname;
 

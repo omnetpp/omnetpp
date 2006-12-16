@@ -43,18 +43,21 @@ void NEDTools::repairNEDElementTree(NEDElement *tree)
 
 void NEDTools::splitToFiles(FilesNode *tree)
 {
+    FilesNode *tmpTree = new FilesNode();
     for (NEDElement *child=tree->getFirstChild(); child; child = child->getNextSibling())
     {
+        // ignore msg files
         if (child->getTagCode()!=NED_NED_FILE)
             continue;
 
         NedFileNode *fileNode = (NedFileNode *)child;
 
+        // we'll generate new files into the directory of the original file
         std::string directory;
         std::string filename;
-        //XXX splitFileName(fileNode->getFilename(), directory, filename);
-        directory = fileNode->getFilename();
+        splitFileName(fileNode->getFilename(), directory, filename);
 
+        // go through NED components in the file, and create new NED files for them
         for (NEDElement *child=fileNode->getFirstChild(); child; child = child->getNextSibling())
         {
             int type = child->getTagCode();
@@ -69,13 +72,14 @@ void NEDTools::splitToFiles(FilesNode *tree)
                 NedFileNode *newFileNode = fileNode->dup();
                 std::string newFileName = directory + componentName + ".ned";
                 newFileNode->setFilename(newFileName.c_str());
+                tmpTree->appendChild(newFileNode);
 
                 // copy comments and imports from old file
                 for (NEDElement *child=fileNode->getFirstChild(); child; child = child->getNextSibling())
                     if (child->getTagCode()==NED_COMMENT || child->getTagCode()==NED_IMPORT)
                         newFileNode->appendChild(child->dupTree());
 
-                // move NED component
+                // move NED component into new file
                 fileNode->removeChild(componentNode);
                 newFileNode->appendChild(componentNode);
             }
@@ -84,6 +88,9 @@ void NEDTools::splitToFiles(FilesNode *tree)
         // rename original file
         fileNode->setFilename((std::string(fileNode->getFilename())+"-STRIPPED").c_str());
     }
+
+    while (tmpTree->getFirstChild())
+        tree->appendChild(tmpTree->removeChild(tmpTree->getFirstChild()));
 }
 
 
