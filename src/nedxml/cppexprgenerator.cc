@@ -692,11 +692,10 @@ void CppExpressionGenerator::doIdent(ObsoleteIdentNode *node, const char *indent
 
 void CppExpressionGenerator::doConst(LiteralNode *node, const char *indent, int mode)
 {
-    bool isstring = (node->getType()==NED_CONST_STRING);
-
-    if (isstring) out << "\"";
-    out << node->getValue();
-    if (isstring) out << "\"";
+    if (node->getType()==NED_CONST_STRING)
+        out << opp_quotestr(node->getValue());
+    else
+        out << node->getValue();
 }
 
 void CppExpressionGenerator::doExpression(ExpressionNode *node, const char *indent, int mode)

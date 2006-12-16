@@ -23,6 +23,7 @@
 #include "cpar.h"
 #include "cenvir.h"
 #include "cmodule.h"
+#include "stringutil.h"
 
 cStringPool cDynamicExpression::Elem::stringPool;
 
@@ -79,7 +80,7 @@ std::string cDynamicExpression::StkValue::toString()
     {
       case BOOL: return bl ? "true" : "false";
       case DBL:  sprintf(buf, "%g", dbl); return buf;
-      case STR:  return std::string("\"")+str+"\"";
+      case STR:  return opp_quotestr(str.c_str());
       case XML:  return std::string("<")+xml->getTagName()+">"; //XXX
       default:   throw new cRuntimeError("internal error: bad StkValue type");
     }
@@ -497,7 +498,7 @@ std::string cDynamicExpression::toString() const
                case Elem::STR:
                  if (tos>=stksize-1)
                      throw new cRuntimeError(this,eESTKOFLOW);
-                 strstk[++tos] = std::string("\"") + (e.s?e.s:"")+"\"";
+                 strstk[++tos] = opp_quotestr(e.s ? e.s : "");
                  pristk[tos] = 0;
                  break;
                case Elem::XML:

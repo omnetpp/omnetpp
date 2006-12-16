@@ -22,6 +22,7 @@
 #include <iostream>
 #include <sstream>
 #include "cownedobject.h"
+#include "stringutil.h"
 
 
 /**
@@ -197,14 +198,12 @@ class SIM_API cWatch_stdstring : public cWatchBase
     virtual bool supportsAssignment() const {return true;}
     virtual std::string info() const
     {
-        std::stringstream out;
-        out << "\"" << r << "\"";
-        return out.str();
+        return opp_quotestr(r.c_str());
     }
     virtual void assign(const char *s)
     {
         if (s[0]=='"' && s[strlen(s)-1]=='"')
-            r.assign(s+1, strlen(s)-2);
+            r.assign(s+1, strlen(s)-2);  //FIXME possibly use opp_parsequotedstr()?
         else
             r = s;
     }

@@ -795,7 +795,7 @@ void NEDCppGenerator::doSubmodule(SubmoduleNode *node, const char *indent, int m
     DisplayStringNode *dispstr = (DisplayStringNode *)node->getFirstChildWithTag(NED_DISPLAY_STRING);
     if (dispstr)
     {
-        out << indent << submodule_var.c_str() << "->setDisplayString(\"" <<  dispstr->getValue() << "\");\n";
+        out << indent << submodule_var.c_str() << "->setDisplayString(" << opp_quotestr(dispstr->getValue()) << ");\n";
     }
 
     // note: we'll call buildinside only if all connections on this level have been built as well
@@ -1022,7 +1022,7 @@ void NEDCppGenerator::doConnection(ConnectionNode *node, const char *indent, int
     DisplayStringNode *dispstr = (DisplayStringNode *)node->getFirstChildWithTag(NED_DISPLAY_STRING);
     if (dispstr)
     {
-        out << indent << "srcgate->setDisplayString(\"" <<  dispstr->getValue() << "\");\n\n";
+        out << indent << "srcgate->setDisplayString(" << opp_quotestr(dispstr->getValue()) << ");\n\n";
     }
 
     // epilog

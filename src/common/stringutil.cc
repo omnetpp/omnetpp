@@ -17,7 +17,7 @@
 #include "stringutil.h"
 
 
-char *opp_quotestr(const char *txt)
+std::string opp_quotestr(const char *txt)
 {
     char *buf = new char[2*strlen(txt)+3];  // a conservative guess
     char *d = buf;
@@ -37,7 +37,10 @@ char *opp_quotestr(const char *txt)
     }
     *d++ = '"';
     *d = '\0';
-    return buf;
+
+    std::string ret = buf;
+    delete [] buf;
+    return ret;
 }
 
 char *opp_parsequotedstr(const char *txt, const char *&endp)
@@ -74,6 +77,13 @@ char *opp_parsequotedstr(const char *txt, const char *&endp)
     return buf;
 }
 
+bool opp_needsquotes(const char *txt)
+{
+    for (const char *s = txt; *s; s++)
+        if (isspace(*s) || *s=='\\' || *s=='"')
+            return true;
+    return false;
+}
 
 int strdictcmp(const char *s1, const char *s2)
 {

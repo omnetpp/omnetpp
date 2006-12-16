@@ -54,7 +54,7 @@ double VectorResult::variance() const
 
 double VectorResult::stddev() const
 {
-    return sqrt( variance() ); 
+    return sqrt( variance() );
 }
 
 
@@ -623,7 +623,7 @@ void ResultFileManager::dump(ResultFile *fileRef, std::ostream& out) const
                 prevRunRef = d.runRef;
             }
             out << "scalar \"" << *d.moduleNameRef << "\"\t\""
-                << *d.nameRef << "\"\t" << d.value << "\n";
+                << *d.nameRef << "\"\t" << d.value << "\n";   //FIXME use opp_quotestr() here
         }
     }
 }

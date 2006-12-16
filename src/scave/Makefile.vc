@@ -105,6 +105,7 @@ datasorter.obj: datasorter.cc \
   resultfilemanager.h \
   ../common/util.h \
   datasorter.h \
+  ../common/stringutil.h \
   idlist.h \
   ../common/exception.h \
   scavedefs.h \
@@ -142,6 +143,7 @@ filternodes.obj: filternodes.cc \
 idlist.obj: idlist.cc \
   idlist.h \
   resultfilemanager.h \
+  ../common/stringutil.h \
   scavedefs.h \
   ../common/exception.h \
   ../common/util.h

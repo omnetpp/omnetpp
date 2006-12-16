@@ -15,20 +15,28 @@
 #ifndef _STRINGUTIL_H_
 #define _STRINGUTIL_H_
 
+#include <string>
 #include "util.h"
+
 
 /**
  * Surround the given string with "quotes", also escape with backslash
- * where needed. Returns a new string allocated via new char[].
- *
- * The returned pointer has to be deallocated by the caller.
+ * where needed.
  */
-char *opp_quotestr(const char *txt);
+std::string opp_quotestr(const char *txt);
+
+/**
+ * Returns true if the string contains space, backslash, quote, or anything
+ * else that would make quoting (opp_quotestr()) necessary before writing
+ * it into a data file.
+ */
+bool opp_needsquotes(const char *txt);
 
 /**
  * Reverse of opp_quotestr(): remove quotes and resolve backslashed escapes.
  *
- * The returned pointer has to be deallocated by the caller.
+ * Returns a new string allocated via new char[], which has to be deallocated
+ * by the caller.
  */
 char *opp_parsequotedstr(const char *txt, const char *&endp);
 
