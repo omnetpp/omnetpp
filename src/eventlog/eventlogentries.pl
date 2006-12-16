@@ -286,12 +286,20 @@ EventLogTokenBasedEntry *EventLogEntryFactory::parseEntry(Event *event, char **t
     EventLogTokenBasedEntry *entry;
 
     if (false)
-       ;
+        ;
 ";
 
 foreach $class (@classes)
 {
-   print FACTORY_CC_FILE "    else if (!strcmp(code, \"$class->{CODE}\"))\n";
+   #print FACTORY_CC_FILE "    else if (!strcmp(code, \"$class->{CODE}\"))\n";
+   print FACTORY_CC_FILE "    else if (";
+   $i=0;
+   foreach $c (split(//, $class->{CODE})) {
+       print FACTORY_CC_FILE "code\[$i\]=='$c' && ";
+       $i++;
+   }
+   print FACTORY_CC_FILE "code[$i]==0)  // $class->{CODE}\n";
+   
    print FACTORY_CC_FILE "        entry = new $class->{NAME}(event);\n";
 }
 print FACTORY_CC_FILE "    else\n";
