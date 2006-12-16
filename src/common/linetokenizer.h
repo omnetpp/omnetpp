@@ -19,7 +19,9 @@
 #include <string>
 
 /**
- * Tokenizes a line.
+ * Tokenizes a line. Uses space as separator, and also honors quoted substrings
+ * (that is, `one "two or three" four' is returned as 3 tokens `one', 
+ * `two or three', `four').
  */
 class LineTokenizer
 {

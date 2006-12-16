@@ -23,7 +23,9 @@
 #include <vector>
 
 /**
- * String tokenizer class, based on strtok().
+ * String tokenizer class, based on strtok(). The separator can be specified.
+ * Does *not* honor quoted substrings, quotation marks are treated just like 
+ * any other character.
  *
  * Example usage:
  *

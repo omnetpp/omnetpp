@@ -15,7 +15,7 @@ COPTS=$(CFLAGS) -I. -I$(OMNETPP_INCL_DIR)/platdep /Fd"common.pdb"
 OBJS= filetokenizer.obj filereader.obj linetokenizer.obj stringtokenizer.obj \
       matchexpression.obj lex.matchexpressionyy.obj matchexpression.tab.obj \
       patternmatcher.obj unitconversion.obj displaystring.obj fileglobber.obj \
-      util.obj exception.obj
+      fileutil.obj util.obj exception.obj
 
 
 #
