@@ -31,14 +31,6 @@
 #  define DBG(x)
 #endif
 
-/**
- * Dictionary-compare two strings, the main difference from stricmp()
- * being that integers embedded in the strings are compared in
- * numerical order.  
- */
-int strdictcmp(const char *s1, const char *s2);
-
-
 #endif
 
 

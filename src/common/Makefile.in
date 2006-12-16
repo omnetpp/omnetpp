@@ -31,7 +31,7 @@ COPTS=$(CFLAGS) -I. -I$(OMNETPP_INCL_DIR)/platdep
 OBJS= filetokenizer.o filereader.o linetokenizer.o stringtokenizer.o \
       matchexpression.o lex.matchexpressionyy.o matchexpression.tab.o \
       patternmatcher.o unitconversion.o displaystring.o fileglobber.o \
-      fileutil.o util.o exception.o
+      fileutil.o stringutil.o util.o exception.o
 
 #
 # Automatic rules
