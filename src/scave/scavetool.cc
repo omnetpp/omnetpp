@@ -27,6 +27,7 @@
 #include "filewriter.h"
 #include "arraybuilder.h"
 #include "octaveexport.h"
+#include "stringutil.h"
 
 
 void printUsage()

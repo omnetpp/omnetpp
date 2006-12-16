@@ -18,6 +18,7 @@
 
 #include "channel.h"
 #include "vectorfilewriter.h"
+#include "stringutil.h"
 
 
 #ifdef CHECK

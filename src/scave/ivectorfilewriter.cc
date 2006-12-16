@@ -18,6 +18,7 @@
 
 #include "channel.h"
 #include "ivectorfilewriter.h"
+#include "stringutil.h"
 
 #define CHECK(printf) if (printf<0) throw new Exception("Cannot write vector file '%s'", fileName.c_str());
 

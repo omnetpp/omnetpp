@@ -32,6 +32,7 @@
 #include "cstat.h"
 #include "filemgrs.h"
 #include "ccomponenttype.h"
+#include "stringutil.h"
 
 using std::ostream;
 using std::ofstream;
