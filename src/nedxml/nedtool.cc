@@ -306,10 +306,19 @@ bool processFile(const char *fname, NEDErrorStore *errors)
             generateXML(out, tree, opt_srcloc);
             out.close();
         }
-        else if (opt_inplace && opt_gensrc && tree->getTagCode()==NED_FILES)
+        else if (opt_inplace && opt_gensrc && (tree->getTagCode()==NED_FILES ||
+                 tree->getTagCode()==NED_NED_FILE || tree->getTagCode()==NED_MSG_FILE))
         {
-            if (opt_splitnedfiles)
-                NEDTools::splitToFiles(tree);
+             if (tree->getTagCode()==NED_NED_FILE || tree->getTagCode()==NED_MSG_FILE)
+             {
+                 // wrap the tree into a FilesNode
+                 NEDElement *file = tree;
+                 tree = new FilesNode();
+                 tree->appendChild(file);
+             }
+
+             if (opt_splitnedfiles)
+                NEDTools::splitToFiles((FilesNode *)tree);
 
             for (NEDElement *child=tree->getFirstChild(); child; child=child->getNextSibling())
             {

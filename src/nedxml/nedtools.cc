@@ -58,31 +58,36 @@ void NEDTools::splitToFiles(FilesNode *tree)
         splitFileName(fileNode->getFilename(), directory, filename);
 
         // go through NED components in the file, and create new NED files for them
-        for (NEDElement *child=fileNode->getFirstChild(); child; child = child->getNextSibling())
+        for (NEDElement *child=fileNode->getFirstChild(); child; )
         {
             int type = child->getTagCode();
-            if (type==NED_SIMPLE_MODULE || type==NED_COMPOUND_MODULE ||
-                type==NED_CHANNEL || type==NED_MODULE_INTERFACE ||
-                type==NED_CHANNEL_INTERFACE)
+            if (type!=NED_SIMPLE_MODULE && type!=NED_COMPOUND_MODULE &&
+                type!=NED_CHANNEL && type!=NED_MODULE_INTERFACE &&
+                type!=NED_CHANNEL_INTERFACE)
             {
-                NEDElement *componentNode = child;
-                const char *componentName = componentNode->getAttribute("name");
-
-                // create new file
-                NedFileNode *newFileNode = fileNode->dup();
-                std::string newFileName = directory + componentName + ".ned";
-                newFileNode->setFilename(newFileName.c_str());
-                tmpTree->appendChild(newFileNode);
-
-                // copy comments and imports from old file
-                for (NEDElement *child=fileNode->getFirstChild(); child; child = child->getNextSibling())
-                    if (child->getTagCode()==NED_COMMENT || child->getTagCode()==NED_IMPORT)
-                        newFileNode->appendChild(child->dupTree());
-
-                // move NED component into new file
-                fileNode->removeChild(componentNode);
-                newFileNode->appendChild(componentNode);
+                child = child->getNextSibling();
+                continue;
             }
+
+            // process NED component
+            NEDElement *componentNode = child;
+            const char *componentName = componentNode->getAttribute("name");
+
+            // create new file for it
+            NedFileNode *newFileNode = fileNode->dup();
+            std::string newFileName = directory + componentName + ".ned";
+            newFileNode->setFilename(newFileName.c_str());
+            tmpTree->appendChild(newFileNode);
+
+            // copy comments and imports from old file
+            for (NEDElement *child2=fileNode->getFirstChild(); child2; child2 = child2->getNextSibling())
+                if (child2->getTagCode()==NED_COMMENT || child2->getTagCode()==NED_IMPORT)
+                    newFileNode->appendChild(child2->dupTree());
+
+            // move NED component into new file
+            child = child->getNextSibling(); // adjust iterator
+            fileNode->removeChild(componentNode);
+            newFileNode->appendChild(componentNode);
         }
 
         // rename original file
