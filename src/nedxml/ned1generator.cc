@@ -18,6 +18,7 @@
 #include <string>
 #include <sstream>
 #include "ned1generator.h"
+#include "stringutil.h"
 #include "nedutil.h"
 
 using std::ostream;
@@ -1100,10 +1101,10 @@ void NED1Generator::doLiteral(LiteralNode *node, const char *indent, bool islast
     else
     {
         // fallback: when original text is not present, use value
-        bool isstring = (node->getType()==NED_CONST_STRING);
-        if (isstring) OUT << "\"";
-        OUT << node->getValue();  //FIXME maybe value needs quoting??
-        if (isstring) OUT << "\"";
+        if (node->getType()==NED_CONST_STRING)
+            OUT << opp_quotestr(node->getValue());
+        else
+            OUT << node->getValue();
     }
 }
 

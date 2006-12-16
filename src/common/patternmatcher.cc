@@ -19,6 +19,7 @@
 #include <assert.h>
 #include <string.h>
 #include "patternmatcher.h"
+#include "stringutil.h"
 #include "exception.h"
 
 #ifdef _MSC_VER
@@ -181,7 +182,7 @@ void PatternMatcher::dump(int from)
         Elem& e = pattern[k];
         switch (e.type)
         {
-            case LITERALSTRING: printf("\"%s\"", e.literalstring.c_str()); break;
+            case LITERALSTRING: printf("%s", opp_quotestr(e.literalstring.c_str()).c_str()); break;
             case ANYCHAR: printf("?!"); break;
             case COMMONCHAR: printf("?"); break;
             case SET: printf("SET(%s)", e.setchars.c_str()); break;

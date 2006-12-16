@@ -161,6 +161,7 @@ void IndexedVectorFileWriterNode::writeIndex(VectorInputPort *port)
     int nBlocks = port->blocks.size();
     if (nBlocks > 0)
     {
+        //FIXME possibly use opp_quotestr()
         CHECK_I(fprintf(fi,"vector %ld  \"%s\"  \"%s\"  %d  %d  %d  %.*g  %.*g  %.*g  %.*g\n",
                       port->id, port->moduleName.c_str(), port->name.c_str(), 1/*tuple*/, port->bufferSize,
                       port->numOfRecords, prec, port->min, prec, port->max, prec, port->sum, prec, port->sumSqr));
