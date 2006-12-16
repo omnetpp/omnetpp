@@ -1,12 +1,18 @@
-# FIXME Levy pls add comment at top of file: what is this perl script, what does it do?
+#
+# Generates eventlogentry classes from a textual description.
+#
+# Author: Levente Meszaros, 2006
+#
+
 # FIXME parsing: choose different strategy, current code cannot detect unrecognized field names in the trace file!
 # FIXME parsing: does it support optional fields in the trace file?
 
 open(FILE, "eventlogentries.txt");
 
-##########################################
-# Read input file
 
+#
+# Read input file
+#
 while (<FILE>)
 {
    if ($_ =~ /^ *\/\//)
@@ -15,9 +21,9 @@ while (<FILE>)
    }
    elsif ($_ =~ /^([\w]+) +([\w]+) *$/)
    {
-      $classSign = $1;
+      $classCode = $1;
       $className = $2;
-      print "$classSign $className\n";
+      print "$classCode $className\n";
    }
    elsif ($_ =~ /^ *{ *$/)
    {
@@ -25,7 +31,7 @@ while (<FILE>)
    }
    elsif ($_ =~ /^ +([\w#]+) +([\w]+) +([\w]+) *$/)
    {
-      $fieldSign = $1;
+      $fieldCode = $1;
       $fieldType = $2;
       $fieldName = $3;
 
@@ -49,19 +55,19 @@ while (<FILE>)
       $fieldCType = $fieldType;
       $fieldCType =~ s/string/const char */;
       $field = {
-         SIGN => $fieldSign,
+         CODE => $fieldCode,
          TYPE => $fieldType,
          CTYPE => $fieldCType,
          PRINTFTYPE => $fieldPrintfType,
          NAME => $fieldName,
       };
       push(@fields, $field);
-      print " $fieldSign $fieldType $fieldName\n";
+      print " $fieldCode $fieldType $fieldName\n";
    }
    elsif ($_ =~ /^ *} *$/)
    {
       $class = {
-         SIGN => $classSign,
+         CODE => $classCode,
          NAME => $className,
          FIELDS => [ @fields ],
       };
@@ -73,12 +79,24 @@ while (<FILE>)
 
 close(FILE);
 
-##########################################
+
+
+#
 # Write eventlogentries header file
+#
 
 open(ENTRIES_H_FILE, ">eventlogentries.h");
 
-print ENTRIES_H_FILE "
+print ENTRIES_H_FILE "\
+//=========================================================================
+//  EVENTLOGENTRIES.H - part of
+//                  OMNeT++/OMNEST
+//           Discrete System Simulation in C++
+//
+//  This is a generated file -- do not modify.
+//
+//=========================================================================
+
 #ifndef __EVENTLOGENTRIES_H_
 #define __EVENTLOGENTRIES_H_
 
@@ -124,14 +142,27 @@ print ENTRIES_H_FILE "
 
 close(ENTRIES_H_FILE);
 
-##########################################
-# Write eventlogentries cc file
+
+
+#
+# Write eventlogentries.cc file
+#
 
 open(ENTRIES_CC_FILE, ">eventlogentries.cc");
 
-print ENTRIES_CC_FILE "
+print ENTRIES_CC_FILE "\
+//=========================================================================
+//  EVENTLOGENTRIES.CC - part of
+//                  OMNeT++/OMNEST
+//           Discrete System Simulation in C++
+//
+//  This is a generated file -- do not modify.
+//
+//=========================================================================
+
 #include \"event.h\"
 #include \"eventlogentries.h\"
+#include \"stringutil.h\"
 ";
 
 foreach $class (@classes)
@@ -139,52 +170,35 @@ foreach $class (@classes)
    $className = $class->{NAME};
 
    # constructors
-   print ENTRIES_CC_FILE "
-$className\::$className()
-{
-   this->event = NULL;";
+   print ENTRIES_CC_FILE "$className\::$className()\n";
+   print ENTRIES_CC_FILE "{\n";
+   print ENTRIES_CC_FILE "    this->event = NULL;\n";
    foreach $field (@{ $class->{FIELDS} })
    {
-      if ($field->{TYPE} eq "string")
-      {
-      print ENTRIES_CC_FILE "
-   $field->{NAME} = NULL;"; 
-      }
-      else
-      {
-      print ENTRIES_CC_FILE "
-   $field->{NAME} = -1;"; 
+      if ($field->{TYPE} eq "string") {
+          print ENTRIES_CC_FILE "    $field->{NAME} = NULL;\n";
+      } else {
+          print ENTRIES_CC_FILE "    $field->{NAME} = -1;\n";
       }
    }
-   print ENTRIES_CC_FILE "
-}
-";
+   print ENTRIES_CC_FILE "}\n\n";
 
-   print ENTRIES_CC_FILE "
-$className\::$className(Event *event)
-{
-   this->event = event;";
+   print ENTRIES_CC_FILE "$className\::$className(Event *event)\n";
+   print ENTRIES_CC_FILE "{\n";
+   print ENTRIES_CC_FILE "    this->event = event;\n";
    foreach $field (@{ $class->{FIELDS} })
    {
-      if ($field->{TYPE} eq "string")
-      {
-      print ENTRIES_CC_FILE "
-   $field->{NAME} = NULL;"; 
-      }
-      else
-      {
-      print ENTRIES_CC_FILE "
-   $field->{NAME} = -1;"; 
+      if ($field->{TYPE} eq "string") {
+          print ENTRIES_CC_FILE "    $field->{NAME} = NULL;\n";
+      } else {
+          print ENTRIES_CC_FILE "    $field->{NAME} = -1;\n";
       }
    }
-   print ENTRIES_CC_FILE "
-}
-";
+   print ENTRIES_CC_FILE "}\n\n";
 
    # parse
-   print ENTRIES_CC_FILE "
-void $className\::parse(char **tokens, int numTokens)
-{";
+   print ENTRIES_CC_FILE "void $className\::parse(char **tokens, int numTokens)\n";
+   print ENTRIES_CC_FILE "{\n";
    foreach $field (@{ $class->{FIELDS} })
    {
       if ($field->{TYPE} eq "int")
@@ -203,98 +217,89 @@ void $className\::parse(char **tokens, int numTokens)
       {
       	$parserFunction = "getSimtimeToken";
       }
-      print ENTRIES_CC_FILE "
-   $field->{NAME} = $parserFunction(tokens, numTokens, \"$field->{SIGN}\");";
+      print ENTRIES_CC_FILE "    $field->{NAME} = $parserFunction(tokens, numTokens, \"$field->{CODE}\");\n";
    }
+   print ENTRIES_CC_FILE "}\n\n";
 
-   print ENTRIES_CC_FILE "
-}
-";
    # print
-   print ENTRIES_CC_FILE "
-void $className\::print(FILE *fout)
-{";
+   print ENTRIES_CC_FILE "void $className\::print(FILE *fout)\n";
+   print ENTRIES_CC_FILE "{\n";
    if ($class->{NAME} eq "EventEntry")
    {
-      print ENTRIES_CC_FILE "
-   fprintf(fout, \"\\n\");";
+      print ENTRIES_CC_FILE "    fprintf(fout, \"\\n\");\n";
    }
-
-   print ENTRIES_CC_FILE "
-   fprintf(fout, \"$class->{SIGN}\");";
+   print ENTRIES_CC_FILE "    fprintf(fout, \"$class->{CODE}\");\n";
 
    foreach $field (@{ $class->{FIELDS} })
    {
       if ($field->{TYPE} eq "string")
       {
-         print ENTRIES_CC_FILE "
-   if ($field->{NAME} != NULL)
-   {";
-         print ENTRIES_CC_FILE "
-      if (strchr($field->{NAME}, ' '))
-         fprintf(fout, \" $field->{SIGN} \\\"$field->{PRINTFTYPE}\\\"\", $field->{NAME});
-      else
-         fprintf(fout, \" $field->{SIGN} $field->{PRINTFTYPE}\", $field->{NAME});
-   }";
+         print ENTRIES_CC_FILE "   if ($field->{NAME})\n";
+         print ENTRIES_CC_FILE "      fprintf(fout, \" $field->{CODE} $field->{PRINTFTYPE}\", QUOTE($field->{NAME}));\n";
       }
       elsif ($field->{TYPE} eq "simtime_t")
       {
-         print ENTRIES_CC_FILE "
-   if ($field->{NAME} != -1)
-      fprintf(fout, \" $field->{SIGN} $field->{PRINTFTYPE}\", 12, $field->{NAME});";
+         print ENTRIES_CC_FILE "   if ($field->{NAME} != -1)\n";
+         print ENTRIES_CC_FILE "      fprintf(fout, \" $field->{CODE} $field->{PRINTFTYPE}\", 12, $field->{NAME});\n";
       }
       else
       {
-         print ENTRIES_CC_FILE "
-   if ($field->{NAME} != -1)
-      fprintf(fout, \" $field->{SIGN} $field->{PRINTFTYPE}\", $field->{NAME});";
+         print ENTRIES_CC_FILE "   if ($field->{NAME} != -1)\n";
+         print ENTRIES_CC_FILE "      fprintf(fout, \" $field->{CODE} $field->{PRINTFTYPE}\", $field->{NAME});\n";
       }
    }
 
-   print ENTRIES_CC_FILE "
-   fprintf(fout, \"\\n\");
-   fflush(fout);
-} 
-";
+   print ENTRIES_CC_FILE "    fprintf(fout, \"\\n\");\n";
+   print ENTRIES_CC_FILE "    fflush(fout);\n";
+   print ENTRIES_CC_FILE "}\n\n";
 }
 
 close(ENTRIES_CC_FILE);
 
-##########################################
+
+
+#
 # Write eventlogentryfactory cc file
+#
 
 open(FACTORY_CC_FILE, ">eventlogentryfactory.cc");
 
-print FACTORY_CC_FILE "
+print FACTORY_CC_FILE "\
+//=========================================================================
+//  EVENTLOGENTRYFACTORY.CC - part of
+//                  OMNeT++/OMNEST
+//           Discrete System Simulation in C++
+//
+//  This is a generated file -- do not modify.
+//
+//=========================================================================
+
 #include \"event.h\"
 #include \"eventlogentryfactory.h\"
 
-EventLogTokenBasedEntry * EventLogEntryFactory::parseEntry(Event *event, char **tokens, int numTokens)
+EventLogTokenBasedEntry *EventLogEntryFactory::parseEntry(Event *event, char **tokens, int numTokens)
 {
-   if (numTokens < 1)
-      return NULL;
+    if (numTokens < 1)
+        return NULL;
 
-   char *sign = tokens[0];
-   EventLogTokenBasedEntry *entry;
+    char *code = tokens[0];
+    EventLogTokenBasedEntry *entry;
 
-   if (false);
+    if (false)
+       ;
 ";
 
 foreach $class (@classes)
 {
-   print FACTORY_CC_FILE "
-   else if (!strcmp(sign, \"$class->{SIGN}\"))
-      entry = new $class->{NAME}(event);
-";
-   }
-
-print FACTORY_CC_FILE "
-   else
-      return NULL;
-
-   entry->parse(tokens, numTokens);
-   return entry;
+   print FACTORY_CC_FILE "    else if (!strcmp(code, \"$class->{CODE}\"))\n";
+   print FACTORY_CC_FILE "        entry = new $class->{NAME}(event);\n";
 }
-";
+print FACTORY_CC_FILE "    else\n";
+print FACTORY_CC_FILE "        return NULL;\n\n";
+print FACTORY_CC_FILE "    entry->parse(tokens, numTokens);\n";
+print FACTORY_CC_FILE "    return entry;\n";
+print FACTORY_CC_FILE "}\n";
 
 close(FACTORY_CC_FILE);
+
+
