@@ -30,6 +30,7 @@
 #include "cenvir.h"
 #include "cconfig.h"
 #include "parsimutil.h"
+#include "fileglobber.h"
 #include "platdep/platmisc.h"
 
 
@@ -131,7 +132,7 @@ bool cFileCommunications::receiveNonblocking(int filtTag, cCommBuffer *buffer, i
         sprintf(fmask,"%s#*-s*-d%d-t%d.msg", commDirPrefix.buffer(), myProcId, filtTag);
 
     bool ret = false;
-    const char *fname = findFirstFile(fmask);
+    const char *fname = FileGlobber(fmask).getNext();
     if (fname)
     {
         ret = true;
@@ -196,7 +197,6 @@ bool cFileCommunications::receiveNonblocking(int filtTag, cCommBuffer *buffer, i
                 throw new cRuntimeError("cFileCommunications: cannot delete file %s: %s", fname, strerror(errno));
         }
     }
-    findCleanup();
     //DBG: printf("%d: filecomm: nothing found matching %s\n",getProcId(),fmask);
     return ret;
 }

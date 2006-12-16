@@ -147,5 +147,16 @@ const char *FileGlobber::getNext()
         return data->globdata.gl_pathv[data->globpos++];
     }
 }
-
 #endif
+
+
+std::vector<std::string> FileGlobber::getFilenames()
+{
+    std::vector<std::string> v;
+    const char *filename;
+    while ((filename=getNext())!=NULL)
+        v.push_back(filename);
+    return v;
+}
+
+

@@ -35,8 +35,8 @@
 #include "nedtools.h"
 //XXX #include "cppgenerator.h"
 //XXX #include "nedcompiler.h"
-#include "platdep/platmisc.h"
-#include "fileutil.h"  // splitFileName
+#include "fileglobber.h"
+#include "fileutil.h"
 #include "../utils/ver.h"
 
 using std::ofstream;
@@ -627,20 +627,20 @@ int main(int argc, char **argv)
                 return 1;
             }
 
-#ifdef SHELL_DOES_NOT_EXPAND_WILDCARDS
-            const char *fname = findFirstFile(argv[i]);
-            if (!fname) {
-                fprintf(stderr,"nedtool: not found: %s\n",argv[i]);
+#if SHELL_EXPANDS_WILDCARDS
+            if (!processFile(argv[i]))
+                return 1;
+#else
+            // we have to expand wildcards ourselves
+            std::vector<std::string> filelist = FileGlobber(argv[i]).getFilenames();
+            if (filelist.empty())
+            {
+                fprintf(stderr,"nedtool: not found: %s\n", argv[i]);
                 return 1;
             }
-            while (fname)
-            {
-                if (!processFile(fname, errors)) return 1;
-                fname = findNextFile();
-            }
-            findCleanup();
-#else
-            if (!processFile(argv[i])) return 1;
+            for (int i=0; i<filelist.size(); i++)
+                if (!processFile(filelist[i].c_str(), errors))
+                    return 1;
 #endif
         }
     }

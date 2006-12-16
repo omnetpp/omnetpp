@@ -25,11 +25,17 @@
 #endif
 
 #include <string>
+#include <vector>
 #include <exception>
 #ifndef _MSC_VER
 #include <stdexcept>   // std::runtime_exception (with MSVC, it's in <exception>)
 #endif
 
+#ifdef _WIN32
+#define SHELL_EXPANDS_WILDCARDS 0
+#else
+#define SHELL_EXPANDS_WILDCARDS 1
+#endif
 
 struct GlobPrivateData;
 
@@ -59,6 +65,12 @@ class FileGlobber
      * Caution: may throw std::runtime_exception!
      */
     const char *getNext();
+
+    /**
+     * Returns all matching files at once. Using this method also solves problems
+     * that would occur when new matching files get created during iteration.
+     */
+    std::vector<std::string> getFilenames();
 };
 
 #endif
