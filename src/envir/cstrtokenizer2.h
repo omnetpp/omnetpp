@@ -26,7 +26,7 @@
 /**
  * A string tokenizer class which honors quotation marks but not
  * backslashes. It is designed to split up filename lists returned by
- * cInifile::getAsFilenames().
+ * cInifile::getAsFilenames().      FIXME rename to FilenameListTokenizer?
  *
  * It considers the string as consisting of tokens separated by tab or space
  * charaters. If a token contains space or tab, it has to be surrounded

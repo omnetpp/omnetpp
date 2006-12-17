@@ -705,7 +705,7 @@ string cMsgPar::toString() const
     }
 }
 
-static bool parseQuotedString(string& str, const char *&s)
+static bool parseQuotedString(string& str, const char *&s)  //FIXME use opp_parsequotedstr() instead!
 {
     while (*s==' ' || *s=='\t') s++;
     if (*s!='"') return false;
@@ -760,7 +760,7 @@ bool cMsgPar::parse(const char *text, char tp)
         if (!strchr("?S",tp)) goto error;
 
         // check closing quote
-        if (!tmp[1] || tmp[strlen(tmp)-1]!='\"') goto error;
+        if (!tmp[1] || tmp[strlen(tmp)-1]!='\"') goto error;  //FIXME use opp_parsequotedstr() and catch exception
 
         tmp[strlen(tmp)-1] = '\0'; // cut off closing quote
         setStringValue(tmp+1);

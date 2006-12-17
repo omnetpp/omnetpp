@@ -635,7 +635,7 @@ static void parseString(char *&s, std::string& dest, int lineNum)
     while (*s==' ' || *s=='\t') s++;
     if (*s=='"')
     {
-        // parse quoted string
+        // parse quoted string    //FIXME use opp_parsequotedstr() instead!
         char *start = s+1;
         s++;
         while (*s && (*s!='"' || *(s-1)=='\\') && *s!='\r' && *s!='\n') s++;
