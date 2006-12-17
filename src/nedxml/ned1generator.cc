@@ -357,9 +357,14 @@ void NED1Generator::doCompoundModule(CompoundModuleNode *node, const char *inden
     std::string dispstr = getDisplayStringOf(node, displayProp);
     if (!dispstr.empty())
     {
-        dispstr = DisplayStringUtil::toOldBackgroundDisplayString(opp_parsequotedstr(dispstr.c_str()).c_str());
-        OUT << getBannerComment(displayProp, increaseIndent(indent));
-        OUT << increaseIndent(indent) << "display: " << opp_quotestr(dispstr.c_str()) << ";" << getRightComment(displayProp);
+        try {
+            dispstr = DisplayStringUtil::toOldBackgroundDisplayString(opp_parsequotedstr(dispstr.c_str()).c_str());
+            OUT << getBannerComment(displayProp, increaseIndent(indent));
+            OUT << increaseIndent(indent) << "display: " << opp_quotestr(dispstr.c_str()) << ";" << getRightComment(displayProp);
+        } catch (Exception *e) {
+            errors->add(node, ERRCAT_WARNING, e->message());
+            delete e;
+        }
     }
 
     OUT << indent << (node->getIsNetwork() ? "endnetwork" : "endmodule") << getTrailingComment(node);
@@ -748,9 +753,14 @@ void NED1Generator::doSubmodule(SubmoduleNode *node, const char *indent, bool is
     std::string dispstr = getDisplayStringOf(node, displayProp);
     if (!dispstr.empty())
     {
-        dispstr = DisplayStringUtil::toOldSubmoduleDisplayString(opp_parsequotedstr(dispstr.c_str()).c_str());
-        OUT << getBannerComment(displayProp, increaseIndent(indent));
-        OUT << increaseIndent(indent) << "display: " << opp_quotestr(dispstr.c_str()) << ";" << getRightComment(displayProp);
+        try {
+            dispstr = DisplayStringUtil::toOldSubmoduleDisplayString(opp_parsequotedstr(dispstr.c_str()).c_str());
+            OUT << getBannerComment(displayProp, increaseIndent(indent));
+            OUT << increaseIndent(indent) << "display: " << opp_quotestr(dispstr.c_str()) << ";" << getRightComment(displayProp);
+        } catch (Exception *e) {
+            errors->add(node, ERRCAT_WARNING, e->message());
+            delete e;
+        }
     }
 }
 
@@ -841,8 +851,13 @@ void NED1Generator::doConnection(ConnectionNode *node, const char *indent, bool 
         std::string dispstr = getDisplayStringOf(chanSpecNode, dummy);
         if (!dispstr.empty())
         {
-            dispstr = DisplayStringUtil::toOldConnectionDisplayString(opp_parsequotedstr(dispstr.c_str()).c_str());
-            OUT << " display " << opp_quotestr(dispstr.c_str());
+            try {
+                dispstr = DisplayStringUtil::toOldConnectionDisplayString(opp_parsequotedstr(dispstr.c_str()).c_str());
+                OUT << " display " << opp_quotestr(dispstr.c_str());
+            } catch (Exception *e) {
+                errors->add(node, ERRCAT_WARNING, e->message());
+                delete e;
+            }
         }
     }
 

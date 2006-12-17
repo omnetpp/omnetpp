@@ -345,11 +345,16 @@ displayblock
                   ps.property = addComponentProperty(ps.module, "display");
                   ps.params = (ParametersNode *)ps.module->getFirstChildWithTag(NED_PARAMETERS); // previous line doesn't set it
                   ps.propkey = (PropertyKeyNode *)createNodeWithTag(NED_PROPERTY_KEY, ps.property);
-                  std::string displaystring = DisplayStringUtil::upgradeBackgroundDisplayString(opp_parsequotedstr(toString(@3)).c_str());
                   LiteralNode *literal = (LiteralNode *)createNodeWithTag(NED_LITERAL);
                   literal->setType(NED_CONST_STRING);
-                  literal->setValue(displaystring.c_str());
-                  // NOTE: no setText(): it would cause the OLD form to be exported into NED2 too
+                  try {
+                      std::string displaystring = DisplayStringUtil::upgradeBackgroundDisplayString(opp_parsequotedstr(toString(@3)).c_str());
+                      literal->setValue(displaystring.c_str());
+                      // NOTE: no setText(): it would cause the OLD form to be exported into NED2 too
+                  } catch (Exception *e) {
+                      np->getErrors()->add(ps.property, e->message());
+                      delete e;
+                  }
                   ps.propkey->appendChild(literal);
                   storePos(ps.propkey, @$);
                   storePos(literal, @3);
@@ -760,11 +765,16 @@ opt_submod_displayblock
                   ps.property = addComponentProperty(ps.submod, "display");
                   ps.substparams = (ParametersNode *)ps.submod->getFirstChildWithTag(NED_PARAMETERS); // previous line doesn't set it
                   ps.propkey = (PropertyKeyNode *)createNodeWithTag(NED_PROPERTY_KEY, ps.property);
-                  std::string displaystring = DisplayStringUtil::upgradeSubmoduleDisplayString(opp_parsequotedstr(toString(@3)).c_str());
                   LiteralNode *literal = (LiteralNode *)createNodeWithTag(NED_LITERAL);
                   literal->setType(NED_CONST_STRING);
-                  literal->setValue(displaystring.c_str());
-                  // NOTE: no setText(): it would cause the OLD form to be exported into NED2 too
+                  try {
+                      std::string displaystring = DisplayStringUtil::upgradeSubmoduleDisplayString(opp_parsequotedstr(toString(@3)).c_str());
+                      literal->setValue(displaystring.c_str());
+                      // NOTE: no setText(): it would cause the OLD form to be exported into NED2 too
+                  } catch (Exception *e) {
+                      np->getErrors()->add(ps.property, e->message());
+                      delete e;
+                  }
                   ps.propkey->appendChild(literal);
                   storePos(ps.propkey, @$);
                   storePos(literal, @3);
@@ -870,10 +880,15 @@ opt_conn_displaystr
                       ps.chanspec = createChannelSpec(ps.conn);
                   ps.property = addComponentProperty(ps.chanspec, "display");
                   ps.propkey = (PropertyKeyNode *)createNodeWithTag(NED_PROPERTY_KEY, ps.property);
-                  std::string displaystring = DisplayStringUtil::upgradeConnectionDisplayString(opp_parsequotedstr(toString(@2)).c_str());
                   LiteralNode *literal = (LiteralNode *)createNodeWithTag(NED_LITERAL);
                   literal->setType(NED_CONST_STRING);
-                  literal->setValue(displaystring.c_str());
+                  try {
+                      std::string displaystring = DisplayStringUtil::upgradeConnectionDisplayString(opp_parsequotedstr(toString(@2)).c_str());
+                      literal->setValue(displaystring.c_str());
+                  } catch (Exception *e) {
+                      np->getErrors()->add(ps.property, e->message());
+                      delete e;
+                  }
                   // NOTE: no setText(): it would cause the OLD form to be exported into NED2 too
                   ps.propkey->appendChild(literal);
                   storePos(ps.propkey, @$);
