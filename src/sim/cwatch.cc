@@ -30,8 +30,16 @@ std::string cWatch_stdstring::info() const
 void cWatch_stdstring::assign(const char *s)
 {
     if (s[0]=='"' && s[strlen(s)-1]=='"')
-        r.assign(s+1, strlen(s)-2);  //FIXME possibly use opp_parsequotedstr()?
+    {
+        try {
+            r = opp_parsequotedstr(s);
+        } catch (Exception *e) {
+            delete e;  //FIXME ignore it, or throw it further?
+        }
+    }
     else
+    {
         r = s;
+    }
 }
 

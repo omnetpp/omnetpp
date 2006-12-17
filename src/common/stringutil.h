@@ -22,10 +22,19 @@
 /**
  * Reverse of opp_quotestr(): remove quotes and resolve backslashed escapes.
  *
- * Returns a new string allocated via new char[], which has to be deallocated
- * by the caller.
+ * Throws an exception if there's a parse error. If there's anything
+ * (non-whitespace) in the input after the string literal, endp is set to
+ * that character; otherwise endp is set to point to the terminating zero
+ * of the string.
  */
-char *opp_parsequotedstr(const char *txt, const char *&endp);
+std::string opp_parsequotedstr(const char *txt, const char *&endp);
+
+/**
+ * Reverse of opp_quotestr(): remove quotes and resolve backslashed escapes.
+ *
+ * Throws an exception if there's a parse error.
+ */
+std::string opp_parsequotedstr(const char *txt);
 
 /**
  * Surround the given string with "quotes", also escape with backslash

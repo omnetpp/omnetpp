@@ -17,6 +17,52 @@
 #include "stringutil.h"
 
 
+std::string opp_parsequotedstr(const char *txt)
+{
+    char *endp;
+    std::string ret = opp_parsequotedstr(txt, endp);
+    if (*endp)
+        throw new Exception("trailing garbage after string literal in `%s'", txt);
+    return ret;
+}
+
+std::string opp_parsequotedstr(const char *txt, const char *&endp)
+{
+    const char *s = txt;
+    while (isspace(*s))
+        s++;
+    if (*s++!='"')
+        throw new Exception("no opening quote in `%s'", txt);
+    char *buf = new char [strlen(txt)+1];
+    char *d = buf;
+    while (*s && *s!='"')
+    {
+        if (*s++!='\\')
+            *d++ = *--s; // typical: no backslash
+        else if (*s=='n')
+            *d++ = '\n';
+        else if (*s=='r')
+            *d++ = '\r';
+        else if (*s=='t')
+            *d++ = '\t';
+        else if (*s=='\n')
+            ; // ignore line continuation (backslash followed by newline)
+        else
+            *d++ = *s; // unrecognized backslashed char -- just ignore the backslash
+        s++;
+    }
+    *d = '\0';
+    if (*s++!='"')
+        {delete [] buf; throw new Exception("no closing quote for string literal `%s'", txt); }
+    while (isspace(*s))
+        s++;
+    endp = s;  // if (*s!='\0'), something comes after the string
+
+    std::string ret = buf;
+    delete [] buf;
+    return ret;
+}
+
 std::string opp_quotestr(const char *txt)
 {
     char *buf = new char[2*strlen(txt)+3];  // a conservative guess
@@ -41,40 +87,6 @@ std::string opp_quotestr(const char *txt)
     std::string ret = buf;
     delete [] buf;
     return ret;
-}
-
-char *opp_parsequotedstr(const char *txt, const char *&endp)
-{
-    const char *s = txt;
-    while (*s==' ' || *s=='\t')
-        s++;
-    if (*s++!='"')
-        return NULL;  // no opening quote
-    char *buf = new char [strlen(txt)+1];
-    char *d = buf;
-    while (*s && *s!='"')
-    {
-        if (*s++!='\\')
-            *d++ = *--s; // typical: no backslash
-        else if (*s=='n')
-            *d++ = '\n';
-        else if (*s=='r')
-            *d++ = '\r';
-        else if (*s=='t')
-            *d++ = '\t';
-        else if (*s=='\n')
-            ; // ignore line continuation (backslash followed by newline)
-        else
-            *d++ = *s; // unrecognized backslashed char -- just ignore the backslash
-        s++;
-    }
-    *d = '\0';
-    if (*s++!='"')
-        {delete [] buf;return NULL;}  // no closing quote
-    while (*s==' ' || *s=='\t')
-        s++;
-    endp = s;  // if (*s!='\0'), something comes after the string
-    return buf;
 }
 
 bool opp_needsquotes(const char *txt)

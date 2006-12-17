@@ -165,13 +165,12 @@ std::string cStringPar::toString() const
 bool cStringPar::parse(const char *text)
 {
     // maybe it's just a string literal in quotes
-    const char *endp;
-    char *str = opp_parsequotedstr(text, endp);
-    if (str!=NULL && *endp=='\0')
-    {
-        setStringValue(str);
-        delete [] str;
+    try {
+        std::string str = opp_parsequotedstr(text);
+        setStringValue(str.c_str());
         return true;
+    } catch (Exception *e) {
+        delete e; // no problem, we'll try it otherwise
     }
 
     // try parsing it as an expression

@@ -256,13 +256,7 @@ literal
 
 stringliteral
         : STRINGCONSTANT
-                {
-                  const char *dummy;
-                  char *s = opp_parsequotedstr($1,dummy); //FIXME assert(s!=NULL && !*dummy)
-                  *e++ = s;
-                  delete [] s;
-                  delete [] $1;
-                }
+                { *e++ = opp_parsequotedstr($1).c_str(); delete [] $1; }
         ;
 
 boolliteral

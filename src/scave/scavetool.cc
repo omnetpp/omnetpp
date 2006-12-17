@@ -100,9 +100,9 @@ int filterCommand(int argc, char **argv)
     StringMap opt_runAttrPatterns; //FIXME options to fill this
 
     //FIXME only exactly one of the next ones may be true
-    bool opt_writeVectorFile = false;    //TODO create option for this
+    bool opt_writeVectorFile = true;    //TODO create option for this
     bool opt_writeSeparateFiles = false; //TODO create option for this
-    bool opt_writeOctaveFile = true; //TODO create option for this
+    bool opt_writeOctaveFile = false; //TODO create option for this
 
     // parse options
     bool endOpts = false;

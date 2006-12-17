@@ -383,17 +383,13 @@ LiteralNode *createStringLiteral(YYLTYPE textpos)
     const char *text = toString(textpos);
     c->setText(text);
 
-    char *endp;
-    char *value = opp_parsequotedstr(text, endp);
-    if (value==NULL || *endp)
-    {
-        np->error("invalid string literal", pos.li);
-        delete [] value;
-        return c;
+    try {
+        std::string value = opp_parsequotedstr(text);
+        c->setValue(value.c_str());
+    } catch (Exception *e) {
+        np->error(e->message(), pos.li);
+        delete e;
     }
-
-    c->setValue(value);
-    delete [] value;
     return c;
 }
 

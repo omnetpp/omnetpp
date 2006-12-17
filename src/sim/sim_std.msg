@@ -393,7 +393,7 @@ class cOutVector extends cNoncopyableOwnedObject
         long valuesStored @hint(number of values actually stored on the disk);
 }
 
-class cPar extends cOwnedObject
+class cPar extends cOwnedObject  //FIXME this is a lie! it's cObject!
 {
     fields:
         @omitGetVerb(true);

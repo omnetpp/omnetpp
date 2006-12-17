@@ -35,7 +35,7 @@ static void renameTag(DisplayString& ds, const char *from, const char *to)
 std::string DisplayStringUtil::upgradeBackgroundDisplayString(const char *s)
 {
     DisplayString ds;
-    ds.parse(s); //TBD raise error if not ok (ie retval==false)
+    parseDisplayString(s, ds);
     renameTag(ds, "p",  "bgp");
     renameTag(ds, "b",  "bgb");
     renameTag(ds, "tt", "bgtt");
@@ -52,7 +52,7 @@ std::string DisplayStringUtil::upgradeBackgroundDisplayString(const char *s)
 std::string DisplayStringUtil::upgradeSubmoduleDisplayString(const char *s)
 {
     DisplayString ds;
-    ds.parse(s); //TBD raise error if not ok (ie retval==false)
+    parseDisplayString(s, ds);
     if (ds.existsTag("o"))
     {
         ds.setTagArg("b", 3, ds.getTagArg("o",0));
@@ -66,29 +66,21 @@ std::string DisplayStringUtil::upgradeSubmoduleDisplayString(const char *s)
 std::string DisplayStringUtil::upgradeConnectionDisplayString(const char *s)
 {
     DisplayString ds;
-    ds.parse(s); //TBD raise error if not ok (ie retval==false)
+    parseDisplayString(s, ds);
     renameTag(ds, "o", "ls");
     return ds.toString();
 }
 
-void DisplayStringUtil::parseQuotedDisplayString(const char *quotedstr, DisplayString& ds)
+void DisplayStringUtil::parseDisplayString(const char *s, DisplayString& ds)
 {
-    const char *endp;
-    char *s = opp_parsequotedstr(quotedstr, endp);
-    if (s==NULL || *endp)
-    {
-        //FIXME signal the problem! exception? has to be caught (in NED1Generator)
-        delete [] s;
-        return;
-    }
-    ds.parse(s); //TBD raise error if not ok (ie retval==false)
-    delete [] s;
+    if (!ds.parse(s))
+        throw new Exception("cannot parse display string `%s'", s);
 }
 
-std::string DisplayStringUtil::toOldBackgroundDisplayStringQuoted(const char *s)
+std::string DisplayStringUtil::toOldBackgroundDisplayString(const char *s)
 {
     DisplayString ds;
-    parseQuotedDisplayString(s, ds);
+    parseDisplayString(s, ds);
     for (int i=0; i<ds.getNumTags(); i++)
     {
         const char *t = ds.getTagName(i);
@@ -107,13 +99,13 @@ std::string DisplayStringUtil::toOldBackgroundDisplayStringQuoted(const char *s)
         ds.setTagArg("b", 4, "");
         ds.setTagArg("b", 5, "");
     }
-    return opp_quotestr(ds.toString());
+    return ds.toString();
 }
 
-std::string DisplayStringUtil::toOldSubmoduleDisplayStringQuoted(const char *s)
+std::string DisplayStringUtil::toOldSubmoduleDisplayString(const char *s)
 {
     DisplayString ds;
-    parseQuotedDisplayString(s, ds);
+    parseDisplayString(s, ds);
     if (ds.getNumArgs("b")>3)
     {
         ds.setTagArg("o", 0, ds.getTagArg("b",3));
@@ -123,14 +115,14 @@ std::string DisplayStringUtil::toOldSubmoduleDisplayStringQuoted(const char *s)
         ds.setTagArg("b", 4, "");
         ds.setTagArg("b", 5, "");
     }
-    return opp_quotestr(ds.toString());
+    return ds.toString();
 }
 
-std::string DisplayStringUtil::toOldConnectionDisplayStringQuoted(const char *s)
+std::string DisplayStringUtil::toOldConnectionDisplayString(const char *s)
 {
     DisplayString ds;
-    parseQuotedDisplayString(s, ds);
+    parseDisplayString(s, ds);
     renameTag(ds, "ls", "o");
-    return opp_quotestr(ds.toString());
+    return ds.toString();
 }
 
