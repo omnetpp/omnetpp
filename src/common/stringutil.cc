@@ -26,6 +26,25 @@ std::string opp_parsequotedstr(const char *txt)
     return ret;
 }
 
+inline int h2d(char c)
+{
+    if (c>='0' && c<='9') return c-'0';
+    if (c>='A' && c<='F') return c-'A'+10;
+    if (c>='a' && c<='f') return c-'a'+10;
+    return -1;
+}
+
+inline int h2d(const char *&s)
+{
+    int a = h2d(*s);
+    if (a<0) return 0;
+    s++;
+    int b = h2d(*s);
+    if (b<0) return a;
+    s++;
+    return a*16+b;
+}
+
 std::string opp_parsequotedstr(const char *txt, const char *&endp)
 {
     const char *s = txt;
@@ -35,21 +54,29 @@ std::string opp_parsequotedstr(const char *txt, const char *&endp)
         throw new Exception("no opening quote in `%s'", txt);
     char *buf = new char [strlen(txt)+1];
     char *d = buf;
-    while (*s && *s!='"')
+    for (; *s && *s!='"'; s++, d++)
     {
-        if (*s++!='\\')
-            *d++ = *--s; // typical: no backslash
-        else if (*s=='n')
-            *d++ = '\n';
-        else if (*s=='r')
-            *d++ = '\r';
-        else if (*s=='t')
-            *d++ = '\t';
-        else if (*s=='\n')
-            ; // ignore line continuation (backslash followed by newline)
+        if (*s=='\\')
+        {
+            // allow backslash as quote character, also interpret backslash sequences
+            s++;
+            switch(*s)
+            {
+                case 'b': *d = '\b'; break;
+                case 'f': *d = '\f'; break;
+                case 'n': *d = '\n'; break;
+                case 'r': *d = '\r'; break;
+                case 't': *d = '\t'; break;
+                case 'x': s++; *d = h2d(s); s--; break;
+                case '\n': d--; break; // don't store line continuation (backslash followed by newline)
+                case '\0': d--; s--; break; // string ends in stray backslash
+                default: *d = *s;
+            }
+        }
         else
-            *d++ = *s; // unrecognized backslashed char -- just ignore the backslash
-        s++;
+        {
+            *d = *s;
+        }
     }
     *d = '\0';
     if (*s++!='"')
@@ -73,12 +100,15 @@ std::string opp_quotestr(const char *txt)
     {
         switch (*s)
         {
+            case '\b': *d++ = '\\'; *d++ = 'b'; s++; break;
+            case '\f': *d++ = '\\'; *d++ = 'f'; s++; break;
             case '\n': *d++ = '\\'; *d++ = 'n'; s++; break;
             case '\r': *d++ = '\\'; *d++ = 'r'; s++; break;
             case '\t': *d++ = '\\'; *d++ = 't'; s++; break;
-            case '"': *d++ = '\\'; *d++ = '"'; s++; break;
+            case '"':  *d++ = '\\'; *d++ = '"'; s++; break;
             case '\\': *d++ = '\\'; *d++ = '\\'; s++; break;
-            default: *d++ = *s++;
+            default: if (*s<32) {*d++='\\'; *d++='x'; sprintf(d,"%2.2X",*s++); d+=2;}
+                     else {*d++ = *s++;}
         }
     }
     *d++ = '"';

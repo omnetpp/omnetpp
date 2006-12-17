@@ -320,25 +320,6 @@ void cDisplayString::cleartags()
     notify();
 }
 
-inline int h2d(char c)
-{
-    if (c>='0' && c<='9') return c-'0';
-    if (c>='A' && c<='F') return c-'A'+10;
-    if (c>='a' && c<='f') return c-'a'+10;
-    return -1;
-}
-
-inline int h2d(char *&s)
-{
-    int a = h2d(*s);
-    if (a<0) return 0;
-    s++;
-    int b = h2d(*s);
-    if (b<0) return a;
-    s++;
-    return a*16+b;
-}
-
 bool cDisplayString::parse()
 {
     cleartags();
@@ -368,21 +349,12 @@ bool cDisplayString::parse()
     char *s, *d;
     for (s=dispstr,d=buffer; *s; s++,d++)
     {
-        if (*s=='\\')
+        if (*s=='\\' && *(s+1))
         {
-            // allow backslash as quote character, also interpret backslash sequences
-            s++;
-            switch(*s)
-            {
-                case 'b': *d = '\b'; break;
-                case 'f': *d = '\f'; break;
-                case 'n': *d = '\n'; break;
-                case 'r': *d = '\r'; break;
-                case 't': *d = '\t'; break;
-                case 'x': s++; *d = h2d(s); s--; break;
-                case '\0': *d--; s--; break; // dispstr terminates in stray backslash
-                default: *d = *s;
-            }
+            // allow escaping display string special chars (=,;) with backslash.
+            // No need to deal with "\t", "\n" etc here, since they already got
+            // interpreted by opp_parsequotedstr().
+            *d = *++s;
         }
         else if (*s==';')
         {
@@ -421,6 +393,15 @@ bool cDisplayString::parse()
     }
     *d = '\0';
 
+    // check tag names are OK (matching [a-zA-Z0-9:]+)
+    for (int i=0; i<numtags; i++)
+    {
+        if (!tags[i].name[0])
+            fully_ok = false; // empty string as tagname
+        for (const char *s=tags[i].name; *s; s++)
+            if (!isalnum(*s) && *s!=':')
+                fully_ok = false; // tagname contains invalid character
+    }
     return fully_ok;
 }
 
@@ -465,14 +446,10 @@ void cDisplayString::strcatescaped(char *d, const char *s)
     d += strlen(d);
     while (*s)
     {
-        if (*s=='\b')      {*d++='\\'; *d++='b'; s++;}
-        else if (*s=='\f') {*d++='\\'; *d++='f'; s++;}
-        else if (*s=='\n') {*d++='\\'; *d++='n'; s++;}
-        else if (*s=='\r') {*d++='\\'; *d++='r'; s++;}
-        else if (*s=='\t') {*d++='\\'; *d++='t'; s++;}
-        else if (*s<32)    {*d++='\\'; *d++='x'; sprintf(d,"%2.2X",*s++); d+=2;}
-        else if (*s==';' || *s==',' || *s=='=' || *s=='\\') {*d++ = '\\'; *d++=*s++;}
-        else *d++ = *s++;
+        // quoting \t, \n etc is the job of opp_quotestr()
+        if (*s==';' || *s==',' || *s=='=')
+            *d++ = '\\';
+        *d++ = *s++;
     }
     *d = '\0';
 }
