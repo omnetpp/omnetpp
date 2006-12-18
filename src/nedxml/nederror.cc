@@ -34,12 +34,13 @@ void NEDErrorStore::doAdd(NEDElement *context, const char *loc, int category, co
 
     if (doprint)
     {
+        const char *severity = categoryName(category);
         if (loc)
-            fprintf(stderr, "%s: error: %s\n", loc, message);
+            fprintf(stderr, "%s: %s: %s\n", loc, severity, message);
         else if (context)
-            fprintf(stderr, "<%s>: error: %s\n", context->getTagName(), message);
+            fprintf(stderr, "<%s>: %s: %s\n", context->getTagName(), severity, message);
         else
-            fprintf(stderr, "error: %s\n", message);
+            fprintf(stderr, "%s: %s\n", severity, message);
    }
 }
 
