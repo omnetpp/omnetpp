@@ -1,8 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?pde version="3.1"?>
 
-<product name="OMNeT++ IDE" id="org.eclipse.platform.ide" application="org.eclipse.ui.ide.workbench" useFeatures="true">
+<product name="OMNeT++ IDE" id="org.omnetpp.main.product" application="org.eclipse.ui.ide.workbench" useFeatures="true">
 
+   <aboutInfo>
+      <text>
+         about text
+      </text>
+   </aboutInfo>
 
    <configIni use="default"/>
 
@@ -13,7 +18,7 @@
 
    <splash
       location="org.omnetpp.main"
-      startupProgressRect="6,0,0,0"
+      startupProgressRect="6,3,100,10"
       startupMessageRect="0,0,0,0"
       startupForegroundColor="000000" />
    <launcher name="omnetide">
@@ -23,7 +28,6 @@
       </win>
    </launcher>
 
-   <intro introId="org.eclipse.ui.intro.universal"/>
 
    <plugins>
       <plugin id="com.ibm.icu"/>
