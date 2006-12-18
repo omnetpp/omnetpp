@@ -323,6 +323,10 @@ void doParseExpression(const char *nedtext, cDynamicExpression::Elem *&elems, in
     {
         ret = yyparse();
     }
+    catch (Exception *e)
+    {
+        // FIXME wrap and re-throw!!!
+    }
     catch (cException *e)
     {
         yy_delete_buffer(handle);

@@ -77,7 +77,7 @@ std::string opp_parsequotedstr(const char *txt, const char *&endp)
                 case ',': throw new Exception("invalid escape sequence `\\%c' in `%s' "
                           "(hint: use double backslash to quote display string special chars: "
                           "equal sign, comma, semicolon)", *s, txt);
-                default: throw new Exception("invalid escape sequence `\\%c' in `%s'", *s, txt);
+                default:  throw new Exception("invalid escape sequence `\\%c' in `%s'", *s, txt);
             }
         }
         else
