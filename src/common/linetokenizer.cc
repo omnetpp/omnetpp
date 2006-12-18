@@ -68,8 +68,10 @@ int LineTokenizer::tokenize(char *line, int length)
             // parse quoted string
             token = s+1;
             s++;
-            // try find end of quoted string
-            while (*s && (*s!='"' || *(s-1)=='\\')) s++;
+            // try to find end of quoted string
+            while (*s && *s!='"')
+                if (*s++=='\\')
+                    s++;
             // check we found the close quote
             if (*s!='"')
                 throw new Exception("Unmatched quote in file");
