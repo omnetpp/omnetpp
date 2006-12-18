@@ -67,10 +67,17 @@ std::string opp_parsequotedstr(const char *txt, const char *&endp)
                 case 'n': *d = '\n'; break;
                 case 'r': *d = '\r'; break;
                 case 't': *d = '\t'; break;
-                case 'x': s++; *d = h2d(s); s--; break;
+                case 'x': s++; *d = h2d(s); s--; break; // hex code
+                case '"': *d = '"'; break;  // quote needs to be backslashed
+                case '\\': *d = '\\'; break;  // backslash needs to be backslashed
                 case '\n': d--; break; // don't store line continuation (backslash followed by newline)
                 case '\0': d--; s--; break; // string ends in stray backslash
-                default: *d = *s;
+                case '=':
+                case ';':
+                case ',': throw new Exception("invalid escape sequence `\\%c' in `%s' "
+                          "(hint: use double backslash to quote display string special chars: "
+                          "equal sign, comma, semicolon)", *s, txt);
+                default: throw new Exception("invalid escape sequence `\\%c' in `%s'", *s, txt);
             }
         }
         else

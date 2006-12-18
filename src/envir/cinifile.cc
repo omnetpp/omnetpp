@@ -182,17 +182,18 @@ void cIniFile::_readFile(const char *fname, int section_id)
 
            // do cosmetics on the value string
            if (*e=='"') {                // "string": keep quotes but chop off
-             e1 = e+1;                   //           rest of line after it
-             while (*e1 && *e1!='"') e1++;
-             if (!*e1) SYNTAX_ERROR("no closing quote");
-             *(e1+1)=0;    // keep closing quote
+              e1 = e+1;                   //           rest of line after it
+              while (*e1 && (*e1!='"' || *(e1-1)=='\\')) e1++;
+              // check we found the close quote
+              if (*e1!='"') SYNTAX_ERROR("no closing quote");
+              *(e1+1)=0;    // keep closing quote
            }
            else {                               // chop off comment and
-             e1 = e;                            //   trailing whitespace
-             while (*e1 && *e1!=';' && *e1!='#') e1++;  // find EOL/comment start
-             e1--;
-             while (e<=e1 && (*e1==' '||*e1=='\t')) e1--; // go back along trailing whitespaces
-             *(e1+1)=0;
+              e1 = e;                            //   trailing whitespace
+              while (*e1 && *e1!=';' && *e1!='#') e1++;  // find EOL/comment start
+              e1--;
+              while (e<=e1 && (*e1==' '||*e1=='\t')) e1--; // go back along trailing whitespaces
+              *(e1+1)=0;
            }
 
            // fill in the entry
