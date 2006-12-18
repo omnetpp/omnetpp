@@ -2,7 +2,7 @@
 <?eclipse version="3.2"?>
 <plugin>
 
-     <extension id="ide" 
+     <extension id="product" 
          name="OMNeT++ Integrated Development Environment"
 	 point="org.eclipse.core.runtime.products"> 
       <product name="OMNeT++ IDE" application="org.eclipse.ui.ide.workbench" description="%productBlurb"> 
@@ -34,7 +34,10 @@
           value="0,0,0,0"/>
     <property
           name="startupProgressRect"
-          value="0,0,0,0"/>                
+          value="6,3,100,10"/>
+    <property
+          name="aboutText"
+          value="about text"/>                
       </product> 
    </extension> 
    <extension
