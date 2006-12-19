@@ -387,7 +387,7 @@ LiteralNode *createStringLiteral(YYLTYPE textpos)
         std::string value = opp_parsequotedstr(text);
         c->setValue(value.c_str());
     } catch (Exception& e) {
-        np->error(e.message(), pos.li);
+        np->error(e.what(), pos.li);
     }
     return c;
 }
@@ -408,7 +408,7 @@ LiteralNode *createQuantityLiteral(YYLTYPE textpos)
         d = UnitConversion().parseQuantity(text, unit);
     }
     catch (Exception& e) {
-        np->error(e.message(), pos.li);
+        np->error(e.what(), pos.li);
     }
 
     // convert value back to string

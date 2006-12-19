@@ -60,7 +60,7 @@ main()
     }
     catch (Exception& e)
     {
-        printf("exception: %s", e.message());
+        printf("exception: %s", e.what());
     }
 
     return 0;

@@ -377,7 +377,7 @@ int main(int argc, char **argv)
             cout << line << "\n";
     }
     catch (Exception& e) {
-        cout << "Error: " << e.message() << endl;
+        cout << "Error: " << e.what() << endl;
     }
 
     return 0;

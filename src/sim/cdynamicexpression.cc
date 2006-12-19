@@ -637,7 +637,7 @@ std::string cDynamicExpression::toString() const
     }
     catch (cException& e)
     {
-        std::string ret = std::string("[[ ") + e.message() + " ]]";
+        std::string ret = std::string("[[ ") + e.what() + " ]]";
         return ret;
     }
 }

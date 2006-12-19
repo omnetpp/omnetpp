@@ -352,7 +352,7 @@ displayblock
                       literal->setValue(displaystring.c_str());
                       // NOTE: no setText(): it would cause the OLD form to be exported into NED2 too
                   } catch (Exception& e) {
-                      np->getErrors()->add(ps.property, e.message());
+                      np->getErrors()->add(ps.property, e.what());
                   }
                   ps.propkey->appendChild(literal);
                   storePos(ps.propkey, @$);
@@ -771,7 +771,7 @@ opt_submod_displayblock
                       literal->setValue(displaystring.c_str());
                       // NOTE: no setText(): it would cause the OLD form to be exported into NED2 too
                   } catch (Exception& e) {
-                      np->getErrors()->add(ps.property, e.message());
+                      np->getErrors()->add(ps.property, e.what());
                   }
                   ps.propkey->appendChild(literal);
                   storePos(ps.propkey, @$);
@@ -884,7 +884,7 @@ opt_conn_displaystr
                       std::string displaystring = DisplayStringUtil::upgradeConnectionDisplayString(opp_parsequotedstr(toString(@2)).c_str());
                       literal->setValue(displaystring.c_str());
                   } catch (Exception& e) {
-                      np->getErrors()->add(ps.property, e.message());
+                      np->getErrors()->add(ps.property, e.what());
                   }
                   // NOTE: no setText(): it would cause the OLD form to be exported into NED2 too
                   ps.propkey->appendChild(literal);
@@ -1349,7 +1349,7 @@ NEDElement *doParseNED1(NEDParser *p, const char *nedtext)
     }
     catch (NEDException& e)
     {
-        yyerror((std::string("error during parsing: ")+e.errorMessage()).c_str());
+        yyerror((std::string("error during parsing: ")+e.what()).c_str());
         yy_delete_buffer(handle);
         return 0;
     }

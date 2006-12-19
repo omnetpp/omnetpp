@@ -87,7 +87,7 @@ void  NEDValidatorBase::validateElement(NEDElement *node)
     }
     catch (NEDException& e)
     {
-        INTERNAL_ERROR1(node,"validateElement(): NEDException: %s", e.errorMessage());
+        INTERNAL_ERROR1(node,"validateElement(): NEDException: %s", e.what());
     }
 }
 

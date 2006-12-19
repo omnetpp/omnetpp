@@ -115,7 +115,7 @@ main()
     }
     catch (Exception& e)
     {
-        printf("exception: %s", e.message());
+        printf("exception: %s", e.what());
     }
 
     clock_t t1 = clock();

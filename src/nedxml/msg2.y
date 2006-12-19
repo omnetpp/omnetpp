@@ -551,7 +551,7 @@ NEDElement *doParseMSG2(NEDParser *p, const char *nedtext)
     }
     catch (NEDException& e)
     {
-        yyerror((std::string("error during parsing: ")+e.errorMessage()).c_str());
+        yyerror((std::string("error during parsing: ")+e.what()).c_str());
         yy_delete_buffer(handle);
         return 0;
     }

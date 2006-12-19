@@ -16,11 +16,13 @@
 #define _EXCEPTION_H_
 
 #include <string>
+#include <exception>
+#include <stdexcept>
 
 /**
  * Exceptions of this type are thrown on errors during processing.
  */
-class Exception //FIXME use some more specific name...
+class Exception : public std::runtime_error //FIXME use some more specific name...
 {
   protected:
     std::string errormsg;
@@ -32,9 +34,9 @@ class Exception //FIXME use some more specific name...
     Exception(const char *msg,...);
 
     /**
-     * Returns the text of the error.
+     * Returns the text of the error. Redefined from std::exception.
      */
-    const char *message() {return errormsg.c_str();}
+    virtual const char *what() {return errormsg.c_str();}
 };
 
 

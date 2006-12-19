@@ -17,6 +17,8 @@
 #define __NEDERROR_H
 
 #include <vector>
+#include <exception>
+#include <stdexcept>
 #include "nedelement.h"
 
 
@@ -125,7 +127,7 @@ void NEDInternalError(const char *file, int line, NEDElement *context, const cha
 /**
  * Low-level routines throw an exception instead of calling NEDErrorStore->add().
  */
-class NEDException
+class NEDException : public std::runtime_error   //FIXME into separate header file
 {
   protected:
     std::string errormsg;
@@ -137,9 +139,9 @@ class NEDException
     NEDException(const char *msg,...);
 
     /**
-     * Returns the text of the error.
+     * Returns the text of the error. Redefined from std::exception.
      */
-    const char *errorMessage() {return errormsg.c_str();}
+    virtual const char *what() {return errormsg.c_str();}
 };
 
 

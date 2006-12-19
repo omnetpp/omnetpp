@@ -225,7 +225,7 @@ void cParsimPartition::broadcastTerminationException(cTerminationException *e)
 {
     // send TAG_TERMINATIONEXCEPTION to all partitions
     cCommBuffer *buffer = comm->createCommBuffer();
-    buffer->pack(e->message());
+    buffer->pack(e->what());
     try
     {
         comm->broadcast(buffer, TAG_TERMINATIONEXCEPTION);
@@ -241,7 +241,7 @@ void cParsimPartition::broadcastException(cException *e)
 {
     // send TAG_EXCEPTION to all partitions
     cCommBuffer *buffer = comm->createCommBuffer();
-    buffer->pack(e->message());
+    buffer->pack(e->what());
     try
     {
         comm->broadcast(buffer, TAG_EXCEPTION);

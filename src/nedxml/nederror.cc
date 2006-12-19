@@ -156,7 +156,7 @@ void NEDInternalError(const char *file, int line, NEDElement *context, const cha
     //__asm int 3; //FIXME this windows-only
 }
 
-NEDException::NEDException(const char *msgformat...)
+NEDException::NEDException(const char *msgformat...) : std::runtime_error("")
 {
     va_list va;
     va_start(va, msgformat);

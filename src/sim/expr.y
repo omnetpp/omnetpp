@@ -116,7 +116,7 @@ static double parseQuantity(const char *text, std::string& unit)
         return UnitConversion().parseQuantity(text, unit);
     }
     catch (Exception& e) {
-        yyerror(e.message());
+        yyerror(e.what());
         return 0;
     }
 }

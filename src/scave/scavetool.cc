@@ -163,7 +163,7 @@ int filterCommand(int argc, char **argv)
                     if (opt_verbose) printf(" %d lines\n", f->numLines);
                 }
             } catch (Exception& e) {
-                fprintf(stdout, "Exception: %s\n", e.message());
+                fprintf(stdout, "Exception: %s\n", e.what());
             }
         }
 
@@ -322,7 +322,7 @@ int filterCommand(int argc, char **argv)
     }
     catch (Exception& e)
     {
-        fprintf(stdout, "Exception: %s\n", e.message());
+        fprintf(stdout, "Exception: %s\n", e.what());
         return 1;
     }
 
@@ -428,7 +428,7 @@ int indexCommand(int argc, char **argv)
             indexer.generateIndex(fileName);
         }
         catch (Exception& e) {
-            fprintf(stdout, "Exception: %s\n", e.message());
+            fprintf(stdout, "Exception: %s\n", e.what());
             rc=1;
         }
     }

@@ -212,7 +212,7 @@ void cEnvir::setup(int argc, char *argv[])
     }
     catch (cException& e)
     {
-        printfmsg("Error during startup: %s", e.message());
+        printfmsg("Error during startup: %s", e.what());
         if (app)
         {
            delete app;

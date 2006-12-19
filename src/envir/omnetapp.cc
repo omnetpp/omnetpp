@@ -410,7 +410,7 @@ void TOmnetApp::readParameter(cPar *par)
                 throw cRuntimeError("Syntax error, please try again.");
         }
         catch (cException& e) {
-            ev.printfmsg("%s", e.message());
+            ev.printfmsg("%s", e.what());
         }
     }
 }
@@ -833,17 +833,17 @@ bool TOmnetApp::memoryIsLow()
 void TOmnetApp::displayError(cException& e)
 {
     if (e.moduleID()==-1)  //FIXME revise condition
-        ev.printfmsg("Error: %s.", e.message());
+        ev.printfmsg("Error: %s.", e.what());
     else
-        ev.printfmsg("Error in module (%s) %s: %s.", e.contextClassName(), e.contextFullPath(), e.message());
+        ev.printfmsg("Error in module (%s) %s: %s.", e.contextClassName(), e.contextFullPath(), e.what());
 }
 
 void TOmnetApp::displayMessage(cException& e)
 {
     if (e.moduleID()==-1)  //FIXME revise condition
-        ev.printfmsg("%s.", e.message());
+        ev.printfmsg("%s.", e.what());
     else
-        ev.printfmsg("Module (%s) %s: %s.", e.contextClassName(), e.contextFullPath(), e.message());
+        ev.printfmsg("Module (%s) %s: %s.", e.contextClassName(), e.contextFullPath(), e.what());
 }
 
 bool TOmnetApp::idle()

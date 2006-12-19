@@ -40,9 +40,9 @@
 #endif
 
 #include <exception>
-#ifndef _MSC_VER
-#include <stdexcept>   // std::runtime_exception (with MSVC, it's in <exception>)
-#endif
+//XXX #ifndef _MSC_VER
+#include <stdexcept>   // std::runtime_error (with MSVC, it's in <exception>)
+//XXX #endif
 
 
 //

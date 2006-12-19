@@ -19,6 +19,9 @@
 #define __CEXCEPTION_H
 
 #include <stdarg.h>
+#include <exception>
+#include <stdexcept>
+
 #include "defs.h"
 #include "errmsg.h"
 #include "opp_string.h"
@@ -31,7 +34,7 @@ class cComponent;
  *
  * @ingroup SimSupport
  */
-class SIM_API cException
+class SIM_API cException : public std::runtime_error
 {
   protected:
     int errorcode;
@@ -108,31 +111,31 @@ class SIM_API cException
     /**
      * Returns the error code.
      */
-    int errorCode() {return errorcode;}
+    virtual int errorCode() {return errorcode;}
 
     /**
-     * Returns the text of the error.
+     * Returns the text of the error. Redefined from std::exception.
      */
-    const char *message() {return msg.c_str();}
+    virtual const char *what() {return msg.c_str();}
 
     /**
      * Returns true if the exception has "context info", that is, it occurred
      * within a known module or channel. contextClassName() and contextFullPath()
      * and moduleID() can only be called if this method returned true.
      */
-    bool hasContext() {return hascontext;}
+    virtual bool hasContext() {return hascontext;}
 
     /**
      * Returns the class name (NED type name) of the context where the
      * exception occurred.
      */
-    const char *contextClassName() {return contextclassname.c_str();}
+    virtual const char *contextClassName() {return contextclassname.c_str();}
 
     /**
      * Returns the full path of the context where the exception
      * occurred.
      */
-    const char *contextFullPath() {return contextfullpath.c_str();}
+    virtual const char *contextFullPath() {return contextfullpath.c_str();}
 
     /**
      * Returns the ID of the module where the exception occurred,
@@ -140,7 +143,7 @@ class SIM_API cException
      * any more when the exception is caught (ie. if the exception occurs
      * during network setup, the network is cleaned up immediately).
      */
-    int moduleID() {return moduleid;}   // FIXME check all code that calls this!!! maybe they need hasContext() instead
+    virtual int moduleID() {return moduleid;}   // FIXME check all code that calls this!!! maybe they need hasContext() instead
     //@}
 };
 

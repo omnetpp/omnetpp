@@ -34,14 +34,14 @@ static char buffer[BUFLEN];
 static char buffer2[BUFLEN];
 
 
-cException::cException()
+cException::cException() : std::runtime_error("")
 {
     errorcode = eCUSTOM;
     storeCtx();
     msg = "n/a";
 }
 
-cException::cException(ErrorCode errorcode...)
+cException::cException(ErrorCode errorcode...) : std::runtime_error("")
 {
     va_list va;
     va_start(va, errorcode);
@@ -49,7 +49,7 @@ cException::cException(ErrorCode errorcode...)
     va_end(va);
 }
 
-cException::cException(const char *msgformat...)
+cException::cException(const char *msgformat...) : std::runtime_error("")
 {
     va_list va;
     va_start(va, msgformat);
@@ -57,7 +57,7 @@ cException::cException(const char *msgformat...)
     va_end(va);
 }
 
-cException::cException(const cObject *where, ErrorCode errorcode...)
+cException::cException(const cObject *where, ErrorCode errorcode...) : std::runtime_error("")
 {
     va_list va;
     va_start(va, errorcode);
@@ -65,7 +65,7 @@ cException::cException(const cObject *where, ErrorCode errorcode...)
     va_end(va);
 }
 
-cException::cException(const cObject *where, const char *msgformat...)
+cException::cException(const cObject *where, const char *msgformat...) : std::runtime_error("")
 {
     va_list va;
     va_start(va, msgformat);
@@ -91,7 +91,7 @@ void cException::exitIfStartupError()
 {
     if (!cStaticFlag::isSet())
     {
-        ev.printfmsg("Error during startup/shutdown: %s. Aborting.", message());
+        ev.printfmsg("Error during startup/shutdown: %s. Aborting.", what());
         abort();
     }
 }
@@ -203,13 +203,13 @@ void cRuntimeError::breakIntoDebuggerIfRequested()
                "\n"
                );
         if (!hascontext)
-            printf("<!> Error: %s.\n", message());
+            printf("<!> Error: %s.\n", what());
         else if (moduleID()==-1)
             printf("<!> Error in component (%s) %s: %s.\n",
-                   contextClassName(), contextFullPath(), message());
+                   contextClassName(), contextFullPath(), what());
         else
             printf("<!> Error in module (%s) %s (id=%d): %s.\n",
-                   contextClassName(), contextFullPath(), moduleID(), message());
+                   contextClassName(), contextFullPath(), moduleID(), what());
         fflush(stdout);
 
 #ifdef _MSC_VER

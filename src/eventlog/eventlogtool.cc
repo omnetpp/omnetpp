@@ -592,7 +592,7 @@ int main(int argc, char **argv)
                     usage("Unknown or invalid command");
             }
             catch (Exception& e) {
-                fprintf(stderr, "Error: %s\n", e.message());
+                fprintf(stderr, "Error: %s\n", e.what());
             }
 
             if (options.outputFileName)

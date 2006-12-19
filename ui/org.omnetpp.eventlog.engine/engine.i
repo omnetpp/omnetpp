@@ -35,7 +35,7 @@
     try {
         $action
     } catch (Exception& e) {
-        SWIG_exception(SWIG_RuntimeError,const_cast<char*>(e.message()));
+        SWIG_exception(SWIG_RuntimeError,const_cast<char*>(e.what()));
     } catch (std::exception& e) {
         SWIG_exception(SWIG_RuntimeError,const_cast<char*>(e.what()));
     }

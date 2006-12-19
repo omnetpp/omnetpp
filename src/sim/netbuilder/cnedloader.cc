@@ -103,7 +103,7 @@ void cNEDLoader::registerBuiltinDeclarations()
     }
     catch (NEDException& e)
     {
-        throw cRuntimeError("NED error: %s", e.errorMessage()); // FIXME or something
+        throw cRuntimeError("NED error: %s", e.what()); // FIXME or something
     }
 }
 
@@ -198,7 +198,7 @@ void cNEDLoader::loadNedFile(const char *nedfname, bool isXML)
     }
     catch (NEDException& e)
     {
-        throw cRuntimeError("NED error: %s", e.errorMessage()); // FIXME or something
+        throw cRuntimeError("NED error: %s", e.what()); // FIXME or something
     }
 }
 
