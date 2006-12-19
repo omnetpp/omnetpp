@@ -287,12 +287,12 @@ class ENVIR_API TOmnetApp
     /**
      * Display error message.
      */
-    virtual void displayError(cException *e);
+    virtual void displayError(cException& e);
 
     /**
      * Like displayError(), but for normal termination messages, not errors.
      */
-    virtual void displayMessage(cException *e);
+    virtual void displayMessage(cException& e);
 
     /**
      * Called from cEnvir::idle().
@@ -335,13 +335,13 @@ class ENVIR_API TOmnetApp
      * Hook called when the simulation terminates normally.
      * Its current use is to notify parallel simulation part.
      */
-    void stoppedWithTerminationException(cTerminationException *e);
+    void stoppedWithTerminationException(cTerminationException& e);
 
     /**
      * Hook called when the simulation is stopped with an error.
      * Its current use is to notify parallel simulation part.
      */
-    void stoppedWithException(cException *e);
+    void stoppedWithException(cException& e);
     //@}
 };
 

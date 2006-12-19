@@ -50,10 +50,10 @@ double SequenceChartFacade::getTimelineCoordinate(IEvent *event)
 	        	//double timelineCoordinate = previousTimelineCoordinate + Math.atan((simulationTime - previousSimulationTime) / nonLinearFocus) / Math.PI * 2;
 	        	//logFacade.setEvent_i_timelineCoordinate(i, timelineCoordinate);
 	        	//previousTimelineCoordinate = timelineCoordinate;
-                throw new Exception("Not yet implemented");
+                throw Exception("Not yet implemented");
                 break;
             default:
-                throw new Exception("Unknown timeline mode");
+                throw Exception("Unknown timeline mode");
         }
 
         event->cachedTimelineCoordinate = timelineCoordinate;
@@ -70,7 +70,7 @@ IEvent *SequenceChartFacade::getLastEventNotAfterTimelineCoordinate(double timel
     switch (timelineMode) {
         case LINEAR:
             // TODO:
-            throw new Exception("Not yet implemented");
+            throw Exception("Not yet implemented");
             break;
         case STEP:
             if (timelineCoordinate > LONG_MAX)
@@ -79,10 +79,10 @@ IEvent *SequenceChartFacade::getLastEventNotAfterTimelineCoordinate(double timel
                 return eventLog->getLastEventNotAfterEventNumber((long)floor(timelineCoordinate));
         case NON_LINEAR:
             // TODO:
-            throw new Exception("Not yet implemented");
+            throw Exception("Not yet implemented");
             break;
         default:
-            throw new Exception("Unknown timeline mode");
+            throw Exception("Unknown timeline mode");
     }
 }
 
@@ -93,7 +93,7 @@ IEvent *SequenceChartFacade::getFirstEventNotBeforeTimelineCoordinate(double tim
     switch (timelineMode) {
         case LINEAR:
             // TODO:
-            throw new Exception("Not yet implemented");
+            throw Exception("Not yet implemented");
             break;
         case STEP:
             if (timelineCoordinate > LONG_MAX)
@@ -102,13 +102,13 @@ IEvent *SequenceChartFacade::getFirstEventNotBeforeTimelineCoordinate(double tim
                 return eventLog->getFirstEventNotBeforeEventNumber((long)ceil(timelineCoordinate));
         case NON_LINEAR:
             // TODO:
-            throw new Exception("Not yet implemented");
+            throw Exception("Not yet implemented");
             break;
         default:
-            throw new Exception("Unknown timeline mode");
+            throw Exception("Unknown timeline mode");
     }
 }
-	
+
 double SequenceChartFacade::getSimulationTimeForTimelineCoordinate(double timelineCoordinate)
 {
     EASSERT(timelineCoordinate >= 0);
@@ -123,7 +123,7 @@ double SequenceChartFacade::getSimulationTimeForTimelineCoordinate(double timeli
 		        IEvent *event = getLastEventNotAfterTimelineCoordinate(timelineCoordinate);
 		        double eventSimulationTime;
 		        double eventTimelineCoordinate;
-        		
+
    		        // if before the first event
 		        if (event) {
                     eventSimulationTime = event->getSimulationTime();
@@ -158,7 +158,7 @@ double SequenceChartFacade::getSimulationTimeForTimelineCoordinate(double timeli
 		        return eventSimulationTime + simulationTimeDelta * (timelineCoordinate - eventTimelineCoordinate) / timelineCoordinateDelta;
             }
 	    default:
-		    throw new Exception("Unknown timeline mode");
+		    throw Exception("Unknown timeline mode");
     }
 }
 
@@ -176,7 +176,7 @@ double SequenceChartFacade::getTimelineCoordinateForSimulationTime(double simula
     		    IEvent *event = eventLog->getLastEventNotAfterSimulationTime(simulationTime);
     		    double eventSimulationTime;
     		    double eventTimelineCoordinate;
-        		
+
     		    // if before the first event
     		    if (event) {
                     eventSimulationTime = event->getSimulationTime();
@@ -203,7 +203,7 @@ double SequenceChartFacade::getTimelineCoordinateForSimulationTime(double simula
 			    // linear approximation between two enclosing events
     		    double simulationTimeDelta = nextEventSimulationTime - eventSimulationTime;
     		    double timelineCoordinateDelta = nextEventTimelineCoordinate - eventTimelineCoordinate;
-           		
+
     		    if (simulationTimeDelta == 0) //XXX this can happen in STEP mode when pos==-1, and 1st event is at timeline zero. perhaps getLastEventPositionBeforeTimelineCoordinate() should check "<=" not "<" ?
     			    return eventTimelineCoordinate;
 
@@ -212,7 +212,7 @@ double SequenceChartFacade::getTimelineCoordinateForSimulationTime(double simula
     		    return eventTimelineCoordinate + timelineCoordinateDelta * (simulationTime - eventSimulationTime) / simulationTimeDelta;
             }
     	default:
-    		throw new Exception("Unknown timeline mode");
+    		throw Exception("Unknown timeline mode");
 	}
 }
 

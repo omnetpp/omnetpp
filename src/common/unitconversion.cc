@@ -99,14 +99,14 @@ double UnitConversion::doParseQuantity(const char *str, const char *expectedUnit
     // read first number
     double num;
     if (!readNumber(s, num))
-        throw new Exception("syntax error parsing quantity '%s': must begin with a number", str);
+        throw Exception("syntax error parsing quantity '%s': must begin with a number", str);
 
     // first, deal with special case: just a plain number without unit
     std::string tmpUnit;
     if (!readUnit(s, tmpUnit))
     {
         if (*s)
-            throw new Exception("syntax error parsing quantity '%s': garbage after first number", str);
+            throw Exception("syntax error parsing quantity '%s': garbage after first number", str);
         return num;
     }
 
@@ -121,12 +121,12 @@ double UnitConversion::doParseQuantity(const char *str, const char *expectedUnit
 
     // check it matches expected unit ("meters given but seconds expected")
     if (!performConversion && expectedUnit && tmpUnit!=expectedUnit)
-        throw new Exception("error in quantity '%s': supplied unit %s does not match expected unit %s "
+        throw Exception("error in quantity '%s': supplied unit %s does not match expected unit %s "
                             "(note that conversion is only performed into base units: s, m, Hz, B, bps, W)",
                             str, DESC(tmpUnit.c_str()), DESC(expectedUnit));
 
     if (performConversion && expectedUnit && (!tmpUnitDesc || std::string(tmpUnitDesc->baseUnit)!=expectedUnit))
-        throw new Exception("error in quantity '%s': supplied unit %s does not match expected unit %s",
+        throw Exception("error in quantity '%s': supplied unit %s does not match expected unit %s",
                             str, DESC(tmpUnit.c_str()), DESC(expectedUnit));
     unit = performConversion ? tmpUnitDesc->baseUnit : tmpUnit;
 
@@ -142,12 +142,12 @@ double UnitConversion::doParseQuantity(const char *str, const char *expectedUnit
 
         // read unit
         if (!readUnit(s, tmpUnit))
-            throw new Exception("syntax error parsing quantity '%s': missing unit", str);
+            throw Exception("syntax error parsing quantity '%s': missing unit", str);
 
         // check unit
         UnitDesc *tmpUnitDesc = lookupUnit(tmpUnit.c_str());
         if (performConversion ? (!tmpUnitDesc || unit!=tmpUnitDesc->baseUnit) : unit!=tmpUnit)
-            throw new Exception("error in quantity '%s': unit %s does not match %s",
+            throw Exception("error in quantity '%s': unit %s does not match %s",
                                 str, DESC(tmpUnit.c_str()), DESC(unit.c_str()));
 
         // convert kilometers to meters, etc
@@ -156,7 +156,7 @@ double UnitConversion::doParseQuantity(const char *str, const char *expectedUnit
 
     // must be at the end of the input string
     if (*s)
-        throw new Exception("syntax error parsing quantity '%s'", str);
+        throw Exception("syntax error parsing quantity '%s'", str);
 
     // success
     return result;

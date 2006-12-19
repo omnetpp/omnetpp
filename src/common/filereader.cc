@@ -56,7 +56,7 @@ void FileReader::openFile()
     f = fopen(fileName.c_str(), "rb");
 
     if (!f)
-        throw new Exception("Cannot open file `%s'", fileName.c_str());
+        throw Exception("Cannot open file `%s'", fileName.c_str());
 
     seekTo(0);
 }
@@ -112,11 +112,11 @@ void FileReader::fillBuffer(bool forward)
         file_offset_t fileOffset = pointerToFileOffset(dataPointer);
         filereader_fseek(f, fileOffset, SEEK_SET);
         if (ferror(f))
-            throw new Exception("Cannot seek in file `%s'", fileName.c_str());
+            throw Exception("Cannot seek in file `%s'", fileName.c_str());
 
         int bytesRead = fread(dataPointer, 1, dataLength, f);
         if (ferror(f))
-            throw new Exception("Read error in file `%s'", fileName.c_str());
+            throw Exception("Read error in file `%s'", fileName.c_str());
 
         if (PRINT_DEBUG_MESSAGES) printf("Reading data at file offset: %ld, length: %ld\n", fileOffset, bytesRead);
 
@@ -189,7 +189,7 @@ char *FileReader::findNextLineStart(char *start, bool bufferFilled)
         else if (getDataEndFileOffset() == getFileSize()) // searching reached to the end of the file without CR/LF
             return NULL;
         else // line too long
-            throw new Exception("Line too long, should be below %d in file `%s'", maxLineSize, fileName.c_str());
+            throw Exception("Line too long, should be below %d in file `%s'", maxLineSize, fileName.c_str());
     }
 
     return s;
@@ -228,7 +228,7 @@ char *FileReader::findPreviousLineStart(char *start, bool bufferFilled)
         if (getDataBeginFileOffset() == 0) // searching reached to the beginning of the file without CR/LF
             return dataBegin;
         else // line too long
-            throw new Exception("Line too long, should be below %d in file `%s'", maxLineSize, fileName.c_str());
+            throw Exception("Line too long, should be below %d in file `%s'", maxLineSize, fileName.c_str());
     }
 
     return s + 1;
@@ -297,7 +297,7 @@ int64 FileReader::getFileSize()
         filereader_fseek(f, tmp, SEEK_SET);
 
         if (ferror(f))
-            throw new Exception("Cannot seek in file `%s'", fileName.c_str());
+            throw Exception("Cannot seek in file `%s'", fileName.c_str());
     }
 
     return fileSize;
@@ -308,7 +308,7 @@ void FileReader::seekTo(file_offset_t fileOffset, int ensureBufferSizeAround)
     if (PRINT_DEBUG_MESSAGES) printf("Seeking to file offset: %ld\n", fileOffset);
 
     if (fileOffset < 0 || fileOffset > getFileSize())
-        throw new Exception("Invalid file offset: %ld", fileOffset);
+        throw Exception("Invalid file offset: %ld", fileOffset);
 
     if (!f) openFile();
 
@@ -376,8 +376,8 @@ int main(int argc, char **argv)
         while ((line = freader.readNextLine()) != NULL)
             cout << line << "\n";
     }
-    catch (Exception *e) {
-        cout << "Error: " << e->message() << endl;
+    catch (Exception& e) {
+        cout << "Error: " << e.message() << endl;
     }
 
     return 0;

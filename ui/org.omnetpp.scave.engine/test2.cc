@@ -113,10 +113,9 @@ main()
 
         net.execute();
     }
-    catch (Exception *ex)
+    catch (Exception& e)
     {
-        printf("exception: %s", ex->message());
-        delete ex;
+        printf("exception: %s", e.message());
     }
 
     clock_t t1 = clock();

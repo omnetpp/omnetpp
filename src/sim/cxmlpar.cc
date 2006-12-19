@@ -61,22 +61,22 @@ void cXMLPar::netUnpack(cCommBuffer *buffer)
 
 void cXMLPar::setBoolValue(bool b)
 {
-    throw new cRuntimeError(this, eBADCAST, "bool", "XML");
+    throw cRuntimeError(this, eBADCAST, "bool", "XML");
 }
 
 void cXMLPar::setLongValue(long l)
 {
-    throw new cRuntimeError(this, eBADCAST, "int/long", "XML");
+    throw cRuntimeError(this, eBADCAST, "int/long", "XML");
 }
 
 void cXMLPar::setDoubleValue(double d)
 {
-    throw new cRuntimeError(this, eBADCAST, "double", "XML");
+    throw cRuntimeError(this, eBADCAST, "double", "XML");
 }
 
 void cXMLPar::setStringValue(const char *s)
 {
-    throw new cRuntimeError(this, eBADCAST, "string", "XML");
+    throw cRuntimeError(this, eBADCAST, "string", "XML");
 }
 
 void cXMLPar::setXMLValue(cXMLElement *node)
@@ -95,27 +95,27 @@ void cXMLPar::setExpression(cExpression *e)
 
 bool cXMLPar::boolValue(cComponent *) const
 {
-    throw new cRuntimeError(this, eBADCAST, "XML", "bool");
+    throw cRuntimeError(this, eBADCAST, "XML", "bool");
 }
 
 long cXMLPar::longValue(cComponent *) const
 {
-    throw new cRuntimeError(this, eBADCAST, "XML", "int/long");
+    throw cRuntimeError(this, eBADCAST, "XML", "int/long");
 }
 
 double cXMLPar::doubleValue(cComponent *) const
 {
-    throw new cRuntimeError(this, eBADCAST, "XML", "double");
+    throw cRuntimeError(this, eBADCAST, "XML", "double");
 }
 
 const char *cXMLPar::stringValue(cComponent *) const
 {
-    throw new cRuntimeError(this, eBADCAST, "XML", "string");
+    throw cRuntimeError(this, eBADCAST, "XML", "string");
 }
 
 std::string cXMLPar::stdstringValue(cComponent *) const
 {
-    throw new cRuntimeError(this, eBADCAST, "XML", "string");
+    throw cRuntimeError(this, eBADCAST, "XML", "string");
 }
 
 cXMLElement *cXMLPar::xmlValue(cComponent *context) const
@@ -198,7 +198,7 @@ int cXMLPar::compare(const cParValue *other) const
 
     const cXMLPar *other2 = dynamic_cast<const cXMLPar *>(other);
     if (flags & FL_ISEXPR)
-        throw new cRuntimeError(this, "cannot compare expressions yet"); //FIXME
+        throw cRuntimeError(this, "cannot compare expressions yet"); //FIXME
     else
         return (val == other2->val) ? 0 : (val < other2->val) ? -1 : 1;
 }

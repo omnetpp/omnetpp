@@ -50,11 +50,11 @@ void DataflowManager::addChannel(Channel *channel)
 void DataflowManager::connect(Port *src, Port *dest)
 {
     if (src->channel())
-        throw new Exception("connect: source port already connected");
+        throw Exception("connect: source port already connected");
     if (dest->channel())
-        throw new Exception("connect: destination port already connected");
+        throw Exception("connect: destination port already connected");
     if (!dest->node())
-        throw new Exception("connect: port's owner node not filled in");
+        throw Exception("connect: port's owner node not filled in");
 
     Channel *ch = new Channel();
     addChannel(ch);
@@ -112,13 +112,13 @@ void DataflowManager::execute()
     // check all nodes have finished now
     for (i=0; i<nodes.size(); i++)
         if (!nodes[i]->alreadyFinished())
-            throw new Exception("execute: deadlock: no ready nodes but node %s not finished",
+            throw Exception("execute: deadlock: no ready nodes but node %s not finished",
                                 nodes[i]->nodeType()->name());
 
     // check all channel buffers are empty
     for (i=0; i<channels.size(); i++)
         if (!channels[i]->eof())
-            throw new Exception("execute: all nodes finished but channel %d not at eof", i);
+            throw Exception("execute: all nodes finished but channel %d not at eof", i);
 }
 
 bool DataflowManager::nodeFinished(Node *node)

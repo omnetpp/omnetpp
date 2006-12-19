@@ -162,9 +162,8 @@ int filterCommand(int argc, char **argv)
                 {
                     if (opt_verbose) printf(" %d lines\n", f->numLines);
                 }
-            } catch (Exception *e) {
-                fprintf(stdout, "Exception: %s\n", e->message());
-                delete e;
+            } catch (Exception& e) {
+                fprintf(stdout, "Exception: %s\n", e.message());
             }
         }
 
@@ -236,7 +235,7 @@ int filterCommand(int argc, char **argv)
                  Node *node = NodeTypeRegistry::instance()->createNode(opt_filterList[k].c_str(), &dataflowManager);
                  FilterNode *filterNode = dynamic_cast<FilterNode *>(node);
                  if (!filterNode)
-                     throw new Exception("%s is not a filter node", opt_filterList[k].c_str());
+                     throw Exception("%s is not a filter node", opt_filterList[k].c_str());
                  dataflowManager.connect(vectorPorts[i], &(filterNode->in));
                  vectorPorts[i] = &(filterNode->out);
             }
@@ -321,10 +320,9 @@ int filterCommand(int argc, char **argv)
 
         if (opt_verbose) printf("done\n");
     }
-    catch (Exception *e)
+    catch (Exception& e)
     {
-        fprintf(stdout, "Exception: %s\n", e->message());
-        delete e;
+        fprintf(stdout, "Exception: %s\n", e.message());
         return 1;
     }
 
@@ -429,9 +427,8 @@ int indexCommand(int argc, char **argv)
         {
             indexer.generateIndex(fileName);
         }
-        catch (Exception *e) {
-            fprintf(stdout, "Exception: %s\n", e->message());
-            delete e;
+        catch (Exception& e) {
+            fprintf(stdout, "Exception: %s\n", e.message());
             rc=1;
         }
     }

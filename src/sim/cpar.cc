@@ -285,7 +285,7 @@ void cPar::read()
         cProperty *unitProp = props->get("unit");
         const char *declUnit = unitProp ? unitProp->value(cProperty::DEFAULTKEY) : NULL;
         if (declUnit && declUnit[0] && strcmp(actualUnit, declUnit)!=0)
-            throw new cRuntimeError(this, "value is given in wrong units: should be %s instead of %s",
+            throw cRuntimeError(this, "value is given in wrong units: should be %s instead of %s",
                                     UnitConversion::unitDescription(declUnit).c_str(),
                                     UnitConversion::unitDescription(actualUnit).c_str());
     }

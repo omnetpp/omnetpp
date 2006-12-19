@@ -100,7 +100,7 @@ Port *MergerNodeType::getPort(Node *node, const char *portname) const
         return node1->addPort();
     else if (!strcmp(portname,"out"))
         return &(node1->out);
-    throw new Exception("no such port `%s'", portname);
+    throw Exception("no such port `%s'", portname);
 }
 
 

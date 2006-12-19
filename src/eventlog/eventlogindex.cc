@@ -168,7 +168,7 @@ template <typename T> file_offset_t EventLogIndex::binarySearchForOffset(bool ev
             upperOffset = reader->getFileSize();
         else
             upperOffset = it->second;
-        
+
         if (it == keyToOffsetMap->begin()) {
             lowerKey = 0;
             lowerOffset = 0;
@@ -191,7 +191,7 @@ template <typename T> file_offset_t EventLogIndex::binarySearchForOffset(bool ev
         {
             stepCount++;
             file_offset_t midOffset = (upperOffset + lowerOffset) / 2;
-            //printf("step %d: offsets: lo=%ld, up=%ld, mid=%ld \t\tkey#: lo=#%ld\n", 
+            //printf("step %d: offsets: lo=%ld, up=%ld, mid=%ld \t\tkey#: lo=#%ld\n",
             //       stepCount, lowerOffset, upperOffset, midOffset, lowerKey);
             long midEventNumber;
             file_offset_t midEventStartOffset, midEventEndOffset;
@@ -230,7 +230,7 @@ template <typename T> file_offset_t EventLogIndex::binarySearchForOffset(bool ev
             else
             {
                 //printf("  NOTHING found, decreasing upperOffset\n");
-                
+
                 // no key found -- we must be at the very end of the file.
                 // try again finding an "E" line from a bit earlier point in the file.
                 upperOffset = midOffset;
@@ -256,7 +256,7 @@ template <typename T> file_offset_t EventLogIndex::binarySearchForOffset(bool ev
         if (foundOffset == lastOffset && foundOffset == firstOffset)
             return foundOffset;
         else
-            throw new Exception("Found non unique simulation time when exact match is requested");
+            throw Exception("Found non unique simulation time when exact match is requested");
     }
     else
     {
@@ -280,7 +280,7 @@ template <typename T> file_offset_t EventLogIndex::linearSearchForOffset(bool ev
 {
     // this is a search either forward or backward based on matchKind
     if (matchKind == EXACT)
-        throw new Exception("Invalid match kind");
+        throw Exception("Invalid match kind");
 
     file_offset_t previousOffset = offset;
     long eventNumber;
@@ -370,7 +370,7 @@ bool EventLogIndex::readToEventLine(bool forward, file_offset_t readStartOffset,
         return true;
 
     // bad luck
-    throw new Exception("Wrong file format: no event number in 'E' line, line %d", reader->getNumReadLines());
+    throw Exception("Wrong file format: no event number in 'E' line, line %d", reader->getNumReadLines());
 }
 
 void EventLogIndex::dumpTable()

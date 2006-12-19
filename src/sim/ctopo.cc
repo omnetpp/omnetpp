@@ -37,14 +37,14 @@ Register_Class(cTopology);
 cTopology::LinkIn *cTopology::Node::in(int i)
 {
     if (i<0 || i>=num_in_links)
-        throw new cRuntimeError("cTopology::Node: invalid in() index %d",i);
+        throw cRuntimeError("cTopology::Node: invalid in() index %d",i);
     return (cTopology::LinkIn *)in_links[i];
 }
 
 cTopology::LinkOut *cTopology::Node::out(int i)
 {
     if (i<0 || i>=num_out_links)
-        throw new cRuntimeError("cTopology::Node: invalid out() index %d",i);
+        throw cRuntimeError("cTopology::Node: invalid out() index %d",i);
     return (cTopology::LinkOut *)(out_links+i);
 }
 
@@ -77,17 +77,17 @@ std::string cTopology::info() const
 
 void cTopology::netPack(cCommBuffer *buffer)
 {
-    throw new cRuntimeError(this,"netPack() not implemented");
+    throw cRuntimeError(this,"netPack() not implemented");
 }
 
 void cTopology::netUnpack(cCommBuffer *buffer)
 {
-    throw new cRuntimeError(this,"netUnpack() not implemented");
+    throw cRuntimeError(this,"netUnpack() not implemented");
 }
 
 cTopology& cTopology::operator=(const cTopology&)
 {
-    throw new cRuntimeError(this,"operator= not implemented yet");
+    throw cRuntimeError(this,"operator= not implemented yet");
 }
 
 void cTopology::clear()
@@ -259,7 +259,7 @@ void cTopology::extractFromNetwork(int (*selfunc)(cModule *,void *), void *data)
 cTopology::Node *cTopology::node(int i)
 {
     if (i<0 || i>=num_nodes)
-        throw new cRuntimeError(this,"invalid node index %d",i);
+        throw cRuntimeError(this,"invalid node index %d",i);
     return nodev+i;
 }
 
@@ -286,7 +286,7 @@ void cTopology::unweightedSingleShortestPathsTo(Node *_target)
     // multiple paths not supported :-(
 
     if (!_target)
-        throw new cRuntimeError(this,"..ShortestPathTo(): target node is NULL");
+        throw cRuntimeError(this,"..ShortestPathTo(): target node is NULL");
     target = _target;
 
     for (int i=0; i<num_nodes; i++)
@@ -328,7 +328,7 @@ void cTopology::unweightedSingleShortestPathsTo(Node *_target)
 void cTopology::weightedSingleShortestPathsTo(Node *_target)
 {
     if (!_target)
-        throw new cRuntimeError(this,"..ShortestPathTo(): target node is NULL");
+        throw cRuntimeError(this,"..ShortestPathTo(): target node is NULL");
 
     target = _target;
 

@@ -152,7 +152,7 @@ void cArray::forEachChild(cVisitor *v)
 void cArray::netPack(cCommBuffer *buffer)
 {
 #ifndef WITH_PARSIM
-    throw new cRuntimeError(this,eNOPARSIM);
+    throw cRuntimeError(this,eNOPARSIM);
 #else
     cOwnedObject::netPack(buffer);
 
@@ -166,7 +166,7 @@ void cArray::netPack(cCommBuffer *buffer)
         if (buffer->packFlag(vect[i]!=NULL))
         {
             if (vect[i]->owner() != this)
-                throw new cRuntimeError(this,"netPack(): cannot transmit pointer to \"external\" object");
+                throw cRuntimeError(this,"netPack(): cannot transmit pointer to \"external\" object");
             buffer->packObject(vect[i]);
         }
     }
@@ -176,7 +176,7 @@ void cArray::netPack(cCommBuffer *buffer)
 void cArray::netUnpack(cCommBuffer *buffer)
 {
 #ifndef WITH_PARSIM
-    throw new cRuntimeError(this,eNOPARSIM);
+    throw cRuntimeError(this,eNOPARSIM);
 #else
     cOwnedObject::netUnpack(buffer);
 
@@ -213,7 +213,7 @@ void cArray::clear()
 int cArray::add(cObject *obj)
 {
     if (!obj)
-        throw new cRuntimeError(this,"cannot insert NULL pointer");
+        throw cRuntimeError(this,"cannot insert NULL pointer");
 
     int retval;
     if (obj->isOwnedObject() && takeOwnership())
@@ -245,14 +245,14 @@ int cArray::add(cObject *obj)
 int cArray::addAt(int m, cObject *obj)
 {
     if (!obj)
-        throw new cRuntimeError(this,"cannot insert NULL pointer");
+        throw cRuntimeError(this,"cannot insert NULL pointer");
 
     if (m<size)  // fits in current vector
     {
         if (m<0)
-            throw new cRuntimeError(this,"addAt(): negative position %d",m);
+            throw cRuntimeError(this,"addAt(): negative position %d",m);
         if (vect[m]!=NULL)
-            throw new cRuntimeError(this,"addAt(): position %d already used",m);
+            throw cRuntimeError(this,"addAt(): position %d already used",m);
         vect[m] = obj;
         if (obj->isOwnedObject() && takeOwnership())
             take((cOwnedObject *)obj);
@@ -283,7 +283,7 @@ int cArray::addAt(int m, cObject *obj)
 int cArray::set(cObject *obj)
 {
     if (!obj)
-        throw new cRuntimeError(this,"cannot insert NULL pointer");
+        throw cRuntimeError(this,"cannot insert NULL pointer");
 
     int i = find(obj->name());
     if (i<0)

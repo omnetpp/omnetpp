@@ -61,9 +61,9 @@ void cMySQLOutputVectorManager::openDB()
     // prepare and bind INSERT INTO VECTOR...
     insertVectorStmt = mysql_stmt_init(mysql);
     if (!insertVectorStmt)
-        throw new cRuntimeError("MySQL error: out of memory");
+        throw cRuntimeError("MySQL error: out of memory");
     if (mysql_stmt_prepare(insertVectorStmt, SQL_INSERT_VECTOR, strlen(SQL_INSERT_VECTOR)))
-        throw new cRuntimeError("MySQL error: prepare statement failed: %s", mysql_error(mysql));
+        throw cRuntimeError("MySQL error: prepare statement failed: %s", mysql_error(mysql));
     ASSERT(mysql_stmt_param_count(insertVectorStmt)==sizeof(insVectorBind)/sizeof(MYSQL_BIND));
 
     opp_mysql_bindLONG(insVectorBind[0], runidBuf); // vector.runid
@@ -71,14 +71,14 @@ void cMySQLOutputVectorManager::openDB()
     opp_mysql_bindSTRING(insVectorBind[2], nameBuf, sizeof(nameBuf), nameLength); // vector.name
 
     if (mysql_stmt_bind_param(insertVectorStmt, insVectorBind))
-        throw new cRuntimeError("MySQL error: bind failed: %s", mysql_error(mysql));
+        throw cRuntimeError("MySQL error: bind failed: %s", mysql_error(mysql));
 
     // prepare and bind INSERT INTO VECDATA...
     insertVecdataStmt = mysql_stmt_init(mysql);
     if (!insertVecdataStmt)
-        throw new cRuntimeError("MySQL error: out of memory");
+        throw cRuntimeError("MySQL error: out of memory");
     if (mysql_stmt_prepare(insertVecdataStmt, SQL_INSERT_VECDATA, strlen(SQL_INSERT_VECDATA)))
-        throw new cRuntimeError("MySQL error: prepare statement failed: %s", mysql_error(mysql));
+        throw cRuntimeError("MySQL error: prepare statement failed: %s", mysql_error(mysql));
     ASSERT(mysql_stmt_param_count(insertVecdataStmt)==sizeof(insVecdataBind)/sizeof(MYSQL_BIND));
 
     opp_mysql_bindLONG(insVecdataBind[0], vectoridBuf); // vecdata.vectorid
@@ -86,7 +86,7 @@ void cMySQLOutputVectorManager::openDB()
     opp_mysql_bindDOUBLE(insVecdataBind[2], valueBuf); // vecdata.value
 
     if (mysql_stmt_bind_param(insertVecdataStmt, insVecdataBind))
-        throw new cRuntimeError("MySQL error: bind failed: %s", mysql_error(mysql));
+        throw cRuntimeError("MySQL error: bind failed: %s", mysql_error(mysql));
 }
 
 void cMySQLOutputVectorManager::closeDB()
@@ -102,7 +102,7 @@ void cMySQLOutputVectorManager::closeDB()
 void cMySQLOutputVectorManager::commitDB()
 {
     if (mysql_commit(mysql))
-        throw new cRuntimeError("MySQL error: COMMIT failed: %s", mysql_error(mysql));
+        throw cRuntimeError("MySQL error: COMMIT failed: %s", mysql_error(mysql));
 }
 
 void cMySQLOutputVectorManager::initVector(sVectorData *vp)
@@ -115,7 +115,7 @@ void cMySQLOutputVectorManager::initVector(sVectorData *vp)
     opp_mysql_assignSTRING(insVectorBind[1], moduleBuf, vp->modulename.c_str());
     opp_mysql_assignSTRING(insVectorBind[2], nameBuf, vp->vectorname.c_str());
     if (mysql_stmt_execute(insertVectorStmt))
-        throw new cRuntimeError("MySQL error: INSERT failed: %s", mysql_error(mysql));
+        throw cRuntimeError("MySQL error: INSERT failed: %s", mysql_error(mysql));
 
     // query the automatic vectorid from the newly inserted row
     // Note: this INSERT must not be DELAYED, otherwise we get zero here.
@@ -151,7 +151,7 @@ void cMySQLOutputVectorManager::insertRunIntoDB()
         opp_mysql_substitute(insertRunStmt, "@runnumber@", simulation.runNumber(), mysql);
         opp_mysql_substitute(insertRunStmt, "@network@", simulation.networkType()->name(), mysql);
         if (mysql_query(mysql, insertRunStmt.c_str()))
-            throw new cRuntimeError("MySQL error: INSERT failed: %s", mysql_error(mysql));
+            throw cRuntimeError("MySQL error: INSERT failed: %s", mysql_error(mysql));
 
         // query the automatic runid from the newly inserted row
         runId = (long) mysql_insert_id(mysql);
@@ -204,7 +204,7 @@ bool cMySQLOutputVectorManager::record(void *vectorhandle, simtime_t t, double v
         timeBuf = t;
         valueBuf = value;
         if (mysql_stmt_execute(insertVecdataStmt))
-            throw new cRuntimeError("MySQL error: INSERT failed: %s", mysql_error(mysql));
+            throw cRuntimeError("MySQL error: INSERT failed: %s", mysql_error(mysql));
 
         // commit every once in a while
         if (++insertCount == commitFreq)
@@ -220,7 +220,7 @@ bool cMySQLOutputVectorManager::record(void *vectorhandle, simtime_t t, double v
 
 bool cMySQLOutputVectorManager::record(void *vectorhandle, simtime_t t, double value1, double value2)
 {
-    throw new cRuntimeError("cMySQLOutputVectorManager: tuple=2 not supported");
+    throw cRuntimeError("cMySQLOutputVectorManager: tuple=2 not supported");
 }
 
 void cMySQLOutputVectorManager::flush()

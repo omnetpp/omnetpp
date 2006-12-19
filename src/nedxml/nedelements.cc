@@ -4342,7 +4342,7 @@ NEDElement *NEDElementFactory::createNodeWithTag(const char *tagname)
     if (tagname[0]=='p' && !strcmp(tagname,"properties"))  return new PropertiesNode();
     if (tagname[0]=='m' && !strcmp(tagname,"msgproperty"))  return new MsgpropertyNode();
     if (tagname[0]=='u' && !strcmp(tagname,"unknown"))  return new UnknownNode();
-    throw new NEDException("unknown tag '%s', cannot create object to represent it", tagname);
+    throw NEDException("unknown tag '%s', cannot create object to represent it", tagname);
 }
 
 NEDElement *NEDElementFactory::createNodeWithTag(int tagcode)
@@ -4399,6 +4399,6 @@ NEDElement *NEDElementFactory::createNodeWithTag(int tagcode)
         case NED_MSGPROPERTY: return new MsgpropertyNode();
         case NED_UNKNOWN: return new UnknownNode();
     }
-    throw new NEDException("unknown tag code %d, cannot create object to represent it", tagcode);
+    throw NEDException("unknown tag code %d, cannot create object to represent it", tagcode);
 }
 

@@ -55,7 +55,7 @@ void cLongPar::netUnpack(cCommBuffer *buffer)
 
 void cLongPar::setBoolValue(bool b)
 {
-    throw new cRuntimeError(this, eBADCAST, "bool", "int/long");
+    throw cRuntimeError(this, eBADCAST, "bool", "int/long");
 }
 
 void cLongPar::setLongValue(long l)
@@ -74,12 +74,12 @@ void cLongPar::setDoubleValue(double d)
 
 void cLongPar::setStringValue(const char *s)
 {
-    throw new cRuntimeError(this, eBADCAST, "string", "int/long");
+    throw cRuntimeError(this, eBADCAST, "string", "int/long");
 }
 
 void cLongPar::setXMLValue(cXMLElement *node)
 {
-    throw new cRuntimeError(this, eBADCAST, "XML", "int/long");
+    throw cRuntimeError(this, eBADCAST, "XML", "int/long");
 }
 
 void cLongPar::setExpression(cExpression *e)
@@ -92,7 +92,7 @@ void cLongPar::setExpression(cExpression *e)
 
 bool cLongPar::boolValue(cComponent *) const
 {
-    throw new cRuntimeError(this, eBADCAST, "int/long", "bool");
+    throw cRuntimeError(this, eBADCAST, "int/long", "bool");
 }
 
 long cLongPar::longValue(cComponent *context) const
@@ -107,17 +107,17 @@ double cLongPar::doubleValue(cComponent *context) const
 
 const char *cLongPar::stringValue(cComponent *) const
 {
-    throw new cRuntimeError(this, eBADCAST, "int/long", "string");
+    throw cRuntimeError(this, eBADCAST, "int/long", "string");
 }
 
 std::string cLongPar::stdstringValue(cComponent *) const
 {
-    throw new cRuntimeError(this, eBADCAST, "int/long", "string");
+    throw cRuntimeError(this, eBADCAST, "int/long", "string");
 }
 
 cXMLElement *cLongPar::xmlValue(cComponent *) const
 {
-    throw new cRuntimeError(this, eBADCAST, "int/long", "XML");
+    throw cRuntimeError(this, eBADCAST, "int/long", "XML");
 }
 
 cExpression *cLongPar::expression() const
@@ -202,7 +202,7 @@ int cLongPar::compare(const cParValue *other) const
 
     const cLongPar *other2 = dynamic_cast<const cLongPar *>(other);
     if (flags & FL_ISEXPR)
-        throw new cRuntimeError(this, "cannot compare expressions yet"); //FIXME
+        throw cRuntimeError(this, "cannot compare expressions yet"); //FIXME
     else
         return (val == other2->val) ? 0 : (val < other2->val) ? -1 : 1;
 }

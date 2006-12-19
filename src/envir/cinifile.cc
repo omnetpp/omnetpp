@@ -48,7 +48,7 @@ void cIniFile::initializeFrom(cConfiguration *)
 {
 }
 
-#define SYNTAX_ERROR(txt) throw new cRuntimeError("Error reading `%s' line %d: %s",fname,lineno,txt);
+#define SYNTAX_ERROR(txt) throw cRuntimeError("Error reading `%s' line %d: %s",fname,lineno,txt);
 
 void cIniFile::readFile(const char *filename)
 {
@@ -68,7 +68,7 @@ void cIniFile::_readFile(const char *fname, int section_id)
     // then open and read this file
     FILE *file = fopen(fname,"r");
     if (file==NULL)
-        throw new cRuntimeError("Cannot open ini file `%s'", fname);
+        throw cRuntimeError("Cannot open ini file `%s'", fname);
 
     int lineno = 0;
 

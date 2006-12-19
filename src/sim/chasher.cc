@@ -49,7 +49,7 @@ uint32 cHasher::parse(const char *fingerprint) const
     unsigned long d = strtoul(s.c_str(), &e, 16);
     uint32 hash = (uint32)d;
     if (*e || hash!=d)
-        throw new cRuntimeError("Error verifying fingerprint: invalid fingerprint text \"%s\"", fingerprint);
+        throw cRuntimeError("Error verifying fingerprint: invalid fingerprint text \"%s\"", fingerprint);
     return hash;
 }
 

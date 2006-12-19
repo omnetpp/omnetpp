@@ -430,10 +430,9 @@ void TWatchInspector::writeBack()
 //    try {
 //       ok = p->parse(getEntry(".main.value.e"));
 //       if (!ok)
-//          throw new cException("Syntax error, value not changed.");
-//    } catch (cException *e) {
-//       TclQuotedString msg(e->message());
-//       delete e;
+//          throw cException("Syntax error, value not changed.");
+//    } catch (cException& e) {
+//       TclQuotedString msg(e.message());
 //       CHK(Tcl_VarEval(interp,"messagebox {Error} ", msg.get(), " error ok", NULL));
 //    }
 //

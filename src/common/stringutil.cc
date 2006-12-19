@@ -22,7 +22,7 @@ std::string opp_parsequotedstr(const char *txt)
     char *endp;
     std::string ret = opp_parsequotedstr(txt, endp);
     if (*endp)
-        throw new Exception("trailing garbage after string literal in `%s'", txt);
+        throw Exception("trailing garbage after string literal in `%s'", txt);
     return ret;
 }
 
@@ -51,7 +51,7 @@ std::string opp_parsequotedstr(const char *txt, const char *&endp)
     while (isspace(*s))
         s++;
     if (*s++!='"')
-        throw new Exception("no opening quote in `%s'", txt);
+        throw Exception("no opening quote in `%s'", txt);
     char *buf = new char [strlen(txt)+1];
     char *d = buf;
     for (; *s && *s!='"'; s++, d++)
@@ -74,10 +74,10 @@ std::string opp_parsequotedstr(const char *txt, const char *&endp)
                 case '\0': d--; s--; break; // string ends in stray backslash
                 case '=':
                 case ';':
-                case ',': throw new Exception("invalid escape sequence `\\%c' in `%s' "
+                case ',': throw Exception("invalid escape sequence `\\%c' in `%s' "
                           "(hint: use double backslash to quote display string special chars: "
                           "equal sign, comma, semicolon)", *s, txt);
-                default:  throw new Exception("invalid escape sequence `\\%c' in `%s'", *s, txt);
+                default:  throw Exception("invalid escape sequence `\\%c' in `%s'", *s, txt);
             }
         }
         else
@@ -87,7 +87,7 @@ std::string opp_parsequotedstr(const char *txt, const char *&endp)
     }
     *d = '\0';
     if (*s++!='"')
-        {delete [] buf; throw new Exception("no closing quote for string literal `%s'", txt); }
+        {delete [] buf; throw Exception("no closing quote for string literal `%s'", txt); }
     while (isspace(*s))
         s++;
     endp = s;  // if (*s!='\0'), something comes after the string

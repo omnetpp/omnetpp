@@ -361,9 +361,8 @@ void NED1Generator::doCompoundModule(CompoundModuleNode *node, const char *inden
             dispstr = DisplayStringUtil::toOldBackgroundDisplayString(opp_parsequotedstr(dispstr.c_str()).c_str());
             OUT << getBannerComment(displayProp, increaseIndent(indent));
             OUT << increaseIndent(indent) << "display: " << opp_quotestr(dispstr.c_str()) << ";" << getRightComment(displayProp);
-        } catch (Exception *e) {
-            errors->add(node, ERRCAT_WARNING, e->message());
-            delete e;
+        } catch (Exception& e) {
+            errors->add(node, ERRCAT_WARNING, e.message());
         }
     }
 
@@ -757,9 +756,8 @@ void NED1Generator::doSubmodule(SubmoduleNode *node, const char *indent, bool is
             dispstr = DisplayStringUtil::toOldSubmoduleDisplayString(opp_parsequotedstr(dispstr.c_str()).c_str());
             OUT << getBannerComment(displayProp, increaseIndent(indent));
             OUT << increaseIndent(indent) << "display: " << opp_quotestr(dispstr.c_str()) << ";" << getRightComment(displayProp);
-        } catch (Exception *e) {
-            errors->add(node, ERRCAT_WARNING, e->message());
-            delete e;
+        } catch (Exception& e) {
+            errors->add(node, ERRCAT_WARNING, e.message());
         }
     }
 }
@@ -854,9 +852,8 @@ void NED1Generator::doConnection(ConnectionNode *node, const char *indent, bool 
             try {
                 dispstr = DisplayStringUtil::toOldConnectionDisplayString(opp_parsequotedstr(dispstr.c_str()).c_str());
                 OUT << " display " << opp_quotestr(dispstr.c_str());
-            } catch (Exception *e) {
-                errors->add(node, ERRCAT_WARNING, e->message());
-                delete e;
+            } catch (Exception& e) {
+                errors->add(node, ERRCAT_WARNING, e.message());
             }
         }
     }

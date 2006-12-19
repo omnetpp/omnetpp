@@ -33,8 +33,9 @@ void cWatch_stdstring::assign(const char *s)
     {
         try {
             r = opp_parsequotedstr(s);
-        } catch (Exception *e) {
-            delete e;  //FIXME ignore it, or throw it further?
+        }
+        catch (Exception& e) {
+            //FIXME ignore it, or throw it further?
         }
     }
     else

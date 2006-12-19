@@ -25,7 +25,7 @@
 #  define ASSERT(x)
 #  define DBG(x)
 #else
-#  define ASSERT(expr)  ((void) ((expr) ? 0 : (throw new Exception("ASSERT: condition %s false, %s line %d", \
+#  define ASSERT(expr)  ((void) ((expr) ? 0 : (throw Exception("ASSERT: condition %s false, %s line %d", \
                         #expr, __FILE__, __LINE__), 0)))
 //#  define DBG(x)  printf x
 #  define DBG(x)

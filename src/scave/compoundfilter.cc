@@ -100,21 +100,21 @@ int CompoundFilterType::numSubfilters() const
 CompoundFilterType::Subfilter& CompoundFilterType::subfilter(int pos)
 {
     if (pos<0 || (unsigned)pos>=_subfilters.size())
-        throw new Exception("%s: invalid subfilter index %d", name(), pos);
+        throw Exception("%s: invalid subfilter index %d", name(), pos);
     return _subfilters[pos];
 }
 
 void CompoundFilterType::insertSubfilter(int pos, const Subfilter& f)
 {
     if (pos<0 || (unsigned)pos>_subfilters.size())
-        throw new Exception("%s: invalid subfilter insert index %d", name(), pos);
+        throw Exception("%s: invalid subfilter insert index %d", name(), pos);
     _subfilters.insert(_subfilters.begin()+pos, f);
 }
 
 void CompoundFilterType::removeSubfilter(int pos)
 {
     if (pos<0 || (unsigned)pos>=_subfilters.size())
-        throw new Exception("%s: invalid subfilter index %d", name(), pos);
+        throw Exception("%s: invalid subfilter index %d", name(), pos);
     _subfilters.erase(_subfilters.begin()+pos);
 }
 
@@ -160,7 +160,7 @@ Node *CompoundFilterType::create(DataflowManager *mgr, StringMap& attrs) const
         // create and add instance
         FilterNode *subnode = dynamic_cast<FilterNode *>(subnodetype->create(mgr,subattrs));
         if (!subnode)
-            throw new Exception("%s: subfilter type %s is not subclassed from FilterNode", name(), subnodetypename);
+            throw Exception("%s: subfilter type %s is not subclassed from FilterNode", name(), subnodetypename);
         if (i==0)
             node->first = subnode;
         if (i==n-1)
@@ -186,7 +186,7 @@ Port *CompoundFilterType::getPort(Node *node, const char *name) const
                     !strcmp(name,"out") ? compound->lastNode() :
                     NULL;
     if (!subnode)
-        throw new Exception("no such port `%s'", name);
+        throw Exception("no such port `%s'", name);
     return subnode->nodeType()->getPort(subnode, name);
 }
 

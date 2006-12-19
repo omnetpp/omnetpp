@@ -128,12 +128,12 @@ const ResultItem& ResultFileManager::getItem(ID id) const
         {
             case SCALAR: return getFileForID(id)->scalarResults.at(_pos(id));
             case VECTOR: return getFileForID(id)->vectorResults.at(_pos(id));
-            default: throw new Exception("ResultFileManager: invalid ID: bad type");
+            default: throw Exception("ResultFileManager: invalid ID: bad type");
         }
     }
     catch (std::out_of_range e)
     {
-        throw new Exception("ResultFileManager::getItem(id): invalid ID");
+        throw Exception("ResultFileManager::getItem(id): invalid ID");
     }
 }
 
@@ -200,14 +200,14 @@ StringSet *ResultFileManager::getUniqueNames(const IDList& ids) const
 const ScalarResult& ResultFileManager::getScalar(ID id) const
 {
     if (_type(id)!=SCALAR)
-        throw new Exception("ResultFileManager::getScalar(id): this item is not a scalar");
+        throw Exception("ResultFileManager::getScalar(id): this item is not a scalar");
     return getFileForID(id)->scalarResults.at(_pos(id));
 }
 
 const VectorResult& ResultFileManager::getVector(ID id) const
 {
     if (_type(id)!=VECTOR)
-        throw new Exception("ResultFileManager::getVector(id): this item is not a vector");
+        throw Exception("ResultFileManager::getVector(id): this item is not a vector");
     return getFileForID(id)->vectorResults.at(_pos(id));
 }
 
@@ -640,7 +640,7 @@ static void parseString(char *&s, std::string& dest, int lineNum)
         s++;
         while (*s && (*s!='"' || *(s-1)=='\\') && *s!='\r' && *s!='\n') s++;
         if (*s!='"')
-            throw new Exception("invalid syntax: missing close quote, line %d", lineNum);
+            throw Exception("invalid syntax: missing close quote, line %d", lineNum);
         dest.assign(start, s-start);
         s++;
     }
@@ -718,7 +718,7 @@ void ResultFileManager::processLine(char **vec, int numTokens, FileRun *&fileRun
     if (vec[0][0]=='r' && !strcmp(vec[0],"run"))
     {
         if (numTokens<2)
-            throw new Exception("invalid result file: run Id missing from `run' line, line %d", lineNum);
+            throw Exception("invalid result file: run Id missing from `run' line, line %d", lineNum);
 
         if (atoi(vec[1])>0 && strlen(vec[1])<=10)
         {
@@ -758,7 +758,7 @@ void ResultFileManager::processLine(char **vec, int numTokens, FileRun *&fileRun
             }
             // associate Run with this file
             if (getFileRun(fileRef, runRef)!=NULL)
-                throw new Exception("invalid result file: run Id repeats in the file, line %d", lineNum);
+                throw Exception("invalid result file: run Id repeats in the file, line %d", lineNum);
             fileRunRef = addFileRun(fileRef, runRef);
         }
         return;
@@ -784,7 +784,7 @@ void ResultFileManager::processLine(char **vec, int numTokens, FileRun *&fileRun
     if (vec[0][0]=='a' && !strcmp(vec[0],"attr"))
     {
         if (numTokens<3)
-            throw new Exception("invalid result file: 'attr <name> <value>' expected, line %d", lineNum);
+            throw Exception("invalid result file: 'attr <name> <value>' expected, line %d", lineNum);
 
         // store attribute
         fileRunRef->runRef->attributes[vec[1]] = vec[2];
@@ -796,7 +796,7 @@ void ResultFileManager::processLine(char **vec, int numTokens, FileRun *&fileRun
     else if (vec[0][0]=='p' && !strcmp(vec[0],"param"))
     {
         if (numTokens<3)
-            throw new Exception("invalid result file: 'param <namePattern> <value>' expected, line %d", lineNum);
+            throw Exception("invalid result file: 'param <namePattern> <value>' expected, line %d", lineNum);
 
         // store attribute
         fileRunRef->runRef->moduleParams[vec[1]] = vec[2];
@@ -805,11 +805,11 @@ void ResultFileManager::processLine(char **vec, int numTokens, FileRun *&fileRun
     {
         // syntax: "scalar <module> <scalarname> <value>"
         if (numTokens<4)
-            throw new Exception("invalid scalar file: too few items on `scalar' line, line %d", lineNum);
+            throw Exception("invalid scalar file: too few items on `scalar' line, line %d", lineNum);
 
         double value;
         if (!parseDouble(vec[3],value))
-            throw new Exception("invalid scalar file syntax: invalid value column, line %d", lineNum);
+            throw Exception("invalid scalar file syntax: invalid value column, line %d", lineNum);
 
         addScalar(fileRunRef, vec[1], vec[2], value);
         return;
@@ -818,7 +818,7 @@ void ResultFileManager::processLine(char **vec, int numTokens, FileRun *&fileRun
     {
         // vector line
         if (numTokens<4)
-            throw new Exception("invalid vector file syntax: too few items on 'vector' line, line %d", lineNum);
+            throw Exception("invalid vector file syntax: too few items on 'vector' line, line %d", lineNum);
 
         VectorResult vecdata;
         vecdata.fileRunRef = fileRunRef;
@@ -827,7 +827,7 @@ void ResultFileManager::processLine(char **vec, int numTokens, FileRun *&fileRun
         char *e;
         vecdata.vectorId = (int) strtol(vec[1],&e,10);
         if (*e)
-            throw new Exception("invalid vector file syntax: invalid vector id in vector definition, line %d", lineNum);
+            throw Exception("invalid vector file syntax: invalid vector id in vector definition, line %d", lineNum);
         // module name, vector name
         const char *moduleName = vec[2];
         const char *vectorName = vec[3];
@@ -935,7 +935,7 @@ ResultFile *ResultFileManager::loadFile(const char *fileName, const char *fileSy
     if (fileSystemFileName==NULL)
         fileSystemFileName = fileName;
     if (!isFileReadable(fileSystemFileName))
-        throw new Exception("cannot open `%s' for read", fileSystemFileName);
+        throw Exception("cannot open `%s' for read", fileSystemFileName);
 
     // add to fileList
     ResultFile *fileRef = addFile();
@@ -964,7 +964,7 @@ ResultFile *ResultFileManager::loadFile(const char *fileName, const char *fileSy
     // ignore "incomplete last line" error, because we might be reading
     // from a vec file currently being written by a simulation
     if (!ftok.eof() && ftok.errorCode()!=FileTokenizer::INCOMPLETELINE)
-        throw new Exception(ftok.errorMsg().c_str());
+        throw Exception(ftok.errorMsg().c_str());
 
     fileRef->numLines = ftok.lineNum();
 

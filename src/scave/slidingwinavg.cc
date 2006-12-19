@@ -24,7 +24,7 @@ SlidingWindowAverageNode::SlidingWindowAverageNode(int windowSize)
 {
     array = NULL;
     if (windowSize<1 || windowSize>100000)
-        throw new Exception("slidingwinavg: invalid window size %d", windowSize);
+        throw Exception("slidingwinavg: invalid window size %d", windowSize);
     winsize = windowSize;
     array = new Datum[winsize];
     count = pos = 0;

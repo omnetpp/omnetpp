@@ -55,7 +55,7 @@ void cMySQLConfiguration::initializeFrom(cConfiguration *cfg)
     copyExistingConfig(cfg);
     const char *configName = cfg->getAsString("General", "mysqlconfiguration-configname", NULL);
     if (!configName || !configName[0])
-        throw new cRuntimeError("cMySQLConfiguration: config entry mysqlconfiguration-configname= must be given");
+        throw cRuntimeError("cMySQLConfiguration: config entry mysqlconfiguration-configname= must be given");
     readDB(mysql, configName);
     mysql_close(mysql);
 }
@@ -73,7 +73,7 @@ void cMySQLConfiguration::dumpConfig(cConfiguration *cfg)
 
     cIniFile *ini = dynamic_cast<cIniFile *>(cfg);
     if (!ini)
-        throw new cRuntimeError("cMySQLConfiguration: boot-time config is not a cIniFile");
+        throw cRuntimeError("cMySQLConfiguration: boot-time config is not a cIniFile");
 
     int k = 0;
     for (cIniFileIterator it(ini); !it.end(); it++)
@@ -111,7 +111,7 @@ void cMySQLConfiguration::copyExistingConfig(cConfiguration *cfg)
 
     cIniFile *ini = dynamic_cast<cIniFile *>(cfg);
     if (!ini)
-        throw new cRuntimeError("cMySQLConfiguration: boot-time config is not a cIniFile");
+        throw cRuntimeError("cMySQLConfiguration: boot-time config is not a cIniFile");
 
     for (cIniFileIterator it(ini); !it.end(); it++)
     {
@@ -145,20 +145,20 @@ void cMySQLConfiguration::readDB(MYSQL *mysql, const char *configName)
 {
     // query sections from the database
     if (strchr(configName,'"'))
-        throw new cRuntimeError("cMySQLConfiguration: configname cannot contain quotes");
+        throw cRuntimeError("cMySQLConfiguration: configname cannot contain quotes");
     std::string selectSectionsStmt = "SELECT s.id, s.name FROM configsection s, config c "
                                      "WHERE s.configid=c.id AND c.name=\"@configname@\"";
     opp_mysql_substitute(selectSectionsStmt, "@configname@",  configName, mysql);
     if (mysql_query(mysql, selectSectionsStmt.c_str()))
-        throw new cRuntimeError("MySQL error: SELECT failed: %s", mysql_error(mysql));
+        throw cRuntimeError("MySQL error: SELECT failed: %s", mysql_error(mysql));
 
     // and add them to the config
     std::map<long,int> sectionId2index;
     MYSQL_RES *res = mysql_store_result(mysql);
     if (res==NULL)
-        throw new cRuntimeError("MySQL error: mysql_store_result() failed: %s", mysql_error(mysql));
+        throw cRuntimeError("MySQL error: mysql_store_result() failed: %s", mysql_error(mysql));
     if (mysql_num_rows(res)==0)
-        throw new cRuntimeError("cMySQLConfiguration: configname='%s': no such config in the database, or it is empty", configName);
+        throw cRuntimeError("cMySQLConfiguration: configname='%s': no such config in the database, or it is empty", configName);
     ASSERT(mysql_num_fields(res)==2);
     MYSQL_ROW row;
     while ((row = mysql_fetch_row(res))!=NULL)
@@ -190,12 +190,12 @@ void cMySQLConfiguration::readDB(MYSQL *mysql, const char *configName)
                                     "ORDER BY entryorder";
     opp_mysql_substitute(selectEntriesStmt, "@configname@",  configName, mysql);
     if (mysql_query(mysql, selectEntriesStmt.c_str()))
-        throw new cRuntimeError("MySQL error: SELECT failed: %s", mysql_error(mysql));
+        throw cRuntimeError("MySQL error: SELECT failed: %s", mysql_error(mysql));
 
     // and add them to the config
     res = mysql_store_result(mysql);
     if (res==NULL)
-        throw new cRuntimeError("MySQL error: mysql_store_result() failed: %s", mysql_error(mysql));
+        throw cRuntimeError("MySQL error: mysql_store_result() failed: %s", mysql_error(mysql));
     ASSERT(mysql_num_fields(res)==3);
     while ((row = mysql_fetch_row(res))!=NULL)
     {

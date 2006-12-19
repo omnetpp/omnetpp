@@ -121,7 +121,7 @@ void cParsimPartition::connectRemoteGates()
         int tag, remoteProcId;
         // note: *must* filter for TAG_SETUP_LINKS here, to prevent race conditions
         if (!comm->receiveBlocking(TAG_SETUP_LINKS, buffer, tag, remoteProcId))
-            throw new cRuntimeError("connectRemoteGates() interrupted by user");
+            throw cRuntimeError("connectRemoteGates() interrupted by user");
         ASSERT(tag==TAG_SETUP_LINKS);
 
         ev << "  processing msg from procId=" << remoteProcId << "...\n";
@@ -186,12 +186,12 @@ void cParsimPartition::processReceivedBuffer(cCommBuffer *buffer, int tag, int s
     {
         case TAG_TERMINATIONEXCEPTION:
             buffer->unpack(errmsg);
-            throw new cReceivedTerminationException(sourceProcId, errmsg.c_str());
+            throw cReceivedTerminationException(sourceProcId, errmsg.c_str());
         case TAG_EXCEPTION:
             buffer->unpack(errmsg);
-            throw new cReceivedException(sourceProcId, errmsg.c_str());
+            throw cReceivedException(sourceProcId, errmsg.c_str());
         default:
-            throw new cRuntimeError("cParsimPartition::processReceivedBuffer(): unexpected tag %d "
+            throw cRuntimeError("cParsimPartition::processReceivedBuffer(): unexpected tag %d "
                                  "from procId %d", tag, sourceProcId);
     }
     buffer->assertBufferEmpty();
@@ -202,12 +202,12 @@ void cParsimPartition::processReceivedMessage(cMessage *msg, int destModuleId, i
     msg->setSrcProcId(sourceProcId);
     cModule *mod = sim->module(destModuleId);
     if (!mod)
-        throw new cRuntimeError("parallel simulation error: destination module id=%d for message \"%s\""
+        throw cRuntimeError("parallel simulation error: destination module id=%d for message \"%s\""
                              "from partition %d does not exist (any longer)",
                              destModuleId, msg->name(), sourceProcId);
     cGate *g = mod->gate(destGateId);
     if (!g)
-        throw new cRuntimeError("parallel simulation error: destination gate %d of module id=%d "
+        throw cRuntimeError("parallel simulation error: destination gate %d of module id=%d "
                              "for message \"%s\" from partition %d does not exist",
                              destGateId, destModuleId, msg->name(), sourceProcId);
 
@@ -230,9 +230,9 @@ void cParsimPartition::broadcastTerminationException(cTerminationException *e)
     {
         comm->broadcast(buffer, TAG_TERMINATIONEXCEPTION);
     }
-    catch (cException *e)
+    catch (cException& e)
     {
-        delete e; // eat any exceptions -- here we're not interested in them
+        // eat any exceptions -- here we're not interested in them
     }
     comm->recycleCommBuffer(buffer);
 }
@@ -246,9 +246,9 @@ void cParsimPartition::broadcastException(cException *e)
     {
         comm->broadcast(buffer, TAG_EXCEPTION);
     }
-    catch (cException *e)
+    catch (cException& e)
     {
-        delete e; // eat any exceptions -- here we're not interested in them
+        // eat any exceptions -- here we're not interested in them
     }
     comm->recycleCommBuffer(buffer);
 }

@@ -224,7 +224,7 @@ cXMLElement *MiniXPath::matchStep(cXMLElement *node, const char *pathexpr)
     }
     else
     {
-        throw new cRuntimeError("cXMLElement::getElementByPath(): invalid path expression `%s'", pathexpr);
+        throw cRuntimeError("cXMLElement::getElementByPath(): invalid path expression `%s'", pathexpr);
     }
 }
 
@@ -271,7 +271,7 @@ bool MiniXPath::nodeMatchesStepExpr(cXMLElement *node, const char *stepexpr, int
     }
     else
     {
-        throw new cRuntimeError("cXMLElement::getElementByPath(): invalid step in expression `%s'", stepexpr);
+        throw cRuntimeError("cXMLElement::getElementByPath(): invalid step in expression `%s'", stepexpr);
     }
 }
 */
@@ -283,7 +283,7 @@ cXMLElement *MiniXPath::matchPathExpression(cXMLElement *contextNode, const char
     {
         // we need the document node if path starts with "/"
         if (documentNode==NULL)
-            throw new cRuntimeError("Mini XPath engine: cannot evaluate a path starting with '/' "
+            throw cRuntimeError("Mini XPath engine: cannot evaluate a path starting with '/' "
                                     "if the documentNode optional parameter is not supplied");
 
         // plain "/" or "/." or "/./." doesn't match anything (try with any XPath interpreter)

@@ -28,7 +28,7 @@ bool cVisitor::process(cObject *obj)
     {
         visit(obj);
     }
-    catch (EndTraversalException e)
+    catch (EndTraversalException& e)
     {
         return false;
     }
@@ -41,9 +41,10 @@ bool cVisitor::processChildrenOf(cObject *obj)
     {
         obj->forEachChild(this);
     }
-    catch (EndTraversalException e)
+    catch (EndTraversalException& e)
     {
         return false;
     }
     return true;
 }
+

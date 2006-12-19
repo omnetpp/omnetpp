@@ -36,7 +36,7 @@ StkValue ModuleIndex::evaluate(cComponent *context, StkValue args[], int numargs
     ASSERT(numargs==0 && context!=NULL);
     cModule *module = dynamic_cast<cModule *>(context);
     if (!module)
-        throw new cRuntimeError(context,"cannot evaluate `index' operator in expression: context is not a module");
+        throw cRuntimeError(context,"cannot evaluate `index' operator in expression: context is not a module");
     return (double) module->index();
 }
 
@@ -59,7 +59,7 @@ StkValue ParameterRef::evaluate(cComponent *context, StkValue args[], int numarg
     ASSERT(numargs==0 && context!=NULL);
     cModule *module = dynamic_cast<cModule *>(ofParent ? context->parentModule() : context);
     if (!module)
-        throw new cRuntimeError(context,eENOPARENT);
+        throw cRuntimeError(context,eENOPARENT);
     return module->par(paramName.c_str());
 }
 
@@ -87,11 +87,11 @@ StkValue SiblingModuleParameterRef::evaluate(cComponent *context, StkValue args[
     ASSERT(!withModuleIndex || (withModuleIndex && numargs==1 && args[0].type==StkValue::DBL));
     cModule *compoundModule = dynamic_cast<cModule *>(ofParent ? context->parentModule() : context); // this works for channels too
     if (!compoundModule)
-        throw new cRuntimeError(context,eENOPARENT);
+        throw cRuntimeError(context,eENOPARENT);
     int moduleIndex = withModuleIndex ? (int)args[0].dbl : -1;
     cModule *siblingModule = compoundModule->submodule(moduleName.c_str(), moduleIndex);
     if (!siblingModule)
-        throw new cRuntimeError(context,"cannot find submodule `%[%d]' for parameter `%s[%d].%s'",
+        throw cRuntimeError(context,"cannot find submodule `%[%d]' for parameter `%s[%d].%s'",
                                 moduleName.c_str(), moduleIndex, moduleName.c_str(), moduleIndex, paramName.c_str());
     return siblingModule->par(paramName.c_str());
 }
@@ -135,7 +135,7 @@ StkValue LoopVar::evaluate(cComponent *context, StkValue args[], int numargs)
     for (int i=0; i<varCount; i++)
         if (strcmp(var, varNames[i])==0)
             return vars[i];
-    throw new cRuntimeError(context, "loop variable %s not found", varName.c_str());
+    throw cRuntimeError(context, "loop variable %s not found", varName.c_str());
 }
 
 std::string LoopVar::toString(std::string args[], int numargs)
@@ -158,7 +158,7 @@ StkValue Sizeof::evaluate(cComponent *context, StkValue args[], int numargs)
     ASSERT(numargs==0 && context!=NULL);
     cModule *module = dynamic_cast<cModule *>(ofParent ? context->parentModule() : context);
     if (!module)
-        throw new cRuntimeError(context,eENOPARENT);
+        throw cRuntimeError(context,eENOPARENT);
 
     // ident might be a gate vector of the *parent* module, or a sibling submodule vector
     // Note: it might NOT mean gate vector of this module
@@ -194,13 +194,13 @@ StkValue XMLDoc::evaluate(cComponent *context, StkValue args[], int numargs)
     {
         node = ev.getXMLDocument(args[0].str.c_str(), NULL);
         if (!node)
-            throw new cRuntimeError("xmldoc(\"%s\"): element not found", args[0].str.c_str());
+            throw cRuntimeError("xmldoc(\"%s\"): element not found", args[0].str.c_str());
     }
     else
     {
         node = ev.getXMLDocument(args[0].str.c_str(), args[1].str.c_str());
         if (!node)
-            throw new cRuntimeError("xmldoc(\"%s\", \"%s\"): element not found", args[0].str.c_str(), args[1].str.c_str());
+            throw cRuntimeError("xmldoc(\"%s\", \"%s\"): element not found", args[0].str.c_str(), args[1].str.c_str());
     }
     return node;
 }
@@ -233,7 +233,7 @@ StkValue cDynamicExpression::sizeofIdent(cComponent *context, StkValue args[], i
     // Note: it might NOT mean gate vector of this module
     cModule *parentModule = dynamic_cast<cModule *>(context->parentModule()); // this works for channels too
     if (!parentModule)
-        throw new cRuntimeError(context, "sizeof(%s) occurs in wrong context", ident);
+        throw cRuntimeError(context, "sizeof(%s) occurs in wrong context", ident);
     if (parentModule->hasGate(ident))
     {
         return (long) parentModule->gateSize(ident); // returns 1 if it's not a vector
@@ -259,7 +259,7 @@ StkValue cDynamicExpression::sizeofGate(cComponent *context, StkValue args[], in
     const char *gateName = args[0].str.c_str();
     cModule *module = dynamic_cast<cModule *>(context);
     if (!module || !module->hasGate(gateName))
-        throw new cRuntimeError(context, "error evaluating sizeof(): no such gate: `%s'", gateName);
+        throw cRuntimeError(context, "error evaluating sizeof(): no such gate: `%s'", gateName);
     return (long) module->gateSize(gateName); // returns 1 if it's not a vector
 }
 
@@ -272,9 +272,9 @@ StkValue cDynamicExpression::sizeofParentModuleGate(cComponent *context, StkValu
     const char *gateName = args[0].str.c_str();
     cModule *parentModule = dynamic_cast<cModule *>(context->parentModule()); // this works for channels too
     if (!parentModule)
-        throw new cRuntimeError(context, "sizeof() occurs in wrong context", gateName);
+        throw cRuntimeError(context, "sizeof() occurs in wrong context", gateName);
     if (!parentModule->hasGate(gateName))
-        throw new cRuntimeError(context, "error evaluating sizeof(): no such gate: `%s'", gateName);
+        throw cRuntimeError(context, "error evaluating sizeof(): no such gate: `%s'", gateName);
     return (long) parentModule->gateSize(gateName); // returns 1 if it's not a vector
 }
 
@@ -289,10 +289,10 @@ StkValue cDynamicExpression::sizeofSiblingModuleGate(cComponent *context, StkVal
 
     cModule *parentModule = dynamic_cast<cModule *>(context->parentModule()); // this works for channels too
     if (!parentModule)
-        throw new cRuntimeError(context, "sizeof() occurs in wrong context", gateName);
+        throw cRuntimeError(context, "sizeof() occurs in wrong context", gateName);
     cModule *siblingModule = parentModule->submodule(siblingModuleName); // returns NULL if submodule is not a vector
     if (!siblingModule->hasGate(gateName))
-        throw new cRuntimeError(context, "error evaluating sizeof(): no such gate: `%s'", gateName);
+        throw cRuntimeError(context, "error evaluating sizeof(): no such gate: `%s'", gateName);
     return (long) siblingModule->gateSize(gateName); // returns 1 if it's not a vector
 }
 
@@ -308,7 +308,7 @@ StkValue cDynamicExpression::sizeofIndexedSiblingModuleGate(cComponent *context,
     cModule *parentModule = dynamic_cast<cModule *>(context->parentModule()); // this works for channels too
     cModule *siblingModule = parentModule ? parentModule->submodule(siblingModuleName, siblingModuleIndex) : NULL;
     if (!siblingModule)
-        throw new cRuntimeError(context,"sizeof(): cannot find submodule %[%d]",
+        throw cRuntimeError(context,"sizeof(): cannot find submodule %[%d]",
                                 siblingModuleName, siblingModuleIndex,
                                 siblingModuleName, siblingModuleIndex, gateName);
     return (long) siblingModule->gateSize(gateName); // returns 1 if it's not a vector

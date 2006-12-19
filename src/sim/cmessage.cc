@@ -189,12 +189,12 @@ std::string cMessage::detailedInfo() const
 void cMessage::netPack(cCommBuffer *buffer)
 {
 #ifndef WITH_PARSIM
-    throw new cRuntimeError(this,eNOPARSIM);
+    throw cRuntimeError(this,eNOPARSIM);
 #else
     cOwnedObject::netPack(buffer);
 
     if (contextptr || ctrlp)
-        throw new cRuntimeError(this,"netPack(): cannot pack object with contextPointer or controlInfo set");
+        throw cRuntimeError(this,"netPack(): cannot pack object with contextPointer or controlInfo set");
 
     buffer->pack(msgkind);
     buffer->pack(prior);
@@ -223,7 +223,7 @@ void cMessage::netPack(cCommBuffer *buffer)
 void cMessage::netUnpack(cCommBuffer *buffer)
 {
 #ifndef WITH_PARSIM
-    throw new cRuntimeError(this,eNOPARSIM);
+    throw cRuntimeError(this,eNOPARSIM);
 #else
     cOwnedObject::netUnpack(buffer);
 
@@ -259,7 +259,7 @@ cMessage& cMessage::operator=(const cMessage& msg)
     if (this==&msg) return *this;
 
     if (sharecount!=0)
-        throw new cRuntimeError(this,"operator=(): this message is refcounted (shared between "
+        throw cRuntimeError(this,"operator=(): this message is refcounted (shared between "
                                      "several messages), it is forbidden to change it");
 
     cOwnedObject::operator=(msg);
@@ -356,7 +356,7 @@ void cMessage::_detachEncapMsg()
 void cMessage::setLength(long l)
 {
     if (l<0)
-        throw new cRuntimeError(this,"setLength(): negative length %ld",l);
+        throw cRuntimeError(this,"setLength(): negative length %ld",l);
     len=l;
 }
 
@@ -364,18 +364,18 @@ void cMessage::addLength(long l)
 {
     len+=l;
     if (len<0)
-        throw new cRuntimeError(this,"addLength(): length became negative (%ld) after adding %ld",len,l);
+        throw cRuntimeError(this,"addLength(): length became negative (%ld) after adding %ld",len,l);
 }
 
 void cMessage::encapsulate(cMessage *msg)
 {
     if (encapmsg)
-        throw new cRuntimeError(this,"encapsulate(): another message already encapsulated");
+        throw cRuntimeError(this,"encapsulate(): another message already encapsulated");
 
     if (msg)
     {
         if (msg->owner()!=simulation.contextSimpleModule())
-            throw new cRuntimeError(this,"encapsulate(): not owner of message (%s)%s, owner is (%s)%s",
+            throw cRuntimeError(this,"encapsulate(): not owner of message (%s)%s, owner is (%s)%s",
                                     msg->className(), msg->fullName(),
                                     msg->owner()->className(), msg->owner()->fullPath().c_str());
         take(encapmsg = msg);
@@ -393,7 +393,7 @@ cMessage *cMessage::decapsulate()
     if (len>0)
         len -= encapmsg->len;
     if (len<0)
-        throw new cRuntimeError(this,"decapsulate(): msg length is smaller than encapsulated msg length");
+        throw cRuntimeError(this,"decapsulate(): msg length is smaller than encapsulated msg length");
 
 #ifdef REFCOUNTING
     if (encapmsg->sharecount>0)
@@ -430,9 +430,9 @@ cMessage *cMessage::encapsulatedMsg() const
 void cMessage::setControlInfo(cObject *p)
 {
     if (!p)
-        throw new cRuntimeError(this,"setControlInfo(): pointer is NULL");
+        throw cRuntimeError(this,"setControlInfo(): pointer is NULL");
     if (ctrlp)
-        throw new cRuntimeError(this,"setControlInfo(): message already has control info attached");
+        throw cRuntimeError(this,"setControlInfo(): message already has control info attached");
     if (dynamic_cast<cOwnedObject *>(p))
         take((cOwnedObject *)p);
     ctrlp = p;
@@ -452,9 +452,9 @@ cMsgPar& cMessage::par(int n)
     cArray& parlist = parList();
     cObject *p = parlist.get(n);
     if (!p)
-        throw new cRuntimeError(this,"par(int): has no parameter #%d",n);
+        throw cRuntimeError(this,"par(int): has no parameter #%d",n);
     if (!dynamic_cast<cMsgPar *>(p))
-        throw new cRuntimeError(this,"par(int): parameter #%d is of type %s, not cMsgPar",n, p->className());
+        throw cRuntimeError(this,"par(int): parameter #%d is of type %s, not cMsgPar",n, p->className());
     return *(cMsgPar *)p;
 }
 
@@ -463,9 +463,9 @@ cMsgPar& cMessage::par(const char *s)
     cArray& parlist = parList();
     cObject *p = parlist.get(s);
     if (!p)
-        throw new cRuntimeError(this,"par(const char *): has no parameter called `%s'",s);
+        throw cRuntimeError(this,"par(const char *): has no parameter called `%s'",s);
     if (!dynamic_cast<cMsgPar *>(p))
-        throw new cRuntimeError(this,"par(const char *): parameter `%s' is of type %s, not cMsgPar",s, p->className());
+        throw cRuntimeError(this,"par(const char *): parameter `%s' is of type %s, not cMsgPar",s, p->className());
     return *(cMsgPar *)p;
 }
 

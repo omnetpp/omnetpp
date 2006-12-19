@@ -74,7 +74,7 @@ void NEDResourceCache::collectComponents(NEDElement *node, const std::string& na
         {
             std::string name = namespaceprefix + child->getAttribute("name");
             if (lookup(name.c_str()))
-                throw new NEDException("redeclaration of %s %s", child->getTagName(), name.c_str()); //XXX maybe just NEDError?
+                throw NEDException("redeclaration of %s %s", child->getTagName(), name.c_str()); //XXX maybe just NEDError?
 
             addComponent(name.c_str(), child);
 

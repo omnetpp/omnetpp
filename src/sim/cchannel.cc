@@ -63,12 +63,12 @@ void cChannel::forEachChild(cVisitor *v)
 
 void cChannel::netPack(cCommBuffer *buffer)
 {
-    throw new cRuntimeError(this,"netPack() not implemented");
+    throw cRuntimeError(this,"netPack() not implemented");
 }
 
 void cChannel::netUnpack(cCommBuffer *buffer)
 {
-    throw new cRuntimeError(this,"netUnpack() not implemented");
+    throw cRuntimeError(this,"netUnpack() not implemented");
 }
 
 void cChannel::callInitialize()

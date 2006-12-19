@@ -61,7 +61,7 @@ void IndexedVectorFileReader::loadIndex()
             tokens=tokenizer.tokens();
 
             if (numTokens < 6 || sscanf(tokens[5], "%d", &blockSize)!=1 || blockSize<MIN_BUFFER_SIZE)
-                throw new Exception("Malformed vector header: %.*s", len, line);
+                throw Exception("Malformed vector header: %.*s", len, line);
 
             while ((line=reader.readNextLine())!=NULL)
             {
@@ -73,7 +73,7 @@ void IndexedVectorFileReader::loadIndex()
 
                 for (int i=1; i<numTokens; ++i)
                 {
-                    if (sscanf(tokens[i], "%ld:%ld", &offset, &count)==2) 
+                    if (sscanf(tokens[i], "%ld:%ld", &offset, &count)==2)
                     {
                         blocks.push_back(Block(numOfEntries, numOfEntries+count, offset));
                         numOfEntries+=count;
@@ -103,7 +103,7 @@ Block* IndexedVectorFileReader::getBlockForEntry(long serial)
         else
             return &blocks[mid];
     }
-    
+
     return NULL;
 }
 
@@ -130,35 +130,35 @@ void IndexedVectorFileReader::loadBlock(Block &block)
 {
     if (reader==NULL)
         reader=new FileReader(fname, blockSize);
-    
+
     long count=block.endSerial-block.startSerial;
     reader->seekTo(block.startOffset);
     block.entries=new OutputVectorEntry[count];
-    
+
     char *line, **tokens, *end;
     int numTokens;
     LineTokenizer tokenizer;
     long id;
     double t, val;
 
-    for (int i=0; i<count; ++i) 
+    for (int i=0; i<count; ++i)
     {
         if ((line=reader->readNextLine())==NULL)
-            throw new Exception("Unexpected end of file in '%s'", fname);
+            throw Exception("Unexpected end of file in '%s'", fname);
         int len = reader->getLastLineLength();
 
         tokenizer.tokenize(line, len);
         tokens=tokenizer.tokens();
         numTokens = tokenizer.numTokens();
         if (numTokens < 3)
-            throw new Exception("Line to short: %.*s", len, line);
+            throw Exception("Line to short: %.*s", len, line);
 
         id = strtol(tokens[0], &end, 10);
         if (*end || id!=vectorId)
-            throw new Exception("Missing or unexpected vector id: %.*s", len, line);
+            throw Exception("Missing or unexpected vector id: %.*s", len, line);
 
         if (!parseDouble(tokens[1], t) || !parseDouble(tokens[2], val))
-            throw new Exception("Malformed line: %.*s", len, line);
+            throw Exception("Malformed line: %.*s", len, line);
 
         block.entries[i] = OutputVectorEntry(block.startSerial+i, t, val);
     }
@@ -168,8 +168,8 @@ OutputVectorEntry *IndexedVectorFileReader::getEntryBySerial(long serial)
 {
     if (serial<0 || serial>=numOfEntries)
         return NULL;
-    
-    if (currentBlock == NULL || !currentBlock->contains(serial)) 
+
+    if (currentBlock == NULL || !currentBlock->contains(serial))
     {
         if (currentBlock != NULL)
             currentBlock->deleteEntries();

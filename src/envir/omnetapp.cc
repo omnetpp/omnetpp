@@ -81,7 +81,7 @@ static char buffer[1024];
      baseclass *var ## _tmp = (baseclass *) createOne(classname); \
      var = dynamic_cast<baseclass *>(var ## _tmp); \
      if (!var) \
-         throw new cRuntimeError("Class \"%s\" is not subclassed from " #baseclass, (const char *)classname);
+         throw cRuntimeError("Class \"%s\" is not subclassed from " #baseclass, (const char *)classname);
 
 
 //-------------------------------------------------------------
@@ -189,7 +189,7 @@ void TOmnetApp::setup()
              // initialize them
              parsimcomm->init();
 #else
-             throw new cRuntimeError("Parallel simulation is turned on in the ini file, but OMNeT++ was compiled without parallel simulation support (WITH_PARSIM=no)");
+             throw cRuntimeError("Parallel simulation is turned on in the ini file, but OMNeT++ was compiled without parallel simulation support (WITH_PARSIM=no)");
 #endif
          }
 
@@ -214,10 +214,9 @@ void TOmnetApp::setup()
              simulation.doneLoadingNedFiles();
          }
      }
-     catch (cException *e)
+     catch (cException& e)
      {
          displayError(e);
-         delete e;
          return;  // don't set initialized to true
      }
      initialized = true;
@@ -298,10 +297,9 @@ void TOmnetApp::shutdown()
             parsimpartition->shutdown();
 #endif
     }
-    catch (cException *e)
+    catch (cException& e)
     {
         displayError(e);
-        delete e;
     }
 }
 
@@ -384,7 +382,7 @@ void TOmnetApp::readParameter(cPar *par)
     {
         bool success = par->parse(str.c_str());
         if (!success)
-            throw new cRuntimeError("Wrong value `%s' for parameter `%s'", str.c_str(), parfullpath.c_str());
+            throw cRuntimeError("Wrong value `%s' for parameter `%s'", str.c_str(), parfullpath.c_str());
         return;
     }
 
@@ -409,11 +407,10 @@ void TOmnetApp::readParameter(cPar *par)
             success = false;
             success = par->parse(reply.c_str());
             if (!success)
-                throw new cRuntimeError("Syntax error, please try again.");
+                throw cRuntimeError("Syntax error, please try again.");
         }
-        catch (cException *e) {
-            ev.printfmsg("%s", e->message());
-            delete e;
+        catch (cException& e) {
+            ev.printfmsg("%s", e.message());
         }
     }
 }
@@ -436,9 +433,9 @@ bool TOmnetApp::isModuleLocal(cModule *parentmod, const char *modname, int index
         sprintf(parname,"%s.%s[%d].partition-id", parentmod->fullPath().c_str(), modname, index);
     int procId = getConfig()->getAsInt2(getRunSectionName(simulation.runNumber()),"Partitioning",parname,-1);
     if (procId<0)
-        throw new cRuntimeError("incomplete or wrong partitioning: missing or invalid value for '%s'",parname);
+        throw cRuntimeError("incomplete or wrong partitioning: missing or invalid value for '%s'",parname);
     if (procId>=parsimcomm->getNumPartitions())
-        throw new cRuntimeError("wrong partitioning: value %d too large for '%s' (total partitions=%d)",
+        throw cRuntimeError("wrong partitioning: value %d too large for '%s' (total partitions=%d)",
                                 procId,parname,parsimcomm->getNumPartitions());
     // FIXME This solution is not entirely correct. Rather, we'd have to check if
     // myProcId is CONTAINED in the set of procIds defined for the children of this
@@ -474,7 +471,7 @@ void TOmnetApp::getOutVectorConfig(int run_no, const char *modname,const char *v
     // parse interval string
     const char *ellipsis = strstr(s,"..");
     if (!ellipsis)
-        throw new cRuntimeError("Error in output vector interval %s=%s -- contains no `..'",buffer,s);
+        throw cRuntimeError("Error in output vector interval %s=%s -- contains no `..'",buffer,s);
 
     const char *startstr = s;
     const char *stopstr = ellipsis+2;
@@ -482,7 +479,7 @@ void TOmnetApp::getOutVectorConfig(int run_no, const char *modname,const char *v
     stoptime = strToSimtime0(stopstr);
 
     if (startstr<ellipsis || *stopstr!='\0')
-        throw new cRuntimeError("Error in output vector interval %s=%s",buffer,s);
+        throw cRuntimeError("Error in output vector interval %s=%s",buffer,s);
 }
 
 cXMLElement *TOmnetApp::getXMLDocument(const char *filename, const char *path)
@@ -526,7 +523,7 @@ void TOmnetApp::processFileName(opp_string& fname)
         if (!hostname)
             hostname=getenv("COMPUTERNAME");
         if (!hostname)
-            throw new cRuntimeError("Cannot append hostname to file name `%s': no HOST, HOSTNAME "
+            throw cRuntimeError("Cannot append hostname to file name `%s': no HOST, HOSTNAME "
                                     "or COMPUTERNAME (Windows) environment variable",
                                     fname.c_str());
         int pid = getpid();
@@ -561,7 +558,7 @@ void TOmnetApp::readOptions()
         opt_parsimcomm_class = cfg->getAsString("General", "parsim-communications-class", "cFileCommunications");
         opt_parsimsynch_class = cfg->getAsString("General", "parsim-synchronization-class", "cNullMessageProtocol");
 #else
-        throw new cRuntimeError("Parallel simulation is turned on in the ini file, but OMNeT++ was compiled without parallel simulation support (WITH_PARSIM=no)");
+        throw cRuntimeError("Parallel simulation is turned on in the ini file, but OMNeT++ was compiled without parallel simulation support (WITH_PARSIM=no)");
 #endif
     }
     opt_load_libs = cfg->getAsFilenames("General", "load-libs", "").c_str();
@@ -657,7 +654,7 @@ void TOmnetApp::globAndLoadNedFile(const char *fnamepattern)
             simulation.loadNedFile(fname);
         }
     } catch (std::runtime_error e) {
-        throw new cRuntimeError(e.what());
+        throw cRuntimeError(e.what());
     }
 }
 
@@ -671,7 +668,7 @@ void TOmnetApp::globAndLoadListFile(const char *fnamepattern, bool istemplistfil
             processListFile(fname, istemplistfile);
         }
     } catch (std::runtime_error e) {
-        throw new cRuntimeError(e.what());
+        throw cRuntimeError(e.what());
     }
 }
 
@@ -679,7 +676,7 @@ void TOmnetApp::processListFile(const char *listfilename, bool istemplistfile)
 {
     std::ifstream in(listfilename, std::ios::in);
     if (in.fail())
-        throw new cRuntimeError("Cannot open list file '%s'",listfilename);
+        throw cRuntimeError("Cannot open list file '%s'",listfilename);
 
     ev.printf("Processing listfile: %s\n", listfilename);
 
@@ -705,7 +702,7 @@ void TOmnetApp::processListFile(const char *listfilename, bool istemplistfile)
     }
 
     if (in.bad())
-        throw new cRuntimeError("Error reading list file '%s'",listfilename);
+        throw cRuntimeError("Error reading list file '%s'",listfilename);
     in.close();
 }
 
@@ -719,7 +716,7 @@ int TOmnetApp::numRNGs()
 cRNG *TOmnetApp::rng(int k)
 {
     if (k<0 || k>=num_rngs)
-        throw new cRuntimeError("RNG index %d is out of range (num-rngs=%d, "
+        throw cRuntimeError("RNG index %d is out of range (num-rngs=%d, "
                                 "check the configuration)", k, num_rngs);
     return rngs[k];
 }
@@ -740,18 +737,18 @@ void TOmnetApp::getRNGMappingFor(cComponent *component)
         int modRng = strtol(entries[i].c_str(), &s1, 10);
         int physRng = strtol(entries[i+1].c_str(), &s2, 10);
         if (*s1!='\0' || *s2!='\0')
-            throw new cRuntimeError("Configuration error: rng-%s=%s of module/channel %s: "
+            throw cRuntimeError("Configuration error: rng-%s=%s of module/channel %s: "
                                     "numeric RNG indices expected",
                                     entries[i].c_str(), entries[i+1].c_str(), component->fullPath().c_str());
 
         if (physRng>numRNGs())
-            throw new cRuntimeError("Configuration error: rng-%d=%d of module/channel %s: "
+            throw cRuntimeError("Configuration error: rng-%d=%d of module/channel %s: "
                                     "RNG index out of range (num-rngs=%d)",
                                     modRng, physRng, component->fullPath().c_str(), numRNGs());
         if (modRng>=mapsize)
         {
             if (modRng>=100)
-                throw new cRuntimeError("Configuration error: rng-%d=... of module/channel %s: "
+                throw cRuntimeError("Configuration error: rng-%d=... of module/channel %s: "
                                         "local RNG index out of supported range 0..99",
                                         modRng, component->fullPath().c_str());
             while (mapsize<=modRng)
@@ -833,20 +830,20 @@ bool TOmnetApp::memoryIsLow()
     return false;
 }
 
-void TOmnetApp::displayError(cException *e)
+void TOmnetApp::displayError(cException& e)
 {
-    if (e->moduleID()==-1)  //FIXME revise condition
-        ev.printfmsg("Error: %s.", e->message());
+    if (e.moduleID()==-1)  //FIXME revise condition
+        ev.printfmsg("Error: %s.", e.message());
     else
-        ev.printfmsg("Error in module (%s) %s: %s.", e->contextClassName(), e->contextFullPath(), e->message());
+        ev.printfmsg("Error in module (%s) %s: %s.", e.contextClassName(), e.contextFullPath(), e.message());
 }
 
-void TOmnetApp::displayMessage(cException *e)
+void TOmnetApp::displayMessage(cException& e)
 {
-    if (e->moduleID()==-1)  //FIXME revise condition
-        ev.printfmsg("%s.", e->message());
+    if (e.moduleID()==-1)  //FIXME revise condition
+        ev.printfmsg("%s.", e.message());
     else
-        ev.printfmsg("Module (%s) %s: %s.", e->contextClassName(), e->contextFullPath(), e->message());
+        ev.printfmsg("Module (%s) %s: %s.", e.contextClassName(), e.contextFullPath(), e.message());
 }
 
 bool TOmnetApp::idle()
@@ -886,7 +883,7 @@ timeval TOmnetApp::totalElapsed()
 void TOmnetApp::checkTimeLimits()
 {
     if (opt_simtimelimit!=0 && simulation.simTime()>=opt_simtimelimit)
-         throw new cTerminationException(eSIMTIME);
+         throw cTerminationException(eSIMTIME);
     if (opt_cputimelimit==0) // no limit
          return;
     if (ev.disable_tracing && simulation.eventNumber()&0xFF!=0) // optimize: in Express mode, don't call gettimeofday() on every event
@@ -895,25 +892,25 @@ void TOmnetApp::checkTimeLimits()
     gettimeofday(&now, NULL);
     long elapsedsecs = now.tv_sec - laststarted.tv_sec + elapsedtime.tv_sec;
     if (elapsedsecs>=opt_cputimelimit)
-         throw new cTerminationException(eREALTIME);
+         throw cTerminationException(eREALTIME);
 }
 
-void TOmnetApp::stoppedWithTerminationException(cTerminationException *e)
+void TOmnetApp::stoppedWithTerminationException(cTerminationException& e)
 {
     // if we're running in parallel and this exception is NOT one we received
     // from other partitions, then notify other partitions
 #ifdef WITH_PARSIM
-    if (opt_parsim && !dynamic_cast<cReceivedTerminationException *>(e))
+    if (opt_parsim && !dynamic_cast<cReceivedTerminationException&>(e))
         parsimpartition->broadcastTerminationException(e);
 #endif
 }
 
-void TOmnetApp::stoppedWithException(cException *e)
+void TOmnetApp::stoppedWithException(cException& e)
 {
     // if we're running in parallel and this exception is NOT one we received
     // from other partitions, then notify other partitions
 #ifdef WITH_PARSIM
-    if (opt_parsim && !dynamic_cast<cReceivedException *>(e))
+    if (opt_parsim && !dynamic_cast<cReceivedException&>(e))
         parsimpartition->broadcastException(e);
 #endif
 }

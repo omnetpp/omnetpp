@@ -131,7 +131,7 @@ void cNamedObject::setNamePooling(bool pooling)
 void cNamedObject::netPack(cCommBuffer *buffer)
 {
 #ifndef WITH_PARSIM
-    throw new cRuntimeError(this,eNOPARSIM);
+    throw cRuntimeError(this,eNOPARSIM);
 #else
     buffer->pack(name());
 #endif
@@ -140,7 +140,7 @@ void cNamedObject::netPack(cCommBuffer *buffer)
 void cNamedObject::netUnpack(cCommBuffer *buffer)
 {
 #ifndef WITH_PARSIM
-    throw new cRuntimeError(this,eNOPARSIM);
+    throw cRuntimeError(this,eNOPARSIM);
 #else
     opp_string tmp;
     buffer->unpack(tmp);

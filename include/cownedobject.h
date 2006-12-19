@@ -389,10 +389,10 @@ template<class T>
 T check_and_cast(cObject *p)
 {
     if (!p)
-        throw new cRuntimeError("check_and_cast(): cannot cast NULL pointer to type '%s'",opp_typename(typeid(T)));
+        throw cRuntimeError("check_and_cast(): cannot cast NULL pointer to type '%s'",opp_typename(typeid(T)));
     T ret = dynamic_cast<T>(p);
     if (!ret)
-        throw new cRuntimeError("check_and_cast(): cannot cast (%s *)%s to type '%s'",p->className(),p->fullPath().c_str(),opp_typename(typeid(T)));
+        throw cRuntimeError("check_and_cast(): cannot cast (%s *)%s to type '%s'",p->className(),p->fullPath().c_str(),opp_typename(typeid(T)));
     return ret;
 }
 

@@ -235,7 +235,7 @@ void TokenRingMAC::activity()
         }
         else
         {
-            throw new cRuntimeError("unexpected message arrived: (%s)%s", msg->className(), msg->name());
+            throw cRuntimeError("unexpected message arrived: (%s)%s", msg->className(), msg->name());
         }
     }
 }
@@ -269,7 +269,7 @@ void TokenRingMAC::handleMessagesWhileTransmitting()
         }
         else
         {
-            throw new cRuntimeError("unexpected message arrived: (%s)%s", msg->className(), msg->name());
+            throw cRuntimeError("unexpected message arrived: (%s)%s", msg->className(), msg->name());
         }
     }
 }

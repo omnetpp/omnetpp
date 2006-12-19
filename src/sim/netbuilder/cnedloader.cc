@@ -93,7 +93,7 @@ void cNEDLoader::registerBuiltinDeclarations()
     if (errors.containsError())
     {
         delete tree;
-        throw new cRuntimeError("error during parsing of internal NED declarations");
+        throw cRuntimeError("error during parsing of internal NED declarations");
     }
     //FIXME check errors; run validation perhaps, etc!
 
@@ -101,9 +101,9 @@ void cNEDLoader::registerBuiltinDeclarations()
     {
         addFile("[builtin-declarations]", tree);
     }
-    catch (NEDException *e)
+    catch (NEDException& e)
     {
-        throw new cRuntimeError("NED error: %s", e->errorMessage()); // FIXME or something
+        throw cRuntimeError("NED error: %s", e.errorMessage()); // FIXME or something
     }
 }
 
@@ -141,7 +141,7 @@ cNEDDeclaration *cNEDLoader::getDecl(const char *name) const
 {
     cNEDDeclaration *decl = cNEDLoader::instance()->lookup2(name);
     if (!decl)
-        throw new cRuntimeError("NED declaration '%s' not found", name);
+        throw cRuntimeError("NED declaration '%s' not found", name);
     return decl;
 }
 
@@ -165,7 +165,7 @@ NEDElement *cNEDLoader::parseAndValidateNedFile(const char *fname, bool isXML)
     if (errors.containsError())
     {
         delete tree;
-        throw new cRuntimeError("errors while loading or parsing file `%s'", fname);
+        throw cRuntimeError("errors while loading or parsing file `%s'", fname);
     }
 
     // DTD validation and additional basic validation
@@ -174,7 +174,7 @@ NEDElement *cNEDLoader::parseAndValidateNedFile(const char *fname, bool isXML)
     if (errors.containsError())
     {
         delete tree;
-        throw new cRuntimeError("errors during DTD validation of file `%s'", fname);
+        throw cRuntimeError("errors during DTD validation of file `%s'", fname);
     }
 
     NEDBasicValidator basicvalidator(true, &errors);
@@ -182,7 +182,7 @@ NEDElement *cNEDLoader::parseAndValidateNedFile(const char *fname, bool isXML)
     if (errors.containsError())
     {
         delete tree;
-        throw new cRuntimeError("errors during validation of file `%s'", fname);
+        throw cRuntimeError("errors during validation of file `%s'", fname);
     }
     return tree;
 }
@@ -196,9 +196,9 @@ void cNEDLoader::loadNedFile(const char *nedfname, bool isXML)
     {
         addFile(nedfname, tree);
     }
-    catch (NEDException *e)
+    catch (NEDException& e)
     {
-        throw new cRuntimeError("NED error: %s", e->errorMessage()); // FIXME or something
+        throw cRuntimeError("NED error: %s", e.errorMessage()); // FIXME or something
     }
 }
 

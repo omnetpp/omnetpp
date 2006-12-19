@@ -49,7 +49,7 @@ cMessage *cSequentialScheduler::getNextEvent()
 {
     cMessage *msg = sim->msgQueue.peekFirst();
     if (!msg)
-        throw new cTerminationException(eENDEDOK);
+        throw cTerminationException(eENDEDOK);
     return msg;
 }
 
@@ -103,7 +103,7 @@ cMessage *cRealTimeScheduler::getNextEvent()
 {
     cMessage *msg = sim->msgQueue.peekFirst();
     if (!msg)
-        throw new cTerminationException(eENDEDOK);
+        throw cTerminationException(eENDEDOK);
 
     // calculate target time
     simtime_t eventSimtime = msg->arrivalTime();

@@ -54,17 +54,17 @@ void cStringPar::netUnpack(cCommBuffer *buffer)
 
 void cStringPar::setBoolValue(bool b)
 {
-    throw new cRuntimeError(this, eBADCAST, "bool", "string");
+    throw cRuntimeError(this, eBADCAST, "bool", "string");
 }
 
 void cStringPar::setLongValue(long l)
 {
-    throw new cRuntimeError(this, eBADCAST, "int/long", "string");
+    throw cRuntimeError(this, eBADCAST, "int/long", "string");
 }
 
 void cStringPar::setDoubleValue(double d)
 {
-    throw new cRuntimeError(this, eBADCAST, "double", "string");
+    throw cRuntimeError(this, eBADCAST, "double", "string");
 }
 
 void cStringPar::setStringValue(const char *s)
@@ -76,7 +76,7 @@ void cStringPar::setStringValue(const char *s)
 
 void cStringPar::setXMLValue(cXMLElement *node)
 {
-    throw new cRuntimeError(this, eBADCAST, "XML", "string");
+    throw cRuntimeError(this, eBADCAST, "XML", "string");
 }
 
 void cStringPar::setExpression(cExpression *e)
@@ -88,23 +88,23 @@ void cStringPar::setExpression(cExpression *e)
 
 bool cStringPar::boolValue(cComponent *context) const
 {
-    throw new cRuntimeError(this, eBADCAST, "string", "bool");
+    throw cRuntimeError(this, eBADCAST, "string", "bool");
 }
 
 long cStringPar::longValue(cComponent *) const
 {
-    throw new cRuntimeError(this, eBADCAST, "string", "int/long");
+    throw cRuntimeError(this, eBADCAST, "string", "int/long");
 }
 
 double cStringPar::doubleValue(cComponent *) const
 {
-    throw new cRuntimeError(this, eBADCAST, "string", "double");
+    throw cRuntimeError(this, eBADCAST, "string", "double");
 }
 
 const char *cStringPar::stringValue(cComponent *context) const
 {
     if (flags & FL_ISEXPR)
-        throw new cRuntimeError(this, "stringValue() and conversion to `const char *' cannot be invoked "
+        throw cRuntimeError(this, "stringValue() and conversion to `const char *' cannot be invoked "
                                 "on parameters declared `volatile string' in NED -- use stdstringValue() "
                                 "or conversion to `std::string' instead.");
     return val.c_str();
@@ -117,7 +117,7 @@ std::string cStringPar::stdstringValue(cComponent *context) const
 
 cXMLElement *cStringPar::xmlValue(cComponent *) const
 {
-    throw new cRuntimeError(this, eBADCAST, "string", "XML");
+    throw cRuntimeError(this, eBADCAST, "string", "XML");
 }
 
 cExpression *cStringPar::expression() const
@@ -169,8 +169,9 @@ bool cStringPar::parse(const char *text)
         std::string str = opp_parsequotedstr(text);
         setStringValue(str.c_str());
         return true;
-    } catch (Exception *e) {
-        delete e; // no problem, we'll try it otherwise
+    }
+    catch (Exception& e) {
+        // no problem, we'll try it another way
     }
 
     // try parsing it as an expression
@@ -193,7 +194,7 @@ int cStringPar::compare(const cParValue *other) const
 
     const cStringPar *other2 = dynamic_cast<const cStringPar *>(other);
     if (flags & FL_ISEXPR)
-        throw new cRuntimeError(this, "cannot compare expressions yet"); //FIXME
+        throw cRuntimeError(this, "cannot compare expressions yet"); //FIXME
     else
         return (val == other2->val) ? 0 : (val < other2->val) ? -1 : 1;
 }

@@ -53,7 +53,7 @@ static char buffer[ENVIR_TEXTBUF_LEN];
      baseclass *var ## _tmp = (baseclass *) createOne(classname); \
      var = dynamic_cast<baseclass *>(var ## _tmp); \
      if (!var) \
-         throw new cRuntimeError("Class \"%s\" is not subclassed from " #baseclass, (const char *)classname);
+         throw cRuntimeError("Class \"%s\" is not subclassed from " #baseclass, (const char *)classname);
 
 
 //========================================================================
@@ -191,7 +191,7 @@ void cEnvir::setup(int argc, char *argv[])
                 for (cArray::Iterator iter(*omnetapps.instance()); iter(); iter++)
                     ::printf("  %s : %s\n", iter()->name(), iter()->info().c_str());
 
-                throw new cRuntimeError("Could not start user interface '%s'",appname);
+                throw cRuntimeError("Could not start user interface '%s'",appname);
             }
         }
         else
@@ -199,7 +199,7 @@ void cEnvir::setup(int argc, char *argv[])
             // user interface not explicitly selected: pick one from what we have
             appreg = chooseBestOmnetApp();
             if (!appreg)
-                throw new cRuntimeError("No user interface (Cmdenv, Tkenv, etc.) found");
+                throw cRuntimeError("No user interface (Cmdenv, Tkenv, etc.) found");
         }
 
         //
@@ -210,9 +210,9 @@ void cEnvir::setup(int argc, char *argv[])
         app->setup();
         isgui = app->isGUI();
     }
-    catch (cException *e)
+    catch (cException& e)
     {
-        printfmsg("Error during startup: %s", e->message());
+        printfmsg("Error during startup: %s", e.message());
         if (app)
         {
            delete app;
@@ -220,7 +220,6 @@ void cEnvir::setup(int argc, char *argv[])
         }
         delete args;
         delete inifile;
-        delete e;
     }
 }
 
@@ -439,7 +438,7 @@ bool cEnvir::gets(const char *prompt, char *buf, int len)
 {
     bool esc = app->gets(prompt, buf, len);
     if (esc)
-        throw new cRuntimeError(eCANCEL);
+        throw cRuntimeError(eCANCEL);
     return true;
 }
 
@@ -450,7 +449,7 @@ std::string cEnvir::gets(const char *prompt, const char *defaultreply)
     buffer[ENVIR_TEXTBUF_LEN-1]='\0';
     bool esc = app->gets(prompt, buffer, ENVIR_TEXTBUF_LEN-1);
     if (esc)
-        throw new cRuntimeError(eCANCEL);
+        throw cRuntimeError(eCANCEL);
     return std::string(buffer);
 }
 
@@ -463,7 +462,7 @@ bool cEnvir::askYesNo(const char *msgfmt,...)
 
     int ret = app->askYesNo(buffer);
     if (ret<0)
-        throw new cRuntimeError(eCANCEL);
+        throw cRuntimeError(eCANCEL);
     return ret!=0;
 }
 

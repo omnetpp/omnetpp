@@ -51,7 +51,7 @@ cExpressionBuilder::~cExpressionBuilder()
 void cExpressionBuilder::doNode(NEDElement *node)
 {
     if (pos > limit)
-        throw new cRuntimeError("dynamic module builder: expression too long");
+        throw cRuntimeError("dynamic module builder: expression too long");
     int tagcode = node->getTagCode();
     switch (tagcode)
     {
@@ -64,7 +64,7 @@ void cExpressionBuilder::doNode(NEDElement *node)
         case NED_LITERAL:
             doLiteral((LiteralNode *)node); break;
         default:
-            throw new cRuntimeError("dynamic module builder: unexpected tag in expression: %s", node->getTagName());
+            throw cRuntimeError("dynamic module builder: unexpected tag in expression: %s", node->getTagName());
     }
 }
 
@@ -90,7 +90,7 @@ void cExpressionBuilder::doOperator(OperatorNode *node)
         else if (!strcmp(name,"~"))
             elems[pos++] = cDynamicExpression::BIN_NOT;
         else
-            throw new cRuntimeError("dynamic module builder: unexpected operator %s", name);
+            throw cRuntimeError("dynamic module builder: unexpected operator %s", name);
     }
     else if (!op3)
     {
@@ -142,7 +142,7 @@ void cExpressionBuilder::doOperator(OperatorNode *node)
         else if (!strcmp(name,">>"))
             elems[pos++] = cDynamicExpression::RSHIFT;
         else
-            throw new cRuntimeError("dynamic module builder: unexpected operator %s", name);
+            throw cRuntimeError("dynamic module builder: unexpected operator %s", name);
     }
     else
     {
@@ -150,7 +150,7 @@ void cExpressionBuilder::doOperator(OperatorNode *node)
         if (!strcmp(name,"?:"))
             elems[pos++] = cDynamicExpression::IIF;
         else
-            throw new cRuntimeError("dynamic module builder: unexpected operator %s", name);
+            throw cRuntimeError("dynamic module builder: unexpected operator %s", name);
     }
 }
 
@@ -164,12 +164,12 @@ void cExpressionBuilder::doFunction(FunctionNode *node)
     if (!strcmp(funcname,"index"))
     {
         if (!inSubcomponentScope)
-            throw new cRuntimeError("dynamic module builder: `index' operator is only supported on submodule parameters");
+            throw cRuntimeError("dynamic module builder: `index' operator is only supported on submodule parameters");
         elems[pos++] = new NEDSupport::ModuleIndex();
     }
     else if (!strcmp(funcname,"const"))
     {
-        throw new cRuntimeError("dynamic module builder: `const' operator: not yet!"); //XXX
+        throw cRuntimeError("dynamic module builder: `const' operator: not yet!"); //XXX
     }
     else if (!strcmp(funcname,"sizeof"))
     {
@@ -188,7 +188,7 @@ void cExpressionBuilder::doFunction(FunctionNode *node)
             elems[pos++] = new NEDSupport::Sizeof(ident, inSubcomponentScope, false);
         else //FIXME handle "this.ident"
             //XXX elems[pos++] = new NEDSupport::Sizeof(modulename, ident, inSubcomponentScope, hasChild);
-            throw new cRuntimeError("dynamic module builder: sizeof(module.ident): not yet");
+            throw cRuntimeError("dynamic module builder: sizeof(module.ident): not yet");
     }
     else if (!strcmp(funcname,"xmldoc"))
     {
@@ -214,7 +214,7 @@ void cExpressionBuilder::doFunction(FunctionNode *node)
         else if (nedfunctype)
             elems[pos++] = nedfunctype;
         else
-            throw new cRuntimeError("dynamic module builder: function %s with %d args not found", funcname, argcount);
+            throw cRuntimeError("dynamic module builder: function %s with %d args not found", funcname, argcount);
     }
 }
 
@@ -254,7 +254,7 @@ void cExpressionBuilder::doLiteral(LiteralNode *node)
                                elems[pos-1].setUnit(node->getUnit());
                                break;
         case NED_CONST_STRING: elems[pos++] = node->getValue(); break;
-        default: throw new cRuntimeError("dynamic module builder: evaluate: internal error: wrong constant type");
+        default: throw cRuntimeError("dynamic module builder: evaluate: internal error: wrong constant type");
     }
 }
 

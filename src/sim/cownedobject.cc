@@ -114,7 +114,7 @@ cOwnedObject::~cOwnedObject()
 void cOwnedObject::ownedObjectDeleted(cOwnedObject *obj)
 {
     // Note: too late to call obj->className(), at this point it'll aways return "cOwnedObject"
-    throw new cRuntimeError("Object %s is currently in (%s)%s, it cannot be deleted. "
+    throw cRuntimeError("Object %s is currently in (%s)%s, it cannot be deleted. "
                             "If this error occurs inside %s, it needs to be changed "
                             "to call drop() before it can delete that object. "
                             "If this error occurs inside %s's destructor and %s is a class member, "
@@ -127,7 +127,7 @@ void cOwnedObject::ownedObjectDeleted(cOwnedObject *obj)
 
 void cOwnedObject::yieldOwnership(cOwnedObject *obj, cOwnedObject *newowner)
 {
-    throw new cRuntimeError("(%s)%s is currently in (%s)%s, it cannot be inserted into (%s)%s",
+    throw cRuntimeError("(%s)%s is currently in (%s)%s, it cannot be inserted into (%s)%s",
                             obj->className(), obj->fullName(),
                             className(), fullPath().c_str(),
                             newowner->className(), newowner->fullPath().c_str());
@@ -149,7 +149,7 @@ void cOwnedObject::take(cOwnedObject *obj)
 void cOwnedObject::drop(cOwnedObject *obj)
 {
     if (obj->ownerp!=this)
-        throw new cRuntimeError(this,"drop(): not owner of object (%s)%s",
+        throw cRuntimeError(this,"drop(): not owner of object (%s)%s",
                                 obj->className(), obj->fullPath().c_str());
     defaultowner->doInsert(obj);
 }
@@ -159,7 +159,7 @@ void cOwnedObject::dropAndDelete(cOwnedObject *obj)
     if (!obj)
         return;
     if (obj->ownerp!=this)
-        throw new cRuntimeError(this,"dropAndDelete(): not owner of object (%s)%s",
+        throw cRuntimeError(this,"dropAndDelete(): not owner of object (%s)%s",
                                 obj->className(), obj->fullPath().c_str());
     obj->ownerp = NULL;
     delete obj;
@@ -191,7 +191,7 @@ cOwnedObject& cOwnedObject::operator=(const cOwnedObject& obj)
 void cOwnedObject::netPack(cCommBuffer *buffer)
 {
 #ifndef WITH_PARSIM
-    throw new cRuntimeError(this,eNOPARSIM);
+    throw cRuntimeError(this,eNOPARSIM);
 #else
     cNamedObject::netPack(buffer);
 #endif
@@ -200,7 +200,7 @@ void cOwnedObject::netPack(cCommBuffer *buffer)
 void cOwnedObject::netUnpack(cCommBuffer *buffer)
 {
 #ifndef WITH_PARSIM
-    throw new cRuntimeError(this,eNOPARSIM);
+    throw cRuntimeError(this,eNOPARSIM);
 #else
     cNamedObject::netUnpack(buffer);
 #endif
@@ -210,19 +210,19 @@ void cOwnedObject::netUnpack(cCommBuffer *buffer)
 
 cNoncopyableOwnedObject *cNoncopyableOwnedObject::dup() const
 {
-    throw new cRuntimeError(this, "dup(): %s subclasses from cNoncopyableOwnedObject, "
+    throw cRuntimeError(this, "dup(): %s subclasses from cNoncopyableOwnedObject, "
                                   "and does not support dup()", className());
 }
 
 void cNoncopyableOwnedObject::netPack(cCommBuffer *buffer)
 {
-    throw new cRuntimeError(this, "netPack(): %s subclasses from cNoncopyableOwnedObject, and "
+    throw cRuntimeError(this, "netPack(): %s subclasses from cNoncopyableOwnedObject, and "
                                   "does not support pack/unpack operations", className());
 }
 
 void cNoncopyableOwnedObject::netUnpack(cCommBuffer *buffer)
 {
-    throw new cRuntimeError(this, "netUnpack(): %s subclasses from cNoncopyableOwnedObject, and "
+    throw cRuntimeError(this, "netUnpack(): %s subclasses from cNoncopyableOwnedObject, and "
                                   "does not support pack/unpack operations", className());
 }
 

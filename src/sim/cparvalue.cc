@@ -85,7 +85,7 @@ std::string cParValue::detailedInfo() const
 
 cParValue *cParValue::dup() const
 {
-    throw new cRuntimeError(this, eCANTDUP);  // cannot dup because this is an abstract class
+    throw cRuntimeError(this, eCANTDUP);  // cannot dup because this is an abstract class
 }
 
 const char *cParValue::unit() const
@@ -131,7 +131,7 @@ cParValue *cParValue::createWithType(Type type)
         case cPar::LONG:    return new cLongPar();
         case cPar::STRING:  return new cStringPar();
         case cPar::XML:     return new cXMLPar();
-        default: throw new cRuntimeError("cParValue::createWithType(): no such type: %d", type);
+        default: throw cRuntimeError("cParValue::createWithType(): no such type: %d", type);
     }
 }
 

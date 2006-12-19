@@ -151,15 +151,15 @@ cProperties *cGate::properties() const
 void cGate::connectTo(cGate *g, cChannel *chan)
 {
     if (vectsize==0)
-        throw new cRuntimeError(this, "connectTo(): gate vector size is zero");
+        throw cRuntimeError(this, "connectTo(): gate vector size is zero");
     if (togatep)
-        throw new cRuntimeError(this, "connectTo(): gate already connected");
+        throw cRuntimeError(this, "connectTo(): gate already connected");
     if (!g)
-        throw new cRuntimeError(this, "connectTo(): destination gate cannot be NULL pointer");
+        throw cRuntimeError(this, "connectTo(): destination gate cannot be NULL pointer");
     if (g->vectsize==0)
-        throw new cRuntimeError(this, "connectTo(): destination gate vector size is zero");
+        throw cRuntimeError(this, "connectTo(): destination gate vector size is zero");
     if (g->fromgatep)
-        throw new cRuntimeError(this, "connectTo(): destination gate already connected");
+        throw cRuntimeError(this, "connectTo(): destination gate already connected");
 
     // build new connection
     togatep = g;

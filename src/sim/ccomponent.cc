@@ -93,7 +93,7 @@ void cComponent::reallocParamv(int size)
 {
     ASSERT(size>=numparams);
     if (size!=(short)size)
-        throw new cRuntimeError(this, "reallocParamv(%d): at most %d parameters allowed", size, 0x7fff);
+        throw cRuntimeError(this, "reallocParamv(%d): at most %d parameters allowed", size, 0x7fff);
     cPar *newparamv = new cPar[size];
     for (int i=0; i<numparams; i++)
         paramv[i].moveto(newparamv[i]);
@@ -105,7 +105,7 @@ void cComponent::reallocParamv(int size)
 void cComponent::addPar(cParValue *value)
 {
     if (findPar(value->name())>=0)
-        throw new cRuntimeError(this, "addPar(): Parameter %s.%s already present", fullPath().c_str(), value->name());
+        throw cRuntimeError(this, "addPar(): Parameter %s.%s already present", fullPath().c_str(), value->name());
     if (numparams==paramvsize)
         reallocParamv(paramvsize+1);
     paramv[numparams++].assign(this, value);
@@ -114,7 +114,7 @@ void cComponent::addPar(cParValue *value)
 cPar& cComponent::par(int k)
 {
     if (k<0 || k>=numparams)
-        throw new cRuntimeError(this, "parameter index %d out of range", k);
+        throw cRuntimeError(this, "parameter index %d out of range", k);
     return paramv[k];
 }
 
@@ -122,7 +122,7 @@ cPar& cComponent::par(const char *parname)
 {
     int k = findPar(parname);
     if (k<0)
-        throw new cRuntimeError(this, "has no parameter called `%s'", parname);
+        throw cRuntimeError(this, "has no parameter called `%s'", parname);
     return paramv[k];
 }
 

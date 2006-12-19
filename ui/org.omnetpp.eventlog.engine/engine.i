@@ -34,9 +34,9 @@
 %exception {
     try {
         $action
-    } catch (Exception *e) {
-        SWIG_exception(SWIG_RuntimeError,const_cast<char*>(e->message()));
-    } catch (std::exception e) {
+    } catch (Exception& e) {
+        SWIG_exception(SWIG_RuntimeError,const_cast<char*>(e.message()));
+    } catch (std::exception& e) {
         SWIG_exception(SWIG_RuntimeError,const_cast<char*>(e.what()));
     }
 }
@@ -208,7 +208,7 @@ import java.lang.reflect.Constructor;
 
          int index = ScaveEngineJNI.EventLogEntry_getClassIndex(cPtr);
          Constructor constructor = eventLogConstructors[index];
-      
+
          if (constructor == null)
          {
             String name = "org.omnetpp.eventlog.engine." + ScaveEngineJNI.EventLogEntry_getClassName(cPtr);
@@ -216,10 +216,10 @@ import java.lang.reflect.Constructor;
             constructor = clazz.getDeclaredConstructor(long.class, boolean.class);
             eventLogConstructors[index] = constructor;
          }
-	  
+
          return (EventLogEntry)constructor.newInstance(cPtr, isOwner);
       }
-      catch (Exception e) {
+      catch (Exception& e) {
          throw new RuntimeException(e);
       }
    }

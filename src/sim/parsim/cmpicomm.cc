@@ -127,7 +127,7 @@ void cMPICommunications::send(cCommBuffer *buffer, int tag, int destination)
     // cause deadlock
     int status = MPI_Bsend(b->getBuffer(), b->getMessageSize(), MPI_PACKED, destination, tag, MPI_COMM_WORLD);
     if (status!=MPI_SUCCESS)
-        throw new cRuntimeError("cMPICommunications::send(): MPI error %d", status);
+        throw cRuntimeError("cMPICommunications::send(): MPI error %d", status);
 }
 
 void cMPICommunications::broadcast(cCommBuffer *buffer, int tag)
@@ -148,7 +148,7 @@ bool cMPICommunications::receiveBlocking(int filtTag, cCommBuffer *buffer, int& 
     b->allocateAtLeast(msgsize);
     int err = MPI_Recv(b->getBuffer(), b->getBufferLength(), MPI_PACKED, MPI_ANY_SOURCE, filtTag, MPI_COMM_WORLD, &status);
     if (err!=MPI_SUCCESS)
-        throw new cRuntimeError("cMPICommunications::receiveBlocking(): MPI error %d", err);
+        throw cRuntimeError("cMPICommunications::receiveBlocking(): MPI error %d", err);
     b->setMessageSize(msgsize);
     receivedTag = status.MPI_TAG;
     sourceProcId = status.MPI_SOURCE;
@@ -172,7 +172,7 @@ bool cMPICommunications::receiveNonblocking(int filtTag, cCommBuffer *buffer, in
         b->allocateAtLeast(msgsize);
         int err = MPI_Recv(b->getBuffer(), b->getBufferLength(), MPI_PACKED, MPI_ANY_SOURCE, filtTag, MPI_COMM_WORLD, &status);
         if (err!=MPI_SUCCESS)
-            throw new cRuntimeError("cMPICommunications::receiveNonBlocking(): MPI error %d", err);
+            throw cRuntimeError("cMPICommunications::receiveNonBlocking(): MPI error %d", err);
         b->setMessageSize(msgsize);
         receivedTag = status.MPI_TAG;
         sourceProcId = status.MPI_SOURCE;

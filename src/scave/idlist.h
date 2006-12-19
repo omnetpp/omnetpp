@@ -42,7 +42,7 @@ class IDList
         V *v;
 
         void operator=(const IDList&); // undefined, to prevent calling it
-        void checkV() const {if (!v) throw new std::runtime_error("this is a zombie IDList");}
+        void checkV() const {if (!v) throw std::runtime_error("this is a zombie IDList");}
         void uncheckedAdd(ID id) {v->push_back(id);} // doesn't check if already in there
         void discardDuplicates();
         void checkIntegrity(ResultFileManager *mgr) const;

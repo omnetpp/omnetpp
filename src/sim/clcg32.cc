@@ -29,7 +29,7 @@ void cLCG32::initialize(int runNumber, int rngId, int numRngs,
                         cConfiguration *cfg)
 {
     if (parsimNumPartitions>1)
-        throw new cRuntimeError("The cLCG32 RNG is not suitable for parallel simulation runs "
+        throw cRuntimeError("The cLCG32 RNG is not suitable for parallel simulation runs "
                                 "because of its short cycle -- please select cMersenneTwister "
                                 "in the configuration instead");
 
@@ -50,7 +50,7 @@ void cLCG32::initialize(int runNumber, int rngId, int numRngs,
     }
     else if (seed==0)
     {
-        throw new cRuntimeError("cLCG32: zero is not allowed as seed in %s config file entry", entry);
+        throw cRuntimeError("cLCG32: zero is not allowed as seed in %s config file entry", entry);
     }
 }
 
@@ -60,7 +60,7 @@ void cLCG32::selfTest()
     for (int i=0; i<10000; i++)
         intRand();
     if (seed!=1043618065L)
-        throw new cRuntimeError("cLCG32: selfTest() failed, please report this problem!");
+        throw cRuntimeError("cLCG32: selfTest() failed, please report this problem!");
 }
 
 unsigned long cLCG32::intRand()
@@ -80,7 +80,7 @@ unsigned long cLCG32::intRandMax()
 unsigned long cLCG32::intRand(unsigned long n)
 {
     if (n>LCG32_MAX)
-        throw new cRuntimeError("cLCG32: intRand(%d): argument out of range 1..2^31-2");
+        throw cRuntimeError("cLCG32: intRand(%d): argument out of range 1..2^31-2");
 
     // code from MersenneTwister.h, Richard J. Wagner rjwagner@writeme.com
     // Find which bits are used in n

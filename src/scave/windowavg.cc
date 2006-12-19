@@ -24,7 +24,7 @@ WindowAverageNode::WindowAverageNode(int windowSize)
 {
     array = NULL;
     if (windowSize<1 || windowSize>100000)
-        throw new Exception("winavg: invalid window size %d", windowSize);
+        throw Exception("winavg: invalid window size %d", windowSize);
     winsize = windowSize;
     array = new Datum[winsize];
 }

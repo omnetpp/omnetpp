@@ -45,7 +45,7 @@ cOutVector::cOutVector(const char *name, int tuple) : cNoncopyableOwnedObject(na
     if (tupl!=1 && tupl!=2)
     {
         tupl = 0;
-        throw new cRuntimeError(this,"constructor: invalid value (%d) for tuple; supported values are 1 and 2", tupl);
+        throw cRuntimeError(this,"constructor: invalid value (%d) for tuple; supported values are 1 and 2", tupl);
     }
 
     // register early if possible (only required by Akaroa)
@@ -62,7 +62,7 @@ cOutVector::~cOutVector()
 void cOutVector::setName(const char *nam)
 {
     if (handle)
-        throw new cRuntimeError(this,"setName(): changing name of an output vector after record() calls is not allowed");
+        throw cRuntimeError(this,"setName(): changing name of an output vector after record() calls is not allowed");
     cOwnedObject::setName(nam);
 
     // register early (only needed for Akaroa...)
@@ -81,12 +81,12 @@ std::string cOutVector::info() const
 
 void cOutVector::netPack(cCommBuffer *buffer)
 {
-    throw new cRuntimeError(this, "netPack() not supported");
+    throw cRuntimeError(this, "netPack() not supported");
 }
 
 void cOutVector::netUnpack(cCommBuffer *buffer)
 {
-    throw new cRuntimeError(this, "netUnpack(): not supported");
+    throw cRuntimeError(this, "netUnpack(): not supported");
 }
 
 
@@ -104,11 +104,11 @@ bool cOutVector::recordWithTimestamp(simtime_t t, double value)
 {
     // check tuple
     if (tupl!=1)
-        throw new cRuntimeError(this,eNUMARGS,1);
+        throw cRuntimeError(this,eNUMARGS,1);
 
     // check timestamp
     if (t<last_t)
-        throw new cRuntimeError(this,"Cannot record data with an earlier timestamp (t=%s) "
+        throw cRuntimeError(this,"Cannot record data with an earlier timestamp (t=%s) "
                                      "than the previously recorded value", simtimeToStr(t));
     last_t = t;
 
@@ -135,11 +135,11 @@ bool cOutVector::recordWithTimestamp(simtime_t t, double value1, double value2)
 {
     // check tuple
     if (tupl!=2)
-        throw new cRuntimeError(this,eNUMARGS,2);
+        throw cRuntimeError(this,eNUMARGS,2);
 
     // check timestamp
     if (t<last_t)
-        throw new cRuntimeError(this,"Cannot record data with an earlier timestamp (t=%s) "
+        throw cRuntimeError(this,"Cannot record data with an earlier timestamp (t=%s) "
                                      "than the previously recorded value", simtimeToStr(t));
     last_t = t;
 

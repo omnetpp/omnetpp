@@ -23,7 +23,7 @@
 Port *XYPlotNode::portY(int k)
 {
     if (k<0 || yin.size()< (unsigned)k)
-        throw new Exception("XYPlotNode::portY(k): k=%d out of range, size of yin[] is %d",k,yin.size());
+        throw Exception("XYPlotNode::portY(k): k=%d out of range, size of yin[] is %d",k,yin.size());
     if (yin.size()==(unsigned)k)
     {
         yin.push_back(Port(this));
@@ -35,7 +35,7 @@ Port *XYPlotNode::portY(int k)
 Port *XYPlotNode::portOut(int k)
 {
     if (k<0 || out.size()<=(unsigned)k)
-        throw new Exception("XYPlotNode::portOut(k): k=%d out of range, size of out[] is %d",k,out.size());
+        throw Exception("XYPlotNode::portOut(k): k=%d out of range, size of out[] is %d",k,out.size());
     return &out[k];
 }
 
@@ -128,7 +128,7 @@ Port *XYPlotNodeType::getPort(Node *node, const char *portname) const
         return node1->portY(atoi(portname+1));
     else if (!strncmp(portname,"out",3))
         return node1->portOut(atoi(portname+3));
-    throw new Exception("no such port `%s'", portname);
+    throw Exception("no such port `%s'", portname);
 }
 
 

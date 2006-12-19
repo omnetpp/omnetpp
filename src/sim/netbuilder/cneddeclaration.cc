@@ -137,14 +137,14 @@ std::string cNEDDeclaration::nedSource() const
 const char *cNEDDeclaration::interfaceName(int k) const
 {
     if (k<0 || k>=interfacenames.size())
-        throw new cRuntimeError(this, "interface index %d out of range 0..%d", k, interfacenames.size()-1);
+        throw cRuntimeError(this, "interface index %d out of range 0..%d", k, interfacenames.size()-1);
     return interfacenames[k].c_str();
 }
 
 const char *cNEDDeclaration::extendsName(int k) const
 {
     if (k<0 || k>=extendsnames.size())
-        throw new cRuntimeError(this, "extendsName(): index %d out of range 0..%d", k, extendsnames.size()-1);
+        throw cRuntimeError(this, "extendsName(): index %d out of range 0..%d", k, extendsnames.size()-1);
     return extendsnames[k].c_str();
 }
 
@@ -457,28 +457,28 @@ void cNEDDeclaration::assertParMatchesBase(cPar *par, const cPar *basepar,
                                                 const char *parname, const char *basename)
 {
     if (basepar->isSet() && par->isSet())
-        throw new cRuntimeError(this, "parameter `%s' already set in base `%s', it cannot be overridden", parname, basename);
+        throw cRuntimeError(this, "parameter `%s' already set in base `%s', it cannot be overridden", parname, basename);
 
     if (par->type()!=basepar->type() || par->isVolatile()!=ifpar->isVolatile())
-        throw new cRuntimeError(this, "type of parameter `%s' differs from that in base `%s'", parname, basename);
+        throw cRuntimeError(this, "type of parameter `%s' differs from that in base `%s'", parname, basename);
 }
 
 bool cNEDDeclaration::parMatchesInterface(cPar *par, const cPar *ifpar)
 {
     if (par->type()!=basepar->type() || par->isVolatile()!=ifpar->isVolatile())
-        throw new cRuntimeError(this, "type of parameter `%s' differs from that in interface `%s'", parname, interfacename);
+        throw cRuntimeError(this, "type of parameter `%s' differs from that in interface `%s'", parname, interfacename);
 
     if (ifpar->isSet()) // values must match as well
     {
         if (!par->isSet())
-            throw new cRuntimeError(this, "parameter `%s' must have the same value as in interface `%s'", parname, interfacename);
+            throw cRuntimeError(this, "parameter `%s' must have the same value as in interface `%s'", parname, interfacename);
 
         if (ifpar->isConstant())
         {
             if (!par->isConstant())
-                throw new cRuntimeError(this, "parameter `%s' must have the same value as in interface `%s'", parname, interfacename);
+                throw cRuntimeError(this, "parameter `%s' must have the same value as in interface `%s'", parname, interfacename);
             if (!const_cast<cPar&>(ifpar).equals(*par))   //FIXME const_cast -- eliminate
-                throw new cRuntimeError(this, "parameter `%s' must have the same value as in interface `%s'", parname, interfacename);
+                throw cRuntimeError(this, "parameter `%s' must have the same value as in interface `%s'", parname, interfacename);
         }
         else
         {
@@ -500,7 +500,7 @@ void cInterfaceNEDDeclaration::resolve()
         // find and resolve interface declaration
         cInterfaceNEDDeclaration *ifdecl = findInterfaceDeclaration(interfacename);
         if (!ifdecl)
-            throw new cRuntimeError(this, "declaration for interface `%s' not found", interfacename);
+            throw cRuntimeError(this, "declaration for interface `%s' not found", interfacename);
         if (!ifdecl->isResolved())
             ifdecl->resolve();
 
@@ -509,7 +509,7 @@ void cInterfaceNEDDeclaration::resolve()
         {
             int k = findPar(ifdecl->parName(i));
             if (k<0)
-                throw new cRuntimeError(this, "has no parameter `%s' required by interface `%s'", ifdecl->parName(i), interfacename);
+                throw cRuntimeError(this, "has no parameter `%s' required by interface `%s'", ifdecl->parName(i), interfacename);
             verifyParameterMatch(params[k].value, ifdecl->par(i), ifdecl->parName(i), interfacename);
         }
 
@@ -518,14 +518,14 @@ void cInterfaceNEDDeclaration::resolve()
         {
             int k = findGate(ifdecl->gateName(i));
             if (k<0)
-                throw new cRuntimeError(this, "has no gate `%s' required by interface `%s'", ifdecl->gateName(i), interfacename);
+                throw cRuntimeError(this, "has no gate `%s' required by interface `%s'", ifdecl->gateName(i), interfacename);
             GateDescription& g = gates[k];
             if (g.type != ifdecl->gateType(i))
-                throw new cRuntimeError(this, "type of gate `%s' differs from that in interface `%s'", ifdecl->gateName(i), interfacename);
+                throw cRuntimeError(this, "type of gate `%s' differs from that in interface `%s'", ifdecl->gateName(i), interfacename);
             if (g.isvector != ifdecl->gateIsVector(i))
-                throw new cRuntimeError(this, "vectorness of gate `%s' differs from that in interface `%s'", ifdecl->gateName(i), interfacename);
+                throw cRuntimeError(this, "vectorness of gate `%s' differs from that in interface `%s'", ifdecl->gateName(i), interfacename);
             if (ifdecl->gateSize(i)!=-1 && g.gatesize!=ifdecl->gateSize(i))
-                throw new cRuntimeError(this, "size of gate vector `%s[]' differs from that in interface `%s'", ifdecl->gateName(i), interfacename);
+                throw cRuntimeError(this, "size of gate vector `%s[]' differs from that in interface `%s'", ifdecl->gateName(i), interfacename);
         }
     }
 }

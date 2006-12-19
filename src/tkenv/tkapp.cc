@@ -294,19 +294,17 @@ void TOmnetTkApp::doOneStep()
         outvectmgr->flush();
         outscalarmgr->flush();
     }
-    catch (cTerminationException *e)
+    catch (cTerminationException& e)
     {
         simstate = SIM_TERMINATED;
         stoppedWithTerminationException(e);
         displayMessage(e);
-        delete e;
     }
-    catch (cException *e)
+    catch (cException& e)
     {
         simstate = SIM_ERROR;
         stoppedWithException(e);
         displayError(e);
-        delete e;
     }
     stopClock();
     stopsimulation_flag = false;
@@ -359,19 +357,17 @@ void TOmnetTkApp::runSimulation(int mode, simtime_t until_time, long until_event
         outvectmgr->flush();
         outscalarmgr->flush();
     }
-    catch (cTerminationException *e)
+    catch (cTerminationException& e)
     {
         simstate = SIM_TERMINATED;
         stoppedWithTerminationException(e);
         displayMessage(e);
-        delete e;
     }
-    catch (cException *e)
+    catch (cException& e)
     {
         simstate = SIM_ERROR;
         stoppedWithException(e);
         displayError(e);
-        delete e;
     }
     stopClock();
     stopsimulation_flag = false;
@@ -593,10 +589,9 @@ void TOmnetTkApp::finishSimulation()
 
         checkFingerprint();
     }
-    catch (cException *e)
+    catch (cException& e)
     {
         displayError(e);
-        delete e;
     }
 
     // then endrun
@@ -604,10 +599,9 @@ void TOmnetTkApp::finishSimulation()
     {
         endRun();
     }
-    catch (cException *e)
+    catch (cException& e)
     {
         displayError(e);
-        delete e;
     }
     simstate = SIM_FINISHCALLED;
 
@@ -622,10 +616,9 @@ void TOmnetTkApp::loadNedFile(const char *fname)
     {
         simulation.loadNedFile(fname);
     }
-    catch (cException *e)
+    catch (cException& e)
     {
         displayError(e);
-        delete e;
     }
 }
 
@@ -661,10 +654,9 @@ void TOmnetTkApp::newNetwork(const char *network_name)
 
         simstate = SIM_NEW;
     }
-    catch (cException *e)
+    catch (cException& e)
     {
         displayError(e);
-        delete e;
         simstate = SIM_ERROR;
     }
 
@@ -706,10 +698,9 @@ void TOmnetTkApp::newRun(int run)
         startRun();
         simstate = SIM_NEW;
     }
-    catch (cException *e)
+    catch (cException& e)
     {
         displayError(e);
-        delete e;
         simstate = SIM_ERROR;
     }
 

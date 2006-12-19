@@ -46,26 +46,22 @@
 // Turns exceptions into Tcl errors
 //
 #define TRY(code) \
-  try {code;} catch (cException *e) { \
-      Tcl_SetResult(interp, TCLCONST(e->message()), TCL_VOLATILE); \
-      delete e; \
+  try {code;} catch (cException& e) { \
+      Tcl_SetResult(interp, TCLCONST(e.message()), TCL_VOLATILE); \
       return TCL_ERROR; \
-  } catch (Exception *e) { \
-      Tcl_SetResult(interp, TCLCONST(e->message()), TCL_VOLATILE); \
-      delete e; \
+  } catch (Exception& e) { \
+      Tcl_SetResult(interp, TCLCONST(e.message()), TCL_VOLATILE); \
       return TCL_ERROR; \
   }
 
 #define E_TRY   try {
 
 #define E_CATCH \
-  } catch (cException *e) { \
-      Tcl_SetResult(interp, TCLCONST(e->message()), TCL_VOLATILE); \
-      delete e; \
+  } catch (cException& e) { \
+      Tcl_SetResult(interp, TCLCONST(e.message()), TCL_VOLATILE); \
       return TCL_ERROR; \
-  } catch (Exception *e) { \
-      Tcl_SetResult(interp, TCLCONST(e->message()), TCL_VOLATILE); \
-      delete e; \
+  } catch (Exception& e) { \
+      Tcl_SetResult(interp, TCLCONST(e.message()), TCL_VOLATILE); \
       return TCL_ERROR; \
   }
 

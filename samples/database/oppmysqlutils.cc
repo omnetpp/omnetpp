@@ -40,7 +40,7 @@ void opp_mysql_connectToDB(MYSQL *mysql, cConfiguration *cfg, const char *prefix
     if (usepipe)
         mysql_options(mysql, MYSQL_OPT_NAMED_PIPE, 0);
     if (!mysql_real_connect(mysql, host, user, passwd, db, port, socket, clientflag))
-        throw new cRuntimeError("MySQL error: Failed to connect to database: %s", mysql_error(mysql));
+        throw cRuntimeError("MySQL error: Failed to connect to database: %s", mysql_error(mysql));
 }
 
 void opp_mysql_bindSTRING(MYSQL_BIND& bind, const char *buf, size_t buflen, unsigned long& len)
@@ -82,7 +82,7 @@ void opp_mysql_assignSTRING(MYSQL_BIND& bind, char *buf, const char *s)
 int opp_mysql_substitute(std::string& query, const char *substring, const char *value, MYSQL *mysql)
 {
     if (!substring || !substring[0])
-        throw new cRuntimeError("opp_mysql_substitute(): substring cannot be NULL or ''");
+        throw cRuntimeError("opp_mysql_substitute(): substring cannot be NULL or ''");
     if (!value)
         value = "";
 
@@ -100,7 +100,7 @@ int opp_mysql_substitute(std::string& query, const char *substring, const char *
     delete [] quotedvalue;
 
     if (count==0)
-        throw new cRuntimeError("opp_mysql_substitute(): substring '%s' not found in '%s'", substring, query.c_str());
+        throw cRuntimeError("opp_mysql_substitute(): substring '%s' not found in '%s'", substring, query.c_str());
 
     return count;
 }

@@ -32,7 +32,7 @@ cProperties::~cProperties()
 cProperties& cProperties::operator=(const cProperties& other)
 {
     if (islocked)
-        throw new cRuntimeError(this, eLOCKED);
+        throw cRuntimeError(this, eLOCKED);
 
     // note: do NOT copy islocked flag
 
@@ -69,14 +69,14 @@ void cProperties::netPack(cCommBuffer *buffer)
 void cProperties::netUnpack(cCommBuffer *buffer)
 {
     if (islocked)
-        throw new cRuntimeError(this, eLOCKED);
+        throw cRuntimeError(this, eLOCKED);
     // TBD
 }
 
 cProperty *cProperties::get(int k) const
 {
     if (k<0 || k>=propv.size())
-        throw new cRuntimeError(this, "property index %d out of range", k);
+        throw cRuntimeError(this, "property index %d out of range", k);
     return propv[k];
 }
 
@@ -91,7 +91,7 @@ cProperty *cProperties::get(const char *name, const char *index) const
 void cProperties::add(cProperty *p)
 {
     if (islocked)
-        throw new cRuntimeError(this, eLOCKED);
+        throw cRuntimeError(this, eLOCKED);
     propv.push_back(p);
     p->setOwner(this);
 }
@@ -99,10 +99,10 @@ void cProperties::add(cProperty *p)
 void cProperties::remove(int k)
 {
     if (islocked)
-        throw new cRuntimeError(this, eLOCKED);
+        throw cRuntimeError(this, eLOCKED);
 
     if (k<0 || k>=propv.size())
-        throw new cRuntimeError(this, "property index %d out of range", k);
+        throw cRuntimeError(this, "property index %d out of range", k);
 
     delete propv[k];
     propv.erase(propv.begin()+k);

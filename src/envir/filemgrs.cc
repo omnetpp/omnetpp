@@ -44,7 +44,7 @@ Register_Class(cFileOutputVectorManager);
 #ifdef CHECK
 #undef CHECK
 #endif
-#define CHECK(fprintf)    if (fprintf<0) throw new cRuntimeError("Cannot write output vector file `%s'", fname.c_str())
+#define CHECK(fprintf)    if (fprintf<0) throw cRuntimeError("Cannot write output vector file `%s'", fname.c_str())
 
 // helper function
 static void createFileName(opp_string& fname, int run_no, const char *configentry, const char *defaultval)
@@ -60,7 +60,7 @@ static void createFileName(opp_string& fname, int run_no, const char *configentr
 static void removeFile(const char *fname, const char *descr)
 {
     if (unlink(fname)!=0 && errno!=ENOENT)
-        throw new cRuntimeError("Cannot remove %s `%s': %s", descr, fname, strerror(errno));
+        throw cRuntimeError("Cannot remove %s `%s': %s", descr, fname, strerror(errno));
 }
 
 cFileOutputVectorManager::cFileOutputVectorManager()
@@ -79,7 +79,7 @@ void cFileOutputVectorManager::openFile()
 {
     f = fopen(fname.c_str(),"a");
     if (f==NULL)
-        throw new cRuntimeError("Cannot open output file `%s'",fname.c_str());
+        throw cRuntimeError("Cannot open output file `%s'",fname.c_str());
 }
 
 void cFileOutputVectorManager::closeFile()
@@ -197,7 +197,7 @@ Register_Class(cFileOutputScalarManager);
 #ifdef CHECK
 #undef CHECK
 #endif
-#define CHECK(fprintf)    if (fprintf<0) throw new cRuntimeError("Cannot write output scalar file `%s'", fname.c_str())
+#define CHECK(fprintf)    if (fprintf<0) throw cRuntimeError("Cannot write output scalar file `%s'", fname.c_str())
 
 cFileOutputScalarManager::cFileOutputScalarManager()
 {
@@ -214,7 +214,7 @@ void cFileOutputScalarManager::openFile()
 {
     f = fopen(fname.c_str(),"a");
     if (f==NULL)
-        throw new cRuntimeError("Cannot open output file `%s'",fname.c_str());
+        throw cRuntimeError("Cannot open output file `%s'",fname.c_str());
 }
 
 void cFileOutputScalarManager::closeFile()

@@ -27,9 +27,9 @@ cNEDFunction::cNEDFunction(const char *name, NEDFunction f, const char *argtypes
     if (!argtypes) argtypes = "";
     if (!rettype) rettype = "";
     if (strspn(argtypes,"BLDSX*")!=strlen(argtypes))
-        throw new cRuntimeError("Define_NED_Function(%s): invalid type character in argtypes string \"%s\"", name, argtypes);
+        throw cRuntimeError("Define_NED_Function(%s): invalid type character in argtypes string \"%s\"", name, argtypes);
     if (strlen(rettype)!=1 || strspn(rettype,"BLDSX*")!=strlen(rettype))
-        throw new cRuntimeError("Define_NED_Function(%s): invalid return type \"%s\"", name, argtypes);
+        throw cRuntimeError("Define_NED_Function(%s): invalid return type \"%s\"", name, argtypes);
 
     this->rettype = rettype[0];
     this->argtypes = argtypes;

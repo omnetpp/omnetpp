@@ -25,9 +25,9 @@
 %exception {
     try {
         $action
-    } catch (Exception *e) {
-        SWIG_exception(SWIG_RuntimeError,const_cast<char*>(e->message()));
-    } catch (std::exception e) {
+    } catch (Exception& e) {
+        SWIG_exception(SWIG_RuntimeError,const_cast<char*>(e.message()));
+    } catch (std::exception& e) {
         SWIG_exception(SWIG_RuntimeError,const_cast<char*>(e.what()));
     }
 }
@@ -92,7 +92,7 @@ import java.lang.reflect.Constructor;
          for (int i = 0; i < bodyConstructors.size(); i++)
             if (bodyConstructors.get(i).getName().equals(className))
                constructor = bodyConstructors.get(i);
-      
+
          if (constructor == null)
          {
             String name = "org.omnetpp.common.engine." + className;
@@ -100,10 +100,10 @@ import java.lang.reflect.Constructor;
             constructor = clazz.getDeclaredConstructor(long.class, boolean.class);
             bodyConstructors.add(constructor);
          }
-	  
+
          return (IBody)constructor.newInstance(cPtr, isOwner);
       }
-      catch (Exception e) {
+      catch (Exception& e) {
          throw new RuntimeException(e);
       }
    }
@@ -130,7 +130,7 @@ import java.lang.reflect.Constructor;
          for (int i = 0; i < forceProviderConstructors.size(); i++)
             if (forceProviderConstructors.get(i).getName().equals(className))
                constructor = forceProviderConstructors.get(i);
-      
+
          if (constructor == null)
          {
             String name = "org.omnetpp.common.engine." + className;
@@ -138,10 +138,10 @@ import java.lang.reflect.Constructor;
             constructor = clazz.getDeclaredConstructor(long.class, boolean.class);
             forceProviderConstructors.add(constructor);
          }
-	  
+
          return (IForceProvider)constructor.newInstance(cPtr, isOwner);
       }
-      catch (Exception e) {
+      catch (Exception& e) {
          throw new RuntimeException(e);
       }
    }

@@ -29,7 +29,7 @@ typedef long long int64;
 #ifndef NDEBUG
 #define EASSERT(expr)  \
   ((void) ((expr) ? 0 : \
-           (throw new Exception("ASSERT: condition %s false, %s line %d", \
+           (throw Exception("ASSERT: condition %s false, %s line %d", \
                              #expr, __FILE__, __LINE__), 0)))
 #else
 #define ASSERT(expr)  ((void)0)

@@ -115,9 +115,8 @@ static double parseQuantity(const char *text, std::string& unit)
         // evaluate quantities like "5s 230ms"
         return UnitConversion().parseQuantity(text, unit);
     }
-    catch (Exception *e) {
-        yyerror(e->message());
-        delete e;
+    catch (Exception& e) {
+        yyerror(e.message());
         return 0;
     }
 }
@@ -312,7 +311,7 @@ void doParseExpression(const char *nedtext, cDynamicExpression::Elem *&elems, in
     // alloc buffer
     struct yy_buffer_state *handle = yy_scan_string(nedtext);
     if (!handle)
-        throw new cRuntimeError("Error during expression parsing: unable to allocate work memory");
+        throw cRuntimeError("Error during expression parsing: unable to allocate work memory");
 
     cDynamicExpression::Elem *v = new cDynamicExpression::Elem[100]; // overestimate for now; XXX danger of overrun
     e = v;
@@ -323,11 +322,11 @@ void doParseExpression(const char *nedtext, cDynamicExpression::Elem *&elems, in
     {
         ret = yyparse();
     }
-    catch (Exception *e)
+    catch (Exception& e)
     {
         // FIXME wrap and re-throw!!!
     }
-    catch (cException *e)
+    catch (cException& e)
     {
         yy_delete_buffer(handle);
         throw;
@@ -349,6 +348,6 @@ void yyerror(const char *s)
     if (buf[strlen(buf)-1] == '\n')
         buf[strlen(buf)-1] = '\0';
 
-    throw new cRuntimeError("Error parsing expression: %s", buf);
+    throw cRuntimeError("Error parsing expression: %s", buf);
 }
 

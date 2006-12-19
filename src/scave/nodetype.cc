@@ -31,7 +31,7 @@ void NodeType::checkAttrNames(const StringMap& attrs) const
         const char *attr = it->first.c_str();
         StringMap::iterator j = allowedAttrs.find(attr);
         if (j==allowedAttrs.end())
-            throw new Exception("illegal attribute `%s'", attr);
+            throw Exception("illegal attribute `%s'", attr);
     }
 
     // do we have all attributes?
@@ -40,7 +40,7 @@ void NodeType::checkAttrNames(const StringMap& attrs) const
         const char *attr = i->first.c_str();
         StringMap::const_iterator it = attrs.find(attr);
         if (it==attrs.end())
-            throw new Exception("missing attribute `%s'", attr);
+            throw Exception("missing attribute `%s'", attr);
     }
 }
 

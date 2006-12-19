@@ -186,11 +186,11 @@ class cSnapshotWriterVisitor : public cVisitor
 bool cSimulation::snapshot(cObject *object, const char *label)
 {
     if (!object)
-        throw new cRuntimeError("snapshot(): object pointer is NULL");
+        throw cRuntimeError("snapshot(): object pointer is NULL");
 
     ostream *osptr = ev.getStreamForSnapshot();
     if (!osptr)
-        throw new cRuntimeError("Could not create stream for snapshot");
+        throw cRuntimeError("Could not create stream for snapshot");
 
     ostream& os = *osptr;
 
@@ -211,7 +211,7 @@ bool cSimulation::snapshot(cObject *object, const char *label)
     ev.releaseStreamForSnapshot(&os);
 
     if (!success)
-        throw new cRuntimeError("Could not write snapshot");
+        throw cRuntimeError("Could not write snapshot");
     return success;
 }
 
@@ -235,7 +235,7 @@ static void writesubmodules(ostream& os, cModule *p, int indent )
 void cSimulation::setScheduler(cScheduler *sched)
 {
     if (schedulerp)
-        throw new cRuntimeError(this, "setScheduler() can only be called once");
+        throw cRuntimeError(this, "setScheduler() can only be called once");
     schedulerp = sched;
 }
 
@@ -244,7 +244,7 @@ void cSimulation::loadNedFile(const char *nedfile, bool isXML)
 #ifdef WITH_NETBUILDER
     cNEDLoader::instance()->loadNedFile(nedfile, isXML);
 #else
-    throw new cRuntimeError("cannot load `%s': simulation kernel was compiled without "
+    throw cRuntimeError("cannot load `%s': simulation kernel was compiled without "
                             "support for dynamic loading of NED files (WITH_NETBUILDER=no)", nedfile);
 #endif
 }
@@ -322,7 +322,7 @@ cModule *cSimulation::moduleByPath(const char *path) const
         else
         {
             if (s[strlen(s)-1]!=']')
-                throw new cRuntimeError("moduleByPath(): syntax error in path `%s'", path);
+                throw cRuntimeError("moduleByPath(): syntax error in path `%s'", path);
             *b='\0';
             modp = modp->submodule(s,atoi(b+1));
         }
@@ -339,7 +339,7 @@ void cSimulation::setupNetwork(cModuleType *network, int run_num)
     objectlist.clear();
 #endif
     if (!network)
-        throw new cRuntimeError(eNONET);
+        throw cRuntimeError(eNONET);
 
     // set run number
     run_number = run_num;
@@ -358,7 +358,7 @@ void cSimulation::setupNetwork(cModuleType *network, int run_num)
         mod->readParams();
         mod->buildInside();
     }
-    catch (cException *)
+    catch (cException&)
     {
         // we could clean up the whole stuff with deleteNetwork()
         // before passing the exception back, but it is dangerous.
@@ -368,17 +368,17 @@ void cSimulation::setupNetwork(cModuleType *network, int run_num)
         //deleteNetwork();
         throw;
     }
-    catch (std::exception e)
+    catch (std::exception& e)
     {
         // omit deleteNetwork() -- see note above
         //deleteNetwork();
-        throw new cRuntimeError("standard C++ exception %s: %s",
+        throw cRuntimeError("standard C++ exception %s: %s",
                                 opp_typename(typeid(e)), e.what());
     }
     //catch (...) -- this is probably not a good idea because it makes debugging more difficult
     //{
     //    deleteNetwork();
-    //    throw new cRuntimeError("unknown exception occurred");
+    //    throw cRuntimeError("unknown exception occurred");
     //}
 
     printf("setupNetwork finished, cParValue objects in use: %ld\n", cParValue::liveParValueObjectCount()); //XXX
@@ -428,7 +428,7 @@ void cSimulation::deleteNetwork()
         return;  // network already deleted
 
     if (contextModule()!=NULL)
-        throw new cRuntimeError("Attempt to delete network during simulation");
+        throw cRuntimeError("Attempt to delete network during simulation");
 
     // delete all modules recursively
     systemmodp->deleteModule();
@@ -517,7 +517,7 @@ cSimpleModule *cSimulation::guessNextModule()
 void cSimulation::transferTo(cSimpleModule *modp)
 {
     if (modp==NULL)
-        throw new cRuntimeError("transferTo(): attempt to transfer to NULL");
+        throw cRuntimeError("transferTo(): attempt to transfer to NULL");
 
     // switch to activity() of the simple module
     simulation.exception = NULL;
@@ -525,7 +525,7 @@ void cSimulation::transferTo(cSimpleModule *modp)
     cCoroutine::switchTo(modp->coroutine);
 
     if (modp->stackOverflow())
-        throw new cRuntimeError("Stack violation in module (%s)%s: module stack too small? "
+        throw cRuntimeError("Stack violation in module (%s)%s: module stack too small? "
                                 "Try increasing it in the class' Module_Class_Members() or constructor",
                                 modp->className(), modp->fullPath().c_str());
 
@@ -588,13 +588,12 @@ void cSimulation::doOneEvent(cSimpleModule *mod)
             mod->handleMessage(msg);
         }
     }
-    catch (cDeleteModuleException *e)
+    catch (cDeleteModuleException& e)
     {
         setGlobalContext();
         delete mod;
-        delete e;
     }
-    catch (cException *)
+    catch (cException&)
     {
         // restore global context before throwing exception further
         setGlobalContext();

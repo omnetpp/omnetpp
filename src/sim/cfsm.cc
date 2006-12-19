@@ -58,11 +58,11 @@ std::string cFSM::info() const
 
 void cFSM::netPack(cCommBuffer *buffer)
 {
-    throw new cRuntimeError(this,"netPack() not implemented");
+    throw cRuntimeError(this,"netPack() not implemented");
 }
 
 void cFSM::netUnpack(cCommBuffer *buffer)
 {
-    throw new cRuntimeError(this,"netUnpack() not implemented");
+    throw cRuntimeError(this,"netUnpack() not implemented");
 }
 

@@ -24,7 +24,7 @@
 #ifdef CHECK
 #undef CHECK
 #endif
-#define CHECK(fprintf)    if (fprintf<0) throw new Exception("Cannot write output vector file `%s'", fileName.c_str())
+#define CHECK(fprintf)    if (fprintf<0) throw Exception("Cannot write output vector file `%s'", fileName.c_str())
 
 VectorFileWriterNode::VectorFileWriterNode(const char *fileName, const char *fileHeader)
 {
@@ -59,7 +59,7 @@ void VectorFileWriterNode::process()
     {
         f = fopen(fileName.c_str(), "w");
         if (!f)
-            throw new Exception("cannot open `%s' for write", fileName.c_str());
+            throw Exception("cannot open `%s' for write", fileName.c_str());
 
         // print file header and vector declarations
         CHECK(fprintf(f,"%s\n\n", fileHeader.c_str()));

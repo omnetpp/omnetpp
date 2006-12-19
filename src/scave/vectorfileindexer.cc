@@ -46,7 +46,7 @@ static std::string createTempFileName(const std::string baseFileName)
     std::string tmpFileName = prefix;
     int serial = 0;
     char buffer[11];
-    while (existsFile(tmpFileName)) 
+    while (existsFile(tmpFileName))
         tmpFileName = prefix+itoa(serial++, buffer, 10);
     return tmpFileName;
 }
@@ -58,7 +58,7 @@ void VectorFileIndexer::generateIndex(const char* fileName)
         ResultFile *f = resultFileManager.loadFile(fileName); // TODO: limit number of lines read
         if (!f)
         {
-            throw new Exception("Error: %s: load() returned null", fileName);
+            throw Exception("Error: %s: load() returned null", fileName);
         }
         else if (f->numUnrecognizedLines>0)
         {
@@ -86,7 +86,7 @@ void VectorFileIndexer::generateIndex(const char* fileName)
         attrs["filename"]=tmpFileName;
         attrs["indexfilename"]=createIndexFileName(fileName);
         IndexedVectorFileWriterNode *writer = (IndexedVectorFileWriterNode*)writerNodeType->create(dataflowManager, attrs);
-        
+
         // create a ports for each vector on reader node and writer node and connect them
         IDList vectorIDList = resultFileManager.getAllVectors();
         for (int i=0; i<vectorIDList.size(); i++)
@@ -103,7 +103,7 @@ void VectorFileIndexer::generateIndex(const char* fileName)
 
         // rename
         if (unlink(fileName)!=0 && errno!=ENOENT)
-            throw new Exception("Cannot remove original file `%s': %s", fileName, strerror(errno));
+            throw Exception("Cannot remove original file `%s': %s", fileName, strerror(errno));
         else if (rename(tmpFileName.c_str(), fileName)!=0)
-            throw new Exception("Cannot rename vector file from '%s' to '%s': %s", tmpFileName.c_str(), fileName, strerror(errno));
+            throw Exception("Cannot rename vector file from '%s' to '%s': %s", tmpFileName.c_str(), fileName, strerror(errno));
 }

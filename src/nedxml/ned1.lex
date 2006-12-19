@@ -132,7 +132,7 @@ static char textbuf[TEXTBUF_LEN];
 
 \"                      { count(); BEGIN(stringliteral); }
 <stringliteral>{
-      \n                { throw new NEDException("unterminated string literal (append backslash to line for multi-line strings)"); }
+      \n                { throw NEDException("unterminated string literal (append backslash to line for multi-line strings)"); }
       \\\n              { extendCount(); /* line continuation */ }
       \\\"              { extendCount(); /* qouted quote */ }
       \\[^\n\"]         { extendCount(); /* qouted char */ }

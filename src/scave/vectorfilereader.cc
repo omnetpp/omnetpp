@@ -74,7 +74,7 @@ void VectorFileReaderNode::process()
             char *e;
             int vectorId = (int) strtol(vec[0],&e,10);
             if (*e)
-                throw new Exception("invalid vector file syntax: invalid vector id column, line %d", ftok.lineNum());
+                throw Exception("invalid vector file syntax: invalid vector id column, line %d", ftok.lineNum());
 
             Portmap::iterator portvec = ports.find(vectorId);
             if (portvec!=ports.end())
@@ -82,7 +82,7 @@ void VectorFileReaderNode::process()
                 // parse time and value
                 Datum a;
                 if (!parseDouble(vec[1],a.x) || !parseDouble(vec[2],a.y))
-                    throw new Exception("invalid vector file syntax: invalid time or value column, line %d", ftok.lineNum());
+                    throw Exception("invalid vector file syntax: invalid time or value column, line %d", ftok.lineNum());
 
                 // write to port(s)
                 for (PortVector::iterator p=portvec->second.begin(); p!=portvec->second.end(); ++p)
@@ -96,7 +96,7 @@ void VectorFileReaderNode::process()
     // ignore "incomplete last line" error, because we might be reading
     // a vec file currently being written by a simulation
     if (!ftok.ok() && !ftok.eof() && ftok.errorCode()!=FileTokenizer::INCOMPLETELINE)
-        throw new Exception(ftok.errorMsg().c_str());
+        throw Exception(ftok.errorMsg().c_str());
 }
 
 bool VectorFileReaderNode::finished() const

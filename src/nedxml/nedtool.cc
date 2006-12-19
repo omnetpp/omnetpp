@@ -211,9 +211,9 @@ bool processFile(const char *fname, NEDErrorStore *errors)
     NEDDTDValidator dtdvalidator(errors);
     try {
         dtdvalidator.validate(tree);
-    } catch(NEDException *e) {
+    } catch(NEDException& e) {
         // FIXME embed exception handling in validate()!
-        fprintf(stderr,"nedtool: NEDException: %s\n",e->errorMessage());
+        fprintf(stderr,"nedtool: NEDException: %s\n",e.errorMessage());
         delete tree;
         return false;
     }

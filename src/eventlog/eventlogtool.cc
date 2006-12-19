@@ -314,7 +314,7 @@ void echo(Options options)
 
     delete eventLog;
 }
-        
+
 void consistency(Options options)
 {
     if (options.verbose)
@@ -413,7 +413,7 @@ void filter(Options options)
 
     delete eventLog;
 }
-        
+
 void usage(char *message)
 {
     if (message)
@@ -591,8 +591,8 @@ int main(int argc, char **argv)
                 else
                     usage("Unknown or invalid command");
             }
-            catch (Exception *e) {
-                fprintf(stderr, "Error: %s\n", e->message());
+            catch (Exception& e) {
+                fprintf(stderr, "Error: %s\n", e.message());
             }
 
             if (options.outputFileName)

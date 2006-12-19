@@ -97,7 +97,7 @@ void TCmdenvApp::readOptions()
         ::printf("Cmdenv: redirecting output to file `%s'...\n",opt_outputfile.c_str());
         FILE *out = fopen(opt_outputfile.c_str(), "w");
         if (!out)
-            throw new cRuntimeError("Cannot open output file `%s'",opt_outputfile.c_str());
+            throw cRuntimeError("Cannot open output file `%s'",opt_outputfile.c_str());
         fout = out;
     }
 }
@@ -213,7 +213,7 @@ int TCmdenvApp::run()
             // find network
             cModuleType *network = cModuleType::find(opt_network_name.c_str());
             if (!network)
-                throw new cRuntimeError("Network `%s' not found, check .ini and .ned files", opt_network_name.c_str());
+                throw cRuntimeError("Network `%s' not found, check .ini and .ned files", opt_network_name.c_str());
 
             // set up network
             ::fprintf(fout, "Setting up network `%s'...\n", opt_network_name.c_str());
@@ -244,12 +244,11 @@ int TCmdenvApp::run()
 
             checkFingerprint();
         }
-        catch (cException *e)
+        catch (cException& e)
         {
             had_error = true;
             stoppedWithException(e);
             displayError(e);
-            delete e;
         }
 
         // call endRun()
@@ -259,11 +258,10 @@ int TCmdenvApp::run()
             {
                 endRun();
             }
-            catch (cException *e)
+            catch (cException& e)
             {
                 had_error = true;
                 displayError(e);
-                delete e;
             }
         }
 
@@ -274,11 +272,10 @@ int TCmdenvApp::run()
             {
                 simulation.deleteNetwork();
             }
-            catch (cException *e)
+            catch (cException& e)
             {
                 had_error = true;
                 displayError(e);
-                delete e;
             }
         }
 
@@ -308,7 +305,7 @@ void TCmdenvApp::simulate()
            {
                cSimpleModule *mod = simulation.selectNextModule();
                if (!mod)
-                   throw new cTerminationException("scheduler interrupted while waiting");
+                   throw cTerminationException("scheduler interrupted while waiting");
 
                // print event banner if neccessary
                if (opt_eventbanners && mod->isEvEnabled())
@@ -343,7 +340,7 @@ void TCmdenvApp::simulate()
 
                checkTimeLimits();
                if (sigint_received)
-                   throw new cTerminationException("SIGINT or SIGTERM received, exiting");
+                   throw cTerminationException("SIGINT or SIGTERM received, exiting");
            }
         }
         else
@@ -355,7 +352,7 @@ void TCmdenvApp::simulate()
            {
                cSimpleModule *mod = simulation.selectNextModule();
                if (!mod)
-                   throw new cTerminationException("scheduler interrupted while waiting");
+                   throw cTerminationException("scheduler interrupted while waiting");
 
                speedometer.addEvent(simulation.simTime());
 
@@ -399,20 +396,19 @@ void TCmdenvApp::simulate()
 
                checkTimeLimits();
                if (sigint_received)
-                   throw new cTerminationException("SIGINT or SIGTERM received, exiting");
+                   throw cTerminationException("SIGINT or SIGTERM received, exiting");
            }
         }
     }
-    catch (cTerminationException *e)
+    catch (cTerminationException& e)
     {
         ev.disable_tracing = false;
         stopClock();
         stoppedWithTerminationException(e);
         displayMessage(e);
-        delete e;
         return;
     }
-    catch (cException *e)
+    catch (cException& e)
     {
         ev.disable_tracing = false;
         stopClock();

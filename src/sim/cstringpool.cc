@@ -53,7 +53,7 @@ void cStringPool::release(const char *s)
     if (!s)
         return;
     if (!cStaticFlag::isSet())  //XXX alternatively: just ignore release() calls after shutdown
-        throw new cRuntimeError("cStringPool: release(\"%s\"): strings must be released before shutdown! "
+        throw cRuntimeError("cStringPool: release(\"%s\"): strings must be released before shutdown! "
                                 "(Hint: some object with that name being deleted too late?)", s);
 
     StringIntMap::iterator it = pool.find(const_cast<char *>(s));

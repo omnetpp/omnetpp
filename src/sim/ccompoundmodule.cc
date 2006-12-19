@@ -52,7 +52,7 @@ void cCompoundModule::doBuildInside()
 void cCompoundModule::arrived(cMessage *msg, int g, simtime_t)
 {
     cGate *gt = gate(g);
-    throw new cRuntimeError("Gate `%s' of compound module (%s)%s is not connected on the %s, "
+    throw cRuntimeError("Gate `%s' of compound module (%s)%s is not connected on the %s, "
                             "upon arrival of message (%s)%s",
                             gt->fullName(),
                             className(), fullPath().c_str(),

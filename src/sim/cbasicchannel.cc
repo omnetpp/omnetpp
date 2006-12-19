@@ -57,7 +57,7 @@ void cBasicChannel::initialize()
 void cBasicChannel::checkInitialized() const
 {
     if (!(flags & FL_INITIALIZED))
-        throw new cRuntimeError(this, "channel object not initialized yet, try calling the same method in a later init stage");
+        throw cRuntimeError(this, "channel object not initialized yet, try calling the same method in a later init stage");
 }
 
 void cBasicChannel::rereadPars()
@@ -68,11 +68,11 @@ void cBasicChannel::rereadPars()
     datarate_ = par("datarate");
 
     if (delay_<0)
-        throw new cRuntimeError(this, "negative delay %g", delay_);
+        throw cRuntimeError(this, "negative delay %g", delay_);
     if (error_<0 || error_>1)
-        throw new cRuntimeError(this,"wrong bit error rate %g", error_);
+        throw cRuntimeError(this,"wrong bit error rate %g", error_);
     if (datarate_<0)
-        throw new cRuntimeError(this, "negative datarate %g", datarate_);
+        throw cRuntimeError(this, "negative datarate %g", datarate_);
 
     flags &= ~FL_BASICCHANNELFLAGS;
     if (par("disabled")) flags |= FL_ISDISABLED;

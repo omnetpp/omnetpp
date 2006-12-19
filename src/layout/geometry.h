@@ -22,7 +22,7 @@
 #ifndef NDEBUG
 #define ASSERT(expr)  \
   ((void) ((expr) ? 0 : \
-           (throw new Exception("ASSERT: condition %s false, %s line %d", \
+           (throw Exception("ASSERT: condition %s false, %s line %d", \
                              #expr, __FILE__, __LINE__), 0)))
 #else
 #define ASSERT(expr)  ((void)0)
@@ -52,7 +52,7 @@ class Pt
         Pt(const Pt& pt) {
             assign(pt);
         }
-    
+
         Pt& assign(const Pt& pt) {
             return assign(pt.x, pt.y);
         }
@@ -82,14 +82,14 @@ class Pt
 
             return sqrt(dx * dx + dy * dy);
         }
-        
+
         double getAngle() {
             return atan2(y, x);
         }
-        
+
         void rotate(double rotateAngle) {
             double angle = getAngle();
-            
+
             if (!isNaN(angle)) {
                 double length = getLength();
                 angle += rotateAngle;
@@ -152,7 +152,7 @@ class Pt
         Pt& transpose() {
             return assign(y, -x);
         }
-        
+
         void setNaNToZero() {
             if (isNaN(x))
                 x = 0;
@@ -200,7 +200,7 @@ class Ln {
         Ln(double x1, double y1, double x2, double y2) {
             assign(Pt(x1, y1), Pt(x2, y2));
         }
-    
+
         Ln(Pt& begin, Pt& end) {
             assign(begin, end);
         }
@@ -278,12 +278,12 @@ class Rs {
         bool isNil() {
             return isNaN(width) && isNaN(height);
         }
-        
+
         double getDiagonalLength()
         {
             return sqrt(width * width + height * height);
         }
-        
+
         double getArea()
         {
             return width * height;
@@ -327,7 +327,7 @@ class Rc {
         bool contains(Pt& p) {
             return pt.x <= p.x && p.x <= pt.x + rs.width && pt.y <= p.y && p.y <= pt.y + rs.height;
         }
-        
+
         double getLeft() {
             return pt.x;
         }
@@ -335,7 +335,7 @@ class Rc {
         double getRight() {
             return pt.x + rs.width;
         }
-        
+
         double getTop() {
             return pt.y;
         }
@@ -373,7 +373,7 @@ class Cc {
         Pt origin;
 
         double radius;
-    
+
     public:
         Cc() {
             assign(Pt::getNil(), NaN);
@@ -386,7 +386,7 @@ class Cc {
         Cc(Pt& origin, double radius) {
             assign(origin, radius);
         }
-        
+
         Cc& assign(Pt& origin, double radius) {
             this->origin = origin;
             this->radius = radius;
@@ -397,22 +397,22 @@ class Cc {
         bool contains(Pt& pt) {
             return origin.getDistance(pt) <= radius;
         }
-        
+
         std::vector<Pt> intersect(Cc& other) {
             double R2 = radius * radius;
             double r2 = other.radius * other.radius;
             double d = origin.getDistance(other.origin);
             double d2 = d * d;
             double a = (d2 - r2 + R2);
-            
+
             if (d2 == 0)
                 return std::vector<Pt>();
 
             double y2 = (4 * d2 * R2 - a * a) / (4 * d2);
-            
+
             if (y2 < 0)
                 return std::vector<Pt>();
-            
+
             double y = sqrt(y2);
             double x = (d2 - r2 + R2) / (2 * d);
             Pt pt1 = Pt(x, y);
@@ -423,7 +423,7 @@ class Cc {
             pt1.add(origin);
             pt2.add(origin);
 
-            std::vector<Pt> pts; 
+            std::vector<Pt> pts;
             pts.push_back(pt1);
             pts.push_back(pt2);
 
@@ -432,13 +432,13 @@ class Cc {
 
         static Cc getEnclosingCircle(std::vector<Cc>& circles) {
             Cc cc = circles[0];
-            
+
             for (std::vector<Cc>::iterator it = circles.begin(); it != circles.end(); it++)
                 cc = cc.getEnclosingCircle(*it);
 
             return cc;
         }
-        
+
         Cc getEnclosingCircle(Cc& other) {
             double distance = origin.getDistance(other.origin);
             double d = distance + std::max(radius, other.radius - distance) + std::max(other.radius, radius - distance);

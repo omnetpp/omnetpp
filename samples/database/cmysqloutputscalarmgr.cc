@@ -58,9 +58,9 @@ void cMySQLOutputScalarManager::openDB()
     // prepare and bind INSERT INTO SCALAR...
     insertScalarStmt = mysql_stmt_init(mysql);
     if (!insertScalarStmt)
-        throw new cRuntimeError("MySQL error: out of memory");
+        throw cRuntimeError("MySQL error: out of memory");
     if (mysql_stmt_prepare(insertScalarStmt, SQL_INSERT_SCALAR, strlen(SQL_INSERT_SCALAR)))
-        throw new cRuntimeError("MySQL error: prepare statement failed: %s", mysql_error(mysql));
+        throw cRuntimeError("MySQL error: prepare statement failed: %s", mysql_error(mysql));
     ASSERT(mysql_stmt_param_count(insertScalarStmt)==sizeof(insScalarBind)/sizeof(MYSQL_BIND));
 
     opp_mysql_bindLONG(  insScalarBind[0], runidBuf); // scalar.runid
@@ -69,7 +69,7 @@ void cMySQLOutputScalarManager::openDB()
     opp_mysql_bindDOUBLE(insScalarBind[3], valueBuf); // scalar.value
 
     if (mysql_stmt_bind_param(insertScalarStmt, insScalarBind))
-        throw new cRuntimeError("MySQL error: bind failed: %s", mysql_error(mysql));
+        throw cRuntimeError("MySQL error: bind failed: %s", mysql_error(mysql));
 }
 
 void cMySQLOutputScalarManager::closeDB()
@@ -84,7 +84,7 @@ void cMySQLOutputScalarManager::closeDB()
 void cMySQLOutputScalarManager::commitDB()
 {
     if (mysql_commit(mysql))
-        throw new cRuntimeError("MySQL error: COMMIT failed: %s", mysql_error(mysql));
+        throw cRuntimeError("MySQL error: COMMIT failed: %s", mysql_error(mysql));
 }
 
 void cMySQLOutputScalarManager::startRun()
@@ -115,7 +115,7 @@ void cMySQLOutputScalarManager::insertRunIntoDB()
         opp_mysql_substitute(insertRunStmt, "@runnumber@", simulation.runNumber(), mysql);
         opp_mysql_substitute(insertRunStmt, "@network@", simulation.networkType()->name(), mysql);
         if (mysql_query(mysql, insertRunStmt.c_str()))
-            throw new cRuntimeError("MySQL error: INSERT failed: %s", mysql_error(mysql));
+            throw cRuntimeError("MySQL error: INSERT failed: %s", mysql_error(mysql));
 
         // query the automatic runid from the newly inserted row
         runId = (long) mysql_insert_id(mysql);
@@ -136,7 +136,7 @@ void cMySQLOutputScalarManager::recordScalar(cModule *module, const char *name, 
     valueBuf = value;
 
     if (mysql_stmt_execute(insertScalarStmt))
-        throw new cRuntimeError("MySQL error: INSERT failed: %s", mysql_error(mysql));
+        throw cRuntimeError("MySQL error: INSERT failed: %s", mysql_error(mysql));
 
     // commit every once in a while
     if (++insertCount == commitFreq)

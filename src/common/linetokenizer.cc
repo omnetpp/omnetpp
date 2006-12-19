@@ -40,7 +40,7 @@ LineTokenizer::~LineTokenizer()
 int LineTokenizer::tokenize(char *line, int length)
 {
     if (length > lineBufferSize)
-        throw new Exception("Cannot tokenize lines longer than %d", lineBufferSize);
+        throw Exception("Cannot tokenize lines longer than %d", lineBufferSize);
 
     strncpy(lineBuffer, line, lineBufferSize);
 
@@ -74,7 +74,7 @@ int LineTokenizer::tokenize(char *line, int length)
                     s++;
             // check we found the close quote
             if (*s!='"')
-                throw new Exception("Unmatched quote in file");
+                throw Exception("Unmatched quote in file");
             // terminate quoted string with zero, overwriting close quote
             *s++ = 0;
         }
@@ -90,7 +90,7 @@ int LineTokenizer::tokenize(char *line, int length)
 
         // add token to the array (if there's room); s points to the rest of the string
         if (numtokens==vecsize)
-            throw new Exception("Too many tokens on a line, max %d allowed", vecsize-1);
+            throw Exception("Too many tokens on a line, max %d allowed", vecsize-1);
         vec[numtokens++] = token;
     }
     return numtokens;

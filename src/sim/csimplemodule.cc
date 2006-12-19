@@ -72,6 +72,8 @@ void cSimpleModule::activate(void *p)
     sprintf(buf,"timeout-%d", mod->id());
     starter->setName(buf);
 
+#if 0
+//FIXME add back!!!
     cException *exception = NULL;
     try
     {
@@ -82,12 +84,12 @@ void cSimpleModule::activate(void *p)
         //
         mod->activity();
     }
-    catch (cException *e)
+    catch (cException& e)
     {
         // IMPORTANT: No transferTo() in catch blocks! See Note 2 below.
         exception = e;
     }
-    catch (std::exception e)
+    catch (std::exception& e)
     {
         // wrap it into a cRuntimeError
         exception = new cRuntimeError("standard C++ exception %s: %s", opp_typename(typeid(e)), e.what());
@@ -135,6 +137,7 @@ void cSimpleModule::activate(void *p)
         simulation.transferToMain();
         assert(("INTERNAL ERROR: switch to the fiber of a module already terminated",false));
     }
+#endif  //FIXME
 }
 
 // legacy constructor, only for backwards compatiblity; first two args are unused
@@ -153,7 +156,7 @@ cSimpleModule::cSimpleModule(const char *, cModule *, unsigned stksize)
        // setup coroutine, allocate stack for it
        coroutine = new cCoroutine;
        if (!coroutine->setup(cSimpleModule::activate, this, stksize+ev.extraStackForEnvir()))
-           throw new cRuntimeError("Cannot create coroutine with %d+%d bytes of stack space for module `%s' -- "
+           throw cRuntimeError("Cannot create coroutine with %d+%d bytes of stack space for module `%s' -- "
                                    "see Manual for hints on how to increase the number of coroutines that can be created, "
                                    "or rewrite modules to use handleMessage() instead of activity()",
                                    stksize,ev.extraStackForEnvir(),fullPath().c_str());
@@ -175,7 +178,7 @@ cSimpleModule::cSimpleModule(unsigned stksize)
        // setup coroutine, allocate stack for it
        coroutine = new cCoroutine;
        if (!coroutine->setup(cSimpleModule::activate, this, stksize+ev.extraStackForEnvir()))
-           throw new cRuntimeError("Cannot create coroutine with %d+%d bytes of stack space for module `%s' -- "
+           throw cRuntimeError("Cannot create coroutine with %d+%d bytes of stack space for module `%s' -- "
                                    "see Manual for hints on how to increase the number of coroutines that can be created, "
                                    "or rewrite modules to use handleMessage() instead of activity()",
                                    stksize,ev.extraStackForEnvir(),fullPath().c_str());
@@ -185,7 +188,7 @@ cSimpleModule::cSimpleModule(unsigned stksize)
 cSimpleModule::~cSimpleModule()
 {
     if (simulation.context()==this)
-        throw new cRuntimeError(this, "cannot delete itself, only via deleteModule()");
+        throw cRuntimeError(this, "cannot delete itself, only via deleteModule()");
 
     if (usesActivity())
     {
@@ -243,12 +246,12 @@ void cSimpleModule::setId(int n)
 void cSimpleModule::halt()
 {
     if (!usesactivity)
-        throw new cRuntimeError("halt() can only be invoked from activity()-based simple modules");
+        throw cRuntimeError("halt() can only be invoked from activity()-based simple modules");
 
     isterminated = true;
     simulation.transferToMain();
     assert(stack_cleanup_requested);
-    throw new cStackCleanupException();
+    throw cStackCleanupException();
 }
 
 void cSimpleModule::error(const char *fmt...) const
@@ -259,7 +262,7 @@ void cSimpleModule::error(const char *fmt...) const
     vsprintf(buf,fmt,va);
     va_end(va);
 
-    throw new cRuntimeError(eUSER,buf);
+    throw cRuntimeError(eUSER,buf);
 }
 
 //---------
@@ -278,7 +281,7 @@ void cSimpleModule::scheduleStart(simtime_t t)
         return;
 
     if (timeoutmsg!=NULL)
-        throw new cRuntimeError("scheduleStart(): module `%s' already started",fullPath().c_str());
+        throw cRuntimeError("scheduleStart(): module `%s' already started",fullPath().c_str());
 
     // create timeoutmsg, used as internal timeout message
     char buf[24];
@@ -299,7 +302,7 @@ void cSimpleModule::deleteModule()
     {
         // this module is committing suicide: gotta get outta here, and leave
         // doing simulation.deleteModule(id()) to whoever catches the exception
-        throw new cDeleteModuleException();
+        throw cDeleteModuleException();
     }
 
     // simple case: we're being deleted from main or from another module
@@ -325,7 +328,7 @@ int cSimpleModule::sendDelayed(cMessage *msg, double delay, const char *gatename
 {
     cGate *outgate = gate(gatename,sn);
     if (outgate==NULL)
-       throw new cRuntimeError(sn<0 ? "send()/sendDelayed(): module has no gate `%s'":
+       throw cRuntimeError(sn<0 ? "send()/sendDelayed(): module has no gate `%s'":
                                "send()/sendDelayed(): module has no gate `%s[%d]'",gatename,sn);
     return sendDelayed(msg, delay, outgate);
 }
@@ -334,7 +337,7 @@ int cSimpleModule::sendDelayed(cMessage *msg, double delay, int g)
 {
     cGate *outgate = gate(g);
     if (outgate==NULL)
-        throw new cRuntimeError("send()/sendDelayed(): module has no gate #%d",g);
+        throw cRuntimeError("send()/sendDelayed(): module has no gate #%d",g);
     return sendDelayed(msg, delay, outgate);
 }
 
@@ -342,17 +345,17 @@ int cSimpleModule::sendDelayed(cMessage *msg, double delay, cGate *outgate)
 {
     // error checking:
     if (outgate==NULL)
-       throw new cRuntimeError("send()/sendDelayed(): gate pointer is NULL");
+       throw cRuntimeError("send()/sendDelayed(): gate pointer is NULL");
     if (outgate->type()=='I')
-       throw new cRuntimeError("send()/sendDelayed(): cannot send via an input gate (`%s')",outgate->name());
+       throw cRuntimeError("send()/sendDelayed(): cannot send via an input gate (`%s')",outgate->name());
     if (!outgate->toGate())  // NOTE: without this error check, msg would become self-message
-       throw new cRuntimeError("send()/sendDelayed(): gate `%s' not connected",outgate->fullName());
+       throw cRuntimeError("send()/sendDelayed(): gate `%s' not connected",outgate->fullName());
     if (msg==NULL)
-        throw new cRuntimeError("send()/sendDelayed(): message pointer is NULL");
+        throw cRuntimeError("send()/sendDelayed(): message pointer is NULL");
     if (msg->owner()!=this)
     {
         if (this!=simulation.contextModule())
-            throw new cRuntimeError("send()/sendDelayed() of module (%s)%s called in the context of "
+            throw cRuntimeError("send()/sendDelayed() of module (%s)%s called in the context of "
                                     "module (%s)%s: method called from the latter module "
                                     "lacks Enter_Method() or Enter_Method_Silent()? "
                                     "Also, if message to be sent is passed from that module, "
@@ -361,25 +364,25 @@ int cSimpleModule::sendDelayed(cMessage *msg, double delay, cGate *outgate)
                                     simulation.contextModule()->className(),
                                     simulation.contextModule()->fullPath().c_str());
         else if (msg->owner()==&simulation.msgQueue && msg->isSelfMessage() && msg->arrivalModuleId()==id())
-            throw new cRuntimeError("send()/sendDelayed(): cannot send message (%s)%s, it is "
+            throw cRuntimeError("send()/sendDelayed(): cannot send message (%s)%s, it is "
                                     "currently scheduled as a self-message for this module",
                                     msg->className(), msg->name());
         else if (msg->owner()==&simulation.msgQueue && msg->isSelfMessage())
-            throw new cRuntimeError("send()/sendDelayed(): cannot send message (%s)%s, it is "
+            throw cRuntimeError("send()/sendDelayed(): cannot send message (%s)%s, it is "
                                     "currently scheduled as a self-message for ANOTHER module",
                                     msg->className(), msg->name());
         else if (msg->owner()==&simulation.msgQueue)
-            throw new cRuntimeError("send()/sendDelayed(): cannot send message (%s)%s, it is "
+            throw cRuntimeError("send()/sendDelayed(): cannot send message (%s)%s, it is "
                                     "currently in scheduled-events, being underway between two modules",
                                     msg->className(), msg->name());
         else
-            throw new cRuntimeError("send()/sendDelayed(): cannot send message (%s)%s, "
+            throw cRuntimeError("send()/sendDelayed(): cannot send message (%s)%s, "
                                     "it is currently contained/owned by (%s)%s",
                                     msg->className(), msg->name(), msg->owner()->className(),
                                     msg->owner()->fullPath().c_str());
     }
     if (delay<0.0)
-        throw new cRuntimeError("sendDelayed(): negative delay %g",delay);
+        throw cRuntimeError("sendDelayed(): negative delay %g",delay);
 
     // set message parameters and send it
     msg->setSentFrom(this, outgate->id(), simTime()+delay);
@@ -395,7 +398,7 @@ int cSimpleModule::sendDirect(cMessage *msg, double propdelay, cModule *mod, int
 {
     cGate *togate = mod->gate(g);
     if (togate==NULL)
-        throw new cRuntimeError("sendDirect(): module `%s' has no gate #%d",mod->fullPath().c_str(),g);
+        throw cRuntimeError("sendDirect(): module `%s' has no gate #%d",mod->fullPath().c_str(),g);
 
     return sendDirect(msg, propdelay, togate);
 }
@@ -404,10 +407,10 @@ int cSimpleModule::sendDirect(cMessage *msg, double propdelay,
                               cModule *mod, const char *gatename, int sn)
 {
     if (!mod)
-        throw new cRuntimeError("sendDirect(): module ptr is NULL");
+        throw cRuntimeError("sendDirect(): module ptr is NULL");
     cGate *togate = mod->gate(gatename,sn);
     if (togate==NULL)
-        throw new cRuntimeError(sn<0 ? "sendDirect(): module `%s' has no gate `%s'":
+        throw cRuntimeError(sn<0 ? "sendDirect(): module `%s' has no gate `%s'":
                                 "sendDirect(): module `%s' has no gate `%s[%d]'",
                                 mod->fullPath().c_str(),gatename,sn);
     return sendDirect(msg, propdelay, togate);
@@ -418,17 +421,17 @@ int cSimpleModule::sendDirect(cMessage *msg, double propdelay, cGate *togate)
     // Note: it is permitted to send to an output gate. It is especially useful
     // with several submodules sending to a single output gate of their parent module.
     if (togate==NULL)
-        throw new cRuntimeError("sendDirect(): destination gate pointer is NULL");
+        throw cRuntimeError("sendDirect(): destination gate pointer is NULL");
     if (togate->fromGate())
-        throw new cRuntimeError("sendDirect(): module must have dedicated gate(s) for receiving via sendDirect()"
+        throw cRuntimeError("sendDirect(): module must have dedicated gate(s) for receiving via sendDirect()"
                                 " (\"from\" side of dest. gate `%s' should NOT be connected)",togate->fullPath().c_str());
 
     if (msg==NULL)
-        throw new cRuntimeError("sendDirect(): message pointer is NULL");
+        throw cRuntimeError("sendDirect(): message pointer is NULL");
     if (msg->owner()!=this)
     {
         if (this!=simulation.contextModule())
-            throw new cRuntimeError("sendDirect() of module (%s)%s called in the context of "
+            throw cRuntimeError("sendDirect() of module (%s)%s called in the context of "
                                     "module (%s)%s: method called from the latter module "
                                     "lacks Enter_Method() or Enter_Method_Silent()? "
                                     "Also, if message to be sent is passed from that module, "
@@ -437,19 +440,19 @@ int cSimpleModule::sendDirect(cMessage *msg, double propdelay, cGate *togate)
                                     simulation.contextModule()->className(),
                                     simulation.contextModule()->fullPath().c_str());
         else if (msg->owner()==&simulation.msgQueue && msg->isSelfMessage() && msg->arrivalModuleId()==id())
-            throw new cRuntimeError("sendDirect(): cannot send message (%s)%s, it is "
+            throw cRuntimeError("sendDirect(): cannot send message (%s)%s, it is "
                                     "currently scheduled as a self-message for this module",
                                     msg->className(), msg->name());
         else if (msg->owner()==&simulation.msgQueue && msg->isSelfMessage())
-            throw new cRuntimeError("sendDirect(): cannot send message (%s)%s, it is "
+            throw cRuntimeError("sendDirect(): cannot send message (%s)%s, it is "
                                     "currently scheduled as a self-message for ANOTHER module",
                                     msg->className(), msg->name());
         else if (msg->owner()==&simulation.msgQueue)
-            throw new cRuntimeError("sendDirect(): cannot send message (%s)%s, it is "
+            throw cRuntimeError("sendDirect(): cannot send message (%s)%s, it is "
                                     "currently in scheduled-events, being underway between two modules",
                                     msg->className(), msg->name());
         else
-            throw new cRuntimeError("sendDirect(): cannot send message (%s)%s, "
+            throw cRuntimeError("sendDirect(): cannot send message (%s)%s, "
                                     "it is currently contained/owned by (%s)%s",
                                     msg->className(), msg->name(), msg->owner()->className(),
                                     msg->owner()->fullPath().c_str());
@@ -467,33 +470,33 @@ int cSimpleModule::sendDirect(cMessage *msg, double propdelay, cGate *togate)
 int cSimpleModule::scheduleAt(simtime_t t, cMessage *msg)
 {
     if (msg==NULL)
-        throw new cRuntimeError("scheduleAt(): message pointer is NULL");
+        throw cRuntimeError("scheduleAt(): message pointer is NULL");
     if (t<simTime())
-        throw new cRuntimeError(eBACKSCHED, msg->className(), msg->name(), (double)t);
+        throw cRuntimeError(eBACKSCHED, msg->className(), msg->name(), (double)t);
     if (msg->owner()!=this)
     {
         if (this!=simulation.contextModule())
-            throw new cRuntimeError("scheduleAt() of module (%s)%s called in the context of "
+            throw cRuntimeError("scheduleAt() of module (%s)%s called in the context of "
                                     "module (%s)%s: method called from the latter module "
                                     "lacks Enter_Method() or Enter_Method_Silent()?",
                                     className(), fullPath().c_str(),
                                     simulation.contextModule()->className(),
                                     simulation.contextModule()->fullPath().c_str());
         else if (msg->owner()==&simulation.msgQueue && msg->isSelfMessage() && msg->arrivalModuleId()==id())
-            throw new cRuntimeError("scheduleAt(): message (%s)%s is currently scheduled, "
+            throw cRuntimeError("scheduleAt(): message (%s)%s is currently scheduled, "
                                     "use cancelEvent() before rescheduling",
                                     msg->className(), msg->name());
         else if (msg->owner()==&simulation.msgQueue && msg->isSelfMessage())
-            throw new cRuntimeError("scheduleAt(): cannot schedule message (%s)%s, it is "
+            throw cRuntimeError("scheduleAt(): cannot schedule message (%s)%s, it is "
                                     "currently scheduled as self-message for ANOTHER module",
                                     msg->className(), msg->name());
 
          else if (msg->owner()==&simulation.msgQueue)
-            throw new cRuntimeError("scheduleAt(): cannot schedule message (%s)%s, it is "
+            throw cRuntimeError("scheduleAt(): cannot schedule message (%s)%s, it is "
                                     "currently in scheduled-events, being underway between two modules",
                                     msg->className(), msg->name());
         else
-            throw new cRuntimeError("scheduleAt(): cannot schedule message (%s)%s, "
+            throw cRuntimeError("scheduleAt(): cannot schedule message (%s)%s, "
                                     "it is currently contained/owned by (%s)%s",
                                     msg->className(), msg->name(), msg->owner()->className(),
                                     msg->owner()->fullPath().c_str());
@@ -511,7 +514,7 @@ cMessage *cSimpleModule::cancelEvent(cMessage *msg)
 {
     // make sure we really have the message and it is scheduled
     if (msg==NULL)
-        throw new cRuntimeError("cancelEvent(): message pointer is NULL");
+        throw cRuntimeError("cancelEvent(): message pointer is NULL");
 
     // now remove it from future events and return pointer
     if (msg->isScheduled())
@@ -528,9 +531,9 @@ void cSimpleModule::cancelAndDelete(cMessage *msg)
 void cSimpleModule::arrived( cMessage *msg, int ongate, simtime_t t)
 {
     if (isterminated)
-        throw new cRuntimeError(eMODFIN,fullPath().c_str());
+        throw cRuntimeError(eMODFIN,fullPath().c_str());
     if (t<simTime())
-        throw new cRuntimeError("causality violation: message `%s' arrival time %s at module `%s' "
+        throw cRuntimeError("causality violation: message `%s' arrival time %s at module `%s' "
                                 "is earlier than current simulation time",
                                 msg->name(), simtimeToStr(t), fullPath().c_str());
     msg->setArrival(this, ongate, t);
@@ -540,21 +543,21 @@ void cSimpleModule::arrived( cMessage *msg, int ongate, simtime_t t)
 void cSimpleModule::wait(simtime_t t)
 {
     if (!usesactivity)
-        throw new cRuntimeError(eNORECV);
+        throw cRuntimeError(eNORECV);
     if (t<0)
-        throw new cRuntimeError(eNEGTIME);
+        throw cRuntimeError(eNEGTIME);
 
     timeoutmsg->setArrivalTime(simTime()+t);
     simulation.msgQueue.insert( timeoutmsg );
 
     simulation.transferToMain();
     if (stack_cleanup_requested)
-        throw new cStackCleanupException();
+        throw cStackCleanupException();
 
     cMessage *newmsg = simulation.msgQueue.getFirst();
 
     if (newmsg!=timeoutmsg)
-        throw new cRuntimeError("message arrived during wait() call ((%s)%s); if this "
+        throw cRuntimeError("message arrived during wait() call ((%s)%s); if this "
                                 "should be allowed, use waitAndEnqueue() instead of wait()",
                                 newmsg->className(), newmsg->fullName());
 }
@@ -562,11 +565,11 @@ void cSimpleModule::wait(simtime_t t)
 void cSimpleModule::waitAndEnqueue(simtime_t t, cQueue *queue)
 {
     if (!usesactivity)
-        throw new cRuntimeError(eNORECV);
+        throw cRuntimeError(eNORECV);
     if (t<0)
-        throw new cRuntimeError(eNEGTIME);
+        throw cRuntimeError(eNEGTIME);
     if (!queue)
-        throw new cRuntimeError("waitAndEnqueue(): queue pointer is NULL");
+        throw cRuntimeError("waitAndEnqueue(): queue pointer is NULL");
 
     timeoutmsg->setArrivalTime(simTime()+t);
     simulation.msgQueue.insert( timeoutmsg );
@@ -575,7 +578,7 @@ void cSimpleModule::waitAndEnqueue(simtime_t t, cQueue *queue)
     {
         simulation.transferToMain();
         if (stack_cleanup_requested)
-            throw new cStackCleanupException();
+            throw cStackCleanupException();
 
         cMessage *newmsg = simulation.msgQueue.getFirst();
 
@@ -594,11 +597,11 @@ void cSimpleModule::waitAndEnqueue(simtime_t t, cQueue *queue)
 cMessage *cSimpleModule::receive()
 {
     if (!usesactivity)
-        throw new cRuntimeError(eNORECV);
+        throw cRuntimeError(eNORECV);
 
     simulation.transferToMain();
     if (stack_cleanup_requested)
-        throw new cStackCleanupException();
+        throw cStackCleanupException();
 
     cMessage *newmsg = simulation.msgQueue.getFirst();
 
@@ -610,16 +613,16 @@ cMessage *cSimpleModule::receive()
 cMessage *cSimpleModule::receive(simtime_t t)
 {
     if (!usesactivity)
-        throw new cRuntimeError(eNORECV);
+        throw cRuntimeError(eNORECV);
     if (t<0)
-        throw new cRuntimeError(eNEGTOUT);
+        throw cRuntimeError(eNEGTOUT);
 
     timeoutmsg->setArrivalTime(simTime()+t);
     simulation.msgQueue.insert( timeoutmsg );
 
     simulation.transferToMain();
     if (stack_cleanup_requested)
-        throw new cStackCleanupException();
+        throw cStackCleanupException();
 
     cMessage *newmsg = simulation.msgQueue.getFirst();
 
@@ -642,14 +645,14 @@ void cSimpleModule::activity()
 {
     // default thread function
     // the user must redefine this for the module to do anything useful
-    throw new cRuntimeError("Redefine activity() or specify zero stack size to use handleMessage()");
+    throw cRuntimeError("Redefine activity() or specify zero stack size to use handleMessage()");
 }
 
 void cSimpleModule::handleMessage(cMessage *)
 {
     // handleMessage is an alternative to activity()
     // this is the default version
-    throw new cRuntimeError("Redefine handleMessage() or specify non-zero stack size to use activity()");
+    throw cRuntimeError("Redefine handleMessage() or specify non-zero stack size to use activity()");
 }
 
 //-------------
@@ -661,7 +664,7 @@ simtime_t cSimpleModule::simTime() const
 
 void cSimpleModule::endSimulation()
 {
-    throw new cTerminationException(eENDSIM);
+    throw cTerminationException(eENDSIM);
 }
 
 void cSimpleModule::breakpoint(const char *label)

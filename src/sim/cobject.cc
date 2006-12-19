@@ -57,7 +57,7 @@ std::string cObject::detailedInfo() const
 
 cObject *cObject::dup() const
 {
-    throw new cRuntimeError("The dup() method, declared in cObject, is not "
+    throw cRuntimeError("The dup() method, declared in cObject, is not "
                             "redefined in class %s", className());
 }
 
@@ -71,7 +71,7 @@ void cObject::netUnpack(cCommBuffer *buffer)
 
 void cObject::copyNotSupported() const
 {
-    throw new cRuntimeError(this,eCANTCOPY);
+    throw cRuntimeError(this,eCANTCOPY);
 }
 
 void cObject::forEachChild(cVisitor *v)

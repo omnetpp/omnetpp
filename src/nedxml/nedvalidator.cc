@@ -85,10 +85,9 @@ void  NEDValidatorBase::validateElement(NEDElement *node)
             default: INTERNAL_ERROR1(node,"validateElement(): unknown tag '%s'", node->getTagName());
         }
     }
-    catch (NEDException *e)
+    catch (NEDException& e)
     {
-        INTERNAL_ERROR1(node,"validateElement(): NEDException: %s", e->errorMessage());
-        delete e;
+        INTERNAL_ERROR1(node,"validateElement(): NEDException: %s", e.errorMessage());
     }
 }
 

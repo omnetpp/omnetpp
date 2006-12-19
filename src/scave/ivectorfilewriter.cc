@@ -20,7 +20,7 @@
 #include "ivectorfilewriter.h"
 #include "stringutil.h"
 
-#define CHECK(printf) if (printf<0) throw new Exception("Cannot write vector file '%s'", fileName.c_str());
+#define CHECK(printf) if (printf<0) throw Exception("Cannot write vector file '%s'", fileName.c_str());
 
 #ifndef min
 #define min(a,b)     ( (a)<(b) ? (a) : (b) )
@@ -31,7 +31,7 @@ static FILE *openFile(const std::string fileName)
 {
     FILE *f = fopen(fileName.c_str(),"w");
     if (f==NULL)
-        throw new Exception("Cannot open index file `%s'", fileName.c_str());
+        throw Exception("Cannot open index file `%s'", fileName.c_str());
     return f;
 }
 
@@ -139,7 +139,7 @@ void IndexedVectorFileWriterNode::writeRecordsToBuffer(VectorInputPort *port)
             port->sumSqr += a.y*a.y;
         }
         else
-            throw new Exception("Cannot write data to output buffer.");
+            throw Exception("Cannot write data to output buffer.");
     }
 }
 
@@ -152,7 +152,7 @@ void IndexedVectorFileWriterNode::writeBufferToFile(VectorInputPort *port)
     port->clearBuffer();
 }
 
-#define CHECK_I(printf) if (printf<0) throw new Exception("Cannot write index file '%s'", indexFileName.c_str());
+#define CHECK_I(printf) if (printf<0) throw Exception("Cannot write index file '%s'", indexFileName.c_str());
 
 void IndexedVectorFileWriterNode::writeIndex(VectorInputPort *port)
 {

@@ -180,11 +180,11 @@ if ($generate_classes)
     print CC "// Another default rule (prevents compiler from choosing base class' doPacking())\n";
     print CC "template<typename T>\n";
     print CC "void doPacking(cCommBuffer *, T& t) {\n";
-    print CC "    throw new cRuntimeError(\"Parsim error: no doPacking() function for type %s or its base class (check .msg and _m.cc/h files!)\",opp_typename(typeid(t)));\n";
+    print CC "    throw cRuntimeError(\"Parsim error: no doPacking() function for type %s or its base class (check .msg and _m.cc/h files!)\",opp_typename(typeid(t)));\n";
     print CC "}\n";
     print CC "template<typename T>\n";
     print CC "void doUnpacking(cCommBuffer *, T& t) {\n";
-    print CC "    throw new cRuntimeError(\"Parsim error: no doUnpacking() function for type %s or its base class (check .msg and _m.cc/h files!)\",opp_typename(typeid(t)));\n";
+    print CC "    throw cRuntimeError(\"Parsim error: no doUnpacking() function for type %s or its base class (check .msg and _m.cc/h files!)\",opp_typename(typeid(t)));\n";
     print CC "}\n";
     print CC "\n";
     print CC "// Automatically supply array (un)packing functions\n";
@@ -1109,7 +1109,7 @@ sub generateClass
         print H "    $msgclass& operator=(const $msgclass& other);\n";
     }
     if ($gap) {
-        print H "    virtual $msgclass *dup() const {throw new cRuntimeError(\"You forgot to manually add a dup() function to class $realmsgclass\");}\n";
+        print H "    virtual $msgclass *dup() const {throw cRuntimeError(\"You forgot to manually add a dup() function to class $realmsgclass\");}\n";
     } else {
         print H "    virtual $msgclass *dup() const {return new $msgclass(*this);}\n";
     }
@@ -1378,12 +1378,12 @@ sub generateClass
                 print CC "}\n\n";
                 print CC "$rettype{$fieldname} $msgclass\:\:$getter{$fieldname}(unsigned int k)$constifprimitivetype\n";
                 print CC "{\n";
-                print CC "    if (k>=$farraysize{$fieldname}) throw new cRuntimeError(\"Array of size $farraysize{$fieldname} indexed by \%d\", k);\n";
+                print CC "    if (k>=$farraysize{$fieldname}) throw cRuntimeError(\"Array of size $farraysize{$fieldname} indexed by \%d\", k);\n";
                 print CC "    return $var{$fieldname}\[k\]$maybe_c_str{$fieldname};\n";
                 print CC "}\n\n";
                 print CC "void $msgclass\:\:$setter{$fieldname}(unsigned int k, $argtype{$fieldname} $var{$fieldname})\n";
                 print CC "{\n";
-                print CC "    if (k>=$farraysize{$fieldname}) throw new cRuntimeError(\"Array of size $farraysize{$fieldname} indexed by \%d\", k);\n";
+                print CC "    if (k>=$farraysize{$fieldname}) throw cRuntimeError(\"Array of size $farraysize{$fieldname} indexed by \%d\", k);\n";
                 print CC "    this->$var{$fieldname}\[k\] = $var{$fieldname};\n";
                 print CC "}\n\n";
             } elsif ($fisarray{$fieldname} && $farraysize{$fieldname} eq '') {
@@ -1412,12 +1412,12 @@ sub generateClass
                 print CC "}\n\n";
                 print CC "$rettype{$fieldname} $msgclass\:\:$getter{$fieldname}(unsigned int k)$constifprimitivetype\n";
                 print CC "{\n";
-                print CC "    if (k>=$varsize{$fieldname}) throw new cRuntimeError(\"Array of size \%d indexed by \%d\", $varsize{$fieldname}, k);\n";
+                print CC "    if (k>=$varsize{$fieldname}) throw cRuntimeError(\"Array of size \%d indexed by \%d\", $varsize{$fieldname}, k);\n";
                 print CC "    return $var{$fieldname}\[k\]$maybe_c_str{$fieldname};\n";
                 print CC "}\n\n";
                 print CC "void $msgclass\:\:$setter{$fieldname}(unsigned int k, $argtype{$fieldname} $var{$fieldname})\n";
                 print CC "{\n";
-                print CC "    if (k>=$varsize{$fieldname}) throw new cRuntimeError(\"Array of size \%d indexed by \%d\", $varsize{$fieldname}, k);\n";
+                print CC "    if (k>=$varsize{$fieldname}) throw cRuntimeError(\"Array of size \%d indexed by \%d\", $varsize{$fieldname}, k);\n";
                 print CC "    this->$var{$fieldname}\[k\]=$var{$fieldname};\n";
                 print CC "}\n\n";
             } else {

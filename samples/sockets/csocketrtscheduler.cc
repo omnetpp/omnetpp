@@ -41,7 +41,7 @@ cSocketRTScheduler::~cSocketRTScheduler()
 void cSocketRTScheduler::startRun()
 {
     if (initsocketlibonce()!=0)
-        throw new cRuntimeError("cSocketRTScheduler: Cannot initialize socket library");
+        throw cRuntimeError("cSocketRTScheduler: Cannot initialize socket library");
 
     gettimeofday(&baseTime, NULL);
 
@@ -59,14 +59,14 @@ void cSocketRTScheduler::setupListener()
 {
     listenerSocket = socket(AF_INET, SOCK_STREAM, 0);
     if (listenerSocket==INVALID_SOCKET)
-        throw new cRuntimeError("cSocketRTScheduler: cannot create socket");
+        throw cRuntimeError("cSocketRTScheduler: cannot create socket");
 
     sockaddr_in sinInterface;
     sinInterface.sin_family = AF_INET;
     sinInterface.sin_addr.s_addr = INADDR_ANY;
     sinInterface.sin_port = htons(port);
     if (bind(listenerSocket, (sockaddr*)&sinInterface, sizeof(sockaddr_in))==SOCKET_ERROR)
-        throw new cRuntimeError("cSocketRTScheduler: socket bind() failed");
+        throw cRuntimeError("cSocketRTScheduler: socket bind() failed");
 
     listen(listenerSocket, SOMAXCONN);
 }
@@ -84,9 +84,9 @@ void cSocketRTScheduler::executionResumed()
 void cSocketRTScheduler::setInterfaceModule(cModule *mod, cMessage *notifMsg, char *buf, int bufSize, int *nBytesPtr)
 {
     if (module)
-        throw new cRuntimeError("cSocketRTScheduler: setInterfaceModule() already called");
+        throw cRuntimeError("cSocketRTScheduler: setInterfaceModule() already called");
     if (!mod || !notifMsg || !buf || !bufSize || !nBytesPtr)
-        throw new cRuntimeError("cSocketRTScheduler: setInterfaceModule(): arguments must be non-NULL");
+        throw cRuntimeError("cSocketRTScheduler: setInterfaceModule(): arguments must be non-NULL");
 
     module = mod;
     notificationMsg = notifMsg;
@@ -123,7 +123,7 @@ bool cSocketRTScheduler::receiveWithTimeout(long usec)
             char *bufPtr = recvBuffer + (*numBytesPtr);
             int bufLeft = recvBufferSize - (*numBytesPtr);
             if (bufLeft<=0)
-                throw new cRuntimeError("cSocketRTScheduler: interface module's recvBuffer is full");
+                throw cRuntimeError("cSocketRTScheduler: interface module's recvBuffer is full");
             int nBytes = recv(connSocket, bufPtr, bufLeft, 0);
             if (nBytes==SOCKET_ERROR)
             {
@@ -135,7 +135,7 @@ bool cSocketRTScheduler::receiveWithTimeout(long usec)
             {
                 ev << "cSocketRTScheduler: socket closed by the client\n";
                 if (shutdown(connSocket, SHUT_WR) == SOCKET_ERROR)
-                    throw new cRuntimeError("cSocketRTScheduler: shutdown() failed");
+                    throw cRuntimeError("cSocketRTScheduler: shutdown() failed");
                 closesocket(connSocket);
                 connSocket = INVALID_SOCKET;
             }
@@ -162,7 +162,7 @@ bool cSocketRTScheduler::receiveWithTimeout(long usec)
             int addrSize = sizeof(sinRemote);
             connSocket = accept(listenerSocket, (sockaddr*)&sinRemote, (socklen_t*)&addrSize);
             if (connSocket==INVALID_SOCKET)
-                throw new cRuntimeError("cSocketRTScheduler: accept() failed");
+                throw cRuntimeError("cSocketRTScheduler: accept() failed");
             ev << "cSocketRTScheduler: connected!\n";
         }
     }
@@ -197,7 +197,7 @@ cMessage *cSocketRTScheduler::getNextEvent()
 {
     // assert that we've been configured
     if (!module)
-        throw new cRuntimeError("cSocketRTScheduler: setInterfaceModule() not called: it must be called from a module's initialize() function");
+        throw cRuntimeError("cSocketRTScheduler: setInterfaceModule() not called: it must be called from a module's initialize() function");
 
     // calculate target time
     timeval targetTime;
@@ -240,7 +240,7 @@ cMessage *cSocketRTScheduler::getNextEvent()
 void cSocketRTScheduler::sendBytes(const char *buf, size_t numBytes)
 {
     if (connSocket==INVALID_SOCKET)
-        throw new cRuntimeError("cSocketRTScheduler: sendBytes(): no connection");
+        throw cRuntimeError("cSocketRTScheduler: sendBytes(): no connection");
 
     send(connSocket, buf, numBytes, 0);
     // TBD check for errors

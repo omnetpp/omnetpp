@@ -191,7 +191,7 @@ void cMsgPar::forEachChild(cVisitor *v)
 void cMsgPar::netPack(cCommBuffer *buffer)
 {
 #ifndef WITH_PARSIM
-    throw new cRuntimeError(this,eNOPARSIM);
+    throw cRuntimeError(this,eNOPARSIM);
 #else
     cOwnedObject::netPack(buffer);
 
@@ -200,7 +200,7 @@ void cMsgPar::netPack(cCommBuffer *buffer)
         && typechar != 'F' && typechar != 'T' && typechar != 'P'
         && typechar != 'O' && typechar != 'M')
     {
-        throw new cRuntimeError(this,"netPack: unsupported type '%c'",typechar);
+        throw cRuntimeError(this,"netPack: unsupported type '%c'",typechar);
     }
 
     buffer->pack(typechar);
@@ -228,7 +228,7 @@ void cMsgPar::netPack(cCommBuffer *buffer)
     case 'F':
         ff = cMathFunction::findByPointer(func.f);
         if (ff == NULL)
-            throw new cRuntimeError(this,"netPack(): cannot transmit unregistered function");
+            throw cRuntimeError(this,"netPack(): cannot transmit unregistered function");
 
         buffer->pack(ff->name());
         buffer->pack(func.argc);
@@ -240,23 +240,23 @@ void cMsgPar::netPack(cCommBuffer *buffer)
 
     case 'T':
         if (dtr.res && dtr.res->owner() != this)
-            throw new cRuntimeError(this,"netPack(): cannot transmit pointer to \"external\" object");
+            throw cRuntimeError(this,"netPack(): cannot transmit pointer to \"external\" object");
         if (buffer->packFlag(dtr.res!=NULL))
             buffer->packObject(dtr.res);
         break;
 
     case 'P':
-        throw new cRuntimeError(this,"netPack(): cannot transmit pointer to unknown data structure (type 'P')");
+        throw cRuntimeError(this,"netPack(): cannot transmit pointer to unknown data structure (type 'P')");
 
     case 'O':
         if (obj.obj && obj.obj->owner() != this)
-            throw new cRuntimeError(this,"netPack(): cannot transmit pointer to \"external\" object");
+            throw cRuntimeError(this,"netPack(): cannot transmit pointer to \"external\" object");
         if (buffer->packFlag(obj.obj!=NULL))
             buffer->packObject(obj.obj);
         break;
 
     case 'M':
-        throw new cRuntimeError(this,"netPack(): cannot transmit pointer to XML element (type 'M')");
+        throw cRuntimeError(this,"netPack(): cannot transmit pointer to XML element (type 'M')");
     }
 #endif
 }
@@ -264,7 +264,7 @@ void cMsgPar::netPack(cCommBuffer *buffer)
 void cMsgPar::netUnpack(cCommBuffer *buffer)
 {
 #ifndef WITH_PARSIM
-    throw new cRuntimeError(this,eNOPARSIM);
+    throw cRuntimeError(this,eNOPARSIM);
 #else
     char *funcname;
     int argc;
@@ -301,7 +301,7 @@ void cMsgPar::netUnpack(cCommBuffer *buffer)
         if (ff == NULL)
         {
             delete [] funcname;
-            throw new cRuntimeError(this,"netUnpack(): transmitted function `%s' with %d args not registered here",
+            throw cRuntimeError(this,"netUnpack(): transmitted function `%s' with %d args not registered here",
                                     funcname, argc);
         }
         func.f = ff->mathFunc();
@@ -322,7 +322,7 @@ void cMsgPar::netUnpack(cCommBuffer *buffer)
 
     case 'P':
     case 'M':
-        throw new cRuntimeError(this,"netUnpack(): unpacking types I, P, M not implemented");
+        throw cRuntimeError(this,"netUnpack(): unpacking types I, P, M not implemented");
 
     case 'O':
         if (!buffer->checkFlag())
@@ -463,7 +463,7 @@ cMsgPar& cMsgPar::setDoubleValue(MathFunc4Args f, double p1, double p2, double p
 cMsgPar& cMsgPar::setDoubleValue(cStatistic *res)
 {
     if (!res)
-        throw new cRuntimeError(this,eBADINIT,typeName('T'));
+        throw cRuntimeError(this,eBADINIT,typeName('T'));
 
     beforeChange();
     deleteOld();
@@ -518,7 +518,7 @@ void cMsgPar::configPointer( VoidDelFunc delfunc, VoidDupFunc dupfunc,
                       size_t itemsize)
 {
     if (typechar!='P')
-        throw new cRuntimeError(this,"configPointer(): type is '%c'; should be 'P'",typechar);
+        throw cRuntimeError(this,"configPointer(): type is '%c'; should be 'P'",typechar);
     ptr.delfunc = delfunc;
     ptr.dupfunc = dupfunc;
     ptr.itemsize = itemsize;
@@ -529,7 +529,7 @@ void cMsgPar::configPointer( VoidDelFunc delfunc, VoidDupFunc dupfunc,
 const char *cMsgPar::stringValue()
 {
     if (typechar!='S')
-        throw new cRuntimeError(this,eBADCAST,typeName(typechar),typeName('S'));
+        throw cRuntimeError(this,eBADCAST,typeName(typechar),typeName('S'));
     return ss.sht ? ss.str : ls.str;
 }
 
@@ -546,7 +546,7 @@ bool cMsgPar::boolValue()
     else if (isNumeric())
         return doubleValue()!=0;
     else
-        throw new cRuntimeError(this,eBADCAST,typeName(typechar),typeName('B'));
+        throw cRuntimeError(this,eBADCAST,typeName(typechar),typeName('B'));
 }
 
 inline long _double_to_long(double d)
@@ -566,7 +566,7 @@ long cMsgPar::longValue()
     else if (isNumeric())
         return _double_to_long(doubleValue());
     else
-        throw new cRuntimeError(this,eBADCAST,typeName(typechar),typeName('L'));
+        throw cRuntimeError(this,eBADCAST,typeName(typechar),typeName('L'));
 }
 
 double cMsgPar::doubleValue()
@@ -584,7 +584,7 @@ double cMsgPar::doubleValue()
                func.argc==3 ? ((MathFunc3Args)func.f)(func.p1,func.p2,func.p3) :
                               ((MathFunc4Args)func.f)(func.p1,func.p2,func.p3,func.p4);
     else
-        throw new cRuntimeError(this,eBADCAST,typeName(typechar),typeName('D'));
+        throw cRuntimeError(this,eBADCAST,typeName(typechar),typeName('D'));
 }
 
 void *cMsgPar::pointerValue()
@@ -592,7 +592,7 @@ void *cMsgPar::pointerValue()
     if (typechar=='P')
         return ptr.ptr;
     else
-        throw new cRuntimeError(this,eBADCAST,typeName(typechar),typeName('P'));
+        throw cRuntimeError(this,eBADCAST,typeName(typechar),typeName('P'));
 }
 
 cOwnedObject *cMsgPar::objectValue()
@@ -600,7 +600,7 @@ cOwnedObject *cMsgPar::objectValue()
     if (typechar=='O')
         return obj.obj;
     else
-        throw new cRuntimeError(this,eBADCAST,typeName(typechar),typeName('O'));
+        throw cRuntimeError(this,eBADCAST,typeName(typechar),typeName('O'));
 }
 
 cXMLElement *cMsgPar::xmlValue()
@@ -608,7 +608,7 @@ cXMLElement *cMsgPar::xmlValue()
     if (typechar=='M')
         return xmlp.node;
     else
-        throw new cRuntimeError(this,eBADCAST,typeName(typechar),typeName('M'));
+        throw cRuntimeError(this,eBADCAST,typeName(typechar),typeName('M'));
 }
 
 bool cMsgPar::isNumeric() const
@@ -817,7 +817,7 @@ bool cMsgPar::parse(const char *text, char tp)
 
         cXMLElement *node = ev.getXMLDocument(fname.c_str(), pathexpr.empty() ? NULL : pathexpr.c_str());
         if (!node)
-            throw new cRuntimeError(this,"%s: element not found", tmp);
+            throw cRuntimeError(this,"%s: element not found", tmp);
         setXMLValue(node);
     }
     else // maybe function; try to parse it
@@ -918,7 +918,7 @@ bool cMsgPar::setfunction(char *text)
 double cMsgPar::fromstat()
 {
     if (typechar!='T')
-        throw new cRuntimeError(this,eBADCAST,typeName(typechar),typeName('T'));
+        throw cRuntimeError(this,eBADCAST,typeName(typechar),typeName('T'));
     return  dtr.res->random();
 }
 

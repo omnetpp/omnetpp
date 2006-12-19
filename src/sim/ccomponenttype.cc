@@ -150,14 +150,14 @@ cModule *cModuleType::instantiateModuleClass(const char *classname)
     cObject *obj = cClassFactory::createOne(classname); // this won't return NULL
     cModule *mod = dynamic_cast<cModule *>(obj);
     if (!mod)
-        throw new cRuntimeError("class %s is not a module type", classname); //FIXME better msg
+        throw cRuntimeError("class %s is not a module type", classname); //FIXME better msg
     return mod;
 }
 
 cModule *cModuleType::createScheduleInit(char *modname, cModule *parentmod)
 {
     if (!parentmod)
-        throw new cRuntimeError("createScheduleInit(): parent module pointer cannot be NULL "
+        throw cRuntimeError("createScheduleInit(): parent module pointer cannot be NULL "
                                 "when creating module named '%s' of type %s", modname, name());
     cModule *mod = create(modname, parentmod);
     mod->buildInside();
@@ -182,7 +182,7 @@ cChannel *cChannelType::instantiateChannelClass(const char *classname)
     cObject *obj = cClassFactory::createOne(classname); // this won't return NULL
     cChannel *channel = dynamic_cast<cChannel *>(obj);
     if (!channel)
-        throw new cRuntimeError("class %s is not a channel type", classname); //FIXME better msg
+        throw cRuntimeError("class %s is not a channel type", classname); //FIXME better msg
     return channel;
 }
 

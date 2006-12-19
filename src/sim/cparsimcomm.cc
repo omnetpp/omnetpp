@@ -40,17 +40,17 @@ void cParsimCommunications::broadcast(cCommBuffer *buffer, int tag)
             if (myProcId != i)
                 send(buffer, tag, i);
         }
-        catch (cException *e)
+        catch (cException& e)
         {
-            if (ex)
-               delete e;
-            else
-               ex = e;
+/*FIXME add back!!!!
+            if (!ex)
+               ex = e.dup();
+*/
         }
     }
 
     if (ex)
-        throw ex;
+        throw (*ex);  //XXX leaks the exception object
 }
 
 

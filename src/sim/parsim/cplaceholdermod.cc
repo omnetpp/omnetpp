@@ -26,7 +26,7 @@ cPlaceHolderModule::~cPlaceHolderModule()
 
 void cPlaceHolderModule::arrived(cMessage *msg, int n, simtime_t t)
 {
-    throw new cRuntimeError(this, "internal error: arrived() called");
+    throw cRuntimeError(this, "internal error: arrived() called");
 }
 
 bool cPlaceHolderModule::callInitialize(int stage)
