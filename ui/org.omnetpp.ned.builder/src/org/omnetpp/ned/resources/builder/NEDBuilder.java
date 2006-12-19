@@ -25,7 +25,7 @@ import org.omnetpp.ned.resources.NEDResourcesPlugin;
  */
 public class NEDBuilder extends IncrementalProjectBuilder {
 
-	public static final String BUILDER_ID = "org.omnetpp.ned.resources.nedbuilder";
+	public static final String BUILDER_ID = "org.omnetpp.ned.builder.nedbuilder";
 
 	class NEDDeltaVisitor implements IResourceDeltaVisitor {
 		/*

@@ -53,7 +53,7 @@
          </run>
       </runtime>
       <builder
-            id="org.omnetpp.resources.nedbuilder">
+            id="org.omnetpp.ned.builder.nedbuilder">
       </builder>
       <builder id="org.omnetpp.scave.builder.vectorfileindexer"/>
    </extension>

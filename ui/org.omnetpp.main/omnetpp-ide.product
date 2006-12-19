@@ -18,7 +18,7 @@
 
    <splash
       location="org.omnetpp.main"
-      startupProgressRect="6,3,100,10"
+      startupProgressRect="10,10,300,10"
       startupMessageRect="0,0,0,0"
       startupForegroundColor="000000" />
    <launcher name="omnetide">
