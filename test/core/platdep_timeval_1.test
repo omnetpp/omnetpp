@@ -2,7 +2,7 @@
 Test functions in include/platdep/timeval.h
 
 %global:
-#include <platdep/time.h>
+#include <platdep/timeutil.h>
 #define  SEC    1000000
 #define  USEC   1e-6
 

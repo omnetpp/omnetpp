@@ -123,31 +123,31 @@ class SIM_API cException : public std::exception
     /**
      * Returns the error code.
      */
-    virtual int errorCode() {return errorcode;}
+    virtual int errorCode() const {return errorcode;}
 
     /**
      * Returns the text of the error. Redefined from std::exception.
      */
-    virtual const char *what() {return msg.c_str();}
+    virtual const char *what() const {return msg.c_str();}
 
     /**
      * Returns true if the exception has "context info", that is, it occurred
      * within a known module or channel. contextClassName() and contextFullPath()
      * and moduleID() can only be called if this method returned true.
      */
-    virtual bool hasContext() {return hascontext;}
+    virtual bool hasContext() const {return hascontext;}
 
     /**
      * Returns the class name (NED type name) of the context where the
      * exception occurred.
      */
-    virtual const char *contextClassName() {return contextclassname.c_str();}
+    virtual const char *contextClassName() const {return contextclassname.c_str();}
 
     /**
      * Returns the full path of the context where the exception
      * occurred.
      */
-    virtual const char *contextFullPath() {return contextfullpath.c_str();}
+    virtual const char *contextFullPath() const {return contextfullpath.c_str();}
 
     /**
      * Returns the ID of the module where the exception occurred,
@@ -155,7 +155,7 @@ class SIM_API cException : public std::exception
      * any more when the exception is caught (ie. if the exception occurs
      * during network setup, the network is cleaned up immediately).
      */
-    virtual int moduleID() {return moduleid;}   // FIXME check all code that calls this!!! maybe they need hasContext() instead
+    virtual int moduleID() const {return moduleid;}   // FIXME check all code that calls this!!! maybe they need hasContext() instead
     //@}
 };
 

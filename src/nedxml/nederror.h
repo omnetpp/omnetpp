@@ -141,7 +141,7 @@ class NEDException : public std::runtime_error   //FIXME into separate header fi
     /**
      * Returns the text of the error. Redefined from std::exception.
      */
-    virtual const char *what() {return errormsg.c_str();}
+    virtual const char *what() const {return errormsg.c_str();}
 };
 
 
