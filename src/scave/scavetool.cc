@@ -162,7 +162,8 @@ int filterCommand(int argc, char **argv)
                 {
                     if (opt_verbose) printf(" %d lines\n", f->numLines);
                 }
-            } catch (Exception& e) {
+            }
+            catch (std::runtime_error& e) {
                 fprintf(stdout, "Exception: %s\n", e.what());
             }
         }
@@ -235,7 +236,7 @@ int filterCommand(int argc, char **argv)
                  Node *node = NodeTypeRegistry::instance()->createNode(opt_filterList[k].c_str(), &dataflowManager);
                  FilterNode *filterNode = dynamic_cast<FilterNode *>(node);
                  if (!filterNode)
-                     throw Exception("%s is not a filter node", opt_filterList[k].c_str());
+                     throw opp_runtime_error("%s is not a filter node", opt_filterList[k].c_str());
                  dataflowManager.connect(vectorPorts[i], &(filterNode->in));
                  vectorPorts[i] = &(filterNode->out);
             }
@@ -320,7 +321,7 @@ int filterCommand(int argc, char **argv)
 
         if (opt_verbose) printf("done\n");
     }
-    catch (Exception& e)
+    catch (std::runtime_error& e)
     {
         fprintf(stdout, "Exception: %s\n", e.what());
         return 1;
@@ -427,7 +428,7 @@ int indexCommand(int argc, char **argv)
         {
             indexer.generateIndex(fileName);
         }
-        catch (Exception& e) {
+        catch (std::runtime_error& e) {
             fprintf(stdout, "Exception: %s\n", e.what());
             rc=1;
         }

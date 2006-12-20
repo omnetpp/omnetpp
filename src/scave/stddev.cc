@@ -53,7 +53,7 @@ bool StddevNode::finished() const
 void StddevNode::collect(double val)
 {
     if (++num_samples <= 0)
-        throw Exception("StddevNode: observation count overflow");
+        throw opp_runtime_error("StddevNode: observation count overflow");
 
     sum_samples += val;
     sqrsum_samples += val*val;

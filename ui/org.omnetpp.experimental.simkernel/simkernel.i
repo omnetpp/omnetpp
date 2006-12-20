@@ -21,7 +21,8 @@
   static {
     try {
       System.loadLibrary("simkernel");
-    } catch (UnsatisfiedLinkError e) {
+    }
+    catch (UnsatisfiedLinkError e) {
       System.err.println("Native code library failed to load. \n" + e);
       System.exit(1);
     }

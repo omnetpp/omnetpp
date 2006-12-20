@@ -39,7 +39,7 @@ const char *MatchableObjectAdapter::getDefaultAttribute() const
         case FULLPATH:  tmp = obj->fullPath(); return tmp.c_str();
         case FULLNAME:  return obj->fullName();
         case CLASSNAME: return obj->className();
-        default: throw Exception("unknown setting for default attribute");
+        default: throw opp_runtime_error("unknown setting for default attribute");
     }
 }
 
@@ -51,12 +51,12 @@ void MatchableObjectAdapter::splitIndex(char *fieldname, int& index)
     {
         char *lastcharp = fieldname + strlen(fieldname) - 1;
         if (*lastcharp != ']')
-            throw Exception("unmatched '['");
+            throw opp_runtime_error("unmatched '['");
         *startbracket = '\0';
         char *end;
         index = strtol(startbracket+1, &end, 10);
         if (end!=lastcharp)
-            throw Exception("brackets [] must contain numeric index");
+            throw opp_runtime_error("brackets [] must contain numeric index");
     }
 }
 

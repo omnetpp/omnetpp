@@ -22,7 +22,7 @@
 #ifdef CHECK
 #undef CHECK
 #endif
-#define CHECK(fprintf)    if (fprintf<0) throw Exception("Cannot write output vector file `%s'", fileName.c_str())
+#define CHECK(fprintf)    if (fprintf<0) throw opp_runtime_error("Cannot write output vector file `%s'", fileName.c_str())
 
 
 FileWriterNode::FileWriterNode(const char *filename, const char *banner)
@@ -49,7 +49,7 @@ void FileWriterNode::process()
     {
         f = fopen(fileName.c_str(), "w");
         if (!f)
-            throw Exception("cannot open `%s' for write", fileName.c_str());
+            throw opp_runtime_error("cannot open `%s' for write", fileName.c_str());
 
         // print file header
         CHECK(fprintf(f,"%s\n\n", banner.c_str()));

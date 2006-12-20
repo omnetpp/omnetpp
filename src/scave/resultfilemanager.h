@@ -284,7 +284,7 @@ inline const ResultItem& ResultFileManager::uncheckedGetItem(ID id) const
     {
         case SCALAR: return fileList[_fileid(id)]->scalarResults[_pos(id)];
         case VECTOR: return fileList[_fileid(id)]->vectorResults[_pos(id)];
-        default: throw Exception("");
+        default: throw opp_runtime_error("");
     }
 }
 
@@ -302,7 +302,7 @@ inline ResultFile *ResultFileManager::getFileForID(ID id) const
 {
     ResultFile *fileRef = fileList.at(_fileid(id));
     if (fileRef==NULL)
-        throw Exception("ResultFileManager: stale ID: its file has already been unloaded");
+        throw opp_runtime_error("ResultFileManager: stale ID: its file has already been unloaded");
     return fileRef;
 }
 

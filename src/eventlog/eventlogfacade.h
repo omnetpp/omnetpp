@@ -18,7 +18,7 @@
 #include "ievent.h"
 #include "ieventlog.h"
 
-#define PTR(ptr) if (ptr == 0) throw Exception("NULL ptr exception");
+#define PTR(ptr) if (ptr == 0) throw opp_runtime_error("NULL ptr exception");
 
 /**
  * A class that makes it possible to extract info about events, without

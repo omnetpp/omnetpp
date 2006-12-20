@@ -653,7 +653,8 @@ void TOmnetApp::globAndLoadNedFile(const char *fnamepattern)
             ev.printf("Loading NED file: %s\n", fname);
             simulation.loadNedFile(fname);
         }
-    } catch (std::runtime_error e) {
+    }
+    catch (std::runtime_error e) {
         throw cRuntimeError(e.what());
     }
 }
@@ -667,7 +668,8 @@ void TOmnetApp::globAndLoadListFile(const char *fnamepattern, bool istemplistfil
         {
             processListFile(fname, istemplistfile);
         }
-    } catch (std::runtime_error e) {
+    }
+     catch (std::runtime_error e) {
         throw cRuntimeError(e.what());
     }
 }

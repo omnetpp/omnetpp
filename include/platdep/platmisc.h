@@ -31,6 +31,7 @@
 #define chdir  _chdir
 #define usleep(x) _sleep((x)/1000)
 #define mkdir(x,y) _mkdir(x)
+#define vsnprintf _vsnprintf
 
 #else
 
@@ -40,9 +41,7 @@
 #endif
 
 #include <exception>
-//XXX #ifndef _MSC_VER
-#include <stdexcept>   // std::runtime_error (with MSVC, it's in <exception>)
-//XXX #endif
+#include <stdexcept>
 
 
 //

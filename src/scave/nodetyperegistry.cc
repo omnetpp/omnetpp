@@ -98,7 +98,7 @@ NodeType *NodeTypeRegistry::getNodeType(const char *name)
 {
     NodeTypeMap::iterator it = nodeTypeMap.find(name);
     if (it==nodeTypeMap.end())
-        throw Exception("unknown node type `%s'", name);
+        throw opp_runtime_error("unknown node type `%s'", name);
     return it->second;
 }
 
@@ -124,7 +124,7 @@ Node *NodeTypeRegistry::createNode(const char *filterSpec, DataflowManager *mgr)
     StringMap attrs;
     nodeType->getAttrDefaults(attrs);
     if (attrs.size()!=args.size())
-        throw Exception("error in filter spec `%s' -- %s expects %d parameters", filterSpec, name.c_str(), attrs.size());
+        throw opp_runtime_error("error in filter spec `%s' -- %s expects %d parameters", filterSpec, name.c_str(), attrs.size());
 
     // fill in args map
     int i=0;
@@ -148,7 +148,7 @@ void NodeTypeRegistry::parseFilterSpec(const char *filterSpec, std::string& name
 
     // check that string ends in right paren
     if (filterSpec[strlen(filterSpec)-1]!=')')
-        throw Exception("syntax error in filter spec `%s'", filterSpec);
+        throw opp_runtime_error("syntax error in filter spec `%s'", filterSpec);
 
     // filter name is the part before the left paren
     name.assign(filterSpec, paren-filterSpec);

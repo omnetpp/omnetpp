@@ -155,7 +155,7 @@ void IDList::checkIntegrityAllScalars(ResultFileManager *mgr) const
     for (V::const_iterator i=v->begin(); i!=v->end(); ++i)
         mgr->getItem(*i); // this will thow exception if id is not valid
     if (!areAllScalars())
-        throw Exception("These items are not all scalars");
+        throw opp_runtime_error("These items are not all scalars");
 }
 
 void IDList::checkIntegrityAllVectors(ResultFileManager *mgr) const
@@ -164,7 +164,7 @@ void IDList::checkIntegrityAllVectors(ResultFileManager *mgr) const
     for (V::const_iterator i=v->begin(); i!=v->end(); ++i)
         mgr->getItem(*i); // this will thow exception if id is not valid
     if (!areAllVectors())
-        throw Exception("These items are not all vectors");
+        throw opp_runtime_error("These items are not all vectors");
 }
 
 class CmpBase {
@@ -474,7 +474,7 @@ void IDList::toByteArray(char *array, int n) const
 {
     checkV();
     if (n != v->size()*8)
-        throw Exception("byteArray is of wrong size -- must be 8*numIDs");
+        throw opp_runtime_error("byteArray is of wrong size -- must be 8*numIDs");
     std::copy(v->begin(), v->end(), (ID*)array);
 }
 
@@ -482,7 +482,7 @@ void IDList::fromByteArray(char *array, int n)
 {
     checkV();
     if (n%8 != 0)
-        throw Exception("byteArray size must be multiple of 8");
+        throw opp_runtime_error("byteArray size must be multiple of 8");
     v->resize(n/8);
     ID *a = (ID *)array;
     std::copy(a, a+n/8, v->begin());

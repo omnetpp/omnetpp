@@ -58,7 +58,7 @@ main()
         IDVector *v2 = ScalarDataSorter(mgr).getFilteredList(*v, "*", "*", "*frames");
         printData(mgr, v2);
     }
-    catch (Exception& e)
+    catch (std::runtime_error& e)
     {
         printf("exception: %s", e.what());
     }

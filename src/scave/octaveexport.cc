@@ -22,7 +22,7 @@
 #ifdef CHECK
 #undef CHECK
 #endif
-#define CHECK(fprintf)    if (fprintf<0) throw Exception("Cannot write file `%s'", fileName.c_str())
+#define CHECK(fprintf)    if (fprintf<0) throw opp_runtime_error("Cannot write file `%s'", fileName.c_str())
 
 
 OctaveExport::OctaveExport(const char *fileName)
@@ -45,7 +45,7 @@ void OctaveExport::openFileIfNeeded()
         // cygwin-based Octave chokes on CR-LF...
         f = fopen(fileName.c_str(), "wb");
         if (!f)
-            throw Exception("cannot open `%s' for write", fileName.c_str());
+            throw opp_runtime_error("cannot open `%s' for write", fileName.c_str());
 
         // print file header
         CHECK(fprintf(f,"# Created by OMNeT++/OMNEST scavetool\n"));
@@ -87,7 +87,7 @@ std::string OctaveExport::makeUniqueName(const char *nameHint)
         if (it == savedVars.end())
             return newName;
     }
-    throw Exception("banged head against the sky");
+    throw opp_runtime_error("banged head against the sky");
 }
 
 void OctaveExport::writeMatrixHeader(const char *name, int rows, int columns)

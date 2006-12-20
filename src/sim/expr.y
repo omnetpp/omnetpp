@@ -115,7 +115,7 @@ static double parseQuantity(const char *text, std::string& unit)
         // evaluate quantities like "5s 230ms"
         return UnitConversion().parseQuantity(text, unit);
     }
-    catch (Exception& e) {
+    catch (std::runtime_error& e) {
         yyerror(e.what());
         return 0;
     }
@@ -322,11 +322,7 @@ void doParseExpression(const char *nedtext, cDynamicExpression::Elem *&elems, in
     {
         ret = yyparse();
     }
-    catch (Exception& e)
-    {
-        // FIXME wrap and re-throw!!!
-    }
-    catch (cException& e)
+    catch (std::exception& e)
     {
         yy_delete_buffer(handle);
         throw;

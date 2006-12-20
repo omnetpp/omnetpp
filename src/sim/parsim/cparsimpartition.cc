@@ -230,9 +230,9 @@ void cParsimPartition::broadcastTerminationException(cTerminationException *e)
     {
         comm->broadcast(buffer, TAG_TERMINATIONEXCEPTION);
     }
-    catch (cException& e)
+    catch (std::exception&)
     {
-        // eat any exceptions -- here we're not interested in them
+        // swallow exceptions -- here we're not interested in them
     }
     comm->recycleCommBuffer(buffer);
 }
@@ -246,9 +246,9 @@ void cParsimPartition::broadcastException(cException *e)
     {
         comm->broadcast(buffer, TAG_EXCEPTION);
     }
-    catch (cException& e)
+    catch (std::exception&)
     {
-        // eat any exceptions -- here we're not interested in them
+        // swallow any exceptions -- here we're not interested in them
     }
     comm->recycleCommBuffer(buffer);
 }

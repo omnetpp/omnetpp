@@ -292,7 +292,7 @@ FilteredEvent *FilteredEventLog::getEventForEventNumber(long eventNumber, MatchK
 FilteredEvent *FilteredEventLog::getEventForSimulationTime(simtime_t simulationTime, MatchKind matchKind)
 {
     // TODO:
-    throw Exception("Not yet implemented");
+    throw opp_runtime_error("Not yet implemented");
 }
 
 FilteredEvent* FilteredEventLog::getMatchingEventInDirection(long eventNumber, bool forward)

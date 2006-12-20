@@ -125,7 +125,7 @@ void PatternMatcher::parseSet(const char *&s, Elem& e)
         e.setchars += range;
     }
     if (!*s)
-        throw Exception("unmatched '}' in expression");
+        throw opp_runtime_error("unmatched '}' in expression");
     s++; // skip "}"
 }
 
@@ -323,7 +323,7 @@ bool PatternMatcher::matches(const char *line)
 const char *PatternMatcher::patternPrefixMatches(const char *line, int suffixoffset)
 {
     if (!iscasesensitive)
-        throw Exception("PatternMatcher: patternPrefixMatches() doesn't support case-insensitive match");
+        throw opp_runtime_error("PatternMatcher: patternPrefixMatches() doesn't support case-insensitive match");
 
     // pattern must end in a literal string...
     assert(pattern[pattern.size()-1].type==END);

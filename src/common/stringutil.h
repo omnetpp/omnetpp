@@ -64,12 +64,21 @@ inline std::string opp_quotestr_ifneeded(const char *txt)
 #define QUOTE(txt)   (opp_needsquotes(txt) ? opp_quotestr(txt).c_str() : (txt))
 
 /**
+ * Create a string using printf-like formatting.
+ */
+std::string opp_stringf(const char *fmt, ...);
+
+/**
+ * Create a string using printf-like formatting.
+ */
+std::string opp_vstringf(const char *fmt, va_list& args);
+
+/**
  * Dictionary-compare two strings, the main difference from stricmp()
  * being that integers embedded in the strings are compared in
  * numerical order.
  */
 int strdictcmp(const char *s1, const char *s2);
-
 
 #endif
 

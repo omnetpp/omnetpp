@@ -591,7 +591,7 @@ int main(int argc, char **argv)
                 else
                     usage("Unknown or invalid command");
             }
-            catch (Exception& e) {
+            catch (std::runtime_error& e) {
                 fprintf(stderr, "Error: %s\n", e.what());
             }
 

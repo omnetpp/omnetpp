@@ -14,6 +14,8 @@
 
 #include <ctype.h>
 #include <stdlib.h>
+#include <stdarg.h>
+#include "util.h"
 #include "stringutil.h"
 
 
@@ -22,7 +24,7 @@ std::string opp_parsequotedstr(const char *txt)
     char *endp;
     std::string ret = opp_parsequotedstr(txt, endp);
     if (*endp)
-        throw Exception("trailing garbage after string literal in `%s'", txt);
+        throw opp_runtime_error("trailing garbage after string literal in `%s'", txt);
     return ret;
 }
 
@@ -51,7 +53,7 @@ std::string opp_parsequotedstr(const char *txt, const char *&endp)
     while (isspace(*s))
         s++;
     if (*s++!='"')
-        throw Exception("no opening quote in `%s'", txt);
+        throw opp_runtime_error("no opening quote in `%s'", txt);
     char *buf = new char [strlen(txt)+1];
     char *d = buf;
     for (; *s && *s!='"'; s++, d++)
@@ -74,10 +76,10 @@ std::string opp_parsequotedstr(const char *txt, const char *&endp)
                 case '\0': d--; s--; break; // string ends in stray backslash
                 case '=':
                 case ';':
-                case ',': throw Exception("invalid escape sequence `\\%c' in `%s' "
+                case ',': throw opp_runtime_error("invalid escape sequence `\\%c' in `%s' "
                           "(hint: use double backslash to quote display string special chars: "
                           "equal sign, comma, semicolon)", *s, txt);
-                default:  throw Exception("invalid escape sequence `\\%c' in `%s'", *s, txt);
+                default:  throw opp_runtime_error("invalid escape sequence `\\%c' in `%s'", *s, txt);
             }
         }
         else
@@ -87,7 +89,7 @@ std::string opp_parsequotedstr(const char *txt, const char *&endp)
     }
     *d = '\0';
     if (*s++!='"')
-        {delete [] buf; throw Exception("no closing quote for string literal `%s'", txt); }
+        {delete [] buf; throw opp_runtime_error("no closing quote for string literal `%s'", txt); }
     while (isspace(*s))
         s++;
     endp = s;  // if (*s!='\0'), something comes after the string
@@ -132,6 +134,24 @@ bool opp_needsquotes(const char *txt)
         if (isspace(*s) || *s=='\\' || *s=='"')
             return true;
     return false;
+}
+
+std::string opp_stringf(const char *fmt, ...)
+{
+    char buf[1024];
+    va_list args;
+    va_start(args, fmt);
+    vsnprintf(buf, 1024, fmt, args);
+    va_end(args);
+    return buf;
+}
+
+std::string opp_vstringf(const char *fmt, va_list& args)
+{
+    char buf[1024];
+    vsnprintf(buf, 1024, fmt, args);
+    va_end(args);
+    return buf;
 }
 
 int strdictcmp(const char *s1, const char *s2)

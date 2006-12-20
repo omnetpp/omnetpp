@@ -34,8 +34,6 @@
 %exception {
     try {
         $action
-    } catch (Exception& e) {
-        SWIG_exception(SWIG_RuntimeError,const_cast<char*>(e.what()));
     } catch (std::exception& e) {
         SWIG_exception(SWIG_RuntimeError,const_cast<char*>(e.what()));
     }
@@ -202,7 +200,7 @@ import java.lang.reflect.Constructor;
    private static Constructor[] eventLogConstructors = new Constructor[100];
 
    public static EventLogEntry newEventLogEntry(long cPtr, boolean isOwner) {
-	  try {
+      try {
          if (cPtr == 0)
             return null;
 
@@ -219,7 +217,7 @@ import java.lang.reflect.Constructor;
 
          return (EventLogEntry)constructor.newInstance(cPtr, isOwner);
       }
-      catch (Exception& e) {
+      catch (Exception e) {
          throw new RuntimeException(e);
       }
    }
@@ -227,8 +225,8 @@ import java.lang.reflect.Constructor;
 
 %typemap(javacode) FileReader %{
     public FileReader(String fileName, boolean cMemoryOwn) {
-	    this(fileName);
-	    this.swigCMemOwn = cMemoryOwn;
+        this(fileName);
+        this.swigCMemOwn = cMemoryOwn;
     }
 %}
 

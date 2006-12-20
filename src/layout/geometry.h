@@ -22,7 +22,7 @@
 #ifndef NDEBUG
 #define ASSERT(expr)  \
   ((void) ((expr) ? 0 : \
-           (throw Exception("ASSERT: condition %s false, %s line %d", \
+           (throw opp_runtime_error("ASSERT: condition %s false, %s line %d", \
                              #expr, __FILE__, __LINE__), 0)))
 #else
 #define ASSERT(expr)  ((void)0)

@@ -45,7 +45,7 @@ typedef off_t file_offset_t;
  * buffer must be able to contain at least two lines, therefore
  * the maximum line length is limited to buffer size divided by 2.
  *
- * All functions throw class Exception on error.
+ * All functions throw class opp_runtime_error on error.
  */
 class FileReader
 {
@@ -125,7 +125,7 @@ class FileReader
 
     /**
      * Reads the previous line from the file ending at the current position, and returns a pointer to its first character.
-     * It returns NULL when the beginning of file reached. 
+     * It returns NULL when the beginning of file reached.
      * Moves the current position to the beginning of the line just returned.
      */
     char *readPreviousLine();

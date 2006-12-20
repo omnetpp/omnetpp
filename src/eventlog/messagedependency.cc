@@ -148,7 +148,7 @@ simtime_t MessageDependency::getConsequenceTime()
                 return endSendEntry->arrivalTime;
         }
 
-        throw Exception("Missing end message send entry");
+        throw opp_runtime_error("Missing end message send entry");
     }
 }
 

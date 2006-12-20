@@ -58,7 +58,7 @@ void VectorFileIndexer::generateIndex(const char* fileName)
         ResultFile *f = resultFileManager.loadFile(fileName); // TODO: limit number of lines read
         if (!f)
         {
-            throw Exception("Error: %s: load() returned null", fileName);
+            throw opp_runtime_error("Error: %s: load() returned null", fileName);
         }
         else if (f->numUnrecognizedLines>0)
         {
@@ -103,7 +103,7 @@ void VectorFileIndexer::generateIndex(const char* fileName)
 
         // rename
         if (unlink(fileName)!=0 && errno!=ENOENT)
-            throw Exception("Cannot remove original file `%s': %s", fileName, strerror(errno));
+            throw opp_runtime_error("Cannot remove original file `%s': %s", fileName, strerror(errno));
         else if (rename(tmpFileName.c_str(), fileName)!=0)
-            throw Exception("Cannot rename vector file from '%s' to '%s': %s", tmpFileName.c_str(), fileName, strerror(errno));
+            throw opp_runtime_error("Cannot rename vector file from '%s' to '%s': %s", tmpFileName.c_str(), fileName, strerror(errno));
 }

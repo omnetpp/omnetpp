@@ -256,7 +256,7 @@ template <typename T> file_offset_t EventLogIndex::binarySearchForOffset(bool ev
         if (foundOffset == lastOffset && foundOffset == firstOffset)
             return foundOffset;
         else
-            throw Exception("Found non unique simulation time when exact match is requested");
+            throw opp_runtime_error("Found non unique simulation time when exact match is requested");
     }
     else
     {
@@ -280,7 +280,7 @@ template <typename T> file_offset_t EventLogIndex::linearSearchForOffset(bool ev
 {
     // this is a search either forward or backward based on matchKind
     if (matchKind == EXACT)
-        throw Exception("Invalid match kind");
+        throw opp_runtime_error("Invalid match kind");
 
     file_offset_t previousOffset = offset;
     long eventNumber;
@@ -370,7 +370,7 @@ bool EventLogIndex::readToEventLine(bool forward, file_offset_t readStartOffset,
         return true;
 
     // bad luck
-    throw Exception("Wrong file format: no event number in 'E' line, line %d", reader->getNumReadLines());
+    throw opp_runtime_error("Wrong file format: no event number in 'E' line, line %d", reader->getNumReadLines());
 }
 
 void EventLogIndex::dumpTable()

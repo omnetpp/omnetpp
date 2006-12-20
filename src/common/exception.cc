@@ -21,7 +21,7 @@
 #include "exception.h"
 
 
-Exception::Exception(const char *message, ...) : std::runtime_error("")
+opp_runtime_error::opp_runtime_error(const char *message, ...) : std::runtime_error("")
 {
     va_list va;
     va_start(va, message);

@@ -17,18 +17,20 @@
 
 #include "exception.h"
 
-#include <assert.h>
-#include <string>
-#include <stdarg.h>
-
 #ifdef NDEBUG
 #  define ASSERT(x)
 #  define DBG(x)
 #else
-#  define ASSERT(expr)  ((void) ((expr) ? 0 : (throw Exception("ASSERT: condition %s false, %s line %d", \
+#  define ASSERT(expr)  ((void) ((expr) ? 0 : (throw opp_runtime_error("ASSERT: condition %s false, %s line %d", \
                         #expr, __FILE__, __LINE__), 0)))
 //#  define DBG(x)  printf x
 #  define DBG(x)
+#endif
+
+#ifdef _WIN32
+#ifndef vsnprintf
+#define vsnprintf _vsnprintf
+#endif
 #endif
 
 #endif

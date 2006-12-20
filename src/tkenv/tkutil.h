@@ -49,7 +49,7 @@
   try {code;} catch (cException& e) { \
       Tcl_SetResult(interp, TCLCONST(e.what()), TCL_VOLATILE); \
       return TCL_ERROR; \
-  } catch (Exception& e) { \
+  } catch (std::runtime_error& e) { \
       Tcl_SetResult(interp, TCLCONST(e.what()), TCL_VOLATILE); \
       return TCL_ERROR; \
   }
@@ -60,7 +60,7 @@
   } catch (cException& e) { \
       Tcl_SetResult(interp, TCLCONST(e.what()), TCL_VOLATILE); \
       return TCL_ERROR; \
-  } catch (Exception& e) { \
+  } catch (std::runtime_error& e) { \
       Tcl_SetResult(interp, TCLCONST(e.what()), TCL_VOLATILE); \
       return TCL_ERROR; \
   }

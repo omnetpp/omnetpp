@@ -226,7 +226,7 @@ IDVectorVector ScalarDataSorter::prepareScatterPlot(const IDList& idlist, const 
             {xpos = i-vv.begin();break;}
     }
     if (xpos==-1)
-        throw Exception("data for X axis not found");
+        throw opp_runtime_error("data for X axis not found");
 
     // ... and bring X series to 1st place
     if (xpos!=0)

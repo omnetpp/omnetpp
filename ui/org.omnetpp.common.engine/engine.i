@@ -25,8 +25,6 @@
 %exception {
     try {
         $action
-    } catch (Exception& e) {
-        SWIG_exception(SWIG_RuntimeError,const_cast<char*>(e.what()));
     } catch (std::exception& e) {
         SWIG_exception(SWIG_RuntimeError,const_cast<char*>(e.what()));
     }
@@ -103,7 +101,7 @@ import java.lang.reflect.Constructor;
 
          return (IBody)constructor.newInstance(cPtr, isOwner);
       }
-      catch (Exception& e) {
+      catch (Exception e) {
          throw new RuntimeException(e);
       }
    }
@@ -141,7 +139,7 @@ import java.lang.reflect.Constructor;
 
          return (IForceProvider)constructor.newInstance(cPtr, isOwner);
       }
-      catch (Exception& e) {
+      catch (Exception e) {
          throw new RuntimeException(e);
       }
    }

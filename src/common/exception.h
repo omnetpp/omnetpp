@@ -19,10 +19,13 @@
 #include <exception>
 #include <stdexcept>
 
+//FIXME rename this file
+
 /**
- * Exceptions of this type are thrown on errors during processing.
+ * Utility class: makes std::runtime_error somewhat more convenient to use,
+ * by providing a printf-style constructor. Catch as std::runtime_error.
  */
-class Exception : public std::runtime_error //FIXME use some more specific name...
+class opp_runtime_error : public std::runtime_error
 {
   protected:
     std::string errormsg;
@@ -31,14 +34,13 @@ class Exception : public std::runtime_error //FIXME use some more specific name.
     /**
      * The error message can be generated in a printf-like manner.
      */
-    Exception(const char *msg,...);
+    opp_runtime_error(const char *msg,...);
 
     /**
      * Returns the text of the error. Redefined from std::exception.
      */
     virtual const char *what() {return errormsg.c_str();}
 };
-
 
 #endif
 

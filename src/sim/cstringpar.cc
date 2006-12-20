@@ -170,7 +170,7 @@ bool cStringPar::parse(const char *text)
         setStringValue(str.c_str());
         return true;
     }
-    catch (Exception& e) {
+    catch (std::runtime_error& e) {
         // no problem, we'll try it another way
     }
 

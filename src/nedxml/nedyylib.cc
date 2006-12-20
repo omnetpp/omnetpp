@@ -386,7 +386,8 @@ LiteralNode *createStringLiteral(YYLTYPE textpos)
     try {
         std::string value = opp_parsequotedstr(text);
         c->setValue(value.c_str());
-    } catch (Exception& e) {
+    }
+    catch (std::runtime_error& e) {
         np->error(e.what(), pos.li);
     }
     return c;
@@ -407,7 +408,7 @@ LiteralNode *createQuantityLiteral(YYLTYPE textpos)
         // evaluate quantities like "5s 230ms"
         d = UnitConversion().parseQuantity(text, unit);
     }
-    catch (Exception& e) {
+    catch (std::runtime_error& e) {
         np->error(e.what(), pos.li);
     }
 

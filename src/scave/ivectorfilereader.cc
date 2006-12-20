@@ -61,7 +61,7 @@ void IndexedVectorFileReader::loadIndex()
             tokens=tokenizer.tokens();
 
             if (numTokens < 6 || sscanf(tokens[5], "%d", &blockSize)!=1 || blockSize<MIN_BUFFER_SIZE)
-                throw Exception("Malformed vector header: %.*s", len, line);
+                throw opp_runtime_error("Malformed vector header: %.*s", len, line);
 
             while ((line=reader.readNextLine())!=NULL)
             {
@@ -144,21 +144,21 @@ void IndexedVectorFileReader::loadBlock(Block &block)
     for (int i=0; i<count; ++i)
     {
         if ((line=reader->readNextLine())==NULL)
-            throw Exception("Unexpected end of file in '%s'", fname);
+            throw opp_runtime_error("Unexpected end of file in '%s'", fname);
         int len = reader->getLastLineLength();
 
         tokenizer.tokenize(line, len);
         tokens=tokenizer.tokens();
         numTokens = tokenizer.numTokens();
         if (numTokens < 3)
-            throw Exception("Line to short: %.*s", len, line);
+            throw opp_runtime_error("Line to short: %.*s", len, line);
 
         id = strtol(tokens[0], &end, 10);
         if (*end || id!=vectorId)
-            throw Exception("Missing or unexpected vector id: %.*s", len, line);
+            throw opp_runtime_error("Missing or unexpected vector id: %.*s", len, line);
 
         if (!parseDouble(tokens[1], t) || !parseDouble(tokens[2], val))
-            throw Exception("Malformed line: %.*s", len, line);
+            throw opp_runtime_error("Malformed line: %.*s", len, line);
 
         block.entries[i] = OutputVectorEntry(block.startSerial+i, t, val);
     }
