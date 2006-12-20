@@ -331,7 +331,9 @@ bool cPar::parse(const char *text)
     {
         // not found: clone existing parameter, then parse text into it
         cParValue *tmp = p->dup();
-        if (tmp->parse(text))
+        if (tmp->parse(text))  //FIXME parse() may throw exceptions!!!
+                               //   1) change its return type to void!!!!
+                               //   2) catch exception here, wrap it into cRuntimeError, then re-throw!
         {
             // successfully parsed: install it
             componentType->parValueCache()->put(key.c_str(), tmp);
