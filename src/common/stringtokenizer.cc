@@ -30,11 +30,10 @@ StringTokenizer::StringTokenizer(const char *s, const char *delim)
     if (!s)
         s = "";
     if (!delim || !*delim)
-        delim = " ";
+        delim = " \t\n\r\f";
     delimiter = delim;
     str = new char[strlen(s)+1];
     strcpy(str,s);
-    strend = str+strlen(str);
     rest = str;
 }
 
@@ -50,15 +49,31 @@ void StringTokenizer::setDelimiter(const char *delim)
     delimiter = delim;
 }
 
+inline void skipDelimiters(const char *&s, const char *delims)
+{
+    while (*s && strchr(delims, *s)!=NULL) s++;
+}
+
+inline void skipToken(const char *&s, const char *delims)
+{
+    while (*s && strchr(delims, *s)==NULL) s++;
+}
+
 const char *StringTokenizer::nextToken()
 {
-    if (!rest)
-        return NULL;
-    char *token = strtok(rest, delimiter.c_str());
-    rest = token ? token+strlen(token)+1 : NULL;
-    if (rest && rest>=strend)
-        rest = NULL;
+    skipDelimiters(rest, delimiter.c_str());
+    if (!*rest) return NULL;
+    const char *token = rest;
+    skipToken(rest, delimiter.c_str());
+    if (*rest)
+        *rest++ = '\0';
     return token;
+}
+
+bool cStringTokenizer::hasMoreTokens()
+{
+    skipDelimiters(rest, delimiter.c_str());
+    return *rest;
 }
 
 std::vector<std::string> StringTokenizer::asVector()
