@@ -155,6 +155,7 @@ ivectorfilereader.obj: ivectorfilereader.cc \
 ivectorfilewriter.obj: ivectorfilewriter.cc \
   channel.h \
   ivectorfilewriter.h \
+  ../common/stringutil.h \
   ../common/util.h \
   node.h \
   ../common/exception.h \
@@ -210,13 +211,14 @@ octaveexport.obj: octaveexport.cc \
   xyarray.h \
   ../common/exception.h
 resultfilemanager.obj: resultfilemanager.cc \
+  ../common/matchexpression.h \
   ../common/patternmatcher.h \
   resultfilemanager.h \
   ../common/filetokenizer.h \
   ../common/stringtokenizer.h \
   ../common/filereader.h \
-  idlist.h \
   ../common/exception.h \
+  idlist.h \
   ../common/util.h \
   scavedefs.h
 scavetool.obj: scavetool.cc \
@@ -232,6 +234,7 @@ scavetool.obj: scavetool.cc \
   filewriter.h \
   arraybuilder.h \
   octaveexport.h \
+  ../common/stringutil.h \
   idlist.h \
   ../common/exception.h \
   ../common/util.h \
@@ -290,6 +293,7 @@ vectorfilereader.obj: vectorfilereader.cc \
 vectorfilewriter.obj: vectorfilewriter.cc \
   channel.h \
   vectorfilewriter.h \
+  ../common/stringutil.h \
   ../common/util.h \
   node.h \
   ../common/exception.h \

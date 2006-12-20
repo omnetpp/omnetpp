@@ -39,7 +39,7 @@ class opp_runtime_error : public std::runtime_error
     /**
      * Returns the text of the error. Redefined from std::exception.
      */
-    virtual const char *what() {return errormsg.c_str();}
+    virtual const char *what() const {return errormsg.c_str();}
 };
 
 #endif

@@ -87,12 +87,14 @@ matchexpression.tab.obj: matchexpression.tab.cc \
   exception.h
 patternmatcher.obj: patternmatcher.cc \
   patternmatcher.h \
-  exception.h
+  stringutil.h \
+  exception.h \
+  util.h
 stringtokenizer.obj: stringtokenizer.cc \
   stringtokenizer.h
 stringutil.obj: stringutil.cc \
-  stringutil.h \
   util.h \
+  stringutil.h \
   exception.h
 unitconversion.obj: unitconversion.cc \
   unitconversion.h \
