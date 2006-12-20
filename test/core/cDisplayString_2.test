@@ -2,7 +2,7 @@
 check basic cDisplayString functionality: get/set tags
 
 %activity:
-cDisplayStringParser ds("a=,a2,a3;b=,b2,,b4");
+cDisplayString ds("a=,a2,a3;b=,b2,,b4");
 
 ds.insertTag("x",1); ev << ds.getString() << endl;
 ds.setTagArg("x",0,"joe"); ev << ds.getString() << endl;

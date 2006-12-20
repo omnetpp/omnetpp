@@ -109,7 +109,7 @@ class SIM_API cException : public std::exception
      * Virtual copy constructor. We unfortunately need to copy exception objects
      * when handing them back from an activity().
      */
-    cException *dup() const {return new cException(*this);}
+    virtual cException *dup() const {return new cException(*this);}
 
     /**
      * Destructor.
@@ -192,7 +192,7 @@ class SIM_API cTerminationException : public cException
      * Virtual copy constructor. We unfortunately need to copy exception objects
      * when handing them back from an activity().
      */
-    cTerminationException *dup() const {return new cTerminationException(*this);}
+    virtual cTerminationException *dup() const {return new cTerminationException(*this);}
 };
 
 /**
@@ -248,7 +248,7 @@ class SIM_API cRuntimeError : public cException
      * Virtual copy constructor. We unfortunately need to copy exception objects
      * when handing them back from an activity().
      */
-    cRuntimeError *dup() const {return new cRuntimeError(*this);}
+    virtual cRuntimeError *dup() const {return new cRuntimeError(*this);}
 };
 
 /**
@@ -276,7 +276,7 @@ class SIM_API cDeleteModuleException : public cException
      * Virtual copy constructor. We unfortunately need to copy exception objects
      * when handing them back from an activity().
      */
-    cDeleteModuleException *dup() const {return new cDeleteModuleException(*this);}
+    virtual cDeleteModuleException *dup() const {return new cDeleteModuleException(*this);}
 };
 
 /**
@@ -305,7 +305,7 @@ class SIM_API cStackCleanupException : public cException
      * Virtual copy constructor. We unfortunately need to copy exception objects
      * when handing them back from an activity().
      */
-    cStackCleanupException *dup() const {return new cStackCleanupException(*this);}
+    virtual cStackCleanupException *dup() const {return new cStackCleanupException(*this);}
 };
 
 #endif

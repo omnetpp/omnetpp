@@ -3,8 +3,8 @@ check backslash handling in cDisplayString
 
 %activity:
 // unfortunately, because of the C++ compiler we have to duplicate all backslashes :(
-cDisplayStringParser ds("a=c:\\\\tmp\\\\;b=,the \\; mark,Hello\\, Dolly!;"
-                        "c=1\\t2\\n\\3\\t4\\n\\!\\*\\\"\\'\\a\\xB.");
+cDisplayString ds("a=c:\\\\tmp\\\\;b=,the \\; mark,Hello\\, Dolly!;"
+                  "c=1\\t2\\n\\3\\t4\\n\\!\\*\\\"\\'\\a\\xB.");
 
 ds.insertTag("x",1);
 ds.setTagArg("a",1,"alpha");

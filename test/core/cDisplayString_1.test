@@ -2,7 +2,7 @@
 basic cDisplayString functionality: parse and regenerate
 
 %activity:
-cDisplayStringParser ds;
+cDisplayString ds;
 const char *s;
 
 s="a=foo"; 
