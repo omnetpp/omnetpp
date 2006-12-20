@@ -91,7 +91,7 @@ std::string extendbuf;
 {D}+{E}                  { count(); yylval = opp_strdup(yytext); return REALCONSTANT; }
 {D}*"."{D}+({E})?        { count(); yylval = opp_strdup(yytext); return REALCONSTANT; }
 
-\"                       { count(); BEGIN(stringliteral); }
+\"                       { BEGIN(stringliteral); extendCount(); }
 <stringliteral>{
       \n                 { throw cRuntimeError("Error parsing expression: unterminated string literal (append backslash to line for multi-line strings)"); }
       \\\n               { extendCount(); /* line continuation */ }
