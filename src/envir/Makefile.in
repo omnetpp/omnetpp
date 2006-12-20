@@ -31,7 +31,7 @@ COPTS=$(CFLAGS) $(AKAROA_CFLAGS) -I$(OMNETPP_INCL_DIR) -I../sim -I../common -DBU
 
 OBJS=args.o cenvir.o cinifile.o main.o omnetapp.o fsutils.o \
      speedmtr.o filemgrs.o akoutvectormgr.o matchableobject.o \
-     akaroarng.o cxmldoccache.o cstrtokenizer2.o
+     akaroarng.o cxmldoccache.o
 
 #
 # Automatic rules

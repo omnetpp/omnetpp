@@ -22,7 +22,7 @@
 
 #include <assert.h>
 #include <stdlib.h>
-#include "cstrtokenizer2.h"
+#include "fnamelisttokenizer.h"
 
 
 FilenamesListTokenizer::FilenamesListTokenizer(const char *s)

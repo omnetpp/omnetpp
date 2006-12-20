@@ -29,7 +29,7 @@
 #include "appreg.h"
 #include "cmodule.h"
 #include "fsutils.h"
-#include "cstrtokenizer2.h"
+#include "fnamelisttokenizer.h"
 
 #include "speedmtr.h"       // env_dummy_function()
 #include "filemgrs.h"       // env_dummy_function()

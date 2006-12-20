@@ -40,7 +40,7 @@
 #include "cmodule.h"
 #include "cxmlelement.h"
 #include "cxmldoccache.h"
-#include "cstrtokenizer2.h"
+#include "fnamelisttokenizer.h"
 #include "chasher.h"
 
 #ifdef WITH_PARSIM

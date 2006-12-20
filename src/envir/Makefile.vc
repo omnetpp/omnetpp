@@ -18,7 +18,7 @@ COPTS=$(CFLAGS) -I"$(OMNETPP_INCL_DIR)" -I../sim  -I../common -DBUILDING_ENVIR -
 
 OBJS=args.obj cenvir.obj cinifile.obj main.obj omnetapp.obj fsutils.obj \
      speedmtr.obj filemgrs.obj akoutvectormgr.obj matchableobject.obj \
-     akaroarng.obj cxmldoccache.obj cstrtokenizer2.obj
+     akaroarng.obj cxmldoccache.obj
 
 LIBS=$(OMNETPP_SRC_DIR)/sim/sim_std.ilib
 
@@ -120,7 +120,6 @@ cenvir.obj: cenvir.cc \
   appreg.h \
   ../../include/cmodule.h \
   fsutils.h \
-  cstrtokenizer2.h \
   speedmtr.h \
   filemgrs.h \
   akaroarng.h \
@@ -170,9 +169,6 @@ cinifile.obj: cinifile.cc \
   ../../include/cvisitor.h \
   ../../include/regmacros.h \
   ../../include/onstartup.h
-cstrtokenizer2.obj: cstrtokenizer2.cc \
-  cstrtokenizer2.h \
-  ../../include/defs.h
 cxmldoccache.obj: cxmldoccache.cc \
   ../../include/cobject.h \
   cxmldoccache.h \
@@ -281,7 +277,6 @@ omnetapp.obj: omnetapp.cc \
   ../../include/cmodule.h \
   ../../include/cxmlelement.h \
   cxmldoccache.h \
-  cstrtokenizer2.h \
   ../../include/chasher.h \
   ../../include/cparsimcomm.h \
   ../../include/platdep/timeutil.h \

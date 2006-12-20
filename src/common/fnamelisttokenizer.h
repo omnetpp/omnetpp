@@ -1,5 +1,5 @@
 //==========================================================================
-//  CSTRTOKENIZER2.H - part of
+//  FNAMELISTTOKENIZER.H - part of
 //                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
 //
@@ -16,12 +16,13 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __STRINGTOKENIZER2_H
-#define __STRINGTOKENIZER2_H
+#ifndef __FNAMELISTTOKENIZER_H
+#define __FNAMELISTTOKENIZER_H
 
 #include <string>
 #include <vector>
-#include "defs.h"
+#include "util.h"
+
 
 /**
  * A string tokenizer class which honors quotation marks but not
@@ -35,7 +36,7 @@
  * may well contain backslashes, so interpreting backslashes would not be
  * very practical.)
  */
-class SIM_API FilenamesListTokenizer
+class FilenamesListTokenizer
 {
   private:
     char *str; // copy of full string (will be corrupted during tokenization)
