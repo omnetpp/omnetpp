@@ -68,6 +68,7 @@ int LineTokenizer::tokenize(char *line, int length)
             // parse quoted string
             token = s+1;
             s++;
+            //FIXME obey backslash quoting!!! ie replace \" with ", and \\ with \ in the returned token!
             // try to find end of quoted string
             while (*s && *s!='"')
                 if (*s++=='\\')

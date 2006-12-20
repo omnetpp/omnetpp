@@ -20,8 +20,10 @@
 
 /**
  * Tokenizes a line. Uses space as separator, and also honors quoted substrings
- * (that is, `one "two or three" four' is returned as 3 tokens `one', 
- * `two or three', `four').
+ * (that is, `one "two or three" four' is returned as 3 tokens `one',
+ * `two or three', `four'). If a quote appears within a token, it needs to
+ * be preceded by backslash. A backslash also needs to be quoted (ie.
+ * duplicated) if it appears within a token.
  */
 class LineTokenizer
 {
