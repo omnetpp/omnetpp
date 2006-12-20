@@ -16,7 +16,7 @@ vec.record(1/zero);
 vec.record(-1/zero);
 
 %contains-regex: {}.vec
-vector 0  "{}_network"  "vec"  1
+vector 0  {}_network  vec  1
 0	1	((1\.#INF)|(inf))
 0	1	-((1\.#INF)|(inf))
 
