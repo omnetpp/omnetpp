@@ -5,7 +5,7 @@
 //
 //
 //  Declaration of the following classes:
-//    cStringTokenizer2  : string tokenizer utility class
+//    FilenamesListTokenizer  : string tokenizer utility class
 //
 //==========================================================================
 
@@ -26,16 +26,16 @@
 /**
  * A string tokenizer class which honors quotation marks but not
  * backslashes. It is designed to split up filename lists returned by
- * cInifile::getAsFilenames().      FIXME rename to FilenameListTokenizer?
+ * cInifile::getAsFilenames().
  *
  * It considers the string as consisting of tokens separated by tab or space
- * charaters. If a token contains space or tab, it has to be surrounded
- * with quotation marks. A token may NOT contain quotation mark.
- *
- * Rationale: filenames do not contain quotes but they may well contain
- * backslashes, so escaping with backslashes would not be feasible.
+ * characters. If a token contains space or tab ("C:\Program Files\X"),
+ * it has to be surrounded with quotation marks. A token may NOT contain
+ * quotation marks. (Rationale: filenames do not contain quotes but they
+ * may well contain backslashes, so interpreting backslashes would not be
+ * very practical.)
  */
-class SIM_API cStringTokenizer2
+class SIM_API FilenamesListTokenizer
 {
   private:
     char *str; // copy of full string (will be corrupted during tokenization)
@@ -45,12 +45,12 @@ class SIM_API cStringTokenizer2
     /**
      * Constructor. The class will make its own copy of the input string.
      */
-    cStringTokenizer2(const char *str);
+    FilenamesListTokenizer(const char *str);
 
     /**
      * Destructor.
      */
-    ~cStringTokenizer2();
+    ~FilenamesListTokenizer();
 
     /**
      * Returns true if there're more tokens (i.e. the next nextToken()

@@ -5,7 +5,7 @@
 //
 //
 //  Declaration of the following classes:
-//    cStringTokenizer2  : string tokenizer utility class
+//    FilenamesListTokenizer  : string tokenizer utility class
 //
 //==========================================================================
 
@@ -25,7 +25,7 @@
 #include "cstrtokenizer2.h"
 
 
-cStringTokenizer2::cStringTokenizer2(const char *s)
+FilenamesListTokenizer::FilenamesListTokenizer(const char *s)
 {
     if (!s)
         s = "";
@@ -34,18 +34,18 @@ cStringTokenizer2::cStringTokenizer2(const char *s)
     rest = str;
 }
 
-cStringTokenizer2::~cStringTokenizer2()
+FilenamesListTokenizer::~FilenamesListTokenizer()
 {
     delete [] str;
 }
 
-bool cStringTokenizer2::hasMoreTokens()
+bool FilenamesListTokenizer::hasMoreTokens()
 {
     while (*rest==' ' || *rest=='\t') rest++;
     return *rest != '\0';
 }
 
-const char *cStringTokenizer2::nextToken()
+const char *FilenamesListTokenizer::nextToken()
 {
     // we want to write "s" instead of "rest"
     char *&s = rest;
@@ -80,7 +80,7 @@ const char *cStringTokenizer2::nextToken()
     return token;
 }
 
-std::vector<std::string> cStringTokenizer2::asVector()
+std::vector<std::string> FilenamesListTokenizer::asVector()
 {
     const char *s;
     std::vector<std::string> v;

@@ -200,7 +200,7 @@ void TOmnetApp::setup()
              // iterate through file names
              ev.printf("\n");
 
-             cStringTokenizer2 tokenizer(nedfiles.c_str());
+             FilenamesListTokenizer tokenizer(nedfiles.c_str());
              const char *fname;
              while ((fname = tokenizer.nextToken())!=NULL)
              {

@@ -93,9 +93,9 @@ cEnvir::~cEnvir()
 
 static void loadLibs(const char *libs)
 {
-    // "libs" may contain quoted filenames, so use cStringTokenizer2 to parse it
+    // "libs" may contain quoted filenames, so use FilenamesListTokenizer to parse it
     if (!libs) libs = "";
-    cStringTokenizer2 tokenizer(libs);
+    FilenamesListTokenizer tokenizer(libs);
     const char *lib;
     while ((lib = tokenizer.nextToken())!=NULL)
         loadExtensionLibrary(lib);
