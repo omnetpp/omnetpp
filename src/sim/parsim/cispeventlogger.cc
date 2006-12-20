@@ -65,8 +65,8 @@ void cISPEventLogger::processOutgoingMessage(cMessage *msg, int procId, int modu
 {
     if (msg->priority()!=0)
         throw cRuntimeError("cISPEventLogger: outgoing message (%s)%s has nonzero priority() set -- "
-                                "this conflicts with ISP which uses priority for its own purposes",
-                                msg->className(), msg->name());
+                            "this conflicts with ISP which uses priority for its own purposes",
+                            msg->className(), msg->name());
     cParsimProtocolBase::processOutgoingMessage(msg, procId, moduleId, gateId, data);
 }
 

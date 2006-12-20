@@ -115,14 +115,14 @@ void cOwnedObject::ownedObjectDeleted(cOwnedObject *obj)
 {
     // Note: too late to call obj->className(), at this point it'll aways return "cOwnedObject"
     throw cRuntimeError("Object %s is currently in (%s)%s, it cannot be deleted. "
-                            "If this error occurs inside %s, it needs to be changed "
-                            "to call drop() before it can delete that object. "
-                            "If this error occurs inside %s's destructor and %s is a class member, "
-                            "%s needs to call drop() in the destructor",
-                            obj->fullName(), className(), fullPath().c_str(),
-                            className(),
-                            className(), obj->fullName(),
-                            className());
+                        "If this error occurs inside %s, it needs to be changed "
+                        "to call drop() before it can delete that object. "
+                        "If this error occurs inside %s's destructor and %s is a class member, "
+                        "%s needs to call drop() in the destructor",
+                        obj->fullName(), className(), fullPath().c_str(),
+                        className(),
+                        className(), obj->fullName(),
+                        className());
 }
 
 void cOwnedObject::yieldOwnership(cOwnedObject *obj, cOwnedObject *newowner)
@@ -211,19 +211,19 @@ void cOwnedObject::netUnpack(cCommBuffer *buffer)
 cNoncopyableOwnedObject *cNoncopyableOwnedObject::dup() const
 {
     throw cRuntimeError(this, "dup(): %s subclasses from cNoncopyableOwnedObject, "
-                                  "and does not support dup()", className());
+                              "and does not support dup()", className());
 }
 
 void cNoncopyableOwnedObject::netPack(cCommBuffer *buffer)
 {
     throw cRuntimeError(this, "netPack(): %s subclasses from cNoncopyableOwnedObject, and "
-                                  "does not support pack/unpack operations", className());
+                              "does not support pack/unpack operations", className());
 }
 
 void cNoncopyableOwnedObject::netUnpack(cCommBuffer *buffer)
 {
     throw cRuntimeError(this, "netUnpack(): %s subclasses from cNoncopyableOwnedObject, and "
-                                  "does not support pack/unpack operations", className());
+                              "does not support pack/unpack operations", className());
 }
 
 //-----

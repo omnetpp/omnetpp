@@ -498,7 +498,7 @@ void cModule::deleteModule()
     for (cModule *mod = simulation.contextModule(); mod; mod = mod->parentModule())
         if (mod==this)
             throw cRuntimeError(this, "it is not supported to delete module which contains "
-                                    "the currently executing simple module");
+                                      "the currently executing simple module");
 
     delete this;
 }
@@ -514,7 +514,7 @@ void cModule::changeParentTo(cModule *mod)
     for (int i=0; i<numgates; i++)
         if (g=gate(i), g && g->isConnectedOutside())
             throw cRuntimeError(this, "changeParentTo(): gates of the module must not be "
-                                    "connected (%s is connected now)", g->fullName());
+                                      "connected (%s is connected now)", g->fullName());
 
     // cannot insert module under one of its own submodules
     for (cModule *m = mod; m; m = m->parentModule())

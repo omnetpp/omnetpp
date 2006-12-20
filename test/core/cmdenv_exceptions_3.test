@@ -18,7 +18,7 @@ void {Module}::activity()
 
 void {Module}::finish()
 {
-    throw new cRuntimeError("test exception");
+    throw cRuntimeError("test exception");
 }
 
 %exitcode: 1

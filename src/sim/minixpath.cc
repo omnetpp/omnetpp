@@ -284,7 +284,7 @@ cXMLElement *MiniXPath::matchPathExpression(cXMLElement *contextNode, const char
         // we need the document node if path starts with "/"
         if (documentNode==NULL)
             throw cRuntimeError("Mini XPath engine: cannot evaluate a path starting with '/' "
-                                    "if the documentNode optional parameter is not supplied");
+                                "if the documentNode optional parameter is not supplied");
 
         // plain "/" or "/." or "/./." doesn't match anything (try with any XPath interpreter)
         while (pathexpr[0]=='/' && pathexpr[1]=='.' && pathexpr[2]=='/')

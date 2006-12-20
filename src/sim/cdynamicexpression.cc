@@ -635,7 +635,7 @@ std::string cDynamicExpression::toString() const
             throw cRuntimeError(this,eBADEXP);
         return strstk[tos];
     }
-    catch (cException& e)
+    catch (std::exception& e)
     {
         std::string ret = std::string("[[ ") + e.what() + " ]]";
         return ret;

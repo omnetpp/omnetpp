@@ -362,7 +362,7 @@ void NED1Generator::doCompoundModule(CompoundModuleNode *node, const char *inden
             OUT << getBannerComment(displayProp, increaseIndent(indent));
             OUT << increaseIndent(indent) << "display: " << opp_quotestr(dispstr.c_str()) << ";" << getRightComment(displayProp);
         }
-        catch (std::runtime_error& e) {
+        catch (std::exception& e) {
             errors->add(node, ERRCAT_WARNING, e.what());
         }
     }
@@ -758,7 +758,7 @@ void NED1Generator::doSubmodule(SubmoduleNode *node, const char *indent, bool is
             OUT << getBannerComment(displayProp, increaseIndent(indent));
             OUT << increaseIndent(indent) << "display: " << opp_quotestr(dispstr.c_str()) << ";" << getRightComment(displayProp);
         }
-        catch (std::runtime_error& e) {
+        catch (std::exception& e) {
             errors->add(node, ERRCAT_WARNING, e.what());
         }
     }
@@ -855,7 +855,7 @@ void NED1Generator::doConnection(ConnectionNode *node, const char *indent, bool 
                 dispstr = DisplayStringUtil::toOldConnectionDisplayString(opp_parsequotedstr(dispstr.c_str()).c_str());
                 OUT << " display " << opp_quotestr(dispstr.c_str());
             }
-            catch (std::runtime_error& e) {
+            catch (std::exception& e) {
                 errors->add(node, ERRCAT_WARNING, e.what());
             }
         }

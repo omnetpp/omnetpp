@@ -325,8 +325,8 @@ cModuleType *cNEDNetworkBuilder::findAndCheckModuleType(const char *modtypename,
     cModuleType *modtype = cModuleType::find(modtypename);
     if (!modtype)
         throw cRuntimeError("dynamic module builder: module type definition `%s' for submodule %s "
-                                "in (%s)%s not found (Define_Module() missing from C++ source?)",
-                                modtypename, submodname, modp->className(), modp->fullPath().c_str());
+                            "in (%s)%s not found (Define_Module() missing from C++ source?)",
+                            modtypename, submodname, modp->className(), modp->fullPath().c_str());
     return modtype;
 }
 
@@ -568,8 +568,8 @@ void cNEDNetworkBuilder::doAddConnection(cModule *modp, ConnectionNode *conn)
         errg = destg;
     if (errg)
         throw cRuntimeError("dynamic module builder: gate %s in (%s)%s is being "
-                                "connected the wrong way: directions don't match",
-                                errg->fullPath().c_str(), modp->className(), modp->fullPath().c_str());
+                            "connected the wrong way: directions don't match",
+                            errg->fullPath().c_str(), modp->className(), modp->fullPath().c_str());
 
     // connect
     ChannelSpecNode *channelspec = conn->getFirstChannelSpecChild();
@@ -678,7 +678,7 @@ cChannelType *cNEDNetworkBuilder::findAndCheckChannelType(const char *channeltyp
     cChannelType *channeltype = cChannelType::find(channeltypename);
     if (!channeltype)
         throw cRuntimeError("dynamic network builder: channel type definition `%s' not found "
-                                "(Define_Channel() missing from C++ source?)", channeltypename);
+                            "(Define_Channel() missing from C++ source?)", channeltypename);
     return channeltype;
 }
 

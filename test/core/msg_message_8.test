@@ -16,13 +16,13 @@ message {MyMessage}
 
 #define TRYPRINT(X)  try { \
                        ev << #X << ":";  ev << X << endl; \
-                     } catch (cException *e) { \
-                       ev << "OOPS!" << endl; delete e; \
+                     } catch (std::exception& e) { \
+                       ev << "OOPS!" << endl; \
                      }
 #define TRY(X)       try { \
                        ev << #X << ":";  X;  ev << "OK" << endl; \
-                     } catch (cException *e) { \
-                       ev << "OOPS!" << endl; delete e; \
+                     } catch (std::exception& e) { \
+                       ev << "OOPS!" << endl; \
                      }
 
 {MyMessage} x;

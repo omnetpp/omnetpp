@@ -60,8 +60,8 @@ cMathFunction::cMathFunction(const char *name, MathFuncNoArg f, int ac) : cNonco
     argc = 0;
     if (ac!=-1 && ac!=0)
         throw cRuntimeError("Register_Function() or cMathFunction: "
-                                "attempt to register function \"%s\" with wrong "
-                                "number of arguments %d, should be 0", name, ac);
+                            "attempt to register function \"%s\" with wrong "
+                            "number of arguments %d, should be 0", name, ac);
 }
 
 cMathFunction::cMathFunction(const char *name, MathFunc1Arg f, int ac) : cNoncopyableOwnedObject(name)
@@ -70,8 +70,8 @@ cMathFunction::cMathFunction(const char *name, MathFunc1Arg f, int ac) : cNoncop
     argc = 1;
     if (ac!=-1 && ac!=1)
         throw cRuntimeError("Register_Function() or cMathFunction: "
-                                "attempt to register function \"%s\" with wrong "
-                                "number of arguments %d, should be 1", name, ac);
+                            "attempt to register function \"%s\" with wrong "
+                            "number of arguments %d, should be 1", name, ac);
 }
 
 cMathFunction::cMathFunction(const char *name, MathFunc2Args f, int ac) : cNoncopyableOwnedObject(name)
@@ -80,8 +80,8 @@ cMathFunction::cMathFunction(const char *name, MathFunc2Args f, int ac) : cNonco
     argc = 2;
     if (ac!=-1 && ac!=2)
         throw cRuntimeError("Register_Function() or cMathFunction: "
-                                "attempt to register function \"%s\" with wrong "
-                                "number of arguments %d, should be 2", name, ac);
+                            "attempt to register function \"%s\" with wrong "
+                            "number of arguments %d, should be 2", name, ac);
 }
 
 cMathFunction::cMathFunction(const char *name, MathFunc3Args f, int ac) : cNoncopyableOwnedObject(name)
@@ -90,8 +90,8 @@ cMathFunction::cMathFunction(const char *name, MathFunc3Args f, int ac) : cNonco
     argc = 3;
     if (ac!=-1 && ac!=3)
         throw cRuntimeError("Register_Function() or cMathFunction: "
-                                "attempt to register function \"%s\" with wrong "
-                                "number of arguments %d, should be 3", name, ac);
+                            "attempt to register function \"%s\" with wrong "
+                            "number of arguments %d, should be 3", name, ac);
 }
 
 cMathFunction::cMathFunction(const char *name, MathFunc4Args f, int ac) : cNoncopyableOwnedObject(name)
@@ -100,8 +100,8 @@ cMathFunction::cMathFunction(const char *name, MathFunc4Args f, int ac) : cNonco
     argc = 4;
     if (ac!=-1 && ac!=4)
         throw cRuntimeError("Register_Function() or cMathFunction: "
-                                "attempt to register function \"%s\" with wrong "
-                                "number of arguments %d, should be 4", name, ac);
+                            "attempt to register function \"%s\" with wrong "
+                            "number of arguments %d, should be 4", name, ac);
 }
 
 std::string cMathFunction::info() const

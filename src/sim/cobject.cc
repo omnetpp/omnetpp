@@ -58,7 +58,7 @@ std::string cObject::detailedInfo() const
 cObject *cObject::dup() const
 {
     throw cRuntimeError("The dup() method, declared in cObject, is not "
-                            "redefined in class %s", className());
+                        "redefined in class %s", className());
 }
 
 void cObject::netPack(cCommBuffer *buffer)

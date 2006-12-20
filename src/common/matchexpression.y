@@ -128,7 +128,7 @@ void MatchExpression::parsePattern(std::vector<MatchExpression::Elem>& elems, co
     {
         ret = yyparse();
     }
-    catch (std::runtime_error& e)
+    catch (std::exception& e)
     {
         yy_delete_buffer(handle);
         throw;

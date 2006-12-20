@@ -105,8 +105,8 @@ const char *cStringPar::stringValue(cComponent *context) const
 {
     if (flags & FL_ISEXPR)
         throw cRuntimeError(this, "stringValue() and conversion to `const char *' cannot be invoked "
-                                "on parameters declared `volatile string' in NED -- use stdstringValue() "
-                                "or conversion to `std::string' instead.");
+                                  "on parameters declared `volatile string' in NED -- use stdstringValue() "
+                                  "or conversion to `std::string' instead.");
     return val.c_str();
 }
 
@@ -170,7 +170,7 @@ bool cStringPar::parse(const char *text)
         setStringValue(str.c_str());
         return true;
     }
-    catch (std::runtime_error& e) {
+    catch (std::exception& e) {
         // no problem, we'll try it another way
     }
 

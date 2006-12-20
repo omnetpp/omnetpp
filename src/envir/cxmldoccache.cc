@@ -153,8 +153,8 @@ cXMLElement *cXMLDocCache::parseDocument(const char *filename)
 {
 #ifndef WITH_NETBUILDER
     throw cRuntimeError("Cannot load `%s': XML config file support currently requires "
-                            "WITH_NETBUILDER option (check configure.user or configuser.vc, then "
-                            "rebuild OMNeT++)", filename);
+                        "WITH_NETBUILDER option (check configure.user or configuser.vc, then "
+                        "rebuild OMNeT++)", filename);
 #else
     cXMLSAXHandler sh(filename);
     SAXParser parser;

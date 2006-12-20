@@ -376,7 +376,7 @@ int main(int argc, char **argv)
         while ((line = freader.readNextLine()) != NULL)
             cout << line << "\n";
     }
-    catch (std::runtime_error& e) {
+    catch (std::exception& e) {
         cout << "Error: " << e.what() << endl;
     }
 

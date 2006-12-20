@@ -352,7 +352,7 @@ displayblock
                       literal->setValue(displaystring.c_str());
                       // NOTE: no setText(): it would cause the OLD form to be exported into NED2 too
                   }
-                  catch (std::runtime_error& e) {
+                  catch (std::exception& e) {
                       np->getErrors()->add(ps.property, e.what());
                   }
                   ps.propkey->appendChild(literal);
@@ -772,7 +772,7 @@ opt_submod_displayblock
                       literal->setValue(displaystring.c_str());
                       // NOTE: no setText(): it would cause the OLD form to be exported into NED2 too
                   }
-                  catch (std::runtime_error& e) {
+                  catch (std::exception& e) {
                       np->getErrors()->add(ps.property, e.what());
                   }
                   ps.propkey->appendChild(literal);
@@ -886,7 +886,7 @@ opt_conn_displaystr
                       std::string displaystring = DisplayStringUtil::upgradeConnectionDisplayString(opp_parsequotedstr(toString(@2)).c_str());
                       literal->setValue(displaystring.c_str());
                   }
-                  catch (std::runtime_error& e) {
+                  catch (std::exception& e) {
                       np->getErrors()->add(ps.property, e.what());
                   }
                   // NOTE: no setText(): it would cause the OLD form to be exported into NED2 too

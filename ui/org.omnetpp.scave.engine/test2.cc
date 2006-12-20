@@ -113,7 +113,7 @@ main()
 
         net.execute();
     }
-    catch (std::runtime_error& e)
+    catch (std::exception& e)
     {
         printf("exception: %s", e.what());
     }

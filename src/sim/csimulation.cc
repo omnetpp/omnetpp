@@ -245,7 +245,7 @@ void cSimulation::loadNedFile(const char *nedfile, bool isXML)
     cNEDLoader::instance()->loadNedFile(nedfile, isXML);
 #else
     throw cRuntimeError("cannot load `%s': simulation kernel was compiled without "
-                            "support for dynamic loading of NED files (WITH_NETBUILDER=no)", nedfile);
+                        "support for dynamic loading of NED files (WITH_NETBUILDER=no)", nedfile);
 #endif
 }
 
@@ -358,24 +358,15 @@ void cSimulation::setupNetwork(cModuleType *network, int run_num)
         mod->readParams();
         mod->buildInside();
     }
-    catch (cException&)
-    {
-        // we could clean up the whole stuff with deleteNetwork()
-        // before passing the exception back, but it is dangerous.
-        // Module destructors may try to delete uninitialized pointers
-        // and crash. (Often pointers incorrectly get initialized in initialize()
-        // and not in the constructor.)
-        //deleteNetwork();
-        throw;
-    }
     catch (std::exception& e)
     {
-        // omit deleteNetwork() -- see note above
-        //deleteNetwork();
-        throw cRuntimeError("standard C++ exception %s: %s",
-                                opp_typename(typeid(e)), e.what());
+        // Note: no deleteNetwork() call here. We could call it here, but it's
+        // dangerous: module destructors may try to delete uninitialized pointers
+        // and crash. (Often pointers incorrectly get initialized in initialize()
+        // and not in the constructor.)
+        throw;
     }
-    //catch (...) -- this is probably not a good idea because it makes debugging more difficult
+    //catch (...) -- this is not a good idea because it would make debugging more difficult
     //{
     //    deleteNetwork();
     //    throw cRuntimeError("unknown exception occurred");
@@ -526,8 +517,8 @@ void cSimulation::transferTo(cSimpleModule *modp)
 
     if (modp->stackOverflow())
         throw cRuntimeError("Stack violation in module (%s)%s: module stack too small? "
-                                "Try increasing it in the class' Module_Class_Members() or constructor",
-                                modp->className(), modp->fullPath().c_str());
+                            "Try increasing it in the class' Module_Class_Members() or constructor",
+                            modp->className(), modp->fullPath().c_str());
 
     // if exception occurred in activity(), re-throw it. This allows us to handle
     // handleMessage() and activity() in an uniform way in the upper layer.
@@ -536,18 +527,32 @@ void cSimulation::transferTo(cSimpleModule *modp)
         cException *e = simulation.exception;
         simulation.exception = NULL;
 
-        // unfortunately, if we just further throw e, type info gets lost and
-        // the exception can only be caught as cException* and not e.g. as
-        // cRuntimeException. So we have to do the following magic to allow
-        // for more specific catches.
+        // ok, so we have an exception *pointer*, but we have to throw further
+        // by *value*, and possibly without leaking it. Hence the following magic...
         if (dynamic_cast<cDeleteModuleException *>(e))
-            throw (cDeleteModuleException *)e;
-        if (dynamic_cast<cTerminationException *>(e))
-            throw (cTerminationException *)e;
-        if (dynamic_cast<cRuntimeError *>(e))
-            throw (cRuntimeError *)e;
+        {
+            cDeleteModuleException e2(*(cDeleteModuleException *)e);
+            delete e;
+            throw e2;
+        }
+        else if (dynamic_cast<cTerminationException *>(e))
+        {
+            cTerminationException e2(*(cTerminationException *)e);
+            delete e;
+            throw e2;
+        }
+        else if (dynamic_cast<cRuntimeError *>(e))
+        {
+            cRuntimeError e2(*(cRuntimeError *)e);
+            delete e;
+            throw e2;
+        }
         else
-            throw e;
+        {
+            cException e2(*(cException *)e);
+            delete e;
+            throw e2;
+        }
     }
 }
 
@@ -593,7 +598,7 @@ void cSimulation::doOneEvent(cSimpleModule *mod)
         setGlobalContext();
         delete mod;
     }
-    catch (cException&)
+    catch (std::exception&)
     {
         // restore global context before throwing exception further
         setGlobalContext();

@@ -46,10 +46,7 @@
 // Turns exceptions into Tcl errors
 //
 #define TRY(code) \
-  try {code;} catch (cException& e) { \
-      Tcl_SetResult(interp, TCLCONST(e.what()), TCL_VOLATILE); \
-      return TCL_ERROR; \
-  } catch (std::runtime_error& e) { \
+  try {code;} catch (std::exception& e) { \
       Tcl_SetResult(interp, TCLCONST(e.what()), TCL_VOLATILE); \
       return TCL_ERROR; \
   }
@@ -57,10 +54,7 @@
 #define E_TRY   try {
 
 #define E_CATCH \
-  } catch (cException& e) { \
-      Tcl_SetResult(interp, TCLCONST(e.what()), TCL_VOLATILE); \
-      return TCL_ERROR; \
-  } catch (std::runtime_error& e) { \
+  } catch (std::exception& e) { \
       Tcl_SetResult(interp, TCLCONST(e.what()), TCL_VOLATILE); \
       return TCL_ERROR; \
   }

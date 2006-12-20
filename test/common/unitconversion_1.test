@@ -14,9 +14,8 @@ static void parseAndPrint(const char *text, const char *expectedUnit=NULL)
         double d = UnitConversion().parseQuantity(text, expectedUnit);
         ev << d << "\n";
     }
-    catch (Exception *e) {
-        ev << "ERROR: " << e->message() << "\n";
-        delete e;
+    } catch (std::exception& e) {
+        ev << "ERROR: " << e.what() << "\n";
     }
 }
 

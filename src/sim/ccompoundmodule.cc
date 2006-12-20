@@ -53,11 +53,11 @@ void cCompoundModule::arrived(cMessage *msg, int g, simtime_t)
 {
     cGate *gt = gate(g);
     throw cRuntimeError("Gate `%s' of compound module (%s)%s is not connected on the %s, "
-                            "upon arrival of message (%s)%s",
-                            gt->fullName(),
-                            className(), fullPath().c_str(),
-                            (gt->isConnectedOutside() ? "inside" : "outside"),
-                            msg->className(), msg->name());
+                        "upon arrival of message (%s)%s",
+                        gt->fullName(),
+                        className(), fullPath().c_str(),
+                        (gt->isConnectedOutside() ? "inside" : "outside"),
+                        msg->className(), msg->name());
 }
 
 void cCompoundModule::scheduleStart(simtime_t t)

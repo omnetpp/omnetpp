@@ -34,7 +34,7 @@ class cComponent;
  *
  * @ingroup SimSupport
  */
-class SIM_API cException : public std::runtime_error
+class SIM_API cException : public std::exception
 {
   protected:
     int errorcode;
@@ -98,6 +98,18 @@ class SIM_API cException : public std::runtime_error
      * object name will be prepended to the message like this: "(cArray)arr".
      */
     cException(const cObject *where, const char *msg,...);
+
+    /**
+     * We unfortunately need to copy exception objects when handing them back
+     * from an activity().
+     */
+    cException(const cException&);
+
+    /**
+     * Virtual copy constructor. We unfortunately need to copy exception objects
+     * when handing them back from an activity().
+     */
+    cException *dup() const {return new cException(*this);}
 
     /**
      * Destructor.
@@ -169,6 +181,18 @@ class SIM_API cTerminationException : public cException
      * To be called like printf(). The error code is set to eCUSTOM.
      */
     cTerminationException(const char *msg,...);
+
+    /**
+     * We unfortunately need to copy exception objects when handing them back
+     * from an activity().
+     */
+    cTerminationException(const cTerminationException& e) : cException(e) {}
+
+    /**
+     * Virtual copy constructor. We unfortunately need to copy exception objects
+     * when handing them back from an activity().
+     */
+    cTerminationException *dup() const {return new cTerminationException(*this);}
 };
 
 /**
@@ -213,6 +237,18 @@ class SIM_API cRuntimeError : public cException
      * object name will be prepended to the message like this: "(cArray)arr".
      */
     cRuntimeError(const cObject *where, const char *msg,...);
+
+    /**
+     * We unfortunately need to copy exception objects when handing them back
+     * from an activity().
+     */
+    cRuntimeError(const cRuntimeError& e) : cException(e) {}
+
+    /**
+     * Virtual copy constructor. We unfortunately need to copy exception objects
+     * when handing them back from an activity().
+     */
+    cRuntimeError *dup() const {return new cRuntimeError(*this);}
 };
 
 /**
@@ -224,6 +260,23 @@ class SIM_API cRuntimeError : public cException
  */
 class SIM_API cDeleteModuleException : public cException
 {
+  public:
+    /**
+     * Default ctor.
+     */
+    cDeleteModuleException() : cException() {}
+
+    /**
+     * We unfortunately need to copy exception objects when handing them back
+     * from an activity().
+     */
+    cDeleteModuleException(const cDeleteModuleException& e) : cException(e) {}
+
+    /**
+     * Virtual copy constructor. We unfortunately need to copy exception objects
+     * when handing them back from an activity().
+     */
+    cDeleteModuleException *dup() const {return new cDeleteModuleException(*this);}
 };
 
 /**
@@ -238,9 +291,23 @@ class SIM_API cStackCleanupException : public cException
 {
   public:
     /**
-     * Constructor.
+     * Default ctor.
      */
-    cStackCleanupException();
+    cStackCleanupException() : cException() {}
+
+    /**
+     * We unfortunately need to copy exception objects when handing them back
+     * from an activity().
+     */
+    cStackCleanupException(const cStackCleanupException& e) : cException(e) {}
+
+    /**
+     * Virtual copy constructor. We unfortunately need to copy exception objects
+     * when handing them back from an activity().
+     */
+    cStackCleanupException *dup() const {return new cStackCleanupException(*this);}
 };
 
 #endif
+
+

@@ -23,7 +23,7 @@ void {Module}::initialize()
 
 void {Module}::handleMessage(cMessage *msg)
 {
-    throw new cRuntimeError("test exception");
+    throw cRuntimeError("test exception");
 }
 
 void {Module}::finish()

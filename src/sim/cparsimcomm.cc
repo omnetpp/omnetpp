@@ -30,7 +30,9 @@ void cParsimCommunications::broadcast(cCommBuffer *buffer, int tag)
 {
     // Default implementation: send to everyone. Try to do as much of the job
     // as possible -- if there're exceptions, throw on only one of them.
-    cException *ex = NULL;
+    bool hadException = false;
+    std::string exceptionText;
+
     int n = getNumPartitions();
     int myProcId = getProcId();
     for (int i=0; i<n; i++)
@@ -40,17 +42,15 @@ void cParsimCommunications::broadcast(cCommBuffer *buffer, int tag)
             if (myProcId != i)
                 send(buffer, tag, i);
         }
-        catch (cException& e)
+        catch (std::exception& e)
         {
-/*FIXME add back!!!!
-            if (!ex)
-               ex = e.dup();
-*/
+            hadException = true;
+            exceptionText = e.what();
         }
     }
 
-    if (ex)
-        throw (*ex);  //XXX leaks the exception object
+    if (hadException)
+        throw cRuntimeError("Error during broadcast: %s", exceptionText.c_str());
 }
 
 

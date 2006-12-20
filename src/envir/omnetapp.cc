@@ -214,7 +214,7 @@ void TOmnetApp::setup()
              simulation.doneLoadingNedFiles();
          }
      }
-     catch (cException& e)
+     catch (std::exception& e)
      {
          displayError(e);
          return;  // don't set initialized to true
@@ -297,7 +297,7 @@ void TOmnetApp::shutdown()
             parsimpartition->shutdown();
 #endif
     }
-    catch (cException& e)
+    catch (std::exception& e)
     {
         displayError(e);
     }
@@ -403,13 +403,15 @@ void TOmnetApp::readParameter(cPar *par)
         else
             reply = ev.gets((std::string("Enter parameter `")+parfullpath+"':").c_str(), par->toString().c_str());
 
-        try {
+        try
+        {
             success = false;
             success = par->parse(reply.c_str());
             if (!success)
                 throw cRuntimeError("Syntax error, please try again.");
         }
-        catch (cException& e) {
+        catch (std::exception& e)
+        {
             ev.printfmsg("%s", e.what());
         }
     }
@@ -832,20 +834,22 @@ bool TOmnetApp::memoryIsLow()
     return false;
 }
 
-void TOmnetApp::displayError(cException& e)
+void TOmnetApp::displayError(std::exception& e)
 {
-    if (e.moduleID()==-1)  //FIXME revise condition
+    cException *ee = dynamic_cast<cException *>(&e);
+    if (!ee || ee->moduleID()==-1)  //FIXME revise condition
         ev.printfmsg("Error: %s.", e.what());
     else
-        ev.printfmsg("Error in module (%s) %s: %s.", e.contextClassName(), e.contextFullPath(), e.what());
+        ev.printfmsg("Error in module (%s) %s: %s.", ee->contextClassName(), ee->contextFullPath(), ee->what());
 }
 
-void TOmnetApp::displayMessage(cException& e)
+void TOmnetApp::displayMessage(std::exception& e)
 {
-    if (e.moduleID()==-1)  //FIXME revise condition
+    cException *ee = dynamic_cast<cException *>(&e);
+    if (!ee || ee->moduleID()==-1)  //FIXME revise condition
         ev.printfmsg("%s.", e.what());
     else
-        ev.printfmsg("Module (%s) %s: %s.", e.contextClassName(), e.contextFullPath(), e.what());
+        ev.printfmsg("Module (%s) %s: %s.", ee->contextClassName(), ee->contextFullPath(), ee->what());
 }
 
 bool TOmnetApp::idle()
@@ -902,17 +906,17 @@ void TOmnetApp::stoppedWithTerminationException(cTerminationException& e)
     // if we're running in parallel and this exception is NOT one we received
     // from other partitions, then notify other partitions
 #ifdef WITH_PARSIM
-    if (opt_parsim && !dynamic_cast<cReceivedTerminationException&>(e))
+    if (opt_parsim && !dynamic_cast<cReceivedTerminationException *>(&e))
         parsimpartition->broadcastTerminationException(e);
 #endif
 }
 
-void TOmnetApp::stoppedWithException(cException& e)
+void TOmnetApp::stoppedWithException(std::exception& e)
 {
     // if we're running in parallel and this exception is NOT one we received
     // from other partitions, then notify other partitions
 #ifdef WITH_PARSIM
-    if (opt_parsim && !dynamic_cast<cReceivedException&>(e))
+    if (opt_parsim && !dynamic_cast<cReceivedException *>(&e))
         parsimpartition->broadcastException(e);
 #endif
 }

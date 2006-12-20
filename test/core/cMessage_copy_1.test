@@ -8,7 +8,7 @@ TODO: check copying of param array too
 
 %activity:
 
-#define CHECK(cond)  if (!(cond)) {throw new cException("BUG at line %d, failed condition %s", __LINE__, #cond);}
+#define CHECK(cond)  if (!(cond)) {throw cRuntimeError("BUG at line %d, failed condition %s", __LINE__, #cond);}
 
 cMessage *msg = new cMessage("msg");
 int dummy;

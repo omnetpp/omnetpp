@@ -193,7 +193,7 @@ double gamma_d(double alpha, double theta, int rng)
 {
     if (alpha<=0 || theta<=0)
         throw cRuntimeError("gamma(): alpha and theta params must be positive "
-                                "(alpha=%lg, theta=%lg)", alpha, theta);
+                            "(alpha=%lg, theta=%lg)", alpha, theta);
 
     if (fabs(alpha - 1.0) <= DBL_EPSILON)
     {
@@ -216,7 +216,7 @@ double beta(double alpha1, double alpha2, int rng)
 {
     if (alpha1<=0 || alpha2<=0)
         throw cRuntimeError("beta(): alpha1 and alpha2 parameters must be positive "
-                                "(alpha1=%lg, alpha2=%lg)", alpha1, alpha2);
+                            "(alpha1=%lg, alpha2=%lg)", alpha1, alpha2);
 
     double Y1 = gamma_d(alpha1, 1.0, rng);
     double Y2 = gamma_d(alpha2, 1.0, rng);
@@ -370,7 +370,7 @@ int hypergeometric(int a, int b, int n, int rng)
 {
     if (a<0 || b<0 || n>a+b)
         throw cRuntimeError("hypergeometric(): params must be a>=0, b>=0, n=<a+b "
-                             "(a=%d, b=%d, n=%d)", a,b,n);
+                            "(a=%d, b=%d, n=%d)", a,b,n);
 
     double U = genk_dblrand(rng);
     double alpha = _factorial(b) / (double) _factorial(a + b - n);

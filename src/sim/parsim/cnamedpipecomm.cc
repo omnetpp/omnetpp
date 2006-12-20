@@ -216,7 +216,7 @@ bool cNamedPipeCommunications::doReceive(cCommBuffer *buffer, int& receivedTag, 
                 struct PipeHeader ph;
                 if (readBytes(rpipes[i], &ph, sizeof(ph))==-1)
                     throw cRuntimeError("cNamedPipeCommunications: cannot read from pipe "
-                                            "to procId=%d: %s", sourceProcId, strerror(errno));
+                                        "to procId=%d: %s", sourceProcId, strerror(errno));
 
                 sourceProcId = i;
                 receivedTag = ph.tag;
@@ -225,7 +225,7 @@ bool cNamedPipeCommunications::doReceive(cCommBuffer *buffer, int& receivedTag, 
 
                 if (readBytes(rpipes[i], b->getBuffer(), ph.contentLength)==-1)
                     throw cRuntimeError("cNamedPipeCommunications: cannot read from pipe "
-                                            "to procId=%d: %s", sourceProcId, strerror(errno));
+                                        "to procId=%d: %s", sourceProcId, strerror(errno));
                 return true;
             }
         }

@@ -244,7 +244,7 @@ int TCmdenvApp::run()
 
             checkFingerprint();
         }
-        catch (cException& e)
+        catch (std::exception& e)
         {
             had_error = true;
             stoppedWithException(e);
@@ -258,7 +258,7 @@ int TCmdenvApp::run()
             {
                 endRun();
             }
-            catch (cException& e)
+            catch (std::exception& e)
             {
                 had_error = true;
                 displayError(e);
@@ -272,7 +272,7 @@ int TCmdenvApp::run()
             {
                 simulation.deleteNetwork();
             }
-            catch (cException& e)
+            catch (std::exception& e)
             {
                 had_error = true;
                 displayError(e);
@@ -408,7 +408,7 @@ void TCmdenvApp::simulate()
         displayMessage(e);
         return;
     }
-    catch (cException& e)
+    catch (std::exception& e)
     {
         ev.disable_tracing = false;
         stopClock();

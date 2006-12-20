@@ -210,7 +210,7 @@ void cEnvir::setup(int argc, char *argv[])
         app->setup();
         isgui = app->isGUI();
     }
-    catch (cException& e)
+    catch (std::exception& e)
     {
         printfmsg("Error during startup: %s", e.what());
         if (app)

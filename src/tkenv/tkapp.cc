@@ -300,7 +300,7 @@ void TOmnetTkApp::doOneStep()
         stoppedWithTerminationException(e);
         displayMessage(e);
     }
-    catch (cException& e)
+    catch (std::exception& e)
     {
         simstate = SIM_ERROR;
         stoppedWithException(e);
@@ -363,7 +363,7 @@ void TOmnetTkApp::runSimulation(int mode, simtime_t until_time, long until_event
         stoppedWithTerminationException(e);
         displayMessage(e);
     }
-    catch (cException& e)
+    catch (std::exception& e)
     {
         simstate = SIM_ERROR;
         stoppedWithException(e);
@@ -589,7 +589,7 @@ void TOmnetTkApp::finishSimulation()
 
         checkFingerprint();
     }
-    catch (cException& e)
+    catch (std::exception& e)
     {
         displayError(e);
     }
@@ -599,7 +599,7 @@ void TOmnetTkApp::finishSimulation()
     {
         endRun();
     }
-    catch (cException& e)
+    catch (std::exception& e)
     {
         displayError(e);
     }
@@ -616,7 +616,7 @@ void TOmnetTkApp::loadNedFile(const char *fname)
     {
         simulation.loadNedFile(fname);
     }
-    catch (cException& e)
+    catch (std::exception& e)
     {
         displayError(e);
     }
@@ -654,7 +654,7 @@ void TOmnetTkApp::newNetwork(const char *network_name)
 
         simstate = SIM_NEW;
     }
-    catch (cException& e)
+    catch (std::exception& e)
     {
         displayError(e);
         simstate = SIM_ERROR;
@@ -698,7 +698,7 @@ void TOmnetTkApp::newRun(int run)
         startRun();
         simstate = SIM_NEW;
     }
-    catch (cException& e)
+    catch (std::exception& e)
     {
         displayError(e);
         simstate = SIM_ERROR;

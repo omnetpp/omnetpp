@@ -163,7 +163,7 @@ int filterCommand(int argc, char **argv)
                     if (opt_verbose) printf(" %d lines\n", f->numLines);
                 }
             }
-            catch (std::runtime_error& e) {
+            catch (std::exception& e) {
                 fprintf(stdout, "Exception: %s\n", e.what());
             }
         }
@@ -321,7 +321,7 @@ int filterCommand(int argc, char **argv)
 
         if (opt_verbose) printf("done\n");
     }
-    catch (std::runtime_error& e)
+    catch (std::exception& e)
     {
         fprintf(stdout, "Exception: %s\n", e.what());
         return 1;
@@ -428,7 +428,7 @@ int indexCommand(int argc, char **argv)
         {
             indexer.generateIndex(fileName);
         }
-        catch (std::runtime_error& e) {
+        catch (std::exception& e) {
             fprintf(stdout, "Exception: %s\n", e.what());
             rc=1;
         }

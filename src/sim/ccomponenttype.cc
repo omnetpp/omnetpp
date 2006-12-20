@@ -158,7 +158,7 @@ cModule *cModuleType::createScheduleInit(char *modname, cModule *parentmod)
 {
     if (!parentmod)
         throw cRuntimeError("createScheduleInit(): parent module pointer cannot be NULL "
-                                "when creating module named '%s' of type %s", modname, name());
+                            "when creating module named '%s' of type %s", modname, name());
     cModule *mod = create(modname, parentmod);
     mod->buildInside();
     mod->scheduleStart(simulation.simTime());

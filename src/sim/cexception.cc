@@ -34,14 +34,14 @@ static char buffer[BUFLEN];
 static char buffer2[BUFLEN];
 
 
-cException::cException() : std::runtime_error("")
+cException::cException() : std::exception("")
 {
     errorcode = eCUSTOM;
     storeCtx();
     msg = "n/a";
 }
 
-cException::cException(ErrorCode errorcode...) : std::runtime_error("")
+cException::cException(ErrorCode errorcode...) : std::exception("")
 {
     va_list va;
     va_start(va, errorcode);
@@ -49,7 +49,7 @@ cException::cException(ErrorCode errorcode...) : std::runtime_error("")
     va_end(va);
 }
 
-cException::cException(const char *msgformat...) : std::runtime_error("")
+cException::cException(const char *msgformat...) : std::exception("")
 {
     va_list va;
     va_start(va, msgformat);
@@ -57,7 +57,7 @@ cException::cException(const char *msgformat...) : std::runtime_error("")
     va_end(va);
 }
 
-cException::cException(const cObject *where, ErrorCode errorcode...) : std::runtime_error("")
+cException::cException(const cObject *where, ErrorCode errorcode...) : std::exception("")
 {
     va_list va;
     va_start(va, errorcode);
@@ -65,12 +65,22 @@ cException::cException(const cObject *where, ErrorCode errorcode...) : std::runt
     va_end(va);
 }
 
-cException::cException(const cObject *where, const char *msgformat...) : std::runtime_error("")
+cException::cException(const cObject *where, const char *msgformat...) : std::exception("")
 {
     va_list va;
     va_start(va, msgformat);
     init(where, eCUSTOM, msgformat, va);
     va_end(va);
+}
+
+cException::cException(const cException& e)
+{
+    errorcode = e.errorcode;
+    msg = e.msg;
+    hascontext = e.hascontext;
+    contextclassname = e.contextclassname;
+    contextfullpath = e.contextfullpath;
+    moduleid = e.moduleid;
 }
 
 void cException::storeCtx()
@@ -220,9 +230,4 @@ void cRuntimeError::breakIntoDebuggerIfRequested()
     }
 }
 
-//---
-
-cStackCleanupException::cStackCleanupException()
-{
-}
 

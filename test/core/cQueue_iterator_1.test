@@ -3,7 +3,7 @@ basic check for cQueueIterator
 
 %activity:
 
-#define CHECK(cond)  if (!(cond)) {throw new cException("BUG at line %d, failed condition %s", __LINE__, #cond);}
+#define CHECK(cond)  if (!(cond)) {throw cRuntimeError("BUG at line %d, failed condition %s", __LINE__, #cond);}
 
 cQueue q("queue");
 

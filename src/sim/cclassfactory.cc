@@ -47,8 +47,8 @@ cObject *cClassFactory::createOne(const char *classname)
     cClassFactory *p = find(classname);
     if (!p)
         throw cRuntimeError("Class \"%s\" not found -- perhaps its code was not linked in, "
-                                "or the class wasn't registered with Register_Class(), or in the case of "
-                                "modules and channels, with Define_Module()/Define_Channel()", classname);
+                            "or the class wasn't registered with Register_Class(), or in the case of "
+                            "modules and channels, with Define_Module()/Define_Channel()", classname);
     return p->createOne();
 }
 

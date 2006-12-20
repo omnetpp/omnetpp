@@ -260,7 +260,7 @@ cMessage& cMessage::operator=(const cMessage& msg)
 
     if (sharecount!=0)
         throw cRuntimeError(this,"operator=(): this message is refcounted (shared between "
-                                     "several messages), it is forbidden to change it");
+                                 "several messages), it is forbidden to change it");
 
     cOwnedObject::operator=(msg);
 

@@ -128,7 +128,7 @@ void NEDDTDValidatorBase::checkEnumeratedAttribute(NEDElement *node, const char 
     if (n==0)
         INTERNAL_ERROR1(node,"no allowed values for enumerated attribute '%s'", attr);
     errors->add(node,"DTD validation error: invalid value '%s' for attribute '%s', not one of the "
-                  "enumerated values ('%s',...)", s, attr, vals[0]);
+                     "enumerated values ('%s',...)", s, attr, vals[0]);
 }
 
 void NEDDTDValidatorBase::checkNameAttribute(NEDElement *node, const char *attr)

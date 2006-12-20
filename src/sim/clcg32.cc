@@ -30,8 +30,8 @@ void cLCG32::initialize(int runNumber, int rngId, int numRngs,
 {
     if (parsimNumPartitions>1)
         throw cRuntimeError("The cLCG32 RNG is not suitable for parallel simulation runs "
-                                "because of its short cycle -- please select cMersenneTwister "
-                                "in the configuration instead");
+                            "because of its short cycle -- please select cMersenneTwister "
+                            "in the configuration instead");
 
     char section[16], entry[32];
     sprintf(section, "Run %d", runNumber);
