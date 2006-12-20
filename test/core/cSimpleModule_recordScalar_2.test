@@ -15,10 +15,10 @@ output-scalar-file = {}.sca
 [Run 2]
 
 %contains: {}.sca
-run 1 "{}_network"
-scalar "{}_network" 	"one" 	24.2
-scalar "{}_network" 	"two" 	-1.5
-run 2 "{}_network"
-scalar "{}_network" 	"one" 	24.2
-scalar "{}_network" 	"two" 	-1.5
+run 1  {}_network
+scalar {}_network 	one 	24.2
+scalar {}_network 	two 	-1.5
+run 2  {}_network
+scalar {}_network 	one 	24.2
+scalar {}_network 	two 	-1.5
 
