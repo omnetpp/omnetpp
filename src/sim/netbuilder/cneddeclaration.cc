@@ -57,7 +57,7 @@ cNEDDeclaration::~cNEDDeclaration()
     clearPropsMap(subcomponentPropsMap);
     clearPropsMap(subcomponentParamPropsMap);
     clearPropsMap(subcomponentGatePropsMap);
-    printf("%s: %d cached expressions\n", name(), expressionMap.size());
+    //XXX printf("%s: %d cached expressions\n", name(), expressionMap.size());
     clearExpressionMap(expressionMap);
 }
 

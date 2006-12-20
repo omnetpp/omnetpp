@@ -16,25 +16,39 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __STRINGTOKENIZER_H
-#define __STRINGTOKENIZER_H
+#ifndef __CSTRINGTOKENIZER_H
+#define __CSTRINGTOKENIZER_H
 
 #include <string>
 #include <vector>
 #include "defs.h"
 
 /**
- * String tokenizer class, based on strtok().
+ * String tokenizer class, modelled after strtok(). It considers the input
+ * string to consist of tokens, separated by one or more delimiter characters.
+ * Repeated calls to nextToken() will enumerate the tokens in the string,
+ * returning NULL after the last token. The function hasMoreTokens() can be
+ * used to find out whether there are more tokens without consuming one.
  *
- * Example usage:
+ * Limitations: this class does not honor quotes, apostrophes or backslash
+ * quoting; nor does it return empty tokens if it encounters multiple
+ * delimiter characters in a row (so setting the delimiter to "," does not
+ * produce the desired results). This behaviour is consistent with strtok().
+ *
+ * Example 1:
  *
  * <pre>
- * const char *str = "34 42 13 46 72 41"; // input
- * std::vector<int> numbers;  // array to hold result
- *
+ * const char *str = "one two three four";
  * cStringTokenizer tokenizer(str);
  * while (tokenizer.hasMoreTokens())
- *     out.push_back(atoi(tokenizer.nextToken()));
+ *     ev << " [" << tokenizer.nextToken() << "]";
+ * </pre>
+ *
+ * Example 2:
+ *
+ * <pre>
+ * const char *str = "42 13 46 72 41";
+ * std::vector<int> array = cStringTokenizer(str).asIntVector();
  * </pre>
  *
  * @ingroup SimSupport
@@ -44,15 +58,15 @@ class SIM_API cStringTokenizer
   private:
     char *str; // copy of full string
     char *rest; // rest of string (to be tokenized)
-    char *strend; // points to terminating zero of str
     std::string delimiter;
 
   public:
     /**
      * Constructor. The class will make its own copy of the input string
-     * and of the delimiters string.
+     * and of the delimiters string. The delimiters default to all whitespace
+     * characters (space, tab, CR, LF, FF).
      */
-    cStringTokenizer(const char *str, const char *delimiters=" ");
+    cStringTokenizer(const char *str, const char *delimiters=NULL);
 
     /**
      * Destructor.
@@ -69,7 +83,7 @@ class SIM_API cStringTokenizer
      * Returns true if there're more tokens (i.e. the next nextToken()
      * call won't return NULL).
      */
-    bool hasMoreTokens()  {return rest!=NULL;}
+    bool hasMoreTokens();
 
     /**
      * Returns the next token. The returned pointers will stay valid as long

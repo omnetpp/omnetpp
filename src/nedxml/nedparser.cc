@@ -132,6 +132,7 @@ bool NEDParser::guessIsNEDInNewSyntax(const char *txt)
     char *buf = new char [strlen(txt)+1];
     const char *s;
     char *d;
+    bool whitespaceOnly = true;
     for (s=txt, d=buf; *s; )
     {
         if (*s=='/' && *(s+1)=='/') {
@@ -150,8 +151,12 @@ bool NEDParser::guessIsNEDInNewSyntax(const char *txt)
                 s++;
         }
         else {
+            if (*s && !isspace(*s))
+                whitespaceOnly = false;
+
             // copy everything else
             *d++ = *s++;
+
         }
     }
     *d = '\0';
@@ -163,7 +168,7 @@ bool NEDParser::guessIsNEDInNewSyntax(const char *txt)
     // old NED keywords are not reserved in NED2; moreover we'd have to search
     // "whole words only" so strstr() is no good.
 
-    bool isNewSyntax = strchr(buf,'{') || strchr(buf,'}') || strchr(buf,'@');
+    bool isNewSyntax = whitespaceOnly || strchr(buf,'{') || strchr(buf,'}') || strchr(buf,'@');
 
     // cleanup
     delete [] buf;

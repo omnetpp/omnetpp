@@ -37,6 +37,61 @@ LineTokenizer::~LineTokenizer()
     delete lineBuffer;
 }
 
+inline int h2d(char c)
+{
+    if (c>='0' && c<='9') return c-'0';
+    if (c>='A' && c<='F') return c-'A'+10;
+    if (c>='a' && c<='f') return c-'a'+10;
+    return -1;
+}
+
+inline int h2d(const char *&s)
+{
+    int a = h2d(*s);
+    if (a<0) return 0;
+    s++;
+    int b = h2d(*s);
+    if (b<0) return a;
+    s++;
+    return a*16+b;
+}
+
+static void interpretBackslashes(char *buffer)
+{
+    // interpret backslashes in-place. This works because the output
+    // is always shorter (or equal) than the input.
+    char *s = buffer;
+    char *d = buffer;
+    for (; *s; s++, d++)
+    {
+        if (*s=='\\')
+        {
+            // allow backslash as quote character, also interpret backslash sequences
+            // note: this must be kept consistent with opp_quotestr()/opp_parsequotedstr()
+            s++;
+            switch(*s)
+            {
+                case 'b': *d = '\b'; break;
+                case 'f': *d = '\f'; break;
+                case 'n': *d = '\n'; break;
+                case 'r': *d = '\r'; break;
+                case 't': *d = '\t'; break;
+                case 'x': s++; *d = h2d(s); s--; break; // hex code
+                case '"': *d = '"'; break;  // quote needs to be backslashed
+                case '\\': *d = '\\'; break;  // backslash needs to be backslashed
+                case '\n': d--; break; // don't store line continuation (backslash followed by newline)
+                case '\0': d--; s--; break; // string ends in stray backslash
+                default: *d = *s; // be tolerant with unrecogized backslash sequences
+            }
+        }
+        else
+        {
+            *d = *s;
+        }
+    }
+    *d = '\0';
+}
+
 int LineTokenizer::tokenize(char *line, int length)
 {
     if (length > lineBufferSize)
@@ -68,16 +123,21 @@ int LineTokenizer::tokenize(char *line, int length)
             // parse quoted string
             token = s+1;
             s++;
-            //FIXME obey backslash quoting!!! ie replace \" with ", and \\ with \ in the returned token!
             // try to find end of quoted string
+            bool containsBackslash = false;
             while (*s && *s!='"')
                 if (*s++=='\\')
-                    s++;
+                    {s++; containsBackslash = true;}
             // check we found the close quote
             if (*s!='"')
                 throw opp_runtime_error("Unmatched quote in file");
             // terminate quoted string with zero, overwriting close quote
             *s++ = 0;
+            // if token contained a backslash (rare!), we need post-processing
+            // to interpret the escape sequences
+            if (containsBackslash)
+                interpretBackslashes(token);
+
         }
         else
         {
