@@ -537,7 +537,7 @@ foreach $element (@elements)
     $startletter = $1;
     print CC "    if (tagname[0]=='$startletter' && !strcmp(tagname,\"$element\"))  return new $elementclass{$element}();\n";
 }
-print CC "    throw new NEDException(\"unknown tag '%s', cannot create object to represent it\", tagname);\n";
+print CC "    throw NEDException(\"unknown tag '%s', cannot create object to represent it\", tagname);\n";
 print CC "}\n\n";
 print CC "NEDElement *NEDElementFactory::createNodeWithTag(int tagcode)\n";
 print CC "{\n";
@@ -549,7 +549,7 @@ foreach $element (@elements)
     print CC "        case $enumname{$element}: return new $elementclass{$element}();\n";
 }
 print CC "    }\n";
-print CC "    throw new NEDException(\"unknown tag code %d, cannot create object to represent it\", tagcode);\n";
+print CC "    throw NEDException(\"unknown tag code %d, cannot create object to represent it\", tagcode);\n";
 print CC "}\n\n";
 
 
@@ -621,10 +621,9 @@ foreach $element (@elements)
 print VAL_CC "            default: INTERNAL_ERROR1(node,\"validateElement(): unknown tag '%s'\", node->getTagName());\n";
 print VAL_CC "        }\n";
 print VAL_CC "    }\n";
-print VAL_CC "    catch (NEDException *e)\n";
+print VAL_CC "    catch (NEDException& e)\n";
 print VAL_CC "    {\n";
-print VAL_CC "        INTERNAL_ERROR1(node,\"validateElement(): NEDException: %s\", e->errorMessage());\n";
-print VAL_CC "        delete e;\n";
+print VAL_CC "        INTERNAL_ERROR1(node,\"validateElement(): NEDException: %s\", e.what());\n";
 print VAL_CC "    }\n";
 print VAL_CC "}\n\n";
 
