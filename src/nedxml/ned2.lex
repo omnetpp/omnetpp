@@ -127,7 +127,7 @@ static char textbuf[TEXTBUF_LEN];
 
 \"                       { count(); BEGIN(stringliteral); }
 <stringliteral>{
-      \n                 { throw NEDException("unterminated string literal (append backslash to line for multi-line strings)"); }
+      \n                 { BEGIN(INITIAL); throw NEDException("unterminated string literal (append backslash to line for multi-line strings)"); /* NOTE: BEGIN(INITIAL) is important, otherwise parsing of the next file (!) will start from the <stringliteral> state! */ }
       \\\n               { extendCount(); /* line continuation */ }
       \\\"               { extendCount(); /* qouted quote */ }
       \\[^\n\"]          { extendCount(); /* qouted char */ }

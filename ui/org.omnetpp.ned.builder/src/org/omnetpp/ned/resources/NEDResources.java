@@ -99,6 +99,7 @@ public class NEDResources implements INEDTypeResolver {
 	/**
 	 * Create channel and interface types that are predefined in NED.
 	 */
+	//FIXME should use built-in NED text from nedxml lib!!!
 	protected void createBuiltInNEDTypes() {
 		// create built-in channel type NullChannel
 		ChannelNode nullChannel = (ChannelNode)NEDElementFactoryEx
