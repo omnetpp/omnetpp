@@ -33,6 +33,7 @@ proc editCanvasLabel {c id cmd} {
     set id [$c find withtag $id]
     set xy [$c coords $id]
     set txt  [$c itemcget $id -text]
+    regexp {^'(.*)'$} $txt match txt ;# strip quotes (apostrophes)
     set font $fonts(normal)
     set anch [$c itemcget $id -anchor]
     set tmp(canvasentry_orig) $txt
