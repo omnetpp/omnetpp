@@ -70,7 +70,7 @@ const char *StringTokenizer::nextToken()
     return token;
 }
 
-bool cStringTokenizer::hasMoreTokens()
+bool StringTokenizer::hasMoreTokens()
 {
     skipDelimiters(rest, delimiter.c_str());
     return *rest;
